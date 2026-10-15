@@ -90,18 +90,22 @@ try{
    ok(!erreurs(log).length, 'parcours : aucune erreur ' + erreurs(log).join(' | '));
    await pg.context().close(); }
 
- /* ── 3 · totehm.space seul : on arrive dans le fil ; figher.club : le radar, sans phrase ── */
+ /* ── 3 · 15/10 : le lecteur social conservé ; galerie et Club consultatif à leur entrée ── */
  { const { pg, log } = await page(browser, { dir:'space', origin:'https://www.totehm.space', tables, rpc });
-   await pg.goto('https://www.totehm.space/'); await pg.waitForFunction(() => window.__totehm_space?.().view === 'feed');
-   ok(true, 'totehm.space : on arrive dans le FIL (pur TikTok)');
+   await pg.goto('https://www.totehm.space/social'); await pg.waitForFunction(() => window.__totehm_space?.().view === 'feed');
+   ok(true, 'le lecteur social demeure accessible à son adresse conservée');
    ok(await pg.$eval('#joy-box', e => e.style.getPropertyValue('--joy-vue')) === 'var(--rep)' && await pg.$eval('#joy-box', e => e.classList.contains('is-side')), 'au fil, la manette garde ses couleurs d\'avant (rouge-violet)');
    await pg.click('#cur-g'); await pg.waitForFunction(() => window.__totehm_space().view === 'home');
    ok(!(await pg.locator('#home-what').count()) && await pg.locator('#x-back').isHidden(), 'à gauche du fil, SPACE sans phrase ; hors de COM, pas de croix');
    ok(!erreurs(log).length, 'SPACE seul : aucune erreur');
    await pg.context().close(); }
- { const { pg, log } = await page(browser, { dir:'club', origin:'https://www.figher.club', tables, rpc });
-   await pg.goto('https://www.figher.club/'); await pg.waitForFunction(() => window.__totehm_club?.().view === 'radar');
-   ok(await pg.locator('#club-title p').count() === 0, 'figher.club : le radar et [Higher] SPOTS, sans phrase');
+ { const { pg, log } = await page(browser, { dir:'space', origin:'https://www.totehm.space', tables, rpc });
+   await pg.goto('https://www.totehm.space/'); await pg.waitForFunction(() => window.__totehm_gallery?.().rooms === 4);
+   ok(await pg.locator('a[href="/get_higher"]').count()>0 && !log.rpc.some(r=>r.name==='space_feed'), 'entrée SPACE : les œuvres, sans chargement du fil social');
+   await pg.context().close(); }
+ { const { pg, log } = await page(browser, { dir:'club', origin:'https://www.figher.club', tables, rpc:{...rpc,club_spots:{ok:true,items:[],total:0,has_more:false,next_offset:0,as_of:new Date().toISOString()}} });
+   await pg.goto('https://www.figher.club/'); await pg.waitForFunction(() => window.__totehm_club?.().period === 'now');
+   ok(await pg.locator('#v-plan,#v-cam').count() === 0, 'entrée Club : consultation seule, sans vue de création');
    ok(!erreurs(log).length, 'Club seul : aucune erreur');
    await pg.context().close(); }
 }finally{ await browser.close(); }

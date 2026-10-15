@@ -21,7 +21,7 @@
 
 import Stripe from "npm:stripe@14";
 import { createClient } from "npm:@supabase/supabase-js@2";
-import { corsHeaders, SITE_CLUB } from "../_shared/origins.ts";
+import { corsHeaders, SITE_SPACE } from "../_shared/origins.ts";
 
 // Pas de fallback vide : Stripe accepterait "", échouerait au premier appel,
 // et un checkout partirait en fantôme. Le `!` fait planter le module au
@@ -38,7 +38,7 @@ const admin = createClient(
 const SESSION_MIN = 30;
 
 Deno.serve(async (req) => {
-  const headers = corsHeaders(req.headers.get("origin"), SITE_CLUB);
+  const headers = corsHeaders(req.headers.get("origin"), SITE_SPACE);
   const json = (b: unknown, s = 200) => new Response(JSON.stringify(b), { status: s, headers });
 
   if (req.method === "OPTIONS") return new Response("ok", { headers });
@@ -87,15 +87,15 @@ Deno.serve(async (req) => {
           product_data: {
             name: r.title,
             description: r.edition_total === 1
-              ? "Unique digital artwork · 1/1 · owned on FIGHER.CLUB"
-              : `Edition ${r.edition_next}/${r.edition_total} · owned on FIGHER.CLUB`,
+              ? "Unique digital artwork · 1/1 · owned on TOTEHM.SPACE"
+              : `Edition ${r.edition_next}/${r.edition_total} · owned on TOTEHM.SPACE`,
           },
         },
       }],
       metadata: meta,
       payment_intent_data: { metadata: meta },
-      success_url: `${SITE_CLUB}/market?owned=${encodeURIComponent(slug)}`,
-      cancel_url: `${SITE_CLUB}/market?art=${encodeURIComponent(slug)}`,
+      success_url: `${SITE_SPACE}/market?owned=${encodeURIComponent(slug)}`,
+      cancel_url: `${SITE_SPACE}/market?art=${encodeURIComponent(slug)}`,
     });
     await admin.rpc("art_reservation_session", { p_reservation: r.reservation, p_session: session.id });
     return json({ url: session.url, amount: r.price_cents, currency: r.currency, title: r.title });

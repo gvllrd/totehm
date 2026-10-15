@@ -26,5 +26,79 @@
         }
       ]
     }
+  ],
+  "rewrites": [
+    {
+      "source": "/get_higher",
+      "destination": "/art-bridge.html"
+    },
+    {
+      "source": "/get_higher.html",
+      "destination": "/art-bridge.html"
+    },
+    {
+      "source": "/stoner",
+      "destination": "/art-bridge.html"
+    },
+    {
+      "source": "/stoner.html",
+      "destination": "/art-bridge.html"
+    },
+    {
+      "source": "/stoner_terms",
+      "destination": "/art-bridge.html"
+    },
+    {
+      "source": "/stoner_terms.html",
+      "destination": "/art-bridge.html"
+    },
+    {
+      "source": "/play_lisbon_street",
+      "destination": "/art-bridge.html"
+    },
+    {
+      "source": "/play_lisbon_street.html",
+      "destination": "/art-bridge.html"
+    },
+    {
+      "source": "/discover",
+      "destination": "/art-bridge.html"
+    },
+    {
+      "source": "/discover.html",
+      "destination": "/art-bridge.html"
+    },
+    {
+      "source": "/discover_lisbon",
+      "destination": "/art-bridge.html"
+    },
+    {
+      "source": "/discover_lisbon.html",
+      "destination": "/art-bridge.html"
+    },
+    {
+      "source": "/origins",
+      "destination": "/art-bridge.html"
+    },
+    {
+      "source": "/origins.html",
+      "destination": "/art-bridge.html"
+    },
+    {
+      "source": "/market",
+      "destination": "/art-bridge.html"
+    },
+    {
+      "source": "/market.html",
+      "destination": "/art-bridge.html"
+    },
+    {
+      "source": "/lisbon",
+      "destination": "/art-bridge.html"
+    },
+    {
+      "source": "/global",
+      "destination": "/art-bridge.html"
+    }
   ]
 }

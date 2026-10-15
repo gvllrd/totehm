@@ -1,5 +1,16 @@
 # com/CLAUDE.md — totehm.com : le Totehm, la carte, HigherSelf
 
+## 15/10/2026 — raccordements galerie / Club (sans changer le moteur COM)
+
+`com/totehm.html` reste intact pour le travail COM en parallèle. `/x/space` sert désormais SPACE `/social`,
+`/x/club` sert Club `/create` : les commandes XO et la création depuis une Habit restent opérationnelles.
+`/spot?v=plan|cam&habit=…&city=…` fournit une entrée COM pour les anciens liens de création Club ; le cadre
+utilise la session de la même origine et valide origine + fenêtre émettrice. Sans session, le parcours COM
+existant `/totehm#in` s'ouvre dans le cadre, puis le compositeur reprend à la connexion.
+Les menus console/creator/monetize et le snippet ciblent ensemble `space` + `https://www.totehm.space/get_higher`.
+Pour les prochains changements COM : garder le contrat XO et ces deux destinations tant que les lecteurs intégrés
+n'ont pas été remplacés. Détails, tests et limites : `../docs/GALLERY_CLUB_20261015.md`.
+
 ## 13/10/2026 — la croix de Wah (lot B)
 
 BUILD `2026-10-13-com-story`. Module `LV` : `CROIX_L`, `NOMS`, `TEINTE_L`. **Centre** : le papier SANS nom au recto, le

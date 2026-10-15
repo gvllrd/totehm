@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>My TOTEHM · Spot</title>
+<style>
+html,body{margin:0;width:100%;height:100%;background:#000;color:#aaa;font-family:monospace}
+iframe{position:fixed;inset:0;width:100%;height:100%;border:0;background:#000}
+#status{position:fixed;inset:0;z-index:2;display:grid;place-content:center;gap:16px;text-align:center;background:#000}
+#status[hidden]{display:none}button,a{font:inherit;color:inherit;background:#222;border:0;border-radius:10px;padding:12px;text-decoration:none;cursor:pointer}
+</style>
+<div id="status" role="status"><span id="note">Opening my TOTEHM…</span><button id="retry" hidden>Try again</button><a href="/totehm#in">My TOTEHM</a></div>
+<script type="module">
+import {createClient} from 'https://esm.sh/@supabase/supabase-js@2';
+// Same-origin adapter around the established COM composer. Core totehm.html is
+// being developed separately; its Habit → XO creation path stays unchanged.
+const SB='https://abujjbkbbiumxrokozph.supabase.co';
+const KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us';
+const sb=createClient(SB,KEY),status=document.getElementById('status');
+const query=new URLSearchParams(location.search),fragment=new URLSearchParams(location.hash.slice(1));
+const intent=new URLSearchParams();
+for(const key of ['habit','city','take','when','starts_at','duration','lat','lng','location','audience']){
+  const value=query.get(key);if(value)intent.set(key,value.slice(0,1000));
+}
+intent.set('v',['cam','rec'].includes(query.get('v'))?'cam':'plan');
+let frame=null,kind='',ready=false,timer=0,changes=0;
+const diag=()=>({ready,login:kind==='login',changes});
+window.__totehm_spot=diag;
+
+// Redeem a COM-bound link on COM before the child reads this origin's session.
+// A PKCE response is accepted only against the challenge retained in this tab.
+async function arrive(){
+  const code=fragment.get('sso')||query.get('sso'),state=fragment.get('state');
+  const hadResponse=code||fragment.has('sso_error');
+  if(!hadResponse)return;
+  for(const key of ['sso','state','sso_error']){fragment.delete(key);query.delete(key);}
+  history.replaceState(null,'',location.pathname+(query.size?'?'+query:'')+(fragment.size?'#'+fragment:''));
+  let pk=null;try{pk=JSON.parse(sessionStorage.getItem('totehm_sso_pkce')||'null');sessionStorage.removeItem('totehm_sso_pkce');}catch{}
+  if(!/^[a-f0-9]{64}$/.test(code||'')||(state&&(!pk||pk.state!==state)))return;
+  try{
+    const response=await fetch(SB+'/functions/v1/sso-redeem',{method:'POST',headers:{'content-type':'application/json',apikey:KEY,authorization:'Bearer '+KEY},
+      body:JSON.stringify({code,...(state?{verifier:pk.verifier}:{})}),signal:AbortSignal.timeout(5000)});
+    if(!response.ok){console.error('[spot sso] redeem',response.status);return;}
+    const {token_hash}=await response.json();if(!token_hash)return;
+    const {error}=await sb.auth.verifyOtp({type:'email',token_hash});if(error)console.error('[spot sso] verify',error.message);
+  }catch(error){console.error('[spot sso]',error?.message||error);}
+}
+function show(next){
+  if(kind===next&&frame)return;
+  clearTimeout(timer);frame?.remove();ready=false;kind=next;changes++;
+  status.hidden=next==='login';
+  frame=document.createElement('iframe');frame.title=next==='login'?'My TOTEHM':'My TOTEHM · Spot';
+  frame.allow='camera; microphone; geolocation; autoplay; fullscreen; clipboard-write; web-share';
+  frame.src=next==='login'?'/totehm#in':'/x/club?embed=1';
+  document.body.append(frame);
+  if(next==='composer')timer=setTimeout(()=>{
+    if(ready)return;
+    document.getElementById('note').textContent='Unable to open this spot';
+    document.getElementById('retry').hidden=false;status.hidden=false;
+  },15000);
+}
+function send(command){if(frame&&kind==='composer')frame.contentWindow.postMessage({totehm:'x',...command},location.origin);}
+async function bridge(target,url){
+  const hosts={space:'www.totehm.space',club:'www.figher.club',boutique:'www.higher.boutique'};
+  if(url.protocol!=='https:'||url.host!==hosts[target])return;
+  try{
+    const {data:{session}}=await sb.auth.getSession();
+    if(session){
+      const response=await fetch(SB+'/functions/v1/sso-mint',{method:'POST',headers:{'content-type':'application/json',apikey:KEY,authorization:'Bearer '+session.access_token},body:JSON.stringify({target}),signal:AbortSignal.timeout(5000)});
+      if(response.ok){const {code}=await response.json();if(code){const h=new URLSearchParams(url.hash.slice(1));h.set('sso',code);url.hash=h.toString();}}
+      else console.error('[spot sso] mint',response.status);
+    }
+  }catch(error){console.error('[spot sso]',error?.message||error);}
+  location.href=url.href;
+}
+window.addEventListener('message',event=>{
+  if(event.origin!==location.origin||event.source!==frame?.contentWindow||kind!=='composer')return;
+  const data=event.data;if(!data||data.totehm!=='x')return;
+  if(data.ev==='ready'){ready=true;clearTimeout(timer);status.hidden=true;send({cmd:'url',q:intent.toString()});}
+  if(data.ev==='close'){send({cmd:'sleep'});location.href='/totehm#in';}
+  if(data.ev==='signin')show('login');
+  if(data.ev==='stale'){kind='';show('composer');}
+  if(data.ev==='go'){
+    let url;try{url=new URL(data.url,location.origin);}catch{return;}
+    if(data.cible==='com'&&url.origin===location.origin){location.href=url.pathname+url.search+url.hash;return;}
+    bridge(data.cible,url);
+  }
+});
+window.addEventListener('pagehide',()=>send({cmd:'sleep'}));
+document.getElementById('retry').onclick=()=>{kind='';show('composer');};
+await arrive();
+const {data:{session}}=await sb.auth.getSession();
+show(session?.user?.email?'composer':'login');
+sb.auth.onAuthStateChange((event,next)=>{
+  // Defer calls outside the auth callback's internal lock.
+  if(event==='SIGNED_IN'&&next?.user?.email&&kind==='login')setTimeout(()=>show('composer'),0);
+  if(event==='SIGNED_OUT')setTimeout(()=>show('login'),0);
+});
+</script>
+</html>

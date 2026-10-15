@@ -14,7 +14,7 @@
 
 import Stripe from "npm:stripe@14";
 import { createClient } from "npm:@supabase/supabase-js@2";
-import { corsHeaders, origineDe, SITE_BOUT } from "../_shared/origins.ts";
+import { corsHeaders, origineDe, SITE_SPACE } from "../_shared/origins.ts";
 
 // Pas de fallback `?? ""` : Stripe accepterait la clé vide, échouerait
 // silencieusement au premier appel. Le `!` fait planter le module au
@@ -39,7 +39,7 @@ async function prixTHP() {
 
 Deno.serve(async (req) => {
   const origin = req.headers.get("origin");
-  const headers = corsHeaders(origin, SITE_BOUT);
+  const headers = corsHeaders(origin, SITE_SPACE);
   const json = (b: unknown, s = 200) =>
     new Response(JSON.stringify(b), { status: s, headers });
 
@@ -82,17 +82,13 @@ Deno.serve(async (req) => {
     return json({ error: "waiver_required" }, 400);
   }
 
-  // D'où vient l'achat, là il revient. ⚠️ 09/10/2026 : Get Higher, la
-  // méthode et le marché sont revenus sur higher.boutique (figher.club les
-  // redirige, 308). `from` est un NOM (`method` | `market`), jamais une URL :
-  // `method` → la méthode s'ouvre, `market` (défaut, la page du marché ne
-  // l'envoie pas) → l'exemplaire apparaît dans My collection. Un onglet resté
-  // ouvert sur figher.club compte comme la boutique.
-  // Chemins ABSOLUS sur des origines fixes — jamais une URL reçue.
-  const ici = origineDe("boutique", origin) || origineDe("club", origin);
+  // L'art digital vit sur SPACE. Les anciens onglets boutique/Club restent
+  // compatibles ; `from` est un nom de parcours, jamais une URL reçue.
+  // Les prix, métadonnées et droits acquis restent ceux de la base.
+  const ici = origineDe("space", origin) || origineDe("boutique", origin) || origineDe("club", origin);
   const versMethode = !ici || body?.from === "method";
-  const retour = versMethode ? `${SITE_BOUT}/stoner?checked=1` : `${SITE_BOUT}/market?owned=totehmpaper`;
-  const annule = versMethode ? `${SITE_BOUT}/get_higher` : `${SITE_BOUT}/market?art=totehmpaper`;
+  const retour = versMethode ? `${SITE_SPACE}/stoner?checked=1` : `${SITE_SPACE}/market?owned=totehmpaper`;
+  const annule = versMethode ? `${SITE_SPACE}/get_higher` : `${SITE_SPACE}/market?art=totehmpaper`;
 
   try {
     // payment_method_types explicite : Stripe refuse une devise sans

@@ -1,5 +1,9 @@
 # SYSTEM.md — état réel du système TOTEHM
 
+> Livraison locale du 15/10/2026 : galerie SPACE, Club temporel, séparation des droits payants.
+> Vérifications locales et mise en service restante : `../docs/GALLERY_CLUB_20261015.md`.
+> Aucun nouveau relevé de production ; les valeurs et dates de production ci-dessous sont conservées.
+
 **Dernier relevé : 13 octobre 2026, quatre niveaux et `/@nom` = l'univers** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
 
 > **À quoi sert ce fichier.** Les masters disent *ce qu'on veut*. `CLAUDE.md` dit

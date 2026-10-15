@@ -1,5 +1,5 @@
 -- LOT A (13/10/2026) : quatre niveaux — PRIVATE · FIGHER CLUB · MY SUBSCRIBERS · PUBLIC.
--- Lecteurs : l'auteur (A), un membre FIGHER CLUB (F, par figher_comps), un abonné de A (S), personne (N), anonyme.
+-- Lecteurs : l'auteur (A), un membre FIGHER CLUB (F, Totehm complet), un abonné de A (S), personne (N), anonyme.
 -- Fixtures créées puis annulées par l'exception. Attendu : « FAIL={} ».
 DO $t$
 declare
@@ -11,7 +11,11 @@ begin
   insert into auth.users(id, email) values (ua, pa || '_a@example.invalid'), (uf, pa || '_f@example.invalid'),
                                            (us, pa || '_s@example.invalid'), (un, pa || '_n@example.invalid');
   insert into public.profiles(id, pseudo) values (ua, pa), (uf, pa || '_f'), (us, pa || '_s'), (un, pa || '_n');
-  insert into public.figher_comps(email, reason) values (lower(pa || '_f@example.invalid'), 'selftest');
+  insert into public.totehms(user_id, steps) values (uf, '[{"t":"Selftest habit"}]');
+  insert into public.objectives(user_id, text) values (uf, 'Selftest objective');
+  insert into public.repulsions(user_id, repulsion, active) values (uf, 'Selftest repulsion', true);
+  insert into public.wisdom(user_id, text) values (uf, 'Selftest story');
+  insert into public.visions(user_id, text) values (uf, 'Selftest vision');
   insert into public.creator_subscriptions(creator_id, fan_id, status) values (ua, us, 'active');
   insert into public.totehms(user_id, totehm_visibility, steps)
   values (ua, 'members', '[{"t":"Run the hill","f":"daily","is":["fight"]}]');

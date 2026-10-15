@@ -1,15 +1,14 @@
 <!DOCTYPE html>
-<!-- 09/10/2026 — Club: original SPACE map, planning, agenda and live camera.
-     Center radar, top plan, right future spots, bottom camera, left past spots.
-     Exact positions come only from current server rights; spaces redirect to SPACE.
-     Original Meet door, How it works and footer remain at /meet. -->
+<!-- 15/10/2026 — Club consultation: past / now / future × radar / shorts.
+     The server selects authorized spots and classifies their actual time intervals.
+     Creation lives in COM; the existing embedded editor is preserved at /create. -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#000000">
-<title>FIGHER.CLUB — meet in reality</title>
-<meta name="description" content="Inspiration: strategic Habits of a TOTEHM, lived on camera, with their why.">
+<title>FIGHER.CLUB — past · now · future</title>
+<meta name="description" content="Explore past, present and future spots, through their Habit Boxes.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://abujjbkbbiumxrokozph.supabase.co" crossorigin>
@@ -496,19 +495,45 @@ body.v-plan #tp-hint,body.v-cam #tp-hint{display:none}
 <body class="v-radar">
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="higher-badge" viewBox="0 0 600 200"><defs><mask id="hbmask"><rect width="600" height="200" fill="white"/><circle cx="60" cy="0" r="14" fill="black"/><circle cx="140" cy="0" r="14" fill="black"/><circle cx="220" cy="0" r="14" fill="black"/><circle cx="300" cy="0" r="14" fill="black"/><circle cx="380" cy="0" r="14" fill="black"/><circle cx="460" cy="0" r="14" fill="black"/><circle cx="540" cy="0" r="14" fill="black"/><circle cx="60" cy="200" r="14" fill="black"/><circle cx="140" cy="200" r="14" fill="black"/><circle cx="220" cy="200" r="14" fill="black"/><circle cx="300" cy="200" r="14" fill="black"/><circle cx="380" cy="200" r="14" fill="black"/><circle cx="460" cy="200" r="14" fill="black"/><circle cx="540" cy="200" r="14" fill="black"/><circle cx="0" cy="70" r="14" fill="black"/><circle cx="0" cy="130" r="14" fill="black"/><circle cx="600" cy="70" r="14" fill="black"/><circle cx="600" cy="130" r="14" fill="black"/></mask></defs><rect width="600" height="200" fill="#333366" mask="url(#hbmask)"/><g fill="#ffffff" transform="translate(34.32, 144.42)"><path transform="translate(0.000,0) scale(0.144,-0.144)" d="M596 700H832L692 0H456ZM238 0H2L142 700H378ZM523 258H274L313 452H562Z"/><path transform="translate(115.776,0) scale(0.144,-0.144)" d="M-5 0 104 547H329L220 0ZM241 591Q182 591 147.5 622.0Q113 653 113 698Q113 751 152.5 786.0Q192 821 257 821Q316 821 350.5 792.0Q385 763 385 718Q385 662 345.5 626.5Q306 591 241 591Z"/><path transform="translate(162.576,0) scale(0.144,-0.144)" d="M255 -204Q172 -204 103.5 -187.0Q35 -170 -16 -136L80 18Q113 -7 161.5 -21.5Q210 -36 259 -36Q325 -36 355.0 -8.5Q385 19 395 68L409 138L450 294L485 464L501 547H716L629 110Q596 -57 499.5 -130.5Q403 -204 255 -204ZM260 30Q200 30 146.0 58.0Q92 86 58.0 139.0Q24 192 24 266Q24 327 46.5 379.5Q69 432 109.5 472.0Q150 512 203.5 534.5Q257 557 318 557Q379 557 424.5 533.0Q470 509 490.0 451.5Q510 394 493 294Q478 204 446.0 145.5Q414 87 367.0 58.5Q320 30 260 30ZM332 207Q361 207 383.0 219.5Q405 232 417.0 255.0Q429 278 429 309Q429 340 408.5 359.5Q388 379 350 379Q321 379 299.0 366.5Q277 354 264.5 331.0Q252 308 252 277Q252 246 273.5 226.5Q295 207 332 207Z"/><path transform="translate(264.960,0) scale(0.144,-0.144)" d="M470 557Q535 557 584.0 528.5Q633 500 654.5 443.5Q676 387 659 302L599 0H373L428 275Q437 320 424.0 343.5Q411 367 375 367Q337 367 311.0 341.5Q285 316 274 263L221 0H-5L143 742H369L300 396L260 436Q299 499 356.5 528.0Q414 557 470 557Z"/><path transform="translate(366.048,0) scale(0.144,-0.144)" d="M321 -10Q231 -10 163.5 21.0Q96 52 58.0 109.0Q20 166 20 243Q20 333 62.0 404.0Q104 475 180.5 516.0Q257 557 359 557Q447 557 509.0 526.0Q571 495 604.0 441.0Q637 387 637 316Q637 291 633.5 267.0Q630 243 625 221H200L221 330H521L427 301Q435 333 426.5 355.5Q418 378 398.0 390.5Q378 403 349 403Q308 403 284.0 381.0Q260 359 249.5 324.0Q239 289 239 251Q239 200 266.5 178.5Q294 157 347 157Q378 157 409.0 166.5Q440 176 466 195L560 58Q504 20 443.5 5.0Q383 -10 321 -10Z"/><path transform="translate(459.360,0) scale(0.144,-0.144)" d="M-5 0 104 547H317L286 392L265 436Q299 501 359.5 529.0Q420 557 498 557L458 357Q444 359 432.5 360.0Q421 361 409 361Q353 361 318.5 336.0Q284 311 272 253L221 0Z"/></g></symbol></svg>
 
-<button id="x-back" type="button" aria-label="Back to my TOTEHM"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 3 L13 13 M13 3 L3 13"/></svg></button>
-<div id="who"><button id="member" type="button" aria-label="Connect with my TOTEHM"><i></i><span id="member-txt">CONNECT WITH MY TOTEHM</span></button><a id="terms" href="https://www.totehm.com/terms" target="_blank" rel="noopener">Simple terms of use</a></div>
-<button id="space-about" type="button" data-space-about="1">What is a spot?</button>
-<template id="space-definition"><div class="space-definition">
-<h2>What is a spot?</h2>
-<p>A spot is a strategic Habit, lived together in reality. I WILL BE HERE · I AM HERE · I WAS THERE.</p>
-<p>A <svg viewBox="0 0 600 200" class="space-higher" aria-label="Higher"><use href="#higher-badge"/></svg> spot is a place where you put your TOTEHM into action, in line with your habits, goals and vision.</p>
-<p>At home, in a private venue or outside. Alone or alongside like-minded people, whose shared energy can lift the group: collective effervescence.</p>
-<p>SOCIAL: we can talk. SILENT: nobody disturb me. Respect everyone's space, boundaries and chosen mode. A location is never an invitation to enter a private place.</p>
-<p class="space-domains">totehm.com builds the strategy · totehm.space shows it lived · figher.club meets in reality · higher.boutique wears and owns it.</p>
-</div></template>
-<header id="heading">
-<div id="tp-wrap">
+
+<style>
+/* Consultation: time is horizontal, presentation is independent. Habit colours stay untouched. */
+body{--period:#333366;--header:156px;--footer:78px}body[data-period=past]{--period:#743169}body[data-period=future]{--period:#36498c}
+#heading{position:fixed!important;top:calc(14px + var(--top))!important;left:50%!important;right:auto!important;transform:translateX(-50%)!important;width:auto!important;display:flex!important;flex-direction:row!important;align-items:center;gap:14px;pointer-events:none;z-index:65;--tp:64px}
+#tp-wrap{display:block!important;pointer-events:auto}#totehm-paper{width:64px!important;height:64px!important;cursor:pointer}#tp-hint{display:none!important}#tp-card{transition:transform .25s ease}#totehm-paper:hover #tp-card{transform:rotateY(8deg)}#totehm-paper:focus-within #tp-card{animation:none}
+@keyframes paper-breathe{0%,100%{transform:rotateY(-7deg) rotateX(4deg)}50%{transform:rotateY(9deg) rotateX(-3deg)}}
+.club-word{font:700 16px/1.3 var(--mono);letter-spacing:.16em;color:#eee}.club-word small{display:block;font:400 8px/1.5 var(--mono);letter-spacing:.17em;color:var(--lo);margin-top:6px}
+#who{z-index:68}#member{font-size:10px}#member i{display:none}#member.is-in{color:#fbd5ca;font-family:var(--q)}#terms{font-size:7px}
+#mode-bar{position:fixed;top:calc(97px + var(--top));left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:65;align-items:center;white-space:nowrap}
+#mode-bar button{font-size:9px;letter-spacing:.1em}button:focus-visible,a:focus-visible{outline:2px solid #fbd5ca;outline-offset:4px}
+#mode-bar [aria-pressed=true]{background:var(--s4);color:white}#filter-button{margin-left:8px}#new-spot{position:fixed;top:calc(19px + var(--top));right:16px;z-index:67;font-size:8px}
+#periods{position:fixed;bottom:0;left:0;right:0;display:grid;grid-template-columns:repeat(3,1fr);z-index:65;background:rgba(11,11,13,.95);padding:10px max(10px,env(safe-area-inset-right)) calc(14px + var(--bot));gap:6px;border-top:1px solid #202025}
+#periods button{border:0;border-top:2px solid var(--time);background:transparent;color:var(--lo);padding:9px 4px 3px;cursor:pointer;font:700 9px/1.4 var(--mono);letter-spacing:.05em;transition:color .2s,background .2s,transform .2s}#periods button small{display:block;font:400 7px/1.4 var(--mono);letter-spacing:.14em;margin-top:3px}#periods button[aria-selected=true]{color:#fff;background:color-mix(in srgb,var(--time) 25%,transparent);transform:translateY(-3px)}
+#content{position:fixed;inset:var(--header) 0 var(--footer);border-top:1px solid color-mix(in srgb,var(--period) 35%,transparent)}
+#v-radar,#v-shorts{position:absolute;inset:0;transition:opacity .2s,transform .25s;visibility:visible;background:transparent}
+#v-radar.hide,#v-shorts.hide{display:block!important;opacity:0;visibility:hidden;pointer-events:none;transform:translateY(8px)}
+#canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none}#radar-tools{position:absolute;bottom:auto;top:10px;left:16px;right:16px;z-index:12;display:flex;justify-content:space-between;flex-direction:row;max-width:none;align-items:flex-start;pointer-events:none}#radar-tools button{position:static!important;transform:none!important;pointer-events:auto;font-size:9px}#radar-tools .row{position:static!important;transform:none!important}
+#result-list{position:absolute;bottom:0;left:12px;right:12px;height:26%;min-height:88px;overflow-y:auto;z-index:15;background:linear-gradient(transparent,rgba(0,0,0,.9) 14%);padding-top:13px;scrollbar-width:thin}
+.radar-row{display:grid;grid-template-columns:minmax(100px,1fr) auto;gap:7px;align-items:center;width:min(640px,100%);margin:0 auto 6px;padding:9px 12px;background:#15151ad9;border:0;border-left:2px solid var(--period);text-align:left;cursor:pointer;font:400 12px/1.4 var(--q);color:white}.radar-row small{font:400 8px/1.4 var(--mono);color:var(--lo);max-width:180px}.radar-row.is-selected{outline:1px solid var(--period)}
+#results-caption{position:fixed;left:50%;top:calc(137px + var(--top));transform:translateX(-50%);font-size:8px;color:var(--lo);z-index:60;white-space:nowrap}.result-empty{padding:30px 20px;text-align:center;color:var(--lo);font-size:10px}.load-more{display:block;margin:16px auto}.retry{display:block;margin:14px auto}
+#feed{position:absolute;inset:0;overflow-y:auto;scroll-snap-type:y mandatory;scrollbar-width:none;overscroll-behavior:contain}#feed::-webkit-scrollbar{display:none}.clip{position:relative;min-height:100%;height:100%;width:min(640px,100%);margin:auto;scroll-snap-align:start;scroll-snap-stop:always;overflow:hidden;background:#101013}
+.clip .portrait-media{position:absolute;inset:0;border-radius:0!important;max-height:none!important;aspect-ratio:auto!important;width:100%;height:100%;margin:0!important}.clip video,.clip img{width:100%;height:100%;object-fit:cover}.clip .shade{position:absolute;inset:0;background:linear-gradient(transparent 12%,rgba(0,0,0,.15) 35%,rgba(0,0,0,.82) 85%);pointer-events:none}.clip.no-media{background:radial-gradient(ellipse at 50% 20%,color-mix(in srgb,var(--period) 30%,#111),#0b0b0d 75%)}.no-media .time-mark{position:absolute;top:12%;left:20px;right:20px;font:700 clamp(28px,7vw,54px)/1.1 var(--mono);letter-spacing:-.04em;opacity:.22;color:var(--period)}
+.clip .info{position:absolute;left:14px;right:14px;bottom:14px;max-height:83%;overflow:auto;scrollbar-width:thin}.clip .habit{box-shadow:0 5px 22px #0008}.clip .sdata{background:#0b0b0ddb;margin-top:8px}.clip .by{margin:8px 0}.clip .acts{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 2px}.clip .btn{background:#0b0b0de0}.sound-button{position:absolute;right:12px;top:12px;z-index:2;font-size:8px}
+#habit-picker,#filters{position:fixed!important;z-index:90;top:calc(143px + var(--top))!important;bottom:calc(83px + var(--bot));left:50%!important;right:auto!important;transform:translateX(-50%)!important;width:min(580px,calc(100% - 24px));max-height:none!important;background:#111115f5;padding:18px;overflow-y:auto;border:1px solid #33333b;border-radius:10px;box-shadow:0 12px 50px #0008;animation:panel-in .18s ease-out}
+@keyframes panel-in{from{opacity:0;translate:0 8px}to{opacity:1;translate:0 0}}#habit-picker .pick-habit{margin-top:12px}.filter-row{margin:13px 0}.filter-row .lab{display:block;margin-bottom:6px}.filter-row .row{flex-wrap:wrap}.filter-row input{width:100%;margin:5px 0}.chip[aria-pressed=true]{background:#2e2e36;color:#fff;box-shadow:inset 0 0 0 1px #777}.chip.is-int{border-left:2px solid var(--c)}
+#detail{z-index:100;max-height:89%;width:min(640px,100%);left:50%;right:auto;transform:translate(-50%,104%);padding:16px 18px calc(18px + var(--bot));border-radius:12px 12px 0 0;box-shadow:0 -12px 60px #0008}#detail.is-open{transform:translate(-50%,var(--sheet-y,0px))}#detail .portrait-media{max-height:42vh;overflow:hidden;margin-bottom:12px}#detail img,#detail video{width:100%;max-height:42vh;object-fit:contain}#detail .habit{margin-top:8px}.detail-error{padding:40px 15px}.sheet-grab{display:block;width:100%;height:20px;background:none;border:0;cursor:pointer}.sheet-grab span{display:block;margin:auto;width:40px;height:3px;border-radius:4px;background:#777}
+#toast{position:fixed;z-index:110;bottom:calc(90px + var(--bot));left:50%;transform:translateX(-50%);background:#24242c;padding:10px 15px;font-size:10px;max-width:90vw;border-radius:8px}#membership-note{display:none}.space-definition .space-domains{font-size:10px}
+body.transition-period #content{animation:period-in .23s ease-out}@keyframes period-in{from{opacity:.3;transform:translateX(var(--travel,15px))}to{opacity:1;transform:none}}
+@media(min-width:900px){body{--header:153px;--footer:86px}#periods{left:50%;right:auto;transform:translateX(-50%);width:620px;border:0;border-radius:12px 12px 0 0}#result-list{left:auto;right:30px;top:56px;bottom:22px;width:290px;height:auto;max-height:calc(100% - 72px);background:none}#content{border:0}#new-spot{font-size:10px}#who{top:20px;left:20px}#member{font-size:12px}}
+@media(max-width:540px){#heading{top:calc(54px + var(--top))!important;--tp:48px}#totehm-paper{width:48px!important;height:48px!important}.club-word{font-size:13px}#mode-bar{top:calc(112px + var(--top))}body{--header:169px}#results-caption{top:calc(151px + var(--top))}#habit-picker,#filters{top:calc(158px + var(--top))!important}.clip .habit{padding:13px 10px}.clip .v-name{font-size:17px}#new-spot{right:10px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+#radar-tools #cmp{visibility:visible!important}#space-about{position:fixed;top:auto;bottom:calc(91px + var(--bot));right:10px;z-index:66;font-size:7px;padding:3px 6px;opacity:.7}
+
+</style>
+<div id="who"><button id="member" type="button" aria-label="Connect with my TOTEHM"><span id="member-txt">CONNECT WITH MY TOTEHM</span></button><a id="terms" href="https://www.totehm.com/terms" target="_blank" rel="noopener">Simple terms of use</a></div>
+<button class="btn" id="new-spot" type="button">+ SPOT · MY TOTEHM</button>
+<header id="heading"><div id="tp-wrap">
 <div id="totehm-paper">
     <div id="tp-card">
       <div class="tp-face tp-front">
@@ -517,7 +542,7 @@ body.v-plan #tp-hint,body.v-cam #tp-hint{display:none}
           <svg class="tp-layer" id="tp-gl-rail" viewBox="20.689 0.225 17.203 223.630" preserveAspectRatio="none"    aria-hidden="true"><defs><clipPath id="tpr_3a710ebbbe"><path d="M 20.652344 0.261719 L 37.839844 0.261719 L 37.839844 223.816406 L 20.652344 223.816406 Z M 20.652344 0.261719 " clip-rule="nonzero"/></clipPath><clipPath id="tpr_1b01f8474a"><path d="M 0.652344 0.261719 L 17.839844 0.261719 L 17.839844 223.816406 L 0.652344 223.816406 Z M 0.652344 0.261719 " clip-rule="nonzero"/></clipPath><clipPath id="tpr_95349ecf51"><rect x="0" width="18" y="0" height="224"/></clipPath></defs><g clip-path="url(#tpr_3a710ebbbe)"><g transform="matrix(1, 0, 0, 1, 20, -0.000000000000020428)"><g clip-path="url(#tpr_95349ecf51)"><g clip-path="url(#tpr_1b01f8474a)"><path fill="#626286" d="M 0.652344 0.261719 L 17.839844 0.261719 L 17.839844 223.808594 L 0.652344 223.808594 Z M 0.652344 0.261719 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g></svg>
           <svg class="tp-layer" id="tp-gl-t"    viewBox="79.832 47.921 66.789 66.932"    preserveAspectRatio="none" aria-hidden="true"><defs><clipPath id="tpt_ad60c268aa"><path d="M 0.871094 1.027344 L 67.59375 1.027344 L 67.59375 10.664062 L 0.871094 10.664062 Z M 0.871094 1.027344 " clip-rule="nonzero"/></clipPath><clipPath id="tpt_f37d153e97"><path d="M 0.871094 0.0273438 L 67.59375 0.0273438 L 67.59375 9.664062 L 0.871094 9.664062 Z M 0.871094 0.0273438 " clip-rule="nonzero"/></clipPath><clipPath id="tpt_0eae0d8cca"><rect x="0" width="68" y="0" height="10"/></clipPath><clipPath id="tpt_d380122ed3"><path d="M 29.410156 1.027344 L 39.050781 1.027344 L 39.050781 67.75 L 29.410156 67.75 Z M 29.410156 1.027344 " clip-rule="nonzero"/></clipPath><clipPath id="tpt_75ca9fbfbb"><path d="M 0.410156 0.0273438 L 10.050781 0.0273438 L 10.050781 66.75 L 0.410156 66.75 Z M 0.410156 0.0273438 " clip-rule="nonzero"/></clipPath><clipPath id="tpt_92fddf9f0e"><rect x="0" width="11" y="0" height="67"/></clipPath><clipPath id="tpt_1e85f52e0e"><path d="M 21.183594 63.386719 L 47.28125 63.386719 L 47.28125 67.75 L 21.183594 67.75 Z M 21.183594 63.386719 " clip-rule="nonzero"/></clipPath><clipPath id="tpt_6c7bfd0f9f"><path d="M 0.183594 0.386719 L 26.28125 0.386719 L 26.28125 4.75 L 0.183594 4.75 Z M 0.183594 0.386719 " clip-rule="nonzero"/></clipPath><clipPath id="tpt_7d4c700d36"><rect x="0" width="27" y="0" height="5"/></clipPath><clipPath id="tpt_ffb4264ddd"><rect x="0" width="68" y="0" height="68"/></clipPath></defs><g transform="matrix(1, 0, 0, 1, 79, 47)"><g clip-path="url(#tpt_ffb4264ddd)"><g clip-path="url(#tpt_ad60c268aa)"><g transform="matrix(1, 0, 0, 1, 0.000000000000014211, 1)"><g clip-path="url(#tpt_0eae0d8cca)"><g clip-path="url(#tpt_f37d153e97)"><path fill="#ffffff" d="M 0.871094 0.0273438 L 67.582031 0.0273438 L 67.582031 9.664062 L 0.871094 9.664062 Z M 0.871094 0.0273438 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g><g clip-path="url(#tpt_d380122ed3)"><g transform="matrix(1, 0, 0, 1, 29, 1)"><g clip-path="url(#tpt_92fddf9f0e)"><g clip-path="url(#tpt_75ca9fbfbb)"><path fill="#ffffff" d="M 10.050781 0.0273438 L 10.050781 66.738281 L 0.410156 66.738281 L 0.410156 0.0273438 Z M 10.050781 0.0273438 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g><g clip-path="url(#tpt_1e85f52e0e)"><g transform="matrix(1, 0, 0, 1, 21, 63)"><g clip-path="url(#tpt_7d4c700d36)"><g clip-path="url(#tpt_6c7bfd0f9f)"><path fill="#ffffff" d="M 26.28125 4.75 L 0.183594 4.75 L 0.183594 0.386719 L 26.28125 0.386719 Z M 26.28125 4.75 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g></g></g></svg>
           <svg class="tp-layer" id="tp-gl-wm"   viewBox="74.997 121.602 77.584 46.683"   preserveAspectRatio="none" aria-hidden="true"><defs><g/><clipPath id="tpw_98fd27636e"><rect x="0" width="84" y="0" height="39"/></clipPath></defs><g fill="#ffffff" fill-opacity="1"><g transform="translate(87.377054, 137.358137)"><g><path d="M 5.546875 -14.09375 L 0.09375 -14.09375 L 0.09375 -15.515625 L 12.640625 -15.515625 L 12.640625 -14.09375 L 7.1875 -14.09375 L 7.1875 0 L 5.546875 0 Z M 5.546875 -14.09375 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(99.483952, 137.358137)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(104.6725, 137.358137)"><g><path d="M 9.3125 0.140625 C 7.769531 0.140625 6.375 -0.203125 5.125 -0.890625 C 3.882812 -1.578125 2.910156 -2.519531 2.203125 -3.71875 C 1.503906 -4.914062 1.15625 -6.265625 1.15625 -7.765625 C 1.15625 -9.253906 1.503906 -10.597656 2.203125 -11.796875 C 2.910156 -12.992188 3.882812 -13.9375 5.125 -14.625 C 6.375 -15.3125 7.769531 -15.65625 9.3125 -15.65625 C 10.851562 -15.65625 12.238281 -15.3125 13.46875 -14.625 C 14.707031 -13.945312 15.679688 -13.003906 16.390625 -11.796875 C 17.097656 -10.597656 17.453125 -9.253906 17.453125 -7.765625 C 17.453125 -6.265625 17.097656 -4.910156 16.390625 -3.703125 C 15.679688 -2.503906 14.707031 -1.5625 13.46875 -0.875 C 12.238281 -0.195312 10.851562 0.140625 9.3125 0.140625 Z M 9.3125 -1.328125 C 10.539062 -1.328125 11.648438 -1.601562 12.640625 -2.15625 C 13.628906 -2.71875 14.40625 -3.488281 14.96875 -4.46875 C 15.53125 -5.445312 15.8125 -6.546875 15.8125 -7.765625 C 15.8125 -8.972656 15.53125 -10.066406 14.96875 -11.046875 C 14.40625 -12.035156 13.628906 -12.804688 12.640625 -13.359375 C 11.648438 -13.910156 10.539062 -14.1875 9.3125 -14.1875 C 8.082031 -14.1875 6.96875 -13.910156 5.96875 -13.359375 C 4.976562 -12.804688 4.195312 -12.035156 3.625 -11.046875 C 3.050781 -10.066406 2.765625 -8.972656 2.765625 -7.765625 C 2.765625 -6.546875 3.050781 -5.445312 3.625 -4.46875 C 4.195312 -3.488281 4.976562 -2.71875 5.96875 -2.15625 C 6.96875 -1.601562 8.082031 -1.328125 9.3125 -1.328125 Z M 9.3125 -1.328125 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(122.655559, 137.358137)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(127.844108, 137.358137)"><g><path d="M 5.546875 -14.09375 L 0.09375 -14.09375 L 0.09375 -15.515625 L 12.640625 -15.515625 L 12.640625 -14.09375 L 7.1875 -14.09375 L 7.1875 0 L 5.546875 0 Z M 5.546875 -14.09375 "/></g></g></g><g transform="matrix(1, 0, 0, 1, 71, 138)"><g clip-path="url(#tpw_98fd27636e)"><g fill="#ffffff" fill-opacity="1"><g transform="translate(0.838799, 30.275545)"><g><path d="M 18.59375 -2.640625 L 18.59375 0 L 3.1875 0 L 3.1875 -21.234375 L 18.171875 -21.234375 L 18.171875 -18.59375 L 6.21875 -18.59375 L 6.21875 -12.078125 L 16.875 -12.078125 L 16.875 -9.5 L 6.21875 -9.5 L 6.21875 -2.640625 Z M 18.59375 -2.640625 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(19.582399, 30.275545)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(26.163451, 30.275545)"><g><path d="M 21.453125 -21.234375 L 21.453125 0 L 18.421875 0 L 18.421875 -9.46875 L 6.21875 -9.46875 L 6.21875 0 L 3.1875 0 L 3.1875 -21.234375 L 6.21875 -21.234375 L 6.21875 -12.109375 L 18.421875 -12.109375 L 18.421875 -21.234375 Z M 21.453125 -21.234375 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(49.213997, 30.275545)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(55.79505, 30.275545)"><g><path d="M 22.875 0 L 22.84375 -15.46875 L 15.171875 -2.578125 L 13.78125 -2.578125 L 6.09375 -15.390625 L 6.09375 0 L 3.1875 0 L 3.1875 -21.234375 L 5.671875 -21.234375 L 14.53125 -6.3125 L 23.28125 -21.234375 L 25.765625 -21.234375 L 25.796875 0 Z M 22.875 0 "/></g></g></g></g></g></svg>
-          <button id="tp-enter" type="button" aria-haspopup="dialog" aria-controls="habit-picker" aria-expanded="false" aria-label="Turn a habit into a spot — select a Habit Box"></button>
+          <button id="tp-enter" type="button" aria-haspopup="dialog" aria-controls="habit-picker" aria-expanded="false" aria-label="Select my Habit Box to filter spots"></button>
         </div><!-- /#tp-logo -->
         <div class="tp-light" aria-hidden="true"></div>
       </div>
@@ -530,35 +555,16 @@ body.v-plan #tp-hint,body.v-cam #tp-hint{display:none}
   </div><!-- /#totehm-paper -->
 <span id="tp-hint"></span>
 </div>
-<div id="club-title"><div class="ct-h"><svg viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-badge"></use></svg><b>Spots</b></div></div>
-<div id="title" aria-live="polite"><b id="title-int"></b><svg viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-badge"></use></svg></div>
-<p id="int-def"></p><button id="habit-filter" class="hide" type="button" aria-haspopup="dialog" aria-expanded="false">Habit Box · all</button></header>
+<div class="club-word">FIGHER.CLUB<small>SPOTS</small></div></header>
+<div id="mode-bar" role="group" aria-label="Presentation"><button class="chip" type="button" data-mode="radar" aria-pressed="true">RADAR</button><button class="chip" type="button" data-mode="shorts" aria-pressed="false">SHORTS</button><button class="chip" id="filter-button" type="button" aria-controls="filters" aria-expanded="false">FILTER</button></div>
+<p id="results-caption" aria-live="polite"></p>
+<main id="content"><section id="v-radar" aria-label="Spot radar"><canvas id="canvas" aria-label="Authorized exact locations"></canvas><div id="radar-tools" role="group" aria-label="Radar controls"><button id="cmp" class="chip" type="button" aria-label="Compass">000° N<br>turn the ring</button><div class="row"><button class="chip" type="button" data-zoom="1" aria-label="Zoom in">+</button><button class="chip" type="button" data-zoom="-1" aria-label="Zoom out">−</button><button class="chip" id="locate" type="button" aria-label="Use my position">◎</button></div></div><div id="result-list" aria-label="All authorized results"></div></section><section id="v-shorts" class="hide" aria-label="Spot shorts"><div id="feed"></div></section></main>
+<nav id="periods" role="tablist" aria-label="Spot period"><button type="button" role="tab" data-period="past" aria-selected="false" style="--time:#743169">I WAS THERE<small>PAST</small></button><button type="button" role="tab" data-period="now" aria-selected="true" style="--time:#333366">I AM HERE<small>NOW</small></button><button type="button" role="tab" data-period="future" aria-selected="false" style="--time:#36498c">I WILL BE HERE<small>FUTURE</small></button></nav>
 <aside id="habit-picker" class="hide" role="dialog" aria-label="Select my Habit Box"></aside>
-<section class="view" id="v-plan" aria-label="Create a future spot"><div id="plan-body"></div><input id="p-file" class="hide" type="file" accept="video/mp4,video/quicktime,video/webm,image/*" aria-label="A video or a photo from my files"></section>
-
-<section id="v-past" class="view"><div id="past"></div></section>
-<section class="view is-on" id="v-radar" aria-label="Radar"><canvas id="canvas"></canvas><div id="radar-map" class="hide"><div id="map-tiles"></div><div id="map-pin"></div><span id="map-credit">© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a></span></div><div class="empty hide" id="radar-empty"></div></section>
-<section class="view" id="v-list" aria-label="Future Spot Habits"><div id="list"></div></section>
-<section class="view" id="v-cam" aria-label="Camera">
-  <div id="cam-frame" class="portrait-media"><video id="cam-v" playsinline muted></video><img id="cam-photo" class="hide" alt=""></div>
-  <div id="cam-n"></div>
-  <div id="cam-sec" class="hide"><i></i><span id="cam-s"></span></div>
-</section>
-<div id="cam-body" tabindex="-1" aria-label="Create my spot"></div>
-
-<aside id="detail" aria-label="Spot"></aside>
-<section id="place-picker" class="hide" role="dialog" aria-label="Choose the future spot place">
-  <div id="place-actions"><p class="note">Move the radar under the cross.</p><input class="field" id="place-name" maxlength="120" placeholder="Place name (optional)" aria-label="Place name"><div class="row"><button class="lnk" id="place-cancel" type="button">Cancel</button><button class="btn" id="place-use" type="button">Use this place</button></div></div>
-</section>
-<div id="radar-tools" role="group" aria-label="Radar controls"><button id="cmp" class="chip" type="button" aria-label="Compass">000° N<br>turn the ring</button><div id="map-tools" class="row"><button class="chip" type="button" data-zoom="1" aria-label="Zoom in">+</button><button class="chip" type="button" data-zoom="-1" aria-label="Zoom out">−</button><button class="chip" type="button" data-here="1" aria-label="My position">◎</button></div></div>
-
-<div id="joy" role="group" aria-label="Where I am in figher.club">
-  <button class="cur" id="cur-h" type="button" aria-label="Plan a spot"><svg viewBox="0 0 16 16"><path d="M3 10 L8 5 L13 10"/></svg></button>
-  <button class="cur" id="cur-g" type="button" aria-label="Feed"><svg viewBox="0 0 16 16"><path d="M10 3 L5 8 L10 13"/></svg></button>
-  <button id="joy-box" type="button" aria-label="Back to radar"><span id="joy-stack" aria-hidden="true"><i class="o"></i><i class="h"></i><i class="r"></i></span><span id="joy-record" aria-hidden="true"></span></button><span id="joy-say"></span>
-  <button class="cur" id="cur-d" type="button" aria-label="List"><svg viewBox="0 0 16 16"><path d="M6 3 L11 8 L6 13"/></svg></button>
-  <button class="cur" id="cur-b" type="button" aria-label="Camera"><svg viewBox="0 0 16 16"><path d="M3 6 L8 11 L13 6"/></svg></button>
-</div>
+<aside id="filters" class="hide" role="dialog" aria-label="Filter spots"></aside>
+<aside id="detail" role="dialog" aria-modal="true" aria-label="Spot" tabindex="-1"></aside>
+<p id="toast" role="status" class="hide"></p>
+<button id="space-about" type="button" data-space-about="1">What is a spot?</button><template id="space-definition"><div class="space-definition"><h2>What is a spot?</h2><p>A Habit lived together in reality. I WAS THERE · I AM HERE · I WILL BE HERE.</p><p>SOCIAL: we can talk. SILENT: nobody disturb me. Respect everyone's boundaries. A location is never an invitation to enter a private place.</p><p>Club membership comes from your TOTEHM: at least one non-empty Box in Habits, Objectives, Repulsions, Visions and My Story / Wisdom.</p><p class="space-domains">totehm.com builds and creates · totehm.space exhibits digital art · figher.club explores spots · higher.boutique wears it.</p></div></template>
 
 <script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
@@ -567,10 +573,7 @@ const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsIn
 const sb = createClient(SB_URL, SB_ANON);
 const FN = SB_URL + '/functions/v1/';
 const $ = id => document.getElementById(id);
-const esc = s => { const d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; };
-/* ══ AUDIENCE — 13/10 : quatre niveaux, une pastille. COPIÉ tel quel depuis tools/audience_ui.js
-   (jamais importé). PRIVATE = moi · FIGHER CLUB = les membres · MY SUBSCRIBERS = mes abonnés ·
-   PUBLIC = tout le monde. Le serveur décide (`_audience_ok`) ; ceci ne fait que le dire. ══ */
+const esc = s => { const d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML.replace(/"/g,'&quot;').replace(/'/g,'&#39;'); };
 const AUD = [['private','PRIVATE'],['figher','FIGHER CLUB'],['subscribers','MY SUBSCRIBERS'],['public','PUBLIC']];
 const AUD_ICON = {
   private:'<svg viewBox="0 0 12 12" aria-hidden="true"><rect x="2.5" y="5.5" width="7" height="5" rx="1" fill="currentColor"/><path d="M4 5.5V4a2 2 0 0 1 4 0v1.5" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>',
@@ -585,22 +588,8 @@ const audPick = (cur, attr) => '<div class="aud" role="radiogroup" aria-label="W
 const audBadge = a => AUD_ICON[a] ? '<span class="audb" role="img" aria-label="' + audName(a) + '" title="' + audName(a) + '">' + AUD_ICON[a] + '</span>' : '';
 const audMark = (root, attr, a) => root?.querySelectorAll('[' + attr + ']').forEach(b => { const on = b.getAttribute(attr) === a;
   b.classList.toggle('is-on', on); b.setAttribute('aria-checked', String(on)); });
-/* ══ fin AUDIENCE ══ */
 
-/* ══ DANS TOTEHM.COM · 12/10/2026 — COPIÉ À L'IDENTIQUE dans space/ et club/ ══════════
-   Wah : « il faut que SPACE et le Club vivent sur totehm.com ; dans mon Totehm, un clic sur un
-   space ou un spot me redirige vers une autre page alors que la fluidité est LA chose la plus
-   importante ». totehm.com sert cette page sous `/x/space` et `/x/club` (réécritures Vercel) :
-   MÊME ORIGINE, donc la même session, aucun pont. Elle vit dans une couche du Totehm (`#xo`),
-   chargée d'avance. `EMBED` n'est vrai que dans un cadre de la même origine avec `?embed`.
-   Le contrat, par `postMessage`, origine vérifiée :
-     COM → ici  {totehm:'x', cmd:'url', q:'spot=ID' | 'v=cam&habit=…' | …} · {cmd:'sleep'}
-     ici → COM  {totehm:'x', ev:'ready' | 'close' | 'signin' | 'stale' | 'go', cible, url}
-   Pas de pont SSO ici : se connecter, aller ailleurs, c'est COM qui le fait. */
-const EMBED = (() => { try{ return window.parent !== window && parent.location.origin === location.origin && new URLSearchParams(location.search).has('embed'); }catch(_){ return false; } })();
-const toCom = (ev, x) => { try{ parent.postMessage(Object.assign({ totehm:'x', ev }, x || {}), location.origin); }catch(_){} };
-let WANT_HABIT = null, CHARGE = false, DORT = false;
-
+const EMBED=false; let DORT=false;
 /* ══ LE PONT SSO v2 — COPIÉ de tools/sso_snippet.js (30/09/2026) ══════
    totehm.com est l'autorité : se connecter ici = passer PAR totehm.com
    (authorization code + PKCE). Le lien entre domaines reste le pont. */
@@ -692,7 +681,6 @@ document.addEventListener('click', e => {
   if(g){ e.preventDefault(); e.stopPropagation(); ssoVersDomaine(sb, 'com', COM + g.dataset.com); }
 }, true);
 
-/* ══ LES SEPT INTENTIONS — ordre des chakras : violet en haut, rouge en bas ══ */
 const INTS = {
   fight:{n:'Fight',c:'#E24B4A',def:'Conquer yourself through harder effort.',pillar:'BODY'},
   flow:{n:'Flow',c:'#e48b31',def:'Liberate energy through movement.',pillar:'BODY'},
@@ -706,69 +694,25 @@ const CHAKRA = ['celebrate','focus','express','love','enrich','flow','fight'];
 const icol = i => (INTS[i] || {}).c || '#ffffff';
 const FREQ = {"every_minute": "every minute", "hourly": "every hour", "several_daily": "several times a day", "every_morning": "every morning", "every_afternoon": "every afternoon", "daily": "daily", "every_evening": "every evening", "every_weekday": "every weekday", "every_night": "every night", "every_other_day": "every other day", "twice_week": "twice a week", "every_weekend": "every weekend", "weekly": "weekly", "every_monday": "every monday", "every_tuesday": "every tuesday", "every_wednesday": "every wednesday", "every_thursday": "every thursday", "every_friday": "every friday", "every_saturday": "every saturday", "every_sunday": "every sunday", "biweekly": "every two weeks", "twice_month": "twice a month", "monthly": "monthly", "every_1st_month": "every 1st of the month", "every_15th_month": "every 15th of the month", "seasonal": "every season change", "quarterly": "every quarter", "semiannual": "every six months", "yearly": "yearly", "every_birthday": "every birthday", "every_newyear": "every new year", "randomly": "randomly", "sometimes": "sometimes"};
 
-/* ══ LE TEMPS — à l'heure de l'APPAREIL, à la première personne ══════ */
-const pad = n => String(n).padStart(2, '0');
-const hhmm = d => pad(d.getHours()) + ':' + pad(d.getMinutes());
-const dayOf = d => { const n = new Date(), y = new Date(n); y.setDate(n.getDate() - 1);
-  if(d.toDateString() === n.toDateString()) return 'today';
-  if(d.toDateString() === y.toDateString()) return 'yesterday';
-  return d.toLocaleDateString('en-GB', { day:'numeric', month:'short' }); };
-const fmtDur = m => !m ? '' : m < 60 ? m + ' min' : Math.floor(m/60) + ' h' + (m % 60 ? ' ' + pad(m % 60) : '');
-/* L'état se RECALCULE à chaque dessin depuis `ends_at` : un Spot passe à
-   I WAS THERE sous les yeux, sans attendre une requête. */
-const spotState = s => s.starts_at && new Date(s.starts_at).getTime() > Date.now() ? 'will' : s.ends_at ? (Date.now() < new Date(s.ends_at).getTime() ? 'am' : 'was') : s.state;
-const isHere = s => spotState(s) === 'am';
-
-/* ══ LA SPHÈRE — seulement pour les points que j'ai le droit de voir ═ */
-const EARTH_R = 6371e3, DEG = Math.PI/180;
-const hav = (a, b) => { const p1 = a.lat*DEG, p2 = b.lat*DEG, dp = p2 - p1, dl = (b.lng - a.lng)*DEG;
-  const h = Math.sin(dp/2)**2 + Math.cos(p1)*Math.cos(p2)*Math.sin(dl/2)**2; return 2*EARTH_R*Math.asin(Math.min(1, Math.sqrt(h))); };
-const bearing = (a, b) => { const p1 = a.lat*DEG, p2 = b.lat*DEG, dl = (b.lng - a.lng)*DEG;
-  return (Math.atan2(Math.sin(dl)*Math.cos(p2), Math.cos(p1)*Math.sin(p2) - Math.sin(p1)*Math.cos(p2)*Math.cos(dl))/DEG + 360) % 360; };
-let UNIT = 'km';
-try{ if(/^(America\/|Pacific\/Honolulu|US\/)/.test(Intl.DateTimeFormat().resolvedOptions().timeZone || '')
-        && !/America\/(Sao_Paulo|Argentina|Bogota|Lima|Santiago|Caracas|Mexico_City|Toronto|Vancouver|Montreal|Halifax)/.test(Intl.DateTimeFormat().resolvedOptions().timeZone)) UNIT = 'mi'; }catch(_){}
-const fmtDist = m => { if(m == null || !isFinite(m)) return ''; const v = UNIT === 'mi' ? m/1609.344 : m/1000;
-  return (v < 10 ? Math.max(.1, v).toFixed(1) : String(Math.round(v))) + ' ' + UNIT; };
-const mapsURL = (lat, lng) => 'https://www.google.com/maps/search/?api=1&query=' + Number(lat).toFixed(5) + '%2C' + Number(lng).toFixed(5);
-
-/* ══ L'ÉTAT ══════════════════════════════════════════════════════════ */
-const BUILD='2026-10-13-club-who';
-const store = { get(k){ try{ return localStorage.getItem(k); }catch(_){ return null; } }, set(k, v){ try{ localStorage.setItem(k, v); }catch(_){} } };
-let me = null, PSEUDO = null, POS = null, RULES = { clip_seconds:33, clip_max_bytes:48000000, countdown:3, duration_min:5, duration_max:720 };
-let VIEW = 'radar';
-const S = { int:null, q:'', habit:null };
-const PAST = {list:[],seq:0,more:false,loading:false,match:'all',before:null};
-const EX = { list:[], seq:0, match:'all' };
-const LIST = { list:[], seq:0, more:false, loading:false, match:'all' };
-/* SPACE → SPOT (11/10 bis) : un space arrive avec sa Habit, et sa ville si c'est le mien. */
-const PRE = { habit:'', city:'' };
-const PLAN = { seq:0, context:null, details:false, habit:null, date:'', time:'', pos:null, place:'', city:null, cityText:'', cityPos:null, video:null, fileSeq:0, dur:null, vis:'shared', aud:'figher', mode:null, loc:'on', boxOptions:boxNew(), say:'', busy:false };
-let habitsPending = null, gestureCount = 0, suppressClickUntil = 0;
-const REC = { seq:0, step:null, stream:null, mr:null, blob:null, url:null, mime:'', t0:0, timer:0, seconds:0, uploaded:null, habit:null, vis:'shared', boxOptions:boxNew(), pos:null, city:null, placeAt:0, placePromise:null, placeError:false,
-  mode:null, loc:null, dur:null, busy:false, capture:null, width:0,height:0,fps:0,bitrate:0,path:null, forPlan:false, kind:null, why:false };
-let HABITS = null, DETAIL = null;
-const VIDEO_METRICS={firstFrameMs:0,uploadMs:0,publishMs:0,warmStarts:0,coldStarts:0,stalls:0};
-window.__totehm_club = () => ({ build: BUILD, view: VIEW, signed_in: !!me, located: !!POS, intention: S.int, search: !!S.q,
-  past:PAST.list.length, exact:EX.list.length, video:{provider:RULES.video_provider || 'storage',...VIDEO_METRICS},
-  list:LIST.list.length, future:LIST.list.filter(s => spotState(s) === 'will' && s.location === 'on').length, gestures:gestureCount, radar:{cx:Math.round(RAD.cx),cy:Math.round(RAD.cy),radius:Math.round(RAD.rpx),heading:Math.round(norm360(RAD.head)),pin:MAP.open,place:!!PLAN.pos}, paper:PAPER.etat(), habit_filter:!!S.habit, plan:{aud:PLAN.aud,city:!!PLAN.cityPos,exact:!!PLAN.pos,video:!!PLAN.video,uploaded:!!PLAN.video?.ref}, joystick_camera:VIEW === 'cam', detail: !!DETAIL, rec: { step: REC.step, kind: REC.kind, clip: !!REC.blob, camera: !!REC.stream, vis: REC.vis, aud: REC.aud, width:REC.width,height:REC.height,fps:REC.fps,bitrate:REC.bitrate,path:REC.path } });
-
-/* Chaque vue dit où je suis. L'intention vient de la Habit, sans filtre parallèle. */
-const VIEW_WORDS = {radar:['RADAR','Exact places I can see'],past:['PAST SPOTS','I WAS THERE'],list:['FUTURE SPOTS','I WILL BE HERE'],plan:['PLAN A SPOT','I WILL BE HERE'],cam:['I AM HERE','Start a spot now · 9:16 · up to 33 seconds']};
-function paintInts(){
-  const [title,sub] = MAP?.open ? ['MEETING POINT','Move the radar under the cross'] : VIEW_WORDS[VIEW];
-  const source = VIEW === 'past' ? PAST : VIEW === 'list' ? LIST : EX;
-  $('title-int').textContent = title; $('title').style.setProperty('--c','#fff');
-  $('int-def').textContent = sub + (S.habit && ['past','radar','list'].includes(VIEW) ? ' · '+ (source.match === 'intention' ? 'Same intention' : S.habit.name) : '');
-  PAPER.hint();
-}
-
-/* ══ LA BOÎTE D'UN SPOT — ce que CE lecteur a le droit de voir ═══════ */
+const BUILD='2026-10-15-club-temporal';
+const PERIODS=['past','now','future'], WORDS={past:'I WAS THERE',now:'I AM HERE',future:'I WILL BE HERE'};
+const initial=new URLSearchParams(location.search), oldView=initial.get('v');
+let PERIOD=PERIODS.includes(initial.get('period'))?initial.get('period'):oldView==='past'?'past':oldView==='list'?'future':'now';
+let MODE=initial.get('mode')==='shorts'?'shorts':'radar',me=null,PSEUDO=null,POS=null,HABITS=null,DETAIL=null,detailSeq=0,detailTrigger=null,detailRequest=0;
+const CACHE=Object.fromEntries(PERIODS.map(p=>[p,{items:[],total:0,more:false,offset:0,asOf:null,loaded:false,loading:false,error:false,seq:0,active:null,scroll:0,radarScroll:0,anchor:null}]));
+const current=()=>CACHE[PERIOD], hasExact=s=>Number.isFinite(s.exact?.lat)&&Number.isFinite(s.exact?.lng), statePeriod=s=>({was:'past',am:'now',will:'future'})[s.state]||PERIOD;
+const pad=n=>String(n).padStart(2,'0'),hhmm=d=>pad(d.getHours())+':'+pad(d.getMinutes());
+const dayOf=d=>d.toLocaleDateString('en-GB',{day:'numeric',month:'short'}),fmtDur=m=>m<60?m+' min':Math.floor(m/60)+' h'+(m%60?' '+m%60:'');
+const mapsURL=(lat,lng)=>'https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(lat+','+lng);
+const EARTH_R=6371e3,DEG=Math.PI/180;
+const hav=(a,b)=>{const p=a.lat*DEG,q=b.lat*DEG,h=Math.sin((q-p)/2)**2+Math.cos(p)*Math.cos(q)*Math.sin((b.lng-a.lng)*DEG/2)**2;return 2*EARTH_R*Math.asin(Math.min(1,Math.sqrt(h)));};
+const bearing=(a,b)=>{const p=a.lat*DEG,q=b.lat*DEG,l=(b.lng-a.lng)*DEG;return(Math.atan2(Math.sin(l)*Math.cos(q),Math.cos(p)*Math.sin(q)-Math.sin(p)*Math.cos(q)*Math.cos(l))/DEG+360)%360;};
+const fmtDist=m=>m<1000?Math.round(m)+' m':(m/1000).toFixed(m<10000?1:0)+' km';
 const tickHTML = l => '<span class="tick">' + (l || []).map(i => '<i style="background:' + icol(i) + '"></i>').join('') + '</span>';
 const sdTag = (t, cls) => '<span class="sd-tag' + (cls ? ' ' + cls : '') + '">' + t + '</span>';
 function placeHTML(s){
   if(s.location === 'off') return sdTag(esc(s.city || 'City unavailable'));
-  if(s.exact && s.exact.lat != null){
+  if(hasExact(s)){
     const d = POS ? fmtDist(hav(POS, s.exact)) : '';
     return '<a class="sd-tag v-loc" href="' + mapsURL(s.exact.lat, s.exact.lng) + '" target="_blank" rel="noopener">' + esc(s.exact.place || s.city || 'the exact place') + '</a>' + (d ? sdTag(d) : '');
   }
@@ -802,78 +746,21 @@ function habitInner(h,options,prefix){
  const meta=intHTML(configured)+freq+(!edit && String(h.place || '').trim() ? '<span class="v-frq">'+esc(h.place)+'</span>' : '');
  return '<span class="v-name">'+esc(h.name)+'</span>'+(meta ? '<span class="v-sub">'+meta+'</span>' : '')+contextHTML(h,options,prefix);
 }
-/* La Habit Box reste la boîte de COM ; tout ce qui est « space » vit dessous,
-   noir et gris, identique dans LEFT, RIGHT et le détail. */
-function spotHTML(s){
- const state=spotState(s),st=new Date(s.starts_at),end=new Date(s.ends_at || st.getTime()+(s.duration_min||0)*60e3);
- const when=state==='will' ? 'I WILL BE HERE' : state==='am' ? 'I AM HERE' : 'I WAS THERE';
- const a=audOf(s), how=sdTag(audBadge(a)+esc(audName(a).toLowerCase()),'sd-aud')+(a==='private' ? '' : sdTag('location '+esc(s.location||'off')))+(s.location==='on' && s.mode ? sdTag(s.mode==='silent' ? 'silent · nobody disturb me' : 'social · we can talk') : '');
- const why=s.why || {}; // Published box options apply to the owner's preview too.
- const box={name:s.habit,ints:s.intentions,freq:s.freq,place:s.context?.place,objectives:why.objectives,repulsions:why.repulsions};
- return '<div class="habit">'+tickHTML(s.intentions)+'<span class="h-body"><span class="v-col">'+habitInner(box)+'</span></span>'+'</div>'
-  +'<div class="sdata" aria-label="Where and when"><div class="sd-row">'+sdTag(when,'is-st')+sdTag(state==='am' ? 'until '+hhmm(end) : esc(dayOf(st))+' '+hhmm(st))+(s.duration_min ? sdTag(fmtDur(s.duration_min)) : '')+'</div>'
-  +'<div class="sd-row">'+placeHTML(s)+how+'</div>'+(s.comment ? '<p class="sd-say">'+esc(s.comment)+'</p>' : '')+'</div>'
-  +(!s.mine && s.creator ? '<div class="by"><span>by</span><button class="tname" type="button" data-com="/@'+encodeURIComponent(s.creator)+'">'+esc(s.creator)+'</button></div>' : '');
-}
-/* LES GESTES D'UN SPACE — en ligne, là où il est lu : jamais une fiche qui
-   répète la même boîte. GO résout les droits ACTUELS au moment du geste. */
-const hasMedia = s => !!(s.clip || s.video || s.photo);
-const hasWhy = s => !!((s.why || (s.mine && s.show_why && s.context)) && [...((s.why || s.context).objectives || []),...((s.why || s.context).repulsions || [])].length);
-function actsHTML(s, where){
-  const id = esc(s.id), b = [];
-  if(s.location === 'on') b.push('<button class="btn" type="button" data-go="' + id + '">GO</button>');
-  if(where === 'list' && hasMedia(s)) b.push('<button class="btn" type="button" data-watch="' + id + '">WATCH</button>');
-  if(spotState(s) === 'will') b.push('<button class="btn" type="button" data-ics="' + id + '">CALENDAR</button>');
-  if(audOf(s) === 'public') b.push('<button class="btn" type="button" data-share="' + id + '">SHARE</button>');
-  if(where === 'detail' && s.mine) b.push('<button class="btn" type="button" data-del="' + id + '">DELETE</button>');
-  if(where === 'detail') b.push('<button class="btn" type="button" data-close="1">CLOSE</button>');
-  return b.length ? '<div class="acts">' + b.join('') + '</div><p class="note acts-note" hidden></p>' : '';
-}
-const spotById = id => DETAIL?.id === id ? DETAIL : [...PAST.list, ...LIST.list, ...EX.list].find(x => x.id === id);
-function actsSay(button, text, creator){
-  const n = button.closest('.acts')?.nextElementSibling; if(!n) return;
-  n.hidden = false; n.innerHTML = esc(text) + (creator ? ' <button class="btn" type="button" data-com="/@' + encodeURIComponent(creator) + '">SUBSCRIBE</button>' : '');
-}
-async function goSpace(button){
-  if(button.disabled) return; button.disabled = true;
-  const user = me?.id, id = button.dataset.go;
-  try{
-    const { data, error } = await sb.rpc('spot_get', { p_id:id });
-    if(user !== me?.id || !button.isConnected) return;
-    if(error || !data?.ok){ if(error) console.error('[spot_get]', error.message); return actsSay(button, 'Try again.'); }
-    const s = data.spot;
-    if(s.exact && Number.isFinite(s.exact.lat) && Number.isFinite(s.exact.lng)){
-      location.assign('https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(s.exact.lat + ',' + s.exact.lng)); return;
-    }
-    actsSay(button, 'The exact place is for ' + (s.creator ? s.creator + '’s' : 'the') + ' subscribers.', s.creator);
-  }catch(e){ console.error('[go]', e && e.message); if(button.isConnected) actsSay(button, 'Try again.'); }
-  finally{ button.disabled = false; }
-}
-function icsFor(s){
-  const d = t => new Date(t).toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
-  const x = t => String(t || '').replace(/\\/g, '\\\\').replace(/[,;]/g, m => '\\' + m).replace(/\r?\n/g, '\\n');
-  const end = s.ends_at || new Date(new Date(s.starts_at).getTime() + (s.duration_min || 0)*60e3).toISOString(), where = s.exact?.place || s.city || '';
-  return ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//TOTEHM//FIGHER//EN','BEGIN:VEVENT','UID:' + s.id + '@figher.club','DTSTAMP:' + d(Date.now()),
-    'DTSTART:' + d(s.starts_at),'DTEND:' + d(end),'SUMMARY:' + x(s.habit), where ? 'LOCATION:' + x(where) : '',
-    s.exact && Number.isFinite(s.exact.lat) ? 'GEO:' + s.exact.lat + ';' + s.exact.lng : '',
-    'URL:https://www.figher.club/?spot=' + encodeURIComponent(s.id),'END:VEVENT','END:VCALENDAR'].filter(Boolean).join('\r\n');
-}
-async function actsClick(e){
-  const t = e.target instanceof Element ? e.target : null; if(!t) return false;
-  const g = t.closest('[data-go]'); if(g){ goSpace(g); return true; }
-  const del = t.closest('[data-del]'); if(del){ if(await spaceDelete(del, del.dataset.del) === 'failed') actsSay(del, 'Not deleted. Try again.'); return true; }
-  const c = t.closest('[data-ics]');
-  if(c){ const s = spotById(c.dataset.ics); if(!s) return true;
-    const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([icsFor(s)], { type:'text/calendar' })); a.download = 'spot.ics';
-    document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); return true; }
-  const sh = t.closest('[data-share]');
-  if(sh){ const url = 'https://www.figher.club/?spot=' + encodeURIComponent(sh.dataset.share);
-    try{ if(navigator.share) await navigator.share({ title:'FIGHER.CLUB', url }); else { await navigator.clipboard.writeText(url); sh.textContent = 'LINK COPIED'; } }
-    catch(_){} return true; }
-  return false;
-}
 
-/* ══ LES VIDÉOS — lecture autorisée, fenêtre précédente/active/suivante ══ */
+function boxOf(s){return s.habit_box||{name:s.habit,ints:s.intentions||[],freq:s.freq,objectives:s.why?.objectives||[],repulsions:s.why?.repulsions||[]};}
+function spotHTML(s){
+ const h=boxOf(s),p=statePeriod(s),st=new Date(s.starts_at),end=new Date(s.ends_at),a=audOf(s);
+ return '<div class="habit">'+tickHTML(h.ints||s.intentions)+'<span class="h-body"><span class="v-col">'+habitInner(h)+'</span></span></div>'+
+ '<div class="sdata"><div class="sd-row">'+sdTag(WORDS[p],'is-st')+sdTag(esc(dayOf(st))+' '+hhmm(st))+(s.duration_min?sdTag(fmtDur(s.duration_min)):'')+(p==='now'&&Number.isFinite(end.getTime())?sdTag('until '+hhmm(end)):'')+'</div><div class="sd-row">'+placeHTML(s)+sdTag(audBadge(a)+esc(audName(a).toLowerCase()))+(s.mode?sdTag(s.mode==='silent'?'silent · nobody disturb me':'social · we can talk'):'')+'</div>'+(s.comment?'<p class="sd-say">'+esc(s.comment)+'</p>':'')+'</div>'+(s.creator?'<div class="by">by <button class="tname" data-com="/@'+encodeURIComponent(s.creator)+'" type="button">'+esc(s.creator)+'</button></div>':'');
+}
+const hasMedia=s=>!!(s.photo||s.clip||s.video);
+function actsHTML(s,detail=false){return '<div class="acts">'+(!detail?'<button class="btn" type="button" data-open="'+esc(s.id)+'">SPOT</button>':'')+(s.location==='on'?'<button class="btn" type="button" data-go="'+esc(s.id)+'">GO</button>':'')+(statePeriod(s)==='future'?'<button class="btn" type="button" data-ics="'+esc(s.id)+'">CALENDAR</button>':'')+(audOf(s)==='public'?'<button class="btn" type="button" data-share="'+esc(s.id)+'">SHARE</button>':'')+(detail?'<button class="btn" type="button" data-close="1">CLOSE</button>':'')+'</div><p class="note acts-note" hidden></p>';}
+const spotById=id=>DETAIL?.id===id?DETAIL:Object.values(CACHE).flatMap(x=>x.items).find(s=>s.id===id);
+function toast(text){$('toast').textContent=text;$('toast').classList.remove('hide');clearTimeout(toast.timer);toast.timer=setTimeout(()=>$('toast').classList.add('hide'),4500);}
+function publishURL(params=new URLSearchParams()){
+ const q=new URLSearchParams(params);q.delete('sso');q.delete('state');q.delete('sso_error');if(!['plan','cam'].includes(q.get('v')))q.set('v','plan');if(!q.get('habit')&&SF.box)q.set('habit',SF.box.name);return COM+'/spot?'+q;
+}
+function publish(params){return ssoVersDomaine(sb,'com',publishURL(params),true);}
 const SIGNED=new Map(),VIDEO_AUTH=new Map();let hlsModule=null,videoAuthQueue=[],videoAuthScheduled=false;
 async function videoRequest(name,body){const {data,error}=await sb.functions.invoke(name,{body});if(error) throw error;return data;}
 function authorizeClip(v){
@@ -903,7 +790,7 @@ async function clipURL(path){
  const {data,error}=await sb.storage.from('moments').createSignedUrl(path,3600);if(error){console.error('[clip]',error.message);return null;}
  if((me?.id || 'anon')===uid){SIGNED.set(key,{url:data.signedUrl,at:Date.now()});if(SIGNED.size>64)SIGNED.delete(SIGNED.keys().next().value);}return data.signedUrl;
 }
-const videoWanted=v=>v.isConnected && !document.hidden && (v.closest('#detail')?!!DETAIL:v.closest('#list')?VIEW==='list' && !!v._wanted:VIEW==='past' && !!v._wanted);
+const videoWanted=v=>v.isConnected && !document.hidden && !DORT && (v.closest('#detail')?!!DETAIL:MODE==='shorts' && !!v._wanted);
 const lookAhead=()=>!navigator.connection?.saveData && !['slow-2g','2g'].includes(navigator.connection?.effectiveType);
 const bandwidth=()=>Math.max(400000,Math.min(15000000,(navigator.connection?.downlink || 5)*800000));
 const bufferedAhead=v=>{for(let i=0;i<v.buffered.length;i++)if(v.buffered.start(i)<=v.currentTime+.1 && v.buffered.end(i)>v.currentTime)return v.buffered.end(i)-v.currentTime;return 0;};
@@ -967,1271 +854,130 @@ const videoHTML=s=>s.clip || s.video ? '<div class="portrait-media"><video '+(s.
 const mediaHTML=s=>s.photo ? '<div class="portrait-media"><img data-photo="'+esc(s.photo)+'" alt="" decoding="async"></div>' : videoHTML(s);
 async function loadPhoto(img){if(!img || img.getAttribute('src') || img._loading) return;img._loading=true;try{const u=await clipURL(img.dataset.photo);if(u && img.isConnected) img.src=u;}finally{img._loading=false;}}
 
-async function bunnyUpload(blob,seconds,onProgress){
- const c=await videoRequest('create-bunny-upload',{bytes:blob.size,seconds});
- const headers={...c.headers,'Tus-Resumable':'1.0.0'};
- const meta='filetype '+btoa(blob.type)+',title '+btoa('Spot '+c.id);
- const start=await fetch(c.endpoint,{method:'POST',headers:{...headers,'Upload-Length':String(blob.size),'Upload-Metadata':meta}});
- if(!start.ok) throw new Error('Upload could not start');
- const url=new URL(start.headers.get('Location'),c.endpoint);
- if(url.origin!=='https://video.bunnycdn.com') throw new Error('Upload address invalid');
- let offset=0,retries=0;
- while(offset<blob.size){
-  try{
-   const r=await fetch(url,{method:'PATCH',headers:{...headers,'Upload-Offset':String(offset),'Content-Type':'application/offset+octet-stream'},body:blob.slice(offset,offset+6*1024*1024)});
-   if(!r.ok) throw new Error('Upload interrupted');
-   const next=Number(r.headers.get('Upload-Offset'));if(!Number.isFinite(next) || next<=offset || next>blob.size) throw new Error('Upload offset invalid');
-   offset=next;retries=0;onProgress(Math.round(offset/blob.size*100));
-  }catch(e){
-   if(++retries>3) throw e;
-   await new Promise(r=>setTimeout(r,Math.min(4000,retries*1000)));
-   const head=await fetch(url,{method:'HEAD',headers});
-   if(!head.ok) continue;const n=Number(head.headers.get('Upload-Offset'));if(Number.isInteger(n) && n>=0 && n<=blob.size) offset=n;
-  }
- }
- const data=await videoRequest('bunny-video',{id:c.id,action:'complete'});
- if(!['processing','ready'].includes(data.status)) throw new Error('Video could not be processed');
- return 'bunny:'+c.id;
-}
 
-/* ══ LEFT — LES SPOTS PASSÉS, CARTES DE MEET ═════════════════════════ */
-function pastCard(x){
- const lieu=x.exact?.name || x.exact?.label || x.city || '';
- const mode=x.mode ? '<span class="sp-mode">'+esc(x.mode)+'</span>' : '';
- const at=new Date(x.starts_at),when=Number.isNaN(at.getTime())?'':dayOf(at)+' '+hhmm(at);
- return '<button class="sp-card" type="button" data-spot="'+esc(x.id)+'"><span class="sp-when">I WAS THERE · '+esc(when)+'</span><span class="sp-habit">'+esc(x.habit)+'</span><span class="sp-meta">'+(lieu ? esc(lieu)+' · ' : '')+(x.duration_min ? esc(x.duration_min)+' min' : '')+mode+'</span>'+(x.creator ? '<span class="sp-by">by <b>'+esc(x.creator)+'</b></span>' : '')+'</button>';
+const PILLARS={BODY:['fight','flow'],MENTAL:['enrich','focus'],SOUL:['express','celebrate'],SPIRIT:['love']};
+const SF={box:null,habit:initial.get('habit')||'',useHabit:!!initial.get('habit'),ints:new Set(),pillars:new Set(),rhythms:new Set(),obj:new Set(),rep:new Set(),type:'all',scope:'world',radius:50,city:initial.get('city')||''};
+const boxTexts=(h,k)=>(h?.[k]||[]).map(x=>String(x.text||'').trim()).filter(Boolean);
+function filters(){return {habit:SF.useHabit?SF.habit:null,intentions:[...SF.ints],pillars:[...SF.pillars],rhythms:[...SF.rhythms],objectives:[...SF.obj],repulsions:[...SF.rep],type:SF.type,scope:SF.scope,radius_km:SF.radius,city:SF.city||null};}
+const filterCount=()=>Number(SF.useHabit)+SF.ints.size+SF.pillars.size+SF.rhythms.size+SF.obj.size+SF.rep.size+Number(SF.type!=='all')+Number(SF.scope!=='world')+Number(!!SF.city);
+function selectBox(h){SF.box=h;SF.habit=h?.name||'';SF.useHabit=!!h;SF.ints=new Set(h?.ints||[]);SF.pillars.clear();SF.rhythms=new Set(h?.freq?[h.freq]:[]);SF.obj=new Set(boxTexts(h,'objectives'));SF.rep=new Set(boxTexts(h,'repulsions'));}
+function chip(attr,text,on){return '<button type="button" class="chip" '+attr+' aria-pressed="'+!!on+'">'+esc(text)+'</button>';}
+function renderFilters(){
+ $('filter-button').textContent=filterCount()?'FILTER · '+filterCount():'FILTER';
+ if($('filters').classList.contains('hide'))return;
+ const row=(name,body)=>'<div class="filter-row"><span class="lab">'+name+'</span><div class="row">'+body+'</div></div>',h=SF.box;
+ $('filters').innerHTML='<div class="row"><button class="btn" data-pick="1" type="button">'+esc(h?.name||'MY HABIT BOX')+'</button><button class="lnk" data-filter-close="1" type="button">CLOSE</button></div>'+
+ row('Habit','<input class="field" id="f-habit" placeholder="Any Habit" aria-label="Habit" maxlength="200" value="'+esc(SF.habit)+'">'+(SF.habit?chip('data-use-habit="1"','match this Habit',SF.useHabit):''))+
+ row('Intentions',Object.entries(INTS).map(([i,v])=>chip('data-int="'+i+'" style="--c:'+v.c+'"',v.n,SF.ints.has(i))).join(''))+
+ row('Pillars · Mood',Object.keys(PILLARS).map(p=>chip('data-pillar="'+p+'"',p,SF.pillars.has(p))).join(''))+
+ row('Rhythm',Object.entries(FREQ).map(([k,v])=>chip('data-rhythm="'+k+'"',v,SF.rhythms.has(k))).join(''))+
+ row('Objectives',boxTexts(h,'objectives').map((t,i)=>chip('data-obj="'+i+'"',t,SF.obj.has(t))).join('')+'<input class="field" id="f-objective" placeholder="Add an objective · Enter" aria-label="Add an objective">'+[...SF.obj].filter(t=>!boxTexts(h,'objectives').includes(t)).map((t,i)=>chip('data-free-obj="'+i+'"',t,true)).join(''))+
+ row('Repulsions',boxTexts(h,'repulsions').map((t,i)=>chip('data-rep="'+i+'"',t,SF.rep.has(t))).join('')+'<input class="field" id="f-repulsion" placeholder="Add a repulsion · Enter" aria-label="Add a repulsion">'+[...SF.rep].filter(t=>!boxTexts(h,'repulsions').includes(t)).map((t,i)=>chip('data-free-rep="'+i+'"',t,true)).join(''))+
+ row('Content', [['all','all spots'],['video','video'],['photo','photo'],['none','without media'],['why','objectives · repulsions']].map(([k,t])=>chip('data-type="'+k+'"',t,SF.type===k)).join(''))+
+ row('Where',chip('data-scope="world"','the world',SF.scope==='world')+chip('data-scope="near"','near me',SF.scope==='near')+'<input class="field" id="f-city" aria-label="City" maxlength="80" placeholder="Any city" value="'+esc(SF.city)+'">'+(SF.scope==='near'?'<input class="field" id="f-radius" type="number" min="1" max="500" value="'+SF.radius+'" aria-label="Radius in kilometres">':''))+
+ '<button class="btn" data-filter-reset="1" type="button">ALL SPOTS</button>';
 }
-function paintPast(){
- const p=$('past');p.innerHTML=PAST.list.length?PAST.list.map(pastCard).join(''):'<p class="sp-empty">No spot yet.</p>';
- if(PAST.more)p.insertAdjacentHTML('beforeend','<button class="btn" type="button" data-past-more="1">MORE</button>');
-}
-async function loadPast(more=false){
- if(more && (!PAST.more || PAST.loading))return;
- const seq=++PAST.seq, uid=me?.id;PAST.loading=true;
- const before=more?PAST.before:null;
- const {data,error}=await sb.rpc('spots_feed',{p_intention:S.int,p_lat:POS?Math.round(POS.lat*100)/100:null,p_lng:POS?Math.round(POS.lng*100)/100:null,p_q:S.q || null,p_before:before,p_limit:30});
- if(seq!==PAST.seq || uid!==me?.id)return;PAST.loading=false;
- if(error){console.error('[spots_feed]',error.message);return;}
- PAST.before=(data?.spots || []).at(-1)?.starts_at || null;
- const rows=(data?.spots || []).filter(s=>spotState(s)==='was');
- PAST.more=(data?.spots || []).length===30;PAST.list=more?[...new Map(PAST.list.concat(rows).map(s=>[s.id,s])).values()]:rows;paintPast();paintInts();
-}
-$('past').addEventListener('click',async e=>{if(e.target.closest('[data-past-more]'))return loadPast(true);const b=e.target.closest('[data-spot]');if(!b)return;const {data,error}=await sb.rpc('spot_get',{p_id:b.dataset.spot});if(error)console.error('[spot_get]',error.message);if(data?.ok)openDetail(data.spot);});
-
-async function loadExact(){
-  const seq = ++EX.seq;
-  if(!me){ EX.list = []; paintRadarEmpty(); return; }
-  const { data, error } = await sb.rpc('space_discover', {p_view:'radar',p_habit:S.q || null,p_limit:300});
-  if(seq !== EX.seq) return;
-  if(error){ console.error('[spots_exact]', error.message); return; }
-  EX.list = (data?.spots || []).filter(s => s.exact && s.exact.lat != null);
-  if(!MAP.open) RAD.range = radarRange(); EX.match=data?.match || 'all'; paintRadarEmpty(); paintInts();
-}
-/* RIGHT — seulement les Spots-Habits futurs. Sans droit exact : la ville. */
-async function loadList(more = false){
-  if(more && (!LIST.more || LIST.loading)) return;
-  const seq = ++LIST.seq; LIST.loading = true;
-  const last = more ? LIST.list.at(-1) : null;
-  const { data, error } = await sb.rpc('space_discover', {p_view:'list',p_habit:S.q || null,p_before:last?.starts_at || null,p_before_id:last?.id || null,p_limit:50});
-  if(seq !== LIST.seq) return;
-  LIST.loading = false;
-  if(error){ console.error('[spots_list]', error.message); return; }
-  LIST.list = more ? LIST.list.concat(data?.spots || []) : data?.spots || [];
-  LIST.more = !!data?.more; LIST.match=data?.match || 'all'; paintList(); paintInts();
-}
-/* RIGHT — l'agenda : chaque space porte ses gestes (GO, WATCH, CALENDAR, SHARE).
-   Un rafraîchissement aux mêmes IDs ne remplace que les informations : une
-   vidéo ouverte par WATCH continue de jouer. */
-function paintList(){
-  const l = $('list'), upcoming = LIST.list.filter(s => spotState(s) === 'will' && s.location === 'on'), items = [...l.querySelectorAll('.it[data-id]')];
-  if(upcoming.length && items.length === upcoming.length && items.every((it, k) => it.dataset.id === upcoming[k].id)){
-    items.forEach((it, k) => { const info = it.querySelector('.it-info'), html = spotHTML(upcoming[k]) + actsHTML(upcoming[k], 'list'); if(info.innerHTML !== html) info.innerHTML = html; });
-  } else {
-    l.querySelectorAll('video').forEach(releaseClip);
-    l.innerHTML = upcoming.length ? upcoming.map(s => '<div class="it" data-id="' + esc(s.id) + '" data-state="' + spotState(s) + '"><div class="it-media"></div><div class="it-info">' + spotHTML(s) + actsHTML(s, 'list') + '</div></div>').join('')
-      : '<div class="empty">' + (S.q ? 'no spot for this Habit yet' : 'no future spot yet') + '</div>' + (S.q ? '<button class="btn" type="button" data-plan-one="1">PLAN ONE</button>' : '');
-  }
-  l.querySelector('[data-more]')?.remove();
-  if(upcoming.length && LIST.more) l.insertAdjacentHTML('beforeend', '<button class="btn" type="button" data-more="1">MORE SPOTS</button>');
-}
-function listWatch(button){
-  const it = button.closest('.it'), box = it?.querySelector('.it-media'), s = spotById(it?.dataset.id); if(!box || !s) return;
-  const open = !!box.firstChild;
-  $('list').querySelectorAll('.it-media').forEach(m => { m.querySelectorAll('video').forEach(releaseClip); m.replaceChildren(); });
-  $('list').querySelectorAll('[data-watch]').forEach(b => b.textContent = 'WATCH');
-  if(open) return;
-  box.innerHTML = mediaHTML(s); button.textContent = 'HIDE';
-  const v = box.querySelector('video'); if(v) playClip(v); else loadPhoto(box.querySelector('img'));
-}
-$('list').addEventListener('click', async e => {
-  if(Date.now() < suppressClickUntil || e.target.closest('a,[data-com]')) return;
-  if(e.target.closest('[data-more]')) return loadList(true);
-  if(e.target.closest('[data-plan-one]')){ PRE.habit = S.q; return go('plan'); }
-  const w = e.target.closest('[data-watch]'); if(w) return listWatch(w);
-  await actsClick(e);
+function showPanel(id,on){const el=$(id);const seq=(el._panelSeq||0)+1;el._panelSeq=seq;const motion=!matchMedia('(prefers-reduced-motion: reduce)').matches;if(on){el.classList.remove('hide');if(motion)el.animate([{opacity:0,translate:'0 7px'},{opacity:1,translate:'0 0'}],{duration:160,easing:'ease-out'});}else if(!el.classList.contains('hide')&&motion){el.animate([{opacity:1,translate:'0 0'},{opacity:0,translate:'0 7px'}],{duration:120}).finished.then(()=>{if(el._panelSeq===seq)el.classList.add('hide');});}else el.classList.add('hide');if(id==='filters'){$('filter-button').setAttribute('aria-expanded',String(on));if(on)renderFilters();}if(id==='habit-picker')$('tp-enter').setAttribute('aria-expanded',String(on));}
+function invalidate(){for(const c of Object.values(CACHE)){c.seq++;c.loading=false;c.loaded=false;c.items=[];c.asOf=null;c.offset=0;c.more=false;c.error=false;c.anchor=null;c.scroll=0;c.radarScroll=0;}renderFilters();loadResults(false);}
+let filterTimer=0;function applyFilters(){clearTimeout(filterTimer);filterTimer=setTimeout(invalidate,160);renderFilters();}
+const toggle=(set,v)=>set.has(v)?set.delete(v):set.add(v);
+$('filter-button').onclick=()=>{showPanel('habit-picker',false);showPanel('filters',$('filters').classList.contains('hide'));};
+$('filters').addEventListener('click',async e=>{
+ const d=e.target.closest('button')?.dataset;if(!d)return;
+ if(d.filterClose)return showPanel('filters',false);if(d.pick){showPanel('filters',false);return pickerOpen();}
+ if(d.filterReset){selectBox(null);SF.type='all';SF.scope='world';SF.city='';}
+ else if(d.useHabit)SF.useHabit=!SF.useHabit;
+ else if(d.int)toggle(SF.ints,d.int);else if(d.pillar)toggle(SF.pillars,d.pillar);else if(d.rhythm)toggle(SF.rhythms,d.rhythm);
+ else if(d.obj!==undefined)toggle(SF.obj,boxTexts(SF.box,'objectives')[+d.obj]);else if(d.rep!==undefined)toggle(SF.rep,boxTexts(SF.box,'repulsions')[+d.rep]);
+ else if(d.freeObj!==undefined)SF.obj.delete([...SF.obj].filter(t=>!boxTexts(SF.box,'objectives').includes(t))[+d.freeObj]);else if(d.freeRep!==undefined)SF.rep.delete([...SF.rep].filter(t=>!boxTexts(SF.box,'repulsions').includes(t))[+d.freeRep]);
+ else if(d.type)SF.type=d.type;else if(d.scope){if(d.scope==='near'&&!POS){const p=await geo();if(!p)return toast('Allow your location to search near you.');POS=p;}SF.scope=d.scope;}
+ else return;applyFilters();
 });
-
-function paintRadarEmpty(){
-  const el = $('radar-empty'), n = EX.list.length;
-  el.classList.toggle('hide', n > 0); el.textContent = !me ? 'sign in to see my spots' : S.q ? 'no spot for this habit' : 'no spot on the radar';
-}
-
-/* LE RADAR — anneaux, balayage, des points. Le centre = moi (ou mes Spots). */
-const RAD = { raf:0, W:0, H:0, dpr:1, cx:0, cy:0, rpx:0, tx:0, ty:0, tr:0, range:1000, pts:[], head:0, headTo:0, turn:null, last:0, dirty:null };
-function center(){ if(MAP.open) return MAP; if(POS) return POS; const s = EX.list[0]; return s ? s.exact : null; }
-const desktop = () => matchMedia('(min-width:900px)').matches;
-function radarSize(){
-  const c = $('canvas'), dpr = Math.min(2, devicePixelRatio || 1);
-  if(RAD.W !== innerWidth || RAD.H !== innerHeight || RAD.dpr !== dpr){
-    RAD.W = innerWidth; RAD.H = innerHeight; RAD.dpr = dpr; c.width = RAD.W*dpr; c.height = RAD.H*dpr;RAD.dirty=null;
-  }
-  let left = 20, right = RAD.W - 20, top = (['radar','past','list'].includes(VIEW) ? $('heading').getBoundingClientRect().bottom : 14) + 26, bottom = $('joy').getBoundingClientRect().top - 44;
-  if(MAP.open) bottom=$('place-picker').getBoundingClientRect().top-36;
-  else if(!desktop() && VIEW === 'plan') bottom=$('v-plan').getBoundingClientRect().top-32;
-  if(desktop() && !MAP.open){
-    if(VIEW === 'past') left = $('v-past').offsetWidth + 22;
-    if(VIEW === 'list') right = RAD.W - $('v-list').offsetWidth - 22;
-    if(VIEW === 'plan') top = Math.max(top, parseFloat(getComputedStyle($('v-plan')).top) + $('v-plan').offsetHeight + 16);
-    if(VIEW === 'cam') bottom = Math.min(bottom, RAD.H - parseFloat(getComputedStyle($('v-cam')).bottom) - $('v-cam').offsetHeight - 16);
-  }
-  RAD.tx = (left + right)/2; RAD.ty = (top + bottom)/2;
-  RAD.tr = Math.max(20, Math.min(right - left, Math.max(40,bottom - top))*(desktop() && ['past','list'].includes(VIEW) ? .36 : .43));
-  if(VIEW === 'radar' && !MAP.open) RAD.ty = bottom - RAD.tr;
-  if(!RAD.rpx){ RAD.cx = RAD.tx; RAD.cy = RAD.ty; RAD.rpx = RAD.tr; }
-  const em = $('radar-empty'); em.style.left = RAD.tx + 'px'; em.style.top = RAD.ty + 'px';
-}
-
-
-function radarRange(){
-  const c = center(); if(!c) return 1000;
-  const d = EX.list.map(s => hav(c, s.exact)).sort((a, b) => a - b);
-  if(!d.length) return 1000;
-  return Math.max(300, d[Math.min(d.length - 1, Math.floor(d.length*.85))]*1.18);
-}
-function draw(t){
-  RAD.raf = 0; if(DORT || document.hidden || VIEW !== 'radar' && VIEW !== 'plan' && !MAP.open && !desktop()) return;
-  if(RAD.morph && t < RAD.morph) radarSize();
-  const moving=Math.abs(RAD.tx-RAD.cx)+Math.abs(RAD.ty-RAD.cy)+Math.abs(RAD.tr-RAD.rpx)>1 || RAD.turn || RAD.headTo!==null;
-  const fps=moving?60:VIEW==='cam'?10:VIEW==='past'?15:30;
-  if(t-RAD.last<1000/fps-1){RAD.raf=requestAnimationFrame(draw);return;}
-  const blend=1-Math.pow(.82,Math.min(100,t-RAD.last)/(1000/60));RAD.last=t;
-  for(const [now,target] of [['cx','tx'],['cy','ty'],['rpx','tr']])RAD[now]=Math.abs(RAD[target]-RAD[now])<.04?RAD[target]:RAD[now]+(RAD[target]-RAD[now])*blend;
-  if(CMP.on){const delta=norm180(CMP.target-RAD.head);RAD.head=norm360(RAD.head+delta*.15);}
-  else if(RAD.headTo!==null){const delta=norm180(RAD.headTo-RAD.head);RAD.head=norm360(RAD.head+delta*.16);if(Math.abs(delta)<.1) RAD.headTo=null;}
-  const tools=$('radar-tools'),positions=[RAD.cx-RAD.rpx*.82,RAD.cx+RAD.rpx*.82,RAD.cy+RAD.rpx*.67,RAD.cx-RAD.rpx,RAD.cy-RAD.rpx,RAD.rpx*2].map(n=>n.toFixed(1)+'px'),layout=positions.join('|');
-  if(tools._layout!==layout){tools._layout=layout;tools.classList.add('is-placed');$('cmp').style.left=positions[0];$('cmp').style.top=positions[2];$('map-tools').style.left=positions[1];$('map-tools').style.top=positions[2];const map=$('radar-map');map.style.left=positions[3];map.style.top=positions[4];map.style.width=map.style.height=positions[5];if(MAP.open && Math.abs(RAD.tr-RAD.rpx)>.1)mapDraw();}paintCmp();
-  const x = $('canvas').getContext('2d'), { dpr, cx, cy, rpx } = RAD;
-  x.setTransform(dpr, 0, 0, dpr, 0, 0);if(RAD.dirty)x.clearRect(...RAD.dirty);
-  const margin=VIEW==='plan' && PLAN.pos?Math.max(42,x.measureText(PLAN.place || PLAN.city || 'Meeting point').width/2+32):42;
-  RAD.dirty=[cx-rpx-margin,cy-rpx-margin,(rpx+margin)*2,(rpx+margin)*2];
-  const g = x.createRadialGradient(cx, cy, 0, cx, cy, rpx); g.addColorStop(0, '#16161b'); g.addColorStop(1, '#0d0d10');
-  x.fillStyle = g; x.beginPath(); x.arc(cx, cy, rpx, 0, Math.PI*2); x.fill();
-  x.strokeStyle = 'rgba(255,255,255,.07)'; x.lineWidth = 1;
-  for(let k = 1; k <= 4; k++){ x.beginPath(); x.arc(cx, cy, rpx*k/4, 0, Math.PI*2); x.stroke(); }
-  x.font = '9px "Space Mono", monospace'; x.fillStyle = 'rgba(255,255,255,.28)'; x.textAlign = 'left';
-  if(center()) for(let k = 2; k <= 4; k += 2) x.fillText(fmtDist(RAD.range*k/4), cx + 4, cy - rpx*k/4 + 11);
-  const a = ((t || 0)/14000 % 1)*Math.PI*2 - Math.PI/2;
-  const sw = x.createConicGradient ? x.createConicGradient(a - .55, cx, cy) : null;
-  if(sw){ sw.addColorStop(0, 'rgba(255,255,255,0)'); sw.addColorStop(.0875, 'rgba(255,255,255,.07)'); sw.addColorStop(.0876, 'rgba(255,255,255,0)');
-    x.fillStyle = sw; x.beginPath(); x.arc(cx, cy, rpx, 0, Math.PI*2); x.fill(); }
-  const c = center(); RAD.pts = [];
-  if(c && !MAP.open) for(const s of EX.list){
-    const d = hav(c, s.exact), b = (bearing(c, s.exact)-RAD.head)*DEG, out = d > RAD.range;
-    const r = Math.min(1, d/RAD.range)*rpx, px = cx + Math.sin(b)*r, py = cy - Math.cos(b)*r, here = isHere(s);
-    x.globalAlpha = out ? .35 : here ? 1 : .55;
-    x.fillStyle = icol((s.intentions || [])[0]); x.beginPath(); x.arc(px, py, here ? 6 : 4.5, 0, Math.PI*2); x.fill();
-    if(here){ x.strokeStyle = icol((s.intentions || [])[0]); x.globalAlpha = .35; x.beginPath(); x.arc(px, py, 10 + 3*Math.sin((t || 0)/500), 0, Math.PI*2); x.stroke(); }
-    x.globalAlpha = 1; RAD.pts.push({ s, px, py });
-  }
-  if(POS && !MAP.open){ x.fillStyle = '#fff'; x.shadowColor = '#fff'; x.shadowBlur = 8; x.beginPath(); x.arc(cx, cy, 4, 0, Math.PI*2); x.fill(); x.shadowBlur = 0; }
-  x.globalAlpha=1;
-  for(let deg=0;deg<360;deg+=5){const a=(deg-RAD.head)*DEG,outer=rpx+12,inner=outer-(deg%45===0?10:deg%15===0?6:3);x.strokeStyle=deg%45===0?'rgba(255,255,255,.65)':'rgba(255,255,255,.25)';x.beginPath();x.moveTo(cx+Math.sin(a)*inner,cy-Math.cos(a)*inner);x.lineTo(cx+Math.sin(a)*outer,cy-Math.cos(a)*outer);x.stroke();}
-  x.textAlign='center';x.textBaseline='middle';x.font='9px "Space Mono"';x.fillStyle='rgba(255,255,255,.65)';
-  for(const [deg,label] of [[0,'N'],[90,'E'],[180,'S'],[270,'W']]){const a=(deg-RAD.head)*DEG;x.fillText(label,cx+Math.sin(a)*(rpx+24),cy-Math.cos(a)*(rpx+24));}
-  if(VIEW==='plan' && PLAN.pos && !MAP.open && c){const d=hav(c,PLAN.pos),a=(bearing(c,PLAN.pos)-RAD.head)*DEG,r=Math.min(.96,d/RAD.range)*rpx,px=cx+Math.sin(a)*r,py=cy-Math.cos(a)*r;x.strokeStyle='#fff';x.lineWidth=2;x.strokeRect(px-6,py-6,12,12);x.fillStyle='#fff';x.font='9px "Space Mono"';x.fillText(PLAN.place || PLAN.city || 'Meeting point',px,py-17);}
-  RAD.raf = requestAnimationFrame(draw);
-}
-const norm360=d=>((d%360)+360)%360, norm180=d=>((d+540)%360)-180;
-const CARD=['N','NE','E','SE','S','SW','W','NW'];
-const CMP={on:false,src:null,target:0,last:0,timer:0,available:typeof DeviceOrientationEvent!=='undefined' && matchMedia('(pointer:coarse)').matches};
-function paintCmp(){const h=Math.round(norm360(RAD.head))%360,html='<b>'+String(h).padStart(3,'0')+'° '+CARD[Math.round(h/45)%8]+'</b><br>'+(CMP.on?'compass':Math.abs(norm180(RAD.head))>.5?'north ↺':CMP.available?'align compass':'turn the ring'),el=$('cmp');if(el._heading!==html){el._heading=html;el.innerHTML=html;}}
-function compassOff(){if(CMP.src) removeEventListener(CMP.src,onOrient);CMP.on=false;CMP.src=null;clearTimeout(CMP.timer);}
-function onOrient(e){let h=typeof e.webkitCompassHeading==='number'?e.webkitCompassHeading:e.absolute && typeof e.alpha==='number'?360-e.alpha:null;if(h===null || !Number.isFinite(h)) return;CMP.target=norm360(h+(screen.orientation?.angle || window.orientation || 0));CMP.last=Date.now();CMP.on=true;RAD.headTo=null;}
-$('cmp').onclick=async()=>{
- if(CMP.on || CMP.src || Math.abs(norm180(RAD.head))>.5){compassOff();RAD.headTo=0;return;}
- if(!CMP.available) return;
- try{if(typeof DeviceOrientationEvent.requestPermission==='function' && await DeviceOrientationEvent.requestPermission()!=='granted') return;}
- catch{CMP.available=false;return;}
- CMP.last=0;CMP.src='ondeviceorientationabsolute' in window?'deviceorientationabsolute':'deviceorientation';addEventListener(CMP.src,onOrient);
- CMP.timer=setTimeout(()=>{if(!CMP.last){compassOff();CMP.available=false;paintCmp();}},3000);
-};
-const cv=$('canvas');
-cv.addEventListener('pointerdown',e=>{if(MAP.open) return;const d=Math.hypot(e.clientX-RAD.cx,e.clientY-RAD.cy);if(d<RAD.rpx-18 || d>RAD.rpx+35) return;compassOff();RAD.headTo=null;RAD.turn={id:e.pointerId,a:Math.atan2(e.clientX-RAD.cx,RAD.cy-e.clientY),h:RAD.head};cv.setPointerCapture(e.pointerId);e.stopImmediatePropagation();});
-cv.addEventListener('pointermove',e=>{if(!RAD.turn || e.pointerId!==RAD.turn.id) return;const a=Math.atan2(e.clientX-RAD.cx,RAD.cy-e.clientY);RAD.head=norm360(RAD.turn.h-(a-RAD.turn.a)/DEG);suppressClickUntil=Date.now()+500;e.preventDefault();e.stopImmediatePropagation();});
-for(const name of ['pointerup','pointercancel']) cv.addEventListener(name,e=>{if(RAD.turn?.id===e.pointerId){RAD.turn=null;suppressClickUntil=Date.now()+500;}});
-function radarOn(){ if(DORT) return; radarSize(); if(!RAD.raf) RAD.raf = requestAnimationFrame(draw); }
-addEventListener('resize', () => { radarSize(); radarOn(); if(MAP.open) mapDraw(); });
-$('canvas').addEventListener('click', e => {
-  if(MAP.open || Date.now() < suppressClickUntil || RAD.turn) return;
-  let best = null, bd = 22;
-  for(const p of RAD.pts){ const d = Math.hypot(p.px - e.clientX, p.py - e.clientY); if(d < bd){ bd = d; best = p.s; } }
-  if(best) openDetail(best);
-});
-
-/* ══ UN SPOT, SEUL ═══════════════════════════════════════════════════ */
-/* UN SPACE SEUL — seulement quand rien ne le montre déjà : un point du radar,
-   un lien partagé. Le fil et l'agenda gardent leurs gestes en ligne. */
-async function openDetail(s){
-  if(!s) return;detailSeq++;const old=$('detail').querySelector('video');if(old) releaseClip(old);DETAIL=s;
-  $('detail').style.removeProperty('--sheet-y');$('detail').classList.remove('is-dragging');
-  $('detail').innerHTML = '<button class="sheet-grab" type="button" data-close="1" aria-label="Close this spot, or drag down"><span aria-hidden="true"></span></button>' + (hasMedia(s) ? mediaHTML(s) : '') + spotHTML(s) + actsHTML(s, 'detail');
-  $('detail').classList.add('is-open');$('detail').scrollTop=0;joyPaint();
-  loadPhoto($('detail').querySelector('img[data-photo]'));
-  const v = $('detail').querySelector('video');
-  if(v) await playClip(v);
-}
-let detailSeq = 0;
-function closeDetail(){ DETAIL = null; const seq = ++detailSeq; $('detail').classList.remove('is-open','is-dragging');$('detail').style.removeProperty('--sheet-y'); const v=$('detail').querySelector('video');if(v) releaseClip(v);joyPaint();
-  // Once the sheet has slid away, its gestures leave the page (no hidden duplicate GO).
-  setTimeout(() => { if(!DETAIL && seq === detailSeq) $('detail').replaceChildren(); }, 400); }
-$('detail').addEventListener('click', async e => {
-  if(e.target.closest('[data-close]')) return closeDetail();
-  await actsClick(e);
-});
-
-/* Drag the handle, or pull the sheet down when its own scroll is at the top. */
-(function sheetGesture(){
- const el=$('detail');let drag=null,ignoreUntil=0;
- const begin=(x,y,id)=>{drag={x,y,id,t:performance.now(),dy:0};};
- const move=(x,y)=>{if(!drag)return;const dy=y-drag.y;if(dy>8 && Math.abs(x-drag.x)<dy){drag.dy=dy;el.classList.add('is-dragging');el.style.setProperty('--sheet-y',dy+'px');}};
- const end=()=>{if(!drag)return;const d=drag;drag=null;el.classList.remove('is-dragging');el.style.removeProperty('--sheet-y');if(d.dy>85 || d.dy>36 && performance.now()-d.t<280){ignoreUntil=Date.now()+350;closeDetail();}};
- el.addEventListener('pointerdown',e=>{if(e.button>0 || !e.target.closest('.sheet-grab'))return;begin(e.clientX,e.clientY,e.pointerId);e.target.closest('.sheet-grab').setPointerCapture(e.pointerId);});
- el.addEventListener('pointermove',e=>{if(drag?.id===e.pointerId){move(e.clientX,e.clientY);e.preventDefault();}});
- el.addEventListener('pointerup',e=>{if(drag?.id===e.pointerId)end();});
- el.addEventListener('pointercancel',()=>{drag=null;el.classList.remove('is-dragging');el.style.removeProperty('--sheet-y');});
- el.addEventListener('touchstart',e=>{if(e.touches.length!==1 || el.scrollTop>1 || e.target.closest('button,a,input,textarea'))return;const p=e.touches[0];begin(p.clientX,p.clientY,'touch');},{passive:true});
- el.addEventListener('touchmove',e=>{if(drag?.id!=='touch' || e.touches.length!==1)return;const p=e.touches[0];move(p.clientX,p.clientY);if(drag.dy>8)e.preventDefault();},{passive:false});
- el.addEventListener('touchend',()=>{if(drag?.id==='touch')end();},{passive:true});
- el.addEventListener('touchcancel',()=>{drag=null;el.classList.remove('is-dragging');el.style.removeProperty('--sheet-y');},{passive:true});
- el.addEventListener('click',e=>{if(Date.now()<ignoreUntil){e.stopImmediatePropagation();e.preventDefault();}},true);
-})();
-/* LE PAPIER — moteur original, une seule boucle sur le radar. */
-  const PAPER=(()=>{
-    const scene=$('totehm-paper'), card=$('tp-card');
-    const RM=window.matchMedia('(prefers-reduced-motion: reduce)');
-    /* Le diagnostic : des booléens et des compteurs, jamais une valeur. */
-    const diag={vivant:false, souris:false, lancers:0};
-    const lights=[...card.querySelectorAll('.tp-light')];   /* [face, dos] */
-    const R=Math.PI/180, W0=34;
-    const LUM=(()=>{ const x=-.35,y=-.55,z=1,n=Math.hypot(x,y,z); return [x/n,y/n,z/n]; })();
-    const borne=(v,a,b)=>Math.max(a,Math.min(b,v||0));
-    const res=x=>({x,v:0});
-    const SPR={rx:res(0), ry:res(0), px:res(0), py:res(0), sc:res(1)};
-    const goal={rx:0, ry:0, px:0, py:0, sc:1};
-    const K={rx:[34,.62], ry:[34,.62], px:[34,.62], py:[34,.62], sc:[170,.5]};
-    const PLAT={th:0, rx:0, ry:0, rz:0, px:0, py:0, sc:1};
-    let mode='plat', raf=0, last=0, clock=0, th=0, om=0, life=0;
-    let cur={...PLAT}, prev=null, vel={...PLAT, sc:0};
-    let appui=null, aGlisse=false, pose=null, centre=null;
-    let ratio=scene.clientWidth/110;
-
-    function ressort(s,g,k,z,dt){
-      const a=k*(g-s.x)-2*z*Math.sqrt(k)*s.v; s.v+=a*dt; s.x+=s.v*dt; }
-    function kick(){ if(!raf&&mode!=='plat') raf=requestAnimationFrame(frame); }
-    function frame(now){
-      raf=0;
-      const dt=Math.min(.05,Math.max(0,(now-(last||now))/1000)); last=now;
-      if(mode==='vit') vivre(dt); else if(mode==='pose') poserPas(now);
-      if(mode==='plat') return;
-      peindre();
-      if(!document.hidden) raf=requestAnimationFrame(frame);
-    }
-    function vivre(dt){
-      clock+=dt;
-      life+=(1-life)*(1-Math.exp(-dt/1.4));
-      if(appui&&appui.on){ /* le doigt conduit : `th` bouge dans pointermove */ }
-      else if(appui){ om*=Math.exp(-dt/.15); th+=om*dt; }      /* tenu */
-      else{
-        const s=Math.sin(th*R), nat=W0*(.34+.66*s*s);
-        om+=(nat-om)*(1-Math.exp(-dt/(Math.abs(om)>W0*1.3?1.1:1.6)));
-        th+=om*dt;
-      }
-      if(th>3600||th<-3600) th%=360;
-      for(const k in SPR) ressort(SPR[k],goal[k],K[k][0],K[k][1],dt);
-      const f=clock*2*Math.PI;
-      const nx={th, sc:SPR.sc.x, ry:SPR.ry.x, px:SPR.px.x,
-        rx:SPR.rx.x+life*2.4*Math.sin(f/7.3),
-        rz:life*1.1*Math.sin(f/8.9+1.3),
-        py:SPR.py.x+life*ratio*(2.6*Math.sin(f/6.4)+1.1*Math.sin(f/10.3+.7))};
-      if(prev&&dt>0) for(const k in nx) vel[k]=(nx[k]-prev[k])/dt;
-      vel.th=om; prev=cur=nx;
-    }
-    function peindre(){
-      const c=cur;
-      card.style.transform='translate3d('+c.px.toFixed(2)+'px,'+c.py.toFixed(2)+'px,0)'
-        +' rotateX('+c.rx.toFixed(2)+'deg) rotateY('+c.ry.toFixed(2)+'deg)'
-        +' rotateZ('+c.rz.toFixed(2)+'deg) rotateY('+c.th.toFixed(2)+'deg)'
-        +' scale('+c.sc.toFixed(4)+')';
-      /* La normale de la face : (0,0,1) passée par les mêmes rotations,
-         de la plus intérieure à la plus extérieure. */
-      let x=Math.sin(c.th*R), y=0, z=Math.cos(c.th*R), co, si, t;
-      co=Math.cos(c.rz*R); si=Math.sin(c.rz*R); t=x*co-y*si; y=x*si+y*co; x=t;
-      co=Math.cos(c.ry*R); si=Math.sin(c.ry*R); t=x*co+z*si; z=-x*si+z*co; x=t;
-      co=Math.cos(c.rx*R); si=Math.sin(c.rx*R); t=y*co-z*si; z=y*si+z*co; y=t;
-      const d=(x*LUM[0]+y*LUM[1]+z*LUM[2])/LUM[2];
-      eclairer(lights[0],d); eclairer(lights[1],-d);
-    }
-    function eclairer(el,f){
-      if(!el||f<=0) return;                 /* face détournée : cachée */
-      if(f<1){ el.style.background='#000'; el.style.opacity=Math.min(.5,(1-f)*.6).toFixed(3); }
-      else   { el.style.background='#fff'; el.style.opacity=Math.min(.06,(f-1)*.3).toFixed(3); }
-    }
-    function aPlat(){
-      if(raf){ cancelAnimationFrame(raf); raf=0; }
-      mode='plat'; th=0; om=0; life=0; appui=null; pose=null; prev=null;
-      for(const k in SPR){ SPR[k].x=k==='sc'?1:0; SPR[k].v=0; }
-      cur={...PLAT};
-      card.style.transform='';
-      lights.forEach(l=>{ l.style.background=''; l.style.opacity=''; });
-      card.classList.add('is-flat');
-      diag.vivant=false;
-    }
-    /* L'ATTERRISSAGE : position et vitesse du moment → face logo, à plat,
-       vitesse nulle. La durée suit le chemin à faire. */
-    function poser(cb){
-      if(mode!=='vit'){ aPlat(); if(cb) cb(); return; }
-      const thT=360*Math.round((cur.th+om*.3)/360);
-      const D=Math.min(.78,.3+Math.abs(thT-cur.th)/360*.62);
-      const to={...PLAT, th:thT}, v={};
-      for(const k in to){
-        const span=Math.abs(to[k]-cur[k])*1.5+(k==='sc'?.02:2);
-        v[k]=borne(vel[k]||0,-span/D,span/D);
-      }
-      pose={t0:performance.now(), D, from:{...cur}, to, v, cb};
-      appui=null; mode='pose'; kick();
-    }
-    function poserPas(now){
-      const u=Math.min(1,(now-pose.t0)/1000/pose.D);
-      const h00=2*u*u*u-3*u*u+1, h10=u*u*u-2*u*u+u, h01=-2*u*u*u+3*u*u;
-      const nx={};
-      for(const k in pose.to) nx[k]=h00*pose.from[k]+h10*pose.D*pose.v[k]+h01*pose.to[k];
-      cur=nx;
-      if(u>=1){ const cb=pose.cb; aPlat(); if(cb) cb(); }
-    }
-    /* LE RÉVEIL : après un repli, ou au chargement. Il repart de l'arrêt,
-       face logo — la vitesse et la dérive montent doucement. */
-    function reveiller(){
-      ratio=scene.clientWidth/110; paintPaper();
-      if(RM.matches||mode!=='plat'||document.hidden||VIEW!=='radar'||ouvert()) return;
-      card.classList.remove('is-flat');
-      mode='vit'; clock=0; last=0; life=0; om=0; th=0; prev=null; centre=null;
-      goal.rx=goal.ry=goal.px=goal.py=0; goal.sc=1;
-      diag.vivant=true; kick();
-    }
-    const libre=()=>mode==='vit'&&!appui&&!document.hidden&&VIEW==='radar'&&!ouvert()&&!RM.matches;
-    function viser(rx,ry,px,py){ goal.rx=rx; goal.ry=ry; goal.px=px; goal.py=py; }
-
-    aPlat();
-
-    document.addEventListener('visibilitychange',()=>{ last=0; sync(); });
-    if(RM.addEventListener) RM.addEventListener('change',sync); else RM.addListener(sync);
-
-    /* La souris : le papier regarde le curseur et glisse d'un rien vers lui. */
-    if(window.matchMedia('(hover:hover)').matches){
-      window.addEventListener('resize',()=>{ centre=null; });
-      document.addEventListener('mousemove',e=>{
-        if(!libre()) return;
-        if(!centre){ const r=scene.getBoundingClientRect();
-                     centre=[r.left+r.width/2, r.top+r.height/2]; }
-        const dx=borne((e.clientX-centre[0])/(innerWidth/2),-1,1),
-              dy=borne((e.clientY-centre[1])/(innerHeight/2),-1,1);
-        viser(-dy*15, dx*20, dx*7*ratio, dy*5*ratio); diag.souris=true;
-      },{passive:true});
-      document.documentElement.addEventListener('mouseleave',()=>{ if(libre()) viser(0,0,0,0); });
-    }
-
-    /* Le doigt (ou la souris) : appuyer tient le papier, glisser le fait
-       tourner, lâcher lui laisse l'élan. `touch-action:none` sur la scène :
-       le geste porte une fonction, on le conduit en Pointer Events. */
-    scene.addEventListener('pointerdown',e=>{
-      if(mode!=='vit'||(e.pointerType==='mouse'&&e.button!==0)) return;
-      appui={id:e.pointerId, x0:e.clientX, y0:e.clientY, x:e.clientX, t:performance.now(), on:false};
-      aGlisse=false; goal.sc=.965;
-      try{ scene.setPointerCapture(e.pointerId); }catch(_){}
-    });
-    scene.addEventListener('pointermove',e=>{
-      if(!appui||e.pointerId!==appui.id) return;
-      const dx=e.clientX-appui.x0, dy=e.clientY-appui.y0;
-      if(!appui.on){ if(Math.hypot(dx,dy)<7) return; appui.on=true; aGlisse=true; goal.sc=1.03; }
-      const now=performance.now(), dts=Math.max(.008,(now-appui.t)/1000);
-      const d=(e.clientX-appui.x)*.62;
-      th+=d; om=om*.6+(d/dts)*.4;
-      goal.rx=borne(-dy*.18,-18,18);
-      appui.x=e.clientX; appui.t=now;
-    });
-    const lacher=e=>{
-      if(!appui||e.pointerId!==appui.id) return;
-      const glisse=appui.on; appui=null;
-      viser(0,0,0,0); goal.sc=1;
-      if(glisse){ om=borne(om,-720,720); diag.lancers++; }
-    };
-    scene.addEventListener('pointerup',lacher);
-    scene.addEventListener('pointercancel',lacher);
-    /* Un glissé n'est pas un tap : le clic qui le suit ne doit rien ouvrir. */
-    scene.addEventListener('click',e=>{
-      if(aGlisse){ aGlisse=false; e.stopPropagation(); e.preventDefault(); }
-    },true);
-
-
-    const ouvert=()=>!$('habit-picker').classList.contains('hide');
-    function hint(){ $('tp-hint').textContent='tap to pick a Habit'; }
-    function sync(){
-      const open=ouvert(); $('tp-wrap').classList.toggle('is-open',open);
-      if(document.hidden||VIEW!=='radar'||!document.body.classList.contains('v-radar')||open||RM.matches){
-        if(mode!=='plat'||raf) aPlat(); aGlisse=false; return;
-      }
-      if(mode==='plat') reveiller();
-    }
-    function etat(){return {alive:!!raf,flat:mode==='plat',open:ouvert(),name:!!(me&&PSEUDO),spins:diag.lancers};}
-    window.addEventListener('resize',()=>{
-      if(!['radar','past','list'].includes(VIEW)) return;
-      ratio=scene.clientWidth/110; paintPaper(); if(ouvert()) tpPickerPosition();
-    },{passive:true});
-    if(document.fonts?.ready) document.fonts.ready.then(paintPaper);
-
-function paintPaper(){
-  const el=$('tp-name'); if(!el) return;
-  const p=((me&&PSEUDO)||'').trim();
-  el.classList.toggle('is-name',!!p);
-  el.style.fontSize='';
-  el.textContent=p||'Tap to open it';
-  if(!p||!el.offsetWidth) return;
-  const max=(el.parentElement.clientWidth||110)*.76;
-  if(el.offsetWidth>max&&p.length>3){
-    const mi=p.length/2; let cut=Math.ceil(mi);
-    for(let d=0;d<=p.length;d++){
-      const a=Math.floor(mi)-d, b=Math.ceil(mi)+d;
-      if(/[_\-. ]/.test(p[a]||'')){ cut=a+1; break; }
-      if(/[_\-. ]/.test(p[b-1]||'')){ cut=b; break; }
-    }
-    el.textContent=p.slice(0,cut).trim()+'\n'+p.slice(cut).trim();
-  }
-  for(let fs=10; el.offsetWidth>max&&fs>7.5;){ fs-=.5; el.style.fontSize=fs+'px'; }
-}
-    return {poser, sync, nommer:paintPaper, hint, etat};
-  })();
-
-/* ══ LA HABIT BOX — même sélection que pour créer un Spot ═══════════ */
-function reload(){ loadPast(false); loadExact(); loadList(); }
-async function loadHabits(){
-  if(HABITS) return HABITS;
-  if(!me) return [];
-  if(habitsPending) return habitsPending;
-  const uid = me.id;
-  habitsPending = (async () => {
-    const { data, error } = await sb.rpc('space_habits');
-    if(error){ console.error('[space_habits]', error.message); return []; }
-    const habits = (data?.habits || []).map(s => ({...s,name:s.name,ints:(s.ints || []).filter(i => INTS[i])}));
-    if(me?.id === uid) HABITS = habits;
-    return habits;
-  })();
-  try{ return await habitsPending; }finally{ habitsPending = null; }
-}
-function tpPickerPosition(){
-  const p=$('habit-picker'), top=$('heading').getBoundingClientRect().bottom+8;
-  p.style.top=top+'px'; p.style.maxHeight=Math.max(0,innerHeight-top-16)+'px';
-}
-function pickerClose(){
-  $('habit-picker').classList.add('hide'); $('habit-filter').setAttribute('aria-expanded', 'false');
-  $('tp-enter').setAttribute('aria-expanded','false'); PAPER.sync();
-}
+$('filters').addEventListener('change',e=>{if(e.target.id==='f-habit'){SF.habit=e.target.value.trim();SF.useHabit=!!SF.habit;}else if(e.target.id==='f-city')SF.city=e.target.value.trim();else if(e.target.id==='f-radius')SF.radius=Math.max(1,Math.min(500,Number(e.target.value)||50));else return;applyFilters();});
+$('filters').addEventListener('keydown',e=>{if(e.key!=='Enter'||!['f-objective','f-repulsion'].includes(e.target.id))return;e.preventDefault();const text=e.target.value.trim().slice(0,200);if(text)(e.target.id==='f-objective'?SF.obj:SF.rep).add(text);applyFilters();});
+let habitsPending=null,pickerSeq=0;
 async function pickerOpen(){
-  PAPER.poser();
-  const p = $('habit-picker'); p.classList.remove('hide'); $('habit-filter').setAttribute('aria-expanded', 'true');
-  $('tp-enter').setAttribute('aria-expanded','true'); PAPER.sync(); tpPickerPosition();
-  p.innerHTML = '<p class="note">Reading my TOTEHM…</p>';
-  await loadHabits();
-  if(p.classList.contains('hide')) return;
-  p.innerHTML = '<div class="row"><button class="chip" type="button" data-all="1">All Habit Boxes</button><button class="lnk" type="button" data-picker-close="1">Close</button></div>' +
-    (!me ? '<button class="btn" type="button" data-picker-signin="1">CONNECT WITH MY TOTEHM</button>' : HABITS?.length ?
-      HABITS.map((h,k)=>pickHabitHTML(h,'data-filter-h="'+k+'"',S.habit?.name===h.name)).join('') :
-      '<button class="btn" type="button" data-com="/totehm#in">Write a Habit Box in my TOTEHM</button>');
+ const seq=++pickerSeq;showPanel('filters',false);showPanel('habit-picker',true);$('habit-picker').innerHTML='<p class="note">Reading my TOTEHM…</p>';
+ if(me&&!HABITS){const uid=me.id;const pending=habitsPending||=sb.rpc('space_habits');const {data,error}=await pending;if(habitsPending===pending)habitsPending=null;if(error)console.error('[space_habits]',error.message);if(uid===me?.id)HABITS=data?.habits||[];}
+ if(seq!==pickerSeq||$('habit-picker').classList.contains('hide'))return;
+ $('habit-picker').innerHTML='<div class="row"><button class="btn" data-all="1" type="button">ALL HABIT BOXES</button><button class="lnk" data-picker-close="1" type="button">CLOSE</button></div>'+(!me?'<button class="btn" data-connect="1" type="button">CONNECT WITH MY TOTEHM</button>':HABITS?.length?HABITS.map((h,i)=>'<button class="pick-habit" type="button" data-habit="'+i+'"><span class="habit">'+tickHTML(h.ints)+'<span class="h-body"><span class="v-col">'+habitInner(h)+'</span></span></span></button>').join(''):'<button class="btn" data-com="/totehm#in" type="button">MY TOTEHM · ADD A HABIT</button>');
 }
-$('habit-filter').onclick = () => $('habit-picker').classList.contains('hide') ? pickerOpen() : pickerClose();
+$('tp-enter').onclick=()=> $('habit-picker').classList.contains('hide')?pickerOpen():showPanel('habit-picker',false);
+$('habit-picker').addEventListener('click',e=>{const d=e.target.closest('button')?.dataset;if(!d)return;if(d.pickerClose)return showPanel('habit-picker',false);if(d.connect)return ssoLogin(false);if(d.habit!==undefined||d.all){selectBox(d.all?null:HABITS[+d.habit]);showPanel('habit-picker',false);showPanel('filters',true);invalidate();}});
+function saveContext(){const c=current();c.scroll=$('feed').scrollTop;c.radarScroll=$('result-list').scrollTop;}
+function paintControls(){document.body.dataset.period=PERIOD;document.body.dataset.mode=MODE;document.querySelectorAll('[data-period]').forEach(b=>{b.setAttribute('aria-selected',String(b.dataset.period===PERIOD));b.tabIndex=b.dataset.period===PERIOD?0:-1;});document.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode===MODE)));$('v-radar').classList.toggle('hide',MODE!=='radar');$('v-shorts').classList.toggle('hide',MODE!=='shorts');const q=new URLSearchParams(location.search);q.delete('v');q.set('period',PERIOD);q.set('mode',MODE);history.replaceState(null,'',location.pathname+'?'+q+location.hash);}
+function setPeriod(p){if(!PERIODS.includes(p)||p===PERIOD)return;saveContext();releaseFeed();const direction=PERIODS.indexOf(p)>PERIODS.indexOf(PERIOD)?1:-1;PERIOD=p;document.body.style.setProperty('--travel',direction*20+'px');document.body.classList.remove('transition-period');void $('content').offsetWidth;document.body.classList.add('transition-period');paintControls();renderResults();if(!current().loaded)loadResults(false);else refreshIfDue();radarOn();}
+function setMode(m){if(!['radar','shorts'].includes(m)||m===MODE)return;saveContext();releaseFeed();MODE=m;paintControls();renderResults();radarOn();}
+document.querySelectorAll('[data-period]').forEach(b=>b.onclick=()=>setPeriod(b.dataset.period));document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
+async function loadResults(more=false){
+ if(more)saveContext();const p=PERIOD,c=CACHE[p];if(more&&(!c.more||c.loading))return;if(!more&&c.loaded)saveContext();const seq=++c.seq,uid=me?.id;c.loading=true;c.error=false;if(!more&&!c.loaded)renderResults();
+ const args={p_period:p,p_filters:filters(),p_lat:SF.scope==='near'&&POS?Math.round(POS.lat*10)/10:null,p_lng:SF.scope==='near'&&POS?Math.round(POS.lng*10)/10:null,p_limit:30,p_offset:more?c.offset:0,p_as_of:more?c.asOf:null};
+ try{const {data,error}=await sb.rpc('club_spots',args);if(seq!==c.seq||uid!==me?.id)return;if(error||!data?.ok)throw error||Error('Spots unavailable');
+  const items=data.items||data.spots||[];c.items=more?[...new Map(c.items.concat(items).map(s=>[s.id,s])).values()]:items;c.total=Number(data.total)||c.items.length;c.more=!!data.has_more;c.offset=Number.isFinite(data.next_offset)?data.next_offset:args.p_offset+items.length;c.asOf=data.as_of;c.loaded=true;c.at=Date.now();if(!more)c.anchor=c.asOf?performance.now():null;
+ }catch(error){if(seq!==c.seq)return;console.error('[club_spots]',error?.message||error);c.error=true;}
+ finally{if(seq===c.seq){c.loading=false;if(PERIOD===p){renderResults();radarFit();radarOn();}}}
+}
+function renderResults(){
+ const c=current(),exact=c.items.filter(hasExact).length;$('results-caption').textContent=c.loading?'Reading spots…':c.error?'Could not read spots':c.total+' spot'+(c.total===1?'':'s')+(MODE==='radar'?' · '+exact+' exact point'+(exact===1?'':'s'):'');
+ const more=c.more?'<button class="btn load-more" type="button" data-more="1"'+(c.loading?' disabled':'')+'>'+(c.loading?'READING…':'MORE SPOTS')+'</button>':'',empty=c.error?'<div class="result-empty">Spots unavailable.<button class="btn retry" type="button" data-retry="1">TRY AGAIN</button></div>':'<div class="result-empty">'+(c.loading?'Reading spots…':'No spots for this period and these filters.')+'</div>';
+ $('result-list').innerHTML=c.items.length?c.items.map(s=>'<button class="radar-row'+(c.active===s.id?' is-selected':'')+'" type="button" data-open="'+esc(s.id)+'"><span>'+esc(s.habit)+'</span><small>'+esc(s.city||'City unavailable')+(hasExact(s)?' · exact point':' · city only')+'</small></button>').join('')+more:empty;
+ $('result-list').scrollTop=c.radarScroll;
+ // Both modes render this same server page; the radar never manufactures a city point.
+ releaseFeed();$('feed').innerHTML=c.items.length?c.items.map((s,i)=>'<article class="clip'+(!hasMedia(s)?' no-media':'')+'" data-id="'+esc(s.id)+'" data-k="'+i+'">'+(hasMedia(s)?mediaHTML(s)+'<div class="shade"></div>':'<div class="time-mark" aria-hidden="true">'+WORDS[PERIOD]+'</div>')+((s.clip||s.video)?'<button class="chip sound-button" type="button" data-sound="1" aria-pressed="false">SOUND OFF</button>':'')+'<div class="info">'+spotHTML(s)+actsHTML(s)+'</div></article>').join('')+(c.more?'<div class="clip"><div class="result-empty">'+more+'</div></div>':''):'<div class="clip">'+empty+'</div>';
+ $('feed').scrollTop=c.scroll;if(MODE==='shorts'){if(c.active){const n=[...$('feed').querySelectorAll('.clip[data-id]')].find(n=>n.dataset.id===c.active);if(n)$('feed').scrollTop=n.offsetTop;}focusVisible();}
+}
+function releaseFeed(){document.querySelectorAll('#feed video').forEach(releaseClip);}
+function focusVisible(){if(MODE!=='shorts'||DETAIL||document.hidden||DORT)return;const f=$('feed'),clips=[...f.querySelectorAll('.clip[data-id]')];if(!clips.length)return;const clip=clips.reduce((best,n)=>Math.abs(n.offsetTop-f.scrollTop)<Math.abs(best.offsetTop-f.scrollTop)?n:best,clips[0]),i=clips.indexOf(clip);current().active=clip.dataset.id;current().scroll=f.scrollTop;
+ clips.forEach((n,k)=>{const v=n.querySelector('video');if(v){if(k===i){v._wanted=true;playClip(v);}else if(Math.abs(k-i)<=1&&lookAhead()){v.pause();v._active=false;v._wanted=true;prepareClip(v);}else releaseClip(v);}if(Math.abs(k-i)<=1)n.querySelectorAll('img[data-photo]').forEach(loadPhoto);});
+}
+let scrollFrame=0;$('feed').addEventListener('scroll',()=>{if(!scrollFrame)scrollFrame=requestAnimationFrame(()=>{scrollFrame=0;focusVisible();});},{passive:true});
+async function refreshIfDue(){const c=current();if(c.loading||!c.loaded)return;const serverNow=Date.parse(c.asOf)+(performance.now()-(c.anchor||performance.now()));const boundary=c.items.some(s=>{const t=Date.parse(PERIOD==='future'?s.starts_at:s.ends_at);return PERIOD!=='past'&&Number.isFinite(t)&&t>Date.parse(c.asOf)&&t<=serverNow;});if(boundary||Date.now()-(c.at||0)>30000)await loadResults(false);}
+function geo(){return new Promise(resolve=>navigator.geolocation?navigator.geolocation.getCurrentPosition(p=>resolve({lat:p.coords.latitude,lng:p.coords.longitude}),()=>resolve(null),{enableHighAccuracy:false,timeout:8000,maximumAge:300000}):resolve(null));}
+/* Existing radar geometry: rings, sweep, compass and draggable heading, exact points only. */
+const REDUCED=matchMedia('(prefers-reduced-motion: reduce)');
+const RAD={raf:0,cx:0,cy:0,rpx:0,range:1000,head:0,pts:[],last:0};
+const norm360=d=>((d%360)+360)%360;
+function center(){return POS||current().items.find(hasExact)?.exact||null;}
+function radarFit(){const c=center(),ds=c?current().items.filter(hasExact).map(s=>hav(c,s.exact)).sort((a,b)=>a-b):[];RAD.range=ds.length?Math.max(300,ds[Math.min(ds.length-1,Math.floor(ds.length*.85))]*1.18):1000;}
+function draw(t){RAD.raf=0;if(MODE!=='radar'||document.hidden||DORT)return;if(t-RAD.last<32){RAD.raf=requestAnimationFrame(draw);return;}RAD.last=t;
+ const canvas=$('canvas'),r=canvas.getBoundingClientRect(),dpr=Math.min(2,devicePixelRatio||1),desktop=innerWidth>=900;if(canvas.width!==Math.round(r.width*dpr)||canvas.height!==Math.round(r.height*dpr)){canvas.width=Math.round(r.width*dpr);canvas.height=Math.round(r.height*dpr);}const w=r.width,h=r.height,x=canvas.getContext('2d');x.setTransform(dpr,0,0,dpr,0,0);x.clearRect(0,0,w,h);RAD.cx=desktop?(w-290)/2:w/2;RAD.cy=desktop?h/2:h*.36;RAD.rpx=Math.max(25,Math.min(desktop?(w-350)*.34:w*.37,h*(desktop?.4:.28)));const {cx,cy,rpx}=RAD;
+ const g=x.createRadialGradient(cx,cy,0,cx,cy,rpx);g.addColorStop(0,'#16161b');g.addColorStop(1,'#0d0d10');x.fillStyle=g;x.beginPath();x.arc(cx,cy,rpx,0,Math.PI*2);x.fill();x.lineWidth=1;x.strokeStyle='#ffffff16';for(let k=1;k<=4;k++){x.beginPath();x.arc(cx,cy,rpx*k/4,0,Math.PI*2);x.stroke();}
+ const a=REDUCED.matches?0:t/14000*Math.PI*2,sw=x.createConicGradient?.(a-.55,cx,cy);if(sw){sw.addColorStop(0,'#ffffff00');sw.addColorStop(.0875,'#ffffff13');sw.addColorStop(.0876,'#ffffff00');x.fillStyle=sw;x.beginPath();x.arc(cx,cy,rpx,0,Math.PI*2);x.fill();}
+ const c=center();x.font='9px "Space Mono"';x.textAlign='left';x.fillStyle='#ffffff70';if(c)for(const k of[2,4])x.fillText(fmtDist(RAD.range*k/4),cx+4,cy-rpx*k/4+11);RAD.pts=[];
+ if(c)for(const s of current().items.filter(hasExact)){const distance=hav(c,s.exact),ang=(bearing(c,s.exact)-RAD.head)*DEG,rr=Math.min(1,distance/RAD.range)*rpx,px=cx+Math.sin(ang)*rr,py=cy-Math.cos(ang)*rr;x.globalAlpha=distance>RAD.range?.35:1;x.fillStyle=icol((s.intentions||[])[0]);x.beginPath();x.arc(px,py,s.id===current().active?7:5,0,Math.PI*2);x.fill();x.globalAlpha=1;RAD.pts.push({s,px,py});}
+ if(POS){x.fillStyle='#fff';x.beginPath();x.arc(cx,cy,3,0,Math.PI*2);x.fill();}for(let deg=0;deg<360;deg+=5){const a=(deg-RAD.head)*DEG,outer=rpx+12,inner=outer-(deg%45===0?10:deg%15===0?6:3);x.strokeStyle=deg%45===0?'#ffffffa0':'#ffffff40';x.beginPath();x.moveTo(cx+Math.sin(a)*inner,cy-Math.cos(a)*inner);x.lineTo(cx+Math.sin(a)*outer,cy-Math.cos(a)*outer);x.stroke();}
+ x.textAlign='center';x.textBaseline='middle';x.fillStyle='#ffffffa0';for(const[deg,label]of[[0,'N'],[90,'E'],[180,'S'],[270,'W']]){const a=(deg-RAD.head)*DEG;x.fillText(label,cx+Math.sin(a)*(rpx+24),cy-Math.cos(a)*(rpx+24));}$('cmp').innerHTML=String(Math.round(RAD.head)%360).padStart(3,'0')+'° N<br>turn the ring';if(!REDUCED.matches)RAD.raf=requestAnimationFrame(draw);
+}
+function radarOn(){if(MODE==='radar'&&!DORT&&!RAD.raf)RAD.raf=requestAnimationFrame(draw);}
+$('cmp').onclick=()=>{RAD.head=0;radarOn();};document.querySelectorAll('[data-zoom]').forEach(b=>b.onclick=()=>{RAD.range=Math.max(100,Math.min(20000000,RAD.range*(b.dataset.zoom==='1'?.65:1.5)));radarOn();});
+$('locate').onclick=async()=>{const p=await geo();if(p){POS=p;radarFit();radarOn();}else toast('Location unavailable. Spots remain available below.');};
+let radarDrag=null,ignoreClick=0;
+$('canvas').addEventListener('pointerdown',e=>{const r=e.currentTarget.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top,d=Math.hypot(x-RAD.cx,y-RAD.cy);if(Math.abs(d-RAD.rpx)>30)return;radarDrag={id:e.pointerId,a:Math.atan2(x-RAD.cx,RAD.cy-y),h:RAD.head};e.currentTarget.setPointerCapture(e.pointerId);});
+$('canvas').addEventListener('pointermove',e=>{if(radarDrag?.id!==e.pointerId)return;const r=e.currentTarget.getBoundingClientRect(),a=Math.atan2(e.clientX-r.left-RAD.cx,RAD.cy-e.clientY+r.top);RAD.head=norm360(radarDrag.h-(a-radarDrag.a)/DEG);ignoreClick=Date.now()+350;radarOn();});
+for(const ev of['pointerup','pointercancel'])$('canvas').addEventListener(ev,()=>radarDrag=null);
+$('canvas').onclick=e=>{if(Date.now()<ignoreClick)return;const r=e.currentTarget.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;let best=null,dist=22;for(const p of RAD.pts){const d=Math.hypot(p.px-x,p.py-y);if(d<dist){best=p.s;dist=d;}}if(best)openSpot(best.id);};
+function icsFor(s){const d=t=>new Date(t).toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,''),x=t=>String(t||'').replace(/\\/g,'\\\\').replace(/[,;]/g,m=>'\\'+m).replace(/\r?\n/g,'\\n');return ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//TOTEHM//FIGHER//EN','BEGIN:VEVENT','UID:'+s.id+'@figher.club','DTSTAMP:'+d(Date.now()),'DTSTART:'+d(s.starts_at),'DTEND:'+d(s.ends_at||Date.parse(s.starts_at)+(s.duration_min||0)*60000),'SUMMARY:'+x(s.habit),'LOCATION:'+x(hasExact(s)?s.exact.place||s.city:s.city),hasExact(s)?'GEO:'+s.exact.lat+';'+s.exact.lng:'','URL:https://www.figher.club/?spot='+encodeURIComponent(s.id),'END:VEVENT','END:VCALENDAR'].filter(Boolean).join('\r\n');}
+async function openSpot(id){const seq=++detailRequest,uid=me?.id;detailTrigger=document.activeElement;current().active=id;releaseFeed();$('detail').innerHTML='<button class="sheet-grab" data-close="1" aria-label="Close spot" type="button"><span></span></button><p class="detail-error">Reading spot…</p>';$('detail').classList.add('is-open');$('content').inert=true;$('periods').inert=true;$('mode-bar').inert=true;$('detail').focus();
+ const {data,error}=await sb.rpc('spot_get',{p_id:id});if(seq!==detailRequest||uid!==me?.id)return;if(error||!data?.ok){if(error)console.error('[spot_get]',error.message);$('detail').innerHTML='<p class="detail-error">This spot is unavailable.</p><button class="btn" data-close="1" type="button">CLOSE</button>';return;}
+ DETAIL=data.spot;$('detail').scrollTop=0;$('detail').innerHTML='<button class="sheet-grab" data-close="1" aria-label="Close spot" type="button"><span></span></button>'+mediaHTML(DETAIL)+spotHTML(DETAIL)+actsHTML(DETAIL,true);$('detail').querySelectorAll('img[data-photo]').forEach(loadPhoto);const v=$('detail').querySelector('video');if(v)playClip(v);
+}
+function closeDetail(){detailRequest++;detailSeq++;DETAIL=null;$('detail').querySelectorAll('video').forEach(releaseClip);$('detail').classList.remove('is-open');$('content').inert=false;$('periods').inert=false;$('mode-bar').inert=false;const seq=detailSeq;setTimeout(()=>{if(seq===detailSeq&&!DETAIL)$('detail').replaceChildren();},350);detailTrigger?.focus?.({preventScroll:true});focusVisible();}
+async function goSpot(button){button.disabled=true;const uid=me?.id;try{const {data,error}=await sb.rpc('spot_get',{p_id:button.dataset.go});if(uid!==me?.id||!button.isConnected)return;if(error||!data?.ok){if(error)console.error('[spot_get]',error.message);return toast('This spot is unavailable.');}if(hasExact(data.spot))return location.assign(mapsURL(data.spot.exact.lat,data.spot.exact.lng));toast('Only the city is available with your current access.');}finally{button.disabled=false;}}
+document.addEventListener('click',async e=>{const b=e.target.closest('button');if(!b)return;const d=b.dataset;if(d.open)return openSpot(d.open);if(d.close)return closeDetail();if(d.more)return loadResults(true);if(d.retry)return loadResults(false);if(d.go)return goSpot(b);if(d.ics){const s=spotById(d.ics);if(!s)return;const a=document.createElement('a'),url=URL.createObjectURL(new Blob([icsFor(s)],{type:'text/calendar'}));a.href=url;a.download='spot.ics';a.click();setTimeout(()=>URL.revokeObjectURL(url),4000);}if(d.share){const url='https://www.figher.club/?spot='+encodeURIComponent(d.share);try{if(navigator.share)await navigator.share({title:'FIGHER.CLUB',url});else{await navigator.clipboard.writeText(url);toast('Link copied.');}}catch{}}if(d.sound){const v=b.closest('.clip').querySelector('video');if(v){v.muted=!v.muted;b.textContent=v.muted?'SOUND OFF':'SOUND ON';b.setAttribute('aria-pressed',String(!v.muted));}}});
+$('member').onclick=()=>me?ssoVersDomaine(sb,'com',COM+'/totehm#in'):ssoLogin(false);$('new-spot').onclick=()=>publish();
+function paintMember(){$('member').classList.toggle('is-in',!!me);$('member-txt').textContent=me?PSEUDO||'MY TOTEHM':'CONNECT WITH MY TOTEHM';$('terms').classList.toggle('hide',!!me);}
+addEventListener('keydown',e=>{if(e.key==='Tab'&&$('detail').classList.contains('is-open')){const list=[...$('detail').querySelectorAll('button,a[href],[tabindex="0"]')];const first=list[0],last=list.at(-1);if(e.shiftKey&&(document.activeElement===first||document.activeElement===$('detail'))){e.preventDefault();last?.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first?.focus();}}if(e.key==='Escape'){if($('detail').classList.contains('is-open'))return closeDetail();showPanel('filters',false);showPanel('habit-picker',false);return;}if(e.target.closest('input,textarea,select,[contenteditable],#filters,#habit-picker')||$('detail').classList.contains('is-open'))return;if(e.key==='ArrowLeft'||e.key==='ArrowRight'){e.preventDefault();setPeriod(PERIODS[Math.max(0,Math.min(2,PERIODS.indexOf(PERIOD)+(e.key==='ArrowRight'?1:-1)))]);}});
+// Horizontal swipes choose time; vertical scrolling belongs to the shorts reader.
+let swipe=null;$('content').addEventListener('touchstart',e=>{if(e.touches.length!==1||e.target.closest('button,a,input,.info'))return;const p=e.touches[0];swipe={x:p.clientX,y:p.clientY};},{passive:true});$('content').addEventListener('touchend',e=>{if(!swipe||!e.changedTouches.length)return;const p=e.changedTouches[0],dx=p.clientX-swipe.x,dy=p.clientY-swipe.y;swipe=null;if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.5)setPeriod(PERIODS[Math.max(0,Math.min(2,PERIODS.indexOf(PERIOD)+(dx<0?1:-1)))]);},{passive:true});
+REDUCED.addEventListener?.('change',radarOn);
+let wheelSum=0,wheelAt=0,wheelLock=0;
+$('content').addEventListener('wheel',e=>{if(Math.abs(e.deltaX)<=Math.abs(e.deltaY)*1.4||$('detail').classList.contains('is-open')||!$('filters').classList.contains('hide')||!$('habit-picker').classList.contains('hide'))return;const now=performance.now();e.preventDefault();if(now<wheelLock)return;if(now-wheelAt>200||Math.sign(wheelSum)!==Math.sign(e.deltaX))wheelSum=0;wheelAt=now;wheelSum+=e.deltaX*(e.deltaMode===1?16:e.deltaMode===2?innerWidth:1);if(Math.abs(wheelSum)>80){setPeriod(PERIODS[Math.max(0,Math.min(2,PERIODS.indexOf(PERIOD)+(wheelSum>0?1:-1)))]);wheelSum=0;wheelLock=now+360;}},{passive:false});
+addEventListener('resize',radarOn);document.addEventListener('visibilitychange',()=>{if(document.hidden)releaseFeed();else{refreshIfDue();focusVisible();radarOn();}});setInterval(()=>{if(!document.hidden&&!DORT)refreshIfDue();},1000);
+window.__totehm_club=()=>({build:BUILD,period:PERIOD,mode:MODE,view:PERIOD,signed_in:!!me,located:!!POS,results:current().items.length,total:current().total,more:current().more,loading:current().loading,filter:filterCount(),habit_filter:!!SF.box,exact:current().items.filter(hasExact).length,detail:!!DETAIL,radar:{cx:Math.round(RAD.cx),cy:Math.round(RAD.cy),radius:Math.round(RAD.rpx),points:RAD.pts.length},video:{playing:[...document.querySelectorAll('video')].filter(v=>!v.paused).length},creating:false});
+async function boot(){const {data:{session}}=await sb.auth.getSession();me=session?.user||null;if(me){const {data,error}=await sb.from('profiles').select('pseudo').eq('id',me.id).maybeSingle();if(error)console.error('[profile]',error.message);PSEUDO=data?.pseudo||null;}paintMember();if(['plan','cam','create'].includes(oldView))return publish(initial);paintControls();renderFilters();await loadResults(false);radarOn();if(initial.get('spot'))openSpot(initial.get('spot'));}
+sb.auth.onAuthStateChange((_event,session)=>{const uid=session?.user?.id||null;if(!boot.ready||uid===(me?.id||null))return;me=session?.user||null;PSEUDO=null;HABITS=null;habitsPending=null;pickerSeq++;showPanel('habit-picker',false);$('habit-picker').replaceChildren();showPanel('filters',false);selectBox(null);SIGNED.clear();VIDEO_AUTH.clear();closeDetail();paintMember();invalidate();});
+await boot();boot.ready=true;
 
-/* Le bouton natif donne Entrée/Espace ; la scène donne le tap des deux faces. */
-const tpToggle=()=>{
-  if(!$('habit-picker').classList.contains('hide')) pickerClose();
-  else PAPER.poser(()=>pickerOpen());
-};
-$('tp-enter').onclick=e=>{e.stopPropagation();tpToggle();};
-$('totehm-paper').onclick=tpToggle;
-
-$('habit-picker').addEventListener('click', e => {
-  if(e.target.closest('[data-picker-close]')) return pickerClose();
-  if(e.target.closest('[data-picker-signin]')) return ssoLogin(false);
-  const b = e.target.closest('[data-filter-h]');
-  if(b || e.target.closest('[data-all]')){
-    S.habit = b ? HABITS[+b.dataset.filterH] : null; S.q = S.habit?.name || '';
-    $('habit-filter').textContent = S.habit ? S.habit.name : 'Habit Box · all'; PAPER.hint(); pickerClose(); reload();
-  }
-});
-document.addEventListener('pointerdown', e => { if(!e.target.closest('#habit-picker,#habit-filter,#totehm-paper')) pickerClose(); });
-
-/* ══ TOP — I WILL BE HERE, un Spot annoncé, jamais une fausse vidéo ═ */
-const chip = (a, l, on, sub) => '<button type="button" class="chip' + (on ? ' is-on' : '') + '" ' + a + '>' + l + (sub ? '<small>' + sub + '</small>' : '') + '</button>';
-function sharingHTML(x,prefix){
- const attr=k=>'data-'+prefix+k, planned=prefix==='p';
- /* 13/10 : QUI voit (quatre niveaux, défaut FIGHER CLUB) puis QUOI (ON = le point exact, OFF = la ville). */
- let html=audPick(x.aud || 'figher', attr('aud'))+'<div class="row"><span class="lab">Location</span>'+(planned ? '<span class="chip is-on">ON<small>the exact point</small></span>' : chip(attr('loc')+'="on"','on',x.loc==='on','the exact point')+chip(attr('loc')+'="off"','off',x.loc==='off','the city only'))+'</div>';
- if(x.loc==='on') html+='<div class="row"><span class="lab">Together</span>'+chip(attr('mode')+'="silent"','silent',x.mode==='silent','Nobody disturb me')+chip(attr('mode')+'="social"','social',x.mode==='social','We can talk')+'</div>';
- if(!planned && x.loc) html+='<div class="row"><span class="lab">WHERE</span><span class="sd-tag">'+esc(x.city || (x.placeError ? 'Allow your location to find your city' : 'Finding your city…'))+'</span>'+(x.placeError ? '<button class="btn" type="button" data-locate="1">TRY AGAIN</button>' : '')+'</div>';
- return html;
-}
-const habitWhy=h=>!!(h?.objectives?.length || h?.repulsions?.length);
-const sharingDone=x=>x.loc==='off' || x.loc==='on' && !!x.mode;
-/* 12/10 — un élément de la box se rallume / s'éteint aussi au clavier, avant la boîte qui l'entoure. */
-document.addEventListener('keydown', e => {
-  if((e.key === 'Enter' || e.key === ' ') && e.target instanceof Element && e.target.matches('[data-box-el]')){ e.preventDefault(); e.stopPropagation(); e.target.click(); }
-}, true);
-function boxOptionsClick(t,x){
- const b=t.closest('[data-box-el]'); if(!b || !x.habit) return false;
- x.boxOptions ||= boxNew(); const hd = x.boxOptions.hide, k = b.dataset.boxEl;
- if(k === 'f'){ hd.freq = !hd.freq; return true; }
- const item = (x.habit[k === 'o' ? 'objectives' : 'repulsions'] || [])[+b.dataset.boxI], txt = String(item?.text || '').trim(); if(!txt) return false;
- const at = hd[k].findIndex(v => v.toLowerCase() === txt.toLowerCase()); if(at >= 0) hd[k].splice(at,1); else hd[k].push(txt);
- return true;
-}
-/* Un space ou un spot NAÎT CACHÉ (serveur) : cet appel, toujours fait, montre ce qui reste allumé. */
-async function publishBoxOptions(id,x){
- const hd = x.boxOptions?.hide || boxNew().hide;
- const r=await sb.rpc('spot_box_set',{p_spot:id,p_hide:{objectives:hd.o,repulsions:hd.r,freq:!!hd.freq}});
- if(r.error) console.error('[spot_box_set]',r.error.message); return !r.error && !!r.data?.ok;
-}
-function durationHTML(x,prefix,id){ return '<div class="row"><span class="lab">DURATION</span>'+DURS.map(d=>chip('data-'+prefix+'dur="'+d+'"',fmtDur(d),x.dur===d)).join('')+'<input class="field" id="'+id+'" type="number" inputmode="numeric" min="'+RULES.duration_min+'" max="'+RULES.duration_max+'" aria-label="Duration in minutes" placeholder="min" value="'+(x.dur && !DURS.includes(x.dur) ? x.dur : '')+'"></div>'; }
-
-/* WHERE? — une ville (saisie, suggestions locales) ET/OU le point exact sur
-   la carte. SHARED·ON exige le point ; PRIVATE et SHARED·OFF se contentent
-   de la ville, sans aucune demande de position. */
-const planExact = () => true;
-function planMissing(){
-  const m = [];
-  if(!PLAN.habit) m.push('a Habit Box');
-  if(!PLAN.mode) m.push('silent or social');
-  const start = new Date(PLAN.date + 'T' + PLAN.time).getTime();
-  if(!Number.isFinite(start) || start <= Date.now() || start > Date.now() + (RULES.horizon_days || 90)*864e5) m.push('a future date and time');
-  if(planExact() && !PLAN.pos) m.push('the exact point on the map'); else if(!PLAN.pos && !PLAN.cityPos) m.push('a city or a point on the map');
-  if(!PLAN.dur) m.push('the duration');
-  return m;
-}
-function planValidity(){
-  const m = planMissing(), send = $('plan-body').querySelector('[data-plan-send]');
-  if(send) send.disabled = !!m.length || PLAN.busy;
-  const n = $('p-note'); if(n && !PLAN.busy){ n.className = 'note'; n.textContent = m.length ? 'missing: ' + m.join(' · ') : ''; }
-}
-let CITIES = null, CITY_KEYS = [], citiesLoading = null;
-const fold = t => String(t || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
-function loadCities(){
-  if(CITIES) return Promise.resolve(CITIES);
-  return citiesLoading ||= fetch('/cities.json').then(r => r.ok ? r.json() : {cities:[]}).then(d => d.cities || []).catch(() => [])
-    .then(l => { CITIES = l; CITY_KEYS = l.map(c => fold(c[0])); return l; });
-}
-async function nearestCity(p){
-  await loadCities(); let best = null, bd = 40e3;
-  for(const k of CITIES){ const d = hav(p, { lat:k[1], lng:k[2] }); if(d < bd){ bd = d; best = k; } }
-  return best;
-}
-const cityNear = async p => (await nearestCity(p))?.[0] || null;
-function citySuggestHTML(){
-  const q = fold(PLAN.cityText); if(!CITIES || !q) return '';
-  const hits = [];
-  CITY_KEYS.forEach((k, i) => { const at = k === q ? 0 : k.startsWith(q) ? 1 : k.includes(' ' + q) ? 2 : -1; if(at >= 0) hits.push([at, CITIES[i][3] || 0, i]); });
-  if(!hits.length) return '<span class="note">No city with this name here — use the map.</span>';
-  // One exact name already chosen: nothing to propose. Homonyms stay listed.
-  if(PLAN.city && fold(PLAN.city) === q && hits.filter(h => h[0] === 0).length < 2) return '';
-  return hits.sort((a, b) => a[0] - b[0] || a[1] - b[1]).slice(0, 6).map(([,, i]) => chip('data-pcity="' + i + '"', esc(CITIES[i][0]), PLAN.cityIdx === i, esc(CITIES[i][4] || ''))).join('');
-}
-function planCity(c){
-  PLAN.city = c ? c[0] : null; PLAN.cityPos = c ? { lat:c[1], lng:c[2] } : null; PLAN.cityIdx = c && CITIES ? CITIES.indexOf(c) : -1;
-  if(c){ PLAN.cityText = c[0]; if(PLAN.pos && hav(PLAN.pos, PLAN.cityPos) > 40e3){ PLAN.pos = null; PLAN.place = ''; } }
-}
-function planVideoDrop(){ if(PLAN.video?.url) URL.revokeObjectURL(PLAN.video.url); PLAN.video = null; PLAN.fileSeq++; }
-function planNote(t){ const n = $('p-note'); if(n){ n.className = 'note no'; n.textContent = t; } }
-function planPaint(){
-  requestAnimationFrame(radarSize);
-  const b = $('plan-body'); b.classList.toggle('is-busy', PLAN.busy);
-  document.body.classList.toggle('is-pick', VIEW === 'plan' && !!me && !PLAN.habit);
-  if(!me){ b.innerHTML = '<p class="say">Plan a spot</p><button class="btn" type="button" data-plan-signin="1">CONNECT WITH MY TOTEHM</button>'; return; }
-  if(!PLAN.habit){
-    b.innerHTML = '<div class="row pick-head"><span class="lab">Which Habit Box?</span><button class="btn" type="button" data-plan-cancel="1">CANCEL</button></div>' + (!HABITS ? '<p class="note">Reading my TOTEHM…</p>' : HABITS.length ?
-      HABITS.map((h,k)=>pickHabitHTML(h,'data-plan-h="'+k+'"')).join('') :
-      '<button class="btn" type="button" data-com="/totehm#in">Write a Habit Box in my TOTEHM</button>'); return;
-  }
-  const ready = sharingDone(PLAN), exact = planExact(), secs = RULES.clip_seconds || 33, v = PLAN.video;
-  let h = '<div class="pick-habit plan-habit" role="button" tabindex="0" data-plan-reh="1" aria-label="Change the Habit Box">' + habitHTML(PLAN.habit,PLAN.boxOptions,'p') + '</div><div class="plan-conf">' + sharingHTML(PLAN,'p');
-  if(ready){
-    h += '<span class="lab">When?</span><div class="row"><input class="field" id="p-date" type="date" aria-label="Date" value="' + PLAN.date + '"><input class="field" id="p-time" type="time" aria-label="Time" value="' + PLAN.time + '"></div>' +
-      '<span class="lab">Where?</span><div class="row"><input class="field" id="p-city" type="text" autocomplete="off" maxlength="80" placeholder="City" aria-label="City" value="' + esc(PLAN.cityText) + '">' +
-      chip('data-plan-place="1"', PLAN.pos ? esc(PLAN.place || 'Exact point') : 'On the map', !!PLAN.pos, PLAN.pos ? 'Change it in the radar' : exact ? 'required' : 'the exact point · optional') +
-      (PLAN.pos ? '<button class="lnk" type="button" data-plan-unpin="1">Remove the point</button>' : '') + '</div><div class="row" id="p-cities">' + citySuggestHTML() + '</div>' +
-      durationHTML(PLAN,'p','p-dur') + '<textarea class="field" id="p-say" maxlength="400" placeholder="A word (optional)">' + esc(PLAN.say) + '</textarea>' +
-      '<span class="lab">Video or photo</span><div class="row">' + chip('data-plan-file="1"', 'From my files', false, 'vertical · video up to ' + secs + ' s') + chip('data-plan-film="video"', 'Film it', false, 'the camera') + chip('data-plan-film="photo"', 'Take a photo', false, 'the camera') + '</div>' +
-      (v ? '<div class="plan-video"><div class="portrait-media">' + (v.photo ? '<img src="' + esc(v.url) + '" alt="">' : '<video src="' + esc(v.url) + '" muted loop playsinline autoplay></video>') + '</div><span class="note">' + (v.photo ? 'photo' : Math.round(v.seconds) + ' s') + ' · ' + (v.size/1e6).toFixed(1) + ' MB' + (v.ref ? ' · sent' : '') + '</span><button class="btn" type="button" data-plan-novideo="1">REMOVE</button></div>' : '');
-  }
-  b.innerHTML = h + '</div>' + (ready ? '<button class="btn" type="button" data-plan-send="1">I WILL BE HERE</button><p class="note" id="p-note"></p>' : '');
-  planValidity();
-}
-async function planOpen(){
-  PLAN.vis='shared'; PLAN.loc='on';
-  if(!PLAN.date){ const d = new Date(Date.now() + 864e5); PLAN.date = d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()); PLAN.time = hhmm(d); }
-  planPaint();
-  loadCities().then(async () => {
-    if(PRE.city && !PLAN.cityText){ const i = CITY_KEYS.indexOf(fold(PRE.city)); if(i >= 0){ planCity(CITIES[i]); const f = $('p-city'); if(f && document.activeElement !== f) f.value = PLAN.cityText; } PRE.city = ''; }
-    // A position already known prefills the city; TOP never asks for one.
-    const c = !PLAN.cityText && POS ? await nearestCity(POS) : null;
-    if(c && !PLAN.cityText){ planCity(c); const i = $('p-city'); if(i && document.activeElement !== i) i.value = c[0]; }
-    if(VIEW === 'plan'){ const l = $('p-cities'); if(l) l.innerHTML = citySuggestHTML(); planValidity(); }
-  });
-  await loadHabits();
-  if(PRE.habit && HABITS?.length && !PLAN.habit){ const k = fold(PRE.habit), h = HABITS.find(x => fold(x.name) === k);
-    if(h){ PLAN.habit = h; PLAN.context = h; PLAN.boxOptions = boxNew(); } PRE.habit = ''; }
-  if(VIEW === 'plan') planPaint();
-}
-$('plan-body').addEventListener('input', e => {
-  if(e.target.id === 'p-date') PLAN.date = e.target.value;
-  if(e.target.id === 'p-time') PLAN.time = e.target.value;
-  if(e.target.id === 'p-say') PLAN.say = e.target.value;
-  if(e.target.id === 'p-city'){
-    PLAN.cityText = e.target.value; const q = fold(PLAN.cityText), i = CITY_KEYS.indexOf(q);
-    planCity(q && i >= 0 ? CITIES[i] : null); PLAN.cityText = e.target.value;
-    $('p-cities').innerHTML = citySuggestHTML();
-  }
-  if(e.target.id === 'p-dur'){ const n = Number(e.target.value); PLAN.dur = Number.isInteger(n) && n >= RULES.duration_min && n <= RULES.duration_max ? n : null; $('plan-body').querySelectorAll('[data-pdur]').forEach(b => b.classList.remove('is-on')); }
-  planValidity();
-});
-$('plan-body').addEventListener('click', e => {
-  if(PLAN.busy) return;
-  if(boxOptionsClick(e.target,PLAN)) return planPaint();
-  const t = e.target;
-  if(t.closest('[data-plan-signin]')) return ssoLogin(false, '/?' + new URLSearchParams({ v:'plan', ...(PRE.habit ? { habit:PRE.habit } : {}), ...(PRE.city ? { city:PRE.city } : {}) }));
-  const h=t.closest('[data-plan-h]'); if(h){ PLAN.habit=HABITS[+h.dataset.planH]; PLAN.context=PLAN.habit; PLAN.boxOptions=boxNew(); return planPaint(); }
-  if(t.closest('[data-plan-cancel]')) return go('radar');
-  if(t.closest('[data-plan-reh]')){ PLAN.seq++; PLAN.habit = null; PLAN.context = null; return planPaint(); }
-  if(t.closest('[data-plan-place]')) return mapOpen();
-  if(t.closest('[data-plan-unpin]')){ PLAN.pos = null; PLAN.place = ''; return planPaint(); }
-  const c = t.closest('[data-pcity]'); if(c){ planCity(CITIES[+c.dataset.pcity]); return planPaint(); }
-  if(t.closest('[data-plan-file]')) return $('p-file').click();
-  const film = t.closest('[data-plan-film]'); if(film){ REC.forPlan = film.dataset.planFilm; return go('cam'); }
-  if(t.closest('[data-plan-novideo]')){ planVideoDrop(); return planPaint(); }
-  const pa = t.closest('[data-paud]'); if(pa){ PLAN.aud = pa.dataset.paud; return audMark($('plan-body'), 'data-paud', PLAN.aud); }
-  for(const [a,k] of [['pmode','mode'],['pdur','dur']]){
-    const b = t.closest('[data-' + a + ']'); if(b){ PLAN[k] = k === 'dur' ? +b.dataset[a] : k === 'why' ? b.dataset[a] === '1' : b.dataset[a];  return planPaint(); }
-  }
-  if(t.closest('[data-plan-send]')) return planSend();
-});
-/* VIDEO — From my files : vertical, ≤ 33 s, ≤ 48 Mo (limites du serveur),
-   vérifiés AVANT l'envoi ; le fichier part tel quel, sans ré-encodage. */
-$('p-file').addEventListener('change', e => { const f = e.target.files?.[0]; e.target.value = ''; if(f) planFile(f); });
-async function planFile(file){
-  const seq = ++PLAN.fileSeq, max = RULES.clip_max_bytes || 48e6, secs = RULES.clip_seconds || 33;
-  if(/^image\//.test(file.type) || /\.(jpe?g|png|webp|heic|heif)$/i.test(file.name)) return planPhoto(file, seq);
-  const ext = (file.name.match(/\.(mp4|mov|webm)$/i)?.[1] || '').toLowerCase();
-  const type = /^video\/(mp4|quicktime|webm)$/.test(file.type) ? file.type : ({mp4:'video/mp4',mov:'video/quicktime',webm:'video/webm'})[ext];
-  const refuse = t => { if(seq === PLAN.fileSeq && VIEW === 'plan'){ planPaint(); planNote(t); } };
-  if(!type) return refuse('mp4, mov or webm only.');
-  if(file.size > max) return refuse('Too heavy — up to ' + Math.floor(max/1e6) + ' MB. Film it here instead.');
-  const url = URL.createObjectURL(file), probe = document.createElement('video'); probe.muted = true; probe.preload = 'metadata';
-  const meta = await new Promise(res => { const timer = setTimeout(() => res(null), 10000);
-    probe.onloadedmetadata = () => { clearTimeout(timer); res({ w:probe.videoWidth, h:probe.videoHeight, d:probe.duration }); };
-    probe.onerror = () => { clearTimeout(timer); res(null); }; probe.src = url; });
-  probe.removeAttribute('src'); probe.load();
-  const fail = t => { URL.revokeObjectURL(url); refuse(t); };
-  if(seq !== PLAN.fileSeq || VIEW !== 'plan' || PLAN.busy){ URL.revokeObjectURL(url); return; }
-  if(!meta || !meta.w || !meta.h || !Number.isFinite(meta.d) || meta.d <= 0) return fail('This video cannot be read here — film it instead.');
-  if(meta.d > secs + .5) return fail('Up to ' + secs + ' seconds — cut it, or film it here.');
-  if(meta.h <= meta.w) return fail('Vertical video only (9:16).');
-  planVideoDrop();
-  PLAN.video = { blob:file.type === type ? file : file.slice(0, file.size, type), seconds:Math.max(.5, Math.min(secs, meta.d)), size:file.size, url, ref:null };
-  planPaint();
-}
-/* Une photo de la galerie : verticale, décodée ici, ré-encodée en JPEG ≤ 1080 px
-   de large (quelques centaines de Ko). Une HEIC que le navigateur ne sait pas
-   lire est refusée avec la caméra comme issue. */
-async function planPhoto(file, seq){
-  const refuse = t => { if(seq === PLAN.fileSeq && VIEW === 'plan'){ planPaint(); planNote(t); } };
-  let blob = null;
-  try{ blob = await photoJPEG(file); }catch(e){ console.error('[plan photo]', e && e.message); }
-  if(seq !== PLAN.fileSeq || VIEW !== 'plan' || PLAN.busy) return;
-  if(!blob) return refuse('This photo cannot be read here — take it with the camera.');
-  if(blob.portrait === false) return refuse('Vertical photo only.');
-  planVideoDrop();
-  PLAN.video = { blob, photo:true, seconds:0, size:blob.size, url:URL.createObjectURL(blob), ref:null };
-  planPaint();
-}
-async function photoJPEG(source){
-  let img, w, h;
-  if(typeof createImageBitmap === 'function'){ try{ img = await createImageBitmap(source); w = img.width; h = img.height; }catch(_){ img = null; } }
-  if(!img){ const u = URL.createObjectURL(source); try{ img = await new Promise((ok, ko) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => ko(new Error('Photo unreadable')); i.src = u; }); w = img.naturalWidth; h = img.naturalHeight; } finally{ URL.revokeObjectURL(u); } }
-  if(!w || !h) return null;
-  if(h <= w){ const r = new Blob([]); r.portrait = false; img.close?.(); return r; }
-  const W = Math.min(1080, w), H = Math.round(h * W / w), c = document.createElement('canvas'); c.width = W; c.height = H;
-  c.getContext('2d').drawImage(img, 0, 0, W, H); img.close?.();
-  return await new Promise(r => c.toBlob(r, 'image/jpeg', .88));
-}
-/* Film it / Take a photo : la caméra SPACE, puis retour au TOP avec le média vérifié. */
-function planTakeClip(){
-  planVideoDrop();
-  const photo = REC.kind === 'photo';
-  PLAN.video = { blob:REC.blob, photo, seconds:photo ? 0 : Math.max(.5, Math.min(RULES.clip_seconds || 33, REC.seconds || 1)), size:REC.blob.size, url:URL.createObjectURL(REC.blob), ref:null };
-  REC.forPlan = false; go('plan');
-}
-/* Ordre d'envoi : la vidéo (privée tant qu'elle n'est liée à rien), puis le
-   space, puis le lien. Un envoi réussi est gardé pour un nouvel essai. */
-async function videoSend(blob, seconds, onProgress){
-  if(/^image\//.test(blob.type)){
-    const path = me.id + '/' + crypto.randomUUID() + '.jpg';
-    const up = await sb.storage.from('moments').upload(path, blob, { contentType:'image/jpeg', upsert:false }); if(up.error) throw up.error;
-    return path;
-  }
-  if(RULES.video_provider === 'bunny') return bunnyUpload(blob, seconds, onProgress);
-  const t = blob.type || '', ext = t.includes('mp4') ? 'mp4' : t.includes('quicktime') ? 'mov' : 'webm', path = me.id + '/' + crypto.randomUUID() + '.' + ext;
-  const up = await sb.storage.from('moments').upload(path, blob, { contentType:t || 'video/' + ext, upsert:false }); if(up.error) throw up.error;
-  return path;
-}
-async function planSend(){
-  if(PLAN.busy || planMissing().length) return;
-  PLAN.vis='shared'; PLAN.loc='on';
-  PLAN.busy = true; planPaint(); const shared = PLAN.vis === 'shared', v = PLAN.video;
-  if(v && !v.ref){
-    planNote('sending the ' + (v.photo ? 'photo' : 'video') + '…');
-    try{ v.ref = await videoSend(v.blob, v.seconds, n => planNote('sending the video… ' + n + '%')); }
-    catch(e){ console.error('[plan media]', e && e.message); PLAN.busy = false; planPaint(); return planNote('The ' + (v.photo ? 'photo' : 'video') + ' was not sent — try again, or remove it.'); }
-  }
-  const at = PLAN.pos || PLAN.cityPos;
-  const { data, error } = await sb.rpc('spot_schedule_audience', { p_habit:PLAN.habit.name, p_audience:PLAN.aud || 'figher',
-    p_starts_at:new Date(PLAN.date + 'T' + PLAN.time).toISOString(), p_duration_min:PLAN.dur,
-    p_place:PLAN.pos ? (PLAN.place || PLAN.city || 'the planned place') : PLAN.city, p_lat:at.lat, p_lng:at.lng,
-    p_city:PLAN.city, p_comment:PLAN.say.trim() || null, p_mode:shared && PLAN.loc === 'on' ? PLAN.mode : null, p_location:shared ? PLAN.loc : null });
-  if(error || !data?.ok){ if(error) console.error('[spot_schedule_audience]', error.message); PLAN.busy = false; planPaint(); return planNote(({when:'Choose a future date within the next 90 days.',habit:'This Habit Box is no longer in my TOTEHM.',too_many:'Enough spots planned for now.',signin:'Sign in again.',place:'Choose a city or a point on the map.',position:'Choose a city or a point on the map.'})[data?.why] || 'Not saved — try again.'); }
-  let linked = true, why = true;
-  if(v?.ref){ const r = await sb.rpc('spot_video_attach', { p_spot:data.id, p_video:v.ref }); if(r.error) console.error('[spot_video_attach]', r.error.message); linked = !r.error && !!r.data?.ok; }
-  why=await publishBoxOptions(data.id,PLAN);
-  PLAN.busy = false;
-  PLAN.habit = null; PLAN.say = ''; PLAN.pos = null; PLAN.place = ''; PLAN.dur = null; PLAN.boxOptions=boxNew(); planVideoDrop();
-  await Promise.all([loadExact(),loadList()]); loadPast(false); go('list');
-  // The new spot appears in the agenda, with its own gestures — no second sheet.
-  const it = $('list').querySelector('.it[data-id="' + CSS.escape(data.id) + '"]');
-  if(it){ it.classList.add('is-new'); it.scrollIntoView({ block:'center' });
-    if(!linked || !why){ const n = document.createElement('p'); n.className = 'note no'; n.textContent = !linked ? 'The media could not be attached to this spot.' : 'These mini-boxes were kept hidden.'; it.querySelector('.it-info').append(n); } }
-}
-/* La carte sert uniquement à choisir MON futur lieu. Les autres Spots
-   restent un radar de coordonnées autorisées, jamais une carte du feed. */
-const MAP = { open:false, lat:0, lng:0, z:16, timer:0, seq:0, drag:null, pointers:new Map(), pinch:null };
-const merc = (p,z) => { const n = 256*2**z, lat = Math.max(-85.0511,Math.min(85.0511,p.lat))*DEG; return {x:(p.lng+180)/360*n,y:(1-Math.log(Math.tan(lat)+1/Math.cos(lat))/Math.PI)/2*n}; };
-const unmerc = (p,z) => { const n = 256*2**z; return {lat:Math.atan(Math.sinh(Math.PI*(1-2*p.y/n)))/DEG,lng:((p.x/n*360)%360+360)%360-180}; };
-function mapCenter(p){ const c = unmerc(p,MAP.z); MAP.lat = Math.max(-85.0511,Math.min(85.0511,c.lat)); MAP.lng = c.lng; mapDraw(); }
-function mapDraw(){
-  if(!MAP.open) return;
-  const el = $('radar-map'), W = el.clientWidth, H = el.clientHeight, c = merc(MAP,MAP.z), tiles = $('map-tiles'), n = 2**MAP.z;
-  const x0 = Math.floor((c.x-W/2)/256), x1 = Math.floor((c.x+W/2)/256), y0 = Math.floor((c.y-H/2)/256), y1 = Math.floor((c.y+H/2)/256);
-  const wanted = new Set();
-  for(let y=Math.max(0,y0);y<=Math.min(n-1,y1);y++) for(let x=x0;x<=x1;x++){
-    const wx = ((x%n)+n)%n, key = MAP.z + '/' + wx + '/' + y, id = key + ':' + x; wanted.add(id);
-    let img = [...tiles.children].find(i => i.dataset.id === id);
-    if(!img){ img = document.createElement('img'); img.alt = ''; img.dataset.id = id; img.src = 'https://tile.openstreetmap.org/' + key + '.png'; img.referrerPolicy = 'strict-origin-when-cross-origin'; tiles.append(img); }
-    img.style.left = x*256 - c.x + W/2 + 'px'; img.style.top = y*256 - c.y + H/2 + 'px';
-  }
-  [...tiles.children].forEach(i => { if(!wanted.has(i.dataset.id)) i.remove(); });
-}
-function mapOpen(){
-  const p = PLAN.pos || PLAN.cityPos || POS || {lat:38.7223,lng:-9.1393}; Object.assign(MAP,{open:true,lat:p.lat,lng:p.lng,z:PLAN.pos || !PLAN.cityPos && POS ? 16 : PLAN.cityPos ? 13 : 12});
-  $('place-name').value = PLAN.place; $('place-picker').classList.remove('hide'); $('radar-map').classList.remove('hide'); document.body.classList.add('is-pin'); pickerClose();compassOff();RAD.headTo=0;paintInts();radarOn();mapDraw();$('place-use').focus();
-}
-function mapClose(){ MAP.open = false; MAP.seq++; MAP.pointers.clear(); MAP.drag = MAP.pinch = null; $('place-picker').classList.add('hide');$('radar-map').classList.add('hide');document.body.classList.remove('is-pin');paintInts();radarOn();$('plan-body').querySelector('[data-plan-place]')?.focus(); }
-$('place-cancel').onclick = mapClose;
-$('place-use').onclick = async () => {
-  const pos = {lat:MAP.lat,lng:MAP.lng}, place = $('place-name').value.trim(), seq = ++MAP.seq;
-  $('place-use').disabled = true;
-  const city = await nearestCity(pos); $('place-use').disabled = false;
-  if(!MAP.open || seq !== MAP.seq) return;
-  PLAN.pos = pos; PLAN.place = place; if(city) planCity(city); mapClose(); planPaint();
-};
-function mapZoom(d){ MAP.z = Math.max(2,Math.min(19,MAP.z+d)); mapDraw(); }
-$('map-tools').addEventListener('click', async e => {
-  const b = e.target.closest('[data-zoom]'); if(b){if(MAP.open) mapZoom(+b.dataset.zoom);else RAD.range=Math.max(100,Math.min(2e7,RAD.range*Math.pow(1.5,-Number(b.dataset.zoom))));return;}
-  if(e.target.closest('[data-here]')){ const seq = ++MAP.seq, p = await geo(); if(p && seq === MAP.seq){POS=p;RAD.headTo=0;if(MAP.open){MAP.lat=p.lat;MAP.lng=p.lng;MAP.z=16;mapDraw();}else RAD.range=radarRange();} }
-});
-$('radar-map').addEventListener('wheel', e => { if(e.target.closest('button,a')) return; e.preventDefault(); if(e.ctrlKey){ if(Math.abs(e.deltaY)>2) mapZoom(e.deltaY<0?1:-1); } else { const c = merc(MAP,MAP.z); mapCenter({x:c.x+e.deltaX,y:c.y+e.deltaY}); } },{passive:false});
-$('radar-map').addEventListener('pointerdown', e => {
-  if(e.target.closest('button,a') || e.button > 0) return; e.preventDefault();
-  MAP.pointers.set(e.pointerId,{x:e.clientX,y:e.clientY}); $('radar-map').setPointerCapture(e.pointerId); $('radar-map').classList.add('is-held');
-  if(MAP.pointers.size === 1) MAP.drag = {x:e.clientX,y:e.clientY,c:merc(MAP,MAP.z)};
-  else { const a = [...MAP.pointers.values()]; MAP.pinch = {d:Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y),z:MAP.z}; MAP.drag = null; }
-});
-$('radar-map').addEventListener('pointermove', e => {
-  if(!MAP.pointers.has(e.pointerId)) return; MAP.pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
-  if(MAP.pinch && MAP.pointers.size >= 2){ const a=[...MAP.pointers.values()],d=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y); MAP.z=Math.max(2,Math.min(19,Math.round(MAP.pinch.z+Math.log2(d/Math.max(1,MAP.pinch.d))))); mapDraw(); }
-  else if(MAP.drag) mapCenter({x:MAP.drag.c.x-(e.clientX-MAP.drag.x),y:MAP.drag.c.y-(e.clientY-MAP.drag.y)});
-});
-for(const event of ['pointerup','pointercancel']) $('radar-map').addEventListener(event,e => { MAP.pointers.delete(e.pointerId); if(MAP.pointers.size < 2) MAP.pinch=null; if(!MAP.pointers.size){ MAP.drag=null; $('radar-map').classList.remove('is-held'); } });
-
-
-/* ══ BOTTOM — LA CAMÉRA, PUIS LE SPOT ════════════════════════════════
-   Aucun formulaire avant la caméra. Décompte (annulable) → REC → arrêt
-   à la main ou à 33 s → l'Habit → PRIVATE/SHARED (le dernier choix est
-   retenu) → SHARED : LOCATION ON/OFF puis SILENT/SOCIAL si ON → la durée →
-   un mot → I AM HERE. */
-import {VIDEO,cameraConstraints,cameraReady,portraitCapture,recordingMime} from '/video-capture.mjs';
-function camState(){ ['is-rec','is-count','is-form'].forEach(c => document.body.classList.remove(c));
-  if(REC.step === 'rec') document.body.classList.add('is-rec');
-  if(REC.step === 'count') document.body.classList.add('is-count');
-  const form=['habit','form','send','retry','heavy'].includes(REC.step);
-  if(form) document.body.classList.add('is-form');
-  for(const id of ['member','heading','joy','v-radar','v-plan','v-past','v-list','v-cam']) $(id).inert=form;
-  $('cam-body').setAttribute('role',form?'dialog':'region');if(form)$('cam-body').setAttribute('aria-modal','true');else $('cam-body').removeAttribute('aria-modal');
-  joyPaint(); }
-function camStop(){
-  REC.capture?.stop();REC.capture=null;
-  REC.stream?.getTracks().forEach(t => t.stop()); REC.stream = null;
-  try{ if(REC.mr && REC.mr.state !== 'inactive') REC.mr.stop(); }catch(_){}
-  clearInterval(REC.timer);
-}
-function camReset(){
-  REC.seq++; if(REC.mr){ REC.mr.onstop = null; REC.mr.ondataavailable = null; REC.mr.onstart=null;REC.mr.onerror=null; }
-  camStop(); if(REC.url) URL.revokeObjectURL(REC.url);
-  Object.assign(REC, { step:null, kind:null, why:false, boxOptions:boxNew(), pos:null,city:null,placeAt:0,placePromise:null,placeError:false, mr:null, blob:null, url:null, habit:null, mode:null, loc:null, dur:null, busy:false,seconds:0,uploaded:null,width:0,height:0,fps:0,bitrate:0,path:null });
-  const v = $('cam-v'); v.pause(); v.removeAttribute('src'); v.srcObject = null;
-  const ph = $('cam-photo'); ph.classList.add('hide'); ph.removeAttribute('src');
-  $('cam-n').textContent = ''; $('cam-sec').classList.add('hide'); camState();
-}
-/* Le capteur ne s'allume QU'APRÈS un appui : VIDEO, PHOTO (ou le point rouge,
-   qui vaut VIDEO). Arriver dans la vue n'ouvre jamais la caméra. */
-async function camOpen(kind){
-  camReset(); REC.vis='shared'; REC.aud='figher'; const seq = REC.seq;
-  if(!me){ REC.step = 'signin'; return camPaint(); }
-  if(!kind){ REC.step = 'idle'; return camPaint(); }
-  REC.kind = kind;
-  if(!navigator.mediaDevices?.getUserMedia || kind === 'video' && typeof MediaRecorder === 'undefined'){ REC.step = 'nocam'; return camPaint(); }
-  REC.step = 'perm'; camPaint();
-  const constraints = cameraConstraints(); if(kind === 'photo') constraints.audio = false;
-  let stream;
-  try{ stream = await navigator.mediaDevices.getUserMedia(constraints); }
-  catch(e){ if(seq !== REC.seq || VIEW !== 'cam') return; console.error('[cam]', e && e.name); REC.step = 'denied'; return camPaint(); }
-  if(seq !== REC.seq || VIEW !== 'cam'){ stream.getTracks().forEach(t => t.stop()); return; }
-  REC.stream = stream;
-  const v = $('cam-v'); v.srcObject = REC.stream; v.muted = true;
-  try{await v.play();await cameraReady(v);if(seq!==REC.seq || VIEW!=='cam') return;
-    if(kind === 'video'){const capture=await portraitCapture(v,stream);if(seq!==REC.seq || VIEW!=='cam'){capture.stop();return;}REC.capture=capture;REC.mime=await recordingMime(capture);if(!REC.mime)throw new Error('Video recording unsupported');if(seq!==REC.seq || VIEW!=='cam')return;Object.assign(REC,{width:capture.width,height:capture.height,fps:capture.fps,path:capture.path});}}
-  catch(e){if(seq!==REC.seq || VIEW!=='cam') return;console.error('[portrait capture]',e.message);camStop();REC.step='nocam';return camPaint();}
-  REC.step = 'ready'; camPaint();
-}
-/* La photo : l'image de la caméra recadrée au centre en 9:16, ≤ 1080 × 1920, JPEG. */
-async function camShot(){
-  const v = $('cam-v'), w = v.videoWidth, h = v.videoHeight, seq = REC.seq; if(REC.step !== 'ready' || !w || !h) return;
-  const cw = Math.min(w, h*9/16), ch = cw*16/9, W = Math.max(2, Math.round(Math.min(1080, cw)/2)*2), H = Math.round(W*16/9/2)*2;
-  const c = document.createElement('canvas'); c.width = W; c.height = H; c.getContext('2d').drawImage(v, (w-cw)/2, (h-ch)/2, cw, ch, 0, 0, W, H);
-  REC.step = 'shot'; joyPaint(); const blob = await new Promise(r => c.toBlob(r, 'image/jpeg', .88));
-  if(seq !== REC.seq || VIEW !== 'cam') return;
-  camStop(); v.srcObject = null;
-  if(!blob?.size){ REC.step = 'retry'; return camPaint(); }
-  REC.blob = blob; REC.seconds = 0; REC.width = W; REC.height = H; REC.url = URL.createObjectURL(blob);
-  const ph = $('cam-photo'); ph.src = REC.url; ph.classList.remove('hide');
-  if(REC.forPlan) return planTakeClip();
-  REC.step = 'habit'; camPaint(); loadHabits().then(() => { if(seq === REC.seq && REC.step === 'habit') camPaint(); });
-}
-function camRec(){
-  if(!REC.stream || !REC.capture || REC.step !== 'ready') return;
-  clearInterval(REC.timer); $('cam-n').textContent = '';
-  const chunks = [], seq = REC.seq;
-  try{ REC.mr = new MediaRecorder(REC.capture.stream, { mimeType: REC.mime, videoBitsPerSecond: VIDEO.bitrate, audioBitsPerSecond: VIDEO.audioBitrate }); }
-  catch(e){ console.error('[cam]', e && e.message); REC.step = 'nocam'; return camPaint(); }
-  REC.bitrate=REC.mr.videoBitsPerSecond;REC.mime=REC.mr.mimeType || REC.mime;let bytes=0,failed=false;
-  REC.mr.onstart=()=>{if(seq===REC.seq && VIEW==='cam' && REC.mr.state==='recording') REC.t0=Date.now();};
-  REC.mr.onerror=e=>{failed=true;console.error('[cam recording]',e.error?.name || 'failed');};
-  REC.mr.ondataavailable = e => {if(e.data?.size){chunks.push(e.data);bytes+=e.data.size;if(bytes>(RULES.clip_max_bytes || VIDEO.maxBytes)*.96 && REC.mr.state==='recording') REC.mr.stop();}};
-  REC.mr.onstop = async () => {
-    if(seq !== REC.seq || VIEW !== 'cam') return;
-    const type = REC.mime.split(';')[0] || 'video/webm';
-    REC.seconds=REC.t0?Math.min(33,(Date.now()-REC.t0)/1000):0;REC.blob = new Blob(chunks, { type }); camStop(); $('cam-sec').classList.add('hide');
-    if(VIEW !== 'cam') return;
-    if(failed || !REC.blob.size){REC.blob=null;REC.step='retry';return camPaint();}
-    if(REC.blob.size > (RULES.clip_max_bytes || VIDEO.maxBytes)){ REC.blob = null; REC.step = 'heavy'; return camPaint(); }
-    const v = $('cam-v'); v.srcObject = null; REC.url = URL.createObjectURL(REC.blob); v.src = REC.url; v.loop = true; v.muted = true;
-    try{await v.play();await cameraReady(v);if(seq!==REC.seq || VIEW!=='cam') return;if(Math.abs(v.videoWidth*16-v.videoHeight*9)>2) throw new Error('Portrait video required');}
-    catch(e){if(seq!==REC.seq || VIEW!=='cam') return;console.error('[recorded video]',e.message);REC.blob=null;REC.step='retry';return camPaint();}
-    if(REC.forPlan) return planTakeClip();
-    REC.step = 'habit'; camPaint(); loadHabits().then(() => { if(seq === REC.seq && REC.step === 'habit') camPaint(); });
-  };
-  // Encoder startup must not consume the clip duration or stop an empty recording.
-  REC.t0=0;REC.mr.start(250); REC.step = 'rec'; camPaint();
-  const max = (RULES.clip_seconds || 33)*1000;
-  $('cam-sec').classList.remove('hide');
-  $('cam-s').textContent='0 / '+(max/1000)+' s';
-  const tick = () => { if(!REC.t0) return; const el = Date.now() - REC.t0; $('cam-s').textContent = Math.min(33, Math.floor(el/1000)) + ' / ' + (max/1000) + ' s';
-    if(el >= max){ clearInterval(REC.timer); try{ REC.mr?.stop(); }catch(_){} } };
-  tick(); REC.timer = setInterval(tick, 200);
-}
-const habitHTML=(h,options,prefix)=>'<div class="habit">'+tickHTML(h.ints)+'<span class="h-body"><span class="v-col">'+habitInner(h,options,prefix)+'</span></span>'+'</div>';
-const pickHabitHTML=(h,attr,on)=>'<div class="pick-habit'+(on ? ' is-on' : '')+'" role="button" tabindex="0" '+attr+'>'+habitHTML(h)+'</div>';
-document.addEventListener('keydown',e=>{const b=e.target.closest('.pick-habit[role="button"]');if(b && e.target===b && ['Enter',' '].includes(e.key)){e.preventDefault();b.click();}});
-const DURS = [15, 30, 45, 60, 90, 120, 180];
-function missing(){
-  const m = [];
-  if(!REC.habit) m.push('a habit');
-  if(REC.vis === 'shared'){ if(!REC.loc) m.push('location on or off'); if(REC.loc === 'on' && !REC.mode) m.push('silent or social'); }
-  if(REC.loc==='off' && !REC.city) m.push('your current city');
-  if(!REC.dur) m.push('the duration');
-  return m;
-}
-function camPaint(){
-  camState();
-  const b = $('cam-body'), st = REC.step, photo = REC.kind === 'photo', cancel = '<button class="btn" type="button" data-cancel="1">CANCEL</button>';
-  const forPlan = REC.forPlan ? '<p class="note">for my future spot</p>' : '';
-  let h = '';
-  if(st === 'signin') h = '<p class="say">Put your TOTEHM into action. At home or anywhere else.</p><div class="cam-actions"><button class="btn" type="button" data-signin="1">CONNECT WITH MY TOTEHM</button></div>';
-  else if(st === 'idle') h = '<p class="say">I am here — start a spot from my TOTEHM</p><div class="cam-actions"><button class="btn" type="button" data-start="video">VIDEO<small>up to ' + (RULES.clip_seconds || 33) + ' s</small></button><button class="btn" type="button" data-start="photo">PHOTO<small>one image</small></button>' + cancel + '</div>';
-  else if(st === 'perm') h = '<p class="say">Allow the camera</p><div class="cam-actions">' + cancel + '</div>';
-  else if(st === 'denied') h = '<p class="say">The camera is closed for this site. Allow it in the browser, then come back.</p><div class="cam-actions">' + cancel + '</div>';
-  else if(st === 'nocam') h = '<p class="say">This browser cannot ' + (photo ? 'take the photo' : 'film') + '. Try Safari or Chrome on the phone.</p><div class="cam-actions">' + cancel + '</div>';
-  else if(st === 'retry') h = '<p class="say">The ' + (photo ? 'photo' : 'recording') + ' did not arrive. Take it again.</p>';
-  else if(st === 'heavy') h = '<p class="say">Too heavy — film it again.</p>';
-  else if(st === 'ready' || st === 'shot') h = '<p class="say">' + (photo ? 'Tap the red point to take the photo' : 'Tap the red point to film · up to ' + (RULES.clip_seconds || 33) + ' s') + '</p>' + forPlan + '<div class="cam-actions">' + cancel + '</div>';
-  else if(st === 'rec') h = '<p class="say">Tap the red point to stop</p>';
-  else if(st === 'habit'){
-    h = '<div class="row pick-head"><span class="lab">Which Habit Box?</span></div>' + (!HABITS ? '<p class="note">reading my TOTEHM…</p>' : HABITS.length
-      ? HABITS.map((x,k)=>pickHabitHTML(x,'data-h="'+k+'"')).join('')
-      : '<p class="say">No habit in my TOTEHM yet.</p><button class="btn" type="button" data-com="/totehm#in">Write one in my TOTEHM</button>') ;
-  }
-  else if(st === 'form' || st === 'send'){
-    const m = missing();
-    const ready=sharingDone(REC);
-    h='<div class="it" data-reh="1">'+habitHTML(REC.habit,REC.boxOptions,'')+'</div>'+sharingHTML(REC,'')+(ready ? durationHTML(REC,'','c-dur')+'<textarea id="c-say" maxlength="400" placeholder="A word (optional)">'+esc(REC.say || '')+'</textarea><button class="btn" type="button" data-send="1"'+(m.length || st==='send' ? ' disabled' : '')+'>I AM HERE</button><p class="note" id="c-note">'+(m.length ? 'missing: '+m.join(' · ') : '')+'</p>' : '');
-  }
-  if(['habit','form','retry','heavy'].includes(st)) h+='<div class="cam-actions"><button class="btn" type="button" data-again="1">' + (photo ? 'TAKE AGAIN' : 'RECORD AGAIN') + '</button>' + cancel + '</div>';
-  b.innerHTML = h;
-  if(document.body.classList.contains('is-form') && !b.contains(document.activeElement)) b.focus({preventScroll:true});
-}
-$('cam-body').addEventListener('input', e => {
-  if(e.target.id === 'c-say') REC.say = e.target.value;
-  if(e.target.id === 'c-dur'){ const n = parseInt(e.target.value, 10);
-    REC.dur = n >= RULES.duration_min && n <= RULES.duration_max ? n : null;
-    const m = missing(), s = $('cam-body').querySelector('[data-send]'); if(s) s.disabled = !!m.length;
-    $('c-note').textContent = m.length ? 'missing: ' + m.join(' · ') : '';
-    $('cam-body').querySelectorAll('[data-dur]').forEach(c => c.classList.remove('is-on')); }
-});
-$('cam-body').addEventListener('click', e => {
-  const t = e.target instanceof Element ? e.target : null; if(!t || REC.busy) return;
-  if(boxOptionsClick(t,REC)) return camPaint();
-  if(t.closest('[data-locate]')) return recResolvePlace(true);
-  if(t.closest('[data-signin]')) return ssoLogin(false, '/?v=cam');
-  if(t.closest('[data-cancel]')){ const back = REC.forPlan ? 'plan' : 'radar'; camReset(); return go(back); }
-  const start = t.closest('[data-start]'); if(start) return camOpen(start.dataset.start);
-  if(t.closest('[data-again]')) return camOpen(REC.kind || 'video');
-  const hk = t.closest('[data-h]'); if(hk){ REC.habit = HABITS[+hk.dataset.h]; REC.boxOptions=boxNew(); REC.step = 'form'; return camPaint(); }
-  if(t.closest('[data-reh]')){ REC.step = 'habit'; return camPaint(); }
-  const au = t.closest('[data-aud]'); if(au){ REC.aud = au.dataset.aud; return audMark($('cam-body'), 'data-aud', REC.aud); }
-  const mo = t.closest('[data-mode]'); if(mo){ REC.mode = mo.dataset.mode; return camPaint(); }
-  const lo = t.closest('[data-loc]'); if(lo){ REC.loc = lo.dataset.loc; REC.mode=null; camPaint(); recResolvePlace(); return; }
-  const du = t.closest('[data-dur]'); if(du){ REC.dur = +du.dataset.dur; return camPaint(); }
-  if(t.closest('[data-send]')) return camSend();
-});
-const geo = () => new Promise(res => { if(!navigator.geolocation) return res(null);
-  navigator.geolocation.getCurrentPosition(p => res({ lat:p.coords.latitude, lng:p.coords.longitude }), () => res(null), { enableHighAccuracy:true, timeout:9000, maximumAge:60000 }); });
-const note = (t, no) => { const n = $('c-note'); if(n){ n.textContent = t || ''; n.className = 'note' + (no ? ' no' : ''); } };
-async function recResolvePlace(force=false){
- if(REC.placePromise) return REC.placePromise;
- if(!force && REC.pos && REC.city && Date.now()-REC.placeAt<60000) return {pos:REC.pos,city:REC.city};
- const seq=REC.seq; REC.placeError=false;
- const promise=geo().then(async pos=>({pos,city:pos ? await cityNear(pos) : null})).then(r=>{
-  if(seq===REC.seq){REC.pos=r.pos;REC.city=r.city;REC.placeAt=Date.now();REC.placeError=!r.pos || !r.city;if(['form','send'].includes(REC.step))camPaint();}
-  return r;
- }).finally(()=>{if(seq===REC.seq && REC.placePromise===promise)REC.placePromise=null;});
- REC.placePromise=promise; return promise;
-}
-async function camSend(){
-  if(REC.busy || missing().length || !REC.blob || !me) return;
-  REC.vis='shared';
-  const started=performance.now();REC.busy = true; REC.step = 'send'; camPaint();$('cam-v').pause();note('sending…');
-  // Position/city and binary transfer are independent; publication waits for both.
-  const place=recResolvePlace();
-  let path=REC.uploaded;
-  try{
-   if(!path){path=await videoSend(REC.blob,REC.seconds,p=>note('sending… '+p+'%'));REC.uploaded=path;}
-  }catch(e){console.error('[upload]',e.message);REC.busy=false;REC.step='form';camPaint();return note('Not sent — try again.',true);}
-  VIDEO_METRICS.uploadMs=Math.round(performance.now()-started);
-  const {pos,city}=await place;
-  if(!pos || REC.loc==='off' && !city){REC.busy=false;REC.step='form';camPaint();return note('Allow your location to find your current city.',true);}
-  POS=pos;
-  const shared = REC.vis === 'shared';
-  const { data, error } = await sb.rpc('spot_create_audience', { p_habit: REC.habit.name, p_audience: REC.aud || 'figher', p_duration_min: REC.dur, p_video: path,
-    p_lat: pos.lat, p_lng: pos.lng, p_city: city, p_comment: (REC.say || '').trim() || null,
-    p_mode: shared && REC.loc === 'on' ? REC.mode : null, p_location: shared ? REC.loc : null });
-  if(error) console.error('[spot_create_audience]', error.message);
-  if(error || !data?.ok){
-    // Keep the completed upload for a retry; ownership remains server-enforced.
-    REC.busy = false; REC.step = 'form'; camPaint();
-    return note(({ habit:'that habit is no longer in my TOTEHM', too_many:'enough spots for today', video:'the media did not arrive — take it again',
-      position:'allow my position', duration:'the duration', signin:'sign in again' })[data?.why] || 'not published', true);
-  }
-  const boxesSaved=await publishBoxOptions(data.id,REC);
-  VIDEO_METRICS.publishMs=Math.round(performance.now()-started);REC.say = ''; camReset(); await Promise.all([loadExact(),loadList()]); loadPast(false);
-  go('radar'); const s = EX.list.find(s => s.id === data.id); if(s) openDetail(s); else { const r = await sb.rpc('spot_get',{p_id:data.id}); if(r.error) console.error('[spot_get]',r.error.message); if(r.data?.ok) openDetail(r.data.spot); }
-  if(!boxesSaved && DETAIL) $('detail').insertAdjacentHTML('beforeend','<p class="note">These mini-boxes were kept hidden.</p>');
-}
-
-/* ══ LES CINQ VUES — joystick, trackpad, souris et écran tactile ═════ */
-const CROIX = { radar:{h:'plan',b:'cam',g:'past',d:'list'}, plan:{b:'radar',g:'past',d:'list'}, cam:{h:'radar',g:'past',d:'list'}, past:{d:'radar'}, list:{g:'radar'} };
-const voisin = d => VIEW === 'cam' && REC.forPlan && d === 'h' ? 'plan' : CROIX[VIEW][d] || null;
-const recordingLocked = () => VIEW === 'cam' && ['perm','count','rec','shot','habit','form','send','retry','heavy'].includes(REC.step);
-function joyPaint(preview){
-  const bx = $('joy-box'), camera = VIEW === 'cam';
-  bx.style.setProperty('--joy-vue', ({plan:'var(--blue)',radar:'var(--navy)',cam:'var(--navy)',past:'var(--rep)',list:'var(--blue)'})[voisin(preview) || VIEW]);
-  bx.classList.toggle('is-side',['past','list'].includes(VIEW));
-  bx.classList.toggle('is-camera',camera); bx.classList.toggle('is-recording',camera && REC.step === 'rec');
-  const muted=!!DETAIL || camera && ['habit','form','send','retry','heavy'].includes(REC.step);
-  $('joy').classList.toggle('is-muted',muted);bx.disabled=muted || camera && ['perm','signin','nocam','denied','shot'].includes(REC.step);
-  const photo = REC.kind === 'photo';
-  bx.setAttribute('aria-label',camera ? (REC.step === 'rec' ? 'Stop recording' : ['habit','form','heavy','retry'].includes(REC.step) ? (photo ? 'Take the photo again' : 'Record again') : REC.step === 'ready' && photo ? 'Take the photo' : 'Record video') : 'Back to radar');
-  for(const [cls,v] of [['o','plan'],['h','radar'],['r','cam']]) $('joy-stack').querySelector('.'+cls).classList.toggle('is-current',VIEW === v);
-  for(const d of ['g','d','h','b']){ $('cur-'+d).classList.toggle('is-dead',!voisin(d) || recordingLocked() || !!DETAIL); $('cur-'+d).classList.toggle('is-preview',preview === d && !!voisin(d)); }
-  $('joy-say').textContent = camera ? (REC.step === 'rec' ? 'STOP' : REC.step === 'idle' ? 'VIDEO' : REC.step === 'ready' ? (photo ? 'PHOTO' : 'REC') : ['habit','form','heavy','retry'].includes(REC.step) ? 'AGAIN' : '') : preview && voisin(preview) ? ({plan:'Plan a spot',past:'I was there',radar:'Radar',list:'Next spots',cam:'I am here'})[voisin(preview)] : '';
-}
-function go(v){
-  if(v === VIEW || !CROIX[v] || REC.busy || PLAN.busy) return;
-  const was = VIEW; VIEW = v; closeDetail(); pickerClose();
-  document.body.className = document.body.className.replace(/\bv-\w+/g,'').trim() + ' v-' + v;
-  document.querySelectorAll('.view').forEach(s => s.classList.toggle('is-on',s.id === 'v-'+v));
-  if(was === 'cam'){ camReset(); REC.forPlan = false; }
-  if(was === 'list') $('list').querySelectorAll('.it-media').forEach(m => { m.querySelectorAll('video').forEach(releaseClip); m.replaceChildren(); });
-  if(was === 'plan') document.body.classList.remove('is-pick');
-  
-  if(v === 'plan') planOpen();
-  if(v === 'cam') camOpen(REC.forPlan || null);
-  camState(); joyPaint(); paintInts(); radarOn(); PAPER.sync();
-  RAD.morph = performance.now() + 700; clearTimeout(RAD.morphT);
-  RAD.morphT = setTimeout(() => dispatchEvent(new Event('resize')), 720);
-}
-document.addEventListener('visibilitychange',()=>{
- if(document.hidden){cancelAnimationFrame(RAD.raf);RAD.raf=0;SIGNED.clear();document.querySelectorAll('#detail video,#list video').forEach(releaseClip);}
- else {radarOn();if(VIEW==='list')$('list').querySelectorAll('video').forEach(playClip);const v=$('detail').querySelector('video');if(DETAIL && v)playClip(v);}
-});
-function step(d){ if(MAP.open || recordingLocked() || PLAN.busy || DETAIL) return; const v = voisin(d); if(v){ gestureCount++; go(v); } }
-function joyTap(){
-  if(VIEW !== 'cam'){ if(VIEW !== 'radar') go('radar'); return; }
-  if(REC.step === 'rec'){ clearInterval(REC.timer); if(REC.mr?.state === 'recording') REC.mr.stop(); }
-  else if(REC.step === 'ready'){ if(REC.kind === 'photo') camShot(); else camRec(); }
-  else if(REC.step === 'idle') camOpen('video');
-  else if(['habit','form','heavy','retry'].includes(REC.step)) camOpen(REC.kind || 'video');
-}
-addEventListener('keydown',e => {
-  if(e.key==='Tab' && VIEW==='cam' && document.body.classList.contains('is-form')){const f=[...$('cam-body').querySelectorAll('button:not(:disabled),input,textarea,a[href]')].filter(x=>x.getClientRects().length);if(f.length){const i=f.indexOf(document.activeElement);if(e.shiftKey && i<=0 || !e.shiftKey && (i<0 || i===f.length-1)){e.preventDefault();(e.shiftKey?f.at(-1):f[0]).focus();}}return;}
-  if(e.key === 'Escape'){
-    if(MAP.open) mapClose(); else if(!$('habit-picker').classList.contains('hide')) pickerClose(); else if(DETAIL) closeDetail();
-    else if(REC.step === 'rec') joyTap(); else if(VIEW !== 'radar' && !REC.busy && !PLAN.busy) go('radar');
-    return;
-  }
-  if(e.target.closest?.('input,textarea,select,[contenteditable]') || MAP.open) return;
-  const d = {ArrowLeft:'g',ArrowRight:'d',ArrowUp:'h',ArrowDown:'b'}[e.key];
-  if(d){ e.preventDefault(); step(d); }
-});
-/* Le contenu défile d'abord. Aux bords, le même geste reprend la croix.
-   Les petits deltas du trackpad s'additionnent ; son inertie ne saute pas
-   une deuxième vue. Les champs, les dialogues et la prise vidéo gardent
-   leurs gestes. Le radar conserve le pincement / ctrl-wheel de zoom. */
-(function gestures(){
-  const pointers = new Map(); let drag = null, pinch = null, pinching = false;
-  const excluded = t => !!t.closest?.('.eco-sheet,#cam-body,#v-plan,#joy,button,input,textarea,select,a,#detail,#habit-picker,#totehm-paper,#place-picker,[contenteditable],#radar-map,#radar-tools');
-  const horizontal = dx => {if(['past','list'].includes(VIEW)){gestureCount++;go('radar');}else step(dx>0?'g':'d');};
-  const scroller = t => t.closest?.('#past,#list,#v-plan,#cam-body');
-  const canScroll = (el,delta) => !!el && el.scrollHeight > el.clientHeight + 3 && (delta > 0 ? el.scrollTop < el.scrollHeight - el.clientHeight - 3 : el.scrollTop > 3);
-  addEventListener('pointerdown',e => {
-    if(RAD.turn || e.button > 0 || (e.pointerType === 'touch' && e.target.id !== 'canvas') || excluded(e.target) || recordingLocked() || PLAN.busy || DETAIL) return;
-    pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
-    if(pointers.size === 1){ pinching = false; drag = {id:e.pointerId,x:e.clientX,y:e.clientY,t:Date.now(),el:scroller(e.target),canvas:e.target.id === 'canvas',view:VIEW}; }
-    else {
-      if(drag?.canvas){ const a=[...pointers.values()]; pinch = {d:Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y),range:RAD.range}; pinching = true; suppressClickUntil=Date.now()+500; }
-      drag = null;
-    }
-    if(e.target.id === 'canvas') try{ e.target.setPointerCapture(e.pointerId); }catch(_){}
-  },true);
-  addEventListener('pointermove',e => {
-    if(!pointers.has(e.pointerId)) return; pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
-    if(pinch && pointers.size >= 2){
-      const a=[...pointers.values()], d=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);
-      RAD.range=Math.max(100,Math.min(2e7,pinch.range*pinch.d/Math.max(1,d))); suppressClickUntil=Date.now()+500; e.preventDefault();
-    }
-  },{capture:true,passive:false});
-  addEventListener('pointerup',e => {
-    pointers.delete(e.pointerId); const d=drag;
-    if(pointers.size < 2) pinch=null;
-    if(!pointers.size) drag=null;
-    if(RAD.turn || e.pointerType === 'touch' || pinching || !d || e.pointerId !== d.id || d.view !== VIEW || Date.now()-d.t > 1600) return;
-    const dx=e.clientX-d.x,dy=e.clientY-d.y;
-    if(Math.abs(dx)>55 && Math.abs(dx)>Math.abs(dy)*1.35){ suppressClickUntil=Date.now()+400; horizontal(dx); }
-    else if(Math.abs(dy)>65 && Math.abs(dy)>Math.abs(dx)*1.35 && !canScroll(d.el,-dy)){
-      suppressClickUntil=Date.now()+400; step(dy>0?'h':'b');
-    }
-  },true);
-  addEventListener('pointercancel',e => { pointers.delete(e.pointerId); drag=null; pinch=null; if(!pointers.size) pinching=false; },true);
-  let touch=null;
-  const touchExcluded=t=>!!t.closest?.('.eco-sheet,#cam-body,#v-plan,#joy,input,textarea,select,#detail,#habit-picker,#totehm-paper,#place-picker,#radar-tools,#radar-map,[contenteditable]');
-  addEventListener('touchstart',e=>{
-    if(e.touches.length!==1 || touchExcluded(e.target) || recordingLocked() || PLAN.busy || MAP.open || RAD.turn || DETAIL){ touch=null;return; }
-    const p=e.touches[0];touch={x:p.clientX,y:p.clientY,t:Date.now(),el:scroller(e.target),view:VIEW};
-  },{passive:true,capture:true});
-  addEventListener('touchmove',e=>{
-    if(!touch || e.touches.length!==1) return;
-    const p=e.touches[0],dx=p.clientX-touch.x,dy=p.clientY-touch.y;
-    if(Math.abs(dx)>12 && Math.abs(dx)>Math.abs(dy)*1.25) e.preventDefault();
-  },{passive:false,capture:true});
-  addEventListener('touchend',e=>{
-    const d=touch;touch=null;if(!d || d.view!==VIEW || Date.now()-d.t>1800 || !e.changedTouches.length || pinching) return;
-    const p=e.changedTouches[0],dx=p.clientX-d.x,dy=p.clientY-d.y;
-    if(Math.abs(dx)>55 && Math.abs(dx)>Math.abs(dy)*1.3){ suppressClickUntil=Date.now()+500;horizontal(dx); }
-    else if(Math.abs(dy)>70 && Math.abs(dy)>Math.abs(dx)*1.35 && !canScroll(d.el,-dy)){suppressClickUntil=Date.now()+500;step(dy>0?'h':'b');}
-  },{passive:true,capture:true});
-  addEventListener('touchcancel',()=>{touch=null;},{passive:true});
-  let axis='',dir='',sum=0,last=0,lockedUntil=0;
-  addEventListener('wheel',e => {
-    if(MAP.open || RAD.turn || excluded(e.target) || recordingLocked() || PLAN.busy || DETAIL) return;
-    if(e.ctrlKey && e.target.id === 'canvas'){
-      e.preventDefault(); RAD.range=Math.max(100,Math.min(2e7,RAD.range*Math.exp(e.deltaY*.005))); return;
-    }
-    const factor=e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? innerHeight : 1;
-    const x=e.deltaX*factor,y=e.deltaY*factor, ax=Math.abs(x)>Math.abs(y)*1.25?'x':Math.abs(y)>Math.abs(x)*1.25?'y':null;
-    if(!ax) return;
-    const delta=ax === 'x'?x:y, direction=ax === 'x'?(VIEW==='list'?'g':VIEW==='past'?'d':delta>0?'d':'g'):(delta>0?'b':'h');
-    if(!voisin(direction)) return;
-    if(ax === 'y' && canScroll(scroller(e.target),delta)){sum=0;last=0;return;}
-    const now=Date.now();
-    if(now < lockedUntil){ e.preventDefault(); lockedUntil=now+260; return; }
-    e.preventDefault();
-    if(now-last>180 || ax !== axis || direction !== dir) sum=0;
-    axis=ax;dir=direction;last=now;sum+=Math.min(160,Math.abs(delta));
-    if(sum >= (ax === 'x'?75:70)){ sum=0;lockedUntil=now+350;step(direction); }
-  },{passive:false});
-})();
-/* Le manche est celui de COM : rayon 15px, seuil 9px, sans clic fantôme. */
-(function manette(){
-  const bx=$('joy-box'),st=$('joy-stack'),R=15,threshold=9;
-  let id=null,x0=0,y0=0,dx=0,dy=0,moved=0;
-  const pose=(a,b) => { st.style.setProperty('--mx',a.toFixed(1)+'px');st.style.setProperty('--my',b.toFixed(1)+'px'); };
-  bx.addEventListener('pointerdown',e => {
-    if(e.button>0 || bx.disabled || id!==null) return;
-    id=e.pointerId;x0=e.clientX;y0=e.clientY;dx=dy=moved=0;bx.classList.add('is-held');try{bx.setPointerCapture(id);}catch(_){} e.preventDefault();
-  });
-  bx.addEventListener('pointermove',e => {
-    if(id!==e.pointerId) return;
-    const a=e.clientX-x0,b=e.clientY-y0,d=Math.hypot(a,b),k=d>R?R/d:1;dx=a*k;dy=b*k;moved=Math.max(moved,d);pose(dx,dy);
-    joyPaint(Math.max(Math.abs(dx),Math.abs(dy))>=threshold?(Math.abs(dx)>Math.abs(dy)?(dx<0?'g':'d'):(dy<0?'h':'b')):null);
-  });
-  function finish(e,cancel){
-    if(id===null || e.pointerId!==id) return;id=null;bx.classList.remove('is-held');pose(0,0);joyPaint();
-    if(cancel) return;
-    if(moved<4) joyTap(); else if(Math.max(Math.abs(dx),Math.abs(dy))>=threshold) step(Math.abs(dx)>Math.abs(dy)?(dx<0?'g':'d'):(dy<0?'h':'b'));
-  }
-  bx.addEventListener('pointerup',e => finish(e,false));bx.addEventListener('pointercancel',e => finish(e,true));
-  bx.addEventListener('click',e => {if(e.detail===0) joyTap();});
-  for(const [c,d] of [['cur-g','g'],['cur-d','d'],['cur-h','h'],['cur-b','b']]) $(c).onclick=()=>step(d);
-  bx.addEventListener('wheel',e => { e.preventDefault();e.stopPropagation(); if(Math.max(Math.abs(e.deltaX),Math.abs(e.deltaY))<4) return;step(Math.abs(e.deltaX)>Math.abs(e.deltaY)?(e.deltaX>0?'d':'g'):(e.deltaY>0?'b':'h')); },{passive:false});
-})();
-
-
-/* DELETE → DELETE FOR GOOD → supprimé, partout, tout de suite (depuis la fiche d'un de mes spots). */
-async function spaceDelete(btn, id){
-  if(!btn.classList.contains('is-arm')){
-    document.querySelectorAll('[data-del].is-arm').forEach(x => { x.classList.remove('is-arm'); x.textContent = 'DELETE'; });
-    btn.classList.add('is-arm'); btn.textContent = 'DELETE FOR GOOD'; return 'armed';
-  }
-  btn.disabled = true; btn.textContent = 'DELETING…'; const uid = me?.id;
-  try{ await videoRequest('space-delete', { spot:id }); }
-  catch(e){ console.error('[space-delete]', e?.message || e); if(btn.isConnected){ btn.disabled = false; btn.classList.remove('is-arm'); btn.textContent = 'DELETE'; } return 'failed'; }
-  if(uid !== me?.id) return 'done';
-  PAST.list = PAST.list.filter(x => x.id !== id); LIST.list = LIST.list.filter(x => x.id !== id); EX.list = EX.list.filter(x => x.id !== id);
-  if(DETAIL?.id === id) closeDetail();
-  paintPast(); paintList(); reload();
-  return 'done';
-}
-/* ══ LE COIN MEMBRE (13/10, lot B) — Wah : sur un satellite, CONNECT WITH MY TOTEHM seul ; connecté, le NOM seul,
-   qui ramène à totehm.com (le pont). Tout l'espace membre (mes spaces, mes spots, la console, la déconnexion
-   partout) vit dans COM. « Simple terms of use » en tout petit sous CONNECT. ═══════════════════════ */
-function paintMember(){
-  $('member').classList.toggle('is-in', !!me);
-  $('member-txt').textContent = me ? (PSEUDO || 'MY TOTEHM') : 'CONNECT WITH MY TOTEHM';
-  $('member').setAttribute('aria-label', me ? 'My TOTEHM' : 'Connect with my TOTEHM');
-  $('terms').classList.toggle('hide', !!me);
-  PAPER.nommer();
-}
-$('member').onclick = () => me ? ssoVersDomaine(sb, 'com', COM + '/totehm#in') : ssoLogin(false);
-
-/* ══ LE DÉMARRAGE ════════════════════════════════════════════════════ */
-async function boot(){
-  const { data:{ session } } = await sb.auth.getSession();
-  me = session?.user || null;
-  if(me){ const { data, error } = await sb.from('profiles').select('pseudo').eq('id', me.id).maybeSingle();
-    if(error) console.error('[profile]', error.message); PSEUDO = data?.pseudo || null; }
-  paintMember(); paintInts(); PAPER.hint(); PAPER.sync();
-  sb.rpc('spot_rules').then(({ data, error }) => { if(error) console.error('[spot_rules]', error.message); if(data) RULES = { ...RULES, ...data, video_provider:RULES.video_provider==='bunny'?'bunny':data.video_provider }; });
-  ['g','d','h','b'].forEach(d => $('cur-' + d).classList.toggle('is-dead', !voisin(d)));
-  /* Dans totehm.com : ni position, ni radar, ni spots avant qu'on l'ouvre. */
-  if(EMBED){ document.body.classList.add('is-embed'); DORT = true; joyPaint(); toCom('ready'); return; }
-  const p = new URLSearchParams(location.search);
-  prendre(p); charger();
-  await suivre(p);
-  joyPaint();
-}
-/* L'adresse (ou totehm.com) pose la Habit et la ville d'un plan, ou le filtre de l'agenda. */
-function prendre(p){
-  const fromHabit = (p.get('habit') || '').trim().slice(0,200), fromCity = (p.get('city') || '').trim().slice(0,80);
-  if(fromHabit && p.get('v') === 'list'){ S.habit = null; S.q = fromHabit; $('habit-filter').textContent = fromHabit; }
-  if(fromHabit && p.get('v') === 'plan'){ PRE.habit = fromHabit; PRE.city = fromCity; }
-  return !!(fromHabit && p.get('v') === 'list');
-}
-function charger(){
-  if(CHARGE) return; CHARGE = true;
-  if(me) videoRequest('create-bunny-upload',{action:'status'}).then(d=>{if(d?.available) RULES.video_provider='bunny';}).catch(e=>console.error('[video availability]',e.message));
-  geo().then(pos => { if(pos){ POS = pos; reload(); radarOn(); } });
-  reload(); radarOn();
-  setInterval(() => { if(DORT) return; paintList(); planValidity(); const started = LIST.list.some(s => s.state === 'will' && spotState(s) !== 'will'); if(started) reload(); }, 30000);
-}
-async function suivre(p){
-  if(p.get('spot')){
-    const { data, error } = await sb.rpc('spot_get', { p_id: p.get('spot') });
-    if(error) console.error('[spot_get]', error.message);
-    if(data?.ok){if(data.spot.format==='space')return ssoVersDomaine(sb,'space','https://www.totehm.space/?spot='+encodeURIComponent(p.get('spot')),true);openDetail(data.spot);}
-    return;
-  }
-  if(['list','past','plan'].includes(p.get('v'))) go(p.get('v'));
-  else if(p.get('v') === 'cam' && me) go('cam');
-}
-boot();
-if(EMBED){
-  addEventListener('message', async e => {
-    if(e.origin !== location.origin || e.source !== parent || !e.data || e.data.totehm !== 'x' || !e.data.cmd) return;
-    const d = e.data;
-    if(d.cmd === 'sleep'){
-      pickerClose(); closeDetail();
-      if(!REC.busy && !PLAN.busy){ if(VIEW !== 'radar') go('radar'); PLAN.seq++; PLAN.context = null; PLAN.habit = null; planVideoDrop(); planCity(null); PLAN.cityText = ''; }
-      DORT = true; cancelAnimationFrame(RAD.raf); RAD.raf = 0;
-      document.querySelectorAll('#list video').forEach(releaseClip);
-      return;
-    }
-    const { data:{ session } } = await sb.auth.getSession();
-    if((session?.user?.id || null) !== (me?.id || null)) return toCom('stale');
-    DORT = false;
-    const q = new URLSearchParams(d.q || ''), filtre = prendre(q);
-    if(CHARGE && filtre) reload();
-    charger(); radarOn();
-    if(d.cmd === 'url') await suivre(q);
-    joyPaint();
-  });
-  $('x-back').onclick = () => toCom('close');
-  addEventListener('keydown', e => {
-    if(e.key !== 'Escape') return;
-    const rien = VIEW === 'radar' && !DETAIL && !MAP.open && $('habit-picker').classList.contains('hide');
-    if(rien){ e.preventDefault(); e.stopImmediatePropagation(); toCom('close'); }
-  }, true);
-}
 </script>
 <script data-ecosystem-ui="2026-10-05">
 /* 05/10/2026 — copied into each independent page; no runtime import. */
@@ -2333,5 +1079,6 @@ if(EMBED){
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded',start,{once:true}); else start();
 })();
 </script>
+
 </body>
 </html>

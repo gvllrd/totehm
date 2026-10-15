@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HIGHER.BOUTIQUE — wear it, own it</title>
+<title>HIGHER.BOUTIQUE — Totehm Cloths</title>
 <link href="https://fonts.googleapis.com/css2?family=Quantico:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 /* POLICES — BASE (01/10) : Space Mono et Quantico, rien d'autre ; un bouton hérite. */
@@ -257,14 +257,8 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
 <nav>
   <div id="menu-main" style="display:flex;flex-direction:column;align-items:center;gap:6px;width:100%">
 
-    <!-- 09/10 : quatre domaines, quatre fonctions (Wah). La boutique = l'ACHAT,
-         physique et numérique : Get Higher (TotehmPaper, Stoner, Lisbonne),
-         les Cloths, le marché de l'art. Retour de figher.club (02/10 → 09/10). -->
-    <div class="fn-line">physical &amp; digital · wear it · own it</div>
-    <a class="btn-sig" id="higher-btn" href="/discover">Get <svg class="higher-inline" viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></a>
-    <a class="btn-sig hide" id="lisbon-btn" href="/discover_lisbon">Make the Lisbon Streets <svg class="higher-inline" viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></a>
-
-    <div class="menu-gap"></div>
+    <!-- Physical creation, orders and Decode stay on higher.boutique. -->
+    <div class="fn-line">Totehm Cloths · wear it</div>
 
     <!-- 1 : Streetwear -->
     <div class="sw-block">
@@ -291,8 +285,7 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
     </div>
 
     <div class="menu-row art-row">
-      <a class="btn-sig" href="/market">The art market</a>
-      <a class="btn-sig" href="/origins">Origins</a>
+      <a class="btn-sig" data-space="/" href="https://www.totehm.space/">Digital art · SPACE</a>
     </div>
 
     <div class="menu-gap"></div>
@@ -486,7 +479,7 @@ function decodeHTML(d,signed){
   const meta=['Totehm Cloth',d.line==='luxury'?'Luxury':'Streetwear',d.created_at||'',d.edition&&d.edition_of?'No. '+d.edition+' / '+d.edition_of:'',d.test?'test':''].filter(Boolean).join(' · ');
   let el;
   if(d.legacy)el='<div class="dc-el" style="--skin:#333366"><small>the message</small><b>'+esc('“'+(d.message||'')+'”')+'</b></div>';
-  else if(d.level==='locked')el='<div class="dc-el" style="--skin:'+V[1]+'"><small>'+esc(V[0])+'</small><div class="lock">The element behind this cloth opens to FIGHER members.</div>'+
+  else if(d.level==='locked')el='<div class="dc-el" style="--skin:'+V[1]+'"><small>'+esc(V[0])+'</small><div class="lock">This element is reserved for its owner and eligible collectors.</div>'+
     (signed?'':'<button class="btn-sig" type="button" data-eco-connect="1">CONNECT WITH MY TOTEHM</button>')+'</div>';
   else{
     const ints=(d.is||[]).filter(i=>DC_INT[i]).map(i=>'<span style="color:'+DC_INT[i][1]+'">'+DC_INT[i][0]+'</span><span style="color:rgba(255,255,255,.55)">'+DC_INT[i][2]+'</span>').join('');
@@ -566,40 +559,6 @@ $('email-input').addEventListener('keydown',async(e)=>{
   $('sw-col-sold').textContent=left>0?left+' pieces left':'sold out';
 })();
 
-/* ══ GET HIGHER — la porte · revenu le 09/10/2026 (d'origine sur la boutique)
-   Un invité voit /discover (le pourquoi, le prix). Un propriétaire du THP
-   (`stoner-gate` lit SA session) va droit à la méthode, /stoner. Sans
-   session, rien à prouver : /discover. */
-(()=>{
-  const GATE='https://abujjbkbbiumxrokozph.supabase.co/functions/v1/stoner-gate';
-  async function refreshHigher(){
-    let href='/discover';
-    try{
-      const {data:{session}}=await sb.auth.getSession();
-      if(session){
-        const r=await fetch(GATE,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token}});
-        if(r.ok){ const j=await r.json(); if(j.access===true) href='/stoner'; }
-        else console.error('[stoner-gate]',r.status);
-      }
-    }catch(e){ console.error('[stoner-gate]',e&&e.message||e); }
-    $('higher-btn').setAttribute('href',href);
-  }
-  refreshHigher();
-  sb.auth.onAuthStateChange(()=>refreshHigher());
-})();
-
-/* ══ MAKE THE LISBON STREETS HIGHER — Lisbonne seulement
-   /api/geo lit l'en-tête Vercel x-vercel-ip-country : PT → le bouton.
-   Fermé par défaut : sans réponse, il reste caché. */
-(async()=>{
-  try{
-    const r=await fetch('/api/geo',{cache:'no-store'});
-    if(!r.ok) return;
-    const j=await r.json();
-    if(j.lisbon===true) $('lisbon-btn').classList.remove('hide');
-  }catch(_){}
-})();
-
 /* ══ LE PONT VERS UN AUTRE DOMAINE · 02/10/2026 ═════════════════════════
    Un membre connecté ici arrive connecté ailleurs : `sso-mint` émet un code
    (60 s, usage unique, cible = un NOM, jamais une URL). Copié de
@@ -623,12 +582,15 @@ async function ssoVersDomaine(sb, cible, url){
   }catch(e){ console.error('[sso]', e && e.message || e); }
   location.href = url;
 }
+document.querySelectorAll('[data-space]').forEach(a => a.addEventListener('click', e => {
+  e.preventDefault(); ssoVersDomaine(sb, 'space', 'https://www.totehm.space' + a.dataset.space);
+}));
 document.querySelectorAll('[data-club]').forEach(a => a.addEventListener('click', e => {
   e.preventDefault(); ssoVersDomaine(sb, 'club', 'https://www.figher.club' + a.dataset.club);
 }));
 
 /* Diagnostic — des booléens, jamais une valeur de membre. */
-const BUILD='2026-10-08-bis';
+const BUILD='2026-10-15-physical';
 window.__totehm_boutique=()=>({ build:BUILD, page:'home', luxury_link:!!document.querySelector('a[href="/luxury"]'),
   club_links:document.querySelectorAll('[data-club]').length, logos:document.querySelectorAll('.brand-logo,img[src*="champion"]').length,
   collab:/Champion 2026/.test(document.getElementById('collab')?.textContent||''), branding_com:document.getElementById('brand-btn')?.dataset.com==='/',

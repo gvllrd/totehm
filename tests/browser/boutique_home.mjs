@@ -21,14 +21,15 @@ const { pg, log } = await page(browser, { dir:'boutique', origin:'https://www.hi
 await pg.goto('https://www.higher.boutique/');
 await pg.waitForFunction(() => window.__totehm_boutique && /47 pieces left/.test(document.querySelector('#sw-col-sold').textContent));
 const d = await pg.evaluate(() => window.__totehm_boutique());
-ok(d.build === '2026-10-08-bis' && !d.joystick, 'the landing page, no joystick');
+ok(d.build === '2026-10-15-physical' && !d.joystick, 'the physical landing page, no joystick');
+ok(await pg.locator('a[data-space][href="https://www.totehm.space/"]').count()===1 && await pg.locator('#higher-btn,#lisbon-btn,a[href="/market"],a[href="/origins"]').count()===0,'digital art has one explicit SPACE destination; the physical homepage keeps its Cloth paths');
 ok(d.collab && d.logos === 0 && d.luxury_link, 'Totehm x Champion 2026 under Create, written, no logo');
 ok(d.branding_com && d.club_links === 0, 'Experience our dope branding → totehm.com');
 const order = await pg.evaluate(() => { const a = document.querySelector('a[href="streetwear.html"]').getBoundingClientRect().top, c = document.querySelector('#collab').getBoundingClientRect().top, l = document.querySelector('a[href="/luxury"]').getBoundingClientRect().top; return a < c && c < l; });
 ok(order, 'the collection sits under [Create my Totehm Streetwear Cloth], above Luxury');
 await pg.screenshot({ path: OUT + '/bq_landing.png' });
 await pg.click('#decode-btn');
-for(const [name, re, lvl] of [['0.hill', /Run the hill/, 'member'], ['0.lock', /FIGHER/, 'locked'], ['0.old', /I stay higher/, 'full']]){
+for(const [name, re, lvl] of [['0.hill', /Run the hill/, 'member'], ['0.lock', /reserved/, 'locked'], ['0.old', /I stay higher/, 'full']]){
   await pg.fill('#decode-input', name); await pg.press('#decode-input', 'Enter');
   await pg.waitForFunction(n => document.querySelector('#decode-fs').classList.contains('show') && window.__totehm_boutique().decode, name);
   ok(re.test(await pg.textContent('#decode-msg')) && (await pg.evaluate(() => window.__totehm_boutique().decode.level)) === lvl, 'decode ' + lvl + ': reveal_cloth');

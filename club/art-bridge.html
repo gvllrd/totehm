@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex"><title>TOTEHM.SPACE</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>html{color-scheme:dark;background:#000;color:#bbb;font-family:'Space Mono',monospace}body{margin:0;min-height:100dvh;display:grid;place-items:center}main{text-align:center;padding:24px}p{font-size:12px}a,button{display:inline-block;background:#292929;border:0;border-radius:10px;color:#ddd;font:700 12px 'Space Mono',monospace;padding:12px 16px;text-decoration:none;cursor:pointer;margin:4px}h1{font-size:16px}button[hidden]{display:none}</style>
+</head><body><main><h1>TOTEHM.SPACE</h1><p id="status" role="status">Opening the gallery…</p>
+<a id="continue" href="https://www.totehm.space/">CONTINUE</a><button id="connect" hidden>CONNECT WITH MY TOTEHM</button></main>
+<script>
+// The path table is closed. Query parameters can never choose a destination origin.
+(() => {
+  const paths = {"/get_higher":"get_higher","/get_higher.html":"get_higher","/stoner":"stoner","/stoner.html":"stoner","/stoner_terms":"stoner_terms","/stoner_terms.html":"stoner_terms","/play_lisbon_street":"play_lisbon_street","/play_lisbon_street.html":"play_lisbon_street","/discover":"discover","/discover.html":"discover","/discover_lisbon":"discover_lisbon","/discover_lisbon.html":"discover_lisbon","/origins":"origins","/origins.html":"origins","/market":"market","/market.html":"market","/lisbon":"discover_lisbon","/global":"discover"};
+  const slug = paths[location.pathname] || '';
+  const target = new URL('https://www.totehm.space/' + slug);
+  const query = new URLSearchParams(location.search);
+  let hash = new URLSearchParams(location.hash.slice(1));
+  // COM's auth return permits paths and queries, not deep fragments. Restore
+  // this tab's saved fragment only when the PKCE callback state matches.
+  try {
+    const state = hash.get('state');
+    const pkce = JSON.parse(sessionStorage.getItem('totehm_sso_pkce') || 'null');
+    const saved = sessionStorage.getItem('totehm_art_migration_fragment');
+    if(state && saved && pkce?.state === state) hash = new URLSearchParams(saved.replace(/^#/, ''));
+    if(state) sessionStorage.removeItem('totehm_art_migration_fragment');
+  } catch(_) {}
+  for(const key of ['sso','state','sso_error']){ query.delete(key); hash.delete(key); }
+  target.search = query.toString();
+  // Old permanent SPACE → boutique redirects may still be in browser caches.
+  target.searchParams.set('migration', 'gallery-v1');
+  target.hash = hash.toString().replace(/=(&|$)/g, '$1');
+  window.__artMigrationTarget = target.href;
+  document.getElementById('continue').href = target.href;
+})();
+</script>
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+const sb = createClient('https://abujjbkbbiumxrokozph.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us');
+/* ══ LE PONT SSO — LE BLOC À COPIER · v2 · 30/09/2026 ═════════════════
+   Quatre domaines, quatre `localStorage`, quatre sessions. Le compte est
+   unique — l'email est l'identité universelle — mais la session ne l'est
+   pas et ne peut pas l'être : un navigateur ne partage rien entre deux
+   origines. On ne le contourne pas, on le TRAVERSE.
+
+   ⚠️ v2 — TOTEHM.COM EST L'AUTORITÉ (MASTER BRIEF du 30/09, §6). Deux
+   façons de traverser, un seul échange côté serveur (`sso-redeem`) :
+
+   1 · LE LIEN (le pont d'avant, inchangé) : un domaine connecté frappe un
+       code pour un autre (`ssoVersDomaine`) et y envoie le membre.
+   2 · LA CONNEXION CENTRALE (nouveau) : un satellite (space · club ·
+       boutique) ne demande plus l'email lui-même. `ssoLogin()` crée un
+       `verifier` PKCE et un `state`, les garde dans SON `sessionStorage`,
+       et envoie le navigateur à `totehm.com/auth` avec le DÉFI. totehm.com
+       (sa session, ou email → code une fois) frappe un code LIÉ à ce défi
+       et renvoie ici, dans le fragment. Ce satellite seul peut l'échanger :
+       il faut le `verifier`, qui n'a jamais quitté cette page.
+       SILENCIEUX : un navigateur qui s'est déjà connecté ici (un repère
+       local) et qui revient sans session repasse UNE fois par onglet par
+       totehm.com (`prompt=none`) ; il revient connecté, ou invité.
+
+   ⚠️ CE BLOC SE COPIE, IL NE S'IMPORTE PAS. Règle du projet : produits
+   indépendants = fichiers indépendants. Un `<script src>` partagé ferait
+   qu'une panne sur un domaine éteindrait les quatre.
+
+   OÙ LE POSER : dans le module ES de chaque page qui a un `sb`
+   (`createClient`), juste après sa création, avec `SSO_CLIENT` réglé sur
+   le nom du domaine de la page. La partie ARRIVÉE doit s'exécuter AVANT
+   toute lecture de session.
+
+   CE QUI VOYAGE DANS L'URL N'EST PAS UN JETON DE SESSION. C'est un code
+   d'autorisation : soixante secondes, un seul usage, un seul domaine
+   cible, stocké haché côté serveur, lié à un défi PKCE pour la connexion
+   centrale, et il n'ouvre rien par lui-même — il faut l'échanger.
+   ═══════════════════════════════════════════════════════════════════ */
+
+const SSO_FN = 'https://abujjbkbbiumxrokozph.supabase.co/functions/v1/';
+/* ⚠️ LA CLÉ ANONYME EST OBLIGATOIRE : les Edge Functions sont déployées
+   avec `verify_jwt` ; sans en-tête, 401 avant notre code. Elle est
+   publique — déjà en clair au `createClient`. */
+const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us';
+/* LE NOM DE CE DOMAINE — 'space' | 'club' | 'boutique'. Jamais une URL. */
+const SSO_CLIENT = 'club';
+const SSO_AUTH = 'https://www.totehm.com/auth';
+const SSO_KNOWN = 'totehm_sso_known';   // localStorage : ce navigateur s'est déjà connecté ici
+const SSO_TRIED = 'totehm_sso_tried';   // sessionStorage : l'aller-retour silencieux a eu lieu
+const SSO_PKCE  = 'totehm_sso_pkce';    // sessionStorage : { verifier, state } le temps du voyage
+
+const ssoB64 = bytes => btoa(String.fromCharCode(...bytes)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+const ssoStore = (s, k, v) => { try{ v === null ? s.removeItem(k) : s.setItem(k, v); }catch(_){} };
+const ssoRead = (s, k) => { try{ return s.getItem(k); }catch(_){ return null; } };
+
+/* ── ARRIVÉE ────────────────────────────────────────────────────────
+   ⚠️ LE CODE SORT DE L'URL AVANT TOUT AUTRE GESTE — et SEULEMENT lui :
+   le reste du fragment (#create, #reveal…) reste à la page. Un code
+   laissé dans la barre d'adresse se retrouve dans un signet, un partage,
+   un historique. Avec un `state`, c'est une connexion centrale : il doit
+   être celui que CE navigateur a envoyé (sinon quelqu'un essaie de nous
+   connecter à SON compte) et le `verifier` part avec le code. */
+async function ssoArrivee(sb){
+  const h = new URLSearchParams(location.hash.replace(/^#/, ''));
+  const q = new URLSearchParams(location.search);
+  const code = h.get('sso') || q.get('sso'), st = h.get('state'), err = h.get('sso_error');
+  if(!code && !err) return false;
+  ['sso','state','sso_error'].forEach(k => { h.delete(k); q.delete(k); });
+  const reste = [...h.keys()].length ? '#' + h.toString().replace(/=(&|$)/g, '$1') : '';
+  history.replaceState(null, '', location.pathname + (q.toString() ? '?' + q : '') + reste);
+  const pk = (() => { try{ return JSON.parse(ssoRead(sessionStorage, SSO_PKCE) || 'null'); }catch(_){ return null; } })();
+  ssoStore(sessionStorage, SSO_PKCE, null);
+  if(err || !/^[a-f0-9]{64}$/.test(code || '')) return false;
+  let verifier;
+  if(st){
+    if(!pk || pk.state !== st){ console.error('[sso] state'); return false; }
+    verifier = pk.verifier;
+  }
+  try{
+    const r = await fetch(SSO_FN + 'sso-redeem', {
+      method:'POST', signal:AbortSignal.timeout(2500),
+      headers:{'content-type':'application/json', 'apikey':SB_ANON, 'authorization':'Bearer '+SB_ANON},
+      body: JSON.stringify(verifier ? { code, verifier } : { code })
+    });
+    if(!r.ok){ console.error('[sso] redeem', r.status); return false; }
+    const { token_hash, email } = await r.json();
+    if(!token_hash) return false;
+    /* `verifyOtp` ouvre une session NORMALE dans ce `localStorage`.
+       ⚠️ 02/10 : `token_hash` + `type` SEULS — avec `email`, Supabase Auth
+       répond 400 « Only the token_hash and type should be provided ». */
+    const { error } = await sb.auth.verifyOtp({ type:'email', token_hash });
+    if(error){ console.error('[sso] verify', error.message); return false; }
+    return true;
+  }catch(e){ console.error('[sso]', e && e.message || e); return false; }
+}
+
+/* ── SE CONNECTER — PAR TOTEHM.COM ──────────────────────────────────
+   `silent` : `prompt=none` — totehm.com ne montre rien, il rend un code
+   ou `login_required`. `retour` : un CHEMIN de ce domaine (jamais une
+   URL) ; totehm.com refuse tout le reste. */
+async function ssoLogin(silent, retour){
+  const v = ssoB64(crypto.getRandomValues(new Uint8Array(32)));
+  const c = ssoB64(new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(v))));
+  const st = ssoB64(crypto.getRandomValues(new Uint8Array(16)));
+  ssoStore(sessionStorage, SSO_PKCE, JSON.stringify({ verifier: v, state: st }));
+  const ret = retour || (location.pathname + location.search);
+  location.href = SSO_AUTH + '?client=' + SSO_CLIENT + '&challenge=' + c + '&state=' + st +
+                  '&return=' + encodeURIComponent(ret) + (silent ? '&prompt=none' : '');
+}
+
+/* ── DÉPART ─────────────────────────────────────────────────────────
+   `cible` est un NOM DE PRODUIT — 'com' | 'space' | 'boutique' | 'club'.
+   ⚠️ SI LE PONT ÉCHOUE, ON PART QUAND MÊME : dégradé, pas cassé. */
+async function ssoVersDomaine(sb, cible, url){
+  try{
+    const { data:{ session } } = await sb.auth.getSession();
+    if(session){
+      const r = await fetch(SSO_FN + 'sso-mint', {
+        method:'POST', signal:AbortSignal.timeout(2500),
+        headers:{ 'authorization':'Bearer '+session.access_token, 'apikey':SB_ANON, 'content-type':'application/json' },
+        body: JSON.stringify({ target: cible })
+      });
+      if(r.ok){
+        const { code } = await r.json();
+        if(code){ location.href = url + (url.includes('#') ? '&' : '#') + 'sso=' + code; return; }
+      } else console.error('[sso] mint', r.status);
+    }
+  }catch(e){ console.error('[sso]', e && e.message || e); }
+  location.href = url;
+}
+
+
+let phase = 'arrival';
+window.__totehm_art_bridge = () => ({ build:'2026-10-15-gallery-bridge', phase });
+const connect = document.getElementById('connect');
+connect.hidden = false;
+connect.onclick = () => {
+  try { sessionStorage.setItem('totehm_art_migration_fragment', new URL(window.__artMigrationTarget).hash); } catch(_) {}
+  return ssoLogin(false);
+};
+try {
+  // Redeem on Club first: old COM tabs minted a code for this origin.
+  await Promise.race([ssoArrivee(sb), new Promise(resolve => setTimeout(resolve, 2800))]);
+  phase = 'departure';
+  // A fresh code bound to SPACE is the only auth data allowed to cross next.
+  await ssoVersDomaine(sb, 'space', window.__artMigrationTarget);
+} catch(error) {
+  console.error('[art migration]', error?.message || error);
+  phase = 'fallback';
+  document.getElementById('status').textContent = 'Continue to the gallery or connect with your Totehm.';
+}
+</script></body></html>

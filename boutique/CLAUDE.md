@@ -1,4 +1,17 @@
-# boutique/CLAUDE.md — higher.boutique : l'achat, physique et numérique (Cloths, Get Higher, Stoner, le marché)
+# boutique/CLAUDE.md — higher.boutique : vêtements, totehmisation physique et production
+
+## 15/10/2026 — le numérique est dans la galerie SPACE (code local)
+
+La boutique conserve Streetwear, Luxury, Decode, commandes et production. Son accueil reste physique, avec un
+lien de traversée SSO vers SPACE. Get Higher, Stoner, Lisbon, Discover, Origins/Quantum et le marché sont servis
+par SPACE ; les copies historiques restent comme référence de comparaison, leurs URLs sont réécrites vers
+`art-bridge.html` (consommer le passage boutique avant d'émettre un passage SPACE, conserver query/deep link).
+Un 308 direct casserait les anciens codes SSO liés à boutique : ne pas remplacer le pont par une redirection aveugle.
+
+Prix, stocks, exemplaires, redevances, règlement et droits acquis restent inchangés. L'adhésion gratuite du Club
+ne donne pas accès aux œuvres payantes. Le numéro THP reste attaché à l'exemplaire.
+Validation et déploiement : `../docs/GALLERY_CLUB_20261015.md`. Les sections ci-dessous décrivent l'historique ;
+la règle « pas de gamification » est remplacée par l'exploration minimale de la galerie, sans points ni récompenses.
 
 ## BOUTIQUE · 13/10/2026 — LA LANGUE ; UN CLOTH = MY STORY (lot B)
 

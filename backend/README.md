@@ -1,5 +1,16 @@
 # TOTEHM · backend
 
+## 15/10/2026 — galerie SPACE et Club par complétude (code, non déployé)
+
+La migration `20261015120000_club_gallery.sql` détache `_art_passport` de l'adhésion gratuite `_figher` et ajoute
+`club_spots` : mêmes résultats autorisés pour trois périodes et deux modes, critères détaillés avant pagination,
+subscribers reconnus indépendamment du Club, projection des seuls attributs lisibles. L'ancienne règle artistique
+est préservée ; prix, propriété, THP, Stoner, règlement et créateurs ne changent pas.
+
+Les checkouts digitaux retournent désormais sur SPACE ; les retours physiques restent boutique.
+Procédure, tests locaux, contrat COM et ordre de déploiement : `../docs/GALLERY_CLUB_20261015.md`.
+Aucune migration ni Edge Function n'a été appliquée en production par cette session.
+
 ## 13/10/2026 — four audiences (`audience`) and `/@name` as a universe
 
 - Procedure: publish with `space_post_audience` / `spot_create_audience` / `spot_schedule_audience` (audience set in

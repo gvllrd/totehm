@@ -1,4 +1,31 @@
-# club/CLAUDE.md — figher.club : la rencontre dans la réalité (09/10)
+# club/CLAUDE.md — figher.club : consultation des spots dans trois périodes
+
+## 15/10/2026 — passé / maintenant / futur × RADAR / SHORTS (code local)
+
+Trois périodes horizontales : `past` rouge-violet #743169, `now` navy #333366, `future` bleu clair #36498c.
+Le mode (`radar` ou `shorts`) est indépendant du temps. SHORTS reprend le lecteur **central** de l'ancien SPACE
+et son système de filtres, pas l'ancienne vue de gauche. Les Habit Boxes gardent leurs couleurs et attributs.
+
+Un seul `club_spots` alimente les deux modes, avec les mêmes filtres serveur : Habit, intentions, piliers/Mood,
+rythmes, objectifs, répulsions, type et monde/près de moi. Une Habit se choisit en touchant le TOTEHM ; ses critères
+se reprennent puis se règlent séparément. Pagination ancrée sur `as_of`, filtres avant pagination, réponses tardives
+écartées, contexte conservé entre modes et périodes. Les limites horaires réelles font changer l'état du spot.
+
+Le radar ne trace que les points exacts autorisés. Un spot sans point ou sans média reste dans les résultats,
+SHORTS et sa fiche ; jamais de fausse position calculée depuis une ville. Les médias sont signés selon les droits,
+le lecteur hors écran est arrêté, les préférences de réduction d'animations sont respectées.
+
+Le Club public ne publie plus : les anciens `?v=plan|cam` et les actions de création passent à COM `/spot`,
+Habit et paramètres conservés. `create.html` conserve le moteur pour `/x/club` sur COM ; l'accès direct standalone
+revient au parcours COM. Le contrat XO reste identique pour ne pas chevaucher le travail COM parallèle.
+
+Adhésion gratuite = cinq vues non vides, côté serveur. Un abonnement créateur donne accès aux spots autorisés
+sans condition Club supplémentaire. Propriété THP et droits artistiques historiques restent séparés.
+Les anciens liens artistiques Club passent par `art-bridge.html` avant SPACE pour préserver le SSO.
+
+Tests actuels : `tests/browser/club_temporal.mjs`, `tests/browser/com_spot.mjs`, `tests/browser/com_plateforme.mjs`
+et `tests/sql/club_gallery_local.py`. Détails et mise en service : `../docs/GALLERY_CLUB_20261015.md`.
+Les sections suivantes sont historiques ; les anciennes cinq vues publiques ne décrivent plus l'entrée actuelle.
 
 ## 13/10/2026 — le coin membre = CONNECT WITH MY TOTEHM seul (lot B)
 

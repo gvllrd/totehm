@@ -3,35 +3,157 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "redirects": [
-    { "source": "/discover", "destination": "https://www.higher.boutique/discover", "permanent": true },
-    { "source": "/discover.html", "destination": "https://www.higher.boutique/discover", "permanent": true },
-    { "source": "/discover_lisbon", "destination": "https://www.higher.boutique/discover_lisbon", "permanent": true },
-    { "source": "/discover_lisbon.html", "destination": "https://www.higher.boutique/discover_lisbon", "permanent": true },
-    { "source": "/get_higher", "destination": "https://www.higher.boutique/get_higher", "permanent": true },
-    { "source": "/get_higher.html", "destination": "https://www.higher.boutique/get_higher", "permanent": true },
-    { "source": "/stoner", "destination": "https://www.higher.boutique/stoner", "permanent": true },
-    { "source": "/stoner.html", "destination": "https://www.higher.boutique/stoner", "permanent": true },
-    { "source": "/stoner_terms", "destination": "https://www.higher.boutique/stoner_terms", "permanent": true },
-    { "source": "/stoner_terms.html", "destination": "https://www.higher.boutique/stoner_terms", "permanent": true },
-    { "source": "/play_lisbon_street", "destination": "https://www.higher.boutique/play_lisbon_street", "permanent": true },
-    { "source": "/play_lisbon_street.html", "destination": "https://www.higher.boutique/play_lisbon_street", "permanent": true },
-    { "source": "/origins", "destination": "https://www.higher.boutique/origins", "permanent": true },
-    { "source": "/origins.html", "destination": "https://www.higher.boutique/origins", "permanent": true },
-    { "source": "/lisbon", "destination": "https://www.higher.boutique/discover_lisbon", "permanent": true },
-    { "source": "/global", "destination": "https://www.higher.boutique/discover", "permanent": true }
+    {
+      "source": "/",
+      "has": [
+        {
+          "type": "query",
+          "key": "embed"
+        }
+      ],
+      "destination": "/social",
+      "permanent": false
+    },
+    {
+      "source": "/",
+      "has": [
+        {
+          "type": "query",
+          "key": "spot"
+        }
+      ],
+      "destination": "/social",
+      "permanent": false
+    },
+    {
+      "source": "/",
+      "has": [
+        {
+          "type": "query",
+          "key": "u"
+        }
+      ],
+      "destination": "/social",
+      "permanent": false
+    },
+    {
+      "source": "/",
+      "has": [
+        {
+          "type": "query",
+          "key": "v"
+        }
+      ],
+      "destination": "/social",
+      "permanent": false
+    },
+    {
+      "source": "/",
+      "has": [
+        {
+          "type": "query",
+          "key": "habit"
+        }
+      ],
+      "destination": "/social",
+      "permanent": false
+    },
+    {
+      "source": "/index.html",
+      "has": [
+        {
+          "type": "query",
+          "key": "embed"
+        }
+      ],
+      "destination": "/social",
+      "permanent": false
+    },
+    {
+      "source": "/index.html",
+      "has": [
+        {
+          "type": "query",
+          "key": "spot"
+        }
+      ],
+      "destination": "/social",
+      "permanent": false
+    },
+    {
+      "source": "/index.html",
+      "has": [
+        {
+          "type": "query",
+          "key": "u"
+        }
+      ],
+      "destination": "/social",
+      "permanent": false
+    },
+    {
+      "source": "/index.html",
+      "has": [
+        {
+          "type": "query",
+          "key": "v"
+        }
+      ],
+      "destination": "/social",
+      "permanent": false
+    },
+    {
+      "source": "/index.html",
+      "has": [
+        {
+          "type": "query",
+          "key": "habit"
+        }
+      ],
+      "destination": "/social",
+      "permanent": false
+    },
+    {
+      "source": "/lisbon",
+      "destination": "/discover_lisbon",
+      "permanent": true
+    },
+    {
+      "source": "/global",
+      "destination": "/discover",
+      "permanent": true
+    }
   ],
   "rewrites": [
-    { "source": "/s/:id/i", "destination": "/api/card?id=:id&img=1" },
-    { "source": "/s/:id", "destination": "/api/card?id=:id" }
+    {
+      "source": "/s/:id/i",
+      "destination": "/api/card?id=:id&img=1"
+    },
+    {
+      "source": "/s/:id",
+      "destination": "/api/card?id=:id"
+    }
   ],
   "headers": [
     {
       "source": "/(.*)",
       "headers": [
-        { "key": "X-Content-Type-Options", "value": "nosniff" },
-        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
-        { "key": "Permissions-Policy", "value": "geolocation=(self), camera=(self), microphone=(self)" },
-        { "key": "X-Frame-Options", "value": "SAMEORIGIN" }
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "geolocation=(self), camera=(self), microphone=(self)"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "SAMEORIGIN"
+        }
       ]
     }
   ]

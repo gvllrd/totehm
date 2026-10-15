@@ -1,4 +1,4 @@
-# CLAUDE.md — CTO de TOTEHM (racine · réorganisé le 30/09, mis à jour le 13/10/2026)
+# CLAUDE.md — CTO de TOTEHM (racine · réorganisé le 30/09, mis à jour le 15/10/2026)
 > **Ce fichier est chargé à CHAQUE session : il reste court (≤ 250 lignes).**
 > Détails : `CLAUDE.md` du domaine ; histoire : `docs/POSTMORTEMS.md`,
 > à lire seulement si utile. Avant copy, naming ou UI : section utile de `BRAND.md`.
@@ -60,23 +60,23 @@ l'architecture et de la stabilité. Wah change de vision vite : on s'adapte.
 Un document contradictoire est corrigé dans le même lot, dans le fichier qui répond déjà.
 Les `CLAUDE.md` des dossiers servis par Vercel sont exclus du déploiement (`.vercelignore`).
 
-## L'architecture — quatre domaines, une source, quatre fonctions (09/10/2026)
+## L'architecture — direction du 15/10/2026 (code local ; déploiement à vérifier)
 
 ```
-com/      → www.totehm.com       LA PLATEFORME (13/10, lot B) : le Totehm (5 vues, minimal), l'identité (/auth), /@nom ; la croix : centre = le papier
-                                 signé, My TOTEHM · Search (le banc → /@nom) · ↑ Higher Self (le verso, 7/30 j) · ↓ PHOTO·VIDEO·SPOT · ← ma Terre + mes shorts · → mes visions ; SERT SPACE et le Club
-                                 (`/x/space`, `/x/club`, même origine) dans une couche `XO` : un space ou un spot s'ouvre SUR PLACE ; /console
-club/     → www.figher.club      LA RENCONTRE DANS LA RÉALITÉ, le prolongement de SPACE : [Higher] SPOTS + radar au centre · ↑ annoncer
-                                 · ↓ caméra · ← passés · → agenda ; reçoit `?v=plan|list&habit=&city=` (SPOT d'un space) ; /meet ; 308 boutique
-space/    → www.totehm.space     L'INSPIRATION, pur TikTok (12/10) : centre = le FIL (la Habit Box ENTIÈRE, un élément = son horizon ; rail
-                                 VIBE · SPOT · SHARE) · ← le pouls · ↓ SHARE · → MY SPACE · ↑ VIBES ; `?embed` = dans COM ; `/s/:id` = l'aperçu (`api/card.js`)
-boutique/ → www.higher.boutique  L'ACHAT, physique et numérique (09/10) : Get Higher (la langue, 13/10) / THP / Stoner / Lisbon / Origins, le marché
-                                 de l'art (/market) ; accueil + collection ; /streetwear (plein écran au téléphone, fenêtres-côtés sur ordinateur) : cloth →
-                                 element (MY STORY seul, 13/10, ou « + totehmize » depuis COM) → 0.nom → style → taille ; Luxe SUR DEVIS ; Decode = la page du Cloth
+com/      → www.totehm.com       Mon TOTEHM, stratégie et création : les cinq vues, identité, /@nom, /console.
+                                 /spot = création avec Habit sélectionnée ; /x/space sert SPACE/social ; /x/club sert Club/create.
+space/    → www.totehm.space     Galerie d'art digital : TotehmPaper, Get Higher, Stoner, Lisbon, Origins/Quantum,
+                                 /market et collection. Expériences déplacées sans refonte. /social et /s/:id préservent les contenus existants.
+club/     → www.figher.club      Consultation : passé / maintenant / futur × RADAR / SHORTS, mêmes filtres et résultats autorisés.
+                                 Création → COM /spot ; /create reste le moteur intégré à COM, pas une vue publique autonome.
+boutique/ → www.higher.boutique  Physique : Streetwear, Luxury, Decode, commandes et production. Anciens liens d'art → pont SSO → SPACE.
 backend/  → servi par PERSONNE — reste à la racine (sinon SQL et fonctions téléchargeables)
 oracle/   → clés, gitignoré, jamais lu ni recopié
-tests/    → tests navigateur (Playwright, Supabase simulé) et SQL (tests/sql/, auto-annulés)
+tests/    → navigateur Playwright/Supabase simulé, contrats Edge, SQL transactionnel en base de développement
 ```
+
+La direction du 15/10 remplace les répartitions historiques ci-dessous et dans les documents de domaine.
+État de livraison et ordre de déploiement : `docs/GALLERY_CLUB_20261015.md` ; aucune mesure locale ne prouve la production.
 
 TotehmBot est transversal (Telegram). Une seule base Supabase
 (`abujjbkbbiumxrokozph`, eu-west-1), un seul webhook Stripe.
@@ -109,9 +109,10 @@ projet la ferme : ni space, ni vibe, ni Higher Self avant « save with my email 
   SPIRIT. Liens croisés = tables de jointure, jamais une colonne.
 - **Le Totehm est le passeport** : complet = une boîte NON VIDE dans chacune
   des 5 vues (`totehm_complete()`).
-- **Passeport FIGHER** (02/10) = THP possédé + une Habit Box non vide (ou
-  `figher_comps`) ; l'annuel n'en fait plus partie. UNE fonction `_figher()`, lue via `figher_access()` ; un
-  seul booléen `member` décide, la page ne recompose jamais la règle.
+- **Adhésion FIGHER CLUB** (15/10) = une Box non vide dans chacune des cinq vues, calculée côté serveur
+  par `totehm_complete` / `_figher` ; aucun achat, abonnement ou comp ne remplace cette condition.
+  **Accès artistique historique** = `_art_passport` (ancien THP + Habit ou comp), distinct de l'adhésion.
+  Propriété THP, Stoner, achats/reventes et abonnements créateur gardent leurs règles et identifiants.
 - **Un seul système de droits** : `_subscriber_of(créateur, fan)`,
   `creator_page(pseudo)`, `my_entitlements()`. L'abonnement est à sens
   unique : Bob → Alice ne donne rien à Alice sur Bob. **Depuis le 01/10 :**
@@ -120,13 +121,13 @@ projet la ferme : ni space, ni vibe, ni Higher Self avant « save with my email 
   **QUATRE NIVEAUX (13/10)**, colonne `audience` (source ; `visibility` suit par trigger) sur un space,
   un spot, le Totehm : PRIVATE · FIGHER CLUB · MY SUBSCRIBERS · PUBLIC. Défauts : Totehm PRIVATE, space
   PUBLIC, spot FIGHER CLUB. Lire = `_audience_ok` ; les vitrines LISTENT `_audience_listed` (public + FIGHER
-  CLUB aux membres ; le réservé aux abonnés se lit sur `/@nom`) ; le point exact (ON) = `_point_ok` (l'auteur,
+  CLUB aux membres ; le réservé aux abonnés reste sur `/@nom` et apparaît aussi dans le Club via `club_spots` pour les bons abonnés) ; le point exact (ON) = `_point_ok` (l'auteur,
   un membre FIGHER CLUB si public/figher, un abonné). Un abonné lit tout ce qui n'est pas privé. Écrire =
   `*_audience`, `spot_audience_set`, `visibility_set`. Jamais une distance ni un cap à qui n'a pas le point. TotehmBot = offre à part.
 - **La propriété est un exemplaire** (`art_editions`), son histoire
   `art_transfers` (ajout seul). `stoner_access` = projection d'accès ; le THP
-  = l'œuvre `totehmpaper` (777 000 ex.), prix = sa ligne `artworks`, numéro
-  FIGHER = son numéro d'exemplaire.
+  = l'œuvre `totehmpaper` (777 000 ex.), prix = sa ligne `artworks`. Le numéro appartient à cet exemplaire THP ;
+  un nouveau membre du Club sans THP ne reçoit aucun numéro d’œuvre.
 - **L'argent est un grand livre** (`member_ledger`, ajout seul, trigger) :
   abonnements 80/20, crédit sur `invoice.paid` seulement ; revente 7 % à
   TOTEHM, le reste au vendeur (arrondi inférieur au membre). Idempotence =
