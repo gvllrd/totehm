@@ -11,12 +11,12 @@ export async function createGallery({select,interact,fallback,reduced}) {
   const host=document.getElementById('space');
   const renderer=new T.WebGLRenderer({antialias:true,alpha:false,powerPreference:'low-power'});
   renderer.setPixelRatio(Math.min(devicePixelRatio,innerWidth<650?1.5:1.75));
-  renderer.setSize(innerWidth,innerHeight); renderer.setClearColor(0xe7e5dd);
+  renderer.setSize(innerWidth,innerHeight); renderer.setClearColor(0x000000);
   renderer.shadowMap.enabled=true; renderer.shadowMap.type=T.PCFSoftShadowMap;
   renderer.shadowMap.autoUpdate=false; renderer.shadowMap.needsUpdate=true;
   renderer.toneMapping=T.ACESFilmicToneMapping; renderer.toneMappingExposure=1.15;
   renderer.domElement.setAttribute('aria-hidden','true'); host.append(renderer.domElement);
-  const scene=new T.Scene(); scene.background=new T.Color(0x060918); scene.fog=new T.Fog(0x101326,30,75);
+  const scene=new T.Scene(); scene.background=new T.Color(0x000000); scene.fog=new T.Fog(0x030306,30,75);
   const sky=createSky(scene,renderer); document.body.classList.add('night-sky');
   const camera=new T.PerspectiveCamera(innerWidth<650?76:62,innerWidth/innerHeight,.08,100);
   const eye=new T.Vector3(.5,1.65,8), gaze=new T.Vector3(-.5,2.8,-6);
@@ -24,10 +24,10 @@ export async function createGallery({select,interact,fallback,reduced}) {
   let dragged=false, down=null, joystick={x:0,y:0}, lastTime=0, video=null, videoTexture=null;
   let motionReduced=reduced.matches;
   const keys=new Set(), surfaces=[], art=[];
-  const wall=new T.MeshStandardMaterial({color:0xeceae4,roughness:.95});
-  const floor=new T.MeshStandardMaterial({color:0xc8c4b9,roughness:.72,metalness:.03});
-  const trim=new T.MeshStandardMaterial({color:0x6d6a61,roughness:.8});
-  const dark=new T.MeshStandardMaterial({color:0x292938,roughness:.55});
+  const wall=new T.MeshStandardMaterial({color:0x020203,roughness:.95});
+  const floor=new T.MeshStandardMaterial({color:0x030304,roughness:.42,metalness:.12});
+  const trim=new T.MeshStandardMaterial({color:0x111117,roughness:.68});
+  const dark=new T.MeshStandardMaterial({color:0x07070b,roughness:.6,metalness:.12});
   function box(w,h,d,x,y,z,material=wall,shadow=true) {
     const mesh=new T.Mesh(new T.BoxGeometry(w,h,d),material); mesh.position.set(x,y,z);
     mesh.castShadow=shadow; mesh.receiveShadow=true;scene.add(mesh);return mesh;
@@ -39,19 +39,19 @@ export async function createGallery({select,interact,fallback,reduced}) {
   box(.22,.18,23,-6.94,5.66,-1.5);box(.22,.18,23,6.94,5.66,-1.5);
   box(14,.06,.08,0,.03,-12.83,trim,false);
   box(.08,.06,23,-6.82,.03,-1.5,trim,false);box(.08,.06,23,6.82,.03,-1.5,trim,false);
-  for(let z=-11;z<10;z+=2.4)box(13.6,.006,.012,0,.004,z,new T.MeshStandardMaterial({color:0xbab6ac,roughness:1}),false);
+  for(let z=-11;z<10;z+=2.4)box(13.6,.006,.012,0,.004,z,new T.MeshStandardMaterial({color:0x0c0c12,roughness:1}),false);
   // A low sculpture plinth: the same Higher artwork, with no new collectible or invented work.
   box(1.12,.8,1.12,0,.4,-3.1);const plinth=box(.76,.76,.76,0,1.18,-3.1,dark);
-  box(2.8,.17,.85,-3,.52,3.3,new T.MeshStandardMaterial({color:0x989084,roughness:.9}));
+  box(2.8,.17,.85,-3,.52,3.3,new T.MeshStandardMaterial({color:0x08080c,roughness:.85}));
   box(.16,.45,.6,-4,.25,3.3,trim);box(.16,.45,.6,-2,.25,3.3,trim);
-  scene.add(new T.HemisphereLight(0xf3f5ff,0x8e8170,2.6));
-  const sun=new T.DirectionalLight(0xfff1d4,3.2);sun.position.set(-8,14,3);sun.castShadow=true;
+  scene.add(new T.HemisphereLight(0xc2c5ef,0x08080e,.75));
+  const sun=new T.DirectionalLight(0xbbc8ff,.8);sun.position.set(-8,14,3);sun.castShadow=true;
   Object.assign(sun.shadow.camera,{left:-13,right:13,top:16,bottom:-16,near:1,far:40});sun.shadow.mapSize.set(1024,1024);sun.shadow.bias=-.0005;sun.shadow.normalBias=.04;sun.target.position.set(0,0,-3);scene.add(sun,sun.target);
-  const fill=new T.DirectionalLight(0xdde5ff,.8);fill.position.set(5,5,8);scene.add(fill);
+  const fill=new T.DirectionalLight(0xbab5ec,.25);fill.position.set(5,5,8);scene.add(fill);
   function texture(canvas){const t=new T.CanvasTexture(canvas);t.colorSpace=T.SRGBColorSpace;t.anisotropy=Math.min(4,renderer.capabilities.getMaxAnisotropy());return t;}
   function canvas(w=1024,h=768){const c=document.createElement('canvas');c.width=w;c.height=h;return c;}
   function label(text,sub,w=1024,h=150) {
-    const c=canvas(w,h),ctx=c.getContext('2d');ctx.fillStyle='#eceae4';ctx.fillRect(0,0,w,h);ctx.fillStyle='#4b4a48';ctx.font='23px monospace';ctx.fillText(text,22,55);ctx.fillStyle='#8b8780';ctx.font='15px monospace';ctx.fillText(sub,22,92);return texture(c);
+    const c=canvas(w,h),ctx=c.getContext('2d');ctx.fillStyle='#07070b';ctx.fillRect(0,0,w,h);ctx.fillStyle='#d4d0df';ctx.font='23px monospace';ctx.fillText(text,22,55);ctx.fillStyle='#9691a5';ctx.font='15px monospace';ctx.fillText(sub,22,92);return texture(c);
   }
   const sign=new T.Mesh(new T.PlaneGeometry(2.4,.36),new T.MeshBasicMaterial({map:label('TOTEHM.SPACE','ART BY WAH')}));sign.position.set(0,4.55,-12.82);scene.add(sign);
   const image = src => new Promise((resolve,reject)=>{const i=new Image();i.onload=()=>resolve(i);i.onerror=reject;i.src=src;});
@@ -73,7 +73,7 @@ export async function createGallery({select,interact,fallback,reduced}) {
     const painting=new T.Mesh(new T.PlaneGeometry(work.w,work.h),material);painting.position.z=.051;painting.userData.work=index;group.add(painting);art.push(painting);
     const plaque=new T.Mesh(new T.PlaneGeometry(2.05,.3),new T.MeshBasicMaterial({map:label(work.title,work.type)}));plaque.position.set(-work.w/2+1.025,-work.h/2-.38,.01);group.add(plaque);
     preview(work.image,work.w/work.h).then(t=>{material.map=t;material.color.set(0xffffff);material.needsUpdate=true;dirty=true;if(index===0){plinth.material=new T.MeshStandardMaterial({map:t,roughness:.6});}}).catch(()=>{});
-    const light=new T.PointLight(0xfff5df,9,8,2);light.position.copy(group.position).add(new T.Vector3(0,2,0));scene.add(light);
+    const light=new T.PointLight(0xe7e4ff,9,8,2);light.position.copy(group.position).add(new T.Vector3(0,2,0));scene.add(light);
   }
   function cameraAngles(){const delta=gaze.clone().sub(eye).normalize();yaw=Math.atan2(-delta.x,-delta.z);pitch=Math.asin(delta.y);}
   function look(){gaze.copy(eye).add(new T.Vector3(-Math.sin(yaw)*Math.cos(pitch),Math.sin(pitch),-Math.cos(yaw)*Math.cos(pitch)));}

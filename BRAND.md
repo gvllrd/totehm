@@ -1,5 +1,12 @@
 # BRAND.md — TOTEHM
 
+## SPACE — 15/10/2026 · deep night
+
+SPACE stays dark in every interface state: deep black gallery walls, floor, plinths, menus, artwork information
+and the classic artwork view, including the fallback without 3D. Light text; the artworks keep their own colours.
+Above the open gallery: a rich, dreamy animated sky, luminous blue/violet/rose nebulae, dense stars, warm glints
+and slow movement. The sky is present on arrival. Reduced motion freezes it. No light theme from system preferences.
+
 ## CURRENT UPDATE — 15/10/2026 (bis) · the network is alive, and the first screen SELLS (overrides parts of the processor update above)
 
 **The ramifications take the WHOLE screen.** They are the published intention trait, at screen scale: 2 px, flat,

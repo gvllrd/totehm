@@ -21,8 +21,9 @@ ordinateur, le joystick au toucher sur téléphone. Les quatre stations proposen
 à l'entrée retrouve la vue d'ensemble. La vue Artworks expose aussi toutes les œuvres dans un document HTML,
 automatiquement en absence de WebGL ou en perte de contexte ; elle fonctionne également sans JavaScript.
 
-Le toit est désormais ouvert sur un ciel nocturne : Voie lactée procédurale, 3 800 étoiles (2 400 au téléphone),
-scintillement, rotation lente et une étoile filante toutes les quatorze secondes. LOOK UP dirige la vue vers le ciel.
+Le toit est désormais ouvert sur un ciel nocturne : Voie lactée procédurale, 6 800 étoiles (4 300 au téléphone),
+nébuleuses directionnelles 3D bleues, violettes et roses, halos, scintillement, rotation lente et une étoile filante
+toutes les quatorze secondes. La nébuleuse traverse le cadrage d'arrivée. LOOK UP dirige la vue vers le ciel.
 Le ciel réutilise la boucle WebGL existante, à 30 images/s maximum (25 sur téléphone), sans ressource externe.
 Les ombres statiques ne sont calculées qu'une fois. La liste et l'arrière-plan suspendent le ciel ; le mouvement
 réduit le fige, sans saut à la reprise. Dans ce mode, le rendu redevient à la demande.
@@ -40,6 +41,7 @@ Le moteur Three.js 0.180.0 est versionné localement avec sa licence MIT ; archi
 | --- | --- |
 | `tests/browser/gallery_immersive.mjs` | 34 réussites : rendu WebGL réel à 1440/390 px, stations, clic au sol, clavier, vrai toucher du joystick, vidéo, mouvement réduit, repli sans WebGL |
 | `tests/browser/gallery_sky.mjs` | 25 réussites : ciel réellement animé à 1440/390 px, étoile filante, vue vers le ciel, absence de chevauchement mobile, pause avec mouvement réduit et liste, reprise en 3D |
+| `tests/browser/gallery_dark.mjs` | 47 contrôles réussis : thème sombre, fonds noirs, contrastes, navigation, menu, œuvre, liste et repli ; 12 vérifications ciblées après placement final du titre |
 | `tests/browser/gallery.mjs` | 41 contrôles réussis : marché, propriété, revente, paiement simulé, collection et ancienne adresse sociale |
 | Expériences originales | Préservées ; seul l'accueil change |
 | Navigateur en production | Non exécuté : certificat proxy Chromium non reconnu ; refus automatique de modification de confiance conservé |
@@ -48,3 +50,8 @@ Les tests navigateur utilisent les vrais fichiers du moteur et un rendu local, a
 Ils ne créent aucun compte et ne réalisent aucun paiement. Les captures sont sous
 `/tmp/totehm-production/immersive-final`. La publication se vérifie sur `https://www.totehm.space/` par état Vercel,
 association des alias et comparaison des fichiers servis.
+
+La direction « deep night » rend les murs, le sol, les socles et les cartels noirs. Les lumières restent ciblées
+sur les œuvres ; le cadre d'exposition reste distinct des couleurs originales des œuvres. Les menus, fiches,
+commandes et la liste suivent ce même thème, avec ou sans WebGL. Les préférences système ne rétablissent pas
+de thème clair ; les contrôles natifs du marché utilisent aussi `color-scheme: dark`.

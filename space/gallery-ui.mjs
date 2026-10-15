@@ -47,7 +47,7 @@ document.addEventListener('keydown', e => {
   if (e.key === 'PageDown' || e.key === 'PageUp') { e.preventDefault(); select((selected + (e.key==='PageDown'?1:-1) + rooms.length) % rooms.length); }
   if (e.key === 'Home') { e.preventDefault(); overview(); }
 });
-window.__totehm_gallery = () => ({build:'2026-10-15-space-starry-sky',rooms:rooms.length,room:selected,reduced_motion:reduced.matches,list:document.body.classList.contains('list-view'),fallback,...engine?.diagnostics()});
+window.__totehm_gallery = () => ({build:'2026-10-15-space-deep-night',rooms:rooms.length,room:selected,reduced_motion:reduced.matches,list:document.body.classList.contains('list-view'),fallback,...engine?.diagnostics()});
 function useFallback() {
   fallback = true; document.body.classList.add('no-3d','list-view'); engine?.setList(true);
 }
