@@ -1,4 +1,4 @@
-# CLAUDE.md — CTO de TOTEHM (racine · réorganisé le 30/09, mis à jour le 13/10/2026)
+# CLAUDE.md — CTO de TOTEHM (racine · réorganisé le 30/09, mis à jour le 15/10/2026)
 > **Ce fichier est chargé à CHAQUE session : il reste court (≤ 250 lignes).**
 > Détails : `CLAUDE.md` du domaine ; histoire : `docs/POSTMORTEMS.md`,
 > à lire seulement si utile. Avant copy, naming ou UI : section utile de `BRAND.md`.
@@ -63,8 +63,8 @@ Les `CLAUDE.md` des dossiers servis par Vercel sont exclus du déploiement (`.ve
 ## L'architecture — quatre domaines, une source, quatre fonctions (09/10/2026)
 
 ```
-com/      → www.totehm.com       LA PLATEFORME (13/10, lot B) : le Totehm (5 vues, minimal), l'identité (/auth), /@nom ; la croix : centre = le papier
-                                 signé, My TOTEHM · Search (le banc → /@nom) · ↑ Higher Self (le verso, 7/30 j) · ↓ PHOTO·VIDEO·SPOT · ← ma Terre + mes shorts · → mes visions ; SERT SPACE et le Club
+com/      → www.totehm.com       LA PLATEFORME (15/10, processeur) : le Totehm (5 vues, liste + shorts, capture dans l'élément), /auth, /@nom ; TROIS vues
+                                 verticales : ↑ Get Higher (la bouche) · le processeur (socle, ramifications ; Mine · Others = la galaxie ; verso = mes réglages) · ↓ ma Reflection ; SERT SPACE et le Club
                                  (`/x/space`, `/x/club`, même origine) dans une couche `XO` : un space ou un spot s'ouvre SUR PLACE ; /console
 club/     → www.figher.club      LA RENCONTRE DANS LA RÉALITÉ, le prolongement de SPACE : [Higher] SPOTS + radar au centre · ↑ annoncer
                                  · ↓ caméra · ← passés · → agenda ; reçoit `?v=plan|list&habit=&city=` (SPOT d'un space) ; /meet ; 308 boutique
@@ -173,7 +173,7 @@ musique ajoutée ; vibes, profils ; **ce qui vient du Totehm reste TEL QUEL** (l
 rythme, `spot_box_set`) ; le reste (space, spot) au format de sa plateforme. **figher.club :** un spot = un lieu + une heure (Higher spot : chez soi, lieu privé ou dehors) ;
 radar, annonce (toujours ON), agenda, I AM HERE, passés ; OFF = ville, ON = le point (`_point_ok`). Mini-boxes
 OBJECTIVES/REPULSIONS séparées (droits serveur). Détails : `space/CLAUDE.md`, `club/CLAUDE.md`, copy : `BRAND.md`.
-My spaces (COM ; DELETE aussi dans la fiche) + `space-delete` ; une Box MY STORY (WISDOM) de COM montre ses Cloths (`element_cloths`) comme une Habit ses spaces ; une VISION porte une image libre (`vision_image_set`) ; chercher = un NOM → son univers /@nom (le banc). Espace membre COM = l'utilisateur (vignette, nom, 4 niveaux, créateur en 3 chiffres + prix au curseur, Higher, souscriptions), format higher.boutique.
+My spaces (COM ; DELETE aussi dans la fiche) + `space-delete` ; une Box MY STORY (WISDOM) de COM montre ses Cloths (`element_cloths`) comme une Habit ses spaces ; une VISION porte une image libre (`vision_image_set`) ; chercher = un NOM → son univers /@nom (la galaxie). Mes réglages (nom, 4 niveaux, créateur en 3 chiffres + prix au curseur) = le verso du papier ; l'espace membre = le compte (vignette, Higher, souscriptions), format higher.boutique.
 
 ## Règles d'interface qui valent partout
 
@@ -185,8 +185,8 @@ My spaces (COM ; DELETE aussi dans la fiche) + `space-delete` ; une Box MY STORY
 - Un `<canvas>` porte toujours `width:100%;height:100%`.
 - Geste dédié : `touch-action:none` + Pointer Events. Dans un feed scrollable,
   préserver le scroll natif ; touchstart/move/end reprend le retour au radar.
-  **Le trackpad change de vue dans les QUATRE sens** (07/10), hors manette aussi :
-  nouveau geste (trou de 200 ms) + 130 px ; une liste qui peut défiler garde la molette.
+  **Le trackpad change de vue vers chaque voisin** (07/10 ; seuils de SPACE 12/10 : 70–75 px, verrou 350 ms + inertie ;
+  l'atterrissage COM = vertical seul, 15/10), hors manette aussi ; une liste qui peut défiler garde la molette.
 - Overlays plein écran ancrés EN HAUT (le clavier mobile mange le bas).
 - L'interface est en anglais, LE MOINS DE MOTS POSSIBLE (12/10 : le design parle, pas une phrase) ; termes de marque en anglais. À l'écran « element », jamais « Box » (08/10) ; WISDOM se dit MY STORY (13/10).
 - Une règle de comportement ne va jamais dans un `@media`.

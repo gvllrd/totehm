@@ -1,5 +1,19 @@
 # TOTEHM · backend
 
+## 15/10/2026 — the files of an element, the galaxy, the three-tier Reflection
+
+- **Attach a file to an element** (photo, video, PDF, audio, text — private): upload to `element-media` at
+  `<uid>/m-<uuid>.<ext>` (images re-encoded to JPEG ≤ 1600 px by the page), then `element_media_add(kind, ref, path,
+  mime, bytes, name)` — kind `h|o|r|w|v`, `ref` = the Habit's SERVER text (else the id). On refusal the page removes
+  the uploaded file. Detach: `element_media_remove(id)` returns the path, the page removes the file from MY folder.
+- **Renaming a Habit** = `habit_rename_links(old, new)` AND `element_media_rekey(old, new)` (same key: the text).
+  **Deleting an element** = its files are detached and removed (page, `emPurger`).
+- An orphan file (page closed between upload and `element_media_add`) stays in MY folder, invisible: a cleanup is a
+  Claude Code task (it is a delete), never from the page.
+- **The galaxy** reads `totehm_galaxy(160)` (anon too): names and offer only. **higher-self v4**: send `fmt:'r3'` to get
+  the three tiers; the stream ends with `@ok {dir,teach,step}` — show a quoted item as "mine" only when it is `true`.
+- Checks: `tests/sql/processor_media_galaxy_selftest.sql` (rolled back, `FAIL={}`); browser `com_shorts`, `com_processeur`.
+
 ## 13/10/2026 — four audiences (`audience`) and `/@name` as a universe
 
 - Procedure: publish with `space_post_audience` / `spot_create_audience` / `spot_schedule_audience` (audience set in

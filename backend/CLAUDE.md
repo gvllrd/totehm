@@ -1,5 +1,27 @@
 # backend/CLAUDE.md — la base, les fonctions, l'argent, le bot
 
+## 15/10/2026 — lot processeur : les fichiers d'un élément, la galaxie, la Reflection en trois étages
+
+Migration `20261015090000_processor_media_galaxy.sql`, appliquée UNE fois sous `processor_media_galaxy`, additive (une
+première version portait des `delete` : refusée par l'approbation du cloud, rien n'était passé — le retrait est un
+MARQUAGE). Auto-test `tests/sql/processor_media_galaxy_selftest.sql` : `FAIL={}`.
+- Seau **`element-media`** : privé, 50 Mo, images · vidéos · PDF · audio · texte ; UNE politique `for all to authenticated`
+  sur `(storage.foldername(name))[1] = auth.uid()` (lire, écrire, retirer dans MON dossier seulement).
+- Table **`element_media`** (RLS sans politique) : `kind` h · o · r · w · v, `ref` (le TEXTE d'une Habit — la clé de
+  `habit_rename_links` —, l'id sinon), `path` unique `<uid>/m-<uuid>.<ext>`, `mime`, `bytes`, `name`, `removed_at`.
+- `_element_ok(user, kind, ref)` (service_role) ; `element_media_add(kind, ref, path, mime?, bytes?, name?)`
+  (authenticated) : `why` signin · kind · path · not_mine · file (l'objet doit exister, à moi) · type · size · full
+  (2 000) · exists ; le type et la taille viennent de `storage.objects.metadata`. `element_media_list(kind?, ref?)`
+  (600 au plus, retirés exclus). `element_media_remove(id)` → `removed_at`, rend `path` (la page efface le fichier).
+  `element_media_rekey(old, new)` → le compte (la page l'appelle avec `habit_rename_links`).
+- **`totehm_galaxy(limit=160)`** (anon + authenticated) : les Totehms présentables (règle de `totehm_search` : nommés,
+  `totehm_visibility in ('subscribers','members')`), sans moi, les plus vivants d'abord ; `{pseudo, offer, price_cents,
+  currency, subscribed}` — des noms et l'offre, jamais un contenu.
+- Edge **`higher-self` v4** (JWT) : `fmt:'r3'` → UNE Reflection en trois étages liés (`@dir` objectif|vision|none
+  "citation", `@obs`, `@teach` wisdom|repulsion|story "citation", `@step` habit|new "citation"), `max_tokens` 420 ; à la
+  fin du flux, `@ok {dir,teach,step}` : chaque citation existe-t-elle MOT POUR MOT dans `_bot_memory` (casse, blancs,
+  guillemets ignorés) ; danger → la réponse fixe. Sans `fmt` : l'ancien format (pages en cache). Coût ≈ 1,9 k + 200 jetons.
+
 ## 13/10/2026 — lot B : l'image d'une VISION, le tableau du créateur, un Cloth = MY STORY
 
 Migrations `20261013100000_vision_image.sql` (`vision_image`) et `20261013101000_creator_dashboard.sql`
