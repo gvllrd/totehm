@@ -77,3 +77,18 @@ environnement. Les copies COM de Claude du lot F (`c386ebc`) doivent être conse
 Preuves : `/tmp/totehm-production/intention-dome/results.json`, `intention-dome-dark/results.json`,
 `intention-dome-lisbon/results.json`, `origins-gallery-links/results.json`, `dome-occlusion/results.json`
 et captures `intention-dome-immersive/`.
+
+
+## Publication mesurée
+
+Code publié sur main : `069ed64714c2e5fba8f21f38cd2a10a1180d589e`. Vérification des vrais domaines : `2026-10-16T18:36:09.318322+00:00`.
+Les quatre projets Vercel sont READY en production à ce commit ; chacun des huit alias pointe sur le bon
+déploiement. SPACE : `dpl_FJ6C3UZSfUZk1zEowhoukpLhtv7n`.
+
+Les 49/49 lectures HTTPS ont réussi : accueil, styles et sept modules/lecteur sur www/apex SPACE, les vingt JPG
+Origins et le PNG TotehmPaper, les quatre expériences/marché, et `/totehm`, `/higher`, `/monetize` sur les deux
+origines COM. Tous les corps sont identiques au dépôt, avec le bon MIME et TLS validé. Les six lectures COM
+sont aussi identiques à Claude `c386ebc`, octet pour octet.
+
+Preuves du code publié : `/tmp/totehm-production/dome-code-ready.json` et `dome-code-live.json`.
+Un commit documentaire peut suivre cette mesure sans modifier les fichiers servis.

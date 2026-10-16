@@ -4,7 +4,7 @@
 > Quatre projets READY et huit alias vérifiés (`395c7ca`) ; 25 contrôles HTTP et 40 anciennes adresses réussis ; détail : `../docs/GALLERY_CLUB_20261015.md`.
 > Les mesures historiques du lot C publiées dans `13abd34` sont conservées avec leur date propre.
 
-**Dernier relevé : 16 octobre 2026 (bis), le lot F publié (COM : la liste seule dans le Totehm, ← mes shorts, → mes spots)** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
+**Dernier relevé : 16 octobre 2026, dôme SPACE aux sept intentions publié ; lot F de Claude sur COM conservé** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
 
 > **À quoi sert ce fichier.** Les masters disent *ce qu'on veut*. `CLAUDE.md` dit
 > *comment on construit*. **Celui-ci dit ce qui existe vraiment.**
@@ -19,6 +19,22 @@
 
 ---
 
+
+## 0 · SPACE — DÔME DES INTENTIONS, VOYAGE ET VINGT ORIGINS PUBLIÉS — 16/10/2026
+
+| Mesure | Résultat |
+| --- | --- |
+| Code | `069ed64714c2e5fba8f21f38cd2a10a1180d589e` ; build `2026-10-16-space-intention-dome` |
+| Vercel | Quatre projets READY, huit alias exacts ; SPACE `dpl_FJ6C3UZSfUZk1zEowhoukpLhtv7n` |
+| HTTPS réel | 49/49 : accueil et modules www/apex, vingt photos, papier original, expériences/marché, trois pages COM www/apex ; corps exacts, MIME et TLS vérifiés |
+| Architecture | Murs et sol noir absolu ; arbre abstrait et dôme tracés dans les sept couleurs exactes de COM, traits de 2 px CSS ; ciel animé conservé |
+| Collections | Un seul TotehmPaper/Stoner, papier original encadré ; vingt Origins réelles exposées aux murs et liens vers leur chapitre ; Lisbon reste la station 03 |
+| Porte et voyage | Passage réel à l'opposé ; quatre compositions célestes renouvelées, mémoire bornée à cinq secteurs ordinateur/trois téléphone, retour au dôme |
+| Navigateur local | 230/230 : dôme 60, visite 34, sombre 49, Lisbon 66, Origins 16, occlusion 5 ; ordinateur/téléphone, aucune erreur JavaScript/shader |
+| Invariants locaux | 67/67 trajets/collisions et retour lointain ; 85/85 intégrité des expériences, médias, prix, accès et redirections |
+| Coordination COM | Dernier lot F `c386ebc` intégré ; `/totehm`, `/higher`, `/monetize` identiques sur www/apex ; aucun SQL, Edge, compte, commande ou paiement de production dans ce lot |
+
+Mesure HTTPS : `2026-10-16T18:36:09.318322+00:00`. Preuves du code publié : `/tmp/totehm-production/dome-code-ready.json`, `dome-code-live.json`. Tests WebGL locaux avec services interceptés ; lectures HTTPS des vrais domaines avec validation TLS normale. Le navigateur de production garde sa limite de certificat proxy. Détails : `../docs/SPACE_DOME_20261016.md`.
 
 ## 0 · LA LISTE SEULE DANS LE TOTEHM ; ← MES SHORTS, → MES SPOTS — 16/10/2026 (lot F)
 
