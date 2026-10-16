@@ -302,6 +302,18 @@ Ajoute, telle quelle, l'entrée **0.21 — 01/10/2026 · Pour soi, ou pour soi e
 > `test`, sans génération ni Printful). Migration `20261005b_stripe_test_mode.sql`
 > APPLIQUÉE (`stripe_test_mode`) : ne pas réappliquer.
 
+### Correction 0.62 — 16/10/2026 (bis) · la liste seule dans le Totehm ; ← mes shorts, → mes spots (lot F, à reporter)
+> **Les modes de 0.61 sont ANNULÉS** (Wah : « on garde seulement le mode liste … sinon ça pète toute la structure »).
+> Dans le Totehm : la LISTE seule, aucune bascule, la manette ne s'en va plus jamais, la croix et Échap replient d'un
+> coup. Les deux moteurs sont des VUES de l'atterrissage, qui regagne l'horizontale (cinq vues, quatre voisins) :
+> **← MES SHORTS** = un tiktok plein écran, UN MÉDIA par écran (mes fichiers, la photo d'un spot, l'image d'une
+> VISION), la légende portant les traits d'intention et ouvrant son élément dans le Totehm ; **→ MES SPOTS** = le
+> radar de TOUS mes spots, canvas transparent centré sur le papier (le centre, c'est moi). Zéro appel réseau de plus :
+> les trois sources sont déjà en mémoire. Membre seulement, et jamais dans la galaxie (l'horizontale y fait tourner
+> les étoiles). **Dette de 0.61 réparée** : `creator.html` (`/search`, `/@nom`) avait gardé « Manage my
+> subscriptions » alors que les trois autres copies du menu membre disaient « My monetization » — les quatre
+> copies sont alignées. Aucune migration, aucun prix : rien à approuver. BUILD `2026-10-16-com-vues`.
+
 ### Correction 0.61 — 16/10/2026 · le Club est le public, deux modes par vue, deux offres nommées (lot E, à reporter)
 > **Le Club EST le public, et il s'ouvre à TROIS objets** : `_figher().member` = une habit + un objectif + une
 > répulsion (plus les cinq vues). **IL N'Y A PLUS DE NIVEAU PUBLIC** : PRIVATE · FIGHER CLUB · MY SUBSCRIBERS.
@@ -309,9 +321,8 @@ Ajoute, telle quelle, l'entrée **0.21 — 01/10/2026 · Pour soi, ou pour soi e
 > c'est la surface d'acquisition. Migration `20261016090000_club_ouvert_trois_objets.sql` APPLIQUÉE
 > (`club_ouvert_trois_objets`) : ne pas réappliquer. La contrainte `check` accepte encore `public`, normalisé par
 > les deux triggers — le jour où un `drop` sera possible depuis le terminal, la resserrer à trois valeurs.
-> **Dans le Totehm : deux modes par vue** (liste · shorts) et un troisième dans la vue Habit (le RADAR de mes
-> spots, sans un appel réseau de plus). Shorts et radar font partir la manette ; Échap et la croix sortent d'abord
-> du mode. **La galaxie** : une multitude de dos de papier, la recherche AU MILIEU, et `/@nom` s'ouvre SUR PLACE
+> **Dans le Totehm : deux modes par vue** — ⚠️ ANNULÉ par 0.62 le même jour (la liste est seule ; les shorts et le
+> radar sont devenus deux vues de l'atterrissage). **La galaxie** : une multitude de dos de papier, la recherche AU MILIEU, et `/@nom` s'ouvre SUR PLACE
 > dans la couche (zéro saut d'URL), la fermeture rejouant la plongée à l'envers.
 > **Le nom du Totehm** vit en haut au centre, en petit, et n'en bouge jamais (il a quitté le recto du papier).
 > **Le verso = le menu membre**, d'emblée. **Plus de spaces dans COM** : My Totehm spaces, le groupe SPACES d'une

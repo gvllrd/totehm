@@ -1,5 +1,6 @@
-// COM · 15/10/2026 — LE PROCESSEUR : trois vues VERTICALES (↑ Get Higher · My TOTEHM · ↓ My Reflection) ; plus de
-// manette, plus de gauche ni de droite. CENTRE : le papier dans son socle, les ramifications de mes intentions (les 7
+// COM · 15/10/2026, mis à jour le 16/10 bis — LE PROCESSEUR : CINQ vues, quatre voisins, sans manette
+// (↑ Get Higher · ← My shorts · My TOTEHM · My spots → · ↓ My Reflection). L'horizontale est revenue avec mes
+// shorts et mes spots (16/10 bis, détail dans com_shorts.mjs) ; elle s'éteint dans la galaxie. CENTRE : le papier dans son socle, les ramifications de mes intentions (les 7
 // couleurs) ; Mine · Others (la galaxie des TOTEHMs, la recherche, l'univers /@nom, le retour). HAUT : la bouche du
 // 12/10, le papier sur la langue, « Get [Higher] » l'avale → higher.boutique/get_higher?from=com. BAS : la condensation
 // (seul #gl-bg tourne), le profil, la Reflection en trois étages (citations vérifiées, proposition ≠ Habit).
@@ -37,8 +38,10 @@ try{
       pales:document.querySelectorAll('#lv-ram g.r-0').length,ramOp:getComputedStyle(q('#lv-ram')).opacity,flou,
       plein:(()=>{const r=q('#lv-ram').getBoundingClientRect();return Math.round(r.width)===innerWidth&&Math.round(r.height)>=innerHeight-2;})(),
       puls:[...document.querySelectorAll('#lv-ram .puls')].map(e=>getComputedStyle(e).animationName+'/'+getComputedStyle(e).animationDuration),
-      partis:['ljoy','ljoy-say','lv-g','lv-d','lv-take','fish','lv-earth','lv-visions','lv-mine','lv-find'].filter(i=>document.getElementById(i)),
+      partis:['ljoy','ljoy-say','lv-take','fish','lv-earth','lv-visions','lv-mine','lv-find','vmode'].filter(i=>document.getElementById(i)),
       up:q('#lvn-up').getAttribute('aria-label'),dn:q('#lvn-dn').getAttribute('aria-label'),
+      lf:q('#lvn-lf').getAttribute('aria-label'),rt:q('#lvn-rt').getAttribute('aria-label'),
+      cotes:['lv-g','lv-d'].filter(i=>document.getElementById(i)).length,
       mine:q('#lv-m-mine').getAttribute('aria-checked'),others:q('#lv-m-others').getAttribute('aria-checked'),
       /* 16/10 : le nom a quitté le recto du papier — il vit EN HAUT, au centre, et il n'en bouge jamais. */
       sig:q('#conn-bar').textContent.trim(),sigAbs:!q('#ast-sig'),
@@ -48,8 +51,9 @@ try{
   ok(JSON.stringify(c.pistes)===JSON.stringify(COULEURS)&&c.noeuds>=7&&c.pales===4&&c.ramOp==='1'&&c.plein,'le réseau PLEIN ÉCRAN : sept pistes aux 7 couleurs exactes, les nœuds = MES Habits, les quatre intentions vides en creux');
   ok(c.puls.length===3&&c.puls.every(x=>/^ram-puls\//.test(x))&&new Set(c.puls.map(x=>x.split('/')[1])).size>=1,'ça VIT : une impulsion par intention habitée, à la période réelle de son Habit ('+c.puls.join(' · ')+')');
   ok(!c.flou,'aucun flou (socle, ramifications, galaxie)');
-  ok(!c.partis.length,'plus de manette ni de vues gauche/droite (balisage retiré) '+c.partis.join(','));
-  ok(c.up==='Get Higher'&&c.dn==='My Reflection'&&c.mine==='true'&&c.others==='false','deux chevrons discrets (↑ Get Higher, ↓ My Reflection) ; [Mine] coché');
+  ok(!c.partis.length,'plus de manette, plus de bascule de mode (balisage retiré) '+c.partis.join(','));
+  ok(c.cotes===2&&c.up==='Get Higher'&&c.dn==='My Reflection'&&c.lf==='My shorts'&&c.rt==='My spots'&&c.mine==='true'&&c.others==='false',
+     'quatre chevrons discrets (↑ Get Higher, ↓ My Reflection, ← My shorts, → My spots) ; [Mine] coché');
   ok(c.sig==='wahigher'&&c.sigAbs&&c.haut&&/to open it · (Turn|Swipe) to configure it$/.test(c.tap)&&c.bouche==='0','le nom EN HAUT AU CENTRE, en petit (et plus sur le recto du papier) ; « '+c.tap+' » ; la bouche invisible au centre');
   await pg.screenshot({path:OUT+'/proc_centre_'+(tel?'tel':'ordi')+'.png'});
   await pg.click('#lv-tap');await pg.waitForFunction(()=>!document.body.classList.contains('gate'),null,{timeout:8000}).catch(()=>{});
@@ -59,10 +63,15 @@ try{
  // ── 2 · LES GESTES : ↑ ↓ Échap, ← → sans effet, une transition à la fois ; trackpad ; doigt ; chevrons ──
  {const{pg,log}=await page(browser,{dir:'com',origin,tables,viewport:{width:1280,height:800},rpc:{my_landing:LAND()}});
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1000);
-  await pg.keyboard.press('ArrowLeft');await pg.keyboard.press('ArrowRight');await pg.waitForTimeout(400);
-  ok((await lv(pg)).vue==='c'&&(await lv(pg)).allers===0,'← → : rien (plus de gauche ni de droite)');
+  await pg.keyboard.press('ArrowLeft');await vers(pg,'g');
+  const g0=(await lv(pg)).vue;
+  await pg.keyboard.press('ArrowRight');await vers(pg,'c');
+  await pg.keyboard.press('ArrowRight');await vers(pg,'d');
+  ok(g0==='g'&&(await lv(pg)).vue==='d','← mes shorts, → mes spots (l\'horizontale est revenue le 16/10 bis)');
+  await pg.keyboard.press('Escape');await vers(pg,'c');
+  const a0=(await lv(pg)).allers;
   await pg.keyboard.press('ArrowDown');await pg.keyboard.press('ArrowUp');await vers(pg,'b');await pg.waitForTimeout(200);
-  let d=await lv(pg);ok(d.vue==='b'&&d.allers===1,'↓ puis ↑ aussitôt : UNE navigation (la seconde attend, jamais deux)');
+  let d=await lv(pg);ok(d.vue==='b'&&d.allers===a0+1,'↓ puis ↑ aussitôt : UNE navigation (la seconde attend, jamais deux)');
   await pg.keyboard.press('Escape');await vers(pg,'c');
   await pg.keyboard.press('ArrowUp');await vers(pg,'h');
   await pg.keyboard.press('ArrowUp');await pg.waitForTimeout(500);
@@ -73,6 +82,10 @@ try{
   const t=[await geste(220),await geste(-220),await geste(-220),await geste(220)];
   ok(t.join(',')==='b,c,h,c','le trackpad, vertical : '+t.join(','));
   {await pg.waitForTimeout(300);await pg.mouse.wheel(0,60);await pg.waitForTimeout(900);ok((await lv(pg)).vue==='c','un petit défilement (60 px) ne change pas de vue');}
+  /* 16/10 bis — l'horizontale : `deltaX > 0` veut dire « montre-moi ce qui est à DROITE » (la règle de SPACE). */
+  const gesteX=async dx=>{await pg.waitForTimeout(300);for(let i=0;i<4;i++){await pg.mouse.wheel(dx/4,0);await pg.waitForTimeout(16);}await calme(pg);await pg.waitForTimeout(400);return (await lv(pg)).vue;};
+  const tx=[await gesteX(220),await gesteX(-220),await gesteX(-220),await gesteX(220)];
+  ok(tx.join(',')==='d,c,g,c','le trackpad, horizontal : deltaX > 0 → mes spots, < 0 → mes shorts : '+tx.join(','));
   await pg.click('#lvn-dn');await vers(pg,'b');const dn=await pg.$eval('#lvn-dn',e=>getComputedStyle(e).opacity);
   await pg.click('#lvn-up');await vers(pg,'c');
   ok((await lv(pg)).vue==='c'&&dn==='0','les chevrons : ↓ la Reflection (en bas, plus de chevron ↓), ↑ le centre');
@@ -84,7 +97,7 @@ try{
     for(let i=1;i<=6;i++){await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:x0+(x1-x0)*i/6,y:y0+(y1-y0)*i/6}]});await pg.waitForTimeout(16);}
     await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await calme(pg);await pg.waitForTimeout(500);return (await lv(pg)).vue;};
   const s=[await glisse(40,780,40,640),await glisse(40,640,40,780),await glisse(40,640,40,780),await glisse(40,780,40,640),await glisse(330,560,200,560),await glisse(200,560,330,560)];
-  ok(s.join(',')==='b,c,h,c,c,c','le doigt : vers le haut → la Reflection, vers le bas → Get Higher ; à l\'horizontale, rien : '+s.join(','));
+  ok(s.join(',')==='b,c,h,c,d,c','le doigt : haut → la Reflection, bas → Get Higher, vers la gauche → mes spots : '+s.join(','));
   ok(!erreurs(log).length,'doigt : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
 
  // ── 3 · EN HAUT : GET HIGHER, la bouche du 12/10 — le papier sur la langue, « Get [Higher] » l'avale → la boutique ──

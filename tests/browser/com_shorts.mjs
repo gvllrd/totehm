@@ -1,9 +1,11 @@
-// COM · 15/10/2026 — DANS LE TOTEHM : la vue liste ne change pas ; la vue SHORTS montre UNE Habit par écran, sa boîte
-// telle quelle (attributs, couleurs, liens), son média devant (le plus récent de ses fichiers, sinon la photo d'un de
-// ses spaces) ; sans média, son papier et ses intentions. La bascule garde l'Habit courante et s'anime ; ↑ ↓ vont
-// d'une Habit à l'autre. Capturer et importer DEPUIS l'élément (photo · vidéo · fichier) : privé (`element-media`),
-// rattaché à l'élément (`element_media_add`), retiré par `element_media_remove` ; une Habit renommée garde ses fichiers
-// (`element_media_rekey`), supprimée les emporte. En lecture : rien de tout ça. Tout est simulé.
+// COM · 16/10/2026 bis — LA LISTE SEULE DANS LE TOTEHM ; MES SHORTS À GAUCHE, MES SPOTS À DROITE.
+// Wah : « non on garde seulement le mode liste … sinon ça pète toute la structure. Sur la page d'atterrissage tu me
+// remets une vue shorts en mode tiktok sur la vue de gauche et sur la vue de droite tu me mets la vue radar avec tous
+// mes spots. » Donc : dans le Totehm, aucun mode, aucune bascule, la manette ne s'en va jamais ; sur l'atterrissage,
+// ← un feed de MES médias plein écran (`element_media` + les photos de mes spots + l'image d'une VISION, déjà lus,
+// zéro appel de plus) et → le radar de TOUS mes spots, centré sur le papier (son canvas est transparent).
+// Capturer et importer DEPUIS l'élément reste dans le Totehm : privé (`element-media`), `element_media_add`,
+// `_remove`, `_rekey`. En lecture : rien de tout ça. Sans compte : ni shorts ni spots. Tout est simulé.
 // LANCER : node com_shorts.mjs /tmp
 import fs from 'node:fs';
 import {launch,page,ok} from './harness.mjs';
@@ -15,8 +17,9 @@ const STEPS=[{t:'Run the hill',t0:'Run the hill',is:['fight']},{t:'Read at dawn'
 const tables={profiles:[{pseudo:'wahigher'}],totehms:[{user_id:UID,steps:STEPS,vis:'private'}]};
 const LAND={signed_in:true,pseudo:'wahigher',visibility:'private',offer:{enabled:false},higher:{active:false,price_cents:700,currency:'eur'},thp:false,subscriptions:0,subscribers:0};
 const erreurs=log=>log.errors.filter(e=>e.startsWith('pageerror'));
-const sh=pg=>pg.evaluate(()=>window.__totehm_sh());
-const ici=pg=>pg.evaluate(()=>document.querySelector('#habits .sh.is-ici')?.querySelector('.v-name')?.textContent||null);
+const lv=pg=>pg.evaluate(()=>window.__totehm_lv());
+const vers=(pg,v)=>pg.waitForFunction(v=>{const d=window.__totehm_lv();return d.vue===v&&!d.bouge;},v,{timeout:8000}).catch(()=>{});
+const ici=pg=>pg.evaluate(()=>(document.querySelector('#lv-sh .lsh.is-ici .lsh-t')||{}).textContent||null);
 function serveur(){
   let items=[{id:'m1',kind:'h',ref:'Run the hill',path:UID+'/m-aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa.jpg',mime:'image/jpeg',bytes:1200,name:'hill.jpg',created_at:'2026-10-15T10:00:00Z'}],n=1;
   return {
@@ -25,12 +28,12 @@ function serveur(){
       const id='m'+(++n); items=[{id,kind:b.p_kind,ref:b.p_ref,path:b.p_path,mime:b.p_mime,bytes:b.p_bytes,name:b.p_name},...items]; return {ok:true,id,mime:b.p_mime,bytes:b.p_bytes}; },
     element_media_remove:b=>{ const m=items.find(x=>x.id===b.p_id); items=items.filter(x=>x.id!==b.p_id); return m?{ok:true,path:m.path}:{ok:false,why:'not_mine'}; },
     element_media_rekey:b=>{ let k=0; items.forEach(m=>{ if(m.kind==='h'&&m.ref===b.p_old){ m.ref=b.p_new; k++; } }); return k; },
-    my_trips:{signed_in:true,trips:[{id:'o1',text:'Ship it',is:['express']}],reps:[],wisdom:[],visions:[]},
+    my_trips:{signed_in:true,trips:[{id:'o1',text:'Ship it',is:['express']}],reps:[],wisdom:[],visions:[{id:'v1',text:'The studio'}]},
     habit_spaces:{ok:true,mine:true,habits:[{habit:'Call mum',total:1,total_spaces:0,total_spots:1,spaces:[],spots:[{id:'sp1',format:'spot',state:'will',photo:UID+'/bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb.jpg',starts_at:'2026-10-12T08:00:00Z',exact:{lat:38.72,lng:-9.14,place:'the hill'}}]}]},
-    element_cloths:{ok:true,mine:true,elements:[]},my_visions:{ok:true,visions:[]},my_landing:LAND};
+    element_cloths:{ok:true,mine:true,elements:[]},
+    my_visions:{ok:true,visions:[{id:'v1',image:UID+'/vision-cccccccc-cccc-4ccc-8ccc-cccccccccccc.jpg'}]},
+    my_landing:LAND};
 }
-const ouvrirTotehm=async pg=>{await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(800);
-  await pg.click('#lv-tap');await pg.waitForFunction(()=>!document.body.classList.contains('gate'),null,{timeout:9000}).catch(()=>{});await pg.waitForTimeout(1300);};
 const browser=await launch();
 try{
  for(const [vp,tel] of [[{width:390,height:844},true],[{width:1280,height:800},false]]){
@@ -38,47 +41,64 @@ try{
   const{pg,log}=await page(browser,{dir:'com',origin,tables,viewport:vp,hasTouch:tel,rpc:serveur()});
   await pg.route(/\/storage\/v1\/object\/sign\//,r=>r.request().method()==='GET'?r.fulfill({status:200,contentType:'image/png',body:PNG}):r.fallback());
   await pg.addInitScript(()=>{window.__ouvert=[];window.open=(u)=>{window.__ouvert.push(u);return {location:{set href(x){window.__ouvert.push(x);}},close(){}};};});
-  await ouvrirTotehm(pg);
-  // ── la liste ne change pas ; la bascule vit à côté de la manette ──
-  const l0=await pg.evaluate(()=>({rows:document.querySelectorAll('#habits > .habit[data-row]').length,sh:document.querySelectorAll('#habits .sh').length,
-    btn:getComputedStyle(document.getElementById('vmode')).display,lbl:document.getElementById('vmode').getAttribute('aria-label')}));
-  ok(l0.rows===3&&l0.sh===0&&l0.btn==='flex'&&l0.lbl==='Shorts',nom+' · la liste telle quelle (3 Habits) ; la bascule « Shorts » à côté de la manette');
-  // l'Habit courante (ouverte) est gardée par la bascule
-  await pg.locator('#habits [data-open="h:'+(await pg.evaluate(()=>[...document.querySelectorAll('#habits > .habit[data-row]')][1].dataset.row))+'"]').evaluate(e=>e.click());await pg.waitForTimeout(300);
-  await pg.click('#vmode');await pg.waitForTimeout(250);
-  const anim=await pg.evaluate(()=>document.getElementById('habits').getAnimations().length);
-  await pg.waitForTimeout(900);
-  const s1=await pg.evaluate(()=>{const sc=document.getElementById('fv-inner'),l=[...document.querySelectorAll('#habits .sh')],cs=getComputedStyle(sc);
-    return {n:l.length,h:l.map(e=>Math.round(e.getBoundingClientRect().height)),root:sc.clientHeight,snap:cs.scrollSnapType,
-      boites:l.map(e=>e.querySelector('.habit[data-row] .v-name')?.textContent),img:!!l[0].querySelector('.sh-m img[src]'),
-      vide:!!l[1].querySelector('.sh-none'),traits:[...l[1].querySelectorAll('.sh-ints i')].map(i=>getComputedStyle(i).backgroundColor),cap:(l[1].querySelector('.sh-none [data-cap]')||{}).textContent||'',
-      space:!!l[2].querySelector('.sh-m img[data-b="moments"]'),tick:getComputedStyle(l[0].querySelector('.habit .tick')).opacity};});
-  ok(anim>=1,'la bascule liste → shorts s\'anime');
-  ok(s1.n===3&&s1.h.every((x,i)=>i===1?x>=s1.root-2:Math.abs(x-s1.root)<=2)&&/y mandatory/.test(s1.snap),'shorts : UNE Habit par écran (la hauteur de la liste ; l\'ouverte grandit avec sa boîte), le défilement aimanté '+s1.h.join('/')+' ≈ '+s1.root);
-  ok(JSON.stringify(s1.boites)===JSON.stringify(['Run the hill','Read at dawn','Call mum'])&&s1.tick==='1','chaque short porte SA boîte, telle quelle (le titre, le trait d\'intention)');
-  ok(s1.img,'son média DEVANT : le fichier le plus récent de l\'Habit (photo signée)');
-  ok(s1.vide&&JSON.stringify(s1.traits)===JSON.stringify(['rgb(55, 138, 221)','rgb(99, 153, 34)'])&&s1.cap==='Add a media','sans média : son papier, ses intentions (focus, love), [Add a media] sans icône — rien d\'inventé');
-  ok(s1.space,'sinon la photo d\'un de ses spots (Call mum)');
-  ok(await ici(pg)==='Read at dawn','la bascule garde l\'Habit courante (Read at dawn)');
+  await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1200);
+
+  // ══ 1 · ← MES SHORTS : le tiktok, plein écran ══
+  await pg.click('#lvn-lf');await vers(pg,'g');await pg.waitForTimeout(1000);
+  const g=await pg.evaluate(()=>{const s=document.getElementById('lv-sh'),l=[...document.querySelectorAll('#lv-sh .lsh')],cs=getComputedStyle(s);
+    return {n:l.length,h:l.map(e=>Math.round(e.getBoundingClientRect().height)),vh:innerHeight,snap:cs.scrollSnapType,
+      scroll:s.scrollHeight>s.clientHeight+10,
+      legendes:l.map(e=>(e.querySelector('.lsh-t')||{}).textContent||''),
+      cibles:l.map(e=>(e.querySelector('[data-lsh]')||{dataset:{}}).dataset.lsh||''),
+      traits:[...l[0].querySelectorAll('.lsh-i i')].map(i=>getComputedStyle(i).backgroundColor),
+      police:getComputedStyle(l[0].querySelector('.lsh-t')).fontFamily,
+      img:l.filter(e=>e.querySelector('img[src]')).length,
+      plein:Math.round(l[0].getBoundingClientRect().width)===innerWidth,
+      proc:getComputedStyle(document.getElementById('lv-proc')).opacity,
+      say:(document.getElementById('lv-sh-say')||{}).textContent||'',
+      items:window.__totehm_sh().items};});
+  ok(g.n===3&&g.items===3&&g.h.every(x=>Math.abs(x-g.vh)<=2)&&g.plein&&/y mandatory/.test(g.snap)&&g.scroll,
+     nom+' · ← mes shorts : UN MÉDIA par écran, plein écran, défilement aimanté ('+g.h.join('/')+' ≈ '+g.vh+')');
+  ok(JSON.stringify(g.legendes)===JSON.stringify(['Run the hill','Call mum','The studio']),
+     'les trois sources, dans l\'ordre : mes fichiers, la photo d\'un spot, l\'image d\'une VISION ('+g.legendes.join(' · ')+')');
+  ok(JSON.stringify(g.traits)===JSON.stringify(['rgb(226, 75, 74)'])&&/Quantico/.test(g.police)
+     &&/^habits\|/.test(g.cibles[0])&&/^habits\|/.test(g.cibles[1])&&/^visions\|/.test(g.cibles[2]),
+     'la légende : ses traits d\'intention (fight), le texte en Quantico, et elle mène à SA vue');
+  ok(g.proc==='0'&&!g.say,'le feed prend l\'écran : le processeur s\'efface, aucun mot de plus');
+  await pg.waitForTimeout(500);
+  ok(g.img>=1&&await pg.evaluate(()=>!!document.querySelector('#lv-sh .lsh.is-ici img[src]')),'le média visible est chargé (URL signée) et marqué is-ici');
   await pg.screenshot({path:OUT+'/shorts_'+(tel?'tel':'ordi')+'.png'});
-  // ↑ ↓ d'une Habit à l'autre (le défilement aimanté, animé)
-  /* la boîte ouverte se ferme par SA croix (Échap replie le Totehm) */
+  // ↑ ↓ : le média d'avant, d'après — sans quitter la vue (il n'y a pas de voisin vertical)
+  await pg.evaluate(()=>window.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowDown'})));await pg.waitForTimeout(1200);
+  const a1=await ici(pg), vg=(await lv(pg)).vue;
+  await pg.evaluate(()=>window.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowUp'})));await pg.waitForTimeout(1200);
+  ok(a1==='Call mum'&&vg==='g'&&await ici(pg)==='Run the hill','↓ le média suivant, ↑ le précédent — et on ne quitte pas la vue ('+a1+')');
+
+  // ══ 2 · UN TAP SUR LA LÉGENDE OUVRE SON ÉLÉMENT DANS LE TOTEHM ══
+  await pg.locator('#lv-sh .lsh [data-lsh]').first().evaluate(e=>e.click());
+  await pg.waitForFunction(()=>!document.body.classList.contains('gate'),null,{timeout:9000}).catch(()=>{});
+  await pg.waitForTimeout(1200);
+  const o=await pg.evaluate(()=>({vue:window.__totehm_zone.vue,ouverte:(document.querySelector('#habits .habit.open .v-name')||{}).textContent||''}));
+  ok(o.vue==='habits'&&o.ouverte==='Run the hill','un tap sur la légende ouvre SON élément dans le Totehm ('+o.vue+' · '+o.ouverte+')');
+
+  // ══ 3 · DANS LE TOTEHM : LA LISTE, ET RIEN D'AUTRE ══
+  const l0=await pg.evaluate(()=>({rows:document.querySelectorAll('#habits > .habit[data-row]').length,
+    sh:document.querySelectorAll('#habits .lsh,#habits .sh').length,bascule:!!document.getElementById('vmode'),
+    radar:!!document.querySelector('#habits #rdr-c'),joy:getComputedStyle(document.getElementById('joy')).opacity,
+    cls:document.body.className.split(/\s+/).filter(c=>/^v-(shorts|radar)$/.test(c)).length,
+    sorti:window.__totehm_sh().on||window.__totehm_rdr().on}));
+  ok(l0.rows===3&&l0.sh===0&&!l0.bascule&&!l0.radar&&l0.joy==='1'&&l0.cls===0&&!l0.sorti,
+     nom+' · la liste SEULE (3 Habits) : aucune bascule, aucun short, aucun radar, la manette reste, les deux moteurs à l\'arrêt');
+  // ── capturer / importer DEPUIS l'élément (le Totehm les garde) ──
   await pg.locator('#habits .habit.open [data-x]').first().evaluate(e=>e.click()).catch(()=>{});await pg.waitForTimeout(300);
-  await pg.evaluate(()=>document.activeElement&&document.activeElement.blur&&document.activeElement.blur());
-  await pg.keyboard.press('ArrowDown');await pg.waitForTimeout(1100);const a=await ici(pg);
-  await pg.keyboard.press('ArrowUp');await pg.waitForTimeout(1100);const b=await ici(pg);
-  const tr=await pg.evaluate(()=>getComputedStyle(document.querySelector('#habits .sh .habit')).transitionDuration);
-  ok(a==='Call mum'&&b==='Read at dawn'&&!/^0s(, 0s)*$/.test(tr),'↓ l\'Habit suivante, ↑ la précédente ; le passage s\'anime ('+a+' → '+b+')');
-  // ── capturer / importer DEPUIS l'élément ──
-  await pg.locator('#habits .sh.is-ici [data-open]').first().evaluate(e=>e.click());await pg.waitForTimeout(400);
-  const f0=await pg.locator('#habits .sh.is-ici .habit [data-cap]').count();
+  const h2=await pg.evaluate(()=>[...document.querySelectorAll('#habits > .habit[data-row]')][1].dataset.row);
+  await pg.locator('#habits [data-open="h:'+h2+'"]').evaluate(e=>e.click());await pg.waitForTimeout(400);
+  const f0=await pg.locator('#habits .habit.open [data-cap]').count();
   ok(f0===1,'la boîte ouverte (la mienne) a ses fichiers et UN SEUL [Add a media]');
-  await pg.locator('#habits .sh.is-ici .habit [data-cap]').first().evaluate(e=>e.click());await pg.waitForTimeout(450);
+  await pg.locator('#habits .habit.open [data-cap]').first().evaluate(e=>e.click());await pg.waitForTimeout(450);
   const c=await pg.evaluate(()=>({on:document.getElementById('cap').classList.contains('is-on'),btn:[...document.querySelectorAll('#cap .cap-b')].map(b=>b.textContent.trim()),
     tr:getComputedStyle(document.getElementById('cap-in')).transitionDuration}));
   ok(c.on&&c.btn.join(',')==='PHOTO,VIDEO,IMPORT'&&!/^0s/.test(c.tr),'la capture s\'ouvre depuis l\'élément (animée) : PHOTO · VIDEO · IMPORT');
-  await pg.keyboard.press('ArrowDown');await pg.waitForTimeout(500);
-  ok(await ici(pg)==='Read at dawn','pendant la capture, rien ne navigue dessous');
   const fc=pg.waitForEvent('filechooser',{timeout:5000});
   await pg.click('#cap [data-capk="file"]');
   await (await fc).setFiles({name:'notes.pdf',mimeType:'application/pdf',buffer:Buffer.from('%PDF-1.4 test')});
@@ -86,11 +106,11 @@ try{
   const up=log.upload.filter(u=>u.method==='POST').pop(), add=log.rpc.filter(r=>r.name==='element_media_add').pop();
   ok(up&&new RegExp('^element-media/'+UID+'/m-[0-9a-f-]{36}\\.pdf$').test(up.path),'IMPORT : le fichier part dans MON dossier, privé ('+(up&&up.path)+')');
   ok(add&&add.body.p_kind==='h'&&add.body.p_ref==='Read at dawn'&&add.body.p_mime==='application/pdf'&&add.body.p_name==='notes.pdf'&&up.path==='element-media/'+add.body.p_path,'rattaché à CETTE Habit (element_media_add : h, « Read at dawn »)');
-  const puce=await pg.evaluate(()=>[...document.querySelectorAll('#habits .sh.is-ici .m-f .mini-t')].map(b=>b.textContent));
+  const puce=await pg.evaluate(()=>[...document.querySelectorAll('#habits .habit.open .m-f .mini-t')].map(b=>b.textContent));
   ok(puce.includes('notes.pdf'),'la capture se referme ; le fichier est là, dans l\'élément');
   ok(!log.rpc.some(r=>/^(spot_create|space_post|space_post_audience|spot_create_audience)$/.test(r.name)),'importer n\'est pas publier (aucun space, aucun spot)');
-  // une photo : elle devient le média de l'Habit, devant
-  await pg.locator('#habits .sh.is-ici .habit [data-cap]').first().evaluate(e=>e.click());await pg.waitForTimeout(450);
+  // une photo : elle rejoint mes médias
+  await pg.locator('#habits .habit.open [data-cap]').first().evaluate(e=>e.click());await pg.waitForTimeout(450);
   if(tel){
     const fp=pg.waitForEvent('filechooser',{timeout:5000});
     await pg.click('#cap [data-capk="photo"]');
@@ -104,71 +124,84 @@ try{
   await pg.waitForFunction(()=>!document.getElementById('cap').classList.contains('is-on'),null,{timeout:8000}).catch(()=>{});
   const ph=log.rpc.filter(r=>r.name==='element_media_add').pop();
   await pg.waitForTimeout(600);
-  ok(ph&&ph.body.p_mime==='image/jpeg'&&/\.jpg$/.test(ph.body.p_path)&&await pg.evaluate(()=>!!document.querySelector('#habits .sh.is-ici .sh-m img')),'PHOTO : un JPEG (≤ 1 600 px), il devient le média de l\'Habit, devant');
+  ok(ph&&ph.body.p_mime==='image/jpeg'&&/\.jpg$/.test(ph.body.p_path),'PHOTO : un JPEG (≤ 1 600 px), rattaché à l\'élément');
   // ouvrir, retirer un fichier
-  await pg.locator('#habits .sh.is-ici .m-f .mini-t',{hasText:'notes.pdf'}).evaluate(e=>e.click());await pg.waitForTimeout(500);
+  await pg.locator('#habits .habit.open .m-f .mini-t',{hasText:'notes.pdf'}).evaluate(e=>e.click());await pg.waitForTimeout(500);
   ok(await pg.evaluate(()=>window.__ouvert.some(u=>/\/storage\/v1\/object\/sign\/element-media\//.test(u))),'un fichier s\'ouvre par son URL signée');
   const dels=log.upload.filter(u=>u.method==='DELETE').length;
-  await pg.locator('#habits .sh.is-ici .m-f',{hasText:'notes.pdf'}).locator('[data-emx]').evaluate(e=>e.click());await pg.waitForTimeout(700);
+  await pg.locator('#habits .habit.open .m-f',{hasText:'notes.pdf'}).locator('[data-emx]').evaluate(e=>e.click());await pg.waitForTimeout(700);
   ok(log.rpc.some(r=>r.name==='element_media_remove')&&log.upload.filter(u=>u.method==='DELETE').length===dels+1&&!(await pg.evaluate(()=>[...document.querySelectorAll('#habits .m-f .mini-t')].some(b=>b.textContent==='notes.pdf'))),'« × » : element_media_remove, le fichier s\'efface de mon dossier');
-  // ── 16/10 : la vue Habit a TROIS modes ; Échap sort du mode avant de replier le Totehm ──
-  await pg.locator('#habits .sh.is-ici [data-x]').first().evaluate(e=>e.click()).catch(()=>{});await pg.waitForTimeout(300);
-  await pg.click('#vmode');await pg.waitForTimeout(800);
-  const rd=await pg.evaluate(()=>({mode:window.__totehm_sh().mode,radar:!!document.getElementById('rdr-c'),
-    cls:document.body.classList.contains('v-radar'),joy:getComputedStyle(document.getElementById('joy')).opacity,
-    say:(document.getElementById('rdr-say')||{}).textContent||'',lbl:document.getElementById('vmode').getAttribute('aria-label'),
-    pts:window.__totehm_rdr().points}));
-  ok(rd.mode==='radar'&&rd.radar&&rd.cls&&rd.lbl==='List','troisième mode de la vue Habit : le RADAR (le bouton mène ensuite à List)');
-  ok(rd.joy==='0','au radar comme en shorts, la manette s\'en va');
-  ok(rd.pts===1&&/1 spot/.test(rd.say),'le radar place MES spots, sans un appel de plus ('+rd.say+')');
-  await pg.evaluate(()=>window.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape'})));await pg.waitForTimeout(800);
-  const l1=await pg.evaluate(()=>({sh:document.querySelectorAll('#habits .sh').length,rows:document.querySelectorAll('#habits > .habit[data-row]').length,
-    lbl:document.getElementById('vmode').getAttribute('aria-label'),gate:document.body.classList.contains('gate'),joy:getComputedStyle(document.getElementById('joy')).opacity}));
-  ok(l1.sh===0&&l1.rows===3&&l1.lbl==='Shorts'&&!l1.gate&&l1.joy==='1','Échap revient à la LISTE (la manette revient), il ne replie pas le Totehm');
-  // renommer une Habit : ses fichiers suivent ; la supprimer : ils partent
-  const h1=await pg.evaluate(()=>[...document.querySelectorAll('#habits > .habit[data-row]')][0].dataset.row);
-  await pg.locator('#habits [data-open="h:'+h1+'"]').evaluate(e=>e.click());await pg.waitForTimeout(300);
+  // renommer : ses fichiers suivent ; supprimer : ils partent
   await pg.locator('#habits .habit.open .v-name[data-edit]').click();
-  await pg.keyboard.press('End');await pg.keyboard.type(' fast');await pg.waitForTimeout(1600);
+  await pg.keyboard.press('End');await pg.keyboard.type(' slow');await pg.waitForTimeout(1600);
   const rk=log.rpc.find(r=>r.name==='element_media_rekey');
-  ok(rk&&rk.body.p_old==='Run the hill'&&rk.body.p_new==='Run the hill fast'&&log.rpc.some(r=>r.name==='habit_rename_links'),'renommée : element_media_rekey avec habit_rename_links (ses fichiers la suivent)');
+  ok(rk&&rk.body.p_old==='Read at dawn'&&rk.body.p_new==='Read at dawn slow'&&log.rpc.some(r=>r.name==='habit_rename_links'),'renommée : element_media_rekey avec habit_rename_links (ses fichiers la suivent)');
   const rm0=log.rpc.filter(r=>r.name==='element_media_remove').length;
   await pg.locator('#habits .habit.open [data-kill]').evaluate(e=>e.click());await pg.waitForTimeout(900);
   ok(log.rpc.filter(r=>r.name==='element_media_remove').length===rm0+1,'supprimée : ses fichiers partent avec elle');
-  // ── 16/10 : CHAQUE vue a ses modes (deux ailleurs, trois dans les Habits) ──
-  await pg.evaluate(()=>window.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowUp'})));await pg.waitForTimeout(900);
-  const av=await pg.evaluate(()=>({vue:window.__totehm_zone.vue,btn:getComputedStyle(document.getElementById('vmode')).display,
-    lbl:document.getElementById('vmode').getAttribute('aria-label'),mode:window.__totehm_sh().mode}));
-  ok(av.vue==='objectives'&&av.btn==='flex'&&av.lbl==='Shorts'&&av.mode==='list','la bascule existe dans TOUTES les vues (objectives : liste, puis Shorts)');
-  await pg.click('#vmode');await pg.waitForTimeout(900);
-  const ao=await pg.evaluate(()=>({mode:window.__totehm_sh().mode,n:document.querySelectorAll('#habits .sh').length,
-    titre:(document.querySelector('#habits .sh .v-name')||{}).textContent||'',lbl:document.getElementById('vmode').getAttribute('aria-label')}));
-  ok(ao.mode==='shorts'&&ao.n===1&&ao.titre==='Ship it'&&ao.lbl==='List','objectives en shorts : SA boîte, un écran — et deux modes seulement (pas de radar)');
-  await pg.evaluate(()=>window.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape'})));await pg.waitForTimeout(700);
-  /* Le mode est gardé PAR VUE : revenu aux Habits, la liste y est restée la liste. */
-  await pg.evaluate(()=>window.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowDown'})));await pg.waitForTimeout(900);
-  const ret=await pg.evaluate(()=>{const h=document.getElementById('habits');
-    return {vue:window.__totehm_zone.vue,mode:window.__totehm_sh().mode,
-            swap:h.classList.contains('swap')&&h.classList.contains('sw-b')&&getComputedStyle(h).animationName==='swap-b'};});
-  ok(ret.swap,'changer de vue : la pile entre du côté du voyage (↓ : d\'en bas)');
-  ok(ret.vue==='habits'&&ret.mode==='list','le mode est gardé PAR VUE : les Habits étaient en liste, elles le sont restées');
-  ok(!erreurs(log).length,nom+' · shorts : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
- // ── en lecture (le Totehm d'un autre) : ni bascule, ni fichiers ──
+  // ── Échap replie le Totehm d'un coup : il n'y a plus de mode dont sortir d'abord ──
+  await pg.evaluate(()=>document.activeElement&&document.activeElement.blur&&document.activeElement.blur());
+  await pg.evaluate(()=>window.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape'})));await pg.waitForTimeout(1500);
+  ok(await pg.evaluate(()=>document.body.classList.contains('gate')),'Échap replie le Totehm d\'un coup (plus de mode à quitter)');
+
+  // ══ 4 · → MES SPOTS : le radar, centré sur le papier ══
+  await vers(pg,'c');
+  await pg.click('#lvn-rt');await vers(pg,'d');await pg.waitForTimeout(900);
+  const d=await pg.evaluate(()=>{const c=document.getElementById('rdr-c'),a=document.getElementById('gate-asteroid'),
+      rc=c.getBoundingClientRect(),ra=a.getBoundingClientRect(),r=window.__totehm_rdr();
+    return {pts:r.points,sans:r.sans,rayon:r.rayon,anime:r.anime,
+      say:(document.getElementById('rdr-say')||{}).textContent||'',
+      fond:getComputedStyle(c).backgroundColor,plein:Math.round(rc.width)===innerWidth&&Math.round(rc.height)>=innerHeight-2,
+      papier:getComputedStyle(document.getElementById('lv-proc')).opacity,
+      centre:Math.abs((ra.x+ra.width/2)-(rc.x+rc.width/2))<2&&ra.y<innerHeight*.6};});
+  ok(d.pts===1&&d.sans===0&&/^1 spot · \d+ m$/.test(d.say)&&d.rayon>0,'→ mes spots : TOUS mes spots placés, la portée en mètres sous le kilomètre ('+d.say+')');
+  ok(d.fond==='rgba(0, 0, 0, 0)'&&d.plein&&d.papier==='1'&&d.centre,'le canvas est plein écran et TRANSPARENT : le papier reste le centre');
+  ok(d.anime,'le radar tourne quand il est à l\'écran');
+  await pg.screenshot({path:OUT+'/spots_'+(tel?'tel':'ordi')+'.png'});
+  await pg.click('#lvn-lf');await vers(pg,'c');await pg.waitForTimeout(300);
+  ok(await pg.evaluate(()=>!window.__totehm_rdr().anime&&!window.__totehm_rdr().on),'quitté, le radar s\'arrête (zéro rAF au repos)');
+
+  // ══ 5 · DANS LA GALAXIE, L'HORIZONTALE APPARTIENT AUX ÉTOILES ══
+  await pg.click('#lv-m-others');await pg.waitForTimeout(900);
+  const gal=await pg.evaluate(()=>({lf:document.getElementById('lvn-lf').classList.contains('is-mort'),
+    rt:document.getElementById('lvn-rt').classList.contains('is-mort')}));
+  await pg.evaluate(()=>window.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowRight'})));await pg.waitForTimeout(700);
+  ok(gal.lf&&gal.rt&&(await lv(pg)).vue==='c','Others : les deux chevrons latéraux s\'éteignent, ← → ne naviguent pas (les étoiles gardent le geste)');
+  ok(!erreurs(log).length,nom+' · aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
+
+ // ── sans compte : ni « mes » shorts, ni « mes » spots ──
+ {const{pg,log}=await page(browser,{dir:'com',origin,tables:{},session:false,rpc:{...serveur(),my_landing:{signed_in:false}}});
+  await pg.goto(origin+'/totehm');await pg.waitForTimeout(1600);
+  const v=await pg.evaluate(()=>({lf:document.getElementById('lvn-lf').classList.contains('is-mort'),
+    rt:document.getElementById('lvn-rt').classList.contains('is-mort'),
+    up:!document.getElementById('lvn-up').classList.contains('is-mort')}));
+  await pg.evaluate(()=>window.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowLeft'})));await pg.waitForTimeout(700);
+  ok(v.lf&&v.rt&&v.up&&(await lv(pg)).vue==='c','sans compte : pas de shorts ni de spots (chevrons latéraux éteints) ; Get Higher reste');
+  ok(!log.rpc.some(r=>r.name==='element_media_list'),'sans compte : mes fichiers ne sont jamais lus');
+  ok(!erreurs(log).length,'sans compte : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
+
+ // ── en lecture (le Totehm d'un autre) : ni fichiers, ni capture, ni shorts ──
  {const source={ok:true,pseudo:'studio',steps:[{t:'Deep practice',is:['focus']}],objs:{},trips:[],reps:[],wisdom:[],visions:[]};
   const{pg,log}=await page(browser,{dir:'com',origin,tables,rpc:{...serveur(),totehm_of:source,habit_spaces:{ok:true,mine:false,habits:[]}}});
   await pg.goto(origin+'/totehm?ro=studio');await pg.waitForSelector('body.ro:not(.gate)');await pg.waitForTimeout(700);
   await pg.locator('#habits [data-open]').first().evaluate(e=>e.click());await pg.waitForTimeout(300);
-  ok(await pg.evaluate(()=>getComputedStyle(document.getElementById('vmode')).display==='none'&&!document.querySelector('#habits [data-cap],#habits .m-f')),'en lecture : ni shorts, ni fichiers, ni capture');
+  ok(await pg.evaluate(()=>!document.getElementById('vmode')&&!document.querySelector('#habits [data-cap],#habits .m-f')),'en lecture : ni bascule, ni fichiers, ni capture');
   ok(!log.rpc.some(r=>r.name==='element_media_list'),'en lecture : mes fichiers ne sont jamais lus');
+  ok(await pg.evaluate(()=>window.__totehm_sh().items===0),'en lecture : aucun short (ce ne sont pas mes médias)');
   ok(!erreurs(log).length,'lecture : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
- // ── mouvement réduit : la bascule sans animation ──
+
+ // ── mouvement réduit : le feed sans défilement doux, le radar sans balayage ──
  {const{pg,log}=await page(browser,{dir:'com',origin,tables,rpc:serveur()});
   await pg.emulateMedia({reducedMotion:'reduce'});
   await pg.route(/\/storage\/v1\/object\/sign\//,r=>r.request().method()==='GET'?r.fulfill({status:200,contentType:'image/png',body:PNG}):r.fallback());
-  await ouvrirTotehm(pg);
-  await pg.click('#vmode');await pg.waitForTimeout(60);
-  const r=await pg.evaluate(()=>({anim:document.getElementById('habits').getAnimations().length,n:document.querySelectorAll('#habits .sh').length,
-    tr:getComputedStyle(document.querySelector('#habits .sh .habit')).transitionDuration,sb:getComputedStyle(document.getElementById('fv-inner')).scrollBehavior}));
-  ok(r.n===3&&r.anim===0&&/^0s/.test(r.tr)&&r.sb==='auto','mouvement réduit : les shorts, sans animation ni défilement doux');
+  await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1200);
+  await pg.click('#lvn-lf');await vers(pg,'g');await pg.waitForTimeout(700);
+  const r=await pg.evaluate(()=>({n:document.querySelectorAll('#lv-sh .lsh').length,
+    sb:getComputedStyle(document.getElementById('lv-sh')).scrollBehavior,
+    tr:getComputedStyle(document.querySelector('#lv-sh .lsh img')).transitionDuration}));
+  ok(r.n===3&&r.sb==='auto'&&/^0s/.test(r.tr),'mouvement réduit : les shorts, sans animation ni défilement doux');
+  await pg.click('#lvn-rt');await vers(pg,'c');await pg.click('#lvn-rt');await vers(pg,'d');await pg.waitForTimeout(600);
+  const rr=await pg.evaluate(()=>window.__totehm_rdr());
+  ok(rr.points===1&&rr.rayon>0,'mouvement réduit : le radar place ses points (une image, pas de balayage)');
   ok(!erreurs(log).length,'mouvement réduit : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
 }finally{await browser.close();}

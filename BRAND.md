@@ -1,9 +1,9 @@
 # BRAND.md — TOTEHM
 
-## CURRENT UPDATE — 16/10/2026 · the landing SELLS two different things, and the name never moves
+## CURRENT UPDATE — 16/10/2026 bis · the list is the Totehm ; ← my shorts, my spots →
 
 **THE NAME OF A TOTEHM HAS ONE PLACE: top, centre, small — and it never moves.** Quantico Coral, 13 px, above
-everything, in every view and every mode. Tapping it opens the back of the paper, so renaming is one gesture.
+everything, in every view. Tapping it opens the back of the paper, so renaming is one gesture.
 It left the front of the paper (12/10): two places for one name is two values to keep in agreement. Every
 animation composes around it (`--tn-h`), nothing is ever laid over it.
 
@@ -38,8 +38,16 @@ price **from the server**. Closing line of `/higher`: **Talk is cheap.**
 CLUB means *anyone with a TOTEHM* — one habit, one objective, one repulsion. Say it that way on screen: never
 « everyone with an account ».
 
-**ENTERING A MODE IS A PLACE, NOT A SETTING.** List · Shorts · (Radar, in Habits). In Shorts and Radar the
-joystick leaves: that is how you know you went in. Escape or the cross brings the list — and the joystick — back.
+**INSIDE THE TOTEHM, THERE IS ONE WAY TO READ IT: THE LIST** (16/10 bis — this replaces the modes). No toggle, no
+mode, the joystick never leaves, and the cross folds the Totehm in one gesture. **The feed and the radar are PLACES,
+not settings**: they are two views of the landing, reached by going left or right.
+
+> **← My shorts** — one media per screen, full bleed, snap-scrolled. Over it, the element it came from: its
+> intention lines and its words, in Quantico. Tap it and that element opens, inside the Totehm, on its own view.
+> **My spots →** — the radar. The rings bloom around the paper, because the centre is me. A spot without an exact
+> point sits pale on the outer ring and SAYS so — never a position invented from a city.
+
+Both are mine: without a TOTEHM they do not exist, and inside the galaxy the horizontal belongs to the stars.
 
 ## SPACE — 15/10/2026 · deep night
 

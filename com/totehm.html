@@ -3131,8 +3131,12 @@ body:not(.gate) #lv,body.entered #lv,body.is-door #lv{display:none}
 .lv-pane{position:absolute;inset:0;opacity:0;visibility:hidden;
   transition:opacity .4s ease,transform .55s var(--gate-ease),visibility 0s linear .55s}
 #lv-h{transform:translateY(-22px)}#lv-b{transform:translateY(22px)}
-body.lv-c #lv-c,body.lv-h #lv-h,body.lv-b #lv-b{opacity:1;visibility:visible;transform:none;
+#lv-g{transform:translateX(-22px)}#lv-d{transform:translateX(22px)}
+body.lv-c #lv-c,body.lv-h #lv-h,body.lv-b #lv-b,body.lv-g #lv-g,body.lv-d #lv-d{opacity:1;visibility:visible;transform:none;
   transition:opacity .45s ease .16s,transform .6s var(--gate-ease) .1s}
+/* ← MES SHORTS prend tout l'écran : le processeur et le badge s'effacent. Le NOM, lui, ne bouge jamais.
+   → MES SPOTS garde le papier dans son socle : le radar bloomme autour de lui (son canvas est transparent). */
+body.lv-g #lv-proc,body.lv-g #lv-slogan{opacity:0}
 .lv-pane .lv-act{pointer-events:auto}
 .lv-mono{font-family:'Space Mono',monospace;font-size:11px;line-height:1.6;color:#9a9aa2;text-align:center}
 .lv-h2{font-family:'Space Mono',monospace;font-weight:700;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#fff}
@@ -3168,6 +3172,11 @@ body.lv-others #lv-slogan.is-c{opacity:0}        /* dans la galaxie, il n'y a qu
 /* Le chevron du haut passe SOUS le nom : le nom est le repère fixe, pas lui. */
 #lvn-up{top:calc(max(10px,env(safe-area-inset-top)) + var(--tn-h))}
 #lvn-dn{bottom:max(12px,env(safe-area-inset-bottom))}
+/* 16/10 bis — l'horizontale est revenue (mes shorts à gauche, mes spots à droite) : deux chevrons de plus,
+   couchés, aux bords. Même objet, même gris, même rayon : une croix de quatre voisins, jamais une manette. */
+.lvn-x{top:50%;left:auto;width:26px;height:44px;margin:-22px 0 0 0}
+#lvn-lf{left:max(10px,env(safe-area-inset-left))}
+#lvn-rt{right:max(10px,env(safe-area-inset-right))}
 .lvn.is-mort{opacity:0;pointer-events:none}
 .lvn:focus-visible{outline:1px solid #fff;outline-offset:3px}
 body.lv-others.lv-c #lvn-up{opacity:0;pointer-events:none}
@@ -3444,57 +3453,37 @@ body.lv-b #gate-logo #gl-rail,body.lv-b #gate-logo #gl-wm{opacity:0}
 #srch-res .srch-sub{flex:none;font:400 10.5px/1.3 'Space Mono',monospace;color:#b0b0b0;background:#1f1f24;border-radius:10px;padding:7px 10px;text-decoration:none;white-space:nowrap}
 @media (prefers-reduced-motion: reduce){#lv-slogan,#lv-slogan *,.lv-pane,#ast-front,#lv-proc,#lv-socket,#lv-socket *,#lv-ram,#lv-ram path,#lv-ram rect,#gx-c,#gx-ui,.rf-t,#lv-tap,#gate-mouth{transition:none!important}
   .lv-pane,#lv-h,#lv-b{transform:none!important}}
-/* ══ DANS LE TOTEHM : LA VUE SHORTS ET LES FICHIERS D'UN ÉLÉMENT · 15/10/2026 ═══════════════════════
-   Wah : « garder la vue liste ; une vue shorts — une Habit Box par écran, son image ou sa vidéo devant ; capturer
-   et importer depuis l'élément ». La liste ne bouge pas. En shorts, chaque Habit occupe la hauteur de la liste
-   (`--sh-h`), la boîte EST la même (attributs, couleurs, liens), son média devant, au-dessus d'elle ; on passe
-   de l'une à l'autre par le défilement natif aimanté (`scroll-snap`). Sans média, son papier et ses intentions,
-   rien d'inventé. Les fichiers (photo · vidéo · document) sont privés (`element-media`) : importer n'est pas publier. */
-body.v-shorts #fv-inner{scroll-snap-type:y mandatory;scroll-behavior:smooth;padding:0}
-body.v-shorts #habits{gap:0}
-.sh{position:relative;height:var(--sh-h,70vh);display:flex;flex-direction:column;justify-content:flex-end;gap:10px;
-  padding:8px 0 10px;scroll-snap-align:start;scroll-snap-stop:always;flex:none}
-.sh-m{position:relative;flex:1 1 auto;min-height:0;margin-left:calc(var(--rl) + var(--rw) + 4px);margin-right:16px;
-  overflow:hidden;background:#0b0b0e;transition:opacity .45s ease}
-.sh-m img,.sh-m video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;
-  transform:scale(1.035);transition:transform .7s var(--gate-ease),opacity .35s ease}
-.sh-m img:not([src]),.sh-m video:not([src]){opacity:0}
-.sh.is-ici .sh-m img,.sh.is-ici .sh-m video{transform:none}
-.sh .habit{transform:translateY(10px);opacity:.72;transition:transform .5s var(--gate-ease),opacity .4s ease}
-.sh.is-ici .habit{transform:none;opacity:1}
-.sh-n{position:absolute;right:8px;top:8px;z-index:2;font:700 9px/1 'Space Mono',monospace;letter-spacing:.14em;color:#fff;
-  background:rgba(0,0,0,.45);padding:4px 6px;border-radius:10px}
-/* Sans média : le papier de la vue, ses intentions en traits pleins, et (chez moi) la porte de la capture. */
-.sh-none{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:16px;flex-direction:column;
-  background:var(--paper)}
-.sh-ints{display:flex;gap:6px;height:42%;align-items:stretch}
-.sh-ints i{width:2px;display:block}
-.sh-cap{border:0;border-radius:10px;padding:9px 14px;background:rgba(0,0,0,.32);color:#cfcfd6;cursor:pointer;
-  font:700 10px/1.3 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;display:inline-flex;align-items:center;gap:8px}
-.sh-cap svg{width:16px;height:16px}
-body.v-shorts #habits > .habit.add{scroll-snap-align:end}
-/* Une boîte OUVERTE (édition) : le short grandit avec elle, le média garde au moins sa part. */
-.sh.is-open{height:auto;min-height:var(--sh-h,70vh)}
-.sh.is-open .sh-m{min-height:calc(var(--sh-h,70vh) * .38)}
-/* ══ LE RADAR (troisième mode de la vue Habit) ══ Mes spots, là où ils sont. Pas de HUD : le canvas,
-   et UNE ligne de chiffres dessous (combien, jusqu'où, combien sans point). */
-.rdr{position:relative;display:flex;flex-direction:column;align-items:center;gap:10px;
-  margin-left:calc(var(--rl) + var(--rw) + 4px);margin-right:16px;padding:8px 0 16px}
-#rdr-c{width:100%;height:100%;aspect-ratio:1/1;max-height:62dvh;display:block;background:#0b0b0e}
-.rdr-say{font:400 10px/1.4 'Space Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#8a8a92;margin:0;text-align:center}
-body.v-radar #fv-inner{padding:0}
-/* ⚠️ ON SENT QU'ON EST ENTRÉ : en shorts comme au radar, LA MANETTE S'EN VA (Wah : « pour revenir dans
-   une vue, il faut fermer ou revenir en mode liste où le joystick reapparait »). La croix et le bouton
-   de mode restent : on peut toujours sortir, et on voit par où. */
-body.v-shorts #joy,body.v-radar #joy{opacity:0;pointer-events:none;transition:opacity .3s ease}
-/* La bascule liste ↔ shorts ↔ radar, à côté de la place de la manette, dans TOUTES les vues. */
-#vmode{position:fixed;z-index:33;left:calc(50% + 62px);bottom:calc(var(--joy-b) + 18px + var(--joy-d,60px) / 2 - 15px);
-  width:34px;height:30px;border:0;border-radius:10px;padding:0;background:#1f1f24;color:#8a8a92;cursor:pointer;
-  display:none;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent}
-#vmode svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
-body:not(.gate):not(.ro):not(.ordering) #vmode{display:flex}
-#vmode:focus-visible{outline:1px solid #fff;outline-offset:3px}
-@media(hover:hover){#vmode:hover,.sh-cap:hover{color:#fff}}
+/* ══ L'ATTERRISSAGE : MES SHORTS (gauche) ET MES SPOTS (droite) · 16/10/2026 bis ═════════════════════
+   Wah : « non on garde seulement le mode liste [dans le Totehm] … sinon ça pète toute la structure.
+   Sur la page d'atterrissage tu me remets une vue shorts en mode tiktok sur la vue de gauche et sur la
+   vue de droite tu me mets la vue radar avec tous mes spots. »
+   Donc le Totehm n'a PLUS DE MODE : la liste seule, la manette toujours là, aucun bouton de bascule.
+   Les deux moteurs ont déménagé sur l'atterrissage, en vues PLEIN ÉCRAN :
+     ← g · MES SHORTS  un MÉDIA par écran (pas un élément : cinq photos sur une Habit = cinq écrans),
+                       défilement aimanté, l'élément par-dessus (ses traits, son texte) ; un tap l'ouvre.
+     → d · MES SPOTS   le radar, transparent, centré sur LE PAPIER : le centre, c'est moi.
+   Aucun appel réseau de plus : `element_media`, les photos de mes spots et l'image d'une VISION sont
+   déjà lues au démarrage (doctrine de coût). Les fichiers d'un élément, eux, restent dans le Totehm. */
+#lv-sh{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;scroll-snap-type:y mandatory;scroll-behavior:smooth;
+  -webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.lsh{position:relative;height:100dvh;scroll-snap-align:start;scroll-snap-stop:always;background:#000;overflow:hidden}
+.lsh img,.lsh video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;opacity:0;
+  transform:scale(1.04);transition:opacity .4s ease,transform .9s var(--gate-ease)}
+.lsh img[src],.lsh video[src]{opacity:1}
+.lsh.is-ici img,.lsh.is-ici video{transform:none}
+/* L'élément d'où vient le média : ses traits d'intention et son texte, EN QUANTICO (ce que le membre a tapé). */
+.lsh-say{position:absolute;left:16px;right:16px;bottom:calc(max(60px,env(safe-area-inset-bottom) + 52px));z-index:2;
+  display:flex;align-items:flex-end;gap:9px;background:none;border:0;padding:0;margin:0;text-align:left;cursor:pointer}
+.lsh-i{display:flex;flex-direction:column;gap:2px;flex:none;padding-bottom:3px}
+.lsh-i i{width:13px;height:2px;display:block}
+.lsh-t{font:400 13.5px/1.35 'Quantico',sans-serif;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.92);
+  max-height:3.9em;overflow:hidden}
+.lsh-say:focus-visible{outline:1px solid #fff;outline-offset:4px}
+/* Le radar : le canvas ne porte PAS de fond — le papier, dans son socle, reste visible dessous ; les anneaux
+   bloomment autour de lui. Pas de HUD : une ligne de chiffres, en bas. */
+#rdr-c{position:absolute;inset:0;width:100%;height:100%;display:block;background:transparent;pointer-events:none}
+#lv-sh-say,#rdr-say{position:absolute;left:0;right:0;z-index:3;margin:0;
+  bottom:calc(max(26px,env(safe-area-inset-bottom) + 18px))}
 /* Les fichiers d'un élément ouvert : des mini-boîtes sombres (une porte, pas une pièce du Totehm), « × » les retire. */
 .m-f{background:rgba(0,0,0,.30);gap:4px;padding-right:2px}
 .m-f .mini-t{display:inline-flex;align-items:center;gap:5px;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -3528,12 +3517,10 @@ body:not(.gate):not(.ro):not(.ordering) #vmode{display:flex}
 #cap-x{position:fixed;top:10px;right:10px;background:none;border:0;cursor:pointer;padding:10px;line-height:0;color:rgba(255,255,255,.6)}
 #cap-x svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round}
 @media(hover:hover){.cap-b:hover,#cap-x:hover{color:#fff}}
-@media (prefers-reduced-motion: reduce){#cap,#cap-in,.sh-m img,.sh-m video,.sh .habit{transition:none!important}
-  body.v-shorts #fv-inner{scroll-behavior:auto}}
-.sh > .habit .tick{opacity:1}
+@media (prefers-reduced-motion: reduce){#cap,#cap-in,.lsh img,.lsh video{transition:none!important}
+  #lv-sh{scroll-behavior:auto}}
 .dash[data-cap]{display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
 .dash[data-cap] svg{width:12px;height:12px;flex:none}
-.sh > .habit.add .tick{opacity:0}
 /* Sur ordinateur, le gris passe au blanc au survol (hover.py ne lit que le premier <style>). */
 @media(hover:hover){.lv-btn:hover,.lv-vis button:hover,#lv-tap:hover,.sm-acts button:hover,.sm-check:hover,.sm-link:hover,#srch-res .srch-sub:hover,.mw-sub-act:hover,#mw-avatar:hover,.lvn:hover,#lv-mode button:hover,.rf-add:hover{color:#fff}}
 </style>
@@ -3751,6 +3738,23 @@ body:not(.gate):not(.ro):not(.ordering) #vmode{display:flex}
       </div>
     </section>
 
+    <!-- ══ 16/10 bis · ← MES SHORTS ══ Wah : « sur la page d'atterrissage tu me remets une vue shorts en mode
+         tiktok sur la vue de gauche ». Un MÉDIA par écran (pas un élément : cinq photos sur une Habit font cinq
+         écrans), plein écran, défilement aimanté ; par-dessus, l'élément d'où il vient — ses traits d'intention
+         et son texte — et un tap l'ouvre DANS le Totehm, sur sa vue. Zéro appel de plus. -->
+    <section class="lv-pane" id="lv-g" aria-label="My shorts">
+      <div id="lv-sh" class="lv-act"><div id="lv-sh-f"></div></div>
+      <p class="lv-note" id="lv-sh-say" role="status" aria-live="polite"></p>
+    </section>
+
+    <!-- ══ → MES SPOTS ══ « sur la vue de droite tu me mets la vue radar avec tous mes spots ». Le canvas est
+         TRANSPARENT et centré sur le papier : le centre du radar, c'est moi, et mon Totehm est déjà là, dans son
+         socle. Un spot sans point exact se pose sur l'anneau, pâle, et le DIT : jamais une fausse position. -->
+    <section class="lv-pane" id="lv-d" aria-label="My spots">
+      <canvas id="rdr-c" width="100" height="100" aria-hidden="true"></canvas>
+      <p class="lv-note" id="rdr-say" role="status" aria-live="polite"></p>
+    </section>
+
     <!-- Le slogan qui voyage : en haut, LE bouton « Get [Higher] » ; en bas, « [Higher] Self » sous le profil. -->
     <button id="lv-slogan" class="is-c" type="button" tabindex="-1" aria-label="Get Higher">
       <span class="lvs-pre"><span class="lvs-get">Get</span></span><svg viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-badge"></use></svg><span class="lvs-post"><span class="lvs-self">Self</span></span>
@@ -3764,6 +3768,8 @@ body:not(.gate):not(.ro):not(.ordering) #vmode{display:flex}
     </div>
     <button id="lvn-up" class="lvn lv-act" type="button" aria-label="Get Higher"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 10 L8 5 L13 10"/></svg></button>
     <button id="lvn-dn" class="lvn lv-act" type="button" aria-label="My Reflection"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 6 L8 11 L13 6"/></svg></button>
+    <button id="lvn-lf" class="lvn lvn-x lv-act" type="button" aria-label="My shorts"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 L5 8 L10 13"/></svg></button>
+    <button id="lvn-rt" class="lvn lvn-x lv-act" type="button" aria-label="My spots"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3 L11 8 L6 13"/></svg></button>
   </div>
 </div>
 
@@ -4019,7 +4025,6 @@ body:not(.gate):not(.ro):not(.ordering) #vmode{display:flex}
      CLAUDE.md. Un élément qui doit se placer sur la FENÊTRE ne vit
      jamais sous un parent transformé. -->
 <!-- 15/10 : la bascule liste ↔ shorts (vue Habits, mon Totehm). -->
-<button id="vmode" type="button" aria-label="Shorts" aria-pressed="false"></button>
 <div id="vnow"><b></b><i></i><span></span></div>
 
 
@@ -4975,9 +4980,6 @@ const EM_MIMES={'image/jpeg':'jpg','image/png':'png','image/webp':'webp','video/
 const ICO_PHOTO='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M3 8h4l2-3h6l2 3h4v11H3z"/><circle cx="12" cy="13" r="4"/></svg>';
 const ICO_VIDEO='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="4.5" fill="#e0453f"/></svg>';
 const ICO_DOC='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/></svg>';
-const ICO_LIST='<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 4h10M3 8h10M3 12h10"/></svg>';
-const ICO_SHORTS='<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="4" y="2" width="8" height="12" rx="1"/><path d="M7 6v4l3-2z" fill="currentColor" stroke="none"/></svg>';
-const ICO_RADAR='<svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6"/><circle cx="8" cy="8" r="2.5"/><path d="M8 8l4-3"/></svg>';
 const emCle=(k,ref)=>k+':'+String(ref??'').trim();
 const mediasDe=(k,ref)=>EMEDIA.par.get(emCle(k,ref))||[];
 const emImg=m=>/^image\//.test(m.mime||''), emVid=m=>/^video\//.test(m.mime||'');
@@ -5166,35 +5168,24 @@ const CAP=(()=>{
           etat:()=>Object.assign({ouvert:root.classList.contains('is-on'), camera:!!flux}, diagC)};
 })();
 
-/* ══ LA VUE SHORTS (Habits) · 15/10/2026 ═══════════════════════════════════════════════════════════════
-   UNE Habit par écran, sa boîte telle quelle (attributs, couleurs, liens), son média DEVANT : le plus récent de
-   ses fichiers (photo, vidéo), sinon la photo d'un de ses spaces ; sans média, son papier et ses intentions.
-   La liste ne change pas ; la bascule garde l'Habit courante et s'anime ; d'une Habit à l'autre, le défilement
-   aimanté. Une vidéo ne joue que visible, la suivante se prépare (la règle d'egress de SPACE). */
-/* ══ LE TROISIÈME MODE DE LA VUE HABIT : LE RADAR · 16/10/2026 ═════════════════════════════════
-   Wah : « on peut même rajouter un troisième mode dans la vue Habit (le mode radar) ». Il montre MES
-   SPOTS, là où ils sont — rien d'autre, et ZÉRO APPEL DE PLUS : les points viennent de `habit_spaces`,
-   déjà lu pour les boîtes (`HSPACES`). Un spot sans point exact (le serveur ne me l'accorde pas) n'est
-   pas placé au hasard : il se pose sur l'anneau extérieur, pâle, et il le DIT. Jamais une fausse
-   position calculée depuis une ville (`club/CLAUDE.md`).
-   Le centre, c'est MOI : ma position si le navigateur la donne (jamais demandée, seulement lue si elle
-   est déjà accordée), sinon le barycentre de mes points. rAF seulement quand le radar est à l'écran. */
+/* ══ → MES SPOTS — LE RADAR, VUE DE DROITE DE L'ATTERRISSAGE · 16/10/2026 bis ══════════════════════
+   Wah : « sur la vue de droite tu me mets la vue radar avec tous mes spots. » Ce n'est plus un mode DANS
+   le Totehm (la liste y est seule) : c'est une VUE de l'atterrissage, plein écran, et son canvas est
+   TRANSPARENT — le papier reste visible dans son socle, au milieu. **Le centre du radar, c'est moi**, donc
+   le radar se CENTRE SUR LE PAPIER (mesuré, jamais deviné) au lieu de redessiner un carré blanc.
+   Aucun appel réseau de plus : les points viennent de `habit_spaces`, déjà lu (doctrine de coût). */
 const RDR=(()=>{
-  const etat={points:0, sans:0, rayon:0, moi:false, anime:false};
+  const etat={on:false, points:0, sans:0, rayon:0, moi:false, anime:false};
   let raf=0, t0=0, moi=null, pts=[], R=0, cx=0, cy=0, demande=false;
   const cv=()=>$('rdr-c');
   const RMS=()=>window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  function html(){
-    return '<div class="rdr"><canvas id="rdr-c" width="100" height="100" aria-hidden="true"></canvas>'
-      +'<p class="rdr-say" id="rdr-say" role="status"></p></div>';
-  }
-  /* Mes spots, par Habit, tels que le serveur les a rendus. */
+  /* TOUS mes spots, tels que le serveur les a rendus — par Habit, l'une après l'autre. */
   function lire(){
     pts=[]; let sans=0;
-    HSPACES.par.forEach((v,k)=>{
+    HSPACES.par.forEach(v=>{
       (v.spots||[]).forEach(z=>{
         const e=z&&z.exact;
-        if(e&&typeof e.lat==='number'&&typeof e.lng==='number') pts.push({id:String(z.id), lat:e.lat, lng:e.lng, st:z.state||'will', nom:k});
+        if(e&&typeof e.lat==='number'&&typeof e.lng==='number') pts.push({lat:e.lat, lng:e.lng, st:z.state||'will'});
         else sans++;
       });
     });
@@ -5210,11 +5201,16 @@ const RDR=(()=>{
         ()=>{}, {timeout:6000,maximumAge:600000});
     }).catch(()=>{});
   }
-  function geo(){
+  /* La taille du canvas et le CENTRE : mesurés à l'ouverture et au `resize`, jamais à chaque image —
+     une lecture de géométrie par frame, c'est une mise en page par frame. */
+  function mesurer(){
     const c=cv(); if(!c) return false;
     const w=c.clientWidth||1, h=c.clientHeight||1, dpr=Math.min(2,devicePixelRatio||1);
     if(c.width!==Math.round(w*dpr)||c.height!==Math.round(h*dpr)){ c.width=Math.round(w*dpr); c.height=Math.round(h*dpr); }
-    cx=w/2; cy=h/2; R=Math.max(60,Math.min(w,h)/2-10);
+    const a=$('gate-asteroid'), r=a?a.getBoundingClientRect():null, b=c.getBoundingClientRect();
+    cx=(r&&r.width)?r.left+r.width/2-b.left:w/2;
+    cy=(r&&r.height)?r.top+r.height/2-b.top:h*.4;
+    R=Math.max(70,Math.min(cx,w-cx,cy,h-cy)-14);
     return true;
   }
   /* L'échelle : le point le plus loin tient dans l'anneau, jamais sous 400 m. */
@@ -5226,11 +5222,12 @@ const RDR=(()=>{
     return {o, km:Math.min(60,max*1.15)};
   }
   function dessiner(){
-    const c=cv(); if(!c||!geo()) return;
+    const c=cv(); if(!c||!c.width) return;
     const x=c.getContext('2d'), dpr=Math.min(2,devicePixelRatio||1);
-    x.setTransform(dpr,0,0,dpr,0,0); x.clearRect(0,0,cx*2,cy*2);
+    x.setTransform(dpr,0,0,dpr,0,0); x.clearRect(0,0,c.width/dpr,c.height/dpr);
     const E=echelle();
-    /* Trois anneaux, un balayage : la grammaire du radar du Club, en plus sobre. */
+    /* Trois anneaux, un balayage : la grammaire du radar du Club, en plus sobre. Le centre n'est PAS
+       dessiné : c'est le papier, déjà là, sous le canvas transparent. */
     x.strokeStyle='rgba(255,255,255,.10)'; x.lineWidth=1;
     for(let i=1;i<=3;i++){ x.beginPath(); x.arc(cx,cy,R*i/3,0,Math.PI*2); x.stroke(); }
     if(!RMS()){
@@ -5239,8 +5236,7 @@ const RDR=(()=>{
       g.addColorStop(0,'rgba(255,255,255,.14)'); g.addColorStop(1,'rgba(255,255,255,0)');
       x.strokeStyle=g; x.lineWidth=2; x.beginPath(); x.moveTo(cx,cy); x.lineTo(cx+Math.cos(a)*R,cy+Math.sin(a)*R); x.stroke();
     }
-    /* Moi : un carré blanc au centre. Un spot : un carré navy, bleu clair à venir, blanc s'il est en cours. */
-    x.fillStyle='#fff'; x.fillRect(cx-3,cy-3,6,6);
+    /* Un spot : un carré navy, bleu clair à venir, blanc s'il est en cours, rouge-violet s'il est passé. */
     if(E){
       pts.forEach(p=>{
         const dx=(p.lng-E.o.lng)*Math.cos(E.o.lat*Math.PI/180)*111.32, dy=(p.lat-E.o.lat)*110.57;
@@ -5260,92 +5256,97 @@ const RDR=(()=>{
     etat.rayon=E?Math.round(E.km*10)/10:0;
     const say=$('rdr-say');
     if(say) say.textContent=pts.length||etat.sans
-      ? [pts.length?pts.length+(pts.length>1?' spots':' spot'):'', E?Math.round(E.km)+' km':'', etat.sans?etat.sans+' without a point':''].filter(Boolean).join(' · ')
+      /* La portée en MÈTRES sous le kilomètre : « 0 km » ne dit rien, « 460 m » dit la taille du cercle. */
+      ? [pts.length?pts.length+(pts.length>1?' spots':' spot'):'', E?(E.km>=1?Math.round(E.km)+' km':Math.round(E.km*1000)+' m'):'', etat.sans?etat.sans+' without a point':''].filter(Boolean).join(' · ')
       : 'no spot yet';
   }
-  function frame(){ raf=0; if(!SH.radar()||document.hidden){ etat.anime=false; return; }
+  function frame(){ raf=0; if(!etat.on||document.hidden){ etat.anime=false; return; }
     dessiner(); etat.anime=true; if(!RMS()) raf=requestAnimationFrame(frame); }
-  function kick(){ if(!raf&&SH.radar()) raf=requestAnimationFrame(frame); }
-  function apres(){ if(!t0) t0=performance.now(); lire(); position(); kick(); }
+  function kick(){ if(!raf&&etat.on) raf=requestAnimationFrame(frame); }
+  function ouvrir(){ etat.on=true; if(!t0) t0=performance.now(); lire(); mesurer(); position(); kick(); }
+  function fermer(){ etat.on=false; pause(); }
   function pause(){ if(raf){ cancelAnimationFrame(raf); raf=0; } etat.anime=false; }
-  window.addEventListener('resize',()=>{ if(SH.radar()) kick(); });
+  /* Mes spots ont changé (une annonce, un rechargement) : on relit, on redessine. Rien si la vue est fermée. */
+  function maj(){ if(etat.on){ lire(); mesurer(); kick(); } }
+  window.addEventListener('resize',()=>{ if(etat.on){ mesurer(); kick(); } });
   document.addEventListener('visibilitychange',()=>{ if(document.hidden) pause(); else kick(); });
   window.__totehm_rdr=()=>Object.assign({},etat);
-  return {html, apres, pause, etat:()=>Object.assign({},etat)};
+  return {ouvrir, fermer, pause, maj, etat:()=>Object.assign({},etat)};
 })();
 
+/* ══ ← MES SHORTS — LE TIKTOK, VUE DE GAUCHE DE L'ATTERRISSAGE · 16/10/2026 bis ════════════════════
+   Wah : « non on garde seulement le mode liste [dans le Totehm] … sinon ça pète toute la structure. Sur la
+   page d'atterrissage tu me remets une vue shorts en mode tiktok sur la vue de gauche. »
+   Donc : le Totehm n'a PLUS DE MODE (la liste seule, la manette toujours là, aucun bouton de bascule), et
+   les shorts sont une VUE, plein écran.
+     • UN MÉDIA PAR ÉCRAN, pas un élément : cinq photos sur une Habit font cinq écrans. C'est ce qu'est un
+       tiktok — on défile des médias, pas des fiches.
+     • Le média remplit l'écran (`object-fit:cover`), le défilement est aimanté, la vidéo visible JOUE et la
+       suivante se prépare ; par-dessus, l'élément d'où il vient — ses traits d'intention et son texte — et
+       un tap l'OUVRE dans le Totehm, sur sa vue.
+     • AUCUN APPEL DE PLUS : `element_media` (mes fichiers), les photos de mes SPOTS et l'image libre d'une
+       VISION sont déjà lus au démarrage. Un élément introuvable (l'arbre n'est pas encore revenu) ne fait
+       pas tomber son short : il perd sa légende, pas son image. */
 const SH=(()=>{
-  /* ══ DEUX MODES PAR VUE, TROIS DANS LA VUE HABIT · 16/10/2026 ══════════════════════════════════
-     Wah : « une fois que l'on est dans le Totehm il y a deux modes pour chaque vue : la vue liste et
-     la vue Shorts qui changent complètement le dispositif ; la liste devient un tiktok avec la photo ou
-     la vidéo en full screen et la possibilité de défiler. Pour revenir dans une vue, il faut fermer ou
-     revenir en mode liste où le joystick reapparait. L'utilisateur doit sentir qu'il rentre dans le mode
-     Shorts de la vue concernée. On peut même rajouter un troisième mode dans la vue Habit (le radar). »
-     Donc : UN mode par vue, gardé par vue (`totehm_modes`), et un seul bouton qui tourne.
-       • LISTE  — le dispositif d'origine, avec la manette.
-       • SHORTS — un élément par écran, son média devant, défilement aimanté ; la manette DISPARAÎT
-                  (on est entré), la croix et le bouton de mode restent (on peut sortir).
-       • RADAR  — vue Habit seulement : mes spots, là où ils sont. Aucun appel réseau de plus — les
-                  points viennent de `habit_spaces`, déjà lu (doctrine de coût).
-     Le média d'un élément : ses fichiers (`element_media`, le plus récent) ; à défaut la photo d'un de
-     ses spots pour une Habit, l'image libre d'une VISION. Rien d'inventé : sans média, son papier. */
-  const ORDRE={habits:['list','shorts','radar'],objectives:['list','shorts'],repulsions:['list','shorts'],
-               wisdom:['list','shorts'],visions:['list','shorts']};
-  const KIND={habits:'h',objectives:'t',repulsions:'r',wisdom:'w',visions:'v'};
-  const CLE='totehm_modes';
-  let M={}; try{ M=JSON.parse(localStorage.getItem(CLE)||'{}')||{}; }catch(_){ M={}; }
-  /* L'ancienne clé (shorts, la vue Habit seule) se relit UNE fois : personne ne perd son réglage. */
-  try{ if(localStorage.getItem('totehm_shorts')==='1'&&!M.habits) M.habits='shorts'; }catch(_){}
-  let io=null, ici=null, n=0;
-  const sc=()=>$('fv-inner');
-  const dispo=()=>ORDRE[view]||['list'];
-  const mode=()=>{ const l=dispo(), m=M[view]||'list'; return l.includes(m)?m:'list'; };
-  const libre=()=>!RO&&!ordering;
-  const actif=()=>mode()==='shorts'&&libre();
-  const radar=()=>mode()==='radar'&&libre();
+  const etat={on:false, items:0, videos:0, ici:false, pas:0};
+  let io=null, ici=null, L=[];
+  const sc=()=>$('lv-sh'), bx=()=>$('lv-sh-f');
   const RMS=()=>window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const kDe=()=>KIND[view]||'h';
-  /* Le média d'un élément : `emDe` connaît les deux systèmes de lettres (boîte h·t·r·w·v, fichier h·o·r·w·v). */
-  function media(x){
-    const kind=kDe();
-    const e=(typeof emDe==='function')?emDe(kind,x.id):null;
-    const l=e?mediasDe(e.k,e.ref).filter(m=>emImg(m)||emVid(m)):[];
-    if(l.length) return {src:l[0].path, b:'em', vid:emVid(l[0]), n:l.length};
-    if(kind==='h'){ const sp=spacesDe(x), z=sp&&[...(sp.spots||[])].find(y=>y&&y.photo);
-      if(z) return {src:String(z.photo), b:'moments', vid:false, n:1}; }
-    if(kind==='v'){ const img=VISIMG.get(String(x.id)); if(img) return {src:String(img), b:'moments', vid:false, n:1}; }
-    return null;
-  }
-  const VUE=()=>({habits:vueHabitude,objectives:vueObjectif,repulsions:vueRepulsion,
-                  wisdom:vueTeaching,visions:vueVision})[view];
-  const capDe=x=>{ const e=(typeof emDe==='function')?emDe(kDe(),x.id):null; return e?e.k+':'+e.ref:''; };
+  /* Les deux systèmes de lettres : le FICHIER dit h·o·r·w·v, la BOÎTE dit h·t·r·w·v. */
+  const BOX={h:'h',o:'t',r:'r',w:'w',v:'v'};
+  const VUE={h:'habits',o:'objectives',r:'repulsions',w:'wisdom',v:'visions'};
+  const VUE_K={habits:'h',objectives:'t',repulsions:'r',wisdom:'w',visions:'v'};
+  const txtDe=(k,o)=>!o?'':((k==='t'||k==='r')?String(o.text||''):String(o.t||''));
   /* Les traits : ses intentions pour une Habit, celles qu'il HÉRITE pour les quatre autres — la MÊME
      chaîne que la boîte de chaque vue (une habitude qualifie un geste répété ; les autres héritent). */
-  function barres(x){
+  function colsDe(k,o){
     try{
-      const k=kDe();
-      if(k==='h') return intCols(x);
-      if(k==='t') return colsHeritees(habsOfTrip(x));
-      if(k==='r') return colsHeritees(habsOfRep(x));
-      if(k==='w') return colsHeritees(repsOfTeach(x).reduce((a,r)=>a.concat(habsOfRep(r)),[]));
-      return colsHeritees(tripsOfVision(x).reduce((a,t)=>a.concat(habsOfTrip(t)),[]));
+      if(!o) return [];
+      if(k==='h') return intCols(o);
+      if(k==='t') return colsHeritees(habsOfTrip(o));
+      if(k==='r') return colsHeritees(habsOfRep(o));
+      if(k==='w') return colsHeritees(repsOfTeach(o).reduce((a,r)=>a.concat(habsOfRep(r)),[]));
+      return colsHeritees(tripsOfVision(o).reduce((a,t)=>a.concat(habsOfTrip(t)),[]));
     }catch(_){ return []; }
   }
-  function shortHTML(x,k){
-    const m=media(x), cap=capDe(x);
-    const ouverte=!!open&&open.kind===kDe()&&String(open.id)===String(x.id);
-    let devant;
-    if(m){
-      const u=m.b==='em'?emCache(m.src):'';
-      devant=(m.vid?'<video data-sh-src="'+esc(m.src)+'" data-b="em" muted playsinline loop preload="none"'+(u?' src="'+esc(u)+'" data-ok="1"':'')+'></video>'
-                   :'<img alt="" data-sh-src="'+esc(m.src)+'" data-b="'+m.b+'"'+(u?' src="'+esc(u)+'" data-ok="1"':'')+'>')
-        +(m.n>1?'<span class="sh-n">'+m.n+'</span>':'');
-    } else {
-      devant='<div class="sh-none"><span class="sh-ints">'+barres(x).map(c=>'<i style="background:'+c+'"></i>').join('')+'</span>'
-        +(cap?'<button type="button" class="sh-cap" data-cap="'+esc(cap)+'">Add a media</button>':'')+'</div>';
-    }
-    /* Le short courant naît déjà `is-ici` : un redessin (une frappe, un fichier) ne rejoue pas son entrée. */
-    return '<section class="sh'+(ouverte?' is-open':'')+(ici!==null&&String(x.id)===ici?' is-ici':'')+'" data-sh="'+esc(String(x.id))+'"><div class="sh-m">'+devant+'</div>'+VUE()(x,k)+'</section>';
+  /* `ref` d'une Habit est son TEXTE (c'est la clé serveur) ; les quatre autres portent un identifiant. */
+  function de(kind,ref){
+    const bk=BOX[kind]; if(!bk) return null;
+    const o=bk==='h'?habByT(String(ref)):objetDe(bk,String(ref));
+    return {bk, vue:VUE[kind], id:o?String(o.id):'', txt:o?txtDe(bk,o):(bk==='h'?String(ref):''), cols:colsDe(bk,o)};
+  }
+  function liste(){
+    const l=[];
+    if(!me||RO) return l;
+    (EMEDIA.items||[]).forEach(m=>{
+      if(!emImg(m)&&!emVid(m)) return;
+      const e=de(m.kind,m.ref); if(!e) return;
+      l.push(Object.assign({cle:'em:'+m.id, src:String(m.path), b:'em', vid:emVid(m)},e));
+    });
+    (state.habits||[]).forEach(x=>{
+      const sp=spacesDe(x); if(!sp) return;
+      (sp.spots||[]).forEach(z=>{ if(!z||!z.photo) return;
+        l.push({cle:'sp:'+z.id, src:String(z.photo), b:'moments', vid:false,
+                bk:'h', vue:'habits', id:String(x.id), txt:String(x.t||''), cols:colsDe('h',x)}); });
+    });
+    VISIMG.forEach((img,id)=>{
+      const o=visOf(id);
+      l.push({cle:'vi:'+id, src:String(img), b:'moments', vid:false,
+              bk:'v', vue:'visions', id:String(id), txt:o?String(o.t||''):'', cols:colsDe('v',o)});
+    });
+    return l;
+  }
+  function html(x){
+    const u=x.b==='em'?emCache(x.src):'';
+    const devant=x.vid
+      ? '<video data-sh-src="'+esc(x.src)+'" data-b="'+esc(x.b)+'" muted playsinline loop preload="none"'+(u?' src="'+esc(u)+'" data-ok="1"':'')+'></video>'
+      : '<img alt="" data-sh-src="'+esc(x.src)+'" data-b="'+esc(x.b)+'"'+(u?' src="'+esc(u)+'" data-ok="1"':'')+'>';
+    const traits=(x.cols||[]).map(c=>'<i style="background:'+c+'"></i>').join('');
+    const say=x.txt?'<button type="button" class="lsh-say" data-lsh="'+esc(x.vue+'|'+x.id)+'">'
+        +(traits?'<span class="lsh-i" aria-hidden="true">'+traits+'</span>':'')
+        +'<span class="lsh-t">'+esc(x.txt)+'</span></button>':'';
+    /* Le short courant naît déjà `is-ici` : un redessin (un fichier de plus) ne rejoue pas son entrée. */
+    return '<section class="lsh'+(ici===x.cle?' is-ici':'')+'" data-lsh-k="'+esc(x.cle)+'">'+devant+say+'</section>';
   }
   async function charger(el,prochain){
     const m=el&&el.querySelector('[data-sh-src]'); if(!m||m.dataset.ok) return; m.dataset.ok='1';
@@ -5356,91 +5357,65 @@ const SH=(()=>{
     else{ m.onerror=()=>m.remove(); m.src=u; }
   }
   function jouer(el,oui){ const v=el&&el.querySelector('video[src]'); if(!v) return; if(oui) v.play().catch(()=>{}); else v.pause(); }
-  function hauteur(){ const s=sc(); if(s) s.style.setProperty('--sh-h',Math.max(260,s.clientHeight)+'px'); }
-  /* Après chaque rendu : la hauteur d'un short, l'élément visible (`is-ici`), son média et celui du suivant. */
-  function apres(box){
-    document.body.classList.toggle('v-shorts',actif());
-    document.body.classList.toggle('v-radar',radar());
-    if(radar()&&typeof RDR!=='undefined') RDR.apres();
-    else if(typeof RDR!=='undefined') RDR.pause();
-    if(!actif()){ if(io){ io.disconnect(); io=null; } return; }
-    hauteur();
-    if(io) io.disconnect();
-    io=new IntersectionObserver(es=>{ es.forEach(en=>{ const el=en.target, v=en.intersectionRatio>=.6||(!!en.rootBounds&&en.intersectionRect.height>=en.rootBounds.height*.6);
-      el.classList.toggle('is-ici',v);
-      if(v){ ici=el.dataset.sh; charger(el); const nx=el.nextElementSibling, pv=el.previousElementSibling;
-        if(nx&&nx.classList.contains('sh')) charger(nx,true);
-        if(pv&&pv.classList.contains('sh')&&pv.querySelector('img[data-sh-src]')) charger(pv,true);
-        jouer(el,true); }
-      else jouer(el,false); }); },{root:sc(),threshold:[0,.6]});
-    box.querySelectorAll('.sh').forEach(el=>io.observe(el));
-  }
-  /* L'élément courant : la boîte ouverte, sinon le premier visible (liste) ou le short affiché. */
-  function courant(){
-    if(open&&open.kind===kDe()) return String(open.id);
-    if(mode()==='shorts') return ici;
-    const s=sc(); if(!s) return null;
-    const top=s.getBoundingClientRect().top;
-    const r=[...s.querySelectorAll('#habits > .habit[data-row]')].find(el=>el.getBoundingClientRect().bottom>top+8);
-    return r?r.dataset.row:null;
-  }
-  /* Le bouton TOURNE : liste → shorts → (radar) → liste. On SENT qu'on entre — la pile arrive d'en
-     bas, le mot du mode passe une seconde, et la manette s'en va. */
-  function basculer(){
-    if(!libre()) return;
-    const l=dispo(), av=mode(), id=courant(), box=$('habits'), s=sc();
-    const ap=l[(l.indexOf(av)+1)%l.length];
-    M[view]=ap; n++; try{ localStorage.setItem(CLE,JSON.stringify(M)); }catch(_){}
-    if(ap!=='shorts'&&io){ io.disconnect(); io=null; }
-    renderZone(); peindre();
-    if(typeof dis==='function') dis(MOT[ap].toLowerCase());
-    if(s&&ap!=='radar'){
-      const el=id?(ap==='shorts'?box.querySelector('.sh[data-sh="'+CSS.escape(id)+'"]'):box.querySelector('#habits > .habit[data-row="'+CSS.escape(id)+'"]')):null;
-      s.style.scrollBehavior='auto'; s.scrollTop=el?Math.max(0,el.offsetTop-(ap==='shorts'?0:8)):0; s.style.scrollBehavior='';
-    }
-    if(box.animate&&!RMS()) box.animate([{opacity:0,transform:ap==='list'?'scale(1.04)':'scale(.94)'},{opacity:1,transform:'none'}],
-      {duration:380,easing:'cubic-bezier(.22,.9,.3,1)'});
-  }
-  /* ↑ ↓ au clavier : l'élément d'avant, d'après ; au bout, la croix reprend la main. */
-  function pas(dir){
-    if(!actif()) return false;
-    const s=sc(), l=[...$('habits').querySelectorAll('.sh')]; if(!l.length) return false;
-    const i=l.findIndex(el=>el.dataset.sh===ici), j=(i<0?0:i)+dir;
-    if(j<0||j>=l.length) return false;
-    s.scrollTo({top:l[j].offsetTop,behavior:RMS()?'auto':'smooth'}); return true;
-  }
-  const MOT={list:'List',shorts:'Shorts',radar:'Radar'};
-  function peindre(){ const b=$('vmode'); if(!b) return;
-    const l=dispo(), ap=l[(l.indexOf(mode())+1)%l.length];
-    /* Le bouton montre OÙ IL MÈNE, pas où l'on est : c'est ce qu'on va chercher en le touchant. */
-    b.innerHTML=({list:ICO_LIST,shorts:ICO_SHORTS,radar:ICO_RADAR})[ap]||ICO_LIST;
-    b.setAttribute('aria-label',MOT[ap]); b.title=MOT[ap];
-    b.setAttribute('aria-pressed',String(mode()!=='list')); }
-  function pause(){ document.querySelectorAll('#habits video').forEach(v=>{ try{ v.pause(); }catch(_){} }); }
-  { const b=$('vmode'); if(b) b.onclick=basculer; }
-  window.__totehm_sh=()=>etat();
-  window.addEventListener('resize',()=>{ if(actif()) hauteur(); });
-  document.addEventListener('visibilitychange',()=>{ if(document.hidden) pause(); });
-  /* ⚠️ PAS DE `peindre()` ICI. Le mode dépend de `view`, déclaré PLUS BAS : l'appeler à l'évaluation du
-     module lève « Cannot access 'view' before initialization » — donc page blanche. C'est `renderZone()`
-     qui le peint, et le bouton est de toute façon caché sur l'atterrissage. */
-  /* Revenir à la LISTE, d'où qu'on vienne (la croix, Échap) : le même chemin que le bouton. */
-  function liste(){ if(mode()==='list'||!libre()) return false;
-    const id=courant(), box=$('habits'), s=sc();
-    M[view]='list'; n++; try{ localStorage.setItem(CLE,JSON.stringify(M)); }catch(_){}
+  /* Le média visible (`is-ici`), le sien et celui du suivant : UN clip visible, UN suivant anticipé. */
+  function observer(){
     if(io){ io.disconnect(); io=null; }
-    renderZone(); peindre();
-    if(s){ const el=id?box.querySelector('#habits > .habit[data-row="'+CSS.escape(id)+'"]'):null;
-      s.style.scrollBehavior='auto'; s.scrollTop=el?Math.max(0,el.offsetTop-8):0; s.style.scrollBehavior=''; }
-    if(box.animate&&!RMS()) box.animate([{opacity:0,transform:'scale(1.04)'},{opacity:1,transform:'none'}],
-      {duration:380,easing:'cubic-bezier(.22,.9,.3,1)'});
-    return true; }
-  return {actif, radar, mode, liste, html:shortHTML, apres, basculer, pas, pause, peindre,
-          vider(){ ici=null; if(io){ io.disconnect(); io=null; } },
-          etat};
-  function etat(){ return {mode:mode(), on:mode()!=='list', actif:actif(), radar:radar(), ici:ici?true:false,
-                           bascules:n, shorts:document.querySelectorAll('#habits .sh').length,
-                           visible:document.querySelectorAll('#habits .sh.is-ici').length, capture:CAP.etat()}; }
+    const s=sc(), b=bx(); if(!s||!b||!etat.on) return;
+    io=new IntersectionObserver(es=>{ es.forEach(en=>{
+      const el=en.target, v=en.intersectionRatio>=.6||(!!en.rootBounds&&en.intersectionRect.height>=en.rootBounds.height*.6);
+      el.classList.toggle('is-ici',v);
+      if(v){ ici=el.dataset.lshK; etat.ici=true; charger(el);
+        const nx=el.nextElementSibling, pv=el.previousElementSibling;
+        if(nx&&nx.classList.contains('lsh')) charger(nx,true);
+        if(pv&&pv.classList.contains('lsh')&&pv.querySelector('img[data-sh-src]')) charger(pv,true);
+        jouer(el,true); }
+      else jouer(el,false); }); },{root:s,threshold:[0,.6]});
+    b.querySelectorAll('.lsh').forEach(el=>io.observe(el));
+  }
+  function peindre(){
+    const b=bx(); if(!b) return;
+    L=liste(); etat.items=L.length; etat.videos=L.filter(x=>x.vid).length;
+    if(ici&&!L.some(x=>x.cle===ici)) ici=null;
+    etat.ici=!!ici;
+    b.innerHTML=L.map(html).join('');
+    const say=$('lv-sh-say'); if(say) say.textContent=L.length?'':'no media yet';
+    observer();
+  }
+  /* ↑ ↓ au clavier : le média d'avant, d'après. Dans cette vue il n'y a pas de voisin vertical : les
+     deux flèches servent le feed, et l'horizontale ramène au centre. */
+  function pas(dir){
+    if(!etat.on) return false;
+    const s=sc(), b=bx(); if(!s||!b) return false;
+    const l=[...b.querySelectorAll('.lsh')]; if(!l.length) return false;
+    const i=l.findIndex(el=>el.dataset.lshK===ici), j=(i<0?0:i)+dir;
+    if(j<0||j>=l.length) return false;
+    s.scrollTo({top:l[j].offsetTop,behavior:RMS()?'auto':'smooth'}); etat.pas++; return true;
+  }
+  /* ⚠️ PAS DE FONCTION `ouvrir` ICI : `ouvrir(kind,id)` est le verbe GLOBAL qui ouvre une boîte du Totehm,
+     et la légende d'un short l'appelle. Une locale du même nom le masquerait dans tout le module. */
+  /* On revient LÀ OÙ L'ON ÉTAIT : le feed est reconstruit, donc il repartirait du haut sans ça. */
+  function entrer(){
+    etat.on=true; peindre();
+    const s=sc(), b=bx(); if(!s||!b) return;
+    const el=ici?b.querySelector('.lsh[data-lsh-k="'+CSS.escape(ici)+'"]'):null;
+    s.style.scrollBehavior='auto'; s.scrollTop=el?el.offsetTop:0; s.style.scrollBehavior='';
+  }
+  function sortir(){ etat.on=false; pause(); if(io){ io.disconnect(); io=null; } }
+  function pause(){ document.querySelectorAll('#lv-sh video').forEach(v=>{ try{ v.pause(); }catch(_){} }); }
+  /* Mes médias ont changé (un import, un rechargement) : on refait le feed. Rien si la vue est fermée. */
+  function maj(){ if(etat.on) peindre(); }
+  function vider(){ ici=null; etat.ici=false; L=[]; const b=bx(); if(b) b.innerHTML=''; if(io){ io.disconnect(); io=null; } }
+  /* Un tap sur la légende OUVRE l'élément dans le Totehm, sur SA vue — `__totehmDeplie` est le seul
+     chemin d'entrée (il passe par la porte si l'on n'est pas inscrit). */
+  { const s=sc(); if(s) s.addEventListener('click',e=>{
+      const b=e.target.closest('[data-lsh]'); if(!b) return;
+      const [v,id]=String(b.dataset.lsh||'').split('|'); const k=VUE_K[v]; if(!k) return;
+      if(typeof window.__totehmDeplie!=='function') return;
+      window.__totehmDeplie(()=>{ setView(v); if(id) requestAnimationFrame(()=>ouvrir(k,id)); });
+    }); }
+  window.__totehm_sh=()=>Object.assign({},etat,{capture:CAP.etat()});
+  document.addEventListener('visibilitychange',()=>{ if(document.hidden) pause(); });
+  return {ouvrir:entrer, fermer:sortir, pause, maj, vider, pas, etat:()=>Object.assign({},etat)};
 })();
 
 /* ══ LES 7 INTENTIONS (source : totehm_map.html) ══ */
@@ -5954,7 +5929,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-10-16-com-modes';
+const BUILD='2026-10-16-com-vues';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -6807,10 +6782,10 @@ function renderZone(){
   const sens = change ? dernierSens : null;               /* lu AVANT paintZone (qui le consomme pour le nom) */
   paintZone();
 
-  /* ⚠️ 16/10 · UNE SEULE CHAÎNE POUR LES CINQ VUES ET LES DEUX MODES. Avant, seule la vue Habit
-     connaissait les shorts : la liste était écrite cinq fois et le mode une fois. Maintenant chaque
-     vue dit SA liste et SON rendu, et c'est le MODE qui choisit la boîte (liste) ou le short.
-     Deux listes finiraient par diverger — c'est déjà arrivé avec `VIEW_ORDER`. */
+  /* ⚠️ 16/10 bis · UNE SEULE CHAÎNE POUR LES CINQ VUES, ET LA LISTE SEULE. Wah : « non on garde seulement
+     le mode liste … sinon ça pète toute la structure. » Les shorts et le radar ont quitté le Totehm pour
+     l'atterrissage (`SH`, `RDR`) : ici il n'y a plus de mode, donc plus de bouton de bascule, et la manette
+     ne s'en va jamais. Chaque vue dit SA liste et SON rendu — deux listes finiraient par diverger. */
   const PLAN={
     habits:    {add:'h', mot:'Add a habit',      liste:()=>{ if(!state.ord)sortHabits();
                   return (state.habits||[]).filter(x=>{
@@ -6824,15 +6799,9 @@ function renderZone(){
   }[view]||{add:'h', mot:'Add a habit', liste:()=>[], rend:vueHabitude};
   const list=PLAN.liste();
   NB=list.length;
-  let h='';
-  if(SH.radar()){
-    /* Le radar remplace la liste : mes spots, là où ils sont. La croix et le bouton de mode restent. */
-    h=RDR.html();
-  }else{
-    h=SH.actif()?list.map((x,k)=>SH.html(x,k)).join(''):list.map((x,k)=>PLAN.rend(x,k)).join('');
-    if(!list.length) h+='<div class="void">'+(view==='habits'?((state.habits||[]).length?'—':''):(tripsLoaded?'':'…'))+'</div>';
-    h+=ligne('<button type="button" class="add-box" data-add="'+PLAN.add+'" aria-label="'+PLAN.mot+'">+</button>','add');
-  }
+  let h=list.map((x,k)=>PLAN.rend(x,k)).join('');
+  if(!list.length) h+='<div class="void">'+(view==='habits'?((state.habits||[]).length?'—':''):(tripsLoaded?'':'…'))+'</div>';
+  h+=ligne('<button type="button" class="add-box" data-add="'+PLAN.add+'" aria-label="'+PLAN.mot+'">+</button>','add');
 
   /* La bande « order by importance » a quitté le `innerHTML` : elle
      défilait avec les boîtes. Elle est fixe, sous les trois carrés. */
@@ -6841,8 +6810,10 @@ function renderZone(){
   if(keep!=null&&sc)sc.scrollTop=keep;
   peintTraits();
   box.querySelectorAll('.v-img[data-photo]').forEach(signerPhoto);
-  SH.apres(box); SH.peindre();      /* le bouton de mode suit la vue : il dit toujours où il mène */
-  window.__totehm_zone={version:BUILD, vue:view, session:!!me, arbre_charge:tripsLoaded, shorts:SH.etat(), fichiers:EMEDIA.items.length,
+  /* Mes médias et mes spots viennent de changer : les DEUX VUES de l'atterrissage se refont (sans rien
+     relire — elles lisent la même mémoire). Un no-op quand elles sont fermées, c'est-à-dire presque toujours. */
+  SH.maj(); RDR.maj();
+  window.__totehm_zone={version:BUILD, vue:view, session:!!me, arbre_charge:tripsLoaded, fichiers:EMEDIA.items.length,
     habitudes:(state.habits||[]).length, objectifs:TRIPS.length, repulsions:REPS.length,
     lecons:TEACH.length, visions:VIS.length, images:VISIMG.size, cloths:[...ECLOTHS.par.values()].reduce((a,x)=>a+x.total,0),
     filtre:{rythme:!!filterF, intention:!!filterI},
@@ -7169,8 +7140,8 @@ function ouvrir(kind,id,neuve){
   /* MESURÉ : `scrollIntoView` ne bougeait le cadre que de 2 px — dans un
      document dont le corps ne défile pas, il ne trouve pas #fv-inner de
      façon fiable. On lui dit lequel, et de combien. */
-  requestAnimationFrame(()=>{const sc=$('fv-inner'); if(!sc)return; const c=SH.actif()&&b.closest('.sh')||b;
-    sc.scrollTop=sc.scrollTop+c.getBoundingClientRect().top-sc.getBoundingClientRect().top-(c===b?6:0);});
+  requestAnimationFrame(()=>{const sc=$('fv-inner'); if(!sc)return;
+    sc.scrollTop=sc.scrollTop+b.getBoundingClientRect().top-sc.getBoundingClientRect().top-6;});
   const f=b.querySelector('.v-name[contenteditable]');
   if(f&&(neuve||window.innerWidth>700))f.focus();
 }
@@ -7969,10 +7940,9 @@ if(location.hash === '#settings'){
    l'évaluation du module, donc page blanche). Les fonctions serveur
    (`totehmbot_access`, `ssoVersDomaine`) restent utilisables pour les
    câblages équivalents dans le tiroir membre. */
-/* La croix : le Totehm se replie et l'atterrissage revient. */
-/* La croix : elle sort d'abord du MODE (shorts, radar), puis du Totehm. « Fermer ou revenir en mode
-   liste » (Wah, 16/10) : les deux sont le même bouton, dans cet ordre. */
-$('fold-x').onclick=()=>{ if(SH.liste()) return; foldToGate(); };
+/* La croix : le Totehm se replie et l'atterrissage revient. Un seul geste, une seule chose — il n'y a
+   plus de mode dont sortir d'abord (16/10 bis). */
+$('fold-x').onclick=()=>{ foldToGate(); };
 
 /* ══ GESTE VERTICAL — SUPPRIMÉ · 07/09/2026 ══════════════════════════
    Les deux gestes de scroll — vers le haut au sommet pour ouvrir le
@@ -8382,10 +8352,6 @@ window.addEventListener('keydown',(e)=>{
     /* Les modales se ferment par leurs propres écouteurs : on ne replie
        le Totehm que si l'écran est nu. */
     if(!$('filter-modal').classList.contains('hide')||!$('habit-peek').classList.contains('hide'))return;
-    /* ⚠️ 16/10 · SORTIR D'UN MODE AVANT DE SORTIR DU TOTEHM (Wah : « pour revenir dans une vue, il faut
-       fermer ou revenir en mode liste où le joystick reapparaît »). Entré en shorts ou au radar, Échap
-       ramène à la LISTE — un geste, garanti, sans chercher le bon nombre de taps sur le bouton de mode. */
-    if(SH.mode()!=='list'){ e.preventDefault(); SH.liste(); return; }
     if(hOpen()){showBook(false);showNext(false);return;}
     foldToGate();return;
   }
@@ -8395,8 +8361,6 @@ window.addEventListener('keydown',(e)=>{
      croix, une flèche ne peut vouloir dire qu'une chose : va voir à
      côté. Quand il n'y a pas de voisin dans cette direction, on retombe
      sur l'ancien geste : c'est le seul endroit où il restait utile. */
-  /* 15/10 — en shorts, ↑ ↓ vont d'une Habit à l'autre ; au bout, la croix reprend la main. */
-  if((e.key==='ArrowDown'||e.key==='ArrowUp')&&SH.pas(e.key==='ArrowDown'?1:-1)){e.preventDefault();return;}
   if(e.key==='ArrowDown'){e.preventDefault();
     if(voisin('b'))versVoisin('b'); else if(!hOpen())foldToGate();}
   else if(e.key==='ArrowUp'){e.preventDefault();
@@ -9960,7 +9924,7 @@ window.addEventListener('pageshow',e=>{
       moving=false;
       PAPIER.reveiller();                 /* le logo est revenu : il repart */
       LV.revenu();                        /* mes ramifications ont pu changer dedans */
-      SH.pause();                         /* aucune vidéo ne joue derrière l'atterrissage */
+      SH.pause(); RDR.pause();            /* ni vidéo ni rAF derrière l'atterrissage */
     },DUR+120);
   }
 
@@ -10123,15 +10087,27 @@ window.addEventListener('pageshow',e=>{
      UNE table (`VOISINS`), UNE fonction (`aller`) : le doigt, le trackpad, la molette, les flèches et les deux
      chevrons y mènent tous. Une transition à la fois (`bouge`) : jamais deux navigations, jamais une saisie perdue. */
   const LV=(()=>{
-    const VOISINS={c:{h:'h',b:'b'}, h:{b:'c'}, b:{h:'c'}};
-    const NOMS={c:'My TOTEHM', h:'Get Higher', b:'My Reflection'};
-    const slo=$('lv-slogan'), nUp=$('lvn-up'), nDn=$('lvn-dn'), sock=$('lv-socket'), BG=$('gl-bg');
+    /* ⚠️ 16/10 bis · CINQ VUES, QUATRE VOISINS. Wah : « sur la page d'atterrissage tu me remets une vue
+       shorts en mode tiktok sur la vue de gauche et sur la vue de droite tu me mets la vue radar avec tous
+       mes spots. » L'horizontale est donc revenue — et elle appartient à MES données :
+         ← g · MES SHORTS   le feed de mes médias, plein écran (`SH`)
+         → d · MES SPOTS    le radar, centré sur le papier (`RDR`)
+       Les deux n'existent que pour un membre (il n'y a pas « mes shorts » sans Totehm) et jamais dans la
+       galaxie, où l'horizontale fait tourner les étoiles : `voisin()` les éteint, les chevrons suivent. */
+    const VOISINS={c:{h:'h',b:'b',g:'g',d:'d'}, h:{b:'c'}, b:{h:'c'}, g:{d:'c'}, d:{g:'c'}};
+    const NOMS={c:'My TOTEHM', h:'Get Higher', b:'My Reflection', g:'My shorts', d:'My spots'};
+    const slo=$('lv-slogan'), nUp=$('lvn-up'), nDn=$('lvn-dn'), nLf=$('lvn-lf'), nRt=$('lvn-rt'),
+          sock=$('lv-socket'), BG=$('gl-bg');
     const W=()=>innerWidth, H=()=>innerHeight;
     const ordi=()=>window.matchMedia('(hover:hover) and (pointer:fine)').matches;
     const lisse=u=>u<.5?2*u*u:1-Math.pow(-2*u+2,2)/2;
     const diag={allers:0, modes:0, envois:0, telegram:0, ajouts:0, tours:0};
     let vue='c', mode='mine', bouge=false;
-    const voisin=d=>(VOISINS[vue]||{})[d]||null;
+    const voisin=k=>{
+      const v=(VOISINS[vue]||{})[k]||null;
+      if((k==='g'||k==='d')&&v!=='c'&&(!inscrit()||(vue==='c'&&mode==='others'))) return null;
+      return v;
+    };
     body.classList.add('lv-c');
 
     /* ── LE SLOGAN : « Get [Higher] » sous la langue (LE bouton), « [Higher] Self » sous le profil ── */
@@ -10142,7 +10118,10 @@ window.addEventListener('pageshow',e=>{
     }
     /* Le profil : centré, sous le chevron du haut (mesuré sans les transformations du panneau). */
     function profil(){ const m=$('rf-me'), rf=$('rf'); return {x:W()/2, y:rf.offsetTop+m.offsetTop+m.offsetHeight/2, d:m.offsetHeight||64}; }
-    function sloganPour(v){
+    function sloganPour(v0){
+      /* Mes shorts et mes spots gardent la pose du CENTRE : le badge se range au coin du socle (en shorts,
+         la CSS l'efface — le feed prend tout l'écran). Un seul [Higher], une seule grammaire. */
+      const v=(v0==='g'||v0==='d')?'c':v0;
       ['c','h','b'].forEach(k=>slo.classList.toggle('is-'+k,k===v));
       slo.classList.add('is-pose');
       slo.tabIndex=v==='h'?0:-1;
@@ -10162,12 +10141,12 @@ window.addEventListener('pageshow',e=>{
       }
     }
     function peindreNav(){
-      const u=voisin('h'), d=voisin('b');
-      [[nUp,u],[nDn,d]].forEach(([b,v])=>{ b.classList.toggle('is-mort',!v); b.tabIndex=v?0:-1;
-        if(v){ b.setAttribute('aria-label',NOMS[v]); b.title=NOMS[v]; } else b.removeAttribute('title'); });
+      [[nUp,voisin('h')],[nDn,voisin('b')],[nLf,voisin('g')],[nRt,voisin('d')]]
+        .forEach(([b,v])=>{ if(!b) return; b.classList.toggle('is-mort',!v); b.tabIndex=v?0:-1;
+          if(v){ b.setAttribute('aria-label',NOMS[v]); b.title=NOMS[v]; } else b.removeAttribute('title'); });
     }
     function poser(v){
-      ['c','h','b'].forEach(k=>body.classList.toggle('lv-'+k,k===v));
+      ['c','h','b','g','d'].forEach(k=>body.classList.toggle('lv-'+k,k===v));
       sloganPour(v); peindreNav();
       /* Le réseau se reconfigure AVANT que la vue s'allume : il est déjà dans sa forme quand on arrive. */
       if(v==='c'||v==='h') RAM.peindre(v);
@@ -10205,17 +10184,23 @@ window.addEventListener('pageshow',e=>{
       if(bouge||open||moving||sMoving||sOpen) return;
       if(body.classList.contains('is-door')||!body.classList.contains('gate')) return;
       if(v!=='c'&&!Object.values(VOISINS[vue]||{}).includes(v)) return;
+      if((v==='g'||v==='d')&&!inscrit()) return;      /* « mes » shorts, « mes » spots : il faut un Totehm */
       if(PAPIER.occupe()&&!PAPIER.vue()) return;
       diag.allers++;
       bouge=true; const de=vue; vue=v;
       if(de==='c'&&mode==='others') GX.pause();
       if(de==='b') REF.quitter();
+      /* Un moteur ne tourne que dans sa vue : on ferme celui d'où l'on part, on ouvre celui où l'on va. */
+      if(de==='g') SH.fermer(); else if(de==='d') RDR.fermer();
+      if(v==='g') SH.ouvrir(); else if(v==='d') RDR.ouvrir();
       poser(v); socle(v);
       if(v==='c'&&mode==='others') GX.reprendre();
       const fini=()=>{ bouge=false; peindreNav(); sloganPour(vue); if(vue==='b') REF.arrive(); if(then) then(); };
-      if(v==='c'){
+      /* Mes shorts et mes spots laissent le papier CHEZ LUI : en shorts le feed le recouvre, au radar il
+         EST le centre (le canvas est transparent). Rien à déplacer, donc rien à remettre en place. */
+      if(v==='c'||v==='g'||v==='d'){
         if(de==='b') tourner(-1,760);
-        const cible=mode==='others'?cibleMine():null;
+        const cible=(v==='c'&&mode==='others')?cibleMine():null;
         return PAPIER.glisser(cible,{ms:de==='b'?720:640,bouche:de==='h'&&cible?[0,0]:null,fin:fini});
       }
       if(v==='h'){
@@ -10235,7 +10220,7 @@ window.addEventListener('pageshow',e=>{
       if(body.classList.contains('is-door')||!body.classList.contains('gate')) return;
       if(PAPIER.occupe()&&!PAPIER.vue()) return;
       diag.modes++; mode=m; bouge=true;
-      body.classList.toggle('lv-others',m==='others'); peindreMode(); socle('c');
+      body.classList.toggle('lv-others',m==='others'); peindreMode(); peindreNav(); socle('c');
       const fini=()=>{ bouge=false; if(then) then(); };
       if(m==='others'){ GX.ouvrir(vite); PAPIER.glisser(cibleMine(),{ms:vite?1:620,fin:fini}); }
       else{ GX.fermer(); PAPIER.glisser(null,{ms:620,fin:fini}); }
@@ -10279,7 +10264,7 @@ window.addEventListener('pageshow',e=>{
     /* L'espace membre (hors de ce module) ouvre ou ferme mes réglages par ici. */
     lvReglages={ouvrir:()=>versMine(()=>ouvrirVerso()), fermer:f=>{ if(sOpen) fermerVerso(f); else f(); }};
     function reset(){
-      bouge=false; vue='c'; calme(); poser('c'); socle('c');
+      bouge=false; vue='c'; calme(); SH.fermer(); RDR.fermer(); poser('c'); socle('c');
       if(mode==='others') requestAnimationFrame(()=>PAPIER.glisser(cibleMine(),{ms:1}));
     }
     window.addEventListener('pageshow',e=>{ if(e.persisted){ PAPIER.remettre(); reset(); GX.revenir(); } });
@@ -10300,36 +10285,50 @@ window.addEventListener('pageshow',e=>{
     const libre=()=>body.classList.contains('gate')&&!body.classList.contains('entered')&&!body.classList.contains('is-door')
       &&!sOpen&&!sMoving&&!$('member-window').classList.contains('show')&&!body.classList.contains('is-xo');
     const saisie=t=>!!(t&&(t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.tagName==='SELECT'||t.isContentEditable));
-    const LISTES='#lv-thread,#gx-res';
+    const LISTES='#lv-thread,#gx-res,#lv-sh';
     const filDefile=(t,dy)=>{ if(!t||!t.closest||!t.closest(LISTES)) return false;
       const el=t.closest(LISTES); if(el.scrollHeight<=el.clientHeight+2) return false;
       return dy>0 ? el.scrollTop+el.clientHeight<el.scrollHeight-1 : el.scrollTop>1; };
     nUp.onclick=()=>{ const v=voisin('h'); if(v) aller(v); };
     nDn.onclick=()=>{ const v=voisin('b'); if(v) aller(v); };
+    if(nLf) nLf.onclick=()=>{ const v=voisin('g'); if(v) aller(v); };
+    if(nRt) nRt.onclick=()=>{ const v=voisin('d'); if(v) aller(v); };
     window.addEventListener('keydown',e=>{
       if(!libre()||saisie(e.target)||e.metaKey||e.ctrlKey||e.altKey) return;
-      if(e.key==='ArrowUp'||e.key==='ArrowDown'){ const v=voisin(e.key==='ArrowUp'?'h':'b'); if(v){ e.preventDefault(); aller(v); } return; }
-      /* Au clavier, le papier se retourne comme à la main : ← → sur son recto ouvrent mes réglages. */
-      if((e.key==='ArrowLeft'||e.key==='ArrowRight')&&document.activeElement===$('gate-enter')&&vue==='c'&&mode==='mine'){ e.preventDefault(); ouvrirVerso(); return; }
+      if(e.key==='ArrowUp'||e.key==='ArrowDown'){
+        const d=e.key==='ArrowUp'?'h':'b', v=voisin(d);
+        if(v){ e.preventDefault(); aller(v); return; }
+        /* Dans mes shorts il n'y a pas de voisin vertical : les deux flèches servent le feed. */
+        if(vue==='g'&&SH.pas(d==='b'?1:-1)) e.preventDefault();
+        return; }
+      /* Au clavier, le papier se retourne comme à la main : ← → sur son recto ouvrent mes réglages ; c'est
+         la seule chose qui passe DEVANT l'horizontale, parce que le papier a le focus. */
+      if(e.key==='ArrowLeft'||e.key==='ArrowRight'){
+        if(document.activeElement===$('gate-enter')&&vue==='c'&&mode==='mine'){ e.preventDefault(); ouvrirVerso(); return; }
+        const v=voisin(e.key==='ArrowLeft'?'g':'d'); if(v){ e.preventDefault(); aller(v); }
+        return; }
       if(e.key==='Escape'){ if(vue!=='c'){ e.preventDefault(); aller('c'); } else if(mode==='others'){ e.preventDefault(); choisirMode('mine'); } }
     },{capture:true});
-    /* Le trackpad et la molette (la règle de SPACE, 12/10, en vertical seul) : deltaY > 0 → la vue du bas ;
-       70 px accumulés (160 au plus par événement), remis à zéro après 180 ms ou au changement de sens, puis un
-       verrou de 350 ms que l'inertie prolonge de 260 ms. Une liste qui peut défiler garde la molette. */
+    /* Le trackpad et la molette (la règle de SPACE, 12/10) : `deltaX > 0` → la vue de DROITE, `deltaY > 0` →
+       celle du BAS ; 75 px accumulés en X, 70 en Y (160 au plus par événement), remis à zéro après 180 ms ou
+       au changement de sens, puis un verrou de 350 ms que l'inertie prolonge de 260 ms. Une liste qui peut
+       défiler garde la molette ; en diagonale on ne devine pas. L'horizontale est revenue le 16/10 bis avec
+       mes shorts et mes spots — dans la galaxie, `voisin()` l'éteint et les étoiles gardent le geste. */
     (function trackpad(){
       let sens='', sum=0, last=0, verrou=0;
       window.addEventListener('wheel',e=>{
         if(!libre()) return;
         const f=e.deltaMode===1?16:e.deltaMode===2?innerHeight:1, x=e.deltaX*f, y=e.deltaY*f;
-        if(Math.abs(y)<=Math.abs(x)*1.25) return;
-        if(filDefile(e.target,y)){ sum=0; last=0; return; }
-        const d=y>0?'b':'h', v=voisin(d); if(!v) return;
+        const hor=Math.abs(x)>Math.abs(y)*1.25;
+        if(!hor&&Math.abs(y)<=Math.abs(x)*1.25) return;
+        if(!hor&&filDefile(e.target,y)){ sum=0; last=0; return; }
+        const d=hor?(x>0?'d':'g'):(y>0?'b':'h'), v=voisin(d); if(!v) return;
         const now=Date.now();
         e.preventDefault();
         if(bouge||now<verrou){ verrou=now+260; return; }
         if(now-last>180||d!==sens) sum=0;
-        sens=d; last=now; sum+=Math.min(160,Math.abs(y));
-        if(sum>=70){ sum=0; verrou=now+350; aller(v); }
+        sens=d; last=now; sum+=Math.min(160,Math.abs(hor?x:y));
+        if(sum>=(hor?75:70)){ sum=0; verrou=now+350; aller(v); }
       },{passive:false,capture:true});
     })();
     /* Le doigt : glisser vers le haut montre ce qui est en bas. Pas sur le papier (il se retourne), ni dans un
@@ -10345,7 +10344,10 @@ window.addEventListener('pageshow',e=>{
       window.addEventListener('touchend',e=>{
         const q=p; p=null; if(!q||!libre()||bouge||Date.now()-q.t>900) return;
         const dx=e.changedTouches[0].clientX-q.x, dy=e.changedTouches[0].clientY-q.y;
-        if(Math.abs(dy)>60&&Math.abs(dy)>Math.abs(dx)*1.3&&!filDefile(q.el,-dy)){ const v=voisin(dy<0?'b':'h'); if(v) aller(v); }
+        if(Math.abs(dy)>60&&Math.abs(dy)>Math.abs(dx)*1.3&&!filDefile(q.el,-dy)){ const v=voisin(dy<0?'b':'h'); if(v) aller(v); return; }
+        /* 16/10 bis — glisser vers la GAUCHE montre ce qui est à droite (un déplacement de doigt, pas un
+           trackpad : les deux gestes ne se lisent pas dans le même sens, et c'est normal). */
+        if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.3){ const v=voisin(dx<0?'d':'g'); if(v) aller(v); }
       },{passive:true,capture:true});
     })();
 
@@ -11038,7 +11040,7 @@ window.addEventListener('pageshow',e=>{
       if(seq!==landSeq||(me?me.id:null)!==uid) return;
       if(error){ console.error('[my_landing]',error.message); return; }
       LAND=data||null;
-      peindreCarte(); connPaint(); paintMe(); RAM.peindre(vue);
+      peindreCarte(); connPaint(); paintMe(); RAM.peindre(vue); peindreNav();
       smPeindre(); if(vue==='b'&&!SM.paye) smNoteEtat();
       CREA.charger();
     };
@@ -11049,6 +11051,7 @@ window.addEventListener('pageshow',e=>{
       reflection:{tours:SM.msgs.length, pret:!!etatSM().ready, gratuits:etatSM().free_left??null, envois:diag.envois, ajouts:diag.ajouts,
                   pense:!!pense, telegram:diag.telegram},
       galaxie:GX.etat(), ramifications:RAM.etat(), tours:diag.tours, tourne:!!tour,
+      shorts:SH.etat(), spots:RDR.etat(),
       visibilite:LAND?LAND.visibility:null, vignette:!!avatarOk(LAND&&LAND.avatar), createur:CREA.etat(), reglages:sOpen});
     window.__lvAller=v=>aller(v);
     window.__lvMode=m=>choisirMode(m);

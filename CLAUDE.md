@@ -61,11 +61,12 @@ Les `CLAUDE.md` des dossiers servis par Vercel sont exclus du déploiement (`.ve
 ## L'architecture — direction du 15/10/2026 (publiée en production)
 
 ```
-com/      → www.totehm.com       LA PLATEFORME (16/10) : le Totehm (5 vues × DEUX MODES — liste et shorts —, plus le RADAR dans la vue Habit ; capture et spot dans
-                                 l'élément), /auth, /@nom, /console, /monetize, /higher (la vente de l'abonnement Higher), /spot ; TROIS vues verticales : ↑ Get Higher (la bouche, le
-                                 cerveau aux 7 couleurs) · le processeur (le réseau des 7 intentions PLEIN ÉCRAN au rythme de mes Habits ; Mine · Others = une MULTITUDE de dos de
-                                 papier, la recherche AU MILIEU) · ↓ ma Reflection ; le NOM en haut au centre, il n'en bouge jamais ; le verso = le MENU MEMBRE ; XO sert /x/space,
-                                 /x/club et /@nom (l'univers d'un membre s'ouvre SUR PLACE : zéro saut)
+com/      → www.totehm.com       LA PLATEFORME (16/10 bis) : le Totehm = 5 vues EN LISTE, rien d'autre (aucun mode ; capture et spot dans l'élément), /auth, /@nom,
+                                 /console, /monetize, /higher (la vente de l'abonnement Higher), /spot ; CINQ vues d'atterrissage, quatre voisins, sans manette :
+                                 ↑ Get Higher (la bouche, le cerveau aux 7 couleurs) · ← MES SHORTS (tiktok plein écran) · le processeur (le réseau des 7 intentions PLEIN
+                                 ÉCRAN au rythme de mes Habits ; Mine · Others = une MULTITUDE de dos de papier, la recherche AU MILIEU) · MES SPOTS → (le radar, centré sur
+                                 le papier) · ↓ ma Reflection ; le NOM en haut au centre, il n'en bouge jamais ; le verso = le MENU MEMBRE ; XO sert /x/space, /x/club et
+                                 /@nom (SUR PLACE : zéro saut)
 space/    → www.totehm.space     Galerie 3D visitable d'art digital : TotehmPaper, Get Higher, Stoner, Lisbon, Origins/Quantum,
                                  /market et collection. Expériences déplacées sans refonte. /social et /s/:id préservent les contenus existants.
 club/     → www.figher.club      Consultation : passé / maintenant / futur × RADAR / SHORTS, mêmes filtres et résultats autorisés.
@@ -76,8 +77,7 @@ oracle/   → clés, gitignoré, jamais lu ni recopié
 tests/    → navigateur Playwright/Supabase simulé, contrats Edge, SQL transactionnel en base de développement
 ```
 
-La direction du 15/10 remplace les répartitions historiques ci-dessous et dans les documents de domaine ; livraison et
-ordre de déploiement : `docs/GALLERY_CLUB_20261015.md`, `docs/SPACE_IMMERSIVE_20261015.md`. Aucune mesure locale ne prouve la production.
+La direction du 15/10 remplace les répartitions historiques ci-dessous et dans les documents de domaine ; livraison et ordre de déploiement : `docs/GALLERY_CLUB_20261015.md`, `docs/SPACE_IMMERSIVE_20261015.md`. Aucune mesure locale ne prouve la production.
 
 TotehmBot est transversal (Telegram). Une seule base Supabase (`abujjbkbbiumxrokozph`, eu-west-1), un seul webhook Stripe.
 **Produits indépendants = fichiers indépendants** : un contenu commun est COPIÉ (ex. `tools/sso_snippet.js`), jamais
@@ -165,13 +165,13 @@ vérifié le 30/09 : `checkout.session.completed`, `invoice.paid`,
 - **CORS** : `corsHeaders(origin, fallback)` de `_shared/origins.ts`, jamais `*`.
 - **Claude Code** (terminal) : une commande simple par ligne, jamais
   `cd X && …` (les permissions jugent la ligne entière).
-**16/10 — PLUS DE SPACES DANS COM** (Wah) : une Habit Box ne montre que ses SPOTS, « + a space » est parti, `[Add a media]` et `[Add a spot]` remplacent les icônes, et un spot
+**16/10 bis — LA LISTE SEULE DANS LE TOTEHM** (Wah : « on garde seulement le mode liste … sinon ça pète toute la structure ») : aucun mode, aucune bascule, la manette ne s'en va plus jamais ; les deux moteurs sont des VUES de l'atterrissage — `SH` ← mes shorts (UN MÉDIA par écran, aimanté, la légende ouvre son élément) et `RDR` → mes spots (canvas transparent, centré sur le papier) —, ils lisent ce qui est déjà en mémoire (zéro appel), membre seulement, jamais dans la galaxie. **16/10 — PLUS DE SPACES DANS COM** (Wah) : une Habit Box ne montre que ses SPOTS, « + a space » est parti, `[Add a media]` et `[Add a spot]` remplacent les icônes, et un spot
 s'annonce DANS la boîte (deux champs, le point du navigateur exigé — jamais une position calculée depuis une ville). **SPACE · 11/10 :** un space = une Habit vécue, jamais un point exact ; sans selfie ni
 musique ajoutée ; vibes, profils ; **ce qui vient du Totehm reste TEL QUEL** (la box de COM ; à la publication, un tap éteint/rallume une mini-box ou le
 rythme, `spot_box_set`) ; le reste (space, spot) au format de sa plateforme. **figher.club :** un spot = un lieu + une heure (Higher spot : chez soi, lieu privé ou dehors) ;
 radar, annonce (toujours ON), agenda, I AM HERE, passés ; OFF = ville, ON = le point (`_point_ok`). Mini-boxes
 OBJECTIVES/REPULSIONS séparées (droits serveur). Détails : `space/CLAUDE.md`, `club/CLAUDE.md`, copy : `BRAND.md`.
-My spaces (COM ; DELETE aussi dans la fiche) + `space-delete` ; une Box MY STORY (WISDOM) de COM montre ses Cloths (`element_cloths`) comme une Habit ses spaces ; une VISION porte une image libre (`vision_image_set`) ; chercher = un NOM → son univers /@nom (la galaxie : rien que le dos du papier, le nom en Coral au zoom). **Le verso du papier porte TOUT** (15/10 bis) : mes réglages (nom, 4 niveaux, créateur en 3 chiffres + prix au curseur) PUIS mon compte (vignette, Higher, souscriptions, conditions) ; la console s'ouvre dans la couche `XO`, on ne quitte pas la page.
+Une Box MY STORY (WISDOM) de COM montre ses Cloths (`element_cloths`) comme une Habit ses spots ; une VISION porte une image libre (`vision_image_set`) ; chercher = un NOM → son univers /@nom (la galaxie : rien que le dos du papier, le nom en Coral au zoom). **Le verso du papier porte TOUT** (15/10 bis ; 16/10 : c'est LE MENU MEMBRE) : mes réglages (nom, 3 niveaux, créateur en 3 chiffres + prix au curseur) PUIS mon compte (vignette, Higher, souscriptions, conditions) ; la console s'ouvre dans la couche `XO`, on ne quitte pas la page.
 
 ## Règles d'interface qui valent partout
 
@@ -183,8 +183,9 @@ My spaces (COM ; DELETE aussi dans la fiche) + `space-delete` ; une Box MY STORY
 - Un `<canvas>` porte toujours `width:100%;height:100%`.
 - Geste dédié : `touch-action:none` + Pointer Events. Dans un feed scrollable,
   préserver le scroll natif ; touchstart/move/end reprend le retour au radar.
-  **Le trackpad change de vue vers chaque voisin** (07/10 ; seuils de SPACE 12/10 : 70–75 px, verrou 350 ms + inertie ;
-  l'atterrissage COM = vertical seul, 15/10), hors manette aussi ; une liste qui peut défiler garde la molette.
+  **Le trackpad change de vue vers chaque voisin** (07/10 ; seuils de SPACE 12/10 : 75 px en X, 70 en Y, verrou 350 ms
+  + inertie ; `deltaX > 0` = la DROITE), hors manette aussi ; une liste qui défile garde la molette, et un geste réservé
+  à autre chose éteint l'axe dans CETTE vue (la galaxie garde l'horizontale) sans changer la règle.
 - Overlays plein écran ancrés EN HAUT (le clavier mobile mange le bas).
 - L'interface est en anglais, LE MOINS DE MOTS POSSIBLE (12/10 : le design parle, pas une phrase) ; termes de marque en anglais. À l'écran « element », jamais « Box » (08/10) ; WISDOM se dit MY STORY (13/10).
 - Une règle de comportement ne va jamais dans un `@media`.

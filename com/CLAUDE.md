@@ -1,9 +1,55 @@
 # com/CLAUDE.md — totehm.com : le Totehm, la carte, HigherSelf
 
+## 16/10/2026 bis — LE LOT F : LA LISTE SEULE dans le Totehm ; ← mes shorts, → mes spots
+
+BUILD `2026-10-16-com-vues`. Wah : « non on garde seulement le mode liste … sinon ça pète toute la structure. Sur la
+page d'atterrissage tu me remets une vue shorts en mode tiktok sur la vue de gauche et sur la vue de droite tu me mets
+la vue radar avec tous mes spots. » Ce lot ANNULE les modes du lot E (le reste du lot E tient).
+
+- **DANS LE TOTEHM, LA LISTE SEULE.** `#vmode`, `ICO_LIST/SHORTS/RADAR`, `body.v-shorts`, `body.v-radar`, `.sh*`,
+  `SH.basculer/actif/radar/liste/mode/html/apres/peindre` et `RDR.html` sont PARTIS — balisage ET câblage, ensemble.
+  `renderZone()` garde la chaîne unique des cinq vues (`PLAN`) et rend la liste, point. **La manette ne s'en va plus
+  jamais** ; **la croix et Échap replient le Totehm d'un coup** (il n'y a plus de mode dont sortir d'abord) ; ↑ ↓ y
+  redeviennent la navigation entre vues. La capture et les fichiers d'un élément (`CAP`, `element_media`,
+  `[Add a media]`, `[Add a spot]`) ne bougent pas : ils vivent dans la boîte, pas dans un mode.
+- **← `SH` — MES SHORTS, une VUE de l'atterrissage.** `#lv-g` → `#lv-sh` (`overflow-y:auto`, `scroll-snap-type:y
+  mandatory`) et `.lsh` à `100dvh`. **UN MÉDIA par écran, pas un élément** : cinq photos sur une Habit font cinq
+  écrans — c'est ce qu'est un tiktok. Trois sources, dans cet ordre : mes fichiers (`element_media`, images et vidéos),
+  la photo d'un de mes SPOTS, l'image libre d'une VISION. **Zéro appel de plus** : les trois sont déjà en mémoire.
+  Par-dessus, `.lsh-say` = les traits d'intention de l'élément (hérités pour les quatre autres vues, la même chaîne que
+  la boîte) + son texte en Quantico ; un tap passe par `__totehmDeplie` → `setView` → `ouvrir(kind,id)` : l'élément
+  s'ouvre DANS le Totehm, sur sa vue. Le clip visible joue, le suivant se prépare (la règle d'egress de SPACE) ;
+  ↑ ↓ vont d'un média à l'autre (il n'y a pas de voisin vertical dans cette vue). Le processeur s'efface
+  (`body.lv-g #lv-proc,#lv-slogan{opacity:0}`) : le feed prend l'écran, et le NOM reste en haut au centre.
+  ⚠️ `ouvrir` est le verbe GLOBAL qui ouvre une boîte : le module nomme ses locales `entrer`/`sortir` pour ne pas le
+  masquer (une locale du même nom l'aurait caché dans tout le module).
+- **→ `RDR` — MES SPOTS, le radar.** `#lv-d` → `#rdr-c` plein écran, **fond transparent** et centré sur le PAPIER
+  (mesuré sur `#gate-asteroid`, à l'ouverture et au `resize` — jamais une lecture de géométrie par image) : le centre
+  du radar, c'est moi, et mon Totehm est déjà là dans son socle, alors le carré blanc du centre a disparu. TOUS mes
+  spots (`HSPACES`, déjà lu), trois anneaux, un balayage ; un spot sans point exact se pose sur l'anneau, pâle, et le
+  DIT. Ma position seulement si elle est DÉJÀ accordée. rAF seulement dans la vue (`etat.on`), coupé à l'onglet caché.
+- **L'HORIZONTALE EST REVENUE.** `VOISINS={c:{h,b,g,d}, h:{b:'c'}, b:{h:'c'}, g:{d:'c'}, d:{g:'c'}}`, deux chevrons de
+  plus (`#lvn-lf`, `#lvn-rt`, `.lvn-x` couchés aux bords), le trackpad aux DEUX axes (75 px en X, 70 en Y) et le doigt
+  à l'horizontale. **`voisin()` éteint g et d** sans compte (il n'y a pas « mes » médias sans Totehm) et dans la
+  GALAXIE (l'horizontale y fait tourner les étoiles) : les chevrons suivent, et `aller()` refuse aussi. ← → sur le
+  recto du papier (focus `#gate-enter`) ouvrent toujours mes réglages : c'est la seule chose qui passe devant.
+  `enter()` ramène déjà au centre avant de déplier — les deux moteurs se ferment donc tout seuls en entrant.
+- **Dette du lot E réparée ici** : le bloc du menu membre est COPIÉ dans quatre fichiers et le lot E n'en avait mis
+  à jour que trois — `com/creator.html` (`/search`, `/@nom`) disait encore « Monetize my TOTEHM ecosystem » /
+  « Manage my subscriptions » avec ses anciennes légendes. `com_member_menu` plantait dessus depuis (26 contrôles
+  passés puis un délai dépassé, que le compteur de PASS masquait). Les quatre copies disent maintenant la même chose.
+  Le même test exigeait « 20 % » sur `/monetize` : la page refaite ne montre QUE ma part (doctrine du grand livre)
+  et son curseur COMPTE — le contrôle vise désormais 80 %, l'année et le curseur, jamais un revenu annoncé.
+- Diagnostics : `__totehm_sh()` (`on`, `items`, `videos`, `ici`, `pas`, `capture`), `__totehm_rdr()` (`on`, `points`,
+  `sans`, `rayon`, `moi`, `anime`), tous deux repris dans `__totehm_lv().shorts` / `.spots`. `__totehm_zone` ne porte
+  plus `shorts`. Tests : `com_shorts` 64, `com_processeur` 108, `com_member_menu` 34, `com_plateforme` 23.
+
 ## 16/10/2026 — LE LOT E : deux modes par vue, la galaxie sans saut, le verso = le menu membre, ça VEND
 
 BUILD `2026-10-16-com-modes`. Ce lot REMPLACE, sur ces points, les lots C et D du 15/10 (le reste tient).
 
+> ⚠️ **Les deux puces suivantes (les modes, le radar dans la vue Habit) sont ANNULÉES par le lot F ci-dessus** : la
+> liste est seule dans le Totehm, et les deux moteurs sont des vues de l'atterrissage.
 - **DEUX MODES PAR VUE, TROIS DANS LA VUE HABIT** (`SH`, ex-shorts) — Wah : « il y a deux modes pour chaque vue :
   la vue liste et la vue Shorts qui changent complètement le dispositif ; pour revenir, il faut fermer ou revenir
   en mode liste où le joystick reapparait ». Un mode PAR VUE, gardé (`localStorage totehm_modes` ; l'ancienne clé
@@ -15,7 +61,7 @@ BUILD `2026-10-16-com-modes`. Ce lot REMPLACE, sur ces points, les lots C et D d
 - **Le média d'un short, pour les cinq vues** : ses fichiers (`element_media`, le plus récent) ; à défaut la photo
   d'un de ses SPOTS pour une Habit, l'image libre d'une VISION. Sans média : son papier et ses traits d'intention
   (hérités pour les quatre autres vues, la même chaîne que la boîte). Rien d'inventé.
-- **`RDR` — le RADAR, troisième mode de la vue Habit** : mes spots, là où ils sont, **sans un appel de plus** (les
+- **`RDR` — le RADAR, troisième mode de la vue Habit** (DÉPLACÉ sur l'atterrissage le 16/10 bis) : mes spots, là où ils sont, **sans un appel de plus** (les
   points viennent de `habit_spaces`, déjà lu). Un spot sans point exact se pose sur l'anneau, pâle, et le DIT :
   jamais une fausse position calculée depuis une ville. Le centre, c'est moi — ma position seulement si elle est
   DÉJÀ accordée (`navigator.permissions`, jamais un dialogue pour un radar), sinon le barycentre. `__totehm_rdr()`.
