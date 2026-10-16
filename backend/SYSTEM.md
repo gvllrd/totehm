@@ -4,7 +4,7 @@
 > Quatre projets READY et huit alias vérifiés (`395c7ca`) ; 25 contrôles HTTP et 40 anciennes adresses réussis ; détail : `../docs/GALLERY_CLUB_20261015.md`.
 > Les mesures historiques du lot C publiées dans `13abd34` sont conservées avec leur date propre.
 
-**Dernier relevé : 16 octobre 2026, le lot E publié (base, COM, `/higher`, `/monetize`) ; Lisbon unifié dans la galerie SPACE conservé** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
+**Dernier relevé : 16 octobre 2026 (bis), le lot F publié (COM : la liste seule dans le Totehm, ← mes shorts, → mes spots)** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
 
 > **À quoi sert ce fichier.** Les masters disent *ce qu'on veut*. `CLAUDE.md` dit
 > *comment on construit*. **Celui-ci dit ce qui existe vraiment.**
@@ -20,6 +20,21 @@
 ---
 
 
+## 0 · LA LISTE SEULE DANS LE TOTEHM ; ← MES SHORTS, → MES SPOTS — 16/10/2026 (lot F)
+
+| Mesure | Résultat |
+| --- | --- |
+| Commit fusionné | `a629a1b` sur `main` en avance rapide depuis `03e12a8` ; aucune migration, aucune fonction Edge, aucun prix |
+| Déploiement COM | `dpl_7MssTcGBTYGAAc6aNFNr2QaCyocK` sur `a629a1b` : READY en production, alias `totehm.com` et `www.totehm.com` |
+| Prod `www.totehm.com/totehm` | 200 · MD5 `11b1aa5d` · 728 244 o · `BUILD='2026-10-16-com-vues'` = le dépôt, octet pour octet |
+| Prod `www.totehm.com/search` (creator) | 200 · MD5 `326c2a99` = le dépôt ; la copie du menu membre dit enfin « My monetization » comme les trois autres |
+| Prod inchangés | `/higher` MD5 `84c20f52` · `/monetize` MD5 `c9a3a88c` (le lot ne les touche pas) |
+| Lus en prod · PRÉSENTS | `#lv-g` · `#lv-d` · `#lvn-lf` · `#lvn-rt` · `#lv-sh` · `#rdr-c` · `aria-label="My shorts"` · `aria-label="My spots"` · `data-lsh` (la légende qui ouvre son élément) · `.lsh-say` · « no media yet » · « without a point » · `VOISINS … g:{d:'c'}, d:{g:'c'}` |
+| Lus en prod · ABSENTS | nœud `#vmode` · classe `v-shorts` · `ICO_RADAR` · `SH.basculer` / `SH.actif` / `SH.radar` — les modes sont partis, balisage ET câblage |
+| Suites navigateur COM | **334 contrôles, 0 échec** : com_processeur 108 · com_shorts 64 · com_creator 37 · com_paper 34 · com_member_menu 34 · com_plateforme 23 · com_read_copy 18 · com_cloths 16 |
+| Dette du lot E réparée | `com/creator.html` avait gardé « Monetize my TOTEHM ecosystem » / « Manage my subscriptions » : le bloc du menu membre est COPIÉ dans quatre fichiers et le lot E n'en avait mis à jour que trois. `com_member_menu` plantait dessus (26 contrôles passés puis un délai dépassé) — le compteur de PASS le masquait. Il repasse à 34/34 |
+| ⚠️ Dette constatée, hors de ce lot | les suites visant `www.totehm.space` expirent sur `main` depuis la refonte SPACE (gallery, space_boxes_ecosystem, space_spot_links, spaces_loupe) ; le lot F ne touche à aucun fichier de `space/` |
+
 ## 0 · LE CLUB EST LE PUBLIC, DEUX MODES PAR VUE, LA GALAXIE SANS SAUT, DEUX OFFRES NOMMÉES — 16/10/2026 (lot E)
 
 | Mesure | Résultat |
@@ -31,7 +46,7 @@
 | Selftest SQL | `club_ouvert_trois_objets_selftest.sql` : 20 contrôles, `FAIL={}`, fixtures annulées |
 | Adhésion mesurée | 1 habit + 1 objectif + 1 répulsion ⇒ `member` vrai, `complete` FAUX (les 5 vues restent informatives) ; habit seule ⇒ `member` faux, `needs = ["objective","repulsion"]` |
 | PUBLIC | écrit `public` sur `totehms` et `spot_plans` ⇒ relu `figher` (les triggers) ; `_audience_ok('public', anon)` faux · `_audience_listed('public', anon)` faux · `_point_ok('public', anon)` faux ; `visibility_set('public')` rend `figher` ; projection 0,1° éteinte |
-| Prod `www.totehm.com/totehm` | 200 · MD5 `2de93bed` · 706 363 o · `BUILD='2026-10-16-com-modes'` = le dépôt, octet pour octet |
+| Prod `www.totehm.com/totehm` | 200 · MD5 `2de93bed` · 706 363 o · `BUILD='2026-10-16-com-modes'` = le dépôt, octet pour octet — **remplacé le même jour par le lot F** (voir §0 ci-dessus) |
 | Prod `www.totehm.com/higher` | 200 · MD5 `84c20f52` · 27 503 o · `BUILD='2026-10-16-higher'` = le dépôt (page NEUVE, servie par `cleanUrls`) |
 | Prod `www.totehm.com/monetize` | 200 · MD5 `c9a3a88c` · 25 448 o · `BUILD='2026-10-16-monetize'` = le dépôt |
 | Lus en prod · présents | `#conn-bar` (le nom en haut) · `[Add a spot]` · `ICO_RADAR` · « your brain » · « your strategy » · « An objective you keep in your head is a wish » · `Gollwitzer` · `Monetize my TOTEHM` · la couche `univers` · « Talk is cheap » (sur `/higher`) |
