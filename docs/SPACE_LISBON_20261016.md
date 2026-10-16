@@ -1,5 +1,12 @@
 # Lisbon dans la galerie — 16 octobre 2026
 
+Publié : `a64e59a252e96e39b607ca23f54fc991b30d9985`, build galerie `2026-10-16-space-lisbon-play`,
+expérience `2026-10-16-lisbon-space`. SPACE `dpl_D6ebbq6mATvZA8chDR4YsBumQqRs` READY ; quatre projets et
+huit alias de production vérifiés. Les 23 contrôles HTTPS réels correspondent aux sources du dépôt et aux MIME
+attendus. Les six anciennes adresses Lisbon www/apex arrivent sur le même parcours en conservant la query.
+Les deux pages COM servent exactement le travail de Claude `67941b5`.
+Preuves : `/tmp/totehm-production/lisbon-ready.json` et `lisbon-live.json`.
+
 La page `/play_lisbon_street` contient le récit et la transformation des 22 panneaux en manette. PLAY est la
 seule action de la station 03, désormais « Neuro Street Art Digital ». Les anciens chemins `/discover_lisbon`,
 `/discover_lisbon.html` et `/lisbon` redirigent temporairement vers ce parcours unique ; la page ancienne reste

@@ -4,7 +4,7 @@
 > Quatre projets READY et huit alias vérifiés (`395c7ca`) ; 25 contrôles HTTP et 40 anciennes adresses réussis ; détail : `../docs/GALLERY_CLUB_20261015.md`.
 > Les mesures historiques du lot C publiées dans `13abd34` sont conservées avec leur date propre.
 
-**Dernier relevé : 15 octobre 2026, SPACE marbre noir et ficus monumental publiés ; réseau neuronal COM de Claude conservé** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
+**Dernier relevé : 16 octobre 2026, Lisbon unifié dans la galerie SPACE et publié ; réseau neuronal COM de Claude conservé** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
 
 > **À quoi sert ce fichier.** Les masters disent *ce qu'on veut*. `CLAUDE.md` dit
 > *comment on construit*. **Celui-ci dit ce qui existe vraiment.**
@@ -19,6 +19,21 @@
 
 ---
 
+
+## 0 · SPACE — LISBON, UN SEUL PARCOURS PUBLIÉ — 16/10/2026
+
+| Mesure | Résultat |
+| --- | --- |
+| Code | `a64e59a252e96e39b607ca23f54fc991b30d9985` ; galerie `2026-10-16-space-lisbon-play`, expérience `2026-10-16-lisbon-space` |
+| Vercel | Quatre projets READY, huit alias exacts ; SPACE `dpl_D6ebbq6mATvZA8chDR4YsBumQqRs` |
+| HTTPS réel | 23/23 : sources et slogan exacts, MIME/TLS vérifiés ; six anciennes entrées Lisbon convergent avec query conservée ; marché et COM intacts |
+| Aperçu et parcours | Station 03 « Neuro Street Art Digital » ; 22 panneaux animés et vrai slogan Higher au centre ; seul PLAY ouvre le récit/manette `/play_lisbon_street` |
+| Texte | CTA « MAKE THEM USEFUL FOR YOUR BRAIN » en Space Mono capitales ; trois phrases neutres sans Quantico Coral ni flou ; Higher en SVG |
+| Navigateur local | Lisbon 65/65 à 1440/390 px ; visite immersive 34/34 ; ouverture de liste pendant téléchargement du moteur 10/10 |
+| Conservation | 14/14 comparaisons navigateur des expériences ; 84/84 invariants de sources, géométrie, médias, prix, accès et ponts |
+| Coordination COM | www/apex identiques à Claude `67941b5` ; aucun SQL/Edge, compte, commande ou paiement de production dans ce lot |
+
+Preuves : `/tmp/totehm-production/lisbon-ready.json`, `lisbon-live.json`, `lisbon-20261016/results.json`, `lisbon-immersive-20261016.log`, `lisbon-initial-list-20261016/results.json`. Tests WebGL locaux avec services interceptés ; vérifications HTTPS sur les vrais domaines. Détails : `../docs/SPACE_LISBON_20261016.md`.
 
 ## 0 · SPACE — MARBRE NOIR ET FICUS MONUMENTAL PUBLIÉS — 15/10/2026
 
