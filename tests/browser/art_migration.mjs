@@ -36,6 +36,22 @@ try {
         await pg.waitForTimeout(120);
         const snapshot = await pg.evaluate(() => {
           const style = getComputedStyle(document.body);
+          // The Lisbon storyboard/branding now intentionally evolves on SPACE.
+          // Compare its original controller and XP structure instead of freezing
+          // that expressly requested copy and presentation forever.
+          if(document.querySelector('#street-disc')) return {
+            controller:[...document.querySelectorAll('#board .sign')].map(e => ({
+              label:e.getAttribute('aria-label'),classes:e.className,
+              image:e.querySelector('img').getAttribute('src'),
+              l:e.style.getPropertyValue('--l'),t:e.style.getPropertyValue('--t'),w:e.style.getPropertyValue('--w')
+            })),
+            slogan:document.querySelector('#higher-slogan').outerHTML,
+            video:[...document.querySelectorAll('#vid')].map(e => ({playsinline:e.hasAttribute('playsinline'),preload:e.preload})),
+            xpIds:[...document.querySelectorAll('#xp [id]')].map(e => [e.tagName,e.id]),
+            auth:[...document.querySelectorAll('#auth-overlay button,#auth-overlay input')].map(e => [e.tagName,e.id,e.textContent,e.getAttribute('type')]),
+            body:{ color:style.color, background:style.backgroundColor, font:style.fontFamily },
+            board:{width:getComputedStyle(document.querySelector('#board')).width,height:getComputedStyle(document.querySelector('#board')).height}
+          };
           return {
             title:document.title,
             text:document.body.innerText,

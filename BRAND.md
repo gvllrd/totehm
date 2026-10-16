@@ -10,6 +10,11 @@ The floor and thick walls are polished black marble with natural silver calcite 
 fig tree inspired by Lisbon's Jardim da Estrela: broad buttress roots, a sculptural trunk and a spreading evergreen
 crown, open enough to see the stars. The living tree is part of the architecture, with no invented artwork or collectible.
 
+SPACE's third station is **Neuro Street Art Digital**. Its preview shows only floating Lisbon road signs and
+**[Higher] the Lisbon Streets**, using the genuine Higher vector slogan. **PLAY** opens `/play_lisbon_street`,
+the single story-to-controller experience. Its CTA keeps **MAKE THEM USEFUL FOR YOUR BRAIN** in uppercase
+Space Mono; the narrative is clear neutral Space Mono, with no Coral Quantico or blur. Every visible Higher is the brand SVG.
+
 ## CURRENT UPDATE — 15/10/2026 (bis) · the network is alive, and the first screen SELLS (overrides parts of the processor update above)
 
 **The ramifications take the WHOLE screen.** They are the published intention trait, at screen scale: 2 px, flat,

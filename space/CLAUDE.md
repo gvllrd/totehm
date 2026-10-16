@@ -1,5 +1,21 @@
 # space/CLAUDE.md — totehm.space : galerie d’art digital
 
+## 16/10/2026 — Lisbon, un seul parcours
+
+La station 03 est « Neuro Street Art Digital ». Son mur et sa carte HTML montrent les 22 panneaux flottants,
+sans récit ni CTA dans l'image, avec « Higher the Lisbon Streets » au centre et le vrai SVG slogan Higher.
+`gallery-lisbon.mjs` partage un canvas entre texture 3D et carte HTML ; animation à 12 images/s maximum,
+arrêt en mouvement réduit, hors champ/hors écran et onglet masqué. La liste peut animer sa seule carte visible,
+pendant que le rendu WebGL et le ciel restent suspendus.
+
+L'unique action est PLAY → `/play_lisbon_street` : cette page contient déjà le récit puis la manette de 22 panneaux.
+Le CTA « MAKE THEM USEFUL FOR YOUR BRAIN » est en Space Mono capitales. Les trois phrases narratives finales
+restent claires en Space Mono neutre, sans Quantico Coral ni flou. Tous les Higher visibles utilisent le SVG slogan.
+Fermer la manette revient au récit sur place ; quitter le récit retourne à `/#lisbon`.
+Les anciennes entrées `/discover_lisbon`, `.html` et `/lisbon` redirigent temporairement vers le même parcours.
+Médias, coordonnées de manette, propriété, prix et accès d'origine sont conservés ; les autres expériences sont intactes.
+Tests : `gallery_lisbon.mjs`, invariants et comparaisons `art_migration.mjs` ; détail `../docs/SPACE_LISBON_20261016.md`.
+
 ## 15/10/2026 — visite immersive de la galerie
 
 L'accueil est une salle 3D : déplacement WASD/flèches, regard au glisser, clic au sol et joystick tactile.
@@ -15,7 +31,7 @@ Le toit ouvert expose `gallery-sky.mjs` : nébuleuses directionnelles 3D bleues/
 6 800 étoiles (4 300 au téléphone), scintillement, halos, rotation lente et étoiles filantes.
 La nébuleuse traverse le cadrage d'entrée ; LOOK UP regarde le ciel, l'entrée retrouve la galerie.
 Three.js 0.180.0 est servi localement sous `vendor/`, licence MIT jointe ; aucun moteur chargé depuis un CDN.
-Les aperçus viennent des SVG, panneaux et média Quantum existants. Les pages des expériences restent intactes.
+Les aperçus viennent des SVG, panneaux et média Quantum existants. Les expériences autres que l'évolution Lisbon du 16/10 restent intactes.
 La vidéo se charge à la sélection de Quantum et s'arrête hors de sa visite, en arrière-plan ou en mouvement réduit.
 Le ciel anime la boucle existante à 30 images/s maximum (25 au téléphone), avec ombres statiques calculées une fois.
 La résolution 3D baisse automatiquement si le GPU dépasse durablement 90 ms par image ; les commandes HTML restent nettes.

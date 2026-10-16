@@ -1,5 +1,9 @@
 # Visite de la galerie SPACE — 15 octobre 2026
 
+Évolution Lisbon du 16/10 : la station 03 devient « Neuro Street Art Digital », les panneaux flottent dans le mur
+et PLAY ouvre l'unique récit/manette `/play_lisbon_street`. Cette expérience reçoit les corrections explicites
+de textes et de slogan ; les autres restent intactes. Voir `SPACE_LISBON_20261016.md` pour la direction actuelle.
+
 Version marbre noir et ficus publiée : `4e1774d960d1f1716be3a6fcbe4c4052ae5ba49c`, build
 `2026-10-15-space-estrela-marble`, production SPACE `dpl_3XLsijPW2zXaBPNHKBJdAAXFBWbM` READY.
 Quatre projets et huit alias vérifiés. Les 19 contrôles HTTPS réels correspondent exactement au dépôt, avec les

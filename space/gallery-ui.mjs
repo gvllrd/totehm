@@ -1,14 +1,35 @@
+import { createLisbonPreview } from './gallery-lisbon.mjs';
+
 const rooms = [...document.querySelectorAll('.room')];
 const nav = [...document.querySelectorAll('.tour [data-room]')];
 const reduced = matchMedia('(prefers-reduced-motion: reduce)');
 const info = document.getElementById('work-info');
 let selected = -1, engine = null, fallback = false;
+const lisbonPreview=createLisbonPreview({onChange:()=>engine?.invalidate()});
+const lisbonCard=document.querySelector('#lisbon .artwork');
+lisbonCard.append(lisbonPreview.canvas);lisbonCard.classList.add('has-preview');
+let previewRaf=0,lastPreviewTime=0;
+function listPreview(time) {
+  previewRaf=0;
+  if(document.hidden||reduced.matches||!document.body.classList.contains('list-view')){lisbonPreview.pause();return;}
+  const rect=lisbonCard.getBoundingClientRect(),visible=rect.bottom>100&&rect.top<innerHeight-90;
+  lisbonPreview.update(lastPreviewTime?Math.min((time-lastPreviewTime)/1000,.1):0,visible);
+  lastPreviewTime=time;previewRaf=requestAnimationFrame(listPreview);
+}
+function syncPreview() {
+  if(previewRaf)cancelAnimationFrame(previewRaf);previewRaf=0;lastPreviewTime=0;lisbonPreview.pause();
+  if(!document.hidden&&!reduced.matches&&document.body.classList.contains('list-view'))previewRaf=requestAnimationFrame(listPreview);
+}
+document.addEventListener('visibilitychange',syncPreview);
+reduced.addEventListener('change',syncPreview);
+addEventListener('pagehide',()=>{if(previewRaf)cancelAnimationFrame(previewRaf);previewRaf=0;lisbonPreview.pause();});
+addEventListener('pageshow',syncPreview);
 function select(index, updateHash = true) {
   selected = Math.max(0, Math.min(rooms.length - 1, index));
   document.body.classList.add('exploring');
   nav.forEach((a, i) => a.setAttribute('aria-current', String(i === selected)));
   const room = rooms[selected];
-  document.getElementById('work-title').textContent = room.querySelector('.caption h1,.caption h2').textContent;
+  document.getElementById('work-title').replaceChildren(...[...room.querySelector('.caption h1,.caption h2').childNodes].map(n=>n.cloneNode(true)));
   document.getElementById('work-kind').textContent = room.querySelector('.caption p').textContent;
   document.getElementById('work-links').replaceChildren(...[...room.querySelectorAll('.room-actions a')].map(a => a.cloneNode(true)));
   info.classList.add('is-open');
@@ -32,9 +53,11 @@ document.getElementById('view-list').addEventListener('click', e => {
   e.currentTarget.textContent = list ? 'Visit in 3D' : 'Artworks';
   e.currentTarget.setAttribute('aria-pressed', String(list));
   engine?.setList(list);
+  syncPreview();
 });
 document.querySelector('.skip').addEventListener('click', () => {
   document.body.classList.add('list-view'); engine?.setList(true);
+  syncPreview();
 });
 const member = document.getElementById('member'), menu = document.getElementById('member-menu');
 member.addEventListener('click', () => { const open = menu.classList.toggle('is-open'); member.setAttribute('aria-expanded', String(open)); });
@@ -47,13 +70,15 @@ document.addEventListener('keydown', e => {
   if (e.key === 'PageDown' || e.key === 'PageUp') { e.preventDefault(); select((selected + (e.key==='PageDown'?1:-1) + rooms.length) % rooms.length); }
   if (e.key === 'Home') { e.preventDefault(); overview(); }
 });
-window.__totehm_gallery = () => ({build:'2026-10-15-space-estrela-marble',rooms:rooms.length,room:selected,reduced_motion:reduced.matches,list:document.body.classList.contains('list-view'),fallback,...engine?.diagnostics()});
+window.__totehm_gallery = () => ({build:'2026-10-16-space-lisbon-play',rooms:rooms.length,room:selected,reduced_motion:reduced.matches,list:document.body.classList.contains('list-view'),fallback,...engine?.diagnostics(),lisbon:lisbonPreview.diagnostics()});
 function useFallback() {
   fallback = true; document.body.classList.add('no-3d','list-view'); engine?.setList(true);
+  syncPreview();
 }
 try {
   const { createGallery } = await import('./gallery-3d.mjs');
-  engine = await createGallery({ select, interact:() => document.body.classList.add('exploring'), fallback:useFallback, reduced });
+  engine = await createGallery({ select, interact:() => document.body.classList.add('exploring'), fallback:useFallback, reduced, lisbonPreview });
+  engine.setList(document.body.classList.contains('list-view'));syncPreview();
   const deepLink = rooms.findIndex(r => '#'+r.id === location.hash);
   if (deepLink >= 0) select(deepLink, false);
 } catch (error) {
