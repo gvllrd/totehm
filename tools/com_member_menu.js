@@ -7,18 +7,18 @@ function comMemberLinks(home = false, enabled = null) {
     item('<a class="cm-action" href="/search">Search a TOTEHM</a>', 'Turn it over') +
     item('<a class="cm-action" id="btn-get-higher" data-com-bridge="space" href="https://www.totehm.space/get_higher">Get ' + COM_HIGHER_BADGE + '</a>', 'Put it on your tongue') +
     item('<a class="cm-action" href="/higherself">Reflect with my TOTEHM</a>', 'Higher Self · TotehmBot') +
-    item(home ? '<button class="cm-action" id="myspaces-open" type="button">My TOTEHM spaces</button>' : '<a class="cm-action" href="/totehm?spaces=1">My TOTEHM spaces</a>', 'My TOTEHM, right now, right here · in SPACE') +
+    item('<a class="cm-action" href="/higher">' + COM_HIGHER_BADGE + '</a>', 'Every day · my habits in Telegram') +
     item('<a class="cm-action" id="wear-btn" data-com-bridge="boutique" href="https://www.higher.boutique/">Totehmize my cloth</a>', 'HIGHER BOUTIQUE') +
-    item('<a class="cm-action" data-com-monetize href="' + (enabled === false ? '/monetize' : '/console') + '">' + (enabled === false ? 'Monetize my TOTEHM ecosystem' : 'Manage my subscriptions') + '</a>', '<span data-com-offer-hint>' + (enabled === false ? 'Your audience · your annual subscription' : enabled === true ? 'My offer · my subscribers · my subscriptions' : 'Subscription settings') + '</span>') +
+    item('<a class="cm-action" data-com-monetize href="' + (enabled === false ? '/monetize' : '/console') + '">' + (enabled === false ? 'Monetize my TOTEHM' : 'My monetization') + '</a>', '<span data-com-offer-hint>' + (enabled === false ? 'My readers pay me, once a year' : enabled === true ? 'My price · my readers · what I am owed' : 'My price and my payout') + '</span>') +
     '</nav>';
 }
 function paintComMemberOffer(enabled) {
   document.querySelectorAll('[data-com-monetize]').forEach(link => {
     link.href = enabled === false ? '/monetize' : '/console';
-    link.textContent = enabled === false ? 'Monetize my TOTEHM ecosystem' : 'Manage my subscriptions';
+    link.textContent = enabled === false ? 'Monetize my TOTEHM' : 'My monetization';
   });
   document.querySelectorAll('[data-com-offer-hint]').forEach(hint => {
-    hint.textContent = enabled === false ? 'Your audience · your annual subscription' : enabled === true ? 'My offer · my subscribers · my subscriptions' : 'Subscription settings';
+    hint.textContent = enabled === false ? 'My readers pay me, once a year' : enabled === true ? 'My price · my readers · what I am owed' : 'My price and my payout';
   });
 }
 let comOfferSeq = 0;

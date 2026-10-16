@@ -1,5 +1,31 @@
 # backend/CLAUDE.md — la base, les fonctions, l'argent, le bot
 
+## 16/10/2026 — lot E : le Club EST le public, et il s'ouvre à TROIS objets
+
+Migration `20261016090000_club_ouvert_trois_objets.sql`, appliquée UNE fois sous `club_ouvert_trois_objets`.
+Additive : 13 `create or replace`, trois `update … where`, aucun `drop`, aucun prix. Auto-test
+`tests/sql/club_ouvert_trois_objets_selftest.sql` : `FAIL={}` (20 contrôles, fixtures annulées).
+- **`_figher().member` = habit ET objectif ET répulsion** (Wah : « le figher club c'est du public avec une
+  inscription Totehm avec au moins une repulsion, une habit et un objectif »). Elle valait
+  `totehm_complete().complete` (les CINQ vues). `complete` et `views` restent dans la réponse, informatifs, et
+  `needs` (`["habit","objective","repulsion"]` moins ce qui est posé) dit à la page ce qui manque **sans qu'elle
+  recompose la règle**. `_art_passport` (THP) est inchangé : c'est une porte commerciale, pas l'adhésion.
+- **IL N'Y A PLUS DE NIVEAU PUBLIC.** Trois niveaux : `private` · `figher` · `subscribers`. ⚠️ La contrainte
+  `check` n'est PAS touchée (la changer demanderait un `drop`, impossible depuis le cloud) : `public` reste une
+  valeur légale, elle n'est plus jamais produite ni plus permissive. **Trois verrous**, dans cet ordre :
+  (1) `_spot_audience_sync` et `_totehm_audience_sync` normalisent `public` → `figher` — ce sont le SEUL chemin
+  vers les deux colonnes `audience`, donc tout écrivain est couvert, même une page en cache qui n'écrirait que
+  `visibility` ; (2) `_audience_ok` / `_audience_listed` / `_point_ok` traitent `public` comme `figher` (ceinture
+  contre une écriture `service_role` hors trigger) ; (3) les lignes existantes passent en `figher`.
+  Les écrivains rendent la VRAIE audience (`visibility_set`, `spot_audience_set`, `space_post_audience`,
+  `spot_create_audience`, `spot_schedule_audience`) : sinon la page afficherait « public » là où la base a écrit
+  « figher ». `_audience_put` normalise AVANT d'écrire la projection historique.
+- **La projection à 0,1° (`spots.active` / `is_public`) ne s'allume plus pour personne** : elle était lue par une
+  politique « tout connecté », et il n'existe plus de niveau qui la justifie. Le lieu d'un spot ne passe donc plus
+  que par `_point_ok` / `_spot_view`.
+- **Conséquence assumée, dite à Wah** : un visiteur SANS compte ne liste plus aucun space ni spot. Restent ouverts
+  à tous les NOMS (`totehm_galaxy`, `totehm_search`) et la page de vente `/@nom` — de quoi acquérir, zéro contenu.
+
 ## 15/10/2026 (bis) — lot D : les relances suivent la Time frequency de CHAQUE Habit
 
 Migration `20261015160000_push_par_frequence.sql`, appliquée UNE fois sous `push_par_frequence`. Additive : deux

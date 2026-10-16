@@ -40,14 +40,17 @@ try{
       partis:['ljoy','ljoy-say','lv-g','lv-d','lv-take','fish','lv-earth','lv-visions','lv-mine','lv-find'].filter(i=>document.getElementById(i)),
       up:q('#lvn-up').getAttribute('aria-label'),dn:q('#lvn-dn').getAttribute('aria-label'),
       mine:q('#lv-m-mine').getAttribute('aria-checked'),others:q('#lv-m-others').getAttribute('aria-checked'),
-      sig:q('#ast-sig').textContent,tap:q('#lv-tap').textContent,bouche:getComputedStyle(q('#gate-mouth')).opacity};});
+      /* 16/10 : le nom a quitté le recto du papier — il vit EN HAUT, au centre, et il n'en bouge jamais. */
+      sig:q('#conn-bar').textContent.trim(),sigAbs:!q('#ast-sig'),
+      haut:(()=>{const r=q('#conn-bar').getBoundingClientRect();return Math.abs(r.x+r.width/2-innerWidth/2)<2&&r.y<60;})(),
+      tap:q('#lv-tap').textContent,bouche:getComputedStyle(q('#gate-mouth')).opacity};});
   ok(c.vue==='c'&&c.mode==='mine'&&c.dans,(tel?'téléphone':'ordinateur')+' · centre, Mine : le papier posé DANS son socle');
   ok(JSON.stringify(c.pistes)===JSON.stringify(COULEURS)&&c.noeuds>=7&&c.pales===4&&c.ramOp==='1'&&c.plein,'le réseau PLEIN ÉCRAN : sept pistes aux 7 couleurs exactes, les nœuds = MES Habits, les quatre intentions vides en creux');
   ok(c.puls.length===3&&c.puls.every(x=>/^ram-puls\//.test(x))&&new Set(c.puls.map(x=>x.split('/')[1])).size>=1,'ça VIT : une impulsion par intention habitée, à la période réelle de son Habit ('+c.puls.join(' · ')+')');
   ok(!c.flou,'aucun flou (socle, ramifications, galaxie)');
   ok(!c.partis.length,'plus de manette ni de vues gauche/droite (balisage retiré) '+c.partis.join(','));
   ok(c.up==='Get Higher'&&c.dn==='My Reflection'&&c.mine==='true'&&c.others==='false','deux chevrons discrets (↑ Get Higher, ↓ My Reflection) ; [Mine] coché');
-  ok(c.sig==='wahigher'&&/to open it · (Turn|Swipe) to configure it$/.test(c.tap)&&c.bouche==='0','le papier signé ; « '+c.tap+' » ; la bouche invisible au centre');
+  ok(c.sig==='wahigher'&&c.sigAbs&&c.haut&&/to open it · (Turn|Swipe) to configure it$/.test(c.tap)&&c.bouche==='0','le nom EN HAUT AU CENTRE, en petit (et plus sur le recto du papier) ; « '+c.tap+' » ; la bouche invisible au centre');
   await pg.screenshot({path:OUT+'/proc_centre_'+(tel?'tel':'ordi')+'.png'});
   await pg.click('#lv-tap');await pg.waitForFunction(()=>!document.body.classList.contains('gate'),null,{timeout:8000}).catch(()=>{});
   ok(await pg.evaluate(()=>!document.body.classList.contains('gate')),'« '+c.tap+' » ouvre mon TOTEHM (la déconstruction)');
@@ -113,14 +116,24 @@ try{
   const o=await pg.evaluate(()=>{const q=s=>document.querySelector(s),d=window.__totehm_lv(),p=q('#gate-asteroid').getBoundingClientRect(),m=q('#lv-m-mine').getBoundingClientRect();
     return {mode:d.mode,g:d.galaxie,pc:p.x+p.width/2,pyc:p.y+p.height/2,dans:p.x+p.width/2>m.x&&p.x+p.width/2<m.x+m.width&&p.y+p.height/2>m.y&&p.y+p.height/2<m.y+m.height&&p.width<30,
       cv:getComputedStyle(q('#gx-c')).opacity,ui:getComputedStyle(q('#gx-ui')).visibility,checked:q('#lv-m-others').getAttribute('aria-checked'),ram:getComputedStyle(q('#lv-ram')).opacity,
-      up:getComputedStyle(q('#lvn-up')).opacity};});
+      up:getComputedStyle(q('#lvn-up')).opacity,
+      rech:(()=>{const u=q('#gx-ui').getBoundingClientRect(),c=q('#gx-c').getBoundingClientRect();
+        return {centre:Math.abs(u.y+u.height/2-(c.y+c.height*.4))<Math.max(90,c.height*.18)&&Math.abs(u.x+u.width/2-innerWidth/2)<2,
+                transparent:getComputedStyle(q('#gx-ui')).pointerEvents==='none',
+                champ:getComputedStyle(q('#gx-q')).pointerEvents==='auto'};})()};});
   ok(o.mode==='others'&&o.checked==='true'&&o.dans,(tel?'téléphone':'ordinateur')+' · Others : le papier rentre DANS [Mine] (la continuité), [Others] coché');
-  ok(o.g.etoiles===12&&o.g.sprite&&o.g.poussiere===undefined&&o.g.anime&&o.cv==='1'&&o.ui==='visible'&&o.ram==='0','la galaxie : 12 TOTEHMs réels, le DOS du papier et rien d\'autre (plus une seule poussière) ; les ramifications se retirent');
+  ok(o.g.etoiles===12&&o.g.fond>=100&&o.g.sprite&&o.g.poussiere===undefined&&o.g.anime&&o.cv==='1'&&o.ui==='visible'&&o.ram==='0',
+    'la galaxie : 12 TOTEHMs réels dans une MULTITUDE de dos de papier ('+o.g.fond+' carrés de fond, le même background.svg) ; les ramifications se retirent');
+  /* 16/10 : la recherche est AU MILIEU (sur le centre de la galaxie), et elle n'avale pas les étoiles. */
+  ok(o.rech.centre&&o.rech.transparent&&o.rech.champ,'la zone de recherche est AU MILIEU de la galaxie, et le doigt passe à côté d\'elle');
   ok(log.rpc.filter(x=>x.name==='totehm_galaxy').length===1,'une seule lecture de totehm_galaxy');
   if(tel) await pg.screenshot({path:OUT+'/proc_galaxie.png'});
   // le nom au survol (souris) / au premier tap (doigt)
   const pos=await pg.evaluate(()=>window.__totehm_gx());
-  const vis=pos.find(([x,y])=>x>40&&x<vp.width-40&&y>140&&y<vp.height*.6)||pos[0];
+  /* La recherche est au MILIEU : on vise une étoile qui n'est pas derrière elle. */
+  const champ=await pg.evaluate(()=>{const r=document.getElementById('gx-ui').getBoundingClientRect();return {x:r.x,y:r.y,w:r.width,h:r.height};});
+  const loin=([x,y])=>!(x>champ.x-8&&x<champ.x+champ.w+8&&y>champ.y-8&&y<champ.y+champ.h+8);
+  const vis=pos.find(([x,y])=>x>40&&x<vp.width-40&&y>140&&y<vp.height*.75&&loin([x,y]))||pos.find(loin)||pos[0];
   if(tel){ await pg.touchscreen.tap(vis[0],vis[1]); } else { await pg.mouse.move(vis[0],vis[1]); }
   await pg.waitForTimeout(400);
   const tip=await pg.evaluate(()=>({on:document.getElementById('gx-tip').classList.contains('is-on'),t:document.querySelector('#gx-tip .srch-name').textContent}));
@@ -134,21 +147,26 @@ try{
   ok((await lv(pg)).galaxie.filtre===1&&tr.liste==='none','la recherche allume le Totehm trouvé — et AUCUNE liste ne s\'ouvre');
   ok(/^kai\d+$/.test(tr.nom)&&tr.couleur==='rgb(251, 213, 202)'&&/Quantico/.test(tr.police)&&tr.sc>1.4,
     'son nom se pose SUR son carré, Quantico Coral, agrandi avec lui (×'+tr.sc+')');
-  if(tel){
-    const nav=pg.waitForURL(/\/@kai3$/,{timeout:6000}).then(()=>true).catch(()=>false);
-    await pg.focus('#gx-q');await pg.keyboard.press('Enter');
-    ok(await nav,'téléphone : on plonge dans l\'étoile, puis son univers SUR PLACE (/@kai3)');
-    const ctx=await pg.evaluate(()=>JSON.parse(sessionStorage.getItem('totehm_gx')||'null'));
-    ok(ctx&&ctx.p==='kai3'&&ctx.q==='kai','le contexte de recherche est gardé pour le retour');
-    await pg.goBack();await pg.waitForSelector('body.member');await pg.waitForTimeout(1600);
-    const b=await lv(pg);
-    ok(b.mode==='others'&&await pg.inputValue('#gx-q')==='kai'&&b.galaxie.retours===1,'retour : Others, la recherche intacte, on ressort de l\'étoile (animé)');
-  } else {
-    await pg.focus('#gx-q');await pg.keyboard.press('Enter');await pg.waitForTimeout(1500);
-    const w=await pg.evaluate(()=>window.__ouvert);
-    const g=(await lv(pg)).galaxie;
-    ok(w.length===1&&w[0]==='/@kai3'&&g.ouvertures===1,'ordinateur : on plonge dans l\'étoile, son univers dans un nouvel onglet (/@kai3)');
-    ok(g.retours===1&&(await lv(pg)).mode==='others'&&await pg.inputValue('#gx-q')==='kai','puis on ressort de l\'étoile, la recherche intacte');
+  /* ⚠️ 16/10 · ZÉRO SAUT (Wah) : Entrée plonge dans l'étoile et l'univers `/@nom` s'ouvre DANS la page
+     (couche `XO`, même origine) — l'URL ne bouge pas, aucun onglet ne s'ouvre. Fermer rejoue l'inverse. */
+  const url0=pg.url();
+  await pg.focus('#gx-q');await pg.keyboard.press('Enter');
+  await pg.waitForFunction(()=>window.__totehm_xo().actif==='univers',null,{timeout:8000}).catch(()=>{});
+  await pg.waitForTimeout(600);
+  const x=await pg.evaluate(()=>({xo:window.__totehm_xo(),
+    src:(document.querySelector('#xo iframe[data-k="univers"]')||{}).getAttribute?document.querySelector('#xo iframe[data-k="univers"]').getAttribute('src'):null,
+    croix:getComputedStyle(document.getElementById('xo-x')).display,
+    g:window.__totehm_lv().galaxie}));
+  ok(x.xo.actif==='univers'&&x.src==='/@kai3?embed=1'&&pg.url()===url0&&!(await pg.evaluate(()=>window.__ouvert)).length,
+    (tel?'téléphone':'ordinateur')+' · l\'univers s\'ouvre DANS la page (/@kai3?embed=1) : ni navigation, ni onglet, l\'URL ne bouge pas');
+  ok(x.croix==='flex'&&x.g.ouvertures===1,'la couche porte sa sortie (une croix), et la plongée a bien eu lieu');
+  const ctx=await pg.evaluate(()=>JSON.parse(sessionStorage.getItem('totehm_gx')||'null'));
+  ok(ctx&&ctx.p==='kai3'&&ctx.q==='kai','le contexte de recherche est gardé (un rechargement rend Others et le nom tapé)');
+  await pg.click('#xo-x');await pg.waitForTimeout(1200);
+  const r=await lv(pg);
+  ok(r.mode==='others'&&await pg.inputValue('#gx-q')==='kai'&&r.galaxie.retours===1&&!(await pg.evaluate(()=>window.__totehm_xo().actif)),
+    'fermer : on RESSORT de l\'étoile (le mouvement inverse), la galaxie et la recherche intactes');
+  if(!tel){
     await pg.click('#lv-m-mine');await calme(pg);await pg.waitForTimeout(800);
     const m=await pg.evaluate(()=>({d:window.__totehm_lv(),cv:getComputedStyle(document.getElementById('gx-c')).opacity}));
     ok(m.d.mode==='mine'&&!m.d.galaxie.anime&&m.cv==='0','retour à Mine : la galaxie se referme, plus aucune image calculée (rAF arrêté)');

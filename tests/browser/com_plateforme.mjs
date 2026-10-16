@@ -25,14 +25,15 @@ try{
  { const { pg, log } = await page(browser, { dir:'com', origin, tables, rpc, viewport:{ width:1280, height:800 } });
    await pg.goto(origin + '/totehm'); await pg.waitForSelector('body.member'); await pg.waitForTimeout(900);
    const c = await pg.evaluate(() => ({ why:!!document.getElementById('lv-why'), strat:/strategy/i.test(document.getElementById('lv-slogan').textContent),
-     sig:document.getElementById('ast-sig')?.textContent, sigFont:getComputedStyle(document.getElementById('ast-sig')).fontFamily,
-     sigInPaper:!!document.querySelector('#ast-front #ast-sig'), nameBtn:getComputedStyle(document.getElementById('name-btn')).display,
+     /* 16/10 : le nom a quitté le recto du papier — il vit EN HAUT, au centre, en petit, et il n'en bouge jamais. */
+     sig:document.getElementById('conn-bar').textContent.trim(), sigFont:getComputedStyle(document.getElementById('conn-bar')).fontFamily,
+     sigInPaper:!document.getElementById('ast-sig'), nameBtn:getComputedStyle(document.getElementById('name-btn')).display,
      thp:!!document.getElementById('lv-thp-say'), tag:!!document.getElementById('lv-b-tag'), build:window.__totehm_lv().build,
      pitch:document.getElementById('lv-pitch').classList.contains('hide'), tap:document.getElementById('lv-tap').textContent }));
    ok(!c.why && !c.strat && !c.thp && !c.tag, 'COM : plus de « [Higher] STRATEGY », de phrase sous lui, de texte du THP ni de slogan TotehmSM');
    ok(c.pitch && /to open it · (Turn|Swipe) to configure it/.test(c.tap), '15/10 bis : un MEMBRE ne lit pas l\'argumentaire — le geste seul');
-   ok(c.sig === 'wahigher' && /Quantico/.test(c.sigFont) && c.sigInPaper && c.nameBtn === 'none', 'le nom est écrit SUR le papier (Quantico), plus de boîte noire sous lui');
-   ok(c.build === '2026-10-15-com-neural', 'BUILD 2026-10-15-com-neural');
+   ok(c.sig === 'wahigher' && /Quantico/.test(c.sigFont) && c.sigInPaper && c.nameBtn === 'none', 'le nom du Totehm vit EN HAUT AU CENTRE, en Quantico (16/10) — plus sur le recto du papier, plus de boîte noire');
+   ok(c.build === '2026-10-16-com-modes', 'BUILD 2026-10-16-com-modes');
    await pg.screenshot({ path:OUT + '/plateforme_centre.png' });
    /* 15/10 : les trois vues, leurs gestes, la galaxie et la Reflection sont dans com_processeur.mjs. */
    /* La couche se réchauffe toute seule, sans rien charger dans SPACE ni le Club. */
@@ -51,43 +52,36 @@ try{
    await pg.goto(origin + '/totehm'); await pg.waitForSelector('body.member'); await pg.waitForTimeout(600);
    await pg.click('#lv-tap'); await pg.waitForFunction(() => !document.body.classList.contains('gate'), null, { timeout:8000 });
    await pg.waitForSelector('#habits [data-open]'); await pg.locator('#habits [data-open]').first().evaluate(e => e.click());
+   /* ⚠️ 16/10 : il n'y a plus de SPACES dans une Habit Box — seulement des SPOTS (Wah : « on a supprimé
+      tous les spaces, on garde seulement les spots »), et ANNONCER un spot ne quitte plus la boîte. */
    await pg.waitForSelector('#habits [data-space]');
    const url0 = pg.url();
-   await pg.locator('#habits [data-format="space"]').click();
-   await pg.waitForFunction(() => window.__totehm_xo().actif === 'space');
-   const sp = cadre(pg, 'space');
-   await sp.waitForSelector('#detail.is-open', { timeout:10000 });
-   ok(pg.url() === url0 && !log.functions.some(f => f.name === 'sso-mint'), 'un space s\'ouvre SUR PLACE : même page, aucun pont SSO');
-   ok(await sp.evaluate(() => document.body.classList.contains('is-embed') && getComputedStyle(document.getElementById('who')).display === 'none'), 'dans la couche : SPACE sans son coin membre (COM le tient)');
-   await pg.screenshot({ path:OUT + '/plateforme_space.png' });
-   await sp.click('#x-back'); await pg.waitForFunction(() => !window.__totehm_xo().actif);
-   ok(!(await pg.evaluate(() => document.body.classList.contains('gate'))) && await pg.locator('#habits [data-space]').count() === 2, 'la croix rend le Totehm tel qu\'il était (la Habit toujours ouverte)');
-   ok(await sp.evaluate(() => !document.getElementById('detail').classList.contains('is-open')), 'fermé, SPACE s\'endort (fiche refermée, vidéo coupée)');
-   /* un spot → le Club, sur place ; « précédent » le referme */
+   ok(await pg.locator('#habits [data-format="space"]').count() === 0 && await pg.locator('#habits [data-format="spot"]').count() === 1
+      && !await pg.locator('#habits [data-newspace]').count(), 'la Habit Box ne montre plus que ses SPOTS, et « + a space » est parti');
+   /* un spot → le Club, sur place ; la croix rend le Totehm tel qu'il était */
    await pg.locator('#habits [data-format="spot"]').click();
    await pg.waitForFunction(() => window.__totehm_xo().actif === 'club');
    const cl = cadre(pg, 'club'); await cl.waitForSelector('#detail.is-open', { timeout:10000 });
-   ok(true, 'un spot s\'ouvre dans le Club, sur place');
+   ok(pg.url() === url0 && !log.functions.some(f => f.name === 'sso-mint'), 'un spot s\'ouvre SUR PLACE : même page, aucun pont SSO');
+   ok(await cl.evaluate(() => document.body.classList.contains('is-embed')), 'dans la couche : le Club sans son coin membre (COM le tient)');
+   await pg.screenshot({ path:OUT + '/plateforme_spot.png' });
    await pg.goBack(); await pg.waitForFunction(() => !window.__totehm_xo().actif);
-   ok(pg.url() === url0, '« précédent » referme la couche, sans quitter le Totehm');
-   /* + a space : la caméra de SPACE, sur CETTE Habit */
-   await pg.locator('#habits [data-newspace]').click();
-   await pg.waitForFunction(() => window.__totehm_xo().actif === 'space');
-   await sp.waitForFunction(() => window.__totehm_space().view === 'cam', null, { timeout:10000 });
-   await sp.waitForSelector('[data-start="photo"]'); await sp.click('[data-start="photo"]');
-   await sp.waitForFunction(() => ['shot','ready'].includes(window.__totehm_space().rec.step), null, { timeout:15000 });
-   await sp.click('#joy-box'); await sp.waitForFunction(() => window.__totehm_space().rec.step === 'form', null, { timeout:15000 });
-   ok(/Deep practice/.test(await sp.textContent('#cam-body')), '+ a space : la caméra s\'ouvre sur place, la Habit déjà choisie (Deep practice)');
-   await pg.screenshot({ path:OUT + '/plateforme_plus_space.png' });
-   await sp.click('#x-back'); await pg.waitForFunction(() => !window.__totehm_xo().actif);
-   /* + a spot : le plan du Club, sur CETTE Habit */
-   await pg.locator('#habits [data-newspot]').click();
-   await pg.waitForFunction(() => window.__totehm_xo().actif === 'club');
-   await cl.waitForFunction(() => window.__totehm_club().view === 'plan', null, { timeout:10000 });
-   await cl.waitForSelector('#plan-body .plan-habit', { timeout:10000 });
-   ok(/Deep practice/.test(await cl.textContent('#plan-body .plan-habit')), '+ a spot : le plan du Club s\'ouvre sur place, sur la Habit (Deep practice)');
-   await cl.click('#x-back'); await pg.waitForFunction(() => !window.__totehm_xo().actif);
-   ok(log.rpc.filter(r => r.name === 'habit_spaces').length >= 3, 'à chaque retour, le Totehm relit ses spaces et ses spots');
+   ok(pg.url() === url0 && await pg.locator('#habits [data-space]').count() === 1, '« précédent » referme la couche, sans quitter le Totehm (la Habit toujours ouverte)');
+   /* [Add a spot] : le compositeur s'ouvre DANS la boîte — aucune autre page, aucun cadre */
+   await pg.locator('#habits [data-pk^="spotnew:"]').click(); await pg.waitForTimeout(400);
+   const sn = await pg.evaluate(() => ({ champs:[...document.querySelectorAll('#habits [data-sn]')].map(e => e.getAttribute('aria-label')),
+     go:!!document.querySelector('#habits [data-spotgo]'), xo:window.__totehm_xo().actif, dans:!!document.querySelector('#habits .habit.open .sn-w') }));
+   ok(sn.dans && sn.go && !sn.xo && sn.champs.join(',') === 'When,Where', '[Add a spot] : deux champs et un verbe, DANS la boîte — pas une autre page');
+   const t1 = new Date(Date.now() + 36e5).toISOString().slice(0, 16);
+   await pg.fill('#habits [data-sn^="when:"]', t1); await pg.fill('#habits [data-sn^="where:"]', 'the hill');
+   await pg.context().grantPermissions(['geolocation']); await pg.context().setGeolocation({ latitude:38.72, longitude:-9.14 });
+   await pg.locator('#habits [data-spotgo]').click();
+   await pg.waitForFunction(() => window.__totehm_zone && document.querySelectorAll('#habits [data-sn]').length === 0, null, { timeout:12000 }).catch(() => {});
+   const an = log.rpc.find(r => r.name === 'spot_schedule_audience');
+   ok(an && an.body.p_habit === 'Deep practice' && an.body.p_place === 'the hill' && an.body.p_audience === 'figher'
+      && an.body.p_location === 'on' && an.body.p_mode === 'silent' && typeof an.body.p_lat === 'number',
+     'annoncer : spot_schedule_audience avec MA Habit, le lieu, FIGHER CLUB et le POINT (jamais une fausse position)');
+   ok(log.rpc.filter(r => r.name === 'habit_spaces').length >= 2, 'à chaque retour (et après une annonce), le Totehm relit ses spots');
    ok(!log.functions.some(f => f.name === 'sso-mint'), 'aucun pont SSO de tout le parcours');
    ok(!erreurs(log).length, 'parcours : aucune erreur ' + erreurs(log).join(' | '));
    await pg.context().close(); }

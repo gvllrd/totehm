@@ -1,5 +1,62 @@
 # com/CLAUDE.md — totehm.com : le Totehm, la carte, HigherSelf
 
+## 16/10/2026 — LE LOT E : deux modes par vue, la galaxie sans saut, le verso = le menu membre, ça VEND
+
+BUILD `2026-10-16-com-modes`. Ce lot REMPLACE, sur ces points, les lots C et D du 15/10 (le reste tient).
+
+- **DEUX MODES PAR VUE, TROIS DANS LA VUE HABIT** (`SH`, ex-shorts) — Wah : « il y a deux modes pour chaque vue :
+  la vue liste et la vue Shorts qui changent complètement le dispositif ; pour revenir, il faut fermer ou revenir
+  en mode liste où le joystick reapparait ». Un mode PAR VUE, gardé (`localStorage totehm_modes` ; l'ancienne clé
+  `totehm_shorts` se relit une fois). `#vmode` TOURNE et montre **où il mène** ; il vit dans les CINQ vues.
+  **Shorts et radar font partir la manette** (`body.v-shorts`, `body.v-radar` → `#joy` à l'opacité 0) : on SENT
+  qu'on est entré. **Échap et la croix sortent d'abord du MODE**, puis du Totehm (`SH.liste()`) : un geste garanti.
+  `renderZone()` a UNE chaîne pour les cinq vues (`PLAN` = la liste et le rendu de la vue ; le mode choisit la
+  boîte ou le short) — avant, la liste était écrite cinq fois et le mode une seule.
+- **Le média d'un short, pour les cinq vues** : ses fichiers (`element_media`, le plus récent) ; à défaut la photo
+  d'un de ses SPOTS pour une Habit, l'image libre d'une VISION. Sans média : son papier et ses traits d'intention
+  (hérités pour les quatre autres vues, la même chaîne que la boîte). Rien d'inventé.
+- **`RDR` — le RADAR, troisième mode de la vue Habit** : mes spots, là où ils sont, **sans un appel de plus** (les
+  points viennent de `habit_spaces`, déjà lu). Un spot sans point exact se pose sur l'anneau, pâle, et le DIT :
+  jamais une fausse position calculée depuis une ville. Le centre, c'est moi — ma position seulement si elle est
+  DÉJÀ accordée (`navigator.permissions`, jamais un dialogue pour un radar), sinon le barycentre. `__totehm_rdr()`.
+- **La galaxie : une MULTITUDE de dos de papier, la recherche AU MILIEU, ZÉRO SAUT.** Wah : « ça doit être une
+  multitude de background.svg (représentant alors une étoile) et la zone de recherche doit être au milieu » ·
+  « quand l'utilisateur entre un nom correct, tu tires au hasard une étoile-background et tu regroupes le nom et le
+  background avec beaucoup de fluidité ; il ne faut pas que ça saute entre totehm.com et totehm.com/@{Nom} ».
+  Donc : 132 carrés (le même sprite `#gl-bg`), les VRAIS Totehms **répartis** sur toute la spirale (un vrai ne se
+  reconnaît pas à sa place) ; un nom qui n'est pas dans l'échantillon **prend** un carré de fond tiré par le hachage
+  de son nom (une étoile par nom, stable) ; `#gx-ui` est centré sur `--gy` (le centre de la galaxie, 40 % de la
+  hauteur, fixe — il suivait le papier, qui descend en Others) et **transparent au doigt** sauf la saisie.
+  Entrée ou un tap PLONGE, puis `/@nom` s'ouvre **dans la couche `XO`** (`XO.univers`, `?embed=1`, préchargé
+  pendant la plongée) : même origine, même session, **l'URL ne bouge pas** ; fermer rejoue la plongée à l'envers
+  (`revenir`). `#xo-x` est la sortie visible d'un cadre qui n'en porte pas (`#xo.is-nu`).
+- **`creator.html` en cadre** (`?embed=1`) : coin membre et menu cachés, toute navigation sort par le HAUT
+  (`window.top`, même origine) — sinon Stripe refuserait de s'afficher dans un cadre —, Échap demande la fermeture.
+- **LE NOM DU TOTEHM VIT EN HAUT AU CENTRE, EN PETIT, ET IL N'EN BOUGE JAMAIS.** `#conn-bar` (l'ancien coin membre
+  de GAUCHE, déplacé — pas une copie) ; un tap ouvre le verso, donc le renommage. `#ast-sig` (le nom sur le recto)
+  est PARTI : une seule place pour un nom. `--tn-h` (0 sans compte, 30 px avec) écarte le chevron du haut et le
+  texte de vente : toute animation compose avec sa place.
+- **LE VERSO = LE MENU MEMBRE**, d'emblée (`surReglages` pose `show` sur `#member-window`) : mes réglages, un filet,
+  mon compte. **`MYSPACES` est parti en entier** — module, fenêtre, bouton du menu, `space-delete`, `?spaces=1`,
+  le groupe SPACES d'une Habit Box et « + a space » : il n'y a plus de spaces, seulement des SPOTS.
+- **Pas d'icône dans une liste** : `[Add a media]` (dans le groupe `files`, UN seul par boîte) et `[Add a spot]`.
+  **Un spot s'annonce DANS la boîte** (`spotNeuf`, `annoncerSpot`) : deux champs (quand, où), FIGHER CLUB, point ON,
+  silencieux, 60 min — le serveur décide. La ville se DÉDUIT du point (`cities.json`, 40 km, comme le Club).
+- **TROIS NIVEAUX** partout (plus de PUBLIC) : `#ast-panel`, `[data-lvvis]`, `creator`, `console`, `club/create`,
+  `space/social`. Une donnée `public` d'avant se LIT comme FIGHER CLUB (la base l'a migrée).
+- **L'atterrissage VEND, et il vend deux choses** : sans compte, `#lv-pitch` porte DEUX côtés — Mine
+  (`[Higher] your brain`, « an objective you keep in your head is a wish », trois pas : l'objectif, l'habit, la
+  répulsion) et Others (`[Higher] your strategy`, « someone already lives the habit you keep postponing », trois
+  pas : taper un nom, ouvrir son Totehm, souscrire). `body.lv-others` fait la bascule ; `Why it works` et les deux
+  citations réelles restent communes. En Others, le texte passe SOUS la recherche.
+- **« Monetize my TOTEHM »** remplace « subscription » côté créateur (COM, console, creator, `tools/com_member_menu.js`
+  et ses copies) ; l'abonnement personnel s'appelle **My Higher**. Deux pages de vente : **`/higher`** (neuve — la
+  version haute du processeur, Telegram au rythme de chaque Habit, le tracker ; le PRIX vient de `my_landing`,
+  le checkout est `higher-sub`) et **`/monetize`** refait (un curseur qui COMPTE 80 %, trois pas, zéro promesse).
+  `?higher=open` renvoie sur ma Reflection.
+- Tests : `com_processeur` 107, `com_shorts` 67, `com_paper` 34, `com_member_menu` 34, `com_plateforme` 23,
+  `com_read_copy` 18, `com_creator` 37 ; base : `tests/sql/club_ouvert_trois_objets_selftest.sql`.
+
 ## 15/10/2026 (bis) — LE RÉSEAU NEURONAL (lot D) : plein écran, le cerveau, l'espace membre au verso
 
 BUILD `2026-10-15-com-neural`. Wah : « les ramifications doivent prendre tout l'écran et reprendre les traits

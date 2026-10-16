@@ -302,6 +302,25 @@ Ajoute, telle quelle, l'entrée **0.21 — 01/10/2026 · Pour soi, ou pour soi e
 > `test`, sans génération ni Printful). Migration `20261005b_stripe_test_mode.sql`
 > APPLIQUÉE (`stripe_test_mode`) : ne pas réappliquer.
 
+### Correction 0.61 — 16/10/2026 · le Club est le public, deux modes par vue, deux offres nommées (lot E, à reporter)
+> **Le Club EST le public, et il s'ouvre à TROIS objets** : `_figher().member` = une habit + un objectif + une
+> répulsion (plus les cinq vues). **IL N'Y A PLUS DE NIVEAU PUBLIC** : PRIVATE · FIGHER CLUB · MY SUBSCRIBERS.
+> Conséquence assumée : un visiteur sans compte ne liste plus aucun contenu — restent ouverts les NOMS et `/@nom`,
+> c'est la surface d'acquisition. Migration `20261016090000_club_ouvert_trois_objets.sql` APPLIQUÉE
+> (`club_ouvert_trois_objets`) : ne pas réappliquer. La contrainte `check` accepte encore `public`, normalisé par
+> les deux triggers — le jour où un `drop` sera possible depuis le terminal, la resserrer à trois valeurs.
+> **Dans le Totehm : deux modes par vue** (liste · shorts) et un troisième dans la vue Habit (le RADAR de mes
+> spots, sans un appel réseau de plus). Shorts et radar font partir la manette ; Échap et la croix sortent d'abord
+> du mode. **La galaxie** : une multitude de dos de papier, la recherche AU MILIEU, et `/@nom` s'ouvre SUR PLACE
+> dans la couche (zéro saut d'URL), la fermeture rejouant la plongée à l'envers.
+> **Le nom du Totehm** vit en haut au centre, en petit, et n'en bouge jamais (il a quitté le recto du papier).
+> **Le verso = le menu membre**, d'emblée. **Plus de spaces dans COM** : My Totehm spaces, le groupe SPACES d'une
+> Habit Box et « + a space » sont retirés ; un spot s'annonce DANS la boîte. `[Add a media]` / `[Add a spot]`,
+> aucune icône dans une liste.
+> **Deux offres, deux mots** : « Monetize my TOTEHM » (le créateur, 80 %, `/monetize` refait) et « My Higher »
+> (le personnel, `/higher`, page de vente NEUVE : le Higher Self chaque jour + Telegram au rythme de chaque Habit
+> + le tracker ; prix lu sur le serveur, checkout `higher-sub`). Prix inchangé : rien à approuver.
+
 ### Correction 0.60 — 15/10/2026 (bis) · le réseau neuronal (lot D, à reporter ; précise 0.59)
 > Les ramifications prennent TOUT l'écran : la ligne du trait d'intention publié (2 px, les 7 couleurs exactes),
 > qui se reconfigure par vue — le circuit autour du Totehm au centre, un CERVEAU vu de dessus en haut (scissure et

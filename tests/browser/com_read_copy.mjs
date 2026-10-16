@@ -4,7 +4,9 @@ import {launch,page,ok} from './harness.mjs';
 const OUT=process.argv[2]||'/tmp';const browser=await launch();const origin='https://www.totehm.com';
 const erreurs=log=>log.errors.filter(e=>e.startsWith('pageerror'));
 const source={ok:true,pseudo:'studio',steps:[{t:'Deep practice',is:['focus'],f:'every_morning'},{t:'Run the hill',is:['fight']}],objs:{'Deep practice':['o1']},trips:[{id:'o1',text:'Build a practice',is:['focus']}],reps:[{id:71,text:'Put the phone away',is:['focus'],hs:['Deep practice']}],wisdom:[{id:'w1',text:'Attention is a choice',is:['focus']}],visions:[{id:'v1',text:'A focused life',is:['focus']}]};
-const hs={ok:true,mine:false,habits:[{habit:'Deep practice',total:1,spaces:[{id:'s1',format:'space',state:'will',city:'Porto',starts_at:new Date(Date.now()+864e5).toISOString(),visibility:'shared'}]}]};
+/* 16/10 : il n'y a plus de spaces, seulement des SPOTS — une Habit lue montre donc ses spots. */
+const hs={ok:true,mine:false,habits:[{habit:'Deep practice',total:1,total_spaces:0,total_spots:1,spaces:[],
+  spots:[{id:'s1',format:'spot',state:'will',city:'Porto',starts_at:new Date(Date.now()+864e5).toISOString(),audience:'figher'}]}]};
 const rpc={my_console:{signed_in:true,offer:{enabled:false}},my_landing:{signed_in:true,pseudo:'wah',visibility:'private',offer:{enabled:false},higher:{active:false,price_cents:700,currency:'eur'},thp:false,subscriptions:1,subscribers:0},totehm_of:source,habit_spaces:b=>b.p_pseudo?hs:{ok:true,mine:true,habits:[]},
   totehm_search:b=>b.p_q?[{pseudo:'studio',offer:true,price_cents:2400,currency:'eur',subscribed:true},{pseudo:'atelier',offer:true,price_cents:3600,currency:'eur',subscribed:false}]:[{pseudo:'studio',offer:true,price_cents:2400,currency:'eur',subscribed:true}],
   totehm_import_boxes:b=>({ok:true,created:b.p_selection[0].kind==='h'?1:0,reused:b.p_selection[0].kind==='h'?0:1,total:1})};
@@ -35,7 +37,7 @@ try{
   ok(!(await pg.evaluate(()=>window.__totehm_zone?.boite_ouverte)),'copier n\'ouvre pas la Box');
   await pg.locator('#habits [data-open]').first().evaluate(e=>e.click());await pg.waitForTimeout(400);
   const open=await pg.evaluate(()=>({k:window.__totehm_zone?.boite_ouverte,spaces:document.querySelectorAll('#habits [data-space]').length,edit:document.querySelectorAll('#habits [contenteditable],#habits [data-kill],#habits [data-add],#habits [data-pk]').length,copied:document.querySelector('#habits .copie').classList.contains('is-done')}));
-  ok(open.k==='h'&&open.spaces===1&&open.edit===0&&open.copied,'une Box s\'ouvre en place : ses liens, ses spaces, rien à modifier ; copiée, elle le reste (✓)');
+  ok(open.k==='h'&&open.spaces===1&&open.edit===0&&open.copied,'une Box s\'ouvre en place : ses liens, ses SPOTS, rien à modifier ; copiée, elle le reste (✓)');
   await pg.screenshot({path:OUT+'/ro_open_copy.png'});
   await pg.locator('#habits .w-x').first().evaluate(e=>e.click());await pg.waitForTimeout(200);
   await pg.keyboard.press('ArrowUp');await pg.waitForTimeout(400);
@@ -50,7 +52,7 @@ try{
   const m=await pg.evaluate(()=>{const w=document.getElementById('member-window').getBoundingClientRect(),a=[...document.querySelectorAll('#member-window .cm-action')].map(e=>{const r=e.getBoundingClientRect(),cs=getComputedStyle(e);return {t:e.textContent.trim(),c:r.left+r.width/2,h:r.height,fs:cs.fontSize,ws:cs.whiteSpace,bg:cs.backgroundColor};});
     const outs=[...document.querySelectorAll('#mw-in-state > .mw-out')].map(e=>e.textContent.trim());return {w:w.width,h:w.height,W:innerWidth,H:innerHeight,dansVerso:!!document.querySelector('#srch #member-window'),statique:getComputedStyle(document.getElementById('member-window')).position==='static',a,outs,nom:!!document.querySelector('#member-window #name-btn'),verso:!!document.querySelector('#srch #name-btn')};});
   ok(m.w>0&&m.dansVerso&&m.statique,'l\'espace membre vit dans le verso du papier (15/10 bis) — plus une fenêtre plein écran');
-  ok(m.a.length===4&&m.a.every(x=>Math.abs(x.c-m.W/2)<2&&x.h<48&&x.ws==='nowrap'&&x.fs==='12.5px'&&x.bg==='rgb(31, 31, 36)'),'quatre boutons centrés, sur une ligne, le bouton de la boutique : '+m.a.map(x=>x.t).join(' | '));
+  ok(m.a.length===3&&m.a.every(x=>Math.abs(x.c-m.W/2)<2&&x.h<48&&x.ws==='nowrap'&&x.fs==='12.5px'&&x.bg==='rgb(31, 31, 36)'),'trois boutons centrés, sur une ligne (My TOTEHM spaces est parti le 16/10) : '+m.a.map(x=>x.t).join(' | '));
   ok(m.outs[m.outs.length-1]==='Simple terms of use'&&!m.nom&&m.verso,'Simple terms of use en dernier ; le nom du Totehm vit au verso (mes réglages, 15/10), plus dans le compte');
   await pg.screenshot({path:OUT+'/member_menu.png',fullPage:true});
   ok(!erreurs(log).length,'menu membre : aucune erreur');await pg.context().close();

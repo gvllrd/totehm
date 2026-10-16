@@ -698,7 +698,23 @@ body.higher .set-block.higher-only{display:flex!important}
 /* Coin haut gauche, en vis-à-vis de OWN/YOUR/WORLD. `fixed` et pas
    `absolute` : le gate défile maintenant sur deux écrans, le menu membre
    ne doit pas partir avec. */
-#conn-bar{position:fixed;top:14px;left:16px;z-index:201;margin:0;display:flex;align-items:center;gap:7px;background:none;border:none;cursor:pointer;font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;letter-spacing:0;color:#b0b0b0;padding:4px;-webkit-tap-highlight-color:transparent;transition:color .2s}
+/* ⚠️ 16/10 · LE NOM DU TOTEHM VIT EN HAUT, AU CENTRE, EN PETIT — ET IL N'EN BOUGE JAMAIS. Wah :
+   « le nom du Totehm doit toujours être en haut centré en petit (avec possibilité de le changer
+   directement). Il ne change JAMAIS de place et TOUTES les animations doivent prendre en
+   considération son placement ». Donc UN seul nœud, et c'est celui-ci : l'ancien coin membre de
+   GAUCHE (« pas besoin du menu membre sur le côté gauche ») déplacé, pas une copie — deux nœuds
+   « nom du Totehm » finiraient par afficher deux valeurs. Un tap ouvre le VERSO, donc le menu
+   membre, donc le renommage : « directement » veut dire un geste, pas un détour.
+   Les trois vues et les deux modes le gardent à la même place : c'est le repère fixe autour duquel
+   le papier monte, le réseau s'allume et la galaxie tourne. `--tn-h` dit aux textes de s'en écarter. */
+#conn-bar{position:fixed;top:max(10px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);z-index:201;margin:0;
+  display:flex;align-items:center;gap:6px;background:none;border:none;cursor:pointer;font-family:'Quantico',sans-serif;
+  font-weight:400;font-size:13px;letter-spacing:.02em;color:#fbd5ca;padding:4px 8px;max-width:72vw;overflow:hidden;
+  white-space:nowrap;text-overflow:ellipsis;-webkit-tap-highlight-color:transparent;transition:opacity .25s ease}
+/* La hauteur que le nom prend en haut. Zéro sans compte (il n'y a pas de nom) : tout ce qui vit en
+   haut s'en écarte par CE chiffre, et rien ne se chevauche dans un cas ou dans l'autre. */
+:root{--tn-h:0px}
+body.member{--tn-h:30px}
 /* ⚠️ INVISIBLE DANS LE TOTEHM · 19/09/2026, ET SUR LES DEUX ÉCRANS.
    La règle vivait dans la requête média du téléphone : sur ordinateur
    le point vert restait, alors qu'il n'ouvre plus rien depuis le 17/09.
@@ -706,7 +722,8 @@ body.higher .set-block.higher-only{display:flex!important}
    ⚠️ Une règle de comportement ne va JAMAIS dans une requête média —
    seule la mise en page y a sa place. */
 body:not(.gate) #conn-bar{display:none!important}
-#conn-bar:hover{color:#fff}
+/* Le nom reste Coral au survol (doctrine : les noms ne changent pas de teinte). */
+#conn-bar:hover{opacity:.78}
 /* Accréditation Higher. Elle ne s'affiche que pour qui l'a payée ou reçue :
    la source de vérité est stoner_access, jamais le front. */
 .hi-badge{display:inline-flex;align-items:center;line-height:0;margin-left:7px;
@@ -2241,12 +2258,9 @@ body:not(.gate) #gate{display:none}
 #gate-search-go{position:absolute;inset:0;z-index:9;background:none;border:none;padding:0;
   cursor:pointer;outline:none;-webkit-tap-highlight-color:transparent}
 body.gate.entered .ast-back{visibility:hidden}
-/* 12/10 — LE NOM EST SUR LE PAPIER (Wah : « pas de boîte noire ; directement imbriqué dans le
-   paper et le bleu navy »). La bande sous « EHM », à droite du rail, au-dessus des perforations ;
-   Quantico Coral, mesuré par `paintAsteroid()`. Il part dès que le papier se déconstruit. */
-#ast-sig{position:absolute;left:auto;right:7%;bottom:4.5%;max-width:62%;z-index:3;text-align:right;white-space:nowrap;overflow:hidden;
-  font:400 6.5px/1 'Quantico',sans-serif;letter-spacing:.04em;color:#fbd5ca;pointer-events:none;transition:opacity .25s ease}
-body.entered #ast-sig,body.folding #ast-sig,body.ro #ast-sig{opacity:0;transition:none}
+/* ⚠️ `#ast-sig` (le nom écrit sur le recto du papier, 12/10) EST PARTI LE 16/10 : le nom a UNE place,
+   en haut au centre (`#conn-bar`). Deux endroits pour un nom, c'est deux valeurs à tenir d'accord.
+   Le VERSO garde `#ast-name` : ce n'est pas la même chose — c'est le nom qui grandit et devient la saisie.
 
 /* ══ LA BOUCHE · 15/10 : celle du 12/10 (lot A), restaurée telle quelle, EN HAUT (la vue Get Higher). ══
    Les gris de la bouche sont ceux du dessin de Wah, au code près. Elle est dessinée par le moteur
@@ -2938,29 +2952,18 @@ body.gate.entered #filter-badge{
 #xo{position:fixed;inset:0;z-index:400;background:#000;visibility:hidden;transform:translateY(100%);
   transition:transform .32s cubic-bezier(.22,.9,.3,1),visibility 0s linear .32s}
 #xo.is-open{visibility:visible;transform:none;transition:transform .32s cubic-bezier(.22,.9,.3,1)}
+/* ⚠️ UNE SORTIE VISIBLE pour un cadre qui n'en porte pas (l'univers `/@nom`). SPACE et le Club ont
+   la leur et disent `close` eux-mêmes : la croix de COM ne s'affiche que pour les autres (`is-nu`). */
+#xo-x{position:absolute;z-index:2;top:max(10px,env(safe-area-inset-top));right:12px;width:34px;height:34px;display:none;
+  align-items:center;justify-content:center;background:rgba(0,0,0,.62);border:0;border-radius:10px;color:#b0b0b0;
+  font:400 20px/1 'Space Mono',monospace;cursor:pointer;-webkit-tap-highlight-color:transparent}
+#xo.is-open.is-nu #xo-x{display:flex}
+@media(hover:hover){#xo-x:hover{color:#fff}}
 .xo-f{position:absolute;inset:0;width:100%;height:100%;border:0;display:block;background:#000;visibility:hidden}
 #xo.is-open .xo-f.is-on{visibility:visible}
 body.is-xo{overflow:hidden}
 @media(prefers-reduced-motion:reduce){#xo,#xo.is-open{transition:none}}
 /* Personal spaces: owner-only history, opened from the member menu. */
-#myspaces{position:fixed;inset:0;z-index:260;display:none;background:rgba(0,0,0,.94);overflow-y:auto;overscroll-behavior:contain;padding:24px 16px 40px}
-#myspaces.is-open{display:block}
-#myspaces-inner{width:min(560px,100%);margin:0 auto;display:flex;flex-direction:column;gap:16px}
-#myspaces-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
-#myspaces-title{font-family:'Space Mono',monospace;font-size:13px;font-weight:400;letter-spacing:.08em}
-#myspaces-name{font-family:'Quantico',sans-serif;font-weight:400;color:#fbd5ca}
-#myspaces-close{width:fit-content;font-size:11px;background:none;border:none;color:#b0b0b0;padding:6px;cursor:pointer}
-#myspaces-list{display:flex;flex-direction:column;gap:8px}
-.my-space{display:flex;align-items:stretch;gap:2px;width:100%}
-.my-space-open{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:6px;align-items:flex-start;background:#111114;border:0;border-radius:10px 0 0 10px;padding:14px;font-size:11px;color:#b0b0b0;text-align:left;cursor:pointer;font-family:'Space Mono',monospace}
-.my-space-del{flex:0 0 auto;background:#111114;border:0;border-radius:0 10px 10px 0;padding:0 14px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#7c7c84;cursor:pointer}
-.my-space-del.is-arm{color:#ff9a9a}
-.my-space-del[disabled]{opacity:.4;pointer-events:none}
-.my-space-habit{font-family:'Quantico',sans-serif;font-size:15px;color:#fff}
-.my-space-state{font-family:'Space Mono',monospace;font-size:9px;color:#9a9a9a}
-#myspaces-note{font-family:'Space Mono',monospace;font-size:11px;color:#9a9a9a}
-#myspaces-more,#myspaces-open-space{width:fit-content;font-family:'Space Mono',monospace;font-size:11px;color:#b0b0b0;background:#16161a;border:0;border-radius:8px;padding:8px 12px;cursor:pointer}
-@media(hover:hover){.my-space-open:hover,.my-space-del:hover{background:#1c1c22}#myspaces-close:hover,#myspaces-more:hover,#myspaces-open-space:hover{color:#fff}}
 
 
 
@@ -3085,13 +3088,7 @@ body.is-xo{overflow:hidden}
 #gate-search-input:hover::placeholder,
 #search-input:hover::placeholder,
 #fold-x svg:hover,
-#myspaces-close:hover,
-.my-space-open:hover,
-.my-space-del:hover,
-.my-space-state:hover,
-#myspaces-note:hover,
-#myspaces-more:hover,
-#myspaces-open-space:hover{color:#fff}
+#mw-note:hover{color:#fff}
 }
 /* ══ FIN DU BLOC GÉNÉRÉ ══ */
 </style>
@@ -3168,7 +3165,8 @@ body.lv-others #lv-slogan.is-c{opacity:0}        /* dans la galaxie, il n'y a qu
   background:rgba(22,22,26,.82);color:#6d6d74;display:flex;align-items:center;justify-content:center;cursor:pointer;
   transition:opacity .3s ease,color .2s ease;-webkit-tap-highlight-color:transparent}
 .lvn svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
-#lvn-up{top:max(10px,env(safe-area-inset-top))}
+/* Le chevron du haut passe SOUS le nom : le nom est le repère fixe, pas lui. */
+#lvn-up{top:calc(max(10px,env(safe-area-inset-top)) + var(--tn-h))}
 #lvn-dn{bottom:max(12px,env(safe-area-inset-bottom))}
 .lvn.is-mort{opacity:0;pointer-events:none}
 .lvn:focus-visible{outline:1px solid #fff;outline-offset:3px}
@@ -3244,6 +3242,17 @@ body.gate.member.lv-h:not(.entered) #lv-ram .puls{opacity:1;
 .lvp-h .lvp-b{width:92px;height:31px}
 .lvp-h span{font:700 19px/1 'Space Mono',monospace;letter-spacing:.04em;text-transform:lowercase;color:#fff}
 .lvp-s{margin:0;font:400 12.5px/1.55 'Space Mono',monospace;color:#b7b7bf;max-width:36em}
+/* Un seul des deux côtés s'affiche : Mine, ou Others. Le CTA, la preuve et « free » sont communs. */
+.lvp-side{display:flex;flex-direction:column;align-items:center;gap:9px;width:100%}
+.lvp-others,body.lv-others .lvp-mine{display:none}
+body.lv-others .lvp-others{display:flex}
+/* LE MÉCANISME, EN TROIS PAS. Des chiffres, pas des puces : on compte ce qu'on va faire. */
+.lvp-how{list-style:none;margin:2px 0 0;padding:0;display:flex;flex-direction:column;gap:7px;width:100%;counter-reset:lvp}
+.lvp-how li{counter-increment:lvp;display:grid;grid-template-columns:18px 1fr;gap:10px;align-items:baseline;text-align:left}
+.lvp-how li::before{content:counter(lvp);font:700 10px/1.5 'Space Mono',monospace;color:#fbd5ca;letter-spacing:.1em}
+.lvp-how b{font:700 12.5px/1.45 'Space Mono',monospace;color:#fff;letter-spacing:.01em}
+.lvp-how span{display:block;font:400 10px/1.5 'Space Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:#7c7c84}
+.lvp-out{margin:4px 0 0;font:400 11.5px/1.55 'Space Mono',monospace;color:#9a9aa2;max-width:34em}
 .lvp-why{border:0;background:none;padding:2px 6px;cursor:pointer;
   font:700 9px/1.4 'Space Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:#8a8a92;
   transition:color .2s ease}
@@ -3258,7 +3267,7 @@ body.gate.member.lv-h:not(.entered) #lv-ram .puls{opacity:1;
 .lvp-cta:focus-visible,.lvp-why:focus-visible{outline:1px solid #fff;outline-offset:3px}
 .lvp-free{margin:0;font:400 9.5px/1.4 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#6d6d74}
 /* ── LA VENTE DE GET HIGHER (vue du haut), au-dessus du cerveau ── */
-#lv-sell{position:absolute;left:50%;top:49%;transform:translateX(-50%);width:min(92vw,560px);
+#lv-sell{position:absolute;left:50%;top:calc(49% + var(--tn-h) / 2);transform:translateX(-50%);width:min(92vw,560px);
   text-align:center;display:flex;flex-direction:column;gap:8px;opacity:0;pointer-events:none;
   background:rgba(0,0,0,.78);border-radius:10px;padding:14px 16px;transition:opacity .45s ease}
 body.gate.lv-h:not(.entered):not(.is-door) #lv-sell{opacity:1}
@@ -3270,6 +3279,8 @@ body.gate.lv-h:not(.entered):not(.is-door) #lv-sell{opacity:1}
   display:flex;flex-direction:column;align-items:center;gap:12px;width:min(94vw,460px)}
 #lv-tap{background:none;border:0;padding:4px 10px;font:700 9.5px/1.4 'Space Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:#9a9aa2;cursor:pointer;white-space:nowrap;transition:opacity .3s ease}
 body.lv-others #lv-tap{opacity:0;pointer-events:none}
+/* En Others, la recherche est au milieu : le texte et les deux boutons se rangent DESSOUS, jamais dessus. */
+body.lv-others #lv-c-acts{top:calc(var(--gy,40%) + 62px)}
 #lv-mode{display:flex;gap:6px}
 #lv-mode button{position:relative;display:inline-flex;align-items:center;gap:8px;border:0;border-radius:10px;padding:8px 14px;background:#16161a;color:#8a8a92;
   font:700 10px/1.3 'Space Mono',monospace;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;
@@ -3283,17 +3294,30 @@ body.lv-others #gate-asteroid{z-index:6;pointer-events:none}
    la recherche par nom (`NameSearch`), le nom lisible au survol ou au tap. rAF seulement visible. ── */
 #gx-c{position:absolute;inset:0;width:100%;height:100%;display:block;opacity:0;transition:opacity .45s ease;pointer-events:none}
 body.lv-c.lv-others #gx-c{opacity:1;pointer-events:auto;touch-action:pan-y;transition:opacity .5s ease .1s}
-#gx-ui{position:absolute;left:50%;top:calc(max(10px,env(safe-area-inset-top)) + 4px);width:min(92vw,420px);
-  display:flex;flex-direction:column;align-items:center;gap:6px;opacity:0;visibility:hidden;transform:translate(-50%,-10px);
+/* ⚠️ LA RECHERCHE EST AU MILIEU (Wah, 16/10 : « la zone de recherche doit être au milieu, je te la
+   rappelle encore une fois »). Elle se cale sur le CENTRE de la galaxie (`--gy`, posé par `geo()` : la
+   place du papier), pas sur le milieu de l'écran — l'étoile trouvée vient exactement là. Le NOM du
+   Totehm, lui, ne quitte jamais le haut (`#conn-bar`). */
+/* ⚠️ AU MILIEU, LE CHAMP NE DOIT PAS AVALER LA GALAXIE : le bloc est transparent au doigt, seule la
+   saisie le reçoit. Sinon un tap autour du champ ne toucherait plus aucune étoile. */
+#gx-ui{position:absolute;left:50%;top:var(--gy,50%);width:min(92vw,420px);pointer-events:none;
+  display:flex;flex-direction:column;align-items:center;gap:6px;opacity:0;visibility:hidden;transform:translate(-50%,calc(-50% + 10px));
   transition:opacity .3s ease,transform .45s var(--gate-ease),visibility 0s linear .45s}
-body.lv-others #gx-ui{opacity:1;visibility:visible;transform:translate(-50%,0);transition:opacity .4s ease .3s,transform .55s var(--gate-ease) .22s}
-#gx-q{width:100%;font:400 clamp(20px,6vw,28px)/1.25 'Quantico',sans-serif;color:#fbd5ca;background:none;border:0;outline:none;
+body.lv-others #gx-ui{opacity:1;visibility:visible;transform:translate(-50%,-50%);transition:opacity .4s ease .3s,transform .55s var(--gate-ease) .22s}
+/* Pendant la plongée, le champ s'efface : l'étoile et son nom prennent sa place. */
+body.lv-others.gx-dive #gx-ui{opacity:0;transition:opacity .28s ease}
+#gx-q{pointer-events:auto;width:100%;font:400 clamp(20px,6vw,28px)/1.25 'Quantico',sans-serif;color:#fbd5ca;background:none;border:0;outline:none;
   caret-color:#fbd5ca;text-align:center;padding:2px 0;border-radius:0;-webkit-appearance:none;appearance:none}
 #gx-q::placeholder{color:rgba(251,213,202,.36)}
 #gx-note:empty{display:none}
 /* ⚠️ PAS DE LISTE DE RÉSULTATS DANS LA GALAXIE (Wah, 15/10) : « les résultats, c'est la galaxie qui s'agrandit
    avec le nom tapé ». Les lignes restent câblées (elles allument les carrés et répondent à Entrée) mais ne
    s'affichent jamais : un nom trouvé se lit SUR son carré, en Coral. */
+/* Le compositeur d'un spot, DANS la boîte : deux champs et un verbe, sur une ligne quand ça tient. */
+.sn-w{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.sn-w .in.nw{flex:1 1 130px;min-width:0}
+.sn-w .dash{flex:0 0 auto}
+.sn-w .pk-say{flex:1 1 100%}
 #gx-res{display:none}
 #gx-res-x{width:100%;max-height:30dvh;overflow-y:auto;overscroll-behavior:contain;display:flex;flex-direction:column;gap:8px;scrollbar-width:none}
 #gx-res::-webkit-scrollbar{display:none}
@@ -3409,7 +3433,7 @@ body.gate:not(.entered):not(.folding) #ast-front{clip-path:circle(72% at 50% 50%
 body.gate.lv-b:not(.entered):not(.folding) #ast-front{clip-path:circle(29.5% at 50% 36.3%)}
 body.lv-b #gate-logo #gl-rail,body.lv-b #gate-logo #gl-wm{opacity:0}
 /* ── LE MEMBRE : sa vignette ── */
-#conn-bar .lv-av{width:22px;height:22px;border-radius:50%;background:#1f1f24 center/cover no-repeat;flex:none}
+/* ⚠️ La vignette a quitté le haut le 16/10 (elle vit au verso, dans le compte) : la règle part avec elle. */
 #mw-me{display:flex;flex-direction:column;align-items:center;gap:6px}
 #mw-avatar{width:84px;height:84px;border-radius:50%;border:0;padding:0;cursor:pointer;background:#1f1f24 center/cover no-repeat;
   display:flex;align-items:center;justify-content:center;color:#6d6d74;font:400 9px/1.3 'Space Mono',monospace;letter-spacing:.12em;text-transform:uppercase}
@@ -3452,12 +3476,23 @@ body.v-shorts #habits > .habit.add{scroll-snap-align:end}
 /* Une boîte OUVERTE (édition) : le short grandit avec elle, le média garde au moins sa part. */
 .sh.is-open{height:auto;min-height:var(--sh-h,70vh)}
 .sh.is-open .sh-m{min-height:calc(var(--sh-h,70vh) * .38)}
-/* La bascule liste ↔ shorts, à côté de la manette, dans la vue Habits (mon Totehm). */
+/* ══ LE RADAR (troisième mode de la vue Habit) ══ Mes spots, là où ils sont. Pas de HUD : le canvas,
+   et UNE ligne de chiffres dessous (combien, jusqu'où, combien sans point). */
+.rdr{position:relative;display:flex;flex-direction:column;align-items:center;gap:10px;
+  margin-left:calc(var(--rl) + var(--rw) + 4px);margin-right:16px;padding:8px 0 16px}
+#rdr-c{width:100%;height:100%;aspect-ratio:1/1;max-height:62dvh;display:block;background:#0b0b0e}
+.rdr-say{font:400 10px/1.4 'Space Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#8a8a92;margin:0;text-align:center}
+body.v-radar #fv-inner{padding:0}
+/* ⚠️ ON SENT QU'ON EST ENTRÉ : en shorts comme au radar, LA MANETTE S'EN VA (Wah : « pour revenir dans
+   une vue, il faut fermer ou revenir en mode liste où le joystick reapparait »). La croix et le bouton
+   de mode restent : on peut toujours sortir, et on voit par où. */
+body.v-shorts #joy,body.v-radar #joy{opacity:0;pointer-events:none;transition:opacity .3s ease}
+/* La bascule liste ↔ shorts ↔ radar, à côté de la place de la manette, dans TOUTES les vues. */
 #vmode{position:fixed;z-index:33;left:calc(50% + 62px);bottom:calc(var(--joy-b) + 18px + var(--joy-d,60px) / 2 - 15px);
   width:34px;height:30px;border:0;border-radius:10px;padding:0;background:#1f1f24;color:#8a8a92;cursor:pointer;
   display:none;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent}
 #vmode svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
-body.v-habits:not(.gate):not(.ro):not(.ordering) #vmode{display:flex}
+body:not(.gate):not(.ro):not(.ordering) #vmode{display:flex}
 #vmode:focus-visible{outline:1px solid #fff;outline-offset:3px}
 @media(hover:hover){#vmode:hover,.sh-cap:hover{color:#fff}}
 /* Les fichiers d'un élément ouvert : des mini-boîtes sombres (une porte, pas une pièce du Totehm), « × » les retire. */
@@ -3546,14 +3581,13 @@ body.v-habits:not(.gate):not(.ro):not(.ordering) #vmode{display:flex}
         </div><!-- /#gate-logo -->
         <!-- 12/10 : le NOM, écrit sur le papier, dans son navy (Wah). Hors des quatre calques :
              la déconstruction ne le mesure pas, il s'efface quand elle part. -->
-        <span id="ast-sig" aria-hidden="true"></span>
         <div class="ast-light" aria-hidden="true"></div>
       </div>
       <!-- ⚠️ LE VERSO · 15/10/2026 : le NOM du Totehm et son panneau (les quatre niveaux, le prix) — le
            retourner ouvre MES RÉGLAGES (`#srch`). `inert` tant que le recto est dessus : une seule face atteignable. -->
       <div class="ast-face ast-back" id="ast-back" inert>
         <div class="ast-tile"></div>
-        <div id="ast-verso"><span class="ast-say" id="ast-name"></span><span class="ast-panel" id="ast-panel" aria-hidden="true"><i data-l="private"></i><i data-l="figher"></i><i data-l="subscribers"></i><i data-l="public"></i></span><span class="ast-slider" aria-hidden="true"><b></b></span></div>
+        <div id="ast-verso"><span class="ast-say" id="ast-name"></span><span class="ast-panel" id="ast-panel" aria-hidden="true"><i data-l="private"></i><i data-l="figher"></i><i data-l="subscribers"></i></span><span class="ast-slider" aria-hidden="true"><b></b></span></div>
         <button id="gate-search-go" type="button" aria-label="My TOTEHM settings"></button>
         <div class="ast-light"></div>
       </div>
@@ -3659,9 +3693,35 @@ body.v-habits:not(.gate):not(.ro):not(.ordering) #vmode{display:flex}
              CE QUE ça lui fait, et POURQUOI ça marche — avec de vraies références, vérifiables (jamais un
              chiffre inventé, jamais une fausse rareté). Un membre, lui, ne lit rien : il a déjà son Totehm.
              Le détail se déroule au clic : le moins de mots possible, et la suite à la demande. -->
+        <!-- ⚠️ 16/10 · L'ATTERRISSAGE VEND, ET IL VEND DEUX CHOSES DIFFÉRENTES (Wah : « le HOW IT WORKS de la
+             page d'atterrissage est nul : il faut vendre ici ; il faut que l'utilisateur ait l'impression qu'il
+             DOIT utiliser le Totehm pour atteindre ses objectifs » · « quand tu cliques sur OTHERS, “Higher your
+             brain” devient “Higher your strategy” et le texte change, en mode cherche et souscris à un ou
+             plusieurs Totehm des membres ; le HOW IT WORKS change aussi »).
+             Donc DEUX blocs, un seul CTA, et trois pas numérotés dans les deux cas : le mécanisme se lit d'un
+             coup d'œil, et chaque pas est une chose que le membre va vraiment écrire. Aucun chiffre inventé,
+             aucune fausse rareté, aucune promesse de résultat : la preuve est réelle ou elle n'est pas. -->
         <div id="lv-pitch" class="hide">
-          <p class="lvp-h"><svg class="lvp-b" viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-badge"></use></svg><span>your brain</span></p>
-          <p class="lvp-s">Your whole strategy in one object — and a Reflection that turns it into your next move.</p>
+          <div class="lvp-side lvp-mine">
+            <p class="lvp-h"><svg class="lvp-b" viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-badge"></use></svg><span>your brain</span></p>
+            <p class="lvp-s">An objective you keep in your head is a wish. One object turns it into a move.</p>
+            <ol class="lvp-how">
+              <li><b>What you're after.</b><span>the objective</span></li>
+              <li><b>The habit that gets you there.</b><span>when · where</span></li>
+              <li><b>What derails you.</b><span>in your own words</span></li>
+            </ol>
+            <p class="lvp-out">Your Reflection turns the three into your next move — at the rhythm of each habit.</p>
+          </div>
+          <div class="lvp-side lvp-others">
+            <p class="lvp-h"><svg class="lvp-b" viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-badge"></use></svg><span>your strategy</span></p>
+            <p class="lvp-s">Someone already lives the habit you keep postponing. Read how.</p>
+            <ol class="lvp-how">
+              <li><b>Type a name.</b><span>the galaxy answers</span></li>
+              <li><b>Open their TOTEHM.</b><span>objectives · habits · repulsions</span></li>
+              <li><b>Subscribe to one, or to many.</b><span>copy what works into yours</span></li>
+            </ol>
+            <p class="lvp-out">Their spots say where they'll be. You go.</p>
+          </div>
           <button id="lvp-why" class="lvp-why" type="button" aria-expanded="false">Why it works</button>
           <p class="lvp-sci hide" id="lvp-sci">A “when, where, what” plan raises follow-through: 94 studies, d&nbsp;=&nbsp;0.65 (Gollwitzer &amp; Sheeran, 2006). The words you tell yourself change how you perform under pressure (Kross et&nbsp;al., 2014).</p>
           <button id="lv-join" class="lvp-cta" type="button">CONNECT WITH MY TOTEHM</button>
@@ -3730,9 +3790,8 @@ body.v-habits:not(.gate):not(.ro):not(.ordering) #vmode{display:flex}
         <button type="button" data-lvvis="private" role="radio" aria-checked="true"><svg viewBox="0 0 12 12" aria-hidden="true"><rect x="2.5" y="5.5" width="7" height="5" rx="1" fill="currentColor"/><path d="M4 5.5V4a2 2 0 0 1 4 0v1.5" fill="none" stroke="currentColor" stroke-width="1.3"/></svg><span>PRIVATE</span></button>
         <button type="button" data-lvvis="figher" role="radio" aria-checked="false"><svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="4.6" fill="none" stroke="currentColor" stroke-width="1.2"/><circle cx="6" cy="6" r="2.2" fill="none" stroke="currentColor" stroke-width="1.2"/><circle cx="6" cy="6" r=".9" fill="currentColor"/></svg><span>FIGHER CLUB</span></button>
         <button type="button" data-lvvis="subscribers" role="radio" aria-checked="false"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 1.2l1.4 3 3.3.4-2.4 2.3.6 3.3L6 8.6 3.1 10.2l.6-3.3L1.3 4.6l3.3-.4z" fill="currentColor"/></svg><span>MY SUBSCRIBERS</span></button>
-        <button type="button" data-lvvis="public" role="radio" aria-checked="false"><svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="4.6" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M1.4 6h9.2M6 1.4c-2.6 2.6-2.6 6.6 0 9.2M6 1.4c2.6 2.6 2.6 6.6 0 9.2" fill="none" stroke="currentColor" stroke-width="1"/></svg><span>PUBLIC</span></button>
-      </div>
-      <a class="lv-btn hide" id="lv-prog" href="/monetize">My subscription program</a>
+              </div>
+      <a class="lv-btn hide" id="lv-prog" href="/monetize">Monetize my TOTEHM</a>
       <!-- 13/10 — le créateur en trois chiffres, et son prix au curseur (`creator_dashboard`, `monetization_set`). -->
       <div id="mw-creator" class="hide">
         <div class="mwc-n"><span><b id="mwc-subs">0</b><i>subscribers</i></span><span><b id="mwc-month">0</b><i>this month</i></span><span><b id="mwc-next">—</b><i>next payout</i></span></div>
@@ -3777,9 +3836,8 @@ body.v-habits:not(.gate):not(.ro):not(.ordering) #vmode{display:flex}
       </div>
       <div id="settings" class="mw-dash">
         <nav class="cm-menu" id="mw-menu" aria-label="Me">
-          <div class="cm-item"><button class="cm-action" id="mw-higher" type="button">My Higher subscription</button><p class="cm-hint" id="mw-higher-hint">TotehmSM</p><div id="mw-higher-acts"></div></div>
+          <div class="cm-item"><button class="cm-action" id="mw-higher" type="button">My Higher</button><p class="cm-hint" id="mw-higher-hint">TotehmSM</p><div id="mw-higher-acts"></div></div>
           <div class="cm-item"><button class="cm-action" id="mw-subs" type="button">My subscriptions</button><p class="cm-hint" id="mw-subs-hint">the TOTEHMs I follow · my subscribers</p></div>
-          <div class="cm-item"><button class="cm-action" id="myspaces-open" type="button">My TOTEHM spaces</button><p class="cm-hint">my history · in SPACE</p></div>
           <div class="cm-item"><button class="cm-action" id="mw-telegram" type="button">Connect TotehmBot</button><p class="cm-hint" id="mw-tg-hint">Telegram · my reflections land there</p></div>
         </nav>
         <div class="lv-note" id="mw-menu-note" role="status"></div>
@@ -3790,7 +3848,7 @@ body.v-habits:not(.gate):not(.ro):not(.ordering) #vmode{display:flex}
         <div class="set-block acct-block">
           <div id="acct" class="hide">
             <button class="acct-btn" id="acct-wipe" type="button">Delete my Totehm</button>
-            <button class="acct-btn hide" id="acct-cancel" type="button">Cancel my subscription</button>
+            <button class="acct-btn hide" id="acct-cancel" type="button">Cancel my Higher</button>
             <div class="acct-note hide" id="acct-note"></div>
           </div>
         </div>
@@ -4017,16 +4075,6 @@ body.v-habits:not(.gate):not(.ro):not(.ordering) #vmode{display:flex}
 </div>
 
 <button id="conn-bar" type="button" aria-label="member space"><span class="dot"></span></button>
-<section id="myspaces" role="dialog" aria-modal="true" aria-labelledby="myspaces-title" tabindex="-1">
-  <div id="myspaces-inner">
-    <div id="myspaces-head"><h2 id="myspaces-title">My TOTEHM spaces</h2><button id="myspaces-close" type="button">[CLOSE]</button></div>
-    <div id="myspaces-name"></div>
-    <div id="myspaces-list"></div>
-    <p id="myspaces-note" role="status"></p>
-    <button id="myspaces-more" class="hide" type="button">More</button>
-    <button id="myspaces-open-space" type="button">Create a space ↗</button>
-  </div>
-</section>
 <script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 const sb=createClient('https://abujjbkbbiumxrokozph.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us');
@@ -4152,7 +4200,6 @@ const $=id=>document.getElementById(id);
 /* 07/10/2026 : le menu de l'écosystème (tools/com_member_menu.js) a quitté
    l'espace membre de cette page — ses portes sont devenues les quatre vues de
    l'atterrissage. /search, /console et /monetize gardent leur copie. */
-let openRequestedSpaces=new URLSearchParams(location.search).get('spaces')==='1';
 
 
 /* ══ JOURNAL DES TRANSFORMATIONS — la matière première du Book of My Totehm ══
@@ -4643,6 +4690,59 @@ const miniSpace=s=>'<button type="button" class="mini m-s" data-space="'+esc(Str
   +'<span class="ms-w">'+esc([(s.exact&&s.exact.place)||s.city||'', quandSpace(s)].filter(Boolean).join(' · '))+'</span></button>';
 const spacesDe=x=>HSPACES.par.get(norm(srv(x)))||null;
 
+/* ══ ANNONCER : LE SERVEUR ÉCRIT, LA PAGE NE DÉCIDE RIEN · 16/10/2026 ═════════════════════
+   `spot_schedule_audience` (authenticated) : MA Habit, une heure future, un lieu — et l'audience
+   par défaut d'un spot, FIGHER CLUB. La page ne choisit ni le niveau, ni le point, ni le mode :
+   elle envoie ce que le membre a tapé. Une erreur de RPC se journalise, toujours. */
+/* ⚠️ JAMAIS UNE FAUSSE POSITION CALCULÉE DEPUIS UNE VILLE (`club/CLAUDE.md`). Un spot annoncé est
+   ON : son point est le POINT, donc la position du navigateur est exigée — refusée, on le dit en deux
+   mots et on n'invente rien. La VILLE, elle, se déduit de ce point (`cities.json`, le même fichier que
+   le Club, servi par la même origine) : un champ de moins à remplir, et une ville juste. */
+let CITIES_COM=null, citiesCom=null;
+const plisser=t=>String(t||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+function villesCom(){
+  if(CITIES_COM) return Promise.resolve(CITIES_COM);
+  return citiesCom||=fetch('/cities.json').then(r=>r.ok?r.json():{cities:[]}).then(d=>d.cities||[])
+    .catch(e=>{ console.error('[cities.json]',e?.message||e); return []; })
+    .then(l=>{ CITIES_COM=l; return l; });
+}
+async function villeDe(lat,lng){
+  const L=await villesCom(); let best=null, bd=40;         /* 40 km : la règle du Club */
+  for(const c of L){ const dx=(c[2]-lng)*Math.cos(lat*Math.PI/180)*111.32, dy=(c[1]-lat)*110.57;
+    const d=Math.hypot(dx,dy); if(d<bd){ bd=d; best=c; } }
+  return best?best[0]:null;
+}
+async function annoncerSpot(id){
+  const x=habOf(id); if(!x||!me) return;
+  const g=q=>document.querySelector('[data-sn="'+q+':'+CSS.escape(String(id))+'"]');
+  const note=document.querySelector('[data-sn-note="'+CSS.escape(String(id))+'"]');
+  const dire=t=>{ if(note) note.textContent=t||''; };
+  const when=g('when')?.value||'', place=(g('where')?.value||'').trim();
+  const t=when?new Date(when):null;
+  if(!t||isNaN(t)||t.getTime()<=Date.now()){ dire('a time, later than now'); return; }
+  if(!place){ dire('where'); return; }
+  dire('announcing…');
+  const pos=await new Promise(r=>{ if(!navigator.geolocation) return r(null);
+    let fini=false; const fin=v=>{ if(!fini){ fini=true; r(v); } };
+    navigator.geolocation.getCurrentPosition(p=>fin(p&&p.coords||null),()=>fin(null),{timeout:8000,maximumAge:300000});
+    setTimeout(()=>fin(null),8200); });
+  if(!pos){ dire('allow your position'); return; }
+  const city=await villeDe(pos.latitude,pos.longitude);
+  const uid=me.id;
+  const {data,error}=await sb.rpc('spot_schedule_audience',{
+    p_habit:srv(x), p_starts_at:t.toISOString(), p_duration_min:60,
+    p_place:place, p_lat:pos.latitude, p_lng:pos.longitude,
+    p_city:city||null, p_comment:null, p_mode:'silent', p_location:'on', p_audience:'figher'});
+  if(uid!==me?.id) return;
+  if(error){ console.error('[spot_schedule_audience]',error.message); dire('not announced · try again'); return; }
+  if(!data||!data.ok){ dire(({signin:'connect first',habit:'not my habit',when:'a time, later than now',
+    place:'where',position:'allow your position',too_many:'too many spots ahead',
+    duration:'try again'})[data&&data.why]||'not announced · try again'); return; }
+  pk=null; dire('');
+  await loadHabitSpaces();
+  renderZone();
+}
+
 /* ══ UNE PLATEFORME · 12/10/2026 ══════════════════════════════════════════
    Wah : « il faut que SPACE et le Club vivent sur totehm.com ; dans mon Totehm, quand je
    clique sur un de mes spaces ou un de mes spots je suis redirigé vers une autre page alors
@@ -4661,10 +4761,12 @@ const spacesDe=x=>HSPACES.par.get(norm(srv(x)))||null;
 const XO=(()=>{
   /* 15/10 : la console entre dans la couche (Wah : « on reste sur cette page, la console intégrée dedans »).
      Même origine, donc la même session : rien à repasser, rien à reconnecter. */
-  const SRC={space:'/x/space?embed=1', club:'/x/club?embed=1', console:'/console?embed=1'};
-  const NOM={space:'SPACE', club:'FIGHER.CLUB', console:'MY SUBSCRIPTIONS'};
+  /* `univers` naît VIDE : son adresse dépend du nom cherché, et charger `/creator` pour le remplacer
+     aussitôt serait une requête pour rien. */
+  const SRC={space:'/x/space?embed=1', club:'/x/club?embed=1', console:'/console?embed=1', univers:'about:blank'};
+  const NOM={space:'SPACE', club:'FIGHER.CLUB', console:'MY SUBSCRIPTIONS', univers:'A TOTEHM'};
   const ALLOW='camera; microphone; geolocation; autoplay; fullscreen; clipboard-write; web-share';
-  const C={}; let actif=null, hist=false, uid=null;
+  const C={}; let actif=null, hist=false, uid=null, retour=null;
   const diag={ouverts:0, arrivees:0, perdus:0, cmds:0};
   const racine=()=>$('xo');
   function cadre(k){
@@ -4688,6 +4790,8 @@ const XO=(()=>{
     actif=k; diag.ouverts++;
     document.body.classList.add('is-xo');
     const r=racine(); r.classList.add('is-open'); r.setAttribute('aria-hidden','false');
+    /* L'univers n'a pas de croix à lui : COM en pose une. */
+    r.classList.toggle('is-nu',k==='univers');
     if(!hist){ try{ history.pushState({xo:1},''); hist=true; }catch(_){} }
     envoyer(k,{cmd:'url',q:q||''});
     setTimeout(()=>{ try{ c.f.focus(); }catch(_){} },80);
@@ -4699,13 +4803,16 @@ const XO=(()=>{
     const r=racine(); r.classList.remove('is-open'); r.setAttribute('aria-hidden','true');
     document.body.classList.remove('is-xo');
     envoyer(k,{cmd:'sleep'});
+    /* Le geste inverse, s'il y en a un (la galaxie ressort de son étoile). UNE fois. */
+    const f=retour; retour=null; if(f) try{ f(); }catch(e){ console.error('[xo retour]',e?.message||e); }
     if(typeof loadHabitSpaces==='function') loadHabitSpaces();
   }
   function fermer(){ if(!actif) return; if(hist&&history.state&&history.state.xo) history.back(); else rendre(); }
   window.addEventListener('popstate',()=>{ if(actif) rendre(); });
+  { const x=$('xo-x'); if(x) x.onclick=()=>fermer(); }
   /* Le focus resté sur COM : Échap ferme la couche, et rien d'autre ne bouge dessous. */
   window.addEventListener('keydown',e=>{ if(actif&&e.key==='Escape'){ e.preventDefault(); e.stopImmediatePropagation(); fermer(); } },true);
-  function oublier(){ if(actif){ actif=null; hist=false; const r=racine(); r.classList.remove('is-open'); r.setAttribute('aria-hidden','true'); document.body.classList.remove('is-xo'); }
+  function oublier(){ retour=null; if(actif){ actif=null; hist=false; const r=racine(); r.classList.remove('is-open'); r.setAttribute('aria-hidden','true'); document.body.classList.remove('is-xo'); }
     Object.keys(C).forEach(k=>{ C[k].f.remove(); delete C[k]; }); }
   /* Ce que demande le cadre : SPACE ↔ Club sur place, totehm.com chez lui, le reste par le pont. */
   function aller(cible,url){
@@ -4737,8 +4844,27 @@ const XO=(()=>{
   let tic=0;
   function bientot(){ clearTimeout(tic); tic=setTimeout(()=>{ (window.requestIdleCallback||(f=>setTimeout(f,0)))(prechauffer); },3000); }
   bientot();
-  window.__totehm_xo=()=>({actif, cadres:Object.keys(C), prets:Object.keys(C).filter(k=>C[k].pret), ...diag});
-  return {ouvrir, fermer, ouvert:()=>actif};
+  /* ⚠️ 16/10 · L'UNIVERS D'UN MEMBRE NE FAIT PLUS SAUTER LA PAGE. Wah : « il ne faut pas que ça saute
+     entre totehm.com et totehm.com/@{Nom} ». `/@nom` est servi par la MÊME origine (`com/vercel.json`
+     le réécrit sur `/creator`) : il entre dans la couche comme SPACE et le Club — même session, aucune
+     navigation, l'URL ne bouge pas, et la fermeture rejoue le geste d'entrée à l'envers (`apres`).
+     Le cadre se charge PENDANT la plongée : à l'arrivée la page est déjà là, donc rien ne clignote. */
+  function univers(pseudo,apres){
+    const p=String(pseudo||'').replace(/^@/,'').slice(0,32); if(!p) return;
+    const u='/@'+encodeURIComponent(p)+'?embed=1';
+    const c=cadre('univers');
+    if(c.f.getAttribute('src')!==u){ c.pret=false; c.file=null; c.der=null; c.f.setAttribute('src',u); }
+    retour=apres||null;
+    ouvrir('univers');
+  }
+  /* Charger sans montrer : la plongée dure 640 ms, autant les mettre à profit. */
+  function prefetch(pseudo){
+    const p=String(pseudo||'').replace(/^@/,'').slice(0,32); if(!p) return;
+    const u='/@'+encodeURIComponent(p)+'?embed=1', c=cadre('univers');
+    if(c.f.getAttribute('src')!==u){ c.pret=false; c.file=null; c.der=null; c.f.setAttribute('src',u); }
+  }
+  window.__totehm_xo=()=>({actif, cadres:Object.keys(C), prets:Object.keys(C).filter(k=>C[k].pret), retour:!!retour, ...diag});
+  return {ouvrir, fermer, ouvert:()=>actif, univers, prefetch};
 })();
 
 /* ══ LA BOUTIQUE APPARAÎT DANS WISDOM ET VISION · 08/10/2026 (ter) ══════
@@ -4851,6 +4977,7 @@ const ICO_VIDEO='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy=
 const ICO_DOC='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/></svg>';
 const ICO_LIST='<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 4h10M3 8h10M3 12h10"/></svg>';
 const ICO_SHORTS='<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="4" y="2" width="8" height="12" rx="1"/><path d="M7 6v4l3-2z" fill="currentColor" stroke="none"/></svg>';
+const ICO_RADAR='<svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6"/><circle cx="8" cy="8" r="2.5"/><path d="M8 8l4-3"/></svg>';
 const emCle=(k,ref)=>k+':'+String(ref??'').trim();
 const mediasDe=(k,ref)=>EMEDIA.par.get(emCle(k,ref))||[];
 const emImg=m=>/^image\//.test(m.mime||''), emVid=m=>/^video\//.test(m.mime||'');
@@ -4890,7 +5017,7 @@ function fichiersHTML(kind,id){
   const puces=mediasDe(e.k,e.ref).map(m=>'<span class="mini m-f"><button type="button" class="mini-t" data-emo="'+esc(String(m.id))+'">'
       +(emImg(m)?ICO_PHOTO:emVid(m)?ICO_VIDEO:ICO_DOC)+esc(m.name||(emImg(m)?'photo':emVid(m)?'video':'file'))+'</button>'
       +'<button type="button" class="mf-x" data-emx="'+esc(String(m.id))+'" aria-label="Remove">&times;</button></span>').join('');
-  return groupe('files',puces+'<button type="button" class="dash" data-cap="'+esc(e.k+':'+e.ref)+'" aria-label="Photo · video · file">+ '+ICO_PHOTO+'</button>');
+  return groupe('files',puces+'<button type="button" class="dash" data-cap="'+esc(e.k+':'+e.ref)+'">Add a media</button>');
 }
 /* Ouvrir un fichier : la fenêtre part DANS le geste (sinon le navigateur la bloque), l'URL signée la suit. */
 async function emOuvrir(id){
@@ -5044,21 +5171,169 @@ const CAP=(()=>{
    ses fichiers (photo, vidéo), sinon la photo d'un de ses spaces ; sans média, son papier et ses intentions.
    La liste ne change pas ; la bascule garde l'Habit courante et s'anime ; d'une Habit à l'autre, le défilement
    aimanté. Une vidéo ne joue que visible, la suivante se prépare (la règle d'egress de SPACE). */
+/* ══ LE TROISIÈME MODE DE LA VUE HABIT : LE RADAR · 16/10/2026 ═════════════════════════════════
+   Wah : « on peut même rajouter un troisième mode dans la vue Habit (le mode radar) ». Il montre MES
+   SPOTS, là où ils sont — rien d'autre, et ZÉRO APPEL DE PLUS : les points viennent de `habit_spaces`,
+   déjà lu pour les boîtes (`HSPACES`). Un spot sans point exact (le serveur ne me l'accorde pas) n'est
+   pas placé au hasard : il se pose sur l'anneau extérieur, pâle, et il le DIT. Jamais une fausse
+   position calculée depuis une ville (`club/CLAUDE.md`).
+   Le centre, c'est MOI : ma position si le navigateur la donne (jamais demandée, seulement lue si elle
+   est déjà accordée), sinon le barycentre de mes points. rAF seulement quand le radar est à l'écran. */
+const RDR=(()=>{
+  const etat={points:0, sans:0, rayon:0, moi:false, anime:false};
+  let raf=0, t0=0, moi=null, pts=[], R=0, cx=0, cy=0, demande=false;
+  const cv=()=>$('rdr-c');
+  const RMS=()=>window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function html(){
+    return '<div class="rdr"><canvas id="rdr-c" width="100" height="100" aria-hidden="true"></canvas>'
+      +'<p class="rdr-say" id="rdr-say" role="status"></p></div>';
+  }
+  /* Mes spots, par Habit, tels que le serveur les a rendus. */
+  function lire(){
+    pts=[]; let sans=0;
+    HSPACES.par.forEach((v,k)=>{
+      (v.spots||[]).forEach(z=>{
+        const e=z&&z.exact;
+        if(e&&typeof e.lat==='number'&&typeof e.lng==='number') pts.push({id:String(z.id), lat:e.lat, lng:e.lng, st:z.state||'will', nom:k});
+        else sans++;
+      });
+    });
+    etat.points=pts.length; etat.sans=sans;
+  }
+  function position(){
+    if(moi||demande||!navigator.geolocation||!navigator.permissions) return;
+    demande=true;
+    /* On ne DEMANDE pas la position : on la lit si elle est déjà accordée. Un radar ne vaut pas un dialogue. */
+    navigator.permissions.query({name:'geolocation'}).then(p=>{
+      if(p.state!=='granted') return;
+      navigator.geolocation.getCurrentPosition(q=>{ moi={lat:q.coords.latitude,lng:q.coords.longitude}; etat.moi=true; kick(); },
+        ()=>{}, {timeout:6000,maximumAge:600000});
+    }).catch(()=>{});
+  }
+  function geo(){
+    const c=cv(); if(!c) return false;
+    const w=c.clientWidth||1, h=c.clientHeight||1, dpr=Math.min(2,devicePixelRatio||1);
+    if(c.width!==Math.round(w*dpr)||c.height!==Math.round(h*dpr)){ c.width=Math.round(w*dpr); c.height=Math.round(h*dpr); }
+    cx=w/2; cy=h/2; R=Math.max(60,Math.min(w,h)/2-10);
+    return true;
+  }
+  /* L'échelle : le point le plus loin tient dans l'anneau, jamais sous 400 m. */
+  function echelle(){
+    const o=moi||(pts.length?{lat:pts.reduce((a,p)=>a+p.lat,0)/pts.length,lng:pts.reduce((a,p)=>a+p.lng,0)/pts.length}:null);
+    if(!o) return null;
+    let max=.4;
+    for(const p of pts){ const d=Math.hypot((p.lng-o.lng)*Math.cos(o.lat*Math.PI/180)*111.32,(p.lat-o.lat)*110.57); if(d>max) max=d; }
+    return {o, km:Math.min(60,max*1.15)};
+  }
+  function dessiner(){
+    const c=cv(); if(!c||!geo()) return;
+    const x=c.getContext('2d'), dpr=Math.min(2,devicePixelRatio||1);
+    x.setTransform(dpr,0,0,dpr,0,0); x.clearRect(0,0,cx*2,cy*2);
+    const E=echelle();
+    /* Trois anneaux, un balayage : la grammaire du radar du Club, en plus sobre. */
+    x.strokeStyle='rgba(255,255,255,.10)'; x.lineWidth=1;
+    for(let i=1;i<=3;i++){ x.beginPath(); x.arc(cx,cy,R*i/3,0,Math.PI*2); x.stroke(); }
+    if(!RMS()){
+      const a=(performance.now()-t0)/1000*.7;
+      const g=x.createLinearGradient(cx,cy,cx+Math.cos(a)*R,cy+Math.sin(a)*R);
+      g.addColorStop(0,'rgba(255,255,255,.14)'); g.addColorStop(1,'rgba(255,255,255,0)');
+      x.strokeStyle=g; x.lineWidth=2; x.beginPath(); x.moveTo(cx,cy); x.lineTo(cx+Math.cos(a)*R,cy+Math.sin(a)*R); x.stroke();
+    }
+    /* Moi : un carré blanc au centre. Un spot : un carré navy, bleu clair à venir, blanc s'il est en cours. */
+    x.fillStyle='#fff'; x.fillRect(cx-3,cy-3,6,6);
+    if(E){
+      pts.forEach(p=>{
+        const dx=(p.lng-E.o.lng)*Math.cos(E.o.lat*Math.PI/180)*111.32, dy=(p.lat-E.o.lat)*110.57;
+        const k=R/Math.max(.001,E.km);
+        const px=cx+dx*k, py=cy-dy*k;
+        x.fillStyle=p.st==='am'?'#fff':p.st==='was'?'#743169':'#36498c';
+        x.globalAlpha=p.st==='was'?.55:1;
+        x.fillRect(px-4,py-4,8,8); x.globalAlpha=1;
+      });
+    }
+    /* Les spots sans point exact : sur l'anneau, pâles, répartis — ils existent, ils ne sont pas situés. */
+    for(let i=0;i<etat.sans;i++){
+      const a=(i/Math.max(1,etat.sans))*Math.PI*2;
+      x.globalAlpha=.3; x.fillStyle='#333366';
+      x.fillRect(cx+Math.cos(a)*R-3,cy+Math.sin(a)*R-3,6,6); x.globalAlpha=1;
+    }
+    etat.rayon=E?Math.round(E.km*10)/10:0;
+    const say=$('rdr-say');
+    if(say) say.textContent=pts.length||etat.sans
+      ? [pts.length?pts.length+(pts.length>1?' spots':' spot'):'', E?Math.round(E.km)+' km':'', etat.sans?etat.sans+' without a point':''].filter(Boolean).join(' · ')
+      : 'no spot yet';
+  }
+  function frame(){ raf=0; if(!SH.radar()||document.hidden){ etat.anime=false; return; }
+    dessiner(); etat.anime=true; if(!RMS()) raf=requestAnimationFrame(frame); }
+  function kick(){ if(!raf&&SH.radar()) raf=requestAnimationFrame(frame); }
+  function apres(){ if(!t0) t0=performance.now(); lire(); position(); kick(); }
+  function pause(){ if(raf){ cancelAnimationFrame(raf); raf=0; } etat.anime=false; }
+  window.addEventListener('resize',()=>{ if(SH.radar()) kick(); });
+  document.addEventListener('visibilitychange',()=>{ if(document.hidden) pause(); else kick(); });
+  window.__totehm_rdr=()=>Object.assign({},etat);
+  return {html, apres, pause, etat:()=>Object.assign({},etat)};
+})();
+
 const SH=(()=>{
-  let on=false; try{ on=localStorage.getItem('totehm_shorts')==='1'; }catch(_){}
+  /* ══ DEUX MODES PAR VUE, TROIS DANS LA VUE HABIT · 16/10/2026 ══════════════════════════════════
+     Wah : « une fois que l'on est dans le Totehm il y a deux modes pour chaque vue : la vue liste et
+     la vue Shorts qui changent complètement le dispositif ; la liste devient un tiktok avec la photo ou
+     la vidéo en full screen et la possibilité de défiler. Pour revenir dans une vue, il faut fermer ou
+     revenir en mode liste où le joystick reapparait. L'utilisateur doit sentir qu'il rentre dans le mode
+     Shorts de la vue concernée. On peut même rajouter un troisième mode dans la vue Habit (le radar). »
+     Donc : UN mode par vue, gardé par vue (`totehm_modes`), et un seul bouton qui tourne.
+       • LISTE  — le dispositif d'origine, avec la manette.
+       • SHORTS — un élément par écran, son média devant, défilement aimanté ; la manette DISPARAÎT
+                  (on est entré), la croix et le bouton de mode restent (on peut sortir).
+       • RADAR  — vue Habit seulement : mes spots, là où ils sont. Aucun appel réseau de plus — les
+                  points viennent de `habit_spaces`, déjà lu (doctrine de coût).
+     Le média d'un élément : ses fichiers (`element_media`, le plus récent) ; à défaut la photo d'un de
+     ses spots pour une Habit, l'image libre d'une VISION. Rien d'inventé : sans média, son papier. */
+  const ORDRE={habits:['list','shorts','radar'],objectives:['list','shorts'],repulsions:['list','shorts'],
+               wisdom:['list','shorts'],visions:['list','shorts']};
+  const KIND={habits:'h',objectives:'t',repulsions:'r',wisdom:'w',visions:'v'};
+  const CLE='totehm_modes';
+  let M={}; try{ M=JSON.parse(localStorage.getItem(CLE)||'{}')||{}; }catch(_){ M={}; }
+  /* L'ancienne clé (shorts, la vue Habit seule) se relit UNE fois : personne ne perd son réglage. */
+  try{ if(localStorage.getItem('totehm_shorts')==='1'&&!M.habits) M.habits='shorts'; }catch(_){}
   let io=null, ici=null, n=0;
   const sc=()=>$('fv-inner');
-  const actif=()=>on&&view==='habits'&&!RO&&!ordering;
+  const dispo=()=>ORDRE[view]||['list'];
+  const mode=()=>{ const l=dispo(), m=M[view]||'list'; return l.includes(m)?m:'list'; };
+  const libre=()=>!RO&&!ordering;
+  const actif=()=>mode()==='shorts'&&libre();
+  const radar=()=>mode()==='radar'&&libre();
   const RMS=()=>window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const kDe=()=>KIND[view]||'h';
+  /* Le média d'un élément : `emDe` connaît les deux systèmes de lettres (boîte h·t·r·w·v, fichier h·o·r·w·v). */
   function media(x){
-    const r=x?String(srv(x)||'').trim():'';
-    const l=r?mediasDe('h',r).filter(m=>emImg(m)||emVid(m)):[];
+    const kind=kDe();
+    const e=(typeof emDe==='function')?emDe(kind,x.id):null;
+    const l=e?mediasDe(e.k,e.ref).filter(m=>emImg(m)||emVid(m)):[];
     if(l.length) return {src:l[0].path, b:'em', vid:emVid(l[0]), n:l.length};
-    const sp=spacesDe(x), s=sp&&(sp.spaces||[]).find(z=>z&&z.photo);
-    return s?{src:String(s.photo), b:'moments', vid:false, n:1}:null;
+    if(kind==='h'){ const sp=spacesDe(x), z=sp&&[...(sp.spots||[])].find(y=>y&&y.photo);
+      if(z) return {src:String(z.photo), b:'moments', vid:false, n:1}; }
+    if(kind==='v'){ const img=VISIMG.get(String(x.id)); if(img) return {src:String(img), b:'moments', vid:false, n:1}; }
+    return null;
+  }
+  const VUE=()=>({habits:vueHabitude,objectives:vueObjectif,repulsions:vueRepulsion,
+                  wisdom:vueTeaching,visions:vueVision})[view];
+  const capDe=x=>{ const e=(typeof emDe==='function')?emDe(kDe(),x.id):null; return e?e.k+':'+e.ref:''; };
+  /* Les traits : ses intentions pour une Habit, celles qu'il HÉRITE pour les quatre autres — la MÊME
+     chaîne que la boîte de chaque vue (une habitude qualifie un geste répété ; les autres héritent). */
+  function barres(x){
+    try{
+      const k=kDe();
+      if(k==='h') return intCols(x);
+      if(k==='t') return colsHeritees(habsOfTrip(x));
+      if(k==='r') return colsHeritees(habsOfRep(x));
+      if(k==='w') return colsHeritees(repsOfTeach(x).reduce((a,r)=>a.concat(habsOfRep(r)),[]));
+      return colsHeritees(tripsOfVision(x).reduce((a,t)=>a.concat(habsOfTrip(t)),[]));
+    }catch(_){ return []; }
   }
   function shortHTML(x,k){
-    const m=media(x), r=String(srv(x)||'').trim(), ouverte=!!open&&open.kind==='h'&&String(open.id)===String(x.id);
+    const m=media(x), cap=capDe(x);
+    const ouverte=!!open&&open.kind===kDe()&&String(open.id)===String(x.id);
     let devant;
     if(m){
       const u=m.b==='em'?emCache(m.src):'';
@@ -5066,11 +5341,11 @@ const SH=(()=>{
                    :'<img alt="" data-sh-src="'+esc(m.src)+'" data-b="'+m.b+'"'+(u?' src="'+esc(u)+'" data-ok="1"':'')+'>')
         +(m.n>1?'<span class="sh-n">'+m.n+'</span>':'');
     } else {
-      devant='<div class="sh-none"><span class="sh-ints">'+intCols(x).map(c=>'<i style="background:'+c+'"></i>').join('')+'</span>'
-        +(!RO&&r?'<button type="button" class="sh-cap" data-cap="'+esc('h:'+r)+'">'+ICO_PHOTO+'photo · video</button>':'')+'</div>';
+      devant='<div class="sh-none"><span class="sh-ints">'+barres(x).map(c=>'<i style="background:'+c+'"></i>').join('')+'</span>'
+        +(cap?'<button type="button" class="sh-cap" data-cap="'+esc(cap)+'">Add a media</button>':'')+'</div>';
     }
     /* Le short courant naît déjà `is-ici` : un redessin (une frappe, un fichier) ne rejoue pas son entrée. */
-    return '<section class="sh'+(ouverte?' is-open':'')+(ici!==null&&String(x.id)===ici?' is-ici':'')+'" data-sh="'+esc(String(x.id))+'"><div class="sh-m">'+devant+'</div>'+vueHabitude(x,k)+'</section>';
+    return '<section class="sh'+(ouverte?' is-open':'')+(ici!==null&&String(x.id)===ici?' is-ici':'')+'" data-sh="'+esc(String(x.id))+'"><div class="sh-m">'+devant+'</div>'+VUE()(x,k)+'</section>';
   }
   async function charger(el,prochain){
     const m=el&&el.querySelector('[data-sh-src]'); if(!m||m.dataset.ok) return; m.dataset.ok='1';
@@ -5082,9 +5357,12 @@ const SH=(()=>{
   }
   function jouer(el,oui){ const v=el&&el.querySelector('video[src]'); if(!v) return; if(oui) v.play().catch(()=>{}); else v.pause(); }
   function hauteur(){ const s=sc(); if(s) s.style.setProperty('--sh-h',Math.max(260,s.clientHeight)+'px'); }
-  /* Après chaque rendu : la hauteur d'un short, l'Habit visible (`is-ici`), son média et celui de la suivante. */
+  /* Après chaque rendu : la hauteur d'un short, l'élément visible (`is-ici`), son média et celui du suivant. */
   function apres(box){
     document.body.classList.toggle('v-shorts',actif());
+    document.body.classList.toggle('v-radar',radar());
+    if(radar()&&typeof RDR!=='undefined') RDR.apres();
+    else if(typeof RDR!=='undefined') RDR.pause();
     if(!actif()){ if(io){ io.disconnect(); io=null; } return; }
     hauteur();
     if(io) io.disconnect();
@@ -5097,28 +5375,33 @@ const SH=(()=>{
       else jouer(el,false); }); },{root:sc(),threshold:[0,.6]});
     box.querySelectorAll('.sh').forEach(el=>io.observe(el));
   }
-  /* L'Habit courante : la boîte ouverte, sinon la première visible (liste) ou le short affiché. */
+  /* L'élément courant : la boîte ouverte, sinon le premier visible (liste) ou le short affiché. */
   function courant(){
-    if(open&&open.kind==='h') return String(open.id);
-    if(on) return ici;
+    if(open&&open.kind===kDe()) return String(open.id);
+    if(mode()==='shorts') return ici;
     const s=sc(); if(!s) return null;
     const top=s.getBoundingClientRect().top;
     const r=[...s.querySelectorAll('#habits > .habit[data-row]')].find(el=>el.getBoundingClientRect().bottom>top+8);
     return r?r.dataset.row:null;
   }
+  /* Le bouton TOURNE : liste → shorts → (radar) → liste. On SENT qu'on entre — la pile arrive d'en
+     bas, le mot du mode passe une seconde, et la manette s'en va. */
   function basculer(){
-    if(view!=='habits'||RO||ordering) return;
-    const id=courant(), box=$('habits'), s=sc();
-    on=!on; n++; try{ localStorage.setItem('totehm_shorts',on?'1':'0'); }catch(_){}
-    if(!on&&io){ io.disconnect(); io=null; }
+    if(!libre()) return;
+    const l=dispo(), av=mode(), id=courant(), box=$('habits'), s=sc();
+    const ap=l[(l.indexOf(av)+1)%l.length];
+    M[view]=ap; n++; try{ localStorage.setItem(CLE,JSON.stringify(M)); }catch(_){}
+    if(ap!=='shorts'&&io){ io.disconnect(); io=null; }
     renderZone(); peindre();
-    if(s){
-      const el=id?(on?box.querySelector('.sh[data-sh="'+CSS.escape(id)+'"]'):box.querySelector('#habits > .habit[data-row="'+CSS.escape(id)+'"]')):null;
-      s.style.scrollBehavior='auto'; s.scrollTop=el?Math.max(0,el.offsetTop-(on?0:8)):0; s.style.scrollBehavior='';
+    if(typeof dis==='function') dis(MOT[ap].toLowerCase());
+    if(s&&ap!=='radar'){
+      const el=id?(ap==='shorts'?box.querySelector('.sh[data-sh="'+CSS.escape(id)+'"]'):box.querySelector('#habits > .habit[data-row="'+CSS.escape(id)+'"]')):null;
+      s.style.scrollBehavior='auto'; s.scrollTop=el?Math.max(0,el.offsetTop-(ap==='shorts'?0:8)):0; s.style.scrollBehavior='';
     }
-    if(box.animate&&!RMS()) box.animate([{opacity:0,transform:on?'scale(.94)':'scale(1.04)'},{opacity:1,transform:'none'}],{duration:380,easing:'cubic-bezier(.22,.9,.3,1)'});
+    if(box.animate&&!RMS()) box.animate([{opacity:0,transform:ap==='list'?'scale(1.04)':'scale(.94)'},{opacity:1,transform:'none'}],
+      {duration:380,easing:'cubic-bezier(.22,.9,.3,1)'});
   }
-  /* ↑ ↓ au clavier : l'Habit d'avant, d'après ; au bout, la croix reprend la main. */
+  /* ↑ ↓ au clavier : l'élément d'avant, d'après ; au bout, la croix reprend la main. */
   function pas(dir){
     if(!actif()) return false;
     const s=sc(), l=[...$('habits').querySelectorAll('.sh')]; if(!l.length) return false;
@@ -5126,18 +5409,37 @@ const SH=(()=>{
     if(j<0||j>=l.length) return false;
     s.scrollTo({top:l[j].offsetTop,behavior:RMS()?'auto':'smooth'}); return true;
   }
+  const MOT={list:'List',shorts:'Shorts',radar:'Radar'};
   function peindre(){ const b=$('vmode'); if(!b) return;
-    b.innerHTML=on?ICO_LIST:ICO_SHORTS; b.setAttribute('aria-label',on?'List':'Shorts'); b.title=on?'List':'Shorts'; b.setAttribute('aria-pressed',String(on)); }
+    const l=dispo(), ap=l[(l.indexOf(mode())+1)%l.length];
+    /* Le bouton montre OÙ IL MÈNE, pas où l'on est : c'est ce qu'on va chercher en le touchant. */
+    b.innerHTML=({list:ICO_LIST,shorts:ICO_SHORTS,radar:ICO_RADAR})[ap]||ICO_LIST;
+    b.setAttribute('aria-label',MOT[ap]); b.title=MOT[ap];
+    b.setAttribute('aria-pressed',String(mode()!=='list')); }
   function pause(){ document.querySelectorAll('#habits video').forEach(v=>{ try{ v.pause(); }catch(_){} }); }
   { const b=$('vmode'); if(b) b.onclick=basculer; }
   window.__totehm_sh=()=>etat();
   window.addEventListener('resize',()=>{ if(actif()) hauteur(); });
   document.addEventListener('visibilitychange',()=>{ if(document.hidden) pause(); });
-  peindre();
-  return {actif, html:shortHTML, apres, basculer, pas, pause, peindre,
+  /* ⚠️ PAS DE `peindre()` ICI. Le mode dépend de `view`, déclaré PLUS BAS : l'appeler à l'évaluation du
+     module lève « Cannot access 'view' before initialization » — donc page blanche. C'est `renderZone()`
+     qui le peint, et le bouton est de toute façon caché sur l'atterrissage. */
+  /* Revenir à la LISTE, d'où qu'on vienne (la croix, Échap) : le même chemin que le bouton. */
+  function liste(){ if(mode()==='list'||!libre()) return false;
+    const id=courant(), box=$('habits'), s=sc();
+    M[view]='list'; n++; try{ localStorage.setItem(CLE,JSON.stringify(M)); }catch(_){}
+    if(io){ io.disconnect(); io=null; }
+    renderZone(); peindre();
+    if(s){ const el=id?box.querySelector('#habits > .habit[data-row="'+CSS.escape(id)+'"]'):null;
+      s.style.scrollBehavior='auto'; s.scrollTop=el?Math.max(0,el.offsetTop-8):0; s.style.scrollBehavior=''; }
+    if(box.animate&&!RMS()) box.animate([{opacity:0,transform:'scale(1.04)'},{opacity:1,transform:'none'}],
+      {duration:380,easing:'cubic-bezier(.22,.9,.3,1)'});
+    return true; }
+  return {actif, radar, mode, liste, html:shortHTML, apres, basculer, pas, pause, peindre,
           vider(){ ici=null; if(io){ io.disconnect(); io=null; } },
           etat};
-  function etat(){ return {on, actif:actif(), ici:ici?true:false, bascules:n, shorts:document.querySelectorAll('#habits .sh').length,
+  function etat(){ return {mode:mode(), on:mode()!=='list', actif:actif(), radar:radar(), ici:ici?true:false,
+                           bascules:n, shorts:document.querySelectorAll('#habits .sh').length,
                            visible:document.querySelectorAll('#habits .sh.is-ici').length, capture:CAP.etat()}; }
 })();
 
@@ -5652,7 +5954,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-10-15-com-neural';
+const BUILD='2026-10-16-com-modes';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -6363,6 +6665,21 @@ const spotPicker=x=>'<span class="pkw">'
   +'<span class="pk-say">the park downstairs · my kitchen · the gym on 5th</span>'
   +'</span>';
 
+/* ══ ANNONCER UN SPOT DANS LE PROLONGEMENT DE LA HABIT · 16/10/2026 ═══════════════════════
+   Wah : « pour ajouter un spot, on peut l'intégrer directement en bas dans le prolongement de
+   l'habit sans passer par une autre page, non ? » — oui. Un spot, c'est UN LIEU ET UNE HEURE
+   (`club/CLAUDE.md`) : le compositeur ne demande donc que ça, et rien d'autre. Le reste vient
+   des défauts du projet, posés par le SERVEUR : FIGHER CLUB (le niveau par défaut d'un spot),
+   le point ON, le mode silencieux, 60 minutes. Zéro mot d'explication : trois champs et un verbe.
+   La position : si le navigateur la donne, elle part ; sinon la VILLE suffit (le serveur prend son
+   centre — `spot_schedule`), et le point exact ne se lit de toute façon que par `_point_ok`. */
+const spotNeuf=x=>'<span class="pkw sn-w">'
+  +'<input class="in nw" type="datetime-local" data-sn="when:'+esc(String(x.id))+'" aria-label="When">'
+  +'<input class="in nw" data-sn="where:'+esc(String(x.id))+'" autocomplete="off" maxlength="120" placeholder="where" aria-label="Where">'
+  +'<button type="button" class="dash" data-spotgo="'+esc(String(x.id))+'">Announce it</button>'
+  +'<span class="pk-say" data-sn-note="'+esc(String(x.id))+'" role="status"></span>'
+  +'</span>';
+
 /* LES SEPT INTENTIONS — plusieurs à la fois. Pas de surlignage : la tuile
    prend un fondu de sa couleur, et se remplit quand elle est choisie. */
 /* ⚠️ LE SON SE RÈGLE LÀ OÙ ON CHOISIT L'INTENTION, ET IL APPARTIENT À
@@ -6490,33 +6807,31 @@ function renderZone(){
   const sens = change ? dernierSens : null;               /* lu AVANT paintZone (qui le consomme pour le nom) */
   paintZone();
 
+  /* ⚠️ 16/10 · UNE SEULE CHAÎNE POUR LES CINQ VUES ET LES DEUX MODES. Avant, seule la vue Habit
+     connaissait les shorts : la liste était écrite cinq fois et le mode une fois. Maintenant chaque
+     vue dit SA liste et SON rendu, et c'est le MODE qui choisit la boîte (liste) ou le short.
+     Deux listes finiraient par diverger — c'est déjà arrivé avec `VIEW_ORDER`. */
+  const PLAN={
+    habits:    {add:'h', mot:'Add a habit',      liste:()=>{ if(!state.ord)sortHabits();
+                  return (state.habits||[]).filter(x=>{
+                    if(filterF && x.f!==filterF) return false;
+                    if(filterI && !intIds(x).includes(filterI)) return false;
+                    return true; }); }, rend:vueHabitude},
+    objectives:{add:'t', mot:'Add an objective', liste:()=>TRIPS, rend:vueObjectif},
+    repulsions:{add:'r', mot:'Add a repulsion',  liste:()=>REPS,  rend:vueRepulsion},
+    wisdom:    {add:'w', mot:'Add my story',     liste:()=>TEACH, rend:vueTeaching},
+    visions:   {add:'v', mot:'Add a vision',     liste:()=>VIS,   rend:vueVision}
+  }[view]||{add:'h', mot:'Add a habit', liste:()=>[], rend:vueHabitude};
+  const list=PLAN.liste();
+  NB=list.length;
   let h='';
-  if(view==='habits'){
-    if(!state.ord)sortHabits();
-    const list=(state.habits||[]).filter(x=>{
-      if(filterF && x.f!==filterF) return false;
-      if(filterI && !intIds(x).includes(filterI)) return false;
-      return true;});
-    NB=list.length; h=SH.actif()?list.map((x,k)=>SH.html(x,k)).join(''):list.map((x,k)=>vueHabitude(x,k)).join('');
-    if(!list.length)h+='<div class="void">'+((state.habits||[]).length
-      ?'—':'')+'</div>';
-    h+=ligne('<button type="button" class="add-box" data-add="h" aria-label="Add a habit">+</button>','add');
-  }else if(view==='objectives'){
-    NB=TRIPS.length; h=TRIPS.map((t,k)=>vueObjectif(t,k)).join('');
-    if(!TRIPS.length)h+='<div class="void">'+(tripsLoaded?'':'…')+'</div>';
-    h+=ligne('<button type="button" class="add-box" data-add="t" aria-label="Add an objective">+</button>','add');
-  }else if(view==='repulsions'){
-    NB=REPS.length; h=REPS.map((r,k)=>vueRepulsion(r,k)).join('');
-    if(!REPS.length)h+='<div class="void">'+(tripsLoaded?'':'…')+'</div>';
-    h+=ligne('<button type="button" class="add-box" data-add="r" aria-label="Add a repulsion">+</button>','add');
-  }else if(view==='wisdom'){
-    NB=TEACH.length; h=TEACH.map((w,k)=>vueTeaching(w,k)).join('');
-    if(!TEACH.length)h+='<div class="void">'+(tripsLoaded?'':'…')+'</div>';
-    h+=ligne('<button type="button" class="add-box" data-add="w" aria-label="Add my story">+</button>','add');
+  if(SH.radar()){
+    /* Le radar remplace la liste : mes spots, là où ils sont. La croix et le bouton de mode restent. */
+    h=RDR.html();
   }else{
-    NB=VIS.length; h=VIS.map((v,k)=>vueVision(v,k)).join('');
-    if(!VIS.length)h+='<div class="void">'+(tripsLoaded?'':'…')+'</div>';
-    h+=ligne('<button type="button" class="add-box" data-add="v" aria-label="Add a vision">+</button>','add');
+    h=SH.actif()?list.map((x,k)=>SH.html(x,k)).join(''):list.map((x,k)=>PLAN.rend(x,k)).join('');
+    if(!list.length) h+='<div class="void">'+(view==='habits'?((state.habits||[]).length?'—':''):(tripsLoaded?'':'…'))+'</div>';
+    h+=ligne('<button type="button" class="add-box" data-add="'+PLAN.add+'" aria-label="'+PLAN.mot+'">+</button>','add');
   }
 
   /* La bande « order by importance » a quitté le `innerHTML` : elle
@@ -6526,7 +6841,7 @@ function renderZone(){
   if(keep!=null&&sc)sc.scrollTop=keep;
   peintTraits();
   box.querySelectorAll('.v-img[data-photo]').forEach(signerPhoto);
-  SH.apres(box);
+  SH.apres(box); SH.peindre();      /* le bouton de mode suit la vue : il dit toujours où il mène */
   window.__totehm_zone={version:BUILD, vue:view, session:!!me, arbre_charge:tripsLoaded, shorts:SH.etat(), fichiers:EMEDIA.items.length,
     habitudes:(state.habits||[]).length, objectifs:TRIPS.length, repulsions:REPS.length,
     lecons:TEACH.length, visions:VIS.length, images:VISIMG.size, cloths:[...ECLOTHS.par.values()].reduce((a,x)=>a+x.total,0),
@@ -6628,15 +6943,21 @@ function vueHabitude(x,k){
       ts.map(t=>String(t.id)), TRIPS.map(t=>({id:t.id,txt:t.text})), 'a new objective','o') : '';
   const pkR = (ouverte&&pkOn('lien','r',x.id)) ? lienPicker('r',x.id,
       rs.map(r=>String(r.id)), REPS.map(r=>({id:r.id,txt:r.text})), 'a new repulsion','r') : '';
-  /* SPACES sous TRIGGER : ce que l'habitude a VÉCU (ou va vivre) dehors. */
+  /* ⚠️ 16/10 · PAS D'ICÔNE DANS UNE LISTE (Wah : « [Add a media] c'est mieux, et [Add a spot] pour le
+     figher club, on a supprimé les spaces »). Deux boutons qui DISENT ce qu'ils font, et le groupe
+     SPACES est parti avec les spaces — il ne reste que les SPOTS. `[Add a spot]` s'ouvre DANS la boîte,
+     dans le prolongement de la Habit : plus de détour par une autre page. */
   const minis = groupe('why',gO,pkO) + groupe('trigger',gR,pkR)
-    + (ouverte&&spaces.length?groupe(nSp>3?'SPACES · 3 of '+nSp:'SPACES',spaces.map(miniSpace).join('')):'')
     + (ouverte&&spots.length?groupe(nSt>3?'SPOTS · 3 of '+nSt:'SPOTS',spots.map(miniSpace).join('')):'')
-    + (ouverte&&!RO?'<button type="button" class="dash" data-newspace="'+esc(srv(x))+'" aria-label="A space">+ <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor"/></svg></button><button type="button" class="dash" data-newspot="'+esc(srv(x))+'" aria-label="A spot">+ <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></svg></button>':'');
+    + (ouverte&&!RO?'<button type="button" class="dash'+(pkOn('spotnew','h',x.id)?' on':'')+'" data-pk="spotnew:h:'+esc(String(x.id))+'">'
+        +(pkOn('spotnew','h',x.id)?'close':'Add a spot')+'</button>':'');
+  /* ⚠️ `[Add a media]` vit dans le groupe `files` (`fichiersHTML`), pas ici : deux boutons pour le même
+     geste dans la même boîte, c'est un bouton de trop. Ici, le geste du Club : `[Add a spot]`. */
   let haut='', bas='';
   if(ouverte&&pkOn('int','h',x.id))  haut=intPicker(x,'h');
   if(ouverte&&pkOn('freq','h',x.id)) haut=freqPicker(x);
   if(ouverte&&pkOn('spot','h',x.id)) haut=spotPicker(x);
+  if(ouverte&&!RO&&pkOn('spotnew','h',x.id)) bas=spotNeuf(x);
   return ligne(boiteHTML({kind:'h',id:x.id,titre:x.t,unit,minis,ouverte,haut,bas,tue:'Delete habit'}),
     ouverte?'open':'', intCols(x), k+1, x.id, k===0, k===NB-1);
 }
@@ -7129,7 +7450,7 @@ function cable(box){
        qui les traite existait et n'était jamais atteint. */
     const el=e.target.closest('[data-fint],[data-ffq],[data-fclear],[data-fx],'
       +'[data-open],[data-add],[data-x],[data-pk],[data-int],[data-mv],[data-go],'
-      +'[data-fq],[data-lien],[data-unlink],[data-nodate],[data-kill],[data-space],[data-newspace],[data-newspot],[data-cloth],[data-totehmize],[data-zoom],[data-copy],[data-vimg],[data-vimg-x],[data-cap],[data-emo],[data-emx]');
+      +'[data-fq],[data-lien],[data-unlink],[data-nodate],[data-kill],[data-space],[data-spotgo],[data-cloth],[data-totehmize],[data-zoom],[data-copy],[data-vimg],[data-vimg-x],[data-cap],[data-emo],[data-emx]');
     if(!el)return;
     const d=el.dataset;
     if(d.vimg){ e.stopPropagation(); const id=d.vimg, f=document.createElement('input'); f.type='file'; f.accept='image/*';
@@ -7145,11 +7466,11 @@ function cable(box){
       const col=el.closest('.v-col'); if(col)col.classList.toggle('is-zoom',on);
       el.setAttribute('aria-pressed',String(on)); el.setAttribute('aria-label',on?'Smaller':'Bigger');
       el.querySelector('path')?.setAttribute('d','M15 15l6 6M7.5 10h5'+(on?'':'M10 7.5v5')); return; }
-    /* 12/10 — un space ou un spot s'ouvre SUR PLACE, dans la couche (même en lecture) ; « + a space »
-       ouvre la caméra de SPACE sur CETTE Habit, « + a spot » le plan du Club sur CETTE Habit. */
+    /* 12/10 — un spot s'ouvre SUR PLACE, dans la couche (même en lecture).
+       16/10 : « + a space » est parti avec les spaces, et ANNONCER un spot ne quitte plus la boîte
+       (`spotnew`, plus bas) — le Club reste la vitrine, COM reste l'atelier. */
     if(d.space){ e.stopPropagation(); XO.ouvrir(d.format==='spot'?'club':'space','spot='+encodeURIComponent(d.space)); return; }
-    if(d.newspace!==undefined){ e.stopPropagation(); if(!RO) XO.ouvrir('space',new URLSearchParams({v:'cam',...(d.newspace?{habit:d.newspace}:{})}).toString()); return; }
-    if(d.newspot!==undefined){ e.stopPropagation(); if(!RO) XO.ouvrir('club',new URLSearchParams({v:'plan',...(d.newspot?{habit:d.newspot}:{})}).toString()); return; }
+    if(d.spotgo!==undefined){ e.stopPropagation(); if(!RO) annoncerSpot(d.spotgo); return; }
     /* Un Cloth s'ouvre sur sa page Decode ; « + totehmize » part avec CET élément. */
     if(d.cloth){ e.stopPropagation(); ssoVersDomaine(sb,'boutique','https://www.higher.boutique/?decode='+encodeURIComponent(d.cloth)); return; }
     if(d.totehmize){ e.stopPropagation(); if(!RO) ssoVersDomaine(sb,'boutique','https://www.higher.boutique/streetwear?wear='+encodeURIComponent(d.totehmize)); return; }
@@ -7649,7 +7970,9 @@ if(location.hash === '#settings'){
    (`totehmbot_access`, `ssoVersDomaine`) restent utilisables pour les
    câblages équivalents dans le tiroir membre. */
 /* La croix : le Totehm se replie et l'atterrissage revient. */
-$('fold-x').onclick=()=>foldToGate();
+/* La croix : elle sort d'abord du MODE (shorts, radar), puis du Totehm. « Fermer ou revenir en mode
+   liste » (Wah, 16/10) : les deux sont le même bouton, dans cet ordre. */
+$('fold-x').onclick=()=>{ if(SH.liste()) return; foldToGate(); };
 
 /* ══ GESTE VERTICAL — SUPPRIMÉ · 07/09/2026 ══════════════════════════
    Les deux gestes de scroll — vers le haut au sommet pour ouvrir le
@@ -8059,7 +8382,10 @@ window.addEventListener('keydown',(e)=>{
     /* Les modales se ferment par leurs propres écouteurs : on ne replie
        le Totehm que si l'écran est nu. */
     if(!$('filter-modal').classList.contains('hide')||!$('habit-peek').classList.contains('hide'))return;
-    if(false)return;
+    /* ⚠️ 16/10 · SORTIR D'UN MODE AVANT DE SORTIR DU TOTEHM (Wah : « pour revenir dans une vue, il faut
+       fermer ou revenir en mode liste où le joystick reapparaît »). Entré en shorts ou au radar, Échap
+       ramène à la LISTE — un geste, garanti, sans chercher le bon nombre de taps sur le bouton de mode. */
+    if(SH.mode()!=='list'){ e.preventDefault(); SH.liste(); return; }
     if(hOpen()){showBook(false);showNext(false);return;}
     foldToGate();return;
   }
@@ -8367,7 +8693,10 @@ function connPaint(){
      son nom. `body.member` le montre ou le cache (CSS). */
   const label=(myProfile&&myProfile.pseudo)||'';
   const av=avatarOk(LAND&&LAND.avatar);
-  $('conn-bar').innerHTML=(av?'<span class="lv-av" style="background-image:url('+av+')"></span>':'')+esc(label)+(myHigher?HI_SVG:'');
+  /* En haut au centre : LE NOM, et le badge Higher s'il est payé. Pas de vignette (elle vit au verso),
+     pas de point : le moins de choses possible autour du nom. */
+  $('conn-bar').innerHTML=esc(label)+(myHigher?HI_SVG:'');
+  $('conn-bar').setAttribute('aria-label',label?label+' · my member space':'my member space');
   document.body.classList.toggle('member',inscrit());
   paintAsteroid();
 }
@@ -8384,12 +8713,10 @@ function connPaint(){
 function paintAsteroid(){
   const el=$('ast-name'); if(!el) return;
   const p=((me&&myProfile&&myProfile.pseudo)||'').trim();
-  const sig=$('ast-sig');
-  if(sig){ sig.textContent=p; sig.style.fontSize='';
-    const mx=sig.clientWidth; for(let fs=6.5; p&&mx&&sig.scrollWidth>mx&&fs>4.5;){ fs-=.5; sig.style.fontSize=fs+'px'; } }
   /* 15/10 — le verso porte le nom et son panneau ; déplié, le nom est le haut de mes réglages. */
   const sn=$('self-name'); if(sn) sn.textContent=p;
-  const niv=(LAND&&LAND.visibility)||'private';
+  /* 16/10 : trois niveaux. Une donnée `public` d'avant se lit comme FIGHER CLUB (la base l'a déjà migrée). */
+  const niv=(v=>v==='public'?'figher':v)((LAND&&LAND.visibility)||'private');
   document.querySelectorAll('#ast-panel i').forEach(i=>i.classList.toggle('is-on',i.dataset.l===niv));
   const cur=document.querySelector('#ast-verso .ast-slider'); if(cur) cur.style.setProperty('--p',LAND&&LAND.offer&&LAND.offer.open?'100%':'0%');
   el.classList.toggle('is-name',!!p);
@@ -8601,8 +8928,8 @@ function paintMe(){
   const L=LAND||{}, av=avatarOk(L.avatar), b=$('mw-avatar'), h=L.higher||{};
   b.style.backgroundImage=av?'url('+av+')':''; b.textContent=av?'':'picture';
   const btn=$('mw-higher'), hint=$('mw-higher-hint'), acts=$('mw-higher-acts');
-  if(h.comp){ btn.textContent='My Higher subscription'; hint.textContent='offered · TotehmSM is open'; acts.innerHTML=''; }
-  else if(h.active){ btn.textContent='My Higher subscription'; hint.textContent=(h.ending?'ends ':'renews ')+jourFmt(h.until)+' · '+prixMois(h);
+  if(h.comp){ btn.textContent='My Higher'; hint.textContent='offered · my Higher Self is open'; acts.innerHTML=''; }
+  else if(h.active){ btn.textContent='My Higher'; hint.textContent=(h.ending?'ends ':'renews ')+jourFmt(h.until)+' · '+prixMois(h);
     acts.innerHTML='<button class="mw-sub-act" type="button" data-hsub="'+(h.ending?'resume':'cancel')+'">'+(h.ending?'Keep it':'Stop at the end of the month')+'</button>'; }
   else { btn.textContent='Get Higher Self'; hint.textContent='TotehmSM · '+prixMois(h); acts.innerHTML=''; }
   const n=x=>Number(x)||0;
@@ -8660,60 +8987,12 @@ memberPaint=function(){
   _mpOrig();
   if(me&&myProfile&&typeof renderSettings==='function')renderSettings();
 };
-/* COM retrieves only the member's own private/shared spaces. Detail and video stay on SPACE. */
-const MYSPACES={seq:0,rows:[],more:false,busy:false,inert:[]};
-const spacesState=s=>{const start=Date.parse(s.starts_at),end=Date.parse(s.ends_at),now=Date.now();return start>now?'I WILL BE HERE':now<end?'I AM HERE':'I WAS THERE';};
-function spacesClose(){
- MYSPACES.seq++;MYSPACES.busy=false;$('myspaces').classList.remove('is-open');
- MYSPACES.inert.forEach(([e,was])=>e.inert=was);MYSPACES.inert=[];
- if(me){ ouvrirCompte(()=>{ try{ $('myspaces-open').focus(); }catch(_){} }); }
-}
-async function spacesLoad(more=false){
- if(!me || MYSPACES.busy)return;MYSPACES.busy=true;const seq=++MYSPACES.seq,uid=me.id,last=more?MYSPACES.rows.at(-1):null;
- $('myspaces-note').textContent='Reading my spaces…';$('myspaces-more').disabled=true;
- try{
-  const {data,error}=await sb.rpc('my_spaces',{p_before:last?.starts_at || null,p_before_id:last?.id || null,p_limit:30});
-  if(seq!==MYSPACES.seq || me?.id!==uid || !$('myspaces').classList.contains('is-open'))return;
-  if(error || !data?.ok){if(error)console.error('[my_spaces]',error.message);$('myspaces-note').textContent='My spaces could not load. Reopen this window to try again.';return;}
-  MYSPACES.rows=more?MYSPACES.rows.concat(data.spaces || []):data.spaces || [];MYSPACES.more=!!data.more;
-  $('myspaces-list').innerHTML=MYSPACES.rows.map(x=>{const date=new Date(x.starts_at),when=Number.isNaN(date.getTime())?'':date.toLocaleString(undefined,{dateStyle:'medium',timeStyle:'short'});return '<div class="my-space" data-row="'+esc(x.id)+'"><button class="my-space-open" type="button" data-space="'+esc(x.id)+'"><span class="my-space-habit">'+esc(x.habit)+'</span><span class="my-space-state">'+spacesState(x)+' · '+(x.visibility==='private'?'PRIVATE':'SHARED')+'</span><span>'+esc(when)+'</span>'+(x.place || x.city?'<span>'+esc(x.place || x.city)+'</span>':'')+'<span>Open in SPACE ↗</span></button><button class="my-space-del" type="button" data-del="'+esc(x.id)+'" aria-label="Delete this space">Delete</button></div>';}).join('');
-  $('myspaces-more').classList.toggle('hide',!MYSPACES.more);$('myspaces-note').textContent=MYSPACES.rows.length?'':'No spaces yet. Record your first one on SPACE.';
- }catch(_){if(seq===MYSPACES.seq)$('myspaces-note').textContent='My spaces could not load. Reopen this window to try again.';}
- finally{if(seq===MYSPACES.seq){MYSPACES.busy=false;$('myspaces-more').disabled=false;}}
-}
-$('myspaces-open').onclick=()=>{
- if(!me)return;MYSPACES.rows=[];MYSPACES.more=false;$('myspaces-list').replaceChildren();$('myspaces-more').classList.add('hide');$('myspaces-name').textContent=myProfile?.pseudo || '';
- $('member-window').classList.remove('show');$('myspaces').classList.add('is-open');
- MYSPACES.inert=['gate','stage','conn-bar','member-window'].map(id=>$(id)).filter(Boolean).map(e=>[e,e.inert]);MYSPACES.inert.forEach(([e])=>e.inert=true);
- $('myspaces-close').focus();spacesLoad();
-};
-$('myspaces-close').onclick=spacesClose;$('myspaces-more').onclick=()=>spacesLoad(true);
-$('myspaces-open-space').onclick=()=>XO.ouvrir('space','v=cam');
-/* SUPPRIMER UN SPACE · 06/10/2026 — deux taps (Delete → Delete for good), puis
-   `space-delete` : le serveur décide sous MA session, efface le média, et le
-   space disparaît partout (historique, habits, SPACE). */
-async function spaceDelete(id){
- const {data:{session}}=await sb.auth.getSession();if(!session)return {ok:false,error:'signin'};
- try{
-  const r=await fetch('https://abujjbkbbiumxrokozph.supabase.co/functions/v1/space-delete',{method:'POST',
-   headers:{'content-type':'application/json',apikey:SB_ANON,authorization:'Bearer '+session.access_token},body:JSON.stringify({spot:id})});
-  const j=await r.json().catch(()=>({}));if(!r.ok)console.error('[space-delete]',r.status,j.error||'');return r.ok?{ok:true}:{ok:false,error:j.error||'try_again'};
- }catch(e){console.error('[space-delete]',e?.message||e);return {ok:false,error:'try_again'};}
-}
-$('myspaces-list').onclick=async e=>{
- const d=e.target.closest('[data-del]');
- if(d){
-  if(!d.classList.contains('is-arm')){$('myspaces-list').querySelectorAll('.my-space-del.is-arm').forEach(x=>{x.classList.remove('is-arm');x.textContent='Delete';});d.classList.add('is-arm');d.textContent='Delete for good';return;}
-  d.disabled=true;d.textContent='Deleting…';const id=d.dataset.del,uid=me?.id;
-  const r=await spaceDelete(id);if(uid!==me?.id)return;
-  if(!r.ok){d.disabled=false;d.classList.remove('is-arm');d.textContent='Delete';$('myspaces-note').textContent=r.error==='not_found'?'This space is already gone.':'Not deleted. Try again.';return;}
-  MYSPACES.rows=MYSPACES.rows.filter(x=>String(x.id)!==id);d.closest('.my-space')?.remove();
-  $('myspaces-note').textContent=MYSPACES.rows.length?'Space deleted.':'No spaces yet. Record your first one on SPACE.';
-  loadHabitSpaces();return;
- }
- const b=e.target.closest('[data-space]');if(b)XO.ouvrir('space','spot='+encodeURIComponent(b.dataset.space));
-};
-window.addEventListener('keydown',e=>{if(!$('myspaces').classList.contains('is-open'))return;e.stopImmediatePropagation();if(e.key==='Escape'){e.preventDefault();spacesClose();return;}if(e.key==='Tab'){const f=[...$('myspaces').querySelectorAll('button:not(:disabled),a[href],input')].filter(x=>x.getClientRects().length);const i=f.indexOf(document.activeElement);if(e.shiftKey && i<=0 || !e.shiftKey && (i<0 || i===f.length-1)){e.preventDefault();(e.shiftKey?f.at(-1):f[0]).focus();}}},true);
+/* ⚠️ MY TOTEHM SPACES EST PARTI LE 16/10. Wah : « pas besoin de My Totehm Spaces (on a supprimé tous
+   les spaces, on garde seulement les spots) ». Le module `MYSPACES`, sa fenêtre, son bouton du menu, sa
+   suppression (`space-delete`) et son piège à focus sont retirés ENSEMBLE — balisage, CSS et câblage :
+   un `$('id')` sur un nœud absent lève à l'évaluation du module, donc page blanche. Ce qui reste du
+   serveur (`my_spaces`, `space-delete`) n'est plus appelé par COM ; les SPOTS, eux, vivent dans les
+   Habit Boxes (`habit_spaces.spots`) et se créent dans le prolongement de la Habit. */
 $('mw-close').onclick=()=>{clearTimeout(mwNameTimer);closeMember();};
 /* Mes souscriptions : la console s'ouvre DANS la page (couche XO), même origine, même session. */
 $('mw-subs').onclick=()=>{ XO.ouvrir('console'); };
@@ -8871,7 +9150,6 @@ $('mw-save-code').addEventListener('input',async()=>{
 let sesSeq=0;
 function quitter(){
   roSeq++; HSPACES.seq++; HSPACES.par=new Map(); ECLOTHS.seq++; ECLOTHS.par=new Map(); visImgSeq++; VISIMG.clear(); ZOOM.clear(); COPIES.clear();
-  if($('myspaces').classList.contains('is-open')){MYSPACES.seq++;MYSPACES.busy=false;MYSPACES.rows=[];$('myspaces-list').replaceChildren();$('myspaces-name').textContent='';$('myspaces').classList.remove('is-open');MYSPACES.inert.forEach(([e,was])=>e.inert=was);MYSPACES.inert=[];}
   state={habits:[],vis:'private'}; myProfile=null; cloudMode=false; mySub=null; LAND=null; if(lvQuitter) lvQuitter();
   EMEDIA.seq++; EMEDIA.items=[]; EMEDIA.par=new Map(); EMEDIA.charge=false; SIGNE_EM.clear(); SH.vider(); CAP.fermer();
   TRIPS=[]; REPS=[]; TEACH=[]; VIS=[]; OBJ={}; tripsLoaded=false;
@@ -8908,7 +9186,6 @@ async function sessionLoad(){
   if(inscrit()&&!RO){loadTrips(true);loadHabitSpaces();loadElementCloths();loadVisionImages();loadElementMedia();}
   garde();
   if(n===sesSeq&&lvRefresh) lvRefresh();
-  if(n===sesSeq&&inscrit()&&!RO&&openRequestedSpaces){openRequestedSpaces=false;$('myspaces-open').click();}
 }
 /* LA GARDE : inscrit, la porte se franchit ; pas inscrit et Totehm
    ouvert (un `#in` avec une session sans nom, un jeton expiré en
@@ -9992,7 +10269,13 @@ window.addEventListener('pageshow',e=>{
     slo.addEventListener('click',()=>{ if(vue==='h') getHigher(); });
     { const b=$('gate-mouth'); if(b) b.addEventListener('click',()=>{ if(vue==='h') getHigher(); }); }
     PAPIER.surVerso=()=>{ if(vue==='c'&&mode==='mine') ouvrirVerso(); };
-    surReglages=()=>{ peindreCarte(); CREA.charger(); };
+    /* ⚠️ 16/10 · RETOURNER LE PAPIER AFFICHE LE MENU MEMBRE. Wah : « quand tu retournes le totehm verso,
+       c'est le menu membre qui s'affiche ». Donc il est là d'emblée, sans second geste : mes réglages,
+       un filet, puis mon compte — dans cet ordre, l'un sous l'autre, zéro blabla. */
+    surReglages=()=>{ peindreCarte(); CREA.charger();
+      if(me){ $('member-window').classList.add('show');
+              if(typeof memberPaint==='function') memberPaint();
+              if(typeof paintMe==='function') paintMe(); } };
     /* L'espace membre (hors de ce module) ouvre ou ferme mes réglages par ici. */
     lvReglages={ouvrir:()=>versMine(()=>ouvrirVerso()), fermer:f=>{ if(sOpen) fermerVerso(f); else f(); }};
     function reset(){
@@ -10015,7 +10298,7 @@ window.addEventListener('pageshow',e=>{
     /* ── LES GESTES : flèches ↑ ↓ et Échap, trackpad et molette, doigt, deux chevrons — sur tout l'atterrissage,
        jamais pendant mes réglages, la porte, l'espace membre ou une couche. ── */
     const libre=()=>body.classList.contains('gate')&&!body.classList.contains('entered')&&!body.classList.contains('is-door')
-      &&!sOpen&&!sMoving&&!$('member-window').classList.contains('show')&&!$('myspaces').classList.contains('is-open')&&!body.classList.contains('is-xo');
+      &&!sOpen&&!sMoving&&!$('member-window').classList.contains('show')&&!body.classList.contains('is-xo');
     const saisie=t=>!!(t&&(t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.tagName==='SELECT'||t.isContentEditable));
     const LISTES='#lv-thread,#gx-res';
     const filDefile=(t,dy)=>{ if(!t||!t.closest||!t.closest(LISTES)) return false;
@@ -10205,11 +10488,35 @@ window.addEventListener('pageshow',e=>{
         const a=arm*2.0944+r*3.3+(r2-.5)*.55;
         return {u:Math.cos(a)*r, v:Math.sin(a)*r, w:(r3-.5)*.16*(1-r*.6)};
       }
+      /* ⚠️ UNE MULTITUDE DE DOS DE PAPIER (Wah, 16/10) : « ça doit être une multitude de background.svg,
+         représentant alors une étoile ». Donc DEUX sortes de carrés, le même sprite pour les deux :
+           • les VRAIS Totehms (`totehm_galaxy`) — ils portent un nom, on les vise, on plonge dedans ;
+           • les carrés de fond, sans nom et sans clic — ils font de la galaxie une galaxie.
+         Un nom cherché qui n'est pas dans l'échantillon PREND un carré de fond tiré au hasard : l'étoile
+         était déjà là, elle se nomme. C'est exactement « tu tires au hasard une étoile-background ». */
+      const FOND=132;
+      /* ⚠️ UN VRAI TOTEHM NE SE RECONNAÎT PAS À SA PLACE : les vrais sont RÉPARTIS sur toute la spirale,
+         pas groupés au cœur — sinon la galaxie dirait « les douze du milieu sont les vrais ». */
       function semer(list){
-        const N=list.length;
-        stars=list.filter(t=>t&&t.pseudo).map((t,i)=>{ const g=alea(hash(t.pseudo));
-          return Object.assign({pseudo:String(t.pseudo), k:String(t.pseudo).toLowerCase()}, dispose(i,N,g(),g(),g())); });
-        etat.etoiles=stars.length;
+        const vrais=list.filter(t=>t&&t.pseudo);
+        const N=Math.max(FOND,vrais.length);
+        const pas=Math.max(1,Math.floor(N/Math.max(1,vrais.length)));
+        const pris=new Set();
+        stars=vrais.map((t,i)=>{ const g=alea(hash(t.pseudo)), slot=Math.min(N-1,i*pas); pris.add(slot);
+          return Object.assign({pseudo:String(t.pseudo), k:String(t.pseudo).toLowerCase()}, dispose(slot,N,g(),g(),g())); });
+        for(let i=0;i<N;i++){ if(pris.has(i)) continue; const g=alea(hash('fond:'+i));
+          stars.push(Object.assign({pseudo:null, k:null, fond:true}, dispose(i,N,g(),g(),g()))); }
+        etat.etoiles=stars.filter(x=>x.pseudo).length; etat.fond=stars.length-etat.etoiles;
+      }
+      /* Le carré de fond le plus proche du centre qui n'a pas encore de nom : l'étoile tirée au hasard
+         (au hasard de SA place, pas d'un tirage qui changerait à chaque frappe — un nom = une étoile). */
+      function tirer(p){
+        const libres=stars.filter(x=>x.fond&&!x.pseudo);
+        if(!libres.length) return null;
+        const st=libres[hash('tire:'+String(p).toLowerCase())%libres.length];
+        st.pseudo=String(p); st.k=String(p).toLowerCase(); st.fond=false;
+        etat.etoiles=stars.filter(x=>x.pseudo).length; etat.fond=stars.length-etat.etoiles;
+        return st;
       }
       /* ⚠️ LA GALAXIE NE MONTRE QUE LE DOS DU PAPIER (Wah, 15/10) : le carré navy perforé `#gl-bg`, SEUL —
          ni rail, ni T, ni wordmark, et surtout aucun nom. Le nom d'un Totehm vit au VERSO : ici il n'apparaît
@@ -10229,7 +10536,11 @@ window.addEventListener('pageshow',e=>{
           img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">'+inner+'</svg>');
         }catch(e){ console.error('[galaxy] sprite',e?.message||e); }
       }
-      function geo(){ const c=PAPIER.chez(), w=W(), h=H(); G.cx=w/2; G.cy=c?c.y:h*.4; G.R=Math.max(120,Math.min(w*.46,h*.5,520)); }
+      /* ⚠️ LA GALAXIE A SON PROPRE CENTRE, et il ne bouge pas. Il suivait le papier — or en Others le papier
+         est rentré dans [Mine] : le centre descendait avec lui, et la recherche avec. Un repère fixe
+         (40 % de la hauteur) : la recherche est au milieu, et l'étoile trouvée arrive exactement là. */
+      function geo(){ const w=W(), h=H(); G.cx=w/2; G.cy=Math.round(h*.40); G.R=Math.max(120,Math.min(w*.46,h*.5,520));
+        try{ document.documentElement.style.setProperty('--gy',G.cy+'px'); }catch(_){} }
       function proj(p,sp){
         const c=Math.cos(rot), s=Math.sin(rot), x=(p.u*c-p.v*s)*sp, y=(p.u*s+p.v*c)*sp, w=p.w*sp;
         const yy=y*CT-w*ST, z=y*ST+w*CT, k=1/(1+.32*z);
@@ -10268,9 +10579,9 @@ window.addEventListener('pageshow',e=>{
         for(const st of stars) st.P=camera(proj(st,sp),e);
         const L=stars.slice().sort((a,b)=>b.P.z-a.P.z);
         for(const st of L){
-          const P=st.P, cible=anim&&anim.st===st, vise=st===hover||st===sel||cible, match=!filtre||filtre.has(st.k);
-          let a=I*(.55+.45*(1-(P.z+1)/2))*(match?1:.2); if(anim&&!cible) a*=1-e;
-          const sz=base*P.k*(vise?1.5:1)*(filtre&&match?1.45:1); st.sz=sz;
+          const P=st.P, cible=anim&&anim.st===st, vise=st===hover||st===sel||cible, match=!filtre||(st.k&&filtre.has(st.k));
+          let a=I*(.55+.45*(1-(P.z+1)/2))*(match?1:.2)*(st.fond?.42:1); if(anim&&!cible) a*=1-e;
+          const sz=base*P.k*(st.fond?.52:1)*(vise?1.5:1)*(filtre&&match?1.45:1); st.sz=sz;
           if(a<.02) continue;
           ctx.globalAlpha=Math.min(1,a);
           if(sprite) ctx.drawImage(sprite,P.x-sz/2,P.y-sz/2,sz,sz);
@@ -10283,7 +10594,7 @@ window.addEventListener('pageshow',e=>{
          se caler EN PLEIN milieu — le carré navy et son nom finissent à la place du papier. */
       function peindreTip(){
         const st=(anim&&anim.st)||hover||sel;
-        if(!st||!st.P||!on){ if(tipPour){ tipPour=null; tip.classList.remove('is-on','is-dedans'); tip.setAttribute('aria-hidden','true'); tip.tabIndex=-1; } return; }
+        if(!st||!st.pseudo||!st.P||!on){ if(tipPour){ tipPour=null; tip.classList.remove('is-on','is-dedans'); tip.setAttribute('aria-hidden','true'); tip.tabIndex=-1; } return; }
         if(tipPour!==st){ tipPour=st; tipN.textContent=st.pseudo; tip.setAttribute('aria-label','Open '+st.pseudo);
           tip.classList.add('is-on'); tip.setAttribute('aria-hidden','false'); tip.tabIndex=0; }
         const base=Math.max(26,Math.min(44,G.R*.13)), sz=st.sz||base;
@@ -10295,7 +10606,8 @@ window.addEventListener('pageshow',e=>{
       }
       function viser(x,y,marge){
         let best=null, bd=1e9;
-        for(const st of stars){ const P=st.P; if(!P) continue; const r=(st.sz||20)/2+marge, d=Math.hypot(P.x-x,P.y-y); if(d<r&&d<bd){ bd=d; best=st; } }
+        /* Un carré de fond n'est pas un Totehm : il ne se survole pas, il ne s'ouvre pas. */
+        for(const st of stars){ const P=st.P; if(!P||!st.pseudo) continue; const r=(st.sz||20)/2+marge, d=Math.hypot(P.x-x,P.y-y); if(d<r&&d<bd){ bd=d; best=st; } }
         return best;
       }
       cv.addEventListener('pointerdown',e=>{
@@ -10324,20 +10636,25 @@ window.addEventListener('pageshow',e=>{
       cv.addEventListener('pointerup',lacher); cv.addEventListener('pointercancel',lacher);
       cv.addEventListener('pointerleave',()=>{ if(hover){ hover=null; cv.style.cursor=''; kick(); } });
       tip.addEventListener('click',()=>{ const st=sel||hover; if(st) ouvrirEtoile(st); });
+      /* ⚠️ ZÉRO SAUT, ZÉRO FRICTION (Wah, 16/10). On ne navigue plus : l'étoile vient au centre, son nom
+         se cale dessus, et l'univers `/@nom` s'ouvre DANS la couche `XO` (même origine, même session).
+         Le cadre se charge pendant la plongée ; à la fermeture, `revenir()` rejoue le geste à l'envers.
+         Le marqueur `sessionStorage` reste : un rechargement pendant la lecture rend Others et le nom tapé. */
       function ouvrirEtoile(st){
-        if(anim||!on) return;
+        if(anim||!on||!st||!st.pseudo) return;
         etat.choix++; sel=st; hover=null;
-        const P=st.P||{x:W()/2,y:G.cy};
-        try{ sessionStorage.setItem(CLE,JSON.stringify({q:q.value||'',p:st.pseudo,t:Date.now()})); }catch(_){}
-        const url='/@'+encodeURIComponent(st.pseudo);
+        const P=st.P||{x:W()/2,y:G.cy}, nom=st.pseudo;
+        try{ q.blur(); }catch(_){}
+        try{ sessionStorage.setItem(CLE,JSON.stringify({q:q.value||'',p:nom,t:Date.now()})); }catch(_){}
+        document.body.classList.add('gx-dive');
+        try{ XO.prefetch(nom); }catch(_){}
         anim={t0:performance.now(), D:RMQ.matches?1:640, s:{x:P.x,y:P.y}, st, dir:1, e:0,
-              fin:()=>{ etat.ouvertures++;
-                        if(ordi()){ window.open(url,'_blank','noopener'); setTimeout(revenir,160); }
-                        else location.href=url; }};
+              fin:()=>{ etat.ouvertures++; XO.univers(nom,revenir); }};
         kick();
       }
-      /* Ressortir de l'étoile (onglet ouvert, ou revenu par « précédent »). */
+      /* Ressortir de l'étoile : la même course, dir = −1. */
       function revenir(){
+        document.body.classList.remove('gx-dive');
         if(!anim) return;
         anim.t0=performance.now(); anim.dir=-1; anim.D=RMQ.matches?1:520; anim.fait=false; anim.fin=()=>{ etat.retours++; sel=null; };
         kick();
@@ -10346,20 +10663,25 @@ window.addEventListener('pageshow',e=>{
          plonge dans son étoile (un TOTEHM hors de la galaxie y entre, au premier plan). */
       function choisir(p){
         const k=String(p||'').toLowerCase(); if(!k) return;
-        let st=stars.find(s=>s.k===k);
-        if(!st){ st={pseudo:String(p), k, u:0, v:-.08, w:-.5}; st.P=proj(st,1); stars.push(st); etat.etoiles=stars.length; }
-        try{ q.blur(); }catch(_){}
+        /* Un nom qui existe mais qui n'est pas dans l'échantillon prend un dos de papier tiré au hasard. */
+        const st=stars.find(s=>s.k===k)||tirer(p);
+        if(!st) return;
+        if(!st.P) st.P=proj(st,1);
         ouvrirEtoile(st);
       }
       const ctl=NameSearch({input:q, results:$('gx-res'), note:$('gx-note'), vide:true, href:p=>'/@'+encodeURIComponent(p), nouvel:ordi,
         /* Taper un nom N'OUVRE PAS une liste à part : la galaxie elle-même répond — les autres s'éteignent,
            le trouvé grandit et porte son nom en Coral. Un seul trouvé = il est déjà désigné. */
         onRows:(rows,qq)=>{ filtre=qq?new Set(rows.map(r=>String(r.pseudo).toLowerCase())):null;
-          const seuls=filtre&&filtre.size===1?stars.find(st=>filtre.has(st.k)):null;
-          if(seuls) sel=seuls; else if(!filtre||!sel||!filtre.has(sel.k)) sel=null;
+          /* Un seul nom trouvé : il est désigné. S'il n'a pas encore de carré, il en prend un (au hasard
+             de sa place, stable pour ce nom) — l'étoile s'allume pendant qu'on tape. */
+          let seuls=null;
+          if(filtre&&filtre.size===1){ const k=[...filtre][0];
+            seuls=stars.find(st=>st.k===k)||tirer(rows[0]&&rows[0].pseudo||k); }
+          if(seuls) sel=seuls; else if(!filtre||!sel||!sel.k||!filtre.has(sel.k)) sel=null;
           kick(); }, choisir});
       /* Les positions des étoiles, pour viser (des nombres, jamais un nom). */
-      window.__totehm_gx=()=>stars.filter(s=>s.P).map(s=>[Math.round(s.P.x),Math.round(s.P.y)]);
+      window.__totehm_gx=()=>stars.filter(s=>s.P&&s.pseudo).map(s=>[Math.round(s.P.x),Math.round(s.P.y)]);
       q.addEventListener('keydown',e=>{
         /* Entrée : on plonge dans le Totehm désigné — la galaxie n'a pas de liste à parcourir. */
         if(e.key==='Enter'){ const st=sel||(filtre?stars.find(x=>filtre.has(x.k)):null);
@@ -10384,6 +10706,7 @@ window.addEventListener('pageshow',e=>{
       }
       function fermer(vite){
         on=false; sel=null; hover=null; drag=null; anim=null; introCible=0; if(vite||RMQ.matches) intro=0;
+        document.body.classList.remove('gx-dive');
         peindreTip(); ctl.reset(); try{ q.blur(); }catch(_){} last=0; kick();
       }
       function pause(){ on=false; sel=null; hover=null; drag=null; peindreTip(); if(raf){ cancelAnimationFrame(raf); raf=0; } etat.anime=false; }
@@ -10394,7 +10717,7 @@ window.addEventListener('pageshow',e=>{
         if(!c||!c.p||Date.now()-(+c.t||0)>15*60*1000) return false;
         q.value=String(c.q||'').slice(0,24);
         choisirMode('others',null,true);
-        apres=()=>{ const st=stars.find(s=>s.k===String(c.p).toLowerCase()); if(!st||!on) return;
+        apres=()=>{ const st=stars.find(s=>s.k===String(c.p).toLowerCase())||tirer(c.p); if(!st||!on) return;
           st.P=proj(st,1); anim={t0:performance.now(), D:1, s:{x:st.P.x,y:st.P.y}, st, dir:1, e:1, fait:true}; sel=st; revenir(); };
         if(charge){ const f=apres; apres=null; f(); }
         return true;
@@ -10432,7 +10755,7 @@ window.addEventListener('pageshow',e=>{
       document.querySelector('#lv-card .lv-vis').classList.toggle('hide',g);
       $('lv-guest').classList.toggle('hide',!g);
       if(g){ $('lv-prog').classList.add('hide'); return; }
-      const v=(LAND&&LAND.visibility)||'private';
+      const v=(w=>w==='public'?'figher':w)((LAND&&LAND.visibility)||'private');
       document.querySelectorAll('[data-lvvis]').forEach(b=>{ const on=b.dataset.lvvis===v;
         b.classList.toggle('is-on',on); b.setAttribute('aria-checked',String(on)); });
       $('lv-prog').classList.toggle('hide',v==='private');
@@ -10742,6 +11065,11 @@ window.addEventListener('pageshow',e=>{
         history.replaceState(null,'',location.pathname);
         setTimeout(()=>XO.ouvrir(k==='spot'?'club':'space','spot='+encodeURIComponent(id)),0); } }
 
+    /* La page de vente de l'abonnement Higher renvoie ici quand il est déjà à moi (`?higher=open`). */
+    if(new URLSearchParams(location.search).get('higher')==='open'){
+      history.replaceState(null,'',location.pathname);
+      setTimeout(()=>aller('b'),400);
+    }
     /* Retour de Stripe (`?higher=paid`) : la Reflection, et l'attente du webhook. */
     if(new URLSearchParams(location.search).get('higher')==='paid'){
       history.replaceState(null,'',location.pathname);
@@ -10917,6 +11245,6 @@ window.addEventListener('pageshow',e=>{
   <input id="cap-f-file" type="file" accept="image/jpeg,image/png,image/webp,video/mp4,video/webm,video/quicktime,application/pdf,audio/mpeg,audio/mp4,audio/webm,audio/ogg,text/plain" hidden>
 </div>
 <!-- 12/10 : SPACE et le Club, servis par totehm.com, posés par-dessus le Totehm (`XO`). -->
-<div id="xo" aria-hidden="true"></div>
+<div id="xo" aria-hidden="true"><button id="xo-x" type="button" aria-label="Back to the galaxy">×</button></div>
 </body>
 </html>

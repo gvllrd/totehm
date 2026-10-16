@@ -1,5 +1,32 @@
 # TOTEHM · backend
 
+## 16/10/2026 — Club membership is three objects, and PUBLIC is gone
+
+**How to read who is a member.** One function, server side only:
+`select public._figher('<uuid>') -> member, needs;` — `member` is true when the Totehm carries **one habit, one
+objective and one repulsion** with text. `needs` lists what is missing (`["objective","repulsion"]`). `complete`
+still means the five views and is informative only. No page ever recomposes this rule.
+
+**How to read an audience.** Three levels: `private` · `figher` · `subscribers`. The `check` constraint still
+accepts `public` (dropping it needs a `drop`, which the cloud session cannot approve), so the rule lives in three
+places that each refuse to treat it as more open:
+```sql
+-- 1 · what is stored (the triggers normalise on every write, old writers included)
+select audience, count(*) from public.spot_plans group by 1;   -- expect: no 'public' row
+select audience, count(*) from public.totehms    group by 1;   -- expect: no 'public' row
+-- 2 · the rule itself (service_role only)
+select public._audience_ok('<owner>','public','<viewer>',false);  -- false: not a member
+select public._audience_listed('<owner>','public',null,false);    -- false: no session lists content
+-- 3 · the legacy 0,1° projection stays off
+select count(*) from public.spots where active or is_public;      -- expect: 0
+```
+**If a `public` row ever appears again**, something wrote to `audience` without passing the trigger (a direct
+`service_role` write): fix the writer, then `update … set audience='figher' where audience='public'`. Never relax
+the three helpers — they are the ceiling, not the floor.
+
+**What a signed-out visitor can still reach**, by design: names only (`totehm_galaxy`, `totehm_search`) and the
+sales page `/@name`. No space, no spot, no content. That is the acquisition surface; everything else needs a Totehm.
+
 ## 15/10/2026 (bis) — Telegram nudges follow each Habit's Time frequency
 
 **What changed.** `push_decision(user)` no longer ranks habits by a frozen list. A Habit is only due once

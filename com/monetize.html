@@ -128,6 +128,9 @@ footer a:hover{color:#fff}
 #menu:has(.cm-menu) .m-it{width:fit-content;align-self:center;text-align:center;background:none;color:#8a8a92;font-size:10px}
 #menu .cm-menu{margin:0 0 26px}
 .cm-close{position:fixed;top:14px;right:16px;z-index:2;background:none;border:0;padding:6px;cursor:pointer;font:400 10px 'Space Mono',monospace;letter-spacing:.12em;color:#b0b0b0}
+.mz-sim input[type=range]{width:min(100%,420px);accent-color:#9a9aa2}
+.mz-say{font:400 13px/1.6 'Space Mono',monospace;color:#b0b0b0;margin:10px 0 0}
+.mz-say b{color:#fff}
 #member-window .cm-menu{padding:0 0 22px}
 @media(hover:hover){.cm-action:hover{background:#2c2c32;color:#fff}.cm-close:hover,#menu:has(.cm-menu) .m-it:hover{color:#fff}}
 </style>
@@ -137,48 +140,58 @@ footer a:hover{color:#fff}
 <nav id="menu" aria-label="Member menu"></nav>
 
 <main>
+  <!-- ⚠️ 16/10 · REFAIT, FORME ET FOND (Wah : « il faut que tu revoies la page de vente de la creator economy
+       qui n'est pas bonne pour l'instant tant au niveau de la forme que du fond » · « l'abonnement Higher et la
+       creator economy doivent être visibles et largement compréhensibles par de l'innovation design et words :
+       le moins de mots possible avec le plus d'impact possible »).
+       Le fond : on ne vend plus « un abonnement » (ça se confondait avec l'abonnement Higher) — on vend
+       MONETIZE MY TOTEHM : des gens paient pour LIRE comment je construis. Trois chiffres, un curseur qui
+       calcule, trois pas. La forme : la grammaire du Totehm — des blocs pleins, pas de paragraphes. -->
   <section class="hero">
     <div style="display:flex;flex-direction:column;gap:18px">
       <div class="kick">Monetize my TOTEHM</div>
-      <h1>Your audience, inside your TOTEHM.</h1>
-      <p class="lead">Your followers subscribe to your TOTEHM for a year. They read how you build your life, read only, and see where you act when you share it. You set the price. You keep 80%.</p>
-      <div class="actions"><a class="btn is-main" data-setup href="/console">Set up my subscription</a><a class="btn" href="/totehm#in">Build my TOTEHM</a></div>
+      <h1>They pay to read how you build.</h1>
+      <p class="lead">Once a year. You set the price. You keep 80%.</p>
+      <div class="actions"><a class="btn is-main" data-setup href="/console">Set my price</a><a class="btn" href="/totehm#in">Build my TOTEHM</a></div>
     </div>
     <div class="paper" aria-hidden="true"><span class="tname" id="nm">you</span><span class="url" id="nm-url">totehm.com/@you</span></div>
   </section>
 
-  <section>
-    <h2>What a subscriber opens</h2>
-    <div class="gets">
-      <div class="get"><span class="croix" aria-hidden="true"><i class="c-t"></i><i class="c-w"></i><i class="c-h"></i><i class="c-v"></i><i class="c-r"></i></span>
-        <span><b>Your whole TOTEHM</b><p>habits · objectives · repulsions · vision · wisdom. Read only, as it grows. You stay the only one who writes.</p></span></div>
-      <div class="get"><span class="pt" aria-hidden="true"></span>
-        <span><b>Where you are, right now</b><p>the exact place of your shared spaces in SPACE, when you turn location on. With location off, your audience sees the city only.</p></span></div>
-      <div class="get"><span class="yr" aria-hidden="true">1×</span>
-        <span><b>One payment a year</b><p>your price, by Stripe. They stop when they want: it runs to the end of their year.</p></span></div>
-    </div>
-    <p class="fine">A subscription is not an invitation: it opens your TOTEHM and your shared places, never a meeting or your time. SOCIAL or SILENT says how you want to be approached.</p>
+  <!-- LE CALCUL, PAS LA PROMESSE : le membre bouge le curseur et lit SA part. De l'arithmétique, jamais
+       un revenu annoncé — un chiffre inventé sur une page de vente est une dette. -->
+  <section class="mz-sim">
+    <h2>What it pays</h2>
+    <input id="mz-p" type="range" min="300" max="20000" step="100" value="2400" aria-label="My yearly price">
+    <p class="mz-say" id="mz-say"></p>
+    <p class="fine">80% is yours, to the cent. Paid on the 1st, by IBAN or PayPal, above €25.</p>
   </section>
 
   <section>
-    <h2>What you keep</h2>
-    <div class="split"><div><b>80%</b><span>for you</span></div><div><b>20%</b><span>for TOTEHM</span></div></div>
-    <p class="fine">Paid on the 1st of each month, by IBAN or PayPal. Your earnings, subscribers and payouts live in your console.</p>
+    <h2>What a reader opens</h2>
+    <div class="gets">
+      <div class="get"><span class="croix" aria-hidden="true"><i class="c-t"></i><i class="c-w"></i><i class="c-h"></i><i class="c-v"></i><i class="c-r"></i></span>
+        <span><b>Your whole TOTEHM, read only</b><p>habits · objectives · repulsions · vision · my story. You stay the only one who writes.</p></span></div>
+      <div class="get"><span class="pt" aria-hidden="true"></span>
+        <span><b>Your spots</b><p>where you'll be, when you turn the point on. Off, they see the city.</p></span></div>
+      <div class="get"><span class="yr" aria-hidden="true">1×</span>
+        <span><b>One payment a year</b><p>they stop when they want — it runs to the end of their year.</p></span></div>
+    </div>
+    <p class="fine">Reading is not a meeting. A reader never gets your time, only what you wrote.</p>
   </section>
 
   <section>
     <h2>Three steps</h2>
     <ol class="steps">
-      <li><span><b>Set your yearly price</b><p>you choose it, per year. You can change it later.</p></span></li>
-      <li><span><b>Tell us where to pay you</b><p>an IBAN or a PayPal email. Never shown again on screen.</p></span></li>
-      <li><span><b>Open it and share your page</b><p>totehm.com/@yourname sells it for you. Copy the link or a ready-made post for your networks.</p></span></li>
+      <li><span><b>Your price</b><p>per year. Change it whenever.</p></span></li>
+      <li><span><b>Where to pay you</b><p>an IBAN or a PayPal email. Never shown on screen again.</p></span></li>
+      <li><span><b>Your page sells it</b><p>totehm.com/@yourname — copy the link, or the ready-made post.</p></span></li>
     </ol>
   </section>
 
   <section class="close">
-    <h2>Your TOTEHM. Your audience. Your price.</h2>
-    <div class="actions"><a class="btn is-main" data-setup href="/console">Set up my subscription</a></div>
-    <p class="fine">Higher Self · TotehmBot is a separate personal offer, never part of a subscription to a TOTEHM.</p>
+    <h2>Your TOTEHM. Your readers. Your price.</h2>
+    <div class="actions"><a class="btn is-main" data-setup href="/console">Set my price</a></div>
+    <p class="fine">[Higher] is a separate personal offer, never part of what a reader pays you.</p>
   </section>
 </main>
 <footer><a href="/terms" target="_blank" rel="noopener">Simple terms of use</a></footer>
@@ -199,18 +212,18 @@ function comMemberLinks(home = false, enabled = null) {
     item('<a class="cm-action" href="/search">Search a TOTEHM</a>', 'Turn it over') +
     item('<a class="cm-action" id="btn-get-higher" data-com-bridge="space" href="https://www.totehm.space/get_higher">Get ' + COM_HIGHER_BADGE + '</a>', 'Put it on your tongue') +
     item('<a class="cm-action" href="/higherself">Reflect with my TOTEHM</a>', 'Higher Self · TotehmBot') +
-    item(home ? '<button class="cm-action" id="myspaces-open" type="button">My TOTEHM spaces</button>' : '<a class="cm-action" href="/totehm?spaces=1">My TOTEHM spaces</a>', 'My TOTEHM, right now, right here · in SPACE') +
+    item('<a class="cm-action" href="/higher">' + COM_HIGHER_BADGE + '</a>', 'Every day · my habits in Telegram') +
     item('<a class="cm-action" id="wear-btn" data-com-bridge="boutique" href="https://www.higher.boutique/">Totehmize my cloth</a>', 'HIGHER BOUTIQUE') +
-    item('<a class="cm-action" data-com-monetize href="' + (enabled === false ? '/monetize' : '/console') + '">' + (enabled === false ? 'Monetize my TOTEHM ecosystem' : 'Manage my subscriptions') + '</a>', '<span data-com-offer-hint>' + (enabled === false ? 'Your audience · your annual subscription' : enabled === true ? 'My offer · my subscribers · my subscriptions' : 'Subscription settings') + '</span>') +
+    item('<a class="cm-action" data-com-monetize href="' + (enabled === false ? '/monetize' : '/console') + '">' + (enabled === false ? 'Monetize my TOTEHM' : 'My monetization') + '</a>', '<span data-com-offer-hint>' + (enabled === false ? 'My readers pay me, once a year' : enabled === true ? 'My price · my readers · what I am owed' : 'My price and my payout') + '</span>') +
     '</nav>';
 }
 function paintComMemberOffer(enabled) {
   document.querySelectorAll('[data-com-monetize]').forEach(link => {
     link.href = enabled === false ? '/monetize' : '/console';
-    link.textContent = enabled === false ? 'Monetize my TOTEHM ecosystem' : 'Manage my subscriptions';
+    link.textContent = enabled === false ? 'Monetize my TOTEHM' : 'My monetization';
   });
   document.querySelectorAll('[data-com-offer-hint]').forEach(hint => {
-    hint.textContent = enabled === false ? 'Your audience · your annual subscription' : enabled === true ? 'My offer · my subscribers · my subscriptions' : 'Subscription settings';
+    hint.textContent = enabled === false ? 'My readers pay me, once a year' : enabled === true ? 'My price · my readers · what I am owed' : 'My price and my payout';
   });
 }
 let comOfferSeq = 0;
@@ -257,7 +270,15 @@ async function comMemberBridge(sb, target, url, apiURL, publicKey) {
 
 /* END COM MEMBER MENU */
 let me=null,offerEnabled=null,seq=0;
-const BUILD='2026-10-06-menu';
+const BUILD='2026-10-16-monetize';
+/* Le curseur ne promet rien : il COMPTE. 80% au membre, arrondi inférieur (la règle du grand livre). */
+const euro=c=>'€'+(c/100).toLocaleString('en',{maximumFractionDigits:c%100?2:0});
+function mzSay(){
+  const c=+$('mz-p').value||0, part=Math.floor(c*0.8);
+  $('mz-say').innerHTML=euro(c)+' / year · <b>'+euro(part)+'</b> of it is yours'
+    +'<br>10 readers = <b>'+euro(part*10)+'</b> · 100 readers = <b>'+euro(part*100)+'</b> a year';
+}
+$('mz-p').addEventListener('input',mzSay); mzSay();
 window.__totehm_monetize=()=>({build:BUILD,signed_in:!!me,offer_enabled:offerEnabled});
 wireComMemberMenu($('menu'),{bridge:(target,url)=>comMemberBridge(sb,target,url,SB_URL,SB_ANON)});
 function closeMenu(){ $('menu').classList.remove('is-open');$('member').setAttribute('aria-expanded','false'); }
@@ -274,7 +295,7 @@ async function sessionChange(){
   const {data:{session}}=await sb.auth.getSession();if(n!==seq)return;
   me=session?.user||null;paintMenu();paintName(null);
   $('member').classList.toggle('is-in',!!me);$('member').textContent=me?'My TOTEHM':'CONNECT WITH MY TOTEHM';
-  document.querySelectorAll('[data-setup]').forEach(a=>a.textContent='Set up my subscription');
+  document.querySelectorAll('[data-setup]').forEach(a=>a.textContent='Set my price');
   const uid=me?.id;
   if(me){
     const {data,error}=await sb.from('profiles').select('pseudo').eq('id',uid).maybeSingle();
@@ -284,7 +305,7 @@ async function sessionChange(){
   }
   const enabled=await readComMemberOffer(sb,()=>me);if(n!==seq||uid!==me?.id)return;
   offerEnabled=typeof enabled==='boolean'?enabled:null;
-  if(enabled===true)document.querySelectorAll('[data-setup]').forEach(a=>a.textContent='Manage my subscription');
+  if(enabled===true)document.querySelectorAll('[data-setup]').forEach(a=>a.textContent='My monetization');
 }
 $('member').onclick=()=>{$('menu').classList.toggle('is-open');$('member').setAttribute('aria-expanded',String($('menu').classList.contains('is-open')));};
 $('menu').addEventListener('click',async e=>{if(e.target.closest('[data-menu-close]')){closeMenu();return;}if(e.target.closest('[data-out]')){closeMenu();resetComMemberOffer();await sb.auth.signOut({scope:'local'});sessionChange();}});

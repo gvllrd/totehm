@@ -24,12 +24,12 @@ try{
    await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(700);await pg.click('#conn-bar');
    await pg.waitForFunction(()=>/2 TOTEHMs I follow/.test(document.getElementById('mw-subs-hint').textContent),null,{timeout:8000});
    const acts=await pg.$$eval('#mw-menu .cm-action',l=>l.map(e=>e.textContent));
-   ok(JSON.stringify(acts)==='["Get Higher Self","My subscriptions","My TOTEHM spaces","Connect TotehmBot"]','the member space is the member: Higher, subscriptions, spaces, TotehmBot → '+acts.join(' | '));
+   ok(JSON.stringify(acts)==='["Get Higher Self","My subscriptions","Connect TotehmBot"]','16/10: no more « My TOTEHM spaces » (spaces are gone, spots stay) → '+acts.join(' | '));
    ok(!await pg.locator('#member-window #lv-card').count()&&await pg.locator('#srch #lv-card #ident-block').count()===1&&!await pg.locator('#totehm-menu').count(),'15/10 : the TOTEHM name, its four levels and the program moved to MY SETTINGS (the back of the paper) — the member window keeps the account');
    /* 15/10 bis : l'espace membre EST le verso — mes réglages au-dessus, mon compte en dessous, une seule page */
    await pg.waitForFunction(()=>document.getElementById('srch').classList.contains('is-open'),null,{timeout:8000});
-   ok(await pg.locator('#srch #member-window.show').count()===1&&await pg.locator('#srch [data-lvvis]').count()===4
-      &&await pg.$eval('#member-window',e=>getComputedStyle(e).position==='static'),'the account opens inside the back of the paper, under my settings (four levels)');
+   ok(await pg.locator('#srch #member-window.show').count()===1&&await pg.locator('#srch [data-lvvis]').count()===3
+      &&await pg.$eval('#member-window',e=>getComputedStyle(e).position==='static'),'the account opens inside the back of the paper, under my settings (THREE levels since 16/10)');
    await pg.waitForFunction(()=>!document.getElementById('mw-creator').classList.contains('hide'));
    const dash=await pg.evaluate(()=>({subs:document.getElementById('mwc-subs').textContent,month:document.getElementById('mwc-month').textContent,next:document.getElementById('mwc-next').textContent,
      on:!document.getElementById('mw-creator').classList.contains('hide'),say:document.getElementById('mwc-say').textContent}));
@@ -41,7 +41,7 @@ try{
    await pg.click('#srch [data-lvvis="subscribers"]');await pg.waitForFunction(()=>!document.getElementById('lv-prog').classList.contains('hide'));
    ok(log.rpc.some(x=>x.name==='visibility_set'&&x.body.p_visibility==='subscribers')&&await pg.$eval('#lv-prog',e=>e.getAttribute('href'))==='/monetize','MY SUBSCRIBERS : visibility_set decides, then the program button (/monetize)');
    await pg.click('#srch [data-lvvis="figher"]');await pg.waitForFunction(()=>document.querySelector('#srch [data-lvvis="figher"]').getAttribute('aria-checked')==='true');
-   ok(log.rpc.some(x=>x.name==='visibility_set'&&x.body.p_visibility==='figher'),'FIGHER CLUB : the fourth level is one tap away');
+   ok(log.rpc.some(x=>x.name==='visibility_set'&&x.body.p_visibility==='figher'),'FIGHER CLUB : the most open level (16/10) is one tap away');
    await pg.keyboard.press('Escape');await pg.waitForFunction(()=>!document.getElementById('srch').classList.contains('is-open'),null,{timeout:6000});
    await pg.click('#conn-bar');await pg.waitForSelector('#member-window.show');
    ok(/€7 \/ month/.test(await pg.textContent('#mw-higher-hint'))&&/1 subscriber/.test(await pg.textContent('#mw-subs-hint')),'Higher price and my counts come from the server (my_landing)');
@@ -56,13 +56,14 @@ try{
    // la vignette : un JPEG recadré, écrit par avatar_set, repris dans le coin membre
    const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAIAAAD91JpzAAAAFklEQVR4nGP8z8DAwMDAxMDAwMDAAAANHQEDasKb6QAAAABJRU5ErkJggg==','base64');
    await pg.setInputFiles('#mw-avatar-file',{name:'me.png',mimeType:'image/png',buffer:png});
-   await pg.waitForFunction(()=>!!document.querySelector('#conn-bar .lv-av'));
+   await pg.waitForFunction(()=>/url\("data:image\/jpeg/.test(document.getElementById('mw-avatar').style.backgroundImage),null,{timeout:8000});
    const av=log.rpc.find(x=>x.name==='avatar_set');
-   ok(av&&/^data:image\/jpeg;base64,/.test(av.body.p_data)&&/url\("data:image\/jpeg/.test(await pg.$eval('#mw-avatar',e=>e.style.backgroundImage)),'my picture: a JPEG data URL through avatar_set, shown in the window and the corner');
+   /* 16/10 : la vignette n'est plus dans le coin (il n'y a plus de coin) — elle vit au VERSO, dans le compte ;
+      le haut ne porte que LE NOM du Totehm. */
+   ok(av&&/^data:image\/jpeg;base64,/.test(av.body.p_data)&&/url\("data:image\/jpeg/.test(await pg.$eval('#mw-avatar',e=>e.style.backgroundImage))
+      &&!await pg.locator('#conn-bar .lv-av').count(),'my picture: a JPEG data URL through avatar_set, shown in the account — never in the name on top');
    await pg.screenshot({path:OUT+'/com_member_mobile.png'});
-   await pg.click('#myspaces-open');await pg.waitForSelector('[data-space="old-private"]');
-   ok(/PRIVATE/.test(await pg.textContent('#myspaces-list'))&&await pg.$eval('#gate',e=>e.inert),'My TOTEHM spaces preserves owner-only history in a modal');
-   await pg.keyboard.press('Escape');ok(await pg.$eval('#member-window',e=>e.classList.contains('show'))&&await pg.$eval('#srch',e=>/is-open/.test(e.className)),'closing history restores the back of the paper and my account');
+   ok(!await pg.locator('#myspaces,[id^="myspaces-"]').count()&&!await pg.evaluate(()=>typeof MYSPACES!=='undefined'),'16/10: the whole My-spaces window is gone — markup AND wiring');
    ok(!log.errors.some(e=>e.startsWith('pageerror')),'member window: no runtime errors');await ctx.close();
   }
   {const until=new Date(Date.now()+20*864e5).toISOString();
@@ -70,15 +71,15 @@ try{
      functions:{'sso-mint':{code:'b'.repeat(64)},'higher-sub':b=>({ok:true,ending:b.action==='cancel',until})}});
    await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(400);await pg.click('#conn-bar');
    await pg.waitForFunction(()=>/renews/.test(document.getElementById('mw-higher-hint').textContent));
-   ok((await pg.textContent('#mw-higher'))==='My Higher subscription'&&/Stop at the end of the month/.test(await pg.textContent('#mw-higher-acts')),'Higher active: renews on a date, can stop at the end of the month');
+   ok((await pg.textContent('#mw-higher'))==='My Higher'&&/Stop at the end of the month/.test(await pg.textContent('#mw-higher-acts')),'Higher active: renews on a date, can stop at the end of the month');
    await pg.click('[data-hsub="cancel"]');await pg.waitForFunction(()=>/it ends on/.test(document.getElementById('mw-menu-note').textContent));
    ok(log.functions.some(f=>f.name==='higher-sub'&&f.body.action==='cancel')&&/Keep it/.test(await pg.textContent('#mw-higher-acts')),'stopping is at period end (higher-sub cancel), and it can be kept');
    await pg.click('#mw-higher');await pg.waitForFunction(()=>window.__totehm_lv&&window.__totehm_lv().vue==='b');
    ok(!await pg.$eval('#member-window',e=>e.classList.contains('show')),'My Higher subscription opens my Reflection (the view below, 15/10)');
    ok(!log.errors.some(e=>e.startsWith('pageerror')),'Higher active: no runtime errors');await ctx.close();
   }
-  {const{pg,ctx}=await ready(browser,{rpc:{...rpc,my_landing:LAND}});await pg.goto(origin+'/totehm?spaces=1');await pg.waitForSelector('[data-space="old-private"]');
-   ok(await pg.locator('#myspaces.is-open').count()===1,'the shared menu deep link opens the existing owner history');await ctx.close();
+  {const{pg,ctx,log}=await ready(browser,{rpc:{...rpc,my_landing:LAND}});await pg.goto(origin+'/totehm?spaces=1');await pg.waitForSelector('body.member');await pg.waitForTimeout(900);
+   ok(!log.errors.some(e=>e.startsWith('pageerror'))&&!await pg.locator('#myspaces').count(),'16/10: the old ?spaces=1 deep link opens nothing and breaks nothing');await ctx.close();
   }
   // A slow landing response may never repaint another account after sign-out.
   {let n=0;const{pg,ctx}=await ready(browser,{rpc:{...rpc,my_landing:async()=>{const k=++n;await new Promise(r=>setTimeout(r,650));

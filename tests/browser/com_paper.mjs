@@ -32,7 +32,7 @@ try{
   ok(c.cls==='is-flat'&&c.tf===''&&(await lsd(pg)).face===0,'départ : recto, posé, aucune transformation');
   const dos=await pg.evaluate(()=>({nom:document.getElementById('ast-name').textContent.replace(/\s+/g,''),cases:[...document.querySelectorAll('#ast-panel i')].map(i=>i.dataset.l+(i.classList.contains('is-on')?'*':'')),
     curseur:!!document.querySelector('#ast-verso .ast-slider b'),ia:!!document.querySelector('#ast-verso .ast-self')}));
-  ok(dos.nom==='wahigher'&&dos.cases.join(',')==='private*,figher,subscribers,public'&&dos.curseur&&!dos.ia,'le dos porte le nom et son panneau : quatre niveaux (PRIVATE allumé), le curseur ; plus de [Higher] Self');
+  ok(dos.nom==='wahigher'&&dos.cases.join(',')==='private*,figher,subscribers'&&dos.curseur&&!dos.ia,'le dos porte le nom et son panneau : TROIS niveaux (PRIVATE allumé ; plus de PUBLIC depuis le 16/10), le curseur ; plus de [Higher] Self');
   ok(await pg.$eval('#ast-back',e=>e.inert)&&!await pg.$eval('#ast-front',e=>e.inert),'seul le recto est atteignable (inert sur le verso)');
   await pg.waitForTimeout(1500);
   ok((await card(pg)).tf==='','il ne tourne JAMAIS tout seul (1,5 s : transform toujours vide)');
@@ -45,11 +45,11 @@ try{
   const z=await pg.evaluate(()=>{const q=s=>document.querySelector(s);return{srch:q('#srch').className,vue:window.__totehm_lv().vue,reglages:window.__totehm_lv().reglages,
     nom:q('#self-name').textContent,ff:getComputedStyle(q('#self-name')).fontFamily,tb:getComputedStyle(q('#srch-bg')).transform,bg:getComputedStyle(q('#srch-bg')).backgroundImage.includes('333366'),
     niveaux:document.querySelectorAll('#srch #lv-card [data-lvvis]').length,carte:!q('#lv-card').classList.contains('hide'),createur:!q('#mw-creator').classList.contains('hide'),
-    ia:!!q('#srch #lv-say,#srch #lv-thread'),menu:!!q('#member-window #lv-card')};});
+    ia:!!q('#srch #lv-say,#srch #lv-thread'),menu:!!q('#srch #member-window'),compte:q('#member-window').classList.contains('show')};});
   ok(/is-open/.test(z.srch)&&z.reglages&&z.vue==='c','retourné à la main : mes RÉGLAGES s\'ouvrent (le verso déplié), la vue ne change pas');
   ok(z.nom==='wahigher'&&/Quantico/.test(z.ff)&&z.tb==='matrix(1, 0, 0, 1, 0, 0)'&&z.bg,'zoom fini : le fond est le papier navy, le nom (Quantico) en haut');
-  ok(z.carte&&z.niveaux===4&&z.createur&&!z.ia,'dessous : qui lit mon TOTEHM (4 niveaux), mon programme d\'abonnés ; aucune IA');
-  ok(!z.menu,'un seul système de réglages : les nœuds ont QUITTÉ l\'espace membre');
+  ok(z.carte&&z.niveaux===3&&z.createur&&!z.ia&&z.menu,'dessous : qui lit mon TOTEHM (3 niveaux), mon programme d\'abonnés, PUIS le menu membre (il s\'affiche d\'emblée, 16/10) ; aucune IA');
+  ok(z.compte,'retourner le papier AFFICHE le menu membre (Wah, 16/10) : pas de second geste');
   c=await card(pg);ok((await lsd(pg)).face===1&&c.cls==='is-back is-flat'&&c.tf==='','dessous, le papier est posé sur son verso, sans transformation');
   ok(await pg.$eval('#gate',e=>e.inert&&getComputedStyle(e).visibility==='visible'),'#gate est inert mais reste peint (le Totehm dessous ne se révèle jamais)');
   // aucun contrôle ne change de vue ni ne retourne le papier
@@ -62,7 +62,7 @@ try{
   ok(/100 subscribers/.test(await pg.textContent('#mwc-say'))&&await pg.isVisible('#mwc-save'),'le prix au curseur : la part se lit en direct, « Save » apparaît');
   // focus piégé dans la feuille
   const tab=async()=>{await pg.keyboard.press('Tab');return pg.evaluate(()=>{const e=document.activeElement;return e.closest('#srch')?(e.id||e.dataset.lvvis||e.tagName):'HORS:'+e.tagName;});};
-  await pg.focus('#self-name');const ring=[];for(let i=0;i<12;i++)ring.push(await tab());
+  await pg.focus('#self-name');const ring=[];for(let i=0;i<24;i++)ring.push(await tab());
   ok(ring.every(x=>!/^HORS/.test(x))&&ring.includes('srch-x'),'Tab tourne dans la feuille → '+ring.join(','));
   await pg.screenshot({path:OUT+'/com_reglages.png'});
   await pg.click('#srch-x');await pg.waitForTimeout(2000);

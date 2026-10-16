@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<!--
+  ══ totehm.com/monetize — L'OFFRE AUX INFLUENCEURS · RÉÉCRITE LE 05/10/2026 ══
+  Publique. Elle explique l'abonnement ANNUEL d'un membre (prix choisi par
+  lui, 80/20, versé le 1er) dans la grammaire de `/@nom` : le papier et le
+  nom, ce qu'un abonné ouvre (la croix des cinq vues, le point d'un space
+  ON), trois étapes — les mêmes que la console. Elle ne lit AUCUNE donnée
+  pour un invité, ne crée aucun prix, n'active aucune offre : tout se fait
+  dans `/console`. Plus de « copier les boxes » (05/10 : les copies sont
+  parties du front). Titres : Space Mono Bold en capitales.
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<title>[Higher] · the higher version of my TOTEHM</title>
+<meta name="description" content="Your audience subscribes to your TOTEHM for a year. You set the price. You keep 80%.">
+<link rel="canonical" href="https://www.totehm.com/monetize">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Quantico:wght@400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+html{font-family:'Space Mono',monospace}button,input,select,textarea{font-family:inherit}
+:root{
+  --bg:#000;--mid:#b0b0b0;--lo:#8d8d96;--dim:#5f5f66;--g1:#0c0c0e;--g2:#121214;--g3:#1b1b1f;--g4:#26262b;--g5:#34343a;--coral:#fbd5ca;
+  --navy:#333366;--blue:#36498c;--rep:#743169;--wis:#5b2652;--vis:#2b3a73;--q:'Quantico',sans-serif;--mono:'Space Mono',monospace;
+  --paper:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 224.88 224.08' preserveAspectRatio='none'%3E%3Cdefs%3E%3Cmask id='m'%3E%3Crect x='-40' y='-40' width='310' height='310' fill='%23fff'/%3E%3Ccircle cx='56.421' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='56.421' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='112.440' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='112.440' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='168.459' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='168.459' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='56.020' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='56.020' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='112.039' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='112.039' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='168.059' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='168.059' r='13.86' fill='%23000'/%3E%3C/mask%3E%3C/defs%3E%3Crect x='0.402' y='0' width='224.076' height='224.078' fill='%23333366' mask='url(%23m)'/%3E%3C/svg%3E");
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--mid);font-family:var(--mono);font-size:13px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+.hide{display:none!important}
+:focus-visible{outline:1px solid #fff;outline-offset:3px}
+#member{position:fixed;top:14px;left:12px;z-index:40;display:flex;align-items:center;background:none;border:none;cursor:pointer;
+  font-family:var(--mono);font-weight:700;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--mid);padding:8px 6px}
+#member.is-in{font-family:var(--q);font-weight:400;font-size:13px;letter-spacing:0;text-transform:none;color:var(--coral)}
+#menu{position:fixed;top:0;left:0;z-index:45;width:min(320px,88vw);background:var(--g2);padding:58px 16px 18px;display:flex;flex-direction:column;gap:6px;
+  transform:translateY(-104%);visibility:hidden;transition:transform .3s ease,visibility 0s linear .3s}
+#menu.is-open{transform:none;visibility:visible;transition:transform .3s ease}
+#menu .m-it{display:block;width:fit-content;text-align:left;background:var(--g4);border:none;border-radius:10px;padding:8px 12px;cursor:pointer;color:var(--mid);
+  font-family:var(--mono);font-weight:700;font-size:10px;letter-spacing:.12em;text-transform:uppercase}
+#menu .m-terms{background:none;font-weight:400;color:var(--lo);margin-top:8px;padding-left:2px}
+
+main{width:100%;max-width:640px;margin:0 auto;padding:max(84px,11dvh) 16px 64px;display:flex;flex-direction:column;gap:56px}
+section{display:flex;flex-direction:column;gap:16px}
+.kick{font-size:10px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--lo)}
+h1{font-weight:700;font-size:clamp(25px,7vw,40px);line-height:1.12;letter-spacing:.01em;text-transform:uppercase;color:#fff}
+h2{font-weight:700;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#fff}
+.lead{font-size:12.5px;line-height:1.75;color:var(--mid);max-width:520px}
+.fine{font-size:10px;line-height:1.75;color:var(--lo)}
+.btn{display:inline-flex;align-items:center;justify-content:center;width:fit-content;max-width:100%;font-family:var(--mono);font-weight:700;font-size:11px;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--mid);background:var(--g4);border:none;border-radius:10px;cursor:pointer;padding:10px 15px;transition:background .15s,color .15s}
+.btn.is-main{color:#fff;background:var(--g5);padding:13px 20px;font-size:11.5px}
+.actions{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+
+.hero{display:grid;grid-template-columns:1fr auto;gap:28px;align-items:center}
+.paper{width:min(190px,48vw);aspect-ratio:1;background:var(--paper) 0 0/100% 100% no-repeat;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:13%}
+.tname{display:inline-block;max-width:100%;font-family:var(--q);font-weight:400;color:var(--coral);background:#333366;border-radius:0;padding:5px 11px;line-height:1.3;overflow-wrap:anywhere;font-size:var(--fs,22px)}
+.url{font-size:8.5px;letter-spacing:.08em;color:rgba(255,255,255,.6);text-align:center;overflow-wrap:anywhere}
+@media(max-width:560px){.hero{grid-template-columns:1fr}.paper{order:-1;margin:0 auto}}
+
+.gets{display:flex;flex-direction:column;gap:2px}
+.get{display:grid;grid-template-columns:34px 1fr;gap:14px;align-items:center;background:var(--g2);padding:14px 16px}
+.get b{display:block;font-size:11px;letter-spacing:.06em;color:#fff}
+.get p{font-size:10.5px;line-height:1.6;color:var(--lo)}
+.croix{display:grid;grid-template-columns:repeat(3,8px);grid-template-rows:repeat(3,8px);gap:2px;justify-content:center}
+.croix i{display:block}
+.croix .c-t{grid-area:1/2;background:var(--blue)}.croix .c-w{grid-area:2/1;background:var(--wis)}.croix .c-h{grid-area:2/2;background:var(--navy)}
+.croix .c-v{grid-area:2/3;background:var(--vis)}.croix .c-r{grid-area:3/2;background:var(--rep)}
+.pt{position:relative;width:12px;height:12px;margin:0 auto;border-radius:50%;background:#fff}
+.pt::after{content:"";position:absolute;inset:-7px;border-radius:50%;background:rgba(255,255,255,.14)}
+.yr{font-weight:700;font-size:11px;letter-spacing:.06em;color:#fff;text-align:center;line-height:1.1}
+
+.split{display:grid;grid-template-columns:1fr 1fr;gap:2px}
+.split > div{background:var(--g2);padding:16px}
+.split b{display:block;font-size:clamp(34px,10vw,52px);line-height:1;color:#fff}
+.split span{font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--lo)}
+.split > div + div b{color:var(--dim)}
+
+.steps{display:flex;flex-direction:column;gap:2px;counter-reset:s}
+.steps li{list-style:none;display:grid;grid-template-columns:34px 1fr;gap:14px;background:var(--g2);padding:14px 16px;counter-increment:s}
+.steps li::before{content:counter(s);font-weight:700;font-size:16px;color:#fff;text-align:center}
+.steps b{display:block;font-size:11px;letter-spacing:.06em;color:#fff}
+.steps p{font-size:10.5px;line-height:1.6;color:var(--lo)}
+.close{background:var(--g2);padding:24px 18px;align-items:flex-start}
+footer{width:100%;max-width:640px;margin:0 auto;padding:0 16px 40px}
+footer a{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo)}
+@media(hover:hover){.btn:hover{background:var(--g5);color:#fff}.btn.is-main:hover{background:#44444b}#menu .m-it:hover{background:var(--g5)}}
+
+
+
+
+
+/* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
+/* Le gris en survol devient blanc. Généré depuis la feuille
+   elle-même : un nouveau bloc gris entre ici tout seul.        */
+@media(hover:hover){
+#member:hover,
+#menu .m-it:hover,
+#menu .m-terms:hover,
+.kick:hover,
+.lead:hover,
+.fine:hover,
+.btn:hover,
+.url:hover,
+.get p:hover,
+.split span:hover,
+.split > div + div b:hover,
+.steps p:hover,
+footer a:hover{color:#fff}
+}
+/* ══ FIN DU BLOC GÉNÉRÉ ══ */
+</style>
+<style data-com-member-menu="2026-10-06">
+/* 06/10 — Wah : « le menu de higher.boutique dans le menu espace membre de
+   totehm.com : les mêmes boutons, centré, plein écran ». Boutons gris
+   arrondis Space Mono (le `.btn-sig` de la boutique), légende dessous en
+   petites capitales, le tout centré ; le texte d'un bouton ne passe jamais
+   à la ligne. Source : tools/com_member_menu.css (copiée, jamais importée). */
+.cm-menu{display:flex;flex-direction:column;align-items:center;gap:18px;width:100%}
+.cm-item{display:flex;flex-direction:column;align-items:center;gap:7px;max-width:100%}
+.cm-action{display:inline-flex;align-items:center;justify-content:center;gap:6px;inline-size:fit-content;max-inline-size:100%;padding:12px 20px;border:0;border-radius:10px;background:#1f1f24;color:#b0b0b0;font:400 12.5px/1.4 'Space Mono',monospace;letter-spacing:0;text-align:center;text-decoration:none;cursor:pointer;white-space:nowrap}
+.cm-action svg{width:57px;height:19px;flex-shrink:0}
+.cm-hint{margin:0;font:700 8.6px/1.6 'Space Mono',monospace;letter-spacing:.22em;text-transform:uppercase;color:#6b6b72;text-align:center;max-width:100%}
+.cm-action:focus-visible{outline:1px solid #fff;outline-offset:3px}
+#menu:has(.cm-menu){inset:0;width:100%;height:100dvh;max-height:none;background:#000;align-items:center;padding:max(64px,9dvh) 16px 40px;overflow-y:auto;overscroll-behavior:contain}
+#menu:has(.cm-menu) .m-it{width:fit-content;align-self:center;text-align:center;background:none;color:#8a8a92;font-size:10px}
+#menu .cm-menu{margin:0 0 26px}
+.cm-close{position:fixed;top:14px;right:16px;z-index:2;background:none;border:0;padding:6px;cursor:pointer;font:400 10px 'Space Mono',monospace;letter-spacing:.12em;color:#b0b0b0}
+.hg-price{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.hg-price b{font:700 30px/1 'Space Mono',monospace;color:#fff}
+.hg-price i{font-style:normal;font:400 11px/1.4 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#8a8a92}
+.hg-chat{display:flex;flex-direction:column;gap:6px;width:min(100%,430px)}
+.hg-b{background:#121214;padding:10px 12px;font:400 12.5px/1.5 'Space Mono',monospace;color:#d4d4da}
+.hg-b.is-me{background:#2a2a30;align-self:flex-end;max-width:78%}
+.hg-b small{display:block;margin-top:5px;font:400 9px/1.3 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#7c7c84}
+.mz-sim input[type=range]{width:min(100%,420px);accent-color:#9a9aa2}
+.mz-say{font:400 13px/1.6 'Space Mono',monospace;color:#b0b0b0;margin:10px 0 0}
+.mz-say b{color:#fff}
+#member-window .cm-menu{padding:0 0 22px}
+@media(hover:hover){.cm-action:hover{background:#2c2c32;color:#fff}.cm-close:hover,#menu:has(.cm-menu) .m-it:hover{color:#fff}}
+</style>
+</head>
+<body>
+<button id="member" type="button" aria-expanded="false" aria-controls="menu">CONNECT WITH MY TOTEHM</button>
+<nav id="menu" aria-label="Member menu"></nav>
+
+<main>
+  <!-- ⚠️ 16/10 · LA PAGE DE VENTE DE L'ABONNEMENT HIGHER (Wah : « il faut faire une page de vente pour la
+       Higher Subscription comme la possibilité d'avoir la version Bot Telegram avec le tracker Habit et les
+       notifications-messages basés sur le Telegram »). Deux choses à comprendre d'un coup d'œil :
+         1 · c'est la VERSION HAUTE du processeur (le Higher Self chaque jour, pas 7 fois par mois) ;
+         2 · ça sort du site : Telegram envoie un message PAR HABIT, au rythme de CETTE Habit.
+       ⚠️ LE PRIX VIENT DU SERVEUR (`my_landing().higher`), jamais de cette page : un prix écrit dans un
+       fichier servi finit par mentir. Et aucune promesse de résultat : ce qu'on vend, c'est la cadence. -->
+  <section class="hero">
+    <div style="display:flex;flex-direction:column;gap:18px">
+      <div class="kick" id="hg-kick">Higher</div>
+      <h1>The higher version of your processor.</h1>
+      <p class="lead">Your Higher Self, every day. And Telegram asks you — one message per habit, at that habit's own rhythm.</p>
+      <div class="hg-price"><b id="hg-p">—</b><i id="hg-per">per month · cancel anytime</i></div>
+      <div class="actions"><button class="btn is-main" id="hg-go" type="button">GET HIGHER</button><a class="btn" href="/totehm#in">Open my TOTEHM</a></div>
+      <p class="fine" id="hg-note" role="status"></p>
+    </div>
+    <div class="hg-chat" aria-label="What Telegram sends">
+      <div class="hg-b">Run the hill — did you?<small>07:12 · every morning</small></div>
+      <div class="hg-b is-me">done</div>
+      <div class="hg-b">You chose to stop scrolling at night.<small>23:40 · your own words</small></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>What it opens</h2>
+    <div class="gets">
+      <div class="get"><span class="yr" aria-hidden="true">∞</span>
+        <span><b>Your Higher Self, every day</b><p>without it: 7 Reflections per 30 days. With it: every day.</p></span></div>
+      <div class="get"><span class="pt" aria-hidden="true"></span>
+        <span><b>[Higher] my Telegram</b><p>one message per habit, at ITS Time frequency — hourly, weekly, every Monday.</p></span></div>
+      <div class="get"><span class="croix" aria-hidden="true"><i class="c-t"></i><i class="c-w"></i><i class="c-h"></i><i class="c-v"></i><i class="c-r"></i></span>
+        <span><b>The tracker</b><p>did you do it? One word answers. The streak is counted for you.</p></span></div>
+    </div>
+    <p class="fine">It speaks with YOUR words — your habit, your objective, your repulsion. It never has an opinion.</p>
+  </section>
+
+  <section>
+    <h2>How the messages work</h2>
+    <ol class="steps">
+      <li><span><b>Each habit carries its rhythm</b><p>you set it once, in your TOTEHM.</p></span></li>
+      <li><span><b>It waits for that period</b><p>then asks — the most overdue habit first, never twice.</p></span></li>
+      <li><span><b>You answer in Telegram</b><p>nothing to open, nothing to install.</p></span></li>
+    </ol>
+    <p class="fine">Your time zone, your quiet hours, six messages a day at most. Three ignored questions and it goes quiet.</p>
+  </section>
+
+  <section class="close">
+    <h2>Talk is cheap.</h2>
+    <div class="actions"><button class="btn is-main" id="hg-go2" type="button">GET HIGHER</button></div>
+    <p class="fine">A reader paying to read your TOTEHM is a different thing — that one is <a href="/monetize">Monetize my TOTEHM</a>.</p>
+  </section>
+</main>
+<footer><a href="/terms" target="_blank" rel="noopener">Simple terms of use</a></footer>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+const SB_URL = 'https://abujjbkbbiumxrokozph.supabase.co';
+const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us';
+const sb = createClient(SB_URL, SB_ANON);
+const $ = id => document.getElementById(id);
+/* COM MEMBER MENU · 2026-10-05 · source: tools/com_member_menu.js */
+/* COM member navigation. Copied into independent pages; no runtime import. */
+const COM_HIGHER_BADGE = '<svg viewBox="0 0 600 200" role="img" aria-label="Higher"><defs><mask id="cm-hbmask"><rect width="600" height="200" fill="white"/><circle cx="60" cy="0" r="14" fill="black"/><circle cx="140" cy="0" r="14" fill="black"/><circle cx="220" cy="0" r="14" fill="black"/><circle cx="300" cy="0" r="14" fill="black"/><circle cx="380" cy="0" r="14" fill="black"/><circle cx="460" cy="0" r="14" fill="black"/><circle cx="540" cy="0" r="14" fill="black"/><circle cx="60" cy="200" r="14" fill="black"/><circle cx="140" cy="200" r="14" fill="black"/><circle cx="220" cy="200" r="14" fill="black"/><circle cx="300" cy="200" r="14" fill="black"/><circle cx="380" cy="200" r="14" fill="black"/><circle cx="460" cy="200" r="14" fill="black"/><circle cx="540" cy="200" r="14" fill="black"/><circle cx="0" cy="70" r="14" fill="black"/><circle cx="0" cy="130" r="14" fill="black"/><circle cx="600" cy="70" r="14" fill="black"/><circle cx="600" cy="130" r="14" fill="black"/></mask></defs><rect width="600" height="200" fill="#333366" mask="url(#cm-hbmask)"/><g fill="#ffffff" transform="translate(34.32, 144.42)"><path transform="translate(0.000,0) scale(0.144,-0.144)" d="M596 700H832L692 0H456ZM238 0H2L142 700H378ZM523 258H274L313 452H562Z"/><path transform="translate(115.776,0) scale(0.144,-0.144)" d="M-5 0 104 547H329L220 0ZM241 591Q182 591 147.5 622.0Q113 653 113 698Q113 751 152.5 786.0Q192 821 257 821Q316 821 350.5 792.0Q385 763 385 718Q385 662 345.5 626.5Q306 591 241 591Z"/><path transform="translate(162.576,0) scale(0.144,-0.144)" d="M255 -204Q172 -204 103.5 -187.0Q35 -170 -16 -136L80 18Q113 -7 161.5 -21.5Q210 -36 259 -36Q325 -36 355.0 -8.5Q385 19 395 68L409 138L450 294L485 464L501 547H716L629 110Q596 -57 499.5 -130.5Q403 -204 255 -204ZM260 30Q200 30 146.0 58.0Q92 86 58.0 139.0Q24 192 24 266Q24 327 46.5 379.5Q69 432 109.5 472.0Q150 512 203.5 534.5Q257 557 318 557Q379 557 424.5 533.0Q470 509 490.0 451.5Q510 394 493 294Q478 204 446.0 145.5Q414 87 367.0 58.5Q320 30 260 30ZM332 207Q361 207 383.0 219.5Q405 232 417.0 255.0Q429 278 429 309Q429 340 408.5 359.5Q388 379 350 379Q321 379 299.0 366.5Q277 354 264.5 331.0Q252 308 252 277Q252 246 273.5 226.5Q295 207 332 207Z"/><path transform="translate(264.960,0) scale(0.144,-0.144)" d="M470 557Q535 557 584.0 528.5Q633 500 654.5 443.5Q676 387 659 302L599 0H373L428 275Q437 320 424.0 343.5Q411 367 375 367Q337 367 311.0 341.5Q285 316 274 263L221 0H-5L143 742H369L300 396L260 436Q299 499 356.5 528.0Q414 557 470 557Z"/><path transform="translate(366.048,0) scale(0.144,-0.144)" d="M321 -10Q231 -10 163.5 21.0Q96 52 58.0 109.0Q20 166 20 243Q20 333 62.0 404.0Q104 475 180.5 516.0Q257 557 359 557Q447 557 509.0 526.0Q571 495 604.0 441.0Q637 387 637 316Q637 291 633.5 267.0Q630 243 625 221H200L221 330H521L427 301Q435 333 426.5 355.5Q418 378 398.0 390.5Q378 403 349 403Q308 403 284.0 381.0Q260 359 249.5 324.0Q239 289 239 251Q239 200 266.5 178.5Q294 157 347 157Q378 157 409.0 166.5Q440 176 466 195L560 58Q504 20 443.5 5.0Q383 -10 321 -10Z"/><path transform="translate(459.360,0) scale(0.144,-0.144)" d="M-5 0 104 547H317L286 392L265 436Q299 501 359.5 529.0Q420 557 498 557L458 357Q444 359 432.5 360.0Q421 361 409 361Q353 361 318.5 336.0Q284 311 272 253L221 0Z"/></g></svg>';
+function comMemberLinks(home = false, enabled = null) {
+  const item = (content, hint) => '<div class="cm-item">' + content + '<p class="cm-hint">' + hint + '</p></div>';
+  return '<nav class="cm-menu" aria-label="My TOTEHM ecosystem">' +
+    item('<a class="cm-action" data-com-open href="/totehm#in">Open my TOTEHM</a>', 'Tap on it') +
+    item('<a class="cm-action" href="/search">Search a TOTEHM</a>', 'Turn it over') +
+    item('<a class="cm-action" id="btn-get-higher" data-com-bridge="space" href="https://www.totehm.space/get_higher">Get ' + COM_HIGHER_BADGE + '</a>', 'Put it on your tongue') +
+    item('<a class="cm-action" href="/higherself">Reflect with my TOTEHM</a>', 'Higher Self · TotehmBot') +
+    item('<a class="cm-action" href="/higher">' + COM_HIGHER_BADGE + '</a>', 'Every day · my habits in Telegram') +
+    item('<a class="cm-action" id="wear-btn" data-com-bridge="boutique" href="https://www.higher.boutique/">Totehmize my cloth</a>', 'HIGHER BOUTIQUE') +
+    item('<a class="cm-action" data-com-monetize href="' + (enabled === false ? '/monetize' : '/console') + '">' + (enabled === false ? 'Monetize my TOTEHM' : 'My monetization') + '</a>', '<span data-com-offer-hint>' + (enabled === false ? 'My readers pay me, once a year' : enabled === true ? 'My price · my readers · what I am owed' : 'My price and my payout') + '</span>') +
+    '</nav>';
+}
+function paintComMemberOffer(enabled) {
+  document.querySelectorAll('[data-com-monetize]').forEach(link => {
+    link.href = enabled === false ? '/monetize' : '/console';
+    link.textContent = enabled === false ? 'Monetize my TOTEHM' : 'My monetization';
+  });
+  document.querySelectorAll('[data-com-offer-hint]').forEach(hint => {
+    hint.textContent = enabled === false ? 'My readers pay me, once a year' : enabled === true ? 'My price · my readers · what I am owed' : 'My price and my payout';
+  });
+}
+let comOfferSeq = 0;
+function resetComMemberOffer() { comOfferSeq++; paintComMemberOffer(null); }
+async function readComMemberOffer(sb, currentUser) {
+  const uid = currentUser()?.id || null, seq = ++comOfferSeq;
+  if (!uid) { paintComMemberOffer(false); return false; }
+  try {
+    const { data, error } = await sb.rpc('my_console');
+    if (seq !== comOfferSeq || uid !== currentUser()?.id) return;
+    if (error) { console.error('[member offer]', error.message); paintComMemberOffer(null); return; }
+    const enabled=data?.signed_in && typeof data.offer?.enabled === 'boolean' ? data.offer.enabled : null;
+    paintComMemberOffer(enabled);return enabled;
+  } catch (error) {
+    if (seq !== comOfferSeq || uid !== currentUser()?.id) return;
+    console.error('[member offer]', error?.message || error); paintComMemberOffer(null);
+  }
+}
+function wireComMemberMenu(host, { open, bridge } = {}) {
+  host.addEventListener('click', event => {
+    const link = event.target.closest('a');
+    if (!link || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || event.button > 0) return;
+    if (link.hasAttribute('data-com-open') && open) { event.preventDefault(); open(link); }
+    else if (link.dataset.comBridge && bridge) { event.preventDefault(); bridge(link.dataset.comBridge, link.href); }
+  });
+}
+/* Same 60s, one-use SSO bridge as tools/sso_snippet.js. No session in URLs. */
+async function comMemberBridge(sb, target, url, apiURL, publicKey) {
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    if (session) {
+      const response = await fetch(apiURL + '/functions/v1/sso-mint', {
+        method: 'POST', headers: { authorization: 'Bearer ' + session.access_token, apikey: publicKey, 'content-type': 'application/json' },
+        body: JSON.stringify({ target })
+      });
+      if (response.ok) {
+        const { code } = await response.json();
+        if (code) { location.href = url + (url.includes('#') ? '&' : '#') + 'sso=' + code; return; }
+      } else console.error('[member bridge]', response.status);
+    }
+  } catch (error) { console.error('[member bridge]', error?.message || error); }
+  location.href = url;
+}
+
+/* END COM MEMBER MENU */
+let me=null,offerEnabled=null,seq=0,HL=null;
+const BUILD='2026-10-16-higher';
+/* ⚠️ LE PRIX VIENT DU SERVEUR. `my_landing()` répond même sans session (il rend alors les règles seules). */
+const money=(c,cur)=>{ try{ return new Intl.NumberFormat('en',{style:'currency',currency:(cur||'eur').toUpperCase(),maximumFractionDigits:c%100?2:0}).format(c/100); }catch(_){ return (c/100)+' '+(cur||'eur'); } };
+function hgPaint(){
+  const h=(HL&&HL.higher)||null;
+  $('hg-p').textContent=h&&h.price_cents?money(h.price_cents,h.currency):'—';
+  $('hg-per').textContent='per '+((h&&h.period)||'month')+' · cancel anytime';
+  if(h&&(h.active||h.comp)){ $('hg-kick').textContent='Higher · yours';
+    document.querySelectorAll('#hg-go,#hg-go2').forEach(b=>{ b.textContent='OPEN MY REFLECTION'; b.dataset.open='1'; }); }
+}
+async function hgLoad(){
+  const n=seq;
+  const {data,error}=await sb.rpc('my_landing');
+  if(n!==seq) return;
+  if(error){ console.error('[my_landing]',error.message); return; }
+  HL=data||null; hgPaint();
+}
+/* Le checkout : la MÊME fonction que l'espace membre (`higher-sub`), sous MA session. Sans session, la porte. */
+async function hgGo(b){
+  if(b&&b.dataset.open){ location.href='/totehm?higher=open'; return; }
+  const note=$('hg-note'); note.textContent='';
+  const {data:{session}}=await sb.auth.getSession();
+  if(!session){ location.href='/totehm#in'; return; }
+  if(b) b.disabled=true; note.textContent='opening checkout…';
+  try{
+    const r=await fetch(SB_URL+'/functions/v1/higher-sub',{method:'POST',
+      headers:{'content-type':'application/json',apikey:SB_ANON,authorization:'Bearer '+session.access_token},
+      body:JSON.stringify({action:'checkout'})});
+    const j=await r.json().catch(()=>({}));
+    if(j.url){ location.href=j.url; return; }
+    if(!r.ok) console.error('[higher-sub]',r.status,j.error||'');
+    note.textContent=j.error==='not_ready'?'opening soon':j.error==='already'?'it is already yours':'checkout is unavailable, try again';
+  }catch(e){ console.error('[higher-sub]',e&&e.message||e); note.textContent='checkout is unavailable, try again'; }
+  if(b) b.disabled=false;
+}
+document.querySelectorAll('#hg-go,#hg-go2').forEach(b=>b.onclick=()=>hgGo(b));
+window.__totehm_higher=()=>({build:BUILD,signed_in:!!me,price:((HL&&HL.higher)||{}).price_cents||null,active:!!((HL&&HL.higher)||{}).active});
+wireComMemberMenu($('menu'),{bridge:(target,url)=>comMemberBridge(sb,target,url,SB_URL,SB_ANON)});
+function closeMenu(){ $('menu').classList.remove('is-open');$('member').setAttribute('aria-expanded','false'); }
+function paintMenu(){
+  $('menu').innerHTML='<button class="cm-close" type="button" data-menu-close="1">Close</button>'+comMemberLinks(false,me?null:false)+(me?'<button class="m-it" type="button" data-out>Sign out</button>':'<a class="m-it" href="/totehm#in">CONNECT WITH MY TOTEHM</a>')+'<a class="m-it m-terms" href="/terms" target="_blank" rel="noopener">Simple terms of use</a>';
+}
+function paintName(){}   /* cette page ne porte pas le papier : elle porte une conversation */
+async function sessionChange(){
+  const n=++seq;resetComMemberOffer();offerEnabled=null;
+  const {data:{session}}=await sb.auth.getSession();if(n!==seq)return;
+  me=session?.user||null;paintMenu();paintName(null);
+  $('member').classList.toggle('is-in',!!me);$('member').textContent=me?'My TOTEHM':'CONNECT WITH MY TOTEHM';
+  
+  const uid=me?.id;
+  if(me){
+    const {data,error}=await sb.from('profiles').select('pseudo').eq('id',uid).maybeSingle();
+    if(n!==seq||uid!==me?.id)return;
+    if(error)console.error('[monetize profile]',error.message);
+    $('member').textContent=data?.pseudo||'My TOTEHM'; if(data?.pseudo) paintName(data.pseudo);
+  }
+  const enabled=await readComMemberOffer(sb,()=>me);if(n!==seq||uid!==me?.id)return;
+  offerEnabled=typeof enabled==='boolean'?enabled:null;
+  
+}
+$('member').onclick=()=>{$('menu').classList.toggle('is-open');$('member').setAttribute('aria-expanded',String($('menu').classList.contains('is-open')));};
+$('menu').addEventListener('click',async e=>{if(e.target.closest('[data-menu-close]')){closeMenu();return;}if(e.target.closest('[data-out]')){closeMenu();resetComMemberOffer();await sb.auth.signOut({scope:'local'});sessionChange();}});
+document.addEventListener('pointerdown',e=>{if(!e.target.closest('#member,#menu'))closeMenu();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeMenu();$('member').focus();}});
+sb.auth.onAuthStateChange(event=>{if(event!=='INITIAL_SESSION')setTimeout(sessionChange,0);});
+sessionChange(); hgLoad();
+</script>
+</body>
+</html>

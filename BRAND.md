@@ -1,5 +1,46 @@
 # BRAND.md — TOTEHM
 
+## CURRENT UPDATE — 16/10/2026 · the landing SELLS two different things, and the name never moves
+
+**THE NAME OF A TOTEHM HAS ONE PLACE: top, centre, small — and it never moves.** Quantico Coral, 13 px, above
+everything, in every view and every mode. Tapping it opens the back of the paper, so renaming is one gesture.
+It left the front of the paper (12/10): two places for one name is two values to keep in agreement. Every
+animation composes around it (`--tn-h`), nothing is ever laid over it.
+
+**THE LANDING SELLS, AND IT SELLS TWO DIFFERENT THINGS.** Signed out, three numbered steps — the mechanism read
+at a glance, each step something the member will actually write. Never a result promised, never an invented
+number, never false scarcity.
+
+*Mine — the one who builds:*
+> **[Higher] your brain**
+> An objective you keep in your head is a wish. One object turns it into a move.
+> **1** What you're after. *the objective* · **2** The habit that gets you there. *when · where* ·
+> **3** What derails you. *in your own words*
+> Your Reflection turns the three into your next move — at the rhythm of each habit.
+
+*Others — the one who reads:*
+> **[Higher] your strategy**
+> Someone already lives the habit you keep postponing. Read how.
+> **1** Type a name. *the galaxy answers* · **2** Open their TOTEHM. *objectives · habits · repulsions* ·
+> **3** Subscribe to one, or to many. *copy what works into yours*
+> Their spots say where they'll be. You go.
+
+Both keep **Why it works** (Gollwitzer & Sheeran 2006 · Kross 2014), **CONNECT WITH MY TOTEHM**, **free · no card**.
+
+**TWO OFFERS, TWO WORDS, NEVER THE SAME ONE.** The creator side is **Monetize my TOTEHM** — people pay to READ
+how you build, once a year, 80 % is yours. The personal side is **My Higher** — the higher version of the
+processor: the Higher Self every day instead of 7 per 30 days, and Telegram asking one message per habit at
+*that habit's* rhythm, with the tracker. The word « subscription » is gone from the creator side: it was read as
+the other one. `/monetize` counts (a slider, 80 %, three steps); `/higher` shows a Telegram conversation and the
+price **from the server**. Closing line of `/higher`: **Talk is cheap.**
+
+**THE CLUB IS THE PUBLIC.** There is no PUBLIC level any more: PRIVATE · FIGHER CLUB · MY SUBSCRIBERS. FIGHER
+CLUB means *anyone with a TOTEHM* — one habit, one objective, one repulsion. Say it that way on screen: never
+« everyone with an account ».
+
+**ENTERING A MODE IS A PLACE, NOT A SETTING.** List · Shorts · (Radar, in Habits). In Shorts and Radar the
+joystick leaves: that is how you know you went in. Escape or the cross brings the list — and the joystick — back.
+
 ## CURRENT UPDATE — 15/10/2026 (bis) · the network is alive, and the first screen SELLS (overrides parts of the processor update above)
 
 **The ramifications take the WHOLE screen.** They are the published intention trait, at screen scale: 2 px, flat,

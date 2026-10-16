@@ -110,10 +110,11 @@ for(const [nom, data, test] of cas){
 }
 /* ── 5 · /@nom = l'univers (13/10) : lisible net, réservé flouté (son niveau seul), un tap ouvre sur place ── */
 {
-  const sp = (id, o) => Object.assign({ id, format:'space', habit:'Run the hill', intentions:['fight'], audience:'public', state:'was', city:'Lisbon', locked:false }, o);
+  /* 16/10 : il n'y a plus de PUBLIC — FIGHER CLUB est le niveau le plus ouvert, et il ne se badge donc pas. */
+  const sp = (id, o) => Object.assign({ id, format:'space', habit:'Run the hill', intentions:['fight'], audience:'figher', state:'was', city:'Lisbon', locked:false }, o);
   const UNI = { ok:true, me:false, signed_in:true, figher:false, totehm:{ audience:'subscribers', can_read:false, counts:{ habits:3 } },
     spaces:[ sp('a0000000-0000-4000-8000-000000000001', { photo:'u1/p.jpg' }), { locked:true, format:'space', audience:'subscribers' } ],
-    spots:[ sp('b0000000-0000-4000-8000-000000000002', { format:'spot', audience:'figher', state:'will', habit:'Read at dawn' }), { locked:true, format:'spot', audience:'figher', state:'am' } ] };
+    spots:[ sp('b0000000-0000-4000-8000-000000000002', { format:'spot', audience:'subscribers', state:'will', habit:'Read at dawn' }), { locked:true, format:'spot', audience:'figher', state:'am' } ] };
   const { pg, log } = await page(browser, { dir:'com', origin:'https://www.totehm.com', rpc:{ creator_page:KAI({}), creator_universe:UNI, my_console:{ signed_in:true, offer:{ enabled:false } } },
     tables:{ profiles:[{ pseudo:'wah' }] }, viewport:{ width:390, height:844 } });
   /* l'URL signée sert une vraie image : sinon `onerror` la retire avant qu'on la voie (course, comme en prod sur un fichier absent) */
@@ -127,7 +128,7 @@ for(const [nom, data, test] of cas){
   ok(locked.every(x => x.badge && !/Run the hill|Read at dawn|Lisbon/.test(x.t)) && locked.map(x => x.label).join(',') === 'MY SUBSCRIBERS,FIGHER CLUB', 'reserved = blurred, its level only: ' + locked.map(x => x.label).join(','));
   ok(/I AM HERE/.test(locked[1].t), 'a reserved spot still says its state');
   await pg.waitForFunction(() => document.querySelector('#uni img[data-photo]')?.getAttribute('src'));
-  ok(await pg.locator('#uni [data-open="spot"] .audb').count() === 1 && await pg.locator('#uni [data-open="space"] .audb').count() === 0, 'a readable item shows its level unless PUBLIC');
+  ok(await pg.locator('#uni [data-open="spot"] .audb').count() === 1 && await pg.locator('#uni [data-open="space"] .audb').count() === 0, 'un élément lisible dit son niveau SAUF FIGHER CLUB, le plus ouvert (16/10)');
   await pg.click('#uni .u-t.is-locked');
   ok(/subscribe to open it/i.test(await pg.textContent('#note')), 'a reserved tile points to Subscribe');
   ok(log.rpc.some(r => r.name === 'creator_universe' && r.body.p_pseudo === 'kai'), 'one read: creator_universe(kai)');

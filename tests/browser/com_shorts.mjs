@@ -26,7 +26,7 @@ function serveur(){
     element_media_remove:b=>{ const m=items.find(x=>x.id===b.p_id); items=items.filter(x=>x.id!==b.p_id); return m?{ok:true,path:m.path}:{ok:false,why:'not_mine'}; },
     element_media_rekey:b=>{ let k=0; items.forEach(m=>{ if(m.kind==='h'&&m.ref===b.p_old){ m.ref=b.p_new; k++; } }); return k; },
     my_trips:{signed_in:true,trips:[{id:'o1',text:'Ship it',is:['express']}],reps:[],wisdom:[],visions:[]},
-    habit_spaces:{ok:true,mine:true,habits:[{habit:'Call mum',total:1,total_spaces:1,total_spots:0,spaces:[{id:'sp1',format:'space',photo:UID+'/bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb.jpg',starts_at:'2026-10-12T08:00:00Z'}],spots:[]}]},
+    habit_spaces:{ok:true,mine:true,habits:[{habit:'Call mum',total:1,total_spaces:0,total_spots:1,spaces:[],spots:[{id:'sp1',format:'spot',state:'will',photo:UID+'/bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb.jpg',starts_at:'2026-10-12T08:00:00Z',exact:{lat:38.72,lng:-9.14,place:'the hill'}}]}]},
     element_cloths:{ok:true,mine:true,elements:[]},my_visions:{ok:true,visions:[]},my_landing:LAND};
 }
 const ouvrirTotehm=async pg=>{await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(800);
@@ -51,14 +51,14 @@ try{
   const s1=await pg.evaluate(()=>{const sc=document.getElementById('fv-inner'),l=[...document.querySelectorAll('#habits .sh')],cs=getComputedStyle(sc);
     return {n:l.length,h:l.map(e=>Math.round(e.getBoundingClientRect().height)),root:sc.clientHeight,snap:cs.scrollSnapType,
       boites:l.map(e=>e.querySelector('.habit[data-row] .v-name')?.textContent),img:!!l[0].querySelector('.sh-m img[src]'),
-      vide:!!l[1].querySelector('.sh-none'),traits:[...l[1].querySelectorAll('.sh-ints i')].map(i=>getComputedStyle(i).backgroundColor),cap:!!l[1].querySelector('.sh-none [data-cap]'),
+      vide:!!l[1].querySelector('.sh-none'),traits:[...l[1].querySelectorAll('.sh-ints i')].map(i=>getComputedStyle(i).backgroundColor),cap:(l[1].querySelector('.sh-none [data-cap]')||{}).textContent||'',
       space:!!l[2].querySelector('.sh-m img[data-b="moments"]'),tick:getComputedStyle(l[0].querySelector('.habit .tick')).opacity};});
   ok(anim>=1,'la bascule liste → shorts s\'anime');
   ok(s1.n===3&&s1.h.every((x,i)=>i===1?x>=s1.root-2:Math.abs(x-s1.root)<=2)&&/y mandatory/.test(s1.snap),'shorts : UNE Habit par écran (la hauteur de la liste ; l\'ouverte grandit avec sa boîte), le défilement aimanté '+s1.h.join('/')+' ≈ '+s1.root);
   ok(JSON.stringify(s1.boites)===JSON.stringify(['Run the hill','Read at dawn','Call mum'])&&s1.tick==='1','chaque short porte SA boîte, telle quelle (le titre, le trait d\'intention)');
   ok(s1.img,'son média DEVANT : le fichier le plus récent de l\'Habit (photo signée)');
-  ok(s1.vide&&JSON.stringify(s1.traits)===JSON.stringify(['rgb(55, 138, 221)','rgb(99, 153, 34)'])&&s1.cap,'sans média : son papier, ses intentions (focus, love), « photo · video » — rien d\'inventé');
-  ok(s1.space,'sinon la photo d\'un de ses spaces (Call mum)');
+  ok(s1.vide&&JSON.stringify(s1.traits)===JSON.stringify(['rgb(55, 138, 221)','rgb(99, 153, 34)'])&&s1.cap==='Add a media','sans média : son papier, ses intentions (focus, love), [Add a media] sans icône — rien d\'inventé');
+  ok(s1.space,'sinon la photo d\'un de ses spots (Call mum)');
   ok(await ici(pg)==='Read at dawn','la bascule garde l\'Habit courante (Read at dawn)');
   await pg.screenshot({path:OUT+'/shorts_'+(tel?'tel':'ordi')+'.png'});
   // ↑ ↓ d'une Habit à l'autre (le défilement aimanté, animé)
@@ -72,7 +72,7 @@ try{
   // ── capturer / importer DEPUIS l'élément ──
   await pg.locator('#habits .sh.is-ici [data-open]').first().evaluate(e=>e.click());await pg.waitForTimeout(400);
   const f0=await pg.locator('#habits .sh.is-ici .habit [data-cap]').count();
-  ok(f0===1,'la boîte ouverte (la mienne) a ses fichiers et « + »');
+  ok(f0===1,'la boîte ouverte (la mienne) a ses fichiers et UN SEUL [Add a media]');
   await pg.locator('#habits .sh.is-ici .habit [data-cap]').first().evaluate(e=>e.click());await pg.waitForTimeout(450);
   const c=await pg.evaluate(()=>({on:document.getElementById('cap').classList.contains('is-on'),btn:[...document.querySelectorAll('#cap .cap-b')].map(b=>b.textContent.trim()),
     tr:getComputedStyle(document.getElementById('cap-in')).transitionDuration}));
@@ -111,11 +111,20 @@ try{
   const dels=log.upload.filter(u=>u.method==='DELETE').length;
   await pg.locator('#habits .sh.is-ici .m-f',{hasText:'notes.pdf'}).locator('[data-emx]').evaluate(e=>e.click());await pg.waitForTimeout(700);
   ok(log.rpc.some(r=>r.name==='element_media_remove')&&log.upload.filter(u=>u.method==='DELETE').length===dels+1&&!(await pg.evaluate(()=>[...document.querySelectorAll('#habits .m-f .mini-t')].some(b=>b.textContent==='notes.pdf'))),'« × » : element_media_remove, le fichier s\'efface de mon dossier');
-  // retour à la liste : l'Habit courante est gardée
+  // ── 16/10 : la vue Habit a TROIS modes ; Échap sort du mode avant de replier le Totehm ──
   await pg.locator('#habits .sh.is-ici [data-x]').first().evaluate(e=>e.click()).catch(()=>{});await pg.waitForTimeout(300);
   await pg.click('#vmode');await pg.waitForTimeout(800);
-  const l1=await pg.evaluate(()=>({sh:document.querySelectorAll('#habits .sh').length,rows:document.querySelectorAll('#habits > .habit[data-row]').length,lbl:document.getElementById('vmode').getAttribute('aria-label')}));
-  ok(l1.sh===0&&l1.rows===3&&l1.lbl==='Shorts','retour à la liste, la même');
+  const rd=await pg.evaluate(()=>({mode:window.__totehm_sh().mode,radar:!!document.getElementById('rdr-c'),
+    cls:document.body.classList.contains('v-radar'),joy:getComputedStyle(document.getElementById('joy')).opacity,
+    say:(document.getElementById('rdr-say')||{}).textContent||'',lbl:document.getElementById('vmode').getAttribute('aria-label'),
+    pts:window.__totehm_rdr().points}));
+  ok(rd.mode==='radar'&&rd.radar&&rd.cls&&rd.lbl==='List','troisième mode de la vue Habit : le RADAR (le bouton mène ensuite à List)');
+  ok(rd.joy==='0','au radar comme en shorts, la manette s\'en va');
+  ok(rd.pts===1&&/1 spot/.test(rd.say),'le radar place MES spots, sans un appel de plus ('+rd.say+')');
+  await pg.evaluate(()=>window.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape'})));await pg.waitForTimeout(800);
+  const l1=await pg.evaluate(()=>({sh:document.querySelectorAll('#habits .sh').length,rows:document.querySelectorAll('#habits > .habit[data-row]').length,
+    lbl:document.getElementById('vmode').getAttribute('aria-label'),gate:document.body.classList.contains('gate'),joy:getComputedStyle(document.getElementById('joy')).opacity}));
+  ok(l1.sh===0&&l1.rows===3&&l1.lbl==='Shorts'&&!l1.gate&&l1.joy==='1','Échap revient à la LISTE (la manette revient), il ne replie pas le Totehm');
   // renommer une Habit : ses fichiers suivent ; la supprimer : ils partent
   const h1=await pg.evaluate(()=>[...document.querySelectorAll('#habits > .habit[data-row]')][0].dataset.row);
   await pg.locator('#habits [data-open="h:'+h1+'"]').evaluate(e=>e.click());await pg.waitForTimeout(300);
@@ -126,10 +135,23 @@ try{
   const rm0=log.rpc.filter(r=>r.name==='element_media_remove').length;
   await pg.locator('#habits .habit.open [data-kill]').evaluate(e=>e.click());await pg.waitForTimeout(900);
   ok(log.rpc.filter(r=>r.name==='element_media_remove').length===rm0+1,'supprimée : ses fichiers partent avec elle');
-  // une autre vue : pas de bascule
+  // ── 16/10 : CHAQUE vue a ses modes (deux ailleurs, trois dans les Habits) ──
   await pg.evaluate(()=>window.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowUp'})));await pg.waitForTimeout(900);
-  ok(await pg.evaluate(()=>window.__totehm_zone.vue==='objectives'&&getComputedStyle(document.getElementById('vmode')).display==='none'),'la bascule n\'existe que dans les Habits');
-  ok(await pg.evaluate(()=>{const h=document.getElementById('habits');return h.classList.contains('swap')&&h.classList.contains('sw-h')&&getComputedStyle(h).animationName==='swap-h';}),'changer de vue : la pile entre du côté du voyage (↑ : d\'en haut)');
+  const av=await pg.evaluate(()=>({vue:window.__totehm_zone.vue,btn:getComputedStyle(document.getElementById('vmode')).display,
+    lbl:document.getElementById('vmode').getAttribute('aria-label'),mode:window.__totehm_sh().mode}));
+  ok(av.vue==='objectives'&&av.btn==='flex'&&av.lbl==='Shorts'&&av.mode==='list','la bascule existe dans TOUTES les vues (objectives : liste, puis Shorts)');
+  await pg.click('#vmode');await pg.waitForTimeout(900);
+  const ao=await pg.evaluate(()=>({mode:window.__totehm_sh().mode,n:document.querySelectorAll('#habits .sh').length,
+    titre:(document.querySelector('#habits .sh .v-name')||{}).textContent||'',lbl:document.getElementById('vmode').getAttribute('aria-label')}));
+  ok(ao.mode==='shorts'&&ao.n===1&&ao.titre==='Ship it'&&ao.lbl==='List','objectives en shorts : SA boîte, un écran — et deux modes seulement (pas de radar)');
+  await pg.evaluate(()=>window.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape'})));await pg.waitForTimeout(700);
+  /* Le mode est gardé PAR VUE : revenu aux Habits, la liste y est restée la liste. */
+  await pg.evaluate(()=>window.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowDown'})));await pg.waitForTimeout(900);
+  const ret=await pg.evaluate(()=>{const h=document.getElementById('habits');
+    return {vue:window.__totehm_zone.vue,mode:window.__totehm_sh().mode,
+            swap:h.classList.contains('swap')&&h.classList.contains('sw-b')&&getComputedStyle(h).animationName==='swap-b'};});
+  ok(ret.swap,'changer de vue : la pile entre du côté du voyage (↓ : d\'en bas)');
+  ok(ret.vue==='habits'&&ret.mode==='list','le mode est gardé PAR VUE : les Habits étaient en liste, elles le sont restées');
   ok(!erreurs(log).length,nom+' · shorts : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
  // ── en lecture (le Totehm d'un autre) : ni bascule, ni fichiers ──
  {const source={ok:true,pseudo:'studio',steps:[{t:'Deep practice',is:['focus']}],objs:{},trips:[],reps:[],wisdom:[],visions:[]};

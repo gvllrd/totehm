@@ -213,6 +213,10 @@ main{width:100%;max-width:520px;margin:0 auto;padding:max(84px,11dvh) 16px 96px;
 .cm-close{position:fixed;top:14px;right:16px;z-index:2;background:none;border:0;padding:6px;cursor:pointer;font:400 10px 'Space Mono',monospace;letter-spacing:.12em;color:#b0b0b0}
 #member-window .cm-menu{padding:0 0 22px}
 @media(hover:hover){.cm-action:hover{background:#2c2c32;color:#fff}.cm-close:hover,#menu:has(.cm-menu) .m-it:hover{color:#fff}}
+/* ⚠️ EN CADRE (`?embed=1`, 16/10) : la page entre dans la couche `XO` de COM. Le coin membre et son
+   menu n'ont rien à faire ici — l'espace membre vit au VERSO du papier, dans COM, et nulle part ailleurs. */
+html.is-embed #member,html.is-embed #menu{display:none!important}
+html.is-embed,html.is-embed body{background:#000}
 </style>
 </head>
 <body>
@@ -271,7 +275,7 @@ function comMemberLinks(home = false, enabled = null) {
     item('<a class="cm-action" href="/search">Search a TOTEHM</a>', 'Turn it over') +
     item('<a class="cm-action" id="btn-get-higher" data-com-bridge="space" href="https://www.totehm.space/get_higher">Get ' + COM_HIGHER_BADGE + '</a>', 'Put it on your tongue') +
     item('<a class="cm-action" href="/higherself">Reflect with my TOTEHM</a>', 'Higher Self · TotehmBot') +
-    item(home ? '<button class="cm-action" id="myspaces-open" type="button">My TOTEHM spaces</button>' : '<a class="cm-action" href="/totehm?spaces=1">My TOTEHM spaces</a>', 'My TOTEHM, right now, right here · in SPACE') +
+    item('<a class="cm-action" href="/higher">' + COM_HIGHER_BADGE + '</a>', 'Every day · my habits in Telegram') +
     item('<a class="cm-action" id="wear-btn" data-com-bridge="boutique" href="https://www.higher.boutique/">Totehmize my cloth</a>', 'HIGHER BOUTIQUE') +
     item('<a class="cm-action" data-com-monetize href="' + (enabled === false ? '/monetize' : '/console') + '">' + (enabled === false ? 'Monetize my TOTEHM ecosystem' : 'Manage my subscriptions') + '</a>', '<span data-com-offer-hint>' + (enabled === false ? 'Your audience · your annual subscription' : enabled === true ? 'My offer · my subscribers · my subscriptions' : 'Subscription settings') + '</span>') +
     '</nav>';
@@ -333,23 +337,45 @@ wireComMemberMenu($('menu'),{bridge:(target,url)=>comMemberBridge(sb,target,url,
 const esc = s => { const d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; };
 /* ══ AUDIENCE — 13/10 : quatre niveaux, une pastille. COPIÉ tel quel depuis tools/audience_ui.js
    (jamais importé). PRIVATE = moi · FIGHER CLUB = les membres · MY SUBSCRIBERS = mes abonnés ·
-   PUBLIC = tout le monde. Le serveur décide (`_audience_ok`) ; ceci ne fait que le dire. ══ */
-const AUD = [['private','PRIVATE'],['figher','FIGHER CLUB'],['subscribers','MY SUBSCRIBERS'],['public','PUBLIC']];
+   16/10 : FIGHER CLUB EST le plus ouvert (il n'y a plus de PUBLIC). Le serveur décide (`_audience_ok`) ;
+   ceci ne fait que le dire. ══ */
+/* ⚠️ TROIS NIVEAUX DEPUIS LE 16/10 (Wah : « y a pas de mode PUBLIC »). FIGHER CLUB est le plus ouvert :
+   c'est le public, à condition d'avoir un Totehm (une habit, un objectif, une répulsion). La base normalise
+   une ancienne valeur `public` en `figher` ; la page la LIT donc comme FIGHER CLUB et ne la propose plus. */
+const AUD = [['private','PRIVATE'],['figher','FIGHER CLUB'],['subscribers','MY SUBSCRIBERS']];
+const audNorm = a => a === 'public' ? 'figher' : a;
 const AUD_ICON = {
   private:'<svg viewBox="0 0 12 12" aria-hidden="true"><rect x="2.5" y="5.5" width="7" height="5" rx="1" fill="currentColor"/><path d="M4 5.5V4a2 2 0 0 1 4 0v1.5" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>',
   figher:'<svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="4.6" fill="none" stroke="currentColor" stroke-width="1.2"/><circle cx="6" cy="6" r="2.2" fill="none" stroke="currentColor" stroke-width="1.2"/><circle cx="6" cy="6" r=".9" fill="currentColor"/></svg>',
   subscribers:'<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 1.2l1.4 3 3.3.4-2.4 2.3.6 3.3L6 8.6 3.1 10.2l.6-3.3L1.3 4.6l3.3-.4z" fill="currentColor"/></svg>',
   public:'<svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="4.6" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M1.4 6h9.2M6 1.4c-2.6 2.6-2.6 6.6 0 9.2M6 1.4c2.6 2.6 2.6 6.6 0 9.2" fill="none" stroke="currentColor" stroke-width="1"/></svg>'
 };
-const audOf = s => s?.audience || (s?.visibility === 'shared' ? 'public' : 'private');
-const audName = a => (AUD.find(x => x[0] === a) || [])[1] || '';
-const audPick = (cur, attr) => '<div class="aud" role="radiogroup" aria-label="Who sees it">' + AUD.map(([k, l]) =>
-  '<button type="button" role="radio" aria-checked="' + (k === cur) + '"' + (k === cur ? ' class="is-on"' : '') + ' ' + attr + '="' + k + '">' + AUD_ICON[k] + '<span>' + l + '</span></button>').join('') + '</div>';
+const audOf = s => audNorm(s?.audience || (s?.visibility === 'shared' ? 'figher' : 'private'));
+const audName = a => (AUD.find(x => x[0] === audNorm(a)) || [])[1] || '';
+const audPick = (cur0, attr) => { const cur = audNorm(cur0); return '<div class="aud" role="radiogroup" aria-label="Who sees it">' + AUD.map(([k, l]) =>
+  '<button type="button" role="radio" aria-checked="' + (k === cur) + '"' + (k === cur ? ' class="is-on"' : '') + ' ' + attr + '="' + k + '">' + AUD_ICON[k] + '<span>' + l + '</span></button>').join('') + '</div>'; };
 const audBadge = a => AUD_ICON[a] ? '<span class="audb" role="img" aria-label="' + audName(a) + '" title="' + audName(a) + '">' + AUD_ICON[a] + '</span>' : '';
-const audMark = (root, attr, a) => root?.querySelectorAll('[' + attr + ']').forEach(b => { const on = b.getAttribute(attr) === a;
-  b.classList.toggle('is-on', on); b.setAttribute('aria-checked', String(on)); });
+const audMark = (root, attr, a0) => { const a = audNorm(a0); return root?.querySelectorAll('[' + attr + ']').forEach(b => { const on = b.getAttribute(attr) === a;
+  b.classList.toggle('is-on', on); b.setAttribute('aria-checked', String(on)); }); };
 /* ══ fin AUDIENCE ══ */
-const BUILD='2026-10-13-univers';
+const BUILD='2026-10-16-univers-embed';
+
+/* ══ EN CADRE DANS COM (`?embed=1`) ═════════════════════════════════════
+   Wah, 16/10 : « il ne faut pas que ça saute entre totehm.com et totehm.com/@{Nom} ». COM ouvre cette
+   page dans sa couche `XO` (même origine, même session) : la galaxie plonge dans l'étoile et l'univers
+   est là, sans navigation. Ce que le cadre change, et rien d'autre :
+     • le coin membre et son menu sont cachés (CSS `is-embed`) ;
+     • toute navigation sort du cadre par le HAUT (même origine : `window.top` est lisible) — sinon
+       Stripe refuserait de s'afficher dans un cadre et le parcours d'abonnement casserait en silence ;
+     • Échap demande la fermeture au parent, qui rejoue la plongée à l'envers.
+   Hors cadre, la page ne change pas d'un octet. */
+const EMBED = new URLSearchParams(location.search).has('embed');
+if(EMBED) document.documentElement.classList.add('is-embed');
+const dire = (ev, extra) => { if(!EMBED) return;
+  try{ parent.postMessage({ totehm:'x', ev, ...(extra || {}) }, location.origin); }catch(_){} };
+/* ⚠️ UNE SEULE SORTIE. En cadre on navigue la fenêtre du HAUT, jamais le cadre : un Checkout Stripe
+   dans un cadre est refusé par Stripe, et un `/totehm` dans un cadre dans COM serait COM dans COM. */
+const nav = u => { if(EMBED){ try{ (window.top || window).location.href = u; return; }catch(_){} } location.href = u; };
 
 const COLOR = { fight:'#E24B4A', flow:'#e48b31', enrich:'#fcbe21', love:'#639922', express:'#1D9E75', focus:'#378ADD', celebrate:'#7F77DD' };
 const money = (c, cur) => { try{ return new Intl.NumberFormat('en', { style:'currency', currency:(cur||'eur').toUpperCase(), maximumFractionDigits: c % 100 ? 2 : 0 }).format(c/100); }catch(_){ return (c/100) + ' ' + (cur||'eur'); } };
@@ -417,7 +443,7 @@ function NameSearch({input,results,note,vide=true,onResults=()=>{}}){
     draw(q);
     if(ouvrir&&rows.length){
       const pile=rows.find(r=>r.pseudo.toLowerCase()===q.toLowerCase())||rows[0];
-      location.href=href(pile.pseudo);
+      nav(href(pile.pseudo));
     }
   }
   input.addEventListener('input',()=>{ clearTimeout(timer); const v=propre(input.value); timer=setTimeout(()=>run(v),220); });
@@ -529,7 +555,7 @@ function tileHTML(x){
     (x.photo ? '<img alt="" data-photo="' + esc(x.photo) + '">' : '') + '<span class="u-ints" aria-hidden="true">' + ints + '</span>' +
     '<span class="u-h">' + esc(x.habit || '') + '</span>' +
     (x.format === 'spot' ? '<span class="u-st">' + (STATE[x.state] || '') + (x.city ? ' · ' + esc(x.city) : '') + '</span>' : '') +
-    (audOf(x) !== 'public' ? audBadge(audOf(x)) : '') + '</button>';
+    (audOf(x) !== 'figher' ? audBadge(audOf(x)) : '') + '</button>';
 }
 async function loadUniverse(){
   const seq = ++uniSeq, uid = me?.id || null;
@@ -548,7 +574,7 @@ async function loadUniverse(){
 }
 $('uni').addEventListener('click', e => {
   const o = e.target.closest('[data-open]');
-  if(o){ location.href = '/totehm?' + new URLSearchParams({ open:o.dataset.open, id:o.dataset.id }); return; }
+  if(o){ nav('/totehm?' + new URLSearchParams({ open:o.dataset.open, id:o.dataset.id })); return; }
   const l = e.target.closest('[data-lock]'); if(!l) return;
   /* Réservé : s'abonner ouvre tout ce qui n'est pas privé (FIGHER CLUB compris). */
   const sub = $('offer').querySelector('[data-do=subscribe]');
@@ -568,7 +594,7 @@ async function subscribe(b){
       headers:{ 'content-type':'application/json', 'apikey':SB_ANON, 'authorization':'Bearer ' + s.access_token },
       body: JSON.stringify({ pseudo: C.pseudo, from: 'page' }) });
     const j = await r.json().catch(() => ({}));
-    if(j.url){ location.href = j.url; return; }
+    if(j.url){ nav(j.url); return; }
     if(j.already){ say('you are already subscribed', 'ok'); await loadPage(); return; }
     if(!r.ok) console.error('[creator-subscribe]', r.status, j.error || '');
     say(({ closed:'not open to subscriptions', self:'this is your own TOTEHM', signin:'connect first', nobody:'no TOTEHM by that name' })[j.error] || 'checkout is unavailable, try again', 'no');
@@ -578,8 +604,8 @@ async function subscribe(b){
 $('offer').addEventListener('click', async e => {
   const b = e.target.closest('[data-do]'); if(!b) return;
   const d = b.dataset.do;
-  if(d === 'open') location.href = '/totehm?ro=' + encodeURIComponent(C.pseudo);
-  if(d === 'mine') location.href = '/totehm#in';
+  if(d === 'open') nav('/totehm?ro=' + encodeURIComponent(C.pseudo));
+  if(d === 'mine') nav('/totehm#in');
   if(d === 'subscribe') subscribe(b);
   if(d === 'copy'){
     const url = 'https://www.totehm.com/@' + encodeURIComponent(C.pseudo);
@@ -633,12 +659,16 @@ $('menu').addEventListener('click', async e => {
   if(e.target.closest('[data-signin]')){
     $('menu').classList.remove('is-open');
     if(NAME && C?.ok && C.sale?.open && !C.viewer?.subscribed && !C.viewer?.can_read){ WANT = null; showSignin(); }
-    else location.href = '/totehm#in';
+    else nav('/totehm#in');
   }
   if(e.target.closest('[data-out]')){ await sb.auth.signOut({ scope:'local' }); $('menu').classList.remove('is-open'); await session(); if(NAME) loadPage(); else searchCtl.start($('q').value); }
 });
 document.addEventListener('pointerdown', e => { if(!e.target.closest('#menu,#member')) $('menu').classList.remove('is-open'); });
-document.addEventListener('keydown', e => { if(e.key === 'Escape') $('menu').classList.remove('is-open'); });
+document.addEventListener('keydown', e => { if(e.key !== 'Escape') return;
+  const ouvert = $('menu').classList.contains('is-open');
+  $('menu').classList.remove('is-open');
+  /* En cadre, Échap sur une page sans menu ouvert demande la fermeture de la couche. */
+  if(!ouvert) dire('close'); });
 
 /* ══ DÉMARRAGE ═══════════════════════════════════════════════════════ */
 const searchCtl = NameSearch({ input:$('q'), results:$('res'), note:$('q-note') });
@@ -661,6 +691,7 @@ if(NAME){
   searchCtl.start(q0);
   setTimeout(() => $('q').focus(), 60);
 }
+dire('ready');
 sb.auth.onAuthStateChange(event => { if(event === 'INITIAL_SESSION') return;
   setTimeout(async () => { await session(); if(NAME) loadPage(); else searchCtl.start($('q').value); }, 0); });
 </script>

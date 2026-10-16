@@ -1,4 +1,4 @@
-# CLAUDE.md — CTO de TOTEHM (racine · réorganisé le 30/09, mis à jour le 15/10/2026)
+# CLAUDE.md — CTO de TOTEHM (racine · réorganisé le 30/09, mis à jour le 16/10/2026)
 > **Ce fichier est chargé à CHAQUE session : il reste court (≤ 250 lignes).**
 > Détails : `CLAUDE.md` du domaine ; histoire : `docs/POSTMORTEMS.md`,
 > à lire seulement si utile. Avant copy, naming ou UI : section utile de `BRAND.md`.
@@ -50,10 +50,8 @@ l'architecture et de la stabilité. Wah change de vision vite : on s'adapte.
 |---|---|---|
 | `BRAND.md` | qu'est-ce que TOTEHM et pourquoi (copy, naming, UI) | à la demande, par section |
 | `TOTEHM_MASTER.md` | la vision, les prix, les arbitrages ; §0 = écarts code/vision | gitignoré (dépôt public, il porte les prix) |
-| `CLAUDE.md` (racine) | comment on construit, transverse | toujours |
-| `com/ club/ space/ boutique/ backend/ CLAUDE.md` | comment on construit CE domaine | quand on travaille dans le dossier |
-| `backend/SYSTEM.md` | ce qui existe VRAIMENT, mesuré et daté | à la demande, par `grep` |
-| `backend/README.md` | comment marche le backend, les procédures | à la demande, par `grep` |
+| `CLAUDE.md` (racine) · `com/ club/ space/ boutique/ backend/ CLAUDE.md` | comment on construit : transverse, puis CE domaine | la racine toujours ; le domaine quand on y travaille |
+| `backend/SYSTEM.md` · `backend/README.md` | ce qui existe VRAIMENT (mesuré, daté) ; comment marche le backend et ses procédures | à la demande, par `grep` |
 | `docs/POSTMORTEMS.md` | l'histoire : bugs, décisions dépassées, texte intégral des anciennes règles | jamais d'office |
 | `CLAUDE_CODE.md` | la tâche en cours pour Claude Code (Oracle/n8n) | quand il y en a une |
 
@@ -63,9 +61,11 @@ Les `CLAUDE.md` des dossiers servis par Vercel sont exclus du déploiement (`.ve
 ## L'architecture — direction du 15/10/2026 (publiée en production)
 
 ```
-com/      → www.totehm.com       LA PLATEFORME (15/10 bis, le réseau) : le Totehm (5 vues, liste + shorts, capture dans l'élément), /auth, /@nom, /console, /spot (création avec Habit) ; TROIS vues
-                                 verticales : ↑ Get Higher (la bouche, le cerveau aux 7 couleurs) · le processeur (le réseau des 7 intentions PLEIN ÉCRAN, qui pulse au rythme réel de mes Habits ;
-                                 Mine · Others = la galaxie des dos de papier) · ↓ ma Reflection ; le verso = TOUT l'espace membre (réglages, compte, console en couche) ; XO sert /x/space et /x/club
+com/      → www.totehm.com       LA PLATEFORME (16/10) : le Totehm (5 vues × DEUX MODES — liste et shorts —, plus le RADAR dans la vue Habit ; capture et spot dans
+                                 l'élément), /auth, /@nom, /console, /monetize, /higher (la vente de l'abonnement Higher), /spot ; TROIS vues verticales : ↑ Get Higher (la bouche, le
+                                 cerveau aux 7 couleurs) · le processeur (le réseau des 7 intentions PLEIN ÉCRAN au rythme de mes Habits ; Mine · Others = une MULTITUDE de dos de
+                                 papier, la recherche AU MILIEU) · ↓ ma Reflection ; le NOM en haut au centre, il n'en bouge jamais ; le verso = le MENU MEMBRE ; XO sert /x/space,
+                                 /x/club et /@nom (l'univers d'un membre s'ouvre SUR PLACE : zéro saut)
 space/    → www.totehm.space     Galerie 3D visitable d'art digital : TotehmPaper, Get Higher, Stoner, Lisbon, Origins/Quantum,
                                  /market et collection. Expériences déplacées sans refonte. /social et /s/:id préservent les contenus existants.
 club/     → www.figher.club      Consultation : passé / maintenant / futur × RADAR / SHORTS, mêmes filtres et résultats autorisés.
@@ -104,23 +104,22 @@ projet la ferme : ni space, ni vibe, ni Higher Self avant « save with my email 
   express · focus · celebrate (contrainte `check` en base). Piliers : fight,
   flow → BODY · enrich, focus → MENTAL · express, celebrate → SOUL · love →
   SPIRIT. Liens croisés = tables de jointure, jamais une colonne.
-- **Le Totehm est le passeport** : complet = une boîte NON VIDE dans chacune
-  des 5 vues (`totehm_complete()`).
-- **Adhésion FIGHER CLUB** (15/10) = une Box non vide dans chacune des cinq vues, calculée côté serveur
-  par `totehm_complete` / `_figher` ; aucun achat, abonnement ou comp ne remplace cette condition.
+- **Adhésion FIGHER CLUB** (16/10) = UNE habit + UN objectif + UNE répulsion non vides, calculée côté serveur
+  (`_figher().member` ; `needs` dit ce qui manque). Le Club EST le public : il n'y a pas d'autre niveau au-dessus.
+  Aucun achat, abonnement ou comp ne remplace cette condition. `complete` (les 5 vues) reste, informatif.
   **Accès artistique historique** = `_art_passport` (ancien THP + Habit ou comp), distinct de l'adhésion.
-  Propriété THP, Stoner, achats/reventes et abonnements créateur gardent leurs règles et identifiants.
 - **Un seul système de droits** : `_subscriber_of(créateur, fan)`,
   `creator_page(pseudo)`, `my_entitlements()`. L'abonnement est à sens
   unique : Bob → Alice ne donne rien à Alice sur Bob. **Depuis le 01/10 :**
   COM et SPACE sont gratuits pour soi ; un abonné = un abonnement vivant à
   UN créateur, ANNUEL, prix fixé par le créateur, sans passeport FIGHER.
-  **QUATRE NIVEAUX (13/10)**, colonne `audience` (source ; `visibility` suit par trigger) sur un space,
-  un spot, le Totehm : PRIVATE · FIGHER CLUB · MY SUBSCRIBERS · PUBLIC. Défauts : Totehm PRIVATE, space
-  PUBLIC, spot FIGHER CLUB. Lire = `_audience_ok` ; les vitrines LISTENT `_audience_listed` (public + FIGHER
-  CLUB aux membres ; le réservé aux abonnés reste sur `/@nom` et apparaît aussi dans le Club via `club_spots` pour les bons abonnés) ; le point exact (ON) = `_point_ok` (l'auteur,
-  un membre FIGHER CLUB si public/figher, un abonné). Un abonné lit tout ce qui n'est pas privé. Écrire =
-  `*_audience`, `spot_audience_set`, `visibility_set`. Jamais une distance ni un cap à qui n'a pas le point. TotehmBot = offre à part.
+  **TROIS NIVEAUX (16/10 ; PUBLIC est mort)**, colonne `audience` (source ; `visibility` suit par trigger) sur
+  un spot, le Totehm : PRIVATE · FIGHER CLUB · MY SUBSCRIBERS. Défauts : Totehm PRIVATE, spot FIGHER CLUB. La
+  contrainte `check` accepte encore `public` (la changer demanderait un `drop`) : les deux triggers le NORMALISENT
+  en `figher`, et `_audience_ok`/`_audience_listed`/`_point_ok` ne le traitent jamais comme plus ouvert. Lire =
+  `_audience_ok` ; les vitrines LISTENT `_audience_listed` (FIGHER CLUB aux membres) ; le point exact (ON) =
+  `_point_ok`. Sans compte on ne liste AUCUN contenu : restent ouverts les NOMS (`totehm_galaxy`, `totehm_search`)
+  et `/@nom`. Écrire = `*_audience`, `spot_audience_set`, `visibility_set`. TotehmBot = offre à part.
 - **La propriété est un exemplaire** (`art_editions`), son histoire
   `art_transfers` (ajout seul). `stoner_access` = projection d'accès ; le THP
   = l'œuvre `totehmpaper` (777 000 ex.), prix = sa ligne `artworks`. Le numéro appartient à cet exemplaire THP ;
@@ -166,7 +165,8 @@ vérifié le 30/09 : `checkout.session.completed`, `invoice.paid`,
 - **CORS** : `corsHeaders(origin, fallback)` de `_shared/origins.ts`, jamais `*`.
 - **Claude Code** (terminal) : une commande simple par ligne, jamais
   `cd X && …` (les permissions jugent la ligne entière).
-**SPACE · 11/10 :** un space = une Habit vécue (photo/vidéo + son pourquoi), jamais un point exact ; sans selfie ni
+**16/10 — PLUS DE SPACES DANS COM** (Wah) : une Habit Box ne montre que ses SPOTS, « + a space » est parti, `[Add a media]` et `[Add a spot]` remplacent les icônes, et un spot
+s'annonce DANS la boîte (deux champs, le point du navigateur exigé — jamais une position calculée depuis une ville). **SPACE · 11/10 :** un space = une Habit vécue, jamais un point exact ; sans selfie ni
 musique ajoutée ; vibes, profils ; **ce qui vient du Totehm reste TEL QUEL** (la box de COM ; à la publication, un tap éteint/rallume une mini-box ou le
 rythme, `spot_box_set`) ; le reste (space, spot) au format de sa plateforme. **figher.club :** un spot = un lieu + une heure (Higher spot : chez soi, lieu privé ou dehors) ;
 radar, annonce (toujours ON), agenda, I AM HERE, passés ; OFF = ville, ON = le point (`_point_ok`). Mini-boxes
@@ -206,9 +206,9 @@ My spaces (COM ; DELETE aussi dans la fiche) + `space-delete` ; une Box MY STORY
   se détache par sa VALEUR. Exceptions : la tuile perforée (texture), les
   arêtes d'une boîte en verre 3D, le pointillé d'une place vide. Ombre autorisée sur les Habit Boxes du feed SPACE.
 - **Contrôles** sur les quatre domaines : gris, `border-radius:10px`. **Le
-  nom du Totehm = Quantico Coral SUR le navy du papier** (12/10 : plus de boîte noire ; au centre de COM, écrit sur le papier),
-  accès membre sans point/carré ni T statique centré. Le papier conserve son navy
-  perforé ; « by » reste à côté. Aucun motif perforé comme fond de contrôle, sauf [Decode a Totehm Cloth] au survol et en saisie (tuile navy, 06/10). **Aucun fond
+  nom du Totehm = Quantico Coral, EN HAUT AU CENTRE, en petit, et il ne change JAMAIS de place** (16/10 : plus sur le recto du papier — une seule place pour un nom ; toute
+  animation compose avec lui, `--tn-h`),
+  accès membre sans point/carré ni T statique centré ; le papier garde son navy perforé. Aucun motif perforé comme fond de contrôle, sauf [Decode a Totehm Cloth] au survol et en saisie (tuile navy, 06/10). **Aucun fond
   blanc** sur un bouton, une option, une sélection, un panneau : tout reste
   sombre (sélection = gris clair + filet blanc). Une BOÎTE reste carrée.
 - Boutons ajustés au label. **Chaque Box a une petite loupe : un tap agrandit son contenu EN PLACE
