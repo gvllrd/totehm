@@ -4,7 +4,7 @@
 > Quatre projets READY et huit alias vérifiés (`395c7ca`) ; 25 contrôles HTTP et 40 anciennes adresses réussis ; détail : `../docs/GALLERY_CLUB_20261015.md`.
 > Les mesures historiques du lot C publiées dans `13abd34` sont conservées avec leur date propre.
 
-**Dernier relevé : 16 octobre 2026, Lisbon unifié dans la galerie SPACE et publié ; réseau neuronal COM de Claude conservé** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
+**Dernier relevé : 16 octobre 2026, le lot E publié (base, COM, `/higher`, `/monetize`) ; Lisbon unifié dans la galerie SPACE conservé** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
 
 > **À quoi sert ce fichier.** Les masters disent *ce qu'on veut*. `CLAUDE.md` dit
 > *comment on construit*. **Celui-ci dit ce qui existe vraiment.**
@@ -19,6 +19,26 @@
 
 ---
 
+
+## 0 · LE CLUB EST LE PUBLIC, DEUX MODES PAR VUE, LA GALAXIE SANS SAUT, DEUX OFFRES NOMMÉES — 16/10/2026 (lot E)
+
+| Mesure | Résultat |
+| --- | --- |
+| Commit fusionné | `6048ae7` (fusion `46b3dcf` : galerie SPACE ciel/marbre/ficus/Lisbonne) |
+| Migration | `club_ouvert_trois_objets`, appliquée UNE fois ; 13 `create or replace`, 3 `update … where`, aucun `drop` |
+| Corps en base = dépôt | 12 fonctions, `prosrc` MD5 identiques au fichier : `_figher 33b3bb62` · `_spot_audience_sync 93dd5656` · `_totehm_audience_sync 28a250ab` · `_audience_ok db9e0056` · `_audience_listed 1bfd9357` · `_point_ok 98014ac2` · `_audience_put 47bfd22b` · `visibility_set bd5cf8d7` · `spot_audience_set 155aa020` · `space_post_audience a436af53` · `spot_create_audience bee37883` · `spot_schedule_audience e92044b0` |
+| Droits | `anon` et `authenticated` : non sur les 7 règles d'accès ; `authenticated` : oui sur les 5 écrivains |
+| Selftest SQL | `club_ouvert_trois_objets_selftest.sql` : 20 contrôles, `FAIL={}`, fixtures annulées |
+| Adhésion mesurée | 1 habit + 1 objectif + 1 répulsion ⇒ `member` vrai, `complete` FAUX (les 5 vues restent informatives) ; habit seule ⇒ `member` faux, `needs = ["objective","repulsion"]` |
+| PUBLIC | écrit `public` sur `totehms` et `spot_plans` ⇒ relu `figher` (les triggers) ; `_audience_ok('public', anon)` faux · `_audience_listed('public', anon)` faux · `_point_ok('public', anon)` faux ; `visibility_set('public')` rend `figher` ; projection 0,1° éteinte |
+| Prod `www.totehm.com/totehm` | 200 · MD5 `2de93bed` · 706 363 o · `BUILD='2026-10-16-com-modes'` = le dépôt, octet pour octet |
+| Prod `www.totehm.com/higher` | 200 · MD5 `84c20f52` · 27 503 o · `BUILD='2026-10-16-higher'` = le dépôt (page NEUVE, servie par `cleanUrls`) |
+| Prod `www.totehm.com/monetize` | 200 · MD5 `c9a3a88c` · 25 448 o · `BUILD='2026-10-16-monetize'` = le dépôt |
+| Lus en prod · présents | `#conn-bar` (le nom en haut) · `[Add a spot]` · `ICO_RADAR` · « your brain » · « your strategy » · « An objective you keep in your head is a wish » · `Gollwitzer` · `Monetize my TOTEHM` · la couche `univers` · « Talk is cheap » (sur `/higher`) |
+| Lus en prod · ABSENTS | nœud `#ast-sig` · nœud `#myspaces` · `data-newspace` · `data-lvvis="public"` |
+| Suites navigateur | **412 contrôles, 0 échec** : com_processeur 107 · com_shorts 67 · com_creator 37 · com_paper 34 · com_member_menu 26 · boutique_home 24 · com_plateforme 23 · com_read_copy 18 · console 18 · com_cloths 16 · com_guest 14 · boutique_tongue 11 · com_spot 8 · com_vision_image 8 · club_temporal 1 |
+| Vercel COM | `dpl_FReiax2rUGbzZCTn93kmcJziV53R` sur `6048ae7` : READY en production |
+| ⚠️ Dette constatée, hors de ce lot | les suites visant `www.totehm.space` expirent sur `main` depuis la refonte SPACE (gallery, space_boxes_ecosystem, space_spot_links, spaces_loupe) ; le lot E ne touche à `space/` que la table d'audience de `social.html` |
 
 ## 0 · SPACE — LISBON, UN SEUL PARCOURS PUBLIÉ — 16/10/2026
 
