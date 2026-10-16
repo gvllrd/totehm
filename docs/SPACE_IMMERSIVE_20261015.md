@@ -1,5 +1,9 @@
 # Visite de la galerie SPACE — 15 octobre 2026
 
+Direction actuelle du 16/10 : dôme noir absolu, arbre abstrait aux sept intentions, voyage après la porte,
+TotehmPaper/Stoner réunis et vingt Origins accrochées. Voir `SPACE_DOME_20261016.md`. Les livraisons ci-dessous
+gardent leurs mesures et leur date, y compris l'ancien décor marbre/ficus désormais remplacé.
+
 Évolution Lisbon du 16/10 : la station 03 devient « Neuro Street Art Digital », les panneaux flottent dans le mur
 et PLAY ouvre l'unique récit/manette `/play_lisbon_street`. Cette expérience reçoit les corrections explicites
 de textes et de slogan ; les autres restent intactes. Voir `SPACE_LISBON_20261016.md` pour la direction actuelle.

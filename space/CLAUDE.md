@@ -1,5 +1,26 @@
 # space/CLAUDE.md — totehm.space : galerie d’art digital
 
+## 16/10/2026 — dôme des intentions et voyage spatial (direction actuelle)
+
+SPACE prolonge le langage de COM en 3D : murs et sol noir absolu, sept traits de 2 px dans les couleurs exactes
+du processeur, arbre abstrait relié aux arcs du dôme ouvert sur le ciel. `gallery-dome.mjs` remplace le marbre
+et le ficus figuratif ; aucun flou ni halo. La géométrie noire laisse une vraie porte à l'opposé de l'entrée.
+`gallery-journey.mjs` renouvelle un nombre borné de compositions spatiales à mesure qu'on avance, sans limite
+de distance, avec les mêmes commandes et un retour au dôme. Les décors ne sont pas des œuvres en vente.
+
+Trois collections guidées : 01 TotehmPaper {THP}/Stoner, une seule présentation du papier original encadré ;
+02 Origins/Quantum, les vingt œuvres directement aux murs ; 03 Neuro Street Art Digital, aperçu Lisbon animé conservé.
+`gallery-artworks.mjs` donne les vrais titres/identifiants du catalogue ; les vingt JPG sont des images extraites
+des vidéos originales, et le PNG THP est identique à `get_higher` (`assets/img/totehm_logo.png`).
+Chaque photo propose son œuvre originale via `/origins?work=01`…`20`, et son acquisition sur le marché existant.
+Origins conserve son lecteur, sa navigation, ses médias/prix/droits ; seul un petit bloc d'initialisation accepte ce lien direct.
+La liste HTML et le repli sans WebGL exposent les vingt images. Anciens hashes `#stoner`/`#quantum` conservés.
+Animations suspendues en liste/onglet masqué ; mouvement réduit fige le ciel et le voyage, visites immédiates.
+Tests actuels : `gallery_dome.mjs`, `gallery_origins.mjs`, `gallery_immersive.mjs`, `gallery_lisbon.mjs`,
+`gallery_dark.mjs`, `gallery_initial_list.mjs`, invariants `art_migration.mjs` et `gallery_path.mjs`.
+`gallery_estrela.mjs` garde la livraison historique remplacée ; ne décrit plus le décor courant.
+Détails et publication : `../docs/SPACE_DOME_20261016.md`. Les sections suivantes gardent leur date propre.
+
 ## 16/10/2026 — Lisbon, un seul parcours
 
 La station 03 est « Neuro Street Art Digital ». Son mur et sa carte HTML montrent les 22 panneaux flottants,

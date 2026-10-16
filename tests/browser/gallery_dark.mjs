@@ -98,9 +98,10 @@ try{
    check(dark(panel(samples.list,'#gallery'))&&dark(panel(samples.list,'.artwork')),'artwork list and plinths stay near black at '+viewport.width);
    check(['.caption h1','.caption p','.room-actions a'].every(s=>text(samples.list,s).contrast>=4.5),'list captions and experience links stay readable at '+viewport.width);
    check(fit(samples.list)&&samples.list.gallery.scrollWidth<=samples.list.gallery.clientWidth,'artwork list has no horizontal overflow at '+viewport.width);
-   check(await pg.locator('#gallery .room').count()===4,'all four original artworks remain available at '+viewport.width);
-   for(const href of ['/get_higher','/stoner','/play_lisbon_street','/origins'])
-    check(await pg.locator('#gallery .artwork[href="'+href+'"]').count()===1,'artwork doorway preserved: '+href+' at '+viewport.width);
+   check(await pg.locator('#gallery .room').count()===3,'three collections retain the unified THP/Stoner, Lisbon and all Origins works at '+viewport.width);
+   check(await pg.locator('#gallery .room:has(a[href="/get_higher"]) a[href="/stoner"]').count()===1,'THP and Stoner share a single artwork card at '+viewport.width);
+   for(const href of ['/get_higher','/play_lisbon_street','/origins'])
+    check(await pg.locator('#gallery .room a[href="'+href+'"]').count()>=1,'original artwork doorway preserved: '+href+' at '+viewport.width);
    await capture(pg,'list',viewport.width);
    check(!log.errors.some(e=>e.startsWith('pageerror:')),'no application JavaScript errors at '+viewport.width+': '+log.errors.join(' | '));
    results.push({viewport,samples,log});
@@ -121,7 +122,7 @@ try{
   await pg.waitForFunction(()=>window.__totehm_gallery?.().fallback);
   const sample=await snapshot(pg);
   check(sample.scheme==='dark'&&dark(panel(sample,'#gallery'))&&dark(panel(sample,'.artwork')),'WebGL fallback retains full dark theme');
-  check(sample.state.rooms===4&&await pg.locator('#gallery').isVisible(),'WebGL fallback exposes the complete real artwork collection');
+  check(sample.state.rooms===3&&await pg.locator('#gallery').isVisible(),'WebGL fallback exposes the complete real artwork collection');
   check(fit(sample)&&sample.gallery.scrollWidth<=sample.gallery.clientWidth,'dark fallback fits a touch viewport');
   check(text(sample,'.caption h1').contrast>=4.5&&text(sample,'.caption p').contrast>=4.5,'fallback captions remain readable');
   check(!log.errors.some(e=>e.startsWith('pageerror:')),'fallback has no application JavaScript errors');

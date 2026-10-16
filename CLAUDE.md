@@ -67,8 +67,8 @@ com/      → www.totehm.com       LA PLATEFORME (16/10 bis) : le Totehm = 5 vue
                                  ÉCRAN au rythme de mes Habits ; Mine · Others = une MULTITUDE de dos de papier, la recherche AU MILIEU) · MES SPOTS → (le radar, centré sur
                                  le papier) · ↓ ma Reflection ; le NOM en haut au centre, il n'en bouge jamais ; le verso = le MENU MEMBRE ; XO sert /x/space, /x/club et
                                  /@nom (SUR PLACE : zéro saut)
-space/    → www.totehm.space     Galerie 3D visitable d'art digital : TotehmPaper, Get Higher, Stoner, Lisbon, Origins/Quantum,
-                                 /market et collection. Expériences déplacées sans refonte. /social et /s/:id préservent les contenus existants.
+space/    → www.totehm.space     Dôme 3D noir, arbre aux sept intentions et porte vers l'espace : TotehmPaper/Stoner réunis,
+                                 Lisbon, vingt Origins exposées aux murs ; /market et collection. /social et /s/:id préservent les contenus existants.
 club/     → www.figher.club      Consultation : passé / maintenant / futur × RADAR / SHORTS, mêmes filtres et résultats autorisés.
                                  Création → COM /spot ; /create reste le moteur intégré à COM, pas une vue publique autonome.
 boutique/ → www.higher.boutique  Physique : Streetwear, Luxury, Decode, commandes et production. Anciens liens d'art → pont SSO → SPACE.

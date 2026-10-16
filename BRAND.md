@@ -49,15 +49,21 @@ not settings**: they are two views of the landing, reached by going left or righ
 
 Both are mine: without a TOTEHM they do not exist, and inside the galaxy the horizontal belongs to the stars.
 
-## SPACE — 15/10/2026 · deep night
+## SPACE — 16/10/2026 · intention dome
 
 SPACE stays dark in every interface state: deep black gallery walls, floor, plinths, menus, artwork information
 and the classic artwork view, including the fallback without 3D. Light text; the artworks keep their own colours.
 Above the open gallery: a rich, dreamy animated sky, luminous blue/violet/rose nebulae, dense stars, warm glints
 and slow movement. The sky is present on arrival. Reduced motion freezes it. No light theme from system preferences.
-The floor and thick walls are polished black marble with natural silver calcite veins. At the centre, a monumental
-fig tree inspired by Lisbon's Jardim da Estrela: broad buttress roots, a sculptural trunk and a spreading evergreen
-crown, open enough to see the stars. The living tree is part of the architecture, with no invented artwork or collectible.
+SPACE extends COM's intention language into an explorable 3D space. The walls and floor are absolute black.
+Seven fine strokes in the exact intention colours form an abstract tree and continue into the open dome's ribs.
+No marble veins, physical foliage, blur or glow. At the far side, a real doorway opens into a continuing journey
+among celestial forms and surprises; a clear return leads back to the dome.
+
+**TotehmPaper {THP} and The Stoner Experience are one presentation.** Frame the actual paper shown by Get Higher,
+never a substitute Higher wordmark or a second Stoner picture. **All twenty Origins works hang on the walls**, with
+their real images and titles; their frames open the corresponding original work and keep its market/access rules.
+Celestial scenery beyond the dome is part of the environment, not invented art editions or things to purchase.
 
 SPACE's third station is **Neuro Street Art Digital**. Its preview shows only floating Lisbon road signs and
 **[Higher] the Lisbon Streets**, using the genuine Higher vector slogan. **PLAY** opens `/play_lisbon_street`,

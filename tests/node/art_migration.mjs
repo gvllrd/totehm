@@ -56,9 +56,19 @@ for(const name of pages){
     checks++;
     continue;
   }
-  // Full source equality outside the necessary copied authentication protocol:
-  // includes every SVG, artwork, word, stylesheet and interaction handler.
-  assert.equal(after, name === 'stoner_terms' ? before : before.replace(oldSSO, sso), name + ' only changes the SSO origin/protocol');
+  // 16/10: individual wall photographs may enter the same Origins reader at
+  // one existing chapter. Its tagged initializer and safe diagnostic are the
+  // only intentional addition; all original reader source stays identical.
+  let comparable=after;
+  if(name==='origins'){
+    const block=/\/\* SPACE_GALLERY_DEEP_LINK_START \*\/[\s\S]*?\/\* SPACE_GALLERY_DEEP_LINK_END \*\//g;
+    assert.equal([...after.matchAll(block)].length,1,'Origins has one explicit gallery deep-link addition');
+    comparable=after.replace(/\n*\/\* SPACE_GALLERY_DEEP_LINK_START \*\/[\s\S]*?\/\* SPACE_GALLERY_DEEP_LINK_END \*\/\n*/,'\n');
+    checks++;
+  }
+  // Full source equality outside the copied authentication protocol and the
+  // explicit Origins initializer includes every SVG, style and access flow.
+  assert.equal(comparable, name === 'stoner_terms' ? before : before.replace(oldSSO, sso), name + ' preserves original experience source outside its explicit migration additions');
   checks++;
 }
 for(const name of ['assets/img/totehm_logo.png', ...fs.readdirSync(path.join(root, 'boutique/assets/signs')).map(n => 'assets/signs/' + n)]){

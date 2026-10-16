@@ -42,10 +42,11 @@ try{
   try{
    await f.pg.goto(origin+'/');
    await f.pg.waitForFunction(()=>window.__totehm_gallery?.().frames>0,null,{timeout:25000});
-   await f.pg.click('.tour [data-room="2"]');
-   await f.pg.waitForFunction(()=>window.__totehm_gallery().room===2&&!window.__totehm_gallery().moving);
+   const lisbon=Number(await f.pg.getAttribute('.tour a[href="#lisbon"]','data-room'));
+   await f.pg.click('.tour a[href="#lisbon"]');
+   await f.pg.waitForFunction(i=>window.__totehm_gallery().room===i&&!window.__totehm_gallery().moving,lisbon);
    check(await f.pg.locator('#work-title use[href="#higher-slogan"]').count()===1&&(await f.pg.locator('#work-title').innerText()).includes('the Lisbon Streets'),'selected artwork uses authentic Higher the Lisbon Streets title at '+viewport.width);
-   check((await f.pg.locator('.tour [data-room="2"] .label').textContent()).trim()==='Neuro Street Art Digital','tour identifies the renamed station at '+viewport.width);
+   check((await f.pg.locator('.tour a[href="#lisbon"] .label').textContent()).trim()==='Neuro Street Art Digital','tour identifies the renamed station at '+viewport.width);
    const links=await f.pg.locator('#work-links a').evaluateAll(els=>els.map(e=>({label:e.textContent.trim(),href:e.getAttribute('href')})));
    check(links.length===1&&links[0].label==='PLAY'&&links[0].href==='/play_lisbon_street','Lisbon has one canonical PLAY action at '+viewport.width);
    check(await f.pg.locator('#lisbon .room-actions a').count()===1&&await f.pg.locator('#lisbon a[href="/play_lisbon_street"]').count()===2&&!await f.pg.locator('#lisbon a[href*="discover"]').count(),'HTML artwork and its sole PLAY action share the canonical entrance at '+viewport.width);
@@ -68,6 +69,12 @@ try{
    await f.pg.emulateMedia({reducedMotion:'no-preference'});
    await f.pg.click('#view-list');
    if(viewport.width<650){
+    // Lisbon is now the second collection after the unified THP card. Move
+    // well past it before testing an off-screen pause; its former third-card
+    // position no longer guarantees invisibility when the list first opens.
+    await f.pg.locator('#origins .origin-card').last().scrollIntoViewIfNeeded();
+    await f.pg.waitForFunction(()=>!__totehm_gallery().lisbon.animated);
+    check(await f.pg.locator('#lisbon .artwork').evaluate(e=>{const r=e.getBoundingClientRect();return r.bottom<=100||r.top>=innerHeight-90;}),'phone preview is physically outside the visible artwork list');
     const offscreen=await f.pg.evaluate(()=>__totehm_gallery().lisbon.time);
     await f.pg.waitForTimeout(350);
     check((await f.pg.evaluate(()=>__totehm_gallery().lisbon.time))===offscreen,'off-screen HTML preview pauses in the phone artwork list');
