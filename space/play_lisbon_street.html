@@ -16,12 +16,12 @@ html{font-family:'Space Mono',monospace}button,input,select,textarea{font-family
 html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-font-smoothing:antialiased}
 
 .t-futura{font-family:var(--futura-light);font-weight:300;font-size:14px;color:var(--g-light);line-height:1.7;letter-spacing:.02em;padding:0 20px;}
-.t-coral{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;color:var(--coral);line-height:1.7;letter-spacing:.02em;padding:0 20px;}
 
 .higher-inline{display:inline-flex;align-items:center;width:54px;vertical-align:middle;line-height:0;margin:0 2px;}
 .higher-inline svg{display:block;width:100%;height:auto;fill:currentColor}
+.get-word{font-weight:700;color:var(--coral)}
 
-.btn-sig{font-family:'Quantico',sans-serif;font-weight:700;font-size:14px;letter-spacing:0;color:#b0b0b0;background:#1f1f24;border-radius:10px;cursor:pointer;border:2px solid transparent;padding:0;line-height:1.5;text-decoration:none;display:inline-flex;align-items:center;gap:6px;-webkit-tap-highlight-color:transparent;transition:color .15s ease;text-align:center}
+.btn-sig{font-family:'Space Mono',monospace;font-weight:700;font-size:14px;letter-spacing:0;color:#b0b0b0;background:#1f1f24;border-radius:10px;cursor:pointer;border:2px solid transparent;padding:0;line-height:1.5;text-decoration:none;display:inline-flex;align-items:center;gap:6px;-webkit-tap-highlight-color:transparent;transition:color .15s ease;text-align:center}
 .btn-sig.claimed{color:#fff;border-image-source:none;border-image-slice:6 fill;border-image-repeat:round;background:#2e2e36}
 @media(hover:hover){.btn-sig:hover{color:#fff;border-image-source:none;border-image-slice:6 fill;border-image-repeat:round;background:#2e2e36}}
 .btn-sig:active{color:#fff;border-image-source:none;border-image-slice:6 fill;border-image-repeat:round;background:#2e2e36}
@@ -37,9 +37,7 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
 .disc-block.active{visibility:visible}
 .disc-block.show{opacity:1;transform:translateY(0);pointer-events:auto}
 .disc-block.instant{transition:none}
-.disc-block.show .coral-line{animation:settle .9s cubic-bezier(.22,.61,.36,1)}
-@keyframes settle{0%{filter:blur(5px)}100%{filter:blur(0)}}
-@media(prefers-reduced-motion:reduce){.disc-block.show .coral-line{animation:none}}
+.disc-block>.btn-sig{min-height:44px;padding:10px 20px;font-size:12px;letter-spacing:.04em}
 
 /* ─── STREET DISCOVER (page principale) ─── */
 #street-disc{position:fixed;inset:0;z-index:1;background:#000;}
@@ -199,7 +197,7 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
 .xp-la{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;color:#8a8a8a;text-transform:uppercase;margin-bottom:3px}
 .xp-lt{font-family:'Space Mono',monospace;font-size:clamp(10.6px,2.3vmin,17.2px);letter-spacing:.06em;color:#fff;line-height:1;margin-bottom:3px;font-weight:700;text-transform:uppercase}
 .xp-lm{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.1em;color:#8a8a8a;text-transform:uppercase;margin-bottom:6px}
-.xp-lph{font-family:'Quantico',sans-serif;font-weight:400;font-size:12px;color:#c8c8c8;line-height:1.5;margin-bottom:9px}
+.xp-lph{font-family:'Space Mono',monospace;font-weight:400;font-size:12px;color:#c8c8c8;line-height:1.5;margin-bottom:9px}
 .xp-ld{width:100%;height:1px;background:#222;margin-bottom:9px}
 .xp-lr{display:flex;justify-content:space-between;align-items:baseline}
 .xp-lp{font-family:'Space Mono',monospace;font-size:12px;color:var(--coral);letter-spacing:.04em}
@@ -226,6 +224,11 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
 
 /* 30/09 : le prix du THP, posé par le serveur (voir le module). */
 .thp-price::after{content:var(--thp,"")}
+
+@media(prefers-reduced-motion:reduce){
+  .disc-block,.world,.xp,.vbox-scene{transition:none}
+  .bob-chev,.sign-spin img,.rotate-spinner{animation:none}
+}
 
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille
@@ -273,7 +276,7 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
 <div id="street-disc">
   <div id="sdisc-bg"></div>
   <button id="sdisc-back" type="button">Back</button>
-  <button id="sdisc-board-close" type="button" style="display:none">✕</button>
+  <button id="sdisc-board-close" type="button" aria-label="Back to the story" style="display:none">✕</button>
   <div id="sdisc-stage"></div>
   <button id="sdisc-trig" type="button" aria-label="Next">
     <span class="trigger-label">When Street Art meets the quintessence of modern neurology</span>
@@ -308,7 +311,7 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
       <span class="xp-le" id="xp-artw-edition">—</span>
     </div>
   </div>
-  <button id="xp-buy" class="btn-sig">Get Higher<span class="thp-price"></span></button>
+  <button id="xp-buy" class="btn-sig" aria-label="Get Higher"><span class="get-word">Get</span> <span class="higher-inline" role="img" aria-label="Higher"><svg viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-slogan"></use></svg></span><span class="thp-price"></span></button>
 </div>
 
 <div id="rotate-prompt">
@@ -337,6 +340,20 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
 
 <script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+const BUILD = '2026-10-16-lisbon-space';
+const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+const HIGHER_MARKUP = '<span class="higher-inline" role="img" aria-label="Higher"><svg viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-slogan"></use></svg></span>';
+const GET_HIGHER_MARKUP = '<span class="get-word">Get</span> ' + HIGHER_MARKUP;
+// Text stays text; the brand word always uses the repository's vector slogan.
+function setBrandedText(element, text){
+  element.replaceChildren();
+  const parts=String(text || '').split(/(\bHigher\b|\n)/g);
+  for(const part of parts){
+    if(part==='Higher') element.insertAdjacentHTML('beforeend', HIGHER_MARKUP);
+    else if(part==='\n') element.appendChild(document.createElement('br'));
+    else element.appendChild(document.createTextNode(part));
+  }
+}
 const SB_URL  = 'https://abujjbkbbiumxrokozph.supabase.co';
 const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us';
 const GATE_FN = SB_URL + '/functions/v1/stoner-gate';
@@ -547,7 +564,7 @@ function applyOwnedFallback(){
   if(b.dataset.artworkId) return;   // ne pas ecraser le label d'une oeuvre
   b.dataset.mode = 'owned';
   b.setAttribute('aria-label','Get Higher');
-  b.innerHTML = '<span style="font-family:\'Quantico\',sans-serif;font-weight:700;color:var(--coral);letter-spacing:.02em">Get</span> <span class="higher-inline"><svg viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></span>';
+  b.innerHTML = GET_HIGHER_MARKUP;
 }
 
 async function toStripe(){
@@ -680,6 +697,7 @@ const xpClose    = document.getElementById('xp-close');
 const xpBuy      = document.getElementById('xp-buy');
 
 let streetBusy = false;
+let resumeVideo = null;
 
 for(const [id,[l,t,w]] of Object.entries(SIGNS)){
   const b = document.createElement('button');
@@ -704,6 +722,7 @@ let vbSX=0,vbSY=0,vbDRX=0,vbDRY=0,vbHX=null,vbHY=null;
 function startVidBox(){
   const scene=document.getElementById('vidWrap'),box=document.getElementById('vidBox');
   if(!scene||!box||vbRaf)return;
+  if(reducedMotion.matches){ box.style.transform='rotateX(5deg) rotateY(-15deg)'; return; }
   vbRX=5;vbRY=-15;vbVX=0;vbVY=0;vbT=0;vbTs=null;vbHX=null;vbHY=null;
   function idleXY(t){return{x:Math.sin(t*.5)*5+Math.cos(t*.9)*2,y:Math.cos(t*.35)*12+Math.sin(t*.8)*5};}
   function tick(ts){
@@ -746,10 +765,10 @@ function launchXp(id){
   // Gallery label
   const xpLabel = document.getElementById('xp-label');
   xpLabel.classList.remove('in');
-  document.getElementById('xp-artw-phrase').textContent = PHRASES[id] || '';
+  setBrandedText(document.getElementById('xp-artw-phrase'), PHRASES[id]);
   const aw = artworkMap.get(id);
   if(aw){
-    document.getElementById('xp-artw-title').textContent = aw.title;
+    setBrandedText(document.getElementById('xp-artw-title'), aw.title);
     document.getElementById('xp-artw-price').textContent = new Intl.NumberFormat('en', { style:'currency', currency:String(aw.currency || 'eur').toUpperCase(), minimumFractionDigits: aw.price_cents % 100 ? 2 : 0 }).format(aw.price_cents/100);
     const avail = aw.edition_total - aw.edition_sold;
     const isSold = aw.status==='sold' || avail<=0;
@@ -758,6 +777,7 @@ function launchXp(id){
     xpBuy.dataset.slug = aw.slug || '';
     xpBuy.dataset.sold = isSold ? '1' : '0';
     xpBuy.dataset.mode = '';
+    xpBuy.removeAttribute('aria-label');
     xpBuy.textContent = isSold ? '— Sold —' : 'Acquire →';
     xpBuy.disabled = isSold;
     xpBuy.style.color = isSold ? '#222' : '';
@@ -772,23 +792,26 @@ function launchXp(id){
     if(OWNED){
       xpBuy.dataset.mode = 'owned';
       xpBuy.setAttribute('aria-label','Get Higher');
-      xpBuy.innerHTML = '<span style="font-family:\'Quantico\',sans-serif;font-weight:700;color:var(--coral);letter-spacing:.02em">Get</span> <span class="higher-inline"><svg viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></span>';
+      xpBuy.innerHTML = GET_HIGHER_MARKUP;
     } else {
       xpBuy.dataset.mode = '';
-      xpBuy.removeAttribute('aria-label');
-      xpBuy.innerHTML = 'Get Higher<span class="thp-price"></span>';
+      xpBuy.setAttribute('aria-label','Get Higher');
+      xpBuy.innerHTML = GET_HIGHER_MARKUP + '<span class="thp-price"></span>';
     }
   }
 
   setTimeout(()=>{
+    if(!xp.classList.contains('up')) return;
     vidWrap.classList.add('in');
     xpLabel.classList.add('in');
+    if(document.hidden){ vid.controls=true; return; }
     vid.play().catch(()=>{ vid.controls=true; });
     startVidBox();
   },400);
 }
 
 function comeBack(){
+  resumeVideo=null;
   vid.pause(); stopVidBox();
   xp.classList.remove('up'); vidWrap.classList.remove('in');
   setTimeout(()=>{
@@ -802,6 +825,7 @@ function comeBack(){
 }
 
 function closeAll(){
+  resumeVideo=null;
   vid.pause(); stopVidBox();
   xp.classList.remove('up'); closeWorld(); vidWrap.classList.remove('in');
   setTimeout(()=>{ vid.src=''; streetBusy=false; },300);
@@ -834,7 +858,6 @@ const sdiscBoardClose= document.getElementById('sdisc-board-close');
 const sdiscBg        = document.getElementById('sdisc-bg');
 
 const G=(x)=>({t:"g",x});
-const C=(x)=>({t:"c",x});
 
 const SDSLIDES = [
   {parts:[G("You see them everywhere, every single day."),G("Hundreds of times a day.")]},
@@ -842,9 +865,9 @@ const SDSLIDES = [
   {parts:[G("Now, imagine if they were stimulants."),G("Consciously or unconsciously.")]},
   {parts:[G("What if every signal reminded you of your objectives?"),G("The daily habits to achieve them.\nThe past mistakes you swore never to repeat.")]},
   {parts:[G("The instant trigger to elevate your mental state:"),G("To act with more efficiency and presence.")]},
-  {parts:[G("Artist Wavywah integrated Lisbon's urban signals directly into TOTEHM."),C("An artistic and cognitive performance tool conceived through neurology.")]},
-  {parts:[G("Once you get Higher, walking through Lisbon hits differently."),G("Urban signals are no longer background noise."),C("They turn into active cognitive stimuli.")]},
-  {parts:[G("You don't just walk the city anymore."),C("You operate from a Higher perspective.")]}
+  {parts:[G("Artist Wavywah integrated Lisbon's urban signals directly into TOTEHM."),G("An artistic and cognitive performance tool conceived through neurology.")]},
+  {parts:[G("Once you get Higher, walking through Lisbon hits differently."),G("Urban signals are no longer background noise."),G("They turn into active cognitive stimuli.")]},
+  {parts:[G("You don't just walk the city anymore."),G("You operate from a Higher perspective.")]}
 ];
 
 const SIGN_ENTRIES = Object.entries(SIGNS);
@@ -893,7 +916,7 @@ function spawnRock(id,tl,tt,tw){
 
   const uLabel=document.createElement('div');
   uLabel.textContent='Useless';
-  uLabel.style.cssText=`position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Quantico',sans-serif;font-weight:700;font-size:11px;color:#fbd5ca;letter-spacing:.08em;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .2s ease;`;
+  uLabel.style.cssText=`position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Space Mono',monospace;font-weight:700;font-size:11px;color:#b0b0b0;letter-spacing:.08em;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .2s ease;`;
 
   wrap.appendChild(img);
   wrap.appendChild(uLabel);
@@ -942,8 +965,9 @@ function resetRocks(){
 function startAsteroids(){
   if(astRaf) return;
   if(!ROCKS.length) SIGN_ENTRIES.forEach(([id,[l,t,w]])=>ROCKS.push(spawnRock(id,l,t,w)));
+  if(reducedMotion.matches || document.hidden || snapping || boardMode) return;
   function tick(){
-    if(snapping) return;
+    if(snapping || boardMode || reducedMotion.matches || document.hidden){ astRaf=null; return; }
     const W=window.innerWidth,H=window.innerHeight;
     for(let i=0;i<ROCKS.length;i++){
       for(let j=i+1;j<ROCKS.length;j++){
@@ -1015,7 +1039,7 @@ function enterBoardMode(){
       r.uLabel.style.cssText=`position:absolute;top:${50+Number(oy)}%;left:${50+Number(ox)}%;width:75%;transform:translate(-50%,-50%) rotate(${angle}deg);pointer-events:none;opacity:${r._pressed?1:0};transition:opacity .3s ease;`;
       r.uLabel.innerHTML='<svg viewBox="0 0 600 200" style="width:100%;height:auto;display:block"><use href="#higher-slogan"></use></svg>';
     }
-    if(SPINNING.has(r.id)){
+    if(SPINNING.has(r.id) && !reducedMotion.matches){
       const tx=br.x+(r.tl/100)*br.w, ty=br.y+(r.tt/100)*br.h;
       r.img.style.transition=''; r.img.style.transform='';
       r.wrap.style.transition=''; r.wrap.style.transform='';
@@ -1023,8 +1047,14 @@ function enterBoardMode(){
       r.wrap.style.animation='sign-spin 18s linear infinite';
     }
     r._boardClick=()=>{ lastPressedRock=r; launchXpFromDisc(r.id); };
+    r.wrap.setAttribute('role','button');
+    r.wrap.setAttribute('tabindex','0');
+    r.wrap.setAttribute('aria-label',r.id.replace(/_/g,' '));
+    r._boardKey=e=>{ if(e.key==='Enter'||e.key===' '){e.preventDefault();r._boardClick();} };
     r.wrap.addEventListener('click',r._boardClick);
+    r.wrap.addEventListener('keydown',r._boardKey);
   });
+  sdiscBoardClose.focus({preventScroll:true});
 }
 function exitBoardMode(){
   boardMode=false;
@@ -1040,9 +1070,19 @@ function exitBoardMode(){
     r.uLabel.style.cssText=r._origLabelCss;
     r._pressed=false;
     if(r._boardClick){ r.wrap.removeEventListener('click',r._boardClick); r._boardClick=null; }
+    if(r._boardKey){ r.wrap.removeEventListener('keydown',r._boardKey); r._boardKey=null; }
+    r.wrap.removeAttribute('role'); r.wrap.removeAttribute('tabindex'); r.wrap.removeAttribute('aria-label');
   });
 }
-sdiscBoardClose.addEventListener('click',()=>{ window.location.href='/discover_lisbon'; });
+function returnToStory(){
+  if(snapping || streetBusy) return;
+  exitBoardMode();
+  sdiscStage.style.opacity=''; sdiscBack.style.opacity=''; sdiscTrig.style.opacity='';
+  sdiscTrig.style.display='';
+  resetRocks(); sdiscReset(); startAsteroids();
+  requestAnimationFrame(()=>sdiscStage.querySelector('.disc-block.active .btn-sig')?.focus({preventScroll:true}));
+}
+sdiscBoardClose.addEventListener('click',returnToStory);
 
 function reSnapToBoard(){
   const br=getBoardRect();
@@ -1052,7 +1092,7 @@ function reSnapToBoard(){
     if(r.wrap.style.animation){
       r.wrap.style.translate=`${tx}px ${ty}px`;
     } else {
-      r.wrap.style.transition='transform .5s ease,width .5s,height .5s';
+      r.wrap.style.transition=reducedMotion.matches?'none':'transform .5s ease,width .5s,height .5s';
       r.wrap.style.transform=`translate(${tx}px,${ty}px)`;
     }
   });
@@ -1078,22 +1118,24 @@ if(window.matchMedia('(pointer:coarse)').matches){
 function snapToBoard(){
   if(snapping) return; snapping=true; stopAsteroids();
   const br=getBoardRect();
-  sdiscStage.style.transition='opacity .4s'; sdiscStage.style.opacity='0';
-  sdiscBack.style.transition='opacity .4s'; sdiscBack.style.opacity='0';
+  const reduced=reducedMotion.matches;
+  sdiscStage.style.transition=reduced?'none':'opacity .4s'; sdiscStage.style.opacity='0';
+  sdiscBack.style.transition=reduced?'none':'opacity .4s'; sdiscBack.style.opacity='0';
   sdiscTrig.style.opacity='0';
   ROCKS.forEach(r=>{
     const tx=br.x+(r.tl/100)*br.w, ty=br.y+(r.tt/100)*br.h, tw=(r.tw/100)*br.w;
-    r.wrap.style.transition='transform .9s cubic-bezier(.65,0,.35,1),width .9s,height .9s';
+    r.wrap.style.transition=reduced?'none':'transform .9s cubic-bezier(.65,0,.35,1),width .9s,height .9s';
     r.wrap.style.width=tw+'px'; r.wrap.style.height=tw+'px';
     r.wrap.style.transform=`translate(${tx}px,${ty}px)`;
-    r.img.style.transition='transform .9s cubic-bezier(.65,0,.35,1),filter .25s ease';
+    r.img.style.transition=reduced?'none':'transform .9s cubic-bezier(.65,0,.35,1),filter .25s ease';
     r.img.style.filter=''; r.img.style.transform='rotate(0deg)';
   });
-  setTimeout(()=>{
+  const finish=()=>{
     snapping=false;
     sdiscStage.style.transition=''; sdiscBack.style.transition='';
     enterBoardMode();
-  },1000);
+  };
+  if(reduced) finish(); else setTimeout(finish,1000);
 }
 
 function launchXpFromDisc(id){
@@ -1103,10 +1145,10 @@ function launchXpFromDisc(id){
 
   const xpLabel = document.getElementById('xp-label');
   xpLabel.classList.remove('in');
-  document.getElementById('xp-artw-phrase').textContent = PHRASES[id] || '';
+  setBrandedText(document.getElementById('xp-artw-phrase'), PHRASES[id]);
   const aw = artworkMap.get(id);
   if(aw){
-    document.getElementById('xp-artw-title').textContent = aw.title;
+    setBrandedText(document.getElementById('xp-artw-title'), aw.title);
     document.getElementById('xp-artw-price').textContent = new Intl.NumberFormat('en', { style:'currency', currency:String(aw.currency || 'eur').toUpperCase(), minimumFractionDigits: aw.price_cents % 100 ? 2 : 0 }).format(aw.price_cents/100);
     const avail = aw.edition_total - aw.edition_sold;
     const isSold = aw.status==='sold' || avail<=0;
@@ -1115,6 +1157,7 @@ function launchXpFromDisc(id){
     xpBuy.dataset.slug = aw.slug || '';
     xpBuy.dataset.sold = isSold ? '1' : '0';
     xpBuy.dataset.mode = '';
+    xpBuy.removeAttribute('aria-label');
     xpBuy.textContent = isSold ? '— Sold —' : 'Acquire →';
     xpBuy.disabled = isSold;
     xpBuy.style.color = isSold ? '#222' : '';
@@ -1129,17 +1172,19 @@ function launchXpFromDisc(id){
     if(OWNED){
       xpBuy.dataset.mode = 'owned';
       xpBuy.setAttribute('aria-label','Get Higher');
-      xpBuy.innerHTML = '<span style="font-family:\'Quantico\',sans-serif;font-weight:700;color:var(--coral);letter-spacing:.02em">Get</span> <span class="higher-inline"><svg viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></span>';
+      xpBuy.innerHTML = GET_HIGHER_MARKUP;
     } else {
       xpBuy.dataset.mode = '';
-      xpBuy.removeAttribute('aria-label');
-      xpBuy.innerHTML = 'Get Higher<span class="thp-price"></span>';
+      xpBuy.setAttribute('aria-label','Get Higher');
+      xpBuy.innerHTML = GET_HIGHER_MARKUP + '<span class="thp-price"></span>';
     }
   }
 
   setTimeout(()=>{
+    if(!xp.classList.contains('up')) return;
     vidWrap.classList.add('in');
     xpLabel.classList.add('in');
+    if(document.hidden){ vid.controls=true; return; }
     vid.play().catch(()=>{vid.controls=true;});
     startVidBox();
   },400);
@@ -1149,13 +1194,13 @@ function buildSdisc(sl){
   const b=document.createElement('div'); b.className='disc-block';
   sl.parts.forEach(p=>{
     const d=document.createElement('div');
-    d.className=p.t==='c'?'t-futura t-coral coral-line':'t-futura';
-    d.innerHTML=(p.x||'').replace(/\n/g,'<br>');
+    d.className='t-futura';
+    setBrandedText(d, p.x);
     b.appendChild(d);
   });
   const btn=document.createElement('button');
   btn.className='btn-sig'; btn.style.marginTop='14px';
-  btn.textContent='Make them useful for your brain';
+  btn.textContent='MAKE THEM USEFUL FOR YOUR BRAIN';
   btn.addEventListener('click',()=>snapToBoard());
   b.appendChild(btn);
   return b;
@@ -1183,24 +1228,25 @@ function showSdisc(i,instant){
   if(i>0) sdiscTrig.classList.add('gone');
 }
 function sdiscReset(){
+  sdiscLock=false;
   sdiscStage.querySelectorAll('.disc-block').forEach(b=>b.classList.remove('show','active','instant'));
   sdiscTrig.classList.remove('gone');
   sdiscCur=0;
   requestAnimationFrame(()=>showSdisc(0,true));
 }
 function sdiscNext(){
-  if(sdiscLock||sdiscCur>=SDSLIDES.length-1)return;
+  if(boardMode||snapping||streetBusy||authOverlay.classList.contains('in')||sdiscLock||sdiscCur>=SDSLIDES.length-1)return;
   sdiscLock=true; showSdisc(sdiscCur+1,false); setTimeout(()=>sdiscLock=false,SD_FADE);
 }
 function sdiscPrev(){
-  if(sdiscLock||sdiscCur<=0)return;
+  if(boardMode||snapping||streetBusy||authOverlay.classList.contains('in')||sdiscLock||sdiscCur<=0)return;
   sdiscLock=true; showSdisc(sdiscCur-1,false); setTimeout(()=>sdiscLock=false,SD_FADE);
 }
 
 /* démarrage */
 resetRocks(); sdiscReset(); startAsteroids();
 
-sdiscBack.addEventListener('click',()=>{ window.location.href='/discover_lisbon'; });
+sdiscBack.addEventListener('click',()=>{ window.location.href='/#lisbon'; });
 sdiscTrig.addEventListener('click',sdiscNext);
 
 let sdWlLock=false;
@@ -1218,7 +1264,52 @@ window.addEventListener('keydown',e=>{
   if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;
   if(e.key==='ArrowDown') sdiscNext();
   else if(e.key==='ArrowUp') sdiscPrev();
-  else if(e.key==='Escape') window.location.href='/discover_lisbon';
+  else if(e.key==='Escape'){
+    if(authOverlay.classList.contains('in')) closeAuth();
+    else if(xp.classList.contains('up')) comeBack();
+    else if(boardMode) returnToStory();
+    else if(!snapping) window.location.href='/#lisbon';
+  }
+});
+
+function pauseHiddenVideo(){
+  if(!resumeVideo && xp.classList.contains('up') && !vid.paused && !vid.ended) resumeVideo=vid.currentSrc || vid.src;
+  vid.pause();
+}
+function syncMotion(){
+  if(reducedMotion.matches || document.hidden){ stopAsteroids(); stopVidBox(); }
+  else if(!boardMode && !snapping) startAsteroids();
+  if(boardMode){
+    const br=getBoardRect();
+    ROCKS.forEach(r=>{
+      if(r.id!=='roundabout'&&r.id!=='left_or_straight') return;
+      const tx=br.x+(r.tl/100)*br.w, ty=br.y+(r.tt/100)*br.h;
+      if(reducedMotion.matches || document.hidden){
+        r.wrap.style.animation=''; r.wrap.style.translate='';
+        r.wrap.style.transform=`translate(${tx}px,${ty}px)`;
+      } else {
+        r.wrap.style.transform=''; r.wrap.style.translate=`${tx}px ${ty}px`;
+        r.wrap.style.animation='sign-spin 18s linear infinite';
+      }
+    });
+  }
+  if(document.hidden) pauseHiddenVideo();
+  else {
+    const source=resumeVideo; resumeVideo=null;
+    if(source && xp.classList.contains('up') && source===(vid.currentSrc || vid.src) && vid.paused && !vid.ended){
+      vid.play().catch(()=>{vid.controls=true;});
+    }
+    if(xp.classList.contains('up') && !reducedMotion.matches) startVidBox();
+  }
+}
+reducedMotion.addEventListener('change',syncMotion);
+document.addEventListener('visibilitychange',syncMotion);
+window.addEventListener('pagehide',()=>{stopAsteroids();stopVidBox();pauseHiddenVideo();});
+window.addEventListener('pageshow',syncMotion);
+window.__totehm_lisbon=()=>({
+  build:BUILD,step:sdiscCur,board:boardMode,rocks:ROCKS.length,moving:!!astRaf,
+  snapping,reduced_motion:reducedMotion.matches,visible:!document.hidden,
+  artwork:xp.classList.contains('up'),auth:authOverlay.classList.contains('in')
 });
 }
 </script>

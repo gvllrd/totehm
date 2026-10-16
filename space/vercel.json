@@ -115,8 +115,18 @@
     },
     {
       "source": "/lisbon",
-      "destination": "/discover_lisbon",
-      "permanent": true
+      "destination": "/play_lisbon_street",
+      "permanent": false
+    },
+    {
+      "source": "/discover_lisbon",
+      "destination": "/play_lisbon_street",
+      "permanent": false
+    },
+    {
+      "source": "/discover_lisbon.html",
+      "destination": "/play_lisbon_street",
+      "permanent": false
     },
     {
       "source": "/global",

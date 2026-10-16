@@ -15,6 +15,47 @@ let checks = 0;
 for(const name of pages){
   const before = read(`boutique/${name}.html`);
   const after = read(`space/${name}.html`);
+  if(name === 'play_lisbon_street'){
+    // 16/10: the user explicitly evolves Lisbon's story and entrance on SPACE.
+    // Its source signs, controller layout, artwork data and access flows remain
+    // the migration baseline; do not silently exempt the entire experience.
+    const section = (source, start, end) => {
+      const at = source.indexOf(start);
+      assert(at >= 0, 'Lisbon section exists: ' + start);
+      const to = source.indexOf(end, at + start.length);
+      assert(to >= 0, 'Lisbon section ends: ' + start);
+      return source.slice(at, to);
+    };
+    // Only these presentational lines differ inside the unchanged XP pricing
+    // and entitlement branches: authentic Higher insertion and an accessible
+    // name reset when the server returns a real artwork's Acquire/Sold action.
+    const presentation = source => source
+      .replace(/document\.getElementById\('xp-artw-phrase'\)\.textContent = PHRASES\[id\] \|\| '';/g, "setBrandedText(document.getElementById('xp-artw-phrase'), PHRASES[id]);")
+      .replace(/document\.getElementById\('xp-artw-title'\)\.textContent = aw\.title;/g, "setBrandedText(document.getElementById('xp-artw-title'), aw.title);")
+      .replace(/^    xpBuy\.removeAttribute\('aria-label'\);\n/gm, '');
+    for(const [start,end] of [
+      ['<symbol id="higher-slogan"', '</symbol>'],
+      ['const PHRASES = {', 'const SIGNS = {'],
+      ['const SIGNS = {', 'const world      ='],
+      ['// Artworks catalogue', '// Boot :'],
+      ['async function toStripe()', '/* ═══ STREET BOARD ═══ */'],
+      ['function launchXp(id){', '    if(OWNED){'],
+      ['function launchXpFromDisc(id){', '    if(OWNED){'],
+      ["xpBuy.addEventListener('click',async()=>{", '/* ─── STREET DISCOVER ─── */']
+    ]){
+      assert.equal(presentation(section(after,start,end)), presentation(section(before,start,end)), 'Lisbon preserves ' + start);
+      checks++;
+    }
+    for(const key of ['IMG_BASE','VID_BASE','GATE_FN','PAY_FN','METHOD']){
+      const declaration = source => source.match(new RegExp('const '+key+'\\s*=.*;'))?.[0];
+      assert(declaration(before), key + ' is present');
+      assert.equal(declaration(after), declaration(before), 'Lisbon preserves ' + key);
+      checks++;
+    }
+    assert(after.includes(sso), 'Lisbon preserves the migrated SPACE SSO protocol');
+    checks++;
+    continue;
+  }
   // Full source equality outside the necessary copied authentication protocol:
   // includes every SVG, artwork, word, stylesheet and interaction handler.
   assert.equal(after, name === 'stoner_terms' ? before : before.replace(oldSSO, sso), name + ' only changes the SSO origin/protocol');
@@ -29,13 +70,21 @@ checks++;
 
 const space = JSON.parse(read('space/vercel.json'));
 const boutique = JSON.parse(read('boutique/vercel.json'));
+for(const alias of ['/discover_lisbon','/discover_lisbon.html','/lisbon']){
+  const canonical=space.redirects.find(r=>r.source===alias);
+  assert.equal(canonical?.destination,'/play_lisbon_street',alias+' has one playable Lisbon destination');
+  assert.equal(canonical?.permanent,false,alias+' remains reversible');
+  checks++;
+}
 const art = [...pages, 'market'];
 const excluded = read('boutique/.vercelignore').split(/\r?\n/);
 for(const name of art){
   assert(excluded.includes('/' + name + '.html'), name + ' baseline is excluded from production so filesystem precedence cannot bypass the bridge');
   for(const suffix of ['', '.html']){
     const source = '/' + name + suffix;
-    assert(!space.redirects.some(r => r.source === source), 'SPACE serves ' + source + ' directly');
+    if(name==='discover_lisbon'){
+      assert.equal(space.redirects.find(r => r.source === source)?.destination, '/play_lisbon_street', 'the former Lisbon discover entrance points to its single experience');
+    }else assert(!space.redirects.some(r => r.source === source), 'SPACE serves ' + source + ' directly');
     if(suffix){
       const canonical = boutique.redirects.find(r => r.source === source);
       assert.equal(canonical?.destination, '/' + name, source + ' keeps its origin and slug before the SSO bridge');

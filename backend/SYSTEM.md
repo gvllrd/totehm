@@ -4,7 +4,7 @@
 > Quatre projets READY et huit alias vérifiés (`395c7ca`) ; 25 contrôles HTTP et 40 anciennes adresses réussis ; détail : `../docs/GALLERY_CLUB_20261015.md`.
 > Les mesures historiques du lot C publiées dans `13abd34` sont conservées avec leur date propre.
 
-**Dernier relevé : 15 octobre 2026 (bis), le réseau neuronal COM — page, base, Vercel ; visite immersive SPACE, galerie/Club et processeur conservés** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
+**Dernier relevé : 16 octobre 2026, Lisbon unifié dans la galerie SPACE et publié ; réseau neuronal COM de Claude conservé** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
 
 > **À quoi sert ce fichier.** Les masters disent *ce qu'on veut*. `CLAUDE.md` dit
 > *comment on construit*. **Celui-ci dit ce qui existe vraiment.**
@@ -19,6 +19,63 @@
 
 ---
 
+
+## 0 · SPACE — LISBON, UN SEUL PARCOURS PUBLIÉ — 16/10/2026
+
+| Mesure | Résultat |
+| --- | --- |
+| Code | `a64e59a252e96e39b607ca23f54fc991b30d9985` ; galerie `2026-10-16-space-lisbon-play`, expérience `2026-10-16-lisbon-space` |
+| Vercel | Quatre projets READY, huit alias exacts ; SPACE `dpl_D6ebbq6mATvZA8chDR4YsBumQqRs` |
+| HTTPS réel | 23/23 : sources et slogan exacts, MIME/TLS vérifiés ; six anciennes entrées Lisbon convergent avec query conservée ; marché et COM intacts |
+| Aperçu et parcours | Station 03 « Neuro Street Art Digital » ; 22 panneaux animés et vrai slogan Higher au centre ; seul PLAY ouvre le récit/manette `/play_lisbon_street` |
+| Texte | CTA « MAKE THEM USEFUL FOR YOUR BRAIN » en Space Mono capitales ; trois phrases neutres sans Quantico Coral ni flou ; Higher en SVG |
+| Navigateur local | Lisbon 65/65 à 1440/390 px ; visite immersive 34/34 ; ouverture de liste pendant téléchargement du moteur 10/10 |
+| Conservation | 14/14 comparaisons navigateur des expériences ; 84/84 invariants de sources, géométrie, médias, prix, accès et ponts |
+| Coordination COM | www/apex identiques à Claude `67941b5` ; aucun SQL/Edge, compte, commande ou paiement de production dans ce lot |
+
+Preuves : `/tmp/totehm-production/lisbon-ready.json`, `lisbon-live.json`, `lisbon-20261016/results.json`, `lisbon-immersive-20261016.log`, `lisbon-initial-list-20261016/results.json`. Tests WebGL locaux avec services interceptés ; vérifications HTTPS sur les vrais domaines. Détails : `../docs/SPACE_LISBON_20261016.md`.
+
+## 0 · SPACE — MARBRE NOIR ET FICUS MONUMENTAL PUBLIÉS — 15/10/2026
+
+| Mesure | Résultat |
+| --- | --- |
+| Code | `4e1774d960d1f1716be3a6fcbe4c4052ae5ba49c`, build `2026-10-15-space-estrela-marble` |
+| Vercel | Quatre projets READY, huit alias exacts ; SPACE `dpl_3XLsijPW2zXaBPNHKBJdAAXFBWbM` |
+| HTTPS réel | 19/19 : deux accueils, six modules et CSS sur www/apex, marché et COM ; sources et MIME exacts, TLS vérifié |
+| WebGL local | Ficus/marbre 44/44 ; visite 34/34 ; ciel 25/25, à 1440/390 px ; aucun problème JavaScript/shader |
+| Cheminement et œuvres | 35/35 trajets/collisions, dont les 25 paires de stations ; 68/68 invariants des expériences originales |
+| Architecture | Sol et murs de 90 cm en marbre noir veiné ; ficus central, 146 branches/racines et 17 712 feuilles (12 096 mobile) ; ciel animé conservé |
+| Déplacements | Les visites guidées et clics au sol contournent racines/banc ; marche bloquée aux racines ; bois opaque à la sélection |
+| Performance | Bois fusionné, feuillage instancié Lambert ; ombres statiques et résolution 3D adaptative ; pauses liste/arrière-plan et mouvement réduit vérifiés |
+| Coordination COM | Pages COM www/apex identiques à Claude `67941b5` ; aucun changement SQL/Edge ou paiement dans ce lot |
+
+Preuves : `/tmp/totehm-production/estrela-ready.json`, `estrela-live.json`, `estrela/results.json`, `estrela-sky/results.json`, captures `estrela-immersive-final/`. Les tests WebGL sont locaux avec services interceptés ; les lectures HTTPS des domaines sont réelles. La limite de certificat du navigateur de production reste celle documentée dans `../docs/SPACE_IMMERSIVE_20261015.md`.
+
+## 0 · SPACE — NOIR PROFOND ET CIEL ONIRIQUE PUBLIÉS — 15/10/2026
+
+| Mesure | Résultat |
+| --- | --- |
+| Code | `4f6a61fb4d49fa6516659cce411efe005273c968`, build `2026-10-15-space-deep-night` |
+| Vercel | Quatre projets READY, huit alias exacts ; SPACE `dpl_ECVgSn5ajvZGoQmun23PGVa6BGGq` |
+| HTTP réel | 8/8 : accueil www/apex, CSS, trois modules, marché et COM ; sources/MIME exacts, mode sombre et matériaux noirs présents |
+| WebGL local | Visite 34/34 ; ciel 25/25 ; thème sombre, contraste et repli 47/47 ; placement final de l'entrée 12/12 |
+| Direction visuelle | Murs, sol et socles noirs ; UI sombre permanente ; nébuleuses 3D bleues/violettes/roses centrées à l'arrivée, 6 800 étoiles (4 300 mobile) |
+| Coordination COM | Page COM identique au code de Claude `67941b5` ; aucun SQL/Edge ou paiement dans ce lot |
+
+Preuves locales : `/tmp/totehm-production/deep-night-ready.json`, `deep-night-live.json`, `deep-night-regression.log`, `dark-gallery/results.json`, `dark-gallery-final/`, `dream-sky-centered/results.json`. Tests WebGL locaux avec services interceptés ; les contrôles HTTPS lisent les vrais domaines.
+
+## 0 · SPACE — CIEL ÉTOILÉ ANIMÉ PUBLIÉ — 15/10/2026
+
+| Mesure | Résultat |
+| --- | --- |
+| Code | `22ec60ca5d41f186f3bfc3c7c433e0e1fee9c611` ; main de Claude `67941b5` conservé intégralement |
+| Vercel | Quatre projets READY, huit alias exacts ; SPACE `dpl_9GrA67UEuUNuAFYufiWkWYK9kpgA` |
+| HTTP réel | 12/12 : deux racines SPACE, modules/styles et build du ciel exacts ; COM www/apex identique à Claude, bons MIME et TLS vérifié |
+| WebGL local | 34 contrôles de visite + 25 du ciel réussis à 1440/390 px ; étoiles filantes capturées, pauses/réduction des mouvements et reprise vérifiées |
+| Rendu | Voûte ouverte, Voie lactée, scintillement, 3 800 étoiles (2 400 mobile), ciel à 30/25 images/s maximum et ombres statiques |
+| Services | Aucun changement SQL/Edge ou paiement dans ce lot |
+
+Preuves : `/tmp/totehm-production/starry-ready.json`, `starry-live.json`, `starry-gallery-final.log`, `starry-sky-final/results.json`. Limite du navigateur en production inchangée : les tests WebGL sont locaux, les lectures HTTPS des domaines sont réelles.
 
 ## 0 · LE RÉSEAU NEURONAL : RAMIFICATIONS PLEIN ÉCRAN, ACQUISITION, GALAXIE NUE, TELEGRAM CADENCÉ — 15/10/2026 (lot D)
 

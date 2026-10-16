@@ -1,16 +1,47 @@
 # space/CLAUDE.md — totehm.space : galerie d’art digital
 
+## 16/10/2026 — Lisbon, un seul parcours
+
+La station 03 est « Neuro Street Art Digital ». Son mur et sa carte HTML montrent les 22 panneaux flottants,
+sans récit ni CTA dans l'image, avec « Higher the Lisbon Streets » au centre et le vrai SVG slogan Higher.
+`gallery-lisbon.mjs` partage un canvas entre texture 3D et carte HTML ; animation à 12 images/s maximum,
+arrêt en mouvement réduit, hors champ/hors écran et onglet masqué. La liste peut animer sa seule carte visible,
+pendant que le rendu WebGL et le ciel restent suspendus.
+
+L'unique action est PLAY → `/play_lisbon_street` : cette page contient déjà le récit puis la manette de 22 panneaux.
+Le CTA « MAKE THEM USEFUL FOR YOUR BRAIN » est en Space Mono capitales. Les trois phrases narratives finales
+restent claires en Space Mono neutre, sans Quantico Coral ni flou. Tous les Higher visibles utilisent le SVG slogan.
+Fermer la manette revient au récit sur place ; quitter le récit retourne à `/#lisbon`.
+Les anciennes entrées `/discover_lisbon`, `.html` et `/lisbon` redirigent temporairement vers le même parcours.
+Médias, coordonnées de manette, propriété, prix et accès d'origine sont conservés ; les autres expériences sont intactes.
+Tests : `gallery_lisbon.mjs`, invariants et comparaisons `art_migration.mjs` ; détail `../docs/SPACE_LISBON_20261016.md`.
+
 ## 15/10/2026 — visite immersive de la galerie
 
 L'accueil est une salle 3D : déplacement WASD/flèches, regard au glisser, clic au sol et joystick tactile.
+Noir profond permanent : murs, sol, socles et interface, y compris menus, fiches, liste et repli sans WebGL.
+Le sol et les murs de 90 cm sont en marbre noir veiné, texture locale projetée en mètres (`gallery-marble.mjs`).
+Un ficus monumental inspiré du Jardim da Estrela occupe le centre (`gallery-tree.mjs`) : bois fusionné,
+feuilles individuelles instanciées et racines plantées dans une ouverture de terre sombre. Le socle central est retiré.
+`gallery-path.mjs` fait contourner les racines et le banc aux visites guidées et aux clics au sol ; la marche respecte ces collisions.
+Le navigateur utilise `color-scheme: dark` sur la galerie et le marché. Les œuvres gardent leurs couleurs.
 Les quatre boutons d'œuvres guident la caméra ; l'information ouvre les expériences et le marché existants.
 `gallery-ui.mjs` garde une vue HTML des œuvres, y compris sans WebGL ; `gallery-3d.mjs` gère la salle.
+Le toit ouvert expose `gallery-sky.mjs` : nébuleuses directionnelles 3D bleues/violettes/roses,
+6 800 étoiles (4 300 au téléphone), scintillement, halos, rotation lente et étoiles filantes.
+La nébuleuse traverse le cadrage d'entrée ; LOOK UP regarde le ciel, l'entrée retrouve la galerie.
 Three.js 0.180.0 est servi localement sous `vendor/`, licence MIT jointe ; aucun moteur chargé depuis un CDN.
-Les aperçus viennent des SVG, panneaux et média Quantum existants. Les pages des expériences restent intactes.
+Les aperçus viennent des SVG, panneaux et média Quantum existants. Les expériences autres que l'évolution Lisbon du 16/10 restent intactes.
 La vidéo se charge à la sélection de Quantum et s'arrête hors de sa visite, en arrière-plan ou en mouvement réduit.
-Le rendu est suspendu au repos et hors écran. Retour bfcache et perte du contexte graphique sont traités.
+Le ciel anime la boucle existante à 30 images/s maximum (25 au téléphone), avec ombres statiques calculées une fois.
+La résolution 3D baisse automatiquement si le GPU dépasse durablement 90 ms par image ; les commandes HTML restent nettes.
+La liste et l'arrière-plan suspendent l'animation ; le mouvement réduit garde un ciel fixe et le rendu à la demande.
+Retour bfcache et perte du contexte graphique sont traités.
 Tests : `gallery_immersive.mjs` (34 vérifications, vrai WebGL local et toucher), `gallery.mjs` (marché),
 `art_migration.mjs` (intégrité des expériences). Détails : `../docs/SPACE_IMMERSIVE_20261015.md`.
+`gallery_sky.mjs` vérifie aussi le ciel animé et ses pauses à 1440/390 px.
+`gallery_dark.mjs` vérifie les surfaces sombres, les contrastes, les liens et le repli sans WebGL.
+`gallery_estrela.mjs` vérifie le ficus, le marbre, les parcours autour des racines et le ciel ; `tests/node/gallery_path.mjs` couvre tous les trajets entre stations.
 
 ## 15/10/2026 — galerie et continuité des anciens contenus (publiées en production)
 
