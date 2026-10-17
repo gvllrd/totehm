@@ -107,8 +107,23 @@ L'ouverture précoce de la liste et le repli sans WebGL conservent aussi toutes 
 Preuves locales : `/tmp/totehm-production/temple-void/results.json`, captures `temple-void/`,
 `temple-audio/results.json` et `temple-origins/results.json`. Les services sont interceptés dans les tests
 navigateur ; aucun compte, paiement ni commande n'est créé. La régression Lisbon passe 68/68 et la disposition
-est vérifiée sur six variantes ; preuves `temple-lisbon/results.json` et `temple-void/layout.json`. Le test
-fonctionnel a exécuté 197 contrôles ; les nouvelles assertions de disposition intégrées au script portent
-un prochain lancement complet à 201, sans présenter ces quatre ajouts comme déjà exécutés dans ce lot.
-La publication reste à mesurer. Ces contrôles locaux ne prouvent aucune présence en production ; les mesures de déploiement
-et de lecture HTTPS seront ajoutées après leur réalisation.
+est vérifiée sur six variantes ; preuves `temple-lisbon/results.json` et `temple-void/layout.json`. Les 197 contrôles fonctionnels et les six variantes de disposition ont été exécutés séparément ; la mesure
+de disposition n’utilise pas WebGL. Les mesures réelles de publication suivent.
+
+
+## Publication mesurée
+
+Code publié sur main : `2239f0f57eff834e20efef99018fd0e64c4feb20`. Vérification des domaines : `2026-10-17T13:05:42.747051+00:00`.
+Les quatre projets Vercel sont READY en production à ce commit, avec leurs huit alias exacts.
+SPACE : `dpl_FHAk6niMEQLEm6zsL5ZeSrg3GLSP`.
+
+51/51 lectures HTTPS réussies : accueil, CSS et nouveaux modules sur www/apex SPACE ; les vingt images
+Origins et le vrai papier ; quatre expériences/marché ; `/totehm`, `/higher`, `/monetize` sur les deux origines
+COM ; accueil du Club sur www/apex. Les corps sont identiques au dépôt octet pour octet, avec le MIME attendu
+et TLS validé. Les six réponses COM et les deux réponses du Club sont aussi identiques au main `1117c0c` :
+les travaux de Claude et la restauration du Club sont conservés.
+
+Preuves du code publié : `/tmp/totehm-production/temple-code-ready.json` et `temple-code-live.json`.
+Le contrôle navigateur des vrais domaines reste limité par le certificat proxy de cet environnement ;
+les tests WebGL sont locaux, et les lectures HTTPS des vrais domaines utilisent la validation TLS normale.
+Un commit documentaire peut suivre cette mesure sans changer les fichiers servis.
