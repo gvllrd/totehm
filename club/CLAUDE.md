@@ -1,4 +1,25 @@
-# club/CLAUDE.md — figher.club : consultation des spots dans trois périodes
+# club/CLAUDE.md — figher.club : radar et cinq vues restaurés
+
+## 17/10/2026 — restauration demandée par Wah : avant la refonte du 15/10
+
+L’interface publique `club/index.html` reprend EXACTEMENT le blob
+`127c0cfaf7455aac78a02efbc5376b25f85d7f78` du commit
+`b4ae3f066971ced6dfb4616a996bce7930737062`, parent de la refonte
+`51081a2642c45e9db91f75d1ed9ba04384f09ab7`.
+BUILD historique conservé : `2026-10-13-club-who`.
+
+Cinq vues restaurées : centre radar, haut annonce/plan, droite agenda,
+bas caméra, gauche passés. Papier, boussole, joystick, gestes, panneaux desktop,
+Habit Boxes et parcours de création retrouvent ce code, sans nouvelle refonte.
+Cette demande remplace la consultation publique trois périodes × RADAR/SHORTS
+pour l’accueil uniquement ; les sections du 15/10 ci-dessous sont historiques.
+
+`create.html` reste en place pour le moteur embarqué de COM. `vercel.json`,
+`art-bridge.html`, médias, assets et les ponts artistiques vers SPACE restent
+actuels. COM, SPACE et BOUTIQUE ne sont pas restaurés à une ancienne version.
+Aucune migration, donnée, règle d’accès serveur ou configuration de paiement
+n’est annulée. Les neuf RPC appelées par l’index existent toujours en production.
+
 
 ## 15/10/2026 — passé / maintenant / futur × RADAR / SHORTS (publiés en production)
 

@@ -69,8 +69,8 @@ com/      → www.totehm.com       LA PLATEFORME (16/10 bis) : le Totehm = 5 vue
                                  /@nom (SUR PLACE : zéro saut)
 space/    → www.totehm.space     Dôme 3D noir, arbre aux sept intentions et porte vers l'espace : TotehmPaper/Stoner réunis,
                                  Lisbon, vingt Origins exposées aux murs ; /market et collection. /social et /s/:id préservent les contenus existants.
-club/     → www.figher.club      Consultation : passé / maintenant / futur × RADAR / SHORTS, mêmes filtres et résultats autorisés.
-                                 Création → COM /spot ; /create reste le moteur intégré à COM, pas une vue publique autonome.
+club/     → www.figher.club      Retour du 17/10 : interface cinq vues d’avant la refonte du 15/10 (référence b4ae3f0).
+                                 Radar · annonce · agenda · caméra · passés ; /create intégré à COM et ponts d’art conservés.
 boutique/ → www.higher.boutique  Physique : Streetwear, Luxury, Decode, commandes et production. Anciens liens d'art → pont SSO → SPACE.
 backend/  → servi par PERSONNE — reste à la racine (sinon SQL et fonctions téléchargeables)
 oracle/   → clés, gitignoré, jamais lu ni recopié
