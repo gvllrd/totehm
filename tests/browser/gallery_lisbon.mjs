@@ -1,11 +1,12 @@
-// Focused 16/10 Lisbon revision. Real WebGL, original sign images/controller;
+// Lisbon regression through the 17/10 temple and absolute-black corridor.
+// Real WebGL, original sign images/controller;
 // identity, artwork data, payment quotes and video are intercepted locally.
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {execFileSync} from 'node:child_process';
 import {launch,page} from './harness.mjs';
 
-const OUT=process.argv[2]||'/tmp/totehm-production/lisbon-20261016';
+const OUT=process.argv[2]||'/tmp/totehm-production/lisbon-20261017';
 fs.mkdirSync(OUT,{recursive:true});
 const origin='https://www.totehm.space',results=[];
 execFileSync('ffmpeg',['-hide_banner','-loglevel','error','-y','-f','lavfi','-i','testsrc2=size=96x96:rate=12','-t','8','-c:v','libx264','-threads','1','-pix_fmt','yuv420p','-movflags','+faststart',OUT+'/sign.mp4']);
@@ -44,7 +45,12 @@ try{
    await f.pg.waitForFunction(()=>window.__totehm_gallery?.().frames>0,null,{timeout:25000});
    const lisbon=Number(await f.pg.getAttribute('.tour a[href="#lisbon"]','data-room'));
    await f.pg.click('.tour a[href="#lisbon"]');
-   await f.pg.waitForFunction(i=>window.__totehm_gallery().room===i&&!window.__totehm_gallery().moving,lisbon);
+   await f.pg.waitForFunction(i=>{
+    const d=window.__totehm_gallery();
+    return d.room===i&&d.zone==='void'&&d.void.room===i&&!d.moving&&!d.transition.active;
+   },lisbon,{timeout:25000});
+   const station=await f.pg.evaluate(()=>__totehm_gallery());
+   check(!station.temple.visible&&station.void.black&&station.void.total===1&&station.void.currentWork==='lisbon-streets'&&station.void.visibleWorks.join(',')==='1','Lisbon enters its single original preview in the absolute-black corridor at '+viewport.width);
    check(await f.pg.locator('#work-title use[href="#higher-slogan"]').count()===1&&(await f.pg.locator('#work-title').innerText()).includes('the Lisbon Streets'),'selected artwork uses authentic Higher the Lisbon Streets title at '+viewport.width);
    check((await f.pg.locator('.tour a[href="#lisbon"] .label').textContent()).trim()==='Neuro Street Art Digital','tour identifies the renamed station at '+viewport.width);
    const links=await f.pg.locator('#work-links a').evaluateAll(els=>els.map(e=>({label:e.textContent.trim(),href:e.getAttribute('href')})));
@@ -57,15 +63,15 @@ try{
    await f.pg.waitForTimeout(650);
    evidence.previewEnd=await f.pg.evaluate(()=>__totehm_gallery().lisbon);
    evidence.previewPixelsEnd=await previewPixels(f.pg);
-   check(evidence.previewEnd.signs===22&&evidence.previewEnd.loaded===22&&evidence.previewEnd.animated&&evidence.previewEnd.time>evidence.previewStart.time,'all original sign previews float on the actual 3D wall at '+viewport.width);
-   check(evidence.previewEnd.title==='Higher the Lisbon Streets'&&evidence.previewEnd.brandAsset==='/assets/gallery/higher.svg','wall has one central title with the original Higher asset at '+viewport.width);
+   check(evidence.previewEnd.signs===22&&evidence.previewEnd.loaded===22&&evidence.previewEnd.animated&&evidence.previewEnd.time>evidence.previewStart.time,'all original sign previews float on the actual 3D corridor image at '+viewport.width);
+   check(evidence.previewEnd.title==='Higher the Lisbon Streets'&&evidence.previewEnd.brandAsset==='/assets/gallery/higher.svg','corridor image has one central title with the original Higher asset at '+viewport.width);
    check(evidence.previewPixelsStart!==evidence.previewPixelsEnd,'floating preview changes its rendered pixels at '+viewport.width);
-   await f.pg.screenshot({path:OUT+'/wall-'+viewport.width+'.png'});
+   await f.pg.screenshot({path:OUT+'/void-'+viewport.width+'.png'});
    await f.pg.emulateMedia({reducedMotion:'reduce'});
    await f.pg.waitForFunction(()=>!window.__totehm_gallery().lisbon.animated);
    const frozen=await f.pg.evaluate(()=>__totehm_gallery().lisbon.time);
    await f.pg.waitForTimeout(350);
-   check((await f.pg.evaluate(()=>__totehm_gallery().lisbon.time))===frozen,'wall preview respects reduced motion at '+viewport.width);
+   check((await f.pg.evaluate(()=>__totehm_gallery().lisbon.time))===frozen,'corridor preview respects reduced motion at '+viewport.width);
    await f.pg.emulateMedia({reducedMotion:'no-preference'});
    await f.pg.click('#view-list');
    if(viewport.width<650){
@@ -84,13 +90,13 @@ try{
    const listed=await f.pg.evaluate(()=>__totehm_gallery());
    await f.pg.waitForTimeout(350);
    const listedEnd=await f.pg.evaluate(()=>__totehm_gallery());
-   check(listedEnd.sky.time===listed.sky.time&&listedEnd.frames===listed.frames,'artwork list pauses the 3D renderer and sky at '+viewport.width);
+   check(listedEnd.temple.time===listed.temple.time&&listedEnd.frames===listed.frames,'artwork list pauses the 3D renderer and temple at '+viewport.width);
    check(listedEnd.lisbon.time>listed.lisbon.time,'visible HTML artwork shares the floating sign preview at '+viewport.width);
    await f.pg.click('#view-list');
    await visibility(f.pg,true);
    const hidden=await f.pg.evaluate(()=>__totehm_gallery().lisbon.time);
    await f.pg.waitForTimeout(350);
-   check((await f.pg.evaluate(()=>__totehm_gallery().lisbon.time))===hidden,'wall preview pauses on hidden-document event at '+viewport.width);
+   check((await f.pg.evaluate(()=>__totehm_gallery().lisbon.time))===hidden,'corridor preview pauses on hidden-document event at '+viewport.width);
    await visibility(f.pg,false);
    await f.pg.waitForFunction(t=>window.__totehm_gallery().lisbon.time>t,hidden);
    check(!f.log.errors.some(e=>e.startsWith('pageerror:')),'gallery has no application errors at '+viewport.width);

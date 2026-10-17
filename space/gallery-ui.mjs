@@ -25,7 +25,7 @@ document.addEventListener('visibilitychange',syncPreview);
 reduced.addEventListener('change',syncPreview);
 addEventListener('pagehide',()=>{if(previewRaf)cancelAnimationFrame(previewRaf);previewRaf=0;lisbonPreview.pause();});
 addEventListener('pageshow',syncPreview);
-function select(index, updateHash = true, origin=null) {
+function select(index, updateHash = true, origin=null, navigate=true) {
   selected = Math.max(0, Math.min(rooms.length - 1, index));
   selectedOrigin=origin;
   document.body.classList.add('exploring');
@@ -44,23 +44,22 @@ function select(index, updateHash = true, origin=null) {
   info.classList.add('is-open');
   if (updateHash) history.replaceState(null, '', location.pathname + location.search + '#' + (selected===1&&origin!==null?'origin-'+String(origin+1).padStart(2,'0'):room.id));
   if (document.body.classList.contains('list-view') || fallback) room.scrollIntoView({behavior:reduced.matches?'instant':'smooth',block:'start'});
-  else engine?.visit(selected,origin);
+  else if(navigate) engine?.visit(selected,origin);
 }
 function overview() {
   selected = -1;
   selectedOrigin=null;pendingExploration=false;
-  document.body.classList.remove('exploring'); info.classList.remove('is-open');
+  document.body.classList.add('exploring'); info.classList.remove('is-open');
   nav.forEach(a => a.setAttribute('aria-current', 'false'));
   history.replaceState(null, '', location.pathname + location.search);
   engine?.overview();
 }
 nav.forEach((a, i) => a.addEventListener('click', e => { e.preventDefault(); select(i); }));
-document.getElementById('enter-gallery').addEventListener('click', () => select(0));
+document.getElementById('enter-gallery').addEventListener('click', () => {document.body.classList.add('exploring');document.getElementById('space').focus();});
 document.getElementById('overview').addEventListener('click', overview);
 document.getElementById('return-dome').addEventListener('click',overview);
 document.getElementById('explore-space').addEventListener('click',()=>{
-  selected=-1;selectedOrigin=null;info.classList.remove('is-open');document.body.classList.add('exploring');
-  nav.forEach(a=>a.setAttribute('aria-current','false'));history.replaceState(null,'',location.pathname+location.search+'#beyond');
+  document.body.classList.add('exploring');
   if(engine)engine.explore();else pendingExploration=true;
 });
 document.getElementById('close-info').addEventListener('click', () => info.classList.remove('is-open'));
@@ -82,18 +81,19 @@ document.addEventListener('keydown', e => {
   if (e.target.closest('input,textarea,select,[contenteditable=true]')) return;
   if (e.key === 'Escape') {
     menu.classList.remove('is-open'); member.setAttribute('aria-expanded','false'); info.classList.remove('is-open');
+    if(engine?.diagnostics().zone==='void')overview();
   }
-  if (e.key === 'PageDown' || e.key === 'PageUp') { e.preventDefault(); select((selected + (e.key==='PageDown'?1:-1) + rooms.length) % rooms.length); }
+  if (e.key === 'PageDown' || e.key === 'PageUp') { e.preventDefault(); if(engine?.diagnostics().zone==='void'){if(e.key==='PageDown')engine.explore();else engine.previous();}else select((selected + (e.key==='PageDown'?1:-1) + rooms.length) % rooms.length); }
   if (e.key === 'Home') { e.preventDefault(); overview(); }
 });
-window.__totehm_gallery = () => ({build:'2026-10-16-space-intention-dome',rooms:rooms.length,room:selected,origin:selectedOrigin,reduced_motion:reduced.matches,list:document.body.classList.contains('list-view'),fallback,...engine?.diagnostics(),lisbon:lisbonPreview.diagnostics()});
+window.__totehm_gallery = () => ({build:'2026-10-17-space-temple-void',rooms:rooms.length,room:selected,origin:selectedOrigin,reduced_motion:reduced.matches,list:document.body.classList.contains('list-view'),fallback,...engine?.diagnostics(),lisbon:lisbonPreview.diagnostics()});
 function useFallback() {
   fallback = true; document.body.classList.add('no-3d','list-view'); engine?.setList(true);
   syncPreview();
 }
 try {
   const { createGallery } = await import('./gallery-3d.mjs');
-  engine = await createGallery({ select, interact:() => document.body.classList.add('exploring'), fallback:useFallback, reduced, lisbonPreview });
+  engine = await createGallery({ select, onZone:(zone,room,origin)=>{if(zone==='void')select(room,true,origin,false);else{selected=-1;selectedOrigin=null;info.classList.remove('is-open');nav.forEach(a=>a.setAttribute('aria-current','false'));history.replaceState(null,'',location.pathname+location.search);}}, interact:() => document.body.classList.add('exploring'), fallback:useFallback, reduced, lisbonPreview });
   engine.setList(document.body.classList.contains('list-view'));syncPreview();
   const hash=location.hash==='#quantum'?'#origins':location.hash==='#stoner'?'#totehmpaper':location.hash;
   const frame=/^#origin-(\d{1,2})$/.exec(hash),origin=frame?Number(frame[1])-1:null;

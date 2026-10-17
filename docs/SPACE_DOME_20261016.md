@@ -1,5 +1,8 @@
 # SPACE, dôme des intentions — 16 octobre 2026
 
+Direction suivante : [temple au-dessus des nuages et couloirs dans le vide du 17 octobre](SPACE_TEMPLE_20261017.md).
+Ce document conserve la conception et les mesures de la livraison du dôme du 16 octobre.
+
 SPACE prolonge en 3D les sept traits d'intention du processeur COM. Les murs et le sol utilisent un matériau
 noir absolu non éclairé ; le marbre et le ficus figuratif quittent la scène. `gallery-dome.mjs` dessine un arbre
 abstrait, ses ramifications, les sept arcs du dôme et la porte avec un seul maillage de traits de 2 px CSS,
