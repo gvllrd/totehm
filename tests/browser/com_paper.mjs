@@ -30,9 +30,10 @@ try{
   const paper=await R(pg,'#gate-asteroid'),v0=await vars(pg);
   let c=await card(pg);
   ok(c.cls==='is-flat'&&c.tf===''&&(await lsd(pg)).face===0,'départ : recto, posé, aucune transformation');
-  const dos=await pg.evaluate(()=>({nom:document.getElementById('ast-name').textContent.replace(/\s+/g,''),cases:[...document.querySelectorAll('#ast-panel i')].map(i=>i.dataset.l+(i.classList.contains('is-on')?'*':'')),
+  const dos=await pg.evaluate(()=>({nom:document.getElementById('ast-name').textContent.replace(/\s+/g,''),pastilles:!document.getElementById('ast-panel'),
     curseur:!!document.querySelector('#ast-verso .ast-slider b'),ia:!!document.querySelector('#ast-verso .ast-self')}));
-  ok(dos.nom==='wahigher'&&dos.cases.join(',')==='private*,figher,subscribers'&&dos.curseur&&!dos.ia,'le dos porte le nom et son panneau : TROIS niveaux (PRIVATE allumé ; plus de PUBLIC depuis le 16/10), le curseur ; plus de [Higher] Self');
+  /* 18/10 — le dos ne porte plus de pastilles de confidentialité : elle vit sur chaque box. */
+  ok(dos.nom==='wahigher'&&dos.pastilles&&dos.curseur&&!dos.ia,'le dos porte le NOM et le curseur du prix — plus de pastilles de confidentialité (elle est par box)');
   ok(await pg.$eval('#ast-back',e=>e.inert)&&!await pg.$eval('#ast-front',e=>e.inert),'seul le recto est atteignable (inert sur le verso)');
   await pg.waitForTimeout(1500);
   ok((await card(pg)).tf==='','il ne tourne JAMAIS tout seul (1,5 s : transform toujours vide)');
@@ -44,11 +45,21 @@ try{
   await tourner(pg,260);await pg.waitForTimeout(1700);
   const z=await pg.evaluate(()=>{const q=s=>document.querySelector(s);return{srch:q('#srch').className,vue:window.__totehm_lv().vue,reglages:window.__totehm_lv().reglages,
     nom:q('#self-name').textContent,ff:getComputedStyle(q('#self-name')).fontFamily,tb:getComputedStyle(q('#srch-bg')).transform,bg:getComputedStyle(q('#srch-bg')).backgroundImage.includes('333366'),
-    niveaux:document.querySelectorAll('#srch #lv-card [data-lvvis]').length,carte:!q('#lv-card').classList.contains('hide'),createur:!q('#mw-creator').classList.contains('hide'),
-    ia:!!q('#srch #lv-say,#srch #lv-thread'),menu:!!q('#srch #member-window'),compte:q('#member-window').classList.contains('show')};});
+    niveaux:document.querySelectorAll('#srch [data-lvvis]').length,carte:!q('#lv-card').classList.contains('hide'),createur:!q('#mw-creator').classList.contains('hide'),
+    ia:!!q('#srch #lv-say,#srch #lv-thread'),menu:!!q('#srch #member-window'),compte:q('#member-window').classList.contains('show'),
+    /* 18/10 — le verso : plus de vignette, plus de confidentialité du Totehm, plus de /monetize ;
+       le NOM est un identifiant fixe en haut, et la CONSOLE s'affiche une fois le verso posé. */
+    vignette:!!q('#mw-avatar'),monetize:!!q('#lv-prog'),
+    nomFixe:getComputedStyle(q('#self-h')).position,nomWrap:getComputedStyle(q('#self-name')).whiteSpace,
+    nomPx:parseFloat(getComputedStyle(q('#self-name')).fontSize),
+    console:(()=>{const f=q('#srch-console iframe');return f?f.getAttribute('src'):null;})()};});
   ok(/is-open/.test(z.srch)&&z.reglages&&z.vue==='c','retourné à la main : mes RÉGLAGES s\'ouvrent (le verso déplié), la vue ne change pas');
   ok(z.nom==='wahigher'&&/Quantico/.test(z.ff)&&z.tb==='matrix(1, 0, 0, 1, 0, 0)'&&z.bg,'zoom fini : le fond est le papier navy, le nom (Quantico) en haut');
-  ok(z.carte&&z.niveaux===3&&z.createur&&!z.ia&&z.menu,'dessous : qui lit mon TOTEHM (3 niveaux), mon programme d\'abonnés, PUIS le menu membre (il s\'affiche d\'emblée, 16/10) ; aucune IA');
+  /* 18/10 — un IDENTIFIANT : fixe en haut, petit, sans retour de ligne. */
+  ok(z.nomFixe==='sticky'&&z.nomWrap==='nowrap'&&z.nomPx<=19,'le nom est un identifiant FIXE en haut, petit ('+z.nomPx+'px), sans retour de ligne');
+  ok(z.carte&&z.niveaux===0&&!z.vignette&&!z.monetize&&z.createur&&!z.ia&&z.menu,
+    'le verso SIMPLIFIÉ : plus de confidentialité du Totehm (elle est par box), plus de vignette, plus de /monetize ; restent le nom, le programme d\'abonnés et le compte');
+  ok(z.console==='/console?embed=1','la CONSOLE est sur le verso, affichée une fois le verso posé');
   ok(z.compte,'retourner le papier AFFICHE le menu membre (Wah, 16/10) : pas de second geste');
   c=await card(pg);ok((await lsd(pg)).face===1&&c.cls==='is-back is-flat'&&c.tf==='','dessous, le papier est posé sur son verso, sans transformation');
   ok(await pg.$eval('#gate',e=>e.inert&&getComputedStyle(e).visibility==='visible'),'#gate est inert mais reste peint (le Totehm dessous ne se révèle jamais)');
@@ -56,12 +67,11 @@ try{
   await pg.mouse.move(195,600);for(let i=0;i<4;i++){await pg.mouse.wheel(0,90);await pg.waitForTimeout(16);}
   await pg.keyboard.press('ArrowDown');await pg.waitForTimeout(700);
   ok(/is-open/.test(await srch(pg))&&(await pg.evaluate(()=>window.__totehm_lv().vue))==='c'&&(await lsd(pg)).face===1,'molette et ↓ dans mes réglages : rien ne change de vue, le papier ne bouge pas');
-  await pg.click('#srch [data-lvvis="subscribers"]');await pg.waitForFunction(()=>!document.getElementById('lv-prog').classList.contains('hide'),null,{timeout:4000}).catch(()=>{});
-  ok(log.rpc.some(x=>x.name==='visibility_set'&&x.body.p_visibility==='subscribers')&&/is-open/.test(await srch(pg)),'MY SUBSCRIBERS : visibility_set ; la feuille reste ouverte');
+  ok(!log.rpc.some(x=>x.name==='visibility_set'),'le verso n\'écrit plus la confidentialité du Totehm (elle vit sur chaque box)');
   await pg.fill('#mwc-price','3600');await pg.dispatchEvent('#mwc-price','input');
   ok(/100 subscribers/.test(await pg.textContent('#mwc-say'))&&await pg.isVisible('#mwc-save'),'le prix au curseur : la part se lit en direct, « Save » apparaît');
   // focus piégé dans la feuille
-  const tab=async()=>{await pg.keyboard.press('Tab');return pg.evaluate(()=>{const e=document.activeElement;return e.closest('#srch')?(e.id||e.dataset.lvvis||e.tagName):'HORS:'+e.tagName;});};
+  const tab=async()=>{await pg.keyboard.press('Tab');return pg.evaluate(()=>{const e=document.activeElement;return e.closest('#srch')?(e.id||e.tagName):'HORS:'+e.tagName;});};
   await pg.focus('#self-name');const ring=[];for(let i=0;i<24;i++)ring.push(await tab());
   ok(ring.every(x=>!/^HORS/.test(x))&&ring.includes('srch-x'),'Tab tourne dans la feuille → '+ring.join(','));
   await pg.screenshot({path:OUT+'/com_reglages.png'});
@@ -69,9 +79,10 @@ try{
   c=await card(pg);
   ok(await srch(pg)===''&&(await lsd(pg)).face===0&&c.cls==='is-flat'&&c.tf==='','la croix : dézoom, puis le papier se remet sur son recto');
   ok(!await pg.$eval('#gate',e=>e.inert)&&JSON.stringify(await R(pg,'#gate-asteroid'))===JSON.stringify(paper),'le papier est de nouveau atteignable, exactement à sa place');
-  ok((await pg.evaluate(()=>[...document.querySelectorAll('#ast-panel i')].filter(i=>i.classList.contains('is-on')).map(i=>i.dataset.l).join()))==='subscribers','son dos dit le niveau choisi (MY SUBSCRIBERS)');
-  // 15/10 bis : l'espace membre N'EST PLUS une fenêtre — il vit DANS le verso, à la suite de mes réglages
-  await pg.click('#conn-bar');await pg.waitForTimeout(2200);
+  ok(!(await pg.evaluate(()=>!!document.getElementById('ast-panel')))&&!(await pg.evaluate(()=>!!document.getElementById('conn-bar'))),
+    'le dos ne porte plus de pastilles, et il n\'y a plus d\'espace membre hors du verso (#conn-bar parti)');
+  // 18/10 : on revient au verso par le papier — il n'y a plus d'autre porte
+  await tourner(pg,260);await pg.waitForTimeout(2200);
   ok(/is-open/.test(await srch(pg))&&await pg.evaluate(()=>{const m=document.getElementById('member-window');
       return !!document.querySelector('#srch #member-window')&&m.classList.contains('show')&&getComputedStyle(m).position==='static';}),
     'l\'espace membre s\'ouvre DANS le verso (mes réglages, puis mon compte) — plus de fenêtre par-dessus');

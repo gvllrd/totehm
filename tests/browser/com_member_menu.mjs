@@ -11,6 +11,19 @@ const history=[{id:'old-private',habit:'Deep practice',visibility:'private',star
 const network=url=>url.pathname==='/search'?{status:200,contentType:'text/html',body:fs.readFileSync(new URL('../../com/creator.html',import.meta.url))}:url.hostname==='www.figher.club'||url.hostname==='www.higher.boutique'?{status:200,contentType:'text/html',body:'<!doctype html><p>Satellite fixture</p>'}:null;
 const rpc={creator_dashboard:{ok:true,subscribers:12,month_cents:19200,pending_cents:19200,currency:'eur',next_payout:'2026-11-01',threshold_cents:2500,part:80,period:'year',price_cents:2400,min_cents:300,max_cents:100000,enabled:true,open:true},monetization_set:{ok:true},visibility_set:b=>({ok:true,visibility:b.p_visibility}),my_console:base,my_spaces:{ok:true,spaces:history,more:false},totehm_discover:{items:[],total:0,more:false}};
 const ready=async(browser,options={})=>{const sample=await page(browser,{dir:'com',origin,rpc,tables,network,functions:{'sso-mint':{code:'b'.repeat(64)}},...options});await sample.pg.emulateMedia({reducedMotion:'reduce'});return sample;};
+/* ⚠️ 18/10 — IL N'Y A PLUS D'ESPACE MEMBRE HORS DU VERSO (Wah) : `#conn-bar` est parti. On ouvre
+   donc mes réglages comme un membre : en RETOURNANT le papier (un glissé horizontal dessus). */
+const retourner=async pg=>{
+  /* Le verso refuse de s'ouvrir tant qu'une course est en train (`sMoving`, `PAPIER.occupe()`) :
+     on attend que le papier soit posé, et on retente une fois si le geste est tombé pendant. */
+  for(let i=0;i<4;i++){
+    await pg.waitForFunction(()=>!document.getElementById('srch').classList.contains('is-on'),null,{timeout:9000}).catch(()=>{});
+    await pg.click('#lv-tap-turn').catch(()=>{});
+    const ok=await pg.waitForFunction(()=>document.getElementById('srch').classList.contains('is-open'),null,{timeout:3000}).then(()=>true,()=>false);
+    if(ok) return;
+    await pg.waitForTimeout(700);
+  }
+  throw new Error('le verso ne s\'ouvre pas');};
 const browser=await launch();
 try{
   /* 07/10 — L'ESPACE MEMBRE DE totehm.com, C'EST L'UTILISATEUR : sa vignette,
@@ -21,15 +34,18 @@ try{
   {const{pg,ctx,log}=await ready(browser,{rpc:{...rpc,my_landing:LAND,avatar_set:b=>({ok:/^data:image\/jpeg;base64,/.test(b.p_data)}),new_bot_link_code:'CODE123'},
      functions:{'sso-mint':{code:'b'.repeat(64)},'higher-sub':{error:'not_ready'}}});
    await pg.addInitScript(()=>{window.__opened=[];window.open=(u)=>{window.__opened.push(u);return null;};});
-   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(700);await pg.click('#conn-bar');
-   await pg.waitForFunction(()=>/2 TOTEHMs I follow/.test(document.getElementById('mw-subs-hint').textContent),null,{timeout:8000});
+   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(900);await retourner(pg);
+   await pg.waitForFunction(()=>!!document.querySelector('#srch-console iframe'),null,{timeout:9000});
    const acts=await pg.$$eval('#mw-menu .cm-action',l=>l.map(e=>e.textContent));
-   ok(JSON.stringify(acts)==='["Get Higher Self","My subscriptions","Connect TotehmBot"]','16/10: no more « My TOTEHM spaces » (spaces are gone, spots stay) → '+acts.join(' | '));
+   /* 18/10 : « My subscriptions » n'est plus un bouton — la CONSOLE est sur le verso, en dessous. */
+   ok(JSON.stringify(acts)==='["Get Higher Self","Connect TotehmBot"]','18/10: the console IS the back of the paper — no « My subscriptions » button left → '+acts.join(' | '));
+   ok(await pg.$eval('#srch-console iframe',e=>e.getAttribute('src'))==='/console?embed=1','the console is embedded in the back of the paper');
    ok(!await pg.locator('#member-window #lv-card').count()&&await pg.locator('#srch #lv-card #ident-block').count()===1&&!await pg.locator('#totehm-menu').count(),'15/10 : the TOTEHM name, its four levels and the program moved to MY SETTINGS (the back of the paper) — the member window keeps the account');
    /* 15/10 bis : l'espace membre EST le verso — mes réglages au-dessus, mon compte en dessous, une seule page */
    await pg.waitForFunction(()=>document.getElementById('srch').classList.contains('is-open'),null,{timeout:8000});
-   ok(await pg.locator('#srch #member-window.show').count()===1&&await pg.locator('#srch [data-lvvis]').count()===3
-      &&await pg.$eval('#member-window',e=>getComputedStyle(e).position==='static'),'the account opens inside the back of the paper, under my settings (THREE levels since 16/10)');
+   ok(await pg.locator('#srch #member-window.show').count()===1&&await pg.locator('#srch [data-lvvis]').count()===0
+      &&!await pg.locator('#mw-avatar').count()
+      &&await pg.$eval('#member-window',e=>getComputedStyle(e).position==='static'),'the account opens inside the back of the paper — no Totehm-level privacy, no picture (18/10)');
    await pg.waitForFunction(()=>!document.getElementById('mw-creator').classList.contains('hide'));
    const dash=await pg.evaluate(()=>({subs:document.getElementById('mwc-subs').textContent,month:document.getElementById('mwc-month').textContent,next:document.getElementById('mwc-next').textContent,
      on:!document.getElementById('mw-creator').classList.contains('hide'),say:document.getElementById('mwc-say').textContent}));
@@ -38,13 +54,14 @@ try{
    ok(await pg.isVisible('#mwc-save'),'moving the slider shows Save');
    await pg.click('#mwc-save');await pg.waitForFunction(()=>document.getElementById('mwc-note').textContent==='saved');
    ok(log.rpc.some(x=>x.name==='monetization_set'&&x.body.p_price_cents===3600&&x.body.p_enabled===null),'Save : monetization_set(price 3600), the server decides');
-   await pg.click('#srch [data-lvvis="subscribers"]');await pg.waitForFunction(()=>!document.getElementById('lv-prog').classList.contains('hide'));
-   ok(log.rpc.some(x=>x.name==='visibility_set'&&x.body.p_visibility==='subscribers')&&await pg.$eval('#lv-prog',e=>e.getAttribute('href'))==='/monetize','MY SUBSCRIBERS : visibility_set decides, then the program button (/monetize)');
-   await pg.click('#srch [data-lvvis="figher"]');await pg.waitForFunction(()=>document.querySelector('#srch [data-lvvis="figher"]').getAttribute('aria-checked')==='true');
-   ok(log.rpc.some(x=>x.name==='visibility_set'&&x.body.p_visibility==='figher'),'FIGHER CLUB : the most open level (16/10) is one tap away');
-   await pg.keyboard.press('Escape');await pg.waitForFunction(()=>!document.getElementById('srch').classList.contains('is-open'),null,{timeout:6000});
-   await pg.click('#conn-bar');await pg.waitForSelector('#member-window.show');
-   ok(/€7 \/ month/.test(await pg.textContent('#mw-higher-hint'))&&/1 subscriber/.test(await pg.textContent('#mw-subs-hint')),'Higher price and my counts come from the server (my_landing)');
+   /* 18/10 — no Totehm-level privacy on the back any more: it lives on EACH BOX of each view. */
+   ok(!await pg.locator('#srch [data-lvvis],#lv-prog').count()&&!log.rpc.some(x=>x.name==='visibility_set'),
+      '18/10: the back sets no Totehm-wide privacy and no longer links to /monetize');
+   await pg.keyboard.press('Escape');
+   await pg.waitForFunction(()=>!document.getElementById('srch').classList.contains('is-open'),null,{timeout:6000});
+   await pg.waitForTimeout(1800);
+   await retourner(pg);await pg.waitForSelector('#member-window.show');
+   ok(/€7 \/ month/.test(await pg.textContent('#mw-higher-hint')),'the Higher price comes from the server (my_landing)');
    const fmt=await pg.locator('#mw-menu .cm-action').evaluateAll(items=>items.every(e=>{const s=getComputedStyle(e);return s.backgroundColor==='rgb(31, 31, 36)'&&s.whiteSpace==='nowrap'&&s.fontSize==='12.5px';}));
    ok(fmt,'the higher.boutique buttons, centred, on one line');
    ok(await pg.$eval('#mw-in-state',e=>e.lastElementChild.textContent.trim().toLowerCase())==='simple terms of use','terms remain the final member entry');
@@ -53,15 +70,10 @@ try{
    ok(log.functions.some(f=>f.name==='higher-sub'&&f.body.action==='checkout'),'Get Higher Self asks the server for a checkout — no live price yet: « opening soon »');
    await pg.click('#mw-telegram');await pg.waitForFunction(()=>window.__opened.length===1);
    ok(await pg.evaluate(()=>window.__opened[0])==='https://t.me/TotehmBot?start=CODE123','Connect TotehmBot: a one-use link code, then Telegram');
-   // la vignette : un JPEG recadré, écrit par avatar_set, repris dans le coin membre
-   const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAIAAAD91JpzAAAAFklEQVR4nGP8z8DAwMDAxMDAwMDAAAANHQEDasKb6QAAAABJRU5ErkJggg==','base64');
-   await pg.setInputFiles('#mw-avatar-file',{name:'me.png',mimeType:'image/png',buffer:png});
-   await pg.waitForFunction(()=>/url\("data:image\/jpeg/.test(document.getElementById('mw-avatar').style.backgroundImage),null,{timeout:8000});
-   const av=log.rpc.find(x=>x.name==='avatar_set');
-   /* 16/10 : la vignette n'est plus dans le coin (il n'y a plus de coin) — elle vit au VERSO, dans le compte ;
-      le haut ne porte que LE NOM du Totehm. */
-   ok(av&&/^data:image\/jpeg;base64,/.test(av.body.p_data)&&/url\("data:image\/jpeg/.test(await pg.$eval('#mw-avatar',e=>e.style.backgroundImage))
-      &&!await pg.locator('#conn-bar .lv-av').count(),'my picture: a JPEG data URL through avatar_set, shown in the account — never in the name on top');
+   /* 18/10 — PLUS DE PHOTO DE PROFIL (Wah) : la vignette, son champ de fichier et `avatar_set` sont
+      partis ensemble. Le papier EST l'image du membre. */
+   ok(!await pg.locator('#mw-avatar,#mw-avatar-file,#mw-avatar-note').count()&&!log.rpc.some(x=>x.name==='avatar_set'),
+      '18/10: no picture at all on the back of the paper (avatar_set is gone)');
    await pg.screenshot({path:OUT+'/com_member_mobile.png'});
    ok(!await pg.locator('#myspaces,[id^="myspaces-"]').count()&&!await pg.evaluate(()=>typeof MYSPACES!=='undefined'),'16/10: the whole My-spaces window is gone — markup AND wiring');
    ok(!log.errors.some(e=>e.startsWith('pageerror')),'member window: no runtime errors');await ctx.close();
@@ -69,7 +81,7 @@ try{
   {const until=new Date(Date.now()+20*864e5).toISOString();
    const{pg,ctx,log}=await ready(browser,{rpc:{...rpc,my_landing:{...LAND,higher:{...LAND.higher,active:true,status:'active',until,ending:false}}},
      functions:{'sso-mint':{code:'b'.repeat(64)},'higher-sub':b=>({ok:true,ending:b.action==='cancel',until})}});
-   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(400);await pg.click('#conn-bar');
+   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(900);await retourner(pg);
    await pg.waitForFunction(()=>/renews/.test(document.getElementById('mw-higher-hint').textContent));
    ok((await pg.textContent('#mw-higher'))==='My Higher'&&/Stop at the end of the month/.test(await pg.textContent('#mw-higher-acts')),'Higher active: renews on a date, can stop at the end of the month');
    await pg.click('[data-hsub="cancel"]');await pg.waitForFunction(()=>/it ends on/.test(document.getElementById('mw-menu-note').textContent));
@@ -84,8 +96,8 @@ try{
   // A slow landing response may never repaint another account after sign-out.
   {let n=0;const{pg,ctx}=await ready(browser,{rpc:{...rpc,my_landing:async()=>{const k=++n;await new Promise(r=>setTimeout(r,650));
      return k<=2?{...LAND,subscriptions:5,avatar:'data:image/jpeg;base64,AAAA'}:{signed_in:false,thp:false,higher:{active:false,price_cents:700,currency:'eur'}};}}});
-   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.click('#conn-bar');await pg.click('#mw-signout');await pg.waitForSelector('body:not(.member)');await pg.waitForTimeout(900);
-   ok(!await pg.locator('#conn-bar .lv-av').count()&&!/5 TOTEHMs/.test(await pg.textContent('#mw-subs-hint')),'late account data cannot repaint the member space after sign-out');await ctx.close();
+   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(900);await retourner(pg);await pg.click('#mw-signout');await pg.waitForSelector('body:not(.member)');await pg.waitForTimeout(900);
+   ok(!await pg.locator('body.member').count(),'late account data cannot repaint the member space after sign-out');await ctx.close();
   }
   for(const path of ['/search','/console','/monetize']){
    const{pg,ctx,log}=await ready(browser,{rpc:{...rpc,my_console:{...base,offer:{enabled:true}}}});await pg.goto(origin+path);await pg.waitForFunction(()=>document.querySelector('[data-com-monetize]')?.textContent==='My monetization');await pg.click('#member');

@@ -65,7 +65,7 @@ com/      → www.totehm.com       LA PLATEFORME (16/10 bis) : le Totehm = 5 vue
                                  /console, /monetize, /higher (la vente de l'abonnement Higher), /spot ; CINQ vues d'atterrissage, quatre voisins, sans manette :
                                  ↑ Get Higher (la bouche, le cerveau aux 7 couleurs) · ← MES SHORTS (tiktok plein écran) · le processeur (le réseau des 7 intentions PLEIN
                                  ÉCRAN au rythme de mes Habits ; Mine · Others = une MULTITUDE de dos de papier, la recherche AU MILIEU) · MES SPOTS → (le radar, centré sur
-                                 le papier) · ↓ ma Reflection ; le NOM en haut au centre, il n'en bouge jamais ; le verso = le MENU MEMBRE ; XO sert /x/space, /x/club et
+                                 le papier) · ↓ ma Reflection ; le NOM ne vit QUE sur le VERSO (18/10) ; le verso = le MENU MEMBRE ET LA CONSOLE ; XO sert /x/space, /x/club et
                                  /@nom (SUR PLACE : zéro saut)
 space/    → www.totehm.space     Temple antique au sommet des nuages, jour/nuit à l'heure locale ; trois arches vers le vide noir et son couloir d'œuvres,
                                  vingt Origins dans l'ordre, TotehmPaper/Stoner réunis et Lisbon ; /market, collection, /social et /s/:id conservés.
@@ -171,7 +171,7 @@ musique ajoutée ; vibes, profils ; **ce qui vient du Totehm reste TEL QUEL** (l
 rythme, `spot_box_set`) ; le reste (space, spot) au format de sa plateforme. **figher.club :** un spot = un lieu + une heure (Higher spot : chez soi, lieu privé ou dehors) ;
 radar, annonce (toujours ON), agenda, I AM HERE, passés ; OFF = ville, ON = le point (`_point_ok`). Mini-boxes
 OBJECTIVES/REPULSIONS séparées (droits serveur). Détails : `space/CLAUDE.md`, `club/CLAUDE.md`, copy : `BRAND.md`.
-Une Box MY STORY (WISDOM) de COM montre ses Cloths (`element_cloths`) comme une Habit ses spots ; une VISION porte une image libre (`vision_image_set`) ; chercher = un NOM → son univers /@nom (la galaxie : rien que le dos du papier, le nom en Coral au zoom). **Le verso du papier porte TOUT** (15/10 bis ; 16/10 : c'est LE MENU MEMBRE) : mes réglages (nom, 3 niveaux, créateur en 3 chiffres + prix au curseur) PUIS mon compte (vignette, Higher, souscriptions, conditions) ; la console s'ouvre dans la couche `XO`, on ne quitte pas la page.
+Une Box MY STORY (WISDOM) de COM montre ses Cloths (`element_cloths`) comme une Habit ses spots ; une VISION porte une image libre (`vision_image_set`) ; chercher = un NOM → son univers /@nom (la galaxie : rien que le dos du papier, le nom en Coral au zoom). **Le verso du papier porte TOUT** (15/10 bis ; 16/10 : LE MENU MEMBRE ; 18/10 : LA CONSOLE, affichée une fois le verso POSÉ) : le NOM — un identifiant sans espace, fixe en haut, sans retour de ligne —, le créateur en 3 chiffres + prix au curseur, mon compte (Higher, conditions), la console. **Plus de vignette, plus de confidentialité du Totehm** (elle est par box), **plus de /monetize** (une plaquette à envoyer), **plus d'espace membre hors du verso** : [Others] y met le papier côté VERSO.
 
 ## Règles d'interface qui valent partout
 

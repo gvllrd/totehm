@@ -717,23 +717,11 @@ body.higher .set-block.higher-only{display:flex!important}
    membre, donc le renommage : « directement » veut dire un geste, pas un détour.
    Les trois vues et les deux modes le gardent à la même place : c'est le repère fixe autour duquel
    le papier monte, le réseau s'allume et la galaxie tourne. `--tn-h` dit aux textes de s'en écarter. */
-#conn-bar{position:fixed;top:max(10px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);z-index:201;margin:0;
-  display:flex;align-items:center;gap:6px;background:none;border:none;cursor:pointer;font-family:'Quantico',sans-serif;
-  font-weight:400;font-size:13px;letter-spacing:.02em;color:#fbd5ca;padding:4px 8px;max-width:72vw;overflow:hidden;
-  white-space:nowrap;text-overflow:ellipsis;-webkit-tap-highlight-color:transparent;transition:opacity .25s ease}
-/* La hauteur que le nom prend en haut. Zéro sans compte (il n'y a pas de nom) : tout ce qui vit en
-   haut s'en écarte par CE chiffre, et rien ne se chevauche dans un cas ou dans l'autre. */
+/* ⚠️ 18/10 — LE NOM A QUITTÉ L'ATTERRISSAGE. Wah : « le nom doit être affiché en haut du Totehm
+   SEULEMENT sur la face verso » · « je ne veux pas d'espace membre en dehors du totehm face Verso ».
+   `#conn-bar` est parti, balisage, style et câblage ensemble. `--tn-h` reste — une poignée de règles
+   s'en servent pour s'écarter du haut — mais il vaut zéro : plus rien n'occupe cette bande. */
 :root{--tn-h:0px}
-body.member{--tn-h:30px}
-/* ⚠️ INVISIBLE DANS LE TOTEHM · 19/09/2026, ET SUR LES DEUX ÉCRANS.
-   La règle vivait dans la requête média du téléphone : sur ordinateur
-   le point vert restait, alors qu'il n'ouvre plus rien depuis le 17/09.
-   Un point qui ne fait rien est une porte peinte sur un mur.
-   ⚠️ Une règle de comportement ne va JAMAIS dans une requête média —
-   seule la mise en page y a sa place. */
-body:not(.gate) #conn-bar{display:none!important}
-/* Le nom reste Coral au survol (doctrine : les noms ne changent pas de teinte). */
-#conn-bar:hover{opacity:.78}
 /* Accréditation Higher. Elle ne s'affiche que pour qui l'a payée ou reçue :
    la source de vérité est stoner_access, jamais le front. */
 .hi-badge{display:inline-flex;align-items:center;line-height:0;margin-left:7px;
@@ -741,40 +729,12 @@ body:not(.gate) #conn-bar{display:none!important}
 .hi-badge svg{height:11px;width:auto;display:block}
 #tv-name .hi-badge svg{height:14px}
 .mw-pseudo .hi-badge svg{height:13px}
-/* ══ UN CARRÉ QUI TOURNE · 09/09/2026 ═══════════════════════════════
-   Le Totehm est fait de carrés : un rond au milieu de l'identité du
-   membre était la seule forme ronde du produit.
-   Sur l'ATTERRISSAGE il tourne lentement — un signal de vie, pas une
-   alarme. Dans l'ESPACE MEMBRE il tourne si vite que l'œil ne suit plus
-   les angles et le voit rond : le carré redevient un point, mais un point
-   qui a tourné pour le devenir. Zéro reflow, zéro peinture — une
-   transformation composite, le GPU s'en charge. */
-#conn-bar .dot{width:9px;height:9px;border-radius:0;background:#fff;
-  will-change:transform}
-/* ⚠️ IL N'Y A QU'UN SEUL POINT, et il vit dans `#conn-bar` — pas dans
-   la fenêtre. `#member-window .dot` ne visait donc RIEN : mesuré le
-   09/09, `animationName` valait `undefined`. C'est l'ÉTAT de la fenêtre
-   qui commande, pas son arbre : quand elle est ouverte, le carré du
-   bouton accélère. Un sélecteur frère (`:has`) suffit — aucun JS. */
-/* ⚠️ IL TOURNE PARTOUT, PAS SEULEMENT SUR L'ATTERRISSAGE · 09/09/2026.
-   La règle était `body.gate #conn-bar .dot` : une fois dans le Totehm,
-   le carré s'arrêtait — donc au téléphone, où l'on vit dans le Totehm,
-   il ne tournait jamais. Il tourne maintenant en permanence, lentement.
-   ET IL GROSSIT DANS L'ESPACE MEMBRE : `#mw-dot` est le même carré, en
-   grand, tournant si vite que l'œil ne suit plus les angles et le voit
-   ROND. Le carré redevient un point — mais un point qui a tourné pour
-   le devenir. Zéro reflow, zéro peinture : une transformation
-   composite, le GPU s'en charge. */
-#conn-bar .dot{animation:vrille 7s linear infinite}
-/* 14 px et non 26 : à 26 il devenait le sujet de l'écran alors qu'il
-   n'est qu'un signe de vie. Il tourne toujours aussi vite — c'est la
-   VITESSE qui fait le rond, pas la taille. */
+/* Le carré qui tourne de l'espace membre (le point du 09/09 est parti avec `#conn-bar`). */
 #mw-dot{width:14px;height:14px;border-radius:0;background:#fff;
   will-change:transform;animation:vrille .22s linear infinite;
   margin:0 auto 14px;display:block}
 @keyframes vrille{from{transform:rotate(0)}to{transform:rotate(360deg)}}
-@media(prefers-reduced-motion:reduce){
-  #conn-bar .dot,#mw-dot{animation:none}}
+@media(prefers-reduced-motion:reduce){#mw-dot{animation:none}}
 
 /* ══ FLOORVIEW : 0 = HABITS (navy) · 1 = SETTINGS (noir) ══ */
 #floorview{position:fixed;inset:0;display:flex;flex-direction:column;transition:background-color .5s ease;z-index:2;background:transparent}
@@ -2331,7 +2291,6 @@ body.gate.entered #gate-door{opacity:0;visibility:hidden}
 #gate-turn{margin-top:20px}
 /* Le coin membre n'existe que pour un inscrit : un point gris qui
    n'ouvre rien d'utile à un inconnu est une porte peinte sur un mur. */
-body:not(.member) #conn-bar{display:none}
 
 #gate-logo{position:relative;flex-shrink:0;
   width:var(--gate-size);height:var(--gate-size)}
@@ -2458,7 +2417,6 @@ body.gate.entered #gl-rail{transform:var(--tf-rail,translateX(-30vw))}
 body.gate.entered #gate-enter,
 body.gate.entered #gate-open,
 body.gate.entered #gate-bottom,
-body.gate.entered #conn-bar{opacity:0;pointer-events:none}
 
 /* ══ L'UI de l'app : masquée pendant l'état 1, fondu entrant pendant l'état 2 ══ */
 body.gate #rail,body.gate #bigT,body.gate #wordmark,
@@ -2487,7 +2445,6 @@ body.gate.entered #filter-badge{
 }
 /* ── Gate: zone basse (Search + phrase) — margin-top:auto pousse vers le bas ── */
 #gate-bottom{display:flex;flex-direction:column;align-items:center;gap:8px;margin-top:12px;width:100%;flex-shrink:0;transition:opacity .25s ease}
-#conn-bar{transition:color .15s,opacity .25s ease}
 /* ── Gate: Search bar — style moteur de recherche ── */
 /* Une box rectangulaire pleine, #626283 — pas la tuile perforée navy des
    boutons. `border-image:none` est obligatoire : sans lui la tuile héritée
@@ -3336,7 +3293,10 @@ body.gate.lv-h:not(.entered):not(.is-door) #lv-sell{opacity:1}
 /* ── LE CENTRE : « Tap to open it », Mine · Others ── */
 #lv-c-acts{position:absolute;left:50%;top:calc(var(--lv-y) + var(--sk) / 2 + 18px);transform:translateX(-50%);
   display:flex;flex-direction:column;align-items:center;gap:12px;width:min(94vw,460px)}
-#lv-tap{background:none;border:0;padding:4px 10px;font:700 9.5px/1.4 'Space Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:#9a9aa2;cursor:pointer;white-space:nowrap;transition:opacity .3s ease}
+#lv-tap{display:flex;align-items:center;justify-content:center;gap:0;background:none;border:0;padding:4px 10px;
+  font:700 9.5px/1.4 'Space Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:#9a9aa2;white-space:nowrap;transition:opacity .3s ease}
+#lv-tap button{background:none;border:0;padding:0;font:inherit;letter-spacing:inherit;text-transform:inherit;color:inherit;cursor:pointer}
+#lv-tap button:focus-visible{outline:1px solid #fff;outline-offset:3px}
 body.lv-others #lv-tap{opacity:0;pointer-events:none}
 /* En Others, la recherche est au milieu : le texte et les deux boutons se rangent DESSOUS, jamais dessus. */
 body.lv-others #lv-c-acts{top:calc(var(--gy,40%) + 62px)}
@@ -3456,12 +3416,23 @@ body.lv-b #lv-say{position:relative}
 .sm-hi{display:inline-block;height:1.15em;width:3.45em;vertical-align:-.25em}
 .sm-link .sm-hi{height:14px;width:42px}
 /* ── MES RÉGLAGES (le verso déplié, `#srch`) : le nom en grand, puis le panneau du même objet. ── */
-#self-h{display:flex;flex-direction:column;align-items:center;gap:8px;transform-origin:50% 50%;will-change:transform;flex:none}
-#self-name{font:400 clamp(24px,7vw,36px)/1.15 'Quantico',sans-serif;color:#fbd5ca;text-align:center;word-break:break-word;max-width:92vw;
+/* ⚠️ 18/10 — LE NOM EST UN IDENTIFIANT, ET IL TIENT LE HAUT DU VERSO (Wah : « affiché en haut du
+   Totehm seulement sur la face verso, en mode FIXE et dans une police PLUS PETITE SANS RETOUR DE
+   LIGNE »). Il était en `clamp(24px,7vw,36px)` et passait à la ligne : un identifiant ne se coupe
+   pas, il s'élide. `sticky` : il reste en haut pendant que la console défile dessous. */
+#self-h{position:sticky;top:0;z-index:3;display:flex;flex-direction:column;align-items:center;gap:8px;
+  transform-origin:50% 50%;will-change:transform;flex:none;padding:6px 0 8px;background:#000;width:100%}
+#self-name{font:400 clamp(15px,3.4vw,19px)/1.2 'Quantico',sans-serif;color:#fbd5ca;text-align:center;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:88vw;display:block;
   background:none;border:0;padding:0;cursor:pointer}
 #self-name:empty{display:none}
 #self-name:focus-visible{outline:1px solid rgba(255,255,255,.4);outline-offset:6px}
 #srch.is-prep #self-h{opacity:0}
+/* ══ LA CONSOLE EST SUR LE VERSO · 18/10/2026 ══ Elle n'apparaît qu'une fois le verso POSÉ
+   (`versoConsole()`), et elle occupe toute la largeur utile : c'est un écran, pas un encart. */
+#srch-console{width:100%;flex:none;margin:4px 0 2px}
+#srch-console:empty{display:none}
+#srch-console iframe{display:block;width:100%;height:min(76dvh,820px);border:0;background:#000}
 #srch #lv-card{width:min(94vw,420px);flex:none}
 #srch #member-window{width:min(94vw,420px);flex:none}
 #lv-card{display:flex;flex-direction:column;align-items:center;gap:12px;margin:10px 0 2px}
@@ -3470,10 +3441,6 @@ body.lv-b #lv-say{position:relative}
   background:#333366;border:0;border-image:none;border-radius:0;padding:6px 12px;filter:none;min-width:0;text-align:center}
 #lv-card #name-btn.claimed{display:none}
 #lv-card #set-name{caret-color:#fbd5ca;width:200px}
-.lv-vis{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
-.lv-vis button{border:0;border-radius:10px;padding:8px 12px;background:#16161a;color:#8a8a92;font:700 10px/1.3 'Space Mono',monospace;letter-spacing:.08em;cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;gap:6px}
-.lv-vis svg{width:12px;height:12px;flex:0 0 auto}
-.lv-vis button.is-on{background:#3a3a42;color:#fff;box-shadow:0 0 0 1px #fff}
 #mw-creator{display:flex;flex-direction:column;align-items:center;gap:10px;width:min(100%,360px);margin-top:4px}
 #mw-creator.hide{display:none}
 .mwc-n{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;width:100%}
@@ -3483,10 +3450,7 @@ body.lv-b #lv-say{position:relative}
 #mwc-price{width:100%;accent-color:#9a9aa2}
 .mwc-say{font:400 11px/1.5 'Space Mono',monospace;color:#b0b0b0;text-align:center}
 .mwc-say b{color:#fff}
-/* Le verso posé (petit) : le nom et le panneau — quatre niveaux (celui qui est vrai, allumé) et le curseur du prix. */
-.ast-panel{display:flex;gap:2px;margin-top:3px}
-.ast-panel i{width:5px;height:5px;background:rgba(255,255,255,.2)}
-.ast-panel i.is-on{background:#fff}
+/* Le verso posé (petit) : le NOM et le curseur du prix. Plus de pastilles de confidentialité (18/10). */
 .ast-slider{position:relative;display:block;width:27px;height:1px;margin-top:4px;background:rgba(255,255,255,.3)}
 .ast-slider b{position:absolute;top:-1.5px;left:var(--p,0%);width:4px;height:4px;margin-left:-2px;background:#fff}
 /* ── LE PROFIL : le papier se découpe en disque autour du T (rayon 29,5 %, centre à 36,3 % du haut), le rail et le
@@ -3497,9 +3461,6 @@ body.lv-b #gate-logo #gl-rail,body.lv-b #gate-logo #gl-wm{opacity:0}
 /* ── LE MEMBRE : sa vignette ── */
 /* ⚠️ La vignette a quitté le haut le 16/10 (elle vit au verso, dans le compte) : la règle part avec elle. */
 #mw-me{display:flex;flex-direction:column;align-items:center;gap:6px}
-#mw-avatar{width:84px;height:84px;border-radius:50%;border:0;padding:0;cursor:pointer;background:#1f1f24 center/cover no-repeat;
-  display:flex;align-items:center;justify-content:center;color:#6d6d74;font:400 9px/1.3 'Space Mono',monospace;letter-spacing:.12em;text-transform:uppercase}
-#mw-avatar:focus-visible{outline:1px solid #fff;outline-offset:3px}
 #mw-menu .cm-hint b{font-weight:700;color:#9a9aa2}
 .mw-sub-act{background:none;border:0;padding:2px 0;font:400 9.5px/1.4 'Space Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:#6d6d74;cursor:pointer}
 #srch-res .srch-open{display:flex;align-items:center;text-decoration:none;min-width:0}
@@ -3575,7 +3536,7 @@ body.lv-b #gate-logo #gl-rail,body.lv-b #gate-logo #gl-wm{opacity:0}
 .dash[data-cap]{display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
 .dash[data-cap] svg{width:12px;height:12px;flex:none}
 /* Sur ordinateur, le gris passe au blanc au survol (hover.py ne lit que le premier <style>). */
-@media(hover:hover){.lv-btn:hover,.lv-vis button:hover,#lv-tap:hover,.sm-acts button:hover,.sm-check:hover,.sm-link:hover,#srch-res .srch-sub:hover,.mw-sub-act:hover,#mw-avatar:hover,.lvn:hover,#lv-mode button:hover,.rf-add:hover{color:#fff}}
+@media(hover:hover){.lv-btn:hover,#lv-tap:hover,.sm-acts button:hover,.sm-check:hover,.sm-link:hover,#srch-res .srch-sub:hover,.mw-sub-act:hover,.lvn:hover,#lv-mode button:hover,.rf-add:hover{color:#fff}}
 </style>
 </head>
 <body class="gate">
@@ -3627,7 +3588,11 @@ body.lv-b #gate-logo #gl-rail,body.lv-b #gate-logo #gl-wm{opacity:0}
            retourner ouvre MES RÉGLAGES (`#srch`). `inert` tant que le recto est dessus : une seule face atteignable. -->
       <div class="ast-face ast-back" id="ast-back" inert>
         <div class="ast-tile"></div>
-        <div id="ast-verso"><span class="ast-say" id="ast-name"></span><span class="ast-panel" id="ast-panel" aria-hidden="true"><i data-l="private"></i><i data-l="figher"></i><i data-l="subscribers"></i></span><span class="ast-slider" aria-hidden="true"><b></b></span></div>
+        <!-- ⚠️ 18/10 — PLUS DE CONFIDENTIALITÉ DU TOTEHM ICI (Wah : « il n'est pas question de
+             confidentialité du totehm puisque la confidentialité s'effectue pour CHAQUE BOX de chaque
+             vue »). Les trois pastilles (`#ast-panel`) sont parties, balisage ET câblage. Restent le
+             NOM et le curseur du prix : ce que le verso règle vraiment. -->
+        <div id="ast-verso"><span class="ast-say" id="ast-name"></span><span class="ast-slider" aria-hidden="true"><b></b></span></div>
         <button id="gate-search-go" type="button" aria-label="My TOTEHM settings"></button>
         <div class="ast-light"></div>
       </div>
@@ -3767,7 +3732,10 @@ body.lv-b #gate-logo #gl-rail,body.lv-b #gate-logo #gl-wm{opacity:0}
           <button id="lv-join" class="lvp-cta" type="button">CONNECT WITH MY TOTEHM</button>
           <p class="lvp-free">free · no card</p>
         </div>
-        <button id="lv-tap" type="button">Tap to open it</button>
+        <!-- ⚠️ 18/10 — CHACUN FAIT CE QU'IL DIT (règle du 06/10). Depuis que `#conn-bar` est parti,
+             « Turn to configure it » est la SEULE porte vers le verso quand le geste n'est pas
+             disponible (mouvement réduit, clavier) : c'est donc un vrai bouton, pas une légende. -->
+        <div id="lv-tap"><button id="lv-tap-open" type="button">Tap to open it</button><span class="lvt-sep"> · </span><button id="lv-tap-turn" type="button">Turn to configure it</button></div>
         <div id="lv-mode" role="radiogroup" aria-label="My TOTEHM or the others">
           <button type="button" role="radio" id="lv-m-mine" data-mode="mine" aria-checked="true"><span class="lvm-slot" aria-hidden="true"></span>Mine</button>
           <button type="button" role="radio" id="lv-m-others" data-mode="others" aria-checked="false">Others</button>
@@ -3848,15 +3816,11 @@ body.lv-b #gate-logo #gl-rail,body.lv-b #gate-logo #gl-wm{opacity:0}
         <input class="line-input hide" id="set-name" maxlength="24" placeholder="my TOTEHM" autocomplete="off" spellcheck="false">
         <div class="note dim hide" id="name-note"></div>
       </div>
-      <!-- Le nom et la visibilité de MON Totehm vivent ici (Wah, 07/10) :
-           les nœuds de l'ancien tiroir, déplacés (`#ident-block`).
-           13/10 : quatre niveaux (`totehms.audience`), mes abonnés lisent tout ce qui n'est pas privé. -->
-      <div class="lv-vis" role="radiogroup" aria-label="Who reads my TOTEHM">
-        <button type="button" data-lvvis="private" role="radio" aria-checked="true"><svg viewBox="0 0 12 12" aria-hidden="true"><rect x="2.5" y="5.5" width="7" height="5" rx="1" fill="currentColor"/><path d="M4 5.5V4a2 2 0 0 1 4 0v1.5" fill="none" stroke="currentColor" stroke-width="1.3"/></svg><span>PRIVATE</span></button>
-        <button type="button" data-lvvis="figher" role="radio" aria-checked="false"><svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="4.6" fill="none" stroke="currentColor" stroke-width="1.2"/><circle cx="6" cy="6" r="2.2" fill="none" stroke="currentColor" stroke-width="1.2"/><circle cx="6" cy="6" r=".9" fill="currentColor"/></svg><span>FIGHER CLUB</span></button>
-        <button type="button" data-lvvis="subscribers" role="radio" aria-checked="false"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 1.2l1.4 3 3.3.4-2.4 2.3.6 3.3L6 8.6 3.1 10.2l.6-3.3L1.3 4.6l3.3-.4z" fill="currentColor"/></svg><span>MY SUBSCRIBERS</span></button>
-              </div>
-      <a class="lv-btn hide" id="lv-prog" href="/monetize">Monetize my TOTEHM</a>
+      <!-- ⚠️ 18/10 — LA CONFIDENTIALITÉ A QUITTÉ LE VERSO (Wah : « il n'est pas question ici de
+           confidentialité du totehm puisque la confidentialité s'effectue pour chaque box de chaque
+           vue pour un contrôle TOTAL sur son Totehm »). Le radiogroupe `.lv-vis` et le lien vers
+           `/monetize` sont partis, balisage ET câblage. La page de vente « Monétisation » devient une
+           plaquette à envoyer : elle n'a plus rien à faire dans le produit. -->
       <!-- 13/10 — le créateur en trois chiffres, et son prix au curseur (`creator_dashboard`, `monetization_set`). -->
       <div id="mw-creator" class="hide">
         <div class="mwc-n"><span><b id="mwc-subs">0</b><i>subscribers</i></span><span><b id="mwc-month">0</b><i>this month</i></span><span><b id="mwc-next">—</b><i>next payout</i></span></div>
@@ -3866,7 +3830,6 @@ body.lv-b #gate-logo #gl-rail,body.lv-b #gate-logo #gl-wm{opacity:0}
         <div class="lv-note" id="mwc-note" role="status"></div>
       </div>
       <button class="hide" id="lv-guest" type="button">Guest TOTEHM · save it with my email</button>
-      <div class="lv-note" id="lv-vis-note" role="status"></div>
     </div>
     <!-- ══ TOUT L'ESPACE MEMBRE EST ICI · 15/10/2026 ══ Wah : « tout l'espace membre doit aller sur la face
          verso du Totehm, et on reste sur cette page, la console intégrée dedans ». Ce n'est plus une fenêtre
@@ -3885,13 +3848,13 @@ body.lv-b #gate-logo #gl-rail,body.lv-b #gate-logo #gl-wm{opacity:0}
            l'abonnement Higher, une vignette profil qu'il peut modifier ».
            15/10 : le nom, la visibilité et le programme d'abonnés sont au
            verso du papier (mes réglages) ; ici, le compte. -->
+      <!-- ⚠️ 18/10 — PAS DE PHOTO DE PROFIL (Wah : « dans le totehm face verso, pas besoin de photo
+           de profil »). La vignette, son fichier, sa note et `avatar_set` sont partis ENSEMBLE. Le
+           papier EST l'image du membre ; une deuxième image à côté du nom n'ajoutait rien. -->
       <div id="mw-me">
-        <button id="mw-avatar" type="button" aria-label="Change my picture">picture</button>
-        <input id="mw-avatar-file" type="file" accept="image/*" hidden>
         <div class="mw-pseudo" id="mw-who" role="button" tabindex="0" aria-label="My TOTEHM settings"></div>
         <div class="mw-mail" id="mw-mail"></div>
         <div class="mw-sync" id="mw-sync"></div>
-        <div class="lv-note" id="mw-avatar-note" role="status"></div>
       </div>
       <div id="mw-save" class="hide">
         <p class="cm-hint">Guest TOTEHM · only on this device. Save it with my email: it follows me everywhere, SPACE and figher.club included.</p>
@@ -3902,10 +3865,17 @@ body.lv-b #gate-logo #gl-rail,body.lv-b #gate-logo #gl-wm{opacity:0}
       <div id="settings" class="mw-dash">
         <nav class="cm-menu" id="mw-menu" aria-label="Me">
           <div class="cm-item"><button class="cm-action" id="mw-higher" type="button">My Higher</button><p class="cm-hint" id="mw-higher-hint">TotehmSM</p><div id="mw-higher-acts"></div></div>
-          <div class="cm-item"><button class="cm-action" id="mw-subs" type="button">My subscriptions</button><p class="cm-hint" id="mw-subs-hint">the TOTEHMs I follow · my subscribers</p></div>
           <div class="cm-item"><button class="cm-action" id="mw-telegram" type="button">Connect TotehmBot</button><p class="cm-hint" id="mw-tg-hint">Telegram · my reflections land there</p></div>
         </nav>
         <div class="lv-note" id="mw-menu-note" role="status"></div>
+
+        <!-- ══ LA CONSOLE EST SUR LE VERSO · 18/10/2026 ══ Wah : « on met directement la console sur le
+             verso du totehm, qui doit d'ailleurs s'afficher une fois que l'on est bien sur la face
+             verso (pas au moment où la face verso est en train de s'afficher) ».
+             Le cadre ne se crée donc qu'à la FIN de l'ouverture (`versoPose()`), une seule fois, même
+             origine, même session. Avant, « My subscriptions » ouvrait `/console` dans la couche XO —
+             un geste de plus pour un écran qui appartient au verso. -->
+        <div id="srch-console" aria-label="My subscriptions"></div>
 
         <!-- ══ ACTIONS DESTRUCTIVES · discrètes, écartées des liens menu
              · 24/09/2026. Un geste destructeur ne se pose pas à côté d'un
@@ -4138,7 +4108,6 @@ body.lv-b #gate-logo #gl-rail,body.lv-b #gate-logo #gl-wm{opacity:0}
   </div>
 </div>
 
-<button id="conn-bar" type="button" aria-label="member space"><span class="dot"></span></button>
 <script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 const sb=createClient('https://abujjbkbbiumxrokozph.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us');
@@ -6039,7 +6008,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-10-18-com-lecture';
+const BUILD='2026-10-18-com-verso';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -8535,7 +8504,13 @@ function paintNameButton(){
 /* renommage du Totehm : vérif de dispo live (comme le Totehm Cloth), Enter pour claim */
 let nameTimer=null;
 $('set-name').addEventListener('input',()=>{
-  const v=$('set-name').value.trim(), note=$('name-note');
+  /* ⚠️ 18/10 — LE NOM EST UN IDENTIFIANT, type nom d'utilisateur Instagram, SANS ESPACE (Wah).
+     On normalise À LA FRAPPE : minuscules, lettres, chiffres, point, tiret, souligné. Ce n'est pas
+     un contrôle à la validation — le champ n'accepte tout simplement rien d'autre. */
+  const el=$('set-name'), brut=el.value, net=brut.toLowerCase().replace(/[^a-z0-9._-]+/g,'');
+  if(net!==brut){ const d=brut.length-net.length, pos=Math.max(0,(el.selectionStart||0)-d);
+    el.value=net; try{ el.setSelectionRange(pos,pos); }catch(_){} }
+  const v=el.value.trim(), note=$('name-note');
   clearTimeout(nameTimer);
   if(myProfile&&v===myProfile.pseudo){note.className='note dim';note.textContent='';return;}
   if(v.length<3){note.className='note dim';note.textContent='at least 3 characters';return;}
@@ -8770,15 +8745,12 @@ function NameSearch({input,results,note,vide=true,onResults=()=>{},onRows=null,c
 
 
 /* ══ MEMBER SPACE : email-only DNA ══ */
+/* ⚠️ 18/10 — IL N'Y A PLUS D'ESPACE MEMBRE HORS DU VERSO (Wah : « je ne veux pas d'espace membre en
+   dehors du totehm face Verso » · « le nom doit être affiché en haut du Totehm SEULEMENT sur la face
+   verso »). `#conn-bar` — le nom en haut au centre de l'atterrissage depuis le 16/10 — est parti,
+   balisage ET câblage. On retourne le papier pour se retrouver : une seule place, une seule porte.
+   Il ne reste ici que l'état `body.member`, que toute la feuille lit. */
 function connPaint(){
-  /* Plus de « Guest » : le coin n'existe que pour un inscrit, et il dit
-     son nom. `body.member` le montre ou le cache (CSS). */
-  const label=(myProfile&&myProfile.pseudo)||'';
-  const av=avatarOk(LAND&&LAND.avatar);
-  /* En haut au centre : LE NOM, et le badge Higher s'il est payé. Pas de vignette (elle vit au verso),
-     pas de point : le moins de choses possible autour du nom. */
-  $('conn-bar').innerHTML=esc(label)+(myHigher?HI_SVG:'');
-  $('conn-bar').setAttribute('aria-label',label?label+' · my member space':'my member space');
   document.body.classList.toggle('member',inscrit());
   paintAsteroid();
 }
@@ -8795,11 +8767,8 @@ function connPaint(){
 function paintAsteroid(){
   const el=$('ast-name'); if(!el) return;
   const p=((me&&myProfile&&myProfile.pseudo)||'').trim();
-  /* 15/10 — le verso porte le nom et son panneau ; déplié, le nom est le haut de mes réglages. */
+  /* 18/10 — le verso porte le NOM, et le nom ne vit que là ; déplié, il en est le haut, FIXE. */
   const sn=$('self-name'); if(sn) sn.textContent=p;
-  /* 16/10 : trois niveaux. Une donnée `public` d'avant se lit comme FIGHER CLUB (la base l'a déjà migrée). */
-  const niv=(v=>v==='public'?'figher':v)((LAND&&LAND.visibility)||'private');
-  document.querySelectorAll('#ast-panel i').forEach(i=>i.classList.toggle('is-on',i.dataset.l===niv));
   const cur=document.querySelector('#ast-verso .ast-slider'); if(cur) cur.style.setProperty('--p',LAND&&LAND.offer&&LAND.offer.open?'100%':'0%');
   el.classList.toggle('is-name',!!p);
   el.style.fontSize='';
@@ -8964,29 +8933,32 @@ $('gate-hero').addEventListener('click',e=>{
 });
 $('gate-door').addEventListener('keydown',e=>{
   if(e.key==='Escape'){ fermerPorte(); if(e.target.blur) e.target.blur(); } });
-/* ══ PAS D'ESPACE MEMBRE DANS LE TOTEHM DÉPLIÉ · 17/09/2026 ══════════
-   ⚠️ `#conn-bar` EST UN ÉTAT, PLUS UNE PORTE. Tout ce qui concerne le
-   compte — le nom, la visibilité, la recherche — vit sur l'atterrissage
-   depuis le 15/09. Ouvrir une fenêtre par-dessus le Totehm pour régler
-   ce qui se règle à l'écran d'avant, c'était deux endroits pour une
-   chose. Le point vert dit qu'on est connecté ; il ne fait rien de plus.
-   Sur l'atterrissage, en revanche, il reste la porte — c'est là que la
-   carte de visite vit. */
-/* ⚠️ L'ACCÈS MEMBRE N'EXISTE QUE SUR L'ATTERRISSAGE · 19/09/2026. Il ne
-   s'ouvrait déjà plus depuis le Totehm ; il ne s'y VOIT plus non plus.
-   Un point vert qui ne fait rien est une porte peinte sur un mur. */
-$('conn-bar').onclick=()=>{
-  if(!document.body.classList.contains('gate'))return;
-  ouvrirCompte(); };
+/* ══ LA CONSOLE VIT SUR LE VERSO · 18/10/2026 ══════════════════════
+   Wah : « on met directement la console sur le verso du totehm ». Un seul cadre, créé à la FIN de
+   l'ouverture du verso (`zoomer().fin`) — même origine, même session, aucun saut. Avant, elle
+   s'ouvrait dans la couche `XO` depuis « My subscriptions » : un geste de plus pour un écran qui
+   appartient au verso. Le cadre se jette au changement de compte (`quitter()`). */
+let consoleCadre=null;
+function versoConsole(){
+  const box=$('srch-console');
+  if(!box||consoleCadre||!me||(typeof guest==='function'&&guest())) return;
+  const f=document.createElement('iframe');
+  f.src='/console?embed=1'; f.title='My subscriptions'; f.loading='lazy';
+  box.appendChild(f); consoleCadre=f;
+}
+function versoConsoleVider(){ if(consoleCadre){ try{ consoleCadre.remove(); }catch(_){} consoleCadre=null; } }
+
+/* ══ L'ESPACE MEMBRE N'EXISTE QUE SUR LE VERSO · 18/10/2026 ══════════
+   Il n'y a plus de porte sur l'atterrissage : on RETOURNE le papier. Une
+   seule place pour le nom, une seule porte vers ce qui se règle. */
 
 /* Le Dashboard se repeint à chaque ouverture : réglages (nom, visibilité,
    suppression) + abonnement (offre unique). */
 
 /* ══ L'ESPACE MEMBRE, C'EST L'UTILISATEUR · 07/10/2026 ══════════════════
-   Sa vignette (modifiable, elle parle pour lui dans TotehmSM), son
-   abonnement Higher, ses abonnements, ses spaces, son TotehmBot. Tout vient
+   Son abonnement Higher, ses abonnements, son TotehmBot — et, depuis le
+   18/10, la console elle-même, sur le verso. Tout vient
    de `my_landing()` (LAND) ; une écriture passe par sa fonction serveur. */
-const avatarOk=d=>typeof d==='string'&&/^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(d)?d:'';
 function prixFmt(c,cur){ try{ return (c/100).toLocaleString('en-GB',{style:'currency',currency:String(cur||'eur').toUpperCase(),minimumFractionDigits:c%100?2:0}); }catch(_){ return ''; } }
 function prixAn(c,cur){ const p=prixFmt(c,cur); return p?p+' / year':''; }
 function prixMois(h){ return h&&h.price_cents!=null?prixFmt(h.price_cents,h.currency)+' / month':''; }
@@ -9007,35 +8979,14 @@ async function fnAppel(fn,body){
 const mwNote=t=>{ $('mw-menu-note').textContent=t||''; };
 function paintMe(){
   if(!me) return;
-  const L=LAND||{}, av=avatarOk(L.avatar), b=$('mw-avatar'), h=L.higher||{};
-  b.style.backgroundImage=av?'url('+av+')':''; b.textContent=av?'':'picture';
+  const L=LAND||{}, h=L.higher||{};
   const btn=$('mw-higher'), hint=$('mw-higher-hint'), acts=$('mw-higher-acts');
   if(h.comp){ btn.textContent='My Higher'; hint.textContent='offered · my Higher Self is open'; acts.innerHTML=''; }
   else if(h.active){ btn.textContent='My Higher'; hint.textContent=(h.ending?'ends ':'renews ')+jourFmt(h.until)+' · '+prixMois(h);
     acts.innerHTML='<button class="mw-sub-act" type="button" data-hsub="'+(h.ending?'resume':'cancel')+'">'+(h.ending?'Keep it':'Stop at the end of the month')+'</button>'; }
   else { btn.textContent='Get Higher Self'; hint.textContent='TotehmSM · '+prixMois(h); acts.innerHTML=''; }
-  const n=x=>Number(x)||0;
-  $('mw-subs-hint').textContent=n(L.subscriptions)+' TOTEHM'+(n(L.subscriptions)===1?'':'s')+' I follow · '+n(L.subscribers)+' subscriber'+(n(L.subscribers)===1?'':'s');
   $('mw-telegram').textContent=L.telegram?'TotehmBot connected':'Connect TotehmBot';
 }
-/* La vignette : un JPEG 256 px recadré au centre, écrit par `avatar_set`. */
-$('mw-avatar').onclick=()=>$('mw-avatar-file').click();
-$('mw-avatar-file').onchange=async e=>{
-  const f=e.target.files&&e.target.files[0]; e.target.value=''; if(!f||!me) return;
-  const note=$('mw-avatar-note'); note.textContent='…';
-  try{
-    const img=await new Promise((ok,ko)=>{ const i=new Image(); i.onload=()=>ok(i); i.onerror=ko; i.src=URL.createObjectURL(f); });
-    const c=document.createElement('canvas'); c.width=c.height=256;
-    const k=Math.min(img.naturalWidth,img.naturalHeight), g=c.getContext('2d');
-    g.drawImage(img,(img.naturalWidth-k)/2,(img.naturalHeight-k)/2,k,k,0,0,256,256);
-    URL.revokeObjectURL(img.src);
-    const data=c.toDataURL('image/jpeg',.82);
-    const {data:r,error}=await sb.rpc('avatar_set',{p_data:data});
-    if(error){ console.error('[avatar_set]',error.message); note.textContent='try again'; return; }
-    if(!r?.ok){ note.textContent='a picture, please'; return; }
-    LAND={...(LAND||{}),avatar:data}; note.textContent=''; paintMe(); connPaint(); if(window.__lvPeindreSM) window.__lvPeindreSM();
-  }catch(_){ note.textContent='a picture, please'; }
-};
 /* Mon abonnement Higher : actif → TotehmSM ; sinon le Checkout (prix chez Stripe). */
 $('mw-higher').onclick=async()=>{
   const h=(LAND&&LAND.higher)||{};
@@ -9077,7 +9028,6 @@ memberPaint=function(){
    Habit Boxes (`habit_spaces.spots`) et se créent dans le prolongement de la Habit. */
 $('mw-close').onclick=()=>{clearTimeout(mwNameTimer);closeMember();};
 /* Mes souscriptions : la console s'ouvre DANS la page (couche XO), même origine, même session. */
-$('mw-subs').onclick=()=>{ XO.ouvrir('console'); };
 /* 15/10 — le nom se change dans MES RÉGLAGES (le verso du papier) : le toucher ici y mène. */
 $('mw-who').style.cursor='pointer';
 $('mw-who').addEventListener('click',()=>{
@@ -9234,6 +9184,7 @@ function quitter(){
   roSeq++; HSPACES.seq++; HSPACES.par=new Map(); ECLOTHS.seq++; ECLOTHS.par=new Map(); visImgSeq++; VISIMG.clear(); ZOOM.clear(); COPIES.clear();
   state={habits:[],vis:'private'}; myProfile=null; cloudMode=false; mySub=null; LAND=null; if(lvQuitter) lvQuitter();
   EMEDIA.seq++; EMEDIA.items=[]; EMEDIA.par=new Map(); EMEDIA.charge=false; SIGNE_EM.clear(); SH.vider(); CAP.fermer();
+  versoConsoleVider();
   TRIPS=[]; REPS=[]; TEACH=[]; VIS=[]; OBJ={}; tripsLoaded=false;
   cacheOublier();
   closeMember();
@@ -10133,6 +10084,9 @@ window.addEventListener('pageshow',e=>{
     const fin=()=>{ document.body.classList.add('searching'); gate.inert=true;
                     srch.classList.add('is-show','is-open');
                     sOpen=true; sMoving=false; window.__totehm_lsd.recherche=true;
+                    /* ⚠️ LA CONSOLE S'AFFICHE UNE FOIS QU'ON EST BIEN SUR LE VERSO, jamais pendant
+                       qu'il s'affiche (Wah, 18/10) : c'est ICI, à la fin de la course, pas avant. */
+                    versoConsole();
                     try{ if(!srch.contains(document.activeElement)) srch.focus({preventScroll:true}); }catch(_){} };
     sansTransition(); sBg.style.transform=''; sH.style.transform='';
     if(RMQ.matches){ srch.classList.remove('is-prep'); pleinEcran(); fin(); return; }
@@ -10343,8 +10297,13 @@ window.addEventListener('pageshow',e=>{
       diag.modes++; mode=m; bouge=true;
       body.classList.toggle('lv-others',m==='others'); peindreMode(); peindreNav(); socle('c');
       const fini=()=>{ bouge=false; if(then) then(); };
-      if(m==='others'){ GX.ouvrir(vite); PAPIER.glisser(cibleMine(),{ms:vite?1:620,fin:fini}); }
-      else{ GX.fermer(); PAPIER.glisser(null,{ms:620,fin:fini}); }
+      /* ⚠️ 18/10 — CE QUI VA DANS [MINE], C'EST LE VERSO (Wah : « quand on clique sur [Others], ce
+         qui va dans la case [MINE] c'est le Totehm face VERSO, et non pas RECTO »). Le papier se
+         retourne D'ABORD, puis il rentre dans la case ; au retour, il ressort, puis il se remet sur
+         son recto. Deux gestes lisibles, jamais un saut de face au milieu d'un déplacement. */
+      if(m==='others'){ GX.ouvrir(vite);
+        PAPIER.poserDos(()=>PAPIER.glisser(cibleMine(),{ms:vite?1:620,fin:fini})); }
+      else{ GX.fermer(); PAPIER.glisser(null,{ms:620,fin:()=>PAPIER.poser(fini)}); }
     }
     /* Ouvrir MON Totehm (ou mes réglages) part toujours du centre, en Mine. */
     function versMine(then){
@@ -10933,34 +10892,16 @@ window.addEventListener('pageshow',e=>{
       $('lv-card').classList.toggle('hide',!m);
       /* Sans compte : ce que ça fait et pourquoi ça marche. Avec un compte : le geste, rien d'autre. */
       const sou=window.matchMedia('(hover:hover)').matches;
-      $('lv-tap').textContent=(sou?'Click to open it':'Tap to open it')+' · '+(sou?'Turn':'Swipe')+' to configure it';
+      $('lv-tap-open').textContent=sou?'Click to open it':'Tap to open it';
+      $('lv-tap-turn').textContent=(sou?'Turn':'Swipe')+' to configure it';
       $('lv-tap').classList.toggle('hide',!m);
       $('lv-pitch').classList.toggle('hide',m);
       if(!m) return;
       /* Un invité n'a ni nom ni lecteurs : une seule porte, sauver avec l'email. */
       const g=guest();
-      ['ident-block','lv-vis-note'].forEach(id=>$(id).classList.toggle('hide',g));
-      document.querySelector('#lv-card .lv-vis').classList.toggle('hide',g);
+      $('ident-block').classList.toggle('hide',g);
       $('lv-guest').classList.toggle('hide',!g);
-      if(g){ $('lv-prog').classList.add('hide'); return; }
-      const v=(w=>w==='public'?'figher':w)((LAND&&LAND.visibility)||'private');
-      document.querySelectorAll('[data-lvvis]').forEach(b=>{ const on=b.dataset.lvvis===v;
-        b.classList.toggle('is-on',on); b.setAttribute('aria-checked',String(on)); });
-      $('lv-prog').classList.toggle('hide',v==='private');
     }
-    $('lv-card').addEventListener('click',async e=>{
-      const b=e.target.closest('[data-lvvis]'); if(!b||!me) return;
-      const v=b.dataset.lvvis; if(LAND&&LAND.visibility===v) return;
-      const seq=++visSeq, uid=me.id, note=$('lv-vis-note');
-      note.textContent='…';
-      const {data,error}=await sb.rpc('visibility_set',{p_visibility:v});
-      if(seq!==visSeq||me?.id!==uid) return;
-      if(error){ console.error('[visibility_set]',error.message); note.textContent='try again'; return; }
-      if(!data?.ok){ note.textContent=data?.why==='no_totehm'?'write my TOTEHM first':'try again'; return; }
-      LAND={...(LAND||{}),visibility:data.visibility};
-      note.textContent=({private:'only me',figher:'FIGHER CLUB + my subscribers',subscribers:'my subscribers',public:'everyone'})[data.visibility]||'';
-      peindreCarte(); paintAsteroid();
-    });
     $('self-name').addEventListener('click',()=>{ if(!myProfile||guest()) return; const b=$('name-btn'); b.classList.remove('claimed'); b.click(); });
     /* ── LE CRÉATEUR (13/10) — trois chiffres (abonnés · ce mois-ci · prochain versement) et le prix au curseur,
        sa part lue en direct. Le serveur dit tout (`creator_dashboard`) ; le prix s'écrit par `monetization_set`. ── */
@@ -11000,7 +10941,8 @@ window.addEventListener('pageshow',e=>{
     })();
 
     /* Le centre : « Tap to open it » ouvre MON Totehm. */
-    $('lv-tap').onclick=()=>{ if(!PAPIER.occupe()) enter(); };
+    $('lv-tap-open').onclick=()=>{ if(!PAPIER.occupe()) enter(); };
+    $('lv-tap-turn').onclick=()=>{ if(!PAPIER.occupe()&&lvReglages) lvReglages.ouvrir(); };
 
     /* ══ EN BAS : MA REFLECTION (15/10) ═══════════════════════════════════════
        Wah : « toutes les données de mon TOTEHM prennent vie à travers une Reflection ». Le passage
@@ -11231,14 +11173,14 @@ window.addEventListener('pageshow',e=>{
       CREA.charger();
     };
     lvQuitter=()=>{ landSeq++; SM.seq++; SM.msgs=[]; SM.busy=false; SM.live=null; SM.offre=false; SM.ajoute.clear(); penser(false);
-                    visSeq++; CREA.vider(); GX.vider(); $('lv-vis-note').textContent=''; smNote(''); };
+                    visSeq++; CREA.vider(); GX.vider(); smNote(''); };
     window.__totehm_lv=()=>({build:BUILD, vue, mode, bouge, allers:diag.allers, modes:diag.modes, papier:PAPIER.vue(),
       membre:inscrit(), higher:!!(LAND&&LAND.higher&&LAND.higher.active), thp:!!(LAND&&LAND.thp),
       reflection:{tours:SM.msgs.length, pret:!!etatSM().ready, gratuits:etatSM().free_left??null, envois:diag.envois, ajouts:diag.ajouts,
                   pense:!!pense, telegram:diag.telegram},
       galaxie:GX.etat(), ramifications:RAM.etat(), tours:diag.tours, tourne:!!tour,
       shorts:SH.etat(), spots:RDR.etat(),
-      visibilite:LAND?LAND.visibility:null, vignette:!!avatarOk(LAND&&LAND.avatar), createur:CREA.etat(), reglages:sOpen});
+      visibilite:LAND?LAND.visibility:null, createur:CREA.etat(), reglages:sOpen});
     window.__lvAller=v=>aller(v);
     window.__lvMode=m=>choisirMode(m);
     slo.classList.add('no-anim');
@@ -11346,6 +11288,10 @@ window.addEventListener('pageshow',e=>{
      n'atteignait jamais le champ de recherche, capturée au niveau window. */
   const swallow=e=>{
     if(!body.classList.contains('gate')) return;
+    /* ⚠️ 18/10 — ÉCHAP NE SE FAIT JAMAIS AVALER. Le focus peut retomber sur `body` (un bouton du
+       verso redessiné, un cadre qui se charge) : la sortie au clavier disparaissait alors, et l'on
+       restait enfermé dans ses réglages. Échap n'a qu'un sens ici — fermer ce qui est ouvert. */
+    if(e.type==='keydown'&&e.key==='Escape') return;
     const t=e.target;
     if(t&&t.closest&&t.closest('#gate,#member-window,#srch')) return;
     e.stopPropagation();

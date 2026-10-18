@@ -48,9 +48,8 @@ try{
       lf:q('#lvn-lf').getAttribute('aria-label'),rt:q('#lvn-rt').getAttribute('aria-label'),
       cotes:['lv-g','lv-d'].filter(i=>document.getElementById(i)).length,
       mine:q('#lv-m-mine').getAttribute('aria-checked'),others:q('#lv-m-others').getAttribute('aria-checked'),
-      /* 16/10 : le nom a quitté le recto du papier — il vit EN HAUT, au centre, et il n'en bouge jamais. */
-      sig:q('#conn-bar').textContent.trim(),sigAbs:!q('#ast-sig'),
-      haut:(()=>{const r=q('#conn-bar').getBoundingClientRect();return Math.abs(r.x+r.width/2-innerWidth/2)<2&&r.y<60;})(),
+      /* 18/10 : le nom a quitté l'atterrissage — il ne vit QUE sur la face verso du papier (Wah). */
+      sigAbs:!q('#ast-sig'),connAbs:!q('#conn-bar'),
       tap:q('#lv-tap').textContent,bouche:getComputedStyle(q('#gate-mouth')).opacity};});
   ok(c.vue==='c'&&c.mode==='mine'&&c.dans,(tel?'téléphone':'ordinateur')+' · centre, Mine : le papier posé DANS son socle');
   ok(JSON.stringify(c.pistes)===JSON.stringify(COULEURS)&&c.noeuds>=7&&c.pales===4&&c.ramOp==='1'&&c.plein,'le réseau PLEIN ÉCRAN : sept pistes aux 7 couleurs exactes, les nœuds = MES Habits, les quatre intentions vides en creux');
@@ -65,9 +64,10 @@ try{
   ok(!c.partis.length,'plus de manette, plus de bascule de mode (balisage retiré) '+c.partis.join(','));
   ok(c.cotes===2&&c.up==='Get Higher'&&c.dn==='My Reflection'&&c.lf==='My shorts'&&c.rt==='My spots'&&c.mine==='true'&&c.others==='false',
      'quatre chevrons discrets (↑ Get Higher, ↓ My Reflection, ← My shorts, → My spots) ; [Mine] coché');
-  ok(c.sig==='wahigher'&&c.sigAbs&&c.haut&&/to open it · (Turn|Swipe) to configure it$/.test(c.tap)&&c.bouche==='0','le nom EN HAUT AU CENTRE, en petit (et plus sur le recto du papier) ; « '+c.tap+' » ; la bouche invisible au centre');
+  ok(c.sigAbs&&c.connAbs&&/to open it · (Turn|Swipe) to configure it$/.test(c.tap)&&c.bouche==='0',
+    'plus de nom ni d\'espace membre sur l\'atterrissage : le nom ne vit que sur la face VERSO ; « '+c.tap+' » ; la bouche invisible au centre');
   await pg.screenshot({path:OUT+'/proc_centre_'+(tel?'tel':'ordi')+'.png'});
-  await pg.click('#lv-tap');await pg.waitForFunction(()=>!document.body.classList.contains('gate'),null,{timeout:8000}).catch(()=>{});
+  await pg.click('#lv-tap-open');await pg.waitForFunction(()=>!document.body.classList.contains('gate'),null,{timeout:8000}).catch(()=>{});
   ok(await pg.evaluate(()=>!document.body.classList.contains('gate')),'« '+c.tap+' » ouvre mon TOTEHM (la déconstruction)');
   ok(!erreurs(log).length,'centre : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
 

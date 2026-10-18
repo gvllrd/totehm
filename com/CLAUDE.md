@@ -1,5 +1,39 @@
 # com/CLAUDE.md — totehm.com : le Totehm, la carte, HigherSelf
 
+## 18/10/2026 (ter) — LOT G, TROISIÈME VOLET : le nom est un identifiant, et le VERSO porte tout
+
+BUILD `2026-10-18-com-verso`.
+
+- **LE NOM EST UN IDENTIFIANT, ET IL NE VIT QUE SUR LE VERSO** (Wah : « ça doit être un identifiant
+  type nom d'utilisateur Instagram sans espace » · « affiché en haut du Totehm SEULEMENT sur la face
+  verso, en mode fixe et dans une police plus petite sans retour de ligne » · « je ne veux pas
+  d'espace membre en dehors du totehm face Verso »). **`#conn-bar` est PARTI** — balisage, style et
+  câblage ensemble : le nom en haut au centre de l'atterrissage (16/10) n'existe plus. `#self-h` est
+  `sticky` en haut du verso, `#self-name` en 15–19 px `nowrap` + ellipse. `#set-name` **normalise à la
+  frappe** : minuscules, `[a-z0-9._-]`, rien d'autre n'entre.
+- **⚠️ LA SEULE PORTE RESTANTE DOIT ÊTRE ATTEIGNABLE.** `#conn-bar` ouvrait le verso ; sans lui, en
+  mouvement réduit (où `PAPIER` n'écoute aucun geste) et au clavier, il n'y avait PLUS AUCUN chemin
+  vers ses réglages. `#lv-tap` est donc devenu deux vrais boutons — `#lv-tap-open` (ouvre le Totehm)
+  et `#lv-tap-turn` (ouvre le verso) : chacun FAIT ce qu'il dit, la règle du 06/10.
+- **⚠️ ÉCHAP NE SE FAIT PLUS AVALER.** `swallow` (le filtre de gestes de l'atterrissage) arrêtait tout
+  `keydown` dont la cible n'était ni `#gate`, ni `#member-window`, ni `#srch`. Le focus retombe sur
+  `body` dès qu'un bouton du verso est redessiné : Échap ne fermait plus rien et l'on restait enfermé
+  dans ses réglages. Échap passe désormais toujours.
+- **LE VERSO PORTE LA CONSOLE**, affichée **une fois le verso POSÉ** (Wah : « pas au moment où la face
+  verso est en train de s'afficher ») : `versoConsole()` est appelée dans le `fin()` de `zoomer()`, et
+  crée UN cadre `/console?embed=1` (même origine, même session), jeté au changement de compte. Le
+  bouton « My subscriptions » du menu est parti avec : la console n'est plus un détour par `XO`.
+- **LE VERSO SIMPLIFIÉ** : **plus de photo de profil** (`#mw-avatar`, son champ et `avatar_set` sont
+  partis ensemble — le papier EST l'image du membre) ; **plus de confidentialité du Totehm**
+  (`.lv-vis`, `#ast-panel`, `visibility_set` : elle vit sur CHAQUE BOX, voir `backend/CLAUDE.md`) ;
+  **plus de `/monetize`** (la page de vente devient une plaquette à envoyer). Restent le nom, le
+  créateur en trois chiffres + le prix au curseur, le compte, la console.
+- **[Others] MET LE VERSO DANS [MINE]** (Wah) : `choisirMode('others')` retourne le papier PUIS le
+  glisse dans la case ; au retour il ressort, PUIS se remet sur son recto. Deux gestes lisibles,
+  jamais un saut de face au milieu d'un déplacement.
+- Tests : `com_processeur` 114, `com_paper` 36, `com_member_menu` 34, `com_read_copy` 18,
+  `com_plateforme` 23, `com_shorts` 64 ; fail=0.
+
 ## 18/10/2026 (bis) — LOT G, DEUXIÈME VOLET : la manette revient sur l'atterrissage, la galaxie ouvre un TOTEHM
 
 BUILD `2026-10-18-com-lecture`.

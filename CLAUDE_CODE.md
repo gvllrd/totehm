@@ -50,6 +50,15 @@ chacun — et **Entrée y ouvre le TOTEHM du nom tapé, EN LECTURE, dans la mêm
 page** : `RO` s'arme en plein vol, l'URL suit par `replaceState`, on ne
 navigue jamais. Sans compte, c'est toujours `/@nom` qui s'ouvre.
 
+Troisième volet (BUILD `2026-10-18-com-verso`) : le NOM est un IDENTIFIANT
+sans espace (normalisé à la frappe) et il ne vit QUE sur la face verso, fixe
+en haut, en petit, sans retour de ligne — `#conn-bar` est parti, il n'y a plus
+d'espace membre hors du verso. Le verso PORTE LA CONSOLE (affichée une fois le
+verso posé), sans photo de profil, sans confidentialité du Totehm (elle est
+par box) et sans `/monetize` — la page de vente devient une plaquette à
+envoyer par mail aux influenceurs. [Others] met le papier côté VERSO dans la
+case [MINE].
+
 ## À reporter au master · 11/10/2026 — boutons boutique encore plus compacts
 
 Dans `~/totehm/TOTEHM_MASTER.md` §0 : le padding des boutons de la boutique

@@ -48,11 +48,11 @@ try{
  }
  /* ── 4 · l'espace membre (07/10) : plein écran, c'est l'utilisateur ; les boutons de higher.boutique ── */
  {const {pg,log}=await page(browser,{dir:'com',origin,rpc,tables:{profiles:[{pseudo:'wah'}]}});
-  await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(700);await pg.click('#conn-bar');await pg.waitForTimeout(2200);
+  await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(900);await pg.click('#lv-tap-turn');await pg.mouse.move(4,4);await pg.waitForTimeout(2200);
   const m=await pg.evaluate(()=>{const w=document.getElementById('member-window').getBoundingClientRect(),a=[...document.querySelectorAll('#member-window .cm-action')].map(e=>{const r=e.getBoundingClientRect(),cs=getComputedStyle(e);return {t:e.textContent.trim(),c:r.left+r.width/2,h:r.height,fs:cs.fontSize,ws:cs.whiteSpace,bg:cs.backgroundColor};});
     const outs=[...document.querySelectorAll('#mw-in-state > .mw-out')].map(e=>e.textContent.trim());return {w:w.width,h:w.height,W:innerWidth,H:innerHeight,dansVerso:!!document.querySelector('#srch #member-window'),statique:getComputedStyle(document.getElementById('member-window')).position==='static',a,outs,nom:!!document.querySelector('#member-window #name-btn'),verso:!!document.querySelector('#srch #name-btn')};});
   ok(m.w>0&&m.dansVerso&&m.statique,'l\'espace membre vit dans le verso du papier (15/10 bis) — plus une fenêtre plein écran');
-  ok(m.a.length===3&&m.a.every(x=>Math.abs(x.c-m.W/2)<2&&x.h<48&&x.ws==='nowrap'&&x.fs==='12.5px'&&x.bg==='rgb(31, 31, 36)'),'trois boutons centrés, sur une ligne (My TOTEHM spaces est parti le 16/10) : '+m.a.map(x=>x.t).join(' | '));
+  ok(m.a.length===2&&m.a.every(x=>Math.abs(x.c-m.W/2)<2&&x.h<48&&x.ws==='nowrap'&&x.fs==='12.5px'&&x.bg==='rgb(31, 31, 36)'),'deux boutons centrés, sur une ligne (« My subscriptions » est devenu LA CONSOLE du verso, 18/10) : '+m.a.map(x=>x.t).join(' | '));
   ok(m.outs[m.outs.length-1]==='Simple terms of use'&&!m.nom&&m.verso,'Simple terms of use en dernier ; le nom du Totehm vit au verso (mes réglages, 15/10), plus dans le compte');
   await pg.screenshot({path:OUT+'/member_menu.png',fullPage:true});
   ok(!erreurs(log).length,'menu membre : aucune erreur');await pg.context().close();

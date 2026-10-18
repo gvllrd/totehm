@@ -26,14 +26,14 @@ try{
    await pg.goto(origin + '/totehm'); await pg.waitForSelector('body.member'); await pg.waitForTimeout(900);
    const c = await pg.evaluate(() => ({ why:!!document.getElementById('lv-why'), strat:/strategy/i.test(document.getElementById('lv-slogan').textContent),
      /* 16/10 : le nom a quitté le recto du papier — il vit EN HAUT, au centre, en petit, et il n'en bouge jamais. */
-     sig:document.getElementById('conn-bar').textContent.trim(), sigFont:getComputedStyle(document.getElementById('conn-bar')).fontFamily,
+     connAbs:!document.getElementById('conn-bar'),
      sigInPaper:!document.getElementById('ast-sig'), nameBtn:getComputedStyle(document.getElementById('name-btn')).display,
      thp:!!document.getElementById('lv-thp-say'), tag:!!document.getElementById('lv-b-tag'), build:window.__totehm_lv().build,
      pitch:document.getElementById('lv-pitch').classList.contains('hide'), tap:document.getElementById('lv-tap').textContent }));
    ok(!c.why && !c.strat && !c.thp && !c.tag, 'COM : plus de « [Higher] STRATEGY », de phrase sous lui, de texte du THP ni de slogan TotehmSM');
    ok(c.pitch && /to open it · (Turn|Swipe) to configure it/.test(c.tap), '15/10 bis : un MEMBRE ne lit pas l\'argumentaire — le geste seul');
-   ok(c.sig === 'wahigher' && /Quantico/.test(c.sigFont) && c.sigInPaper && c.nameBtn === 'none', 'le nom du Totehm vit EN HAUT AU CENTRE, en Quantico (16/10) — plus sur le recto du papier, plus de boîte noire');
-   ok(c.build === '2026-10-18-com-lecture', 'BUILD 2026-10-18-com-lecture');
+   ok(c.connAbs && c.sigInPaper && c.nameBtn === 'none', 'le nom du Totehm ne vit QUE sur la face verso (18/10) — ni en haut de l\'atterrissage, ni sur le recto du papier');
+   ok(c.build === '2026-10-18-com-verso', 'BUILD 2026-10-18-com-verso');
    await pg.screenshot({ path:OUT + '/plateforme_centre.png' });
    /* 15/10 : les trois vues, leurs gestes, la galaxie et la Reflection sont dans com_processeur.mjs. */
    /* La couche se réchauffe toute seule, sans rien charger dans SPACE ni le Club. */
@@ -50,7 +50,7 @@ try{
      functions:{ 'create-bunny-upload':{ available:false }, 'sso-mint':{ code:'x'.repeat(64) } } });
    await pg.emulateMedia({ reducedMotion:'reduce' });
    await pg.goto(origin + '/totehm'); await pg.waitForSelector('body.member'); await pg.waitForTimeout(600);
-   await pg.click('#lv-tap'); await pg.waitForFunction(() => !document.body.classList.contains('gate'), null, { timeout:8000 });
+   await pg.click('#lv-tap-open'); await pg.waitForFunction(() => !document.body.classList.contains('gate'), null, { timeout:8000 });
    await pg.waitForSelector('#habits [data-open]'); await pg.locator('#habits [data-open]').first().evaluate(e => e.click());
    /* ⚠️ 16/10 : il n'y a plus de SPACES dans une Habit Box — seulement des SPOTS (Wah : « on a supprimé
       tous les spaces, on garde seulement les spots »), et ANNONCER un spot ne quitte plus la boîte. */
