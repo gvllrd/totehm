@@ -206,9 +206,9 @@ Une Box MY STORY (WISDOM) de COM montre ses Cloths (`element_cloths`) comme une 
 - **Aucune bordure autour d'une boîte**, sur les quatre domaines : une boîte
   se détache par sa VALEUR. Exceptions : la tuile perforée (texture), les
   arêtes d'une boîte en verre 3D, le pointillé d'une place vide. Ombre autorisée sur les Habit Boxes du feed SPACE.
-- **Contrôles** sur les quatre domaines : gris, `border-radius:10px`. **Le
-  nom du Totehm = Quantico Coral, EN HAUT AU CENTRE, en petit, et il ne change JAMAIS de place** (16/10 : plus sur le recto du papier — une seule place pour un nom ; toute
-  animation compose avec lui, `--tn-h`),
+- **Contrôles** sur les quatre domaines : gris, `border-radius:10px`. **Le nom du Totehm = Quantico Coral,
+  un IDENTIFIANT sans espace, et il ne vit QUE sur la face VERSO** (18/10 : fixe en haut du verso, petit,
+  sans retour de ligne ; plus sur le recto, plus sur l'atterrissage — une seule place pour un nom),
   accès membre sans point/carré ni T statique centré ; le papier garde son navy perforé. Aucun motif perforé comme fond de contrôle, sauf [Decode a Totehm Cloth] au survol et en saisie (tuile navy, 06/10). **Aucun fond
   blanc** sur un bouton, une option, une sélection, un panneau : tout reste
   sombre (sélection = gris clair + filet blanc). Une BOÎTE reste carrée.
