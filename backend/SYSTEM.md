@@ -4,7 +4,7 @@
 > Quatre projets READY et huit alias vérifiés (`395c7ca`) ; 25 contrôles HTTP et 40 anciennes adresses réussis ; détail : `../docs/GALLERY_CLUB_20261015.md`.
 > Les mesures historiques du lot C publiées dans `13abd34` sont conservées avec leur date propre.
 
-**Dernier relevé : 16 octobre 2026 (bis), le lot F publié (COM : la liste seule dans le Totehm, ← mes shorts, → mes spots)** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
+**Dernier relevé : 17 octobre 2026, temple SPACE et couloirs Origins publiés ; COM de Claude et retour du Club préservés** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
 
 > **À quoi sert ce fichier.** Les masters disent *ce qu'on veut*. `CLAUDE.md` dit
 > *comment on construit*. **Celui-ci dit ce qui existe vraiment.**
@@ -19,6 +19,39 @@
 
 ---
 
+
+## 0 · SPACE — TEMPLE AU-DESSUS DES NUAGES ET COULOIRS ORIGINS PUBLIÉS — 17/10/2026
+
+| Mesure | Résultat |
+| --- | --- |
+| Code | `2239f0f57eff834e20efef99018fd0e64c4feb20` ; build `2026-10-17-space-temple-void` |
+| Vercel | Quatre projets READY, huit alias exacts ; SPACE `dpl_FHAk6niMEQLEm6zsL5ZeSrg3GLSP` |
+| HTTPS réel | 51/51 : fichiers SPACE www/apex, vingt JPG et vrai THP, expériences/marché, trois pages COM www/apex et Club www/apex ; octets, MIME et TLS vérifiés |
+| Temple | Pierre antique, huit colonnes, six arbres, 216 fleurs ; mer à gauche, montagnes sous le sommet à droite, mer de nuages ; ciel selon l'heure locale, jour de 06:00 à 20:00 |
+| Portails et vide | Trois arches aux vraies couvertures ; temple/lumières/ciel entièrement masqués dans le vide `#000000`, seules les œuvres restent visibles |
+| Mécanique conservée | Même progression droite, alternance et espacement 32 m, vitesse 2,6 m/s, interpolation et durées 1450–4200 ms ; vingt Origins de 01 à 20, pool cinq/trois |
+| Transition et son | FOV sur 800 ms et souffle synthétique ; grave d'approche et onde pure dans le vide ; Web Audio après geste, bouton muet, aucun fichier audio ; retour Échap/bouton et flash doux |
+| Navigateur local | Temple 197/197, Lisbon 68/68, audio natif 19/19, lecteur Origins 16/16 ; six variantes de disposition 320/390/1440 px ; jour/nuit, clavier/tactile, ordre, pixels noirs, pauses et repli vérifiés |
+| Invariants locaux | Navigation 420/420 ; intégrité des expériences, médias, prix, accès et redirections 85/85 |
+| Conservation | COM de Claude et Club restauré identiques à `1117c0c` sur www/apex ; aucun SQL, Edge, prix, compte, commande ou paiement de production dans ce lot |
+
+Mesure HTTPS : `2026-10-17T13:05:42.747051+00:00`. Preuves : `/tmp/totehm-production/temple-code-ready.json`, `temple-code-live.json`, `temple-void/results.json`, `temple-void/layout.json`, `temple-audio/results.json`, `temple-lisbon/results.json`, `temple-origins/results.json`. Tests WebGL locaux avec services interceptés ; HTTPS des vrais domaines avec TLS normal. Le navigateur de production garde la limite de certificat proxy. Détails : `../docs/SPACE_TEMPLE_20261017.md`.
+
+## 0 · SPACE — DÔME DES INTENTIONS, VOYAGE ET VINGT ORIGINS PUBLIÉS — 16/10/2026
+
+| Mesure | Résultat |
+| --- | --- |
+| Code | `069ed64714c2e5fba8f21f38cd2a10a1180d589e` ; build `2026-10-16-space-intention-dome` |
+| Vercel | Quatre projets READY, huit alias exacts ; SPACE `dpl_FJ6C3UZSfUZk1zEowhoukpLhtv7n` |
+| HTTPS réel | 49/49 : accueil et modules www/apex, vingt photos, papier original, expériences/marché, trois pages COM www/apex ; corps exacts, MIME et TLS vérifiés |
+| Architecture | Murs et sol noir absolu ; arbre abstrait et dôme tracés dans les sept couleurs exactes de COM, traits de 2 px CSS ; ciel animé conservé |
+| Collections | Un seul TotehmPaper/Stoner, papier original encadré ; vingt Origins réelles exposées aux murs et liens vers leur chapitre ; Lisbon reste la station 03 |
+| Porte et voyage | Passage réel à l'opposé ; quatre compositions célestes renouvelées, mémoire bornée à cinq secteurs ordinateur/trois téléphone, retour au dôme |
+| Navigateur local | 230/230 : dôme 60, visite 34, sombre 49, Lisbon 66, Origins 16, occlusion 5 ; ordinateur/téléphone, aucune erreur JavaScript/shader |
+| Invariants locaux | 67/67 trajets/collisions et retour lointain ; 85/85 intégrité des expériences, médias, prix, accès et redirections |
+| Coordination COM | Dernier lot F `c386ebc` intégré ; `/totehm`, `/higher`, `/monetize` identiques sur www/apex ; aucun SQL, Edge, compte, commande ou paiement de production dans ce lot |
+
+Mesure HTTPS : `2026-10-16T18:36:09.318322+00:00`. Preuves du code publié : `/tmp/totehm-production/dome-code-ready.json`, `dome-code-live.json`. Tests WebGL locaux avec services interceptés ; lectures HTTPS des vrais domaines avec validation TLS normale. Le navigateur de production garde sa limite de certificat proxy. Détails : `../docs/SPACE_DOME_20261016.md`.
 
 ## 0 · LA LISTE SEULE DANS LE TOTEHM ; ← MES SHORTS, → MES SPOTS — 16/10/2026 (lot F)
 

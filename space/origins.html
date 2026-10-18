@@ -521,6 +521,11 @@ window.addEventListener('resize', ()=>positionSlides(false));
 positionSlides(false);
 preload(0);
 updateUI();
+/* SPACE_GALLERY_DEEP_LINK_START */
+const galleryWork = new URLSearchParams(location.search).get('work') || '';
+if (/^[0-9]{1,2}$/.test(galleryWork) && Number(galleryWork)>=1 && Number(galleryWork)<=VCOUNT) goTo(Number(galleryWork));
+window.__totehm_origins = () => ({build:'2026-10-16-origins-wall',work:cur,total:VCOUNT,playing:videos.filter(v=>!v.paused).length});
+/* SPACE_GALLERY_DEEP_LINK_END */
 </script>
 </body>
 </html>

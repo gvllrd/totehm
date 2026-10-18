@@ -1,4 +1,6 @@
-// Real local WebGL: the Estrela-inspired ficus, marble and accessible routes.
+// Historical 15/10 release checks: the Estrela-inspired ficus and marble.
+// Superseded by gallery_dome.mjs after the 16/10 intention-line dome redesign.
+// This file documents that earlier release and is not a current-gallery test.
 // source /workspace/.totehm-cloud/activate.sh; node tests/browser/gallery_estrela.mjs
 import assert from 'node:assert/strict';
 import fs from 'node:fs';

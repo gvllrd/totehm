@@ -74,15 +74,31 @@ not settings**: they are two views of the landing, reached by going left or righ
 
 Both are mine: without a TOTEHM they do not exist, and inside the galaxy the horizontal belongs to the stars.
 
-## SPACE — 15/10/2026 · deep night
+## SPACE — 17/10/2026 · paradise above the clouds, art in the absolute void
 
-SPACE stays dark in every interface state: deep black gallery walls, floor, plinths, menus, artwork information
-and the classic artwork view, including the fallback without 3D. Light text; the artworks keep their own colours.
-Above the open gallery: a rich, dreamy animated sky, luminous blue/violet/rose nebulae, dense stars, warm glints
-and slow movement. The sky is present on arrival. Reduced motion freezes it. No light theme from system preferences.
-The floor and thick walls are polished black marble with natural silver calcite veins. At the centre, a monumental
-fig tree inspired by Lisbon's Jardim da Estrela: broad buttress roots, a sculptural trunk and a spreading evergreen
-crown, open enough to see the stars. The living tree is part of the architecture, with no invented artwork or collectible.
+SPACE's arrival is an antique temple at the world's summit, above a sea of clouds. Ancient stone, eight great
+columns, six living trees and flowers form the outdoor gallery. The sea stretches to the left; mountain ranges
+rise to the right. The visitor's local hour (`new Date().getHours()`) sets the sky: bright blue and a great sun
+from 06:00 until 20:00, a spectacular, peaceful starry sky otherwise. This replaces the black intention dome.
+The interface, list, information panels and fallback keep dark surfaces and legible text. Art keeps its own colours.
+
+Three antique arches show the actual cover of each experience, with darkness behind them. Crossing an arch
+removes the whole temple and its sky: **the parallel corridor is absolute black, `#000000`**. No visible floor,
+walls, ceiling, lines, scenery, sculptures or ambient lights. Only the original images emerge as one advances.
+**Keep the published corridor's exact navigation:** the same straight progression, alternating artwork positions,
+32-metre cadence, smooth guided movement, keyboard, drag and touch controls. Origins follows the original
+order, 01 through 20. A bounded pool of five images on desktop and three on mobile keeps the journey fluid.
+
+Near an arch, a quiet magnetic bass rises. Crossing uses a gentle 0.8-second FOV stretch and a low breath;
+inside, one pure meditative tone remains. All sound is generated with the Web Audio API, only after a gesture,
+with a clear mute control and no external audio file. Escape and a discreet return button restore the temple
+with a soft flash. Reduced motion makes transitions immediate without a flash; list and hidden-page states
+pause the scene and audio.
+
+**TotehmPaper {THP} and The Stoner Experience remain one presentation.** Use the actual paper shown by Get Higher,
+never a substitute Higher wordmark or a second Stoner picture. **All twenty Origins works use their real images,
+titles and original order**, with links to the corresponding original work and its existing market/access rules.
+The HTML list and fallback also expose the twenty images. No invented artwork or commercial edition is added.
 
 SPACE's third station is **Neuro Street Art Digital**. Its preview shows only floating Lisbon road signs and
 **[Higher] the Lisbon Streets**, using the genuine Higher vector slogan. **PLAY** opens `/play_lisbon_street`,

@@ -67,10 +67,10 @@ com/      → www.totehm.com       LA PLATEFORME (16/10 bis) : le Totehm = 5 vue
                                  ÉCRAN au rythme de mes Habits ; Mine · Others = une MULTITUDE de dos de papier, la recherche AU MILIEU) · MES SPOTS → (le radar, centré sur
                                  le papier) · ↓ ma Reflection ; le NOM en haut au centre, il n'en bouge jamais ; le verso = le MENU MEMBRE ; XO sert /x/space, /x/club et
                                  /@nom (SUR PLACE : zéro saut)
-space/    → www.totehm.space     Galerie 3D visitable d'art digital : TotehmPaper, Get Higher, Stoner, Lisbon, Origins/Quantum,
-                                 /market et collection. Expériences déplacées sans refonte. /social et /s/:id préservent les contenus existants.
-club/     → www.figher.club      Consultation : passé / maintenant / futur × RADAR / SHORTS, mêmes filtres et résultats autorisés.
-                                 Création → COM /spot ; /create reste le moteur intégré à COM, pas une vue publique autonome.
+space/    → www.totehm.space     Temple antique au sommet des nuages, jour/nuit à l'heure locale ; trois arches vers le vide noir et son couloir d'œuvres,
+                                 vingt Origins dans l'ordre, TotehmPaper/Stoner réunis et Lisbon ; /market, collection, /social et /s/:id conservés.
+club/     → www.figher.club      Retour du 17/10 : interface cinq vues d’avant la refonte du 15/10 (référence b4ae3f0).
+                                 Radar · annonce · agenda · caméra · passés ; /create intégré à COM et ponts d’art conservés.
 boutique/ → www.higher.boutique  Physique : Streetwear, Luxury, Decode, commandes et production. Anciens liens d'art → pont SSO → SPACE.
 backend/  → servi par PERSONNE — reste à la racine (sinon SQL et fonctions téléchargeables)
 oracle/   → clés, gitignoré, jamais lu ni recopié

@@ -1,5 +1,58 @@
 # space/CLAUDE.md — totehm.space : galerie d’art digital
 
+## 17/10/2026 — temple au-dessus des nuages, couloirs dans le vide (direction actuelle)
+
+L'accueil devient un temple antique au sommet d'une montagne, au-dessus d'une mer de nuages : pierre ancienne,
+huit colonnes, six grands arbres et 216 fleurs. Mer à gauche, chaînes de montagnes à droite. `gallery-temple.mjs`
+génère le décor et ses matériaux en code ; l'heure locale du navigateur (`new Date().getHours()`, réévaluée
+chaque minute) donne le jour de 06:00 à 20:00, sinon la nuit étoilée. Trois arches portent les vraies couvertures
+de TotehmPaper/Stoner, Origins et Lisbon ; leur ouverture laisse entrevoir le noir.
+
+Franchir une arche masque tout le temple : fond `#000000`, aucun mur, sol, ciel, trait, cadre, lumière ou décor
+dans la scène du couloir. `gallery-void.mjs` remplace les sculptures du voyage par les images originales.
+Le parcours conserve exactement ses positions alternées x=±4,8 m, son premier arrêt à z=-25 m, ses étapes
+de 32 m, sa vitesse de marche de 2,6 m/s et ses visites guidées de 1 450 à 4 200 ms avec la même interpolation.
+Les vingt Origins paraissent dans l'ordre `quantum-01`…`quantum-20` ; cinq images maximum sont conservées
+sur ordinateur, trois au téléphone. Le retour reste accessible par Échap et par un bouton discret.
+
+Le passage étire légèrement le FOV pendant 800 ms ; le retour ajoute un doux flash. Mouvement réduit :
+passage immédiat sans flash. `gallery-audio.mjs` synthétise un bourdonnement d'approche à 50/70 Hz, un souffle
+filtré de transition et une onde sinusoïdale de 110 Hz dans le vide. Aucun fichier audio externe ; le contexte
+audio naît après un geste réel, le son se coupe avec le bouton dédié et se suspend en liste/onglet masqué.
+La résolution reste adaptative ; clavier, glisser, clic au sol et joystick tactile conservent leur mécanique.
+`gallery-navigation.mjs` contourne les six plantations et empêche les visites guidées de traverser une autre arche.
+
+TotehmPaper {THP}/The Stoner Experience restent réunis, avec le vrai PNG de `get_higher`. Les vingt images et
+leurs titres viennent du manifeste existant ; le lecteur `/origins?work=NN`, ses vidéos, prix et droits ne changent pas.
+Neuro Street Art Digital et son récit/manette Lisbon sont conservés. La liste HTML et le repli sans WebGL
+gardent les trois collections et les vingt images. Aucun changement SQL, paiement, compte ou règle d'accès.
+Le retour du Club sur main `1117c0c` et les changements COM de Claude sont conservés.
+
+Vérifications locales mesurées à ce stade : navigation 420/420, audio 19/19, intégrité des expériences 85/85.
+Validation navigateur et publication restent à mesurer ; ces résultats locaux ne prouvent pas la production.
+Détails : `../docs/SPACE_TEMPLE_20261017.md`. Les sections suivantes décrivent leurs livraisons historiques.
+
+## 16/10/2026 — dôme des intentions et voyage spatial (historique, remplacé le 17/10)
+
+SPACE prolonge le langage de COM en 3D : murs et sol noir absolu, sept traits de 2 px dans les couleurs exactes
+du processeur, arbre abstrait relié aux arcs du dôme ouvert sur le ciel. `gallery-dome.mjs` remplace le marbre
+et le ficus figuratif ; aucun flou ni halo. La géométrie noire laisse une vraie porte à l'opposé de l'entrée.
+`gallery-journey.mjs` renouvelle un nombre borné de compositions spatiales à mesure qu'on avance, sans limite
+de distance, avec les mêmes commandes et un retour au dôme. Les décors ne sont pas des œuvres en vente.
+
+Trois collections guidées : 01 TotehmPaper {THP}/Stoner, une seule présentation du papier original encadré ;
+02 Origins/Quantum, les vingt œuvres directement aux murs ; 03 Neuro Street Art Digital, aperçu Lisbon animé conservé.
+`gallery-artworks.mjs` donne les vrais titres/identifiants du catalogue ; les vingt JPG sont des images extraites
+des vidéos originales, et le PNG THP est identique à `get_higher` (`assets/img/totehm_logo.png`).
+Chaque photo propose son œuvre originale via `/origins?work=01`…`20`, et son acquisition sur le marché existant.
+Origins conserve son lecteur, sa navigation, ses médias/prix/droits ; seul un petit bloc d'initialisation accepte ce lien direct.
+La liste HTML et le repli sans WebGL exposent les vingt images. Anciens hashes `#stoner`/`#quantum` conservés.
+Animations suspendues en liste/onglet masqué ; mouvement réduit fige le ciel et le voyage, visites immédiates.
+Tests actuels : `gallery_dome.mjs`, `gallery_origins.mjs`, `gallery_immersive.mjs`, `gallery_lisbon.mjs`,
+`gallery_dark.mjs`, `gallery_initial_list.mjs`, invariants `art_migration.mjs` et `gallery_path.mjs`.
+`gallery_estrela.mjs` garde la livraison historique remplacée ; ne décrit plus le décor courant.
+Détails et publication : `../docs/SPACE_DOME_20261016.md`. Les sections suivantes gardent leur date propre.
+
 ## 16/10/2026 — Lisbon, un seul parcours
 
 La station 03 est « Neuro Street Art Digital ». Son mur et sa carte HTML montrent les 22 panneaux flottants,
