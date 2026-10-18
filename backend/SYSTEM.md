@@ -20,6 +20,24 @@
 ---
 
 
+## 0 · LA MANETTE, LA LECTURE SUR PLACE, LE VERSO — 18/10/2026 (lot G, volumes 2 et 3)
+
+| Mesure | Résultat |
+|---|---|
+| `com/totehm.html` en production | 200, 737 513 octets, `BUILD=2026-10-18-com-verso` |
+| Déploiement Vercel | `dpl_BmB1vVQcmxcwRrXbB4An6nxeCMTg`, production, READY, commit `f663567` |
+| La manette de l'atterrissage | `id="lvjoy"` présent (volume 2) |
+| La lecture d'un autre Totehm SUR PLACE | `lireEnPlace` présent ; l'URL suit par `replaceState` (`/totehm?ro=<nom>`), aucune navigation |
+| La galaxie décorative | `const FOND=248` (132 avant), carrés deux fois plus petits, filet d'intention sur chacun |
+| La console sur le verso | `id="srch-console"` présent ; le cadre `/console?embed=1` se crée à la FIN de l'ouverture |
+| La porte vers le verso | `id="lv-tap-turn"` présent — la seule, depuis que `#conn-bar` est parti |
+| `#conn-bar` (le nom sur l'atterrissage) | **absent** du HTML servi |
+| `data-lvvis` (confidentialité du Totehm) | **absent** — elle vit sur chaque box |
+| `#mw-avatar` (photo de profil) | **absent** |
+| Suites navigateur | com_processeur 114 · com_paper 36 · com_member_menu 34 · com_read_copy 18 · com_plateforme 23 · com_shorts 64 — **fail=0**, aucune exception |
+| ⚠️ Trouvé et corrigé au passage | `com_plateforme` PLANTAIT depuis le 17/10 (temple SPACE : `rooms===4` ; Club restauré : `period==='now'`), et le compteur de PASS le masquait (20 au lieu de 23, fail=0) |
+| ⚠️ Trouvé et corrigé au passage | `swallow` avalait Échap quand le focus retombait sur `body` : avec `#conn-bar` parti, on serait resté enfermé dans ses réglages |
+
 ## 0 · LA CONFIDENTIALITÉ PAR BOX (base) ET LE PLACEMENT COM — 18/10/2026 (lot G, 1er volume)
 
 | Mesure | Résultat |
