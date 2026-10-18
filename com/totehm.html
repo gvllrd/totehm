@@ -101,6 +101,11 @@ html{font-family:'Space Mono',monospace}button,input,select,textarea{font-family
   --joy-d:52px;
   --joy-b:18px;
   --band-b:calc(var(--joy-b) + var(--joy-d) + 36px + 26px);   /* 13/10 : + le nom de la vue, un mot au-dessus */
+  /* 18/10 — la manette de l'ATTERRISSAGE (`#lvjoy`) : son retrait du bas, et la hauteur qu'elle
+     occupe (26 + 44 + 26 et deux gouttières de 6). Tout ce qui vit au bas de l'atterrissage s'y
+     accroche : rien ne se calcule deux fois, rien ne passe dessous. */
+  --lvj-b:max(12px,env(safe-area-inset-bottom));
+  --lvj-h:calc(108px + var(--lvj-b));
   --tile-btn:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
   --tile-light:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%2336498c'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
   /* Le carré perforé du logo (desktop) — même dessin que #gl-bg.
@@ -3175,22 +3180,47 @@ body.lv-g #lv-proc,body.lv-g #lv-slogan{opacity:0}
 #lv-slogan.is-c{opacity:.45;pointer-events:none}
 #lv-slogan.is-c .lvs-pre,#lv-slogan.is-c .lvs-post{opacity:0}
 body.lv-others #lv-slogan.is-c{opacity:0}        /* dans la galaxie, il n'y a que les Totehms */
-/* ── LES DEUX CHEVRONS (souris, clavier ; le doigt glisse) — gris, 10 px de rayon, jamais une manette. ── */
-.lvn{position:absolute;left:50%;width:44px;height:26px;margin-left:-22px;border:0;border-radius:10px;padding:0;pointer-events:auto;
+/* ══ LA MANETTE DE L'ATTERRISSAGE · 18/10/2026 ══════════════════════════════════════════════════
+   Wah : « je veux que tu remettes le joystick sur la page d'atterrissage tout en bas centré ».
+   C'est LE MÊME OBJET que dans le Totehm — quatre chevrons autour d'un manche —, et ce sont les
+   MÊMES chevrons qu'hier (`#lvn-up/dn/lf/rt`, mêmes identités, même câblage) : ils ont changé de
+   PLACE, pas de nature. Ils tenaient les quatre bords de l'écran depuis le 16/10 ; ils entourent
+   désormais le manche, sous le pouce, dans la bande noire du bas. Une seule commande à viser.
+   ⚠️ `position:absolute` (et non `fixed`) : les chevrons vivaient déjà ainsi dans `#gate`, et
+   c'est ce qui garantit qu'ils disparaissent avec lui quand le Totehm se déplie. */
+#lvjoy{position:absolute;left:50%;bottom:var(--lvj-b);z-index:34;transform:translateX(-50%);
+  display:grid;grid-template-columns:26px 44px 26px;grid-template-rows:26px 44px 26px;gap:6px;
+  align-items:center;justify-items:center;pointer-events:none}
+.lvn{position:static;width:44px;height:26px;border:0;border-radius:10px;padding:0;pointer-events:auto;
   background:rgba(22,22,26,.82);color:#6d6d74;display:flex;align-items:center;justify-content:center;cursor:pointer;
   transition:opacity .3s ease,color .2s ease;-webkit-tap-highlight-color:transparent}
 .lvn svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
-/* Le chevron du haut passe SOUS le nom : le nom est le repère fixe, pas lui. */
-#lvn-up{top:calc(max(10px,env(safe-area-inset-top)) + var(--tn-h))}
-#lvn-dn{bottom:max(12px,env(safe-area-inset-bottom))}
-/* 16/10 bis — l'horizontale est revenue (mes shorts à gauche, mes spots à droite) : deux chevrons de plus,
-   couchés, aux bords. Même objet, même gris, même rayon : une croix de quatre voisins, jamais une manette. */
-.lvn-x{top:50%;left:auto;width:26px;height:44px;margin:-22px 0 0 0}
-#lvn-lf{left:max(10px,env(safe-area-inset-left))}
-#lvn-rt{right:max(10px,env(safe-area-inset-right))}
+#lvn-up{grid-area:1/2/2/3}
+#lvn-lf{grid-area:2/1/3/2}
+#lvj-box{grid-area:2/2/3/3}
+#lvn-rt{grid-area:2/3/3/4}
+#lvn-dn{grid-area:3/2/4/3}
+.lvn-x{width:26px;height:44px}
 .lvn.is-mort{opacity:0;pointer-events:none}
 .lvn:focus-visible{outline:1px solid #fff;outline-offset:3px}
 body.lv-others.lv-c #lvn-up{opacity:0;pointer-events:none}
+/* Le manche : le disque navy de la marque (30 % de la composition), et UN point bleu clair qui se
+   tire avec lui. Pas de trois ronds ici — l'atterrissage n'a ni objectif ni répulsion à désigner :
+   il a quatre voisins, et ce sont les chevrons qui les nomment. Aucune bordure, jamais. */
+#lvj-box{width:44px;height:44px;position:relative;border-radius:50%;background:var(--navy);
+  box-shadow:0 2px 7px rgba(0,0,0,.5);transition:box-shadow .42s ease;touch-action:none;cursor:grab;pointer-events:auto}
+#lvj-box:active{cursor:grabbing}
+#lvj-stack{position:absolute;inset:0;transform:translate(var(--mx,0px),var(--my,0px));
+  transition:transform .26s cubic-bezier(.22,.9,.3,1)}
+#lvj-box.tenu #lvj-stack{transition:none}
+#lvj-stack i{--d:11px;position:absolute;left:50%;top:50%;display:block;width:var(--d);height:var(--d);
+  margin:calc(var(--d) / -2) 0 0 calc(var(--d) / -2);border-radius:50%;background:var(--blue);
+  box-shadow:0 2px 5px rgba(0,0,0,.6)}
+#lvjoy.tenu #lvj-box{box-shadow:0 5px 14px rgba(0,0,0,.65)}
+#lvjoy.vers-g #lvn-lf,
+#lvjoy.vers-d #lvn-rt,
+#lvjoy.vers-h #lvn-up,
+#lvjoy.vers-b #lvn-dn{color:#fff}
 /* ── LE SOCLE (15/10) — la boîte Premium du TotehmPaper, à plat : un verre (le reflet en biais, l'arête claire
    en haut), un puits noir où le papier se pose, la marque de la broche 1 dans un coin. Arêtes nettes, aucun
    flou, aucune ombre portée. Il suit le papier : anneau autour du profil (Reflection), il rapetisse dans [Mine]
@@ -3233,8 +3263,13 @@ body.gate.entered #lv-ram,body.gate.folding #lv-ram,body.is-door #lv-ram{opacity
 #lv-ram path{fill:none;stroke-width:2;stroke-linecap:square;stroke-linejoin:miter;
   stroke-dasharray:1 1;stroke-dashoffset:1;transition:stroke-dashoffset .85s var(--gate-ease) calc(var(--i) * 50ms)}
 #lv-ram rect{opacity:0;transition:opacity .25s ease}
-#lv-ram .r-0{opacity:.22}                        /* chez MOI, une intention sans Habit est un vrai trou */
-body.gate:not(.member) #lv-ram .r-0{opacity:.5}  /* sans compte, rien n'est un trou : le réseau est juste en veille */
+/* ⚠️ 18/10 · LA COULEUR SE LIT, MÊME EN CREUX (Wah : « plus de vie dans les traits d'intention, ET
+   AFFICHER LES COULEURS, dans la page processor »). Une intention sans Habit était à .22 : à ce
+   niveau, le rouge-violet et le navy sont du gris, et les 7 couleurs — les 10 % de la composition —
+   ne disaient plus rien. Ce qui dit le creux, ce ne sont plus les couleurs éteintes : ce sont les
+   NŒUDS qui manquent (`.r-0 rect`) et l'impulsion qui n'est qu'une veille. */
+#lv-ram .r-0{opacity:.5}
+body.gate:not(.member) #lv-ram .r-0{opacity:.62} /* sans compte, rien n'est un trou : le réseau est en veille */
 #lv-ram .r-0 rect{display:none}
 #lv-ram .sk{stroke:#4a4a52}                      /* l'anatomie (scissure, tronc) : gris, jamais une intention */
 /* Tirées : en entrant dans la vue, chaque piste se dessine depuis le papier. */
@@ -3242,10 +3277,14 @@ body.gate.lv-c:not(.lv-others) #lv-ram path,body.gate.lv-h #lv-ram path{stroke-d
   transition:stroke-dashoffset .95s var(--gate-ease) calc(var(--i) * 50ms + .1s)}
 body.gate.lv-c:not(.lv-others) #lv-ram rect,body.gate.lv-h #lv-ram rect{opacity:1;
   transition:opacity .35s ease calc(var(--i) * 50ms + .8s)}
-/* L'impulsion : réservée au membre, à la période de SON Habit. */
-#lv-ram .puls{stroke-dasharray:.05 .95;stroke-dashoffset:1;opacity:0;transition:opacity .4s ease}
-body.gate.member.lv-c:not(.lv-others):not(.entered) #lv-ram .puls,
-body.gate.member.lv-h:not(.entered) #lv-ram .puls{opacity:1;
+/* L'impulsion · 18/10 : LES SEPT PISTES VIVENT. Une intention habitée porte une impulsion ÉPAISSE
+   à la période RÉELLE de son Habit ; une intention vide porte une VEILLE — fine, lente, la même
+   pour toutes. Rien d'inventé : la veille ne prétend pas qu'il y a une Habit, elle dit que la
+   piste existe. Et elle tourne aussi sans compte : un réseau mort ne vend rien. CSS seul, zéro rAF. */
+#lv-ram .puls{stroke-dasharray:.08 .92;stroke-dashoffset:1;stroke-width:3;opacity:0;transition:opacity .4s ease}
+#lv-ram .puls.veille{stroke-dasharray:.04 .96;stroke-width:2}
+body.gate.lv-c:not(.lv-others):not(.entered) #lv-ram .puls,
+body.gate.lv-h:not(.entered) #lv-ram .puls{opacity:1;
   animation:ram-puls var(--p,3s) linear infinite;animation-delay:var(--d,0s)}
 @keyframes ram-puls{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
 @media(prefers-reduced-motion:reduce){
@@ -3358,7 +3397,7 @@ body.lv-others.gx-dive #gx-ui{opacity:0;transition:opacity .28s ease}
    ÉTAGES liés, empilés comme les blocs du Totehm (séparés par du noir) ; la couleur EST le sens. ── */
 #rf{position:absolute;left:50%;top:0;bottom:0;transform:translateX(-50%);width:min(94vw,560px);
   display:flex;flex-direction:column;align-items:stretch;gap:10px;
-  padding:calc(max(10px,env(safe-area-inset-top)) + 46px) 0 calc(max(12px,env(safe-area-inset-bottom)) + 46px)}
+  padding:calc(max(10px,env(safe-area-inset-top)) + 46px) 0 calc(var(--lvj-h) + 14px)}
 #rf-me{width:64px;height:64px;align-self:center;flex:none;margin-bottom:34px}
 #lv-say{display:flex;gap:8px;align-items:flex-end;flex:none}
 /* ⚠️ 18/10 · ON ÉCRIT À MÊME LE NOIR, ET IL N'Y A QU'UN CURSEUR (Wah : « il y a un double curseur et une
@@ -3486,7 +3525,7 @@ body.lv-b #gate-logo #gl-rail,body.lv-b #gate-logo #gl-wm{opacity:0}
 .lsh img[src],.lsh video[src]{opacity:1}
 .lsh.is-ici img,.lsh.is-ici video{transform:none}
 /* L'élément d'où vient le média : ses traits d'intention et son texte, EN QUANTICO (ce que le membre a tapé). */
-.lsh-say{position:absolute;left:16px;right:16px;bottom:calc(max(60px,env(safe-area-inset-bottom) + 52px));z-index:2;
+.lsh-say{position:absolute;left:16px;right:16px;bottom:calc(var(--lvj-h) + 12px);z-index:2;
   display:flex;align-items:flex-end;gap:9px;background:none;border:0;padding:0;margin:0;text-align:left;cursor:pointer}
 .lsh-i{display:flex;flex-direction:column;gap:2px;flex:none;padding-bottom:3px}
 .lsh-i i{width:13px;height:2px;display:block}
@@ -3780,10 +3819,16 @@ body.lv-b #gate-logo #gl-rail,body.lv-b #gate-logo #gl-wm{opacity:0}
       <p class="lvs-hook">Neuroscience, not motivation.</p>
       <p class="lvs-sci">The TotehmPaper <b>THP</b> distills selected mental-performance techniques informed by modern neuroscience research, including EEG studies, into an experience designed to prepare your brain for efficient action.</p>
     </div>
-    <button id="lvn-up" class="lvn lv-act" type="button" aria-label="Get Higher"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 10 L8 5 L13 10"/></svg></button>
-    <button id="lvn-dn" class="lvn lv-act" type="button" aria-label="My Reflection"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 6 L8 11 L13 6"/></svg></button>
-    <button id="lvn-lf" class="lvn lvn-x lv-act" type="button" aria-label="My shorts"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 L5 8 L10 13"/></svg></button>
-    <button id="lvn-rt" class="lvn lvn-x lv-act" type="button" aria-label="My spots"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3 L11 8 L6 13"/></svg></button>
+    <!-- ⚠️ LA MANETTE DE L'ATTERRISSAGE · 18/10/2026 — les quatre chevrons entourent le manche, en bas
+         au centre. Grille à plat (pas de rangée intermédiaire : une grille ne place que ses enfants
+         DIRECTS, la leçon de `#joy`). Les identités ne changent pas : `#lvn-*` restent les boutons. -->
+    <div id="lvjoy" class="lv-act" role="group" aria-label="Where I am">
+      <button id="lvn-up" class="lvn lv-act" type="button" aria-label="Get Higher"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 10 L8 5 L13 10"/></svg></button>
+      <button id="lvn-lf" class="lvn lvn-x lv-act" type="button" aria-label="My shorts"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 L5 8 L10 13"/></svg></button>
+      <div id="lvj-box" aria-hidden="true"><div id="lvj-stack"><i></i></div></div>
+      <button id="lvn-rt" class="lvn lvn-x lv-act" type="button" aria-label="My spots"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3 L11 8 L6 13"/></svg></button>
+      <button id="lvn-dn" class="lvn lv-act" type="button" aria-label="My Reflection"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 6 L8 11 L13 6"/></svg></button>
+    </div>
   </div>
 </div>
 
@@ -4470,6 +4515,8 @@ let ANON_OK=false;
    et l'offre de mon Totehm, mon abonnement Higher, mon THP, Telegram. Peint par
    la croix (`lvRefresh`), vidé au changement de compte (`lvQuitter`). */
 let LAND=null, lvRefresh=null, lvQuitter=null, lvReglages=null;
+/* 18/10 — la galaxie rejoue sa plongée à l'envers quand une LECTURE se termine (`sortirLecture`). */
+let lvRevenirGalaxie=null;
 /* TotehmBot — declare ici et pas plus bas : la remise a zero de la
    deconnexion s'execute avant, et une TDZ y jetterait. */
 
@@ -4495,11 +4542,17 @@ try{ ['totehm_profile_v1','totehm_grind_v5','totehm_events'].forEach(k=>localSto
      const c0=JSON.parse(localStorage.getItem(KEY)||'null'); if(c0&&!c0.uid) cacheOublier(); }catch(e){}
 
 /* ══ ?ro=<pseudo> — LE TOTEHM D'UN AUTRE, DANS CETTE PAGE ══
-   Une seule bascule, lue une fois au démarrage. Tout le reste du fichier
-   ignore qu'elle existe, sauf les deux verrous d'écriture (`save`,
-   `cloudSave`) et le rendu de la barre. */
-const RO=(()=>{try{const v=new URLSearchParams(location.search).get('ro');
+   Une seule bascule. Tout le reste du fichier ignore qu'elle existe, sauf
+   les deux verrous d'écriture (`save`, `cloudSave`) et le rendu de la barre.
+   ⚠️ 18/10 — ELLE N'EST PLUS FIGÉE AU CHARGEMENT (Wah : « 0 friction, 0
+   sautage » · « le résultat de recherche doit être dans la même
+   configuration que actuelle, mais en mode READ »). La galaxie l'arme en
+   PLEIN VOL (`lireEnPlace`) et la désarme (`sortirLecture`) : on ne navigue
+   jamais, l'URL suit par `replaceState`. `roEnPlace` dit par où l'on est
+   entré — c'est la seule chose qui change le chemin de sortie. */
+let RO=(()=>{try{const v=new URLSearchParams(location.search).get('ro');
   return v&&v.trim()?v.trim().slice(0,32):null;}catch(e){return null;}})();
+let roEnPlace=false;
 let roSeq=0;
 /* Les spaces de SPACE, par habitude (`habit_spaces`) : clé = norm(texte). */
 const HSPACES={seq:0, par:new Map()};
@@ -4531,15 +4584,17 @@ const isTyping=e=>{const t=e&&e.target;
 /* Le filtre survit au rechargement : sans persistance, on retrouvait son
    Totehm entier alors qu'on l'avait laissé filtré. Il ne sort plus de ce
    fichier — My next objective n'a plus de fenêtre de filtre. */
-const KEYF=RO?'totehm_reader_filter_v1':'totehm_filter_v1';
+/* ⚠️ LA CLÉ SE LIT AU MOMENT D'ÉCRIRE, pas au chargement : `RO` peut s'armer en plein vol
+   (18/10), et le filtre d'une LECTURE ne doit jamais écraser le mien. */
+const KEYF=()=>RO?'totehm_reader_filter_v1':'totehm_filter_v1';
 let lastFilterSaved=null;
 function saveFilter(){
   const v=JSON.stringify({f:filterF,i:filterI});
   if(v===lastFilterSaved)return;          /* paint() passe ici à chaque rendu */
   lastFilterSaved=v;
-  try{localStorage.setItem(KEYF,v);}catch(e){}
+  try{localStorage.setItem(KEYF(),v);}catch(e){}
 }
-try{const _rf=JSON.parse(localStorage.getItem(KEYF)||'null');
+try{const _rf=JSON.parse(localStorage.getItem(KEYF())||'null');
     if(_rf){filterF=_rf.f||null;filterI=_rf.i||null;}}catch(e){}
 
 function save(){
@@ -4627,7 +4682,14 @@ async function loadRO(){
   if(seq!==roSeq||uid!==me?.id)return false;
   if(error){ console.error('[totehm] totehm_of:',error.message);
              roFail('this Totehm could not be read'); return false; }
-  if(data&&data.why==='subscribe'){ location.replace('/@'+encodeURIComponent(data.pseudo||RO)); return false; }
+  /* Un Totehm à abonnement, lu par un non-abonné : sa page de vente. Entré EN PLEIN VOL, elle
+     s'ouvre dans la couche `XO` (même origine, même session) — on ne quitte toujours pas la page. */
+  if(data&&data.why==='subscribe'){
+    const p=data.pseudo||RO;
+    if(roEnPlace){ RO=null; roEnPlace=false; document.body.classList.remove('ro');
+      try{ XO.univers(p); }catch(_){ location.replace('/@'+encodeURIComponent(p)); } }
+    else location.replace('/@'+encodeURIComponent(p));
+    return false; }
   if(!data||!data.ok){
     roFail(data&&data.why==='nobody' ? 'no Totehm by that name'
          : data&&data.why==='signin' ? 'connect to read a Totehm'
@@ -4677,7 +4739,41 @@ function roFail(msg){
   TRIPS=[];REPS=[];TEACH=[];VIS=[];OBJ={};tripsLoaded=true;
   renderHabits();
 }
-$('ro-out').onclick=()=>{ location.href='/totehm#in'; };
+/* Entré par la galaxie, on en ressort par où l'on est venu : le Totehm se replie, et `fold()`
+   désarme la lecture (une seule porte de sortie, la même que la croix et Échap). */
+$('ro-out').onclick=()=>{ if(roEnPlace) foldToGate(); else location.href='/totehm#in'; };
+
+/* ══ LIRE UN AUTRE TOTEHM SANS QUITTER LA PAGE · 18/10/2026 ═══════════════════════════════════
+   Wah : « tu prends au hasard un totehm décoratif de la galaxie, tu prends le nom entré et tu
+   les regroupes en affichant DIRECT la page du Totehm » · « le résultat de recherche doit être
+   dans la même configuration que actuelle mais en mode READ ».
+   La configuration, c'est CETTE page : les cinq vues, la liste, la manette. On ne charge donc
+   pas un second document — on ARME `RO` et on rejoue exactement ce que fait un `?ro=` au
+   démarrage. L'URL suit par `replaceState` : elle dit où l'on est, elle ne navigue pas. */
+async function lireEnPlace(nom){
+  const n=String(nom||'').trim().slice(0,32); if(!n) return false;
+  const avant=RO;
+  RO=n; roEnPlace=true;
+  const ok=await loadRO();
+  if(!ok&&!document.body.classList.contains('ro')){ RO=avant; roEnPlace=!!avant; return false; }
+  try{ history.replaceState(null,'','/totehm?ro='+encodeURIComponent(n)); }catch(_){}
+  if(typeof window.__totehmDeplie==='function') window.__totehmDeplie();
+  return true;
+}
+/* Sortir : on redevient soi. Tout ce que la lecture a posé est jeté AVANT de recharger —
+   sinon le Totehm d'un autre resterait une image sous le mien le temps d'un aller-retour. */
+async function sortirLecture(){
+  if(!RO) return;
+  RO=null; roEnPlace=false;
+  document.body.classList.remove('ro');
+  document.title='TOTEHM';
+  roSeq++; HSPACES.seq++; HSPACES.par=new Map(); ECLOTHS.seq++; ECLOTHS.par=new Map();
+  ZOOM.clear(); COPIES.clear();
+  state={habits:[],vis:'private'}; TRIPS=[]; REPS=[]; TEACH=[]; VIS=[]; OBJ={}; tripsLoaded=false;
+  try{ history.replaceState(null,'',location.pathname); }catch(_){}
+  if(lvRevenirGalaxie) lvRevenirGalaxie();
+  await sessionChange();
+}
 
 /* ══ SPACE APPARAÎT DANS LES HABITUDES · 05/10/2026 ═════════════════════
    Wah : « il faut lier SPACE à COM avec l'apparition des spots dans les
@@ -5943,7 +6039,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-10-18-com-place';
+const BUILD='2026-10-18-com-lecture';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -9947,6 +10043,9 @@ window.addEventListener('pageshow',e=>{
       PAPIER.reveiller();                 /* le logo est revenu : il repart */
       LV.revenu();                        /* mes ramifications ont pu changer dedans */
       SH.pause(); RDR.pause();            /* ni vidéo ni rAF derrière l'atterrissage */
+      /* ⚠️ 18/10 — REPLIER UNE LECTURE, C'EST LA QUITTER. Sans ça, l'atterrissage garderait le
+         Totehm d'un AUTRE sous les yeux (le réseau d'intentions lit `state`). */
+      if(roEnPlace) sortirLecture();
     },DUR+120);
   }
 
@@ -10153,8 +10252,8 @@ window.addEventListener('pageshow',e=>{
       } else if(v==='b'){
         /* « [Higher] Self » descend TOUT EN BAS, en tout petit (Wah) : la vue, c'est le profil et ce que
            j'écris — la signature ne prend pas la place de la réponse. */
-        const k=.42;
-        placer(slo, W()/2-(8+larg('.lvs-self'))*k/2, H()-Math.max(26,parseInt(getComputedStyle(nDn).bottom)||12)-18, 96*k);
+        const k=.42, jb=$('lvjoy'), haut=jb?Math.max(60,H()-jb.getBoundingClientRect().top):120;
+        placer(slo, W()/2-(8+larg('.lvs-self'))*k/2, H()-haut-18, 96*k);
       } else {
         /* AU CENTRE, le badge ne s'éteint pas : il se pose en petit sur le socle, au coin du processeur —
            le même objet, à une autre échelle. Il reprend sa taille en montant vers Get Higher. */
@@ -10315,6 +10414,48 @@ window.addEventListener('pageshow',e=>{
     nDn.onclick=()=>{ const v=voisin('b'); if(v) aller(v); };
     if(nLf) nLf.onclick=()=>{ const v=voisin('g'); if(v) aller(v); };
     if(nRt) nRt.onclick=()=>{ const v=voisin('d'); if(v) aller(v); };
+
+    /* ── LE MANCHE DE L'ATTERRISSAGE · 18/10/2026 ─────────────────────────────────────────────
+       Le même geste que dans le Totehm, la même dualité : au DOIGT on déplace l'objet (tirer à
+       gauche va à gauche) ; à la SOURIS on pousse la scène comme un trackpad (tirer à gauche
+       amène la vue de DROITE). `fin` est posé au `pointerdown`, jamais déduit après coup. */
+    (function manetteLV(){
+      const jy=$('lvjoy'), bx=$('lvj-box'), st=$('lvj-stack');
+      if(!jy||!bx||!st) return;
+      const RAYON=14, SEUIL=8;
+      let id=null, x0=0, y0=0, dx=0, dy=0, fin=false;
+      const pose=(a,b)=>{ st.style.setProperty('--mx',a.toFixed(1)+'px');
+                          st.style.setProperty('--my',b.toFixed(1)+'px'); };
+      const vise=v=>{ ['g','d','h','b'].forEach(k=>jy.classList.toggle('vers-'+k,k===v)); };
+      const centre=()=>{ pose(0,0); jy.classList.remove('tenu'); bx.classList.remove('tenu'); vise(null); };
+      const sens=()=>{
+        if(Math.max(Math.abs(dx),Math.abs(dy))<SEUIL) return null;
+        const i = fin ? -1 : 1;
+        const d = Math.abs(dx)>Math.abs(dy) ? (dx*i<0?'g':'d') : (dy*i<0?'h':'b');
+        return voisin(d) ? d : null;
+      };
+      bx.addEventListener('pointerdown',e=>{
+        if(!libre()) return;
+        fin = e.pointerType && e.pointerType!=='touch';
+        id=e.pointerId; x0=e.clientX; y0=e.clientY; dx=dy=0;
+        jy.classList.add('tenu'); bx.classList.add('tenu');
+        try{ bx.setPointerCapture(id); }catch(_){}
+      });
+      bx.addEventListener('pointermove',e=>{
+        if(id===null||e.pointerId!==id) return;
+        const ax=e.clientX-x0, ay=e.clientY-y0;
+        const d=Math.hypot(ax,ay), k=d>RAYON ? RAYON/d : 1;
+        dx=ax*k; dy=ay*k; pose(dx,dy); vise(sens());
+      });
+      bx.addEventListener('pointerup',e=>{
+        if(id===null||(e&&e.pointerId!==id)) return;
+        const v=sens();
+        try{ bx.releasePointerCapture(id); }catch(_){}
+        id=null; centre();
+        if(v) aller(v);
+      });
+      bx.addEventListener('pointercancel',()=>{ id=null; centre(); });
+    })();
     window.addEventListener('keydown',e=>{
       if(!libre()||saisie(e.target)||e.metaKey||e.ctrlKey||e.altKey) return;
       if(e.key==='ArrowUp'||e.key==='ArrowDown'){
@@ -10475,10 +10616,11 @@ window.addEventListener('pageshow',e=>{
         const l=vu==='h'?cerveau(n):circuit(n);
         let out=l.anat||'';
         l.forEach(b=>{
-          const st=' style="--i:'+b.i+';--p:'+periode(b.q.w)+'s;--d:'+(b.i*.42).toFixed(2)+'s"';
+          /* Habitée : la période RÉELLE de son Habit. Vide : la veille, lente et commune. */
+          const st=' style="--i:'+b.i+';--p:'+(b.q.n?periode(b.q.w):'6.2')+'s;--d:'+(b.i*.42).toFixed(2)+'s"';
           out+='<g'+(b.q.n?'':' class="r-0"')+st+'>'
             +'<path pathLength="1" d="'+b.d+'" stroke="'+b.x.color+'"/>'
-            +(b.q.n?'<path class="puls" pathLength="1" d="'+b.d+'" stroke="'+b.x.color+'"/>':'')
+            +'<path class="puls'+(b.q.n?'':' veille')+'" pathLength="1" d="'+b.d+'" stroke="'+b.x.color+'"/>'
             +b.nodes+'</g>';
         });
         svg.innerHTML=out;
@@ -10518,7 +10660,12 @@ window.addEventListener('pageshow',e=>{
            • les carrés de fond, sans nom et sans clic — ils font de la galaxie une galaxie.
          Un nom cherché qui n'est pas dans l'échantillon PREND un carré de fond tiré au hasard : l'étoile
          était déjà là, elle se nomme. C'est exactement « tu tires au hasard une étoile-background ». */
-      const FOND=132;
+      /* ⚠️ 18/10 · PLUS ABSTRAITE, PLUS DÉCORATIVE (Wah : « la galaxie doit être plus abstraite et en
+         full-screen, elle est DÉCORATIVE »). Deux fois plus de carrés, deux fois plus petits : le dos
+         du papier devient une POUSSIÈRE de navy sur du noir pur — 60 % noir, 30 % navy. Les 10 %
+         restants, ce sont les sept couleurs d'intention, posées en filet d'un pixel sur les carrés de
+         fond : on ne les lit pas une par une, on les voit scintiller. */
+      const FOND=248;
       /* ⚠️ UN VRAI TOTEHM NE SE RECONNAÎT PAS À SA PLACE : les vrais sont RÉPARTIS sur toute la spirale,
          pas groupés au cœur — sinon la galaxie dirait « les douze du milieu sont les vrais ». */
       function semer(list){
@@ -10529,7 +10676,7 @@ window.addEventListener('pageshow',e=>{
         stars=vrais.map((t,i)=>{ const g=alea(hash(t.pseudo)), slot=Math.min(N-1,i*pas); pris.add(slot);
           return Object.assign({pseudo:String(t.pseudo), k:String(t.pseudo).toLowerCase()}, dispose(slot,N,g(),g(),g())); });
         for(let i=0;i<N;i++){ if(pris.has(i)) continue; const g=alea(hash('fond:'+i));
-          stars.push(Object.assign({pseudo:null, k:null, fond:true}, dispose(i,N,g(),g(),g()))); }
+          stars.push(Object.assign({pseudo:null, k:null, fond:true, teinte:INTS[i%7].color}, dispose(i,N,g(),g(),g()))); }
         etat.etoiles=stars.filter(x=>x.pseudo).length; etat.fond=stars.length-etat.etoiles;
       }
       /* Le carré de fond le plus proche du centre qui n'a pas encore de nom : l'étoile tirée au hasard
@@ -10576,7 +10723,11 @@ window.addEventListener('pageshow',e=>{
         const S=anim.s, Z=1+6*e;
         return {x:S.x+(W()/2-S.x)*e+(P.x-S.x)*Z, y:S.y+(G.cy-S.y)*e+(P.y-S.y)*Z, k:P.k*Z, z:P.z};
       }
-      const couvert=()=>document.hidden||$('member-window').classList.contains('show')||body.classList.contains('is-xo');
+      /* ⚠️ 18/10 — LE TOTEHM DÉPLIÉ COUVRE LA GALAXIE. Depuis que la lecture s'ouvre DANS la page
+         (et non plus dans un cadre `XO`), plus rien ne posait `is-xo` : la galaxie aurait continué
+         de calculer des images derrière un Totehm plein écran. L'atterrissage absent, elle dort. */
+      const couvert=()=>document.hidden||!body.classList.contains('gate')
+        ||$('member-window').classList.contains('show')||body.classList.contains('is-xo');
       function kick(){ if(!raf&&(on||intro>0||anim)) raf=requestAnimationFrame(frame); }
       function frame(now){
         raf=0;
@@ -10604,12 +10755,16 @@ window.addEventListener('pageshow',e=>{
         const L=stars.slice().sort((a,b)=>b.P.z-a.P.z);
         for(const st of L){
           const P=st.P, cible=anim&&anim.st===st, vise=st===hover||st===sel||cible, match=!filtre||(st.k&&filtre.has(st.k));
-          let a=I*(.55+.45*(1-(P.z+1)/2))*(match?1:.2)*(st.fond?.42:1); if(anim&&!cible) a*=1-e;
-          const sz=base*P.k*(st.fond?.52:1)*(vise?1.5:1)*(filtre&&match?1.45:1); st.sz=sz;
+          let a=I*(.55+.45*(1-(P.z+1)/2))*(match?1:.2)*(st.fond?.5:1); if(anim&&!cible) a*=1-e;
+          const sz=base*P.k*(st.fond?.34:1)*(vise?1.5:1)*(filtre&&match?1.45:1); st.sz=sz;
           if(a<.02) continue;
           ctx.globalAlpha=Math.min(1,a);
           if(sprite) ctx.drawImage(sprite,P.x-sz/2,P.y-sz/2,sz,sz);
           else{ ctx.fillStyle='#333366'; ctx.fillRect(P.x-sz/2,P.y-sz/2,sz,sz); ctx.fillStyle='#fff'; }
+          /* Le filet d'intention : décoratif, jamais une information — un carré de fond n'est le Totehm
+             de personne, et sa couleur ne dit rien de plus que « la marque a sept couleurs ». */
+          if(st.fond&&st.teinte&&sz>=5){ ctx.globalAlpha=Math.min(1,a)*.55; ctx.strokeStyle=st.teinte; ctx.lineWidth=1;
+            ctx.strokeRect(P.x-sz/2+.5,P.y-sz/2+.5,sz-1,sz-1); }
         }
         ctx.globalAlpha=1;
         peindreTip();
@@ -10660,9 +10815,11 @@ window.addEventListener('pageshow',e=>{
       cv.addEventListener('pointerup',lacher); cv.addEventListener('pointercancel',lacher);
       cv.addEventListener('pointerleave',()=>{ if(hover){ hover=null; cv.style.cursor=''; kick(); } });
       tip.addEventListener('click',()=>{ const st=sel||hover; if(st) ouvrirEtoile(st); });
-      /* ⚠️ ZÉRO SAUT, ZÉRO FRICTION (Wah, 16/10). On ne navigue plus : l'étoile vient au centre, son nom
-         se cale dessus, et l'univers `/@nom` s'ouvre DANS la couche `XO` (même origine, même session).
-         Le cadre se charge pendant la plongée ; à la fermeture, `revenir()` rejoue le geste à l'envers.
+      /* ⚠️ ZÉRO SAUT, ZÉRO FRICTION (Wah, 16/10 puis 18/10). On ne navigue pas : l'étoile vient au
+         centre, le nom tapé se cale dessus — et ce qui s'ouvre au bout de la plongée, c'est SON
+         TOTEHM, dans CETTE page, en mode READ (`lireEnPlace`) : la même configuration que le mien,
+         les cinq vues, la manette, rien d'éditable. Un Totehm à abonnement bascule tout seul sur sa
+         page de vente, dans la couche `XO`. Fermer la lecture rejoue la plongée à l'envers.
          Le marqueur `sessionStorage` reste : un rechargement pendant la lecture rend Others et le nom tapé. */
       function ouvrirEtoile(st){
         if(anim||!on||!st||!st.pseudo) return;
@@ -10671,9 +10828,14 @@ window.addEventListener('pageshow',e=>{
         try{ q.blur(); }catch(_){}
         try{ sessionStorage.setItem(CLE,JSON.stringify({q:q.value||'',p:nom,t:Date.now()})); }catch(_){}
         document.body.classList.add('gx-dive');
-        try{ XO.prefetch(nom); }catch(_){}
+        /* Sans compte, il n'y a rien à lire (le serveur exige une session) : c'est la page de vente
+           qui s'ouvre, dans la couche `XO`, comme avant. On ne montre jamais une porte fermée. */
+        const lire=inscrit();
+        if(!lire){ try{ XO.prefetch(nom); }catch(_){} }
         anim={t0:performance.now(), D:RMQ.matches?1:640, s:{x:P.x,y:P.y}, st, dir:1, e:0,
-              fin:()=>{ etat.ouvertures++; XO.univers(nom,revenir); }};
+              fin:()=>{ etat.ouvertures++;
+                        if(!lire){ XO.univers(nom,revenir); return; }
+                        lireEnPlace(nom).then(ok=>{ if(!ok) revenir(); }); }};
         kick();
       }
       /* Ressortir de l'étoile : la même course, dir = −1. */
@@ -10748,6 +10910,8 @@ window.addEventListener('pageshow',e=>{
       }
       document.addEventListener('visibilitychange',()=>{ if(!document.hidden){ last=0; kick(); } });
       window.addEventListener('pageshow',e=>{ if(e.persisted&&anim) revenir(); });
+      /* La lecture terminée (`sortirLecture`) rejoue la plongée à l'envers : on ressort de l'étoile. */
+      lvRevenirGalaxie=()=>{ if(anim) revenir(); };
       return {ouvrir, fermer, pause, reprendre, revenir, restaurer, geo,
               vider(){ seq++; charge=false; stars=[]; etat.charge=false; etat.etoiles=0; sel=null; hover=null; anim=null; filtre=null; ctl.reset(); q.value=''; },
               etat:()=>Object.assign({}, etat, {ouvert:on, filtre:filtre?filtre.size:0, nom:tipPour?true:false})};

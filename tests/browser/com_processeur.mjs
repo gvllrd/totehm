@@ -17,6 +17,9 @@ const LAND=(o={})=>({signed_in:true,pseudo:'wahigher',visibility:'private',offer
   higher:{active:false,price_cents:700,currency:'eur',period:'month'},thp:false,subscriptions:0,subscribers:0,
   sm:{ready:true,habit:true,objective:true,higher:false,free_total:7,free_left:6,left:6},...o});
 const GAL={ok:true,totehms:Array.from({length:12},(_,i)=>({pseudo:'kai'+i,offer:i%2===0,price_cents:2400,currency:'eur',subscribed:false}))};
+/* 18/10 — le Totehm d'un autre, lu SUR PLACE depuis la galaxie (`totehm_of`). */
+const AUTRE={ok:true,pseudo:'kai3',steps:[{t:'Swim at dawn',i:'flow',is:['flow']},{t:'Write it down',i:'express',is:['express']}],
+  trips:[],objs:{},reps:[],wisdom:[],visions:[]};
 const COULEURS=['#E24B4A','#e48b31','#fcbe21','#639922','#1D9E75','#378ADD','#7F77DD'];
 const erreurs=log=>log.errors.filter(e=>e.startsWith('pageerror'));
 const lv=pg=>pg.evaluate(()=>window.__totehm_lv());
@@ -38,6 +41,8 @@ try{
       pales:document.querySelectorAll('#lv-ram g.r-0').length,ramOp:getComputedStyle(q('#lv-ram')).opacity,flou,
       plein:(()=>{const r=q('#lv-ram').getBoundingClientRect();return Math.round(r.width)===innerWidth&&Math.round(r.height)>=innerHeight-2;})(),
       puls:[...document.querySelectorAll('#lv-ram .puls')].map(e=>getComputedStyle(e).animationName+'/'+getComputedStyle(e).animationDuration),
+      veille:document.querySelectorAll('#lv-ram .puls.veille').length,
+      creuxOp:(()=>{const g=q('#lv-ram g.r-0');return g?getComputedStyle(g).opacity:'';})(),
       partis:['ljoy','ljoy-say','lv-take','fish','lv-earth','lv-visions','lv-mine','lv-find','vmode'].filter(i=>document.getElementById(i)),
       up:q('#lvn-up').getAttribute('aria-label'),dn:q('#lvn-dn').getAttribute('aria-label'),
       lf:q('#lvn-lf').getAttribute('aria-label'),rt:q('#lvn-rt').getAttribute('aria-label'),
@@ -49,7 +54,13 @@ try{
       tap:q('#lv-tap').textContent,bouche:getComputedStyle(q('#gate-mouth')).opacity};});
   ok(c.vue==='c'&&c.mode==='mine'&&c.dans,(tel?'téléphone':'ordinateur')+' · centre, Mine : le papier posé DANS son socle');
   ok(JSON.stringify(c.pistes)===JSON.stringify(COULEURS)&&c.noeuds>=7&&c.pales===4&&c.ramOp==='1'&&c.plein,'le réseau PLEIN ÉCRAN : sept pistes aux 7 couleurs exactes, les nœuds = MES Habits, les quatre intentions vides en creux');
-  ok(c.puls.length===3&&c.puls.every(x=>/^ram-puls\//.test(x))&&new Set(c.puls.map(x=>x.split('/')[1])).size>=1,'ça VIT : une impulsion par intention habitée, à la période réelle de son Habit ('+c.puls.join(' · ')+')');
+  /* 18/10 — LES SEPT PISTES VIVENT : une impulsion par intention, épaisse et à la période RÉELLE
+     sur une intention habitée, en VEILLE (lente, fine) sur une intention vide ; et la couleur d'un
+     creux se LIT (.5, elle valait .22). Wah : « plus de vie dans les traits d'intention, et afficher
+     les couleurs ». */
+  ok(c.puls.length===7&&c.veille===4&&c.puls.every(x=>/^ram-puls\//.test(x))&&new Set(c.puls.map(x=>x.split('/')[1])).size>=2,
+    'ça VIT : sept impulsions, quatre en veille, la période réelle sur les habitées ('+c.puls.join(' · ')+')');
+  ok(parseFloat(c.creuxOp)>=.45,'la couleur d\'une intention vide se LIT ('+c.creuxOp+')');
   ok(!c.flou,'aucun flou (socle, ramifications, galaxie)');
   ok(!c.partis.length,'plus de manette, plus de bascule de mode (balisage retiré) '+c.partis.join(','));
   ok(c.cotes===2&&c.up==='Get Higher'&&c.dn==='My Reflection'&&c.lf==='My shorts'&&c.rt==='My spots'&&c.mine==='true'&&c.others==='false',
@@ -123,7 +134,8 @@ try{
  // ── 4 · OTHERS : la galaxie — le papier rentre dans [Mine], des TOTEHMs en logo, la recherche, l'étoile, l'univers ──
  for(const [vp,tel] of [[{width:390,height:844},true],[{width:1280,height:800},false]]){
   const{pg,log}=await page(browser,{dir:'com',origin,tables,viewport:vp,hasTouch:tel,
-    rpc:{my_landing:LAND(),totehm_galaxy:GAL,totehm_search:b=>b.p_q?[{pseudo:'kai3',offer:true,price_cents:2400,currency:'eur'}]:[]}});
+    rpc:{my_landing:LAND(),totehm_galaxy:GAL,totehm_search:b=>b.p_q?[{pseudo:'kai3',offer:true,price_cents:2400,currency:'eur'}]:[],
+         totehm_of:AUTRE,habit_spaces:{ok:true,habits:[]},element_cloths:{ok:true,elements:[]}}});
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1000);await ouvre(pg);
   await pg.click('#lv-m-others');await calme(pg);await pg.waitForTimeout(900);
   const o=await pg.evaluate(()=>{const q=s=>document.querySelector(s),d=window.__totehm_lv(),p=q('#gate-asteroid').getBoundingClientRect(),m=q('#lv-m-mine').getBoundingClientRect();
@@ -160,25 +172,38 @@ try{
   ok((await lv(pg)).galaxie.filtre===1&&tr.liste==='none','la recherche allume le Totehm trouvé — et AUCUNE liste ne s\'ouvre');
   ok(/^kai\d+$/.test(tr.nom)&&tr.couleur==='rgb(251, 213, 202)'&&/Quantico/.test(tr.police)&&tr.sc>1.4,
     'son nom se pose SUR son carré, Quantico Coral, agrandi avec lui (×'+tr.sc+')');
-  /* ⚠️ 16/10 · ZÉRO SAUT (Wah) : Entrée plonge dans l'étoile et l'univers `/@nom` s'ouvre DANS la page
-     (couche `XO`, même origine) — l'URL ne bouge pas, aucun onglet ne s'ouvre. Fermer rejoue l'inverse. */
+  /* ⚠️ 18/10 · ZÉRO SAUT, ET CE QUI S'OUVRE EST SON TOTEHM EN MODE READ (Wah : « tu prends au hasard
+     un totehm décoratif, tu prends le nom entré et tu les regroupes en affichant DIRECT la page du
+     Totehm » · « dans la même configuration que actuelle mais en mode READ »). Même document, même
+     session : `RO` s'arme en plein vol, l'URL suit par `replaceState`, aucune navigation. */
   const url0=pg.url();
   await pg.focus('#gx-q');await pg.keyboard.press('Enter');
-  await pg.waitForFunction(()=>window.__totehm_xo().actif==='univers',null,{timeout:8000}).catch(()=>{});
+  await pg.waitForSelector('body.ro',{timeout:8000}).catch(()=>{});
+  /* Le papier rentre d'abord chez lui (la galaxie se referme), PUIS le Totehm se déconstruit : c'est
+     la même séquence que pour le mien — une seule déconstruction dans tout le fichier. */
+  await pg.waitForFunction(()=>!document.body.classList.contains('gate'),null,{timeout:9000}).catch(()=>{});
   await pg.waitForTimeout(600);
-  const x=await pg.evaluate(()=>({xo:window.__totehm_xo(),
-    src:(document.querySelector('#xo iframe[data-k="univers"]')||{}).getAttribute?document.querySelector('#xo iframe[data-k="univers"]').getAttribute('src'):null,
-    croix:getComputedStyle(document.getElementById('xo-x')).display,
-    g:window.__totehm_lv().galaxie}));
-  ok(x.xo.actif==='univers'&&x.src==='/@kai3?embed=1'&&pg.url()===url0&&!(await pg.evaluate(()=>window.__ouvert)).length,
-    (tel?'téléphone':'ordinateur')+' · l\'univers s\'ouvre DANS la page (/@kai3?embed=1) : ni navigation, ni onglet, l\'URL ne bouge pas');
-  ok(x.croix==='flex'&&x.g.ouvertures===1,'la couche porte sa sortie (une croix), et la plongée a bien eu lieu');
+  const x=await pg.evaluate(()=>({ro:document.body.classList.contains('ro'),
+    qui:(document.getElementById('ro-who')||{}).textContent,
+    deplie:!document.body.classList.contains('gate'),
+    xo:window.__totehm_xo().actif, g:window.__totehm_lv().galaxie,
+    habits:[...document.querySelectorAll('#habits [data-open]')].map(e=>e.textContent.trim().slice(0,20)),
+    ecrit:document.querySelectorAll('#habits [contenteditable],#habits [data-kill],#habits [data-add]').length}));
+  ok(x.ro&&x.qui==='kai3'&&x.deplie&&!x.xo&&/[?&]ro=kai3/.test(pg.url())&&pg.url().split('?')[0]===url0.split('?')[0]
+     &&!(await pg.evaluate(()=>window.__ouvert)).length,
+    (tel?'téléphone':'ordinateur')+' · Entrée ouvre SON Totehm, ici même, en lecture ('+pg.url().replace(origin,'')+') : ni navigation, ni onglet');
+  ok(x.habits.length===2&&!x.ecrit,'la même configuration que la mienne, mais rien n\'est éditable ('+x.habits.join(' · ')+')');
+  ok(x.g.ouvertures===1,'la plongée a bien eu lieu');
   const ctx=await pg.evaluate(()=>JSON.parse(sessionStorage.getItem('totehm_gx')||'null'));
   ok(ctx&&ctx.p==='kai3'&&ctx.q==='kai','le contexte de recherche est gardé (un rechargement rend Others et le nom tapé)');
-  await pg.click('#xo-x');await pg.waitForTimeout(1200);
+  await pg.click('#ro-out');
+  await pg.waitForFunction(()=>!document.body.classList.contains('ro')&&document.body.classList.contains('gate'),null,{timeout:9000}).catch(()=>{});
+  await pg.waitForTimeout(1000);
   const r=await lv(pg);
-  ok(r.mode==='others'&&await pg.inputValue('#gx-q')==='kai'&&r.galaxie.retours===1&&!(await pg.evaluate(()=>window.__totehm_xo().actif)),
-    'fermer : on RESSORT de l\'étoile (le mouvement inverse), la galaxie et la recherche intactes');
+  ok(!(await pg.evaluate(()=>document.body.classList.contains('ro')))&&!/[?&]ro=/.test(pg.url()),
+    'sortir de la lecture : je redeviens moi, et l\'URL aussi');
+  ok(r.vue==='c'&&await pg.inputValue('#gx-q')==='kai',
+    'on revient à l\'atterrissage, et le nom tapé est toujours là');
   if(!tel){
     await pg.click('#lv-m-mine');await calme(pg);await pg.waitForTimeout(800);
     const m=await pg.evaluate(()=>({d:window.__totehm_lv(),cv:getComputedStyle(document.getElementById('gx-c')).opacity}));

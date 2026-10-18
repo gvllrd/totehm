@@ -1,5 +1,42 @@
 # com/CLAUDE.md — totehm.com : le Totehm, la carte, HigherSelf
 
+## 18/10/2026 (bis) — LOT G, DEUXIÈME VOLET : la manette revient sur l'atterrissage, la galaxie ouvre un TOTEHM
+
+BUILD `2026-10-18-com-lecture`.
+
+- **LA MANETTE EST DE RETOUR SUR L'ATTERRISSAGE, EN BAS AU CENTRE** (Wah : « je veux que tu remettes le
+  joystick sur la page d'atterrissage tout en bas centré »). `#lvjoy` : une grille 26/44/26, les QUATRE
+  CHEVRONS D'HIER (`#lvn-up/dn/lf/rt`, mêmes identités, même câblage) autour d'un manche `#lvj-box` —
+  disque navy, un point bleu clair qui se tire avec lui. Ils tenaient les quatre bords depuis le 16/10 ;
+  ils entourent désormais le manche, sous le pouce. **Le manche suit la même dualité que dans le Totehm** :
+  à la souris il pousse la scène (tirer à gauche amène la vue de DROITE), au doigt il déplace l'objet.
+  `--lvj-b` / `--lvj-h` : tout ce qui vit au bas de l'atterrissage s'y accroche (`#rf`, `.lsh-say`,
+  « [Higher] Self ») — rien ne passe dessous, rien ne se calcule deux fois.
+- **LES SEPT TRAITS D'INTENTION VIVENT, ET LEURS COULEURS SE LISENT** (Wah : « plus de vie dans les traits
+  d'intention, et afficher les couleurs, dans la page processor »). Une intention sans Habit était à
+  `.22` d'opacité : à ce niveau le rouge-violet et le navy sont du gris. Elle est à `.5` (`.62` sans
+  compte) — ce qui dit le creux, ce sont les NŒUDS absents, plus la couleur éteinte. Et les sept pistes
+  portent une impulsion : **épaisse et à la période RÉELLE** sur une intention habitée, **en veille**
+  (fine, 6,2 s) sur une intention vide, **pour tout le monde** (un réseau mort ne vend rien). CSS seul.
+- **LA GALAXIE EST DÉCORATIVE, ET SON ENTRÉE OUVRE UN TOTEHM EN MODE READ** (Wah : « la galaxie doit être
+  plus abstraite et en full-screen, elle est décorative » · « tu prends au hasard un totehm décoratif, tu
+  prends le nom entré et tu les regroupes en affichant DIRECT la page du Totehm » · « le résultat de
+  recherche doit être dans la même configuration que actuelle mais en mode READ »).
+  248 carrés (132 avant) deux fois plus petits (`.34`) : une POUSSIÈRE de navy sur du noir pur, avec un
+  filet d'une des sept couleurs sur chacun — 60 / 30 / 10, à l'écran. Le tirage au hasard d'une étoile
+  pour un nom existant ne change pas (`tirer`, stable par nom).
+- **⚠️ `RO` N'EST PLUS FIGÉ AU CHARGEMENT.** `lireEnPlace(nom)` l'arme EN PLEIN VOL et rejoue exactement
+  ce que fait un `?ro=` au démarrage ; `sortirLecture()` le désarme et recharge mon Totehm. L'URL suit
+  par `replaceState` — **on ne navigue jamais**. Sorties : `#ro-out`, la croix, Échap — toutes par
+  `fold()`, qui désarme la lecture à la fin du repli (sinon l'atterrissage garderait le Totehm d'un
+  autre sous les yeux : le réseau d'intentions lit `state`). `KEYF` est devenu une FONCTION : le filtre
+  d'une lecture n'écrase plus le mien. Sans compte, c'est toujours la page de vente `/@nom` qui s'ouvre
+  dans `XO` (le serveur exige une session pour lire) — on ne montre jamais une porte fermée.
+- **La galaxie dort quand le Totehm est déplié** : `couvert()` teste `body.gate`. Depuis que la lecture
+  s'ouvre DANS la page, plus rien ne posait `is-xo` — elle aurait calculé des images derrière un Totehm
+  plein écran.
+- Tests : `com_processeur` 114, `com_shorts` 64, `com_paper` 34, `com_read_copy` 18, `com_plateforme` 23.
+
 ## 18/10/2026 — LE LOT G (premier volet) : la manette reprend sa place, on écrit dans le noir
 
 BUILD `2026-10-18-com-place`. Ce volet pose la BASE de la confidentialité par box (voir `backend/CLAUDE.md`)

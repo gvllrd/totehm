@@ -41,6 +41,15 @@ partage l'écran avec TOTEHM.svg. Le joystick ne s'inverse plus à la souris. La
 Reflection n'a plus de boîte de saisie ni de double curseur : on tape dans le
 noir. BUILD `2026-10-18-com-place`.
 
+Deuxième volet (BUILD `2026-10-18-com-lecture`) : la MANETTE est revenue sur
+l'atterrissage, en bas au centre (les quatre chevrons entourent le manche) ;
+les sept traits d'intention VIVENT et leurs couleurs se lisent (une intention
+vide passe de .22 à .5, et porte une impulsion de veille) ; la galaxie est
+décorative — 248 carrés deux fois plus petits, un filet d'intention sur
+chacun — et **Entrée y ouvre le TOTEHM du nom tapé, EN LECTURE, dans la même
+page** : `RO` s'arme en plein vol, l'URL suit par `replaceState`, on ne
+navigue jamais. Sans compte, c'est toujours `/@nom` qui s'ouvre.
+
 ## À reporter au master · 11/10/2026 — boutons boutique encore plus compacts
 
 Dans `~/totehm/TOTEHM_MASTER.md` §0 : le padding des boutons de la boutique
