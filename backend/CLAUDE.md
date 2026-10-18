@@ -1,5 +1,49 @@
 # backend/CLAUDE.md — la base, les fonctions, l'argent, le bot
 
+## 18/10/2026 — lot G : la confidentialité est PAR BOX, et le Totehm n'en décide plus
+
+Wah : « il n'est pas question ici de confidentialité du totehm puisque la confidentialité s'effectue pour
+chaque box de chaque vue pour un contrôle totale sur son Totehm. Et 3 choix possible : private (only me) ·
+Subscribers · Club ». Deux fichiers, parce qu'ils ne passent pas par le même chemin :
+
+| fichier | état | pourquoi |
+|---|---|---|
+| `20261018090000_audience_par_box.sql` | **APPLIQUÉ** en quatre morceaux (`audience_par_box`, `audience_par_box_regle`, `audience_par_box_ecrivain`, `audience_par_box_put`) | additif : colonnes, table, règle, écrivains |
+| `20261018091000_audience_par_box_lecteurs.sql` | **POUR CLAUDE CODE** (terminal) | il REMPLACE des fonctions existantes et resserre des politiques |
+
+- **⚠️ MESURÉ LE 18/10 : UN `create or replace` SUR UNE FONCTION QUI EXISTE DÉJÀ NE PASSE PAS DEPUIS LE
+  CLOUD.** L'approbation expire (60 s), exactement comme pour un `drop` ; une CRÉATION pure passe. C'est
+  une contrainte de plus à ranger à côté de `…_menage.sql` : **tout remplacement de fonction part au
+  terminal**. C'est pour ça que l'écrivain appelé par la page s'appelle `box_audience_put` (création) et
+  non `box_audience_set` (qui existait déjà dans le même lot).
+- **L'audience vit sur la BOÎTE** : colonne `audience` (`private|figher|subscribers`, défaut `private`,
+  contrainte `check`) sur `objectives`, `repulsions`, `visions`, `wisdom` ; **table `habit_audience`**
+  (`user_id`, `habit_text`, PK) pour les habitudes. ⚠️ **Jamais dans `steps`** : `cloudSave()` réécrit le
+  jsonb entier à chaque sauvegarde, une visibilité posée là se ferait écraser en silence (la leçon du
+  01/10, déjà payée par `totehm_visibility`). Héritage initial = l'audience du Totehm : le jour de la
+  migration, personne ne gagne ni ne perd un lecteur.
+- **LA RÈGLE** : `_box_shared(owner, audience)` (service_role) = `_audience_ok` avec `_is_figher` calculé
+  pour le niveau `figher` seulement. `_box_audience(owner, kind, ref)` donne le niveau d'UNE box, les cinq
+  genres par la même porte (h · t · r · w · v). Une habitude sans ligne est PRIVÉE : le défaut ne s'hérite
+  pas du Totehm, sinon une habitude neuve naîtrait ouverte.
+- **LES ÉCRIVAINS** (authenticated, propriétaire seul, `public` normalisé en `figher`) :
+  `box_audience_put` écrit SEULEMENT la box — c'est celui que la page appelle aujourd'hui ;
+  `box_audience_set` fait la même chose PUIS recalcule `totehms.audience` = le plus ouvert de mes box.
+  ⚠️ **Tant que les lecteurs ne filtrent pas, la page doit appeler `put`** : monter le plafond ouvrirait
+  tout le Totehm au Club alors que `totehm_of` ne regarde encore que ce plafond. Le jour où le fichier
+  « lecteurs » passe, la page bascule sur `set` et `_offer_open` continue de lire le plafond.
+- **MES NIVEAUX EN UNE LECTURE** : `my_box_audiences()` rend `{h,t,r,w,v}` → niveau. La page peint la
+  pastille sans recomposer la règle (et sans cinq lectures).
+- **CE QUE LE FICHIER « LECTEURS » ALLUME** : `totehm_of` filtré box par box (les `steps` lisibles dans
+  leur ordre, les quatre listes filtrées, et la porte devient « reste-t-il au moins une box lisible »
+  au lieu du réglage global) ; `habit_rename_links` qui fait suivre le niveau d'une habitude renommée ;
+  et trois `alter policy` qui resserrent (`objectives`, `visions`, `wisdom` → `_box_shared`) plus deux qui
+  ferment `totehms` sur l'auteur. ⚠️ Mesuré : AUCUN client ne lit ces tables d'un AUTRE membre en REST
+  (`eq('user_id', me.id)` ou service_role), donc ces politiques ne cassent rien ; `steps` étant un seul
+  jsonb, il ne peut pas se filtrer ligne à ligne — d'où la fermeture.
+- Auto-test `tests/sql/audience_par_box_selftest.sql` : `FAIL={}` (il SAUTE les contrôles « LECTEURS »
+  tant que `totehm_of` n'est pas filtré, et le dit : `lecteurs=f`).
+
 ## 16/10/2026 — lot E : le Club EST le public, et il s'ouvre à TROIS objets
 
 Migration `20261016090000_club_ouvert_trois_objets.sql`, appliquée UNE fois sous `club_ouvert_trois_objets`.

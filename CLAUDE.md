@@ -113,8 +113,8 @@ projet la ferme : ni space, ni vibe, ni Higher Self avant « save with my email 
   unique : Bob → Alice ne donne rien à Alice sur Bob. **Depuis le 01/10 :**
   COM et SPACE sont gratuits pour soi ; un abonné = un abonnement vivant à
   UN créateur, ANNUEL, prix fixé par le créateur, sans passeport FIGHER.
-  **TROIS NIVEAUX (16/10 ; PUBLIC est mort)**, colonne `audience` (source ; `visibility` suit par trigger) sur
-  un spot, le Totehm : PRIVATE · FIGHER CLUB · MY SUBSCRIBERS. Défauts : Totehm PRIVATE, spot FIGHER CLUB. La
+  **TROIS NIVEAUX (16/10 ; PUBLIC est mort), ET DEPUIS LE 18/10 ILS VIVENT SUR CHAQUE BOX** (Wah : « la confidentialité s'effectue pour chaque box de chaque vue ») : colonne `audience` sur `objectives`/`repulsions`/`visions`/`wisdom`, table `habit_audience` pour les habitudes (jamais dans `steps` : `cloudSave` le réécrit). `box_audience_put` écrit, `my_box_audiences` lit mes niveaux, `_box_shared` est LA règle ; le verso ne règle plus rien et `totehms.audience` devient le PLAFOND (le plus ouvert de mes box) que lit l'offre créateur. Mêmes trois niveaux sur
+  un spot : PRIVATE · FIGHER CLUB · MY SUBSCRIBERS. Défauts : box PRIVATE, spot FIGHER CLUB. La
   contrainte `check` accepte encore `public` (la changer demanderait un `drop`) : les deux triggers le NORMALISENT
   en `figher`, et `_audience_ok`/`_audience_listed`/`_point_ok` ne le traitent jamais comme plus ouvert. Lire =
   `_audience_ok` ; les vitrines LISTENT `_audience_listed` (FIGHER CLUB aux membres) ; le point exact (ON) =
