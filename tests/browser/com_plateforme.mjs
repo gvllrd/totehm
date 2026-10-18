@@ -33,7 +33,7 @@ try{
    ok(!c.why && !c.strat && !c.thp && !c.tag, 'COM : plus de « [Higher] STRATEGY », de phrase sous lui, de texte du THP ni de slogan TotehmSM');
    ok(c.pitch && /to open it · (Turn|Swipe) to configure it/.test(c.tap), '15/10 bis : un MEMBRE ne lit pas l\'argumentaire — le geste seul');
    ok(c.sig === 'wahigher' && /Quantico/.test(c.sigFont) && c.sigInPaper && c.nameBtn === 'none', 'le nom du Totehm vit EN HAUT AU CENTRE, en Quantico (16/10) — plus sur le recto du papier, plus de boîte noire');
-   ok(c.build === '2026-10-18-com-place', 'BUILD 2026-10-18-com-place');
+   ok(c.build === '2026-10-18-com-lecture', 'BUILD 2026-10-18-com-lecture');
    await pg.screenshot({ path:OUT + '/plateforme_centre.png' });
    /* 15/10 : les trois vues, leurs gestes, la galaxie et la Reflection sont dans com_processeur.mjs. */
    /* La couche se réchauffe toute seule, sans rien charger dans SPACE ni le Club. */
@@ -96,12 +96,20 @@ try{
    ok(!erreurs(log).length, 'SPACE seul : aucune erreur');
    await pg.context().close(); }
  { const { pg, log } = await page(browser, { dir:'space', origin:'https://www.totehm.space', tables, rpc });
-   await pg.goto('https://www.totehm.space/'); await pg.waitForFunction(() => window.__totehm_gallery?.().rooms === 4);
+   /* ⚠️ 18/10 — le compte de salles était épinglé à 4 ; le temple du 17/10 en a changé le nombre et
+      cette suite PLANTAIT (le compteur de PASS masquait l'exception : 20 au lieu de 23, fail=0).
+      Ce contrôle ne porte pas sur le nombre de salles — il porte sur « l'entrée SPACE sert les
+      œuvres sans charger le fil social ». On attend donc une galerie VIVANTE, pas un chiffre. */
+   await pg.goto('https://www.totehm.space/'); await pg.waitForFunction(() => window.__totehm_gallery?.().rooms > 0);
    ok(await pg.locator('a[href="/get_higher"]').count()>0 && !log.rpc.some(r=>r.name==='space_feed'), 'entrée SPACE : les œuvres, sans chargement du fil social');
    await pg.context().close(); }
  { const { pg, log } = await page(browser, { dir:'club', origin:'https://www.figher.club', tables, rpc:{...rpc,club_spots:{ok:true,items:[],total:0,has_more:false,next_offset:0,as_of:new Date().toISOString()}} });
-   await pg.goto('https://www.figher.club/'); await pg.waitForFunction(() => window.__totehm_club?.().period === 'now');
-   ok(await pg.locator('#v-plan,#v-cam').count() === 0, 'entrée Club : consultation seule, sans vue de création');
+   /* ⚠️ 18/10 — le contrôle visait la consultation seule du 15/10. Wah a demandé le 17/10 le RETOUR
+      de l'interface d'avant (cinq vues, référence b4ae3f0) : `period` n'existe plus (`view`), et le
+      plan et la caméra sont REVENUS. Ce qui reste vrai, et ce qu'on vérifie : l'entrée du Club est
+      le RADAR, et elle tourne sans erreur. */
+   await pg.goto('https://www.figher.club/'); await pg.waitForFunction(() => window.__totehm_club?.().view === 'radar');
+   ok(await pg.locator('#v-radar.is-on').count() === 1 && await pg.locator('#v-plan,#v-list,#v-cam,#v-past').count() === 4, 'entrée Club : le radar, et les cinq vues restaurées (17/10)');
    ok(!erreurs(log).length, 'Club seul : aucune erreur');
    await pg.context().close(); }
 }finally{ await browser.close(); }
