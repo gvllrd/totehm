@@ -20,6 +20,20 @@
 ---
 
 
+## 0 · LA CONFIDENTIALITÉ PAR BOX (base) ET LE PLACEMENT COM — 18/10/2026 (lot G, 1er volume)
+
+| Mesure | Résultat |
+|---|---|
+| `com/totehm.html` en production (`https://www.totehm.com/`) | 200, 730 429 octets, `BUILD=2026-10-18-com-place` présent, `2026-10-16-com-vues` absent |
+| Déploiement Vercel | `dpl_3XxRWufyzUmj1bgcUWnu12DjH4T9`, production, READY, commit `cfbb153` |
+| Migration appliquée (cloud) | `20261018090000_audience_par_box.sql`, en **quatre** morceaux : `audience_par_box` · `audience_par_box_regle` · `audience_par_box_ecrivain` · `audience_par_box_put` |
+| ⚠️ Contrainte MESURÉE | un `create or replace` sur une fonction **existante** EXPIRE à l'approbation MCP (60 s), comme un `drop` ; `pg_stat_activity` ne montre aucun blocage en base. Une création pure passe. D'où `box_audience_put` (création) et le fichier « lecteurs » laissé au terminal |
+| Auto-test SQL `tests/sql/audience_par_box_selftest.sql` | `lecteurs=f`, **`FAIL={}`** (il saute ses contrôles « LECTEURS » tant que `totehm_of` n'est pas filtré) |
+| Droits des nouvelles fonctions (mesurés) | `_box_shared` / `_box_audience` / `_totehm_audience_recalc` : anon=f, auth=f · `box_audience_put` / `my_box_audiences` : anon=f, auth=t |
+| `totehm_of` avant le fichier « lecteurs » | anon=f, auth=t — un `revoke … from anon` ne retire donc rien ; `/@nom` sans compte passe par `creator_page` (anon=t), intact |
+| Reste au terminal | `20261018091000_audience_par_box_lecteurs.sql` (tâche écrite dans `CLAUDE_CODE.md`) |
+| Suites navigateur | com_plateforme 23 · com_shorts 64 · com_processeur 108 · com_paper 34 · com_read_copy 18 · com_member_menu 34 — **fail=0**, aucune trace d'exception dans les journaux |
+
 ## 0 · SPACE — TEMPLE AU-DESSUS DES NUAGES ET COULOIRS ORIGINS PUBLIÉS — 17/10/2026
 
 | Mesure | Résultat |
