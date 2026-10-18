@@ -1,5 +1,46 @@
 # CLAUDE_CODE.md — la tâche de Claude Code (terminal de Wah)
 
+## TÂCHE · 18/10/2026 — appliquer les LECTEURS de la confidentialité par box
+
+Une migration attend la machine de Wah : elle contient des `alter policy`, que
+le MCP du cloud refuse (il les classe destructifs et expire à 60 s).
+
+Fichier : `backend/supabase/migrations/20261018091000_audience_par_box_lecteurs.sql`
+
+Ce qu'elle fait : `totehm_of` filtre désormais BOX PAR BOX (`_box_shared`) au
+lieu du seul plafond `totehms.audience` ; cinq politiques de lecture suivent
+(`objectives`, `visions`, `wisdom` sur `_box_shared(user_id, audience)` ;
+`totehms` ramené au propriétaire). Un `habit_rename_links` renommé emporte la
+ligne `habit_audience`.
+
+Commande (une ligne) :
+
+    psql "$SUPABASE_DB_URL" -f backend/supabase/migrations/20261018091000_audience_par_box_lecteurs.sql
+
+Puis, pour vérifier (le test saute ses contrôles « LECTEURS » tant que la
+migration n'est pas passée ; après, il doit afficher `lecteurs=t FAIL={}`) :
+
+    psql "$SUPABASE_DB_URL" -f tests/sql/audience_par_box_selftest.sql
+
+Le `revoke` final est DANS le fichier, après le dernier `create or replace` :
+ne pas réordonner.
+
+## À reporter au master · 18/10/2026 — la confidentialité est par box, le papier se range
+
+Dans `~/totehm/TOTEHM_MASTER.md` §0 : PLUS DE CONFIDENTIALITÉ AU NIVEAU DU
+TOTEHM. Chaque box de chaque vue porte son niveau — `private` (moi seul) ·
+`subscribers` (abonné à ce créateur) · `figher` (membre du Club). Défaut :
+privé, une box neuve ne s'ouvre jamais toute seule. Les habitudes ont leur
+table (`habit_audience`), jamais une colonne dans `steps` (que `cloudSave()`
+réécrit en entier). Écrire = `box_audience_put`, lire ses niveaux =
+`my_box_audiences()`. Composition des pages : 60 % black pur, 30 % navy TOTEHM
+(et ses deux couleurs de rattachement), 10 % les 7 couleurs d'intention — sauf
+DANS le Totehm déplié, où le navy reprend la main. Sur ordinateur le joystick
+sort du papier (bas, centré, dans le noir) ; sur mobile il passe à droite et
+partage l'écran avec TOTEHM.svg. Le joystick ne s'inverse plus à la souris. La
+Reflection n'a plus de boîte de saisie ni de double curseur : on tape dans le
+noir. BUILD `2026-10-18-com-place`.
+
 ## À reporter au master · 11/10/2026 — boutons boutique encore plus compacts
 
 Dans `~/totehm/TOTEHM_MASTER.md` §0 : le padding des boutons de la boutique

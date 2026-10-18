@@ -1,5 +1,35 @@
 # com/CLAUDE.md — totehm.com : le Totehm, la carte, HigherSelf
 
+## 18/10/2026 — LE LOT G (premier volet) : la manette reprend sa place, on écrit dans le noir
+
+BUILD `2026-10-18-com-place`. Ce volet pose la BASE de la confidentialité par box (voir `backend/CLAUDE.md`)
+et règle les points de placement et de geste. Le second volet (la galaxie abstraite, le verso qui porte la
+console, le polaroid déplaçable et les filtres, le 60/30/10 page par page) suit immédiatement.
+
+- **LA MANETTE SORT DU CARRÉ SUR ORDINATEUR** (Wah : « sur version ordinateur tu peux sortir le joystick du
+  totehm et le mettre à la même place que sur la page d'atterrissage tout en bas centré dans la zone noire
+  hors des 3 couleurs »). `#joy` s'ancre sur la FENÊTRE (`bottom:var(--joy-b)`), plus sur `--stage` : une
+  seule place, dedans comme dehors, et plus rien à tenir d'accord avec les coins du carré.
+- **AU TÉLÉPHONE, LA BANDE DU BAS SE PARTAGE EN DEUX** : le wordmark à gauche, la manette à DROITE
+  (`right:max(14px,5vw)`). « Le joystick et le TOTEHM.svg se partagent l'écran de part et d'autre. »
+- **LE T ET LE WORDMARK SONT RECENTRÉS** sur ordinateur (`left:50%`) : ils tenaient les deux coins gauches
+  depuis le 20/09 ; la manette ayant quitté le carré, la colonne du milieu est libre, et c'est la place du
+  logo — il EST l'écran, il n'en garde pas un coin.
+- **LE MANCHE : LA SOURIS POUSSE LA SCÈNE, LE DOIGT DÉPLACE L'OBJET** (Wah : « les mouvements du joystick
+  sur ordinateur sont inversés horizontalement et verticalement »). `sens()` inverse les deux axes quand
+  `pointerType !== 'touch'` : tirer vers la gauche à la souris amène la vue de DROITE, comme un trackpad ;
+  au doigt, tirer vers la gauche va à gauche. C'est la même dualité que le trackpad et le doigt sur
+  l'atterrissage — les deux gestes ne se lisent pas dans le même sens, et c'est normal (règle du 15/09).
+  La molette du joystick ne bouge pas : elle suivait déjà la règle de SPACE, identique à `club/create.html`.
+- **ON ÉCRIT À MÊME LE NOIR, ET IL N'Y A QU'UN CURSEUR** (Wah : « il y a un double curseur et une boîte
+  saisie texte qui s'affiche ; l'utilisateur doit pouvoir directement entrer son texte dans le dark »).
+  `#lv-say textarea` n'a plus NI fond, NI rayon, NI contour — à aucun moment ; et `.rf-cur` (le trait
+  d'invitation) s'éteint dès que le vrai caret apparaît (`#lv-say:focus-within`). Deux traits qui
+  clignotaient côte à côte, c'était le « double curseur ».
+- **La confidentialité par box, côté page** : `box_audience_put(kind, id, audience)` et
+  `my_box_audiences()` sont les deux seuls verbes ; la page ne recompose jamais la règle. ⚠️ Elle appelle
+  `put`, pas `set` : voir `backend/CLAUDE.md` (le plafond n'est recalculé qu'une fois les lecteurs filtrés).
+
 ## 16/10/2026 bis — LE LOT F : LA LISTE SEULE dans le Totehm ; ← mes shorts, → mes spots
 
 BUILD `2026-10-16-com-vues`. Wah : « non on garde seulement le mode liste … sinon ça pète toute la structure. Sur la

@@ -214,8 +214,13 @@ body:not(.gate):not(.v-habits) #bigT{opacity:.42;cursor:default}
    ⚠️ ET IL NE TOMBE PAS SUR LES PERFORATIONS. « Pas sur les trous noirs
    par exemple » : le rail (`--rl` + `--rw`) est le logo, rien ne passe
    dessus. Centré, il est à bonne distance des deux bords. */
-#joy{top:auto;bottom:var(--joy-b);left:50%;right:auto;
-     transform:translateX(-50%)}
+/* ⚠️ 18/10 · AU TÉLÉPHONE IL PASSE À DROITE, ET LE WORDMARK GARDE LA GAUCHE (Wah : « sur version
+   portable le mettre plus à droite » · « faire en sorte à ce que le joystick et le TOTEHM.svg se
+   partagent l'écran de part et d'autre »). La bande du bas se partage donc en deux : le logo à
+   gauche, la manette à droite, et plus personne ne se marche dessus. Sur ordinateur, il reste
+   centré sous le carré (voir le bloc ordinateur). */
+#joy{top:auto;bottom:var(--joy-b);left:auto;right:max(14px,5vw);
+     transform:none}
 /* Les deux portes, à droite, à la même hauteur que le wordmark et dans
    la grammaire `.btn-sig` du reste du produit. */
 /* ⚠️ LES PORTES PASSENT À GAUCHE · 18/09/2026, parce que le wordmark
@@ -2615,11 +2620,14 @@ body.gate.entered #filter-badge{
      par la cascade. Mesuré : le T sautait encore de 12 px à l'entrée en
      mode classement, sur ordinateur seulement. Un jeton qu'on renomme
      se renomme PARTOUT — un `grep`, pas une relecture. */
-  #bigT{top:22px;left:calc(var(--rl) + var(--rw0) + 16px)}
+  /* ⚠️ 18/10 · LE T ET LE WORDMARK SONT RECENTRÉS (Wah). Ils tenaient les deux coins gauches depuis le
+     20/09 ; le contrôleur ayant quitté le carré pour le bas de la FENÊTRE (voir plus bas), la colonne du
+     milieu est libre et c'est la place du logo : il EST l'écran, il n'en garde pas un coin. */
+  #bigT{top:22px;left:50%;transform:translateX(-50%)}
   /* Le wordmark est passé à gauche le 20/09 ; il retrouve son ancrage du
      carré, pas celui de la fenêtre. ⚠️ IL COMMENCE APRÈS LE RAIL, comme
      le T : le rail est le logo, rien ne passe dessus. */
-  #wordmark{bottom:26px;left:calc(var(--rl) + var(--rw0) + 16px);top:auto;right:auto}
+  #wordmark{bottom:26px;left:50%;transform:translateX(-50%);top:auto;right:auto}
   /* ⚠️ LE CONTRÔLEUR DESCEND EN BAS DU CARRÉ · 22/09/2026.
      Il a fait le tour — bas-droite le 20/09, haut-droite le 21/09, et
      Wah le veut en bas. Cette fois il est CENTRÉ sur le carré, et c'est
@@ -2629,8 +2637,11 @@ body.gate.entered #filter-badge{
      ⚠️ ET IL RESTE AU-DESSUS DU WORDMARK, jamais dessus : `--band-b`
      borne la bande basse, le wordmark y vit à 26 px, le contrôleur se
      pose à 20 px du bord et se centre — deux colonnes différentes. */
-  #joy{top:auto;bottom:calc(50% - var(--stage)/2 + var(--joy-b));
-       left:50%;right:auto;transform:translateX(-50%)}
+  /* ⚠️ 18/10 · IL SORT DU CARRÉ (Wah : « sur version ordinateur tu peux sortir le joystick du totehm et
+     le mettre à la même place que sur la page d'atterrissage tout en bas centré dans la zone noire hors
+     des 3 couleurs »). Donc il s'ancre sur la FENÊTRE, pas sur `--stage` : une seule place pour une seule
+     manette, dedans comme dehors — et plus rien à tenir d'accord avec les coins du carré. */
+  #joy{top:auto;bottom:var(--joy-b);left:50%;right:auto;transform:translateX(-50%)}
   /* ⚠️ LE TITRE VIT DANS LE TOTEHM SUR ORDINATEUR · 22/09/2026.
      « Les titres et sous-titre DANS le totehm sur ordinateur. » Il
      était à 22 px du haut de la FENÊTRE, donc sur le noir, au-dessus
@@ -3350,17 +3361,20 @@ body.lv-others.gx-dive #gx-ui{opacity:0;transition:opacity .28s ease}
   padding:calc(max(10px,env(safe-area-inset-top)) + 46px) 0 calc(max(12px,env(safe-area-inset-bottom)) + 46px)}
 #rf-me{width:64px;height:64px;align-self:center;flex:none;margin-bottom:34px}
 #lv-say{display:flex;gap:8px;align-items:flex-end;flex:none}
-#lv-say textarea{flex:1;min-height:42px;max-height:110px;resize:none;border:0;border-radius:21px;background:#16161a;color:#fff;
-  font:400 15px/1.4 'Quantico',sans-serif;padding:11px 16px;outline:none}
+/* ⚠️ 18/10 · ON ÉCRIT À MÊME LE NOIR, ET IL N'Y A QU'UN CURSEUR (Wah : « il y a un double curseur et une
+   boîte saisie texte qui s'affiche ; l'utilisateur doit pouvoir directement entrer son texte dans le dark,
+   pas de saisie texte »). Le champ n'a donc NI fond, NI rayon, NI contour — à aucun moment, écrit ou vide :
+   c'est le fond de la page qui est la page. Et le faux curseur s'éteint dès que le vrai apparaît (le focus) :
+   deux traits qui clignotent côte à côte, c'était le « double curseur ». */
+#lv-say textarea{flex:1;min-height:42px;max-height:110px;resize:none;border:0;border-radius:0;background:none;color:#fff;
+  font:400 15px/1.4 'Quantico',sans-serif;padding:11px 0 11px 22px;outline:none;caret-color:#fff}
 #lv-say textarea::placeholder{color:#3a3a42}
-/* ⚠️ AU REPOS, UN CURSEUR — RIEN D'AUTRE (Wah, 15/10). Le champ n'est plus une barre grise qui attend :
-   c'est une ligne nue avec un trait qui clignote, sous le profil. Il reprend son fond dès qu'on écrit. */
 body.lv-b #lv-say{position:relative}
-#lv-say.is-vide textarea{background:none;padding-left:22px}
 #lv-say.is-vide .lv-btn{opacity:0;pointer-events:none}
 #lv-say .rf-cur{position:absolute;left:8px;top:50%;width:2px;height:19px;margin-top:-10px;background:#fff;
   opacity:0;pointer-events:none;transition:opacity .2s ease}
 #lv-say.is-vide .rf-cur{opacity:1;animation:rf-blink 1.1s steps(1,end) infinite}
+#lv-say:focus-within .rf-cur{opacity:0;animation:none}
 @keyframes rf-blink{0%,55%{opacity:1}56%,100%{opacity:0}}
 #lv-say .lv-btn{border-radius:21px;min-height:42px;padding:0 16px}
 #lv-say .lv-btn svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
@@ -5929,7 +5943,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-10-16-com-vues';
+const BUILD='2026-10-18-com-place';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -8259,7 +8273,7 @@ const navRight=()=>{ if(navBlocked())return; versVoisin('d'); };
 
   const RAYON=15;                    /* jusqu'où le manche se laisse tirer */
   const SEUIL=9;                     /* au-delà, on part                   */
-  let id=null, x0=0, y0=0, dx=0, dy=0;
+  let id=null, x0=0, y0=0, dx=0, dy=0, fin=false;
 
   const pose=(a,b)=>{ st.style.setProperty('--mx',a.toFixed(1)+'px');
                       st.style.setProperty('--my',b.toFixed(1)+'px'); };
@@ -8273,14 +8287,22 @@ const navRight=()=>{ if(navBlocked())return; versVoisin('d'); };
   /* La direction que le geste désigne — et seulement si elle MÈNE
      quelque part. Tirer vers la sagesse depuis la sagesse ne doit ni
      allumer, ni naviguer. */
+  /* ⚠️ 18/10 · À LA SOURIS, LE MANCHE POUSSE LE CONTENU ; AU DOIGT, IL SUIT LE DOIGT (Wah : « les
+     mouvements du joystick sur ordinateur sont inversés horizontalement et verticalement »).
+     Au DOIGT, on déplace l'objet : tirer vers la gauche va à gauche. À la SOURIS, on ne touche pas
+     l'objet — on pousse la scène, comme un trackpad : tirer vers la gauche amène la vue de DROITE.
+     C'est la même dualité que le trackpad et le doigt sur l'atterrissage, et c'est normal qu'elle
+     ne se lise pas dans le même sens (règle du 15/09). `fin` est posé au `pointerdown`. */
   const sens=()=>{
     if(Math.max(Math.abs(dx),Math.abs(dy))<SEUIL) return null;
-    const d = Math.abs(dx)>Math.abs(dy) ? (dx<0?'g':'d') : (dy<0?'h':'b');
+    const i = fin ? -1 : 1;
+    const d = Math.abs(dx)>Math.abs(dy) ? (dx*i<0?'g':'d') : (dy*i<0?'h':'b');
     return voisin(d) ? d : null;
   };
 
   bx.addEventListener('pointerdown',e=>{
     if(navBlocked())return;
+    fin = e.pointerType && e.pointerType!=='touch';
     id=e.pointerId; x0=e.clientX; y0=e.clientY; dx=dy=0;
     jy.classList.add('tenu'); bx.classList.add('tenu');
     try{ bx.setPointerCapture(id); }catch(_){}

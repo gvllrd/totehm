@@ -1,6 +1,31 @@
 # BRAND.md — TOTEHM
 
-## CURRENT UPDATE — 16/10/2026 bis · the list is the Totehm ; ← my shorts, my spots →
+## CURRENT UPDATE — 18/10/2026 · the 60 / 30 / 10 composition, and privacy per Box
+
+**EVERY PAGE OF TOTEHM.COM IS COMPOSED 60 / 30 / 10.** Not a palette — a composition, the way a cover is
+composed. Hold it on every page and every view, and the product reads as one object.
+
+> **60 % pure black.** The page is black. Not near-black, not a dark grey: `#000`. It is the silence the
+> rest is heard against.
+> **30 % the TOTEHM navy** `#333366` and its two attached colours — light blue `#36498c`, red-violet
+> `#743169`. This is the paper, the Boxes, the badge: the object itself.
+> **10 % the seven intentions.** `#E24B4A` `#e48b31` `#fcbe21` `#639922` `#1D9E75` `#378ADD` `#7F77DD` —
+> lines, nodes, a node on a ring. Never a surface, never a fill: a signal.
+
+Full dark, minimal, subtly coloured. The reference is a Pink Floyd sleeve — one object, one field, nothing
+decorative — run like Disney: the same grammar everywhere, so you never have to learn the next screen.
+**The ONE exception is the unfolded Totehm**: inside it the navy and its two attached colours take over,
+because there the Boxes ARE the content. Everywhere else they are an accent on black.
+
+**UNDERSTAND BY DESIGN, NOT BY SENTENCES.** The fewest words possible, and the ones that stay must hit.
+If a screen needs a paragraph to be understood, the screen is wrong — not the paragraph.
+
+**PRIVACY IS PER BOX, NEVER PER TOTEHM** (18/10). Each Box of each view carries its own level, so the
+member has total control of their own Totehm — and the back of the paper has nothing to set about it.
+Three levels, and only three: **PRIVATE** (only me) · **SUBSCRIBERS** (whoever subscribed to a member's
+Totehm) · **CLUB** (whoever is on the platform with a Totehm filled in — a member).
+
+## 16/10/2026 bis · the list is the Totehm ; ← my shorts, my spots →
 
 **THE NAME OF A TOTEHM HAS ONE PLACE: top, centre, small — and it never moves.** Quantico Coral, 13 px, above
 everything, in every view. Tapping it opens the back of the paper, so renaming is one gesture.
