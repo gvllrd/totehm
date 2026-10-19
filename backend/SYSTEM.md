@@ -20,6 +20,23 @@
 ---
 
 
+## 0 · LE POLAROID EST UN CADRE, LES FILTRES SONT CEUX DE SPACE — 19/10/2026 ter (lot G, volume 6)
+
+| Mesure | Résultat |
+|---|---|
+| `com/totehm.html` en production | 200, 773 685 octets, `BUILD=2026-10-19-com-filter` |
+| Déploiement Vercel | commit `2330aa1`, production READY |
+| Le cadre | `.lsh-m{position:relative` présent (la fenêtre du média, 5/4) ; la Box est imprimée dessous (`.lsh-b`) |
+| Le noir transparent par-dessus le média | `.lsh-c span{background:rgba(0,0,0,.72)` présent |
+| Les informations du spot | `I will be here` présent (+ date, durée, ville, niveau, LOCATION ON/OFF) |
+| Le papier qui choisit une Box | `class="lsh-tp` présent ; le bouton `class="lsh-fb` présent |
+| Les panneaux de filtres | `id="lv-sh-sf"` (gauche) et `id="rdr-sf"` (droite) présents ; `data-sf="pil"` (les 4 piliers) présent |
+| L'appui long | `touchAction='none'` présent (armé, la carte ne se laisse plus défiler) |
+| Les faux noirs | `background:#131316` **absent** (la composition du volume 5 tient) |
+| ⚠️ Mesuré : pourquoi le geste mourait | un `pan-y` sur la carte faisait prendre la main au navigateur → `pointercancel` au 1er pixel ; et une capture de pointeur sur une carte repeinte annulait le geste |
+| Identité du filtre repris | `SF`, `sfPaint()` et le CSS `#feed` de `space/social.html` sont **identiques octet pour octet** à `f1ca98c:space/index.html` (13/10) : rien n'a été perdu dans la migration du 15/10 |
+| Suites navigateur | com_shorts **104** · com_processeur 114 · com_paper 36 · com_member_menu 34 · com_read_copy 18 · com_plateforme 23 · com_composition 78 · com_spot 8 · com_vision_image 8 · com_cloths 16 · com_guest 14 — **fail=0** |
+
 ## 0 · LA COMPOSITION 60 / 30 / 10, PAGE PAR PAGE — 19/10/2026 bis (lot G, volume 5)
 
 | Mesure | Résultat |
