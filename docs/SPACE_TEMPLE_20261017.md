@@ -1,5 +1,9 @@
 # SPACE, temple et vide absolu — 17 octobre 2026
 
+Direction suivante : [reconstruction brutaliste côtière de la vidéo du 19 octobre](SPACE_BRUTALIST_20261019.md).
+Ce document conserve la conception et les mesures de la livraison du temple du 17 octobre ; le ciel local
+jour/nuit et son architecture antique ne décrivent plus l'accueil courant. Le couloir d'œuvres est conservé.
+
 Le contraste demandé remplace le dôme noir : un temple antique, vivant et lumineux au sommet du monde,
 puis des couloirs d'œuvres dans le noir absolu. La mécanique de progression du voyage livré le 16 octobre
 est conservée ; ses sculptures cèdent la place aux images originales.

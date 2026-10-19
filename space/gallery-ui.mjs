@@ -5,7 +5,7 @@ const rooms = [...document.querySelectorAll('.room')];
 const nav = [...document.querySelectorAll('.tour [data-room]')];
 const reduced = matchMedia('(prefers-reduced-motion: reduce)');
 const info = document.getElementById('work-info');
-let selected = -1, selectedOrigin=null,engine = null, fallback = false,pendingExploration=false;
+let selected = -1, selectedOrigin=null,engine = null, fallback = false,pendingExploration=false,pendingLocation=null;
 const lisbonPreview=createLisbonPreview({onChange:()=>engine?.invalidate()});
 const lisbonCard=document.querySelector('#lisbon .artwork');
 lisbonCard.append(lisbonPreview.canvas);lisbonCard.classList.add('has-preview');
@@ -62,6 +62,11 @@ document.getElementById('explore-space').addEventListener('click',()=>{
   document.body.classList.add('exploring');
   if(engine)engine.explore();else pendingExploration=true;
 });
+document.querySelectorAll('.world-nav [data-location]').forEach(button=>button.addEventListener('click',()=>{
+  const id=button.dataset.location;document.body.classList.add('exploring');
+  if(engine)engine.changeLocation(id);else pendingLocation=id;
+  history.replaceState(null,'',location.pathname+location.search+'#'+id);
+}));
 document.getElementById('close-info').addEventListener('click', () => info.classList.remove('is-open'));
 document.getElementById('view-list').addEventListener('click', e => {
   const list = document.body.classList.toggle('list-view');
@@ -86,7 +91,7 @@ document.addEventListener('keydown', e => {
   if (e.key === 'PageDown' || e.key === 'PageUp') { e.preventDefault(); if(engine?.diagnostics().zone==='void'){if(e.key==='PageDown')engine.explore();else engine.previous();}else select((selected + (e.key==='PageDown'?1:-1) + rooms.length) % rooms.length); }
   if (e.key === 'Home') { e.preventDefault(); overview(); }
 });
-window.__totehm_gallery = () => ({build:'2026-10-17-space-temple-void',rooms:rooms.length,room:selected,origin:selectedOrigin,reduced_motion:reduced.matches,list:document.body.classList.contains('list-view'),fallback,...engine?.diagnostics(),lisbon:lisbonPreview.diagnostics()});
+window.__totehm_gallery = () => ({build:'2026-10-19-space-coastal-brutalism',rooms:rooms.length,room:selected,origin:selectedOrigin,reduced_motion:reduced.matches,list:document.body.classList.contains('list-view'),fallback,...engine?.diagnostics(),lisbon:lisbonPreview.diagnostics()});
 function useFallback() {
   fallback = true; document.body.classList.add('no-3d','list-view'); engine?.setList(true);
   syncPreview();
@@ -95,6 +100,8 @@ try {
   const { createGallery } = await import('./gallery-3d.mjs');
   engine = await createGallery({ select, onZone:(zone,room,origin)=>{if(zone==='void')select(room,true,origin,false);else{selected=-1;selectedOrigin=null;info.classList.remove('is-open');nav.forEach(a=>a.setAttribute('aria-current','false'));history.replaceState(null,'',location.pathname+location.search);}}, interact:() => document.body.classList.add('exploring'), fallback:useFallback, reduced, lisbonPreview });
   engine.setList(document.body.classList.contains('list-view'));syncPreview();
+  if(pendingLocation)engine.changeLocation(pendingLocation);
+  else if(['#courtyard','#passage','#pavilion','#coast'].includes(location.hash))engine.changeLocation(location.hash.slice(1));
   const hash=location.hash==='#quantum'?'#origins':location.hash==='#stoner'?'#totehmpaper':location.hash;
   const frame=/^#origin-(\d{1,2})$/.exec(hash),origin=frame?Number(frame[1])-1:null;
   const deepLink = rooms.findIndex(r => '#'+r.id === hash);

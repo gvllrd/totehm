@@ -1,6 +1,44 @@
 # space/CLAUDE.md — totehm.space : galerie d’art digital
 
-## 17/10/2026 — temple au-dessus des nuages, couloirs dans le vide (direction actuelle)
+## 19/10/2026 — quatre lieux brutalistes côtiers d'après la vidéo (direction actuelle)
+
+La référence jointe est un film vertical de 25,333 s, 712 × 1 276 px, montrant quatre compositions : cour
+monumentale, passage axial sur la mer, pavillon aux deux rubans de béton ondulants et villa de falaise avec
+terrasse/piscine turquoise. La scène est une reconstruction interactive de ce qui est visible ; aucun modèle
+3D original n'est fourni et aucune identité pixel par pixel ou depuis tous les angles n'est revendiquée.
+Le ciel bleu pétrole couvert reste à l'heure bleue de la vidéo, indépendamment de l'heure locale : cette
+nouvelle demande remplace le temple antique, les arbres classiques et l'alternance jour/nuit du 17 octobre.
+Les quatre boutons de lieu suivent les coupes du montage, sans inventer de continuité physique entre bâtiments.
+
+`gallery-brutalist.mjs` assemble le décor et sa sélection de lieu. `gallery-atmosphere.mjs` produit le béton
+coffré (joints, pores, trous de banches, texture projetée en mètres), les autres matériaux, le ciel nuageux,
+la mer et les lumières. `gallery-courtyards.mjs` construit Court (murs de 27 m, tours de 34 m, bassin axial,
+agaves, galets et trois portes rectangulaires) et Passage (deux murs et un canal vers la mer).
+`gallery-pavilions.mjs` construit Pavilion (deux rubans ondulants et leurs liserés ambre) et Sea view
+(villa à trois niveaux, falaise calcaire et piscine). `gallery-reflection.mjs` rend de vrais reflets planaires,
+avec une unique cible partagée de 512 px/8 Hz maximum sur ordinateur, 256 px/4 Hz au téléphone.
+La cible est réutilisée sans changement ; les états liste, page masquée et couloir arrêtent les captures.
+Le mouvement réduit garde le décor fixe et ne capture qu'après un changement de vue. Les ombres sont
+statiques, 1 024 px sur ordinateur et 512 px au téléphone ; les textures procédurales sont de 1 024 px.
+`gallery-brutalist-path.mjs` borne chaque lieu, interdit les bassins et contourne les plantations. Les
+changements de lieu sont des coupes de caméra ; ils ne créent aucun chemin à travers les bâtiments.
+`gallery-3d.mjs` conserve clavier, glisser, clic au sol, joystick tactile et résolution adaptative.
+
+Le couloir noir et ses œuvres restent inchangés : Origins 01…20 dans l'ordre, positions alternées x=±4,8 m,
+premier arrêt z=-25 m, pas de 32 m, marche à 2,6 m/s, visites de 1 450 à 4 200 ms et pool borné à cinq images
+sur ordinateur/trois au téléphone. TotehmPaper/Stoner restent une seule présentation du vrai papier ; Lisbon
+reste le récit/manette canonique `/play_lisbon_street`. Transition de 800 ms, retour Échap/bouton, audio pur
+Web Audio, droits, marché et liste HTML des vingt images sont conservés. Aucun changement de compte,
+paiement, SQL ou fonction Edge. Les changements COM/backend du lot G de Claude, intégrés sur `2e84f37`,
+sont préservés ; ne pas rejouer ses migrations déjà appliquées.
+
+Preuves locales : navigation 811/811, intégrité des expériences 85/85 et navigateur ordinateur/téléphone
+161/161, sans erreur applicative ou shader ; régression Lisbon 68/68. Les reflets natifs complets 512/256,
+la piscine, les vingt Origins et leurs arrêts de 32 m, les portes, retours, pauses et replis sont vérifiés.
+La publication reste à mesurer.
+Détails et tableau de preuves : `../docs/SPACE_BRUTALIST_20261019.md`. Les sections suivantes sont historiques.
+
+## 17/10/2026 — temple au-dessus des nuages, couloirs dans le vide (historique, remplacé le 19/10)
 
 L'accueil devient un temple antique au sommet d'une montagne, au-dessus d'une mer de nuages : pierre ancienne,
 huit colonnes, six grands arbres et 216 fleurs. Mer à gauche, chaînes de montagnes à droite. `gallery-temple.mjs`
