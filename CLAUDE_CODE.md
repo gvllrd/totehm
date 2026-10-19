@@ -50,6 +50,16 @@ chacun — et **Entrée y ouvre le TOTEHM du nom tapé, EN LECTURE, dans la mêm
 page** : `RO` s'arme en plein vol, l'URL suit par `replaceState`, on ne
 navigue jamais. Sans compte, c'est toujours `/@nom` qui s'ouvre.
 
+Quatrième volet (BUILD `2026-10-19-com-polaroid`) : l'élément du Totehm est un
+POLAROID posé sur le média, et il SE DÉPLACE — sa place est à moi
+(`feed_badges`, une lecture au chargement, des écritures groupées). Un seul
+moteur de feed sert les DEUX vues : à gauche tous mes médias, à droite mes
+spots. La vue de droite a deux modes, RADAR et SHORTS, qui lisent les mêmes
+points et le MÊME filtre. Des filtres par type, par temps et par intention
+(des points de couleur), calculés sur ce qui est déjà en mémoire : zéro appel
+de plus. Le « + » de la vue de gauche ajoute un média en demandant D'ABORD
+l'élément auquel il s'attribue.
+
 Troisième volet (BUILD `2026-10-18-com-verso`) : le NOM est un IDENTIFIANT
 sans espace (normalisé à la frappe) et il ne vit QUE sur la face verso, fixe
 en haut, en petit, sans retour de ligne — `#conn-bar` est parti, il n'y a plus

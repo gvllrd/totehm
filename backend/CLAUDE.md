@@ -1,5 +1,23 @@
 # backend/CLAUDE.md — la base, les fonctions, l'argent, le bot
 
+## 19/10/2026 — lot G : la place du polaroid sur un média (`feed_badges`)
+
+Migration `20261019090000_feed_badges.sql`, appliquée UNE fois sous `feed_badges`. Additive : une
+table neuve, deux fonctions neuves, aucun `drop`, aucun prix. Auto-test
+`tests/sql/feed_badges_selftest.sql` : `FAIL={}`.
+- **UNE SEULE TABLE POUR LES TROIS SOURCES.** Le feed mélange trois origines (un fichier
+  `element_media`, la photo d'un spot, l'image libre d'une VISION) ; une colonne par origine ferait
+  trois mécanismes à tenir d'accord. La clé est celle que le feed utilise DÉJÀ pour se repérer :
+  `em:<id>` · `sp:<id>` · `vi:<id>`.
+- ⚠️ **JAMAIS DANS `steps` NI DANS UN SNAPSHOT** : `cloudSave()` réécrit le jsonb entier et le
+  snapshot d'un spot est FIGÉ — une position posée là se ferait écraser en silence (la leçon de
+  `totehm_visibility`, déjà payée deux fois).
+- `feed_badges(user_id, ref, x, y, updated_at)` : RLS **sans politique**, lue et écrite par fonction ;
+  `check` sur la référence (3–64) et sur les bornes (0–100). `feed_badge_set(ref, x, y)`
+  (authenticated, propriétaire par `auth.uid()`, bornes RECALCULÉES en base — la page ne décide pas
+  de ce qui tient à l'écran) ; `my_feed_badges()` rend toutes mes places en UNE lecture.
+- Grants : `authenticated` seul, posés APRÈS le dernier `create`.
+
 ## 18/10/2026 — lot G : la confidentialité est PAR BOX, et le Totehm n'en décide plus
 
 Wah : « il n'est pas question ici de confidentialité du totehm puisque la confidentialité s'effectue pour

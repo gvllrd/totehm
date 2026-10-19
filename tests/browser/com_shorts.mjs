@@ -32,6 +32,8 @@ function serveur(){
     habit_spaces:{ok:true,mine:true,habits:[{habit:'Call mum',total:1,total_spaces:0,total_spots:1,spaces:[],spots:[{id:'sp1',format:'spot',state:'will',photo:UID+'/bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb.jpg',starts_at:'2026-10-12T08:00:00Z',exact:{lat:38.72,lng:-9.14,place:'the hill'}}]}]},
     element_cloths:{ok:true,mine:true,elements:[]},
     my_visions:{ok:true,visions:[{id:'v1',image:UID+'/vision-cccccccc-cccc-4ccc-8ccc-cccccccccccc.jpg'}]},
+    my_feed_badges:{ok:true,pos:{'sp:sp1':[20,30]}},
+    feed_badge_set:b=>({ok:true,ref:b.p_ref,x:b.p_x,y:b.p_y}),
     my_landing:LAND};
 }
 const browser=await launch();
@@ -160,6 +162,73 @@ try{
   await pg.screenshot({path:OUT+'/spots_'+(tel?'tel':'ordi')+'.png'});
   await pg.click('#lvn-lf');await vers(pg,'c');await pg.waitForTimeout(300);
   ok(await pg.evaluate(()=>!window.__totehm_rdr().anime&&!window.__totehm_rdr().on),'quitté, le radar s\'arrête (zéro rAF au repos)');
+
+  // ══ 4 bis · LE POLAROID, LES FILTRES, ET LES DEUX MODES DE LA VUE DE DROITE (19/10) ══
+  // Wah : « je veux un système de photo polaroid, et l'utilisateur doit pouvoir le DÉPLACER sur sa photo » ·
+  // « il faut des filtres intelligents pour les deux vues » · « dans la vue de droite, deux modes : shorts ET radar ».
+  await vers(pg,'c');
+  await pg.click('#lvn-lf');await vers(pg,'g');await pg.waitForTimeout(900);
+  const pol=await pg.evaluate(()=>{const p=document.querySelector('#lv-sh .lsh.is-ici .lsh-pol');
+    if(!p) return null; const cs=getComputedStyle(p), r=p.getBoundingClientRect();
+    return {navy:cs.backgroundColor,touch:cs.touchAction,pos:cs.position,
+      px:p.style.getPropertyValue('--px'),py:p.style.getPropertyValue('--py'),
+      dedans:r.top>0&&r.bottom<innerHeight+2,traits:p.querySelectorAll('.lsh-i i').length,
+      say:!!p.querySelector('.lsh-say[data-lsh]'),vue:(p.querySelector('.lsh-v')||{}).textContent||''};});
+  ok(pol&&pol.navy==='rgb(51, 51, 102)'&&pol.pos==='absolute'&&pol.touch==='none'&&pol.dedans,
+    nom+' · l\'élément est un POLAROID posé sur le média (navy, placé, geste dédié)');
+  ok(pol&&pol.say&&pol.traits>0,'le polaroid porte ses traits d\'intention et ouvre son élément ('+(pol&&pol.vue)+')');
+  // on le DÉPLACE : la place part au serveur, une seule fois
+  const box=await pg.$eval('#lv-sh .lsh.is-ici .lsh-pol',e=>{const r=e.getBoundingClientRect();return{x:r.x+r.width/2,y:r.y+r.height/2};});
+  await pg.mouse.move(box.x,box.y);await pg.mouse.down();
+  for(let i=1;i<=6;i++){await pg.mouse.move(box.x,box.y-i*18);await pg.waitForTimeout(16);}
+  await pg.mouse.up();
+  await pg.waitForFunction(()=>window.__log&&true,null,{timeout:1000}).catch(()=>{});
+  await pg.waitForTimeout(1200);
+  const mv=log.rpc.filter(x=>x.name==='feed_badge_set');
+  ok(mv.length>=1&&mv[0].body.p_y<72&&mv[0].body.p_ref,'déplacé : la place part au serveur (feed_badge_set '+(mv[0]&&Math.round(mv[0].body.p_y))+' %)');
+  // les filtres : ils trient CE QUI EST DÉJÀ LÀ, sans un appel de plus
+  const avant=log.rpc.length, n0=(await pg.evaluate(()=>window.__totehm_sh())).items;
+  await pg.click('#lv-sh-flt [data-f="type"][data-v="video"]');await pg.waitForTimeout(500);
+  const f1=await pg.evaluate(()=>window.__totehm_sh());
+  await pg.click('#lv-sh-flt [data-f="type"][data-v="all"]');
+  await pg.click('#lv-sh-flt [data-f="int"][data-v="love"]');await pg.waitForTimeout(500);
+  const f2=await pg.evaluate(()=>window.__totehm_sh());
+  ok(n0===3&&f1.items===0&&f2.items>0&&f2.items<n0&&f2.filtre==='love'&&log.rpc.length===avant,
+    'les filtres trient ce qui est DÉJÀ en mémoire : '+n0+' → video '+f1.items+' → love '+f2.items+', zéro appel de plus');
+  await pg.click('#lv-sh-flt [data-f="int"][data-v="love"]');await pg.waitForTimeout(400);
+  // on AJOUTE un média depuis la vue de gauche : l'élément d'abord, la caméra ensuite
+  await pg.click('#lv-sh-flt [data-f="plus"]');await pg.waitForTimeout(400);
+  const pick=await pg.evaluate(()=>({n:document.querySelectorAll('#lv-sh-pick [data-pick]').length,
+    l:[...document.querySelectorAll('#lv-sh-pick [data-pick]')].map(e=>e.textContent.trim()),
+    vu:!document.getElementById('lv-sh-pick').hidden,
+    haut:document.querySelector('#lv-sh-pick [data-pick]').getBoundingClientRect().top<innerHeight*.4}));
+  ok(pick.vu&&pick.haut&&pick.l.includes('Ship it')&&pick.l.includes('The studio')&&pick.l.some(x=>/hill|mum|dawn/.test(x)),
+    '« + » demande D\'ABORD l\'élément — les cinq vues, pas seulement les Habits ('+pick.l.join(' · ')+')');
+  await pg.click('#lv-sh-pick [data-pick="0"]');await pg.waitForTimeout(500);
+  ok(await pg.evaluate(()=>window.__totehm_sh().capture.ouvertures>0)&&await pg.evaluate(()=>document.getElementById('lv-sh-pick').hidden),
+    'l\'élément choisi, la capture s\'ouvre POUR LUI');
+  await pg.keyboard.press('Escape');await pg.waitForTimeout(500);
+  // la vue de droite : radar ↔ shorts, et le MÊME filtre
+  await pg.click('#lvn-rt');await vers(pg,'c');await pg.click('#lvn-rt');await vers(pg,'d');await pg.waitForTimeout(800);
+  ok((await pg.evaluate(()=>window.__totehm_rdr())).mode==='radar','la vue de droite s\'ouvre sur le RADAR');
+  await pg.click('#rdr-flt [data-f="mode"][data-v="shorts"]');await pg.waitForTimeout(900);
+  const sh2=await pg.evaluate(()=>({d:window.__totehm_rdr(),
+    shorts:document.body.classList.contains('rdr-shorts'),
+    n:document.querySelectorAll('#rdr-sh .lsh').length,
+    pol:!!document.querySelector('#rdr-sh .lsh-pol'),
+    px:(document.querySelector('#rdr-sh .lsh-pol')||{style:{getPropertyValue:()=>''}}).style.getPropertyValue('--px')}));
+  ok(sh2.shorts&&sh2.d.mode==='shorts'&&sh2.n===1&&sh2.pol,'le mode SHORTS de mes spots : le même moteur, la photo du spot en polaroid');
+  ok(sh2.px==='20%','la place enregistrée revient du serveur (my_feed_badges) : '+sh2.px);
+  const avant2=log.rpc.length;
+  await pg.click('#rdr-flt [data-f="quand"][data-v="was"]');await pg.waitForTimeout(600);
+  const f3=await pg.evaluate(()=>window.__totehm_rdr());
+  await pg.click('#rdr-flt [data-f="mode"][data-v="radar"]');await pg.waitForTimeout(700);
+  const f4=await pg.evaluate(()=>window.__totehm_rdr());
+  ok(f3.items===0&&f4.points===0&&log.rpc.length===avant2,
+    'le filtre des spots vaut pour les DEUX modes (un spot « will » disparaît de la liste ET du radar), zéro appel');
+  await pg.click('#rdr-flt [data-f="quand"][data-v="all"]');await pg.waitForTimeout(600);
+  await pg.screenshot({path:OUT+'/spots_shorts_'+(tel?'tel':'ordi')+'.png'});
+  await pg.click('#lvn-lf');await vers(pg,'c');await pg.waitForTimeout(300);
 
   // ══ 5 · DANS LA GALAXIE, L'HORIZONTALE APPARTIENT AUX ÉTOILES ══
   await pg.click('#lv-m-others');await pg.waitForTimeout(900);

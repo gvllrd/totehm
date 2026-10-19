@@ -1,5 +1,40 @@
 # com/CLAUDE.md — totehm.com : le Totehm, la carte, HigherSelf
 
+## 19/10/2026 — LOT G, QUATRIÈME VOLET : LE POLAROID, LES FILTRES, ET LES DEUX MODES DES SPOTS
+
+BUILD `2026-10-19-com-polaroid`.
+
+- **L'ÉLÉMENT EST UN POLAROID, ET IL SE DÉPLACE** (Wah : « je veux un système de photo polaroid — les
+  éléments du Totehm mis sous la forme polaroid — et l'utilisateur doit pouvoir le DÉPLACER sur sa
+  photo, son image ou sa vidéo »). `.lsh-pol` : une carte navy posée SUR le média (ses traits
+  d'intention, son texte en Quantico, d'où il vient), `--px/--py` en POUR CENT — l'écran change de
+  taille, la carte reste au même endroit. On la prend (`touch-action:none` sur la CARTE seule : le
+  reste du feed garde son défilement natif), on la pose ; sous 6 px ce n'est pas un déplacement,
+  c'est un tap, et il OUVRE l'élément. La place est à MOI : `feed_badges`, une lecture au chargement,
+  des écritures groupées (600 ms) — on ne poste pas une position par pixel parcouru.
+- **UN SEUL MOTEUR, DEUX VUES.** `SH` était un module singleton ; il devient la fabrique `creerFeed`,
+  instanciée deux fois — `SH` à gauche (tous mes médias), `SHS` à droite (mes spots). Le dupliquer
+  aurait voulu dire tenir deux copies d'accord. Chaque instance a son conteneur, sa source, ses
+  filtres ; rien n'est partagé que le dessin.
+- **LA VUE DE DROITE A DEUX MODES** (Wah) : `SPOTMODE` (radar ↔ shorts, gardé en `localStorage`) et la
+  façade `SPOTS` qui ouvre l'un ou l'autre. Les deux lisent les MÊMES spots, déjà en mémoire, et le
+  MÊME filtre (`SPOTFLT`) : un spot écarté disparaît de la liste ET du radar. ⚠️ La rangée se peint
+  même quand le feed ne tourne pas (`SHS.flts()`) — sinon, en mode radar, la bascule n'existerait pas
+  à l'écran. En shorts, le papier et le badge s'effacent, comme à gauche.
+- **DES FILTRES QUI NE COÛTENT RIEN** (Wah : « des filtres intelligents pour les deux vues ») : à
+  gauche le type (all · photo · video), à droite le temps (all · was · now · next), et partout les
+  SEPT INTENTIONS en points de couleur — la couleur dit l'intention mieux que son nom (le moins de
+  mots possible). Tout se calcule sur ce qui est DÉJÀ en mémoire : **zéro appel de plus**, mesuré.
+- **ON AJOUTE UN MÉDIA DEPUIS LA VUE DE GAUCHE** (Wah : « ou qu'il souhaite ajouter directement dans
+  la vue de gauche EN LUI ATTRIBUANT un élément de son Totehm ») : le « + » de la rangée demande
+  D'ABORD l'élément (les cinq vues, ancré EN HAUT), puis `CAP.ouvrir(k, ref)` — un média n'existe
+  jamais sans son élément. ⚠️ Le panneau porte `lv-act` : sans elle, `.lv-pane` ne lui donne aucun
+  `pointer-events` et le choix ne se clique pas.
+- Diagnostics : `__totehm_sh()` (+ `total`, `filtre`, `places`), `__totehm_rdr()` = `SPOTS.etat()`
+  (+ `mode`). Base : `backend/CLAUDE.md` (table `feed_badges`).
+- Tests : `com_shorts` 84, `com_processeur` 114, `com_paper` 36, `com_member_menu` 34,
+  `com_read_copy` 18, `com_plateforme` 23 ; fail=0.
+
 ## 18/10/2026 (ter) — LOT G, TROISIÈME VOLET : le nom est un identifiant, et le VERSO porte tout
 
 BUILD `2026-10-18-com-verso`.
