@@ -20,6 +20,22 @@
 ---
 
 
+## 0 · LA COMPOSITION 60 / 30 / 10, PAGE PAR PAGE — 19/10/2026 bis (lot G, volume 5)
+
+| Mesure | Résultat |
+|---|---|
+| `com/totehm.html` en production | 200, 757 056 octets, `BUILD=2026-10-19-com-60-30-10` |
+| Déploiement Vercel | commit `4b20d3c`, production READY |
+| Les cartes du Totehm | `.hp-card{background:var(--navy-d)` présent en prod |
+| Les faux noirs comme surface | **absents** de `/totehm` : `background:#131316` et `background:#16161a` → faux |
+| Les pages servies | `--navy-d:#22224a` présent sur `/terms`, `/higher`, `/console` ; `background:var(--g2)` **absent partout** |
+| `/terms` | `html,body{width:100%;background:#000` en prod — ce n'est plus une page navy |
+| Part de surface mesurée (page entière, aire d'un panneau moins ses panneaux fils) | `/higher` 69,6 noir / 27,7 navy · `/monetize` 75,4 / 21,2 · `/@nom` 75,0 / 23,6 · `/console` 52,1 / 36,9 · `/terms` 85,9 / 14,1 · `/creator` 99,6 / 0,4 · `/auth` 99,4 / 0,6 |
+| Les cinq vues de l'atterrissage | mobile ≥ 94,4 % de noir (navy 19,9 %) · ordinateur ≥ 98,4 % (navy 8,3 %) |
+| Les sept couleurs d'intention | **jamais au-dessus de 0,3 %** — un signal, jamais une surface |
+| L'exception | le champ de `/totehm` est le navy du papier (`rgb(43,43,87)`) ; celui de TOUTES les pages servies est `rgb(0,0,0)` |
+| Suites navigateur | com_composition **78** (neuve) · com_shorts 84 · com_processeur 114 · com_paper 36 · com_member_menu 34 · com_read_copy 18 · com_plateforme 23 · com_creator 37 · console 18 — **fail=0** |
+
 ## 0 · LE POLAROID, LES FILTRES, LES DEUX MODES DES SPOTS — 19/10/2026 (lot G, volume 4)
 
 | Mesure | Résultat |
