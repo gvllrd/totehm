@@ -70,6 +70,18 @@ qu'un gris. `terms.html` n'est plus une page entièrement navy. Mesuré :
 noir, les sept couleurs jamais au-dessus de 0,3 %. La seule exception reste le
 Totehm DÉPLOYÉ, où le papier navy prend le champ.
 
+Septième volet (BUILD `2026-10-19-com-etages`) : LE TOTEHM SORT DU CENTRE et
+se cale EN HAUT, CENTRÉ, sur mes shorts comme sur mes spots (c'est le même
+objet qui voyage) ; un tap dessus choisit une Box — les CINQ vues à gauche,
+les HABITS seules à droite. La vue de GAUCHE devient SEPT ÉTAGES d'intention
+(Instagram-Netflix) : du rouge en bas au violet en haut, on REMONTE pour
+passer à la suivante, une rangée par écran sur téléphone, les polaroids à
+l'horizontale, un polaroid VIDE en bout de ligne. Le polaroid est une vraie
+photo polaroid : BLANC, la Box du Totehm accolée dessous (nom, intention,
+rythme, lieu habituel, mini-boîtes). Un appui long change le POINT DE
+FOCALISATION de l'image. Les sept couleurs ne filtrent plus : elles
+structurent. Plus aucun spot dans la vue de gauche.
+
 Sixième volet (BUILD `2026-10-19-com-filter`) : LE POLAROID EST UN CADRE —
 une carte navy, le média dans sa fenêtre, la Box imprimée dessous (nom,
 intention dans sa couleur, rythme, mini-boîtes), et par-dessus le média du

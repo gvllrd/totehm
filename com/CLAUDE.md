@@ -1,5 +1,47 @@
 # com/CLAUDE.md — totehm.com : le Totehm, la carte, HigherSelf
 
+## 19/10/2026 quater — LE TOTEHM VOYAGE, ET LA VUE DE GAUCHE DEVIENT SEPT ÉTAGES
+
+BUILD `2026-10-19-com-etages`. Wah : « pour les vues de gauche et de droite, ça ne va pas du tout.
+Regarde le fonctionnement de figher.club : le Totehm de la vue centrale doit SORTIR et aller se caler
+en haut-centré sur les deux vues. Un clic dessus : à droite seulement les Habit boxes, à gauche les
+5 vues. Le filtre doit être spécifique à chaque vue, et pas besoin des filtres d'intention — on les
+déplace DANS les vues, en structure de la plateforme. »
+
+- **LE PAPIER EST LE MÊME OBJET, PARTOUT.** Il ne se copie pas : `aller('g'|'d')` lui donne
+  `cibleHaut()` et `PAPIER.glisser` l'emmène, comme il l'emmène sur la langue en haut ou en profil
+  en bas. `body.papier-haut` dit qu'il est docké : le socle s'efface, il passe DEVANT le feed
+  (`z-index:7`), et `window.__papierDock` reçoit le choix de Box de la vue courante.
+  ⚠️ **Deux pièges mesurés.** (1) Docké, `PAPIER.occupe()` est vrai EN PERMANENCE : tester le dock
+  APRÈS lui, c'est ne jamais ouvrir le choix — le dock passe donc en premier dans `ge.onclick` et
+  `ast.onclick`. (2) **Le radar ne se centre plus sur le papier** quand il est en haut, sinon sa
+  portée s'écrase contre le bord : `body.papier-haut` → centre du canvas, « le centre, c'est moi ».
+- **SEPT ÉTAGES D'INTENTION** (`etages()`), du ROUGE (fight) EN BAS au VIOLET (celebrate) EN HAUT :
+  le DOM est dans l'ordre inverse d'`INTS` et la vue ARRIVE en bas (`scrollTop=scrollHeight`) — on
+  REMONTE pour passer à l'intention suivante, comme demandé. Un média apparaît dans la rangée de
+  CHACUNE de ses intentions ; ce qui n'en a pas vit dans une rangée « no intention yet » placée
+  AU-DESSUS du spectre, pour que le bas reste le rouge. Téléphone : une rangée par écran
+  (`scroll-snap-type:y`), les polaroids à l'horizontale (`scroll-snap-type:x`). Ordinateur : les
+  rangées se serrent, c'est le Netflix. Le titre = l'intention + le badge Higher, juste sous le papier.
+- **LE POLAROID EST UNE VRAIE PHOTO POLAROID** : `.pol` BLANC, `.pol-ph` la fenêtre carrée du média,
+  `.pol-b` la bande, et dessus `.pol-x` — la Box du Totehm telle qu'elle est : son trait latéral, son
+  nom en Quantico, son intention dans SA couleur, son rythme, son LIEU HABITUEL (`spotDe`), ses
+  mini-boîtes OBJECTIVES et REPULSIONS. (C'est la seule surface blanche du produit : une PHOTO n'est
+  ni un bouton, ni un panneau, ni une sélection — la règle « aucun fond blanc » vise les contrôles.)
+- **LE POINT DE FOCALISATION APPARTIENT AU MEMBRE** : appui long (380 ms) puis glissé sur la photo →
+  `object-position:var(--fx) var(--fy)`, gardé dans `feed_badges` (les mêmes x/y, en pour cent, qui
+  servaient à placer la carte à droite). ⚠️ **Mesuré :** il faut retrouver la carte vivante par sa
+  clé AVANT de mesurer la fenêtre — un repaint du feed détache le nœud, son rectangle vaut zéro et le
+  recadrage partait à 100 % au premier pixel.
+- **LE « + » EST UN POLAROID VIDE, EN BOUT DE RANGÉE** : il ne propose que les éléments de CETTE
+  intention, parce qu'un média ajouté là doit atterrir dans CETTE rangée.
+- **PLUS AUCUN SPOT DANS LA VUE DE GAUCHE** (`conf.src==='spots'` garde seul les photos de spots) :
+  à gauche ce sont MES médias, à droite MES spots.
+- **UN PANNEAU PAR VUE** : plus d'Intentions ni de Mood (les étages LES portent) ; à gauche
+  « It shows » et « Views », à droite « When ». La Box se choisit par le papier, plus par une copie
+  dans la barre (`.lsh-tp` est retiré).
+
+
 ## 19/10/2026 ter — LE POLAROID EST UN CADRE, ET LES FILTRES SONT CEUX DE SPACE
 
 BUILD `2026-10-19-com-filter`. Wah : « la vue de gauche, ça ne va pas du tout ; reprends ce que l'on

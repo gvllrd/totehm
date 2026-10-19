@@ -13,7 +13,7 @@ const OUT=process.argv[2]||'/tmp';fs.mkdirSync(OUT,{recursive:true});
 const origin='https://www.totehm.com';
 const UID='11111111-1111-4111-8111-111111111111';
 const PNG=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==','base64');
-const STEPS=[{t:'Run the hill',t0:'Run the hill',is:['fight']},{t:'Read at dawn',t0:'Read at dawn',is:['focus','love']},{t:'Call mum',t0:'Call mum',is:['love']}];
+const STEPS=[{t:'Run the hill',t0:'Run the hill',is:['fight'],f:'every_morning',o:['o1']},{t:'Read at dawn',t0:'Read at dawn',is:['focus','love']},{t:'Call mum',t0:'Call mum',is:['love']}];
 const tables={profiles:[{pseudo:'wahigher'}],totehms:[{user_id:UID,steps:STEPS,vis:'private'}]};
 const LAND={signed_in:true,pseudo:'wahigher',visibility:'private',offer:{enabled:false},higher:{active:false,price_cents:700,currency:'eur'},thp:false,subscriptions:0,subscribers:0};
 const erreurs=log=>log.errors.filter(e=>e.startsWith('pageerror'));
@@ -28,7 +28,8 @@ function serveur(){
       const id='m'+(++n); items=[{id,kind:b.p_kind,ref:b.p_ref,path:b.p_path,mime:b.p_mime,bytes:b.p_bytes,name:b.p_name},...items]; return {ok:true,id,mime:b.p_mime,bytes:b.p_bytes}; },
     element_media_remove:b=>{ const m=items.find(x=>x.id===b.p_id); items=items.filter(x=>x.id!==b.p_id); return m?{ok:true,path:m.path}:{ok:false,why:'not_mine'}; },
     element_media_rekey:b=>{ let k=0; items.forEach(m=>{ if(m.kind==='h'&&m.ref===b.p_old){ m.ref=b.p_new; k++; } }); return k; },
-    my_trips:{signed_in:true,trips:[{id:'o1',text:'Ship it',is:['express']}],reps:[],wisdom:[],visions:[{id:'v1',text:'The studio'}]},
+    my_trips:{signed_in:true,trips:[{id:'o1',text:'Ship it',is:['express'],hs:['Run the hill']}],
+    reps:[{id:'r1',text:'The phone',is:['focus'],hs:['Run the hill']}],wisdom:[],visions:[{id:'v1',text:'The studio'}]},
     habit_spaces:{ok:true,mine:true,habits:[{habit:'Call mum',total:1,total_spaces:0,total_spots:1,spaces:[],spots:[{id:'sp1',format:'spot',state:'will',photo:UID+'/bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb.jpg',starts_at:'2026-10-12T08:00:00Z',exact:{lat:38.72,lng:-9.14,place:'the hill'}}]}]},
     element_cloths:{ok:true,mine:true,elements:[]},
     my_visions:{ok:true,visions:[{id:'v1',image:UID+'/vision-cccccccc-cccc-4ccc-8ccc-cccccccccccc.jpg'}]},
@@ -45,43 +46,53 @@ try{
   await pg.addInitScript(()=>{window.__ouvert=[];window.open=(u)=>{window.__ouvert.push(u);return {location:{set href(x){window.__ouvert.push(x);}},close(){}};};});
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1200);
 
-  // ══ 1 · ← MES SHORTS : le tiktok, plein écran ══
-  await pg.click('#lvn-lf');await vers(pg,'g');await pg.waitForTimeout(1000);
-  const g=await pg.evaluate(()=>{const s=document.getElementById('lv-sh'),l=[...document.querySelectorAll('#lv-sh .lsh')],cs=getComputedStyle(s);
-    return {n:l.length,h:l.map(e=>Math.round(e.getBoundingClientRect().height)),vh:innerHeight,snap:cs.scrollSnapType,
-      scroll:s.scrollHeight>s.clientHeight+10,
-      legendes:l.map(e=>(e.querySelector('.lsh-t')||{}).textContent||''),
-      cibles:l.map(e=>(e.querySelector('[data-lsh]')||{dataset:{}}).dataset.lsh||''),
-      traits:[...l[0].querySelectorAll('.lsh-i i')].map(i=>getComputedStyle(i).backgroundColor),
-      police:getComputedStyle(l[0].querySelector('.lsh-t')).fontFamily,
-      img:l.filter(e=>e.querySelector('img[src]')).length,
-      plein:Math.round(l[0].getBoundingClientRect().width)===innerWidth,
-      proc:getComputedStyle(document.getElementById('lv-proc')).opacity,
-      say:(document.getElementById('lv-sh-say')||{}).textContent||'',
-      items:window.__totehm_sh().items};});
-  ok(g.n===3&&g.items===3&&g.h.every(x=>Math.abs(x-g.vh)<=2)&&g.plein&&/y mandatory/.test(g.snap)&&g.scroll,
-     nom+' · ← mes shorts : UN MÉDIA par écran, plein écran, défilement aimanté ('+g.h.join('/')+' ≈ '+g.vh+')');
-  ok(JSON.stringify(g.legendes)===JSON.stringify(['Run the hill','Call mum','The studio']),
-     'les trois sources, dans l\'ordre : mes fichiers, la photo d\'un spot, l\'image d\'une VISION ('+g.legendes.join(' · ')+')');
-  ok(JSON.stringify(g.traits)===JSON.stringify(['rgb(226, 75, 74)'])&&/Quantico/.test(g.police)
-     &&/^habits\|/.test(g.cibles[0])&&/^habits\|/.test(g.cibles[1])&&/^visions\|/.test(g.cibles[2]),
-     'la légende : ses traits d\'intention (fight), le texte en Quantico, et elle mène à SA vue');
-  ok(g.proc==='0'&&!g.say,'le feed prend l\'écran : le processeur s\'efface, aucun mot de plus');
-  await pg.waitForTimeout(500);
-  ok(g.img>=1&&await pg.evaluate(()=>!!document.querySelector('#lv-sh .lsh.is-ici img[src]')),'le média visible est chargé (URL signée) et marqué is-ici');
+  // ══ 1 · ← MES SHORTS : SEPT ÉTAGES D'INTENTION, DU ROUGE EN BAS AU VIOLET EN HAUT (19/10 quater) ══
+  // Wah : « un genre d'Instagram-Netflix en 7 étages de couleurs intentionnelles … on REMONTE pour passer à
+  // l'intention suivante … et fais en sorte que le polaroid soit une photo polaroid : mets-le en BLANC ».
+  await pg.click('#lvn-lf');await vers(pg,'g');await pg.waitForTimeout(1300);
+  const g=await pg.evaluate(()=>{
+    const s=document.getElementById('lv-sh'), r=[...document.querySelectorAll('#lv-sh .etg')];
+    /* le polaroid de L'ÉTAGE ROUGE : c'est là qu'on arrive */
+    const p=document.querySelector('#lv-sh .etg[data-etg="fight"] .pol[data-pol]'), a=document.getElementById('gate-asteroid');
+    const ra=a.getBoundingClientRect(), ph=p&&p.querySelector('.pol-ph'), bd=p&&p.querySelector('.pol-b');
+    return {n:r.length, ordre:r.map(e=>e.dataset.etg), titres:r.map(e=>(e.querySelector('.etg-t span')||{}).textContent||''),
+      haut:r.map(e=>Math.round(e.offsetTop)), add:r.filter(e=>e.querySelector('.pol-add')).length,
+      hi:r.filter(e=>e.querySelector('.etg-t .hi-badge')).length,
+      bas:Math.abs(s.scrollTop-(s.scrollHeight-s.clientHeight))<4,
+      snapY:getComputedStyle(s).scrollSnapType,
+      snapX:getComputedStyle(r[0].querySelector('.etg-r')).scrollSnapType,
+      blanc:p?getComputedStyle(p).backgroundColor:'', box:!!(p&&p.querySelector('.pol-x')),
+      nom:(p&&p.querySelector('.pol-n')||{}).textContent||'', sous:(p&&p.querySelector('.pol-s')||{}).textContent||'',
+      minis:p?p.querySelectorAll('.lsh-o,.lsh-r').length:0, trait:p?p.querySelectorAll('.pol-i i').length:0,
+      sousBande:!!(ph&&bd&&bd.getBoundingClientRect().top>=ph.getBoundingClientRect().bottom-1),
+      papier:[Math.round(ra.x+ra.width/2), Math.round(ra.y+ra.height/2), Math.round(ra.width)], W:innerWidth,
+      dock:document.body.classList.contains('papier-haut'),
+      items:window.__totehm_sh().items,
+      spots:[...document.querySelectorAll('#lv-sh .pol-n')].some(e=>/Call mum/.test(e.textContent||''))};});
+  ok(g.n===8&&g.ordre[1]==='celebrate'&&g.ordre[g.n-1]==='fight'&&g.add===7&&g.hi===7,
+     nom+' · SEPT étages d\'intention + ce qui n\'en a pas : du violet en haut au ROUGE en bas ('+g.ordre.join(' ')+')');
+  ok(g.bas,'on ARRIVE en bas, sur le rouge : on remonte pour passer à l\'intention suivante');
+  ok(/y mandatory/.test(g.snapY)&&/x mandatory/.test(g.snapX),
+     'une rangée-intention par écran, les polaroids défilent à l\'HORIZONTALE');
+  ok(g.blanc==='rgb(255, 255, 255)'&&g.box&&g.sousBande,
+     'LE POLAROID EST UNE PHOTO POLAROID : blanc, la Box du Totehm accolée DESSOUS');
+  ok(g.nom==='Run the hill'&&/every morning/i.test(g.sous)&&g.minis===2&&g.trait===1,
+     'sa box d\'origine : le nom, le rythme, ses sous-box, son trait latéral ('+g.sous+')');
+  ok(g.dock&&Math.abs(g.papier[0]-Math.round(g.W/2))<=3&&g.papier[1]<90&&g.papier[2]<70,
+     'le TOTEHM est sorti du centre : en haut, centré, petit ('+g.papier.join('/')+')');
+  ok(!g.spots&&g.items===2,'aucun spot dans la vue de gauche : ce sont MES médias ('+g.items+')');
   await pg.screenshot({path:OUT+'/shorts_'+(tel?'tel':'ordi')+'.png'});
-  // ↑ ↓ : le média d'avant, d'après — sans quitter la vue (il n'y a pas de voisin vertical)
-  await pg.evaluate(()=>window.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowDown'})));await pg.waitForTimeout(1200);
-  const a1=await ici(pg), vg=(await lv(pg)).vue;
-  await pg.evaluate(()=>window.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowUp'})));await pg.waitForTimeout(1200);
-  ok(a1==='Call mum'&&vg==='g'&&await ici(pg)==='Run the hill','↓ le média suivant, ↑ le précédent — et on ne quitte pas la vue ('+a1+')');
+  // ↑ ↓ : d'une intention à l'autre, sans quitter la vue
+  await pg.evaluate(()=>window.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowUp'})));await pg.waitForTimeout(1100);
+  const mt=await pg.evaluate(()=>({y:document.getElementById('lv-sh').scrollTop,v:window.__totehm_lv().vue}));
+  ok(mt.v==='g'&&mt.y<g.haut[g.n-1],'↑ monte d\'une intention, et ne quitte pas la vue ('+Math.round(mt.y)+')');
 
-  // ══ 2 · UN TAP SUR LA LÉGENDE OUVRE SON ÉLÉMENT DANS LE TOTEHM ══
-  await pg.locator('#lv-sh .lsh [data-lsh]').first().evaluate(e=>e.click());
+  // ══ 2 · UN TAP SUR LA BOX DU POLAROID OUVRE SON ÉLÉMENT DANS LE TOTEHM ══
+  await pg.locator('#lv-sh .etg[data-etg="fight"] .pol [data-lsh]').first().evaluate(e=>e.click());
   await pg.waitForFunction(()=>!document.body.classList.contains('gate'),null,{timeout:9000}).catch(()=>{});
   await pg.waitForTimeout(1200);
   const o=await pg.evaluate(()=>({vue:window.__totehm_zone.vue,ouverte:(document.querySelector('#habits .habit.open .v-name')||{}).textContent||''}));
-  ok(o.vue==='habits'&&o.ouverte==='Run the hill','un tap sur la légende ouvre SON élément dans le Totehm ('+o.vue+' · '+o.ouverte+')');
+  ok(o.vue==='habits'&&o.ouverte==='Run the hill','un tap sur la box ouvre SON élément dans le Totehm ('+o.vue+' · '+o.ouverte+')');
 
   // ══ 3 · DANS LE TOTEHM : LA LISTE, ET RIEN D'AUTRE ══
   const l0=await pg.evaluate(()=>({rows:document.querySelectorAll('#habits > .habit[data-row]').length,
@@ -155,108 +166,69 @@ try{
       say:(document.getElementById('rdr-say')||{}).textContent||'',
       fond:getComputedStyle(c).backgroundColor,plein:Math.round(rc.width)===innerWidth&&Math.round(rc.height)>=innerHeight-2,
       papier:getComputedStyle(document.getElementById('lv-proc')).opacity,
-      centre:Math.abs((ra.x+ra.width/2)-(rc.x+rc.width/2))<2&&ra.y<innerHeight*.6};});
+      /* 19/10 quater — le papier est DOCKÉ en haut, centré ; le radar, lui, se centre sur MOI. */
+      dock:document.body.classList.contains('papier-haut'),
+      haut:ra.y+ra.height/2<90&&Math.abs((ra.x+ra.width/2)-innerWidth/2)<4&&ra.width<70};});
   ok(d.pts===1&&d.sans===0&&/^1 spot · \d+ m$/.test(d.say)&&d.rayon>0,'→ mes spots : TOUS mes spots placés, la portée en mètres sous le kilomètre ('+d.say+')');
-  ok(d.fond==='rgba(0, 0, 0, 0)'&&d.plein&&d.papier==='1'&&d.centre,'le canvas est plein écran et TRANSPARENT : le papier reste le centre');
+  ok(d.fond==='rgba(0, 0, 0, 0)'&&d.plein&&d.dock&&d.haut,
+    'le canvas est plein écran et TRANSPARENT ; le Totehm est sorti se caler EN HAUT, centré');
   ok(d.anime,'le radar tourne quand il est à l\'écran');
   await pg.screenshot({path:OUT+'/spots_'+(tel?'tel':'ordi')+'.png'});
   await pg.click('#lvn-lf');await vers(pg,'c');await pg.waitForTimeout(300);
   ok(await pg.evaluate(()=>!window.__totehm_rdr().anime&&!window.__totehm_rdr().on),'quitté, le radar s\'arrête (zéro rAF au repos)');
 
-  // ══ 4 bis · LE POLAROID, LES FILTRES, ET LES DEUX MODES DE LA VUE DE DROITE (19/10) ══
-  // Wah : « je veux un système de photo polaroid, et l'utilisateur doit pouvoir le DÉPLACER sur sa photo » ·
-  // « il faut des filtres intelligents pour les deux vues » · « dans la vue de droite, deux modes : shorts ET radar ».
+  // ══ 4 bis · LE TOTEHM DOCKÉ CHOISIT LA BOX, LE FILTRE EST PROPRE À LA VUE, L'IMAGE SE RECADRE ══
+  // Wah : « le Totehm doit sortir et se caler en haut-centré sur les deux vues ; à gauche on retrouve les
+  // 5 vues, à droite les Habit boxes seules ; pas besoin des filtres d'intention ; et l'utilisateur doit
+  // pouvoir changer le point de focalisation de son image ».
   await vers(pg,'c');
-  await pg.click('#lvn-lf');await vers(pg,'g');await pg.waitForTimeout(900);
-  const pol=await pg.evaluate(()=>{const p=document.querySelector('#lv-sh .lsh.is-ici .lsh-pol');
-    if(!p) return null; const cs=getComputedStyle(p), r=p.getBoundingClientRect();
-    const m=p.querySelector('.lsh-m'), c=p.querySelector('.lsh-c span');
-    return {navy:cs.backgroundColor,touch:cs.touchAction,pos:cs.position,
-      px:p.style.getPropertyValue('--px'),py:p.style.getPropertyValue('--py'),
-      dedans:r.top>-1&&r.bottom<innerHeight+2,traits:p.querySelectorAll('.lsh-i i').length,
-      say:!!p.querySelector('.lsh-b .lsh-say[data-lsh]'),
-      /* LE CADRE : le média dans sa fenêtre, la Box imprimée DESSOUS */
-      /* le média du harnais peut se retirer (URL simulée) : on vérifie qu'il est DANS la fenêtre */
-      fenetre:!!m&&(!p.querySelector('[data-sh-src]')||!!m.querySelector('[data-sh-src]')),
-      bande:!!p.querySelector('.lsh-b'),
-      sous:!!(m&&p.querySelector('.lsh-b')&&p.querySelector('.lsh-b').getBoundingClientRect().top>=m.getBoundingClientRect().bottom-1),
-      noir:c?getComputedStyle(c).backgroundColor:'', surMedia:!!(c&&m&&m.contains(c))};});
-  ok(pol&&pol.navy==='rgb(51, 51, 102)'&&pol.pos==='absolute'&&pol.fenetre&&pol.bande&&pol.sous&&pol.dedans,
-    nom+' · LE POLAROID EST UN CADRE : le média dans sa fenêtre, la Box imprimée dessous');
-  ok(pol&&pol.noir==='rgba(0, 0, 0, 0.72)'&&pol.surMedia,
-    'par-dessus le média, en NOIR TRANSPARENT ('+(pol&&pol.noir)+')');
-  ok(pol&&pol.say&&pol.traits>0&&pol.touch==='pan-y',
-    'le filet d\'intention, le nom qui ouvre l\'élément, et le feed garde son défilement');
-  // on le DÉPLACE : APPUI LONG, puis la place part au serveur, une seule fois
-  const box=await pg.$eval('#lv-sh .lsh.is-ici .lsh-pol',e=>{const r=e.getBoundingClientRect();return{x:r.x+r.width/2,y:r.y+r.height/2};});
-  await pg.mouse.move(box.x,box.y);await pg.mouse.down();await pg.waitForTimeout(460);
-  for(let i=1;i<=6;i++){await pg.mouse.move(box.x,box.y-i*18);await pg.waitForTimeout(16);}
-  await pg.mouse.up();
-  const poses=await pg.evaluate(()=>window.__totehm_sh().poses||0);
-  await pg.waitForTimeout(1200);
-  const mv=log.rpc.filter(x=>x.name==='feed_badge_set');
-  ok(poses>0,'l\'appui long arme le déplacement, et le feed garde son défilement (poses='+poses+')');
-  ok(mv.length>=1&&mv[0].body.p_y<50&&mv[0].body.p_ref,'appui long puis déplacé : la place part au serveur (feed_badge_set '+(mv[0]&&Math.round(mv[0].body.p_y))+' %)');
-  // ══ 19/10 ter · LE PAPIER CHOISIT LA BOX, [Filter] PORTE TOUT LE RESTE (repris de SPACE) ══
-  const barre=await pg.evaluate(()=>({tp:!!document.querySelector('#lv-sh-flt [data-f="box"]'),
-    sf:(document.querySelector('#lv-sh-flt [data-f="sf"]')||{}).textContent||'',
-    pastilles:document.querySelectorAll('#lv-sh-flt [data-f="int"],#lv-sh-flt [data-f="type"]').length,
-    navy:getComputedStyle(document.querySelector('#lv-sh-flt [data-f="box"]')).backgroundImage.includes('svg')}));
-  ok(barre.tp&&barre.navy&&barre.sf==='Filter'&&barre.pastilles===0,
-    'en haut : le PAPIER et [Filter], plus la rangée de dix pastilles ('+barre.sf+')');
+  await pg.click('#lvn-lf');await vers(pg,'g');await pg.waitForTimeout(1000);
+  // le papier docké ouvre le choix d'une Box — LES CINQ VUES à gauche
+  await pg.click('#gate-asteroid');await pg.waitForTimeout(500);
+  const pk=await pg.evaluate(()=>({vu:!document.getElementById('lv-sh-pick').hidden,
+    l:[...document.querySelectorAll('#lv-sh-pick [data-pick]')].map(e=>e.textContent.trim())}));
+  ok(pk.vu&&pk.l.includes('Ship it')&&pk.l.includes('The studio')&&pk.l.some(x=>/hill|mum|dawn/.test(x)),
+    'le Totehm docké ouvre le choix : à gauche LES CINQ VUES ('+pk.l.join(' · ')+')');
+  await pg.keyboard.press('Escape');await pg.waitForTimeout(400);
+  // le panneau de gauche : ni intentions ni mood (les étages LES portent), le type et la vue
+  await pg.click('#lv-sh-flt [data-f="sf"]');await pg.waitForTimeout(400);
+  const pan=await pg.evaluate(()=>({lab:[...document.querySelectorAll('#lv-sh-sf .sfl')].map(e=>e.textContent),
+    ints:document.querySelectorAll('#lv-sh-sf [data-sf="int"],#lv-sh-sf [data-sf="pil"]').length,
+    vues:document.querySelectorAll('#lv-sh-sf [data-sf="vue"]').length}));
+  ok(pan.ints===0&&pan.vues===5&&pan.lab.includes('It shows')&&pan.lab.includes('Views')&&!pan.lab.includes('Mood'),
+    'le filtre sert CETTE vue : plus d\'intentions (elles sont la structure), le type et la vue ('+pan.lab.join(' · ')+')');
   const avant=log.rpc.length, n0=(await pg.evaluate(()=>window.__totehm_sh())).items;
-  await pg.click('#lv-sh-flt [data-f="sf"]');await pg.waitForTimeout(400);
-  const pan=await pg.evaluate(()=>({vu:!document.getElementById('lv-sh-sf').hidden,
-    lab:[...document.querySelectorAll('#lv-sh-sf .sfl')].map(e=>e.textContent),
-    ints:document.querySelectorAll('#lv-sh-sf [data-sf="int"]').length,
-    pil:document.querySelectorAll('#lv-sh-sf [data-sf="pil"]').length,
-    vues:document.querySelectorAll('#lv-sh-sf [data-sf="vue"]').length,
-    haut:document.querySelector('#lv-sh-sf .sfg').getBoundingClientRect().top<innerHeight*.4}));
-  ok(pan.vu&&pan.haut&&pan.ints===7&&pan.pil===4&&pan.vues===5
-     &&['My Box','Intentions','Mood','It shows','Views'].every(x=>pan.lab.includes(x)),
-    '[Filter] ouvre TOUS les filtres, ancrés en haut ('+pan.lab.join(' · ')+')');
-  await pg.click('#lv-sh-sf [data-sf="type"][data-v="video"]');await pg.waitForTimeout(400);
+  await pg.click('#lv-sh-sf [data-sf="type"][data-v="video"]');await pg.waitForTimeout(500);
   const f1=await pg.evaluate(()=>window.__totehm_sh());
-  await pg.click('#lv-sh-sf [data-sf="type"][data-v="video"]');await pg.waitForTimeout(200);
-  await pg.click('#lv-sh-sf [data-sf="int"][data-v="love"]');await pg.waitForTimeout(400);
+  await pg.click('#lv-sh-sf [data-sf="type"][data-v="video"]');await pg.waitForTimeout(300);
+  await pg.click('#lv-sh-sf [data-sf="vue"][data-v="visions"]');await pg.waitForTimeout(500);
   const f2=await pg.evaluate(()=>window.__totehm_sh());
-  await pg.click('#lv-sh-sf [data-sf="pil"][data-v="BODY"]');await pg.waitForTimeout(400);
-  const f3=await pg.evaluate(()=>window.__totehm_sh());
-  ok(n0===3&&f1.items===0&&f2.items>0&&f2.items<n0&&f2.filtre==='love'&&f3.items>f2.items&&log.rpc.length===avant,
-    'les filtres trient ce qui est DÉJÀ en mémoire : '+n0+' → video '+f1.items+' → love '+f2.items
-    +' → +BODY '+f3.items+', zéro appel de plus');
+  ok(n0===2&&f1.items===0&&f2.items===1&&log.rpc.length===avant,
+    'il trie ce qui est DÉJÀ en mémoire : '+n0+' → video '+f1.items+' → visions '+f2.items+', zéro appel de plus');
   await pg.click('#lv-sh-sf [data-sf="all"]');await pg.waitForTimeout(400);
-  // LE PAPIER : une Box, et tout ce qui la compose ; Échap ferme
-  await pg.click('#lv-sh-sf [data-sf="pick"]');await pg.waitForTimeout(400);
-  ok(await pg.evaluate(()=>!document.getElementById('lv-sh-pick').hidden&&document.getElementById('lv-sh-sf').hidden),
-    'choisir une Box : le même sélecteur que le « + », et le panneau s\'efface');
+  await pg.keyboard.press('Escape');await pg.waitForTimeout(400);
+  // LE POINT DE FOCALISATION : appui long sur la photo, puis on la recadre
+  /* on amène la rangée rouge à l'écran, on LAISSE l'aimantage se poser, puis on mesure */
+  await pg.$eval('#lv-sh .etg[data-etg="fight"]',e=>e.scrollIntoView({block:'center'}));
+  await pg.waitForTimeout(900);
+  const foc=await pg.$eval('#lv-sh .etg[data-etg="fight"] .pol[data-pol] .pol-ph',e=>{const r=e.getBoundingClientRect();
+    return {x:r.x+r.width/2,y:r.y+r.height/2,h:r.height};});
+  await pg.mouse.move(foc.x,foc.y);await pg.mouse.down();await pg.waitForTimeout(460);
+  for(let i=1;i<=6;i++){await pg.mouse.move(foc.x,foc.y-i*(foc.h/14));await pg.waitForTimeout(18);}
+  await pg.mouse.up();await pg.waitForTimeout(1200);
+  const fy=await pg.$eval('#lv-sh .etg[data-etg="fight"] .pol[data-pol]',e=>({f:e.style.getPropertyValue('--fy'),
+    op:getComputedStyle(e.querySelector('.pol-ph img,.pol-ph video')||e).objectPosition}));
+  const mv=log.rpc.filter(x=>x.name==='feed_badge_set');
+  ok(mv.length>=1&&mv[0].body.p_y<50&&/%/.test(fy.f),
+    'le point de focalisation se change et se garde (object-position '+fy.f+', feed_badge_set '+(mv[0]&&Math.round(mv[0].body.p_y))+' %)');
+  // le polaroid VIDE au bout de la rangée : il ajoute un média À CETTE intention
+  await pg.click('#lv-sh .etg[data-etg="fight"] .pol-add');await pg.waitForTimeout(500);
+  const vide=await pg.evaluate(()=>({vu:!document.getElementById('lv-sh-pick').hidden,
+    l:[...document.querySelectorAll('#lv-sh-pick [data-pick]')].map(e=>e.textContent.trim())}));
+  ok(vide.vu&&vide.l.length>=1&&vide.l.every(t=>/hill|Ship it|phone/.test(t)),
+    'le polaroid vide ajoute un média à CETTE intention ('+vide.l.join(' · ')+')');
   await pg.click('#lv-sh-pick [data-pick="0"]');await pg.waitForTimeout(500);
-  const bx=await pg.evaluate(()=>({d:window.__totehm_sh(),
-    nom:(document.querySelector('#lv-sh-flt .lsh-bx')||{}).textContent||'',
-    on:document.querySelector('#lv-sh-flt [data-f="box"]').classList.contains('is-on'),
-    sf:(document.querySelector('#lv-sh-flt [data-f="sf"]')||{}).textContent||''}));
-  ok(bx.nom==='Run the hill'&&bx.on&&/^Filter · \d+$/.test(bx.sf)&&bx.d.items===1&&bx.d.filtre.includes('box'),
-    'le papier choisit la Box : son nom en haut, son monde seul ('+bx.d.items+' média), '+bx.sf);
-  await pg.click('#lv-sh-flt [data-f="sf"]');await pg.waitForTimeout(400);
-  const comp=await pg.evaluate(()=>({lab:[...document.querySelectorAll('#lv-sh-sf .sfl')].map(e=>e.textContent),
-    el:document.querySelectorAll('#lv-sh-sf [data-sf="el"].is-on').length}));
-  ok(comp.lab.includes('This element')&&comp.el===1,'la Box arrive avec TOUT ce qui la compose, allumé ('+comp.el+')');
-  await pg.click('#lv-sh-sf [data-sf="unbox"]');await pg.waitForTimeout(400);
-  await pg.keyboard.press('Escape');await pg.waitForTimeout(300);
-  const fin=await pg.evaluate(()=>({d:window.__totehm_sh(),ferme:document.getElementById('lv-sh-sf').hidden,
-    nom:!!document.querySelector('#lv-sh-flt .lsh-bx')}));
-  ok(fin.d.items===3&&!fin.nom&&fin.ferme,'« all Boxes » rend tout le fil ; Échap ferme le panneau');
-  // on AJOUTE un média depuis la vue de gauche : l'élément d'abord, la caméra ensuite
-  await pg.click('#lv-sh-flt [data-f="plus"]');await pg.waitForTimeout(400);
-  const pick=await pg.evaluate(()=>({n:document.querySelectorAll('#lv-sh-pick [data-pick]').length,
-    l:[...document.querySelectorAll('#lv-sh-pick [data-pick]')].map(e=>e.textContent.trim()),
-    vu:!document.getElementById('lv-sh-pick').hidden,
-    haut:document.querySelector('#lv-sh-pick [data-pick]').getBoundingClientRect().top<innerHeight*.4}));
-  ok(pick.vu&&pick.haut&&pick.l.includes('Ship it')&&pick.l.includes('The studio')&&pick.l.some(x=>/hill|mum|dawn/.test(x)),
-    '« + » demande D\'ABORD l\'élément — les cinq vues, pas seulement les Habits ('+pick.l.join(' · ')+')');
-  await pg.click('#lv-sh-pick [data-pick="0"]');await pg.waitForTimeout(500);
-  ok(await pg.evaluate(()=>window.__totehm_sh().capture.ouvertures>0)&&await pg.evaluate(()=>document.getElementById('lv-sh-pick').hidden),
-    'l\'élément choisi, la capture s\'ouvre POUR LUI');
+  ok(await pg.evaluate(()=>window.__totehm_sh().capture.ouvertures>0),'l\'élément choisi, la capture s\'ouvre POUR LUI');
   await pg.keyboard.press('Escape');await pg.waitForTimeout(500);
   // la vue de droite : radar ↔ shorts, et le MÊME filtre
   await pg.click('#lvn-rt');await vers(pg,'c');await pg.click('#lvn-rt');await vers(pg,'d');await pg.waitForTimeout(800);
@@ -327,10 +299,11 @@ try{
   await pg.route(/\/storage\/v1\/object\/sign\//,r=>r.request().method()==='GET'?r.fulfill({status:200,contentType:'image/png',body:PNG}):r.fallback());
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1200);
   await pg.click('#lvn-lf');await vers(pg,'g');await pg.waitForTimeout(700);
-  const r=await pg.evaluate(()=>({n:document.querySelectorAll('#lv-sh .lsh').length,
+  const r=await pg.evaluate(()=>({n:document.querySelectorAll('#lv-sh .etg').length,
+    pol:document.querySelectorAll('#lv-sh .pol[data-pol]').length,
     sb:getComputedStyle(document.getElementById('lv-sh')).scrollBehavior,
-    tr:getComputedStyle(document.querySelector('#lv-sh .lsh img')).transitionDuration}));
-  ok(r.n===3&&r.sb==='auto'&&/^0s/.test(r.tr),'mouvement réduit : les shorts, sans animation ni défilement doux');
+    tr:getComputedStyle(document.querySelector('#lv-sh .pol-ph img')).transitionDuration}));
+  ok(r.n===8&&r.pol===2&&r.sb==='auto'&&/^0s/.test(r.tr),'mouvement réduit : les étages, sans animation ni défilement doux ('+JSON.stringify(r)+')');
   await pg.click('#lvn-rt');await vers(pg,'c');await pg.click('#lvn-rt');await vers(pg,'d');await pg.waitForTimeout(600);
   const rr=await pg.evaluate(()=>window.__totehm_rdr());
   ok(rr.points===1&&rr.rayon>0,'mouvement réduit : le radar place ses points (une image, pas de balayage)');
