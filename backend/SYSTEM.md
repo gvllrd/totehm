@@ -41,6 +41,23 @@ Mesure HTTPS : `2026-10-19T15:51:36.385599+00:00`. Preuves : `/tmp/totehm-produc
 Tests WebGL locaux avec services interceptés ; HTTPS des vrais domaines avec TLS normal. Le navigateur de
 production garde la limite de certificat proxy. Détails : `../docs/SPACE_BRUTALIST_20261019.md`.
 
+## 0 · LE TOTEHM VOYAGE, LA VUE DE GAUCHE DEVIENT SEPT ÉTAGES — 19/10/2026 quater (lot G, volume 7)
+
+| Mesure | Résultat |
+|---|---|
+| `com/totehm.html` en production | 200, 785 481 octets, `BUILD=2026-10-19-com-etages` |
+| Déploiement Vercel | commit `31e076b` (fusion avec le lot SPACE brutaliste), production READY |
+| Le papier docké | `function cibleHaut()` et `body.papier-haut #gate-asteroid{z-index:7}` présents ; mesuré en page : centré à 1 px près, 44 px de côté, à 40 px du haut |
+| Un tap dessus | ouvre le choix : **6 éléments** à gauche (les cinq vues), les Habits seules à droite (`conf.boxes==='habits'`) |
+| Les sept étages | `function etages()` présent ; mesuré : **8 rangées** (7 intentions + « no intention yet » au-dessus du spectre), `celebrate` en haut, `fight` en bas, arrivée EN BAS (`scrollTop = max`) |
+| Les gestes | rangées `scroll-snap-type:y mandatory`, polaroids `x mandatory` |
+| Le polaroid | `.pol{…background:#fff…}` en production ; mesuré `rgb(255,255,255)`, la Box imprimée SOUS la fenêtre |
+| Le point de focalisation | `object-position:var(--fx,50%) var(--fy,50%)` présent ; mesuré : 50 % → **43 %** après un appui long + glissé, `feed_badge_set` envoyé une fois |
+| Le polaroid vide | `.pol-add` présent, un par rangée d'intention (7) |
+| Les filtres d'intention | `data-sf="int"` **absent** : les sept couleurs ne filtrent plus, elles structurent |
+| ⚠️ Mesuré : deux pièges | docké, `PAPIER.occupe()` est vrai en permanence (le dock se teste AVANT lui) ; et un repaint détache la carte, dont le rectangle vaut zéro — le recadrage partait à 100 % au premier pixel |
+| Suites navigateur | com_shorts **92** · com_processeur 114 · com_paper 36 · com_member_menu 34 · com_read_copy 18 · com_plateforme 23 · com_composition 78 · com_spot 8 · com_vision_image 8 · com_cloths 16 · com_guest 14 · com_creator 37 · console 18 — **fail=0** |
+
 ## 0 · LE POLAROID EST UN CADRE, LES FILTRES SONT CEUX DE SPACE — 19/10/2026 ter (lot G, volume 6)
 
 | Mesure | Résultat |
