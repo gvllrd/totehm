@@ -170,32 +170,82 @@ try{
   await pg.click('#lvn-lf');await vers(pg,'g');await pg.waitForTimeout(900);
   const pol=await pg.evaluate(()=>{const p=document.querySelector('#lv-sh .lsh.is-ici .lsh-pol');
     if(!p) return null; const cs=getComputedStyle(p), r=p.getBoundingClientRect();
+    const m=p.querySelector('.lsh-m'), c=p.querySelector('.lsh-c span');
     return {navy:cs.backgroundColor,touch:cs.touchAction,pos:cs.position,
       px:p.style.getPropertyValue('--px'),py:p.style.getPropertyValue('--py'),
-      dedans:r.top>0&&r.bottom<innerHeight+2,traits:p.querySelectorAll('.lsh-i i').length,
-      say:!!p.querySelector('.lsh-say[data-lsh]'),vue:(p.querySelector('.lsh-v')||{}).textContent||''};});
-  ok(pol&&pol.navy==='rgb(51, 51, 102)'&&pol.pos==='absolute'&&pol.touch==='none'&&pol.dedans,
-    nom+' · l\'élément est un POLAROID posé sur le média (navy, placé, geste dédié)');
-  ok(pol&&pol.say&&pol.traits>0,'le polaroid porte ses traits d\'intention et ouvre son élément ('+(pol&&pol.vue)+')');
-  // on le DÉPLACE : la place part au serveur, une seule fois
+      dedans:r.top>-1&&r.bottom<innerHeight+2,traits:p.querySelectorAll('.lsh-i i').length,
+      say:!!p.querySelector('.lsh-b .lsh-say[data-lsh]'),
+      /* LE CADRE : le média dans sa fenêtre, la Box imprimée DESSOUS */
+      /* le média du harnais peut se retirer (URL simulée) : on vérifie qu'il est DANS la fenêtre */
+      fenetre:!!m&&(!p.querySelector('[data-sh-src]')||!!m.querySelector('[data-sh-src]')),
+      bande:!!p.querySelector('.lsh-b'),
+      sous:!!(m&&p.querySelector('.lsh-b')&&p.querySelector('.lsh-b').getBoundingClientRect().top>=m.getBoundingClientRect().bottom-1),
+      noir:c?getComputedStyle(c).backgroundColor:'', surMedia:!!(c&&m&&m.contains(c))};});
+  ok(pol&&pol.navy==='rgb(51, 51, 102)'&&pol.pos==='absolute'&&pol.fenetre&&pol.bande&&pol.sous&&pol.dedans,
+    nom+' · LE POLAROID EST UN CADRE : le média dans sa fenêtre, la Box imprimée dessous');
+  ok(pol&&pol.noir==='rgba(0, 0, 0, 0.72)'&&pol.surMedia,
+    'par-dessus le média, en NOIR TRANSPARENT ('+(pol&&pol.noir)+')');
+  ok(pol&&pol.say&&pol.traits>0&&pol.touch==='pan-y',
+    'le filet d\'intention, le nom qui ouvre l\'élément, et le feed garde son défilement');
+  // on le DÉPLACE : APPUI LONG, puis la place part au serveur, une seule fois
   const box=await pg.$eval('#lv-sh .lsh.is-ici .lsh-pol',e=>{const r=e.getBoundingClientRect();return{x:r.x+r.width/2,y:r.y+r.height/2};});
-  await pg.mouse.move(box.x,box.y);await pg.mouse.down();
+  await pg.mouse.move(box.x,box.y);await pg.mouse.down();await pg.waitForTimeout(460);
   for(let i=1;i<=6;i++){await pg.mouse.move(box.x,box.y-i*18);await pg.waitForTimeout(16);}
   await pg.mouse.up();
-  await pg.waitForFunction(()=>window.__log&&true,null,{timeout:1000}).catch(()=>{});
+  const poses=await pg.evaluate(()=>window.__totehm_sh().poses||0);
   await pg.waitForTimeout(1200);
   const mv=log.rpc.filter(x=>x.name==='feed_badge_set');
-  ok(mv.length>=1&&mv[0].body.p_y<72&&mv[0].body.p_ref,'déplacé : la place part au serveur (feed_badge_set '+(mv[0]&&Math.round(mv[0].body.p_y))+' %)');
-  // les filtres : ils trient CE QUI EST DÉJÀ LÀ, sans un appel de plus
+  ok(poses>0,'l\'appui long arme le déplacement, et le feed garde son défilement (poses='+poses+')');
+  ok(mv.length>=1&&mv[0].body.p_y<50&&mv[0].body.p_ref,'appui long puis déplacé : la place part au serveur (feed_badge_set '+(mv[0]&&Math.round(mv[0].body.p_y))+' %)');
+  // ══ 19/10 ter · LE PAPIER CHOISIT LA BOX, [Filter] PORTE TOUT LE RESTE (repris de SPACE) ══
+  const barre=await pg.evaluate(()=>({tp:!!document.querySelector('#lv-sh-flt [data-f="box"]'),
+    sf:(document.querySelector('#lv-sh-flt [data-f="sf"]')||{}).textContent||'',
+    pastilles:document.querySelectorAll('#lv-sh-flt [data-f="int"],#lv-sh-flt [data-f="type"]').length,
+    navy:getComputedStyle(document.querySelector('#lv-sh-flt [data-f="box"]')).backgroundImage.includes('svg')}));
+  ok(barre.tp&&barre.navy&&barre.sf==='Filter'&&barre.pastilles===0,
+    'en haut : le PAPIER et [Filter], plus la rangée de dix pastilles ('+barre.sf+')');
   const avant=log.rpc.length, n0=(await pg.evaluate(()=>window.__totehm_sh())).items;
-  await pg.click('#lv-sh-flt [data-f="type"][data-v="video"]');await pg.waitForTimeout(500);
+  await pg.click('#lv-sh-flt [data-f="sf"]');await pg.waitForTimeout(400);
+  const pan=await pg.evaluate(()=>({vu:!document.getElementById('lv-sh-sf').hidden,
+    lab:[...document.querySelectorAll('#lv-sh-sf .sfl')].map(e=>e.textContent),
+    ints:document.querySelectorAll('#lv-sh-sf [data-sf="int"]').length,
+    pil:document.querySelectorAll('#lv-sh-sf [data-sf="pil"]').length,
+    vues:document.querySelectorAll('#lv-sh-sf [data-sf="vue"]').length,
+    haut:document.querySelector('#lv-sh-sf .sfg').getBoundingClientRect().top<innerHeight*.4}));
+  ok(pan.vu&&pan.haut&&pan.ints===7&&pan.pil===4&&pan.vues===5
+     &&['My Box','Intentions','Mood','It shows','Views'].every(x=>pan.lab.includes(x)),
+    '[Filter] ouvre TOUS les filtres, ancrés en haut ('+pan.lab.join(' · ')+')');
+  await pg.click('#lv-sh-sf [data-sf="type"][data-v="video"]');await pg.waitForTimeout(400);
   const f1=await pg.evaluate(()=>window.__totehm_sh());
-  await pg.click('#lv-sh-flt [data-f="type"][data-v="all"]');
-  await pg.click('#lv-sh-flt [data-f="int"][data-v="love"]');await pg.waitForTimeout(500);
+  await pg.click('#lv-sh-sf [data-sf="type"][data-v="video"]');await pg.waitForTimeout(200);
+  await pg.click('#lv-sh-sf [data-sf="int"][data-v="love"]');await pg.waitForTimeout(400);
   const f2=await pg.evaluate(()=>window.__totehm_sh());
-  ok(n0===3&&f1.items===0&&f2.items>0&&f2.items<n0&&f2.filtre==='love'&&log.rpc.length===avant,
-    'les filtres trient ce qui est DÉJÀ en mémoire : '+n0+' → video '+f1.items+' → love '+f2.items+', zéro appel de plus');
-  await pg.click('#lv-sh-flt [data-f="int"][data-v="love"]');await pg.waitForTimeout(400);
+  await pg.click('#lv-sh-sf [data-sf="pil"][data-v="BODY"]');await pg.waitForTimeout(400);
+  const f3=await pg.evaluate(()=>window.__totehm_sh());
+  ok(n0===3&&f1.items===0&&f2.items>0&&f2.items<n0&&f2.filtre==='love'&&f3.items>f2.items&&log.rpc.length===avant,
+    'les filtres trient ce qui est DÉJÀ en mémoire : '+n0+' → video '+f1.items+' → love '+f2.items
+    +' → +BODY '+f3.items+', zéro appel de plus');
+  await pg.click('#lv-sh-sf [data-sf="all"]');await pg.waitForTimeout(400);
+  // LE PAPIER : une Box, et tout ce qui la compose ; Échap ferme
+  await pg.click('#lv-sh-sf [data-sf="pick"]');await pg.waitForTimeout(400);
+  ok(await pg.evaluate(()=>!document.getElementById('lv-sh-pick').hidden&&document.getElementById('lv-sh-sf').hidden),
+    'choisir une Box : le même sélecteur que le « + », et le panneau s\'efface');
+  await pg.click('#lv-sh-pick [data-pick="0"]');await pg.waitForTimeout(500);
+  const bx=await pg.evaluate(()=>({d:window.__totehm_sh(),
+    nom:(document.querySelector('#lv-sh-flt .lsh-bx')||{}).textContent||'',
+    on:document.querySelector('#lv-sh-flt [data-f="box"]').classList.contains('is-on'),
+    sf:(document.querySelector('#lv-sh-flt [data-f="sf"]')||{}).textContent||''}));
+  ok(bx.nom==='Run the hill'&&bx.on&&/^Filter · \d+$/.test(bx.sf)&&bx.d.items===1&&bx.d.filtre.includes('box'),
+    'le papier choisit la Box : son nom en haut, son monde seul ('+bx.d.items+' média), '+bx.sf);
+  await pg.click('#lv-sh-flt [data-f="sf"]');await pg.waitForTimeout(400);
+  const comp=await pg.evaluate(()=>({lab:[...document.querySelectorAll('#lv-sh-sf .sfl')].map(e=>e.textContent),
+    el:document.querySelectorAll('#lv-sh-sf [data-sf="el"].is-on').length}));
+  ok(comp.lab.includes('This element')&&comp.el===1,'la Box arrive avec TOUT ce qui la compose, allumé ('+comp.el+')');
+  await pg.click('#lv-sh-sf [data-sf="unbox"]');await pg.waitForTimeout(400);
+  await pg.keyboard.press('Escape');await pg.waitForTimeout(300);
+  const fin=await pg.evaluate(()=>({d:window.__totehm_sh(),ferme:document.getElementById('lv-sh-sf').hidden,
+    nom:!!document.querySelector('#lv-sh-flt .lsh-bx')}));
+  ok(fin.d.items===3&&!fin.nom&&fin.ferme,'« all Boxes » rend tout le fil ; Échap ferme le panneau');
   // on AJOUTE un média depuis la vue de gauche : l'élément d'abord, la caméra ensuite
   await pg.click('#lv-sh-flt [data-f="plus"]');await pg.waitForTimeout(400);
   const pick=await pg.evaluate(()=>({n:document.querySelectorAll('#lv-sh-pick [data-pick]').length,
@@ -219,14 +269,26 @@ try{
     px:(document.querySelector('#rdr-sh .lsh-pol')||{style:{getPropertyValue:()=>''}}).style.getPropertyValue('--px')}));
   ok(sh2.shorts&&sh2.d.mode==='shorts'&&sh2.n===1&&sh2.pol,'le mode SHORTS de mes spots : le même moteur, la photo du spot en polaroid');
   ok(sh2.px==='20%','la place enregistrée revient du serveur (my_feed_badges) : '+sh2.px);
+  /* 19/10 ter — SUR le noir transparent, les informations DU SPOT */
+  const infos=await pg.$$eval('#rdr-sh .lsh-c span',l=>l.map(e=>e.textContent));
+  ok(infos.some(t=>/I will be here/i.test(t))&&infos.some(t=>/OCT/.test(t))&&infos.some(t=>/LOCATION ON/.test(t)),
+    'les informations du spot sur le noir transparent : '+infos.join(' · '));
   const avant2=log.rpc.length;
-  await pg.click('#rdr-flt [data-f="quand"][data-v="was"]');await pg.waitForTimeout(600);
-  const f3=await pg.evaluate(()=>window.__totehm_rdr());
+  await pg.click('#rdr-flt [data-f="sf"]');await pg.waitForTimeout(400);
+  const panD=await pg.evaluate(()=>({lab:[...document.querySelectorAll('#rdr-sf .sfl')].map(e=>e.textContent),
+    quand:document.querySelectorAll('#rdr-sf [data-sf="quand"]').length}));
+  ok(panD.lab.includes('When')&&panD.quand===3&&!panD.lab.includes('Views'),
+    'à droite, le panneau parle TEMPS (was · now · next), pas vues');
+  await pg.click('#rdr-sf [data-sf="quand"][data-v="was"]');await pg.waitForTimeout(600);
+  const g3=await pg.evaluate(()=>window.__totehm_rdr());
+  await pg.keyboard.press('Escape');await pg.waitForTimeout(300);
   await pg.click('#rdr-flt [data-f="mode"][data-v="radar"]');await pg.waitForTimeout(700);
-  const f4=await pg.evaluate(()=>window.__totehm_rdr());
-  ok(f3.items===0&&f4.points===0&&log.rpc.length===avant2,
+  const g4=await pg.evaluate(()=>window.__totehm_rdr());
+  ok(g3.items===0&&g4.points===0&&log.rpc.length===avant2,
     'le filtre des spots vaut pour les DEUX modes (un spot « will » disparaît de la liste ET du radar), zéro appel');
-  await pg.click('#rdr-flt [data-f="quand"][data-v="all"]');await pg.waitForTimeout(600);
+  await pg.click('#rdr-flt [data-f="sf"]');await pg.waitForTimeout(400);
+  await pg.click('#rdr-sf [data-sf="all"]');await pg.waitForTimeout(400);
+  await pg.keyboard.press('Escape');await pg.waitForTimeout(400);
   await pg.screenshot({path:OUT+'/spots_shorts_'+(tel?'tel':'ordi')+'.png'});
   await pg.click('#lvn-lf');await vers(pg,'c');await pg.waitForTimeout(300);
 

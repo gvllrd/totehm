@@ -3488,41 +3488,95 @@ body.lv-b #gate-logo #gl-rail,body.lv-b #gate-logo #gl-wm{opacity:0}
 #lv-sh{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;scroll-snap-type:y mandatory;scroll-behavior:smooth;
   -webkit-overflow-scrolling:touch;overscroll-behavior:contain}
 .lsh{position:relative;height:100dvh;scroll-snap-align:start;scroll-snap-stop:always;background:#000;overflow:hidden}
-.lsh img,.lsh video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;opacity:0;
+.lsh-m img,.lsh-m video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;opacity:0;
   transform:scale(1.04);transition:opacity .4s ease,transform .9s var(--gate-ease)}
-.lsh img[src],.lsh video[src]{opacity:1}
-.lsh.is-ici img,.lsh.is-ici video{transform:none}
+.lsh-m img[src],.lsh-m video[src]{opacity:1}
+.lsh.is-ici .lsh-m img,.lsh.is-ici .lsh-m video{transform:none}
 /* ══ LE POLAROID · 19/10/2026 ═══════════════════════════════════════════════════════════════════
    Wah : « niveau design des shorts, je veux un système de photo polaroid — les éléments du Totehm
    mis sous la forme polaroid — et l'utilisateur doit pouvoir DÉPLACER, sur sa photo, son image ou sa
    vidéo, l'élément du Totehm ». L'élément n'est donc plus une légende collée en bas de l'écran :
    c'est une CARTE navy posée SUR le média, qu'on prend et qu'on pose où l'on veut.
    `--px/--py` sont en POUR CENT : l'écran change de taille, la carte reste au même endroit.
-   ⚠️ `touch-action:none` sur la CARTE SEULE : le reste du feed garde son défilement natif. */
-.lsh-pol{position:absolute;left:var(--px,50%);top:var(--py,72%);transform:translate(-50%,-50%);z-index:3;
-  width:min(62vw,250px);max-width:calc(100% - 28px);background:var(--navy);padding:10px 12px 11px;
-  display:flex;flex-direction:column;gap:7px;box-shadow:0 10px 26px rgba(0,0,0,.55);
-  touch-action:none;cursor:grab;-webkit-user-select:none;user-select:none}
-.lsh-pol.is-tenu{cursor:grabbing;box-shadow:0 16px 38px rgba(0,0,0,.72)}
-.lsh-i{display:flex;flex-direction:row;gap:2px;flex:none}
-.lsh-i i{width:14px;height:2px;display:block}
-.lsh-t{font:400 13.5px/1.35 'Quantico',sans-serif;color:#fff;max-height:3.9em;overflow:hidden;display:block}
+   (La première version posait l'élément SUR le média ; elle est remplacée le 19/10 ter.) */
+/* ══ 19/10 TER — LE POLAROID EST UN CADRE, PAS UNE ÉTIQUETTE ═══════════════════════════════════
+   Wah, capture d'écran à l'appui : une
+   CARTE navy, le média dans sa fenêtre, et LA BOX IMPRIMÉE DESSOUS, comme la bande blanche d'un
+   polaroid — le nom en Quantico, l'intention dans sa couleur, le rythme, puis les mini-boîtes
+   OBJECTIVES et REPULSIONS. Le filet d'intention court sur le bord GAUCHE de la carte.
+   ⚠️ `touch-action:pan-y` : le feed garde son défilement natif ; le déplacement s'arme sur un APPUI
+   LONG (380 ms), sinon la carte, qui prend presque tout l'écran, interdirait de faire défiler. */
+.lsh-pol{position:absolute;left:var(--px,50%);top:var(--py,50%);transform:translate(-50%,-50%);z-index:3;
+  width:min(86vw,420px);max-height:calc(100dvh - 96px);background:var(--navy);padding:14px 14px 0;
+  display:flex;flex-direction:column;box-shadow:0 14px 34px rgba(0,0,0,.6);
+  touch-action:pan-y;-webkit-user-select:none;user-select:none}
+.lsh-pol.is-tenu{box-shadow:0 20px 44px rgba(0,0,0,.78);cursor:grabbing}
+/* LA FENÊTRE : le média, dans le cadre. Le noir derrière lui, jamais un gris. */
+.lsh-m{position:relative;width:100%;aspect-ratio:5/4;background:#000;overflow:hidden;flex:none}
+/* PAR-DESSUS LE MÉDIA, EN NOIR TRANSPARENT (Wah, 19/10 ter) : d'où il vient, et quand. */
+.lsh-c{position:absolute;left:8px;right:8px;bottom:8px;z-index:2;display:flex;flex-wrap:wrap;gap:4px;pointer-events:none}
+.lsh-c span{background:rgba(0,0,0,.72);color:#fff;padding:5px 8px;
+  font:700 8.5px/1.2 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase}
+/* LA BANDE : la Box, telle qu'elle est dans le Totehm. */
+.lsh-b{padding:11px 2px 14px;display:flex;flex-direction:column;gap:6px;overflow:hidden}
+.lsh-i{position:absolute;left:-7px;top:14px;bottom:14px;width:7px;display:flex;flex-direction:column}
+.lsh-i i{flex:1;width:100%;display:block}
+.lsh-t{font:400 15px/1.3 'Quantico',sans-serif;color:#fff;max-height:2.6em;overflow:hidden;display:block}
+.lsh-l{font:700 8.5px/1.4 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.6)}
+.lsh-l i{font-style:normal}
+.lsh-k{font:700 8px/1.3 'Space Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.45)}
+.lsh-mg{display:flex;flex-direction:column;gap:3px}
+.lsh-ms{display:flex;flex-wrap:wrap;gap:3px}
+.lsh-o,.lsh-r{font:400 11px/1.3 'Quantico',sans-serif;color:#fff;padding:4px 7px;max-width:100%;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lsh-o{background:var(--blue)}
+.lsh-r{background:var(--rep)}
 .lsh-say{display:block;width:100%;background:none;border:0;padding:0;margin:0;text-align:left;cursor:pointer;color:inherit}
 .lsh-say:focus-visible{outline:1px solid #fff;outline-offset:3px}
 /* La légende du polaroid : d'OÙ il vient. Trois mots au plus, le moins possible. */
 .lsh-v{font:700 8px/1.3 'Space Mono',monospace;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.55)}
-/* ══ LES FILTRES · 19/10/2026 ══ Wah : « il faut des filtres intelligents pour les deux vues ».
-   Le moins de mots possible : UN mot par choix, et des POINTS pour les sept intentions — la couleur
-   dit l'intention mieux que son nom. Tout se calcule sur ce qui est DÉJÀ en mémoire. */
+/* ══ LA BARRE ET SON PANNEAU · 19/10/2026 ter ═══════════════════════════════════════════════════
+   Wah : « reprends ce que l'on avait fait dans space : le défilement vertical type shorts, le LOGO
+   TOTEHM qui permettait de sélectionner une box, et le bouton FILTER avec tous les filtres ».
+   La rangée de dix pastilles est partie : il ne reste DEUX objets en haut — le papier (il choisit
+   la Box, et avec elle tout ce qui la compose) et [Filter · N] (tout le reste, dans un panneau).
+   Comme sur SPACE, et comme sur SPACE tout se calcule sur ce qui est DÉJÀ en mémoire. */
 .lsh-flt{position:absolute;left:0;right:0;top:max(10px,env(safe-area-inset-top));z-index:4;
-  display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:5px;padding:0 12px;pointer-events:none}
+  display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;gap:7px;padding:0 12px;pointer-events:none}
 .lsh-flt button{pointer-events:auto;border:0;border-radius:10px;padding:5px 9px;background:rgba(22,22,26,.82);
   color:#8a8a92;font:700 8.5px/1.3 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;cursor:pointer}
 .lsh-flt button.is-on{background:#3a3a42;color:#fff}
-.lsh-flt .fi{padding:0;width:16px;height:16px;border-radius:50%;background:var(--c);opacity:.34}
-.lsh-flt .fi.is-on{opacity:1;box-shadow:0 0 0 2px rgba(255,255,255,.85)}
 .lsh-flt button:focus-visible{outline:1px solid #fff;outline-offset:2px}
 .lsh-flt .fp{font-size:12px;letter-spacing:0;padding:3px 10px 5px}
+/* LE PAPIER : le carré navy perforé du logo, en petit. Il ne navigue pas — il CHOISIT une Box. */
+.lsh-tp{flex:none;width:34px;height:34px;padding:0;border-radius:0!important;
+  background:var(--logo-navy) 0 0/100% 100% no-repeat!important;
+  display:flex;align-items:center;justify-content:center}
+.lsh-tp span{font:700 14px/1 'Space Mono',monospace;color:#fff;letter-spacing:0}
+.lsh-tp.is-on{box-shadow:0 0 0 2px rgba(255,255,255,.8)}
+/* Le nom de la Box choisie, à côté du papier : une ligne, jamais deux. */
+/* ⚠️ LE BOUTON N'EST PAS LE PANNEAU : deux objets, deux classes. `.lsh-sf` (le panneau) prenait
+   `inset:0` au bouton — mesuré, il faisait 390 px de large et passait SOUS le papier. */
+.lsh-fb{flex:none}
+.lsh-bx{pointer-events:none;max-width:38vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  font:400 12px/1.3 'Quantico',sans-serif;color:var(--coral)}
+/* LE PANNEAU : plein écran, ancré EN HAUT (le clavier mobile mange le bas), champ noir. */
+.lsh-sf{position:absolute;inset:0;z-index:7;background:rgba(0,0,0,.94);
+  display:flex;flex-direction:column;align-items:center;gap:9px;
+  padding:calc(max(10px,env(safe-area-inset-top)) + 46px) 14px 24px;overflow-y:auto;overscroll-behavior:contain}
+.lsh-sf[hidden]{display:none}
+.lsh-sf .sfg{width:min(92vw,420px);display:flex;flex-direction:column;gap:5px}
+.lsh-sf .sfl{font:700 8.5px/1.3 'Space Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:#6d6d74}
+.lsh-sf .sfr{display:flex;flex-wrap:wrap;gap:5px}
+.sfc{border:0;border-radius:10px;padding:8px 11px;background:#1f1f24;color:#b0b0b0;cursor:pointer;
+  font:400 11.5px/1.3 'Space Mono',monospace;text-align:left;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.sfc.is-on{background:#3a3a42;color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.45)}
+.sfc.is-int{border-left:3px solid var(--c,#fff)}
+.sfc.is-box{background:var(--navy);color:#fff;font-family:'Quantico',sans-serif;font-size:13px}
+.sfc:focus-visible{outline:1px solid #fff;outline-offset:2px}
+.lsh-sf .sfk{background:none;color:#8a8a92;font:700 8.5px/1.3 'Space Mono',monospace;letter-spacing:.14em;
+  text-transform:uppercase;padding:8px 2px}
+.lsh-sf .sfa{justify-content:space-between;margin-top:6px}
 /* Le choix de l'élément : une colonne sombre, ancrée EN HAUT, chaque élément avec ses traits. */
 .lsh-pick{position:absolute;inset:0;z-index:6;background:rgba(0,0,0,.82);
   display:flex;flex-direction:column;align-items:center;gap:6px;
@@ -3815,7 +3869,9 @@ body.rdr-shorts #rdr-c{opacity:0}
       <!-- 19/10 — les filtres vivent HORS du conteneur qui défile : ils ne partent pas avec le feed. -->
       <div id="lv-sh-flt" class="lsh-flt lv-act" role="group" aria-label="Filter my media"></div>
       <!-- Le choix de l'élément auquel un média neuf s'attribue. Ancré EN HAUT (le clavier mange le bas). -->
-      <div id="lv-sh-pick" class="lsh-pick lv-act" role="dialog" aria-label="Attribute this media to an element" hidden></div>
+      <div id="lv-sh-pick" class="lsh-pick lv-act" role="dialog" aria-label="Choose an element" hidden></div>
+      <!-- 19/10 ter — le panneau de TOUS les filtres, comme sur SPACE. -->
+      <div id="lv-sh-sf" class="lsh-sf lv-act" role="dialog" aria-label="Filter my media" hidden></div>
       <p class="lv-note" id="lv-sh-say" role="status" aria-live="polite"></p>
     </section>
 
@@ -3828,6 +3884,8 @@ body.rdr-shorts #rdr-c{opacity:0}
            gauche, nourri des SPOTS). Ils lisent les mêmes points et le même filtre. -->
       <div id="rdr-sh" class="lv-act"><div id="rdr-sh-f"></div></div>
       <div id="rdr-flt" class="lsh-flt lv-act" role="group" aria-label="My spots: mode and filters"></div>
+      <div id="rdr-pick" class="lsh-pick lv-act" role="dialog" aria-label="Choose an element" hidden></div>
+      <div id="rdr-sf" class="lsh-sf lv-act" role="dialog" aria-label="Filter my spots" hidden></div>
       <p class="lv-note" id="rdr-say" role="status" aria-live="polite"></p>
     </section>
 
@@ -5305,7 +5363,7 @@ const CAP=(()=>{
 /* ══ LE FILTRE DES SPOTS, PARTAGÉ PAR LES DEUX MODES · 19/10/2026 ═══════════════════════════════
    Wah : « il faut des filtres intelligents pour les deux vues ». Le radar et les shorts lisent le
    MÊME objet : changer de mode ne change pas ce qu'on regarde, et rien n'est redemandé au serveur. */
-const SPOTFLT={quand:'all', int:''};
+const SPOTFLT={quand:'', ints:[], habits:null};
 /* Le spot d'une Habit porte les intentions de CETTE Habit : c'est la seule source, jamais une
    intention posée sur le spot (il n'en a pas). */
 function spotInts(habit){
@@ -5313,8 +5371,10 @@ function spotInts(habit){
        return Array.isArray(h.is)&&h.is.length?h.is:(h.i?[h.i]:[]); }catch(_){ return []; }
 }
 function spotGarde(habit,st){
-  if(SPOTFLT.quand!=='all'&&String(st||'will')!==SPOTFLT.quand) return false;
-  if(SPOTFLT.int&&!spotInts(habit).includes(SPOTFLT.int)) return false;
+  if(SPOTFLT.quand&&String(st||'will')!==SPOTFLT.quand) return false;
+  if(SPOTFLT.ints.length&&!spotInts(habit).some(i=>SPOTFLT.ints.includes(i))) return false;
+  /* La Box choisie au papier vaut pour les DEUX modes : un spot écarté de la liste sort du radar. */
+  if(SPOTFLT.habits&&!SPOTFLT.habits.has(String(habit||''))) return false;
   return true;
 }
 /* ══ RADAR ou SHORTS · 19/10/2026 ══ Le choix tient d'une visite à l'autre ; il ne touche aucune donnée. */
@@ -5508,7 +5568,27 @@ const BADGE=(()=>{
 function creerFeed(conf){
   const etat={on:false, items:0, total:0, videos:0, ici:false, pas:0, filtre:''};
   let io=null, ici=null, L=[], drag=null;
-  const flt={type:'all', vue:'all', quand:'all', int:''};
+  /* ══ LE FILTRE, REPRIS DE SPACE · 19/10/2026 ter ═══════════════════════════════════════════════
+     Wah : « le logo Totehm qui permettait de sélectionner une box, et le bouton filter avec TOUS les
+     filtres possibles ». Deux objets en haut de l'écran, rien d'autre :
+       · le PAPIER → une de mes Box, et avec elle TOUT ce qui la compose (son élément, ses objectifs,
+         ses répulsions, son rythme) ; chacun se coupe d'un tap, exactement comme sur SPACE ;
+       · [Filter · N] → le panneau : intentions, mood (les quatre piliers), ce que ça montre, la vue
+         (à gauche) ou le temps (à droite).
+     ⚠️ UNE DIFFÉRENCE ASSUMÉE AVEC SPACE : là-bas le serveur fait un OU pondéré (`space_feed`, on
+     cherche CHEZ LES AUTRES) ; ici on trie MES médias, déjà en mémoire, et un filtre qui élargit
+     n'aurait aucun sens — c'est donc un ET entre les groupes, un OU dedans. Zéro appel de plus. */
+  const SF={box:null, on:new Set(), ints:new Set(), piliers:new Set(), freq:false, type:'', vue:'', quand:''};
+  const PILIERS=['BODY','MENTAL','SOUL','SPIRIT'];
+  const sfCount=()=>(SF.box?SF.on.size:0)+SF.ints.size+SF.piliers.size+(SF.freq?1:0)
+                   +(SF.type?1:0)+(SF.vue?1:0)+(SF.quand?1:0);
+  /* Les intentions ACTIVES : celles cochées, plus celles qu'apportent les piliers cochés. */
+  function sfIntsActives(){
+    const s=new Set(SF.ints);
+    SF.piliers.forEach(p=>INTS.filter(i=>i.pillar===p).forEach(i=>s.add(i.id)));
+    return s;
+  }
+  const flt={type:'all', vue:'all', quand:'all', int:''};   /* la forme historique, pour le diagnostic */
   const sc=()=>$(conf.sc), bx=()=>$(conf.bx), rail=()=>$(conf.rail);
   const RMS=()=>window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   /* Les deux systèmes de lettres : le FICHIER dit h·o·r·w·v, la BOÎTE dit h·t·r·w·v. */
@@ -5563,7 +5643,7 @@ function creerFeed(conf){
     (state.habits||[]).forEach(x=>{
       const sp=spacesDe(x); if(!sp) return;
       (sp.spots||[]).forEach(z=>{ if(!z||!z.photo) return;
-        l.push({cle:'sp:'+z.id, src:String(z.photo), b:'moments', vid:false, st:String(z.state||'will'),
+        l.push({cle:'sp:'+z.id, src:String(z.photo), b:'moments', vid:false, st:String(z.state||'will'), sp:z,
                 bk:'h', vue:'habits', id:String(x.id), txt:String(x.t||''),
                 cols:colsDe('h',x), ints:intsDe('h',x)}); });
     });
@@ -5577,28 +5657,91 @@ function creerFeed(conf){
   }
   /* LE FILTRE : il ne redemande RIEN au serveur, il choisit dans ce qui est déjà là. */
   function garder(x){
-    if(flt.type==='photo'&&x.vid) return false;
-    if(flt.type==='video'&&!x.vid) return false;
-    if(flt.vue!=='all'&&x.vue!==flt.vue) return false;
-    if(flt.quand!=='all'&&x.st!==flt.quand) return false;
-    if(flt.int&&!(x.ints||[]).includes(flt.int)) return false;
+    if(SF.type==='photo'&&x.vid) return false;
+    if(SF.type==='video'&&!x.vid) return false;
+    if(SF.vue&&x.vue!==SF.vue) return false;
+    if(SF.quand&&x.st!==SF.quand) return false;
+    const ints=sfIntsActives();
+    if(ints.size&&!(x.ints||[]).some(i=>ints.has(i))) return false;
+    if(SF.freq&&SF.box&&SF.box.freq){
+      if(x.vue!=='habits') return false;
+      const h=habOf(x.id); if(!h||String(h.f||'')!==SF.box.freq) return false;
+    }
+    /* La Box : l'élément doit être CELUI qu'on a choisi, ou l'un de ceux qui le composent et qui
+       sont restés allumés. Tout éteindre ne vide pas l'écran — ça retire simplement la contrainte. */
+    if(SF.box&&SF.on.size&&!SF.on.has(x.vue+'|'+x.id)) return false;
     return true;
   }
+  /* Choisir une Box = l'allumer, ELLE ET TOUT CE QUI LA COMPOSE (SPACE, 11/10). */
+  function sfBox(x){
+    if(!x){ SF.box=null; SF.on=new Set(); SF.freq=false; return; }
+    const bk=BOX[x.k]; if(!bk) return;
+    const o=bk==='h'?habByT(String(x.ref)):objetDe(bk,String(x.ref));
+    const vue=VUE[x.k], id=o?String(o.id):'';
+    const liens=(l,v)=>l.map(z=>({vue:v, id:String(z.id), txt:String(z.text||z.t||'')})).filter(z=>z.txt);
+    const objs=(bk==='h'&&o)?liens(tripsOfHab(o),'objectives'):[];
+    const reps=(bk==='h'&&o)?liens(repsOfHabX(o),'repulsions'):[];
+    SF.box={k:x.k, vue, id, txt:String(x.txt||''), freq:(bk==='h'&&o)?String(o.f||''):'', objs, reps};
+    SF.on=new Set([vue+'|'+id].concat(objs.map(z=>z.vue+'|'+z.id), reps.map(z=>z.vue+'|'+z.id)));
+    SF.freq=!!SF.box.freq;
+  }
+  function sfReset(){ sfBox(null); SF.ints=new Set(); SF.piliers=new Set(); SF.type=''; SF.vue=''; SF.quand=''; }
   function html(x){
     const u=x.b==='em'?emCache(x.src):'';
     const devant=x.vid
       ? '<video data-sh-src="'+esc(x.src)+'" data-b="'+esc(x.b)+'" muted playsinline loop preload="none"'+(u?' src="'+esc(u)+'" data-ok="1"':'')+'></video>'
       : '<img alt="" data-sh-src="'+esc(x.src)+'" data-b="'+esc(x.b)+'"'+(u?' src="'+esc(u)+'" data-ok="1"':'')+'>';
     const traits=(x.cols||[]).map(c=>'<i style="background:'+c+'"></i>').join('');
-    const p=BADGE.de(x.cle)||{x:50,y:72};
-    /* LE POLAROID : l'élément, posé SUR le média, à la place que le membre lui a donnée. */
-    const pol=x.txt?'<div class="lsh-pol" data-pol="'+esc(x.cle)+'" style="--px:'+p.x+'%;--py:'+p.y+'%">'
-        +(traits?'<span class="lsh-i" aria-hidden="true">'+traits+'</span>':'')
+    const p=BADGE.de(x.cle)||{x:50,y:50};
+    const b=bande(x);
+    /* LE POLAROID : le média dans son cadre navy, et la Box IMPRIMÉE sur la bande du dessous. */
+    return '<section class="lsh'+(ici===x.cle?' is-ici':'')+'" data-lsh-k="'+esc(x.cle)+'">'
+      +'<div class="lsh-pol" data-pol="'+esc(x.cle)+'" style="--px:'+p.x+'%;--py:'+p.y+'%">'
+      +(traits?'<span class="lsh-i" aria-hidden="true">'+traits+'</span>':'')
+      +'<div class="lsh-m">'+devant+(b.chips?'<div class="lsh-c">'+b.chips+'</div>':'')+'</div>'
+      +(x.txt?'<div class="lsh-b">'
         +'<button type="button" class="lsh-say" data-lsh="'+esc(x.vue+'|'+x.id)+'">'
         +'<span class="lsh-t">'+esc(x.txt)+'</span></button>'
-        +'<span class="lsh-v" aria-hidden="true">'+esc(MOT[x.vue]||'')+'</span></div>':'';
-    /* Le short courant naît déjà `is-ici` : un redessin (un fichier de plus) ne rejoue pas son entrée. */
-    return '<section class="lsh'+(ici===x.cle?' is-ici':'')+'" data-lsh-k="'+esc(x.cle)+'">'+devant+pol+'</section>';
+        +(b.ligne?'<span class="lsh-l">'+b.ligne+'</span>':'')
+        +b.minis+'</div>':'')
+      +'</div></section>';
+  }
+  /* LA BANDE DU POLAROID : la Box telle qu'elle est dans le Totehm — son intention dans SA couleur,
+     son rythme, et ses mini-boîtes. Rien n'est inventé : un attribut non renseigné est absent. */
+  function bande(x){
+    let ligne=(x.ints||[]).map(i=>{ const o=INT_BY_ID[i];
+      return o?'<i style="color:'+o.color+'">'+esc(o.name)+'</i>':''; }).filter(Boolean).join(' · ');
+    let minis='';
+    try{
+      if(x.vue==='habits'){
+        const h=habOf(x.id);
+        if(h&&h.f) ligne+=(ligne?' · ':'')+esc(flabel(h.f));
+        if(h){
+          const grp=(lab,l,cl)=>l.length?'<div class="lsh-mg"><span class="lsh-k">'+lab+'</span><div class="lsh-ms">'
+            +l.map(t=>'<span class="'+cl+'">'+esc(t)+'</span>').join('')+'</div></div>':'';
+          minis+=grp('Objectives', tripsOfHab(h).map(t=>String(t.text||'')).filter(Boolean), 'lsh-o');
+          minis+=grp('Repulsions', repsOfHabX(h).map(t=>String(t.text||'')).filter(Boolean), 'lsh-r');
+        }
+      }
+    }catch(_){}
+    /* SUR LE MÉDIA, EN NOIR TRANSPARENT (Wah, 19/10 ter) : pour un SPOT, SES informations —
+       quand, combien de temps, où, pour qui, et si le point exact est ouvert. Sinon, d'où il vient. */
+    const ET={will:'I will be here', am:'I am here', was:'I was there'};
+    const AUD={private:'PRIVATE', figher:'FIGHER CLUB', subscribers:'MY SUBSCRIBERS'};
+    const MOIS=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+    let l=[];
+    if(x.sp){
+      const z=x.sp, d=z.starts_at?new Date(z.starts_at):null;
+      l.push(ET[x.st]||'');
+      if(d&&!isNaN(d)) l.push(d.getDate()+' '+MOIS[d.getMonth()]+' '
+        +String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'));
+      if(z.duration) l.push(z.duration>=60?Math.round(z.duration/60)+' h':z.duration+' min');
+      if(z.city) l.push(String(z.city));
+      l.push(AUD[String(z.audience||'')]||'');
+      l.push(z.exact?'LOCATION ON':'LOCATION OFF');
+    }else l=[MOT[x.vue]||'', x.vid?'video':'photo'];
+    const chips=l.filter(Boolean).map(t=>'<span>'+esc(t)+'</span>').join('');
+    return {ligne, minis, chips};
   }
   async function charger(el,prochain){
     const m=el&&el.querySelector('[data-sh-src]'); if(!m||m.dataset.ok) return; m.dataset.ok='1';
@@ -5625,27 +5768,83 @@ function creerFeed(conf){
     b.querySelectorAll('.lsh').forEach(el=>io.observe(el));
   }
   /* LA RANGÉE DE FILTRES : un mot quand il en faut un, des POINTS pour les sept intentions. */
+  /* LA BARRE : le papier, le nom de la Box choisie, [Filter · N], et à gauche le « + ».
+     ⚠️ 19/10 — ON AJOUTE UN MÉDIA DEPUIS LA VUE DE GAUCHE (Wah : « ou qu'il souhaite ajouter
+     directement dans la vue de gauche EN LUI ATTRIBUANT un élément de son Totehm »). Un média
+     n'existe jamais sans son élément : le « + » demande donc l'élément AVANT la caméra. */
   function peindreFlt(){
     const r=rail(); if(!r) return;
-    const b=(cle,val,mot)=>'<button type="button" data-f="'+cle+'" data-v="'+esc(val)+'"'
-      +(flt[cle]===val?' class="is-on" aria-pressed="true"':' aria-pressed="false"')+'>'+esc(mot)+'</button>';
+    const n=sfCount();
     let h=conf.avant?conf.avant():'';
-    /* ⚠️ 19/10 — ON AJOUTE UN MÉDIA DEPUIS LA VUE DE GAUCHE (Wah : « ou qu'il souhaite ajouter
-       directement dans la vue de gauche EN LUI ATTRIBUANT un élément de son Totehm »). Un média
-       n'existe jamais sans son élément : le « + » demande donc l'élément AVANT la caméra. */
+    h+='<button type="button" class="lsh-tp'+(SF.box?' is-on':'')+'" data-f="box"'
+      +' aria-label="'+(SF.box?'Change the Box':'Choose a Box')+'"><span aria-hidden="true">T</span></button>';
+    if(SF.box) h+='<span class="lsh-bx">'+esc(SF.box.txt)+'</span>';
+    h+='<button type="button" class="lsh-fb'+(n?' is-on':'')+'" data-f="sf" aria-haspopup="dialog"'
+      +' aria-expanded="'+(sfOuvert()?'true':'false')+'">'+(n?'Filter · '+n:'Filter')+'</button>';
     if(conf.ajout) h+='<button type="button" class="fp" data-f="plus" data-v="1" aria-label="Add a media">+</button>';
-    if(conf.src==='spots') h+=b('quand','all','all')+b('quand','was','was')+b('quand','am','now')+b('quand','will','next');
-    else                   h+=b('type','all','all')+b('type','photo','photo')+b('type','video','video');
-    h+=INTS.map(x=>'<button type="button" class="fi'+(flt.int===x.id?' is-on':'')+'" style="--c:'+x.color+'"'
-      +' data-f="int" data-v="'+x.id+'" aria-pressed="'+(flt.int===x.id?'true':'false')+'" aria-label="'+esc(x.name)+'"></button>').join('');
-    r.innerHTML=h;
+    /* ⚠️ On ne réécrit la barre QUE si elle change : un `innerHTML` à chaque passage du feed
+       remplacerait le bouton sous le doigt — mesuré, il n'était plus jamais « stable ». */
+    if(r.dataset.h===h) return;
+    r.dataset.h=h; r.innerHTML=h;
+  }
+  /* LE PANNEAU : tout le reste, en une colonne, ancré en haut. Un groupe par question. */
+  const pan=()=>conf.panneau?$(conf.panneau):null;
+  const sfOuvert=()=>{ const p=pan(); return !!p&&!p.hidden; };
+  function sfPaint(){
+    const p=pan(); if(!p||p.hidden) return;
+    const c=(attr,mot,on,cl)=>'<button type="button" class="sfc'+(on?' is-on':'')+(cl?' '+cl:'')+'" '+attr
+      +' aria-pressed="'+(on?'true':'false')+'">'+esc(mot)+'</button>';
+    const g=(lab,inner)=>inner?'<div class="sfg"><span class="sfl">'+lab+'</span><div class="sfr">'+inner+'</div></div>':'';
+    const b=SF.box;
+    let h=g('My Box', c('data-sf="pick"', b?b.txt:'choose a Box', !!b, 'is-box')
+        +(b?'<button type="button" class="sfc sfk" data-sf="unbox">all Boxes</button>':''));
+    if(b){
+      h+=g('This element', c('data-sf="el" data-v="'+esc(b.vue+'|'+b.id)+'"', b.txt, SF.on.has(b.vue+'|'+b.id)));
+      h+=g('Objectives', b.objs.map(z=>c('data-sf="el" data-v="'+esc(z.vue+'|'+z.id)+'"', z.txt, SF.on.has(z.vue+'|'+z.id))).join(''));
+      h+=g('Repulsions', b.reps.map(z=>c('data-sf="el" data-v="'+esc(z.vue+'|'+z.id)+'"', z.txt, SF.on.has(z.vue+'|'+z.id))).join(''));
+      if(b.freq) h+=g('Rhythm', c('data-sf="freq"', flabel(b.freq), SF.freq));
+    }
+    const ints=sfIntsActives();
+    h+=g('Intentions', INTS.map(i=>'<button type="button" class="sfc is-int'+(ints.has(i.id)?' is-on':'')+'"'
+        +' style="--c:'+i.color+'" data-sf="int" data-v="'+i.id+'" aria-pressed="'+(ints.has(i.id)?'true':'false')+'">'
+        +esc(i.name)+'</button>').join(''));
+    h+=g('Mood', PILIERS.map(x=>c('data-sf="pil" data-v="'+x+'"', x, SF.piliers.has(x))).join(''));
+    h+=g('It shows', c('data-sf="type" data-v="photo"','photo',SF.type==='photo')
+                    +c('data-sf="type" data-v="video"','video',SF.type==='video'));
+    if(conf.src==='spots') h+=g('When', c('data-sf="quand" data-v="was"','was',SF.quand==='was')
+                                        +c('data-sf="quand" data-v="am"','now',SF.quand==='am')
+                                        +c('data-sf="quand" data-v="will"','next',SF.quand==='will'));
+    else h+=g('Views', Object.keys(VUE_K).map(v=>c('data-sf="vue" data-v="'+v+'"', MOT[v]||v, SF.vue===v)).join(''));
+    h+='<div class="sfg"><div class="sfr sfa"><button type="button" class="sfc" data-sf="all">ALL</button>'
+      +'<button type="button" class="sfc" data-sf="close">CLOSE</button></div></div>';
+    p.innerHTML=h;
+  }
+  function sfOpen(open){
+    const p=pan(); if(!p) return;
+    p.hidden=!open;
+    if(open){ const pk=$(conf.pick); if(pk) pk.hidden=true; }
+    sfPaint(); peindreFlt();
+  }
+  /* Un changement de filtre : on repeint la liste, on remonte en haut, et le radar suit. */
+  function sfApply(){
+    peindre();
+    const s=sc(); if(s) s.scrollTop=0;
+    if(conf.src==='spots'){
+      SPOTFLT.quand=SF.quand; SPOTFLT.ints=[...sfIntsActives()];
+      SPOTFLT.habits=(SF.box&&SF.on.size)
+        ? new Set([...SF.on].filter(k=>k.startsWith('habits|')).map(k=>{ const h=habOf(k.slice(7)); return h?String(h.t||''):''; }).filter(Boolean))
+        : null;
+      RDR.maj();
+    }
+    sfPaint();
   }
   function peindre(){
     const b=bx(); if(!b) return;
     const tout=liste();
     L=tout.filter(garder);
     etat.total=tout.length; etat.items=L.length; etat.videos=L.filter(x=>x.vid).length;
-    etat.filtre=[flt.type!=='all'?flt.type:'',flt.vue!=='all'?flt.vue:'',flt.quand!=='all'?flt.quand:'',flt.int].filter(Boolean).join('+');
+    etat.filtre=[SF.type,SF.vue,SF.quand,[...sfIntsActives()].join('·'),SF.box?'box':''].filter(Boolean).join('+');
+    etat.n=sfCount(); etat.box=SF.box?SF.box.txt:''; etat.panneau=sfOuvert();
     if(ici&&!L.some(x=>x.cle===ici)) ici=null;
     etat.ici=!!ici;
     b.innerHTML=L.map(html).join('');
@@ -5677,7 +5876,9 @@ function creerFeed(conf){
   function pause(){ const s=sc(); if(s) s.querySelectorAll('video').forEach(v=>{ try{ v.pause(); }catch(_){} }); }
   /* Mes médias ont changé (un import, un rechargement) : on refait le feed. Rien si la vue est fermée. */
   function maj(){ if(etat.on) peindre(); }
-  function vider(){ ici=null; etat.ici=false; L=[]; const b=bx(); if(b) b.innerHTML=''; if(io){ io.disconnect(); io=null; } }
+  function vider(){ ici=null; etat.ici=false; L=[]; sfReset(); const b=bx(); if(b) b.innerHTML='';
+    const p=pan(); if(p) p.hidden=true; const pk=$(conf.pick); if(pk) pk.hidden=true;
+    if(io){ io.disconnect(); io=null; } }
   /* ── ON PREND LE POLAROID, ON LE POSE OÙ L'ON VEUT ───────────────────────────────────────────
      `touch-action:none` sur la CARTE seule : le reste de l'écran garde son défilement natif (la règle
      du feed). Un geste de moins de 6 px n'est pas un déplacement : c'est un tap, et il OUVRE. */
@@ -5686,28 +5887,37 @@ function creerFeed(conf){
       const p=e.target.closest('[data-pol]'); if(!p||RO) return;
       const sec=p.closest('.lsh'); if(!sec) return;
       drag={id:e.pointerId, el:p, cle:p.dataset.pol, r:sec.getBoundingClientRect(),
-            x0:e.clientX, y0:e.clientY, bouge:false, x:null, y:null};
-      try{ p.setPointerCapture(e.pointerId); }catch(_){}
+            x0:e.clientX, y0:e.clientY, bouge:false, arme:false, x:null, y:null,
+            t:setTimeout(()=>{ if(!drag||drag.id!==e.pointerId) return;
+              drag.arme=true; drag.el.classList.add('is-tenu');
+              /* ⚠️ ARMÉ, LA CARTE NE SE LAISSE PLUS DÉFILER : sans ça, le navigateur voit un pan-y,
+                 prend la main et envoie un `pointercancel` — mesuré, le geste mourait au 1er pixel. */
+              drag.el.style.touchAction='none'; },380)};
     });
     s.addEventListener('pointermove',e=>{
       if(!drag||e.pointerId!==drag.id) return;
-      if(!drag.bouge&&Math.hypot(e.clientX-drag.x0,e.clientY-drag.y0)<6) return;
-      if(!drag.bouge){ drag.bouge=true; drag.el.classList.add('is-tenu'); }
-      const x=Math.max(8,Math.min(92,((e.clientX-drag.r.left)/Math.max(1,drag.r.width ))*100));
-      const y=Math.max(8,Math.min(92,((e.clientY-drag.r.top )/Math.max(1,drag.r.height))*100));
+      /* Tant que l'appui n'est pas LONG, un mouvement est un défilement : on rend la main au feed. */
+      if(!drag.arme){ if(Math.hypot(e.clientX-drag.x0,e.clientY-drag.y0)>8){ clearTimeout(drag.t); drag=null; } return; }
+      drag.bouge=true;
+      /* ⚠️ Un repaint du feed remplace la carte : on la RETROUVE par sa clé. Et aucune capture de
+         pointeur — la carte retirée du document enverrait un `pointercancel` qui tuerait le geste. */
+      const vif=(bx()||document).querySelector('[data-pol="'+CSS.escape(drag.cle)+'"]');
+      if(vif) drag.el=vif;
+      const x=Math.max(14,Math.min(86,((e.clientX-drag.r.left)/Math.max(1,drag.r.width ))*100));
+      const y=Math.max(14,Math.min(86,((e.clientY-drag.r.top )/Math.max(1,drag.r.height))*100));
       drag.x=x; drag.y=y;
       drag.el.style.setProperty('--px',x.toFixed(1)+'%');
       drag.el.style.setProperty('--py',y.toFixed(1)+'%');
     });
     const lache=e=>{
       if(!drag||(e&&e.pointerId!==drag.id)) return;
-      const d=drag; drag=null;
-      try{ d.el.releasePointerCapture(d.id); }catch(_){}
-      d.el.classList.remove('is-tenu');
+      const d=drag; drag=null; clearTimeout(d.t);
+      d.el.classList.remove('is-tenu'); d.el.style.touchAction='';
       if(d.bouge&&d.x!=null){ BADGE.poser(d.cle,d.x,d.y); etat.poses=(etat.poses||0)+1; }
     };
     s.addEventListener('pointerup',lache);
-    s.addEventListener('pointercancel',()=>{ if(drag){ drag.el.classList.remove('is-tenu'); drag=null; } });
+    /* Un `pointercancel` ne JETTE pas le geste : ce qui a été déplacé est posé, comme un lâcher. */
+    s.addEventListener('pointercancel',lache);
     /* Un tap sur le texte OUVRE l'élément dans le Totehm, sur SA vue — `__totehmDeplie` est le seul
        chemin d'entrée (il passe par la porte si l'on n'est pas inscrit). */
     s.addEventListener('click',e=>{
@@ -5731,7 +5941,9 @@ function creerFeed(conf){
     }catch(_){}
     return l;
   }
-  function choix(){
+  /* Le même sélecteur sert DEUX questions : à quel élément ce média s'attribue (`cap`), et quelle
+     Box filtre le fil (`box`, le papier). Un seul composant, deux sorties. */
+  function choix(mode){
     const pk=$(conf.pick); if(!pk||RO||!me) return;
     const l=mesElements();
     pk.innerHTML=l.length
@@ -5739,37 +5951,69 @@ function creerFeed(conf){
           +(x.cols&&x.cols.length?'<span class="lsh-i" aria-hidden="true">'+x.cols.map(c=>'<i style="background:'+c+'"></i>').join('')+'</span>':'')
           +'<span class="lsh-t">'+esc(x.txt)+'</span></button>').join('')
       : '<p class="lv-note">write my TOTEHM first</p>';
-    pk.hidden=false;
+    pk.hidden=false; sfOpen(false);
     pk.onclick=e=>{
       const b=e.target.closest('[data-pick]');
       if(!b){ if(e.target===pk) pk.hidden=true; return; }
       const x=l[+b.dataset.pick]; pk.hidden=true;
-      if(x) CAP.ouvrir(x.k,x.ref,b);
+      if(!x) return;
+      if(mode==='box'){ sfBox(x); sfApply(); return; }
+      CAP.ouvrir(x.k,x.ref,b);
     };
   }
-  /* La rangée de filtres vit HORS du conteneur qui défile : son clic se câble à part. */
+  /* La barre vit HORS du conteneur qui défile : son clic se câble à part. */
   { const r=rail(); if(r) r.addEventListener('click',e=>{
       const f=e.target.closest('[data-f]'); if(!f) return;
-      const c=f.dataset.f, v=f.dataset.v;
+      const c=f.dataset.f;
       /* `mode` n'est pas un filtre : il change de MOTEUR (radar ↔ shorts), sans toucher aux données. */
-      if(c==='mode'){ SPOTMODE.set(v); return; }
-      if(c==='plus'){ choix(); return; }
-      flt[c]=(c==='int'&&flt.int===v)?'':v;
-      peindre();
-      const s=sc(); if(s) s.scrollTop=0;
-      /* Les deux modes de la vue de droite lisent le MÊME filtre : le radar suit les points. */
-      if(conf.src==='spots'){ SPOTFLT.quand=flt.quand; SPOTFLT.int=flt.int; RDR.maj(); }
+      if(c==='mode'){ SPOTMODE.set(f.dataset.v); return; }
+      if(c==='plus'){ choix('cap'); return; }
+      if(c==='box'){ choix('box'); return; }
+      if(c==='sf'){ sfOpen(!sfOuvert()); return; }
     }); }
+  /* Le panneau : un seul écouteur, une seule peinture. */
+  { const p=pan(); if(p) p.addEventListener('click',e=>{
+      const t=e.target.closest('[data-sf]');
+      if(!t){ if(e.target===p) sfOpen(false); return; }
+      const c=t.dataset.sf, v=t.dataset.v;
+      if(c==='close') return sfOpen(false);
+      if(c==='pick') return choix('box');
+      if(c==='unbox') sfBox(null);
+      else if(c==='all') sfReset();
+      else if(c==='el'){ SF.on.has(v)?SF.on.delete(v):SF.on.add(v); }
+      else if(c==='int'){ SF.piliers.forEach(x=>INTS.filter(i=>i.pillar===x).forEach(i=>SF.ints.add(i.id)));
+                          SF.piliers=new Set(); SF.ints.has(v)?SF.ints.delete(v):SF.ints.add(v); }
+      else if(c==='pil'){ SF.piliers.has(v)?SF.piliers.delete(v):SF.piliers.add(v); }
+      else if(c==='freq') SF.freq=!SF.freq;
+      else if(c==='type') SF.type=SF.type===v?'':v;
+      else if(c==='vue')  SF.vue =SF.vue ===v?'':v;
+      else if(c==='quand')SF.quand=SF.quand===v?'':v;
+      else return;
+      sfApply();
+    }); }
+  /* Échap ferme ce qui est ouvert — le panneau d'abord, puis le sélecteur — et RIEN d'autre : le
+     test porte sur MES nœuds, donc les deux instances ne se marchent jamais dessus.
+     ⚠️ SUR `window`, EN CAPTURE : la navigation de l'atterrissage écoute `window` en capture elle
+     aussi, et une capture sur `document` passe APRÈS — Échap fermait le panneau ET quittait la vue. */
+  window.addEventListener('keydown',e=>{
+    if(e.key!=='Escape') return;
+    const p=pan(), pk=$(conf.pick);
+    if(p&&!p.hidden){ e.preventDefault(); e.stopImmediatePropagation(); return sfOpen(false); }
+    if(pk&&!pk.hidden){ e.preventDefault(); e.stopImmediatePropagation(); pk.hidden=true; }
+  },{capture:true});
   document.addEventListener('visibilitychange',()=>{ if(document.hidden) pause(); });
   /* ⚠️ LA RANGÉE SE PEINT MÊME QUAND LE FEED NE TOURNE PAS. En mode radar, `SHS` n'ouvre jamais :
      sans ça, la bascule radar ↔ shorts n'existerait tout simplement pas à l'écran. */
-  return {ouvrir:entrer, fermer:sortir, pause, maj, vider, pas, flts:peindreFlt,
-          flt:()=>Object.assign({},flt), etat:()=>Object.assign({},etat)};
+  return {ouvrir:entrer, fermer:sortir, pause, maj, vider, pas, flts:peindreFlt, sf:sfOpen,
+          flt:()=>({type:SF.type||'all', vue:SF.vue||'all', quand:SF.quand||'all',
+                   ints:[...sfIntsActives()], piliers:[...SF.piliers], freq:SF.freq,
+                   box:SF.box?SF.box.txt:'', on:[...SF.on], n:sfCount()}),
+          etat:()=>Object.assign({},etat)};
 }
 const SH =creerFeed({sc:'lv-sh',  bx:'lv-sh-f',  say:'lv-sh-say', rail:'lv-sh-flt', src:'media', vide:'no media yet',
-                     ajout:true, pick:'lv-sh-pick'});
+                     ajout:true, pick:'lv-sh-pick', panneau:'lv-sh-sf'});
 const SHS=creerFeed({sc:'rdr-sh', bx:'rdr-sh-f', say:'rdr-say',   rail:'rdr-flt',   src:'spots', vide:'no spot photo yet',
-                     avant:()=>SPOTMODE.html()});
+                     avant:()=>SPOTMODE.html(), pick:'rdr-pick', panneau:'rdr-sf'});
 window.__totehm_sh=()=>Object.assign({},SH.etat(),{capture:CAP.etat(), places:BADGE.etat()});
 
 /* ══ LA VUE DE DROITE A DEUX MODES · 19/10/2026 ══════════════════════════════════════════════════
@@ -6306,7 +6550,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-10-19-com-60-30-10';
+const BUILD='2026-10-19-com-filter';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────

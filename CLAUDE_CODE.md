@@ -70,6 +70,15 @@ qu'un gris. `terms.html` n'est plus une page entièrement navy. Mesuré :
 noir, les sept couleurs jamais au-dessus de 0,3 %. La seule exception reste le
 Totehm DÉPLOYÉ, où le papier navy prend le champ.
 
+Sixième volet (BUILD `2026-10-19-com-filter`) : LE POLAROID EST UN CADRE —
+une carte navy, le média dans sa fenêtre, la Box imprimée dessous (nom,
+intention dans sa couleur, rythme, mini-boîtes), et par-dessus le média du
+NOIR TRANSPARENT qui porte les informations du spot (quand, durée, ville,
+niveau, point ouvert ou non). Un appui long déplace la carte ; le reste du
+temps le doigt fait défiler. Les filtres reprennent ceux de SPACE : le PAPIER
+choisit une Box et tout ce qui la compose, [Filter · N] ouvre le reste
+(intentions, mood, ce que ça montre, la vue ou le temps).
+
 Troisième volet (BUILD `2026-10-18-com-verso`) : le NOM est un IDENTIFIANT
 sans espace (normalisé à la frappe) et il ne vit QUE sur la face verso, fixe
 en haut, en petit, sans retour de ligne — `#conn-bar` est parti, il n'y a plus

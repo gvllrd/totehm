@@ -18,7 +18,7 @@ try{
   /* l'URL signée sert une vraie image (sinon `onerror` la retire, comme en prod) */
   await pg.route(/\/storage\/v1\/object\/sign\//, r => r.request().method() === 'GET' ? r.fulfill({ status:200, contentType:'image/png', body:PNG }) : r.fallback());
   await pg.goto(origin + '/totehm'); await pg.waitForSelector('body.member'); await pg.waitForTimeout(700);
-  await pg.click('#lv-tap'); await pg.waitForFunction(() => !document.body.classList.contains('gate'), null, { timeout:6000 }).catch(() => {}); await pg.waitForTimeout(1200);
+  await pg.click('#lv-tap-open'); await pg.waitForFunction(() => !document.body.classList.contains('gate'), null, { timeout:6000 }).catch(() => {}); await pg.waitForTimeout(1200);
   await pg.keyboard.press('ArrowRight'); await pg.waitForFunction(() => window.__totehm_zone?.vue === 'visions', null, { timeout:6000 });
   await pg.waitForFunction(() => window.__totehm_zone?.images === 1 && document.querySelector('#habits .v-img[src]'), null, { timeout:6000 });
   const ferme = await pg.evaluate(() => ({ img:document.querySelector('#habits .v-img')?.dataset.photo, src:!!document.querySelector('#habits .v-img')?.getAttribute('src'),

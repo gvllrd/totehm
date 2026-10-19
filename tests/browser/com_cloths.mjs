@@ -21,7 +21,7 @@ const theirs = { ok:true, mine:false, elements:[{ kind:'wisdom', ref:'w9', total
 
 async function ouvrir(pg){
   await pg.goto(origin + '/totehm'); await pg.waitForSelector('body.member'); await pg.waitForTimeout(700);
-  await pg.click('#lv-tap'); await pg.waitForFunction(() => !document.body.classList.contains('gate'), null, { timeout:6000 }).catch(() => {});
+  await pg.click('#lv-tap-open'); await pg.waitForFunction(() => !document.body.classList.contains('gate'), null, { timeout:6000 }).catch(() => {});
   await pg.waitForTimeout(1200);
 }
 async function vers(pg, touche, vue){

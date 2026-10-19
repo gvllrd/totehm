@@ -1,5 +1,44 @@
 # com/CLAUDE.md — totehm.com : le Totehm, la carte, HigherSelf
 
+## 19/10/2026 ter — LE POLAROID EST UN CADRE, ET LES FILTRES SONT CEUX DE SPACE
+
+BUILD `2026-10-19-com-filter`. Wah : « la vue de gauche, ça ne va pas du tout ; reprends ce que l'on
+avait fait dans space : le défilement vertical type shorts/tiktok, le LOGO TOTEHM qui permettait de
+sélectionner une box, et le bouton FILTER avec tous les filtres possibles » — puis, capture d'écran
+à l'appui : « je veux le système polaroid, avec du noir transparent, par-dessus le média, et les
+informations du spot (pour la vue de droite en mode Shorts) ».
+
+- **LE POLAROID N'EST PLUS UNE ÉTIQUETTE, C'EST UN CADRE.** Avant : une carte navy posée SUR le média
+  plein écran. Maintenant : une CARTE navy centrée, le média dans sa fenêtre (`.lsh-m`, 5/4), et LA BOX
+  IMPRIMÉE DESSOUS (`.lsh-b`) comme la bande blanche d'un polaroid — le nom en Quantico, l'intention
+  dans SA couleur, le rythme, puis les mini-boîtes OBJECTIVES (bleu) et REPULSIONS (rouge-violet),
+  exactement celles du Totehm. Le filet d'intention court sur le bord gauche de la carte.
+- **PAR-DESSUS LE MÉDIA, DU NOIR TRANSPARENT** (`.lsh-c`, `rgba(0,0,0,.72)`) : pour un SPOT, SES
+  informations — I will be here · la date et l'heure · la durée · la ville · le niveau · LOCATION ON
+  ou OFF ; pour un média, d'où il vient. Rien n'est inventé : un attribut absent ne s'affiche pas.
+- **L'APPUI LONG DÉPLACE LA CARTE** (380 ms), le reste du temps le doigt fait DÉFILER. ⚠️ Deux pièges
+  mesurés : (1) armé, la carte passe en `touch-action:none` — sinon le navigateur voit un `pan-y`,
+  prend la main et envoie un `pointercancel` qui tue le geste au premier pixel ; (2) aucune capture de
+  pointeur — un repaint du feed retire la carte du document, ce qui annulait le geste ; on RETROUVE la
+  carte par sa clé à chaque mouvement. Un `pointercancel` ne jette plus le geste : il le POSE.
+- **LES FILTRES SONT CEUX DE SPACE** (`space/social.html`, `SF`/`sfPaint`, inchangé depuis le 13/10 —
+  vérifié octet par octet). La rangée de dix pastilles est partie. En haut, DEUX objets : le PAPIER
+  (le carré navy perforé, `.lsh-tp`) qui choisit une Box et allume TOUT ce qui la compose — son
+  élément, ses objectifs, ses répulsions, son rythme, chacun se coupant d'un tap — et `[Filter · N]`
+  (`.lsh-fb`) qui ouvre le panneau : My Box · This element · Objectives · Repulsions · Rhythm ·
+  Intentions · Mood (les quatre piliers) · It shows (photo/video) · Views (à gauche) ou When (à droite).
+- ⚠️ **UNE DIFFÉRENCE ASSUMÉE AVEC SPACE** : là-bas `space_feed` fait un OU pondéré côté serveur (on
+  cherche chez les AUTRES) ; ici on trie MES médias, déjà en mémoire, donc c'est un ET entre les
+  groupes et un OU dedans — et toujours zéro appel de plus.
+- ⚠️ **`.lsh-sf` EST LE PANNEAU, `.lsh-fb` EST LE BOUTON.** Le bouton portait la classe du panneau :
+  il héritait `position:absolute;inset:0` et faisait 390 px de large, sous le papier. Deux objets,
+  deux classes.
+- Échap ferme le panneau puis le sélecteur, sur `window` EN CAPTURE : la navigation de l'atterrissage
+  écoute `window` en capture elle aussi, et une capture sur `document` passe APRÈS — Échap fermait le
+  panneau ET quittait la vue.
+- Dette réglée : `com_vision_image` et `com_cloths` cliquaient encore `#lv-tap`, devenu un `<div>` le
+  18/10 (volume 3) ; ils cliquent `#lv-tap-open`.
+
 ## 19/10/2026 bis — LOT G, CINQUIÈME VOLET : LA COMPOSITION 60 / 30 / 10, PAGE PAR PAGE
 
 BUILD `2026-10-19-com-60-30-10`. La doctrine est dans `BRAND.md` (60 % noir pur · 30 % le navy et ses
