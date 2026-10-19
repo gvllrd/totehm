@@ -1,11 +1,11 @@
 import * as T from './vendor/three-0.180.0.mjs';
-import { createTemple } from './gallery-temple.mjs';
+import { createBrutalist } from './gallery-brutalist.mjs';
 import { createVoid } from './gallery-void.mjs';
 import { createGalleryAudio } from './gallery-audio.mjs';
-import { createTempleWalkway } from './gallery-navigation.mjs';
+import { createBrutalistWalkway } from './gallery-brutalist-path.mjs';
 import { ORIGINS } from './gallery-artworks.mjs';
 
-const ENTRY=[0,1.65,12],OVERVIEW=[0,3,-10],PORTALS=[-9,0,9];
+const ENTRY=[0,1.65,14],OVERVIEW=[0,5,-22];
 const TRANSITION_MS=800;
 export async function createGallery({select,interact,onZone=()=>{},fallback,reduced,lisbonPreview}) {
  const host=document.getElementById('space');
@@ -17,7 +17,7 @@ export async function createGallery({select,interact,onZone=()=>{},fallback,redu
  let dirty=true,list=false,hidden=document.hidden,zone='temple',room=-1,transition=null,tween=null;
  let frames=0,lastTime=0,lastRender=0,slowFrames=0,yaw=0,pitch=0,down=null,dragged=false;
  let motionReduced=reduced.matches,joystick={x:0,y:0},announced=-1;
- const temple=createTemple(scene,renderer,{lisbonPreview,onChange:()=>{dirty=true;}}),walkway=createTempleWalkway();
+ const temple=createBrutalist(scene,renderer,{lisbonPreview,onChange:()=>{dirty=true;}}),walkway=createBrutalistWalkway(()=>temple.location);
  const corridor=createVoid(scene,{lisbonPreview,onChange:()=>{dirty=true;}}),sound=createGalleryAudio();
  const camera=new T.PerspectiveCamera(innerWidth<650?76:62,innerWidth/innerHeight,.08,1400);
  const eye=new T.Vector3(...ENTRY),gaze=new T.Vector3(...OVERVIEW),keys=new Set();
@@ -41,7 +41,7 @@ export async function createGallery({select,interact,onZone=()=>{},fallback,redu
  }
  function announce(){
   const data=corridor.diagnostics(),index=data.index??0;
-  advance.textContent=index>=data.total-1?'Return to the temple ↗':'Next artwork ↗';
+  advance.textContent=index>=data.total-1?'Return to the gallery ↗':'Next artwork ↗';
   if(announced!==index){announced=index;onZone('void',room,room===1?index:null);status.textContent=room===1?ORIGINS[index].title+' · '+(index+1)+' of 20':room===0?'TotehmPaper · The Stoner Experience':'Higher the Lisbon Streets';}
  }
  function enter(roomIndex,index=0){
@@ -53,16 +53,27 @@ export async function createGallery({select,interact,onZone=()=>{},fallback,redu
  }
  function overview(){
   const wasVoid=zone==='void';stop();tween=null;zone='temple';room=-1;announced=-1;
-  corridor.root.visible=false;temple.setVisible(true);eye.fromArray(ENTRY);gaze.fromArray(OVERVIEW);cameraAngles();
-  document.body.classList.remove('void-world');advance.textContent='Enter Origins ↗';status.textContent='Back at the temple above the clouds';
+  corridor.root.visible=false;temple.setLocation('courtyard');temple.setVisible(true);eye.fromArray(ENTRY);gaze.fromArray(OVERVIEW);cameraAngles();syncLocation();
+  document.body.classList.remove('void-world');advance.textContent='Enter Origins ↗';status.textContent='Back in the courtyard';
   if(wasVoid)beginTransition('return');onZone('temple',-1,null);dirty=true;
  }
+ function syncLocation(){
+  document.body.dataset.location=temple.location;
+  document.querySelectorAll('[data-location]').forEach(button=>button.setAttribute('aria-current',String(button.dataset.location===temple.location)));
+ }
+ function changeLocation(id){
+  if(zone==='void')overview();
+  const view=temple.setLocation(id);if(!view)return;
+  stop();tween=null;transition=null;flash.style.opacity='0';camera.fov=baseFov();camera.updateProjectionMatrix();
+  eye.fromArray(view.position);gaze.fromArray(view.target);cameraAngles();syncLocation();interact();onZone('temple',-1,null);history.replaceState(null,'',location.pathname+location.search+'#'+id);dirty=true;
+ }
+ syncLocation();
  function travel(position,target,done=null){
   keys.clear();stopStick();
   const route=zone==='temple'?walkway.route(eye,position):[eye,position];if(!route)return false;
   if(motionReduced){eye.copy(position);gaze.copy(target);cameraAngles();tween=null;dirty=true;done?.();}
   else{
-   const path=route.map(p=>new T.Vector3(p.x,1.65,p.z)),lengths=[0];
+   const path=route.map(p=>new T.Vector3(p.x,zone==='temple'?position.y:1.65,p.z)),lengths=[0];
    for(let i=1;i<path.length;i++)lengths.push(lengths[i-1]+path[i-1].distanceTo(path[i]));
    // Keep the preceding gallery's exact distance-based timing and easing.
    tween={path,lengths,to:position,lookFrom:gaze.clone(),lookTo:target,start:performance.now(),duration:Math.min(4200,Math.max(1450,lengths.at(-1)*110)),done};
@@ -75,7 +86,9 @@ export async function createGallery({select,interact,onZone=()=>{},fallback,redu
    const step=corridor.getStop(work);travel(step.position,step.target,()=>{corridor.update(0,eye,!motionReduced);announced=-1;announce();});return;
   }
   if(zone==='void')overview();
-  travel(new T.Vector3(PORTALS[index],1.65,-11.2),new T.Vector3(PORTALS[index],3.2,-15),()=>enter(index,work));
+  if(temple.location!=='courtyard')changeLocation('courtyard');
+  const portal=temple.portals.find(p=>p.room===index);if(!portal)return;
+  travel(new T.Vector3(portal.approach.x,1.65,portal.approach.z),new T.Vector3(portal.x,2.5,portal.z-3),()=>enter(index,work));
  }
  function explore(){
   if(zone==='temple'){select(1,true,0);return;}
@@ -92,7 +105,7 @@ export async function createGallery({select,interact,onZone=()=>{},fallback,redu
  document.getElementById('look-sky').addEventListener('click',()=>{freeLook();if(zone==='temple')travel(eye.clone(),eye.clone().add(new T.Vector3(0,12,-3)));});
  const ray=new T.Raycaster(),mouse=new T.Vector2(),floorPlane=new T.Plane(new T.Vector3(0,1,0),0),floorPoint=new T.Vector3();
  function setRay(event){const r=host.getBoundingClientRect();mouse.set((event.clientX-r.left)/r.width*2-1,-(event.clientY-r.top)/r.height*2+1);ray.setFromCamera(mouse,camera);}
- function hitAt(event){setRay(event);const picks=zone==='temple'?temple.portals.flatMap(p=>p.pickables):corridor.pickables;return ray.intersectObjects(picks,false).find(hit=>hit.object.visible&&hit.object.material?.opacity!==0);}
+ function hitAt(event){setRay(event);const picks=zone==='temple'?temple.pickables:corridor.pickables;return ray.intersectObjects(picks,false).find(hit=>hit.object.visible&&hit.object.material?.opacity!==0);}
  function allowed(x,z){return zone==='temple'?walkway.allowed(x,z):Math.abs(x)<11.5&&z<=-16.9&&z>=-34-(corridor.diagnostics().total-1)*32-12;}
  function move(dx,dz){
   const x=eye.x+dx,z=eye.z+dz;if(allowed(x,eye.z))eye.x=x;if(allowed(eye.x,z))eye.z=z;
@@ -101,16 +114,16 @@ export async function createGallery({select,interact,onZone=()=>{},fallback,redu
  }
  host.addEventListener('pointerdown',e=>{if(e.button!==0)return;host.setPointerCapture(e.pointerId);down={x:e.clientX,y:e.clientY,lastX:e.clientX,lastY:e.clientY};dragged=false;});
  host.addEventListener('pointermove',e=>{
-  if(!down){host.style.cursor=hitAt(e)?'pointer':'grab';return;}
+  if(!down){const hit=hitAt(e);host.style.cursor=hit?.object.userData.room!==undefined?'pointer':'grab';return;}
   const dx=e.clientX-down.lastX,dy=e.clientY-down.lastY;if(Math.hypot(e.clientX-down.x,e.clientY-down.y)>6)dragged=true;
   if(dragged){tween=null;freeLook();yaw-=dx*.004;pitch=T.MathUtils.clamp(pitch+dy*.003,-.85,1.45);look();dirty=true;}
   down.lastX=e.clientX;down.lastY=e.clientY;
  });
  host.addEventListener('pointerup',e=>{
   if(!down)return;down=null;if(dragged)return;const hit=hitAt(e);
-  if(hit){const data=hit.object.userData;select(data.room,true,data.origin??null);return;}
-  if(ray.ray.intersectPlane(floorPlane,floorPoint)&&allowed(floorPoint.x,floorPoint.z)){
-   freeLook();const destination=new T.Vector3(floorPoint.x,1.65,floorPoint.z),direction=gaze.clone().sub(eye);
+  if(hit?.object.userData.room!==undefined){const data=hit.object.userData;select(data.room,true,data.origin??null);return;}
+  if(ray.ray.intersectPlane(floorPlane,floorPoint)&&allowed(floorPoint.x,floorPoint.z)&&(!hit||eye.distanceTo(floorPoint)<=hit.distance+.03)){
+   freeLook();const destination=new T.Vector3(floorPoint.x,zone==='temple'?eye.y:1.65,floorPoint.z),direction=gaze.clone().sub(eye);
    travel(destination,destination.clone().add(direction),()=>{if(zone==='temple'){const portal=walkway.portalAt(eye.x,eye.z);if(portal!==null)enter(portal);}});
   }
  });
@@ -124,7 +137,7 @@ export async function createGallery({select,interact,onZone=()=>{},fallback,redu
  stick.addEventListener('pointerdown',e=>{stick.setPointerCapture(e.pointerId);stickMove(e);});stick.addEventListener('pointermove',e=>{if(stick.hasPointerCapture(e.pointerId))stickMove(e);});
  stick.addEventListener('pointerup',stopStick);stick.addEventListener('pointercancel',stopStick);
  function syncAudio(){
-  const proximity=zone==='temple'?Math.max(0,1-Math.min(...PORTALS.map(x=>Math.hypot(eye.x-x,eye.z+12)))/7):0;
+  const proximity=zone==='temple'&&temple.portals.length?Math.max(0,1-Math.min(...temple.portals.map(p=>Math.hypot(eye.x-p.x,eye.z-p.z)))/7):0;
   sound.update({zone,proximity,active:!hidden&&!list});
  }
  addEventListener('blur',()=>{stop();sound.update({zone,proximity:0,active:false});});
@@ -166,15 +179,15 @@ export async function createGallery({select,interact,onZone=()=>{},fallback,redu
    document.body.classList.toggle('temple-day',!!temple.diagnostics().day);
   }else{if(corridor.update(dt,eye,!motionReduced))dirty=true;if(!tween)announce();}
   syncAudio();camera.position.copy(eye);camera.lookAt(gaze);camera.updateMatrixWorld();
-  if(dirty||!motionReduced){if(time-lastRender<(innerWidth<650?40:32))return;renderer.render(scene,camera);frames++;dirty=false;lastRender=time;}
+  if(dirty||!motionReduced){if(time-lastRender<(innerWidth<650?40:32))return;renderer.render(scene,camera);frames++;const reflected=temple.afterRender(camera,{time:time/1000,changed:dirty||!motionReduced});dirty=reflected;lastRender=time;}
  }
  renderer.setAnimationLoop(animate);
  addEventListener('pageshow',e=>{if(e.persisted){hidden=document.hidden;dirty=true;lastTime=0;syncAudio();renderer.setAnimationLoop(animate);}});
- return {visit,overview,explore,previous,invalidate(){corridor.invalidate();dirty=true;},setList(value){list=value;stop();syncAudio();dirty=true;},
+ return {visit,overview,explore,previous,changeLocation,invalidate(){corridor.invalidate();temple.invalidate();dirty=true;},setList(value){list=value;stop();syncAudio();dirty=true;},
   diagnostics:()=>({webgl:true,frames,zone,moving:!!tween||!!keys.size||!!joystick.x||!!joystick.y,position:[+eye.x.toFixed(2),+eye.z.toFixed(2)],playing:0,visible:!hidden&&!list,
    render:{pixelRatio:renderer.getPixelRatio(),calls:renderer.info.render.calls,triangles:renderer.info.render.triangles},
    transition:{active:!!transition,direction:transition?.direction??null,duration:TRANSITION_MS,fov:+camera.fov.toFixed(2),baseFov:baseFov()},
-   temple:temple.diagnostics(),void:corridor.diagnostics(),audio:sound.diagnostics(),
+   world:temple.diagnostics(),temple:temple.diagnostics(),void:corridor.diagnostics(),audio:sound.diagnostics(),
    collection:{paper:{src:'/assets/gallery/totehmpaper.png',framed:true},origins:{total:ORIGINS.length}},
    navigation:{speed:2.6,spacing:32,minDuration:1450,maxDuration:4200}})};
 }

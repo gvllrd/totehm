@@ -82,24 +82,31 @@ not settings**: they are two views of the landing, reached by going left or righ
 
 Both are mine: without a TOTEHM they do not exist, and inside the galaxy the horizontal belongs to the stars.
 
-## SPACE — 17/10/2026 · paradise above the clouds, art in the absolute void
+## SPACE — 19/10/2026 · coastal brutalism, art in the absolute void
 
-SPACE's arrival is an antique temple at the world's summit, above a sea of clouds. Ancient stone, eight great
-columns, six living trees and flowers form the outdoor gallery. The sea stretches to the left; mountain ranges
-rise to the right. The visitor's local hour (`new Date().getHours()`) sets the sky: bright blue and a great sun
-from 06:00 until 20:00, a spectacular, peaceful starry sky otherwise. This replaces the black intention dome.
+The arrival follows the user's reference film: monumental blue-grey board-formed concrete, dark wet stone,
+mirror pools, restrained agaves and rocks, warm recessed amber lighting and a dramatic, overcast petrol-blue sky.
+Four places reproduce the film's visible compositions: **Court**, **Passage**, **Pavilion** and **Sea view**.
+The court has tall monolithic volumes, an axial pool and three rectangular experience doors. The passage frames
+a canal and the sea between two plain walls. Two undulating concrete ribbons cross the pavilion above their
+reflection. The sea terrace overlooks a three-storey cliffside villa and a turquoise infinity pool.
+This is a navigable reconstruction of the four shots, not the source 3D model or a pixel-identical copy from
+unseen angles. Location buttons follow the film's cuts; do not claim that its separate buildings share a floorplan.
+
+**The reference's fixed, cloudy blue hour replaces the antique temple, classical trees and visitor-hour day/night
+cycle of 17 October.** No classical columns, bright daytime paradise or star field belongs to this direction.
 The interface, list, information panels and fallback keep dark surfaces and legible text. Art keeps its own colours.
 
-Three antique arches show the actual cover of each experience, with darkness behind them. Crossing an arch
-removes the whole temple and its sky: **the parallel corridor is absolute black, `#000000`**. No visible floor,
+The three experience doors in the court show their actual covers, with darkness behind them. Crossing a door
+removes the whole exterior and its sky: **the parallel corridor is absolute black, `#000000`**. No visible floor,
 walls, ceiling, lines, scenery, sculptures or ambient lights. Only the original images emerge as one advances.
 **Keep the published corridor's exact navigation:** the same straight progression, alternating artwork positions,
 32-metre cadence, smooth guided movement, keyboard, drag and touch controls. Origins follows the original
 order, 01 through 20. A bounded pool of five images on desktop and three on mobile keeps the journey fluid.
 
-Near an arch, a quiet magnetic bass rises. Crossing uses a gentle 0.8-second FOV stretch and a low breath;
+Near a door, a quiet magnetic bass rises. Crossing uses a gentle 0.8-second FOV stretch and a low breath;
 inside, one pure meditative tone remains. All sound is generated with the Web Audio API, only after a gesture,
-with a clear mute control and no external audio file. Escape and a discreet return button restore the temple
+with a clear mute control and no external audio file. Escape and a discreet return button restore the court
 with a soft flash. Reduced motion makes transitions immediate without a flash; list and hidden-page states
 pause the scene and audio.
 
