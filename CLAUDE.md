@@ -108,11 +108,9 @@ projet la ferme : ni space, ni vibe, ni Higher Self avant « save with my email 
   (`_figher().member` ; `needs` dit ce qui manque). Le Club EST le public : il n'y a pas d'autre niveau au-dessus.
   Aucun achat, abonnement ou comp ne remplace cette condition. `complete` (les 5 vues) reste, informatif.
   **Accès artistique historique** = `_art_passport` (ancien THP + Habit ou comp), distinct de l'adhésion.
-- **Un seul système de droits** : `_subscriber_of(créateur, fan)`,
-  `creator_page(pseudo)`, `my_entitlements()`. L'abonnement est à sens
-  unique : Bob → Alice ne donne rien à Alice sur Bob. **Depuis le 01/10 :**
-  COM et SPACE sont gratuits pour soi ; un abonné = un abonnement vivant à
-  UN créateur, ANNUEL, prix fixé par le créateur, sans passeport FIGHER.
+- **Un seul système de droits** : `_subscriber_of(créateur, fan)`, `creator_page(pseudo)`, `my_entitlements()`.
+  L'abonnement est à sens unique : Bob → Alice ne donne rien à Alice sur Bob. **Depuis le 01/10 :** COM et SPACE
+  sont gratuits pour soi ; un abonné = un abonnement vivant à UN créateur, ANNUEL, prix fixé par lui, sans FIGHER.
   **TROIS NIVEAUX (16/10 ; PUBLIC est mort), ET DEPUIS LE 18/10 ILS VIVENT SUR CHAQUE BOX** (Wah : « la confidentialité s'effectue pour chaque box de chaque vue ») : colonne `audience` sur `objectives`/`repulsions`/`visions`/`wisdom`, table `habit_audience` pour les habitudes (jamais dans `steps` : `cloudSave` le réécrit). `box_audience_put` écrit, `my_box_audiences` lit mes niveaux, `_box_shared` est LA règle ; le verso ne règle plus rien et `totehms.audience` devient le PLAFOND (le plus ouvert de mes box) que lit l'offre créateur. Mêmes trois niveaux sur
   un spot : PRIVATE · FIGHER CLUB · MY SUBSCRIBERS. Défauts : box PRIVATE, spot FIGHER CLUB. La
   contrainte `check` accepte encore `public` (la changer demanderait un `drop`) : les deux triggers le NORMALISENT
@@ -120,15 +118,13 @@ projet la ferme : ni space, ni vibe, ni Higher Self avant « save with my email 
   `_audience_ok` ; les vitrines LISTENT `_audience_listed` (FIGHER CLUB aux membres) ; le point exact (ON) =
   `_point_ok`. Sans compte on ne liste AUCUN contenu : restent ouverts les NOMS (`totehm_galaxy`, `totehm_search`)
   et `/@nom`. Écrire = `*_audience`, `spot_audience_set`, `visibility_set`. TotehmBot = offre à part.
-- **La propriété est un exemplaire** (`art_editions`), son histoire
-  `art_transfers` (ajout seul). `stoner_access` = projection d'accès ; le THP
-  = l'œuvre `totehmpaper` (777 000 ex.), prix = sa ligne `artworks`. Le numéro appartient à cet exemplaire THP ;
-  un nouveau membre du Club sans THP ne reçoit aucun numéro d’œuvre.
-- **L'argent est un grand livre** (`member_ledger`, ajout seul, trigger) :
-  abonnements 80/20, crédit sur `invoice.paid` seulement ; revente 7 % à
-  TOTEHM, le reste au vendeur (arrondi inférieur au membre). Idempotence =
-  contrainte `unique(source, kind)`. Versement manuel le 1er, seuil 25 €
-  (`payout_rules()`). Pas de Stripe Connect (cent créateurs = seuil de retour).
+- **La propriété est un exemplaire** (`art_editions`), son histoire `art_transfers` (ajout seul). `stoner_access` =
+  projection d'accès ; le THP = l'œuvre `totehmpaper` (777 000 ex.), prix = sa ligne `artworks`. Le numéro appartient
+  à cet exemplaire THP ; un nouveau membre du Club sans THP ne reçoit aucun numéro d’œuvre.
+- **L'argent est un grand livre** (`member_ledger`, ajout seul, trigger) : abonnements 80/20, crédit sur
+  `invoice.paid` seulement ; revente 7 % à TOTEHM, le reste au vendeur (arrondi inférieur au membre). Idempotence =
+  contrainte `unique(source, kind)`. Versement manuel le 1er, seuil 25 € (`payout_rules()`). Pas de Stripe Connect
+  (cent créateurs = seuil de retour).
 - **Le prix et l'accès viennent du serveur**, toujours.
 - Détail et procédures : `backend/CLAUDE.md`, `backend/README.md`.
 
@@ -192,17 +188,21 @@ Une Box MY STORY (WISDOM) de COM montre ses Cloths (`element_cloths`) comme une 
 
 ## Doctrine visuelle (état au 03/10)
 
-- **Polices : Space Mono et Quantico, partout, rien d'autre** (Bebas Neue,
-  Jost/Futura, Montserrat : nulle part, ni import ni CSS). Quantico = ce que
-  le membre TAPE et le NOM d'un Totehm. Space Mono = texte, labels, prix,
+- **Polices : Space Mono et Quantico, partout, rien d'autre** (Bebas Neue, Jost/Futura, Montserrat : nulle part, ni
+  import ni CSS). Quantico = ce que le membre TAPE et le NOM d'un Totehm. Space Mono = texte, labels, prix,
   navigation, boutons (Bold) ; un titre = Space Mono Bold en capitales.
   « Higher » est TOUJOURS le SVG, jamais du texte ; le titre d'une vue
   d'intention = l'intention + le badge Higher (SPACE : seul le centre porte [Higher] Social media).
-- **Couleurs** : navy `#333366` · bleu clair `#36498c` · rouge-violet
-  `#743169` = les boîtes du Totehm et elles seules (+ le papier et le badge Higher). Coral `#fbd5ca` = le NOM du Totehm (Quantico), la méthode
+- **Couleurs · la composition 60 / 30 / 10** (19/10, mesurée page par page) : **60 % noir PUR** (`#000`, jamais un
+  gris sombre — plus aucun faux noir `#121214`/`#131316`/`#0c0c0e`/`#16161a` comme surface) · **30 %** navy `#333366`
+  · bleu clair `#36498c` · rouge-violet `#743169` = l'OBJET (les boîtes du Totehm, le papier, le badge Higher) et,
+  UN TON EN ARRIÈRE (`--navy-d:#22224a` · `--blue-d:#263362` · `--rep-d:#51224a`), les panneaux des pages servies —
+  jamais au-dessus des boîtes en valeur · **10 %** les sept intentions, en SIGNAL (un trait, un point), jamais une
+  surface. Toutes les pages se composent pareil ; SEULE exception, le Totehm DÉPLOYÉ, où le navy prend le champ
+  (`totehm.html` : `html,body` = `--paper` sur téléphone). Coral `#fbd5ca` = le NOM du Totehm (Quantico), la méthode
   Stoner et le « Get » de [Get Higher]. Filtres, accès, abonnements, soldes,
-  portes : gris. Exceptions SPACE demandées : joystick COM blue/navy/rep, fond navy et REC/STOP
-  rouge dans la caméra ; boîte de contexte d'un space arrondie ; textes caméra en boîtes noires ; joystick aussi sur la boutique (05/10).
+  portes : gris. Exceptions SPACE/boutique demandées (caméra navy + REC rouge, contexte d'un space arrondi, textes
+  caméra en boîtes noires, joystick blue/navy/rep) : `space/CLAUDE.md`.
 - **Aucune bordure autour d'une boîte**, sur les quatre domaines : une boîte
   se détache par sa VALEUR. Exceptions : la tuile perforée (texture), les
   arêtes d'une boîte en verre 3D, le pointillé d'une place vide. Ombre autorisée sur les Habit Boxes du feed SPACE.

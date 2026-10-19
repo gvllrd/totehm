@@ -1,5 +1,37 @@
 # com/CLAUDE.md — totehm.com : le Totehm, la carte, HigherSelf
 
+## 19/10/2026 bis — LOT G, CINQUIÈME VOLET : LA COMPOSITION 60 / 30 / 10, PAGE PAR PAGE
+
+BUILD `2026-10-19-com-60-30-10`. La doctrine est dans `BRAND.md` (60 % noir pur · 30 % le navy et ses
+deux couleurs de rattachement · 10 % les sept intentions en signal) ; ici, ce qu'elle change dans le code.
+
+- **PLUS AUCUN FAUX NOIR COMME SURFACE.** `--g1:#0c0c0e` et `--g2:#121214` servaient de panneaux sur
+  `console`, `creator`, `higher` et `monetize` ; `#131316` servait de carte dans `totehm.html`,
+  `#16161a`/`#1c1c22`/`#101014`/`#0d0d10` de contrôles. Trois noirs côte à côte ne se distinguent pas :
+  ils SALISSENT le champ sans rien structurer. Désormais un panneau est navy ou il est noir, et les
+  contrôles n'ont qu'UN gris (`#1f1f24`). `--g1`/`--g2` restent déclarés : ils ne peignent plus de surface.
+- **LA GRAMMAIRE D'UN PANNEAU.** Le panneau qui porte l'objet est navy un ton en arrière —
+  `--navy-d:#22224a` · `--blue-d:#263362` · `--rep-d:#51224a`, soit les trois couleurs de marque × 0,7,
+  le même recul que le papier (`--paper`) prend sur les boîtes. DEDANS, un sous-bloc redevient NOIR
+  (`.step`, `.row`, `.trio > div`, `.get` de `creator`) : le champ revient, et c'est cette alternance qui
+  fait le 60/30. Une liste fait tourner les trois couleurs dans l'ordre (`:nth-child(3n+2)`, `(3n)`).
+- **CE QUI RESTE NAVY, ET CE QUI NE DOIT PAS L'ÊTRE.** `.srch-row` est NOIR : ses noms sont déjà des
+  pastilles `#333366` — une pastille navy sur une rangée navy, c'est le piège documenté de 09/09, le
+  texte flotte. Même raison pour `.u-t` (une vignette couverte d'image) et `#q` (on tape dans le noir).
+- **`terms.html` N'EST PLUS UNE PAGE NAVY.** Elle était `background:var(--navy)` de bord à bord : la
+  pire entorse du produit. Champ noir, le rail prend le vrai navy, et les boîtes `.key` (la tuile
+  perforée) portent `--navy-d`.
+- **LA SEULE EXCEPTION EST LE TOTEHM DÉPLOYÉ.** `totehm.html` garde `html,body{background:var(--paper)}`
+  sur téléphone : c'est le papier qu'on déplie, et le navy DOIT y prendre le champ. Mesuré, les cinq
+  vues de l'atterrissage sont noires quand même (≥ 94 %) — leurs calques couvrent le papier — et sur
+  ordinateur le corps est déjà `#000` depuis le carré habité. **Ne pas rétrécir le `#stage` du téléphone
+  pour faire apparaître une marge noire** : on perdrait de l'écran là où il est le plus rare, pour une
+  bande décorative. Le rapport de la mesure est dans `tests/browser/com_composition.mjs`.
+- **LA COMPOSITION EST MESURÉE, PAS PROMISE.** `com_composition.mjs` calcule la part de surface peinte
+  par classe (noir · navy · intentions · gris), page entière et non premier écran, l'aire d'un panneau
+  moins celle de ses panneaux fils. Il échoue si une page servie n'a pas un champ `#000`, si une
+  surface revient à un faux noir, si les sept couleurs dépassent 10 %, ou si le noir passe sous 45 %.
+
 ## 19/10/2026 — LOT G, QUATRIÈME VOLET : LE POLAROID, LES FILTRES, ET LES DEUX MODES DES SPOTS
 
 BUILD `2026-10-19-com-polaroid`.

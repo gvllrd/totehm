@@ -12,6 +12,14 @@ composed. Hold it on every page and every view, and the product reads as one obj
 > **10 % the seven intentions.** `#E24B4A` `#e48b31` `#fcbe21` `#639922` `#1D9E75` `#378ADD` `#7F77DD` —
 > lines, nodes, a node on a ring. Never a surface, never a fill: a signal.
 
+**THE GRAMMAR, SO EVERY PAGE IS BUILT THE SAME WAY** (19/10, measured page by page). The field is `#000` — a panel
+never fakes black with `#121214` or `#0c0c0e`, the three blacks only muddy each other. A panel that carries the
+object is navy ONE TONE BACK — `--navy-d:#22224a` · `--blue-d:#263362` · `--rep-d:#51224a` — so the Totehm's own
+Boxes stay the brightest navy in the product. Inside a navy panel, a sub-block goes back to pure black: the field
+returns, and that alternation is the 60/30. A list of items rotates the three attached colours, in order. Controls
+stay grey, always. Measured: `/higher` 70/28 · `/monetize` 75/21 · `/@name` 75/24 · `/console` 52/37 (the densest
+page: it IS the object) · `/terms` 86/14 · the five landing views ≥ 94 % black, the intentions never above 0.3 %.
+
 Full dark, minimal, subtly coloured. The reference is a Pink Floyd sleeve — one object, one field, nothing
 decorative — run like Disney: the same grammar everywhere, so you never have to learn the next screen.
 **The ONE exception is the unfolded Totehm**: inside it the navy and its two attached colours take over,

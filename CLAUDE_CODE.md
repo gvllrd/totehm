@@ -60,6 +60,16 @@ points et le MÊME filtre. Des filtres par type, par temps et par intention
 de plus. Le « + » de la vue de gauche ajoute un média en demandant D'ABORD
 l'élément auquel il s'attribue.
 
+Cinquième volet (BUILD `2026-10-19-com-60-30-10`) : la composition 60 / 30 / 10
+est APPLIQUÉE page par page, et MESURÉE. Plus un seul faux noir comme surface
+(`#121214`, `#131316`, `#0c0c0e`, `#16161a`…) : un panneau est navy un ton en
+arrière (`#22224a` · `#263362` · `#51224a`) ou il est NOIR, les contrôles n'ont
+qu'un gris. `terms.html` n'est plus une page entièrement navy. Mesuré :
+`/higher` 70 % noir / 28 % navy · `/monetize` 75/21 · `/@nom` 75/24 ·
+`/console` 52/37 · `/terms` 86/14 ; les cinq vues de l'atterrissage ≥ 94 % de
+noir, les sept couleurs jamais au-dessus de 0,3 %. La seule exception reste le
+Totehm DÉPLOYÉ, où le papier navy prend le champ.
+
 Troisième volet (BUILD `2026-10-18-com-verso`) : le NOM est un IDENTIFIANT
 sans espace (normalisé à la frappe) et il ne vit QUE sur la face verso, fixe
 en haut, en petit, sans retour de ligne — `#conn-bar` est parti, il n'y a plus

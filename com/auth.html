@@ -40,14 +40,14 @@
 <style>
 /* POLICES — BASE (01/10) : Space Mono et Quantico, rien d'autre ; un bouton hérite. */
 html{font-family:'Space Mono',monospace}button,input,select,textarea{font-family:inherit}
-:root{--bg:#000;--mid:#b0b0b0;--lo:#9a9a9a;--dim:#606060;--g3:#1c1c1f;--g4:#26262b;--no:#ff9a9a;--on:#639922}
+:root{--bg:#000;--navy:#333366;--mid:#b0b0b0;--lo:#9a9a9a;--dim:#606060;--g3:#1c1c1f;--g4:#26262b;--no:#ff9a9a;--on:#639922}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{background:var(--bg);color:var(--mid);font-family:'Space Mono',monospace;font-size:13px;line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100%}
 body{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;min-height:100dvh;padding:24px 16px;text-align:center;gap:14px}
 #t svg{height:34px;width:auto;fill:#fff;display:block}
 h1{font-family:'Space Mono',monospace;font-weight:700;font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:#fff}
 .to{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--lo)}
-.to b{color:#fff;font-weight:400}
+.to b{color:#fff;font-weight:400;font-family:'Quantico',sans-serif;background:var(--navy);padding:3px 8px}
 .in{font-family:'Quantico',sans-serif;font-size:15px;color:#fff;background:#1c1c22;outline:none;border:none;border-radius:10px;padding:11px 14px;
   text-align:center;caret-color:#fff;width:100%;max-width:300px;-webkit-appearance:none;appearance:none}
 .in:focus{background:#26262e}
@@ -59,6 +59,17 @@ h1{font-family:'Space Mono',monospace;font-weight:700;font-size:13px;letter-spac
 .note{font-size:9px;letter-spacing:.14em;text-transform:uppercase;min-height:14px;color:var(--lo)}
 .note.no{color:var(--no)}.note.ok{color:var(--on)}
 .hide{display:none!important}
+
+/* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
+/* Le gris en survol devient blanc. Généré depuis la feuille
+   elle-même : un nouveau bloc gris entre ici tout seul.        */
+@media(hover:hover){
+.to:hover,
+.in:hover::placeholder,
+.lnk:hover,
+.note:hover{color:#fff}
+}
+/* ══ FIN DU BLOC GÉNÉRÉ ══ */
 </style>
 </head>
 <body>

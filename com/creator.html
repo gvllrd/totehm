@@ -37,7 +37,7 @@ html{font-family:'Space Mono',monospace}button,input,select,textarea{font-family
 :root{
   --bg:#000;--hi:#fff;--mid:#b0b0b0;--lo:#8d8d96;--dim:#5f5f66;--g1:#0c0c0e;--g2:#121214;--g3:#1b1b1f;--g4:#26262b;--g5:#34343a;
   --no:#ff9a9a;--on:#a9d67c;--coral:#fbd5ca;
-  --navy:#333366;--blue:#36498c;--rep:#743169;--wis:#5b2652;--vis:#2b3a73;
+  --navy:#333366;--blue:#36498c;--rep:#743169;--navy-d:#22224a;--blue-d:#263362;--rep-d:#51224a;--wis:#5b2652;--vis:#2b3a73;
   --q:'Quantico',sans-serif;--mono:'Space Mono',monospace;
   --paper:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 224.88 224.08' preserveAspectRatio='none'%3E%3Cdefs%3E%3Cmask id='m'%3E%3Crect x='-40' y='-40' width='310' height='310' fill='%23fff'/%3E%3Ccircle cx='56.421' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='56.421' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='112.440' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='112.440' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='168.459' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='168.459' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='56.020' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='56.020' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='112.039' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='112.039' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='168.059' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='168.059' r='13.86' fill='%23000'/%3E%3C/mask%3E%3C/defs%3E%3Crect x='0.402' y='0' width='224.076' height='224.078' fill='%23333366' mask='url(%23m)'/%3E%3C/svg%3E");
 }
@@ -52,7 +52,7 @@ a{color:inherit;text-decoration:none}
   font-family:var(--mono);font-weight:700;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--mid);padding:8px 6px}
 #member.is-in{font-family:var(--q);font-weight:400;font-size:13px;letter-spacing:0;text-transform:none;color:var(--coral)}
 /* Le menu membre — SIMPLE TERMS OF USE toujours en dernier. */
-#menu{position:fixed;top:0;left:0;z-index:45;width:min(320px,88vw);background:var(--g2);padding:58px 16px 18px;display:flex;flex-direction:column;gap:6px;
+#menu{position:fixed;top:0;left:0;z-index:45;width:min(320px,88vw);background:#000;padding:58px 16px 18px;display:flex;flex-direction:column;gap:6px;
   transform:translateY(-104%);visibility:hidden;transition:transform .3s ease,visibility 0s linear .3s}
 #menu.is-open{transform:none;visibility:visible;transition:transform .3s ease}
 #menu .m-it{display:block;width:fit-content;text-align:left;background:var(--g4);border:none;border-radius:10px;padding:8px 12px;cursor:pointer;color:var(--mid);
@@ -70,15 +70,15 @@ main{width:100%;max-width:520px;margin:0 auto;padding:max(84px,11dvh) 16px 96px;
 .btn:active{transform:scale(.97)}
 .btn[disabled]{opacity:.4;pointer-events:none}
 .lnk{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo);background:none;border:none;cursor:pointer;padding:6px 2px}
-.in{width:100%;font-family:var(--q);font-size:16px;color:#fff;background:var(--g1);outline:none;border:none;border-radius:10px;padding:12px 14px;text-align:center;
+.in{width:100%;font-family:var(--q);font-size:16px;color:#fff;background:var(--g3);outline:none;border:none;border-radius:10px;padding:12px 14px;text-align:center;
   caret-color:#fff;-webkit-appearance:none;appearance:none}
-.in:focus{background:#000}
+.in:focus{background:var(--g4)}
 .in::placeholder{color:rgba(255,255,255,.34)}
 
 /* ══ LE PAPIER — le verso du Totehm : le papier navy perforé, et le NOM ══ */
 .paper{position:relative;width:min(232px,64vw);aspect-ratio:1;background:var(--paper) 0 0/100% 100% no-repeat;
   display:flex;align-items:center;justify-content:center;padding:14%}
-.tname{display:inline-block;max-width:100%;font-family:var(--q);font-weight:400;color:var(--coral);background:#333366;border-radius:0;
+.tname{display:inline-block;max-width:100%;font-family:var(--q);font-weight:400;color:var(--coral);background:var(--navy);border-radius:0;
   padding:6px 12px;line-height:1.3;overflow-wrap:anywhere}
 .paper .tname{font-size:var(--fs,26px)}
 .ints{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 14px;margin-top:18px;min-height:18px}
@@ -86,11 +86,11 @@ main{width:100%;max-width:520px;margin:0 auto;padding:max(84px,11dvh) 16px 96px;
 .ints i{width:8px;height:8px;border-radius:50%;display:block}
 
 /* ══ L'OFFRE — un panneau sombre, carré, sans bordure ══ */
-.offer{width:100%;margin-top:28px;background:var(--g2);padding:22px 18px 20px;display:flex;flex-direction:column;align-items:center;gap:14px}
+.offer{width:100%;margin-top:28px;background:var(--navy-d);padding:22px 18px 20px;display:flex;flex-direction:column;align-items:center;gap:14px}
 .price{display:flex;align-items:baseline;gap:8px;color:#fff;font-weight:700;font-size:30px;line-height:1.1}
 .price small{font-size:11px;font-weight:400;letter-spacing:.14em;text-transform:uppercase;color:var(--lo)}
 .gets{width:100%;display:flex;flex-direction:column;gap:2px;margin:4px 0 2px;text-align:left}
-.get{display:grid;grid-template-columns:34px 1fr;gap:12px;align-items:center;background:var(--g1);padding:12px 14px}
+.get{display:grid;grid-template-columns:34px 1fr;gap:12px;align-items:center;background:#000;padding:12px 14px}
 .get b{display:block;font-size:11px;letter-spacing:.06em;color:#fff}
 .get p{font-size:10px;line-height:1.55;color:var(--lo)}
 /* La croix des cinq vues (une forme, jamais un contenu) */
@@ -106,19 +106,19 @@ main{width:100%;max-width:520px;margin:0 auto;padding:max(84px,11dvh) 16px 96px;
 .state.is-off{color:var(--lo)}
 .mine{width:100%;display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
 #si-note{text-transform:none;letter-spacing:.04em}
-#signin{width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;background:var(--g2);padding:0 18px 20px}
+#signin{width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;background:var(--navy-d);padding:0 18px 20px}
 .foot{margin-top:26px;display:flex;flex-direction:column;align-items:center;gap:4px}
 
 /* ══ LA RECHERCHE — un champ, des noms ══ */
 #search{width:100%;display:flex;flex-direction:column;align-items:center;gap:12px}
-#q{font-size:clamp(22px,6.4vw,30px);color:var(--coral);caret-color:var(--coral);background:var(--g1);padding:14px 16px;margin-top:6px}
+#q{font-size:clamp(22px,6.4vw,30px);color:var(--coral);caret-color:var(--coral);background:#000;padding:14px 16px;margin-top:6px}
 #q:focus{background:#000}
 #q::placeholder{color:rgba(251,213,202,.32)}
 .hint{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
 #res{width:100%;display:flex;flex-direction:column;gap:4px;margin-top:4px;text-align:left}
 .ns-label{font-size:9px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--lo);padding:6px 2px 4px}
-.srch-row{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--g2);padding:10px 12px;transition:background .15s}
-.srch-name{font-family:var(--q);font-size:17px;color:var(--coral);background:#333366;border-radius:0;padding:5px 11px;line-height:1.35;max-width:72%;overflow-wrap:anywhere}
+.srch-row{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#000;padding:10px 12px;transition:background .15s}
+.srch-name{font-family:var(--q);font-size:17px;color:var(--coral);background:var(--navy);border-radius:0;padding:5px 11px;line-height:1.35;max-width:72%;overflow-wrap:anywhere}
 .srch-meta{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--lo);white-space:nowrap;margin-left:auto}
 .srch-row::after{content:"\2192";font-size:14px;color:var(--dim)}
 .srch-meta:empty+*,.srch-row:has(.srch-meta:empty)::after{margin-left:auto}
@@ -140,7 +140,7 @@ main{width:100%;max-width:520px;margin:0 auto;padding:max(84px,11dvh) 16px 96px;
 .u-head{display:flex;align-items:center;gap:7px;font:700 10px/1 var(--mono);letter-spacing:.14em;color:var(--lo);margin-top:10px}
 .u-head svg{width:12px;height:12px}
 .u-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
-.u-t{position:relative;aspect-ratio:9/16;border:none;border-radius:10px;background:var(--g2);overflow:hidden;cursor:pointer;padding:0;color:#fff;text-align:left;font:inherit}
+.u-t{position:relative;aspect-ratio:9/16;border:none;border-radius:10px;background:#000;overflow:hidden;cursor:pointer;padding:0;color:#fff;text-align:left;font:inherit}
 .u-t img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .u-t::after{content:"";position:absolute;inset:auto 0 0 0;height:55%;background:linear-gradient(transparent,rgba(0,0,0,.78));pointer-events:none}
 .u-ints{position:absolute;top:8px;left:8px;display:flex;gap:3px;z-index:1}
@@ -163,6 +163,8 @@ main{width:100%;max-width:520px;margin:0 auto;padding:max(84px,11dvh) 16px 96px;
 .audb{display:inline-flex;align-items:center;justify-content:center;color:#9a9aa0;min-width:20px;min-height:20px}
 @media(hover:hover){.aud button:hover,.audb:hover{color:#fff}}
 /* ══ fin AUDIENCE ══ */
+
+
 
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille

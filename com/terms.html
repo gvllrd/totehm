@@ -9,17 +9,17 @@
 /* POLICES — BASE (01/10) : Space Mono et Quantico, rien d'autre ; un bouton hérite. */
 html{font-family:'Space Mono',monospace}button,input,select,textarea{font-family:inherit}
 :root{
-  --navy:#333366;--coral:#fbd5ca;--g-light:#e0e0e0;--g-mid:#909090;
+  --navy:#333366;--navy-d:#22224a;--coral:#fbd5ca;--g-light:#e0e0e0;--g-mid:#909090;
   --rl:46px;--rw:18px;
   --futura:'Space Mono',monospace;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{width:100%;background:var(--navy);color:var(--g-light);
+html,body{width:100%;background:#000;color:var(--g-light);
   font-family:var(--futura);font-weight:300;font-size:14px;
   -webkit-font-smoothing:antialiased;overscroll-behavior-y:none}
 
 /* Le rail, comme partout ailleurs */
-#rail{position:fixed;top:0;bottom:0;left:var(--rl);width:var(--rw);background:#626286;z-index:1}
+#rail{position:fixed;top:0;bottom:0;left:var(--rl);width:var(--rw);background:var(--navy);z-index:1}
 
 #wrap{position:relative;z-index:2;
   margin-left:calc(var(--rl) + var(--rw) + 18px);
@@ -40,7 +40,7 @@ a{color:var(--coral);text-decoration:underline;text-underline-offset:2px;transit
 a:hover{color:#fff}
 
 /* Ce qui compte le plus, dans la boîte perforée de la marque */
-.key{border:6px solid transparent;
+.key{background:var(--navy-d);border:6px solid transparent;
   border-image-source:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Cpath fill='%23ffffff' fill-opacity='.16' fill-rule='evenodd' d='M0 0h24v24H0Z M9 0a3 3 0 1 0 6 0a3 3 0 1 0-6 0 M9 24a3 3 0 1 0 6 0a3 3 0 1 0-6 0 M-3 12a3 3 0 1 0 6 0a3 3 0 1 0-6 0 M21 12a3 3 0 1 0 6 0a3 3 0 1 0-6 0'/%3E%3C/svg%3E");
   border-image-slice:6 fill;border-image-repeat:round;padding:14px 18px;margin:16px 0}
 .key p:last-child{margin-bottom:0}
@@ -55,6 +55,15 @@ a:hover{color:#fff}
   h1{font-size:26px}
   p,li{font-size:16px}
 }
+
+/* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
+/* Le gris en survol devient blanc. Généré depuis la feuille
+   elle-même : un nouveau bloc gris entre ici tout seul.        */
+@media(hover:hover){
+.updated:hover,
+h2:hover{color:#fff}
+}
+/* ══ FIN DU BLOC GÉNÉRÉ ══ */
 </style>
 </head>
 <body>
