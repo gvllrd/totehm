@@ -32,6 +32,7 @@
 | Le papier qui choisit une Box | `class="lsh-tp` présent ; le bouton `class="lsh-fb` présent |
 | Les panneaux de filtres | `id="lv-sh-sf"` (gauche) et `id="rdr-sf"` (droite) présents ; `data-sf="pil"` (les 4 piliers) présent |
 | L'appui long | `touchAction='none'` présent (armé, la carte ne se laisse plus défiler) |
+| Les couleurs d'intention DANS le cadre photo (commit `b92ec54`, 773 846 octets) | `.lsh-i{…left:0;top:0;bottom:0;width:11px;z-index:2;…opacity:.62}` présent en production |
 | Les faux noirs | `background:#131316` **absent** (la composition du volume 5 tient) |
 | ⚠️ Mesuré : pourquoi le geste mourait | un `pan-y` sur la carte faisait prendre la main au navigateur → `pointercancel` au 1er pixel ; et une capture de pointeur sur une carte repeinte annulait le geste |
 | Identité du filtre repris | `SF`, `sfPaint()` et le CSS `#feed` de `space/social.html` sont **identiques octet pour octet** à `f1ca98c:space/index.html` (13/10) : rien n'a été perdu dans la migration du 15/10 |
