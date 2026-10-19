@@ -12,7 +12,8 @@ informations du spot (pour la vue de droite en mode Shorts) ».
   plein écran. Maintenant : une CARTE navy centrée, le média dans sa fenêtre (`.lsh-m`, 5/4), et LA BOX
   IMPRIMÉE DESSOUS (`.lsh-b`) comme la bande blanche d'un polaroid — le nom en Quantico, l'intention
   dans SA couleur, le rythme, puis les mini-boîtes OBJECTIVES (bleu) et REPULSIONS (rouge-violet),
-  exactement celles du Totehm. Le filet d'intention court sur le bord gauche de la carte.
+  exactement celles du Totehm. **Les couleurs d'intention vivent DANS LE CADRE PHOTO** (Wah),
+  en bande verticale à gauche de la fenêtre, à `opacity:.62` : la photo se lit dessous.
 - **PAR-DESSUS LE MÉDIA, DU NOIR TRANSPARENT** (`.lsh-c`, `rgba(0,0,0,.72)`) : pour un SPOT, SES
   informations — I will be here · la date et l'heure · la durée · la ville · le niveau · LOCATION ON
   ou OFF ; pour un média, d'où il vient. Rien n'est inventé : un attribut absent ne s'affiche pas.
