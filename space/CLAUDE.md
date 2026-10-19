@@ -35,7 +35,8 @@ sont préservés ; ne pas rejouer ses migrations déjà appliquées.
 Preuves locales : navigation 811/811, intégrité des expériences 85/85 et navigateur ordinateur/téléphone
 161/161, sans erreur applicative ou shader ; régression Lisbon 68/68. Les reflets natifs complets 512/256,
 la piscine, les vingt Origins et leurs arrêts de 32 m, les portes, retours, pauses et replis sont vérifiés.
-La publication reste à mesurer.
+Publication mesurée : code `0e09bea`, quatre projets READY et huit alias exacts ; 63/63 lectures HTTPS
+des domaines, octets/MIME/TLS vérifiés. SPACE `dpl_3hzHN2oN642NsCexZFoqVWHgCpaw`. COM et Club identiques à `2e84f37`.
 Détails et tableau de preuves : `../docs/SPACE_BRUTALIST_20261019.md`. Les sections suivantes sont historiques.
 
 ## 17/10/2026 — temple au-dessus des nuages, couloirs dans le vide (historique, remplacé le 19/10)

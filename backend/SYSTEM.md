@@ -4,7 +4,7 @@
 > Quatre projets READY et huit alias vérifiés (`395c7ca`) ; 25 contrôles HTTP et 40 anciennes adresses réussis ; détail : `../docs/GALLERY_CLUB_20261015.md`.
 > Les mesures historiques du lot C publiées dans `13abd34` sont conservées avec leur date propre.
 
-**Dernier relevé : 17 octobre 2026, temple SPACE et couloirs Origins publiés ; COM de Claude et retour du Club préservés** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
+**Dernier relevé : 19 octobre 2026, quatre environnements brutalistes SPACE publiés ; COM de Claude et Club préservés** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
 
 > **À quoi sert ce fichier.** Les masters disent *ce qu'on veut*. `CLAUDE.md` dit
 > *comment on construit*. **Celui-ci dit ce qui existe vraiment.**
@@ -19,6 +19,27 @@
 
 ---
 
+
+## 0 · SPACE — ARCHITECTURES BRUTALISTES DE LA VIDÉO PUBLIÉES — 19/10/2026
+
+| Mesure | Résultat |
+| --- | --- |
+| Code | `0e09bea2ff726b40095b55a733218a654112282a` ; build `2026-10-19-space-coastal-brutalism` |
+| Vercel | Quatre projets READY, huit alias exacts ; SPACE `dpl_3hzHN2oN642NsCexZFoqVWHgCpaw` |
+| HTTPS réel | 63/63 : accueil et modules SPACE www/apex, vingt JPG, vrai THP, Origins, expériences/marché, trois pages COM www/apex et Club www/apex ; corps exacts, MIME et TLS vérifiés |
+| Architecture | Quatre compositions reconstruites à partir de la vidéo : cour, passage, pavillon aux deux rubans et villa/piscine en vue aérienne ; béton coffré, éclairage ambre, ciel couvert bleu pétrole fixe |
+| Limite de fidélité | Reconstruction des cadrages visibles ; aucun modèle 3D original fourni, aucune identité pixel par pixel ou depuis tous les angles revendiquée |
+| Reflets | Caméra miroir avec découpe ; une cible partagée native 512 px/8 Hz maximum sur ordinateur, 256 px/4 Hz au téléphone, sans rendu récursif ; pauses et mouvement réduit vérifiés |
+| Couloir conservé | Vide absolu, vingt Origins 01…20, même progression/interpolation, étapes de 32 m, vitesse 2,6 m/s, durées 1450–4200 ms et pool cinq/trois ; modules du vide/audio inchangés |
+| Navigateur local | 161/161 ordinateur/téléphone : lieux, vrais pixels des reflets, collisions, portes physiques, œuvres, retours, audio/pauses, clavier/joystick, mouvement réduit, initialisation et fallback ; zéro erreur applicative/shader |
+| Régression Lisbon | 68/68 : aperçu, unique PLAY, 22 panneaux, coordonnées de manette originales, accès, lecture/retour et marché |
+| Invariants locaux | Navigation 811/811, 484 058 points de routes échantillonnés indépendamment ; expériences/médias/prix/accès/redirections 85/85 |
+| Conservation | COM et Club identiques à la base Claude `2e84f37` sur www/apex ; aucun SQL, Edge, compte, prix, commande ou paiement de production modifié ; migrations de Claude non rejouées |
+
+Mesure HTTPS : `2026-10-19T15:51:36.385599+00:00`. Preuves : `/tmp/totehm-production/brutalist-code-ready.json`,
+`brutalist-code-live.json`, `brutalist-checks/results.json` et `brutalist-lisbon/results.json`.
+Tests WebGL locaux avec services interceptés ; HTTPS des vrais domaines avec TLS normal. Le navigateur de
+production garde la limite de certificat proxy. Détails : `../docs/SPACE_BRUTALIST_20261019.md`.
 
 ## 0 · LE POLAROID EST UN CADRE, LES FILTRES SONT CEUX DE SPACE — 19/10/2026 ter (lot G, volume 6)
 

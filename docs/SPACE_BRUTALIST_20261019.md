@@ -121,7 +121,7 @@ modifie ni compte, paiement, prix, propriété, règle d'accès, SQL ou fonction
 déjà appliquée par Claude. `/market`, collection, `/social`, `/s/:id`, les expériences et leurs ponts SSO restent
 en place. Les anciens modules du temple restent historiques ; ils ne sont plus importés par l'accueil courant.
 
-## Preuves disponibles avant publication
+## Vérifications et publication mesurées
 
 | Vérification | Résultat mesuré à ce stade |
 | --- | --- |
@@ -131,7 +131,7 @@ en place. Les anciens modules du temple restent historiques ; ils ne sont plus i
 | Suite navigateur complète ordinateur/téléphone | 161/161 : quatre lieux, vrais reflets natifs 512/256, collisions, vingt Origins dans l'ordre et leurs arrêts de 32 m, portes, retours, audio, pauses, mouvement réduit, course d'initialisation et repli sans WebGL ; aucune erreur applicative ou shader |
 | Intégrité des expériences, médias, prix, accès et redirections | 85/85 |
 | Régression Lisbon : galerie, récit et manette d'origine | 68/68 ordinateur/téléphone : 22 panneaux, positions de manette, aperçu animé/pauses, unique PLAY, Higher vectoriel, accès membre/visiteur, lecture, retour et marché |
-| Déploiement et lectures HTTPS des domaines | En attente |
+| Déploiement et lectures HTTPS des domaines | Quatre projets READY, huit alias exacts ; 63/63 lectures HTTPS, corps/MIME/TLS vérifiés |
 
 Le smoke préliminaire a révélé un problème de cadrage du reflet selon le DPR et une surface de terrasse
 masquant la piscine. Les deux sont corrigés : les captures finales montrent le miroir complet et la piscine
@@ -140,5 +140,23 @@ visible. Le rendu des quatre lieux ne produit aucune erreur JavaScript ou shader
 La suite complète a confirmé le cadrage intégral de la cible miroir et la piscine visible. Preuves :
 `/tmp/totehm-production/brutalist-checks/results.json` et captures des quatre lieux dans ce répertoire.
 Régression Lisbon : `/tmp/totehm-production/brutalist-lisbon/results.json`.
-Les lectures des vrais domaines suivent après publication ; les tests WebGL locaux utilisent les services
-interceptés et ne créent aucun compte, achat ou commande de production.
+Les tests WebGL locaux utilisent les services interceptés et ne créent aucun compte, achat ou commande
+de production. Les lectures ci-dessous portent sur les vrais domaines avec TLS normal.
+
+
+## Publication constatée
+
+Code `0e09bea2ff726b40095b55a733218a654112282a`, build `2026-10-19-space-coastal-brutalism`, publié sur
+[www.totehm.space](https://www.totehm.space/) et [totehm.space](https://totehm.space/).
+Mesure HTTPS : `2026-10-19T15:51:36.385599+00:00`. SPACE : `dpl_3hzHN2oN642NsCexZFoqVWHgCpaw`.
+
+Les quatre projets Vercel sont READY sur ce commit et leurs huit alias pointent vers leurs déploiements
+de production respectifs. Les 63 lectures comparent octet pour octet les réponses HTTPS aux sources Git :
+accueil et modules SPACE www/apex, vingt JPG, papier THP, Origins et expériences/marché, trois pages COM
+www/apex et accueil Club www/apex. Les pages COM et Club correspondent aussi à la base Claude `2e84f37`.
+Aucune migration, fonction Edge, donnée, tarification ou opération de paiement n'a été changée ou rejouée.
+
+Preuves : `/tmp/totehm-production/brutalist-code-ready.json`, `brutalist-code-live.json`,
+`brutalist-checks/results.json` et `brutalist-lisbon/results.json`. Le contrôle WebGL est local, avec services
+interceptés ; les domaines réels sont vérifiés par lectures HTTPS standard. La limite de certificat du
+proxy dans le navigateur de production demeure ; aucune validation TLS n'a été désactivée.
