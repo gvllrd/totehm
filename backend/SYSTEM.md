@@ -20,6 +20,21 @@
 ---
 
 
+## 0 · LE POLAROID, LES FILTRES, LES DEUX MODES DES SPOTS — 19/10/2026 (lot G, volume 4)
+
+| Mesure | Résultat |
+|---|---|
+| `com/totehm.html` en production | 200, 756 984 octets, `BUILD=2026-10-19-com-polaroid` |
+| Déploiement Vercel | commit `064241c`, production |
+| Le polaroid (la carte posée sur le média) | `class="lsh-pol"` présent ; `--px/--py` en pour cent |
+| Sa place, enregistrée | `feed_badge_set` présent ; table `feed_badges` appliquée (migration `feed_badges`) |
+| Auto-test `tests/sql/feed_badges_selftest.sql` | **`FAIL={}`** (bornes recalculées en base, référence courte refusée, RLS sans politique, grants `authenticated` seuls) |
+| Les filtres | `id="lv-sh-flt"` (gauche) et `id="rdr-flt"` (droite) présents |
+| Les deux modes des spots | `id="rdr-sh"` présent (le feed), `SPOTMODE` en `localStorage` |
+| Ajouter un média depuis la gauche | `id="lv-sh-pick"` présent (l'élément AVANT la caméra) |
+| ⚠️ Mesuré : le coût des filtres | **zéro appel de plus** — le compteur de RPC est identique avant et après un filtrage (com_shorts) |
+| Suites navigateur | com_shorts 84 · com_processeur 114 · com_paper 36 · com_member_menu 34 · com_read_copy 18 · com_plateforme 23 — **fail=0**, aucune exception |
+
 ## 0 · LA MANETTE, LA LECTURE SUR PLACE, LE VERSO — 18/10/2026 (lot G, volumes 2 et 3)
 
 | Mesure | Résultat |
