@@ -20,6 +20,17 @@
 ---
 
 
+## 0 · LE CURSEUR CLIGNOTE À GAUCHE, LE TEXTE EN GRAND — 20/10/2026 ter (lot H)
+
+| Mesure | Résultat |
+|---|---|
+| `com/totehm.html` en production | 200, 795 322 octets, `BUILD=2026-10-20-com-curseur` |
+| Déploiement Vercel | commit `e085cfc`, production READY |
+| Absent en production | `placeholder="Wassup ?"` |
+| Présent en production | le trait `.rf-cur` + `#lv-say.is-vide:not(.is-tape)` (il clignote tant que le vrai curseur n'est pas là), champ Quantico 22 px à gauche, secours au tap (`#rf` click), détection du clavier (`hauteurLibre`) |
+| Mesuré en page | souris : ↓ → focus dans le champ, trait à l'opacité 0, « hey » tapé sans clic · doigt : le trait clignote pendant la course ; clavier levé (page 844 → 480 px) → `is-tape`, trait à 0 ; clavier baissé → il clignote de nouveau ; un tap à (200, 600) dans la vue → focus dans le champ |
+| Suites navigateur | com_processeur **129** · com_plateforme 23 · com_paper 36 · com_shorts 92 · com_guest 14 · com_composition 78 — 0 échec |
+
 ## 0 · EN BAS, ON ARRIVE ET ON TAPE — 20/10/2026 bis (lot H)
 
 | Mesure | Résultat |
