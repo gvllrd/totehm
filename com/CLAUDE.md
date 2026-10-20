@@ -1,5 +1,23 @@
 # com/CLAUDE.md — totehm.com : le Totehm, la carte, HigherSelf
 
+## 21/10/2026 bis — MES MÉDIAS PERFORÉS ; LA LOUPE SUR TOUTES LES BOXES (BUILD `2026-10-21-com-perfo`)
+
+Wah : « les images des grilles dans la vue de gauche au format perforé, avec le même nombre de trous, bien positionnés à
+la même place que le logo TOTEHM » · « n'oublie pas le système de loupe-zoom dans TOUTES les box du Totehm déployé ».
+- **← PERFORÉ** : `#lv-sh .tl:not(.tl-add) .tl-ph` porte `--perfo` en masque — la variable qui EXISTAIT (28/09, le masque
+  de `.ast-light`), copiée du `<mask>` de `#gl-bg` : douze trous, trois par côté à 25 · 50 · 75 %, rayon 6,2 %. La PHOTO
+  seule est découpée (la box posée dessus reste entière, la tuile « + » reste un pointillé) ; la tuile n'a plus de fond,
+  les trous montrent le noir. La grille de droite reste arrondie. ⚠️ Ne pas redéfinir `--perfo` : une seconde définition
+  dans un autre `:root` l'écrase en silence (mesuré pendant ce lot).
+- **LA LOUPE** : mesurée sur les cinq vues, fermées et ouvertes, au téléphone et à l'ordinateur, chez moi et en lecture —
+  elle y était partout ; il manquait la BOÎTE DU FILTRE (`boiteFiltre`) : elle a sa loupe (clé `f:0`, à gauche de sa
+  croix, l'état survit au redessin). Les mini-boxes n'en portent pas : elles gardent leur format d'origine et grandissent
+  avec leur box (06/10).
+- Tests : `com_loupe.mjs` (NOUVEAU, 60 : chaque box des cinq vues fermée puis ouverte, la loupe visible et non recouverte au
+  point, ×1,25 puis retour, le filtre, la lecture avec Copy ; téléphone + ordinateur), `com_shorts` 137 (les 12 trous comparés
+  un à un à `#gl-bg`). `spaces_loupe.mjs` RETIRÉ : sa partie COM vit dans `com_loupe`, « My spaces » de COM est parti le
+  16/10 et sa partie SPACE visait l'ancien fil (réécrit le 19/10) — il échouait depuis le 18/10 (`#conn-bar`).
+
 ## 21/10/2026 — LE SPOT TEL QU'IL EST ; LA VISIONNEUSE DE GAUCHE DÉFILE À LA VERTICALE (BUILD `2026-10-21-com-spots`)
 
 Wah : « arrondis les images de la grille dans la vue de droite ; je ne veux plus de l'effet polaroid dans la vue

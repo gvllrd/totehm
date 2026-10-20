@@ -88,6 +88,11 @@ dessus, légèrement surélevée, avec ses filtres. À DROITE, LES SPOTS DU CLUB
 ou en shorts TikTok ; c'est là seulement qu'on a le polaroid, avec en haut
 la bande noire transparente des informations du spot.
 
+Quinzième volet (BUILD `2026-10-21-com-perfo`) : À GAUCHE, chaque image de la
+grille est perforée comme le logo (les mêmes douze trous, aux mêmes places).
+La loupe est sur TOUTES les boxes du Totehm déplié, la boîte du filtre
+comprise.
+
 Quatorzième volet (BUILD `2026-10-21-com-spots`) : À DROITE, les tuiles de
 la grille sont arrondies et le spot s'ouvre en grand SANS polaroid — sur le
 noir, sa Habit Box et ses informations au format de figher.club juste

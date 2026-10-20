@@ -88,6 +88,17 @@ try{
   ok(g.dock&&Math.abs(g.papier[0]-Math.round(g.W/2))<=3&&g.papier[1]<90&&g.papier[2]<70,
      'le TOTEHM est sorti du centre : en haut, centré, petit ('+g.papier.join('/')+')');
   ok(!g.spots&&g.items===2,'aucun spot dans la vue de gauche : ce sont MES médias ('+g.items+')');
+  /* 21/10 bis — la PHOTO porte les douze trous du logo, aux mêmes places (comparées une à une à `#gl-bg`) ; la box n'est jamais découpée. */
+  const pf=await pg.evaluate(()=>{const t=document.querySelector('#lv-sh .tl[data-i="0"]'), ph=t&&t.querySelector('.tl-ph'), bx=t&&t.querySelector('.tl-bx');
+    const cs=e=>e?getComputedStyle(e):null, mk=e=>e?(cs(e).maskImage||cs(e).webkitMaskImage||''):'';
+    const d=decodeURIComponent(mk(ph));
+    const trous=[...d.matchAll(/<circle cx='([\d.]+)' cy='([\d.]+)' r='13\.86'/g)].map(m=>[+(+m[1]).toFixed(1),+(+m[2]).toFixed(1)]);
+    const logo=[...document.querySelectorAll('#gl-bg mask circle')].map(c=>[+(+c.getAttribute('cx')).toFixed(1),+(+c.getAttribute('cy')).toFixed(1)]);
+    const k=l=>l.map(x=>x.join(',')).sort().join(' ');
+    return {n:trous.length, memes:k(trous)===k(logo)&&logo.length===12, fond:t?cs(t).backgroundColor:'', boxM:mk(bx)||'none',
+      plus:mk(document.querySelector('#lv-sh .tl-add .tl-ph'))||'none'};});
+  ok(pf.n===12&&pf.memes&&pf.fond==='rgba(0, 0, 0, 0)'&&/none/.test(pf.boxM),
+     '21/10 bis · chaque image de la grille est PERFORÉE : les 12 trous du logo, aux mêmes places ; la box posée dessus reste entière → '+JSON.stringify(pf));
   await pg.screenshot({path:OUT+'/grille_'+(tel?'tel':'ordi')+'.png'});
 
   // ══ 2 · UN TAP SUR L'IMAGE — OU SUR SA BOX — OUVRE LE MÉDIA, AVEC LA BOX DÉTAILLÉE PAR-DESSUS (20/10) ══

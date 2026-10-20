@@ -33,6 +33,12 @@ member has total control of their own Totehm — and the back of the paper has n
 Three levels, and only three: **PRIVATE** (only me) · **SUBSCRIBERS** (whoever subscribed to a member's
 Totehm) · **CLUB** (whoever is on the platform with a Totehm filled in — a member).
 
+## 21/10/2026 (bis) · my media are perforated, every box has its loupe
+
+> **Left, every image of the grid is perforated like the logo**: the same twelve holes (three per side, at a quarter, half
+> and three quarters), at the same places. The box laid on it is never cut. **Every box of the unfolded Totehm has its
+> loupe** — the five views, closed and open, and the filter box too; the mini-boxes grow with their box.
+
 ## 21/10/2026 · the spot as it is, the media scroll the same way
 
 > **Right, the grid tiles are rounded.** A tap opens the spot large — no frame, no polaroid: its Habit Box and its facts
