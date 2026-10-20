@@ -20,6 +20,21 @@
 ---
 
 
+## 0 · LE VERSO = MON ARGENT, EN UN ÉCRAN — 20/10/2026 (lot H)
+
+| Mesure | Résultat |
+|---|---|
+| `com/totehm.html` en production | 200, 790 822 octets, `BUILD=2026-10-20-com-verso` |
+| Déploiement Vercel | commit `610ab26`, production READY |
+| Avant (mesuré en page, fixture) | le nom **5 fois**, les abonnés 2 fois, le prix 2 fois (curseur + champ), `/console` empilée en `iframe` (hauteur 1 478 px sur téléphone) |
+| Après (même fixture) | le nom **1 fois** ; tout tient en **844 px** sur téléphone (390 × 844), 900 px sur ordinateur |
+| Présent en production | `#vs-open` (open · paused · off), `#vs-pay-in` (IBAN/PayPal), `#vs-subs`, le badge Higher en SVG dans la ligne Higher, `sb.rpc('my_console')` |
+| Absent en production | `#srch-console`, `#mw-who`, `#mwc-save`, `#acct-cancel` (`/console?embed=1` ne reste que dans la table de la couche XO, pas dans le verso) |
+| Lectures à l'ouverture | `creator_dashboard` + `my_console` en parallèle (l'`iframe` chargeait une page, son SSO et `my_console` en plus) |
+| Écritures | prix au LÂCHER du curseur → `monetization_set(null, prix)` ; pastille → `monetization_set(±)` (refus `payout_first` → le champ s'ouvre) ; `creator_payout_set` ; `club-billing cancel_creator` |
+| Music des Habits | inchangé en production (`intention_sound_set` présent) |
+| Suites navigateur | com_member_menu **41** · com_paper 36 · com_read_copy 18 · com_guest 14 · com_plateforme 23 · com_composition 78 · com_creator 37 · com_processeur 114 · com_shorts 92 · com_spot 8 · com_vision_image 8 · com_cloths 16 — 0 échec |
+
 ## 0 · SPACE — ARCHITECTURES BRUTALISTES DE LA VIDÉO PUBLIÉES — 19/10/2026
 
 | Mesure | Résultat |
