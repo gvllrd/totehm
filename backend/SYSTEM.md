@@ -20,6 +20,18 @@
 ---
 
 
+## 0 · LE SPOT TEL QU'IL EST ; LA VISIONNEUSE DE GAUCHE À LA VERTICALE — 21/10/2026 (lot M)
+
+| Mesure | Résultat |
+|---|---|
+| Base | aucune migration (front seul) |
+| `com/totehm.html` en production | 200, 811 678 caractères = le fichier du dépôt (836 938 octets), `BUILD=2026-10-21-com-spots`, commit `47e2c3c`, Vercel READY (`dpl_BaNjDCyBgR66pbe2GevZ9sc1Wqs6`) |
+| Présent en production | `function boxSpot(z,court)`, `<div class="sdata" aria-label="Where and when">`, `#rdr-g .tl{border-radius:14px}`, `.tlv-f` en `scroll-snap-type:y mandatory` |
+| Absent en production | `class="lsh-pol"` (le polaroid), `ssp-bg` (le fond flou), `class="tlv-p"` (les flèches latérales) |
+| Mesuré en page (simulé, 390 × 844 et 1280 × 800) | → tuiles rondes ≥ 14 px ; vue agrandie : fond `#000`, image `contain` non arrondie, infos (Habit Box + `.sdata` rayon 16, Space Mono) AU-DESSUS du média, GO · CALENDAR ; spot sans média = infos centrées, mini-boîtes de l'autre membre au format Totehm · ← visionneuse : 2 sections pour 2 médias, aimant vertical, ↓ = média suivant (scrollTop = 1 écran), molette = précédent, → inerte, Échap ferme |
+| ⚠️ Non mesurable ici | le geste réel sur le téléphone de Wah (inertie du défilement aimanté) |
+| Suites navigateur | com_shorts **135** · com_processeur 147 · com_read_copy 18 · com_plateforme 23 · com_paper 36 · com_member_menu 41 · com_guest 14 · com_composition 78 · com_creator 37 · com_spot 8 · com_vision_image 4 · com_cloths 16 — fail 0 |
+
 ## 0 · LE CERVEAU VIBRE, DES POINTS SUR LA TERRE, UN SEUL CURSEUR, LA MANETTE-SOCLE — 20/10/2026 septies (lot L)
 
 | Mesure | Résultat |
