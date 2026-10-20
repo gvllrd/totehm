@@ -3374,9 +3374,15 @@ body.lv-others.gx-dive #gx-ui{opacity:0;transition:opacity .28s ease}
    fond, ni contour, ni rayon : c'est le noir de la page. Centré sous le profil, comme ce que j'ai dit (`.rf-q`).
    16 px : en dessous, l'iPhone ZOOME la page au focus. La flèche d'envoi n'est qu'un trait, et seulement quand
    il y a du texte ; le clavier dit « send » (`enterkeyhint`). */
-#lv-say textarea{display:block;width:100%;min-height:42px;max-height:110px;resize:none;border:0;border-radius:0;background:none;color:#fff;
-  font:400 16px/1.4 'Quantico',sans-serif;padding:11px 36px;outline:none;caret-color:#fff;text-align:center;box-sizing:border-box}
-#lv-say textarea::placeholder{color:#55555c;opacity:1}
+/* 20/10 ter — Wah : « je préfère le curseur qui clignote comme avant, à GAUCHE, et ce que j'écris en plus GRAND ».
+   Le trait qui clignote occupe EXACTEMENT la place du vrai curseur (à gauche, même hauteur de ligne) : tant que le
+   vrai n'est pas là, c'est lui ; dès que le vrai est là (`is-tape` : le champ a le focus — et, sur téléphone, le
+   clavier est levé), il s'éteint. Jamais les deux. Plus de « Wassup ? ». */
+#lv-say textarea{display:block;width:100%;min-height:46px;max-height:150px;resize:none;border:0;border-radius:0;background:none;color:#fff;
+  font:400 22px/1.35 'Quantico',sans-serif;padding:8px 34px 8px 0;outline:none;caret-color:#fff;text-align:left;box-sizing:border-box}
+#lv-say .rf-cur{position:absolute;left:0;top:10px;width:2px;height:26px;background:#fff;opacity:0;pointer-events:none}
+#lv-say.is-vide:not(.is-tape) .rf-cur{opacity:1;animation:rf-blink 1.1s steps(1,end) infinite}
+@keyframes rf-blink{0%,55%{opacity:1}56%,100%{opacity:0}}
 #lv-say .lv-btn{position:absolute;right:0;bottom:0;min-height:42px;padding:0 6px;background:none;border:0;border-radius:0;color:#fff;transition:opacity .15s ease}
 #lv-say.is-vide .lv-btn{opacity:0;pointer-events:none}
 #lv-say .lv-btn svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
@@ -3408,7 +3414,7 @@ body.rf-clavier #lvjoy{opacity:0;pointer-events:none}
 .rf-add{border:0;border-radius:10px;padding:7px 11px;background:rgba(0,0,0,.3);color:#d6d6dc;font:700 9.5px/1.3 'Space Mono',monospace;letter-spacing:.1em;text-transform:uppercase;cursor:pointer}
 .rf-add:disabled{opacity:.6;cursor:default}
 .rf-ex{align-self:flex-start;font:400 9px/1.4 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#5c5c64;margin:2px 0 4px}
-.rf-q{margin:0 0 6px;text-align:center;font:400 13px/1.4 'Quantico',sans-serif;color:#8a8a92;word-wrap:break-word}
+.rf-q{margin:0 0 8px;text-align:left;font:400 20px/1.35 'Quantico',sans-serif;color:#cfcfd6;word-wrap:break-word}
 .sm-acts{display:flex;gap:12px;padding:8px 2px 0}
 .sm-acts button{background:none;border:0;padding:2px 0;font:400 9.5px/1.4 'Space Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:#6d6d74;cursor:pointer}
 .sm-cta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;margin-top:10px}
@@ -3944,7 +3950,8 @@ body.rdr-shorts #rdr-c{opacity:0}
       <div id="rf" class="lv-act">
         <div id="rf-me" aria-hidden="true"></div>
         <form id="lv-say" class="hide is-vide" autocomplete="off">
-          <textarea id="lv-say-in" maxlength="600" rows="1" placeholder="Wassup ?" enterkeyhint="send" autocapitalize="sentences" aria-label="Talk to my Reflection"></textarea>
+          <i class="rf-cur" aria-hidden="true"></i>
+          <textarea id="lv-say-in" maxlength="600" rows="1" enterkeyhint="send" autocapitalize="sentences" aria-label="Talk to my Reflection"></textarea>
           <button class="lv-btn" id="lv-say-go" type="submit" aria-label="Reflect"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8 H13 M9 4 L13 8 L9 12"/></svg></button>
         </form>
         <div class="lv-note" id="lv-say-note" role="status" aria-live="polite"></div>
@@ -6706,7 +6713,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-10-20-com-clavier';
+const BUILD='2026-10-20-com-curseur';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -11877,9 +11884,31 @@ window.addEventListener('pageshow',e=>{
       else if(e.key==='Escape'){ e.preventDefault(); try{ e.target.blur(); }catch(_){} if(!e.target.value.trim()) aller('c'); }
       else if(e.key==='ArrowUp'&&!e.target.value){ const v=voisin('h'); if(v){ e.preventDefault(); try{ e.target.blur(); }catch(_){} aller(v); } }
     });
-    /* En tapant sur téléphone, la manette s'efface (`body.rf-clavier`). */
-    $('lv-say-in').addEventListener('focus',()=>{ if(tactile()) document.body.classList.add('rf-clavier'); });
-    $('lv-say-in').addEventListener('blur',()=>document.body.classList.remove('rf-clavier'));
+    /* LE VRAI CURSEUR EST-IL LÀ ? Le champ a le focus — et, sur téléphone, le clavier est levé (la fenêtre visible
+       rétrécit) : sans clavier, un téléphone ne dessine pas de curseur, c'est donc le trait qui clignote qui reste.
+       En tapant sur téléphone, la manette s'efface (`body.rf-clavier`). */
+    /* La hauteur SANS clavier est relevée tant que le champ n'a pas le focus : un téléphone qui rétrécit toute la
+       page (et pas seulement la fenêtre visible) au lever du clavier est ainsi lu pareil. */
+    let hauteurLibre=window.innerHeight;
+    const clavierLeve=()=>(window.visualViewport?window.visualViewport.height:window.innerHeight)<hauteurLibre-100;
+    function vraiCurseur(){
+      const f=$('lv-say'), t=$('lv-say-in'); if(!f||!t) return;
+      const ici=document.activeElement===t;
+      if(!ici) hauteurLibre=window.innerHeight;
+      const la=ici&&(!tactile()||clavierLeve());
+      f.classList.toggle('is-tape',la);
+      document.body.classList.toggle('rf-clavier',ici&&tactile());
+    }
+    $('lv-say-in').addEventListener('focus',vraiCurseur);
+    $('lv-say-in').addEventListener('blur',vraiCurseur);
+    if(window.visualViewport) window.visualViewport.addEventListener('resize',vraiCurseur);
+    window.addEventListener('resize',vraiCurseur);
+    /* Le secours : si le téléphone n'a pas voulu ouvrir le clavier pendant le glissé, UN TAP n'importe où dans la
+       vue l'ouvre (un tap est toujours un geste que le téléphone accepte). */
+    $('rf').addEventListener('click',e=>{
+      if(vue!=='b'||e.target.closest('button,a,textarea,input,[data-sm-offer]')) return;
+      const t=champ(); if(t) try{ t.focus({preventScroll:true}); const n=t.value.length; t.setSelectionRange(n,n); }catch(_){}
+    });
     /* Une Reflection, telle qu'elle part ailleurs : ses trois étages, en clair. */
     const aPartager=m=>{ const r=lireR3(m.text); return [r.dir&&r.dir.text, r.obs&&r.obs.text, r.teach&&r.teach.text, r.step&&r.step.text&&('→ '+r.step.text)].filter(Boolean).join('\n'); };
     function ajouterHabit(id){

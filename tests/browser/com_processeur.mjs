@@ -269,10 +269,11 @@ try{
     vide:document.getElementById('lv-say').classList.contains('is-vide'),cur:!!document.querySelector('#lv-say .rf-cur'),
     focus:document.activeElement===document.getElementById('lv-say-in'),ph:document.getElementById('lv-say-in').placeholder,
     px:getComputedStyle(document.getElementById('lv-say-in')).fontSize,boite:getComputedStyle(document.getElementById('lv-say-in')).backgroundColor,
+    align:getComputedStyle(document.getElementById('lv-say-in')).textAlign,faux:getComputedStyle(document.querySelector('#lv-say .rf-cur')).opacity,coarse:matchMedia('(pointer:coarse)').matches,
     slo:(()=>{const r=document.getElementById('lv-slogan').getBoundingClientRect();return r.top>innerHeight*.8;})()}));
   ok(v.say&&/Quantico/.test(v.font)&&/^6 of 7 free this month/.test(v.note),'prêt : la saisie (Quantico), « 6 of 7 free this month »');
-  ok(v.etages.length===0&&v.vide&&!v.cur&&v.focus&&v.ph==='Wassup ?','20/10 · en arrivant : le VRAI curseur est déjà dans le champ (focus), « Wassup ? » invite, AUCUN faux curseur, rien d\'autre');
-  ok(v.px==='16px'&&v.boite==='rgba(0, 0, 0, 0)','20/10 · ni boîte ni fond, et 16 px (en dessous l\'iPhone zoome au focus) → '+v.px+' '+v.boite);
+  ok(v.etages.length===0&&v.vide&&v.focus&&v.ph===''&&v.faux===(v.coarse?'1':'0'),'20/10 ter · en arrivant : le focus est déjà dans le champ ; à la souris le trait s\'efface (le vrai curseur est là), au doigt SANS clavier levé il reste — jamais deux ; plus de « Wassup ? » → '+JSON.stringify({f:v.focus,faux:v.faux,coarse:v.coarse}));
+  ok(v.px==='22px'&&v.align==='left'&&v.boite==='rgba(0, 0, 0, 0)','20/10 ter · à GAUCHE, en GRAND (22 px), ni boîte ni fond → '+v.px+' '+v.align+' '+v.boite);
   /* ↑ dans le champ vide remonte ; redescendre remet le curseur dans le champ */
   await pg.keyboard.press('ArrowUp');await vers(pg,'c');await pg.waitForTimeout(300);
   ok(await pg.evaluate(()=>window.__totehm_lv().vue)==='c','20/10 · ↑ dans le champ vide remonte au centre');
@@ -393,14 +394,35 @@ try{
   const tp=(type,x,y)=>cdp.send('Input.dispatchTouchEvent',{type,touchPoints:type==='touchEnd'?[]:[{x,y}]});
   await tp('touchStart',195,600);for(let i=1;i<=6;i++) await tp('touchMove',195,600-i*40);await tp('touchEnd');
   const geste=await pg.evaluate(()=>document.activeElement&&document.activeElement.className);
+  const course=await pg.evaluate(()=>getComputedStyle(document.querySelector('#lv-say .rf-cur')).animationName);
   await pg.keyboard.type('yo');await vers(pg,'b');await pg.waitForTimeout(300);
   const a=await pg.evaluate(()=>({act:document.activeElement&&document.activeElement.id,val:document.getElementById('lv-say-in').value,
     clav:document.body.classList.contains('rf-clavier'),joy:getComputedStyle(document.getElementById('lvjoy')).opacity}));
   ok(geste==='rf-proxy','20/10 · téléphone : le clavier s\'ouvre DANS le geste (relais focalisé pendant la course)');
   ok(a.act==='lv-say-in'&&a.val==='yo','20/10 · à l\'arrivée, le focus passe au vrai champ et garde ce qui a été tapé pendant la course → '+JSON.stringify(a));
   ok(a.clav&&a.joy==='0','20/10 · en tapant sur téléphone, la manette s\'efface');
+  ok(course==='rf-blink','20/10 ter · pendant la course, le trait CLIGNOTE à gauche (le vrai curseur n\'est pas encore là)');
+  /* le clavier se lève : la page rétrécit → le vrai curseur prend la place, le trait s'éteint (champ vidé d'abord) */
+  await pg.fill('#lv-say-in','');await pg.focus('#lv-say-in');await pg.setViewportSize({width:390,height:480});await pg.waitForTimeout(300);
+  const k=await pg.evaluate(()=>({tape:document.getElementById('lv-say').classList.contains('is-tape'),op:getComputedStyle(document.querySelector('#lv-say .rf-cur')).opacity}));
+  ok(k.tape&&k.op==='0','20/10 ter · clavier levé : un seul curseur, le vrai → '+JSON.stringify(k));
+  await pg.evaluate(()=>document.getElementById('lv-say-in').blur());await pg.setViewportSize({width:390,height:844});await pg.waitForTimeout(300);
+  ok(await pg.evaluate(()=>!document.getElementById('lv-say').classList.contains('is-tape')&&getComputedStyle(document.querySelector('#lv-say .rf-cur')).animationName==='rf-blink'),'20/10 ter · clavier baissé : le trait clignote de nouveau à gauche');
+  /* le secours : un tap n'importe où dans la vue ouvre le clavier */
+  await pg.tap('#rf',{position:{x:200,y:600}});await pg.waitForTimeout(200);
+  ok(await pg.evaluate(()=>document.activeElement===document.getElementById('lv-say-in')),'20/10 ter · un tap n\'importe où dans la vue met le curseur dans le champ (le téléphone accepte toujours un tap)');
   await tp('touchStart',195,500);for(let i=1;i<=6;i++) await tp('touchMove',195,500+i*40);await tp('touchEnd');await vers(pg,'c');await pg.waitForTimeout(300);
   ok(await pg.evaluate(()=>!document.body.classList.contains('rf-clavier')&&!['lv-say-in'].includes(document.activeElement&&document.activeElement.id)&&!(document.activeElement&&document.activeElement.classList.contains('rf-proxy'))),
     '20/10 · remonter ferme le clavier et rend la manette');
   ok(!erreurs(log).length,'téléphone : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
+
+ // ── 20/10 ter · À LA SOURIS : ↓ mène en bas, le vrai curseur est là, le trait s'efface ──
+ {const{pg,log}=await page(browser,{dir:'com',origin,tables,rpc:{my_landing:LAND()},viewport:{width:1280,height:860}});
+  await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1200);
+  await pg.keyboard.press('ArrowDown');await vers(pg,'b');await pg.waitForTimeout(300);
+  const m=await pg.evaluate(()=>({coarse:matchMedia('(pointer:coarse)').matches,f:document.activeElement===document.getElementById('lv-say-in'),
+    faux:getComputedStyle(document.querySelector('#lv-say .rf-cur')).opacity}));
+  ok(!m.coarse&&m.f&&m.faux==='0','20/10 ter · à la souris : ↓ et le curseur est dans le champ, un seul → '+JSON.stringify(m));
+  await pg.keyboard.type('hey');ok(await pg.inputValue('#lv-say-in')==='hey','20/10 ter · on tape directement, sans cliquer');
+  ok(!erreurs(log).length,'souris : aucune erreur');await pg.context().close();}
 }finally{await browser.close();}

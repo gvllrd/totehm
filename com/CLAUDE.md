@@ -1,5 +1,16 @@
 # com/CLAUDE.md — totehm.com : le Totehm, la carte, HigherSelf
 
+## 20/10/2026 ter — LE CURSEUR QUI CLIGNOTE, À GAUCHE, ET CE QUE J'ÉCRIS EN GRAND (BUILD `2026-10-20-com-curseur`)
+
+Wah : « au lieu du Wassup, je préfère le curseur qui clignote comme avant, à gauche, et les inputs en plus grand ».
+- Plus de placeholder. Le champ et ce que j'ai dit (`.rf-q`) sont À GAUCHE, en Quantico 22 px / 20 px.
+- **Un seul curseur à la fois** : le trait qui clignote (`.rf-cur`, revenu) occupe la place EXACTE du vrai. Il s'éteint
+  quand le vrai est là — `#lv-say.is-tape` : le champ a le focus ET, au doigt, le clavier est levé (la fenêtre visible
+  passe sous la hauteur relevée AVANT le focus, moins 100 px ; relevée hors focus pour lire aussi un téléphone qui
+  rétrécit toute la page). Sans clavier, un téléphone ne dessine pas de curseur : le trait reste.
+- **Le secours** : si le téléphone refuse d'ouvrir le clavier pendant le glissé (un glissé n'est pas un tap pour tous
+  les navigateurs), UN TAP n'importe où dans `#rf` met le focus dans le champ — un tap est toujours accepté.
+
 ## 20/10/2026 bis — EN BAS, ON ARRIVE ET ON TAPE (BUILD `2026-10-20-com-clavier`)
 
 Wah : « dès que l'utilisateur passe de la vue centrale à la vue du bas, le clavier s'affiche direct ; pas de double
