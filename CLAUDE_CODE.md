@@ -70,6 +70,10 @@ qu'un gris. `terms.html` n'est plus une page entièrement navy. Mesuré :
 noir, les sept couleurs jamais au-dessus de 0,3 %. La seule exception reste le
 Totehm DÉPLOYÉ, où le papier navy prend le champ.
 
+Neuvième volet (BUILD `2026-10-20-com-clavier`) : EN BAS, ON ARRIVE ET ON
+TAPE. Passer à ma Reflection ouvre le clavier tout de suite ; un seul curseur,
+aucune boîte, « Wassup ? » comme seule invitation.
+
 Huitième volet (BUILD `2026-10-20-com-verso`) : LE VERSO = MON ARGENT, EN
 UN ÉCRAN. Le nom une fois en haut ; ce que je gagne, OPEN/OFF, le prix au
 curseur (enregistré en le lâchant), où me payer, ma page à partager ; puis ce

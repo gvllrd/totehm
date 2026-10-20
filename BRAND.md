@@ -145,7 +145,8 @@ study does not exist. Our own citations are stronger because they are real. A me
 only on hover, tap or dive, in Quantico Coral, growing with its square. Typing a name does not open a list: the
 galaxy itself answers.
 
-**The Reflection at rest is a profile and a blinking cursor.** Then three linked tiers: direction (light blue) ·
+**The Reflection at rest is a profile and the REAL cursor, already in place** (20/10): arriving below opens the
+keyboard at once; one caret, no box, *Wassup ?* as the only invitation. Then three linked tiers: direction (light blue) ·
 **the Habit, raised, in the MIDDLE** (navy, with the intention trait the model chose) · obstacle + Teaching from the
 story (red-violet). Talk is cheap: the action is the centre of gravity.
 

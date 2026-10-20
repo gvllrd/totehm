@@ -1,5 +1,22 @@
 # com/CLAUDE.md — totehm.com : le Totehm, la carte, HigherSelf
 
+## 20/10/2026 bis — EN BAS, ON ARRIVE ET ON TAPE (BUILD `2026-10-20-com-clavier`)
+
+Wah : « dès que l'utilisateur passe de la vue centrale à la vue du bas, le clavier s'affiche direct ; pas de double
+curseur ni de boîte de saisie ; minimalisme et fluidité extrêmes ». Mesuré avant : un FAUX curseur (`.rf-cur`)
+clignotait à côté du vrai, aucun focus à l'arrivée (on devait toucher le champ), le champ en 15 px (l'iPhone zoome
+la page au focus sous 16 px), et la flèche d'envoi dans une pastille grise = une « boîte ».
+- **Un seul curseur, le vrai** : `.rf-cur` et `@keyframes rf-blink` partis (balisage + règles). Le champ : ni fond ni
+  contour, 16 px, centré sous le profil, `placeholder="Wassup ?"`, `enterkeyhint="send"` ; la flèche est un trait nu,
+  visible seulement avec du texte.
+- **Le clavier s'ouvre en arrivant** : `aller('b')` appelle `REF.armer()` DANS le geste (doigt, manette, flèche, bouton)
+  et focalise un relais invisible (`.rf-proxy`, fixe en haut, 16 px) — un téléphone n'ouvre le clavier QUE pendant un
+  geste, et la course dure 0,7 s. À l'arrivée, `REF.arrive()` passe le focus au vrai champ (le clavier reste ouvert)
+  et reprend ce qui a été tapé pendant la course. À la souris, le focus se pose à l'arrivée. Tactile = `(pointer:coarse)`.
+- **La navigation tient** : dans le champ VIDE, ↑ remonte et Échap revient au centre ; glisser vers le bas remonte
+  (le doigt n'est pas lu sur le champ). Partir de la vue ferme le clavier (`REF.quitter`).
+- En tapant sur téléphone, la manette s'efface (`body.rf-clavier #lvjoy`).
+
 ## 20/10/2026 — LE VERSO = MON ARGENT, EN UN ÉCRAN (BUILD `2026-10-20-com-verso`)
 
 Wah : « le verso, totalement ILLISIBLE … c'est l'espace membre axé sur la monétisation ULTRA-SIMPLIFIÉ ».

@@ -267,9 +267,17 @@ try{
   const v=await pg.evaluate(()=>({say:!document.getElementById('lv-say').classList.contains('hide'),font:getComputedStyle(document.getElementById('lv-say-in')).fontFamily,
     note:document.getElementById('lv-say-note').textContent,etages:[...document.querySelectorAll('#lv-thread .rf-t')].map(e=>e.className),
     vide:document.getElementById('lv-say').classList.contains('is-vide'),cur:!!document.querySelector('#lv-say .rf-cur'),
+    focus:document.activeElement===document.getElementById('lv-say-in'),ph:document.getElementById('lv-say-in').placeholder,
+    px:getComputedStyle(document.getElementById('lv-say-in')).fontSize,boite:getComputedStyle(document.getElementById('lv-say-in')).backgroundColor,
     slo:(()=>{const r=document.getElementById('lv-slogan').getBoundingClientRect();return r.top>innerHeight*.8;})()}));
   ok(v.say&&/Quantico/.test(v.font)&&/^6 of 7 free this month/.test(v.note),'prêt : la saisie (Quantico), « 6 of 7 free this month »');
-  ok(v.etages.length===0&&v.vide&&v.cur,'15/10 bis · avant d\'avoir parlé : le profil et un CURSEUR qui clignote, rien d\'autre (plus de boîtes vides)');
+  ok(v.etages.length===0&&v.vide&&!v.cur&&v.focus&&v.ph==='Wassup ?','20/10 · en arrivant : le VRAI curseur est déjà dans le champ (focus), « Wassup ? » invite, AUCUN faux curseur, rien d\'autre');
+  ok(v.px==='16px'&&v.boite==='rgba(0, 0, 0, 0)','20/10 · ni boîte ni fond, et 16 px (en dessous l\'iPhone zoome au focus) → '+v.px+' '+v.boite);
+  /* ↑ dans le champ vide remonte ; redescendre remet le curseur dans le champ */
+  await pg.keyboard.press('ArrowUp');await vers(pg,'c');await pg.waitForTimeout(300);
+  ok(await pg.evaluate(()=>window.__totehm_lv().vue)==='c','20/10 · ↑ dans le champ vide remonte au centre');
+  await pg.click('#lvn-dn');await vers(pg,'b');await pg.waitForTimeout(400);
+  ok(await pg.evaluate(()=>document.activeElement===document.getElementById('lv-say-in')),'20/10 · redescendre : le curseur est de nouveau dans le champ');
   await pg.fill('#lv-say-in','I procrastinate on my collection');await pg.keyboard.press('Enter');
   await pg.waitForFunction(()=>window.__totehm_lv().reflection.envois===1,null,{timeout:5000}).catch(()=>{});await pg.waitForTimeout(300);
   const r=await pg.evaluate(()=>{const q=s=>document.querySelector(s),cs=e=>e&&getComputedStyle(e).backgroundColor;
@@ -376,4 +384,23 @@ try{
   await pg.goto(origin+'/totehm');await pg.waitForTimeout(3200);
   ok(await pg.evaluate(()=>window.__coin)===0,'module retardé de 1,5 s ('+vp.width+' px) : le badge [Higher] jamais au coin');
   ok(!erreurs(log).length,'chargement lent : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
+
+ // ── 20/10 · TÉLÉPHONE : on glisse vers le bas, le clavier est DÉJÀ ouvert (relais focalisé DANS le geste) ──
+ {const{pg,log}=await page(browser,{dir:'com',origin,tables,rpc:{my_landing:LAND()},viewport:{width:390,height:844},hasTouch:true});
+  await pg.addInitScript(()=>{const m=window.matchMedia.bind(window);window.matchMedia=q=>/^\(pointer:\s*coarse\)$/.test(q)?{matches:true,media:q,addEventListener(){},removeEventListener(){},addListener(){},removeListener(){}}:m(q);});
+  await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1200);
+  const cdp=await pg.context().newCDPSession(pg);
+  const tp=(type,x,y)=>cdp.send('Input.dispatchTouchEvent',{type,touchPoints:type==='touchEnd'?[]:[{x,y}]});
+  await tp('touchStart',195,600);for(let i=1;i<=6;i++) await tp('touchMove',195,600-i*40);await tp('touchEnd');
+  const geste=await pg.evaluate(()=>document.activeElement&&document.activeElement.className);
+  await pg.keyboard.type('yo');await vers(pg,'b');await pg.waitForTimeout(300);
+  const a=await pg.evaluate(()=>({act:document.activeElement&&document.activeElement.id,val:document.getElementById('lv-say-in').value,
+    clav:document.body.classList.contains('rf-clavier'),joy:getComputedStyle(document.getElementById('lvjoy')).opacity}));
+  ok(geste==='rf-proxy','20/10 · téléphone : le clavier s\'ouvre DANS le geste (relais focalisé pendant la course)');
+  ok(a.act==='lv-say-in'&&a.val==='yo','20/10 · à l\'arrivée, le focus passe au vrai champ et garde ce qui a été tapé pendant la course → '+JSON.stringify(a));
+  ok(a.clav&&a.joy==='0','20/10 · en tapant sur téléphone, la manette s\'efface');
+  await tp('touchStart',195,500);for(let i=1;i<=6;i++) await tp('touchMove',195,500+i*40);await tp('touchEnd');await vers(pg,'c');await pg.waitForTimeout(300);
+  ok(await pg.evaluate(()=>!document.body.classList.contains('rf-clavier')&&!['lv-say-in'].includes(document.activeElement&&document.activeElement.id)&&!(document.activeElement&&document.activeElement.classList.contains('rf-proxy'))),
+    '20/10 · remonter ferme le clavier et rend la manette');
+  ok(!erreurs(log).length,'téléphone : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
 }finally{await browser.close();}

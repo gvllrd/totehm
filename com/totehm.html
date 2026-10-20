@@ -3367,24 +3367,24 @@ body.lv-others.gx-dive #gx-ui{opacity:0;transition:opacity .28s ease}
   display:flex;flex-direction:column;align-items:stretch;gap:10px;
   padding:calc(max(10px,env(safe-area-inset-top)) + 46px) 0 calc(var(--lvj-h) + 14px)}
 #rf-me{width:64px;height:64px;align-self:center;flex:none;margin-bottom:34px}
-#lv-say{display:flex;gap:8px;align-items:flex-end;flex:none}
-/* ⚠️ 18/10 · ON ÉCRIT À MÊME LE NOIR, ET IL N'Y A QU'UN CURSEUR (Wah : « il y a un double curseur et une
-   boîte saisie texte qui s'affiche ; l'utilisateur doit pouvoir directement entrer son texte dans le dark,
-   pas de saisie texte »). Le champ n'a donc NI fond, NI rayon, NI contour — à aucun moment, écrit ou vide :
-   c'est le fond de la page qui est la page. Et le faux curseur s'éteint dès que le vrai apparaît (le focus) :
-   deux traits qui clignotent côte à côte, c'était le « double curseur ». */
-#lv-say textarea{flex:1;min-height:42px;max-height:110px;resize:none;border:0;border-radius:0;background:none;color:#fff;
-  font:400 15px/1.4 'Quantico',sans-serif;padding:11px 0 11px 22px;outline:none;caret-color:#fff}
-#lv-say textarea::placeholder{color:#3a3a42}
-body.lv-b #lv-say{position:relative}
+#lv-say{position:relative;display:block;flex:none}
+/* ⚠️ 20/10 · ON ARRIVE, ON TAPE (Wah : « dès que l'utilisateur passe de la vue centrale à la vue du bas, le clavier
+   s'affiche direct ; pas de double curseur, pas de boîte de saisie ; minimalisme et fluidité extrêmes »).
+   UN SEUL curseur : le VRAI (le faux trait qui clignotait à côté est parti, balisage et règles). Le champ n'a ni
+   fond, ni contour, ni rayon : c'est le noir de la page. Centré sous le profil, comme ce que j'ai dit (`.rf-q`).
+   16 px : en dessous, l'iPhone ZOOME la page au focus. La flèche d'envoi n'est qu'un trait, et seulement quand
+   il y a du texte ; le clavier dit « send » (`enterkeyhint`). */
+#lv-say textarea{display:block;width:100%;min-height:42px;max-height:110px;resize:none;border:0;border-radius:0;background:none;color:#fff;
+  font:400 16px/1.4 'Quantico',sans-serif;padding:11px 36px;outline:none;caret-color:#fff;text-align:center;box-sizing:border-box}
+#lv-say textarea::placeholder{color:#55555c;opacity:1}
+#lv-say .lv-btn{position:absolute;right:0;bottom:0;min-height:42px;padding:0 6px;background:none;border:0;border-radius:0;color:#fff;transition:opacity .15s ease}
 #lv-say.is-vide .lv-btn{opacity:0;pointer-events:none}
-#lv-say .rf-cur{position:absolute;left:8px;top:50%;width:2px;height:19px;margin-top:-10px;background:#fff;
-  opacity:0;pointer-events:none;transition:opacity .2s ease}
-#lv-say.is-vide .rf-cur{opacity:1;animation:rf-blink 1.1s steps(1,end) infinite}
-#lv-say:focus-within .rf-cur{opacity:0;animation:none}
-@keyframes rf-blink{0%,55%{opacity:1}56%,100%{opacity:0}}
-#lv-say .lv-btn{border-radius:21px;min-height:42px;padding:0 16px}
 #lv-say .lv-btn svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+/* Le relais du clavier (tactile) : un champ invisible, en haut, focalisé DANS le geste — l'iPhone n'ouvre le
+   clavier que pendant un geste, et la course vers le bas dure 0,7 s. À l'arrivée, le focus passe au vrai champ. */
+.rf-proxy{position:fixed;top:0;left:0;width:1px;height:1px;padding:0;border:0;opacity:0;font-size:16px;pointer-events:none;caret-color:transparent}
+/* En tapant sur téléphone, la manette s'efface : le clavier, le profil, ce que j'écris — rien d'autre. */
+body.rf-clavier #lvjoy{opacity:0;pointer-events:none}
 #lv-say-note{flex:none}
 #lv-say-note:empty{display:none}
 #lv-thread{flex:0 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;display:flex;flex-direction:column;gap:3px;scrollbar-width:none}
@@ -3944,8 +3944,7 @@ body.rdr-shorts #rdr-c{opacity:0}
       <div id="rf" class="lv-act">
         <div id="rf-me" aria-hidden="true"></div>
         <form id="lv-say" class="hide is-vide" autocomplete="off">
-          <i class="rf-cur" aria-hidden="true"></i>
-          <textarea id="lv-say-in" maxlength="600" rows="1" aria-label="Talk to my Reflection"></textarea>
+          <textarea id="lv-say-in" maxlength="600" rows="1" placeholder="Wassup ?" enterkeyhint="send" autocapitalize="sentences" aria-label="Talk to my Reflection"></textarea>
           <button class="lv-btn" id="lv-say-go" type="submit" aria-label="Reflect"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8 H13 M9 4 L13 8 L9 12"/></svg></button>
         </form>
         <div class="lv-note" id="lv-say-note" role="status" aria-live="polite"></div>
@@ -6707,7 +6706,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-10-20-com-verso';
+const BUILD='2026-10-20-com-clavier';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -10948,6 +10947,7 @@ window.addEventListener('pageshow',e=>{
       if((v==='g'||v==='d')&&!inscrit()) return;      /* « mes » shorts, « mes » spots : il faut un Totehm */
       if(PAPIER.occupe()&&!PAPIER.vue()) return;
       diag.allers++;
+      if(v==='b') REF.armer();      /* DANS le geste : sans lui, le téléphone n'ouvre pas le clavier */
       bouge=true; const de=vue; vue=v;
       if(de==='c'&&mode==='others') GX.pause();
       if(de==='b') REF.quitter();
@@ -11874,8 +11874,12 @@ window.addEventListener('pageshow',e=>{
     $('lv-say-in').addEventListener('input',curseur);
     $('lv-say-in').addEventListener('keydown',e=>{
       if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); $('lv-say').requestSubmit(); }
-      else if(e.key==='Escape'){ e.preventDefault(); try{ e.target.blur(); }catch(_){} }   /* Échap rend les flèches à la navigation */
+      else if(e.key==='Escape'){ e.preventDefault(); try{ e.target.blur(); }catch(_){} if(!e.target.value.trim()) aller('c'); }
+      else if(e.key==='ArrowUp'&&!e.target.value){ const v=voisin('h'); if(v){ e.preventDefault(); try{ e.target.blur(); }catch(_){} aller(v); } }
     });
+    /* En tapant sur téléphone, la manette s'efface (`body.rf-clavier`). */
+    $('lv-say-in').addEventListener('focus',()=>{ if(tactile()) document.body.classList.add('rf-clavier'); });
+    $('lv-say-in').addEventListener('blur',()=>document.body.classList.remove('rf-clavier'));
     /* Une Reflection, telle qu'elle part ailleurs : ses trois étages, en clair. */
     const aPartager=m=>{ const r=lireR3(m.text); return [r.dir&&r.dir.text, r.obs&&r.obs.text, r.teach&&r.teach.text, r.step&&r.step.text&&('→ '+r.step.text)].filter(Boolean).join('\n'); };
     function ajouterHabit(id){
@@ -11909,11 +11913,31 @@ window.addEventListener('pageshow',e=>{
     }
     fil.addEventListener('click',smClic);
     $('lv-say-note').addEventListener('click',smClic);
+    /* ══ 20/10 · ON ARRIVE, ON TAPE ══ Le clavier s'ouvre en arrivant dans ma Reflection. Sur téléphone, il ne
+       s'ouvre que DANS un geste : `armer()` est appelé par `aller('b')` dans le même geste (doigt, manette,
+       flèche) et focalise un relais invisible ; à l'arrivée, `arrive()` passe le focus au vrai champ (le clavier
+       reste ouvert) et reprend ce qui a déjà été tapé. À la souris, le focus se pose simplement à l'arrivée.
+       ↑ et Échap naviguent toujours : dans un champ VIDE, ↑ remonte et Échap revient au centre. */
+    const tactile=()=>window.matchMedia('(pointer:coarse)').matches;
+    let relais=null;
+    const champ=()=>{ const f=$('lv-say'), t=$('lv-say-in'); return f&&t&&!f.classList.contains('hide')?t:null; };
     const REF={
       entre(){ smEtat(); },
-      /* Pas de mise au point d'office : ↑ et Échap doivent toujours naviguer ; on tape quand on touche le champ. */
-      arrive(){ if(SM.busy) penser(true); },
-      quitter(){ penser(false); try{ if($('rf').contains(document.activeElement)) document.activeElement.blur(); }catch(_){} }
+      armer(){
+        if(!champ()||!tactile()) return;
+        if(!relais){ relais=document.createElement('input'); relais.className='rf-proxy'; relais.tabIndex=-1;
+          relais.setAttribute('aria-hidden','true'); relais.autocomplete='off'; document.body.appendChild(relais); }
+        relais.value=''; try{ relais.focus({preventScroll:true}); }catch(_){}
+      },
+      arrive(){
+        if(SM.busy) penser(true);
+        const t=champ();
+        if(t&&vue==='b'){
+          if(relais&&relais.value){ t.value+=relais.value; relais.value=''; curseur(); }
+          try{ t.focus({preventScroll:true}); const n=t.value.length; t.setSelectionRange(n,n); }catch(_){}
+        } else if(relais&&document.activeElement===relais) relais.blur();
+      },
+      quitter(){ penser(false); try{ const a=document.activeElement; if(a&&($('rf').contains(a)||a===relais)) a.blur(); }catch(_){} }
     };
 
     /* ── LES DONNÉES : `my_landing()`, une réponse tardive ne gagne jamais ── */
