@@ -33,7 +33,20 @@ member has total control of their own Totehm — and the back of the paper has n
 Three levels, and only three: **PRIVATE** (only me) · **SUBSCRIBERS** (whoever subscribed to a member's
 Totehm) · **CLUB** (whoever is on the platform with a Totehm filled in — a member).
 
-## 16/10/2026 bis · the list is the Totehm ; ← my shorts, my spots →
+## 20/10/2026 · ← my media is a grid · the spots → are the Club
+
+> **← My media** — an Instagram grid. One square per picture or video, and on it, slightly raised (a shadow
+> lifts it), the box of the element it illustrates: its type colour, its intention line, its words. The first
+> square is **+**. Tap the picture: it opens big. Tap the box: the element opens in the Totehm. Long press:
+> move the focal point. Filters: what it shows, which view, which intention.
+> **The spots →** — figher.club continues here: every spot I may see, mine and the Club's, in three times —
+> **was · now · next**. RADAR or SHORTS; shorts are TikTok, one spot per screen, phone and desktop. This is the
+> ONLY place for the polaroid: a navy frame, the intention line on its left edge, in the window at the TOP a
+> transparent black band with the spot facts (I was there · date · duration · place · who · location ·
+> silent/social · its word), GO and CALENDAR at the bottom, the Habit Box printed under the window, then the
+> author's name in Coral. Never a position invented from a city.
+
+## 16/10/2026 bis · the list is the Totehm ; ← my shorts, my spots → (views replaced on 20/10, above)
 
 **THE NAME OF A TOTEHM HAS ONE PLACE: top, centre, small — and it never moves.** Quantico Coral, 13 px, above
 everything, in every view. Tapping it opens the back of the paper, so renaming is one gesture.

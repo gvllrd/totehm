@@ -1,5 +1,38 @@
 # com/CLAUDE.md — totehm.com : le Totehm, la carte, HigherSelf
 
+## 20/10/2026 quater — ← UNE GRILLE INSTAGRAM · LES SPOTS DU CLUB → (BUILD `2026-10-20-com-grille`)
+
+Wah : « la vue de gauche, c'est littéralement l'illustration média (photo et vidéo) des boxes du Totehm sous la forme
+d'une grille Instagram : une image, une vidéo avec par-dessus la box qui lui est attribuée légèrement surélevée, avec
+un bon système de filtre » · « la vue de droite, c'est la partie Spot… ET figher.club en est son prolongement : il faut
+la retravailler en prenant en compte ce qui a été fait sur figher.club tant dans le fond que dans la forme ; format
+TikTok sur ordinateur et mobile ; c'est ici et seulement ici qu'on a la forme polaroid ».
+- **← La grille** (`SH`, `conf.grille`) : `.tlg` 3 colonnes (téléphone), 4 puis 5 (ordinateur), tuiles CARRÉES bord à
+  bord (`.tl`, recadrage `--fx/--fy`), la boîte `.tl-b` posée dessus (couleur de type : navy · bleu clair ·
+  rouge-violet, filet d'intention, 2 lignes, ombre + `translateY(-3px)`). Tuile « + » en tête (`choix('cap')`, les cinq
+  vues). Un tap → la visionneuse `#tlv` (‹ › ← → glisser, ✕ Échap, glisser vers le bas) ; un tap sur la boîte →
+  l'élément dans le Totehm ; appui long → point de focalisation (`feed_badges`), sans ouvrir la visionneuse. Les
+  vidéos montrent leur premier plan (`#t=0.1`, `preload=metadata`) et ne jouent que dans la visionneuse (egress).
+  Filtres : It shows · Views · **Intentions** (revenues : il n'y a plus d'étages qui les portent) — zéro appel.
+  Les sept étages, le polaroid blanc et leur CSS sont partis.
+- **Les spots →** (`SHS` + `RDR`, nourris par `CLUBSP`) : `club_spots(period, filters, lat, lng, 20, offset, as_of)`
+  — tout ce que le SERVEUR me laisse voir (mes spots, le Club, mes abonnements). Trois temps dans la barre :
+  **was · now · next** (à l'arrivée, si « now » est vide, la vue passe d'elle-même à « next » puis « was » ; un choix
+  du membre n'est jamais contredit). Filtres SERVEUR : intentions, type, `scope:'near'` (la position est demandée AU
+  GESTE), Habit choisie au papier docké ; « mine » est un tri local. Page suivante à trois cartes de la fin, `as_of`
+  ancré. Le radar lit le MÊME objet (un spot sans point exact sur l'anneau).
+- **La carte** (shorts) : un écran par spot, aimanté (TikTok), la photo floue et éteinte derrière ; cadre navy, filet
+  d'intention à gauche ; dans la fenêtre (4:5) EN HAUT `.ssp-top` (dégradé noir transparent) : I was there /
+  I am here / I will be here · date · durée · lieu (le point nommé si je le vois, sinon la ville) · audience ·
+  location on/off · silent/social · son mot ; en bas GO (point exact visible) · CALENDAR (à venir, `.ics` local) ;
+  sous la fenêtre la Habit Box projetée par le serveur (`habit_box`, mini-boîtes autorisées seulement), puis l'auteur
+  en Coral → `XO.univers` (sur place). Mes spots : le nom ouvre ma Habit.
+- **Vidéo** : `BUNNY` (copié du lecteur de figher.club, plus court) — `bunny-video {clips:[{id,spot}]}` signe au moment
+  de jouer, HLS natif (Safari) ou `/vendor/hls-1.6.13.mjs` (même origine, réécrit vers SPACE) ; UN clip visible, UN
+  suivant, le reste LÂCHÉ (`destroy`). Fichiers du seau `moments` : `urlMoments` (droits `_clip_readable`).
+- Tests : `com_shorts` 108 (grille, visionneuse, focalisation, + ; club_spots, périodes, carte, filtres serveur, mine,
+  near, Bunny, radar).
+
 ## 20/10/2026 ter — LE CURSEUR QUI CLIGNOTE, À GAUCHE, ET CE QUE J'ÉCRIS EN GRAND (BUILD `2026-10-20-com-curseur`)
 
 Wah : « au lieu du Wassup, je préfère le curseur qui clignote comme avant, à gauche, et les inputs en plus grand ».

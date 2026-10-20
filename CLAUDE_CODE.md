@@ -70,6 +70,13 @@ qu'un gris. `terms.html` n'est plus une page entièrement navy. Mesuré :
 noir, les sept couleurs jamais au-dessus de 0,3 %. La seule exception reste le
 Totehm DÉPLOYÉ, où le papier navy prend le champ.
 
+Dixième volet (BUILD `2026-10-20-com-grille`) : À GAUCHE, UNE GRILLE
+INSTAGRAM — chaque photo ou vidéo du Totehm, la boîte de son élément posée
+dessus, légèrement surélevée, avec ses filtres. À DROITE, LES SPOTS DU CLUB
+(figher.club en est le prolongement) : passé · maintenant · à venir, en radar
+ou en shorts TikTok ; c'est là seulement qu'on a le polaroid, avec en haut
+la bande noire transparente des informations du spot.
+
 Neuvième volet (BUILD `2026-10-20-com-curseur`) : EN BAS, ON ARRIVE ET ON
 TAPE. Passer à ma Reflection ouvre le clavier tout de suite ; le curseur
 clignote à gauche, un seul à la fois, aucune boîte ; ce que j'écris est en

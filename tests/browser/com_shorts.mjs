@@ -31,6 +31,21 @@ function serveur(){
     my_trips:{signed_in:true,trips:[{id:'o1',text:'Ship it',is:['express'],hs:['Run the hill']}],
     reps:[{id:'r1',text:'The phone',is:['focus'],hs:['Run the hill']}],wisdom:[],visions:[{id:'v1',text:'The studio'}]},
     habit_spaces:{ok:true,mine:true,habits:[{habit:'Call mum',total:1,total_spaces:0,total_spots:1,spaces:[],spots:[{id:'sp1',format:'spot',state:'will',photo:UID+'/bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb.jpg',starts_at:'2026-10-12T08:00:00Z',exact:{lat:38.72,lng:-9.14,place:'the hill'}}]}]},
+    /* 20/10 quater — LA VUE DE DROITE LIT LE CLUB (`club_spots`) : maintenant rien, à venir MON spot (le point
+       exact, une photo), passé le spot d'un autre membre (kai3 : sans média, la ville seule). */
+    club_spots:b=>{ const f=b.p_filters||{}, mine={id:'sp1',habit:'Call mum',intentions:['love'],freq:'',state:'will',
+        starts_at:'2026-10-24T08:00:00Z',duration_min:60,city:'Lisbon',location:'on',mode:'social',audience:'figher',
+        comment:'Bring a coffee',photo:UID+'/bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb.jpg',exact:{lat:38.72,lng:-9.14,place:'the hill'},
+        mine:true,creator:'wahigher',habit_box:{name:'Call mum',ints:['love'],objectives:[],repulsions:[]}};
+      const autre={id:'sp2',habit:'Swim at dawn',intentions:['flow'],state:'was',starts_at:'2026-10-13T07:00:00Z',duration_min:45,
+        city:'Porto',location:'off',audience:'figher',mine:false,creator:'kai3',
+        habit_box:{name:'Swim at dawn',ints:['flow'],freq:'every_morning',objectives:[{text:'Cross the bay'}],repulsions:[]}};
+      const clip={id:'sp3',habit:'Dance',intentions:['celebrate'],state:'was',starts_at:'2026-10-11T20:00:00Z',duration_min:90,
+        city:'Lisbon',location:'off',audience:'subscribers',mine:false,creator:'kai3',clip:{id:'cccccccc-cccc-4ccc-8ccc-cccccccccccc',status:'ready'},
+        habit_box:{name:'Dance',ints:['celebrate'],objectives:[],repulsions:[]}};
+      let l=b.p_period==='future'?[mine]:b.p_period==='past'?[autre,clip]:[];
+      if(Array.isArray(f.intentions)) l=l.filter(x=>x.intentions.some(i=>f.intentions.includes(i)));
+      return {ok:true,period:b.p_period,items:l,spots:l,total:l.length,has_more:false,next_offset:l.length,as_of:'2026-10-20T10:00:00Z'}; },
     element_cloths:{ok:true,mine:true,elements:[]},
     my_visions:{ok:true,visions:[{id:'v1',image:UID+'/vision-cccccccc-cccc-4ccc-8ccc-cccccccccccc.jpg'}]},
     my_feed_badges:{ok:true,pos:{'sp:sp1':[20,30]}},
@@ -41,58 +56,52 @@ const browser=await launch();
 try{
  for(const [vp,tel] of [[{width:390,height:844},true],[{width:1280,height:800},false]]){
   const nom=tel?'téléphone':'ordinateur';
-  const{pg,log}=await page(browser,{dir:'com',origin,tables,viewport:vp,hasTouch:tel,rpc:serveur()});
+  const{pg,log}=await page(browser,{dir:'com',origin,tables,viewport:vp,hasTouch:tel,rpc:serveur(),
+    functions:{'bunny-video':b=>({clips:(b.clips||[]).map(c=>({...c,status:'ready',url:'https://vz-test.b-cdn.net/'+c.id+'/playlist.m3u8',expires:Math.floor(Date.now()/1000)+3600}))})}});
   await pg.route(/\/storage\/v1\/object\/sign\//,r=>r.request().method()==='GET'?r.fulfill({status:200,contentType:'image/png',body:PNG}):r.fallback());
   await pg.addInitScript(()=>{window.__ouvert=[];window.open=(u)=>{window.__ouvert.push(u);return {location:{set href(x){window.__ouvert.push(x);}},close(){}};};});
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1200);
 
-  // ══ 1 · ← MES SHORTS : SEPT ÉTAGES D'INTENTION, DU ROUGE EN BAS AU VIOLET EN HAUT (19/10 quater) ══
-  // Wah : « un genre d'Instagram-Netflix en 7 étages de couleurs intentionnelles … on REMONTE pour passer à
-  // l'intention suivante … et fais en sorte que le polaroid soit une photo polaroid : mets-le en BLANC ».
+  // ══ 1 · ← LA GRILLE (20/10 quater) ══
+  // Wah : « la vue de gauche, c'est littéralement l'illustration média des boxes du Totehm sous la forme d'une
+  // grille Instagram : une image, une vidéo, avec par-dessus la box qui lui est attribuée, légèrement surélevée ».
   await pg.click('#lvn-lf');await vers(pg,'g');await pg.waitForTimeout(1300);
   const g=await pg.evaluate(()=>{
-    const s=document.getElementById('lv-sh'), r=[...document.querySelectorAll('#lv-sh .etg')];
-    /* le polaroid de L'ÉTAGE ROUGE : c'est là qu'on arrive */
-    const p=document.querySelector('#lv-sh .etg[data-etg="fight"] .pol[data-pol]'), a=document.getElementById('gate-asteroid');
-    const ra=a.getBoundingClientRect(), ph=p&&p.querySelector('.pol-ph'), bd=p&&p.querySelector('.pol-b');
-    return {n:r.length, ordre:r.map(e=>e.dataset.etg), titres:r.map(e=>(e.querySelector('.etg-t span')||{}).textContent||''),
-      haut:r.map(e=>Math.round(e.offsetTop)), add:r.filter(e=>e.querySelector('.pol-add')).length,
-      hi:r.filter(e=>e.querySelector('.etg-t .hi-badge')).length,
-      bas:Math.abs(s.scrollTop-(s.scrollHeight-s.clientHeight))<4,
-      snapY:getComputedStyle(s).scrollSnapType,
-      snapX:getComputedStyle(r[0].querySelector('.etg-r')).scrollSnapType,
-      blanc:p?getComputedStyle(p).backgroundColor:'', box:!!(p&&p.querySelector('.pol-x')),
-      nom:(p&&p.querySelector('.pol-n')||{}).textContent||'', sous:(p&&p.querySelector('.pol-s')||{}).textContent||'',
-      minis:p?p.querySelectorAll('.lsh-o,.lsh-r').length:0, trait:p?p.querySelectorAll('.pol-i i').length:0,
-      sousBande:!!(ph&&bd&&bd.getBoundingClientRect().top>=ph.getBoundingClientRect().bottom-1),
+    const t=[...document.querySelectorAll('#lv-sh .tl[data-pol]')], a=document.getElementById('gate-asteroid'), ra=a.getBoundingClientRect();
+    const t0=t[0], b0=t0&&t0.querySelector('.tl-b'), r0=t0&&t0.getBoundingClientRect(), g0=document.querySelector('#lv-sh .tlg');
+    return {n:t.length, add:!!document.querySelector('#lv-sh .tl-add'), carre:r0?Math.abs(r0.width-r0.height)<2:false,
+      cols:g0?getComputedStyle(g0).gridTemplateColumns.split(' ').length:0,
+      vieux:document.querySelectorAll('#lv-sh .etg,#lv-sh .pol').length,
+      nom:(b0&&b0.querySelector('.tl-n')||{}).textContent||'', fond:b0?getComputedStyle(b0).backgroundColor:'',
+      ombre:b0?getComputedStyle(b0).boxShadow:'', trait:t0?t0.querySelectorAll('.tl-i i').length:0,
+      dessus:!!(b0&&r0&&b0.getBoundingClientRect().bottom<=r0.bottom&&b0.getBoundingClientRect().top>=r0.top),
       papier:[Math.round(ra.x+ra.width/2), Math.round(ra.y+ra.height/2), Math.round(ra.width)], W:innerWidth,
-      dock:document.body.classList.contains('papier-haut'),
-      items:window.__totehm_sh().items,
-      spots:[...document.querySelectorAll('#lv-sh .pol-n')].some(e=>/Call mum/.test(e.textContent||''))};});
-  ok(g.n===8&&g.ordre[1]==='celebrate'&&g.ordre[g.n-1]==='fight'&&g.add===7&&g.hi===7,
-     nom+' · SEPT étages d\'intention + ce qui n\'en a pas : du violet en haut au ROUGE en bas ('+g.ordre.join(' ')+')');
-  ok(g.bas,'on ARRIVE en bas, sur le rouge : on remonte pour passer à l\'intention suivante');
-  ok(/y mandatory/.test(g.snapY)&&/x mandatory/.test(g.snapX),
-     'une rangée-intention par écran, les polaroids défilent à l\'HORIZONTALE');
-  ok(g.blanc==='rgb(255, 255, 255)'&&g.box&&g.sousBande,
-     'LE POLAROID EST UNE PHOTO POLAROID : blanc, la Box du Totehm accolée DESSOUS');
-  ok(g.nom==='Run the hill'&&/every morning/i.test(g.sous)&&g.minis===2&&g.trait===1,
-     'sa box d\'origine : le nom, le rythme, ses sous-box, son trait latéral ('+g.sous+')');
+      dock:document.body.classList.contains('papier-haut'), items:window.__totehm_sh().items,
+      spots:[...document.querySelectorAll('#lv-sh .tl-n')].some(e=>/Call mum/.test(e.textContent||''))};});
+  ok(g.n===2&&g.add&&g.carre&&g.vieux===0&&g.cols===(tel?3:5),
+     nom+' · LA GRILLE : des tuiles CARRÉES ('+g.n+' médias + la tuile « + »), '+g.cols+' colonnes, plus aucun étage');
+  ok(g.nom==='Run the hill'&&g.fond==='rgb(51, 51, 102)'&&/rgba\(0, 0, 0/.test(g.ombre)&&g.trait===1&&g.dessus,
+     'la boîte de SON élément est posée DESSUS, dans sa couleur de type (navy), surélevée (ombre), avec son filet');
   ok(g.dock&&Math.abs(g.papier[0]-Math.round(g.W/2))<=3&&g.papier[1]<90&&g.papier[2]<70,
      'le TOTEHM est sorti du centre : en haut, centré, petit ('+g.papier.join('/')+')');
   ok(!g.spots&&g.items===2,'aucun spot dans la vue de gauche : ce sont MES médias ('+g.items+')');
-  await pg.screenshot({path:OUT+'/shorts_'+(tel?'tel':'ordi')+'.png'});
-  // ↑ ↓ : d'une intention à l'autre, sans quitter la vue
-  await pg.evaluate(()=>window.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowUp'})));await pg.waitForTimeout(1100);
-  const mt=await pg.evaluate(()=>({y:document.getElementById('lv-sh').scrollTop,v:window.__totehm_lv().vue}));
-  ok(mt.v==='g'&&mt.y<g.haut[g.n-1],'↑ monte d\'une intention, et ne quitte pas la vue ('+Math.round(mt.y)+')');
+  await pg.screenshot({path:OUT+'/grille_'+(tel?'tel':'ordi')+'.png'});
 
-  // ══ 2 · UN TAP SUR LA BOX DU POLAROID OUVRE SON ÉLÉMENT DANS LE TOTEHM ══
-  await pg.locator('#lv-sh .etg[data-etg="fight"] .pol [data-lsh]').first().evaluate(e=>e.click());
+  // ══ 2 · UN TAP SUR L'IMAGE L'OUVRE EN GRAND ; UN TAP SUR LA BOÎTE OUVRE SON ÉLÉMENT DANS LE TOTEHM ══
+  await pg.click('#lv-sh .tl[data-i="0"] .tl-ph');await pg.waitForTimeout(500);
+  const v=await pg.evaluate(()=>({vu:!document.getElementById('tlv').hidden, img:!!document.querySelector('#tlv .tlv-m img'),
+    box:(document.querySelector('#tlv .tl-n')||{}).textContent||'', suiv:!document.querySelector('#tlv .tlv-n').hidden,
+    prec:document.querySelector('#tlv .tlv-p').hidden, papier:getComputedStyle(document.getElementById('gate-asteroid')).opacity}));
+  ok(v.vu&&v.img&&v.box==='Run the hill'&&v.suiv&&v.prec&&v.papier==='0','un tap sur l\'image l\'ouvre EN GRAND, sa boîte dessous, › vers le suivant');
+  await pg.keyboard.press('ArrowRight');await pg.waitForTimeout(300);
+  ok((await pg.$eval('#tlv .tl-n',e=>e.textContent))==='The studio'&&(await lv(pg)).vue==='g','→ montre le média suivant, sans quitter la vue');
+  await pg.keyboard.press('Escape');await pg.waitForTimeout(300);
+  ok(await pg.evaluate(()=>document.getElementById('tlv').hidden&&window.__totehm_lv().vue==='g'),'Échap referme la visionneuse : on reste dans la grille');
+  await pg.locator('#lv-sh .tl[data-i="0"] .tl-b').evaluate(e=>e.click());
   await pg.waitForFunction(()=>!document.body.classList.contains('gate'),null,{timeout:9000}).catch(()=>{});
   await pg.waitForTimeout(1200);
   const o=await pg.evaluate(()=>({vue:window.__totehm_zone.vue,ouverte:(document.querySelector('#habits .habit.open .v-name')||{}).textContent||''}));
-  ok(o.vue==='habits'&&o.ouverte==='Run the hill','un tap sur la box ouvre SON élément dans le Totehm ('+o.vue+' · '+o.ouverte+')');
+  ok(o.vue==='habits'&&o.ouverte==='Run the hill','un tap sur la boîte ouvre SON élément dans le Totehm ('+o.vue+' · '+o.ouverte+')');
 
   // ══ 3 · DANS LE TOTEHM : LA LISTE, ET RIEN D'AUTRE ══
   const l0=await pg.evaluate(()=>({rows:document.querySelectorAll('#habits > .habit[data-row]').length,
@@ -157,19 +166,20 @@ try{
   await pg.evaluate(()=>window.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape'})));await pg.waitForTimeout(1500);
   ok(await pg.evaluate(()=>document.body.classList.contains('gate')),'Échap replie le Totehm d\'un coup (plus de mode à quitter)');
 
-  // ══ 4 · → MES SPOTS : le radar, centré sur le papier ══
+  // ══ 4 · → LES SPOTS : le radar, centré sur moi, nourri par le Club (`club_spots`) ══
   await vers(pg,'c');
-  await pg.click('#lvn-rt');await vers(pg,'d');await pg.waitForTimeout(900);
+  await pg.click('#lvn-rt');await vers(pg,'d');await pg.waitForTimeout(1200);
   const d=await pg.evaluate(()=>{const c=document.getElementById('rdr-c'),a=document.getElementById('gate-asteroid'),
       rc=c.getBoundingClientRect(),ra=a.getBoundingClientRect(),r=window.__totehm_rdr();
-    return {pts:r.points,sans:r.sans,rayon:r.rayon,anime:r.anime,
+    return {pts:r.points,sans:r.sans,rayon:r.rayon,anime:r.anime,club:r.club,
       say:(document.getElementById('rdr-say')||{}).textContent||'',
       fond:getComputedStyle(c).backgroundColor,plein:Math.round(rc.width)===innerWidth&&Math.round(rc.height)>=innerHeight-2,
-      papier:getComputedStyle(document.getElementById('lv-proc')).opacity,
-      /* 19/10 quater — le papier est DOCKÉ en haut, centré ; le radar, lui, se centre sur MOI. */
       dock:document.body.classList.contains('papier-haut'),
       haut:ra.y+ra.height/2<90&&Math.abs((ra.x+ra.width/2)-innerWidth/2)<4&&ra.width<70};});
-  ok(d.pts===1&&d.sans===0&&/^1 spot · \d+ m$/.test(d.say)&&d.rayon>0,'→ mes spots : TOUS mes spots placés, la portée en mètres sous le kilomètre ('+d.say+')');
+  const lus=log.rpc.filter(x=>x.name==='club_spots').map(x=>x.body.p_period);
+  ok(lus.join(',')==='now,future'&&d.club.periode==='future',
+     '→ les spots du CLUB : rien maintenant, la vue montre ce qui VIENT (club_spots : '+lus.join(' → ')+')');
+  ok(d.pts===1&&d.sans===0&&/^1 spot · \d+ (m|km)$/.test(d.say)&&d.rayon>0,'le radar place le spot qui a un point exact ('+d.say+')');
   ok(d.fond==='rgba(0, 0, 0, 0)'&&d.plein&&d.dock&&d.haut,
     'le canvas est plein écran et TRANSPARENT ; le Totehm est sorti se caler EN HAUT, centré');
   ok(d.anime,'le radar tourne quand il est à l\'écran');
@@ -178,9 +188,6 @@ try{
   ok(await pg.evaluate(()=>!window.__totehm_rdr().anime&&!window.__totehm_rdr().on),'quitté, le radar s\'arrête (zéro rAF au repos)');
 
   // ══ 4 bis · LE TOTEHM DOCKÉ CHOISIT LA BOX, LE FILTRE EST PROPRE À LA VUE, L'IMAGE SE RECADRE ══
-  // Wah : « le Totehm doit sortir et se caler en haut-centré sur les deux vues ; à gauche on retrouve les
-  // 5 vues, à droite les Habit boxes seules ; pas besoin des filtres d'intention ; et l'utilisateur doit
-  // pouvoir changer le point de focalisation de son image ».
   await vers(pg,'c');
   await pg.click('#lvn-lf');await vers(pg,'g');await pg.waitForTimeout(1000);
   // le papier docké ouvre le choix d'une Box — LES CINQ VUES à gauche
@@ -190,77 +197,106 @@ try{
   ok(pk.vu&&pk.l.includes('Ship it')&&pk.l.includes('The studio')&&pk.l.some(x=>/hill|mum|dawn/.test(x)),
     'le Totehm docké ouvre le choix : à gauche LES CINQ VUES ('+pk.l.join(' · ')+')');
   await pg.keyboard.press('Escape');await pg.waitForTimeout(400);
-  // le panneau de gauche : ni intentions ni mood (les étages LES portent), le type et la vue
+  // le panneau de gauche : ce que ça montre, la vue d'origine, les intentions (la grille n'a plus d'étages)
   await pg.click('#lv-sh-flt [data-f="sf"]');await pg.waitForTimeout(400);
   const pan=await pg.evaluate(()=>({lab:[...document.querySelectorAll('#lv-sh-sf .sfl')].map(e=>e.textContent),
-    ints:document.querySelectorAll('#lv-sh-sf [data-sf="int"],#lv-sh-sf [data-sf="pil"]').length,
-    vues:document.querySelectorAll('#lv-sh-sf [data-sf="vue"]').length}));
-  ok(pan.ints===0&&pan.vues===5&&pan.lab.includes('It shows')&&pan.lab.includes('Views')&&!pan.lab.includes('Mood'),
-    'le filtre sert CETTE vue : plus d\'intentions (elles sont la structure), le type et la vue ('+pan.lab.join(' · ')+')');
+    ints:document.querySelectorAll('#lv-sh-sf [data-sf="int"]').length, vues:document.querySelectorAll('#lv-sh-sf [data-sf="vue"]').length}));
+  ok(pan.ints===7&&pan.vues===5&&pan.lab.includes('It shows')&&pan.lab.includes('Views')&&pan.lab.includes('Intentions'),
+    'le filtre de la grille : ce que ça montre, la vue, les SEPT intentions ('+pan.lab.join(' · ')+')');
   const avant=log.rpc.length, n0=(await pg.evaluate(()=>window.__totehm_sh())).items;
   await pg.click('#lv-sh-sf [data-sf="type"][data-v="video"]');await pg.waitForTimeout(500);
   const f1=await pg.evaluate(()=>window.__totehm_sh());
   await pg.click('#lv-sh-sf [data-sf="type"][data-v="video"]');await pg.waitForTimeout(300);
   await pg.click('#lv-sh-sf [data-sf="vue"][data-v="visions"]');await pg.waitForTimeout(500);
   const f2=await pg.evaluate(()=>window.__totehm_sh());
-  ok(n0===2&&f1.items===0&&f2.items===1&&log.rpc.length===avant,
-    'il trie ce qui est DÉJÀ en mémoire : '+n0+' → video '+f1.items+' → visions '+f2.items+', zéro appel de plus');
+  await pg.click('#lv-sh-sf [data-sf="vue"][data-v="visions"]');await pg.waitForTimeout(300);
+  await pg.click('#lv-sh-sf [data-sf="int"][data-v="fight"]');await pg.waitForTimeout(500);
+  const f3=await pg.evaluate(()=>window.__totehm_sh());
+  ok(n0===2&&f1.items===0&&f2.items===1&&f3.items===1&&log.rpc.length===avant,
+    'il trie ce qui est DÉJÀ en mémoire : '+n0+' → video '+f1.items+' → visions '+f2.items+' → fight '+f3.items+', zéro appel');
   await pg.click('#lv-sh-sf [data-sf="all"]');await pg.waitForTimeout(400);
   await pg.keyboard.press('Escape');await pg.waitForTimeout(400);
-  // LE POINT DE FOCALISATION : appui long sur la photo, puis on la recadre
-  /* on amène la rangée rouge à l'écran, on LAISSE l'aimantage se poser, puis on mesure */
-  await pg.$eval('#lv-sh .etg[data-etg="fight"]',e=>e.scrollIntoView({block:'center'}));
-  await pg.waitForTimeout(900);
-  const foc=await pg.$eval('#lv-sh .etg[data-etg="fight"] .pol[data-pol] .pol-ph',e=>{const r=e.getBoundingClientRect();
-    return {x:r.x+r.width/2,y:r.y+r.height/2,h:r.height};});
+  // LE POINT DE FOCALISATION : appui long sur l'image, puis on la recadre — et ce n'est pas un tap
+  const foc=await pg.$eval('#lv-sh .tl[data-i="0"] .tl-ph',e=>{const r=e.getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/3,h:r.height};});
   await pg.mouse.move(foc.x,foc.y);await pg.mouse.down();await pg.waitForTimeout(460);
-  for(let i=1;i<=6;i++){await pg.mouse.move(foc.x,foc.y-i*(foc.h/14));await pg.waitForTimeout(18);}
+  for(let i=1;i<=6;i++){await pg.mouse.move(foc.x,foc.y-i*(foc.h/40));await pg.waitForTimeout(18);}
   await pg.mouse.up();await pg.waitForTimeout(1200);
-  const fy=await pg.$eval('#lv-sh .etg[data-etg="fight"] .pol[data-pol]',e=>({f:e.style.getPropertyValue('--fy'),
-    op:getComputedStyle(e.querySelector('.pol-ph img,.pol-ph video')||e).objectPosition}));
+  const fy=await pg.$eval('#lv-sh .tl[data-i="0"]',e=>({f:e.style.getPropertyValue('--fy'),op:getComputedStyle(e.querySelector('.tl-ph img')||e).objectPosition}));
   const mv=log.rpc.filter(x=>x.name==='feed_badge_set');
-  ok(mv.length>=1&&mv[0].body.p_y<50&&/%/.test(fy.f),
-    'le point de focalisation se change et se garde (object-position '+fy.f+', feed_badge_set '+(mv[0]&&Math.round(mv[0].body.p_y))+' %)');
-  // le polaroid VIDE au bout de la rangée : il ajoute un média À CETTE intention
-  await pg.click('#lv-sh .etg[data-etg="fight"] .pol-add');await pg.waitForTimeout(500);
+  ok(mv.length>=1&&mv[0].body.p_y<50&&/%/.test(fy.f)&&(await pg.evaluate(()=>document.getElementById('tlv').hidden)),
+    'le point de focalisation se change et se garde (object-position '+fy.f+', feed_badge_set '+(mv[0]&&Math.round(mv[0].body.p_y))+' %), sans ouvrir la visionneuse');
+  // la tuile « + » : l'élément d'abord (les cinq vues), la caméra ensuite
+  await pg.click('#lv-sh .tl-add');await pg.waitForTimeout(500);
   const vide=await pg.evaluate(()=>({vu:!document.getElementById('lv-sh-pick').hidden,
     l:[...document.querySelectorAll('#lv-sh-pick [data-pick]')].map(e=>e.textContent.trim())}));
-  ok(vide.vu&&vide.l.length>=1&&vide.l.every(t=>/hill|Ship it|phone/.test(t)),
-    'le polaroid vide ajoute un média à CETTE intention ('+vide.l.join(' · ')+')');
+  ok(vide.vu&&vide.l.length>=5,'la tuile « + » demande l\'élément d\'abord ('+vide.l.length+' éléments, les cinq vues)');
   await pg.click('#lv-sh-pick [data-pick="0"]');await pg.waitForTimeout(500);
   ok(await pg.evaluate(()=>window.__totehm_sh().capture.ouvertures>0),'l\'élément choisi, la capture s\'ouvre POUR LUI');
   await pg.keyboard.press('Escape');await pg.waitForTimeout(500);
-  // la vue de droite : radar ↔ shorts, et le MÊME filtre
+  // la vue de droite : radar ↔ shorts, le TEMPS dans la barre, et le MÊME objet
   await pg.click('#lvn-rt');await vers(pg,'c');await pg.click('#lvn-rt');await vers(pg,'d');await pg.waitForTimeout(800);
   ok((await pg.evaluate(()=>window.__totehm_rdr())).mode==='radar','la vue de droite s\'ouvre sur le RADAR');
   await pg.click('#rdr-flt [data-f="mode"][data-v="shorts"]');await pg.waitForTimeout(900);
-  const sh2=await pg.evaluate(()=>({d:window.__totehm_rdr(),
-    shorts:document.body.classList.contains('rdr-shorts'),
-    n:document.querySelectorAll('#rdr-sh .lsh').length,
-    pol:!!document.querySelector('#rdr-sh .lsh-pol'),
-    px:(document.querySelector('#rdr-sh .lsh-pol')||{style:{getPropertyValue:()=>''}}).style.getPropertyValue('--px')}));
-  ok(sh2.shorts&&sh2.d.mode==='shorts'&&sh2.n===1&&sh2.pol,'le mode SHORTS de mes spots : le même moteur, la photo du spot en polaroid');
+  const sh2=await pg.evaluate(()=>{const c=document.querySelector('#rdr-sh .ssp-s'),p=c&&c.querySelector('.lsh-pol'),
+      m=p&&p.querySelector('.lsh-m'),top=m&&m.querySelector('.ssp-top'),b=p&&p.querySelector('.lsh-b');
+    return {d:window.__totehm_rdr(), shorts:document.body.classList.contains('rdr-shorts'), n:document.querySelectorAll('#rdr-sh .ssp-s').length,
+      px:p?p.style.getPropertyValue('--px'):'', haut:top&&m?Math.abs(top.getBoundingClientRect().top-m.getBoundingClientRect().top)<2:false,
+      noir:top?getComputedStyle(top).backgroundImage:'', chips:top?[...top.querySelectorAll('span')].map(e=>e.textContent):[],
+      say:(c&&c.querySelector('.ssp-say')||{}).textContent||'', sous:b&&m?b.getBoundingClientRect().top>=m.getBoundingClientRect().bottom-1:false,
+      nom:(b&&b.querySelector('.lsh-t')||{}).textContent||'', cadre:p?getComputedStyle(p).backgroundColor:'',
+      snap:getComputedStyle(document.getElementById('rdr-sh')).scrollSnapType, plein:c?Math.round(c.getBoundingClientRect().height)===innerHeight:false,
+      cal:!!(c&&c.querySelector('[data-ics]')), go:!!(c&&c.querySelector('[data-go]')),
+      per:[...document.querySelectorAll('#rdr-flt [data-f="per"]')].map(e=>e.textContent+(e.classList.contains('is-on')?'*':''))};});
+  ok(sh2.shorts&&sh2.d.mode==='shorts'&&sh2.n===1&&/y mandatory/.test(sh2.snap)&&sh2.plein,
+     'SHORTS : le format TikTok — un spot par écran, aimanté ('+sh2.n+')');
+  ok(sh2.cadre==='rgb(51, 51, 102)'&&sh2.haut&&/gradient/.test(sh2.noir)&&sh2.sous&&sh2.nom==='Call mum',
+     'LA FORME POLAROID : le cadre navy, EN HAUT la bande noire transparente, la Habit Box SOUS la fenêtre');
+  ok(sh2.chips.some(t=>/I will be here/i.test(t))&&sh2.chips.some(t=>/OCT/.test(t))&&sh2.chips.some(t=>/location on/i.test(t))
+     &&sh2.chips.some(t=>/social/i.test(t))&&sh2.say==='Bring a coffee'&&sh2.go&&sh2.cal,
+     'les informations du spot dans la bande : '+sh2.chips.join(' · ')+' — son mot, GO, CALENDAR');
   ok(sh2.px==='20%','la place enregistrée revient du serveur (my_feed_badges) : '+sh2.px);
-  /* 19/10 ter — SUR le noir transparent, les informations DU SPOT */
-  const infos=await pg.$$eval('#rdr-sh .lsh-c span',l=>l.map(e=>e.textContent));
-  ok(infos.some(t=>/I will be here/i.test(t))&&infos.some(t=>/OCT/.test(t))&&infos.some(t=>/LOCATION ON/.test(t)),
-    'les informations du spot sur le noir transparent : '+infos.join(' · '));
-  const avant2=log.rpc.length;
+  ok(sh2.per.join(' ')==='was now next*','LES TROIS TEMPS de figher.club sont dans la barre : '+sh2.per.join(' '));
+  // le passé : le spot d'un AUTRE membre, sans média, la ville seule, son auteur
+  await pg.click('#rdr-flt [data-f="per"][data-v="past"]');await pg.waitForTimeout(800);
+  const pas2=await pg.evaluate(()=>{const c=document.querySelector('#rdr-sh .ssp-s');
+    return {n:document.querySelectorAll('#rdr-sh .ssp-s').length, by:(c&&c.querySelector('.ssp-by')||{}).textContent||'',
+      sans:!!(c&&c.querySelector('.ssp-sans')), chips:c?[...c.querySelectorAll('.ssp-top span')].map(e=>e.textContent):[],
+      mini:c?[...c.querySelectorAll('.lsh-o')].map(e=>e.textContent):[], d:window.__totehm_rdr()};});
+  ok(pas2.n===2&&pas2.by==='kai3'&&pas2.sans&&pas2.chips.some(t=>/Porto/.test(t))&&pas2.chips.some(t=>/location off/i.test(t))
+     &&pas2.mini.includes('Cross the bay')&&pas2.d.club.periode==='past',
+     'was : le spot d\'un AUTRE membre (kai3), sans média, la ville seule, sa box et ses mini-boîtes');
+  /* la vidéo du suivant (Bunny) : signée par le SERVEUR au moment où elle approche — jamais une URL en dur */
+  await pg.waitForFunction(()=>true,null,{timeout:500});
+  const bv=log.functions.filter(f=>f.name==='bunny-video');
+  ok(bv.length>=1&&bv[0].body.clips[0].id==='cccccccc-cccc-4ccc-8ccc-cccccccccccc'&&bv[0].body.clips[0].spot==='sp3'
+     &&await pg.evaluate(()=>!!document.querySelector('#rdr-sh video[data-bunny]')),
+     'le clip du spot suivant est préparé : bunny-video signe {id, spot} (le lecteur ne voit jamais d\'URL Bunny en dur)');
+  await pg.click('#rdr-sh [data-who]');await pg.waitForTimeout(500);
+  ok(await pg.evaluate(()=>(window.__totehm_xo()||{}).actif==='univers'),'son nom ouvre SON univers /@kai3, sur place');
+  /* le focus est DANS le cadre de l'univers : Échap se joue sur la page */
+  await pg.evaluate(()=>window.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape'})));
+  await pg.waitForFunction(()=>!(window.__totehm_xo()||{}).actif,null,{timeout:6000}).catch(()=>{});
+  await pg.waitForTimeout(800);
+  // le panneau de droite : à qui, où, ce que ça montre, les intentions — le serveur filtre
   await pg.click('#rdr-flt [data-f="sf"]');await pg.waitForTimeout(400);
-  const panD=await pg.evaluate(()=>({lab:[...document.querySelectorAll('#rdr-sf .sfl')].map(e=>e.textContent),
-    quand:document.querySelectorAll('#rdr-sf [data-sf="quand"]').length}));
-  ok(panD.lab.includes('When')&&panD.quand===3&&!panD.lab.includes('Views'),
-    'à droite, le panneau parle TEMPS (was · now · next), pas vues');
-  await pg.click('#rdr-sf [data-sf="quand"][data-v="was"]');await pg.waitForTimeout(600);
-  const g3=await pg.evaluate(()=>window.__totehm_rdr());
-  await pg.keyboard.press('Escape');await pg.waitForTimeout(300);
+  const panD=await pg.evaluate(()=>[...document.querySelectorAll('#rdr-sf .sfl')].map(e=>e.textContent));
+  ok(panD.includes('Whose')&&panD.includes('Where')&&panD.includes('It shows')&&panD.includes('Intentions')&&!panD.includes('Views')&&!panD.includes('When'),
+    'à droite, le panneau : '+panD.join(' · '));
+  await pg.click('#rdr-sf [data-sf="int"][data-v="love"]');await pg.waitForTimeout(700);
+  const q1=log.rpc.filter(x=>x.name==='club_spots').pop();
+  ok(q1&&JSON.stringify(q1.body.p_filters.intentions)==='["love"]'&&(await pg.evaluate(()=>window.__totehm_rdr().club.items))===0,
+     'une intention part au SERVEUR (club_spots filtre avant la pagination) : '+JSON.stringify(q1&&q1.body.p_filters));
+  await pg.click('#rdr-sf [data-sf="ou"][data-v="near"]');await pg.waitForTimeout(900);
+  const q2=log.rpc.filter(x=>x.name==='club_spots').pop();
+  ok(q2&&q2.body.p_filters.scope==='near'&&typeof q2.body.p_lat==='number','« near me » demande la position au geste et la passe au serveur');
+  await pg.click('#rdr-sf [data-sf="all"]');await pg.waitForTimeout(600);
+  await pg.click('#rdr-sf [data-sf="qui"][data-v="mine"]');await pg.waitForTimeout(700);
+  ok((await pg.evaluate(()=>window.__totehm_rdr())).items===0,'« mine » : seulement mes spots (kai3 sort)');
+  await pg.click('#rdr-sf [data-sf="all"]');await pg.waitForTimeout(600);
+  await pg.keyboard.press('Escape');await pg.waitForTimeout(400);
   await pg.click('#rdr-flt [data-f="mode"][data-v="radar"]');await pg.waitForTimeout(700);
   const g4=await pg.evaluate(()=>window.__totehm_rdr());
-  ok(g3.items===0&&g4.points===0&&log.rpc.length===avant2,
-    'le filtre des spots vaut pour les DEUX modes (un spot « will » disparaît de la liste ET du radar), zéro appel');
-  await pg.click('#rdr-flt [data-f="sf"]');await pg.waitForTimeout(400);
-  await pg.click('#rdr-sf [data-sf="all"]');await pg.waitForTimeout(400);
-  await pg.keyboard.press('Escape');await pg.waitForTimeout(400);
+  ok(g4.mode==='radar'&&g4.sans===2&&g4.points===0,'le radar lit le MÊME objet : le spot passé, sans point exact, se pose sur l\'anneau');
   await pg.screenshot({path:OUT+'/spots_shorts_'+(tel?'tel':'ordi')+'.png'});
   await pg.click('#lvn-lf');await vers(pg,'c');await pg.waitForTimeout(300);
 
@@ -299,11 +335,11 @@ try{
   await pg.route(/\/storage\/v1\/object\/sign\//,r=>r.request().method()==='GET'?r.fulfill({status:200,contentType:'image/png',body:PNG}):r.fallback());
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1200);
   await pg.click('#lvn-lf');await vers(pg,'g');await pg.waitForTimeout(700);
-  const r=await pg.evaluate(()=>({n:document.querySelectorAll('#lv-sh .etg').length,
-    pol:document.querySelectorAll('#lv-sh .pol[data-pol]').length,
+  const r=await pg.evaluate(()=>({n:document.querySelectorAll('#lv-sh .tl[data-pol]').length,
     sb:getComputedStyle(document.getElementById('lv-sh')).scrollBehavior,
-    tr:getComputedStyle(document.querySelector('#lv-sh .pol-ph img')).transitionDuration}));
-  ok(r.n===8&&r.pol===2&&r.sb==='auto'&&/^0s/.test(r.tr),'mouvement réduit : les étages, sans animation ni défilement doux ('+JSON.stringify(r)+')');
+    tr:getComputedStyle(document.querySelector('#lv-sh .tl-ph img')).transitionDuration,
+    tb:getComputedStyle(document.querySelector('#lv-sh .tl-b')).transitionDuration}));
+  ok(r.n===2&&r.sb==='auto'&&/^0s/.test(r.tr),'mouvement réduit : la grille, sans animation ni défilement doux ('+JSON.stringify(r)+')');
   await pg.click('#lvn-rt');await vers(pg,'c');await pg.click('#lvn-rt');await vers(pg,'d');await pg.waitForTimeout(600);
   const rr=await pg.evaluate(()=>window.__totehm_rdr());
   ok(rr.points===1&&rr.rayon>0,'mouvement réduit : le radar place ses points (une image, pas de balayage)');

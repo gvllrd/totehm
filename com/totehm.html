@@ -2957,6 +2957,8 @@ body.is-xo{overflow:hidden}
 
 
 
+
+
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille
    elle-même : un nouveau bloc gris entre ici tout seul.        */
@@ -3531,8 +3533,9 @@ body.lv-b #gate-logo #gl-rail,body.lv-b #gate-logo #gl-wm{opacity:0}
      → d · MES SPOTS   le radar, transparent, centré sur LE PAPIER : le centre, c'est moi.
    Aucun appel réseau de plus : `element_media`, les photos de mes spots et l'image d'une VISION sont
    déjà lues au démarrage (doctrine de coût). Les fichiers d'un élément, eux, restent dans le Totehm. */
-#lv-sh{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;scroll-snap-type:y mandatory;scroll-behavior:smooth;
-  -webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+#lv-sh{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;overscroll-behavior:contain;scrollbar-width:none}
+#lv-sh::-webkit-scrollbar{display:none}
 .lsh{position:relative;height:100dvh;scroll-snap-align:start;scroll-snap-stop:always;background:#000;overflow:hidden}
 .lsh-m img,.lsh-m video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;opacity:0;
   transform:scale(1.04);transition:opacity .4s ease,transform .9s var(--gate-ease)}
@@ -3545,53 +3548,59 @@ body.lv-b #gate-logo #gl-rail,body.lv-b #gate-logo #gl-wm{opacity:0}
    c'est une CARTE navy posée SUR le média, qu'on prend et qu'on pose où l'on veut.
    `--px/--py` sont en POUR CENT : l'écran change de taille, la carte reste au même endroit.
    (La première version posait l'élément SUR le média ; elle est remplacée le 19/10 ter.) */
-/* ══ 19/10 QUATER — LES SEPT ÉTAGES, ET LA VRAIE PHOTO POLAROID ════════════════════════════════
-   Wah : « un genre d'Instagram-Netflix en 7 étages de couleurs intentionnelles, du rouge en bas au
-   violet en haut, et on REMONTE pour passer à la suivante ; sur mobile une rangée à la fois, les
-   polaroids à l'horizontale, un polaroid VIDE en bout de ligne. Et fais en sorte que le polaroid
-   soit une photo polaroid : mets-le en BLANC et dessus accole les box héritées du Totehm. »
-   Le papier est docké en haut : chaque titre d'étage se pose JUSTE DESSOUS. */
-.etg{position:relative;height:100dvh;scroll-snap-align:start;scroll-snap-stop:always;
-  display:flex;flex-direction:column;justify-content:center;gap:10px;padding:0 0 10px}
-.etg-t{position:absolute;left:0;right:0;top:calc(max(10px,env(safe-area-inset-top)) + 104px);
-  margin:0;display:flex;align-items:center;justify-content:center;gap:7px;
-  font:700 11px/1 'Space Mono',monospace;letter-spacing:.22em;text-transform:uppercase;color:var(--c,#fff)}
-.etg-t .hi-badge{display:inline-flex;width:46px;height:16px}
-.etg-t .hi-badge svg{width:100%;height:100%}
-/* LA RANGÉE : elle défile à l'HORIZONTALE, un polaroid aimanté à la fois. */
-.etg-r{display:flex;gap:12px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;
-  scrollbar-width:none;padding:0 max(14px,calc(50vw - 160px));align-items:center;
-  overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
-.etg-r::-webkit-scrollbar{display:none}
-/* LE POLAROID : blanc, la photo dans sa fenêtre, la Box du Totehm ACCOLÉE sur la bande. */
-.pol{flex:none;width:min(72vw,300px);scroll-snap-align:center;background:#fff;padding:11px 11px 0;
-  display:flex;flex-direction:column;box-shadow:0 16px 36px rgba(0,0,0,.55);border:0;cursor:pointer;
-  touch-action:pan-x;-webkit-user-select:none;user-select:none}
-.pol.is-tenu{box-shadow:0 22px 46px rgba(0,0,0,.8)}
-.pol-ph{position:relative;width:100%;aspect-ratio:1;background:#0b0b0d;overflow:hidden;flex:none}
-.pol-ph img,.pol-ph video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
-  object-position:var(--fx,50%) var(--fy,50%);display:block;opacity:0;transition:opacity .4s ease}
-.pol-ph img[src],.pol-ph video[src]{opacity:1}
-/* LA BANDE BLANCHE : dessus, la boîte du Totehm, telle qu'elle est dans le Totehm. */
-.pol-b{padding:11px 0 13px;display:flex;flex-direction:column}
-.pol-x{position:relative;background:var(--navy);padding:9px 10px 10px 13px;display:flex;flex-direction:column;gap:5px}
-.pol-i{position:absolute;left:0;top:0;bottom:0;width:5px;display:flex;flex-direction:column}
-.pol-i i{flex:1;width:100%;display:block}
-.pol-n{font:400 14px/1.3 'Quantico',sans-serif;color:#fff;display:block;max-height:2.7em;overflow:hidden}
-.pol-s{font:700 8px/1.4 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.6)}
-.pol-s i{font-style:normal}
-/* LE POLAROID VIDE, en bout de ligne : on ajoute un média À CETTE intention. */
-.pol-add{display:flex;align-items:center;justify-content:center;aspect-ratio:.82;
-  background:rgba(255,255,255,.07);box-shadow:none;color:#fff;font:400 34px/1 'Space Mono',monospace;
-  padding:0;outline:1px dashed rgba(255,255,255,.35);outline-offset:-10px}
-@media(hover:hover){.pol-add:hover{background:rgba(255,255,255,.14)}}
-/* Sur ORDINATEUR, plusieurs étages se lisent d'un coup — c'est le Netflix. */
-@media(min-width:700px){
-  .etg{height:auto;min-height:0;justify-content:flex-start;padding:74px 0 18px;scroll-snap-align:start}
-  .etg-t{position:static;justify-content:flex-start;padding-left:max(14px,calc(50vw - 300px))}
-  .etg-r{padding-left:max(14px,calc(50vw - 300px))}
-  .pol{width:230px}
-}
+/* ══ 20/10 QUATER — LA GRILLE (Instagram) ═══════════════════════════════════════════════════════
+   Wah : « une image, une vidéo, avec par-dessus la box qui lui est attribuée, légèrement surélevée ».
+   Des tuiles CARRÉES bord à bord (3 colonnes au téléphone, 4 puis 5 à l'ordinateur), le recadrage suit le
+   point de focalisation du membre ; la boîte de l'élément est posée DESSUS, dans sa couleur de type, avec
+   son filet d'intention, et une ombre qui la soulève. Sous le papier docké et la barre de filtres. */
+.tlg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:3px;
+  padding:calc(max(10px,env(safe-area-inset-top)) + 100px) 0 calc(var(--lvj-h,64px) + 40px)}
+@media(min-width:700px){.tlg{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;width:min(100% - 32px,1080px);margin:0 auto}}
+@media(min-width:1200px){.tlg{grid-template-columns:repeat(5,minmax(0,1fr))}}
+.tl{position:relative;aspect-ratio:1;background:#0b0b0d;overflow:hidden;cursor:pointer;border:0;padding:0;
+  touch-action:pan-y;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.tl.is-tenu{outline:2px solid #fff;outline-offset:-2px}
+.tl-ph{position:absolute;inset:0}
+.tl-ph img,.tl-ph video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  object-position:var(--fx,50%) var(--fy,50%);display:block;opacity:0;transition:opacity .35s ease}
+.tl-ph img[src],.tl-ph video[src]{opacity:1}
+/* Une vidéo : un petit triangle blanc, en haut à droite — elle joue dans la visionneuse. */
+.tl-v{position:absolute;top:7px;right:7px;width:0;height:0;border-style:solid;border-width:6px 0 6px 10px;
+  border-color:transparent transparent transparent #fff;filter:drop-shadow(0 1px 2px rgba(0,0,0,.6))}
+/* LA BOÎTE, SURÉLEVÉE : la couleur de son type (navy · bleu clair · rouge-violet), son filet, son texte. */
+.tl-b{position:absolute;left:6px;bottom:6px;max-width:calc(100% - 12px);display:block;border:0;cursor:pointer;
+  background:var(--tc,var(--navy));color:#fff;text-align:left;padding:5px 7px 5px 10px;
+  box-shadow:0 8px 18px rgba(0,0,0,.6),0 2px 4px rgba(0,0,0,.45);transform:translateY(-3px)}
+.tl-i{position:absolute;left:0;top:0;bottom:0;width:3px;display:flex;flex-direction:column}
+.tl-i i{flex:1;width:100%;display:block}
+.tl-n{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+  font:400 10.5px/1.25 'Quantico',sans-serif;color:#fff;word-break:break-word}
+@media(min-width:700px){.tl-b{left:9px;bottom:9px;max-width:calc(100% - 18px);padding:7px 10px 7px 12px}.tl-n{font-size:12.5px}}
+.tl-b:focus-visible{outline:1px solid #fff;outline-offset:2px}
+/* La tuile « + » : une place vide (le pointillé est permis à une place vide). */
+.tl-add{display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.04);
+  outline:1px dashed rgba(255,255,255,.3);outline-offset:-9px;color:#fff;font:400 30px/1 'Space Mono',monospace}
+@media(hover:hover){.tl-add:hover{background:rgba(255,255,255,.1)}.tl:hover .tl-b{transform:translateY(-5px)}}
+/* LA VISIONNEUSE : le noir, le média en grand, sa boîte dessous ; ✕ en haut, ‹ › sur les bords. */
+.tlv{position:absolute;inset:0;z-index:30;background:#000;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:14px;padding:calc(max(10px,env(safe-area-inset-top)) + 46px) 0 calc(max(14px,env(safe-area-inset-bottom)) + 24px)}
+.tlv[hidden]{display:none}
+.tlv-m{flex:1;min-height:0;width:100%;display:flex;align-items:center;justify-content:center}
+.tlv-m img,.tlv-m video{max-width:100%;max-height:100%;object-fit:contain;display:block}
+.tlv-b{display:flex;flex-direction:column;align-items:center;gap:7px;padding:0 16px;max-width:min(100%,560px)}
+.tlv-b .tl-b{position:relative;left:auto;bottom:auto;max-width:100%;padding:9px 14px 9px 16px}
+.tlv-b .tl-i{width:5px}
+.tlv-b .tl-n{font-size:15px;-webkit-line-clamp:3}
+.tlv-l{font:700 8.5px/1.4 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.6)}
+.tlv-l i{font-style:normal}
+.tlv-x,.tlv-p,.tlv-n{position:absolute;border:0;background:none;cursor:pointer;color:#fff;padding:10px}
+.tlv-x{top:calc(max(10px,env(safe-area-inset-top)) + 4px);right:10px}
+.tlv-p{left:6px;top:50%;margin-top:-22px}.tlv-n{right:6px;top:50%;margin-top:-22px}
+.tlv-x svg,.tlv-p svg,.tlv-n svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;display:block}
+.tlv-p[hidden],.tlv-n[hidden]{display:none}
+body.is-tlv #gate-asteroid,body.is-tlv #lvjoy{opacity:0;pointer-events:none}
+/* Les intentions du panneau : un POINT de leur couleur (le signal), le mot gris. */
+.lsh-sf .sfi i{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--c);margin-right:6px;vertical-align:1px}
 /* ══ 19/10 TER — LE POLAROID DE LA VUE DE DROITE : UN CADRE ════════════════════════════════════
    Wah, capture d'écran à l'appui : une
    CARTE navy, le média dans sa fenêtre, et LA BOX IMPRIMÉE DESSOUS, comme la bande blanche d'un
@@ -3607,11 +3616,40 @@ body.lv-b #gate-logo #gl-rail,body.lv-b #gate-logo #gl-wm{opacity:0}
 /* LA FENÊTRE : le média, dans le cadre. Le noir derrière lui, jamais un gris. */
 .lsh-m{position:relative;width:100%;aspect-ratio:5/4;background:#000;overflow:hidden;flex:none}
 /* PAR-DESSUS LE MÉDIA, EN NOIR TRANSPARENT (Wah, 19/10 ter) : d'où il vient, et quand. */
-.lsh-c{position:absolute;left:8px;right:8px;bottom:8px;z-index:2;display:flex;flex-wrap:wrap;gap:4px;pointer-events:none}
-.lsh-c span{background:rgba(0,0,0,.72);color:#fff;padding:5px 8px;
-  font:700 8.5px/1.2 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase}
 /* LA BANDE : la Box, telle qu'elle est dans le Totehm. */
 .lsh-b{padding:11px 2px 14px;display:flex;flex-direction:column;gap:6px;overflow:hidden}
+/* ══ 20/10 QUATER — LA CARTE D'UN SPOT (le format TikTok, ordinateur et téléphone) ═══════════════
+   Un écran par spot, aimanté. Derrière la carte, la photo du spot, floue et éteinte (le noir reste le
+   champ) ; dans la fenêtre, EN HAUT, la bande noire transparente des informations du spot ; en bas, les
+   gestes ; sous la fenêtre, la Habit Box. La fenêtre est en portrait (4:5) : c'est un short. */
+.ssp-s{display:block}
+.ssp-bg{position:absolute;inset:-40px;width:calc(100% + 80px);height:calc(100% + 80px);object-fit:cover;
+  filter:blur(26px) brightness(.32) saturate(1.1);opacity:0;transition:opacity .5s ease;pointer-events:none}
+.ssp-bg[src]{opacity:1}
+/* La carte tient ENTRE la barre du haut et la manette du bas : sa largeur se déduit de la hauteur libre. */
+.ssp-s .lsh-pol{width:min(92vw,440px,calc((100dvh - 380px) * .8 + 28px));top:calc(var(--py,50%) + 18px);max-height:none}
+.ssp-s .lsh-m{aspect-ratio:4/5}
+.ssp-s .lsh-i{left:0;top:0;bottom:0;width:4px;opacity:1}
+.ssp-top{position:absolute;left:0;right:0;top:0;z-index:2;padding:10px 10px 22px;display:flex;flex-wrap:wrap;gap:4px;
+  align-content:flex-start;background:linear-gradient(rgba(0,0,0,.78),rgba(0,0,0,.62) 70%,rgba(0,0,0,0));pointer-events:none}
+.ssp-top span{background:rgba(0,0,0,.55);color:#cfcfd6;border-radius:10px;padding:4px 8px;
+  font:700 8.5px/1.2 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;white-space:nowrap}
+.ssp-top .ssp-st{color:#fff;background:rgba(255,255,255,.14)}
+.ssp-say{flex-basis:100%;margin:4px 2px 0;font:400 14px/1.35 'Quantico',sans-serif;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.6)}
+.ssp-acts{position:absolute;left:10px;bottom:10px;z-index:2;display:flex;gap:6px}
+.ssp-acts button{border:0;border-radius:10px;background:rgba(0,0,0,.62);color:#fff;cursor:pointer;padding:7px 11px;
+  font:700 9.5px/1 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase}
+.ssp-acts button:focus-visible{outline:1px solid #fff;outline-offset:2px}
+.ssp-sans{position:absolute;inset:0;background:repeating-linear-gradient(135deg,rgba(255,255,255,.035) 0 10px,transparent 10px 20px)}
+.ssp-etat{position:absolute;left:0;right:0;bottom:46px;text-align:center;font:700 8.5px/1.3 'Space Mono',monospace;
+  letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.55);z-index:1}
+.ssp-etat:empty{display:none}
+.ssp-by{align-self:flex-start;border:0;background:#000;border-radius:10px;padding:5px 9px;cursor:pointer;
+  font:400 12px/1.2 'Quantico',sans-serif;color:#fbd5ca}
+/* LES TROIS TEMPS (figher.club) : passé · maintenant · à venir ; le choisi porte le trait de sa période. */
+.rdr-p{display:inline-flex;gap:2px;margin-right:5px}
+.rdr-p button.is-on{box-shadow:inset 0 -2px 0 var(--pc,#fff)}
+.rdr-p .p-past{--pc:#9a4a8e}.rdr-p .p-now{--pc:#fff}.rdr-p .p-future{--pc:#6f86d6}
 /* LES COULEURS D'INTENTION DANS LE CADRE PHOTO (Wah, 19/10 ter) : dedans, et TRANSPARENTES —
    la photo continue de se lire dessous. */
 .lsh-i{position:absolute;left:0;top:0;bottom:0;width:11px;z-index:2;display:flex;flex-direction:column;opacity:.62}
@@ -3622,7 +3660,7 @@ body.lv-b #gate-logo #gl-rail,body.lv-b #gate-logo #gl-wm{opacity:0}
 .lsh-k{font:700 8px/1.3 'Space Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.45)}
 .lsh-mg{display:flex;flex-direction:column;gap:3px}
 .lsh-ms{display:flex;flex-wrap:wrap;gap:3px}
-.lsh-o,.lsh-r,.pol-x .lsh-o,.pol-x .lsh-r{font:400 11px/1.3 'Quantico',sans-serif;color:#fff;padding:4px 7px;max-width:100%;
+.lsh-o,.lsh-r{font:400 11px/1.3 'Quantico',sans-serif;color:#fff;padding:4px 7px;max-width:100%;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .lsh-o{background:var(--blue)}
 .lsh-r{background:var(--rep)}
@@ -3731,7 +3769,7 @@ body.rdr-shorts #rdr-c{opacity:0}
 #cap-x{position:fixed;top:10px;right:10px;background:none;border:0;cursor:pointer;padding:10px;line-height:0;color:rgba(255,255,255,.6)}
 #cap-x svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round}
 @media(hover:hover){.cap-b:hover,#cap-x:hover{color:#fff}}
-@media (prefers-reduced-motion: reduce){#cap,#cap-in,.lsh img,.lsh video,.pol-ph img,.pol-ph video{transition:none!important}
+@media (prefers-reduced-motion: reduce){#cap,#cap-in,.lsh img,.lsh video,.tl-ph img,.tl-ph video,.ssp-bg,.tl-b{transition:none!important}
   #lv-sh{scroll-behavior:auto}}
 .dash[data-cap]{display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
 .dash[data-cap] svg{width:12px;height:12px;flex:none}
@@ -3972,6 +4010,14 @@ body.rdr-shorts #rdr-c{opacity:0}
       <!-- 19/10 ter — le panneau de TOUS les filtres, comme sur SPACE. -->
       <div id="lv-sh-sf" class="lsh-sf lv-act" role="dialog" aria-label="Filter my media" hidden></div>
       <p class="lv-note" id="lv-sh-say" role="status" aria-live="polite"></p>
+      <!-- 20/10 quater — la visionneuse de la grille : le média en grand, sa boîte, ← → et ✕. -->
+      <div id="tlv" class="tlv lv-act" role="dialog" aria-modal="true" aria-label="Media" hidden>
+        <div class="tlv-m"></div>
+        <div class="tlv-b"></div>
+        <button type="button" class="tlv-x" data-tlv="x" aria-label="Close"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2 L12 12 M12 2 L2 12"/></svg></button>
+        <button type="button" class="tlv-p" data-tlv="-1" aria-label="Previous"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 L5 8 L10 13"/></svg></button>
+        <button type="button" class="tlv-n" data-tlv="1" aria-label="Next"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3 L11 8 L6 13"/></svg></button>
+      </div>
     </section>
 
     <!-- ══ → MES SPOTS ══ « sur la vue de droite tu me mets la vue radar avec tous mes spots ». Le canvas est
@@ -5445,23 +5491,153 @@ const CAP=(()=>{
           etat:()=>Object.assign({ouvert:root.classList.contains('is-on'), camera:!!flux}, diagC)};
 })();
 
-/* ══ LE FILTRE DES SPOTS, PARTAGÉ PAR LES DEUX MODES · 19/10/2026 ═══════════════════════════════
-   Wah : « il faut des filtres intelligents pour les deux vues ». Le radar et les shorts lisent le
-   MÊME objet : changer de mode ne change pas ce qu'on regarde, et rien n'est redemandé au serveur. */
-const SPOTFLT={quand:'', ints:[], habits:null};
-/* Le spot d'une Habit porte les intentions de CETTE Habit : c'est la seule source, jamais une
-   intention posée sur le spot (il n'en a pas). */
-function spotInts(habit){
-  try{ const h=habByT(String(habit||'')); if(!h) return [];
-       return Array.isArray(h.is)&&h.is.length?h.is:(h.i?[h.i]:[]); }catch(_){ return []; }
+/* ══ → LES SPOTS DU CLUB · 20/10/2026 quater ═══════════════════════════════════════════════════════
+   Wah : « la vue de droite, c'est la partie Spot… ET figher.club en est son prolongement ; il faut la
+   retravailler en prenant en compte ce qui a été fait sur figher.club, dans le fond comme dans la forme ».
+   Le FOND de figher.club, c'est `club_spots` : tout ce que J'AI LE DROIT de voir (mes spots, ceux du Club,
+   ceux des créateurs auxquels je suis abonné), en trois temps — PASSÉ · MAINTENANT · À VENIR —, filtré par
+   le serveur AVANT la pagination, ancré sur `as_of` (une page 2 ne glisse pas quand quelqu'un publie).
+   Un seul objet nourrit le radar ET les shorts : changer de mode ne redemande rien.
+   ⚠️ « Mes spots » n'est pas un filtre serveur : c'est un tri sur ce qui est déjà là (`mine`). */
+const CLUBSP=(()=>{
+  const PER=['past','now','future'];
+  const st={per:'now', items:[], total:0, more:false, off:0, asOf:null, seq:0, charge:false, lu:false, auto:true,
+            err:'', pos:null, at:0, mine:false, srv:{intentions:[], type:'all', scope:'world', habit:''}};
+  const abon=[];
+  const prevenir=()=>abon.forEach(f=>{ try{ f(); }catch(e){ console.error('[clubsp]',e&&e.message||e); } });
+  function filtres(){
+    const f={};
+    if(st.srv.intentions.length) f.intentions=st.srv.intentions.slice();
+    if(st.srv.type!=='all') f.type=st.srv.type;
+    if(st.srv.scope==='near'&&st.pos) f.scope='near';
+    if(st.srv.habit) f.habit=st.srv.habit;
+    return f;
+  }
+  async function lire(suite){
+    if(suite&&(st.charge||!st.more)) return;
+    const s=++st.seq, uid=me?me.id:null, f=filtres();
+    st.charge=true;
+    const {data,error}=await sb.rpc('club_spots',{p_period:st.per, p_filters:f,
+      p_lat:f.scope==='near'?st.pos.lat:null, p_lng:f.scope==='near'?st.pos.lng:null,
+      p_limit:20, p_offset:suite?st.off:0, p_as_of:suite?st.asOf:null});
+    if(s!==st.seq||(me?me.id:null)!==uid) return;
+    st.charge=false;
+    if(error){ console.error('[club_spots]',error.message); st.err='unreachable'; prevenir(); return; }
+    if(!data||!data.ok){ st.err=(data&&data.why)||'refused'; if(!suite){ st.items=[]; st.total=0; st.more=false; } prevenir(); return; }
+    const l=Array.isArray(data.items)?data.items:[];
+    /* RIEN MAINTENANT ? À l'ARRIVÉE seulement, on montre ce qui vient, puis ce qui a été : une vue vide
+       quand le Club a des spots, c'est une vue qui ment. Un choix du membre n'est jamais contredit. */
+    if(!suite&&st.auto&&!l.length&&!Object.keys(f).length){
+      const nx=st.per==='now'?'future':st.per==='future'?'past':null;
+      if(nx){ st.per=nx; return lire(false); }
+    }
+    st.auto=false; st.err=''; st.lu=true; st.at=Date.now();
+    st.items=suite?st.items.concat(l.filter(x=>!st.items.some(y=>y.id===x.id))):l;
+    st.total=data.total|0; st.more=!!(data.has_more||data.more); st.off=data.next_offset|0; st.asOf=data.as_of||st.asOf;
+    prevenir();
+  }
+  /* « Près de moi » demande la position : on la DEMANDE seulement ici, au geste du membre. */
+  function position(){
+    return new Promise(ok=>{
+      if(st.pos) return ok(true);
+      if(!navigator.geolocation) return ok(false);
+      navigator.geolocation.getCurrentPosition(q=>{ st.pos={lat:q.coords.latitude,lng:q.coords.longitude}; ok(true); },
+        ()=>ok(false), {timeout:8000,maximumAge:600000});
+    });
+  }
+  const NOMS={past:'was',now:'now',future:'next'};
+  return {
+    lire:()=>{ st.asOf=null; return lire(false); },
+    /* À l'ouverture : on relit si la lecture a plus d'une minute (un spot commence, un autre finit). */
+    ouvrir(){ if(!st.lu||Date.now()-st.at>60000){ st.asOf=null; lire(false); } },
+    suite:()=>lire(true),
+    periode(p){ if(!PER.includes(p)) return; st.auto=false; if(p===st.per) return;
+      st.per=p; st.items=[]; st.total=0; st.more=false; st.asOf=null; prevenir(); lire(false); },
+    async regler(o){
+      if(o.scope==='near'&&!(await position())){ st.err='location'; o.scope='world'; }
+      st.srv={intentions:o.intentions||[], type:o.type||'all', scope:o.scope||'world', habit:o.habit||''};
+      st.mine=!!o.mine; st.auto=false; st.asOf=null; lire(false);
+    },
+    /* Mes spots : un tri local (le serveur a déjà dit ce que je peux voir). */
+    items:()=>st.mine?st.items.filter(x=>x&&x.mine):st.items.slice(),
+    get per(){ return st.per; }, get err(){ return st.err; }, get lu(){ return st.lu; }, get charge(){ return st.charge; },
+    perHTML:()=>'<span class="rdr-p" role="group" aria-label="When">'
+      +PER.map(p=>'<button type="button" data-f="per" data-v="'+p+'" class="p-'+p+(st.per===p?' is-on':'')+'"'
+        +' aria-pressed="'+(st.per===p)+'">'+NOMS[p]+'</button>').join('')+'</span>',
+    surChangement(f){ if(typeof f==='function') abon.push(f); },
+    vider(){ st.seq++; st.items=[]; st.total=0; st.more=false; st.off=0; st.asOf=null; st.lu=false; st.auto=true;
+      st.per='now'; st.err=''; st.charge=false; st.mine=false; st.srv={intentions:[], type:'all', scope:'world', habit:''}; },
+    etat:()=>({periode:st.per, items:st.items.length, total:st.total, more:st.more, lu:st.lu, err:st.err,
+               filtres:filtres(), mine:st.mine, charge:st.charge})
+  };
+})();
+
+/* ══ LA VIDÉO D'UN SPOT : BUNNY (HLS), SIGNÉE AU MOMENT DE JOUER ══ Copié du lecteur de figher.club, en
+   plus court : `bunny-video` rend une URL signée et son échéance (les droits ACTUELS du lecteur), Safari
+   lit le HLS nativement, ailleurs `hls.js` (servi par `/vendor`, même origine). UN clip visible, UN suivant
+   préparé ; tout ce qui sort de l'écran est LÂCHÉ (egress). */
+const BUNNY=(()=>{
+  const cache=new Map(); let mod=null;
+  const natif=v=>!!v.canPlayType('application/vnd.apple.mpegurl')&&(navigator.vendor==='Apple Computer, Inc.'||(!window.MediaSource&&!window.ManagedMediaSource));
+  async function signer(id,spot){
+    const k=(me?me.id:'anon')+':'+spot+':'+id, c=cache.get(k);
+    if(c&&c.exp>Date.now()+30000) return c;
+    const {data,error}=await sb.functions.invoke('bunny-video',{body:{clips:[{id,spot}]}});
+    if(error){ console.error('[bunny-video]',error.message||error); return null; }
+    const r=data&&Array.isArray(data.clips)?data.clips.find(x=>x&&x.id===id):data;
+    if(!r||r.error) return null;
+    if(r.status!=='ready'||!r.url) return {status:r.status||'processing'};
+    const o={status:'ready', url:r.url, exp:Number(r.expires)*1000||Date.now()+30*60e3};
+    cache.set(k,o); if(cache.size>60) cache.delete(cache.keys().next().value);
+    return o;
+  }
+  async function poser(v){
+    if(!v||v.dataset.ok) return; v.dataset.ok='1';
+    const r=await signer(v.dataset.bunny,v.dataset.spot);
+    if(!v.isConnected) return;
+    if(!r||r.status!=='ready'){ v.dataset.ok=''; const s=v.parentElement&&v.parentElement.querySelector('.ssp-etat');
+      if(s) s.textContent=r&&r.status==='failed'?'video unavailable':'preparing the video'; return; }
+    if(natif(v)){ v.src=r.url; return; }
+    mod=mod||import('/vendor/hls-1.6.13.mjs').catch(()=>null);
+    const H=(await mod)?.default;
+    if(!v.isConnected) return;
+    if(!H||!H.isSupported()){ if(v.canPlayType('application/vnd.apple.mpegurl')) v.src=r.url; return; }
+    const h=new H({maxBufferLength:10, maxMaxBufferLength:14, backBufferLength:0, capLevelToPlayerSize:true});
+    v._hls=h; h.attachMedia(v); h.loadSource(r.url);
+    h.on(H.Events.ERROR,(_,e)=>{ if(e&&e.fatal){ console.error('[hls]',e.type); lacher(v); } });
+  }
+  function lacher(v){
+    if(!v) return;
+    if(v._hls){ try{ v._hls.destroy(); }catch(_){} v._hls=null; }
+    if(v.dataset.bunny){ try{ v.pause(); }catch(_){} v.removeAttribute('src'); try{ v.load(); }catch(_){} v.dataset.ok=''; }
+  }
+  return {poser, lacher};
+})();
+/* Un fichier du seau `moments` (photo ou vidéo d'un spot) : URL signée d'une heure, gardée 50 min. Les droits
+   sont ceux du SERVEUR (`_clip_readable`) : un fichier que je ne peux pas lire ne se signe pas. */
+async function urlMoments(p){
+  const uid=me?.id||'anon', k=uid+':'+p, c=SIGNE.get(k);
+  if(c&&c.at>Date.now()-50*60e3) return c.url;
+  const {data,error}=await sb.storage.from('moments').createSignedUrl(p,3600);
+  if(error||!data?.signedUrl){ console.error('[moments]',error?error.message:'sign'); return null; }
+  if((me?.id||'anon')!==uid) return null;
+  SIGNE.set(k,{url:data.signedUrl,at:Date.now()}); if(SIGNE.size>120) SIGNE.delete(SIGNE.keys().next().value);
+  return data.signedUrl;
 }
-function spotGarde(habit,st){
-  if(SPOTFLT.quand&&String(st||'will')!==SPOTFLT.quand) return false;
-  if(SPOTFLT.ints.length&&!spotInts(habit).some(i=>SPOTFLT.ints.includes(i))) return false;
-  /* La Box choisie au papier vaut pour les DEUX modes : un spot écarté de la liste sort du radar. */
-  if(SPOTFLT.habits&&!SPOTFLT.habits.has(String(habit||''))) return false;
-  return true;
+/* CALENDAR (un spot à venir) : un fichier .ics fabriqué ICI, avec ce que je vois — l'Habit, l'heure, la durée,
+   la ville (jamais le point exact, qui peut se fermer d'ici là : GO le relit au moment du geste). */
+function calendrier(z){
+  const d=new Date(z.starts_at); if(isNaN(d)) return;
+  const f=t=>t.toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,'');
+  const fin=new Date(d.getTime()+(+z.duration_min||60)*60e3);
+  const net=t=>String(t||'').replace(/[\\;,]/g,m=>'\\'+m).replace(/\r?\n/g,' ');
+  const ics=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//TOTEHM//Spot//EN','BEGIN:VEVENT','UID:'+z.id+'@totehm.com',
+    'DTSTAMP:'+f(new Date()),'DTSTART:'+f(d),'DTEND:'+f(fin),'SUMMARY:'+net(z.habit||'Spot'),
+    z.city?'LOCATION:'+net(z.city):'','END:VEVENT','END:VCALENDAR'].filter(Boolean).join('\r\n');
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([ics],{type:'text/calendar'}));
+  a.download='spot.ics'; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },500);
 }
+
 /* ══ RADAR ou SHORTS · 19/10/2026 ══ Le choix tient d'une visite à l'autre ; il ne touche aucune donnée. */
 const SPOTMODE=(()=>{
   const CLE='totehm_spots_mode'; const abonnes=[];
@@ -5492,18 +5668,14 @@ const RDR=(()=>{
   let raf=0, t0=0, moi=null, pts=[], R=0, cx=0, cy=0, demande=false;
   const cv=()=>$('rdr-c');
   const RMS=()=>window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  /* TOUS mes spots, tels que le serveur les a rendus — par Habit, l'une après l'autre. */
+  /* 20/10 quater — LES SPOTS DU CLUB (`CLUBSP`), les MÊMES que les shorts d'à côté : même période, mêmes
+     filtres. Un spot sans point exact se pose sur l'anneau, pâle : il existe, il n'est pas situé. */
   function lire(){
     pts=[]; let sans=0;
-    HSPACES.par.forEach(v=>{
-      (v.spots||[]).forEach(z=>{
-        /* 19/10 — le MÊME filtre que les shorts de cette vue : un radar qui montrerait autre chose
-           que la liste d'à côté ferait mentir la bascule. */
-        if(!spotGarde(v.habit, z&&z.state)) return;
-        const e=z&&z.exact;
-        if(e&&typeof e.lat==='number'&&typeof e.lng==='number') pts.push({lat:e.lat, lng:e.lng, st:z.state||'will'});
-        else sans++;
-      });
+    CLUBSP.items().forEach(z=>{
+      const e=z&&z.exact;
+      if(e&&typeof e.lat==='number'&&typeof e.lng==='number') pts.push({lat:e.lat, lng:e.lng, st:z.state||'will'});
+      else sans++;
     });
     etat.points=pts.length; etat.sans=sans;
   }
@@ -5665,10 +5837,10 @@ function creerFeed(conf){
      ⚠️ UNE DIFFÉRENCE ASSUMÉE AVEC SPACE : là-bas le serveur fait un OU pondéré (`space_feed`, on
      cherche CHEZ LES AUTRES) ; ici on trie MES médias, déjà en mémoire, et un filtre qui élargit
      n'aurait aucun sens — c'est donc un ET entre les groupes, un OU dedans. Zéro appel de plus. */
-  const SF={box:null, on:new Set(), ints:new Set(), piliers:new Set(), freq:false, type:'', vue:'', quand:''};
+  const SF={box:null, on:new Set(), ints:new Set(), piliers:new Set(), freq:false, type:'', vue:'', quand:'', qui:'', ou:''};
   const PILIERS=['BODY','MENTAL','SOUL','SPIRIT'];
   const sfCount=()=>(SF.box?SF.on.size:0)+SF.ints.size+SF.piliers.size+(SF.freq?1:0)
-                   +(SF.type?1:0)+(SF.vue?1:0)+(SF.quand?1:0);
+                   +(SF.type?1:0)+(SF.vue?1:0)+(SF.quand?1:0)+(SF.qui?1:0)+(SF.ou?1:0);
   /* Les intentions ACTIVES : celles cochées, plus celles qu'apportent les piliers cochés. */
   function sfIntsActives(){
     const s=new Set(SF.ints);
@@ -5727,12 +5899,15 @@ function creerFeed(conf){
       const e=de(m.kind,m.ref); if(!e) return;
       l.push(Object.assign({cle:'em:'+m.id, src:String(m.path), b:'em', vid:emVid(m), st:''},e));
     });
-    if(conf.src==='spots') (state.habits||[]).forEach(x=>{
-      const sp=spacesDe(x); if(!sp) return;
-      (sp.spots||[]).forEach(z=>{ if(!z||!z.photo) return;
-        l.push({cle:'sp:'+z.id, src:String(z.photo), b:'moments', vid:false, st:String(z.state||'will'), sp:z,
-                bk:'h', vue:'habits', id:String(x.id), txt:String(x.t||''),
-                cols:colsDe('h',x), ints:intsDe('h',x)}); });
+    /* 20/10 quater — À DROITE, LES SPOTS DU CLUB (`CLUBSP`, `club_spots`) : les miens et ceux que j'ai le droit
+       de voir, filtrés par le SERVEUR. Un spot sans média reste dans le fil : il a sa carte, pas d'image. */
+    if(conf.src==='spots') CLUBSP.items().forEach(z=>{
+      if(!z||!z.id) return;
+      const hb=z.habit_box||{}, ints=Array.isArray(hb.ints)?hb.ints:(Array.isArray(z.intentions)?z.intentions:[]);
+      const mien=z.mine?habByT(String(z.habit||'')):null;
+      l.push({cle:'sp:'+z.id, src:String(z.photo||z.video||''), b:'moments', vid:!!((z.clip&&z.clip.id)||z.video),
+              st:String(z.state||'will'), sp:z, bk:'h', vue:'habits', id:mien?String(mien.id):'',
+              txt:String(hb.name||z.habit||''), cols:ints.map(intColor), ints});
     });
     if(conf.src!=='spots') VISIMG.forEach((img,id)=>{
       const o=visOf(id);
@@ -5744,6 +5919,7 @@ function creerFeed(conf){
   }
   /* LE FILTRE : il ne redemande RIEN au serveur, il choisit dans ce qui est déjà là. */
   function garder(x){
+    if(conf.src==='spots') return true;          /* le serveur a déjà filtré (et `mine` est trié par CLUBSP) */
     if(SF.type==='photo'&&x.vid) return false;
     if(SF.type==='video'&&!x.vid) return false;
     if(SF.vue&&x.vue!==SF.vue) return false;
@@ -5772,91 +5948,107 @@ function creerFeed(conf){
     SF.on=new Set([vue+'|'+id].concat(objs.map(z=>z.vue+'|'+z.id), reps.map(z=>z.vue+'|'+z.id)));
     SF.freq=!!SF.box.freq;
   }
-  function sfReset(){ sfBox(null); SF.ints=new Set(); SF.piliers=new Set(); SF.type=''; SF.vue=''; SF.quand=''; }
+  function sfReset(){ sfBox(null); SF.ints=new Set(); SF.piliers=new Set(); SF.type=''; SF.vue=''; SF.quand=''; SF.qui=''; SF.ou=''; }
+  /* ══ LA CARTE D'UN SPOT · 20/10/2026 quater ═════════════════════════════════════════════════════
+     Wah (capture à l'appui) : « c'est ici et seulement ici qu'on a la forme polaroid : la photo / vidéo de
+     l'utilisateur, et par-dessus la box Habit héritée du Totehm, MAIS avec en haut, dans la partie noire
+     transparente, les informations type spot ». Donc : un cadre navy, le filet d'intention sur son bord
+     gauche ; dans la fenêtre, le média, et EN HAUT une bande noire transparente — quand, combien de temps,
+     où, pour qui, le point ouvert ou non, silencieux ou social, son mot ; en bas de la fenêtre, les gestes
+     (GO, CALENDAR) ; sous la fenêtre, la Habit Box telle que le serveur la projette (`habit_box` : ce que CE
+     lecteur a le droit de voir, mini-boxes comprises), puis le nom de son auteur s'il n'est pas moi. */
+  const ET={will:'I will be here', am:'I am here', was:'I was there'};
+  const AUD={private:'private', figher:'figher club', subscribers:'my subscribers', public:'figher club'};
+  const MOIS=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+  const hhmm=d=>String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
   function html(x){
-    const u=x.b==='em'?emCache(x.src):'';
-    const devant=x.vid
-      ? '<video data-sh-src="'+esc(x.src)+'" data-b="'+esc(x.b)+'" muted playsinline loop preload="none"'+(u?' src="'+esc(u)+'" data-ok="1"':'')+'></video>'
-      : '<img alt="" data-sh-src="'+esc(x.src)+'" data-b="'+esc(x.b)+'"'+(u?' src="'+esc(u)+'" data-ok="1"':'')+'>';
+    const z=x.sp||{}, p=BADGE.de(x.cle)||{x:50,y:50};
+    const clip=z.clip&&z.clip.id?String(z.clip.id):'';
+    const media=clip?'<video data-bunny="'+esc(clip)+'" data-spot="'+esc(String(z.id))+'" muted playsinline loop preload="none"></video><span class="ssp-etat"></span>'
+      :z.video?'<video data-sh-src="'+esc(String(z.video))+'" data-b="moments" muted playsinline loop preload="none"></video>'
+      :z.photo?'<img alt="" data-sh-src="'+esc(String(z.photo))+'" data-b="moments">'
+      :'<span class="ssp-sans" aria-hidden="true"></span>';
+    const d=z.starts_at?new Date(z.starts_at):null, dur=+z.duration_min||0;
+    const lieu=z.location==='on'&&z.exact&&z.exact.place?String(z.exact.place):String(z.city||'');
+    const chips=[['ssp-st',ET[z.state]||''], ['',d&&!isNaN(d)?d.getDate()+' '+MOIS[d.getMonth()]+' '+hhmm(d):''],
+      ['',dur?(dur>=60?(Math.round(dur/6)/10)+' h':dur+' min'):''], ['',lieu],
+      ['',AUD[String(z.audience||'')]||''], ['','location '+(z.location==='on'?'on':'off')],
+      ['',z.location==='on'&&z.mode?(z.mode==='silent'?'silent · nobody disturb me':'social · we can talk'):'']]
+      .filter(c=>c[1]).map(c=>'<span'+(c[0]?' class="'+c[0]+'"':'')+'>'+esc(c[1])+'</span>').join('');
+    const go=z.location==='on'&&z.exact&&typeof z.exact.lat==='number';
+    const acts=(go?'<button type="button" data-go="'+esc(String(z.id))+'">go</button>':'')
+      +(z.state==='will'?'<button type="button" data-ics="'+esc(String(z.id))+'">calendar</button>':'');
+    const hb=z.habit_box||{}, ints=x.ints||[];
+    let ligne=ints.map(i=>{ const o=INT_BY_ID[i]; return o?'<i style="color:'+o.color+'">'+esc(o.name)+'</i>':''; }).filter(Boolean).join(' · ');
+    if(hb.freq&&FREQ_BY_ID[hb.freq]) ligne+=(ligne?' · ':'')+esc(flabel(hb.freq));
+    const grp=(lab,l,cl)=>l.length?'<div class="lsh-mg"><span class="lsh-k">'+lab+'</span><div class="lsh-ms">'
+      +l.map(t=>'<span class="'+cl+'">'+esc(t)+'</span>').join('')+'</div></div>':'';
+    const txts=l=>(Array.isArray(l)?l:[]).map(o=>String(o&&o.text||'').trim()).filter(Boolean);
     const traits=(x.cols||[]).map(c=>'<i style="background:'+c+'"></i>').join('');
-    const p=BADGE.de(x.cle)||{x:50,y:50};
-    const b=bande(x);
-    /* LE POLAROID : le média dans son cadre navy, et la Box IMPRIMÉE sur la bande du dessous. */
-    return '<section class="lsh'+(ici===x.cle?' is-ici':'')+'" data-lsh-k="'+esc(x.cle)+'">'
+    const nom=esc(x.txt||'');
+    return '<section class="lsh ssp-s'+(ici===x.cle?' is-ici':'')+'" data-lsh-k="'+esc(x.cle)+'">'
+      +(z.photo?'<img class="ssp-bg" alt="" aria-hidden="true">':'')
       +'<div class="lsh-pol" data-pol="'+esc(x.cle)+'" style="--px:'+p.x+'%;--py:'+p.y+'%">'
-      +'<div class="lsh-m">'+devant
       +(traits?'<span class="lsh-i" aria-hidden="true">'+traits+'</span>':'')
-      +(b.chips?'<div class="lsh-c">'+b.chips+'</div>':'')+'</div>'
-      +(x.txt?'<div class="lsh-b">'
-        +'<button type="button" class="lsh-say" data-lsh="'+esc(x.vue+'|'+x.id)+'">'
-        +'<span class="lsh-t">'+esc(x.txt)+'</span></button>'
-        +(b.ligne?'<span class="lsh-l">'+b.ligne+'</span>':'')
-        +b.minis+'</div>':'')
-      +'</div></section>';
-  }
-  /* LA BANDE DU POLAROID : la Box telle qu'elle est dans le Totehm — son intention dans SA couleur,
-     son rythme, et ses mini-boîtes. Rien n'est inventé : un attribut non renseigné est absent. */
-  function bande(x){
-    let ligne=(x.ints||[]).map(i=>{ const o=INT_BY_ID[i];
-      return o?'<i style="color:'+o.color+'">'+esc(o.name)+'</i>':''; }).filter(Boolean).join(' · ');
-    let minis='';
-    try{
-      if(x.vue==='habits'){
-        const h=habOf(x.id);
-        if(h&&h.f) ligne+=(ligne?' · ':'')+esc(flabel(h.f));
-        const ou=h?String(spotDe(h)||'').trim():'';          /* le lieu habituel, jamais inventé */
-        if(ou) ligne+=(ligne?' · ':'')+esc(ou);
-        if(h){
-          const grp=(lab,l,cl)=>l.length?'<div class="lsh-mg"><span class="lsh-k">'+lab+'</span><div class="lsh-ms">'
-            +l.map(t=>'<span class="'+cl+'">'+esc(t)+'</span>').join('')+'</div></div>':'';
-          minis+=grp('Objectives', tripsOfHab(h).map(t=>String(t.text||'')).filter(Boolean), 'lsh-o');
-          minis+=grp('Repulsions', repsOfHabX(h).map(t=>String(t.text||'')).filter(Boolean), 'lsh-r');
-        }
-      }
-    }catch(_){}
-    /* SUR LE MÉDIA, EN NOIR TRANSPARENT (Wah, 19/10 ter) : pour un SPOT, SES informations —
-       quand, combien de temps, où, pour qui, et si le point exact est ouvert. Sinon, d'où il vient. */
-    const ET={will:'I will be here', am:'I am here', was:'I was there'};
-    const AUD={private:'PRIVATE', figher:'FIGHER CLUB', subscribers:'MY SUBSCRIBERS'};
-    const MOIS=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
-    let l=[];
-    if(x.sp){
-      const z=x.sp, d=z.starts_at?new Date(z.starts_at):null;
-      l.push(ET[x.st]||'');
-      if(d&&!isNaN(d)) l.push(d.getDate()+' '+MOIS[d.getMonth()]+' '
-        +String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'));
-      if(z.duration) l.push(z.duration>=60?Math.round(z.duration/60)+' h':z.duration+' min');
-      if(z.city) l.push(String(z.city));
-      l.push(AUD[String(z.audience||'')]||'');
-      l.push(z.exact?'LOCATION ON':'LOCATION OFF');
-    }else l=[MOT[x.vue]||'', x.vid?'video':'photo'];
-    const chips=l.filter(Boolean).map(t=>'<span>'+esc(t)+'</span>').join('');
-    return {ligne, minis, chips};
+      +'<div class="lsh-m">'+media
+      +'<div class="ssp-top">'+chips+(z.comment?'<p class="ssp-say">'+esc(String(z.comment))+'</p>':'')+'</div>'
+      +(acts?'<div class="ssp-acts">'+acts+'</div>':'')+'</div>'
+      +'<div class="lsh-b">'
+      +(x.id?'<button type="button" class="lsh-say" data-lsh="habits|'+esc(x.id)+'"><span class="lsh-t">'+nom+'</span></button>'
+            :'<span class="lsh-t">'+nom+'</span>')
+      +(ligne?'<span class="lsh-l">'+ligne+'</span>':'')
+      +grp('Objectives',txts(hb.objectives),'lsh-o')+grp('Repulsions',txts(hb.repulsions),'lsh-r')
+      +(!z.mine&&z.creator?'<button type="button" class="ssp-by" data-who="'+esc(String(z.creator))+'">'+esc(String(z.creator))+'</button>':'')
+      +'</div></div></section>';
   }
   async function charger(el,prochain){
-    const m=el&&el.querySelector('[data-sh-src]'); if(!m||m.dataset.ok) return; m.dataset.ok='1';
+    if(!el) return;
+    const vb=el.querySelector('video[data-bunny]');
+    if(vb){ await BUNNY.poser(vb); if(el.classList.contains('is-ici')&&vb.getAttribute('src')) vb.play().catch(()=>{}); return; }
+    const m=el.querySelector('[data-sh-src]'); if(!m||m.dataset.ok) return; m.dataset.ok='1';
     const p=m.dataset.shSrc;
-    if(m.dataset.b==='moments'){ m.dataset.photo=p; signerPhoto(m); return; }
-    const u=await urlEM(p); if(!u||!m.isConnected) return;
-    if(m.tagName==='VIDEO'){ m.preload=prochain?'metadata':'auto'; m.src=u; if(el.classList.contains('is-ici')) m.play().catch(()=>{}); }
-    else{ m.onerror=()=>m.remove(); m.src=u; }
+    const u=m.dataset.b==='moments'?await urlMoments(p):await urlEM(p);
+    if(!m.isConnected) return;
+    if(!u){ if(m.tagName==='IMG') m.remove(); return; }
+    if(m.tagName==='VIDEO'){
+      /* Dans la grille, une vidéo montre son PREMIER plan et ne joue pas : elle joue dans la visionneuse. */
+      if(conf.grille){ m.preload='metadata'; m.src=u+'#t=0.1'; return; }
+      m.preload=prochain?'metadata':'auto'; m.src=u; if(el.classList.contains('is-ici')) m.play().catch(()=>{});
+    }else{ m.onerror=()=>m.remove(); m.src=u; const bg=el.querySelector('.ssp-bg'); if(bg) bg.src=u; }
   }
-  function jouer(el,oui){ const v=el&&el.querySelector('video[src]'); if(!v) return; if(oui) v.play().catch(()=>{}); else v.pause(); }
+  function jouer(el,oui){
+    const v=el&&el.querySelector('video'); if(!v) return;
+    if(!oui){ try{ v.pause(); }catch(_){} return; }
+    if(v.dataset.bunny&&!v.dataset.ok){ BUNNY.poser(v).then(()=>{ if(el.classList.contains('is-ici')&&v.getAttribute('src')) v.play().catch(()=>{}); }); return; }
+    if(v.getAttribute('src')) v.play().catch(()=>{});
+  }
   /* Le média visible (`is-ici`), le sien et celui du suivant : UN clip visible, UN suivant anticipé. */
   function observer(){
     if(io){ io.disconnect(); io=null; }
     const s=sc(), b=bx(); if(!s||!b||!etat.on) return;
-    const SEL=conf.etages?'.pol[data-pol]':'.lsh';
+    /* LA GRILLE : chaque tuile se charge quand elle approche de l'écran, une fois ; rien ne joue. */
+    if(conf.grille){
+      io=new IntersectionObserver(es=>es.forEach(en=>{ if(en.isIntersecting){ charger(en.target,true); if(io) io.unobserve(en.target); } }),
+        {root:s, rootMargin:'300px 0px', threshold:0});
+      b.querySelectorAll('.tl[data-pol]').forEach(el=>io.observe(el));
+      return;
+    }
     io=new IntersectionObserver(es=>{ es.forEach(en=>{
       const el=en.target, v=en.intersectionRatio>=.6||(!!en.rootBounds&&en.intersectionRect.height>=en.rootBounds.height*.6);
       el.classList.toggle('is-ici',v);
       if(v){ ici=el.dataset.lshK; etat.ici=true; charger(el);
         const nx=el.nextElementSibling, pv=el.previousElementSibling;
-        if(nx&&nx.matches(SEL)) charger(nx,true);
-        if(pv&&pv.matches(SEL)&&pv.querySelector('img[data-sh-src]')) charger(pv,true);
-        jouer(el,true); }
+        if(nx&&nx.matches('.lsh')) charger(nx,true);
+        if(pv&&pv.matches('.lsh')&&pv.querySelector('img[data-sh-src]')) charger(pv,true);
+        jouer(el,true);
+        if(conf.src==='spots'){
+          const l=[...b.querySelectorAll('.lsh')], i=l.indexOf(el);
+          /* La page suivante du Club, à trois cartes de la fin ; et ce qui est à plus d'un écran est LÂCHÉ. */
+          if(i>=l.length-3) CLUBSP.suite();
+          l.forEach((o,j)=>{ if(Math.abs(j-i)>1) BUNNY.lacher(o.querySelector('video[data-bunny]')); });
+        } }
       else jouer(el,false); }); },{root:s,threshold:[0,.6]});
-    b.querySelectorAll(SEL).forEach(el=>io.observe(el));
+    b.querySelectorAll('.lsh').forEach(el=>io.observe(el));
   }
   /* LA RANGÉE DE FILTRES : un mot quand il en faut un, des POINTS pour les sept intentions. */
   /* LA BARRE : le papier, le nom de la Box choisie, [Filter · N], et à gauche le « + ».
@@ -5888,24 +6080,24 @@ function creerFeed(conf){
     const b=SF.box;
     let h=g('My Box', c('data-sf="pick"', b?b.txt:'choose a Box', !!b, 'is-box')
         +(b?'<button type="button" class="sfc sfk" data-sf="unbox">all Boxes</button>':''));
-    if(b){
+    if(b&&conf.src!=='spots'){
       h+=g('This element', c('data-sf="el" data-v="'+esc(b.vue+'|'+b.id)+'"', b.txt, SF.on.has(b.vue+'|'+b.id)));
       h+=g('Objectives', b.objs.map(z=>c('data-sf="el" data-v="'+esc(z.vue+'|'+z.id)+'"', z.txt, SF.on.has(z.vue+'|'+z.id))).join(''));
       h+=g('Repulsions', b.reps.map(z=>c('data-sf="el" data-v="'+esc(z.vue+'|'+z.id)+'"', z.txt, SF.on.has(z.vue+'|'+z.id))).join(''));
       if(b.freq) h+=g('Rhythm', c('data-sf="freq"', flabel(b.freq), SF.freq));
     }
-    /* ⚠️ PLUS DE FILTRE D'INTENTION (Wah, 19/10 quater) : les sept couleurs ne filtrent plus, elles
-       STRUCTURENT la vue — à gauche ce sont les sept étages. Chaque panneau ne garde que ce qui sert
-       à SA vue : à gauche le type et la vue d'origine, à droite le temps. */
+    /* 20/10 quater — CHAQUE PANNEAU SERT SA VUE. À gauche (mes médias) : ce que ça montre, la vue d'origine,
+       les intentions. À droite (les spots du Club) : à qui, où, ce que ça montre, les intentions — le TEMPS
+       n'est plus ici, il est dans la barre (was · now · next), comme les trois périodes de figher.club. */
     if(conf.src==='spots'){
-      h+=g('When', c('data-sf="quand" data-v="was"','was',SF.quand==='was')
-                  +c('data-sf="quand" data-v="am"','now',SF.quand==='am')
-                  +c('data-sf="quand" data-v="will"','next',SF.quand==='will'));
-    }else{
-      h+=g('It shows', c('data-sf="type" data-v="photo"','photo',SF.type==='photo')
-                      +c('data-sf="type" data-v="video"','video',SF.type==='video'));
-      h+=g('Views', Object.keys(VUE_K).map(v=>c('data-sf="vue" data-v="'+v+'"', MOT[v]||v, SF.vue===v)).join(''));
+      h+=g('Whose', c('data-sf="qui" data-v=""','everyone',!SF.qui)+c('data-sf="qui" data-v="mine"','mine',SF.qui==='mine'));
+      h+=g('Where', c('data-sf="ou" data-v=""','world',!SF.ou)+c('data-sf="ou" data-v="near"','near me',SF.ou==='near'));
     }
+    h+=g('It shows', c('data-sf="type" data-v="photo"','photo',SF.type==='photo')
+                    +c('data-sf="type" data-v="video"','video',SF.type==='video'));
+    if(conf.src!=='spots') h+=g('Views', Object.keys(VUE_K).map(v=>c('data-sf="vue" data-v="'+v+'"', MOT[v]||v, SF.vue===v)).join(''));
+    h+=g('Intentions', INTS.map(i=>'<button type="button" class="sfc sfi'+(SF.ints.has(i.id)?' is-on':'')+'" data-sf="int" data-v="'+i.id+'"'
+      +' aria-pressed="'+(SF.ints.has(i.id)?'true':'false')+'" style="--c:'+i.color+'"><i aria-hidden="true"></i>'+esc(i.name)+'</button>').join(''));
     h+='<div class="sfg"><div class="sfr sfa"><button type="button" class="sfc" data-sf="all">ALL</button>'
       +'<button type="button" class="sfc" data-sf="close">CLOSE</button></div></div>';
     p.innerHTML=h;
@@ -5916,79 +6108,103 @@ function creerFeed(conf){
     if(open){ const pk=$(conf.pick); if(pk) pk.hidden=true; }
     sfPaint(); peindreFlt();
   }
-  /* Un changement de filtre : on repeint la liste, on remonte en haut, et le radar suit. */
+  /* Un changement de filtre : à gauche on repeint ce qui est en mémoire ; à droite on REDEMANDE au serveur
+     (`club_spots` filtre avant la pagination), et le radar suit, puisqu'il lit le même objet. */
   function sfApply(){
+    if(conf.src==='spots'){
+      CLUBSP.regler({intentions:[...sfIntsActives()], type:SF.type||'all', scope:SF.ou||'world',
+                     habit:SF.box?SF.box.txt:'', mine:SF.qui==='mine'});
+      const s=sc(); if(s) s.scrollTop=0;
+      sfPaint(); peindreFlt(); return;
+    }
     peindre();
     const s=sc(); if(s) s.scrollTop=0;
-    if(conf.src==='spots'){
-      SPOTFLT.quand=SF.quand; SPOTFLT.ints=[...sfIntsActives()];
-      SPOTFLT.habits=(SF.box&&SF.on.size)
-        ? new Set([...SF.on].filter(k=>k.startsWith('habits|')).map(k=>{ const h=habOf(k.slice(7)); return h?String(h.t||''):''; }).filter(Boolean))
-        : null;
-      RDR.maj();
-    }
     sfPaint();
   }
-  /* ══ LES SEPT ÉTAGES · 19/10/2026 quater ═══════════════════════════════════════════════════
-     Wah : « sur la vue de gauche, un genre d'Instagram-Netflix en 7 étages de couleurs
-     intentionnelles — les 7 traits de la vue centrale deviennent 7 rangées, du ROUGE en bas au
-     VIOLET en haut, et contrairement au scrolling habituel on REMONTE pour passer à l'intention
-     suivante ; sur mobile une rangée à la fois, les polaroids défilent à l'HORIZONTALE, et en bout
-     de ligne un polaroid VIDE pour ajouter ». Les sept couleurs ne sont donc plus un filtre : elles
-     sont la STRUCTURE de la vue — le Totehm se transforme d'une vue à l'autre, ses traits aussi. */
-  function etages(){
+  /* ══ LA GRILLE · 20/10/2026 quater ══════════════════════════════════════════════════════════════
+     Wah : « la vue de gauche, c'est littéralement l'illustration média (photo et vidéo) des boxes du Totehm
+     sous la forme d'une grille Instagram : une image, une vidéo, avec par-dessus la box qui lui est
+     attribuée, légèrement surélevée ; avec un bon système de filtre par-dessus ». Les sept étages partent.
+     Une tuile CARRÉE par média (le recadrage suit le point de focalisation du membre), la boîte de SON
+     élément posée dessus — sa couleur de type, son filet d'intention, son texte — avec une ombre qui la
+     soulève. En tête, la tuile « + » ajoute un média (l'élément d'abord, la caméra ensuite). Un tap sur
+     l'image l'ouvre en GRAND ; un tap sur la boîte ouvre l'élément dans le Totehm ; un appui long règle le
+     point de focalisation. */
+  const TCOUL={habits:'var(--navy)', objectives:'var(--blue)', repulsions:'var(--rep)', wisdom:'var(--rep)', visions:'var(--blue)'};
+  const boite=(x,cl)=>x.txt?'<button type="button" class="tl-b'+(cl?' '+cl:'')+'" data-lsh="'+esc(x.vue+'|'+x.id)+'" style="--tc:'+(TCOUL[x.vue]||'var(--navy)')+'">'
+    +((x.cols||[]).length?'<span class="tl-i" aria-hidden="true">'+x.cols.map(c=>'<i style="background:'+c+'"></i>').join('')+'</span>':'')
+    +'<span class="tl-n">'+esc(x.txt)+'</span></button>':'';
+  function tuile(x,i){
+    const u=x.b==='em'?emCache(x.src):'';
+    const media=x.vid
+      ? '<video data-sh-src="'+esc(x.src)+'" data-b="'+esc(x.b)+'" muted playsinline preload="none"'+(u?' src="'+esc(u)+'#t=0.1" data-ok="1"':'')+'></video>'
+      : '<img alt="" data-sh-src="'+esc(x.src)+'" data-b="'+esc(x.b)+'"'+(u?' src="'+esc(u)+'" data-ok="1"':'')+'>';
+    const f=BADGE.de(x.cle)||{x:50,y:50};
+    return '<article class="tl" data-pol="'+esc(x.cle)+'" data-lsh-k="'+esc(x.cle)+'" data-i="'+i+'" style="--fx:'+f.x+'%;--fy:'+f.y+'%">'
+      +'<div class="tl-ph">'+media+(x.vid?'<span class="tl-v" aria-hidden="true"></span>':'')+'</div>'+boite(x)+'</article>';
+  }
+  function grille(){
     const b=bx(); if(!b) return;
     const tout=liste();
     L=tout.filter(garder);
     etat.total=tout.length; etat.items=L.length; etat.videos=L.filter(x=>x.vid).length;
     etat.filtre=[SF.type,SF.vue,[...sfIntsActives()].join('·'),SF.box?'box':''].filter(Boolean).join('+');
     etat.n=sfCount(); etat.box=SF.box?SF.box.txt:''; etat.panneau=sfOuvert();
-    const par=new Map(); INTS.forEach(i=>par.set(i.id,[]));
-    const sans=[];
-    L.forEach(x=>{ const l=(x.ints||[]).filter(i=>par.has(i));
-      if(!l.length) sans.push(x); else l.forEach(i=>par.get(i).push(x)); });
-    etat.etages=INTS.filter(i=>par.get(i.id).length).length;
-    const rang=(cle,titre,coul,l,add)=>'<section class="etg" data-etg="'+esc(cle)+'"'+(coul?' style="--c:'+coul+'"':'')+'>'
-      +'<h3 class="etg-t">'+titre+'</h3><div class="etg-r">'
-      +l.map(pol).join('')
-      +(add?'<button type="button" class="pol pol-add" data-add="'+esc(cle)+'" aria-label="Add a media">+</button>':'')
-      +'</div></section>';
-    /* Du VIOLET (celebrate) en haut au ROUGE (fight) en bas : on remonte pour passer à la suivante. */
-    /* Ce qui n'a pas encore d'intention vit AU-DESSUS du spectre : le bas reste le rouge, toujours. */
-    let h=sans.length?rang('none','<span>no intention yet</span>','',sans,false):'';
-    h+=[...INTS].reverse().map(i=>rang(i.id,'<span>'+esc(i.name)+'</span>'+HI_SVG,i.color,par.get(i.id),true)).join('');
-    b.innerHTML=h;
+    const plus=me&&!RO?'<button type="button" class="tl tl-add" data-add="" aria-label="Add a media"><span aria-hidden="true">+</span></button>':'';
+    b.innerHTML='<div class="tlg">'+plus+L.map(tuile).join('')+'</div>';
     const say=$(conf.say);
     if(say) say.textContent=L.length?'':(tout.length?'nothing with these filters':conf.vide);
     peindreFlt();
     observer();
-    /* On ARRIVE sur le rouge, tout en bas : la première intention est celle qui commence. */
-    const sc0=sc();
-    if(sc0&&!etat.pose){ etat.pose=true; requestAnimationFrame(()=>{ sc0.scrollTop=sc0.scrollHeight; }); }
   }
-  /* LE POLAROID : une VRAIE photo polaroid — BLANCHE —, la fenêtre du média en haut, et la Box du
-     Totehm ACCOLÉE sur la bande du dessous (son trait latéral, son nom, son rythme et son lieu, ses
-     mini-boîtes). Le point de focalisation de l'image appartient au membre (`--fx/--fy`). */
-  function pol(x){
-    const u=x.b==='em'?emCache(x.src):'';
-    const media=x.vid
-      ? '<video data-sh-src="'+esc(x.src)+'" data-b="'+esc(x.b)+'" muted playsinline loop preload="none"'+(u?' src="'+esc(u)+'" data-ok="1"':'')+'></video>'
-      : '<img alt="" data-sh-src="'+esc(x.src)+'" data-b="'+esc(x.b)+'"'+(u?' src="'+esc(u)+'" data-ok="1"':'')+'>';
-    const f=BADGE.de(x.cle)||{x:50,y:50}, b=bande(x);
-    const traits=(x.cols||[]).map(c=>'<i style="background:'+c+'"></i>').join('');
-    return '<article class="pol" data-pol="'+esc(x.cle)+'" data-lsh-k="'+esc(x.cle)+'"'
-      +' style="--fx:'+f.x+'%;--fy:'+f.y+'%">'
-      +'<div class="pol-ph">'+media+'</div>'
-      +'<div class="pol-b"><div class="pol-x">'
-      +(traits?'<span class="pol-i" aria-hidden="true">'+traits+'</span>':'')
-      +'<button type="button" class="lsh-say" data-lsh="'+esc(x.vue+'|'+x.id)+'">'
-      +'<span class="pol-n">'+esc(x.txt||'')+'</span></button>'
-      +(b.ligne?'<span class="pol-s">'+b.ligne+'</span>':'')
-      +b.minis+'</div></div></article>';
+  /* LA VISIONNEUSE : le média en grand (la vidéo joue, avec ses contrôles), sa boîte dessous, ← → pour le
+     voisin, Échap ou ✕ pour revenir à la grille. Elle n'existe que pour la grille (`#tlv`). */
+  const VU={i:-1};
+  function voir(i){
+    const r=$('tlv'), x=L[i]; if(!r||!x) return fermerV();
+    VU.i=i; etat.vu=i; r.hidden=false; document.body.classList.add('is-tlv');
+    const u=x.b==='em'?emCache(x.src):'', m=r.querySelector('.tlv-m');
+    m.innerHTML=x.vid?'<video controls playsinline autoplay loop'+(u?' src="'+esc(u)+'"':'')+'></video>':'<img alt=""'+(u?' src="'+esc(u)+'"':'')+'>';
+    const el=m.firstChild;
+    if(!u) (x.b==='moments'?urlMoments(x.src):urlEM(x.src)).then(url=>{ if(url&&el.isConnected&&VU.i===i){ el.src=url; if(el.tagName==='VIDEO') el.play().catch(()=>{}); } });
+    let ligne=(x.ints||[]).map(k=>{ const o=INT_BY_ID[k]; return o?'<i style="color:'+o.color+'">'+esc(o.name)+'</i>':''; }).filter(Boolean).join(' · ');
+    r.querySelector('.tlv-b').innerHTML=boite(x,'tlv-box')+(ligne?'<span class="tlv-l">'+ligne+'</span>':'');
+    r.querySelector('.tlv-p').hidden=i<=0; r.querySelector('.tlv-n').hidden=i>=L.length-1;
   }
+  function fermerV(){
+    const r=$('tlv'); if(!r||r.hidden) return;
+    r.querySelectorAll('video').forEach(v=>{ try{ v.pause(); }catch(_){} });
+    r.querySelector('.tlv-m').innerHTML=''; r.hidden=true; document.body.classList.remove('is-tlv'); VU.i=-1; etat.vu=-1;
+  }
+  /* Ouvrir l'élément d'une boîte dans le Totehm, sur SA vue (`__totehmDeplie` est le seul chemin d'entrée). */
+  function ouvrirElement(b){
+    const [v,id]=String(b.dataset.lsh||'').split('|'); const k=VUE_K[v]; if(!k||!id) return;
+    if(typeof window.__totehmDeplie!=='function') return;
+    fermerV();
+    window.__totehmDeplie(()=>{ setView(v); requestAnimationFrame(()=>ouvrir(k,id)); });
+  }
+  if(conf.grille){ const r=$('tlv'); if(r){
+    r.addEventListener('click',e=>{
+      const t=e.target.closest('[data-tlv]'); if(t){ const d=t.dataset.tlv; if(d==='x') fermerV(); else voir(VU.i+(+d)); return; }
+      const b=e.target.closest('[data-lsh]'); if(b){ ouvrirElement(b); return; }
+      if(e.target===r) fermerV();
+    });
+    let t0=null;
+    r.addEventListener('touchstart',e=>{ t0=e.touches.length===1?{x:e.touches[0].clientX,y:e.touches[0].clientY}:null; },{passive:true});
+    r.addEventListener('touchend',e=>{ if(!t0) return; const dx=e.changedTouches[0].clientX-t0.x, dy=e.changedTouches[0].clientY-t0.y; t0=null;
+      if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.3) voir(VU.i+(dx<0?1:-1));
+      else if(dy>90&&Math.abs(dy)>Math.abs(dx)*1.3) fermerV(); },{passive:true});
+    window.addEventListener('keydown',e=>{
+      if(r.hidden) return;
+      if(e.key==='Escape'){ e.preventDefault(); e.stopImmediatePropagation(); fermerV(); }
+      else if(e.key==='ArrowRight'||e.key==='ArrowLeft'){ e.preventDefault(); e.stopImmediatePropagation(); voir(VU.i+(e.key==='ArrowRight'?1:-1)); }
+      else if(e.key==='ArrowUp'||e.key==='ArrowDown') e.stopImmediatePropagation();
+    },{capture:true});
+  } }
   function peindre(){
-    if(conf.etages) return etages();
+    if(conf.grille) return grille();
     const b=bx(); if(!b) return;
+    b.querySelectorAll('video[data-bunny]').forEach(v=>BUNNY.lacher(v));
     const tout=liste();
     L=tout.filter(garder);
     etat.total=tout.length; etat.items=L.length; etat.videos=L.filter(x=>x.vid).length;
@@ -5998,7 +6214,10 @@ function creerFeed(conf){
     etat.ici=!!ici;
     b.innerHTML=L.map(html).join('');
     const say=$(conf.say);
-    if(say) say.textContent=L.length?'':(tout.length?'nothing with these filters':conf.vide);
+    if(say) say.textContent=conf.src==='spots'
+      ? (CLUBSP.err==='unreachable'?'the club is unreachable · try again':CLUBSP.err==='location'?'location refused':
+         !CLUBSP.lu?'':L.length?'':(sfCount()?'nothing with these filters':({past:'no spot yet',now:'nothing right now',future:'nothing planned'})[CLUBSP.per]))
+      : (L.length?'':(tout.length?'nothing with these filters':conf.vide));
     peindreFlt();
     observer();
   }
@@ -6007,11 +6226,9 @@ function creerFeed(conf){
   function pas(dir){
     if(!etat.on) return false;
     const s=sc(), b=bx(); if(!s||!b) return false;
-    if(conf.etages){
-      const r=[...b.querySelectorAll('.etg')]; if(!r.length) return false;
-      const y=s.scrollTop, i=r.findIndex(e=>e.offsetTop>=y-4), j=(i<0?r.length-1:i)+dir;
-      if(j<0||j>=r.length) return false;
-      s.scrollTo({top:r[j].offsetTop,behavior:RMS()?'auto':'smooth'}); etat.pas++; return true;
+    if(conf.grille){
+      const max=s.scrollHeight-s.clientHeight; if((dir<0&&s.scrollTop<=0)||(dir>0&&s.scrollTop>=max-1)) return false;
+      s.scrollBy({top:dir*Math.round(s.clientHeight*.6),behavior:RMS()?'auto':'smooth'}); etat.pas++; return true;
     }
     const l=[...b.querySelectorAll('.lsh')]; if(!l.length) return false;
     const i=l.findIndex(el=>el.dataset.lshK===ici), j=(i<0?0:i)+dir;
@@ -6024,14 +6241,20 @@ function creerFeed(conf){
   function entrer(){
     etat.on=true; peindre();
     const s=sc(), b=bx(); if(!s||!b) return;
+    if(conf.grille){ s.style.scrollBehavior='auto'; s.scrollTop=etat.y||0; s.style.scrollBehavior=''; return; }
     const el=ici?b.querySelector('.lsh[data-lsh-k="'+CSS.escape(ici)+'"]'):null;
     s.style.scrollBehavior='auto'; s.scrollTop=el?el.offsetTop:0; s.style.scrollBehavior='';
   }
-  function sortir(){ etat.on=false; pause(); if(io){ io.disconnect(); io=null; } }
+  function sortir(){
+    const s=sc(); if(s&&conf.grille) etat.y=s.scrollTop;
+    etat.on=false; pause(); fermerV(); if(io){ io.disconnect(); io=null; }
+    const b=bx(); if(b) b.querySelectorAll('video[data-bunny]').forEach(v=>BUNNY.lacher(v));
+  }
   function pause(){ const s=sc(); if(s) s.querySelectorAll('video').forEach(v=>{ try{ v.pause(); }catch(_){} }); }
   /* Mes médias ont changé (un import, un rechargement) : on refait le feed. Rien si la vue est fermée. */
   function maj(){ if(etat.on) peindre(); }
-  function vider(){ ici=null; etat.ici=false; L=[]; sfReset(); const b=bx(); if(b) b.innerHTML='';
+  function vider(){ ici=null; etat.ici=false; etat.y=0; L=[]; sfReset(); fermerV(); const b=bx();
+    if(b){ b.querySelectorAll('video[data-bunny]').forEach(v=>BUNNY.lacher(v)); b.innerHTML=''; }
     const p=pan(); if(p) p.hidden=true; const pk=$(conf.pick); if(pk) pk.hidden=true;
     if(io){ io.disconnect(); io=null; } }
   /* ── ON PREND LE POLAROID, ON LE POSE OÙ L'ON VEUT ───────────────────────────────────────────
@@ -6042,7 +6265,7 @@ function creerFeed(conf){
       const p=e.target.closest('[data-pol]'); if(!p||RO) return;
       /* À gauche, on ne déplace pas la carte : on choisit le POINT DE FOCALISATION de l'image
          (Wah) — la référence est donc la FENÊTRE du média, pas l'écran. */
-      const sec=conf.etages?p.querySelector('.pol-ph'):p.closest('.lsh'); if(!sec) return;
+      const sec=conf.grille?p.querySelector('.tl-ph'):p.closest('.lsh'); if(!sec) return;
       drag={id:e.pointerId, el:p, cle:p.dataset.pol, r:sec.getBoundingClientRect(),
             x0:e.clientX, y0:e.clientY, bouge:false, arme:false, x:null, y:null,
             t:setTimeout(()=>{ if(!drag||drag.id!==e.pointerId) return;
@@ -6064,21 +6287,21 @@ function creerFeed(conf){
       const vif=(bx()||document).querySelector('[data-pol="'+CSS.escape(drag.cle)+'"]');
       if(vif) drag.el=vif;
       if(!drag.remesure){ drag.remesure=1;
-        const el=conf.etages?(drag.el.querySelector('.pol-ph')||drag.el):drag.el.closest('.lsh');
+        const el=conf.grille?(drag.el.querySelector('.tl-ph')||drag.el):drag.el.closest('.lsh');
         const rr=el?el.getBoundingClientRect():null;
         if(rr&&rr.height>4) drag.r=rr; }
-      const b0=conf.etages?0:14, b1=conf.etages?100:86;
+      const b0=conf.grille?0:14, b1=conf.grille?100:86;
       const x=Math.max(b0,Math.min(b1,((e.clientX-drag.r.left)/Math.max(1,drag.r.width ))*100));
       const y=Math.max(b0,Math.min(b1,((e.clientY-drag.r.top )/Math.max(1,drag.r.height))*100));
       drag.x=x; drag.y=y;
-      drag.el.style.setProperty(conf.etages?'--fx':'--px',x.toFixed(1)+'%');
-      drag.el.style.setProperty(conf.etages?'--fy':'--py',y.toFixed(1)+'%');
+      drag.el.style.setProperty(conf.grille?'--fx':'--px',x.toFixed(1)+'%');
+      drag.el.style.setProperty(conf.grille?'--fy':'--py',y.toFixed(1)+'%');
     });
     const lache=e=>{
       if(!drag||(e&&e.pointerId!==drag.id)) return;
       const d=drag; drag=null; clearTimeout(d.t);
       d.el.classList.remove('is-tenu'); d.el.style.touchAction='';
-      if(d.bouge&&d.x!=null){ BADGE.poser(d.cle,d.x,d.y); etat.poses=(etat.poses||0)+1; }
+      if(d.bouge&&d.x!=null){ BADGE.poser(d.cle,d.x,d.y); etat.poses=(etat.poses||0)+1; etat.glisse=Date.now(); }
     };
     s.addEventListener('pointerup',lache);
     /* Un `pointercancel` ne JETTE pas le geste : ce qui a été déplacé est posé, comme un lâcher. */
@@ -6087,12 +6310,19 @@ function creerFeed(conf){
        chemin d'entrée (il passe par la porte si l'on n'est pas inscrit). */
     /* Le polaroid VIDE au bout d'une rangée : il ajoute un média À CETTE intention. */
     s.addEventListener('click',e=>{
+      /* Un appui long qui a déplacé le point de focalisation n'est pas un tap. */
+      if(etat.glisse&&Date.now()-etat.glisse<400) return;
       const a=e.target.closest('[data-add]');
-      if(a){ choix('cap',a.dataset.add); return; }
-      const b=e.target.closest('[data-lsh]'); if(!b) return;
-      const [v,id]=String(b.dataset.lsh||'').split('|'); const k=VUE_K[v]; if(!k) return;
-      if(typeof window.__totehmDeplie!=='function') return;
-      window.__totehmDeplie(()=>{ setView(v); if(id) requestAnimationFrame(()=>ouvrir(k,id)); });
+      if(a){ choix('cap',a.dataset.add||undefined); return; }
+      const b=e.target.closest('[data-lsh]'); if(b){ ouvrirElement(b); return; }
+      /* Les gestes d'un spot : y aller (le point exact, si je le vois), le mettre au calendrier, voir son auteur. */
+      const g=e.target.closest('[data-go],[data-ics],[data-who]');
+      if(g){ const z=(L.find(x=>x.sp&&String(x.sp.id)===String(g.dataset.go||g.dataset.ics))||{}).sp;
+        if(g.dataset.who){ XO.univers(g.dataset.who); return; }
+        if(g.dataset.go&&z&&z.exact){ window.open('https://www.google.com/maps/dir/?api=1&destination='+z.exact.lat+','+z.exact.lng,'_blank','noopener'); return; }
+        if(g.dataset.ics&&z) calendrier(z);
+        return; }
+      const t=conf.grille&&e.target.closest('.tl[data-i]'); if(t) voir(+t.dataset.i);
     });
   } }
   /* MES ÉLÉMENTS, pour attribuer un média : les cinq vues, dans l'ordre du Totehm. */
@@ -6139,6 +6369,7 @@ function creerFeed(conf){
       const c=f.dataset.f;
       /* `mode` n'est pas un filtre : il change de MOTEUR (radar ↔ shorts), sans toucher aux données. */
       if(c==='mode'){ SPOTMODE.set(f.dataset.v); return; }
+      if(c==='per'){ CLUBSP.periode(f.dataset.v); const s=sc(); if(s) s.scrollTop=0; return; }
       if(c==='plus'){ choix('cap'); return; }
       if(c==='box'){ choix('box'); return; }
       if(c==='sf'){ sfOpen(!sfOuvert()); return; }
@@ -6160,6 +6391,8 @@ function creerFeed(conf){
       else if(c==='type') SF.type=SF.type===v?'':v;
       else if(c==='vue')  SF.vue =SF.vue ===v?'':v;
       else if(c==='quand')SF.quand=SF.quand===v?'':v;
+      else if(c==='qui')  SF.qui=v||'';
+      else if(c==='ou')   SF.ou=v||'';
       else return;
       sfApply();
     }); }
@@ -6184,9 +6417,9 @@ function creerFeed(conf){
           etat:()=>Object.assign({},etat)};
 }
 const SH =creerFeed({sc:'lv-sh',  bx:'lv-sh-f',  say:'lv-sh-say', rail:'lv-sh-flt', src:'media', vide:'no media yet',
-                     ajout:false, pick:'lv-sh-pick', panneau:'lv-sh-sf', etages:true});
-const SHS=creerFeed({sc:'rdr-sh', bx:'rdr-sh-f', say:'rdr-say',   rail:'rdr-flt',   src:'spots', vide:'no spot photo yet',
-                     avant:()=>SPOTMODE.html(), pick:'rdr-pick', panneau:'rdr-sf', boxes:'habits'});
+                     ajout:false, pick:'lv-sh-pick', panneau:'lv-sh-sf', grille:true});
+const SHS=creerFeed({sc:'rdr-sh', bx:'rdr-sh-f', say:'rdr-say',   rail:'rdr-flt',   src:'spots', vide:'no spot yet',
+                     avant:()=>SPOTMODE.html()+CLUBSP.perHTML(), pick:'rdr-pick', panneau:'rdr-sf', boxes:'habits'});
 window.__totehm_sh=()=>Object.assign({},SH.etat(),{capture:CAP.etat(), places:BADGE.etat()});
 
 /* ══ LA VUE DE DROITE A DEUX MODES · 19/10/2026 ══════════════════════════════════════════════════
@@ -6199,9 +6432,11 @@ const SPOTS=(()=>{
   const dort =()=>SPOTMODE.get()==='shorts'?RDR:SHS;
   let ouvert=false;
   SPOTMODE.surChangement(()=>{ if(!ouvert) return; dort().fermer(); actif().ouvrir(); SHS.flts(); });
+  /* Les spots du Club ont changé (une période, un filtre, une page de plus) : les deux modes relisent. */
+  CLUBSP.surChangement(()=>{ SHS.flts(); if(!ouvert) return; actif().maj(); });
   return {
     ouvrir(){ ouvert=true; document.body.classList.toggle('rdr-shorts',SPOTMODE.get()==='shorts');
-              SHS.flts(); actif().ouvrir(); },
+              SHS.flts(); actif().ouvrir(); CLUBSP.ouvrir(); },
     fermer(){ ouvert=false; SHS.fermer(); RDR.fermer(); },
     pause(){ SHS.pause(); RDR.pause(); },
     maj(){ if(ouvert) actif().maj(); },
@@ -6210,7 +6445,7 @@ const SPOTS=(()=>{
     etat
   };
 })();
-window.__totehm_rdr=()=>SPOTS.etat();
+window.__totehm_rdr=()=>Object.assign(SPOTS.etat(),{club:CLUBSP.etat()});
 
 /* ══ LES 7 INTENTIONS (source : totehm_map.html) ══ */
 const INTS=[
@@ -6713,7 +6948,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-10-20-com-curseur';
+const BUILD='2026-10-20-com-grille';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -11056,7 +11291,8 @@ window.addEventListener('pageshow',e=>{
     /* ── LES GESTES : flèches ↑ ↓ et Échap, trackpad et molette, doigt, deux chevrons — sur tout l'atterrissage,
        jamais pendant mes réglages, la porte, l'espace membre ou une couche. ── */
     const libre=()=>body.classList.contains('gate')&&!body.classList.contains('entered')&&!body.classList.contains('is-door')
-      &&!sOpen&&!sMoving&&!$('member-window').classList.contains('show')&&!body.classList.contains('is-xo');
+      &&!sOpen&&!sMoving&&!$('member-window').classList.contains('show')&&!body.classList.contains('is-xo')
+      &&!body.classList.contains('is-tlv');
     const saisie=t=>!!(t&&(t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.tagName==='SELECT'||t.isContentEditable));
     const LISTES='#lv-thread,#gx-res,#lv-sh';
     const filDefile=(t,dy)=>{ if(!t||!t.closest||!t.closest(LISTES)) return false;
@@ -11982,7 +12218,7 @@ window.addEventListener('pageshow',e=>{
       CREA.charger();
     };
     lvQuitter=()=>{ landSeq++; SM.seq++; SM.msgs=[]; SM.busy=false; SM.live=null; SM.offre=false; SM.ajoute.clear(); penser(false);
-                    visSeq++; CREA.vider(); GX.vider(); smNote(''); };
+                    visSeq++; CREA.vider(); GX.vider(); CLUBSP.vider(); smNote(''); };
     window.__totehm_lv=()=>({build:BUILD, vue, mode, bouge, allers:diag.allers, modes:diag.modes, papier:PAPIER.vue(),
       membre:inscrit(), higher:!!(LAND&&LAND.higher&&LAND.higher.active), thp:!!(LAND&&LAND.thp),
       reflection:{tours:SM.msgs.length, pret:!!etatSM().ready, gratuits:etatSM().free_left??null, envois:diag.envois, ajouts:diag.ajouts,
