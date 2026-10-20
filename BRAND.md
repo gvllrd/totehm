@@ -33,13 +33,24 @@ member has total control of their own Totehm — and the back of the paper has n
 Three levels, and only three: **PRIVATE** (only me) · **SUBSCRIBERS** (whoever subscribed to a member's
 Totehm) · **CLUB** (whoever is on the platform with a Totehm filled in — a member).
 
+## 20/10/2026 septies · the brain vibrates, the controller is a small socket
+
+> **Up, the brain VIBRATES.** The seven intention lines, in their full colours, form a brain seen from above (two
+> hemispheres, the fissure and the outline in grey) and each one oscillates at its own frequency — **red (Fight) slow and
+> wide, violet (Celebrate) fast and fine**, like the EEG bands the pitch quotes (delta → gamma). An intention without a
+> Habit vibrates at half amplitude, never in a faded colour. It sits between the pitch and the controller; nothing covers it.
+> **The controller is a small socket**: the same glass as the Totehm's socket, square, the pin-1 mark in its corner, a
+> round black well and a minimal stick cap (navy, hollowed centre) — a PlayStation stick, stripped down. The direction
+> chevrons are bare: no grey boxes around them.
+
 ## 20/10/2026 sexies · the ecosystem — the side views ARE the centre, transformed
 
 > **The rule.** The four views around the centre are the centre, transformed. Travelling sideways you SEE it: the
 > paper slides to the top, and the seven intention lines bend — into the rail of the boxes on the left, into seven
 > meridians around the world on the right. Then the view arrives.
-> **The spots →** — two modes, **MAP · GRID**, in the same format as **MINE · MEMBERS**. MAP is the Earth: a square per
-> spot in the colour of its intention — full when I see its point, hollow when I only see its city. GRID is a square
+> **The spots →** — two modes, **MAP · GRID**, in the same format as **MINE · MEMBERS**. MAP is the Earth: a DOT per
+> spot in the colour of its intention — full when I see its point, hollow when I only see its city (20/10 septies). The
+> meridians live only during the travel: once the Earth is there, they are gone — like on the left. GRID is a square
 > per spot with its Habit Box on top. A tap opens the polaroid. My Totehm on top opens the filter: the Habits (as Boxes),
 > **I WAS HERE · I AM HERE · I WILL BE THERE**, the intentions (**Fight [Higher]**…), what it shows, near me, mine.
 > No radar here: the radar belongs to figher.club.
@@ -175,8 +186,9 @@ study does not exist. Our own citations are stronger because they are real. A me
 ~~The galaxy~~ (gone on 20/10 sexies): searching a member is the BACK of my own paper, grown — one field, a name
 typed in Quantico Coral, and the member's ecosystem in answer.
 
-**The Reflection at rest is a profile and a blinking cursor, on the LEFT** (20/10): arriving below opens the keyboard at
-once; one caret at a time, no box, no placeholder; what I type is big (Quantico 22 px), left-aligned. Then three linked tiers: direction (light blue) ·
+**The Reflection at rest is a profile and the caret, on the LEFT** (20/10; 20/10 septies: the fake blinking line is gone —
+ONE caret, the real one, and a **SEND** button, grey, under what I type, only when there is something to send): arriving below opens the keyboard at
+once; no box, no placeholder; what I type is big (Quantico 22 px), left-aligned. Then three linked tiers: direction (light blue) ·
 **the Habit, raised, in the MIDDLE** (navy, with the intention trait the model chose) · obstacle + Teaching from the
 story (red-violet). Talk is cheap: the action is the centre of gravity.
 

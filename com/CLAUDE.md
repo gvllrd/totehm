@@ -1,5 +1,34 @@
 # com/CLAUDE.md — totehm.com : le Totehm, la carte, HigherSelf
 
+## 20/10/2026 septies — LE CERVEAU VIBRE, DES POINTS SUR LA TERRE, UN SEUL CURSEUR, LA MANETTE-SOCLE (BUILD `2026-10-20-com-manette`)
+
+Wah : « à la place des carrés, des points ; les 7 traits doivent disparaître du globe, comme à gauche » · « les couleurs
+des 7 traits dans la vue d'en haut, qui vibrent, basse fréquence pour le rouge, haute pour le violet, en formant un
+cerveau » · « enlève le double curseur en bas, et au lieu de l'icône Entrée, un bouton » · « un curseur dans le même
+style que le socle du Totehm, un genre de joystick PlayStation plus minimaliste ; pas de boîtes grises autour des
+indicateurs de direction ».
+- **→ MAP** : un spot = un POINT (`arc`, r 4, 5,5 si I AM HERE ; plein = le point, creux = la ville). `SPMAP.dessiner`
+  ne trace plus les sept méridiens : ils n'existent que pendant la transformation (`#lv-ram`), puis s'effacent ; la
+  Terre garde un limbe `--navy-d` (1 px) pour que le globe se lise sur le noir.
+- **↑ LE CERVEAU VIBRE** (`RAM.cerveau` + `onde` + `vibrer`) : sept ondes, une par intention, miroir de part et d'autre
+  de la scissure ; la largeur suit une super-ellipse (un hémisphère vu de dessus). Fréquence temporelle 0,35 Hz (fight)
+  → 3,2 Hz (celebrate), géométrique ; cycles 1,2 → 6,9 par moitié ; amplitude décroissante (delta ample → gamma fine).
+  Sans Habit : demi-amplitude, couleur PLEINE (`body.gate.lv-h #lv-ram .r-0{opacity:1}`) ; pas d'impulsion `.puls` en
+  haut. Placé ENTRE `#lv-sell` et `#lvjoy` (mesurés) ; contour des hémisphères gris `.sk-c`. rAF SEULEMENT en vue h,
+  page visible, sans `entered` ; l'amplitude monte en 0,6 s à l'arrivée ; mouvement réduit = ondes immobiles, zéro rAF.
+  Diagnostic : `ramifications.vibre`, `.vibrations`, `.ondes[{c,f,cyc,amp}]`.
+- **↓ UN SEUL CURSEUR** : `.rf-cur`, `@keyframes rf-blink`, `is-tape` et la lecture du clavier (`clavierLeve`) PARTIS
+  — balisage, règles et câblage ensemble ; reste le vrai curseur du champ. `body.rf-clavier` (la manette s'efface en
+  tapant au doigt) reste. **`#lv-say-go` = le bouton « SEND »** (gris, rayon 10, Space Mono Bold), sous le champ, à
+  droite ; invisible tant que le champ est vide (hauteur réservée).
+- **LA MANETTE = UN PETIT SOCLE** (`#lvjoy`, atterrissage) : grille 26/48/26, gap 4 (tient dans `--lvj-h`). `#lvj-box`
+  = le verre de `#lv-socket` (même dégradé, même arête, marque de broche 5 px), CARRÉ ; `::after` = le puits rond noir ;
+  `#lvj-stack i` = le chapeau 22 px, navy au centre creusé (`--navy-d`), bleu quand on le tient ; course 10 px
+  (`RAYON`), seuil 6. Chevrons `.lvn` NUS (fond retiré), `#8a8a92`, blancs au survol et quand le manche les vise. La
+  manette DANS le Totehm (`#joy`, trois ronds) ne change pas : ses chevrons n'avaient déjà aucune boîte.
+- Tests : `com_processeur` 147 (cerveau : couleurs, fréquences croissantes, place, vibration, mouvement réduit ; globe
+  sans méridien au pixel ; SEND ; jamais de second curseur), `com_shorts` 127, toutes les suites COM vertes.
+
 ## 20/10/2026 sexies — L'ÉCOSYSTÈME : ← → SONT LA TRANSFORMATION DU CENTRE ; MAP · GRID ; MEMBERS (BUILD `2026-10-20-com-ecosysteme`)
 
 Wah : « les 4 vues adjacentes doivent être le résultat de la transformation de la vue centrale : on doit voir en
@@ -14,13 +43,13 @@ ce n'est plus le nôtre, c'est celui d'un membre ».
   `body.ram-morph`). Formes : centre = le circuit (autour du papier, ou du papier AGRANDI en MEMBERS : `{papier}`) ·
   haut = le cerveau · gauche = le RAIL (les sept pistes descendent du papier docké jusqu'aux deux bords, sans croisement)
   · droite = SEPT MÉRIDIENS sur le globe de la carte (`SPMAP.geo()`, la même géométrie). Les vues ← → entrent après
-  (`transition-delay` .55–.62 s) ; arrivé, le réseau s'efface (la carte garde ses propres méridiens). Mouvement réduit :
+  (`transition-delay` .55–.62 s) ; arrivé, le réseau s'efface (et la Terre n'en dessine aucun, 20/10 septies). Mouvement réduit :
   aucune transformation. Diagnostic : `ramifications.morphs`, `.enCours`.
 - **→ MAP · GRID** (`SPOTMODE` map|grid, `localStorage totehm_spots_mode2`) ; le RADAR (`RDR`, `#rdr-c`) est PARTI.
   `#rdr-mode` = la bascule au format de MINE · MEMBERS, au-dessus de la manette. **`SPMAP`** : un canvas, la projection
-  orthographique, Natural Earth 110 m (`/assets/earth.json`, 51 ko, restauré du 13/10), terres en `--navy-d`, sept
-  méridiens fixes aux sept couleurs, la Terre tourne dedans (doigt, molette, pincement ×1–8) ; aucun rAF permanent. Un
-  spot = un carré à la couleur de sa première intention : PLEIN si `exact` m'est montré, CREUX au centre de SA VILLE
+  orthographique, Natural Earth 110 m (`/assets/earth.json`, 51 ko, restauré du 13/10), terres en `--navy-d`, un limbe
+  `--navy-d` (plus de méridiens depuis le 20/10 septies), la Terre tourne dedans (doigt, molette, pincement ×1–8) ; aucun
+  rAF permanent. Un spot = un POINT à la couleur de sa première intention : PLEIN si `exact` m'est montré, CREUX au centre de SA VILLE
   (`cities.json`, lu seulement s'il le faut — jamais un faux point). Le doigt horizontal tourne la Terre : l'axe s'éteint
   dans CETTE vue (chevron, manette, trackpad ramènent). **`SPGRID`** : la grille de gauche (`.tlg`), la photo ou la
   vignette Bunny (`BUNNY.vignette`), la Habit Box au format Totehm (la mienne, ou rendue depuis `habit_box`). Un tap
@@ -115,7 +144,7 @@ TikTok sur ordinateur et mobile ; c'est ici et seulement ici qu'on a la forme po
 - Tests : `com_shorts` 108 (grille, visionneuse, focalisation, + ; club_spots, périodes, carte, filtres serveur, mine,
   near, Bunny, radar).
 
-## 20/10/2026 ter — LE CURSEUR QUI CLIGNOTE, À GAUCHE, ET CE QUE J'ÉCRIS EN GRAND (BUILD `2026-10-20-com-curseur`)
+## 20/10/2026 ter — LE CURSEUR QUI CLIGNOTE, À GAUCHE, ET CE QUE J'ÉCRIS EN GRAND (BUILD `2026-10-20-com-curseur`) — ⚠️ le trait `.rf-cur` est REPARTI le 20/10 septies
 
 Wah : « au lieu du Wassup, je préfère le curseur qui clignote comme avant, à gauche, et les inputs en plus grand ».
 - Plus de placeholder. Le champ et ce que j'ai dit (`.rf-q`) sont À GAUCHE, en Quantico 22 px / 20 px.

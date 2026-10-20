@@ -126,6 +126,24 @@ try{
       dessous:g.top>p.bottom,badge:!!q('#lv-slogan use[href="#higher-badge"]'),socle:getComputedStyle(q('#lv-socket')).opacity,tab:q('#lv-slogan').tabIndex};});
   ok(h.op==='1'&&h.ouverte&&h.haut&&h.papier,(reduit?'mouvement réduit · ':'')+'↑ Get Higher : la bouche EN HAUT, ouverte, le papier rapetissé sur la langue');
   ok(h.get==='Get'&&h.getOp==='1'&&h.badge&&h.dessous&&h.tab===0&&h.socle==='0','« Get [Higher] » sous la langue (le badge SVG), LE bouton ; le socle s\'efface '+JSON.stringify(h));
+  /* 20/10 septies — LE CERVEAU VIBRE : les sept couleurs pleines, rouge lent et ample → violet rapide et fin ;
+     placé SOUS la vente, au-dessus de la manette ; immobile si le mouvement est réduit. */
+  const cv=async()=>pg.evaluate(()=>{const g=[...document.querySelectorAll('#lv-ram g')],r=window.__totehm_lv().ramifications,
+    se=document.getElementById('lv-sell').getBoundingClientRect(),jo=document.getElementById('lvjoy').getBoundingClientRect(),
+    ys=g.flatMap(e=>e.querySelector('path').getAttribute('d').split(/[ML]/).filter(Boolean).map(t=>+t.trim().split(' ')[1]));
+    return {r,d:g.map(e=>e.querySelector('path').getAttribute('d')),cols:g.map(e=>e.querySelector('path').getAttribute('stroke')),
+      ops:g.map(e=>getComputedStyle(e).opacity),haut:Math.min(...ys),bas:Math.max(...ys),sell:se.bottom,joy:jo.top,
+      contour:document.querySelectorAll('#lv-ram .sk-c').length,puls:[...document.querySelectorAll('#lv-ram .puls')].map(e=>getComputedStyle(e).opacity)};});
+  await pg.waitForFunction(()=>!window.__totehm_lv().ramifications.enCours,null,{timeout:3000}).catch(()=>{});
+  const c1=await cv();await pg.waitForTimeout(300);const c2=await cv();
+  const fs=c1.r.ondes.map(o=>o.f), amps=c1.r.ondes.map(o=>o.amp);
+  ok(c1.r.vue==='h'&&c1.cols.length===7&&c1.cols.join()==='#E24B4A,#e48b31,#fcbe21,#639922,#1D9E75,#378ADD,#7F77DD'&&c1.ops.every(o=>o==='1')&&c1.contour===2,
+    (reduit?'mouvement réduit · ':'')+'20/10 septies · le cerveau : sept ondes, les sept couleurs PLEINES, deux hémisphères → '+JSON.stringify({c:c1.cols,o:c1.ops}));
+  ok(fs.every((f,i)=>!i||f>fs[i-1])&&fs[0]<.5&&fs[6]>3&&c1.r.ondes[6].cyc>c1.r.ondes[0].cyc*4,'20/10 septies · rouge = basse fréquence, violet = haute fréquence → '+JSON.stringify(fs));
+  ok(c1.haut>c1.sell&&c1.bas<c1.joy,'20/10 septies · le cerveau vit ENTRE la vente et la manette → '+JSON.stringify({haut:c1.haut,sell:c1.sell,bas:c1.bas,joy:c1.joy}));
+  ok(c1.puls.every(o=>o==='0'),'20/10 septies · pas d\'impulsion dans le cerveau : c\'est l\'onde qui vit');
+  if(reduit) ok(!c2.r.vibre&&c1.d.join()===c2.d.join(),'mouvement réduit · le cerveau est immobile (aucun rAF)');
+  else ok(c2.r.vibre&&c2.r.vibrations>c1.r.vibrations&&c1.d.join()!==c2.d.join(),'20/10 septies · il VIBRE (les ondes bougent d\'une image à l\'autre) → '+c2.r.vibrations);
   if(!reduit) await pg.screenshot({path:OUT+'/proc_get_higher.png'});
   const req=pg.waitForRequest(r=>r.url().startsWith('https://www.higher.boutique/get_higher'),{timeout:9000}).catch(()=>null);
   await pg.click('#lv-slogan');
@@ -232,6 +250,14 @@ try{
   const dd=await pg.evaluate(()=>{const ps=[...document.querySelectorAll('#lv-ram path:not(.puls)')].map(p=>p.getAttribute('d').split(/[ML]/).filter(Boolean).map(t=>t.trim().split(' ').map(Number)));
     const g=window.__totehm_rdr().carte; return {vue:window.__totehm_lv().ramifications.vue, ys:ps.map(l=>[l[0][1],l[l.length-1][1]])};});
   ok(dd.vue==='d'&&dd.ys.every(([a,b])=>b>a),'arrivé à droite : sept méridiens, du pôle nord au pôle sud');
+  /* 20/10 septies — puis ils DISPARAISSENT du globe (comme à gauche) : le réseau s'efface, et la Terre n'en dessine
+     aucun — plus aucune longue ligne verticale aux couleurs d'intention sur le canvas. */
+  const gl=await pg.evaluate(()=>{const c=document.getElementById('rdr-map'),x=c.getContext('2d'),w=c.width,h=c.height,im=x.getImageData(0,0,w,h).data;
+    const C=[[226,75,74],[228,139,49],[252,190,33],[99,153,34],[29,158,117],[55,138,221],[127,119,221]];
+    const est=i=>C.some(k=>Math.abs(im[i]-k[0])+Math.abs(im[i+1]-k[1])+Math.abs(im[i+2]-k[2])<60);
+    let run=0;for(let cx=0;cx<w;cx+=2){let r=0;for(let y=0;y<h;y++){if(est((y*w+cx)*4)){r++;if(r>run)run=r;}else r=0;}}
+    return {run,ram:getComputedStyle(document.getElementById('lv-ram')).opacity,w};});
+  ok(gl.ram==='0'&&gl.run<30,'20/10 septies · arrivé : les méridiens ont quitté le globe (réseau à 0, plus longue ligne colorée '+gl.run+' px)');
   ok(!erreurs(log).length,'transformations : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
 
  // ── 5 · EN BAS : LA CONDENSATION — seul #gl-bg tourne ; le socle devient un anneau (7 couleurs) ; le profil ──
@@ -278,12 +304,14 @@ try{
   const v=await pg.evaluate(()=>({say:!document.getElementById('lv-say').classList.contains('hide'),font:getComputedStyle(document.getElementById('lv-say-in')).fontFamily,
     note:document.getElementById('lv-say-note').textContent,etages:[...document.querySelectorAll('#lv-thread .rf-t')].map(e=>e.className),
     vide:document.getElementById('lv-say').classList.contains('is-vide'),cur:!!document.querySelector('#lv-say .rf-cur'),
+    go:document.getElementById('lv-say-go').textContent.trim(),goSvg:!!document.querySelector('#lv-say-go svg'),goOp:getComputedStyle(document.getElementById('lv-say-go')).opacity,
     focus:document.activeElement===document.getElementById('lv-say-in'),ph:document.getElementById('lv-say-in').placeholder,
     px:getComputedStyle(document.getElementById('lv-say-in')).fontSize,boite:getComputedStyle(document.getElementById('lv-say-in')).backgroundColor,
-    align:getComputedStyle(document.getElementById('lv-say-in')).textAlign,faux:getComputedStyle(document.querySelector('#lv-say .rf-cur')).opacity,coarse:matchMedia('(pointer:coarse)').matches,
+    align:getComputedStyle(document.getElementById('lv-say-in')).textAlign,coarse:matchMedia('(pointer:coarse)').matches,
     slo:(()=>{const r=document.getElementById('lv-slogan').getBoundingClientRect();return r.top>innerHeight*.8;})()}));
   ok(v.say&&/Quantico/.test(v.font)&&/^6 of 7 free this month/.test(v.note),'prêt : la saisie (Quantico), « 6 of 7 free this month »');
-  ok(v.etages.length===0&&v.vide&&v.focus&&v.ph===''&&v.faux===(v.coarse?'1':'0'),'20/10 ter · en arrivant : le focus est déjà dans le champ ; à la souris le trait s\'efface (le vrai curseur est là), au doigt SANS clavier levé il reste — jamais deux ; plus de « Wassup ? » → '+JSON.stringify({f:v.focus,faux:v.faux,coarse:v.coarse}));
+  ok(v.etages.length===0&&v.vide&&v.focus&&v.ph===''&&!v.cur,'20/10 septies · en arrivant : le focus est déjà dans le champ ; UN SEUL curseur, le vrai (le trait qui clignotait est parti) ; plus de « Wassup ? » → '+JSON.stringify({f:v.focus,cur:v.cur}));
+  ok(v.go==='SEND'&&!v.goSvg&&v.goOp==='0','20/10 septies · la flèche est devenue un BOUTON « SEND », caché tant que le champ est vide → '+JSON.stringify({go:v.go,svg:v.goSvg,op:v.goOp}));
   ok(v.px==='22px'&&v.align==='left'&&v.boite==='rgba(0, 0, 0, 0)','20/10 ter · à GAUCHE, en GRAND (22 px), ni boîte ni fond → '+v.px+' '+v.align+' '+v.boite);
   /* ↑ dans le champ vide remonte ; redescendre remet le curseur dans le champ */
   await pg.keyboard.press('ArrowUp');await vers(pg,'c');await pg.waitForTimeout(300);
@@ -405,20 +433,15 @@ try{
   const tp=(type,x,y)=>cdp.send('Input.dispatchTouchEvent',{type,touchPoints:type==='touchEnd'?[]:[{x,y}]});
   await tp('touchStart',195,600);for(let i=1;i<=6;i++) await tp('touchMove',195,600-i*40);await tp('touchEnd');
   const geste=await pg.evaluate(()=>document.activeElement&&document.activeElement.className);
-  const course=await pg.evaluate(()=>getComputedStyle(document.querySelector('#lv-say .rf-cur')).animationName);
   await pg.keyboard.type('yo');await vers(pg,'b');await pg.waitForTimeout(300);
   const a=await pg.evaluate(()=>({act:document.activeElement&&document.activeElement.id,val:document.getElementById('lv-say-in').value,
     clav:document.body.classList.contains('rf-clavier'),joy:getComputedStyle(document.getElementById('lvjoy')).opacity}));
   ok(geste==='rf-proxy','20/10 · téléphone : le clavier s\'ouvre DANS le geste (relais focalisé pendant la course)');
   ok(a.act==='lv-say-in'&&a.val==='yo','20/10 · à l\'arrivée, le focus passe au vrai champ et garde ce qui a été tapé pendant la course → '+JSON.stringify(a));
   ok(a.clav&&a.joy==='0','20/10 · en tapant sur téléphone, la manette s\'efface');
-  ok(course==='rf-blink','20/10 ter · pendant la course, le trait CLIGNOTE à gauche (le vrai curseur n\'est pas encore là)');
-  /* le clavier se lève : la page rétrécit → le vrai curseur prend la place, le trait s'éteint (champ vidé d'abord) */
-  await pg.fill('#lv-say-in','');await pg.focus('#lv-say-in');await pg.setViewportSize({width:390,height:480});await pg.waitForTimeout(300);
-  const k=await pg.evaluate(()=>({tape:document.getElementById('lv-say').classList.contains('is-tape'),op:getComputedStyle(document.querySelector('#lv-say .rf-cur')).opacity}));
-  ok(k.tape&&k.op==='0','20/10 ter · clavier levé : un seul curseur, le vrai → '+JSON.stringify(k));
-  await pg.evaluate(()=>document.getElementById('lv-say-in').blur());await pg.setViewportSize({width:390,height:844});await pg.waitForTimeout(300);
-  ok(await pg.evaluate(()=>!document.getElementById('lv-say').classList.contains('is-tape')&&getComputedStyle(document.querySelector('#lv-say .rf-cur')).animationName==='rf-blink'),'20/10 ter · clavier baissé : le trait clignote de nouveau à gauche');
+  ok(await pg.evaluate(()=>!document.querySelector('#lv-say .rf-cur')&&!document.getElementById('lv-say').classList.contains('is-tape')),'20/10 septies · jamais de second curseur, même pendant la course (le faux trait est retiré du balisage)');
+  ok(await pg.evaluate(()=>{const b=document.getElementById('lv-say-go');return b.textContent.trim()==='SEND'&&getComputedStyle(b).opacity==='1';}),'20/10 septies · du texte : le bouton SEND apparaît');
+  await pg.evaluate(()=>document.getElementById('lv-say-in').blur());await pg.waitForTimeout(200);
   /* le secours : un tap n'importe où dans la vue ouvre le clavier */
   await pg.tap('#rf',{position:{x:200,y:600}});await pg.waitForTimeout(200);
   ok(await pg.evaluate(()=>document.activeElement===document.getElementById('lv-say-in')),'20/10 ter · un tap n\'importe où dans la vue met le curseur dans le champ (le téléphone accepte toujours un tap)');
@@ -432,8 +455,8 @@ try{
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1200);
   await pg.keyboard.press('ArrowDown');await vers(pg,'b');await pg.waitForTimeout(300);
   const m=await pg.evaluate(()=>({coarse:matchMedia('(pointer:coarse)').matches,f:document.activeElement===document.getElementById('lv-say-in'),
-    faux:getComputedStyle(document.querySelector('#lv-say .rf-cur')).opacity}));
-  ok(!m.coarse&&m.f&&m.faux==='0','20/10 ter · à la souris : ↓ et le curseur est dans le champ, un seul → '+JSON.stringify(m));
+    faux:!!document.querySelector('#lv-say .rf-cur')}));
+  ok(!m.coarse&&m.f&&!m.faux,'20/10 septies · à la souris : ↓ et le curseur est dans le champ, un seul → '+JSON.stringify(m));
   await pg.keyboard.type('hey');ok(await pg.inputValue('#lv-say-in')==='hey','20/10 ter · on tape directement, sans cliquer');
   ok(!erreurs(log).length,'souris : aucune erreur');await pg.context().close();}
 }finally{await browser.close();}

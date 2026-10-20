@@ -2965,6 +2965,8 @@ body.is-xo{overflow:hidden}
 
 
 
+
+
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille
    elle-même : un nouveau bloc gris entre ici tout seul.        */
@@ -3164,10 +3166,12 @@ body.lv-d #lv-proc,body.lv-d #lv-slogan{opacity:0}
    ⚠️ `position:absolute` (et non `fixed`) : les chevrons vivaient déjà ainsi dans `#gate`, et
    c'est ce qui garantit qu'ils disparaissent avec lui quand le Totehm se déplie. */
 #lvjoy{position:absolute;left:50%;bottom:var(--lvj-b);z-index:34;transform:translateX(-50%);
-  display:grid;grid-template-columns:26px 44px 26px;grid-template-rows:26px 44px 26px;gap:6px;
+  display:grid;grid-template-columns:26px 48px 26px;grid-template-rows:26px 48px 26px;gap:4px;
   align-items:center;justify-items:center;pointer-events:none}
-.lvn{position:static;width:44px;height:26px;border:0;border-radius:10px;padding:0;pointer-events:auto;
-  background:rgba(22,22,26,.82);color:#6d6d74;display:flex;align-items:center;justify-content:center;cursor:pointer;
+/* 20/10 septies — Wah : « pas besoin d'entourer les indicateurs de direction avec des boîtes grises » : les chevrons
+   sont nus, gris, blancs au survol et quand le manche les vise. */
+.lvn{position:static;width:48px;height:26px;border:0;border-radius:10px;padding:0;pointer-events:auto;
+  background:none;color:#8a8a92;display:flex;align-items:center;justify-content:center;cursor:pointer;
   transition:opacity .3s ease,color .2s ease;-webkit-tap-highlight-color:transparent}
 .lvn svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
 #lvn-up{grid-area:1/2/2/3}
@@ -3175,22 +3179,31 @@ body.lv-d #lv-proc,body.lv-d #lv-slogan{opacity:0}
 #lvj-box{grid-area:2/2/3/3}
 #lvn-rt{grid-area:2/3/3/4}
 #lvn-dn{grid-area:3/2/4/3}
-.lvn-x{width:26px;height:44px}
+.lvn-x{width:26px;height:48px}
 .lvn.is-mort{opacity:0;pointer-events:none}
 .lvn:focus-visible{outline:1px solid #fff;outline-offset:3px}
-/* Le manche : le disque navy de la marque (30 % de la composition), et UN point bleu clair qui se
-   tire avec lui. Pas de trois ronds ici — l'atterrissage n'a ni objectif ni répulsion à désigner :
-   il a quatre voisins, et ce sont les chevrons qui les nomment. Aucune bordure, jamais. */
-#lvj-box{width:44px;height:44px;position:relative;border-radius:50%;background:var(--navy);
-  box-shadow:0 2px 7px rgba(0,0,0,.5);transition:box-shadow .42s ease;touch-action:none;cursor:grab;pointer-events:auto}
+/* ⚠️ 20/10 septies — LA MANETTE EST UN PETIT SOCLE (Wah : « un curseur dans le même style que le socle du Totehm de la
+   vue centrale, un genre de joystick PlayStation en plus minimaliste »). La base = LE SOCLE en miniature : le même
+   verre (reflet en biais, arête claire en haut), carrée — une boîte reste carrée —, la marque de la broche 1 dans
+   un coin ; au centre un puits ROND, noir ; dans le puits, LE MANCHE : un chapeau navy (le papier) au centre creusé,
+   comme un stick, qui se tire et revient. Arêtes nettes, aucun flou, aucune ombre portée — comme le socle. */
+#lvj-box{width:48px;height:48px;position:relative;border-radius:0;
+  background:linear-gradient(135deg,rgba(255,255,255,.10) 0%,rgba(255,255,255,.025) 40%,rgba(255,255,255,0) 65%),#0b0b0e;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.30),inset 0 0 0 1px rgba(255,255,255,.05);
+  touch-action:none;cursor:grab;pointer-events:auto}
+#lvj-box::before{content:"";position:absolute;left:4px;top:4px;width:5px;height:5px;
+  background:linear-gradient(135deg,rgba(255,255,255,.26) 50%,rgba(255,255,255,0) 50%)}
+#lvj-box::after{content:"";position:absolute;inset:8px;border-radius:50%;background:#000;
+  box-shadow:inset 0 1px 0 rgba(0,0,0,.95),0 1px 0 rgba(255,255,255,.08)}
 #lvj-box:active{cursor:grabbing}
-#lvj-stack{position:absolute;inset:0;transform:translate(var(--mx,0px),var(--my,0px));
+#lvj-stack{position:absolute;inset:0;z-index:1;transform:translate(var(--mx,0px),var(--my,0px));
   transition:transform .26s cubic-bezier(.22,.9,.3,1)}
 #lvj-box.tenu #lvj-stack{transition:none}
-#lvj-stack i{--d:11px;position:absolute;left:50%;top:50%;display:block;width:var(--d);height:var(--d);
-  margin:calc(var(--d) / -2) 0 0 calc(var(--d) / -2);border-radius:50%;background:var(--blue);
-  box-shadow:0 2px 5px rgba(0,0,0,.6)}
-#lvjoy.tenu #lvj-box{box-shadow:0 5px 14px rgba(0,0,0,.65)}
+#lvj-stack i{--d:22px;position:absolute;left:50%;top:50%;display:block;width:var(--d);height:var(--d);
+  margin:calc(var(--d) / -2) 0 0 calc(var(--d) / -2);border-radius:50%;
+  background:radial-gradient(circle,var(--navy-d) 0 50%,var(--navy) 54%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.28);transition:background .2s ease}
+#lvjoy.tenu #lvj-stack i{background:radial-gradient(circle,var(--navy) 0 50%,var(--blue) 54%)}
 #lvjoy.vers-g #lvn-lf,
 #lvjoy.vers-d #lvn-rt,
 #lvjoy.vers-h #lvn-up,
@@ -3232,8 +3245,8 @@ body.lv-h #lv-socket{opacity:0}
 #lv-ram{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden;opacity:0;
   transition:opacity .5s ease}
 body.gate.lv-c #lv-ram,body.gate.lv-h #lv-ram{opacity:1}
-/* ← et → (20/10 sexies) : le réseau est là PENDANT la transformation (`ram-morph`), puis il cède la place à la vue — la carte
-   garde ses sept méridiens, la grille ses boîtes. */
+/* ← et → (20/10 sexies) : le réseau est là PENDANT la transformation (`ram-morph`), puis il cède la place à la vue —
+   la grille garde ses boîtes, la Terre ses spots (20/10 septies : plus aucun méridien dessiné sur le globe). */
 body.gate.ram-morph:not(.entered) #lv-ram{opacity:1;transition:opacity .2s ease}
 body.gate.lv-g #lv-ram,body.gate.lv-d #lv-ram{transition:opacity .45s ease .2s}
 body.gate.entered #lv-ram,body.gate.folding #lv-ram,body.is-door #lv-ram{opacity:0;transition:opacity .25s ease}
@@ -3249,6 +3262,10 @@ body.gate.entered #lv-ram,body.gate.folding #lv-ram,body.is-door #lv-ram{opacity
 body.gate:not(.member) #lv-ram .r-0{opacity:.62} /* sans compte, rien n'est un trou : le réseau est en veille */
 #lv-ram .r-0 rect{display:none}
 #lv-ram .sk{stroke:#4a4a52}                      /* l'anatomie (scissure, tronc) : gris, jamais une intention */
+#lv-ram .sk-c{stroke:#2e2e34;stroke-width:1.5}    /* 20/10 septies : le contour des deux hémisphères, en retrait */
+/* LE CERVEAU (20/10 septies) : les sept couleurs PLEINES — le creux s'y dit par une onde à demi-amplitude, pas par une
+   couleur éteinte ; et pas d'impulsion : c'est l'onde qui vit. */
+body.gate.lv-h #lv-ram .r-0{opacity:1}
 /* Tirées : en entrant dans la vue, chaque piste se dessine depuis le papier. */
 body.gate.lv-c #lv-ram path,body.gate.lv-h #lv-ram path,body.gate.lv-g #lv-ram path,body.gate.lv-d #lv-ram path{stroke-dashoffset:0;
   transition:stroke-dashoffset .95s var(--gate-ease) calc(var(--i) * 50ms + .1s)}
@@ -3260,8 +3277,7 @@ body.gate.lv-c #lv-ram rect,body.gate.lv-h #lv-ram rect{opacity:1;
    piste existe. Et elle tourne aussi sans compte : un réseau mort ne vend rien. CSS seul, zéro rAF. */
 #lv-ram .puls{stroke-dasharray:.08 .92;stroke-dashoffset:1;stroke-width:3;opacity:0;transition:opacity .4s ease}
 #lv-ram .puls.veille{stroke-dasharray:.04 .96;stroke-width:2}
-body.gate.lv-c:not(.entered) #lv-ram .puls,
-body.gate.lv-h:not(.entered) #lv-ram .puls{opacity:1;
+body.gate.lv-c:not(.entered) #lv-ram .puls{opacity:1;
   animation:ram-puls var(--p,3s) linear infinite;animation-delay:var(--d,0s)}
 @keyframes ram-puls{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
 @media(prefers-reduced-motion:reduce){
@@ -3374,18 +3390,17 @@ body.lv-membre #mb-offre{display:flex}
    fond, ni contour, ni rayon : c'est le noir de la page. Centré sous le profil, comme ce que j'ai dit (`.rf-q`).
    16 px : en dessous, l'iPhone ZOOME la page au focus. La flèche d'envoi n'est qu'un trait, et seulement quand
    il y a du texte ; le clavier dit « send » (`enterkeyhint`). */
-/* 20/10 ter — Wah : « je préfère le curseur qui clignote comme avant, à GAUCHE, et ce que j'écris en plus GRAND ».
-   Le trait qui clignote occupe EXACTEMENT la place du vrai curseur (à gauche, même hauteur de ligne) : tant que le
-   vrai n'est pas là, c'est lui ; dès que le vrai est là (`is-tape` : le champ a le focus — et, sur téléphone, le
-   clavier est levé), il s'éteint. Jamais les deux. Plus de « Wassup ? ». */
+/* 20/10 ter — à GAUCHE, en GRAND (22 px). Plus de « Wassup ? ».
+   ⚠️ 20/10 septies — Wah : « enlève le double curseur ». Le trait qui clignotait à la place du vrai curseur est
+   PARTI (balisage, règles et `is-tape`) : il ne reste que le VRAI curseur, celui du champ. Et la flèche devient
+   un BOUTON (« au lieu de l'icône Entrée, un bouton ») : SEND, un contrôle gris, sous ce que j'écris, à droite ;
+   il ne prend sa place visible qu'avec du texte (sa hauteur reste réservée : rien ne saute). */
 #lv-say textarea{display:block;width:100%;min-height:46px;max-height:150px;resize:none;border:0;border-radius:0;background:none;color:#fff;
-  font:400 22px/1.35 'Quantico',sans-serif;padding:8px 34px 8px 0;outline:none;caret-color:#fff;text-align:left;box-sizing:border-box}
-#lv-say .rf-cur{position:absolute;left:0;top:10px;width:2px;height:26px;background:#fff;opacity:0;pointer-events:none}
-#lv-say.is-vide:not(.is-tape) .rf-cur{opacity:1;animation:rf-blink 1.1s steps(1,end) infinite}
-@keyframes rf-blink{0%,55%{opacity:1}56%,100%{opacity:0}}
-#lv-say .lv-btn{position:absolute;right:0;bottom:0;min-height:42px;padding:0 6px;background:none;border:0;border-radius:0;color:#fff;transition:opacity .15s ease}
+  font:400 22px/1.35 'Quantico',sans-serif;padding:8px 0;outline:none;caret-color:#fff;text-align:left;box-sizing:border-box}
+#lv-say .lv-btn{display:block;margin:6px 0 0 auto;min-height:34px;padding:0 14px;border:0;border-radius:10px;background:#2a2a31;color:#fff;cursor:pointer;
+  font:700 11px/1 'Space Mono',monospace;letter-spacing:.14em;transition:opacity .15s ease,background .2s ease}
+#lv-say .lv-btn:disabled{opacity:.5;cursor:default}
 #lv-say.is-vide .lv-btn{opacity:0;pointer-events:none}
-#lv-say .lv-btn svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
 /* Le relais du clavier (tactile) : un champ invisible, en haut, focalisé DANS le geste — l'iPhone n'ouvre le
    clavier que pendant un geste, et la course vers le bas dure 0,7 s. À l'arrivée, le focus passe au vrai champ. */
 .rf-proxy{position:fixed;top:0;left:0;width:1px;height:1px;padding:0;border:0;opacity:0;font-size:16px;pointer-events:none;caret-color:transparent}
@@ -4040,9 +4055,8 @@ body.lv-d.rdr-voir #gate-asteroid,body.lv-d.rdr-voir #lvjoy,body.rdr-voir #rdr-f
       <div id="rf" class="lv-act">
         <div id="rf-me" aria-hidden="true"></div>
         <form id="lv-say" class="hide is-vide" autocomplete="off">
-          <i class="rf-cur" aria-hidden="true"></i>
           <textarea id="lv-say-in" maxlength="600" rows="1" enterkeyhint="send" autocapitalize="sentences" aria-label="Talk to my Reflection"></textarea>
-          <button class="lv-btn" id="lv-say-go" type="submit" aria-label="Reflect"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8 H13 M9 4 L13 8 L9 12"/></svg></button>
+          <button class="lv-btn" id="lv-say-go" type="submit">SEND</button>
         </form>
         <div class="lv-note" id="lv-say-note" role="status" aria-live="polite"></div>
         <div id="lv-thread" aria-live="polite"></div>
@@ -5798,6 +5812,7 @@ const SPMAP=(()=>{
     const x=c.getContext('2d'), g=geo(), cx=g.cx*d, cy=g.cy*d, R=g.R0*k*d;
     x.clearRect(0,0,w,h);
     x.beginPath(); x.arc(cx,cy,R,0,7); x.fillStyle='#000'; x.fill();
+    x.strokeStyle='#22224a'; x.lineWidth=1*d; x.stroke();   /* le limbe : sans méridiens, le globe garde son bord */
     /* Les terres : le navy un ton en arrière (30 %), jamais une couleur d'intention. Un point derrière
        l'horizon est ramené sur le bord : la côte suit le limbe. */
     x.fillStyle='#22224a';
@@ -5810,19 +5825,17 @@ const SPMAP=(()=>{
       }
       if(vis){ x.closePath(); x.fill(); }
     }
-    /* LES SEPT MÉRIDIENS : le réseau du centre, plié autour du monde — fixes, le trait du `.tick` (2 px). */
-    x.lineWidth=2*d; x.lineCap='square';
-    INTS.forEach((it,i)=>{ const lam=(i-3)*(180/7)*D; x.beginPath();
-      for(let z=0;z<=32;z++){ const ph=(-90+180*z/32)*D, px=cx+R*Math.sin(lam)*Math.cos(ph), py=cy-R*Math.sin(ph);
-        if(z) x.lineTo(px,py); else x.moveTo(px,py); }
-      x.strokeStyle=it.color; x.globalAlpha=.85; x.stroke(); x.globalAlpha=1; });
-    /* Les spots. */
+    /* 20/10 septies — PLUS DE MÉRIDIENS SUR LE GLOBE (Wah : « comme sur la vue de gauche, il faut qu'ils
+       disparaissent du globe ») : les sept traits se plient autour du monde PENDANT la transformation (`#lv-ram`),
+       puis ils s'effacent ; la Terre ne garde que ses spots. */
+    /* Les spots = des POINTS (Wah : « à la place des carrés, des points ») : plein = le point exact, creux = la ville. */
     pts=[];
     for(const o of lieux){
       const [px,py,pz]=proj(o.p.lng,o.p.lat,R,cx,cy); if(pz<0) continue;
-      const z=o.z, col=intColor((z.intentions||((z.habit_box||{}).ints)||[])[0]), a=(z.state==='am'?11:8)*d;
-      if(o.p.plein){ x.fillStyle=col; x.fillRect(px-a/2,py-a/2,a,a); }
-      else{ x.strokeStyle=col; x.lineWidth=1.5*d; x.strokeRect(px-a/2,py-a/2,a,a); }
+      const z=o.z, col=intColor((z.intentions||((z.habit_box||{}).ints)||[])[0]), r=(z.state==='am'?5.5:4)*d;
+      x.beginPath(); x.arc(px,py,r,0,7);
+      if(o.p.plein){ x.fillStyle=col; x.fill(); }
+      else{ x.strokeStyle=col; x.lineWidth=1.5*d; x.stroke(); }
       pts.push({x:px/d, y:py/d, cle:'sp:'+z.id});
     }
     etat.points=pts.length; etat.zoom=Math.round(k*100)/100;
@@ -7254,7 +7267,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-10-20-com-ecosysteme';
+const BUILD='2026-10-20-com-manette';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -11755,7 +11768,7 @@ window.addEventListener('pageshow',e=>{
     (function manetteLV(){
       const jy=$('lvjoy'), bx=$('lvj-box'), st=$('lvj-stack');
       if(!jy||!bx||!st) return;
-      const RAYON=14, SEUIL=8;
+      const RAYON=10, SEUIL=6;   /* 20/10 septies : le manche ne sort pas du petit socle */
       let id=null, x0=0, y0=0, dx=0, dy=0, fin=false;
       const pose=(a,b)=>{ st.style.setProperty('--mx',a.toFixed(1)+'px');
                           st.style.setProperty('--my',b.toFixed(1)+'px'); };
@@ -11869,7 +11882,7 @@ window.addEventListener('pageshow',e=>{
     const RAM=(()=>{
       const svg=$('lv-ram'); let sig='', cur=null, raf=0;
       const N=24;                                   /* chaque branche, rééchantillonnée : la même forme se TRANSFORME */
-      const diagR={morphs:0};
+      const diagR={morphs:0, vib:0};
       /* Par intention : combien d'Habits, et la PLUS FRÉQUENTE — c'est elle qui donne le rythme. */
       function compte(){
         const n={}; INTS.forEach(x=>{ n[x.id]={n:0,w:0}; });
@@ -11911,27 +11924,61 @@ window.addEventListener('pageshow',e=>{
           return {i, x, q, a, b, nodes};
         });
       }
-      /* ── LE CERVEAU (vue du haut) : sept circonvolutions, une par intention, la même des deux côtés ; la scissure et le
-         tronc restent gris (l'anatomie n'est pas une intention). ── */
+      /* ── LE CERVEAU (vue du haut) · 20/10 septies — Wah : « les couleurs des 7 traits, qui VIBRENT, basse fréquence pour
+         le rouge, haute fréquence pour le violet, tout en formant un cerveau ». Sept ondes, une par intention, la même des
+         deux côtés de la scissure ; la largeur de chacune suit la silhouette d'un hémisphère. Rouge (fight) : lente et ample
+         (delta) ; violet (celebrate) : rapide et fine (gamma) — l'EEG que cite la vente. Une intention sans Habit vibre à
+         demi-amplitude, dans SA couleur. La scissure, le contour et le tronc restent gris (l'anatomie n'est pas une
+         intention). Placé ENTRE la vente (`#lv-sell`) et la manette : rien ne le recouvre. ── */
+      function onde(v,dir,s,g){
+        const p=[], M=Math.max(24,Math.ceil(v.cyc*14));
+        for(let z=0;z<=M;z++){ const u=z/M, env=Math.min(1,u*5)*(1-.3*u);
+          p.push([v.bx+dir*(v.gap+(v.hw-v.gap)*u), v.y+g*v.amp*env*Math.sin(2*Math.PI*(v.cyc*u-v.f*s))]); }
+        return p;
+      }
       function cerveau(n){
-        const w=W(), h=H();
-        const A=Math.round(Math.min(w*.36,h*.22,210)), B=Math.round(A*.82);
-        const bx=Math.round(w/2), by=Math.round(Math.min(h*.8,h-B-54));
+        const w=W(), h=H(), se=$('lv-sell'), jo=$('lvjoy');
+        const rs=se&&se.getBoundingClientRect(), rj=jo&&jo.getBoundingClientRect();
+        const bas=rj&&rj.height?rj.top-10:h-120;
+        let haut=rs&&rs.height?rs.bottom+16:h*.6;
+        if(bas-haut<110) haut=bas-Math.max(110,h*.28);
+        const B=Math.round((bas-haut)/2), A=Math.round(Math.min(w*.42,B*1.6,240));
+        const bx=Math.round(w/2), by=Math.round(haut+B), sp=2*B/7, pad=Math.max(6,sp*.45);
+        /* La silhouette : arrondie devant et derrière (une super-ellipse), un peu plus large à l'arrière. */
+        const sil=t=>Math.pow(Math.max(0,1-Math.pow(Math.abs(2*t-1),2.4)),1/2.4)*(.9+.15*t);
         const l=INTS.map((x,i)=>{
-          const t=(i+.5)/7, y=by-B+2*B*t, q=n[x.id], am=A*Math.sin(Math.PI*t)*.98;
-          const moitie=dir=>{ const p=[];
-            for(let z=0;z<=14;z++){ const u=z/14; p.push([bx+dir*(10+(am-10)*u), y+9*Math.sin(u*Math.PI*2.4)]); }
-            p.push([bx+dir*am, y-11]); return p; };
-          const nodes=[], m=Math.min(3,q.n);
-          for(let z=0;z<m;z++){ const u=(z+1)/(m+1), px=bx+(10+(am-10)*u), py=y+9*Math.sin(u*Math.PI*2.4);
-            nodes.push([px,py,3],[2*bx-px,py,3]); }
-          return {i, x, q, a:moitie(-1), b:moitie(1), nodes};
+          const t=(i+.5)/7, q=n[x.id];
+          const v={bx, y:by-B+2*B*t, gap:5, hw:A*sil(t),
+            cyc:1.2+i*.95, f:.35*Math.pow(3.2/.35,i/6), amp:sp*(.44-.04*i)*(q.n?1:.5)};
+          return {i, x, q, v, a:onde(v,-1,0,0), b:onde(v,1,0,0), nodes:[]};
         });
+        l.vib=true;
         const lg=PAPIER.cibleLangue&&PAPIER.cibleLangue(), ty=Math.max(0,lg?lg.y:h*.3);
-        l.anat='<path class="sk" pathLength="1" style="--i:7" d="M'+bx+' '+(by-B-6)+'V'+(by+B+6)+'"/>'
-          +'<path class="sk" pathLength="1" style="--i:8" d="M'+bx+' '+(by-B-6)+'V'+Math.round(ty)+'"/>';
+        const bord=dir=>{ let d=''; for(let z=0;z<=28;z++){ const t=z/28;
+          d+=(z?'L':'M')+r1(bx+dir*(2+(A+pad)*sil(t)))+' '+r1(by-B-pad+(2*B+2*pad)*t); } return d; };
+        l.anat='<path class="sk" pathLength="1" style="--i:7" d="M'+bx+' '+Math.round(by-B-pad)+'V'+Math.round(by+B+pad)+'"/>'
+          +'<path class="sk" pathLength="1" style="--i:8" d="M'+bx+' '+Math.round(by-B-pad)+'V'+Math.round(ty)+'"/>'
+          +'<path class="sk sk-c" pathLength="1" style="--i:9" d="'+bord(-1)+'"/><path class="sk sk-c" pathLength="1" style="--i:9" d="'+bord(1)+'"/>';
         return l;
       }
+      /* LA VIBRATION : un rAF SEULEMENT dans la vue du haut, page visible, mouvement permis ; l'amplitude monte en 0,6 s
+         à l'arrivée (le cerveau se forme à plat, puis il vibre). Ailleurs, elle s'arrête d'elle-même. */
+      let vraf=0, GH=null;
+      function vibrer(){
+        if(vraf||!GH||RMQ.matches) return;
+        const t0=performance.now(), gs=[...svg.querySelectorAll('g')];
+        const pas=now=>{
+          const bd=document.body;
+          if(GH!==cur||!bd.classList.contains('lv-h')||bd.classList.contains('entered')||document.hidden){ vraf=0; return; }
+          const s=now/1000, g=Math.min(1,(now-t0)/600);
+          GH.forEach((o,i)=>{ const e=gs[i]; if(!e) return; const d=dDe({a:onde(o.v,-1,s,g), b:onde(o.v,1,s,g)});
+            e.querySelectorAll('path').forEach(pa=>pa.setAttribute('d',d)); });
+          diagR.vib++;
+          vraf=requestAnimationFrame(pas);
+        };
+        vraf=requestAnimationFrame(pas);
+      }
+      document.addEventListener('visibilitychange',()=>{ if(!document.hidden&&GH===cur) vibrer(); });
       /* ── ← LE RAIL (20/10 sexies) : le papier se cale en haut et les sept traits en descendent jusqu'aux DEUX bords — le rail
          du Totehm, le trait d'intention d'une boîte, à l'échelle de l'écran : les médias sont ses boîtes. Sans croisement :
          plus une piste part à l'extérieur, plus elle tourne haut. ── */
@@ -11961,8 +12008,10 @@ window.addEventListener('pageshow',e=>{
       function dessiner(G){
         let out=G.anat||'';
         G.forEach(o=>{
-          /* Habitée : la période RÉELLE de son Habit. Vide : la veille, lente et commune. */
-          const st=' style="--i:'+o.i+';--p:'+(o.q.n?periode(o.q.w):'6.2')+'s;--d:'+(o.i*.42).toFixed(2)+'s"', d=dDe(o);
+          /* Habitée : la période RÉELLE de son Habit. Vide : la veille, lente et commune. Le cerveau : ses ondes
+             (immobiles si le mouvement est réduit, à plat sinon — la vibration les lève). */
+          const st=' style="--i:'+o.i+';--p:'+(o.q.n?periode(o.q.w):'6.2')+'s;--d:'+(o.i*.42).toFixed(2)+'s"',
+            d=o.v?dDe({a:onde(o.v,-1,0,RMQ.matches?1:0), b:onde(o.v,1,0,RMQ.matches?1:0)}):dDe(o);
           out+='<g'+(o.q.n?'':' class="r-0"')+st+'>'
             +'<path pathLength="1" d="'+d+'" stroke="'+o.x.color+'"/>'
             +'<path class="puls'+(o.q.n?'':' veille')+'" pathLength="1" d="'+d+'" stroke="'+o.x.color+'"/>'
@@ -11970,6 +12019,7 @@ window.addEventListener('pageshow',e=>{
             +'</g>';
         });
         svg.innerHTML=out; cur=G;
+        if(G.vib){ GH=G; vibrer(); } else GH=null;
       }
       /* LA TRANSFORMATION : chaque point de chaque piste va de sa place à sa nouvelle place (≈ 0,7 s, la course du papier).
          Les nœuds attendent l'arrivée ; une transformation interrompue repart de là où elle en était. */
@@ -11999,7 +12049,8 @@ window.addEventListener('pageshow',e=>{
         o=o||{};
         const vu=(v==='h'||v==='g'||v==='d')?v:'c', n=compte(), c=o.papier||PAPIER.chez()||{x:W()/2,y:H()*.55,w:110};
         const s=vu+'|'+W()+'x'+H()+'|'+INTS.map(x=>n[x.id].n+':'+n[x.id].w).join(',')+'|'+Math.round(c.x)+','+Math.round(c.y)+','+Math.round(c.w||110);
-        if(s===sig&&svg.childNodes.length) return; sig=s;
+        if(s===sig&&svg.childNodes.length){ if(vu==='h') vibrer(); return; } sig=s;
+        if(vraf){ cancelAnimationFrame(vraf); vraf=0; }
         svg.setAttribute('viewBox','0 0 '+W()+' '+H());
         const G=forme(vu,n,c);
         if(o.anime&&cur&&cur.length===G.length&&svg.childNodes.length&&!RMQ.matches) morph(cur,G);
@@ -12010,7 +12061,8 @@ window.addEventListener('pageshow',e=>{
                    noeuds:svg?svg.querySelectorAll('rect').length:0,
                    impulsions:svg?svg.querySelectorAll('.puls').length:0,
                    creux:svg?svg.querySelectorAll('.r-0').length:0, vue:sig.split('|')[0]||'', habits:sig.split('|')[2]||'',
-                   morphs:diagR.morphs, enCours:!!raf})};
+                   morphs:diagR.morphs, enCours:!!raf, vibre:!!vraf, vibrations:diagR.vib,
+                   ondes:GH?GH.map(o=>({c:o.x.id, f:Math.round(o.v.f*100)/100, cyc:Math.round(o.v.cyc*100)/100, amp:Math.round(o.v.amp*10)/10})):[]})};
     })();
 
     /* ══ EN BAS, CHEZ UN MEMBRE : LUI, ET SON OFFRE · 20/10/2026 sexies ══════════════════════════════════════════
@@ -12377,25 +12429,13 @@ window.addEventListener('pageshow',e=>{
       else if(e.key==='Escape'){ e.preventDefault(); try{ e.target.blur(); }catch(_){} if(!e.target.value.trim()) aller('c'); }
       else if(e.key==='ArrowUp'&&!e.target.value){ const v=voisin('h'); if(v){ e.preventDefault(); try{ e.target.blur(); }catch(_){} aller(v); } }
     });
-    /* LE VRAI CURSEUR EST-IL LÀ ? Le champ a le focus — et, sur téléphone, le clavier est levé (la fenêtre visible
-       rétrécit) : sans clavier, un téléphone ne dessine pas de curseur, c'est donc le trait qui clignote qui reste.
-       En tapant sur téléphone, la manette s'efface (`body.rf-clavier`). */
-    /* La hauteur SANS clavier est relevée tant que le champ n'a pas le focus : un téléphone qui rétrécit toute la
-       page (et pas seulement la fenêtre visible) au lever du clavier est ainsi lu pareil. */
-    let hauteurLibre=window.innerHeight;
-    const clavierLeve=()=>(window.visualViewport?window.visualViewport.height:window.innerHeight)<hauteurLibre-100;
-    function vraiCurseur(){
-      const f=$('lv-say'), t=$('lv-say-in'); if(!f||!t) return;
-      const ici=document.activeElement===t;
-      if(!ici) hauteurLibre=window.innerHeight;
-      const la=ici&&(!tactile()||clavierLeve());
-      f.classList.toggle('is-tape',la);
-      document.body.classList.toggle('rf-clavier',ici&&tactile());
+    /* En tapant sur téléphone, la manette s'efface (`body.rf-clavier`). Un seul curseur : celui du champ (20/10 septies). */
+    function clavier(){
+      const t=$('lv-say-in'); if(!t) return;
+      document.body.classList.toggle('rf-clavier',document.activeElement===t&&tactile());
     }
-    $('lv-say-in').addEventListener('focus',vraiCurseur);
-    $('lv-say-in').addEventListener('blur',vraiCurseur);
-    if(window.visualViewport) window.visualViewport.addEventListener('resize',vraiCurseur);
-    window.addEventListener('resize',vraiCurseur);
+    $('lv-say-in').addEventListener('focus',clavier);
+    $('lv-say-in').addEventListener('blur',clavier);
     /* Le secours : si le téléphone n'a pas voulu ouvrir le clavier pendant le glissé, UN TAP n'importe où dans la
        vue l'ouvre (un tap est toujours un geste que le téléphone accepte). */
     $('rf').addEventListener('click',e=>{

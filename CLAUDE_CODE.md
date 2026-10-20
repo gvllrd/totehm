@@ -88,6 +88,14 @@ dessus, légèrement surélevée, avec ses filtres. À DROITE, LES SPOTS DU CLUB
 ou en shorts TikTok ; c'est là seulement qu'on a le polaroid, avec en haut
 la bande noire transparente des informations du spot.
 
+Treizième volet (BUILD `2026-10-20-com-manette`) : EN HAUT, LE CERVEAU VIBRE —
+les sept traits, couleurs pleines, une onde par intention, rouge lente et
+ample, violet rapide et fine (l'EEG de la vente). À DROITE, les spots sont des
+POINTS et les méridiens quittent le globe une fois arrivé. EN BAS, un seul
+curseur (le vrai) et un bouton SEND à la place de la flèche. LA MANETTE de
+l'atterrissage est un petit socle (le verre du socle, un puits rond, un
+chapeau de stick) ; ses chevrons sont nus.
+
 Douzième volet (BUILD `2026-10-20-com-ecosysteme`) : L'ÉCOSYSTÈME. Les vues
 de gauche et de droite sont la TRANSFORMATION du centre : en y allant, le
 papier se cale en haut et les sept traits d'intention se plient (le rail des
