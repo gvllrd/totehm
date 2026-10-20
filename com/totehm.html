@@ -1938,12 +1938,11 @@ body.ro #fv-inner{top:calc(var(--band-t) + var(--ro-h))}
 #member-window .mw-card{background:none;max-width:none;width:100%;margin:0;padding:0;max-height:none;overflow:visible;text-align:center}
 #member-window .mw-close{display:none}      /* la croix du verso ferme tout : une seule sortie */
 /* La charnière entre MES RÉGLAGES et MON COMPTE : un trait, pas un titre. */
-#mw-in-state{border-top:1px solid rgba(255,255,255,.09);margin-top:18px;padding-top:18px}
-#srch #mw-me{margin:0 0 14px}
+#mw-in-state{margin-top:18px}
 #srch #settings{margin-top:4px}
 /* ══ LE DASHBOARD : #settings vit désormais dans la fenêtre membre ══
    Tous les réglages (nom, visibilité, abonnement, suppression) sous un seul toit. */
-#mw-in-state #settings.mw-dash{max-width:none;margin:0;padding:16px 0 0;gap:12px;background:none}
+#mw-in-state #settings.mw-dash{max-width:none;margin:0;padding:0;gap:10px;background:none}
 #mw-in-state #settings.mw-dash > .set-block{width:100%}
 /* Meme regle, generique : le conteneur du bloc compte n'a que #acct pour
    enfant. Quand #acct est `hide`, le conteneur reste et laisse 12px. */
@@ -2365,7 +2364,7 @@ body.gate.entered #terms-corner{opacity:0;pointer-events:none}
   margin:calc(var(--s,1200px) / -2) 0 0 calc(var(--s,1200px) / -2);transform-origin:50% 50%;
   will-change:transform;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 224.88 224.08' preserveAspectRatio='none'%3E%3Cdefs%3E%3Cmask id='m'%3E%3Crect x='-40' y='-40' width='310' height='310' fill='%23fff'/%3E%3Ccircle cx='56.421' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='56.421' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='112.440' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='112.440' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='168.459' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='168.459' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='56.020' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='56.020' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='112.039' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='112.039' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='168.059' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='168.059' r='13.86' fill='%23000'/%3E%3C/mask%3E%3C/defs%3E%3Crect x='0.402' y='0' width='224.076' height='224.078' fill='%23333366' mask='url(%23m)'/%3E%3C/svg%3E") 0 0/100% 100% no-repeat}
 #srch-ui{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;gap:10px;
-  padding:max(72px,14dvh) 16px max(28px,env(safe-area-inset-bottom));pointer-events:none;
+  padding:max(54px,8dvh) 16px max(28px,env(safe-area-inset-bottom));pointer-events:none;
   overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none}
 #srch-ui::-webkit-scrollbar{display:none}
 #srch.is-open #srch-ui{pointer-events:auto}
@@ -2956,6 +2955,8 @@ body.is-xo{overflow:hidden}
 
 
 
+
+
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille
    elle-même : un nouveau bloc gris entre ici tout seul.        */
@@ -3428,35 +3429,76 @@ body.lv-b #lv-say{position:relative}
    LIGNE »). Il était en `clamp(24px,7vw,36px)` et passait à la ligne : un identifiant ne se coupe
    pas, il s'élide. `sticky` : il reste en haut pendant que la console défile dessous. */
 #self-h{position:sticky;top:0;z-index:3;display:flex;flex-direction:column;align-items:center;gap:8px;
-  transform-origin:50% 50%;will-change:transform;flex:none;padding:6px 0 8px;background:#000;width:100%}
+  transform-origin:50% 50%;will-change:transform;flex:none;padding:7px 14px;background:#000;border-radius:10px;width:auto;max-width:94vw}
 #self-name{font:400 clamp(15px,3.4vw,19px)/1.2 'Quantico',sans-serif;color:#fbd5ca;text-align:center;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:88vw;display:block;
   background:none;border:0;padding:0;cursor:pointer}
 #self-name:empty{display:none}
 #self-name:focus-visible{outline:1px solid rgba(255,255,255,.4);outline-offset:6px}
 #srch.is-prep #self-h{opacity:0}
-/* ══ LA CONSOLE EST SUR LE VERSO · 18/10/2026 ══ Elle n'apparaît qu'une fois le verso POSÉ
-   (`versoConsole()`), et elle occupe toute la largeur utile : c'est un écran, pas un encart. */
-#srch-console{width:100%;flex:none;margin:4px 0 2px}
-#srch-console:empty{display:none}
-#srch-console iframe{display:block;width:100%;height:min(76dvh,820px);border:0;background:#000}
+/* ══ LE VERSO = MON ARGENT, EN UN ÉCRAN · 20/10/2026 ══ Une colonne, des BOÎTES noires carrées sur le papier navy
+   (elles se détachent par leur valeur, aucune bordure), des contrôles gris arrondis à 10 px, le texte au minimum :
+   un label gris à gauche, la valeur blanche à droite. Les noms restent Coral (Quantico). */
 #srch #lv-card{width:min(94vw,420px);flex:none}
 #srch #member-window{width:min(94vw,420px);flex:none}
-#lv-card{display:flex;flex-direction:column;align-items:center;gap:12px;margin:10px 0 2px}
+#lv-card{display:flex;flex-direction:column;align-items:stretch;gap:10px;margin:6px 0 2px}
 #lv-card #ident-block{display:flex;flex-direction:column;align-items:center;gap:6px}
+#lv-card #ident-block:not(:has(> :not(.hide):not(.claimed))){display:none}
 #lv-card #name-btn,#lv-card #name-btn.claimed,#lv-card #set-name{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;color:#fbd5ca;
-  background:#333366;border:0;border-image:none;border-radius:0;padding:6px 12px;filter:none;min-width:0;text-align:center}
+  background:#000;border:0;border-image:none;border-radius:10px;padding:8px 12px;filter:none;min-width:0;text-align:center}
 #lv-card #name-btn.claimed{display:none}
-#lv-card #set-name{caret-color:#fbd5ca;width:200px}
-#mw-creator{display:flex;flex-direction:column;align-items:center;gap:10px;width:min(100%,360px);margin-top:4px}
-#mw-creator.hide{display:none}
-.mwc-n{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;width:100%}
-.mwc-n span{display:flex;flex-direction:column;align-items:center;gap:4px;background:#000;border-radius:10px;padding:10px 4px}
-.mwc-n b{font:700 16px/1 'Space Mono',monospace;color:#fff}
-.mwc-n i{font:400 8.5px/1.2 'Space Mono',monospace;font-style:normal;letter-spacing:.14em;text-transform:uppercase;color:#8a8a92}
-#mwc-price{width:100%;accent-color:#9a9aa2}
-.mwc-say{font:400 11px/1.5 'Space Mono',monospace;color:#b0b0b0;text-align:center}
+#lv-card #set-name{caret-color:#fbd5ca;width:220px}
+.vs{display:flex;flex-direction:column;gap:2px;width:100%}
+.vs.hide{display:none}
+.vs-top{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#000;padding:18px 16px 16px}
+.vs-month{display:flex;flex-direction:column;gap:6px;min-width:0}
+.vs-month b{font:700 clamp(28px,8vw,36px)/1 'Space Mono',monospace;color:#fff;white-space:nowrap}
+.vs-month i,.vs-n i,.vs-row i{font:400 8.5px/1.2 'Space Mono',monospace;font-style:normal;letter-spacing:.16em;text-transform:uppercase;color:#8a8a92}
+.vs-tog{flex:none;display:inline-flex;align-items:center;gap:8px;border:0;border-radius:10px;background:#1f1f24;padding:9px 12px;cursor:pointer;white-space:nowrap}
+.vs-tog span{width:8px;height:8px;border-radius:50%;background:#4a4a52;transition:background .2s}
+.vs-tog em{font:700 10px/1 'Space Mono',monospace;font-style:normal;letter-spacing:.16em;text-transform:uppercase;color:#8a8a92;transition:color .2s}
+.vs-tog[data-etat="open"] span{background:#fff}
+.vs-tog[data-etat="open"] em{color:#fff}
+.vs-tog[data-etat="paused"] span{background:none;box-shadow:inset 0 0 0 1.5px #b0b0b0}
+.vs-n{display:grid;grid-template-columns:repeat(3,1fr);gap:2px}
+.vs-n span{display:flex;flex-direction:column;align-items:flex-start;gap:5px;background:#000;padding:11px 12px;min-width:0}
+.vs-n b{font:700 14px/1 'Space Mono',monospace;color:#fff;white-space:nowrap}
+.vs-row{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#000;padding:12px 16px;min-height:44px}
+.vs-row.hide{display:none}
+.vs-row b{font:700 12.5px/1.2 'Space Mono',monospace;color:#fff}
+.vs-row a{flex:1;min-width:0;text-align:right;font:400 11px/1.2 'Space Mono',monospace;color:#cfcfd6;text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vs-prix{background:#000;padding-bottom:12px}
+.vs-prix .vs-row{padding-bottom:4px}
+#mwc-price{display:block;width:calc(100% - 32px);margin:4px 16px 2px;accent-color:#9a9aa2}
+.mwc-say{padding:4px 16px 0;font:400 10.5px/1.4 'Space Mono',monospace;color:#8a8a92;text-align:left}
 .mwc-say b{color:#fff}
+.vs-val,.vs-act,.vs-btn,.vs-seg button{flex:none;border:0;border-radius:10px;background:#1f1f24;color:#cfcfd6;cursor:pointer;
+  font:700 10px/1.2 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;padding:8px 11px;white-space:nowrap}
+.vs-val{letter-spacing:.06em;text-transform:none;font-weight:400;font-size:11px}
+.vs-val.is-todo{color:#fff}
+.vs-get{color:#fbd5ca}
+.vs-pay{display:flex;flex-wrap:wrap;gap:8px;background:#000;padding:4px 16px 14px}
+.vs-pay.hide{display:none}
+.vs-seg{display:flex;gap:6px;width:100%}
+.vs-seg button.is-on{background:#3a3a42;color:#fff;box-shadow:inset 0 0 0 1px #fff}
+.vs-in{flex:1;min-width:0;border:0;border-radius:10px;background:#1f1f24;color:#fff;caret-color:#fff;outline:none;
+  font:400 14px/1.2 'Quantico',sans-serif;padding:9px 12px}
+.vs-in::placeholder{color:#6d6d74}
+#mwc-note{margin-top:6px}
+.lv-note.is-no{color:#d9a0a0}
+.lv-note.is-ok{color:#cfcfd6}
+.vs-list{display:flex;flex-direction:column;gap:2px;width:100%}
+.vs-list.hide{display:none}
+.vs-item{display:flex;align-items:center;gap:10px;background:#000;padding:10px 12px 10px 16px;min-height:48px;text-align:left}
+.vs-k{flex:none;font:700 10.5px/1 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#fff}
+.vs-k.vs-nom{font:400 14px/1.2 'Quantico',sans-serif;letter-spacing:0;text-transform:none;color:#fbd5ca;text-decoration:none;max-width:40%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vs-hi{display:block;width:54px;height:18px}
+.vs-h{flex:1;min-width:0;font:400 10px/1.3 'Space Mono',monospace;color:#8a8a92;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vs-foot{display:flex;flex-direction:column;align-items:center;gap:2px;margin-top:22px}
+.vs-foot .mw-mail{margin:0}
+.vs-foot .mw-sync{margin:0}
+.vs-foot .mw-out[hidden]{display:none}
+.vs-foot .mw-terms{margin-top:10px}
 /* Le verso posé (petit) : le NOM et le curseur du prix. Plus de pastilles de confidentialité (18/10). */
 .ast-slider{position:relative;display:block;width:27px;height:1px;margin-top:4px;background:rgba(255,255,255,.3)}
 .ast-slider b{position:absolute;top:-1.5px;left:var(--p,0%);width:4px;height:4px;margin-left:-2px;background:#fff}
@@ -3467,8 +3509,6 @@ body.gate.lv-b:not(.entered):not(.folding) #ast-front{clip-path:circle(29.5% at 
 body.lv-b #gate-logo #gl-rail,body.lv-b #gate-logo #gl-wm{opacity:0}
 /* ── LE MEMBRE : sa vignette ── */
 /* ⚠️ La vignette a quitté le haut le 16/10 (elle vit au verso, dans le compte) : la règle part avec elle. */
-#mw-me{display:flex;flex-direction:column;align-items:center;gap:6px}
-#mw-menu .cm-hint b{font-weight:700;color:#9a9aa2}
 .mw-sub-act{background:none;border:0;padding:2px 0;font:400 9.5px/1.4 'Space Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:#6d6d74;cursor:pointer}
 #srch-res .srch-open{display:flex;align-items:center;text-decoration:none;min-width:0}
 #srch-res .srch-sub{flex:none;font:400 10.5px/1.3 'Space Mono',monospace;color:#b0b0b0;background:#1f1f24;border-radius:10px;padding:7px 10px;text-decoration:none;white-space:nowrap}
@@ -3982,46 +4022,40 @@ body.rdr-shorts #rdr-c{opacity:0}
         <input class="line-input hide" id="set-name" maxlength="24" placeholder="my TOTEHM" autocomplete="off" spellcheck="false">
         <div class="note dim hide" id="name-note"></div>
       </div>
-      <!-- ⚠️ 18/10 — LA CONFIDENTIALITÉ A QUITTÉ LE VERSO (Wah : « il n'est pas question ici de
-           confidentialité du totehm puisque la confidentialité s'effectue pour chaque box de chaque
-           vue pour un contrôle TOTAL sur son Totehm »). Le radiogroupe `.lv-vis` et le lien vers
-           `/monetize` sont partis, balisage ET câblage. La page de vente « Monétisation » devient une
-           plaquette à envoyer : elle n'a plus rien à faire dans le produit. -->
-      <!-- 13/10 — le créateur en trois chiffres, et son prix au curseur (`creator_dashboard`, `monetization_set`). -->
-      <div id="mw-creator" class="hide">
-        <div class="mwc-n"><span><b id="mwc-subs">0</b><i>subscribers</i></span><span><b id="mwc-month">0</b><i>this month</i></span><span><b id="mwc-next">—</b><i>next payout</i></span></div>
-        <input id="mwc-price" type="range" min="300" max="20000" step="100" aria-label="My yearly price">
-        <div class="mwc-say" id="mwc-say"></div>
-        <button class="lv-btn hide" id="mwc-save" type="button">Save</button>
+      <!-- ══ LE VERSO = MON ARGENT, EN UN ÉCRAN · 20/10/2026 ══ Wah : « le verso c'est l'espace membre axé sur
+           la monétisation ULTRA-SIMPLIFIÉ ». Avant : le nom cinq fois, les abonnés deux fois, le prix deux fois
+           (curseur ET champ), et toute la page `/console` empilée en `iframe`, avec un réglage de lecteurs que la
+           confidentialité PAR BOX (18/10) a rendu faux. Maintenant UNE colonne, dans l'ordre où l'on gagne :
+           ce que je gagne → ouvert ou pas → mon prix → où me payer → ma page à partager. Le serveur dit tout
+           (`creator_dashboard` + `my_console`, en parallèle) ; chaque écriture passe par SA fonction. -->
+      <section id="mw-creator" class="vs hide" aria-label="My subscription">
+        <div class="vs-top">
+          <div class="vs-month"><b id="mwc-month">0</b><i>this month</i></div>
+          <button class="vs-tog" id="vs-open" type="button" aria-pressed="false"><span aria-hidden="true"></span><em id="vs-open-t">off</em></button>
+        </div>
+        <div class="vs-n"><span><b id="mwc-subs">0</b><i>subscribers</i></span><span><b id="vs-due">0</b><i>to be paid</i></span><span><b id="mwc-next">—</b><i>payout</i></span></div>
+        <div class="vs-prix">
+          <div class="vs-row"><i>price</i><b id="vs-price">—</b></div>
+          <input id="mwc-price" type="range" min="300" max="20000" step="100" aria-label="My yearly price">
+          <div class="mwc-say" id="mwc-say"></div>
+        </div>
+        <div class="vs-row" id="vs-pay"><i>pay me</i><button class="vs-val" id="vs-pay-v" type="button">to set</button></div>
+        <div class="vs-pay hide" id="vs-pay-f">
+          <div class="vs-seg"><button type="button" data-paym="iban" class="is-on">IBAN</button><button type="button" data-paym="paypal">PayPal</button></div>
+          <input class="vs-in" id="vs-pay-in" autocomplete="off" spellcheck="false" placeholder="my IBAN" aria-label="Where to pay me">
+          <button class="vs-btn" id="vs-pay-save" type="button">Save</button>
+        </div>
+        <div class="vs-row hide" id="vs-page"><i>my page</i><a id="vs-page-a" href="/"></a><button class="vs-val" id="vs-copy" type="button">copy</button></div>
         <div class="lv-note" id="mwc-note" role="status"></div>
-      </div>
+      </section>
       <button class="hide" id="lv-guest" type="button">Guest TOTEHM · save it with my email</button>
     </div>
-    <!-- ══ TOUT L'ESPACE MEMBRE EST ICI · 15/10/2026 ══ Wah : « tout l'espace membre doit aller sur la face
-         verso du Totehm, et on reste sur cette page, la console intégrée dedans ». Ce n'est plus une fenêtre
-         par-dessus l'application : c'est la SUITE du verso — mes réglages d'abord, mon compte ensuite. Les
-         identifiants des nœuds n'ont pas bougé d'un caractère : tout le câblage existant marche tel quel. -->
 <div id="member-window">
   <div class="mw-card">
     <button class="mw-close" id="mw-close">Close</button>
-    <!-- ⚠️ L'INSCRIPTION A QUITTÉ CETTE FENÊTRE · 27/09/2026. Elle vit
-         sous le papier (#gate-door) : on s'inscrit pour OUVRIR le papier,
-         pas dans un menu. Cette fenêtre n'est plus que le tiroir d'un
-         inscrit. -->
+    <!-- L'inscription vit sous le papier (#gate-door, 27/09) ; ici, le compte d'un inscrit. Pas de nom (il tient le
+         haut du verso), pas de photo (le papier EST l'image du membre, 18/10). -->
     <div id="mw-in-state" class="hide">
-      <!-- ══ L'ESPACE MEMBRE, C'EST L'UTILISATEUR · 07/10/2026 ══ Wah : « ça
-           devient vraiment à propos de l'utilisateur : ses souscriptions,
-           l'abonnement Higher, une vignette profil qu'il peut modifier ».
-           15/10 : le nom, la visibilité et le programme d'abonnés sont au
-           verso du papier (mes réglages) ; ici, le compte. -->
-      <!-- ⚠️ 18/10 — PAS DE PHOTO DE PROFIL (Wah : « dans le totehm face verso, pas besoin de photo
-           de profil »). La vignette, son fichier, sa note et `avatar_set` sont partis ENSEMBLE. Le
-           papier EST l'image du membre ; une deuxième image à côté du nom n'ajoutait rien. -->
-      <div id="mw-me">
-        <div class="mw-pseudo" id="mw-who" role="button" tabindex="0" aria-label="My TOTEHM settings"></div>
-        <div class="mw-mail" id="mw-mail"></div>
-        <div class="mw-sync" id="mw-sync"></div>
-      </div>
       <div id="mw-save" class="hide">
         <p class="cm-hint">Guest TOTEHM · only on this device. Save it with my email: it follows me everywhere, SPACE and figher.club included.</p>
         <input class="mw-input" id="mw-save-email" type="email" placeholder="my email" autocomplete="email">
@@ -4029,33 +4063,25 @@ body.rdr-shorts #rdr-c{opacity:0}
         <div class="mw-note dim" id="mw-save-note"></div>
       </div>
       <div id="settings" class="mw-dash">
-        <nav class="cm-menu" id="mw-menu" aria-label="Me">
-          <div class="cm-item"><button class="cm-action" id="mw-higher" type="button">My Higher</button><p class="cm-hint" id="mw-higher-hint">TotehmSM</p><div id="mw-higher-acts"></div></div>
-          <div class="cm-item"><button class="cm-action" id="mw-telegram" type="button">Connect TotehmBot</button><p class="cm-hint" id="mw-tg-hint">Telegram · my reflections land there</p></div>
+        <!-- Ce que JE paie, sous ce que je gagne : les Totehms auxquels je suis abonné, puis Higher et TotehmBot.
+             Une ligne chacun : le nom, l'état, UN geste. -->
+        <div class="vs-list hide" id="vs-subs" aria-label="I subscribe to"></div>
+        <nav class="vs-list" id="mw-menu" aria-label="Me">
+          <div class="vs-item"><span class="vs-k"><svg class="vs-hi" viewBox="0 0 600 200" aria-label="Higher"><use href="#higher-badge"/></svg></span><span class="vs-h" id="mw-higher-hint"></span><span id="mw-higher-acts"></span><button class="vs-act vs-get" id="mw-higher" type="button">Get</button></div>
+          <div class="vs-item"><span class="vs-k">TotehmBot</span><span class="vs-h" id="mw-tg-hint">Telegram</span><button class="vs-act" id="mw-telegram" type="button">Connect</button></div>
         </nav>
         <div class="lv-note" id="mw-menu-note" role="status"></div>
-
-        <!-- ══ LA CONSOLE EST SUR LE VERSO · 18/10/2026 ══ Wah : « on met directement la console sur le
-             verso du totehm, qui doit d'ailleurs s'afficher une fois que l'on est bien sur la face
-             verso (pas au moment où la face verso est en train de s'afficher) ».
-             Le cadre ne se crée donc qu'à la FIN de l'ouverture (`versoPose()`), une seule fois, même
-             origine, même session. Avant, « My subscriptions » ouvrait `/console` dans la couche XO —
-             un geste de plus pour un écran qui appartient au verso. -->
-        <div id="srch-console" aria-label="My subscriptions"></div>
-
-        <!-- ══ ACTIONS DESTRUCTIVES · discrètes, écartées des liens menu
-             · 24/09/2026. Un geste destructeur ne se pose pas à côté d'un
-             lien promotionnel. -->
-        <div class="set-block acct-block">
-          <div id="acct" class="hide">
-            <button class="acct-btn" id="acct-wipe" type="button">Delete my Totehm</button>
-            <button class="acct-btn hide" id="acct-cancel" type="button">Cancel my Higher</button>
-            <div class="acct-note hide" id="acct-note"></div>
-          </div>
-        </div>
       </div>
-      <button class="mw-out" id="mw-signout">Sign out</button>
-      <a class="mw-out mw-terms" href="/terms" target="_blank" rel="noopener">Simple terms of use</a>
+      <div class="vs-foot">
+        <span class="mw-mail" id="mw-mail"></span><span class="mw-sync" id="mw-sync"></span>
+        <div id="acct" class="hide">
+          <button class="acct-btn" id="acct-wipe" type="button">Delete my Totehm</button>
+          <div class="acct-note hide" id="acct-note"></div>
+        </div>
+        <button class="mw-out" id="mw-pay" type="button" hidden>My payments</button>
+        <button class="mw-out" id="mw-signout">Sign out</button>
+        <a class="mw-out mw-terms" href="/terms" target="_blank" rel="noopener">Simple terms of use</a>
+      </div>
     </div>
   </div>
 </div>
@@ -6232,9 +6258,6 @@ function acctPaint(){
   const box=$('acct'); if(!box)return;
   box.classList.toggle('hide',!me);
   if(!me)return;
-  /* Le bouton de resiliation n'existe que s'il y a quelque chose a resilier. */
-  const active = mySub && ['active','trialing','past_due'].includes(mySub.status);
-  $('acct-cancel').classList.toggle('hide',!active);
 }
 function wipeReset(){
   clearTimeout(wipeArmed); wipeArmed=0;
@@ -6271,13 +6294,6 @@ $('acct-wipe').onclick=async()=>{
     b.disabled=false; b.classList.remove('armed');
     b.textContent='could not erase — try again';
   }
-};
-$('acct-cancel').onclick=()=>{
-  /* Resilier veut dire resilier chez Stripe : tout le reste serait un
-     mensonge affiche pendant qu'on continue de prelever. Le portail de
-     facturation arrivera avec subscription-checkout. */
-  $('acct-note').classList.remove('hide');
-  $('acct-note').textContent='billing portal opening soon';
 };
 function renderSettings(){
   acctPaint();
@@ -6691,7 +6707,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-10-19-com-etages';
+const BUILD='2026-10-20-com-verso';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -9549,11 +9565,11 @@ function memberPaint(){
   $('mw-in-state').classList.toggle('hide',!(me&&(myProfile||guest())));
   $('mw-save').classList.toggle('hide',!guest());
   $('mw-menu').classList.toggle('hide',guest());
-  if(guest()){$('mw-who').textContent='Guest';$('mw-mail').textContent='only on this device';}
+  if(guest()) $('mw-mail').textContent='guest · only on this device';
   peindreInvite();
   /* `body.member` : le coin membre n'existe que pour un inscrit. */
   document.body.classList.toggle('member',inscrit());
-  if(me&&myProfile){$('mw-who').textContent=myProfile.pseudo;$('mw-mail').textContent=me.email||'';}
+  if(me&&myProfile) $('mw-mail').textContent=me.email||'';
   peindrePorte();
 }
 /* ══ LA PORTE DU PAPIER · 27/09/2026 ═════════════════════════════════
@@ -9616,20 +9632,6 @@ $('gate-hero').addEventListener('click',e=>{
 });
 $('gate-door').addEventListener('keydown',e=>{
   if(e.key==='Escape'){ fermerPorte(); if(e.target.blur) e.target.blur(); } });
-/* ══ LA CONSOLE VIT SUR LE VERSO · 18/10/2026 ══════════════════════
-   Wah : « on met directement la console sur le verso du totehm ». Un seul cadre, créé à la FIN de
-   l'ouverture du verso (`zoomer().fin`) — même origine, même session, aucun saut. Avant, elle
-   s'ouvrait dans la couche `XO` depuis « My subscriptions » : un geste de plus pour un écran qui
-   appartient au verso. Le cadre se jette au changement de compte (`quitter()`). */
-let consoleCadre=null;
-function versoConsole(){
-  const box=$('srch-console');
-  if(!box||consoleCadre||!me||(typeof guest==='function'&&guest())) return;
-  const f=document.createElement('iframe');
-  f.src='/console?embed=1'; f.title='My subscriptions'; f.loading='lazy';
-  box.appendChild(f); consoleCadre=f;
-}
-function versoConsoleVider(){ if(consoleCadre){ try{ consoleCadre.remove(); }catch(_){} consoleCadre=null; } }
 
 /* ══ L'ESPACE MEMBRE N'EXISTE QUE SUR LE VERSO · 18/10/2026 ══════════
    Il n'y a plus de porte sur l'atterrissage : on RETOURNE le papier. Une
@@ -9662,18 +9664,21 @@ async function fnAppel(fn,body){
 const mwNote=t=>{ $('mw-menu-note').textContent=t||''; };
 function paintMe(){
   if(!me) return;
+  /* 20/10 — une ligne chacun : la marque (le SVG Higher, jamais du texte), l'état en peu de mots, UN geste. */
   const L=LAND||{}, h=L.higher||{};
   const btn=$('mw-higher'), hint=$('mw-higher-hint'), acts=$('mw-higher-acts');
-  if(h.comp){ btn.textContent='My Higher'; hint.textContent='offered · my Higher Self is open'; acts.innerHTML=''; }
-  else if(h.active){ btn.textContent='My Higher'; hint.textContent=(h.ending?'ends ':'renews ')+jourFmt(h.until)+' · '+prixMois(h);
-    acts.innerHTML='<button class="mw-sub-act" type="button" data-hsub="'+(h.ending?'resume':'cancel')+'">'+(h.ending?'Keep it':'Stop at the end of the month')+'</button>'; }
-  else { btn.textContent='Get Higher Self'; hint.textContent='TotehmSM · '+prixMois(h); acts.innerHTML=''; }
-  $('mw-telegram').textContent=L.telegram?'TotehmBot connected':'Connect TotehmBot';
+  if(h.comp){ btn.textContent='Open'; hint.textContent='offered'; acts.innerHTML=''; }
+  else if(h.active){ btn.textContent='Open'; hint.textContent=(h.ending?'ends ':'renews ')+jourFmt(h.until);
+    acts.innerHTML='<button class="mw-sub-act" type="button" data-hsub="'+(h.ending?'resume':'cancel')+'">'+(h.ending?'Keep':'Stop')+'</button>'; }
+  else { btn.textContent='Get'; hint.textContent=prixMois(h); acts.innerHTML=''; }
+  btn.classList.toggle('vs-get',!(h.comp||h.active));
+  $('mw-telegram').textContent=L.telegram?'Connected':'Connect';
+  $('mw-tg-hint').textContent=L.telegram?'Telegram ✓':'Telegram';
 }
 /* Mon abonnement Higher : actif → TotehmSM ; sinon le Checkout (prix chez Stripe). */
 $('mw-higher').onclick=async()=>{
   const h=(LAND&&LAND.higher)||{};
-  if(h.active){ closeMember(); if(window.__lvAller) window.__lvAller('b'); return; }   /* 15/10 : ma Reflection vit en bas */
+  if(h.active||h.comp){ closeMember(); if(window.__lvAller) window.__lvAller('b'); return; }   /* 15/10 : ma Reflection vit en bas */
   mwNote('opening checkout…');
   const {d}=await fnAppel('higher-sub',{action:'checkout'});
   if(d.url){ location.href=d.url; return; }
@@ -9710,16 +9715,6 @@ memberPaint=function(){
    serveur (`my_spaces`, `space-delete`) n'est plus appelé par COM ; les SPOTS, eux, vivent dans les
    Habit Boxes (`habit_spaces.spots`) et se créent dans le prolongement de la Habit. */
 $('mw-close').onclick=()=>{clearTimeout(mwNameTimer);closeMember();};
-/* Mes souscriptions : la console s'ouvre DANS la page (couche XO), même origine, même session. */
-/* 15/10 — le nom se change dans MES RÉGLAGES (le verso du papier) : le toucher ici y mène. */
-$('mw-who').style.cursor='pointer';
-$('mw-who').addEventListener('click',()=>{
-  if(!myProfile||guest()) return;
-  /* On est DÉJÀ dans le verso : le nom remonte simplement vers ses réglages. */
-  try{ $('self-name').focus({preventScroll:true}); }catch(_){}
-  try{ $('srch-ui').scrollTo({top:0,behavior:'smooth'}); }catch(_){}
-});
-$('mw-who').addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); $('mw-who').click(); } });
 /* 15/10 : plus de fond cliquable — le verso a sa croix, et une seule sortie vaut mieux que deux. */
 
 let mwEmail='';
@@ -9867,7 +9862,6 @@ function quitter(){
   roSeq++; HSPACES.seq++; HSPACES.par=new Map(); ECLOTHS.seq++; ECLOTHS.par=new Map(); visImgSeq++; VISIMG.clear(); ZOOM.clear(); COPIES.clear();
   state={habits:[],vis:'private'}; myProfile=null; cloudMode=false; mySub=null; LAND=null; if(lvQuitter) lvQuitter();
   EMEDIA.seq++; EMEDIA.items=[]; EMEDIA.par=new Map(); EMEDIA.charge=false; SIGNE_EM.clear(); SH.vider(); SHS.vider(); BADGE.vider(); CAP.fermer();
-  versoConsoleVider();
   TRIPS=[]; REPS=[]; TEACH=[]; VIS=[]; OBJ={}; tripsLoaded=false;
   cacheOublier();
   closeMember();
@@ -10767,9 +10761,6 @@ window.addEventListener('pageshow',e=>{
     const fin=()=>{ document.body.classList.add('searching'); gate.inert=true;
                     srch.classList.add('is-show','is-open');
                     sOpen=true; sMoving=false; window.__totehm_lsd.recherche=true;
-                    /* ⚠️ LA CONSOLE S'AFFICHE UNE FOIS QU'ON EST BIEN SUR LE VERSO, jamais pendant
-                       qu'il s'affiche (Wah, 18/10) : c'est ICI, à la fin de la course, pas avant. */
-                    versoConsole();
                     try{ if(!srch.contains(document.activeElement)) srch.focus({preventScroll:true}); }catch(_){} };
     sansTransition(); sBg.style.transform=''; sH.style.transform='';
     if(RMQ.matches){ srch.classList.remove('is-prep'); pleinEcran(); fin(); return; }
@@ -11599,41 +11590,110 @@ window.addEventListener('pageshow',e=>{
       $('lv-guest').classList.toggle('hide',!g);
     }
     $('self-name').addEventListener('click',()=>{ if(!myProfile||guest()) return; const b=$('name-btn'); b.classList.remove('claimed'); b.click(); });
-    /* ── LE CRÉATEUR (13/10) — trois chiffres (abonnés · ce mois-ci · prochain versement) et le prix au curseur,
-       sa part lue en direct. Le serveur dit tout (`creator_dashboard`) ; le prix s'écrit par `monetization_set`. ── */
+    /* ── MON ARGENT, EN UN ÉCRAN (20/10) — ce que je gagne, ouvert ou pas, mon prix, où me payer, ma page.
+       DEUX lectures en parallèle, UNE fois par ouverture : `creator_dashboard` (les chiffres, les bornes du
+       prix) et `my_console` (l'offre, le versement, mes abonnements). Le serveur dit tout ; la page ne
+       recompose jamais une règle (ouvrir exige un prix ET un versement : c'est `monetization_set` qui refuse).
+       Le prix s'écrit en LÂCHANT le curseur — plus de bouton Save, plus de champ en double. ── */
     const CREA=(()=>{
-      const box=$('mw-creator'), r=$('mwc-price'), say=$('mwc-say'), save=$('mwc-save'), note=$('mwc-note');
-      let d=null, seq=0;
+      const box=$('mw-creator'), r=$('mwc-price'), say=$('mwc-say'), note=$('mwc-note'), tog=$('vs-open');
+      let d=null, C=null, seq=0, paym='iban';
       const fmt=(c,cur)=>{ try{ return new Intl.NumberFormat('en',{style:'currency',currency:(cur||'eur').toUpperCase(),maximumFractionDigits:c%100?2:0}).format(c/100); }catch(_){ return (c/100)+' '+(cur||''); } };
-      const jour=s=>{ const t=new Date(String(s)+'T12:00:00'); return Number.isNaN(t.getTime())?'—':t.toLocaleDateString('en-GB',{day:'numeric',month:'short'}); };
+      const jour=s=>{ const t=new Date(String(s).slice(0,10)+'T12:00:00'); return Number.isNaN(t.getTime())?'—':t.toLocaleDateString('en-GB',{day:'numeric',month:'short'}); };
+      const dit=(t,k)=>{ note.textContent=t||''; note.className='lv-note'+(k?' is-'+k:''); };
+      const WHY={price:'€3 to €1,000 a year',price_first:'set my price first',payout_first:'where to pay me first',signin:'sign in again'};
       function dire(){
         if(!d) return; const c=+r.value, part=d.part||80;
-        say.innerHTML='<b>'+esc(fmt(c,d.currency))+'</b> / year · 100 subscribers = <b>'+esc(fmt(Math.floor(c*part/100)*100,d.currency))+'</b> for me';
-        save.classList.toggle('hide',c===(d.price_cents||0));
+        $('vs-price').textContent=fmt(c,d.currency)+' / year';
+        say.innerHTML='100 subscribers = <b>'+esc(fmt(Math.floor(c*part/100)*100,d.currency))+'</b> for me';
       }
-      async function charger(){
-        if(!(me&&inscrit())||guest()){ box.classList.add('hide'); return; }
-        const s=++seq, uid=me.id;
-        const {data,error}=await sb.rpc('creator_dashboard');
-        if(s!==seq||(me?.id||null)!==uid) return;
-        if(error){ console.error('[creator_dashboard]',error.message); return; }
-        if(!data?.ok){ box.classList.add('hide'); return; }
-        d=data; box.classList.remove('hide'); note.textContent='';
+      function peindre(){
+        if(!d) return; const o=(C&&C.offer)||{}, pseudo=(C&&C.pseudo)||(myProfile&&myProfile.pseudo)||'';
         $('mwc-subs').textContent=String(d.subscribers|0);
         $('mwc-month').textContent=fmt(d.month_cents|0,d.currency);
+        $('vs-due').textContent=fmt(d.pending_cents|0,d.currency);
         $('mwc-next').textContent=jour(d.next_payout);
-        const p=d.price_cents||2400; r.min=String(d.min_cents||300); r.max=String(Math.max(20000,p)); r.value=String(p); dire();
+        /* Trois états, dits par la pastille seule : ouvert · en pause (offre allumée, Totehm fermé) · éteint. */
+        const etat=o.open?'open':o.enabled?'paused':'off';
+        tog.dataset.etat=etat; tog.setAttribute('aria-pressed',String(!!o.enabled)); $('vs-open-t').textContent=etat;
+        if(o.payout_method) paym=o.payout_method;
+        $('vs-pay-v').textContent=o.payout_fin?(o.payout_method==='paypal'?'PayPal':'IBAN')+' ···· '+o.payout_fin:'to set';
+        $('vs-pay-v').classList.toggle('is-todo',!o.payout_fin);
+        peindrePaym();
+        const url=pseudo?'totehm.com/@'+pseudo:'';
+        $('vs-page').classList.toggle('hide',!(o.open&&pseudo));
+        $('vs-page-a').textContent=url; $('vs-page-a').href='/@'+encodeURIComponent(pseudo);
+        peindreAbos();
+      }
+      function peindrePaym(){
+        $('vs-pay-f').querySelectorAll('[data-paym]').forEach(b=>b.classList.toggle('is-on',b.dataset.paym===paym));
+        $('vs-pay-in').placeholder=paym==='paypal'?'my PayPal email':'my IBAN';
+      }
+      /* Ce que JE paie : une ligne par Totehm suivi, un seul geste (arrêter à la fin de l'année). */
+      function peindreAbos(){
+        const l=((C&&C.subscriptions)||[]), el=$('vs-subs');
+        el.classList.toggle('hide',!l.length);
+        el.innerHTML=l.map(x=>{ const vit=['active','trialing'].includes(x.status);
+          return '<div class="vs-item"><a class="vs-k vs-nom" href="/@'+encodeURIComponent(x.creator||'')+'">'+esc(x.creator||'—')+'</a>'
+            +'<span class="vs-h">'+esc(fmt(x.price_cents|0,x.currency))+' / year'+(x.renews?' · '+(x.ending?'ends ':'renews ')+esc(jour(x.renews)):'')+'</span>'
+            +(vit&&!x.ending?'<button class="vs-act" type="button" data-stop="'+esc(x.creator||'')+'">Stop</button>':'')+'</div>'; }).join('');
+        $('mw-pay').hidden=!(C&&C.membership&&C.membership.portal);
+      }
+      async function charger(){
+        if(!(me&&inscrit())||guest()){ box.classList.add('hide'); $('vs-subs').classList.add('hide'); return; }
+        const s=++seq, uid=me.id;
+        const [a,b]=await Promise.all([sb.rpc('creator_dashboard'),sb.rpc('my_console')]);
+        if(s!==seq||(me?.id||null)!==uid) return;
+        if(a.error) console.error('[creator_dashboard]',a.error.message);
+        if(b.error) console.error('[my_console]',b.error.message);
+        if(a.error||!a.data?.ok){ box.classList.add('hide'); return; }
+        d=a.data; C=b.error?null:(b.data||null); box.classList.remove('hide'); dit('');
+        const p=d.price_cents||2400; r.min=String(d.min_cents||300); r.max=String(Math.max(20000,p)); r.value=String(p);
+        dire(); peindre();
+      }
+      /* Une écriture de l'offre : la réponse dit ok ou pourquoi ; puis on RELIT (le serveur décide de l'état). */
+      async function offre(enabled,cents){
+        const s=++seq, uid=me?.id; dit('…');
+        const {data,error}=await sb.rpc('monetization_set',{p_enabled:enabled,p_price_cents:cents});
+        if(s!==seq||me?.id!==uid) return false;
+        if(error){ console.error('[monetization_set]',error.message); dit('try again','no'); return false; }
+        if(!data?.ok){ dit(WHY[data?.why]||'try again','no'); if(data?.why==='payout_first') ouvrirPay(); return false; }
+        await charger(); dit('saved','ok'); return true;
       }
       r.addEventListener('input',dire);
-      save.onclick=async()=>{
-        if(!d) return; const c=+r.value, s=++seq, uid=me?.id; note.textContent='…';
-        const {data,error}=await sb.rpc('monetization_set',{p_enabled:null,p_price_cents:c});
+      r.addEventListener('change',()=>{ if(d&&+r.value!==(d.price_cents||0)) offre(null,+r.value); });
+      tog.onclick=()=>{ if(!d) return; const o=(C&&C.offer)||{}; offre(!o.enabled,+r.value); };
+      const ouvrirPay=()=>{ $('vs-pay-f').classList.remove('hide'); setTimeout(()=>{ try{ $('vs-pay-in').focus(); }catch(_){} },60); };
+      $('vs-pay-v').onclick=()=>{ $('vs-pay-f').classList.contains('hide')?ouvrirPay():$('vs-pay-f').classList.add('hide'); };
+      $('vs-pay-f').addEventListener('click',e=>{ const b=e.target.closest('[data-paym]'); if(!b) return; paym=b.dataset.paym; peindrePaym(); try{ $('vs-pay-in').focus(); }catch(_){} });
+      async function payer(){
+        const v=$('vs-pay-in').value.trim();
+        if(v.length<6){ dit('not complete','no'); return; }
+        const s=++seq, uid=me?.id; dit('…');
+        const {error}=await sb.rpc('creator_payout_set',{p_method:paym,p_handle:v});
         if(s!==seq||me?.id!==uid) return;
-        if(error){ console.error('[monetization_set]',error.message); note.textContent='try again'; return; }
-        if(!data?.ok){ note.textContent=data?.why==='price'?'3 to 1,000 a year':'try again'; return; }
-        d.price_cents=c; note.textContent='saved'; dire();
+        if(error){ console.error('[creator_payout_set]',error.message); dit('try again','no'); return; }
+        $('vs-pay-in').value='';   /* un IBAN affiché est un IBAN lu par-dessus l'épaule */
+        $('vs-pay-f').classList.add('hide'); await charger(); dit('saved','ok');
+      }
+      $('vs-pay-save').onclick=payer;
+      $('vs-pay-in').addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); payer(); } });
+      $('vs-copy').onclick=async()=>{
+        const u='https://www.'+$('vs-page-a').textContent;
+        try{ await navigator.clipboard.writeText(u); dit('link copied','ok'); }catch(_){ dit(u); }
       };
-      return {charger, vider(){ seq++; d=null; box.classList.add('hide'); }, etat:()=>({vu:!box.classList.contains('hide'), prix:d?d.price_cents:null})};
+      $('vs-subs').addEventListener('click',async e=>{
+        const b=e.target.closest('[data-stop]'); if(!b) return; b.disabled=true; mwNote('…');
+        const {status,d:x}=await fnAppel('club-billing',{action:'cancel_creator',pseudo:b.dataset.stop});
+        if(status!==200){ mwNote(x.error||'try again'); b.disabled=false; return; }
+        mwNote('stops on '+jour(x.until)); charger();
+      });
+      $('mw-pay').onclick=async()=>{
+        mwNote('…'); const {d:x}=await fnAppel('club-billing',{action:'portal'});
+        if(x.url){ location.href=x.url; return; } mwNote('try again');
+      };
+      return {charger, vider(){ seq++; d=null; C=null; box.classList.add('hide'); $('vs-subs').classList.add('hide'); $('vs-pay-f').classList.add('hide'); dit(''); },
+        etat:()=>({vu:!box.classList.contains('hide'), prix:d?d.price_cents:null, offre:tog.dataset.etat||null, versement:!!(C&&C.offer&&C.offer.payout_fin), abonnements:((C&&C.subscriptions)||[]).length})};
     })();
 
     /* Le centre : « Tap to open it » ouvre MON Totehm. */

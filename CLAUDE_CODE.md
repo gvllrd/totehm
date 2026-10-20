@@ -70,6 +70,12 @@ qu'un gris. `terms.html` n'est plus une page entièrement navy. Mesuré :
 noir, les sept couleurs jamais au-dessus de 0,3 %. La seule exception reste le
 Totehm DÉPLOYÉ, où le papier navy prend le champ.
 
+Huitième volet (BUILD `2026-10-20-com-verso`) : LE VERSO = MON ARGENT, EN
+UN ÉCRAN. Le nom une fois en haut ; ce que je gagne, OPEN/OFF, le prix au
+curseur (enregistré en le lâchant), où me payer, ma page à partager ; puis ce
+que je paie (mes abonnements, Higher, TotehmBot), une ligne et un geste
+chacun. La console n'est plus empilée dans le verso.
+
 Septième volet (BUILD `2026-10-19-com-etages`) : LE TOTEHM SORT DU CENTRE et
 se cale EN HAUT, CENTRÉ, sur mes shorts comme sur mes spots (c'est le même
 objet qui voyage) ; un tap dessus choisit une Box — les CINQ vues à gauche,

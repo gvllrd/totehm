@@ -1,5 +1,26 @@
 # com/CLAUDE.md — totehm.com : le Totehm, la carte, HigherSelf
 
+## 20/10/2026 — LE VERSO = MON ARGENT, EN UN ÉCRAN (BUILD `2026-10-20-com-verso`)
+
+Wah : « le verso, totalement ILLISIBLE … c'est l'espace membre axé sur la monétisation ULTRA-SIMPLIFIÉ ».
+Mesuré avant : le nom CINQ fois, les abonnés deux fois, le prix deux fois (curseur ET champ), et toute la
+page `/console` empilée en `iframe` dessous, avec un réglage « qui lit mon TOTEHM » que la confidentialité
+PAR BOX (18/10) a rendu faux. Maintenant UNE colonne de boîtes noires carrées sur le papier navy :
+- **Le nom, une fois** (`#self-h`, étiquette noire à sa taille, fixe en haut ; un tap = le renommer).
+- **Ce que je gagne** : ce mois en grand + la pastille `open · paused · off` (`#vs-open`, un tap l'ouvre ou
+  la ferme par `monetization_set` ; le SERVEUR refuse sans prix/versement, et `payout_first` ouvre le champ) ·
+  abonnés · à verser · prochain versement · le prix au curseur, **enregistré au lâcher** (`change`, plus de
+  Save) · où me payer (`creator_payout_set`, IBAN/PayPal, le champ se vide après) · ma page (copier le lien,
+  visible une fois ouverte).
+- **Ce que je paie** : mes abonnements (`club-billing cancel_creator`), Higher (le SVG, jamais le mot), TotehmBot
+  — une ligne, UN geste. Pied : email · Delete my Totehm · My payments (si un portail existe) · Sign out ·
+  Simple terms of use (dernier).
+- **Deux lectures en parallèle à chaque ouverture** : `creator_dashboard` (chiffres, bornes) + `my_console` (offre,
+  versement, abonnements) — l'`iframe` faisait une page entière, son SSO et `my_console` en plus.
+- Partis ENSEMBLE (balisage + câblage) : `#srch-console`/`versoConsole()`, `#mw-who`, `#mwc-save`, `#acct-cancel`
+  (« billing portal opening soon », un bouton mort). `/console` reste une page servie (liens des satellites).
+- Le music des Habits n'a PAS bougé : il vit dans le choix d'intention (`intention_music`), une musique par intention.
+
 ## 19/10/2026 quater — LE TOTEHM VOYAGE, ET LA VUE DE GAUCHE DEVIENT SEPT ÉTAGES
 
 BUILD `2026-10-19-com-etages`. Wah : « pour les vues de gauche et de droite, ça ne va pas du tout.

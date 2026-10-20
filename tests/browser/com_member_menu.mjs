@@ -31,43 +31,55 @@ try{
      la visibilité et le programme sont MES RÉGLAGES, au verso du papier. */
   const LAND={signed_in:true,pseudo:'wahigher',avatar:null,visibility:'private',offer:{enabled:false,open:false},
     higher:{active:false,comp:false,price_cents:700,currency:'eur',period:'month'},telegram:false,thp:false,subscriptions:2,subscribers:1};
-  {const{pg,ctx,log}=await ready(browser,{rpc:{...rpc,my_landing:LAND,avatar_set:b=>({ok:/^data:image\/jpeg;base64,/.test(b.p_data)}),new_bot_link_code:'CODE123'},
-     functions:{'sso-mint':{code:'b'.repeat(64)},'higher-sub':{error:'not_ready'}}});
+  {const SUBS=[{creator:'alice',price_cents:1200,currency:'eur',status:'active',renews:'2027-03-01',ending:false}];
+   const{pg,ctx,log}=await ready(browser,{rpc:{...rpc,my_landing:LAND,avatar_set:b=>({ok:/^data:image\/jpeg;base64,/.test(b.p_data)}),new_bot_link_code:'CODE123',
+       my_console:{...base,offer:{enabled:false,open:false},subscriptions:SUBS},creator_payout_set:{ok:true},
+       monetization_set:b=>b.p_enabled===true?{ok:false,why:'payout_first'}:{ok:true}},
+     functions:{'sso-mint':{code:'b'.repeat(64)},'higher-sub':{error:'not_ready'},'club-billing':b=>({ok:true,until:'2027-03-01',action:b.action})}});
    await pg.addInitScript(()=>{window.__opened=[];window.open=(u)=>{window.__opened.push(u);return null;};});
    await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(900);await retourner(pg);
-   await pg.waitForFunction(()=>!!document.querySelector('#srch-console iframe'),null,{timeout:9000});
-   const acts=await pg.$$eval('#mw-menu .cm-action',l=>l.map(e=>e.textContent));
-   /* 18/10 : « My subscriptions » n'est plus un bouton — la CONSOLE est sur le verso, en dessous. */
-   ok(JSON.stringify(acts)==='["Get Higher Self","Connect TotehmBot"]','18/10: the console IS the back of the paper — no « My subscriptions » button left → '+acts.join(' | '));
-   ok(await pg.$eval('#srch-console iframe',e=>e.getAttribute('src'))==='/console?embed=1','the console is embedded in the back of the paper');
-   ok(!await pg.locator('#member-window #lv-card').count()&&await pg.locator('#srch #lv-card #ident-block').count()===1&&!await pg.locator('#totehm-menu').count(),'15/10 : the TOTEHM name, its four levels and the program moved to MY SETTINGS (the back of the paper) — the member window keeps the account');
-   /* 15/10 bis : l'espace membre EST le verso — mes réglages au-dessus, mon compte en dessous, une seule page */
-   await pg.waitForFunction(()=>document.getElementById('srch').classList.contains('is-open'),null,{timeout:8000});
-   ok(await pg.locator('#srch #member-window.show').count()===1&&await pg.locator('#srch [data-lvvis]').count()===0
-      &&!await pg.locator('#mw-avatar').count()
-      &&await pg.$eval('#member-window',e=>getComputedStyle(e).position==='static'),'the account opens inside the back of the paper — no Totehm-level privacy, no picture (18/10)');
-   await pg.waitForFunction(()=>!document.getElementById('mw-creator').classList.contains('hide'));
+   await pg.waitForFunction(()=>!document.getElementById('mw-creator').classList.contains('hide'),null,{timeout:9000});
+   /* 20/10 — LE VERSO = MON ARGENT, EN UN ÉCRAN (Wah : « totalement ILLISIBLE … ULTRA-SIMPLIFIÉ »). */
+   ok(!await pg.locator('#srch iframe,#srch-console').count()&&!log.rpc.some(x=>x.name==='visibility_set'),'20/10: no second page stacked in the back (no /console iframe), no Totehm-wide privacy');
+   const nom=await pg.$eval('#srch',e=>(e.innerText.match(/wahigher/g)||[]).length);
+   ok(nom===1,'20/10: the name appears ONCE on the back (it was five times) → '+nom);
+   ok(!await pg.locator('#member-window #lv-card').count()&&await pg.locator('#srch #lv-card #ident-block').count()===1&&!await pg.locator('#totehm-menu').count(),'the name and the money live on the back of the paper');
+   ok(await pg.locator('#srch #member-window.show').count()===1&&!await pg.locator('#mw-avatar,#mw-who,#mwc-save,#acct-cancel').count()
+      &&await pg.$eval('#member-window',e=>getComputedStyle(e).position==='static'),'the account follows inside the back — no picture, no second name, no Save button, no dead « cancel » (20/10)');
    const dash=await pg.evaluate(()=>({subs:document.getElementById('mwc-subs').textContent,month:document.getElementById('mwc-month').textContent,next:document.getElementById('mwc-next').textContent,
-     on:!document.getElementById('mw-creator').classList.contains('hide'),say:document.getElementById('mwc-say').textContent}));
-   ok(dash.on&&dash.subs==='12'&&dash.month==='€192'&&dash.next==='1 Nov'&&/€24 \/ year · 100 subscribers = €1,920 for me/.test(dash.say),'the creator in three numbers (creator_dashboard) and the price on a slider → '+JSON.stringify(dash));
+     due:document.getElementById('vs-due').textContent,price:document.getElementById('vs-price').textContent,say:document.getElementById('mwc-say').textContent,
+     etat:document.getElementById('vs-open').dataset.etat,pay:document.getElementById('vs-pay-v').textContent}));
+   ok(dash.subs==='12'&&dash.month==='€192'&&dash.next==='1 Nov'&&dash.due==='€192'&&dash.price==='€24 / year'&&dash.say==='100 subscribers = €1,920 for me'&&dash.etat==='off'&&dash.pay==='to set',
+      'what I earn, open or not, my price, where to pay me — read from the server → '+JSON.stringify(dash));
+   ok(log.rpc.some(x=>x.name==='creator_dashboard')&&log.rpc.some(x=>x.name==='my_console'),'two reads, in parallel: creator_dashboard + my_console');
    await pg.$eval('#mwc-price',e=>{e.value='3600';e.dispatchEvent(new Event('input',{bubbles:true}));});
-   ok(await pg.isVisible('#mwc-save'),'moving the slider shows Save');
-   await pg.click('#mwc-save');await pg.waitForFunction(()=>document.getElementById('mwc-note').textContent==='saved');
-   ok(log.rpc.some(x=>x.name==='monetization_set'&&x.body.p_price_cents===3600&&x.body.p_enabled===null),'Save : monetization_set(price 3600), the server decides');
-   /* 18/10 — no Totehm-level privacy on the back any more: it lives on EACH BOX of each view. */
-   ok(!await pg.locator('#srch [data-lvvis],#lv-prog').count()&&!log.rpc.some(x=>x.name==='visibility_set'),
-      '18/10: the back sets no Totehm-wide privacy and no longer links to /monetize');
+   ok(await pg.textContent('#vs-price')==='€36 / year','the price follows the slider live');
+   await pg.$eval('#mwc-price',e=>e.dispatchEvent(new Event('change',{bubbles:true})));
+   await pg.waitForFunction(()=>document.getElementById('mwc-note').textContent==='saved');
+   ok(log.rpc.some(x=>x.name==='monetization_set'&&x.body.p_price_cents===3600&&x.body.p_enabled===null),'releasing the slider saves the price (monetization_set, enabled untouched) — no Save button');
+   await pg.click('#vs-open');await pg.waitForFunction(()=>/where to pay me first/.test(document.getElementById('mwc-note').textContent));
+   ok(log.rpc.some(x=>x.name==='monetization_set'&&x.body.p_enabled===true)&&await pg.isVisible('#vs-pay-in'),'opening without a payout: the SERVER refuses (payout_first) and the payout field opens');
+   await pg.click('[data-paym="paypal"]');ok(await pg.getAttribute('#vs-pay-in','placeholder')==='my PayPal email','IBAN / PayPal');
+   await pg.fill('#vs-pay-in','me@paypal.test');await pg.click('#vs-pay-save');await pg.waitForFunction(()=>document.getElementById('mwc-note').textContent==='saved');
+   ok(log.rpc.some(x=>x.name==='creator_payout_set'&&x.body.p_method==='paypal'&&x.body.p_handle==='me@paypal.test')&&await pg.inputValue('#vs-pay-in')===''&&!await pg.isVisible('#vs-pay-in'),
+      'the payout is written by creator_payout_set, then wiped from the screen');
+   ok(await pg.textContent('#vs-subs .vs-nom')==='alice'&&/renews 1 Mar/.test(await pg.textContent('#vs-subs')),'what I pay: the Totehms I subscribe to, one line each');
+   await pg.click('#vs-subs [data-stop]');await pg.waitForFunction(()=>/stops on/.test(document.getElementById('mw-menu-note').textContent));
+   ok(log.functions.some(f=>f.name==='club-billing'&&f.body.action==='cancel_creator'&&f.body.pseudo==='alice'),'Stop = club-billing cancel_creator, at the end of the year');
+   ok(await pg.locator('#mw-menu .vs-hi use[href="#higher-badge"]').count()===1&&!/higher/i.test(await pg.$eval('#mw-menu',e=>e.textContent)),'« Higher » is the SVG, never text');
+   const acts=await pg.$$eval('#mw-menu .vs-act',l=>l.map(e=>e.textContent));
+   ok(JSON.stringify(acts)==='["Get","Connect"]','one gesture per line → '+acts.join(' | '));
    await pg.keyboard.press('Escape');
    await pg.waitForFunction(()=>!document.getElementById('srch').classList.contains('is-open'),null,{timeout:6000});
    await pg.waitForTimeout(1800);
    await retourner(pg);await pg.waitForSelector('#member-window.show');
    ok(/€7 \/ month/.test(await pg.textContent('#mw-higher-hint')),'the Higher price comes from the server (my_landing)');
-   const fmt=await pg.locator('#mw-menu .cm-action').evaluateAll(items=>items.every(e=>{const s=getComputedStyle(e);return s.backgroundColor==='rgb(31, 31, 36)'&&s.whiteSpace==='nowrap'&&s.fontSize==='12.5px';}));
-   ok(fmt,'the higher.boutique buttons, centred, on one line');
-   ok(await pg.$eval('#mw-in-state',e=>e.lastElementChild.textContent.trim().toLowerCase())==='simple terms of use','terms remain the final member entry');
+   const fmt=await pg.locator('#srch .vs-act,#srch .vs-val,#srch .vs-tog').evaluateAll(items=>items.every(e=>{const s=getComputedStyle(e);return s.backgroundColor==='rgb(31, 31, 36)'&&s.whiteSpace==='nowrap'&&s.borderTopLeftRadius==='10px';}));
+   ok(fmt,'controls: grey, 10 px radius, one line'+(fmt?'':' → '+JSON.stringify(await pg.locator('#srch .vs-act,#srch .vs-val,#srch .vs-tog').evaluateAll(l=>l.map(e=>{const s=getComputedStyle(e);return e.id+'/'+e.className+':'+s.backgroundColor+','+s.whiteSpace+','+s.borderTopLeftRadius;})))));
+   ok(await pg.$eval('#mw-in-state',e=>[...e.querySelectorAll('a,button')].pop().textContent.trim().toLowerCase())==='simple terms of use','terms remain the final member entry');
    await pg.click('#mw-higher');await pg.waitForFunction(()=>/opening soon/.test(document.getElementById('mw-menu-note').textContent));
    ok(await pg.isVisible('#mw-menu-note'),'the menu note is VISIBLE in the member window (11/10: it was written into the hidden door note)');
-   ok(log.functions.some(f=>f.name==='higher-sub'&&f.body.action==='checkout'),'Get Higher Self asks the server for a checkout — no live price yet: « opening soon »');
+   ok(log.functions.some(f=>f.name==='higher-sub'&&f.body.action==='checkout'),'Get (Higher) asks the server for a checkout — no live price yet: « opening soon »');
    await pg.click('#mw-telegram');await pg.waitForFunction(()=>window.__opened.length===1);
    ok(await pg.evaluate(()=>window.__opened[0])==='https://t.me/TotehmBot?start=CODE123','Connect TotehmBot: a one-use link code, then Telegram');
    /* 18/10 — PLUS DE PHOTO DE PROFIL (Wah) : la vignette, son champ de fichier et `avatar_set` sont
@@ -83,9 +95,9 @@ try{
      functions:{'sso-mint':{code:'b'.repeat(64)},'higher-sub':b=>({ok:true,ending:b.action==='cancel',until})}});
    await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(900);await retourner(pg);
    await pg.waitForFunction(()=>/renews/.test(document.getElementById('mw-higher-hint').textContent));
-   ok((await pg.textContent('#mw-higher'))==='My Higher'&&/Stop at the end of the month/.test(await pg.textContent('#mw-higher-acts')),'Higher active: renews on a date, can stop at the end of the month');
+   ok((await pg.textContent('#mw-higher'))==='Open'&&(await pg.textContent('#mw-higher-acts'))==='Stop'&&/renews/.test(await pg.textContent('#mw-higher-hint')),'Higher active: renews on a date, Open, and Stop (at the end of the month)');
    await pg.click('[data-hsub="cancel"]');await pg.waitForFunction(()=>/it ends on/.test(document.getElementById('mw-menu-note').textContent));
-   ok(log.functions.some(f=>f.name==='higher-sub'&&f.body.action==='cancel')&&/Keep it/.test(await pg.textContent('#mw-higher-acts')),'stopping is at period end (higher-sub cancel), and it can be kept');
+   ok(log.functions.some(f=>f.name==='higher-sub'&&f.body.action==='cancel')&&(await pg.textContent('#mw-higher-acts'))==='Keep','stopping is at period end (higher-sub cancel), and it can be kept');
    await pg.click('#mw-higher');await pg.waitForFunction(()=>window.__totehm_lv&&window.__totehm_lv().vue==='b');
    ok(!await pg.$eval('#member-window',e=>e.classList.contains('show')),'My Higher subscription opens my Reflection (the view below, 15/10)');
    ok(!log.errors.some(e=>e.startsWith('pageerror')),'Higher active: no runtime errors');await ctx.close();

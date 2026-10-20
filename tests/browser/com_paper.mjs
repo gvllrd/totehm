@@ -52,14 +52,14 @@ try{
     vignette:!!q('#mw-avatar'),monetize:!!q('#lv-prog'),
     nomFixe:getComputedStyle(q('#self-h')).position,nomWrap:getComputedStyle(q('#self-name')).whiteSpace,
     nomPx:parseFloat(getComputedStyle(q('#self-name')).fontSize),
-    console:(()=>{const f=q('#srch-console iframe');return f?f.getAttribute('src'):null;})()};});
+    console:!!q('#srch iframe,#srch-console')};});
   ok(/is-open/.test(z.srch)&&z.reglages&&z.vue==='c','retourné à la main : mes RÉGLAGES s\'ouvrent (le verso déplié), la vue ne change pas');
   ok(z.nom==='wahigher'&&/Quantico/.test(z.ff)&&z.tb==='matrix(1, 0, 0, 1, 0, 0)'&&z.bg,'zoom fini : le fond est le papier navy, le nom (Quantico) en haut');
   /* 18/10 — un IDENTIFIANT : fixe en haut, petit, sans retour de ligne. */
   ok(z.nomFixe==='sticky'&&z.nomWrap==='nowrap'&&z.nomPx<=19,'le nom est un identifiant FIXE en haut, petit ('+z.nomPx+'px), sans retour de ligne');
   ok(z.carte&&z.niveaux===0&&!z.vignette&&!z.monetize&&z.createur&&!z.ia&&z.menu,
     'le verso SIMPLIFIÉ : plus de confidentialité du Totehm (elle est par box), plus de vignette, plus de /monetize ; restent le nom, le programme d\'abonnés et le compte');
-  ok(z.console==='/console?embed=1','la CONSOLE est sur le verso, affichée une fois le verso posé');
+  ok(!z.console,'20/10 : plus de page /console empilée dans le verso — mon argent tient en un écran');
   ok(z.compte,'retourner le papier AFFICHE le menu membre (Wah, 16/10) : pas de second geste');
   c=await card(pg);ok((await lsd(pg)).face===1&&c.cls==='is-back is-flat'&&c.tf==='','dessous, le papier est posé sur son verso, sans transformation');
   ok(await pg.$eval('#gate',e=>e.inert&&getComputedStyle(e).visibility==='visible'),'#gate est inert mais reste peint (le Totehm dessous ne se révèle jamais)');
@@ -69,7 +69,7 @@ try{
   ok(/is-open/.test(await srch(pg))&&(await pg.evaluate(()=>window.__totehm_lv().vue))==='c'&&(await lsd(pg)).face===1,'molette et ↓ dans mes réglages : rien ne change de vue, le papier ne bouge pas');
   ok(!log.rpc.some(x=>x.name==='visibility_set'),'le verso n\'écrit plus la confidentialité du Totehm (elle vit sur chaque box)');
   await pg.fill('#mwc-price','3600');await pg.dispatchEvent('#mwc-price','input');
-  ok(/100 subscribers/.test(await pg.textContent('#mwc-say'))&&await pg.isVisible('#mwc-save'),'le prix au curseur : la part se lit en direct, « Save » apparaît');
+  ok(/100 subscribers/.test(await pg.textContent('#mwc-say'))&&/€36 \/ year/.test(await pg.textContent('#vs-price'))&&!await pg.locator('#mwc-save').count(),'le prix au curseur : la part se lit en direct, sans bouton Save (enregistré au lâcher, 20/10)');
   // focus piégé dans la feuille
   const tab=async()=>{await pg.keyboard.press('Tab');return pg.evaluate(()=>{const e=document.activeElement;return e.closest('#srch')?(e.id||e.tagName):'HORS:'+e.tagName;});};
   await pg.focus('#self-name');const ring=[];for(let i=0;i<24;i++)ring.push(await tab());

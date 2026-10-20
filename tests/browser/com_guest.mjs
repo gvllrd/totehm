@@ -64,7 +64,7 @@ try{
   /* 15/10 bis : l'espace membre vit DANS le verso — « save it with my email » replie le Totehm, retourne le
      papier, et déplie le compte dessous : on ne quitte jamais la page. */
   await pg.$eval('#lv-guest',e=>e.click());await pg.waitForSelector('#member-window.show',{state:'visible',timeout:12000});
-  ok(await pg.isVisible('#mw-save')&&await pg.isHidden('#mw-menu')&&(await pg.textContent('#mw-who'))==='Guest','the member window is the guest one: save with my email, no paid menu');
+  ok(await pg.isVisible('#mw-save')&&await pg.isHidden('#mw-menu')&&/guest/.test(await pg.textContent('#mw-mail'))&&await pg.isHidden('#mw-creator'),'the member window is the guest one: save with my email, no paid menu, no money');
   await pg.fill('#mw-save-email','wah@example.test');await pg.press('#mw-save-email','Enter');await pg.waitForSelector('#mw-save-code:not(.hide)');
   ok(A.update?.email==='wah@example.test','the email is attached to the SAME account (updateUser)');
   await pg.fill('#mw-save-code','654321');

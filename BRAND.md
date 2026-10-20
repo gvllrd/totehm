@@ -149,7 +149,10 @@ galaxy itself answers.
 **the Habit, raised, in the MIDDLE** (navy, with the intention trait the model chose) · obstacle + Teaching from the
 story (red-violet). Talk is cheap: the action is the centre of gravity.
 
-**The back of the paper holds everything** — my settings, then my account, then the console in place. One page.
+**The back of the paper is my money, on one screen** (20/10). The name once, on top. Then what I earn (this month,
+big) · open / paused / off · subscribers · to be paid · payout · price (a slider, saved on release) · pay me · my
+page. Then what I pay: the TOTEHMs I subscribe to, [Higher] (the SVG), TotehmBot — one line, ONE gesture each
+(Get · Open · Stop · Connect · copy). Labels are one or two words; no sentence explains a number.
 
 **Telegram only** (15/10): no WhatsApp, no Meta. "[Higher] my Telegram · my next move, at the rhythm of each Habit."
 
