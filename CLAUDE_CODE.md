@@ -1,5 +1,16 @@
 # CLAUDE_CODE.md — la tâche de Claude Code (terminal de Wah)
 
+## TÂCHE · 20/10/2026 — `club_spots` délègue à son cœur (une approbation)
+
+Le lot K a créé `_club_spots_core(owner, …)` (le corps de `club_spots` + un filtre auteur) pour lire les spots d'UN
+membre (`club_spots_of`). `club_spots` n'a pas pu être rebranché depuis le cloud (`create or replace` sur l'existant) :
+deux copies du même corps vivent en base. Une ligne :
+
+    psql "$SUPABASE_DB_URL" -f backend/supabase/migrations/20261020181000_club_spots_coeur.sql
+
+Vérifier ensuite : `psql "$SUPABASE_DB_URL" -f tests/sql/ecosysteme_membre_selftest.sql` → `FAIL={}` (le contrôle
+`coeur` compare les deux réponses).
+
 ## TÂCHE · 18/10/2026 — appliquer les LECTEURS de la confidentialité par box
 
 Une migration attend la machine de Wah : elle contient des `alter policy`, que
@@ -76,6 +87,18 @@ dessus, légèrement surélevée, avec ses filtres. À DROITE, LES SPOTS DU CLUB
 (figher.club en est le prolongement) : passé · maintenant · à venir, en radar
 ou en shorts TikTok ; c'est là seulement qu'on a le polaroid, avec en haut
 la bande noire transparente des informations du spot.
+
+Douzième volet (BUILD `2026-10-20-com-ecosysteme`) : L'ÉCOSYSTÈME. Les vues
+de gauche et de droite sont la TRANSFORMATION du centre : en y allant, le
+papier se cale en haut et les sept traits d'intention se plient (le rail des
+boîtes à gauche, sept méridiens autour du monde à droite). À droite, plus de
+radar (il reste au figher.club) : MAP (la Terre, les spots en carrés pleins ou
+creux) et GRID, dans le format de MINE · MEMBERS ; un tap ouvre le polaroid ;
+le filtre : les Habits, I WAS HERE · I AM HERE · I WILL BE THERE, les
+intentions « X [Higher] ». OTHERS devient MEMBERS et la galaxie disparaît :
+le papier grandit, se retourne, on tape un nom, et l'on vit l'écosystème du
+membre (son processeur, ses médias, ses spots, son offre en bas) ; MINE
+ramène chez soi.
 
 Onzième volet (BUILD `2026-10-20-com-boxes`) : LES BOXES SONT SACRÉES. Sur la
 grille, la box posée sur chaque média est CELLE du Totehm (même rendu) ; un

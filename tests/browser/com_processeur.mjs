@@ -1,7 +1,8 @@
-// COM · 15/10/2026, mis à jour le 16/10 bis — LE PROCESSEUR : CINQ vues, quatre voisins, sans manette
-// (↑ Get Higher · ← My shorts · My TOTEHM · My spots → · ↓ My Reflection). L'horizontale est revenue avec mes
-// shorts et mes spots (16/10 bis, détail dans com_shorts.mjs) ; elle s'éteint dans la galaxie. CENTRE : le papier dans son socle, les ramifications de mes intentions (les 7
-// couleurs) ; Mine · Others (la galaxie des TOTEHMs, la recherche, l'univers /@nom, le retour). HAUT : la bouche du
+// COM · 15/10/2026, mis à jour le 20/10 sexies — LE PROCESSEUR : CINQ vues, quatre voisins
+// (↑ Get Higher · ← Media · My TOTEHM · Spots → · ↓ My Reflection). Les deux côtés sont la TRANSFORMATION du centre :
+// les sept traits se plient (rail à gauche, méridiens à droite). CENTRE : le papier dans son socle, les ramifications de
+// mes intentions (les 7 couleurs) ; Mine · Members (plus de galaxie : le papier grandit, se retourne, on tape un nom,
+// et l'on vit l'écosystème du membre). HAUT : la bouche du
 // 12/10, le papier sur la langue, « Get [Higher] » l'avale → higher.boutique/get_higher?from=com. BAS : la condensation
 // (seul #gl-bg tourne), le profil, la Reflection en trois étages (citations vérifiées, proposition ≠ Habit).
 // Le verso = mes réglages : com_paper.mjs. Les shorts et la capture : com_shorts.mjs. Tout est simulé.
@@ -16,8 +17,7 @@ const tables={profiles:[{pseudo:'wahigher'}],totehms:[{user_id:UID,steps:STEPS,v
 const LAND=(o={})=>({signed_in:true,pseudo:'wahigher',visibility:'private',offer:{enabled:false,open:false},
   higher:{active:false,price_cents:700,currency:'eur',period:'month'},thp:false,subscriptions:0,subscribers:0,
   sm:{ready:true,habit:true,objective:true,higher:false,free_total:7,free_left:6,left:6},...o});
-const GAL={ok:true,totehms:Array.from({length:12},(_,i)=>({pseudo:'kai'+i,offer:i%2===0,price_cents:2400,currency:'eur',subscribed:false}))};
-/* 18/10 — le Totehm d'un autre, lu SUR PLACE depuis la galaxie (`totehm_of`). */
+/* Le Totehm d'un autre, lu SUR PLACE depuis MEMBERS (`totehm_of`). */
 const AUTRE={ok:true,pseudo:'kai3',steps:[{t:'Swim at dawn',i:'flow',is:['flow']},{t:'Write it down',i:'express',is:['express']}],
   trips:[],objs:{},reps:[],wisdom:[],visions:[]};
 const COULEURS=['#E24B4A','#e48b31','#fcbe21','#639922','#1D9E75','#378ADD','#7F77DD'];
@@ -35,7 +35,7 @@ try{
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1400);
   const c=await pg.evaluate(()=>{const q=s=>document.querySelector(s);
     const sk=q('#lv-socket').getBoundingClientRect(),pa=q('#gate-asteroid').getBoundingClientRect(),d=window.__totehm_lv();
-    const flou=[...document.querySelectorAll('#lv-proc,#lv-proc *,#gx-c')].some(e=>{const cs=getComputedStyle(e);return /blur/.test(cs.filter+' '+(cs.backdropFilter||''));});
+    const flou=[...document.querySelectorAll('#lv-proc,#lv-proc *')].some(e=>{const cs=getComputedStyle(e);return /blur/.test(cs.filter+' '+(cs.backdropFilter||''));});
     return {vue:d.vue,mode:d.mode,dans:Math.abs((sk.x+sk.width/2)-(pa.x+pa.width/2))<1.5&&Math.abs((sk.y+sk.height/2)-(pa.y+pa.height/2))<1.5&&sk.width>pa.width*1.2,
       pistes:[...document.querySelectorAll('#lv-ram path:not(.puls):not(.sk)')].map(p=>p.getAttribute('stroke')),noeuds:document.querySelectorAll('#lv-ram rect').length,
       pales:document.querySelectorAll('#lv-ram g.r-0').length,ramOp:getComputedStyle(q('#lv-ram')).opacity,flou,
@@ -43,11 +43,11 @@ try{
       puls:[...document.querySelectorAll('#lv-ram .puls')].map(e=>getComputedStyle(e).animationName+'/'+getComputedStyle(e).animationDuration),
       veille:document.querySelectorAll('#lv-ram .puls.veille').length,
       creuxOp:(()=>{const g=q('#lv-ram g.r-0');return g?getComputedStyle(g).opacity:'';})(),
-      partis:['ljoy','ljoy-say','lv-take','fish','lv-earth','lv-visions','lv-mine','lv-find','vmode'].filter(i=>document.getElementById(i)),
+      partis:['ljoy','ljoy-say','lv-take','fish','lv-earth','lv-visions','lv-mine','lv-find','vmode','gx-c','gx-q','gx-tip','rdr-c'].filter(i=>document.getElementById(i)),
       up:q('#lvn-up').getAttribute('aria-label'),dn:q('#lvn-dn').getAttribute('aria-label'),
       lf:q('#lvn-lf').getAttribute('aria-label'),rt:q('#lvn-rt').getAttribute('aria-label'),
       cotes:['lv-g','lv-d'].filter(i=>document.getElementById(i)).length,
-      mine:q('#lv-m-mine').getAttribute('aria-checked'),others:q('#lv-m-others').getAttribute('aria-checked'),
+      mine:q('#lv-m-mine').getAttribute('aria-checked'),others:q('#lv-m-members').getAttribute('aria-checked'),
       /* 18/10 : le nom a quitté l'atterrissage — il ne vit QUE sur la face verso du papier (Wah). */
       sigAbs:!q('#ast-sig'),connAbs:!q('#conn-bar'),
       tap:q('#lv-tap').textContent,bouche:getComputedStyle(q('#gate-mouth')).opacity};});
@@ -60,10 +60,10 @@ try{
   ok(c.puls.length===7&&c.veille===4&&c.puls.every(x=>/^ram-puls\//.test(x))&&new Set(c.puls.map(x=>x.split('/')[1])).size>=2,
     'ça VIT : sept impulsions, quatre en veille, la période réelle sur les habitées ('+c.puls.join(' · ')+')');
   ok(parseFloat(c.creuxOp)>=.45,'la couleur d\'une intention vide se LIT ('+c.creuxOp+')');
-  ok(!c.flou,'aucun flou (socle, ramifications, galaxie)');
-  ok(!c.partis.length,'plus de manette, plus de bascule de mode (balisage retiré) '+c.partis.join(','));
-  ok(c.cotes===2&&c.up==='Get Higher'&&c.dn==='My Reflection'&&c.lf==='My shorts'&&c.rt==='My spots'&&c.mine==='true'&&c.others==='false',
-     'quatre chevrons discrets (↑ Get Higher, ↓ My Reflection, ← My shorts, → My spots) ; [Mine] coché');
+  ok(!c.flou,'aucun flou (socle, ramifications)');
+  ok(!c.partis.length,'plus de manette, plus de galaxie, plus de radar (balisage retiré) '+c.partis.join(','));
+  ok(c.cotes===2&&c.up==='Get Higher'&&c.dn==='My Reflection'&&c.lf==='Media'&&c.rt==='Spots'&&c.mine==='true'&&c.others==='false',
+     'quatre chevrons discrets (↑ Get Higher, ↓ My Reflection, ← Media, → Spots) ; [Mine] coché');
   ok(c.sigAbs&&c.connAbs&&/to open it · (Turn|Swipe) to configure it$/.test(c.tap)&&c.bouche==='0',
     'plus de nom ni d\'espace membre sur l\'atterrissage : le nom ne vit que sur la face VERSO ; « '+c.tap+' » ; la bouche invisible au centre');
   await pg.screenshot({path:OUT+'/proc_centre_'+(tel?'tel':'ordi')+'.png'});
@@ -108,7 +108,10 @@ try{
     for(let i=1;i<=6;i++){await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:x0+(x1-x0)*i/6,y:y0+(y1-y0)*i/6}]});await pg.waitForTimeout(16);}
     await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await calme(pg);await pg.waitForTimeout(500);return (await lv(pg)).vue;};
   const s=[await glisse(40,780,40,640),await glisse(40,640,40,780),await glisse(40,640,40,780),await glisse(40,780,40,640),await glisse(330,560,200,560),await glisse(200,560,330,560)];
-  ok(s.join(',')==='b,c,h,c,d,c','le doigt : haut → la Reflection, bas → Get Higher, vers la gauche → mes spots : '+s.join(','));
+  /* 20/10 sexies — sur la CARTE, le doigt fait tourner la Terre : l'horizontale s'éteint dans CETTE vue (la règle de la
+     galaxie d'hier) ; le chevron, la manette et le trackpad ramènent au centre. */
+  ok(s.join(',')==='b,c,h,c,d,d','le doigt : haut → la Reflection, bas → Get Higher, vers la gauche → les spots ; sur la Terre, il la tourne : '+s.join(','));
+  await pg.click('#lvn-lf');await vers(pg,'c');ok((await lv(pg)).vue==='c','le chevron ← ramène au centre');
   ok(!erreurs(log).length,'doigt : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
 
  // ── 3 · EN HAUT : GET HIGHER, la bouche du 12/10 — le papier sur la langue, « Get [Higher] » l'avale → la boutique ──
@@ -131,97 +134,105 @@ try{
   ok(!!r&&/\/get_higher\?from=com/.test(r.url()),'puis higher.boutique/get_higher?from=com, par le pont ('+(r&&r.url())+')');
   ok(!erreurs(log).length,'Get Higher : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
 
- // ── 4 · OTHERS : la galaxie — le papier rentre dans [Mine], des TOTEHMs en logo, la recherche, l'étoile, l'univers ──
+ // ── 4 · MEMBERS (20/10 sexies) : plus de galaxie. Le papier GRANDIT avec son socle et son réseau, se retourne,
+ // la saisie est sur son dos ; validé, on retombe dans l'écosystème — le SIEN (processeur, médias, spots, offre). ──
+ const OFFRE={ok:true,pseudo:'kai3',palette:['flow','express'],sale:{open:true,price_cents:2400,currency:'eur',period:'year'},
+   viewer:{signed_in:true,me:false,subscribed:false,until:null,ending:false,can_read:true}};
  for(const [vp,tel] of [[{width:390,height:844},true],[{width:1280,height:800},false]]){
   const{pg,log}=await page(browser,{dir:'com',origin,tables,viewport:vp,hasTouch:tel,
-    rpc:{my_landing:LAND(),totehm_galaxy:GAL,totehm_search:b=>b.p_q?[{pseudo:'kai3',offer:true,price_cents:2400,currency:'eur'}]:[],
-         totehm_of:AUTRE,habit_spaces:{ok:true,habits:[]},element_cloths:{ok:true,elements:[]}}});
+    rpc:{my_landing:LAND(),habit_spaces:{ok:true,habits:[]},element_cloths:{ok:true,elements:[]},
+         totehm_of:b=>b.p_pseudo==='kai3'?AUTRE:b.p_pseudo==='lock'?{ok:false,why:'subscribe',pseudo:'lock'}:{ok:false,why:'nobody'},
+         creator_page:b=>b.p_pseudo==='lock'?Object.assign({},OFFRE,{pseudo:'lock'}):OFFRE,
+         member_media:{ok:true,items:[]},club_spots_of:{ok:true,items:[],total:0}}});
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1000);await ouvre(pg);
-  await pg.click('#lv-m-others');await calme(pg);await pg.waitForTimeout(900);
-  const o=await pg.evaluate(()=>{const q=s=>document.querySelector(s),d=window.__totehm_lv(),p=q('#gate-asteroid').getBoundingClientRect(),m=q('#lv-m-mine').getBoundingClientRect();
-    return {mode:d.mode,g:d.galaxie,pc:p.x+p.width/2,pyc:p.y+p.height/2,dans:p.x+p.width/2>m.x&&p.x+p.width/2<m.x+m.width&&p.y+p.height/2>m.y&&p.y+p.height/2<m.y+m.height&&p.width<30,
-      cv:getComputedStyle(q('#gx-c')).opacity,ui:getComputedStyle(q('#gx-ui')).visibility,checked:q('#lv-m-others').getAttribute('aria-checked'),ram:getComputedStyle(q('#lv-ram')).opacity,
-      up:getComputedStyle(q('#lvn-up')).opacity,
-      rech:(()=>{const u=q('#gx-ui').getBoundingClientRect(),c=q('#gx-c').getBoundingClientRect();
-        return {centre:Math.abs(u.y+u.height/2-(c.y+c.height*.4))<Math.max(90,c.height*.18)&&Math.abs(u.x+u.width/2-innerWidth/2)<2,
-                transparent:getComputedStyle(q('#gx-ui')).pointerEvents==='none',
-                champ:getComputedStyle(q('#gx-q')).pointerEvents==='auto'};})()};});
-  ok(o.mode==='others'&&o.checked==='true'&&o.dans,(tel?'téléphone':'ordinateur')+' · Others : le papier rentre DANS [Mine] (la continuité), [Others] coché');
-  ok(o.g.etoiles===12&&o.g.fond>=100&&o.g.sprite&&o.g.poussiere===undefined&&o.g.anime&&o.cv==='1'&&o.ui==='visible'&&o.ram==='0',
-    'la galaxie : 12 TOTEHMs réels dans une MULTITUDE de dos de papier ('+o.g.fond+' carrés de fond, le même background.svg) ; les ramifications se retirent');
-  /* 16/10 : la recherche est AU MILIEU (sur le centre de la galaxie), et elle n'avale pas les étoiles. */
-  ok(o.rech.centre&&o.rech.transparent&&o.rech.champ,'la zone de recherche est AU MILIEU de la galaxie, et le doigt passe à côté d\'elle');
-  ok(log.rpc.filter(x=>x.name==='totehm_galaxy').length===1,'une seule lecture de totehm_galaxy');
-  if(tel) await pg.screenshot({path:OUT+'/proc_galaxie.png'});
-  // le nom au survol (souris) / au premier tap (doigt)
-  const pos=await pg.evaluate(()=>window.__totehm_gx());
-  /* La recherche est au MILIEU : on vise une étoile qui n'est pas derrière elle. */
-  const champ=await pg.evaluate(()=>{const r=document.getElementById('gx-ui').getBoundingClientRect();return {x:r.x,y:r.y,w:r.width,h:r.height};});
-  const loin=([x,y])=>!(x>champ.x-8&&x<champ.x+champ.w+8&&y>champ.y-8&&y<champ.y+champ.h+8);
-  const vis=pos.find(([x,y])=>x>40&&x<vp.width-40&&y>140&&y<vp.height*.75&&loin([x,y]))||pos.find(loin)||pos[0];
-  if(tel){ await pg.touchscreen.tap(vis[0],vis[1]); } else { await pg.mouse.move(vis[0],vis[1]); }
-  await pg.waitForTimeout(400);
-  const tip=await pg.evaluate(()=>({on:document.getElementById('gx-tip').classList.contains('is-on'),t:document.querySelector('#gx-tip .srch-name').textContent}));
-  ok(tip.on&&/^kai\d+$/.test(tip.t),(tel?'premier tap':'survol')+' : son nom, lisible ('+tip.t+')');
-  // 15/10 bis : PAS de liste — la galaxie EST le résultat. Un nom tapé éteint les autres, agrandit le trouvé
-  // et pose son nom en Coral dessus ; Entrée plonge dedans.
-  await pg.fill('#gx-q','kai');await pg.waitForFunction(()=>window.__totehm_lv().galaxie.filtre===1,null,{timeout:6000}).catch(()=>{});
-  const tr=await pg.evaluate(()=>{const t=document.getElementById('gx-tip'),n=t.querySelector('.srch-name');
-    return {liste:getComputedStyle(document.getElementById('gx-res')).display,nom:n.textContent,
-      couleur:getComputedStyle(n).color,police:getComputedStyle(n).fontFamily,sc:parseFloat(t.style.getPropertyValue('--sc')||'1')};});
-  ok((await lv(pg)).galaxie.filtre===1&&tr.liste==='none','la recherche allume le Totehm trouvé — et AUCUNE liste ne s\'ouvre');
-  ok(/^kai\d+$/.test(tr.nom)&&tr.couleur==='rgb(251, 213, 202)'&&/Quantico/.test(tr.police)&&tr.sc>1.4,
-    'son nom se pose SUR son carré, Quantico Coral, agrandi avec lui (×'+tr.sc+')');
-  /* ⚠️ 18/10 · ZÉRO SAUT, ET CE QUI S'OUVRE EST SON TOTEHM EN MODE READ (Wah : « tu prends au hasard
-     un totehm décoratif, tu prends le nom entré et tu les regroupes en affichant DIRECT la page du
-     Totehm » · « dans la même configuration que actuelle mais en mode READ »). Même document, même
-     session : `RO` s'arme en plein vol, l'URL suit par `replaceState`, aucune navigation. */
+  const p0=await pg.evaluate(()=>document.getElementById('gate-asteroid').getBoundingClientRect().width);
+  const habits0=(await lv(pg)).ramifications.habits;
+  await pg.click('#lv-m-members');await calme(pg);await pg.waitForTimeout(700);
+  const o=await pg.evaluate(()=>{const q=s=>document.querySelector(s),d=window.__totehm_lv(),p=q('#gate-asteroid').getBoundingClientRect(),
+      k=q('#lv-socket').getBoundingClientRect(),u=q('#mb-q').getBoundingClientRect();
+    return {mode:d.mode,m:d.membre,pw:p.width,pcx:p.x+p.width/2,pcy:p.y+p.height/2,sk:k.width,dos:q('#gate-card').classList.contains('is-back'),
+      focus:document.activeElement&&document.activeElement.id,ui:getComputedStyle(q('#mb-ui')).visibility,
+      surLui:Math.abs(u.x+u.width/2-(p.x+p.width/2))<3&&u.y>p.y&&u.bottom<p.bottom,
+      ram:getComputedStyle(q('#lv-ram')).opacity,pistes:document.querySelectorAll('#lv-ram path:not(.puls):not(.sk)').length,
+      coude:(()=>{const r=[...document.querySelectorAll('#lv-ram rect')][0];return r?+r.getAttribute('y'):0;})(),
+      checked:q('#lv-m-members').getAttribute('aria-checked'),gx:!!q('#gx-c'),haut:p.y<160};});
+  ok(o.mode==='members'&&o.m.cherche&&o.checked==='true'&&!o.gx,(tel?'téléphone':'ordinateur')+' · [Members] : plus de galaxie, la recherche');
+  ok(o.pw>p0*1.9&&o.dos&&o.sk>o.pw*1.2&&o.haut,'le papier GRANDIT (×'+(o.pw/p0).toFixed(1)+') avec son socle, se pose sur son DOS, ancré en haut');
+  ok(o.focus==='mb-q'&&o.ui==='visible'&&o.surLui,'la saisie est SUR le dos du papier, et elle a déjà le focus (le clavier s\'ouvre dans le geste)');
+  ok(o.ram==='1'&&o.pistes===7,'les sept traits suivent le papier agrandi');
+  if(tel) await pg.screenshot({path:OUT+'/proc_members_'+(tel?'tel':'ordi')+'.png'});
+  // un nom inconnu, puis un Totehm à abonnement : un refus ne touche jamais à MON état
+  await pg.fill('#mb-q','nobody');await pg.keyboard.press('Enter');await pg.waitForTimeout(500);
+  const n1=await pg.evaluate(()=>({t:document.getElementById('mb-note').textContent,ro:document.body.classList.contains('ro'),h:window.__totehm_lv().ramifications.habits}));
+  ok(n1.t==='no TOTEHM by that name'&&!n1.ro&&n1.h===habits0,'un nom inconnu : « '+n1.t+' », et mon Totehm n\'a pas bougé');
+  await pg.fill('#mb-q','lock');await pg.keyboard.press('Enter');await pg.waitForTimeout(700);
+  const n2=await pg.evaluate(()=>({t:document.getElementById('mb-note').textContent,b:document.getElementById('mb-go').textContent,v:!document.getElementById('mb-go').classList.contains('hide')}));
+  ok(n2.t==='subscribe to read'&&n2.v&&/^SUBSCRIBE · 24 € \/ year$/.test(n2.b),'un Totehm à abonnement : « '+n2.t+' » et UN geste, avec le prix du serveur ('+n2.b+')');
+  // le bon nom : SON écosystème
   const url0=pg.url();
-  await pg.focus('#gx-q');await pg.keyboard.press('Enter');
-  await pg.waitForSelector('body.ro',{timeout:8000}).catch(()=>{});
-  /* Le papier rentre d'abord chez lui (la galaxie se referme), PUIS le Totehm se déconstruit : c'est
-     la même séquence que pour le mien — une seule déconstruction dans tout le fichier. */
-  await pg.waitForFunction(()=>!document.body.classList.contains('gate'),null,{timeout:9000}).catch(()=>{});
-  await pg.waitForTimeout(600);
-  const x=await pg.evaluate(()=>({ro:document.body.classList.contains('ro'),
-    qui:(document.getElementById('ro-who')||{}).textContent,
-    deplie:!document.body.classList.contains('gate'),
-    xo:window.__totehm_xo().actif, g:window.__totehm_lv().galaxie,
-    habits:[...document.querySelectorAll('#habits [data-open]')].map(e=>e.textContent.trim().slice(0,20)),
-    ecrit:document.querySelectorAll('#habits [contenteditable],#habits [data-kill],#habits [data-add]').length}));
-  ok(x.ro&&x.qui==='kai3'&&x.deplie&&!x.xo&&/[?&]ro=kai3/.test(pg.url())&&pg.url().split('?')[0]===url0.split('?')[0]
-     &&!(await pg.evaluate(()=>window.__ouvert)).length,
-    (tel?'téléphone':'ordinateur')+' · Entrée ouvre SON Totehm, ici même, en lecture ('+pg.url().replace(origin,'')+') : ni navigation, ni onglet');
-  ok(x.habits.length===2&&!x.ecrit,'la même configuration que la mienne, mais rien n\'est éditable ('+x.habits.join(' · ')+')');
-  ok(x.g.ouvertures===1,'la plongée a bien eu lieu');
-  const ctx=await pg.evaluate(()=>JSON.parse(sessionStorage.getItem('totehm_gx')||'null'));
-  ok(ctx&&ctx.p==='kai3'&&ctx.q==='kai','le contexte de recherche est gardé (un rechargement rend Others et le nom tapé)');
-  await pg.click('#ro-out');
-  await pg.waitForFunction(()=>!document.body.classList.contains('ro')&&document.body.classList.contains('gate'),null,{timeout:9000}).catch(()=>{});
-  await pg.waitForTimeout(1000);
-  const r=await lv(pg);
-  ok(!(await pg.evaluate(()=>document.body.classList.contains('ro')))&&!/[?&]ro=/.test(pg.url()),
-    'sortir de la lecture : je redeviens moi, et l\'URL aussi');
-  ok(r.vue==='c'&&await pg.inputValue('#gx-q')==='kai',
-    'on revient à l\'atterrissage, et le nom tapé est toujours là');
-  if(!tel){
-    await pg.click('#lv-m-mine');await calme(pg);await pg.waitForTimeout(800);
-    const m=await pg.evaluate(()=>({d:window.__totehm_lv(),cv:getComputedStyle(document.getElementById('gx-c')).opacity}));
-    ok(m.d.mode==='mine'&&!m.d.galaxie.anime&&m.cv==='0','retour à Mine : la galaxie se referme, plus aucune image calculée (rAF arrêté)');
-  }
-  ok(!erreurs(log).length,'galaxie : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
- // la galaxie s'arrête dès qu'elle n'est plus vue : une autre vue
- {const{pg,log}=await page(browser,{dir:'com',origin,tables,viewport:{width:1280,height:800},rpc:{my_landing:LAND(),totehm_galaxy:GAL}});
-  await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(900);
-  await pg.click('#lv-m-others');await calme(pg);await pg.waitForTimeout(600);
-  await pg.keyboard.press('ArrowDown');await vers(pg,'b');await pg.waitForTimeout(400);
-  const b=await lv(pg);
-  ok(b.vue==='b'&&b.mode==='others'&&!b.galaxie.anime,'de la galaxie vers la Reflection : la Reflection est la MIENNE, la galaxie s\'arrête');
-  const p=await pg.evaluate(()=>{const p=document.getElementById('gate-asteroid').getBoundingClientRect(),m=document.getElementById('rf-me').getBoundingClientRect();return Math.abs(p.x+p.width/2-(m.x+m.width/2))<4;});
-  ok(p,'mon papier devient le profil, même venu de la galaxie');
+  await pg.fill('#mb-q','kai3');await pg.keyboard.press('Enter');
+  await pg.waitForFunction(()=>document.body.classList.contains('lv-membre')&&!document.body.classList.contains('mb-cherche'),null,{timeout:8000}).catch(()=>{});
+  await calme(pg);await pg.waitForTimeout(800);
+  const e=await pg.evaluate(()=>{const q=s=>document.querySelector(s),d=window.__totehm_lv(),p=q('#gate-asteroid').getBoundingClientRect();
+    return {d,pw:p.width,dos:q('#gate-card').classList.contains('is-back'),ro:document.body.classList.contains('ro'),qui:q('#lv-m-who').textContent,
+      quiVu:getComputedStyle(q('#lv-m-who')).display!=='none',couleur:getComputedStyle(q('#lv-m-who')).color,
+      tap:q('#lv-tap').textContent,pales:document.querySelectorAll('#lv-ram g.r-0').length};});
+  ok(e.ro&&e.d.mode==='members'&&e.d.membre.chez&&!e.d.membre.cherche&&/[?&]ro=kai3/.test(pg.url())&&pg.url().split('?')[0]===url0.split('?')[0]&&!(await pg.evaluate(()=>window.__ouvert)).length,
+    'validé : on retombe dans l\'écosystème — le SIEN, sur place, sans navigation ('+pg.url().replace(origin,'')+')');
+  ok(Math.abs(e.pw-p0)<2&&!e.dos,'le papier redescend chez lui, sur son recto');
+  ok(e.qui==='kai3'&&e.quiVu&&e.couleur==='rgb(251, 213, 202)','[Members] porte SON nom, en Coral');
+  ok(e.d.ramifications.habits!==habits0&&e.pales===5,'le processeur est le SIEN : ses deux intentions habitées, cinq en creux');
+  ok(/to open it · (Turn|Swipe) to search$/.test(e.tap),'« '+e.tap+' »');
+  // ↓ chez lui : son offre, pas ma Reflection
+  await pg.keyboard.press('ArrowDown');await vers(pg,'b');await pg.waitForTimeout(700);
+  const b=await pg.evaluate(()=>({o:document.getElementById('mb-offre').textContent,say:getComputedStyle(document.getElementById('lv-say')).display,
+    p:(()=>{const p=document.getElementById('gate-asteroid').getBoundingClientRect(),m=document.getElementById('rf-me').getBoundingClientRect();return Math.abs(p.x+p.width/2-(m.x+m.width/2))<4;})()}));
+  ok(/kai3/.test(b.o)&&/SUBSCRIBE · 24 € \/ year/.test(b.o)&&b.say==='none'&&b.p,'↓ chez un membre : SON profil et SON offre (« '+b.o+' »), jamais ma Reflection');
   await pg.keyboard.press('ArrowUp');await vers(pg,'c');await pg.waitForTimeout(500);
-  const c=await lv(pg);ok(c.mode==='others'&&c.galaxie.anime,'retour : la galaxie reprend, telle quelle');
-  ok(!erreurs(log).length,'galaxie / Reflection : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
+  // son Totehm, en lecture, puis on replie : on reste chez lui
+  await pg.click('#lv-tap-open');await pg.waitForFunction(()=>!document.body.classList.contains('gate'),null,{timeout:9000}).catch(()=>{});
+  await pg.waitForTimeout(600);
+  const x=await pg.evaluate(()=>({habits:[...document.querySelectorAll('#habits [data-open]')].map(e=>e.textContent.trim().slice(0,20)),
+    ecrit:document.querySelectorAll('#habits [contenteditable],#habits [data-kill],#habits [data-add]').length,qui:(document.getElementById('ro-who')||{}).textContent}));
+  ok(x.habits.length===2&&!x.ecrit&&x.qui==='kai3','tap : SON Totehm, en lecture, la même configuration que le mien ('+x.habits.join(' · ')+')');
+  await pg.keyboard.press('Escape');await pg.waitForFunction(()=>document.body.classList.contains('gate'),null,{timeout:9000}).catch(()=>{});await pg.waitForTimeout(900);
+  ok(await pg.evaluate(()=>document.body.classList.contains('lv-membre')&&document.body.classList.contains('ro')),'replier SON Totehm : on reste dans son écosystème');
+  // [Mine] : je redeviens moi
+  await pg.click('#lv-m-mine');await calme(pg);await pg.waitForTimeout(1200);
+  const m=await pg.evaluate(()=>({d:window.__totehm_lv(),ro:document.body.classList.contains('ro'),cl:document.body.classList.contains('lv-membre')}));
+  ok(m.d.mode==='mine'&&!m.ro&&!m.cl&&!/[?&]ro=/.test(pg.url()),'[Mine] : je redeviens moi, et l\'URL aussi '+JSON.stringify({mode:m.d.mode,ro:m.ro,cl:m.cl,u:pg.url().replace(origin,''),v:m.d.vue,b:m.d.bouge}));
+  // Échap pendant la recherche : on revient d'où l'on vient
+  if(!tel){
+    await pg.click('#lv-m-members');await calme(pg);await pg.waitForTimeout(600);
+    await pg.keyboard.press('Escape');await calme(pg);await pg.waitForTimeout(900);
+    const q=await pg.evaluate(()=>({d:window.__totehm_lv(),w:document.getElementById('gate-asteroid').getBoundingClientRect().width,dos:document.getElementById('gate-card').classList.contains('is-back')}));
+    ok(q.d.mode==='mine'&&!q.d.membre.cherche&&Math.abs(q.w-p0)<2&&!q.dos,'Échap pendant la recherche : le papier rentre, sur son recto, chez moi');
+  }
+  ok(!erreurs(log).length,'MEMBERS : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
+
+ // ── 4 bis · LES VUES DE CÔTÉ SONT LA TRANSFORMATION DU CENTRE : les sept traits se plient pendant le voyage ──
+ {const{pg,log}=await page(browser,{dir:'com',origin,tables,viewport:{width:390,height:844},hasTouch:true,rpc:{my_landing:LAND(),club_spots:{ok:true,items:[],total:0}}});
+  await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1200);
+  const m0=(await lv(pg)).ramifications.morphs;
+  await pg.click('#lvn-lf');await pg.waitForTimeout(260);
+  const mi=await pg.evaluate(()=>({r:window.__totehm_lv().ramifications,op:getComputedStyle(document.getElementById('lv-ram')).opacity,
+    pane:+getComputedStyle(document.getElementById('lv-g')).opacity,pistes:document.querySelectorAll('#lv-ram path:not(.puls)').length}));
+  ok(mi.r.enCours&&mi.r.morphs===m0+1&&+mi.op>.5&&mi.pane<.5&&mi.pistes===7,'← en route : les SEPT traits se transforment, visibles, avant que la vue n\'entre (vue à '+mi.pane.toFixed(2)+')');
+  await vers(pg,'g');await pg.waitForTimeout(1300);
+  const g=await pg.evaluate(()=>{const d=[...document.querySelectorAll('#lv-ram path:not(.puls)')].map(p=>p.getAttribute('d'));
+    const last=s=>{const m=s.split('M')[1].trim().split('L').pop().split(' ').map(Number);return m;};
+    return {r:window.__totehm_lv().ramifications,bas:d.map(last),op:getComputedStyle(document.getElementById('lv-ram')).opacity};});
+  ok(g.r.vue==='g'&&!g.r.enCours&&g.bas.every(([x,y])=>x<30&&y>800),'arrivé à gauche : les sept traits sont devenus le RAIL du bord gauche (le trait d\'une boîte, à l\'échelle de l\'écran)');
+  ok(g.op==='0','puis le réseau cède la place à la grille');
+  await pg.click('#lvn-rt');await vers(pg,'c');await pg.waitForTimeout(400);
+  await pg.click('#lvn-rt');await pg.waitForTimeout(300);
+  const dm=await pg.evaluate(()=>({r:window.__totehm_lv().ramifications,op:getComputedStyle(document.getElementById('lv-ram')).opacity}));
+  ok(dm.r.enCours&&+dm.op>.5,'→ en route : les traits se plient autour du monde');
+  await vers(pg,'d');await pg.waitForTimeout(1300);
+  const dd=await pg.evaluate(()=>{const ps=[...document.querySelectorAll('#lv-ram path:not(.puls)')].map(p=>p.getAttribute('d').split(/[ML]/).filter(Boolean).map(t=>t.trim().split(' ').map(Number)));
+    const g=window.__totehm_rdr().carte; return {vue:window.__totehm_lv().ramifications.vue, ys:ps.map(l=>[l[0][1],l[l.length-1][1]])};});
+  ok(dd.vue==='d'&&dd.ys.every(([a,b])=>b>a),'arrivé à droite : sept méridiens, du pôle nord au pôle sud');
+  ok(!erreurs(log).length,'transformations : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
 
  // ── 5 · EN BAS : LA CONDENSATION — seul #gl-bg tourne ; le socle devient un anneau (7 couleurs) ; le profil ──
  {const{pg,log}=await page(browser,{dir:'com',origin,tables,viewport:{width:390,height:844},hasTouch:true,rpc:{my_landing:LAND()}});
@@ -360,17 +371,17 @@ try{
   ok(!erreurs(log).length,'retour Stripe : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
 
  // ── 7 · MOUVEMENT RÉDUIT : tout marche, rien ne tourne ni ne glisse ──
- {const{pg,log}=await page(browser,{dir:'com',origin,tables,viewport:{width:390,height:844},rpc:{my_landing:LAND(),totehm_galaxy:GAL}});
+ {const{pg,log}=await page(browser,{dir:'com',origin,tables,viewport:{width:390,height:844},rpc:{my_landing:LAND()}});
   await pg.emulateMedia({reducedMotion:'reduce'});
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(900);
-  const tr=await pg.evaluate(()=>['lv-socket','lv-b','gx-c'].map(i=>getComputedStyle(document.getElementById(i)).transitionDuration));
+  const tr=await pg.evaluate(()=>['lv-socket','lv-b','mb-ui'].map(i=>getComputedStyle(document.getElementById(i)).transitionDuration));
   await pg.keyboard.press('ArrowDown');await vers(pg,'b');
   const b=await pg.evaluate(()=>({tours:window.__totehm_lv().tours,anim:document.getElementById('gl-bg').getAnimations().filter(a=>a.effect&&a.effect.getKeyframes().some(k=>/rotate/.test(k.transform||''))).length}));
   await pg.keyboard.press('ArrowUp');await vers(pg,'c');
-  await pg.click('#lv-m-others');await calme(pg);await pg.waitForTimeout(600);
-  const g=(await lv(pg)).galaxie;
+  await pg.click('#lv-m-members');await calme(pg);await pg.waitForTimeout(600);
+  const g=await lv(pg);
   ok(tr.every(t=>/^0s/.test(t))&&b.tours===0&&b.anim===0,'mouvement réduit : aucune transition, #gl-bg ne tourne pas ('+tr.join(' ')+')');
-  ok((await lv(pg)).mode==='others'&&g.etoiles===12&&!g.anime,'la galaxie, immobile (dessinée une fois)');
+  ok(g.mode==='members'&&g.membre.cherche&&!g.ramifications.enCours&&await pg.evaluate(()=>document.activeElement.id==='mb-q'),'MEMBERS : la saisie est là, sans animation');
   ok(!erreurs(log).length,'mouvement réduit : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
 
  // ── 8 · AU CHARGEMENT : le badge [Higher] n'apparaît jamais au coin ──

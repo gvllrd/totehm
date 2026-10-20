@@ -2961,6 +2961,10 @@ body.is-xo{overflow:hidden}
 
 
 
+
+
+
+
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille
    elle-même : un nouveau bloc gris entre ici tout seul.        */
@@ -3096,7 +3100,7 @@ body.is-xo{overflow:hidden}
 <style data-lv="2026-10-07">
 /* ══ LE PROCESSEUR · 15/10/2026 ══════════════════════════════════════════════
    Wah : « le TOTEHM est mon processeur personnel ; il prend vie à travers une IA réflexive ».
-   Trois vues VERTICALES, UN mot sur <body> (`lv-h|c|b`) ; au centre, un mode (`lv-others`) :
+   Trois vues VERTICALES, UN mot sur <body> (`lv-h|c|b`) ; au centre, deux modes (`lv-mb` : MEMBERS) :
      ↑ GET HIGHER   la bouche du 12/10 (lot A), restaurée telle quelle : le papier se pose sur la langue
        MY TOTEHM    le processeur dans son socle (verre, d'après la boîte Premium du TotehmPaper), les
                     ramifications de mes intentions (les 7 couleurs) ; Mine · Others (la galaxie)
@@ -3116,12 +3120,15 @@ body:not(.gate) #lv,body.entered #lv,body.is-door #lv{display:none}
 #lv-g{transform:translateX(-22px)}#lv-d{transform:translateX(22px)}
 body.lv-c #lv-c,body.lv-h #lv-h,body.lv-b #lv-b,body.lv-g #lv-g,body.lv-d #lv-d{opacity:1;visibility:visible;transform:none;
   transition:opacity .45s ease .16s,transform .6s var(--gate-ease) .1s}
+/* ⚠️ 20/10 sexies — LES VUES DE CÔTÉ SONT LA TRANSFORMATION DU CENTRE (Wah : « on doit voir en transition, de part et
+   d'autre, les 7 traits d'intention, et évidemment le Totehm »). Le contenu de ← et → n'entre donc qu'APRÈS le
+   voyage : d'abord le papier qui se cale en haut et les sept traits qui se plient (`RAM.morph`), puis la vue. */
+body.lv-g #lv-g,body.lv-d #lv-d{transition:opacity .4s ease .62s,transform .5s var(--gate-ease) .55s}
 /* ← MES SHORTS prend tout l'écran : le processeur et le badge s'effacent. Le NOM, lui, ne bouge jamais.
-   → MES SPOTS garde le papier dans son socle : le radar bloomme autour de lui (son canvas est transparent). */
+   → LES SPOTS (20/10 sexies) : le papier est docké en haut, la carte ou la grille prennent l'écran. */
 body.lv-g #lv-proc,body.lv-g #lv-slogan{opacity:0}
-/* 19/10 — EN MODE SHORTS, LA VUE DE DROITE SE COMPORTE COMME LA GAUCHE : le feed prend l'écran,
-   le papier et le badge s'effacent. En mode radar, le papier EST le centre : il reste. */
-body.lv-d.rdr-shorts #lv-proc,body.lv-d.rdr-shorts #lv-slogan{opacity:0}
+/* → LES SPOTS : le papier est docké en haut comme à gauche ; le processeur et le badge s'effacent. */
+body.lv-d #lv-proc,body.lv-d #lv-slogan{opacity:0}
 .lv-pane .lv-act{pointer-events:auto}
 .lv-mono{font-family:'Space Mono',monospace;font-size:11px;line-height:1.6;color:#9a9aa2;text-align:center}
 .lv-h2{font-family:'Space Mono',monospace;font-weight:700;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#fff}
@@ -3148,7 +3155,6 @@ body.lv-d.rdr-shorts #lv-proc,body.lv-d.rdr-shorts #lv-slogan{opacity:0}
 #lv-slogan:focus-visible{outline:1px solid rgba(255,255,255,.4);outline-offset:6px}
 #lv-slogan.is-c{opacity:.45;pointer-events:none}
 #lv-slogan.is-c .lvs-pre,#lv-slogan.is-c .lvs-post{opacity:0}
-body.lv-others #lv-slogan.is-c{opacity:0}        /* dans la galaxie, il n'y a que les Totehms */
 /* ══ LA MANETTE DE L'ATTERRISSAGE · 18/10/2026 ══════════════════════════════════════════════════
    Wah : « je veux que tu remettes le joystick sur la page d'atterrissage tout en bas centré ».
    C'est LE MÊME OBJET que dans le Totehm — quatre chevrons autour d'un manche —, et ce sont les
@@ -3172,7 +3178,6 @@ body.lv-others #lv-slogan.is-c{opacity:0}        /* dans la galaxie, il n'y a qu
 .lvn-x{width:26px;height:44px}
 .lvn.is-mort{opacity:0;pointer-events:none}
 .lvn:focus-visible{outline:1px solid #fff;outline-offset:3px}
-body.lv-others.lv-c #lvn-up{opacity:0;pointer-events:none}
 /* Le manche : le disque navy de la marque (30 % de la composition), et UN point bleu clair qui se
    tire avec lui. Pas de trois ronds ici — l'atterrissage n'a ni objectif ni répulsion à désigner :
    il a quatre voisins, et ce sont les chevrons qui les nomment. Aucune bordure, jamais. */
@@ -3216,7 +3221,6 @@ body.lv-b #lv-socket{border-radius:50%;background:rgba(11,11,14,0);box-shadow:no
 body.lv-b #lv-socket .sk-well,body.lv-b #lv-socket::before{opacity:0}
 body.lv-b #lv-socket .sk-ring{opacity:1;transition-delay:.38s}
 body.lv-h #lv-socket{opacity:0}
-body.lv-others.lv-c #lv-socket{opacity:0;transition:transform .62s var(--gate-ease),opacity .3s ease .32s}
 /* ── LES RAMIFICATIONS · 15/10 (plein écran) ───────────────────────────────────────────────────────────
    LA GRAMMAIRE DU TRAIT D'INTENTION PUBLIÉ, À L'ÉCHELLE DE L'ÉCRAN. Dans le Totehm, une Habit porte son
    `.tick` : 2 px, plat, les sept couleurs exactes. Ici c'est la même ligne, mais elle sort du papier et
@@ -3227,7 +3231,11 @@ body.lv-others.lv-c #lv-socket{opacity:0;transition:transform .62s var(--gate-ea
    Aucun flou, aucune image, aucun rAF : deux tracés et un `stroke-dashoffset`. ── */
 #lv-ram{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden;opacity:0;
   transition:opacity .5s ease}
-body.gate.lv-c:not(.lv-others) #lv-ram,body.gate.lv-h #lv-ram{opacity:1}
+body.gate.lv-c #lv-ram,body.gate.lv-h #lv-ram{opacity:1}
+/* ← et → (20/10 sexies) : le réseau est là PENDANT la transformation (`ram-morph`), puis il cède la place à la vue — la carte
+   garde ses sept méridiens, la grille ses boîtes. */
+body.gate.ram-morph:not(.entered) #lv-ram{opacity:1;transition:opacity .2s ease}
+body.gate.lv-g #lv-ram,body.gate.lv-d #lv-ram{transition:opacity .45s ease .2s}
 body.gate.entered #lv-ram,body.gate.folding #lv-ram,body.is-door #lv-ram{opacity:0;transition:opacity .25s ease}
 #lv-ram path{fill:none;stroke-width:2;stroke-linecap:square;stroke-linejoin:miter;
   stroke-dasharray:1 1;stroke-dashoffset:1;transition:stroke-dashoffset .85s var(--gate-ease) calc(var(--i) * 50ms)}
@@ -3242,9 +3250,9 @@ body.gate:not(.member) #lv-ram .r-0{opacity:.62} /* sans compte, rien n'est un t
 #lv-ram .r-0 rect{display:none}
 #lv-ram .sk{stroke:#4a4a52}                      /* l'anatomie (scissure, tronc) : gris, jamais une intention */
 /* Tirées : en entrant dans la vue, chaque piste se dessine depuis le papier. */
-body.gate.lv-c:not(.lv-others) #lv-ram path,body.gate.lv-h #lv-ram path{stroke-dashoffset:0;
+body.gate.lv-c #lv-ram path,body.gate.lv-h #lv-ram path,body.gate.lv-g #lv-ram path,body.gate.lv-d #lv-ram path{stroke-dashoffset:0;
   transition:stroke-dashoffset .95s var(--gate-ease) calc(var(--i) * 50ms + .1s)}
-body.gate.lv-c:not(.lv-others) #lv-ram rect,body.gate.lv-h #lv-ram rect{opacity:1;
+body.gate.lv-c #lv-ram rect,body.gate.lv-h #lv-ram rect{opacity:1;
   transition:opacity .35s ease calc(var(--i) * 50ms + .8s)}
 /* L'impulsion · 18/10 : LES SEPT PISTES VIVENT. Une intention habitée porte une impulsion ÉPAISSE
    à la période RÉELLE de son Habit ; une intention vide porte une VEILLE — fine, lente, la même
@@ -3252,7 +3260,7 @@ body.gate.lv-c:not(.lv-others) #lv-ram rect,body.gate.lv-h #lv-ram rect{opacity:
    piste existe. Et elle tourne aussi sans compte : un réseau mort ne vend rien. CSS seul, zéro rAF. */
 #lv-ram .puls{stroke-dasharray:.08 .92;stroke-dashoffset:1;stroke-width:3;opacity:0;transition:opacity .4s ease}
 #lv-ram .puls.veille{stroke-dasharray:.04 .96;stroke-width:2}
-body.gate.lv-c:not(.lv-others):not(.entered) #lv-ram .puls,
+body.gate.lv-c:not(.entered) #lv-ram .puls,
 body.gate.lv-h:not(.entered) #lv-ram .puls{opacity:1;
   animation:ram-puls var(--p,3s) linear infinite;animation-delay:var(--d,0s)}
 @keyframes ram-puls{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
@@ -3272,8 +3280,8 @@ body.gate.lv-h:not(.entered) #lv-ram .puls{opacity:1;
 .lvp-s{margin:0;font:400 12.5px/1.55 'Space Mono',monospace;color:#b7b7bf;max-width:36em}
 /* Un seul des deux côtés s'affiche : Mine, ou Others. Le CTA, la preuve et « free » sont communs. */
 .lvp-side{display:flex;flex-direction:column;align-items:center;gap:9px;width:100%}
-.lvp-others,body.lv-others .lvp-mine{display:none}
-body.lv-others .lvp-others{display:flex}
+.lvp-others,body.lv-mb .lvp-mine{display:none}
+body.lv-mb .lvp-others{display:flex}
 /* LE MÉCANISME, EN TROIS PAS. Des chiffres, pas des puces : on compte ce qu'on va faire. */
 .lvp-how{list-style:none;margin:2px 0 0;padding:0;display:flex;flex-direction:column;gap:7px;width:100%;counter-reset:lvp}
 .lvp-how li{counter-increment:lvp;display:grid;grid-template-columns:18px 1fr;gap:10px;align-items:baseline;text-align:left}
@@ -3309,62 +3317,50 @@ body.gate.lv-h:not(.entered):not(.is-door) #lv-sell{opacity:1}
   font:700 9.5px/1.4 'Space Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:#9a9aa2;white-space:nowrap;transition:opacity .3s ease}
 #lv-tap button{background:none;border:0;padding:0;font:inherit;letter-spacing:inherit;text-transform:inherit;color:inherit;cursor:pointer}
 #lv-tap button:focus-visible{outline:1px solid #fff;outline-offset:3px}
-body.lv-others #lv-tap{opacity:0;pointer-events:none}
-/* En Others, la recherche est au milieu : le texte et les deux boutons se rangent DESSOUS, jamais dessus. */
-body.lv-others #lv-c-acts{top:calc(var(--gy,40%) + 62px)}
 #lv-mode{display:flex;gap:6px}
 #lv-mode button{position:relative;display:inline-flex;align-items:center;gap:8px;border:0;border-radius:10px;padding:8px 14px;background:#1f1f24;color:#8a8a92;
   font:700 10px/1.3 'Space Mono',monospace;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;
   transition:background .25s ease,color .25s ease,box-shadow .25s ease}
 #lv-mode button[aria-checked="true"]{background:#3a3a42;color:#fff;box-shadow:0 0 0 1px #fff}
 #lv-mode button:focus-visible{outline:1px solid #fff;outline-offset:3px}
-/* La place du papier quand il rentre dans [Mine] (Others) : un puits, comme le socle. */
-.lvm-slot{display:block;width:18px;height:18px;margin-left:-4px;background:#000;box-shadow:inset 0 1px 0 rgba(0,0,0,.9),0 1px 0 rgba(255,255,255,.08)}
-body.lv-others #gate-asteroid{z-index:6;pointer-events:none}
-/* ── LA GALAXIE (Others) : UN canvas, de vrais TOTEHMs — le DOS du papier (le carré navy perforé) et rien d'autre ;
-   la recherche par nom (`NameSearch`), le nom lisible au survol ou au tap. rAF seulement visible. ── */
-#gx-c{position:absolute;inset:0;width:100%;height:100%;display:block;opacity:0;transition:opacity .45s ease;pointer-events:none}
-body.lv-c.lv-others #gx-c{opacity:1;pointer-events:auto;touch-action:pan-y;transition:opacity .5s ease .1s}
-/* ⚠️ LA RECHERCHE EST AU MILIEU (Wah, 16/10 : « la zone de recherche doit être au milieu, je te la
-   rappelle encore une fois »). Elle se cale sur le CENTRE de la galaxie (`--gy`, posé par `geo()` : la
-   place du papier), pas sur le milieu de l'écran — l'étoile trouvée vient exactement là. Le NOM du
-   Totehm, lui, ne quitte jamais le haut (`#conn-bar`). */
-/* ⚠️ AU MILIEU, LE CHAMP NE DOIT PAS AVALER LA GALAXIE : le bloc est transparent au doigt, seule la
-   saisie le reçoit. Sinon un tap autour du champ ne toucherait plus aucune étoile. */
-#gx-ui{position:absolute;left:50%;top:var(--gy,50%);width:min(92vw,420px);pointer-events:none;
-  display:flex;flex-direction:column;align-items:center;gap:6px;opacity:0;visibility:hidden;transform:translate(-50%,calc(-50% + 10px));
-  transition:opacity .3s ease,transform .45s var(--gate-ease),visibility 0s linear .45s}
-body.lv-others #gx-ui{opacity:1;visibility:visible;transform:translate(-50%,-50%);transition:opacity .4s ease .3s,transform .55s var(--gate-ease) .22s}
-/* Pendant la plongée, le champ s'efface : l'étoile et son nom prennent sa place. */
-body.lv-others.gx-dive #gx-ui{opacity:0;transition:opacity .28s ease}
-#gx-q{pointer-events:auto;width:100%;font:400 clamp(20px,6vw,28px)/1.25 'Quantico',sans-serif;color:#fbd5ca;background:none;border:0;outline:none;
+/* ══ 20/10 sexies · MEMBERS — PLUS DE GALAXIE ═══════════════════════════════════════════════════════════════
+   Wah : « quand on cherche un Totehm (MEMBERS), on oublie la galaxie : on agrandit le TOTEHM et son socle processor
+   tout en retournant le totehm en mode verso, avec l'invitation directe à entrer un identifiant ». Le papier GRANDIT
+   (le même objet, `PAPIER.glisser`), le socle et le réseau grandissent avec lui, puis il se pose sur son DOS : la
+   saisie est posée dessus (`--mb-x/--mb-y/--mb-w`, mesurés par `MB`), ancrée EN HAUT (le clavier mange le bas). */
+#mb-ui{position:absolute;left:var(--mb-x,50%);top:var(--mb-y,40%);width:var(--mb-w,260px);transform:translate(-50%,-50%);
+  display:flex;flex-direction:column;align-items:center;gap:10px;opacity:0;visibility:hidden;
+  transition:opacity .25s ease,visibility 0s linear .25s}
+body.mb-cherche #mb-ui{opacity:1;visibility:visible;transition:opacity .35s ease .45s}
+#mb-q{width:100%;font:400 clamp(18px,5.4vw,26px)/1.25 'Quantico',sans-serif;color:#fbd5ca;background:none;border:0;outline:none;
   caret-color:#fbd5ca;text-align:center;padding:2px 0;border-radius:0;-webkit-appearance:none;appearance:none}
-#gx-q::placeholder{color:rgba(251,213,202,.36)}
-#gx-note:empty{display:none}
-/* ⚠️ PAS DE LISTE DE RÉSULTATS DANS LA GALAXIE (Wah, 15/10) : « les résultats, c'est la galaxie qui s'agrandit
-   avec le nom tapé ». Les lignes restent câblées (elles allument les carrés et répondent à Entrée) mais ne
-   s'affichent jamais : un nom trouvé se lit SUR son carré, en Coral. */
+#mb-q::placeholder{color:rgba(251,213,202,.45)}
+#mb-note{margin:0;font:700 9px/1.4 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#fff;text-align:center}
+#mb-note:empty{display:none}
+#mb-go.hide{display:none}
+/* Sur le dos agrandi, la saisie et rien d'autre : mon nom et mon prix s'effacent, le papier ne se tourne plus. */
+body.mb-cherche #ast-verso{opacity:0}
+body.mb-cherche #gate-asteroid{pointer-events:none}
+body.mb-cherche #lv-tap,body.mb-cherche #lv-pitch,body.mb-cherche #lv-slogan.is-c{opacity:0;pointer-events:none}
+body.mb-cherche #lv-c-acts{top:var(--mb-bas,70%)}
+/* Chez un membre : son NOM sur [Members], en Coral Quantico — c'est un identifiant, pas une étiquette. */
+.lvm-who{display:none;font:400 13px/1 'Quantico',sans-serif;color:#fbd5ca;text-transform:none;letter-spacing:0;
+  max-width:42vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+body.lv-membre .lvm-who{display:inline}
+body.lv-membre .lvm-lab{display:none}
+/* En bas, chez un membre : SON profil et SON offre — jamais ma Reflection. */
+body.lv-membre #lv-say,body.lv-membre #lv-say-note,body.lv-membre #lv-thread{display:none}
+body.lv-membre.lv-b #lv-slogan{opacity:0}
+#mb-offre{display:none;flex-direction:column;align-items:center;gap:12px;text-align:center;margin-top:6px}
+body.lv-membre #mb-offre{display:flex}
+#mb-offre .mbo-n{font:400 20px/1.2 'Quantico',sans-serif;color:#fbd5ca;max-width:90vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#mb-offre .mbo-p{font:700 11px/1.4 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#b0b0b0}
+#mb-offre .mbo-s{font:400 10px/1.5 'Space Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:#7c7c84}
 /* Le compositeur d'un spot, DANS la boîte : deux champs et un verbe, sur une ligne quand ça tient. */
 .sn-w{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
 .sn-w .in.nw{flex:1 1 130px;min-width:0}
 .sn-w .dash{flex:0 0 auto}
 .sn-w .pk-say{flex:1 1 100%}
-#gx-res{display:none}
-#gx-res-x{width:100%;max-height:30dvh;overflow-y:auto;overscroll-behavior:contain;display:flex;flex-direction:column;gap:8px;scrollbar-width:none}
-#gx-res::-webkit-scrollbar{display:none}
-#gx-res .srch-row{background:rgba(0,0,0,.62);padding:6px 8px}
-#gx-res .srch-open{flex:1 1 auto;min-width:0;display:flex;align-items:center;text-decoration:none}
-#gx-res .srch-name{max-width:100%}
-#gx-tip{position:absolute;left:0;top:0;border:0;padding:0;margin:0;background:none;cursor:pointer;opacity:0;pointer-events:none;
-  transform:translate(var(--tx,0px),var(--ty,0px)) translate(-50%,-100%);transition:opacity .18s ease;-webkit-tap-highlight-color:transparent}
-#gx-tip.is-on{opacity:1;pointer-events:auto}
-/* Le nom d'un Totehm : Quantico CORAL, sur le navy du carré — jamais de tuile perforée derrière. */
-#gx-tip .srch-name{display:block;font-size:13px;padding:2px 6px;white-space:nowrap;border:0;background:none;
-  color:#fbd5ca;max-width:none;transform:scale(var(--sc,1));transform-origin:50% 100%;
-  transition:transform .12s linear}
-#gx-tip.is-dedans{transform:translate(var(--tx,0px),var(--ty,0px)) translate(-50%,-50%)}
-#gx-tip.is-dedans .srch-name{transform-origin:50% 50%}
-#gx-tip:focus-visible{outline:1px solid #fff;outline-offset:2px}
 /* ── EN BAS : MA REFLECTION (15/10) — le profil, ce que j'écris (Quantico, au-dessus du clavier), puis TROIS
    ÉTAGES liés, empilés comme les blocs du Totehm (séparés par du noir) ; la couleur EST le sens. ── */
 #rf{position:absolute;left:50%;top:0;bottom:0;transform:translateX(-50%);width:min(94vw,560px);
@@ -3522,7 +3518,7 @@ body.lv-b #gate-logo #gl-rail,body.lv-b #gate-logo #gl-wm{opacity:0}
 .mw-sub-act{background:none;border:0;padding:2px 0;font:400 9.5px/1.4 'Space Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:#6d6d74;cursor:pointer}
 #srch-res .srch-open{display:flex;align-items:center;text-decoration:none;min-width:0}
 #srch-res .srch-sub{flex:none;font:400 10.5px/1.3 'Space Mono',monospace;color:#b0b0b0;background:#1f1f24;border-radius:10px;padding:7px 10px;text-decoration:none;white-space:nowrap}
-@media (prefers-reduced-motion: reduce){#lv-slogan,#lv-slogan *,.lv-pane,#ast-front,#lv-proc,#lv-socket,#lv-socket *,#lv-ram,#lv-ram path,#lv-ram rect,#gx-c,#gx-ui,.rf-t,#lv-tap,#gate-mouth{transition:none!important}
+@media (prefers-reduced-motion: reduce){#lv-slogan,#lv-slogan *,.lv-pane,#ast-front,#lv-proc,#lv-socket,#lv-socket *,#lv-ram,#lv-ram path,#lv-ram rect,#mb-ui,.rf-t,#lv-tap,#gate-mouth{transition:none!important}
   .lv-pane,#lv-h,#lv-b{transform:none!important}}
 /* ══ L'ATTERRISSAGE : MES SHORTS (gauche) ET MES SPOTS (droite) · 16/10/2026 bis ═════════════════════
    Wah : « non on garde seulement le mode liste [dans le Totehm] … sinon ça pète toute la structure.
@@ -3532,7 +3528,7 @@ body.lv-b #gate-logo #gl-rail,body.lv-b #gate-logo #gl-wm{opacity:0}
    Les deux moteurs ont déménagé sur l'atterrissage, en vues PLEIN ÉCRAN :
      ← g · MES SHORTS  un MÉDIA par écran (pas un élément : cinq photos sur une Habit = cinq écrans),
                        défilement aimanté, l'élément par-dessus (ses traits, son texte) ; un tap l'ouvre.
-     → d · MES SPOTS   le radar, transparent, centré sur LE PAPIER : le centre, c'est moi.
+     → d · LES SPOTS   (20/10 sexies) la carte de la Terre ou la grille, le polaroid par-dessus (`SPOTS`).
    Aucun appel réseau de plus : `element_media`, les photos de mes spots et l'image d'une VISION sont
    déjà lues au démarrage (doctrine de coût). Les fichiers d'un élément, eux, restent dans le Totehm. */
 #lv-sh{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;
@@ -3757,16 +3753,38 @@ body.lv-g #lv-socket,body.lv-d #lv-socket{opacity:0}
 .lsh-pick .lsh-i{flex-direction:column}
 .lsh-pick .lsh-i i{width:13px;height:2px}
 .lsh-pick button:focus-visible{outline:1px solid #fff;outline-offset:2px}
-/* La bascule radar ↔ shorts : le même objet que les filtres, collé, devant eux. */
-.rdr-m{display:inline-flex;gap:2px;margin-right:5px}
-/* Les shorts de la vue de droite : le même conteneur qu'à gauche, montré par le MODE. */
-#rdr-sh{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;scroll-snap-type:y mandatory;scroll-behavior:smooth;
-  -webkit-overflow-scrolling:touch;overscroll-behavior:contain;display:none}
-body.rdr-shorts #rdr-sh{display:block}
-body.rdr-shorts #rdr-c{opacity:0}
-/* Le radar : le canvas ne porte PAS de fond — le papier, dans son socle, reste visible dessous ; les anneaux
-   bloomment autour de lui. Pas de HUD : une ligne de chiffres, en bas. */
-#rdr-c{position:absolute;inset:0;width:100%;height:100%;display:block;background:transparent;pointer-events:none}
+/* ══ 20/10 sexies · → LES SPOTS : MAP · GRID ════════════════════════════════════════════════════════════════
+   Wah : « on oublie le radar, réservé au figher.club ; deux modes, MAP et GRILLE, dans le même format que MINE et
+   MEMBERS ». MAP : la Terre (un canvas, `SPMAP`), les spots en carrés à la couleur de leur intention — plein si le
+   point est vu, creux si l'on ne voit que la ville. GRID : la grille de gauche (`.tlg`), un spot par tuile. Un tap
+   ouvre le POLAROID (`#rdr-sh`, un spot par écran, TikTok) PAR-DESSUS ; ✕ ou Échap y revient. */
+#rdr-map{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:grab;background:transparent}
+#rdr-map.is-tenu{cursor:grabbing}
+#rdr-g{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;
+  scrollbar-width:none;display:none;background:#000}
+#rdr-g::-webkit-scrollbar{display:none}
+body.rdr-grid #rdr-g{display:block}
+body.rdr-grid #rdr-map{display:none}
+/* Le polaroid, par-dessus : le fil TikTok, aimanté, un spot par écran. */
+#rdr-sh{position:absolute;inset:0;z-index:20;overflow-y:auto;overflow-x:hidden;scroll-snap-type:y mandatory;scroll-behavior:smooth;
+  -webkit-overflow-scrolling:touch;overscroll-behavior:contain;display:none;background:#000}
+body.rdr-voir #rdr-sh{display:block}
+#rdr-x{position:absolute;z-index:22;top:calc(max(10px,env(safe-area-inset-top)) + 4px);right:10px;border:0;background:none;color:#fff;
+  padding:10px;cursor:pointer;display:none}
+#rdr-x svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;display:block}
+#rdr-x:focus-visible{outline:1px solid #fff;outline-offset:2px}
+body.rdr-voir #rdr-x{display:block}
+body.lv-d.rdr-voir #gate-asteroid,body.lv-d.rdr-voir #lvjoy,body.rdr-voir #rdr-flt,body.rdr-voir #rdr-mode{opacity:0;pointer-events:none}
+/* MAP · GRID : la bascule de MINE · MEMBERS, à la même place qu'elle, au-dessus de la manette. */
+#rdr-mode{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(var(--lvj-h,64px) + 26px);z-index:6;display:flex;gap:6px}
+#rdr-mode button{border:0;border-radius:10px;padding:8px 14px;background:#1f1f24;color:#8a8a92;cursor:pointer;
+  font:700 10px/1.3 'Space Mono',monospace;letter-spacing:.12em;text-transform:uppercase;
+  transition:background .25s ease,color .25s ease,box-shadow .25s ease}
+#rdr-mode button[aria-checked="true"]{background:#3a3a42;color:#fff;box-shadow:0 0 0 1px #fff}
+#rdr-mode button:focus-visible{outline:1px solid #fff;outline-offset:3px}
+@media(hover:hover){#rdr-mode button:hover{color:#fff}}
+/* L'intention + le badge Higher (« Fight [Higher] »), dans les deux panneaux de filtres. */
+.sfi .sfh{display:inline-block;width:38px;height:13px;margin-left:5px;vertical-align:-2px}
 #lv-sh-say,#rdr-say{position:absolute;left:0;right:0;z-index:3;margin:0;
   bottom:calc(max(26px,env(safe-area-inset-bottom) + 18px))}
 /* Les fichiers d'un élément ouvert : des mini-boîtes sombres (une porte, pas une pièce du Totehm), « × » les retire. */
@@ -3952,18 +3970,19 @@ body.rdr-shorts #rdr-c{opacity:0}
   <!-- ══ LE PROCESSEUR · 15/10/2026 ══════════════════════════════════════════
        Trois vues VERTICALES (Wah) : ↑ GET HIGHER · MY TOTEHM · ↓ MY REFLECTION. Le papier (`#gate-asteroid`)
        voyage de l'une à l'autre ; chaque panneau ne porte que ce qui lui est propre. Au centre, deux modes :
-       Mine (le processeur dans son socle) et Others (la galaxie des TOTEHMs, `#gx-c`). Plus de manette, plus de
+       Mine (le processeur dans son socle) et Members (20/10 sexies : le papier grandit, se retourne, on tape un nom). Plus de manette, plus de
        gauche ni de droite : le doigt, le trackpad, la molette, les flèches et deux chevrons discrets. -->
   <div id="lv">
-    <canvas id="gx-c" aria-hidden="true"></canvas>
     <section class="lv-pane" id="lv-c" aria-label="My TOTEHM">
-      <div id="gx-ui" class="lv-act">
-        <input id="gx-q" type="text" inputmode="search" enterkeyhint="search" maxlength="24" placeholder="a name"
-               autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Find a TOTEHM by name">
-        <div class="note dim" id="gx-note" role="status" aria-live="polite"></div>
-        <div id="gx-res"></div>
+      <!-- ══ 20/10 sexies · MEMBERS ══ Wah : « quand on cherche un Totehm, on oublie la galaxie : on agrandit le TOTEHM et
+           son socle processor tout en retournant le totehm en mode verso, avec l'invitation directe à entrer un
+           identifiant ». La saisie vit SUR le dos du papier agrandi (`MB`), ancrée en haut (le clavier mange le bas). -->
+      <div id="mb-ui" class="lv-act" aria-hidden="true">
+        <input id="mb-q" type="text" inputmode="text" enterkeyhint="go" maxlength="32" placeholder="a member's TOTEHM"
+               autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="A member's TOTEHM identifier">
+        <p id="mb-note" class="lv-note" role="status" aria-live="polite"></p>
+        <button id="mb-go" type="button" class="lvp-cta hide"></button>
       </div>
-      <button id="gx-tip" class="lv-act" type="button" tabindex="-1" aria-hidden="true"><span class="srch-name"></span></button>
       <div id="lv-c-acts" class="lv-act">
         <!-- ══ LE PREMIER CONTACT · 15/10/2026 ══ Un visiteur sans compte ne voit pas un objet muet : il voit
              CE QUE ça lui fait, et POURQUOI ça marche — avec de vraies références, vérifiables (jamais un
@@ -3992,8 +4011,8 @@ body.rdr-shorts #rdr-c{opacity:0}
             <p class="lvp-h"><svg class="lvp-b" viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-badge"></use></svg><span>your strategy</span></p>
             <p class="lvp-s">Someone already lives the habit you keep postponing. Read how.</p>
             <ol class="lvp-how">
-              <li><b>Type a name.</b><span>the galaxy answers</span></li>
-              <li><b>Open their TOTEHM.</b><span>objectives · habits · repulsions</span></li>
+              <li><b>Type a member's name.</b><span>on the back of the paper</span></li>
+              <li><b>Live in their TOTEHM.</b><span>media · spots · habits</span></li>
               <li><b>Subscribe to one, or to many.</b><span>copy what works into yours</span></li>
             </ol>
             <p class="lvp-out">Their spots say where they'll be. You go.</p>
@@ -4007,9 +4026,9 @@ body.rdr-shorts #rdr-c{opacity:0}
              « Turn to configure it » est la SEULE porte vers le verso quand le geste n'est pas
              disponible (mouvement réduit, clavier) : c'est donc un vrai bouton, pas une légende. -->
         <div id="lv-tap"><button id="lv-tap-open" type="button">Tap to open it</button><span class="lvt-sep"> · </span><button id="lv-tap-turn" type="button">Turn to configure it</button></div>
-        <div id="lv-mode" role="radiogroup" aria-label="My TOTEHM or the others">
-          <button type="button" role="radio" id="lv-m-mine" data-mode="mine" aria-checked="true"><span class="lvm-slot" aria-hidden="true"></span>Mine</button>
-          <button type="button" role="radio" id="lv-m-others" data-mode="others" aria-checked="false">Others</button>
+        <div id="lv-mode" role="radiogroup" aria-label="My TOTEHM or a member's">
+          <button type="button" role="radio" id="lv-m-mine" data-mode="mine" aria-checked="true">Mine</button>
+          <button type="button" role="radio" id="lv-m-members" data-mode="members" aria-checked="false"><span class="lvm-lab">Members</span><span class="lvm-who" id="lv-m-who"></span></button>
         </div>
       </div>
     </section>
@@ -4027,6 +4046,8 @@ body.rdr-shorts #rdr-c{opacity:0}
         </form>
         <div class="lv-note" id="lv-say-note" role="status" aria-live="polite"></div>
         <div id="lv-thread" aria-live="polite"></div>
+        <!-- 20/10 sexies — DANS L'ÉCOSYSTÈME D'UN MEMBRE, le bas, c'est LUI : son nom, son offre, UN geste. -->
+        <div id="mb-offre" aria-live="polite"></div>
       </div>
     </section>
 
@@ -4053,18 +4074,22 @@ body.rdr-shorts #rdr-c{opacity:0}
       </div>
     </section>
 
-    <!-- ══ → MES SPOTS ══ « sur la vue de droite tu me mets la vue radar avec tous mes spots ». Le canvas est
-         TRANSPARENT et centré sur le papier : le centre du radar, c'est moi, et mon Totehm est déjà là, dans son
-         socle. Un spot sans point exact se pose sur l'anneau, pâle, et le DIT : jamais une fausse position. -->
-    <section class="lv-pane" id="lv-d" aria-label="My spots">
-      <canvas id="rdr-c" width="100" height="100" aria-hidden="true"></canvas>
-      <!-- 19/10 — DEUX MODES : le radar (le canvas ci-dessus) et les shorts (le même moteur qu'à
-           gauche, nourri des SPOTS). Ils lisent les mêmes points et le même filtre. -->
+    <section class="lv-pane" id="lv-d" aria-label="Spots">
+      <!-- ══ 20/10 sexies · LES SPOTS : MAP · GRID ══ Wah : « on oublie le radar, réservé au figher.club ; deux modes, MAP et
+           GRILLE, dans le même format que MINE et MEMBERS ». MAP = la Terre et ses spots ; GRID = une tuile par spot.
+           Un tap ouvre le POLAROID (le format TikTok, un spot par écran) : c'est ici, et ici seulement. -->
+      <canvas id="rdr-map" class="lv-act" aria-label="Spots on the map"></canvas>
+      <div id="rdr-g" class="lv-act"><div id="rdr-g-f"></div></div>
       <div id="rdr-sh" class="lv-act"><div id="rdr-sh-f"></div></div>
-      <div id="rdr-flt" class="lsh-flt lv-act" role="group" aria-label="My spots: mode and filters"></div>
-      <div id="rdr-pick" class="lsh-pick lv-act" role="dialog" aria-label="Choose an element" hidden></div>
-      <div id="rdr-sf" class="lsh-sf lv-act" role="dialog" aria-label="Filter my spots" hidden></div>
+      <button type="button" id="rdr-x" class="lv-act" aria-label="Close"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2 L12 12 M12 2 L2 12"/></svg></button>
+      <div id="rdr-flt" class="lsh-flt lv-act" role="group" aria-label="Spots: filters"></div>
+      <div id="rdr-pick" class="lsh-pick lv-act" role="dialog" aria-label="Choose a Habit" hidden></div>
+      <div id="rdr-sf" class="lsh-sf lv-act" role="dialog" aria-label="Filter the spots" hidden></div>
       <p class="lv-note" id="rdr-say" role="status" aria-live="polite"></p>
+      <div id="rdr-mode" class="lv-act" role="radiogroup" aria-label="Map or grid">
+        <button type="button" role="radio" data-rmode="map" aria-checked="true">Map</button>
+        <button type="button" role="radio" data-rmode="grid" aria-checked="false">Grid</button>
+      </div>
     </section>
 
     <!-- Le slogan qui voyage : en haut, LE bouton « Get [Higher] » ; en bas, « [Higher] Self » sous le profil. -->
@@ -4760,9 +4785,9 @@ let ANON_OK=false;
 /* 07/10 : l'atterrissage lit UN appel (`my_landing`) — ma vignette, la visibilité
    et l'offre de mon Totehm, mon abonnement Higher, mon THP, Telegram. Peint par
    la croix (`lvRefresh`), vidé au changement de compte (`lvQuitter`). */
-let LAND=null, lvRefresh=null, lvQuitter=null, lvReglages=null;
-/* 18/10 — la galaxie rejoue sa plongée à l'envers quand une LECTURE se termine (`sortirLecture`). */
-let lvRevenirGalaxie=null;
+let LAND=null, lvRefresh=null, lvQuitter=null, lvReglages=null, lvMembreBoot=null, lvVersMembre=null;
+/* 20/10 sexies — LES MÉDIAS DU MEMBRE QUE JE LIS (`member_media` : ceux dont la box m'est partagée), pour sa vue de gauche. */
+const MBM={seq:0, nom:null, items:[]};
 /* TotehmBot — declare ici et pas plus bas : la remise a zero de la
    deconnexion s'execute avant, et une TDZ y jetterait. */
 
@@ -4793,7 +4818,7 @@ try{ ['totehm_profile_v1','totehm_grind_v5','totehm_events'].forEach(k=>localSto
    ⚠️ 18/10 — ELLE N'EST PLUS FIGÉE AU CHARGEMENT (Wah : « 0 friction, 0
    sautage » · « le résultat de recherche doit être dans la même
    configuration que actuelle, mais en mode READ »). La galaxie l'arme en
-   PLEIN VOL (`lireEnPlace`) et la désarme (`sortirLecture`) : on ne navigue
+   PLEIN VOL (MEMBERS, `MB`) et la désarme (`sortirLecture`) : on ne navigue
    jamais, l'URL suit par `replaceState`. `roEnPlace` dit par où l'on est
    entré — c'est la seule chose qui change le chemin de sortie. */
 let RO=(()=>{try{const v=new URLSearchParams(location.search).get('ro');
@@ -4942,6 +4967,11 @@ async function loadRO(){
          :                             'this Totehm is private');
     return false; }
 
+  return poserLecture(data);
+}
+/* Poser le Totehm lu (la réponse de `totehm_of`) À LA PLACE du mien, en mémoire : MEMBERS l'appelle aussi, après
+   avoir vérifié la réponse — un refus ne touche JAMAIS mon état. */
+function poserLecture(data){
   const habits=[];const seen={};
   (Array.isArray(data.steps)?data.steps:[]).forEach(x=>{
     const k=norm(x.t); if(!x.t||seen[k])return; seen[k]=1;
@@ -4985,27 +5015,14 @@ function roFail(msg){
   TRIPS=[];REPS=[];TEACH=[];VIS=[];OBJ={};tripsLoaded=true;
   renderHabits();
 }
-/* Entré par la galaxie, on en ressort par où l'on est venu : le Totehm se replie, et `fold()`
-   désarme la lecture (une seule porte de sortie, la même que la croix et Échap). */
-$('ro-out').onclick=()=>{ if(roEnPlace) foldToGate(); else location.href='/totehm#in'; };
+/* « back to mine » : le Totehm d'un membre se replie, PUIS on quitte son écosystème (MINE). La croix et Échap,
+   eux, replient seulement : on retombe dans SON écosystème (20/10 sexies). */
+let roSortir=false;
+$('ro-out').onclick=()=>{ roSortir=true; foldToGate(); };
 
-/* ══ LIRE UN AUTRE TOTEHM SANS QUITTER LA PAGE · 18/10/2026 ═══════════════════════════════════
-   Wah : « tu prends au hasard un totehm décoratif de la galaxie, tu prends le nom entré et tu
-   les regroupes en affichant DIRECT la page du Totehm » · « le résultat de recherche doit être
-   dans la même configuration que actuelle mais en mode READ ».
-   La configuration, c'est CETTE page : les cinq vues, la liste, la manette. On ne charge donc
-   pas un second document — on ARME `RO` et on rejoue exactement ce que fait un `?ro=` au
-   démarrage. L'URL suit par `replaceState` : elle dit où l'on est, elle ne navigue pas. */
-async function lireEnPlace(nom){
-  const n=String(nom||'').trim().slice(0,32); if(!n) return false;
-  const avant=RO;
-  RO=n; roEnPlace=true;
-  const ok=await loadRO();
-  if(!ok&&!document.body.classList.contains('ro')){ RO=avant; roEnPlace=!!avant; return false; }
-  try{ history.replaceState(null,'','/totehm?ro='+encodeURIComponent(n)); }catch(_){}
-  if(typeof window.__totehmDeplie==='function') window.__totehmDeplie();
-  return true;
-}
+/* ══ LIRE UN AUTRE TOTEHM SANS QUITTER LA PAGE · 18/10 → 20/10/2026 sexies ═════════════════════════
+   La lecture s'arme EN PLEIN VOL par MEMBERS (`MB`, dans l'atterrissage) : il vérifie `totehm_of`, puis pose la
+   réponse (`poserLecture`) — on ne charge jamais un second document, l'URL suit par `replaceState`. */
 /* Sortir : on redevient soi. Tout ce que la lecture a posé est jeté AVANT de recharger —
    sinon le Totehm d'un autre resterait une image sous le mien le temps d'un aller-retour. */
 async function sortirLecture(){
@@ -5014,10 +5031,10 @@ async function sortirLecture(){
   document.body.classList.remove('ro');
   document.title='TOTEHM';
   roSeq++; HSPACES.seq++; HSPACES.par=new Map(); ECLOTHS.seq++; ECLOTHS.par=new Map();
+  MBM.seq++; MBM.nom=null; MBM.items=[];
   ZOOM.clear(); COPIES.clear();
   state={habits:[],vis:'private'}; TRIPS=[]; REPS=[]; TEACH=[]; VIS=[]; OBJ={}; tripsLoaded=false;
   try{ history.replaceState(null,'',location.pathname); }catch(_){}
-  if(lvRevenirGalaxie) lvRevenirGalaxie();
   await sessionChange();
 }
 
@@ -5523,6 +5540,8 @@ const POSTER=(()=>{
           const k=Math.min(1,640/Math.max(w,h)), c=document.createElement('canvas');
           c.width=Math.round(w*k); c.height=Math.round(h*k); c.getContext('2d').drawImage(v,0,0,c.width,c.height);
           const b=await new Promise(r=>c.toBlob(r,'image/jpeg',.82)); if(!b) return fin(null);
+          /* La vignette d'un média d'un AUTRE membre reste locale : on n'écrit jamais dans son dossier. */
+          if(!me||!String(p).startsWith(me.id+'/')) return fin(URL.createObjectURL(b));
           const {error}=await sb.storage.from('element-media').upload(cle(p),b,{contentType:'image/jpeg',upsert:true});
           if(error){ console.error('[poster]',error.message); return fin(URL.createObjectURL(b)); }
           fin((await signe(p))||URL.createObjectURL(b));
@@ -5547,7 +5566,7 @@ const POSTER=(()=>{
    Le FOND de figher.club, c'est `club_spots` : tout ce que J'AI LE DROIT de voir (mes spots, ceux du Club,
    ceux des créateurs auxquels je suis abonné), en trois temps — PASSÉ · MAINTENANT · À VENIR —, filtré par
    le serveur AVANT la pagination, ancré sur `as_of` (une page 2 ne glisse pas quand quelqu'un publie).
-   Un seul objet nourrit le radar ET les shorts : changer de mode ne redemande rien.
+   Un seul objet nourrit la carte, la grille ET le polaroid : changer de mode ne redemande rien.
    ⚠️ « Mes spots » n'est pas un filtre serveur : c'est un tri sur ce qui est déjà là (`mine`). */
 const CLUBSP=(()=>{
   const PER=['past','now','future'];
@@ -5565,14 +5584,16 @@ const CLUBSP=(()=>{
   }
   async function lire(suite){
     if(suite&&(st.charge||!st.more)) return;
-    const s=++st.seq, uid=me?me.id:null, f=filtres();
+    const s=++st.seq, uid=me?me.id:null, f=filtres(), ro=RO;
     st.charge=true;
-    const {data,error}=await sb.rpc('club_spots',{p_period:st.per, p_filters:f,
+    const args={p_period:st.per, p_filters:f,
       p_lat:f.scope==='near'?st.pos.lat:null, p_lng:f.scope==='near'?st.pos.lng:null,
-      p_limit:20, p_offset:suite?st.off:0, p_as_of:suite?st.asOf:null});
-    if(s!==st.seq||(me?me.id:null)!==uid) return;
+      p_limit:20, p_offset:suite?st.off:0, p_as_of:suite?st.asOf:null};
+    /* 20/10 sexies — DANS L'ÉCOSYSTÈME D'UN MEMBRE, SES spots seulement (`club_spots_of`, les mêmes droits, filtrés par auteur). */
+    const {data,error}=ro?await sb.rpc('club_spots_of',Object.assign({p_pseudo:ro},args)):await sb.rpc('club_spots',args);
+    if(s!==st.seq||(me?me.id:null)!==uid||RO!==ro) return;
     st.charge=false;
-    if(error){ console.error('[club_spots]',error.message); st.err='unreachable'; prevenir(); return; }
+    if(error){ console.error(ro?'[club_spots_of]':'[club_spots]',error.message); st.err='unreachable'; prevenir(); return; }
     if(!data||!data.ok){ st.err=(data&&data.why)||'refused'; if(!suite){ st.items=[]; st.total=0; st.more=false; } prevenir(); return; }
     const l=Array.isArray(data.items)?data.items:[];
     /* RIEN MAINTENANT ? À l'ARRIVÉE seulement, on montre ce qui vient, puis ce qui a été : une vue vide
@@ -5595,7 +5616,8 @@ const CLUBSP=(()=>{
         ()=>ok(false), {timeout:8000,maximumAge:600000});
     });
   }
-  const NOMS={past:'was',now:'now',future:'next'};
+  /* Les trois temps, dans les mots du spot (Wah, 20/10 sexies) : I WAS HERE · I AM HERE · I WILL BE THERE. */
+  const NOMS={past:'I was here',now:'I am here',future:'I will be there'};
   return {
     lire:()=>{ st.asOf=null; return lire(false); },
     /* À l'ouverture : on relit si la lecture a plus d'une minute (un spot commence, un autre finit). */
@@ -5611,9 +5633,9 @@ const CLUBSP=(()=>{
     /* Mes spots : un tri local (le serveur a déjà dit ce que je peux voir). */
     items:()=>st.mine?st.items.filter(x=>x&&x.mine):st.items.slice(),
     get per(){ return st.per; }, get err(){ return st.err; }, get lu(){ return st.lu; }, get charge(){ return st.charge; },
-    perHTML:()=>'<span class="rdr-p" role="group" aria-label="When">'
-      +PER.map(p=>'<button type="button" data-f="per" data-v="'+p+'" class="p-'+p+(st.per===p?' is-on':'')+'"'
-        +' aria-pressed="'+(st.per===p)+'">'+NOMS[p]+'</button>').join('')+'</span>',
+    PER, NOMS,
+    /* Dans la barre, le temps courant, et rien d'autre : un tap ouvre le filtre (où se choisit le temps). */
+    perChip:()=>'<button type="button" class="is-on" data-f="sf" data-per="'+st.per+'">'+NOMS[st.per]+'</button>',
     surChangement(f){ if(typeof f==='function') abon.push(f); },
     vider(){ st.seq++; st.items=[]; st.total=0; st.more=false; st.off=0; st.asOf=null; st.lu=false; st.auto=true;
       st.per='now'; st.err=''; st.charge=false; st.mine=false; st.srv={intentions:[], type:'all', scope:'world', habit:''}; },
@@ -5666,7 +5688,12 @@ const BUNNY=(()=>{
     if(v._hls){ try{ v._hls.destroy(); }catch(_){} v._hls=null; }
     if(v.dataset.bunny){ try{ v.pause(); }catch(_){} v.removeAttribute('src'); try{ v.load(); }catch(_){} v.dataset.ok=''; }
   }
-  return {poser, lacher};
+  /* La vignette seule (la grille des spots) : la même signature que la lecture, rien de plus. */
+  async function vignette(id,spot){
+    const r=await signer(id,spot);
+    return r&&r.status==='ready'&&r.url?r.url.replace(/playlist\.m3u8(\?.*)?$/,'thumbnail.jpg'):null;
+  }
+  return {poser, lacher, vignette};
 })();
 /* Un fichier du seau `moments` (photo ou vidéo d'un spot) : URL signée d'une heure, gardée 50 min. Les droits
    sont ceux du SERVEUR (`_clip_readable`) : un fichier que je ne peux pas lire ne se signe pas. */
@@ -5693,129 +5720,220 @@ function calendrier(z){
   a.download='spot.ics'; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },500);
 }
 
-/* ══ RADAR ou SHORTS · 19/10/2026 ══ Le choix tient d'une visite à l'autre ; il ne touche aucune donnée. */
+/* ══ MAP ou GRID · 20/10/2026 sexies ══ Wah : « on oublie le radar, réservé spécialement au figher.club : deux modes,
+   MAP et GRILLE ». Le choix tient d'une visite à l'autre ; il ne touche aucune donnée (les deux lisent `CLUBSP`). */
 const SPOTMODE=(()=>{
-  const CLE='totehm_spots_mode'; const abonnes=[];
-  let mode='radar';
-  try{ const v=localStorage.getItem(CLE); if(v==='shorts'||v==='radar') mode=v; }catch(_){}
-  const html=()=>'<span class="rdr-m">'
-    +['radar','shorts'].map(m=>'<button type="button" data-f="mode" data-v="'+m+'"'
-      +(mode===m?' class="is-on" aria-pressed="true"':' aria-pressed="false"')+'>'+m+'</button>').join('')
-    +'</span>';
+  const CLE='totehm_spots_mode2'; const abonnes=[];
+  let mode='map';
+  try{ const v=localStorage.getItem(CLE); if(v==='map'||v==='grid') mode=v; }catch(_){}
   return {
-    get:()=>mode, html,
-    set(m){ if((m!=='radar'&&m!=='shorts')||m===mode) return;
+    get:()=>mode,
+    set(m){ if((m!=='map'&&m!=='grid')||m===mode) return;
       mode=m; try{ localStorage.setItem(CLE,m); }catch(_){}
-      document.body.classList.toggle('rdr-shorts',m==='shorts');
       abonnes.forEach(f=>{ try{ f(m); }catch(_){} }); },
     surChangement(f){ if(typeof f==='function') abonnes.push(f); }
   };
 })();
 
-/* ══ → MES SPOTS — LE RADAR, VUE DE DROITE DE L'ATTERRISSAGE · 16/10/2026 bis ══════════════════════
-   Wah : « sur la vue de droite tu me mets la vue radar avec tous mes spots. » Ce n'est plus un mode DANS
-   le Totehm (la liste y est seule) : c'est une VUE de l'atterrissage, plein écran, et son canvas est
-   TRANSPARENT — le papier reste visible dans son socle, au milieu. **Le centre du radar, c'est moi**, donc
-   le radar se CENTRE SUR LE PAPIER (mesuré, jamais deviné) au lieu de redessiner un carré blanc.
-   Aucun appel réseau de plus : les points viennent de `habit_spaces`, déjà lu (doctrine de coût). */
-const RDR=(()=>{
-  const etat={on:false, points:0, sans:0, rayon:0, moi:false, anime:false};
-  let raf=0, t0=0, moi=null, pts=[], R=0, cx=0, cy=0, demande=false;
-  const cv=()=>$('rdr-c');
-  const RMS=()=>window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  /* 20/10 quater — LES SPOTS DU CLUB (`CLUBSP`), les MÊMES que les shorts d'à côté : même période, mêmes
-     filtres. Un spot sans point exact se pose sur l'anneau, pâle : il existe, il n'est pas situé. */
-  function lire(){
-    pts=[]; let sans=0;
-    CLUBSP.items().forEach(z=>{
-      const e=z&&z.exact;
-      if(e&&typeof e.lat==='number'&&typeof e.lng==='number') pts.push({lat:e.lat, lng:e.lng, st:z.state||'will'});
-      else sans++;
-    });
-    etat.points=pts.length; etat.sans=sans;
+/* Où un spot se pose : son POINT s'il m'est montré, sinon le centre de SA VILLE (`cities.json`). La ville est ce
+   que le spot dit déjà de lui (OFF) : on ne calcule jamais un faux point — le carré est alors CREUX. */
+const SPOTLIEU=(()=>{
+  const par=new Map();
+  async function de(z){
+    if(z&&z.exact&&typeof z.exact.lat==='number'&&typeof z.exact.lng==='number') return {lat:z.exact.lat, lng:z.exact.lng, plein:true};
+    const v=plisser(z&&z.city); if(!v) return null;
+    if(par.has(v)) return par.get(v);
+    const L=await villesCom(); const c=L.find(x=>plisser(x[0])===v)||null;
+    const r=c?{lat:c[1], lng:c[2], plein:false}:null; par.set(v,r); return r;
   }
-  function position(){
-    if(moi||demande||!navigator.geolocation||!navigator.permissions) return;
-    demande=true;
-    /* On ne DEMANDE pas la position : on la lit si elle est déjà accordée. Un radar ne vaut pas un dialogue. */
-    navigator.permissions.query({name:'geolocation'}).then(p=>{
-      if(p.state!=='granted') return;
-      navigator.geolocation.getCurrentPosition(q=>{ moi={lat:q.coords.latitude,lng:q.coords.longitude}; etat.moi=true; kick(); },
-        ()=>{}, {timeout:6000,maximumAge:600000});
-    }).catch(()=>{});
+  return {de, connu:z=>!!(z&&z.exact&&typeof z.exact.lat==='number')};
+})();
+
+/* ══ → MAP · LA TERRE ET SES SPOTS · 20/10/2026 sexies ═══════════════════════════════════════════════════════
+   Un canvas, la projection orthographique (le globe de MON MONDE du 13/10, repris), les terres de Natural Earth
+   110 m (`/assets/earth.json`, 51 ko, une fois). Le globe se tourne au doigt, se zoome à la molette et au pincement ;
+   AUCUN rAF permanent — on redessine quand quelque chose change. Autour, SEPT MÉRIDIENS aux sept couleurs : c'est
+   le réseau du centre qui s'est plié autour du monde (`RAM`, vue `d`) — ils ne tournent pas, la Terre tourne dedans.
+   Un carré par spot, à la couleur de sa première intention : PLEIN si le point m'est montré, CREUX si je ne vois
+   que la ville. Un tap sur un carré ouvre son polaroid. */
+const SPMAP=(()=>{
+  const D=Math.PI/180;
+  const etat={on:false, terres:0, points:0, villes:0, sans:0, zoom:1, centre:false};
+  let terre=null, terreP=null, lon0=8, lat0=28, k=1, tenu=null, pinch=null, pts=[], lieux=[], seq=0, rq=0;
+  const ptrs=new Map();
+  const cv=()=>$('rdr-map');
+  /* La géométrie du globe à l'écran, PARTAGÉE avec le réseau (`RAM`) : sous le papier docké, au-dessus de la bascule. */
+  function geo(){
+    const w=innerWidth, h=innerHeight, jb=$('lvjoy'), haut=118;
+    const bas=Math.max(120,(jb?h-jb.getBoundingClientRect().top:96)+70);
+    const R0=Math.max(60,Math.min(w*.43,(h-haut-bas)/2*.94));
+    return {cx:w/2, cy:haut+(h-haut-bas)/2, R0};
   }
-  /* La taille du canvas et le CENTRE : mesurés à l'ouverture et au `resize`, jamais à chaque image —
-     une lecture de géométrie par frame, c'est une mise en page par frame. */
-  function mesurer(){
-    const c=cv(); if(!c) return false;
-    const w=c.clientWidth||1, h=c.clientHeight||1, dpr=Math.min(2,devicePixelRatio||1);
-    if(c.width!==Math.round(w*dpr)||c.height!==Math.round(h*dpr)){ c.width=Math.round(w*dpr); c.height=Math.round(h*dpr); }
-    /* ⚠️ Le papier DOCKÉ en haut n'est plus le centre du radar : le centre, c'est moi. */
-    const haut=document.body.classList.contains('papier-haut');
-    const a=haut?null:$('gate-asteroid'), r=a?a.getBoundingClientRect():null, b=c.getBoundingClientRect();
-    cx=(r&&r.width)?r.left+r.width/2-b.left:w/2;
-    cy=(r&&r.height)?r.top+r.height/2-b.top:h*.54;
-    R=Math.max(70,Math.min(cx,w-cx,cy,h-cy)-14);
-    return true;
+  function chargerTerre(){
+    if(!terreP) terreP=fetch('/assets/earth.json').then(r=>r.ok?r.json():[]).catch(e=>{ console.error('[earth]',e&&e.message||e); return []; })
+      .then(t=>{ terre=Array.isArray(t)?t:[]; etat.terres=terre.length; kick(); return terre; });
+    return terreP;
   }
-  /* L'échelle : le point le plus loin tient dans l'anneau, jamais sous 400 m. */
-  function echelle(){
-    const o=moi||(pts.length?{lat:pts.reduce((a,p)=>a+p.lat,0)/pts.length,lng:pts.reduce((a,p)=>a+p.lng,0)/pts.length}:null);
-    if(!o) return null;
-    let max=.4;
-    for(const p of pts){ const d=Math.hypot((p.lng-o.lng)*Math.cos(o.lat*Math.PI/180)*111.32,(p.lat-o.lat)*110.57); if(d>max) max=d; }
-    return {o, km:Math.min(60,max*1.15)};
+  function proj(lo,la,R,cx,cy){
+    const l=(lo-lon0)*D, p=la*D, p0=lat0*D, cp=Math.cos(p);
+    return [cx+R*cp*Math.sin(l), cy-R*(Math.cos(p0)*Math.sin(p)-Math.sin(p0)*cp*Math.cos(l)),
+            Math.sin(p0)*Math.sin(p)+Math.cos(p0)*cp*Math.cos(l)];
+  }
+  /* Les spots → leurs lieux (une lecture de `cities.json` seulement si un spot n'a pas de point). */
+  async function situer(){
+    const s=++seq, l=CLUBSP.items();
+    const r=await Promise.all(l.map(async z=>({z, p:await SPOTLIEU.de(z)})));
+    if(s!==seq) return;
+    lieux=r.filter(x=>x.p);
+    etat.sans=r.length-lieux.length; etat.villes=lieux.filter(x=>!x.p.plein).length;
+    /* Le premier dessin se centre sur les spots (leur barycentre) ; ensuite, le membre tient le globe. */
+    if(lieux.length&&!etat.centre){ etat.centre=true;
+      lon0=lieux.reduce((a,x)=>a+x.p.lng,0)/lieux.length; lat0=Math.max(-55,Math.min(60,lieux.reduce((a,x)=>a+x.p.lat,0)/lieux.length)); }
+    kick();
   }
   function dessiner(){
-    const c=cv(); if(!c||!c.width) return;
-    const x=c.getContext('2d'), dpr=Math.min(2,devicePixelRatio||1);
-    x.setTransform(dpr,0,0,dpr,0,0); x.clearRect(0,0,c.width/dpr,c.height/dpr);
-    const E=echelle();
-    /* Trois anneaux, un balayage : la grammaire du radar du Club, en plus sobre. Le centre n'est PAS
-       dessiné : c'est le papier, déjà là, sous le canvas transparent. */
-    x.strokeStyle='rgba(255,255,255,.10)'; x.lineWidth=1;
-    for(let i=1;i<=3;i++){ x.beginPath(); x.arc(cx,cy,R*i/3,0,Math.PI*2); x.stroke(); }
-    if(!RMS()){
-      const a=(performance.now()-t0)/1000*.7;
-      const g=x.createLinearGradient(cx,cy,cx+Math.cos(a)*R,cy+Math.sin(a)*R);
-      g.addColorStop(0,'rgba(255,255,255,.14)'); g.addColorStop(1,'rgba(255,255,255,0)');
-      x.strokeStyle=g; x.lineWidth=2; x.beginPath(); x.moveTo(cx,cy); x.lineTo(cx+Math.cos(a)*R,cy+Math.sin(a)*R); x.stroke();
+    rq=0; const c=cv(); if(!c||!etat.on) return;
+    const d=Math.min(2,devicePixelRatio||1), w=Math.max(2,Math.round(c.clientWidth*d)), h=Math.max(2,Math.round(c.clientHeight*d));
+    if(c.width!==w||c.height!==h){ c.width=w; c.height=h; }
+    const x=c.getContext('2d'), g=geo(), cx=g.cx*d, cy=g.cy*d, R=g.R0*k*d;
+    x.clearRect(0,0,w,h);
+    x.beginPath(); x.arc(cx,cy,R,0,7); x.fillStyle='#000'; x.fill();
+    /* Les terres : le navy un ton en arrière (30 %), jamais une couleur d'intention. Un point derrière
+       l'horizon est ramené sur le bord : la côte suit le limbe. */
+    x.fillStyle='#22224a';
+    for(const r of terre||[]){
+      let vis=false; x.beginPath();
+      for(let i=0;i<r.length;i+=2){
+        let [px,py,pz]=proj(r[i],r[i+1],R,cx,cy);
+        if(pz<0){ const q=R/(Math.hypot(px-cx,py-cy)||1); px=cx+(px-cx)*q; py=cy+(py-cy)*q; } else vis=true;
+        if(i) x.lineTo(px,py); else x.moveTo(px,py);
+      }
+      if(vis){ x.closePath(); x.fill(); }
     }
-    /* Un spot : un carré navy, bleu clair à venir, blanc s'il est en cours, rouge-violet s'il est passé. */
-    if(E){
-      pts.forEach(p=>{
-        const dx=(p.lng-E.o.lng)*Math.cos(E.o.lat*Math.PI/180)*111.32, dy=(p.lat-E.o.lat)*110.57;
-        const k=R/Math.max(.001,E.km);
-        const px=cx+dx*k, py=cy-dy*k;
-        x.fillStyle=p.st==='am'?'#fff':p.st==='was'?'#743169':'#36498c';
-        x.globalAlpha=p.st==='was'?.55:1;
-        x.fillRect(px-4,py-4,8,8); x.globalAlpha=1;
-      });
+    /* LES SEPT MÉRIDIENS : le réseau du centre, plié autour du monde — fixes, le trait du `.tick` (2 px). */
+    x.lineWidth=2*d; x.lineCap='square';
+    INTS.forEach((it,i)=>{ const lam=(i-3)*(180/7)*D; x.beginPath();
+      for(let z=0;z<=32;z++){ const ph=(-90+180*z/32)*D, px=cx+R*Math.sin(lam)*Math.cos(ph), py=cy-R*Math.sin(ph);
+        if(z) x.lineTo(px,py); else x.moveTo(px,py); }
+      x.strokeStyle=it.color; x.globalAlpha=.85; x.stroke(); x.globalAlpha=1; });
+    /* Les spots. */
+    pts=[];
+    for(const o of lieux){
+      const [px,py,pz]=proj(o.p.lng,o.p.lat,R,cx,cy); if(pz<0) continue;
+      const z=o.z, col=intColor((z.intentions||((z.habit_box||{}).ints)||[])[0]), a=(z.state==='am'?11:8)*d;
+      if(o.p.plein){ x.fillStyle=col; x.fillRect(px-a/2,py-a/2,a,a); }
+      else{ x.strokeStyle=col; x.lineWidth=1.5*d; x.strokeRect(px-a/2,py-a/2,a,a); }
+      pts.push({x:px/d, y:py/d, cle:'sp:'+z.id});
     }
-    /* Les spots sans point exact : sur l'anneau, pâles, répartis — ils existent, ils ne sont pas situés. */
-    for(let i=0;i<etat.sans;i++){
-      const a=(i/Math.max(1,etat.sans))*Math.PI*2;
-      x.globalAlpha=.3; x.fillStyle='#333366';
-      x.fillRect(cx+Math.cos(a)*R-3,cy+Math.sin(a)*R-3,6,6); x.globalAlpha=1;
-    }
-    etat.rayon=E?Math.round(E.km*10)/10:0;
-    const say=$('rdr-say');
-    if(say) say.textContent=pts.length||etat.sans
-      /* La portée en MÈTRES sous le kilomètre : « 0 km » ne dit rien, « 460 m » dit la taille du cercle. */
-      ? [pts.length?pts.length+(pts.length>1?' spots':' spot'):'', E?(E.km>=1?Math.round(E.km)+' km':Math.round(E.km*1000)+' m'):'', etat.sans?etat.sans+' without a point':''].filter(Boolean).join(' · ')
-      : 'no spot yet';
+    etat.points=pts.length; etat.zoom=Math.round(k*100)/100;
   }
-  function frame(){ raf=0; if(!etat.on||document.hidden){ etat.anime=false; return; }
-    dessiner(); etat.anime=true; if(!RMS()) raf=requestAnimationFrame(frame); }
-  function kick(){ if(!raf&&etat.on) raf=requestAnimationFrame(frame); }
-  function ouvrir(){ etat.on=true; if(!t0) t0=performance.now(); lire(); mesurer(); position(); kick(); }
-  function fermer(){ etat.on=false; pause(); }
-  function pause(){ if(raf){ cancelAnimationFrame(raf); raf=0; } etat.anime=false; }
-  /* Mes spots ont changé (une annonce, un rechargement) : on relit, on redessine. Rien si la vue est fermée. */
-  function maj(){ if(etat.on){ lire(); mesurer(); kick(); } }
-  window.addEventListener('resize',()=>{ if(etat.on){ mesurer(); kick(); } });
-  document.addEventListener('visibilitychange',()=>{ if(document.hidden) pause(); else kick(); });
-  return {ouvrir, fermer, pause, maj, etat:()=>Object.assign({},etat)};
+  function kick(){ if(!rq&&etat.on) rq=requestAnimationFrame(dessiner); }
+  function viser(cx0,cy0){
+    let best=null, dm=22;
+    for(const p of pts){ const dd=Math.hypot(p.x-cx0,p.y-cy0); if(dd<dm){ dm=dd; best=p; } }
+    return best;
+  }
+  /* Les gestes : un doigt tourne, deux doigts zooment, la molette zoome ; un tap (< 6 px) ouvre le carré visé. */
+  { const c=cv(); if(c){
+    c.addEventListener('pointerdown',e=>{
+      if(e.pointerType==='mouse'&&e.button!==0) return;
+      ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
+      try{ c.setPointerCapture(e.pointerId); }catch(_){}
+      if(ptrs.size===2){ const [a,b]=[...ptrs.values()]; pinch={d:Math.hypot(a.x-b.x,a.y-b.y)||1, k}; tenu=null; return; }
+      tenu={id:e.pointerId, x:e.clientX, y:e.clientY, x0:e.clientX, y0:e.clientY}; c.classList.add('is-tenu');
+    });
+    c.addEventListener('pointermove',e=>{
+      if(!ptrs.has(e.pointerId)) return; ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
+      if(pinch&&ptrs.size===2){ const [a,b]=[...ptrs.values()]; k=Math.max(1,Math.min(8,pinch.k*(Math.hypot(a.x-b.x,a.y-b.y)/pinch.d))); kick(); return; }
+      if(!tenu||tenu.id!==e.pointerId) return;
+      const f=.32/k; lon0-=(e.clientX-tenu.x)*f; lat0=Math.max(-75,Math.min(75,lat0+(e.clientY-tenu.y)*f));
+      tenu.x=e.clientX; tenu.y=e.clientY; kick();
+    });
+    const fin=e=>{
+      ptrs.delete(e.pointerId); c.classList.remove('is-tenu');
+      if(ptrs.size<2) pinch=null;
+      if(!tenu||tenu.id!==e.pointerId) return; const t=tenu; tenu=null;
+      if(e.type!=='pointerup'||Math.hypot(e.clientX-t.x0,e.clientY-t.y0)>6) return;
+      const r=c.getBoundingClientRect(), p=viser(e.clientX-r.left,e.clientY-r.top);
+      if(p) SPOTS.voir(p.cle);
+    };
+    c.addEventListener('pointerup',fin); c.addEventListener('pointercancel',fin);
+    c.addEventListener('wheel',e=>{ e.preventDefault(); e.stopPropagation();
+      k=Math.max(1,Math.min(8,k*Math.exp(-e.deltaY*.0015))); kick(); },{passive:false});
+  } }
+  window.addEventListener('resize',()=>{ if(etat.on) kick(); });
+  return {
+    geo,
+    ouvrir(){ etat.on=true; k=1; chargerTerre(); situer(); kick(); },
+    fermer(){ etat.on=false; tenu=null; pinch=null; ptrs.clear(); if(rq){ cancelAnimationFrame(rq); rq=0; } },
+    maj(){ if(etat.on) situer(); },
+    vider(){ seq++; lieux=[]; pts=[]; etat.centre=false; etat.points=0; },
+    /* Pour viser au test : où se trouve un spot à l'écran (des nombres, jamais un nom). */
+    ou:()=>pts.map(p=>[Math.round(p.x),Math.round(p.y)]),
+    etat:()=>Object.assign({},etat)
+  };
+})();
+
+/* ══ → GRID · UNE TUILE PAR SPOT · 20/10/2026 sexies ══════════════════════════════════════════════════════════
+   La grille de gauche (`.tlg`), nourrie des spots : la photo (ou la vignette Bunny d'un clip), et dessus, surélevée,
+   SA Habit Box au format Totehm (`boxTotehm` : la mienne, ou celle du membre que je lis ; celle d'un autre membre est
+   rendue depuis ce que le serveur me montre). Un tap ouvre le polaroid. Page suivante à six tuiles de la fin. */
+const SPGRID=(()=>{
+  const etat={on:false, tuiles:0};
+  let io=null, L=[];
+  const bx=()=>$('rdr-g-f'), sc=()=>$('rdr-g');
+  function boxDe(z){
+    const hb=z.habit_box||{}, ints=Array.isArray(hb.ints)?hb.ints:(Array.isArray(z.intentions)?z.intentions:[]);
+    const mien=(z.mine||RO)?habByT(String(z.habit||'')):null;
+    const o=mien||{id:'', t:String(hb.name||z.habit||''), t0:String(hb.name||z.habit||''), is:ints, i:ints[0]||null,
+                   f:FREQ_BY_ID[hb.freq]?hb.freq:null};
+    return boxTotehm('h',o,{court:true});
+  }
+  function tuile(z,i){
+    const clip=z.clip&&z.clip.id?String(z.clip.id):'';
+    const media=clip?'<img alt="" data-bunny="'+esc(clip)+'" data-spot="'+esc(String(z.id))+'">'
+      :z.photo?'<img alt="" data-sh-src="'+esc(String(z.photo))+'">'
+      :z.video?'<video muted playsinline preload="none" data-sh-v="'+esc(String(z.video))+'"></video>'
+      :'';
+    return '<article class="tl" data-cle="sp:'+esc(String(z.id))+'" data-i="'+i+'" tabindex="0" role="button" aria-label="'
+      +esc((z.habit||'spot'))+'"><div class="tl-ph">'+media+((clip||z.video)?'<span class="tl-v" aria-hidden="true"></span>':'')+'</div>'
+      +'<div class="tl-bx">'+boxDe(z)+'</div></article>';
+  }
+  async function charger(el){
+    const b=el.querySelector('img[data-bunny]');
+    if(b){ const u=await BUNNY.vignette(b.dataset.bunny,b.dataset.spot); if(u&&b.isConnected) b.src=u; return; }
+    const m=el.querySelector('img[data-sh-src]');
+    if(m){ const u=await urlMoments(m.dataset.shSrc); if(u&&m.isConnected){ m.onerror=()=>m.remove(); m.src=u; } return; }
+    const v=el.querySelector('video[data-sh-v]');
+    if(v){ const u=await urlMoments(v.dataset.shV); if(u&&v.isConnected){ v.preload='metadata'; v.src=u+'#t=0.1'; } }
+  }
+  function peindre(){
+    const b=bx(); if(!b) return;
+    L=CLUBSP.items();
+    etat.tuiles=L.length;
+    b.innerHTML='<div class="tlg">'+L.map(tuile).join('')+'</div>';
+    if(io){ io.disconnect(); io=null; }
+    const s=sc(); if(!s) return;
+    io=new IntersectionObserver(es=>es.forEach(en=>{ if(!en.isIntersecting) return;
+      charger(en.target); if(io) io.unobserve(en.target);
+      if(+en.target.dataset.i>=L.length-6) CLUBSP.suite(); }),{root:s, rootMargin:'300px 0px', threshold:0});
+    b.querySelectorAll('.tl[data-cle]').forEach(el=>io.observe(el));
+  }
+  { const s=sc(); if(s){
+    s.addEventListener('click',e=>{ const t=e.target.closest('.tl[data-cle]'); if(t) SPOTS.voir(t.dataset.cle); });
+    s.addEventListener('keydown',e=>{ const t=e.target.closest&&e.target.closest('.tl[data-cle]');
+      if(t&&(e.key==='Enter'||e.key===' ')){ e.preventDefault(); SPOTS.voir(t.dataset.cle); } });
+  } }
+  return {
+    ouvrir(){ etat.on=true; peindre(); },
+    fermer(){ etat.on=false; if(io){ io.disconnect(); io=null; } },
+    maj(){ if(etat.on) peindre(); },
+    pas(dir){ const s=sc(); if(!etat.on||!s) return false; const max=s.scrollHeight-s.clientHeight;
+      if((dir<0&&s.scrollTop<=0)||(dir>0&&s.scrollTop>=max-1)) return false;
+      s.scrollBy({top:dir*Math.round(s.clientHeight*.6)}); return true; },
+    vider(){ L=[]; const b=bx(); if(b) b.innerHTML=''; if(io){ io.disconnect(); io=null; } },
+    etat:()=>Object.assign({},etat)
+  };
 })();
 
 /* ══ ← MES SHORTS — LE TIKTOK, VUE DE GAUCHE DE L'ATTERRISSAGE · 16/10/2026 bis ════════════════════
@@ -5978,8 +6096,9 @@ function creerFeed(conf){
      À droite, seuls les SPOTS — c'est la vue des spots, en shorts. */
   function liste(){
     const l=[];
-    if(!me||RO) return l;
-    if(conf.src!=='spots') (EMEDIA.items||[]).forEach(m=>{
+    if(!me) return l;
+    /* 20/10 sexies — DANS L'ÉCOSYSTÈME D'UN MEMBRE, SES médias (`member_media` : ceux dont la box m'est partagée). */
+    if(conf.src!=='spots') ((RO?MBM.items:EMEDIA.items)||[]).forEach(m=>{
       if(!emImg(m)&&!emVid(m)) return;
       const e=de(m.kind,m.ref); if(!e) return;
       l.push(Object.assign({cle:'em:'+m.id, src:String(m.path), b:'em', vid:emVid(m), st:''},e));
@@ -5989,12 +6108,12 @@ function creerFeed(conf){
     if(conf.src==='spots') CLUBSP.items().forEach(z=>{
       if(!z||!z.id) return;
       const hb=z.habit_box||{}, ints=Array.isArray(hb.ints)?hb.ints:(Array.isArray(z.intentions)?z.intentions:[]);
-      const mien=z.mine?habByT(String(z.habit||'')):null;
+      const mien=(z.mine||RO)?habByT(String(z.habit||'')):null;
       l.push({cle:'sp:'+z.id, src:String(z.photo||z.video||''), b:'moments', vid:!!((z.clip&&z.clip.id)||z.video),
               st:String(z.state||'will'), sp:z, bk:'h', vue:'habits', id:mien?String(mien.id):'',
               txt:String(hb.name||z.habit||''), cols:ints.map(intColor), ints});
     });
-    if(conf.src!=='spots') VISIMG.forEach((img,id)=>{
+    if(conf.src!=='spots'&&!RO) VISIMG.forEach((img,id)=>{
       const o=visOf(id);
       l.push({cle:'vi:'+id, src:String(img), b:'moments', vid:false, st:'',
               bk:'v', vue:'visions', id:String(id), txt:o?String(o.t||''):'',
@@ -6045,7 +6164,7 @@ function creerFeed(conf){
      où, pour qui, le point ouvert ou non, silencieux ou social, son mot ; en bas de la fenêtre, les gestes
      (GO, CALENDAR) ; sous la fenêtre, la Habit Box telle que le serveur la projette (`habit_box` : ce que CE
      lecteur a le droit de voir, mini-boxes comprises), puis le nom de son auteur s'il n'est pas moi. */
-  const ET={will:'I will be here', am:'I am here', was:'I was there'};
+  const ET={will:'I will be there', am:'I am here', was:'I was here'};
   const AUD={private:'private', figher:'figher club', subscribers:'my subscribers', public:'figher club'};
   const MOIS=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
   const hhmm=d=>String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
@@ -6167,6 +6286,10 @@ function creerFeed(conf){
   }
   /* LE PANNEAU : tout le reste, en une colonne, ancré en haut. Un groupe par question. */
   const pan=()=>conf.panneau?$(conf.panneau):null;
+  /* Une intention se dit avec le badge : « Fight [Higher] » (le titre d'une vue d'intention, BRAND). */
+  const chipInt=i=>'<button type="button" class="sfc sfi'+(SF.ints.has(i.id)?' is-on':'')+'" data-sf="int" data-v="'+i.id+'"'
+    +' aria-pressed="'+(SF.ints.has(i.id)?'true':'false')+'" style="--c:'+i.color+'"><i aria-hidden="true"></i>'+esc(i.name)
+    +'<svg class="sfh" viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-badge"></use></svg></button>';
   const sfOuvert=()=>{ const p=pan(); return !!p&&!p.hidden; };
   function sfPaint(){
     const p=pan(); if(!p||p.hidden) return;
@@ -6192,8 +6315,26 @@ function creerFeed(conf){
           +'</div></div>';
       }
       h+=g('It shows', c('data-sf="type" data-v="photo"','photo',SF.type==='photo')+c('data-sf="type" data-v="video"','video',SF.type==='video'));
-      h+=g('Intentions', INTS.map(i=>'<button type="button" class="sfc sfi'+(SF.ints.has(i.id)?' is-on':'')+'" data-sf="int" data-v="'+i.id+'"'
-        +' aria-pressed="'+(SF.ints.has(i.id)?'true':'false')+'" style="--c:'+i.color+'"><i aria-hidden="true"></i>'+esc(i.name)+'</button>').join(''));
+      h+=g('Intentions', INTS.map(chipInt).join(''));
+      h+='<div class="sfg"><div class="sfr sfa"><button type="button" class="sfc" data-sf="all">ALL</button>'
+        +'<button type="button" class="sfc" data-sf="close">CLOSE</button></div></div>';
+      p.innerHTML=h; return;
+    }
+    /* ══ LE FILTRE DES SPOTS (20/10 sexies) ══ Wah : « à peu près le même format que le filtre des médias, mais avec
+       SEULEMENT les box Habits (un spot ne vit qu'une Habit), les intentions (« Fight [Higher] »), et le temps :
+       I WAS HERE · I AM HERE · I WILL BE THERE ; puis les autres filtres pertinents ». Tout part au SERVEUR. */
+    if(conf.src==='spots'){
+      const hs=mesElements();
+      let h='<div class="sfg"><div class="sfl">Habits</div><div class="sfbx">'
+        +(hs.length?hs.map(x=>{ const on=!!b&&b.txt===x.txt, o=(state.habits||[]).find(z=>String(z.t||'').trim()===x.ref);
+            return '<div class="sfb'+(on?' is-on':'')+'" role="button" tabindex="0" data-sf="box" data-v="'+esc(x.k+'|'+x.ref)+'" aria-pressed="'+on+'">'
+              +(boxTotehm('h',o,{})||'<span class="lsh-t">'+esc(x.txt)+'</span>')+'</div>'; }).join('')
+           :'<p class="lv-note">no habit yet</p>')+'</div></div>';
+      h+=g('When', CLUBSP.PER.map(q=>c('data-sf="per" data-v="'+q+'"', CLUBSP.NOMS[q], CLUBSP.per===q)).join(''));
+      h+=g('Intentions', INTS.map(chipInt).join(''));
+      h+=g('It shows', c('data-sf="type" data-v="photo"','photo',SF.type==='photo')+c('data-sf="type" data-v="video"','video',SF.type==='video'));
+      h+=g('Where', c('data-sf="ou" data-v=""','world',!SF.ou)+c('data-sf="ou" data-v="near"','near me',SF.ou==='near'));
+      if(!RO) h+=g('Whose', c('data-sf="qui" data-v=""','everyone',!SF.qui)+c('data-sf="qui" data-v="mine"','mine',SF.qui==='mine'));
       h+='<div class="sfg"><div class="sfr sfa"><button type="button" class="sfc" data-sf="all">ALL</button>'
         +'<button type="button" class="sfc" data-sf="close">CLOSE</button></div></div>';
       p.innerHTML=h; return;
@@ -6216,8 +6357,7 @@ function creerFeed(conf){
     h+=g('It shows', c('data-sf="type" data-v="photo"','photo',SF.type==='photo')
                     +c('data-sf="type" data-v="video"','video',SF.type==='video'));
     if(conf.src!=='spots') h+=g('Views', Object.keys(VUE_K).map(v=>c('data-sf="vue" data-v="'+v+'"', MOT[v]||v, SF.vue===v)).join(''));
-    h+=g('Intentions', INTS.map(i=>'<button type="button" class="sfc sfi'+(SF.ints.has(i.id)?' is-on':'')+'" data-sf="int" data-v="'+i.id+'"'
-      +' aria-pressed="'+(SF.ints.has(i.id)?'true':'false')+'" style="--c:'+i.color+'"><i aria-hidden="true"></i>'+esc(i.name)+'</button>').join(''));
+    h+=g('Intentions', INTS.map(chipInt).join(''));
     h+='<div class="sfg"><div class="sfr sfa"><button type="button" class="sfc" data-sf="all">ALL</button>'
       +'<button type="button" class="sfc" data-sf="close">CLOSE</button></div></div>';
     p.innerHTML=h;
@@ -6229,7 +6369,7 @@ function creerFeed(conf){
     sfPaint(); peindreFlt();
   }
   /* Un changement de filtre : à gauche on repeint ce qui est en mémoire ; à droite on REDEMANDE au serveur
-     (`club_spots` filtre avant la pagination), et le radar suit, puisqu'il lit le même objet. */
+     (`club_spots` filtre avant la pagination), et la carte et la grille suivent, elles lisent le même objet. */
   function sfApply(){
     if(conf.src==='spots'){
       CLUBSP.regler({intentions:[...sfIntsActives()], type:SF.type||'all', scope:SF.ou||'world',
@@ -6452,7 +6592,9 @@ function creerFeed(conf){
       /* Les gestes d'un spot : y aller (le point exact, si je le vois), le mettre au calendrier, voir son auteur. */
       const g=e.target.closest('[data-go],[data-ics],[data-who]');
       if(g){ const z=(L.find(x=>x.sp&&String(x.sp.id)===String(g.dataset.go||g.dataset.ics))||{}).sp;
-        if(g.dataset.who){ XO.univers(g.dataset.who); return; }
+        /* 20/10 sexies — l'auteur : son ÉCOSYSTÈME (sur place) ; sa page de vente si sa lecture demande un abonnement. */
+        if(g.dataset.who){ const w=g.dataset.who; if(conf.src==='spots') SPOTS.fermerVoir();
+          if(lvVersMembre) lvVersMembre(w).then(ok=>{ if(!ok) XO.univers(w); }); else XO.univers(w); return; }
         if(g.dataset.go&&z&&z.exact){ window.open('https://www.google.com/maps/dir/?api=1&destination='+z.exact.lat+','+z.exact.lng,'_blank','noopener'); return; }
         if(g.dataset.ics&&z) calendrier(z);
         return; }
@@ -6479,7 +6621,7 @@ function creerFeed(conf){
   /* Le même sélecteur sert DEUX questions : à quel élément ce média s'attribue (`cap`), et quelle
      Box filtre le fil (`box`, le papier). Un seul composant, deux sorties. */
   function choix(mode,intention){
-    const pk=$(conf.pick); if(!pk||RO||!me) return;
+    const pk=$(conf.pick); if(!pk||!me||(RO&&mode!=='box')) return;
     /* Depuis le polaroid vide d'un étage, on ne propose QUE les éléments de cette intention. */
     const l=mesElements().filter(x=>!intention||(x.ints||[]).includes(intention));
     /* Les éléments, AU FORMAT TOTEHM, rangés par vue (le carré de la vue, puis ses boxes). */
@@ -6507,8 +6649,6 @@ function creerFeed(conf){
   { const r=rail(); if(r) r.addEventListener('click',e=>{
       const f=e.target.closest('[data-f]'); if(!f) return;
       const c=f.dataset.f;
-      /* `mode` n'est pas un filtre : il change de MOTEUR (radar ↔ shorts), sans toucher aux données. */
-      if(c==='mode'){ SPOTMODE.set(f.dataset.v); return; }
       if(c==='per'){ CLUBSP.periode(f.dataset.v); const s=sc(); if(s) s.scrollTop=0; return; }
       if(c==='plus'){ choix('cap'); return; }
       if(c==='box'){ choix('box'); return; }
@@ -6533,6 +6673,7 @@ function creerFeed(conf){
       else if(c==='box'){ const [k,ref]=String(v||'').split('|'); const x=mesElements().find(z=>z.k===k&&z.ref===ref);
         if(!x) return; if(SF.box&&SF.box.vue===VUE[k]&&SF.box.txt===x.txt) sfBox(null); else sfBox(x);
         sfApply(); if(SF.box) sfOpen(false); return; }
+      else if(c==='per'){ CLUBSP.periode(v); sfPaint(); peindreFlt(); return; }
       else if(c==='quand')SF.quand=SF.quand===v?'':v;
       else if(c==='qui')  SF.qui=v||'';
       else if(c==='ou')   SF.ou=v||'';
@@ -6550,11 +6691,13 @@ function creerFeed(conf){
     if(pk&&!pk.hidden){ e.preventDefault(); e.stopImmediatePropagation(); pk.hidden=true; }
   },{capture:true});
   document.addEventListener('visibilitychange',()=>{ if(document.hidden) pause(); });
-  /* ⚠️ LA RANGÉE SE PEINT MÊME QUAND LE FEED NE TOURNE PAS. En mode radar, `SHS` n'ouvre jamais :
-     sans ça, la bascule radar ↔ shorts n'existerait tout simplement pas à l'écran. */
+  /* ⚠️ LA RANGÉE SE PEINT MÊME QUAND LE FEED NE TOURNE PAS : à droite, `SHS` (le polaroid) n'ouvre que sur un spot,
+     mais la barre de filtres des spots doit exister sur la carte et la grille. */
   return {ouvrir:entrer, fermer:sortir, pause, maj, vider, pas, flts:peindreFlt, sf:sfOpen,
-          /* À gauche, le Totehm docké ouvre DIRECTEMENT le filtre (les vues, puis leurs boxes). */
-          box:()=>conf.grille?sfOpen(!sfOuvert()):choix('box'),
+          /* Le Totehm docké ouvre DIRECTEMENT le filtre : à gauche les vues puis leurs boxes, à droite les Habits. */
+          box:()=>sfOpen(!sfOuvert()),
+          /* Le polaroid s'ouvre SUR un spot (la carte ou la grille l'ont désigné). */
+          ouvrirA:cle=>{ ici=cle; entrer(); },
           flt:()=>({type:SF.type||'all', vue:SF.vue||'all', quand:SF.quand||'all',
                    ints:[...sfIntsActives()], piliers:[...SF.piliers], freq:SF.freq,
                    box:SF.box?SF.box.txt:'', on:[...SF.on], n:sfCount()}),
@@ -6563,33 +6706,52 @@ function creerFeed(conf){
 const SH =creerFeed({sc:'lv-sh',  bx:'lv-sh-f',  say:'lv-sh-say', rail:'lv-sh-flt', src:'media', vide:'no media yet',
                      ajout:false, pick:'lv-sh-pick', panneau:'lv-sh-sf', grille:true});
 const SHS=creerFeed({sc:'rdr-sh', bx:'rdr-sh-f', say:'rdr-say',   rail:'rdr-flt',   src:'spots', vide:'no spot yet',
-                     avant:()=>SPOTMODE.html()+CLUBSP.perHTML(), pick:'rdr-pick', panneau:'rdr-sf', boxes:'habits'});
+                     avant:()=>CLUBSP.perChip(), pick:'rdr-pick', panneau:'rdr-sf', boxes:'habits'});
 window.__totehm_sh=()=>Object.assign({},SH.etat(),{capture:CAP.etat(), places:BADGE.etat()});
 
-/* ══ LA VUE DE DROITE A DEUX MODES · 19/10/2026 ══════════════════════════════════════════════════
-   Wah : « dans la vue de droite (la vue spots), on a deux modes : le mode Shorts (comme dans la vue
-   de gauche) ET le mode radar ». Les deux lisent les MÊMES spots, déjà en mémoire, et le MÊME filtre
-   (`SPOTFLT`) : changer de mode ne redemande jamais rien. Le choix tient (`localStorage`). */
+/* ══ → LES SPOTS : MAP · GRID, ET LE POLAROID PAR-DESSUS · 20/10/2026 sexies ══════════════════════════════════
+   Wah : « dans la vue de droite on oublie le radar réservé au figher.club ; deux modes, MAP et GRILLE, dans le même
+   format que MINE et MEMBERS ». Les deux lisent les MÊMES spots (`CLUBSP`, filtrés par le serveur) ; un tap sur un
+   carré de la carte ou une tuile de la grille ouvre le POLAROID (`SHS`, le TikTok du 20/10) sur CE spot, et l'on
+   défile vers ses voisins ; ✕ ou Échap ramène à la carte ou à la grille. Changer de mode ne redemande rien. */
 const SPOTS=(()=>{
-  const etat=()=>Object.assign({mode:SPOTMODE.get()}, SPOTMODE.get()==='shorts'?SHS.etat():RDR.etat());
-  const actif=()=>SPOTMODE.get()==='shorts'?SHS:RDR;
-  const dort =()=>SPOTMODE.get()==='shorts'?RDR:SHS;
-  let ouvert=false;
-  SPOTMODE.surChangement(()=>{ if(!ouvert) return; dort().fermer(); actif().ouvrir(); SHS.flts(); });
-  /* Les spots du Club ont changé (une période, un filtre, une page de plus) : les deux modes relisent. */
-  CLUBSP.surChangement(()=>{ SHS.flts(); if(!ouvert) return; actif().maj(); });
+  let ouvert=false, voit=false;
+  const grille=()=>SPOTMODE.get()==='grid';
+  const actif=()=>grille()?SPGRID:SPMAP, dort=()=>grille()?SPMAP:SPGRID;
+  function peindreMode(){
+    document.body.classList.toggle('rdr-grid',grille());
+    document.querySelectorAll('#rdr-mode [data-rmode]').forEach(b=>b.setAttribute('aria-checked',String(b.dataset.rmode===SPOTMODE.get())));
+  }
+  function voir(cle){ if(!ouvert||!cle) return; voit=true; document.body.classList.add('rdr-voir'); SHS.ouvrirA(cle); }
+  function fermerVoir(){ if(!voit) return; voit=false; document.body.classList.remove('rdr-voir'); SHS.fermer(); }
+  SPOTMODE.surChangement(()=>{ peindreMode(); if(!ouvert) return; fermerVoir(); dort().fermer(); actif().ouvrir(); });
+  /* Les spots ont changé (un temps, un filtre, une page de plus) : la carte, la grille et le polaroid relisent. */
+  CLUBSP.surChangement(()=>{ SHS.flts(); if(!ouvert) return; actif().maj(); if(voit) SHS.maj(); });
+  { const m=$('rdr-mode'); if(m){
+      m.addEventListener('click',e=>{ const b=e.target.closest('[data-rmode]'); if(b) SPOTMODE.set(b.dataset.rmode); });
+      m.addEventListener('keydown',e=>{ if(e.key!=='ArrowLeft'&&e.key!=='ArrowRight') return; e.preventDefault(); e.stopPropagation();
+        const v=e.key==='ArrowRight'?'grid':'map'; SPOTMODE.set(v);
+        const b=m.querySelector('[data-rmode="'+v+'"]'); if(b) try{ b.focus({preventScroll:true}); }catch(_){} });
+  } }
+  { const x=$('rdr-x'); if(x) x.addEventListener('click',fermerVoir); }
+  window.addEventListener('keydown',e=>{ if(e.key==='Escape'&&voit){ e.preventDefault(); e.stopImmediatePropagation(); fermerVoir(); } },{capture:true});
+  peindreMode();
   return {
-    ouvrir(){ ouvert=true; document.body.classList.toggle('rdr-shorts',SPOTMODE.get()==='shorts');
-              SHS.flts(); actif().ouvrir(); CLUBSP.ouvrir(); },
-    fermer(){ ouvert=false; SHS.fermer(); RDR.fermer(); },
-    pause(){ SHS.pause(); RDR.pause(); },
-    maj(){ if(ouvert) actif().maj(); },
-    pas(d){ return SPOTMODE.get()==='shorts'?SHS.pas(d):false; },
+    ouvrir(){ ouvert=true; peindreMode(); SHS.flts(); actif().ouvrir(); CLUBSP.ouvrir(); },
+    fermer(){ fermerVoir(); ouvert=false; SPMAP.fermer(); SPGRID.fermer(); },
+    pause(){ SHS.pause(); },
+    maj(){ if(!ouvert) return; actif().maj(); if(voit) SHS.maj(); },
+    voir, fermerVoir,
+    box:()=>SHS.box(),
+    pas(d){ return voit?SHS.pas(d):grille()?SPGRID.pas(d):false; },
+    vider(){ fermerVoir(); SHS.vider(); SPMAP.vider(); SPGRID.vider(); },
     mode:()=>SPOTMODE.get(),
-    etat
+    etat:()=>({mode:SPOTMODE.get(), voit, carte:SPMAP.etat(), grille:SPGRID.etat(), polaroid:SHS.etat()})
   };
 })();
 window.__totehm_rdr=()=>Object.assign(SPOTS.etat(),{club:CLUBSP.etat()});
+/* Où sont les carrés de la carte (pour viser au test) : des nombres, jamais un nom. */
+window.__totehm_carte=()=>SPMAP.ou();
 
 /* ══ LES 7 INTENTIONS (source : totehm_map.html) ══ */
 const INTS=[
@@ -7092,7 +7254,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-10-20-com-boxes';
+const BUILD='2026-10-20-com-ecosysteme';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -7947,7 +8109,7 @@ function renderZone(){
 
   /* ⚠️ 16/10 bis · UNE SEULE CHAÎNE POUR LES CINQ VUES, ET LA LISTE SEULE. Wah : « non on garde seulement
      le mode liste … sinon ça pète toute la structure. » Les shorts et le radar ont quitté le Totehm pour
-     l'atterrissage (`SH`, `RDR`) : ici il n'y a plus de mode, donc plus de bouton de bascule, et la manette
+     l'atterrissage (`SH`, `SPOTS`) : ici il n'y a plus de mode, donc plus de bouton de bascule, et la manette
      ne s'en va jamais. Chaque vue dit SA liste et SON rendu — deux listes finiraient par diverger. */
   const PLAN={
     habits:    {add:'h', mot:'Add a habit',      liste:()=>{ if(!state.ord)sortHabits();
@@ -10267,7 +10429,7 @@ async function sessionLoad(){
   if(n!==sesSeq) return;
   if(inscrit()){
     /* En lecture on charge le Totehm VISITÉ et jamais le sien. */
-    if(RO){ await loadRO(); }
+    if(RO){ const ok=await loadRO(); if(ok&&lvMembreBoot) lvMembreBoot(RO); }
     else{
       /* Le cache de CE compte peint tout de suite ; le nuage corrige. */
       const c=cacheLire();
@@ -10981,9 +11143,10 @@ window.addEventListener('pageshow',e=>{
        dans le bouton. */
     if(sMoving) return;
     if(sOpen){ fermerVerso(()=>enter(then)); return; }
-    /* 15/10 : le Totehm se déconstruit depuis le CENTRE, en Mine — d'une autre vue ou de la galaxie,
-       le papier rentre chez lui d'abord. */
-    if(LV.vue()!=='c'||LV.mode()!=='mine'){ LV.versMine(()=>enter(then)); return; }
+    /* 15/10 : le Totehm se déconstruit depuis le CENTRE. 20/10 sexies : chez un membre, c'est SON Totehm (en lecture) qui
+       s'ouvre ; pendant la recherche (le papier agrandi sur son dos), on revient d'abord à Mine. */
+    if(LV.mode()==='members'&&!LV.membre()){ LV.versMine(()=>enter(then)); return; }
+    if(LV.vue()!=='c'){ LV.aller('c',()=>enter(then)); return; }
     LV.calme();
     /* ⚠️ PAS INSCRIT, RIEN N'EST PERMIS · 27/09/2026. Le papier ne
        s'ouvre pas : la porte s'ouvre sous lui, et c'est elle qui
@@ -11055,9 +11218,9 @@ window.addEventListener('pageshow',e=>{
       PAPIER.reveiller();                 /* le logo est revenu : il repart */
       LV.revenu();                        /* mes ramifications ont pu changer dedans */
       SH.pause(); SPOTS.pause();          /* ni vidéo ni rAF derrière l'atterrissage */
-      /* ⚠️ 18/10 — REPLIER UNE LECTURE, C'EST LA QUITTER. Sans ça, l'atterrissage garderait le
-         Totehm d'un AUTRE sous les yeux (le réseau d'intentions lit `state`). */
-      if(roEnPlace) sortirLecture();
+      /* ⚠️ 20/10 sexies — REPLIER LE TOTEHM D'UN MEMBRE, C'EST RETOMBER DANS SON ÉCOSYSTÈME (Wah : « on retombe dans
+         l'écosystème, mais cette fois ce n'est plus le nôtre »). On ne le quitte que par MINE (ou « back to mine »). */
+      if(roSortir){ roSortir=false; LV.choisirMode('mine'); }
     },DUR+120);
   }
 
@@ -11224,11 +11387,11 @@ window.addEventListener('pageshow',e=>{
        shorts en mode tiktok sur la vue de gauche et sur la vue de droite tu me mets la vue radar avec tous
        mes spots. » L'horizontale est donc revenue — et elle appartient à MES données :
          ← g · MES SHORTS   le feed de mes médias, plein écran (`SH`)
-         → d · MES SPOTS    le radar, centré sur le papier (`RDR`)
+         → d · LES SPOTS    (20/10 sexies) MAP · GRID, le polaroid par-dessus (`SPOTS`)
        Les deux n'existent que pour un membre (il n'y a pas « mes shorts » sans Totehm) et jamais dans la
        galaxie, où l'horizontale fait tourner les étoiles : `voisin()` les éteint, les chevrons suivent. */
     const VOISINS={c:{h:'h',b:'b',g:'g',d:'d'}, h:{b:'c'}, b:{h:'c'}, g:{d:'c'}, d:{g:'c'}};
-    const NOMS={c:'My TOTEHM', h:'Get Higher', b:'My Reflection', g:'My shorts', d:'My spots'};
+    const NOMS={c:'My TOTEHM', h:'Get Higher', b:'My Reflection', g:'Media', d:'Spots'};
     const slo=$('lv-slogan'), nUp=$('lvn-up'), nDn=$('lvn-dn'), nLf=$('lvn-lf'), nRt=$('lvn-rt'),
           sock=$('lv-socket'), BG=$('gl-bg');
     const W=()=>innerWidth, H=()=>innerHeight;
@@ -11236,9 +11399,17 @@ window.addEventListener('pageshow',e=>{
     const lisse=u=>u<.5?2*u*u:1-Math.pow(-2*u+2,2)/2;
     const diag={allers:0, modes:0, envois:0, telegram:0, ajouts:0, tours:0};
     let vue='c', mode='mine', bouge=false;
+    /* ══ MEMBERS · 20/10/2026 sexies ══ Wah : « les 5 vues (surtout les 4, celle du haut est la même pour tout le monde)
+       forment L'ÉCOSYSTÈME TOTEHM. Quand on cherche un Totehm (MEMBERS), on oublie la galaxie : on agrandit le
+       TOTEHM et son socle processor tout en le retournant sur son verso, avec l'invitation directe à entrer un
+       identifiant ; dès qu'il est validé, on retombe dans l'écosystème — mais ce n'est plus le nôtre, c'est celui
+       du membre ». `cherche` = le papier agrandi sur son dos ; `nom` = le membre dont je vis l'écosystème. */
+    const MB={cherche:false, nom:null, avant:null, seq:0};
+    const libreMb=()=>mode!=='members'||(!!MB.nom&&!MB.cherche);
     const voisin=k=>{
       const v=(VOISINS[vue]||{})[k]||null;
-      if((k==='g'||k==='d')&&v!=='c'&&(!inscrit()||(vue==='c'&&mode==='others'))) return null;
+      if(!libreMb()) return null;                       /* pendant la recherche, on ne voyage pas */
+      if((k==='g'||k==='d')&&v!=='c'&&!inscrit()) return null;
       return v;
     };
     body.classList.add('lv-c');
@@ -11280,19 +11451,27 @@ window.addEventListener('pageshow',e=>{
     }
     function poser(v){
       ['c','h','b','g','d'].forEach(k=>body.classList.toggle('lv-'+k,k===v));
-      /* Le papier est DOCKÉ en haut : le radar ne se centre plus sur lui, et un tap ouvre le choix. */
+      /* Le papier est DOCKÉ en haut : un tap ouvre le filtre de la vue. */
       body.classList.toggle('papier-haut',v==='g'||v==='d');
       window.__papierDock = v==='g' ? ()=>SH.box() : v==='d' ? ()=>SPOTS.box() : null;
       sloganPour(v); peindreNav();
-      /* Le réseau se reconfigure AVANT que la vue s'allume : il est déjà dans sa forme quand on arrive. */
-      if(v==='c'||v==='h') RAM.peindre(v);
+      /* Le réseau se TRANSFORME vers la vue (20/10 sexies : « les 4 vues adjacentes sont le résultat de la transformation
+         de la vue centrale ») : circuit → cerveau en haut, → rail à gauche, → méridiens autour du monde à droite. */
+      if(v!=='b') RAM.peindre(v,{anime:true});
     }
 
     /* ── LE SOCLE suit le papier : `--skx/--sky/--sks` (la transition CSS fait le reste) ── */
     function cibleProfil(){ const p=profil(), w=PAPIER.chez().w||110, s=p.d/(.59*w); return {x:p.x, y:p.y+(.5-.363)*w*s, s}; }
-    function cibleMine(){
-      const r=document.querySelector('#lv-m-mine .lvm-slot').getBoundingClientRect(), w=PAPIER.chez().w||110;
-      return {x:r.left+r.width/2, y:r.top+r.height/2, s:Math.max(.05,(r.width+2)/w)};
+    /* MEMBERS : le papier GRANDIT, ancré en haut (le clavier mange le bas) ; la saisie se pose sur lui. */
+    function cibleGrand(){
+      const w=(PAPIER.chez()||{}).w||110, taille=Math.round(Math.min(W()*.74,H()*.42,380)), haut=Math.max(56,Math.round(H()*.07));
+      return {x:W()/2, y:haut+taille/2, s:taille/w, taille};
+    }
+    function placerSaisie(t){
+      const st=$('lv').style;
+      st.setProperty('--mb-x',t.x.toFixed(1)+'px'); st.setProperty('--mb-y',t.y.toFixed(1)+'px');
+      st.setProperty('--mb-w',Math.round(t.taille*.84)+'px');
+      st.setProperty('--mb-bas',Math.round(t.y+t.taille*.65+16)+'px');
     }
     /* ── LE TOTEHM SORT DU CENTRE ET SE CALE EN HAUT, CENTRÉ (Wah, 19/10 quater, d'après
        figher.club) : sur mes shorts ET sur mes spots, c'est le MÊME objet qui voyage — comme il
@@ -11306,7 +11485,7 @@ window.addEventListener('pageshow',e=>{
       const st=sock.style, c=PAPIER.chez()||{x:W()/2,y:H()*.4}, sk=sock.offsetWidth||143;
       let x=0, y=0, s=1;
       if(v==='b'){ const p=profil(); x=p.x-c.x; y=p.y-c.y; s=(p.d+18)/sk; }
-      else if(v==='c'&&mode==='others'){ const m=cibleMine(); x=m.x-c.x; y=m.y-c.y; s=26/sk; }
+      else if(v==='c'&&MB.cherche){ const t=cibleGrand(); x=t.x-c.x; y=t.y-c.y; s=t.s; }
       else if(v==='h'){ y=16; s=.9; }
       else if(v==='g'||v==='d'){ const t=cibleHaut(); x=t.x-c.x; y=t.y-c.y; s=.3; }
       st.setProperty('--skx',x.toFixed(1)+'px'); st.setProperty('--sky',y.toFixed(1)+'px'); st.setProperty('--sks',s.toFixed(4));
@@ -11329,66 +11508,184 @@ window.addEventListener('pageshow',e=>{
       if(bouge||open||moving||sMoving||sOpen) return;
       if(body.classList.contains('is-door')||!body.classList.contains('gate')) return;
       if(v!=='c'&&!Object.values(VOISINS[vue]||{}).includes(v)) return;
-      if((v==='g'||v==='d')&&!inscrit()) return;      /* « mes » shorts, « mes » spots : il faut un Totehm */
+      if((v==='g'||v==='d')&&!inscrit()) return;      /* « mes » médias, « mes » spots : il faut un Totehm */
+      if(!libreMb()) return;                            /* la recherche MEMBERS se termine d'abord */
       if(PAPIER.occupe()&&!PAPIER.vue()) return;
       diag.allers++;
-      if(v==='b') REF.armer();      /* DANS le geste : sans lui, le téléphone n'ouvre pas le clavier */
+      /* Ma Reflection n'existe que chez MOI ; chez un membre, le bas est SON offre. */
+      const moi=mode==='mine';
+      if(v==='b'&&moi) REF.armer();      /* DANS le geste : sans lui, le téléphone n'ouvre pas le clavier */
+      if(v==='b'&&!moi) OFFRE.ouvrir(MB.nom);
       bouge=true; const de=vue; vue=v;
-      if(de==='c'&&mode==='others') GX.pause();
-      if(de==='b') REF.quitter();
+      if(de==='b'&&moi) REF.quitter();
       /* Un moteur ne tourne que dans sa vue : on ferme celui d'où l'on part, on ouvre celui où l'on va. */
       if(de==='g') SH.fermer(); else if(de==='d') SPOTS.fermer();
       if(v==='g') SH.ouvrir(); else if(v==='d') SPOTS.ouvrir();
       poser(v); socle(v);
-      if(v==='c'&&mode==='others') GX.reprendre();
-      const fini=()=>{ bouge=false; peindreNav(); sloganPour(vue); if(vue==='b') REF.arrive(); if(then) then(); };
-      /* Mes shorts et mes spots laissent le papier CHEZ LUI : en shorts le feed le recouvre, au radar il
-         EST le centre (le canvas est transparent). Rien à déplacer, donc rien à remettre en place. */
+      const fini=()=>{ bouge=false; peindreNav(); sloganPour(vue); if(vue==='b'&&mode==='mine') REF.arrive(); if(then) then(); };
+      /* ← et → : le papier SORT du centre et se cale en haut (19/10 quater) pendant que les sept traits se
+         transforment (20/10 sexies) ; au centre, il rentre chez lui. */
       if(v==='c'||v==='g'||v==='d'){
         if(de==='b') tourner(-1,760);
-        const cible=(v==='g'||v==='d')?cibleHaut():((v==='c'&&mode==='others')?cibleMine():null);
+        const cible=(v==='g'||v==='d')?cibleHaut():null;
         return PAPIER.glisser(cible,{ms:de==='b'?720:640,bouche:de==='h'&&cible?[0,0]:null,fin:fini});
       }
       if(v==='h'){
         const l=PAPIER.cibleLangue();
         return PAPIER.glisser(l?{x:l.x,y:l.y,s:l.s}:{x:W()/2,y:H()*.26,s:.5},{ms:760,bouche:l?[1,1]:null,fin:fini});
       }
-      REF.entre(); tourner(1);
+      if(moi) REF.entre(); tourner(1);
       return PAPIER.glisser(cibleProfil(),{ms:820,fin:fini});
     }
 
-    /* ── MINE · OTHERS : le papier rentre dans [Mine] et la galaxie éclot à sa place ; le retour à l'envers ── */
-    function peindreMode(){ document.querySelectorAll('#lv-mode [data-mode]').forEach(b=>b.setAttribute('aria-checked',String(b.dataset.mode===mode))); }
-    function choisirMode(m,then,vite){
-      if(m!=='mine'&&m!=='others') return;
-      if(m===mode){ if(then) then(); return; }
-      if(vue!=='c'||bouge||open||moving||sMoving||sOpen) return;
+    /* ── MINE · MEMBERS (20/10 sexies) ─────────────────────────────────────────────────────────────────────────── */
+    const mq=$('mb-q'), mnote=$('mb-note'), mgo=$('mb-go');
+    const mbNote=t=>{ mnote.textContent=t||''; };
+    const mbGo=(t,f)=>{ if(!t){ mgo.classList.add('hide'); mgo.onclick=null; return; } mgo.textContent=t; mgo.classList.remove('hide'); mgo.onclick=f; };
+    function peindreMode(){
+      document.querySelectorAll('#lv-mode [data-mode]').forEach(b=>b.setAttribute('aria-checked',String(b.dataset.mode===mode)));
+      $('lv-m-who').textContent=MB.nom||'';
+      const t=$('lv-tap-turn'); if(t){ const sou=window.matchMedia('(hover:hover)').matches;
+        t.textContent=(sou?'Turn':'Swipe')+(mode==='members'?' to search':' to configure it'); }
+    }
+    /* Le papier grandit avec son socle et son réseau, PUIS se pose sur son dos ; la saisie a déjà le focus (le
+       clavier d'un téléphone ne s'ouvre que DANS le geste). Un membre déjà lu reste derrière : Échap y revient. */
+    function chercher(then){
+      if(vue!=='c'||bouge||open||moving||sMoving||sOpen||MB.cherche) return;
       if(body.classList.contains('is-door')||!body.classList.contains('gate')) return;
       if(PAPIER.occupe()&&!PAPIER.vue()) return;
-      diag.modes++; mode=m; bouge=true;
-      body.classList.toggle('lv-others',m==='others'); peindreMode(); peindreNav(); socle('c');
-      const fini=()=>{ bouge=false; if(then) then(); };
-      /* ⚠️ 18/10 — CE QUI VA DANS [MINE], C'EST LE VERSO (Wah : « quand on clique sur [Others], ce
-         qui va dans la case [MINE] c'est le Totehm face VERSO, et non pas RECTO »). Le papier se
-         retourne D'ABORD, puis il rentre dans la case ; au retour, il ressort, puis il se remet sur
-         son recto. Deux gestes lisibles, jamais un saut de face au milieu d'un déplacement. */
-      if(m==='others'){ GX.ouvrir(vite);
-        PAPIER.poserDos(()=>PAPIER.glisser(cibleMine(),{ms:vite?1:620,fin:fini})); }
-      else{ GX.fermer(); PAPIER.glisser(null,{ms:620,fin:()=>PAPIER.poser(fini)}); }
+      diag.modes++;
+      MB.avant=MB.nom; MB.cherche=true; mode='members'; bouge=true; MB.seq++;
+      body.classList.add('lv-mb','mb-cherche');
+      peindreMode(); peindreNav();
+      const t=cibleGrand(); placerSaisie(t);
+      mq.value=''; mbNote(''); mbGo(null);
+      $('mb-ui').setAttribute('aria-hidden','false');
+      try{ mq.focus({preventScroll:true}); }catch(_){}
+      socle('c'); RAM.peindre('c',{anime:true, papier:{x:t.x, y:t.y, w:t.taille}});
+      PAPIER.poserDos(()=>PAPIER.glisser(t,{ms:620, fin:()=>{ bouge=false; if(then) then(); }}));
+    }
+    /* Le papier redescend chez lui et se remet sur son recto ; le réseau le suit. */
+    function rentrer(fini){
+      bouge=true; socle('c'); RAM.oublie(); RAM.peindre('c',{anime:true});
+      PAPIER.glisser(null,{ms:620, fin:()=>PAPIER.poser(()=>{ bouge=false; RAM.peindre('c'); if(fini) fini(); })});
+    }
+    function finirRecherche(){
+      MB.cherche=false; MB.seq++;
+      body.classList.remove('mb-cherche');
+      try{ mq.blur(); }catch(_){}
+      $('mb-ui').setAttribute('aria-hidden','true'); mbGo(null);
+    }
+    /* Échap pendant la recherche : chez le membre d'avant s'il y en avait un, sinon chez moi. */
+    function annuler(){
+      if(!MB.cherche) return;
+      if(MB.avant){ finirRecherche(); MB.nom=MB.avant; peindreMode(); peindreNav(); rentrer(); return; }
+      quitterMembre();
+    }
+    /* Valider un identifiant : `totehm_of` décide (session, abonnement, confidentialité). Un refus ne touche
+       JAMAIS à mon état : on ne pose la lecture qu'une fois la réponse acceptée. */
+    async function valider(){
+      if(!MB.cherche) return;
+      const n=String(mq.value||'').trim().replace(/^@+/,'').slice(0,32);
+      if(!n) return;
+      if(!me){ mbNote('connect to read a TOTEHM'); mbGo('CONNECT WITH MY TOTEHM',()=>{ if(typeof ouvrirPorte==='function') ouvrirPorte(null); }); return; }
+      const moi=((myProfile&&myProfile.pseudo)||'').trim();
+      if(moi&&n.toLowerCase()===moi.toLowerCase()){ quitterMembre(); return; }
+      mbNote('…'); mbGo(null);
+      const s0=++MB.seq, uid=me.id;
+      const {data,error}=await sb.rpc('totehm_of',{p_pseudo:n});
+      if(s0!==MB.seq||(me?me.id:null)!==uid||!MB.cherche) return;
+      if(error){ console.error('[totehm_of]',error.message); mbNote('unreachable · try again'); return; }
+      if(!data||!data.ok){
+        const w=data&&data.why;
+        if(w==='subscribe'){ const nom=String(data.pseudo||n); mbNote('subscribe to read'); mbGo('SUBSCRIBE',()=>OFFRE.abonner(nom,mbNote)); OFFRE.prix(nom).then(t=>{ if(t&&MB.cherche&&!mgo.classList.contains('hide')) mgo.textContent='SUBSCRIBE · '+t; }); return; }
+        mbNote(w==='nobody'?'no TOTEHM by that name':w==='signin'?'connect first':'this TOTEHM is private'); return;
+      }
+      activer(data);
+    }
+    /* Entrer dans l'écosystème d'un membre : SON Totehm en mémoire (lecture seule), SES médias, SES spots, SON offre. */
+    function activer(data,direct){
+      const nom=String(data.pseudo||'');
+      RO=nom; roEnPlace=true; roSeq++; ZOOM.clear(); COPIES.clear();
+      HSPACES.seq++; HSPACES.par=new Map(); ECLOTHS.seq++; ECLOTHS.par=new Map();
+      poserLecture(data);
+      try{ history.replaceState(null,'','/totehm?ro='+encodeURIComponent(nom)); }catch(_){}
+      if(MB.cherche) finirRecherche();
+      entrerChez(nom);
+      if(direct){ socle('c'); RAM.oublie(); RAM.peindre('c',{anime:true}); return; }
+      rentrer();
+    }
+    /* L'auteur d'un spot (son nom en Coral) : on entre dans SON écosystème, sur place. S'il faut s'abonner pour le
+       lire, sa page de vente s'ouvre dans la couche `XO` — on ne montre jamais une porte fermée. */
+    async function versMembre(nom){
+      nom=String(nom||'').trim(); if(!me||!nom) return false;
+      const s0=++MB.seq, uid=me.id;
+      const {data,error}=await sb.rpc('totehm_of',{p_pseudo:nom});
+      if(s0!==MB.seq||(me?me.id:null)!==uid) return true;
+      if(error){ console.error('[totehm_of]',error.message); return false; }
+      if(!data||!data.ok){ if(data&&data.why==='subscribe'){ XO.univers(String(data.pseudo||nom)); return true; } return false; }
+      const go=()=>activer(data,true);
+      if(vue!=='c') aller('c',go); else go();
+      return true;
+    }
+    lvVersMembre=versMembre;
+    function entrerChez(nom){
+      MB.nom=nom; mode='members';
+      body.classList.add('lv-mb','lv-membre');
+      SH.vider(); SPOTS.vider(); CLUBSP.vider(); OFFRE.vider();
+      MBM.seq++; MBM.items=[]; chargerMedias(nom);
+      peindreMode(); peindreNav(); peindreCarte();
+    }
+    async function chargerMedias(nom){
+      const s0=++MBM.seq, uid=me?me.id:null;
+      const {data,error}=await sb.rpc('member_media',{p_pseudo:nom});
+      if(s0!==MBM.seq||(me?me.id:null)!==uid||RO!==nom) return;
+      if(error){ console.error('[member_media]',error.message); return; }
+      MBM.nom=nom; MBM.items=(data&&data.ok&&Array.isArray(data.items))?data.items:[];
+      SH.maj();
+    }
+    /* MINE : on quitte l'écosystème du membre — sa lecture est jetée, le mien se recharge (`sortirLecture`). */
+    function quitterMembre(then){
+      const cherchait=MB.cherche, avait=!!RO;
+      diag.modes++;
+      if(cherchait) finirRecherche();
+      MB.nom=null; MB.avant=null; mode='mine';
+      body.classList.remove('lv-mb','lv-membre');
+      SH.vider(); SPOTS.vider(); CLUBSP.vider(); OFFRE.vider(); MBM.seq++; MBM.items=[];
+      peindreMode(); peindreNav();
+      if(avait) sortirLecture();
+      if(cherchait) rentrer(then); else{ socle('c'); RAM.oublie(); RAM.peindre('c',{anime:true}); if(then) then(); }
+    }
+    function choisirMode(m,then){
+      if(m!=='mine'&&m!=='members') return;
+      if(m==='members'){ if(MB.cherche){ if(then) then(); return; } if(vue!=='c') return aller('c',()=>chercher(then)); return chercher(then); }
+      if(mode==='mine'){ if(then) then(); return; }
+      if(bouge||open||moving||sMoving||sOpen) return;
+      if(vue!=='c') return aller('c',()=>quitterMembre(then));
+      quitterMembre(then);
     }
     /* Ouvrir MON Totehm (ou mes réglages) part toujours du centre, en Mine. */
     function versMine(then){
-      if(vue==='c'){ if(mode==='mine'){ if(then) then(); } else choisirMode('mine',then); return; }
+      if(mode!=='mine') return choisirMode('mine',then);
+      if(vue==='c'){ if(then) then(); return; }
       if(bouge||open||moving||sMoving||sOpen) return;
-      if(mode!=='mine'){ mode='mine'; body.classList.remove('lv-others'); peindreMode(); GX.fermer(true); }
       aller('c',then);
     }
-    $('lv-mode').addEventListener('click',e=>{ const b=e.target.closest('[data-mode]'); if(b) choisirMode(b.dataset.mode); });
+    /* Un tap pendant un mouvement (un repli, une course) n'est jamais perdu : il attend la fin, 2 s au plus. */
+    const quandLibre=(f,n=0)=>{ if((bouge||moving||sMoving)&&n<12) return void setTimeout(()=>quandLibre(f,n+1),180); f(); };
+    $('lv-mode').addEventListener('click',e=>{ const b=e.target.closest('[data-mode]'); if(b) quandLibre(()=>choisirMode(b.dataset.mode)); });
     $('lv-mode').addEventListener('keydown',e=>{
       if(e.key!=='ArrowLeft'&&e.key!=='ArrowRight') return;
-      e.preventDefault(); const m=e.key==='ArrowRight'?'others':'mine';
+      e.preventDefault(); const m=e.key==='ArrowRight'?'members':'mine';
       choisirMode(m); const b=document.querySelector('#lv-mode [data-mode="'+m+'"]'); if(b) try{ b.focus({preventScroll:true}); }catch(_){}
     });
+    mq.addEventListener('keydown',e=>{
+      if(e.key==='Enter'){ e.preventDefault(); valider(); return; }
+      if(e.key==='Escape'){ e.preventDefault(); e.stopPropagation(); annuler(); }
+    });
+    mq.addEventListener('input',()=>{ if(mnote.textContent&&mnote.textContent!=='…'){ mbNote(''); mbGo(null); } });
+    /* `?ro=nom` (un lien, un retour de Stripe) : on arrive DANS l'écosystème du membre, déjà lu par `loadRO`. */
+    lvMembreBoot=nom=>{ if(!nom) return; roEnPlace=true; entrerChez(nom); RAM.oublie(); RAM.peindre(vue); };
 
     /* ── GET HIGHER : posé sur la langue, il est avalé (la suite du 03/10), puis la boutique par le pont ;
        `?from=com` : la langue a déjà eu lieu ici, la boutique ne la rejoue pas. ── */
@@ -11404,7 +11701,8 @@ window.addEventListener('pageshow',e=>{
     };
     slo.addEventListener('click',()=>{ if(vue==='h') getHigher(); });
     { const b=$('gate-mouth'); if(b) b.addEventListener('click',()=>{ if(vue==='h') getHigher(); }); }
-    PAPIER.surVerso=()=>{ if(vue==='c'&&mode==='mine') ouvrirVerso(); };
+    /* Retourner le papier : chez moi, mes réglages ; chez un membre, chercher un autre membre (20/10 sexies). */
+    PAPIER.surVerso=()=>{ if(vue!=='c') return; if(mode==='mine') ouvrirVerso(); else if(MB.nom&&!MB.cherche) chercher(); };
     /* ⚠️ 16/10 · RETOURNER LE PAPIER AFFICHE LE MENU MEMBRE. Wah : « quand tu retournes le totehm verso,
        c'est le menu membre qui s'affiche ». Donc il est là d'emblée, sans second geste : mes réglages,
        un filet, puis mon compte — dans cet ordre, l'un sous l'autre, zéro blabla. */
@@ -11415,19 +11713,23 @@ window.addEventListener('pageshow',e=>{
     /* L'espace membre (hors de ce module) ouvre ou ferme mes réglages par ici. */
     lvReglages={ouvrir:()=>versMine(()=>ouvrirVerso()), fermer:f=>{ if(sOpen) fermerVerso(f); else f(); }};
     function reset(){
-      bouge=false; vue='c'; calme(); SH.fermer(); SPOTS.fermer(); poser('c'); socle('c');
-      if(mode==='others') requestAnimationFrame(()=>PAPIER.glisser(cibleMine(),{ms:1}));
+      bouge=false; vue='c'; calme(); SH.fermer(); SPOTS.fermer();
+      /* Une recherche interrompue (retour arrière, navigation annulée) : le papier est déjà rentré, on la referme. */
+      if(MB.cherche){ finirRecherche(); if(MB.avant) MB.nom=MB.avant; else{ mode='mine'; body.classList.remove('lv-mb'); } peindreMode(); }
+      poser('c'); socle('c');
     }
-    window.addEventListener('pageshow',e=>{ if(e.persisted){ PAPIER.remettre(); reset(); GX.revenir(); } });
+    window.addEventListener('pageshow',e=>{ if(e.persisted){ PAPIER.remettre(); reset(); } });
     /* ⚠️ LE PREMIER RENDU ATTEND LA PLACE DU PAPIER. Le réseau part de `PAPIER.chez()` : dessiné avant la
        mesure (les polices chargent encore), il s'accrochait à un papier qui n'était pas encore là. */
     requestAnimationFrame(()=>requestAnimationFrame(()=>{ RAM.oublie(); RAM.peindre(vue); }));
     if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>{ RAM.oublie(); RAM.peindre(vue); });
     window.addEventListener('resize',()=>{
       if(bouge) return;
-      sloganPour(vue); socle(vue); GX.geo(); RAM.peindre(vue);   /* le réseau est en pixels : il se refait */
+      sloganPour(vue); socle(vue);
+      /* le réseau est en pixels : il se refait (et pendant la recherche, autour du papier agrandi) */
+      if(vue==='c'&&MB.cherche){ const t=cibleGrand(); placerSaisie(t); RAM.peindre('c',{papier:{x:t.x,y:t.y,w:t.taille}}); PAPIER.glisser(t,{ms:1}); }
+      else RAM.peindre(vue);
       if(vue==='b') PAPIER.glisser(cibleProfil(),{ms:1});
-      else if(vue==='c'&&mode==='others') PAPIER.glisser(cibleMine(),{ms:1});
       else if(vue==='h'){ const l=PAPIER.cibleLangue(); if(l) PAPIER.glisser({x:l.x,y:l.y,s:l.s},{ms:1,bouche:[1,1]}); }
     });
 
@@ -11437,7 +11739,7 @@ window.addEventListener('pageshow',e=>{
       &&!sOpen&&!sMoving&&!$('member-window').classList.contains('show')&&!body.classList.contains('is-xo')
       &&!body.classList.contains('is-tlv');
     const saisie=t=>!!(t&&(t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.tagName==='SELECT'||t.isContentEditable));
-    const LISTES='#lv-thread,#gx-res,#lv-sh';
+    const LISTES='#lv-thread,#lv-sh,#rdr-g,#rdr-sh';
     const filDefile=(t,dy)=>{ if(!t||!t.closest||!t.closest(LISTES)) return false;
       const el=t.closest(LISTES); if(el.scrollHeight<=el.clientHeight+2) return false;
       return dy>0 ? el.scrollTop+el.clientHeight<el.scrollHeight-1 : el.scrollTop>1; };
@@ -11499,10 +11801,13 @@ window.addEventListener('pageshow',e=>{
       /* Au clavier, le papier se retourne comme à la main : ← → sur son recto ouvrent mes réglages ; c'est
          la seule chose qui passe DEVANT l'horizontale, parce que le papier a le focus. */
       if(e.key==='ArrowLeft'||e.key==='ArrowRight'){
-        if(document.activeElement===$('gate-enter')&&vue==='c'&&mode==='mine'){ e.preventDefault(); ouvrirVerso(); return; }
+        if(document.activeElement===$('gate-enter')&&vue==='c'){
+          if(mode==='mine'){ e.preventDefault(); ouvrirVerso(); return; }
+          if(MB.nom&&!MB.cherche){ e.preventDefault(); chercher(); return; } }
         const v=voisin(e.key==='ArrowLeft'?'g':'d'); if(v){ e.preventDefault(); aller(v); }
         return; }
-      if(e.key==='Escape'){ if(vue!=='c'){ e.preventDefault(); aller('c'); } else if(mode==='others'){ e.preventDefault(); choisirMode('mine'); } }
+      if(e.key==='Escape'){ if(vue!=='c'){ e.preventDefault(); aller('c'); }
+        else if(mode==='members'){ e.preventDefault(); if(MB.cherche) annuler(); else choisirMode('mine'); } }
     },{capture:true});
     /* Le trackpad et la molette (la règle de SPACE, 12/10) : `deltaX > 0` → la vue de DROITE, `deltaY > 0` →
        celle du BAS ; 75 px accumulés en X, 70 en Y (160 au plus par événement), remis à zéro après 180 ms ou
@@ -11533,7 +11838,8 @@ window.addEventListener('pageshow',e=>{
       window.addEventListener('touchstart',e=>{
         const t=e.target; p=null;
         if(!libre()||e.touches.length>1) return;
-        if(t&&t.closest&&t.closest('#gate-asteroid,input,textarea,select,[contenteditable]')) return;
+        /* La Terre (MAP) garde le doigt : il la fait tourner (l'axe s'éteint dans CETTE vue, la règle ne change pas). */
+        if(t&&t.closest&&t.closest('#gate-asteroid,input,textarea,select,[contenteditable],#rdr-map')) return;
         p={x:e.touches[0].clientX, y:e.touches[0].clientY, t:Date.now(), el:t};
       },{passive:true,capture:true});
       window.addEventListener('touchend',e=>{
@@ -11561,8 +11867,9 @@ window.addEventListener('pageshow',e=>{
        une intention sans Habit reste en creux (`.r-0`), jamais remplie d'un faux contenu.
        L'impulsion (CSS seul, `--p`) ne tourne que pour un membre, à la période RÉELLE de son Habit. */
     const RAM=(()=>{
-      const svg=$('lv-ram'); let sig='';
-      const TAU=Math.PI*2;
+      const svg=$('lv-ram'); let sig='', cur=null, raf=0;
+      const N=24;                                   /* chaque branche, rééchantillonnée : la même forme se TRANSFORME */
+      const diagR={morphs:0};
       /* Par intention : combien d'Habits, et la PLUS FRÉQUENTE — c'est elle qui donne le rythme. */
       function compte(){
         const n={}; INTS.forEach(x=>{ n[x.id]={n:0,w:0}; });
@@ -11574,379 +11881,185 @@ window.addEventListener('pageshow',e=>{
       /* La période d'une impulsion : la fréquence réelle, en échelle log — chaque minute ≈ 1,1 s,
          quotidienne ≈ 3,4 s, mensuelle ≈ 4,6 s. Sans fréquence posée, le rythme le plus lent. */
       const periode=w=>(w?1.1+3.5*Math.log2(1+w)/Math.log2(43201):4.6).toFixed(2);
-      const r2=v=>Math.round(v*10)/10;
-      /* ── LE CIRCUIT (vue centre) ─────────────────────────────────────────────────────────────
-         Sept pistes sortent du papier, s'écartent par un coude, puis MONTENT jusqu'au bord haut ET
-         DESCENDENT jusqu'au bord bas : le réseau tient tout l'écran, le papier au milieu. Les coudes
-         s'étagent sur toute la hauteur libre, les plus extérieurs touchent les bords latéraux.
-         Un carré au coude (la broche), un carré par Habit sur la course. */
-      function circuit(n){
-        const c=PAPIER.chez()||{x:W()/2,y:H()*.55,w:110}, hw=(c.w||110)/2, w=W(), h=H();
+      const r1=v=>Math.round(v*10)/10;
+      /* Une polyligne → N points répartis sur sa LONGUEUR : deux formes se répondent point pour point. */
+      function reech(l){
+        if(!l||!l.length) return Array.from({length:N},()=>[0,0]);
+        const seg=[0]; for(let i=1;i<l.length;i++) seg.push(seg[i-1]+Math.hypot(l[i][0]-l[i-1][0],l[i][1]-l[i-1][1]));
+        const T=seg[seg.length-1]||1, out=[]; let j=1;
+        for(let k=0;k<N;k++){ const t=T*k/(N-1);
+          while(j<l.length-1&&seg[j]<t) j++;
+          const a=l[j-1], b=l[j]||a, u=seg[j]>seg[j-1]?(t-seg[j-1])/(seg[j]-seg[j-1]):0;
+          out.push([a[0]+(b[0]-a[0])*Math.max(0,Math.min(1,u)), a[1]+(b[1]-a[1])*Math.max(0,Math.min(1,u))]); }
+        return out;
+      }
+      /* ── LE CIRCUIT (vue centre) : sept pistes sortent du papier, un coude, puis jusqu'au bord haut ET au bord bas ;
+         un carré au coude (la broche), un carré par Habit sur la montée. `c` = le papier (chez lui, ou AGRANDI en MEMBERS). */
+      function circuit(n,c){
+        const hw=(c.w||110)/2, w=W(), h=H();
         const haut=Math.max(80,c.y-hw), bas=Math.max(80,h-(c.y+hw));
         return INTS.map((x,i)=>{
           const d=i-3, dir=Math.sign(d), k=Math.abs(d), q=n[x.id];
           const sx=Math.round(c.x+d*hw*.5), sy=Math.round(c.y-hw), by=Math.round(c.y+hw);
-          /* Le coude s'étage : du plus proche du papier (k = 0) au plus haut (k = 3). */
           const eh=Math.round(sy-(34+(haut-70)*k/3.2)), eb=Math.round(by+(30+(bas-60)*k/3.2));
           const ex=Math.round(c.x+dir*(hw*1.35+(w/2-hw*1.35)*(k/3)));
-          let p;
-          if(!dir) p='M'+sx+' '+sy+'V-4M'+sx+' '+by+'V'+(h+4);
-          else p='M'+sx+' '+sy+'V'+eh+'H'+ex+'V-4'
-                +'M'+sx+' '+by+'V'+eb+'H'+ex+'V'+(h+4);
-          const nx=dir?ex:sx; let g='';
-          if(dir) g='<rect x="'+(ex-2)+'" y="'+(eh-2)+'" width="4" height="4" fill="'+x.color+'"/>'
-                   +'<rect x="'+(ex-2)+'" y="'+(eb-2)+'" width="4" height="4" fill="'+x.color+'"/>';
-          /* Les nœuds : une Habit, un nœud, répartis sur la montée. */
-          const m=Math.min(6,q.n);
-          for(let z=0;z<m;z++){ const y=Math.round(eh-(eh+4)*(z+1)/(m+1));
-            g+='<rect x="'+(nx-1.5)+'" y="'+(y-1.5)+'" width="3" height="3" fill="'+x.color+'"/>'; }
-          return {i, x, q, d:p, nodes:g};
+          const a=dir?[[sx,sy],[sx,eh],[ex,eh],[ex,-4]]:[[sx,sy],[sx,-4]];
+          const b=dir?[[sx,by],[sx,eb],[ex,eb],[ex,h+4]]:[[sx,by],[sx,h+4]];
+          const nodes=[]; if(dir){ nodes.push([ex,eh,4],[ex,eb,4]); }
+          const nx=dir?ex:sx, m=Math.min(6,q.n);
+          for(let z=0;z<m;z++) nodes.push([nx, Math.round(eh-(eh+4)*(z+1)/(m+1)), 3]);
+          return {i, x, q, a, b, nodes};
         });
       }
-      /* ── LE CERVEAU (vue du haut) ────────────────────────────────────────────────────────────
-         Vu de dessus : la scissure au milieu, et SEPT circonvolutions — une par intention, la même
-         des deux côtés. La largeur d'une circonvolution dessine la silhouette ; ses nœuds sont MES
-         Habits de cette intention. Le tronc remonte vers la langue : ce qu'on avale arrive ici.
-         L'anatomie (scissure, tronc) reste grise — ce n'est pas une intention. */
+      /* ── LE CERVEAU (vue du haut) : sept circonvolutions, une par intention, la même des deux côtés ; la scissure et le
+         tronc restent gris (l'anatomie n'est pas une intention). ── */
       function cerveau(n){
         const w=W(), h=H();
         const A=Math.round(Math.min(w*.36,h*.22,210)), B=Math.round(A*.82);
         const bx=Math.round(w/2), by=Math.round(Math.min(h*.8,h-B-54));
-        const r2=v=>Math.round(v*10)/10;
-        const lobes=INTS.map((x,i)=>{
-          const t=(i+.5)/7, y=by-B+2*B*t, q=n[x.id];
-          const a=A*Math.sin(Math.PI*t)*.98;            /* la silhouette : large au milieu, fine aux pôles */
-          let d='', g='';
-          [-1,1].forEach(dir=>{
-            let p='';
-            for(let z=0;z<=14;z++){ const u=z/14, px=bx+dir*(10+(a-10)*u), py=y+9*Math.sin(u*Math.PI*2.4);
-              p+=(z?'L':'M')+r2(px)+' '+r2(py); }
-            /* Le crochet du bout : une circonvolution se referme, elle ne s'arrête pas net. */
-            p+='L'+r2(bx+dir*a)+' '+r2(y-11);
-            d+=p;
-          });
-          const m=Math.min(3,q.n);
-          for(let z=0;z<m;z++){ const u=(z+1)/(m+1), px=bx+(10+(a-10)*u), py=y+9*Math.sin(u*Math.PI*2.4);
-            g+='<rect x="'+r2(px-1.5)+'" y="'+r2(py-1.5)+'" width="3" height="3" fill="'+x.color+'"/>'
-              +'<rect x="'+r2(2*bx-px-1.5)+'" y="'+r2(py-1.5)+'" width="3" height="3" fill="'+x.color+'"/>'; }
-          return {i, x, q, d, nodes:g};
+        const l=INTS.map((x,i)=>{
+          const t=(i+.5)/7, y=by-B+2*B*t, q=n[x.id], am=A*Math.sin(Math.PI*t)*.98;
+          const moitie=dir=>{ const p=[];
+            for(let z=0;z<=14;z++){ const u=z/14; p.push([bx+dir*(10+(am-10)*u), y+9*Math.sin(u*Math.PI*2.4)]); }
+            p.push([bx+dir*am, y-11]); return p; };
+          const nodes=[], m=Math.min(3,q.n);
+          for(let z=0;z<m;z++){ const u=(z+1)/(m+1), px=bx+(10+(am-10)*u), py=y+9*Math.sin(u*Math.PI*2.4);
+            nodes.push([px,py,3],[2*bx-px,py,3]); }
+          return {i, x, q, a:moitie(-1), b:moitie(1), nodes};
         });
-        /* La scissure, et le tronc qui remonte vers la langue (le papier). */
-        const l=PAPIER.cibleLangue&&PAPIER.cibleLangue();
-        const ty=Math.max(0,l?l.y:h*.3);
-        lobes.anat='<path class="sk" pathLength="1" style="--i:7" d="M'+bx+' '+(by-B-6)+'V'+(by+B+6)+'"/>'
+        const lg=PAPIER.cibleLangue&&PAPIER.cibleLangue(), ty=Math.max(0,lg?lg.y:h*.3);
+        l.anat='<path class="sk" pathLength="1" style="--i:7" d="M'+bx+' '+(by-B-6)+'V'+(by+B+6)+'"/>'
           +'<path class="sk" pathLength="1" style="--i:8" d="M'+bx+' '+(by-B-6)+'V'+Math.round(ty)+'"/>';
-        return lobes;
+        return l;
       }
-      /* Un rendu = une vue et une taille. On ne redessine pas pour rien. */
-      function peindre(v){
-        if(!svg) return;
-        const vu=(v==='h'?'h':'c'), w=W(), h=H(), n=compte();
-        const s=vu+'|'+w+'x'+h+'|'+INTS.map(x=>n[x.id].n+':'+n[x.id].w).join(',')+'|'+(PAPIER.chez()||{}).y;
-        if(s===sig&&svg.childNodes.length) return; sig=s;
-        svg.setAttribute('viewBox','0 0 '+w+' '+h);
-        const l=vu==='h'?cerveau(n):circuit(n);
-        let out=l.anat||'';
-        l.forEach(b=>{
-          /* Habitée : la période RÉELLE de son Habit. Vide : la veille, lente et commune. */
-          const st=' style="--i:'+b.i+';--p:'+(b.q.n?periode(b.q.w):'6.2')+'s;--d:'+(b.i*.42).toFixed(2)+'s"';
-          out+='<g'+(b.q.n?'':' class="r-0"')+st+'>'
-            +'<path pathLength="1" d="'+b.d+'" stroke="'+b.x.color+'"/>'
-            +'<path class="puls'+(b.q.n?'':' veille')+'" pathLength="1" d="'+b.d+'" stroke="'+b.x.color+'"/>'
-            +b.nodes+'</g>';
+      /* ── ← LE RAIL (20/10 sexies) : le papier se cale en haut et les sept traits en descendent jusqu'aux DEUX bords — le rail
+         du Totehm, le trait d'intention d'une boîte, à l'échelle de l'écran : les médias sont ses boîtes. Sans croisement :
+         plus une piste part à l'extérieur, plus elle tourne haut. ── */
+      function rail(n){
+        const w=W(), h=H(), t=cibleHaut(), sy=t.y+22;
+        return INTS.map((x,i)=>{
+          const sx=t.x+(i-3)*5, yl=sy+12+i*4, yr=sy+12+(6-i)*4, xl=2+i*3, xr=w-2-(6-i)*3;
+          return {i, x, q:n[x.id], a:[[sx,sy],[sx,yl],[xl,yl],[xl,h+4]], b:[[sx,sy],[sx,yr],[xr,yr],[xr,h+4]], nodes:[]};
         });
+      }
+      /* ── → LES MÉRIDIENS (20/10 sexies) : les sept traits se plient AUTOUR DU MONDE — sept méridiens, un par intention, sur
+         le globe de la carte (`SPMAP.geo()`, la même géométrie) ; la Terre tourne dedans. ── */
+      function meridiens(n){
+        const g=SPMAP.geo(), D=Math.PI/180;
+        return INTS.map((x,i)=>{
+          const lam=(i-3)*(180/7)*D, pt=ph=>[g.cx+g.R0*Math.sin(lam)*Math.cos(ph*D), g.cy-g.R0*Math.sin(ph*D)];
+          const a=[], b=[]; for(let z=0;z<=16;z++){ a.push(pt(90*z/16)); b.push(pt(-90*z/16)); }
+          return {i, x, q:n[x.id], a, b, nodes:[]};
+        });
+      }
+      function forme(v,n,c){
+        const l=v==='h'?cerveau(n):v==='g'?rail(n):v==='d'?meridiens(n):circuit(n,c);
+        l.forEach(o=>{ o.a=reech(o.a); o.b=reech(o.b); });
+        return l;
+      }
+      const dDe=o=>'M'+o.a.map(p=>r1(p[0])+' '+r1(p[1])).join('L')+'M'+o.b.map(p=>r1(p[0])+' '+r1(p[1])).join('L');
+      function dessiner(G){
+        let out=G.anat||'';
+        G.forEach(o=>{
+          /* Habitée : la période RÉELLE de son Habit. Vide : la veille, lente et commune. */
+          const st=' style="--i:'+o.i+';--p:'+(o.q.n?periode(o.q.w):'6.2')+'s;--d:'+(o.i*.42).toFixed(2)+'s"', d=dDe(o);
+          out+='<g'+(o.q.n?'':' class="r-0"')+st+'>'
+            +'<path pathLength="1" d="'+d+'" stroke="'+o.x.color+'"/>'
+            +'<path class="puls'+(o.q.n?'':' veille')+'" pathLength="1" d="'+d+'" stroke="'+o.x.color+'"/>'
+            +o.nodes.map(r=>'<rect x="'+r1(r[0]-r[2]/2)+'" y="'+r1(r[1]-r[2]/2)+'" width="'+r[2]+'" height="'+r[2]+'" fill="'+o.x.color+'"/>').join('')
+            +'</g>';
+        });
+        svg.innerHTML=out; cur=G;
+      }
+      /* LA TRANSFORMATION : chaque point de chaque piste va de sa place à sa nouvelle place (≈ 0,7 s, la course du papier).
+         Les nœuds attendent l'arrivée ; une transformation interrompue repart de là où elle en était. */
+      function morph(A,B){
+        if(raf) cancelAnimationFrame(raf);
+        diagR.morphs++; document.body.classList.add('ram-morph');
+        const t0=performance.now(), Dms=700, ease=u=>u<.5?4*u*u*u:1-Math.pow(-2*u+2,3)/2;
+        let out=''; B.forEach(o=>{ const st=' style="--i:'+o.i+';--p:'+(o.q.n?periode(o.q.w):'6.2')+'s;--d:'+(o.i*.42).toFixed(2)+'s"';
+          out+='<g'+(o.q.n?'':' class="r-0"')+st+'><path pathLength="1" stroke="'+o.x.color+'"/>'
+            +'<path class="puls'+(o.q.n?'':' veille')+'" pathLength="1" stroke="'+o.x.color+'"/></g>'; });
         svg.innerHTML=out;
+        const gs=[...svg.querySelectorAll('g')];
+        const pas=now=>{
+          const u=ease(Math.min(1,(now-t0)/Dms));
+          const M=B.map((o,i)=>{ const p=A[i]||o, m=(x,y)=>x.map((q,k)=>[q[0]+((y[k]||q)[0]-q[0])*u, q[1]+((y[k]||q)[1]-q[1])*u]);
+            return Object.assign({},o,{a:m(p.a,o.a), b:m(p.b,o.b)}); });
+          M.forEach((o,i)=>{ const d=dDe(o); gs[i].querySelectorAll('path').forEach(pa=>pa.setAttribute('d',d)); });
+          cur=M;
+          if(u<1){ raf=requestAnimationFrame(pas); return; }
+          raf=0; dessiner(B); document.body.classList.remove('ram-morph');
+        };
+        raf=requestAnimationFrame(pas);
+      }
+      /* Un rendu = une vue, une taille, mes Habits, la place du papier. On ne redessine pas pour rien. */
+      function peindre(v,o){
+        if(!svg) return;
+        o=o||{};
+        const vu=(v==='h'||v==='g'||v==='d')?v:'c', n=compte(), c=o.papier||PAPIER.chez()||{x:W()/2,y:H()*.55,w:110};
+        const s=vu+'|'+W()+'x'+H()+'|'+INTS.map(x=>n[x.id].n+':'+n[x.id].w).join(',')+'|'+Math.round(c.x)+','+Math.round(c.y)+','+Math.round(c.w||110);
+        if(s===sig&&svg.childNodes.length) return; sig=s;
+        svg.setAttribute('viewBox','0 0 '+W()+' '+H());
+        const G=forme(vu,n,c);
+        if(o.anime&&cur&&cur.length===G.length&&svg.childNodes.length&&!RMQ.matches) morph(cur,G);
+        else{ if(raf){ cancelAnimationFrame(raf); raf=0; document.body.classList.remove('ram-morph'); } dessiner(G); }
       }
       return {peindre, oublie(){ sig=''; },
-        etat:()=>({pistes:svg?svg.querySelectorAll('path:not(.puls)').length:0,
+        etat:()=>({pistes:svg?svg.querySelectorAll('path:not(.puls):not(.sk)').length:0,
                    noeuds:svg?svg.querySelectorAll('rect').length:0,
                    impulsions:svg?svg.querySelectorAll('.puls').length:0,
-                   creux:svg?svg.querySelectorAll('.r-0').length:0, vue:sig.split('|')[0]||'', habits:sig.split('|')[2]||''})};
+                   creux:svg?svg.querySelectorAll('.r-0').length:0, vue:sig.split('|')[0]||'', habits:sig.split('|')[2]||'',
+                   morphs:diagR.morphs, enCours:!!raf})};
     })();
 
-    /* ══ LA GALAXIE (Others, 15/10) ═════════════════════════════════════════
-       Les TOTEHMs qu'on peut me présenter (`totehm_galaxy` : nommés, non privés, sans moi), chacun en VRAI logo
-       assemblé (les quatre calques du papier, rendus une fois dans une image), posés en spirale (les plus vivants
-       au cœur), en profondeur, qui tournent lentement — moins vite sous la souris. Rien de décoratif : chaque
-       carré est un vrai Totehm présentable. Survol (souris) ou premier tap (doigt) :
-       le nom, lisible ; clic ou second tap : on plonge dans l'étoile, puis son univers `/@nom` (ses droits, son
-       TOTEHM en lecture, la copie permise) — un onglet sur ordinateur, sur place au téléphone ; au retour, on
-       ressort de l'étoile, la recherche intacte (`sessionStorage`). rAF seulement visible. */
-    const GX=(()=>{
-      const cv=$('gx-c'), ctx=cv.getContext('2d'), q=$('gx-q'), tip=$('gx-tip'), tipN=tip.querySelector('.srch-name');
-      const CLE='totehm_gx', TILT=.94, CT=Math.cos(TILT), ST=Math.sin(TILT);
-      const etat={etoiles:0, ouvertures:0, choix:0, retours:0, charge:false, anime:false, sprite:false};
-      const G={cx:0, cy:0, R:200};
-      let on=false, raf=0, last=0, rot=0, om=.06, intro=0, introCible=0, stars=[], seq=0, charge=false,
-          hover=null, sel=null, anim=null, filtre=null, sprite=null, drag=null, tipPour=null, apres=null;
-      const hash=s=>{ let h=2166136261; for(const c of String(s)) h=Math.imul(h^c.charCodeAt(0),16777619); return h>>>0; };
-      const alea=k=>{ let x=(k>>>0)||1; return ()=>{ x^=x<<13; x^=x>>>17; x^=x<<5; return ((x>>>0)%100000)/100000; }; };
-      function dispose(i,N,r1,r2,r3){
-        const arm=i%3, r=.16+.84*Math.sqrt((i+.5)/Math.max(N,1))*(.86+.14*r1);
-        const a=arm*2.0944+r*3.3+(r2-.5)*.55;
-        return {u:Math.cos(a)*r, v:Math.sin(a)*r, w:(r3-.5)*.16*(1-r*.6)};
+    /* ══ EN BAS, CHEZ UN MEMBRE : LUI, ET SON OFFRE · 20/10/2026 sexies ══════════════════════════════════════════
+       Ma Reflection n'existe que chez moi. Chez un membre, le bas est SON profil (le papier condensé, comme le mien)
+       et SON offre : `creator_page` (le prix vient du serveur, toujours), UN geste — Subscribe, ou ce qui est déjà vrai.
+       Le paiement part par `creator-subscribe` (la même fonction que `/@nom`) ; rien ne s'écrit ici. */
+    const OFFRE=(()=>{
+      const box=$('mb-offre'); let seq=0, cache=null;
+      const prixDe=d=>{ const s0=d&&d.sale; if(!s0||!s0.open||!s0.price_cents) return '';
+        const v=(s0.price_cents/100).toFixed(s0.price_cents%100?2:0), c=String(s0.currency||'eur').toUpperCase();
+        return (c==='EUR'?v+' €':c==='USD'?'$'+v:v+' '+c)+' / year'; };
+      async function lire(nom){
+        if(cache&&cache.nom===nom) return cache.d;
+        const s0=++seq;
+        const {data,error}=await sb.rpc('creator_page',{p_pseudo:nom});
+        if(s0!==seq) return null;
+        if(error){ console.error('[creator_page]',error.message); return null; }
+        cache={nom, d:data||null}; return cache.d;
       }
-      /* ⚠️ UNE MULTITUDE DE DOS DE PAPIER (Wah, 16/10) : « ça doit être une multitude de background.svg,
-         représentant alors une étoile ». Donc DEUX sortes de carrés, le même sprite pour les deux :
-           • les VRAIS Totehms (`totehm_galaxy`) — ils portent un nom, on les vise, on plonge dedans ;
-           • les carrés de fond, sans nom et sans clic — ils font de la galaxie une galaxie.
-         Un nom cherché qui n'est pas dans l'échantillon PREND un carré de fond tiré au hasard : l'étoile
-         était déjà là, elle se nomme. C'est exactement « tu tires au hasard une étoile-background ». */
-      /* ⚠️ 18/10 · PLUS ABSTRAITE, PLUS DÉCORATIVE (Wah : « la galaxie doit être plus abstraite et en
-         full-screen, elle est DÉCORATIVE »). Deux fois plus de carrés, deux fois plus petits : le dos
-         du papier devient une POUSSIÈRE de navy sur du noir pur — 60 % noir, 30 % navy. Les 10 %
-         restants, ce sont les sept couleurs d'intention, posées en filet d'un pixel sur les carrés de
-         fond : on ne les lit pas une par une, on les voit scintiller. */
-      const FOND=248;
-      /* ⚠️ UN VRAI TOTEHM NE SE RECONNAÎT PAS À SA PLACE : les vrais sont RÉPARTIS sur toute la spirale,
-         pas groupés au cœur — sinon la galaxie dirait « les douze du milieu sont les vrais ». */
-      function semer(list){
-        const vrais=list.filter(t=>t&&t.pseudo);
-        const N=Math.max(FOND,vrais.length);
-        const pas=Math.max(1,Math.floor(N/Math.max(1,vrais.length)));
-        const pris=new Set();
-        stars=vrais.map((t,i)=>{ const g=alea(hash(t.pseudo)), slot=Math.min(N-1,i*pas); pris.add(slot);
-          return Object.assign({pseudo:String(t.pseudo), k:String(t.pseudo).toLowerCase()}, dispose(slot,N,g(),g(),g())); });
-        for(let i=0;i<N;i++){ if(pris.has(i)) continue; const g=alea(hash('fond:'+i));
-          stars.push(Object.assign({pseudo:null, k:null, fond:true, teinte:INTS[i%7].color}, dispose(i,N,g(),g(),g()))); }
-        etat.etoiles=stars.filter(x=>x.pseudo).length; etat.fond=stars.length-etat.etoiles;
+      async function peindre(nom){
+        box.innerHTML='<p class="mbo-n">'+esc(nom)+'</p>';
+        const d=await lire(nom); if(!d||MB.nom!==nom) return;
+        const v=d.viewer||{}, p=prixDe(d);
+        let h='<p class="mbo-n">'+esc(d.pseudo||nom)+'</p>';
+        if(v.subscribed) h+='<p class="mbo-p">subscribed</p>'+(v.until?'<p class="mbo-s">'+(v.ending?'ends ':'renews ')+esc(new Date(v.until).toLocaleDateString())+'</p>':'');
+        else if(p) h+='<button type="button" class="lvp-cta" data-mbo="sub">SUBSCRIBE · '+esc(p)+'</button>';
+        else h+='<p class="mbo-s">no subscription yet</p>';
+        box.innerHTML=h;
       }
-      /* Le carré de fond le plus proche du centre qui n'a pas encore de nom : l'étoile tirée au hasard
-         (au hasard de SA place, pas d'un tirage qui changerait à chaque frappe — un nom = une étoile). */
-      function tirer(p){
-        const libres=stars.filter(x=>x.fond&&!x.pseudo);
-        if(!libres.length) return null;
-        const st=libres[hash('tire:'+String(p).toLowerCase())%libres.length];
-        st.pseudo=String(p); st.k=String(p).toLowerCase(); st.fond=false;
-        etat.etoiles=stars.filter(x=>x.pseudo).length; etat.fond=stars.length-etat.etoiles;
-        return st;
-      }
-      /* ⚠️ LA GALAXIE NE MONTRE QUE LE DOS DU PAPIER (Wah, 15/10) : le carré navy perforé `#gl-bg`, SEUL —
-         ni rail, ni T, ni wordmark, et surtout aucun nom. Le nom d'un Totehm vit au VERSO : ici il n'apparaît
-         qu'au survol, au tap et pendant la plongée, en Quantico Coral. Rendu UNE fois dans une image. */
-      function fabriquer(){
-        if(sprite) return;
+      async function abonner(nom,dire){
+        const say=dire||(()=>{});
+        say('opening checkout…');
         try{
-          const P={'gl-bg':[0,0,100,100]};
-          const X=new XMLSerializer(); let inner='';
-          Object.keys(P).forEach(id=>{ const el=$(id); if(!el) return; const c=el.cloneNode(true), [x,y,w,h]=P[id];
-            c.removeAttribute('id'); c.removeAttribute('class'); c.removeAttribute('style');
-            c.setAttribute('x',x+'%'); c.setAttribute('y',y+'%'); c.setAttribute('width',w+'%'); c.setAttribute('height',h+'%');
-            inner+=X.serializeToString(c); });
-          const img=new Image();
-          img.onload=()=>{ const c=document.createElement('canvas'); c.width=c.height=128; c.getContext('2d').drawImage(img,0,0,128,128); sprite=c; etat.sprite=true; kick(); };
-          img.onerror=()=>console.error('[galaxy] sprite');
-          img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">'+inner+'</svg>');
-        }catch(e){ console.error('[galaxy] sprite',e?.message||e); }
+          const {d:j}=await fnAppel('creator-subscribe',{pseudo:nom, from:'page'});
+          if(j&&j.url){ location.href=j.url; return; }
+          if(j&&j.already){ say('already subscribed'); return; }
+          say(({closed:'not open to subscriptions', self:'this is your own TOTEHM', signin:'connect first', nobody:'no TOTEHM by that name'})[j&&j.error]||'checkout is unavailable · try again');
+        }catch(e){ console.error('[creator-subscribe]',e&&e.message||e); say('checkout is unavailable · try again'); }
       }
-      /* ⚠️ LA GALAXIE A SON PROPRE CENTRE, et il ne bouge pas. Il suivait le papier — or en Others le papier
-         est rentré dans [Mine] : le centre descendait avec lui, et la recherche avec. Un repère fixe
-         (40 % de la hauteur) : la recherche est au milieu, et l'étoile trouvée arrive exactement là. */
-      function geo(){ const w=W(), h=H(); G.cx=w/2; G.cy=Math.round(h*.40); G.R=Math.max(120,Math.min(w*.46,h*.5,520));
-        try{ document.documentElement.style.setProperty('--gy',G.cy+'px'); }catch(_){} }
-      function proj(p,sp){
-        const c=Math.cos(rot), s=Math.sin(rot), x=(p.u*c-p.v*s)*sp, y=(p.u*s+p.v*c)*sp, w=p.w*sp;
-        const yy=y*CT-w*ST, z=y*ST+w*CT, k=1/(1+.32*z);
-        return {x:G.cx+x*G.R*k, y:G.cy+yy*G.R*k, k, z};
-      }
-      /* La plongée : l'étoile vient au centre et tout grandit autour d'elle (×7). */
-      function camera(P,e){
-        if(!anim||e<=0) return P;
-        const S=anim.s, Z=1+6*e;
-        return {x:S.x+(W()/2-S.x)*e+(P.x-S.x)*Z, y:S.y+(G.cy-S.y)*e+(P.y-S.y)*Z, k:P.k*Z, z:P.z};
-      }
-      /* ⚠️ 18/10 — LE TOTEHM DÉPLIÉ COUVRE LA GALAXIE. Depuis que la lecture s'ouvre DANS la page
-         (et non plus dans un cadre `XO`), plus rien ne posait `is-xo` : la galaxie aurait continué
-         de calculer des images derrière un Totehm plein écran. L'atterrissage absent, elle dort. */
-      const couvert=()=>document.hidden||!body.classList.contains('gate')
-        ||$('member-window').classList.contains('show')||body.classList.contains('is-xo');
-      function kick(){ if(!raf&&(on||intro>0||anim)) raf=requestAnimationFrame(frame); }
-      function frame(now){
-        raf=0;
-        if(couvert()){ etat.anime=false; if(on||anim) setTimeout(kick,400); return; }
-        const dt=Math.min(.05,Math.max(0,(now-(last||now))/1000)); last=now;
-        if(intro!==introCible){ const v=dt/(introCible>intro?.75:.5); intro=introCible>intro?Math.min(introCible,intro+v):Math.max(introCible,intro-v); }
-        if(!drag&&!(anim)&&!RMQ.matches){ const c=(hover||sel)?.012:.06; om+=(c-om)*Math.min(1,dt*2.5); rot+=om*dt; }
-        let e=0;
-        if(anim){
-          const u=Math.min(1,(now-anim.t0)/anim.D); e=anim.dir>0?lisse(u):1-lisse(u); anim.e=e;
-          if(u>=1&&!anim.fait){ anim.fait=true; const f=anim.fin; anim.fin=null; if(anim.dir<0){ anim=null; e=0; } if(f) f(); }
-        }
-        dessiner(e);
-        etat.anime=true;
-        const encore=on&&(!RMQ.matches||anim&&!anim.fait)||(intro!==introCible)||(anim&&!anim.fait);
-        if(encore) raf=requestAnimationFrame(frame); else etat.anime=false;
-      }
-      function dessiner(e){
-        const dpr=Math.min(2,devicePixelRatio||1), w=W(), h=H();
-        if(cv.width!==Math.round(w*dpr)||cv.height!==Math.round(h*dpr)){ cv.width=Math.round(w*dpr); cv.height=Math.round(h*dpr); }
-        ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,w,h);
-        const I=lisse(Math.max(0,Math.min(1,intro))), sp=.1+.9*I;
-        const base=Math.max(26,Math.min(44,G.R*.13));   /* assez grand pour être visé au doigt */
-        for(const st of stars) st.P=camera(proj(st,sp),e);
-        const L=stars.slice().sort((a,b)=>b.P.z-a.P.z);
-        for(const st of L){
-          const P=st.P, cible=anim&&anim.st===st, vise=st===hover||st===sel||cible, match=!filtre||(st.k&&filtre.has(st.k));
-          let a=I*(.55+.45*(1-(P.z+1)/2))*(match?1:.2)*(st.fond?.5:1); if(anim&&!cible) a*=1-e;
-          const sz=base*P.k*(st.fond?.34:1)*(vise?1.5:1)*(filtre&&match?1.45:1); st.sz=sz;
-          if(a<.02) continue;
-          ctx.globalAlpha=Math.min(1,a);
-          if(sprite) ctx.drawImage(sprite,P.x-sz/2,P.y-sz/2,sz,sz);
-          else{ ctx.fillStyle='#333366'; ctx.fillRect(P.x-sz/2,P.y-sz/2,sz,sz); ctx.fillStyle='#fff'; }
-          /* Le filet d'intention : décoratif, jamais une information — un carré de fond n'est le Totehm
-             de personne, et sa couleur ne dit rien de plus que « la marque a sept couleurs ». */
-          if(st.fond&&st.teinte&&sz>=5){ ctx.globalAlpha=Math.min(1,a)*.55; ctx.strokeStyle=st.teinte; ctx.lineWidth=1;
-            ctx.strokeRect(P.x-sz/2+.5,P.y-sz/2+.5,sz-1,sz-1); }
-        }
-        ctx.globalAlpha=1;
-        peindreTip();
-      }
-      /* Le nom : Quantico Coral, posé au-dessus du carré ; pendant la plongée il GRANDIT avec lui et vient
-         se caler EN PLEIN milieu — le carré navy et son nom finissent à la place du papier. */
-      function peindreTip(){
-        const st=(anim&&anim.st)||hover||sel;
-        if(!st||!st.pseudo||!st.P||!on){ if(tipPour){ tipPour=null; tip.classList.remove('is-on','is-dedans'); tip.setAttribute('aria-hidden','true'); tip.tabIndex=-1; } return; }
-        if(tipPour!==st){ tipPour=st; tipN.textContent=st.pseudo; tip.setAttribute('aria-label','Open '+st.pseudo);
-          tip.classList.add('is-on'); tip.setAttribute('aria-hidden','false'); tip.tabIndex=0; }
-        const base=Math.max(26,Math.min(44,G.R*.13)), sz=st.sz||base;
-        const k=Math.max(1,Math.min(3.4,sz/Math.max(1,base))), dedans=k>1.6;
-        tip.classList.toggle('is-dedans',dedans);
-        tip.style.setProperty('--sc',k.toFixed(2));
-        tip.style.setProperty('--tx',st.P.x.toFixed(1)+'px');
-        tip.style.setProperty('--ty',(dedans?st.P.y:st.P.y-sz/2-6).toFixed(1)+'px');
-      }
-      function viser(x,y,marge){
-        let best=null, bd=1e9;
-        /* Un carré de fond n'est pas un Totehm : il ne se survole pas, il ne s'ouvre pas. */
-        for(const st of stars){ const P=st.P; if(!P||!st.pseudo) continue; const r=(st.sz||20)/2+marge, d=Math.hypot(P.x-x,P.y-y); if(d<r&&d<bd){ bd=d; best=st; } }
-        return best;
-      }
-      cv.addEventListener('pointerdown',e=>{
-        if(!on||anim||(e.pointerType==='mouse'&&e.button!==0)) return;
-        drag={id:e.pointerId, x:e.clientX, y:e.clientY, lx:e.clientX, t:performance.now(), on:false, v:0};
-      });
-      cv.addEventListener('pointermove',e=>{
-        if(!on||anim) return;
-        if(drag&&e.pointerId===drag.id){
-          const dx=e.clientX-drag.x;
-          if(!drag.on&&Math.abs(dx)>8&&Math.abs(dx)>Math.abs(e.clientY-drag.y)*1.2) drag.on=true;
-          if(drag.on){ const now=performance.now(), d=(e.clientX-drag.lx)*.006; rot+=d; drag.v=d/Math.max(.008,(now-drag.t)/1000); drag.t=now; kick(); }
-          drag.lx=e.clientX; return;
-        }
-        if(e.pointerType==='mouse'){ const h=viser(e.clientX,e.clientY,6); if(h!==hover){ hover=h; cv.style.cursor=h?'pointer':''; kick(); } }
-      });
-      const lacher=e=>{
-        if(!drag||e.pointerId!==drag.id) return;
-        const d=drag; drag=null;
-        if(d.on){ om=Math.max(-1.4,Math.min(1.4,d.v)); kick(); return; }
-        if(e.type!=='pointerup'||Math.hypot(e.clientX-d.x,e.clientY-d.y)>10) return;
-        const st=viser(e.clientX,e.clientY,e.pointerType==='mouse'?6:16);
-        if(!st){ if(sel){ sel=null; kick(); } return; }
-        if(e.pointerType==='mouse'||sel===st) ouvrirEtoile(st); else { sel=st; kick(); }
+      box.addEventListener('click',e=>{ const b=e.target.closest('[data-mbo="sub"]'); if(b&&MB.nom){ b.disabled=true;
+        abonner(MB.nom,t=>{ const n=box.querySelector('.mbo-s')||box.appendChild(Object.assign(document.createElement('p'),{className:'mbo-s'})); n.textContent=t; })
+          .finally(()=>{ b.disabled=false; }); } });
+      return {
+        ouvrir(nom){ if(nom) peindre(nom); },
+        prix:async nom=>prixDe(await lire(nom)),
+        abonner,
+        vider(){ seq++; cache=null; if(box) box.innerHTML=''; },
+        etat:()=>({vu:!!(box&&box.innerHTML), abonne:!!box.querySelector('.mbo-p'), bouton:!!box.querySelector('[data-mbo]')})
       };
-      cv.addEventListener('pointerup',lacher); cv.addEventListener('pointercancel',lacher);
-      cv.addEventListener('pointerleave',()=>{ if(hover){ hover=null; cv.style.cursor=''; kick(); } });
-      tip.addEventListener('click',()=>{ const st=sel||hover; if(st) ouvrirEtoile(st); });
-      /* ⚠️ ZÉRO SAUT, ZÉRO FRICTION (Wah, 16/10 puis 18/10). On ne navigue pas : l'étoile vient au
-         centre, le nom tapé se cale dessus — et ce qui s'ouvre au bout de la plongée, c'est SON
-         TOTEHM, dans CETTE page, en mode READ (`lireEnPlace`) : la même configuration que le mien,
-         les cinq vues, la manette, rien d'éditable. Un Totehm à abonnement bascule tout seul sur sa
-         page de vente, dans la couche `XO`. Fermer la lecture rejoue la plongée à l'envers.
-         Le marqueur `sessionStorage` reste : un rechargement pendant la lecture rend Others et le nom tapé. */
-      function ouvrirEtoile(st){
-        if(anim||!on||!st||!st.pseudo) return;
-        etat.choix++; sel=st; hover=null;
-        const P=st.P||{x:W()/2,y:G.cy}, nom=st.pseudo;
-        try{ q.blur(); }catch(_){}
-        try{ sessionStorage.setItem(CLE,JSON.stringify({q:q.value||'',p:nom,t:Date.now()})); }catch(_){}
-        document.body.classList.add('gx-dive');
-        /* Sans compte, il n'y a rien à lire (le serveur exige une session) : c'est la page de vente
-           qui s'ouvre, dans la couche `XO`, comme avant. On ne montre jamais une porte fermée. */
-        const lire=inscrit();
-        if(!lire){ try{ XO.prefetch(nom); }catch(_){} }
-        anim={t0:performance.now(), D:RMQ.matches?1:640, s:{x:P.x,y:P.y}, st, dir:1, e:0,
-              fin:()=>{ etat.ouvertures++;
-                        if(!lire){ XO.univers(nom,revenir); return; }
-                        lireEnPlace(nom).then(ok=>{ if(!ok) revenir(); }); }};
-        kick();
-      }
-      /* Ressortir de l'étoile : la même course, dir = −1. */
-      function revenir(){
-        document.body.classList.remove('gx-dive');
-        if(!anim) return;
-        anim.t0=performance.now(); anim.dir=-1; anim.D=RMQ.matches?1:520; anim.fait=false; anim.fin=()=>{ etat.retours++; sel=null; };
-        kick();
-      }
-      /* La recherche : `NameSearch`, la même que partout — elle allume les étoiles trouvées ; un nom choisi
-         plonge dans son étoile (un TOTEHM hors de la galaxie y entre, au premier plan). */
-      function choisir(p){
-        const k=String(p||'').toLowerCase(); if(!k) return;
-        /* Un nom qui existe mais qui n'est pas dans l'échantillon prend un dos de papier tiré au hasard. */
-        const st=stars.find(s=>s.k===k)||tirer(p);
-        if(!st) return;
-        if(!st.P) st.P=proj(st,1);
-        ouvrirEtoile(st);
-      }
-      const ctl=NameSearch({input:q, results:$('gx-res'), note:$('gx-note'), vide:true, href:p=>'/@'+encodeURIComponent(p), nouvel:ordi,
-        /* Taper un nom N'OUVRE PAS une liste à part : la galaxie elle-même répond — les autres s'éteignent,
-           le trouvé grandit et porte son nom en Coral. Un seul trouvé = il est déjà désigné. */
-        onRows:(rows,qq)=>{ filtre=qq?new Set(rows.map(r=>String(r.pseudo).toLowerCase())):null;
-          /* Un seul nom trouvé : il est désigné. S'il n'a pas encore de carré, il en prend un (au hasard
-             de sa place, stable pour ce nom) — l'étoile s'allume pendant qu'on tape. */
-          let seuls=null;
-          if(filtre&&filtre.size===1){ const k=[...filtre][0];
-            seuls=stars.find(st=>st.k===k)||tirer(rows[0]&&rows[0].pseudo||k); }
-          if(seuls) sel=seuls; else if(!filtre||!sel||!sel.k||!filtre.has(sel.k)) sel=null;
-          kick(); }, choisir});
-      /* Les positions des étoiles, pour viser (des nombres, jamais un nom). */
-      window.__totehm_gx=()=>stars.filter(s=>s.P&&s.pseudo).map(s=>[Math.round(s.P.x),Math.round(s.P.y)]);
-      q.addEventListener('keydown',e=>{
-        /* Entrée : on plonge dans le Totehm désigné — la galaxie n'a pas de liste à parcourir. */
-        if(e.key==='Enter'){ const st=sel||(filtre?stars.find(x=>filtre.has(x.k)):null);
-          if(st){ e.preventDefault(); try{ q.blur(); }catch(_){} ouvrirEtoile(st); } return; }
-        if(e.key!=='Escape') return;
-        e.preventDefault(); e.stopPropagation();
-        if(q.value){ q.value=''; ctl.start(''); } else { try{ q.blur(); }catch(_){} choisirMode('mine'); }
-      });
-      async function charger(){
-        if(charge) return; const s=++seq;
-        const {data,error}=await sb.rpc('totehm_galaxy',{p_limit:160});
-        if(s!==seq) return;
-        if(error){ console.error('[totehm_galaxy]',error.message); return; }
-        charge=true; etat.charge=true;
-        semer((data&&data.totehms)||[]);
-        kick(); if(apres){ const f=apres; apres=null; f(); }
-      }
-      function ouvrir(vite){
-        on=true; geo(); fabriquer(); charger();
-        if(vite||RMQ.matches){ intro=introCible=1; } else { intro=0; introCible=1; }
-        ctl.start(q.value||''); last=0; kick();
-      }
-      function fermer(vite){
-        on=false; sel=null; hover=null; drag=null; anim=null; introCible=0; if(vite||RMQ.matches) intro=0;
-        document.body.classList.remove('gx-dive');
-        peindreTip(); ctl.reset(); try{ q.blur(); }catch(_){} last=0; kick();
-      }
-      function pause(){ on=false; sel=null; hover=null; drag=null; peindreTip(); if(raf){ cancelAnimationFrame(raf); raf=0; } etat.anime=false; }
-      function reprendre(){ on=true; intro=introCible=1; geo(); last=0; kick(); }
-      /* Revenu d'un univers (rechargé) : Others, la recherche telle quelle, et l'on ressort de l'étoile. */
-      function restaurer(){
-        let c=null; try{ c=JSON.parse(sessionStorage.getItem(CLE)||'null'); sessionStorage.removeItem(CLE); }catch(_){}
-        if(!c||!c.p||Date.now()-(+c.t||0)>15*60*1000) return false;
-        q.value=String(c.q||'').slice(0,24);
-        choisirMode('others',null,true);
-        apres=()=>{ const st=stars.find(s=>s.k===String(c.p).toLowerCase())||tirer(c.p); if(!st||!on) return;
-          st.P=proj(st,1); anim={t0:performance.now(), D:1, s:{x:st.P.x,y:st.P.y}, st, dir:1, e:1, fait:true}; sel=st; revenir(); };
-        if(charge){ const f=apres; apres=null; f(); }
-        return true;
-      }
-      document.addEventListener('visibilitychange',()=>{ if(!document.hidden){ last=0; kick(); } });
-      window.addEventListener('pageshow',e=>{ if(e.persisted&&anim) revenir(); });
-      /* La lecture terminée (`sortirLecture`) rejoue la plongée à l'envers : on ressort de l'étoile. */
-      lvRevenirGalaxie=()=>{ if(anim) revenir(); };
-      return {ouvrir, fermer, pause, reprendre, revenir, restaurer, geo,
-              vider(){ seq++; charge=false; stars=[]; etat.charge=false; etat.etoiles=0; sel=null; hover=null; anim=null; filtre=null; ctl.reset(); q.value=''; },
-              etat:()=>Object.assign({}, etat, {ouvert:on, filtre:filtre?filtre.size:0, nom:tipPour?true:false})};
     })();
 
     /* ── LE PREMIER CONTACT : la preuve se déroule au clic, la porte s'ouvre d'un geste ── */
@@ -11961,14 +12074,15 @@ window.addEventListener('pageshow',e=>{
     /* ── LE NOM ET QUI LIT MON TOTEHM (mes réglages) — nœuds déplacés de l'espace membre (15/10) ── */
     let visSeq=0;
     function peindreCarte(){
-      const m=inscrit()&&!RO;
+      const m=inscrit()&&!RO, chez=inscrit()&&!!RO;
       $('lv-card').classList.toggle('hide',!m);
-      /* Sans compte : ce que ça fait et pourquoi ça marche. Avec un compte : le geste, rien d'autre. */
+      /* Sans compte : ce que ça fait et pourquoi ça marche. Avec un compte : le geste, rien d'autre — chez un
+         membre aussi (20/10 sexies) : tap = SON Totehm, tourner = chercher un autre membre. */
       const sou=window.matchMedia('(hover:hover)').matches;
       $('lv-tap-open').textContent=sou?'Click to open it':'Tap to open it';
-      $('lv-tap-turn').textContent=(sou?'Turn':'Swipe')+' to configure it';
-      $('lv-tap').classList.toggle('hide',!m);
-      $('lv-pitch').classList.toggle('hide',m);
+      $('lv-tap-turn').textContent=(sou?'Turn':'Swipe')+(chez?' to search':' to configure it');
+      $('lv-tap').classList.toggle('hide',!(m||chez));
+      $('lv-pitch').classList.toggle('hide',m||chez);
       if(!m) return;
       /* Un invité n'a ni nom ni lecteurs : une seule porte, sauver avec l'email. */
       const g=guest();
@@ -12084,7 +12198,7 @@ window.addEventListener('pageshow',e=>{
 
     /* Le centre : « Tap to open it » ouvre MON Totehm. */
     $('lv-tap-open').onclick=()=>{ if(!PAPIER.occupe()) enter(); };
-    $('lv-tap-turn').onclick=()=>{ if(!PAPIER.occupe()&&lvReglages) lvReglages.ouvrir(); };
+    $('lv-tap-turn').onclick=()=>{ if(PAPIER.occupe()) return; if(mode==='members') chercher(); else if(lvReglages) lvReglages.ouvrir(); };
 
     /* ══ EN BAS : MA REFLECTION (15/10) ═══════════════════════════════════════
        Wah : « toutes les données de mon TOTEHM prennent vie à travers une Reflection ». Le passage
@@ -12361,12 +12475,14 @@ window.addEventListener('pageshow',e=>{
       CREA.charger();
     };
     lvQuitter=()=>{ landSeq++; SM.seq++; SM.msgs=[]; SM.busy=false; SM.live=null; SM.offre=false; SM.ajoute.clear(); penser(false);
-                    visSeq++; CREA.vider(); GX.vider(); CLUBSP.vider(); smNote(''); };
+                    visSeq++; CREA.vider(); OFFRE.vider(); CLUBSP.vider(); smNote('');
+                    /* Un autre compte : la recherche et l'écosystème d'un membre se referment (la lecture, elle, suit `sessionChange`). */
+                    if(MB.cherche) finirRecherche(); if(!RO){ MB.nom=null; MB.avant=null; mode='mine'; body.classList.remove('lv-mb','lv-membre'); peindreMode(); } };
     window.__totehm_lv=()=>({build:BUILD, vue, mode, bouge, allers:diag.allers, modes:diag.modes, papier:PAPIER.vue(),
       membre:inscrit(), higher:!!(LAND&&LAND.higher&&LAND.higher.active), thp:!!(LAND&&LAND.thp),
       reflection:{tours:SM.msgs.length, pret:!!etatSM().ready, gratuits:etatSM().free_left??null, envois:diag.envois, ajouts:diag.ajouts,
                   pense:!!pense, telegram:diag.telegram},
-      galaxie:GX.etat(), ramifications:RAM.etat(), tours:diag.tours, tourne:!!tour,
+      membre:{cherche:MB.cherche, chez:!!MB.nom, medias:MBM.items.length, offre:OFFRE.etat()}, ramifications:RAM.etat(), tours:diag.tours, tourne:!!tour,
       shorts:SH.etat(), spots:SPOTS.etat(),
       visibilite:LAND?LAND.visibility:null, createur:CREA.etat(), reglages:sOpen});
     window.__lvAller=v=>aller(v);
@@ -12397,9 +12513,7 @@ window.addEventListener('pageshow',e=>{
         let n=0; const t=setInterval(async()=>{ n++; if(lvRefresh) await lvRefresh();
           if(acces()||n>=8){ clearInterval(t); SM.paye=false; if(acces()) smNoteEtat(); else smNote('it takes a moment · reopen this view soon'); } },1500); },600);
     }
-    /* Revenu d'un univers ouvert depuis la galaxie : Others, la recherche, on ressort de l'étoile. */
-    else if(!RO&&!location.hash) setTimeout(()=>GX.restaurer(),0);
-    return {vue:()=>vue, mode:()=>mode, aller, choisirMode, versMine, poser, reset, calme,
+    return {vue:()=>vue, mode:()=>mode, membre:()=>!!MB.nom&&!MB.cherche, aller, choisirMode, versMine, poser, reset, calme,
             revenu(){ RAM.peindre(vue); socle('c'); }};
   })();
 

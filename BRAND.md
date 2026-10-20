@@ -33,6 +33,20 @@ member has total control of their own Totehm — and the back of the paper has n
 Three levels, and only three: **PRIVATE** (only me) · **SUBSCRIBERS** (whoever subscribed to a member's
 Totehm) · **CLUB** (whoever is on the platform with a Totehm filled in — a member).
 
+## 20/10/2026 sexies · the ecosystem — the side views ARE the centre, transformed
+
+> **The rule.** The four views around the centre are the centre, transformed. Travelling sideways you SEE it: the
+> paper slides to the top, and the seven intention lines bend — into the rail of the boxes on the left, into seven
+> meridians around the world on the right. Then the view arrives.
+> **The spots →** — two modes, **MAP · GRID**, in the same format as **MINE · MEMBERS**. MAP is the Earth: a square per
+> spot in the colour of its intention — full when I see its point, hollow when I only see its city. GRID is a square
+> per spot with its Habit Box on top. A tap opens the polaroid. My Totehm on top opens the filter: the Habits (as Boxes),
+> **I WAS HERE · I AM HERE · I WILL BE THERE**, the intentions (**Fight [Higher]**…), what it shows, near me, mine.
+> No radar here: the radar belongs to figher.club.
+> **MEMBERS** — no galaxy. The paper grows with its socket, turns on its back, and asks for a name. Enter: you land in
+> the member's ecosystem — their processor, their media on the left, their spots on the right, their offer below.
+> **MINE** brings you home. A refusal is one line (no TOTEHM by that name · private · subscribe to read + one gesture).
+
 ## 20/10/2026 · ← my media is a grid · the spots → are the Club
 
 > **← My media** — an Instagram grid. One square per picture or video, and on it, slightly raised (a shadow
@@ -44,7 +58,7 @@ Totehm) · **CLUB** (whoever is on the platform with a Totehm filled in — a me
 > never a label that resembles it. A file inside a box reads **Visualize it**, never its file name. A Vision
 > is illustrated by one gesture only: [Add a media].
 > **The spots →** — figher.club continues here: every spot I may see, mine and the Club's, in three times —
-> **was · now · next**. RADAR or SHORTS; shorts are TikTok, one spot per screen, phone and desktop. This is the
+> **I was here · I am here · I will be there** (sexies). MAP or GRID; the polaroid is TikTok, one spot per screen. This is the
 > ONLY place for the polaroid: a navy frame, the intention line on its left edge, in the window at the TOP a
 > transparent black band with the spot facts (I was there · date · duration · place · who · location ·
 > silent/social · its word), GO and CALENDAR at the bottom, the Habit Box printed under the window, then the
@@ -68,10 +82,10 @@ number, never false scarcity.
 > **3** What derails you. *in your own words*
 > Your Reflection turns the three into your next move — at the rhythm of each habit.
 
-*Others — the one who reads:*
+*Members — the one who reads:*
 > **[Higher] your strategy**
 > Someone already lives the habit you keep postponing. Read how.
-> **1** Type a name. *the galaxy answers* · **2** Open their TOTEHM. *objectives · habits · repulsions* ·
+> **1** Type a member's name. *on the back of the paper* · **2** Live in their TOTEHM. *media · spots · habits* ·
 > **3** Subscribe to one, or to many. *copy what works into yours*
 > Their spots say where they'll be. You go.
 
@@ -158,9 +172,8 @@ Signed out, it is dimmed and still. No blur, ever.
 study does not exist. Our own citations are stronger because they are real. A member sees none of this: they get
 **Tap to open it · Turn to configure it**.
 
-**The galaxy is the BACK of the paper, nothing else** — navy perforated squares, no stars, no dust. A name appears
-only on hover, tap or dive, in Quantico Coral, growing with its square. Typing a name does not open a list: the
-galaxy itself answers.
+~~The galaxy~~ (gone on 20/10 sexies): searching a member is the BACK of my own paper, grown — one field, a name
+typed in Quantico Coral, and the member's ecosystem in answer.
 
 **The Reflection at rest is a profile and a blinking cursor, on the LEFT** (20/10): arriving below opens the keyboard at
 once; one caret at a time, no box, no placeholder; what I type is big (Quantico 22 px), left-aligned. Then three linked tiers: direction (light blue) ·
@@ -182,10 +195,9 @@ page. Then what I pay: the TOTEHMs I subscribe to, [Higher] (the SVG), TotehmBot
   dark well; no blur, no circuitry show), fine ramifications above it, one per intention, in the **7 exact colours**,
   their nodes = my Habits. Down: **my Reflection**. No joystick, no left or right: the finger, the trackpad, the
   wheel, the arrows and two discreet chevrons.
-- **Mine · Others**: two quiet buttons, the chosen one obvious. *Others* is a galaxy of real TOTEHMs, each drawn as its
-  assembled logo; a name search lights them; a star (hover, or a first tap) says its name; choosing it dives in and
-  opens its universe (/@name) — the way back comes out of the star, the search kept. Seeing another TOTEHM never
-  replaces mine, nor my Reflection's context.
+- **Mine · Members**: two quiet buttons, the chosen one obvious; once inside a member's ecosystem, *Members* carries
+  their name in Coral. Seeing another TOTEHM never replaces mine, nor my Reflection's context: my Reflection lives at
+  home only.
 - **The back of the paper = my settings**: my name, who reads my TOTEHM (four audiences), my subscription program. No
   AI there. It is the control panel of the same object; the member space keeps the account.
 - **My Reflection** — everything in my TOTEHM comes alive through it. Going down, the processor **condenses**: the

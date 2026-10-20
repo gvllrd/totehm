@@ -1,5 +1,49 @@
 # com/CLAUDE.md — totehm.com : le Totehm, la carte, HigherSelf
 
+## 20/10/2026 sexies — L'ÉCOSYSTÈME : ← → SONT LA TRANSFORMATION DU CENTRE ; MAP · GRID ; MEMBERS (BUILD `2026-10-20-com-ecosysteme`)
+
+Wah : « les 4 vues adjacentes doivent être le résultat de la transformation de la vue centrale : on doit voir en
+transition, de part et d'autre, les 7 traits d'intention et évidemment le Totehm » · « dans la vue de droite on oublie
+le radar, réservé au figher.club : deux modes, MAP et GRILLE, dans le même format que MINE et OTHERS (que tu changes en
+MEMBERS) ; le filtre avec seulement les box Habits, les intentions, le temps I WAS HERE · I AM HERE · I WILL BE THERE » ·
+« quand on cherche un Totehm (MEMBERS), on oublie la galaxie : on agrandit le TOTEHM et son socle processor tout en le
+retournant en mode verso, avec l'invitation directe à entrer un identifiant ; validé, on retombe dans l'écosystème, mais
+ce n'est plus le nôtre, c'est celui d'un membre ».
+- **`RAM` SE TRANSFORME** (`RAM.peindre(v,{anime})`) : chaque piste = deux branches rééchantillonnées à 24 points
+  (`reech`), donc toute forme devient toute autre, point pour point, en ≈ 0,7 s (rAF seulement pendant la course,
+  `body.ram-morph`). Formes : centre = le circuit (autour du papier, ou du papier AGRANDI en MEMBERS : `{papier}`) ·
+  haut = le cerveau · gauche = le RAIL (les sept pistes descendent du papier docké jusqu'aux deux bords, sans croisement)
+  · droite = SEPT MÉRIDIENS sur le globe de la carte (`SPMAP.geo()`, la même géométrie). Les vues ← → entrent après
+  (`transition-delay` .55–.62 s) ; arrivé, le réseau s'efface (la carte garde ses propres méridiens). Mouvement réduit :
+  aucune transformation. Diagnostic : `ramifications.morphs`, `.enCours`.
+- **→ MAP · GRID** (`SPOTMODE` map|grid, `localStorage totehm_spots_mode2`) ; le RADAR (`RDR`, `#rdr-c`) est PARTI.
+  `#rdr-mode` = la bascule au format de MINE · MEMBERS, au-dessus de la manette. **`SPMAP`** : un canvas, la projection
+  orthographique, Natural Earth 110 m (`/assets/earth.json`, 51 ko, restauré du 13/10), terres en `--navy-d`, sept
+  méridiens fixes aux sept couleurs, la Terre tourne dedans (doigt, molette, pincement ×1–8) ; aucun rAF permanent. Un
+  spot = un carré à la couleur de sa première intention : PLEIN si `exact` m'est montré, CREUX au centre de SA VILLE
+  (`cities.json`, lu seulement s'il le faut — jamais un faux point). Le doigt horizontal tourne la Terre : l'axe s'éteint
+  dans CETTE vue (chevron, manette, trackpad ramènent). **`SPGRID`** : la grille de gauche (`.tlg`), la photo ou la
+  vignette Bunny (`BUNNY.vignette`), la Habit Box au format Totehm (la mienne, ou rendue depuis `habit_box`). Un tap
+  (carré ou tuile) → **le polaroid** (`SHS.ouvrirA(cle)`, `#rdr-sh` par-dessus, `body.rdr-voir`, ✕ ou Échap). Le filtre :
+  le Totehm docké l'ouvre (`SHS.box()`) — HABITS (format Totehm) · When (`CLUBSP.periode`) · Intentions « X [Higher] »
+  (`chipInt`, aussi à gauche) · It shows · Where · Whose (pas chez un membre). La barre : le temps courant + Filter.
+- **MEMBERS** (`MB` dans `LV` ; `#lv-m-members`, l'ancienne `GX` et `#gx-*` PARTIS, balisage + câblage + CSS) :
+  `chercher()` — le papier se pose sur son DOS puis GRANDIT (`cibleGrand`, ancré en haut), le socle et le réseau le
+  suivent ; `#mb-ui` (Quantico Coral) est posé dessus et prend le focus DANS le geste. `valider()` → `totehm_of` : refus =
+  une note (`no TOTEHM by that name`, `this TOTEHM is private`, `subscribe to read` + UN bouton SUBSCRIBE au prix du
+  serveur), jamais mon état touché. Accepté → `activer()` : `poserLecture(data)` (extrait de `loadRO`), `RO` armé,
+  `?ro=` par `replaceState`, `entrerChez()` — `body.lv-membre`, [Members] porte SON nom en Coral, SES médias
+  (`member_media` → `MBM`, lus par `SH`), SES spots (`CLUBSP` appelle `club_spots_of`), en bas SON offre (`OFFRE` :
+  `creator_page`, `creator-subscribe`) — ma Reflection n'existe que chez moi. Tap = SON Totehm en lecture ; replier
+  le laisse dans son écosystème (`fold` ne quitte plus la lecture) ; « back to mine » = replier PUIS MINE (`roSortir`).
+  Tourner le papier chez lui = chercher un autre membre. MINE = `quitterMembre()` → `sortirLecture()`. Échap pendant la
+  recherche : le membre d'avant, sinon moi. `?ro=nom` au chargement entre dans son écosystème (`lvMembreBoot`). Le nom
+  de l'auteur d'un spot → `lvVersMembre` (son écosystème ; s'il faut s'abonner, sa page de vente dans `XO`).
+  Une vignette vidéo d'un autre membre reste locale (`POSTER` n'écrit jamais dans son dossier). Un tap sur [Mine] ou
+  [Members] pendant un mouvement attend la fin (`quandLibre`, 2 s au plus).
+- Tests : `com_processeur` 136 (MEMBERS, transformations ← →), `com_shorts` 127 (MAP, polaroid, GRID, filtre, membre),
+  `com_read_copy` 18 ; base : `tests/sql/ecosysteme_membre_selftest.sql`.
+
 ## 20/10/2026 quinquies — LES BOXES SONT SACRÉES (BUILD `2026-10-20-com-boxes`)
 
 Wah : « tout ce qui vient du Totehm est dans le format Totehm … les box sont littéralement sacrées » · « un filtre

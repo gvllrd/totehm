@@ -1,4 +1,4 @@
-// 07/10/2026 — chercher un membre (15/10 : la galaxie, Others ; un nom → /@nom) + Subscribe, le Totehm lu (joystick en bas, une Box s'ouvre en place, COPY, spaces, loupe), le menu
+// 07/10/2026 — chercher un membre (20/10 sexies : MEMBERS, le papier agrandi sur son dos ; un nom → son écosystème) + Subscribe, le Totehm lu (joystick en bas, une Box s'ouvre en place, COPY, spaces, loupe), le menu
 // membre plein écran au format de higher.boutique. Tout est simulé : aucune écriture réelle.
 import {launch,page,ok} from './harness.mjs';
 const OUT=process.argv[2]||'/tmp';const browser=await launch();const origin='https://www.totehm.com';
@@ -11,19 +11,20 @@ const rpc={my_console:{signed_in:true,offer:{enabled:false}},my_landing:{signed_
   totehm_search:b=>b.p_q?[{pseudo:'studio',offer:true,price_cents:2400,currency:'eur',subscribed:true},{pseudo:'atelier',offer:true,price_cents:3600,currency:'eur',subscribed:false}]:[{pseudo:'studio',offer:true,price_cents:2400,currency:'eur',subscribed:true}],
   totehm_import_boxes:b=>({ok:true,created:b.p_selection[0].kind==='h'?1:0,reused:b.p_selection[0].kind==='h'?0:1,total:1})};
 try{
- /* ── 1 · 15/10 : chercher un autre TOTEHM = Others (la galaxie) ; un nom → /@nom (son univers), déjà abonné → « subscribed » ── */
- {const {pg,log}=await page(browser,{dir:'com',origin,rpc,tables:{profiles:[{pseudo:'wah'}]}});
+ /* ── 1 · 20/10 sexies : chercher un autre TOTEHM = MEMBERS ; le papier grandit, on tape son nom sur son dos → SON écosystème ── */
+ {const {pg,log}=await page(browser,{dir:'com',origin,rpc:Object.assign({},rpc,{member_media:{ok:true,items:[]},club_spots_of:{ok:true,items:[]}}),tables:{profiles:[{pseudo:'wah'}]}});
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(700);
   ok(/^(Tap|Click) to open it · (Swipe|Turn) to configure it$/.test((await pg.textContent('#lv-tap')).trim())&&await pg.isVisible('#lv-tap'),'au centre : « Tap to open it · Turn to configure it » (15/10 bis)');
-  await pg.click('#lv-m-others');await pg.waitForTimeout(1200);
-  const q=await pg.evaluate(()=>({v:document.getElementById('gx-q').value,ph:document.getElementById('gx-q').placeholder,rows:document.querySelectorAll('#gx-res .srch-row').length}));
-  ok(q.v===''&&q.ph==='a name'&&q.rows<=1,'Others : la galaxie et sa recherche vide, « a name » (mes abonnements, au plus)');
-  await pg.fill('#gx-q','stu');await pg.waitForFunction(()=>document.querySelectorAll('#gx-res .srch-row').length===2);
-  const rows=await pg.$$eval('#gx-res .srch-row',l=>l.map(r=>({open:r.querySelector('.srch-open')?.getAttribute('href'),sub:r.querySelector('.srch-sub')?.getAttribute('href'),subT:r.querySelector('.srch-sub')?.textContent,meta:r.querySelector('.srch-meta')?.textContent})));
-  ok(rows[0].open==='/@studio'&&rows[0].meta==='subscribed','on tape un nom : son univers (/@studio) ; déjà abonné → « subscribed »');
-  ok(rows[1]&&rows[1].open==='/@atelier'&&/\/ year/.test(rows[1].meta||''),'un créateur : son univers porte la vente, le prix par an à côté ('+(rows[1]&&rows[1].meta)+')');
-  await pg.screenshot({path:OUT+'/galaxie_search.png'});
-  ok(!erreurs(log).length,'galaxie : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();
+  await pg.click('#lv-m-members');await pg.waitForTimeout(1500);
+  const q=await pg.evaluate(()=>({v:document.getElementById('mb-q').value,ph:document.getElementById('mb-q').placeholder,f:document.activeElement.id,gx:!!document.getElementById('gx-q')}));
+  ok(q.v===''&&q.ph==="a member's TOTEHM"&&q.f==='mb-q'&&!q.gx,'[Members] : plus de galaxie, une saisie vide sur le dos du papier, « a member\'s TOTEHM », le focus déjà là');
+  await pg.fill('#mb-q','@studio');await pg.keyboard.press('Enter');
+  await pg.waitForFunction(()=>document.body.classList.contains('lv-membre'),null,{timeout:8000}).catch(()=>{});await pg.waitForTimeout(1200);
+  const e=await pg.evaluate(()=>({who:document.getElementById('lv-m-who').textContent,ro:document.body.classList.contains('ro'),tap:document.getElementById('lv-tap').textContent.trim()}));
+  ok(e.who==='studio'&&e.ro&&/(Swipe|Turn) to search$/.test(e.tap)&&/[?&]ro=studio/.test(pg.url()),'« @studio » ↵ : on vit SON écosystème (« '+e.tap+' »), sur place');
+  ok(log.rpc.filter(x=>x.name==='totehm_of').length===1&&log.rpc.some(x=>x.name==='member_media'&&x.body.p_pseudo==='studio'),'une lecture de son Totehm, une de ses médias (`member_media`)');
+  await pg.screenshot({path:OUT+'/members_search.png'});
+  ok(!erreurs(log).length,'members : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();
  }
  /* ── 3 · le Totehm d'un membre : joystick en bas, une Box s'ouvre en place, COPY, spaces, loupe ── */
  {const {pg,log}=await page(browser,{dir:'com',origin,rpc,tables:{profiles:[{pseudo:'wah'}]}});
