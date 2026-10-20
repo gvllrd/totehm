@@ -20,6 +20,19 @@
 ---
 
 
+## 0 · EN BAS, ON ARRIVE ET ON TAPE — 20/10/2026 bis (lot H)
+
+| Mesure | Résultat |
+|---|---|
+| `com/totehm.html` en production | 200, 793 148 octets, `BUILD=2026-10-20-com-clavier` |
+| Déploiement Vercel | commit `c5557f8`, production READY |
+| Absent en production | le faux curseur (`class="rf-cur"`) et son clignotement (`rf-blink`) |
+| Présent en production | `placeholder="Wassup ?" enterkeyhint="send"`, champ en 16 px, `REF.armer()` dans `aller('b')`, `.rf-proxy`, `body.rf-clavier #lvjoy` |
+| Mesuré en page (ordinateur) | à l'arrivée en bas, le focus est DÉJÀ dans le champ ; fond transparent ; ↑ dans le champ vide remonte ; redescendre remet le focus |
+| Mesuré en page (téléphone, glissé tactile) | pendant la course le focus est sur le relais (le clavier s'ouvre DANS le geste) ; à l'arrivée il passe au champ et garde « yo » tapé pendant la course ; manette à l'opacité 0 ; remonter ferme le clavier |
+| ⚠️ Non mesurable ici | l'ouverture RÉELLE du clavier iOS/Android (aucun téléphone dans le cloud) : à confirmer sur le téléphone de Wah |
+| Suites navigateur | com_processeur **122** · com_plateforme 23 · com_paper 36 · com_shorts 92 · com_guest 14 · com_member_menu 41 · com_read_copy 18 — 0 échec |
+
 ## 0 · LE VERSO = MON ARGENT, EN UN ÉCRAN — 20/10/2026 (lot H)
 
 | Mesure | Résultat |
