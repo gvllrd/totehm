@@ -1,5 +1,30 @@
 # com/CLAUDE.md — totehm.com : le Totehm, la carte, HigherSelf
 
+## 21/10/2026 — LE SPOT TEL QU'IL EST ; LA VISIONNEUSE DE GAUCHE DÉFILE À LA VERTICALE (BUILD `2026-10-21-com-spots`)
+
+Wah : « arrondis les images de la grille dans la vue de droite ; je ne veux plus de l'effet polaroid dans la vue
+agrandie … les informations du spot juste au-dessus, au format d'origine de figher.club » · « c'est l'image telle
+qu'elle, avec le background noir, comme dans la vue de gauche » · « dans la vue de gauche, le système de scrolling de la
+vue de droite, pas de défilement horizontal avec les flèches latérales ».
+- **→ GRID** : `#rdr-g .tl` arrondies (14 px, 16 sur ordinateur), séparées par le noir (gap 5/8). La grille de GAUCHE
+  reste carrée bord à bord (Instagram).
+- **→ LA VUE AGRANDIE** (`SHS`, `html(x)` réécrit) : toujours un spot par écran, aimanté (`#rdr-sh`), mais PLUS DE
+  POLAROID — `.lsh-pol`, son cadre navy, `.ssp-top`, `.ssp-bg` (le fond flou), la place `--px/--py` et toutes leurs règles
+  sont PARTIS (balisage + CSS ; `BADGE` ne sert plus qu'au point de focalisation de gauche). Sur le noir, `.ssp-c` :
+  `.ssp-info` = la Habit Box (`boxSpot(z)` : la mienne avec mes liens, ou celle d'un autre membre depuis `habit_box`,
+  ses mini-boîtes WHY / TRIGGER au format de la liste ; un tap sur LA MIENNE l'ouvre dans le Totehm, `data-lsh`), puis
+  `.sdata` — le bloc de figher.club COPIÉ (`spotHTML` : noir .86, rayon 16, `.sd-tag` Space Mono 9 px gris `#15151a`,
+  l'état en premier `is-st`, le lieu exact en lien Maps, `.sd-say` en Quantico) avec ses mots (`dayOf` → today ·
+  yesterday · « 24 Oct », `fmtDur` → 45 min · 1 h 30, « until » pour I AM HERE) —, puis `.ssp-row` : « by » + l'auteur
+  en Coral (→ SON écosystème) et GO · CALENDAR. Dessous, `.ssp-m` : l'image ou la vidéo TELLE QU'ELLE
+  (`object-fit:contain`, jamais recadrée). Sans média (`.is-nu`) : les infos seules, centrées.
+- **← LA VISIONNEUSE** (`#tlv`) : `.tlv-f` défile à la VERTICALE (`scroll-snap-type:y mandatory`), une `.tlv-s` par média
+  du fil filtré, remplie en approchant (`remplir` : le média `contain` + la box DÉTAILLÉE par-dessus le bas) ; la vidéo
+  visible joue, ses voisines se préparent (`metadata`). ↑ ↓ (`voisinV`) défilent ; ← → ne font rien ; Échap et ✕ ferment.
+  `.tlv-p` / `.tlv-n`, le glissé horizontal et le glissé vers le bas pour fermer sont PARTIS (balisage + câblage + CSS).
+- Tests : `com_shorts` 135 (tuiles arrondies ; vue agrandie : noir, `contain`, infos au-dessus, `.sdata`, étiquettes ;
+  visionneuse : sections, aimant, ↓, molette, → inerte), toutes les suites COM vertes.
+
 ## 20/10/2026 septies — LE CERVEAU VIBRE, DES POINTS SUR LA TERRE, UN SEUL CURSEUR, LA MANETTE-SOCLE (BUILD `2026-10-20-com-manette`)
 
 Wah : « à la place des carrés, des points ; les 7 traits doivent disparaître du globe, comme à gauche » · « les couleurs
@@ -53,7 +78,7 @@ ce n'est plus le nôtre, c'est celui d'un membre ».
   (`cities.json`, lu seulement s'il le faut — jamais un faux point). Le doigt horizontal tourne la Terre : l'axe s'éteint
   dans CETTE vue (chevron, manette, trackpad ramènent). **`SPGRID`** : la grille de gauche (`.tlg`), la photo ou la
   vignette Bunny (`BUNNY.vignette`), la Habit Box au format Totehm (la mienne, ou rendue depuis `habit_box`). Un tap
-  (carré ou tuile) → **le polaroid** (`SHS.ouvrirA(cle)`, `#rdr-sh` par-dessus, `body.rdr-voir`, ✕ ou Échap). Le filtre :
+  (carré ou tuile) → **le spot en grand** (`SHS.ouvrirA(cle)`, `#rdr-sh` par-dessus, `body.rdr-voir`, ✕ ou Échap ; plus de polaroid depuis le 21/10). Le filtre :
   le Totehm docké l'ouvre (`SHS.box()`) — HABITS (format Totehm) · When (`CLUBSP.periode`) · Intentions « X [Higher] »
   (`chipInt`, aussi à gauche) · It shows · Where · Whose (pas chez un membre). La barre : le temps courant + Filter.
 - **MEMBERS** (`MB` dans `LV` ; `#lv-m-members`, l'ancienne `GX` et `#gx-*` PARTIS, balisage + câblage + CSS) :

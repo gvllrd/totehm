@@ -33,6 +33,12 @@ member has total control of their own Totehm — and the back of the paper has n
 Three levels, and only three: **PRIVATE** (only me) · **SUBSCRIBERS** (whoever subscribed to a member's
 Totehm) · **CLUB** (whoever is on the platform with a Totehm filled in — a member).
 
+## 21/10/2026 · the spot as it is, the media scroll the same way
+
+> **Right, the grid tiles are rounded.** A tap opens the spot large — no frame, no polaroid: its Habit Box and its facts
+> in figher.club's format just above, then the image as it is on black. **Left, the viewer scrolls vertically**, one
+> media per screen, snapped — the same gesture as the spots. No side arrows, no horizontal swipe.
+
 ## 20/10/2026 septies · the brain vibrates, the controller is a small socket
 
 > **Up, the brain VIBRATES.** The seven intention lines, in their full colours, form a brain seen from above (two
@@ -51,7 +57,7 @@ Totehm) · **CLUB** (whoever is on the platform with a Totehm filled in — a me
 > **The spots →** — two modes, **MAP · GRID**, in the same format as **MINE · MEMBERS**. MAP is the Earth: a DOT per
 > spot in the colour of its intention — full when I see its point, hollow when I only see its city (20/10 septies). The
 > meridians live only during the travel: once the Earth is there, they are gone — like on the left. GRID is a square
-> per spot with its Habit Box on top. A tap opens the polaroid. My Totehm on top opens the filter: the Habits (as Boxes),
+> per spot with its Habit Box on top (rounded tiles, 21/10). A tap opens the spot, large. My Totehm on top opens the filter: the Habits (as Boxes),
 > **I WAS HERE · I AM HERE · I WILL BE THERE**, the intentions (**Fight [Higher]**…), what it shows, near me, mine.
 > No radar here: the radar belongs to figher.club.
 > **MEMBERS** — no galaxy. The paper grows with its socket, turns on its back, and asks for a name. Enter: you land in
@@ -69,11 +75,11 @@ Totehm) · **CLUB** (whoever is on the platform with a Totehm filled in — a me
 > never a label that resembles it. A file inside a box reads **Visualize it**, never its file name. A Vision
 > is illustrated by one gesture only: [Add a media].
 > **The spots →** — figher.club continues here: every spot I may see, mine and the Club's, in three times —
-> **I was here · I am here · I will be there** (sexies). MAP or GRID; the polaroid is TikTok, one spot per screen. This is the
-> ONLY place for the polaroid: a navy frame, the intention line on its left edge, in the window at the TOP a
-> transparent black band with the spot facts (I was there · date · duration · place · who · location ·
-> silent/social · its word), GO and CALENDAR at the bottom, the Habit Box printed under the window, then the
-> author's name in Coral. Never a position invented from a city.
+> **I was here · I am here · I will be there** (sexies). MAP or GRID; one spot per screen, snapped. **No polaroid any
+> more (21/10)**: on black, the Habit Box (Totehm format), then the spot facts in figher.club's own format — the black
+> rounded block of grey tags (the state first · date · duration · place · who · location · silent/social · its word) —,
+> the author's name in Coral, GO and CALENDAR; below, the image or the video **as it is**, never cropped. Never a
+> position invented from a city.
 
 ## 16/10/2026 bis · the list is the Totehm ; ← my shorts, my spots → (views replaced on 20/10, above)
 

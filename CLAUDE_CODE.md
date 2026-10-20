@@ -88,6 +88,12 @@ dessus, légèrement surélevée, avec ses filtres. À DROITE, LES SPOTS DU CLUB
 ou en shorts TikTok ; c'est là seulement qu'on a le polaroid, avec en haut
 la bande noire transparente des informations du spot.
 
+Quatorzième volet (BUILD `2026-10-21-com-spots`) : À DROITE, les tuiles de
+la grille sont arrondies et le spot s'ouvre en grand SANS polaroid — sur le
+noir, sa Habit Box et ses informations au format de figher.club juste
+au-dessus, puis l'image telle qu'elle. À GAUCHE, la visionneuse défile à la
+verticale, aimantée, comme les spots (plus de flèches latérales).
+
 Treizième volet (BUILD `2026-10-20-com-manette`) : EN HAUT, LE CERVEAU VIBRE —
 les sept traits, couleurs pleines, une onde par intention, rouge lente et
 ample, violet rapide et fine (l'EEG de la vente). À DROITE, les spots sont des

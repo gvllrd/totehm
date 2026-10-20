@@ -1,7 +1,7 @@
 // COM · 16/10/2026 bis → 20/10 sexies — LA LISTE SEULE DANS LE TOTEHM ; MES MÉDIAS À GAUCHE (la grille Instagram),
-// LES SPOTS À DROITE (MAP · GRID, le polaroid par-dessus). Dans le Totehm, aucun mode, aucune bascule, la manette ne
+// LES SPOTS À DROITE (MAP · GRID, le spot en grand par-dessus — plus de polaroid depuis le 21/10). Dans le Totehm, aucun mode, aucune bascule, la manette ne
 // s'en va jamais ; sur l'atterrissage, ← la grille de MES médias (`element_media`, zéro appel de plus) et → les spots
-// du Club (`club_spots`) sur la Terre ou en grille ; un tap ouvre le polaroid TikTok. Plus de radar (figher.club).
+// du Club (`club_spots`) sur la Terre ou en grille ; un tap ouvre le spot en grand, aimanté. Plus de radar (figher.club).
 // Capturer et importer DEPUIS l'élément reste dans le Totehm : privé (`element-media`), `element_media_add`,
 // `_remove`, `_rekey`. En lecture : rien de tout ça. Sans compte : ni shorts ni spots. Tout est simulé.
 // LANCER : node com_shorts.mjs /tmp
@@ -94,20 +94,31 @@ try{
   // Wah : « quand on clique sur une image de la grille, on ouvre le média avec par-dessus la box détaillée, au lieu
   // de rediriger vers le Totehm ».
   await pg.click('#lv-sh .tl[data-i="0"] .tl-bx',{force:true});await pg.waitForTimeout(500);
-  const v=await pg.evaluate(()=>{const b=document.querySelector('#tlv .tlv-b'), m=document.querySelector('#tlv .tlv-m');
-    return {vu:!document.getElementById('tlv').hidden, img:!!document.querySelector('#tlv .tlv-m img'),
+  const v=await pg.evaluate(()=>{const s0=document.querySelector('#tlv .tlv-s[data-j="0"]'), b=s0&&s0.querySelector('.tlv-b'), m=s0&&s0.querySelector('.tlv-m'),
+      f=document.querySelector('#tlv .tlv-f'), im=m&&m.querySelector('img');
+    return {vu:!document.getElementById('tlv').hidden, img:!!im, fit:im?getComputedStyle(im).objectFit:'',
       box:(b&&b.querySelector('.tb .v-name')||{}).textContent||'', sub:(b&&b.querySelector('.tb .v-sub')||{}).textContent||'',
       minis:b?[...b.querySelectorAll('.tb .mini')].map(e=>e.textContent):[],
       dessus:b&&m?b.getBoundingClientRect().top<m.getBoundingClientRect().bottom&&getComputedStyle(b).position==='absolute':false,
-      suiv:!document.querySelector('#tlv .tlv-n').hidden, prec:document.querySelector('#tlv .tlv-p').hidden,
+      n:document.querySelectorAll('#tlv .tlv-s').length, fleches:document.querySelectorAll('#tlv .tlv-p,#tlv .tlv-n,#tlv [data-tlv="1"],#tlv [data-tlv="-1"]').length,
+      snap:f?getComputedStyle(f).scrollSnapType:'', ox:f?getComputedStyle(f).overflowX:'', oy:f?getComputedStyle(f).overflowY:'',
+      haut:s0&&f?Math.abs(s0.getBoundingClientRect().height-f.clientHeight)<2:false,
       gate:document.body.classList.contains('gate'), papier:getComputedStyle(document.getElementById('gate-asteroid')).opacity};});
-  ok(v.vu&&v.img&&v.gate&&v.papier==='0','un tap (même sur la box) ouvre le MÉDIA en grand — plus aucune redirection vers le Totehm');
-  ok(v.box==='Run the hill'&&/fight/i.test(v.sub)&&v.minis.includes('Ship it')&&v.minis.includes('The phone')&&v.dessus&&v.suiv&&v.prec,
+  ok(v.vu&&v.img&&v.fit==='contain'&&v.gate&&v.papier==='0','un tap (même sur la box) ouvre le MÉDIA en grand, TEL QU\'IL EST (contain) — plus aucune redirection vers le Totehm');
+  ok(v.box==='Run the hill'&&/fight/i.test(v.sub)&&v.minis.includes('Ship it')&&v.minis.includes('The phone')&&v.dessus,
      'par-dessus, la box DÉTAILLÉE du Totehm : '+v.box+' · '+v.sub+' · '+v.minis.join(' / '));
-  await pg.keyboard.press('ArrowRight');await pg.waitForTimeout(300);
-  ok((await pg.$eval('#tlv .tlv-b .v-name',e=>e.textContent))==='The studio'&&(await lv(pg)).vue==='g','→ montre le média suivant, sans quitter la vue');
+  ok(v.n===2&&v.fleches===0&&/y/.test(v.snap)&&/mandatory/.test(v.snap)&&v.ox==='hidden'&&v.oy==='auto'&&v.haut,
+     '21/10 · la visionneuse défile À LA VERTICALE, aimantée, un média par écran — plus de ‹ › ni d\'horizontale → '+JSON.stringify({n:v.n,snap:v.snap,f:v.fleches}));
+  await pg.keyboard.press('ArrowRight');await pg.waitForTimeout(400);
+  ok(await pg.evaluate(()=>window.__totehm_sh().vu===0&&window.__totehm_lv().vue==='g'&&!document.getElementById('tlv').hidden),'21/10 · → ne fait rien dans la visionneuse (ni média voisin, ni changement de vue)');
+  await pg.keyboard.press('ArrowDown');await pg.waitForTimeout(1100);
+  const v2=await pg.evaluate(()=>({vu:window.__totehm_sh().vu, nom:(document.querySelector('#tlv .tlv-s[data-j="1"] .tlv-b .v-name')||{}).textContent||'',
+    top:document.querySelector('#tlv .tlv-f').scrollTop, h:document.querySelector('#tlv .tlv-f').clientHeight, vue:window.__totehm_lv().vue}));
+  ok(v2.vu===1&&v2.nom==='The studio'&&Math.abs(v2.top-v2.h)<3&&v2.vue==='g','21/10 · ↓ fait DÉFILER jusqu\'au média suivant (aimanté), sans quitter la vue → '+JSON.stringify(v2));
+  await pg.mouse.move(200,400);await pg.mouse.wheel(0,-700);await pg.waitForTimeout(1100);
+  ok(await pg.evaluate(()=>window.__totehm_sh().vu===0&&window.__totehm_lv().vue==='g'),'21/10 · la molette (le doigt) remonte au média précédent : c\'est le défilement, pas un changement de vue');
   await pg.keyboard.press('Escape');await pg.waitForTimeout(300);
-  ok(await pg.evaluate(()=>document.getElementById('tlv').hidden&&window.__totehm_lv().vue==='g'),'Échap referme la visionneuse : on reste dans la grille');
+  ok(await pg.evaluate(()=>document.getElementById('tlv').hidden&&window.__totehm_lv().vue==='g'&&!document.querySelector('#tlv .tlv-s')),'Échap referme la visionneuse : on reste dans la grille');
   // on entre dans le Totehm par le centre, et l'on ouvre l'Habit
   await pg.click('#lvn-rt');await vers(pg,'c');await pg.waitForTimeout(300);
   await pg.click('#lv-tap-open');
@@ -202,31 +213,34 @@ try{
   ok(d.r.carte.terres>100&&d.r.carte.points===1&&d.r.carte.villes===0,'la Terre (Natural Earth, '+d.r.carte.terres+' terres) et mon spot : un carré plein, à son point');
   ok(d.plein&&d.dock&&d.haut,'la carte prend l\'écran ; le Totehm est sorti se caler EN HAUT, centré');
   await pg.screenshot({path:OUT+'/spots_'+(tel?'tel':'ordi')+'.png'});
-  // un tap sur le carré : SON polaroid, par-dessus
+  // un tap sur le point : SON spot en grand, par-dessus (21/10 : plus de polaroid)
   const pt=(await pg.evaluate(()=>window.__totehm_carte()))[0];
   if(tel) await pg.touchscreen.tap(pt[0],pt[1]); else await pg.mouse.click(pt[0],pt[1]);
-  await pg.waitForTimeout(900);
-  const sh2=await pg.evaluate(()=>{const c=document.querySelector('#rdr-sh .ssp-s.is-ici')||document.querySelector('#rdr-sh .ssp-s'),p=c&&c.querySelector('.lsh-pol'),
-      m=p&&p.querySelector('.lsh-m'),top=m&&m.querySelector('.ssp-top'),b=p&&p.querySelector('.lsh-b');
+  await pg.waitForTimeout(1100);
+  const sh2=await pg.evaluate(()=>{const c=document.querySelector('#rdr-sh .ssp-s.is-ici')||document.querySelector('#rdr-sh .ssp-s'),
+      info=c&&c.querySelector('.ssp-info'),m=c&&c.querySelector('.ssp-m'),sd=c&&c.querySelector('.sdata'),im=m&&m.querySelector('img');
     return {d:window.__totehm_rdr(), voit:document.body.classList.contains('rdr-voir'), n:document.querySelectorAll('#rdr-sh .ssp-s').length,
-      px:p?p.style.getPropertyValue('--px'):'', haut:top&&m?Math.abs(top.getBoundingClientRect().top-m.getBoundingClientRect().top)<2:false,
-      noir:top?getComputedStyle(top).backgroundImage:'', chips:top?[...top.querySelectorAll('span')].map(e=>e.textContent):[],
-      say:(c&&c.querySelector('.ssp-say')||{}).textContent||'', sous:b&&m?b.getBoundingClientRect().top>=m.getBoundingClientRect().bottom-1:false,
-      nom:(b&&b.querySelector('.lsh-t')||{}).textContent||'', cadre:p?getComputedStyle(p).backgroundColor:'',
+      pol:document.querySelectorAll('#rdr-sh .lsh-pol,#rdr-sh [data-pol],#rdr-sh .ssp-bg,#rdr-sh .ssp-top').length,
+      fond:c?getComputedStyle(c).backgroundColor:'', dessus:info&&m?info.getBoundingClientRect().bottom<=m.getBoundingClientRect().top+1:false,
+      fit:im?getComputedStyle(im).objectFit:'', src:!!(im&&im.getAttribute('src')), rond:im?getComputedStyle(im).borderRadius:'',
+      sdR:sd?getComputedStyle(sd).borderRadius:'', st:(sd&&sd.querySelector('.sd-tag.is-st')||{}).textContent||'',
+      chips:sd?[...sd.querySelectorAll('.sd-tag')].map(e=>e.textContent):[], tagF:(()=>{const t=sd&&sd.querySelector('.sd-tag');return t?getComputedStyle(t).fontFamily:'';})(),
+      say:(sd&&sd.querySelector('.sd-say')||{}).textContent||'', nom:(c&&c.querySelector('.ssp-box .tb .v-name')||{}).textContent||'',
       snap:getComputedStyle(document.getElementById('rdr-sh')).scrollSnapType, plein:c?Math.round(c.getBoundingClientRect().height)===innerHeight:false,
-      cal:!!(c&&c.querySelector('[data-ics]')), go:!!(c&&c.querySelector('[data-go]')), x:getComputedStyle(document.getElementById('rdr-x')).display,
+      cal:!!(c&&c.querySelector('.ssp-acts [data-ics]')), go:!!(c&&c.querySelector('.ssp-acts [data-go]')), x:getComputedStyle(document.getElementById('rdr-x')).display,
       per:[...document.querySelectorAll('#rdr-flt [data-per]')].map(e=>e.textContent)};});
   ok(sh2.voit&&sh2.d.voit&&sh2.n===1&&/y mandatory/.test(sh2.snap)&&sh2.plein&&sh2.x==='block',
-     'un tap sur le carré : SON polaroid par-dessus la carte, au format TikTok (un spot par écran, aimanté), ✕ pour revenir');
-  ok(sh2.cadre==='rgb(51, 51, 102)'&&sh2.haut&&/gradient/.test(sh2.noir)&&sh2.sous&&sh2.nom==='Call mum',
-     'LA FORME POLAROID : le cadre navy, EN HAUT la bande noire transparente, la Habit Box SOUS la fenêtre');
-  ok(sh2.chips.some(t=>/I will be there/i.test(t))&&sh2.chips.some(t=>/OCT/.test(t))&&sh2.chips.some(t=>/location on/i.test(t))
+     'un tap sur le point : SON spot en grand, par-dessus la carte (un spot par écran, aimanté), ✕ pour revenir');
+  ok(sh2.pol===0&&sh2.fond==='rgb(0, 0, 0)'&&sh2.src&&sh2.fit==='contain'&&sh2.rond==='0px',
+     '21/10 · PLUS DE POLAROID : l\'image TELLE QU\'ELLE (contain, ni cadre ni recadrage) sur le NOIR → '+JSON.stringify({pol:sh2.pol,fond:sh2.fond,fit:sh2.fit}));
+  ok(sh2.dessus&&sh2.nom==='Call mum'&&sh2.sdR==='16px'&&/I will be there/i.test(sh2.st)&&/Space Mono/.test(sh2.tagF),
+     '21/10 · JUSTE AU-DESSUS, les infos au format de figher.club : la Habit Box, puis le bloc `.sdata` (rayon 16, étiquettes Space Mono, l\'état en premier)');
+  ok(sh2.chips.some(t=>/oct|today|tomorrow/i.test(t))&&sh2.chips.some(t=>/location on/i.test(t))
      &&sh2.chips.some(t=>/social/i.test(t))&&sh2.say==='Bring a coffee'&&sh2.go&&sh2.cal,
-     'les informations du spot dans la bande : '+sh2.chips.join(' · ')+' — son mot, GO, CALENDAR');
-  ok(sh2.px==='20%','la place enregistrée revient du serveur (my_feed_badges) : '+sh2.px);
+     'les informations du spot : '+sh2.chips.join(' · ')+' — son mot, GO, CALENDAR');
   ok(sh2.per.join(' ')==='I will be there','le temps courant, dans la barre : « '+sh2.per.join(' ')+' »');
   await pg.keyboard.press('Escape');await pg.waitForTimeout(500);
-  ok(await pg.evaluate(()=>!document.body.classList.contains('rdr-voir')&&window.__totehm_lv().vue==='d'),'Échap referme le polaroid : on est de retour sur la carte');
+  ok(await pg.evaluate(()=>!document.body.classList.contains('rdr-voir')&&window.__totehm_lv().vue==='d'),'Échap referme la vue agrandie : on est de retour sur la carte');
   await pg.click('#lvn-lf');await vers(pg,'c');await pg.waitForTimeout(300);
 
   // ══ 4 bis · LE TOTEHM DOCKÉ CHOISIT LA BOX, LE FILTRE EST PROPRE À LA VUE, L'IMAGE SE RECADRE ══
@@ -306,20 +320,23 @@ try{
   const gr=await pg.evaluate(()=>({d:window.__totehm_rdr(),grid:document.body.classList.contains('rdr-grid'),
     tuiles:document.querySelectorAll('#rdr-g .tl[data-cle]').length,boxes:[...document.querySelectorAll('#rdr-g .tl-bx .tb .v-name')].map(e=>e.textContent.trim()),
     navy:(()=>{const h=document.querySelector('#rdr-g .tl-bx .tb .habit .h-body');return h?getComputedStyle(h).backgroundColor:'';})(),
+    rond:(()=>{const t=document.querySelector('#rdr-g .tl[data-cle]');return t?getComputedStyle(t).borderRadius:'';})(),
     vign:(document.querySelector('#rdr-g img[data-bunny]')||{}).src||''}));
   ok(gr.grid&&gr.d.mode==='grid'&&gr.tuiles===2&&gr.boxes.join('|')==='Swim at dawn|Dance'&&gr.navy==='rgb(51, 51, 102)',
      'GRID : une tuile par spot, et dessus SA Habit Box au format Totehm ('+gr.boxes.join(' · ')+')');
+  ok(parseFloat(gr.rond)>=14,'21/10 · les images de la grille de droite sont ARRONDIES ('+gr.rond+')');
   const bv=log.functions.filter(f=>f.name==='bunny-video');
   ok(bv.length>=1&&bv[0].body.clips[0].id==='cccccccc-cccc-4ccc-8ccc-cccccccccccc'&&bv[0].body.clips[0].spot==='sp3'&&/\/thumbnail\.jpg$/.test(gr.vign),
      'le clip : sa VIGNETTE Bunny, signée par le serveur ({id, spot}) — jamais une URL en dur');
   await pg.click('#rdr-g .tl[data-cle="sp:sp2"]');await pg.waitForTimeout(900);
   const pas2=await pg.evaluate(()=>{const c=document.querySelector('#rdr-sh .ssp-s.is-ici')||document.querySelector('#rdr-sh .ssp-s');
     return {n:document.querySelectorAll('#rdr-sh .ssp-s').length, by:(c&&c.querySelector('.ssp-by')||{}).textContent||'',
-      sans:!!(c&&c.querySelector('.ssp-sans')), chips:c?[...c.querySelectorAll('.ssp-top span')].map(e=>e.textContent):[],
-      mini:c?[...c.querySelectorAll('.lsh-o')].map(e=>e.textContent):[], d:window.__totehm_rdr()};});
+      sans:!!(c&&c.classList.contains('is-nu')&&!c.querySelector('.ssp-m')), chips:c?[...c.querySelectorAll('.sdata .sd-tag')].map(e=>e.textContent):[],
+      mini:c?[...c.querySelectorAll('.ssp-box .tb .mini.m-o')].map(e=>e.textContent):[], rep:c?[...c.querySelectorAll('.ssp-box .tb .mini.m-r')].map(e=>e.textContent):[],
+      d:window.__totehm_rdr()};});
   ok(pas2.n===2&&pas2.by==='kai3'&&pas2.sans&&pas2.chips.some(t=>/Porto/.test(t))&&pas2.chips.some(t=>/location off/i.test(t))&&pas2.chips.some(t=>/I was here/.test(t))
      &&pas2.mini.includes('Cross the bay')&&pas2.d.club.periode==='past',
-     'la tuile ouvre SON polaroid : le spot d\'un AUTRE membre (kai3), sans média, la ville seule, sa box et ses mini-boîtes');
+     'la tuile ouvre SON spot en grand : un AUTRE membre (kai3), sans média (les infos seules, centrées), la ville seule, sa box et ses mini-boîtes au format Totehm → '+JSON.stringify({m:pas2.mini,r:pas2.rep}));
   await pg.click('#rdr-sh .ssp-s.is-ici [data-who]');await pg.waitForTimeout(600);
   ok(await pg.evaluate(()=>(window.__totehm_xo()||{}).actif==='univers'),'son nom : il faut s\'abonner pour lire son Totehm → SA page de vente, sur place');
   await pg.evaluate(()=>window.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape'})));

@@ -2967,6 +2967,8 @@ body.is-xo{overflow:hidden}
 
 
 
+
+
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille
    elle-même : un nouveau bloc gris entre ici tout seul.        */
@@ -3550,17 +3552,6 @@ body.lv-b #gate-logo #gl-rail,body.lv-b #gate-logo #gl-wm{opacity:0}
   -webkit-overflow-scrolling:touch;overscroll-behavior:contain;scrollbar-width:none}
 #lv-sh::-webkit-scrollbar{display:none}
 .lsh{position:relative;height:100dvh;scroll-snap-align:start;scroll-snap-stop:always;background:#000;overflow:hidden}
-.lsh-m img,.lsh-m video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;opacity:0;
-  transform:scale(1.04);transition:opacity .4s ease,transform .9s var(--gate-ease)}
-.lsh-m img[src],.lsh-m video[src]{opacity:1}
-.lsh.is-ici .lsh-m img,.lsh.is-ici .lsh-m video{transform:none}
-/* ══ LE POLAROID · 19/10/2026 ═══════════════════════════════════════════════════════════════════
-   Wah : « niveau design des shorts, je veux un système de photo polaroid — les éléments du Totehm
-   mis sous la forme polaroid — et l'utilisateur doit pouvoir DÉPLACER, sur sa photo, son image ou sa
-   vidéo, l'élément du Totehm ». L'élément n'est donc plus une légende collée en bas de l'écran :
-   c'est une CARTE navy posée SUR le média, qu'on prend et qu'on pose où l'on veut.
-   `--px/--py` sont en POUR CENT : l'écran change de taille, la carte reste au même endroit.
-   (La première version posait l'élément SUR le média ; elle est remplacée le 19/10 ter.) */
 /* ══ 20/10 QUATER — LA GRILLE (Instagram) ═══════════════════════════════════════════════════════
    Wah : « une image, une vidéo, avec par-dessus la box qui lui est attribuée, légèrement surélevée ».
    Des tuiles CARRÉES bord à bord (3 colonnes au téléphone, 4 puis 5 à l'ordinateur), le recadrage suit le
@@ -3594,23 +3585,27 @@ body.lv-b #gate-logo #gl-rail,body.lv-b #gate-logo #gl-wm{opacity:0}
 .tl-add{display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.04);
   outline:1px dashed rgba(255,255,255,.3);outline-offset:-9px;color:#fff;font:400 30px/1 'Space Mono',monospace}
 @media(hover:hover){.tl-add:hover{background:rgba(255,255,255,.1)}.tl:hover .tl-b{transform:translateY(-5px)}}
-/* LA VISIONNEUSE : le noir, le média en grand, sa boîte dessous ; ✕ en haut, ‹ › sur les bords. */
-.tlv{position:absolute;inset:0;z-index:30;background:#000;display:flex;flex-direction:column;align-items:center;
-  justify-content:center;gap:14px;padding:calc(max(10px,env(safe-area-inset-top)) + 46px) 0 calc(max(14px,env(safe-area-inset-bottom)) + 24px)}
+/* LA VISIONNEUSE · 21/10 — Wah : « dans la vue de gauche, le système de scrolling de la vue de droite, pas de
+   défilement horizontal avec les flèches latérales ». Un média par écran, AIMANTÉ, à la VERTICALE (comme les spots) ;
+   le média TEL QU'IL EST sur le noir, sa box détaillée par-dessus le bas ; ✕ en haut. Plus de ‹ ›. */
+.tlv{position:absolute;inset:0;z-index:30;background:#000}
 .tlv[hidden]{display:none}
-.tlv-m{flex:1;min-height:0;width:100%;display:flex;align-items:center;justify-content:center}
-.tlv-m img,.tlv-m video{max-width:100%;max-height:100%;object-fit:contain;display:block}
+.tlv-f{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;scrollbar-width:none}
+.tlv-f::-webkit-scrollbar{display:none}
+.tlv-s{position:relative;height:100%;scroll-snap-align:start;scroll-snap-stop:always;overflow:hidden}
+.tlv-m{position:absolute;left:0;right:0;top:calc(max(10px,env(safe-area-inset-top)) + 46px);bottom:calc(max(14px,env(safe-area-inset-bottom)) + 24px)}
+.tlv-m img,.tlv-m video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block;opacity:0;transition:opacity .3s ease}
+.tlv-m img[src],.tlv-m video[src],.tlv-m video[poster]{opacity:1}
 .tlv-b{display:flex;flex-direction:column;align-items:center;gap:7px;padding:0 16px;max-width:min(100%,560px)}
+.tlv-b:empty{display:none}
 .tlv-b .tl-b{position:relative;left:auto;bottom:auto;max-width:100%;padding:9px 14px 9px 16px}
 .tlv-b .tl-i{width:5px}
 .tlv-b .tl-n{font-size:15px;-webkit-line-clamp:3}
 .tlv-l{font:700 8.5px/1.4 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.6)}
 .tlv-l i{font-style:normal}
-.tlv-x,.tlv-p,.tlv-n{position:absolute;border:0;background:none;cursor:pointer;color:#fff;padding:10px}
-.tlv-x{top:calc(max(10px,env(safe-area-inset-top)) + 4px);right:10px}
-.tlv-p{left:6px;top:50%;margin-top:-22px}.tlv-n{right:6px;top:50%;margin-top:-22px}
-.tlv-x svg,.tlv-p svg,.tlv-n svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;display:block}
-.tlv-p[hidden],.tlv-n[hidden]{display:none}
+.tlv-x{position:absolute;z-index:2;border:0;background:none;cursor:pointer;color:#fff;padding:10px;top:calc(max(10px,env(safe-area-inset-top)) + 4px);right:10px}
+.tlv-x svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;display:block}
 body.is-tlv #gate-asteroid,body.is-tlv #lvjoy{opacity:0;pointer-events:none}
 /* ══ 20/10 — LA BOX DU TOTEHM, HORS DU TOTEHM (`boxTotehm`) ═══════════════════════════════════════════
    Le rendu de la liste, sans rail : le filet d'intention (2 px) EST le bord gauche, la peau celle de sa vue. */
@@ -3629,7 +3624,7 @@ body.is-tlv #gate-asteroid,body.is-tlv #lvjoy{opacity:0;pointer-events:none}
 .tl-sel{grid-column:1/-1;padding:2px 0 8px;cursor:pointer}
 @media(max-width:699px){.tl-sel{padding:2px 8px 8px}}
 /* La visionneuse : la box DÉTAILLÉE par-dessus le média, en bas, surélevée. */
-.tlv .tlv-b{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(max(14px,env(safe-area-inset-bottom)) + 18px);
+.tlv-s .tlv-b{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(max(14px,env(safe-area-inset-bottom)) + 18px);
   width:min(calc(100vw - 32px),520px);max-width:none;padding:0;display:block;box-shadow:0 14px 34px rgba(0,0,0,.7)}
 /* Le filtre : d'abord les cinq vues, leurs carrés dans leur couleur ; puis les boxes de la vue choisie. */
 .lsh-sf .sfv{border:0;border-radius:0;cursor:pointer;background:var(--skin,var(--navy));color:#fff;padding:9px 12px;
@@ -3645,73 +3640,45 @@ body.is-tlv #gate-asteroid,body.is-tlv #lvjoy{opacity:0;pointer-events:none}
 @media(hover:hover){.lsh-sf .sfv:hover{opacity:.85}.lsh-sf .sfb:hover .h-body,.lsh-pick .pk-b:hover .h-body{filter:brightness(1.18)}}
 /* Les intentions du panneau : un POINT de leur couleur (le signal), le mot gris. */
 .lsh-sf .sfi i{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--c);margin-right:6px;vertical-align:1px}
-/* ══ 19/10 TER — LE POLAROID DE LA VUE DE DROITE : UN CADRE ════════════════════════════════════
-   Wah, capture d'écran à l'appui : une
-   CARTE navy, le média dans sa fenêtre, et LA BOX IMPRIMÉE DESSOUS, comme la bande blanche d'un
-   polaroid — le nom en Quantico, l'intention dans sa couleur, le rythme, puis les mini-boîtes
-   OBJECTIVES et REPULSIONS. Le filet d'intention court sur le bord GAUCHE de la carte.
-   ⚠️ `touch-action:pan-y` : le feed garde son défilement natif ; le déplacement s'arme sur un APPUI
-   LONG (380 ms), sinon la carte, qui prend presque tout l'écran, interdirait de faire défiler. */
-.lsh-pol{position:absolute;left:var(--px,50%);top:var(--py,50%);transform:translate(-50%,-50%);z-index:3;
-  width:min(86vw,420px);max-height:calc(100dvh - 96px);background:var(--navy);padding:14px 14px 0;
-  display:flex;flex-direction:column;box-shadow:0 14px 34px rgba(0,0,0,.6);
-  touch-action:pan-y;-webkit-user-select:none;user-select:none}
-.lsh-pol.is-tenu{box-shadow:0 20px 44px rgba(0,0,0,.78);cursor:grabbing}
-/* LA FENÊTRE : le média, dans le cadre. Le noir derrière lui, jamais un gris. */
-.lsh-m{position:relative;width:100%;aspect-ratio:5/4;background:#000;overflow:hidden;flex:none}
-/* PAR-DESSUS LE MÉDIA, EN NOIR TRANSPARENT (Wah, 19/10 ter) : d'où il vient, et quand. */
-/* LA BANDE : la Box, telle qu'elle est dans le Totehm. */
-.lsh-b{padding:11px 2px 14px;display:flex;flex-direction:column;gap:6px;overflow:hidden}
-/* ══ 20/10 QUATER — LA CARTE D'UN SPOT (le format TikTok, ordinateur et téléphone) ═══════════════
-   Un écran par spot, aimanté. Derrière la carte, la photo du spot, floue et éteinte (le noir reste le
-   champ) ; dans la fenêtre, EN HAUT, la bande noire transparente des informations du spot ; en bas, les
-   gestes ; sous la fenêtre, la Habit Box. La fenêtre est en portrait (4:5) : c'est un short. */
-.ssp-s{display:block}
-.ssp-bg{position:absolute;inset:-40px;width:calc(100% + 80px);height:calc(100% + 80px);object-fit:cover;
-  filter:blur(26px) brightness(.32) saturate(1.1);opacity:0;transition:opacity .5s ease;pointer-events:none}
-.ssp-bg[src]{opacity:1}
-/* La carte tient ENTRE la barre du haut et la manette du bas : sa largeur se déduit de la hauteur libre. */
-.ssp-s .lsh-pol{width:min(92vw,440px,calc((100dvh - 380px) * .8 + 28px));top:calc(var(--py,50%) + 18px);max-height:none}
-.ssp-s .lsh-m{aspect-ratio:4/5}
-.ssp-s .lsh-i{left:0;top:0;bottom:0;width:4px;opacity:1}
-.ssp-top{position:absolute;left:0;right:0;top:0;z-index:2;padding:10px 10px 22px;display:flex;flex-wrap:wrap;gap:4px;
-  align-content:flex-start;background:linear-gradient(rgba(0,0,0,.78),rgba(0,0,0,.62) 70%,rgba(0,0,0,0));pointer-events:none}
-.ssp-top span{background:rgba(0,0,0,.55);color:#cfcfd6;border-radius:10px;padding:4px 8px;
-  font:700 8.5px/1.2 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;white-space:nowrap}
-.ssp-top .ssp-st{color:#fff;background:rgba(255,255,255,.14)}
-.ssp-say{flex-basis:100%;margin:4px 2px 0;font:400 14px/1.35 'Quantico',sans-serif;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.6)}
-.ssp-acts{position:absolute;left:10px;bottom:10px;z-index:2;display:flex;gap:6px}
-.ssp-acts button{border:0;border-radius:10px;background:rgba(0,0,0,.62);color:#fff;cursor:pointer;padding:7px 11px;
+/* ══ 21/10 — LA VUE AGRANDIE D'UN SPOT : plus de polaroid ═════════════════════════════════════════════════
+   Wah : « plus d'effet polaroid … les informations du spot juste au-dessus, au format d'origine de figher.club » ·
+   « l'image telle qu'elle, avec le background noir, comme dans la vue de gauche ». Un écran par spot, aimanté ; en
+   haut la Habit Box (format Totehm) puis `.sdata` — le bloc de figher.club, copié (noir, rayon 16, étiquettes grises
+   Space Mono, l'état en premier, son mot en Quantico) —, l'auteur et les gestes ; dessous, le média TEL QU'IL EST
+   (`contain`) sur le noir. Sans média, le bloc d'infos se centre. */
+.ssp-c{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;gap:12px;
+  padding:calc(max(10px,env(safe-area-inset-top)) + 50px) 0 calc(max(12px,env(safe-area-inset-bottom)) + 14px)}
+.ssp-s.is-nu .ssp-c{justify-content:center}
+.ssp-info{width:min(calc(100vw - 28px),520px);flex:none;display:flex;flex-direction:column;gap:7px}
+.ssp-box[role=button]{cursor:pointer}
+.ssp-box:focus-visible{outline:1px solid #fff;outline-offset:2px}
+.sdata{background:rgba(0,0,0,.86);border-radius:16px;padding:8px 11px 9px;display:flex;flex-direction:column;gap:6px}
+.sd-row{display:flex;flex-wrap:wrap;gap:5px;align-items:center}
+.sd-row:empty{display:none}
+.sd-tag{font:400 9px/1.5 'Space Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:#b4b4b9;background:#15151a;
+  border-radius:10px;padding:3px 8px;font-variant-numeric:tabular-nums;text-decoration:none}
+.sd-tag.is-st{background:#2e2e36;color:#fff;font-weight:700}
+a.sd-tag{color:#fff;text-decoration:underline;text-decoration-color:rgba(255,255,255,.45);text-underline-offset:3px}
+.sd-say{margin:0;font:400 13px/1.45 'Quantico',sans-serif;color:#fff}
+.ssp-row{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:30px}
+.ssp-par{display:flex;align-items:center;gap:7px;font:400 9px/1 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#9a9aa0}
+.ssp-by{border:0;background:none;padding:0;cursor:pointer;font:400 13px/1.2 'Quantico',sans-serif;letter-spacing:0;text-transform:none;color:#fbd5ca}
+.ssp-acts{display:flex;gap:6px;margin-left:auto}
+.ssp-acts button{border:0;border-radius:10px;background:#1f1f24;color:#fff;cursor:pointer;padding:8px 12px;
   font:700 9.5px/1 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase}
-.ssp-acts button:focus-visible{outline:1px solid #fff;outline-offset:2px}
-.ssp-sans{position:absolute;inset:0;background:repeating-linear-gradient(135deg,rgba(255,255,255,.035) 0 10px,transparent 10px 20px)}
-.ssp-etat{position:absolute;left:0;right:0;bottom:46px;text-align:center;font:700 8.5px/1.3 'Space Mono',monospace;
+.ssp-acts button:focus-visible,.ssp-by:focus-visible{outline:1px solid #fff;outline-offset:2px}
+/* LE MÉDIA, TEL QU'IL EST : jamais recadré, le noir autour. */
+.ssp-m{position:relative;flex:1;min-height:0;width:100%;background:#000}
+.ssp-m img,.ssp-m video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block;opacity:0;transition:opacity .4s ease}
+.ssp-m img[src],.ssp-m video[src],.ssp-m video[poster]{opacity:1}
+.ssp-etat{position:absolute;left:0;right:0;bottom:12px;text-align:center;font:700 8.5px/1.3 'Space Mono',monospace;
   letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.55);z-index:1}
 .ssp-etat:empty{display:none}
-.ssp-by{align-self:flex-start;border:0;background:#000;border-radius:10px;padding:5px 9px;cursor:pointer;
-  font:400 12px/1.2 'Quantico',sans-serif;color:#fbd5ca}
 /* LES TROIS TEMPS (figher.club) : passé · maintenant · à venir ; le choisi porte le trait de sa période. */
 .rdr-p{display:inline-flex;gap:2px;margin-right:5px}
 .rdr-p button.is-on{box-shadow:inset 0 -2px 0 var(--pc,#fff)}
 .rdr-p .p-past{--pc:#9a4a8e}.rdr-p .p-now{--pc:#fff}.rdr-p .p-future{--pc:#6f86d6}
-/* LES COULEURS D'INTENTION DANS LE CADRE PHOTO (Wah, 19/10 ter) : dedans, et TRANSPARENTES —
-   la photo continue de se lire dessous. */
-.lsh-i{position:absolute;left:0;top:0;bottom:0;width:11px;z-index:2;display:flex;flex-direction:column;opacity:.62}
-.lsh-i i{flex:1;width:100%;display:block}
 .lsh-t{font:400 15px/1.3 'Quantico',sans-serif;color:#fff;max-height:2.6em;overflow:hidden;display:block}
-.lsh-l{font:700 8.5px/1.4 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.6)}
-.lsh-l i{font-style:normal}
-.lsh-k{font:700 8px/1.3 'Space Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.45)}
-.lsh-mg{display:flex;flex-direction:column;gap:3px}
-.lsh-ms{display:flex;flex-wrap:wrap;gap:3px}
-.lsh-o,.lsh-r{font:400 11px/1.3 'Quantico',sans-serif;color:#fff;padding:4px 7px;max-width:100%;
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.lsh-o{background:var(--blue)}
-.lsh-r{background:var(--rep)}
-.lsh-say{display:block;width:100%;background:none;border:0;padding:0;margin:0;text-align:left;cursor:pointer;color:inherit}
-.lsh-say:focus-visible{outline:1px solid #fff;outline-offset:3px}
-/* La légende du polaroid : d'OÙ il vient. Trois mots au plus, le moins possible. */
-.lsh-v{font:700 8px/1.3 'Space Mono',monospace;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.55)}
 /* ══ LA BARRE ET SON PANNEAU · 19/10/2026 ter ═══════════════════════════════════════════════════
    Wah : « reprends ce que l'on avait fait dans space : le défilement vertical type shorts, le LOGO
    TOTEHM qui permettait de sélectionner une box, et le bouton FILTER avec tous les filtres ».
@@ -3765,8 +3732,6 @@ body.lv-g #lv-socket,body.lv-d #lv-socket{opacity:0}
 .lsh-pick[hidden]{display:none}
 .lsh-pick button{width:min(92vw,420px);display:flex;align-items:center;gap:9px;border:0;border-radius:10px;
   padding:10px 12px;background:#1f1f24;color:#fff;text-align:left;cursor:pointer}
-.lsh-pick .lsh-i{flex-direction:column}
-.lsh-pick .lsh-i i{width:13px;height:2px}
 .lsh-pick button:focus-visible{outline:1px solid #fff;outline-offset:2px}
 /* ══ 20/10 sexies · → LES SPOTS : MAP · GRID ════════════════════════════════════════════════════════════════
    Wah : « on oublie le radar, réservé au figher.club ; deux modes, MAP et GRILLE, dans le même format que MINE et
@@ -3779,6 +3744,10 @@ body.lv-g #lv-socket,body.lv-d #lv-socket{opacity:0}
   scrollbar-width:none;display:none;background:#000}
 #rdr-g::-webkit-scrollbar{display:none}
 body.rdr-grid #rdr-g{display:block}
+/* 21/10 — Wah : « arrondis les images de la grille dans la vue de droite ». Des tuiles rondes, séparées par le noir. */
+#rdr-g .tlg{gap:5px;padding-left:5px;padding-right:5px}
+#rdr-g .tl{border-radius:14px}
+@media(min-width:700px){#rdr-g .tlg{gap:8px;padding-left:0;padding-right:0}#rdr-g .tl{border-radius:16px}}
 body.rdr-grid #rdr-map{display:none}
 /* Le polaroid, par-dessus : le fil TikTok, aimanté, un spot par écran. */
 #rdr-sh{position:absolute;inset:0;z-index:20;overflow-y:auto;overflow-x:hidden;scroll-snap-type:y mandatory;scroll-behavior:smooth;
@@ -3835,7 +3804,7 @@ body.lv-d.rdr-voir #gate-asteroid,body.lv-d.rdr-voir #lvjoy,body.rdr-voir #rdr-f
 #cap-x{position:fixed;top:10px;right:10px;background:none;border:0;cursor:pointer;padding:10px;line-height:0;color:rgba(255,255,255,.6)}
 #cap-x svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round}
 @media(hover:hover){.cap-b:hover,#cap-x:hover{color:#fff}}
-@media (prefers-reduced-motion: reduce){#cap,#cap-in,.lsh img,.lsh video,.tl-ph img,.tl-ph video,.ssp-bg,.tl-b,.tl-bx{transition:none!important}
+@media (prefers-reduced-motion: reduce){#cap,#cap-in,.lsh img,.lsh video,.tl-ph img,.tl-ph video,.ssp-m img,.ssp-m video,.tlv-m img,.tlv-m video,.tl-b,.tl-bx{transition:none!important}
   #lv-sh{scroll-behavior:auto}}
 .dash[data-cap]{display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
 .dash[data-cap] svg{width:12px;height:12px;flex:none}
@@ -4080,11 +4049,8 @@ body.lv-d.rdr-voir #gate-asteroid,body.lv-d.rdr-voir #lvjoy,body.rdr-voir #rdr-f
       <p class="lv-note" id="lv-sh-say" role="status" aria-live="polite"></p>
       <!-- 20/10 quater — la visionneuse de la grille : le média en grand, sa boîte, ← → et ✕. -->
       <div id="tlv" class="tlv lv-act" role="dialog" aria-modal="true" aria-label="Media" hidden>
-        <div class="tlv-m"></div>
-        <div class="tlv-b"></div>
+        <div class="tlv-f"></div>
         <button type="button" class="tlv-x" data-tlv="x" aria-label="Close"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2 L12 12 M12 2 L2 12"/></svg></button>
-        <button type="button" class="tlv-p" data-tlv="-1" aria-label="Previous"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 L5 8 L10 13"/></svg></button>
-        <button type="button" class="tlv-n" data-tlv="1" aria-label="Next"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3 L11 8 L6 13"/></svg></button>
       </div>
     </section>
 
@@ -5687,7 +5653,7 @@ const BUNNY=(()=>{
        `thumbnail.jpg` se lit avec la même URL que la playlist — l'image est là avant la première image du
        flux, et c'est elle qui teint le fond flou de la carte. */
     const vignette=r.url.replace(/playlist\.m3u8(\?.*)?$/,'thumbnail.jpg');
-    if(vignette!==r.url){ v.poster=vignette; const bg=v.closest('.lsh')&&v.closest('.lsh').querySelector('.ssp-bg'); if(bg&&!bg.getAttribute('src')) bg.src=vignette; }
+    if(vignette!==r.url) v.poster=vignette;
     if(natif(v)){ v.src=r.url; return; }
     mod=mod||import('/vendor/hls-1.6.13.mjs').catch(()=>null);
     const H=(await mod)?.default;
@@ -5887,6 +5853,26 @@ const SPMAP=(()=>{
   };
 })();
 
+/* LA HABIT BOX D'UN SPOT, au format Totehm (« les box sont sacrées ») : la mienne — avec mes liens —, ou, pour un
+   autre membre, celle que le serveur me montre (`habit_box` : ce que CE lecteur a le droit de voir), ses mini-boîtes
+   WHY / TRIGGER posées dans la même grammaire que la liste. `court` : la tuile (le nom seul). */
+function boxSpot(z,court){
+  const hb=z.habit_box||{}, ints=Array.isArray(hb.ints)?hb.ints:(Array.isArray(z.intentions)?z.intentions:[]);
+  const mien=(z.mine||RO)?habByT(String(z.habit||'')):null;
+  const o=mien||{id:'', t:String(hb.name||z.habit||''), t0:String(hb.name||z.habit||''), is:ints, i:ints[0]||null,
+                 f:FREQ_BY_ID[hb.freq]?hb.freq:null};
+  const h=boxTotehm('h',o,{court});
+  if(mien||court) return h;
+  const txts=l=>(Array.isArray(l)?l:[]).map(x=>String(x&&x.text||'').trim()).filter(Boolean);
+  const g=(mot,k,l)=>l.length?'<span class="mg"><span class="mg-l">'+mot+'</span><span class="minis">'
+    +l.map(t=>'<span class="mini m-'+k+'">'+esc(t)+'</span>').join('')+'</span></span>':'';
+  const plus=g('why','o',txts(hb.objectives))+g('trigger','r',txts(hb.repulsions));
+  if(!plus) return h;
+  const t=document.createElement('template'); t.innerHTML=h;
+  const col=t.content.querySelector('.v-col'); if(!col) return h;
+  col.insertAdjacentHTML('beforeend',plus);
+  return t.innerHTML;
+}
 /* ══ → GRID · UNE TUILE PAR SPOT · 20/10/2026 sexies ══════════════════════════════════════════════════════════
    La grille de gauche (`.tlg`), nourrie des spots : la photo (ou la vignette Bunny d'un clip), et dessus, surélevée,
    SA Habit Box au format Totehm (`boxTotehm` : la mienne, ou celle du membre que je lis ; celle d'un autre membre est
@@ -5895,13 +5881,7 @@ const SPGRID=(()=>{
   const etat={on:false, tuiles:0};
   let io=null, L=[];
   const bx=()=>$('rdr-g-f'), sc=()=>$('rdr-g');
-  function boxDe(z){
-    const hb=z.habit_box||{}, ints=Array.isArray(hb.ints)?hb.ints:(Array.isArray(z.intentions)?z.intentions:[]);
-    const mien=(z.mine||RO)?habByT(String(z.habit||'')):null;
-    const o=mien||{id:'', t:String(hb.name||z.habit||''), t0:String(hb.name||z.habit||''), is:ints, i:ints[0]||null,
-                   f:FREQ_BY_ID[hb.freq]?hb.freq:null};
-    return boxTotehm('h',o,{court:true});
-  }
+  const boxDe=z=>boxSpot(z,true);
   function tuile(z,i){
     const clip=z.clip&&z.clip.id?String(z.clip.id):'';
     const media=clip?'<img alt="" data-bunny="'+esc(clip)+'" data-spot="'+esc(String(z.id))+'">'
@@ -6169,57 +6149,51 @@ function creerFeed(conf){
     SF.freq=!!SF.box.freq;
   }
   function sfReset(){ sfBox(null); SF.ints=new Set(); SF.piliers=new Set(); SF.type=''; SF.vue=''; SF.quand=''; SF.qui=''; SF.ou=''; }
-  /* ══ LA CARTE D'UN SPOT · 20/10/2026 quater ═════════════════════════════════════════════════════
-     Wah (capture à l'appui) : « c'est ici et seulement ici qu'on a la forme polaroid : la photo / vidéo de
-     l'utilisateur, et par-dessus la box Habit héritée du Totehm, MAIS avec en haut, dans la partie noire
-     transparente, les informations type spot ». Donc : un cadre navy, le filet d'intention sur son bord
-     gauche ; dans la fenêtre, le média, et EN HAUT une bande noire transparente — quand, combien de temps,
-     où, pour qui, le point ouvert ou non, silencieux ou social, son mot ; en bas de la fenêtre, les gestes
-     (GO, CALENDAR) ; sous la fenêtre, la Habit Box telle que le serveur la projette (`habit_box` : ce que CE
-     lecteur a le droit de voir, mini-boxes comprises), puis le nom de son auteur s'il n'est pas moi. */
+  /* ══ LA VUE AGRANDIE D'UN SPOT · 21/10/2026 ══════════════════════════════════════════════════════
+     Wah : « je ne veux plus de cet effet polaroid … les informations du spot juste au-dessus, dans le format
+     d'origine que l'on trouve sur figher.club » · « c'est l'image telle quelle, avec le background noir, comme
+     dans la vue de gauche ». Donc, du haut vers le bas, sur le NOIR : la Habit Box au format Totehm (`boxSpot` :
+     la mienne avec mes liens, ou celle que le serveur me montre d'un autre membre, mini-boîtes comprises), puis
+     `.sdata` — le bloc de figher.club (`spotHTML`) : l'état, la date, la durée · le lieu, pour qui, le point
+     ouvert ou non, silencieux ou social · son mot —, puis l'auteur et les gestes (GO · CALENDAR) ; dessous,
+     l'image ou la vidéo TELLE QU'ELLE (`object-fit:contain`, jamais recadrée). Plus de cadre, plus de fond flou. */
   const ET={will:'I will be there', am:'I am here', was:'I was here'};
   const AUD={private:'private', figher:'figher club', subscribers:'my subscribers', public:'figher club'};
-  const MOIS=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
   const hhmm=d=>String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+  /* Les mots de figher.club (`dayOf`, `fmtDur`), copiés : today · yesterday · « 24 Oct » ; 45 min · 1 h 30. */
+  const jourDe=d=>{ const n=new Date(), y=new Date(n); y.setDate(n.getDate()-1);
+    if(d.toDateString()===n.toDateString()) return 'today'; if(d.toDateString()===y.toDateString()) return 'yesterday';
+    return d.toLocaleDateString('en-GB',{day:'numeric', month:'short'}); };
+  const duree=m=>!m?'':m<60?m+' min':Math.floor(m/60)+' h'+(m%60?' '+String(m%60).padStart(2,'0'):'');
+  const tag=(t,cl)=>t?'<span class="sd-tag'+(cl?' '+cl:'')+'">'+esc(t)+'</span>':'';
   function html(x){
-    const z=x.sp||{}, p=BADGE.de(x.cle)||{x:50,y:50};
+    const z=x.sp||{};
     const clip=z.clip&&z.clip.id?String(z.clip.id):'';
     const media=clip?'<video data-bunny="'+esc(clip)+'" data-spot="'+esc(String(z.id))+'" muted playsinline loop preload="none"></video><span class="ssp-etat"></span>'
       :z.video?'<video data-sh-src="'+esc(String(z.video))+'" data-b="moments" muted playsinline loop preload="none"></video>'
-      :z.photo?'<img alt="" data-sh-src="'+esc(String(z.photo))+'" data-b="moments">'
-      :'<span class="ssp-sans" aria-hidden="true"></span>';
-    const d=z.starts_at?new Date(z.starts_at):null, dur=+z.duration_min||0;
-    const lieu=z.location==='on'&&z.exact&&z.exact.place?String(z.exact.place):String(z.city||'');
-    const chips=[['ssp-st',ET[z.state]||''], ['',d&&!isNaN(d)?d.getDate()+' '+MOIS[d.getMonth()]+' '+hhmm(d):''],
-      ['',dur?(dur>=60?(Math.round(dur/6)/10)+' h':dur+' min'):''], ['',lieu],
-      ['',AUD[String(z.audience||'')]||''], ['','location '+(z.location==='on'?'on':'off')],
-      ['',z.location==='on'&&z.mode?(z.mode==='silent'?'silent · nobody disturb me':'social · we can talk'):'']]
-      .filter(c=>c[1]).map(c=>'<span'+(c[0]?' class="'+c[0]+'"':'')+'>'+esc(c[1])+'</span>').join('');
-    const go=z.location==='on'&&z.exact&&typeof z.exact.lat==='number';
-    const acts=(go?'<button type="button" data-go="'+esc(String(z.id))+'">go</button>':'')
+      :z.photo?'<img alt="" data-sh-src="'+esc(String(z.photo))+'" data-b="moments">':'';
+    const d=z.starts_at?new Date(z.starts_at):null, ok=d&&!isNaN(d), dur=+z.duration_min||0;
+    const fin=z.ends_at?new Date(z.ends_at):(ok?new Date(d.getTime()+dur*6e4):null);
+    const quand=!ok?'':z.state==='am'&&fin&&!isNaN(fin)?'until '+hhmm(fin):jourDe(d)+' '+hhmm(d);
+    const ex=z.location==='on'&&z.exact&&typeof z.exact.lat==='number';
+    const lieu=ex&&z.exact.place?String(z.exact.place):String(z.city||'');
+    const place=!lieu?'':ex?'<a class="sd-tag" href="https://www.google.com/maps/search/?api=1&query='+(+z.exact.lat).toFixed(5)+'%2C'+(+z.exact.lng).toFixed(5)
+      +'" target="_blank" rel="noopener">'+esc(lieu)+'</a>':tag(lieu);
+    const aud=String(z.audience||'');
+    const data='<div class="sdata" aria-label="Where and when">'
+      +'<div class="sd-row">'+tag(ET[z.state]||'','is-st')+tag(quand)+tag(duree(dur))+'</div>'
+      +'<div class="sd-row">'+place+tag(AUD[aud]||'')+(aud==='private'?'':tag('location '+(z.location==='on'?'on':'off')))
+        +(z.location==='on'&&z.mode?tag(z.mode==='silent'?'silent · nobody disturb me':'social · we can talk'):'')+'</div>'
+      +(z.comment?'<p class="sd-say">'+esc(String(z.comment))+'</p>':'')+'</div>';
+    const acts=(ex?'<button type="button" data-go="'+esc(String(z.id))+'">go</button>':'')
       +(z.state==='will'?'<button type="button" data-ics="'+esc(String(z.id))+'">calendar</button>':'');
-    const hb=z.habit_box||{}, ints=x.ints||[];
-    let ligne=ints.map(i=>{ const o=INT_BY_ID[i]; return o?'<i style="color:'+o.color+'">'+esc(o.name)+'</i>':''; }).filter(Boolean).join(' · ');
-    if(hb.freq&&FREQ_BY_ID[hb.freq]) ligne+=(ligne?' · ':'')+esc(flabel(hb.freq));
-    const grp=(lab,l,cl)=>l.length?'<div class="lsh-mg"><span class="lsh-k">'+lab+'</span><div class="lsh-ms">'
-      +l.map(t=>'<span class="'+cl+'">'+esc(t)+'</span>').join('')+'</div></div>':'';
-    const txts=l=>(Array.isArray(l)?l:[]).map(o=>String(o&&o.text||'').trim()).filter(Boolean);
-    const traits=(x.cols||[]).map(c=>'<i style="background:'+c+'"></i>').join('');
-    const nom=esc(x.txt||'');
-    return '<section class="lsh ssp-s'+(ici===x.cle?' is-ici':'')+'" data-lsh-k="'+esc(x.cle)+'">'
-      +((z.photo||clip)?'<img class="ssp-bg" alt="" aria-hidden="true">':'')
-      +'<div class="lsh-pol" data-pol="'+esc(x.cle)+'" style="--px:'+p.x+'%;--py:'+p.y+'%">'
-      +(traits?'<span class="lsh-i" aria-hidden="true">'+traits+'</span>':'')
-      +'<div class="lsh-m">'+media
-      +'<div class="ssp-top">'+chips+(z.comment?'<p class="ssp-say">'+esc(String(z.comment))+'</p>':'')+'</div>'
-      +(acts?'<div class="ssp-acts">'+acts+'</div>':'')+'</div>'
-      +'<div class="lsh-b">'
-      +(x.id?'<button type="button" class="lsh-say" data-lsh="habits|'+esc(x.id)+'"><span class="lsh-t">'+nom+'</span></button>'
-            :'<span class="lsh-t">'+nom+'</span>')
-      +(ligne?'<span class="lsh-l">'+ligne+'</span>':'')
-      +grp('Objectives',txts(hb.objectives),'lsh-o')+grp('Repulsions',txts(hb.repulsions),'lsh-r')
-      +(!z.mine&&z.creator?'<button type="button" class="ssp-by" data-who="'+esc(String(z.creator))+'">'+esc(String(z.creator))+'</button>':'')
-      +'</div></div></section>';
+    const par=!z.mine&&z.creator?'<span class="ssp-par"><span>by</span><button type="button" class="ssp-by" data-who="'+esc(String(z.creator))+'">'+esc(String(z.creator))+'</button></span>':'';
+    const box=x.id?'<div class="ssp-box" role="button" tabindex="0" data-lsh="habits|'+esc(x.id)+'">'+boxSpot(z)+'</div>'
+                  :'<div class="ssp-box">'+boxSpot(z)+'</div>';
+    return '<section class="lsh ssp-s'+(media?'':' is-nu')+(ici===x.cle?' is-ici':'')+'" data-lsh-k="'+esc(x.cle)+'">'
+      +'<div class="ssp-c"><div class="ssp-info">'+box+data
+      +((par||acts)?'<div class="ssp-row">'+(par||'<span></span>')+(acts?'<span class="ssp-acts">'+acts+'</span>':'')+'</div>':'')
+      +'</div>'+(media?'<div class="ssp-m">'+media+'</div>':'')+'</div></section>';
   }
   async function charger(el,prochain){
     if(!el) return;
@@ -6242,7 +6216,7 @@ function creerFeed(conf){
       /* Dans la grille, une vidéo montre son PREMIER plan et ne joue pas : elle joue dans la visionneuse. */
       if(conf.grille){ m.preload='metadata'; m.src=u+'#t=0.1'; return; }
       m.preload=prochain?'metadata':'auto'; m.src=u; if(el.classList.contains('is-ici')) m.play().catch(()=>{});
-    }else{ m.onerror=()=>m.remove(); m.src=u; const bg=el.querySelector('.ssp-bg'); if(bg) bg.src=u; }
+    }else{ m.onerror=()=>m.remove(); m.src=u; }
   }
   function jouer(el,oui){
     const v=el&&el.querySelector('video'); if(!v) return;
@@ -6437,26 +6411,60 @@ function creerFeed(conf){
     peindreFlt();
     observer();
   }
-  /* LA VISIONNEUSE : le média en grand (la vidéo joue, avec ses contrôles), sa boîte dessous, ← → pour le
-     voisin, Échap ou ✕ pour revenir à la grille. Elle n'existe que pour la grille (`#tlv`). */
+  /* LA VISIONNEUSE · 21/10 : un média par écran, AIMANTÉ, à la VERTICALE — le système de la vue de droite (Wah).
+     Une section par média du fil filtré, vide ; chacune se remplit en approchant (son média, sa box DÉTAILLÉE). La
+     vidéo visible joue, la suivante se prépare (`metadata`) : la règle d'egress des spots. ↑ ↓ pour le voisin,
+     Échap ou ✕ pour revenir à la grille. Elle n'existe que pour la grille (`#tlv`). */
   const VU={i:-1};
-  function voir(i){
-    const r=$('tlv'), x=L[i]; if(!r||!x) return fermerV();
-    VU.i=i; etat.vu=i; r.hidden=false; document.body.classList.add('is-tlv');
-    const u=x.b==='em'?emCache(x.src):'', m=r.querySelector('.tlv-m');
-    m.innerHTML=x.vid?'<video controls playsinline autoplay loop'+(u?' src="'+esc(u)+'"':'')+'></video>':'<img alt=""'+(u?' src="'+esc(u)+'"':'')+'>';
-    const el=m.firstChild;
-    if(x.vid&&x.b==='em') POSTER.de(x.src).then(pu=>{ if(pu&&el.isConnected&&!el.getAttribute('src')) el.poster=pu; else if(pu&&el.isConnected) el.poster=pu; });
-    if(!u) (x.b==='moments'?urlMoments(x.src):urlEM(x.src)).then(url=>{ if(url&&el.isConnected&&VU.i===i){ el.src=url; if(el.tagName==='VIDEO') el.play().catch(()=>{}); } });
+  let vio=null;
+  function remplir(sec,joue){
+    const j=sec?+sec.dataset.j:-1, x=L[j]; if(!x) return;
+    const b=sec.querySelector('.tlv-b');
     /* PAR-DESSUS LE MÉDIA, LA BOX DÉTAILLÉE (Wah) : la box du Totehm entière — filet, nom, intentions, rythme,
        mini-boîtes —, surélevée. Plus aucune redirection vers le Totehm depuis la grille. */
-    r.querySelector('.tlv-b').innerHTML=boxDe(x,false);
-    r.querySelector('.tlv-p').hidden=i<=0; r.querySelector('.tlv-n').hidden=i>=L.length-1;
+    if(b&&!b.firstChild) b.innerHTML=boxDe(x,false);
+    const m=sec.querySelector('.tlv-m'); if(!m) return;
+    let el=m.firstChild;
+    if(!el){
+      const u=x.b==='em'?emCache(x.src):'';
+      m.innerHTML=x.vid?'<video controls playsinline loop preload="metadata"'+(u?' src="'+esc(u)+'"':'')+'></video>':'<img alt=""'+(u?' src="'+esc(u)+'"':'')+'>';
+      el=m.firstChild;
+      if(x.vid&&x.b==='em') POSTER.de(x.src).then(pu=>{ if(pu&&el.isConnected) el.poster=pu; });
+      if(el.tagName==='IMG') el.onerror=()=>el.remove();
+      if(!u) (x.b==='moments'?urlMoments(x.src):urlEM(x.src)).then(url=>{ if(!url||!el.isConnected) return; el.src=url;
+        if(el.tagName==='VIDEO'&&VU.i===j) el.play().catch(()=>{}); });
+    }
+    if(el.tagName==='VIDEO'){ if(joue){ if(el.getAttribute('src')) el.play().catch(()=>{}); } else try{ el.pause(); }catch(_){} }
+  }
+  function voir(i){
+    const r=$('tlv'), f=r&&r.querySelector('.tlv-f'); if(!f||!L[i]) return fermerV();
+    r.hidden=false; document.body.classList.add('is-tlv');
+    f.innerHTML=L.map((_,j)=>'<section class="tlv-s" data-j="'+j+'"><div class="tlv-m"></div><div class="tlv-b"></div></section>').join('');
+    VU.i=i; etat.vu=i;
+    f.scrollTop=i*f.clientHeight;
+    remplir(f.children[i],true);
+    if(vio) vio.disconnect();
+    vio=new IntersectionObserver(es=>es.forEach(en=>{
+      const sec=en.target, j=+sec.dataset.j;
+      if(en.intersectionRatio>=.6){ VU.i=j; etat.vu=j; remplir(sec,true);
+        if(sec.nextElementSibling) remplir(sec.nextElementSibling,false);
+        if(sec.previousElementSibling) remplir(sec.previousElementSibling,false); }
+      else{ const v=sec.querySelector('video'); if(v) try{ v.pause(); }catch(_){} }
+    }),{root:f, threshold:[0,.6]});
+    f.querySelectorAll('.tlv-s').forEach(sec=>vio.observe(sec));
+  }
+  /* Le voisin, au clavier : on fait défiler, l'aimant et l'observateur font le reste. */
+  function voisinV(d){
+    const r=$('tlv'), f=r&&r.querySelector('.tlv-f'); if(!f) return;
+    const j=Math.max(0,Math.min(L.length-1,VU.i+d)); if(j===VU.i) return;
+    f.scrollTo({top:j*f.clientHeight, behavior:RMS()?'auto':'smooth'});
   }
   function fermerV(){
     const r=$('tlv'); if(!r||r.hidden) return;
+    if(vio){ vio.disconnect(); vio=null; }
     r.querySelectorAll('video').forEach(v=>{ try{ v.pause(); }catch(_){} });
-    r.querySelector('.tlv-m').innerHTML=''; r.hidden=true; document.body.classList.remove('is-tlv'); VU.i=-1; etat.vu=-1;
+    const f=r.querySelector('.tlv-f'); if(f) f.innerHTML='';
+    r.hidden=true; document.body.classList.remove('is-tlv'); VU.i=-1; etat.vu=-1;
   }
   /* Ouvrir l'élément d'une boîte dans le Totehm, sur SA vue (`__totehmDeplie` est le seul chemin d'entrée). */
   function ouvrirElement(b){
@@ -6467,20 +6475,15 @@ function creerFeed(conf){
   }
   if(conf.grille){ const r=$('tlv'); if(r){
     r.addEventListener('click',e=>{
-      const t=e.target.closest('[data-tlv]'); if(t){ const d=t.dataset.tlv; if(d==='x') fermerV(); else voir(VU.i+(+d)); return; }
+      if(e.target.closest('[data-tlv="x"]')){ fermerV(); return; }
       const b=e.target.closest('[data-lsh]'); if(b){ ouvrirElement(b); return; }
-      if(e.target===r) fermerV();
     });
-    let t0=null;
-    r.addEventListener('touchstart',e=>{ t0=e.touches.length===1?{x:e.touches[0].clientX,y:e.touches[0].clientY}:null; },{passive:true});
-    r.addEventListener('touchend',e=>{ if(!t0) return; const dx=e.changedTouches[0].clientX-t0.x, dy=e.changedTouches[0].clientY-t0.y; t0=null;
-      if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.3) voir(VU.i+(dx<0?1:-1));
-      else if(dy>90&&Math.abs(dy)>Math.abs(dx)*1.3) fermerV(); },{passive:true});
+    /* Le clavier : ↑ ↓ vont d'un média à l'autre ; ← → ne font RIEN ici (et ne changent pas de vue). */
     window.addEventListener('keydown',e=>{
       if(r.hidden) return;
       if(e.key==='Escape'){ e.preventDefault(); e.stopImmediatePropagation(); fermerV(); }
-      else if(e.key==='ArrowRight'||e.key==='ArrowLeft'){ e.preventDefault(); e.stopImmediatePropagation(); voir(VU.i+(e.key==='ArrowRight'?1:-1)); }
-      else if(e.key==='ArrowUp'||e.key==='ArrowDown') e.stopImmediatePropagation();
+      else if(e.key==='ArrowDown'||e.key==='ArrowUp'){ e.preventDefault(); e.stopImmediatePropagation(); voisinV(e.key==='ArrowDown'?1:-1); }
+      else if(e.key==='ArrowRight'||e.key==='ArrowLeft'){ e.preventDefault(); e.stopImmediatePropagation(); }
     },{capture:true});
   } }
   function peindre(){
@@ -6587,8 +6590,11 @@ function creerFeed(conf){
     };
     s.addEventListener('pointerup',lache);
     /* Au clavier, une tuile s'ouvre comme au doigt. */
-    s.addEventListener('keydown',e=>{ const t=conf.grille&&e.target.closest&&e.target.closest('.tl[data-i]');
-      if(t&&(e.key==='Enter'||e.key===' ')){ e.preventDefault(); voir(+t.dataset.i); } });
+    s.addEventListener('keydown',e=>{ if(e.key!=='Enter'&&e.key!==' ') return;
+      const t=conf.grille&&e.target.closest&&e.target.closest('.tl[data-i]');
+      if(t){ e.preventDefault(); voir(+t.dataset.i); return; }
+      const b=!conf.grille&&e.target.closest&&e.target.closest('div[data-lsh]');
+      if(b){ e.preventDefault(); ouvrirElement(b); } });
     /* Un `pointercancel` ne JETTE pas le geste : ce qui a été déplacé est posé, comme un lâcher. */
     s.addEventListener('pointercancel',lache);
     /* Un tap sur le texte OUVRE l'élément dans le Totehm, sur SA vue — `__totehmDeplie` est le seul
@@ -7267,7 +7273,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-10-20-com-manette';
+const BUILD='2026-10-21-com-spots';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
