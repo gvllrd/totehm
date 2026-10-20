@@ -1,5 +1,42 @@
 # com/CLAUDE.md — totehm.com : le Totehm, la carte, HigherSelf
 
+## 20/10/2026 quinquies — LES BOXES SONT SACRÉES (BUILD `2026-10-20-com-boxes`)
+
+Wah : « tout ce qui vient du Totehm est dans le format Totehm … les box sont littéralement sacrées » · « un filtre
+intelligent : d'abord une vue, puis une box de cette vue » · « quand on clique sur le Totehm en haut, le filtre
+s'affiche directement » · « un clic sur une image ouvre le média avec par-dessus la box détaillée, au lieu de
+rediriger vers le Totehm » · « la vignette vidéo s'affiche mal » · « pas le nom du fichier : Visualize it » ·
+« dans Vision, un doublon de photo : garde seulement Add a media ».
+- **`boxTotehm(bk, o, {court})`** (global, avant `creerFeed`) : appelle LE rendu de la liste (`vueHabitude`,
+  `vueObjectif`, `vueRepulsion`, `vueTeaching`, `vueVision`) avec `open`/`ordering`/`pk` neutralisés, puis le rend
+  INERTE (gabarit : loupe, rang, image de vision, Copy retirés ; boutons → `span` ; `data-*`, `aria-*`, `role`,
+  `tabindex` enlevés) dans `.tb` + la peau de sa vue (`PEAU` → `.blk-h/o/r/w/v`). `court` retire les mini-boîtes et
+  la ligne d'unité (la tuile). `objetBox(bk,id)` retrouve l'objet ; une Habit par son id OU son texte. Objet
+  introuvable → l'ancienne étiquette `.tl-b` (`boite`), jamais un trou. **Toute box hors du Totehm passe par là.**
+  `.tb` met `--rl/--rw` à 0 : le filet d'intention (2 px) devient le bord gauche ; `.habit{padding-right:0}` (sinon
+  une bande de 16 px de la tuile se voyait à droite).
+- **La tuile** : `.tl-bx` (box courte, surélevée, `pointer-events:none`) — un tap n'importe où ouvre la
+  **visionneuse** `#tlv` avec `.tlv-b` = la box DÉTAILLÉE (ligne d'unité, mini-boîtes) par-dessus le bas du média.
+  Plus aucun saut vers le Totehm depuis la grille. Tuile focalisable (Entrée/Espace = ouvrir).
+- **Le filtre (`conf.grille`)** : le papier docké (`box:` du dock) OUVRE le panneau, pas un sélecteur. En tête les
+  cinq VUES (carrés à leur peau, `data-sf="vue"`), puis la liste des boxes DE CETTE VUE, chacune rendue par
+  `boxTotehm` (`.sfb`, `data-sf="box"`, `data-v="k|ref"`). Choisir une box applique et ferme ; elle est REMISE en
+  tête des résultats (`.tl-sel`, toute la largeur, détaillée) ; un tap dessus rouvre le filtre. Changer de vue
+  efface une box d'une autre vue. Restent It shows et Intentions. Zéro appel. À droite (spots), le sélecteur
+  d'Habit rend aussi des boxes Totehm (`.pk-b`, en-têtes `.pk-vue`).
+- **Les vignettes vidéo** : à gauche `POSTER` — un JPEG posé à côté du fichier (`<chemin>.jpg`, seau
+  `element-media`, même dossier propriétaire), fabriqué UNE fois par le navigateur au premier affichage (vidéo
+  cachée `crossOrigin`, image à min(0,5 s, durée/3), ≤ 640 px, JPEG 0,82, `upsert`), puis signé comme une image ;
+  retiré avec le média (`emRetirer`). Échec (CORS, codec) → la vidéo `#t=0.1` comme avant. À droite, Bunny :
+  `thumbnail.jpg` du même dossier, signé par le même jeton de répertoire que la playlist → `poster` du lecteur et
+  fond flou `.ssp-bg` d'un spot sans photo. Les médias des éléments restent dans Supabase (une vidéo en prod,
+  1,1 Mo) : les passer sur Bunny = un lot serveur, à décider sur le volume.
+- **Centre** : un fichier d'une boîte dit **Visualize it** (`fichiersHTML`), jamais son nom de fichier. **Vision** :
+  le bouton d'image libre (`data-vimg`, `data-vimg-x`) est parti du rendu ; UN geste pour illustrer = [Add a media].
+  L'image libre déjà posée s'affiche toujours (`vision_image_set` reste pour l'existant).
+- Tests : `com_shorts` 118 (box Totehm inerte et navy, filet 2 px ; visionneuse + box détaillée ; filtre vue → box,
+  `.tl-sel`, réouverture ; Visualize it), `com_vision_image` 4 (plus de `data-vimg`, un seul [Add a media]).
+
 ## 20/10/2026 quater — ← UNE GRILLE INSTAGRAM · LES SPOTS DU CLUB → (BUILD `2026-10-20-com-grille`)
 
 Wah : « la vue de gauche, c'est littéralement l'illustration média (photo et vidéo) des boxes du Totehm sous la forme

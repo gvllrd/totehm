@@ -1,4 +1,4 @@
-// 13/10/2026 — LOT B : une VISION porte une image libre (générée ailleurs ; « Generate » = lot C). Ouverte, la vision
+// 13/10/2026 — LOT B (20/10 : l'ajout passe par [Add a media] seul) : une VISION porte une image libre (générée ailleurs ; « Generate » = lot C). Ouverte, la vision
 // a « + image » : un JPEG ≤ 1080 px part dans MON dossier du seau `moments`, `vision_image_set` le pose, l'ancien
 // fichier s'efface ; « × » la retire. Fermée, l'image s'affiche signée. Tout est simulé.
 // LANCER : node com_vision_image.mjs /tmp
@@ -26,19 +26,13 @@ try{
   ok(ferme.img === 'u/vision-old.jpg' && ferme.src, 'fermée, la vision montre son image, signée : ' + JSON.stringify(ferme));
   ok(ferme.titres === 0, 'aucun titre de groupe visible (Totehm minimal)');
   await pg.locator('#habits [data-open="v:v1"]').evaluate(e => e.click()); await pg.waitForTimeout(400);
-  ok(await pg.locator('#habits [data-vimg="v1"]').count() === 1 && await pg.locator('#habits [data-vimg-x="v1"]').count() === 1, 'ouverte : « + image » et « × »');
-  const fc = pg.waitForEvent('filechooser', { timeout:4000 });
-  await pg.click('#habits [data-vimg="v1"]');
-  await (await fc).setFiles({ name:'house.png', mimeType:'image/png', buffer:PNG });
-  await pg.waitForFunction(() => /vision-[0-9a-f-]{36}\.jpg$/.test(document.querySelector('#habits .v-img')?.dataset.photo || ''), null, { timeout:6000 });
-  const up = log.upload.find(u => u.method === 'POST'), set = log.rpc.find(r => r.name === 'vision_image_set');
-  ok(up && /^moments\/[^/]+\/vision-[0-9a-f-]{36}\.jpg$/.test(up.path), 'le JPEG part dans MON dossier : ' + (up && up.path));
-  ok(set && set.body.p_id === 'v1' && up && up.path === 'moments/' + set.body.p_path, 'vision_image_set(v1, ce chemin)');
-  ok(log.upload.some(u => u.method === 'DELETE'), 'l\'ancien fichier s\'efface');
-  await pg.click('#habits [data-vimg-x="v1"]');
-  await pg.waitForFunction(() => !document.querySelector('#habits .v-img') && window.__totehm_zone?.images === 0, null, { timeout:6000 });
-  const off = log.rpc.filter(r => r.name === 'vision_image_set').pop();
-  ok(off.body.p_path === null && log.upload.filter(u => u.method === 'DELETE').length === 2, '« × » : vision_image_set(v1, null), le fichier s\'efface');
+  /* 20/10 — UN SEUL GESTE POUR ILLUSTRER UNE VISION (Wah : « garde seulement Add a media ») : le bouton
+     « image » (l'image libre, une pièce jointe de plus) est parti ; l'image déjà posée reste affichée. */
+  const ouv = await pg.evaluate(() => ({ vimg:document.querySelectorAll('#habits [data-vimg],#habits [data-vimg-x]').length,
+    media:[...document.querySelectorAll('#habits .habit.open [data-cap]')].map(e => e.textContent.trim()),
+    img:!!document.querySelector('#habits .v-img') }));
+  ok(ouv.vimg === 0 && ouv.media.length === 1 && ouv.media[0] === 'Add a media' && ouv.img,
+     'ouverte : UN seul geste, [Add a media] ; plus de bouton « image » ; l\'image posée reste : ' + JSON.stringify(ouv));
   await pg.screenshot({ path:OUT + '/com_vision_image.png' });
   ok(!erreurs(log).length, 'aucune erreur ' + erreurs(log).join(' | '));
 }finally{ await browser.close(); }

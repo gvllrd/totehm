@@ -2959,6 +2959,8 @@ body.is-xo{overflow:hidden}
 
 
 
+
+
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille
    elle-même : un nouveau bloc gris entre ici tout seul.        */
@@ -3599,6 +3601,37 @@ body.lv-b #gate-logo #gl-rail,body.lv-b #gate-logo #gl-wm{opacity:0}
 .tlv-x svg,.tlv-p svg,.tlv-n svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;display:block}
 .tlv-p[hidden],.tlv-n[hidden]{display:none}
 body.is-tlv #gate-asteroid,body.is-tlv #lvjoy{opacity:0;pointer-events:none}
+/* ══ 20/10 — LA BOX DU TOTEHM, HORS DU TOTEHM (`boxTotehm`) ═══════════════════════════════════════════
+   Le rendu de la liste, sans rail : le filet d'intention (2 px) EST le bord gauche, la peau celle de sa vue. */
+.tb{--rl:0px;--rw:0px;position:relative;min-width:0}
+.tb .habit{min-height:0;margin:0;padding-right:0}
+.tb .habit .tick{left:0;width:2px}
+.tb .habit .h-body{margin-left:0;padding:7px 11px 7px 10px}
+/* Sur la tuile : la box posée sur l'image, surélevée, son nom seul (deux lignes au plus). */
+.tl-bx{position:absolute;left:6px;bottom:6px;max-width:calc(100% - 12px);pointer-events:none;
+  box-shadow:0 8px 18px rgba(0,0,0,.6),0 2px 4px rgba(0,0,0,.45);transform:translateY(-3px)}
+.tl-bx .habit .h-body{padding:4px 7px 4px 8px}
+.tl-bx .v-name{font-size:10.5px;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;padding-right:0}
+@media(min-width:700px){.tl-bx{left:9px;bottom:9px;max-width:calc(100% - 18px)}.tl-bx .v-name{font-size:12.5px}}
+.tl:focus-visible{outline:2px solid #fff;outline-offset:-2px}
+/* La box choisie, REMISE en tête des résultats, sur toute la largeur. */
+.tl-sel{grid-column:1/-1;padding:2px 0 8px;cursor:pointer}
+@media(max-width:699px){.tl-sel{padding:2px 8px 8px}}
+/* La visionneuse : la box DÉTAILLÉE par-dessus le média, en bas, surélevée. */
+.tlv .tlv-b{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(max(14px,env(safe-area-inset-bottom)) + 18px);
+  width:min(calc(100vw - 32px),520px);max-width:none;padding:0;display:block;box-shadow:0 14px 34px rgba(0,0,0,.7)}
+/* Le filtre : d'abord les cinq vues, leurs carrés dans leur couleur ; puis les boxes de la vue choisie. */
+.lsh-sf .sfv{border:0;border-radius:0;cursor:pointer;background:var(--skin,var(--navy));color:#fff;padding:9px 12px;
+  font:700 9.5px/1 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;opacity:.5;transition:opacity .15s}
+.lsh-sf .sfv.is-on{opacity:1;box-shadow:inset 0 0 0 1px #fff}
+.lsh-sf .sfbx{display:flex;flex-direction:column;gap:3px;max-height:40vh;overflow-y:auto;overscroll-behavior:contain}
+.lsh-sf .sfb,.lsh-pick .pk-b{cursor:pointer;width:min(92vw,420px)}
+.lsh-sf .sfb.is-on{outline:1px solid #fff;outline-offset:1px}
+.lsh-sf .sfb:focus-visible,.lsh-pick .pk-b:focus-visible{outline:1px solid #fff;outline-offset:2px}
+.lsh-pick .pk-vue{width:min(92vw,420px);margin:10px 0 2px;font:700 8.5px/1.3 'Space Mono',monospace;letter-spacing:.2em;
+  text-transform:uppercase;color:#fff}
+.lsh-pick .pk-vue::before{content:'';display:inline-block;width:9px;height:9px;margin-right:7px;vertical-align:-1px;background:var(--skin,var(--navy))}
+@media(hover:hover){.lsh-sf .sfv:hover{opacity:.85}.lsh-sf .sfb:hover .h-body,.lsh-pick .pk-b:hover .h-body{filter:brightness(1.18)}}
 /* Les intentions du panneau : un POINT de leur couleur (le signal), le mot gris. */
 .lsh-sf .sfi i{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--c);margin-right:6px;vertical-align:1px}
 /* ══ 19/10 TER — LE POLAROID DE LA VUE DE DROITE : UN CADRE ════════════════════════════════════
@@ -3769,7 +3802,7 @@ body.rdr-shorts #rdr-c{opacity:0}
 #cap-x{position:fixed;top:10px;right:10px;background:none;border:0;cursor:pointer;padding:10px;line-height:0;color:rgba(255,255,255,.6)}
 #cap-x svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round}
 @media(hover:hover){.cap-b:hover,#cap-x:hover{color:#fff}}
-@media (prefers-reduced-motion: reduce){#cap,#cap-in,.lsh img,.lsh video,.tl-ph img,.tl-ph video,.ssp-bg,.tl-b{transition:none!important}
+@media (prefers-reduced-motion: reduce){#cap,#cap-in,.lsh img,.lsh video,.tl-ph img,.tl-ph video,.ssp-bg,.tl-b,.tl-bx{transition:none!important}
   #lv-sh{scroll-behavior:auto}}
 .dash[data-cap]{display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
 .dash[data-cap] svg{width:12px;height:12px;flex:none}
@@ -5340,7 +5373,8 @@ function emDe(kind,id){
 function fichiersHTML(kind,id){
   const e=emDe(kind,id); if(!e) return '';
   const puces=mediasDe(e.k,e.ref).map(m=>'<span class="mini m-f"><button type="button" class="mini-t" data-emo="'+esc(String(m.id))+'">'
-      +(emImg(m)?ICO_PHOTO:emVid(m)?ICO_VIDEO:ICO_DOC)+esc(m.name||(emImg(m)?'photo':emVid(m)?'video':'file'))+'</button>'
+      /* 20/10 — « Visualize it », jamais le nom du fichier (une suite de chiffres et de lettres, illisible). */
+      +(emImg(m)?ICO_PHOTO:emVid(m)?ICO_VIDEO:ICO_DOC)+'Visualize it</button>'
       +'<button type="button" class="mf-x" data-emx="'+esc(String(m.id))+'" aria-label="Remove">&times;</button></span>').join('');
   return groupe('files',puces+'<button type="button" class="dash" data-cap="'+esc(e.k+':'+e.ref)+'">Add a media</button>');
 }
@@ -5358,7 +5392,7 @@ async function emRetirer(id){
   const {data,error}=await sb.rpc('element_media_remove',{p_id:m.id});
   if(error){ console.error('[element_media_remove]',error.message); return; }
   if(!data?.ok) console.error('[element_media_remove]',data?.why);
-  if(data?.path){ const {error:er}=await sb.storage.from('element-media').remove([data.path]); if(er) console.error('[element-media remove]',er.message); }
+  if(data?.path){ const {error:er}=await sb.storage.from('element-media').remove(emVid(m)?[data.path,POSTER.cle(data.path)]:[data.path]); if(er) console.error('[element-media remove]',er.message); }
   EMEDIA.items=EMEDIA.items.filter(x=>String(x.id)!==String(id)); emIndexer(); renderZone();
 }
 /* Un élément supprimé emporte ses fichiers ; une Habit renommée les garde (`element_media_rekey`). */
@@ -5491,6 +5525,52 @@ const CAP=(()=>{
           etat:()=>Object.assign({ouvert:root.classList.contains('is-on'), camera:!!flux}, diagC)};
 })();
 
+/* ══ LA VIGNETTE D'UNE VIDÉO DU TOTEHM (seau `element-media`) · 20/10/2026 ══════════════════════════════
+   Wah : « la vignette de la vidéo ne s'affiche pas bien … l'affichage des médias doit être optimal ». Un
+   navigateur de téléphone ne dessine PAS la première image d'une vidéo qui ne joue pas : la tuile restait
+   noire. Chaque vidéo a donc sa VIGNETTE, une image JPEG rangée à côté d'elle (`<chemin>.jpg`, dans MON
+   dossier — la politique du seau le permet) : lue si elle existe, sinon fabriquée UNE fois (la vidéo est
+   lue en silence, une image tirée au tiers de la première seconde, réduite à 640 px) puis rangée. Un échec
+   n'est jamais une erreur pour le membre : la tuile garde la vidéo en repli. */
+const POSTER=(()=>{
+  const memo=new Map();
+  const cle=p=>p+'.jpg';
+  async function signe(p){
+    const {data,error}=await sb.storage.from('element-media').createSignedUrl(cle(p),3600);
+    return error||!data?.signedUrl?null:data.signedUrl;
+  }
+  async function fabriquer(p){
+    const u=await urlEM(p); if(!u) return null;
+    return new Promise(ok=>{
+      const v=document.createElement('video'); let fini=false;
+      const fin=r=>{ if(fini) return; fini=true; clearTimeout(t); try{ v.pause(); v.removeAttribute('src'); v.load(); }catch(_){} ok(r); };
+      const t=setTimeout(()=>fin(null),9000);
+      v.crossOrigin='anonymous'; v.muted=true; v.playsInline=true; v.preload='auto';
+      v.addEventListener('loadeddata',()=>{ try{ v.pause(); v.currentTime=Math.min(.5,(v.duration||1)/3); }catch(_){ fin(null); } },{once:true});
+      v.addEventListener('seeked',async()=>{
+        try{
+          const w=v.videoWidth||0, h=v.videoHeight||0; if(!w||!h) return fin(null);
+          const k=Math.min(1,640/Math.max(w,h)), c=document.createElement('canvas');
+          c.width=Math.round(w*k); c.height=Math.round(h*k); c.getContext('2d').drawImage(v,0,0,c.width,c.height);
+          const b=await new Promise(r=>c.toBlob(r,'image/jpeg',.82)); if(!b) return fin(null);
+          const {error}=await sb.storage.from('element-media').upload(cle(p),b,{contentType:'image/jpeg',upsert:true});
+          if(error){ console.error('[poster]',error.message); return fin(URL.createObjectURL(b)); }
+          fin((await signe(p))||URL.createObjectURL(b));
+        }catch(e){ console.error('[poster]',e&&e.message||e); fin(null); }
+      },{once:true});
+      v.addEventListener('error',()=>fin(null),{once:true});
+      v.src=u; const pr=v.play(); if(pr&&pr.catch) pr.catch(()=>{});
+    });
+  }
+  return {
+    de(p){ if(!p||!me||RO) return Promise.resolve(null);
+      if(!memo.has(p)) memo.set(p,(async()=>(await signe(p))||(await fabriquer(p)))());
+      return memo.get(p); },
+    deja:p=>memo.has(p),
+    cle, vider(){ memo.clear(); }
+  };
+})();
+
 /* ══ → LES SPOTS DU CLUB · 20/10/2026 quater ═══════════════════════════════════════════════════════
    Wah : « la vue de droite, c'est la partie Spot… ET figher.club en est son prolongement ; il faut la
    retravailler en prenant en compte ce qui a été fait sur figher.club, dans le fond comme dans la forme ».
@@ -5597,6 +5677,11 @@ const BUNNY=(()=>{
     if(!v.isConnected) return;
     if(!r||r.status!=='ready'){ v.dataset.ok=''; const s=v.parentElement&&v.parentElement.querySelector('.ssp-etat');
       if(s) s.textContent=r&&r.status==='failed'?'video unavailable':'preparing the video'; return; }
+    /* LA VIGNETTE VIENT DE BUNNY (20/10) : le jeton signé couvre le DOSSIER de la vidéo (`token_path`), donc
+       `thumbnail.jpg` se lit avec la même URL que la playlist — l'image est là avant la première image du
+       flux, et c'est elle qui teint le fond flou de la carte. */
+    const vignette=r.url.replace(/playlist\.m3u8(\?.*)?$/,'thumbnail.jpg');
+    if(vignette!==r.url){ v.poster=vignette; const bg=v.closest('.lsh')&&v.closest('.lsh').querySelector('.ssp-bg'); if(bg&&!bg.getAttribute('src')) bg.src=vignette; }
     if(natif(v)){ v.src=r.url; return; }
     mod=mod||import('/vendor/hls-1.6.13.mjs').catch(()=>null);
     const H=(await mod)?.default;
@@ -5824,6 +5909,36 @@ const BADGE=(()=>{
    Il était écrit en module singleton : le dupliquer aurait voulu dire tenir deux copies d'accord.
    Chaque instance a son conteneur, sa source et ses filtres ; rien n'est partagé que le dessin.
    ⚠️ ZÉRO APPEL DE PLUS : les trois sources sont déjà en mémoire, les filtres se calculent dessus. */
+/* ══ LA BOX DU TOTEHM, HORS DU TOTEHM · 20/10/2026 ═══════════════════════════════════════════════════
+   Wah : « tout ce qui vient du Totehm est dans le format Totehm … les box sont littéralement SACRÉES ; les
+   vues adjacentes du processeur doivent rappeler les éléments du Totehm ». Une box n'est donc JAMAIS
+   redessinée ailleurs : c'est le MÊME rendu que dans la liste (`vueHabitude`, `vueObjectif`, `vueRepulsion`,
+   `vueTeaching`, `vueVision`), appelé FERMÉ, puis rendu inerte — plus de `data-*`, plus de rôle de bouton,
+   plus de loupe ni de rang : elle se montre, elle ne commande rien hors de chez elle. Sa peau est celle de sa
+   vue (`blk-*`), son filet d'intention le même trait de 2 px. `court` ne garde que le filet et le nom (une
+   tuile de grille). */
+const PEAU={h:'blk-h',t:'blk-o',r:'blk-r',w:'blk-w',v:'blk-v'};
+function objetBox(bk,id){
+  /* Une Habit se retrouve par son identifiant OU par son texte (sa clé côté serveur et côté fichiers). */
+  if(bk==='h'){ const v=String(id==null?'':id).trim(); return (state.habits||[]).find(x=>String(x.id)===v||String(x.t||'').trim()===v)||null; }
+  try{ return objetDe(bk,String(id)); }catch(_){ return null; }
+}
+function boxTotehm(bk,o,opts){
+  if(!o) return '';
+  const f={h:vueHabitude,t:vueObjectif,r:vueRepulsion,w:vueTeaching,v:vueVision}[bk]; if(!f) return '';
+  const o0=open, ord=ordering, pk0=pk; open=null; ordering=false; pk=null;
+  let h='';
+  try{ h=f(o,0); }catch(e){ console.error('[box]',e&&e.message||e); }
+  finally{ open=o0; ordering=ord; pk=pk0; }
+  const t=document.createElement('template'); t.innerHTML=h;
+  t.content.querySelectorAll('.loupe,.rk,.v-img,[data-copy]').forEach(n=>n.remove());
+  t.content.querySelectorAll('button').forEach(b=>{ const sp=document.createElement('span'); sp.className=b.className;
+    sp.innerHTML=b.innerHTML; if(b.getAttribute('style')) sp.setAttribute('style',b.getAttribute('style')); b.replaceWith(sp); });
+  t.content.querySelectorAll('*').forEach(n=>[...n.attributes].forEach(a=>{ if(/^(data-|aria-)|^role$|^tabindex$/.test(a.name)) n.removeAttribute(a.name); }));
+  if(opts&&opts.court) t.content.querySelectorAll('.minis,.v-sub').forEach(n=>n.remove());
+  return '<div class="tb '+(PEAU[bk]||'blk-h')+'">'+t.innerHTML+'</div>';
+}
+
 function creerFeed(conf){
   const etat={on:false, items:0, total:0, videos:0, ici:false, pas:0, filtre:''};
   let io=null, ici=null, L=[], drag=null;
@@ -5938,6 +6053,9 @@ function creerFeed(conf){
   /* Choisir une Box = l'allumer, ELLE ET TOUT CE QUI LA COMPOSE (SPACE, 11/10). */
   function sfBox(x){
     if(!x){ SF.box=null; SF.on=new Set(); SF.freq=false; return; }
+    /* LA GRILLE : la box choisie est UN élément — ses médias, et elle-même remise en tête des résultats. */
+    if(conf.grille){ const bk=BOX[x.k]; if(!bk) return; const o=objetBox(bk,x.ref), vue=VUE[x.k], id=o?String(o.id):'';
+      SF.box={k:x.k, bk, vue, id, txt:String(x.txt||''), objs:[], reps:[], freq:''}; SF.on=new Set([vue+'|'+id]); SF.freq=false; SF.vue=vue; return; }
     const bk=BOX[x.k]; if(!bk) return;
     const o=bk==='h'?habByT(String(x.ref)):objetDe(bk,String(x.ref));
     const vue=VUE[x.k], id=o?String(o.id):'';
@@ -5987,7 +6105,7 @@ function creerFeed(conf){
     const traits=(x.cols||[]).map(c=>'<i style="background:'+c+'"></i>').join('');
     const nom=esc(x.txt||'');
     return '<section class="lsh ssp-s'+(ici===x.cle?' is-ici':'')+'" data-lsh-k="'+esc(x.cle)+'">'
-      +(z.photo?'<img class="ssp-bg" alt="" aria-hidden="true">':'')
+      +((z.photo||clip)?'<img class="ssp-bg" alt="" aria-hidden="true">':'')
       +'<div class="lsh-pol" data-pol="'+esc(x.cle)+'" style="--px:'+p.x+'%;--py:'+p.y+'%">'
       +(traits?'<span class="lsh-i" aria-hidden="true">'+traits+'</span>':'')
       +'<div class="lsh-m">'+media
@@ -6003,6 +6121,14 @@ function creerFeed(conf){
   }
   async function charger(el,prochain){
     if(!el) return;
+    /* La vignette d'une vidéo de la grille ; à défaut (fabrication impossible), la vidéo elle-même en repli. */
+    const vp=el.querySelector('img[data-poster]');
+    if(vp){ if(vp.dataset.ok) return; vp.dataset.ok='1';
+      const u=await POSTER.de(vp.dataset.poster); if(!vp.isConnected) return;
+      if(u){ vp.src=u; return; }
+      const url=await urlEM(vp.dataset.poster); if(!url||!vp.isConnected) return;
+      const v=document.createElement('video'); v.muted=true; v.playsInline=true; v.preload='metadata'; v.src=url+'#t=0.1';
+      vp.replaceWith(v); return; }
     const vb=el.querySelector('video[data-bunny]');
     if(vb){ await BUNNY.poser(vb); if(el.classList.contains('is-ici')&&vb.getAttribute('src')) vb.play().catch(()=>{}); return; }
     const m=el.querySelector('[data-sh-src]'); if(!m||m.dataset.ok) return; m.dataset.ok='1';
@@ -6078,6 +6204,30 @@ function creerFeed(conf){
       +' aria-pressed="'+(on?'true':'false')+'">'+esc(mot)+'</button>';
     const g=(lab,inner)=>inner?'<div class="sfg"><span class="sfl">'+lab+'</span><div class="sfr">'+inner+'</div></div>':'';
     const b=SF.box;
+    /* ══ LE FILTRE INTELLIGENT DE LA GRILLE (20/10) ══ Wah : « commencer par sélectionner une VUE, pour ensuite
+       sélectionner une BOX de cette vue » ; et les box sont celles du Totehm. D'abord les cinq vues (leurs
+       carrés, dans leur couleur) ; une vue choisie déplie SES boxes, au format Totehm ; une box choisie filtre
+       la grille et revient en tête des résultats. Puis ce que ça montre, les intentions. */
+    if(conf.grille){
+      let h=g('Views', Object.keys(VUE_K).map(v=>'<button type="button" class="sfv '+(PEAU[VUE_K[v]]||'')+(SF.vue===v?' is-on':'')+'"'
+        +' data-sf="vue" data-v="'+v+'" aria-pressed="'+(SF.vue===v)+'">'+esc(MOT[v]||v)+'</button>').join(''));
+      if(SF.vue){
+        const l=mesElements().filter(x=>VUE[x.k]===SF.vue);
+        h+='<div class="sfg"><div class="sfl">'+esc(MOT[SF.vue]||SF.vue)+'</div><div class="sfbx">'
+          +(l.length?l.map(x=>{ const on=b&&b.vue===SF.vue&&b.txt===x.txt;
+              return '<div class="sfb'+(on?' is-on':'')+'" role="button" tabindex="0" data-sf="box" data-v="'+esc(x.k+'|'+x.ref)+'" aria-pressed="'+!!on+'">'
+                +(boxTotehm(BOX[x.k],objetBox(BOX[x.k],x.k==='h'?((state.habits||[]).find(z=>String(z.t||'').trim()===x.ref)||{}).id:x.ref),{})
+                  ||'<span class="lsh-t">'+esc(x.txt)+'</span>')+'</div>'; }).join('')
+             :'<p class="lv-note">nothing in this view yet</p>')
+          +'</div></div>';
+      }
+      h+=g('It shows', c('data-sf="type" data-v="photo"','photo',SF.type==='photo')+c('data-sf="type" data-v="video"','video',SF.type==='video'));
+      h+=g('Intentions', INTS.map(i=>'<button type="button" class="sfc sfi'+(SF.ints.has(i.id)?' is-on':'')+'" data-sf="int" data-v="'+i.id+'"'
+        +' aria-pressed="'+(SF.ints.has(i.id)?'true':'false')+'" style="--c:'+i.color+'"><i aria-hidden="true"></i>'+esc(i.name)+'</button>').join(''));
+      h+='<div class="sfg"><div class="sfr sfa"><button type="button" class="sfc" data-sf="all">ALL</button>'
+        +'<button type="button" class="sfc" data-sf="close">CLOSE</button></div></div>';
+      p.innerHTML=h; return;
+    }
     let h=g('My Box', c('data-sf="pick"', b?b.txt:'choose a Box', !!b, 'is-box')
         +(b?'<button type="button" class="sfc sfk" data-sf="unbox">all Boxes</button>':''));
     if(b&&conf.src!=='spots'){
@@ -6134,14 +6284,19 @@ function creerFeed(conf){
   const boite=(x,cl)=>x.txt?'<button type="button" class="tl-b'+(cl?' '+cl:'')+'" data-lsh="'+esc(x.vue+'|'+x.id)+'" style="--tc:'+(TCOUL[x.vue]||'var(--navy)')+'">'
     +((x.cols||[]).length?'<span class="tl-i" aria-hidden="true">'+x.cols.map(c=>'<i style="background:'+c+'"></i>').join('')+'</span>':'')
     +'<span class="tl-n">'+esc(x.txt)+'</span></button>':'';
+  /* La box d'un média : celle du Totehm (`boxTotehm`) ; si l'arbre n'est pas encore revenu, son nom seul. */
+  const boxDe=(x,court)=>boxTotehm(x.bk,objetBox(x.bk,x.id),{court})||boite(x);
   function tuile(x,i){
-    const u=x.b==='em'?emCache(x.src):'';
+    const u=x.b==='em'&&!x.vid?emCache(x.src):'';
+    /* Une vidéo s'affiche par sa VIGNETTE (`POSTER`) : un téléphone ne dessine pas l'image d'une vidéo arrêtée. */
     const media=x.vid
-      ? '<video data-sh-src="'+esc(x.src)+'" data-b="'+esc(x.b)+'" muted playsinline preload="none"'+(u?' src="'+esc(u)+'#t=0.1" data-ok="1"':'')+'></video>'
+      ? '<img alt="" data-poster="'+esc(x.src)+'" data-b="'+esc(x.b)+'">'
       : '<img alt="" data-sh-src="'+esc(x.src)+'" data-b="'+esc(x.b)+'"'+(u?' src="'+esc(u)+'" data-ok="1"':'')+'>';
     const f=BADGE.de(x.cle)||{x:50,y:50};
-    return '<article class="tl" data-pol="'+esc(x.cle)+'" data-lsh-k="'+esc(x.cle)+'" data-i="'+i+'" style="--fx:'+f.x+'%;--fy:'+f.y+'%">'
-      +'<div class="tl-ph">'+media+(x.vid?'<span class="tl-v" aria-hidden="true"></span>':'')+'</div>'+boite(x)+'</article>';
+    return '<article class="tl" data-pol="'+esc(x.cle)+'" data-lsh-k="'+esc(x.cle)+'" data-i="'+i+'" tabindex="0" role="button"'
+      +' aria-label="'+esc((x.vid?'video · ':'photo · ')+(x.txt||''))+'" style="--fx:'+f.x+'%;--fy:'+f.y+'%">'
+      +'<div class="tl-ph">'+media+(x.vid?'<span class="tl-v" aria-hidden="true"></span>':'')+'</div>'
+      +'<div class="tl-bx">'+boxDe(x,true)+'</div></article>';
   }
   function grille(){
     const b=bx(); if(!b) return;
@@ -6151,7 +6306,9 @@ function creerFeed(conf){
     etat.filtre=[SF.type,SF.vue,[...sfIntsActives()].join('·'),SF.box?'box':''].filter(Boolean).join('+');
     etat.n=sfCount(); etat.box=SF.box?SF.box.txt:''; etat.panneau=sfOuvert();
     const plus=me&&!RO?'<button type="button" class="tl tl-add" data-add="" aria-label="Add a media"><span aria-hidden="true">+</span></button>':'';
-    b.innerHTML='<div class="tlg">'+plus+L.map(tuile).join('')+'</div>';
+    /* LA BOX CHOISIE EST REMISE EN TÊTE DES RÉSULTATS (Wah), telle qu'elle est dans le Totehm. */
+    const tete=SF.box?'<div class="tl-sel" data-f-sel="1">'+boxTotehm(SF.box.bk,objetBox(SF.box.bk,SF.box.id),{})+'</div>':'';
+    b.innerHTML='<div class="tlg">'+tete+plus+L.map(tuile).join('')+'</div>';
     const say=$(conf.say);
     if(say) say.textContent=L.length?'':(tout.length?'nothing with these filters':conf.vide);
     peindreFlt();
@@ -6166,9 +6323,11 @@ function creerFeed(conf){
     const u=x.b==='em'?emCache(x.src):'', m=r.querySelector('.tlv-m');
     m.innerHTML=x.vid?'<video controls playsinline autoplay loop'+(u?' src="'+esc(u)+'"':'')+'></video>':'<img alt=""'+(u?' src="'+esc(u)+'"':'')+'>';
     const el=m.firstChild;
+    if(x.vid&&x.b==='em') POSTER.de(x.src).then(pu=>{ if(pu&&el.isConnected&&!el.getAttribute('src')) el.poster=pu; else if(pu&&el.isConnected) el.poster=pu; });
     if(!u) (x.b==='moments'?urlMoments(x.src):urlEM(x.src)).then(url=>{ if(url&&el.isConnected&&VU.i===i){ el.src=url; if(el.tagName==='VIDEO') el.play().catch(()=>{}); } });
-    let ligne=(x.ints||[]).map(k=>{ const o=INT_BY_ID[k]; return o?'<i style="color:'+o.color+'">'+esc(o.name)+'</i>':''; }).filter(Boolean).join(' · ');
-    r.querySelector('.tlv-b').innerHTML=boite(x,'tlv-box')+(ligne?'<span class="tlv-l">'+ligne+'</span>':'');
+    /* PAR-DESSUS LE MÉDIA, LA BOX DÉTAILLÉE (Wah) : la box du Totehm entière — filet, nom, intentions, rythme,
+       mini-boîtes —, surélevée. Plus aucune redirection vers le Totehm depuis la grille. */
+    r.querySelector('.tlv-b').innerHTML=boxDe(x,false);
     r.querySelector('.tlv-p').hidden=i<=0; r.querySelector('.tlv-n').hidden=i>=L.length-1;
   }
   function fermerV(){
@@ -6304,6 +6463,9 @@ function creerFeed(conf){
       if(d.bouge&&d.x!=null){ BADGE.poser(d.cle,d.x,d.y); etat.poses=(etat.poses||0)+1; etat.glisse=Date.now(); }
     };
     s.addEventListener('pointerup',lache);
+    /* Au clavier, une tuile s'ouvre comme au doigt. */
+    s.addEventListener('keydown',e=>{ const t=conf.grille&&e.target.closest&&e.target.closest('.tl[data-i]');
+      if(t&&(e.key==='Enter'||e.key===' ')){ e.preventDefault(); voir(+t.dataset.i); } });
     /* Un `pointercancel` ne JETTE pas le geste : ce qui a été déplacé est posé, comme un lâcher. */
     s.addEventListener('pointercancel',lache);
     /* Un tap sur le texte OUVRE l'élément dans le Totehm, sur SA vue — `__totehmDeplie` est le seul
@@ -6312,6 +6474,8 @@ function creerFeed(conf){
     s.addEventListener('click',e=>{
       /* Un appui long qui a déplacé le point de focalisation n'est pas un tap. */
       if(etat.glisse&&Date.now()-etat.glisse<400) return;
+      /* La box choisie, en tête des résultats : la toucher rouvre le filtre. */
+      if(e.target.closest('[data-f-sel]')){ sfOpen(true); return; }
       const a=e.target.closest('[data-add]');
       if(a){ choix('cap',a.dataset.add||undefined); return; }
       const b=e.target.closest('[data-lsh]'); if(b){ ouvrirElement(b); return; }
@@ -6348,10 +6512,12 @@ function creerFeed(conf){
     const pk=$(conf.pick); if(!pk||RO||!me) return;
     /* Depuis le polaroid vide d'un étage, on ne propose QUE les éléments de cette intention. */
     const l=mesElements().filter(x=>!intention||(x.ints||[]).includes(intention));
+    /* Les éléments, AU FORMAT TOTEHM, rangés par vue (le carré de la vue, puis ses boxes). */
+    let vu='';
     pk.innerHTML=l.length
-      ? l.map((x,i)=>'<button type="button" data-pick="'+i+'">'
-          +(x.cols&&x.cols.length?'<span class="lsh-i" aria-hidden="true">'+x.cols.map(c=>'<i style="background:'+c+'"></i>').join('')+'</span>':'')
-          +'<span class="lsh-t">'+esc(x.txt)+'</span></button>').join('')
+      ? l.map((x,i)=>{ const v=VUE[x.k], ent=v!==vu?'<p class="pk-vue '+(PEAU[BOX[x.k]]||'')+'">'+esc(MOT[v]||v)+'</p>':''; vu=v;
+          const o=objetBox(BOX[x.k],x.k==='h'?((state.habits||[]).find(z=>String(z.t||'').trim()===x.ref)||{}).id:x.ref);
+          return ent+'<div class="pk-b" role="button" tabindex="0" data-pick="'+i+'">'+(boxTotehm(BOX[x.k],o,{court:true})||'<span class="lsh-t">'+esc(x.txt)+'</span>')+'</div>'; }).join('')
       : '<p class="lv-note">write my TOTEHM first</p>';
     pk.hidden=false; sfOpen(false);
     pk.onclick=e=>{
@@ -6363,6 +6529,10 @@ function creerFeed(conf){
       CAP.ouvrir(x.k,x.ref,b);
     };
   }
+  /* Les boxes du sélecteur et du panneau sont des `div role=button` (une box n'entre pas dans un <button>) :
+     Entrée et Espace les choisissent comme un clic. */
+  [conf.pick,conf.panneau].forEach(id=>{ const n=$(id); if(n) n.addEventListener('keydown',e=>{
+    const t=e.target.closest('[data-pick],[data-sf="box"]'); if(t&&(e.key==='Enter'||e.key===' ')){ e.preventDefault(); t.click(); } }); });
   /* La barre vit HORS du conteneur qui défile : son clic se câble à part. */
   { const r=rail(); if(r) r.addEventListener('click',e=>{
       const f=e.target.closest('[data-f]'); if(!f) return;
@@ -6389,7 +6559,10 @@ function creerFeed(conf){
       else if(c==='pil'){ SF.piliers.has(v)?SF.piliers.delete(v):SF.piliers.add(v); }
       else if(c==='freq') SF.freq=!SF.freq;
       else if(c==='type') SF.type=SF.type===v?'':v;
-      else if(c==='vue')  SF.vue =SF.vue ===v?'':v;
+      else if(c==='vue'){ SF.vue=SF.vue===v?'':v; if(conf.grille&&SF.box&&SF.box.vue!==SF.vue) sfBox(null); }
+      else if(c==='box'){ const [k,ref]=String(v||'').split('|'); const x=mesElements().find(z=>z.k===k&&z.ref===ref);
+        if(!x) return; if(SF.box&&SF.box.vue===VUE[k]&&SF.box.txt===x.txt) sfBox(null); else sfBox(x);
+        sfApply(); if(SF.box) sfOpen(false); return; }
       else if(c==='quand')SF.quand=SF.quand===v?'':v;
       else if(c==='qui')  SF.qui=v||'';
       else if(c==='ou')   SF.ou=v||'';
@@ -6410,7 +6583,8 @@ function creerFeed(conf){
   /* ⚠️ LA RANGÉE SE PEINT MÊME QUAND LE FEED NE TOURNE PAS. En mode radar, `SHS` n'ouvre jamais :
      sans ça, la bascule radar ↔ shorts n'existerait tout simplement pas à l'écran. */
   return {ouvrir:entrer, fermer:sortir, pause, maj, vider, pas, flts:peindreFlt, sf:sfOpen,
-          box:()=>choix('box'),
+          /* À gauche, le Totehm docké ouvre DIRECTEMENT le filtre (les vues, puis leurs boxes). */
+          box:()=>conf.grille?sfOpen(!sfOuvert()):choix('box'),
           flt:()=>({type:SF.type||'all', vue:SF.vue||'all', quand:SF.quand||'all',
                    ints:[...sfIntsActives()], piliers:[...SF.piliers], freq:SF.freq,
                    box:SF.box?SF.box.txt:'', on:[...SF.on], n:sfCount()}),
@@ -6948,7 +7122,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-10-20-com-grille';
+const BUILD='2026-10-20-com-boxes';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -8087,8 +8261,10 @@ function vueVision(v,k){
     ? ts.map(t=>miniDel('o',t.id,t.text,'data-unlink="vo:'+esc(String(v.id))+'|'+esc(String(t.id))+'"')).join('')
       + plus('lien','vo',v.id,'objective')
     : ts.map(t=>mini('o',t.id,t.text)).join(''), pkVO)
-    + (ouverte&&!RO&&!estProvisoire(v.id)?'<button type="button" class="dash" data-vimg="'+esc(String(v.id))+'" aria-label="'+(img?'Change the image':'Add an image')+'">+ <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="9" cy="10" r="2" fill="currentColor"/><path d="M5 17l5-5 4 4 2-2 3 3" fill="none" stroke="currentColor" stroke-width="2"/></svg></button>'
-        +(img?'<button type="button" class="dash" data-vimg-x="'+esc(String(v.id))+'" aria-label="Remove the image">&times; <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="9" cy="10" r="2" fill="currentColor"/><path d="M5 17l5-5 4 4 2-2 3 3" fill="none" stroke="currentColor" stroke-width="2"/></svg></button>':''):'');
+    /* 20/10 — UN SEUL GESTE POUR ILLUSTRER UNE VISION : [Add a media] (le groupe `files`). Le bouton
+       « image » (une pièce jointe de plus, l'image libre de `vision_image_set`) faisait doublon : il est
+       parti. Une image déjà posée reste affichée dans la boîte. */
+    ;
   let haut='', bas='';
   return ligne(boiteHTML({kind:'v',id:v.id,titre:v.t,unit,minis,ouverte,haut,bas,tue:'Delete vision'}),
     ouverte?'open':'',

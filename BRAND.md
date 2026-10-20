@@ -37,8 +37,12 @@ Totehm) · **CLUB** (whoever is on the platform with a Totehm filled in — a me
 
 > **← My media** — an Instagram grid. One square per picture or video, and on it, slightly raised (a shadow
 > lifts it), the box of the element it illustrates: its type colour, its intention line, its words. The first
-> square is **+**. Tap the picture: it opens big. Tap the box: the element opens in the Totehm. Long press:
-> move the focal point. Filters: what it shows, which view, which intention.
+> square is **+**. Tap the square: the media opens big, with its box in full on top — we stay in the view.
+> Long press: move the focal point. Tap my Totehm on top: the filter — a view first, then a box of that view;
+> the chosen box stands at the head of the results. Then what it shows, which intention.
+> **The boxes are sacred** (20/10): whatever comes from the Totehm keeps the Totehm's format — the same box,
+> never a label that resembles it. A file inside a box reads **Visualize it**, never its file name. A Vision
+> is illustrated by one gesture only: [Add a media].
 > **The spots →** — figher.club continues here: every spot I may see, mine and the Club's, in three times —
 > **was · now · next**. RADAR or SHORTS; shorts are TikTok, one spot per screen, phone and desktop. This is the
 > ONLY place for the polaroid: a navy frame, the intention line on its left edge, in the window at the TOP a

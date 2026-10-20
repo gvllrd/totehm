@@ -77,6 +77,14 @@ dessus, légèrement surélevée, avec ses filtres. À DROITE, LES SPOTS DU CLUB
 ou en shorts TikTok ; c'est là seulement qu'on a le polaroid, avec en haut
 la bande noire transparente des informations du spot.
 
+Onzième volet (BUILD `2026-10-20-com-boxes`) : LES BOXES SONT SACRÉES. Sur la
+grille, la box posée sur chaque média est CELLE du Totehm (même rendu) ; un
+tap ouvre le média avec la box détaillée par-dessus, sans quitter la vue ; le
+Totehm en haut ouvre un filtre en deux temps (une vue, puis une de ses boxes,
+remise en tête des résultats). Vignettes vidéo : une image fixe posée à côté
+du fichier à gauche, la vignette de Bunny à droite. Dans une boîte, un
+fichier dit « Visualize it » ; une Vision s'illustre par [Add a media] seul.
+
 Neuvième volet (BUILD `2026-10-20-com-curseur`) : EN BAS, ON ARRIVE ET ON
 TAPE. Passer à ma Reflection ouvre le clavier tout de suite ; le curseur
 clignote à gauche, un seul à la fois, aucune boîte ; ce que j'écris est en

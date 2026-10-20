@@ -68,40 +68,56 @@ try{
   await pg.click('#lvn-lf');await vers(pg,'g');await pg.waitForTimeout(1300);
   const g=await pg.evaluate(()=>{
     const t=[...document.querySelectorAll('#lv-sh .tl[data-pol]')], a=document.getElementById('gate-asteroid'), ra=a.getBoundingClientRect();
-    const t0=t[0], b0=t0&&t0.querySelector('.tl-b'), r0=t0&&t0.getBoundingClientRect(), g0=document.querySelector('#lv-sh .tlg');
+    const t0=t[0], b0=t0&&t0.querySelector('.tl-bx'), hb=b0&&b0.querySelector('.tb .habit .h-body'), tk=b0&&b0.querySelector('.tb .habit .tick'),
+      r0=t0&&t0.getBoundingClientRect(), g0=document.querySelector('#lv-sh .tlg');
     return {n:t.length, add:!!document.querySelector('#lv-sh .tl-add'), carre:r0?Math.abs(r0.width-r0.height)<2:false,
       cols:g0?getComputedStyle(g0).gridTemplateColumns.split(' ').length:0,
       vieux:document.querySelectorAll('#lv-sh .etg,#lv-sh .pol').length,
-      nom:(b0&&b0.querySelector('.tl-n')||{}).textContent||'', fond:b0?getComputedStyle(b0).backgroundColor:'',
-      ombre:b0?getComputedStyle(b0).boxShadow:'', trait:t0?t0.querySelectorAll('.tl-i i').length:0,
+      nom:(b0&&b0.querySelector('.v-name')||{}).textContent||'', fond:hb?getComputedStyle(hb).backgroundColor:'',
+      ombre:b0?getComputedStyle(b0).boxShadow:'', trait:tk?tk.querySelectorAll('i').length:0, tw:tk?getComputedStyle(tk).width:'',
+      inerte:b0?b0.querySelectorAll('[data-open],[data-go],[data-zoom],[role],button,.loupe').length:-1,
       dessus:!!(b0&&r0&&b0.getBoundingClientRect().bottom<=r0.bottom&&b0.getBoundingClientRect().top>=r0.top),
       papier:[Math.round(ra.x+ra.width/2), Math.round(ra.y+ra.height/2), Math.round(ra.width)], W:innerWidth,
       dock:document.body.classList.contains('papier-haut'), items:window.__totehm_sh().items,
       spots:[...document.querySelectorAll('#lv-sh .tl-n')].some(e=>/Call mum/.test(e.textContent||''))};});
   ok(g.n===2&&g.add&&g.carre&&g.vieux===0&&g.cols===(tel?3:5),
      nom+' · LA GRILLE : des tuiles CARRÉES ('+g.n+' médias + la tuile « + »), '+g.cols+' colonnes, plus aucun étage');
-  ok(g.nom==='Run the hill'&&g.fond==='rgb(51, 51, 102)'&&/rgba\(0, 0, 0/.test(g.ombre)&&g.trait===1&&g.dessus,
-     'la boîte de SON élément est posée DESSUS, dans sa couleur de type (navy), surélevée (ombre), avec son filet');
+  ok(g.nom==='Run the hill'&&g.fond==='rgb(51, 51, 102)'&&/rgba\(0, 0, 0/.test(g.ombre)&&g.trait===1&&g.tw==='2px'&&g.dessus&&g.inerte===0,
+     '20/10 · la box est CELLE DU TOTEHM (son rendu, sa peau navy, son filet de 2 px), posée DESSUS, surélevée, inerte ('+g.tw+')');
   ok(g.dock&&Math.abs(g.papier[0]-Math.round(g.W/2))<=3&&g.papier[1]<90&&g.papier[2]<70,
      'le TOTEHM est sorti du centre : en haut, centré, petit ('+g.papier.join('/')+')');
   ok(!g.spots&&g.items===2,'aucun spot dans la vue de gauche : ce sont MES médias ('+g.items+')');
   await pg.screenshot({path:OUT+'/grille_'+(tel?'tel':'ordi')+'.png'});
 
-  // ══ 2 · UN TAP SUR L'IMAGE L'OUVRE EN GRAND ; UN TAP SUR LA BOÎTE OUVRE SON ÉLÉMENT DANS LE TOTEHM ══
-  await pg.click('#lv-sh .tl[data-i="0"] .tl-ph');await pg.waitForTimeout(500);
-  const v=await pg.evaluate(()=>({vu:!document.getElementById('tlv').hidden, img:!!document.querySelector('#tlv .tlv-m img'),
-    box:(document.querySelector('#tlv .tl-n')||{}).textContent||'', suiv:!document.querySelector('#tlv .tlv-n').hidden,
-    prec:document.querySelector('#tlv .tlv-p').hidden, papier:getComputedStyle(document.getElementById('gate-asteroid')).opacity}));
-  ok(v.vu&&v.img&&v.box==='Run the hill'&&v.suiv&&v.prec&&v.papier==='0','un tap sur l\'image l\'ouvre EN GRAND, sa boîte dessous, › vers le suivant');
+  // ══ 2 · UN TAP SUR L'IMAGE — OU SUR SA BOX — OUVRE LE MÉDIA, AVEC LA BOX DÉTAILLÉE PAR-DESSUS (20/10) ══
+  // Wah : « quand on clique sur une image de la grille, on ouvre le média avec par-dessus la box détaillée, au lieu
+  // de rediriger vers le Totehm ».
+  await pg.click('#lv-sh .tl[data-i="0"] .tl-bx',{force:true});await pg.waitForTimeout(500);
+  const v=await pg.evaluate(()=>{const b=document.querySelector('#tlv .tlv-b'), m=document.querySelector('#tlv .tlv-m');
+    return {vu:!document.getElementById('tlv').hidden, img:!!document.querySelector('#tlv .tlv-m img'),
+      box:(b&&b.querySelector('.tb .v-name')||{}).textContent||'', sub:(b&&b.querySelector('.tb .v-sub')||{}).textContent||'',
+      minis:b?[...b.querySelectorAll('.tb .mini')].map(e=>e.textContent):[],
+      dessus:b&&m?b.getBoundingClientRect().top<m.getBoundingClientRect().bottom&&getComputedStyle(b).position==='absolute':false,
+      suiv:!document.querySelector('#tlv .tlv-n').hidden, prec:document.querySelector('#tlv .tlv-p').hidden,
+      gate:document.body.classList.contains('gate'), papier:getComputedStyle(document.getElementById('gate-asteroid')).opacity};});
+  ok(v.vu&&v.img&&v.gate&&v.papier==='0','un tap (même sur la box) ouvre le MÉDIA en grand — plus aucune redirection vers le Totehm');
+  ok(v.box==='Run the hill'&&/fight/i.test(v.sub)&&v.minis.includes('Ship it')&&v.minis.includes('The phone')&&v.dessus&&v.suiv&&v.prec,
+     'par-dessus, la box DÉTAILLÉE du Totehm : '+v.box+' · '+v.sub+' · '+v.minis.join(' / '));
   await pg.keyboard.press('ArrowRight');await pg.waitForTimeout(300);
-  ok((await pg.$eval('#tlv .tl-n',e=>e.textContent))==='The studio'&&(await lv(pg)).vue==='g','→ montre le média suivant, sans quitter la vue');
+  ok((await pg.$eval('#tlv .tlv-b .v-name',e=>e.textContent))==='The studio'&&(await lv(pg)).vue==='g','→ montre le média suivant, sans quitter la vue');
   await pg.keyboard.press('Escape');await pg.waitForTimeout(300);
   ok(await pg.evaluate(()=>document.getElementById('tlv').hidden&&window.__totehm_lv().vue==='g'),'Échap referme la visionneuse : on reste dans la grille');
-  await pg.locator('#lv-sh .tl[data-i="0"] .tl-b').evaluate(e=>e.click());
+  // on entre dans le Totehm par le centre, et l'on ouvre l'Habit
+  await pg.click('#lvn-rt');await vers(pg,'c');await pg.waitForTimeout(300);
+  await pg.click('#lv-tap-open');
   await pg.waitForFunction(()=>!document.body.classList.contains('gate'),null,{timeout:9000}).catch(()=>{});
   await pg.waitForTimeout(1200);
-  const o=await pg.evaluate(()=>({vue:window.__totehm_zone.vue,ouverte:(document.querySelector('#habits .habit.open .v-name')||{}).textContent||''}));
-  ok(o.vue==='habits'&&o.ouverte==='Run the hill','un tap sur la boîte ouvre SON élément dans le Totehm ('+o.vue+' · '+o.ouverte+')');
+  const h1=await pg.evaluate(()=>[...document.querySelectorAll('#habits > .habit[data-row]')].find(e=>/Run the hill/.test(e.textContent))?.dataset.row);
+  await pg.locator('#habits [data-open="h:'+h1+'"]').evaluate(e=>e.click());await pg.waitForTimeout(500);
+  const o=await pg.evaluate(()=>({vue:window.__totehm_zone.vue,ouverte:(document.querySelector('#habits .habit.open .v-name')||{}).textContent||'',
+    fichiers:[...document.querySelectorAll('#habits .habit.open .m-f .mini-t')].map(e=>e.textContent.trim())}));
+  ok(o.vue==='habits'&&o.ouverte==='Run the hill','dans le Totehm, l\'Habit s\'ouvre ('+o.vue+' · '+o.ouverte+')');
+  ok(o.fichiers.length===1&&o.fichiers[0]==='Visualize it','20/10 · ses fichiers disent « Visualize it », jamais le nom du fichier ('+o.fichiers.join(' / ')+')');
 
   // ══ 3 · DANS LE TOTEHM : LA LISTE, ET RIEN D'AUTRE ══
   const l0=await pg.evaluate(()=>({rows:document.querySelectorAll('#habits > .habit[data-row]').length,
@@ -129,7 +145,7 @@ try{
   ok(up&&new RegExp('^element-media/'+UID+'/m-[0-9a-f-]{36}\\.pdf$').test(up.path),'IMPORT : le fichier part dans MON dossier, privé ('+(up&&up.path)+')');
   ok(add&&add.body.p_kind==='h'&&add.body.p_ref==='Read at dawn'&&add.body.p_mime==='application/pdf'&&add.body.p_name==='notes.pdf'&&up.path==='element-media/'+add.body.p_path,'rattaché à CETTE Habit (element_media_add : h, « Read at dawn »)');
   const puce=await pg.evaluate(()=>[...document.querySelectorAll('#habits .habit.open .m-f .mini-t')].map(b=>b.textContent));
-  ok(puce.includes('notes.pdf'),'la capture se referme ; le fichier est là, dans l\'élément');
+  ok(puce.length===1&&puce[0]==='Visualize it','la capture se referme ; le fichier est là, dans l\'élément (« Visualize it », pas son nom)');
   ok(!log.rpc.some(r=>/^(spot_create|space_post|space_post_audience|spot_create_audience)$/.test(r.name)),'importer n\'est pas publier (aucun space, aucun spot)');
   // une photo : elle rejoint mes médias
   await pg.locator('#habits .habit.open [data-cap]').first().evaluate(e=>e.click());await pg.waitForTimeout(450);
@@ -148,11 +164,13 @@ try{
   await pg.waitForTimeout(600);
   ok(ph&&ph.body.p_mime==='image/jpeg'&&/\.jpg$/.test(ph.body.p_path),'PHOTO : un JPEG (≤ 1 600 px), rattaché à l\'élément');
   // ouvrir, retirer un fichier
-  await pg.locator('#habits .habit.open .m-f .mini-t',{hasText:'notes.pdf'}).evaluate(e=>e.click());await pg.waitForTimeout(500);
+  /* les fichiers disent « Visualize it » : on reconnaît le PDF à son icône de document */
+  const doc=()=>pg.evaluate(()=>[...document.querySelectorAll('#habits .habit.open .m-f')].findIndex(m=>/M6 3h8/.test(m.innerHTML)));
+  await pg.evaluate(()=>[...document.querySelectorAll('#habits .habit.open .m-f')].find(m=>/M6 3h8/.test(m.innerHTML)).querySelector('.mini-t').click());await pg.waitForTimeout(500);
   ok(await pg.evaluate(()=>window.__ouvert.some(u=>/\/storage\/v1\/object\/sign\/element-media\//.test(u))),'un fichier s\'ouvre par son URL signée');
   const dels=log.upload.filter(u=>u.method==='DELETE').length;
-  await pg.locator('#habits .habit.open .m-f',{hasText:'notes.pdf'}).locator('[data-emx]').evaluate(e=>e.click());await pg.waitForTimeout(700);
-  ok(log.rpc.some(r=>r.name==='element_media_remove')&&log.upload.filter(u=>u.method==='DELETE').length===dels+1&&!(await pg.evaluate(()=>[...document.querySelectorAll('#habits .m-f .mini-t')].some(b=>b.textContent==='notes.pdf'))),'« × » : element_media_remove, le fichier s\'efface de mon dossier');
+  await pg.evaluate(()=>[...document.querySelectorAll('#habits .habit.open .m-f')].find(m=>/M6 3h8/.test(m.innerHTML)).querySelector('[data-emx]').click());await pg.waitForTimeout(700);
+  ok(log.rpc.some(r=>r.name==='element_media_remove')&&log.upload.filter(u=>u.method==='DELETE').length===dels+1&&(await doc())===-1,'« × » : element_media_remove, le fichier s\'efface de mon dossier');
   // renommer : ses fichiers suivent ; supprimer : ils partent
   await pg.locator('#habits .habit.open .v-name[data-edit]').click();
   await pg.keyboard.press('End');await pg.keyboard.type(' slow');await pg.waitForTimeout(1600);
@@ -190,18 +208,29 @@ try{
   // ══ 4 bis · LE TOTEHM DOCKÉ CHOISIT LA BOX, LE FILTRE EST PROPRE À LA VUE, L'IMAGE SE RECADRE ══
   await vers(pg,'c');
   await pg.click('#lvn-lf');await vers(pg,'g');await pg.waitForTimeout(1000);
-  // le papier docké ouvre le choix d'une Box — LES CINQ VUES à gauche
+  // ══ LE FILTRE INTELLIGENT (20/10) : le Totehm docké l'ouvre DIRECTEMENT — une vue, puis une box de cette vue ══
   await pg.click('#gate-asteroid');await pg.waitForTimeout(500);
-  const pk=await pg.evaluate(()=>({vu:!document.getElementById('lv-sh-pick').hidden,
-    l:[...document.querySelectorAll('#lv-sh-pick [data-pick]')].map(e=>e.textContent.trim())}));
-  ok(pk.vu&&pk.l.includes('Ship it')&&pk.l.includes('The studio')&&pk.l.some(x=>/hill|mum|dawn/.test(x)),
-    'le Totehm docké ouvre le choix : à gauche LES CINQ VUES ('+pk.l.join(' · ')+')');
+  const fz=await pg.evaluate(()=>({vu:!document.getElementById("lv-sh-sf").hidden, pick:!document.getElementById('lv-sh-pick').hidden,
+    vues:[...document.querySelectorAll('#lv-sh-sf .sfv')].map(e=>e.textContent), boxes:document.querySelectorAll('#lv-sh-sf .sfb').length}));
+  ok(fz.vu&&!fz.pick&&fz.vues.length===5&&fz.boxes===0,'le Totehm docké ouvre le FILTRE : d\'abord les cinq vues ('+fz.vues.join(' · ')+')');
+  await pg.click('#lv-sh-sf .sfv[data-v="objectives"]');await pg.waitForTimeout(400);
+  const f1b=await pg.evaluate(()=>({boxes:[...document.querySelectorAll('#lv-sh-sf .sfb .tb .v-name')].map(e=>e.textContent),
+    peau:(()=>{const h=document.querySelector('#lv-sh-sf .sfb .tb .h-body');return h?getComputedStyle(h).backgroundColor:'';})()}));
+  ok(f1b.boxes.join('|')==='Ship it'&&f1b.peau==='rgb(54, 73, 140)','une vue choisie déplie SES boxes, au format Totehm (objectif : bleu clair) : '+f1b.boxes.join(' · '));
+  await pg.click('#lv-sh-sf .sfv[data-v="habits"]');await pg.waitForTimeout(400);
+  await pg.locator('#lv-sh-sf .sfb').filter({hasText:'Run the hill'}).first().click();await pg.waitForTimeout(600);
+  const f1c=await pg.evaluate(()=>({ferme:document.getElementById('lv-sh-sf').hidden, items:window.__totehm_sh().items,
+    tete:(document.querySelector('#lv-sh .tl-sel .tb .v-name')||{}).textContent||'', minis:document.querySelectorAll('#lv-sh .tl-sel .tb .mini').length}));
+  ok(f1c.ferme&&f1c.items===1&&f1c.tete==='Run the hill'&&f1c.minis===2,'la box choisie filtre la grille ET revient EN TÊTE des résultats, entière ('+f1c.tete+')');
+  await pg.click('#lv-sh .tl-sel');await pg.waitForTimeout(400);
+  ok(await pg.evaluate(()=>!document.getElementById('lv-sh-sf').hidden),'toucher la box en tête rouvre le filtre');
+  await pg.click('#lv-sh-sf [data-sf="all"]');await pg.waitForTimeout(400);
   await pg.keyboard.press('Escape');await pg.waitForTimeout(400);
   // le panneau de gauche : ce que ça montre, la vue d'origine, les intentions (la grille n'a plus d'étages)
   await pg.click('#lv-sh-flt [data-f="sf"]');await pg.waitForTimeout(400);
   const pan=await pg.evaluate(()=>({lab:[...document.querySelectorAll('#lv-sh-sf .sfl')].map(e=>e.textContent),
     ints:document.querySelectorAll('#lv-sh-sf [data-sf="int"]').length, vues:document.querySelectorAll('#lv-sh-sf [data-sf="vue"]').length}));
-  ok(pan.ints===7&&pan.vues===5&&pan.lab.includes('It shows')&&pan.lab.includes('Views')&&pan.lab.includes('Intentions'),
+  ok(pan.ints===7&&pan.vues===5&&pan.lab.includes('It shows')&&pan.lab.includes('Views')&&pan.lab.includes('Intentions')&&!pan.lab.includes('My Box'),
     'le filtre de la grille : ce que ça montre, la vue, les SEPT intentions ('+pan.lab.join(' · ')+')');
   const avant=log.rpc.length, n0=(await pg.evaluate(()=>window.__totehm_sh())).items;
   await pg.click('#lv-sh-sf [data-sf="type"][data-v="video"]');await pg.waitForTimeout(500);
@@ -338,7 +367,7 @@ try{
   const r=await pg.evaluate(()=>({n:document.querySelectorAll('#lv-sh .tl[data-pol]').length,
     sb:getComputedStyle(document.getElementById('lv-sh')).scrollBehavior,
     tr:getComputedStyle(document.querySelector('#lv-sh .tl-ph img')).transitionDuration,
-    tb:getComputedStyle(document.querySelector('#lv-sh .tl-b')).transitionDuration}));
+    tb:getComputedStyle(document.querySelector('#lv-sh .tl-bx')).transitionDuration}));
   ok(r.n===2&&r.sb==='auto'&&/^0s/.test(r.tr),'mouvement réduit : la grille, sans animation ni défilement doux ('+JSON.stringify(r)+')');
   await pg.click('#lvn-rt');await vers(pg,'c');await pg.click('#lvn-rt');await vers(pg,'d');await pg.waitForTimeout(600);
   const rr=await pg.evaluate(()=>window.__totehm_rdr());
