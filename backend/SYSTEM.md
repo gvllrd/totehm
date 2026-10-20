@@ -20,6 +20,20 @@
 ---
 
 
+## 0 · LES BOXES SONT SACRÉES — 20/10/2026 quinquies (lot J)
+
+| Mesure | Résultat |
+|---|---|
+| `com/totehm.html` en production | 200, 827 122 octets, `BUILD=2026-10-20-com-boxes` |
+| Déploiement Vercel | commits `b86d7a4` puis `f91a565`, production READY |
+| Présent en production | `function boxTotehm(`, `const POSTER=`, `thumbnail.jpg` (Bunny), `Visualize it`, `data-sf="box"` (filtre vue → box), `.tl-sel` |
+| Absent en production | `data-vimg`, `async function visionImage(` (balisage ET câblage) |
+| Visions avec image libre en base | **0** sur 4 (rien de perdu en retirant le bouton) |
+| Vidéos d'éléments en base | 1 (`element_media`, Supabase) ; vignettes JPEG posées : **0** — la première se fabrique au premier affichage chez Wah |
+| Mesuré en page (simulé) | box de la tuile = rendu du Totehm, peau navy `rgb(51,51,102)`, filet 2 px, inerte (0 bouton, 0 `data-*`) ; visionneuse + box détaillée sans quitter la vue ; filtre : vue → box, 1 résultat, box remise en tête, un tap la rouvre |
+| ⚠️ Non mesurable ici | la vignette Bunny réelle (jeton de répertoire) et la fabrication du JPEG dans le Safari de Wah |
+| Suites navigateur | com_shorts **118** · com_processeur 129 · com_plateforme 23 · com_paper 36 · com_member_menu 41 · com_guest 14 · com_composition 78 · com_creator 37 · com_read_copy 18 · com_spot 8 · com_vision_image 4 · com_cloths 16 — fail 0 |
+
 ## 0 · ← UNE GRILLE INSTAGRAM · LES SPOTS DU CLUB → — 20/10/2026 quater (lot I)
 
 | Mesure | Résultat |
