@@ -5276,36 +5276,6 @@ async function signerPhoto(img){
   SIGNE.set(k,{url:data.signedUrl,at:Date.now()}); if(SIGNE.size>120) SIGNE.delete(SIGNE.keys().next().value);
   img.src=data.signedUrl;
 }
-/* Poser (JPEG ≤ 1080 px, dans MON dossier) ou retirer l'image d'une vision ; l'ancien fichier s'efface. */
-let lvVisionsStale=()=>{};
-async function visionImage(id,fichier){
-  if(!me||RO) return;
-  let chemin=null;
-  if(fichier){
-    let blob=null;
-    try{
-      const img=await new Promise((ok,ko)=>{ const i=new Image(); i.onload=()=>ok(i); i.onerror=ko; i.src=URL.createObjectURL(fichier); });
-      const k=Math.min(1,1080/Math.max(img.naturalWidth,img.naturalHeight)), c=document.createElement('canvas');
-      c.width=Math.round(img.naturalWidth*k); c.height=Math.round(img.naturalHeight*k);
-      c.getContext('2d').drawImage(img,0,0,c.width,c.height); URL.revokeObjectURL(img.src);
-      blob=await new Promise(ok=>c.toBlob(ok,'image/jpeg',.86));
-    }catch(_){ blob=null; }
-    if(!blob){ console.error('[vision image] not a picture'); return; }
-    chemin=me.id+'/vision-'+crypto.randomUUID()+'.jpg';
-    const {error:eu}=await sb.storage.from('moments').upload(chemin,blob,{contentType:'image/jpeg',upsert:false});
-    if(eu){ console.error('[moments upload]',eu.message); return; }
-  }
-  const {data,error}=await sb.rpc('vision_image_set',{p_id:id,p_path:chemin});
-  if(error||!data?.ok){
-    console.error('[vision_image_set]',error?error.message:data?.why);
-    if(chemin){ const {error:er}=await sb.storage.from('moments').remove([chemin]); if(er) console.error('[moments remove]',er.message); }
-    return;
-  }
-  if(data.old&&data.old!==chemin){ const {error:er}=await sb.storage.from('moments').remove([data.old]); if(er) console.error('[moments remove]',er.message); }
-  visImgSeq++;
-  if(chemin) VISIMG.set(String(id),chemin); else VISIMG.delete(String(id));
-  lvVisionsStale(); renderZone();
-}
 const ETAT_CLOTH={making:'in the making',production:'in production',shipped:'shipped'};
 const miniCloth=c=>'<button type="button" class="mini m-s m-c" data-cloth="'+esc(String(c.name))+'">'
   +'<span class="ms-st">'+esc([ETAT_CLOTH[c.stage]||'cloth', c.line==='luxury'?'luxury':'', c.test?'test':''].filter(Boolean).join(' · '))+'</span>'
@@ -8616,12 +8586,9 @@ function cable(box){
        qui les traite existait et n'était jamais atteint. */
     const el=e.target.closest('[data-fint],[data-ffq],[data-fclear],[data-fx],'
       +'[data-open],[data-add],[data-x],[data-pk],[data-int],[data-mv],[data-go],'
-      +'[data-fq],[data-lien],[data-unlink],[data-nodate],[data-kill],[data-space],[data-spotgo],[data-cloth],[data-totehmize],[data-zoom],[data-copy],[data-vimg],[data-vimg-x],[data-cap],[data-emo],[data-emx]');
+      +'[data-fq],[data-lien],[data-unlink],[data-nodate],[data-kill],[data-space],[data-spotgo],[data-cloth],[data-totehmize],[data-zoom],[data-copy],[data-cap],[data-emo],[data-emx]');
     if(!el)return;
     const d=el.dataset;
-    if(d.vimg){ e.stopPropagation(); const id=d.vimg, f=document.createElement('input'); f.type='file'; f.accept='image/*';
-      f.onchange=()=>{ const x=f.files&&f.files[0]; if(x) visionImage(id,x); }; f.click(); return; }
-    if(d.vimgX){ e.stopPropagation(); visionImage(d.vimgX,null); return; }
     if(d.copy){ e.stopPropagation(); copierBox(el,d.copy); return; }
     /* 15/10 — capturer ou importer DEPUIS l'élément ; ouvrir, retirer un de ses fichiers. */
     if(d.cap){ e.stopPropagation(); const i=d.cap.indexOf(':'); CAP.ouvrir(d.cap.slice(0,i),d.cap.slice(i+1),el); return; }

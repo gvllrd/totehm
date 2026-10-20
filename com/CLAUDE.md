@@ -32,8 +32,9 @@ rediriger vers le Totehm » · « la vignette vidéo s'affiche mal » · « pas 
   fond flou `.ssp-bg` d'un spot sans photo. Les médias des éléments restent dans Supabase (une vidéo en prod,
   1,1 Mo) : les passer sur Bunny = un lot serveur, à décider sur le volume.
 - **Centre** : un fichier d'une boîte dit **Visualize it** (`fichiersHTML`), jamais son nom de fichier. **Vision** :
-  le bouton d'image libre (`data-vimg`, `data-vimg-x`) est parti du rendu ; UN geste pour illustrer = [Add a media].
-  L'image libre déjà posée s'affiche toujours (`vision_image_set` reste pour l'existant).
+  le bouton d'image libre (`data-vimg`, `data-vimg-x`) est parti AVEC son câblage (`visionImage`) ; UN geste
+  pour illustrer = [Add a media]. Mesuré : 0 vision sur 4 portait une image libre. L'affichage d'une image déjà
+  posée reste ; `vision_image_set` reste en base, sans appelant dans COM.
 - Tests : `com_shorts` 118 (box Totehm inerte et navy, filet 2 px ; visionneuse + box détaillée ; filtre vue → box,
   `.tl-sel`, réouverture ; Visualize it), `com_vision_image` 4 (plus de `data-vimg`, un seul [Add a media]).
 
