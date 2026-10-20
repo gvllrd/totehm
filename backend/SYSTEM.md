@@ -20,6 +20,18 @@
 ---
 
 
+## 0 · LE CERVEAU VIBRE, DES POINTS SUR LA TERRE, UN SEUL CURSEUR, LA MANETTE-SOCLE — 20/10/2026 septies (lot L)
+
+| Mesure | Résultat |
+|---|---|
+| Base | aucune migration (front seul) |
+| `com/totehm.html` en production | 200, 812 438 caractères = le fichier du dépôt (837 825 octets), `BUILD=2026-10-20-com-manette`, commit `b42eba5`, Vercel READY (`dpl_FgxGt4T5BVhZ7kTkRjdTD6i86sVt`) |
+| Présent en production | `function vibrer()`, `x.arc(px,py,r,0,7)` (spots en points), `#lvj-box::after` (le puits), `id="lv-say-go" type="submit">SEND<` |
+| Absent en production | le tracé des méridiens sur le canvas de la carte, `class="rf-cur"` |
+| Mesuré en page (simulé, 390 × 844) | cerveau : 7 ondes aux couleurs pleines, 0,35 → 0,51 → 0,73 → 1,06 → 1,53 → 2,21 → 3,2 Hz, 1,2 → 6,9 cycles par moitié, entre `#lv-sell` et `#lvjoy` ; 62 images/s en vue haut, 0 ailleurs et en mouvement réduit · globe arrivé : réseau à 0, plus longue ligne aux couleurs d'intention < 30 px · manette 48 × 48, rayon 0, chevrons sans fond · SEND visible avec du texte, caché vide ; aucun `.rf-cur` |
+| ⚠️ Non mesurable ici | le rendu et la batterie du rAF sur le téléphone de Wah |
+| Suites navigateur | com_processeur **147** · com_shorts 127 · com_read_copy 18 · com_plateforme 23 · com_paper 36 · com_member_menu 41 · com_guest 14 · com_composition 78 · com_creator 37 · com_spot 8 · com_vision_image 4 · com_cloths 16 — fail 0 |
+
 ## 0 · L'ÉCOSYSTÈME : ← → TRANSFORMENT LE CENTRE, MAP · GRID, MEMBERS — 20/10/2026 sexies (lot K)
 
 | Mesure | Résultat |
