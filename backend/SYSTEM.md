@@ -20,6 +20,21 @@
 ---
 
 
+## 0 · L'ÉCOSYSTÈME : ← → TRANSFORMENT LE CENTRE, MAP · GRID, MEMBERS — 20/10/2026 sexies (lot K)
+
+| Mesure | Résultat |
+|---|---|
+| Base | migration `ecosysteme_membre` appliquée : `_element_media_readable`, politique Storage `element-media read shared box`, `member_media`, `_club_spots_core`, `club_spots_of` |
+| Auto-test `tests/sql/ecosysteme_membre_selftest.sql` | `FAIL={}` — auteur 2/2 médias, abonné vivant 1/2 (la box `private` reste fermée), étranger 0/2 ; pas de nom de fichier ; `_club_spots_core(null)` = `club_spots` au total près ; anon refusé |
+| ⚠️ Reste au terminal | `20261020181000_club_spots_coeur.sql` : `club_spots` délègue au cœur (deux copies du corps d'ici là) |
+| `com/totehm.html` en production | 200, 834 516 octets, `BUILD=2026-10-20-com-ecosysteme`, commit `481c03e`, Vercel READY |
+| Présent en production | `#lv-m-members`, `#mb-q`, `function morph(A,B)`, `SPMAP`, `SPGRID`, `#rdr-mode`, `club_spots_of`, `member_media` |
+| Absent en production | `#gx-c`, `GX`, `#rdr-c`, `RDR`, `totehm_galaxy` (plus appelé par COM) |
+| `/assets/earth.json` | 200, 51 142 octets (Natural Earth 110 m) |
+| Mesuré en page (simulé, 390 × 844) | ← : les 7 traits en transformation à 260 ms (vue à opacité < 0,5), arrivés en rail au bord ; → : 7 méridiens, puis la carte (terres > 100, 1 carré plein ; 2 carrés creux pour 2 villes) ; MEMBERS : papier ×2,6, au dos, socle et réseau suivent, focus dans la saisie ; refus → note, mon état intact ; validé → son processeur (5 creux), [Members] = son nom en Coral, ↓ son offre (24 € / year) |
+| ⚠️ Non mesurable ici | le clavier réel d'iOS au tap sur MEMBERS, la fluidité de la transformation sur le téléphone de Wah |
+| Suites navigateur | com_processeur **136** · com_shorts **127** · com_read_copy 18 · com_plateforme 23 · com_paper 36 · com_member_menu 41 · com_guest 14 · com_composition 78 · com_creator 37 · com_spot 8 · com_vision_image 4 · com_cloths 16 — fail 0 |
+
 ## 0 · LES BOXES SONT SACRÉES — 20/10/2026 quinquies (lot J)
 
 | Mesure | Résultat |
