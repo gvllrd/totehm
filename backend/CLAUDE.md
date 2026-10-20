@@ -1,5 +1,21 @@
 # backend/CLAUDE.md — la base, les fonctions, l'argent, le bot
 
+## 20/10/2026 sexies — lot K : l'écosystème d'un membre (`member_media`, `club_spots_of`)
+
+Migration `20261020180000_ecosysteme_membre.sql`, appliquée UNE fois sous `ecosysteme_membre`. Additive : quatre
+fonctions NEUVES, une politique de lecture neuve, aucun `drop`, aucun `create or replace` sur l'existant, aucun prix.
+Auto-test `tests/sql/ecosysteme_membre_selftest.sql` : `FAIL={}` (auteur 2/2, abonné 1/2, étranger 0/2).
+- **`_element_media_readable(name)`** (authenticated) : un fichier d'élément (ou sa vignette `<chemin>.jpg`) se lit si
+  c'est le mien OU si SA BOX m'est partagée — `_box_shared(owner, _box_audience(owner, kind, ref))` ; ⚠️ le fichier dit
+  `o` pour un objectif, la boîte dit `t` : la traduction est dans la fonction. Politique `element-media read shared box`
+  (`for select to authenticated`) : la signature d'URL de Storage passe par elle ; l'écriture reste à MON dossier.
+- **`member_media(pseudo)`** (authenticated) : les médias d'un membre dont l'élément existe (`_element_ok`) ET dont la
+  box m'est partagée ; jamais le nom du fichier. `why` : `signin` · `nobody`.
+- **`_club_spots_core(owner, …)`** (service_role) = le corps de `club_spots` + un filtre auteur (null = tous) ;
+  **`club_spots_of(pseudo, …)`** (authenticated) l'appelle. ⚠️ `club_spots` n'a PAS été rebranché (un remplacement ne
+  passe pas depuis le cloud) : tant que le terminal ne l'a pas fait (`CLAUDE_CODE.md`), les deux corps DOIVENT rester
+  identiques — toute retouche se fait aux deux.
+
 ## 19/10/2026 — lot G : la place du polaroid sur un média (`feed_badges`)
 
 Migration `20261019090000_feed_badges.sql`, appliquée UNE fois sous `feed_badges`. Additive : une
