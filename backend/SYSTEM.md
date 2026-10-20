@@ -20,6 +20,21 @@
 ---
 
 
+## 0 · ← UNE GRILLE INSTAGRAM · LES SPOTS DU CLUB → — 20/10/2026 quater (lot I)
+
+| Mesure | Résultat |
+|---|---|
+| `com/totehm.html` en production | 200, 815 545 octets, `BUILD=2026-10-20-com-grille` |
+| Déploiement Vercel | commit `72c2efe`, production READY |
+| Présent en production | `function grille()`, `grille:true`, `#tlv` (visionneuse), `CLUBSP` + `sb.rpc('club_spots'`, `BUNNY` + `/vendor/hls-1.6.13.mjs`, `.ssp-top` (la bande noire du haut) |
+| Absent en production | `function etages()`, le polaroid blanc (`.pol{…}`) |
+| `club_spots` en base (mesuré 20/10, session de Wah, transaction annulée) | past **4** · now 0 · future 0 ; un élément porte `habit_box` (name, ints, freq, objectives, repulsions, place, step), `exact`, `photo`, `clip`, `state` |
+| Spots publiés en base | 4 spots (1 membre) : 1 clip Bunny, 2 photos, 1 sans média — à l'arrivée « now » est vide, la vue passe d'elle-même à « next » puis « was » |
+| `/vendor/hls-1.6.13.mjs` sur totehm.com | 200, 521 172 octets, `application/javascript` (réécrit vers SPACE, même origine) |
+| Mesuré en page (simulé) | grille 3 colonnes (téléphone) / 5 (1 280 px), tuiles carrées, boîte navy `rgb(51,51,102)` surélevée ; visionneuse ← → Échap ; focalisation 50 % → < 50 % sans ouvrir la visionneuse ; shorts : 1 spot par écran (`y mandatory`, hauteur = écran), bande noire en HAUT de la fenêtre, box SOUS la fenêtre ; filtres serveur `intentions`, `scope:'near'` + `p_lat` ; `bunny-video {clips:[{id,spot}]}` appelé pour le clip suivant |
+| ⚠️ Non mesurable ici | la lecture réelle d'un clip Bunny dans le navigateur de Wah (HLS), et les spots d'autres membres (il n'y en a pas encore en base) |
+| Suites navigateur | com_shorts **108** · com_processeur 129 · com_plateforme 23 · com_paper 36 · com_member_menu 41 · com_guest 14 · com_composition 78 · com_creator 37 · com_read_copy 18 · com_spot 8 · com_vision_image 8 · com_cloths 16 — 0 échec |
+
 ## 0 · LE CURSEUR CLIGNOTE À GAUCHE, LE TEXTE EN GRAND — 20/10/2026 ter (lot H)
 
 | Mesure | Résultat |
