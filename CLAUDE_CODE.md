@@ -88,6 +88,13 @@ dessus, légèrement surélevée, avec ses filtres. À DROITE, LES SPOTS DU CLUB
 ou en shorts TikTok ; c'est là seulement qu'on a le polaroid, avec en haut
 la bande noire transparente des informations du spot.
 
+Seizième volet (BUILD `2026-10-21-com-gestes`) : LES GESTES NE SE PERDENT
+PLUS — un voyage qui ne finit pas rend la main tout seul, un glissé qui part
+sur le papier change de vue, un geste pendant un voyage attend sa fin. Une
+session gardée n'affiche plus jamais « hors connexion » pendant sa lecture ;
+un membre déjà venu est peint avant la base. EN HAUT, la bouche monte (et
+rétrécit sur un petit écran) : le cerveau aux sept traits se voit entier.
+
 Quinzième volet (BUILD `2026-10-21-com-perfo`) : À GAUCHE, chaque image de la
 grille est perforée comme le logo (les mêmes douze trous, aux mêmes places).
 La loupe est sur TOUTES les boxes du Totehm déplié, la boîte du filtre

@@ -178,7 +178,7 @@ Une Box MY STORY (WISDOM) de COM montre ses Cloths (`element_cloths`) comme une 
   `left/top` : une animation écrase `transform`.
 - Un `<canvas>` porte toujours `width:100%;height:100%`.
 - Geste dédié : `touch-action:none` + Pointer Events. Dans un feed scrollable,
-  préserver le scroll natif ; touchstart/move/end reprend le retour au radar.
+  préserver le scroll natif ; touchstart/move/end reprend le retour au radar. Un verrou de navigation se rend TOUJOURS (fin à usage unique + minuterie, journalisé) et un geste reçu pendant un voyage attend sa fin (21/10).
   **Le trackpad change de vue vers chaque voisin** (07/10 ; seuils de SPACE 12/10 : 75 px en X, 70 en Y, verrou 350 ms
   + inertie ; `deltaX > 0` = la DROITE), hors manette aussi ; une liste qui défile garde la molette, et un geste réservé
   à autre chose éteint l'axe dans CETTE vue (la Terre de MAP garde l'horizontale) sans changer la règle.

@@ -33,6 +33,12 @@ member has total control of their own Totehm — and the back of the paper has n
 Three levels, and only three: **PRIVATE** (only me) · **SUBSCRIBERS** (whoever subscribed to a member's
 Totehm) · **CLUB** (whoever is on the platform with a Totehm filled in — a member).
 
+## 21/10/2026 (ter) · up, the brain is whole
+
+> **Up, the mouth rises against the top edge**, the pitch sits right under « Get [Higher] », and the brain is always
+> seen whole between the pitch and the controller's socket — on a small phone the mouth shrinks, never the brain.
+> A member is never shown the signed-out page while their session loads.
+
 ## 21/10/2026 (bis) · my media are perforated, every box has its loupe
 
 > **Left, every image of the grid is perforated like the logo**: the same twelve holes (three per side, at a quarter, half

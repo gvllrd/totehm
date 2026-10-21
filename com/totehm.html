@@ -2239,7 +2239,7 @@ body.gate.entered .ast-back{visibility:hidden}
    fermée, la bouche occupe son haut. Seules les lèvres sont touchables. */
 :root{--mouth-w:clamp(140px,28dvh,240px)}   /* 06/10 (ter) : toute la bouche ×1,27 */
 #gate-mouth{position:absolute;left:50%;z-index:1;
-  top:max(52px,6dvh);
+  top:var(--mouth-top,max(52px,6dvh));   /* 21/10 : `posHaut()` la remonte et la règle sur l'écran */
   width:var(--mouth-w);height:calc(var(--mouth-w) * 1.2353);transform:translateX(-50%);
   background:none;border:none;padding:0;margin:0;pointer-events:none;outline:none;
   -webkit-tap-highlight-color:transparent;transition:opacity .3s ease}
@@ -2971,6 +2971,8 @@ body.is-xo{overflow:hidden}
 
 
 
+
+
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille
    elle-même : un nouveau bloc gris entre ici tout seul.        */
@@ -3294,6 +3296,9 @@ body.gate.lv-c:not(.entered) #lv-ram .puls{opacity:1;
 #lv-pitch{display:flex;flex-direction:column;align-items:center;gap:9px;width:min(92vw,470px);text-align:center;
   background:rgba(0,0,0,.78);border-radius:10px;padding:14px 16px}   /* le réseau passe derrière : un voile, jamais un flou */
 #lv-pitch.hide{display:none}
+/* 21/10 — une session se lit encore (`ses-attente`, posé avant le premier rendu) : rien de « hors connexion ». */
+body.ses-attente:not(.member) #lv-pitch,body.ses-attente:not(.member) .sm-cta{display:none!important}
+body.member #lv-pitch{display:none!important}   /* la vente ne parle jamais à un membre, même une image avant `peindreCarte` */
 .lvp-h{margin:0;display:flex;align-items:center;justify-content:center;gap:9px;flex-wrap:wrap}
 .lvp-h .lvp-b{width:92px;height:31px}
 .lvp-h span{font:700 19px/1 'Space Mono',monospace;letter-spacing:.04em;text-transform:lowercase;color:#fff}
@@ -3323,7 +3328,7 @@ body.lv-mb .lvp-others{display:flex}
 .lvp-cta:focus-visible,.lvp-why:focus-visible{outline:1px solid #fff;outline-offset:3px}
 .lvp-free{margin:0;font:400 9.5px/1.4 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#6d6d74}
 /* ── LA VENTE DE GET HIGHER (vue du haut), au-dessus du cerveau ── */
-#lv-sell{position:absolute;left:50%;top:calc(49% + var(--tn-h) / 2);transform:translateX(-50%);width:min(92vw,560px);
+#lv-sell{position:absolute;left:50%;top:var(--sell-top,calc(49% + var(--tn-h) / 2));transform:translateX(-50%);width:min(92vw,560px);
   text-align:center;display:flex;flex-direction:column;gap:8px;opacity:0;pointer-events:none;
   background:rgba(0,0,0,.78);border-radius:10px;padding:14px 16px;transition:opacity .45s ease}
 body.gate.lv-h:not(.entered):not(.is-door) #lv-sell{opacity:1}
@@ -3820,6 +3825,10 @@ body.lv-d.rdr-voir #gate-asteroid,body.lv-d.rdr-voir #lvjoy,body.rdr-voir #rdr-f
 </style>
 </head>
 <body class="gate">
+<script>/* 21/10 — UNE SESSION GARDÉE DANS CE NAVIGATEUR S'ANNONCE AVANT LE PREMIER RENDU : tant qu'elle n'est pas lue
+   (`sessionLoad`), rien de « hors connexion » ne s'affiche (`ses-attente`). Un booléen, jamais une valeur lue. */
+try{var t=localStorage.getItem('sb-abujjbkbbiumxrokozph-auth-token');if(t&&JSON.parse(t).refresh_token)document.body.classList.add('ses-attente');}catch(e){}
+setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</script>
 
 
 <!-- ══ ÉTAT 1 : LE LOGO RECOMPOSÉ — 4 SVG vectoriels superposés ══ -->
@@ -4016,7 +4025,7 @@ body.lv-d.rdr-voir #gate-asteroid,body.lv-d.rdr-voir #lvjoy,body.rdr-voir #rdr-f
         <!-- ⚠️ 18/10 — CHACUN FAIT CE QU'IL DIT (règle du 06/10). Depuis que `#conn-bar` est parti,
              « Turn to configure it » est la SEULE porte vers le verso quand le geste n'est pas
              disponible (mouvement réduit, clavier) : c'est donc un vrai bouton, pas une légende. -->
-        <div id="lv-tap"><button id="lv-tap-open" type="button">Tap to open it</button><span class="lvt-sep"> · </span><button id="lv-tap-turn" type="button">Turn to configure it</button></div>
+        <div id="lv-tap" class="hide"><button id="lv-tap-open" type="button">Tap to open it</button><span class="lvt-sep"> · </span><button id="lv-tap-turn" type="button">Turn to configure it</button></div>
         <div id="lv-mode" role="radiogroup" aria-label="My TOTEHM or a member's">
           <button type="button" role="radio" id="lv-m-mine" data-mode="mine" aria-checked="true">Mine</button>
           <button type="button" role="radio" id="lv-m-members" data-mode="members" aria-checked="false"><span class="lvm-lab">Members</span><span class="lvm-who" id="lv-m-who"></span></button>
@@ -4772,7 +4781,7 @@ let ANON_OK=false;
 /* 07/10 : l'atterrissage lit UN appel (`my_landing`) — ma vignette, la visibilité
    et l'offre de mon Totehm, mon abonnement Higher, mon THP, Telegram. Peint par
    la croix (`lvRefresh`), vidé au changement de compte (`lvQuitter`). */
-let LAND=null, lvRefresh=null, lvQuitter=null, lvReglages=null, lvMembreBoot=null, lvVersMembre=null;
+let LAND=null, lvRefresh=null, lvPeindre=null, lvQuitter=null, lvReglages=null, lvMembreBoot=null, lvVersMembre=null;
 /* 20/10 sexies — LES MÉDIAS DU MEMBRE QUE JE LIS (`member_media` : ceux dont la box m'est partagée), pour sa vue de gauche. */
 const MBM={seq:0, nom:null, items:[]};
 /* TotehmBot — declare ici et pas plus bas : la remise a zero de la
@@ -4789,7 +4798,7 @@ function cacheLire(){
 }
 function cacheEcrire(){
   if(!me)return;
-  try{ localStorage.setItem(KEY,JSON.stringify(Object.assign({},state,{uid:me.id}))); }catch(e){}
+  try{ localStorage.setItem(KEY,JSON.stringify(Object.assign({},state,{uid:me.id, pseudo:myProfile&&myProfile.pseudo||null}))); }catch(e){}
 }
 function cacheOublier(){
   try{ localStorage.removeItem(KEY); }catch(e){}
@@ -7280,7 +7289,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-10-21-com-perfo';
+const BUILD='2026-10-21-com-gestes';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -10444,7 +10453,10 @@ function quitter(){
 /* `sesWait` attend la DERNIÈRE lecture de session (onAuthStateChange en lance une
    en parallèle : la première rend la main tôt, `sesSeq` l'ayant dépassée). */
 let sesRun=Promise.resolve();
-function sessionChange(){ const p=sessionLoad(); sesRun=p; return p; }
+function sessionChange(){ const p=sessionLoad(); sesRun=p;
+  /* La DERNIÈRE lecture de session finie (réussie ou non), l'attente se lève : le vrai état se montre. */
+  p.catch(e=>console.error('[session]',e)).finally(()=>{ if(p===sesRun) document.body.classList.remove('ses-attente'); });
+  return p; }
 async function sesWait(){ for(let p=sesRun;;){ await p.catch(()=>{}); if(p===sesRun) return; p=sesRun; } }
 async function sessionLoad(){
   const n=++sesSeq;
@@ -10454,6 +10466,15 @@ async function sessionLoad(){
   if(avant&&avant!==apres) quitter();
   me=session?.user||null;
   if(avant!==apres)searchViews.forEach(c=>c.authChanged());
+  /* ⚠️ 21/10 — UN MEMBRE CONNU SE PEINT AVANT LE RÉSEAU (Wah : « à chaque fois il affiche le mode hors connexion
+     avant de me connecter »). La session est locale, le nom ne l'était pas : `loadProfile` attendait la base et,
+     pendant ce temps, la page vendait le Totehm à son propre membre. Le nom et les Habits de CE compte, gardés à son
+     dernier passage (le cache est lié à l'uid), ouvrent l'atterrissage tout de suite ; la base corrige ensuite.
+     Rien ne s'écrit sur cette foi : aucune écriture ne part avant `cloudLoad`. */
+  if(me&&!myProfile&&!RO&&!me.is_anonymous){ const c=cacheLire();
+    if(c&&c.pseudo){ myProfile={pseudo:c.pseudo}; cloudMode=true;
+      if(!state.habits.length){ state={habits:c.habits, vis:c.vis||'private'}; if(c.ord)state.ord=true; }
+      connPaint(); memberPaint(); paint(); if(lvPeindre) lvPeindre(); } }
   await loadProfile();
   if(n!==sesSeq) return;
   if(inscrit()){
@@ -10467,7 +10488,7 @@ async function sessionLoad(){
     }
   }
   if(n!==sesSeq) return;
-  memberPaint(); paint();
+  memberPaint(); paint(); if(lvPeindre) lvPeindre();   /* la carte suit l'état TOUT DE SUITE, pas après `my_landing` */
   if(inscrit()&&!RO){loadTrips(true);loadHabitSpaces();loadElementCloths();loadVisionImages();loadElementMedia();BADGE.charger();}
   garde();
   if(n===sesSeq&&lvRefresh) lvRefresh();
@@ -10776,7 +10797,7 @@ window.addEventListener('pageshow',e=>{
                reveiller(){}, face:()=>0, occupe:()=>false, surVerso:null, surFace:null,
                offrir:()=>false, remettre(){}, surLangue:null,
                prise:false, glisser:(c,o)=>{ if(o&&o.fin) o.fin(); return true; }, tourner(){}, arreter:f=>{ if(f) f(); },
-               vue:()=>false, chez:()=>null, cibleLangue:()=>null, avalerIci:()=>false};
+               vue:()=>false, saisit:()=>false, chez:()=>null, cibleLangue:()=>null, avalerIci:()=>false};
     if(!scene||!card) return api;
     const lights=[...card.querySelectorAll('.ast-light')];   /* [face, dos] */
     const elF=$('ast-front'), elB=$('ast-back');
@@ -11042,6 +11063,10 @@ window.addEventListener('pageshow',e=>{
        `bouche` = [ouverture, langue] à atteindre pendant le voyage. */
     api.glisser=(cible,opt={})=>{
       if(mode==='tourne'){ api.arreter(()=>api.glisser(cible,opt)); return true; }
+      /* 21/10 — un papier qui freine ENCHAÎNE, un papier en voyage se RECIBLE depuis là où il est (sa suite part
+         avec lui) : avant, les deux répondaient « non » et le geste qui l'avait demandé restait verrouillé. */
+      if(mode==='freine'&&fr){ const cb0=fr.cb; fr.cb=()=>{ if(cb0) cb0(); api.glisser(cible,opt); }; return true; }
+      if(mode==='glisse'&&porte&&porte.gl){ const f0=porte.gl.fin; porte.gl=null; mode='vue'; if(f0) f0(); }
       if(mode!=='plat'&&mode!=='vue') return false;
       if(!porte){ if(!cible){ if(opt.fin) opt.fin(); return true; } porte=chezLui(); }
       const [o0,l0]=BOUCHE.etat(), b=opt.bouche;
@@ -11058,6 +11083,8 @@ window.addEventListener('pageshow',e=>{
       mode='freine'; kick();
     };
     api.vue=()=>mode==='vue'||mode==='tourne'||mode==='glisse'||mode==='freine';
+    /* Le doigt posé sur lui le TIENT (il se retourne) seulement chez lui, au repos : ailleurs, il est un décor. */
+    api.saisit=()=>!RM.matches&&(mode==='plat'||mode==='rentre');
     /* Où il habite (centre et largeur AU REPOS), même s'il est en voyage. */
     api.chez=()=>{ if(porte) return {x:porte.hx, y:porte.hy, w:porte.w};
                    const r=scene.getBoundingClientRect(); return {x:r.left+r.width/2, y:r.top+r.height/2, w:r.width}; };
@@ -11130,6 +11157,12 @@ window.addEventListener('pageshow',e=>{
         return;
       }
       if(!appui.on){ appui=null; return; }          /* un tap : le clic s'en charge */
+      /* ⚠️ 21/10 — UN GLISSÉ VERTICAL SUR LE PAPIER CHANGE DE VUE (Wah : « quelquefois les mouvements ne
+         fonctionnent pas ») : le doigt partait sur le papier, l'inclinait, et le geste se perdait. Il ne
+         l'incline plus pour rien : il va où va le reste de l'écran (le retournement reste à l'horizontale). */
+      const vx=e.clientX-appui.x0, vy=e.clientY-appui.y0;
+      if(e.type==='pointerup'&&e.pointerType==='touch'&&Math.abs(vy)>60&&Math.abs(vy)>Math.abs(vx)*1.3
+         &&typeof api.surVertical==='function'){ aPlat(face); api.surVertical(vy<0?'b':'h'); return; }
       om=elan(performance.now());
       /* ⚠️ TOURNÉ D'UN QUART, IL CHANGE DE FACE — JAMAIS D'UN TOUR ENTIER.
          On décide par rapport à la face de DÉPART, pas par l'angle projeté
@@ -11162,6 +11195,8 @@ window.addEventListener('pageshow',e=>{
 
   function enter(then){
     if(open||moving) return;
+    /* 21/10 — la session se lit encore : on attend sa réponse, jamais la porte d'inscription d'office. */
+    if(!inscrit()&&document.body.classList.contains('ses-attente')){ sesWait().then(()=>enter(then)); return; }
     if(PAYSAGE.matches) return;     /* couché, on n'ouvre pas */
     /* ⚠️ DEUX FACES, UN SEUL DÉPLOIEMENT À LA FOIS · 02/10/2026. Le Totehm
        se déconstruit depuis le RECTO : si la recherche est ouverte on la
@@ -11473,6 +11508,33 @@ window.addEventListener('pageshow',e=>{
         placer(slo, c.x+sk-20, c.y+sk-7, 34);
       }
     }
+    /* ⚠️ 21/10 — LA VUE DU HAUT SE RÈGLE SUR L'ÉCRAN (Wah : « il faut remonter la langue et le TotehmPaper puisque
+       l'on ne voit pas le cerveau formé avec les 7 traits »). De haut en bas : la bouche (et le papier sur la langue),
+       « Get [Higher] », la vente, LE CERVEAU, la manette. La bouche monte contre le haut ; si le cerveau n'a pas encore
+       sa hauteur, elle RÉTRÉCIT (jamais sous 110 px) ; la vente se pose juste sous le slogan. Mesuré, jamais deviné :
+       la langue est lue par `PAPIER.cibleLangue()`, la vente et la manette par leur rectangle. */
+    let diagHaut=null;
+    function posHaut(){
+      const m=$('gate-mouth'), se=$('lv-sell'), jb=$('lvj-box')||$('lvjoy'), rs=document.documentElement.style;
+      if(!m||!se||!jb||!m.offsetParent) return;
+      const h=H(), op=m.offsetParent.getBoundingClientRect();
+      const haut=Math.max(12,Math.round(h*.018));
+      rs.setProperty('--mouth-top',Math.round(haut-op.top)+'px');
+      const base=Math.max(140,Math.min(240,h*.28)), jt=jb.getBoundingClientRect().top||h-120;
+      const sh=se.offsetHeight||150, mini=Math.round(Math.max(130,Math.min(240,h*.22)));
+      let w=base, l=null;
+      for(let i=0;i<4;i++){
+        rs.setProperty('--mouth-w',Math.round(w)+'px');
+        l=PAPIER.cibleLangue(); if(!l) break;
+        const reste=(jt-10)-(l.bas+52+sh+16);
+        if(reste>=mini-1||w<=110) break;
+        w=Math.max(110,w-(mini-reste)*(w/Math.max(1,l.bas-haut))-1);
+      }
+      if(!l) return;
+      const sp=se.offsetParent?se.offsetParent.getBoundingClientRect().top:0;
+      rs.setProperty('--sell-top',Math.round(l.bas+52-sp)+'px');
+      diagHaut={bouche:Math.round(w), cerveau:Math.round((jt-10)-(l.bas+52+sh+16))};
+    }
     function peindreNav(){
       [[nUp,voisin('h')],[nDn,voisin('b')],[nLf,voisin('g')],[nRt,voisin('d')]]
         .forEach(([b,v])=>{ if(!b) return; b.classList.toggle('is-mort',!v); b.tabIndex=v?0:-1;
@@ -11531,6 +11593,32 @@ window.addEventListener('pageshow',e=>{
     }
     function calme(){ if(tour){ try{ tour.cancel(); }catch(_){} tour=null; } }
 
+    /* ⚠️ 21/10 — LE VERROU SE REND TOUJOURS (Wah : « quelquefois les mouvements pour passer d'une vue à l'autre ne
+       fonctionnent pas »). `bouge` se fermait avant le voyage et ne se rouvrait que par SA fin : une exception en route,
+       ou un papier qui refusait le voyage, et plus AUCUN geste ne passait jusqu'au rechargement. `garde` rend une fin
+       qui ne joue qu'UNE fois, et la joue d'elle-même si le voyage ne la rend pas à temps (journalisé). */
+    let gardeT=0, attente=null;
+    diag.debloques=0; diag.enAttente=0;
+    function garde(f,ms){
+      let fait=false; clearTimeout(gardeT);
+      const g=()=>{ if(fait) return; fait=true; clearTimeout(gardeT); f(); };
+      gardeT=setTimeout(()=>{ if(fait) return; diag.debloques++; console.warn('[lv] voyage non terminé : la main est rendue'); g(); },ms+1300);
+      return g;
+    }
+    /* Un geste qui arrive PENDANT un voyage n'est plus perdu : il attend la fin (un seul, le dernier, 900 ms au plus).
+       `vue` est déjà la destination : la direction se lit depuis là où l'on arrive. Le trackpad n'attend pas
+       (son inertie enverrait des dizaines de demandes). */
+    function demander(d){
+      if(!libre()) return false;
+      if(bouge){ if(!voisin(d)) return false; attente={d, t:Date.now()}; diag.enAttente++; return true; }
+      const v=voisin(d); if(!v) return false;
+      aller(v); return true;
+    }
+    function reprendre(){
+      const a=attente; attente=null;
+      if(!a||Date.now()-a.t>900) return;
+      setTimeout(()=>{ if(!bouge){ const v=voisin(a.d); if(v) aller(v); } },0);
+    }
     /* ── ALLER : une vue voisine, ou le centre ── */
     function aller(v,then){
       if(v===vue){ if(then) then(); return; }
@@ -11546,25 +11634,30 @@ window.addEventListener('pageshow',e=>{
       if(v==='b'&&moi) REF.armer();      /* DANS le geste : sans lui, le téléphone n'ouvre pas le clavier */
       if(v==='b'&&!moi) OFFRE.ouvrir(MB.nom);
       bouge=true; const de=vue; vue=v;
-      if(de==='b'&&moi) REF.quitter();
-      /* Un moteur ne tourne que dans sa vue : on ferme celui d'où l'on part, on ouvre celui où l'on va. */
-      if(de==='g') SH.fermer(); else if(de==='d') SPOTS.fermer();
-      if(v==='g') SH.ouvrir(); else if(v==='d') SPOTS.ouvrir();
-      poser(v); socle(v);
-      const fini=()=>{ bouge=false; peindreNav(); sloganPour(vue); if(vue==='b'&&mode==='mine') REF.arrive(); if(then) then(); };
-      /* ← et → : le papier SORT du centre et se cale en haut (19/10 quater) pendant que les sept traits se
-         transforment (20/10 sexies) ; au centre, il rentre chez lui. */
-      if(v==='c'||v==='g'||v==='d'){
-        if(de==='b') tourner(-1,760);
-        const cible=(v==='g'||v==='d')?cibleHaut():null;
-        return PAPIER.glisser(cible,{ms:de==='b'?720:640,bouche:de==='h'&&cible?[0,0]:null,fin:fini});
-      }
-      if(v==='h'){
-        const l=PAPIER.cibleLangue();
-        return PAPIER.glisser(l?{x:l.x,y:l.y,s:l.s}:{x:W()/2,y:H()*.26,s:.5},{ms:760,bouche:l?[1,1]:null,fin:fini});
-      }
-      if(moi) REF.entre(); tourner(1);
-      return PAPIER.glisser(cibleProfil(),{ms:820,fin:fini});
+      const fini=garde(()=>{ bouge=false; peindreNav(); sloganPour(vue); if(vue==='b'&&mode==='mine') REF.arrive(); if(then) then(); reprendre(); },900);
+      try{
+        if(de==='b'&&moi) REF.quitter();
+        /* Un moteur ne tourne que dans sa vue : on ferme celui d'où l'on part, on ouvre celui où l'on va. */
+        if(de==='g') SH.fermer(); else if(de==='d') SPOTS.fermer();
+        if(v==='g') SH.ouvrir(); else if(v==='d') SPOTS.ouvrir();
+        poser(v); socle(v);
+        let parti;
+        /* ← et → : le papier SORT du centre et se cale en haut (19/10 quater) pendant que les sept traits se
+           transforment (20/10 sexies) ; au centre, il rentre chez lui. */
+        if(v==='c'||v==='g'||v==='d'){
+          if(de==='b') tourner(-1,760);
+          const cible=(v==='g'||v==='d')?cibleHaut():null;
+          parti=PAPIER.glisser(cible,{ms:de==='b'?720:640,bouche:de==='h'&&cible?[0,0]:null,fin:fini});
+        } else if(v==='h'){
+          if(de==='c') posHaut();
+          const l=PAPIER.cibleLangue();
+          parti=PAPIER.glisser(l?{x:l.x,y:l.y,s:l.s}:{x:W()/2,y:H()*.26,s:.5},{ms:760,bouche:l?[1,1]:null,fin:fini});
+        } else {
+          if(moi) REF.entre(); tourner(1);
+          parti=PAPIER.glisser(cibleProfil(),{ms:820,fin:fini});
+        }
+        if(!parti){ console.warn('[lv] aller: le papier refuse le voyage ('+de+' → '+v+')'); fini(); }
+      }catch(err){ console.error('[lv] aller '+de+' → '+v,err); fini(); }
     }
 
     /* ── MINE · MEMBERS (20/10 sexies) ─────────────────────────────────────────────────────────────────────────── */
@@ -11591,13 +11684,20 @@ window.addEventListener('pageshow',e=>{
       mq.value=''; mbNote(''); mbGo(null);
       $('mb-ui').setAttribute('aria-hidden','false');
       try{ mq.focus({preventScroll:true}); }catch(_){}
-      socle('c'); RAM.peindre('c',{anime:true, papier:{x:t.x, y:t.y, w:t.taille}});
-      PAPIER.poserDos(()=>PAPIER.glisser(t,{ms:620, fin:()=>{ bouge=false; if(then) then(); }}));
+      const fin=garde(()=>{ bouge=false; if(then) then(); },1400);
+      try{
+        socle('c'); RAM.peindre('c',{anime:true, papier:{x:t.x, y:t.y, w:t.taille}});
+        PAPIER.poserDos(()=>{ if(!PAPIER.glisser(t,{ms:620, fin})) fin(); });
+      }catch(err){ console.error('[lv] chercher',err); fin(); }
     }
     /* Le papier redescend chez lui et se remet sur son recto ; le réseau le suit. */
     function rentrer(fini){
-      bouge=true; socle('c'); RAM.oublie(); RAM.peindre('c',{anime:true});
-      PAPIER.glisser(null,{ms:620, fin:()=>PAPIER.poser(()=>{ bouge=false; RAM.peindre('c'); if(fini) fini(); })});
+      bouge=true;
+      const fin=garde(()=>{ bouge=false; RAM.peindre('c'); if(fini) fini(); },1400);
+      try{
+        socle('c'); RAM.oublie(); RAM.peindre('c',{anime:true});
+        if(!PAPIER.glisser(null,{ms:620, fin:()=>PAPIER.poser(fin)})) PAPIER.poser(fin);
+      }catch(err){ console.error('[lv] rentrer',err); fin(); }
     }
     function finirRecherche(){
       MB.cherche=false; MB.seq++;
@@ -11732,6 +11832,7 @@ window.addEventListener('pageshow',e=>{
     { const b=$('gate-mouth'); if(b) b.addEventListener('click',()=>{ if(vue==='h') getHigher(); }); }
     /* Retourner le papier : chez moi, mes réglages ; chez un membre, chercher un autre membre (20/10 sexies). */
     PAPIER.surVerso=()=>{ if(vue!=='c') return; if(mode==='mine') ouvrirVerso(); else if(MB.nom&&!MB.cherche) chercher(); };
+    PAPIER.surVertical=d=>demander(d);
     /* ⚠️ 16/10 · RETOURNER LE PAPIER AFFICHE LE MENU MEMBRE. Wah : « quand tu retournes le totehm verso,
        c'est le menu membre qui s'affiche ». Donc il est là d'emblée, sans second geste : mes réglages,
        un filet, puis mon compte — dans cet ordre, l'un sous l'autre, zéro blabla. */
@@ -11750,11 +11851,11 @@ window.addEventListener('pageshow',e=>{
     window.addEventListener('pageshow',e=>{ if(e.persisted){ PAPIER.remettre(); reset(); } });
     /* ⚠️ LE PREMIER RENDU ATTEND LA PLACE DU PAPIER. Le réseau part de `PAPIER.chez()` : dessiné avant la
        mesure (les polices chargent encore), il s'accrochait à un papier qui n'était pas encore là. */
-    requestAnimationFrame(()=>requestAnimationFrame(()=>{ RAM.oublie(); RAM.peindre(vue); }));
-    if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>{ RAM.oublie(); RAM.peindre(vue); });
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{ posHaut(); RAM.oublie(); RAM.peindre(vue); }));
+    if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>{ if(bouge) return; posHaut(); sloganPour(vue); RAM.oublie(); RAM.peindre(vue); });
     window.addEventListener('resize',()=>{
       if(bouge) return;
-      sloganPour(vue); socle(vue);
+      posHaut(); sloganPour(vue); socle(vue);
       /* le réseau est en pixels : il se refait (et pendant la recherche, autour du papier agrandi) */
       if(vue==='c'&&MB.cherche){ const t=cibleGrand(); placerSaisie(t); RAM.peindre('c',{papier:{x:t.x,y:t.y,w:t.taille}}); PAPIER.glisser(t,{ms:1}); }
       else RAM.peindre(vue);
@@ -11772,10 +11873,10 @@ window.addEventListener('pageshow',e=>{
     const filDefile=(t,dy)=>{ if(!t||!t.closest||!t.closest(LISTES)) return false;
       const el=t.closest(LISTES); if(el.scrollHeight<=el.clientHeight+2) return false;
       return dy>0 ? el.scrollTop+el.clientHeight<el.scrollHeight-1 : el.scrollTop>1; };
-    nUp.onclick=()=>{ const v=voisin('h'); if(v) aller(v); };
-    nDn.onclick=()=>{ const v=voisin('b'); if(v) aller(v); };
-    if(nLf) nLf.onclick=()=>{ const v=voisin('g'); if(v) aller(v); };
-    if(nRt) nRt.onclick=()=>{ const v=voisin('d'); if(v) aller(v); };
+    nUp.onclick=()=>demander('h');
+    nDn.onclick=()=>demander('b');
+    if(nLf) nLf.onclick=()=>demander('g');
+    if(nRt) nRt.onclick=()=>demander('d');
 
     /* ── LE MANCHE DE L'ATTERRISSAGE · 18/10/2026 ─────────────────────────────────────────────
        Le même geste que dans le Totehm, la même dualité : au DOIGT on déplace l'objet (tirer à
@@ -11814,7 +11915,7 @@ window.addEventListener('pageshow',e=>{
         const v=sens();
         try{ bx.releasePointerCapture(id); }catch(_){}
         id=null; centre();
-        if(v) aller(v);
+        if(v) demander(v);
       });
       bx.addEventListener('pointercancel',()=>{ id=null; centre(); });
     })();
@@ -11822,7 +11923,7 @@ window.addEventListener('pageshow',e=>{
       if(!libre()||saisie(e.target)||e.metaKey||e.ctrlKey||e.altKey) return;
       if(e.key==='ArrowUp'||e.key==='ArrowDown'){
         const d=e.key==='ArrowUp'?'h':'b', v=voisin(d);
-        if(v){ e.preventDefault(); aller(v); return; }
+        if(v){ e.preventDefault(); demander(d); return; }
         /* Dans mes shorts il n'y a pas de voisin vertical : les deux flèches servent le feed. */
         if(vue==='g'&&SH.pas(d==='b'?1:-1)) e.preventDefault();
         else if(vue==='d'&&SPOTS.pas(d==='b'?1:-1)) e.preventDefault();
@@ -11833,7 +11934,7 @@ window.addEventListener('pageshow',e=>{
         if(document.activeElement===$('gate-enter')&&vue==='c'){
           if(mode==='mine'){ e.preventDefault(); ouvrirVerso(); return; }
           if(MB.nom&&!MB.cherche){ e.preventDefault(); chercher(); return; } }
-        const v=voisin(e.key==='ArrowLeft'?'g':'d'); if(v){ e.preventDefault(); aller(v); }
+        const d=e.key==='ArrowLeft'?'g':'d'; if(voisin(d)){ e.preventDefault(); demander(d); }
         return; }
       if(e.key==='Escape'){ if(vue!=='c'){ e.preventDefault(); aller('c'); }
         else if(mode==='members'){ e.preventDefault(); if(MB.cherche) annuler(); else choisirMode('mine'); } }
@@ -11867,17 +11968,20 @@ window.addEventListener('pageshow',e=>{
       window.addEventListener('touchstart',e=>{
         const t=e.target; p=null;
         if(!libre()||e.touches.length>1) return;
-        /* La Terre (MAP) garde le doigt : il la fait tourner (l'axe s'éteint dans CETTE vue, la règle ne change pas). */
-        if(t&&t.closest&&t.closest('#gate-asteroid,input,textarea,select,[contenteditable],#rdr-map')) return;
+        /* La Terre (MAP) garde le doigt : il la fait tourner (l'axe s'éteint dans CETTE vue, la règle ne change pas).
+           Le papier ne garde le doigt que chez lui, au repos (il s'y retourne, et son glissé vertical revient ici par
+           `surVertical`) ; posé dans une autre vue, c'est un décor : le geste passe (21/10). */
+        if(t&&t.closest&&t.closest('input,textarea,select,[contenteditable],#rdr-map')) return;
+        if(t&&t.closest&&t.closest('#gate-asteroid')&&PAPIER.saisit()) return;
         p={x:e.touches[0].clientX, y:e.touches[0].clientY, t:Date.now(), el:t};
       },{passive:true,capture:true});
       window.addEventListener('touchend',e=>{
-        const q=p; p=null; if(!q||!libre()||bouge||Date.now()-q.t>900) return;
+        const q=p; p=null; if(!q||!libre()||Date.now()-q.t>900) return;
         const dx=e.changedTouches[0].clientX-q.x, dy=e.changedTouches[0].clientY-q.y;
-        if(Math.abs(dy)>60&&Math.abs(dy)>Math.abs(dx)*1.3&&!filDefile(q.el,-dy)){ const v=voisin(dy<0?'b':'h'); if(v) aller(v); return; }
+        if(Math.abs(dy)>60&&Math.abs(dy)>Math.abs(dx)*1.3&&!filDefile(q.el,-dy)){ demander(dy<0?'b':'h'); return; }
         /* 16/10 bis — glisser vers la GAUCHE montre ce qui est à droite (un déplacement de doigt, pas un
            trackpad : les deux gestes ne se lisent pas dans le même sens, et c'est normal). */
-        if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.3){ const v=voisin(dx<0?'d':'g'); if(v) aller(v); }
+        if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.3) demander(dx<0?'d':'g');
       },{passive:true,capture:true});
     })();
 
@@ -11953,7 +12057,7 @@ window.addEventListener('pageshow',e=>{
         return p;
       }
       function cerveau(n){
-        const w=W(), h=H(), se=$('lv-sell'), jo=$('lvjoy');
+        const w=W(), h=H(), se=$('lv-sell'), jo=$('lvj-box')||$('lvjoy');   /* le SOCLE de la manette : en haut, son chevron ↑ est éteint */
         const rs=se&&se.getBoundingClientRect(), rj=jo&&jo.getBoundingClientRect();
         const bas=rj&&rj.height?rj.top-10:h-120;
         let haut=rs&&rs.height?rs.bottom+16:h*.6;
@@ -12520,6 +12624,7 @@ window.addEventListener('pageshow',e=>{
 
     /* ── LES DONNÉES : `my_landing()`, une réponse tardive ne gagne jamais ── */
     let landSeq=0;
+    lvPeindre=()=>{ peindreCarte(); connPaint(); paintMe(); RAM.peindre(vue); peindreNav(); };
     lvRefresh=async()=>{
       const seq=++landSeq, uid=me?me.id:null;
       const {data,error}=await sb.rpc('my_landing');
@@ -12535,6 +12640,7 @@ window.addEventListener('pageshow',e=>{
                     /* Un autre compte : la recherche et l'écosystème d'un membre se referment (la lecture, elle, suit `sessionChange`). */
                     if(MB.cherche) finirRecherche(); if(!RO){ MB.nom=null; MB.avant=null; mode='mine'; body.classList.remove('lv-mb','lv-membre'); peindreMode(); } };
     window.__totehm_lv=()=>({build:BUILD, vue, mode, bouge, allers:diag.allers, modes:diag.modes, papier:PAPIER.vue(),
+      debloques:diag.debloques, enAttente:diag.enAttente, haut:diagHaut,
       membre:inscrit(), higher:!!(LAND&&LAND.higher&&LAND.higher.active), thp:!!(LAND&&LAND.thp),
       reflection:{tours:SM.msgs.length, pret:!!etatSM().ready, gratuits:etatSM().free_left??null, envois:diag.envois, ajouts:diag.ajouts,
                   pense:!!pense, telegram:diag.telegram},

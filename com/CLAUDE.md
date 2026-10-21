@@ -1,5 +1,36 @@
 # com/CLAUDE.md — totehm.com : le Totehm, la carte, HigherSelf
 
+## 21/10/2026 ter — LES GESTES NE SE PERDENT PLUS ; LA SESSION SE LIT SANS « HORS CONNEXION » ; LE CERVEAU SE VOIT (BUILD `2026-10-21-com-gestes`)
+
+Wah : « quelquefois les mouvements pour passer d'une vue à l'autre ne fonctionnent pas » · « à chaque fois il affiche le
+mode hors connexion avant de me connecter » · « dans la vue du haut, remonter la langue et le TotehmPaper : on ne voit
+pas le cerveau formé avec les 7 traits ».
+- **LES GESTES — trois causes trouvées, trois corrections.** (1) `bouge` se fermait avant le voyage et ne se rouvrait que
+  par SA fin : une exception en route, ou un papier qui répondait « non » (`PAPIER.glisser` en `glisse`/`freine`), et plus
+  AUCUN geste ne passait jusqu'au rechargement. `garde(f, ms)` rend une fin à usage unique qui se joue d'elle-même à
+  `ms + 1,3 s` (`diag.debloques`, `console.warn('[lv] …')`) ; `aller`, `chercher` et `rentrer` sont en `try/catch`
+  journalisé. `PAPIER.glisser` ENCHAÎNE un papier qui freine et RECIBLE un voyage en route (sa suite part avec lui).
+  (2) Un glissé qui partait SUR le papier était avalé : au centre il l'inclinait, ailleurs il ne faisait rien
+  (`#gate-asteroid` exclu du doigt). Au centre, un glissé vertical (> 60 px, 1,3 × l'horizontale) rend la main à la
+  navigation (`PAPIER.surVertical` → `aPlat` + `demander`) ; dans les autres vues, le papier n'est plus exclu
+  (`PAPIER.saisit()` = chez lui, au repos). Le retournement reste à l'horizontale. (3) Un geste reçu PENDANT un voyage
+  était jeté : `demander(d)` le garde (un seul, le dernier, 900 ms) et `reprendre()` le joue à la fin — doigt, manette,
+  chevrons, flèches. Le trackpad n'attend pas (son inertie).
+- **LA CONNEXION.** Un `<script>` en tête de `<body>` pose `ses-attente` si ce navigateur garde une session (jeton
+  Supabase avec `refresh_token`, un booléen, jamais une valeur lue) ; tant qu'elle est là et que `body.member` n'y est
+  pas, ni la vente (`#lv-pitch`) ni CONNECT ; `#lv-tap` naît caché ; `enter()` attend `sesWait()` au lieu d'ouvrir la
+  porte. `sessionChange` la lève à la fin de la DERNIÈRE lecture (réussie ou non), et 9 s au plus. Le cache des Habits
+  (`totehm_habits_v1`, lié à l'uid) garde aussi le NOM : un membre déjà venu est peint dès `getSession` (110 ms mesurés,
+  profil retardé à 1,8 s), `loadProfile` puis `cloudLoad` corrigent ; aucune écriture ne part sur cette foi.
+  `body.member #lv-pitch` est caché en CSS (la carte suivait `my_landing`, une image trop tard).
+- **EN HAUT.** `posHaut()` : la bouche contre le haut (`--mouth-top`, 1,8 % de la hauteur, 12 px au moins), la vente
+  juste sous « Get [Higher] » (`--sell-top`), et si le cerveau n'a pas 22 % de la hauteur entre la vente et le SOCLE de
+  la manette (`#lvj-box` : en haut, son chevron ↑ est éteint), la bouche RÉTRÉCIT (110 px au plus petit). Rejouée à
+  l'arrivée, au chargement des polices et au redimensionnement. Mesuré : 390 × 664 bouche 149 · cerveau 419 → 555 ;
+  375 × 667 151 · 422 → 558 ; 390 × 844 236 · 534 → 732 ; 1280 × 720 202 · 450 → 610.
+- Tests : `com_boot_gestes.mjs` (NOUVEAU, 36), `com_processeur` 147 (« ↓ puis ↑ » = deux voyages, l'un après l'autre ;
+  le cerveau borné par le socle).
+
 ## 21/10/2026 bis — MES MÉDIAS PERFORÉS ; LA LOUPE SUR TOUTES LES BOXES (BUILD `2026-10-21-com-perfo`)
 
 Wah : « les images des grilles dans la vue de gauche au format perforé, avec le même nombre de trous, bien positionnés à

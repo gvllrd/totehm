@@ -81,8 +81,11 @@ try{
   ok(g0==='g'&&(await lv(pg)).vue==='d','← mes shorts, → mes spots (l\'horizontale est revenue le 16/10 bis)');
   await pg.keyboard.press('Escape');await vers(pg,'c');
   const a0=(await lv(pg)).allers;
-  await pg.keyboard.press('ArrowDown');await pg.keyboard.press('ArrowUp');await vers(pg,'b');await pg.waitForTimeout(200);
-  let d=await lv(pg);ok(d.vue==='b'&&d.allers===a0+1,'↓ puis ↑ aussitôt : UNE navigation (la seconde attend, jamais deux)');
+  /* 21/10 — le second geste n'est plus PERDU (Wah : « quelquefois les mouvements ne fonctionnent pas ») : il attend la fin du
+     premier, puis part ; jamais deux voyages à la fois. */
+  await pg.keyboard.press('ArrowDown');await pg.keyboard.press('ArrowUp');
+  const mid=await lv(pg);await pg.waitForFunction(a=>{const d=window.__totehm_lv();return d.allers===a&&!d.bouge;},a0+2,{timeout:6000}).catch(()=>{});
+  let d=await lv(pg);ok(mid.vue==='b'&&mid.bouge&&d.vue==='c'&&d.allers===a0+2,'↓ puis ↑ aussitôt : la Reflection, PUIS le centre (le second attend, jamais deux à la fois)');
   await pg.keyboard.press('Escape');await vers(pg,'c');
   await pg.keyboard.press('ArrowUp');await vers(pg,'h');
   await pg.keyboard.press('ArrowUp');await pg.waitForTimeout(500);
@@ -129,7 +132,7 @@ try{
   /* 20/10 septies — LE CERVEAU VIBRE : les sept couleurs pleines, rouge lent et ample → violet rapide et fin ;
      placé SOUS la vente, au-dessus de la manette ; immobile si le mouvement est réduit. */
   const cv=async()=>pg.evaluate(()=>{const g=[...document.querySelectorAll('#lv-ram g')],r=window.__totehm_lv().ramifications,
-    se=document.getElementById('lv-sell').getBoundingClientRect(),jo=document.getElementById('lvjoy').getBoundingClientRect(),
+    se=document.getElementById('lv-sell').getBoundingClientRect(),jo=document.getElementById('lvj-box').getBoundingClientRect(),
     ys=g.flatMap(e=>e.querySelector('path').getAttribute('d').split(/[ML]/).filter(Boolean).map(t=>+t.trim().split(' ')[1]));
     return {r,d:g.map(e=>e.querySelector('path').getAttribute('d')),cols:g.map(e=>e.querySelector('path').getAttribute('stroke')),
       ops:g.map(e=>getComputedStyle(e).opacity),haut:Math.min(...ys),bas:Math.max(...ys),sell:se.bottom,joy:jo.top,
