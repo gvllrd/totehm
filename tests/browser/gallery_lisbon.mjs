@@ -11,7 +11,7 @@ fs.mkdirSync(OUT,{recursive:true});
 const origin='https://www.totehm.space',results=[];
 execFileSync('ffmpeg',['-hide_banner','-loglevel','error','-y','-f','lavfi','-i','testsrc2=size=96x96:rate=12','-t','8','-c:v','libx264','-threads','1','-pix_fmt','yuv420p','-movflags','+faststart',OUT+'/sign.mp4']);
 const media=fs.readFileSync(OUT+'/sign.mp4');
-const baseline=fs.readFileSync(new URL('../../boutique/play_lisbon_street.html',import.meta.url),'utf8');
+const baseline=fs.readFileSync(new URL('../../space/play_lisbon_street.html',import.meta.url),'utf8');
 const controller=Function('return ('+baseline.match(/const SIGNS = (\{[\s\S]*?\n\});/)[1]+')')();
 const artwork={id:'22222222-2222-4222-8222-222222222222',slug:'fire-exit-test',title:'Fire Exit',price_cents:12000,currency:'eur',edition_total:8,edition_sold:2,status:'available',video_key:'fire_exit'};
 const browser=await launch();let checks=0;

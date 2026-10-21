@@ -75,6 +75,41 @@
       "source": "/world",
       "destination": "/map",
       "permanent": false
+    },
+    {
+      "source": "/next_objective",
+      "destination": "/totehm",
+      "permanent": false
+    },
+    {
+      "source": "/next_objective.html",
+      "destination": "/totehm",
+      "permanent": false
+    },
+    {
+      "source": "/totehm_world",
+      "destination": "/map",
+      "permanent": false
+    },
+    {
+      "source": "/totehm_world.html",
+      "destination": "/map",
+      "permanent": false
+    },
+    {
+      "source": "/assets/signs/:file",
+      "destination": "https://www.totehm.space/assets/signs/:file",
+      "permanent": true
+    },
+    {
+      "source": "/club",
+      "destination": "https://www.figher.club/",
+      "permanent": false
+    },
+    {
+      "source": "/club/creator",
+      "destination": "/totehm",
+      "permanent": false
     }
   ],
   "rewrites": [

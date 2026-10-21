@@ -1,250 +1,73 @@
-# CLAUDE.md — CTO de TOTEHM (racine · réorganisé le 30/09, mis à jour le 16/10/2026)
-> **Ce fichier est chargé à CHAQUE session : il reste court (≤ 250 lignes).**
-> Détails : `CLAUDE.md` du domaine ; histoire : `docs/POSTMORTEMS.md`,
-> à lire seulement si utile. Avant copy, naming ou UI : section utile de `BRAND.md`.
-## Qui fait quoi — depuis le 30/09/2026
-| qui | a accès à | fait |
+# CLAUDE.md — construire TOTEHM
+
+> Lu à chaque session, ≤ 100 lignes, au PRÉSENT. Un domaine : `<dossier>/CLAUDE.md`. La marque : `BRAND.md`.
+> La carte des fichiers : `README.md`. L'histoire : `git log` (rien d'autre).
+
+## Qui fait quoi
+
+| qui | fait |
+|---|---|
+| **Claude, session cloud** | conçoit ET exécute : code, migrations, Edge Functions, push sur `main`, contrôle de la prod, Stripe (lecture, tests) |
+| **Claude Code, terminal de Wah** | seulement ce qui exige sa machine : VM Oracle, n8n, et les migrations que le cloud ne passe pas (voir Base) |
+| **Wah** | la vision, les tests sur téléphone, le « oui » avant : un prix live, un remboursement, l'endpoint webhook Stripe |
+
+Wah fait le minimum (sauf OAuth, 2FA, décision produit). Une demande = un lot complet, sans plan à valider.
+Push sur `main` = mise en ligne ; jamais réécrire l'historique.
+
+## La vision (Wah, 21/10/2026)
+
+| domaine | dossier | fonction |
 |---|---|---|
-| **Claude, session cloud** (claude.ai/code, dépôt `gvllrd/totehm`) | GitHub (push), Supabase MCP, Vercel MCP, Stripe (connecteur, compte live « Higher »), n8n MCP (lu le 02/10) | conçoit ET exécute : code, migrations, Edge Functions, fusion sur `main`, contrôle de la prod, lecture et tests Stripe |
-| **Claude Code, terminal de Wah** | VM Oracle (SSH, clés dans `oracle/`), n8n (MCP), Supabase MCP, clés locales | SEULEMENT ce qui exige la machine de Wah : VM Oracle, docker compose, caddy, n8n — et une migration DESTRUCTIVE (`drop`, `update` sans `where`), que la session cloud ne peut pas faire approuver |
-| **Wah** | — | la vision, les demandes, les tests sur téléphone, le « oui » avant l'argent réel |
-**Wah fait le minimum.** Jamais « Wah, clique X » : ce qui est automatisable
-se fait par Claude cloud (ou, si ça touche Oracle/n8n, par Claude Code).
-Seules exceptions : OAuth initial d'un service, 2FA physique, décision produit.
+| totehm.com | `com/` | l'écosystème : les 5 vues, la creator economy (s'abonner à un membre = entrer dans son écosystème), l'abonnement Higher, la recherche d'un membre |
+| figher.club | `club/` | le prolongement de la vue Spots : chercher, publier des spots, se rencontrer |
+| higher.boutique | `boutique/` | les vêtements totehmisés, un style artistique déterminé, à partir des boxes MY STORY ; production n8n |
+| totehm.space | `space/` | la galerie d'art de Wah (branding, logo, slogan, Play the Lisbon Street) ; hors cœur produit |
 
-**L'argent réel demande un « oui » de Wah** : un prix en production, un
-remboursement, une modification de l'endpoint webhook Stripe. Le reste
-(déployer, fusionner, vérifier) s'exécute sans validation.
+**Deux fois cinq vues.** totehm.com : ↑ Get Higher (commune à tous) · ← mes médias · ● mon TOTEHM · → les spots ·
+↓ Higher Self (TotehmBot, abonnement Higher) ; ← ● → = l'écosystème d'un membre, ouvert par l'abonnement à ce membre.
+Le TOTEHM déployé : HABITS · OBJECTIVES · REPULSIONS · VISIONS · MY STORY. **Les boxes sont sacrées** : un seul rendu.
 
-**Plus de zip, plus de relais.** Un lot = une session cloud qui commit, déploie,
-fusionne et vérifie. `CLAUDE_CODE.md` = une tâche Oracle/n8n, rien d'autre.
+## L'architecture
 
-## Économiser les tokens — règles de travail
+`com/` `club/` `boutique/` `space/` = un site chacun (Vercel `com`, `boutique`, `space` ; figher.club n'est rattaché à
+aucun projet visible : vérifier avant d'affirmer qu'un changement de `club/` est en ligne). `backend/` n'est servi par
+personne. `oracle/` : jamais lu, jamais recopié. Une base Supabase (`abujjbkbbiumxrokozph`), un webhook Stripe.
+- Produits indépendants = fichiers indépendants : un bloc commun se COPIE depuis `tools/`, jamais importé.
+- Chaque page porte `BUILD` et un diagnostic `__totehm_*()` (booléens et compteurs, jamais une donnée de membre).
+- Aucun `.md` n'est servi (`.vercelignore`).
 
-1. **Une règle vit à UN endroit.** Transverse → ici. Propre à un domaine →
-   `<dossier>/CLAUDE.md`. Histoire → `docs/POSTMORTEMS.md`. Jamais recopiée.
-2. **Ne jamais lire un gros fichier en entier.** `grep -n` puis lecture par
-   plage : `space/index.html`, `com/totehm.html`, `backend/SYSTEM.md`,
-   `backend/README.md`, `BRAND.md`, les migrations.
-3. **Vérifier une fois, au bon endroit.** Une vérification faite est notée,
-   datée, dans `backend/SYSTEM.md` §0 ; personne ne la refait sans raison.
-4. **Rapports = un tableau de valeurs mesurées**, pas un récit. Tests :
-   n'afficher que les échecs.
-5. **Une demande de Wah = un lot complet dans la même session** : pas de
-   plan envoyé pour validation, pas de relecture de ce qui vient d'être écrit.
-## La méthode
+## Les règles absolues
 
-Wah est le fondateur et le visionnaire ; Claude est le CTO, responsable de
-l'architecture et de la stabilité. Wah change de vision vite : on s'adapte.
-1. Tu analyses l'ensemble, tu choisis l'architecture, tu exécutes. Tu ne
-   demandes jamais comment coder. UNE option, appliquée, avec le retour arrière.
-2. Tu refuses les solutions fragiles ; si la demande est risquée, tu fais
-   plus robuste et tu dis pourquoi. Jamais d'implémentation partielle.
-3. **Tu vérifies avant d'affirmer** : lire le repo, interroger la base, lire
-   le déployé. Le repo et la prod divergent régulièrement.
-4. Contredis Wah si une idée coûte plus qu'elle ne rapporte ; signale ce qui
-   va coûter cher AVANT.
-## Les documents — une question, un document
+- **Secrets** : jamais dans une conversation ni un fichier versionné (dépôt PUBLIC) ; `Deno.env.get()` seulement.
+- **Git** : jamais `git add .` ; un commit par changement logique.
+- **Base** : pas de `supabase db push`. Une migration s'applique UNE fois (`apply_migration`) et son fichier reste dans
+  `backend/supabase/migrations/`. Le cloud ne passe pas : `drop`, `update`/`delete` sans `where`, `create or replace`
+  d'une fonction existante, `alter policy` → fichier + une ligne dans `CLAUDE_CODE.md`. La base d'abord, le code ensuite.
+  Grants APRÈS le dernier `create`. Table neuve : RLS sans politique, lue et écrite par fonction.
+- **Identité** : totehm.com est l'autorité. Un satellite appelle `ssoLogin()` → `totehm.com/auth` (code + PKCE) →
+  `sso-redeem` ; d'un domaine à l'autre : `ssoVersDomaine()`. Jamais un jeton dans une URL, jamais une URL de retour
+  reçue. Bloc copié de `tools/sso_snippet.js`. CTA : CONNECT WITH MY TOTEHM.
+- **Argent** : le prix et l'accès viennent du serveur. Un webhook, routé sur `metadata.product` (`switch` + `default`,
+  jamais retiré) ; toute nouvelle fonction de checkout pose sa `metadata.product`, en double dans
+  `subscription_data.metadata`. Propriété et argent ne s'écrivent QUE par le webhook. Grand livre en ajout seul.
+- **Front** : Supabase en module ES. Liens internes ABSOLUS (`cleanUrls`). Retirer un nœud = retirer son câblage.
+  Une erreur de RPC se journalise. Une réponse tardive n'écrase jamais un état plus frais. CORS : `corsHeaders()`.
+- **Interface** : états en `is-…` ; un état permanent = une `transition` ; un verrou de navigation se rend toujours ;
+  overlays ancrés en haut. Couleurs, polices, mots : `BRAND.md`.
+- **Coût** : le gratuit reste mécanique (SQL, zéro centime) ; un LLM seulement pour ce que le membre achète.
+- **Claude Code** : une commande simple par ligne, jamais `cd X && …`.
+- **Lecture** : jamais un gros fichier en entier (`com/totehm.html` ≈ 12 850 lignes, `club/*.html`, migrations) :
+  `grep -n` puis une plage.
 
-| document | répond à | chargé |
-|---|---|---|
-| `BRAND.md` | qu'est-ce que TOTEHM et pourquoi (copy, naming, UI) | à la demande, par section |
-| `TOTEHM_MASTER.md` | la vision, les prix, les arbitrages ; §0 = écarts code/vision | gitignoré (dépôt public, il porte les prix) |
-| `CLAUDE.md` (racine) · `com/ club/ space/ boutique/ backend/ CLAUDE.md` | comment on construit : transverse, puis CE domaine | la racine toujours ; le domaine quand on y travaille |
-| `backend/SYSTEM.md` · `backend/README.md` | ce qui existe VRAIMENT (mesuré, daté) ; comment marche le backend et ses procédures | à la demande, par `grep` |
-| `docs/POSTMORTEMS.md` | l'histoire : bugs, décisions dépassées, texte intégral des anciennes règles | jamais d'office |
-| `CLAUDE_CODE.md` | la tâche en cours pour Claude Code (Oracle/n8n) | quand il y en a une |
+## Les documents — anti-chaos
 
-Un document contradictoire est corrigé dans le même lot, dans le fichier qui répond déjà.
-Les `CLAUDE.md` des dossiers servis par Vercel sont exclus du déploiement (`.vercelignore`).
+`README.md` (la carte, pour Wah) · `CLAUDE.md` (ici) · `<dossier>/CLAUDE.md` · `BRAND.md` · `CLAUDE_CODE.md`. C'est tout.
+1. Un document dit le PRÉSENT. Un lot qui change une règle RÉÉCRIT la ligne, à sa place. Jamais de section datée,
+   jamais de « mise à jour du … », jamais de journal.
+2. L'histoire va dans le message du commit (ce qui change, pourquoi, la mesure en production).
+3. Plafonds : ce fichier ≤ 100 lignes, un `CLAUDE.md` de dossier ≤ 60, `BRAND.md` ≤ 100, `CLAUDE_CODE.md` ≤ 30.
 
-## L'architecture — direction du 15/10/2026 (publiée en production)
+## Un lot est fini quand
 
-```
-com/      → www.totehm.com       LA PLATEFORME (16/10 bis) : le Totehm = 5 vues EN LISTE, rien d'autre (aucun mode ; capture et spot dans l'élément), /auth, /@nom,
-                                 /console, /monetize, /higher (la vente de l'abonnement Higher), /spot ; CINQ vues d'atterrissage, quatre voisins, sans manette :
-                                 ↑ Get Higher (la bouche, le cerveau aux 7 couleurs qui VIBRENT, rouge lent → violet rapide) · ← MES MÉDIAS (grille Instagram, 20/10) · le processeur (le réseau des 7 intentions PLEIN
-                                 ÉCRAN au rythme de mes Habits ; Mine · MEMBERS = le papier grandit, se retourne, on tape un nom → l'ÉCOSYSTÈME du membre, 20/10 sexies) ·
-                                 LES SPOTS → (MAP la Terre · GRID arrondie, le spot en grand par-dessus, sans polaroid, 21/10) · ↓ ma Reflection ; ← et → = la TRANSFORMATION du centre (les 7 traits se plient) ; le NOM ne vit QUE sur le VERSO (18/10) ; le verso = MON ARGENT EN UN ÉCRAN (20/10) ; XO sert /x/space, /x/club et
-                                 /@nom (SUR PLACE : zéro saut)
-space/    → www.totehm.space     Quatre lieux brutalistes côtiers de la vidéo (19/10), béton bleu, bassins miroir, heure bleue nuageuse fixe ; trois portes vers le vide noir,
-                                 couloir inchangé, vingt Origins dans l'ordre, TotehmPaper/Stoner réunis et Lisbon ; /market, collection, /social et /s/:id conservés.
-club/     → www.figher.club      Retour du 17/10 : interface cinq vues d’avant la refonte du 15/10 (référence b4ae3f0).
-                                 Radar · annonce · agenda · caméra · passés ; /create intégré à COM et ponts d’art conservés.
-boutique/ → www.higher.boutique  Physique : Streetwear, Luxury, Decode, commandes et production. Anciens liens d'art → pont SSO → SPACE.
-backend/  → servi par PERSONNE — reste à la racine (sinon SQL et fonctions téléchargeables)
-oracle/   → clés, gitignoré, jamais lu ni recopié
-tests/    → navigateur Playwright/Supabase simulé, contrats Edge, SQL transactionnel en base de développement
-```
-
-La direction du 15/10 remplace les répartitions historiques ci-dessous et dans les documents de domaine ; livraison et ordre de déploiement : `docs/GALLERY_CLUB_20261015.md`, `docs/SPACE_IMMERSIVE_20261015.md`. Aucune mesure locale ne prouve la production.
-
-TotehmBot est transversal (Telegram). Une seule base Supabase (`abujjbkbbiumxrokozph`, eu-west-1), un seul webhook Stripe.
-**Produits indépendants = fichiers indépendants** : un contenu commun est COPIÉ (ex. `tools/sso_snippet.js`), jamais
-importé. Un nom de dossier n'est pas une source de vérité : ce tableau l'est. **Chaque page porte `BUILD` et un
-diagnostic console `__totehm_*()`** — des booléens et des compteurs, jamais une valeur de membre.
-
-## Identité — quatre origines, une autorité
-
-Quatre origines = quatre `localStorage` = quatre sessions ; aucun cookie partagé. **totehm.com est l'autorité** :
-un satellite se connecte par `ssoLogin()` → `totehm.com/auth` (code d'autorisation + PKCE + `state`, retour dans
-le fragment) → `sso-redeem` exige le `verifier`. Silencieux une fois par onglet pour un navigateur déjà connu. Un
-lien d'un domaine connecté vers un autre passe par le pont `ssoVersDomaine()`. Le code : 60 s, usage unique, haché,
-un domaine cible. **Jamais un jeton de session dans une URL. Jamais une URL de retour reçue** : `client` est un nom
-(table fixe), `return` un chemin. Le bloc se COPIE depuis `tools/sso_snippet.js` et bloque au niveau du module
-(2,5 s max, dégradé pas cassé). `verifyOtp({ type, token_hash })` SEULS : avec `email`, Auth répond 400 et le pont
-casse (02/10). CTA partout : **CONNECT WITH MY TOTEHM** ; sur SPACE et le Club (13/10) c'est TOUT le coin membre, connecté = le nom
-seul → COM (l'espace membre vit dans COM). **Invité** (11/10) = connexion anonyme Supabase, totehm.com seul, cachée tant que le
-projet la ferme : ni space, ni vibe, ni Higher Self avant « save with my email » (même compte, `updateUser` + code `email_change`).
-
-## Les données, les droits, l'argent
-
-- **Cinq objets, sept intentions, fermé** : habitudes (`totehms.steps`),
-  objectifs, répulsions, visions, sagesse ; fight · flow · enrich · love ·
-  express · focus · celebrate (contrainte `check` en base). Piliers : fight,
-  flow → BODY · enrich, focus → MENTAL · express, celebrate → SOUL · love →
-  SPIRIT. Liens croisés = tables de jointure, jamais une colonne.
-- **Adhésion FIGHER CLUB** (16/10) = UNE habit + UN objectif + UNE répulsion non vides, calculée côté serveur
-  (`_figher().member` ; `needs` dit ce qui manque). Le Club EST le public : il n'y a pas d'autre niveau au-dessus.
-  Aucun achat, abonnement ou comp ne remplace cette condition. `complete` (les 5 vues) reste, informatif.
-  **Accès artistique historique** = `_art_passport` (ancien THP + Habit ou comp), distinct de l'adhésion.
-- **Un seul système de droits** : `_subscriber_of(créateur, fan)`, `creator_page(pseudo)`, `my_entitlements()`.
-  L'abonnement est à sens unique : Bob → Alice ne donne rien à Alice sur Bob. **Depuis le 01/10 :** COM et SPACE
-  sont gratuits pour soi ; un abonné = un abonnement vivant à UN créateur, ANNUEL, prix fixé par lui, sans FIGHER.
-  **TROIS NIVEAUX (16/10 ; PUBLIC est mort), ET DEPUIS LE 18/10 ILS VIVENT SUR CHAQUE BOX** (Wah : « la confidentialité s'effectue pour chaque box de chaque vue ») : colonne `audience` sur `objectives`/`repulsions`/`visions`/`wisdom`, table `habit_audience` pour les habitudes (jamais dans `steps` : `cloudSave` le réécrit). `box_audience_put` écrit, `my_box_audiences` lit mes niveaux, `_box_shared` est LA règle ; le verso ne règle plus rien et `totehms.audience` devient le PLAFOND (le plus ouvert de mes box) que lit l'offre créateur. Mêmes trois niveaux sur
-  un spot : PRIVATE · FIGHER CLUB · MY SUBSCRIBERS. Défauts : box PRIVATE, spot FIGHER CLUB. La
-  contrainte `check` accepte encore `public` (la changer demanderait un `drop`) : les deux triggers le NORMALISENT
-  en `figher`, et `_audience_ok`/`_audience_listed`/`_point_ok` ne le traitent jamais comme plus ouvert. Lire =
-  `_audience_ok` ; les vitrines LISTENT `_audience_listed` (FIGHER CLUB aux membres) ; le point exact (ON) =
-  `_point_ok`. Sans compte on ne liste AUCUN contenu : restent ouverts les NOMS (`totehm_galaxy`, `totehm_search`)
-  et `/@nom`. Écrire = `*_audience`, `spot_audience_set`, `visibility_set`. TotehmBot = offre à part.
-- **La propriété est un exemplaire** (`art_editions`), son histoire `art_transfers` (ajout seul). `stoner_access` =
-  projection d'accès ; le THP = l'œuvre `totehmpaper` (777 000 ex.), prix = sa ligne `artworks`. Le numéro appartient
-  à cet exemplaire THP ; un nouveau membre du Club sans THP ne reçoit aucun numéro d’œuvre.
-- **L'argent est un grand livre** (`member_ledger`, ajout seul, trigger) : abonnements 80/20, crédit sur
-  `invoice.paid` seulement ; revente 7 % à TOTEHM, le reste au vendeur (arrondi inférieur au membre). Idempotence =
-  contrainte `unique(source, kind)`. Versement manuel le 1er, seuil 25 € (`payout_rules()`). Pas de Stripe Connect
-  (cent créateurs = seuil de retour).
-- **Le prix et l'accès viennent du serveur**, toujours.
-- Détail et procédures : `backend/CLAUDE.md`, `backend/README.md`.
-
-## Stripe
-
-Un webhook, routé sur `metadata.product` par un `switch` avec `default`
-explicite — **ne jamais retirer ce filtre** : `higher` · `cloth` ·
-`subscription` · `creator_sub` · `artwork` · `resale` · `luxury` · `higher_sub` (07/10 : Higher 7 €/mois, `bot_subscriptions`) (05/10 : `cloth` traité ici, `luxury` sur devis ; un testeur actif de `boutique_testers` paie en MODE TEST Stripe : `STRIPE_TEST_SECRET_KEY` / `STRIPE_TEST_WEBHOOK_SECRET`, seuls `cloth`/`luxury` test s'écrivent, marqués `test`). Toute nouvelle
-fonction de checkout pose sa propre `metadata.product`. La metadata voyage EN DOUBLE
-(`subscription_data.metadata`). Propriété et argent ne s'écrivent QUE par le webhook (`art_settle`, idempotent). Endpoint
-vérifié le 30/09 : `checkout.session.completed`, `invoice.paid`,
-`invoice.payment_failed`, `customer.subscription.updated|deleted`.
-`new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!)` — jamais `?? ""`.
-
-## Contraintes absolues
-
-- **Secrets** : jamais dans une conversation ni un fichier versionné ; `Deno.env.get()` uniquement. Une clé exposée se change tout de suite.
-- **Git** : jamais `git add .` (`oracle/`) ; un commit par changement logique, jamais réécrire `main`.
-- **Base** : pas de `supabase db push` ; une migration s'applique UNE fois
-  (MCP `apply_migration`, sans `drop` ni `update` sans `where` : ceux-là ne
-  passent pas depuis le cloud → fichier `…_menage.sql` pour Claude Code), le
-  fichier du dépôt en garde la trace ; la base d'abord, la fusion ensuite. `create or replace function`
-  rend le GRANT à PUBLIC : tout `revoke` vient APRÈS le dernier `create`.
-  Après un `rename`, grepper `pg_proc.prosrc`. Tables nouvelles : RLS sans
-  politique, lues et écrites par fonction.
-- **Front** : Supabase en module ES (`esm.sh`), jamais UMD. Sous `cleanUrls`,
-  tout lien interne est ABSOLU (`/club/creator`, aussi les `return_url`).
-  Un `$('id')` sur un nœud retiré lève à l'évaluation du module → page
-  blanche : on retire le balisage ET son câblage ensemble.
-- **Une erreur de RPC se journalise, toujours** : `if(error) return`
-  transforme une panne en écran vide.
-- **Une réponse tardive n'écrase jamais un état plus frais** (compteur de
-  séquence, garde de fraîcheur).
-- **CORS** : `corsHeaders(origin, fallback)` de `_shared/origins.ts`, jamais `*`.
-- **Claude Code** (terminal) : une commande simple par ligne, jamais
-  `cd X && …` (les permissions jugent la ligne entière).
-**16/10 bis — LA LISTE SEULE DANS LE TOTEHM** (Wah : « on garde seulement le mode liste … sinon ça pète toute la structure ») : aucun mode, aucune bascule, la manette ne s'en va plus jamais ; les deux moteurs sont des VUES de l'atterrissage — `SH` ← mes shorts (UN MÉDIA par écran, aimanté) et → mes spots (19/10 : DEUX MODES, radar ou shorts, `SPOTMODE`) —, ils lisent ce qui est déjà en mémoire (zéro appel), membre seulement, jamais dans la galaxie. **19/10 quater — LE TOTEHM SORT DU CENTRE ET SE CALE EN HAUT, CENTRÉ, SUR LES DEUX VUES** (d'après figher.club) : c'est le MÊME objet qui voyage, comme il devient un profil en bas ou se pose sur la langue en haut ; un tap dessus choisit une Box — les CINQ vues à gauche (un média illustre n'importe quel élément), les HABITS seules à droite. **20/10 quater — LA VUE DE GAUCHE = UNE GRILLE INSTAGRAM** (les sept étages sont partis) : une tuile CARRÉE PERFORÉE par média (les 12 trous du logo, 21/10 bis), et dessus, surélevée, SA BOX TELLE QU'ELLE EST DANS LE TOTEHM (20/10 quinquies, Wah : « les box sont sacrées » — `boxTotehm` appelle les rendus de la liste, jamais une copie) ; la tuile « + » ajoute (l'élément d'abord) ; un tap, image ou box, ouvre le média avec la box DÉTAILLÉE par-dessus (on ne quitte pas la vue ; 21/10 : la visionneuse défile à la VERTICALE, aimantée, comme à droite — plus de ‹ ›) ; un APPUI LONG règle le POINT DE FOCALISATION (`feed_badges`) ; le Totehm docké ouvre LE FILTRE : une vue, puis une box de cette vue, remise en tête des résultats ; plus type et intentions — zéro appel. Vignette d'une vidéo : un JPEG posé à côté du fichier (`POSTER`) à gauche, le `thumbnail.jpg` de Bunny à droite. **LA VUE DE DROITE = LES SPOTS DU CLUB** (figher.club en est le prolongement) : `club_spots` (mes spots + ceux que j'ai le droit de voir), filtres SERVEUR ouverts par le Totehm docké (les HABITS au format Totehm, I WAS HERE · I AM HERE · I WILL BE THERE, les intentions « X [Higher] », type, near me) + « mine » local ; MAP (la Terre, les spots en POINTS : plein = le point, creux = la ville ; aucun méridien sur le globe) ou GRID (20/10 sexies, plus de radar : il reste au figher.club) ; tuiles ARRONDIES ; un tap ouvre le spot en grand, un par écran, aimanté — PLUS DE POLAROID (21/10) : sur le NOIR, la Habit Box puis les infos au format de figher.club (`.sdata`), l'auteur (Coral → SON écosystème, sur place) et GO · CALENDAR, dessous l'image TELLE QU'ELLE (`contain`) ; vidéo Bunny signée par `bunny-video` (HLS). **16/10 — PLUS DE SPACES DANS COM** (Wah) : une Habit Box ne montre que ses SPOTS, « + a space » est parti, `[Add a media]` et `[Add a spot]` remplacent les icônes, et un spot
-s'annonce DANS la boîte (deux champs, le point du navigateur exigé — jamais une position calculée depuis une ville). **SPACE · 11/10 :** un space = une Habit vécue, jamais un point exact ; sans selfie ni
-musique ajoutée ; vibes, profils ; **ce qui vient du Totehm reste TEL QUEL** (la box de COM ; à la publication, un tap éteint/rallume une mini-box ou le
-rythme, `spot_box_set`) ; le reste (space, spot) au format de sa plateforme. **figher.club :** un spot = un lieu + une heure (Higher spot : chez soi, lieu privé ou dehors) ;
-radar, annonce (toujours ON), agenda, I AM HERE, passés ; OFF = ville, ON = le point (`_point_ok`). Mini-boxes
-OBJECTIVES/REPULSIONS séparées (droits serveur). Détails : `space/CLAUDE.md`, `club/CLAUDE.md`, copy : `BRAND.md`.
-Une Box MY STORY (WISDOM) de COM montre ses Cloths (`element_cloths`) comme une Habit ses spots ; une VISION porte une image libre (`vision_image_set`) ; chercher = MEMBERS (20/10 sexies, plus de galaxie) : le papier grandit avec son socle, se pose sur son dos, on tape un identifiant → `totehm_of` → on vit SON écosystème (son processeur, ses médias `member_media`, ses spots `club_spots_of`, en bas son offre), MINE ramène chez soi. **Le verso du papier porte TOUT, EN UN ÉCRAN** (20/10, Wah : « l'espace membre axé sur la monétisation ULTRA-SIMPLIFIÉ ») : le NOM une fois, en haut ; puis ce que je gagne → OPEN/OFF → le prix au curseur (enregistré au lâcher) → où me payer → ma page ; puis ce que je paie (mes abonnements, Higher, TotehmBot), une ligne et UN geste chacun ; plus d'`iframe` `/console`. **Plus de vignette, plus de confidentialité du Totehm** (elle est par box), **plus de /monetize** (une plaquette à envoyer), **plus d'espace membre hors du verso**.
-
-## Règles d'interface qui valent partout
-
-- Une classe d'ÉTAT se nomme `is-…`, jamais comme un style (`.in` a déjà tué
-  un bouton).
-- Un état permanent se dit par une `transition`, jamais une `@keyframes`
-  (elle rejoue à chaque redessin). Un élément animé se place par
-  `left/top` : une animation écrase `transform`.
-- Un `<canvas>` porte toujours `width:100%;height:100%`.
-- Geste dédié : `touch-action:none` + Pointer Events. Dans un feed scrollable,
-  préserver le scroll natif ; touchstart/move/end reprend le retour au radar. Un verrou de navigation se rend TOUJOURS (fin à usage unique + minuterie, journalisé) et un geste reçu pendant un voyage attend sa fin (21/10).
-  **Le trackpad change de vue vers chaque voisin** (07/10 ; seuils de SPACE 12/10 : 75 px en X, 70 en Y, verrou 350 ms
-  + inertie ; `deltaX > 0` = la DROITE), hors manette aussi ; une liste qui défile garde la molette, et un geste réservé
-  à autre chose éteint l'axe dans CETTE vue (la Terre de MAP garde l'horizontale) sans changer la règle.
-- Overlays plein écran ancrés EN HAUT (le clavier mobile mange le bas).
-- L'interface est en anglais, LE MOINS DE MOTS POSSIBLE (12/10 : le design parle, pas une phrase) ; termes de marque en anglais. À l'écran « element », jamais « Box » (08/10) ; WISDOM se dit MY STORY (13/10).
-- Une règle de comportement ne va jamais dans un `@media`.
-
-## Doctrine visuelle (état au 03/10)
-
-- **Polices : Space Mono et Quantico, partout, rien d'autre** (Bebas Neue, Jost/Futura, Montserrat : nulle part, ni
-  import ni CSS). Quantico = ce que le membre TAPE et le NOM d'un Totehm. Space Mono = texte, labels, prix,
-  navigation, boutons (Bold) ; un titre = Space Mono Bold en capitales.
-  « Higher » est TOUJOURS le SVG, jamais du texte ; le titre d'une vue
-  d'intention = l'intention + le badge Higher (SPACE : seul le centre porte [Higher] Social media).
-- **Couleurs · la composition 60 / 30 / 10** (19/10, mesurée page par page) : **60 % noir PUR** (`#000`, jamais un
-  gris sombre — plus aucun faux noir `#121214`/`#131316`/`#0c0c0e`/`#16161a` comme surface) · **30 %** navy `#333366`
-  · bleu clair `#36498c` · rouge-violet `#743169` = l'OBJET (les boîtes du Totehm, le papier, le badge Higher) et,
-  UN TON EN ARRIÈRE (`--navy-d:#22224a` · `--blue-d:#263362` · `--rep-d:#51224a`), les panneaux des pages servies —
-  jamais au-dessus des boîtes en valeur · **10 %** les sept intentions, en SIGNAL (un trait, un point), jamais une
-  surface. Toutes les pages se composent pareil ; SEULE exception, le Totehm DÉPLOYÉ, où le navy prend le champ
-  (`totehm.html` : `html,body` = `--paper` sur téléphone). Coral `#fbd5ca` = le NOM du Totehm (Quantico), la méthode
-  Stoner et le « Get » de [Get Higher]. Filtres, accès, abonnements, soldes,
-  portes : gris. Exceptions SPACE/boutique demandées (caméra navy + REC rouge, contexte d'un space arrondi, textes
-  caméra en boîtes noires, joystick blue/navy/rep) : `space/CLAUDE.md`.
-- **Aucune bordure autour d'une boîte**, sur les quatre domaines : une boîte
-  se détache par sa VALEUR. Exceptions : la tuile perforée (texture), les
-  arêtes d'une boîte en verre 3D, le pointillé d'une place vide. Ombre autorisée sur les Habit Boxes du feed SPACE.
-- **Contrôles** sur les quatre domaines : gris, `border-radius:10px`. **Le nom du Totehm = Quantico Coral,
-  un IDENTIFIANT sans espace, et il ne vit QUE sur la face VERSO** (18/10 : fixe en haut du verso, petit,
-  sans retour de ligne ; plus sur le recto, plus sur l'atterrissage — une seule place pour un nom),
-  accès membre sans point/carré ni T statique centré ; le papier garde son navy perforé. Aucun motif perforé comme fond de contrôle, sauf [Decode a Totehm Cloth] au survol et en saisie (tuile navy, 06/10). **Aucun fond
-  blanc** sur un bouton, une option, une sélection, un panneau : tout reste
-  sombre (sélection = gris clair + filet blanc). Une BOÎTE reste carrée.
-- Boutons ajustés au label. **Chaque Box a une petite loupe : un tap agrandit son contenu EN PLACE
-  (×1,25), jamais une fenêtre** (Wah, 06/10) ; mini-boxes COM au format d'origine ; le T du Totehm
-  déplié reste. Attributs non renseignés absents des miroirs. Satellites : `tools/ecosystem_ui.*` copiés.
-- **Simple terms of use** = la DERNIÈRE entrée du menu membre, partout (SPACE, Club : en tout petit sous CONNECT) ;
-  jamais épinglée dans un coin. Aucun pourcentage de compatibilité.
-- Sur ordinateur, texte gris → blanc au survol ; les noms restent Coral (`tools/hover.py`
-  écrit le bloc ; ne pas l'éditer à la main).
-## Doctrine de coût
-
-**Calculer une fois, stocker, interroger à l'infini.** Avant toute feature à
-appel payant : coût mensuel à 1 000 utilisateurs contre revenu. Deux régimes :
-MÉCANIQUE (SQL, embeddings, gabarits — jamais un centime ; tout le gratuit
-reste déterministe) et QUALITÉ (le meilleur modèle, pour ce que le membre
-achète : TotehmBot / Higher Self, 7 €/mois, un LLM OpenAI ; 08/10 : 7 réponses offertes / 30 j = acquisition, plafonnée en base).
-Les relances Telegram restent MÉCANIQUES (`push_decision` : l'Habit due selon SA Time frequency, les mots du membre, zéro appel payant) ; WhatsApp refusé (API Meta : vérification, gabarits, coût par conversation). À
-surveiller : l'egress vidéo (clip visible + UN suivant anticipé, règles dans
-space/CLAUDE.md), les tokens de ces sessions (voir plus haut).
-
-## Communication
-
-Français, termes de marque en anglais. Direct, franc, sans flatterie ni jargon.
-Wah veut savoir : changement, raison, fichiers, action restante et valeur attendue.
-Bug signalé → UN bloc console qui renvoie tout.
-
-**Tu ne fais pas** : copy marketing signée, prospection, rédaction juridique, recherche
-d'influenceurs. Brief `[POUR X] / CONTEXTE / OBJECTIF / CONTRAINTES / ATTENDU` à Gemini (terrain,
-lieux) · ChatGPT (rédaction) · Mistral (CGU, CGV) · Meta AI (influenceurs, tatoueurs, galeries).
-Wah fait le pont ; tu intègres et tu restes responsable.
-
-## 🛑 La règle d'or
-
-Un lot n'est fini que si : le code est modifié, testé, sécurisé · les documents touchés sont à
-jour dans le même lot (`CLAUDE.md` racine ou du dossier, `BRAND.md`, `backend/SYSTEM.md` §0,
-`backend/README.md`) · le §0 de `TOTEHM_MASTER.md` reçoit l'entrée du lot — elle s'écrit dans
-`CLAUDE_CODE.md` (« à reporter ») et Claude Code la reporte à sa prochaine intervention · c'est
-poussé, fusionné, déployé et vérifié en production. Code et documents désynchronisés = lot refusé.
+le code est modifié, testé, sécurisé · le `CLAUDE.md` du domaine dit le nouvel état · c'est poussé, déployé et vérifié
+en production · le commit raconte le lot. Rapport à Wah : un tableau de valeurs mesurées, en français, sans jargon.

@@ -119,6 +119,21 @@
       "source": "/global.html",
       "destination": "/global",
       "permanent": false
+    },
+    {
+      "source": "/totehm",
+      "destination": "https://www.totehm.com/totehm",
+      "permanent": false
+    },
+    {
+      "source": "/totehm.html",
+      "destination": "https://www.totehm.com/totehm",
+      "permanent": false
+    },
+    {
+      "source": "/assets/signs/:file",
+      "destination": "https://www.totehm.space/assets/signs/:file",
+      "permanent": true
     }
   ]
 }

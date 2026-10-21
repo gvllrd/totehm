@@ -37,6 +37,17 @@ function externe(dir, f){
   }
   return null;
 }
+/* 21/10 — les réécritures INTERNES (destination relative), comme Vercel : seulement quand aucun fichier ne
+   répond (le système de fichiers passe d'abord). Ex. boutique `/get_higher` → `/art-bridge`, COM `/@nom` → `/creator`. */
+function interne(dir, f){
+  let rw = []; try{ rw = JSON.parse(fs.readFileSync(path.join(ROOT, dir, 'vercel.json'), 'utf8')).rewrites || []; }catch(_){ return null; }
+  for(const r of rw){
+    if(!r.destination.startsWith('/')) continue;
+    const motif = new RegExp('^' + r.source.replace(/[.+?^${}()|[\]\\]/g, '\\$&').replace(/:\w+\*/g, '.*').replace(/:\w+/g, '[^/]+') + '$');
+    if(motif.test(f)) return r.destination.split('?')[0];
+  }
+  return null;
+}
 export async function page(browser, { dir, origin, rpc = {}, tables = {}, functions = {}, network = null, session = true, viewport = { width:390, height:844 }, geo = { latitude:38.7223, longitude:-9.1393 }, hasTouch = false }){
   const ctx = await browser.newContext({ viewport, permissions:['geolocation','camera','microphone'], geolocation: geo, hasTouch });
   const log = { rpc:[], upload:[], functions:[], network:[], tiles:0, other:[], errors:[] };
@@ -84,6 +95,7 @@ export async function page(browser, { dir, origin, rpc = {}, tables = {}, functi
       const ext = externe(dir, f); if(ext){ d = ext.dir; f = ext.path; }
       if(f.endsWith('/')) f += 'index.html';
       let fp = path.join(ROOT, d, f); if(!path.extname(fp) && fs.existsSync(fp + '.html')) fp += '.html';
+      if(!fs.existsSync(fp)){ const r = interne(d, f); if(r){ fp = path.join(ROOT, d, r); if(!path.extname(fp)) fp += '.html'; } }
       if(!fs.existsSync(fp)) return route.fulfill({ status:404, body:'nf' });
       return route.fulfill({ status:200, contentType: TYPES[path.extname(fp)] || 'application/octet-stream', body: fs.readFileSync(fp) });
     }

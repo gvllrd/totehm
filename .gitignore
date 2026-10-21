@@ -1,10 +1,12 @@
 # ═══════════════════════════════════════════════════════════════
 # TOTEHM · .gitignore
-# Le repo est PUBLIC. Tout ce qui est commité est lisible par tous,
-# et l'historique git garde ce qui a été commité même après suppression.
+# Le dépôt est PUBLIC : tout ce qui est commité est lisible par tous,
+# et l'historique garde ce qui a été commité même après suppression.
 # ═══════════════════════════════════════════════════════════════
 
-# ─── Secrets — ne doivent JAMAIS entrer dans le repo ───────────
+# ─── Secrets — ne doivent JAMAIS entrer dans le dépôt ──────────
+# (⚠️ `*secret*` et `*credentials*` ignorent AUSSI un fichier de code
+#  qui porterait ce mot dans son nom : choisir un autre nom.)
 .env
 .env.*
 !.env.example
@@ -17,58 +19,38 @@ id_ed25519*
 *credentials*
 *secret*
 service_role*
+oracle/
 
-# ─── Documents stratégiques ────────────────────────────────────
-# Ils décrivent prix, roadmap, unit economics. Rien de dangereux
-# techniquement, mais c'est le plan de bataille — inutile de le
-# servir publiquement sur higher.boutique/Higher_master.html
-Higher_master.html
-totehm_space_master.html
-higher_boutique_master.html
+# ─── Ce qui vit seulement sur la machine de Wah ───────────────
+# La stratégie et les prix (le master), les réglages personnels de Claude Code.
+TOTEHM_MASTER*
+MASTER*.md
 *_master.html
+.claude/settings.local.json
 
-# ─── Fragments de code, pas des pages ──────────────────────────
-# S'ils sont commités, Vercel les sert comme de vraies URLs
+# ─── Fragments et scripts jetables ────────────────────────────
+# Un fragment commité serait servi par Vercel comme une vraie page ;
+# un script écrit pour UN lot ne survit pas au lot (les OUTILS vivent dans tools/).
 *_snippet.html
-index_higher_snippet.html
-
-# ─── Scripts de patch jetables ─────────────────────────────────
-# Un script écrit pour UN lot n'a pas à survivre au lot. Les OUTILS, eux,
-# vivent dans tools/ et sont suivis : `tools/` était ignoré en bloc alors
-# que `tools/hover.py` y est commité — une règle qui se contredit, et qui
-# avalait en silence tout outil ajouté ensuite. Corrigé le 06/09.
 patch_*.py
 build_*.py
 tools/*_tmp.py
+*.bundle
 
-# ─── Système et dépendances ────────────────────────────────────
+# ─── Système et dépendances ───────────────────────────────────
 .DS_Store
 Thumbs.db
 node_modules/
-.vercel/
-.supabase/
-*.log
 __pycache__/
 *.pyc
-oracle/
-supabase/.temp/
+*.log
+.vercel/
+.supabase/
+/supabase/
 **/supabase/.temp/
-# ─── backend ───────────────────────────────────────────────────
-backend/n8n/.env
-backend/**/.env
-backend/supabase/.temp/
-/supabase/
-/supabase/
-TOTEHM_MASTER*
-MASTER*.md
-
-# La sortie du prototype : elle se REGENERE (tools/prototype_totehm.py).
-# Un artefact de build dans le depot, c'est une version de plus a garder
-# d'accord avec sa source.
-totehm_unfold.html
 
 # ─── Tests navigateur : le bundle et ses dépendances se régénèrent ───
-tests/browser/node_modules/
+# (mode d'emploi en tête de tests/browser/harness.mjs)
 tests/browser/supabase.mjs
 tests/browser/entry.js
 tests/browser/package*.json

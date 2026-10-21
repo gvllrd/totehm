@@ -2,7 +2,7 @@
 // Run python tests/browser/space_video_fixtures.py first (camera + two HLS qualities).
 import fs from 'node:fs';import path from 'node:path';import {execFileSync} from 'node:child_process';import {launch,page,ok} from './harness.mjs';
 const fixture=process.env.SPACE_HLS_FIXTURE || '/tmp/space-portrait-fixtures';
-if(!fs.existsSync(fixture+'/playlist.m3u8')) throw new Error('Generate the local HLS fixture first (see backend/README.md).');
+if(!fs.existsSync(fixture+'/playlist.m3u8')) throw new Error('Generate the local HLS fixture first: python3 tests/browser/space_video_fixtures.py');
 const origin='https://www.totehm.space',clip='aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',guid='bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb';
 const publicSpot={id:'live',format:'space',habit:'Run the hill',freq:'daily',intentions:['fight'],visibility:'shared',mode:null,location:'off',city:'Lisbon',starts_at:new Date(Date.now()-60000).toISOString(),ends_at:new Date(Date.now()+3600000).toISOString(),duration_min:60,creator:'nia',mine:false,video:null,clip:{id:clip,status:'ready'},exact:null};
 const sourceMode=process.argv[2] || 'landscape',out='/tmp/space-portrait-qa';if(!['landscape','portrait'].includes(sourceMode)) throw new Error('Fixture mode invalid');fs.mkdirSync(out,{recursive:true});let reading=0,uploaded=0,patches=0;const buffers=[];
