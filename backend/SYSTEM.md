@@ -20,6 +20,17 @@
 ---
 
 
+## 0 · MES MÉDIAS PERFORÉS ; LA LOUPE SUR TOUTES LES BOXES — 21/10/2026 bis (lot N)
+
+| Mesure | Résultat |
+|---|---|
+| Base | aucune migration (front seul) |
+| `com/totehm.html` en production | 200, 812 537 caractères = le fichier du dépôt (837 824 octets), `BUILD=2026-10-21-com-perfo`, commit `f1fd61e`, Vercel READY (`dpl_BkZNW2UqrZafcNzpzFT3FfgLL4Yb`) |
+| Présent en production | `#lv-sh .tl:not(.tl-add) .tl-ph{…mask:var(--perfo)…}`, `+loupeHTML('f:0')`, `.habit.filtre .loupe{right:30px}` ; `--perfo` défini UNE fois |
+| Mesuré en page (simulé) | gauche : 12 trous par image, centres identiques un à un à `#gl-bg` (3 par côté, 25 · 50 · 75 %) ; box posée dessus non masquée · loupe : 5 vues × fermée/ouverte × téléphone/ordinateur = toutes visibles, non recouvertes, ×1,25 puis retour ; le filtre a la sienne (à côté de sa croix, l'état survit au redessin) ; lecture d'un membre : loupe + Copy sur chaque box |
+| Tests retirés | `spaces_loupe.mjs` (cassé depuis le 18/10 : `#conn-bar` ; sa partie COM → `com_loupe.mjs`, « My spaces » COM parti le 16/10, SPACE réécrit le 19/10) |
+| Suites navigateur | com_loupe **60** (nouveau) · com_shorts **137** · com_processeur 147 · com_read_copy 18 · com_plateforme 23 · com_paper 36 · com_member_menu 41 · com_guest 14 · com_composition 78 · com_creator 37 · com_spot 8 · com_vision_image 4 · com_cloths 16 — fail 0 |
+
 ## 0 · LE SPOT TEL QU'IL EST ; LA VISIONNEUSE DE GAUCHE À LA VERTICALE — 21/10/2026 (lot M)
 
 | Mesure | Résultat |
