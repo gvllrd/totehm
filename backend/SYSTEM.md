@@ -20,6 +20,19 @@
 ---
 
 
+## 0 · LES GESTES NE SE PERDENT PLUS ; LA SESSION SANS « HORS CONNEXION » ; LE CERVEAU ENTIER — 21/10/2026 ter (lot O)
+
+| Mesure | Résultat |
+|---|---|
+| Base | aucune migration (front seul) |
+| `com/totehm.html` en production | 200, 820 524 caractères = le fichier du dépôt, `BUILD=2026-10-21-com-gestes`, commit `dce034a`, Vercel READY (`dpl_4WkWxdRgCPHgwM8dPCynkSNQ8S3f`) |
+| Présent en production | `function garde(f,ms)`, `PAPIER.surVertical=d=>demander(d)`, `ses-attente` (script de tête), `function posHaut()`, nom gardé dans `totehm_habits_v1`, `body.member #lv-pitch{display:none!important}` |
+| Causes trouvées (gestes) | `bouge` jamais rendu si un voyage échouait (exception, papier en `glisse`/`freine`) ; glissé vertical parti du papier avalé ; geste reçu pendant un voyage jeté |
+| Mesuré en page (simulé) | membre déjà venu peint à 110 ms, profil retardé à 1,8 s ; 0 image de la vente ni de CONNECT pendant la lecture (3 passes) ; voyage figé → main rendue à 2,2 s (1 déblocage) |
+| Vue du haut (bouche · cerveau) | 390 × 664 : 149 px · 419 → 555 ; 375 × 667 : 151 · 422 → 558 ; 390 × 844 : 236 · 534 → 732 ; 1280 × 720 : 202 · 450 → 610 — vente au-dessus, socle de la manette en dessous |
+| Tests | `com_boot_gestes` 36/36 (NOUVEAU), `com_processeur` 147, `com_shorts` 137, `com_loupe` 60, `com_composition` 78, `com_paper` 36, `com_member_menu` 41, `com_creator` 37, `com_plateforme` 23, `com_read_copy` 18, `com_cloths` 16, `com_guest` 14, `com_spot` 8, `com_vision_image` 4, `boutique_tongue` 11, `console` 18 : 0 échec |
+| Échecs hérités (identiques sur `f4b4ee2`) | `space_boxes_ecosystem` (plantage), `space_spot_links` 19/1, `spaces_ui` 15 + plantage `#conn-bar` : visent des éléments retirés avant ce lot |
+
 ## 0 · MES MÉDIAS PERFORÉS ; LA LOUPE SUR TOUTES LES BOXES — 21/10/2026 bis (lot N)
 
 | Mesure | Résultat |
