@@ -66,9 +66,9 @@ try{
    ok(await pg.textContent('#vs-subs .vs-nom')==='alice'&&/renews 1 Mar/.test(await pg.textContent('#vs-subs')),'what I pay: the Totehms I subscribe to, one line each');
    await pg.click('#vs-subs [data-stop]');await pg.waitForFunction(()=>/stops on/.test(document.getElementById('mw-menu-note').textContent));
    ok(log.functions.some(f=>f.name==='club-billing'&&f.body.action==='cancel_creator'&&f.body.pseudo==='alice'),'Stop = club-billing cancel_creator, at the end of the year');
-   ok(await pg.locator('#mw-menu .vs-hi use[href="#higher-badge"]').count()===1&&!/higher/i.test(await pg.$eval('#mw-menu',e=>e.textContent)),'« Higher » is the SVG, never text');
+   ok(await pg.locator('#mw-menu .vs-hi use[href="#higher-badge"]').count()===2&&!/higher/i.test(await pg.$eval('#mw-menu',e=>e.textContent)),'« Higher » is the SVG, never text (the title and [Higher] Self)');
    const acts=await pg.$$eval('#mw-menu .vs-act',l=>l.map(e=>e.textContent));
-   ok(JSON.stringify(acts)==='["Get","Connect"]','one gesture per line → '+acts.join(' | '));
+   ok(JSON.stringify(acts)==='["Connect","Get"]','one gesture per line → '+acts.join(' | '));
    await pg.keyboard.press('Escape');
    await pg.waitForFunction(()=>!document.getElementById('srch').classList.contains('is-open'),null,{timeout:6000});
    await pg.waitForTimeout(1800);

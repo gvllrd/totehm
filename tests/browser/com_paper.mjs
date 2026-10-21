@@ -33,7 +33,8 @@ try{
   const dos=await pg.evaluate(()=>({nom:document.getElementById('ast-name').textContent.replace(/\s+/g,''),pastilles:!document.getElementById('ast-panel'),
     curseur:!!document.querySelector('#ast-verso .ast-slider b'),ia:!!document.querySelector('#ast-verso .ast-self')}));
   /* 18/10 — le dos ne porte plus de pastilles de confidentialité : elle vit sur chaque box. */
-  ok(dos.nom==='wahigher'&&dos.pastilles&&dos.curseur&&!dos.ia,'le dos porte le NOM et le curseur du prix — plus de pastilles de confidentialité (elle est par box)');
+  /* 21/10 — Wah : « quand on tourne le Totehm en verso, on doit voir seulement le nom, rien d'autre » : le curseur du prix est parti. */
+  ok(dos.nom==='wahigher'&&dos.pastilles&&!dos.curseur&&!dos.ia,'le dos porte le NOM, rien d\'autre (ni curseur, ni pastilles)');
   ok(await pg.$eval('#ast-back',e=>e.inert)&&!await pg.$eval('#ast-front',e=>e.inert),'seul le recto est atteignable (inert sur le verso)');
   await pg.waitForTimeout(1500);
   ok((await card(pg)).tf==='','il ne tourne JAMAIS tout seul (1,5 s : transform toujours vide)');

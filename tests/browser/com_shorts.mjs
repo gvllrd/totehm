@@ -279,7 +279,8 @@ try{
   await pg.click('#lv-sh-flt [data-f="sf"]');await pg.waitForTimeout(400);
   const pan=await pg.evaluate(()=>({lab:[...document.querySelectorAll('#lv-sh-sf .sfl')].map(e=>e.textContent),
     ints:document.querySelectorAll('#lv-sh-sf [data-sf="int"]').length, vues:document.querySelectorAll('#lv-sh-sf [data-sf="vue"]').length}));
-  ok(pan.ints===7&&pan.vues===5&&pan.lab.includes('It shows')&&pan.lab.includes('Views')&&pan.lab.includes('Intentions')&&!pan.lab.includes('My Box'),
+  /* 21/10 — les cinq vues sont un BLOC DE COMMANDE (la croix du TOTEHM), sans libellé : le design parle. */
+  ok(pan.ints===7&&pan.vues===5&&pan.lab.includes('It shows')&&!pan.lab.includes('Views')&&pan.lab.includes('Intentions')&&!pan.lab.includes('My Box'),
     'le filtre de la grille : ce que ça montre, la vue, les SEPT intentions ('+pan.lab.join(' · ')+')');
   const avant=log.rpc.length, n0=(await pg.evaluate(()=>window.__totehm_sh())).items;
   await pg.click('#lv-sh-sf [data-sf="type"][data-v="video"]');await pg.waitForTimeout(500);

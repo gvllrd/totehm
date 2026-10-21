@@ -2377,9 +2377,10 @@ body.gate.entered #terms-corner{opacity:0;pointer-events:none}
   transform-origin:50% 50%;will-change:transform;-webkit-appearance:none;appearance:none}
 #srch-q::placeholder{color:rgba(255,255,255,.42)}
 #srch-q::selection{background:rgba(255,255,255,.22);color:#fff}
-/* Ce qui n'est pas le nom arrive après le zoom. */
-.srch-after{opacity:0;transition:opacity .15s ease}
-#srch.is-show .srch-after{opacity:1;transition:opacity .34s ease .42s}
+/* Le NOM seul pendant le retournement et le zoom ; TOUT le reste (ce que je gagne, Higher, mes abonnements, le
+   compte, la croix) arrive ENSEMBLE, une fois le verso déployé ET la console lue (`is-pret`). */
+.srch-after{opacity:0;visibility:hidden;transition:opacity .15s ease,visibility 0s linear .15s}
+#srch.is-pret .srch-after{opacity:1;visibility:visible;transition:opacity .3s ease}
 .srch-hint{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.16em;
   text-transform:uppercase;color:rgba(255,255,255,.55);text-align:center}
 #srch-note{width:min(420px,100%)}
@@ -2973,6 +2974,10 @@ body.is-xo{overflow:hidden}
 
 
 
+
+
+
+
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille
    elle-même : un nouveau bloc gris entre ici tout seul.        */
@@ -3479,6 +3484,16 @@ body.rf-clavier #lvjoy{opacity:0;pointer-events:none}
 #lv-card #name-btn.claimed{display:none}
 #lv-card #set-name{caret-color:#fbd5ca;width:220px}
 .vs{display:flex;flex-direction:column;gap:2px;width:100%}
+/* Deux mondes, deux titres : ce que je GAGNE (Monetize my TOTEHM) et ce que j'ACHÈTE pour moi ([Higher] subscription),
+   puis les TOTEHMs que je suis. Le titre se pose sur le papier, au-dessus de ses boîtes noires. */
+.vs-head{display:flex;flex-direction:column;gap:5px;padding:0 2px 8px;text-align:left}
+.vs-t{margin:0;display:flex;align-items:center;gap:8px;font:700 12px/1.2 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#fff}
+.vs-t .vs-hi{width:66px;height:22px}
+.vs-hs{display:inline-flex;align-items:center;gap:6px}
+.vs-hs .vs-hi{width:42px;height:14px}
+.vs-s{margin:0;font:400 10px/1.4 'Space Mono',monospace;letter-spacing:.04em;color:#b7b7bf}
+#srch #vs-subs-s{margin-top:26px}
+#mw-menu .vs-h{white-space:normal;overflow:visible}   /* ce que Higher ouvre se lit en entier, sur deux lignes s'il le faut */
 .vs.hide{display:none}
 .vs-top{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#000;padding:18px 16px 16px}
 .vs-month{display:flex;flex-direction:column;gap:6px;min-width:0}
@@ -3529,9 +3544,6 @@ body.rf-clavier #lvjoy{opacity:0;pointer-events:none}
 .vs-foot .mw-sync{margin:0}
 .vs-foot .mw-out[hidden]{display:none}
 .vs-foot .mw-terms{margin-top:10px}
-/* Le verso posé (petit) : le NOM et le curseur du prix. Plus de pastilles de confidentialité (18/10). */
-.ast-slider{position:relative;display:block;width:27px;height:1px;margin-top:4px;background:rgba(255,255,255,.3)}
-.ast-slider b{position:absolute;top:-1.5px;left:var(--p,0%);width:4px;height:4px;margin-left:-2px;background:#fff}
 /* ── LE PROFIL : le papier se découpe en disque autour du T (rayon 29,5 %, centre à 36,3 % du haut), le rail et le
    wordmark s'éteignent (sans tourner) ; AUCUN `clip-path` pendant la déconstruction. ── */
 body.gate:not(.entered):not(.folding) #ast-front{clip-path:circle(72% at 50% 50%);transition:clip-path .75s var(--gate-ease)}
@@ -3638,10 +3650,17 @@ body.is-tlv #gate-asteroid,body.is-tlv #lvjoy{opacity:0;pointer-events:none}
 /* La visionneuse : la box DÉTAILLÉE par-dessus le média, en bas, surélevée. */
 .tlv-s .tlv-b{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(max(14px,env(safe-area-inset-bottom)) + 18px);
   width:min(calc(100vw - 32px),520px);max-width:none;padding:0;display:block;box-shadow:0 14px 34px rgba(0,0,0,.7)}
-/* Le filtre : d'abord les cinq vues, leurs carrés dans leur couleur ; puis les boxes de la vue choisie. */
-.lsh-sf .sfv{border:0;border-radius:0;cursor:pointer;background:var(--skin,var(--navy));color:#fff;padding:9px 12px;
-  font:700 9.5px/1 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;opacity:.5;transition:opacity .15s}
-.lsh-sf .sfv.is-on{opacity:1;box-shadow:inset 0 0 0 1px #fff}
+/* Le filtre : d'abord les cinq vues en UN bloc de commande rectangle (la croix du TOTEHM) ; puis les boxes de la vue
+   choisie. Les deux carrés portent les douze trous du logo (`--perfo`, la même variable que les médias). */
+.lsh-sf .sfv{border:0;border-radius:0;cursor:pointer;background:var(--skin,var(--navy));color:#fff;padding:0 8px;
+  font:700 9.5px/1.15 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;filter:brightness(.5);transition:filter .15s;
+  display:flex;align-items:center;justify-content:center;text-align:center;min-width:0}
+.lsh-sf .sfv.is-on{filter:none;box-shadow:inset 0 0 0 1px #fff}   /* éteint = plus sombre, jamais transparent : rien ne passe à travers */
+.lsh-sf .sfcmd{--q:min(114px,26vw);display:grid;grid-template-columns:var(--q) 1fr var(--q);gap:3px;height:var(--q);width:100%}
+.lsh-sf .sfpile{display:grid;grid-template-rows:repeat(3,1fr);gap:3px;min-width:0}
+.lsh-sf .sfv-sq{width:var(--q);height:var(--q);padding:0 14%;
+  -webkit-mask:var(--perfo) 0 0/100% 100% no-repeat;mask:var(--perfo) 0 0/100% 100% no-repeat}
+.lsh-sf .sfv-sq.is-on{box-shadow:inset 0 0 0 2px #fff}
 .lsh-sf .sfbx{display:flex;flex-direction:column;gap:3px;max-height:40vh;overflow-y:auto;overscroll-behavior:contain}
 .lsh-sf .sfb,.lsh-pick .pk-b{cursor:pointer;width:min(92vw,420px)}
 .lsh-sf .sfb.is-on{outline:1px solid #fff;outline-offset:1px}
@@ -3649,7 +3668,7 @@ body.is-tlv #gate-asteroid,body.is-tlv #lvjoy{opacity:0;pointer-events:none}
 .lsh-pick .pk-vue{width:min(92vw,420px);margin:10px 0 2px;font:700 8.5px/1.3 'Space Mono',monospace;letter-spacing:.2em;
   text-transform:uppercase;color:#fff}
 .lsh-pick .pk-vue::before{content:'';display:inline-block;width:9px;height:9px;margin-right:7px;vertical-align:-1px;background:var(--skin,var(--navy))}
-@media(hover:hover){.lsh-sf .sfv:hover{opacity:.85}.lsh-sf .sfb:hover .h-body,.lsh-pick .pk-b:hover .h-body{filter:brightness(1.18)}}
+@media(hover:hover){.lsh-sf .sfv:hover{filter:brightness(.85)}.lsh-sf .sfb:hover .h-body,.lsh-pick .pk-b:hover .h-body{filter:brightness(1.18)}}
 /* Les intentions du panneau : un POINT de leur couleur (le signal), le mot gris. */
 .lsh-sf .sfi i{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--c);margin-right:6px;vertical-align:1px}
 /* ══ 21/10 — LA VUE AGRANDIE D'UN SPOT : plus de polaroid ═════════════════════════════════════════════════
@@ -3881,7 +3900,7 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
              confidentialité du totehm puisque la confidentialité s'effectue pour CHAQUE BOX de chaque
              vue »). Les trois pastilles (`#ast-panel`) sont parties, balisage ET câblage. Restent le
              NOM et le curseur du prix : ce que le verso règle vraiment. -->
-        <div id="ast-verso"><span class="ast-say" id="ast-name"></span><span class="ast-slider" aria-hidden="true"><b></b></span></div>
+        <div id="ast-verso"><span class="ast-say" id="ast-name"></span></div>
         <button id="gate-search-go" type="button" aria-label="My TOTEHM settings"></button>
         <div class="ast-light"></div>
       </div>
@@ -4134,7 +4153,9 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
            confidentialité PAR BOX (18/10) a rendu faux. Maintenant UNE colonne, dans l'ordre où l'on gagne :
            ce que je gagne → ouvert ou pas → mon prix → où me payer → ma page à partager. Le serveur dit tout
            (`creator_dashboard` + `my_console`, en parallèle) ; chaque écriture passe par SA fonction. -->
-      <section id="mw-creator" class="vs hide" aria-label="My subscription">
+      <section id="mw-creator" class="vs hide" aria-label="Monetize my TOTEHM">
+        <!-- Ce que JE GAGNE : mes lecteurs paient à l'année, je suis payé chaque mois (le 1er, dès 25 €). -->
+        <header class="vs-head"><h3 class="vs-t">Monetize my TOTEHM</h3><p class="vs-s">and get paid every month</p></header>
         <div class="vs-top">
           <div class="vs-month"><b id="mwc-month">0</b><i>this month</i></div>
           <button class="vs-tog" id="vs-open" type="button" aria-pressed="false"><span aria-hidden="true"></span><em id="vs-open-t">off</em></button>
@@ -4156,7 +4177,7 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
       </section>
       <button class="hide" id="lv-guest" type="button">Guest TOTEHM · save it with my email</button>
     </div>
-<div id="member-window">
+<div id="member-window" class="srch-after">
   <div class="mw-card">
     <button class="mw-close" id="mw-close">Close</button>
     <!-- L'inscription vit sous le papier (#gate-door, 27/09) ; ici, le compte d'un inscrit. Pas de nom (il tient le
@@ -4169,14 +4190,21 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
         <div class="mw-note dim" id="mw-save-note"></div>
       </div>
       <div id="settings" class="mw-dash">
-        <!-- Ce que JE paie, sous ce que je gagne : les Totehms auxquels je suis abonné, puis Higher et TotehmBot.
-             Une ligne chacun : le nom, l'état, UN geste. -->
-        <div class="vs-list hide" id="vs-subs" aria-label="I subscribe to"></div>
-        <nav class="vs-list" id="mw-menu" aria-label="Me">
-          <div class="vs-item"><span class="vs-k"><svg class="vs-hi" viewBox="0 0 600 200" aria-label="Higher"><use href="#higher-badge"/></svg></span><span class="vs-h" id="mw-higher-hint"></span><span id="mw-higher-acts"></span><button class="vs-act vs-get" id="mw-higher" type="button">Get</button></div>
-          <div class="vs-item"><span class="vs-k">TotehmBot</span><span class="vs-h" id="mw-tg-hint">Telegram</span><button class="vs-act" id="mw-telegram" type="button">Connect</button></div>
-        </nav>
+        <!-- Ce que J'ACHÈTE pour moi, à part de ce que je gagne : l'abonnement Higher et ce qu'il ouvre (Higher Self
+             chaque jour au lieu de quelques réponses par mois ; TotehmBot, qui demande sur Telegram ce que chaque Habit a
+             donné, à SON rythme, et tient le compte). Puis les TOTEHMs auxquels je suis abonné. -->
+        <section class="vs" id="mw-menu" aria-label="Higher subscription">
+          <header class="vs-head"><h3 class="vs-t"><svg class="vs-hi" viewBox="0 0 600 200" aria-label="Higher"><use href="#higher-badge"/></svg><span>subscription</span></h3>
+            <p class="vs-s">fewer limits · TotehmBot tracks every outcome</p></header>
+          <div class="vs-item"><span class="vs-k vs-hs"><svg class="vs-hi" viewBox="0 0 600 200" aria-label="Higher"><use href="#higher-badge"/></svg>Self</span><span class="vs-h" id="mw-hs-hint">every day</span></div>
+          <div class="vs-item"><span class="vs-k">TotehmBot</span><span class="vs-h" id="mw-tg-hint">tracks each Habit's outcome, at its rhythm</span><button class="vs-act" id="mw-telegram" type="button">Connect</button></div>
+          <div class="vs-item vs-plan"><span class="vs-h" id="mw-higher-hint"></span><span id="mw-higher-acts"></span><button class="vs-act vs-get" id="mw-higher" type="button">Get</button></div>
+        </section>
         <div class="lv-note" id="mw-menu-note" role="status"></div>
+        <section class="vs hide" id="vs-subs-s" aria-label="I subscribe to">
+          <header class="vs-head"><h3 class="vs-t">My subscriptions</h3></header>
+          <div class="vs-list" id="vs-subs"></div>
+        </section>
       </div>
       <div class="vs-foot">
         <span class="mw-mail" id="mw-mail"></span><span class="mw-sync" id="mw-sync"></span>
@@ -6305,8 +6333,14 @@ function creerFeed(conf){
        carrés, dans leur couleur) ; une vue choisie déplie SES boxes, au format Totehm ; une box choisie filtre
        la grille et revient en tête des résultats. Puis ce que ça montre, les intentions. */
     if(conf.grille){
-      let h=g('Views', Object.keys(VUE_K).map(v=>'<button type="button" class="sfv '+(PEAU[VUE_K[v]]||'')+(SF.vue===v?' is-on':'')+'"'
-        +' data-sf="vue" data-v="'+v+'" aria-pressed="'+(SF.vue===v)+'">'+esc(MOT[v]||v)+'</button>').join(''));
+      /* LE BLOC DE COMMANDE (21/10, Wah) : la croix du TOTEHM en un rectangle compact — MY STORY à gauche et VISION à
+         droite, deux CARRÉS PERFORÉS comme le logo, dans leur couleur, qui enferment la pile OBJECTIVE · HABIT ·
+         REPULSION (de haut en bas, comme ↑ ● ↓ dans le TOTEHM déployé). */
+      const vb=(v,cl)=>'<button type="button" class="sfv '+cl+' '+(PEAU[VUE_K[v]]||'')+(SF.vue===v?' is-on':'')+'"'
+        +' data-sf="vue" data-v="'+v+'" aria-pressed="'+(SF.vue===v)+'"><span>'+esc(MOT[v]||v)+'</span></button>';
+      let h='<div class="sfg"><div class="sfcmd" role="group" aria-label="Views">'+vb('wisdom','sfv-sq')
+        +'<div class="sfpile">'+vb('objectives','sfv-st')+vb('habits','sfv-st')+vb('repulsions','sfv-st')+'</div>'
+        +vb('visions','sfv-sq')+'</div></div>';
       if(SF.vue){
         const l=mesElements().filter(x=>VUE[x.k]===SF.vue);
         h+='<div class="sfg"><div class="sfl">'+esc(MOT[SF.vue]||SF.vue)+'</div><div class="sfbx">'
@@ -7289,7 +7323,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-10-21-com-gestes';
+const BUILD='2026-10-21-com-verso';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -10052,7 +10086,6 @@ function paintAsteroid(){
   const p=((me&&myProfile&&myProfile.pseudo)||'').trim();
   /* 18/10 — le verso porte le NOM, et le nom ne vit que là ; déplié, il en est le haut, FIXE. */
   const sn=$('self-name'); if(sn) sn.textContent=p;
-  const cur=document.querySelector('#ast-verso .ast-slider'); if(cur) cur.style.setProperty('--p',LAND&&LAND.offer&&LAND.offer.open?'100%':'0%');
   el.classList.toggle('is-name',!!p);
   el.style.fontSize='';
   el.textContent=p;
@@ -10257,7 +10290,8 @@ function paintMe(){
   else { btn.textContent='Get'; hint.textContent=prixMois(h); acts.innerHTML=''; }
   btn.classList.toggle('vs-get',!(h.comp||h.active));
   $('mw-telegram').textContent=L.telegram?'Connected':'Connect';
-  $('mw-tg-hint').textContent=L.telegram?'Telegram ✓':'Telegram';
+  const sm=L.sm||{}, libre=sm.free_total||7;
+  $('mw-hs-hint').textContent=(h.active||h.comp)?'every day':'every day · free: '+libre+' a month';
 }
 /* Mon abonnement Higher : actif → TotehmSM ; sinon le Checkout (prix chez Stripe). */
 $('mw-higher').onclick=async()=>{
@@ -11324,7 +11358,7 @@ window.addEventListener('pageshow',e=>{
   const srch=$('srch'), sBg=$('srch-bg'), sH=$('self-h'), sX=$('srch-x'), flipLink=$('search-corner');
   const RMQ=window.matchMedia('(prefers-reduced-motion: reduce)');
   const SDUR=640;
-  let sOpen=false, sMoving=false, sTimer=0;
+  let sOpen=false, sMoving=false, sTimer=0, sPret=0, sLu=Promise.resolve();
   window.__totehm_lsd.recherche=false;
 
   const monNom=()=>((me&&myProfile&&myProfile.pseudo)||'').trim();
@@ -11362,16 +11396,21 @@ window.addEventListener('pageshow',e=>{
     if(!me){ PAPIER.poser(()=>ouvrirPorte(null)); return; }
     if(LV.vue()!=='c'||LV.mode()!=='mine') return;
     sMoving=true; fermerPorte();
+    srch.classList.remove('is-pret');
     srch.classList.add('is-on','is-prep'); srch.setAttribute('aria-hidden','false');
-    try{ surReglages(); }catch(err){ console.error('[settings]',err?.message||err); }
+    /* La console se lit PENDANT le retournement ; elle se montre une fois lue (1,8 s au plus après le geste). */
+    let lu=null; try{ lu=surReglages(); }catch(err){ console.error('[settings]',err?.message||err); }
+    sLu=Promise.race([Promise.resolve(lu).catch(err=>console.error('[settings]',err?.message||err)),new Promise(r=>setTimeout(r,1800))]);
     PAPIER.poserDos(zoomer);
   }
   function zoomer(){
     /* Le focus ENTRE dans la feuille (dialogue) : sinon il reste sur un nœud caché (le nom de l'espace membre)
        et Échap, Tab n'atteignent jamais mes réglages. */
+    const n=++sPret;
     const fin=()=>{ document.body.classList.add('searching'); gate.inert=true;
                     srch.classList.add('is-show','is-open');
                     sOpen=true; sMoving=false; window.__totehm_lsd.recherche=true;
+                    sLu.then(()=>{ if(sOpen&&n===sPret) srch.classList.add('is-pret'); });
                     try{ if(!srch.contains(document.activeElement)) srch.focus({preventScroll:true}); }catch(_){} };
     sansTransition(); sBg.style.transform=''; sH.style.transform='';
     if(RMQ.matches){ srch.classList.remove('is-prep'); pleinEcran(); fin(); return; }
@@ -11387,10 +11426,10 @@ window.addEventListener('pageshow',e=>{
   /* Le dézoom : la page redevient le dos du papier, puis le papier se remet sur son recto. */
   function fermerVerso(then){
     if(!sOpen||sMoving) return;
-    sMoving=true; clearTimeout(sTimer);
+    sMoving=true; clearTimeout(sTimer); sPret++;
     let rendre=false;
     try{ if(srch.contains(document.activeElement)){ rendre=true; document.activeElement.blur(); } }catch(_){}
-    srch.classList.remove('is-open','is-show');
+    srch.classList.remove('is-open','is-show','is-pret');
     document.body.classList.remove('searching');
     gate.inert=false;
     const fini=()=>{
@@ -11836,10 +11875,11 @@ window.addEventListener('pageshow',e=>{
     /* ⚠️ 16/10 · RETOURNER LE PAPIER AFFICHE LE MENU MEMBRE. Wah : « quand tu retournes le totehm verso,
        c'est le menu membre qui s'affiche ». Donc il est là d'emblée, sans second geste : mes réglages,
        un filet, puis mon compte — dans cet ordre, l'un sous l'autre, zéro blabla. */
-    surReglages=()=>{ peindreCarte(); CREA.charger();
+    surReglages=()=>{ peindreCarte(); const lu=CREA.charger();
       if(me){ $('member-window').classList.add('show');
               if(typeof memberPaint==='function') memberPaint();
-              if(typeof paintMe==='function') paintMe(); } };
+              if(typeof paintMe==='function') paintMe(); }
+      return lu; };
     /* L'espace membre (hors de ce module) ouvre ou ferme mes réglages par ici. */
     lvReglages={ouvrir:()=>versMine(()=>ouvrirVerso()), fermer:f=>{ if(sOpen) fermerVerso(f); else f(); }};
     function reset(){
@@ -12304,7 +12344,7 @@ window.addEventListener('pageshow',e=>{
       /* Ce que JE paie : une ligne par Totehm suivi, un seul geste (arrêter à la fin de l'année). */
       function peindreAbos(){
         const l=((C&&C.subscriptions)||[]), el=$('vs-subs');
-        el.classList.toggle('hide',!l.length);
+        $('vs-subs-s').classList.toggle('hide',!l.length);
         el.innerHTML=l.map(x=>{ const vit=['active','trialing'].includes(x.status);
           return '<div class="vs-item"><a class="vs-k vs-nom" href="/@'+encodeURIComponent(x.creator||'')+'">'+esc(x.creator||'—')+'</a>'
             +'<span class="vs-h">'+esc(fmt(x.price_cents|0,x.currency))+' / year'+(x.renews?' · '+(x.ending?'ends ':'renews ')+esc(jour(x.renews)):'')+'</span>'
@@ -12312,7 +12352,7 @@ window.addEventListener('pageshow',e=>{
         $('mw-pay').hidden=!(C&&C.membership&&C.membership.portal);
       }
       async function charger(){
-        if(!(me&&inscrit())||guest()){ box.classList.add('hide'); $('vs-subs').classList.add('hide'); return; }
+        if(!(me&&inscrit())||guest()){ box.classList.add('hide'); $('vs-subs-s').classList.add('hide'); return; }
         const s=++seq, uid=me.id;
         const [a,b]=await Promise.all([sb.rpc('creator_dashboard'),sb.rpc('my_console')]);
         if(s!==seq||(me?.id||null)!==uid) return;
@@ -12364,7 +12404,7 @@ window.addEventListener('pageshow',e=>{
         mwNote('…'); const {d:x}=await fnAppel('club-billing',{action:'portal'});
         if(x.url){ location.href=x.url; return; } mwNote('try again');
       };
-      return {charger, vider(){ seq++; d=null; C=null; box.classList.add('hide'); $('vs-subs').classList.add('hide'); $('vs-pay-f').classList.add('hide'); dit(''); },
+      return {charger, vider(){ seq++; d=null; C=null; box.classList.add('hide'); $('vs-subs-s').classList.add('hide'); $('vs-pay-f').classList.add('hide'); dit(''); },
         etat:()=>({vu:!box.classList.contains('hide'), prix:d?d.price_cents:null, offre:tog.dataset.etat||null, versement:!!(C&&C.offer&&C.offer.payout_fin), abonnements:((C&&C.subscriptions)||[]).length})};
     })();
 
