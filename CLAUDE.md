@@ -21,7 +21,7 @@ Push sur `main` = mise en ligne ; jamais réécrire l'historique.
 | totehm.com | `com/` | l'écosystème : les 5 vues, la creator economy (s'abonner à un membre = entrer dans son écosystème), l'abonnement Higher, la recherche d'un membre |
 | figher.club | `club/` | le prolongement de la vue Spots : chercher, publier des spots, se rencontrer |
 | higher.boutique | `boutique/` | les vêtements totehmisés, un style artistique déterminé, à partir des boxes MY STORY ; production n8n |
-| totehm.space | `space/` | la galerie d'art de Wah (branding, logo, slogan, Play the Lisbon Street) ; hors cœur produit |
+| totehm.space | `space/` | le prolongement 3D de COM : un parcours continu, Origins, la manette Lisbon et TotehmPaper joués et collectionnés sur place |
 
 **Deux fois cinq vues.** totehm.com : ↑ Get Higher (commune à tous) · ← mes médias · ● mon TOTEHM · → les spots ·
 ↓ Higher Self (TotehmBot, abonnement Higher) ; ← ● → = l'écosystème d'un membre, ouvert par l'abonnement à ce membre.
@@ -29,8 +29,8 @@ Le TOTEHM déployé : HABITS · OBJECTIVES · REPULSIONS · VISIONS · MY STORY.
 
 ## L'architecture
 
-`com/` `club/` `boutique/` `space/` = un site chacun (Vercel `com`, `boutique`, `space` ; figher.club n'est rattaché à
-aucun projet visible : vérifier avant d'affirmer qu'un changement de `club/` est en ligne). `backend/` n'est servi par
+`com/` `club/` `boutique/` `space/` = un site et un projet Vercel chacun ; les alias www et apex se vérifient sur
+le déploiement de production de chaque projet. `backend/` n'est servi par
 personne. `oracle/` : jamais lu, jamais recopié. Une base Supabase (`abujjbkbbiumxrokozph`), un webhook Stripe.
 - Produits indépendants = fichiers indépendants : un bloc commun se COPIE depuis `tools/`, jamais importé.
 - Chaque page porte `BUILD` et un diagnostic `__totehm_*()` (booléens et compteurs, jamais une donnée de membre).

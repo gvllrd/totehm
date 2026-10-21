@@ -1,23 +1,31 @@
 # space/CLAUDE.md — totehm.space
 
-> L'état ACTUEL (≤ 60 lignes). Hors du cœur produit : on n'y touche que sur demande de Wah.
+> L’état actuel (≤ 60 lignes). On y travaille à la demande de Wah. Les mesures de livraison vivent dans les commits.
 
-La galerie d'art de Wah : ce qui a créé TOTEHM (branding, logo, slogan), les œuvres (TotehmPaper, Stoner, Origins),
-Play the Lisbon Street, et le marché où elles s'achètent et se revendent.
+Le prolongement 3D du Totehm : papier original perforé, processeur navy sur noir et sept traits d’intention.
+Une seule promenade relie les vingt Origins dans l’ordre, la vraie manette Lisbon et le TotehmPaper/Stoner.
+Les œuvres se jouent sur leurs surfaces dans la scène ; leur offre s’ouvre sur place, sans page ou iframe séparée.
 
 | fichier | rôle |
 |---|---|
-| `index.html` · `gallery-ui.mjs` · `gallery.css` | l'entrée : la liste des œuvres, puis la visite 3D (`gallery-3d.mjs`, chargé à la demande) |
-| `gallery-brutalist*.mjs` · `-atmosphere` · `-courtyards` · `-pavilions` · `-reflection` | quatre lieux de béton face à la mer, heure bleue fixe |
-| `gallery-void.mjs` · `-artworks` · `-lisbon` · `-audio` | le couloir des 20 Origins · les œuvres · l'aperçu Lisbon · le son |
-| `get_higher.html` · `stoner.html` · `stoner_terms.html` | le TotehmPaper (THP) et la méthode Stoner (`stoner-gate`, `higher-checkout`) |
-| `play_lisbon_street.html` · `discover*.html` · `origins.html` | Play the Lisbon Street · Discover · Origins |
-| `market.html` | le marché : achat, revente, collection (tout au serveur) |
-| `social.html` · `api/card.js` | l'ancien lecteur de spaces (ouvert par COM `/x/space`) · l'aperçu `/s/:id` |
-| `vendor/` · `assets/` | three.js et hls.js (servis aussi à COM) · les œuvres, les panneaux de Lisbonne |
+| `index.html` · `gallery-ui.mjs` · `gallery.css` | entrée, navigation, liste accessible, repli HTML et client SSO existant |
+| `gallery-3d.mjs` · `gallery-spatial-path.mjs` | une caméra/scène, clavier, regard, sol, joystick et routes autour des sculptures |
+| `gallery-spatial-world.mjs` | papier, processeur, circuits et pool de polaroids ; cinq images ordinateur, trois téléphone |
+| `gallery-spatial-lisbon.mjs` · `gallery-spatial-data.mjs` | 22 panneaux aux coordonnées originales, clics alpha, écran partagé et phrases originales |
+| `gallery-spatial-player.mjs` · `.css` | une vidéo HTML, textures actives, méthode autorisée et offre serveur ; aucune donnée privée dans les diagnostics |
+| `gallery-artworks.mjs` · `gallery-audio.mjs` | vrais titres et images ; ambiance Web Audio après geste, suspendue pendant les œuvres |
+| `get_higher.html` · `stoner.html` · `origins.html` · `play_lisbon_street.html` | pages historiques et liens existants, conservés |
+| `market.html` | marché autonome ; un checkout spatial récent reprend la sélection sur `/?resume=1` |
+| `social.html` · `api/card.js` | lecteur de spaces ouvert par COM `/x/space` · aperçu `/s/:id` |
+| `vendor/` · `assets/` | Three.js/HLS et vrais médias ; les modules brutalistes/void restent historiques, non importés par l’accueil |
 
-- Le code nomme encore la scène `temple` et le retour `#return-dome` : des noms hérités, pas des scènes.
-- Reflets sur UNE cible partagée (512 px / 8 Hz ordinateur, 256 px / 4 Hz téléphone) ; mouvement réduit = décor fixe.
-- Propriété et accès au serveur : `stoner_access`, `art_editions`.
+- Origins : centres `(±4.8,5.1,-34-n*32)`, arrêts `(0,1.65,-25-n*32)`, n=0…19. Une œuvre par arrêt ; transition douce entre elles.
+- Guidage `clamp(distance*110,1450,4200)` ms et même interpolation ; marche 2,6 m/s. Fermer ne déplace pas la caméra.
+- Lecture publique : `wah/1.mp4`…`20.mp4`, `play-signals/{id}.mp4`. Aucune vidéo chargée avant sélection.
+- THP : onze séquences privées ; seul `stoner-gate` autorise les URL signées. Blob actif unique, signatures renouvelées ; Low/High garde `set_entry_mode`.
+- Catalogue, slugs, prix, stock, propriétaires, droits : `market_view`. Consentement explicite ; `higher-checkout`, `artwork-checkout`, `market-checkout` existants.
+- Aucun tarif, règle, migration ou règlement modifié. L’achat réel est déclenché seulement par le visiteur ; la propriété reste au webhook.
+- Liste/onglet masqué suspendent la scène ; une œuvre de la liste utilise le lecteur HTML. Mouvement réduit fige l’ambiance et le guidage devient immédiat.
+- Le retour Stripe garde ses URL serveur : un marqueur local récent reprend le parcours ; sans marqueur, aucun changement du marché.
 
-Tests : `tests/browser/gallery_*.mjs`, `market.mjs`, `space*.mjs` ; `tests/node/gallery_brutalist_path.mjs`, `space_card.mjs`.
+Tests : `tests/browser/gallery_spatial.mjs`, `market.mjs`, `tests/node/gallery_spatial_path.mjs`.

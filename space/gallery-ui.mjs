@@ -1,113 +1,110 @@
-import { createLisbonPreview } from './gallery-lisbon.mjs';
-import { ORIGINS } from './gallery-artworks.mjs';
+import {ORIGINS} from './gallery-artworks.mjs';
+import {SIGNS,PHRASES} from './gallery-spatial-data.mjs';
+import {createSpatialPlayer} from './gallery-spatial-player.mjs';
 
-const rooms = [...document.querySelectorAll('.room')];
-const nav = [...document.querySelectorAll('.tour [data-room]')];
-const reduced = matchMedia('(prefers-reduced-motion: reduce)');
-const info = document.getElementById('work-info');
-let selected = -1, selectedOrigin=null,engine = null, fallback = false,pendingExploration=false,pendingLocation=null;
-const lisbonPreview=createLisbonPreview({onChange:()=>engine?.invalidate()});
-const lisbonCard=document.querySelector('#lisbon .artwork');
-lisbonCard.append(lisbonPreview.canvas);lisbonCard.classList.add('has-preview');
-let previewRaf=0,lastPreviewTime=0;
-function listPreview(time) {
-  previewRaf=0;
-  if(document.hidden||reduced.matches||!document.body.classList.contains('list-view')){lisbonPreview.pause();return;}
-  const rect=lisbonCard.getBoundingClientRect(),visible=rect.bottom>100&&rect.top<innerHeight-90;
-  lisbonPreview.update(lastPreviewTime?Math.min((time-lastPreviewTime)/1000,.1):0,visible);
-  lastPreviewTime=time;previewRaf=requestAnimationFrame(listPreview);
+const reduced=matchMedia('(prefers-reduced-motion: reduce)'),body=document.body;
+const placeButtons=[...document.querySelectorAll('.tour [data-place]')];
+let engine=null,selected=null,fallback=false,ready=false,pending=null,selectionSeq=0;
+const interact=()=>body.classList.add('exploring');
+async function services(){
+ if(window.__spaceAccount)return window.__spaceAccount;
+ return new Promise((resolve,reject)=>{
+  const finish=()=>{clearTimeout(timer);removeEventListener('space-account-ready',finish);resolve(window.__spaceAccount);};
+  const timer=setTimeout(()=>{removeEventListener('space-account-ready',finish);reject(new Error('Account service unavailable'));},7000);
+  addEventListener('space-account-ready',finish,{once:true});
+  if(window.__spaceAccount)finish();
+ });
 }
-function syncPreview() {
-  if(previewRaf)cancelAnimationFrame(previewRaf);previewRaf=0;lastPreviewTime=0;lisbonPreview.pause();
-  if(!document.hidden&&!reduced.matches&&document.body.classList.contains('list-view'))previewRaf=requestAnimationFrame(listPreview);
-}
-document.addEventListener('visibilitychange',syncPreview);
-reduced.addEventListener('change',syncPreview);
-addEventListener('pagehide',()=>{if(previewRaf)cancelAnimationFrame(previewRaf);previewRaf=0;lisbonPreview.pause();});
-addEventListener('pageshow',syncPreview);
-function select(index, updateHash = true, origin=null, navigate=true) {
-  selected = Math.max(0, Math.min(rooms.length - 1, index));
-  selectedOrigin=origin;
-  document.body.classList.add('exploring');
-  nav.forEach((a, i) => a.setAttribute('aria-current', String(i === selected)));
-  const room = rooms[selected];
-  document.getElementById('work-title').replaceChildren(...[...room.querySelector('.caption h1,.caption h2').childNodes].map(n=>n.cloneNode(true)));
-  document.getElementById('work-kind').textContent = room.querySelector('.caption p').textContent;
-  document.getElementById('work-links').replaceChildren(...[...room.querySelectorAll('.room-actions a')].map(a => a.cloneNode(true)));
-  if(selected===1&&origin!==null&&ORIGINS[origin]){
-    const item=ORIGINS[origin];document.getElementById('work-title').textContent=item.title;
-    document.getElementById('work-kind').textContent='Origins / Quantum · '+(origin+1)+' / 20';
-    const links=document.getElementById('work-links');links.replaceChildren();
-    for(const [href,text] of [['/origins?work='+String(origin+1).padStart(2,'0'),'Open'],['/market?art='+item.id,'Collect']]){const a=document.createElement('a');a.href=href;a.textContent=text;links.append(a);}
-    for(const [next,text] of [[origin-1,'Previous'],[origin+1,'Next']])if(ORIGINS[next]){const b=document.createElement('button');b.type='button';b.textContent=text;b.addEventListener('click',()=>select(1,true,next));links.append(b);}
-  }
-  info.classList.add('is-open');
-  if (updateHash) history.replaceState(null, '', location.pathname + location.search + '#' + (selected===1&&origin!==null?'origin-'+String(origin+1).padStart(2,'0'):room.id));
-  if (document.body.classList.contains('list-view') || fallback) room.scrollIntoView({behavior:reduced.matches?'instant':'smooth',block:'start'});
-  else if(navigate) engine?.visit(selected,origin);
-}
-function overview() {
-  selected = -1;
-  selectedOrigin=null;pendingExploration=false;
-  document.body.classList.add('exploring'); info.classList.remove('is-open');
-  nav.forEach(a => a.setAttribute('aria-current', 'false'));
-  history.replaceState(null, '', location.pathname + location.search);
-  engine?.overview();
-}
-nav.forEach((a, i) => a.addEventListener('click', e => { e.preventDefault(); select(i); }));
-document.getElementById('enter-gallery').addEventListener('click', () => {document.body.classList.add('exploring');document.getElementById('space').focus();});
-document.getElementById('overview').addEventListener('click', overview);
-document.getElementById('return-dome').addEventListener('click',overview);
-document.getElementById('explore-space').addEventListener('click',()=>{
-  document.body.classList.add('exploring');
-  if(engine)engine.explore();else pendingExploration=true;
+const player=createSpatialPlayer({services,
+ onMedia:(video,selection)=>engine?.setMedia(video,selection),
+ onClose:()=>{engine?.setMedia(null,null);engine?.invalidate();},
+ onChange:()=>engine?.invalidate(),onSelect:selection=>choose(selection)
 });
-document.querySelectorAll('.world-nav [data-location]').forEach(button=>button.addEventListener('click',()=>{
-  const id=button.dataset.location;document.body.classList.add('exploring');
-  if(engine)engine.changeLocation(id);else pendingLocation=id;
-  history.replaceState(null,'',location.pathname+location.search+'#'+id);
+function sync(){
+ const kind=selected?.kind,place=kind==='origin'?'origins':kind==='paper'?'paper':['sign','lisbon'].includes(kind)?'lisbon':null;
+ body.dataset.focus=place||'overview';
+ placeButtons.forEach(b=>b.setAttribute('aria-current',String(b.dataset.place===place)));
+ const index=kind==='origin'?selected.index:null;
+ document.getElementById('journey-position').textContent=index!==null?'Origins · '+String(index+1).padStart(2,'0')+' / 20':place==='paper'?'The original TotehmPaper':place==='lisbon'?'Play the Lisbon Streets':'TOTEHM · Unfolded';
+ document.getElementById('previous-work').disabled=index===0||index===null;
+ document.getElementById('explore-space').textContent=index===19?'Back to the paper ↗':index!==null?'Next artwork →':'Follow the story →';
+ document.getElementById('world-status').textContent=index!==null?ORIGINS[index].title+' · '+(index+1)+' of 20':place==='lisbon'?'Choose a sign to play the street':place==='paper'?'TotehmPaper · The Stoner Experience':'Beginning of the journey';
+}
+function hashFor(selection){return selection.kind==='origin'?'origin-'+String(selection.index+1).padStart(2,'0'):selection.kind==='paper'?'totehmpaper':selection.kind==='sign'?'lisbon-'+selection.key:'lisbon';}
+function valid(selection){return selection&&(selection.kind==='origin'?Number.isInteger(selection.index)&&!!ORIGINS[selection.index]:selection.kind==='sign'?Object.hasOwn(SIGNS,selection.key):['paper','lisbon'].includes(selection.kind));}
+function choose(selection,{hash=true}={}){
+ if(!valid(selection))return;const token=++selectionSeq;selected={...selection};interact();player.close();sync();
+ if(hash)history.replaceState(null,'',location.pathname+location.search+'#'+hashFor(selection));
+ document.getElementById('sign-picker').open=false;
+ const finish=()=>{
+  if(token!==selectionSeq)return;
+  if(selection.kind!=='lisbon'){player.setVisible(true);player.setFallback(fallback||body.classList.contains('list-view'));player.open(selection);}
+  else if(fallback||body.classList.contains('list-view'))document.getElementById('sign-picker').open=true;
+ };
+ if(!ready){pending={selection:{...selection},token};return;}
+ if(fallback||body.classList.contains('list-view')){finish();return;}
+ if(!engine.visit(selection,finish)){document.getElementById('world-status').textContent='Choose a clear part of the path to continue.';}
+}
+function advance(delta=1){
+ if(delta<0&&selected?.kind!=='origin')return;
+ const n=selected?.kind==='origin'?selected.index+delta:0;
+ if(n>=ORIGINS.length){choose({kind:'paper'});return;}
+ choose({kind:'origin',index:Math.max(0,n)});
+}
+function overview(){selectionSeq++;pending=null;selected=null;player.close();engine?.overview();interact();sync();history.replaceState(null,'',location.pathname+location.search);}
+function setList(value){
+ body.classList.toggle('list-view',value);interact();engine?.setList(value);player.setVisible(!value);
+ player.setFallback(fallback||value);const button=document.getElementById('view-list');button.textContent=value?'Return to the space':'Artworks';button.setAttribute('aria-pressed',String(value));
+}
+function makeController(container){
+ container.replaceChildren();
+ for(const [key,[left,top,width]] of Object.entries(SIGNS)){
+  const button=document.createElement('button');button.type='button';button.dataset.sign=key;button.style.cssText=`left:${left}%;top:${top}%;width:${width}%`;
+  button.setAttribute('aria-label',key.replaceAll('_',' ')+'. '+PHRASES[key]);
+  const image=document.createElement('img');image.src='/assets/signs/'+key+'.png';image.alt=key.replaceAll('_',' ');button.append(image);button.addEventListener('click',()=>{player.setVisible(true);choose({kind:'sign',key});});container.append(button);
+ }
+}
+makeController(document.getElementById('lisbon-controller'));
+const listController=document.createElement('div');listController.className='list-controller';listController.setAttribute('aria-label','Play the Lisbon street controller');
+document.querySelector('#lisbon .artwork').replaceChildren(listController);makeController(listController);
+placeButtons.forEach(b=>b.addEventListener('click',()=>choose(b.dataset.place==='paper'?{kind:'paper'}:b.dataset.place==='lisbon'?{kind:'lisbon'}:{kind:'origin',index:0})));
+document.getElementById('enter-gallery').addEventListener('click',()=>{choose({kind:'origin',index:0});document.getElementById('space').focus({preventScroll:true});});
+document.getElementById('overview').addEventListener('click',overview);
+document.getElementById('explore-space').addEventListener('click',()=>advance());
+document.getElementById('previous-work').addEventListener('click',()=>advance(-1));
+document.getElementById('view-list').addEventListener('click',()=>setList(!body.classList.contains('list-view')));
+document.querySelector('.skip').addEventListener('click',()=>setList(true));
+document.querySelectorAll('#gallery a').forEach(a=>a.addEventListener('click',e=>{
+ if(a.closest('#origins')){e.preventDefault();player.setVisible(true);choose({kind:'origin',index:Number(a.dataset.origin||0)});}
+ else if(a.closest('#totehmpaper')){e.preventDefault();player.setVisible(true);choose({kind:'paper'});}
+ else if(a.closest('#lisbon')){e.preventDefault();choose({kind:'lisbon'});}
 }));
-document.getElementById('close-info').addEventListener('click', () => info.classList.remove('is-open'));
-document.getElementById('view-list').addEventListener('click', e => {
-  const list = document.body.classList.toggle('list-view');
-  e.currentTarget.textContent = list ? 'Visit in 3D' : 'Artworks';
-  e.currentTarget.setAttribute('aria-pressed', String(list));
-  engine?.setList(list);
-  syncPreview();
+const member=document.getElementById('member'),menu=document.getElementById('member-menu');
+member.addEventListener('click',()=>{const open=menu.classList.toggle('is-open');member.setAttribute('aria-expanded',String(open));});
+document.addEventListener('pointerdown',e=>{if(!e.target.closest('.member')){menu.classList.remove('is-open');member.setAttribute('aria-expanded','false');}});
+document.addEventListener('keydown',e=>{
+ if(e.target.closest('input,textarea,select,[contenteditable=true]'))return;
+ if(e.key==='Escape'){menu.classList.remove('is-open');member.setAttribute('aria-expanded','false');document.getElementById('sign-picker').open=false;player.close();engine?.stop();}
+ if(e.key==='PageDown'||e.key==='PageUp'){e.preventDefault();advance(e.key==='PageDown'?1:-1);}
+ if(e.key==='Home'&&!e.target.closest('#spatial-player')){e.preventDefault();overview();}
 });
-document.querySelector('.skip').addEventListener('click', () => {
-  document.body.classList.add('list-view'); engine?.setList(true);
-  syncPreview();
-});
-const member = document.getElementById('member'), menu = document.getElementById('member-menu');
-member.addEventListener('click', () => { const open = menu.classList.toggle('is-open'); member.setAttribute('aria-expanded', String(open)); });
-document.addEventListener('pointerdown', e => { if (!e.target.closest('.member')) { menu.classList.remove('is-open'); member.setAttribute('aria-expanded', 'false'); } });
-document.addEventListener('keydown', e => {
-  if (e.target.closest('input,textarea,select,[contenteditable=true]')) return;
-  if (e.key === 'Escape') {
-    menu.classList.remove('is-open'); member.setAttribute('aria-expanded','false'); info.classList.remove('is-open');
-    if(engine?.diagnostics().zone==='void')overview();
-  }
-  if (e.key === 'PageDown' || e.key === 'PageUp') { e.preventDefault(); if(engine?.diagnostics().zone==='void'){if(e.key==='PageDown')engine.explore();else engine.previous();}else select((selected + (e.key==='PageDown'?1:-1) + rooms.length) % rooms.length); }
-  if (e.key === 'Home') { e.preventDefault(); overview(); }
-});
-window.__totehm_gallery = () => ({build:'2026-10-19-space-coastal-brutalism',rooms:rooms.length,room:selected,origin:selectedOrigin,reduced_motion:reduced.matches,list:document.body.classList.contains('list-view'),fallback,...engine?.diagnostics(),lisbon:lisbonPreview.diagnostics()});
-function useFallback() {
-  fallback = true; document.body.classList.add('no-3d','list-view'); engine?.setList(true);
-  syncPreview();
-}
-try {
-  const { createGallery } = await import('./gallery-3d.mjs');
-  engine = await createGallery({ select, onZone:(zone,room,origin)=>{if(zone==='void')select(room,true,origin,false);else{selected=-1;selectedOrigin=null;info.classList.remove('is-open');nav.forEach(a=>a.setAttribute('aria-current','false'));history.replaceState(null,'',location.pathname+location.search);}}, interact:() => document.body.classList.add('exploring'), fallback:useFallback, reduced, lisbonPreview });
-  engine.setList(document.body.classList.contains('list-view'));syncPreview();
-  if(pendingLocation)engine.changeLocation(pendingLocation);
-  else if(['#courtyard','#passage','#pavilion','#coast'].includes(location.hash))engine.changeLocation(location.hash.slice(1));
-  const hash=location.hash==='#quantum'?'#origins':location.hash==='#stoner'?'#totehmpaper':location.hash;
-  const frame=/^#origin-(\d{1,2})$/.exec(hash),origin=frame?Number(frame[1])-1:null;
-  const deepLink = rooms.findIndex(r => '#'+r.id === hash);
-  if(origin!==null&&ORIGINS[origin])select(1,false,origin);
-  else if (deepLink >= 0) select(deepLink, false);
-  else if(pendingExploration||hash==='#beyond')engine.explore();
-} catch (error) {
-  console.warn('[gallery] Artwork view available:', error?.name || 'unavailable'); useFallback();
+window.__totehm_gallery=()=>({build:'2026-10-21-space-one-journey',rooms:3,selected:selected?{...selected}:null,list:body.classList.contains('list-view'),fallback,reduced_motion:reduced.matches,player:player.diagnostics(),...engine?.diagnostics()});
+function useFallback(){fallback=true;ready=true;body.classList.add('no-3d','list-view');engine?.setList(true);player.setFallback(true);sync();}
+sync();
+try{
+ const {createGallery}=await import('./gallery-3d.mjs');
+ engine=await createGallery({onPick:choose,onMove:()=>player.close(),onArrive:()=>sync(),interact,fallback:useFallback,reduced});
+ ready=true;engine.setList(body.classList.contains('list-view'));
+}catch(error){console.warn('[spatial] Artwork view available:',error?.name||'unavailable');useFallback();}
+if(pending){const p=pending;pending=null;if(p.token===selectionSeq)choose(p.selection,{hash:false});}
+else{
+ let resume=null;
+ if(new URLSearchParams(location.search).has('resume'))try{const saved=JSON.parse(sessionStorage.getItem('space-spatial-resume'));if(saved&&Date.now()-saved.at<86400000&&valid(saved.selection))resume=saved.selection;sessionStorage.removeItem('space-spatial-resume');}catch{}
+ const hash=location.hash.slice(1),match=/^origin-(\d{1,2})$/.exec(hash);
+ if(resume)choose(resume);
+ else if(match&&Number(match[1])>=1&&Number(match[1])<=20)choose({kind:'origin',index:Number(match[1])-1},{hash:false});
+ else if(['origins','quantum','beyond'].includes(hash))choose({kind:'origin',index:0});
+ else if(['totehmpaper','stoner'].includes(hash))choose({kind:'paper'},{hash:false});
+ else if(hash.startsWith('lisbon-')&&Object.hasOwn(SIGNS,hash.slice(7)))choose({kind:'sign',key:hash.slice(7)},{hash:false});
+ else if(hash==='lisbon')choose({kind:'lisbon'},{hash:false});
 }

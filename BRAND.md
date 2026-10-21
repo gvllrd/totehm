@@ -71,6 +71,13 @@ développement personnel, un réseau social classique, une marque streetwear cla
 - Contrôles gris, `border-radius:10px`, ajustés au label ; aucun fond blanc. Sur ordinateur, le gris devient blanc
   au survol (`tools/hover.py`).
 
+## L'espace
+
+TOTEHM.SPACE déploie le papier et son processeur en 3D : un champ noir, des supports navy, sept traits fins.
+Une seule promenade : les vingt vrais polaroids Origins dans l'ordre, la manette Lisbon aux vingt-deux panneaux,
+le TotehmPaper et son expérience. L'œuvre s'anime dans l'espace ; son offre s'ouvre sur place, au prix du serveur.
+Pas d'intention personnelle inventée pour l'art ; les sept couleurs appartiennent à l'architecture commune.
+
 ## Les vêtements
 
 Un vêtement porte une box de MY STORY, rendue dans un style artistique déterminé ; nom unique `0.Nom` (0 = la
