@@ -18,7 +18,9 @@ Le numérique (THP, Stoner, Lisbon, Origins, marché) vit sur totehm.space.
 `draft` → **paid** (`stripe-webhook`, `cloth`) → **generating** (n8n B : sept concepts) → **curation** (Telegram, Wah
 choisit ; n8n C, `compose-artwork`) → **production** (n8n D : Printful) → **shipped** (n8n E) → l'œuvre visible (`cloth-art`).
 - Le serveur pose le préfixe `0.` du nom ; `create-checkout` n'accepte qu'une box `wisdom`.
-- Une pièce de TEST (`boutique_testers`, Stripe test) ne lance jamais la génération.
+- Une pièce de TEST (`boutique_testers`, Stripe test) suit le MÊME chemin jusqu'à l'œuvre composée, puis s'arrête :
+  `test_stop` ferme Printful et le suivi, `test_budget` limite les essais à 3 générations par 7 jours, et le stock
+  n'est jamais consommé. Wah juge les visuels avec un faux paiement, sans qu'un vêtement parte.
 - n8n F tient `totehm_cloth_support` depuis Printful ; les photos choisies par Wah ne sont jamais écrasées.
 - Prix, stock, édition : un « oui » de Wah, posé par la session cloud. Jamais un prix dans une page.
 
@@ -28,8 +30,11 @@ choisit ; n8n C, `compose-artwork`) → **production** (n8n D : Printful) → **
   runtime d'un Code node (zéro exécution enregistrée). Leurs brouillons sécurisés (`$env`) attendent d'être publiés
   ENSEMBLE, et celui de E accepte encore un événement non signé : `CLAUDE_CODE.md` §4. `stripe-webhook` envoie la clé
   de service à B en en-tête `apikey`. Banc hors réseau : `node tests/n8n/streetwear/offline.mjs` (59 succès).
-- **Le mode test Stripe n'a jamais servi** : `STRIPE_TEST_SECRET_KEY` et `STRIPE_TEST_WEBHOOK_SECRET` manquent, donc
-  [Order] répond `test_unavailable` (503) pour un compte de `boutique_testers` (`CLAUDE_CODE.md` §3).
+- **Le mode test Stripe n'a jamais servi** : `STRIPE_TEST_SECRET_KEY` et `STRIPE_TEST_WEBHOOK_SECRET` manquent — ils
+  vivent dans les secrets Supabase (Edge Functions), pas dans le `.env` d'Oracle — donc [Order] répond
+  `test_unavailable` (503) pour un compte de `boutique_testers` (`CLAUDE_CODE.md` §3).
+- **L'essai visuel attend le terminal** : `20261022120000_essai_visuel.sql` (`test_stop`, `test_budget`) et le
+  `stripe-webhook` qui lance la génération d'un essai sont écrits et testés, pas encore en production.
 - **Luxury accepte les cinq vues** (`luxury-quote`) alors que la vision dit MY STORY seulement : à trancher par Wah.
 
 Tests : `tests/browser/streetwear.mjs`, `boutique_home.mjs`, `com_cloths.mjs`, `art_bridge.mjs` ;

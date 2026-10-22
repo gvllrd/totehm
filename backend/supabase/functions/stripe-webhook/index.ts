@@ -396,10 +396,11 @@ async function handleCloth(session: Stripe.Checkout.Session) {
 
   // La génération : n8n B. Une panne ici ne rend pas 500 — la pièce EST
   // payée ; on relance la génération à la main (backend/README.md).
-  // ⚠️ Une pièce de TEST ne lance pas la génération : 7 images payantes et,
-  // si Wah en choisit une sur Telegram, une vraie commande Printful.
-  if (m.test === "1") console.log("cloth test: génération non lancée", id);
-  else try {
+  // Une pièce de TEST passe par le MÊME chemin : Wah juge les visuels avant
+  // qu'un vêtement parte tout seul. Ce sont les fonctions en base qui la
+  // retiennent — `test_stop` ferme Printful et le suivi, `test_budget` limite
+  // les générations d'essai (3 par 7 jours) ; rien ici ne doit la filtrer.
+  try {
     // 22/10 : le brouillon sécurisé de B authentifie son appelant
     // (`serviceAuth` → `streetwear_service_ready`). La clé de service part en
     // EN-TÊTE, jamais dans le corps ni dans l'URL ; l'ancienne version publiée
