@@ -42,6 +42,23 @@ services:
       - N8N_BASIC_AUTH_PASSWORD=${N8N_PASSWORD}
       # Chiffrement des credentials stockés
       - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY}
+      # ⚠️ SANS CES DEUX BLOCS, LA CHAÎNE STREETWEAR NE PEUT PAS TOURNER.
+      # Les Code nodes lisent leurs clés par `$env.X` ; n8n refuse l'accès à
+      # l'environnement dans un Code node tant que ce drapeau est vrai, et une
+      # variable du `.env` n'entre PAS dans le conteneur si elle n'est pas
+      # listée ici. Les secrets restent dans le `.env` à côté de ce fichier.
+      - N8N_BLOCK_ENV_ACCESS_IN_NODE=false
+      - SB_KEY=${SB_KEY}
+      - PRINTFUL_TOKEN=${PRINTFUL_TOKEN}
+      - PF_STORE_ID=${PF_STORE_ID}
+      - TG_TOKEN=${TG_TOKEN}
+      - TG_CHAT=${TG_CHAT}
+      - TG_WEBHOOK_SECRET=${TG_WEBHOOK_SECRET}
+      - TG_ADMIN_IDS=${TG_ADMIN_IDS}
+      - OPENAI_KEY=${OPENAI_KEY}
+      - REPLICATE_KEY=${REPLICATE_KEY}
+      - REPLICATE_VERSION=${REPLICATE_VERSION}
+      - RESEND_KEY=${RESEND_KEY}
     volumes:
       # SANS ce volume, un `docker compose down` efface TOUS tes workflows
       - n8n_data:/home/node/.n8n
