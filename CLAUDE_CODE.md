@@ -21,7 +21,7 @@ elles, [Order] répond `test_unavailable` (503).
 
 ## 4 · L'essai visuel et la chaîne n8n — une seule session, dans cet ordre
 
-    psql "$SUPABASE_DB_URL" -f backend/supabase/migrations/20261022120000_essai_visuel.sql
+    psql "$SUPABASE_DB_URL" -f backend/supabase/migrations/20261022130000_essai_visuel.sql
     psql "$SUPABASE_DB_URL" -f tests/sql/essai_visuel_selftest.sql           (attendu : FAIL={})
     supabase functions deploy stripe-webhook --project-ref abujjbkbbiumxrokozph
     node tests/n8n/streetwear/offline.mjs                                    (attendu : 59 succès)
