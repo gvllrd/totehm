@@ -10,12 +10,12 @@ export function createDrownedOcean(scene,{
  const BASE=-112,CALM=135,SPAN=24000,rings=mobile?160:256,sectors=mobile?192:288;
  // Every term is bounded independently. The four-metre rolled lip is included;
  // even simultaneous constructive interference remains beneath the terrace.
- const crestUpperBound=BASE+46*(1+.30+.12)+4+12*(1+.18)+5+2.8+1.4+.8;
+ const crestUpperBound=BASE+46*(1+.30+.12)+4+15*(1+.18)+7+3.9+2.1+1.1;
  const uniforms={uOceanTime:{value:0},uMoon:{value:moonDirection.clone().normalize()},uHorizon:{value:horizonColor.clone()},uEnvironment:{value:environmentTexture},uHasEnvironment:{value:!!environmentTexture}};
  const surface=`
   float bandLimit(float phaseStep){return 1.-smoothstep(.7,1.2,phaseStep);}
   float bandDerivative(float phaseStep){float t=clamp((phaseStep-.7)/.5,0.,1.);return -12.*t*(1.-t);}
-  struct OceanSurface{vec3 p;vec3 normal;float phaseA;float phaseB;vec2 gradientA;float crest;float breaking;};
+  struct OceanSurface{vec3 p;vec3 normal;float phaseA;float phaseB;vec2 gradientA;float crest;float breaking;float energy;};
   void swell(inout vec3 p,inout vec3 dx,inout vec3 dz,vec2 direction,vec2 dirDx,vec2 dirDz,
    float phase,vec2 gradient,float amplitude,vec2 harmonics,float chop,float curl,float e,vec2 de){
    float c=.5+.5*sin(phase+.42),c2=c*c,c4=c2*c2,c8=c4*c4;
@@ -51,11 +51,21 @@ export function createDrownedOcean(scene,{
    vec2 dax=vec2(1.-da.x*da.x,-da.x*da.y)/ra,daz=vec2(-da.x*da.y,1.-da.y*da.y)/ra;
    vec2 dbx=vec2(1.-db.x*db.x,-db.x*db.y)/rb,dbz=vec2(-db.x*db.y,1.-db.y*db.y)/rb;
    float wa=q.x*.0013+q.y*.0021,wb=q.x*.004-q.y*.002;
-   float warp=.45*sin(wa)+.18*sin(wb);
-   vec2 warpGradient=vec2(.0013,.0021)*.45*cos(wa)+vec2(.004,-.002)*.18*cos(wb);
-   float pa=ra*.0112+warp-time*.151-1.68;
-   float pb=rb*.0157+.21*sin(q.x*.0021+q.y*.0014)-time*.126+.35;
+   float wc=dot(q,vec2(.544,.839))*.019+time*.073;
+   float warpFilter=bandLimit(sampleStep*.019);
+   float warpSlope=bandDerivative(sampleStep*.019)*.019*stepDerivative;
+   float warp=.45*sin(wa)+.18*sin(wb)+.12*sin(wc)*warpFilter;
+   vec2 warpGradient=vec2(.0013,.0021)*.45*cos(wa)+vec2(.004,-.002)*.18*cos(wb)
+    +vec2(.544,.839)*(.00228*cos(wc)*warpFilter)+radial*(.12*sin(wc)*warpSlope);
+   float pa=ra*.0112+warp-time*.28-1.68;
+   float pb=rb*.0157+.21*sin(q.x*.0021+q.y*.0014)-time*.34+.35;
    vec2 ga=da*.0112+warpGradient,gb=db*.0157+vec2(.0021,.0014)*.21*cos(q.x*.0021+q.y*.0014);
+   // Long crests rise and fall along their length, rather than drawing
+   // uninterrupted parallel ribbons around the island. The envelope never
+   // exceeds one; include its gradient in the actual displaced normal.
+   float crossA=dot(q,vec2(-.839,.544))*.0081+time*.037;
+   float modulation=.88+.12*sin(crossA);
+   vec2 modulationGradient=vec2(-.839,.544)*(.000972*cos(crossA));
    float la=bandLimit(sampleStep*.0112),lb=bandLimit(sampleStep*.0157),lc=bandLimit(sampleStep*.035);
    float dla=bandDerivative(sampleStep*.0112)*.0112*stepDerivative;
    float dlb=bandDerivative(sampleStep*.0157)*.0157*stepDerivative;
@@ -64,87 +74,111 @@ export function createDrownedOcean(scene,{
    vec2 dha=vec2(bandDerivative(sampleStep*.0224)*.0224,bandDerivative(sampleStep*.0336)*.0336)*stepDerivative;
    float hb=bandLimit(sampleStep*.0314),dhb=bandDerivative(sampleStep*.0314)*.0314*stepDerivative;
    float curlFilter=bandLimit(sampleStep*.0448),curlSlope=bandDerivative(sampleStep*.0448)*.0448*stepDerivative;
-   swell(p,dx,dz,da,dax,daz,pa,ga,46.,vec2(.30,.12)*ha,.64,8.*curlFilter,e*la,de*la+radial*(e*dla));
+   swell(p,dx,dz,da,dax,daz,pa,ga,46.,vec2(.30,.12)*ha,.64,8.*curlFilter,e*la*modulation,(de*la+radial*(e*dla))*modulation+e*la*modulationGradient);
    // Include the slowly changing LOD amplitudes in the analytic normal.
    float harmonicDerivative=46.*(.30*dha.x*sin(pa*2.)+.12*dha.y*sin(pa*3.));
    float cva=.5+.5*sin(pa+.42),lipA=pow(cva,9.);
    vec3 curlDerivative=vec3(da.x,.5,da.y)*(8.*curlSlope*lipA);
-   dx+=e*la*(vec3(0.,harmonicDerivative*radial.x,0.)+curlDerivative*radial.x);
-   dz+=e*la*(vec3(0.,harmonicDerivative*radial.y,0.)+curlDerivative*radial.y);
-   swell(p,dx,dz,db,dbx,dbz,pb,gb,12.,vec2(.18*hb,0.),.42,0.,e*lb,de*lb+radial*(e*dlb));
-   dx.y+=e*lb*12.*.18*dhb*sin(pb*2.)*radial.x;dz.y+=e*lb*12.*.18*dhb*sin(pb*2.)*radial.y;
-   const vec2 dc=vec2(.34014,.94037);float pc=dot(q,dc)*.035-time*.36+.7;
-   swell(p,dx,dz,dc,vec2(0),vec2(0),pc,dc*.035,5.,vec2(0),.18,0.,e*lc,de*lc+radial*(e*dlc));
-   // Geometry detail stops within330m. Beyond it, short waves are represented
+   dx+=e*la*modulation*(vec3(0.,harmonicDerivative*radial.x,0.)+curlDerivative*radial.x);
+   dz+=e*la*modulation*(vec3(0.,harmonicDerivative*radial.y,0.)+curlDerivative*radial.y);
+   swell(p,dx,dz,db,dbx,dbz,pb,gb,15.,vec2(.18*hb,0.),.42,0.,e*lb,de*lb+radial*(e*dlb));
+   dx.y+=e*lb*15.*.18*dhb*sin(pb*2.)*radial.x;dz.y+=e*lb*15.*.18*dhb*sin(pb*2.)*radial.y;
+   const vec2 dc=vec2(.34014,.94037);float pc=dot(q,dc)*.035-time*.50+.7;
+   swell(p,dx,dz,dc,vec2(0),vec2(0),pc,dc*.035,7.,vec2(0),.18,0.,e*lc,de*lc+radial*(e*dlc));
+   // Resolved short waves taper by 900m. Beyond it, wind waves are represented
    // by the independently filtered per-pixel normal, not aliased triangles.
-   float fu=clamp((radius-110.)/220.,0.,1.),detail=1.-fu*fu*(3.-2.*fu);
-   vec2 detailGradient=-radial*(6.*fu*(1.-fu)/220.);
-   vec3 phase=vec3(dot(q,vec2(.93,.367))*.095-time*.61,dot(q,vec2(-.621,.784))*.18+time*.83,dot(q,vec2(.276,-.961))*.32-time*1.17);
-   vec3 amp=vec3(2.8*bandLimit(sampleStep*.095),1.4*bandLimit(sampleStep*.18),.8*bandLimit(sampleStep*.32));
-   vec3 ampDerivative=vec3(2.8*bandDerivative(sampleStep*.095)*.095,1.4*bandDerivative(sampleStep*.18)*.18,.8*bandDerivative(sampleStep*.32)*.32)*stepDerivative;
+   float fu=clamp((radius-140.)/760.,0.,1.),detail=1.-fu*fu*(3.-2.*fu);
+   vec2 detailGradient=-radial*(6.*fu*(1.-fu)/760.);
+   vec3 phase=vec3(dot(q,vec2(.93,.367))*.07-time*.78,dot(q,vec2(-.621,.784))*.125+time*1.05,dot(q,vec2(.276,-.961))*.23-time*1.43);
+   vec3 amp=vec3(3.9*bandLimit(sampleStep*.07),2.1*bandLimit(sampleStep*.125),1.1*bandLimit(sampleStep*.23));
+   vec3 ampDerivative=vec3(3.9*bandDerivative(sampleStep*.07)*.07,2.1*bandDerivative(sampleStep*.125)*.125,1.1*bandDerivative(sampleStep*.23)*.23)*stepDerivative;
    float shortHeight=dot(sin(phase),amp);
-   vec2 shortGradient=vec2(.93,.367)*(amp.x*.095*cos(phase.x))+vec2(-.621,.784)*(amp.y*.18*cos(phase.y))+vec2(.276,-.961)*(amp.z*.32*cos(phase.z));
+   vec2 shortGradient=vec2(.93,.367)*(amp.x*.07*cos(phase.x))+vec2(-.621,.784)*(amp.y*.125*cos(phase.y))+vec2(.276,-.961)*(amp.z*.23*cos(phase.z));
    shortGradient+=radial*dot(sin(phase),ampDerivative);
    p.y+=detail*shortHeight;dx.y+=detail*shortGradient.x+detailGradient.x*shortHeight;dz.y+=detail*shortGradient.y+detailGradient.y*shortHeight;
    float ca=.5+.5*sin(pa+.42),cb=.5+.5*sin(pb+.42);
    float compression=clamp(1.-(dx.x*dz.z-dx.z*dz.x),0.,1.);
    float visibleCrestA=la*bandLimit(sampleStep*.0336),visibleCrestB=lb*bandLimit(sampleStep*.0471);
    OceanSurface result;result.p=p;result.normal=normalize(cross(dz,dx));result.phaseA=pa;result.phaseB=pb;result.gradientA=ga;
-   result.crest=e*max(pow(ca,5.)*visibleCrestA,pow(cb,5.)*.48*visibleCrestB);
+   result.energy=e*la;result.crest=e*max(pow(ca,5.)*visibleCrestA,pow(cb,5.)*.48*visibleCrestB);
    result.breaking=e*max(pow(ca,7.)*visibleCrestA*(.46+.54*smoothstep(.10,.62,compression)),pow(cb,9.)*.38*visibleCrestB);
    return result;
   }
  `;
  const material=new T.ShaderMaterial({uniforms,side:T.DoubleSide,toneMapped:true,
-  vertexShader:`uniform float uOceanTime;varying vec3 vWorld,vNormal;varying vec2 vOriginal,vPhase;varying float vCrest,vBreaking;${surface}
-   void main(){OceanSurface sea=oceanSurface(position.xz,uOceanTime);vWorld=sea.p;vNormal=sea.normal;vOriginal=position.xz;vPhase=vec2(sea.phaseA,sea.phaseB);vCrest=sea.crest;vBreaking=sea.breaking;gl_Position=projectionMatrix*viewMatrix*vec4(sea.p,1.);}`,
+  vertexShader:`uniform float uOceanTime;varying vec3 vWorld,vNormal;varying vec2 vOriginal,vPhase;varying float vCrest,vBreaking,vEnergy;${surface}
+   void main(){OceanSurface sea=oceanSurface(position.xz,uOceanTime);vWorld=sea.p;vNormal=sea.normal;vOriginal=position.xz;vPhase=vec2(sea.phaseA,sea.phaseB);vCrest=sea.crest;vBreaking=sea.breaking;vEnergy=sea.energy;gl_Position=projectionMatrix*viewMatrix*vec4(sea.p,1.);}`,
   fragmentShader:`uniform float uOceanTime;uniform vec3 uMoon,uHorizon;uniform sampler2D uEnvironment;uniform bool uHasEnvironment;
-   varying vec3 vWorld,vNormal;varying vec2 vOriginal,vPhase;varying float vCrest,vBreaking;
+   varying vec3 vWorld,vNormal;varying vec2 vOriginal,vPhase;varying float vCrest,vBreaking,vEnergy;
    const float PI=3.14159265359;
    float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453123);}
-   float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(hash(i),hash(i+vec2(1,0)),f.x),mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),f.x),f.y);}
+   float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);float n=mix(mix(hash(i),hash(i+vec2(1,0)),f.x),mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),f.x),f.y);float size=max(length(dFdx(p)),length(dFdy(p)));return mix(n,.5,smoothstep(.55,1.8,size));}
+   float fbm(vec2 p){return noise(p)*.57+noise(p*2.07+vec2(7.3,2.9))*.29+noise(p*4.13+vec2(1.8,9.2))*.14;}
    float phaseDistance(float p){return atan(sin(p),cos(p));}
    vec2 ripple(vec2 p,vec2 direction,float frequency,float strength,float speed,float footprint){return direction*cos(dot(p,direction)*frequency+uOceanTime*speed)*strength*(1.-smoothstep(.35,1.8,footprint*frequency));}
+   vec3 skyReflection(vec3 direction,float roughness){
+    vec3 sky=mix(uHorizon,vec3(.008,.016,.034),pow(max(direction.y,0.),.5));
+    if(uHasEnvironment){vec2 uv=vec2(atan(direction.z,direction.x)*.159154943+.5,asin(clamp(direction.y,-1.,1.))*.318309886+.5);sky=mix(sky,texture2D(uEnvironment,uv,roughness*6.).rgb,.86);}
+    return sky;
+   }
    void main(){
     vec2 q=vOriginal;float footprint=max(length(dFdx(q)),length(dFdy(q)));
-    vec2 small=ripple(q,vec2(.81,.586),.79,.095,.91,footprint)+ripple(q,vec2(-.416,.909),1.67,.061,-1.3,footprint)+ripple(q,vec2(.273,-.962),3.11,.031,1.8,footprint);
+    // Gravity waves and capillary waves occupy distinct scales. Filtering
+    // each before it spans a pixel preserves detail without horizon glitter.
+    float gust=noise(q*.009+vec2(uOceanTime*.033,-uOceanTime*.025));
+    vec2 wind=q+vec2(gust*8.,gust*-5.);
+    vec2 small=ripple(wind,vec2(.94,.341),.19,.16,-.43,footprint)
+     +ripple(wind,vec2(-.51,.86),.31,.105,.62,footprint)
+     +ripple(wind,vec2(.81,.586),.63,.082,-.91,footprint)
+     +ripple(wind,vec2(-.416,.909),1.17,.064,1.3,footprint)
+     +ripple(wind,vec2(.273,-.962),2.37,.038,-1.8,footprint)
+     +ripple(wind,vec2(.972,.234),4.31,.019,2.3,footprint);
     vec3 n=normalize(vNormal+vec3(-small.x,0.,-small.y));if(!gl_FrontFacing)n=-n;
     vec3 view=normalize(cameraPosition-vWorld),halfway=normalize(view+uMoon);
     float nv=max(dot(n,view),.015),nl=max(dot(n,uMoon),0.),nh=max(dot(n,halfway),0.);
-    float fresnel=.021+.979*pow(1.-nv,5.);vec3 reflected=reflect(-view,n);
-    vec3 sky=mix(uHorizon*.9,vec3(.009,.019,.041),pow(max(reflected.y,0.),.5));
-    if(uHasEnvironment){vec2 uv=vec2(atan(reflected.z,reflected.x)*.159154943+.5,asin(clamp(reflected.y,-1.,1.))*.318309886+.5);sky=mix(sky,texture2D(uEnvironment,uv,2.1).rgb,.64);}
-    vec3 water=vec3(.003,.019,.031)*(.8+nl*.65);
-    water+=vec3(.002,.016,.024)*vCrest*(.35+.65*nl);
+    float fresnel=.0204+.9796*pow(1.-nv,5.);vec3 reflected=reflect(-view,n);
+    float roughness=.31+gust*.065+smoothstep(8.,55.,footprint)*.05;
+    vec3 sky=skyReflection(reflected,roughness);
+    // Dark absorbing troughs and translucent cyan lips let the same water
+    // retain real thickness under moonlight. No bright opaque blue surface.
+    float faceLight=.72+.28*nl,body=clamp((vWorld.y+166.)/118.,0.,1.);
+    vec3 water=mix(vec3(.0025,.010,.017),vec3(.005,.026,.039),body)*faceLight;
     float thinWall=pow(max(dot(-n,uMoon),0.),1.6)*vCrest*(.3+.7*(1.-nv));
     float through=pow(max(dot(view,-uMoon),0.),3.)*vCrest;
-    water+=vec3(.014,.075,.093)*(thinWall+through*.42);
-    vec3 colour=mix(water,sky,fresnel*.93);
-    // A rough microfacet reflection stretches the real moon across the moving
-    // facets rather than printing a white reflection stripe on the sea.
-    float roughness=.29,alpha=roughness*roughness,a2=alpha*alpha;
+    water+=vec3(.011,.067,.081)*(thinWall+through*.44);
+    water+=vec3(.002,.004,.006)*gust*(.45+.55*nl);
+    vec3 colour=mix(water,sky,fresnel*.96);
+    // GGX glints follow every wind ripple, with a broad energy-conserving
+    // moon reflection rather than an artificial stripe painted on the water.
+    float alpha=roughness*roughness,a2=alpha*alpha;
     float denom=nh*nh*(a2-1.)+1.,distribution=a2/(PI*denom*denom+.00001);
-    float k=.167,visibility=(nv/(nv*(1.-k)+k))*(nl/(nl*(1.-k)+k));
-    float f=.021+.979*pow(1.-max(dot(halfway,view),0.),5.);
-    float specular=min(.42,distribution*visibility*f/max(4.*nv*nl,.003));
-    colour+=vec3(.61,.77,1.)*specular*.44;
-    // Breaking foam follows the broad, leaning lip in torn patches.
-    // Projected derivatives filter its fine bubble detail at a distance.
+    float k=pow(roughness+1.,2.)*.125,visibility=(nv/(nv*(1.-k)+k))*(nl/(nl*(1.-k)+k));
+    float f=.0204+.9796*pow(1.-max(dot(halfway,view),0.),5.);
+    float specular=min(.38,distribution*visibility*f/max(4.*nv*nl,.003));
+    colour+=vec3(.59,.73,.90)*specular*.40;
+    // Caps fragment along the crest; their aerated water is carried down
+    // the rear face as irregular patches, not continuous white contour lines.
     float d=phaseDistance(vPhase.x-1.15),db=phaseDistance(vPhase.y-1.15);
-    float aa=max(fwidth(d),.012),aab=max(fwidth(db),.012);
-    float lip=(1.-smoothstep(.12+aa,.33+aa,abs(d)))*vBreaking;
-    lip=max(lip,(1.-smoothstep(.06+aab,.17+aab,abs(db)))*vBreaking*.38);
-    vec2 flow=q*.027+vec2(uOceanTime*.018,-uOceanTime*.011);
-    float eddy=noise(flow+noise(flow*.37)*2.7),fine=noise(flow*3.1+vec2(4.2,1.7));
-    float breakPatch=smoothstep(.19,.72,eddy*.65+fine*.35);
-    float pores=noise(flow*7.7+vec2(eddy*2.1,fine));
-    float fineVisible=1.-smoothstep(.55,1.8,footprint*.21);
-    float bubbles=mix(.75,.55+.45*pores,fineVisible);
-    float foam=lip*(.20+.8*breakPatch)*bubbles;
-    vec3 foamColour=vec3(.35,.48,.57)*(.53+.47*nl);
-    colour=mix(colour,foamColour,clamp(foam,0.,.9));
-    float distanceToEye=length(cameraPosition-vWorld),haze=1.-exp(-pow(distanceToEye*.00029,1.5));
-    colour=mix(colour,uHorizon,haze*.96);gl_FragColor=vec4(colour,1.);
+    float aa=max(fwidth(d),.018),aab=max(fwidth(db),.018);
+    float lip=(1.-smoothstep(.10+aa,.44+aa,abs(d)))*vBreaking;
+    lip=max(lip,(1.-smoothstep(.08+aab,.27+aab,abs(db)))*vBreaking*.48);
+    vec2 flow=q*.033+vec2(uOceanTime*.17,-uOceanTime*.11);
+    float large=fbm(flow*.36+vec2(0.,uOceanTime*.008));
+    vec2 eddyOffset=vec2(noise(flow*.37),noise(flow*.39+8.7))*3.4;
+    float eddy=fbm(flow+eddyOffset),fine=noise(flow*4.3+eddyOffset);
+    float breakPatch=smoothstep(.48,.69,eddy*.72+large*.28);
+    float trail=smoothstep(-1.7,-.85,d)*(1.-smoothstep(-.52,.08,d));
+    float wake=trail*vEnergy*smoothstep(.48,.76,large*.43+eddy*.57)*.48;
+    float pores=noise(flow*10.7+vec2(eddy*2.1,fine));
+    float fineVisible=1.-smoothstep(.55,1.8,footprint*.35);
+    float bubbles=mix(.82,.58+.42*smoothstep(.15,.82,pores),fineVisible);
+    float foam=(lip*(.015+.985*breakPatch)+wake)*bubbles;
+    // Blue grey shadow in thick foam, bright isolated windward bubbles.
+    vec3 foamColour=vec3(.34,.44,.50)*(.40+.60*nl);
+    foamColour+=vec3(.035,.048,.058)*fine*nl;
+    colour=mix(colour,foamColour,clamp(foam,0.,.91));
+    float distanceToEye=length(cameraPosition-vWorld),haze=1.-exp(-pow(distanceToEye*.00024,1.5));
+    colour=mix(colour,uHorizon,haze*.97);gl_FragColor=vec4(colour,1.);
     #include <tonemapping_fragment>
     #include <colorspace_fragment>
    }`
@@ -162,13 +196,13 @@ export function createDrownedOcean(scene,{
  // It shares the same displacement equations, so particles cannot detach from
  // the swell when time is paused or the user moves around the temple.
  let seed=0x534541;const random=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};
- const sprayCount=mobile?700:1600,sprayAnchors=new Float32Array(sprayCount*3),sprayLife=new Float32Array(sprayCount),spraySize=new Float32Array(sprayCount);
- for(let i=0;i<sprayCount;i++){const angle=random()*Math.PI*2,radius=270+Math.pow(random(),.6)*1650;sprayAnchors.set([Math.cos(angle)*radius,0,Math.sin(angle)*radius],i*3);sprayLife[i]=random();spraySize[i]=.55+random()*1.2;}
+ const sprayCount=mobile?1000:2400,sprayAnchors=new Float32Array(sprayCount*3),sprayLife=new Float32Array(sprayCount),spraySize=new Float32Array(sprayCount);
+ for(let i=0;i<sprayCount;i++){const angle=random()*Math.PI*2,radius=270+Math.pow(random(),.6)*1650;sprayAnchors.set([Math.cos(angle)*radius,0,Math.sin(angle)*radius],i*3);sprayLife[i]=random();spraySize[i]=.65+random()*2.2;}
  const sprayGeometry=new T.BufferGeometry();sprayGeometry.setAttribute('position',new T.BufferAttribute(sprayAnchors,3));sprayGeometry.setAttribute('aLife',new T.BufferAttribute(sprayLife,1));sprayGeometry.setAttribute('aSize',new T.BufferAttribute(spraySize,1));
  const sprayMaterial=new T.ShaderMaterial({uniforms,transparent:true,depthWrite:false,toneMapped:true,
   vertexShader:`uniform float uOceanTime;attribute float aLife,aSize;varying float vAlpha;${surface}
-   void main(){float age=fract(aLife+uOceanTime*.125);vec2 anchor=position.xz;OceanSurface seed=oceanSurface(anchor,uOceanTime);float delta=atan(sin(seed.phaseA-1.15),cos(seed.phaseA-1.15));anchor-=seed.gradientA*delta/max(dot(seed.gradientA,seed.gradientA),.00001);OceanSurface sea=oceanSurface(anchor,uOceanTime);vec3 p=sea.p+vec3(age*23.,2.+age*15.-age*age*8.,-age*15.);float distanceToEye=length(cameraPosition-p);vAlpha=sea.breaking*sin(age*3.14159265)*pow(1.-age,1.4)*(1.-smoothstep(1500.,2400.,distanceToEye));gl_PointSize=clamp(aSize*1550./distanceToEye,1.,10.);gl_Position=projectionMatrix*viewMatrix*vec4(p,1.);}`,
-  fragmentShader:`varying float vAlpha;void main(){vec2 p=(gl_PointCoord-.5)*vec2(1.45,.72);float soft=exp(-dot(p,p)*15.);float alpha=soft*vAlpha*.27;if(alpha<.004)discard;gl_FragColor=vec4(.49,.65,.77,alpha);
+   void main(){float age=fract(aLife+uOceanTime*.125);vec2 anchor=position.xz;OceanSurface seed=oceanSurface(anchor,uOceanTime);float delta=atan(sin(seed.phaseA-1.15),cos(seed.phaseA-1.15));anchor-=seed.gradientA*delta/max(dot(seed.gradientA,seed.gradientA),.00001);OceanSurface sea=oceanSurface(anchor,uOceanTime);vec3 p=sea.p+vec3(age*35.,2.+age*15.-age*age*8.,-age*15.);float distanceToEye=length(cameraPosition-p);vAlpha=sea.breaking*sin(age*3.14159265)*pow(1.-age,1.4)*(1.-smoothstep(1500.,2400.,distanceToEye));gl_PointSize=clamp(aSize*2400./distanceToEye,1.,22.);gl_Position=projectionMatrix*viewMatrix*vec4(p,1.);}`,
+  fragmentShader:`varying float vAlpha;void main(){vec2 p=(gl_PointCoord-.5)*vec2(.78,1.14);float soft=exp(-dot(p,p)*15.);float alpha=soft*vAlpha*.55;if(alpha<.004)discard;gl_FragColor=vec4(.49,.65,.77,alpha);
    #include <tonemapping_fragment>
    #include <colorspace_fragment>
   }`
@@ -180,8 +214,8 @@ export function createDrownedOcean(scene,{
   update(dt,eye,motion){if(disposed)return false;animated=!!motion;if(!animated)return false;const delta=Math.max(0,Math.min(Number(dt)||0,.1));if(!delta)return false;time+=delta;uniforms.uOceanTime.value=time;return true;},
   diagnostics:()=>({kind:'rolling-flood-ocean',time:+time.toFixed(4),animated,displacedGeometry:true,swells:3,waveLayers:6,
    baseHeight:BASE,crestUpperBound:+crestUpperBound.toFixed(4),centralCalmRadius:CALM,span:SPAN,
-   triangles:geometry.index.count/3,lod:'band-limited logarithmic radial mesh',bandLimited:true,geometryDetailRadius:330,rings,sectors,rolledCrests:true,analyticNormals:true,
-   foam:'derivative-filtered broken whitecaps',sprayParticles:sprayCount,sprayOnMovingCrests:true,skyReflections:!!environmentTexture,externalTextures:0,disposed}),
+   triangles:geometry.index.count/3,lod:'band-limited logarithmic radial mesh',bandLimited:true,geometryDetailRadius:900,rings,sectors,rolledCrests:true,analyticNormals:true,
+   foam:'advected fractal whitecaps and aerated wakes',windRippleLayers:6,translucentLips:true,mainWavePeriod:+(Math.PI*2/.28).toFixed(2),sprayParticles:sprayCount,sprayOnMovingCrests:true,skyReflections:!!environmentTexture,externalTextures:0,disposed}),
   dispose(){if(disposed)return;disposed=true;animated=false;geometry.dispose();material.dispose();sprayGeometry.dispose();sprayMaterial.dispose();root.removeFromParent();root.clear();}
  };
 }

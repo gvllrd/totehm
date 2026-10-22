@@ -12,7 +12,7 @@ const check=(value,message)=>{assert(value,message);checks++;};
 function floor(x,z,{guided=false}={}){
  if(!Number.isFinite(x)||!Number.isFinite(z)||Math.abs(x)>14||z < -13||z>16)return false;
  if(guided&&z < -11.4)return false;
- if(z < -11.4&&!gates.some(gate=>Math.abs(x-gate)<1.7))return false;
+ if(z < -11.4&&!gates.some(gate=>Math.abs(x-gate)<2.1))return false;
  return true;
 }
 function verify(from,to){
@@ -58,7 +58,7 @@ for(let room=0;room<gates.length;room++){
  check(nav.portalAt(x,-11.99)===null,'Near-door ambience does not itself enter an experience');
  check(nav.portalAt(x,-12)===room,'Crossing the true sill identifies the correct independent experience');
  check(nav.portalAt(x,-12.9)===room,'The interior of the opening keeps its destination');
- check(nav.portalAt(x+1.71,-12)===null,'Walking into the stone jamb cannot enter a neighbouring experience');
+ check(nav.portalAt(x+2.11,-12)===null,'Walking into the stone jamb cannot enter a neighbouring experience');
  check(nav.route(entry,point(x,-12))===null,'Automatic floor destinations cannot cross the threshold');
 }
 check(nav.clear(point(-14,-3),point(-7,-3)),'The former planting no longer obstructs a direct walk');

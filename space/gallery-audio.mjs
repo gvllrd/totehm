@@ -1,4 +1,4 @@
-/** Quiet, entirely synthesised sound for the temple and its parallel spaces.
+/** Entirely synthesised wind, breaking sea and portal sound for the temple.
  * No context, oscillator or sound is created before unlock() is called by a
  * genuine pointer/keyboard gesture. The caller owns the sound preference and
  * passes active:false for a hidden page, the list view or a stopped renderer.
@@ -6,11 +6,13 @@
 export function createGalleryAudio() {
   const AudioContextClass = globalThis.AudioContext || globalThis.webkitAudioContext;
   let supported = typeof AudioContextClass === 'function';
-  let context = null, master = null, limiter = null, noiseBuffer = null;
+  let context = null, master = null, limiter = null, noiseBuffer = null, weatherBus = null, windBus = null, seaBus = null;
   let unlocked = false, muted = false, active = false, disposed = false;
-  let zone = 'temple', proximity = 0, transitions = 0;
+  let zone = 'temple', proximity = 0, exposure = 0, transitions = 0;
   let suspendTimer = null, suspendPromise = null, resumePromise = null, resumeBlocked = false;
-  const tones = [], breaths = new Set();
+  const tones = [], breaths = new Set(), weather = [], modulators = [], weatherBuffers = [];
+  const magneticGains = [0, 0];
+  let weatherGain = 0;
 
   const audible = () => unlocked && active && !muted && !disposed;
   const hold = (parameter, time) => {
@@ -43,9 +45,19 @@ export function createGalleryAudio() {
     // sine waves stay deliberately quiet, without harmonics or a heavy bass hit.
     const pull = on && zone === 'temple' ? proximity ** 1.7 : 0;
     glide(master.gain, on ? .72 : 0, on ? .09 : .025);
-    glide(tones[0].gain.gain, .018 * pull);
-    glide(tones[1].gain.gain, .008 * pull);
+    magneticGains[0] = .018 * pull;
+    magneticGains[1] = .008 * pull;
+    glide(tones[0].gain.gain, magneticGains[0]);
+    glide(tones[1].gain.gain, magneticGains[1]);
     glide(tones[2].gain.gain, on && zone === 'void' ? .012 : 0, .2);
+    // The weather recedes at a door so its magnetic note remains intelligible.
+    // All four layers share one gate; muting never changes their running graph.
+    weatherGain = on && zone === 'temple' ? .66 - .15 * proximity : 0;
+    if (weatherBus) {
+      glide(weatherBus.gain, weatherGain, .35);
+      glide(windBus.gain, .72 + .5 * exposure, .4);
+      glide(seaBus.gain, .94 - .12 * exposure, .4);
+    }
   }
   function cancelSuspension() {
     if (suspendTimer !== null) globalThis.clearTimeout(suspendTimer);
@@ -92,6 +104,88 @@ export function createGalleryAudio() {
       }, 120);
     }
   }
+  function modulate(parameter, frequency, depth, phase = 0) {
+    // Incommensurate periods and independent stereo noise avoid a recognisable
+    // short loop. These clocks stop with the AudioContext, without a JS timer.
+    const oscillator = context.createOscillator(), amount = context.createGain();
+    oscillator.type = 'sine';
+    if (phase) {
+      const real = new Float32Array([0, Math.sin(phase)]);
+      const imaginary = new Float32Array([0, Math.cos(phase)]);
+      oscillator.setPeriodicWave(context.createPeriodicWave(real, imaginary));
+    }
+    oscillator.frequency.value = frequency;
+    amount.gain.value = depth;
+    oscillator.connect(amount); amount.connect(parameter); oscillator.start();
+    modulators.push({ oscillator, amount });
+  }
+  function weatherNoise(seconds, pink) {
+    const buffer = context.createBuffer(2, Math.ceil(context.sampleRate * seconds), context.sampleRate);
+    let seed = pink ? 0x6d617265 : 0x76656e74;
+    const random = () => {
+      seed ^= seed << 13; seed ^= seed >>> 17; seed ^= seed << 5;
+      return (seed >>> 0) / 2147483648 - 1;
+    };
+    for (let channel = 0; channel < 2; channel++) {
+      const data = buffer.getChannelData(channel);
+      let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+      for (let i = 0; i < data.length; i++) {
+        const white = random();
+        if (pink) {
+          b0 = .99886 * b0 + white * .0555179;
+          b1 = .99332 * b1 + white * .0750759;
+          b2 = .969 * b2 + white * .153852;
+          b3 = .8665 * b3 + white * .3104856;
+          b4 = .55 * b4 + white * .5329522;
+          b5 = -.7616 * b5 - white * .016898;
+          data[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * .5362) * .11;
+          b6 = white * .115926;
+        } else data[i] = white;
+      }
+      // Blend a short wrap region. No discontinuity at the seam can become an
+      // artificial knock once a long low-frequency surge passes the filters.
+      const wrap = Math.min(Math.floor(context.sampleRate * .09), Math.floor(data.length / 2));
+      for (let i = 0; i < wrap; i++) {
+        const blend = (i + 1) / wrap;
+        data[data.length - wrap + i] = data[data.length - wrap + i] * (1 - blend) + data[i] * blend;
+      }
+    }
+    weatherBuffers.push(buffer); return buffer;
+  }
+  function weatherLayer(buffer, { kind, highpass, lowpass, gain, rate, pan, sway, surge, wash }) {
+    const source = context.createBufferSource(), low = context.createBiquadFilter();
+    const high = context.createBiquadFilter(), level = context.createGain();
+    source.buffer = buffer; source.loop = true; source.loopStart = .09; source.playbackRate.value = rate;
+    high.type = 'highpass'; high.frequency.value = highpass; high.Q.value = .45;
+    low.type = 'lowpass'; low.frequency.value = lowpass; low.Q.value = .45;
+    level.gain.value = gain;
+    source.connect(high); high.connect(low); low.connect(level);
+    let panner = null;
+    if (typeof context.createStereoPanner === 'function') {
+      panner = context.createStereoPanner(); panner.pan.value = pan;
+      level.connect(panner); panner.connect(kind === 'wind' ? windBus : seaBus);
+      modulate(panner.pan, .023 + sway * .009, .14, .8 + sway);
+    } else level.connect(kind === 'wind' ? windBus : seaBus);
+    modulate(level.gain, surge, gain * .43, 1.4 + sway);
+    modulate(level.gain, wash, gain * .18, 3.1 + sway);
+    modulate(low.frequency, wash * .71, lowpass * .26, .2 + sway);
+    source.start(0, buffer.duration * ((sway * .37) % 1));
+    weather.push({ kind, source, high, low, level, panner });
+  }
+  function initialiseWeather() {
+    weatherBus = context.createGain(); weatherBus.gain.value = 0; weatherBus.connect(limiter);
+    windBus = context.createGain(); seaBus = context.createGain();
+    windBus.gain.value = .72; seaBus.gain.value = .94;
+    windBus.connect(weatherBus); seaBus.connect(weatherBus);
+    const pink = weatherNoise(17.31, true), white = weatherNoise(13.79, false);
+    // Wind: low turbulent body and a much quieter moving ribbon of upper air.
+    // Sea: a distant mass of water and the brighter wash of a breaking crest.
+    // Broad, low-Q filters avoid synthetic whistles and piercing white noise.
+    weatherLayer(pink, { kind: 'wind', highpass: 105, lowpass: 780, gain: .24, rate: .81, pan: -.28, sway: .2, surge: .079, wash: .137 });
+    weatherLayer(white, { kind: 'wind', highpass: 820, lowpass: 3300, gain: .033, rate: .973, pan: .31, sway: .8, surge: .079, wash: .113 });
+    weatherLayer(pink, { kind: 'sea', highpass: 29, lowpass: 205, gain: .38, rate: .693, pan: .12, sway: 1.3, surge: .061, wash: .097 });
+    weatherLayer(white, { kind: 'sea', highpass: 390, lowpass: 2450, gain: .09, rate: 1.037, pan: -.16, sway: 1.8, surge: .061, wash: .097 });
+  }
   function initialise() {
     context = new AudioContextClass({ latencyHint: 'interactive' });
     master = context.createGain();
@@ -124,6 +218,7 @@ export function createGalleryAudio() {
       seed ^= seed << 13; seed ^= seed >>> 17; seed ^= seed << 5;
       samples[i] = (seed >>> 0) / 2147483648 - 1;
     }
+    initialiseWeather();
   }
   async function unlock() {
     if (disposed || !supported) return false;
@@ -153,11 +248,13 @@ export function createGalleryAudio() {
     const nextZone = state.zone === 'void' ? 'void' : state.zone === 'temple' ? 'temple' : zone;
     const nextProximity = Number.isFinite(state.proximity) ? Math.max(0, Math.min(1, state.proximity)) : proximity;
     const nextActive = typeof state.active === 'boolean' ? state.active : active;
-    const changed = nextZone !== zone || Math.abs(nextProximity - proximity) > .002;
+    const nextExposure = Number.isFinite(state.exposure) ? Math.max(0, Math.min(1, state.exposure)) : exposure;
+    const changed = nextZone !== zone || Math.abs(nextProximity - proximity) > .002 || Math.abs(nextExposure - exposure) > .01;
     const activityChanged = nextActive !== active;
     zone = nextZone;
     proximity = nextProximity;
     active = nextActive;
+    exposure = nextExposure;
     if (activityChanged) synchronise();
     else if (changed) mix();
   }
@@ -194,7 +291,18 @@ export function createGalleryAudio() {
     return {
       supported, unlocked, muted,
       state: disposed ? 'closed' : context?.state || (supported ? 'uninitialized' : 'unsupported'),
-      zone, proximity, voices: disposed ? 0 : tones.length + breaths.size,
+      zone, proximity, voices: disposed ? 0 : tones.length + weather.length + breaths.size,
+      magneticGains: disposed ? [0, 0] : [...magneticGains],
+      weather: {
+        wind: weather.filter(layer => layer.kind === 'wind').length,
+        sea: weather.filter(layer => layer.kind === 'sea').length,
+        layers: weather.length, stereo: weather.length > 0,
+        active: audible() && zone === 'temple', gain: disposed ? 0 : weatherGain,
+        exposure, windGain: disposed ? 0 : .72 + .5 * exposure,
+        seaGain: disposed ? 0 : .94 - .12 * exposure,
+        loopBuffers: weatherBuffers.length, modulators: modulators.length,
+        clock: Number((context?.currentTime || 0).toFixed(3)),
+      },
       transitions, externalFiles: 0, active: !disposed && active,
     };
   }
@@ -214,6 +322,18 @@ export function createGalleryAudio() {
       tone.oscillator.disconnect(); tone.gain.disconnect();
     }
     tones.length = 0;
+    for (const layer of weather) {
+      try { layer.source.stop(); } catch { /* already stopped */ }
+      layer.source.disconnect(); layer.high.disconnect(); layer.low.disconnect();
+      layer.level.disconnect(); layer.panner?.disconnect();
+    }
+    for (const modulation of modulators) {
+      try { modulation.oscillator.stop(); } catch { /* already stopped */ }
+      modulation.oscillator.disconnect(); modulation.amount.disconnect();
+    }
+    weather.length = 0; modulators.length = 0; weatherBuffers.length = 0;
+    windBus?.disconnect(); seaBus?.disconnect(); weatherBus?.disconnect();
+    windBus = null; seaBus = null; weatherBus = null; weatherGain = 0;
     master?.disconnect(); limiter?.disconnect(); noiseBuffer = null;
     if (context && context.state !== 'closed') Promise.resolve(context.close()).catch(() => {});
   }

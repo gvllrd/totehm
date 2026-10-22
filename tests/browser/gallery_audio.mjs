@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {launch,page} from './harness.mjs';
 
-const OUT=process.argv[2]||'/tmp/totehm-production/temple-audio';
+const OUT=process.argv[2]||'/tmp/totehm-production/storm-audio';
 const origin='https://www.totehm.space',requests=[];
 fs.mkdirSync(OUT,{recursive:true});
 const fixture=`<!doctype html><meta charset="utf-8"><button id="unlock">Sound</button>
@@ -57,23 +57,30 @@ try{
   check(await pg.evaluate(()=>constructions===0&&audio.diagnostics().proximity===1),'updates and transitions cannot start sound; proximity clamps');
   await pg.click('#unlock');
   await pg.waitForFunction(()=>window.unlockedResult===true);
-  check(await pg.evaluate(()=>audio.diagnostics().unlocked&&audioContext.state==='running'&&audio.diagnostics().voices===3),'real pointer gesture unlocks three stable voices');
-  check(await pg.evaluate(()=>toneNodes.every(node=>node.type==='sine')&&toneNodes.map(node=>node.frequency.value).join(',')==='50,70,110'),'approach and meditation use real 50/70/110 Hz sine waves');
+  check(await pg.evaluate(()=>audio.diagnostics().unlocked&&audioContext.state==='running'&&audio.diagnostics().voices===7),'real pointer gesture unlocks three tones and four persistent weather voices');
+  check(await pg.evaluate(()=>toneNodes.slice(0,3).every(node=>node.type==='sine')&&toneNodes.slice(0,3).map(node=>node.frequency.value).join(',')==='50,70,110'&&toneNodes.length===19),'approach and meditation use real 50/70/110 Hz sine waves');
   await pg.waitForTimeout(550);
   templeRms=await pg.evaluate(()=>rms());
-  check(templeRms>.0001&&templeRms<.04,'near-portal measured output remains soft ('+templeRms.toFixed(5)+' RMS)');
+  check(templeRms>.0001&&templeRms<.12,'near-portal measured output remains soft ('+templeRms.toFixed(5)+' RMS)');
+  check(await pg.evaluate(()=>noiseNodes.length===4&&noiseNodes.every(node=>node.loop&&node.buffer.numberOfChannels===2&&node.buffer.duration>10)&&new Set(noiseNodes.map(node=>node.buffer)).size===2),'four native weather loops use two long generated stereo buffers');
+  check(await pg.evaluate(()=>noiseNodes.every(node=>{const a=node.buffer.getChannelData(0),b=node.buffer.getChannelData(1);let difference=0;for(let i=0;i<1000;i++)difference+=Math.abs(a[i]-b[i]);return difference>.1;})),'wind and sea stereo channels contain genuinely different samples');
+  await pg.evaluate(()=>audio.update({proximity:0}));await pg.waitForTimeout(800);
+  const weatherRms=await pg.evaluate(()=>rms());
+  check(weatherRms>.0001&&weatherRms<.1,'weather remains audible away from every portal ('+weatherRms.toFixed(5)+' RMS)');
+  const peak=await pg.evaluate(async()=>{let peak=0;for(let i=0;i<12;i++){const data=new Float32Array(meter.fftSize);meter.getFloatTimeDomainData(data);for(const x of data)peak=Math.max(peak,Math.abs(x));await new Promise(resolve=>setTimeout(resolve,100));}return peak;});
+  check(peak>.0001&&peak<.95,'measured storm output is audible and has ample clipping headroom ('+peak.toFixed(5)+' peak)');
   await pg.evaluate(()=>audio.update({zone:'void',proximity:0}));
   await pg.waitForTimeout(650);
   voidRms=await pg.evaluate(()=>rms());
   check(voidRms>.0001&&voidRms<.03,'void measured ambience is audible and quiet ('+voidRms.toFixed(5)+' RMS)');
   await pg.evaluate(()=>audio.transition('enter'));
   check(await pg.evaluate(()=>{
-    const buffer=noiseNodes[0]?.buffer;
-    return audio.diagnostics().transitions===1&&audio.diagnostics().voices===4&&noiseNodes.length===1
-      &&buffer?.numberOfChannels===1&&buffer.duration>=.8&&buffer.duration<=1&&filters[0]?.type==='lowpass';
+    const buffer=noiseNodes[4]?.buffer;
+    return audio.diagnostics().transitions===1&&audio.diagnostics().voices===8&&noiseNodes.length===5
+      &&buffer?.numberOfChannels===1&&buffer.duration>=.8&&buffer.duration<=1&&filters.at(-1)?.type==='lowpass';
   }),'entry creates one real, locally generated and low-pass-filtered breath buffer');
   await pg.waitForTimeout(1100);
-  check(await pg.evaluate(()=>audio.diagnostics().voices===3),'temporary source is removed after its 0.8-second envelope');
+  check(await pg.evaluate(()=>audio.diagnostics().voices===7),'temporary source is removed after its 0.8-second envelope');
   await pg.evaluate(()=>audio.update({active:false}));
   await pg.waitForTimeout(220);
   suspendedAt=await pg.evaluate(()=>audioContext.currentTime);
@@ -101,7 +108,7 @@ try{
   check(await pg.evaluate(()=>audioContext.state==='running'&&constructions===1),'rapid activity changes neither strand suspension nor create extra contexts');
   await pg.evaluate(()=>audio.transition('return'));
   await pg.waitForTimeout(1100);
-  check(await pg.evaluate(()=>audio.diagnostics().transitions===2&&audio.diagnostics().voices===3&&noiseNodes.length===2),'return uses a second synthetic breath and cleans it up');
+  check(await pg.evaluate(()=>audio.diagnostics().transitions===2&&audio.diagnostics().voices===7&&noiseNodes.length===6),'return uses a second synthetic breath and cleans it up');
   await pg.evaluate(()=>{audio.dispose();audio.dispose();});
   check(await pg.evaluate(()=>audio.diagnostics().state==='closed'&&audio.diagnostics().voices===0),'disposal is idempotent and removes every voice');
   unsupported=await pg.evaluate(async()=>{
