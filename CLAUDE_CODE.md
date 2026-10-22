@@ -1,7 +1,6 @@
 # CLAUDE_CODE.md — les tâches du terminal de Wah
 
-> Seulement ce qui exige sa machine (VM Oracle, n8n, `psql`). Une commande simple par ligne. Aucun secret ici.
-> Tâche faite = section supprimée, mesure dans le message du commit.
+> Ce qui exige sa machine (VM Oracle, n8n, `psql`). Une commande par ligne, aucun secret ici. Faite = section retirée.
 
 ## 1 · `club_spots` délègue à son cœur — prête
 
@@ -13,18 +12,19 @@
 `20261018091000_audience_par_box_lecteurs.sql` attend la pastille de niveau sur chaque box dans totehm.com (absente le
 21/10). Avant elle, il cacherait les boxes nées depuis le 18/10, sans moyen de les rouvrir.
 
-## 3 · Le mode test Stripe — à confirmer
+## 3 · Le mode test Stripe — les deux secrets manquent
 
     supabase secrets list --project-ref abujjbkbbiumxrokozph
 
-S'il manque `STRIPE_TEST_SECRET_KEY` ou `STRIPE_TEST_WEBHOOK_SECRET` : Wah crée en mode test un endpoint vers
-`…/functions/v1/stripe-webhook` (`checkout.session.completed`) et colle les deux valeurs ICI, avec `supabase secrets set`.
+Wah crée en mode TEST un endpoint vers `…/functions/v1/stripe-webhook` (`checkout.session.completed`), puis
+`supabase secrets set STRIPE_TEST_SECRET_KEY=… STRIPE_TEST_WEBHOOK_SECRET=…` — jamais par une conversation.
+Sans elles, [Order] sur `/streetwear` répond `test_unavailable` (503) : aucun essai possible.
 
-## 4 · n8n — ne rien publier seul
+## 4 · La chaîne n8n — une seule session, dans cet ordre
 
-B et D tournent sur leurs anciennes versions, sans authentification. Leurs brouillons sécurisés se publient le jour où
-`stripe-webhook` envoie la clé de service (lot cloud) : publier alors B, C, D et E ensemble, puis rejouer un achat test.
+    supabase functions deploy stripe-webhook --project-ref abujjbkbbiumxrokozph
 
-## 5 · Le master
-
+Il envoie maintenant `apikey` à B. Puis : le brouillon de E doit refuser un événement non signé et une pièce TEST
+(il les accepte) ; publier B, C, D, E ENSEMBLE ; `node tests/n8n/streetwear/offline.mjs` (59 succès) ; une pièce
+RÉELLE pour l'essai — une TEST ne génère rien et sept images coûtent chez OpenAI/Replicate.
 En tête de `TOTEHM_MASTER.md` : « Domaines et accès : remplacés le 21/10/2026 par CLAUDE.md, La vision ».

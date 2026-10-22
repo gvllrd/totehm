@@ -24,8 +24,12 @@ choisit ; n8n C, `compose-artwork`) → **production** (n8n D : Printful) → **
 
 ## Écarts connus
 
-- **n8n B et D publiés sans authentification** (adresses visibles dans ce dépôt public) ; leurs versions sécurisées
-  sont en brouillon, et `stripe-webhook` appelle B sans en-tête : les publier seules casserait la génération (`CLAUDE_CODE.md` §4).
+- **La chaîne n8n n'a jamais tourné** : B, C, D, E sont publiés avec un CONFIG qui lit `process.env`, absent du
+  runtime d'un Code node (zéro exécution enregistrée). Leurs brouillons sécurisés (`$env`) attendent d'être publiés
+  ENSEMBLE, et celui de E accepte encore un événement non signé : `CLAUDE_CODE.md` §4. `stripe-webhook` envoie la clé
+  de service à B en en-tête `apikey`. Banc hors réseau : `node tests/n8n/streetwear/offline.mjs` (59 succès).
+- **Le mode test Stripe n'a jamais servi** : `STRIPE_TEST_SECRET_KEY` et `STRIPE_TEST_WEBHOOK_SECRET` manquent, donc
+  [Order] répond `test_unavailable` (503) pour un compte de `boutique_testers` (`CLAUDE_CODE.md` §3).
 - **Luxury accepte les cinq vues** (`luxury-quote`) alors que la vision dit MY STORY seulement : à trancher par Wah.
 
 Tests : `tests/browser/streetwear.mjs`, `boutique_home.mjs`, `com_cloths.mjs`, `art_bridge.mjs` ;

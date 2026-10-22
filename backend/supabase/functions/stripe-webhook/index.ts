@@ -400,9 +400,16 @@ async function handleCloth(session: Stripe.Checkout.Session) {
   // si Wah en choisit une sur Telegram, une vraie commande Printful.
   if (m.test === "1") console.log("cloth test: génération non lancée", id);
   else try {
+    // 22/10 : le brouillon sécurisé de B authentifie son appelant
+    // (`serviceAuth` → `streetwear_service_ready`). La clé de service part en
+    // EN-TÊTE, jamais dans le corps ni dans l'URL ; l'ancienne version publiée
+    // de B l'ignore, la nouvelle l'exige — l'ordre de publication est libre.
     const r = await fetch(N8N_GENERATE, {
       method: "POST",
-      headers: { "content-type": "application/json" },
+      headers: {
+        "content-type": "application/json",
+        apikey: Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+      },
       body: JSON.stringify({ cloth_id: id }),
     });
     if (!r.ok) console.error("cloth: génération n8n KO", r.status);
