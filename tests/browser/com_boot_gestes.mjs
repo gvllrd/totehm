@@ -140,6 +140,21 @@ try{
   ok(!erreurs(log).length,'repli + manette : aucune erreur '+erreurs(log).join(' | '));
   await ctx.close();}
 
+ /* ── 1 ter · LE MOUCHARD (22/10) : un geste refusé dit POURQUOI (un code) ; `?diag=1` l'affiche, sinon rien ── */
+ {const{pg,ctx,log}=await page(browser,{dir:'com',origin,tables,rpc:{my_landing:LAND},viewport:{width:390,height:844},hasTouch:true});
+  await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(800);
+  const sans=await pg.evaluate(()=>!document.getElementById('lv-diag'));
+  await pg.goto(origin+'/totehm?diag=1');await pg.waitForSelector('body.member');await pg.waitForTimeout(1200);
+  await pg.keyboard.press('ArrowDown');await vers(pg,'b');await pg.keyboard.press('ArrowDown');await pg.waitForTimeout(200);
+  await pg.keyboard.press('ArrowUp');await vers(pg,'c');
+  await pg.click('#lv-m-members');await pg.waitForTimeout(1500);await pg.evaluate(()=>document.activeElement.blur());
+  await pg.keyboard.press('ArrowDown');await pg.waitForTimeout(200);
+  const m=await pg.evaluate(()=>{const e=document.getElementById('lv-diag');return {r:window.__totehm_lv().refus,txt:e?e.textContent:'',pe:e?getComputedStyle(e).pointerEvents:''};});
+  ok(sans&&m.r['voisin:b>b']===1&&m.r['voisin:c>b:recherche']===1&&/refus voisin:c>b:recherche/.test(m.txt)&&m.pe==='none',
+     '22/10 · le mouchard : chaque geste refusé dit pourquoi (en bas sans voisin · pendant la recherche) ; à l\'écran avec ?diag=1 seulement → '+JSON.stringify(m.r));
+  ok(!erreurs(log).length,'mouchard : aucune erreur '+erreurs(log).join(' | '));
+  await ctx.close();}
+
  /* ── 3 · LA VUE DU HAUT : le cerveau entier, rien ne le recouvre ── */
  for(const [w,h] of [[390,664],[375,667],[390,844],[1280,720]]){
   const{pg,ctx}=await page(browser,{dir:'com',origin,tables,rpc:{my_landing:LAND},viewport:{width:w,height:h},hasTouch:w<500});

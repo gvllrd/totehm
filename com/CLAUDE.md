@@ -21,7 +21,7 @@ figher.club ; `/vendor`, `/cities.json`, `/assets/signs` → SPACE ; Telegram n'
 
 | vue | repères |
 |---|---|
-| l'atterrissage, les gestes | `const LV=` · `garde(` · `demander(` · `guetter(` · `reprendre(` · `quandLibre` |
+| l'atterrissage, les gestes | `const LV=` · `garde(` · `demander(` · `guetter(` · `reprendre(` · `quandLibre` · `refus(` (le mouchard) |
 | ↑ Get Higher | `RAM.cerveau` · `posHaut()` (la bouche rétrécit, jamais le cerveau) |
 | ← mes médias | `const SH =` · `MBM` · `boxTotehm` · `#tlv` (visionneuse verticale, sa box porte `loupeVue`) · `feed_badges` · filtre : `.sfcmd` (MY STORY ▢ · OBJ/HAB/REP empilés · ▢ VISION, carrés `--perfo`) |
 | ● mon TOTEHM, le verso | `const PAPIER=` · `const RAM=` (`peindre` : ← → ↓ sont la transformation du centre ; `circuit` = 7 broches par arête du processeur, `anneau` = l'anneau du profil) · `#self-h` · `ouvrirVerso` → `is-pret` · sections `#mw-creator` (Monetize my TOTEHM) · `#mw-menu` ([Higher] subscription) · `#vs-subs-s` |
@@ -32,7 +32,7 @@ figher.club ; `/vendor`, `/cities.json`, `/assets/signs` → SPACE ; Telegram n'
 | la liste du TOTEHM déployé | `/* ══ LA BOÎTE` · `/* ══ LES TROIS VUES` · `/* ══ LES ÉCRITURES` · `const INTS=` |
 | la session | `/* ══ LA SESSION` · `sessionChange` · `sesWait` · cache `totehm_habits_v1` |
 
-Diagnostics : `__totehm_lv()` · `__totehm_xo()` · `__totehm_sh()` · `__totehm_rdr()` · `__totehm_carte()` · `__totehm_zone()`.
+Diagnostics : `__totehm_lv()` (`.refus` : pourquoi un geste est refusé ; à l'écran : `/totehm?diag=1`) · `__totehm_xo()` · `__totehm_sh()` · `__totehm_rdr()` · `__totehm_carte()` · `__totehm_zone()`.
 
 ## Les pièges
 

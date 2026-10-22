@@ -3314,6 +3314,9 @@ body.gate.lv-c:not(.entered) #lv-ram .puls{opacity:1;
    déployée (sa taille `--as`, son puits noir `--aw`, jamais une mise à l'échelle) : à la fin du déploiement, les deux sont
    identiques au pixel — le fondu du portail ne fait rien bouger. */
 #app-proc{position:fixed;inset:0;z-index:9;pointer-events:none;visibility:hidden}
+/* Le mouchard des gestes (`?diag=1` seulement) : en haut à gauche, il ne prend jamais un doigt. */
+#lv-diag{position:fixed;left:6px;top:6px;z-index:2147483647;margin:0;padding:6px 8px;max-width:72vw;background:rgba(0,0,0,.82);color:#9fe39f;
+  font:10px/1.4 'Space Mono',monospace;white-space:pre-wrap;pointer-events:none}
 body.proc-ouvert #app-proc{visibility:visible}
 #app-ram{position:absolute;inset:0;width:100%;height:100%}
 #app-ram path{fill:none;stroke-width:2;stroke-linecap:square;stroke-linejoin:miter}
@@ -7394,7 +7397,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-10-22-com-fluide';
+const BUILD='2026-10-22-com-mouchard';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -10903,7 +10906,7 @@ window.addEventListener('pageshow',e=>{
                reveiller(){}, face:()=>0, occupe:()=>false, surVerso:null, surFace:null,
                offrir:()=>false, remettre(){}, surLangue:null,
                prise:false, glisser:(c,o)=>{ if(o&&o.fin) o.fin(); return true; }, tourner(){}, arreter:f=>{ if(f) f(); },
-               vue:()=>false, saisit:()=>false, chez:()=>null, cibleLangue:()=>null, avalerIci:()=>false};
+               vue:()=>false, quoi:()=>'plat', saisit:()=>false, chez:()=>null, cibleLangue:()=>null, avalerIci:()=>false};
     if(!scene||!card) return api;
     const lights=[...card.querySelectorAll('.ast-light')];   /* [face, dos] */
     const elF=$('ast-front'), elB=$('ast-back');
@@ -11189,6 +11192,7 @@ window.addEventListener('pageshow',e=>{
       mode='freine'; kick();
     };
     api.vue=()=>mode==='vue'||mode==='tourne'||mode==='glisse'||mode==='freine';
+    api.quoi=()=>mode;
     /* Le doigt posé sur lui le TIENT (il se retourne) seulement chez lui, au repos : ailleurs, il est un décor. */
     api.saisit=()=>!RM.matches&&(mode==='plat'||mode==='rentre');
     /* Où il habite (centre et largeur AU REPOS), même s'il est en voyage. */
@@ -11726,14 +11730,31 @@ window.addEventListener('pageshow',e=>{
        destination d'un voyage : la direction se lit depuis là où l'on arrive. */
     const ATTENTE=1500; let guetT=0;
     const occupe=()=>bouge||moving||sMoving||(PAPIER.occupe()&&!PAPIER.vue());
+    /* ══ LE MOUCHARD DES GESTES (22/10) ══ Un geste refusé dit POURQUOI — un code, jamais une donnée de membre :
+       `__totehm_lv().refus`, et à l'écran avec `?diag=1` (une capture suffit à trouver un blocage qu'aucun test ne
+       reproduit : Wah, « après Members → Mine, les mouvements ne fonctionnent plus »). */
+    diag.refus={}; diag.dernier='';
+    let diagEl=null;
+    const pasLibre=()=>!body.classList.contains('gate')?'ouvert':body.classList.contains('entered')?'deploie':body.classList.contains('is-door')?'porte'
+      :sOpen?'verso':sMoving?'verso-bouge':$('member-window').classList.contains('show')?'espace-membre':body.classList.contains('is-xo')?'couche'
+      :body.classList.contains('is-tlv')?'visionneuse':'?';
+    const quiOccupe=()=>bouge?'voyage':moving?'repli':sMoving?'verso':'papier-'+PAPIER.quoi();
+    function refus(c){ diag.refus[c]=(diag.refus[c]||0)+1; diag.dernier=c; peindreDiag(); return false; }
+    const sansVoisin=d=>refus('voisin:'+vue+'>'+d+(libreMb()?'':':recherche'));
+    function peindreDiag(){ if(!diagEl) return;
+      diagEl.textContent=vue+' · '+mode+(MB.cherche?' · recherche':'')+'\nvoyage '+(+bouge)+' · repli '+(+moving)+' · verso '+(+sOpen)+'/'+(+sMoving)
+        +' · papier '+PAPIER.quoi()+'\nlibre '+(libre()?1:pasLibre())+' · attente '+(attente?attente.d:'-')+'\nrefus '+(diag.dernier||'-')
+        +'\n'+Object.entries(diag.refus).map(([k,n])=>k+' ×'+n).join(' · '); }
+    if(/[?&]diag=1\b/.test(location.search)){ diagEl=document.createElement('pre'); diagEl.id='lv-diag'; diagEl.setAttribute('aria-hidden','true');
+      document.body.appendChild(diagEl); setInterval(peindreDiag,400); }
     function demander(d){
-      if(!libre()) return false;
-      if(occupe()){ if(!voisin(d)) return false; attente={d, t:Date.now()}; diag.enAttente++; guetter(); return true; }
-      const v=voisin(d); if(!v) return false;
+      if(!libre()) return refus('libre:'+pasLibre());
+      if(occupe()){ if(!voisin(d)) return sansVoisin(d); attente={d, t:Date.now()}; diag.enAttente++; guetter(); return true; }
+      const v=voisin(d); if(!v) return sansVoisin(d);
       aller(v); return true;
     }
     function guetter(){ clearTimeout(guetT); guetT=setTimeout(()=>{ if(!attente) return;
-      if(Date.now()-attente.t>ATTENTE){ attente=null; return; }
+      if(Date.now()-attente.t>ATTENTE){ attente=null; refus('expire:'+quiOccupe()); return; }
       if(occupe()) return guetter();
       reprendre(); },120); }
     function reprendre(){
@@ -11744,12 +11765,12 @@ window.addEventListener('pageshow',e=>{
     /* ── ALLER : une vue voisine, ou le centre ── */
     function aller(v,then){
       if(v===vue){ if(then) then(); return; }
-      if(bouge||open||moving||sMoving||sOpen) return;
-      if(body.classList.contains('is-door')||!body.classList.contains('gate')) return;
-      if(v!=='c'&&!Object.values(VOISINS[vue]||{}).includes(v)) return;
-      if((v==='g'||v==='d')&&!inscrit()) return;      /* « mes » médias, « mes » spots : il faut un Totehm */
-      if(!libreMb()) return;                            /* la recherche MEMBERS se termine d'abord */
-      if(PAPIER.occupe()&&!PAPIER.vue()) return;
+      if(bouge||open||moving||sMoving||sOpen) return void refus('aller:'+(open?'ouvert':sOpen?'verso':quiOccupe()));
+      if(body.classList.contains('is-door')||!body.classList.contains('gate')) return void refus('aller:porte');
+      if(v!=='c'&&!Object.values(VOISINS[vue]||{}).includes(v)) return void refus('aller:croix');
+      if((v==='g'||v==='d')&&!inscrit()) return void refus('aller:sans-totehm');   /* « mes » médias, « mes » spots : il faut un Totehm */
+      if(!libreMb()) return void refus('aller:recherche');                          /* la recherche MEMBERS se termine d'abord */
+      if(PAPIER.occupe()&&!PAPIER.vue()) return void refus('aller:papier-'+PAPIER.quoi());
       diag.allers++;
       /* Ma Reflection n'existe que chez MOI ; chez un membre, le bas est SON offre. */
       const moi=mode==='mine';
@@ -12019,7 +12040,7 @@ window.addEventListener('pageshow',e=>{
         return voisin(d) ? d : null;
       };
       bx.addEventListener('pointerdown',e=>{
-        if(!libre()) return;
+        if(!libre()) return void refus('libre:'+pasLibre());
         id=e.pointerId; x0=e.clientX; y0=e.clientY; dx=dy=0;
         jy.classList.add('tenu'); bx.classList.add('tenu');
         try{ bx.setPointerCapture(id); }catch(_){}
@@ -12036,6 +12057,7 @@ window.addEventListener('pageshow',e=>{
         try{ bx.releasePointerCapture(id); }catch(_){}
         id=null; centre();
         if(v) demander(v);
+        else if(Math.max(Math.abs(dx),Math.abs(dy))>=SEUIL) sansVoisin(Math.abs(dx)>Math.abs(dy)?(dx<0?'g':'d'):(dy<0?'h':'b'));
       });
       bx.addEventListener('pointercancel',()=>{ id=null; centre(); });
     })();
@@ -12044,6 +12066,7 @@ window.addEventListener('pageshow',e=>{
       if(e.key==='ArrowUp'||e.key==='ArrowDown'){
         const d=e.key==='ArrowUp'?'h':'b', v=voisin(d);
         if(v){ e.preventDefault(); demander(d); return; }
+        sansVoisin(d);
         /* Dans mes shorts il n'y a pas de voisin vertical : les deux flèches servent le feed. */
         if(vue==='g'&&SH.pas(d==='b'?1:-1)) e.preventDefault();
         else if(vue==='d'&&SPOTS.pas(d==='b'?1:-1)) e.preventDefault();
@@ -12054,7 +12077,7 @@ window.addEventListener('pageshow',e=>{
         if(document.activeElement===$('gate-enter')&&vue==='c'){
           if(mode==='mine'){ e.preventDefault(); ouvrirVerso(); return; }
           if(MB.nom&&!MB.cherche){ e.preventDefault(); chercher(); return; } }
-        const d=e.key==='ArrowLeft'?'g':'d'; if(voisin(d)){ e.preventDefault(); demander(d); }
+        const d=e.key==='ArrowLeft'?'g':'d'; if(voisin(d)){ e.preventDefault(); demander(d); } else sansVoisin(d);
         return; }
       if(e.key==='Escape'){ if(vue!=='c'){ e.preventDefault(); aller('c'); }
         else if(mode==='members'){ e.preventDefault(); if(MB.cherche) annuler(); else choisirMode('mine'); } }
@@ -12096,7 +12119,8 @@ window.addEventListener('pageshow',e=>{
         p={x:e.touches[0].clientX, y:e.touches[0].clientY, t:Date.now(), el:t};
       },{passive:true,capture:true});
       window.addEventListener('touchend',e=>{
-        const q=p; p=null; if(!q||!libre()||Date.now()-q.t>900) return;
+        const q=p; p=null; if(!q) return; if(!libre()) return void refus('libre:'+pasLibre());
+        if(Date.now()-q.t>900) return void refus('doigt:lent');
         const dx=e.changedTouches[0].clientX-q.x, dy=e.changedTouches[0].clientY-q.y;
         if(Math.abs(dy)>60&&Math.abs(dy)>Math.abs(dx)*1.3&&!filDefile(q.el,-dy)){ demander(dy<0?'h':'b'); return; }
         if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.3) demander(dx<0?'g':'d');
@@ -12792,7 +12816,7 @@ window.addEventListener('pageshow',e=>{
                     /* Un autre compte : la recherche et l'écosystème d'un membre se referment (la lecture, elle, suit `sessionChange`). */
                     if(MB.cherche) finirRecherche(); if(!RO){ MB.nom=null; MB.avant=null; mode='mine'; body.classList.remove('lv-mb','lv-membre'); peindreMode(); } };
     window.__totehm_lv=()=>({build:BUILD, vue, mode, bouge, allers:diag.allers, modes:diag.modes, papier:PAPIER.vue(),
-      debloques:diag.debloques, enAttente:diag.enAttente, haut:diagHaut,
+      debloques:diag.debloques, enAttente:diag.enAttente, refus:{...diag.refus}, dernierRefus:diag.dernier, haut:diagHaut,
       membre:inscrit(), higher:!!(LAND&&LAND.higher&&LAND.higher.active), thp:!!(LAND&&LAND.thp),
       reflection:{tours:SM.msgs.length, pret:!!etatSM().ready, gratuits:etatSM().free_left??null, envois:diag.envois, ajouts:diag.ajouts,
                   pense:!!pense, telegram:diag.telegram},
