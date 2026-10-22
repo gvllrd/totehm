@@ -2982,6 +2982,8 @@ body.is-xo{overflow:hidden}
 
 
 
+
+
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille
    elle-même : un nouveau bloc gris entre ici tout seul.        */
@@ -3228,8 +3230,11 @@ body.lv-d #lv-proc,body.lv-d #lv-slogan{opacity:0}
    flou, aucune ombre portée. Il suit le papier : anneau autour du profil (Reflection), il rapetisse dans [Mine]
    (Others), il s'efface quand le papier monte sur la langue (Get Higher). `--skx/--sky/--sks` : posés par `socle()`. ── */
 #lv-proc{position:absolute;left:50%;top:calc(var(--gate-size) / 2);width:0;height:0;z-index:1;pointer-events:none;
-  transition:opacity .4s ease .25s}
-body.gate.entered #lv-proc{opacity:0;transition:opacity .2s ease}
+  transition:opacity .4s ease .25s,transform var(--gate-dur) var(--gate-ease)}
+/* 22/10 — au déploiement, la boîte GRANDIT avec le papier (même courbe, même durée) au lieu de s'éteindre ; `--dp*` posés
+   par `LV.deployer()` : le centre de #stage et sa taille + 22 px (ordinateur), hors champ avec le papier (téléphone). */
+body.gate.entered #lv-proc{opacity:1;transform:translate(var(--dpx,0px),var(--dpy,0px)) scale(var(--dpk,1));
+  transition:transform var(--gate-dur) var(--gate-ease)}
 #lv-socket{position:absolute;left:calc(var(--sk) / -2);top:calc(var(--sk) / -2);width:var(--sk);height:var(--sk);
   background:linear-gradient(135deg,rgba(255,255,255,.10) 0%,rgba(255,255,255,.025) 40%,rgba(255,255,255,0) 65%),#0b0b0e;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.30),inset 0 0 0 1px rgba(255,255,255,.05);
@@ -3264,7 +3269,8 @@ body.gate.lv-c #lv-ram,body.gate.lv-h #lv-ram{opacity:1}
    la grille garde ses boîtes, la Terre ses spots (20/10 septies : plus aucun méridien dessiné sur le globe). */
 body.gate.ram-morph:not(.entered) #lv-ram{opacity:1;transition:opacity .2s ease}
 body.gate.lv-g #lv-ram,body.gate.lv-d #lv-ram{transition:opacity .45s ease .2s}
-body.gate.entered #lv-ram,body.gate.folding #lv-ram,body.is-door #lv-ram{opacity:0;transition:opacity .25s ease}
+body.is-door #lv-ram{opacity:0;transition:opacity .25s ease}
+body.gate.entered #lv-ram,body.gate.folding #lv-ram{opacity:1;transition:none}   /* les traits accompagnent le déploiement */
 #lv-ram path{fill:none;stroke-width:2;stroke-linecap:square;stroke-linejoin:miter;
   stroke-dasharray:1 1;stroke-dashoffset:1;transition:stroke-dashoffset .85s var(--gate-ease) calc(var(--i) * 50ms)}
 #lv-ram rect{opacity:0;transition:opacity .25s ease}
@@ -3276,13 +3282,14 @@ body.gate.entered #lv-ram,body.gate.folding #lv-ram,body.is-door #lv-ram{opacity
 #lv-ram .r-0{opacity:.5}
 body.gate:not(.member) #lv-ram .r-0{opacity:.62} /* sans compte, rien n'est un trou : le réseau est en veille */
 #lv-ram .r-0 rect{display:none}
+#lv-ram .r-0 rect.pin{display:inline}            /* une broche existe même sans Habit : la piste est branchée */
 #lv-ram .sk{stroke:#4a4a52}                      /* l'anatomie (scissure, tronc) : gris, jamais une intention */
 #lv-ram .sk-c{stroke:#2e2e34;stroke-width:1.5}    /* 20/10 septies : le contour des deux hémisphères, en retrait */
 /* LE CERVEAU (20/10 septies) : les sept couleurs PLEINES — le creux s'y dit par une onde à demi-amplitude, pas par une
    couleur éteinte ; et pas d'impulsion : c'est l'onde qui vit. */
 body.gate.lv-h #lv-ram .r-0{opacity:1}
 /* Tirées : en entrant dans la vue, chaque piste se dessine depuis le papier. */
-body.gate.lv-c #lv-ram path,body.gate.lv-h #lv-ram path,body.gate.lv-g #lv-ram path,body.gate.lv-d #lv-ram path{stroke-dashoffset:0;
+body.gate.lv-c #lv-ram path,body.gate.lv-h #lv-ram path,body.gate.lv-g #lv-ram path,body.gate.lv-d #lv-ram path,body.gate.lv-b #lv-ram path{stroke-dashoffset:0;
   transition:stroke-dashoffset .95s var(--gate-ease) calc(var(--i) * 50ms + .1s)}
 body.gate.lv-c #lv-ram rect,body.gate.lv-h #lv-ram rect{opacity:1;
   transition:opacity .35s ease calc(var(--i) * 50ms + .8s)}
@@ -3295,6 +3302,24 @@ body.gate.lv-c #lv-ram rect,body.gate.lv-h #lv-ram rect{opacity:1;
 body.gate.lv-c:not(.entered) #lv-ram .puls{opacity:1;
   animation:ram-puls var(--p,3s) linear infinite;animation-delay:var(--d,0s)}
 @keyframes ram-puls{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+/* Le TOTEHM ouvert sur ordinateur (22/10) : la boîte et ses traits restent autour de #stage. Même boîte que `#lv-socket`
+   (base `--sk`, mise à l'échelle `--ak`) : à la fin du déploiement, les deux sont identiques au pixel. */
+#app-proc{position:fixed;inset:0;z-index:9;pointer-events:none;visibility:hidden}
+body.proc-ouvert #app-proc{visibility:visible}
+#app-ram{position:absolute;inset:0;width:100%;height:100%}
+#app-ram path{fill:none;stroke-width:2;stroke-linecap:square;stroke-linejoin:miter}
+#app-ram .r-0{opacity:.5}
+#app-ram .r-0 rect{display:none}
+#app-ram .r-0 rect.pin{display:inline}
+#app-ram .puls{stroke-dasharray:.08 .92;stroke-dashoffset:1;stroke-width:3;animation:ram-puls var(--p,3s) linear infinite;animation-delay:var(--d,0s)}
+#app-ram .puls.veille{stroke-dasharray:.04 .96;stroke-width:2}
+#app-sock{position:absolute;left:var(--ax,50%);top:var(--ay,50%);width:var(--sk);height:var(--sk);
+  margin:calc(var(--sk) / -2) 0 0 calc(var(--sk) / -2);transform:scale(var(--ak,1));
+  background:linear-gradient(135deg,rgba(255,255,255,.10) 0%,rgba(255,255,255,.025) 40%,rgba(255,255,255,0) 65%),#0b0b0e;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.30),inset 0 0 0 1px rgba(255,255,255,.05)}
+#app-sock::before{content:"";position:absolute;left:6px;top:6px;width:7px;height:7px;
+  background:linear-gradient(135deg,rgba(255,255,255,.26) 50%,rgba(255,255,255,0) 50%)}
+@media(prefers-reduced-motion:reduce){#app-ram .puls{display:none}}
 @media(prefers-reduced-motion:reduce){
   #lv-ram path,#lv-ram rect{transition:none}
   #lv-ram .puls{display:none}
@@ -4252,6 +4277,9 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
   </defs>
 </svg>
 
+<!-- Le TOTEHM ouvert sur ORDINATEUR : la boîte noire du processeur et ses sept traits, fixes, autour de #stage
+     (posés par `LV.posApp()` à la place exacte où le déploiement les laisse). Le téléphone ne l'affiche jamais. -->
+<div id="app-proc" aria-hidden="true"><svg id="app-ram"></svg><i id="app-sock"></i></div>
 <div id="stage">
 <div id="rail" class="sink-el"></div>
 
@@ -7342,7 +7370,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-10-22-com-membre';
+const BUILD='2026-10-22-com-structure';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -11278,6 +11306,7 @@ window.addEventListener('pageshow',e=>{
     gate.classList.remove('no-anim');
     gate.scrollTop=0;                /* on mesure toujours depuis le haut */
     measure();                       /* dernière mesure juste avant le départ */
+    try{ LV.deployer(); }catch(err){ console.error('[déploiement]',err); }   /* la boîte et ses traits grandissent AVEC lui */
     void gate.offsetWidth;           /* reflow : garantit le point de départ  */
     body.classList.add('entered');
 
@@ -11322,11 +11351,13 @@ window.addEventListener('pageshow',e=>{
     gate.scrollTop=0;                     /*    on mesure toujours du haut */
     void gate.offsetWidth;
     measure();                            /* 3. rect NON transformé        */
+    try{ LV.replier(1); }catch(err){ console.error('[repli]',err); }   /* la boîte et les traits, là où le TOTEHM les avait */
     body.classList.add('entered');        /* 4. saut à la position d'UI    */
     void gate.offsetWidth;
     gate.classList.remove('no-anim');     /* 5. transitions rendues        */
     void gate.offsetWidth;
     body.classList.remove('entered');     /* 6. et le repli part           */
+    try{ LV.replier(2); }catch(err){ console.error('[repli]',err); }   /* … et ils rentrent avec lui */
 
     open=false;
     timer=setTimeout(()=>{
@@ -11606,7 +11637,7 @@ window.addEventListener('pageshow',e=>{
       sloganPour(v); peindreNav();
       /* Le réseau se TRANSFORME vers la vue (20/10 sexies : « les 4 vues adjacentes sont le résultat de la transformation
          de la vue centrale ») : circuit → cerveau en haut, → rail à gauche, → méridiens autour du monde à droite. */
-      if(v!=='b') RAM.peindre(v,{anime:true});
+      RAM.peindre(v,{anime:true});      /* ↓ aussi (22/10) : les pistes se replient en les sept traits de l'anneau du profil */
     }
 
     /* ── LE SOCLE suit le papier : `--skx/--sky/--sks` (la transition CSS fait le reste) ── */
@@ -12085,22 +12116,39 @@ window.addEventListener('pageshow',e=>{
           out.push([a[0]+(b[0]-a[0])*Math.max(0,Math.min(1,u)), a[1]+(b[1]-a[1])*Math.max(0,Math.min(1,u))]); }
         return out;
       }
-      /* ── LE CIRCUIT (vue centre) : sept pistes sortent du papier, un coude, puis jusqu'au bord haut ET au bord bas ;
-         un carré au coude (la broche), un carré par Habit sur la montée. `c` = le papier (chez lui, ou AGRANDI en MEMBERS). */
-      function circuit(n,c){
-        const hw=(c.w||110)/2, w=W(), h=H();
-        const haut=Math.max(80,c.y-hw), bas=Math.max(80,h-(c.y+hw));
+      /* ── LE CIRCUIT (vue centre) : le papier est dans la BOÎTE NOIRE du processeur (le socle) ; les sept pistes sortent
+         de ses arêtes, en haut ET en bas, par SEPT BROCHES de leur couleur (22/10, Wah : « plus de liens entre les traits
+         et la boîte noire ») — elles tiennent le milieu de l'arête, loin des coins —, un coude, puis jusqu'aux bords de
+         l'écran ; un carré au coude, un carré par Habit sur la montée. `c` = le papier (chez lui, agrandi en MEMBERS, ou
+         déployé) ; `S` = la boîte qui l'entoure. */
+      function circuit(n,c,S){
+        const hs=S/2, w=W(), h=H(), top=c.y-hs, bot=c.y+hs;
+        const haut=Math.max(80,top), bas=Math.max(80,h-bot), pas=hs*.72/3;
         return INTS.map((x,i)=>{
           const d=i-3, dir=Math.sign(d), k=Math.abs(d), q=n[x.id];
-          const sx=Math.round(c.x+d*hw*.5), sy=Math.round(c.y-hw), by=Math.round(c.y+hw);
-          const eh=Math.round(sy-(34+(haut-70)*k/3.2)), eb=Math.round(by+(30+(bas-60)*k/3.2));
-          const ex=Math.round(c.x+dir*(hw*1.35+(w/2-hw*1.35)*(k/3)));
+          const sx=Math.round(c.x+d*pas), sy=Math.round(top), by=Math.round(bot);
+          const eh=Math.round(sy-(26+(haut-62)*k/3.2)), eb=Math.round(by+(24+(bas-54)*k/3.2));
+          const ex=Math.round(c.x+dir*(hs*1.12+(w/2-hs*1.12)*(k/3)));
           const a=dir?[[sx,sy],[sx,eh],[ex,eh],[ex,-4]]:[[sx,sy],[sx,-4]];
           const b=dir?[[sx,by],[sx,eb],[ex,eb],[ex,h+4]]:[[sx,by],[sx,h+4]];
           const nodes=[]; if(dir){ nodes.push([ex,eh,4],[ex,eb,4]); }
           const nx=dir?ex:sx, m=Math.min(6,q.n);
           for(let z=0;z<m;z++) nodes.push([nx, Math.round(eh-(eh+4)*(z+1)/(m+1)), 3]);
-          return {i, x, q, a, b, nodes};
+          /* les broches : posées SUR l'arête, à cheval (la moitié sous la boîte), une en haut, une en bas */
+          const pins=[[sx-2,sy-6,4,9],[sx-2,by-3,4,9]];
+          return {i, x, q, a, b, nodes, pins};
+        });
+      }
+      /* ── ↓ L'ANNEAU (22/10, Wah : « les traits de la vue centrale doivent, à l'image de la gauche et de la droite, se
+         transformer pour donner le résultat actuel de la vue du bas ») : chaque piste se replie en SON trait de l'anneau du
+         profil (`.sk-ring b` : 2 px, 13 px de long, à 51,43° l'un de l'autre, sur le bord du socle devenu cercle) ; à
+         l'arrivée, l'anneau du socle prend le relais, trait pour trait. ── */
+      function anneau(n){
+        const p=profil(), sk=(sock&&sock.offsetWidth)||143, s=(p.d+18)/sk, R=sk*s/2, L=13*s;
+        return INTS.map((x,i)=>{
+          const t=i*51.4286*Math.PI/180, ux=Math.sin(t), uy=-Math.cos(t);
+          const seg=[[p.x+ux*(R-L/2),p.y+uy*(R-L/2)],[p.x+ux*(R+L/2),p.y+uy*(R+L/2)]];
+          return {i, x, q:n[x.id], a:seg, b:seg.map(q=>q.slice()), nodes:[]};
         });
       }
       /* ── LE CERVEAU (vue du haut) · 20/10 septies — Wah : « les couleurs des 7 traits, qui VIBRENT, basse fréquence pour
@@ -12178,13 +12226,13 @@ window.addEventListener('pageshow',e=>{
           return {i, x, q:n[x.id], a, b, nodes:[]};
         });
       }
-      function forme(v,n,c){
-        const l=v==='h'?cerveau(n):v==='g'?rail(n):v==='d'?meridiens(n):circuit(n,c);
+      function forme(v,n,c,S){
+        const l=v==='h'?cerveau(n):v==='g'?rail(n):v==='d'?meridiens(n):v==='b'?anneau(n):circuit(n,c,S);
         l.forEach(o=>{ o.a=reech(o.a); o.b=reech(o.b); });
         return l;
       }
       const dDe=o=>'M'+o.a.map(p=>r1(p[0])+' '+r1(p[1])).join('L')+'M'+o.b.map(p=>r1(p[0])+' '+r1(p[1])).join('L');
-      function dessiner(G){
+      function balisage(G){
         let out=G.anat||'';
         G.forEach(o=>{
           /* Habitée : la période RÉELLE de son Habit. Vide : la veille, lente et commune. Le cerveau : ses ondes
@@ -12195,24 +12243,37 @@ window.addEventListener('pageshow',e=>{
             +'<path pathLength="1" d="'+d+'" stroke="'+o.x.color+'"/>'
             +'<path class="puls'+(o.q.n?'':' veille')+'" pathLength="1" d="'+d+'" stroke="'+o.x.color+'"/>'
             +o.nodes.map(r=>'<rect x="'+r1(r[0]-r[2]/2)+'" y="'+r1(r[1]-r[2]/2)+'" width="'+r[2]+'" height="'+r[2]+'" fill="'+o.x.color+'"/>').join('')
+            +(o.pins||[]).map(r=>'<rect class="pin" x="'+r1(r[0])+'" y="'+r1(r[1])+'" width="'+r[2]+'" height="'+r[3]+'" fill="'+o.x.color+'"/>').join('')
             +'</g>';
         });
-        svg.innerHTML=out; cur=G;
+        return out;
+      }
+      function dessiner(G){
+        svg.innerHTML=balisage(G); cur=G;
         if(G.vib){ GH=G; vibrer(); } else GH=null;
       }
       /* LA TRANSFORMATION : chaque point de chaque piste va de sa place à sa nouvelle place (≈ 0,7 s, la course du papier).
          Les nœuds attendent l'arrivée ; une transformation interrompue repart de là où elle en était. */
-      function morph(A,B){
+      function morph(A,B,o){
         if(raf) cancelAnimationFrame(raf);
+        o=o||{};
         diagR.morphs++; document.body.classList.add('ram-morph');
-        const t0=performance.now(), Dms=700, ease=u=>u<.5?4*u*u*u:1-Math.pow(-2*u+2,3)/2;
+        /* le temps part de la PREMIÈRE image : c'est là que partent aussi les transitions CSS (le papier, la boîte) */
+        let t0=0; const Dms=o.ms||700, ease=o.ease||(u=>u<.5?4*u*u*u:1-Math.pow(-2*u+2,3)/2);
         let out=''; B.forEach(o=>{ const st=' style="--i:'+o.i+';--p:'+(o.q.n?periode(o.q.w):'6.2')+'s;--d:'+(o.i*.42).toFixed(2)+'s"';
           out+='<g'+(o.q.n?'':' class="r-0"')+st+'><path pathLength="1" stroke="'+o.x.color+'"/>'
             +'<path class="puls'+(o.q.n?'':' veille')+'" pathLength="1" stroke="'+o.x.color+'"/></g>'; });
         svg.innerHTML=out;
         const gs=[...svg.querySelectorAll('g')];
+        /* `o.suivre` : l'élément dont la transition CSS donne l'heure (la boîte au déploiement) — les traits lisent SON
+           horloge à chaque image : ils ne peuvent pas se détacher de ses arêtes. Sans elle : la nôtre. */
+        const horloge=()=>{ const el=o.suivre; if(!el||!el.getAnimations) return null;
+          const a=el.getAnimations().find(x=>x.transitionProperty==='transform'); return a&&a.currentTime!=null?a.currentTime:null; };
+        let suivie=false;
         const pas=now=>{
-          const u=ease(Math.min(1,(now-t0)/Dms));
+          if(!t0) t0=now;
+          const hc=horloge(); if(hc!=null) suivie=true;
+          const u=ease(Math.min(1,(hc!=null?hc:(suivie?Dms:now-t0))/Dms));
           const M=B.map((o,i)=>{ const p=A[i]||o, m=(x,y)=>x.map((q,k)=>[q[0]+((y[k]||q)[0]-q[0])*u, q[1]+((y[k]||q)[1]-q[1])*u]);
             return Object.assign({},o,{a:m(p.a,o.a), b:m(p.b,o.b)}); });
           M.forEach((o,i)=>{ const d=dDe(o); gs[i].querySelectorAll('path').forEach(pa=>pa.setAttribute('d',d)); });
@@ -12223,19 +12284,23 @@ window.addEventListener('pageshow',e=>{
         raf=requestAnimationFrame(pas);
       }
       /* Un rendu = une vue, une taille, mes Habits, la place du papier. On ne redessine pas pour rien. */
+      /* La boîte noire autour du papier : le socle suit le papier (agrandi en MEMBERS, déployé) ; `o.socle` la donne. */
+      const boite=(c,o)=>o.socle||(c.w||110)*(((sock&&sock.offsetWidth)||143)/(((PAPIER.chez()||{}).w)||110));
       function peindre(v,o){
         if(!svg) return;
         o=o||{};
-        const vu=(v==='h'||v==='g'||v==='d')?v:'c', n=compte(), c=o.papier||PAPIER.chez()||{x:W()/2,y:H()*.55,w:110};
-        const s=vu+'|'+W()+'x'+H()+'|'+INTS.map(x=>n[x.id].n+':'+n[x.id].w).join(',')+'|'+Math.round(c.x)+','+Math.round(c.y)+','+Math.round(c.w||110);
+        const vu=(v==='h'||v==='g'||v==='d'||v==='b')?v:'c', n=compte(), c=o.papier||PAPIER.chez()||{x:W()/2,y:H()*.55,w:110}, S=boite(c,o);
+        const s=vu+'|'+W()+'x'+H()+'|'+INTS.map(x=>n[x.id].n+':'+n[x.id].w).join(',')+'|'+Math.round(c.x)+','+Math.round(c.y)+','+Math.round(c.w||110)+','+Math.round(S);
         if(s===sig&&svg.childNodes.length){ if(vu==='h') vibrer(); return; } sig=s;
         if(vraf){ cancelAnimationFrame(vraf); vraf=0; }
         svg.setAttribute('viewBox','0 0 '+W()+' '+H());
-        const G=forme(vu,n,c);
-        if(o.anime&&cur&&cur.length===G.length&&svg.childNodes.length&&!RMQ.matches) morph(cur,G);
+        const G=forme(vu,n,c,S);
+        if(o.anime&&cur&&cur.length===G.length&&svg.childNodes.length&&!RMQ.matches) morph(cur,G,o);
         else{ if(raf){ cancelAnimationFrame(raf); raf=0; document.body.classList.remove('ram-morph'); } dessiner(G); }
       }
-      return {peindre, oublie(){ sig=''; },
+      /* Le circuit FIXE dans un autre calque (le TOTEHM ouvert sur ordinateur : `#app-ram`), autour d'un papier donné. */
+      function copie(el,c,S){ if(!el) return; el.setAttribute('viewBox','0 0 '+W()+' '+H()); el.innerHTML=balisage(forme('c',compte(),c,S)); }
+      return {peindre, copie, oublie(){ sig=''; },
         etat:()=>({pistes:svg?svg.querySelectorAll('path:not(.puls):not(.sk)').length:0,
                    noeuds:svg?svg.querySelectorAll('rect').length:0,
                    impulsions:svg?svg.querySelectorAll('.puls').length:0,
@@ -12734,7 +12799,63 @@ window.addEventListener('pageshow',e=>{
         let n=0; const t=setInterval(async()=>{ n++; if(lvRefresh) await lvRefresh();
           if(acces()||n>=8){ clearInterval(t); SM.paye=false; if(acces()) smNoteEtat(); else smNote('it takes a moment · reopen this view soon'); } },1500); },600);
     }
+    /* ══ LE DÉPLOIEMENT DE TOUTE LA STRUCTURE (22/10) ══ Wah : « quand j'appuie sur le Totehm, il reste dans sa boîte et
+       on voit les traits d'intention qui accompagnent l'agrandissement général de toute la structure de la vue
+       centrale ». La boîte noire (`#lv-proc`) grandit avec le fond du papier, à la MÊME courbe et la MÊME durée
+       (`--gate-dur`, `--gate-ease` : `BEZ` la recalcule) ; les sept traits se transforment au même rythme vers le
+       circuit de la boîte agrandie — leurs broches restent sur ses arêtes, au pixel. ORDINATEUR : le papier se pose
+       dans `#stage`, la boîte l'entoure de 22 px et RESTE, avec ses traits (`#app-proc`, hors du portail, à la même
+       place : le fondu du portail ne fait rien bouger). TÉLÉPHONE : le papier couvre l'écran ; la boîte et les traits
+       sortent du champ — le TOTEHM ouvert est celui d'avant, seul le déploiement change. */
+    const BEZ=(()=>{ const x1=.62, y1=.02, x2=.24, y2=1;
+      const cx=3*x1, bx=3*(x2-x1)-cx, ax=1-cx-bx, cy=3*y1, by=3*(y2-y1)-cy, ay=1-cy-by;
+      const X=t=>((ax*t+bx)*t+cx)*t, Y=t=>((ay*t+by)*t+cy)*t, dX=t=>(3*ax*t+2*bx)*t+cx;
+      return u=>{ if(u<=0) return 0; if(u>=1) return 1; let t=u;
+        for(let i=0;i<8;i++){ const e=X(t)-u, d=dX(t); if(Math.abs(e)<1e-5||!d) break; t=Math.max(0,Math.min(1,t-e/d)); }
+        return Y(t); }; })();
+    const DEP_MS=1050, MARGE=22;
+    const diagD={deploiements:0, replis:0};
+    function cibleDeploiement(){
+      const st=$('stage'), r=st&&st.getBoundingClientRect(), sr=sock.getBoundingClientRect(), pc=PAPIER.chez()||{w:110};
+      const sk=sock.offsetWidth||143, cx=sr.left+sr.width/2, cy=sr.top+sr.height/2;
+      if(r&&r.width>40&&r.height>40){ const S=Math.max(r.width,r.height)+2*MARGE;
+        return {ordi:true, x:r.left+r.width/2, y:r.top+r.height/2, S, k:S/sk, cx, cy, pw:pc.w||110, sk}; }
+      const k=Math.max(8,+getComputedStyle(document.documentElement).getPropertyValue('--gate-bg-scale')||12);
+      return {ordi:false, x:cx, y:cy, S:sk*k, k, cx, cy, pw:pc.w||110, sk};
+    }
+    function poserBoite(T){
+      const st=$('lv-proc').style;
+      st.setProperty('--dpx',(T.x-T.cx).toFixed(1)+'px'); st.setProperty('--dpy',(T.y-T.cy).toFixed(1)+'px');
+      st.setProperty('--dpk',T.k.toFixed(4));
+    }
+    const papierDe=T=>({x:T.x, y:T.y, w:T.S*T.pw/T.sk});
+    function deployer(){
+      const T=cibleDeploiement(); diagD.deploiements++;
+      poserBoite(T); posApp();
+      RAM.peindre('c',{anime:true, ms:DEP_MS, ease:BEZ, papier:papierDe(T), socle:T.S, suivre:$('lv-proc')});
+      return T;
+    }
+    function replier(phase){
+      if(phase===1){ const T=cibleDeploiement(); diagD.replis++;
+        document.body.classList.remove('proc-ouvert');
+        poserBoite(T); RAM.peindre('c',{papier:papierDe(T), socle:T.S}); return; }
+      RAM.peindre('c',{anime:true, ms:DEP_MS, ease:BEZ, suivre:$('lv-proc')});
+    }
+    /* Le TOTEHM ouvert sur ordinateur : la boîte et ses traits, FIXES, autour de `#stage`. */
+    function posApp(){
+      const ap=$('app-proc'), st=$('stage'); if(!ap||!st) return false;
+      const r=st.getBoundingClientRect(), ordi=r.width>40&&r.height>40;
+      document.body.classList.toggle('proc-ouvert',ordi);
+      if(!ordi) return false;
+      const sk=sock.offsetWidth||143, S=Math.max(r.width,r.height)+2*MARGE, x=r.left+r.width/2, y=r.top+r.height/2;
+      ap.style.setProperty('--ax',x.toFixed(1)+'px'); ap.style.setProperty('--ay',y.toFixed(1)+'px'); ap.style.setProperty('--ak',(S/sk).toFixed(4));
+      RAM.copie($('app-ram'),{x, y, w:S*((PAPIER.chez()||{}).w||110)/sk},S);
+      return true;
+    }
+    window.addEventListener('resize',()=>{ if(document.body.classList.contains('proc-ouvert')&&!document.body.classList.contains('gate')) posApp(); });
+    window.__totehm_deploiement=()=>({...diagD, ouvert:document.body.classList.contains('proc-ouvert')});
     return {vue:()=>vue, mode:()=>mode, membre:()=>!!MB.nom&&!MB.cherche, aller, choisirMode, versMine, poser, reset, calme,
+            deployer, replier, posApp,
             revenu(){ RAM.peindre(vue); socle('c'); }};
   })();
 

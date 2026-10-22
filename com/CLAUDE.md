@@ -24,7 +24,8 @@ figher.club ; `/vendor`, `/cities.json`, `/assets/signs` → SPACE ; Telegram n'
 | l'atterrissage, les gestes | `const LV=` · `garde(` · `demander(` · `reprendre(` · `quandLibre` |
 | ↑ Get Higher | `RAM.cerveau` · `posHaut()` (la bouche rétrécit, jamais le cerveau) |
 | ← mes médias | `const SH =` · `MBM` · `boxTotehm` · `#tlv` (visionneuse verticale) · `feed_badges` · filtre : `.sfcmd` (MY STORY ▢ · OBJ/HAB/REP empilés · ▢ VISION, carrés `--perfo`) |
-| ● mon TOTEHM, le verso | `const PAPIER=` · `const RAM=` (`peindre` : ← → sont la transformation du centre) · `#self-h` · `ouvrirVerso` → `is-pret` · sections `#mw-creator` (Monetize my TOTEHM) · `#mw-menu` ([Higher] subscription) · `#vs-subs-s` |
+| ● mon TOTEHM, le verso | `const PAPIER=` · `const RAM=` (`peindre` : ← → ↓ sont la transformation du centre ; `circuit` = 7 broches par arête du processeur, `anneau` = l'anneau du profil) · `#self-h` · `ouvrirVerso` → `is-pret` · sections `#mw-creator` (Monetize my TOTEHM) · `#mw-menu` ([Higher] subscription) · `#vs-subs-s` |
+| le déploiement | `LV.deployer()` / `LV.replier(1|2)` (appelés par `enter`/`fold`) : `#lv-proc` grandit avec le papier (`--dp*`), les traits suivent ; ordinateur ouvert : `#app-proc` (`LV.posApp`, `body.proc-ouvert`) ; `__totehm_deploiement()` |
 | → les spots | `const CLUBSP=` (`club_spots`, `club_spots_of`) · `SPOTMODE` · `SPMAP` · `SPGRID` · `SHS` · `BUNNY` |
 | ↓ Higher Self | `const REF=` (`higher-self`) |
 | MEMBERS | `const MB=` → `totehm_of` → `entrerChez()` : ses médias, son TOTEHM, ses spots, son offre (`OFFRE`) |
@@ -41,6 +42,8 @@ Diagnostics : `__totehm_lv()` · `__totehm_xo()` · `__totehm_sh()` · `__totehm
 - Ne jamais redéfinir `--perfo` (une seconde définition l'écrase en silence).
 - Un verrou de navigation se rend toujours ; un geste reçu pendant un voyage attend sa fin.
 - Session gardée : ni la vente ni CONNECT avant la fin de la lecture ; aucune écriture sur la foi du cache.
+- Déploiement : la boîte (`#lv-proc`, transition CSS `--gate-dur`/`--gate-ease`) donne l'HEURE aux traits (`morph(…, {suivre})`
+  lit `getAnimations().currentTime`) — ne jamais les animer sur deux horloges : les broches se détachent (mesuré : 19 px).
 - Verso : le dos du papier porte le NOM seul ; déplié, tout ce qui n'est pas le nom porte `.srch-after` et n'apparaît
   qu'à `is-pret` (verso déployé ET console lue, 1,8 s au plus) — un nœud ajouté au verso sans `.srch-after` s'affiche trop tôt.
 - Verso déplié : l'identifiant (`#self-h`) est à même le navy ; il colle en haut avec un bandeau `#333366` peint à

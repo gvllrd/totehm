@@ -40,12 +40,15 @@ La couleur de la box dit le TYPE (navy · bleu clair · rouge-violet) ; le trait
 THP : *Neuroscience, not motivation.*) · ← **mes médias** (une grille, chaque image perforée des douze trous du logo ;
 le filtre = un bloc de commande, la croix du TOTEHM : MY STORY et VISION en carrés perforés de leur couleur,
 OBJECTIVE · HABIT · REPULSION empilés entre eux) ·
-● **mon TOTEHM** (le papier sur son socle ; un tap le déploie ; le retourner montre le NOM seul — à même le navy,
+● **mon TOTEHM** (le papier dans la boîte noire du processeur, ses sept traits branchés sur ses arêtes par des broches de
+leur couleur ; un tap déploie TOUTE la structure — le papier reste dans sa boîte, les traits suivent — et sur ordinateur
+la boîte et ses traits restent autour du TOTEHM ouvert ; le retourner montre le NOM seul — à même le navy,
 l'email dessous —, qui monte, puis
 tout d'un coup : **Monetize my TOTEHM** — *and get paid every month* —, l'abonnement **[Higher]** et ce qu'il ouvre
 — Higher Self chaque jour, TotehmBot qui suit chaque Habit —, mes abonnements, puis DELETE MY TOTEHM et SIGN OUT
 en boutons et les conditions) ·
-→ **les spots** (MAP ou GRID) · ↓ **Higher Self** (j'arrive, je tape, mon Higher Self répond ; quelques réponses
+→ **les spots** (MAP ou GRID) · ↓ **Higher Self** (les traits se replient en l'anneau du profil ; j'arrive, je tape,
+mon Higher Self répond ; quelques réponses
 offertes, puis l'abonnement Higher). Chercher un membre : le papier se retourne, on tape son nom, on entre chez lui.
 
 **Confidentialité par box**, trois niveaux : PRIVATE · FIGHER CLUB (un membre : une habit, un objectif, une
