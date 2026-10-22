@@ -6,7 +6,7 @@ import {execFileSync} from 'node:child_process';
 import {launch,page} from './harness.mjs';
 import {PerspectiveCamera,Vector3} from '../../space/vendor/three-0.180.0.mjs';
 
-const OUT=process.argv[2]||'/tmp/totehm-production/drowned-world';
+const OUT=process.argv[2]||'/tmp/totehm-production/ocean-v2-final';
 const origin='https://www.totehm.space',destinations=['/get_higher','/origins','/play_lisbon_street'];
 const results=[];let checks=0,browser;
 fs.mkdirSync(OUT,{recursive:true});
@@ -23,8 +23,8 @@ async function observe(pg,{hour=12,noWebGL=false}={}){
  await pg.addInitScript(({hour,noWebGL})=>{
   const NativeDate=Date,fixed=new NativeDate(2026,9,21,hour,0,0).getTime();
   window.Date=new Proxy(NativeDate,{construct:(Target,args)=>Reflect.construct(Target,args.length?args:[fixed])});
-  const native=window.__templeNative={contexts:0,draws:0,instancedCounts:[],textureUploads:0,imageSources:[],lastUpload:0,audio:[],noises:[],tones:[],lastFrame:0,canvasUploads:[],pointCounts:[],timeUniforms:{}};
-  const uniformNames=new WeakMap();
+  const native=window.__templeNative={contexts:0,draws:0,instancedCounts:[],textureUploads:0,imageSources:[],lastUpload:0,audio:[],noises:[],tones:[],lastFrame:0,canvasUploads:[],pointCounts:[],timeUniforms:{},oceanTimeUniforms:{},oceanPrograms:0,oceanDraws:0,oceanGeometryCounts:[],vegetationShader:false};
+  const uniformNames=new WeakMap(),shaderKinds=new WeakMap(),programKinds=new WeakMap(),oceanPrograms=new WeakSet();let activeProgramKind=null;
   const get=HTMLCanvasElement.prototype.getContext,seenContexts=new WeakSet();
   HTMLCanvasElement.prototype.getContext=function(kind,...args){
    if(noWebGL&&/webgl/i.test(kind))return null;
@@ -34,6 +34,9 @@ async function observe(pg,{hour=12,noWebGL=false}={}){
   };
   for(const Class of [globalThis.WebGLRenderingContext,globalThis.WebGL2RenderingContext]){
    if(!Class)continue;
+   const shaderSource=Class.prototype.shaderSource;Class.prototype.shaderSource=function(shader,source){if(/uTempleWind/.test(source))native.vegetationShader=true;if(/\buOceanTime\b|\bOceanSurface\b|\boceanSurface\b/.test(source))shaderKinds.set(shader,'ocean');return Reflect.apply(shaderSource,this,[shader,source]);};
+   const attachShader=Class.prototype.attachShader;Class.prototype.attachShader=function(program,shader){if(shaderKinds.get(shader)==='ocean'){programKinds.set(program,'ocean');if(!oceanPrograms.has(program)){oceanPrograms.add(program);native.oceanPrograms++;}}return Reflect.apply(attachShader,this,[program,shader]);};
+   const useProgram=Class.prototype.useProgram;Class.prototype.useProgram=function(program){activeProgramKind=programKinds.get(program)||null;return Reflect.apply(useProgram,this,[program]);};
    for(const method of ['texImage2D','texSubImage2D']){
     const original=Class.prototype[method];
     Class.prototype[method]=function(...args){
@@ -45,10 +48,10 @@ async function observe(pg,{hour=12,noWebGL=false}={}){
    }
    for(const method of ['drawElements','drawArrays','drawElementsInstanced','drawArraysInstanced']){
     const original=Class.prototype[method];if(!original)continue;
-    Class.prototype[method]=function(...args){native.draws++;native.lastFrame=performance.now();if(args[0]===0&&!native.pointCounts.includes(args[2]))native.pointCounts.push(args[2]);if(method.endsWith('Instanced')&&!native.instancedCounts.includes(args.at(-1)))native.instancedCounts.push(args.at(-1));return Reflect.apply(original,this,args);};
+    Class.prototype[method]=function(...args){native.draws++;native.lastFrame=performance.now();if(args[0]===0&&!native.pointCounts.includes(args[2]))native.pointCounts.push(args[2]);if(method.endsWith('Instanced')&&!native.instancedCounts.includes(args.at(-1)))native.instancedCounts.push(args.at(-1));if(activeProgramKind==='ocean'){native.oceanDraws++;const count=method.startsWith('drawElements')?args[1]:args[2];if(!native.oceanGeometryCounts.includes(count))native.oceanGeometryCounts.push(count);}return Reflect.apply(original,this,args);};
    }
-   const location=Class.prototype.getUniformLocation;Class.prototype.getUniformLocation=function(program,name){const value=Reflect.apply(location,this,[program,name]);if(value)uniformNames.set(value,name);return value;};
-   const uniform=Class.prototype.uniform1f;Class.prototype.uniform1f=function(location,value){const name=uniformNames.get(location);if(name&&/time/i.test(name)){const rows=native.timeUniforms[name]||(native.timeUniforms[name]=[]);if(rows.at(-1)!==value){rows.push(value);if(rows.length>16)rows.shift();}}return Reflect.apply(uniform,this,[location,value]);};
+   const location=Class.prototype.getUniformLocation;Class.prototype.getUniformLocation=function(program,name){const value=Reflect.apply(location,this,[program,name]);if(value)uniformNames.set(value,{name,kind:programKinds.get(program)});return value;};
+   const uniform=Class.prototype.uniform1f;Class.prototype.uniform1f=function(location,value){const meta=uniformNames.get(location),name=meta?.name;if(name&&/time/i.test(name)){for(const target of [native.timeUniforms,...(meta.kind==='ocean'?[native.oceanTimeUniforms]:[])]){const rows=target[name]||(target[name]=[]);if(rows.at(-1)!==value){rows.push(value);if(rows.length>16)rows.shift();}}}return Reflect.apply(uniform,this,[location,value]);};
   }
   const NativeAudio=window.AudioContext||window.webkitAudioContext;
   if(NativeAudio){
@@ -127,10 +130,11 @@ try{
   const f=await fixture(viewport),{pg,ctx,log,requests}=f,sample={viewport,kind:'night-at-noon'};results.push(sample);const suffix=' at '+viewport.width;
   try{
    await pg.goto(origin+'/');sample.initial=await loaded(pg);
-   check(sample.initial.build==='2026-10-22-space-last-summit'&&sample.initial.zone==='temple'&&!sample.initial.fallback,'the last summit opens in a real 3D scene'+suffix);
+   check(sample.initial.build==='2026-10-22-space-tidal-ocean'&&sample.initial.zone==='temple'&&!sample.initial.fallback,'the tidal-ocean temple opens in a real 3D scene'+suffix);
    check(dayOf(sample.initial)===false&&sample.initial.landscape.permanentNight&&sample.initial.temple.portals.length===3,'the drowned world stays nocturnal at local noon with three antique portals'+suffix);
    check(sample.initial.landscape.sky.milkyWay&&sample.initial.landscape.sky.stars>5000&&sample.initial.landscape.sky.moon,'the sky contains a Milky Way, thousands of stars and a moon'+suffix);
    check(sample.initial.landscape.ocean.displacedGeometry&&sample.initial.landscape.ocean.swells>=2&&sample.initial.landscape.ocean.crestUpperBound<0&&sample.initial.landscape.ocean.baseHeight<sample.initial.landscape.ocean.crestUpperBound,'monumental displaced swells remain below the last summit'+suffix);
+   check(sample.initial.temple.trees===0&&sample.initial.temple.flowers===0&&sample.initial.temple.planters===0&&sample.initial.temple.leafCards===0&&sample.initial.temple.vegetation===false&&sample.initial.temple.plants.length===0,'the temple contains no trees, flowers, foliage or planting beds'+suffix);
    check(await pg.locator('iframe,video,#spatial-player').count()===0,'the temple has no embedded or merged experience player'+suffix);
    check((await pg.evaluate(()=>__templeNative.audio.length))===0&&!sample.initial.audio.unlocked,'sound is not constructed before a real gesture'+suffix);
    check(await pg.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'temple interface fits the viewport'+suffix);
@@ -138,11 +142,15 @@ try{
    await screenshot(pg,'entrance-ui-'+viewport.width);
    check(sample.worldPixels.mean>4&&sample.worldPixels.mean<100&&sample.worldPixels.black<.9&&sample.worldPixels.colours>300,'the night keeps textured temple stones and a readable world'+suffix);
    await pg.waitForFunction(()=>__templeNative.imageSources.filter(src=>src.includes('/assets/temple/')).length>=2,null,{timeout:45000});
-   sample.nativeTextures=await pg.evaluate(()=>({contexts:__templeNative.contexts,draws:__templeNative.draws,uploads:__templeNative.textureUploads,sources:__templeNative.imageSources,instancedCounts:__templeNative.instancedCounts,canvasUploads:__templeNative.canvasUploads,pointCounts:__templeNative.pointCounts,timeUniforms:__templeNative.timeUniforms}));
+   sample.nativeTextures=await pg.evaluate(()=>({contexts:__templeNative.contexts,draws:__templeNative.draws,uploads:__templeNative.textureUploads,sources:__templeNative.imageSources,instancedCounts:__templeNative.instancedCounts,canvasUploads:__templeNative.canvasUploads,pointCounts:__templeNative.pointCounts,timeUniforms:__templeNative.timeUniforms,oceanPrograms:__templeNative.oceanPrograms,oceanDraws:__templeNative.oceanDraws,oceanGeometryCounts:__templeNative.oceanGeometryCounts,vegetationShader:__templeNative.vegetationShader}));
    check(sample.nativeTextures.contexts===1&&sample.nativeTextures.draws>0&&sample.nativeTextures.uploads>=2,'real temple image textures reach the native GPU'+suffix);
    check(sample.nativeTextures.canvasUploads.some(c=>c.width===sample.initial.landscape.sky.textureSize[0]&&c.height===sample.initial.landscape.sky.textureSize[1])&&sample.nativeTextures.pointCounts.includes(sample.initial.landscape.sky.stars),'the actual celestial canvas and star points reach native GPU uploads and draws'+suffix);
+   check(!sample.nativeTextures.vegetationShader&&!sample.nativeTextures.instancedCounts.includes(viewport.width<650?5760:11520),'the removed foliage is absent from native shaders and instanced draws'+suffix);
+   check(sample.nativeTextures.oceanPrograms>0&&sample.nativeTextures.oceanDraws>0&&sample.nativeTextures.oceanGeometryCounts.some(count=>count>10000),'the displaced ocean is linked and drawn as real high-resolution native geometry'+suffix);
+   check(sample.initial.landscape.ocean.rolledCrests&&sample.initial.landscape.ocean.analyticNormals&&sample.initial.landscape.ocean.skyReflections&&sample.nativeTextures.pointCounts.includes(sample.initial.landscape.ocean.sprayParticles),'the rolled ocean reflects the real sky and draws its crest spray as native points'+suffix);
    const movingWorld=sample.initial.landscape;await pg.waitForFunction(previous=>{const d=__totehm_gallery().landscape;return d.ocean.time>previous.ocean+.025&&d.sky.time>previous.sky+.025;},{ocean:movingWorld.ocean.time,sky:movingWorld.sky.time},{timeout:15000});
    check(await pg.evaluate(()=>Object.values(__templeNative.timeUniforms).some(values=>new Set(values).size>1)),'the ocean and stars advance with real native shader time uniforms'+suffix);
+   check(await pg.evaluate(()=>Object.values(__templeNative.oceanTimeUniforms).some(values=>new Set(values).size>1)),'the actual ocean program receives advancing time independently of the stars'+suffix);
    check(sample.initial.temple.paperPortal?.papers===(viewport.width<650?18:24)&&sample.nativeTextures.instancedCounts.includes(sample.initial.temple.paperPortal.papers)&&sample.nativeTextures.sources.some(src=>src.endsWith('/assets/gallery/totehmpaper.png')),'the door renders many copies of the genuine perforated paper as native instances'+suffix);
    await pg.click('#enter-gallery');
    check(new URL(pg.url()).pathname==='/'&&(await state(pg)).zone==='temple','begin activates the visit without entering an artwork'+suffix);
@@ -167,8 +175,9 @@ try{
    await pg.click('#overview');await settled(pg);
    check(JSON.stringify((await state(pg)).position)===JSON.stringify([0,12]),'return restores the original temple entrance'+suffix);
    await pg.emulateMedia({reducedMotion:'reduce'});await pg.waitForFunction(()=>__totehm_gallery().reduced_motion);
-   await pg.waitForTimeout(500);const frozen=await state(pg);await pg.waitForTimeout(350);const frozenEnd=await state(pg);
+   await pg.waitForTimeout(500);const frozen=await state(pg),frozenOceanUniforms=await pg.evaluate(()=>JSON.stringify(__templeNative.oceanTimeUniforms));await pg.waitForTimeout(350);const frozenEnd=await state(pg);
    check(frozenEnd.frames===frozen.frames&&JSON.stringify(clocks(frozenEnd))===JSON.stringify(clocks(frozen))&&!frozenEnd.landscape.ocean.animated&&!frozenEnd.landscape.sky.animated,'reduced motion freezes geometry, waves, stars and architecture'+suffix);
+   check(await pg.evaluate(()=>JSON.stringify(__templeNative.oceanTimeUniforms))===frozenOceanUniforms,'reduced motion also stops actual ocean shader time uploads'+suffix);
    if(viewport.width<650){
     const start=(await state(pg)).position,r=await pg.locator('#joystick').boundingBox(),cdp=await ctx.newCDPSession(pg);
     await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:r.x+r.width/2,y:r.y+r.height/2}]});
@@ -235,6 +244,13 @@ try{
   const {pg,ctx,log}=await fixture({width:1440,height:1000}),sample={kind:'physical-threshold'};results.push(sample);
   try{
    await pg.emulateMedia({reducedMotion:'reduce'});await pg.goto(origin+'/');await loaded(pg);await pg.click('#enter-gallery');
+   for(const x of [-11,11]){
+    const oldBed=await project(pg,[x,.005,-3]);check(oldBed.x>0&&oldBed.x<1440&&oldBed.y>0&&oldBed.y<1000,'the former planting is a visible physical floor target');
+    await pg.mouse.click(oldBed.x,oldBed.y);
+    await pg.waitForFunction(x=>{const d=__totehm_gallery();return Math.abs(d.position[0]-x)<.15&&Math.abs(d.position[1]+3)<.15&&!d.moving;},x);
+    check(new URL(pg.url()).pathname==='/'&&(await state(pg)).room===-1,'a real floor click crosses the former planting without an invisible obstacle');
+    await pg.click('#overview');await settled(pg);
+   }
    const floor=await project(pg,[0,.005,-8]);await pg.mouse.click(floor.x,floor.y);
    await pg.waitForFunction(()=>Math.abs(__totehm_gallery().position[1]+8)<.15&&!__totehm_gallery().moving);
    check(new URL(pg.url()).pathname==='/'&&(await state(pg)).room===-1,'an actual floor ray moves along the central aisle without selecting a page');
@@ -259,5 +275,5 @@ try{
   }catch(error){sample.error=String(error);throw error;}
   finally{fs.writeFileSync(OUT+'/results.json',JSON.stringify({checks,results},null,2));await close(ctx);}
  }
- console.log('PASS '+checks+' last-summit checks; evidence '+OUT);
+ console.log('PASS '+checks+' tidal-ocean checks; evidence '+OUT);
 }finally{await browser?.close();}

@@ -3,7 +3,7 @@
 > L’état actuel (≤ 60 lignes). On y travaille à la demande de Wah. Les mesures de livraison vivent dans les commits.
 
 Le dernier temple au sommet d’une Terre engloutie : océan à 360°, houles monumentales sous une nuit permanente.
-La terrasse de pierre et ses oliviers vivants restent seuls au-dessus des eaux : peur au loin, refuge et renouveau ici.
+La terrasse de pierre nue reste seule au-dessus des eaux : peur au loin, refuge et renouveau ici. Aucun arbre, fleur ou bac.
 Les trois portes ouvrent leurs pages indépendantes : `/get_higher`, `/origins`, `/play_lisbon_street`.
 La porte TotehmPaper montre de nombreux papiers originaux perforés suspendus ; celle de Lisbon ses panneaux flottants.
 
@@ -11,9 +11,9 @@ La porte TotehmPaper montre de nombreux papiers originaux perforés suspendus ; 
 |---|---|
 | `index.html` · `gallery-ui.mjs` · `gallery.css` | entrée, portes, panoramas, liste accessible et SSO existant |
 | `gallery-3d.mjs` · `gallery-temple-navigation.mjs` | caméra, guidage et collisions, clavier/sol/joystick, passage vers les pages |
-| `gallery-temple.mjs` | pierre PBR, 8 colonnes à 24 flûtes, arches, oliviers, feuilles découpées et couvertures des portes |
+| `gallery-temple.mjs` | pierre PBR, 8 colonnes à 24 flûtes, arches et couvertures des portes ; terrasse sans végétation |
 | `gallery-temple-landscape.mjs` | seul piton émergé, lune, pierre éclairée et environnement nocturne préfiltré |
-| `gallery-drowned-ocean.mjs` | océan 3D à 360°, deux trains de houle déplacés GPU, crêtes et écume argentées |
+| `gallery-drowned-ocean.mjs` | océan radial 3D à 360°, trois houles asymétriques, reflets du ciel, écume filtrée et embruns |
 | `gallery-drowned-sky.mjs` | ciel généré localement, Voie lactée/poussières, étoiles, lune et rare étoile filante |
 | `gallery-temple-assets.mjs` · `assets/temple/` | 9 textures de pierre PBR 1k chargées ; sources CC0 dans LICENSE.txt |
 | `gallery-audio.mjs` · `gallery-lisbon.mjs` | grave progressif près des portes et souffle Web Audio ; aperçu des vrais panneaux |
@@ -24,8 +24,9 @@ La porte TotehmPaper montre de nombreux papiers originaux perforés suspendus ; 
 | `vendor/` · `assets/` | Three.js/HLS, textures de pierre et vrais médias |
 
 - Nuit permanente à toute heure. Environnement PMREM issu du vrai ciel procédural, sans téléchargement de panorama/HDR.
-- Océan à −105 m, crêtes bornées sous −37 m, calme près du piton ; aucun autre sol émergé. Astres et houles suivent le mouvement réduit.
-- Routes autour de six plantations de rayon 2,7 m ; les portes sont en x=−9/0/9, z=−12. Aucun pas hors de la plateforme.
+- Océan à −112 m, crêtes bornées sous −18,52 m, calme à 135 m du piton ; aucun autre sol émergé. Astres/eau/embruns figés en mouvement réduit.
+- Eau détaillée sur 24 km de diamètre : 147 456 triangles ordinateur / 61 440 téléphone, 1 600 / 700 points d’embruns ; détails filtrés avec la distance, ciel emprunté sans texture externe.
+- Terrasse libre : aucun obstacle des anciens bacs. Portes en x=−9/0/9, z=−12 ; aucun pas hors de la plateforme.
 - Marche 2,6 m/s, guidage doux 1 450–4 200 ms. Choisir une porte approche ; entrer/franchir lance sa page après le souffle/FOV de 800 ms.
 - Audio seulement après un geste réel, bouton muet, préférence conservée. Liste/onglet masqué suspendent animation et son.
 - Mouvement réduit fige le décor et rend le guidage immédiat ; passage sans étirement du FOV. Sans WebGL, liens HTML complets.

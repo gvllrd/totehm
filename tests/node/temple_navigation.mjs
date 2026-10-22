@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import {createTempleWalkway} from '../../space/gallery-temple-navigation.mjs';
 
 const nav=createTempleWalkway(),gates=[-9,0,9];
-const beds=[-11,11].flatMap(x=>[-3,5,13].map(z=>({x,z})));
+const formerPlantings=[-11,11].flatMap(x=>[-3,5,13].map(z=>({x,z})));
 const point=(x,z)=>({x,z});
 let checks=0,samples=0;
 const check=(value,message)=>{assert(value,message);checks++;};
@@ -13,7 +13,7 @@ function floor(x,z,{guided=false}={}){
  if(!Number.isFinite(x)||!Number.isFinite(z)||Math.abs(x)>14||z < -13||z>16)return false;
  if(guided&&z < -11.4)return false;
  if(z < -11.4&&!gates.some(gate=>Math.abs(x-gate)<1.7))return false;
- return beds.every(bed=>Math.hypot(x-bed.x,z-bed.z)>2.7);
+ return true;
 }
 function verify(from,to){
  const route=nav.route(from,to);
@@ -35,17 +35,17 @@ const entry=point(0,12),approaches=gates.map(x=>point(x,-10.6));
 const stations=[entry,...approaches,point(0,0),point(0,16),
  point(-7,-6),point(7,-6),point(-7,8),point(7,8),
  point(-13.9,0),point(13.9,0),point(-13.9,9),point(13.9,9),
- point(-13.6,8.4),point(13.6,8.4)];
+ point(-13.6,8.4),point(13.6,8.4),...formerPlantings];
 for(const from of stations)for(const to of stations)verify(from,to);
 for(const to of approaches){
  const route=verify(entry,to);
  check(route.at(-1).z===-10.6,'Guided doorway selection stops in front of the threshold');
 }
 
-for(const bed of beds){
- check(!nav.allowed(bed.x,bed.z),'The planted bed centre is not walking stone');
- check(!nav.allowed(bed.x+2.69,bed.z),'Plantation setback has its full 2.7 m radius');
- check(nav.allowed(bed.x+Math.sign(-bed.x)*2.71,bed.z),'Stone just inside the central aisle remains available');
+for(const bed of formerPlantings){
+ check(nav.allowed(bed.x,bed.z),'Removed planting centres are real walking stone');
+ check(nav.clear(entry,bed),'Removed planting areas have no invisible collision');
+ check(verify(entry,bed).length===2,'Guidance takes a direct path across the empty terrace');
 }
 for(const [x,z] of [[-14,0],[14,0],[0,16],[0,-11.4],[-9,-13],[0,-13],[9,-13]]){
  check(nav.allowed(x,z)===floor(x,z),'Physical walking includes the authored floor edge');
@@ -61,8 +61,8 @@ for(let room=0;room<gates.length;room++){
  check(nav.portalAt(x+1.71,-12)===null,'Walking into the stone jamb cannot enter a neighbouring experience');
  check(nav.route(entry,point(x,-12))===null,'Automatic floor destinations cannot cross the threshold');
 }
-check(!nav.clear(point(-14,-3),point(-7,-3)),'A direct walk through a planting is obstructed');
-check(verify(point(-14,-3),point(-7,-3)).length>2,'Guidance passes around the planting instead of through it');
+check(nav.clear(point(-14,-3),point(-7,-3)),'The former planting no longer obstructs a direct walk');
+check(verify(point(-14,-3),point(-7,-3)).length===2,'Guidance crosses the removed planting directly');
 
 for(const value of [NaN,Infinity,-Infinity,undefined,null,'0']){
  check(!nav.allowed(value,0)&&!nav.allowed(0,value),'Invalid physical positions are rejected');

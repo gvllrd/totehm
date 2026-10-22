@@ -3,7 +3,7 @@ import {TEMPLE_ASSETS} from './gallery-temple-assets.mjs';
 import {createDrownedSky} from './gallery-drowned-sky.mjs';
 import {createDrownedOcean} from './gallery-drowned-ocean.mjs';
 
-// The temple is the last dry summit. Its living terrace stays above a flooded
+// The temple is the last dry summit. Its stone terrace stays above a flooded
 // world, under a permanent night; no land or daytime panorama is substituted.
 export function createTempleLandscape(scene,renderer,{onChange=()=>{},now=()=>new Date(),mobile=innerWidth<650}={}){
  const root=new T.Group();root.name='The last summit — a new beginning above the flood';scene.add(root);
@@ -14,14 +14,14 @@ export function createTempleLandscape(scene,renderer,{onChange=()=>{},now=()=>ne
  const changed=()=>{if(!disposed){dirty=true;onChange();}};
  const horizon=new T.Color(0x101e32),fog=new T.FogExp2(horizon,.00024);scene.fog=fog;
  const sky=createDrownedSky(root,{mobile,onChange:changed});
- const ocean=createDrownedOcean(root,{mobile,onChange:changed,moonDirection:sky.moonDirection,horizonColor:horizon});
+ const ocean=createDrownedOcean(root,{mobile,onChange:changed,moonDirection:sky.moonDirection,horizonColor:horizon,environmentTexture:sky.environmentTexture});
  const hemisphere=new T.HemisphereLight(0x95b5da,0x242032,.62);root.add(hemisphere);
  const moon=new T.DirectionalLight(0xc2d9ff,1.65);moon.position.copy(sky.moonDirection).multiplyScalar(100);moon.castShadow=true;
  moon.shadow.mapSize.set(mobile?512:1024,mobile?512:1024);
  Object.assign(moon.shadow.camera,{left:-25,right:25,top:25,bottom:-25,near:1,far:180});moon.shadow.camera.updateProjectionMatrix();
  moon.shadow.normalBias=.025;moon.shadow.bias=-.00015;moon.shadow.radius=2;root.add(moon,moon.target);moon.target.position.set(0,0,-1);
  const fill=new T.DirectionalLight(0x91aecf,.72);fill.position.set(-18,28,45);root.add(fill);
- // A small warm reflection on the living terrace suggests shelter and rebirth.
+ // A small warm reflection on the stone terrace suggests shelter and rebirth.
  // The original three doors retain their own amber lighting and all previews.
  const sanctuary=new T.PointLight(0xffd6a1,32,34,2);sanctuary.position.set(0,6,5);root.add(sanctuary);
  renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;renderer.shadowMap.autoUpdate=false;renderer.shadowMap.needsUpdate=true;

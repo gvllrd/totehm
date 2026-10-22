@@ -86,7 +86,7 @@ développement personnel, un réseau social classique, une marque streetwear cla
 ## L'espace
 
 TOTEHM.SPACE est le dernier temple au sommet d’une Terre engloutie : beauté, grandeur, peur et renouveau.
-Nuit permanente, Voie lactée, lune et houles monumentales ; pierre naturelle, colonnades et oliviers vivants.
+Nuit permanente, Voie lactée, lune et houles monumentales ; pierre naturelle et colonnades, sans arbres ni fleurs.
 Le refuge reste éclairé au-dessus de l’eau noire ; l’interface garde ses surfaces sombres et ses mots courts.
 Les trois portes annoncent les expériences indépendantes : TotehmPaper, Origins et Play the Lisbon Street.
 De nombreux papiers perforés flottent dans la porte THP, comme les panneaux dans celle de Lisbon.

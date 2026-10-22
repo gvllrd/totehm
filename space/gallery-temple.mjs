@@ -157,87 +157,24 @@ export function createTempleArchitecture(scene,renderer,{onChange=()=>{},lisbonP
  }
  document.fonts?.ready.then(()=>{if(!disposed)plaques.forEach(paintPlaque);});
 
- // Real leaf silhouettes on a branching skeleton replace the former spheres.
  function canvasTexture(canvas){const t=new T.CanvasTexture(canvas);t.colorSpace=T.SRGBColorSpace;textures.add(t);return t;}
- const barkCanvas=document.createElement('canvas');barkCanvas.width=barkCanvas.height=512;const bx=barkCanvas.getContext('2d');bx.fillStyle='#766e58';bx.fillRect(0,0,512,512);
- for(let i=0;i<2600;i++){const x=random()*512,y=random()*512;bx.strokeStyle=random()<.52?'rgba(36,32,23,.24)':'rgba(188,178,146,.22)';bx.lineWidth=.5+random()*2.2;bx.beginPath();bx.moveTo(x,y);bx.lineTo(x+(random()-.5)*5,y+4+random()*46);bx.stroke();}
- const barkMap=canvasTexture(barkCanvas);barkMap.wrapS=barkMap.wrapT=T.RepeatWrapping;barkMap.repeat.set(2.3,2.4);
- const bark=material(new T.MeshStandardMaterial({map:barkMap,bumpMap:barkMap,bumpScale:.04,roughness:1,color:'#c1b7a0'}));
- const soilCanvas=document.createElement('canvas');soilCanvas.width=soilCanvas.height=256;const sx=soilCanvas.getContext('2d');sx.fillStyle='#5d5743';sx.fillRect(0,0,256,256);for(let i=0;i<4500;i++){sx.fillStyle=random()<.6?'#393a2e':'#77725c';sx.fillRect(random()*256,random()*256,1+random()*2,1+random()*2);}
- const soilMap=canvasTexture(soilCanvas),soil=material(new T.MeshStandardMaterial({map:soilMap,roughness:1,color:'#9c967d'}));
- const leafCanvas=document.createElement('canvas');leafCanvas.width=128;leafCanvas.height=64;const lx=leafCanvas.getContext('2d');
- const leafGradient=lx.createLinearGradient(0,7,0,58);leafGradient.addColorStop(0,'#d1d7a1');leafGradient.addColorStop(.48,'#8d9f62');leafGradient.addColorStop(.53,'#667747');leafGradient.addColorStop(1,'#aab883');lx.fillStyle=leafGradient;
- lx.beginPath();lx.moveTo(4,32);lx.bezierCurveTo(37,3,91,7,125,31);lx.bezierCurveTo(91,58,37,62,4,32);lx.fill();lx.strokeStyle='rgba(221,226,178,.7)';lx.lineWidth=.9;lx.beginPath();lx.moveTo(6,32);lx.lineTo(121,32);lx.stroke();
- for(let i=0;i<11;i++){const x=19+i*8;lx.strokeStyle='rgba(63,85,46,.22)';lx.lineWidth=.6;lx.beginPath();lx.moveTo(x,32);lx.lineTo(x+10,14+Math.abs(i-5)*1.3);lx.moveTo(x,32);lx.lineTo(x+10,51-Math.abs(i-5));lx.stroke();}
- const leafMap=canvasTexture(leafCanvas),wind={value:0};
- const leafMaterial=material(new T.MeshStandardMaterial({map:leafMap,color:'#e1e6cf',alphaTest:.4,side:T.DoubleSide,roughness:.82}));
- leafMaterial.onBeforeCompile=shader=>{shader.uniforms.uTempleWind=wind;shader.vertexShader=shader.vertexShader.replace('#include <common>','#include <common>\nuniform float uTempleWind;').replace('#include <begin_vertex>',`#include <begin_vertex>
- #ifdef USE_INSTANCING
- transformed.x+=sin(uTempleWind*.72+instanceMatrix[3].x*.73+instanceMatrix[3].z*.61)*.15;
- transformed.y+=sin(uTempleWind*.53+instanceMatrix[3].y)*.04;
- #endif`);};
- leafMaterial.customProgramCacheKey=()=> 'temple-leaf-breeze-v1';
- const trunkGeometry=geometry(new T.CylinderGeometry(.7,1,1,mobile?7:9,1));
- const twigGeometry=geometry(new T.CylinderGeometry(.32,1,1,5));
- const trunks=[],twigs=[],leaves=[],grass=[],flowerStems=[],blossoms=[],beds=[];
- function segment(a,b,radius,collection){
-  const delta=new T.Vector3(...b).sub(new T.Vector3(...a)),q=new T.Quaternion().setFromUnitVectors(new T.Vector3(0,1,0),delta.clone().normalize()),e=new T.Euler().setFromQuaternion(q);collection.push([(a[0]+b[0])/2,(a[1]+b[1])/2,(a[2]+b[2])/2,radius,delta.length(),radius,e.x,e.y,e.z]);
- }
- for(const x of [-11,11])for(const z of [-3,5,13]){
-  beds.push([x,z]);const lean=(random()-.5)*.55,h=3.5+random()*.35;
-  segment([x,.22,z],[x+lean,1.65,z+.14],.31,trunks);segment([x+lean,1.65,z+.14],[x+.15,h,z-.1],.21,trunks);
-  for(let n=0;n<6;n++){const a=n/6*Math.PI*2;segment([x+Math.cos(a)*.9,.25,z+Math.sin(a)*.9],[x,.55,z],.09,twigs);}
-  for(let n=0;n<8;n++){
-   const a=n/8*Math.PI*2+(random()-.5)*.4,r=1.35+random()*.3;
-   const joint=[x+Math.cos(a)*r,h+.5+random()*.9,z+Math.sin(a)*r];segment([x+.1,2.1+random()*.55,z],joint,.105,trunks);
-   for(let j=0;j<3;j++){
-    const aa=a+(j-1)*.58,rr=1.75+random()*.4,end=[x+Math.cos(aa)*rr,h+1.1+random()*1.2,z+Math.sin(aa)*rr];segment(joint,end,.038,twigs);
-    for(let k=0;k<2;k++){
-     const tip=[end[0]+(random()-.5)*.7,end[1]+(random()-.3)*.6,end[2]+(random()-.5)*.7];segment(end,tip,.014,twigs);
-     for(let m=0;m<(mobile?20:40);m++){
-      const theta=random()*Math.PI*2,yy=random()*2-1,rrr=Math.sqrt(1-yy*yy)*Math.pow(random(),.333),length=.17+random()*.16;
-      leaves.push([tip[0]+Math.cos(theta)*rrr*.68,tip[1]+yy*.53,tip[2]+Math.sin(theta)*rrr*.68,length,length*.4,1,random()*6.28,random()*6.28,random()*6.28]);
-     }
-    }
-   }
-  }
-  for(let n=0;n<(mobile?85:145);n++){
-   const a=random()*Math.PI*2,r=.75+Math.sqrt(random())*1.48,px=x+Math.cos(a)*r,pz=z+Math.sin(a)*r;
-   grass.push([px,.34+random()*.3,pz,.08+random()*.05,.22+random()*.35,1,random()*.8,random()*6.28,random()*.8]);
-   if(n%3===0){const h=.42+random()*.35;flowerStems.push([px,.3+h*.5,pz,.007,h,.007]);blossoms.push([px,.3+h,pz,.085+random()*.035,.085+random()*.035,1,random()*.8,random()*6.28,random()*.7]);}
-  }
- }
- const bedBase=geometry(new T.CylinderGeometry(2.48,2.55,.32,mobile?40:64));
- instances(bedBase,stone,beds.map(([x,z])=>[x,.06,z]),{shadow:true});
- instances(geometry(new T.CylinderGeometry(2.22,2.22,.035,48)),soil,beds.map(([x,z])=>[x,.242,z]),{shadow:false});
- const rim=geometry(new T.TorusGeometry(2.355,.12,8,mobile?40:64));instances(rim,paleStone,beds.map(([x,z])=>[x,.23,z,1,1,1,Math.PI/2,0,0]));
- instances(trunkGeometry,bark,trunks,{solid:true});instances(twigGeometry,bark,twigs);
- const foliage=instances(planeGeometry,leafMaterial,leaves,{shadow:!mobile});
- leaves.forEach((_,n)=>foliage.setColorAt(n,new T.Color().setHSL(.22+random()*.055,.18+random()*.14,.55+random()*.18)));foliage.instanceColor.needsUpdate=true;
- const grassMaterial=leafMaterial.clone();grassMaterial.color.set('#9aa77a');materials.add(grassMaterial);grassMaterial.onBeforeCompile=leafMaterial.onBeforeCompile;grassMaterial.customProgramCacheKey=leafMaterial.customProgramCacheKey;
- instances(planeGeometry,grassMaterial,grass,{shadow:false});
- const stemMaterial=material(new T.MeshStandardMaterial({color:'#697345',roughness:1}));instances(geometry(new T.CylinderGeometry(1,1,1,4)),stemMaterial,flowerStems,{shadow:false});
- const flowerCanvas=document.createElement('canvas');flowerCanvas.width=flowerCanvas.height=64;const fx=flowerCanvas.getContext('2d');
- fx.fillStyle='#f0e5dc';for(let n=0;n<6;n++){const a=n/6*Math.PI*2;fx.beginPath();fx.ellipse(32+Math.cos(a)*14,32+Math.sin(a)*14,13,8,a,0,Math.PI*2);fx.fill();}fx.fillStyle='#c8af75';fx.beginPath();fx.arc(32,32,6,0,Math.PI*2);fx.fill();
- const flowerMaterial=material(new T.MeshStandardMaterial({map:canvasTexture(flowerCanvas),color:'#fff2e8',alphaTest:.4,side:T.DoubleSide,roughness:.8}));
- const flowers=instances(planeGeometry,flowerMaterial,blossoms,{shadow:false});blossoms.forEach((_,n)=>flowers.setColorAt(n,new T.Color([0xf1d2cb,0xdfc7e5,0xfff0d4][n%3])));flowers.instanceColor.needsUpdate=true;
  // Soft local contact occlusion anchors bases even under the broad night sky.
  const aoCanvas=document.createElement('canvas');aoCanvas.width=aoCanvas.height=128;const ax=aoCanvas.getContext('2d'),ao=ax.createRadialGradient(64,64,9,64,64,64);ao.addColorStop(0,'rgba(18,16,11,.3)');ao.addColorStop(.55,'rgba(18,16,11,.16)');ao.addColorStop(1,'rgba(18,16,11,0)');ax.fillStyle=ao;ax.fillRect(0,0,128,128);
  const aoMaterial=material(new T.MeshBasicMaterial({map:canvasTexture(aoCanvas),transparent:true,depthWrite:false,toneMapped:false}));
- instances(planeGeometry,aoMaterial,[...beds.map(([x,z])=>[x,-.075,z,6.3,6.3,1,-Math.PI/2,0,0]),...columnPositions.map(([x,z])=>[x,-.073,z,3.4,3.4,1,-Math.PI/2,0,0])],{shadow:false});
+ instances(planeGeometry,aoMaterial,columnPositions.map(([x,z])=>[x,-.073,z,3.4,3.4,1,-Math.PI/2,0,0]),{shadow:false});
 
  return{
   root,portals,solids,get pickables(){return [...portals.flatMap(p=>p.pickables),...solids];},
   setDay(value){const next=!!value;if(next===day)return;day=next;portalLights.forEach(light=>{light.intensity=day?3:28;});changed();},
   update(dt,eye,motion=true){
    if(disposed||!root.visible)return false;
-   if(motion){time+=Math.min(.05,Math.max(0,Number(dt)||0));wind.value=time;}
+   if(motion){time+=Math.min(.05,Math.max(0,Number(dt)||0));}
    covers.forEach((cover,n)=>{const portal=portals[n],distance=Math.hypot(eye.x-portal.x,eye.z-portal.z),opacity=T.MathUtils.smoothstep(distance,.28,.85);if(Math.abs(cover.material.opacity-opacity)>.001)dirty=true;cover.material.opacity=opacity;cover.visible=opacity>.001;});
    paperMoving=!!motion&&!!paperCover?.visible;if(paperMoving)arrangePapers(time);
    if(lisbonPreview?.canvas&&covers[2].material.map&&motion)covers[2].material.map.needsUpdate=true;
    const result=dirty||motion;dirty=false;return result;
   },
-  diagnostics:()=>({kind:'PBR antique summit temple',columns:8,flutes:24,arches:3,trees:6,leafCards:leaves.length,foliage:'individual alpha-cut leaves on branched olive skeletons',flowers:blossoms.length,plants:beds.map(([x,z])=>({x,z,radius:2.7})),covers:loaded,stoneMapsLoaded,pbr:true,externalTextures:'CC0 Poly Haven',day,time:+time.toFixed(3),paperPortal:{papers:paperCopies.length,loaded:paperLoaded,animated:paperMoving,time:+time.toFixed(3),instanced:true},portals:portals.map(({room,x,z,width,height,href})=>({room,x,z,width,height,href})),disposed}),
+  diagnostics:()=>({kind:'PBR antique summit temple',columns:8,flutes:24,arches:3,trees:0,leafCards:0,flowers:0,planters:0,vegetation:false,plants:[],covers:loaded,stoneMapsLoaded,pbr:true,externalTextures:'CC0 Poly Haven',day,time:+time.toFixed(3),paperPortal:{papers:paperCopies.length,loaded:paperLoaded,animated:paperMoving,time:+time.toFixed(3),instanced:true},portals:portals.map(({room,x,z,width,height,href})=>({room,x,z,width,height,href})),disposed}),
   dispose(){if(disposed)return;disposed=true;root.visible=false;root.removeFromParent();for(const t of textures)t.dispose();for(const g of geometries)g.dispose();for(const m of materials)m.dispose();root.clear();}
  };
 }
