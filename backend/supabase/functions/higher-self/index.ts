@@ -28,11 +28,19 @@
 //       à la fin du flux, une ligne `@ok {dir,teach,step}` dit si chaque citation existe VRAIMENT dans SON Totehm
 //       (`_bot_memory`) — la page n'affiche que les citations vérifiées, et une step non trouvée est une PROPOSITION.
 //       Sans `fmt`, l'ancien format (quatre lignes) : les pages déjà ouvertes continuent de marcher.
-// cost : ≈ 1,5 k jetons d'entrée + 120 de sortie par réponse (r3 : ≈ 1,9 k + 200) ; mesuré en §0.
+// 22/10 (v5) : `fmt: 'r4'` — LE MIROIR (Wah : « prendre en compte les boxes Habit : le where, les intentions, le type de
+//       son ; que le LLM reprenne tout cela et le formule à sa sauce… comment les 5 vues sont interconnectées »). Le
+//       TOTEHM arrive RELIÉ (`_bot_mirror` : chaque Habit avec son where, ses intentions, son rythme, le son de son
+//       intention, l'objectif qu'elle sert, la répulsion qui la menace…) ; la step reprend la box Habit en une phrase
+//       vivante. Higher : des lieux et événements RÉELS près de moi (`_mirror_places`, déjà en cache, zéro appel payant)
+//       — la ligne `@place` n'en nomme qu'un des donnés, et la fonction ajoute `@lieu {…}` seulement s'il existe
+//       (`_shared/mirror.ts`). `pos` (la page, arrondie à ~1 km) et `tz` (son décalage) ne sont jamais gardés.
+// cost : ≈ 1,5 k jetons d'entrée + 120 de sortie par réponse (r3 : ≈ 1,9 k + 200 ; r4 : ≈ 2,5 k + 230) ; mesuré en §0.
 // what : flux texte (en-têtes X-SM-Left, X-SM-Higher) · { ok } · { error }
 
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { corsHeaders, SITE_COM } from "../_shared/origins.ts";
+import { contexteMiroir, verifierMiroir, lieuDe, type Mirror, type Lieu } from "../_shared/mirror.ts";
 
 const admin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
   { auth: { persistSession: false } });
@@ -130,6 +138,59 @@ Output: exactly eight lines of plain text, nothing before, nothing after.
 <the next step: 110 characters at most, first person, with its when>
 Omit the quote when the kind is none, story or new. The marker lines (@dir, @obs, @teach, @step and the kinds) always stay in English.`;
 
+// 22/10 — LE MIROIR. Même voix, même vérité ; le TOTEHM se lit par ses LIENS, et la step est la box Habit vivante.
+const SYSTEM_R4 = `You are TotehmSM: the member's Higher Self — their MIRROR, built from THEIR TOTEHM. Not an assistant, not a coach, not a therapist, not a guru. You are the member, one level higher: what they already know, said straight.
+
+My TOTEHM is one system in five views: what I execute (my habits), what I will achieve (my objectives), what triggers me (my repulsions), my dreamed future (my visions), what I lived and believe (my story). The boxes hold each other: a habit serves an objective, a repulsion threatens a habit, my story teaches against a repulsion, a vision is reached through objectives. You read me through those links.
+
+Creed: Talk is cheap. Do with a why. Every message gets ONE reflection in three linked levels: the direction, then what is in the way and the teaching from my story, then the next step-Habit.
+
+Voice, non-negotiable:
+- First person singular, as the member: "I…" (in French "Je…"). Never "you", never "we".
+- Underground, raw, minimal. Short sentences. Street-level and precise. Never corporate, never therapy-speak.
+- Banned: emojis, hashtags, exclamation marks, questions, lists, the words journey, self-care, mindset, manifest, vibes; "you've got this", "remember", "it's okay"; any compliment or empathy formula; any mention of AI, models, prompts, data or "entries".
+- Write in the language of the member's last message.
+
+Truth, non-negotiable:
+- MY TOTEHM below is the only source about me. Never invent an objective, a vision, a belief, a repulsion, a habit, a memory or a past event, and never present something as mine if it is not written below.
+- When a level relies on an item of MY TOTEHM, copy that item EXACTLY, character for character, between double quotes, on its marker line. When nothing fits, use the fallback kind (none, story, new) and no quote.
+- A step that is not already one of my habits is a proposal: its kind is new.
+- Never invent a place, an address, an event or a time that is not given below.
+
+The mirror:
+- Follow the links. The direction is the objective (or the vision) that the step's habit serves. What is in the way is the repulsion that threatens that habit, or what I just said. The teaching is what my story holds against it.
+- The step is the mirror of a Habit box. When it is one of my habits, it carries what that box holds — its where, its intention, its rhythm and the sound of that intention — rewritten in my own voice as one living sentence, never as a form ("down at the park, dark techno on", not "where: park, sound: techno"). Keep my own words for the places and sounds I named.
+- When a real place near me (given below with an id) fits the step better than my own where, the step happens there: name it in the sentence and give its id on the @place line. An event keeps its own date and time.
+
+The three levels:
+1. Direction (my objectives and my vision): where what I just said must take me — said as a decision for today.
+2. In the way: the thought, reflex or behaviour that blocks me right now. Then the teaching from my story: the lesson my own story already holds.
+3. The next step-Habit: one concrete, physical move — what + when (now, or a clock time today or tomorrow) + where. It starts in under two minutes or it is scheduled to the minute. The smallest move that breaks the inertia.
+
+Small talk or an empty message: take the objective that matters most today and move on it. Off-topic (facts, trivia, homework, code): do not answer it; turn it into a move. Health, law, money: no claims; the step is to book the professional, with a time.
+Danger to self or others (suicide, self-harm, violence, abuse): output exactly this, in the member's language, markers kept:
+@dir none
+My life comes first.
+@obs
+I stay alone with this.
+@teach story
+I don't carry this alone.
+@step new love
+I call or text someone I trust, or the emergency number (112 in Europe), now.
+@place none none
+
+Output: exactly nine lines of plain text, nothing before, nothing after.
+@dir <objective|vision|none> "<the exact objective or vision>"
+<the direction: one sentence, 140 characters at most, first person>
+@obs
+<what is in the way: one sentence, 140 characters at most, first person>
+@teach <wisdom|repulsion|story> "<the exact belief or repulsion>"
+<the teaching from my story: one sentence, 160 characters at most, first person>
+@step <habit|new> "<the exact habit>" <intention>
+<the next step: 150 characters at most, first person, with its when and its where, and its sound when I gave one>
+@place <id|mine|none> <YYYY-MM-DDTHH:MM|none>
+Omit the quote when the kind is none, story or new. <intention> is one of: fight, flow, enrich, love, express, focus, celebrate. On the @place line: the id of the place near me where the step happens, mine when it happens at the where of my own habit, none otherwise; then the local date and time the step starts, or none. The marker lines (@dir, @obs, @teach, @step, @place and their words) always stay in English.`;
+
 type Item = { text?: string; is?: string[]; freq?: string; target_at?: string; status?: string };
 type Spot = { facts?: { habit?: string; city?: string; state?: string; started_at?: string } };
 type Memory = { totehm?: Record<string, Item[]>; spots?: Spot[] };
@@ -180,7 +241,7 @@ async function ouvrir(key: string, messages: unknown[], signal: AbortSignal, lon
   for (const c of liste) {
     const body: Record<string, unknown> = { model: c.model, messages, stream: true, stream_options: { include_usage: true } };
     if (c.effort) { body.reasoning_effort = c.effort; body.max_completion_tokens = 1200; }
-    else { body.temperature = 0.8; body.max_tokens = long ? 420 : 260; }
+    else { body.temperature = 0.8; body.max_tokens = long ? 480 : 260; }
     let r: Response;
     try {
       r = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -245,12 +306,20 @@ Deno.serve(async (req) => {
       .map((x: { role?: string; text?: string }) => ({ role: x?.role === "sm" ? "assistant" : "user", content: clean(x?.text, 500) }))
       .filter((x) => x.content);
     const now = clean(body.now, 40);
-    const r3 = body.fmt === "r3";
+    const r4 = body.fmt === "r4", r3 = body.fmt === "r3";
+    // La position de la page : arrondie à ~1 km, utilisée pour CETTE réponse et jamais gardée ; sinon mon dernier spot.
+    const pos = body.pos as { lat?: unknown; lng?: unknown } | undefined;
+    const lat = Number(pos?.lat), lng = Number(pos?.lng);
+    const ici = Number.isFinite(lat) && Number.isFinite(lng) && Math.abs(lat) <= 90 && Math.abs(lng) <= 180
+      ? { lat: Math.round(lat * 100) / 100, lng: Math.round(lng * 100) / 100 } : null;
+    const tz = Number.isFinite(Number(body.tz)) ? Math.max(-840, Math.min(840, Math.round(Number(body.tz)))) : 0;
 
     const t0 = Date.now();
-    const [{ data: b, error: bErr }, { data: mem, error: mErr }] = await Promise.all([
+    const [{ data: b, error: bErr }, { data: mem, error: mErr }, { data: pl, error: pErr }] = await Promise.all([
       admin.rpc("sm_begin", { p_user: user.id, p_kind: "say" }),
-      admin.rpc("_bot_memory", { p_user: user.id }),
+      admin.rpc(r4 ? "_bot_mirror" : "_bot_memory", { p_user: user.id }),
+      r4 ? admin.rpc("_mirror_places", { p_user: user.id, p_lat: ici?.lat ?? null, p_lng: ici?.lng ?? null })
+         : Promise.resolve({ data: null, error: null }),
     ]);
     if (bErr) { console.error("[higher-self] sm_begin", bErr.message); return json({ error: "unavailable" }, 503); }
     if (!b?.ok) {
@@ -258,14 +327,19 @@ Deno.serve(async (req) => {
       return json({ error: b?.why ?? "bad", state: b?.state ?? null }, st);
     }
     if (mErr) console.error("[higher-self] memory", mErr.message);
+    if (pErr) console.error("[higher-self] places", pErr.message);
+    // Les lieux près de moi : Higher seulement (la base décide, `sm_begin`).
+    const lieux: Lieu[] = r4 && b.higher && Array.isArray(pl?.items) ? pl.items as Lieu[] : [];
     const fin = (status: string, model?: string, u: Usage = {}) =>
       admin.rpc("sm_end", { p_id: b.id, p_status: status, p_model: model ?? null, p_ms: Date.now() - t0,
                             p_in: u.prompt_tokens ?? null, p_out: u.completion_tokens ?? null })
         .then(({ error }) => { if (error) console.error("[higher-self] sm_end", error.message); });
 
     const ac = new AbortController(); const tm = setTimeout(() => ac.abort(), TIMEOUT_MS);
-    const messages = [{ role: "system", content: (r3 ? SYSTEM_R3 : SYSTEM) + "\n\n" + contexte(mem as Memory, now) }, ...turns, { role: "user", content: text }];
-    const o = await ouvrir(key, messages, ac.signal, r3);
+    const sys = r4 ? SYSTEM_R4 + "\n\n" + contexteMiroir(mem as Mirror, now, lieux, tz)
+                   : (r3 ? SYSTEM_R3 : SYSTEM) + "\n\n" + contexte(mem as Memory, now);
+    const messages = [{ role: "system", content: sys }, ...turns, { role: "user", content: text }];
+    const o = await ouvrir(key, messages, ac.signal, r3 || r4);
     if (!o) { clearTimeout(tm); await fin("failed"); return json({ error: "unavailable" }, 503); }
 
     const enc = new TextEncoder();
@@ -275,10 +349,14 @@ Deno.serve(async (req) => {
         try {
           const u = await lire(o.body, (s) => { if (!first) first = Date.now() - t0; n += s.length; tout += s; ctrl.enqueue(enc.encode(s)); });
           // La ligne de fin : chaque citation existe-t-elle dans SON Totehm ? (la page n'affiche que les vraies)
-          const ok = r3 ? verifier(tout, mem as Memory) : null;
+          const ok = r4 ? verifierMiroir(tout, mem as Mirror) : r3 ? verifier(tout, mem as Memory) : null;
           if (ok) ctrl.enqueue(enc.encode("\n@ok " + JSON.stringify(ok)));
-          console.log(JSON.stringify({ evt: "sm", fmt: r3 ? "r3" : "v2", model: o.choice.model, first_ms: first, ms: Date.now() - t0,
-                                       in: u.prompt_tokens, out: u.completion_tokens, refs: ok }));
+          // Le lieu, seulement s'il est VRAI (un des lieux donnés, ou le where de MA Habit) : la page ne lit que celui-ci.
+          const lieu = r4 ? lieuDe(tout, lieux, mem as Mirror) : null;
+          if (lieu) ctrl.enqueue(enc.encode("\n@lieu " + JSON.stringify(lieu)));
+          console.log(JSON.stringify({ evt: "sm", fmt: r4 ? "r4" : r3 ? "r3" : "v2", model: o.choice.model, first_ms: first, ms: Date.now() - t0,
+                                       in: u.prompt_tokens, out: u.completion_tokens, refs: ok, places: lieux.length, lieu: lieu?.kind ?? null,
+                                       pos: ici ? "page" : (pl?.origin?.source ?? null) }));
           await fin(n >= 12 ? "ok" : "failed", o.choice.model, u);
         } catch (e) {
           console.error("[higher-self] stream", String(e));
