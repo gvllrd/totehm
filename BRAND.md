@@ -79,10 +79,11 @@ développement personnel, un réseau social classique, une marque streetwear cla
 
 ## L'espace
 
-TOTEHM.SPACE déploie le papier et son processeur en 3D : un champ noir, des supports navy, sept traits fins.
-Une seule promenade : les vingt vrais polaroids Origins dans l'ordre, la manette Lisbon aux vingt-deux panneaux,
-le TotehmPaper et son expérience. L'œuvre s'anime dans l'espace ; son offre s'ouvre sur place, au prix du serveur.
-Pas d'intention personnelle inventée pour l'art ; les sept couleurs appartiennent à l'architecture commune.
+TOTEHM.SPACE est un temple antique au-dessus des nuages, entre la mer et les montagnes. Pierre naturelle,
+colonnades, oliviers, lumière du ciel et nuit étoilée ; l'interface garde ses surfaces sombres et ses mots courts.
+Les trois portes annoncent les expériences indépendantes : TotehmPaper, Origins et Play the Lisbon Street.
+De nombreux papiers perforés flottent dans la porte THP, comme les panneaux dans celle de Lisbon.
+Un grave magnétique monte à l'approche, un souffle accompagne le passage. Le marché garde achat, collection et revente.
 
 ## Les vêtements
 

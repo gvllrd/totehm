@@ -26,7 +26,16 @@ const rpc = {
   art_list: b => { listed = { price_cents:b.p_price_cents, currency:'eur', since:'now', reserved:false }; return { ok:true }; },
   art_unlist: () => { listed = null; return { ok:true }; },
 };
+// Ownership must come from the server projection, even on a Stripe return.
+let thpConfirmed = true;
+const collectionView = rpc.my_collection;
+rpc.my_collection = () => {
+  const view = collectionView();
+  if(!thpConfirmed) view.items = view.items.filter(item => item.slug !== 'totehmpaper');
+  return view;
+};
 const browser = await launch();
+try{
 const { pg, ctx, log } = await page(browser, { dir:'space', origin:'https://www.totehm.space', rpc });
 const fnBodies = [];
 await ctx.route('https://abujjbkbbiumxrokozph.supabase.co/functions/v1/**', r => { fnBodies.push({ fn: r.request().url().split('/v1/')[1], body: JSON.parse(r.request().postData() || '{}') });
@@ -61,7 +70,20 @@ await pg.waitForURL(/checkout\.stripe\.test/);
 ok(fnBodies[1]?.fn === 'artwork-checkout' && fnBodies[1].body.slug === 'q-01', 'primary art → artwork-checkout with the slug');
 await pg.goto('https://www.totehm.space/market?art=totehmpaper');
 await pg.waitForSelector('#sh h2');
-ok(/owned · № 1/.test(await pg.textContent('#sh')) === false || true, 'THP sheet opens');
+ok((await pg.textContent('#sh h2')).trim() === 'TOTEHMPAPER' && await pg.locator('[data-buy="primary"]').isVisible() && /\$17/.test(await pg.textContent('#sh')), 'THP sheet has its actual server price and primary purchase action');
+await pg.click('[data-buy="primary"]');
+ok(fnBodies.length === 2 && /tick the box/.test(await pg.textContent('#buy-n')), 'THP primary also requires the real withdrawal consent');
+await pg.check('#wv'); await pg.click('[data-buy="primary"]');
+await pg.waitForURL(/checkout\.stripe\.test/);
+ok(fnBodies[2]?.fn === 'higher-checkout' && fnBodies[2].body.waiver === true && Number.isFinite(Date.parse(fnBodies[2].body.waiver_ts)) && !('price_cents' in fnBodies[2].body) && !('amount' in fnBodies[2].body), 'THP primary uses higher-checkout with dated consent and no client price');
+thpConfirmed = false;
+await pg.goto('https://www.totehm.space/market?owned=totehmpaper');
+await pg.waitForFunction(() => /payment is still processing/i.test(document.body.innerText), null, { timeout:35000 });
+ok(!/it is mine/i.test(await pg.textContent('#bn')) && await pg.evaluate(() => !location.search.includes('owned')), 'a Stripe return query cannot grant a THP absent from the server collection');
+thpConfirmed = true;
+await pg.goto('https://www.totehm.space/market?owned=totehmpaper');
+await pg.waitForFunction(() => /it is mine/i.test(document.body.innerText), null, { timeout:10000 });
+ok(/TOTEHMPAPER/.test(await pg.textContent('#view')), 'a server-confirmed THP is visible in the collection after checkout');
 // My collection : revendre
 await pg.goto('https://www.totehm.space/market?tab=mine');
 await pg.waitForSelector('[data-list]');
@@ -78,4 +100,4 @@ await pg.waitForFunction(() => /it is mine/i.test(document.body.innerText), null
 ok(await pg.evaluate(() => !location.search.includes('owned')), 'return from Stripe: ownership read from the base, URL cleaned');
 log.errors = log.errors.filter(e => !/404|ERR_|Failed to load/.test(e));
 ok(!log.errors.length, 'no page error: ' + log.errors.join(' | '));
-await browser.close();
+}finally{await browser.close();}

@@ -29,20 +29,6 @@
 -->
 <html lang="en">
 <head>
-<script>
-// Checkout returns to its existing server route. A journey started in SPACE
-// resumes only its own recent local selection, with fresh server-owned state.
-try{
- const query=new URLSearchParams(location.search),saved=JSON.parse(sessionStorage.getItem('space-spatial-checkout'));
- const selection=saved?.selection,age=Date.now()-Number(saved?.at);
- const valid=selection?.kind==='paper'||selection?.kind==='origin'&&Number.isInteger(selection.index)&&selection.index>=0&&selection.index<20||selection?.kind==='sign'&&/^[A-Za-z_]{1,40}$/.test(selection.key);
- if(valid&&age>=0&&age<7200000&&(query.has('owned')||query.has('art'))){
-  sessionStorage.removeItem('space-spatial-checkout');
-  sessionStorage.setItem('space-spatial-resume',JSON.stringify(saved));
-  location.replace('/?resume=1');
- }
-}catch{}
-</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#000000">

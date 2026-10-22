@@ -1,0 +1,26 @@
+CC0 1.0 Universal — Poly Haven
+https://polyhaven.com/license
+https://creativecommons.org/publicdomain/zero/1.0/
+
+Photographic surface and environment assets, locally resized/recompressed.
+Original authors and source pages:
+https://polyhaven.com/a/old_sandstone_02
+https://polyhaven.com/a/monastery_stone_floor
+https://polyhaven.com/a/kloofendal_48d_partly_cloudy_puresky
+https://polyhaven.com/a/clarens_night_02
+
+Files:
+stone-color.webp — https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/old_sandstone_02/old_sandstone_02_diff_1k.jpg
+stone-normal.webp — https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/old_sandstone_02/old_sandstone_02_nor_gl_1k.jpg
+stone-roughness.webp — https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/old_sandstone_02/old_sandstone_02_rough_1k.jpg
+floor-color.webp — https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/monastery_stone_floor/monastery_stone_floor_diff_1k.jpg
+floor-normal.webp — https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/monastery_stone_floor/monastery_stone_floor_nor_gl_1k.jpg
+floor-roughness.webp — https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/monastery_stone_floor/monastery_stone_floor_rough_1k.jpg
+day-sky.jpg — https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/kloofendal_48d_partly_cloudy_puresky.jpg
+day-environment.hdr — https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/kloofendal_48d_partly_cloudy_puresky_1k.hdr
+night-sky.jpg — https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/clarens_night_02.jpg
+
+Additional column grain: https://polyhaven.com/a/beige_wall_001 (CC0)
+column-color.webp — https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/beige_wall_001/beige_wall_001_diff_1k.jpg
+column-normal.webp — https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/beige_wall_001/beige_wall_001_nor_gl_1k.jpg
+column-roughness.webp — https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/beige_wall_001/beige_wall_001_rough_1k.jpg
