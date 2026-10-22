@@ -56,8 +56,8 @@ try{
     console:!!q('#srch iframe,#srch-console')};});
   ok(/is-open/.test(z.srch)&&z.reglages&&z.vue==='c','retourné à la main : mes RÉGLAGES s\'ouvrent (le verso déplié), la vue ne change pas');
   ok(z.nom==='wahigher'&&/Quantico/.test(z.ff)&&z.tb==='matrix(1, 0, 0, 1, 0, 0)'&&z.bg,'zoom fini : le fond est le papier navy, le nom (Quantico) en haut');
-  /* 18/10 — un IDENTIFIANT : fixe en haut, petit, sans retour de ligne. */
-  ok(z.nomFixe==='sticky'&&z.nomWrap==='nowrap'&&z.nomPx<=19,'le nom est un identifiant FIXE en haut, petit ('+z.nomPx+'px), sans retour de ligne');
+  /* Un IDENTIFIANT : fixe en haut, sans retour de ligne ; posé à même le navy (22/10), un peu plus grand. */
+  ok(z.nomFixe==='sticky'&&z.nomWrap==='nowrap'&&z.nomPx>=19&&z.nomPx<=26,'le nom est un identifiant FIXE en haut ('+z.nomPx+'px), sans retour de ligne');
   ok(z.carte&&z.niveaux===0&&!z.vignette&&!z.monetize&&z.createur&&!z.ia&&z.menu,
     'le verso SIMPLIFIÉ : plus de confidentialité du Totehm (elle est par box), plus de vignette, plus de /monetize ; restent le nom, le programme d\'abonnés et le compte');
   ok(!z.console,'20/10 : plus de page /console empilée dans le verso — mon argent tient en un écran');

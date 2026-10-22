@@ -43,6 +43,9 @@ Diagnostics : `__totehm_lv()` · `__totehm_xo()` · `__totehm_sh()` · `__totehm
 - Session gardée : ni la vente ni CONNECT avant la fin de la lecture ; aucune écriture sur la foi du cache.
 - Verso : le dos du papier porte le NOM seul ; déplié, tout ce qui n'est pas le nom porte `.srch-after` et n'apparaît
   qu'à `is-pret` (verso déployé ET console lue, 1,8 s au plus) — un nœud ajouté au verso sans `.srch-after` s'affiche trop tôt.
+- Verso déplié : l'identifiant (`#self-h`) est à même le navy ; il colle en haut avec un bandeau `#333366` peint à
+  `is-pret` seulement, et `top` compense le padding de `#srch-ui` (Chrome colle dessous). L'email (`#self-mail`) est
+  dessous ; le pied = `.vs-acts` (boutons `.vs-acc` : Delete, Sign out) puis les conditions. Les gris lisibles (≥ #b8b8c2).
 - **Confidentialité par box : base prête, interface ABSENTE** (aucun appel à `box_audience_put/set`,
   `my_box_audiences`). Ordre : 1) la pastille sur chaque box (`tools/audience_ui.js`), 2) les lecteurs (terminal),
   3) passer à `box_audience_set`.

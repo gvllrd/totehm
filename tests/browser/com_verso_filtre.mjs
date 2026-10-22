@@ -5,6 +5,8 @@
 //     l'abonnement [Higher] avec ce qu'il ouvre (Higher Self chaque jour, TotehmBot qui suit chaque Habit).
 // 3 · Le filtre de gauche : un bloc de commande rectangle — MY STORY et VISION en carrés perforés de leur couleur,
 //     qui enferment OBJECTIVE · HABIT · REPULSION empilés.
+// 4 · L'espace membre (22/10) : l'identifiant À MÊME LE NAVY (aucune boîte noire), l'email juste dessous, des gris
+//     lisibles, DELETE MY TOTEHM et SIGN OUT en boutons, les conditions en dernier.
 // Tout est simulé (comptes, RPC) : aucune écriture en production. LANCER : node com_verso_filtre.mjs /tmp
 import {launch,page,ok} from './harness.mjs';
 const browser=await launch();const origin='https://www.totehm.com';
@@ -46,6 +48,26 @@ try{
    ok(t.hb&&/subscription/i.test(t.h)&&/fewer limits/.test(t.hs)&&/outcome/.test(t.hs)&&t.f.join()==='Self,TotehmBot'&&/free: 7/.test(t.hh),
      nom+' · l\'abonnement [Higher] à part, avec ce qu\'il ouvre → '+JSON.stringify({h:t.h,f:t.f,hh:t.hh}));
    ok(t.ordre.join()==='mw-creator,mw-menu,vs-subs-s',nom+' · trois sections dans l\'ordre : je gagne · Higher · mes abonnements → '+t.ordre.join());
+   /* ── 4 · l'espace membre ── */
+   const lum=c=>{const m=(c||'').match(/\d+/g)||[0,0,0];return Math.round(.2126*m[0]+.7152*m[1]+.0722*m[2]);};
+   const e=await pg.evaluate(()=>{const r=s=>document.querySelector(s).getBoundingClientRect(), c=s=>getComputedStyle(document.querySelector(s));
+     const n=r('#self-name'),m=r('#mw-mail'),d=r('#acct-wipe'),o=r('#mw-signout'),t=r('#srch-ui .mw-terms');
+     return {fond:c('#self-h').backgroundColor, nomB:n.bottom, nomX:n.left+n.width/2, mailT:m.top, mailX:m.left+m.width/2, mail:document.getElementById('mw-mail').textContent,
+       cMail:c('#mw-mail').color, cH:c('#mw-menu .vs-h').color, cI:c('.vs-n i').color, cSay:c('.mwc-say').color, cTerms:c('#srch-ui .mw-terms').color,
+       bD:{bg:c('#acct-wipe').backgroundColor,r:c('#acct-wipe').borderRadius,w:d.width,h:d.height,t:d.top}, bO:{bg:c('#mw-signout').backgroundColor,r:c('#mw-signout').borderRadius,h:o.height,t:o.top},
+       ordre:t.top>d.bottom, txt:[document.getElementById('acct-wipe').textContent,document.getElementById('mw-signout').textContent]};});
+   ok(e.fond==='rgb(51, 51, 102)'&&!/rgb\(0, 0, 0\)/.test(e.fond),nom+' · l\'identifiant sans boîte noire : à même le navy du papier → '+e.fond);
+   ok(e.mail==='wah@example.test'&&e.mailT>=e.nomB-2&&e.mailT-e.nomB<24&&Math.abs(e.mailX-e.nomX)<3,nom+' · l\'email juste SOUS l\'identifiant, centré ('+Math.round(e.mailT-e.nomB)+' px)');
+   const g={mail:lum(e.cMail),h:lum(e.cH),labels:lum(e.cI),phrase:lum(e.cSay),terms:lum(e.cTerms)};
+   ok(Object.values(g).every(v=>v>=175),nom+' · les gris se lisent (luminance ≥ 175 sur 255) → '+JSON.stringify(g));
+   ok(e.bD.bg==='rgb(31, 31, 36)'&&e.bO.bg===e.bD.bg&&e.bD.r==='10px'&&e.bO.r==='10px'&&e.bD.h>=40&&Math.abs(e.bD.t-e.bO.t)<2&&e.ordre,
+     nom+' · DELETE MY TOTEHM et SIGN OUT : deux boutons gris côte à côte, les conditions dessous → '+e.txt.join(' · ')+' '+JSON.stringify({d:e.bD,o:e.bO,ordre:e.ordre}));
+   await pg.$eval('#acct-wipe',b=>b.click());await pg.waitForTimeout(150);
+   const arme=await pg.evaluate(()=>({t:document.getElementById('acct-wipe').textContent,a:document.getElementById('acct-wipe').classList.contains('armed')}));
+   ok(arme.a&&/tap again/i.test(arme.t)&&!log.rpc.some(x=>x.name==='delete_my_totehm'),nom+' · Delete demande un second tap (rien n\'est effacé au premier) → '+arme.t);
+   const colle=await pg.evaluate(()=>{const u=document.getElementById('srch-ui');u.scrollTo(0,99999);const h=document.getElementById('self-h').getBoundingClientRect(),x=document.getElementById('srch-x');
+     const p=x.getBoundingClientRect(),t=document.elementFromPoint(p.left+p.width/2,p.top+p.height/2);return {top:Math.round(h.top),x:x.contains(t)};});
+   ok(colle.top===0&&colle.x,nom+' · au défilement, l\'identifiant reste en haut (y = '+colle.top+') et la croix reste au-dessus');
    await pg.click('#srch-x');await pg.waitForTimeout(1200);
    const ferme=await pg.evaluate(()=>document.getElementById('srch').className);
    ok(!/is-pret|is-open/.test(ferme),nom+' · refermé : la console repart avec le verso');

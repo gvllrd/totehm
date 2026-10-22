@@ -2400,7 +2400,7 @@ body.gate.entered #terms-corner{opacity:0;pointer-events:none}
 .ns-label{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;
   color:rgba(255,255,255,.55);text-align:left}
 @media(hover:hover){.srch-row:hover .srch-name{filter:brightness(1.3)}}
-#srch-x{position:fixed;top:10px;right:10px;z-index:2;background:none;border:none;cursor:pointer;
+#srch-x{position:fixed;top:10px;right:10px;z-index:4;background:none;border:none;cursor:pointer;
   padding:10px;line-height:0;-webkit-tap-highlight-color:transparent;pointer-events:none}
 #srch.is-open #srch-x{pointer-events:auto}
 #srch-x svg{width:20px;height:20px;color:rgba(255,255,255,.55);display:block;fill:none;
@@ -2978,6 +2978,10 @@ body.is-xo{overflow:hidden}
 
 
 
+
+
+
+
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille
    elle-même : un nouveau bloc gris entre ici tout seul.        */
@@ -3463,14 +3467,21 @@ body.rf-clavier #lvjoy{opacity:0;pointer-events:none}
    Totehm seulement sur la face verso, en mode FIXE et dans une police PLUS PETITE SANS RETOUR DE
    LIGNE »). Il était en `clamp(24px,7vw,36px)` et passait à la ligne : un identifiant ne se coupe
    pas, il s'élide. `sticky` : il reste en haut pendant que la console défile dessous. */
-#self-h{position:sticky;top:0;z-index:3;display:flex;flex-direction:column;align-items:center;gap:8px;
-  transform-origin:50% 50%;will-change:transform;flex:none;padding:7px 14px;background:#000;border-radius:10px;width:auto;max-width:94vw}
-#self-name{font:400 clamp(15px,3.4vw,19px)/1.2 'Quantico',sans-serif;color:#fbd5ca;text-align:center;
+/* L'IDENTIFIANT est posé À MÊME LE NAVY (aucune boîte) et reste en haut quand la console défile : un bandeau du MÊME
+   navy que le papier (#333366), invisible, peint seulement verso déployé — pendant le zoom il déborderait du papier. */
+#self-h{position:sticky;top:calc(-1 * max(54px,8dvh));z-index:3;   /* Chrome colle sous le padding de #srch-ui : on le rend */display:flex;flex-direction:column;align-items:center;gap:8px;
+  transform-origin:50% 50%;will-change:transform;flex:none;align-self:stretch;margin:0 -16px;padding:8px 16px 6px;background:transparent}
+#srch.is-pret #self-h{background:#333366}
+#self-name{font:400 clamp(19px,5vw,26px)/1.2 'Quantico',sans-serif;color:#fbd5ca;text-align:center;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:88vw;display:block;
   background:none;border:0;padding:0;cursor:pointer}
 #self-name:empty{display:none}
 #self-name:focus-visible{outline:1px solid rgba(255,255,255,.4);outline-offset:6px}
 #srch.is-prep #self-h{opacity:0}
+#self-mail{margin:-6px 0 8px;display:flex;flex-direction:column;align-items:center;gap:4px;flex:none}
+#self-mail .mw-mail{margin:0;font:400 11.5px/1.3 'Space Mono',monospace;letter-spacing:.03em;color:#d6d6de;word-break:break-all;text-align:center}
+#self-mail .mw-sync{margin:0;min-height:0;font-size:9px}
+#self-mail .mw-sync:empty{display:none}
 /* ══ LE VERSO = MON ARGENT, EN UN ÉCRAN · 20/10/2026 ══ Une colonne, des BOÎTES noires carrées sur le papier navy
    (elles se détachent par leur valeur, aucune bordure), des contrôles gris arrondis à 10 px, le texte au minimum :
    un label gris à gauche, la valeur blanche à droite. Les noms restent Coral (Quantico). */
@@ -3491,17 +3502,17 @@ body.rf-clavier #lvjoy{opacity:0;pointer-events:none}
 .vs-t .vs-hi{width:66px;height:22px}
 .vs-hs{display:inline-flex;align-items:center;gap:6px}
 .vs-hs .vs-hi{width:42px;height:14px}
-.vs-s{margin:0;font:400 10px/1.4 'Space Mono',monospace;letter-spacing:.04em;color:#b7b7bf}
+.vs-s{margin:0;font:400 10px/1.4 'Space Mono',monospace;letter-spacing:.04em;color:#d2d2da}
 #srch #vs-subs-s{margin-top:26px}
 #mw-menu .vs-h{white-space:normal;overflow:visible}   /* ce que Higher ouvre se lit en entier, sur deux lignes s'il le faut */
 .vs.hide{display:none}
 .vs-top{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#000;padding:18px 16px 16px}
 .vs-month{display:flex;flex-direction:column;gap:6px;min-width:0}
 .vs-month b{font:700 clamp(28px,8vw,36px)/1 'Space Mono',monospace;color:#fff;white-space:nowrap}
-.vs-month i,.vs-n i,.vs-row i{font:400 8.5px/1.2 'Space Mono',monospace;font-style:normal;letter-spacing:.16em;text-transform:uppercase;color:#8a8a92}
+.vs-month i,.vs-n i,.vs-row i{font:400 9px/1.2 'Space Mono',monospace;font-style:normal;letter-spacing:.16em;text-transform:uppercase;color:#b8b8c2}
 .vs-tog{flex:none;display:inline-flex;align-items:center;gap:8px;border:0;border-radius:10px;background:#1f1f24;padding:9px 12px;cursor:pointer;white-space:nowrap}
-.vs-tog span{width:8px;height:8px;border-radius:50%;background:#4a4a52;transition:background .2s}
-.vs-tog em{font:700 10px/1 'Space Mono',monospace;font-style:normal;letter-spacing:.16em;text-transform:uppercase;color:#8a8a92;transition:color .2s}
+.vs-tog span{width:8px;height:8px;border-radius:50%;background:#6a6a74;transition:background .2s}
+.vs-tog em{font:700 10px/1 'Space Mono',monospace;font-style:normal;letter-spacing:.16em;text-transform:uppercase;color:#c8c8d0;transition:color .2s}
 .vs-tog[data-etat="open"] span{background:#fff}
 .vs-tog[data-etat="open"] em{color:#fff}
 .vs-tog[data-etat="paused"] span{background:none;box-shadow:inset 0 0 0 1.5px #b0b0b0}
@@ -3515,9 +3526,9 @@ body.rf-clavier #lvjoy{opacity:0;pointer-events:none}
 .vs-prix{background:#000;padding-bottom:12px}
 .vs-prix .vs-row{padding-bottom:4px}
 #mwc-price{display:block;width:calc(100% - 32px);margin:4px 16px 2px;accent-color:#9a9aa2}
-.mwc-say{padding:4px 16px 0;font:400 10.5px/1.4 'Space Mono',monospace;color:#8a8a92;text-align:left}
+.mwc-say{padding:4px 16px 0;font:400 10.5px/1.4 'Space Mono',monospace;color:#b8b8c2;text-align:left}
 .mwc-say b{color:#fff}
-.vs-val,.vs-act,.vs-btn,.vs-seg button{flex:none;border:0;border-radius:10px;background:#1f1f24;color:#cfcfd6;cursor:pointer;
+.vs-val,.vs-act,.vs-btn,.vs-seg button{flex:none;border:0;border-radius:10px;background:#1f1f24;color:#e4e4ea;cursor:pointer;
   font:700 10px/1.2 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;padding:8px 11px;white-space:nowrap}
 .vs-val{letter-spacing:.06em;text-transform:none;font-weight:400;font-size:11px}
 .vs-val.is-todo{color:#fff}
@@ -3528,7 +3539,7 @@ body.rf-clavier #lvjoy{opacity:0;pointer-events:none}
 .vs-seg button.is-on{background:#3a3a42;color:#fff;box-shadow:inset 0 0 0 1px #fff}
 .vs-in{flex:1;min-width:0;border:0;border-radius:10px;background:#1f1f24;color:#fff;caret-color:#fff;outline:none;
   font:400 14px/1.2 'Quantico',sans-serif;padding:9px 12px}
-.vs-in::placeholder{color:#6d6d74}
+.vs-in::placeholder{color:#8c8c96}
 #mwc-note{margin-top:6px}
 .lv-note.is-no{color:#d9a0a0}
 .lv-note.is-ok{color:#cfcfd6}
@@ -3538,12 +3549,19 @@ body.rf-clavier #lvjoy{opacity:0;pointer-events:none}
 .vs-k{flex:none;font:700 10.5px/1 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#fff}
 .vs-k.vs-nom{font:400 14px/1.2 'Quantico',sans-serif;letter-spacing:0;text-transform:none;color:#fbd5ca;text-decoration:none;max-width:40%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .vs-hi{display:block;width:54px;height:18px}
-.vs-h{flex:1;min-width:0;font:400 10px/1.3 'Space Mono',monospace;color:#8a8a92;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.vs-foot{display:flex;flex-direction:column;align-items:center;gap:2px;margin-top:22px}
-.vs-foot .mw-mail{margin:0}
-.vs-foot .mw-sync{margin:0}
-.vs-foot .mw-out[hidden]{display:none}
-.vs-foot .mw-terms{margin-top:10px}
+.vs-h{flex:1;min-width:0;font:400 10px/1.3 'Space Mono',monospace;color:#bdbdc7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#srch .lv-note{color:#c8c8d0}
+#srch .mw-sub-act{color:#c8c8d0}
+/* LE COMPTE : des boutons gris arrondis, ajustés au label, comme tous les contrôles du verso ; puis les conditions. */
+.vs-foot{display:flex;flex-direction:column;align-items:center;gap:16px;margin-top:30px}
+.vs-acts{display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
+.vs-acts #acct{display:contents}
+.vs-acts .vs-acc{margin:0;display:inline-flex;align-items:center;border:0;border-radius:10px;background:#1f1f24;color:#e4e4ea;
+  padding:15px 18px;font:700 10px/1 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;white-space:nowrap}
+.vs-acts .vs-acc[hidden]{display:none}
+.vs-acts .acct-btn.armed{color:#fff;box-shadow:inset 0 0 0 1px #fff}
+.vs-acts .vs-acc:disabled{opacity:.6;cursor:default}
+.vs-foot .mw-terms{margin:0;font:400 9.5px/1.3 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#c8c8d0;text-decoration:none}
 /* ── LE PROFIL : le papier se découpe en disque autour du T (rayon 29,5 %, centre à 36,3 % du haut), le rail et le
    wordmark s'éteignent (sans tourner) ; AUCUN `clip-path` pendant la déconstruction. ── */
 body.gate:not(.entered):not(.folding) #ast-front{clip-path:circle(72% at 50% 50%);transition:clip-path .75s var(--gate-ease)}
@@ -4141,6 +4159,8 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
   <div id="srch-bg"></div>
   <div id="srch-ui">
     <div id="self-h"><button id="self-name" type="button" aria-label="Rename my TOTEHM"></button></div>
+    <!-- Sous l'identifiant, le compte qui le porte (et l'état de la synchronisation) ; il arrive avec le reste. -->
+    <p id="self-mail" class="srch-after"><span class="mw-mail" id="mw-mail"></span><span class="mw-sync" id="mw-sync"></span></p>
     <div id="lv-card" class="srch-after hide">
       <div id="ident-block">
         <button class="btn-sig gid" id="name-btn">Name of my TOTEHM</button>
@@ -4206,15 +4226,14 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
           <div class="vs-list" id="vs-subs"></div>
         </section>
       </div>
+      <!-- Le compte : des BOUTONS (Delete demande un second tap), puis les conditions, la dernière entrée. -->
       <div class="vs-foot">
-        <span class="mw-mail" id="mw-mail"></span><span class="mw-sync" id="mw-sync"></span>
-        <div id="acct" class="hide">
-          <button class="acct-btn" id="acct-wipe" type="button">Delete my Totehm</button>
-          <div class="acct-note hide" id="acct-note"></div>
+        <div class="vs-acts">
+          <button class="vs-acc mw-out" id="mw-pay" type="button" hidden>My payments</button>
+          <div id="acct" class="hide"><button class="vs-acc acct-btn" id="acct-wipe" type="button">Delete my Totehm</button></div>
+          <button class="vs-acc mw-out" id="mw-signout" type="button">Sign out</button>
         </div>
-        <button class="mw-out" id="mw-pay" type="button" hidden>My payments</button>
-        <button class="mw-out" id="mw-signout">Sign out</button>
-        <a class="mw-out mw-terms" href="/terms" target="_blank" rel="noopener">Simple terms of use</a>
+        <a class="mw-terms" href="/terms" target="_blank" rel="noopener">Simple terms of use</a>
       </div>
     </div>
   </div>
@@ -7323,7 +7342,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-10-21-com-verso';
+const BUILD='2026-10-22-com-membre';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
