@@ -1,0 +1,26 @@
+{
+  "name": "TOTEHM E — Tracking (Config Node)",
+  "workflowId": "pIU5bSS5jKUiw3xY",
+  "versionId": "628701c1-1b7d-473b-a3b9-97dea085a74c",
+  "activeVersionId": "59e70f44-12b3-4b0d-9aa9-03ed8d449f6e",
+  "nodes": [
+    {
+      "name": "Update DB + Email",
+      "type": "n8n-nodes-base.code",
+      "parameters": {
+        "jsCode": "\nconst SB_KEY = $env.SB_KEY;\nconst RESEND_KEY = $env.RESEND_KEY;\nconst body = $input.first().json.body;\n\nif (body.type !== 'package_shipped') return [];\n\nconst info = body.data.shipment;\nconst pf_order_id = body.data.order.id;\nconst sbh = { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}`, 'Content-Type': 'application/json' };\n\nconst dbRes = await this.helpers.httpRequest({\n  method: 'GET',\n  url: `https://abujjbkbbiumxrokozph.supabase.co/rest/v1/totehm_clothes?printful_order_id=eq.${pf_order_id}&select=*`,\n  headers: sbh, json: true\n});\nif (!dbRes || dbRes.length === 0) throw new Error('Order not found in Supabase');\nconst cloth = dbRes[0];\n\nawait this.helpers.httpRequest({\n  method: 'PATCH',\n  url: `https://abujjbkbbiumxrokozph.supabase.co/rest/v1/totehm_clothes?id=eq.${cloth.id}`,\n  headers: sbh, json: true,\n  body: { status: 'shipped', tracking_number: info.tracking_number, tracking_url: info.tracking_url }\n});\n\nawait this.helpers.httpRequest({\n  method: 'POST',\n  url: 'https://api.resend.com/emails',\n  headers: { Authorization: `Bearer ${RESEND_KEY}`, 'Content-Type': 'application/json' },\n  json: true,\n  body: {\n    from: 'TOTEHM <totehm@higher.boutique>',\n    to: [cloth.email],\n    subject: 'Your TOTEHM Cloth is on its way.',\n    html: `<p>Your physical garment has been encoded and shipped.</p><p>Track its arrival here: <a href=\"${info.tracking_url}\">${info.tracking_number}</a></p><p>— TOTEHM</p>`\n  }\n});\n\nreturn [{ json: { ok: true, cloth_id: cloth.id } }];\n"
+      }
+    }
+  ],
+  "activeVersion": {
+    "nodes": [
+      {
+        "name": "⚙️ CONFIG",
+        "type": "n8n-nodes-base.code",
+        "parameters": {
+          "jsCode": "\nreturn [{ json: {\n  ...$input.first().json,\n  SB_KEY: process.env.SB_KEY,\n  RESEND_KEY: process.env.RESEND_KEY\n}}];\n"
+        }
+      }
+    ]
+  }
+}

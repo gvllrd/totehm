@@ -1,5 +1,38 @@
 # n8n · Oracle Cloud
 
+## Essais Streetwear
+
+Depuis la racine du dépôt :
+
+```bash
+node tests/n8n/streetwear/offline.mjs
+```
+
+Le banc exécute les Code nodes des exports archivés dans `tests/n8n/streetwear/snapshots/`.
+Les requêtes HTTP et les RPC de base sont simulées ; aucun secret ni accès réseau n'est fourni.
+Le résultat est écrit dans `tests/n8n/streetwear/results.json`. Les versions de source sont dans chaque
+snapshot. Le modèle E préparé provient du commit `7bdd1223c2469f0d9bf5f3108e6959ad4dd27fb2`.
+
+59 scénarios passent : refus anonymes, décisions de réservation, sept concepts, reprise de notification,
+reprise d'agrandissement, brouillon Printful, métadonnées/photos du catalogue et suivi préparé.
+Les décisions des RPC sont simulées : ce banc ne valide ni les verrous PostgreSQL ni les fournisseurs réels.
+
+Les six défauts détectés sont des blocages, pas des succès de la chaîne : CONFIG publié avec `process.env`
+dans B/C/D/E ; brouillon E sans vérification d'origine ni exclusion TEST ; distribution des expéditions
+par F encore arrêtée avant E. Le E préparé est testé séparément et n'est pas publié.
+
+F publié reste le catalogue corrigé. B/C/D/E doivent être raccordés et publiés ensemble avec un
+`stripe-webhook` qui authentifie son appel à B. La réception Telegram et la distribution Printful sont
+à raccorder dans le même lot, en conservant les autres usages du bot partagé.
+
+Le contrôle manuel T vérifie des booléens sans envoyer de message ni de commande. Ses contrôles de
+protection peuvent passer alors que `stripe_test_key`, `stripe_test_webhook` ou Telegram restent absents.
+Les deux secrets Stripe TEST doivent être installés côté Supabase avant un achat fictif.
+Une pièce TEST reste exclue de génération et de fabrication ; le pilote fournisseurs est distinct,
+avec coût plafonné, commandes Printful en brouillon et expédition simulée vers une adresse de test.
+
+---
+
 ```
 Domaine   n8n.higher.boutique   (DNS Vercel, enregistrement A)
 Serveur   Oracle Cloud Infrastructure, Ubuntu
