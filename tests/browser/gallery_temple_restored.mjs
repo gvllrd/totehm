@@ -1,4 +1,4 @@
-// The restored temple is a hub: real WebGL/Web Audio here, each artwork lives
+// The last summit is a nocturnal hub: real WebGL/Web Audio here, each artwork lives
 // in its own original page. All identity, payment and media requests are local.
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -6,7 +6,7 @@ import {execFileSync} from 'node:child_process';
 import {launch,page} from './harness.mjs';
 import {PerspectiveCamera,Vector3} from '../../space/vendor/three-0.180.0.mjs';
 
-const OUT=process.argv[2]||'/tmp/totehm-production/temple-restored';
+const OUT=process.argv[2]||'/tmp/totehm-production/drowned-world';
 const origin='https://www.totehm.space',destinations=['/get_higher','/origins','/play_lisbon_street'];
 const results=[];let checks=0,browser;
 fs.mkdirSync(OUT,{recursive:true});
@@ -15,7 +15,7 @@ const media=fs.readFileSync(OUT+'/fixture.mp4');
 const check=(condition,message)=>{assert(condition,message);checks++;console.log('PASS '+message);};
 const state=pg=>pg.evaluate(()=>window.__totehm_gallery());
 const dayOf=d=>d.landscape?.day??d.temple?.day;
-const clocks=d=>[d.temple?.time,d.landscape?.time];
+const clocks=d=>[d.temple?.time,d.landscape?.time,d.landscape?.sky?.time,d.landscape?.ocean?.time];
 const close=async context=>{await context.close();};
 const errors=log=>log.errors.filter(e=>/pageerror:|THREE.WebGLProgram|VALIDATE_STATUS|shader error|WebGL: INVALID/i.test(e));
 
@@ -23,7 +23,8 @@ async function observe(pg,{hour=12,noWebGL=false}={}){
  await pg.addInitScript(({hour,noWebGL})=>{
   const NativeDate=Date,fixed=new NativeDate(2026,9,21,hour,0,0).getTime();
   window.Date=new Proxy(NativeDate,{construct:(Target,args)=>Reflect.construct(Target,args.length?args:[fixed])});
-  const native=window.__templeNative={contexts:0,draws:0,instancedCounts:[],textureUploads:0,imageSources:[],lastUpload:0,audio:[],noises:[],tones:[],lastFrame:0};
+  const native=window.__templeNative={contexts:0,draws:0,instancedCounts:[],textureUploads:0,imageSources:[],lastUpload:0,audio:[],noises:[],tones:[],lastFrame:0,canvasUploads:[],pointCounts:[],timeUniforms:{}};
+  const uniformNames=new WeakMap();
   const get=HTMLCanvasElement.prototype.getContext,seenContexts=new WeakSet();
   HTMLCanvasElement.prototype.getContext=function(kind,...args){
    if(noWebGL&&/webgl/i.test(kind))return null;
@@ -38,13 +39,16 @@ async function observe(pg,{hour=12,noWebGL=false}={}){
     Class.prototype[method]=function(...args){
      const image=args.find(x=>x instanceof HTMLImageElement||(globalThis.ImageBitmap&&x instanceof ImageBitmap));
      if(image){native.textureUploads++;native.lastUpload=performance.now();if(image.src&&!native.imageSources.includes(image.src))native.imageSources.push(image.src);}
+     const canvas=args.find(x=>x instanceof HTMLCanvasElement);if(canvas&&!native.canvasUploads.some(c=>c.width===canvas.width&&c.height===canvas.height))native.canvasUploads.push({width:canvas.width,height:canvas.height});
      return Reflect.apply(original,this,args);
     };
    }
    for(const method of ['drawElements','drawArrays','drawElementsInstanced','drawArraysInstanced']){
     const original=Class.prototype[method];if(!original)continue;
-    Class.prototype[method]=function(...args){native.draws++;native.lastFrame=performance.now();if(method.endsWith('Instanced')&&!native.instancedCounts.includes(args.at(-1)))native.instancedCounts.push(args.at(-1));return Reflect.apply(original,this,args);};
+    Class.prototype[method]=function(...args){native.draws++;native.lastFrame=performance.now();if(args[0]===0&&!native.pointCounts.includes(args[2]))native.pointCounts.push(args[2]);if(method.endsWith('Instanced')&&!native.instancedCounts.includes(args.at(-1)))native.instancedCounts.push(args.at(-1));return Reflect.apply(original,this,args);};
    }
+   const location=Class.prototype.getUniformLocation;Class.prototype.getUniformLocation=function(program,name){const value=Reflect.apply(location,this,[program,name]);if(value)uniformNames.set(value,name);return value;};
+   const uniform=Class.prototype.uniform1f;Class.prototype.uniform1f=function(location,value){const name=uniformNames.get(location);if(name&&/time/i.test(name)){const rows=native.timeUniforms[name]||(native.timeUniforms[name]=[]);if(rows.at(-1)!==value){rows.push(value);if(rows.length>16)rows.shift();}}return Reflect.apply(uniform,this,[location,value]);};
   }
   const NativeAudio=window.AudioContext||window.webkitAudioContext;
   if(NativeAudio){
@@ -76,7 +80,7 @@ async function fixture(viewport,{hour=12,noWebGL=false}={}){
 }
 async function loaded(pg){
  await pg.waitForFunction(()=>{const d=window.__totehm_gallery?.();return d?.webgl&&d.frames>0&&d.temple?.portals?.length===3;},null,{timeout:90000});
- await pg.waitForFunction(()=>{const d=__totehm_gallery();return d.temple.stoneMapsLoaded>=9&&d.temple.paperPortal?.loaded&&d.landscape.skyLoaded&&d.landscape.hdrLoaded;},null,{timeout:60000});
+ await pg.waitForFunction(()=>{const d=__totehm_gallery();return d.temple.stoneMapsLoaded>=9&&d.temple.paperPortal?.loaded&&d.landscape.skyLoaded&&d.landscape.environmentLoaded;},null,{timeout:60000});
  await pg.waitForTimeout(300);return state(pg);
 }
 async function settled(pg){
@@ -118,22 +122,27 @@ async function enter(pg,room,{trace=false}={}){
 }
 
 try{
- browser=await launch();const daySamples=new Map();
+ browser=await launch();const noonSamples=new Map();
  for(const viewport of [{width:1440,height:1000},{width:390,height:844}]){
-  const f=await fixture(viewport),{pg,ctx,log,requests}=f,sample={viewport,kind:'day'};results.push(sample);const suffix=' at '+viewport.width;
+  const f=await fixture(viewport),{pg,ctx,log,requests}=f,sample={viewport,kind:'night-at-noon'};results.push(sample);const suffix=' at '+viewport.width;
   try{
    await pg.goto(origin+'/');sample.initial=await loaded(pg);
-   check(sample.initial.build==='2026-10-21-space-temple-restored'&&sample.initial.zone==='temple'&&!sample.initial.fallback,'restored temple opens in a real 3D scene'+suffix);
-   check(dayOf(sample.initial)===true&&sample.initial.temple.portals.length===3,'local daytime and three antique portals are present'+suffix);
+   check(sample.initial.build==='2026-10-22-space-last-summit'&&sample.initial.zone==='temple'&&!sample.initial.fallback,'the last summit opens in a real 3D scene'+suffix);
+   check(dayOf(sample.initial)===false&&sample.initial.landscape.permanentNight&&sample.initial.temple.portals.length===3,'the drowned world stays nocturnal at local noon with three antique portals'+suffix);
+   check(sample.initial.landscape.sky.milkyWay&&sample.initial.landscape.sky.stars>5000&&sample.initial.landscape.sky.moon,'the sky contains a Milky Way, thousands of stars and a moon'+suffix);
+   check(sample.initial.landscape.ocean.displacedGeometry&&sample.initial.landscape.ocean.swells>=2&&sample.initial.landscape.ocean.crestUpperBound<0&&sample.initial.landscape.ocean.baseHeight<sample.initial.landscape.ocean.crestUpperBound,'monumental displaced swells remain below the last summit'+suffix);
    check(await pg.locator('iframe,video,#spatial-player').count()===0,'the temple has no embedded or merged experience player'+suffix);
    check((await pg.evaluate(()=>__templeNative.audio.length))===0&&!sample.initial.audio.unlocked,'sound is not constructed before a real gesture'+suffix);
    check(await pg.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'temple interface fits the viewport'+suffix);
-   sample.dayPixels=await screenshot(pg,'day-world-'+viewport.width,{world:true});daySamples.set(viewport.width,sample.dayPixels);
+   sample.worldPixels=await screenshot(pg,'noon-night-world-'+viewport.width,{world:true});noonSamples.set(viewport.width,sample.worldPixels);
    await screenshot(pg,'entrance-ui-'+viewport.width);
-   check(sample.dayPixels.mean>12&&sample.dayPixels.black<.85&&sample.dayPixels.colours>300,'the day scene contains textured, lit world pixels'+suffix);
+   check(sample.worldPixels.mean>4&&sample.worldPixels.mean<100&&sample.worldPixels.black<.9&&sample.worldPixels.colours>300,'the night keeps textured temple stones and a readable world'+suffix);
    await pg.waitForFunction(()=>__templeNative.imageSources.filter(src=>src.includes('/assets/temple/')).length>=2,null,{timeout:45000});
-   sample.nativeTextures=await pg.evaluate(()=>({contexts:__templeNative.contexts,draws:__templeNative.draws,uploads:__templeNative.textureUploads,sources:__templeNative.imageSources,instancedCounts:__templeNative.instancedCounts}));
+   sample.nativeTextures=await pg.evaluate(()=>({contexts:__templeNative.contexts,draws:__templeNative.draws,uploads:__templeNative.textureUploads,sources:__templeNative.imageSources,instancedCounts:__templeNative.instancedCounts,canvasUploads:__templeNative.canvasUploads,pointCounts:__templeNative.pointCounts,timeUniforms:__templeNative.timeUniforms}));
    check(sample.nativeTextures.contexts===1&&sample.nativeTextures.draws>0&&sample.nativeTextures.uploads>=2,'real temple image textures reach the native GPU'+suffix);
+   check(sample.nativeTextures.canvasUploads.some(c=>c.width===sample.initial.landscape.sky.textureSize[0]&&c.height===sample.initial.landscape.sky.textureSize[1])&&sample.nativeTextures.pointCounts.includes(sample.initial.landscape.sky.stars),'the actual celestial canvas and star points reach native GPU uploads and draws'+suffix);
+   const movingWorld=sample.initial.landscape;await pg.waitForFunction(previous=>{const d=__totehm_gallery().landscape;return d.ocean.time>previous.ocean+.025&&d.sky.time>previous.sky+.025;},{ocean:movingWorld.ocean.time,sky:movingWorld.sky.time},{timeout:15000});
+   check(await pg.evaluate(()=>Object.values(__templeNative.timeUniforms).some(values=>new Set(values).size>1)),'the ocean and stars advance with real native shader time uniforms'+suffix);
    check(sample.initial.temple.paperPortal?.papers===(viewport.width<650?18:24)&&sample.nativeTextures.instancedCounts.includes(sample.initial.temple.paperPortal.papers)&&sample.nativeTextures.sources.some(src=>src.endsWith('/assets/gallery/totehmpaper.png')),'the door renders many copies of the genuine perforated paper as native instances'+suffix);
    await pg.click('#enter-gallery');
    check(new URL(pg.url()).pathname==='/'&&(await state(pg)).zone==='temple','begin activates the visit without entering an artwork'+suffix);
@@ -152,14 +161,14 @@ try{
    check(await pg.evaluate(()=>__templeNative.audio.length===1&&__templeNative.tones.length>=2),'approaching reuses one real audio context and its voices'+suffix);
    await screenshot(pg,'portal-close-'+viewport.width);
    await pg.click('#look-sea');await settled(pg);sample.sea=await state(pg);sample.seaPixels=await screenshot(pg,'sea-world-'+viewport.width,{world:true});
-   check(sample.sea.camera.target[0]<sample.sea.camera.position[0]&&sample.seaPixels.hash!==sample.dayPixels.hash,'the sea viewpoint looks left into a genuinely different rendering'+suffix);
-   await pg.click('#look-mountains');await settled(pg);sample.mountains=await state(pg);sample.mountainPixels=await screenshot(pg,'mountains-world-'+viewport.width,{world:true});
-   check(sample.mountains.camera.target[0]>sample.mountains.camera.position[0]&&sample.mountainPixels.hash!==sample.seaPixels.hash,'the mountain viewpoint looks right into the other panorama'+suffix);
+   check(sample.sea.camera.target[0]<sample.sea.camera.position[0]&&sample.seaPixels.hash!==sample.worldPixels.hash,'the sea viewpoint looks left into a genuinely different rendering'+suffix);
+   await pg.click('#look-horizon');await settled(pg);sample.horizon=await state(pg);sample.horizonPixels=await screenshot(pg,'drowned-horizon-world-'+viewport.width,{world:true});
+   check(sample.horizon.camera.target[0]>sample.horizon.camera.position[0]&&sample.horizonPixels.hash!==sample.seaPixels.hash,'the second viewpoint looks right across the drowned horizon'+suffix);
    await pg.click('#overview');await settled(pg);
    check(JSON.stringify((await state(pg)).position)===JSON.stringify([0,12]),'return restores the original temple entrance'+suffix);
    await pg.emulateMedia({reducedMotion:'reduce'});await pg.waitForFunction(()=>__totehm_gallery().reduced_motion);
    await pg.waitForTimeout(500);const frozen=await state(pg);await pg.waitForTimeout(350);const frozenEnd=await state(pg);
-   check(frozenEnd.frames===frozen.frames&&JSON.stringify(clocks(frozenEnd))===JSON.stringify(clocks(frozen)),'reduced motion freezes the rendered atmosphere and architecture'+suffix);
+   check(frozenEnd.frames===frozen.frames&&JSON.stringify(clocks(frozenEnd))===JSON.stringify(clocks(frozen))&&!frozenEnd.landscape.ocean.animated&&!frozenEnd.landscape.sky.animated,'reduced motion freezes geometry, waves, stars and architecture'+suffix);
    if(viewport.width<650){
     const start=(await state(pg)).position,r=await pg.locator('#joystick').boundingBox(),cdp=await ctx.newCDPSession(pg);
     await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:r.x+r.width/2,y:r.y+r.height/2}]});
@@ -182,7 +191,7 @@ try{
    await hidden(pg,false);await pg.waitForFunction(()=>__totehm_gallery().audio.state==='running');
    check(!requests.some(r=>/\.(mp3|wav|ogg|aac|flac)(\?|$)/i.test(r.url)),'approach ambience needs no external audio file'+suffix);
    check(!requests.some(r=>/\/storage\/v1\/object\/(public|sign)\//.test(new URL(r.url).pathname)),'the hub requests no experience video or private sequence'+suffix);
-   check(errors(log).length===0,'day temple has no application or GPU shader errors'+suffix);
+   check(errors(log).length===0,'nocturnal temple has no application or GPU shader errors'+suffix);
    await pg.emulateMedia({reducedMotion:'no-preference'});await pg.click('#overview');await settled(pg);
    await enter(pg,1,{trace:true});await pg.waitForSelector('#deck .slide');
    const trace=await pg.evaluate(()=>JSON.parse(sessionStorage.getItem('temple-test-transition')||'[]'));sample.transitionTrace=trace;
@@ -190,16 +199,16 @@ try{
    check(await pg.locator('#deck .slide').count()===21&&await pg.locator('#deck video').count()===20&&await pg.locator('#space,#spatial-player,iframe').count()===0,'Origins opens its own original reader, not an embedded temple view'+suffix);
    check(errors(log).length===0,'independent Origins navigation has no application errors'+suffix);
    sample.log=log;
-  }catch(error){sample.error=String(error);sample.failed=await state(pg).catch(()=>null);await pg.screenshot({path:OUT+'/failure-day-'+viewport.width+'.png'}).catch(()=>{});throw error;}
+  }catch(error){sample.error=String(error);sample.failed=await state(pg).catch(()=>null);await pg.screenshot({path:OUT+'/failure-noon-night-'+viewport.width+'.png'}).catch(()=>{});throw error;}
   finally{sample.requests=requests;fs.writeFileSync(OUT+'/results.json',JSON.stringify({checks,results},null,2));await close(ctx);}
  }
  for(const viewport of [{width:1440,height:1000},{width:390,height:844}]){
   const {pg,ctx,log}=await fixture(viewport,{hour:22}),sample={viewport,kind:'night'};results.push(sample);
   try{
    await pg.emulateMedia({reducedMotion:'reduce'});await pg.goto(origin+'/');sample.state=await loaded(pg);
-   check(dayOf(sample.state)===false,'local night selects the celestial temple at '+viewport.width);
+   check(dayOf(sample.state)===false&&sample.state.landscape.permanentNight,'the same nocturnal world remains selected at local 22:00 at '+viewport.width);
    sample.pixels=await screenshot(pg,'night-world-'+viewport.width,{world:true});await screenshot(pg,'night-ui-'+viewport.width);
-   check(sample.pixels.hash!==daySamples.get(viewport.width).hash&&sample.pixels.mean>1&&sample.pixels.mean<daySamples.get(viewport.width).mean,'night produces a visible, distinct and darker real scene at '+viewport.width);
+   check(sample.pixels.mean>4&&sample.pixels.mean<100&&sample.pixels.mean>noonSamples.get(viewport.width).mean*.4&&sample.pixels.mean<noonSamples.get(viewport.width).mean*2,'night remains visible and does not become a daylight world at another connection hour '+viewport.width);
    check(sample.pixels.colours>200&&sample.pixels.black<.9,'night lighting keeps the antique stones and landscape visible at '+viewport.width);
    check(errors(log).length===0,'night has no application or GPU shader errors at '+viewport.width);sample.log=log;
   }catch(error){sample.error=String(error);sample.failed=await state(pg).catch(()=>null);throw error;}
@@ -250,5 +259,5 @@ try{
   }catch(error){sample.error=String(error);throw error;}
   finally{fs.writeFileSync(OUT+'/results.json',JSON.stringify({checks,results},null,2));await close(ctx);}
  }
- console.log('PASS '+checks+' restored temple checks; evidence '+OUT);
+ console.log('PASS '+checks+' last-summit checks; evidence '+OUT);
 }finally{await browser?.close();}

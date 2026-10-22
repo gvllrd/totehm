@@ -2,7 +2,8 @@
 
 > L’état actuel (≤ 60 lignes). On y travaille à la demande de Wah. Les mesures de livraison vivent dans les commits.
 
-Un temple antique au sommet du monde : mer à gauche, montagnes à droite, mer de nuages, colonnades et oliviers.
+Le dernier temple au sommet d’une Terre engloutie : océan à 360°, houles monumentales sous une nuit permanente.
+La terrasse de pierre et ses oliviers vivants restent seuls au-dessus des eaux : peur au loin, refuge et renouveau ici.
 Les trois portes ouvrent leurs pages indépendantes : `/get_higher`, `/origins`, `/play_lisbon_street`.
 La porte TotehmPaper montre de nombreux papiers originaux perforés suspendus ; celle de Lisbon ses panneaux flottants.
 
@@ -11,16 +12,19 @@ La porte TotehmPaper montre de nombreux papiers originaux perforés suspendus ; 
 | `index.html` · `gallery-ui.mjs` · `gallery.css` | entrée, portes, panoramas, liste accessible et SSO existant |
 | `gallery-3d.mjs` · `gallery-temple-navigation.mjs` | caméra, guidage et collisions, clavier/sol/joystick, passage vers les pages |
 | `gallery-temple.mjs` | pierre PBR, 8 colonnes à 24 flûtes, arches, oliviers, feuilles découpées et couvertures des portes |
-| `gallery-temple-landscape.mjs` | terrains rocheux, mer, nuages, ciels photographiques et éclairage HDR/préfiltrage |
-| `gallery-temple-assets.mjs` · `assets/temple/` | 9 textures PBR 1k, 2 panoramas 2k et un environnement HDR 1k ; sources CC0 dans LICENSE.txt |
+| `gallery-temple-landscape.mjs` | seul piton émergé, lune, pierre éclairée et environnement nocturne préfiltré |
+| `gallery-drowned-ocean.mjs` | océan 3D à 360°, deux trains de houle déplacés GPU, crêtes et écume argentées |
+| `gallery-drowned-sky.mjs` | ciel généré localement, Voie lactée/poussières, étoiles, lune et rare étoile filante |
+| `gallery-temple-assets.mjs` · `assets/temple/` | 9 textures de pierre PBR 1k chargées ; sources CC0 dans LICENSE.txt |
 | `gallery-audio.mjs` · `gallery-lisbon.mjs` | grave progressif près des portes et souffle Web Audio ; aperçu des vrais panneaux |
 | `get_higher.html` · `stoner.html` · `stoner_terms.html` | TotehmPaper et méthode Stoner, dans leurs propres fichiers et avec leurs droits serveur |
 | `origins.html` · `play_lisbon_street.html` | Origins et Lisbon autonomes, leurs lecteurs/manette/médias originaux |
 | `market.html` | marketplace complète : achats primaires, revente, propriétaires, provenance et ma collection |
 | `social.html` · `api/card.js` | lecteur ouvert par COM `/x/space` · aperçu `/s/:id` |
-| `vendor/` · `assets/` | Three.js/HDRLoader/HLS et vrais médias |
+| `vendor/` · `assets/` | Three.js/HLS, textures de pierre et vrais médias |
 
-- Jour de 06:00 à 20:00 selon l’heure locale du navigateur ; nuit étoilée sinon. Tout le décor reste dans le même monde.
+- Nuit permanente à toute heure. Environnement PMREM issu du vrai ciel procédural, sans téléchargement de panorama/HDR.
+- Océan à −105 m, crêtes bornées sous −37 m, calme près du piton ; aucun autre sol émergé. Astres et houles suivent le mouvement réduit.
 - Routes autour de six plantations de rayon 2,7 m ; les portes sont en x=−9/0/9, z=−12. Aucun pas hors de la plateforme.
 - Marche 2,6 m/s, guidage doux 1 450–4 200 ms. Choisir une porte approche ; entrer/franchir lance sa page après le souffle/FOV de 800 ms.
 - Audio seulement après un geste réel, bouton muet, préférence conservée. Liste/onglet masqué suspendent animation et son.
