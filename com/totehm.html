@@ -2990,6 +2990,8 @@ body.is-xo{overflow:hidden}
 
 
 
+
+
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille
    elle-même : un nouveau bloc gris entre ici tout seul.        */
@@ -3485,6 +3487,18 @@ body.rf-clavier #lvjoy{opacity:0;pointer-events:none}
 .rf-prop{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:14px}
 .rf-add{border:0;border-radius:10px;padding:7px 11px;background:rgba(0,0,0,.3);color:#d6d6dc;font:700 9.5px/1.3 'Space Mono',monospace;letter-spacing:.1em;text-transform:uppercase;cursor:pointer}
 .rf-add:disabled{opacity:.6;cursor:default}
+/* 22/10 — LE LIEU DE LA STEP (le miroir) : un carré plein (comme un point de la carte), son nom, ce qui le situe, l'heure ;
+   GO l'ouvre (Maps, ou la billetterie d'un événement), SPOT IT l'annonce sur figher.club. Rien n'est inventé : la page
+   n'affiche que le lieu que le serveur a vérifié (`@lieu`). */
+.rf-lieu{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,.14)}
+.rf-lieu-n{font:400 13px/1.35 'Quantico',sans-serif;color:#fff}
+.rf-lieu-n::before{content:"";display:inline-block;width:7px;height:7px;margin-right:8px;background:#fff;vertical-align:1px}
+.rf-lieu-d,.rf-lieu-q{font:400 9.5px/1.4 'Space Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:#c8c8d0}
+.rf-lieu-a{display:flex;gap:8px;flex-basis:100%;margin-top:4px}
+a.rf-add{text-decoration:none;display:inline-block}
+.rf-lieu-up{margin-top:12px;border:0;background:none;padding:0;cursor:pointer;font:400 9.5px/1.4 'Space Mono',monospace;letter-spacing:.12em;
+  text-transform:uppercase;color:#c8c8d0;display:inline-flex;align-items:center;gap:6px}
+.rf-lieu-up .sm-hi{height:12px;width:auto}
 .rf-ex{align-self:flex-start;font:400 9px/1.4 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#5c5c64;margin:2px 0 4px}
 .rf-q{margin:0 0 8px;text-align:left;font:400 20px/1.35 'Quantico',sans-serif;color:#cfcfd6;word-wrap:break-word}
 .sm-acts{display:flex;gap:12px;padding:8px 2px 0}
@@ -7397,7 +7411,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-10-22-com-mouchard';
+const BUILD='2026-10-22-com-miroir';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -12559,18 +12573,20 @@ window.addEventListener('pageshow',e=>{
        Rien n'est présenté comme mien sans exister dans mon Totehm : le serveur vérifie chaque citation (`@ok`) ;
        une step qui n'est pas une de mes Habits est une PROPOSITION (pointillé, « + my Habit »). La dernière
        Reflection seule, aucun historique visible ; le serveur décide de l'accès (`my_landing().sm`, `sm_begin`). */
-    const SM={seq:0, msgs:[], busy:false, live:null, offre:false, raf:0, paye:false, ajoute:new Set()};
+    const SM={seq:0, msgs:[], busy:false, live:null, offre:false, raf:0, paye:false, ajoute:new Set(), spotte:new Set(), pos:null, posRefus:false};
     const etatSM=()=>(LAND&&LAND.sm)||{};
     const acces=()=>!!(etatSM().higher||(LAND&&LAND.higher&&LAND.higher.active));
     const fil=$('lv-thread'), ring=document.querySelector('#lv-socket .sk-ring');
     /* Le texte du modèle → {dir, obs, teach, step, ok}. Tolérant : un flux coupé au milieu se lit quand même. */
     function lireR3(txt){
-      const r={dir:null, obs:null, teach:null, step:null, ok:null};
+      const r={dir:null, obs:null, teach:null, step:null, ok:null, lieu:null};
       let cur=null;
       for(const l0 of String(txt||'').replace(/\r/g,'').split('\n')){
         const l=l0.trim(); if(!l) continue;
         const ok=/^@ok\s+(\{.*\})\s*$/.exec(l);
         if(ok){ try{ r.ok=JSON.parse(ok[1]); }catch(_){} continue; }
+        const li=/^@lieu\s+(\{.*\})\s*$/.exec(l);
+        if(li){ try{ const x=JSON.parse(li[1]); if(x&&x.name&&/^(place|event|mine)$/.test(x.kind)) r.lieu=x; }catch(_){} continue; }
         const m=/^@(dir|obs|teach|step)\b([^\n]*)$/i.exec(l);
         if(m){
           const tete=m[2]||'', q=/"([^"]*)"|“([^”]*)”/.exec(tete);
@@ -12603,14 +12619,39 @@ window.addEventListener('pageshow',e=>{
       const ti=s&&s.int&&INT_BY_ID[s.int]?'<i class="rf-tick" style="background:'+intColor(s.int)+'" aria-hidden="true"></i>':'';
       h+='<div class="rf-t t-step'+(vide('step')?' is-wait':'')+(prop?' is-prop':'')+(ti?' a-tick':'')+'">'+ti
         +(mienne?ref('step'):ajoutee?'<span class="rf-ref">'+esc(habitDe(s.text))+'</span>':'')+p(s)
+        +lieuHTML(r.lieu,{id:o.id, exemple:o.exemple, mienne})
+        +(!r.lieu&&r.ok&&o.id&&!o.exemple&&!vide('step')?lieuInvite():'')
         +(prop&&r.ok&&o.id&&!o.exemple?'<div class="rf-prop"><button class="rf-add" type="button" data-rf-add="'+esc(o.id)+'">+ my Habit</button></div>':'')+'</div>';
       h+='<div class="rf-t t-obs'+(vide('obs')&&vide('teach')?' is-wait':'')+'">'+p(r.obs)
         +(r.teach&&r.teach.text?'<div class="rf-teach"><span class="rf-k">Teaching from the story</span>'+ref('teach')+p(r.teach)+'</div>':'')+'</div>';
       return h;
     }
+    /* 22/10 — le lieu de la step : vérifié par le serveur ; GO (Maps ou la billetterie), SPOT IT (figher.club) quand la step
+       est une de MES Habits, que le lieu a un point et une heure à venir. */
+    const quandDe=v=>{ const d=new Date(v); if(isNaN(d)) return '';
+      return d.toLocaleString('en-GB',{weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}); };
+    function lieuHTML(L,o){
+      if(!L||!L.name) return '';
+      const q=L.kind==='event'?quandDe(L.at):L.when?quandDe(L.when):'';
+      const det=[L.address, L.kind==='event'?L.city:'', L.km!=null?L.km+' km':''].filter(Boolean).join(' · ');
+      const go=L.kind==='event'&&L.url?L.url:L.maps;
+      const t=new Date(L.when||L.at||'');
+      const spot=!o.exemple&&o.mienne&&L.kind!=='mine'&&L.lat!=null&&L.lng!=null&&!isNaN(t)&&t.getTime()>Date.now();
+      const actes=o.exemple?'':(go&&/^https:\/\//.test(go)?'<a class="rf-add" href="'+esc(go)+'" target="_blank" rel="noopener">go</a>':'')
+        +(spot?(SM.spotte.has(o.id)?'<button class="rf-add" type="button" disabled>spotted</button>'
+          :'<button class="rf-add" type="button" data-rf-spot="'+esc(o.id)+'">spot it</button>'):'');
+      return '<div class="rf-lieu k-'+esc(L.kind)+'"><span class="rf-lieu-n">'+esc(L.name)+'</span>'
+        +(det?'<span class="rf-lieu-d">'+esc(det)+'</span>':'')+(q?'<span class="rf-lieu-q">'+esc(q)+'</span>':'')
+        +(actes?'<span class="rf-lieu-a">'+actes+'</span>':'')+'</div>';
+    }
+    /* Sans lieu : un membre Higher sans position donnée peut la donner (une fois, ~1 km) ; les autres voient ce que Higher ouvre. */
+    function lieuInvite(){
+      if(!acces()) return '<button class="rf-lieu-up" type="button" data-sm-offer>a real place near me · '+HI+'</button>';
+      return SM.pos||SM.posRefus?'':'<button class="rf-lieu-up" type="button" data-rf-pos>places near me</button>';
+    }
     const EXEMPLE=lireR3('@dir objective "Run a marathon under 4 hours"\nI train for the finish line, not for the likes.\n@obs\nI scroll in bed and wake up wrecked.\n'
-      +'@teach wisdom "Discipline is freedom"\nEvery night I give to the screen is a morning I lose.\n@step new focus\nI charge my phone in the kitchen at 22:30 tonight.\n'
-      +'@ok {"dir":true,"teach":true,"step":null}');
+      +'@teach wisdom "Discipline is freedom"\nEvery night I give to the screen is a morning I lose.\n@step habit "Run the hill" fight\nTomorrow 7:00, down at the park, dark techno on, I run the hill twice.\n'
+      +'@ok {"dir":true,"teach":true,"step":true}\n@lieu {"kind":"place","name":"Jardim da Estrela","address":"Praça da Estrela, Lisboa","km":1.2}');
     const BADGE='<svg viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-badge"></use></svg>';
     /* « Higher » est TOUJOURS le badge, même au milieu d'une phrase. */
     const HI='<svg class="sm-hi" viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-badge"></use></svg>';
@@ -12696,15 +12737,30 @@ window.addEventListener('pageshow',e=>{
       }catch(e){ console.error('[higher-self] flux',e?.message||e); }
       return {status:200,d:{ok:txt.trim().length>=12,text:txt,left:reste===''||reste==null?null:+reste,higher:haut}};
     }
-    /* Ce qui repart au modèle (les tours précédents, invisibles) : sans la ligne de vérification. */
-    const sansOk=t=>String(t||'').replace(/\n?@ok\s+\{.*\}\s*$/s,'').trim();
+    /* Ce qui repart au modèle (les tours précédents, invisibles) : sans les lignes du serveur (vérification, lieu). */
+    const sansOk=t=>String(t||'').replace(/\n?@(?:ok|lieu)\s+\{[^\n]*\}/g,'').trim();
+    /* La position (Higher) : arrondie à ~1 km, lue seulement si le navigateur l'a DÉJÀ permise, ou donnée d'un geste
+       (« places near me ») ; jamais gardée ailleurs que dans cette page. */
+    const arrondi=c=>({lat:Math.round(c.latitude*100)/100, lng:Math.round(c.longitude*100)/100});
+    const lirePos=ms=>new Promise(res=>{ if(!navigator.geolocation) return res(null);
+      let fini=false; const fin=v=>{ if(!fini){ fini=true; res(v); } };
+      navigator.geolocation.getCurrentPosition(p=>fin(p&&p.coords?arrondi(p.coords):null),()=>fin(null),{timeout:ms,maximumAge:600000});
+      setTimeout(()=>fin(null),ms+200); });
+    async function posPermise(){
+      if(SM.pos) return SM.pos;
+      try{ const st=navigator.permissions&&await navigator.permissions.query({name:'geolocation'}); if(!st||st.state!=='granted') return null; }
+      catch(_){ return null; }
+      const p=await lirePos(1500); if(p) SM.pos=p; return p;
+    }
     $('lv-say').addEventListener('submit',async e=>{
       e.preventDefault(); if(SM.busy) return;
       const inp=$('lv-say-in'), t=inp.value.trim(); if(t.length<2){ smNote('a few words'); return; }
       const uid=me&&me.id, seq=++SM.seq;
       const tours=SM.msgs.slice(-6).map(m=>({role:m.role,text:m.role==='sm'?sansOk(m.text):m.text}));
       SM.msgs.push({role:'me',text:t}); SM.busy=true; SM.live=''; inp.value=''; smNote(''); smPeindre(); penser(true);
-      const {status,d}=await smFlux({action:'say',text:t,turns:tours,now:maintenant(),fmt:'r3'},txt=>{ if(seq===SM.seq){ SM.live=txt; smBientot(); } });
+      const pos=acces()?await posPermise():null;
+      const {status,d}=await smFlux({action:'say',text:t,turns:tours,now:maintenant(),tz:new Date().getTimezoneOffset(),fmt:'r4',...(pos?{pos}:{})},
+        txt=>{ if(seq===SM.seq){ SM.live=txt; smBientot(); } });
       if(seq!==SM.seq||me?.id!==uid) return;
       penser(false); SM.busy=false; SM.live=null;
       if(d.ok){
@@ -12739,7 +12795,27 @@ window.addEventListener('pageshow',e=>{
       const t=champ(); if(t) try{ t.focus({preventScroll:true}); const n=t.value.length; t.setSelectionRange(n,n); }catch(_){}
     });
     /* Une Reflection, telle qu'elle part ailleurs : ses trois étages, en clair. */
-    const aPartager=m=>{ const r=lireR3(m.text); return [r.dir&&r.dir.text, r.obs&&r.obs.text, r.teach&&r.teach.text, r.step&&r.step.text&&('→ '+r.step.text)].filter(Boolean).join('\n'); };
+    const aPartager=m=>{ const r=lireR3(m.text); return [r.dir&&r.dir.text, r.obs&&r.obs.text, r.teach&&r.teach.text, r.step&&r.step.text&&('→ '+r.step.text),
+      r.lieu&&r.lieu.name&&('◼ '+r.lieu.name+(r.lieu.maps||r.lieu.url?' '+(r.lieu.kind==='event'&&r.lieu.url?r.lieu.url:r.lieu.maps):''))].filter(Boolean).join('\n'); };
+    /* SPOT IT : la step (une de MES Habits) au lieu vérifié, à son heure → un spot sur figher.club, la vue → le montre.
+       Le serveur décide de tout (`spot_schedule_audience`) : la Habit, l'heure à venir, le point. */
+    async function spotDeLaStep(id,btn){
+      if(RO||!me||!inscrit()||guest()) return;
+      const m=SM.msgs.find(x=>x.id===id); if(!m) return;
+      const r=lireR3(m.text), L=r.lieu, s=r.step;
+      const t=L&&new Date(L.when||L.at||'');
+      if(!L||!s||!s.ref||!(r.ok&&r.ok.step===true)||L.lat==null||L.lng==null||!t||isNaN(t)||t.getTime()<=Date.now()){ smNote('a place and a time ahead'); return; }
+      smNote('…'); const uid=me.id;
+      const city=L.city||await villeDe(L.lat,L.lng);
+      const {data,error}=await sb.rpc('spot_schedule_audience',{p_habit:s.ref, p_starts_at:t.toISOString(), p_duration_min:60,
+        p_place:[L.name,L.kind==='place'?L.address:''].filter(Boolean).join(', ').slice(0,120), p_lat:L.lat, p_lng:L.lng,
+        p_city:city||null, p_comment:null, p_mode:'silent', p_location:'on', p_audience:'figher'});
+      if(uid!==me?.id) return;
+      if(error){ console.error('[spot_schedule_audience]',error.message); smNote('not announced · try again'); if(btn) btn.disabled=false; return; }
+      if(!data||!data.ok){ smNote(({habit:'not my habit',when:'a time, later than now',too_many:'too many spots ahead'})[data&&data.why]||'not announced · try again');
+        if(btn) btn.disabled=false; return; }
+      diag.spots=(diag.spots|0)+1; SM.spotte.add(id); CLUBSP.vider(); smPeindre(); smNote('spotted · figher.club');
+    }
     function ajouterHabit(id){
       if(RO||!me||!inscrit()||guest()) return;
       const m=SM.msgs.find(x=>x.id===id); if(!m) return;
@@ -12759,6 +12835,11 @@ window.addEventListener('pageshow',e=>{
               smNote(d.error==='blocked'?'TotehmBot is blocked in Telegram':d.error==='higher_required'?'with the subscription only':'try again'); return; }
       const add=e.target.closest('[data-rf-add]');
       if(add){ add.disabled=true; ajouterHabit(add.dataset.rfAdd); return; }
+      if(e.target.closest('[data-rf-pos]')){ smNote('…'); const p=await lirePos(8000);
+        if(p){ SM.pos=p; smNote('near me · on my next reflection'); } else { SM.posRefus=true; smNote('no position · my own places stay'); }
+        smPeindre(); return; }
+      const sp=e.target.closest('[data-rf-spot]');
+      if(sp){ sp.disabled=true; spotDeLaStep(sp.dataset.rfSpot,sp); return; }
       const w=e.target.closest('[data-sm-write]');
       if(w){ const v=w.dataset.smWrite; enter(()=>setView(v)); return; }
       if(e.target.closest('[data-sm-offer]')){ SM.offre=true; smPeindre(); fil.scrollTop=fil.scrollHeight; return; }
@@ -12819,7 +12900,7 @@ window.addEventListener('pageshow',e=>{
       debloques:diag.debloques, enAttente:diag.enAttente, refus:{...diag.refus}, dernierRefus:diag.dernier, haut:diagHaut,
       membre:inscrit(), higher:!!(LAND&&LAND.higher&&LAND.higher.active), thp:!!(LAND&&LAND.thp),
       reflection:{tours:SM.msgs.length, pret:!!etatSM().ready, gratuits:etatSM().free_left??null, envois:diag.envois, ajouts:diag.ajouts,
-                  pense:!!pense, telegram:diag.telegram},
+                  pense:!!pense, telegram:diag.telegram, spots:diag.spots|0, pos:!!SM.pos},
       membre:{cherche:MB.cherche, chez:!!MB.nom, medias:MBM.items.length, offre:OFFRE.etat()}, ramifications:RAM.etat(), tours:diag.tours, tourne:!!tour,
       shorts:SH.etat(), spots:SPOTS.etat(),
       visibilite:LAND?LAND.visibility:null, createur:CREA.etat(), reglages:sOpen});
