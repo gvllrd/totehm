@@ -6,6 +6,8 @@
 //     n'affiche JAMAIS la vente ni CONNECT pendant qu'elle se lit ; un membre connu se peint avant la réponse de la base.
 // 3 · « Remonter la langue et le TotehmPaper : on ne voit pas le cerveau » : en haut, la bouche contre le bord, la vente
 //     sous le slogan, le cerveau ENTIER entre la vente et la manette, sur quatre écrans.
+// 4 · (22/10) La manette est un MANCHE (tirée à gauche, elle va à gauche, à la souris comme au doigt) ; un geste fait
+//     pendant le repli du TOTEHM attend la fin du repli au lieu de se perdre.
 // Tout est simulé (comptes, RPC) : aucune écriture en production. LANCER : node com_boot_gestes.mjs /tmp
 import {launch,page,ok} from './harness.mjs';
 const browser=await launch();const origin='https://www.totehm.com';
@@ -75,23 +77,23 @@ try{
   /* a · le doigt part SUR le papier (au centre) */
   let p=await centre();
   const a1=await glisse(p.x,p.y+20,p.x,p.y-140);
-  ok(a1==='b'&&!(await lv(pg)).reglages,'un glissé VERS LE HAUT qui part sur le papier → la Reflection (il ne penche plus pour rien) → '+a1);
+  ok(a1==='h'&&!(await lv(pg)).reglages,'22/10 · un manche : un glissé VERS LE HAUT qui part sur le papier → Get Higher (il ne penche plus pour rien) → '+a1);
   p=await centre();
   const a2=await glisse(p.x,p.y-10,p.x,p.y+150);
-  ok(a2==='c','dans la Reflection, un glissé qui part sur le papier-profil → le centre → '+a2);
+  ok(a2==='c','en haut, un glissé vers le bas qui part sur le papier posé sur la langue → le centre → '+a2);
   p=await centre();
   const a3=await glisse(p.x,p.y-20,p.x,p.y+150);
-  ok(a3==='h','au centre, vers le bas depuis le papier → Get Higher → '+a3);
+  ok(a3==='b','au centre, vers le bas depuis le papier → la Reflection → '+a3);
   p=await centre();
-  const a4=await glisse(p.x,p.y-10,p.x,p.y-160);
-  ok(a4==='c','en haut, un glissé qui part sur le papier posé sur la langue → le centre → '+a4);
+  const a4=await glisse(p.x,p.y+10,p.x,p.y-160);
+  ok(a4==='c','dans la Reflection, un glissé vers le haut qui part sur le papier-profil → le centre → '+a4);
   /* b · deux gestes coup sur coup : le second attend la fin du premier au lieu de se perdre */
   await vers(pg,'c');
   const d0=(await lv(pg)).enAttente;
   await glisse(40,780,40,640,false); await pg.waitForTimeout(120); await glisse(40,640,40,780,false);
   await vers(pg,'c'); await pg.waitForTimeout(300);
   const d1=await lv(pg);
-  ok(d1.vue==='c'&&d1.enAttente===d0+1,'↓ puis ↑ pendant le voyage : la Reflection, puis le retour au centre (le second geste a attendu) → '+d1.vue+' · en attente '+(d1.enAttente-d0));
+  ok(d1.vue==='c'&&d1.enAttente===d0+1,'↑ puis ↓ pendant le voyage : Get Higher, puis le retour au centre (le second geste a attendu) → '+d1.vue+' · en attente '+(d1.enAttente-d0));
   await pg.keyboard.press('ArrowUp'); await pg.waitForTimeout(80); await pg.keyboard.press('ArrowDown');
   await vers(pg,'c'); await pg.waitForTimeout(300);
   ok((await lv(pg)).vue==='c','↑ puis ↓ au clavier, sans attendre : Get Higher puis le centre');
@@ -114,6 +116,28 @@ try{
   ok((await lv(pg)).reglages===true,'à l\'horizontale, le papier se retourne toujours (mes réglages)');
   const warn=log.errors.filter(e=>/aller|rentrer|chercher/.test(e));
   ok(!erreurs(log).length&&!warn.length,'gestes : aucune erreur '+erreurs(log).concat(warn).join(' | '));
+  await ctx.close();}
+
+ /* ── 1 bis · LOT S (22/10) : la manette est un MANCHE, et elle répond pendant le repli du TOTEHM ──
+    Wah : « quand on ouvre le Totehm et qu'on referme, les mouvements joystick ne fonctionnent plus » (mesuré avant : un
+    geste à 200, 600 ou 1 000 ms après la croix était perdu) · « tous les mouvements sont inversés, réfléchis en joystick ». */
+ for(const delai of [200,1000]){
+  const{pg,ctx,log}=await page(browser,{dir:'com',origin,tables,rpc:{my_landing:LAND},viewport:{width:1280,height:800}});
+  await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1200);
+  const tire=async(dx,dy)=>{const r=await pg.$eval('#lvj-box',e=>{const b=e.getBoundingClientRect();return {x:b.left+b.width/2,y:b.top+b.height/2};});
+    await pg.mouse.move(r.x,r.y);await pg.mouse.down();await pg.mouse.move(r.x+dx,r.y+dy,{steps:4});await pg.mouse.up();};
+  if(delai===200){
+    await tire(-22,0);await vers(pg,'g');const g=(await lv(pg)).vue;await tire(22,0);await vers(pg,'c');
+    await tire(0,-22);await vers(pg,'h');const h=(await lv(pg)).vue;await tire(0,22);await vers(pg,'c');
+    ok(g==='g'&&h==='h','22/10 · la manette à la souris est un manche : tirée à gauche → mes shorts, vers le haut → Get Higher ('+g+', '+h+')');
+  }
+  await pg.click('#lv-tap-open');await pg.waitForFunction(()=>!document.body.classList.contains('gate'),null,{timeout:6000}).catch(()=>{});await pg.waitForTimeout(500);
+  const a0=(await lv(pg)).enAttente;
+  await pg.evaluate(()=>document.getElementById('fold-x').click());await pg.waitForTimeout(delai);
+  await tire(0,22);await pg.waitForTimeout(1900);
+  const d=await lv(pg);
+  ok(d.vue==='b'&&d.enAttente===a0+1,'22/10 · un geste de manette '+delai+' ms après la croix (le TOTEHM se replie encore) attend la fin du repli, puis part → '+d.vue);
+  ok(!erreurs(log).length,'repli + manette : aucune erreur '+erreurs(log).join(' | '));
   await ctx.close();}
 
  /* ── 3 · LA VUE DU HAUT : le cerveau entier, rien ne le recouvre ── */

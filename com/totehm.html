@@ -2412,6 +2412,10 @@ body.gate.entered #terms-corner{opacity:0;pointer-events:none}
    Les valeurs --tf-* sont mesurées une fois en JS (positions réelles de l'UI)
    puis écrites en variables CSS : l'animation elle-même reste 100% CSS. */
 body.gate.entered #gl-bg  {transform:scale(var(--gate-bg-scale));opacity:var(--gate-bg-fade)}
+/* 22/10 — le papier se déploie vers la couleur de l'app (`--paper`) : à la fin, le portail et l'app sont la même image,
+   et leur fondu ne mélange plus deux navys (#333366 sur #2b2b57 : c'était le « flou » d'avant l'état final). */
+#gl-bg>rect{transition:fill var(--gate-dur) var(--gate-ease)}
+body.gate.entered #gl-bg>rect{fill:var(--paper)}
 body.gate.entered #gl-t   {transform:var(--tf-t,translateY(-40vh))}
 body.gate.entered #gl-wm  {transform:var(--tf-wm,translateY(40vh))}
 body.gate.entered #gl-rail{transform:var(--tf-rail,translateX(-30vw))}
@@ -2984,6 +2988,8 @@ body.is-xo{overflow:hidden}
 
 
 
+
+
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille
    elle-même : un nouveau bloc gris entre ici tout seul.        */
@@ -3231,10 +3237,12 @@ body.lv-d #lv-proc,body.lv-d #lv-slogan{opacity:0}
    (Others), il s'efface quand le papier monte sur la langue (Get Higher). `--skx/--sky/--sks` : posés par `socle()`. ── */
 #lv-proc{position:absolute;left:50%;top:calc(var(--gate-size) / 2);width:0;height:0;z-index:1;pointer-events:none;
   transition:opacity .4s ease .25s,transform var(--gate-dur) var(--gate-ease)}
-/* 22/10 — au déploiement, la boîte GRANDIT avec le papier (même courbe, même durée) au lieu de s'éteindre ; `--dp*` posés
-   par `LV.deployer()` : le centre de #stage et sa taille + 22 px (ordinateur), hors champ avec le papier (téléphone). */
-body.gate.entered #lv-proc{opacity:1;transform:translate(var(--dpx,0px),var(--dpy,0px)) scale(var(--dpk,1));
-  transition:transform var(--gate-dur) var(--gate-ease)}
+/* 22/10 — au déploiement, la boîte GRANDIT avec le papier au lieu de s'éteindre. ⚠️ JAMAIS PAR `scale()` (Wah : « elle se
+   déforme, elle fait pixélisé ») : une boîte agrandie par transformation grossit son arête, son coin et son puits, et le
+   navigateur l'étire depuis une image de 143 px. `LV.deployer()` lui donne sa VRAIE taille à chaque image (`is-geo` :
+   left/top/width/height en ligne, le puits suit le papier à 3 px) : elle reste nette et identique à la boîte au repos. */
+body.gate.entered #lv-proc{opacity:1}
+#lv-socket.is-geo{transform:none;transition:none}
 #lv-socket{position:absolute;left:calc(var(--sk) / -2);top:calc(var(--sk) / -2);width:var(--sk);height:var(--sk);
   background:linear-gradient(135deg,rgba(255,255,255,.10) 0%,rgba(255,255,255,.025) 40%,rgba(255,255,255,0) 65%),#0b0b0e;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.30),inset 0 0 0 1px rgba(255,255,255,.05);
@@ -3303,7 +3311,8 @@ body.gate.lv-c:not(.entered) #lv-ram .puls{opacity:1;
   animation:ram-puls var(--p,3s) linear infinite;animation-delay:var(--d,0s)}
 @keyframes ram-puls{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
 /* Le TOTEHM ouvert sur ordinateur (22/10) : la boîte et ses traits restent autour de #stage. Même boîte que `#lv-socket`
-   (base `--sk`, mise à l'échelle `--ak`) : à la fin du déploiement, les deux sont identiques au pixel. */
+   déployée (sa taille `--as`, son puits noir `--aw`, jamais une mise à l'échelle) : à la fin du déploiement, les deux sont
+   identiques au pixel — le fondu du portail ne fait rien bouger. */
 #app-proc{position:fixed;inset:0;z-index:9;pointer-events:none;visibility:hidden}
 body.proc-ouvert #app-proc{visibility:visible}
 #app-ram{position:absolute;inset:0;width:100%;height:100%}
@@ -3313,12 +3322,14 @@ body.proc-ouvert #app-proc{visibility:visible}
 #app-ram .r-0 rect.pin{display:inline}
 #app-ram .puls{stroke-dasharray:.08 .92;stroke-dashoffset:1;stroke-width:3;animation:ram-puls var(--p,3s) linear infinite;animation-delay:var(--d,0s)}
 #app-ram .puls.veille{stroke-dasharray:.04 .96;stroke-width:2}
-#app-sock{position:absolute;left:var(--ax,50%);top:var(--ay,50%);width:var(--sk);height:var(--sk);
-  margin:calc(var(--sk) / -2) 0 0 calc(var(--sk) / -2);transform:scale(var(--ak,1));
+#app-sock{position:absolute;left:var(--ax,50%);top:var(--ay,50%);width:var(--as,var(--sk));height:var(--as,var(--sk));
+  margin:calc(var(--as,var(--sk)) / -2) 0 0 calc(var(--as,var(--sk)) / -2);
   background:linear-gradient(135deg,rgba(255,255,255,.10) 0%,rgba(255,255,255,.025) 40%,rgba(255,255,255,0) 65%),#0b0b0e;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.30),inset 0 0 0 1px rgba(255,255,255,.05)}
 #app-sock::before{content:"";position:absolute;left:6px;top:6px;width:7px;height:7px;
   background:linear-gradient(135deg,rgba(255,255,255,.26) 50%,rgba(255,255,255,0) 50%)}
+#app-sock::after{content:"";position:absolute;inset:var(--aw,19px);background:#000;
+  box-shadow:inset 0 1px 0 rgba(0,0,0,.95),0 1px 0 rgba(255,255,255,.08)}
 @media(prefers-reduced-motion:reduce){#app-ram .puls{display:none}}
 @media(prefers-reduced-motion:reduce){
   #lv-ram path,#lv-ram rect{transition:none}
@@ -3652,6 +3663,15 @@ body.lv-b #gate-logo #gl-rail,body.lv-b #gate-logo #gl-wm{opacity:0}
 .tl-add{display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.04);
   outline:1px dashed rgba(255,255,255,.3);outline-offset:-9px;color:#fff;font:400 30px/1 'Space Mono',monospace}
 @media(hover:hover){.tl-add:hover{background:rgba(255,255,255,.1)}.tl:hover .tl-b{transform:translateY(-5px)}}
+/* 22/10 — Wah : « dans les grilles de gauche et de droite, au survol des images et de leur box, un effet d'agrandissement ».
+   La tuile ENTIÈRE grandit (l'image et sa box ensemble, la box n'est jamais séparée de son image), au-dessus de ses voisines ;
+   à gauche l'ombre suit les douze trous (`drop-shadow`), à droite les coins arrondis. Souris seulement. */
+@media(hover:hover){
+  .tl:not(.tl-add){transition:transform .22s ease,box-shadow .22s ease,filter .22s ease}
+  .tl:not(.tl-add):hover{transform:scale(1.06);z-index:2}
+  #lv-sh .tl:not(.tl-add):hover{filter:drop-shadow(0 12px 18px rgba(0,0,0,.75))}
+  #rdr-g .tl:hover{box-shadow:0 14px 30px rgba(0,0,0,.75)}
+}
 /* LA VISIONNEUSE · 21/10 — Wah : « dans la vue de gauche, le système de scrolling de la vue de droite, pas de
    défilement horizontal avec les flèches latérales ». Un média par écran, AIMANTÉ, à la VERTICALE (comme les spots) ;
    le média TEL QU'IL EST sur le noir, sa box détaillée par-dessus le bas ; ✕ en haut. Plus de ‹ ›. */
@@ -3715,15 +3735,17 @@ body.is-tlv #gate-asteroid,body.is-tlv #lvjoy{opacity:0;pointer-events:none}
 /* Les intentions du panneau : un POINT de leur couleur (le signal), le mot gris. */
 .lsh-sf .sfi i{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--c);margin-right:6px;vertical-align:1px}
 /* ══ 21/10 — LA VUE AGRANDIE D'UN SPOT : plus de polaroid ═════════════════════════════════════════════════
-   Wah : « plus d'effet polaroid … les informations du spot juste au-dessus, au format d'origine de figher.club » ·
-   « l'image telle qu'elle, avec le background noir, comme dans la vue de gauche ». Un écran par spot, aimanté ; en
-   haut la Habit Box (format Totehm) puis `.sdata` — le bloc de figher.club, copié (noir, rayon 16, étiquettes grises
-   Space Mono, l'état en premier, son mot en Quantico) —, l'auteur et les gestes ; dessous, le média TEL QU'IL EST
-   (`contain`) sur le noir. Sans média, le bloc d'infos se centre. */
-.ssp-c{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;gap:12px;
-  padding:calc(max(10px,env(safe-area-inset-top)) + 50px) 0 calc(max(12px,env(safe-area-inset-bottom)) + 14px)}
-.ssp-s.is-nu .ssp-c{justify-content:center}
-.ssp-info{width:min(calc(100vw - 28px),520px);flex:none;display:flex;flex-direction:column;gap:7px}
+   Wah : « plus d'effet polaroid … l'image telle qu'elle, avec le background noir, comme dans la vue de gauche » ;
+   22/10 : « les boxes comme dans la vue de gauche, en bas, et les informations spot juste au-dessus ». Un écran par
+   spot, aimanté : le média TEL QU'IL EST (`contain`) sur le noir, à la place de `.tlv-m` ; par-dessus son bas, à la
+   place de `.tlv-b`, `.sdata` — le bloc de figher.club, copié (noir, rayon 16, étiquettes grises Space Mono, l'état
+   en premier, son mot en Quantico) —, l'auteur et les gestes, puis la Habit Box (format Totehm) surélevée, tout en bas.
+   Sans média, le bloc se centre. */
+.ssp-c{position:absolute;inset:0}
+.ssp-info{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(max(14px,env(safe-area-inset-bottom)) + 18px);z-index:1;
+  width:min(calc(100vw - 32px),520px);display:flex;flex-direction:column;gap:7px}
+.ssp-s.is-nu .ssp-info{bottom:auto;top:50%;transform:translate(-50%,-50%)}
+.ssp-box{box-shadow:0 14px 34px rgba(0,0,0,.7)}
 .ssp-box[role=button]{cursor:pointer}
 .ssp-box:focus-visible{outline:1px solid #fff;outline-offset:2px}
 .sdata{background:rgba(0,0,0,.86);border-radius:16px;padding:8px 11px 9px;display:flex;flex-direction:column;gap:6px}
@@ -3734,18 +3756,19 @@ body.is-tlv #gate-asteroid,body.is-tlv #lvjoy{opacity:0;pointer-events:none}
 .sd-tag.is-st{background:#2e2e36;color:#fff;font-weight:700}
 a.sd-tag{color:#fff;text-decoration:underline;text-decoration-color:rgba(255,255,255,.45);text-underline-offset:3px}
 .sd-say{margin:0;font:400 13px/1.45 'Quantico',sans-serif;color:#fff}
-.ssp-row{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:30px}
+.ssp-row{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:30px;
+  background:rgba(0,0,0,.86);border-radius:16px;padding:3px 3px 3px 11px}   /* posé sur l'image : lisible comme `.sdata` */
 .ssp-par{display:flex;align-items:center;gap:7px;font:400 9px/1 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#9a9aa0}
 .ssp-by{border:0;background:none;padding:0;cursor:pointer;font:400 13px/1.2 'Quantico',sans-serif;letter-spacing:0;text-transform:none;color:#fbd5ca}
 .ssp-acts{display:flex;gap:6px;margin-left:auto}
 .ssp-acts button{border:0;border-radius:10px;background:#1f1f24;color:#fff;cursor:pointer;padding:8px 12px;
   font:700 9.5px/1 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase}
 .ssp-acts button:focus-visible,.ssp-by:focus-visible{outline:1px solid #fff;outline-offset:2px}
-/* LE MÉDIA, TEL QU'IL EST : jamais recadré, le noir autour. */
-.ssp-m{position:relative;flex:1;min-height:0;width:100%;background:#000}
+/* LE MÉDIA, TEL QU'IL EST : jamais recadré, le noir autour — la place exacte de celui de la vue de gauche. */
+.ssp-m{position:absolute;left:0;right:0;top:calc(max(10px,env(safe-area-inset-top)) + 46px);bottom:calc(max(14px,env(safe-area-inset-bottom)) + 24px);background:#000}
 .ssp-m img,.ssp-m video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block;opacity:0;transition:opacity .4s ease}
 .ssp-m img[src],.ssp-m video[src],.ssp-m video[poster]{opacity:1}
-.ssp-etat{position:absolute;left:0;right:0;bottom:12px;text-align:center;font:700 8.5px/1.3 'Space Mono',monospace;
+.ssp-etat{position:absolute;left:0;right:0;top:12px;text-align:center;font:700 8.5px/1.3 'Space Mono',monospace;
   letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.55);z-index:1}
 .ssp-etat:empty{display:none}
 /* LES TROIS TEMPS (figher.club) : passé · maintenant · à venir ; le choisi porte le trait de sa période. */
@@ -3878,7 +3901,7 @@ body.lv-d.rdr-voir #gate-asteroid,body.lv-d.rdr-voir #lvjoy,body.rdr-voir #rdr-f
 #cap-x{position:fixed;top:10px;right:10px;background:none;border:0;cursor:pointer;padding:10px;line-height:0;color:rgba(255,255,255,.6)}
 #cap-x svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round}
 @media(hover:hover){.cap-b:hover,#cap-x:hover{color:#fff}}
-@media (prefers-reduced-motion: reduce){#cap,#cap-in,.lsh img,.lsh video,.tl-ph img,.tl-ph video,.ssp-m img,.ssp-m video,.tlv-m img,.tlv-m video,.tl-b,.tl-bx{transition:none!important}
+@media (prefers-reduced-motion: reduce){#cap,#cap-in,.lsh img,.lsh video,.tl-ph img,.tl-ph video,.ssp-m img,.ssp-m video,.tlv-m img,.tlv-m video,.tl-b,.tl-bx,.tl{transition:none!important}
   #lv-sh{scroll-behavior:auto}}
 .dash[data-cap]{display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
 .dash[data-cap] svg{width:12px;height:12px;flex:none}
@@ -6243,11 +6266,12 @@ function creerFeed(conf){
   /* ══ LA VUE AGRANDIE D'UN SPOT · 21/10/2026 ══════════════════════════════════════════════════════
      Wah : « je ne veux plus de cet effet polaroid … les informations du spot juste au-dessus, dans le format
      d'origine que l'on trouve sur figher.club » · « c'est l'image telle quelle, avec le background noir, comme
-     dans la vue de gauche ». Donc, du haut vers le bas, sur le NOIR : la Habit Box au format Totehm (`boxSpot` :
-     la mienne avec mes liens, ou celle que le serveur me montre d'un autre membre, mini-boîtes comprises), puis
-     `.sdata` — le bloc de figher.club (`spotHTML`) : l'état, la date, la durée · le lieu, pour qui, le point
-     ouvert ou non, silencieux ou social · son mot —, puis l'auteur et les gestes (GO · CALENDAR) ; dessous,
-     l'image ou la vidéo TELLE QU'ELLE (`object-fit:contain`, jamais recadrée). Plus de cadre, plus de fond flou. */
+     dans la vue de gauche ». 22/10 : « les boxes comme dans la vue de gauche, en bas, les informations spot juste
+     au-dessus ». Donc l'image ou la vidéo TELLE QU'ELLE (`object-fit:contain`, jamais recadrée) sur le NOIR, et par-
+     dessus son bas, de haut en bas : `.sdata` — le bloc de figher.club (`spotHTML`) : l'état, la date, la durée · le
+     lieu, pour qui, le point ouvert ou non, silencieux ou social · son mot —, l'auteur et les gestes (GO · CALENDAR),
+     puis la Habit Box au format Totehm (`boxSpot` : la mienne avec mes liens, ou celle que le serveur me montre d'un
+     autre membre, mini-boîtes comprises), tout en bas. Plus de cadre, plus de fond flou. */
   const ET={will:'I will be there', am:'I am here', was:'I was here'};
   const AUD={private:'private', figher:'figher club', subscribers:'my subscribers', public:'figher club'};
   const hhmm=d=>String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
@@ -6279,12 +6303,12 @@ function creerFeed(conf){
     const acts=(ex?'<button type="button" data-go="'+esc(String(z.id))+'">go</button>':'')
       +(z.state==='will'?'<button type="button" data-ics="'+esc(String(z.id))+'">calendar</button>':'');
     const par=!z.mine&&z.creator?'<span class="ssp-par"><span>by</span><button type="button" class="ssp-by" data-who="'+esc(String(z.creator))+'">'+esc(String(z.creator))+'</button></span>':'';
-    const box=x.id?'<div class="ssp-box" role="button" tabindex="0" data-lsh="habits|'+esc(x.id)+'">'+boxSpot(z)+'</div>'
-                  :'<div class="ssp-box">'+boxSpot(z)+'</div>';
+    const box=x.id?'<div class="ssp-box" role="button" tabindex="0" data-lsh="habits|'+esc(x.id)+'">'+loupeVue(boxSpot(z))+'</div>'
+                  :'<div class="ssp-box">'+loupeVue(boxSpot(z))+'</div>';
     return '<section class="lsh ssp-s'+(media?'':' is-nu')+(ici===x.cle?' is-ici':'')+'" data-lsh-k="'+esc(x.cle)+'">'
-      +'<div class="ssp-c"><div class="ssp-info">'+box+data
+      +'<div class="ssp-c">'+(media?'<div class="ssp-m">'+media+'</div>':'')+'<div class="ssp-info">'+data
       +((par||acts)?'<div class="ssp-row">'+(par||'<span></span>')+(acts?'<span class="ssp-acts">'+acts+'</span>':'')+'</div>':'')
-      +'</div>'+(media?'<div class="ssp-m">'+media+'</div>':'')+'</div></section>';
+      +box+'</div></div></section>';
   }
   async function charger(el,prochain){
     if(!el) return;
@@ -6519,7 +6543,7 @@ function creerFeed(conf){
     const b=sec.querySelector('.tlv-b');
     /* PAR-DESSUS LE MÉDIA, LA BOX DÉTAILLÉE (Wah) : la box du Totehm entière — filet, nom, intentions, rythme,
        mini-boîtes —, surélevée. Plus aucune redirection vers le Totehm depuis la grille. */
-    if(b&&!b.firstChild) b.innerHTML=boxDe(x,false);
+    if(b&&!b.firstChild) b.innerHTML=loupeVue(boxDe(x,false));
     const m=sec.querySelector('.tlv-m'); if(!m) return;
     let el=m.firstChild;
     if(!el){
@@ -7370,7 +7394,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-10-22-com-structure';
+const BUILD='2026-10-22-com-fluide';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -8005,6 +8029,17 @@ const ZOOM=new Set();
 const loupeHTML=k=>{ const on=ZOOM.has(k);
   return '<button type="button" class="loupe" data-zoom="'+esc(k)+'" aria-pressed="'+on+'" aria-label="'+(on?'Smaller':'Bigger')+'">'
     +'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6.5"/><path d="M15 15l6 6M7.5 10h5'+(on?'':'M10 7.5v5')+'"/></svg></button>'; };
+/* 22/10 — LA LOUPE DES VISIONNEUSES (Wah : « n'oublie pas les loupes sur les box dans les vues de gauche et de droite en
+   version Shorts déployée ») : la même loupe, posée sur la box détaillée (`boxTotehm` les retire, on la rend ici seulement) ;
+   elle agrandit la box EN PLACE et ne fait rien d'autre — ni ouvrir l'élément, ni changer d'écran (capture). */
+const loupeVue=h=>String(h||'').replace(/<span class="v-col( is-zoom)?">/,(m,z)=>m+'<button type="button" class="loupe" data-vz aria-pressed="'+!!z+'" aria-label="'+(z?'Smaller':'Bigger')+'">'
+  +'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6.5"/><path d="M15 15l6 6M7.5 10h5'+(z?'':'M10 7.5v5')+'"/></svg></button>');
+document.addEventListener('click',e=>{ const l=e.target&&e.target.closest&&e.target.closest('.loupe[data-vz]'); if(!l) return;
+  e.preventDefault(); e.stopPropagation();
+  const col=l.closest('.v-col'), on=!(col&&col.classList.contains('is-zoom')); if(col) col.classList.toggle('is-zoom',on);
+  l.setAttribute('aria-pressed',String(on)); l.setAttribute('aria-label',on?'Smaller':'Bigger');
+  l.querySelector('path')?.setAttribute('d','M15 15l6 6M7.5 10h5'+(on?'':'M10 7.5v5')); },true);
+document.addEventListener('keydown',e=>{ if((e.key==='Enter'||e.key===' ')&&e.target&&e.target.closest&&e.target.closest('.loupe[data-vz]')) e.stopPropagation(); },true);
 /* ══ LE CLASSEMENT SE FAIT À DEUX FLÈCHES · 09/09/2026 ═══════════════
    Le glissement au doigt ne marchait pas au téléphone, et un classement
    qui rate une fois sur deux est pire que pas de classement : on ne sait
@@ -9537,10 +9572,11 @@ window.addEventListener('touchend',(e)=>{
   if(axis==='h'){
     const dx=e.changedTouches[0].screenX-x0;
     if(Math.abs(dx)<TH)return;
-    /* LE BALAYAGE SUIT LE DOIGT : glisser vers la GAUCHE montre ce qui
-       est à droite. L'axe horizontal est le TEMPS — sagesse, habitudes,
+    /* 22/10 — LE GESTE EST UN MANCHE (Wah : « tous les mouvements sont
+       inversés, réfléchis en terme de joystick ») : glisser vers la GAUCHE
+       va à GAUCHE. L'axe horizontal est le TEMPS — sagesse, habitudes,
        vision. On ne change pas de fichier, on ne recharge rien. */
-    versVoisin(dx<0?'d':'g');
+    versVoisin(dx<0?'g':'d');
     return;
   }
   /* ══ LE VERTICAL SE PREND AU BOUT DE LA LISTE · 16/09/2026 ═════════
@@ -9548,16 +9584,16 @@ window.addEventListener('touchend',(e)=>{
      Un geste vertical libre entrerait en concurrence avec le défilement
      de la liste — c'est exactement ce qui avait « buggé le filtre » et
      fait retirer le vertical la première fois.
-     Ici il ne se déclenche QUE lorsque la liste ne peut plus défiler :
-     arrivé en bas, continuer vers le bas descend sur les répulsions ;
-     en haut, tirer vers le bas remonte sur les objectifs. C'est le
-     geste d'un OS — on tombe dans l'écran suivant, on ne le vise pas. */
+     Ici il ne se déclenche QUE lorsque la liste ne peut plus défiler, et
+     le geste qu'elle ne prend plus est un MANCHE (22/10) : en butée
+     basse, pousser vers le haut monte aux objectifs ; en butée haute,
+     tirer vers le bas descend aux répulsions. */
   /* 110 px, et le doigt devait DÉJÀ être au bord quand il s'est posé.
      Trois conditions au lieu d'une : la liste en butée, la butée
      ancienne, et une traction franche. */
   if(Math.abs(dy)<110)return;
-  if(dy<0 && bordAuDepart.b && bordCalme('b'))      versVoisin('b');
-  else if(dy>0 && bordAuDepart.h && bordCalme('h')) versVoisin('h');
+  if(dy<0 && bordAuDepart.b && bordCalme('b'))      versVoisin('h');
+  else if(dy>0 && bordAuDepart.h && bordCalme('h')) versVoisin('b');
 },{passive:true});
 /* ══ LE TRACKPAD FAIT CE QUE FAIT LE POUCE · 09/09/2026 ══════════════
    La molette VERTICALE ne pilote toujours rien — c'est la règle qui a
@@ -9620,7 +9656,7 @@ window.addEventListener('touchend',(e)=>{
       accV+=e.deltaY;
       /* 130 px accumulés, comme l'horizontale : une traction, pas une fin de course. */
       if(Math.abs(accV)<130)return;
-      const cible=versLeBas?'b':'h';
+      const cible=versLeBas?'h':'b';   /* 22/10 : un manche — deux doigts vers le haut, la vue du haut */
       accV=0; neuf=false; froid=Date.now()+900;
       versVoisin(cible);
       return;
@@ -9636,15 +9672,10 @@ window.addEventListener('touchend',(e)=>{
     if(now-t>180||Math.sign(e.deltaX)!==Math.sign(acc))acc=0; t=now;
     acc+=Math.sign(e.deltaX)*Math.min(160,Math.abs(e.deltaX));
     if(Math.abs(acc)<75)return;
-    /* ⚠️ LE SENS ÉTAIT INVERSÉ · 15/09/2026. Sur un trackpad, un
-       `deltaX` POSITIF veut dire « je pousse le contenu vers la
-       gauche », donc « montre-moi ce qui est à DROITE ». J'avais lu le
-       delta comme un déplacement de doigt et non comme un déplacement
-       de contenu — c'est l'erreur classique, et elle se voit tout de
-       suite quand on l'a dans les mains.
-       Le balayage tactile, lui, était déjà dans le bon sens : il lit un
-       déplacement de DOIGT. Les deux gestes ne se lisent pas pareil. */
-    const d = acc>0 ? 'd' : 'g';
+    /* ⚠️ 22/10 · LE GESTE EST UN MANCHE (Wah : « tous les mouvements sont
+       inversés, réfléchis en terme de joystick »). Deux doigts vers la
+       gauche (`deltaX > 0`) vont à GAUCHE — comme le pouce, comme le manche. */
+    const d = acc>0 ? 'g' : 'd';
     acc=0; froid=now+350;
     versVoisin(d);
   },{passive:false});
@@ -9702,7 +9733,7 @@ const navRight=()=>{ if(navBlocked())return; versVoisin('d'); };
 
   const RAYON=15;                    /* jusqu'où le manche se laisse tirer */
   const SEUIL=9;                     /* au-delà, on part                   */
-  let id=null, x0=0, y0=0, dx=0, dy=0, fin=false;
+  let id=null, x0=0, y0=0, dx=0, dy=0;
 
   const pose=(a,b)=>{ st.style.setProperty('--mx',a.toFixed(1)+'px');
                       st.style.setProperty('--my',b.toFixed(1)+'px'); };
@@ -9716,22 +9747,16 @@ const navRight=()=>{ if(navBlocked())return; versVoisin('d'); };
   /* La direction que le geste désigne — et seulement si elle MÈNE
      quelque part. Tirer vers la sagesse depuis la sagesse ne doit ni
      allumer, ni naviguer. */
-  /* ⚠️ 18/10 · À LA SOURIS, LE MANCHE POUSSE LE CONTENU ; AU DOIGT, IL SUIT LE DOIGT (Wah : « les
-     mouvements du joystick sur ordinateur sont inversés horizontalement et verticalement »).
-     Au DOIGT, on déplace l'objet : tirer vers la gauche va à gauche. À la SOURIS, on ne touche pas
-     l'objet — on pousse la scène, comme un trackpad : tirer vers la gauche amène la vue de DROITE.
-     C'est la même dualité que le trackpad et le doigt sur l'atterrissage, et c'est normal qu'elle
-     ne se lise pas dans le même sens (règle du 15/09). `fin` est posé au `pointerdown`. */
+  /* ⚠️ 22/10 · UN MANCHE, UN SEUL SENS (Wah : « réfléchis en terme de joystick ») : tiré vers la
+     gauche, il va à gauche — au doigt comme à la souris. */
   const sens=()=>{
     if(Math.max(Math.abs(dx),Math.abs(dy))<SEUIL) return null;
-    const i = fin ? -1 : 1;
-    const d = Math.abs(dx)>Math.abs(dy) ? (dx*i<0?'g':'d') : (dy*i<0?'h':'b');
+    const d = Math.abs(dx)>Math.abs(dy) ? (dx<0?'g':'d') : (dy<0?'h':'b');
     return voisin(d) ? d : null;
   };
 
   bx.addEventListener('pointerdown',e=>{
     if(navBlocked())return;
-    fin = e.pointerType && e.pointerType!=='touch';
     id=e.pointerId; x0=e.clientX; y0=e.clientY; dx=dy=0;
     jy.classList.add('tenu'); bx.classList.add('tenu');
     try{ bx.setPointerCapture(id); }catch(_){}
@@ -9774,10 +9799,10 @@ const navRight=()=>{ if(navBlocked())return; versVoisin('d'); };
        des mouvements horizontaux quand on est DANS le joystick ». La
        verticale reste celle d'une molette de souris. Même correction dans
        space/index.html. */
-    /* 12/10 — comme SPACE : `deltaX > 0` = le contenu part à gauche = la vue de DROITE. */
+    /* 22/10 — un manche : deux doigts vers la gauche (`deltaX > 0`) vont à GAUCHE, vers le haut (`deltaY > 0`) en HAUT. */
     const d = Math.abs(e.deltaX)>Math.abs(e.deltaY)
-      ? (e.deltaX>0?'d':'g')
-      : (e.deltaY>0?'b':'h');
+      ? (e.deltaX>0?'g':'d')
+      : (e.deltaY>0?'h':'b');
     if(!voisin(d))return;
     froid=Date.now()+520;
     versVoisin(d);
@@ -11243,7 +11268,7 @@ window.addEventListener('pageshow',e=>{
          l'incline plus pour rien : il va où va le reste de l'écran (le retournement reste à l'horizontale). */
       const vx=e.clientX-appui.x0, vy=e.clientY-appui.y0;
       if(e.type==='pointerup'&&e.pointerType==='touch'&&Math.abs(vy)>60&&Math.abs(vy)>Math.abs(vx)*1.3
-         &&typeof api.surVertical==='function'){ aPlat(face); api.surVertical(vy<0?'b':'h'); return; }
+         &&typeof api.surVertical==='function'){ aPlat(face); api.surVertical(vy<0?'h':'b'); return; }
       om=elan(performance.now());
       /* ⚠️ TOURNÉ D'UN QUART, IL CHANGE DE FACE — JAMAIS D'UN TOUR ENTIER.
          On décide par rapport à la face de DÉPART, pas par l'angle projeté
@@ -11694,19 +11719,27 @@ window.addEventListener('pageshow',e=>{
       gardeT=setTimeout(()=>{ if(fait) return; diag.debloques++; console.warn('[lv] voyage non terminé : la main est rendue'); g(); },ms+1300);
       return g;
     }
-    /* Un geste qui arrive PENDANT un voyage n'est plus perdu : il attend la fin (un seul, le dernier, 900 ms au plus).
-       `vue` est déjà la destination : la direction se lit depuis là où l'on arrive. Le trackpad n'attend pas
-       (son inertie enverrait des dizaines de demandes). */
+    /* Un geste qui arrive PENDANT un mouvement n'est plus perdu : il attend la fin (un seul, le dernier, 1,5 s au plus).
+       ⚠️ 22/10 — ET LE REPLI DU TOTEHM EST UN MOUVEMENT (Wah : « quand on ouvre le Totehm et qu'on referme, les mouvements
+       joystick ne fonctionnent plus ») : pendant ses 1,17 s (`moving`), `aller` refusait en silence — mesuré : un geste
+       à 200, 600 ou 1 000 ms après la croix était perdu. `guetter` le rejoue dès que tout est libre. `vue` est déjà la
+       destination d'un voyage : la direction se lit depuis là où l'on arrive. */
+    const ATTENTE=1500; let guetT=0;
+    const occupe=()=>bouge||moving||sMoving||(PAPIER.occupe()&&!PAPIER.vue());
     function demander(d){
       if(!libre()) return false;
-      if(bouge){ if(!voisin(d)) return false; attente={d, t:Date.now()}; diag.enAttente++; return true; }
+      if(occupe()){ if(!voisin(d)) return false; attente={d, t:Date.now()}; diag.enAttente++; guetter(); return true; }
       const v=voisin(d); if(!v) return false;
       aller(v); return true;
     }
+    function guetter(){ clearTimeout(guetT); guetT=setTimeout(()=>{ if(!attente) return;
+      if(Date.now()-attente.t>ATTENTE){ attente=null; return; }
+      if(occupe()) return guetter();
+      reprendre(); },120); }
     function reprendre(){
       const a=attente; attente=null;
-      if(!a||Date.now()-a.t>900) return;
-      setTimeout(()=>{ if(!bouge){ const v=voisin(a.d); if(v) aller(v); } },0);
+      if(!a||Date.now()-a.t>ATTENTE) return;
+      setTimeout(()=>{ if(occupe()){ attente=a; return void guetter(); } const v=voisin(a.d); if(v) aller(v); },0);
     }
     /* ── ALLER : une vue voisine, ou le centre ── */
     function aller(v,then){
@@ -11969,27 +12002,24 @@ window.addEventListener('pageshow',e=>{
     if(nRt) nRt.onclick=()=>demander('d');
 
     /* ── LE MANCHE DE L'ATTERRISSAGE · 18/10/2026 ─────────────────────────────────────────────
-       Le même geste que dans le Totehm, la même dualité : au DOIGT on déplace l'objet (tirer à
-       gauche va à gauche) ; à la SOURIS on pousse la scène comme un trackpad (tirer à gauche
-       amène la vue de DROITE). `fin` est posé au `pointerdown`, jamais déduit après coup. */
+       Le même geste que dans le Totehm, un seul sens (22/10) : tiré à gauche, il va à gauche — au
+       doigt comme à la souris. */
     (function manetteLV(){
       const jy=$('lvjoy'), bx=$('lvj-box'), st=$('lvj-stack');
       if(!jy||!bx||!st) return;
       const RAYON=10, SEUIL=6;   /* 20/10 septies : le manche ne sort pas du petit socle */
-      let id=null, x0=0, y0=0, dx=0, dy=0, fin=false;
+      let id=null, x0=0, y0=0, dx=0, dy=0;
       const pose=(a,b)=>{ st.style.setProperty('--mx',a.toFixed(1)+'px');
                           st.style.setProperty('--my',b.toFixed(1)+'px'); };
       const vise=v=>{ ['g','d','h','b'].forEach(k=>jy.classList.toggle('vers-'+k,k===v)); };
       const centre=()=>{ pose(0,0); jy.classList.remove('tenu'); bx.classList.remove('tenu'); vise(null); };
       const sens=()=>{
         if(Math.max(Math.abs(dx),Math.abs(dy))<SEUIL) return null;
-        const i = fin ? -1 : 1;
-        const d = Math.abs(dx)>Math.abs(dy) ? (dx*i<0?'g':'d') : (dy*i<0?'h':'b');
+        const d = Math.abs(dx)>Math.abs(dy) ? (dx<0?'g':'d') : (dy<0?'h':'b');
         return voisin(d) ? d : null;
       };
       bx.addEventListener('pointerdown',e=>{
         if(!libre()) return;
-        fin = e.pointerType && e.pointerType!=='touch';
         id=e.pointerId; x0=e.clientX; y0=e.clientY; dx=dy=0;
         jy.classList.add('tenu'); bx.classList.add('tenu');
         try{ bx.setPointerCapture(id); }catch(_){}
@@ -12029,8 +12059,8 @@ window.addEventListener('pageshow',e=>{
       if(e.key==='Escape'){ if(vue!=='c'){ e.preventDefault(); aller('c'); }
         else if(mode==='members'){ e.preventDefault(); if(MB.cherche) annuler(); else choisirMode('mine'); } }
     },{capture:true});
-    /* Le trackpad et la molette (la règle de SPACE, 12/10) : `deltaX > 0` → la vue de DROITE, `deltaY > 0` →
-       celle du BAS ; 75 px accumulés en X, 70 en Y (160 au plus par événement), remis à zéro après 180 ms ou
+    /* Le trackpad et la molette (la règle de SPACE, 12/10 ; un MANCHE depuis le 22/10) : `deltaX > 0` (deux doigts vers
+       la gauche) → la vue de GAUCHE, `deltaY > 0` (vers le haut) → celle du HAUT ; 75 px accumulés en X, 70 en Y (160 au plus par événement), remis à zéro après 180 ms ou
        au changement de sens, puis un verrou de 350 ms que l'inertie prolonge de 260 ms. Une liste qui peut
        défiler garde la molette ; en diagonale on ne devine pas. L'horizontale est revenue le 16/10 bis avec
        mes shorts et mes spots — dans la galaxie, `voisin()` l'éteint et les étoiles gardent le geste. */
@@ -12042,16 +12072,16 @@ window.addEventListener('pageshow',e=>{
         const hor=Math.abs(x)>Math.abs(y)*1.25;
         if(!hor&&Math.abs(y)<=Math.abs(x)*1.25) return;
         if(!hor&&filDefile(e.target,y)){ sum=0; last=0; return; }
-        const d=hor?(x>0?'d':'g'):(y>0?'b':'h'), v=voisin(d); if(!v) return;
+        const d=hor?(x>0?'g':'d'):(y>0?'h':'b'), v=voisin(d); if(!v) return;
         const now=Date.now();
         e.preventDefault();
         if(bouge||now<verrou){ verrou=now+260; return; }
         if(now-last>180||d!==sens) sum=0;
         sens=d; last=now; sum+=Math.min(160,Math.abs(hor?x:y));
-        if(sum>=(hor?75:70)){ sum=0; verrou=now+350; aller(v); }
+        if(sum>=(hor?75:70)){ sum=0; verrou=now+350; demander(d); }
       },{passive:false,capture:true});
     })();
-    /* Le doigt : glisser vers le haut montre ce qui est en bas. Pas sur le papier (il se retourne), ni dans un
+    /* Le doigt, un manche (22/10) : glisser vers le haut va en HAUT, vers la gauche à GAUCHE. Pas sur le papier (il se retourne), ni dans un
        champ ; sur la galaxie, un glissé horizontal la fait tourner, un glissé vertical change de vue. */
     (function doigt(){
       let p=null;
@@ -12068,10 +12098,8 @@ window.addEventListener('pageshow',e=>{
       window.addEventListener('touchend',e=>{
         const q=p; p=null; if(!q||!libre()||Date.now()-q.t>900) return;
         const dx=e.changedTouches[0].clientX-q.x, dy=e.changedTouches[0].clientY-q.y;
-        if(Math.abs(dy)>60&&Math.abs(dy)>Math.abs(dx)*1.3&&!filDefile(q.el,-dy)){ demander(dy<0?'b':'h'); return; }
-        /* 16/10 bis — glisser vers la GAUCHE montre ce qui est à droite (un déplacement de doigt, pas un
-           trackpad : les deux gestes ne se lisent pas dans le même sens, et c'est normal). */
-        if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.3) demander(dx<0?'d':'g');
+        if(Math.abs(dy)>60&&Math.abs(dy)>Math.abs(dx)*1.3&&!filDefile(q.el,-dy)){ demander(dy<0?'h':'b'); return; }
+        if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.3) demander(dx<0?'g':'d');
       },{passive:true,capture:true});
     })();
 
@@ -12814,32 +12842,55 @@ window.addEventListener('pageshow',e=>{
         for(let i=0;i<8;i++){ const e=X(t)-u, d=dX(t); if(Math.abs(e)<1e-5||!d) break; t=Math.max(0,Math.min(1,t-e/d)); }
         return Y(t); }; })();
     const DEP_MS=1050, MARGE=22;
-    const diagD={deploiements:0, replis:0};
+    const diagD={deploiements:0, replis:0, images:0};
+    /* Mesuré AU REPOS (le portail à plat) : la boîte au repos `A` et déployée `B`, en px de `#lv-proc` (centre, côté `S`,
+       largeur du papier `w`) ; `x`/`y` : le centre déployé à l'écran, pour les traits. */
     function cibleDeploiement(){
-      const st=$('stage'), r=st&&st.getBoundingClientRect(), sr=sock.getBoundingClientRect(), pc=PAPIER.chez()||{w:110};
-      const sk=sock.offsetWidth||143, cx=sr.left+sr.width/2, cy=sr.top+sr.height/2;
-      if(r&&r.width>40&&r.height>40){ const S=Math.max(r.width,r.height)+2*MARGE;
-        return {ordi:true, x:r.left+r.width/2, y:r.top+r.height/2, S, k:S/sk, cx, cy, pw:pc.w||110, sk}; }
+      const st=$('stage'), r=st&&st.getBoundingClientRect(), o=$('lv-proc').getBoundingClientRect(), pc=PAPIER.chez()||{w:110};
+      const sk=sock.offsetWidth||143, f=(sock.getBoundingClientRect().width/sk)||1, w0=(pc.w||110)/f;
+      const A={x:0, y:0, S:sk, w:w0};
+      if(r&&r.width>40&&r.height>40){ const S=Math.max(r.width,r.height)+2*MARGE, x=r.left+r.width/2, y=r.top+r.height/2;
+        return {ordi:true, x, y, S, A, B:{x:(x-o.left)/f, y:(y-o.top)/f, S:S/f, w:r.width/f}}; }
       const k=Math.max(8,+getComputedStyle(document.documentElement).getPropertyValue('--gate-bg-scale')||12);
-      return {ordi:false, x:cx, y:cy, S:sk*k, k, cx, cy, pw:pc.w||110, sk};
+      return {ordi:false, x:o.left, y:o.top, S:sk*k*f, A, B:{x:0, y:0, S:sk*k, w:w0*k}};
     }
-    function poserBoite(T){
-      const st=$('lv-proc').style;
-      st.setProperty('--dpx',(T.x-T.cx).toFixed(1)+'px'); st.setProperty('--dpy',(T.y-T.cy).toFixed(1)+'px');
-      st.setProperty('--dpk',T.k.toFixed(4));
+    /* La boîte à sa vraie taille (jamais `scale`) : le puits noir à 3 px du papier, l'arête et le coin intacts. */
+    const puits=sock.querySelector('.sk-well');
+    function geo(g){ const st=sock.style;
+      st.left=(g.x-g.S/2).toFixed(2)+'px'; st.top=(g.y-g.S/2).toFixed(2)+'px'; st.width=st.height=g.S.toFixed(2)+'px';
+      if(puits) puits.style.inset=Math.max(0,(g.S-g.w)/2-3).toFixed(2)+'px'; }
+    function geoRendue(){ sock.classList.remove('is-geo'); ['left','top','width','height'].forEach(k=>sock.style.removeProperty(k));
+      if(puits) puits.style.removeProperty('inset'); }
+    /* L'HEURE est celle du papier (`#gl-bg`, sa transition CSS) : la boîte et les traits la lisent à la même image, ils ne
+       peuvent ni se détacher de lui ni l'un de l'autre. Sans elle (mouvement réduit, transition absente) : la nôtre. */
+    let geoRaf=0;
+    function grandir(A,B,fin){
+      cancelAnimationFrame(geoRaf); sock.classList.add('is-geo');
+      const bg=$('gl-bg'), L=(a,b,u)=>a+(b-a)*u;
+      const heure=()=>{ const a=bg&&bg.getAnimations&&bg.getAnimations().find(x=>x.transitionProperty==='transform'); return a&&a.currentTime!=null?a.currentTime:null; };
+      let t0=0, suivie=false;
+      const pas=now=>{ if(!t0) t0=now; const h=heure(); if(h!=null) suivie=true;
+        const u=RMQ.matches?1:BEZ(Math.min(1,(h!=null?h:(suivie?DEP_MS:now-t0))/DEP_MS));
+        geo({x:L(A.x,B.x,u), y:L(A.y,B.y,u), S:L(A.S,B.S,u), w:L(A.w,B.w,u)}); diagD.images++;
+        if(u<1){ geoRaf=requestAnimationFrame(pas); return; }
+        geoRaf=0; if(fin) fin(); };
+      geo(A); geoRaf=requestAnimationFrame(pas);
     }
-    const papierDe=T=>({x:T.x, y:T.y, w:T.S*T.pw/T.sk});
+    let repli=null;
     function deployer(){
       const T=cibleDeploiement(); diagD.deploiements++;
-      poserBoite(T); posApp();
-      RAM.peindre('c',{anime:true, ms:DEP_MS, ease:BEZ, papier:papierDe(T), socle:T.S, suivre:$('lv-proc')});
+      posApp(); grandir(T.A,T.B);
+      RAM.peindre('c',{anime:true, ms:DEP_MS, ease:BEZ, papier:{x:T.x, y:T.y}, socle:T.S, suivre:$('gl-bg')});
       return T;
     }
     function replier(phase){
-      if(phase===1){ const T=cibleDeploiement(); diagD.replis++;
+      if(phase===1){ repli=cibleDeploiement(); diagD.replis++;
         document.body.classList.remove('proc-ouvert');
-        poserBoite(T); RAM.peindre('c',{papier:papierDe(T), socle:T.S}); return; }
-      RAM.peindre('c',{anime:true, ms:DEP_MS, ease:BEZ, suivre:$('lv-proc')});
+        cancelAnimationFrame(geoRaf); sock.classList.add('is-geo'); geo(repli.B);
+        RAM.peindre('c',{papier:{x:repli.x, y:repli.y}, socle:repli.S}); return; }
+      const T=repli||cibleDeploiement(); repli=null;
+      grandir(T.B,T.A,geoRendue);
+      RAM.peindre('c',{anime:true, ms:DEP_MS, ease:BEZ, suivre:$('gl-bg')});
     }
     /* Le TOTEHM ouvert sur ordinateur : la boîte et ses traits, FIXES, autour de `#stage`. */
     function posApp(){
@@ -12847,9 +12898,10 @@ window.addEventListener('pageshow',e=>{
       const r=st.getBoundingClientRect(), ordi=r.width>40&&r.height>40;
       document.body.classList.toggle('proc-ouvert',ordi);
       if(!ordi) return false;
-      const sk=sock.offsetWidth||143, S=Math.max(r.width,r.height)+2*MARGE, x=r.left+r.width/2, y=r.top+r.height/2;
-      ap.style.setProperty('--ax',x.toFixed(1)+'px'); ap.style.setProperty('--ay',y.toFixed(1)+'px'); ap.style.setProperty('--ak',(S/sk).toFixed(4));
-      RAM.copie($('app-ram'),{x, y, w:S*((PAPIER.chez()||{}).w||110)/sk},S);
+      const S=Math.max(r.width,r.height)+2*MARGE, x=r.left+r.width/2, y=r.top+r.height/2, as=ap.style;
+      as.setProperty('--ax',x.toFixed(2)+'px'); as.setProperty('--ay',y.toFixed(2)+'px');
+      as.setProperty('--as',S.toFixed(2)+'px'); as.setProperty('--aw',Math.max(0,(S-r.width)/2-3).toFixed(2)+'px');
+      RAM.copie($('app-ram'),{x, y},S);
       return true;
     }
     window.addEventListener('resize',()=>{ if(document.body.classList.contains('proc-ouvert')&&!document.body.classList.contains('gate')) posApp(); });

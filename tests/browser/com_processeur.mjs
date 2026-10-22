@@ -94,12 +94,12 @@ try{
   const geste=async dy=>{await pg.waitForTimeout(300);for(let i=0;i<4;i++){await pg.mouse.wheel(0,dy/4);await pg.waitForTimeout(16);}await calme(pg);await pg.waitForTimeout(400);return (await lv(pg)).vue;};
   await pg.mouse.move(640,600);
   const t=[await geste(220),await geste(-220),await geste(-220),await geste(220)];
-  ok(t.join(',')==='b,c,h,c','le trackpad, vertical : '+t.join(','));
+  ok(t.join(',')==='h,c,b,c','22/10 · le trackpad est un manche, vertical : deux doigts vers le haut (deltaY > 0) → Get Higher : '+t.join(','));
   {await pg.waitForTimeout(300);await pg.mouse.wheel(0,60);await pg.waitForTimeout(900);ok((await lv(pg)).vue==='c','un petit défilement (60 px) ne change pas de vue');}
-  /* 16/10 bis — l'horizontale : `deltaX > 0` veut dire « montre-moi ce qui est à DROITE » (la règle de SPACE). */
+  /* 22/10 — l'horizontale est un manche : deux doigts vers la gauche (`deltaX > 0`) vont à GAUCHE. */
   const gesteX=async dx=>{await pg.waitForTimeout(300);for(let i=0;i<4;i++){await pg.mouse.wheel(dx/4,0);await pg.waitForTimeout(16);}await calme(pg);await pg.waitForTimeout(400);return (await lv(pg)).vue;};
   const tx=[await gesteX(220),await gesteX(-220),await gesteX(-220),await gesteX(220)];
-  ok(tx.join(',')==='d,c,g,c','le trackpad, horizontal : deltaX > 0 → mes spots, < 0 → mes shorts : '+tx.join(','));
+  ok(tx.join(',')==='g,c,d,c','le trackpad, horizontal : deltaX > 0 → mes shorts, < 0 → mes spots : '+tx.join(','));
   await pg.click('#lvn-dn');await vers(pg,'b');const dn=await pg.$eval('#lvn-dn',e=>getComputedStyle(e).opacity);
   await pg.click('#lvn-up');await vers(pg,'c');
   ok((await lv(pg)).vue==='c'&&dn==='0','les chevrons : ↓ la Reflection (en bas, plus de chevron ↓), ↑ le centre');
@@ -110,10 +110,11 @@ try{
   const glisse=async(x0,y0,x1,y1)=>{await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:x0,y:y0}]});
     for(let i=1;i<=6;i++){await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:x0+(x1-x0)*i/6,y:y0+(y1-y0)*i/6}]});await pg.waitForTimeout(16);}
     await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await calme(pg);await pg.waitForTimeout(500);return (await lv(pg)).vue;};
-  const s=[await glisse(40,780,40,640),await glisse(40,640,40,780),await glisse(40,640,40,780),await glisse(40,780,40,640),await glisse(330,560,200,560),await glisse(200,560,330,560)];
+  const s=[await glisse(40,780,40,640),await glisse(40,640,40,780),await glisse(40,640,40,780),await glisse(40,780,40,640),
+    await glisse(330,560,200,560),await glisse(200,560,330,560),await glisse(200,560,330,560),await glisse(330,560,200,560)];
   /* 20/10 sexies — sur la CARTE, le doigt fait tourner la Terre : l'horizontale s'éteint dans CETTE vue (la règle de la
      galaxie d'hier) ; le chevron, la manette et le trackpad ramènent au centre. */
-  ok(s.join(',')==='b,c,h,c,d,d','le doigt : haut → la Reflection, bas → Get Higher, vers la gauche → les spots ; sur la Terre, il la tourne : '+s.join(','));
+  ok(s.join(',')==='h,c,b,c,g,c,d,d','22/10 · le doigt est un manche : haut → Get Higher, bas → la Reflection, gauche → mes shorts, droite → les spots ; sur la Terre, il la tourne : '+s.join(','));
   await pg.click('#lvn-lf');await vers(pg,'c');ok((await lv(pg)).vue==='c','le chevron ← ramène au centre');
   ok(!erreurs(log).length,'doigt : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
 
@@ -434,7 +435,7 @@ try{
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1200);
   const cdp=await pg.context().newCDPSession(pg);
   const tp=(type,x,y)=>cdp.send('Input.dispatchTouchEvent',{type,touchPoints:type==='touchEnd'?[]:[{x,y}]});
-  await tp('touchStart',195,600);for(let i=1;i<=6;i++) await tp('touchMove',195,600-i*40);await tp('touchEnd');
+  await tp('touchStart',195,560);for(let i=1;i<=6;i++) await tp('touchMove',195,560+i*40);await tp('touchEnd');   /* 22/10 : un manche — vers le bas, la vue du bas */
   const geste=await pg.evaluate(()=>document.activeElement&&document.activeElement.className);
   await pg.keyboard.type('yo');await vers(pg,'b');await pg.waitForTimeout(300);
   const a=await pg.evaluate(()=>({act:document.activeElement&&document.activeElement.id,val:document.getElementById('lv-say-in').value,
@@ -448,7 +449,7 @@ try{
   /* le secours : un tap n'importe où dans la vue ouvre le clavier */
   await pg.tap('#rf',{position:{x:200,y:600}});await pg.waitForTimeout(200);
   ok(await pg.evaluate(()=>document.activeElement===document.getElementById('lv-say-in')),'20/10 ter · un tap n\'importe où dans la vue met le curseur dans le champ (le téléphone accepte toujours un tap)');
-  await tp('touchStart',195,500);for(let i=1;i<=6;i++) await tp('touchMove',195,500+i*40);await tp('touchEnd');await vers(pg,'c');await pg.waitForTimeout(300);
+  await tp('touchStart',195,500);for(let i=1;i<=6;i++) await tp('touchMove',195,500-i*40);await tp('touchEnd');await vers(pg,'c');await pg.waitForTimeout(300);   /* un manche : vers le haut */
   ok(await pg.evaluate(()=>!document.body.classList.contains('rf-clavier')&&!['lv-say-in'].includes(document.activeElement&&document.activeElement.id)&&!(document.activeElement&&document.activeElement.classList.contains('rf-proxy'))),
     '20/10 · remonter ferme le clavier et rend la manette');
   ok(!erreurs(log).length,'téléphone : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}

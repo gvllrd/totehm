@@ -21,12 +21,12 @@ figher.club ; `/vendor`, `/cities.json`, `/assets/signs` → SPACE ; Telegram n'
 
 | vue | repères |
 |---|---|
-| l'atterrissage, les gestes | `const LV=` · `garde(` · `demander(` · `reprendre(` · `quandLibre` |
+| l'atterrissage, les gestes | `const LV=` · `garde(` · `demander(` · `guetter(` · `reprendre(` · `quandLibre` |
 | ↑ Get Higher | `RAM.cerveau` · `posHaut()` (la bouche rétrécit, jamais le cerveau) |
-| ← mes médias | `const SH =` · `MBM` · `boxTotehm` · `#tlv` (visionneuse verticale) · `feed_badges` · filtre : `.sfcmd` (MY STORY ▢ · OBJ/HAB/REP empilés · ▢ VISION, carrés `--perfo`) |
+| ← mes médias | `const SH =` · `MBM` · `boxTotehm` · `#tlv` (visionneuse verticale, sa box porte `loupeVue`) · `feed_badges` · filtre : `.sfcmd` (MY STORY ▢ · OBJ/HAB/REP empilés · ▢ VISION, carrés `--perfo`) |
 | ● mon TOTEHM, le verso | `const PAPIER=` · `const RAM=` (`peindre` : ← → ↓ sont la transformation du centre ; `circuit` = 7 broches par arête du processeur, `anneau` = l'anneau du profil) · `#self-h` · `ouvrirVerso` → `is-pret` · sections `#mw-creator` (Monetize my TOTEHM) · `#mw-menu` ([Higher] subscription) · `#vs-subs-s` |
-| le déploiement | `LV.deployer()` / `LV.replier(1|2)` (appelés par `enter`/`fold`) : `#lv-proc` grandit avec le papier (`--dp*`), les traits suivent ; ordinateur ouvert : `#app-proc` (`LV.posApp`, `body.proc-ouvert`) ; `__totehm_deploiement()` |
-| → les spots | `const CLUBSP=` (`club_spots`, `club_spots_of`) · `SPOTMODE` · `SPMAP` · `SPGRID` · `SHS` · `BUNNY` |
+| le déploiement | `LV.deployer()` / `LV.replier(1|2)` (appelés par `enter`/`fold`) : `grandir` donne au socle sa vraie taille à chaque image (`is-geo`, le puits à 3 px du papier), les traits suivent ; ordinateur ouvert : `#app-proc` (`LV.posApp`, `--as`/`--aw`, `body.proc-ouvert`) ; `__totehm_deploiement()` |
+| → les spots | `const CLUBSP=` (`club_spots`, `club_spots_of`) · `SPOTMODE` · `SPMAP` · `SPGRID` · `SHS` (un spot ouvert : `.ssp-m` puis `.ssp-info` = infos, box en bas) · `BUNNY` |
 | ↓ Higher Self | `const REF=` (`higher-self`) |
 | MEMBERS | `const MB=` → `totehm_of` → `entrerChez()` : ses médias, son TOTEHM, ses spots, son offre (`OFFRE`) |
 | la liste du TOTEHM déployé | `/* ══ LA BOÎTE` · `/* ══ LES TROIS VUES` · `/* ══ LES ÉCRITURES` · `const INTS=` |
@@ -40,10 +40,12 @@ Diagnostics : `__totehm_lv()` · `__totehm_xo()` · `__totehm_sh()` · `__totehm
 - `cloudSave()` réécrit `steps` en entier : rien d'autre ne s'y range.
 - `FREQS` (page) = `_freq_minutes` (base) : identiques.
 - Ne jamais redéfinir `--perfo` (une seconde définition l'écrase en silence).
-- Un verrou de navigation se rend toujours ; un geste reçu pendant un voyage attend sa fin.
+- Un verrou de navigation se rend toujours ; un geste reçu pendant un voyage OU le repli du TOTEHM attend sa fin (`guetter`,
+  1,5 s au plus). Tout geste de navigation est un MANCHE : il va où il pousse (doigt, trackpad, souris, manette, papier).
 - Session gardée : ni la vente ni CONNECT avant la fin de la lecture ; aucune écriture sur la foi du cache.
-- Déploiement : la boîte (`#lv-proc`, transition CSS `--gate-dur`/`--gate-ease`) donne l'HEURE aux traits (`morph(…, {suivre})`
-  lit `getAnimations().currentTime`) — ne jamais les animer sur deux horloges : les broches se détachent (mesuré : 19 px).
+- Déploiement : jamais de `scale()` sur la boîte (arête épaissie, image étirée : « pixélisé ») — `grandir` pose sa taille.
+  L'HEURE est celle du papier (`#gl-bg`, sa transition CSS) : boîte et traits (`morph(…, {suivre})`) la lisent à la même
+  image ; deux horloges et les broches se détachent (mesuré : 19 px). Fin du portail = l'app au pixel (papier `--paper`).
 - Verso : le dos du papier porte le NOM seul ; déplié, tout ce qui n'est pas le nom porte `.srch-after` et n'apparaît
   qu'à `is-pret` (verso déployé ET console lue, 1,8 s au plus) — un nœud ajouté au verso sans `.srch-after` s'affiche trop tôt.
 - Verso déplié : l'identifiant (`#self-h`) est à même le navy ; il colle en haut avec un bandeau `#333366` peint à

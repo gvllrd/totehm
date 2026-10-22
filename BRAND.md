@@ -41,15 +41,17 @@ THP : *Neuroscience, not motivation.*) · ← **mes médias** (une grille, chaqu
 le filtre = un bloc de commande, la croix du TOTEHM : MY STORY et VISION en carrés perforés de leur couleur,
 OBJECTIVE · HABIT · REPULSION empilés entre eux) ·
 ● **mon TOTEHM** (le papier dans la boîte noire du processeur, ses sept traits branchés sur ses arêtes par des broches de
-leur couleur ; un tap déploie TOUTE la structure — le papier reste dans sa boîte, les traits suivent — et sur ordinateur
+leur couleur ; un tap déploie TOUTE la structure — le papier reste dans sa boîte, nette, qui grandit sans jamais se
+déformer, les traits suivent — et sur ordinateur
 la boîte et ses traits restent autour du TOTEHM ouvert ; le retourner montre le NOM seul — à même le navy,
 l'email dessous —, qui monte, puis
 tout d'un coup : **Monetize my TOTEHM** — *and get paid every month* —, l'abonnement **[Higher]** et ce qu'il ouvre
 — Higher Self chaque jour, TotehmBot qui suit chaque Habit —, mes abonnements, puis DELETE MY TOTEHM et SIGN OUT
 en boutons et les conditions) ·
-→ **les spots** (MAP ou GRID) · ↓ **Higher Self** (les traits se replient en l'anneau du profil ; j'arrive, je tape,
+→ **les spots** (MAP ou GRID ; un spot ouvert : son image telle quelle, ses infos, sa box en bas — comme à gauche) · ↓ **Higher Self** (les traits se replient en l'anneau du profil ; j'arrive, je tape,
 mon Higher Self répond ; quelques réponses
 offertes, puis l'abonnement Higher). Chercher un membre : le papier se retourne, on tape son nom, on entre chez lui.
+On navigue comme avec un MANCHE : le geste va où il pousse (vers le haut, la vue du haut), au doigt, au trackpad, à la souris.
 
 **Confidentialité par box**, trois niveaux : PRIVATE · FIGHER CLUB (un membre : une habit, un objectif, une
 répulsion) · MY SUBSCRIBERS. Un lieu : ON = le point exact, OFF = la ville.
@@ -76,7 +78,8 @@ développement personnel, un réseau social classique, une marque streetwear cla
 - **Coral `#fbd5ca`** = le NOM d'un TOTEHM, la méthode Stoner, le « Get » de [Get Higher]. Nulle part ailleurs.
 - **Space Mono et Quantico, rien d'autre.** Quantico = ce que le membre tape et le nom d'un TOTEHM (Coral, sans
   espace, seulement au verso). Space Mono = tout le reste ; un titre = Space Mono Bold en capitales.
-- Aucune bordure autour d'une box (elle se détache par sa valeur) ; une box reste carrée et a sa loupe (× 1,25, en place).
+- Aucune bordure autour d'une box (elle se détache par sa valeur) ; une box reste carrée et a sa loupe (× 1,25, en place)
+  partout où elle est détaillée ; une tuile de grille grandit au survol (× 1,06 : l'image et sa box ensemble).
 - Contrôles gris, `border-radius:10px`, ajustés au label ; aucun fond blanc. Sur ordinateur, le gris devient blanc
   au survol (`tools/hover.py`).
 

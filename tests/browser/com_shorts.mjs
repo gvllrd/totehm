@@ -100,6 +100,11 @@ try{
   ok(pf.n===12&&pf.memes&&pf.fond==='rgba(0, 0, 0, 0)'&&/none/.test(pf.boxM),
      '21/10 bis · chaque image de la grille est PERFORÉE : les 12 trous du logo, aux mêmes places ; la box posée dessus reste entière → '+JSON.stringify(pf));
   await pg.screenshot({path:OUT+'/grille_'+(tel?'tel':'ordi')+'.png'});
+  /* 22/10 — au survol (souris), la tuile ENTIÈRE grandit : l'image et sa box ensemble, au-dessus des voisines. */
+  if(!tel){ const t1=await pg.$('#lv-sh .tl[data-i="0"]'), bb=await t1.boundingBox(); await pg.mouse.move(bb.x+bb.width/2,bb.y+bb.height/2); await pg.waitForTimeout(350);
+    const hv=await pg.evaluate(()=>{const t=document.querySelector('#lv-sh .tl[data-i="0"]'),cs=getComputedStyle(t);return {tr:cs.transform,z:cs.zIndex,f:cs.filter,bx:!!t.querySelector('.tl-bx')};});
+    ok(/matrix\(1\.06, 0, 0, 1\.06/.test(hv.tr)&&hv.z==='2'&&/drop-shadow/.test(hv.f)&&hv.bx,'22/10 · au survol, la tuile ENTIÈRE (l\'image et sa box) grandit au-dessus de ses voisines → '+hv.tr);
+    await pg.mouse.move(2,2); await pg.waitForTimeout(300); }
 
   // ══ 2 · UN TAP SUR L'IMAGE — OU SUR SA BOX — OUVRE LE MÉDIA, AVEC LA BOX DÉTAILLÉE PAR-DESSUS (20/10) ══
   // Wah : « quand on clique sur une image de la grille, on ouvre le média avec par-dessus la box détaillée, au lieu
@@ -118,6 +123,15 @@ try{
   ok(v.vu&&v.img&&v.fit==='contain'&&v.gate&&v.papier==='0','un tap (même sur la box) ouvre le MÉDIA en grand, TEL QU\'IL EST (contain) — plus aucune redirection vers le Totehm');
   ok(v.box==='Run the hill'&&/fight/i.test(v.sub)&&v.minis.includes('Ship it')&&v.minis.includes('The phone')&&v.dessus,
      'par-dessus, la box DÉTAILLÉE du Totehm : '+v.box+' · '+v.sub+' · '+v.minis.join(' / '));
+  /* 22/10 — la LOUPE, aussi dans la visionneuse : elle agrandit la box en place, puis la rend ; rien d'autre ne bouge. */
+  const LP='#tlv .tlv-s[data-j="0"] .tlv-b .loupe[data-vz]';
+  const lp=await pg.evaluate(s=>({n:document.querySelectorAll('#tlv .tlv-s[data-j="0"] .tlv-b .loupe').length, vis:(e=>e?getComputedStyle(e).display:'')(document.querySelector(s))}),LP);
+  await pg.click(LP);await pg.waitForTimeout(250);
+  const lz=await pg.evaluate(s=>({zoom:!!document.querySelector('#tlv .tlv-s[data-j="0"] .tlv-b .v-col.is-zoom'),vu:!document.getElementById('tlv').hidden,
+    gate:document.body.classList.contains('gate'),pr:document.querySelector(s).getAttribute('aria-pressed')}),LP);
+  await pg.click(LP);await pg.waitForTimeout(250);
+  const lz2=await pg.evaluate(()=>!document.querySelector('#tlv .tlv-s[data-j="0"] .tlv-b .v-col.is-zoom'));
+  ok(lp.n===1&&lp.vis==='flex'&&lz.zoom&&lz.pr==='true'&&lz.vu&&lz.gate&&lz2,'22/10 · la LOUPE sur la box de la visionneuse : elle l\'agrandit en place puis la rend — sans ouvrir le Totehm ni quitter le média → '+JSON.stringify(lz));
   ok(v.n===2&&v.fleches===0&&/y/.test(v.snap)&&/mandatory/.test(v.snap)&&v.ox==='hidden'&&v.oy==='auto'&&v.haut,
      '21/10 · la visionneuse défile À LA VERTICALE, aimantée, un média par écran — plus de ‹ › ni d\'horizontale → '+JSON.stringify({n:v.n,snap:v.snap,f:v.fleches}));
   await pg.keyboard.press('ArrowRight');await pg.waitForTimeout(400);
@@ -229,10 +243,12 @@ try{
   if(tel) await pg.touchscreen.tap(pt[0],pt[1]); else await pg.mouse.click(pt[0],pt[1]);
   await pg.waitForTimeout(1100);
   const sh2=await pg.evaluate(()=>{const c=document.querySelector('#rdr-sh .ssp-s.is-ici')||document.querySelector('#rdr-sh .ssp-s'),
-      info=c&&c.querySelector('.ssp-info'),m=c&&c.querySelector('.ssp-m'),sd=c&&c.querySelector('.sdata'),im=m&&m.querySelector('img');
+      info=c&&c.querySelector('.ssp-info'),m=c&&c.querySelector('.ssp-m'),sd=c&&c.querySelector('.sdata'),im=m&&m.querySelector('img'),bx=c&&c.querySelector('.ssp-box');
     return {d:window.__totehm_rdr(), voit:document.body.classList.contains('rdr-voir'), n:document.querySelectorAll('#rdr-sh .ssp-s').length,
       pol:document.querySelectorAll('#rdr-sh .lsh-pol,#rdr-sh [data-pol],#rdr-sh .ssp-bg,#rdr-sh .ssp-top').length,
-      fond:c?getComputedStyle(c).backgroundColor:'', dessus:info&&m?info.getBoundingClientRect().bottom<=m.getBoundingClientRect().top+1:false,
+      fond:c?getComputedStyle(c).backgroundColor:'', dessus:info&&m&&sd&&bx?sd.getBoundingClientRect().bottom<=bx.getBoundingClientRect().top+1
+        &&bx.getBoundingClientRect().bottom>=innerHeight-90&&info.getBoundingClientRect().top>m.getBoundingClientRect().top:false,
+      ombre:bx?getComputedStyle(bx).boxShadow:'', loupe:!!(bx&&bx.querySelector('.loupe[data-vz]')),
       fit:im?getComputedStyle(im).objectFit:'', src:!!(im&&im.getAttribute('src')), rond:im?getComputedStyle(im).borderRadius:'',
       sdR:sd?getComputedStyle(sd).borderRadius:'', st:(sd&&sd.querySelector('.sd-tag.is-st')||{}).textContent||'',
       chips:sd?[...sd.querySelectorAll('.sd-tag')].map(e=>e.textContent):[], tagF:(()=>{const t=sd&&sd.querySelector('.sd-tag');return t?getComputedStyle(t).fontFamily:'';})(),
@@ -245,7 +261,10 @@ try{
   ok(sh2.pol===0&&sh2.fond==='rgb(0, 0, 0)'&&sh2.src&&sh2.fit==='contain'&&sh2.rond==='0px',
      '21/10 · PLUS DE POLAROID : l\'image TELLE QU\'ELLE (contain, ni cadre ni recadrage) sur le NOIR → '+JSON.stringify({pol:sh2.pol,fond:sh2.fond,fit:sh2.fit}));
   ok(sh2.dessus&&sh2.nom==='Call mum'&&sh2.sdR==='16px'&&/I will be there/i.test(sh2.st)&&/Space Mono/.test(sh2.tagF),
-     '21/10 · JUSTE AU-DESSUS, les infos au format de figher.club : la Habit Box, puis le bloc `.sdata` (rayon 16, étiquettes Space Mono, l\'état en premier)');
+     '22/10 · comme à gauche : la Habit Box TOUT EN BAS, par-dessus l\'image, et JUSTE AU-DESSUS les infos au format de figher.club (`.sdata` : rayon 16, étiquettes Space Mono, l\'état en premier)');
+  await pg.click('#rdr-sh .ssp-s .ssp-box .loupe[data-vz]');await pg.waitForTimeout(300);
+  const rz=await pg.evaluate(()=>({zoom:!!document.querySelector('#rdr-sh .ssp-s .ssp-box .v-col.is-zoom'),voir:document.body.classList.contains('rdr-voir'),gate:document.body.classList.contains('gate')}));
+  ok(sh2.loupe&&/rgba\(0, 0, 0/.test(sh2.ombre)&&rz.zoom&&rz.voir&&rz.gate,'22/10 · la box surélevée porte sa LOUPE : elle s\'agrandit en place, le spot reste ouvert, le Totehm fermé → '+JSON.stringify(rz));
   ok(sh2.chips.some(t=>/oct|today|tomorrow/i.test(t))&&sh2.chips.some(t=>/location on/i.test(t))
      &&sh2.chips.some(t=>/social/i.test(t))&&sh2.say==='Bring a coffee'&&sh2.go&&sh2.cal,
      'les informations du spot : '+sh2.chips.join(' · ')+' — son mot, GO, CALENDAR');
@@ -337,6 +356,10 @@ try{
   ok(gr.grid&&gr.d.mode==='grid'&&gr.tuiles===2&&gr.boxes.join('|')==='Swim at dawn|Dance'&&gr.navy==='rgb(51, 51, 102)',
      'GRID : une tuile par spot, et dessus SA Habit Box au format Totehm ('+gr.boxes.join(' · ')+')');
   ok(parseFloat(gr.rond)>=14,'21/10 · les images de la grille de droite sont ARRONDIES ('+gr.rond+')');
+  if(!tel){ const t2=await pg.$('#rdr-g .tl[data-cle]'), b2=await t2.boundingBox(); await pg.mouse.move(b2.x+b2.width/2,b2.y+b2.height/2); await pg.waitForTimeout(350);
+    const h2=await pg.evaluate(()=>{const cs=getComputedStyle(document.querySelector('#rdr-g .tl[data-cle]'));return cs.transform+' | '+cs.boxShadow;});
+    ok(/matrix\(1\.06, 0, 0, 1\.06/.test(h2)&&/rgba\(0, 0, 0/.test(h2),'22/10 · à droite aussi, la tuile grandit au survol, son ombre suit ses coins arrondis → '+h2);
+    await pg.mouse.move(2,2); await pg.waitForTimeout(300); }
   const bv=log.functions.filter(f=>f.name==='bunny-video');
   ok(bv.length>=1&&bv[0].body.clips[0].id==='cccccccc-cccc-4ccc-8ccc-cccccccccccc'&&bv[0].body.clips[0].spot==='sp3'&&/\/thumbnail\.jpg$/.test(gr.vign),
      'le clip : sa VIGNETTE Bunny, signée par le serveur ({id, spot}) — jamais une URL en dur');
