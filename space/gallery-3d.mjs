@@ -11,8 +11,8 @@ export async function createGallery({select,onOverview=()=>{},interact=()=>{},fa
  const renderer=new T.WebGLRenderer({antialias:true,alpha:false,powerPreference:'high-performance'});
  renderer.setPixelRatio(Math.min(devicePixelRatio,mobile?1.5:1.75));renderer.setSize(innerWidth,innerHeight);
  renderer.outputColorSpace=T.SRGBColorSpace;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1;
- renderer.setClearColor(0xb8d2df);renderer.domElement.setAttribute('aria-hidden','true');host.append(renderer.domElement);
- const scene=new T.Scene(),camera=new T.PerspectiveCamera(mobile?72:60,innerWidth/innerHeight,.08,2800);
+ renderer.setClearColor(0x030912);renderer.domElement.setAttribute('aria-hidden','true');host.append(renderer.domElement);
+ const scene=new T.Scene(),camera=new T.PerspectiveCamera(mobile?72:60,innerWidth/innerHeight,.08,9000);
  let dirty=true,frames=0,list=false,hidden=document.hidden,paused=false,lastTime=0,lastRender=0,slow=0;
  let motionReduced=reduced.matches,tween=null,room=-1,transition=null,down=null,yaw=0,pitch=0,dragged=false;
  const landscape=createTempleLandscape(scene,renderer,{mobile,onChange:()=>{dirty=true;}});
@@ -51,7 +51,7 @@ export async function createGallery({select,onOverview=()=>{},interact=()=>{},fa
   dirty=true;return true;
  }
  function overview(){if(transition)return;room=-1;tween=null;onOverview();travel(new T.Vector3(...ENTRY),new T.Vector3(...LOOK));}
- function panorama(kind){if(transition)return;room=-1;onOverview();const sea=kind==='sea';travel(new T.Vector3(sea?-13.6:13.6,1.65,8.4),new T.Vector3(sea?-250:240,sea?-70:-35,sea?-60:-170));}
+ function panorama(kind){if(transition)return;room=-1;onOverview();const sea=kind==='sea';travel(new T.Vector3(sea?-13.6:13.6,1.65,8.4),new T.Vector3(sea?-700:600,sea?-75:-45,sea?-350:-800));}
  function move(dx,dz){
   const before=eye.clone(),x=eye.x+dx,z=eye.z+dz;
   if(walkway.allowed(x,eye.z))eye.x=x;if(walkway.allowed(eye.x,z))eye.z=z;
@@ -87,7 +87,7 @@ export async function createGallery({select,onOverview=()=>{},interact=()=>{},fa
  stick.addEventListener('pointermove',e=>{if(stick.hasPointerCapture(e.pointerId)&&!transition)stickMove(e);});stick.addEventListener('pointerup',stopStick);stick.addEventListener('pointercancel',stopStick);
  document.getElementById('look-sky').addEventListener('click',()=>{if(transition)return;free();pitch=.75;look();dirty=true;});
  document.getElementById('help').addEventListener('click',()=>document.querySelector('.guide').classList.toggle('is-help'));
- document.getElementById('look-sea').addEventListener('click',()=>panorama('sea'));document.getElementById('look-mountains').addEventListener('click',()=>panorama('mountains'));
+ document.getElementById('look-sea').addEventListener('click',()=>panorama('sea'));document.getElementById('look-horizon').addEventListener('click',()=>panorama('horizon'));
  addEventListener('blur',()=>{stop();paused=true;syncSound();});addEventListener('focus',()=>{paused=false;syncSound();});
  document.addEventListener('visibilitychange',()=>{hidden=document.hidden;if(hidden)stop();syncSound();dirty=true;lastTime=0;});
  function motionChanged(){motionReduced=reduced.matches;if(motionReduced&&tween){const t=tween;tween=null;eye.copy(t.to);gaze.copy(t.target);angles();t.done?.();}dirty=true;}

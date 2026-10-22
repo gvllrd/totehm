@@ -53,8 +53,10 @@ Le compte vient TOUJOURS de la session, jamais du corps ; une page ne reçoit qu
 
 ## n8n
 
-`n8n/README.md` (VM Oracle) · `n8n/workflows/` (A → F). n8n n'accorde jamais un accès. B et D publiés sans
-authentification : voir `boutique/CLAUDE.md`.
+`n8n/README.md` (VM Oracle) · `n8n/workflows/` (A → F). n8n n'accorde jamais un accès. F corrigé ; B/C/D/E publiés
+avec l'ancien CONFIG, qui lit `process.env` — absent d'un Code node : la chaîne n'a jamais tourné (zéro exécution).
+`stripe-webhook` envoie `apikey` (clé de service) à B, que son brouillon exige (`serviceAuth`).
+`tests/n8n/streetwear/offline.mjs` : 59 simulations sur exports archivés, fournisseurs et RPC simulés ; six blocages.
 
 Avis Supabase (21/10) : 2 ERROR connus (`higher_badges` lit `auth.users` pour `id`, `pseudo` ; 4 vues `security definer`,
 dont `signature_styles` qui montre `system_prompt_prefix`).
