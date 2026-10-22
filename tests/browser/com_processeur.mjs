@@ -330,6 +330,7 @@ try{
       dir:t[0]?.querySelector('p')?.textContent,obs:t[2]?.querySelector('p')?.textContent,teachK:t[2]?.querySelector('.rf-k')?.textContent,
       teach:t[2]?.querySelector('.rf-teach p')?.textContent,step:t[1]?.querySelector('p')?.textContent,prop:t[1]?.classList.contains('is-prop'),
       add:!!t[1]?.querySelector('[data-rf-add]'),acts:document.querySelectorAll('#lv-thread .sm-acts').length,pense:window.__totehm_lv().reflection.pense,
+      invite:!!t[1]?.querySelector('.rf-lieu-up[data-sm-offer] .sm-hi'),lieu:document.querySelectorAll('#lv-thread .rf-lieu').length,
       classes:t.map(e=>e.className.match(/t-\w+/)[0]),
       haute:t[1]&&t[0]?t[1].getBoundingClientRect().width>t[0].getBoundingClientRect().width&&/matrix\(1, 0, 0, 1, 0, -\d/.test(getComputedStyle(t[1]).transform):false};});
   ok(r.q==='I procrastinate on my collection'&&JSON.stringify(r.fonds)===JSON.stringify(['rgb(54, 73, 140)','rgb(51, 51, 102)','rgb(116, 49, 105)'])
@@ -340,7 +341,8 @@ try{
   ok(r.prop&&r.add&&r.step==='I draw one sleeve at 22:00 tonight.','la step nouvelle = une PROPOSITION (pointillé) + « + my Habit »');
   ok(r.acts===0&&!r.pense,'gratuit : pas de partage ; l\'anneau ne tourne plus une fois la réponse arrivée');
   const c1=corps.find(x=>x.action==='say');
-  ok(c1&&c1.fmt==='r3'&&Array.isArray(c1.turns)&&c1.turns.length===0,'l\'appel demande le format r3 (trois étages vérifiés)');
+  ok(c1&&c1.fmt==='r4'&&Array.isArray(c1.turns)&&c1.turns.length===0&&Number.isInteger(c1.tz)&&!('pos' in c1),'22/10 · l\'appel demande le MIROIR (r4) avec mon fuseau ; gratuit : aucune position envoyée');
+  ok(r.invite&&r.lieu===0,'22/10 · gratuit : sous la step, « a real place near me · Higher » (aucun lieu inventé)');
   await pg.screenshot({path:OUT+'/proc_reflection.png'});
   await pg.click('#lv-thread [data-rf-add]');await pg.waitForTimeout(1400);
   const a=await pg.evaluate(()=>({h:(window.__totehm_zone||{}).habitudes,ref:[...document.querySelectorAll('#lv-thread .t-step .rf-ref')].map(e=>e.textContent),prop:document.querySelector('#lv-thread .t-step').classList.contains('is-prop'),aj:window.__totehm_lv().reflection.ajouts}));
@@ -348,7 +350,7 @@ try{
   await pg.fill('#lv-say-in','and tomorrow');await pg.keyboard.press('Enter');
   await pg.waitForFunction(()=>window.__totehm_lv().reflection.envois===2,null,{timeout:5000}).catch(()=>{});
   const c2=corps.filter(x=>x.action==='say')[1];
-  ok(c2&&c2.turns.length===2&&c2.turns[1].role==='sm'&&!/@ok/.test(c2.turns[1].text),'le tour suivant porte les tours d\'avant, sans la ligne de vérification ; aucun historique à l\'écran');
+  ok(c2&&c2.turns.length===2&&c2.turns[1].role==='sm'&&!/@ok|@lieu/.test(c2.turns[1].text),'le tour suivant porte les tours d\'avant, sans les lignes du serveur (vérification, lieu) ; aucun historique à l\'écran');
   ok(await pg.locator('#lv-thread .rf-q').count()===1&&/and tomorrow/.test(await pg.textContent('#lv-thread .rf-q')),'la dernière Reflection seule');
   await pg.fill('#lv-say-in','and now');await pg.keyboard.press('Enter');await pg.waitForTimeout(900);
   const f=await pg.evaluate(()=>({v:document.getElementById('lv-say-in').value,ferme:document.getElementById('lv-say').classList.contains('hide'),offre:!!document.querySelector('#lv-thread .sm-offer [data-sm-sub]')}));
@@ -373,12 +375,19 @@ try{
   await pg.waitForFunction(()=>!document.body.classList.contains('gate')&&window.__totehm_zone&&window.__totehm_zone.vue==='objectives',null,{timeout:9000}).catch(()=>{});
   ok(await pg.evaluate(()=>!document.body.classList.contains('gate')&&window.__totehm_zone.vue==='objectives'),'« + my Objective » ouvre mon TOTEHM sur les objectifs (depuis le bas : retour au centre, puis la déconstruction)');
   ok(!erreurs(log).length,'pas prêt : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
- {const REP='@dir vision "A quiet house by the sea"\nI build the house one brick a day.\n@obs\nI wait for the mood.\n@teach story\nI already know waiting never built anything.\n@step habit "Run the hill"\nI run the hill at 7:00 tomorrow.\n@ok {"dir":true,"teach":null,"step":true}';
-  const net=(url,req)=>{ if(url.pathname!=='/functions/v1/higher-self') return null; const b=JSON.parse(req.postData()||'{}');
+ /* Higher : le miroir (r4) — la step EST ma Habit « Run the hill », reformulée ; sous elle, un lieu VÉRIFIÉ par le serveur
+    (`@lieu`, jamais écrit par le modèle) : GO (Maps), SPOT IT (figher.club, à son heure) ; ma position part arrondie (~1 km). */
+ {const quand=new Date(Date.now()+2*864e5).toISOString().slice(0,11)+'07:00';
+  const MAPS='https://www.google.com/maps/search/?api=1&query=Jardim%20da%20Estrela%2C%20Pra%C3%A7a%20da%20Estrela%2C%20Lisboa&query_place_id=ChIJ123';
+  const REP='@dir vision "A quiet house by the sea"\nI build the house one brick a day.\n@obs\nI wait for the mood.\n@teach story\nI already know waiting never built anything.\n@step habit "Run the hill" fight\nDown at Jardim da Estrela at 7:00, dark techno on, I run the hill twice.\n@ok {"dir":true,"teach":null,"step":true}\n'
+    +'@lieu '+JSON.stringify({kind:'place',name:'Jardim da Estrela',address:'Praça da Estrela, Lisboa',city:'Lisbon',url:null,maps:MAPS,lat:38.713,lng:-9.159,km:1.2,when:quand});
+  const corps=[];
+  const net=(url,req)=>{ if(url.pathname!=='/functions/v1/higher-self') return null; const b=JSON.parse(req.postData()||'{}');corps.push(b);
     if(b.action==='say') return {status:200,contentType:'text/plain; charset=utf-8',headers:{'X-SM-Left':'29','X-SM-Higher':'1','access-control-allow-origin':'*','access-control-expose-headers':'X-SM-Left, X-SM-Higher'},body:REP};
     return {status:409,contentType:'application/json',headers:{'access-control-allow-origin':'*'},body:JSON.stringify({error:'not_linked'})}; };
   const{pg,log}=await page(browser,{dir:'com',origin,tables,network:net,viewport:{width:390,height:844},hasTouch:true,
-    rpc:{my_landing:LAND({higher:{active:true,price_cents:700,currency:'eur'},sm:{ready:true,habit:true,objective:true,higher:true,free_total:7,free_left:7,left:30}}),new_bot_link_code:'c0de'}});
+    rpc:{my_landing:LAND({higher:{active:true,price_cents:700,currency:'eur'},sm:{ready:true,habit:true,objective:true,higher:true,free_total:7,free_left:7,left:30}}),new_bot_link_code:'c0de',
+         spot_schedule_audience:{ok:true,id:'sp1'}}});
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(900);await ouvre(pg);
   await pg.keyboard.press('ArrowDown');await vers(pg,'b');
   await pg.fill('#lv-say-in','lazy today');await pg.keyboard.press('Enter');
@@ -388,6 +397,19 @@ try{
     tg:!!document.querySelector('#lv-thread [data-tg]'),wa:!!document.querySelector('#lv-thread [data-wa]')}));
   ok(JSON.stringify(h.refs)===JSON.stringify(['A quiet house by the sea','Run the hill'])&&!h.prop&&!h.add,'une step qui EST une de mes Habits (vérifiée) : sa mini-boîte, sans pointillé ni « + my Habit »');
   ok(h.acts===1&&h.tg&&!h.wa,'15/10 bis · Higher : « [Higher] my Telegram » SEUL sous la Reflection (pas de Meta)');
+  const cs=corps.find(x=>x.action==='say');
+  ok(cs&&cs.fmt==='r4'&&JSON.stringify(cs.pos)==='{"lat":38.72,"lng":-9.14}','22/10 · Higher, position déjà permise : elle part ARRONDIE (~1 km) → '+JSON.stringify(cs&&cs.pos));
+  const l=await pg.evaluate(()=>{const b=document.querySelector('#lv-thread .t-step .rf-lieu');return b&&{n:b.querySelector('.rf-lieu-n')?.textContent,d:b.querySelector('.rf-lieu-d')?.textContent,
+    q:!!b.querySelector('.rf-lieu-q')?.textContent,go:b.querySelector('a.rf-add')?.href,spot:!!b.querySelector('[data-rf-spot]'),invite:!!document.querySelector('#lv-thread .rf-lieu-up')};});
+  ok(l&&l.n==='Jardim da Estrela'&&l.d==='Praça da Estrela, Lisboa · 1.2 km'&&l.q&&l.go===MAPS&&l.spot&&!l.invite,'22/10 · sous la step : le LIEU réel (nom, adresse, distance, heure), GO (Maps), SPOT IT → '+JSON.stringify(l));
+  await pg.screenshot({path:OUT+'/proc_miroir.png'});
+  await pg.click('#lv-thread [data-rf-spot]');
+  await pg.waitForFunction(()=>window.__totehm_lv().reflection.spots===1,null,{timeout:5000}).catch(()=>{});
+  const sp=log.rpc.find(x=>x.name==='spot_schedule_audience'),b=sp&&sp.body;
+  ok(b&&b.p_habit==='Run the hill'&&b.p_lat===38.713&&b.p_lng===-9.159&&b.p_place==='Jardim da Estrela, Praça da Estrela, Lisboa'&&b.p_city==='Lisbon'&&b.p_audience==='figher'
+     &&new Date(b.p_starts_at).getTime()===new Date(quand).getTime(),'22/10 · SPOT IT : ma Habit, au point du lieu, à l\'heure de la step → spot_schedule_audience '+JSON.stringify(b));
+  ok(await pg.evaluate(()=>window.__totehm_lv().reflection.spots===1&&/spotted/.test(document.getElementById('lv-say-note').textContent)&&document.querySelector('#lv-thread .rf-lieu-a button:disabled')?.textContent==='spotted'),
+     '22/10 · annoncé : « spotted · figher.club », compté dans __totehm_lv().reflection.spots');
   /* Telegram : la Reflection part par le serveur (`higher-self` action telegram), jamais par une URL publique. */
   await pg.click('#lv-thread [data-tg]');await pg.waitForTimeout(600);
   const o=await pg.evaluate(()=>window.__ouvert);

@@ -44,10 +44,10 @@ Le compte vient TOUJOURS de la session, jamais du corps ; une page ne reçoit qu
 
 ## Le bot et le Higher Self
 
-- TotehmBot (Telegram) n'a pas de voix : jamais « je » ; les mots du membre ou un nombre. Zéro appel de modèle.
-  Relances `push_decision` au rythme de chaque Habit, 6 par jour au plus.
-- Higher Self (↓ de totehm.com, `higher-self`) : un LLM qui cite le TOTEHM du membre, vérifié mot pour mot ; gratuit
-  limité (`_sm_rules`), puis `higher_sub`.
+- TotehmBot (Telegram) sans voix (jamais « je », zéro appel de modèle) ; relances `push_decision` au rythme de chaque Habit, 6/jour.
+- Higher Self (`higher-self`, `fmt:'r4'`) : le MIROIR. `_bot_mirror` = le TOTEHM relié (chaque Habit entière : where, intentions,
+  rythme, son, liens) ; `_shared/mirror.ts` : contexte + citations vérifiées (`@ok`). Gratuit limité (`_sm_rules`), puis `higher_sub`.
+  Higher : un lieu réel (`_mirror_places`) posé par le serveur (`@lieu`), jamais inventé ; `higher-map` : Lisbonne seule, porte sur `subscriptions`.
 
 ## n8n
 
