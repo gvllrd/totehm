@@ -82,15 +82,25 @@ ok(/champ\/1-front\.png/.test(src) && /champ\/3-side\.png/.test(src) && !/\.keep
 // ── 2 · ELEMENT : le TOTEHM se décompose en trois papiers (23/10)
 await pg.click('#totehmize');
 await pg.waitForFunction(() => window.__totehm_cloth().stage === 'element');
+ok(!(await D()).melt && (await pg.$eval('#tz-logo', e => +getComputedStyle(e).opacity)) > 0.9, 'the TOTEHM arrives whole: background, rail, T and word');
+await pg.waitForFunction(() => window.__totehm_cloth().papers);
+await pg.waitForTimeout(650);
 d = await D();
-ok(d.papers && !d.grind && d.view === null && d.views === 5, 'the TOTEHM opens in three papers, no view chosen yet, the five views are there');
-ok((await pg.$$eval('#tz-papers .pap', l => l.map(b => b.textContent.replace(/\s+/g,' ').trim().split(' ')[0]))).join(',') === 'my,grind,vision'
-   && (await pg.$eval('#el-list', e => e.children.length)) === 0, 'MY STORY · GRIND · VISION, and nothing listed before a tap');
+ok(d.papers && d.melt && !d.grind && d.view === null && d.views === 5, 'the TOTEHM has melted into three papers, no view chosen yet, the five views are there');
+ok((await pg.$$eval('#tz-papers .pap-lab', l => l.map(b => b.textContent.trim()))).join(',') === 'my story,my grind,vision'
+   && (await pg.$eval('#el-list', e => e.children.length)) === 0, 'MY STORY · MY GRIND · VISION, and nothing listed before a tap');
+ok((await pg.$eval('#tz-logo', e => +getComputedStyle(e).opacity)) < 0.05 && (await pg.$eval('#tz-logo .lg-t', e => e.textContent)) === 'T',
+  'the logo (rail · T · word) has dissolved; only its background is left');
 const g3 = await pg.$$eval('#tz-papers .g3 i', l => l.map(i => i.textContent.trim()).join(','));
-ok(g3 === 'objective,habit,repulsion' && (await pg.$eval('#tz-papers .g3', e => e.getBoundingClientRect().height)) < 2, 'the three buttons live inside the GRIND, folded');
+ok(g3 === 'objective,habit,repulsion' && (await pg.$eval('#tz-papers .g3', e => +getComputedStyle(e).opacity)) < 0.05, 'the three buttons live inside the GRIND, hidden');
 await pg.click('.pap-g');
-await pg.waitForFunction(() => window.__totehm_cloth().grind && document.querySelector('#tz-papers .g3').getBoundingClientRect().height > 20);
-ok(true, 'a tap on GRIND opens its three buttons, in its navy');
+await pg.waitForFunction(() => window.__totehm_cloth().grind);
+await pg.waitForTimeout(400);
+const gz = await pg.evaluate(() => { const g = document.querySelector('#tz-papers .g3').getBoundingClientRect(), p = document.querySelector('.pap-g').getBoundingClientRect();
+  return { op:+getComputedStyle(document.querySelector('#tz-papers .g3')).opacity, lab:+getComputedStyle(document.querySelector('.pap-g .pap-lab')).opacity,
+    dx:Math.abs((g.left+g.right)/2 - (p.left+p.right)/2), inside:g.top > p.top && g.bottom < p.bottom, gh:Math.round(g.height), ph:Math.round(p.height) };
+});
+ok(gz.op > 0.9 && gz.dx < 2 && gz.inside && gz.lab < 0.05, 'a tap on MY GRIND stacks its three buttons in the centre of its navy ' + JSON.stringify(gz));
 await pg.click('.g3 i[data-v="habits"]');
 await pg.waitForFunction(() => window.__totehm_cloth().view === 'habits');
 ok(/Run the hill/.test(await pg.textContent('#el-list')) && /Cold shower/.test(await pg.textContent('#el-list')) && /habit/i.test(await pg.textContent('#el-sub')),
@@ -98,10 +108,14 @@ ok(/Run the hill/.test(await pg.textContent('#el-list')) && /Cold shower/.test(a
 await pg.click('.pap-v');
 await pg.waitForFunction(() => window.__totehm_cloth().view === 'visions');
 ok(/A studio by the sea/.test(await pg.textContent('#el-list')), 'VISION is wearable too');
-await pg.click('#tz-home');
-await pg.waitForFunction(() => !window.__totehm_cloth().papers);
-ok((await D()).view === null && (await pg.$eval('#el-list', e => e.children.length)) === 0, 'the logo folds the TOTEHM back: nothing chosen, nothing listed');
-await pg.click('#tz-home');
+await pg.click('#hud button[data-i="0"]');
+await pg.waitForFunction(() => window.__totehm_cloth().stage === 'cloth');
+await pg.click('#totehmize');
+await pg.waitForFunction(() => window.__totehm_cloth().stage === 'element' && !window.__totehm_cloth().melt);
+await pg.waitForTimeout(60);
+ok((await pg.$eval('#tz-logo', e => +getComputedStyle(e).opacity)) > 0.5 && (await D()).view === null,
+  'back to the cloth and in again: the TOTEHM is whole, and it melts again ' + (await pg.$eval('#tz-logo', e => getComputedStyle(e).opacity)) + '/' + JSON.stringify(await D()).slice(0,120));
+await pg.waitForFunction(() => window.__totehm_cloth().papers);
 await pg.click('.pap-s');
 await pg.waitForFunction(() => window.__totehm_cloth().view === 'wisdom');
 ok(/Slow is smooth/.test(await pg.textContent('#el-list')) && /my story/i.test(await pg.textContent('#el-sub')), 'MY STORY · what I pass on');

@@ -5,11 +5,16 @@
 Des vêtements totehmisés : **n'importe quelle box** du TOTEHM d'un membre, un style artistique déterminé, produits par
 Printful. Le numérique (THP, Stoner, Lisbon, Origins, marché) vit sur totehm.space.
 
-**Le TOTEHM est la commande** (23/10) : sur `/streetwear` son logo perforé lance la totehmisation, se décompose en trois
-papiers — MY STORY · GRIND · VISION —, le GRIND s'ouvre en objective · habit · repulsion, une box tapée devient le
-vêtement, le logo replie tout. Les curseurs du manche de COM entourent l'image (← → les modèles, ↑ ↓ ses vues) ; les
-sept intentions sont une COUTURE sous le logo. Au début : le titre et ce qui reste ; le PRIX n'arrive qu'à la fin, dans
+**Le TOTEHM est la commande** (23/10) : son logo (fond perforé · rail · T · mot, en SVG) lance la totehmisation, puis
+**il se décompose** — son FOND prend le dessus pendant que le rail, le T et le mot FONDENT (flou + fondu) et que
+« MY GRIND » apparaît ; dans la foulée deux fonds glissent aux extrémités et deviennent MY STORY et VISION. Un tap sur
+MY GRIND empile OBJECTIVE · HABIT · REPULSION au centre de son navy ; un tap sur une vue donne ses boxes, un tap sur une
+box fait le vêtement. On revient toujours au logo : la séquence rejoue à chaque entrée dans la scène. Les curseurs du
+manche de COM entourent l'image (← → les modèles, ↑ ↓ ses vues) ; les sept intentions sont une COUTURE sous les papiers.
+Scène NOIRE, les papiers portent la couleur. Au début : le titre et ce qui reste ; le PRIX n'arrive qu'à la fin, dans
 ORDER. Ni Back, ni coin membre, ni « how it works », ni titre qui répète la collection.
+⚠️ `tools/ecosystem_ui*` transforme tout bouton qui porte du texte (`inline-size:fit-content!important`) : le logo et
+les papiers en sont exemptés par `#totehmize` / `#tz-papers`, dans la copie ET dans `tools/ecosystem_ui_snippet.js`.
 
 | fichier | rôle |
 |---|---|

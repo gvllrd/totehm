@@ -45,6 +45,8 @@
 html{font-family:'Space Mono',monospace}button,input,select,textarea{font-family:inherit}
 :root{
   --navy:#333366;--blue:#36498c;--rep:#743169;--coral:#fbd5ca;
+  /* Les papiers du logo (mêmes valeurs que com/totehm.html) */
+  --logo-navy:#333366;--logo-wisdom:#5b2652;--logo-visions:#2b3a73;
   --mid:#b0b0b0;--lo:#909090;--dim:#5a5a5a;--bg:#000;--c1:#1f1f24;--c2:#2a2a30;--c3:#34343a;--ok:#639922;
   --q:'Quantico',sans-serif;--mono:'Space Mono',monospace;--ease:cubic-bezier(.22,.61,.36,1);
   --st:env(safe-area-inset-top,0px);--sb:env(safe-area-inset-bottom,0px);--head:calc(var(--st) + 84px);
@@ -123,8 +125,8 @@ a{color:inherit;text-decoration:none}
 .cl-links{display:flex;gap:14px;justify-content:center}
 
 /* 2 · ELEMENT — le Totehm déplié, sur son papier ; la manette n'existe qu'ici */
-#s-element{padding:var(--head) 0 0;overflow:hidden;background:var(--paper,#2b2b57);--rl:46px;--rw:18px}
-#el-rail{position:absolute;top:0;bottom:0;left:var(--rl);width:var(--rw);background:rgba(255,255,255,.3);pointer-events:none}
+#s-element{padding:var(--head) 0 0;overflow:hidden;background:#000;--rl:0px;--rw:0px}
+#el-rail{display:none}  /* 23/10 : les papiers sont sur du NOIR, sans rail */
 #el-head{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;padding:0 16px 10px;flex:0 0 auto}
 #el-sub{font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.66);margin-top:9px;min-height:12px}
 #el-list{position:relative;z-index:1;flex:1 1 auto;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;padding:4px 16px calc(150px + var(--sb)) 0;display:flex;flex-direction:column;gap:6px;transition:opacity .3s ease,transform .34s var(--ease)}
@@ -154,41 +156,72 @@ a{color:inherit;text-decoration:none}
 .cur svg{width:12px;height:12px;stroke:currentColor;stroke-width:2.1;fill:none;stroke-linecap:round;stroke-linejoin:round}
 @media(hover:hover){.cur:hover{opacity:1;transform:scale(1.25)}}
 
-/* le logo : une BOÎTE navy perforée des douze trous, le T dedans */
-#totehmize,#tz-home{width:64px;height:64px;flex:none;border:0;padding:0;background:var(--navy);cursor:pointer;
+/* LE LOGO — le fond perforé (background), le rail, le T, le mot. Quatre pièces,
+   parce qu'elles doivent FONDRE séparément. */
+#totehmize{width:66px;height:66px;flex:none;border:0;padding:0;background:var(--logo-navy);cursor:pointer;margin-top:2px;
+  -webkit-tap-highlight-color:transparent;-webkit-mask-image:var(--perfo);mask-image:var(--perfo);
+  -webkit-mask-size:100% 100%;mask-size:100% 100%;position:relative;transition:transform .3s var(--ease)}
+@media(hover:hover){#totehmize:hover{transform:scale(1.07)}}
+#totehmize:focus-visible{outline:1px solid var(--mid);outline-offset:4px}
+#totehmize[disabled]{opacity:.35;cursor:default}
+.lg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.lg text{fill:#fff;font-family:'Space Mono',monospace;font-weight:700;text-anchor:middle}
+.lg-rail{fill:#fff}
+.lg-t{font-size:34px;letter-spacing:.5px}
+.lg-tot{font-size:9px;letter-spacing:2.2px}
+.lg-ehm{font-size:15px;letter-spacing:1.6px}
+#totehmize.is-busy{opacity:.45}
+
+/* LA DÉCOMPOSITION · 23/10 (Wah) —
+   0) le logo, tel qu'il est ;
+   1) le FOND prend le dessus : le rail, le T et le mot fondent (flou + fondu,
+      un papier qui se dissout) et « MY GRIND » apparaît ;
+   2) deux fonds glissent dans la foulée vers les deux extrémités : MY STORY
+      et VISION, qui donnent leurs boxes ;
+   3) un tap sur MY GRIND fait apparaître ses trois boutons, empilés au centre.
+   Tout en `transition` : jamais une @keyframes (elle rejoue à chaque redessin). */
+#tz-papers{display:flex;gap:10px;width:100%;max-width:430px;margin:0 auto;align-self:stretch;justify-content:center;align-items:stretch}
+.pap{position:relative;flex:1 1 0;aspect-ratio:1/1;border:0;padding:0;cursor:pointer;color:#fff;
   -webkit-tap-highlight-color:transparent;-webkit-mask-image:var(--perfo);mask-image:var(--perfo);
   -webkit-mask-size:100% 100%;mask-size:100% 100%;display:flex;align-items:center;justify-content:center;
-  transition:transform .3s var(--ease),background-color .3s ease}
-#totehmize{margin-top:2px}
-#tz-home{width:52px;height:52px}
-.tz-t{font-weight:700;font-size:26px;line-height:1;letter-spacing:.04em;color:#fff}
-#tz-home .tz-t{font-size:21px}
-@media(hover:hover){#totehmize:hover,#tz-home:hover{transform:scale(1.06)}}
-#totehmize:focus-visible,#tz-home:focus-visible{outline:1px solid var(--mid);outline-offset:4px}
+  transition:transform .55s var(--ease),opacity .4s ease,filter .2s ease}
+.pap-s{background:var(--logo-wisdom)}.pap-g{background:var(--logo-navy)}.pap-v{background:var(--logo-visions)}
+@media(hover:hover){.pap:hover{filter:brightness(1.18)}}
+.pap.is-here{filter:brightness(1.25)}
+.pap-lab{font-weight:700;font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;padding:0 7px;text-align:center;opacity:0;transition:opacity .4s ease}
+/* 0 · les deux côtés sont POSÉS SUR le centre, à sa taille : on ne voit qu'un logo */
+#el-head.is-logo .pap-s{transform:translateX(calc(100% + 10px)) scale(.46);opacity:0}
+#el-head.is-logo .pap-v{transform:translateX(calc(-100% - 10px)) scale(.46);opacity:0}
+#el-head.is-logo .pap-g{transform:scale(.46)}
+/* 1 · le fond prend le dessus */
+#el-head.is-melt #tz-logo{opacity:0;filter:blur(7px);transform:scale(1.14)}
+#el-head.is-melt .pap-g .pap-lab{opacity:1}
+#tz-logo{transition:opacity .45s ease,filter .5s ease,transform .5s var(--ease)}
+/* 2 · ils glissent aux extrémités (et reprennent leur place : sans ce
+   `transform:none`, ils restent POSÉS sur le centre et lui volent ses taps) */
+#el-head.is-split .pap-s,#el-head.is-split .pap-v,#el-head.is-split .pap-g{transform:none}
+#el-head.is-split .pap-s,#el-head.is-split .pap-v{opacity:1}
+#el-head.is-split .pap-s .pap-lab,#el-head.is-split .pap-v .pap-lab{opacity:1;transition-delay:.18s}
+/* 3 · les trois boutons, empilés au centre du navy */
+.g3{position:absolute;left:14%;right:14%;top:50%;display:flex;flex-direction:column;gap:4px;
+  opacity:0;transform:translateY(-50%) scale(.9);pointer-events:none;transition:opacity .3s ease,transform .36s var(--ease)}
+#el-head.is-grind .pap-g .g3{opacity:1;transform:translateY(-50%);pointer-events:auto}
+#el-head.is-grind .pap-g .pap-lab{opacity:0}
+.g3 i{display:block;font-style:normal;font-weight:700;font-size:7.5px;letter-spacing:.1em;text-transform:uppercase;
+  padding:4px 2px;color:#fff;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:clip;transition:filter .2s ease}
+.g3 i[data-v=objectives]{background:var(--blue)}
+.g3 i[data-v=habits]{background:#3a3a70}
+.g3 i[data-v=repulsions]{background:var(--rep)}
+@media(hover:hover){.g3 i:hover{filter:brightness(1.25)}}
+.g3 i.is-here{box-shadow:inset 0 0 0 1px rgba(255,255,255,.85)}
 
 /* LA COUTURE — les sept intentions, en points de couture sur un fil.
    Rien à voir avec le processeur de totehm.com : ici c'est un vêtement. */
-#tz-seam{position:relative;display:flex;gap:7px;align-items:center;justify-content:center;height:14px;margin:9px 0 2px}
-#tz-seam::before{content:'';position:absolute;left:50%;top:50%;width:132px;height:1px;margin-left:-66px;background:rgba(255,255,255,.22)}
+#tz-seam{position:relative;display:flex;gap:7px;align-items:center;justify-content:center;height:14px;margin:12px 0 0}
+#tz-seam::before{content:'';position:absolute;left:50%;top:50%;width:132px;height:1px;margin-left:-66px;background:rgba(255,255,255,.2)}
 #tz-seam i{position:relative;display:block;width:2px;height:9px;background:var(--c,#fff);opacity:.22;transition:opacity .35s ease,height .35s var(--ease)}
 #tz-seam i.is-on{opacity:1;height:14px}
-
-/* LES TROIS PAPIERS — pliés dans le logo, puis dépliés */
-#tz-papers{display:flex;gap:8px;justify-content:center;align-items:stretch;width:100%;max-width:430px;margin:10px auto 0;
-  opacity:0;transform:translateY(-10px) scale(.94);pointer-events:none;transition:opacity .34s ease,transform .4s var(--ease)}
-#el-head.is-open #tz-papers{opacity:1;transform:none;pointer-events:auto}
-.pap{flex:1 1 0;min-height:86px;border:0;padding:14px 6px;cursor:pointer;color:#fff;font-weight:700;font-size:10px;
-  letter-spacing:.16em;text-transform:uppercase;-webkit-tap-highlight-color:transparent;
-  -webkit-mask-image:var(--perfo);mask-image:var(--perfo);-webkit-mask-size:100% 100%;mask-size:100% 100%;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;transition:filter .2s ease}
-.pap-s{background:var(--rep)}.pap-g{background:var(--navy)}.pap-v{background:var(--blue)}
-@media(hover:hover){.pap:hover{filter:brightness(1.18)}}
-.pap.is-here{filter:brightness(1.22)}
-.g3{display:flex;flex-direction:column;gap:4px;width:100%;max-height:0;opacity:0;overflow:hidden;transition:max-height .32s var(--ease),opacity .26s ease}
-#el-head.is-grind .pap-g .g3{max-height:96px;opacity:1}
-.g3 i{display:block;font-style:normal;font-size:8.5px;letter-spacing:.14em;padding:4px 2px;background:rgba(0,0,0,.34);color:#fff;transition:background-color .2s ease}
-@media(hover:hover){.g3 i:hover{background:rgba(0,0,0,.6)}}
-.g3 i.is-here{background:#000}
+@media(prefers-reduced-motion:reduce){.pap,#tz-logo,.g3,.pap-lab{transition:none!important}}
 
 /* 3 · NAME — l'élément en tête, le nom en Quantico Coral */
 .el-tile{width:100%;max-width:360px;background:var(--skin,#333366);color:#fff;padding:12px 16px 13px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
@@ -417,7 +450,7 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
       <div id="cl-facts"></div>
       <div id="cl-wear" class="cl-only hide"></div>
       <!-- LE TOTEHM lance la totehmisation : un tap, et il se décompose. -->
-      <button id="totehmize" class="cl-only" type="button" aria-label="Totehmize this cloth"><span class="tz-t">T</span></button>
+      <button id="totehmize" class="cl-only" type="button" aria-label="Totehmize this cloth"><svg class="lg" viewBox="0 0 100 100" aria-hidden="true"><rect class="lg-rail" x="27" y="20" width="46" height="3.4"/><text class="lg-t" x="50" y="58">T</text><text class="lg-tot" x="50" y="70">TOT</text><text class="lg-ehm" x="50" y="85">EHM</text></svg></button>
       <div class="cl-links cl-only"><button class="lnk" id="cl-more" type="button">details</button></div>
       <div id="cl-detail" class="cl-only"></div>
     </div>
@@ -428,20 +461,23 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
        box du TOTEHM se porte : my story, vision, objective, habit, repulsion. -->
   <section class="stage" id="s-element" data-s="element" aria-label="Choose an element of my TOTEHM">
     <div id="el-rail"></div>
-    <div id="el-head">
-      <button id="tz-home" type="button" aria-label="Fold my TOTEHM back"><span class="tz-t">T</span></button>
-      <div id="tz-seam" aria-hidden="true"></div>
+    <div id="el-head" class="is-logo">
       <div id="tz-papers" role="group" aria-label="My TOTEHM, unfolded">
-        <button class="pap pap-s" type="button" data-v="wisdom">my story</button>
-        <button class="pap pap-g" type="button" data-g="1">grind
+        <button class="pap pap-s" type="button" data-v="wisdom"><span class="pap-lab">my story</span></button>
+        <button class="pap pap-g" type="button" data-g="1">
+          <!-- LE LOGO : le fond perforé, le rail, le T, le mot. Le fond prend le
+               dessus, les trois autres fondent — et MY GRIND reste. -->
+          <svg id="tz-logo" class="lg" viewBox="0 0 100 100" aria-hidden="true"><rect class="lg-rail" x="27" y="20" width="46" height="3.4"/><text class="lg-t" x="50" y="58">T</text><text class="lg-tot" x="50" y="70">TOT</text><text class="lg-ehm" x="50" y="85">EHM</text></svg>
+          <span class="pap-lab">my grind</span>
           <span class="g3">
             <i data-v="objectives">objective</i>
             <i data-v="habits">habit</i>
             <i data-v="repulsions">repulsion</i>
           </span>
         </button>
-        <button class="pap pap-v" type="button" data-v="visions">vision</button>
+        <button class="pap pap-v" type="button" data-v="visions"><span class="pap-lab">vision</span></button>
       </div>
+      <div id="tz-seam" aria-hidden="true"></div>
       <div id="el-sub"></div>
     </div>
     <div id="el-list"></div>
@@ -513,10 +549,7 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
   <button class="btn-back" id="pass-x" type="button">back</button>
 </div>
 
-<!-- 23/10 : « How it works » retiré — la totehmisation se raconte toute seule. --><div class="slide-cap">Swipe the cloths, turn them: a limited edition, made to order.</div></div>
-  <div class="slide"><div class="slide-title">2 · Pick one element of your TOTEHM.</div><div class="slide-cap">Your story — what you pass on. A cloth speaks to others. It becomes an original artwork, in a curated style.</div></div>
-  <div class="slide"><div class="slide-title">3 · Name it.</div><div class="slide-cap">0.name is printed with the artwork. Decoded on higher.boutique, it reveals the element behind the cloth — and the artwork, once it has landed.</div></div>
-</div>
+<!-- 23/10 : « How it works » retiré — la totehmisation se raconte toute seule. -->
 
 <script type="module">
 import{createClient}from'https://esm.sh/@supabase/supabase-js@2';
@@ -669,7 +702,7 @@ function note(id,cls,txt){const n=$(id);n.className='note '+cls;n.textContent=tx
 /* Le diagnostic — des booléens et des compteurs, jamais le texte d'un élément.
    Dans la console : __totehm_cloth() */
 window.__totehm_cloth=()=>({build:BUILD,ready:READY,stage,side:document.body.dataset.side||'none',desktop:desktop(),signed_in:!!me,supports:supports.length,model:ci,angles:imgs(cur()).length,angle:ai,
-  papers:$('el-head').classList.contains('is-open'),grind:$('el-head').classList.contains('is-grind'),
+  papers:$('el-head').classList.contains('is-split'),melt:$('el-head').classList.contains('is-melt'),grind:$('el-head').classList.contains('is-grind'),
   views:TOT?Object.values(TOT).filter(a=>a.length).length:0,view:vue,open:!!OPEN,seam:$('tz-seam').querySelectorAll('i.is-on').length,
   element:F.el?F.el.kind:null,wanted:!!F.want,named:F.nameOk,style:!!F.style,size:!!F.size,test:TEST,zone:!!$('vw-zone').firstChild});
 
@@ -876,7 +909,7 @@ async function ensureTotehm(){
   return !!TOT;
 }
 async function toElement(){
-  if(GOING)return;GOING=true;const b=$('totehmize');b.disabled=true;b.textContent='opening…';
+  if(GOING)return;GOING=true;const b=$('totehmize');b.disabled=true;b.classList.add('is-busy');
   try{
     if(!await ensureTotehm())return;
     /* Un élément déjà choisi (arrivé de COM, ou repris) rouvre SA vue ; sinon le
@@ -884,7 +917,7 @@ async function toElement(){
     if(!applyWant()&&F.el)vue=F.el.view;else if(!F.el)vue=null;
     openTz();renderEl();
     if(F.el){history.pushState({s:'element'},'');HIST.push('element');show('name');}else show('element');
-  }finally{GOING=false;paintCloth();}
+  }finally{GOING=false;$('totehmize').classList.remove('is-busy');paintCloth();}
 }
 $('pass-x').onclick=()=>$('pass').classList.remove('is-open');
 $('pass-go').onclick=()=>ssoVersDomaine(sb,'com','https://www.totehm.com/totehm#in');
@@ -957,13 +990,12 @@ function paintSeam(l){
 function renderEl(dir){
   OPEN=null;MT_SEQ++;
   const head=$('el-head'),list=$('el-list');
-  head.classList.toggle('is-grind',GRIND.includes(vue));
+  if(GRIND.includes(vue))head.classList.add('is-grind');
   $('tz-papers').querySelectorAll('[data-v]').forEach(b=>b.classList.toggle('is-here',b.dataset.v===vue));
   if(!vue){
-    $('s-element').style.setProperty('--paper','#141428');
-    $('el-sub').textContent='tap a view';list.innerHTML='';paintSeam();return;
+  
+    $('el-sub').textContent='';list.innerHTML='';paintSeam();return;
   }
-  $('s-element').style.setProperty('--paper',PAPER[vue]);
   $('el-sub').textContent=NOM[vue][0]+' · '+NOM[vue][1];
   const l=(TOT&&TOT[vue])||[];
   list.innerHTML=l.length?l.map((o,k)=>boxHTML(o,k)).join(''):'<div class="v-empty">nothing written here yet<button class="lnk" id="el-write" type="button">write it on totehm.com</button></div>';
@@ -974,19 +1006,30 @@ function renderEl(dir){
   list.scrollTop=0;
   paintSeam(l.flatMap(o=>o.is||[]));
 }
-/* LE TOTEHM SE DÉCOMPOSE — un tap sur le logo ouvre les trois papiers, un tap
-   sur GRIND ouvre ses trois boutons dans son navy, un tap sur une vue donne ses
-   boxes ; le logo les replie. Aucune @keyframes : tout est en transition. */
-function openTz(){$('el-head').classList.add('is-open');}
-function foldTz(){$('el-head').classList.remove('is-open','is-grind');vue=null;renderEl();}
-$('tz-home').onclick=()=>{
-  if($('el-head').classList.contains('is-open'))foldTz();
-  else openTz();
-};
+/* LA DÉCOMPOSITION — le logo arrive entier, son FOND prend le dessus pendant que
+   le rail, le T et le mot fondent, puis deux fonds glissent aux extrémités. On
+   rejoue la séquence à chaque entrée dans la scène : on revient toujours au logo. */
+let TZ1=null,TZ2=null;
+const douce=()=>matchMedia('(prefers-reduced-motion:reduce)').matches;
+function openTz(){
+  const h=$('el-head'),lg=$('tz-logo');clearTimeout(TZ1);clearTimeout(TZ2);
+  /* Le logo se REPOSE d'un coup (sans transition) : on ne voit jamais un retour
+     en fondu, seulement le départ. */
+  lg.style.transition='none';
+  h.classList.remove('is-melt','is-split','is-grind');h.classList.add('is-logo');
+  void h.offsetWidth;lg.style.transition='';
+  if(douce()){h.classList.remove('is-logo');h.classList.add('is-melt','is-split');return;}
+  void h.offsetWidth;
+  TZ1=setTimeout(()=>h.classList.add('is-melt'),90);
+  TZ2=setTimeout(()=>{h.classList.add('is-split');h.classList.remove('is-logo');},430);
+}
+function foldTz(){clearTimeout(TZ1);clearTimeout(TZ2);$('el-head').classList.remove('is-melt','is-split','is-grind');vue=null;renderEl();}
 $('tz-papers').addEventListener('click',e=>{
+  const h=$('el-head');
+  if(!h.classList.contains('is-split'))return;      /* la décomposition d'abord */
   const v=e.target.closest('[data-v]');
   if(v&&VIEWS[v.dataset.v]){if(v.dataset.v!==vue){vue=v.dataset.v;renderEl('in');}return;}
-  if(e.target.closest('.pap-g'))$('el-head').classList.toggle('is-grind');
+  if(e.target.closest('.pap-g'))h.classList.toggle('is-grind');
 });
 /* Le doigt glisse sur la liste : elle défile, nativement. Plus de manette ici. */
 /* LA MATIÈRE — ce qui est relié à l'élément dans le Totehm,
@@ -1263,7 +1306,7 @@ async function showDone(id){
     const parentButton = scope.closest(buttonSelector);
     const buttons = [...(parentButton ? [parentButton] : []),...scope.querySelectorAll(buttonSelector)];
     buttons.forEach(b => {
-      if (b.closest('#joy,#nav,#cross,.pieces,#totehm-paper,.eco-sheet') || b.matches('.pick-habit,.h-T,.h-Ti,.h-x,.w-x,.cur,.eco-box-zoom,.mini-toggle,.rk-a')) return;
+      if (b.closest('#joy,#nav,#cross,.pieces,#totehm-paper,#tz-papers,.eco-sheet') || b.matches('.pick-habit,.h-T,.h-Ti,.h-x,.w-x,.cur,#totehmize,.eco-box-zoom,.mini-toggle,.rk-a')) return;
       const text = b.textContent.trim(); if (!text || /^[×+−\-↑↓←→↔↕✕✖?°\d\s]+$/.test(text)) return;
       if (/^sign\s*in\b/i.test(text)) {
         const leaf = b.querySelector('#member-txt,#conn-txt') || b;
