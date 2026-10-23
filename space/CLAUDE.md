@@ -14,7 +14,7 @@ La porte TotehmPaper montre de nombreux papiers originaux perforés suspendus ; 
 | `gallery-temple.mjs` | pierre PBR, 8 colonnes libres à 24 flûtes, trois portes plus hautes que les colonnes |
 | `gallery-temple-layout.mjs` · `gallery-temple-physics.mjs` | dimensions partagées, saut balistique, collisions, réception et chute des colonnes |
 | `gallery-temple-landscape.mjs` | seul piton émergé, lune, pierre éclairée et environnement nocturne préfiltré |
-| `gallery-drowned-ocean.mjs` | océan radial 3D à 360°, trois houles asymétriques, reflets du ciel, écume filtrée et embruns |
+| `gallery-drowned-ocean.mjs` | océan 3D à 360°, houles croisées, matière marine éclairée, normales spectrales et écume cellulaire |
 | `gallery-drowned-sky.mjs` | ciel généré localement, Voie lactée/poussières, étoiles, lune et rare étoile filante |
 | `gallery-temple-assets.mjs` · `assets/temple/` | 9 textures de pierre PBR 1k chargées ; sources CC0 dans LICENSE.txt |
 | `gallery-audio.mjs` · `gallery-lisbon.mjs` | vent/mer stéréo synthétisés, grave des portes et souffle Web Audio ; aperçu des vrais panneaux |
@@ -22,11 +22,13 @@ La porte TotehmPaper montre de nombreux papiers originaux perforés suspendus ; 
 | `origins.html` · `play_lisbon_street.html` | Origins et Lisbon autonomes, leurs lecteurs/manette/médias originaux |
 | `market.html` | marketplace complète : achats primaires, revente, propriétaires, provenance et ma collection |
 | `social.html` · `api/card.js` | lecteur ouvert par COM `/x/space` · aperçu `/s/:id` |
+| `assets/ocean/` | deux cartes originales 1024² : normales Fourier et écume cellulaire, données linéaires avec mipmaps ; provenance dans LICENSE.txt |
 | `vendor/` · `assets/` | Three.js/HLS, textures de pierre et vrais médias |
 
 - Nuit permanente à toute heure. Environnement PMREM issu du vrai ciel procédural, sans téléchargement de panorama/HDR.
-- Océan à −112 m, crêtes bornées sous −10,88 m, calme à 135 m du piton ; aucun autre sol émergé. Astres/eau/embruns figés en mouvement réduit.
-- Eau détaillée sur 24 km de diamètre : 147 456 triangles ordinateur / 61 440 téléphone, 2 400 / 1 000 points d’embruns ; détails filtrés jusqu’à 900 m, ciel emprunté sans texture externe.
+- Océan à −96 m, crêtes bornées sous −12,62 m, calme à 110 m du piton ; aucun autre sol émergé. Astres/eau/embruns figés en mouvement réduit.
+- Eau détaillée sur 24 km de diamètre : 327 680 triangles ordinateur / 172 032 téléphone, 2 400 / 1 000 points d’embruns ; maillage rapproché régulier puis logarithmique sans rupture, détails filtrés jusqu’à 1 800 m.
+- Deux flux de normales en repère tangent, lumière marine et reflet lunaire ; mousse de rupture et nappes advectées. Sans cartes, secours procédural ; aucun appel externe.
 - Colonnes à 9,52 m ; arches à 12,024 m avec leurs biseaux, ouvertures de 4,5 × 10,725 m. Aucun entablement ni fronton.
 - Terrasse libre hors des vraies pierres ; aucune collision des anciens bacs. Portes en x=−9/0/9, z=−12 ; limites de plateforme conservées.
 - Espace ou bouton Jump : saut de 16 m/s, gravité 12 m/s², réception sur les huit chapiteaux ; pas de double saut ni vol.
@@ -38,4 +40,4 @@ La porte TotehmPaper montre de nombreux papiers originaux perforés suspendus ; 
 - Le marché reste autonome, y compris après Stripe. Prix, stock et accès du serveur, propriété au webhook ; aucun changement SQL/Edge/tarif.
 - Menu Market et My collection, offres de chaque porte et cartes des vingt Origins conservent leurs routes absolues existantes.
 
-Tests : `tests/browser/gallery_temple_restored.mjs`, `gallery_audio.mjs`, `market.mjs`, `tests/node/temple_navigation.mjs`, `temple_physics.mjs`.
+Tests : `tests/browser/gallery_ocean.mjs`, `gallery_temple_restored.mjs`, `gallery_audio.mjs`, `market.mjs`, `tests/node/temple_navigation.mjs`, `temple_physics.mjs`.

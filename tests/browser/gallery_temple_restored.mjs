@@ -88,6 +88,7 @@ async function fixture(viewport,{hour=12,noWebGL=false}={}){
 async function loaded(pg){
  await pg.waitForFunction(()=>{const d=window.__totehm_gallery?.();return d?.webgl&&d.frames>0&&d.temple?.portals?.length===3;},null,{timeout:90000});
  await pg.waitForFunction(()=>{const d=__totehm_gallery();return d.temple.stoneMapsLoaded>=9&&d.temple.paperPortal?.loaded&&d.landscape.skyLoaded&&d.landscape.environmentLoaded;},null,{timeout:60000});
+ await pg.waitForFunction(()=>__totehm_gallery().landscape.ocean.detailMapsLoaded===2,null,{timeout:60000});
  await pg.waitForTimeout(300);return state(pg);
 }
 async function settled(pg){
@@ -148,7 +149,7 @@ try{
   const f=await fixture(viewport),{pg,ctx,log,requests}=f,sample={viewport,kind:'night-at-noon'};results.push(sample);const suffix=' at '+viewport.width;
   try{
    await pg.goto(origin+'/');sample.initial=await loaded(pg);
-   check(sample.initial.build==='2026-10-22-space-storm-jump'&&sample.initial.zone==='temple'&&!sample.initial.fallback,'the storm-and-jump temple opens in a real 3D scene'+suffix);
+   check(sample.initial.build==='2026-10-23-space-luminous-sea'&&sample.initial.zone==='temple'&&!sample.initial.fallback,'the luminous-sea temple opens in a real 3D scene'+suffix);
    check(dayOf(sample.initial)===false&&sample.initial.landscape.permanentNight&&sample.initial.temple.portals.length===3,'the drowned world stays nocturnal at local noon with three antique portals'+suffix);
    check(sample.initial.landscape.sky.milkyWay&&sample.initial.landscape.sky.stars>5000&&sample.initial.landscape.sky.moon,'the sky contains a Milky Way, thousands of stars and a moon'+suffix);
    check(sample.initial.landscape.ocean.displacedGeometry&&sample.initial.landscape.ocean.swells>=2&&sample.initial.landscape.ocean.crestUpperBound<0&&sample.initial.landscape.ocean.baseHeight<sample.initial.landscape.ocean.crestUpperBound,'monumental displaced swells remain below the last summit'+suffix);
@@ -164,6 +165,7 @@ try{
    await pg.waitForFunction(()=>__templeNative.imageSources.filter(src=>src.includes('/assets/temple/')).length>=2,null,{timeout:45000});
    sample.nativeTextures=await pg.evaluate(()=>({contexts:__templeNative.contexts,draws:__templeNative.draws,uploads:__templeNative.textureUploads,sources:__templeNative.imageSources,instancedCounts:__templeNative.instancedCounts,canvasUploads:__templeNative.canvasUploads,pointCounts:__templeNative.pointCounts,timeUniforms:__templeNative.timeUniforms,oceanPrograms:__templeNative.oceanPrograms,oceanDraws:__templeNative.oceanDraws,oceanGeometryCounts:__templeNative.oceanGeometryCounts,vegetationShader:__templeNative.vegetationShader}));
    check(sample.nativeTextures.contexts===1&&sample.nativeTextures.draws>0&&sample.nativeTextures.uploads>=2,'real temple image textures reach the native GPU'+suffix);
+   check(sample.initial.landscape.ocean.detailMapsLoaded===2&&sample.initial.landscape.ocean.detailMapFailures===0&&sample.nativeTextures.sources.filter(src=>src.includes('/assets/ocean/')).length===2,'both local spectral water textures are loaded and uploaded to the native GPU'+suffix);
    check(sample.nativeTextures.canvasUploads.some(c=>c.width===sample.initial.landscape.sky.textureSize[0]&&c.height===sample.initial.landscape.sky.textureSize[1])&&sample.nativeTextures.pointCounts.includes(sample.initial.landscape.sky.stars),'the actual celestial canvas and star points reach native GPU uploads and draws'+suffix);
    check(!sample.nativeTextures.vegetationShader&&!sample.nativeTextures.instancedCounts.includes(viewport.width<650?5760:11520),'the removed foliage is absent from native shaders and instanced draws'+suffix);
    check(sample.nativeTextures.oceanPrograms>0&&sample.nativeTextures.oceanDraws>0&&sample.nativeTextures.oceanGeometryCounts.some(count=>count>10000),'the displaced ocean is linked and drawn as real high-resolution native geometry'+suffix);
