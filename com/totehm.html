@@ -2992,6 +2992,8 @@ body.is-xo{overflow:hidden}
 
 
 
+
+
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille
    elle-même : un nouveau bloc gris entre ici tout seul.        */
@@ -3141,6 +3143,11 @@ body.is-xo{overflow:hidden}
 body.lv-h:not(.is-door):not(.entered) #gate-mouth{opacity:1;visibility:visible;transition:opacity .35s ease}
 #lv{position:fixed;inset:0;z-index:5;pointer-events:none}
 body:not(.gate) #lv,body.entered #lv,body.is-door #lv{display:none}
+/* ⚠️ 23/10 — LE REPLI EST LE DÉPLOIEMENT À L'ENVERS : au départ, l'atterrissage (légende, MINE/MEMBERS, badge, manette)
+   disparaît d'un coup ; au retour il ne revient qu'une fois le papier posé (fin de `folding`), en fondu — jamais par-dessus
+   le papier encore grand. Les traits et la boîte (`#lv-ram`, `#lv-proc`) sont hors de `#lv` : ils rentrent avec lui. */
+body.folding #lv{opacity:0}
+#lv{transition:opacity .35s ease}
 .lv-pane{position:absolute;inset:0;opacity:0;visibility:hidden;
   transition:opacity .4s ease,transform .55s var(--gate-ease),visibility 0s linear .55s}
 #lv-h{transform:translateY(-22px)}#lv-b{transform:translateY(22px)}
@@ -7411,7 +7418,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-10-22-com-miroir';
+const BUILD='2026-10-23-com-repli';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -11387,9 +11394,13 @@ window.addEventListener('pageshow',e=>{
     moving=true;
     clearTimeout(timer);
 
+    /* ⚠️ 23/10 — LE DÉPLOIEMENT À L'ENVERS, JUSQU'AU FONDU : à l'ouverture, le portail (le papier déployé, vide, couleur de
+       l'app) s'efface sur le TOTEHM ouvert (`gate-off`). Au repli, il revient INVISIBLE, en fondu par-dessus le contenu
+       (FONDU), PUIS le papier rentre. Avant, le contenu disparaissait d'un coup. FONDU + DUR + 120 < 1,5 s (`guetter`). */
+    const FONDU=260;
     gate.classList.add('no-anim');        /* 1. rien ne bouge              */
-    gate.classList.remove('gate-off');
-    body.classList.add('gate','folding'); /* 2. le gate au repos, opaque,  */
+    gate.classList.add('gate-off');       /*    le portail, invisible      */
+    body.classList.add('gate','folding'); /* 2. le gate au repos,          */
                                           /*    et il NE DÉFILE PAS        */
     gate.scrollTop=0;                     /*    on mesure toujours du haut */
     void gate.offsetWidth;
@@ -11399,10 +11410,12 @@ window.addEventListener('pageshow',e=>{
     void gate.offsetWidth;
     gate.classList.remove('no-anim');     /* 5. transitions rendues        */
     void gate.offsetWidth;
-    body.classList.remove('entered');     /* 6. et le repli part           */
-    try{ LV.replier(2); }catch(err){ console.error('[repli]',err); }   /* … et ils rentrent avec lui */
+    gate.classList.remove('gate-off');    /* 6. le portail revient en fondu sur le TOTEHM ouvert */
 
     open=false;
+    timer=setTimeout(()=>{
+    body.classList.remove('entered');     /* 7. et le repli part           */
+    try{ LV.replier(2); }catch(err){ console.error('[repli]',err); }   /* … et ils rentrent avec lui */
     timer=setTimeout(()=>{
       body.classList.remove('folding');   /* le défilement redevient normal */
       moving=false;
@@ -11413,6 +11426,7 @@ window.addEventListener('pageshow',e=>{
          l'écosystème, mais cette fois ce n'est plus le nôtre »). On ne le quitte que par MINE (ou « back to mine »). */
       if(roSortir){ roSortir=false; LV.choisirMode('mine'); }
     },DUR+120);
+    },FONDU);
   }
 
   /* Le reste du script replie par ici. */
@@ -11749,7 +11763,7 @@ window.addEventListener('pageshow',e=>{
        reproduit : Wah, « après Members → Mine, les mouvements ne fonctionnent plus »). */
     diag.refus={}; diag.dernier='';
     let diagEl=null;
-    const pasLibre=()=>!body.classList.contains('gate')?'ouvert':body.classList.contains('entered')?'deploie':body.classList.contains('is-door')?'porte'
+    const pasLibre=()=>!body.classList.contains('gate')?'ouvert':body.classList.contains('entered')&&!body.classList.contains('folding')?'deploie':body.classList.contains('is-door')?'porte'
       :sOpen?'verso':sMoving?'verso-bouge':$('member-window').classList.contains('show')?'espace-membre':body.classList.contains('is-xo')?'couche'
       :body.classList.contains('is-tlv')?'visionneuse':'?';
     const quiOccupe=()=>bouge?'voyage':moving?'repli':sMoving?'verso':'papier-'+PAPIER.quoi();
@@ -12023,7 +12037,8 @@ window.addEventListener('pageshow',e=>{
 
     /* ── LES GESTES : flèches ↑ ↓ et Échap, trackpad et molette, doigt, deux chevrons — sur tout l'atterrissage,
        jamais pendant mes réglages, la porte, l'espace membre ou une couche. ── */
-    const libre=()=>body.classList.contains('gate')&&!body.classList.contains('entered')&&!body.classList.contains('is-door')
+    /* `entered` + `folding` = le fondu du début du repli (23/10) : c'est un mouvement, le geste attend (`guetter`), il n'est pas refusé. */
+    const libre=()=>body.classList.contains('gate')&&(!body.classList.contains('entered')||body.classList.contains('folding'))&&!body.classList.contains('is-door')
       &&!sOpen&&!sMoving&&!$('member-window').classList.contains('show')&&!body.classList.contains('is-xo')
       &&!body.classList.contains('is-tlv');
     const saisie=t=>!!(t&&(t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.tagName==='SELECT'||t.isContentEditable));
@@ -12950,14 +12965,19 @@ window.addEventListener('pageshow',e=>{
     const diagD={deploiements:0, replis:0, images:0};
     /* Mesuré AU REPOS (le portail à plat) : la boîte au repos `A` et déployée `B`, en px de `#lv-proc` (centre, côté `S`,
        largeur du papier `w`) ; `x`/`y` : le centre déployé à l'écran, pour les traits. */
+    /* ⚠️ 23/10 — LE REPOS SE MESURE SANS LA TAILLE POSÉE : après un déploiement, la boîte garde sa taille déployée (inline)
+       derrière le portail fermé. La lire comme « repos » faisait un repli faux (ordinateur : la boîte restait à 684 px et
+       glissait, puis sautait à 143 ; téléphone : 28 000 px, traits figés hors champ). On l'efface AVANT de mesurer
+       (même image : rien ne se voit), l'appelant repose sa géométrie juste après. */
     function cibleDeploiement(){
+      if(sock.classList.contains('is-geo')){ cancelAnimationFrame(geoRaf); geoRaf=0; geoRendue(); }
       const st=$('stage'), r=st&&st.getBoundingClientRect(), o=$('lv-proc').getBoundingClientRect(), pc=PAPIER.chez()||{w:110};
       const sk=sock.offsetWidth||143, f=(sock.getBoundingClientRect().width/sk)||1, w0=(pc.w||110)/f;
-      const A={x:0, y:0, S:sk, w:w0};
+      const A={x:0, y:0, S:sk, w:w0}, R={x:pc.x, y:pc.y, w:pc.w, S:sk*f};   /* `R` : le repos à l'écran, pour les traits */
       if(r&&r.width>40&&r.height>40){ const S=Math.max(r.width,r.height)+2*MARGE, x=r.left+r.width/2, y=r.top+r.height/2;
-        return {ordi:true, x, y, S, A, B:{x:(x-o.left)/f, y:(y-o.top)/f, S:S/f, w:r.width/f}}; }
+        return {ordi:true, x, y, S, A, R, B:{x:(x-o.left)/f, y:(y-o.top)/f, S:S/f, w:r.width/f}}; }
       const k=Math.max(8,+getComputedStyle(document.documentElement).getPropertyValue('--gate-bg-scale')||12);
-      return {ordi:false, x:o.left, y:o.top, S:sk*k*f, A, B:{x:0, y:0, S:sk*k, w:w0*k}};
+      return {ordi:false, x:o.left, y:o.top, S:sk*k*f, A, R, B:{x:0, y:0, S:sk*k, w:w0*k}};
     }
     /* La boîte à sa vraie taille (jamais `scale`) : le puits noir à 3 px du papier, l'arête et le coin intacts. */
     const puits=sock.querySelector('.sk-well');
@@ -12990,12 +13010,14 @@ window.addEventListener('pageshow',e=>{
     }
     function replier(phase){
       if(phase===1){ repli=cibleDeploiement(); diagD.replis++;
-        document.body.classList.remove('proc-ouvert');
         cancelAnimationFrame(geoRaf); sock.classList.add('is-geo'); geo(repli.B);
         RAM.peindre('c',{papier:{x:repli.x, y:repli.y}, socle:repli.S}); return; }
       const T=repli||cibleDeploiement(); repli=null;
+      document.body.classList.remove('proc-ouvert');   /* la boîte fixe de l'app cède sa place à la nôtre, au même pixel */
       grandir(T.B,T.A,geoRendue);
-      RAM.peindre('c',{anime:true, ms:DEP_MS, ease:BEZ, suivre:$('gl-bg')});
+      /* ⚠️ 23/10 — les traits rentrent vers le REPOS mesuré au repos (`R`), jamais vers le papier lu pendant le repli
+         (il est encore déployé à cette image) : sinon ils visaient le déploiement, sortaient du champ, puis sautaient. */
+      RAM.peindre('c',{anime:true, ms:DEP_MS, ease:BEZ, papier:{x:T.R.x, y:T.R.y, w:T.R.w}, socle:T.R.S, suivre:$('gl-bg')});
     }
     /* Le TOTEHM ouvert sur ordinateur : la boîte et ses traits, FIXES, autour de `#stage`. */
     function posApp(){

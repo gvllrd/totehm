@@ -62,12 +62,39 @@ try{
       traits:document.querySelectorAll('#app-ram > g').length};});
   if(ordi) ok(o.ouvert&&o.vis==='visible'&&o.m.every(v=>Math.abs(v-22)<=1)&&o.pins===14&&o.traits===7&&o.tr==='none'&&Math.abs(parseFloat(o.puits)-19)<=1,'ordinateur · ouvert : la boîte (22 px autour du TOTEHM) et ses 7 traits branchés restent → '+JSON.stringify(o));
   else ok(!o.ouvert&&o.vis==='hidden','téléphone · ouvert : rien de plus que le TOTEHM d\'avant (la boîte et les traits sont sortis du champ)');
-  /* le repli */
-  await pg.evaluate(()=>document.getElementById('fold-x').click());
-  await pg.waitForFunction(()=>document.body.classList.contains('gate')&&!document.body.classList.contains('folding'),null,{timeout:6000}).catch(()=>{});await pg.waitForTimeout(600);
-  const r=await branche(pg), ret=await pg.evaluate(()=>({ouvert:document.body.classList.contains('proc-ouvert'),d:window.__totehm_deploiement()}));
-  ok(Math.abs(r.s.t-b.s.t)<1&&r.pins.length===14&&r.dep.every(d=>Math.abs(d[0][1]-r.s.t)<1.5)&&!ret.ouvert&&ret.d.deploiements===1&&ret.d.replis===1,
-     nom+' · le repli rend la boîte et ses traits à leur place → '+JSON.stringify(ret.d));
+  /* le repli — 23/10 : LE DÉPLOIEMENT À L'ENVERS, image par image, sur deux cycles (Wah : « le mouvement inverse ne
+     fonctionne pas »). Avant : le repli prenait la taille DÉPLOYÉE de la boîte pour son repos (ordinateur : 684 px qui
+     glissaient puis sautaient à 143 ; téléphone : 28 000 px, traits figés hors champ), et l'atterrissage (légende,
+     MINE/MEMBERS, manette) réapparaissait par-dessus le papier encore grand. */
+  for(const tour of [1,2]){
+   if(tour===2){ await pg.click('#lv-tap-open');await pg.waitForFunction(()=>!document.body.classList.contains('gate'),null,{timeout:6000}).catch(()=>{});await pg.waitForTimeout(400); }
+   await pg.evaluate(()=>{ window.__rep=[]; const s=document.getElementById('lv-socket'), w=s.querySelector('.sk-well'), bg=document.getElementById('gl-bg'), lv=document.getElementById('lv'), t0=performance.now();
+     const ob=new MutationObserver(()=>{ if(performance.now()-t0>1500) return ob.disconnect(); if(!s.classList.contains('is-geo')) return;
+       const a=w.getBoundingClientRect(), c=bg.getBoundingClientRect(), r=s.getBoundingClientRect();
+       window.__rep.push({g:Math.max(Math.abs(c.left-a.left-3),Math.abs(a.right-c.right-3),Math.abs(c.top-a.top-3)), S:r.width, top:r.top, lv:+getComputedStyle(lv).opacity}); });
+     ob.observe(w,{attributes:true,attributeFilter:['style']});
+     window.__traits=[]; const svg=document.getElementById('lv-ram');
+     const ob2=new MutationObserver(()=>{ if(performance.now()-t0>1500) return ob2.disconnect(); const p=svg.querySelector('g path'), m=p&&(p.getAttribute('d')||'').match(/M\s*([-\d.]+)\s+([-\d.]+)/);
+       if(m&&document.body.classList.contains('folding')) window.__traits.push(Math.abs(+m[2]-s.getBoundingClientRect().top)); });
+     ob2.observe(svg,{subtree:true,attributes:true,attributeFilter:['d']});
+     window.__fondu=[]; const gt=document.getElementById('gate'); const f=()=>{ const t=performance.now()-t0; if(t>1500) return;
+       window.__fondu.push({t, o:+getComputedStyle(gt).opacity, w:bg.getBoundingClientRect().width}); requestAnimationFrame(f); }; requestAnimationFrame(f); });
+   await pg.evaluate(()=>document.getElementById('fold-x').click());
+   await pg.waitForFunction(()=>document.body.classList.contains('gate')&&!document.body.classList.contains('folding'),null,{timeout:6000}).catch(()=>{});
+   const lvFin=await pg.evaluate(()=>+getComputedStyle(document.getElementById('lv')).opacity);await pg.waitForTimeout(600);
+   const rp=await pg.evaluate(()=>window.__rep), tr=await pg.evaluate(()=>window.__traits);
+   const fo=await pg.evaluate(()=>window.__fondu), w1=fo[0]&&fo[0].w, avant=fo.filter(x=>x.o<0.9);
+   ok(fo.length>10&&fo[0].o<0.5&&avant.length>=3&&avant.every(x=>Math.abs(x.w-w1)<0.5)&&fo[fo.length-1].o===1&&fo[fo.length-1].w<w1/3,
+      nom+' · repli '+tour+' : comme le déploiement à l\'envers, le portail revient d\'abord en FONDU sur le TOTEHM ouvert ('+avant.length+' images), puis le papier rentre');
+   const Ss=rp.map(x=>x.S), descend=Ss.every((v,i)=>!i||v<=Ss[i-1]+0.01);
+   ok(rp.length>20&&descend&&Ss[0]>w0*3&&Math.abs(Ss[Ss.length-1]-w0)<0.5&&Math.max(...rp.map(x=>x.g))<=0.5,
+      nom+' · repli '+tour+' : la boîte RÉTRÉCIT avec le papier, de '+Math.round(Ss[0])+' à '+Math.round(Ss[Ss.length-1])+' px, sans saut, le puits à 3 px ('+rp.length+' images, écart max '+Math.max(...rp.map(x=>x.g)).toFixed(2)+' px)');
+   ok(tr.length>20&&Math.max(...tr)<=1.5,nom+' · repli '+tour+' : les traits restent branchés sur la boîte qui rentre ('+tr.length+' images, écart max '+Math.max(...tr).toFixed(1)+' px)');
+   ok(rp.every(x=>x.lv===0)&&lvFin<1,nom+' · repli '+tour+' : l\'atterrissage (légende, MINE/MEMBERS, manette) attend que le papier soit posé, puis revient en fondu');
+   const r=await branche(pg), ret=await pg.evaluate(()=>({ouvert:document.body.classList.contains('proc-ouvert'),d:window.__totehm_deploiement(),lv:+getComputedStyle(document.getElementById('lv')).opacity}));
+   ok(Math.abs(r.s.t-b.s.t)<1&&r.pins.length===14&&r.dep.every(d=>Math.abs(d[0][1]-r.s.t)<1.5)&&!ret.ouvert&&ret.d.deploiements===tour&&ret.d.replis===tour&&ret.lv===1,
+      nom+' · repli '+tour+' : la boîte et ses traits à leur place, l\'atterrissage revenu → '+JSON.stringify(ret.d));
+  }
   /* ── 3 · ↓ l'anneau ── */
   const m0=(await pg.evaluate(()=>window.__totehm_lv().ramifications.morphs));
   await pg.keyboard.press('ArrowDown');

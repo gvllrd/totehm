@@ -134,9 +134,11 @@ try{
   await pg.click('#lv-tap-open');await pg.waitForFunction(()=>!document.body.classList.contains('gate'),null,{timeout:6000}).catch(()=>{});await pg.waitForTimeout(500);
   const a0=(await lv(pg)).enAttente;
   await pg.evaluate(()=>document.getElementById('fold-x').click());await pg.waitForTimeout(delai);
-  await tire(0,22);await pg.waitForTimeout(1900);
+  /* 23/10 : la manette est cachée pendant le fondu du repli (comme au déploiement) : à 200 ms, le geste vient du clavier. */
+  if(delai===200) await pg.keyboard.press('ArrowDown'); else await tire(0,22);
+  await pg.waitForTimeout(1900);
   const d=await lv(pg);
-  ok(d.vue==='b'&&d.enAttente===a0+1,'22/10 · un geste de manette '+delai+' ms après la croix (le TOTEHM se replie encore) attend la fin du repli, puis part → '+d.vue);
+  ok(d.vue==='b'&&d.enAttente===a0+1,'22/10 · un geste ('+(delai===200?'clavier':'manette')+') '+delai+' ms après la croix (le TOTEHM se replie encore) attend la fin du repli, puis part → '+d.vue);
   ok(!erreurs(log).length,'repli + manette : aucune erreur '+erreurs(log).join(' | '));
   await ctx.close();}
 
