@@ -54,13 +54,17 @@ await pg.waitForTimeout(80);
 
 // ── 1 · CLOTH (téléphone)
 let d = await D();
-ok(d.build === '2026-10-23-any-box' && d.stage === 'cloth' && !d.papers && !d.desktop, 'phone: CLOTH first, the TOTEHM still folded');
-ok(/Higher Champion Sweatshirt/.test(await pg.textContent('#cl-title')) && /177 \/ 177 left/.test(await pg.textContent('#cl-facts')), 'the title and what is left');
+ok(d.build === '2026-10-24-my-boxes' && d.stage === 'cloth' && !d.papers && !d.desktop, 'phone: CLOTH first, the TOTEHM still folded');
+const rest = await pg.evaluate(() => { const b = document.querySelector('#cl-facts .left b'); const s = getComputedStyle(b);
+  return { n: b.textContent.trim(), px: Math.round(parseFloat(s.fontSize)), col: s.color, txt: document.querySelector('#cl-facts').textContent }; });
+ok(/Higher Champion Sweatshirt/.test(await pg.textContent('#cl-title')) && rest.n === '177' && /of 177/.test(rest.txt) && /pieces left/.test(rest.txt),
+  'the title and what is left');
+ok(rest.px >= 22 && /251, 213, 202/.test(rest.col), 'what is left is READ FIRST: a big coral number ' + rest.px + 'px');
 ok(!/€|S · M · L/.test(await pg.textContent('#cl-facts')) && !(await pg.$('#cl-hint')) && !(await pg.$('#concept-btn')) && !(await pg.$('#conn-bar')) && !(await pg.$('#back')),
   'no price, no sizes, no hint, no « how it works », no member corner, no Back');
 const lay = await pg.evaluate(() => { const v = document.querySelector('#viewer').getBoundingClientRect(), b = document.querySelector('#totehmize').getBoundingClientRect();
-  return { centre: Math.abs((v.left + v.right) / 2 - innerWidth / 2), ctr: Math.abs((b.left + b.right) / 2 - innerWidth / 2), scroll: document.documentElement.scrollWidth - innerWidth, bottom: b.bottom <= innerHeight }; });
-ok(lay.centre < 2 && lay.ctr < 2 && lay.scroll <= 0 && lay.bottom, 'the cloth and TOTEHMIZE are centered, on one screen (' + lay.centre.toFixed(1) + ' px)');
+  return { centre: Math.abs((v.left + v.right) / 2 - innerWidth / 2), ctr: Math.abs((b.left + b.right) / 2 - innerWidth / 2), scroll: document.documentElement.scrollWidth - innerWidth, over: Math.round(b.bottom - innerHeight) }; });
+ok(lay.centre < 2 && lay.ctr < 2 && lay.scroll <= 0 && lay.over <= 0, 'the cloth and TOTEHMIZE are centered, on one screen (' + lay.centre.toFixed(1) + ' px, ctr ' + lay.ctr.toFixed(1) + ', logo ' + lay.over + ' px from the bottom, scroll ' + lay.scroll + ')');
 ok((await pg.$$eval('#a-dots i', l => l.length)) === 3 && (await pg.$$eval('#m-dots i', l => l.length)) === 2, 'dots: 3 views (vertical), 2 cloths (horizontal)');
 await pg.screenshot({ path: OUT + '/sw_cloth.png' });
 const vb = await pg.locator('#viewer').boundingBox();
@@ -88,12 +92,12 @@ await pg.waitForFunction(() => window.__totehm_cloth().papers);
 await pg.waitForTimeout(650);
 d = await D();
 ok(d.papers && d.melt && !d.grind && d.view === null && d.views === 5, 'the TOTEHM has melted into three papers, no view chosen yet, the five views are there');
-ok((await pg.$$eval('#tz-papers .pap-lab', l => l.map(b => b.textContent.trim()))).join(',') === 'my story,my grind,vision'
-   && (await pg.$eval('#el-list', e => e.children.length)) === 0, 'MY STORY · MY GRIND · VISION, and nothing listed before a tap');
+ok((await pg.$$eval('#tz-papers .pap-lab', l => l.map(b => b.textContent.trim()))).join(',') === 'my wisdom story,my grind,my vision'
+   && (await pg.$eval('#el-list', e => e.children.length)) === 0, 'MY WISDOM STORY · MY GRIND · MY VISION, and nothing listed before a tap');
 ok((await pg.$eval('#tz-logo', e => +getComputedStyle(e).opacity)) < 0.05 && (await pg.$$eval('#tz-logo .gl', l => l.length)) === 3,
   'the logo (rail · T · word — the three SVGs of totehm.com) has dissolved; only its background is left');
 const g3 = await pg.$$eval('#tz-papers .g3 i', l => l.map(i => i.textContent.trim()).join(','));
-ok(g3 === 'objective,habit,repulsion' && (await pg.$eval('#tz-papers .g3', e => +getComputedStyle(e).opacity)) < 0.05, 'the three buttons live inside the GRIND, hidden');
+ok(g3 === 'my objectives,my habits,my repulsions' && (await pg.$eval('#tz-papers .g3', e => +getComputedStyle(e).opacity)) < 0.05, 'the three buttons live inside the GRIND, hidden');
 await pg.click('.pap-g');
 await pg.waitForFunction(() => window.__totehm_cloth().grind);
 await pg.waitForTimeout(400);
@@ -102,10 +106,13 @@ const gz = await pg.evaluate(() => { const g = document.querySelector('#tz-paper
     dx:Math.abs((g.left+g.right)/2 - (p.left+p.right)/2), inside:g.top > p.top && g.bottom < p.bottom, gh:Math.round(g.height), ph:Math.round(p.height) };
 });
 ok(gz.op > 0.9 && gz.dx < 2 && gz.inside && gz.lab < 0.05, 'a tap on MY GRIND stacks its three buttons in the centre of its navy ' + JSON.stringify(gz));
+const sel = await pg.$$eval('#tz-papers .g3 i', l => l.map(i => ({ px: Math.round(parseFloat(getComputedStyle(i).fontSize)), cut: i.scrollWidth - i.clientWidth })));
+ok(sel.every(s => s.px >= 10) && sel.every(s => s.cut <= 1),
+  'the titles of the view selectors are read, whole, inside the navy ' + JSON.stringify(sel));
 await pg.click('.g3 i[data-v="habits"]');
 await pg.waitForFunction(() => window.__totehm_cloth().view === 'habits');
-ok(/Run the hill/.test(await pg.textContent('#el-list')) && /Cold shower/.test(await pg.textContent('#el-list')) && /habit/i.test(await pg.textContent('#el-sub')),
-  'HABIT: the habits of the TOTEHM, the ones of an objective and the loose ones');
+ok(/Run the hill/.test(await pg.textContent('#el-list')) && /Cold shower/.test(await pg.textContent('#el-list')) && /my habits/i.test(await pg.textContent('#el-sub')),
+  'MY HABITS: the habits of the TOTEHM, the ones of an objective and the loose ones');
 await pg.click('.pap-v');
 await pg.waitForFunction(() => window.__totehm_cloth().view === 'visions');
 ok(/A studio by the sea/.test(await pg.textContent('#el-list')), 'VISION is wearable too');
@@ -119,27 +126,27 @@ await pg.click('#totehmize');
 await pg.waitForFunction(() => window.__totehm_cloth().papers);
 await pg.click('.pap-s');
 await pg.waitForFunction(() => window.__totehm_cloth().view === 'wisdom');
-ok(/Slow is smooth/.test(await pg.textContent('#el-list')) && /my story/i.test(await pg.textContent('#el-sub')), 'MY STORY · what I pass on');
+ok(/Slow is smooth/.test(await pg.textContent('#el-list')) && /my wisdom story/i.test(await pg.textContent('#el-sub')), 'MY WISDOM STORY · what I pass on');
 ok((await D()).seam === 1, 'the seam lights the intention of what is on screen (focus)');
 await pg.click('#el-list .bx');
-await pg.waitForSelector('#mt-go');
+// Pas de bouton : le tap EST le choix (comme sur totehm.com), et la box garde sa matière.
+await pg.waitForFunction(() => window.__totehm_cloth().stage === 'name');
+await pg.waitForFunction(() => !!document.querySelector('#el-list .bx.is-on #matter .mi'));
 const matter = await pg.textContent('#matter');
-ok(/Marathon in May/.test(matter) && (await D()).open && !!(await pg.$('#el-list .bx #matter')),
-  'the element opens what it is connected to, INSIDE its box (the box, almost whole)');
+ok(/Marathon in May/.test(matter) && (await D()).open && !(await pg.$('#mt-go')),
+  'a tap chooses the element AND keeps its matter open inside the box — no button at all');
 ok(!/palette|rhythm|every morning/i.test(matter + await pg.textContent('#el-list')) && !(await pg.$('#matter .pal')), 'no colour palette, no time frequency on screen');
 await pg.screenshot({ path: OUT + '/sw_element.png' });
-await pg.click('#mt-go');
 
 // ── 3 · NAME
 await pg.waitForFunction(() => window.__totehm_cloth().stage === 'name');
 d = await D();
 ok(d.stage === 'name' && d.element === 'wisdom' && d.print === 1, 'NAME: the element is kept (wisdom); the print-zone photo is loaded apart');
-await pg.click('#el-list .bx.is-on');
+await pg.click('#el-list .bx.is-on .nm');
 await pg.waitForFunction(() => !document.getElementById('s-element').classList.contains('is-picked'));
 ok((await pg.$$eval('#el-list .bx', l => l.filter(b => b.offsetParent).length)) > 0 && (await D()).stage === 'element',
   'a tap on the worn element opens the list again — one can always change one\'s mind');
 await pg.click('#el-list .bx');
-await pg.waitForSelector('#mt-go'); await pg.click('#mt-go');
 await pg.waitForFunction(() => window.__totehm_cloth().stage === 'name');
 ok(!(await pg.$('#nm-el')) && /Slow is smooth/.test(await pg.textContent('#el-list')) && (await pg.$$eval('#el-list .bx', l => l.filter(b => b.offsetParent).length)) === 1,
   'the chosen element stays alone on screen — never written twice');
@@ -160,7 +167,10 @@ await pg.press('#nm-input', 'Enter');
 
 // ── 4 · STYLE
 await pg.waitForFunction(() => window.__totehm_cloth().stage === 'style' && document.querySelectorAll('.st-card').length === 2);
-ok(/7 left/.test(await pg.textContent('.st-card[data-id="st1"]')) && await pg.isDisabled('.st-card[data-id="st2"]'), 'styles say what is left; a sold-out style is closed');
+const stl = await pg.evaluate(() => { const b = document.querySelector('.st-card[data-id="st1"] span b'); const s = getComputedStyle(b);
+  return { n: b.textContent.trim(), px: Math.round(parseFloat(s.fontSize)), col: s.color, out: document.querySelector('.st-card[data-id="st2"] span.out').textContent }; });
+ok(stl.n === '7' && stl.px >= 14 && /251, 213, 202/.test(stl.col) && /sold out/i.test(stl.out) && await pg.isDisabled('.st-card[data-id="st2"]'),
+  'a style says what is left, in the same big coral figure; a sold-out style is closed ' + JSON.stringify(stl));
 await pg.click('.st-card[data-id="st1"]');
 await pg.click('#st-go');
 
@@ -168,8 +178,8 @@ await pg.click('#st-go');
 await pg.waitForFunction(() => window.__totehm_cloth().stage === 'order');
 ok((await pg.$$eval('#od-sizes .sz', b => b.map(x => x.textContent).join(','))) === 'S,M,L,XL,2XL' && await pg.isDisabled('#od-sizes .sz[data-s="XL"]'), 'sizes from Printful, in order; a discontinued one is closed');
 ok(await pg.isVisible('#od-test') && /4242/.test(await pg.textContent('#od-test')), 'test mode said on the page');
-const pv = await pg.evaluate(() => { const z = document.querySelector('#od-visual .pz'); return { dashed: getComputedStyle(z).borderTopStyle, img: !!z.querySelector('img'), canvas: !!document.querySelector('#od-visual canvas'), name: document.querySelector('#od-visual .pz-name').textContent }; });
-ok(pv.dashed === 'dashed' && pv.img && !pv.canvas && pv.name === '0.hillstreet', 'the preview: the place (dashed), the style, the name — no palette');
+const pv = await pg.evaluate(() => ({ src: (document.querySelector('#od-visual img.ph') || {}).src || '', extra: document.querySelectorAll('#od-visual *').length, canvas: !!document.querySelector('#od-visual canvas') }));
+ok(/1-back-zone\.png$/.test(pv.src) && pv.extra === 1 && !pv.canvas, 'ORDER: the PHOTO of the print zone, nothing simulated over it');
 await pg.click('#od-sizes .sz[data-s="L"]');
 ok(/Order · 170 €/.test(await pg.textContent('#od-go')) && await pg.isEnabled('#od-go'), 'the order button carries the server price');
 await pg.screenshot({ path: OUT + '/sw_order.png' });
@@ -217,25 +227,20 @@ ok(!log.errors.length, 'phone: no page error: ' + log.errors.join(' | '));
   g = await geo(); d = await D();
   ok(Math.abs(g.vc - g.w / 2) < 3 && Math.abs((g.el.l + g.el.r) / 2 - g.w / 2) < 3 && g.vis === 'visible',
     'desktop: NO side window — the TOTEHM opens in the same centred column, under the cloth');
-  ok(d.zone && /your element/i.test(await pg.textContent('#vw-zone')), 'the place of the artwork lights up on the cloth');
+  ok(!(await pg.$('#vw-zone')) && !(await pg.$('.pz')), 'no simulated preview anywhere on the cloth');
   await pg.screenshot({ path: OUT + '/sw_desk_papers.png' });
   await pg.click('.pap-s');
   await pg.waitForFunction(() => window.__totehm_cloth().view === 'wisdom');
   await pg.click('#el-list .bx');
-  await pg.waitForSelector('#mt-go');
-  await pg.click('#mt-go');
   await pg.waitForFunction(() => window.__totehm_cloth().stage === 'name');
   await pg.waitForTimeout(600);
   g = await geo(); d = await D();
   ok(Math.abs((g.nm.l + g.nm.r) / 2 - g.w / 2) < 3 && g.vc === (await geo()).vc, 'NAME: still the same column, nothing slides');
   await pg.fill('#nm-input', 'sea');
-  await pg.waitForFunction(() => /0\.sea/.test(document.querySelector('#vw-zone').textContent));
-  ok(true, 'the name engraves itself on the cloth as it is typed');
   await pg.waitForFunction(() => /available/.test(document.querySelector('#nm-note').textContent));
   await pg.click('#nm-go');
   await pg.waitForFunction(() => window.__totehm_cloth().stage === 'style' && document.querySelectorAll('.st-card').length === 2);
   await pg.click('.st-card[data-id="st1"]');
-  ok(!!(await pg.$('#vw-zone .pz img')), 'the chosen style fills the place on the cloth');
   await pg.click('#st-go');
   await pg.waitForFunction(() => window.__totehm_cloth().stage === 'order');
   await pg.waitForTimeout(500);
@@ -266,14 +271,14 @@ ok(!log.errors.length, 'phone: no page error: ' + log.errors.join(' | '));
   const d = await pg.evaluate(() => window.__totehm_cloth());
   const chip = await pg.evaluate(() => { const c = document.getElementById('cl-wear'), t = document.getElementById('totehmize').getBoundingClientRect();
     return { on: !c.classList.contains('hide') && c.getBoundingClientRect().height > 0, txt: c.textContent, bg: getComputedStyle(c).backgroundColor, fits: t.bottom <= innerHeight }; });
-  ok(d.stage === 'cloth' && !d.wanted && chip.on && /my story/i.test(chip.txt) && /Slow is smooth/.test(chip.txt) && /116, 49, 105/.test(chip.bg),
-    'from COM: the cloth first, the element already chosen under it (my story, red-violet)');
+  ok(d.stage === 'cloth' && !d.wanted && chip.on && /my wisdom story/i.test(chip.txt) && /Slow is smooth/.test(chip.txt) && /116, 49, 105/.test(chip.bg),
+    'from COM: the cloth first, the element already chosen under it (my wisdom story, red-violet)');
   ok(new URL(pg.url()).search === '' && chip.fits, 'the ?wear= leaves the address bar; TOTEHMIZE stays on one screen');
   ok(log.rpc.some(x => x.name === 'my_trips'), 'the element is read again in MY TOTEHM (my_trips), never trusted from the address');
   await pg.screenshot({ path: OUT + '/sw_from_com.png' });
   await pg.click('#totehmize');
   await pg.waitForFunction(() => window.__totehm_cloth().stage === 'name');
-  ok(/Slow is smooth/.test(await pg.textContent('#el-list')) && /my story/i.test(await pg.textContent('#el-sub')), 'TOTEHMIZE goes straight to NAME, the element above it');
+  ok(/Slow is smooth/.test(await pg.textContent('#el-list')) && /my wisdom story/i.test(await pg.textContent('#el-sub')), 'TOTEHMIZE goes straight to NAME, the element above it');
   await pg.goBack();
   await pg.waitForFunction(() => window.__totehm_cloth().stage === 'element');
   ok((await pg.evaluate(() => window.__totehm_cloth().view)) === 'wisdom', 'Back: ELEMENT, on MY STORY (the element can still change)');

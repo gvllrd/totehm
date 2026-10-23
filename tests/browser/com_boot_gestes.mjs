@@ -142,6 +142,19 @@ try{
   ok(!erreurs(log).length,'repli + manette : aucune erreur '+erreurs(log).join(' | '));
   await ctx.close();}
 
+ /* ── 1 quater · LOT 24/10 (Wah) : « les mouvements sur le trackpad et sur l'écran tactile doivent aussi avoir une
+    répercussion sur le joystick ». Un geste venu d'ailleurs POUSSE le manche vers sa vue, puis il revient au centre. ── */
+ {const{pg,ctx,log}=await page(browser,{dir:'com',origin,tables,rpc:{my_landing:LAND},viewport:{width:1280,height:800}});
+  await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1200);
+  const my=()=>pg.$eval('#lvj-stack',e=>parseFloat(e.style.getPropertyValue('--my'))||0);
+  await pg.keyboard.press('ArrowDown');await pg.waitForTimeout(70);
+  const pousse=await my();
+  await pg.waitForTimeout(800);
+  const retour=await my();
+  ok(pousse>0&&Math.abs(retour)<0.5,'24/10 · un geste d\'ailleurs pousse la manette vers sa vue, puis elle revient au centre ('+pousse+' → '+retour+')');
+  ok(!erreurs(log).length,'manette poussée : aucune erreur '+erreurs(log).join(' | '));
+  await ctx.close();}
+
  /* ── 1 ter · LE MOUCHARD (22/10) : un geste refusé dit POURQUOI (un code) ; `?diag=1` l'affiche, sinon rien ── */
  {const{pg,ctx,log}=await page(browser,{dir:'com',origin,tables,rpc:{my_landing:LAND},viewport:{width:390,height:844},hasTouch:true});
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(800);

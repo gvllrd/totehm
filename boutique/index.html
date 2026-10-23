@@ -41,6 +41,18 @@ body{display:flex;flex-direction:column;align-items:center;min-height:100vh;over
 .slogan{width:min(52vw,200px);margin-bottom:13px}
 .slogan svg{display:block;width:100%;height:auto}
 .tagline{font-family:'Space Mono',monospace;font-weight:400;font-size:13px;color:var(--g-mid);letter-spacing:0;text-align:center;margin-bottom:5vh}
+/* LA COUTURE — sept fils d'intention (10 %, en trait) qui n'en font plus qu'un.
+   Ce que totehm.com dit par un processeur, la boutique le dit par une aiguille. */
+.seam{margin:0 auto 5vh;width:min(92vw,520px);display:flex;flex-direction:column;align-items:center;gap:9px}
+.seam svg{width:100%;height:auto;display:block;overflow:visible}
+.seam .th path{stroke:var(--c);stroke-dasharray:460;stroke-dashoffset:460;animation:sew 1.6s cubic-bezier(.22,.61,.36,1) var(--d,0s) forwards}
+@keyframes sew{to{stroke-dashoffset:0}}
+.seam .eye{fill:#fff;opacity:0;animation:sewn .7s ease 1.2s forwards}
+.seam .stitch{opacity:0;animation:sewn .9s ease 1.35s forwards}
+@keyframes sewn{to{opacity:1}}
+.seam figcaption{font-family:'Space Mono',monospace;font-size:8.5px;letter-spacing:.3em;text-transform:uppercase;color:var(--g-dark)}
+@media(max-width:600px){.seam figcaption{letter-spacing:.2em}}
+@media(prefers-reduced-motion:reduce){.seam .th path{animation:none;stroke-dashoffset:0}.seam .eye,.seam .stitch{animation:none;opacity:1}}
 .realwrap{margin-top:6vh;display:flex;justify-content:center}
 .real{width:min(44vw,170px);height:auto;display:block;opacity:1;filter:grayscale(0);transition:filter .2s ease}
 @media(hover:hover){.real:hover{filter:brightness(1.9) contrast(1.05)}}
@@ -254,6 +266,27 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
 <section class="hero" id="hero">
 <div class="slogan"><svg viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></div>
 <div class="tagline">OWN/YOUR/TIME&nbsp;&nbsp;&nbsp;NOW:WON&nbsp;&nbsp;&nbsp;<span id="tag-loc">WRLD</span></div>
+
+<!-- LA NATURE DE LA TOTEHMISATION · 24/10 (Wah) — les sept intentions, ici aussi,
+     mais PAS dans le cadre d'un processeur comme sur totehm.com : sept fils
+     séparés qui se rejoignent en un seul point et repartent en COUTURE sur le
+     vêtement. Du TRAIT, jamais une surface (la règle des 10 %). -->
+<figure class="seam">
+  <svg viewBox="0 0 600 132" role="img" aria-label="Seven intentions become one seam">
+    <g class="th" fill="none" stroke-width="1.4" stroke-linecap="round">
+      <path style="--c:#E24B4A;--d:0s"    d="M8 10 C150 10 206 66 300 66"/>
+      <path style="--c:#e48b31;--d:.09s"  d="M8 29 C150 29 206 66 300 66"/>
+      <path style="--c:#fcbe21;--d:.18s"  d="M8 48 C150 48 206 66 300 66"/>
+      <path style="--c:#378ADD;--d:.27s"  d="M8 66 H300"/>
+      <path style="--c:#1D9E75;--d:.36s"  d="M8 84 C150 84 206 66 300 66"/>
+      <path style="--c:#7F77DD;--d:.45s"  d="M8 103 C150 103 206 66 300 66"/>
+      <path style="--c:#639922;--d:.54s"  d="M8 122 C150 122 206 66 300 66"/>
+    </g>
+    <circle class="eye" cx="300" cy="66" r="2.6"/>
+    <g class="stitch"><path d="M308 66 H592" fill="none" stroke="#ffffff" stroke-opacity=".5" stroke-width="1.4" stroke-dasharray="8 6" stroke-linecap="round"/></g>
+  </svg>
+  <figcaption>seven intentions · one seam</figcaption>
+</figure>
 
 <nav>
   <div id="menu-main" style="display:flex;flex-direction:column;align-items:center;gap:6px;width:100%">
@@ -583,10 +616,11 @@ document.querySelectorAll('[data-club]').forEach(a => a.addEventListener('click'
 }));
 
 /* Diagnostic — des booléens, jamais une valeur de membre. */
-const BUILD='2026-10-23-decode-first';
+const BUILD='2026-10-24-seam';
 window.__totehm_boutique=()=>({ build:BUILD, page:'home', luxury_link:!!document.querySelector('a[href="/luxury"]'),
   club_links:document.querySelectorAll('[data-club]').length, logos:document.querySelectorAll('.brand-logo,img[src*="champion"]').length,
   collab:/Champion 2026/.test(document.getElementById('collab')?.textContent||''), branding_com:document.getElementById('brand-btn')?.dataset.com==='/',
+  seam:document.querySelectorAll('.seam .th path').length, seam_filled:!!document.querySelector('.seam [fill]:not([fill="none"]):not(.eye)'),
   decode_first:(()=>{const m=document.getElementById('menu-main');return !!m&&m.firstElementChild?.contains(document.getElementById('decode-btn'));})(),
   member_window:!!document.getElementById('member-window'), connect:document.getElementById('conn-bar')?.dataset.in||'0', decode:DECODED?{found:!!DECODED.found,level:DECODED.level||null,art:!!DECODED.art,stage:DECODED.stage||null}:null });
 /* 08/10 — `/?decode=0.nom` ouvre directement la page du Cloth (lien de la fin de commande, partage). */

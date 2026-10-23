@@ -89,12 +89,12 @@ TOTEHM.SPACE est le dernier temple au sommet d’une Terre engloutie : beauté, 
 Nuit permanente, arche de la Voie lactée, lune et mer déchaînée ; terrasse de pierre naturelle et trois portes monumentales.
 Sans colonnes, toit, fronton ni végétation, le refuge ouvre la vue sur les déferlants ; Espace propulse au milieu des étoiles, face au globe englouti.
 Les trois portes sans étiquette ouvrent les expériences indépendantes : TotehmPaper, Origins et Play the Lisbon Street.
-De nombreux papiers perforés flottent dans la porte THP, comme les panneaux dans celle de Lisbon.
-Vent et mer accompagnent la visite ; grave magnétique à l’approche, souffle au passage. Le marché garde achat et revente.
+De nombreux papiers perforés flottent dans la porte THP, comme les panneaux dans celle de Lisbon. Vent et mer
+accompagnent la visite ; grave magnétique à l'approche, souffle au passage. Le marché garde achat et revente.
 
 ## Les vêtements
 
 Un vêtement porte **n'importe quelle box** du TOTEHM, dans un style artistique déterminé ; nom unique `0.Nom`
 (collection 2026-27), retrouvé par Decode. Sept concepts, Wah choisit, le client découvre l'œuvre à l'expédition.
-Sur higher.boutique **le TOTEHM est la commande** : un tap le décompose en trois papiers perforés (MY STORY · GRIND ·
-VISION), le GRIND s'ouvre en ses trois, une box tapée devient le vêtement ; les sept intentions y sont une COUTURE.
+Sur higher.boutique **le TOTEHM est la commande** : un tap le décompose en trois papiers perforés (MY WISDOM STORY ·
+MY GRIND · MY VISION), une box tapée EST le choix ; les sept intentions y sont une COUTURE — et sur l'accueil, sept fils de couleur qui n'en font plus qu'un : la totehmisation même.

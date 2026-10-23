@@ -45,6 +45,12 @@ try{
   await pg.locator('#habits .copie').first().click();await pg.waitForFunction(()=>/Already/.test(document.querySelector('#habits .copie')?.textContent||''));
   const c2=log.rpc.filter(x=>x.name==='totehm_import_boxes')[1];
   ok(c2&&JSON.stringify(c2.body.p_selection)==='[{"kind":"t","key":"o1"}]','un objectif se copie par son id ; déjà à moi → « Already in my TOTEHM »');
+  /* 24/10 (Wah) : le trackpad qui change de vue POUSSE le manche, qui revient ensuite au centre. */
+  await pg.mouse.move(200,Math.round(H*.45));await pg.mouse.wheel(90,0);await pg.waitForTimeout(70);
+  const mx=await pg.$eval('#joy-stack',e=>parseFloat(e.style.getPropertyValue('--mx'))||0);
+  await pg.waitForTimeout(800);
+  const mz=await pg.$eval('#joy-stack',e=>parseFloat(e.style.getPropertyValue('--mx'))||0);
+  ok(mx<0&&Math.abs(mz)<0.5,'24/10 · le trackpad pousse le manche vers sa vue, puis il revient au centre ('+mx+' → '+mz+')');
   ok(!erreurs(log).length&&!log.rpc.some(x=>/rename|_create|_set|_delete|totehm_save/.test(x.name)),'lecture : aucune écriture sur le Totehm lu, aucune erreur');await pg.context().close();
  }
  /* ── 4 · l'espace membre (07/10) : plein écran, c'est l'utilisateur ; les boutons de higher.boutique ── */

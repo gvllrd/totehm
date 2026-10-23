@@ -22,14 +22,14 @@
               (`name_available`, réponse tardive jetée). C'est ce nom que Decode
               lira.
    4 STYLE    le style du moment (`artistic_styles` actifs, n pièces restantes).
-   5 ORDER    l'aperçu (la place en pointillé, le style, le nom), la TAILLE
-              (Printful, jamais inventée), le prix du serveur → Stripe (adresse
-              d'envoi et paiement sur la page sécurisée).
+   5 ORDER    la photo de la zone d'impression, la TAILLE (Printful, jamais
+              inventée), le prix du serveur → Stripe (adresse d'envoi et
+              paiement sur la page sécurisée). 24/10 : plus aucun aperçu simulé.
   ORDINATEUR (≥ 900 px) : les décalages de SPACE — le vêtement reste à l'écran
   et se décale, chaque scène est une fenêtre-côté qui glisse (CSS en fin de
   feuille). Ni palette ni rythme à l'écran (Wah, 08/10 bis).
 
-  ⚠️ L'APERÇU N'EST PAS L'ŒUVRE : elle naît après le paiement et reste une
+  ⚠️ ON NE MONTRE JAMAIS L'ŒUVRE AVANT : elle naît après le paiement et reste une
   surprise jusqu'au déballage ; Decode la montre une fois la pièce expédiée.
   ⚠️ CE QUE LA PAGE ENVOIE EST UNE RÉFÉRENCE (`box: {kind, ref}`) et le nom SANS
   préfixe : `create-checkout` relit l'élément dans le Totehm de la SESSION et
@@ -115,7 +115,14 @@ a{color:inherit;text-decoration:none}
 #a-dots i.is-on,#m-dots i.is-on{background:#fff}
 #m-dots{display:flex;gap:7px;justify-content:center;min-height:5px}
 #cl-title{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:#fff;text-align:center}
-#cl-facts{display:flex;flex-wrap:wrap;gap:3px 14px;justify-content:center;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo)}
+/* CE QUI RESTE SE VOIT · 24/10 (Wah) : c'est cette rareté qui tient le prix —
+   le nombre est GRAND, en Quantico, coral ; le reste l'accompagne. */
+#cl-facts{display:flex;flex-wrap:wrap;gap:3px 14px;justify-content:center;align-items:baseline;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo)}
+#cl-facts .left{display:flex;align-items:baseline;gap:6px}
+#cl-facts .left b{font-family:var(--q);font-weight:700;font-size:26px;line-height:1;letter-spacing:0;color:var(--coral)}
+#cl-facts .left i{font-style:normal;font-size:11px;letter-spacing:.06em;color:rgba(255,255,255,.5)}
+#cl-facts .left em{font-style:normal;font-size:9px;letter-spacing:.22em;color:rgba(255,255,255,.72)}
+#cl-facts .out{font-family:var(--q);font-weight:700;font-size:15px;letter-spacing:.1em;color:var(--rep)}
 /* 08/10 (ter) — l'élément déjà choisi (arrivé de COM, ou repris) : dit sous le vêtement, à sa couleur. */
 #cl-wear{display:flex;align-items:baseline;gap:9px;max-width:min(100%,360px);padding:6px 12px;background:var(--skin,#333366);color:#fff}
 #cl-wear small{flex:none;font-size:8.5px;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.72)}
@@ -147,7 +154,6 @@ a{color:inherit;text-decoration:none}
 .mi.o{background:var(--blue)}.mi.r{background:var(--rep)}.mi.w{background:#5b2652}.mi.v{background:#2b3a73}
 .mi.s{background:rgba(0,0,0,.35);font-family:var(--mono);font-size:10px}
 .pal{display:flex;gap:4px}.pal i{width:18px;height:18px;display:block}
-#matter .next{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:4px}
 #matter .mono{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.66)}
 /* LE TOTEHM, LA COMMANDE — il se décompose, on choisit, il se replie.
    23/10 (Wah) : « totehmiser, c'est cliquer sur le Totehm » — trois papiers
@@ -181,7 +187,9 @@ a{color:inherit;text-decoration:none}
    3) un tap sur MY GRIND fait apparaître ses trois boutons, empilés au centre.
    Tout en `transition` : jamais une @keyframes (elle rejoue à chaque redessin). */
 #tz-papers{display:flex;gap:10px;width:100%;max-width:430px;margin:0 auto;align-self:stretch;justify-content:center;align-items:stretch}
-.pap{position:relative;flex:1 1 0;aspect-ratio:1/1;border:0;padding:0;cursor:pointer;color:#fff;
+/* `min-width:0` : sans lui, un titre plus long (« my wisdom story ») élargit son
+   papier et le logo du centre n'est plus au centre. Trois tiers exacts. */
+.pap{position:relative;flex:1 1 0;min-width:0;aspect-ratio:1/1;border:0;padding:0;cursor:pointer;color:#fff;
   -webkit-tap-highlight-color:transparent;-webkit-mask-image:var(--perfo);mask-image:var(--perfo);
   -webkit-mask-size:100% 100%;mask-size:100% 100%;display:flex;align-items:center;justify-content:center;
   transition:transform .55s var(--ease),opacity .4s ease,filter .2s ease}
@@ -206,22 +214,25 @@ a{color:inherit;text-decoration:none}
 #el-head.is-split .pap-s,#el-head.is-split .pap-v{opacity:1}
 #el-head.is-split .pap-s .pap-lab,#el-head.is-split .pap-v .pap-lab{opacity:1;transition-delay:.18s}
 /* 3 · les trois boutons, empilés au centre du navy */
-.g3{position:absolute;left:14%;right:14%;top:50%;display:flex;flex-direction:column;gap:4px;
+.g3{position:absolute;left:6%;right:6%;top:50%;display:flex;flex-direction:column;gap:3px;
   opacity:0;transform:translateY(-50%) scale(.9);pointer-events:none;transition:opacity .3s ease,transform .36s var(--ease)}
 #el-head.is-grind .pap-g .g3{opacity:1;transform:translateY(-50%);pointer-events:auto}
 #el-head.is-grind .pap-g .pap-lab{opacity:0}
-.g3 i{display:block;font-style:normal;font-weight:700;font-size:7.5px;letter-spacing:.1em;text-transform:uppercase;
-  padding:4px 2px;color:#fff;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:clip;transition:filter .2s ease}
+/* 24/10 (Wah) : les TITRES DES SÉLECTEURS se lisent — la police grandit, et c'est
+   le padding du bouton qui cède la place. Les trois noms entiers tiennent dans le
+   navy sans jamais revenir à la ligne. */
+.g3 i{display:block;font-style:normal;font-weight:700;font-size:10px;letter-spacing:0;text-transform:uppercase;
+  padding:3px 1px;color:#fff;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:clip;transition:filter .2s ease}
 .g3 i[data-v=objectives]{background:var(--blue)}
 .g3 i[data-v=habits]{background:#3a3a70}
 .g3 i[data-v=repulsions]{background:var(--rep)}
 @media(hover:hover){.g3 i:hover{filter:brightness(1.25)}}
 .g3 i.is-here{box-shadow:inset 0 0 0 1px rgba(255,255,255,.85)}
 
-/* Porté : la liste se réduit à la box choisie, sa matière se referme. */
+/* Porté : la liste se réduit à la box choisie — qui garde sa matière ouverte
+   (24/10 : le choix se fait au tap, la box reste donc PRESQUE ENTIÈRE). */
 #s-element.is-picked #el-list .bx:not(.is-on){display:none}
-#s-element.is-picked #matter{display:none}
-#s-element.is-picked .bx.is-on{transform:none;cursor:default}
+#s-element.is-picked .bx.is-on{transform:none}
 
 /* LA COUTURE — les sept intentions, en points de couture sur un fil.
    Rien à voir avec le processeur de totehm.com : ici c'est un vêtement. */
@@ -253,24 +264,25 @@ a{color:inherit;text-decoration:none}
 .st-card{flex:0 0 auto;width:120px;display:flex;flex-direction:column;align-items:center;gap:6px;background:none;border:none;padding:0;cursor:pointer;scroll-snap-align:center;-webkit-tap-highlight-color:transparent}
 .st-card img,.st-card .ph{width:120px;height:120px;display:block;object-fit:cover;border-radius:10px;background:var(--c1);opacity:.6;filter:grayscale(45%);outline:1px solid transparent;transition:opacity .2s ease,filter .2s ease,outline-color .2s ease}
 .st-card b{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--lo);transition:color .2s ease}
-.st-card span{font-size:8.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
+.st-card span{display:flex;align-items:baseline;justify-content:center;gap:4px;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.7)}
+/* Sept pièces par style : le chiffre se voit autant que celui du vêtement. */
+.st-card span b{font-family:var(--q);font-weight:700;font-size:15px;line-height:1;letter-spacing:0;color:var(--coral)}
+.st-card span.out{color:var(--rep);font-weight:700}
 .st-card.is-on img,.st-card.is-on .ph{opacity:1;filter:none;outline-color:#fff}
 .st-card.is-on b{color:#fff}
 .st-card:disabled{opacity:.35;cursor:default}
 
-/* 5 · ORDER — l'aperçu (la place, le style, le nom), la taille, le prix */
+/* 5 · ORDER — la PHOTO de la zone d'impression, la taille, le prix.
+   24/10 (Wah) : « le preview n'a aucune utilité » — le cadre pointillé, la
+   vignette du style posée dedans et le nom gravé en direct sont retirés. On ne
+   montre plus une fausse œuvre : l'œuvre arrive après le paiement. */
 #od-visual{position:relative;width:min(100%,300px);aspect-ratio:1/1;overflow:hidden;background:#050506}
 #od-visual img.ph{width:100%;height:100%;object-fit:contain;display:block}
-.pz{position:absolute;left:50%;top:var(--pz-top,24%);width:var(--pz-w,42%);aspect-ratio:var(--pz-ar,3/4);transform:translateX(-50%);overflow:hidden;pointer-events:none;border:1px dashed rgba(255,255,255,.62);background:rgba(0,0,0,.3)}
-.pz img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.5;filter:grayscale(25%)}
-.pz b{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:6px;font-weight:400;font-size:7.5px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.82);text-align:center}
-/* L'instrument (ordinateur) : la place de l'œuvre posée sur le vêtement, gravée en direct. */
-#vw-zone{position:absolute;top:0;bottom:0;left:50%;aspect-ratio:1/1;max-width:100%;transform:translateX(-50%);pointer-events:none;z-index:2;opacity:0;transition:opacity .4s ease}
-.pz-name{position:absolute;left:0;right:0;top:calc(var(--pz-top,24%) + var(--pz-h,61%) + 3%);font-family:var(--q);font-size:11px;color:var(--coral);text-align:center;pointer-events:none;text-shadow:0 1px 3px rgba(0,0,0,.7)}
-.pz-tag{position:absolute;top:8px;left:0;right:0;font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.75);text-align:center;pointer-events:none}
 .recap{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo);text-align:center}
 .recap .price{color:#fff;font-weight:700;font-size:13px;letter-spacing:.04em;margin-top:4px}
 .recap .nm{font-family:var(--q);font-size:15px;letter-spacing:0;text-transform:none;color:var(--coral)}
+.recap .rleft{display:flex;align-items:baseline;justify-content:center;flex-wrap:wrap;gap:0 6px;margin-top:5px;font-size:9px;letter-spacing:.2em;color:rgba(255,255,255,.72)}
+.recap .rleft b{font-family:var(--q);font-weight:700;font-size:17px;line-height:1;letter-spacing:0;color:var(--coral)}
 .sizes{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
 .sz{font-weight:700;font-size:12px;color:var(--mid);background:var(--c1);border:1px solid transparent;border-radius:10px;cursor:pointer;min-width:48px;padding:3px 3px;-webkit-tap-highlight-color:transparent;transition:background .15s ease,color .15s ease,border-color .15s ease}
 .sz.is-on{background:#3a3a42;color:#fff;border-color:#fff}
@@ -356,8 +368,6 @@ a{color:inherit;text-decoration:none}
 #nm-input:hover::placeholder,
 .st-card b:hover,
 .st-card span:hover,
-.pz b:hover,
-.pz-tag:hover,
 .recap:hover,
 .sz:hover,
 .blind:hover,
@@ -426,7 +436,6 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
       <div id="vw-wrap">
         <div id="viewer" role="region" aria-label="The cloth — left or right for another, up or down for another view">
           <div id="vw-track"></div>
-          <div id="vw-zone" aria-hidden="true"></div>
           <div id="a-dots" aria-hidden="true"></div>
         </div>
         <button class="cur cur-x cl-only is-dead" id="m-prev" type="button" aria-label="Previous cloth"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 L5 8 L10 13"/></svg></button>
@@ -449,19 +458,19 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
   <section class="stage" id="s-element" data-s="element" aria-label="Choose an element of my TOTEHM">
     <div id="el-head" class="is-logo">
       <div id="tz-papers" role="group" aria-label="My TOTEHM, unfolded">
-        <button class="pap pap-s" type="button" data-v="wisdom"><span class="pap-lab">my story</span></button>
+        <button class="pap pap-s" type="button" data-v="wisdom"><span class="pap-lab">my wisdom story</span></button>
         <button class="pap pap-g" id="totehmize" type="button" data-g="1" aria-label="Totehmize this cloth">
           <!-- LE LOGO : le fond perforé, le rail, le T, le mot. Le fond prend le
                dessus, les trois autres fondent — et MY GRIND reste. -->
           <span id="tz-logo" class="lg" aria-hidden="true"><svg class="gl g-rail"><use href="#lg-rail"/></svg><svg class="gl g-t"><use href="#lg-t"/></svg><svg class="gl g-wm"><use href="#lg-wm"/></svg></span>
           <span class="pap-lab">my grind</span>
           <span class="g3">
-            <i data-v="objectives">objective</i>
-            <i data-v="habits">habit</i>
-            <i data-v="repulsions">repulsion</i>
+            <i data-v="objectives">my objectives</i>
+            <i data-v="habits">my habits</i>
+            <i data-v="repulsions">my repulsions</i>
           </span>
         </button>
-        <button class="pap pap-v" type="button" data-v="visions"><span class="pap-lab">vision</span></button>
+        <button class="pap pap-v" type="button" data-v="visions"><span class="pap-lab">my vision</span></button>
       </div>
       <div id="tz-seam" aria-hidden="true"></div>
       <div id="el-sub"></div>
@@ -655,7 +664,7 @@ sb.auth.onAuthStateChange(ev => {
 }
 
 /* ══ L'ÉTAT — une pièce en cours, cinq scènes ═════════════════════════ */
-const BUILD='2026-10-23-any-box';
+const BUILD='2026-10-24-my-boxes';
 const STAGES=['cloth','element','name','style','order'];
 const SIZES=['XS','S','M','L','XL','2XL','3XL','4XL','5XL'];
 const FLOW_KEY='totehm_cloth_flow';
@@ -686,7 +695,8 @@ function note(id,cls,txt){const n=$(id);n.className='note '+cls;n.textContent=tx
 window.__totehm_cloth=()=>({build:BUILD,ready:READY,stage,side:document.body.dataset.side||'none',desktop:desktop(),signed_in:!!me,supports:supports.length,model:ci,angles:imgs(cur()).length,angle:ai,
   print:(PRINT[F.support?.id]||[]).length,papers:$('el-head').classList.contains('is-split'),melt:$('el-head').classList.contains('is-melt'),grind:$('el-head').classList.contains('is-grind'),
   views:TOT?Object.values(TOT).filter(a=>a.length).length:0,view:vue,open:!!OPEN,seam:$('tz-seam').querySelectorAll('i.is-on').length,
-  element:F.el?F.el.kind:null,wanted:!!F.want,named:F.nameOk,style:!!F.style,size:!!F.size,test:TEST,zone:!!$('vw-zone').firstChild});
+  element:F.el?F.el.kind:null,wanted:!!F.want,named:F.nameOk,style:!!F.style,size:!!F.size,test:TEST,
+  left:avail(cur()),style_left:F.style?styleLeft(F.style):null});
 
 /* ── La pièce en cours survit à l'aller-retour (connexion, Stripe annulé) ── */
 function save(s){try{sessionStorage.setItem(FLOW_KEY,JSON.stringify({s:s||stage,sid:F.support?.id??null,ai,el:F.el,wt:F.want,nm:F.nameRaw,st:F.style?.id??null,sz:F.size||''}));}catch(_){}}
@@ -723,7 +733,6 @@ function show(s,mode='push'){
   /* Une fois l'élément porté, la liste se réduit à LUI : on ne lit jamais deux
      fois la même chose à l'écran. */
   $('s-element').classList.toggle('is-picked',k>STAGES.indexOf('element'));
-  paintZones();
   /* La nouvelle étape vient à l'écran, sans secousse. */
   if(mode!=='none'&&k>0){const el=document.querySelector('.stage[data-s="'+s+'"]');
     if(el)setTimeout(()=>el.scrollIntoView({behavior:'smooth',block:'center'}),60);}
@@ -809,7 +818,9 @@ function paintCloth(){
   $('cl-title').textContent=s.title||'';
   /* 23/10 : au début, SEULEMENT ce qui reste. Le prix arrive à la fin, dans ORDER,
      là où on le paie ; la taille se choisit là aussi. */
-  $('cl-facts').innerHTML=left>0?'<span>'+left+' / '+(s.max_pieces||0)+' left</span>':'<span>sold out</span>';
+  $('cl-facts').innerHTML=left>0
+    ?'<span class="left"><b>'+left+'</b><i>of '+(s.max_pieces||0)+'</i><em>pieces left</em></span>'
+    :'<span class="out">sold out</span>';
   b.classList.remove('hide');b.disabled=left<=0;b.setAttribute('aria-label',left>0?'Totehmize this cloth':'Sold out');
   const cw=$('cl-wear');cw.classList.toggle('hide',!F.el);
   if(F.el){cw.style.setProperty('--skin',SKIN[F.el.view]||'#333366');cw.innerHTML='<small>'+esc(NOM[F.el.view]?.[0]||'my element')+'</small><b>'+esc(F.el.text)+'</b>';}
@@ -927,12 +938,15 @@ const icol=i=>(INTS[i]||[])[1]||'#ffffff';
    du Totehm ». Les cinq vues reviennent donc ici. Le TOTEHM se décompose en TROIS
    papiers — MY STORY · GRIND · VISION — et le GRIND s'ouvre en ses trois boutons.
    Le serveur relit l'élément dans le Totehm de la session : la page ne décide rien. */
+/* 24/10 (Wah) : les vues portent leur nom entier — « my vision, my objectives,
+   my habits, my repulsions, my wisdom story ». C'est MON Totehm, jamais « la »
+   vue : le possessif est la marque. */
 const VIEWS={
-  wisdom:    {nom:'my story', sub:'what I pass on',  kind:'wisdom',    skin:'#743169', paper:'#5b2652'},
-  visions:   {nom:'vision',   sub:'what I imagine',  kind:'vision',    skin:'#36498c', paper:'#263362'},
-  objectives:{nom:'objective',sub:'what I chase',    kind:'objective', skin:'#36498c', paper:'#22224a'},
-  habits:    {nom:'habit',    sub:'what I repeat',   kind:'habit',     skin:'#333366', paper:'#22224a'},
-  repulsions:{nom:'repulsion',sub:'what I refuse',   kind:'repulsion', skin:'#743169', paper:'#51224a'}
+  wisdom:    {nom:'my wisdom story',sub:'what I pass on', kind:'wisdom',    skin:'#743169', paper:'#5b2652'},
+  visions:   {nom:'my vision',      sub:'what I imagine', kind:'vision',    skin:'#36498c', paper:'#263362'},
+  objectives:{nom:'my objectives',  sub:'what I chase',   kind:'objective', skin:'#36498c', paper:'#22224a'},
+  habits:    {nom:'my habits',      sub:'what I repeat',  kind:'habit',     skin:'#333366', paper:'#22224a'},
+  repulsions:{nom:'my repulsions',  sub:'what I refuse',  kind:'repulsion', skin:'#743169', paper:'#51224a'}
 };
 const SKIN=Object.fromEntries(Object.entries(VIEWS).map(([k,v])=>[k,v.skin]));
 const PAPER=Object.fromEntries(Object.entries(VIEWS).map(([k,v])=>[k,v.paper]));
@@ -1051,15 +1065,20 @@ $('tz-papers').addEventListener('click',e=>{
    calculés en base (`my_box_matter`), jamais ici. */
 const MI={habits:['','how'],objectives:['o','why'],repulsions:['r','instead'],wisdom:['w','learned'],visions:['v','sees']};
 let MT_SEQ=0;
+/* 24/10 (Wah) : « pas besoin de bouton wear the element, simplement cliquer sur
+   la box et la mettre en mode choisi, comme sur totehm.com ». Le choix est donc
+   posé AU TAP, avec ce que la page a déjà en main ; la matière arrive après et
+   RESTE dans la box. Le serveur relira l'élément en base de toute façon. */
 async function openEl(b){
   const o=((TOT&&TOT[vue])||[])[+b.dataset.k];if(!o)return;
-  if(OPEN&&OPEN.b===b)return;
   document.querySelectorAll('#el-list .bx').forEach(x=>x.classList.toggle('is-on',x===b));
-  $('matter')?.remove();OPEN=null;
+  const seq=++MT_SEQ,v=vue,ref=String(o.ref);
+  F.el={kind:KIND[v],ref,view:v,text:o.text,is:o.is||[]};paintCloth();
+  $('matter')?.remove();OPEN={b,o,m:null};
   const c=document.createElement('div');c.id='matter';c.innerHTML='<div class="mono">reading the element…</div>';b.appendChild(c);
-  const seq=++MT_SEQ,v=vue;
-  const{data:m,error}=await sb.rpc('my_box_matter',{p_kind:KIND[v],p_ref:String(o.ref)});
-  if(seq!==MT_SEQ||v!==vue)return;
+  show('name');
+  const{data:m,error}=await sb.rpc('my_box_matter',{p_kind:KIND[v],p_ref:ref});
+  if(seq!==MT_SEQ)return;
   if(error)console.error('[my_box_matter]',error.message);
   if(error||!m){c.innerHTML='<div class="mono">'+(error?'unavailable, try again':'this element is empty')+'</div>';return;}
   const groups=Object.entries(m.matter||{}).filter(([,a])=>(a||[]).length).map(([k,a])=>
@@ -1067,10 +1086,11 @@ async function openEl(b){
   /* La box PRESQUE ENTIÈRE (24/10) : ce qui lui est relié, en mini-boxes, et le
      SON de son intention (`intention_music`). Toujours ni palette ni rythme. */
   const son=m.extra&&m.extra.mood?'<div class="grp"><span class="w">sound</span><span class="mi s">'+esc(m.extra.mood)+'</span></div>':'';
-  c.innerHTML=groups+son+'<div class="next"><button class="btn cta" id="mt-go" type="button">Wear this element</button></div>';
+  c.innerHTML=groups+son;
   OPEN={b,o,m};
-  $('mt-go').onclick=pick;
-  c.scrollIntoView({behavior:'smooth',block:'nearest'});
+  /* Le serveur a le dernier mot sur le texte et la vue — mais jamais sur un
+     choix plus frais que lui (`MT_SEQ` a déjà tranché, F.el peut avoir changé). */
+  if(F.el&&F.el.ref===ref&&F.el.kind===KIND[v]){F.el.view=m.view||v;F.el.text=m.text||o.text;paintCloth();save();}
 }
 $('el-list').addEventListener('click',e=>{
   /* La matière (et son bouton) garde ses propres gestes. */
@@ -1079,13 +1099,12 @@ $('el-list').addEventListener('click',e=>{
   if($('s-element').classList.contains('is-picked')){if(e.target.closest('.bx'))goBackTo('element');return;}
   const b=e.target.closest('.bx');if(b)openEl(b);
 });
-$('el-list').addEventListener('keydown',e=>{if(e.key!=='Enter'&&e.key!==' ')return;const b=e.target.closest('.bx');if(!b)return;e.preventDefault();OPEN&&OPEN.b===b?pick():openEl(b);});
-function pick(){
-  if(!OPEN)return;const{o,m}=OPEN;
-  /* Le nom, le style et la taille restent : seul l'élément change. */
-  F.el={kind:KIND[vue],ref:String(o.ref),view:m.view||vue,text:m.text||o.text,is:o.is||[]};
-  show('name');
-}
+$('el-list').addEventListener('keydown',e=>{
+  if(e.key!=='Enter'&&e.key!==' ')return;
+  const b=e.target.closest('.bx');if(!b)return;e.preventDefault();
+  if($('s-element').classList.contains('is-picked')){goBackTo('element');return;}
+  openEl(b);
+});
 
 /* ══ 3 · NAME — vérifié en direct par le serveur ══════════════════════ */
 let NM_SEQ=0,nmTimer=null;
@@ -1124,7 +1143,7 @@ function checkNow(){
 }
 $('nm-input').addEventListener('input',()=>{
   const v=cleanName($('nm-input').value);if(v!==$('nm-input').value)$('nm-input').value=v;
-  F.nameRaw=v.trim();checkNow();paintZones();
+  F.nameRaw=v.trim();checkNow();
 });
 $('nm-input').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();if(F.nameOk)show('style');}});
 $('nm-go').onclick=()=>{if(F.nameOk)show('style');};
@@ -1145,44 +1164,35 @@ async function enterStyle(){
   r.style.justifyContent=styles.length<=2?'center':'flex-start';
   r.innerHTML=styles.map(s=>{const left=styleLeft(s);
     return '<button type="button" class="st-card'+(F.style?.id===s.id?' is-on':'')+'" data-id="'+esc(s.id)+'" role="option" aria-selected="'+(F.style?.id===s.id)+'"'+(left>0?'':' disabled')+'>'+
-      (s.image_url?'<img src="'+esc(s.image_url)+'" alt="">':'<span class="ph"></span>')+'<b>'+esc(s.name||'')+'</b><span>'+(left>0?(s.remaining_capacity==null?'open':left+' left'):'sold out')+'</span></button>';}).join('');
+      (s.image_url?'<img src="'+esc(s.image_url)+'" alt="">':'<span class="ph"></span>')+'<b>'+esc(s.name||'')+'</b>'+
+      (left<=0?'<span class="out">sold out</span>':s.remaining_capacity==null?'<span>open</span>'
+        :'<span><b>'+left+'</b>'+(s.total_capacity?'of '+s.total_capacity+' left':'left')+'</span>')+'</button>';}).join('');
   r.querySelectorAll('.st-card').forEach(b=>b.onclick=()=>{
     const s=styles.find(x=>String(x.id)===b.dataset.id);if(!s||styleLeft(s)<=0)return;
     F.style=s;r.querySelectorAll('.st-card').forEach(x=>{x.classList.toggle('is-on',x===b);x.setAttribute('aria-selected',String(x===b));});
-    $('st-go').disabled=false;save();paintZones();
+    $('st-go').disabled=false;save();
   });
   $('st-go').disabled=!F.style;
   const on=r.querySelector('.is-on');if(on)on.scrollIntoView({block:'nearest',inline:'center'});
 }
 $('st-go').onclick=()=>{if(F.style)show('order');};
 
-/* ══ 5 · ORDER — l'aperçu, la taille, le prix ═════════════════════════
-   L'APERÇU N'EST PAS L'ŒUVRE : la place (`print_area`, un pointillé — la place
-   vide), le style du moment, le nom gravé. Aucun appel, aucun modèle. */
-function zoneVars(s){const pa=s?.print_area||{},wi=Number(pa.width_in)||12,hi=Number(pa.height_in)||16;
-  const w=hi>=wi?42:54,hPct=w*(hi/wi);
-  return '--pz-w:'+w+'%;--pz-ar:'+wi+'/'+hi+';--pz-h:'+hPct.toFixed(1)+'%;--pz-top:'+Math.max(8,Math.min(24,(100-hPct)/2-6)).toFixed(1)+'%';}
-function zoneHTML(tag){
-  const s=F.support;
-  return '<div class="pz" style="'+zoneVars(s)+'">'+(F.style?.image_url?'<img src="'+esc(F.style.image_url)+'" alt="">':'<b>your element · here</b>')+'</div>'+
-    '<div class="pz-name" style="'+zoneVars(s)+'">'+esc(F.nameRaw?epochPrefix()+F.nameRaw:'')+'</div>'+
-    (tag?'<div class="pz-tag">'+esc((s?.print_area?.placement||'back')+' print · a preview, not the artwork')+'</div>':'');
-}
-/* L'instrument (ordinateur) porte la place dès qu'on totehmise ; ORDER la montre aussi au téléphone. */
-function paintZones(){
-  const z=$('vw-zone');if(z)z.innerHTML=F.support&&cur()===F.support&&stage!=='cloth'&&stage!=='done'?zoneHTML(false):'';
-  if(stage==='order')paintPreview();
-}
+/* ══ 5 · ORDER — la photo, la taille, le prix ═════════════════════════
+   ORDER montre la PHOTO de la zone d'impression (`<dossier>/print/`), sinon la vue
+   affichée. Rien n'est simulé : l'œuvre ne se voit qu'une fois le vêtement arrivé. */
 function paintPreview(){
-  /* L'aperçu se pose sur la ZONE D'IMPRESSION quand elle existe. */
   const s=F.support,w=$('od-visual'),im=(PRINT[s?.id]||[])[0]||imgs(s)[ANG[supports.indexOf(s)]||0]||imgs(s)[0];
-  w.innerHTML=(im?'<img class="ph" src="'+esc(im)+'" alt="'+esc(s?.title||'')+'">':'')+zoneHTML(true);
+  w.innerHTML=im?'<img class="ph" src="'+esc(im)+'" alt="'+esc(s?.title||'')+'">':'';
 }
 function enterOrder(){
   const s=F.support;if(!s)return;
   paintPreview();
   /* 23/10 : le prix n'apparaît QU'ICI — à la fin, au moment de payer. */
-  $('od-recap').innerHTML='<span class="nm">'+esc(epochPrefix()+F.nameRaw)+'</span><span>'+esc((NOM[F.el.view]?.[0]||'my element')+' · '+(F.style?.name||''))+'</span><span>'+esc(s.title||'')+'</span><span class="price">'+esc(price(s))+'</span>';
+  /* Ce qui reste est posé JUSTE AVANT le prix : c'est lui qui le justifie. */
+  const stl=F.style&&F.style.remaining_capacity!=null?styleLeft(F.style):null;
+  $('od-recap').innerHTML='<span class="nm">'+esc(epochPrefix()+F.nameRaw)+'</span><span>'+esc((NOM[F.el.view]?.[0]||'my element')+' · '+(F.style?.name||''))+'</span><span>'+esc(s.title||'')+'</span>'+
+    '<span class="rleft"><b>'+avail(s)+'</b>of '+(s.max_pieces||0)+' pieces left'+(stl!=null?'<b>'+stl+'</b>in this style':'')+'</span>'+
+    '<span class="price">'+esc(price(s))+'</span>';
   const vm=s.printful_variant_map||{},sz=sizesOf(s);
   if(F.size&&!sz.includes(F.size))F.size='';
   $('od-sizes').innerHTML=sz.map(x=>{const off=vm[x]&&vm[x].availability&&vm[x].availability!=='active';
@@ -1233,8 +1243,7 @@ window.addEventListener('keydown',e=>{
     if(e.key==='ArrowLeft'||e.key==='ArrowRight'){
       e.preventDefault();const i=ordre.indexOf(vue),n=ordre[(i<0?0:i+(e.key==='ArrowRight'?1:-1)+ordre.length)%ordre.length];
       if(n&&n!==vue){vue=n;renderEl('in');}
-    }else if(e.key==='Enter'&&OPEN){e.preventDefault();pick();}
-    else if(e.key==='Escape'){if(vue)foldTz();else back();}
+    }else if(e.key==='Escape'){if(vue)foldTz();else back();}
   }else if(e.key==='Escape')back();
 });
 

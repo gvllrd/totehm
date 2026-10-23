@@ -7375,7 +7375,14 @@ const NOM_VUE={
 /* La direction du DERNIER voyage : c'est elle qui décide de quel côté le
    titre pivote. Null au chargement — on n'arrive de nulle part. */
 let dernierSens=null;
-function versVoisin(d){ const v=voisin(d); if(!v)return; dernierSens=d; setView(v); }
+/* 24/10 (Wah) : « les mouvements sur le trackpad et sur l'écran tactile doivent
+   aussi avoir une répercussion sur le joystick ». TOUT geste qui change de vue
+   POUSSE le manche dans sa direction, puis il revient au centre tout seul. Le
+   manche tenu à la main commande seul : on ne le contredit pas (`DU_MANCHE`). */
+let POUSSE_JOY=null, DU_MANCHE=false;
+function versVoisin(d){ const v=voisin(d); if(!v)return; dernierSens=d;
+  if(!DU_MANCHE&&POUSSE_JOY)POUSSE_JOY(d);
+  setView(v); }
 /* Les cinq listes. `state.habits` vit en local (elle est dans `steps`),
    les quatre autres viennent du serveur en UN appel — `my_trips`. */
 let TRIPS=[], REPS=[], TEACH=[], VIS=[], tripsLoaded=false;
@@ -9800,7 +9807,17 @@ const navRight=()=>{ if(navBlocked())return; versVoisin('d'); };
     const v=sens();
     try{ bx.releasePointerCapture(id); }catch(_){}
     id=null; centre();
-    if(v) versVoisin(v);
+    /* Le manche vient de rentrer au centre sous le doigt : on ne le repousse pas. */
+    if(v){ DU_MANCHE=true; versVoisin(v); DU_MANCHE=false; }
+  };
+  /* Un geste venu d'AILLEURS (doigt sur la liste, trackpad, chevrons, clavier)
+     pousse le manche vers sa vue, puis le lâche. Une main posée dessus gagne. */
+  let repos=0;
+  POUSSE_JOY=d=>{
+    const p={g:[-RAYON,0],d:[RAYON,0],h:[0,-RAYON],b:[0,RAYON]}[d];
+    if(!p||id!==null)return;
+    jy.classList.add('tenu'); vise(d); pose(p[0],p[1]);
+    clearTimeout(repos); repos=setTimeout(centre,240);
   };
   bx.addEventListener('pointerup',lache);
   bx.addEventListener('pointercancel',()=>{ id=null; centre(); });
@@ -11775,10 +11792,16 @@ window.addEventListener('pageshow',e=>{
         +'\n'+Object.entries(diag.refus).map(([k,n])=>k+' ×'+n).join(' · '); }
     if(/[?&]diag=1\b/.test(location.search)){ diagEl=document.createElement('pre'); diagEl.id='lv-diag'; diagEl.setAttribute('aria-hidden','true');
       document.body.appendChild(diagEl); setInterval(peindreDiag,400); }
+    /* 24/10 (Wah) : le trackpad et le doigt POUSSENT la manette de l'atterrissage,
+       comme celle de l'app. Elle revient au centre toute seule ; tenue à la main,
+       elle commande seule (`DU_LVJ`). */
+    let POUSSE_LVJ=null, DU_LVJ=false;
     function demander(d){
       if(!libre()) return refus('libre:'+pasLibre());
-      if(occupe()){ if(!voisin(d)) return sansVoisin(d); attente={d, t:Date.now()}; diag.enAttente++; guetter(); return true; }
+      if(occupe()){ if(!voisin(d)) return sansVoisin(d); attente={d, t:Date.now()}; diag.enAttente++;
+        if(!DU_LVJ&&POUSSE_LVJ)POUSSE_LVJ(d); guetter(); return true; }
       const v=voisin(d); if(!v) return sansVoisin(d);
+      if(!DU_LVJ&&POUSSE_LVJ)POUSSE_LVJ(d);
       aller(v); return true;
     }
     function guetter(){ clearTimeout(guetT); guetT=setTimeout(()=>{ if(!attente) return;
@@ -12085,10 +12108,17 @@ window.addEventListener('pageshow',e=>{
         const v=sens();
         try{ bx.releasePointerCapture(id); }catch(_){}
         id=null; centre();
-        if(v) demander(v);
+        if(v){ DU_LVJ=true; demander(v); DU_LVJ=false; }
         else if(Math.max(Math.abs(dx),Math.abs(dy))>=SEUIL) sansVoisin(Math.abs(dx)>Math.abs(dy)?(dx<0?'g':'d'):(dy<0?'h':'b'));
       });
       bx.addEventListener('pointercancel',()=>{ id=null; centre(); });
+      let repos=0;
+      POUSSE_LVJ=d=>{
+        const p={g:[-RAYON,0],d:[RAYON,0],h:[0,-RAYON],b:[0,RAYON]}[d];
+        if(!p||id!==null)return;
+        jy.classList.add('tenu'); vise(d); pose(p[0],p[1]);
+        clearTimeout(repos); repos=setTimeout(centre,240);
+      };
     })();
     window.addEventListener('keydown',e=>{
       if(!libre()||saisie(e.target)||e.metaKey||e.ctrlKey||e.altKey) return;
