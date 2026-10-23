@@ -27,7 +27,8 @@
 - Propriété : `art_editions` · `art_transfers` (ajout seul) · `stoner_access` ; le THP = l'œuvre `totehmpaper`.
   Le marché ne s'écrit que par le webhook (`art_settle`) ; `ok:false` → `market_incidents` = remboursement à la main.
 - `stripe-webhook` : `higher` · `cloth` · `subscription` · `creator_sub` · `artwork` · `resale` · `luxury` · `higher_sub` ;
-  `stripe_events` s'efface avant un 500. Mode test (`boutique_testers`) : jamais exercé, secrets à confirmer.
+  `stripe_events` s'efface avant un 500. Mode test (`boutique_testers`) : v44 fait suivre une pièce d'essai comme une
+  vraie, la base la retient ; mais le mode test n'a pas d'endpoint webhook — rien ne redescend encore.
 
 ## Les 40 Edge Functions (`supabase/functions/`)
 
@@ -45,16 +46,15 @@ Le compte vient TOUJOURS de la session, jamais du corps ; une page ne reçoit qu
 ## Le bot et le Higher Self
 
 - TotehmBot (Telegram) sans voix (jamais « je », zéro appel de modèle) ; relances `push_decision` au rythme de chaque Habit, 6/jour.
-- Higher Self (`higher-self`, `fmt:'r4'`) : le MIROIR. `_bot_mirror` = le TOTEHM relié (chaque Habit entière : where, intentions,
-  rythme, son, liens) ; `_shared/mirror.ts` : contexte + citations vérifiées (`@ok`). Gratuit limité (`_sm_rules`), puis `higher_sub`.
-  Higher : un lieu réel (`_mirror_places`) posé par le serveur (`@lieu`), jamais inventé ; `higher-map` : Lisbonne seule, porte sur `subscriptions`.
+- Higher Self (`higher-self`, `fmt:'r4'`) : le MIROIR. `_bot_mirror` = le TOTEHM relié (chaque Habit entière : where,
+  intentions, rythme, son, liens) ; `_shared/mirror.ts` : contexte + citations vérifiées (`@ok`). Gratuit limité (`_sm_rules`),
+  puis `higher_sub` ; un lieu réel (`_mirror_places`) posé par le serveur (`@lieu`) ; `higher-map` : Lisbonne seule.
 
 ## n8n
 
-`n8n/README.md` (VM Oracle) · `n8n/workflows/` (A → F). n8n n'accorde jamais un accès. F corrigé ; B/C/D/E publiés
-avec l'ancien CONFIG, qui lit `process.env` — absent d'un Code node : la chaîne n'a jamais tourné (zéro exécution).
-`stripe-webhook` envoie `apikey` (clé de service) à B, que son brouillon exige (`serviceAuth`).
-`tests/n8n/streetwear/offline.mjs` : 59 simulations sur exports archivés, fournisseurs et RPC simulés ; six blocages.
+`n8n/README.md` (VM Oracle) · `n8n/workflows/` (A → F). n8n n'accorde jamais un accès. F corrigé ; B, C, D republiés le
+23/10 avec le CONFIG qui lit `$env` (11 clés dans le conteneur, `N8N_BLOCK_ENV_ACCESS_IN_NODE=false`) ; E reste sur
+l'ancien CONFIG (`process.env`). Zéro exécution : `stripe-webhook` envoie `apikey` (clé de service) à B, que sa version publiée exige (`serviceAuth`),
+mais aucun essai ne lui est encore parvenu. Banc hors ligne : `tests/n8n/streetwear/offline.mjs` (59 simulations, six blocages).
 
-Avis Supabase (21/10) : 2 ERROR connus (`higher_badges` lit `auth.users` pour `id`, `pseudo` ; 4 vues `security definer`,
-dont `signature_styles` qui montre `system_prompt_prefix`).
+Avis Supabase : 2 ERROR connus (`higher_badges` lit `auth.users` ; 4 vues `security definer`, dont `signature_styles`).
