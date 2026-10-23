@@ -10,8 +10,10 @@ export function createDrownedSky(scene,{mobile=false,onChange=()=>{}}={}){
  let seed=0x4e494748;const random=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};
  const clamp=(n,a=0,b=1)=>Math.max(a,Math.min(b,n));
  const smooth=(a,b,n)=>{const t=clamp((n-a)/(b-a));return t*t*(3-2*t);};
- const normal=new T.Vector3(.64,.69,.29).normalize();
- const core=new T.Vector3(-.2,.5,-.842);core.addScaledVector(normal,-core.dot(normal)).normalize();
+ // A low celestial arch stays visible from both ocean panoramas as well as
+ // the entrance: its pearly centre rises above the three independent doors.
+ const normal=new T.Vector3(.05,.92,.388).normalize();
+ const core=new T.Vector3(-.2,.39,-.899);core.addScaledVector(normal,-core.dot(normal)).normalize();
  const tangent=new T.Vector3().crossVectors(normal,core).normalize();
  const moonDirection=new T.Vector3(.38,.43,-.82).normalize();
  const width=mobile?1024:2048,height=width/2;
@@ -37,25 +39,33 @@ export function createDrownedSky(scene,{mobile=false,onChange=()=>{}}={}){
    let r=1.7+horizon*5.4,g=3.8+horizon*9.4,b=10.5+horizon*16.2;
    const galacticLatitude=dx*normal.x+dy*normal.y+dz*normal.z;
    const along=dx*tangent.x+dy*tangent.y+dz*tangent.z,centre=dx*core.x+dy*core.y+dz*core.z;
-   const band=Math.exp(-galacticLatitude*galacticLatitude/.018)*upper;
+   const band=Math.exp(-galacticLatitude*galacticLatitude/.044)*upper;
    if(band>.002){
-    const low=noise(along*5+7,galacticLatitude*15+13,centre*6+9);
-    const middle=noise(along*21+11,galacticLatitude*59+17,centre*24+5);
-    const fine=noise(along*67+8,galacticLatitude*151+7,centre*71+16);
+    // Isotropic noise on the sphere avoids the parallel brush strokes made
+    // by stretching a texture along the galactic equator. Domain warping
+    // breaks the arms into overlapping, pearly clouds and dark dust islands.
+    const low=noise(dx*6+7,dy*6+13,dz*6+9);
+    const middle=noise(dx*22+11,dy*22+17,dz*22+5);
+    const fine=noise(dx*73+8,dy*73+7,dz*73+16);
+    const grains=noise(dx*183+12,dy*183+3,dz*183+19);
     const bulge=Math.exp((centre-1)*7.2);
-    const widthVariation=.66+low*.65;
-    const cloud=Math.pow(clamp((low*.54+middle*.32+fine*.14-.23)*1.8),1.35);
-    const riftOffset=.014*Math.sin(dx*13+dz*4)+.011*Math.cos(dz*17-dy*9);
-    const rift=Math.exp(-Math.pow((galacticLatitude-riftOffset)/(.019+middle*.026),2));
-    const dust=1-rift*(.47+smooth(.24,.67,middle)*.43);
-    const wisps=band*widthVariation*cloud*dust;
+    const warpedLatitude=galacticLatitude+(low-.5)*.065+(middle-.5)*.018;
+    const broad=Math.exp(-Math.pow(warpedLatitude/(.105+bulge*.065),2));
+    const inner=Math.exp(-Math.pow((warpedLatitude+.008*Math.sin(along*11))/.055,2));
+    const outerArm=Math.exp(-Math.pow((warpedLatitude-.085-.022*Math.sin(along*8))/.035,2));
+    const cloud=Math.pow(smooth(.20,.79,low*.43+middle*.33+fine*.18+grains*.06),1.12);
+    const riftOffset=.012*Math.sin(along*17)+.009*Math.cos(centre*23)+(middle-.5)*.026;
+    const rift=Math.exp(-Math.pow((warpedLatitude-riftOffset)/(.014+fine*.022),2));
+    const islands=smooth(.42,.76,middle*.63+fine*.37);
+    const dust=1-Math.min(.93,rift*(.51+islands*.32)+islands*.18);
+    const wisps=(broad*.39+inner*.61+outerArm*.17)*cloud*dust*upper;
     // Warm crowded core, cool pearly arms, and dark foreground dust. The
     // radiance stays restrained enough that individual stars remain legible.
-    const energy=wisps*(37+bulge*74),pearl=.76+fine*.24;
-    r+=energy*(.72+bulge*.29)*pearl;
-    g+=energy*(.79+bulge*.17)*pearl;
-    b+=energy*(1.05-bulge*.16);
-    const distantDust=band*(1-dust)*cloud*3.5;r+=distantDust;g+=distantDust*.8;b+=distantDust*.62;
+    const energy=wisps*(58+bulge*118),pearl=.81+fine*.14+grains*.05;
+    r+=energy*(.66+bulge*.39)*pearl;
+    g+=energy*(.78+bulge*.19)*pearl;
+    b+=energy*(1.04-bulge*.22);
+    const distantDust=band*(1-dust)*cloud*2.4;r+=distantDust;g+=distantDust*.76;b+=distantDust*.58;
    }
    // A thin natural airglow, rather than a luminous horizon or ground photo.
    const airglow=Math.exp(-Math.pow((dy-.047)/.065,2))*upper;
@@ -64,16 +74,17 @@ export function createDrownedSky(scene,{mobile=false,onChange=()=>{}}={}){
  }
  // Very distant stellar dust is baked into the environment. Brighter stars
  // below are genuine point geometry, with a slow, independent scintillation.
- const tinyStars=mobile?14000:38000;
+ const tinyStars=mobile?18000:48000;
  for(let i=0;i<tinyStars;i++){
-  const theta=random()*Math.PI*2,latitude=(random()+random()+random()-1.5)*.075;
-  const dx=(core.x*Math.cos(theta)+tangent.x*Math.sin(theta))*Math.cos(latitude)+normal.x*Math.sin(latitude);
-  const dy=(core.y*Math.cos(theta)+tangent.y*Math.sin(theta))*Math.cos(latitude)+normal.y*Math.sin(latitude);
-  const dz=(core.z*Math.cos(theta)+tangent.z*Math.sin(theta))*Math.cos(latitude)+normal.z*Math.sin(latitude);
+  const theta=random()*Math.PI*2,latitude=(random()+random()+random()-1.5)*.092;
+  let dx=(core.x*Math.cos(theta)+tangent.x*Math.sin(theta))*Math.cos(latitude)+normal.x*Math.sin(latitude);
+  let dy=(core.y*Math.cos(theta)+tangent.y*Math.sin(theta))*Math.cos(latitude)+normal.y*Math.sin(latitude);
+  let dz=(core.z*Math.cos(theta)+tangent.z*Math.sin(theta))*Math.cos(latitude)+normal.z*Math.sin(latitude);
+  if(i%4===0){dy=random();const radius=Math.sqrt(1-dy*dy);dx=Math.cos(theta)*radius;dz=Math.sin(theta)*radius;}
   if(dy<.025)continue;
   const x=Math.floor((Math.atan2(dz,dx)/(Math.PI*2)+.5)*width)%width,y=Math.floor((.5-Math.asin(clamp(dy,-1,1))/Math.PI)*height);
-  const at=(y*width+x)*4,luminance=5+Math.pow(random(),5)*31;
-  data[at]=Math.min(255,data[at]+luminance*.9);data[at+1]=Math.min(255,data[at+1]+luminance*.95);data[at+2]=Math.min(255,data[at+2]+luminance);
+  const at=(y*width+x)*4,luminance=4+Math.pow(random(),6)*25;
+  data[at]=Math.min(255,data[at]+luminance*.88);data[at+1]=Math.min(255,data[at+1]+luminance*.95);data[at+2]=Math.min(255,data[at+2]+luminance);
  }
  context.putImageData(pixels,0,0);
  const environmentTexture=new T.CanvasTexture(canvas);environmentTexture.colorSpace=T.SRGBColorSpace;environmentTexture.mapping=T.EquirectangularReflectionMapping;
@@ -87,7 +98,7 @@ export function createDrownedSky(scene,{mobile=false,onChange=()=>{}}={}){
  }));
  const dome=new T.Mesh(geometry(new T.SphereGeometry(1250,48,24)),skyMaterial);dome.name='Milky Way and interstellar dust';dome.renderOrder=-1200;dome.frustumCulled=false;root.add(dome);
 
- const starCount=mobile?6500:14000,positions=new Float32Array(starCount*3),colours=new Float32Array(starCount*3),sizes=new Float32Array(starCount),phases=new Float32Array(starCount),intensities=new Float32Array(starCount);
+ const starCount=mobile?8500:18000,positions=new Float32Array(starCount*3),colours=new Float32Array(starCount*3),sizes=new Float32Array(starCount),phases=new Float32Array(starCount),intensities=new Float32Array(starCount);
  const colour=new T.Color();
  for(let i=0;i<starCount;i++){
   let direction;
@@ -101,26 +112,29 @@ export function createDrownedSky(scene,{mobile=false,onChange=()=>{}}={}){
   positions.set(direction.multiplyScalar(1220).toArray(),i*3);
   const bright=Math.pow(random(),9),temperature=random();
   colour.setHex(temperature<.12?0xffd4a2:temperature<.32?0xfff0cf:temperature<.76?0xe3edff:0xaecbff);
-  colours.set(colour.toArray(),i*3);sizes[i]=.65+bright*3.1;phases[i]=random()*Math.PI*2;intensities[i]=.2+bright*.8;
+  colours.set(colour.toArray(),i*3);sizes[i]=.88+bright*3.5;phases[i]=random()*Math.PI*2;intensities[i]=.27+bright*.86;
  }
  const starGeometry=geometry(new T.BufferGeometry());starGeometry.setAttribute('position',new T.BufferAttribute(positions,3));starGeometry.setAttribute('aColour',new T.BufferAttribute(colours,3));starGeometry.setAttribute('aSize',new T.BufferAttribute(sizes,1));starGeometry.setAttribute('aPhase',new T.BufferAttribute(phases,1));starGeometry.setAttribute('aIntensity',new T.BufferAttribute(intensities,1));
  const timeUniform={value:0},pixelRatio={value:Math.min(globalThis.devicePixelRatio||1,1.5)};
  const starMaterial=material(new T.ShaderMaterial({uniforms:{uTime:timeUniform,uPixelRatio:pixelRatio},transparent:true,depthWrite:false,depthTest:true,blending:T.AdditiveBlending,toneMapped:false,fog:false,
-  vertexShader:`attribute vec3 aColour;attribute float aSize,aPhase,aIntensity;uniform float uTime,uPixelRatio;varying vec3 vColour;varying float vIntensity;
-   void main(){vColour=aColour;vIntensity=aIntensity*(.86+.14*sin(aPhase+uTime*(.17+.11*sin(aPhase))));gl_PointSize=aSize*uPixelRatio;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,
-  fragmentShader:`varying vec3 vColour;varying float vIntensity;
-   void main(){float r=length(gl_PointCoord-.5);float light=exp(-r*r*19.);float alpha=(light*.75+(1.-smoothstep(.015,.19,r))*.25)*vIntensity;if(r>.5)discard;gl_FragColor=vec4(vColour,alpha);
+  vertexShader:`attribute vec3 aColour;attribute float aSize,aPhase,aIntensity;uniform float uTime,uPixelRatio;varying vec3 vColour;varying float vIntensity,vGlint;
+   void main(){vColour=aColour;float lowAltitude=1.-clamp(position.y/1220.,0.,1.);float shimmer=.035+.105*lowAltitude*lowAltitude;vIntensity=aIntensity*(1.-shimmer+shimmer*sin(aPhase+uTime*(.21+.13*sin(aPhase))));vGlint=smoothstep(3.2,4.4,aSize);gl_PointSize=aSize*uPixelRatio;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,
+  fragmentShader:`varying vec3 vColour;varying float vIntensity,vGlint;
+   void main(){vec2 p=gl_PointCoord-.5;float r=length(p);float light=exp(-r*r*22.);float glint=exp(-abs(p.x)*58.)*exp(-abs(p.y)*9.)+exp(-abs(p.y)*58.)*exp(-abs(p.x)*9.);float alpha=(light*.79+(1.-smoothstep(.015,.17,r))*.21+glint*vGlint*.065)*vIntensity;if(r>.5)discard;gl_FragColor=vec4(vColour,alpha);
     #include <colorspace_fragment>
    }`
  }));
- const stars=new T.Points(starGeometry,starMaterial);stars.name='Fourteen thousand quiet stars';stars.renderOrder=-1100;stars.frustumCulled=false;root.add(stars);
+ const stars=new T.Points(starGeometry,starMaterial);stars.name='Fine stellar light — warm giants and blue distant stars';stars.renderOrder=-1100;stars.frustumCulled=false;root.add(stars);
 
  const moonCanvas=document.createElement('canvas');moonCanvas.width=moonCanvas.height=mobile?256:512;
  const mx=moonCanvas.getContext('2d'),moonPixels=mx.createImageData(moonCanvas.width,moonCanvas.height),moonData=moonPixels.data;
+ const lunarCraters=Array.from({length:34},()=>{const theta=random()*Math.PI*2,r=Math.sqrt(random())*.91;return{x:Math.cos(theta)*r,y:Math.sin(theta)*r,radius:.022+Math.pow(random(),2)*.09};});
  for(let y=0;y<moonCanvas.height;y++)for(let x=0;x<moonCanvas.width;x++){
   const nx=(x+.5)/moonCanvas.width*2-1,ny=1-(y+.5)/moonCanvas.height*2,r=Math.hypot(nx,ny),at=(y*moonCanvas.width+x)*4;if(r>=1)continue;
   const nz=Math.sqrt(1-r*r),grain=noise(nx*14+11,ny*14+9,nz*14+5),maria=smooth(.38,.68,noise(nx*3+7,ny*3+5,nz*3+13));
-  const illumination=Math.max(0,nx*-.52+ny*.24+nz*.82),brightness=(.57+grain*.36-maria*.19)*(.13+illumination*.87);
+  let craters=0;
+  for(const crater of lunarCraters){const dx=nx-crater.x,dy=ny-crater.y;if(Math.abs(dx)>crater.radius*1.4||Math.abs(dy)>crater.radius*1.4)continue;const d=Math.hypot(dx,dy)/crater.radius;craters+=Math.exp(-Math.pow((d-.89)/.14,2))*.095-Math.exp(-d*d*4)*.078;}
+  const illumination=Math.max(0,nx*-.52+ny*.24+nz*.82),brightness=(.57+grain*.36-maria*.19+craters)*(.13+illumination*.87);
   moonData[at]=clamp(brightness*255+7,0,255);moonData[at+1]=clamp(brightness*250+8,0,255);moonData[at+2]=clamp(brightness*237+11,0,255);moonData[at+3]=(1-smooth(.983,1,r))*255;
  }
  mx.putImageData(moonPixels,0,0);const moonTexture=new T.CanvasTexture(moonCanvas);moonTexture.colorSpace=T.SRGBColorSpace;textures.add(moonTexture);
@@ -149,7 +163,7 @@ export function createDrownedSky(scene,{mobile=false,onChange=()=>{}}={}){
    animated=!!motion;if(animated){time+=Math.max(0,Math.min(Number(dt)||0,.1));timeUniform.value=time;dirty=true;}
    const changed=dirty;dirty=false;return changed;
   },
-  diagnostics:()=>({night:true,skyLoaded:true,textureReady:true,textureSize:[width,height],milkyWay:true,stars:starCount,stellarDust:tinyStars,time:+time.toFixed(3),animated,moon:true,moonDirection:moonDirection.toArray(),moonDiameterDegrees:1.04,shootingStars:1,meteorPeriod:53,externalFiles:0,disposed}),
+  diagnostics:()=>({night:true,skyLoaded:true,textureReady:true,textureSize:[width,height],milkyWay:true,galacticClouds:'spherical warped clouds and fragmented dark dust',galacticArch:true,galacticNormal:normal.toArray(),stars:starCount,stellarDust:tinyStars,time:+time.toFixed(3),animated,moon:true,moonDirection:moonDirection.toArray(),moonDiameterDegrees:1.04,lunarCraters:lunarCraters.length,shootingStars:1,meteorPeriod:53,externalFiles:0,disposed}),
   dispose(){if(disposed)return;disposed=true;for(const t of textures)t.dispose();for(const m of materials)m.dispose();for(const g of geometries)g.dispose();canvas.width=canvas.height=moonCanvas.width=moonCanvas.height=haloCanvas.width=haloCanvas.height=1;root.removeFromParent();root.clear();}
  };
 }

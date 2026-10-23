@@ -2,5 +2,4 @@
 export const GROUND_Y = -.09;
 export const EYE_HEIGHT = 1.74;
 export const TEMPLE_FLOOR = Object.freeze({halfWidth:16,halfDepth:18,walkHalfWidth:15.8,minZ:-13,maxZ:16});
-export const TEMPLE_COLUMNS = Object.freeze([-15,15].flatMap(x=>[-12,-4,4,12].map(z=>Object.freeze({x,z,top:9.52,halfWidth:1.205,shaftRadius:.84}))));
 export const TEMPLE_PORTALS = Object.freeze([-9,0,9].map((x,room)=>Object.freeze({room,x,z:-12,width:4.5,height:10.725,outerHeight:11.913,scaleX:1.25,scaleY:1.65})));

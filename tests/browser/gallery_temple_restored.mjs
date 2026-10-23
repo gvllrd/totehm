@@ -6,7 +6,7 @@ import {execFileSync} from 'node:child_process';
 import {launch,page} from './harness.mjs';
 import {PerspectiveCamera,Vector3} from '../../space/vendor/three-0.180.0.mjs';
 
-const OUT=process.argv[2]||'/tmp/totehm-production/storm-jump-final';
+const OUT=process.argv[2]||'/tmp/totehm-production/open-ocean-temple',terraceOnly=process.argv.includes('--terrace-only');
 const origin='https://www.totehm.space',destinations=['/get_higher','/origins','/play_lisbon_street'];
 const results=[];let checks=0,browser;
 fs.mkdirSync(OUT,{recursive:true});
@@ -145,17 +145,18 @@ async function analogUntil(pg,{x=0,y=0},predicate,arg,{timeout=30000}={}){
 
 try{
  browser=await launch();const noonSamples=new Map();
+ if(!terraceOnly){
  for(const viewport of [{width:1440,height:1000},{width:390,height:844}]){
   const f=await fixture(viewport),{pg,ctx,log,requests}=f,sample={viewport,kind:'night-at-noon'};results.push(sample);const suffix=' at '+viewport.width;
   try{
    await pg.goto(origin+'/');sample.initial=await loaded(pg);
-   check(sample.initial.build==='2026-10-23-space-luminous-sea'&&sample.initial.zone==='temple'&&!sample.initial.fallback,'the luminous-sea temple opens in a real 3D scene'+suffix);
+   check(sample.initial.build==='2026-10-23-space-open-ocean'&&sample.initial.zone==='temple'&&!sample.initial.fallback,'the open-ocean temple opens in a real 3D scene'+suffix);
    check(dayOf(sample.initial)===false&&sample.initial.landscape.permanentNight&&sample.initial.temple.portals.length===3,'the drowned world stays nocturnal at local noon with three antique portals'+suffix);
    check(sample.initial.landscape.sky.milkyWay&&sample.initial.landscape.sky.stars>5000&&sample.initial.landscape.sky.moon,'the sky contains a Milky Way, thousands of stars and a moon'+suffix);
    check(sample.initial.landscape.ocean.displacedGeometry&&sample.initial.landscape.ocean.swells>=2&&sample.initial.landscape.ocean.crestUpperBound<0&&sample.initial.landscape.ocean.baseHeight<sample.initial.landscape.ocean.crestUpperBound,'monumental displaced swells remain below the last summit'+suffix);
    check(sample.initial.temple.trees===0&&sample.initial.temple.flowers===0&&sample.initial.temple.planters===0&&sample.initial.temple.leafCards===0&&sample.initial.temple.vegetation===false&&sample.initial.temple.plants.length===0,'the temple contains no trees, flowers, foliage or planting beds'+suffix);
-   check(sample.initial.temple.columns===8&&sample.initial.temple.columnTops.length===8&&sample.initial.temple.roof===false&&sample.initial.temple.entablature===false&&sample.initial.temple.pediment===false,'only freestanding columns and doors rise above the stone terrace'+suffix);
-   check(sample.initial.temple.archHeight>sample.initial.temple.columnHeight&&sample.initial.temple.doorsAboveColumns&&sample.initial.temple.portals.every(p=>p.width===4.5&&p.height===10.725&&p.outerHeight>9.52),'all three enlarged doors stand above the column capitals'+suffix);
+   check(sample.initial.temple.columns===0&&sample.initial.temple.columnTops.length===0&&sample.initial.temple.roof===false&&sample.initial.temple.entablature===false&&sample.initial.temple.pediment===false,'only three freestanding doors rise above the unobstructed stone terrace'+suffix);
+   check(sample.initial.temple.archHeight===11.913&&sample.initial.temple.portals.every(p=>p.width===4.5&&p.height===10.725&&p.outerHeight>11.9),'all three monumental doors keep their full authored dimensions'+suffix);
    check(await pg.locator('iframe,video,#spatial-player').count()===0,'the temple has no embedded or merged experience player'+suffix);
    check((await pg.evaluate(()=>__templeNative.audio.length))===0&&!sample.initial.audio.unlocked,'sound is not constructed before a real gesture'+suffix);
    check(await pg.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'temple interface fits the viewport'+suffix);
@@ -190,7 +191,7 @@ try{
     }finally{if(viewport.width>=650)await pg.keyboard.up('Space');}
    });
    const afterJump=await state(pg),heights=sample.jumpTrace.map(row=>row.physics.feetHeight);
-   check(Math.max(...heights)>9.6&&sample.jumpTrace.some(row=>row.physics.velocityY>0)&&sample.jumpTrace.some(row=>row.physics.velocityY<0),'a genuine '+(viewport.width<650?'touch':'Space')+' input produces a rising and falling jump high enough to reach a column'+suffix);
+   check(Math.max(...heights)>9.6&&sample.jumpTrace.some(row=>row.physics.velocityY>0)&&sample.jumpTrace.some(row=>row.physics.velocityY<0),'a genuine '+(viewport.width<650?'touch':'Space')+' input produces a rising and falling jump above the stone terrace'+suffix);
    check(afterJump.physics.grounded&&Math.abs(afterJump.physics.feetHeight+.09)<.002&&afterJump.physics.jumps===beforeJump.physics.jumps+1,'landing returns to stone and a held or repeated jump key does not create flight'+suffix);
    await pg.focus('#overview');await pg.keyboard.press('Space');await settled(pg);
    check((await state(pg)).physics.jumps===afterJump.physics.jumps,'Space activates a focused interface button without jumping'+suffix);
@@ -302,41 +303,39 @@ try{
   }catch(error){sample.error=String(error);sample.failed=await state(pg).catch(()=>null);await pg.screenshot({path:OUT+'/failure-physical.png'}).catch(()=>{});throw error;}
   finally{fs.writeFileSync(OUT+'/results.json',JSON.stringify({checks,results},null,2));await close(ctx);}
  }
+ }
  {
-  const {pg,ctx,log}=await fixture({width:1440,height:1000}),sample={kind:'column-jump'};results.push(sample);
+  const {pg,ctx,log}=await fixture({width:1440,height:1000}),sample={kind:'unobstructed-terrace'};results.push(sample);
   try{
    await pg.emulateMedia({reducedMotion:'reduce'});await pg.goto(origin+'/');await loaded(pg);await pg.click('#enter-gallery');
    const start=await project(pg,[12,-.09,-3]);
-   check(start.x>0&&start.x<1440&&start.y>0&&start.y<1000,'the approach to a column is a visible authored floor target');
+   check(start.x>0&&start.x<1440&&start.y>0&&start.y<1000,'the approach to the former column row is a visible floor target');
    await pg.mouse.click(start.x,start.y);
    await pg.waitForFunction(()=>{const d=__totehm_gallery();return Math.abs(d.position[0]-12)<.15&&Math.abs(d.position[1]+3)<.15&&!d.moving;});
-   await analogUntil(pg,{x:.18},()=>__totehm_gallery().position[0]>13.2);
+   await analogUntil(pg,{x:.18},()=>__totehm_gallery().position[0]>14.95);
    await analogUntil(pg,{y:-.18},()=>__totehm_gallery().position[1]<-3.95);
-   sample.approach=await state(pg);
-   const before=sample.approach.physics.jumps;
-   sample.ascent=await recordJump(pg,async()=>{
+   sample.formerColumn=await state(pg);
+   check(sample.formerColumn.position[0]>14.95&&sample.formerColumn.position[1]<-3.95&&sample.formerColumn.physics.grounded&&Math.abs(sample.formerColumn.physics.feetHeight+.09)<.002,'real walking passes through the removed column shaft and base without a ghost collision');
+   const before=sample.formerColumn.physics.jumps;
+   sample.freeJump=await recordJump(pg,async()=>{
     await pg.focus('#space');await pg.keyboard.down('Space');
     try{
      await pg.waitForFunction(()=>__totehm_gallery().physics.feetHeight>9.6,null,{timeout:30000});
-     await pg.keyboard.down('d');
-     await pg.waitForFunction(()=>__totehm_gallery().position[0]>14.65,null,{timeout:45000});
-     await pg.keyboard.up('d');
-     await pg.waitForFunction(()=>{const p=__totehm_gallery().physics;return p.grounded&&p.supportColumn!==null&&Math.abs(p.feetHeight-9.52)<.002;},null,{timeout:45000});
-    }finally{await pg.keyboard.up('d');await pg.keyboard.up('Space');}
+     await pg.waitForFunction(jumps=>{const p=__totehm_gallery().physics;return p.jumps>jumps&&p.grounded;},before,{timeout:45000});
+    }finally{await pg.keyboard.up('Space');}
    });
-   sample.onColumn=await state(pg);
-   check(sample.onColumn.physics.jumps===before+1&&sample.onColumn.physics.grounded&&sample.onColumn.physics.supportColumn!==null&&Math.abs(sample.onColumn.camera.position[1]-11.26)<.003,'Space and air movement land the user on a real 9.52 m column capital');
-   check(sample.ascent.some(row=>row.physics.velocityY<0&&row.physics.feetHeight>9.52)&&sample.ascent.some(row=>row.position[0]<13.9&&row.physics.feetHeight<9),'access to the capital uses a real vertical ascent followed by air movement and descending contact');
-   const stationary=sample.onColumn.physics.feetHeight;await pg.waitForTimeout(350);
-   check(Math.abs((await state(pg)).physics.feetHeight-stationary)<.001,'standing on a column is stable without repeat jumping or vertical drift');
-   await pg.mouse.move(700,500);await pg.mouse.down();await pg.mouse.move(1100,380,{steps:12});await pg.mouse.up();
-   sample.columnPixels=await screenshot(pg,'column-sea-world-1440',{world:true});await screenshot(pg,'column-sea-ui-1440');
-   check(sample.columnPixels.colours>200&&sample.columnPixels.mean>3,'the sea and night remain rendered from the elevated column viewpoint');
+   sample.afterFreeJump=await state(pg);
+   check(sample.afterFreeJump.physics.jumps===before+1&&sample.afterFreeJump.physics.grounded&&sample.afterFreeJump.physics.supportColumn==null&&Math.abs(sample.afterFreeJump.physics.feetHeight+.09)<.002,'jumping at the removed capital returns to the actual terrace with no invisible elevated landing');
+   check(sample.freeJump.some(row=>row.physics.velocityY<0&&row.physics.feetHeight>9.52)&&sample.freeJump.every(row=>row.physics.supportColumn==null),'the entire ascent and descent have no removed-column support');
+   const stationary=sample.afterFreeJump.physics.feetHeight;await pg.waitForTimeout(350);
+   check(Math.abs((await state(pg)).physics.feetHeight-stationary)<.001,'standing on the formerly occupied stone stays stable');
+   await analogUntil(pg,{y:.45},()=>__totehm_gallery().position[1]>4.1);
+   sample.crossedRow=await state(pg);
+   check(sample.crossedRow.position[0]>14.95&&sample.crossedRow.position[1]>4.1&&sample.crossedRow.physics.grounded,'walking along the side crosses the second former column location freely');
    await pg.emulateMedia({reducedMotion:'no-preference'});
-   sample.returnTrace=await recordJump(pg,async()=>{await pg.click('#overview');await settled(pg);});
+   await pg.click('#overview');await settled(pg);
    sample.returned=await state(pg);
-   check(sample.returned.physics.grounded&&sample.returned.physics.supportColumn===null&&Math.abs(sample.returned.physics.feetHeight+.09)<.002&&Math.abs(sample.returned.position[0])<.03&&Math.abs(sample.returned.position[1]-12)<.03,'guided return from a column reaches the entrance on the real floor');
-   check(sample.returnTrace.some(row=>row.physics.velocityY<0&&row.physics.feetHeight>0&&row.physics.feetHeight<9.4),'guided return falls naturally from the capital instead of teleporting vertically');
+   check(sample.returned.physics.grounded&&Math.abs(sample.returned.physics.feetHeight+.09)<.002&&Math.abs(sample.returned.position[0])<.03&&Math.abs(sample.returned.position[1]-12)<.03,'guided return from the open side terrace reaches the original entrance on the floor');
    await pg.locator('.tour [data-room="1"]').click();await settled(pg);await pg.focus('#space');
    sample.airThreshold=await recordJump(pg,async()=>{
     await pg.keyboard.down('Space');await pg.keyboard.down('w');
@@ -355,8 +354,8 @@ try{
    check(sample.behindJamb.position[1]<-12.85&&sample.behindJamb.position[0]<2.85&&new URL(pg.url()).pathname==='/','real walking reaches the rear paving behind a stone doorway jamb');
    sample.rearReturnTrace=await recordJump(pg,async()=>{await pg.click('#overview');await settled(pg);});
    check(Math.abs((await state(pg)).position[0])<.03&&Math.abs((await state(pg)).position[1]-12)<.03&&sample.rearReturnTrace.every(row=>row.physics.grounded),'guided return follows the actual corners around a jamb without cutting through stone');
-   check(errors(log).length===0,'column access, high viewpoints and airborne portal guards have no application or GPU errors');sample.log=log;
-  }catch(error){sample.error=String(error);sample.failed=await state(pg).catch(()=>null);await pg.screenshot({path:OUT+'/failure-column.png'}).catch(()=>{});throw error;}
+   check(errors(log).length===0,'the open terrace, jumping and airborne portal guards have no application or GPU errors');sample.log=log;
+  }catch(error){sample.error=String(error);sample.failed=await state(pg).catch(()=>null);await pg.screenshot({path:OUT+'/failure-open-terrace.png'}).catch(()=>{});throw error;}
   finally{fs.writeFileSync(OUT+'/results.json',JSON.stringify({checks,results},null,2));await close(ctx);}
  }
  {

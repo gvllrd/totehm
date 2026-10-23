@@ -1,7 +1,7 @@
-// Unobstructed walking stone: the former trees and their planting beds are
-// removed from both the scene and its collision map. Guided walks stop at
+// Unobstructed walking stone: no columns or planting beds remain in the
+// scene or collision map. Guided walks stop at
 // the sill; crossing an arch remains an explicit physical transition.
-import {TEMPLE_COLUMNS,TEMPLE_PORTALS} from './gallery-temple-layout.mjs';
+import {TEMPLE_PORTALS} from './gallery-temple-layout.mjs';
 export function createTempleWalkway() {
  const gates=TEMPLE_PORTALS.map(portal=>portal.x),routeEdge=-11.4;
  const finite=p=>p&&Number.isFinite(p.x)&&Number.isFinite(p.z);
@@ -16,13 +16,13 @@ export function createTempleWalkway() {
  }
  function clear(a,b){
   // The walking terrace is convex. Valid endpoints above the sill therefore
-  // define a clear segment; columns remain outside its side boundaries.
+  // define a clear segment through the empty forecourt.
   return !!(finite(a)&&finite(b)&&a.z>=routeEdge&&b.z>=routeEdge&&allowed(a.x,a.z)&&allowed(b.x,b.z));
  }
  function route(from,to){
   if(!finite(from)||!finite(to)||!allowed(to.x,to.z)||to.z<routeEdge||Math.abs(from.x)>15.8||from.z< -13||from.z>16)return null;
   if(clear(from,to))return[from,to];
-  if(Math.abs(from.x)<=14&&!(Number.isFinite(from.y)&&from.y>=10.5)){
+  if(Math.abs(from.x)<=14){
    if(from.z>=routeEdge)return null;
    const distance=Math.min(...gates.map(gate=>Math.abs(from.x-gate)));
    // Openings and the real empty gaps have a clear return to the forecourt.
@@ -32,13 +32,9 @@ export function createTempleWalkway() {
    const gap=[-13.3,-4.5,4.5,13.3].reduce((best,x)=>Math.abs(x-from.x)<Math.abs(best-from.x)?x:best,-13.3);
    return[from,{x:from.x,z:-12.95},{x:gap,z:-12.95},{x:gap,z:-10.6},to];
   }
-  // A return from a column first moves inward, then uses the unobstructed
-  // central terrace. Its height remains the physics engine's responsibility.
+  // The outer edge is empty paving too. Return through the open forecourt;
+  // if the visitor is jumping, gravity continues independently of this route.
   const side=Math.sign(from.x),points=[from];let z=from.z;
-  if(!(Number.isFinite(from.y)&&from.y>=10.5)){
-   const nearby=TEMPLE_COLUMNS.find(column=>Math.sign(column.x)===side&&Math.abs(column.z-z)<1.2);
-   if(nearby){z=Math.max(-13,Math.min(16,nearby.z+(z>=nearby.z?1.25:-1.25)));points.push({x:from.x,z});}
-  }
   const inward={x:side*13.3,z},anchor={x:side*13.3,z:Math.max(-10.6,z)};
   points.push(inward);if(anchor.z!==z)points.push(anchor);points.push(to);return points;
  }

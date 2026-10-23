@@ -19,9 +19,9 @@ export function createDrownedOcean(scene,{
  const textures=new Set(),loader=globalThis.document?new T.TextureLoader():null;
  function fallback(pixel){const t=new T.DataTexture(new Uint8Array(pixel),1,1);t.needsUpdate=true;textures.add(t);return t;}
  const flatNormal=fallback([128,128,255,255]),emptyFoam=fallback([0,0,128,255]);
- // Every term is bounded independently. The four-metre rolled lip is included;
+ // Every term is bounded independently. The five-metre rolled lip is included;
  // even simultaneous constructive interference remains beneath the terrace.
- const crestUpperBound=BASE+36*(1+.30+.12)+4+12*(1+.18)+7+3.6+2.3+1.2;
+ const crestUpperBound=BASE+40*(1+.30+.12)+5+9*(1+.18)+5+3.6+2.3+1.2;
  const uniforms={uOceanTime:{value:0},uMoon:{value:moonDirection.clone().normalize()},uHorizon:{value:horizonColor.clone()},uEnvironment:{value:environmentTexture},uHasEnvironment:{value:!!environmentTexture},uNormalMap:{value:flatNormal},uFoamMap:{value:emptyFoam}};
  function detailMap(name,uniform){
   if(!loader)return;
@@ -57,7 +57,7 @@ export function createDrownedOcean(scene,{
    dz+=vec3(sz.x,de.y*height+e*dh*gradient.y,sz.y);
   }
   OceanSurface oceanSurface(vec2 q,float time){
-   float radius=max(length(q),.001),u=clamp((radius-110.)/190.,0.,1.);
+   float radius=max(length(q),.001),u=clamp((radius-110.)/250.,0.,1.);
    vec2 radial=q/radius;
    // A wave may occupy many metres while its high harmonics are still
    // smaller than a remote radial cell. Filter each frequency before the
@@ -69,9 +69,9 @@ export function createDrownedOcean(scene,{
    float angularStep=radius*6.28318530718/${sectors}.;
    float sampleStep=max(radialStep,angularStep);
    float stepDerivative=radialStep>=angularStep?(radius<${nearEdge}.?0.:farScale):${Math.PI*2/sectors};
-   float e=u*u*(3.-2.*u);vec2 de=q/radius*(6.*u*(1.-u)/190.);
+   float e=u*u*(3.-2.*u);vec2 de=q/radius*(6.*u*(1.-u)/250.);
    vec3 p=vec3(q.x,-96.,q.y),dx=vec3(1,0,0),dz=vec3(0,0,1);
-   vec2 a=q-vec2(-2900.,-4500.),b=q-vec2(3900.,-3600.);
+   vec2 a=q-vec2(-2900.,-4500.),b=q-vec2(-6500.,-4800.);
    float ra=max(length(a),1.),rb=max(length(b),1.);vec2 da=a/ra,db=b/rb;
    vec2 dax=vec2(1.-da.x*da.x,-da.x*da.y)/ra,daz=vec2(-da.x*da.y,1.-da.y*da.y)/ra;
    vec2 dbx=vec2(1.-db.x*db.x,-db.x*db.y)/rb,dbz=vec2(-db.x*db.y,1.-db.y*db.y)/rb;
@@ -88,9 +88,9 @@ export function createDrownedOcean(scene,{
    // Long crests rise and fall along their length, rather than drawing
    // uninterrupted parallel ribbons around the island. The envelope never
    // exceeds one; include its gradient in the actual displaced normal.
-   float crossA=dot(q,vec2(-.839,.544))*.0081+time*.037;
-   float modulation=.88+.12*sin(crossA);
-   vec2 modulationGradient=vec2(-.839,.544)*(.000972*cos(crossA));
+   float crossA=dot(q,vec2(-.839,.544))*.0031+time*.037;
+   float modulation=.94+.06*sin(crossA);
+   vec2 modulationGradient=vec2(-.839,.544)*(.000186*cos(crossA));
    float la=bandLimit(sampleStep*.0136),lb=bandLimit(sampleStep*.0225),lc=bandLimit(sampleStep*.035);
    float dla=bandDerivative(sampleStep*.0136)*.0136*stepDerivative;
    float dlb=bandDerivative(sampleStep*.0225)*.0225*stepDerivative;
@@ -99,17 +99,20 @@ export function createDrownedOcean(scene,{
    vec2 dha=vec2(bandDerivative(sampleStep*.0272)*.0272,bandDerivative(sampleStep*.0408)*.0408)*stepDerivative;
    float hb=bandLimit(sampleStep*.0450),dhb=bandDerivative(sampleStep*.0450)*.0450*stepDerivative;
    float curlFilter=bandLimit(sampleStep*.0544),curlSlope=bandDerivative(sampleStep*.0544)*.0544*stepDerivative;
-   swell(p,dx,dz,da,dax,daz,pa,ga,36.,vec2(.30,.12)*ha,.64,8.*curlFilter,e*la*modulation,(de*la+radial*(e*dla))*modulation+e*la*modulationGradient);
+   // A dominant travelling front, steepened horizontally before it spills.
+   // Smaller swells follow the same storm: they ruffle long ridges instead
+   // of intersecting at right angles to produce isolated conical hills.
+   swell(p,dx,dz,da,dax,daz,pa,ga,40.,vec2(.30,.12)*ha,1.0,10.*curlFilter,e*la*modulation,(de*la+radial*(e*dla))*modulation+e*la*modulationGradient);
    // Include the slowly changing LOD amplitudes in the analytic normal.
-   float harmonicDerivative=36.*(.30*dha.x*sin(pa*2.)+.12*dha.y*sin(pa*3.));
+   float harmonicDerivative=40.*(.30*dha.x*sin(pa*2.)+.12*dha.y*sin(pa*3.));
    float cva=.5+.5*sin(pa+.42),lipA=pow(cva,9.);
-   vec3 curlDerivative=vec3(da.x,.5,da.y)*(8.*curlSlope*lipA);
+   vec3 curlDerivative=vec3(da.x,.5,da.y)*(10.*curlSlope*lipA);
    dx+=e*la*modulation*(vec3(0.,harmonicDerivative*radial.x,0.)+curlDerivative*radial.x);
    dz+=e*la*modulation*(vec3(0.,harmonicDerivative*radial.y,0.)+curlDerivative*radial.y);
-   swell(p,dx,dz,db,dbx,dbz,pb,gb,12.,vec2(.18*hb,0.),.42,0.,e*lb,de*lb+radial*(e*dlb));
-   dx.y+=e*lb*12.*.18*dhb*sin(pb*2.)*radial.x;dz.y+=e*lb*12.*.18*dhb*sin(pb*2.)*radial.y;
+   swell(p,dx,dz,db,dbx,dbz,pb,gb,9.,vec2(.18*hb,0.),.28,0.,e*lb,de*lb+radial*(e*dlb));
+   dx.y+=e*lb*9.*.18*dhb*sin(pb*2.)*radial.x;dz.y+=e*lb*9.*.18*dhb*sin(pb*2.)*radial.y;
    const vec2 dc=vec2(.34014,.94037);float pc=dot(q,dc)*.035-time*.586+.7;
-   swell(p,dx,dz,dc,vec2(0),vec2(0),pc,dc*.035,7.,vec2(0),.18,0.,e*lc,de*lc+radial*(e*dlc));
+   swell(p,dx,dz,dc,vec2(0),vec2(0),pc,dc*.035,5.,vec2(0),.18,0.,e*lc,de*lc+radial*(e*dlc));
    // Resolved short waves taper by 1800m. Beyond it, wind waves are represented
    // by the independently filtered per-pixel normal, not aliased triangles.
    float fu=clamp((radius-160.)/1640.,0.,1.),detail=1.-fu*fu*(3.-2.*fu);
@@ -179,11 +182,11 @@ export function createDrownedOcean(scene,{
     vec3 foamA=texture2D(uFoamMap,flow).rgb;
     vec3 foamB=texture2D(uFoamMap,turn(q)/157.+vec2(.012,-.009)*uOceanTime).rgb;
     float foamPatch=foamB.g*.72+foamA.g*.28;
-    float roughness=.25+.09*foamB.g+smoothstep(900.,5500.,distanceToEye)*.075;
+    float roughness=.22+.075*foamB.g+smoothstep(900.,5500.,distanceToEye)*.085;
     vec3 reflected=reflect(-view,n),sky=marineSky(reflected,roughness);
     // Clear deep water, moonlit body, and light transmitted through thin crests.
     float height=clamp((vWorld.y+146.)/100.,0.,1.),hemi=.5+.5*max(ng.y,0.);
-    float faceLight=.42+.40*nl+.18*hemi;
+    float faceLight=.30+.48*nl+.22*hemi;
     vec3 water=mix(vec3(.003,.017,.029),vec3(.012,.068,.094),height)*faceLight;
     water+=vec3(.004,.014,.021)*(.35+.65*hemi);
     float thin=pow(max(dot(-ng,uMoon),0.),1.5)*vCrest*(.35+.65*(1.-nv));
@@ -201,12 +204,13 @@ export function createDrownedOcean(scene,{
     specular=specular/(1.+specular/1.2);
     colour+=vec3(.62,.78,.96)*specular*.88;
     // A breaking lip, scattered small whitecaps, then stretched cellular wakes.
-    float crest=smoothstep(.40,.82,vBreaking);
+    float crest=smoothstep(.57,.91,vBreaking);
     float foamSkin=pow(clamp(foamA.r*(.65+.35*foamA.b),0.,1.),.8);
-    float froth=crest*smoothstep(.28,.65,foamPatch)*(.12+.88*foamSkin);
+    float lip=exp(-pow(phaseDistance(vPhase.x-.96)/.21,2.))*vEnergy;
+    float froth=(crest*(.07+.66*foamSkin)+lip*(.13+.19*foamSkin))*smoothstep(.24,.66,foamPatch);
     float d=phaseDistance(vPhase.x-1.15);
     float trail=smoothstep(-1.85,-1.06,d)*(1.-smoothstep(-.52,.07,d));
-    float wake=trail*vEnergy*smoothstep(.42,.73,foamPatch)*(.10+.90*foamSkin)*.27;
+    float wake=trail*vEnergy*smoothstep(.46,.76,foamPatch)*(.04+.96*foamSkin)*.20;
     float whitecaps=vShortFoam*smoothstep(.50,.80,foamPatch)*foamSkin*.35;
     float foam=clamp(froth+wake+whitecaps,0.,.97);
     vec3 foamColour=vec3(.54,.62,.65)*(.43+.46*nl+.11*hemi)*(.86+.14*foamA.b);
@@ -231,13 +235,13 @@ export function createDrownedOcean(scene,{
  // It shares the same displacement equations, so particles cannot detach from
  // the swell when time is paused or the user moves around the temple.
  let seed=0x534541;const random=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};
- const sprayCount=mobile?1000:2400,sprayAnchors=new Float32Array(sprayCount*3),sprayLife=new Float32Array(sprayCount),spraySize=new Float32Array(sprayCount);
+ const sprayCount=mobile?1400:3600,sprayAnchors=new Float32Array(sprayCount*3),sprayLife=new Float32Array(sprayCount),spraySize=new Float32Array(sprayCount);
  for(let i=0;i<sprayCount;i++){const angle=random()*Math.PI*2,radius=270+Math.pow(random(),.6)*1650;sprayAnchors.set([Math.cos(angle)*radius,0,Math.sin(angle)*radius],i*3);sprayLife[i]=random();spraySize[i]=.65+random()*2.2;}
  const sprayGeometry=new T.BufferGeometry();sprayGeometry.setAttribute('position',new T.BufferAttribute(sprayAnchors,3));sprayGeometry.setAttribute('aLife',new T.BufferAttribute(sprayLife,1));sprayGeometry.setAttribute('aSize',new T.BufferAttribute(spraySize,1));
  const sprayMaterial=new T.ShaderMaterial({uniforms,transparent:true,depthWrite:false,toneMapped:true,
-  vertexShader:`uniform float uOceanTime;attribute float aLife,aSize;varying float vAlpha;${surface}
-   void main(){float age=fract(aLife+uOceanTime*.125);vec2 anchor=position.xz;OceanSurface seed=oceanSurface(anchor,uOceanTime);float delta=atan(sin(seed.phaseA-1.15),cos(seed.phaseA-1.15));anchor-=seed.gradientA*delta/max(dot(seed.gradientA,seed.gradientA),.00001);OceanSurface sea=oceanSurface(anchor,uOceanTime);vec3 p=sea.p+vec3(age*35.,2.+age*15.-age*age*8.,-age*15.);float distanceToEye=length(cameraPosition-p);vAlpha=sea.breaking*sin(age*3.14159265)*pow(1.-age,1.4)*(1.-smoothstep(1500.,2400.,distanceToEye));gl_PointSize=clamp(aSize*3100./distanceToEye,1.5,32.);gl_Position=projectionMatrix*viewMatrix*vec4(p,1.);}`,
-  fragmentShader:`varying float vAlpha;void main(){vec2 p=(gl_PointCoord-.5)*vec2(.78,1.14);float soft=exp(-dot(p,p)*15.);float alpha=soft*vAlpha*.55;if(alpha<.004)discard;gl_FragColor=vec4(.49,.65,.77,alpha);
+  vertexShader:`uniform float uOceanTime;attribute float aLife,aSize;varying float vAlpha,vMist;${surface}
+   void main(){float age=fract(aLife+uOceanTime*.125);vec2 anchor=position.xz;OceanSurface seed=oceanSurface(anchor,uOceanTime);float delta=atan(sin(seed.phaseA-.96),cos(seed.phaseA-.96));anchor-=seed.gradientA*delta/max(dot(seed.gradientA,seed.gradientA),.00001);OceanSurface sea=oceanSurface(anchor,uOceanTime);vec3 p=sea.p+vec3(age*30.,2.+age*15.-age*age*8.,age*44.);float distanceToEye=length(cameraPosition-p);vMist=step(2.15,aSize);vAlpha=sea.breaking*sin(age*3.14159265)*pow(1.-age,1.4)*(1.-smoothstep(1500.,2400.,distanceToEye));gl_PointSize=clamp(aSize*mix(4300.,14500.,vMist)/distanceToEye,1.5,58.);gl_Position=projectionMatrix*viewMatrix*vec4(p,1.);}`,
+  fragmentShader:`varying float vAlpha,vMist;void main(){vec2 p=(gl_PointCoord-.5)*mix(vec2(.78,1.14),vec2(.60,2.65),vMist);float soft=exp(-dot(p,p)*15.);float alpha=soft*vAlpha*mix(.55,.19,vMist);if(alpha<.003)discard;gl_FragColor=vec4(.49,.65,.77,alpha);
    #include <tonemapping_fragment>
    #include <colorspace_fragment>
   }`
@@ -250,7 +254,7 @@ export function createDrownedOcean(scene,{
   diagnostics:()=>({kind:'rolling-flood-ocean',time:+time.toFixed(4),animated,displacedGeometry:true,swells:3,waveLayers:6,
    baseHeight:BASE,crestUpperBound:+crestUpperBound.toFixed(4),centralCalmRadius:CALM,span:SPAN,
    triangles:geometry.index.count/3,lod:'dense near-field / logarithmic horizon',bandLimited:true,geometryDetailRadius:1800,rings,sectors,rolledCrests:true,analyticNormals:true,
-   foam:'spectral cellular whitecaps and aerated wakes',windRippleLayers:2,detailMapsLoaded,detailMapFailures,detailTextureSize:[1024,1024],detailTextureFiles:2,detailTexturesLocal:true,translucentLips:true,mainWavePeriod:+(Math.PI*2/.365).toFixed(2),sprayParticles:sprayCount,sprayOnMovingCrests:true,skyReflections:!!environmentTexture,externalTextures:0,disposed}),
+   foam:'narrow spilling fronts and cellular aerated wakes',dominantStormFront:true,windStretchedSpindrift:true,windRippleLayers:2,detailMapsLoaded,detailMapFailures,detailTextureSize:[1024,1024],detailTextureFiles:2,detailTexturesLocal:true,translucentLips:true,mainWavePeriod:+(Math.PI*2/.365).toFixed(2),sprayParticles:sprayCount,sprayOnMovingCrests:true,skyReflections:!!environmentTexture,externalTextures:0,disposed}),
   dispose(){if(disposed)return;disposed=true;animated=false;geometry.dispose();material.dispose();sprayGeometry.dispose();sprayMaterial.dispose();for(const t of textures)t.dispose();root.removeFromParent();root.clear();}
  };
 }
