@@ -48,6 +48,8 @@ html{font-family:'Space Mono',monospace}button,input,select,textarea{font-family
   --mid:#b0b0b0;--lo:#909090;--dim:#5a5a5a;--bg:#000;--c1:#1f1f24;--c2:#2a2a30;--c3:#34343a;--ok:#639922;
   --q:'Quantico',sans-serif;--mono:'Space Mono',monospace;--ease:cubic-bezier(.22,.61,.36,1);
   --st:env(safe-area-inset-top,0px);--sb:env(safe-area-inset-bottom,0px);--head:calc(var(--st) + 84px);
+  /* Les douze trous du logo : un MASQUE, donc n'importe quelle couleur passe dessous. Copié de com/totehm.html. */
+  --perfo:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 224.88 224.08' preserveAspectRatio='none'%3E%3Cdefs%3E%3Cmask id='m'%3E%3Crect x='-40' y='-40' width='310' height='310' fill='%23fff'/%3E%3Ccircle cx='56.421' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='56.421' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='112.440' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='112.440' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='168.459' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='168.459' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='56.020' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='56.020' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='112.039' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='112.039' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='168.059' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='168.059' r='13.86' fill='%23000'/%3E%3C/mask%3E%3C/defs%3E%3Crect x='0.402' y='0' width='224.076' height='224.078' fill='%23fff' mask='url(%23m)'/%3E%3C/svg%3E");
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{width:100%;height:100%;background:var(--bg);color:var(--mid);font-family:var(--mono);font-size:12px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow:hidden;overscroll-behavior:none}
@@ -91,7 +93,7 @@ a{color:inherit;text-decoration:none}
 .stage.is-top .inner{margin:8px auto auto}
 
 /* 1 · CLOTH — le vêtement au centre ; ← → les modèles, ↑ ↓ ses vues */
-#viewer{position:relative;width:100%;height:clamp(220px,calc(100dvh - 380px),600px);overflow:hidden;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none;background:#050506}
+#viewer{position:relative;width:100%;height:clamp(200px,calc(100dvh - 400px),560px);overflow:hidden;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none;background:#050506}
 #viewer.is-drag{cursor:grabbing}
 #vw-track{position:absolute;inset:0;transition:transform .44s var(--ease)}
 .model{position:absolute;top:0;width:100%;height:100%;overflow:hidden}
@@ -99,13 +101,13 @@ a{color:inherit;text-decoration:none}
 #viewer.is-drag #vw-track,#viewer.is-drag .angles{transition:none}
 .angles img{position:absolute;left:0;width:100%;height:100%;object-fit:contain;display:block;pointer-events:none;-webkit-user-drag:none}
 .model .none{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
-.m-arrow{position:absolute;top:50%;margin-top:-20px;z-index:3;width:40px;height:40px;border:none;border-radius:10px;background:rgba(31,31,36,.82);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;transition:opacity .2s ease,background .15s ease}
-.m-arrow svg{width:9px;height:15px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-#m-prev{left:6px}#m-next{right:6px}
-.a-arrow{position:absolute;left:50%;margin-left:-22px;z-index:3;width:44px;height:28px;border:none;border-radius:10px;background:none;color:#fff;opacity:.8;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;transition:opacity .2s ease}
-.a-arrow svg{width:15px;height:9px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-#a-up{top:4px}#a-down{bottom:4px}
-.m-arrow.is-dead,.a-arrow.is-dead{opacity:0;pointer-events:none}
+/* LES CURSEURS DU MANCHE (hérités de totehm.com), posés autour de l'image :
+   ← → les modèles · ↑ ↓ les vues du même vêtement. Mêmes chevrons, même taille. */
+#vw-wrap{position:relative;width:100%;padding:22px 24px}
+#vw-wrap .cur{position:absolute;z-index:3}
+#m-prev{left:0;top:50%;margin-top:-9px}#m-next{right:0;top:50%;margin-top:-9px}
+#a-up{top:0;left:50%;margin-left:-9px}#a-down{bottom:0;left:50%;margin-left:-9px}
+.cur.is-dead{opacity:.14;pointer-events:none}
 #a-dots{position:absolute;right:12px;top:14px;z-index:3;display:flex;flex-direction:column;gap:6px}
 #a-dots i,#m-dots i{display:block;width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.22);transition:background-color .25s ease}
 #a-dots i.is-on,#m-dots i.is-on{background:#fff}
@@ -116,9 +118,6 @@ a{color:inherit;text-decoration:none}
 #cl-wear{display:flex;align-items:baseline;gap:9px;max-width:min(100%,360px);padding:6px 12px;background:var(--skin,#333366);color:#fff}
 #cl-wear small{flex:none;font-size:8.5px;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.72)}
 #cl-wear b{min-width:0;font-family:var(--q);font-weight:400;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-#cl-facts .price{color:#fff;font-weight:700;letter-spacing:.04em;font-size:12px}
-#cl-hint{font-size:8.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);transition:opacity .4s ease}
-#cl-hint.is-gone{opacity:0}
 #cl-detail{font-size:11px;line-height:1.65;color:var(--lo);max-width:380px;text-align:center;overflow:hidden;max-height:0;opacity:0;transition:max-height .38s ease,opacity .3s ease}
 #cl-detail.is-on{max-height:260px;opacity:1}
 .cl-links{display:flex;gap:14px;justify-content:center}
@@ -126,14 +125,8 @@ a{color:inherit;text-decoration:none}
 /* 2 · ELEMENT — le Totehm déplié, sur son papier ; la manette n'existe qu'ici */
 #s-element{padding:var(--head) 0 0;overflow:hidden;background:var(--paper,#2b2b57);--rl:46px;--rw:18px}
 #el-rail{position:absolute;top:0;bottom:0;left:var(--rl);width:var(--rw);background:rgba(255,255,255,.3);pointer-events:none}
-#el-head{position:relative;z-index:2;text-align:center;padding:0 16px 10px;flex:0 0 auto}
-#el-q{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.66)}
-#el-title{font-weight:700;font-size:clamp(21px,5.2vw,30px);letter-spacing:.04em;text-transform:uppercase;color:#fff;line-height:1.05;margin-top:6px}
-#el-sub{font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.66);margin-top:4px}
-/* la croix en petit : où l'on est dans le Totehm (un tap y va) */
-#el-map{display:none}  /* 13/10 : une seule vue (MY STORY), plus de carte */
-#el-map button{width:10px;height:10px;border:none;padding:0;background:rgba(255,255,255,.24);cursor:pointer;transition:background-color .3s ease}
-#el-map button.is-here{background:#fff}
+#el-head{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;padding:0 16px 10px;flex:0 0 auto}
+#el-sub{font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.66);margin-top:9px;min-height:12px}
 #el-list{position:relative;z-index:1;flex:1 1 auto;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;padding:4px 16px calc(150px + var(--sb)) 0;display:flex;flex-direction:column;gap:6px;transition:opacity .3s ease,transform .34s var(--ease)}
 .bx{position:relative;margin-left:calc(var(--rl) + var(--rw) + 4px);background:var(--skin,#333366);color:#fff;padding:8px 12px 9px 14px;cursor:pointer;flex:0 0 auto;transition:filter .15s ease,transform .3s var(--ease)}
 @media(hover:hover){.bx:hover{filter:brightness(1.16)}}
@@ -153,29 +146,49 @@ a{color:inherit;text-decoration:none}
 .pal{display:flex;gap:4px}.pal i{width:18px;height:18px;display:block}
 #matter .next{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:4px}
 #matter .mono{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.66)}
-/* LA MANETTE — celle de COM (rayon 15 px, seuil 9 px), blue / navy / rep */
-#joy{position:fixed;z-index:60;left:50%;bottom:calc(16px + var(--sb));transform:translateX(-50%);display:none;
-  grid-template-columns:18px 56px 18px;grid-template-rows:18px 56px 18px;align-items:center;justify-items:center}
-body[data-stage=element] #joy{display:grid}
-#cur-h{grid-area:1/2/2/3}#cur-g{grid-area:2/1/3/2}#joy-box{grid-area:2/2/3/3}#cur-d{grid-area:2/3/3/4}#cur-b{grid-area:3/2/4/3}
+/* LE TOTEHM, LA COMMANDE — il se décompose, on choisit, il se replie.
+   23/10 (Wah) : « totehmiser, c'est cliquer sur le Totehm » — trois papiers
+   (MY STORY · GRIND · VISION), le GRIND s'ouvre en trois boutons dans son
+   navy, puis une box se tape. Jamais une @keyframes : des transitions. */
 .cur{width:18px;height:18px;padding:0;background:none;border:none;color:#fff;cursor:pointer;opacity:.85;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;transition:opacity .15s,transform .15s}
 .cur svg{width:12px;height:12px;stroke:currentColor;stroke-width:2.1;fill:none;stroke-linecap:round;stroke-linejoin:round}
-.cur.mort{opacity:.14;pointer-events:none}
-#joy.vers-g #cur-g,#joy.vers-d #cur-d,#joy.vers-h #cur-h,#joy.vers-b #cur-b{opacity:1;transform:scale(1.3)}
-#joy-box{width:56px;height:56px;position:relative;border:0;padding:0;border-radius:50%;background:var(--joy,var(--navy));box-shadow:0 2px 7px rgba(0,0,0,.5);
-  touch-action:none;cursor:grab;-webkit-tap-highlight-color:transparent;transition:background-color .42s ease,box-shadow .3s ease}
-#joy-box.is-act{box-shadow:0 0 0 2px rgba(255,255,255,.9),0 2px 9px rgba(0,0,0,.55)}
-#joy.is-held #joy-box{box-shadow:0 5px 14px rgba(0,0,0,.65)}
-#joy-box:focus-visible{outline:1px solid var(--mid);outline-offset:4px}
-#joy-stack{position:absolute;inset:0;transform:translate(var(--mx,0px),var(--my,0px));transition:transform .26s cubic-bezier(.22,.9,.3,1);pointer-events:none}
-#joy.is-held #joy-stack{transition:none}
-#joy-stack i{--d:12px;position:absolute;left:50%;display:block;width:var(--d);height:var(--d);margin:calc(var(--d) / -2) 0 0 calc(var(--d) / -2);
-  border-radius:50%;background:var(--c);box-shadow:0 2px 5px rgba(0,0,0,.6);transition:transform .38s cubic-bezier(.22,.9,.3,1),opacity .38s ease}
-#joy-stack .o{top:23%;--c:var(--blue)}#joy-stack .h{top:50%;--c:var(--navy)}#joy-stack .r{top:77%;--c:var(--rep)}
-#joy-stack i.ici{opacity:0;transform:scale(.4)}
-#joy-say{position:fixed;z-index:60;left:50%;bottom:calc(16px + var(--sb) + 98px);transform:translateX(-50%);display:none;
-  font:700 9px/1.4 'Space Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:#fff;white-space:nowrap;pointer-events:none;background:rgba(0,0,0,.6);border-radius:8px;padding:4px 9px}
-body[data-stage=element] #joy-say{display:block}
+@media(hover:hover){.cur:hover{opacity:1;transform:scale(1.25)}}
+
+/* le logo : une BOÎTE navy perforée des douze trous, le T dedans */
+#totehmize,#tz-home{width:64px;height:64px;flex:none;border:0;padding:0;background:var(--navy);cursor:pointer;
+  -webkit-tap-highlight-color:transparent;-webkit-mask-image:var(--perfo);mask-image:var(--perfo);
+  -webkit-mask-size:100% 100%;mask-size:100% 100%;display:flex;align-items:center;justify-content:center;
+  transition:transform .3s var(--ease),background-color .3s ease}
+#totehmize{margin-top:2px}
+#tz-home{width:52px;height:52px}
+.tz-t{font-weight:700;font-size:26px;line-height:1;letter-spacing:.04em;color:#fff}
+#tz-home .tz-t{font-size:21px}
+@media(hover:hover){#totehmize:hover,#tz-home:hover{transform:scale(1.06)}}
+#totehmize:focus-visible,#tz-home:focus-visible{outline:1px solid var(--mid);outline-offset:4px}
+
+/* LA COUTURE — les sept intentions, en points de couture sur un fil.
+   Rien à voir avec le processeur de totehm.com : ici c'est un vêtement. */
+#tz-seam{position:relative;display:flex;gap:7px;align-items:center;justify-content:center;height:14px;margin:9px 0 2px}
+#tz-seam::before{content:'';position:absolute;left:50%;top:50%;width:132px;height:1px;margin-left:-66px;background:rgba(255,255,255,.22)}
+#tz-seam i{position:relative;display:block;width:2px;height:9px;background:var(--c,#fff);opacity:.22;transition:opacity .35s ease,height .35s var(--ease)}
+#tz-seam i.is-on{opacity:1;height:14px}
+
+/* LES TROIS PAPIERS — pliés dans le logo, puis dépliés */
+#tz-papers{display:flex;gap:8px;justify-content:center;align-items:stretch;width:100%;max-width:430px;margin:10px auto 0;
+  opacity:0;transform:translateY(-10px) scale(.94);pointer-events:none;transition:opacity .34s ease,transform .4s var(--ease)}
+#el-head.is-open #tz-papers{opacity:1;transform:none;pointer-events:auto}
+.pap{flex:1 1 0;min-height:86px;border:0;padding:14px 6px;cursor:pointer;color:#fff;font-weight:700;font-size:10px;
+  letter-spacing:.16em;text-transform:uppercase;-webkit-tap-highlight-color:transparent;
+  -webkit-mask-image:var(--perfo);mask-image:var(--perfo);-webkit-mask-size:100% 100%;mask-size:100% 100%;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;transition:filter .2s ease}
+.pap-s{background:var(--rep)}.pap-g{background:var(--navy)}.pap-v{background:var(--blue)}
+@media(hover:hover){.pap:hover{filter:brightness(1.18)}}
+.pap.is-here{filter:brightness(1.22)}
+.g3{display:flex;flex-direction:column;gap:4px;width:100%;max-height:0;opacity:0;overflow:hidden;transition:max-height .32s var(--ease),opacity .26s ease}
+#el-head.is-grind .pap-g .g3{max-height:96px;opacity:1}
+.g3 i{display:block;font-style:normal;font-size:8.5px;letter-spacing:.14em;padding:4px 2px;background:rgba(0,0,0,.34);color:#fff;transition:background-color .2s ease}
+@media(hover:hover){.g3 i:hover{background:rgba(0,0,0,.6)}}
+.g3 i.is-here{background:#000}
 
 /* 3 · NAME — l'élément en tête, le nom en Quantico Coral */
 .el-tile{width:100%;max-width:360px;background:var(--skin,#333366);color:#fff;padding:12px 16px 13px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
@@ -209,6 +222,7 @@ body[data-stage=element] #joy-say{display:block}
 .pz-name{position:absolute;left:0;right:0;top:calc(var(--pz-top,24%) + var(--pz-h,61%) + 3%);font-family:var(--q);font-size:11px;color:var(--coral);text-align:center;pointer-events:none;text-shadow:0 1px 3px rgba(0,0,0,.7)}
 .pz-tag{position:absolute;top:8px;left:0;right:0;font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.75);text-align:center;pointer-events:none}
 .recap{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo);text-align:center}
+.recap .price{color:#fff;font-weight:700;font-size:13px;letter-spacing:.04em;margin-top:4px}
 .recap .nm{font-family:var(--q);font-size:15px;letter-spacing:0;text-transform:none;color:var(--coral)}
 .sizes{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
 .sz{font-weight:700;font-size:12px;color:var(--mid);background:var(--c1);border:1px solid transparent;border-radius:10px;cursor:pointer;min-width:48px;padding:3px 3px;-webkit-tap-highlight-color:transparent;transition:background .15s ease,color .15s ease,border-color .15s ease}
@@ -276,7 +290,6 @@ body[data-stage=element] #joy-say{display:block}
   .stage.is-swap:not(#s-cloth){transition:none!important}
   #s-element.stage:not(#s-done){background:var(--paper,#2b2b57)}
   #s-done{z-index:30;background:#000}
-  #joy,#joy-say{left:calc(50% + var(--jx,0px));transition:left .5s var(--ease)}
   #od-visual{display:none}
 }
 
@@ -286,7 +299,7 @@ body[data-stage=element] #joy-say{display:block}
 
 /* Au chargement, la première scène est là : aucune glissade d'entrée. */
 body.is-boot .stage{transition:none!important}
-@media(prefers-reduced-motion:reduce){.stage,.stage.is-here,#vw-track,.angles,#el-list,.bx,#joy-stack i,#cl-detail{transition:none!important}}
+@media(prefers-reduced-motion:reduce){.stage,.stage.is-here,#vw-track,.angles,#el-list,.bx,#cl-detail{transition:none!important}}
 
 
 
@@ -353,7 +366,6 @@ button.eco-connect{background:#252529!important;border:0!important;border-radius
 .eco-sheet{position:fixed;inset:0;z-index:2147483000;background:rgba(0,0,0,.94);display:flex;justify-content:center;align-items:flex-start;padding:calc(18px + env(safe-area-inset-top,0px)) 16px calc(18px + env(safe-area-inset-bottom,0px));overflow:auto;overscroll-behavior:contain;text-align:left}
 .eco-card{width:min(720px,100%);min-width:0;display:flex;flex-direction:column;gap:18px;margin:auto;touch-action:pan-y}
 .eco-close{align-self:flex-end!important;border:0;border-radius:10px;background:#252529;color:#ddd;font:700 11px 'Space Mono',monospace;cursor:pointer}
-body.eco-modal #joy{pointer-events:none!important;opacity:.2!important}
 body[data-eco-auth="central"] #mw-email,body[data-eco-auth="central"] #mw-code,body[data-eco-auth="central"] #in-email,body[data-eco-auth="central"] #in-otp,body[data-eco-auth="central"] #pt-email,body[data-eco-auth="central"] #pt-otp,body[data-eco-auth="central"] #pt-verify,body[data-eco-auth="central"] #btn-send,body[data-eco-auth="central"] #pt-send,body[data-eco-auth="central"] #btn-verify{display:none!important}
 /* Standalone interface T glyphs are forbidden. The rotating TOTEHM paper keeps its brand artwork. */
 #bigT>svg{visibility:hidden!important}.tv-T{display:none!important}
@@ -369,10 +381,9 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
 </style>
 </head>
 <body data-eco-auth="central" data-stage="cloth" class="is-boot">
-<header id="top">
-  <button class="btn-back" id="back" type="button">Back</button>
-  <button id="conn-bar" type="button" aria-label="member space"><span class="dc" id="conn-dot"></span><span id="conn-txt">CONNECT WITH MY TOTEHM</span></button>
-</header>
+<!-- 23/10 : ni Back, ni coin membre, ni « how it works ». L'expérience parle
+     seule ; la connexion part toute seule au moment de totehmiser, et l'espace
+     membre vit sur totehm.com. La barre des étapes suffit pour revenir. -->
 <nav id="hud" aria-label="The five steps">
   <ol>
     <li><button type="button" data-i="0" aria-label="Cloth"><i></i></button></li>
@@ -388,37 +399,50 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
   <!-- 1 · CLOTH -->
   <section class="stage" id="s-cloth" data-s="cloth" aria-label="Choose the cloth">
     <div class="inner">
-      <div class="kicker">Streetwear · Totehm x Champion 2026</div>
-      <div id="viewer" role="region" aria-label="The cloth — swipe left or right for another, up or down for another view">
-        <div id="vw-track"></div>
-        <div id="vw-zone" aria-hidden="true"></div>
-        <button class="m-arrow cl-only is-dead" id="m-prev" type="button" aria-label="Previous cloth"><svg viewBox="0 0 14 24" aria-hidden="true"><path d="M11 2 L3 12 L11 22"/></svg></button>
-        <button class="m-arrow cl-only is-dead" id="m-next" type="button" aria-label="Next cloth"><svg viewBox="0 0 14 24" aria-hidden="true"><path d="M3 2 L11 12 L3 22"/></svg></button>
-        <button class="a-arrow is-dead" id="a-up" type="button" aria-label="Previous view"><svg viewBox="0 0 24 14" aria-hidden="true"><path d="M2 11 L12 3 L22 11"/></svg></button>
-        <button class="a-arrow is-dead" id="a-down" type="button" aria-label="Next view"><svg viewBox="0 0 24 14" aria-hidden="true"><path d="M2 3 L12 11 L22 3"/></svg></button>
-        <div id="a-dots" aria-hidden="true"></div>
+      <!-- Les curseurs du manche de totehm.com, posés TOUT AUTOUR de l'image :
+           ← → un autre vêtement, ↑ ↓ une autre vue du même vêtement. -->
+      <div id="vw-wrap">
+        <div id="viewer" role="region" aria-label="The cloth — left or right for another, up or down for another view">
+          <div id="vw-track"></div>
+          <div id="vw-zone" aria-hidden="true"></div>
+          <div id="a-dots" aria-hidden="true"></div>
+        </div>
+        <button class="cur cur-x cl-only is-dead" id="m-prev" type="button" aria-label="Previous cloth"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 L5 8 L10 13"/></svg></button>
+        <button class="cur cur-x cl-only is-dead" id="m-next" type="button" aria-label="Next cloth"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3 L11 8 L6 13"/></svg></button>
+        <button class="cur cur-y is-dead" id="a-up" type="button" aria-label="Previous view"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 10 L8 5 L13 10"/></svg></button>
+        <button class="cur cur-y is-dead" id="a-down" type="button" aria-label="Next view"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 6 L8 11 L13 6"/></svg></button>
       </div>
       <div id="m-dots" class="cl-only" aria-hidden="true"></div>
       <div id="cl-title"></div>
       <div id="cl-facts"></div>
       <div id="cl-wear" class="cl-only hide"></div>
-      <button class="btn cta cl-only" id="totehmize" type="button">Totehmize</button>
-      <div id="cl-hint" class="cl-only">swipe ↔ cloths · ↕ views</div>
-      <div class="cl-links cl-only"><button class="lnk" id="cl-more" type="button">details</button><button class="lnk" id="concept-btn" type="button">How it works</button></div>
+      <!-- LE TOTEHM lance la totehmisation : un tap, et il se décompose. -->
+      <button id="totehmize" class="cl-only" type="button" aria-label="Totehmize this cloth"><span class="tz-t">T</span></button>
+      <div class="cl-links cl-only"><button class="lnk" id="cl-more" type="button">details</button></div>
       <div id="cl-detail" class="cl-only"></div>
     </div>
   </section>
 
-  <!-- 2 · ELEMENT — le Totehm déplié -->
+  <!-- 2 · ELEMENT — LE TOTEHM SE DÉCOMPOSE : trois papiers, puis le GRIND
+       s'ouvre en trois. Un tap sur le logo recompose tout. N'IMPORTE QUELLE
+       box du TOTEHM se porte : my story, vision, objective, habit, repulsion. -->
   <section class="stage" id="s-element" data-s="element" aria-label="Choose an element of my TOTEHM">
     <div id="el-rail"></div>
     <div id="el-head">
-      <div id="el-q">pick the element you want to wear</div>
-      <div id="el-title">my story</div>
-      <div id="el-sub">what I pass on</div>
-      <div id="el-map" role="group" aria-label="My story">
-        <button type="button" data-v="wisdom" aria-label="My story"></button>
+      <button id="tz-home" type="button" aria-label="Fold my TOTEHM back"><span class="tz-t">T</span></button>
+      <div id="tz-seam" aria-hidden="true"></div>
+      <div id="tz-papers" role="group" aria-label="My TOTEHM, unfolded">
+        <button class="pap pap-s" type="button" data-v="wisdom">my story</button>
+        <button class="pap pap-g" type="button" data-g="1">grind
+          <span class="g3">
+            <i data-v="objectives">objective</i>
+            <i data-v="habits">habit</i>
+            <i data-v="repulsions">repulsion</i>
+          </span>
+        </button>
+        <button class="pap pap-v" type="button" data-v="visions">vision</button>
       </div>
+      <div id="el-sub"></div>
     </div>
     <div id="el-list"></div>
   </section>
@@ -471,40 +495,12 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
   </section>
 </main>
 
-<!-- LA MANETTE — les cinq vues du Totehm déplié ; le centre porte l'élément choisi -->
-<div id="joy" role="group" aria-label="Move in my TOTEHM">
-  <button class="cur" id="cur-h" type="button" aria-label="Up"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 10 L8 5 L13 10"/></svg></button>
-  <button class="cur" id="cur-g" type="button" aria-label="Left"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 L5 8 L10 13"/></svg></button>
-  <button id="joy-box" type="button" aria-label="Wear the chosen element"><span id="joy-stack" aria-hidden="true"><i class="o"></i><i class="h"></i><i class="r"></i></span></button>
-  <button class="cur" id="cur-d" type="button" aria-label="Right"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3 L11 8 L6 13"/></svg></button>
-  <button class="cur" id="cur-b" type="button" aria-label="Down"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 6 L8 11 L13 6"/></svg></button>
-</div>
-<div id="joy-say" aria-hidden="true"></div>
+<!-- 23/10 : la manette s'en va. Le TOTEHM lui-même est la commande — il se
+     décompose, on choisit une vue, on tape une box. Ses curseurs restent, mais
+     autour du vêtement, là où ils servent (modèles ↔, vues ↕). -->
 
-<!-- MEMBER -->
-<div id="member">
-  <div class="mw-sheet">
-    <button class="btn-back mw-close" id="mw-close" type="button">close</button>
-    <div id="mw-out-state">
-      <div class="mw-body">One account, four doors.</div>
-      <button class="btn eco-connect" id="mw-login" type="button">CONNECT WITH MY TOTEHM</button>
-    </div>
-    <div id="mw-claim-state" class="hide">
-      <div class="mw-body">Choose the name of your Totehm.</div>
-      <input class="mw-input" id="mw-pseudo" maxlength="24" placeholder="your name">
-      <div class="note dim" id="mw-claim-note"></div>
-    </div>
-    <div id="mw-in-state" class="hide" style="display:flex;flex-direction:column;align-items:center;gap:8px;width:100%">
-      <div class="mw-pseudo" id="mw-who"></div>
-      <div class="mw-mail" id="mw-mail"></div>
-      <div class="step-h">My Totehm Cloths</div>
-      <div class="mw-list" id="mw-list"></div>
-      <button class="lnk" id="mw-signout" type="button">sign out</button>
-    </div>
-    <!-- 01/10 : la DERNIÈRE entrée du menu membre, dans tous les états. -->
-    <a class="lnk" href="https://www.totehm.com/terms" target="_blank" rel="noopener">Simple terms of use</a>
-  </div>
-</div>
+<!-- 23/10 : plus de fenêtre membre ici. Sans nom de TOTEHM, on part le choisir
+     sur totehm.com — c'est là que le TOTEHM vit. -->
 
 <!-- LE PASSEPORT -->
 <div id="pass" role="dialog" aria-label="Your TOTEHM is the passport">
@@ -517,11 +513,7 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
   <button class="btn-back" id="pass-x" type="button">back</button>
 </div>
 
-<!-- COMMENT ÇA MARCHE -->
-<div id="concept">
-  <button class="btn-back" id="concept-back" type="button">back</button>
-  <h1>How it works</h1>
-  <div class="slide"><div class="slide-title">1 · Choose the cloth.</div><div class="slide-cap">Swipe the cloths, turn them: a limited edition, made to order.</div></div>
+<!-- 23/10 : « How it works » retiré — la totehmisation se raconte toute seule. --><div class="slide-cap">Swipe the cloths, turn them: a limited edition, made to order.</div></div>
   <div class="slide"><div class="slide-title">2 · Pick one element of your TOTEHM.</div><div class="slide-cap">Your story — what you pass on. A cloth speaks to others. It becomes an original artwork, in a curated style.</div></div>
   <div class="slide"><div class="slide-title">3 · Name it.</div><div class="slide-cap">0.name is printed with the artwork. Decoded on higher.boutique, it reveals the element behind the cloth — and the artwork, once it has landed.</div></div>
 </div>
@@ -646,22 +638,22 @@ sb.auth.onAuthStateChange(ev => {
 }
 
 /* ══ L'ÉTAT — une pièce en cours, cinq scènes ═════════════════════════ */
-const BUILD='2026-10-13-story';
+const BUILD='2026-10-23-any-box';
 const STAGES=['cloth','element','name','style','order'];
 const LABEL={cloth:'Cloth',element:'Element',name:'Name',style:'Style',order:'Order',done:''};
 const SIZES=['XS','S','M','L','XL','2XL','3XL','4XL','5XL'];
 const FLOW_KEY='totehm_cloth_flow';
 let supports=[],ci=0,ai=0,stage='cloth';
 const IMG={},ANG={};
-let me=null,myProfile=null,TOT=null,vue='wisdom',styles=[],stylesLoaded=false,TEST=false;
+let me=null,myProfile=null,TOT=null,vue=null,styles=[],stylesLoaded=false,TEST=false;
 const F={support:null,el:null,want:null,nameRaw:'',nameOk:false,style:null,size:''};
-let OPEN=null,PENDING=null,ORDERING=false,GOING=false;
+let OPEN=null,ORDERING=false,GOING=false;
 /* L'historique est une pile LINÉAIRE des scènes (cloth → … → order) : le bouton
    Back, la barre des étapes et le geste « retour » du téléphone disent la même chose. */
 let HIST=[],READY=false,SWAPPING=false;
 const desktop=()=>matchMedia('(min-width:900px)').matches;
 /* La place libre (ordinateur) : la fenêtre-côté ouverte, et le vêtement qui se décale. */
-const sideOf=s=>s==='element'?(vue==='wisdom'?'left':'right'):['name','style','order'].includes(s)?'right':'none';
+const sideOf=s=>s==='element'?'left':['name','style','order'].includes(s)?'right':'none';
 function placePanel(el,left){el.classList.add('is-swap');el.classList.toggle('is-left',left);void el.offsetWidth;el.classList.remove('is-swap');}
 
 const esc=s=>{const d=document.createElement('div');d.textContent=s==null?'':String(s);return d.innerHTML;};
@@ -677,7 +669,8 @@ function note(id,cls,txt){const n=$(id);n.className='note '+cls;n.textContent=tx
 /* Le diagnostic — des booléens et des compteurs, jamais le texte d'un élément.
    Dans la console : __totehm_cloth() */
 window.__totehm_cloth=()=>({build:BUILD,ready:READY,stage,side:document.body.dataset.side||'none',desktop:desktop(),signed_in:!!me,supports:supports.length,model:ci,angles:imgs(cur()).length,angle:ai,
-  joystick:getComputedStyle($('joy')).display!=='none',views:TOT?Object.values(TOT).filter(a=>a.length).length:0,view:vue,open:!!OPEN,
+  papers:$('el-head').classList.contains('is-open'),grind:$('el-head').classList.contains('is-grind'),
+  views:TOT?Object.values(TOT).filter(a=>a.length).length:0,view:vue,open:!!OPEN,seam:$('tz-seam').querySelectorAll('i.is-on').length,
   element:F.el?F.el.kind:null,wanted:!!F.want,named:F.nameOk,style:!!F.style,size:!!F.size,test:TEST,zone:!!$('vw-zone').firstChild});
 
 /* ── La pièce en cours survit à l'aller-retour (connexion, Stripe annulé) ── */
@@ -698,7 +691,8 @@ function canShow(s){
 function show(s,mode='push'){
   if(!canShow(s))s='cloth';
   const k=STAGES.indexOf(s);
-  if(s==='element')placePanel($('s-element'),vue==='wisdom');
+  /* 23/10 : le TOTEHM arrive toujours du MÊME côté — il n'y a plus de voisines. */
+  if(s==='element')placePanel($('s-element'),true);
   document.querySelectorAll('.stage').forEach(el=>{
     const here=el.dataset.s===s,i=STAGES.indexOf(el.dataset.s);
     el.classList.toggle('is-here',here);el.classList.toggle('is-past',!here&&(s==='done'||(i>=0&&i<k)));
@@ -709,7 +703,7 @@ function show(s,mode='push'){
   if(mode==='push'){history.pushState({s},'');HIST.push(s);}
   else if(mode==='replace'){history.replaceState({s},'');HIST[Math.max(0,HIST.length-1)]=s;}
   if(document.body.classList.contains('is-boot'))requestAnimationFrame(()=>requestAnimationFrame(()=>document.body.classList.remove('is-boot')));
-  if(s==='element')paintJoy();
+  if(s==='element'){openTz();renderEl();}
   if(s==='name')enterName();
   if(s==='style')enterStyle();
   if(s==='order')enterOrder();
@@ -735,7 +729,6 @@ function back(){
   if(stage==='cloth'||stage==='done'){location.href='/';return;}
   goBackTo(STAGES[STAGES.indexOf(stage)-1]||'cloth');
 }
-$('back').onclick=back;
 
 /* ══ 1 · CLOTH — le vêtement au centre ═══════════════════════════════ */
 async function loadSupports(){
@@ -780,26 +773,25 @@ function paintCloth(){
   $('m-dots').innerHTML=n>1?supports.map((_,i)=>'<i'+(i===ci?' class="is-on"':'')+'></i>').join(''):'';
   $('a-dots').innerHTML=L>1?Array.from({length:L},(_,j)=>'<i'+(j===ai?' class="is-on"':'')+'></i>').join(''):'';
   const b=$('totehmize');
-  /* L'indice du geste ne dit que ce qui existe : d'autres vêtements, d'autres vues. */
-  $('cl-hint').textContent=n>1&&L>1?'swipe ↔ cloths · ↕ views':n>1?'swipe ↔ cloths':L>1?'swipe ↕ views':'';
   if(!s){$('cl-title').textContent='';$('cl-facts').innerHTML='';b.classList.add('hide');$('cl-more').classList.add('hide');return;}
-  const left=avail(s),sz=sizesOf(s);
+  const left=avail(s);
   $('cl-title').textContent=s.title||'';
-  $('cl-facts').innerHTML=left>0?'<span class="price">'+esc(price(s))+'</span><span>'+left+' / '+(s.max_pieces||0)+' left</span>'+(sz.length?'<span>'+esc(sz.join(' · '))+'</span>':''):'<span>sold out</span>';
-  b.classList.remove('hide');b.disabled=left<=0;b.textContent=left>0?'Totehmize':'Sold out';
+  /* 23/10 : au début, SEULEMENT ce qui reste. Le prix arrive à la fin, dans ORDER,
+     là où on le paie ; la taille se choisit là aussi. */
+  $('cl-facts').innerHTML=left>0?'<span>'+left+' / '+(s.max_pieces||0)+' left</span>':'<span>sold out</span>';
+  b.classList.remove('hide');b.disabled=left<=0;b.setAttribute('aria-label',left>0?'Totehmize this cloth':'Sold out');
   const cw=$('cl-wear');cw.classList.toggle('hide',!F.el);
   if(F.el){cw.style.setProperty('--skin',SKIN[F.el.view]||'#333366');cw.innerHTML='<small>'+esc(NOM[F.el.view]?.[0]||'my element')+'</small><b>'+esc(F.el.text)+'</b>';}
   $('cl-more').classList.toggle('hide',!s.details);$('cl-detail').textContent=s.details||'';$('cl-detail').classList.remove('is-on');
 }
-function hintGone(){$('cl-hint').classList.add('is-gone');}
 function model(d){
   if(stage!=='cloth')return;
   const n=ci+d;if(n<0||n>=supports.length){placeViewer();return;}
-  ANG[ci]=ai;ci=n;ai=ANG[ci]||0;placeViewer();paintCloth();hintGone();save();
+  ANG[ci]=ai;ci=n;ai=ANG[ci]||0;placeViewer();paintCloth();save();
 }
 function angle(d){
   const L=imgs(cur()).length,n=ai+d;if(n<0||n>=L){placeViewer();return;}
-  ai=n;ANG[ci]=ai;placeViewer();paintCloth();hintGone();save();
+  ai=n;ANG[ci]=ai;placeViewer();paintCloth();save();
 }
 $('m-prev').onclick=()=>model(-1);$('m-next').onclick=()=>model(1);
 $('a-up').onclick=()=>angle(-1);$('a-down').onclick=()=>angle(1);
@@ -840,11 +832,14 @@ $('cl-more').onclick=()=>$('cl-detail').classList.toggle('is-on');
 })();
 
 /* ══ LE MEMBRE ════════════════════════════════════════════════════════ */
-function connPaint(){$('conn-txt').textContent=(myProfile?.pseudo)||(me?'Member':'CONNECT WITH MY TOTEHM');}
+/* 23/10 : plus de fenêtre membre ici. On lit seulement QUI est là ; le nom, les
+   Cloths et les réglages vivent sur totehm.com — une seule maison. */
+const COM_IN='https://www.totehm.com/totehm#in';
 async function loadProfile(){
-  if(!me){myProfile=null;connPaint();return;}
+  if(!me){myProfile=null;return;}
   const{data,error}=await sb.from('profiles').select('pseudo').eq('id',me.id).maybeSingle();
-  if(error)console.error('[profiles]',error.message);myProfile=data||null;connPaint();
+  if(error)console.error('[profiles]',error.message);
+  myProfile=data||null;
 }
 async function loadTest(){
   TEST=false;if(!me)return;
@@ -852,41 +847,11 @@ async function loadTest(){
   if(error)console.error('[my_streetwear_test_mode]',error.message);
   TEST=data===true;if(stage==='order')enterOrder();
 }
-const STAGE_WORD={draft:'',paid:'in the making',generating:'in the making',curation:'in the making',approved:'in the making',error_locked:'in the making',production:'in production',shipped:'shipped',cancelled:'cancelled'};
-function memberPaint(){
-  $('mw-out-state').classList.toggle('hide',!!me);
-  $('mw-claim-state').classList.toggle('hide',!(me&&!myProfile));
-  $('mw-in-state').classList.toggle('hide',!(me&&myProfile));
-  if(me&&myProfile){$('mw-who').textContent=myProfile.pseudo;$('mw-mail').textContent=me.email||'';loadCloths();}
-}
-async function loadCloths(){
-  const box=$('mw-list');box.innerHTML='<div class="note dim">…</div>';
-  const{data,error}=await sb.from('totehm_clothes').select('name,status,paid_at').eq('user_id',me.id).not('paid_at','is',null).order('paid_at',{ascending:false});
-  if(error)console.error('[totehm_clothes]',error.message);
-  if(!data?.length){box.innerHTML='<div class="note dim" style="text-align:center">none yet</div>';return;}
-  box.innerHTML=data.map(c=>'<a class="mw-row" href="/?decode='+encodeURIComponent(c.name)+'"><span>'+esc(c.name)+'</span><span class="st">'+esc(STAGE_WORD[c.status]||'')+'</span></a>').join('');
-}
-const openMember=()=>{$('member').classList.add('is-open');memberPaint();};
-$('conn-bar').onclick=openMember;
-$('mw-close').onclick=()=>{$('member').classList.remove('is-open');PENDING=null;};
-$('member').addEventListener('click',e=>{if(e.target===$('member')){$('member').classList.remove('is-open');PENDING=null;}});
-$('mw-login').onclick=()=>{save();ssoLogin(false,'/streetwear');};
-$('mw-pseudo').addEventListener('keydown',async e=>{
-  if(e.key!=='Enter')return;
-  const v=$('mw-pseudo').value.trim();
-  if(v.length<3||v.length>24){note('mw-claim-note','no','3 to 24 characters');return;}
-  note('mw-claim-note','dim','…');
-  const{error}=await sb.from('profiles').insert({id:me.id,pseudo:v});
-  if(error){console.error('[profiles]',error.message);note('mw-claim-note','no',error.code==='23505'?'already taken':'try again');return;}
-  note('mw-claim-note','dim','');await loadProfile();memberPaint();
-  if(PENDING==='element'){PENDING=null;$('member').classList.remove('is-open');toElement();}
-});
-$('mw-signout').onclick=async()=>{const{error}=await sb.auth.signOut();if(error)console.error('[signout]',error.message);$('member').classList.remove('is-open');};
 /* Le rappel d'auth reste SYNCHRONE ; la lecture du profil part ensuite (verrou Supabase, 03/10). */
 sb.auth.onAuthStateChange(()=>{setTimeout(async()=>{
   const{data:{session}}=await sb.auth.getSession();const was=me?.id||null;me=session?.user||null;
   if((me?.id||null)===was)return;
-  await loadProfile();TOT=null;loadTest();memberPaint();
+  await loadProfile();TOT=null;loadTest();
   if(!me&&stage!=='cloth'&&stage!=='done')show('cloth','replace');
 },0);});
 
@@ -895,7 +860,7 @@ async function totehmize(){
   const s=cur();if(!s||avail(s)<=0||GOING)return;
   F.support=s;save('element');
   if(!me){ssoLogin(false,'/streetwear');return;}
-  if(!myProfile){PENDING='element';openMember();return;}
+  if(!myProfile){ssoVersDomaine(sb,'com',COM_IN);return;}
   await toElement();
 }
 $('totehmize').onclick=totehmize;
@@ -914,8 +879,10 @@ async function toElement(){
   if(GOING)return;GOING=true;const b=$('totehmize');b.disabled=true;b.textContent='opening…';
   try{
     if(!await ensureTotehm())return;
-    applyWant();
-    vue='wisdom';renderEl();
+    /* Un élément déjà choisi (arrivé de COM, ou repris) rouvre SA vue ; sinon le
+       TOTEHM s'ouvre sans rien de choisi, et c'est Wah qui tape. */
+    if(!applyWant()&&F.el)vue=F.el.view;else if(!F.el)vue=null;
+    openTz();renderEl();
     if(F.el){history.pushState({s:'element'},'');HIST.push('element');show('name');}else show('element');
   }finally{GOING=false;paintCloth();}
 }
@@ -926,29 +893,33 @@ $('pass-go').onclick=()=>ssoVersDomaine(sb,'com','https://www.totehm.com/totehm#
 const INTS={fight:['Fight','#E24B4A','BODY'],flow:['Flow','#e48b31','BODY'],enrich:['Enrich','#fcbe21','MENTAL'],love:['Love','#639922','SPIRIT'],
   express:['Express','#1D9E75','SOUL'],focus:['Focus','#378ADD','MENTAL'],celebrate:['Celebrate','#7F77DD','SOUL']};
 const icol=i=>(INTS[i]||[])[1]||'#ffffff';
-/* 08/10 (bis) — Wah : « pour la totehmisation vêtement, garder seulement WISDOM
-   (ce que je veux transmettre) et VISION (ce que j'imagine pour le monde) ». Un
-   vêtement parle aux autres : l'axe du TEMPS de la croix, le passé ← → le futur.
-   Les habitudes, objectifs et répulsions restent à soi. `create-checkout` refuse
-   les autres.
-   13/10 — Wah : un Cloth ne porte plus que MY STORY (le nom d'écran de WISDOM) ; la VISION reste à soi
-   (son image vit dans COM). `create-checkout` v41 refuse `vision`. */
-const CROIX={wisdom:{}};
-const NOM={wisdom:['my story','what I pass on']};
-const SKIN={wisdom:'#743169'};
-const PAPER={wisdom:'#5b2652'};
-const KIND={wisdom:'wisdom'};
-const WEARABLE=['wisdom'];
-/* 08/10 (ter) — Wah : « on a lié SPACE à COM ; la fonction totehmiser devrait
-   aller se caler dans les deux vues ». Dans COM, « + totehmize » d'une leçon ou
-   d'une vision arrive ici en `?wear=wisdom:<id>` (ou `vision:`) : l'élément est
-   RELU dans MON Totehm (`my_trips`), jamais cru sur parole — introuvable (effacé,
-   autre compte), il est oublié et la page reprend son cours. Le vêtement se
-   choisit toujours d'abord ; TOTEHMIZE mène alors droit au NAME. */
-function parseWear(q){const m=/^(wisdom):([A-Za-z0-9-]{1,64})$/.exec(String(q||''));return m?{kind:m[1],ref:m[2]}:null;}
+/* 23/10 — Wah : « la totehmisation peut s'appliquer à n'importe quelle box-element
+   du Totehm ». Les cinq vues reviennent donc ici. Le TOTEHM se décompose en TROIS
+   papiers — MY STORY · GRIND · VISION — et le GRIND s'ouvre en ses trois boutons.
+   Le serveur relit l'élément dans le Totehm de la session : la page ne décide rien. */
+const VIEWS={
+  wisdom:    {nom:'my story', sub:'what I pass on',  kind:'wisdom',    skin:'#743169', paper:'#5b2652'},
+  visions:   {nom:'vision',   sub:'what I imagine',  kind:'vision',    skin:'#36498c', paper:'#263362'},
+  objectives:{nom:'objective',sub:'what I chase',    kind:'objective', skin:'#36498c', paper:'#22224a'},
+  habits:    {nom:'habit',    sub:'what I repeat',   kind:'habit',     skin:'#333366', paper:'#22224a'},
+  repulsions:{nom:'repulsion',sub:'what I refuse',   kind:'repulsion', skin:'#743169', paper:'#51224a'}
+};
+const SKIN=Object.fromEntries(Object.entries(VIEWS).map(([k,v])=>[k,v.skin]));
+const PAPER=Object.fromEntries(Object.entries(VIEWS).map(([k,v])=>[k,v.paper]));
+const KIND=Object.fromEntries(Object.entries(VIEWS).map(([k,v])=>[k,v.kind]));
+const NOM=Object.fromEntries(Object.entries(VIEWS).map(([k,v])=>[k,[v.nom,v.sub]]));
+const VUE_DE=Object.fromEntries(Object.entries(VIEWS).map(([k,v])=>[v.kind,k]));
+const GRIND=['objectives','habits','repulsions'];
+/* « + totehmize » d'une box de COM arrive en `?wear=<kind>:<ref>` ; une habit porte
+   son TEXTE pour référence. On ne croit rien de l'adresse : `my_trips` tranche. */
+function parseWear(q){
+  const m=/^(habit|objective|repulsion|wisdom|vision):([\s\S]{1,160})$/.exec(String(q||''));
+  return m?{kind:m[1],ref:m[2]}:null;
+}
 function applyWant(){
   const w=F.want;if(!w||!TOT)return false;F.want=null;
-  const v='wisdom',o=(TOT[v]||[]).find(x=>String(x.ref)===String(w.ref));
+  const v=VUE_DE[w.kind];if(!v)return false;
+  const o=(TOT[v]||[]).find(x=>String(x.ref)===String(w.ref));
   if(!o){console.info('[wear] element not found');return false;}
   F.el={kind:w.kind,ref:String(o.ref),view:v,text:o.text,is:o.is||[]};vue=v;return true;
 }
@@ -961,8 +932,16 @@ async function loadTotehm(){
   const{data,error}=await sb.rpc('my_trips');
   if(error){console.error('[totehm]',error.message);return;}
   const t=data||{};
-  TOT={
-    wisdom:(t.wisdom||[]).filter(w=>(w.text||'').trim()).map(w=>({ref:w.id,text:w.text,is:w.is||[]}))};
+  const net=a=>(a||[]).filter(x=>(x.text||'').trim()).map(x=>({ref:x.id,text:x.text,is:x.is||[]}));
+  /* Une habit n'a pas d'identifiant : son TEXTE est sa référence (c'est ce que lit
+     `_box_matter`). Celles d'un objectif et les libres, sans doublon. */
+  const hs=new Map();
+  [...(t.loose||[]),...(t.trips||[]).flatMap(o=>o.habits||[])].forEach(h=>{
+    const txt=(h.t||'').trim();if(!txt||hs.has(txt))return;
+    hs.set(txt,{ref:txt,text:txt,is:h.i?[h.i]:[]});
+  });
+  TOT={wisdom:net(t.wisdom),visions:net(t.visions),objectives:net(t.trips),
+       repulsions:net(t.reps),habits:[...hs.values()]};
 }
 const tick=l=>'<span class="tick">'+(l||[]).map(i=>'<i style="background:'+icol(i)+'"></i>').join('')+'</span>';
 function boxHTML(o,k){
@@ -970,71 +949,46 @@ function boxHTML(o,k){
   const sub=i0?'<span style="color:'+icol(i0)+';font-weight:700">'+INTS[i0][0]+'</span><span style="color:rgba(255,255,255,.5)">'+INTS[i0][2]+'</span>':'';
   return '<div class="bx" style="--skin:'+SKIN[vue]+'" data-k="'+k+'" role="button" tabindex="0">'+tick(o.is)+'<div class="nm">'+esc(o.text)+'</div>'+(sub?'<div class="sb">'+sub+'</div>':'')+'</div>';
 }
+function paintSeam(l){
+  /* LA COUTURE : sept points sur un fil. Allumés = les intentions de ce qu'on regarde. */
+  const on=new Set(l||[]);
+  $('tz-seam').innerHTML=Object.keys(INTS).map(i=>'<i style="--c:'+icol(i)+'"'+(on.has(i)?' class="is-on"':'')+'></i>').join('');
+}
 function renderEl(dir){
   OPEN=null;MT_SEQ++;
+  const head=$('el-head'),list=$('el-list');
+  head.classList.toggle('is-grind',GRIND.includes(vue));
+  $('tz-papers').querySelectorAll('[data-v]').forEach(b=>b.classList.toggle('is-here',b.dataset.v===vue));
+  if(!vue){
+    $('s-element').style.setProperty('--paper','#141428');
+    $('el-sub').textContent='tap a view';list.innerHTML='';paintSeam();return;
+  }
   $('s-element').style.setProperty('--paper',PAPER[vue]);
-  $('el-title').textContent=NOM[vue][0];$('el-sub').textContent=NOM[vue][1];
-  const l=(TOT&&TOT[vue])||[],list=$('el-list');
+  $('el-sub').textContent=NOM[vue][0]+' · '+NOM[vue][1];
+  const l=(TOT&&TOT[vue])||[];
   list.innerHTML=l.length?l.map((o,k)=>boxHTML(o,k)).join(''):'<div class="v-empty">nothing written here yet<button class="lnk" id="el-write" type="button">write it on totehm.com</button></div>';
-  if($('el-write'))$('el-write').onclick=()=>ssoVersDomaine(sb,'com','https://www.totehm.com/totehm#in');
-  /* La vue arrive du côté où l'on va : une transition, jamais une @keyframes. */
-  if(dir){const off={g:'-28px,0',d:'28px,0',h:'0,-24px',b:'0,24px'}[dir]||'0,0';
-    list.style.transition='none';list.style.opacity='0';list.style.transform='translate('+off+')';void list.offsetWidth;
+  if($('el-write'))$('el-write').onclick=()=>ssoVersDomaine(sb,'com',COM_IN);
+  /* La liste arrive d'en haut, comme le papier qui se déplie : une transition. */
+  if(dir){list.style.transition='none';list.style.opacity='0';list.style.transform='translateY(-14px)';void list.offsetWidth;
     list.style.transition='';list.style.opacity='';list.style.transform='';}
   list.scrollTop=0;
-  $('el-map').querySelectorAll('button').forEach(b=>b.classList.toggle('is-here',b.dataset.v===vue));
-  paintJoy();
+  paintSeam(l.flatMap(o=>o.is||[]));
 }
-function goVue(d){
-  const n=CROIX[vue]?.[d];if(!n||SWAPPING)return;
-  if(!(desktop()&&stage==='element')){vue=n;renderEl(d);return;}
-  /* Ordinateur : la fenêtre sort de son côté, le vêtement glisse, l'autre fenêtre entre par le sien. */
-  SWAPPING=true;const p=$('s-element');
-  vue=n;document.body.dataset.side=sideOf('element');p.classList.remove('is-here');
-  setTimeout(()=>{placePanel(p,vue==='wisdom');renderEl();p.classList.add('is-here');SWAPPING=false;},300);
-}
-$('el-map').querySelectorAll('button').forEach(b=>b.onclick=()=>{if(b.dataset.v!==vue){vue=b.dataset.v;renderEl();}});
-function paintJoy(t){
-  const jb=$('joy-box');jb.style.setProperty('--joy',SKIN[vue]);
-  ['h','g','d','b'].forEach(d=>$('cur-'+d).classList.toggle('mort',!CROIX[vue][d]));
-  jb.classList.toggle('is-act',!!OPEN);
-  $('joy-say').textContent=t?NOM[CROIX[vue][t]][0]:(OPEN?'tap · wear it':NOM[vue][0]);
-}
-(function manette(){
-  const jy=$('joy'),jb=$('joy-box'),js=$('joy-stack'),R=15,SEUIL=9;let id=null,x0=0,y0=0,dx=0,dy=0,loin=0;
-  const pose=(a,b)=>{js.style.setProperty('--mx',a.toFixed(1)+'px');js.style.setProperty('--my',b.toFixed(1)+'px');};
-  const sens=()=>{if(Math.max(Math.abs(dx),Math.abs(dy))<SEUIL)return null;const d=Math.abs(dx)>Math.abs(dy)?(dx<0?'g':'d'):(dy<0?'h':'b');return CROIX[vue][d]?d:null;};
-  const vise=v=>{['g','d','h','b'].forEach(k=>jy.classList.toggle('vers-'+k,k===v));paintJoy(v);};
-  jb.addEventListener('pointerdown',e=>{if(e.button>0||id!==null)return;id=e.pointerId;x0=e.clientX;y0=e.clientY;dx=dy=loin=0;jy.classList.add('is-held');try{jb.setPointerCapture(id);}catch(_){}e.preventDefault();});
-  jb.addEventListener('pointermove',e=>{if(id!==e.pointerId)return;const a=e.clientX-x0,b=e.clientY-y0,d=Math.hypot(a,b),k=d>R?R/d:1;dx=a*k;dy=b*k;loin=Math.max(loin,d);pose(dx,dy);vise(sens());});
-  const lache=(e,annule)=>{if(id===null||e.pointerId!==id)return;const v=annule?null:sens();try{jb.releasePointerCapture(id);}catch(_){}id=null;pose(0,0);jy.classList.remove('is-held');vise(null);
-    if(annule)return;if(v)goVue(v);else if(loin<4)joyTap();};
-  jb.addEventListener('pointerup',e=>lache(e,false));jb.addEventListener('pointercancel',e=>lache(e,true));
-  jb.addEventListener('click',e=>{if(e.detail===0)joyTap();});
-  ['h','g','d','b'].forEach(d=>$('cur-'+d).onclick=()=>goVue(d));
-  let froid=0;
-  jy.addEventListener('wheel',e=>{e.preventDefault();if(Date.now()<froid||Math.max(Math.abs(e.deltaX),Math.abs(e.deltaY))<8)return;froid=Date.now()+450;
-    goVue(Math.abs(e.deltaX)>Math.abs(e.deltaY)?(e.deltaX>0?'d':'g'):(e.deltaY>0?'b':'h'));},{passive:false});
-})();
-function joyTap(){if(OPEN)pick();else{const b=$('el-list').querySelector('.bx');if(b)b.focus({preventScroll:true});}}
-/* Le doigt glisse sur la liste : gauche/droite = la vue voisine ; le défilement vertical reste natif. */
-(function listSwipe(){
-  const l=$('el-list');let s=null;
-  l.addEventListener('pointerdown',e=>{if(e.pointerType==='mouse')return;s={x:e.clientX,y:e.clientY};});
-  l.addEventListener('pointerup',e=>{if(!s)return;const dx=e.clientX-s.x,dy=e.clientY-s.y;s=null;if(Math.abs(dx)>60&&Math.abs(dx)>1.6*Math.abs(dy))goVue(dx<0?'d':'g');});
-  l.addEventListener('pointercancel',()=>{s=null;});
-  /* Le trackpad : horizontal = la vue voisine ; vertical = la liste, puis la vue au bout. */
-  let acc={x:0,y:0},last=0,lock=false;
-  $('s-element').addEventListener('wheel',e=>{
-    if(e.target.closest('#joy'))return;
-    const horiz=Math.abs(e.deltaX)>Math.abs(e.deltaY);
-    if(!horiz){const down=l.scrollTop+l.clientHeight<l.scrollHeight-1,up=l.scrollTop>0;if((e.deltaY>0&&down)||(e.deltaY<0&&up))return;}
-    e.preventDefault();const now=performance.now();if(now-last>200){acc={x:0,y:0};lock=false;}last=now;if(lock)return;
-    const k=e.deltaMode===1?16:1;acc.x+=e.deltaX*k;acc.y+=e.deltaY*k;
-    if(Math.abs(acc.x)>=130){lock=true;goVue(acc.x>0?'d':'g');}else if(Math.abs(acc.y)>=130){lock=true;goVue(acc.y>0?'b':'h');}
-  },{passive:false});
-})();
-
+/* LE TOTEHM SE DÉCOMPOSE — un tap sur le logo ouvre les trois papiers, un tap
+   sur GRIND ouvre ses trois boutons dans son navy, un tap sur une vue donne ses
+   boxes ; le logo les replie. Aucune @keyframes : tout est en transition. */
+function openTz(){$('el-head').classList.add('is-open');}
+function foldTz(){$('el-head').classList.remove('is-open','is-grind');vue=null;renderEl();}
+$('tz-home').onclick=()=>{
+  if($('el-head').classList.contains('is-open'))foldTz();
+  else openTz();
+};
+$('tz-papers').addEventListener('click',e=>{
+  const v=e.target.closest('[data-v]');
+  if(v&&VIEWS[v.dataset.v]){if(v.dataset.v!==vue){vue=v.dataset.v;renderEl('in');}return;}
+  if(e.target.closest('.pap-g'))$('el-head').classList.toggle('is-grind');
+});
+/* Le doigt glisse sur la liste : elle défile, nativement. Plus de manette ici. */
 /* LA MATIÈRE — ce qui est relié à l'élément dans le Totehm,
    calculés en base (`my_box_matter`), jamais ici. */
 const MI={habits:['','how'],objectives:['o','why'],repulsions:['r','instead'],wisdom:['w','learned'],visions:['v','sees']};
@@ -1043,7 +997,7 @@ async function openEl(b){
   const o=((TOT&&TOT[vue])||[])[+b.dataset.k];if(!o)return;
   if(OPEN&&OPEN.b===b)return;
   document.querySelectorAll('#el-list .bx').forEach(x=>x.classList.toggle('is-on',x===b));
-  $('matter')?.remove();OPEN=null;paintJoy();
+  $('matter')?.remove();OPEN=null;
   const c=document.createElement('div');c.id='matter';c.innerHTML='<div class="mono">reading the element…</div>';b.after(c);
   const seq=++MT_SEQ,v=vue;
   const{data:m,error}=await sb.rpc('my_box_matter',{p_kind:KIND[v],p_ref:String(o.ref)});
@@ -1054,7 +1008,7 @@ async function openEl(b){
     '<div class="grp"><span class="w">'+esc((MI[k]||['',k])[1])+'</span>'+a.map(x=>'<span class="mi '+((MI[k]||[''])[0])+'">'+esc(x.text)+'</span>').join('')+'</div>').join('');
   /* 08/10 (bis) : ni palette ni rythme à l'écran — ce qui est relié, puis le geste. */
   c.innerHTML=groups+'<div class="next"><button class="btn cta" id="mt-go" type="button">Wear this element</button></div>';
-  OPEN={b,o,m};paintJoy();
+  OPEN={b,o,m};
   $('mt-go').onclick=pick;
   c.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
@@ -1159,7 +1113,8 @@ function paintPreview(){
 function enterOrder(){
   const s=F.support;if(!s)return;
   paintPreview();
-  $('od-recap').innerHTML='<span class="nm">'+esc(epochPrefix()+F.nameRaw)+'</span><span>'+esc((NOM[F.el.view]?.[0]||'my element')+' · '+(F.style?.name||''))+'</span><span>'+esc(s.title||'')+'</span>';
+  /* 23/10 : le prix n'apparaît QU'ICI — à la fin, au moment de payer. */
+  $('od-recap').innerHTML='<span class="nm">'+esc(epochPrefix()+F.nameRaw)+'</span><span>'+esc((NOM[F.el.view]?.[0]||'my element')+' · '+(F.style?.name||''))+'</span><span>'+esc(s.title||'')+'</span><span class="price">'+esc(price(s))+'</span>';
   const vm=s.printful_variant_map||{},sz=sizesOf(s);
   if(F.size&&!sz.includes(F.size))F.size='';
   $('od-sizes').innerHTML=sz.map(x=>{const off=vm[x]&&vm[x].availability&&vm[x].availability!=='active';
@@ -1198,20 +1153,23 @@ async function order(){
 /* ══ LE CLAVIER — chaque scène sa grammaire ═══════════════════════════ */
 window.addEventListener('keydown',e=>{
   if(document.body.classList.contains('eco-modal'))return;
-  if(isOpen('member')||isOpen('pass')||isOpen('concept')){if(e.key==='Escape')['member','pass','concept'].forEach(id=>$(id).classList.remove('is-open'));return;}
+  if(isOpen('pass')){if(e.key==='Escape')$('pass').classList.remove('is-open');return;}
   const t=e.target;if(t&&t.closest&&t.closest('input,textarea,button,a,[role=button]')&&(e.key==='Enter'||e.key===' '))return;
   if(t&&t.closest&&t.closest('input,textarea'))return;
   if(stage==='cloth'){
     const m={ArrowLeft:()=>model(-1),ArrowRight:()=>model(1),ArrowUp:()=>angle(-1),ArrowDown:()=>angle(1),Enter:totehmize}[e.key];
     if(m){e.preventDefault();m();}
   }else if(stage==='element'){
-    const d={ArrowUp:'h',ArrowDown:'b',ArrowLeft:'g',ArrowRight:'d'}[e.key];
-    if(d){e.preventDefault();goVue(d);}else if(e.key==='Enter'&&OPEN){e.preventDefault();pick();}else if(e.key==='Escape')back();
+    /* Les flèches passent d'un papier à l'autre ; au clavier aussi on revient au logo. */
+    const ordre=['wisdom','objectives','habits','repulsions','visions'];
+    if(e.key==='ArrowLeft'||e.key==='ArrowRight'){
+      e.preventDefault();const i=ordre.indexOf(vue),n=ordre[(i<0?0:i+(e.key==='ArrowRight'?1:-1)+ordre.length)%ordre.length];
+      if(n&&n!==vue){vue=n;renderEl('in');}
+    }else if(e.key==='Enter'&&OPEN){e.preventDefault();pick();}
+    else if(e.key==='Escape'){if(vue)foldTz();else back();}
   }else if(e.key==='Escape')back();
 });
 
-$('concept-btn').onclick=()=>$('concept').classList.add('is-open');
-$('concept-back').onclick=()=>$('concept').classList.remove('is-open');
 $('dn-again').onclick=()=>{location.href='/streetwear';};
 
 /* ══ LE DÉPART ════════════════════════════════════════════════════════ */
@@ -1221,14 +1179,15 @@ async function restore(fl,cancelled){
   const i=supports.findIndex(s=>String(s.id)===String(fl.sid));
   if(i<0){show('cloth','replace');return;}
   ci=i;ai=Math.max(0,Math.min(Number(fl.ai)||0,imgs(supports[i]).length-1));ANG[ci]=ai;placeViewer();paintCloth();
-  F.support=supports[i];F.nameRaw=String(fl.nm||'');F.size=String(fl.sz||'');F.el=fl.el&&WEARABLE.includes(fl.el.kind)?fl.el:null;
-  F.want=fl.wt&&WEARABLE.includes(fl.wt.kind)?{kind:fl.wt.kind,ref:String(fl.wt.ref)}:null;
+  F.support=supports[i];F.nameRaw=String(fl.nm||'');F.size=String(fl.sz||'');F.el=fl.el&&!!VUE_DE[fl.el.kind]?fl.el:null;
+  F.want=fl.wt&&!!VUE_DE[fl.wt.kind]?{kind:fl.wt.kind,ref:String(fl.wt.ref)}:null;
   const target=cancelled?'order':(fl.s||'cloth');
   if(target==='cloth'||target==='done'||!me){show('cloth','replace');return;}
-  if(!myProfile){show('cloth','replace');PENDING='element';openMember();return;}
+  if(!myProfile){show('cloth','replace');return;}
   if(!await ensureTotehm()){show('cloth','replace');return;}
   const wanted=applyWant();
-  vue='wisdom';renderEl();
+  if(!wanted&&F.el)vue=F.el.view;else if(!F.el)vue=null;
+  openTz();renderEl();
   /* La pile reconstruite, une scène après l'autre : Back redescend pas à pas. */
   const pile=s=>{history.replaceState({s:'cloth'},'');HIST=['cloth'];
     for(const st of STAGES.slice(1,STAGES.indexOf(s)+1)){history.pushState({s:st},'');HIST.push(st);}show(s,'none');};

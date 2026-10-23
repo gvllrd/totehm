@@ -2,13 +2,19 @@
 
 > L'état ACTUEL et les pièges (≤ 60 lignes). Le sens d'un vêtement : `BRAND.md`. Un lot réécrit ces lignes, en place.
 
-Des vêtements totehmisés : une box MY STORY du TOTEHM d'un membre, un style artistique déterminé, produits par Printful.
-Le numérique (THP, Stoner, Lisbon, Origins, marché) vit sur totehm.space.
+Des vêtements totehmisés : **n'importe quelle box** du TOTEHM d'un membre, un style artistique déterminé, produits par
+Printful. Le numérique (THP, Stoner, Lisbon, Origins, marché) vit sur totehm.space.
+
+**Le TOTEHM est la commande** (23/10) : sur `/streetwear` son logo perforé lance la totehmisation, se décompose en trois
+papiers — MY STORY · GRIND · VISION —, le GRIND s'ouvre en objective · habit · repulsion, une box tapée devient le
+vêtement, le logo replie tout. Les curseurs du manche de COM entourent l'image (← → les modèles, ↑ ↓ ses vues) ; les
+sept intentions sont une COUTURE sous le logo. Au début : le titre et ce qui reste ; le PRIX n'arrive qu'à la fin, dans
+ORDER. Ni Back, ni coin membre, ni « how it works », ni titre qui répète la collection.
 
 | fichier | rôle |
 |---|---|
-| `index.html` | l'accueil : Streetwear, Luxury, Decode (retrouver une pièce par son nom, `reveal_cloth`) |
-| `streetwear.html` | la box MY STORY (déjà choisie depuis COM, `?from=com`), le style, la taille, connexion avant paiement |
+| `index.html` | l'accueil : **Decode en premier** (la boîte navy perforée, bouton ET saisie), puis Streetwear, Luxury |
+| `streetwear.html` | le vêtement, la box (ou celle déjà choisie depuis COM, `?wear=<kind>:<ref>`), le nom, le style, la taille |
 | `luxury.html` | le Luxe sur devis (`luxury-quote`, puis `luxury-checkout`) |
 | `terms_of_sale.html` | les conditions de vente |
 | `art-bridge.html` | `/get_higher`, `/stoner`, `/market`… y sont réécrits : il consomme le code SSO de la boutique puis en émet un pour SPACE — c'est aussi là que revient l'achat du THP (`/stoner?checked=1`) |
@@ -17,7 +23,8 @@ Le numérique (THP, Stoner, Lisbon, Origins, marché) vit sur totehm.space.
 
 `draft` → **paid** (`stripe-webhook`, `cloth`) → **generating** (n8n B : sept concepts) → **curation** (Telegram, Wah
 choisit ; n8n C, `compose-artwork`) → **production** (n8n D : Printful) → **shipped** (n8n E) → l'œuvre visible (`cloth-art`).
-- Le serveur pose le préfixe `0.` du nom ; `create-checkout` n'accepte qu'une box `wisdom`.
+- Le serveur pose le préfixe `0.` du nom ; `create-checkout` v42 accepte les cinq vues (`wisdom · vision · objective ·
+  habit · repulsion`) et relit la box dans le Totehm de la session. La référence d'une habit est son TEXTE.
 - Une pièce de TEST (`boutique_testers`, Stripe test) suit le MÊME chemin jusqu'à l'œuvre composée, puis s'arrête :
   `test_stop` ferme Printful et le suivi, `test_budget` limite les essais à 3 générations par 7 jours, et le stock
   n'est jamais consommé. Wah juge les visuels avec un faux paiement, sans qu'un vêtement parte.
@@ -37,7 +44,10 @@ choisit ; n8n C, `compose-artwork`) → **production** (n8n D : Printful) → **
   (auto-test en production : `FAIL={}`), mais le `stripe-webhook` déployé (v43) ne lance pas la génération d'une
   pièce de test : jusqu'à son déploiement, un essai se lance à la main (POST `{"cloth_id"}` sur
   `n8n.higher.boutique/webhook/streetwear-generate`, en-tête `apikey` = clé de service).
-- **Luxury accepte les cinq vues** (`luxury-quote`) alors que la vision dit MY STORY seulement : à trancher par Wah.
+- **COM ne propose « + totehmize » que sur MY STORY** : la boutique accepte les cinq vues, c'est `com/totehm.html` qui
+  doit suivre (le lien `?wear=<kind>:<ref>` est prêt).
+- **Une seule porte pour se connecter** : l'email OTP local de l'accueil est retiré (23/10) — il ouvrait une session
+  qui n'était celle d'aucun autre domaine. Tout passe par `totehm.com/auth` (PKCE) ; connecté, le nom ramène à COM.
 
 Tests : `tests/browser/streetwear.mjs`, `boutique_home.mjs`, `com_cloths.mjs`, `art_bridge.mjs` ;
 `tests/sql/streetwear_immersive_selftest.sql`, `luxury_*_selftest.sql`.

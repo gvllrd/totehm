@@ -21,7 +21,9 @@ const { pg, log } = await page(browser, { dir:'boutique', origin:'https://www.hi
 await pg.goto('https://www.higher.boutique/');
 await pg.waitForFunction(() => window.__totehm_boutique && /47 pieces left/.test(document.querySelector('#sw-col-sold').textContent));
 const d = await pg.evaluate(() => window.__totehm_boutique());
-ok(d.build === '2026-10-15-physical' && !d.joystick, 'the physical landing page, no joystick');
+ok(d.build === '2026-10-23-decode-first' && d.decode_first && !d.member_window, 'the physical landing page: DECODE first, no member window here');
+ok((await pg.$eval('#decode-btn', b => getComputedStyle(b).borderImageSource)).includes('svg') && (await pg.$eval('#decode-btn', b => getComputedStyle(b).backgroundColor)) === 'rgb(51, 51, 102)',
+  'Decode is the perforated navy BOX, always — not only on hover');
 ok(await pg.locator('a[data-space][href="https://www.totehm.space/"]').count()===1 && await pg.locator('#higher-btn,#lisbon-btn,a[href="/market"],a[href="/origins"]').count()===0,'digital art has one explicit SPACE destination; the physical homepage keeps its Cloth paths');
 ok(d.collab && d.logos === 0 && d.luxury_link, 'Totehm x Champion 2026 under Create, written, no logo');
 ok(d.branding_com && d.club_links === 0, 'Experience our dope branding → totehm.com');
