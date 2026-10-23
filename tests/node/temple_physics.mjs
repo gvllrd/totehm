@@ -20,41 +20,28 @@ for(const fps of [20,30,60,120,240]){
  check(near(p.position.y,9.91,2e-6),'One second reaches the analytic height');
  for(let n=0;n<fps*2;n++){tick(p,1/fps);peak=Math.max(peak,p.position.y);}
  check(state(p).grounded&&near(p.position.y,-.09),'The complete jump returns to real stone');
- check(Math.abs(peak-10.5766666667)<.004,'Apex exceeds the column top without unlimited flight');
+ check(Math.abs(peak-10.5766666667)<.004,'The jump reaches its finite analytic apex');
  check(state(p).jumps===1&&state(p).landings===1,'One impulse produces one landing');
 }
 
-// Every column must be physically reachable with ordinary air steering.
+// All eight former column footprints are now open stone, including their
+// projecting capitals. Walking, jumping and standing must meet no ghost.
 for(const side of [-1,1])for(const z of [-12,-4,4,12]){
- const p=createTemplePhysics({x:side*13.3,z});p.jump();
- for(let i=0;i<114;i++)tick(p,1/120);
- let landedAt=null;
- for(let i=0;i<240;i++){
-  tick(p,1/120,{dx:side*2.6/120});
-  if(state(p).grounded){landedAt=(i+115)/120;break;}
- }
- check(state(p).supportColumn!==null,`Reach the top at ${side*15},${z}`);
- check(near(p.position.y,9.52),'Column reception uses its actual top surface');
- check(Math.abs(landedAt-1.753)<1/120,'Descending top crossing agrees with the independent quadratic');
- const stable={...p.position};
- for(let i=0;i<120;i++)tick(p,1/120);
- check(JSON.stringify(p.position)===JSON.stringify(stable),'Standing on the capital stays stable');
- check(p.jump(),'A column is a real support for another jump');
- for(let i=0;i<400;i++)tick(p,1/120,{dx:-side*2.6/120});
- check(state(p).grounded&&state(p).supportColumn===null&&near(p.position.y,-.09),'Leap away from a column and land on the terrace');
-
+ const p=createTemplePhysics({x:side*13.3,z});
+ for(let i=0;i<80;i++)tick(p,1/120,{dx:side*2.6/120});
+ check(near(p.position.x,side*(13.3+80*2.6/120)),'Walk straight through every former column footprint');
+ check(state(p).grounded&&near(p.position.y,-.09),'The removed base has no residual support height');
+ p.reset({x:side*15,z});check(p.jump(),'The bare stone permits a normal jump');let peak=-Infinity;
+ for(let i=0;i<400;i++){tick(p,1/120);peak=Math.max(peak,p.position.y);}
+ check(Math.abs(peak-10.5766666667)<.001,'A removed capital cannot stop the head or become a landing');
+ check(state(p).grounded&&near(p.position.y,-.09)&&state(p).supportColumn==null,'Jump lands on ground at every former column');
  p.reset({x:side*15,z,y:9.52});
- for(let i=0;i<240;i++)tick(p,1/120,{dx:-side*2.6/120});
- check(state(p).supportColumn===null&&near(p.position.y,-.09),'Walking off the edge falls without sticking or tunnelling');
+ check(!state(p).grounded&&!p.jump(),'A restored airborne position cannot stand on a removed capital');
+ for(let i=0;i<240;i++)tick(p,1/120);
+ check(state(p).grounded&&near(p.position.y,-.09),'An airborne restore falls through the removed column to ground');
 }
 
-// Capitals and arches stop the head, not just horizontal foot movement.
-for(const side of [-1,1]){
- const p=createTemplePhysics({x:side*13.9,z:12});p.jump();let max=-Infinity;
- for(let i=0;i<360;i++){tick(p,1/120);max=Math.max(max,p.position.y);}
- check(max+1.74<=9.155+1e-6,'A jump below a projecting capital cannot pass through its underside');
- check(state(p).grounded&&near(p.position.y,-.09),'A ceiling contact returns to the floor');
-}
+// Existing arches remain actual stone and still stop the head.
 for(const x of [-9,0,9]){
  const p=createTemplePhysics({x,z:-12});p.jump();let max=-Infinity;
  for(let i=0;i<400;i++){tick(p,1/120);max=Math.max(max,p.position.y);}
@@ -62,11 +49,6 @@ for(const x of [-9,0,9]){
  check(state(p).grounded&&near(p.position.y,-.09),'An arch ceiling does not leave the player hovering');
 }
 
-for(const side of [-1,1]){
- const p=createTemplePhysics({x:side*13.3,z:4});
- for(let i=0;i<240;i++)tick(p,1/120,{dx:side*2.6/120});
- check(Math.abs(p.position.x-side*15)>=.98-1e-6,'A shaft cannot be entered by ground movement');
-}
 for(const x of [-9,0,9]){
  const p=createTemplePhysics({x:x+2.7,z:-10});
  for(let i=0;i<240;i++)tick(p,1/120,{dz:-2.6/120});
@@ -95,24 +77,17 @@ const guided=createTemplePhysics({x:0,z:12});tick(guided,.05,{dx:1,guided:true})
 check(near(guided.position.x,1),'Guidance preserves existing smooth travel durations');
 const nav=createTempleWalkway();
 for(const side of [-1,1])for(const z of [-12,-4,4,12]){
- const start={x:side*15,y:11.26,z},end={x:0,z:12},route=nav.route(start,end);
- check(route&&route[0]===start&&route.at(-1)===end,'Guidance can depart every column');
- check(route.some(p=>Math.abs(p.x)<=13.3),'Guidance leaves the column toward the safe central terrace');
- const p=createTemplePhysics({x:side*15,z,y:9.52});
+ const start={x:side*15,y:1.65,z},end={x:0,z:12},route=nav.route(start,end);
+ check(route&&route[0]===start&&route.at(-1)===end,'Guidance can depart every former column footprint');
+ const p=createTemplePhysics({x:side*15,z});
  for(const target of route.slice(1)){
   for(let i=0;i<500&&Math.hypot(p.position.x-target.x,p.position.z-target.z)>.001;i++){
    const distance=Math.hypot(p.position.x-target.x,p.position.z-target.z),stride=Math.min(.25,distance);
    tick(p,.05,{dx:(target.x-p.position.x)/distance*stride,dz:(target.z-p.position.z)/distance*stride,guided:true});
   }
-  check(Math.hypot(p.position.x-target.x,p.position.z-target.z)<.001,'The real collision engine can follow each outward guide segment');
+  check(Math.hypot(p.position.x-target.x,p.position.z-target.z)<.001,'The collision engine follows guidance across the open side terrace');
  }
- for(let i=0;i<100;i++)tick(p,.05);
- check(near(p.position.y,-.09)&&state(p).grounded,'Guidance physically descends from every column to the floor');
-}
-
-for(const side of [-1,1]){
- const route=nav.route({x:side*13.9,y:11.26,z:-12},{x:0,z:12});
- check(route&&route.length>=3,'The inner edge of each rear capital also has a route home');
+ check(near(p.position.y,-.09)&&state(p).grounded,'Guidance stays on the ground where columns once stood');
 }
 
 // The arches are freestanding. Walking behind or between them must never

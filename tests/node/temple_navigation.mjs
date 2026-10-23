@@ -42,6 +42,26 @@ for(const to of approaches){
  check(route.at(-1).z===-10.6,'Guided doorway selection stops in front of the threshold');
 }
 
+// Side paving previously occupied by columns remains reachable manually.
+// Its guide back is sampled against the real floor and the three stone jambs.
+const formerColumns=[-15,15].flatMap(x=>[-12,-4,4,12].map(z=>({x,z})));
+for(const from of formerColumns)for(const to of stations){
+ const route=nav.route(from,to);
+ check(route&&route[0]===from&&route.at(-1)===to,'Every former column footprint has a return guide');
+ for(let i=1;i<route.length;i++){
+  const a=route[i-1],b=route[i],steps=Math.max(1,Math.ceil(Math.hypot(b.x-a.x,b.z-a.z)/.025));
+  for(let j=0;j<=steps;j++){
+   const t=j/steps,x=a.x+(b.x-a.x)*t,z=a.z+(b.z-a.z)*t;
+   assert(Math.abs(x)<=15.8&&z>=-13&&z<=16,'An outer-edge guide remains on the physical terrace');
+   assert(!(Math.abs(z+12)<.81&&gates.some(g=>Math.abs(x-g)>=2.11&&Math.abs(x-g)<=3.29)),'An outer-edge guide avoids actual stone jambs');
+   assert.equal(nav.portalAt(x,z),null,'A return guide never crosses an experience opening');samples++;
+  }
+ }
+ const airborne=nav.route({...from,y:11.26},to);
+ check(JSON.stringify(airborne.slice(1))===JSON.stringify(route.slice(1)),'Camera height adds no obsolete column avoidance detour');
+}
+for(const x of [-15.81,15.81])check(nav.route(point(x,0),entry)===null,'A guide cannot start beyond the real terrace edge');
+
 for(const bed of formerPlantings){
  check(nav.allowed(bed.x,bed.z),'Removed planting centres are real walking stone');
  check(nav.clear(entry,bed),'Removed planting areas have no invisible collision');

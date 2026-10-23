@@ -6,7 +6,7 @@ import {createHash} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
 import {launch,page} from './harness.mjs';
 
-const OUT=process.argv[2]||'/tmp/totehm-production/luminous-sea-final';
+const OUT=process.argv[2]||'/tmp/totehm-production/open-ocean-final';
 const origin='https://www.totehm.space';
 const results=[];let checks=0,browser;
 fs.mkdirSync(OUT,{recursive:true});
@@ -103,7 +103,7 @@ try{
   const f=await fixture(viewport),{pg,ctx,log}=f,sample={kind:'actual-hub',viewport};results.push(sample);
   try{
    await pg.emulateMedia({reducedMotion:'reduce'});await pg.goto(origin+'/',{waitUntil:'domcontentloaded'});sample.entry=await loaded(pg,log);
-   check(sample.entry.build==='2026-10-23-space-luminous-sea'&&sample.entry.temple.columns===8&&!sample.entry.temple.roof&&sample.entry.temple.doorsAboveColumns,'the open temple and tall doors remain intact '+viewport.width);
+   check(sample.entry.build==='2026-10-23-space-open-ocean'&&sample.entry.temple.columns===0&&sample.entry.temple.columnTops.length===0&&!sample.entry.temple.roof&&sample.entry.temple.portals.length===3&&sample.entry.temple.portals.every(p=>p.width===4.5&&p.height===10.725),'the open terrace has no columns and keeps its three tall doors '+viewport.width);
    check(sample.entry.landscape.ocean.detailMapsLoaded===2&&sample.entry.landscape.ocean.detailMapFailures===0,'both local ocean maps finish loading '+viewport.width);
    await screenshot(pg,'entry-'+viewport.width);await screenshot(pg,'entry-world-'+viewport.width,{world:true});
    await pg.click('#enter-gallery');
