@@ -87,8 +87,8 @@ développement personnel, un réseau social classique, une marque streetwear cla
 
 TOTEHM.SPACE est le dernier temple au sommet d’une Terre engloutie : beauté, grandeur, peur et renouveau.
 Nuit permanente, arche de la Voie lactée, lune et mer déchaînée ; terrasse de pierre naturelle et trois portes monumentales.
-Sans colonnes, toit, fronton ni végétation, le refuge ouvre la vue sur les longs déferlants ; Espace permet de sauter.
-Les trois portes annoncent les expériences indépendantes : TotehmPaper, Origins et Play the Lisbon Street.
+Sans colonnes, toit, fronton ni végétation, le refuge ouvre la vue sur les déferlants ; Espace propulse au milieu des étoiles, face au globe englouti.
+Les trois portes sans étiquette ouvrent les expériences indépendantes : TotehmPaper, Origins et Play the Lisbon Street.
 De nombreux papiers perforés flottent dans la porte THP, comme les panneaux dans celle de Lisbon.
 Vent et mer accompagnent la visite ; grave magnétique à l’approche, souffle au passage. Le marché garde achat et revente.
 

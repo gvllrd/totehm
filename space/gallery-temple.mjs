@@ -71,11 +71,6 @@ export function createTempleArchitecture(scene,renderer,{onChange=()=>{},lisbonP
  instances(wedgeGeometry,stone,archStones,{parent:archStructure,solid:true,colours:true});instances(dressedBlock,stone,jambs,{parent:archStructure,solid:true,colours:true});instances(dressedBlock,paleStone,archFoot,{parent:archStructure,solid:true});
  const openingShape=new T.Shape();openingShape.moveTo(-1.8,-.05);openingShape.lineTo(1.8,-.05);openingShape.lineTo(1.8,4.7);openingShape.absarc(0,4.7,1.8,0,Math.PI,false);openingShape.lineTo(-1.8,-.05);openingShape.closePath();
  const openingGeometry=geometry(new T.ShapeGeometry(openingShape,32));openingGeometry.scale(archScaleX,archScaleY,1);
- const portalNames=[['TOTEHMPAPER {THP}','THE STONER EXPERIENCE'],['ORIGINS','TWENTY ORIGINAL WORKS'],['PLAY THE STREET','NEURO STREET ART DIGITAL']];
- const plaques=[];
- function paintPlaque(entry){
-  const ctx=entry.canvas.getContext('2d');ctx.clearRect(0,0,1024,160);ctx.fillStyle='#c9bb9d';ctx.fillRect(0,0,1024,160);ctx.fillStyle='#4b4433';ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='700 30px "Space Mono", monospace';ctx.fillText(entry.title,512,54);ctx.font='16px "Space Mono", monospace';ctx.fillText(entry.subtitle,512,108);entry.texture.needsUpdate=true;changed();
- }
  const portalLights=[];
  TEMPLE_PORTALS.forEach(({x,z,room,width,height,outerHeight})=>{
   const opening=mesh(openingGeometry,black,x,0,z-.38,{shadow:false});opening.userData={room,portal:true};
@@ -105,14 +100,11 @@ export function createTempleArchitecture(scene,renderer,{onChange=()=>{},lisbonP
    const path=room===0?TOTEHMPAPER.src:room===1?ORIGINS[0].src:'/assets/signs/destination.png';
    const t=loader.load(path,value=>{if(disposed){value.dispose();return;}coverMaterial.color.set('#ffffff');coverMaterial.needsUpdate=true;if(room===0)paperLoaded=true;loaded++;changed();},undefined,changed);t.colorSpace=T.SRGBColorSpace;t.anisotropy=anisotropy;textures.add(t);coverMaterial.map=t;
   }
-  const canvas=document.createElement('canvas');canvas.width=1024;canvas.height=160;const labelTexture=new T.CanvasTexture(canvas);labelTexture.colorSpace=T.SRGBColorSpace;textures.add(labelTexture);const entry={canvas,texture:labelTexture,title:portalNames[room][0],subtitle:portalNames[room][1]};plaques.push(entry);paintPlaque(entry);
-  const labelMaterial=material(new T.MeshStandardMaterial({map:labelTexture,color:'#ffffff',roughness:.9}));
-  const label=mesh(planeGeometry,labelMaterial,x,12.5,-11.91,{shadow:false});label.scale.set(4.9*archScaleX,.765*archScaleX,1);label.userData={room,portal:true};
-  instances(boxGeometry,bronze,[[x,12.5,-11.985,5.02*archScaleX,.88*archScaleX,.1],[x,-.005,-11.45,3.57*archScaleX,.045,1.05]],{shadow:false});
+  instances(boxGeometry,bronze,[[x,-.005,-11.45,3.57*archScaleX,.045,1.05]],{shadow:false});
   const light=new T.PointLight('#ffca83',3,16,2);light.position.set(x,6.6,-10.9);root.add(light);portalLights.push(light);
   const lampMaterial=material(new T.MeshStandardMaterial({color:'#c89a59',emissive:'#edb56a',emissiveIntensity:.15,roughness:.45,metalness:.6}));
   instances(boxGeometry,lampMaterial,[[x-1.94*archScaleX,1.0*archScaleY,-11.3,.045,1.2*archScaleY,.06],[x+1.94*archScaleX,1.0*archScaleY,-11.3,.045,1.2*archScaleY,.06]],{shadow:false});
-  portals.push({room,x,z,width,height,outerHeight,href:['/get_higher','/origins','/play_lisbon_street'][room],approach:{x,z:-10.6},pickables:[opening,cover,label]});
+  portals.push({room,x,z,width,height,outerHeight,href:['/get_higher','/origins','/play_lisbon_street'][room],approach:{x,z:-10.6},pickables:[opening,cover]});
  });
  function arrangePapers(at){
   if(!paperCover)return;
@@ -125,7 +117,6 @@ export function createTempleArchitecture(scene,renderer,{onChange=()=>{},lisbonP
   });
   paperCover.instanceMatrix.needsUpdate=true;
  }
- document.fonts?.ready.then(()=>{if(!disposed)plaques.forEach(paintPlaque);});
 
  return{
   root,portals,solids,columnTops:[],get pickables(){return [...portals.flatMap(p=>p.pickables),...solids];},
@@ -138,7 +129,7 @@ export function createTempleArchitecture(scene,renderer,{onChange=()=>{},lisbonP
    if(lisbonPreview?.canvas&&covers[2].material.map&&motion)covers[2].material.map.needsUpdate=true;
    const result=dirty||motion;dirty=false;return result;
   },
-  diagnostics:()=>({kind:'PBR antique summit temple',columns:0,columnHeight:0,columnTops:[],roof:false,entablature:false,pediment:false,flutes:0,arches:TEMPLE_PORTALS.length,archHeight:archTop,trees:0,leafCards:0,flowers:0,planters:0,vegetation:false,plants:[],covers:loaded,stoneMapsLoaded,pbr:true,externalTextures:'CC0 Poly Haven',day,time:+time.toFixed(3),paperPortal:{papers:paperCopies.length,loaded:paperLoaded,animated:paperMoving,time:+time.toFixed(3),instanced:true},portals:portals.map(({room,x,z,width,height,outerHeight,href})=>({room,x,z,width,height,outerHeight,href})),disposed}),
+  diagnostics:()=>({kind:'PBR antique summit temple',columns:0,columnHeight:0,columnTops:[],roof:false,entablature:false,pediment:false,flutes:0,arches:TEMPLE_PORTALS.length,archHeight:archTop,overheadLabels:0,trees:0,leafCards:0,flowers:0,planters:0,vegetation:false,plants:[],covers:loaded,stoneMapsLoaded,pbr:true,externalTextures:'CC0 Poly Haven',day,time:+time.toFixed(3),paperPortal:{papers:paperCopies.length,loaded:paperLoaded,animated:paperMoving,time:+time.toFixed(3),instanced:true},portals:portals.map(({room,x,z,width,height,outerHeight,href})=>({room,x,z,width,height,outerHeight,href})),disposed}),
   dispose(){if(disposed)return;disposed=true;root.visible=false;root.removeFromParent();for(const t of textures)t.dispose();for(const g of geometries)g.dispose();for(const m of materials)m.dispose();root.clear();}
  };
 }

@@ -6,13 +6,14 @@ import {createHash} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
 import {launch,page} from './harness.mjs';
 
-const OUT=process.argv[2]||'/tmp/totehm-production/open-ocean-final';
+const OUT=process.argv[2]||'/tmp/totehm-production/stellar-ocean-final';
+const BUILD='2026-10-23-space-stellar-leap';
 const origin='https://www.totehm.space';
 const results=[];let checks=0,browser;
 fs.mkdirSync(OUT,{recursive:true});
 const check=(condition,message)=>{assert(condition,message);checks++;console.log('PASS '+message);};
 const state=pg=>pg.evaluate(()=>window.__totehm_gallery());
-const clocks=d=>[d.temple.time,d.landscape.time,d.landscape.sky.time,d.landscape.ocean.time];
+const clocks=d=>[d.temple.time,d.landscape.time,d.landscape.sky.time,d.landscape.ocean.time,d.landscape.planet?.time];
 const gpuErrors=log=>log.errors.filter(e=>/pageerror:|THREE.WebGLProgram|VALIDATE_STATUS|shader error|WebGL: INVALID/i.test(e));
 
 async function observe(pg){
@@ -55,7 +56,7 @@ async function fixture(viewport,{maps='normal'}={}){
     if(maps==='failed')return{status:503,contentType:'text/plain',body:'Ocean texture intentionally unavailable in test'};
     if(maps==='delayed')await gate;
    }
-   if(url.pathname==='/gallery-drowned-ocean.mjs'||url.pathname==='/gallery-ui.mjs'){
+   if(/^\/gallery-(?:3d|drowned-ocean|drowned-planet|drowned-sky|temple-landscape|temple-physics|temple|ui)\.mjs$/.test(url.pathname)){
     const body=fs.readFileSync(new URL('../../space'+url.pathname,import.meta.url));
     sources[url.pathname]=createHash('sha256').update(body).digest('hex');
     return{status:200,contentType:'text/javascript',body};
@@ -103,7 +104,7 @@ try{
   const f=await fixture(viewport),{pg,ctx,log}=f,sample={kind:'actual-hub',viewport};results.push(sample);
   try{
    await pg.emulateMedia({reducedMotion:'reduce'});await pg.goto(origin+'/',{waitUntil:'domcontentloaded'});sample.entry=await loaded(pg,log);
-   check(sample.entry.build==='2026-10-23-space-open-ocean'&&sample.entry.temple.columns===0&&sample.entry.temple.columnTops.length===0&&!sample.entry.temple.roof&&sample.entry.temple.portals.length===3&&sample.entry.temple.portals.every(p=>p.width===4.5&&p.height===10.725),'the open terrace has no columns and keeps its three tall doors '+viewport.width);
+   check(sample.entry.build===BUILD&&sample.entry.temple.columns===0&&sample.entry.temple.columnTops.length===0&&!sample.entry.temple.roof&&sample.entry.temple.overheadLabels===0&&sample.entry.temple.portals.length===3&&sample.entry.temple.portals.every(p=>p.width===4.5&&p.height===10.725),'the open terrace has no columns or overhead labels and keeps its three tall doors '+viewport.width);
    check(sample.entry.landscape.ocean.detailMapsLoaded===2&&sample.entry.landscape.ocean.detailMapFailures===0,'both local ocean maps finish loading '+viewport.width);
    await screenshot(pg,'entry-'+viewport.width);await screenshot(pg,'entry-world-'+viewport.width,{world:true});
    await pg.click('#enter-gallery');

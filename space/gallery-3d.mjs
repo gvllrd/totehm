@@ -16,7 +16,7 @@ export async function createGallery({select,onOverview=()=>{},interact=()=>{},fa
  renderer.setClearColor(0x030912);renderer.domElement.setAttribute('aria-hidden','true');host.append(renderer.domElement);
  const scene=new T.Scene(),camera=new T.PerspectiveCamera(mobile?72:60,innerWidth/innerHeight,.08,9000);
  let dirty=true,frames=0,list=false,hidden=document.hidden,paused=false,lastTime=0,lastRender=0,slow=0;
- let motionReduced=reduced.matches,tween=null,room=-1,transition=null,down=null,yaw=0,pitch=0,dragged=false;
+ let motionReduced=reduced.matches,tween=null,arrival=null,stellarView=null,room=-1,transition=null,down=null,yaw=0,pitch=0,dragged=false;
  const landscape=createTempleLandscape(scene,renderer,{mobile,onChange:()=>{dirty=true;}});
  const temple=createTempleArchitecture(scene,renderer,{mobile,lisbonPreview,onChange:()=>{dirty=true;renderer.shadowMap.needsUpdate=true;}});
  const walkway=createTempleWalkway(),physics=createTemplePhysics({x:ENTRY[0],z:ENTRY[2]}),sound=createGalleryAudio(),eye=new T.Vector3(...ENTRY),gaze=new T.Vector3(...LOOK),keys=new Set();
@@ -29,13 +29,13 @@ export async function createGallery({select,onOverview=()=>{},interact=()=>{},fa
  function soundState(){const muted=sound.diagnostics().muted;soundButton.textContent=muted?'Sound off':'Sound on';soundButton.setAttribute('aria-pressed',String(!muted));soundButton.setAttribute('aria-label',muted?'Turn sound on':'Turn sound off');}
  try{sound.setMuted(localStorage.getItem('space-sound-muted')==='true');}catch{}
  soundState();angles();
- function syncSound(){const portals=temple.portals||[],distance=portals.length?Math.min(...portals.map(p=>Math.hypot(eye.x-p.x,eye.z-p.z))):99;const proximity=Math.max(0,1-distance/8);sound.update({zone:'temple',proximity,exposure:T.MathUtils.clamp((physics.position.y-GROUND_Y)/10,0,1),active:!hidden&&!list&&!paused});}
+ function syncSound(){const portals=temple.portals||[],distance=portals.length?Math.min(...portals.map(p=>Math.hypot(eye.x-p.x,eye.z-p.z,eye.y-1.65))):99;const proximity=Math.max(0,1-distance/8);sound.update({zone:physics.position.y>3000?'void':'temple',proximity,exposure:T.MathUtils.clamp((physics.position.y-GROUND_Y)/10,0,1),active:!hidden&&!list&&!paused});}
  const unlock=e=>{if(e.isTrusted&&!list&&!hidden&&!paused)sound.unlock().catch(()=>{});};
  document.addEventListener('pointerdown',unlock,{capture:true});document.addEventListener('keydown',unlock,{capture:true});
  soundButton.addEventListener('click',()=>{sound.setMuted(!sound.diagnostics().muted);try{localStorage.setItem('space-sound-muted',String(sound.diagnostics().muted));}catch{}soundState();});
  function travel(position,target,done){
-  if(transition)return false;const path=walkway.route(eye,position);if(!path)return false;stop();interact();
-  if(motionReduced||eye.distanceTo(position)<.03){physics.reset({x:position.x,z:position.z});eye.set(physics.position.x,physics.position.y+EYE_HEIGHT,physics.position.z);gaze.copy(target);angles();tween=null;dirty=true;done?.();return true;}
+  if(transition)return false;const path=walkway.route(eye,position);if(!path)return false;stop();interact();arrival=null;stellarView=null;
+  if(motionReduced||Math.hypot(eye.x-position.x,eye.z-position.z)<.03){physics.relocateHorizontal({x:position.x,z:position.z});eye.set(physics.position.x,physics.position.y+EYE_HEIGHT,physics.position.z);gaze.copy(target);angles();tween=null;dirty=true;if(physics.diagnostics().grounded)done?.();else arrival={target:target.clone(),done};return true;}
   const points=path.map(p=>new T.Vector3(p.x,1.65,p.z)),lengths=[0];
   for(let n=1;n<points.length;n++)lengths.push(lengths[n-1]+points[n-1].distanceTo(points[n]));
   tween={points,lengths,segment:1,stalled:0,to:position,target,from:gaze.clone(),start:performance.now(),duration:Math.min(4200,Math.max(1450,lengths.at(-1)*110)),done};dirty=true;return true;
@@ -61,17 +61,17 @@ export async function createGallery({select,onOverview=()=>{},interact=()=>{},fa
   if(eye.distanceToSquared(before)>.000001){look();dirty=true;}
   if(!guided&&physics.diagnostics().grounded&&physics.position.y<GROUND_Y+.2){const near=walkway.portalAt(eye.x,eye.z);if(near!==null)enter(near);}
  }
- function jump(){if(list||hidden||paused||transition)return false;const jumped=physics.jump();if(jumped){free();dirty=true;}return jumped;}
+ function jump(){if(list||hidden||paused||transition)return false;const jumped=physics.jump();if(jumped){free();stellarView={yaw,pitch,amount:0};dirty=true;}return jumped;}
  document.getElementById('jump').addEventListener('click',()=>{jump();host.focus({preventScroll:true});});
  const ray=new T.Raycaster(),mouse=new T.Vector2(),plane=new T.Plane(new T.Vector3(0,1,0),-GROUND_Y),floor=new T.Vector3();
  function hit(event){const rect=host.getBoundingClientRect();mouse.set((event.clientX-rect.left)/rect.width*2-1,-(event.clientY-rect.top)/rect.height*2+1);ray.setFromCamera(mouse,camera);const picks=temple.pickables??temple.portals.flatMap(p=>p.pickables);return ray.intersectObjects(picks,false).find(h=>h.object.visible&&h.object.material?.opacity!==0);}
- function free(){if(tween){tween=null;angles();}interact();}
+ function free(){arrival=null;stellarView=null;if(tween){tween=null;angles();}interact();}
  host.addEventListener('pointerdown',e=>{if(e.button!==0||transition)return;host.focus({preventScroll:true});host.setPointerCapture(e.pointerId);down={x:e.clientX,y:e.clientY,lx:e.clientX,ly:e.clientY};dragged=false;});
  host.addEventListener('pointermove',e=>{
   if(transition)return;
   if(!down){const h=hit(e);host.style.cursor=h?.object.userData.room!==undefined?'pointer':'grab';return;}
   if(Math.hypot(e.clientX-down.x,e.clientY-down.y)>6)dragged=true;
-  if(dragged){free();yaw-=(e.clientX-down.lx)*.004;pitch=T.MathUtils.clamp(pitch+(e.clientY-down.ly)*.003,-1.2,1.35);look();dirty=true;}
+  if(dragged){free();yaw-=(e.clientX-down.lx)*.004;pitch=T.MathUtils.clamp(pitch+(e.clientY-down.ly)*.003,-1.55,1.35);look();dirty=true;}
   down.lx=e.clientX;down.ly=e.clientY;
  });
  host.addEventListener('pointerup',e=>{
@@ -97,7 +97,7 @@ export async function createGallery({select,onOverview=()=>{},interact=()=>{},fa
  document.getElementById('look-sea').addEventListener('click',()=>panorama('sea'));document.getElementById('look-horizon').addEventListener('click',()=>panorama('horizon'));
  addEventListener('blur',()=>{stop();paused=true;syncSound();});addEventListener('focus',()=>{paused=false;lastTime=0;syncSound();});
  document.addEventListener('visibilitychange',()=>{hidden=document.hidden;if(hidden)stop();syncSound();dirty=true;lastTime=0;});
- function motionChanged(){motionReduced=reduced.matches;if(motionReduced&&tween){const t=tween;tween=null;physics.reset({x:t.to.x,z:t.to.z});eye.set(physics.position.x,physics.position.y+EYE_HEIGHT,physics.position.z);gaze.copy(t.target);angles();t.done?.();}dirty=true;}
+ function motionChanged(){motionReduced=reduced.matches;if(motionReduced){stellarView=null;if(tween){const t=tween;tween=null;physics.relocateHorizontal({x:t.to.x,z:t.to.z});eye.set(physics.position.x,physics.position.y+EYE_HEIGHT,physics.position.z);gaze.copy(t.target);angles();if(physics.diagnostics().grounded)t.done?.();else arrival={target:t.target.clone(),done:t.done};}}dirty=true;}
  reduced.addEventListener('change',motionChanged);
  renderer.domElement.addEventListener('webglcontextlost',e=>{e.preventDefault();stop();paused=true;syncSound();renderer.setAnimationLoop(null);fallback();});
  addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.fov=mobile?72:60;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);dirty=true;});
@@ -110,6 +110,8 @@ export async function createGallery({select,onOverview=()=>{},interact=()=>{},fa
    const forward=(keys.has('w')||keys.has('arrowup')?1:0)-(keys.has('s')||keys.has('arrowdown')?1:0)-joystick.y,side=(keys.has('d')||keys.has('arrowright')?1:0)-(keys.has('a')||keys.has('arrowleft')?1:0)+joystick.x;
    const speed=physicsDt*2.6/Math.max(1,Math.hypot(forward,side));move(physicsDt,(-Math.sin(yaw)*forward+Math.cos(yaw)*side)*speed,(-Math.cos(yaw)*forward-Math.sin(yaw)*side)*speed);
   }
+  if(stellarView){const s=stellarView;s.amount=T.MathUtils.smoothstep(physics.position.y-GROUND_Y,200,5000);if(!motionReduced){yaw=s.yaw;pitch=T.MathUtils.lerp(s.pitch,-1.52,s.amount);look();dirty=true;}if(physics.diagnostics().grounded){if(!motionReduced){yaw=s.yaw;pitch=s.pitch;look();}stellarView=null;}}
+  if(arrival&&physics.diagnostics().grounded){const a=arrival;arrival=null;gaze.copy(a.target);angles();a.done?.();dirty=true;}
   if(transition){
    // Start on the first animation frame. A queued rAF timestamp may precede
    // the input event's performance.now(); it must never contract the FOV.
@@ -120,6 +122,8 @@ export async function createGallery({select,onOverview=()=>{},interact=()=>{},fa
    if(!motionReduced&&!transition.midpointRendered&&p>.5)p=.5;
    transition.progress=p;
    const ease=p*p*(3-2*p);eye.lerpVectors(transition.from,new T.Vector3(transition.x,1.65,transition.z-1.2),ease);gaze.lerpVectors(transition.fromGaze,new T.Vector3(transition.x,2.8,transition.z-6),ease);camera.fov=(mobile?72:60)+(motionReduced?0:11*Math.sin(p*Math.PI));camera.updateProjectionMatrix();flash.style.opacity=String(T.MathUtils.smoothstep(p,.15,1));dirty=true;if(p>=1){const path=transition.path;transition=null;sound.update({zone:'temple',proximity:0,active:false});renderer.setAnimationLoop(null);location.assign(path);return;}}
+  const altitude=Math.max(0,eye.y-1.65),near=T.MathUtils.clamp(altitude*.002,.08,12),far=altitude>100?100000:9000;
+  if(Math.abs(camera.near-near)>.0001||camera.far!==far){camera.near=near;camera.far=far;camera.updateProjectionMatrix();dirty=true;}
   const landChanged=landscape.update(dt,eye,!motionReduced);temple.setDay(landscape.day??landscape.diagnostics().day);
   const previewChanged=lisbonPreview?.update(dt,!motionReduced),architectureChanged=temple.update(dt,eye,!motionReduced);if(landChanged||architectureChanged||previewChanged)dirty=true;
   document.body.classList.toggle('temple-day',!!(landscape.day??landscape.diagnostics().day));
@@ -128,8 +132,8 @@ export async function createGallery({select,onOverview=()=>{},interact=()=>{},fa
  }
  landscape.update(0,eye,false);temple.setDay(landscape.day??landscape.diagnostics().day);temple.update(0,eye,false);camera.position.copy(eye);camera.lookAt(gaze);camera.updateMatrixWorld();renderer.setAnimationLoop(animate);
  addEventListener('pagehide',()=>{stop();paused=true;syncSound();renderer.setAnimationLoop(null);});
- addEventListener('pageshow',e=>{if(e.persisted){paused=false;hidden=document.hidden;transition=null;if(walkway.portalAt(eye.x,eye.z)!==null){physics.reset({x:eye.x,z:-10.6});eye.set(physics.position.x,physics.position.y+EYE_HEIGHT,physics.position.z);gaze.set(eye.x,5.1,-15);angles();}flash.style.opacity='0';camera.fov=mobile?72:60;camera.updateProjectionMatrix();dirty=true;lastTime=0;syncSound();renderer.setAnimationLoop(animate);}});
- return{visit,enter,overview,panorama,invalidate(){dirty=true;},stop(){stop();if(tween)angles();tween=null;dirty=true;},setList(value){list=!!value;stop();syncSound();dirty=true;lastTime=0;},
+ addEventListener('pageshow',e=>{if(e.persisted){paused=false;hidden=document.hidden;transition=null;if(physics.diagnostics().grounded&&physics.position.y<GROUND_Y+.2&&walkway.portalAt(eye.x,eye.z)!==null){physics.reset({x:eye.x,z:-10.6});eye.set(physics.position.x,physics.position.y+EYE_HEIGHT,physics.position.z);gaze.set(eye.x,5.1,-15);angles();}flash.style.opacity='0';camera.fov=mobile?72:60;camera.updateProjectionMatrix();dirty=true;lastTime=0;syncSound();renderer.setAnimationLoop(animate);}});
+ return{visit,enter,overview,panorama,invalidate(){dirty=true;},stop(){stop();arrival=null;stellarView=null;if(tween)angles();tween=null;dirty=true;},setList(value){list=!!value;stop();syncSound();dirty=true;lastTime=0;},
   diagnostics:()=>({webgl:true,zone:'temple',room,frames,position:[+eye.x.toFixed(2),+eye.z.toFixed(2)],moving:!!tween||!!keys.size||!!joystick.x||!!joystick.y||!physics.diagnostics().grounded,visible:!hidden&&!list,
-   camera:{position:eye.toArray(),target:gaze.toArray(),fov:camera.fov,aspect:camera.aspect},physics:physics.diagnostics(),temple:temple.diagnostics(),landscape:landscape.diagnostics(),audio:sound.diagnostics(),render:{pixelRatio:renderer.getPixelRatio(),calls:renderer.info.render.calls,triangles:renderer.info.render.triangles},transition:{active:!!transition,duration:ENTER_MS,fov:camera.fov},navigation:{speed:2.6,minDuration:1450,maxDuration:4200}})};
+   camera:{position:eye.toArray(),target:gaze.toArray(),fov:camera.fov,aspect:camera.aspect,near:camera.near,far:camera.far,stellarOverview:!!stellarView&&!motionReduced,overviewAmount:stellarView?.amount??0},physics:physics.diagnostics(),temple:temple.diagnostics(),landscape:landscape.diagnostics(),audio:sound.diagnostics(),render:{pixelRatio:renderer.getPixelRatio(),calls:renderer.info.render.calls,triangles:renderer.info.render.triangles},transition:{active:!!transition,duration:ENTER_MS,fov:camera.fov},navigation:{speed:2.6,minDuration:1450,maxDuration:4200,deferredArrival:!!arrival}})};
 }

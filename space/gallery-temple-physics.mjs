@@ -1,6 +1,9 @@
 import {GROUND_Y,EYE_HEIGHT,TEMPLE_FLOOR,TEMPLE_PORTALS} from './gallery-temple-layout.mjs';
 
-const GRAVITY=12,JUMP_SPEED=16,RADIUS=.14,EPSILON=1e-7;
+// A single launch reaches eighteen kilometres and returns after fourteen seconds.
+// Derive launch speed and gravity from that arc so height and duration agree.
+const JUMP_APEX=18000,FLIGHT_TIME=14;
+const GRAVITY=8*JUMP_APEX/FLIGHT_TIME**2,JUMP_SPEED=4*JUMP_APEX/FLIGHT_TIME,RADIUS=.14,EPSILON=1e-7;
 const finite=Number.isFinite;
 const clamp=(value,min,max)=>Math.max(min,Math.min(max,value));
 function archBounds(portal,x){
@@ -12,7 +15,8 @@ function archBounds(portal,x){
 }
 
 // Feet, velocity and contacts are independent of the renderer. Displacement
-// is swept in short substeps, including a descending segment crossing a top.
+// is swept in short horizontal substeps. Head crossings test the full vertical
+// segment: a fast launch must still meet a stone arch between sampled heights.
 export function createTemplePhysics(initial={x:0,z:12}){
  const position={x:0,y:GROUND_Y,z:12};
  let velocityY=0,grounded=true,jumps=0,landings=0;
@@ -36,6 +40,13 @@ export function createTemplePhysics(initial={x:0,z:12}){
   }
   return true;
  }
+ // Immediate reduced-motion guidance must keep the current vertical arc.
+ function relocateHorizontal(next={}){
+  const x=finite(next.x)?clamp(next.x,-TEMPLE_FLOOR.walkHalfWidth,TEMPLE_FLOOR.walkHalfWidth):position.x;
+  const z=finite(next.z)?clamp(next.z,TEMPLE_FLOOR.minZ,TEMPLE_FLOOR.maxZ):position.z;
+  if(validHorizontal(x,z,position.y)){position.x=x;position.z=z;}
+  return position;
+ }
  function step(dt,{dx=0,dz=0,guided=false}={}){
   const elapsed=finite(dt)?clamp(dt,0,.05):0;
   if(!elapsed)return position;
@@ -56,12 +67,12 @@ export function createTemplePhysics(initial={x:0,z:12}){
    if(validHorizontal(x,position.z,position.y))position.x=x;
    if(validHorizontal(position.x,z,position.y))position.z=z;
    if(!grounded&&velocityY<=0){
-    if(position.y<=GROUND_Y){position.y=GROUND_Y;velocityY=0;grounded=true;landings++;}
+    if(position.y<=GROUND_Y+EPSILON){position.y=GROUND_Y;velocityY=0;grounded=true;landings++;}
    }
   }
   return position;
  }
- function diagnostics(){return{grounded,feetHeight:+position.y.toFixed(4),velocityY:+velocityY.toFixed(4),supportColumn:null,jumps,landings,jumpSpeed:JUMP_SPEED,gravity:GRAVITY,jumpApex:JUMP_SPEED**2/(2*GRAVITY)};}
+ function diagnostics(){return{grounded,feetHeight:+position.y.toFixed(4),velocityY:+velocityY.toFixed(4),supportColumn:null,jumps,landings,jumpSpeed:JUMP_SPEED,gravity:GRAVITY,jumpApex:JUMP_APEX,flightTime:FLIGHT_TIME};}
  reset(initial);
- return{position,jump,step,reset,diagnostics};
+ return{position,jump,step,reset,relocateHorizontal,diagnostics};
 }

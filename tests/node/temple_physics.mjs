@@ -12,16 +12,26 @@ const state=p=>p.diagnostics();
 for(const fps of [20,30,60,120,240]){
  const p=createTemplePhysics({x:0,z:0});check(p.jump(),'Ground launches a jump');
  let peak=-Infinity;
- for(let n=1;n<=fps;n++){
+ for(let n=1;n<14*fps;n++){
   tick(p,1/fps);peak=Math.max(peak,p.position.y);
-  const t=n/fps;check(near(p.position.y,-.09+16*t-6*t*t,2e-6),`Ballistic position at ${fps}Hz, t=${t}`);
+  const t=n/fps,expected=-.09+18000*(1-((t-7)/7)**2);
+  check(near(p.position.y,expected,2e-5),`Ballistic position at ${fps}Hz, t=${t}`);
+  check(!state(p).grounded,'The flight cannot ground itself above the terrace');
   check(!p.jump(),'A held/repeated key cannot add a second airborne impulse');
+  if(n===7*fps){
+   check(near(p.position.y,17999.91,2e-5),'The head reaches the stars at the seven-second apex');
+   check(Math.abs(state(p).velocityY)<.0001,'The apex is a turning point');
+  }
+  if(n===8*fps)check(state(p).velocityY<0&&p.position.y<17999.91,'Gravity brings the player down after the apex');
  }
- check(near(p.position.y,9.91,2e-6),'One second reaches the analytic height');
- for(let n=0;n<fps*2;n++){tick(p,1/fps);peak=Math.max(peak,p.position.y);}
+ tick(p,1/fps);
  check(state(p).grounded&&near(p.position.y,-.09),'The complete jump returns to real stone');
- check(Math.abs(peak-10.5766666667)<.004,'The jump reaches its finite analytic apex');
+ check(Math.abs(peak-17999.91)<2e-5,'The jump reaches its finite analytic apex');
  check(state(p).jumps===1&&state(p).landings===1,'One impulse produces one landing');
+ check(state(p).jumpApex===18000&&state(p).flightTime===14,'Diagnostics expose the designed height and flight time');
+ for(let n=0;n<fps;n++)tick(p,1/fps);
+ check(state(p).landings===1&&near(p.position.y,-.09),'An idle ground contact cannot bounce or count another landing');
+ check(p.jump(),'A completed landing permits the next deliberate jump');
 }
 
 // All eight former column footprints are now open stone, including their
@@ -32,8 +42,8 @@ for(const side of [-1,1])for(const z of [-12,-4,4,12]){
  check(near(p.position.x,side*(13.3+80*2.6/120)),'Walk straight through every former column footprint');
  check(state(p).grounded&&near(p.position.y,-.09),'The removed base has no residual support height');
  p.reset({x:side*15,z});check(p.jump(),'The bare stone permits a normal jump');let peak=-Infinity;
- for(let i=0;i<400;i++){tick(p,1/120);peak=Math.max(peak,p.position.y);}
- check(Math.abs(peak-10.5766666667)<.001,'A removed capital cannot stop the head or become a landing');
+ for(let i=0;i<14*120;i++){tick(p,1/120);peak=Math.max(peak,p.position.y);}
+ check(Math.abs(peak-17999.91)<2e-5,'A removed capital cannot stop the head or become a landing');
  check(state(p).grounded&&near(p.position.y,-.09)&&state(p).supportColumn==null,'Jump lands on ground at every former column');
  p.reset({x:side*15,z,y:9.52});
  check(!state(p).grounded&&!p.jump(),'A restored airborne position cannot stand on a removed capital');
@@ -41,12 +51,18 @@ for(const side of [-1,1])for(const z of [-12,-4,4,12]){
  check(state(p).grounded&&near(p.position.y,-.09),'An airborne restore falls through the removed column to ground');
 }
 
-// Existing arches remain actual stone and still stop the head.
-for(const x of [-9,0,9]){
- const p=createTemplePhysics({x,z:-12});p.jump();let max=-Infinity;
- for(let i=0;i<400;i++){tick(p,1/120);max=Math.max(max,p.position.y);}
- check(max+1.74<=10.725+1e-6,'The real arched opening acts as a ceiling');
+// One launch substep travels farther than a complete arch. The head must
+// still hit the curved underside without tunneling between sampled heights.
+for(const fps of [20,30,60,120,240])for(const gate of [-9,0,9])for(const offset of [-1.8,0,1.8]){
+ const p=createTemplePhysics({x:gate+offset,z:-12});check(p.jump(),'Stone paving under an arch permits a launch');let max=-Infinity;
+ const ceiling=7.755+2.97*Math.sqrt(1-((Math.abs(offset)+.14)/2.25)**2);
+ tick(p,1/fps);max=Math.max(max,p.position.y);
+ check(state(p).velocityY<=0,'A high-speed head crossing stops immediately at the underside of each arch');
+ for(let i=1;i<fps;i++){tick(p,1/fps);max=Math.max(max,p.position.y);}
+ check(max+1.74<=ceiling+1e-6,'The curved stone opening acts as a swept ceiling');
+ check(max>1,'A ceiling contact does not erase the launch');
  check(state(p).grounded&&near(p.position.y,-.09),'An arch ceiling does not leave the player hovering');
+ check(state(p).jumps===1&&state(p).landings===1,'An arch strike ends with exactly one real ground landing');
 }
 
 for(const x of [-9,0,9]){
@@ -68,13 +84,43 @@ for(const bad of [NaN,Infinity,-Infinity,undefined,null,'0']){
  check(JSON.stringify(invalid.position)===JSON.stringify(before),'Invalid or absent time never corrupts movement');
 }
 invalid.jump();const before={...invalid.position};tick(invalid,600,{dx:1e8,dz:1e8});
-check(invalid.position.y-before.y<.81,'A resumed long frame is bounded to 50 ms');
+check(near(invalid.position.y-before.y,36000/7*.05-18000/49*.05**2,2e-6),'A resumed long frame advances only the analytic first 50 ms');
 check(Math.hypot(invalid.position.x-before.x,invalid.position.z-before.z)<=.13+1e-7,'A long frame cannot tunnel through geometry');
 const paused={...invalid.position};for(let i=0;i<100;i++)tick(invalid,0,{dx:1,dz:1});
 check(JSON.stringify(invalid.position)===JSON.stringify(paused),'A paused physics clock freezes the entire jump');
 
+// Reduced-motion guidance can change the horizontal destination immediately,
+// but choosing a view in the sky must not reset a flight onto the floor.
+const relocated=createTemplePhysics({x:0,z:0});relocated.jump();
+for(let n=0;n<4*120;n++)tick(relocated,1/120);
+const airborne={...state(relocated)},airborneHeight=relocated.position.y;
+relocated.relocateHorizontal({x:13.6,z:8.4,y:-.09});
+check(near(relocated.position.x,13.6)&&near(relocated.position.z,8.4),'Immediate guidance relocates the horizontal position');
+check(relocated.position.y===airborneHeight&&state(relocated).velocityY===airborne.velocityY,'Immediate guidance preserves altitude and vertical momentum');
+check(!state(relocated).grounded&&!relocated.jump()&&state(relocated).jumps===1,'Changing a view cannot create a ground contact or a second jump');
+const frozen=JSON.stringify({...relocated.position,...state(relocated)});
+for(const bad of [0,NaN,Infinity,-1])tick(relocated,bad,{dx:1,dz:1,guided:true});
+check(JSON.stringify({...relocated.position,...state(relocated)})===frozen,'Paused or invalid time preserves the full airborne state');
+for(let n=4*120;n<14*120;n++)tick(relocated,1/120);
+check(state(relocated).grounded&&near(relocated.position.y,-.09)&&state(relocated).landings===1,'A relocated flight finishes its original fourteen-second ground landing');
+relocated.relocateHorizontal({x:1e6,z:1e6});
+check(near(relocated.position.x,15.8)&&near(relocated.position.z,16),'An immediate destination remains inside the stone footprint');
+relocated.reset({x:0,z:0,y:9});relocated.relocateHorizontal({x:0,z:-12});
+check(near(relocated.position.z,0)&&near(relocated.position.y,9),'Immediate guidance cannot place a body inside a stone arch');
+
 const guided=createTemplePhysics({x:0,z:12});tick(guided,.05,{dx:1,guided:true});
 check(near(guided.position.x,1),'Guidance preserves existing smooth travel durations');
+tick(guided,.05,{dx:100,guided:true});
+check(near(guided.position.x,3),'Guidance remains capped at forty metres per second');
+const walking=createTemplePhysics({x:0,z:0});tick(walking,.05,{dx:100});
+check(near(walking.position.x,.13),'Manual walking remains capped at 2.6 metres per second');
+const finiteStress=createTemplePhysics();finiteStress.jump();
+for(let n=0;n<5000;n++){
+ tick(finiteStress,n%2?.05:1/240,{dx:n%3?Number.MAX_VALUE:Infinity,dz:n%5?-Number.MAX_VALUE:NaN,guided:n%2===0});
+ if(n%100===0)finiteStress.jump();
+ check(Object.values(finiteStress.position).every(Number.isFinite)&&Number.isFinite(state(finiteStress).velocityY),'Extreme finite and invalid inputs keep the complete trajectory finite');
+ check(finiteStress.position.y>=-.09,'Extreme movement never falls below the real terrace');
+}
 const nav=createTempleWalkway();
 for(const side of [-1,1])for(const z of [-12,-4,4,12]){
  const start={x:side*15,y:1.65,z},end={x:0,z:12},route=nav.route(start,end);

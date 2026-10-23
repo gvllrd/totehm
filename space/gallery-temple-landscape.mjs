@@ -2,6 +2,7 @@ import * as T from './vendor/three-0.180.0.mjs';
 import {TEMPLE_ASSETS} from './gallery-temple-assets.mjs';
 import {createDrownedSky} from './gallery-drowned-sky.mjs';
 import {createDrownedOcean} from './gallery-drowned-ocean.mjs';
+import {createDrownedPlanet} from './gallery-drowned-planet.mjs';
 
 // The temple is the last dry summit. Its stone terrace stays above a flooded
 // world, under a permanent night; no land or daytime panorama is substituted.
@@ -14,6 +15,7 @@ export function createTempleLandscape(scene,renderer,{onChange=()=>{},now=()=>ne
  const changed=()=>{if(!disposed){dirty=true;onChange();}};
  const horizon=new T.Color(0x101e32),fog=new T.FogExp2(horizon,.00024);scene.fog=fog;
  const sky=createDrownedSky(root,{mobile,onChange:changed});
+ const planet=createDrownedPlanet(root,{mobile,onChange:changed,moonDirection:sky.moonDirection});
  const ocean=createDrownedOcean(root,{mobile,onChange:changed,moonDirection:sky.moonDirection,horizonColor:horizon,environmentTexture:sky.environmentTexture});
  const hemisphere=new T.HemisphereLight(0x95b5da,0x242032,.62);root.add(hemisphere);
  const moon=new T.DirectionalLight(0xc2d9ff,1.65);moon.position.copy(sky.moonDirection).multiplyScalar(100);moon.castShadow=true;
@@ -69,19 +71,19 @@ export function createTempleLandscape(scene,renderer,{onChange=()=>{},now=()=>ne
    if(disposed)return false;
    hour=now().getHours();
    if(motion){time+=Math.max(0,Math.min(Number(dt)||0,.1));dirty=true;}
-   const skyChanged=sky.update(dt,eye,motion),oceanChanged=ocean.update(dt,eye,motion);
-   const result=dirty||skyChanged||oceanChanged;dirty=false;return result;
+   const skyChanged=sky.update(dt,eye,motion),oceanChanged=ocean.update(dt,eye,motion),planetChanged=planet.update(dt,eye,motion);
+   const result=dirty||skyChanged||oceanChanged||planetChanged;dirty=false;return result;
   },
   diagnostics:()=>({kind:'last-summit-drowned-world',day:false,permanentNight:true,hour,time:+time.toFixed(3),
    skyLoaded:sky.diagnostics().skyLoaded,environmentLoaded:!!environmentTarget,environment:'procedural nocturnal sky PMREM',
-   sky:sky.diagnostics(),ocean:ocean.diagnostics(),
+   sky:sky.diagnostics(),ocean:ocean.diagnostics(),planet:planet.diagnostics(),
    summit:{halfWidth:17.5,halfDepth:19.5,onlyDryLand:true,otherLandMeshes:0,flatApron:false},
    shadowSize:mobile?512:1024,triangles:[...geometries].reduce((n,g)=>n+(g.index?g.index.count:g.attributes.position.count)/3,0)+ocean.diagnostics().triangles,disposed}),
   dispose(){
    if(disposed)return;disposed=true;root.visible=false;
    if(scene.environment===environmentTarget?.texture){scene.environment=priorEnvironment;scene.environmentIntensity=priorIntensity;}
    if(scene.fog===fog)scene.fog=priorFog;environmentTarget?.dispose();pmrem.dispose();moon.shadow.map?.dispose();
-   sky.dispose();ocean.dispose();for(const t of textures)t.dispose();for(const m of materials)m.dispose();for(const g of geometries)g.dispose();root.removeFromParent();root.clear();
+   sky.dispose();ocean.dispose();planet.dispose();for(const t of textures)t.dispose();for(const m of materials)m.dispose();for(const g of geometries)g.dispose();root.removeFromParent();root.clear();
   }
  };
 }

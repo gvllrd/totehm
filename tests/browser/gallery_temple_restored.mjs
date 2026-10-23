@@ -2,11 +2,14 @@
 // in its own original page. All identity, payment and media requests are local.
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import {createHash} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
 import {launch,page} from './harness.mjs';
-import {PerspectiveCamera,Vector3} from '../../space/vendor/three-0.180.0.mjs';
+import {PerspectiveCamera,Vector3,Box3,Scene,Texture,TextureLoader} from '../../space/vendor/three-0.180.0.mjs';
+import {createTempleArchitecture} from '../../space/gallery-temple.mjs';
 
-const OUT=process.argv[2]||'/tmp/totehm-production/open-ocean-temple',terraceOnly=process.argv.includes('--terrace-only');
+const OUT=process.argv[2]||'/tmp/totehm-production/stellar-temple',terraceOnly=process.argv.includes('--terrace-only'),stellarOnly=process.argv.includes('--stellar-only');
+const BUILD='2026-10-23-space-stellar-leap';
 const origin='https://www.totehm.space',destinations=['/get_higher','/origins','/play_lisbon_street'];
 const results=[];let checks=0,browser;
 fs.mkdirSync(OUT,{recursive:true});
@@ -15,7 +18,7 @@ const media=fs.readFileSync(OUT+'/fixture.mp4');
 const check=(condition,message)=>{assert(condition,message);checks++;console.log('PASS '+message);};
 const state=pg=>pg.evaluate(()=>window.__totehm_gallery());
 const dayOf=d=>d.landscape?.day??d.temple?.day;
-const clocks=d=>[d.temple?.time,d.landscape?.time,d.landscape?.sky?.time,d.landscape?.ocean?.time];
+const clocks=d=>[d.temple?.time,d.landscape?.time,d.landscape?.sky?.time,d.landscape?.ocean?.time,d.landscape?.planet?.time];
 const close=async context=>{await context.close();};
 const errors=log=>log.errors.filter(e=>/pageerror:|THREE.WebGLProgram|VALIDATE_STATUS|shader error|WebGL: INVALID/i.test(e));
 
@@ -23,8 +26,8 @@ async function observe(pg,{hour=12,noWebGL=false}={}){
  await pg.addInitScript(({hour,noWebGL})=>{
   const NativeDate=Date,fixed=new NativeDate(2026,9,21,hour,0,0).getTime();
   window.Date=new Proxy(NativeDate,{construct:(Target,args)=>Reflect.construct(Target,args.length?args:[fixed])});
-  const native=window.__templeNative={contexts:0,draws:0,instancedCounts:[],textureUploads:0,imageSources:[],lastUpload:0,audio:[],noises:[],tones:[],toneGains:[],lastFrame:0,canvasUploads:[],pointCounts:[],timeUniforms:{},oceanTimeUniforms:{},oceanPrograms:0,oceanDraws:0,oceanGeometryCounts:[],vegetationShader:false};
-  const uniformNames=new WeakMap(),shaderKinds=new WeakMap(),programKinds=new WeakMap(),oceanPrograms=new WeakSet();let activeProgramKind=null;
+  const native=window.__templeNative={contexts:0,draws:0,instancedCounts:[],textureUploads:0,imageSources:[],lastUpload:0,audio:[],noises:[],tones:[],toneGains:[],lastFrame:0,canvasUploads:[],pointCounts:[],timeUniforms:{},oceanTimeUniforms:{},oceanPrograms:0,oceanDraws:0,oceanGeometryCounts:[],nearStarPrograms:0,nearStarDraws:0,nearStarPointCounts:[],nearStarOpacities:[],planetPrograms:0,planetDraws:0,planetGeometryCounts:[],vegetationShader:false};
+  const uniformNames=new WeakMap(),shaderKinds=new WeakMap(),programKinds=new WeakMap(),observedPrograms=new WeakSet();let activeProgramKind=null;
   const get=HTMLCanvasElement.prototype.getContext,seenContexts=new WeakSet();
   HTMLCanvasElement.prototype.getContext=function(kind,...args){
    if(noWebGL&&/webgl/i.test(kind))return null;
@@ -34,8 +37,8 @@ async function observe(pg,{hour=12,noWebGL=false}={}){
   };
   for(const Class of [globalThis.WebGLRenderingContext,globalThis.WebGL2RenderingContext]){
    if(!Class)continue;
-   const shaderSource=Class.prototype.shaderSource;Class.prototype.shaderSource=function(shader,source){if(/uTempleWind/.test(source))native.vegetationShader=true;if(/\buOceanTime\b|\bOceanSurface\b|\boceanSurface\b/.test(source))shaderKinds.set(shader,'ocean');return Reflect.apply(shaderSource,this,[shader,source]);};
-   const attachShader=Class.prototype.attachShader;Class.prototype.attachShader=function(program,shader){if(shaderKinds.get(shader)==='ocean'){programKinds.set(program,'ocean');if(!oceanPrograms.has(program)){oceanPrograms.add(program);native.oceanPrograms++;}}return Reflect.apply(attachShader,this,[program,shader]);};
+   const shaderSource=Class.prototype.shaderSource;Class.prototype.shaderSource=function(shader,source){if(/uTempleWind/.test(source))native.vegetationShader=true;const kind=/\buNearStarOpacity\b/.test(source)?'nearStar':/\buPlanetMoon\b/.test(source)&&!/\buAtmosphereVisibility\b/.test(source)?'planet':/\buOceanTime\b|\bOceanSurface\b|\boceanSurface\b/.test(source)?'ocean':null;if(kind)shaderKinds.set(shader,kind);return Reflect.apply(shaderSource,this,[shader,source]);};
+   const attachShader=Class.prototype.attachShader;Class.prototype.attachShader=function(program,shader){const kind=shaderKinds.get(shader);if(kind){programKinds.set(program,kind);if(!observedPrograms.has(program)){observedPrograms.add(program);native[kind+'Programs']++;}}return Reflect.apply(attachShader,this,[program,shader]);};
    const useProgram=Class.prototype.useProgram;Class.prototype.useProgram=function(program){activeProgramKind=programKinds.get(program)||null;return Reflect.apply(useProgram,this,[program]);};
    for(const method of ['texImage2D','texSubImage2D']){
     const original=Class.prototype[method];
@@ -48,10 +51,10 @@ async function observe(pg,{hour=12,noWebGL=false}={}){
    }
    for(const method of ['drawElements','drawArrays','drawElementsInstanced','drawArraysInstanced']){
     const original=Class.prototype[method];if(!original)continue;
-    Class.prototype[method]=function(...args){native.draws++;native.lastFrame=performance.now();if(args[0]===0&&!native.pointCounts.includes(args[2]))native.pointCounts.push(args[2]);if(method.endsWith('Instanced')&&!native.instancedCounts.includes(args.at(-1)))native.instancedCounts.push(args.at(-1));if(activeProgramKind==='ocean'){native.oceanDraws++;const count=method.startsWith('drawElements')?args[1]:args[2];if(!native.oceanGeometryCounts.includes(count))native.oceanGeometryCounts.push(count);}return Reflect.apply(original,this,args);};
+    Class.prototype[method]=function(...args){native.draws++;native.lastFrame=performance.now();const count=method.startsWith('drawElements')?args[1]:args[2];if(args[0]===0&&!native.pointCounts.includes(count))native.pointCounts.push(count);if(method.endsWith('Instanced')&&!native.instancedCounts.includes(args.at(-1)))native.instancedCounts.push(args.at(-1));if(activeProgramKind){native[activeProgramKind+'Draws']++;const counts=native[activeProgramKind==='nearStar'?'nearStarPointCounts':activeProgramKind+'GeometryCounts'];if(!counts.includes(count))counts.push(count);}return Reflect.apply(original,this,args);};
    }
    const location=Class.prototype.getUniformLocation;Class.prototype.getUniformLocation=function(program,name){const value=Reflect.apply(location,this,[program,name]);if(value)uniformNames.set(value,{name,kind:programKinds.get(program)});return value;};
-   const uniform=Class.prototype.uniform1f;Class.prototype.uniform1f=function(location,value){const meta=uniformNames.get(location),name=meta?.name;if(name&&/time/i.test(name)){for(const target of [native.timeUniforms,...(meta.kind==='ocean'?[native.oceanTimeUniforms]:[])]){const rows=target[name]||(target[name]=[]);if(rows.at(-1)!==value){rows.push(value);if(rows.length>16)rows.shift();}}}return Reflect.apply(uniform,this,[location,value]);};
+   const uniform=Class.prototype.uniform1f;Class.prototype.uniform1f=function(location,value){const meta=uniformNames.get(location),name=meta?.name;if(name==='uNearStarOpacity'&&!native.nearStarOpacities.includes(value))native.nearStarOpacities.push(value);if(name&&/time/i.test(name)){for(const target of [native.timeUniforms,...(meta.kind==='ocean'?[native.oceanTimeUniforms]:[])]){const rows=target[name]||(target[name]=[]);if(rows.at(-1)!==value){rows.push(value);if(rows.length>16)rows.shift();}}}return Reflect.apply(uniform,this,[location,value]);};
   }
   const NativeAudio=window.AudioContext||window.webkitAudioContext;
   if(NativeAudio){
@@ -76,14 +79,19 @@ async function observe(pg,{hour=12,noWebGL=false}={}){
  },{hour,noWebGL});
 }
 async function fixture(viewport,{hour=12,noWebGL=false}={}){
- const requests=[];
+ const requests=[],sources={};
  const context=await page(browser,{dir:'space',origin,session:false,viewport,hasTouch:viewport.width<650,
   network:(url,request)=>{
    requests.push({url:url.href,method:request.method()});
+   if(/^\/gallery-(?:3d|drowned-ocean|drowned-planet|drowned-sky|temple-landscape|temple-physics|temple|ui)\.mjs$/.test(url.pathname)){
+    const body=fs.readFileSync(new URL('../../space'+url.pathname,import.meta.url));
+    sources[url.pathname]=createHash('sha256').update(body).digest('hex');
+    return {status:200,contentType:'text/javascript',body};
+   }
    if(url.pathname.startsWith('/storage/v1/object/public/'))return {status:200,contentType:'video/mp4',headers:{'access-control-allow-origin':origin},body:media};
    return null;
   },functions:{'higher-checkout':{amount:1700,currency:'usd',left:777000},'stoner-gate':{access:false,reason:'no_session'}}});
- await observe(context.pg,{hour,noWebGL});return {...context,requests};
+ await observe(context.pg,{hour,noWebGL});return {...context,requests,sources};
 }
 async function loaded(pg){
  await pg.waitForFunction(()=>{const d=window.__totehm_gallery?.();return d?.webgl&&d.frames>0&&d.temple?.portals?.length===3;},null,{timeout:90000});
@@ -129,7 +137,7 @@ async function enter(pg,room,{trace=false}={}){
  await pg.waitForURL(url=>url.pathname===destinations[room],{timeout:30000});
 }
 async function recordJump(pg,action){
- await pg.evaluate(()=>{window.__jumpTrace=[];window.__jumpCapture=true;const capture=()=>{if(!window.__jumpCapture)return;const d=__totehm_gallery();__jumpTrace.push({at:performance.now(),position:d.position,eye:d.camera.position,physics:d.physics});window.__jumpFrame=requestAnimationFrame(capture);};window.__jumpFrame=requestAnimationFrame(capture);});
+ await pg.evaluate(()=>{window.__jumpTrace=[];window.__jumpCapture=true;const capture=()=>{if(!window.__jumpCapture)return;const d=__totehm_gallery();__jumpTrace.push({at:performance.now(),position:d.position,eye:d.camera.position,target:d.camera.target,fov:d.camera.fov,physics:d.physics,transition:d.transition,flight:d.flight,planet:d.landscape.planet,sky:d.landscape.sky});window.__jumpFrame=requestAnimationFrame(capture);};window.__jumpFrame=requestAnimationFrame(capture);});
  try{await action();}finally{await pg.evaluate(()=>{window.__jumpCapture=false;cancelAnimationFrame(window.__jumpFrame);});}
  return pg.evaluate(()=>window.__jumpTrace);
 }
@@ -142,15 +150,98 @@ async function analogUntil(pg,{x=0,y=0},predicate,arg,{timeout=30000}={}){
  await pg.mouse.move(sx,sy);await pg.mouse.down();await pg.mouse.move(sx+x*22,sy+y*22);
  try{await pg.waitForFunction(predicate,arg,{timeout});}finally{await pg.mouse.up();}
 }
+function architectureAndSources(){
+ const load=TextureLoader.prototype.load;
+ TextureLoader.prototype.load=()=>new Texture();
+ try{
+  const architecture=createTempleArchitecture(new Scene(),{capabilities:{getMaxAnisotropy:()=>1},shadowMap:{}},{mobile:false});
+  architecture.root.updateMatrixWorld(true);
+  const bounds=new Box3().setFromObject(architecture.root),pickables=architecture.portals.map(portal=>portal.pickables.map(object=>({height:new Box3().setFromObject(object).max.y,room:object.userData.room})));
+  check(bounds.max.y<12.1&&pickables.every(portal=>portal.length===2&&portal.every(object=>object.height<10.8)),'actual temple geometry ends at the arch tops and each doorway has only its opening and artwork as portal pickables');
+  check(architecture.diagnostics().overheadLabels===0,'the architecture reports zero overhead labels');
+  results.push({kind:'actual-architecture',bounds:{min:bounds.min.toArray(),max:bounds.max.toArray()},pickables});architecture.dispose();
+ }finally{TextureLoader.prototype.load=load;}
+ const preserved=['space/get_higher.html','space/stoner.html','space/stoner_terms.html','space/origins.html','space/play_lisbon_street.html','space/market.html'];
+ const sources=preserved.map(path=>{const body=fs.readFileSync(new URL('../../'+path,import.meta.url)),original=execFileSync('git',['show','HEAD:'+path],{cwd:new URL('../..',import.meta.url)});return{path,unchanged:body.equals(original),sha256:createHash('sha256').update(body).digest('hex')};});
+ check(sources.every(source=>source.unchanged),'the three original experiences, Stoner pages and complete marketplace retain their exact committed source');
+ results.push({kind:'preserved-sources',sources});
+}
+function globeFraming(d){
+ const planet=d.landscape.planet,eye=new Vector3(...d.camera.position),center=new Vector3(0,planet.centerY,0),direction=new Vector3(...d.camera.target).sub(eye).normalize(),toCenter=center.sub(eye),right=new Vector3().crossVectors(direction,new Vector3(0,1,0)).normalize(),up=new Vector3().crossVectors(right,direction).normalize();
+ const z=toCenter.dot(direction),radius=planet.atmosphereRadius,vertical=Math.tan(d.camera.fov*Math.PI/360),horizontal=vertical*d.camera.aspect,distance=toCenter.length(),insideClippingPlanes=d.camera.near<distance-radius&&d.camera.far>distance+radius;
+ const bounds=(axis,fov)=>{const v=toCenter.dot(axis),delta=radius*Math.sqrt(v*v+z*z-radius*radius),denominator=z*z-radius*radius;return[(v*z-delta)/denominator/fov,(v*z+delta)/denominator/fov];};
+ const x=bounds(right,horizontal),y=bounds(up,vertical);
+ return{x,y,distance,insideClippingPlanes,fullyInFrame:insideClippingPlanes&&z>radius&&[...x,...y].every(value=>Math.abs(value)<1)};
+}
+async function stellarChecks(){
+ architectureAndSources();
+ for(const viewport of [{width:1440,height:1000},{width:390,height:844}]){
+  const f=await fixture(viewport),{pg,ctx,log}=f,sample={kind:'stellar-leap',viewport};results.push(sample);const suffix=' '+viewport.width;
+  try{
+   await pg.emulateMedia({reducedMotion:'reduce'});await pg.goto(origin+'/');sample.entry=await loaded(pg);
+   check(sample.entry.build===BUILD&&sample.entry.temple.overheadLabels===0&&sample.entry.temple.columns===0,'the reviewed stellar build opens with three unlabelled freestanding doors'+suffix);
+   await screenshot(pg,'stellar-entry-'+viewport.width);await pg.click('#enter-gallery');
+   await pg.emulateMedia({reducedMotion:'no-preference'});await pg.waitForFunction(()=>!__totehm_gallery().reduced_motion);
+   const before=await state(pg),apex=before.physics.jumpApex;
+   check(apex>=18000&&before.physics.flightTime===14,'the intentional jump is authored to reach eighteen kilometres and return in fourteen simulated seconds'+suffix);
+   sample.normalTrace=await recordJump(pg,async()=>{
+    if(viewport.width<650)await pg.locator('#jump').tap();else{await pg.focus('#space');await pg.keyboard.down('Space');}
+    try{
+     await pg.waitForFunction(()=>__totehm_gallery().physics.feetHeight>1000,null,{timeout:45000});
+     await pg.click('#view-list');const listed=await state(pg);await pg.waitForTimeout(350);const listedEnd=await state(pg);
+     check(listed.frames===listedEnd.frames&&listed.physics.feetHeight===listedEnd.physics.feetHeight&&JSON.stringify(clocks(listed))===JSON.stringify(clocks(listedEnd)),'the artwork list pauses an actual airborne leap and the environment'+suffix);
+     await pg.click('#view-list');
+     await pg.waitForFunction(apex=>{const d=__totehm_gallery();return d.physics.feetHeight>apex*.985&&d.physics.velocityY<0;},apex,{timeout:60000});
+     await pg.waitForFunction(frames=>__totehm_gallery().frames>frames,(await state(pg)).frames,{timeout:15000});
+     await hidden(pg,true);sample.apex=await state(pg);await pg.waitForTimeout(350);const hiddenEnd=await state(pg);
+     check(sample.apex.frames===hiddenEnd.frames&&sample.apex.physics.feetHeight===hiddenEnd.physics.feetHeight&&JSON.stringify(clocks(sample.apex))===JSON.stringify(clocks(hiddenEnd)),'a hidden document pauses the leap and all world clocks near the apex'+suffix);
+     sample.apexPixels=await screenshot(pg,'stellar-apex-world-'+viewport.width,{world:true});await screenshot(pg,'stellar-apex-'+viewport.width);
+     sample.native=await pg.evaluate(()=>({contexts:__templeNative.contexts,draws:__templeNative.draws,oceanDraws:__templeNative.oceanDraws,planetPrograms:__templeNative.planetPrograms,planetDraws:__templeNative.planetDraws,planetGeometryCounts:__templeNative.planetGeometryCounts,nearStarPrograms:__templeNative.nearStarPrograms,nearStarDraws:__templeNative.nearStarDraws,nearStarPointCounts:__templeNative.nearStarPointCounts,nearStarOpacities:__templeNative.nearStarOpacities}));
+     sample.framing=globeFraming(sample.apex);
+     check(sample.apex.landscape.planet.fullSphere&&sample.apex.landscape.planet.submergedContinents&&sample.framing.fullyInFrame,'the perspective camera fits the entire curved drowned Earth in the apex view'+suffix);
+     check(sample.native.planetPrograms>0&&sample.native.planetDraws>0&&sample.native.planetGeometryCounts.some(count=>count>10000),'the flooded Earth is linked and drawn as real native GPU geometry'+suffix);
+     check(sample.apex.landscape.sky.nearStars.visible&&sample.apex.landscape.sky.nearStars.opacity>.99&&Math.max(...sample.native.nearStarOpacities)>.99&&sample.native.nearStarPrograms>0&&sample.native.nearStarDraws>0&&sample.native.nearStarPointCounts.includes(sample.apex.landscape.sky.nearStars.count),'actual nearby stars surround the apex and reach their own native GPU draw'+suffix);
+     check(sample.apexPixels.mean>3&&sample.apexPixels.colours>200,'the apex screenshot contains a visible detailed planet and stellar field'+suffix);
+     await hidden(pg,false);
+     await pg.waitForFunction(jumps=>{const p=__totehm_gallery().physics;return p.jumps===jumps+1&&p.grounded;},before.physics.jumps,{timeout:60000});
+    }finally{if(viewport.width>=650)await pg.keyboard.up('Space');await hidden(pg,false);}
+   });
+   sample.landed=await state(pg);
+   check(Math.max(...sample.normalTrace.map(row=>row.physics.feetHeight))>apex*.985&&sample.normalTrace.some(row=>row.physics.velocityY>0)&&sample.normalTrace.some(row=>row.physics.velocityY<0),'a real '+(viewport.width<650?'touch':'Space')+' input rises to the chosen apex and descends'+suffix);
+   check(sample.landed.physics.grounded&&Math.abs(sample.landed.physics.feetHeight+.09)<.002&&sample.landed.physics.jumps===before.physics.jumps+1&&sample.landed.physics.landings===before.physics.landings+1&&JSON.stringify(sample.landed.position)===JSON.stringify(before.position),'one intentional leap returns once to the same stone terrace without repeated flight'+suffix);
+   await pg.focus('#overview');await pg.keyboard.press('Space');await settled(pg);
+   check((await state(pg)).physics.jumps===sample.landed.physics.jumps,'Space on a focused interface button keeps its normal activation'+suffix);
+   await pg.emulateMedia({reducedMotion:'reduce'});await pg.waitForFunction(()=>__totehm_gallery().reduced_motion);
+   await pg.locator('.tour [data-room="1"]').click();await settled(pg);
+   const reduced=await state(pg),frozen=clocks(reduced),frozenUniforms=await pg.evaluate(()=>JSON.stringify(__templeNative.timeUniforms));
+   await pg.evaluate(()=>{sessionStorage.removeItem('stellar-portal-trace');window.__portalCapture=true;const capture=()=>{if(!window.__portalCapture)return;const d=window.__totehm_gallery?.();if(!d)return;const rows=JSON.parse(sessionStorage.getItem('stellar-portal-trace')||'[]');rows.push({at:performance.now(),camera:d.camera,physics:d.physics,transition:d.transition});sessionStorage.setItem('stellar-portal-trace',JSON.stringify(rows.slice(-1200)));requestAnimationFrame(capture);};requestAnimationFrame(capture);});
+   if(viewport.width<650)await pg.locator('#jump').tap();else{await pg.focus('#space');await pg.keyboard.press('Space');}
+   await pg.waitForFunction(apex=>__totehm_gallery().physics.feetHeight>apex*.985,apex,{timeout:60000});sample.reducedApex=await state(pg);
+   check(JSON.stringify(clocks(sample.reducedApex))===JSON.stringify(frozen)&&await pg.evaluate(()=>JSON.stringify(__templeNative.timeUniforms))===frozenUniforms&&!sample.reducedApex.landscape.ocean.animated&&!sample.reducedApex.landscape.sky.animated,'an explicit jump still works while reduced motion freezes water, planet, stars and native GPU shader clocks'+suffix);
+   const preGuide=await pg.evaluate(()=>JSON.parse(sessionStorage.getItem('stellar-portal-trace')||'[]')),airborne=preGuide.filter(row=>!row.physics.grounded),direction=d=>new Vector3(...d.target).sub(new Vector3(...d.position)).normalize(),initialDirection=direction(reduced.camera);
+   check(airborne.length>5&&airborne.every(row=>!row.transition.active&&Math.abs(row.camera.fov-reduced.camera.fov)<.001&&direction(row.camera).dot(initialDirection)>.999999),'reduced-motion flight keeps the chosen camera direction and FOV without automatic panning'+suffix);
+   await pg.click('#enter-experience');await pg.waitForTimeout(350);const queued=await state(pg);
+   check(new URL(pg.url()).pathname==='/'&&!queued.physics.grounded&&queued.physics.feetHeight>1500&&!queued.transition.active,'activating a door midair preserves the vertical arc and cannot enter above ground'+suffix);
+   await pg.waitForURL(url=>url.pathname==='/origins',{timeout:90000});
+   sample.portalTrace=await pg.evaluate(()=>JSON.parse(sessionStorage.getItem('stellar-portal-trace')||'[]'));
+   check(sample.portalTrace.some(row=>row.physics.grounded&&row.transition.active)&&!sample.portalTrace.some(row=>!row.physics.grounded&&row.transition.active),'the queued portal starts only after a recorded floor landing'+suffix);
+   await pg.waitForSelector('#deck .slide');
+   check(await pg.locator('#deck .slide').count()===21&&await pg.locator('#deck video').count()===20&&await pg.locator('#space,#spatial-player,iframe').count()===0,'landing then entry opens the original independent Origins reader'+suffix);
+   check(errors(log).length===0,'stellar flight and doorway entry have no application or GLSL errors'+suffix);sample.log=log;sample.sources=f.sources;
+  }catch(error){sample.error=String(error);sample.failed=await state(pg).catch(()=>null);sample.log=log;sample.sources=f.sources;await pg.screenshot({path:OUT+'/failure-stellar-'+viewport.width+'.png'}).catch(()=>{});throw error;}
+  finally{fs.writeFileSync(OUT+'/results.json',JSON.stringify({checks,results},null,2));await close(ctx);}
+ }
+}
 
 try{
  browser=await launch();const noonSamples=new Map();
+ if(stellarOnly){await stellarChecks();}else{
  if(!terraceOnly){
  for(const viewport of [{width:1440,height:1000},{width:390,height:844}]){
   const f=await fixture(viewport),{pg,ctx,log,requests}=f,sample={viewport,kind:'night-at-noon'};results.push(sample);const suffix=' at '+viewport.width;
   try{
    await pg.goto(origin+'/');sample.initial=await loaded(pg);
-   check(sample.initial.build==='2026-10-23-space-open-ocean'&&sample.initial.zone==='temple'&&!sample.initial.fallback,'the open-ocean temple opens in a real 3D scene'+suffix);
+   check(sample.initial.build===BUILD&&sample.initial.zone==='temple'&&!sample.initial.fallback,'the stellar-leap temple opens in a real 3D scene'+suffix);
    check(dayOf(sample.initial)===false&&sample.initial.landscape.permanentNight&&sample.initial.temple.portals.length===3,'the drowned world stays nocturnal at local noon with three antique portals'+suffix);
    check(sample.initial.landscape.sky.milkyWay&&sample.initial.landscape.sky.stars>5000&&sample.initial.landscape.sky.moon,'the sky contains a Milky Way, thousands of stars and a moon'+suffix);
    check(sample.initial.landscape.ocean.displacedGeometry&&sample.initial.landscape.ocean.swells>=2&&sample.initial.landscape.ocean.crestUpperBound<0&&sample.initial.landscape.ocean.baseHeight<sample.initial.landscape.ocean.crestUpperBound,'monumental displaced swells remain below the last summit'+suffix);
@@ -370,5 +461,6 @@ try{
   }catch(error){sample.error=String(error);throw error;}
   finally{fs.writeFileSync(OUT+'/results.json',JSON.stringify({checks,results},null,2));await close(ctx);}
  }
- console.log('PASS '+checks+' tidal-ocean checks; evidence '+OUT);
+ }
+ console.log('PASS '+checks+' temple checks; evidence '+OUT);
 }finally{await browser?.close();}

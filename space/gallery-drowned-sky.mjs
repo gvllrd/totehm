@@ -87,12 +87,22 @@ export function createDrownedSky(scene,{mobile=false,onChange=()=>{}}={}){
   data[at]=Math.min(255,data[at]+luminance*.88);data[at+1]=Math.min(255,data[at+1]+luminance*.95);data[at+2]=Math.min(255,data[at+2]+luminance);
  }
  context.putImageData(pixels,0,0);
- const environmentTexture=new T.CanvasTexture(canvas);environmentTexture.colorSpace=T.SRGBColorSpace;environmentTexture.mapping=T.EquirectangularReflectionMapping;
+ const environmentTexture=new T.CanvasTexture(canvas);environmentTexture.colorSpace=T.SRGBColorSpace;environmentTexture.mapping=T.EquirectangularReflectionMapping;environmentTexture.wrapS=T.RepeatWrapping;
  environmentTexture.minFilter=T.LinearMipmapLinearFilter;environmentTexture.magFilter=T.LinearFilter;textures.add(environmentTexture);
- const skyMaterial=material(new T.ShaderMaterial({uniforms:{uMap:{value:environmentTexture}},side:T.BackSide,depthWrite:false,depthTest:false,fog:false,toneMapped:false,
+ const spaceUniform={value:0};
+ const skyMaterial=material(new T.ShaderMaterial({uniforms:{uMap:{value:environmentTexture},uSpace:spaceUniform},side:T.BackSide,depthWrite:false,depthTest:false,fog:false,toneMapped:false,
   vertexShader:'varying vec3 vDirection;void main(){vDirection=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
-  fragmentShader:`varying vec3 vDirection;uniform sampler2D uMap;
-   void main(){vec3 d=normalize(vDirection);vec2 uv=vec2(atan(d.z,d.x)*.159154943+.5,asin(clamp(d.y,-1.,1.))*.318309886+.5);gl_FragColor=vec4(texture2D(uMap,uv).rgb,1.);
+  fragmentShader:`varying vec3 vDirection;uniform sampler2D uMap;uniform float uSpace;
+   vec3 celestialColour(vec3 d){vec2 uv=vec2(atan(d.z,d.x)*.159154943+.5,asin(clamp(d.y,-1.,1.))*.318309886+.5);
+    // Keep the longitude seam from selecting a dark, oversized mip level.
+    vec2 du=dFdx(uv),dv=dFdy(uv);du.x-=floor(du.x+.5);dv.x-=floor(dv.x+.5);vec3 sky=textureGrad(uMap,uv,du,dv).rgb;
+    float horizon=exp(-abs(d.y)*7.5),airglow=exp(-pow((d.y-.047)/.065,2.))*smoothstep(-.035,.12,d.y);
+    vec3 air=(vec3(1.7,3.8,10.5)+horizon*vec3(5.4,9.4,16.2)+airglow*vec3(.8,2.1,1.6))/255.;
+    vec3 linearAir=mix(air/12.92,pow((air+.055)/1.055,vec3(2.4)),step(vec3(.04045),air));
+    return max(vec3(0.),sky-linearAir*uSpace);}
+   void main(){vec3 d=normalize(vDirection),sky=celestialColour(d);
+    if(d.y<0.&&uSpace>0.){vec3 lower=vec3(d.x,-d.y,d.z);float bend=1.11*smoothstep(.08,.85,-d.y),c=cos(bend),s=sin(bend);lower=vec3(lower.x,lower.y*c+lower.z*s,-lower.y*s+lower.z*c);sky=mix(sky,celestialColour(lower),uSpace*smoothstep(0.,.18,-d.y));}
+    gl_FragColor=vec4(sky,1.);
     #include <colorspace_fragment>
    }`
  }));
@@ -126,6 +136,45 @@ export function createDrownedSky(scene,{mobile=false,onChange=()=>{}}={}){
  }));
  const stars=new T.Points(starGeometry,starMaterial);stars.name='Fine stellar light — warm giants and blue distant stars';stars.renderOrder=-1100;stars.frustumCulled=false;root.add(stars);
 
+ // The ocean hides the lower celestial hemisphere at ground level. Once
+ // above it, distant stars also surround the world below the visitor. Their
+ // true depth remains behind the entire globe, rather than over its surface.
+ const deepStarMaterial=material(new T.ShaderMaterial({uniforms:{uTime:timeUniform,uPixelRatio:pixelRatio,uDeepStarOpacity:spaceUniform},transparent:true,depthWrite:false,depthTest:true,blending:T.AdditiveBlending,toneMapped:false,fog:false,
+  vertexShader:starMaterial.vertexShader.replace('uniform float uTime,uPixelRatio;','uniform float uTime,uPixelRatio,uDeepStarOpacity;').replace('vIntensity=aIntensity*','vIntensity=uDeepStarOpacity*aIntensity*'),fragmentShader:starMaterial.fragmentShader
+ }));
+ const deepStars=new T.Points(starGeometry,deepStarMaterial);deepStars.name='The distant stellar hemisphere beneath the world';deepStars.scale.set(56000/1220,-56000/1220,56000/1220);deepStars.renderOrder=-1100;deepStars.frustumCulled=false;deepStars.visible=false;root.add(deepStars);
+
+ // A second, finite field lets a high jump pass among stellar light. Each
+ // point has a fixed world position; a toroidal boundary renews only the
+ // invisible outer volume. Camera movement supplies all of the parallax,
+ // without a rain emitter, speed lines, or a second animation clock.
+ const nearStarCount=mobile?600:1300,nearDustCount=mobile?120:300,nearCount=nearStarCount+nearDustCount;
+ const nearPositions=new Float32Array(nearCount*3),nearColours=new Float32Array(nearCount*3),nearSizes=new Float32Array(nearCount),nearIntensities=new Float32Array(nearCount),nearKinds=new Float32Array(nearCount);
+ const celestialSeed=seed;
+ for(let i=0;i<nearCount;i++){
+  nearPositions[i*3]=(random()-.5)*1800;nearPositions[i*3+1]=(random()-.5)*1800;nearPositions[i*3+2]=(random()-.5)*1800;
+  const dust=i>=nearStarCount,bright=Math.pow(random(),5),temperature=random();
+  colour.setHex(dust?0x91a8d4:temperature<.075?0xffead7:temperature<.7?0xe8f0ff:0xc2d9ff);nearColours.set(colour.toArray(),i*3);
+  nearSizes[i]=dust?8+random()*12:1.5+bright*2.8;nearIntensities[i]=dust?.014+random()*.018:.5+bright*.85;nearKinds[i]=dust?1:0;
+ }
+ // Keep the original moon and all ground-level celestial detail identical.
+ seed=celestialSeed;
+ const nearGeometry=geometry(new T.BufferGeometry());nearGeometry.setAttribute('position',new T.BufferAttribute(nearPositions,3));nearGeometry.setAttribute('aNearColour',new T.BufferAttribute(nearColours,3));nearGeometry.setAttribute('aNearSize',new T.BufferAttribute(nearSizes,1));nearGeometry.setAttribute('aNearIntensity',new T.BufferAttribute(nearIntensities,1));nearGeometry.setAttribute('aNearKind',new T.BufferAttribute(nearKinds,1));
+ const nearOpacity={value:0},stellarEye={value:new T.Vector3()};
+ const nearMaterial=material(new T.ShaderMaterial({uniforms:{uNearStarOpacity:nearOpacity,uStellarEye:stellarEye,uPixelRatio:pixelRatio},transparent:true,depthWrite:false,depthTest:true,blending:T.AdditiveBlending,toneMapped:false,fog:false,
+  vertexShader:`attribute vec3 aNearColour;attribute float aNearSize,aNearIntensity,aNearKind;uniform vec3 uStellarEye;uniform float uNearStarOpacity,uPixelRatio;varying vec3 vNearColour;varying float vNearIntensity,vNearKind;
+   void main(){vec3 local=mod(position-uStellarEye+vec3(900.),vec3(1800.))-vec3(900.);float distanceToEye=length(local);
+    float envelope=smoothstep(65.,110.,distanceToEye)*(1.-smoothstep(720.,900.,distanceToEye));
+    vNearColour=aNearColour;vNearKind=aNearKind;vNearIntensity=aNearIntensity*envelope*uNearStarOpacity;
+    float perspective=clamp(310./max(distanceToEye,65.),.75,2.);gl_PointSize=aNearSize*perspective*uPixelRatio;
+    gl_Position=projectionMatrix*modelViewMatrix*vec4(local,1.);}`,
+  fragmentShader:`varying vec3 vNearColour;varying float vNearIntensity,vNearKind;
+   void main(){vec2 p=gl_PointCoord-.5;float r=length(p);if(r>.5)discard;float light=mix(exp(-r*r*26.),exp(-r*r*12.)*(1.-smoothstep(.28,.5,r)),vNearKind);gl_FragColor=vec4(vNearColour,light*vNearIntensity);
+    #include <colorspace_fragment>
+   }`
+ }));
+ const nearStars=new T.Points(nearGeometry,nearMaterial);nearStars.name='Nearby stellar light and soft interstellar dust';nearStars.renderOrder=-1060;nearStars.frustumCulled=false;nearStars.visible=false;root.add(nearStars);
+
  const moonCanvas=document.createElement('canvas');moonCanvas.width=moonCanvas.height=mobile?256:512;
  const mx=moonCanvas.getContext('2d'),moonPixels=mx.createImageData(moonCanvas.width,moonCanvas.height),moonData=moonPixels.data;
  const lunarCraters=Array.from({length:34},()=>{const theta=random()*Math.PI*2,r=Math.sqrt(random())*.91;return{x:Math.cos(theta)*r,y:Math.sin(theta)*r,radius:.022+Math.pow(random(),2)*.09};});
@@ -144,7 +193,8 @@ export function createDrownedSky(scene,{mobile=false,onChange=()=>{}}={}){
  const haloCanvas=document.createElement('canvas');haloCanvas.width=haloCanvas.height=128;const hx=haloCanvas.getContext('2d'),gradient=hx.createRadialGradient(64,64,0,64,64,64);
  gradient.addColorStop(0,'rgba(193,213,239,.19)');gradient.addColorStop(.12,'rgba(173,201,235,.085)');gradient.addColorStop(.43,'rgba(124,163,216,.023)');gradient.addColorStop(1,'rgba(96,137,203,0)');hx.fillStyle=gradient;hx.fillRect(0,0,128,128);
  const haloTexture=new T.CanvasTexture(haloCanvas);haloTexture.colorSpace=T.SRGBColorSpace;textures.add(haloTexture);
- const halo=new T.Mesh(geometry(new T.PlaneGeometry(moonSize*9,moonSize*9)),material(new T.MeshBasicMaterial({map:haloTexture,transparent:true,depthWrite:false,depthTest:true,blending:T.AdditiveBlending,toneMapped:false,fog:false})));halo.position.copy(moon.position);halo.quaternion.copy(moon.quaternion);halo.renderOrder=-1080;halo.name='A restrained moon halo';halo.frustumCulled=false;root.add(halo);
+ const haloMaterial=material(new T.MeshBasicMaterial({map:haloTexture,transparent:true,depthWrite:false,depthTest:true,blending:T.AdditiveBlending,toneMapped:false,fog:false}));
+ const halo=new T.Mesh(geometry(new T.PlaneGeometry(moonSize*9,moonSize*9)),haloMaterial);halo.position.copy(moon.position);halo.quaternion.copy(moon.quaternion);halo.renderOrder=-1080;halo.name='A restrained moon halo';halo.frustumCulled=false;root.add(halo);
 
  const meteorTrail=new Float32Array(32*3),meteorAges=new Float32Array(32);for(let i=0;i<32;i++)meteorAges[i]=i/31;
  const meteorGeometry=geometry(new T.BufferGeometry());meteorGeometry.setAttribute('position',new T.BufferAttribute(meteorTrail,3));meteorGeometry.setAttribute('aAge',new T.BufferAttribute(meteorAges,1));
@@ -160,10 +210,15 @@ export function createDrownedSky(scene,{mobile=false,onChange=()=>{}}={}){
   update(dt,eye,motion){
    if(disposed)return false;
    if(eye&&!root.position.equals(eye)){root.position.copy(eye);dirty=true;}
+   if(eye){
+    stellarEye.value.copy(eye);
+    const opacity=smooth(350,2500,eye.y);
+    if(nearOpacity.value!==opacity){nearOpacity.value=spaceUniform.value=opacity;nearStars.visible=deepStars.visible=opacity>0;haloMaterial.opacity=1-opacity*.72;dirty=true;}
+   }
    animated=!!motion;if(animated){time+=Math.max(0,Math.min(Number(dt)||0,.1));timeUniform.value=time;dirty=true;}
    const changed=dirty;dirty=false;return changed;
   },
-  diagnostics:()=>({night:true,skyLoaded:true,textureReady:true,textureSize:[width,height],milkyWay:true,galacticClouds:'spherical warped clouds and fragmented dark dust',galacticArch:true,galacticNormal:normal.toArray(),stars:starCount,stellarDust:tinyStars,time:+time.toFixed(3),animated,moon:true,moonDirection:moonDirection.toArray(),moonDiameterDegrees:1.04,lunarCraters:lunarCraters.length,shootingStars:1,meteorPeriod:53,externalFiles:0,disposed}),
+  diagnostics:()=>({night:true,skyLoaded:true,textureReady:true,textureSize:[width,height],milkyWay:true,galacticClouds:'spherical warped clouds and fragmented dark dust',galacticArch:true,galacticNormal:normal.toArray(),stars:starCount,stellarDust:tinyStars,deepStars:{count:starCount,visible:deepStars.visible,distance:56000,hemisphere:'lower',galaxy:true},nearStars:{count:nearCount,stars:nearStarCount,dust:nearDustCount,visible:nearStars.visible,opacity:+nearOpacity.value.toFixed(3),nearDistance:110,farDistance:900,fadeStartAltitude:350,fullAltitude:2500,worldAnchored:true,autonomousMotion:false},spaceDarkening:+spaceUniform.value.toFixed(3),time:+time.toFixed(3),animated,moon:true,moonDirection:moonDirection.toArray(),moonDiameterDegrees:1.04,lunarCraters:lunarCraters.length,shootingStars:1,meteorPeriod:53,externalFiles:0,disposed}),
   dispose(){if(disposed)return;disposed=true;for(const t of textures)t.dispose();for(const m of materials)m.dispose();for(const g of geometries)g.dispose();canvas.width=canvas.height=moonCanvas.width=moonCanvas.height=haloCanvas.width=haloCanvas.height=1;root.removeFromParent();root.clear();}
  };
 }
