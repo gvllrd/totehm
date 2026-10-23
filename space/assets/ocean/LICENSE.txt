@@ -1,0 +1,15 @@
+sea-normal.webp and sea-foam.webp are original procedural data textures generated
+for TOTEHM from seeded periodic Fourier fields and periodic Voronoi cells.
+No photographs, external artwork, or third-party texture files are included.
+These files follow the terms of the repository; no additional attribution is required.
+
+Normal data: RGB tangent normal, decoded with rgb * 2 - 1; R is world X,
+G is world Z, B is the upward normal component. NoColorSpace; flipY=false.
+Foam data: R is the irregular cellular foam skin, G is broad patch coverage,
+B is the packed microbubble detail. NoColorSpace; flipY=false.
+Both images tile exactly. Use RepeatWrapping and trilinear mipmapped filtering.
+
+Encoding: 1024 × 1024 RGB, WebP lossless. Packed channels must not use lossy
+WebP/JPEG, whose chroma subsampling changes independent data channels.
+Normal channels are quantized to 6 bits before lossless encoding; foam
+channels are quantized to 4 bits.
