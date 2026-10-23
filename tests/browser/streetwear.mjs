@@ -35,7 +35,8 @@ const tables = { totehm_cloth_support: supports, profiles: [{ pseudo:'Vallerand'
 const network = (url, req) => {
   if(url.origin === SB && url.pathname === '/storage/v1/object/list/totehm-cloth-support'){
     const prefix = JSON.parse(req.postData() || '{}').prefix;
-    const files = prefix === 'champ' ? [{ name:'1-front.png' }, { name:'2-back.png' }, { name:'3-side.png' }, { name:'.keep' }] : [];
+    const files = prefix === 'champ' ? [{ name:'1-front.png' }, { name:'2-back.png' }, { name:'3-side.png' }, { name:'print' }, { name:'.keep' }]
+                : prefix === 'champ/print' ? [{ name:'1-back-zone.png' }] : [];
     return { status:200, contentType:'application/json', body: JSON.stringify(files) };
   }
   if(/printful\.test|storage\/v1\/object\/public/.test(url.href)) return { status:200, contentType:'image/svg+xml', body:'<svg xmlns="http://www.w3.org/2000/svg" width="800" height="800"><rect width="800" height="800" fill="#1a1a1e"/><path d="M250 180 L400 140 L550 180 L640 300 L580 330 L560 290 L560 680 L240 680 L240 290 L220 330 L160 300 Z" fill="#d9d9d9"/></svg>' };
@@ -123,7 +124,8 @@ ok((await D()).seam === 1, 'the seam lights the intention of what is on screen (
 await pg.click('#el-list .bx');
 await pg.waitForSelector('#mt-go');
 const matter = await pg.textContent('#matter');
-ok(/Marathon in May/.test(matter) && (await D()).open, 'the element opens what it is connected to');
+ok(/Marathon in May/.test(matter) && (await D()).open && !!(await pg.$('#el-list .bx #matter')),
+  'the element opens what it is connected to, INSIDE its box (the box, almost whole)');
 ok(!/palette|rhythm|every morning/i.test(matter + await pg.textContent('#el-list')) && !(await pg.$('#matter .pal')), 'no colour palette, no time frequency on screen');
 await pg.screenshot({ path: OUT + '/sw_element.png' });
 await pg.click('#mt-go');
@@ -131,7 +133,14 @@ await pg.click('#mt-go');
 // ── 3 · NAME
 await pg.waitForFunction(() => window.__totehm_cloth().stage === 'name');
 d = await D();
-ok(d.stage === 'name' && d.element === 'wisdom', 'NAME: the element is kept (wisdom)');
+ok(d.stage === 'name' && d.element === 'wisdom' && d.print === 1, 'NAME: the element is kept (wisdom); the print-zone photo is loaded apart');
+await pg.click('#el-list .bx.is-on');
+await pg.waitForFunction(() => !document.getElementById('s-element').classList.contains('is-picked'));
+ok((await pg.$$eval('#el-list .bx', l => l.filter(b => b.offsetParent).length)) > 0 && (await D()).stage === 'element',
+  'a tap on the worn element opens the list again — one can always change one\'s mind');
+await pg.click('#el-list .bx');
+await pg.waitForSelector('#mt-go'); await pg.click('#mt-go');
+await pg.waitForFunction(() => window.__totehm_cloth().stage === 'name');
 ok(!(await pg.$('#nm-el')) && /Slow is smooth/.test(await pg.textContent('#el-list')) && (await pg.$$eval('#el-list .bx', l => l.filter(b => b.offsetParent).length)) === 1,
   'the chosen element stays alone on screen — never written twice');
 ok((await pg.textContent('#nm-prefix')) === '0.' && (await pg.$eval('#nm-field', e => getComputedStyle(e).borderImageSource)).includes('svg')
