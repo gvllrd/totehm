@@ -33,8 +33,10 @@ choisit ; n8n C, `compose-artwork`) → **production** (n8n D : Printful) → **
 - **Le mode test Stripe n'a jamais servi** : `STRIPE_TEST_SECRET_KEY` et `STRIPE_TEST_WEBHOOK_SECRET` manquent — ils
   vivent dans les secrets Supabase (Edge Functions), pas dans le `.env` d'Oracle — donc [Order] répond
   `test_unavailable` (503) pour un compte de `boutique_testers` (`CLAUDE_CODE.md` §3).
-- **L'essai visuel attend le terminal** : `20261022130000_essai_visuel.sql` (`test_stop`, `test_budget`) et le
-  `stripe-webhook` qui lance la génération d'un essai sont écrits et testés, pas encore en production.
+- **L'essai visuel : la base est prête, le webhook non** — `20261022130000_essai_visuel.sql` est APPLIQUÉE
+  (auto-test en production : `FAIL={}`), mais le `stripe-webhook` déployé (v43) ne lance pas la génération d'une
+  pièce de test : jusqu'à son déploiement, un essai se lance à la main (POST `{"cloth_id"}` sur
+  `n8n.higher.boutique/webhook/streetwear-generate`, en-tête `apikey` = clé de service).
 - **Luxury accepte les cinq vues** (`luxury-quote`) alors que la vision dit MY STORY seulement : à trancher par Wah.
 
 Tests : `tests/browser/streetwear.mjs`, `boutique_home.mjs`, `com_cloths.mjs`, `art_bridge.mjs` ;
