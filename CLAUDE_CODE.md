@@ -16,11 +16,12 @@ les boxes nées depuis le 18/10, sans moyen de les rouvrir.
 Wah crée en mode TEST un endpoint vers `…/functions/v1/stripe-webhook` (`checkout.session.completed`), puis
 `supabase secrets set STRIPE_TEST_SECRET_KEY=… STRIPE_TEST_WEBHOOK_SECRET=…`. Sinon [Order] répond 503.
 
-## 4 · L'essai visuel et la chaîne n8n — une seule session, dans cet ordre
-    psql "$SUPABASE_DB_URL" -f backend/supabase/migrations/20261022130000_essai_visuel.sql
-    psql "$SUPABASE_DB_URL" -f tests/sql/essai_visuel_selftest.sql           (attendu : FAIL={})
+## 4 · La chaîne n8n — l'essai visuel est en base depuis le 23/10 (session cloud)
     supabase functions deploy stripe-webhook --project-ref abujjbkbbiumxrokozph
     node tests/n8n/streetwear/offline.mjs                                    (attendu : 59 succès)
+
+Le déploiement attend l'API Management ; sans lui, un essai se lance à la main (POST `{"cloth_id"}` sur
+`n8n.higher.boutique/webhook/streetwear-generate`, en-tête `apikey` = clé de service).
 
 Sur la VM : les onze clés des Code nodes et `N8N_BLOCK_ENV_ACCESS_IN_NODE=false` sont maintenant dans
 `docker-compose.yml` — les comparer au `.env`, `docker compose up -d`, vérifier qu'un Code node lit `$env.SB_KEY`.
