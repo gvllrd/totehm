@@ -5,7 +5,8 @@
 Des vêtements totehmisés : **n'importe quelle box** du TOTEHM d'un membre, un style artistique déterminé, produits par
 Printful. Le numérique (THP, Stoner, Lisbon, Origins, marché) vit sur totehm.space.
 
-**Le TOTEHM est la commande** (23/10) : son logo (fond perforé · rail · T · mot, en SVG) lance la totehmisation, puis
+**Le TOTEHM est la commande** (23/10) : son logo — **les quatre calques de totehm.com, copiés tels quels** (`#gl-bg`
+perforé, `#gl-rail`, `#gl-t`, `#gl-wm`, aux mêmes pourcentages ; le fond EST le papier) — lance la totehmisation, puis
 **il se décompose** — son FOND prend le dessus pendant que le rail, le T et le mot FONDENT (flou + fondu) et que
 « MY GRIND » apparaît ; dans la foulée deux fonds glissent aux extrémités et deviennent MY STORY et VISION. Un tap sur
 MY GRIND empile OBJECTIVE · HABIT · REPULSION au centre de son navy ; un tap sur une vue donne ses boxes, un tap sur une

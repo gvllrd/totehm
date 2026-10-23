@@ -89,8 +89,8 @@ d = await D();
 ok(d.papers && d.melt && !d.grind && d.view === null && d.views === 5, 'the TOTEHM has melted into three papers, no view chosen yet, the five views are there');
 ok((await pg.$$eval('#tz-papers .pap-lab', l => l.map(b => b.textContent.trim()))).join(',') === 'my story,my grind,vision'
    && (await pg.$eval('#el-list', e => e.children.length)) === 0, 'MY STORY · MY GRIND · VISION, and nothing listed before a tap');
-ok((await pg.$eval('#tz-logo', e => +getComputedStyle(e).opacity)) < 0.05 && (await pg.$eval('#tz-logo .lg-t', e => e.textContent)) === 'T',
-  'the logo (rail · T · word) has dissolved; only its background is left');
+ok((await pg.$eval('#tz-logo', e => +getComputedStyle(e).opacity)) < 0.05 && (await pg.$$eval('#tz-logo .gl', l => l.length)) === 3,
+  'the logo (rail · T · word — the three SVGs of totehm.com) has dissolved; only its background is left');
 const g3 = await pg.$$eval('#tz-papers .g3 i', l => l.map(i => i.textContent.trim()).join(','));
 ok(g3 === 'objective,habit,repulsion' && (await pg.$eval('#tz-papers .g3', e => +getComputedStyle(e).opacity)) < 0.05, 'the three buttons live inside the GRIND, hidden');
 await pg.click('.pap-g');
