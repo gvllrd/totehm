@@ -108,13 +108,13 @@ ok(/Run the hill/.test(await pg.textContent('#el-list')) && /Cold shower/.test(a
 await pg.click('.pap-v');
 await pg.waitForFunction(() => window.__totehm_cloth().view === 'visions');
 ok(/A studio by the sea/.test(await pg.textContent('#el-list')), 'VISION is wearable too');
-await pg.click('#hud button[data-i="0"]');
-await pg.waitForFunction(() => window.__totehm_cloth().stage === 'cloth');
-await pg.click('#totehmize');
-await pg.waitForFunction(() => window.__totehm_cloth().stage === 'element' && !window.__totehm_cloth().melt);
+await pg.goBack();
+await pg.waitForFunction(() => window.__totehm_cloth().stage === 'cloth' && !window.__totehm_cloth().melt);
 await pg.waitForTimeout(60);
 ok((await pg.$eval('#tz-logo', e => +getComputedStyle(e).opacity)) > 0.5 && (await D()).view === null,
-  'back to the cloth and in again: the TOTEHM is whole, and it melts again ' + (await pg.$eval('#tz-logo', e => getComputedStyle(e).opacity)) + '/' + JSON.stringify(await D()).slice(0,120));
+  'back: the TOTEHM folds into its logo again');
+ok(await pg.isVisible('#viewer') && await pg.isVisible('#totehmize'), 'one single screen: the cloth and the TOTEHM never leave it');
+await pg.click('#totehmize');
 await pg.waitForFunction(() => window.__totehm_cloth().papers);
 await pg.click('.pap-s');
 await pg.waitForFunction(() => window.__totehm_cloth().view === 'wisdom');
@@ -132,13 +132,18 @@ await pg.click('#mt-go');
 await pg.waitForFunction(() => window.__totehm_cloth().stage === 'name');
 d = await D();
 ok(d.stage === 'name' && d.element === 'wisdom', 'NAME: the element is kept (wisdom)');
-ok(/Slow is smooth/.test(await pg.textContent('#nm-el')) && !(await pg.$('#nm-el .pals')) && (await pg.textContent('#nm-prefix')) === '0.', 'the element sits on top, without palette; the name starts with 0.');
+ok(!(await pg.$('#nm-el')) && /Slow is smooth/.test(await pg.textContent('#el-list')) && (await pg.$$eval('#el-list .bx', l => l.filter(b => b.offsetParent).length)) === 1,
+  'the chosen element stays alone on screen — never written twice');
+ok((await pg.textContent('#nm-prefix')) === '0.' && (await pg.$eval('#nm-field', e => getComputedStyle(e).borderImageSource)).includes('svg')
+   && (await pg.$eval('#nm-field', e => getComputedStyle(e).backgroundColor)) === 'rgb(51, 51, 102)', 'the name is typed in the perforated navy BOX');
 await pg.fill('#nm-input', 'taken');
 await pg.waitForFunction(() => /already taken/.test(document.querySelector('#nm-note').textContent));
 ok(NAMES.includes('0.taken') && await pg.isDisabled('#nm-go'), 'availability is checked by the SERVER; a taken name blocks Next');
-await pg.fill('#nm-input', '0.hill');
+await pg.fill('#nm-input', '0.Hill Street');
 await pg.waitForFunction(() => /available/.test(document.querySelector('#nm-note').textContent));
-ok((await pg.inputValue('#nm-input')) === 'hill' && NAMES.includes('0.hill'), 'a typed "0." is not doubled: 0.hill');
+ok((await pg.inputValue('#nm-input')) === 'hillstreet' && NAMES.includes('0.hillstreet'),
+  'the name is an IDENTIFIER: lower case, no space, and a typed "0." is not doubled');
+ok(/0 = this collection/i.test(await pg.textContent('#s-name')), 'the 0 says what it is, at the moment it is typed');
 const coral = await pg.evaluate(() => getComputedStyle(document.querySelector('#nm-input')).color + '|' + getComputedStyle(document.querySelector('#nm-input')).fontFamily);
 ok(/251, 213, 202/.test(coral) && /Quantico/.test(coral), 'the name is Quantico Coral');
 await pg.screenshot({ path: OUT + '/sw_name.png' });
@@ -155,13 +160,13 @@ await pg.waitForFunction(() => window.__totehm_cloth().stage === 'order');
 ok((await pg.$$eval('#od-sizes .sz', b => b.map(x => x.textContent).join(','))) === 'S,M,L,XL,2XL' && await pg.isDisabled('#od-sizes .sz[data-s="XL"]'), 'sizes from Printful, in order; a discontinued one is closed');
 ok(await pg.isVisible('#od-test') && /4242/.test(await pg.textContent('#od-test')), 'test mode said on the page');
 const pv = await pg.evaluate(() => { const z = document.querySelector('#od-visual .pz'); return { dashed: getComputedStyle(z).borderTopStyle, img: !!z.querySelector('img'), canvas: !!document.querySelector('#od-visual canvas'), name: document.querySelector('#od-visual .pz-name').textContent }; });
-ok(pv.dashed === 'dashed' && pv.img && !pv.canvas && pv.name === '0.hill', 'the preview: the place (dashed), the style, the name — no palette');
+ok(pv.dashed === 'dashed' && pv.img && !pv.canvas && pv.name === '0.hillstreet', 'the preview: the place (dashed), the style, the name — no palette');
 await pg.click('#od-sizes .sz[data-s="L"]');
 ok(/Order · 170 €/.test(await pg.textContent('#od-go')) && await pg.isEnabled('#od-go'), 'the order button carries the server price');
 await pg.screenshot({ path: OUT + '/sw_order.png' });
 await pg.click('#od-go');
 await pg.waitForURL(/checkout\.stripe\.test/);
-ok(body && body.garment_id === 's1' && body.box.kind === 'wisdom' && body.box.ref === 'w1' && body.name === 'hill' && body.size === 'L' && body.style_id === 'st1',
+ok(body && body.garment_id === 's1' && body.box.kind === 'wisdom' && body.box.ref === 'w1' && body.name === 'hillstreet' && body.size === 'L' && body.style_id === 'st1',
   'order sends a reference (wisdom) and the name WITHOUT prefix (the server sets 0.)');
 
 // ── Paiement annulé : retour sur ORDER, tous les choix gardés
@@ -170,12 +175,11 @@ await pg.waitForFunction(() => window.__totehm_cloth && window.__totehm_cloth().
 d = await D();
 ok(d.named && d.style && d.size && d.element === 'wisdom' && /cancelled/.test(await pg.textContent('#od-note')), 'Stripe cancelled: back on ORDER, name · style · size · element kept');
 ok(!/cancel=/.test(pg.url()), 'the ?cancel=1 leaves the address bar');
-await pg.click('#hud button[data-i="3"]');
+ok((await pg.$$eval('.stage', l => l.filter(e => e.classList.contains('is-open')).map(e => e.id).join(','))) === 's-cloth,s-element,s-name,s-style,s-order',
+  'one screen: every step reached is still there, one under the other');
+await pg.goBack();
 await pg.waitForFunction(() => window.__totehm_cloth().stage === 'style');
-ok(true, 'the step bar walks the steps backwards (ORDER → STYLE)');
-await pg.click('#hud button[data-i="1"]');
-await pg.waitForFunction(() => window.__totehm_cloth().stage === 'element' && window.__totehm_cloth().papers);
-ok(true, 'the step bar jumps back to ELEMENT, the TOTEHM is open again');
+ok(!(await pg.$eval('#s-order', e => e.classList.contains('is-open'))), 'back: the order step is folded away again');
 
 // ── Retour payé : le nom, et Decode
 await pg.goto('https://www.higher.boutique/streetwear?paid=1&cloth=c1');
@@ -202,7 +206,8 @@ ok(!log.errors.length, 'phone: no page error: ' + log.errors.join(' | '));
   await pg.waitForFunction(() => window.__totehm_cloth().stage === 'element');
   await pg.waitForTimeout(700);
   g = await geo(); d = await D();
-  ok(d.side === 'left' && g.el.l === 0 && g.vc > g.w / 2 + 120 && g.vis === 'visible', 'the TOTEHM slides in on the LEFT, the cloth shifts right and stays on screen');
+  ok(Math.abs(g.vc - g.w / 2) < 3 && Math.abs((g.el.l + g.el.r) / 2 - g.w / 2) < 3 && g.vis === 'visible',
+    'desktop: NO side window — the TOTEHM opens in the same centred column, under the cloth');
   ok(d.zone && /your element/i.test(await pg.textContent('#vw-zone')), 'the place of the artwork lights up on the cloth');
   await pg.screenshot({ path: OUT + '/sw_desk_papers.png' });
   await pg.click('.pap-s');
@@ -213,7 +218,7 @@ ok(!log.errors.length, 'phone: no page error: ' + log.errors.join(' | '));
   await pg.waitForFunction(() => window.__totehm_cloth().stage === 'name');
   await pg.waitForTimeout(600);
   g = await geo(); d = await D();
-  ok(d.side === 'right' && g.nm.r === g.w && g.vc < g.w / 2 - 120, 'NAME: a window on the right, the cloth on the left');
+  ok(Math.abs((g.nm.l + g.nm.r) / 2 - g.w / 2) < 3 && g.vc === (await geo()).vc, 'NAME: still the same column, nothing slides');
   await pg.fill('#nm-input', 'sea');
   await pg.waitForFunction(() => /0\.sea/.test(document.querySelector('#vw-zone').textContent));
   ok(true, 'the name engraves itself on the cloth as it is typed');
@@ -225,7 +230,7 @@ ok(!log.errors.length, 'phone: no page error: ' + log.errors.join(' | '));
   await pg.click('#st-go');
   await pg.waitForFunction(() => window.__totehm_cloth().stage === 'order');
   await pg.waitForTimeout(500);
-  ok(!(await pg.isVisible('#od-visual')) && (await geo()).vis === 'visible', 'ORDER on desktop: the cloth itself is the preview (no second picture)');
+  ok(await pg.isVisible('#od-visual') && (await geo()).vis === 'visible', 'ORDER: the preview and the cloth are both on the page, one under the other');
   await pg.screenshot({ path: OUT + '/sw_desk_order.png' });
   log.errors = log.errors.filter(e => !/404|Failed to load/.test(e));
   ok(!log.errors.length, 'desktop: no page error ' + log.errors.join(' | '));
@@ -259,7 +264,7 @@ ok(!log.errors.length, 'phone: no page error: ' + log.errors.join(' | '));
   await pg.screenshot({ path: OUT + '/sw_from_com.png' });
   await pg.click('#totehmize');
   await pg.waitForFunction(() => window.__totehm_cloth().stage === 'name');
-  ok(/Slow is smooth/.test(await pg.textContent('#nm-el')) && /my story/i.test(await pg.textContent('#nm-el')), 'TOTEHMIZE goes straight to NAME, the element on top');
+  ok(/Slow is smooth/.test(await pg.textContent('#el-list')) && /my story/i.test(await pg.textContent('#el-sub')), 'TOTEHMIZE goes straight to NAME, the element above it');
   await pg.goBack();
   await pg.waitForFunction(() => window.__totehm_cloth().stage === 'element');
   ok((await pg.evaluate(() => window.__totehm_cloth().view)) === 'wisdom', 'Back: ELEMENT, on MY STORY (the element can still change)');
@@ -311,7 +316,7 @@ ok(!log.errors.length, 'phone: no page error: ' + log.errors.join(' | '));
   await pg.click('#totehmize');
   ok(new URL((await req).url()).searchParams.get('return') === '/streetwear', 'signed out: TOTEHMIZE signs in through totehm.com (PKCE), back to /streetwear');
   await pg.waitForFunction(() => window.__totehm_cloth && window.__totehm_cloth().ready && window.__totehm_cloth().stage === 'name', null, { timeout:15000 });
-  ok(/Slow is smooth/.test(await pg.textContent('#nm-el')) && (await pg.evaluate(() => window.__totehm_cloth().element)) === 'wisdom', 'the wish travels through the sign-in: back, straight to NAME with the wisdom chosen in COM');
+  ok(/Slow is smooth/.test(await pg.textContent('#el-list')) && (await pg.evaluate(() => window.__totehm_cloth().element)) === 'wisdom', 'the wish travels through the sign-in: back, straight to NAME with the wisdom chosen in COM');
   ok(!log.errors.filter(e => !/totehm\.com\/auth/.test(e)).length, 'signed out from COM: no page error');
 }
 // ── Le passeport : un Totehm incomplet ne s'ouvre pas

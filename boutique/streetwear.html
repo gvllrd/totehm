@@ -47,6 +47,8 @@ html{font-family:'Space Mono',monospace}button,input,select,textarea{font-family
   --navy:#333366;--blue:#36498c;--rep:#743169;--coral:#fbd5ca;
   /* Les papiers du logo (mêmes valeurs que com/totehm.html) */
   --logo-navy:#333366;--logo-wisdom:#5b2652;--logo-visions:#2b3a73;
+  /* La tuile navy perforée des contrôles (copiée de boutique/index.html) */
+  --tile-btn:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
   --mid:#b0b0b0;--lo:#909090;--dim:#5a5a5a;--bg:#000;--c1:#1f1f24;--c2:#2a2a30;--c3:#34343a;--ok:#639922;
   --q:'Quantico',sans-serif;--mono:'Space Mono',monospace;--ease:cubic-bezier(.22,.61,.36,1);
   --st:env(safe-area-inset-top,0px);--sb:env(safe-area-inset-bottom,0px);--head:calc(var(--st) + 84px);
@@ -54,7 +56,8 @@ html{font-family:'Space Mono',monospace}button,input,select,textarea{font-family
   --perfo:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 224.88 224.08' preserveAspectRatio='none'%3E%3Cdefs%3E%3Cmask id='m'%3E%3Crect x='-40' y='-40' width='310' height='310' fill='%23fff'/%3E%3Ccircle cx='56.421' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='56.421' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='112.440' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='112.440' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='168.459' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='168.459' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='56.020' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='56.020' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='112.039' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='112.039' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='168.059' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='168.059' r='13.86' fill='%23000'/%3E%3C/mask%3E%3C/defs%3E%3Crect x='0.402' y='0' width='224.076' height='224.078' fill='%23fff' mask='url(%23m)'/%3E%3C/svg%3E");
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{width:100%;height:100%;background:var(--bg);color:var(--mid);font-family:var(--mono);font-size:12px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow:hidden;overscroll-behavior:none}
+html{height:100%}
+body{width:100%;min-height:100%;background:var(--bg);color:var(--mid);font-family:var(--mono);font-size:12px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden;overscroll-behavior-y:none}
 a{color:inherit;text-decoration:none}
 .hide{display:none!important}
 .kicker{font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--lo);text-align:center}
@@ -75,24 +78,18 @@ a{color:inherit;text-decoration:none}
 #top{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;justify-content:space-between;align-items:center;padding:calc(8px + var(--st)) 10px 4px;pointer-events:none}
 #top>*{pointer-events:auto}
 #conn-bar{display:flex;align-items:center;gap:6px;background:none;border:none;cursor:pointer;font-size:10px;letter-spacing:.12em;color:var(--lo);padding:2px 2px;-webkit-tap-highlight-color:transparent}
-#hud{position:fixed;z-index:50;left:50%;top:calc(var(--st) + 48px);transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:4px;transition:opacity .3s ease}
-#hud ol{list-style:none;display:flex;gap:5px}
-#hud button{display:block;width:24px;padding:6px 0;border:none;background:none;cursor:pointer;-webkit-tap-highlight-color:transparent}
-#hud button:disabled{cursor:default}
-#hud button i{display:block;height:3px;border-radius:2px;background:#2a2a30;transition:background-color .35s ease}
-#hud button.is-done i{background:#6d6d74}
-#hud button.is-here i{background:#fff}
-#hud-say{font-size:8.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--lo);white-space:nowrap}
-
-/* LES SCÈNES — une à la fois, plein écran ; on glisse de l'une à l'autre */
-#stages{position:fixed;inset:0}
-.stage{position:absolute;inset:0;display:flex;flex-direction:column;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;
-  padding:var(--head) 16px calc(20px + var(--sb));opacity:0;visibility:hidden;transform:translateX(56px);
-  transition:opacity .34s var(--ease),transform .46s var(--ease),visibility 0s linear .46s,background-color .5s ease}
-.stage.is-past{transform:translateX(-56px)}
-.stage.is-here{opacity:1;visibility:visible;transform:none;transition:opacity .34s var(--ease),transform .46s var(--ease),visibility 0s,background-color .5s ease}
-.inner{margin:auto;width:100%;max-width:560px;display:flex;flex-direction:column;align-items:center;gap:12px}
-.stage.is-top .inner{margin:8px auto auto}
+/* LE PARCOURS — UN SEUL ÉCRAN, QUI SE REMPLIT (23/10, Wah : « apparition des
+   saisies au fur et à mesure »). Plus de scènes plein écran, plus de fenêtres
+   latérales : chaque étape apparaît SOUS la précédente, à sa place, et le
+   TOTEHM se décompose là où il est. */
+#stages{min-height:100%;display:flex;flex-direction:column;align-items:center;gap:16px;
+  padding:calc(var(--st) + 16px) 16px calc(28px + var(--sb))}
+.stage{width:100%;max-width:430px;display:none;flex-direction:column;align-items:center;gap:12px;
+  opacity:0;transform:translateY(16px);transition:opacity .4s var(--ease),transform .5s var(--ease)}
+.stage.is-open{display:flex}
+.stage.is-in{opacity:1;transform:none}
+.inner{width:100%;display:flex;flex-direction:column;align-items:center;gap:12px}
+@media(prefers-reduced-motion:reduce){.stage{transition:none}}
 
 /* 1 · CLOTH — le vêtement au centre ; ← → les modèles, ↑ ↓ ses vues */
 #viewer{position:relative;width:100%;height:clamp(200px,calc(100dvh - 400px),560px);overflow:hidden;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none;background:#050506}
@@ -125,22 +122,22 @@ a{color:inherit;text-decoration:none}
 .cl-links{display:flex;gap:14px;justify-content:center}
 
 /* 2 · ELEMENT — le Totehm déplié, sur son papier ; la manette n'existe qu'ici */
-#s-element{padding:var(--head) 0 0;overflow:hidden;background:#000;--rl:0px;--rw:0px}
+#s-element{background:#000}
 #el-rail{display:none}  /* 23/10 : les papiers sont sur du NOIR, sans rail */
-#el-head{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;padding:0 16px 10px;flex:0 0 auto}
+#el-head{position:relative;z-index:2;width:100%;display:flex;flex-direction:column;align-items:center;flex:0 0 auto}
 #el-sub{font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.66);margin-top:9px;min-height:12px}
-#el-list{position:relative;z-index:1;flex:1 1 auto;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;padding:4px 16px calc(150px + var(--sb)) 0;display:flex;flex-direction:column;gap:6px;transition:opacity .3s ease,transform .34s var(--ease)}
-.bx{position:relative;margin-left:calc(var(--rl) + var(--rw) + 4px);background:var(--skin,#333366);color:#fff;padding:8px 12px 9px 14px;cursor:pointer;flex:0 0 auto;transition:filter .15s ease,transform .3s var(--ease)}
+#el-list{position:relative;z-index:1;width:100%;display:flex;flex-direction:column;gap:6px;transition:opacity .3s ease,transform .34s var(--ease)}
+.bx{position:relative;width:100%;background:var(--skin,#333366);color:#fff;padding:8px 12px 9px 14px;cursor:pointer;flex:0 0 auto;transition:filter .15s ease,transform .3s var(--ease)}
 @media(hover:hover){.bx:hover{filter:brightness(1.16)}}
 .bx .tick{position:absolute;left:0;top:0;bottom:0;width:3px;display:flex;flex-direction:column}
 .bx .tick i{flex:1 1 0;display:block}
 .bx .nm{font-family:var(--q);font-size:14px;line-height:1.5;word-break:break-word}
 .bx .sb{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.74);margin-top:4px;display:flex;flex-wrap:wrap;gap:0 10px}
 .bx.is-on{transform:translateX(-3px) scale(1.012);filter:brightness(1.1);cursor:default}
-.v-empty{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.55);text-align:center;padding:30px 16px 0 calc(var(--rl) + var(--rw) + 4px);display:flex;flex-direction:column;align-items:center;gap:8px}
+.v-empty{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.55);text-align:center;padding:22px 0 0;display:flex;flex-direction:column;align-items:center;gap:8px}
 .v-empty .lnk{color:rgba(255,255,255,.8)}
 /* LA MATIÈRE : l'élément choisi enfante ce qui lui est relié, à sa place */
-#matter{margin-left:calc(var(--rl) + var(--rw) + 4px);display:flex;flex-direction:column;gap:9px;padding:10px 0 4px}
+#matter{width:100%;display:flex;flex-direction:column;gap:9px;padding:10px 0 4px}
 #matter .grp{display:flex;flex-wrap:wrap;gap:5px;align-items:center}
 #matter .w{font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.62);min-width:64px}
 .mi{font-family:var(--q);font-size:11px;color:#fff;padding:2px 7px;background:var(--navy)}
@@ -158,10 +155,7 @@ a{color:inherit;text-decoration:none}
 
 /* LE LOGO — le fond perforé (background), le rail, le T, le mot. Quatre pièces,
    parce qu'elles doivent FONDRE séparément. */
-#totehmize{width:66px;height:66px;flex:none;border:0;padding:0;background:var(--logo-navy);cursor:pointer;margin-top:2px;
-  -webkit-tap-highlight-color:transparent;-webkit-mask-image:var(--perfo);mask-image:var(--perfo);
-  -webkit-mask-size:100% 100%;mask-size:100% 100%;position:relative;transition:transform .3s var(--ease)}
-@media(hover:hover){#totehmize:hover{transform:scale(1.07)}}
+/* Le logo EST le papier du milieu : pas de taille à lui, il suit les trois. */
 #totehmize:focus-visible{outline:1px solid var(--mid);outline-offset:4px}
 #totehmize[disabled]{opacity:.35;cursor:default}
 /* Les trois calques, cadrés EXACTEMENT comme sur totehm.com (#gl-rail, #gl-t,
@@ -192,9 +186,12 @@ a{color:inherit;text-decoration:none}
 .pap.is-here{filter:brightness(1.25)}
 .pap-lab{font-weight:700;font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;padding:0 7px;text-align:center;opacity:0;transition:opacity .4s ease}
 /* 0 · les deux côtés sont POSÉS SUR le centre, à sa taille : on ne voit qu'un logo */
-#el-head.is-logo .pap-s{transform:translateX(calc(100% + 10px)) scale(.46);opacity:0}
-#el-head.is-logo .pap-v{transform:translateX(calc(-100% - 10px)) scale(.46);opacity:0}
-#el-head.is-logo .pap-g{transform:scale(.46)}
+/* Posés SUR le centre, invisibles — et SANS prise : sans ça, le papier de
+   droite intercepte le tap destiné au logo. */
+#el-head.is-logo .pap-s,#el-head.is-logo .pap-v{opacity:0;pointer-events:none}
+#el-head.is-logo .pap-s{transform:translateX(calc(100% + 10px)) scale(.58)}
+#el-head.is-logo .pap-v{transform:translateX(calc(-100% - 10px)) scale(.58)}
+#el-head.is-logo .pap-g{transform:scale(.58)}
 /* 1 · le fond prend le dessus */
 #el-head.is-melt #tz-logo{opacity:0;filter:blur(7px);transform:scale(1.14)}
 #el-head.is-melt .pap-g .pap-lab{opacity:1}
@@ -217,9 +214,15 @@ a{color:inherit;text-decoration:none}
 @media(hover:hover){.g3 i:hover{filter:brightness(1.25)}}
 .g3 i.is-here{box-shadow:inset 0 0 0 1px rgba(255,255,255,.85)}
 
+/* Porté : la liste se réduit à la box choisie, sa matière se referme. */
+#s-element.is-picked #el-list .bx:not(.is-on){display:none}
+#s-element.is-picked #matter{display:none}
+#s-element.is-picked .bx.is-on{transform:none;cursor:default}
+
 /* LA COUTURE — les sept intentions, en points de couture sur un fil.
    Rien à voir avec le processeur de totehm.com : ici c'est un vêtement. */
-#tz-seam{position:relative;display:flex;gap:7px;align-items:center;justify-content:center;height:14px;margin:12px 0 0}
+#tz-seam{position:relative;display:flex;gap:7px;align-items:center;justify-content:center;height:14px;margin:12px 0 0;opacity:0;transition:opacity .4s ease}
+#el-head.is-split #tz-seam{opacity:1}
 #tz-seam::before{content:'';position:absolute;left:50%;top:50%;width:132px;height:1px;margin-left:-66px;background:rgba(255,255,255,.2)}
 #tz-seam i{position:relative;display:block;width:2px;height:9px;background:var(--c,#fff);opacity:.22;transition:opacity .35s ease,height .35s var(--ease)}
 #tz-seam i.is-on{opacity:1;height:14px}
@@ -230,10 +233,15 @@ a{color:inherit;text-decoration:none}
 .el-tile small{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.72)}
 .el-tile b{font-family:var(--q);font-weight:400;font-size:16px;line-height:1.4;word-break:break-word}
 .pals{display:flex;gap:4px;justify-content:center}.pals i{width:12px;height:12px;display:block}
-#nm-field{display:flex;align-items:baseline;background:#111114;border-radius:12px;padding:10px 16px;width:100%;max-width:360px;cursor:text}
-#nm-prefix{font-family:var(--q);font-size:26px;color:var(--coral);opacity:.55;user-select:none;flex:0 0 auto}
-#nm-input{font-family:var(--q);font-size:26px;color:var(--coral);background:none;border:none;outline:none;caret-color:var(--coral);width:100%;min-width:0;padding:2px 0}
-#nm-input::placeholder{color:rgba(251,213,202,.3)}
+/* LE NOM — dans la BOÎTE NAVY PERFORÉE, comme le Decode de l'accueil, et c'est
+   un IDENTIFIANT : minuscules, sans espace, petit. Le « 0. » est au serveur. */
+#nm-field{display:flex;align-items:baseline;justify-content:center;gap:1px;background:var(--navy);
+  border:7px solid transparent;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round;
+  border-radius:0;padding:9px 12px;width:100%;max-width:300px;cursor:text}
+#nm-prefix{font-family:var(--q);font-size:15px;color:var(--coral);opacity:.6;user-select:none;flex:0 0 auto}
+#nm-input{font-family:var(--q);font-size:15px;letter-spacing:.02em;color:var(--coral);background:none;border:none;outline:none;
+  caret-color:var(--coral);width:100%;min-width:0;padding:1px 0;text-transform:lowercase}
+#nm-input::placeholder{color:rgba(251,213,202,.3);text-transform:lowercase}
 
 /* 4 · STYLE — les styles du moment, au doigt */
 #st-rail{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;width:100%;padding:6px 4px 10px}
@@ -302,39 +310,15 @@ a{color:inherit;text-decoration:none}
 .slide-title{font-weight:700;font-size:12px;color:#fff;line-height:1.5}
 .slide-cap{font-size:11px;line-height:1.7;color:var(--lo)}
 
-/* ══ ORDINATEUR ≥ 900 px — LES DÉCALAGES DE SPACE (Wah, 08/10 bis) ══════
-   Le téléphone garde une scène plein écran à la fois. Sur ordinateur, le
-   vêtement reste à l'écran comme le radar de SPACE et se décale vers la place
-   libre ; chaque scène est une fenêtre-côté qui glisse : ELEMENT à gauche
-   (wisdom, le passé) ou à droite (vision, le futur), NAME · STYLE · ORDER à
-   droite. La place de l'œuvre se pose sur le vêtement et le nom s'y grave. */
+/* ══ ORDINATEUR — la MÊME colonne, centrée, le vêtement plus grand.
+   23/10 (Wah) : « j'aime pas les vues latérales ». Elles sont parties. ══ */
 @media(min-width:900px){
-  :root{--pw:clamp(360px,34vw,460px)}
-  body[data-side=left]{--jx:calc(var(--pw) / 2)}
-  body[data-side=right]{--jx:calc(var(--pw) / -2)}
-  #hud{left:calc(50% + var(--jx,0px));transition:left .5s var(--ease),opacity .3s ease}
-  #s-cloth{opacity:1;visibility:visible;transform:none;z-index:1;overflow:hidden}
-  #s-cloth .inner{max-width:min(560px,calc(100vw - var(--pw) - 64px));transform:translateX(var(--jx,0px));transition:transform .5s var(--ease)}
-  .cl-only{transition:opacity .3s ease,visibility 0s}
-  body:not([data-stage=cloth]) .cl-only{opacity:0;visibility:hidden;pointer-events:none;transition:opacity .2s ease,visibility 0s linear .2s}
-  body:not([data-stage=cloth]):not([data-stage=done]) #vw-zone{opacity:1}
-  .stage:not(#s-cloth):not(#s-done){left:auto;right:0;width:var(--pw);z-index:20;opacity:1;background:#0b0b0e;box-shadow:0 0 34px rgba(0,0,0,.5);
-    transform:translateX(101%);transition:transform .46s var(--ease),visibility 0s linear .46s,background-color .5s ease}
-  .stage.is-left:not(#s-cloth):not(#s-done){left:0;right:auto;transform:translateX(-101%)}
-  .stage.is-here:not(#s-cloth):not(#s-done){transform:none;transition:transform .46s var(--ease),visibility 0s,background-color .5s ease}
-  .stage.is-swap:not(#s-cloth){transition:none!important}
-  #s-element.stage:not(#s-done){background:var(--paper,#2b2b57)}
-  #s-done{z-index:30;background:#000}
-  #od-visual{display:none}
+  #stages{gap:20px}
+  .stage{max-width:470px}
+  #viewer{height:clamp(300px,52vh,620px)}
 }
 
-/* 03/10 — le nom du TOTEHM du membre : Quantico Coral, sans point d'état. */
-#conn-bar,#conn-bar:hover,#conn-txt,.mw-pseudo,.mw-pseudo:hover,#mw-who,#mw-who:hover{font-family:'Quantico',sans-serif;font-weight:400;color:#fbd5ca;text-transform:none}
-#conn-bar .dc,#conn-bar .dot{display:none!important}
-
-/* Au chargement, la première scène est là : aucune glissade d'entrée. */
-body.is-boot .stage{transition:none!important}
-@media(prefers-reduced-motion:reduce){.stage,.stage.is-here,#vw-track,.angles,#el-list,.bx,#cl-detail{transition:none!important}}
+@media(prefers-reduced-motion:reduce){#vw-track,.angles,#el-list,.bx,#cl-detail{transition:none!important}}
 
 
 
@@ -428,16 +412,6 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
 <!-- 23/10 : ni Back, ni coin membre, ni « how it works ». L'expérience parle
      seule ; la connexion part toute seule au moment de totehmiser, et l'espace
      membre vit sur totehm.com. La barre des étapes suffit pour revenir. -->
-<nav id="hud" aria-label="The five steps">
-  <ol>
-    <li><button type="button" data-i="0" aria-label="Cloth"><i></i></button></li>
-    <li><button type="button" data-i="1" aria-label="Element"><i></i></button></li>
-    <li><button type="button" data-i="2" aria-label="Name"><i></i></button></li>
-    <li><button type="button" data-i="3" aria-label="Style"><i></i></button></li>
-    <li><button type="button" data-i="4" aria-label="Order"><i></i></button></li>
-  </ol>
-  <div id="hud-say">1 / 5 · Cloth</div>
-</nav>
 
 <main id="stages">
   <!-- 1 · CLOTH -->
@@ -459,11 +433,9 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
       <div id="m-dots" class="cl-only" aria-hidden="true"></div>
       <div id="cl-title"></div>
       <div id="cl-facts"></div>
-      <div id="cl-wear" class="cl-only hide"></div>
-      <!-- LE TOTEHM lance la totehmisation : un tap, et il se décompose. -->
-      <button id="totehmize" class="cl-only" type="button" aria-label="Totehmize this cloth"><span class="lg" aria-hidden="true"><svg class="gl g-rail"><use href="#lg-rail"/></svg><svg class="gl g-t"><use href="#lg-t"/></svg><svg class="gl g-wm"><use href="#lg-wm"/></svg></span></button>
-      <div class="cl-links cl-only"><button class="lnk" id="cl-more" type="button">details</button></div>
-      <div id="cl-detail" class="cl-only"></div>
+      <div id="cl-wear" class="hide"></div>
+      <div class="cl-links"><button class="lnk" id="cl-more" type="button">details</button></div>
+      <div id="cl-detail"></div>
     </div>
   </section>
 
@@ -471,11 +443,10 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
        s'ouvre en trois. Un tap sur le logo recompose tout. N'IMPORTE QUELLE
        box du TOTEHM se porte : my story, vision, objective, habit, repulsion. -->
   <section class="stage" id="s-element" data-s="element" aria-label="Choose an element of my TOTEHM">
-    <div id="el-rail"></div>
     <div id="el-head" class="is-logo">
       <div id="tz-papers" role="group" aria-label="My TOTEHM, unfolded">
         <button class="pap pap-s" type="button" data-v="wisdom"><span class="pap-lab">my story</span></button>
-        <button class="pap pap-g" type="button" data-g="1">
+        <button class="pap pap-g" id="totehmize" type="button" data-g="1" aria-label="Totehmize this cloth">
           <!-- LE LOGO : le fond perforé, le rail, le T, le mot. Le fond prend le
                dessus, les trois autres fondent — et MY GRIND reste. -->
           <span id="tz-logo" class="lg" aria-hidden="true"><svg class="gl g-rail"><use href="#lg-rail"/></svg><svg class="gl g-t"><use href="#lg-t"/></svg><svg class="gl g-wm"><use href="#lg-wm"/></svg></span>
@@ -497,11 +468,9 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
   <!-- 3 · NAME -->
   <section class="stage is-top" id="s-name" data-s="name" aria-label="Name the cloth">
     <div class="inner">
-      <div class="el-tile" id="nm-el"></div>
-      <div class="kicker">Name your Totehm Cloth</div>
-      <label id="nm-field"><span id="nm-prefix">0.</span><input id="nm-input" maxlength="40" placeholder="name it" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="next" aria-label="The name of the cloth"></label>
+      <label id="nm-field"><span id="nm-prefix">0.</span><input id="nm-input" maxlength="40" placeholder="name" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="text" enterkeyhint="next" aria-label="The name of the cloth"></label>
       <div class="note dim" id="nm-note"></div>
-      <div class="say">Printed on the cloth. Decode it to read the element.</div>
+      <div class="say">0 = this collection, june to may. Decode the name to find the cloth.</div>
       <button class="btn cta" id="nm-go" type="button" disabled>Next</button>
     </div>
   </section>
@@ -684,7 +653,6 @@ sb.auth.onAuthStateChange(ev => {
 /* ══ L'ÉTAT — une pièce en cours, cinq scènes ═════════════════════════ */
 const BUILD='2026-10-23-any-box';
 const STAGES=['cloth','element','name','style','order'];
-const LABEL={cloth:'Cloth',element:'Element',name:'Name',style:'Style',order:'Order',done:''};
 const SIZES=['XS','S','M','L','XL','2XL','3XL','4XL','5XL'];
 const FLOW_KEY='totehm_cloth_flow';
 let supports=[],ci=0,ai=0,stage='cloth';
@@ -697,8 +665,6 @@ let OPEN=null,ORDERING=false,GOING=false;
 let HIST=[],READY=false,SWAPPING=false;
 const desktop=()=>matchMedia('(min-width:900px)').matches;
 /* La place libre (ordinateur) : la fenêtre-côté ouverte, et le vêtement qui se décale. */
-const sideOf=s=>s==='element'?'left':['name','style','order'].includes(s)?'right':'none';
-function placePanel(el,left){el.classList.add('is-swap');el.classList.toggle('is-left',left);void el.offsetWidth;el.classList.remove('is-swap');}
 
 const esc=s=>{const d=document.createElement('div');d.textContent=s==null?'':String(s);return d.innerHTML;};
 const avail=s=>Math.max((s?.max_pieces||0)-(s?.claimed||0),0);
@@ -732,38 +698,44 @@ function canShow(s){
   if(s==='order')return !!F.el&&F.nameOk&&!!F.style;
   return false;
 }
+/* L'écran se REMPLIT : toutes les étapes atteintes restent là, l'une sous
+   l'autre ; celles d'après n'existent pas encore. Le TOTEHM (le papier du
+   milieu) est toujours présent — c'est lui qu'on tape pour commencer. */
 function show(s,mode='push'){
   if(!canShow(s))s='cloth';
-  const k=STAGES.indexOf(s);
-  /* 23/10 : le TOTEHM arrive toujours du MÊME côté — il n'y a plus de voisines. */
-  if(s==='element')placePanel($('s-element'),true);
+  const k=STAGES.indexOf(s),fini=s==='done';
   document.querySelectorAll('.stage').forEach(el=>{
-    const here=el.dataset.s===s,i=STAGES.indexOf(el.dataset.s);
-    el.classList.toggle('is-here',here);el.classList.toggle('is-past',!here&&(s==='done'||(i>=0&&i<k)));
-    el.inert=!here;el.setAttribute('aria-hidden',String(!here));
+    const i=STAGES.indexOf(el.dataset.s),mien=el.dataset.s===s;
+    /* Le TOTEHM est là dès le départ : c'est le logo, sous le vêtement. */
+    const ouvert=fini?mien:(i>=0&&i<=k)||el.dataset.s==='element';
+    if(ouvert&&!el.classList.contains('is-open')){
+      el.classList.add('is-open');
+      requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add('is-in')));
+    }else if(!ouvert){el.classList.remove('is-open','is-in');}
+    el.inert=!ouvert;el.setAttribute('aria-hidden',String(!ouvert));
   });
-  stage=s;document.body.dataset.stage=s;document.body.dataset.side=sideOf(s);
-  paintHud();paintZones();
+  stage=s;document.body.dataset.stage=s;
+  /* Une fois l'élément porté, la liste se réduit à LUI : on ne lit jamais deux
+     fois la même chose à l'écran. */
+  $('s-element').classList.toggle('is-picked',k>STAGES.indexOf('element'));
+  paintZones();
+  /* La nouvelle étape vient à l'écran, sans secousse. */
+  if(mode!=='none'&&k>0){const el=document.querySelector('.stage[data-s="'+s+'"]');
+    if(el)setTimeout(()=>el.scrollIntoView({behavior:'smooth',block:'center'}),60);}
   if(mode==='push'){history.pushState({s},'');HIST.push(s);}
   else if(mode==='replace'){history.replaceState({s},'');HIST[Math.max(0,HIST.length-1)]=s;}
   if(document.body.classList.contains('is-boot'))requestAnimationFrame(()=>requestAnimationFrame(()=>document.body.classList.remove('is-boot')));
+  if(s==='cloth')foldTz();           /* on revient toujours au logo */
   if(s==='element'){openTz();renderEl();}
   if(s==='name')enterName();
   if(s==='style')enterStyle();
   if(s==='order')enterOrder();
   if(s==='done')clearFlow();else save();
 }
-function paintHud(){
-  const k=STAGES.indexOf(stage);
-  $('hud').style.opacity=stage==='done'?'0':'1';
-  $('hud').querySelectorAll('button').forEach((b,i)=>{b.classList.toggle('is-here',i===k);b.classList.toggle('is-done',i<k);b.disabled=!(i<k);});
-  $('hud-say').textContent=k>=0?(k+1)+' / 5 · '+LABEL[stage]:'';
-}
 function goBackTo(s){
   const i=HIST.lastIndexOf(s);
   if(i>=0&&i<HIST.length-1)history.go(i-(HIST.length-1));else show(s,'replace');
 }
-$('hud').querySelectorAll('button').forEach(b=>b.onclick=()=>{const s=STAGES[+b.dataset.i];if(STAGES.indexOf(s)<STAGES.indexOf(stage))goBackTo(s);});
 window.addEventListener('popstate',e=>{
   const s=e.state?.s||'cloth',i=HIST.lastIndexOf(s);
   if(i>=0)HIST.length=i+1;else HIST.push(s);
@@ -907,7 +879,6 @@ async function totehmize(){
   if(!myProfile){ssoVersDomaine(sb,'com',COM_IN);return;}
   await toElement();
 }
-$('totehmize').onclick=totehmize;
 async function ensureTotehm(){
   const{data:pass,error}=await sb.rpc('totehm_complete');
   if(error){console.error('[totehm_complete]',error.message);return false;}
@@ -1034,9 +1005,19 @@ function openTz(){
   TZ1=setTimeout(()=>h.classList.add('is-melt'),90);
   TZ2=setTimeout(()=>{h.classList.add('is-split');h.classList.remove('is-logo');},430);
 }
-function foldTz(){clearTimeout(TZ1);clearTimeout(TZ2);$('el-head').classList.remove('is-melt','is-split','is-grind');vue=null;renderEl();}
+/* Replier : le TOTEHM redevient son logo, d'un coup (jamais un retour en fondu). */
+function foldTz(){
+  clearTimeout(TZ1);clearTimeout(TZ2);
+  const h=$('el-head'),lg=$('tz-logo');
+  lg.style.transition='none';
+  h.classList.remove('is-melt','is-split','is-grind');h.classList.add('is-logo');
+  void h.offsetWidth;lg.style.transition='';
+  vue=null;renderEl();
+}
 $('tz-papers').addEventListener('click',e=>{
   const h=$('el-head');
+  /* Tant qu'on est au vêtement, le papier du milieu EST le logo : il ouvre. */
+  if(stage==='cloth'){if(e.target.closest('#totehmize'))totehmize();return;}
   if(!h.classList.contains('is-split'))return;      /* la décomposition d'abord */
   const v=e.target.closest('[data-v]');
   if(v&&VIEWS[v.dataset.v]){if(v.dataset.v!==vue){vue=v.dataset.v;renderEl('in');}return;}
@@ -1077,13 +1058,14 @@ function pick(){
 
 /* ══ 3 · NAME — vérifié en direct par le serveur ══════════════════════ */
 let NM_SEQ=0,nmTimer=null;
-const cleanName=v=>String(v||'').replace(/^\s*\d+\.\s*/,'').replace(/\s+/g,' ').replace(/^\s+/,'').slice(0,40);
+/* 23/10 (Wah) : le nom d'un Cloth est un IDENTIFIANT — minuscules, sans
+   espace, comme un pseudo. Le serveur pose le « 0. » (l'année de collection). */
+const cleanName=v=>String(v||'').toLowerCase().replace(/^\s*\d+\.\s*/,'').replace(/[^a-z0-9._-]+/g,'').slice(0,40);
 function paintTile(el,box){
   box.style.setProperty('--skin',SKIN[el.view]||'#333366');
   box.innerHTML='<small>'+esc(NOM[el.view]?.[0]||'my element')+'</small><b>'+esc(el.text)+'</b>';
 }
 function enterName(){
-  paintTile(F.el,$('nm-el'));
   $('nm-prefix').textContent=epochPrefix();
   if($('nm-input').value!==F.nameRaw)$('nm-input').value=F.nameRaw;
   $('nm-go').disabled=!F.nameOk;

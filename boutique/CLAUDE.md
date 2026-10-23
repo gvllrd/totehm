@@ -5,17 +5,22 @@
 Des vêtements totehmisés : **n'importe quelle box** du TOTEHM d'un membre, un style artistique déterminé, produits par
 Printful. Le numérique (THP, Stoner, Lisbon, Origins, marché) vit sur totehm.space.
 
-**Le TOTEHM est la commande** (23/10) : son logo — **les quatre calques de totehm.com, copiés tels quels** (`#gl-bg`
-perforé, `#gl-rail`, `#gl-t`, `#gl-wm`, aux mêmes pourcentages ; le fond EST le papier) — lance la totehmisation, puis
-**il se décompose** — son FOND prend le dessus pendant que le rail, le T et le mot FONDENT (flou + fondu) et que
-« MY GRIND » apparaît ; dans la foulée deux fonds glissent aux extrémités et deviennent MY STORY et VISION. Un tap sur
-MY GRIND empile OBJECTIVE · HABIT · REPULSION au centre de son navy ; un tap sur une vue donne ses boxes, un tap sur une
-box fait le vêtement. On revient toujours au logo : la séquence rejoue à chaque entrée dans la scène. Les curseurs du
-manche de COM entourent l'image (← → les modèles, ↑ ↓ ses vues) ; les sept intentions sont une COUTURE sous les papiers.
-Scène NOIRE, les papiers portent la couleur. Au début : le titre et ce qui reste ; le PRIX n'arrive qu'à la fin, dans
-ORDER. Ni Back, ni coin membre, ni « how it works », ni titre qui répète la collection.
+**UN SEUL ÉCRAN QUI SE REMPLIT** (23/10) : plus de scènes plein écran, plus de vues latérales. Le vêtement en haut
+(les curseurs du manche autour : ← → les modèles, ↑ ↓ ses vues), son nom, ce qui reste — puis le TOTEHM. Chaque étape
+APPARAÎT sous la précédente et y reste ; la suivante n'existe pas encore. Retour = le geste « back » du navigateur.
+
+**Le TOTEHM est la commande** : son logo — **les quatre calques de totehm.com, copiés tels quels** (`#gl-bg` perforé,
+`#gl-rail`, `#gl-t`, `#gl-wm`, aux mêmes pourcentages) — se décompose À SA PLACE : le FOND prend le dessus pendant que
+le rail, le T et le mot FONDENT, « MY GRIND » paraît, puis deux fonds glissent DEPUIS LUI vers les extrémités et
+deviennent MY STORY et VISION. Un tap sur MY GRIND empile OBJECTIVE · HABIT · REPULSION au centre de son navy ; un tap
+sur une vue donne ses boxes ; une box tapée devient le vêtement et la liste se réduit à ELLE. Revenir replie le logo.
+Les sept intentions sont une COUTURE sous les papiers. Scène NOIRE, les papiers portent la couleur.
+**Le nom est un IDENTIFIANT** — minuscules, sans espace, petit, dans la BOÎTE NAVY PERFORÉE ; le `0.` est posé par le
+serveur et s'explique à ce moment-là (« 0 = this collection, june to may »). Le PRIX n'arrive qu'à la fin.
 ⚠️ `tools/ecosystem_ui*` transforme tout bouton qui porte du texte (`inline-size:fit-content!important`) : le logo et
 les papiers en sont exemptés par `#totehmize` / `#tz-papers`, dans la copie ET dans `tools/ecosystem_ui_snippet.js`.
+⚠️ Les papiers posés sur le logo (avant la décomposition) portent `pointer-events:none` : sinon celui de droite
+intercepte le tap destiné au logo.
 
 | fichier | rôle |
 |---|---|
@@ -39,17 +44,15 @@ choisit ; n8n C, `compose-artwork`) → **production** (n8n D : Printful) → **
 
 ## Écarts connus
 
-- **La chaîne n8n n'a jamais tourné** : B, C, D, E sont publiés avec un CONFIG qui lit `process.env`, absent du
-  runtime d'un Code node (zéro exécution enregistrée). Leurs brouillons sécurisés (`$env`) attendent d'être publiés
-  ENSEMBLE, et celui de E accepte encore un événement non signé : `CLAUDE_CODE.md` §4. `stripe-webhook` envoie la clé
-  de service à B en en-tête `apikey`. Banc hors réseau : `node tests/n8n/streetwear/offline.mjs` (59 succès).
+- **La chaîne n8n n'a jamais tourné** : B, C, D, E publiés avec un CONFIG qui lit `process.env`, absent d'un Code node
+  (zéro exécution). Leurs brouillons (`$env`) attendent une publication ENSEMBLE, et celui de E accepte un événement
+  non signé : `CLAUDE_CODE.md` §4. `stripe-webhook` envoie `apikey` à B. Banc : `tests/n8n/streetwear/offline.mjs` (59).
 - **Le mode test Stripe n'a jamais servi** : `STRIPE_TEST_SECRET_KEY` et `STRIPE_TEST_WEBHOOK_SECRET` manquent — ils
   vivent dans les secrets Supabase (Edge Functions), pas dans le `.env` d'Oracle — donc [Order] répond
   `test_unavailable` (503) pour un compte de `boutique_testers` (`CLAUDE_CODE.md` §3).
-- **L'essai visuel : la base est prête, le webhook non** — `20261022130000_essai_visuel.sql` est APPLIQUÉE
-  (auto-test en production : `FAIL={}`), mais le `stripe-webhook` déployé (v43) ne lance pas la génération d'une
-  pièce de test : jusqu'à son déploiement, un essai se lance à la main (POST `{"cloth_id"}` sur
-  `n8n.higher.boutique/webhook/streetwear-generate`, en-tête `apikey` = clé de service).
+- **L'essai visuel : la base est prête, le webhook non** — `20261022130000_essai_visuel.sql` APPLIQUÉE (auto-test en
+  production : `FAIL={}`), mais le `stripe-webhook` déployé (v43) ne lance pas la génération d'un essai : jusqu'à son
+  déploiement, on le lance à la main (POST `{"cloth_id"}` sur `n8n.higher.boutique/webhook/streetwear-generate`).
 - **COM ne propose « + totehmize » que sur MY STORY** : la boutique accepte les cinq vues, c'est `com/totehm.html` qui
   doit suivre (le lien `?wear=<kind>:<ref>` est prêt).
 - **Une seule porte pour se connecter** : l'email OTP local de l'accueil est retiré (23/10) — il ouvrait une session
