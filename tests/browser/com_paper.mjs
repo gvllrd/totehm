@@ -69,6 +69,8 @@ try{
   await pg.keyboard.press('ArrowDown');await pg.waitForTimeout(700);
   ok(/is-open/.test(await srch(pg))&&(await pg.evaluate(()=>window.__totehm_lv().vue))==='c'&&(await lsd(pg)).face===1,'molette et ↓ dans mes réglages : rien ne change de vue, le papier ne bouge pas');
   ok(!log.rpc.some(x=>x.name==='visibility_set'),'le verso n\'écrit plus la confidentialité du Totehm (elle vit sur chaque box)');
+  /* 24/10 : le verso a trois onglets ; le prix vit dans Monetize. */
+  await pg.click('#vs-tabs [data-vs-tab="money"]');await pg.waitForTimeout(100);
   await pg.fill('#mwc-price','3600');await pg.dispatchEvent('#mwc-price','input');
   ok(/100 subscribers/.test(await pg.textContent('#mwc-say'))&&/€36 \/ year/.test(await pg.textContent('#vs-price'))&&!await pg.locator('#mwc-save').count(),'le prix au curseur : la part se lit en direct, sans bouton Save (enregistré au lâcher, 20/10)');
   // focus piégé dans la feuille

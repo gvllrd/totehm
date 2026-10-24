@@ -2994,6 +2994,8 @@ body.is-xo{overflow:hidden}
 
 
 
+
+
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille
    elle-même : un nouveau bloc gris entre ici tout seul.        */
@@ -3597,6 +3599,89 @@ a.rf-add{text-decoration:none;display:inline-block}
 .vs-pay.hide{display:none}
 .vs-seg{display:flex;gap:6px;width:100%}
 .vs-seg button.is-on{background:#3a3a42;color:#fff;box-shadow:inset 0 0 0 1px #fff}
+/* ── LES TROIS ONGLETS DU VERSO (24/10) : Dashboard (par défaut) · Subscription · Monetize. Un onglet ne fait que montrer
+   son bloc ; le nom, l'invité et le pied (Sign out, Delete, conditions) restent partout. ── */
+#vs-tabs{display:flex;gap:6px;width:min(94vw,420px);flex:none;margin:2px 0 4px}
+#vs-tabs button{flex:1;min-width:0;border:0;border-radius:10px;background:#1f1f24;color:#b8b8c2;cursor:pointer;
+  font:700 10px/1.2 'Space Mono',monospace;letter-spacing:.12em;text-transform:uppercase;padding:9px 4px;white-space:nowrap}
+#vs-tabs button:hover{color:#fff}
+#vs-tabs button.is-on{background:#3a3a42;color:#fff;box-shadow:inset 0 0 0 1px #fff}
+#srch[data-tab="dash"] #mw-creator,#srch[data-tab="dash"] #settings,
+#srch[data-tab="sub"] #vs-dash,#srch[data-tab="sub"] #mw-creator,
+#srch[data-tab="money"] #vs-dash,#srch[data-tab="money"] #settings{display:none}
+#vs-vide{margin:0;width:min(94vw,420px);background:#000;padding:16px;font:400 10px/1.4 'Space Mono',monospace;color:#d2d2da;text-align:left}
+#vs-vide.hide{display:none}
+/* ── LE TABLEAU DE BORD (24/10) : 60 % noir, les données en blanc, les SEPT INTENTIONS en point ou en trait (jamais une
+   surface). Ce que le membre a écrit (ses Habits, ses objectifs) en Quantico ; tout le reste en Space Mono. ── */
+#vs-dash{width:min(94vw,420px);flex:none}
+#vs-dash:empty{display:none}
+.db{background:#000;padding:14px 14px 13px;text-align:left}
+.db-t{margin:0 0 11px;display:flex;align-items:baseline;justify-content:space-between;gap:10px;
+  font:700 10px/1.2 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#fff}
+.db-t i{font:400 9px/1.2 'Space Mono',monospace;font-style:normal;letter-spacing:.08em;text-transform:none;color:#b8b8c2;white-space:nowrap}
+.db-tg{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#000;padding:10px 12px 10px 14px;
+  font:400 10px/1.35 'Space Mono',monospace;color:#d2d2da;text-align:left}
+.db-tg b{font-weight:700;color:#fff;letter-spacing:.08em}
+.db-k{display:grid;grid-template-columns:repeat(3,1fr);gap:2px}
+.db-k>div{background:#000;padding:12px 12px 11px;display:flex;flex-direction:column;gap:6px;min-width:0;text-align:left}
+.db-k b{font:700 22px/1 'Space Mono',monospace;color:#fff;white-space:nowrap}
+.db-k b small{font-size:11px;font-weight:400;color:#b8b8c2;margin-left:3px}
+.db-k i{font:400 9px/1.2 'Space Mono',monospace;font-style:normal;letter-spacing:.14em;text-transform:uppercase;color:#b8b8c2}
+.db-k em{font:400 11px/1.25 'Quantico',sans-serif;font-style:normal;color:#d2d2da;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.db-bar{height:2px;background:#26262c;position:relative;overflow:hidden}
+.db-bar span{position:absolute;inset:0 auto 0 0;background:#fff;transition:width .6s var(--gate-ease)}
+.db-courbe{display:block;width:100%;height:auto;overflow:visible}
+.db-courbe .g{stroke:#26262c;stroke-width:1}
+.db-courbe .l{fill:none;stroke:#fff;stroke-width:1.6;stroke-linejoin:round;stroke-linecap:round}
+.db-courbe .p{fill:#000;stroke:#fff;stroke-width:1.4}
+.db-courbe .p.is-auj{fill:#fff}
+.db-courbe text{font:400 8.5px 'Space Mono',monospace;fill:#8e8e98}
+.db-courbe text.is-auj{fill:#fff;font-weight:700}
+.db-courbe text.v{fill:#d2d2da}
+.db-m{display:grid;grid-template-columns:minmax(0,1fr) repeat(7,17px) 30px;gap:7px 4px;align-items:center}
+.db-m .h{font:400 9px/1 'Space Mono',monospace;color:#8e8e98;text-align:center;text-transform:uppercase}
+.db-m .h.is-auj{color:#fff;font-weight:700}
+.db-n{min-width:0;padding-left:8px;box-shadow:inset 2px 0 0 var(--c,#3a3a42);font:400 12px/1.25 'Quantico',sans-serif;color:#fff;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.db-n small{display:block;font:400 8.5px/1.4 'Space Mono',monospace;letter-spacing:.06em;color:#8e8e98}
+.db-c{width:17px;height:17px;display:grid;place-items:center}
+.db-c::before{content:"";width:3px;height:3px;border-radius:50%;background:#2c2c33}
+.db-c.is-d::before{width:9px;height:9px;background:var(--c,#fff)}
+.db-c.is-m::before{width:8px;height:2px;border-radius:0;background:#8e8e98}
+.db-c.is-a::before{width:7px;height:7px;background:none;box-shadow:inset 0 0 0 1px #8e8e98}
+.db-s{font:700 10px/1 'Space Mono',monospace;color:#fff;text-align:right;white-space:nowrap}
+.db-s.is-0{color:#5c5c66;font-weight:400}
+.db-leg{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px;font:400 8.5px/1 'Space Mono',monospace;color:#8e8e98;letter-spacing:.06em}
+.db-leg span{display:inline-flex;align-items:center;gap:5px}
+.db-leg .db-c{width:9px;height:9px}
+.db-vide{margin:2px 0 0;font:400 10px/1.4 'Space Mono',monospace;color:#b8b8c2}
+.db-i{display:grid;grid-template-columns:62px minmax(0,1fr) 26px;gap:8px 8px;align-items:center}
+.db-i i{font:400 8.5px/1 'Space Mono',monospace;font-style:normal;letter-spacing:.12em;text-transform:uppercase;color:#b8b8c2}
+.db-i .tr{height:2px;background:#1c1c21;position:relative}
+.db-i .tr span{position:absolute;inset:0 auto 0 0;background:var(--c);min-width:2px}
+.db-i b{font:700 10px/1 'Space Mono',monospace;color:#fff;text-align:right}
+.db-o{display:flex;flex-direction:column;gap:12px}
+.db-o>div{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 10px;align-items:baseline}
+.db-o .n{font:400 12px/1.25 'Quantico',sans-serif;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  padding-left:8px;box-shadow:inset 2px 0 0 var(--c,#3a3a42)}
+.db-o .j{font:700 10px/1 'Space Mono',monospace;color:#fff;letter-spacing:.06em}
+.db-o .j.is-tard{color:#b8b8c2;font-weight:400}
+.db-o .db-bar{grid-column:1/-1}
+.db-heat{display:grid;grid-auto-flow:column;grid-template-rows:repeat(7,9px);grid-auto-columns:9px;gap:3px;justify-content:start}
+.db-heat span{border-radius:1px;background:#141418}
+.db-heat span.l1{background:#3a3a44}.db-heat span.l2{background:#6c6c78}.db-heat span.l3{background:#b0b0ba}.db-heat span.l4{background:#fff}
+.db-heat span.is-auj{box-shadow:0 0 0 1px #fff}
+.db-f{display:flex;flex-direction:column;gap:9px}
+.db-f>div{display:grid;grid-template-columns:7px minmax(0,1fr) auto;gap:9px;align-items:baseline}
+.db-f .pt{width:5px;height:5px;border-radius:50%;background:var(--c,#5c5c66);transform:translateY(-1px)}
+.db-f .q{min-width:0;font:400 10px/1.35 'Space Mono',monospace;color:#d2d2da;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.db-f .q em{font:400 11.5px/1.3 'Quantico',sans-serif;font-style:normal;color:#fff}
+.db-f time{font:400 9px/1 'Space Mono',monospace;color:#8e8e98;white-space:nowrap}
+.db-tot{display:grid;grid-template-columns:repeat(5,1fr);gap:2px}
+.db-tot span{background:#000;padding:10px 8px 9px;display:flex;flex-direction:column;gap:5px;min-width:0;text-align:left}
+.db-tot b{font:700 13px/1 'Space Mono',monospace;color:#fff}
+.db-tot i{font:400 8px/1.2 'Space Mono',monospace;font-style:normal;letter-spacing:.1em;text-transform:uppercase;color:#b8b8c2;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .vs-in{flex:1;min-width:0;border:0;border-radius:10px;background:#1f1f24;color:#fff;caret-color:#fff;outline:none;
   font:400 14px/1.2 'Quantico',sans-serif;padding:9px 12px}
 .vs-in::placeholder{color:#8c8c96}
@@ -4227,12 +4312,22 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
      (trois chiffres, le prix au curseur). Ce sont les nœuds de l'espace membre, DÉPLACÉS (un seul système de
      réglages) ; l'espace membre garde le compte. Pendant qu'il est ouvert, #gate est `inert` mais reste PEINT
      (le masquer révélerait le Totehm derrière le papier qui grandit) et aucun geste ne change de vue. -->
-<div id="srch" role="dialog" aria-modal="true" aria-label="My TOTEHM settings" aria-hidden="true" tabindex="-1">
+<div id="srch" role="dialog" aria-modal="true" aria-label="My TOTEHM settings" aria-hidden="true" tabindex="-1" data-tab="dash">
   <div id="srch-bg"></div>
   <div id="srch-ui">
     <div id="self-h"><button id="self-name" type="button" aria-label="Rename my TOTEHM"></button></div>
     <!-- Sous l'identifiant, le compte qui le porte (et l'état de la synchronisation) ; il arrive avec le reste. -->
     <p id="self-mail" class="srch-after"><span class="mw-mail" id="mw-mail"></span><span class="mw-sync" id="mw-sync"></span></p>
+    <!-- 24/10 — TROIS ONGLETS (Wah : « clarté et minimalisme ») : DASHBOARD, ouvert par défaut · SUBSCRIPTION · MONETIZE.
+         Ils ne font que montrer ou cacher trois blocs (`#vs-dash`, `#settings`, `#mw-creator`) : chacun garde son câblage.
+         Le tableau de bord se LIT (`my_dashboard`) ; le suivi, lui, se fait dans Telegram. -->
+    <nav id="vs-tabs" class="srch-after" role="tablist" aria-label="My TOTEHM">
+      <button type="button" role="tab" data-vs-tab="dash" class="is-on" aria-selected="true">Dashboard</button>
+      <button type="button" role="tab" data-vs-tab="sub" aria-selected="false">Subscription</button>
+      <button type="button" role="tab" data-vs-tab="money" aria-selected="false">Monetize</button>
+    </nav>
+    <section id="vs-dash" class="vs srch-after" role="tabpanel" aria-label="My dashboard"></section>
+    <p id="vs-vide" class="srch-after hide" role="status"></p>
     <div id="lv-card" class="srch-after hide">
       <div id="ident-block">
         <button class="btn-sig gid" id="name-btn">Name of my TOTEHM</button>
@@ -7425,7 +7520,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-10-23-com-repli';
+const BUILD='2026-10-24-com-dashboard';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -12030,7 +12125,8 @@ window.addEventListener('pageshow',e=>{
     /* ⚠️ 16/10 · RETOURNER LE PAPIER AFFICHE LE MENU MEMBRE. Wah : « quand tu retournes le totehm verso,
        c'est le menu membre qui s'affiche ». Donc il est là d'emblée, sans second geste : mes réglages,
        un filet, puis mon compte — dans cet ordre, l'un sous l'autre, zéro blabla. */
-    surReglages=()=>{ peindreCarte(); const lu=CREA.charger();
+    /* 24/10 : il s'ouvre sur le TABLEAU DE BORD ; la monétisation et mon tableau de bord se lisent ensemble (1,8 s au plus). */
+    surReglages=()=>{ peindreCarte(); DASH.onglet('dash'); const lu=Promise.all([CREA.charger(),DASH.charger()]).then(()=>DASH.vide());
       if(me){ $('member-window').classList.add('show');
               if(typeof memberPaint==='function') memberPaint();
               if(typeof paintMe==='function') paintMe(); }
@@ -12603,6 +12699,126 @@ window.addEventListener('pageshow',e=>{
         etat:()=>({vu:!box.classList.contains('hide'), prix:d?d.price_cents:null, offre:tog.dataset.etat||null, versement:!!(C&&C.offer&&C.offer.payout_fin), abonnements:((C&&C.subscriptions)||[]).length})};
     })();
 
+    /* ══ LE TABLEAU DE BORD DU VERSO · 24/10 ══ Wah : « enregistrer TOUT ce que fait l'utilisateur dans son Totehm et le
+       mettre sous forme de visuels » ; « le Telegram sert de tracking, pas le verso ». Le verso MONTRE, il ne coche rien :
+       la base journalise tout (`totehm_journal`, ses déclencheurs) et calcule tout (`my_dashboard`, SQL) ; la page dessine.
+       Trois onglets : Dashboard (par défaut, à chaque retournement) · Subscription · Monetize. */
+    const DASH=(()=>{
+      const el=$('vs-dash'), srch=$('srch'), COUL=Object.fromEntries(INTS.map(x=>[x.id,x.color]));
+      let seq=0, D=null, ong='dash'; const diagD={charges:0, erreurs:0};
+      const n=v=>Number.isFinite(+v)?+v:0, coul=i=>COUL[i]||'', jourDe=s=>new Date(String(s).slice(0,10)+'T12:00:00');
+      const court=s=>{ const t=jourDe(s); return isNaN(t)?'':t.toLocaleDateString('en-GB',{day:'numeric',month:'short'}); };
+      function onglet(t){
+        ong=['dash','sub','money'].includes(t)?t:'dash'; srch.dataset.tab=ong;
+        document.querySelectorAll('#vs-tabs [data-vs-tab]').forEach(b=>{ const on=b.dataset.vsTab===ong; b.classList.toggle('is-on',on); b.setAttribute('aria-selected',on?'true':'false'); });
+        vide();
+      }
+      /* Monetize sans offre lisible (invité, ou lecture en échec) : une ligne, jamais un onglet blanc. */
+      function vide(){
+        const v=$('vs-vide'); let t='';
+        if(ong==='money'&&$('mw-creator').classList.contains('hide')) t=guest()?'Save my TOTEHM with my email to monetize it.':'Monetize · back in a moment.';
+        v.textContent=t; v.classList.toggle('hide',!t);
+      }
+      $('vs-tabs').addEventListener('click',e=>{ const b=e.target.closest('[data-vs-tab]'); if(b) onglet(b.dataset.vsTab); });
+      async function charger(){
+        if(!me){ D=null; el.innerHTML=''; return; }
+        const s=++seq, uid=me.id; let tz=null; try{ tz=Intl.DateTimeFormat().resolvedOptions().timeZone||null; }catch(_){}
+        const {data,error}=await sb.rpc('my_dashboard',{p_tz:tz});
+        if(s!==seq||(me?.id||null)!==uid) return;
+        if(error||!data||!data.ok){ if(error) console.error('[my_dashboard]',error.message); diagD.erreurs++;
+          if(!D) el.innerHTML='<div class="db"><p class="db-vide">My dashboard · back in a moment.</p></div>'; return; }
+        D=data; diagD.charges++; peindre();
+      }
+      /* LA COURBE : la part des Habits demandées (Telegram) qui ont été FAITES, jour par jour ; un jour sans demande, un trou. */
+      function courbe(days,today){
+        const W=300, x=i=>18+i*44, y=r=>84-r*70, P=days.map((d,i)=>{ const q=n(d.demande); return {i, r:q?n(d.fait)/q:null, d:d.d}; });
+        let path='', prev=null;
+        P.forEach(p=>{ if(p.r==null){ prev=null; return; }
+          const X=x(p.i), Y=y(p.r);
+          if(!prev) path+='M'+X+' '+Y.toFixed(1);
+          else { const a=x(prev.i), b=y(prev.r); path+=' C'+(a+(X-a)*.45).toFixed(1)+' '+b.toFixed(1)+','+(a+(X-a)*.55).toFixed(1)+' '+Y.toFixed(1)+','+X+' '+Y.toFixed(1); }
+          prev=p; });
+        const pts=P.filter(p=>p.r!=null).map(p=>'<circle class="p'+(p.d===today?' is-auj':'')+'" cx="'+x(p.i)+'" cy="'+y(p.r).toFixed(1)+'" r="3"/>'
+          +'<text class="v" x="'+x(p.i)+'" y="'+(y(p.r)-8).toFixed(1)+'" text-anchor="middle">'+Math.round(p.r*100)+'</text>').join('');
+        const lab=P.map(p=>'<text'+(p.d===today?' class="is-auj"':'')+' x="'+x(p.i)+'" y="104" text-anchor="middle">'
+          +esc(jourDe(p.d).toLocaleDateString('en-GB',{weekday:'short'}).slice(0,2))+'</text>').join('');
+        return '<svg class="db-courbe" viewBox="0 0 '+W+' 110" role="img" aria-label="This week, day by day">'
+          +'<line class="g" x1="0" x2="'+W+'" y1="14" y2="14"/><line class="g" x1="0" x2="'+W+'" y1="49" y2="49"/><line class="g" x1="0" x2="'+W+'" y1="84" y2="84"/>'
+          +(path?'<path class="l" d="'+path+'"/>':'')+pts+lab+'</svg>';
+      }
+      /* L'ACTIVITÉ : 12 semaines, une case par jour, une colonne par semaine (lundi en haut) ; la valeur = mes gestes. */
+      function chaleur(heat,today){
+        const L=heat.length, max=Math.max(1,...heat.map(n)), t0=jourDe(today); t0.setDate(t0.getDate()-(L-1));
+        const dec=(t0.getDay()+6)%7; let h='';
+        for(let k=0;k<dec;k++) h+='<span style="visibility:hidden"></span>';
+        heat.forEach((v,i)=>{ const q=n(v), l=q?Math.max(1,Math.ceil(4*q/max)):0;
+          h+='<span class="'+(l?'l'+l:'')+(i===L-1?' is-auj':'')+'" title="'+q+'"></span>'; });
+        return '<div class="db-heat" role="img" aria-label="My activity, 12 weeks">'+h+'</div>';
+      }
+      const DIT={habit_added:'new habit',habit_removed:'habit dropped',habit_renamed:'habit renamed',intention_changed:'new intention',
+        rhythm_changed:'new rhythm',objective_added:'new objective',objective_achieved:'objective achieved',objective_abandoned:'objective let go',
+        objective_converted:'objective → habit',objective_edited:'objective moved',objective_removed:'objective removed',
+        repulsion_added:'new repulsion',repulsion_retired:'repulsion beaten',vision_added:'new vision',vision_removed:'vision let go',
+        story_added:'my story grew',story_removed:'story removed',media_added:'new media',media_removed:'media removed',
+        spot_planned:'spot planned',reflection:'reflection',tracked_done:'done',tracked_missed:'missed',chapter_written:'new chapter',
+        where_set:'new where',sound_set:'new sound',link_added:'linked'};
+      function ilya(at){
+        const t=new Date(at), s=(Date.now()-t.getTime())/1000; if(isNaN(t)) return '';
+        return s<60?'now':s<3600?Math.floor(s/60)+'m':s<86400?Math.floor(s/3600)+'h':s<7*86400?Math.floor(s/86400)+'d'
+          :t.toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+      }
+      function peindre(){
+        if(!D) return;
+        const W=D.week||{}, H=D.habits||[], days=D.days||[], T=D.totals||{}, today=D.today;
+        const fait=n(W.fait), manque=n(W.manque), rep=fait+manque, taux=rep?Math.round(100*fait/rep):null, top=W.top;
+        let h='';
+        h+='<div class="db-tg">'+(D.telegram?'<span><b>TotehmBot</b> tracks in Telegram · it lands here</span>'
+          :'<span><b>TotehmBot</b> tracks each Habit in Telegram</span><button class="vs-act" type="button" data-db-tg>Connect</button>')+'</div>';
+        h+='<div class="db-k">'
+          +'<div><i>this week</i><b>'+(taux==null?'—':taux+'<small>%</small>')+'</b><div class="db-bar"><span style="width:'+(taux||0)+'%"></span></div><i>'+fait+(n(W.cible)?' / '+n(W.cible):'')+' done</i></div>'
+          +'<div><i>today</i><b>'+n(W.aujourdhui)+'<small>/ '+n(W.demandes)+'</small></b><i>done / asked</i></div>'
+          +'<div><i>streak</i><b>'+(top?n(top.serie)+'<small>d</small>':'—')+'</b><em>'+(top?esc(top.t):'—')+'</em></div></div>';
+        h+='<div class="db"><p class="db-t">This week<i>done, of what TotehmBot asked</i></p>'+courbe(days,today)+'</div>';
+        /* LA MATRICE : mes Habits × 7 jours. Un point (la couleur de son intention) = fait ; un trait = pas fait ; un cercle = demandé, sans réponse. */
+        let m='<div class="db-m"><span></span>'+days.map(d=>'<span class="h'+(d.d===today?' is-auj':'')+'">'+esc(jourDe(d.d).toLocaleDateString('en-GB',{weekday:'narrow'}))+'</span>').join('')+'<span class="h">row</span>';
+        H.forEach(x=>{ const c=coul((x.is||[])[0]);
+          m+='<div class="db-n" style="--c:'+(c||'#3a3a42')+'">'+esc(x.t)+'<small>'+n(x.fait)+(x.cible?' / '+x.cible:'')+' this week'+(n(x.record)>1?' · best '+n(x.record)+'d':'')+'</small></div>'
+            +(x.c||[]).map(v=>'<span class="db-c'+(v?' is-'+v:'')+'" style="--c:'+(c||'#fff')+'"></span>').join('')
+            +'<span class="db-s'+(n(x.serie)?'':' is-0')+'">'+n(x.serie)+'d</span>'; });
+        m+='</div>';
+        const rien=!H.some(x=>(x.c||[]).some(Boolean));
+        h+='<div class="db"><p class="db-t">My Habits<i>tracked in Telegram</i></p>'+(H.length?m:'<p class="db-vide">No Habit yet · my TOTEHM starts with one.</p>')
+          +(H.length&&rien?'<p class="db-vide">Nothing tracked this week · TotehmBot asks, I answer in Telegram.</p>':'')
+          +(H.length?'<div class="db-leg"><span><span class="db-c is-d" style="--c:#fff"></span>done</span><span><span class="db-c is-m"></span>missed</span><span><span class="db-c is-a"></span>no answer</span><span>2d · days in a row</span></div>':'')+'</div>';
+        /* LES SEPT INTENTIONS : ce qui a été fait en 28 jours, une ligne de sa couleur par intention. */
+        const I=D.intentions||{}, maxI=Math.max(1,...INTS.map(x=>n((I[x.id]||{}).fait)));
+        h+='<div class="db"><p class="db-t">My intentions<i>done · 28 days</i></p><div class="db-i">'
+          +INTS.map(x=>{ const v=I[x.id]||{}, f=n(v.fait); return '<i>'+esc(x.name)+'</i><div class="tr" style="--c:'+x.color+'"><span style="width:'+(f?100*f/maxI:0)+'%"></span></div><b>'+f+'</b>'; }).join('')+'</div></div>';
+        const O=D.objectives||[];
+        if(O.length) h+='<div class="db"><p class="db-t">Next objectives<i>time gone</i></p><div class="db-o">'+O.map(o=>{
+          const j=o.jours, J=j==null?'—':j<0?'late':j===0?'today':'D-'+j;
+          return '<div><span class="n" style="--c:'+(coul(o.i)||'#3a3a42')+'">'+esc(o.t)+'</span><span class="j'+(j!=null&&j<0?' is-tard':'')+'">'+J+'</span>'
+            +'<div class="db-bar"><span style="width:'+Math.round(100*n(o.temps))+'%"></span></div></div>'; }).join('')+'</div></div>';
+        const heat=D.heat||[];
+        h+='<div class="db"><p class="db-t">My activity<i>'+heat.reduce((a,v)=>a+n(v),0)+' gestures · 12 weeks</i></p>'+chaleur(heat,today)+'</div>';
+        const F=D.feed||[];
+        if(F.length) h+='<div class="db"><p class="db-t">Lately<i>everything I do in my TOTEHM</i></p><div class="db-f">'+F.slice(0,8).map(f=>
+          '<div><span class="pt" style="--c:'+(coul(f.i)||'#5c5c66')+'"></span><span class="q">'+esc(DIT[f.k]||f.k)+(f.l?' · <em>'+esc(f.l)+'</em>':'')+'</span><time>'+esc(ilya(f.at))+'</time></div>').join('')+'</div></div>';
+        const tot=[['habits',T.habits],['objectives',T.objectives],['achieved',T.achieved],['repulsions',T.repulsions],['visions',T.visions],
+          ['my story',T.story],['media',T.media],['spots',T.spots],['reflections',T.reflections],['chapters',T.chapters]];
+        h+='<div class="db"><p class="db-t">My TOTEHM<i>'+(D.since?'since '+esc(court(D.since))+' · ':'')+n(T.gestes)+' gestures</i></p></div>'
+          +'<div class="db-tot">'+tot.map(([k,v])=>'<span><b>'+n(v)+'</b><i>'+k+'</i></span>').join('')+'</div>';
+        el.innerHTML=h;
+      }
+      /* Relier Telegram : on passe sur l'onglet Subscription, là où TotehmBot vit (et où sa réponse s'écrit). */
+      el.addEventListener('click',e=>{ if(e.target.closest('[data-db-tg]')){ onglet('sub'); $('mw-telegram').click(); } });
+      return {charger, onglet, vide, vider(){ seq++; D=null; el.innerHTML=''; },
+        etat:()=>({onglet:ong, charge:!!D, habits:D?(D.habits||[]).length:0, cases:D?(D.habits||[]).reduce((a,x)=>a+(x.c||[]).filter(Boolean).length,0):0,
+                   jours:D?(D.days||[]).length:0, heat:D?(D.heat||[]).length:0, fil:D?(D.feed||[]).length:0, telegram:!!(D&&D.telegram),
+                   charges:diagD.charges, erreurs:diagD.erreurs})};
+    })();
+    window.__totehm_dash=()=>DASH.etat();
+
     /* Le centre : « Tap to open it » ouvre MON Totehm. */
     $('lv-tap-open').onclick=()=>{ if(!PAPIER.occupe()) enter(); };
     $('lv-tap-turn').onclick=()=>{ if(PAPIER.occupe()) return; if(mode==='members') chercher(); else if(lvReglages) lvReglages.ouvrir(); };
@@ -12938,7 +13154,7 @@ window.addEventListener('pageshow',e=>{
       CREA.charger();
     };
     lvQuitter=()=>{ landSeq++; SM.seq++; SM.msgs=[]; SM.busy=false; SM.live=null; SM.offre=false; SM.ajoute.clear(); penser(false);
-                    visSeq++; CREA.vider(); OFFRE.vider(); CLUBSP.vider(); smNote('');
+                    visSeq++; CREA.vider(); DASH.vider(); OFFRE.vider(); CLUBSP.vider(); smNote('');
                     /* Un autre compte : la recherche et l'écosystème d'un membre se referment (la lecture, elle, suit `sessionChange`). */
                     if(MB.cherche) finirRecherche(); if(!RO){ MB.nom=null; MB.avant=null; mode='mine'; body.classList.remove('lv-mb','lv-membre'); peindreMode(); } };
     window.__totehm_lv=()=>({build:BUILD, vue, mode, bouge, allers:diag.allers, modes:diag.modes, papier:PAPIER.vue(),

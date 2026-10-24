@@ -33,7 +33,7 @@ try{
    ok(!c.why && !c.strat && !c.thp && !c.tag, 'COM : plus de « [Higher] STRATEGY », de phrase sous lui, de texte du THP ni de slogan TotehmSM');
    ok(c.pitch && /to open it · (Turn|Swipe) to configure it/.test(c.tap), '15/10 bis : un MEMBRE ne lit pas l\'argumentaire — le geste seul');
    ok(c.connAbs && c.sigInPaper && c.nameBtn === 'none', 'le nom du Totehm ne vit QUE sur la face verso (18/10) — ni en haut de l\'atterrissage, ni sur le recto du papier');
-   ok(c.build === '2026-10-23-com-repli', 'BUILD 2026-10-23-com-repli');
+   ok(c.build === '2026-10-24-com-dashboard', 'BUILD 2026-10-24-com-dashboard');
    await pg.screenshot({ path:OUT + '/plateforme_centre.png' });
    /* 15/10 : les trois vues, leurs gestes, la galaxie et la Reflection sont dans com_processeur.mjs. */
    /* La couche se réchauffe toute seule, sans rien charger dans SPACE ni le Club. */

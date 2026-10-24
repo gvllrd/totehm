@@ -18,15 +18,22 @@ const LAND={signed_in:true,pseudo:'wahigher',visibility:'private',offer:{enabled
 const DASH={ok:true,subscribers:3,month_cents:1920,pending_cents:1920,currency:'eur',next_payout:'2026-11-01',threshold_cents:2500,part:80,price_cents:2400,min_cents:300,max_cents:100000};
 const CONS={signed_in:true,offer:{enabled:true,price_cents:2400,currency:'eur',payout_fin:'1234'},subscriptions:[{creator:'kai3',price_cents:1200,currency:'eur',status:'active',renews:'2027-03-01'}]};
 const erreurs=log=>log.errors.filter(e=>e.startsWith('pageerror'));
+/* 24/10 : le tableau de bord du verso (my_dashboard), assez plein pour qu'on y défile. */
+const J=k=>{const d=new Date();d.setUTCDate(d.getUTCDate()+k);return d.toISOString().slice(0,10);};
+const MYD={ok:true,tz:'UTC',today:J(0),telegram:true,habits:STEPS.map(x=>({t:x.t,is:x.is,f:'daily',cible:7,c:['d','m','d','','a','d','d'],fait:4,serie:2,record:3})),
+  days:[-6,-5,-4,-3,-2,-1,0].map(k=>({d:J(k),fait:1,manque:0,demande:2})),week:{fait:8,cible:14,manque:2,sans:2,aujourdhui:2,demandes:2,top:{t:'Run the hill',fait:4,serie:2,cible:7}},
+  intentions:{fight:{habits:1,fait:9},focus:{habits:1,fait:4}},objectives:[{t:'Run a marathon',i:'fight',by:J(12),jours:12,temps:.5,habits:1}],
+  heat:Array.from({length:84},(_,i)=>i%4),totals:{habits:2,gestes:120},feed:Array.from({length:8},(_,i)=>({at:new Date(Date.now()-i*36e5).toISOString(),box:'track',k:'tracked_done',l:'Run the hill',i:'fight'})),since:'2026-08-06T10:00:00Z'};
 /* La console répond tard (900 ms) : c'est la fenêtre où le bas du verso s'affichait trop tôt. */
 const lent=async url=>{ if(/rpc\/(creator_dashboard|my_console)/.test(url.pathname)) await new Promise(r=>setTimeout(r,900)); return null; };
 const vu=pg=>pg.evaluate(()=>{const o=s=>{const e=document.querySelector(s);if(!e||!e.getClientRects().length) return 0;let x=e,a=1;
     while(x&&x!==document.body){const c=getComputedStyle(x);if(c.visibility==='hidden'||c.display==='none') return 0;a*=+c.opacity;x=x.parentElement;}return +a.toFixed(2);};
-  return {cls:document.getElementById('srch').className,nom:o('#self-name'),gagne:o('#mw-creator'),higher:o('#mw-menu'),abos:o('#vs-subs-s'),pied:o('.vs-foot'),x:o('#srch-x')};});
+  return {cls:document.getElementById('srch').className,nom:o('#self-name'),gagne:o('#mw-creator'),higher:o('#mw-menu'),abos:o('#vs-subs-s'),pied:o('.vs-foot'),x:o('#srch-x'),
+    onglets:o('#vs-tabs'),dash:o('#vs-dash')};});
 try{
  for(const [nom,vp] of [['téléphone',{width:390,height:844}],['ordinateur',{width:1280,height:800}]]){
   /* ── 1 et 2 · le verso ── */
-  {const{pg,log}=await page(browser,{dir:'com',origin,tables,viewport:vp,hasTouch:nom==='téléphone',network:lent,rpc:{my_landing:LAND,creator_dashboard:DASH,my_console:CONS}});
+  {const{pg,log}=await page(browser,{dir:'com',origin,tables,viewport:vp,hasTouch:nom==='téléphone',network:lent,rpc:{my_landing:LAND,creator_dashboard:DASH,my_console:CONS,my_dashboard:MYD}});
    await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1200);
    const dos=await pg.$$eval('#ast-verso > *',l=>l.map(e=>e.id||e.className));
    ok(dos.length===1&&dos[0]==='ast-name',nom+' · le dos du papier ne porte que le NOM → '+dos.join(','));
@@ -34,11 +41,16 @@ try{
    const film=[];
    for(let i=0;i<40;i++){ film.push(await vu(pg)); if(film[film.length-1].cls.includes('is-pret')) break; await pg.waitForTimeout(60); }
    const avant=film.filter(f=>!f.cls.includes('is-pret')), fin=film[film.length-1];
-   const trop=avant.filter(f=>f.gagne||f.higher||f.abos||f.pied||f.x);
+   const trop=avant.filter(f=>f.gagne||f.higher||f.abos||f.pied||f.x||f.onglets||f.dash);
    ok(avant.length>3&&!trop.length,nom+' · retournement et zoom : rien que le nom, '+avant.length+' images mesurées, '+trop.length+' avec autre chose');
    ok(avant.some(f=>f.nom>0&&f.cls.includes('is-show')),nom+' · pendant le zoom, le nom grandit et monte, SEUL ('+avant.filter(f=>f.nom>0).length+' images)');
    await pg.waitForTimeout(400); const ap=await vu(pg);
-   ok(ap.gagne===1&&ap.higher===1&&ap.abos===1&&ap.pied===1&&ap.x===1,nom+' · puis TOUT arrive ensemble → '+JSON.stringify(ap));
+   /* 24/10 : trois ONGLETS — le verso s'ouvre sur le Dashboard ; Subscription et Monetize montrent chacun leur bloc. */
+   ok(ap.onglets===1&&ap.dash===1&&ap.gagne===0&&ap.higher===0&&ap.abos===0&&ap.pied===1&&ap.x===1,nom+' · puis TOUT arrive ensemble, ouvert sur le DASHBOARD → '+JSON.stringify(ap));
+   await pg.click('#vs-tabs [data-vs-tab="sub"]');await pg.waitForTimeout(150); const sub=await vu(pg);
+   await pg.click('#vs-tabs [data-vs-tab="money"]');await pg.waitForTimeout(150); const mon=await vu(pg);
+   ok(sub.higher===1&&sub.abos===1&&!sub.gagne&&!sub.dash&&mon.gagne===1&&!mon.higher&&!mon.abos&&!mon.dash&&sub.pied===1&&mon.pied===1,
+      nom+' · 24/10 · l\'onglet Subscription montre [Higher] et mes abonnements ; Monetize, ce que je gagne ; le pied reste → '+JSON.stringify({sub,mon}));
    const t=await pg.evaluate(()=>({g:document.querySelector('#mw-creator .vs-t')?.textContent.trim(), gs:document.querySelector('#mw-creator .vs-s')?.textContent.trim(),
      h:document.querySelector('#mw-menu .vs-t')?.textContent.trim(), hb:!!document.querySelector('#mw-menu .vs-t use[href="#higher-badge"]'),
      hs:document.querySelector('#mw-menu .vs-s')?.textContent.trim(), f:[...document.querySelectorAll('#mw-menu .vs-item .vs-k')].map(e=>e.textContent.trim()),
@@ -65,6 +77,7 @@ try{
    await pg.$eval('#acct-wipe',b=>b.click());await pg.waitForTimeout(150);
    const arme=await pg.evaluate(()=>({t:document.getElementById('acct-wipe').textContent,a:document.getElementById('acct-wipe').classList.contains('armed')}));
    ok(arme.a&&/tap again/i.test(arme.t)&&!log.rpc.some(x=>x.name==='delete_my_totehm'),nom+' · Delete demande un second tap (rien n\'est effacé au premier) → '+arme.t);
+   await pg.click('#vs-tabs [data-vs-tab="dash"]');await pg.waitForTimeout(100);
    const colle=await pg.evaluate(()=>{const u=document.getElementById('srch-ui');u.scrollTo(0,99999);const h=document.getElementById('self-h').getBoundingClientRect(),x=document.getElementById('srch-x');
      const p=x.getBoundingClientRect(),t=document.elementFromPoint(p.left+p.width/2,p.top+p.height/2);return {top:Math.round(h.top),x:x.contains(t)};});
    ok(colle.top===0&&colle.x,nom+' · au défilement, l\'identifiant reste en haut (y = '+colle.top+') et la croix reste au-dessus');

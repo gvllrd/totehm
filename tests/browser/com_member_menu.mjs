@@ -24,6 +24,8 @@ const retourner=async pg=>{
     await pg.waitForTimeout(700);
   }
   throw new Error('le verso ne s\'ouvre pas');};
+/* 24/10 — le verso a TROIS ONGLETS (Dashboard par défaut · Subscription · Monetize) : on choisit le bon avant d'agir. */
+const onglet=(pg,t)=>pg.click('#vs-tabs [data-vs-tab="'+t+'"]');
 const browser=await launch();
 try{
   /* 07/10 — L'ESPACE MEMBRE DE totehm.com, C'EST L'UTILISATEUR : sa vignette,
@@ -52,6 +54,7 @@ try{
    ok(dash.subs==='12'&&dash.month==='€192'&&dash.next==='1 Nov'&&dash.due==='€192'&&dash.price==='€24 / year'&&dash.say==='100 subscribers = €1,920 for me'&&dash.etat==='off'&&dash.pay==='to set',
       'what I earn, open or not, my price, where to pay me — read from the server → '+JSON.stringify(dash));
    ok(log.rpc.some(x=>x.name==='creator_dashboard')&&log.rpc.some(x=>x.name==='my_console'),'two reads, in parallel: creator_dashboard + my_console');
+   await onglet(pg,'money');
    await pg.$eval('#mwc-price',e=>{e.value='3600';e.dispatchEvent(new Event('input',{bubbles:true}));});
    ok(await pg.textContent('#vs-price')==='€36 / year','the price follows the slider live');
    await pg.$eval('#mwc-price',e=>e.dispatchEvent(new Event('change',{bubbles:true})));
@@ -63,6 +66,7 @@ try{
    await pg.fill('#vs-pay-in','me@paypal.test');await pg.click('#vs-pay-save');await pg.waitForFunction(()=>document.getElementById('mwc-note').textContent==='saved');
    ok(log.rpc.some(x=>x.name==='creator_payout_set'&&x.body.p_method==='paypal'&&x.body.p_handle==='me@paypal.test')&&await pg.inputValue('#vs-pay-in')===''&&!await pg.isVisible('#vs-pay-in'),
       'the payout is written by creator_payout_set, then wiped from the screen');
+   await onglet(pg,'sub');
    ok(await pg.textContent('#vs-subs .vs-nom')==='alice'&&/renews 1 Mar/.test(await pg.textContent('#vs-subs')),'what I pay: the Totehms I subscribe to, one line each');
    await pg.click('#vs-subs [data-stop]');await pg.waitForFunction(()=>/stops on/.test(document.getElementById('mw-menu-note').textContent));
    ok(log.functions.some(f=>f.name==='club-billing'&&f.body.action==='cancel_creator'&&f.body.pseudo==='alice'),'Stop = club-billing cancel_creator, at the end of the year');
@@ -72,7 +76,7 @@ try{
    await pg.keyboard.press('Escape');
    await pg.waitForFunction(()=>!document.getElementById('srch').classList.contains('is-open'),null,{timeout:6000});
    await pg.waitForTimeout(1800);
-   await retourner(pg);await pg.waitForSelector('#member-window.show');
+   await retourner(pg);await pg.waitForSelector('#member-window.show');await onglet(pg,'sub');
    ok(/€7 \/ month/.test(await pg.textContent('#mw-higher-hint')),'the Higher price comes from the server (my_landing)');
    const fmt=await pg.locator('#srch .vs-act,#srch .vs-val,#srch .vs-tog').evaluateAll(items=>items.every(e=>{const s=getComputedStyle(e);return s.backgroundColor==='rgb(31, 31, 36)'&&s.whiteSpace==='nowrap'&&s.borderTopLeftRadius==='10px';}));
    ok(fmt,'controls: grey, 10 px radius, one line'+(fmt?'':' → '+JSON.stringify(await pg.locator('#srch .vs-act,#srch .vs-val,#srch .vs-tog').evaluateAll(l=>l.map(e=>{const s=getComputedStyle(e);return e.id+'/'+e.className+':'+s.backgroundColor+','+s.whiteSpace+','+s.borderTopLeftRadius;})))));
@@ -94,7 +98,7 @@ try{
    const{pg,ctx,log}=await ready(browser,{rpc:{...rpc,my_landing:{...LAND,higher:{...LAND.higher,active:true,status:'active',until,ending:false}}},
      functions:{'sso-mint':{code:'b'.repeat(64)},'higher-sub':b=>({ok:true,ending:b.action==='cancel',until})}});
    await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(900);await retourner(pg);
-   await pg.waitForFunction(()=>/renews/.test(document.getElementById('mw-higher-hint').textContent));
+   await pg.waitForFunction(()=>/renews/.test(document.getElementById('mw-higher-hint').textContent));await onglet(pg,'sub');
    ok((await pg.textContent('#mw-higher'))==='Open'&&(await pg.textContent('#mw-higher-acts'))==='Stop'&&/renews/.test(await pg.textContent('#mw-higher-hint')),'Higher active: renews on a date, Open, and Stop (at the end of the month)');
    await pg.click('[data-hsub="cancel"]');await pg.waitForFunction(()=>/it ends on/.test(document.getElementById('mw-menu-note').textContent));
    ok(log.functions.some(f=>f.name==='higher-sub'&&f.body.action==='cancel')&&(await pg.textContent('#mw-higher-acts'))==='Keep','stopping is at period end (higher-sub cancel), and it can be kept');

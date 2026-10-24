@@ -45,9 +45,9 @@ leur couleur ; un tap déploie TOUTE la structure — le papier reste dans sa bo
 déformer, les traits suivent — et sur ordinateur
 la boîte et ses traits restent autour du TOTEHM ouvert ; le retourner montre le NOM seul — à même le navy,
 l'email dessous —, qui monte, puis
-tout d'un coup : **Monetize my TOTEHM** — *and get paid every month* —, l'abonnement **[Higher]** et ce qu'il ouvre
-— Higher Self chaque jour, TotehmBot qui suit chaque Habit —, mes abonnements, puis DELETE MY TOTEHM et SIGN OUT
-en boutons et les conditions) ·
+tout d'un coup, en trois onglets : **Dashboard** d'abord (tout ce que je fais dans mon TOTEHM, en visuels : ma semaine, mes
+Habits × 7 jours suivies dans Telegram, mes intentions, mes objectifs, mon activité) · **Subscription** ([Higher], ce qu'il ouvre,
+mes abonnements) · **Monetize** (*and get paid every month*) ; puis DELETE MY TOTEHM et SIGN OUT en boutons, les conditions) ·
 → **les spots** (MAP ou GRID ; un spot ouvert : son image telle quelle, ses infos, sa box en bas — comme à gauche) · ↓ **Higher Self** (les traits se replient en l'anneau du profil ; j'arrive, je tape,
 mon Higher Self répond : un miroir de MON TOTEHM — la step est une de mes Habits redite avec son where, son intention, son son ;
 avec Higher, un lieu réel près de moi sous la step (GO, SPOT IT) ; quelques réponses offertes, puis l'abonnement Higher). Chercher un membre : le papier se retourne, on tape son nom, on entre chez lui.
