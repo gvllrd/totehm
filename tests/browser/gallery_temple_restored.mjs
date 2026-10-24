@@ -9,7 +9,7 @@ import {PerspectiveCamera,Vector3,Box3,Scene,Texture,TextureLoader} from '../../
 import {createTempleArchitecture} from '../../space/gallery-temple.mjs';
 
 const OUT=process.argv[2]||'/tmp/totehm-production/stellar-temple',terraceOnly=process.argv.includes('--terrace-only'),stellarOnly=process.argv.includes('--stellar-only');
-const BUILD='2026-10-23-space-stellar-leap';
+const BUILD='2026-10-24-space-storm-stars';
 const origin='https://www.totehm.space',destinations=['/get_higher','/origins','/play_lisbon_street'];
 const results=[];let checks=0,browser;
 fs.mkdirSync(OUT,{recursive:true});
@@ -95,7 +95,7 @@ async function fixture(viewport,{hour=12,noWebGL=false}={}){
 }
 async function loaded(pg){
  await pg.waitForFunction(()=>{const d=window.__totehm_gallery?.();return d?.webgl&&d.frames>0&&d.temple?.portals?.length===3;},null,{timeout:90000});
- await pg.waitForFunction(()=>{const d=__totehm_gallery();return d.temple.stoneMapsLoaded>=9&&d.temple.paperPortal?.loaded&&d.landscape.skyLoaded&&d.landscape.environmentLoaded;},null,{timeout:60000});
+ await pg.waitForFunction(()=>{const d=__totehm_gallery();return d.temple.stoneMapsLoaded>=6&&d.temple.pavement?.ready&&d.temple.paperPortal?.loaded&&d.landscape.skyLoaded&&d.landscape.environmentLoaded;},null,{timeout:60000});
  await pg.waitForFunction(()=>__totehm_gallery().landscape.ocean.detailMapsLoaded===2,null,{timeout:60000});
  await pg.waitForTimeout(300);return state(pg);
 }

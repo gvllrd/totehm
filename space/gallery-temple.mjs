@@ -2,6 +2,7 @@ import * as T from './vendor/three-0.180.0.mjs';
 import {TOTEHMPAPER,ORIGINS} from './gallery-artworks.mjs';
 import {TEMPLE_ASSETS} from './gallery-temple-assets.mjs';
 import {GROUND_Y,TEMPLE_FLOOR,TEMPLE_PORTALS} from './gallery-temple-layout.mjs';
+import {createLisbonPavement} from './gallery-lisbon-pavement.mjs';
 
 // Architecture only. The surrounding sky/landscape and navigation are owned
 // by the parent, so the experiences remain their own independent HTML pages.
@@ -22,7 +23,8 @@ export function createTempleArchitecture(scene,renderer,{onChange=()=>{},lisbonP
  }
  function pbrMaps(asset,repeat){return{map:texture(asset.color,{colour:true,repeat}),normalMap:texture(asset.normal,{repeat}),roughnessMap:texture(asset.roughness,{repeat})};}
  const stone=material(new T.MeshStandardMaterial({...pbrMaps(TEMPLE_ASSETS.column||TEMPLE_ASSETS.stone,[1.8,3.2]),color:'#eee4d3',roughness:.93,normalScale:new T.Vector2(.48,.48)}));
- const floorStone=material(new T.MeshStandardMaterial({...pbrMaps(TEMPLE_ASSETS.floor,[7.1,8]),color:'#e9dfcb',roughness:.92,normalScale:new T.Vector2(.65,.65)}));
+ const pavement=createLisbonPavement({mobile,anisotropy,onChange:changed});
+ const floorStone=pavement.material;
  const shadowStone=material(new T.MeshStandardMaterial({...pbrMaps(TEMPLE_ASSETS.stone,[2,1]),color:'#c0b6a2',roughness:.97,normalScale:new T.Vector2(.4,.4)}));
  const paleStone=stone.clone();paleStone.color.set('#fbf2e3');materials.add(paleStone);
  const bronze=material(new T.MeshStandardMaterial({color:'#6e6040',metalness:.72,roughness:.56}));
@@ -47,6 +49,7 @@ export function createTempleArchitecture(scene,renderer,{onChange=()=>{},lisbonP
  instances(boxGeometry,shadowStone,[[0,-1.15,0,35.6,1.1,39.6],[0,-.62,0,34.3,.28,38.3],[0,-.38,0,33.3,.2,37.3]],{solid:true});
  instances(boxGeometry,stone,[[0,-.19,0,32.6,.18,36.6]],{solid:true});
  const floor=mesh(geometry(new T.PlaneGeometry(TEMPLE_FLOOR.halfWidth*2,TEMPLE_FLOOR.halfDepth*2)),floorStone,0,GROUND_Y,0,{shadow:false,solid:true});floor.rotation.x=-Math.PI/2;
+ floor.name='Lisbon calçada — waves and a ship made of stone';
  // Individually jointed perimeter stones catch grazing sunlight at the edge.
  const paving=[];
  for(let i=0;i<23;i++){const z=-17.25+i*1.5;paving.push([-15.55,-.055,z,.9,.09,1.46],[15.55,-.055,z,.9,.09,1.46]);}
@@ -129,7 +132,7 @@ export function createTempleArchitecture(scene,renderer,{onChange=()=>{},lisbonP
    if(lisbonPreview?.canvas&&covers[2].material.map&&motion)covers[2].material.map.needsUpdate=true;
    const result=dirty||motion;dirty=false;return result;
   },
-  diagnostics:()=>({kind:'PBR antique summit temple',columns:0,columnHeight:0,columnTops:[],roof:false,entablature:false,pediment:false,flutes:0,arches:TEMPLE_PORTALS.length,archHeight:archTop,overheadLabels:0,trees:0,leafCards:0,flowers:0,planters:0,vegetation:false,plants:[],covers:loaded,stoneMapsLoaded,pbr:true,externalTextures:'CC0 Poly Haven',day,time:+time.toFixed(3),paperPortal:{papers:paperCopies.length,loaded:paperLoaded,animated:paperMoving,time:+time.toFixed(3),instanced:true},portals:portals.map(({room,x,z,width,height,outerHeight,href})=>({room,x,z,width,height,outerHeight,href})),disposed}),
-  dispose(){if(disposed)return;disposed=true;root.visible=false;root.removeFromParent();for(const t of textures)t.dispose();for(const g of geometries)g.dispose();for(const m of materials)m.dispose();root.clear();}
+  diagnostics:()=>({kind:'PBR antique summit temple',columns:0,columnHeight:0,columnTops:[],roof:false,entablature:false,pediment:false,flutes:0,arches:TEMPLE_PORTALS.length,archHeight:archTop,overheadLabels:0,trees:0,leafCards:0,flowers:0,planters:0,vegetation:false,plants:[],covers:loaded,stoneMapsLoaded,pbr:true,pavement:pavement.diagnostics(),externalTextures:'CC0 Poly Haven',day,time:+time.toFixed(3),paperPortal:{papers:paperCopies.length,loaded:paperLoaded,animated:paperMoving,time:+time.toFixed(3),instanced:true},portals:portals.map(({room,x,z,width,height,outerHeight,href})=>({room,x,z,width,height,outerHeight,href})),disposed}),
+  dispose(){if(disposed)return;disposed=true;root.visible=false;root.removeFromParent();pavement.dispose();for(const t of textures)t.dispose();for(const g of geometries)g.dispose();for(const m of materials)m.dispose();root.clear();}
  };
 }

@@ -12,8 +12,8 @@ export function createDrownedSky(scene,{mobile=false,onChange=()=>{}}={}){
  const smooth=(a,b,n)=>{const t=clamp((n-a)/(b-a));return t*t*(3-2*t);};
  // A low celestial arch stays visible from both ocean panoramas as well as
  // the entrance: its pearly centre rises above the three independent doors.
- const normal=new T.Vector3(.05,.92,.388).normalize();
- const core=new T.Vector3(-.2,.39,-.899);core.addScaledVector(normal,-core.dot(normal)).normalize();
+ const normal=new T.Vector3(.05,.84,.54).normalize();
+ const core=new T.Vector3(-.2,.53,-.824);core.addScaledVector(normal,-core.dot(normal)).normalize();
  const tangent=new T.Vector3().crossVectors(normal,core).normalize();
  const moonDirection=new T.Vector3(.38,.43,-.82).normalize();
  const width=mobile?1024:2048,height=width/2;
@@ -44,28 +44,35 @@ export function createDrownedSky(scene,{mobile=false,onChange=()=>{}}={}){
     // Isotropic noise on the sphere avoids the parallel brush strokes made
     // by stretching a texture along the galactic equator. Domain warping
     // breaks the arms into overlapping, pearly clouds and dark dust islands.
-    const low=noise(dx*6+7,dy*6+13,dz*6+9);
-    const middle=noise(dx*22+11,dy*22+17,dz*22+5);
-    const fine=noise(dx*73+8,dy*73+7,dz*73+16);
-    const grains=noise(dx*183+12,dy*183+3,dz*183+19);
-    const bulge=Math.exp((centre-1)*7.2);
-    const warpedLatitude=galacticLatitude+(low-.5)*.065+(middle-.5)*.018;
-    const broad=Math.exp(-Math.pow(warpedLatitude/(.105+bulge*.065),2));
-    const inner=Math.exp(-Math.pow((warpedLatitude+.008*Math.sin(along*11))/.055,2));
-    const outerArm=Math.exp(-Math.pow((warpedLatitude-.085-.022*Math.sin(along*8))/.035,2));
-    const cloud=Math.pow(smooth(.20,.79,low*.43+middle*.33+fine*.18+grains*.06),1.12);
-    const riftOffset=.012*Math.sin(along*17)+.009*Math.cos(centre*23)+(middle-.5)*.026;
-    const rift=Math.exp(-Math.pow((warpedLatitude-riftOffset)/(.014+fine*.022),2));
-    const islands=smooth(.42,.76,middle*.63+fine*.37);
-    const dust=1-Math.min(.93,rift*(.51+islands*.32)+islands*.18);
-    const wisps=(broad*.39+inner*.61+outerArm*.17)*cloud*dust*upper;
+    const low=noise(dx*5.1+7,dy*5.1+13,dz*5.1+9);
+    const warp=noise(dx*11.3+16,dy*11.3+3,dz*11.3+12);
+    const wx=dx+(low-.5)*.058,wy=dy+(warp-.5)*.058,wz=dz+(low-warp)*.037;
+    const middle=noise(wx*24.7+11,wy*24.7+17,wz*24.7+5);
+    const fine=noise(wx*81.3+8,wy*81.3+7,wz*81.3+16);
+    const grains=noise(wx*217.1+12,wy*217.1+3,wz*217.1+19);
+    const bulge=Math.exp((centre-1)*6.1);
+    const warpedLatitude=galacticLatitude+(low-.5)*.079+(warp-.5)*.028;
+    const broad=Math.exp(-Math.pow(warpedLatitude/(.112+bulge*.067),2));
+    const armCurve=.014*Math.sin(along*7.3)+(middle-.5)*.019;
+    const inner=Math.exp(-Math.pow((warpedLatitude+armCurve)/(.043+bulge*.029),2));
+    const outerArm=Math.exp(-Math.pow((warpedLatitude-.083-.023*Math.sin(along*9.1))/.031,2));
+    const cloud=Math.pow(smooth(.16,.83,low*.46+middle*.31+fine*.17+grains*.06),1.08);
+    // The foreground Great Rift has broad occluding clouds and narrow,
+    // branching lanes. Fine luminous filaments remain behind that dust.
+    const riftOffset=.014*Math.sin(along*11.7)+.012*Math.cos(centre*19.3)+(middle-.5)*.033;
+    const rift=Math.exp(-Math.pow((warpedLatitude-riftOffset)/(.010+fine*.021),2));
+    const branch=Math.exp(-Math.pow((warpedLatitude-riftOffset-.027-.012*Math.sin(along*23.))/.008,2));
+    const islands=smooth(.43,.78,middle*.64+fine*.36);
+    const dust=Math.exp(-rift*(1.0+islands*1.25)-branch*.52-islands*.28);
+    const filament=Math.pow(smooth(.23,.80,fine*.72+grains*.28),1.8);
+    const wisps=(broad*.43+inner*.63+outerArm*.19)*cloud*dust*upper*(.82+.36*filament);
     // Warm crowded core, cool pearly arms, and dark foreground dust. The
     // radiance stays restrained enough that individual stars remain legible.
-    const energy=wisps*(58+bulge*118),pearl=.81+fine*.14+grains*.05;
-    r+=energy*(.66+bulge*.39)*pearl;
-    g+=energy*(.78+bulge*.19)*pearl;
-    b+=energy*(1.04-bulge*.22);
-    const distantDust=band*(1-dust)*cloud*2.4;r+=distantDust;g+=distantDust*.76;b+=distantDust*.58;
+    const energy=wisps*(74+bulge*152),pearl=.86+fine*.10+grains*.04;
+    r+=energy*(.70+bulge*.38)*pearl;
+    g+=energy*(.81+bulge*.18)*pearl;
+    b+=energy*(1.08-bulge*.22);
+    const scattered=band*(1-dust)*cloud*3.0;r+=scattered;g+=scattered*.78;b+=scattered*.64;
    }
    // A thin natural airglow, rather than a luminous horizon or ground photo.
    const airglow=Math.exp(-Math.pow((dy-.047)/.065,2))*upper;
@@ -83,7 +90,9 @@ export function createDrownedSky(scene,{mobile=false,onChange=()=>{}}={}){
   if(i%4===0){dy=random();const radius=Math.sqrt(1-dy*dy);dx=Math.cos(theta)*radius;dz=Math.sin(theta)*radius;}
   if(dy<.025)continue;
   const x=Math.floor((Math.atan2(dz,dx)/(Math.PI*2)+.5)*width)%width,y=Math.floor((.5-Math.asin(clamp(dy,-1,1))/Math.PI)*height);
-  const at=(y*width+x)*4,luminance=4+Math.pow(random(),6)*25;
+  const at=(y*width+x)*4,luminance=2+Math.pow(random(),9)*22;
+  // Tiny unresolved stars contribute a veil of light; the point geometry
+  // below supplies crisp individual stars instead of a field of blue bokeh.
   data[at]=Math.min(255,data[at]+luminance*.88);data[at+1]=Math.min(255,data[at+1]+luminance*.95);data[at+2]=Math.min(255,data[at+2]+luminance);
  }
  context.putImageData(pixels,0,0);
@@ -120,17 +129,17 @@ export function createDrownedSky(scene,{mobile=false,onChange=()=>{}}={}){
    const dy=.025+random()*.975,phi=random()*Math.PI*2,r=Math.sqrt(1-dy*dy);direction=new T.Vector3(Math.cos(phi)*r,dy,Math.sin(phi)*r);
   }
   positions.set(direction.multiplyScalar(1220).toArray(),i*3);
-  const bright=Math.pow(random(),9),temperature=random();
+  const bright=Math.pow(random(),24),temperature=random();
   colour.setHex(temperature<.12?0xffd4a2:temperature<.32?0xfff0cf:temperature<.76?0xe3edff:0xaecbff);
-  colours.set(colour.toArray(),i*3);sizes[i]=.88+bright*3.5;phases[i]=random()*Math.PI*2;intensities[i]=.27+bright*.86;
+  colours.set(colour.toArray(),i*3);sizes[i]=.84+bright*8.0;phases[i]=random()*Math.PI*2;intensities[i]=.085+bright*.99;
  }
  const starGeometry=geometry(new T.BufferGeometry());starGeometry.setAttribute('position',new T.BufferAttribute(positions,3));starGeometry.setAttribute('aColour',new T.BufferAttribute(colours,3));starGeometry.setAttribute('aSize',new T.BufferAttribute(sizes,1));starGeometry.setAttribute('aPhase',new T.BufferAttribute(phases,1));starGeometry.setAttribute('aIntensity',new T.BufferAttribute(intensities,1));
  const timeUniform={value:0},pixelRatio={value:Math.min(globalThis.devicePixelRatio||1,1.5)};
  const starMaterial=material(new T.ShaderMaterial({uniforms:{uTime:timeUniform,uPixelRatio:pixelRatio},transparent:true,depthWrite:false,depthTest:true,blending:T.AdditiveBlending,toneMapped:false,fog:false,
   vertexShader:`attribute vec3 aColour;attribute float aSize,aPhase,aIntensity;uniform float uTime,uPixelRatio;varying vec3 vColour;varying float vIntensity,vGlint;
-   void main(){vColour=aColour;float lowAltitude=1.-clamp(position.y/1220.,0.,1.);float shimmer=.035+.105*lowAltitude*lowAltitude;vIntensity=aIntensity*(1.-shimmer+shimmer*sin(aPhase+uTime*(.21+.13*sin(aPhase))));vGlint=smoothstep(3.2,4.4,aSize);gl_PointSize=aSize*uPixelRatio;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,
+   void main(){vColour=aColour;float lowAltitude=1.-clamp(position.y/1220.,0.,1.);float shimmer=.018+.065*lowAltitude*lowAltitude;vIntensity=aIntensity*(1.-shimmer+shimmer*sin(aPhase+uTime*(.21+.13*sin(aPhase))));vGlint=smoothstep(1.8,7.0,aSize);gl_PointSize=aSize*uPixelRatio;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,
   fragmentShader:`varying vec3 vColour;varying float vIntensity,vGlint;
-   void main(){vec2 p=gl_PointCoord-.5;float r=length(p);float light=exp(-r*r*22.);float glint=exp(-abs(p.x)*58.)*exp(-abs(p.y)*9.)+exp(-abs(p.y)*58.)*exp(-abs(p.x)*9.);float alpha=(light*.79+(1.-smoothstep(.015,.17,r))*.21+glint*vGlint*.065)*vIntensity;if(r>.5)discard;gl_FragColor=vec4(vColour,alpha);
+   void main(){vec2 p=gl_PointCoord-.5;float r=length(p);float core=exp(-r*r*mix(19.,235.,vGlint));float halo=exp(-r*r*17.)*vGlint*.095;float glint=exp(-abs(p.x)*105.)*exp(-abs(p.y)*12.)+exp(-abs(p.y)*105.)*exp(-abs(p.x)*12.);float alpha=(core*.88+halo+glint*vGlint*.035)*vIntensity;if(r>.5)discard;gl_FragColor=vec4(vColour,alpha);
     #include <colorspace_fragment>
    }`
  }));
@@ -196,14 +205,21 @@ export function createDrownedSky(scene,{mobile=false,onChange=()=>{}}={}){
  const haloMaterial=material(new T.MeshBasicMaterial({map:haloTexture,transparent:true,depthWrite:false,depthTest:true,blending:T.AdditiveBlending,toneMapped:false,fog:false}));
  const halo=new T.Mesh(geometry(new T.PlaneGeometry(moonSize*9,moonSize*9)),haloMaterial);halo.position.copy(moon.position);halo.quaternion.copy(moon.quaternion);halo.renderOrder=-1080;halo.name='A restrained moon halo';halo.frustumCulled=false;root.add(halo);
 
- const meteorTrail=new Float32Array(32*3),meteorAges=new Float32Array(32);for(let i=0;i<32;i++)meteorAges[i]=i/31;
- const meteorGeometry=geometry(new T.BufferGeometry());meteorGeometry.setAttribute('position',new T.BufferAttribute(meteorTrail,3));meteorGeometry.setAttribute('aAge',new T.BufferAttribute(meteorAges,1));
- const meteorMaterial=material(new T.ShaderMaterial({uniforms:{uTime:timeUniform},transparent:true,depthWrite:false,depthTest:true,blending:T.AdditiveBlending,toneMapped:false,fog:false,
-  vertexShader:`attribute float aAge;uniform float uTime;varying float vAlpha;
-   void main(){float cycle=mod(uTime+37.,53.);float p=cycle/1.35;float head=p-aAge*.17;vec3 direction=normalize(mix(normalize(vec3(-.46,.64,-.61)),normalize(vec3(.12,.44,-.89)),clamp(head,0.,1.)));vAlpha=exp(-aAge*5.)*smoothstep(0.,.13,p)*(1.-smoothstep(.82,1.12,p));if(head<0.||head>1.)vAlpha=0.;gl_Position=projectionMatrix*modelViewMatrix*vec4(direction*1200.,1.);}`,
-  fragmentShader:'varying float vAlpha;void main(){gl_FragColor=vec4(.62,.77,1.,vAlpha*.62);}'
+ const meteorSegments=32,meteorTrail=new Float32Array(meteorSegments*2*3),meteorAges=new Float32Array(meteorSegments*2),meteorSides=new Float32Array(meteorSegments*2),meteorIndices=[];
+ for(let i=0;i<meteorSegments;i++){
+  meteorAges[i*2]=meteorAges[i*2+1]=i/(meteorSegments-1);meteorSides[i*2]=-1;meteorSides[i*2+1]=1;
+  if(i<meteorSegments-1){const v=i*2;meteorIndices.push(v,v+2,v+1,v+1,v+2,v+3);}
+ }
+ const meteorGeometry=geometry(new T.BufferGeometry());meteorGeometry.setAttribute('position',new T.BufferAttribute(meteorTrail,3));meteorGeometry.setAttribute('aAge',new T.BufferAttribute(meteorAges,1));meteorGeometry.setAttribute('aSide',new T.BufferAttribute(meteorSides,1));meteorGeometry.setIndex(meteorIndices);
+ const meteorMaterial=material(new T.ShaderMaterial({uniforms:{uTime:timeUniform},side:T.DoubleSide,transparent:true,depthWrite:false,depthTest:true,blending:T.AdditiveBlending,toneMapped:false,fog:false,
+  vertexShader:`attribute float aAge,aSide;uniform float uTime;varying float vAlpha,vAge,vAcross;
+   // CELESTIAL_METEOR_RIBBON: a tapered optical trail with a compact white head.
+   void main(){float cycle=mod(uTime+37.,47.);float p=cycle/1.15;float head=p-aAge*.17;vec3 start=normalize(vec3(-.46,.64,-.61)),finish=normalize(vec3(.12,.44,-.89));vec3 direction=normalize(mix(start,finish,clamp(head,0.,1.)));vec3 side=normalize(cross(direction,finish-start));float width=.22+pow(1.-aAge,2.)*1.4;vAge=aAge;vAcross=aSide;vAlpha=exp(-aAge*4.5)*smoothstep(0.,.13,p)*(1.-smoothstep(.85,1.12,p));if(head<0.||head>1.)vAlpha=0.;gl_Position=projectionMatrix*modelViewMatrix*vec4(direction*1200.+side*aSide*width,1.);}`,
+  fragmentShader:`varying float vAlpha,vAge,vAcross;void main(){float core=exp(-vAcross*vAcross*3.4);vec3 colour=mix(vec3(.38,.57,.92),vec3(.92,.96,1.),pow(1.-vAge,3.));gl_FragColor=vec4(colour,core*vAlpha*.78);
+   #include <colorspace_fragment>
+  }`
  }));
- const meteor=new T.Line(meteorGeometry,meteorMaterial);meteor.name='A rare, silent falling star';meteor.renderOrder=-1090;meteor.frustumCulled=false;root.add(meteor);
+ const meteor=new T.Mesh(meteorGeometry,meteorMaterial);meteor.name='A rare, silent falling star';meteor.renderOrder=-1090;meteor.frustumCulled=false;root.add(meteor);
  onChange();
  return{
   root,environmentTexture,moonDirection,
@@ -218,7 +234,7 @@ export function createDrownedSky(scene,{mobile=false,onChange=()=>{}}={}){
    animated=!!motion;if(animated){time+=Math.max(0,Math.min(Number(dt)||0,.1));timeUniform.value=time;dirty=true;}
    const changed=dirty;dirty=false;return changed;
   },
-  diagnostics:()=>({night:true,skyLoaded:true,textureReady:true,textureSize:[width,height],milkyWay:true,galacticClouds:'spherical warped clouds and fragmented dark dust',galacticArch:true,galacticNormal:normal.toArray(),stars:starCount,stellarDust:tinyStars,deepStars:{count:starCount,visible:deepStars.visible,distance:56000,hemisphere:'lower',galaxy:true},nearStars:{count:nearCount,stars:nearStarCount,dust:nearDustCount,visible:nearStars.visible,opacity:+nearOpacity.value.toFixed(3),nearDistance:110,farDistance:900,fadeStartAltitude:350,fullAltitude:2500,worldAnchored:true,autonomousMotion:false},spaceDarkening:+spaceUniform.value.toFixed(3),time:+time.toFixed(3),animated,moon:true,moonDirection:moonDirection.toArray(),moonDiameterDegrees:1.04,lunarCraters:lunarCraters.length,shootingStars:1,meteorPeriod:53,externalFiles:0,disposed}),
+  diagnostics:()=>({night:true,skyLoaded:true,textureReady:true,textureSize:[width,height],milkyWay:true,galacticClouds:'warped luminous filaments behind branching opaque dust',galacticArch:true,galacticNormal:normal.toArray(),stars:starCount,stellarDust:tinyStars,stellarProfile:'compact cores and faint optical halos',stellarColours:4,deepStars:{count:starCount,visible:deepStars.visible,distance:56000,hemisphere:'lower',galaxy:true},nearStars:{count:nearCount,stars:nearStarCount,dust:nearDustCount,visible:nearStars.visible,opacity:+nearOpacity.value.toFixed(3),nearDistance:110,farDistance:900,fadeStartAltitude:350,fullAltitude:2500,worldAnchored:true,autonomousMotion:false},spaceDarkening:+spaceUniform.value.toFixed(3),time:+time.toFixed(3),animated,moon:true,moonDirection:moonDirection.toArray(),moonDiameterDegrees:1.04,lunarCraters:lunarCraters.length,shootingStars:1,meteorPeriod:47,meteorDuration:1.15,meteorRibbon:true,meteorTriangles:meteorIndices.length/3,externalFiles:0,disposed}),
   dispose(){if(disposed)return;disposed=true;for(const t of textures)t.dispose();for(const m of materials)m.dispose();for(const g of geometries)g.dispose();canvas.width=canvas.height=moonCanvas.width=moonCanvas.height=haloCanvas.width=haloCanvas.height=1;root.removeFromParent();root.clear();}
  };
 }

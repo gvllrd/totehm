@@ -6,8 +6,8 @@ import {createHash} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
 import {launch,page} from './harness.mjs';
 
-const OUT=process.argv[2]||'/tmp/totehm-production/ocean-cinema-final';
-const BUILD='2026-10-23-space-ocean-cinema';
+const OUT=process.argv[2]||'/tmp/totehm-production/ocean-nocturne-final';
+const BUILD='2026-10-24-space-storm-stars';
 const origin='https://www.totehm.space';
 const results=[];let checks=0,browser;
 fs.mkdirSync(OUT,{recursive:true});
@@ -19,13 +19,13 @@ const gpuErrors=log=>log.errors.filter(e=>/pageerror:|THREE.WebGLProgram|VALIDAT
 async function observe(pg){
  await pg.addInitScript(()=>{
   const role=()=>({programs:0,draws:0,geometryCounts:[],times:[]});
-  const native=window.__oceanNative={programs:0,draws:0,geometryCounts:[],images:[],times:[],roles:{surface:role(),spray:role(),foam:role()},foamReads:[]};
-  const shaders=new WeakMap(),programs=new WeakMap(),locations=new WeakMap();let active=null;
+  const native=window.__oceanNative={programs:0,draws:0,geometryCounts:[],images:[],times:[],roles:{surface:role(),spray:role(),foam:role(),spindrift:role(),galaxy:role(),stars:role(),meteor:role()},foamReads:[],canvasUploads:[]};
+  const shaders=new WeakMap(),programs=new WeakMap(),locations=new WeakMap(),canvases=new WeakSet();let active=null;
   for(const Class of [globalThis.WebGLRenderingContext,globalThis.WebGL2RenderingContext]){
    if(!Class)continue;
    const source=Class.prototype.shaderSource;
    Class.prototype.shaderSource=function(shader,text){
-    const kind=/OCEAN_FOAM_STATE|\buFoamPrevious\b/.test(text)?'foam':/\baLife\b/.test(text)&&/\buOceanTime\b/.test(text)?'spray':/\buOceanTime\b|\bOceanSurface\b/.test(text)?'surface':null;
+    const kind=/OCEAN_FOAM_STATE|\buFoamPrevious\b/.test(text)?'foam':/OCEAN_SPINDRIFT/.test(text)?'spindrift':/\baLife\b/.test(text)&&/\buOceanTime\b/.test(text)?'spray':/\buOceanTime\b|\bOceanSurface\b/.test(text)?'surface':/\baAge\b|\bvMeteor\b|METEOR_TRAIL/.test(text)?'meteor':/\baColour\b|\baNearColour\b|CELESTIAL_STAR/.test(text)?'stars':/\bvDirection\b/.test(text)&&/\buMap\b/.test(text)?'galaxy':null;
     if(kind)shaders.set(shader,kind);return Reflect.apply(source,this,[shader,text]);
    };
    const attach=Class.prototype.attachShader;
@@ -33,9 +33,9 @@ async function observe(pg){
    const use=Class.prototype.useProgram;
    Class.prototype.useProgram=function(program){active=programs.get(program)||null;return Reflect.apply(use,this,[program]);};
    const location=Class.prototype.getUniformLocation;
-   Class.prototype.getUniformLocation=function(program,name){const value=Reflect.apply(location,this,[program,name]);if(value&&programs.has(program)&&/^(uOceanTime|uFoamTime)$/.test(name))locations.set(value,programs.get(program));return value;};
+   Class.prototype.getUniformLocation=function(program,name){const value=Reflect.apply(location,this,[program,name]);if(value&&programs.has(program)&&/^u\w*Time$/.test(name))locations.set(value,programs.get(program));return value;};
    const uniform=Class.prototype.uniform1f;
-   Class.prototype.uniform1f=function(location,value){const kind=locations.get(location);if(kind){const times=native.roles[kind].times;if(times.at(-1)!==value){times.push(value);if(times.length>32)times.shift();}if(kind!=='foam'&&native.times.at(-1)!==value){native.times.push(value);if(native.times.length>32)native.times.shift();}}return Reflect.apply(uniform,this,[location,value]);};
+   Class.prototype.uniform1f=function(location,value){const kind=locations.get(location);if(kind){const times=native.roles[kind].times;if(times.at(-1)!==value){times.push(value);if(times.length>32)times.shift();}if((kind==='surface'||kind==='spray')&&native.times.at(-1)!==value){native.times.push(value);if(native.times.length>32)native.times.shift();}}return Reflect.apply(uniform,this,[location,value]);};
    for(const method of ['drawElements','drawArrays']){
     const draw=Class.prototype[method];
     Class.prototype[method]=function(...args){
@@ -58,6 +58,17 @@ async function observe(pg){
     Class.prototype[method]=function(...args){
      const image=args.find(value=>value instanceof HTMLImageElement);
      if(image?.src&&!native.images.includes(image.src))native.images.push(image.src);
+     const canvas=args.find(value=>value instanceof HTMLCanvasElement);
+     if(canvas&&!canvases.has(canvas)){
+      canvases.add(canvas);
+      const sample={width:canvas.width,height:canvas.height};
+      try{const pixels=canvas.getContext('2d')?.getImageData(0,0,canvas.width,canvas.height).data;
+       if(pixels){let minimum=255,maximum=0,sum=0,count=0;const stride=Math.max(4,Math.floor(pixels.length/16384/4)*4);
+        for(let i=0;i<pixels.length;i+=stride){const light=(pixels[i]+pixels[i+1]+pixels[i+2])/3;minimum=Math.min(minimum,light);maximum=Math.max(maximum,light);sum+=light;count++;}
+        Object.assign(sample,{minimum,maximum,mean:sum/count});}}
+      catch{}
+      native.canvasUploads.push(sample);
+     }
      return Reflect.apply(upload,this,args);
     };
    }
@@ -83,7 +94,7 @@ async function fixture(viewport,{maps='normal'}={}){
  await observe(result.pg);return{...result,releaseMaps,sources};
 }
 async function loaded(pg,log,{maps=true}={}){
- await pg.waitForFunction(()=>{const d=window.__totehm_gallery?.();return d?.webgl&&d.frames>0&&d.temple?.stoneMapsLoaded>=9&&d.landscape?.skyLoaded&&d.landscape?.environmentLoaded;},null,{timeout:90000});
+ await pg.waitForFunction(()=>{const d=window.__totehm_gallery?.();return d?.webgl&&d.frames>0&&d.temple?.stoneMapsLoaded>=6&&d.temple?.pavement?.ready&&d.landscape?.skyLoaded&&d.landscape?.environmentLoaded;},null,{timeout:90000});
  assert.equal(gpuErrors(log).length,0,gpuErrors(log).join('\n'));
  if(maps){
   await pg.waitForFunction(()=>__totehm_gallery().landscape.ocean.detailMapsLoaded===2,null,{timeout:60000});
@@ -126,19 +137,30 @@ try{
    const initialFoam=sample.entry.landscape.ocean.foamSimulation;
    check(initialFoam.supported&&initialFoam.initialized&&initialFoam.pingPong&&initialFoam.targets===2&&initialFoam.compressionDriven&&initialFoam.simulationSize===(viewport.width<650?128:256),'persistent aeration uses two actual-size compression-driven GPU targets '+viewport.width);
    check(sample.entry.landscape.ocean.curledSurface&&sample.entry.landscape.ocean.mainChop===1.8,'breaking crests belong to the continuous spherical water surface '+viewport.width);
+   const spindrift=sample.entry.landscape.ocean.spindrift;
+   check(spindrift.kind==='raymarched-sea-spindrift'&&spindrift.parentClock&&spindrift.externalFiles===0&&spindrift.textures===0&&spindrift.samplesPerRay===5&&spindrift.maximumOpacity<=.13,'windblown sea mist shares the water clock and owns no external images '+viewport.width);
    await screenshot(pg,'entry-'+viewport.width);await screenshot(pg,'entry-world-'+viewport.width,{world:true});
    await pg.click('#enter-gallery');
    for(const [id,name] of [['look-sea','ocean'],['look-horizon','horizon']]){
     await pg.click('#'+id);await settled(pg);sample[name]=await state(pg);
     await screenshot(pg,name+'-'+viewport.width);await screenshot(pg,name+'-world-'+viewport.width,{world:true});
    }
+   await pg.click('#look-sky');await settled(pg);sample.sky=await state(pg);
+   await screenshot(pg,'sky-'+viewport.width);await screenshot(pg,'sky-world-'+viewport.width,{world:true});
    sample.native=await pg.evaluate(()=>JSON.parse(JSON.stringify(__oceanNative)));
    check(sample.native.images.filter(src=>src.includes('/assets/ocean/')).length===2,'both real water textures reach native GPU uploads '+viewport.width);
    check(sample.native.programs>=3&&sample.native.roles.surface.programs>0&&sample.native.roles.spray.programs>0&&sample.native.roles.surface.draws>0&&sample.native.roles.spray.draws>0&&sample.native.geometryCounts.some(count=>count>10000),'continuous surface and spray are real native ocean draws '+viewport.width);
    check(sample.native.roles.foam.programs>0&&sample.native.foamReads.some(read=>read.width===initialFoam.simulationSize&&read.height===initialFoam.simulationSize&&read.nonzero>0),'foam history contains nonempty pixels in the real simulation framebuffer '+viewport.width);
+   check(sample.native.roles.spindrift.programs>0&&sample.native.roles.spindrift.draws>0&&sample.native.roles.spindrift.geometryCounts.includes(spindrift.triangles*3),'raymarched spray volumes reach a real indexed GPU draw '+viewport.width);
+   const sky=sample.sky.landscape.sky;
+   check(sky.night&&sky.milkyWay&&sky.moon&&sky.externalFiles===0&&sample.native.roles.galaxy.draws>0&&sample.native.roles.stars.draws>0&&sample.native.roles.stars.geometryCounts.includes(sky.stars),'procedural galaxy and actual star geometry reach native GPU draws '+viewport.width);
+   check(sample.native.canvasUploads.some(texture=>texture.width===sky.textureSize[0]&&texture.height===sky.textureSize[1]&&texture.maximum>texture.minimum+20&&texture.mean>0),'the real galaxy canvas uploads varied radiance at the declared resolution '+viewport.width);
    const frozen=clocks(await state(pg)),frozenSteps=(await state(pg)).landscape.ocean.foamSimulation.steps,frozenDraws=await pg.evaluate(()=>__oceanNative.roles.foam.draws);await pg.waitForTimeout(450);
    check(JSON.stringify(clocks(await state(pg)))===JSON.stringify(frozen),'reduced motion freezes the ocean and sky '+viewport.width);
    check((await state(pg)).landscape.ocean.foamSimulation.steps===frozenSteps&&await pg.evaluate(()=>__oceanNative.roles.foam.draws)===frozenDraws,'reduced motion performs no extra simulation framebuffer draws '+viewport.width);
+   const frozenStellarTimes=await pg.evaluate(()=>JSON.stringify([__oceanNative.roles.stars.times,__oceanNative.roles.meteor.times]));
+   await pg.waitForTimeout(300);
+   check(await pg.evaluate(()=>JSON.stringify([__oceanNative.roles.stars.times,__oceanNative.roles.meteor.times]))===frozenStellarTimes,'reduced motion freezes the actual celestial GPU clocks '+viewport.width);
    await pg.click('#look-sea');await settled(pg);await pg.emulateMedia({reducedMotion:'no-preference'});
    const initialTime=(await state(pg)).landscape.ocean.time;
    // Let quality adaptation settle before measuring image motion. Different
@@ -157,12 +179,18 @@ try{
    const foamReads=sample.nativeAnimated.foamReads;
    check(foamReads.length===3&&foamReads.every(read=>read.nonzero>0)&&new Set(foamReads.map(read=>read.hash)).size===3&&new Set(sample.nativeAnimated.roles.foam.times).size>1,'native GPU framebuffer pixels evolve across simulation draws 1, 10 and 30 '+viewport.width);
    check((await state(pg)).landscape.ocean.foamSimulation.advected&&(await state(pg)).landscape.ocean.foamSimulation.decayed,'foam history advances with advection and decay '+viewport.width);
+   check(new Set(sample.nativeAnimated.roles.spindrift.times).size>1&&sample.nativeAnimated.roles.spindrift.times.at(-1)===sample.nativeAnimated.roles.surface.times.at(-1),'volumetric spindrift receives exactly the animated parent-water GPU clock '+viewport.width);
+   check(new Set(sample.nativeAnimated.roles.stars.times).size>1&&sample.nativeAnimated.roles.meteor.draws>0&&new Set(sample.nativeAnimated.roles.meteor.times).size>1,'stellar scintillation and meteor clocks advance in real GPU programs '+viewport.width);
    await pg.click('#view-list');const listClock=clocks(await state(pg)),listFoamDraws=await pg.evaluate(()=>__oceanNative.roles.foam.draws);await pg.waitForTimeout(500);
    check(JSON.stringify(clocks(await state(pg)))===JSON.stringify(listClock),'artworks list pauses the ocean '+viewport.width);
    check(await pg.evaluate(()=>__oceanNative.roles.foam.draws)===listFoamDraws,'artworks list pauses the actual GPU foam simulation '+viewport.width);
+   const listStarDraws=await pg.evaluate(()=>__oceanNative.roles.stars.draws);await pg.waitForTimeout(300);
+   check(await pg.evaluate(()=>__oceanNative.roles.stars.draws)===listStarDraws,'artworks list performs no celestial redraws '+viewport.width);
    await pg.click('#view-list');await hidden(pg,true);const hiddenClock=clocks(await state(pg)),hiddenFoamDraws=await pg.evaluate(()=>__oceanNative.roles.foam.draws);await pg.waitForTimeout(500);
    check(JSON.stringify(clocks(await state(pg)))===JSON.stringify(hiddenClock),'a hidden document pauses the ocean '+viewport.width);
    check(await pg.evaluate(()=>__oceanNative.roles.foam.draws)===hiddenFoamDraws,'a hidden document pauses the actual GPU foam simulation '+viewport.width);
+   const hiddenStarDraws=await pg.evaluate(()=>__oceanNative.roles.stars.draws);await pg.waitForTimeout(300);
+   check(await pg.evaluate(()=>__oceanNative.roles.stars.draws)===hiddenStarDraws,'a hidden document performs no celestial redraws '+viewport.width);
    await hidden(pg,false);check(gpuErrors(log).length===0,'ocean views have no application or GLSL errors '+viewport.width);
    sample.log=log;sample.sources=f.sources;
   }catch(error){sample.error=String(error);sample.log=log;sample.failed=await state(pg).catch(()=>null);await pg.screenshot({path:OUT+'/failure-'+viewport.width+'.png'}).catch(()=>{});throw error;}
