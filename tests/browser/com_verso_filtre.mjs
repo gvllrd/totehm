@@ -91,13 +91,26 @@ try{
    await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1200);
    await pg.keyboard.press('ArrowLeft');await pg.waitForFunction(()=>{const d=window.__totehm_lv();return d.vue==='g'&&!d.bouge;},null,{timeout:6000});
    await pg.evaluate(()=>window.__papierDock&&window.__papierDock());await pg.waitForTimeout(500);
+   /* 24/10 (Wah) : le bloc de commande EST le logo. Replié, on ne voit qu'un papier ;
+      un tap le décompose, un second ouvre MY GRIND sur ses trois boutons — DANS son navy. */
+   const plie=await pg.evaluate(()=>{const c=document.querySelector('.lsh-sf .sfcmd');
+     return {logo:c.classList.contains('is-logo'),calques:c.querySelectorAll('.sf-lg .gl').length};});
+   ok(plie.logo&&plie.calques===3,nom+' · le filtre arrive en LOGO (le rail, le T et le mot sur le papier)');
+   await pg.click('.lsh-sf [data-sf="grind"]');await pg.waitForTimeout(900);
+   await pg.click('.lsh-sf [data-sf="grind"]');await pg.waitForTimeout(600);
    const g=await pg.evaluate(()=>{const r={};document.querySelectorAll('.lsh-sf [data-sf="vue"]').forEach(b=>{const x=b.getBoundingClientRect(),c=getComputedStyle(b);
-       r[b.dataset.v]={l:x.left,t:x.top,r:x.right,b:x.bottom,w:x.width,h:x.height,m:(c.maskImage||c.webkitMaskImage||'').includes('svg'),bg:c.backgroundColor};});return r;});
-   const {wisdom:w,visions:v,objectives:o,habits:h,repulsions:p}=g, px=1.5;
-   ok(w&&v&&Math.abs(w.w-w.h)<px&&Math.abs(v.w-v.h)<px&&w.m&&v.m,nom+' · MY STORY et VISION : deux CARRÉS perforés ('+Math.round(w.w)+' px)');
-   ok(w.bg==='rgb(116, 49, 105)'&&v.bg==='rgb(54, 73, 140)',nom+' · dans leur couleur : rouge-violet, bleu clair → '+w.bg+' · '+v.bg);
-   ok(o.b<=h.t+px&&h.b<=p.t+px&&Math.abs(o.l-h.l)<px&&Math.abs(h.l-p.l)<px&&!o.m,nom+' · OBJECTIVE en haut, HABIT au milieu, REPULSION en bas, empilés');
-   ok(w.r<=o.l&&p.r<=v.l&&Math.abs(w.t-o.t)<px&&Math.abs(w.b-p.b)<px&&Math.abs(v.t-o.t)<px&&Math.abs(v.b-p.b)<px,nom+' · les deux carrés ENFERMENT la pile : un seul rectangle');
+       r[b.dataset.v]={l:x.left,t:x.top,r:x.right,b:x.bottom,w:x.width,h:x.height,m:(c.maskImage||c.webkitMaskImage||'').includes('svg'),bg:c.backgroundColor};});
+     const gr=document.querySelector('.lsh-sf .sfv-g').getBoundingClientRect(), cg=getComputedStyle(document.querySelector('.lsh-sf .sfv-g'));
+     r.grind={l:gr.left,t:gr.top,r:gr.right,b:gr.bottom,w:gr.width,h:gr.height,m:(cg.maskImage||cg.webkitMaskImage||'').includes('svg'),bg:cg.backgroundColor};
+     return r;});
+   const {wisdom:w,visions:v,objectives:o,habits:h,repulsions:p,grind:gr}=g, px=1.5;
+   ok(w&&v&&Math.abs(w.w-w.h)<px&&Math.abs(v.w-v.h)<px&&w.m&&v.m&&gr.m&&Math.abs(gr.w-gr.h)<px,
+     nom+' · trois CARRÉS perforés, comme les trois papiers du logo ('+Math.round(w.w)+' px)');
+   ok(w.bg==='rgb(116, 49, 105)'&&v.bg==='rgb(54, 73, 140)'&&gr.bg==='rgb(51, 51, 102)',
+     nom+' · dans leur couleur : rouge-violet, navy, bleu clair → '+w.bg+' · '+gr.bg+' · '+v.bg);
+   ok(o.b<=h.t+px&&h.b<=p.t+px&&Math.abs(o.l-h.l)<px&&Math.abs(h.l-p.l)<px&&!o.m,nom+' · OBJECTIVES en haut, HABITS au milieu, REPULSIONS en bas, empilés');
+   ok(o.l>=gr.l-px&&p.r<=gr.r+px&&o.t>gr.t&&p.b<gr.b&&w.r<=gr.l+px&&gr.r<=v.l+px,
+     nom+' · la pile est DANS le navy, plus courte que lui ('+Math.round(p.r-o.l)+' px pour '+Math.round(gr.w)+' px)');
    await pg.click('.lsh-sf [data-sf="vue"][data-v="wisdom"]');await pg.waitForTimeout(300);
    const on=await pg.evaluate(()=>[...document.querySelectorAll('.lsh-sf [data-sf="vue"].is-on')].map(b=>b.dataset.v));
    ok(on.join()==='wisdom',nom+' · un tap sur MY STORY la choisit → '+on.join());
