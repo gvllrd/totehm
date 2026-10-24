@@ -67,6 +67,17 @@ try{
   const m=await pg.evaluate(()=>{const s=document.querySelector('#stage').getBoundingClientRect(),j=document.querySelector('#joy').getBoundingClientRect();
     return {ecart:Math.round(j.top-s.bottom),bas:Math.round(innerHeight-j.bottom),carre:Math.round(s.width)};});
   ok(m.ecart>=12&&m.bas===12,'25/10 · ordinateur 1280×800 : la manette sous le carré, hors des perforations '+JSON.stringify(m));
+  /* 25/10 (Wah : « le joystick ne marche pas bien pour l'axe vertical ») : un geste de trackpad ET son inertie (≈ 1 s)
+     faisaient sauter deux vues. 8 événements « doigt » de 30 px, puis 40 d'inertie qui décroissent. */
+  const vue=()=>pg.$eval('#joy',e=>(e.className.match(/v-(\w+)/)||[])[1]);
+  const geste=async(sur,signe)=>{const p=sur==='joy'?await pg.$eval('#joy-box',e=>{const r=e.getBoundingClientRect();return [r.x+r.width/2,r.y+r.height/2];}):[640,400];
+    await pg.mouse.move(p[0],p[1]);const vus=[await vue()];
+    for(let i=0;i<48;i++){await pg.mouse.wheel(0,signe*(i<8?30:Math.max(1,Math.round(30*Math.pow(.93,i-8)))));await pg.waitForTimeout(16);
+      const v=await vue();if(v!==vus[vus.length-1])vus.push(v);}
+    await pg.waitForTimeout(700);return vus.join('>');};
+  const parcours=[];for(const sur of ['joy','liste'])for(const s of [1,-1,-1,1])parcours.push(await geste(sur,s));
+  const attendu='habits>objectives | objectives>habits | habits>repulsions | repulsions>habits';
+  ok(parcours.join(' | ')===attendu+' | '+attendu,'25/10 · au trackpad, un geste (inertie comprise) = UNE vue, sur la manette comme sur la liste → '+parcours.join(' | '));
   await pg.context().close();
  }
  /* ── 4 · l'espace membre (07/10) : plein écran, c'est l'utilisateur ; les boutons de higher.boutique ── */

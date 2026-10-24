@@ -9570,7 +9570,10 @@ window.addEventListener('touchend',(e)=>{
     if(e.target&&e.target.closest&&e.target.closest('#joy,#ro-bar'))return;
     if(Math.abs(e.deltaY) > Math.abs(e.deltaX)*1.6){
       if(navBlocked())return;
-      if(Date.now()<froid){accV=0;return;}
+      /* ⚠️ 25/10 — PENDANT LE VERROU, L'INERTIE LE PROLONGE ET L'HORLOGE DU TROU AVANCE. On sortait sans toucher
+         `tV` : à la fin du verrou, l'inertie encore en cours lisait un « trou » de 900 ms, donc un geste neuf,
+         donc une seconde vue d'un seul geste (mesuré : objectifs → habitudes → répulsions). */
+      { const n=Date.now(); if(n<froid){ froid=Math.max(froid,n+260); accV=0; tV=n; return; } }
       const versLeBas=e.deltaY>0;
       /* ⚠️ `bordCalme` ET PAS `scrollEdges` : il faut que la liste soit
          en butée depuis un instant, pas seulement à l'instant même. */
@@ -9745,28 +9748,29 @@ const navRight=()=>{ if(navBlocked())return; versVoisin('d'); };
      liste, il faut distinguer « je défile » de « je change de vue » —
      c'est le même geste. Ici il n'y a pas de liste : le seul sens
      possible d'une molette sur une manette, c'est de la bouger.
-     Un délai de garde suffit à ne pas traverser deux vues d'un coup. */
-  let froid=0;
+     ⚠️ 25/10 — UN DÉLAI FIXE NE SUFFIT PAS (Wah : « le joystick ne marche pas bien pour l'axe vertical ») : l'inertie
+     d'un trackpad dure plus d'une seconde, et le délai de 520 ms la laissait relancer un second voyage — mesuré :
+     objectifs → habitudes → répulsions d'un seul geste. C'est donc LA RÈGLE DE L'ATTERRISSAGE (`trackpad`) :
+     70 px accumulés en Y, 75 en X (160 au plus par événement), remis à zéro après 180 ms ou au changement de
+     sens, puis un verrou de 350 ms que CHAQUE événement d'inertie prolonge de 260 ms. Deux doigts vers le haut
+     (`deltaY > 0`) vont en HAUT, vers la gauche (`deltaX > 0`) à GAUCHE : un manche. */
+  let sensM='', somme=0, dernier=0, verrou=0;
   jy.addEventListener('wheel',e=>{
     if(navBlocked())return;
-    if(Date.now()<froid)return;
-    /* ⚠️ L'HORIZONTALE SUIT LE DOIGT · 25/09/2026. C'était
-       `deltaX>0 ? 'd' : 'g'` (« trackpad : contenu, pas doigt »). Or une
-       molette horizontale est presque toujours un trackpad, donc des
-       DOIGTS : deux doigts vers la gauche donnent `deltaX > 0`, et le pavé
-       partait à DROITE — à l'opposé du manche tiré au même endroit
-       (`sens()` suit le doigt). Signalé par Wah : « une erreur au niveau
-       des mouvements horizontaux quand on est DANS le joystick ». La
-       verticale reste celle d'une molette de souris. Même correction dans
-       space/index.html. */
-    /* 22/10 — un manche : deux doigts vers la gauche (`deltaX > 0`) vont à GAUCHE, vers le haut (`deltaY > 0`) en HAUT. */
-    const d = Math.abs(e.deltaX)>Math.abs(e.deltaY)
-      ? (e.deltaX>0?'g':'d')
-      : (e.deltaY>0?'h':'b');
+    const f=e.deltaMode===1?16:e.deltaMode===2?innerHeight:1, x=e.deltaX*f, y=e.deltaY*f;
+    const hor=Math.abs(x)>Math.abs(y)*1.25;
+    if(!hor&&Math.abs(y)<=Math.abs(x)*1.25)return;
+    e.preventDefault();
+    const now=Date.now();
+    if(now<verrou){ verrou=Math.max(verrou,now+260); somme=0; return; }
+    const d=hor?(x>0?'g':'d'):(y>0?'h':'b');
     if(!voisin(d))return;
-    froid=Date.now()+520;
+    if(now-dernier>180||d!==sensM)somme=0;
+    sensM=d; dernier=now; somme+=Math.min(160,Math.abs(hor?x:y));
+    if(somme<(hor?75:70))return;
+    somme=0; verrou=now+350;
     versVoisin(d);
-  },{passive:true});
+  },{passive:false});
 })();
 [['cur-g','g'],['cur-d','d'],['cur-h','h'],['cur-b','b']].forEach(([id,d])=>{
   const b=$(id); if(b)b.onclick=()=>{ if(navBlocked())return; versVoisin(d); };

@@ -43,7 +43,8 @@ Diagnostics : `__totehm_lv()` (`.refus` : pourquoi un geste est refusé ; à l'�
 - Un verrou de navigation se rend toujours ; un geste reçu pendant un voyage OU le repli du TOTEHM attend sa fin (`guetter`,
   1,5 s au plus). Tout geste de navigation est un MANCHE : il va où il pousse (doigt, trackpad, souris, manette, papier),
   et il POUSSE le manche à l'écran — `POUSSE_JOY` (app), `POUSSE_LVJ` (atterrissage) : 240 ms, puis retour au centre ;
-  la main posée sur la manette commande seule (`DU_MANCHE`, `DU_LVJ`).
+  la main posée sur la manette commande seule (`DU_MANCHE`, `DU_LVJ`). Trackpad : un geste ET son inertie = UNE vue (le
+  verrou se prolonge tant que l'inertie dure : atterrissage, manette, liste — sinon deux vues d'un geste, mesuré).
 - Session gardée : ni la vente ni CONNECT avant la fin de la lecture ; aucune écriture sur la foi du cache.
 - Déploiement : jamais de `scale()` sur la boîte (arête épaissie, image étirée : « pixélisé ») — `grandir` pose sa taille.
   L'HEURE est celle du papier (`#gl-bg`, sa transition CSS) : boîte et traits (`morph(…, {suivre})`) la lisent à la même
@@ -54,7 +55,6 @@ Diagnostics : `__totehm_lv()` (`.refus` : pourquoi un geste est refusé ; à l'�
   `is-pret` seulement, et `top` compense le padding de `#srch-ui` (Chrome colle dessous). L'email (`#self-mail`) est
   dessous ; le pied = `.vs-acts` (boutons `.vs-acc` : Delete, Sign out) puis les conditions. Les gris lisibles (≥ #b8b8c2).
 - **Confidentialité par box : base prête, interface ABSENTE** (aucun appel à `box_audience_put/set`,
-  `my_box_audiences`). Ordre : 1) la pastille sur chaque box (`tools/audience_ui.js`), 2) les lecteurs (terminal),
-  3) passer à `box_audience_set`.
+  `my_box_audiences`). Ordre : 1) la pastille sur chaque box (`tools/audience_ui.js`), 2) les lecteurs (terminal), 3) `box_audience_set`.
 
 **Tests** : `tests/browser/com_*.mjs`, `console.mjs` ; préparer et lancer : en tête de `tests/browser/harness.mjs`.
