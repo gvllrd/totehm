@@ -106,6 +106,11 @@ const gz = await pg.evaluate(() => { const g = document.querySelector('#tz-paper
     dx:Math.abs((g.left+g.right)/2 - (p.left+p.right)/2), inside:g.top > p.top && g.bottom < p.bottom, gh:Math.round(g.height), ph:Math.round(p.height) };
 });
 ok(gz.op > 0.9 && gz.dx < 2 && gz.inside && gz.lab < 0.05, 'a tap on MY GRIND stacks its three buttons in the centre of its navy ' + JSON.stringify(gz));
+const lab = await pg.evaluate(() => [...document.querySelectorAll('#tz-papers .pap')].map(p => {
+  const l = p.querySelector('.pap-lab'), r = l.getBoundingClientRect(), b = p.getBoundingClientRect();
+  return { t: l.textContent.trim(), deborde: Math.round(Math.max(0, b.left - r.left) + Math.max(0, r.right - b.right)) };
+}));
+ok(lab.every(l => l.deborde === 0), 'no title is clipped by its perforated paper ' + JSON.stringify(lab));
 const sel = await pg.$$eval('#tz-papers .g3 i', l => l.map(i => ({ px: Math.round(parseFloat(getComputedStyle(i).fontSize)), cut: i.scrollWidth - i.clientWidth })));
 ok(sel.every(s => s.px >= 10) && sel.every(s => s.cut <= 1),
   'the titles of the view selectors are read, whole, inside the navy ' + JSON.stringify(sel));
