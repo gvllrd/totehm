@@ -14,7 +14,8 @@ La porte TotehmPaper montre de nombreux papiers originaux perforés suspendus ; 
 | `gallery-temple.mjs` | terrasse de pierre PBR et trois portes monumentales indépendantes |
 | `gallery-temple-layout.mjs` · `gallery-temple-physics.mjs` | dimensions partagées, saut balistique au sol et collisions des arches |
 | `gallery-temple-landscape.mjs` | seul piton émergé, lune, pierre éclairée et environnement nocturne préfiltré |
-| `gallery-drowned-ocean.mjs` | océan 3D à 360°, longs fronts raides, normales spectrales, écume fine et embruns étirés par le vent |
+| `gallery-drowned-ocean.mjs` | océan 3D à 360°, fronts irréguliers recourbés dans la surface, creux sombres, reflets lunaires et embruns |
+| `gallery-ocean-foam.mjs` | mémoire d’écume GPU : naissance par compression, advection, drainage et dissipation |
 | `gallery-drowned-sky.mjs` | Voie lactée, lune et étoiles ; champ stellaire proche pendant l’envol |
 | `gallery-drowned-planet.mjs` | globe submergé, relief continental sous l’eau et fine atmosphère ; teinte partagée avec la mer |
 | `gallery-temple-assets.mjs` · `assets/temple/` | 9 textures de pierre PBR 1k chargées ; sources CC0 dans LICENSE.txt |
@@ -27,9 +28,10 @@ La porte TotehmPaper montre de nombreux papiers originaux perforés suspendus ; 
 | `vendor/` · `assets/` | Three.js/HLS, textures de pierre et vrais médias |
 
 - Nuit permanente : arche de la Voie lactée visible des panoramas, 18 000 / 8 500 étoiles et lune à 34 cratères. PMREM issu du ciel local, sans panorama/HDR externe.
-- Océan à −96 m, crêtes bornées sous −11,48 m, calme à 110 m du piton ; aucun autre sol émergé. Astres/eau/embruns figés en mouvement réduit.
-- Eau détaillée sur 24 km de diamètre : 327 680 triangles ordinateur / 172 032 téléphone, 3 600 / 1 400 points d’embruns ; maillage rapproché régulier puis logarithmique sans rupture, détails filtrés jusqu’à 1 800 m.
-- Mer courbée sur le globe de rayon 6 500 m : tangentes transformées, fronts raides, écume drainée dans le vent et reflet lunaire. En hauteur, continents immergés sous une seule surface ; sans cartes, secours local.
+- Océan à −96 m, crêtes de la surface principale bornées sous −11,48 m, calme à 110 m du piton ; aucun autre sol émergé. Astres/eau/embruns et simulation d’écume figés en mouvement réduit.
+- Eau détaillée sur 24 km de diamètre : 327 680 triangles ordinateur / 172 032 téléphone, 4 800 / 1 800 points d’embruns ; maillage rapproché régulier puis logarithmique, détails filtrés jusqu’à 1 800 m.
+- Mer courbée sur le globe de rayon 6 500 m : le déplacement Gerstner recourbe les fronts du même maillage, avec leurs tangentes exactes, eau sombre et transmission fine. En hauteur, les continents restent sous une seule mer.
+- Écume persistante sur deux cibles 256² / 128² à 30 / 20 Hz : densité RG16, âge et naissance ; dissipation de 7,8 s, dentelle fine et sillages entraînés par le vent. Sans cartes ou sans rendu GPU, secours local ; état du moteur restauré après chaque passe.
 - Arches à 12,024 m avec leurs biseaux, ouvertures de 4,5 × 10,725 m ; aucun panneau, support, texture de titre ou objet cliquable au-dessus.
 - Terrasse libre hors des vraies pierres ; aucune collision des anciens bacs ou colonnes. Portes en x=−9/0/9, z=−12 ; limites de plateforme conservées.
 - Espace ou bouton Jump : envol de 18 000 m en 14 s aller-retour simulées, réception au sol ; aucune relance en l’air. Les arches restent solides.

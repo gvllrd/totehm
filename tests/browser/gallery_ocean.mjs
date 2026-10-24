@@ -6,8 +6,8 @@ import {createHash} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
 import {launch,page} from './harness.mjs';
 
-const OUT=process.argv[2]||'/tmp/totehm-production/stellar-ocean-final';
-const BUILD='2026-10-23-space-stellar-leap';
+const OUT=process.argv[2]||'/tmp/totehm-production/ocean-cinema-final';
+const BUILD='2026-10-23-space-ocean-cinema';
 const origin='https://www.totehm.space';
 const results=[];let checks=0,browser;
 fs.mkdirSync(OUT,{recursive:true});
@@ -18,23 +18,40 @@ const gpuErrors=log=>log.errors.filter(e=>/pageerror:|THREE.WebGLProgram|VALIDAT
 
 async function observe(pg){
  await pg.addInitScript(()=>{
-  const native=window.__oceanNative={programs:0,draws:0,geometryCounts:[],images:[],times:[]};
-  const shaders=new WeakSet(),programs=new WeakSet(),locations=new WeakSet();let active=false;
+  const role=()=>({programs:0,draws:0,geometryCounts:[],times:[]});
+  const native=window.__oceanNative={programs:0,draws:0,geometryCounts:[],images:[],times:[],roles:{surface:role(),spray:role(),foam:role()},foamReads:[]};
+  const shaders=new WeakMap(),programs=new WeakMap(),locations=new WeakMap();let active=null;
   for(const Class of [globalThis.WebGLRenderingContext,globalThis.WebGL2RenderingContext]){
    if(!Class)continue;
    const source=Class.prototype.shaderSource;
-   Class.prototype.shaderSource=function(shader,text){if(/\buOceanTime\b|\bOceanSurface\b/.test(text))shaders.add(shader);return Reflect.apply(source,this,[shader,text]);};
+   Class.prototype.shaderSource=function(shader,text){
+    const kind=/OCEAN_FOAM_STATE|\buFoamPrevious\b/.test(text)?'foam':/\baLife\b/.test(text)&&/\buOceanTime\b/.test(text)?'spray':/\buOceanTime\b|\bOceanSurface\b/.test(text)?'surface':null;
+    if(kind)shaders.set(shader,kind);return Reflect.apply(source,this,[shader,text]);
+   };
    const attach=Class.prototype.attachShader;
-   Class.prototype.attachShader=function(program,shader){if(shaders.has(shader)&&!programs.has(program)){programs.add(program);native.programs++;}return Reflect.apply(attach,this,[program,shader]);};
+   Class.prototype.attachShader=function(program,shader){const kind=shaders.get(shader);if(kind&&!programs.has(program)){programs.set(program,kind);native.programs++;native.roles[kind].programs++;}return Reflect.apply(attach,this,[program,shader]);};
    const use=Class.prototype.useProgram;
-   Class.prototype.useProgram=function(program){active=programs.has(program);return Reflect.apply(use,this,[program]);};
+   Class.prototype.useProgram=function(program){active=programs.get(program)||null;return Reflect.apply(use,this,[program]);};
    const location=Class.prototype.getUniformLocation;
-   Class.prototype.getUniformLocation=function(program,name){const value=Reflect.apply(location,this,[program,name]);if(value&&programs.has(program)&&name==='uOceanTime')locations.add(value);return value;};
+   Class.prototype.getUniformLocation=function(program,name){const value=Reflect.apply(location,this,[program,name]);if(value&&programs.has(program)&&/^(uOceanTime|uFoamTime)$/.test(name))locations.set(value,programs.get(program));return value;};
    const uniform=Class.prototype.uniform1f;
-   Class.prototype.uniform1f=function(location,value){if(locations.has(location)&&native.times.at(-1)!==value){native.times.push(value);if(native.times.length>32)native.times.shift();}return Reflect.apply(uniform,this,[location,value]);};
+   Class.prototype.uniform1f=function(location,value){const kind=locations.get(location);if(kind){const times=native.roles[kind].times;if(times.at(-1)!==value){times.push(value);if(times.length>32)times.shift();}if(kind!=='foam'&&native.times.at(-1)!==value){native.times.push(value);if(native.times.length>32)native.times.shift();}}return Reflect.apply(uniform,this,[location,value]);};
    for(const method of ['drawElements','drawArrays']){
     const draw=Class.prototype[method];
-    Class.prototype[method]=function(...args){if(active){native.draws++;const count=method==='drawElements'?args[1]:args[2];if(!native.geometryCounts.includes(count))native.geometryCounts.push(count);}return Reflect.apply(draw,this,args);};
+    Class.prototype[method]=function(...args){
+     const kind=active;
+     if(kind){native.draws++;const count=method==='drawElements'?args[1]:args[2],r=native.roles[kind];r.draws++;if(!native.geometryCounts.includes(count))native.geometryCounts.push(count);if(!r.geometryCounts.includes(count))r.geometryCounts.push(count);}
+     const result=Reflect.apply(draw,this,args);
+     // Read the actual simulation framebuffer. Distinct nonempty results show
+     // that foam memory changes on the GPU, beyond a diagnostic counter.
+     if(kind==='foam'&&[1,10,30].includes(native.roles.foam.draws)){
+      const viewport=this.getParameter(this.VIEWPORT),width=viewport[2],height=viewport[3],pixels=new Uint8Array(width*height*4);this.readPixels(0,0,width,height,this.RGBA,this.UNSIGNED_BYTE,pixels);
+      let hash=2166136261,nonzero=0,density=0;
+      for(let i=0;i<pixels.length;i++){hash=Math.imul(hash^pixels[i],16777619)>>>0;if(i%4<2){density+=pixels[i];if(pixels[i])nonzero++;}}
+      native.foamReads.push({draw:native.roles.foam.draws,width,height,hash,nonzero,density,time:native.roles.foam.times.at(-1)});
+     }
+     return result;
+    };
    }
    for(const method of ['texImage2D','texSubImage2D']){
     const upload=Class.prototype[method];
@@ -56,7 +73,7 @@ async function fixture(viewport,{maps='normal'}={}){
     if(maps==='failed')return{status:503,contentType:'text/plain',body:'Ocean texture intentionally unavailable in test'};
     if(maps==='delayed')await gate;
    }
-   if(/^\/gallery-(?:3d|drowned-ocean|drowned-planet|drowned-sky|temple-landscape|temple-physics|temple|ui)\.mjs$/.test(url.pathname)){
+   if(/^\/gallery-[a-z0-9-]+\.mjs$/.test(url.pathname)){
     const body=fs.readFileSync(new URL('../../space'+url.pathname,import.meta.url));
     sources[url.pathname]=createHash('sha256').update(body).digest('hex');
     return{status:200,contentType:'text/javascript',body};
@@ -106,6 +123,9 @@ try{
    await pg.emulateMedia({reducedMotion:'reduce'});await pg.goto(origin+'/',{waitUntil:'domcontentloaded'});sample.entry=await loaded(pg,log);
    check(sample.entry.build===BUILD&&sample.entry.temple.columns===0&&sample.entry.temple.columnTops.length===0&&!sample.entry.temple.roof&&sample.entry.temple.overheadLabels===0&&sample.entry.temple.portals.length===3&&sample.entry.temple.portals.every(p=>p.width===4.5&&p.height===10.725),'the open terrace has no columns or overhead labels and keeps its three tall doors '+viewport.width);
    check(sample.entry.landscape.ocean.detailMapsLoaded===2&&sample.entry.landscape.ocean.detailMapFailures===0,'both local ocean maps finish loading '+viewport.width);
+   const initialFoam=sample.entry.landscape.ocean.foamSimulation;
+   check(initialFoam.supported&&initialFoam.initialized&&initialFoam.pingPong&&initialFoam.targets===2&&initialFoam.compressionDriven&&initialFoam.simulationSize===(viewport.width<650?128:256),'persistent aeration uses two actual-size compression-driven GPU targets '+viewport.width);
+   check(sample.entry.landscape.ocean.curledSurface&&sample.entry.landscape.ocean.mainChop===1.8,'breaking crests belong to the continuous spherical water surface '+viewport.width);
    await screenshot(pg,'entry-'+viewport.width);await screenshot(pg,'entry-world-'+viewport.width,{world:true});
    await pg.click('#enter-gallery');
    for(const [id,name] of [['look-sea','ocean'],['look-horizon','horizon']]){
@@ -114,9 +134,11 @@ try{
    }
    sample.native=await pg.evaluate(()=>JSON.parse(JSON.stringify(__oceanNative)));
    check(sample.native.images.filter(src=>src.includes('/assets/ocean/')).length===2,'both real water textures reach native GPU uploads '+viewport.width);
-   check(sample.native.programs>=2&&sample.native.draws>0&&sample.native.geometryCounts.some(count=>count>10000),'surface and spray are real native ocean draws '+viewport.width);
-   const frozen=clocks(await state(pg));await pg.waitForTimeout(450);
+   check(sample.native.programs>=3&&sample.native.roles.surface.programs>0&&sample.native.roles.spray.programs>0&&sample.native.roles.surface.draws>0&&sample.native.roles.spray.draws>0&&sample.native.geometryCounts.some(count=>count>10000),'continuous surface and spray are real native ocean draws '+viewport.width);
+   check(sample.native.roles.foam.programs>0&&sample.native.foamReads.some(read=>read.width===initialFoam.simulationSize&&read.height===initialFoam.simulationSize&&read.nonzero>0),'foam history contains nonempty pixels in the real simulation framebuffer '+viewport.width);
+   const frozen=clocks(await state(pg)),frozenSteps=(await state(pg)).landscape.ocean.foamSimulation.steps,frozenDraws=await pg.evaluate(()=>__oceanNative.roles.foam.draws);await pg.waitForTimeout(450);
    check(JSON.stringify(clocks(await state(pg)))===JSON.stringify(frozen),'reduced motion freezes the ocean and sky '+viewport.width);
+   check((await state(pg)).landscape.ocean.foamSimulation.steps===frozenSteps&&await pg.evaluate(()=>__oceanNative.roles.foam.draws)===frozenDraws,'reduced motion performs no extra simulation framebuffer draws '+viewport.width);
    await pg.click('#look-sea');await settled(pg);await pg.emulateMedia({reducedMotion:'no-preference'});
    const initialTime=(await state(pg)).landscape.ocean.time;
    // Let quality adaptation settle before measuring image motion. Different
@@ -130,10 +152,17 @@ try{
    check(sample.motionDifference.changedFraction>.003,'actual water pixels move at the fixed camera '+viewport.width);
    sample.native.times=await pg.evaluate(()=>__oceanNative.times);
    check(new Set(sample.native.times).size>1,'time reaches the actual ocean GPU programs '+viewport.width);
-   await pg.click('#view-list');const listClock=clocks(await state(pg));await pg.waitForTimeout(500);
+   await pg.waitForFunction(()=>__oceanNative.roles.foam.draws>=30,null,{timeout:60000});
+   sample.nativeAnimated=await pg.evaluate(()=>JSON.parse(JSON.stringify(__oceanNative)));
+   const foamReads=sample.nativeAnimated.foamReads;
+   check(foamReads.length===3&&foamReads.every(read=>read.nonzero>0)&&new Set(foamReads.map(read=>read.hash)).size===3&&new Set(sample.nativeAnimated.roles.foam.times).size>1,'native GPU framebuffer pixels evolve across simulation draws 1, 10 and 30 '+viewport.width);
+   check((await state(pg)).landscape.ocean.foamSimulation.advected&&(await state(pg)).landscape.ocean.foamSimulation.decayed,'foam history advances with advection and decay '+viewport.width);
+   await pg.click('#view-list');const listClock=clocks(await state(pg)),listFoamDraws=await pg.evaluate(()=>__oceanNative.roles.foam.draws);await pg.waitForTimeout(500);
    check(JSON.stringify(clocks(await state(pg)))===JSON.stringify(listClock),'artworks list pauses the ocean '+viewport.width);
-   await pg.click('#view-list');await hidden(pg,true);const hiddenClock=clocks(await state(pg));await pg.waitForTimeout(500);
+   check(await pg.evaluate(()=>__oceanNative.roles.foam.draws)===listFoamDraws,'artworks list pauses the actual GPU foam simulation '+viewport.width);
+   await pg.click('#view-list');await hidden(pg,true);const hiddenClock=clocks(await state(pg)),hiddenFoamDraws=await pg.evaluate(()=>__oceanNative.roles.foam.draws);await pg.waitForTimeout(500);
    check(JSON.stringify(clocks(await state(pg)))===JSON.stringify(hiddenClock),'a hidden document pauses the ocean '+viewport.width);
+   check(await pg.evaluate(()=>__oceanNative.roles.foam.draws)===hiddenFoamDraws,'a hidden document pauses the actual GPU foam simulation '+viewport.width);
    await hidden(pg,false);check(gpuErrors(log).length===0,'ocean views have no application or GLSL errors '+viewport.width);
    sample.log=log;sample.sources=f.sources;
   }catch(error){sample.error=String(error);sample.log=log;sample.failed=await state(pg).catch(()=>null);await pg.screenshot({path:OUT+'/failure-'+viewport.width+'.png'}).catch(()=>{});throw error;}
