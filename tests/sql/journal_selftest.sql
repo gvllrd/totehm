@@ -52,6 +52,19 @@ begin
   if not exists (select 1 from public.totehm_journal j where j.user_id = u and j.kind = 'reflection' and j.at > now() - interval '1 minute') then
     fails:=array_append(fails,'reflection'); end if;
 
+  -- 4 bis · le journal va partout (`le_journal_va_partout`) : le where, le son de l'intention, un lien objectif ↔ Habit
+  insert into public.habit_spots(user_id, habit_text, place) values (u, 'JOURNAL renamed', 'JOURNAL parc')
+    on conflict (user_id, habit_text) do update set place = excluded.place;
+  update public.intention_music set active = false where user_id = u and intention = 'fight' and active;
+  insert into public.intention_music(user_id, intention, title, artist, platform, active) values (u, 'fight', 'JOURNAL son', 'Selftest', 'spotify', true);
+  insert into public.objectives(user_id, text, target_at, status) values (u, 'JOURNAL lien', now() + interval '20 days', 'active') returning id into o;
+  insert into public.objective_habits(objective_id, user_id, habit_text) values (o, u, 'JOURNAL renamed');
+  select count(*) into n from public.totehm_journal j where j.user_id = u and j.at > now() - interval '1 minute'
+     and ((j.kind = 'where_set' and j.label = 'JOURNAL renamed' and j.detail->>'place' = 'JOURNAL parc')
+       or (j.kind = 'sound_set' and j.label = 'JOURNAL son' and j.intention = 'fight')
+       or (j.kind = 'link_added' and j.box = 'objective' and j.label = 'JOURNAL renamed'));
+  if n <> 3 then fails:=array_append(fails,'partout '||n); end if;
+
   -- 5 · une erreur du journal ne remonte jamais (une case inconnue est refusée en silence)
   begin perform public._journal(u, 'nope', 'x', 'y', null, null); exception when others then fails:=array_append(fails,'journal bloque'); end;
 

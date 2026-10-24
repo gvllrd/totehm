@@ -7,9 +7,9 @@
 - Une migration s'applique UNE fois, son fichier reste dans `supabase/migrations/` (jamais `db push`). Ce qui ne
   passe pas du cloud → `CLAUDE_CODE.md`. Chaque migration a son auto-test `tests/sql/*_selftest.sql` (tout annulé,
   attendu `FAIL={}`). Grants après le dernier `create` ; `search_path` vide.
-- **Le modèle est fermé** : HABITS = `totehms.steps` (un jsonb réécrit en entier par `cloudSave`) · `objectives` ·
-  `repulsions` · `visions` · `wisdom` (MY STORY) ; liens = tables de jointure. Sept intentions (`check`),
-  `intentions_set` pose `is` et `i`. Médias : seau `element-media`. Spots : `spot_plans` (point exact, lu par fonction).
+- **Le modèle est fermé** : HABITS = `totehms.steps` (réécrit en entier par `cloudSave`) · `objectives` · `repulsions` · `visions` ·
+  `wisdom` (MY STORY) ; liens = jointures ; 7 intentions (`check`, `intentions_set` pose `is`/`i`) ; médias `element-media` ; spots
+  `spot_plans` (point lu par fonction). **Journal** `totehm_journal` : tout geste, par déclencheurs jamais bloquants ; lu par `my_dashboard`.
 
 ## Les droits
 
