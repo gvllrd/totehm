@@ -18,7 +18,7 @@ const LAND={signed_in:true,pseudo:'wahigher',visibility:'private',offer:{enabled
 const DASH={ok:true,subscribers:3,month_cents:1920,pending_cents:1920,currency:'eur',next_payout:'2026-11-01',threshold_cents:2500,part:80,price_cents:2400,min_cents:300,max_cents:100000};
 const CONS={signed_in:true,offer:{enabled:true,price_cents:2400,currency:'eur',payout_fin:'1234'},subscriptions:[{creator:'kai3',price_cents:1200,currency:'eur',status:'active',renews:'2027-03-01'}]};
 const erreurs=log=>log.errors.filter(e=>e.startsWith('pageerror'));
-/* 24/10 : le tableau de bord du verso (my_dashboard), assez plein pour qu'on y défile. */
+/* 24/10 : le tableau de bord du verso (my_board), assez plein pour qu'on y défile. */
 const J=k=>{const d=new Date();d.setUTCDate(d.getUTCDate()+k);return d.toISOString().slice(0,10);};
 const MYD={ok:true,tz:'UTC',today:J(0),telegram:true,habits:STEPS.map(x=>({t:x.t,is:x.is,f:'daily',cible:7,c:['d','m','d','','a','d','d'],fait:4,serie:2,record:3})),
   days:[-6,-5,-4,-3,-2,-1,0].map(k=>({d:J(k),fait:1,manque:0,demande:2})),week:{fait:8,cible:14,manque:2,sans:2,aujourdhui:2,demandes:2,top:{t:'Run the hill',fait:4,serie:2,cible:7}},
@@ -33,7 +33,7 @@ const vu=pg=>pg.evaluate(()=>{const o=s=>{const e=document.querySelector(s);if(!
 try{
  for(const [nom,vp] of [['téléphone',{width:390,height:844}],['ordinateur',{width:1280,height:800}]]){
   /* ── 1 et 2 · le verso ── */
-  {const{pg,log}=await page(browser,{dir:'com',origin,tables,viewport:vp,hasTouch:nom==='téléphone',network:lent,rpc:{my_landing:LAND,creator_dashboard:DASH,my_console:CONS,my_dashboard:MYD}});
+  {const{pg,log}=await page(browser,{dir:'com',origin,tables,viewport:vp,hasTouch:nom==='téléphone',network:lent,rpc:{my_landing:LAND,creator_dashboard:DASH,my_console:CONS,my_board:MYD}});
    await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1200);
    const dos=await pg.$$eval('#ast-verso > *',l=>l.map(e=>e.id||e.className));
    ok(dos.length===1&&dos[0]==='ast-name',nom+' · le dos du papier ne porte que le NOM → '+dos.join(','));

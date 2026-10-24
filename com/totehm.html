@@ -4320,7 +4320,7 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
     <p id="self-mail" class="srch-after"><span class="mw-mail" id="mw-mail"></span><span class="mw-sync" id="mw-sync"></span></p>
     <!-- 24/10 — TROIS ONGLETS (Wah : « clarté et minimalisme ») : DASHBOARD, ouvert par défaut · SUBSCRIPTION · MONETIZE.
          Ils ne font que montrer ou cacher trois blocs (`#vs-dash`, `#settings`, `#mw-creator`) : chacun garde son câblage.
-         Le tableau de bord se LIT (`my_dashboard`) ; le suivi, lui, se fait dans Telegram. -->
+         Le tableau de bord se LIT (`my_board`) ; le suivi, lui, se fait dans Telegram. -->
     <nav id="vs-tabs" class="srch-after" role="tablist" aria-label="My TOTEHM">
       <button type="button" role="tab" data-vs-tab="dash" class="is-on" aria-selected="true">Dashboard</button>
       <button type="button" role="tab" data-vs-tab="sub" aria-selected="false">Subscription</button>
@@ -7520,7 +7520,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-10-24-com-dashboard';
+const BUILD='2026-10-24-com-board';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -12701,7 +12701,7 @@ window.addEventListener('pageshow',e=>{
 
     /* ══ LE TABLEAU DE BORD DU VERSO · 24/10 ══ Wah : « enregistrer TOUT ce que fait l'utilisateur dans son Totehm et le
        mettre sous forme de visuels » ; « le Telegram sert de tracking, pas le verso ». Le verso MONTRE, il ne coche rien :
-       la base journalise tout (`totehm_journal`, ses déclencheurs) et calcule tout (`my_dashboard`, SQL) ; la page dessine.
+       la base journalise tout (`totehm_journal`, ses déclencheurs) et calcule tout (`my_board`, SQL) ; la page dessine.
        Trois onglets : Dashboard (par défaut, à chaque retournement) · Subscription · Monetize. */
     const DASH=(()=>{
       const el=$('vs-dash'), srch=$('srch'), COUL=Object.fromEntries(INTS.map(x=>[x.id,x.color]));
@@ -12723,9 +12723,9 @@ window.addEventListener('pageshow',e=>{
       async function charger(){
         if(!me){ D=null; el.innerHTML=''; return; }
         const s=++seq, uid=me.id; let tz=null; try{ tz=Intl.DateTimeFormat().resolvedOptions().timeZone||null; }catch(_){}
-        const {data,error}=await sb.rpc('my_dashboard',{p_tz:tz});
+        const {data,error}=await sb.rpc('my_board',{p_tz:tz});
         if(s!==seq||(me?.id||null)!==uid) return;
-        if(error||!data||!data.ok){ if(error) console.error('[my_dashboard]',error.message); diagD.erreurs++;
+        if(error||!data||!data.ok){ if(error) console.error('[my_board]',error.message); diagD.erreurs++;
           if(!D) el.innerHTML='<div class="db"><p class="db-vide">My dashboard · back in a moment.</p></div>'; return; }
         D=data; diagD.charges++; peindre();
       }

@@ -2,7 +2,7 @@
 // « Enregistrer TOUT ce que fait l'utilisateur dans son Totehm et le mettre sous forme de visuels » · « le Telegram sert de
 // tracking, pas le verso » · « 3 onglets : l'abonnement, la monétisation et le tableau de bord, en vue par défaut ».
 // 1 · Dashboard par défaut (à chaque retournement) · Subscription · Monetize : un onglet ne montre que son bloc.
-// 2 · Le tableau de bord DESSINE ce que le serveur a calculé (`my_dashboard`, appelé avec MON fuseau) : la semaine, la
+// 2 · Le tableau de bord DESSINE ce que le serveur a calculé (`my_board`, appelé avec MON fuseau) : la semaine, la
 //     courbe, la matrice Habits × 7 jours (point = fait, de la couleur de l'intention ; trait = pas fait ; cercle = sans
 //     réponse), les séries, les sept intentions, les objectifs qui arrivent, 12 semaines d'activité, le fil, les totaux.
 // 3 · Il ne coche RIEN (le suivi se fait dans Telegram) ; Telegram pas relié : « Connect » mène à TotehmBot (Subscription).
@@ -19,7 +19,7 @@ const LAND={signed_in:true,pseudo:'wahigher',visibility:'private',offer:{enabled
 const CREA={ok:true,subscribers:3,month_cents:1920,pending_cents:1920,currency:'eur',next_payout:'2026-11-01',threshold_cents:2500,part:80,price_cents:2400,min_cents:300,max_cents:100000};
 const CONS={signed_in:true,offer:{enabled:true,price_cents:2400,currency:'eur',payout_fin:'1234'},subscriptions:[]};
 const erreurs=log=>log.errors.filter(e=>e.startsWith('pageerror'));
-/* Le tableau de bord tel que `my_dashboard` le rend (mêmes clés), autour d'aujourd'hui. */
+/* Le tableau de bord tel que `my_board` le rend (mêmes clés), autour d'aujourd'hui. */
 const iso=d=>d.toISOString().slice(0,10), J=k=>{const d=new Date();d.setUTCDate(d.getUTCDate()+k);return iso(d);};
 const TODAY=J(0);
 const DB={ok:true,tz:'UTC',today:TODAY,telegram:false,
@@ -45,7 +45,7 @@ const vu=pg=>pg.evaluate(()=>{const o=s=>{const e=document.querySelector(s);if(!
 try{
  for(const [nom,vp] of [['téléphone',{width:390,height:844}],['ordinateur',{width:1280,height:800}]]){
   {const{pg,log}=await page(browser,{dir:'com',origin,tables,viewport:vp,hasTouch:nom==='téléphone',
-     rpc:{my_landing:LAND,creator_dashboard:CREA,my_console:CONS,my_dashboard:DB,new_bot_link_code:'c0de'}});
+     rpc:{my_landing:LAND,creator_dashboard:CREA,my_console:CONS,my_board:DB,new_bot_link_code:'c0de'}});
    await pg.addInitScript(()=>{ window.__ouvert=[]; window.open=(u)=>{ window.__ouvert.push(String(u)); return null; }; });
    await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1200);
    /* ── 1 · trois onglets, le Dashboard d'abord ── */
@@ -54,8 +54,8 @@ try{
    const a=await vu(pg), tabs=await pg.$$eval('#vs-tabs [data-vs-tab]',l=>l.map(b=>b.textContent.trim()));
    ok(tabs.join()==='Dashboard,Subscription,Monetize'&&a.tab==='dash'&&a.sel==='dash'&&a.dash===1&&!a.gagne&&!a.higher&&a.pied===1,
       nom+' · trois onglets (Dashboard · Subscription · Monetize), ouvert sur le DASHBOARD → '+JSON.stringify(a));
-   const appel=log.rpc.find(x=>x.name==='my_dashboard');
-   ok(appel&&typeof appel.body.p_tz==='string'&&appel.body.p_tz.length>0,nom+' · my_dashboard est appelé avec MON fuseau → '+JSON.stringify(appel&&appel.body));
+   const appel=log.rpc.find(x=>x.name==='my_board');
+   ok(appel&&typeof appel.body.p_tz==='string'&&appel.body.p_tz.length>0,nom+' · my_board est appelé avec MON fuseau → '+JSON.stringify(appel&&appel.body));
    /* ── 2 · ce qu'il dessine ── */
    const d=await pg.evaluate(()=>{const q=s=>[...document.querySelectorAll('#vs-dash '+s)], t=s=>document.querySelector('#vs-dash '+s)?.textContent.trim();
      const k=q('.db-k > div').map(e=>e.querySelector('b').textContent.trim());
@@ -98,7 +98,7 @@ try{
    await pg.click('#lv-tap-turn');
    await pg.waitForFunction(()=>document.getElementById('srch').classList.contains('is-pret'),null,{timeout:6000}).catch(()=>{});await pg.waitForTimeout(300);
    const r=await vu(pg);
-   ok(r.tab==='dash'&&r.dash===1&&log.rpc.filter(x=>x.name==='my_dashboard').length===2,nom+' · rouvert : le Dashboard de nouveau, relu → '+JSON.stringify({r,n:log.rpc.filter(x=>x.name==='my_dashboard').length}));
+   ok(r.tab==='dash'&&r.dash>0.9&&log.rpc.filter(x=>x.name==='my_board').length===2,nom+' · rouvert : le Dashboard de nouveau, relu → '+JSON.stringify({r,n:log.rpc.filter(x=>x.name==='my_board').length}));
    ok(sh.h>sh.c,nom+' · le tableau de bord se lit en défilant ('+sh.h+' px pour '+sh.c+')');
    ok(!erreurs(log).length,nom+' · aucune erreur '+erreurs(log).join(' | '));
    await pg.context().close();}

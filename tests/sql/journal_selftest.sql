@@ -1,4 +1,4 @@
--- COM · 24/10/2026 — le journal de mon TOTEHM (`totehm_journal`) et son tableau de bord (`my_dashboard`).
+-- COM · 24/10/2026 — le journal de mon TOTEHM (`totehm_journal`) et son tableau de bord (`my_board`).
 -- Écrit puis annule tout (exception finale). Attendu : « JOURNAL · FAIL={} ».
 -- Aucune suppression (24/10) : elle fait demander une confirmation que personne ne voit à temps ; les
 -- effacements (objectif, vision, compte) se vérifient par leurs déclencheurs posés, pas en effaçant.
@@ -9,8 +9,8 @@ begin
   if has_table_privilege('anon','public.totehm_journal','SELECT') or has_table_privilege('authenticated','public.totehm_journal','SELECT')
      or has_table_privilege('authenticated','public.totehm_journal','INSERT')
      or has_function_privilege('authenticated','public._journal(uuid,text,text,text,text,text,jsonb,timestamptz)','EXECUTE')
-     or has_function_privilege('anon','public.my_dashboard(text)','EXECUTE')
-     or not has_function_privilege('authenticated','public.my_dashboard(text)','EXECUTE') then
+     or has_function_privilege('anon','public.my_board(text)','EXECUTE')
+     or not has_function_privilege('authenticated','public.my_board(text)','EXECUTE') then
     fails:=array_append(fails,'grants'); end if;
 
   select t.user_id, t.steps into u, st from public.totehms t where exists (select 1 from public.profiles p where p.id = t.user_id) limit 1;
@@ -76,7 +76,7 @@ begin
   begin perform public._journal(u, 'nope', 'x', 'y', null, null); exception when others then fails:=array_append(fails,'journal bloque'); end;
 
   -- 6 · LE TABLEAU DE BORD
-  d := public.my_dashboard('UTC');
+  d := public.my_board('UTC');
   select x into h from jsonb_array_elements(d->'habits') x where x->>'t' = 'JOURNAL renamed';
   if h is null then fails:=array_append(fails,'habit absente'); else
     if h->'c'->>6 <> 'd' or h->'c'->>5 <> 'm' or h->'c'->>4 <> 'a' then fails:=array_append(fails,'cases '||(h->'c')::text); end if;
@@ -87,7 +87,7 @@ begin
   if (select count(*) from jsonb_object_keys(d->'intentions')) <> 7 or (d->'intentions'->'fight'->>'fait')::int < 1 then fails:=array_append(fails,'intentions'); end if;
   if not exists (select 1 from jsonb_array_elements(d->'feed') x where x->>'k' = 'reflection') then fails:=array_append(fails,'fil'); end if;
   if (d->'heat'->>83)::int < 5 or (d->'totals'->>'gestes')::int < 10 then fails:=array_append(fails,'activité'); end if;
-  if d->>'tz' <> 'UTC' or public.my_dashboard('Pas/Une_Zone')->>'tz' is null then fails:=array_append(fails,'fuseau'); end if;
+  if d->>'tz' <> 'UTC' or public.my_board('Pas/Une_Zone')->>'tz' is null then fails:=array_append(fails,'fuseau'); end if;
 
   -- 7 · le compte effacé : le journal part avec lui (le déclencheur posé sur `profiles`, vérifié en 3 ; son corps l'efface)
   if position('public.totehm_journal where user_id = old.id' in pg_get_functiondef('public._journal_forget()'::regprocedure)) = 0 then
