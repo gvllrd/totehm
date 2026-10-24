@@ -41,10 +41,18 @@ try{
   ok(open.k==='h'&&open.spaces===1&&open.edit===0&&open.copied,'une Box s\'ouvre en place : ses liens, ses SPOTS, rien à modifier ; copiée, elle le reste (✓)');
   await pg.screenshot({path:OUT+'/ro_open_copy.png'});
   await pg.locator('#habits .w-x').first().evaluate(e=>e.click());await pg.waitForTimeout(200);
+  /* 25/10 (Wah) : dans le Totehm déployé, la manette = celle de l'atterrissage (le petit socle), le manche a la couleur de la vue. */
+  const manette=()=>pg.evaluate(()=>{const b=document.querySelector('#joy-box'),s=getComputedStyle(b),i=document.querySelectorAll('#joy-stack i');
+    return {w:b.getBoundingClientRect().width,r:s.borderRadius,bg:s.backgroundColor,n:i.length,cap:i[0]&&getComputedStyle(i[0]).backgroundColor,
+      morts:[...document.querySelectorAll('#joy .cur.mort')].every(e=>getComputedStyle(e).opacity==='0')};});
+  const mh=await manette();
   await pg.keyboard.press('ArrowUp');await pg.waitForTimeout(400);
   await pg.locator('#habits .copie').first().click();await pg.waitForFunction(()=>/Already/.test(document.querySelector('#habits .copie')?.textContent||''));
   const c2=log.rpc.filter(x=>x.name==='totehm_import_boxes')[1];
   ok(c2&&JSON.stringify(c2.body.p_selection)==='[{"kind":"t","key":"o1"}]','un objectif se copie par son id ; déjà à moi → « Already in my TOTEHM »');
+  await pg.waitForTimeout(500);const mo=await manette();
+  ok(mh.w===48&&mh.r==='0px'&&mh.bg==='rgb(11, 11, 14)'&&mh.n===1&&mh.morts,'25/10 · la manette du Totehm = le socle de l\'atterrissage (48 px, carré, un manche) '+JSON.stringify(mh));
+  ok(mh.cap==='rgb(51, 51, 102)'&&mo.cap==='rgb(54, 73, 140)','25/10 · le manche prend la couleur de la vue (habitudes '+mh.cap+' → objectifs '+mo.cap+')');
   /* 24/10 (Wah) : le trackpad qui change de vue POUSSE le manche, qui revient ensuite au centre. */
   await pg.mouse.move(200,Math.round(H*.45));await pg.mouse.wheel(90,0);await pg.waitForTimeout(70);
   const mx=await pg.$eval('#joy-stack',e=>parseFloat(e.style.getPropertyValue('--mx'))||0);

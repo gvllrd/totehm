@@ -414,162 +414,50 @@ body.v-repulsions  #t-foot{animation:respire-logo 2.8s ease-in-out infinite}
    peut plus être déplacé par la longueur d'un mot, ce que Wah m'a
    reproché deux fois. Le problème disparaît au lieu d'être contenu. */
 
-/* ══ LE PAVÉ — LA TUILE, ET LES TROIS COUCHES · 21/09/2026 bis ═════
-   ⚠️ JE ME SUIS TROMPÉ D'AXE, ET C'EST LA CORRECTION DE FOND.
-   J'avais mis sagesse / habitudes / vision dans les trois ronds — donc
-   l'axe du TEMPS, à la verticale. Wah : « c'est une façon de mettre en
-   avant les répulsions, habitudes et objectifs. »
-
-   Évidemment : des ronds EMPILÉS ne peuvent dire que l'axe EMPILÉ. La
-   croix du produit est explicite — l'horizontale est le temps, la
-   VERTICALE est la profondeur : ce qui tire l'habitude vers le haut
-   (l'objectif) et ce qui la tire vers le bas (la répulsion). Mettre le
-   temps dans une colonne, c'était dessiner le produit de travers.
-
-       objectifs    bleu clair   ↑ ce qui tire vers le haut
-       habitudes    navy           le présent
-       répulsions   rouge-violet ↓ ce qui fait dérailler
-
-   Et les trois couleurs sont celles que le modèle de données leur donne
-   déjà (CLAUDE.md § « Le papier ne change pas ») : on ne choisit pas une
-   palette pour le pavé, on reprend celle des boîtes. Un objectif est
-   bleu clair dans la liste ET sur le contrôleur.
-
-   ⚠️ LA TUILE, ELLE, PORTE L'ÉPOQUE — et c'est ce que Wah appelle « la
-   logique de défilement reste la même ». Elle change au swipe
-   HORIZONTAL : rouge-violet sombre sur la sagesse, navy sur le présent,
-   bleu sombre sur la vision. Deux axes, deux langages, aucun des deux ne
-   répète l'autre. */
-/* ⚠️ LA TUILE EST PLUS SOMBRE QUE LES TROIS RONDS, TOUJOURS. C'est la
-   contrepartie de leur rendre leurs vraies valeurs : navy sur navy est
-   invisible (mesuré deux fois), donc c'est le socle qui descend, pas la
-   marque qui se dilue. Même doctrine que le papier sous les boîtes. */
-/* ⚠️ AUCUNE BORDURE. LE FOND PORTE LA COULEUR, POINT · 22/09 ter.
-   « Je t'ai pas demandé de bordure sur le joystick, juste le changement
-   de couleur de son background avec nos 3 couleurs. »
-   J'avais mis un anneau intérieur de la couleur de la vue autour d'un
-   fond sombre, en me disant qu'un `box-shadow` n'est pas techniquement
-   une bordure. **Ça se voit comme une bordure, donc c'en est une** — et
-   la règle de marque n'en admet aucune. Le fond EST la couleur : navy,
-   bleu clair, rouge-violet. Rien autour.
-   Le MANCHE (`#joy-stack`) se tire au doigt et revient au centre —
-   voir le module « LA MANETTE ». */
-#joy-box{width:var(--joy-d,60px);height:var(--joy-d,60px);position:relative;
-  border-radius:50%;background:var(--joy-vue,var(--navy));
-  box-shadow:0 2px 7px rgba(0,0,0,.5);
-  transition:background-color .42s ease, box-shadow .42s ease;
+/* ══ LA MANETTE = CELLE DE L'ATTERRISSAGE · 25/10/2026 ══════════════════════════════════════════════════
+   Wah : « je veux le joystick de la vue d'atterrissage dans le Totehm déployé ». C'est le MÊME objet que `#lvj-box` :
+   le socle du Totehm en miniature (48 px, le verre, l'arête claire, la broche 1 dans un coin), un puits rond noir,
+   et dedans LE MANCHE — un chapeau au centre creusé, qui se tire et revient. Une seule différence : le chapeau porte
+   la COULEUR DE LA VUE (`--joy-vue`, posé au rendu : habitudes navy · objectifs, visions bleu clair · répulsions,
+   sagesse rouge-violet). Les trois ronds empilés sont partis. Le socle se centre dans sa case (`--joy-d`) : la liste
+   et la bande du bas ne bougent pas. Arêtes nettes, aucune ombre portée — comme le socle. */
+#joy-box{width:48px;height:48px;position:relative;border-radius:0;
+  background:linear-gradient(135deg,rgba(255,255,255,.10) 0%,rgba(255,255,255,.025) 40%,rgba(255,255,255,0) 65%),#0b0b0e;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.30),inset 0 0 0 1px rgba(255,255,255,.05);
   touch-action:none;cursor:grab}
+#joy-box::before{content:"";position:absolute;left:4px;top:4px;width:5px;height:5px;
+  background:linear-gradient(135deg,rgba(255,255,255,.26) 50%,rgba(255,255,255,0) 50%)}
+#joy-box::after{content:"";position:absolute;inset:8px;border-radius:50%;background:#000;
+  box-shadow:inset 0 1px 0 rgba(0,0,0,.95),0 1px 0 rgba(255,255,255,.08)}
 #joy-box:active{cursor:grabbing}
-
-/* Les trois ronds, empilés. Leur place est FIXE — c'est le relief qui
-   bouge, pas la géométrie. */
-/* Le manche porte les trois ronds et se déplace d'un bloc : c'est lui
-   qu'on tient. `--mx/--my` sont posés par le module de la manette. */
-#joy-stack{position:absolute;inset:0;
-  transform:translate(var(--mx,0px),var(--my,0px));
+/* Le manche se déplace d'un bloc : c'est lui qu'on tient. `--mx/--my` sont posés par le module « LA MANETTE ». */
+#joy-stack{position:absolute;inset:0;z-index:1;transform:translate(var(--mx,0px),var(--my,0px));
   transition:transform .26s cubic-bezier(.22,.9,.3,1)}
 #joy-box.tenu #joy-stack{transition:none}
-#joy-stack i{--d:13px;position:absolute;left:50%;display:block;
-  width:var(--d);height:var(--d);
-  margin:calc(var(--d) / -2) 0 0 calc(var(--d) / -2);
-  border-radius:50%;background:var(--c);
-  transform:scale(1);opacity:1;
-  /* ⚠️ ILS SE DÉTACHENT PAR L'OMBRE, JAMAIS PAR UN TRAIT. Le fond est
-     maintenant une couleur de marque PLEINE : deux couleurs de marque
-     l'une sur l'autre se distinguent par leur TEINTE (un rouge-violet
-     sur du navy se voit, même à luminance voisine), et l'ombre portée
-     fait le reste du travail en les décollant. */
-  box-shadow:0 2px 5px rgba(0,0,0,.6);
-  transition:transform .38s cubic-bezier(.22,.9,.3,1),
-             opacity .38s ease, box-shadow .38s ease}
-/* ⚠️ HAUT = OBJECTIFS, BAS = RÉPULSIONS — le même sens que les chevrons
-   et que `CROIX`. Un pavé qui inverserait le haut et le bas ferait
-   mentir le geste.
-   ⚠️ ET CE SONT DES TONS CLAIRS DES TROIS FAMILLES, pas les valeurs
-   pleines. Mesuré deux fois : navy #333366 sur un papier #2b2b57 est
-   invisible, et rouge-violet sur la tuile de la sagesse aussi. Chaque
-   rond s'éclaircit donc juste assez pour se lire sur les TROIS tuiles,
-   en gardant sa teinte — on reconnaît la famille, on voit le rond. */
-/* ⚠️ LE VRAI NAVY, PAS UN LAVANDE · 22/09/2026. Wah : « tu m'as enlevé
-   mon bleu navy au milieu ». Il avait raison : j'avais éclairci les
-   trois teintes pour qu'elles se lisent sur la tuile, et `--navy`
-   (#333366) était devenu #9a9ae8 — une couleur qui n'est nulle part
-   dans la charte. On ne corrige pas un problème de contraste en
-   inventant une couleur : **les ronds portent les valeurs de marque**,
-   et c'est la TUILE qui recule pour les faire ressortir. */
-#joy-stack .o{top:23%;--c:var(--blue)}   /* objectifs  — bleu clair    */
-#joy-stack .h{top:50%;--c:var(--navy)}   /* habitudes  — navy, le vrai */
-#joy-stack .r{top:77%;--c:var(--rep)}    /* répulsions — rouge-violet  */
-
-/* ══ LE ROND DE LA VUE COURANTE S'EFFACE · 22/09/2026 ═══════════════
-   ⚠️ C'EST LA CLÉ DE TOUT LE PAVÉ, et c'est ce que Wah décrit sans le
-   nommer : « dans la vue Habit c'est le bleu navy AVEC le point bleu
-   clair pour accéder aux objectifs et le point rouge pour les
-   répulsions ». Il cite deux points, pas trois. Le troisième — celui de
-   la vue où l'on est — n'a rien à dire : **la tuile le dit déjà**, et
-   elle le dit en grand.
-
-   Ça règle d'un coup le problème qui m'a fait tourner trois jours :
-   navy sur navy est invisible, donc j'éclaircissais le navy, donc Wah
-   me reprenait. Le rond qui posait problème n'avait simplement pas lieu
-   d'exister. Ce qui reste allumé, ce sont les DESTINATIONS — où je peux
-   aller d'ici — chacune dans sa couleur pleine de marque. */
-#joy-stack i.ici{opacity:0;transform:scale(.4)}
-/* Sur la sagesse et la vision, l'axe vertical N'EXISTE PAS : il n'y a ni
-   objectif ni répulsion là-bas. Les trois ronds s'effacent ensemble et
-   c'est la tuile qui dit où l'on est. En allumer un serait un mensonge —
-   règle posée le 18/09, elle tient toujours. */
-#joy-box.hors i{opacity:0;transform:scale(.4)}
-
-/* ══ CE QU'ON VISE S'ALLUME AVANT QU'ON LÂCHE · 22/09/2026 ══════════
-   Le manche tiré désigne une direction ; le chevron de ce côté passe au
-   blanc plein. C'est ce qui fait la différence entre « j'ai bougé un
-   objet » et « je suis en train de choisir » — on voit où l'on va avant
-   de partir, et on peut revenir au centre sans rien déclencher.
-   Le pavé ne déclenche QUE ce qui mène quelque part : depuis la sagesse,
-   tirer vers la gauche n'allume rien (voir `sens()`). */
-/* ⚠️ L'ÉTAT SE POSE SUR `#joy`, PAS SUR LA TUILE. Le combinateur `~` ne
-   regarde qu'EN AVANT, et `#cur-g` PRÉCÈDE `#joy-box` dans le balisage :
-   la règle n'aurait allumé que deux chevrons sur quatre, et seulement
-   par chance. Un état se pose sur le parent — c'est la grammaire du
-   fichier (`body.gate`, `#stage.v-h`) et ça ne dépend d'aucun ordre. */
-#joy.tenu #joy-box{box-shadow:0 5px 14px rgba(0,0,0,.65)}
+#joy-stack i{--d:22px;position:absolute;left:50%;top:50%;display:block;width:var(--d);height:var(--d);
+  margin:calc(var(--d) / -2) 0 0 calc(var(--d) / -2);border-radius:50%;
+  background:radial-gradient(circle,rgba(0,0,0,.34) 0 50%,rgba(0,0,0,0) 54%) var(--joy-vue,var(--navy));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.28);transition:background-color .42s ease}
+#joy.tenu #joy-stack i{background-image:radial-gradient(circle,rgba(0,0,0,.06) 0 50%,rgba(255,255,255,.16) 54%)}
+/* Ce qu'on vise s'allume avant qu'on lâche. L'état vit sur `#joy` : `#cur-g` PRÉCÈDE `#joy-box` dans le balisage,
+   et le combinateur `~` ne regarde qu'en avant. */
 #joy.vers-g #cur-g,
 #joy.vers-d #cur-d,
 #joy.vers-h #cur-h,
-#joy.vers-b #cur-b{opacity:1;transform:scale(1.3)}
-
-/* ⚠️ LE REPÈRE BLANC SUPPLÉMENTAIRE EST SUPPRIMÉ · 22/09/2026.
-   Il datait du 21/09, quand les trois ronds portaient les ÉPOQUES : il
-   fallait alors un deuxième objet pour dire la couche. Depuis que les
-   ronds SONT les couches, il répète ce qu'ils disent déjà — et il le
-   dit en BLANC, la seule couleur que Wah ne veut pas sur ce pavé.
-   Une information, un seul endroit. Le style ET la classe qui le posait
-   partent ensemble : on n'en garde pas la moitié. */
+#joy.vers-b #cur-b{color:#fff}
 
 /* ══ LES QUATRE CHEVRONS ═════════════════════════════════════════════
-   ⚠️ JAMAIS `display:none`. Un curseur sans voisin garde sa case et
-   s'éteint : c'est lui qui fait le cadre, et un cadre à trois côtés
-   n'est pas un cadre. */
+   ⚠️ JAMAIS `display:none` : un curseur sans voisin garde sa case (sinon le contrôleur se déplace). */
 .cur{background:none;border:none;padding:0;cursor:pointer;
   -webkit-tap-highlight-color:transparent;display:flex;
   align-items:center;justify-content:center;width:20px;height:20px;
-  opacity:.85;transition:opacity .2s ease,transform .18s ease}
-.cur.mort{opacity:.16;pointer-events:none;cursor:default}
-@media(hover:hover){.cur:not(.mort):hover{opacity:1}}
+  color:#8a8a92;transition:opacity .3s ease,color .2s ease}
+/* 25/10 — comme à l'atterrissage (`.lvn.is-mort`) : un chevron sans voisin s'efface, mais garde sa case. */
+.cur.mort{opacity:0;pointer-events:none;cursor:default}
+@media(hover:hover){.cur:not(.mort):hover{color:#fff}}
 .cur svg{width:14px;height:14px;display:block;
-  stroke:currentColor;fill:none;stroke-width:2.1;
+  stroke:currentColor;fill:none;stroke-width:1.6;
   stroke-linecap:round;stroke-linejoin:round}
-/* ⚠️ LES CHEVRONS SONT BLANCS. Colorés par famille, ils se battaient
-   avec les cinq ronds du pavé — deux langages de couleur sur trois
-   centimètres, et plus aucun des deux ne parlait. Blancs, ils ENCADRENT
-   et se taisent : c'est le pavé qui dit où l'on est. */
-.cur{color:#fff}
-@media(hover:hover){
-  #cur-g:not(.mort):hover{transform:translateX(-2px)}
-  #cur-d:not(.mort):hover{transform:translateX(2px)}
-  #cur-h:not(.mort):hover{transform:translateY(-2px)}
-  #cur-b:not(.mort):hover{transform:translateY(2px)}}
 
 /* ══ LE NOM DE LA VUE ════════════════════════════════════════════════
    ⚠️ 7 px à 72 % d'opacité, c'était une note de bas de page. Le nom de
@@ -4546,13 +4434,8 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
   <button class="cur" id="cur-g" type="button">
     <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 L5 8 L10 13"/></svg></button>
   <div id="joy-box" aria-hidden="true">
-    <!-- ⚠️ TROIS RONDS EMPILÉS = L'AXE EMPILÉ · 21/09/2026 bis.
-         Objectifs (bleu clair) · habitudes (navy) · répulsions
-         (rouge-violet), de haut en bas, dans le même sens que les
-         chevrons. J'avais d'abord mis le TEMPS là-dedans — sagesse,
-         habitudes, vision — ce qui revenait à dessiner l'horizontale à
-         la verticale. La tuile, elle, porte l'époque. -->
-    <div id="joy-stack"><i class="o"></i><i class="h"></i><i class="r"></i></div>
+    <!-- 25/10 : le socle de l'atterrissage ; le manche est UN chapeau, de la couleur de la vue. -->
+    <div id="joy-stack"><i></i></div>
   </div>
   <button class="cur" id="cur-d" type="button">
     <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3 L11 8 L6 13"/></svg></button>
@@ -7520,7 +7403,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-10-24-com-board';
+const BUILD='2026-10-25-com-manette';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -7632,81 +7515,18 @@ function paintZone(){
     if(dernierSens){ void nv.offsetWidth; nv.classList.add('f-'+dernierSens); dernierSens=null; }
   }
   /* ── LE JOYSTICK ──────────────────────────────────────────────────
-     Le carré porte l'axe du TEMPS (sa couleur), la pile porte l'axe de
-     la PROFONDEUR (sa position). Tout se peint ici, à chaque rendu. */
+     Le socle de l'atterrissage ; le chapeau du manche dit la vue (sa couleur). Tout se peint ici, à chaque rendu. */
   const jy=$('joy');
   if(jy){
     jy.className='sink-el v-'+view;
-    /* ⚠️ LE ROND ALLUMÉ EST CELUI DE LA VUE, et les deux autres ronds
-       de son AXE sont à mi-chemin. C'est ce qui montre où l'on peut
-       aller en plus de là où l'on est. */
-    /* ⚠️ L'AXE NE SE RECOPIE PAS, IL SE DÉDUIT DE `CROIX` · 19/09/2026.
-       Il y avait ici une seconde table écrite à la main qui disait la
-       même chose que la croix — et qui a cessé de la dire à la minute
-       où la croix s'est élargie : depuis les objectifs on pouvait
-       partir à gauche, mais les ronds de la sagesse et de la vision
-       restaient éteints. Deux tables qui doivent s'accorder finissent
-       toujours par ne plus s'accorder. Une seule, maintenant : le pad
-       allume ce vers quoi on peut réellement aller. */
-    /* ⚠️ TROIS RONDS POUR TROIS ÉPOQUES, PAS CINQ POUR CINQ VUES
-       · 20/09/2026. Le rond allumé est celui de l'ÉPOQUE où l'on se
-       trouve. Les objectifs et les répulsions sont le présent au même
-       titre que les habitudes : ils allument le navy. Ce qui les
-       distingue est écrit en toutes lettres à gauche, et montré par les
-       chevrons haut et bas. */
-    /* ⚠️ DEUX AXES, DEUX LANGAGES, ET AUCUN NE RÉPÈTE L'AUTRE.
-       La TUILE porte l'époque (le swipe horizontal la repeint) ; les
-       trois RONDS portent la couche (le swipe vertical allume l'un
-       d'eux). C'est ce que Wah appelle « la logique de défilement reste
-       la même » : on n'a pas changé le geste, on a remis chaque
-       information sur son axe. */
-    /* ⚠️ LA TUILE PORTE LA COULEUR DE LA VUE — LES 3, TOUJOURS
-       · 22/09/2026. « Je t'ai déjà demandé 100 fois à ce que dans le
-       curseur ce soit TOUJOURS les 3 couleurs. Dans la vue WISDOM c'est
-       total rouge-violet, dans la vue Habit c'est le bleu navy avec le
-       point bleu clair pour accéder aux objectifs et le point rouge en
-       ce qui concerne les répulsions, et quand c'est la vue Objective
-       le curseur devient bleu clair. »
-
-       J'avais mis l'ÉPOQUE sur la tuile (passé/présent/futur). C'est un
-       quatrième langage, et il n'y a que trois couleurs dans la marque.
-       La tuile dit maintenant LA VUE, dans sa propre couleur :
-
-         habitudes            navy
-         objectifs · visions  bleu clair
-         répulsions · sagesse rouge-violet
-
-       ⚠️ ET LE ROND DE LA VUE COURANTE S'EFFACE. C'est la conséquence
-       directe, et c'est ce que Wah décrit sans le nommer : il cite le
-       point bleu clair et le point rouge, jamais un point navy au
-       milieu. La tuile EST la vue ; un rond qui la répète est un rond
-       de trop — et navy sur navy est invisible, mesuré deux fois.
-       Ce qui reste allumé, ce sont les DESTINATIONS : où je peux aller
-       depuis ici, chacune dans sa couleur pleine. */
+    /* 25/10 — le chapeau du manche porte la couleur de la vue (le socle, lui, reste le socle) :
+       habitudes navy · objectifs, visions bleu clair · répulsions, sagesse rouge-violet. */
     const TEINTE={habits:'--navy', objectives:'--blue', repulsions:'--rep',
                   wisdom:'--rep',  visions:'--blue'};
-    /* ⚠️ UNE SEULE VARIABLE, ET C'EST LE FOND. Il y avait une tuile
-       sombre PLUS un anneau de couleur : deux objets pour dire une
-       seule chose, et l'anneau se lisait comme une bordure. */
     jy.style.setProperty('--joy-vue', 'var('+(TEINTE[view]||'--navy')+')');
-
-    /* La couche où l'on se trouve. Sur la sagesse et la vision il n'y en
-       a pas : l'axe vertical n'existe pas là-bas. */
-    const COUCHE={objectives:'o', habits:'h', repulsions:'r'};
-    const ici=COUCHE[view]||null;
-    ['o','h','r'].forEach(k=>{
-      const e=jy.querySelector('#joy-stack .'+k); if(!e)return;
-      /* `.ici` = la vue courante : le rond s'efface, la tuile le dit.
-         `.mort` = pas de voisin de ce côté (sagesse, vision). */
-      e.className = k + (k===ici ? ' ici' : '');
-    });
-    const bx=$('joy-box');
-    if(bx) bx.className = ici ? '' : 'hors';
   }
-  /* ⚠️ ON N'EN CACHE AUCUN. Un curseur sans voisin garde sa case et
-     s'éteint (`.mort`) : c'est lui qui fait le CADRE autour du carré, et
-     un cadre à trois côtés n'est pas un cadre. Le cacher retirait sa
-     case de la grille et tout le contrôleur se déplaçait. */
+  /* ⚠️ ON N'EN RETIRE AUCUN. Un curseur sans voisin garde sa case et s'efface (`.mort`, comme `.lvn.is-mort` à
+     l'atterrissage) : le retirer de la grille déplaçait tout le contrôleur. */
   [['cur-g','g'],['cur-d','d'],['cur-h','h'],['cur-b','b']].forEach(([id,d])=>{
     const b=$(id); if(!b)return;
     const cible=(CROIX[view]||{})[d]||null;
@@ -9857,8 +9677,9 @@ const navRight=()=>{ if(navBlocked())return; versVoisin('d'); };
   const jy=$('joy'), bx=$('joy-box'), st=$('joy-stack');
   if(!jy||!bx||!st) return;          /* absent des jumeaux : on sort */
 
-  const RAYON=15;                    /* jusqu'où le manche se laisse tirer */
-  const SEUIL=9;                     /* au-delà, on part                   */
+  /* 25/10 : le petit socle de l'atterrissage, donc ses mesures (`manetteLV`). */
+  const RAYON=10;                    /* jusqu'où le manche se laisse tirer */
+  const SEUIL=6;                     /* au-delà, on part                   */
   let id=null, x0=0, y0=0, dx=0, dy=0;
 
   const pose=(a,b)=>{ st.style.setProperty('--mx',a.toFixed(1)+'px');
