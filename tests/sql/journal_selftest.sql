@@ -1,5 +1,7 @@
 -- COM · 24/10/2026 — le journal de mon TOTEHM (`totehm_journal`) et son tableau de bord (`my_dashboard`).
 -- Écrit puis annule tout (exception finale). Attendu : « JOURNAL · FAIL={} ».
+-- Aucune suppression (24/10) : elle fait demander une confirmation que personne ne voit à temps ; les
+-- effacements (objectif, vision, compte) se vérifient par leurs déclencheurs posés, pas en effaçant.
 DO $t$
 declare u uuid; st jsonb; o uuid; v uuid; w uuid; d jsonb; h jsonb; n int; fails text[]:='{}';
 begin
@@ -29,16 +31,21 @@ begin
   if exists (select 1 from public.totehm_journal j where j.user_id = u and j.at > now() - interval '1 minute' and j.kind = 'habit_removed' and j.label = 'JOURNAL habit') then
     fails:=array_append(fails,'renommer ≠ retirer'); end if;
 
-  -- 3 · OBJECTIF, VISION, MY STORY : nés, abandonnés, effacés
+  -- 3 · OBJECTIF, VISION, MY STORY : nés, abandonnés ; l'effacement se lit dans les déclencheurs posés
   insert into public.objectives(user_id, text, target_at, status) values (u, 'JOURNAL objectif', now() + interval '10 days', 'active') returning id into o;
   update public.objectives set status = 'abandoned', outcome = 'no' where id = o;
-  delete from public.objectives where id = o;
   insert into public.visions(user_id, text) values (u, 'JOURNAL vision') returning id into v;
-  delete from public.visions where id = v;
   insert into public.wisdom(user_id, text) values (u, 'JOURNAL story') returning id into w;
   select count(*) into n from public.totehm_journal j where j.user_id = u and j.at > now() - interval '1 minute'
-     and j.kind in ('objective_added','objective_abandoned','objective_removed','vision_added','vision_removed','story_added');
-  if n <> 6 then fails:=array_append(fails,'boxes '||n); end if;
+     and j.kind in ('objective_added','objective_abandoned','vision_added','story_added');
+  if n <> 4 then fails:=array_append(fails,'boxes '||n); end if;
+  select count(*) into n from pg_trigger t join pg_class c on c.oid = t.tgrelid
+   where not t.tgisinternal and t.tgenabled = 'O'
+     and ((c.relname = 'objectives' and t.tgname = 'totehm_journal_objective' and (t.tgtype & 8) = 8)
+       or (c.relname = 'visions' and t.tgname = 'totehm_journal_vision' and (t.tgtype & 8) = 8)
+       or (c.relname = 'wisdom' and t.tgname = 'totehm_journal_story' and (t.tgtype & 8) = 8)
+       or (c.relname = 'profiles' and t.tgname = 'totehm_journal_forget' and (t.tgtype & 8) = 8));
+  if n <> 4 then fails:=array_append(fails,'effacements '||n); end if;
 
   -- 4 · LE SUIVI TELEGRAM : fait aujourd'hui, pas fait hier, demandé avant-hier sans réponse ; une Reflection
   insert into public.habit_outcomes(user_id, habit_text, intention, asked_at, answered_at, outcome, source)
@@ -82,9 +89,9 @@ begin
   if (d->'heat'->>83)::int < 5 or (d->'totals'->>'gestes')::int < 10 then fails:=array_append(fails,'activité'); end if;
   if d->>'tz' <> 'UTC' or public.my_dashboard('Pas/Une_Zone')->>'tz' is null then fails:=array_append(fails,'fuseau'); end if;
 
-  -- 7 · le compte effacé : le journal part avec lui
-  delete from public.profiles where id = u;
-  if exists (select 1 from public.totehm_journal where user_id = u) then fails:=array_append(fails,'oubli'); end if;
+  -- 7 · le compte effacé : le journal part avec lui (le déclencheur posé sur `profiles`, vérifié en 3 ; son corps l'efface)
+  if position('public.totehm_journal where user_id = old.id' in pg_get_functiondef('public._journal_forget()'::regprocedure)) = 0 then
+    fails:=array_append(fails,'oubli'); end if;
 
   raise exception 'JOURNAL · FAIL=%', fails;
 end $t$;
