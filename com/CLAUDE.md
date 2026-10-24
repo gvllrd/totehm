@@ -41,7 +41,7 @@ Diagnostics : `__totehm_lv()` (`.refus` : pourquoi un geste est refusé ; à l'�
 - `FREQS` (page) = `_freq_minutes` (base) : identiques.
 - Ne jamais redéfinir `--perfo` (une seconde définition l'écrase en silence).
 - Un verrou de navigation se rend toujours ; un geste reçu pendant un voyage OU le repli du TOTEHM attend sa fin (`guetter`,
-  1,5 s au plus). Tout geste de navigation est un MANCHE : il va où il pousse (doigt, trackpad, souris, manette, papier),
+  1,5 s au plus). Tout geste de navigation est un MANCHE (il va où il pousse : doigt, trackpad, souris, manette, papier) SAUF dans la liste du TOTEHM déployé (`#fv-inner`) : là il suit le défilement (plus bas que le bas → la vue du dessous) ;
   et il POUSSE le manche à l'écran — `POUSSE_JOY` (app), `POUSSE_LVJ` (atterrissage) : 240 ms, puis retour au centre ;
   la main posée sur la manette commande seule (`DU_MANCHE`, `DU_LVJ`). Trackpad : un geste ET son inertie = UNE vue (le
   verrou se prolonge tant que l'inertie dure : atterrissage, manette, liste — sinon deux vues d'un geste, mesuré).

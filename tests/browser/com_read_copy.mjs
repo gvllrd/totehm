@@ -61,6 +61,22 @@ try{
   ok(mx<0&&Math.abs(mz)<0.5,'24/10 · le trackpad pousse le manche vers sa vue, puis il revient au centre ('+mx+' → '+mz+')');
   ok(!erreurs(log).length&&!log.rpc.some(x=>/rename|_create|_set|_delete|totehm_save/.test(x.name)),'lecture : aucune écriture sur le Totehm lu, aucune erreur');await pg.context().close();
  }
+ /* ── 3 ter · 25/10 (Wah : « les scroll des listes sur l'axe vertical, c'est inversé ») : au DOIGT, dans la liste, le geste suit le
+    défilement ; la manette reste un manche ── */
+ {const {pg,ctx}=await page(browser,{dir:'com',origin,rpc,tables:{profiles:[{pseudo:'wah'}]},viewport:{width:390,height:844},hasTouch:true});
+  await pg.goto(origin+'/totehm?ro=studio');await pg.waitForSelector('body.ro:not(.gate)');await pg.waitForTimeout(900);
+  const cdp=await ctx.newCDPSession(pg);
+  const vue=()=>pg.$eval('#joy',e=>(e.className.match(/v-(\w+)/)||[])[1]);
+  const glisse=async(sel,dy)=>{const p=await pg.$eval(sel,e=>{const r=e.getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2};});const a=await vue();
+    await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:p.x,y:p.y}]});
+    for(let i=1;i<=8;i++){await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:p.x,y:p.y+dy*i/8}]});await pg.waitForTimeout(16);}
+    await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await pg.waitForTimeout(900);return a+'>'+await vue();};
+  const liste=[await glisse('#fv-inner',-160),await glisse('#fv-inner',160),await glisse('#fv-inner',160),await glisse('#fv-inner',-160)];
+  ok(liste.join(' | ')==='habits>repulsions | repulsions>habits | habits>objectives | objectives>habits','25/10 · au doigt, dans la liste : plus bas que le bas → les répulsions, plus haut que le haut → les objectifs → '+liste.join(' | '));
+  const manche=[await glisse('#joy-box',-30),await glisse('#joy-box',30),await glisse('#joy-box',30),await glisse('#joy-box',-30)];
+  ok(manche.join(' | ')==='habits>objectives | objectives>habits | habits>repulsions | repulsions>habits','25/10 · au doigt, la manette reste un manche (tirée vers le haut → la vue du haut) → '+manche.join(' | '));
+  await ctx.close();
+ }
  /* ── 3 bis · 25/10 (Wah : « remonte-la ») : sur ordinateur, même sur un écran bas, la manette tient dans la bande noire sous le carré ── */
  {const {pg}=await page(browser,{dir:'com',origin,rpc,tables:{profiles:[{pseudo:'wah'}]},viewport:{width:1280,height:800}});
   await pg.goto(origin+'/totehm?ro=studio');await pg.waitForSelector('body.ro:not(.gate)');await pg.waitForTimeout(600);
@@ -70,14 +86,17 @@ try{
   /* 25/10 (Wah : « le joystick ne marche pas bien pour l'axe vertical ») : un geste de trackpad ET son inertie (≈ 1 s)
      faisaient sauter deux vues. 8 événements « doigt » de 30 px, puis 40 d'inertie qui décroissent. */
   const vue=()=>pg.$eval('#joy',e=>(e.className.match(/v-(\w+)/)||[])[1]);
-  const geste=async(sur,signe)=>{const p=sur==='joy'?await pg.$eval('#joy-box',e=>{const r=e.getBoundingClientRect();return [r.x+r.width/2,r.y+r.height/2];}):[640,400];
+  const geste=async(sur,signe)=>{const p=sur==='dehors'?[60,400]:await pg.$eval(sur==='joy'?'#joy-box':'#fv-inner',e=>{const r=e.getBoundingClientRect();return [r.x+r.width/2,r.y+r.height/2];});
     await pg.mouse.move(p[0],p[1]);const vus=[await vue()];
     for(let i=0;i<48;i++){await pg.mouse.wheel(0,signe*(i<8?30:Math.max(1,Math.round(30*Math.pow(.93,i-8)))));await pg.waitForTimeout(16);
       const v=await vue();if(v!==vus[vus.length-1])vus.push(v);}
     await pg.waitForTimeout(700);return vus.join('>');};
-  const parcours=[];for(const sur of ['joy','liste'])for(const s of [1,-1,-1,1])parcours.push(await geste(sur,s));
-  const attendu='habits>objectives | objectives>habits | habits>repulsions | repulsions>habits';
-  ok(parcours.join(' | ')===attendu+' | '+attendu,'25/10 · au trackpad, un geste (inertie comprise) = UNE vue, sur la manette comme sur la liste → '+parcours.join(' | '));
+  const parcours={};for(const sur of ['joy','dehors','liste']){parcours[sur]=[];for(const s of [1,-1,-1,1])parcours[sur].push(await geste(sur,s));}
+  const manche='habits>objectives | objectives>habits | habits>repulsions | repulsions>habits';
+  ok(parcours.joy.join(' | ')===manche&&parcours.dehors.join(' | ')===manche,'25/10 · au trackpad, un geste (inertie comprise) = UNE vue ; sur la manette et hors de la liste, un manche (deux doigts vers le haut → la vue du haut) → '+parcours.joy.join(' | ')+' // '+parcours.dehors.join(' | '));
+  /* 25/10 (Wah : « les scroll des listes sur l'axe vertical, c'est inversé ») : DANS la liste, le geste suit le défilement —
+     plus bas que le bas des habitudes → les répulsions, plus haut que le haut → les objectifs. */
+  ok(parcours.liste.join(' | ')==='habits>repulsions | repulsions>habits | habits>objectives | objectives>habits','25/10 · dans la liste, le geste suit le défilement → '+parcours.liste.join(' | '));
   await pg.context().close();
  }
  /* ── 4 · l'espace membre (07/10) : plein écran, c'est l'utilisateur ; les boutons de higher.boutique ── */

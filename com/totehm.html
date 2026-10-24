@@ -7406,7 +7406,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-10-25-com-manette';
+const BUILD='2026-10-25-com-listes';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -9471,11 +9471,12 @@ function bordCalme(sens){
 let y0=0,axis=null,t0el=null,x0=0,bordAuDepart={h:false,b:false};
 /* ⚠️ ON NOTE SI LE DOIGT A COMMENCÉ AU BORD. Un doigt qui part du milieu
    de la liste et finit au bord est en train de DÉFILER ; il ne navigue
-   pas, même s'il termine sa course en butée. */
-window.addEventListener('touchstart',(e)=>{x0=e.changedTouches[0].screenX;y0=e.changedTouches[0].screenY;
+   pas, même s'il termine sa course en butée.
+   25/10 : coordonnées `client`, pas `screen` (un écran tactile simulé laisse `screenY` à 0 : rien n'était mesurable). */
+window.addEventListener('touchstart',(e)=>{x0=e.changedTouches[0].clientX;y0=e.changedTouches[0].clientY;
   axis=null;t0el=e.target;
   bordAuDepart = {h:bordCalme('h'), b:bordCalme('b')};},{passive:true});
-window.addEventListener('touchmove',(e)=>{if(axis)return;const dx=e.changedTouches[0].screenX-x0,dy=e.changedTouches[0].screenY-y0;if(Math.abs(dx)>8||Math.abs(dy)>8)axis=Math.abs(dx)>Math.abs(dy)?'h':'v';},{passive:true});
+window.addEventListener('touchmove',(e)=>{if(axis)return;const dx=e.changedTouches[0].clientX-x0,dy=e.changedTouches[0].clientY-y0;if(Math.abs(dx)>8||Math.abs(dy)>8)axis=Math.abs(dx)>Math.abs(dy)?'h':'v';},{passive:true});
 window.addEventListener('touchend',(e)=>{
   if(fpOpen())return;
   /* On ne bloque QUE ce qui capture vraiment le geste : les fenêtres
@@ -9517,9 +9518,9 @@ window.addEventListener('touchend',(e)=>{
      Ce qu'il faut vraiment bloquer, c'est une BOÎTE OUVERTE — et c'est
      déjà `setView` qui s'en charge : une vue qui bouge sous les doigts
      perd la saisie. Une seule règle, un seul endroit. */
-  const dy=e.changedTouches[0].screenY-y0;const TH=32;
+  const dy=e.changedTouches[0].clientY-y0;const TH=32;
   if(axis==='h'){
-    const dx=e.changedTouches[0].screenX-x0;
+    const dx=e.changedTouches[0].clientX-x0;
     if(Math.abs(dx)<TH)return;
     /* 22/10 — LE GESTE EST UN MANCHE (Wah : « tous les mouvements sont
        inversés, réfléchis en terme de joystick ») : glisser vers la GAUCHE
@@ -9533,16 +9534,19 @@ window.addEventListener('touchend',(e)=>{
      Un geste vertical libre entrerait en concurrence avec le défilement
      de la liste — c'est exactement ce qui avait « buggé le filtre » et
      fait retirer le vertical la première fois.
-     Ici il ne se déclenche QUE lorsque la liste ne peut plus défiler, et
-     le geste qu'elle ne prend plus est un MANCHE (22/10) : en butée
-     basse, pousser vers le haut monte aux objectifs ; en butée haute,
-     tirer vers le bas descend aux répulsions. */
+     Ici il ne se déclenche QUE lorsque la liste ne peut plus défiler.
+     ⚠️ 25/10 — DANS LA LISTE, LE GESTE SUIT LE DÉFILEMENT (Wah : « les scroll des listes sur l'axe vertical, c'est
+     inversé… les mouvements joystick marchent seulement en dehors des listes ») : au bout de mes habitudes, je
+     continue de descendre et j'arrive aux répulsions (en dessous) ; en haut, je continue de monter et j'arrive aux
+     objectifs (au-dessus). HORS de la liste, le geste reste un MANCHE (22/10) : vers le haut, la vue du haut. */
   /* 110 px, et le doigt devait DÉJÀ être au bord quand il s'est posé.
      Trois conditions au lieu d'une : la liste en butée, la butée
      ancienne, et une traction franche. */
+  const dansListe=!!(t0el&&t0el.closest&&t0el.closest('#fv-inner'));
+  if(!dansListe){ if(Math.abs(dy)>=60) versVoisin(dy<0?'h':'b'); return; }
   if(Math.abs(dy)<110)return;
-  if(dy<0 && bordAuDepart.b && bordCalme('b'))      versVoisin('h');
-  else if(dy>0 && bordAuDepart.h && bordCalme('h')) versVoisin('b');
+  if(dy<0 && bordAuDepart.b && bordCalme('b'))      versVoisin('b');
+  else if(dy>0 && bordAuDepart.h && bordCalme('h')) versVoisin('h');
 },{passive:true});
 /* ══ LE TRACKPAD FAIT CE QUE FAIT LE POUCE · 09/09/2026 ══════════════
    La molette VERTICALE ne pilote toujours rien — c'est la règle qui a
@@ -9575,6 +9579,8 @@ window.addEventListener('touchend',(e)=>{
          donc une seconde vue d'un seul geste (mesuré : objectifs → habitudes → répulsions). */
       { const n=Date.now(); if(n<froid){ froid=Math.max(froid,n+260); accV=0; tV=n; return; } }
       const versLeBas=e.deltaY>0;
+      /* 25/10 — dans la liste, le geste suit le défilement ; hors de la liste, c'est un manche (voir le doigt). */
+      const dansListe=!!(e.target&&e.target.closest&&e.target.closest('#fv-inner'));
       /* ⚠️ `bordCalme` ET PAS `scrollEdges` : il faut que la liste soit
          en butée depuis un instant, pas seulement à l'instant même. */
       /* ⚠️ L'HORLOGE SE MET À JOUR À CHAQUE ÉVÉNEMENT, AVANT TOUT TEST.
@@ -9592,7 +9598,7 @@ window.addEventListener('touchend',(e)=>{
          ceux de l'horizontale : la liste ne peut plus défiler dans ce sens,
          et c'est un NOUVEAU geste (le trou de 200 ms) de 130 px. */
       const b0=scrollEdges();
-      if(!(versLeBas?b0.bottom:b0.top)){accV=0;neuf=false;return;}
+      if(dansListe&&!(versLeBas?b0.bottom:b0.top)){accV=0;neuf=false;return;}
       /* ⚠️ ET SURTOUT : IL FAUT QUE LA MOLETTE SE SOIT ARRÊTÉE.
          Un trackpad à inertie envoie des événements pendant une seconde
          et demie après que le doigt a quitté la surface — bien au-delà
@@ -9608,7 +9614,8 @@ window.addEventListener('touchend',(e)=>{
       accV+=e.deltaY;
       /* 130 px accumulés, comme l'horizontale : une traction, pas une fin de course. */
       if(Math.abs(accV)<130)return;
-      const cible=versLeBas?'h':'b';   /* 22/10 : un manche — deux doigts vers le haut, la vue du haut */
+      /* Dans la liste : plus bas que le bas → la vue du dessous. Hors de la liste : deux doigts vers le haut → celle du haut. */
+      const cible=dansListe ? (versLeBas?'b':'h') : (versLeBas?'h':'b');
       accV=0; neuf=false; froid=Date.now()+900;
       versVoisin(cible);
       return;
