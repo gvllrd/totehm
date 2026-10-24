@@ -2,18 +2,18 @@
 
 > L’état actuel (≤ 60 lignes). On y travaille à la demande de Wah. Les mesures de livraison vivent dans les commits.
 
-Le dernier temple au sommet d’une Terre engloutie : océan à 360°, houles monumentales sous une nuit permanente.
-La terrasse en calçada de Lisbonne porte trois grandes portes sans étiquette au-dessus, face à l’océan ; aucune colonne, toit ou végétation.
-Les trois portes ouvrent leurs pages indépendantes : `/get_higher`, `/origins`, `/play_lisbon_street`.
-La porte TotehmPaper montre de nombreux papiers originaux perforés suspendus ; celle de Lisbon ses panneaux flottants.
+Une petite galerie contemporaine vit au sommet d’une Terre engloutie, sur la calçada de Lisbonne, face à l’océan sous la Voie lactée.
+La bouche originale orne la devanture noire vitrée. Dedans : comptoir THP en face, livre Origins à gauche, salon Lisbon à droite.
+Les trois installations sont manipulables sur place ; les pages indépendantes et toute la marketplace restent disponibles.
 
 | fichier | rôle |
 |---|---|
-| `index.html` · `gallery-ui.mjs` · `gallery.css` | entrée, portes, panoramas, liste accessible et SSO existant |
-| `gallery-3d.mjs` · `gallery-temple-navigation.mjs` | caméra, guidage, clavier/sol/joystick, passage vers les pages |
-| `gallery-temple.mjs` | terrasse pavée PBR et trois portes monumentales indépendantes |
+| `index.html` · `gallery-ui.mjs` · `gallery.css` | entrée, commandes des installations, panoramas, liste accessible et SSO existant |
+| `gallery-spatial.mjs` · `gallery-modern-navigation.mjs` · `gallery-modern-layout.mjs` | caméra, parcours autour des meubles, collisions, saut et plafond/toit |
+| `gallery-modern.mjs` | pavillon noir/vitré, bouche originale, comptoir de papiers perforés, canapé et tables |
+| `gallery-origins-book.mjs` · `gallery-play-installation.mjs` | livre de 10 doubles pages et manette de 22 panneaux commandant les clips publics sur l’écran 3D |
+| `gallery-3d.mjs` · `gallery-temple*.mjs` | ancien temple et portes conservés ; paysage et pierre partagés avec la galerie |
 | `gallery-lisbon-pavement.mjs` | calçada noir/blanc : vagues Mar Largo et caravelle en médaillon, joints et relief des mêmes pavés |
-| `gallery-temple-layout.mjs` · `gallery-temple-physics.mjs` | dimensions partagées, saut balistique au sol et collisions des arches |
 | `gallery-temple-landscape.mjs` | seul piton émergé, lune, pierre éclairée et environnement nocturne préfiltré |
 | `gallery-drowned-ocean.mjs` | océan 3D à 360°, fronts irréguliers recourbés dans la surface, creux sombres, reflets lunaires et embruns |
 | `gallery-ocean-foam.mjs` | mémoire d’écume GPU : naissance par compression, advection, drainage et dissipation |
@@ -27,7 +27,7 @@ La porte TotehmPaper montre de nombreux papiers originaux perforés suspendus ; 
 | `market.html` | marketplace complète : achats primaires, revente, propriétaires, provenance et ma collection |
 | `social.html` · `api/card.js` | lecteur ouvert par COM `/x/space` · aperçu `/s/:id` |
 | `assets/ocean/` | deux cartes originales 1024² : normales Fourier et écume cellulaire, données linéaires avec mipmaps ; provenance dans LICENSE.txt |
-| `vendor/` · `assets/` | Three.js/HLS, textures de pierre et vrais médias |
+| `vendor/` · `assets/` | Three.js/HLS, textures et vrais médias ; `assets/gallery/book-origins/` : 20 tirages originaux, sources dans LICENSE.txt |
 
 - Nuit permanente : arche galactique relevée, filaments lumineux et poussières opaques ; 18 000 / 8 500 étoiles aux cœurs fins et halos discrets, quatre températures, lune à 34 cratères. PMREM issu du ciel local, sans panorama/HDR externe.
 - Météore en ruban de 62 triangles : passage effilé de 1,15 s toutes les 47 s, sur la même horloge que le ciel ; aucun défilement autonome en mouvement réduit.
@@ -38,15 +38,18 @@ La porte TotehmPaper montre de nombreux papiers originaux perforés suspendus ; 
 - Brume : 80 / 40 ellipsoïdes sur les crêtes, 160 / 80 triangles de support, cinq échantillons de densité par rayon ; éclairage lunaire et profondeur réelle du volume, opacité ≤ 0,13, sommet borné sous −3,72 m. Aucun fichier externe ni texture propre.
 - Mer courbée sur le globe de rayon 6 500 m : le déplacement Gerstner recourbe les fronts du même maillage, avec leurs tangentes exactes, eau sombre et transmission fine. En hauteur, les continents restent sous une seule mer.
 - Écume persistante sur deux cibles 256² / 128² à 30 / 20 Hz : densité RG16, âge et naissance ; dissipation de 7,8 s, dentelle fine et sillages entraînés par le vent. Sans cartes ou sans rendu GPU, secours local ; état du moteur restauré après chaque passe.
-- Arches à 12,024 m avec leurs biseaux, ouvertures de 4,5 × 10,725 m ; aucun panneau, support, texture de titre ou objet cliquable au-dessus.
-- Terrasse libre hors des vraies pierres ; aucune collision des anciens bacs ou colonnes. Portes en x=−9/0/9, z=−12 ; limites de plateforme conservées.
-- Espace ou bouton Jump : envol de 18 000 m en 14 s aller-retour simulées, réception au sol ; aucune relance en l’air. Les arches restent solides.
-- Le guidage, le mode réduit et le cache arrière préservent altitude et vitesse. Une entrée demandée en l’air attend la réception au sol ; pause réelle en liste/onglet masqué.
-- Marche 2,6 m/s, guidage doux 1 450–4 200 ms. Choisir une porte approche ; entrer/franchir lance sa page après le souffle/FOV de 800 ms.
-- Vent et mer après un geste réel, grave des portes atténué par la hauteur ; au-delà de 3 000 m, onde méditative. Bouton muet/préférence conservés ; liste/masqué/blur suspendent le son.
+- La galerie mesure 26 × 15 m, entrée centrale de 4,8 m, verrière à 6,2 m. Aucune colonne ni végétation ; les baies révèlent l’océan.
+- Le comptoir expose 6 feuilles de 12 THP et 5 papiers détachés, en utilisant le dessin perforé original, sans prix local.
+- Livre physique : Origins 01–20 dans l’ordre exact, 10 doubles pages, vue de lecture, pages animées et bornes sans boucle ; tirages des vidéos publiques et cache limité.
+- Manette : les 22 vrais PNG à leurs coordonnées originales ; un clic choisit le clip public correspondant, flèches choisissent, Entrée lance, Espace pause.
+- Écran CanvasTexture 3D à 15 Hz pendant la lecture ; aucune lecture automatique. Liste/masqué/blur/départ du salon mettent en pause, sans reprise automatique.
+- Marche 2,6 m/s, guidage 1 450–4 200 ms autour des murs et meubles. Les trois boutons conduisent aux installations, sans changer de page.
+- Espace ou Jump : envol extérieur de 18 000 m en 14 s simulées ; plafond, murs, mobilier et toit solides. Aucune relance en l’air.
+- Guidage/réduction/cache arrière préservent altitude et vitesse ; une visite demandée en l’air attend le retour sur la terrasse avant d’entrer.
+- Vent et mer après un geste réel, grave à l’approche de l’entrée, atténué par la hauteur ; au-delà de 3 000 m, onde méditative. Bouton muet/préférence conservés ; liste/masqué/blur suspendent le son.
 - Au sommet, cadrage doux du globe entier et 1 600 / 720 points stellaires proches ; glisser reprend la vue. Mouvement réduit : décor figé, guidage horizontal immédiat, saut intentionnel sans recadrage/FOV. Sans WebGL, liens HTML.
-- Les expériences gardent leurs propres fichiers et clients SSO. Aucune vidéo privée ou lecteur de paiement intégré au temple.
+- Les expériences gardent leurs fichiers et clients SSO ; seuls les photos et clips publics sont montrés sur place. Collect mène au marché serveur existant.
 - Le marché reste autonome, y compris après Stripe. Prix, stock et accès du serveur, propriété au webhook ; aucun changement SQL/Edge/tarif.
-- Menu Market et My collection, offres de chaque porte et cartes des vingt Origins conservent leurs routes absolues existantes.
+- Market, My collection, Collect et Full experience gardent leurs routes absolues existantes ; les anciens modules et pages sont conservés.
 
-Tests : `tests/browser/gallery_ocean.mjs`, `gallery_temple_restored.mjs`, `gallery_audio.mjs`, `market.mjs`, `tests/node/temple_navigation.mjs`, `temple_physics.mjs`.
+Tests : `tests/browser/gallery_modern.mjs` · `tests/node/modern_navigation.mjs` ; mer/ciel/pavés et pages indépendantes préservés.
