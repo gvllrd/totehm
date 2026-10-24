@@ -51,7 +51,7 @@ mes abonnements) · **Monetize** (*and get paid every month*) ; puis DELETE MY T
 → **les spots** (MAP ou GRID ; un spot ouvert : son image telle quelle, ses infos, sa box en bas — comme à gauche) · ↓ **Higher Self** (les traits se replient en l'anneau du profil ; j'arrive, je tape,
 mon Higher Self répond : un miroir de MON TOTEHM — la step est une de mes Habits redite avec son where, son intention, son son ;
 avec Higher, un lieu réel près de moi sous la step (GO, SPOT IT) ; quelques réponses offertes, puis l'abonnement Higher). Chercher un membre : le papier se retourne, on tape son nom, on entre chez lui.
-On navigue comme avec un MANCHE : le geste va où il pousse (vers le haut, la vue du haut), au doigt, au trackpad, à la souris.
+On navigue comme avec un MANCHE : le geste va où il pousse (vers le haut, la vue du haut), au doigt, au trackpad, à la souris ; la manette est ronde, de la couleur de la vue où je suis, ses ronds disent où aller.
 
 **Confidentialité par box**, trois niveaux : PRIVATE · FIGHER CLUB (un membre : une habit, un objectif, une
 répulsion) · MY SUBSCRIBERS. Un lieu : ON = le point exact, OFF = la ville.

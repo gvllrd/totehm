@@ -3200,7 +3200,7 @@ body.lv-d #lv-proc,body.lv-d #lv-slogan{opacity:0}
    ⚠️ `position:absolute` (et non `fixed`) : les chevrons vivaient déjà ainsi dans `#gate`, et
    c'est ce qui garantit qu'ils disparaissent avec lui quand le Totehm se déplie. */
 #lvjoy{position:absolute;left:50%;bottom:var(--lvj-b);z-index:34;transform:translateX(-50%);
-  display:grid;grid-template-columns:26px 48px 26px;grid-template-rows:26px 48px 26px;gap:4px;
+  display:grid;grid-template-columns:26px 52px 26px;grid-template-rows:26px 52px 26px;gap:4px;
   align-items:center;justify-items:center;pointer-events:none}
 /* 20/10 septies — Wah : « pas besoin d'entourer les indicateurs de direction avec des boîtes grises » : les chevrons
    sont nus, gris, blancs au survol et quand le manche les vise. */
@@ -3216,28 +3216,28 @@ body.lv-d #lv-proc,body.lv-d #lv-slogan{opacity:0}
 .lvn-x{width:26px;height:48px}
 .lvn.is-mort{opacity:0;pointer-events:none}
 .lvn:focus-visible{outline:1px solid #fff;outline-offset:3px}
-/* ⚠️ 20/10 septies — LA MANETTE EST UN PETIT SOCLE (Wah : « un curseur dans le même style que le socle du Totehm de la
-   vue centrale, un genre de joystick PlayStation en plus minimaliste »). La base = LE SOCLE en miniature : le même
-   verre (reflet en biais, arête claire en haut), carrée — une boîte reste carrée —, la marque de la broche 1 dans
-   un coin ; au centre un puits ROND, noir ; dans le puits, LE MANCHE : un chapeau navy (le papier) au centre creusé,
-   comme un stick, qui se tire et revient. Arêtes nettes, aucun flou, aucune ombre portée — comme le socle. */
-#lvj-box{width:48px;height:48px;position:relative;border-radius:0;
-  background:linear-gradient(135deg,rgba(255,255,255,.10) 0%,rgba(255,255,255,.025) 40%,rgba(255,255,255,0) 65%),#0b0b0e;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.30),inset 0 0 0 1px rgba(255,255,255,.05);
+/* ⚠️ 25/10 — LA MANETTE DU DÉBUT REVIENT (Wah : « remets le joystick comme celui du début, il change de couleur en
+   fonction des vues »). La tuile ronde du 12/10 : son FOND est la couleur de la vue où je suis (centre navy · ↑ Get
+   Higher bleu clair · ↓ Reflection rouge-violet · ← mes shorts rouge-violet · → les spots bleu clair : `--lvj-vue`,
+   posé par `peindreNav`) ; dedans, les trois ronds empilés disent où l'on peut aller verticalement (↑ bleu clair, centre
+   navy, ↓ rouge-violet) — le rond de la vue où l'on est s'efface (`.ici`), et sur les côtés ils s'effacent tous
+   (`.hors`). Aucune bordure : le fond porte la couleur, l'ombre détache. La MÉCANIQUE ne change pas (`manetteLV`). */
+#lvj-box{width:52px;height:52px;position:relative;border-radius:50%;background:var(--lvj-vue,var(--navy));
+  box-shadow:0 2px 7px rgba(0,0,0,.5);transition:background-color .42s ease,box-shadow .42s ease;
   touch-action:none;cursor:grab;pointer-events:auto}
-#lvj-box::before{content:"";position:absolute;left:4px;top:4px;width:5px;height:5px;
-  background:linear-gradient(135deg,rgba(255,255,255,.26) 50%,rgba(255,255,255,0) 50%)}
-#lvj-box::after{content:"";position:absolute;inset:8px;border-radius:50%;background:#000;
-  box-shadow:inset 0 1px 0 rgba(0,0,0,.95),0 1px 0 rgba(255,255,255,.08)}
 #lvj-box:active{cursor:grabbing}
+#lvjoy.tenu #lvj-box{box-shadow:0 5px 14px rgba(0,0,0,.65)}
 #lvj-stack{position:absolute;inset:0;z-index:1;transform:translate(var(--mx,0px),var(--my,0px));
   transition:transform .26s cubic-bezier(.22,.9,.3,1)}
 #lvj-box.tenu #lvj-stack{transition:none}
-#lvj-stack i{--d:22px;position:absolute;left:50%;top:50%;display:block;width:var(--d);height:var(--d);
-  margin:calc(var(--d) / -2) 0 0 calc(var(--d) / -2);border-radius:50%;
-  background:radial-gradient(circle,var(--navy-d) 0 50%,var(--navy) 54%);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.28);transition:background .2s ease}
-#lvjoy.tenu #lvj-stack i{background:radial-gradient(circle,var(--navy) 0 50%,var(--blue) 54%)}
+#lvj-stack i{--d:12px;position:absolute;left:50%;display:block;width:var(--d);height:var(--d);
+  margin:calc(var(--d) / -2) 0 0 calc(var(--d) / -2);border-radius:50%;background:var(--c);
+  box-shadow:0 2px 5px rgba(0,0,0,.6);transform:scale(1);opacity:1;
+  transition:transform .38s cubic-bezier(.22,.9,.3,1),opacity .38s ease}
+#lvj-stack .o{top:23%;--c:var(--blue)}
+#lvj-stack .h{top:50%;--c:var(--navy)}
+#lvj-stack .r{top:77%;--c:var(--rep)}
+#lvj-stack i.ici,#lvj-box.hors i{opacity:0;transform:scale(.4)}
 #lvjoy.vers-g #lvn-lf,
 #lvjoy.vers-d #lvn-rt,
 #lvjoy.vers-h #lvn-up,
@@ -4299,7 +4299,7 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
     <div id="lvjoy" class="lv-act" role="group" aria-label="Where I am">
       <button id="lvn-up" class="lvn lv-act" type="button" aria-label="Get Higher"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 10 L8 5 L13 10"/></svg></button>
       <button id="lvn-lf" class="lvn lvn-x lv-act" type="button" aria-label="My shorts"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 L5 8 L10 13"/></svg></button>
-      <div id="lvj-box" aria-hidden="true"><div id="lvj-stack"><i></i></div></div>
+      <div id="lvj-box" aria-hidden="true"><div id="lvj-stack"><i class="o"></i><i class="h ici"></i><i class="r"></i></div></div>
       <button id="lvn-rt" class="lvn lvn-x lv-act" type="button" aria-label="My spots"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3 L11 8 L6 13"/></svg></button>
       <button id="lvn-dn" class="lvn lv-act" type="button" aria-label="My Reflection"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 6 L8 11 L13 6"/></svg></button>
     </div>
@@ -7520,7 +7520,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-10-24-com-board';
+const BUILD='2026-10-25-com-manette';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -11793,10 +11793,17 @@ window.addEventListener('pageshow',e=>{
       rs.setProperty('--sell-top',Math.round(l.bas+52-sp)+'px');
       diagHaut={bouche:Math.round(w), cerveau:Math.round((jt-10)-(l.bas+52+sh+16))};
     }
+    /* 25/10 — la manette du début : la tuile prend la couleur de la vue, ses ronds disent où l'on peut aller. */
+    const TEINTE_LVJ={c:'--navy', h:'--blue', b:'--rep', g:'--rep', d:'--blue'};
     function peindreNav(){
       [[nUp,voisin('h')],[nDn,voisin('b')],[nLf,voisin('g')],[nRt,voisin('d')]]
         .forEach(([b,v])=>{ if(!b) return; b.classList.toggle('is-mort',!v); b.tabIndex=v?0:-1;
           if(v){ b.setAttribute('aria-label',NOMS[v]); b.title=NOMS[v]; } else b.removeAttribute('title'); });
+      const jy=$('lvjoy'), jb=$('lvj-box'), js=$('lvj-stack'); if(!jy||!jb||!js) return;
+      jy.style.setProperty('--lvj-vue','var('+(TEINTE_LVJ[vue]||'--navy')+')');
+      const [o,h,r]=js.children; if(!r) return;
+      o.classList.toggle('ici',vue!=='c'||!voisin('h')); h.classList.toggle('ici',vue==='c'); r.classList.toggle('ici',vue!=='c'||!voisin('b'));
+      jb.classList.toggle('hors',vue==='g'||vue==='d');
     }
     function poser(v){
       ['c','h','b','g','d'].forEach(k=>body.classList.toggle('lv-'+k,k===v));
@@ -12176,7 +12183,7 @@ window.addEventListener('pageshow',e=>{
     (function manetteLV(){
       const jy=$('lvjoy'), bx=$('lvj-box'), st=$('lvj-stack');
       if(!jy||!bx||!st) return;
-      const RAYON=10, SEUIL=6;   /* 20/10 septies : le manche ne sort pas du petit socle */
+      const RAYON=13, SEUIL=8;   /* 25/10 : la tuile ronde de 52 px (celle du début) */
       let id=null, x0=0, y0=0, dx=0, dy=0;
       const pose=(a,b)=>{ st.style.setProperty('--mx',a.toFixed(1)+'px');
                           st.style.setProperty('--my',b.toFixed(1)+'px'); };

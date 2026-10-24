@@ -21,7 +21,7 @@ figher.club ; `/vendor`, `/cities.json`, `/assets/signs` → SPACE ; Telegram n'
 
 | vue | repères |
 |---|---|
-| l'atterrissage, les gestes | `const LV=` · `garde(` · `demander(` · `guetter(` · `reprendre(` · `quandLibre` · `refus(` (le mouchard) |
+| l'atterrissage, les gestes | `const LV=` · `garde(` · `demander(` · `guetter(` · `reprendre(` · `quandLibre` · `refus(` (le mouchard) · la manette `#lvjoy` = celle du début (tuile ronde de la couleur de la vue, `TEINTE_LVJ` dans `peindreNav` ; ronds `.ici` / `.hors` ; `manetteLV`) |
 | ↑ Get Higher | `RAM.cerveau` · `posHaut()` (la bouche rétrécit, jamais le cerveau) |
 | ← mes médias | `const SH =` · `MBM` · `boxTotehm` · `#tlv` (visionneuse verticale, sa box porte `loupeVue`) · `feed_badges` · filtre : `.sfcmd` (MY STORY ▢ · OBJ/HAB/REP empilés · ▢ VISION, carrés `--perfo`) |
 | ● mon TOTEHM, le verso | `const PAPIER=` · `const RAM=` (`peindre` : ← → ↓ sont la transformation du centre ; `circuit` = 7 broches par arête du processeur, `anneau` = l'anneau du profil) · `#self-h` · `ouvrirVerso` → `is-pret` · TROIS ONGLETS `#vs-tabs` (`#srch[data-tab]` : `dash` à chaque retournement · `sub` · `money` ; ils ne font que cacher `#vs-dash`, `#settings`, `#mw-creator`) · `const DASH=` (`my_board`, lecture seule : le suivi vit dans Telegram ; `__totehm_dash()`) · `#mw-creator` (Monetize my TOTEHM) · `#mw-menu` ([Higher] subscription) · `#vs-subs-s` |
