@@ -61,6 +61,14 @@ try{
   ok(mx<0&&Math.abs(mz)<0.5,'24/10 · le trackpad pousse le manche vers sa vue, puis il revient au centre ('+mx+' → '+mz+')');
   ok(!erreurs(log).length&&!log.rpc.some(x=>/rename|_create|_set|_delete|totehm_save/.test(x.name)),'lecture : aucune écriture sur le Totehm lu, aucune erreur');await pg.context().close();
  }
+ /* ── 3 bis · 25/10 (Wah : « remonte-la ») : sur ordinateur, même sur un écran bas, la manette tient dans la bande noire sous le carré ── */
+ {const {pg}=await page(browser,{dir:'com',origin,rpc,tables:{profiles:[{pseudo:'wah'}]},viewport:{width:1280,height:800}});
+  await pg.goto(origin+'/totehm?ro=studio');await pg.waitForSelector('body.ro:not(.gate)');await pg.waitForTimeout(600);
+  const m=await pg.evaluate(()=>{const s=document.querySelector('#stage').getBoundingClientRect(),j=document.querySelector('#joy').getBoundingClientRect();
+    return {ecart:Math.round(j.top-s.bottom),bas:Math.round(innerHeight-j.bottom),carre:Math.round(s.width)};});
+  ok(m.ecart>=12&&m.bas===12,'25/10 · ordinateur 1280×800 : la manette sous le carré, hors des perforations '+JSON.stringify(m));
+  await pg.context().close();
+ }
  /* ── 4 · l'espace membre (07/10) : plein écran, c'est l'utilisateur ; les boutons de higher.boutique ── */
  {const {pg,log}=await page(browser,{dir:'com',origin,rpc,tables:{profiles:[{pseudo:'wah'}]}});
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(900);await pg.click('#lv-tap-turn');await pg.mouse.move(4,4);await pg.waitForTimeout(2200);

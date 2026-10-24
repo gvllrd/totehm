@@ -2412,12 +2412,14 @@ body.gate.entered #filter-badge{
   :root{
     /* 78vw et pas 94vw : il faut de la place de chaque côté pour les deux
        boîtes de navigation, sinon elles sortent de la fenêtre.
-       Encombrement total = --stage * (1 + 2 * (.058 + .05)) = --stage * 1.216. */
-    --stage:min(92vh,78vw,640px);
-    /* Le contrôleur est PLUS GRAND ici, et la bande basse revient à 98 px :
-       il vit SOUS le carré, donc hors de la liste — mesuré, 21 px de
-       dégagement. La déduction du téléphone n'a pas lieu d'être. */
-    --joy-d:60px;
+       Encombrement total = --stage * (1 + 2 * (.058 + .05)) = --stage * 1.216.
+       ⚠️ 25/10 — ET LA BANDE NOIRE DU BAS TIENT TOUJOURS LA MANETTE (Wah : « remonte-la ») : sur un écran bas
+       (800 px), le carré de 640 px ne laissait que 80 px de noir et la manette (84 px) mordait la perforation du
+       milieu. Le carré cède donc juste ce qu'il faut : 12 px + la manette + 12 px, en haut comme en bas. Au-delà de
+       856 px de haut, rien ne change (640 px). */
+    --stage:min(92vh,78vw,640px,calc(100vh - 2 * (var(--lvj-b) + var(--joy-d) + 36px + 12px)));
+    /* 25/10 — le socle de l'atterrissage fait 48 px : la case aussi, les chevrons le serrent comme là-bas. */
+    --joy-d:48px;
     /* ⚠️ ET SUR ORDINATEUR IL FAUT COMPTER LES TROUS · 22/09/2026.
        « Fais bien attention à son placement… pas sur les trous noirs
        par exemple. » Le carré porte trois perforations sur son bord
@@ -2495,8 +2497,9 @@ body.gate.entered #filter-badge{
   /* ⚠️ 18/10 · IL SORT DU CARRÉ (Wah : « sur version ordinateur tu peux sortir le joystick du totehm et
      le mettre à la même place que sur la page d'atterrissage tout en bas centré dans la zone noire hors
      des 3 couleurs »). Donc il s'ancre sur la FENÊTRE, pas sur `--stage` : une seule place pour une seule
-     manette, dedans comme dehors — et plus rien à tenir d'accord avec les coins du carré. */
-  #joy{top:auto;bottom:var(--joy-b);left:50%;right:auto;transform:translateX(-50%)}
+     manette, dedans comme dehors — et plus rien à tenir d'accord avec les coins du carré.
+     25/10 : au même retrait que `#lvjoy` (`--lvj-b`), et `--stage` lui garde sa bande noire (voir plus haut). */
+  #joy{top:auto;bottom:var(--lvj-b);left:50%;right:auto;transform:translateX(-50%)}
   /* ⚠️ LE TITRE VIT DANS LE TOTEHM SUR ORDINATEUR · 22/09/2026.
      « Les titres et sous-titre DANS le totehm sur ordinateur. » Il
      était à 22 px du haut de la FENÊTRE, donc sur le noir, au-dessus

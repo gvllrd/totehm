@@ -29,7 +29,7 @@ figher.club ; `/vendor`, `/cities.json`, `/assets/signs` → SPACE ; Telegram n'
 | → les spots | `const CLUBSP=` (`club_spots`, `club_spots_of`) · `SPOTMODE` · `SPMAP` · `SPGRID` · `SHS` (un spot ouvert : `.ssp-m` puis `.ssp-info` = infos, box en bas) · `BUNNY` |
 | ↓ Higher Self | `const REF=` (`higher-self`, `fmt:'r4'` le miroir) · `lireR3` · `lieuHTML` (le lieu `@lieu` posé par le serveur : GO, `spotDeLaStep` → figher.club) · `lieuInvite` · `posPermise` (Higher : position arrondie à ~1 km, jamais gardée) |
 | MEMBERS | `const MB=` → `totehm_of` → `entrerChez()` : ses médias, son TOTEHM, ses spots, son offre (`OFFRE`) |
-| la liste du TOTEHM déployé | `/* ══ LA BOÎTE` · `/* ══ LES TROIS VUES` · `/* ══ LES ÉCRITURES` · `const INTS=` · la manette `#joy` = le socle de l'atterrissage (`#lvj-box`), un manche dont la couleur = la vue (`--joy-vue`, `TEINTE`) ; module `manette` (`RAYON` 10, `SEUIL` 6, comme `manetteLV`) |
+| la liste du TOTEHM déployé | `/* ══ LA BOÎTE` · `/* ══ LES TROIS VUES` · `/* ══ LES ÉCRITURES` · `const INTS=` · la manette `#joy` = le socle de l'atterrissage (`#lvj-box`), un manche dont la couleur = la vue (`--joy-vue`, `TEINTE`) ; module `manette` (`RAYON` 10, `SEUIL` 6, comme `manetteLV`) ; ordinateur : dans la bande noire sous le carré (`--lvj-b`), `--stage` cède sur un écran bas pour la lui garder |
 | la session | `/* ══ LA SESSION` · `sessionChange` · `sesWait` · cache `totehm_habits_v1` |
 
 Diagnostics : `__totehm_lv()` (`.refus` : pourquoi un geste est refusé ; à l'écran : `/totehm?diag=1`) · `__totehm_xo()` · `__totehm_sh()` · `__totehm_rdr()` · `__totehm_carte()` · `__totehm_zone()`.
