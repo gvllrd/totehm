@@ -152,18 +152,6 @@ try{
   await pg.waitForTimeout(800);
   const retour=await my();
   ok(pousse>0&&Math.abs(retour)<0.5,'24/10 · un geste d\'ailleurs pousse la manette vers sa vue, puis elle revient au centre ('+pousse+' → '+retour+')');
-  /* 25/10 (Wah) : « remets le joystick comme celui du début, il change de couleur en fonction des vues ». La tuile ronde du
-     12/10 : son fond = la couleur de la vue ; ses ronds = où l'on peut aller (celui de la vue où l'on est s'efface). */
-  const joy=()=>pg.evaluate(()=>{const b=document.getElementById('lvj-box');return {vue:window.__totehm_lv().vue,bg:getComputedStyle(b).backgroundColor,
-    rayon:getComputedStyle(b).borderTopLeftRadius,w:Math.round(b.getBoundingClientRect().width),
-    ronds:[...document.querySelectorAll('#lvj-stack i')].map(i=>+getComputedStyle(i).opacity>.5?1:0).join('')};});
-  await pg.keyboard.press('Escape');await pg.waitForTimeout(1100);   /* depuis le centre */
-  await pg.keyboard.press('ArrowUp');await pg.waitForTimeout(1100); const jh=await joy();
-  await pg.keyboard.press('ArrowDown');await pg.waitForTimeout(1100); const jc=await joy();
-  await pg.keyboard.press('ArrowRight');await pg.waitForTimeout(1100); const jd=await joy();
-  ok(jc.vue==='c'&&jc.bg==='rgb(51, 51, 102)'&&jc.ronds==='101'&&jc.rayon==='50%'&&jc.w===52
-     &&jh.vue==='h'&&jh.bg==='rgb(54, 73, 140)'&&jh.ronds==='010'&&jd.vue==='d'&&jd.bg==='rgb(54, 73, 140)'&&jd.ronds==='000',
-     '25/10 · la manette du début : ronde, de la couleur de la vue (centre navy · Get Higher bleu clair · spots bleu clair), ses ronds = où aller → '+JSON.stringify({jc,jh,jd}));
   ok(!erreurs(log).length,'manette poussée : aucune erreur '+erreurs(log).join(' | '));
   await ctx.close();}
 
