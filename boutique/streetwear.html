@@ -85,12 +85,19 @@ a{color:inherit;text-decoration:none}
    saisies au fur et à mesure »). Plus de scènes plein écran, plus de fenêtres
    latérales : chaque étape apparaît SOUS la précédente, à sa place, et le
    TOTEHM se décompose là où il est. */
-#stages{min-height:100%;display:flex;flex-direction:column;align-items:center;gap:16px;
-  padding:calc(var(--st) + 16px) 16px calc(28px + var(--sb))}
-.stage{width:100%;max-width:430px;display:none;flex-direction:column;align-items:center;gap:12px;
-  opacity:0;transform:translateY(16px);transition:opacity .4s var(--ease),transform .5s var(--ease)}
+/* 25/10 (Wah) : « full-screen step-by-step… une step à la fois, fluidité, un focus
+   sur le centre ». Chaque étape prend TOUT l'écran et se centre ; la précédente
+   s'en va vers le haut pendant que la suivante monte. `safe center` : quand une
+   étape déborde (la liste des box), elle se laisse défiler sans se faire couper
+   en haut. */
+#stages{position:fixed;inset:0;overflow:hidden}
+.stage{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:safe center;gap:12px;
+  padding:calc(var(--st) + 54px) 16px calc(28px + var(--sb));overflow-y:auto;overscroll-behavior:contain;
+  opacity:0;transform:translateY(20px);transition:opacity .34s ease,transform .44s var(--ease)}
+.stage>*{width:100%;max-width:430px;flex:0 0 auto}
 .stage.is-open{display:flex}
 .stage.is-in{opacity:1;transform:none}
+.stage.is-out{opacity:0;transform:translateY(-20px);pointer-events:none}
 .inner{width:100%;display:flex;flex-direction:column;align-items:center;gap:12px}
 @media(prefers-reduced-motion:reduce){.stage{transition:none}}
 
@@ -342,8 +349,9 @@ button.mi.is-off{background:transparent;box-shadow:inset 0 0 0 1px rgba(255,255,
 /* ══ ORDINATEUR — la MÊME colonne, centrée, le vêtement plus grand.
    23/10 (Wah) : « j'aime pas les vues latérales ». Elles sont parties. ══ */
 @media(min-width:900px){
-  #stages{gap:20px}
-  .stage{max-width:470px}
+  /* L'ordinateur ne change rien à la règle : une étape à la fois, au centre.
+     Seule la colonne respire un peu plus. */
+  .stage>*{max-width:470px}
   #viewer{height:clamp(300px,52vh,620px)}
 }
 
@@ -462,6 +470,8 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
       <div id="cl-wear" class="hide"></div>
       <div class="cl-links"><button class="lnk" id="cl-more" type="button">details</button></div>
       <div id="cl-detail"></div>
+      <!-- 25/10 : une étape à la fois — le vêtement se termine par le geste qui ouvre le TOTEHM. -->
+      <button class="btn cta" id="cl-go" type="button">Totehmize it</button>
     </div>
   </section>
 
@@ -489,6 +499,9 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
       <div id="el-sub"></div>
     </div>
     <div id="el-list"></div>
+    <!-- 25/10 : une étape à la fois — la box tapée est choisie, ses sous-box
+         s'éteignent ici, et c'est ce bouton qui passe à la suivante. -->
+    <button class="btn cta hide" id="el-go" type="button">Next</button>
   </section>
 
   <!-- 3 · NAME -->
@@ -729,26 +742,31 @@ function canShow(s){
 /* L'écran se REMPLIT : toutes les étapes atteintes restent là, l'une sous
    l'autre ; celles d'après n'existent pas encore. Le TOTEHM (le papier du
    milieu) est toujours présent — c'est lui qu'on tape pour commencer. */
+/* UNE ÉTAPE À LA FOIS (25/10) : celle qu'on quitte s'efface vers le haut, celle
+   qui arrive monte à sa place. Le DOM ne garde qu'une étape visible — on ne lit
+   jamais deux choses en même temps. */
+let SORTIE=null;
 function show(s,mode='push'){
   if(!canShow(s))s='cloth';
-  const k=STAGES.indexOf(s),fini=s==='done';
+  const k=STAGES.indexOf(s),avant=stage;
+  if(avant&&avant!==s){
+    const vieux=document.querySelector('.stage[data-s="'+avant+'"]');
+    if(vieux){ vieux.classList.remove('is-in');vieux.classList.add('is-out');
+      vieux.inert=true;vieux.setAttribute('aria-hidden','true');
+      clearTimeout(SORTIE);SORTIE=setTimeout(()=>vieux.classList.remove('is-open','is-out'),360); }
+  }
   document.querySelectorAll('.stage').forEach(el=>{
-    const i=STAGES.indexOf(el.dataset.s),mien=el.dataset.s===s;
-    /* Le TOTEHM est là dès le départ : c'est le logo, sous le vêtement. */
-    const ouvert=fini?mien:(i>=0&&i<=k)||el.dataset.s==='element';
-    if(ouvert&&!el.classList.contains('is-open')){
-      el.classList.add('is-open');
-      requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add('is-in')));
-    }else if(!ouvert){el.classList.remove('is-open','is-in');}
-    el.inert=!ouvert;el.setAttribute('aria-hidden',String(!ouvert));
+    if(el.dataset.s===s)return;
+    if(el.dataset.s===avant)return;
+    el.classList.remove('is-open','is-in','is-out');el.inert=true;el.setAttribute('aria-hidden','true');
   });
+  const cur=document.querySelector('.stage[data-s="'+s+'"]');
+  if(cur){
+    cur.classList.remove('is-out');cur.classList.add('is-open');
+    requestAnimationFrame(()=>requestAnimationFrame(()=>cur.classList.add('is-in')));
+    cur.inert=false;cur.setAttribute('aria-hidden','false');cur.scrollTop=0;
+  }
   stage=s;document.body.dataset.stage=s;
-  /* Une fois l'élément porté, la liste se réduit à LUI : on ne lit jamais deux
-     fois la même chose à l'écran. */
-  $('s-element').classList.toggle('is-picked',k>STAGES.indexOf('element'));
-  /* La nouvelle étape vient à l'écran, sans secousse. */
-  if(mode!=='none'&&k>0){const el=document.querySelector('.stage[data-s="'+s+'"]');
-    if(el)setTimeout(()=>el.scrollIntoView({behavior:'smooth',block:'center'}),60);}
   if(mode==='push'){history.pushState({s},'');HIST.push(s);}
   else if(mode==='replace'){history.replaceState({s},'');HIST[Math.max(0,HIST.length-1)]=s;}
   if(document.body.classList.contains('is-boot'))requestAnimationFrame(()=>requestAnimationFrame(()=>document.body.classList.remove('is-boot')));
@@ -826,7 +844,7 @@ function paintCloth(){
   $('m-dots').innerHTML=n>1?supports.map((_,i)=>'<i'+(i===ci?' class="is-on"':'')+'></i>').join(''):'';
   $('a-dots').innerHTML=L>1?Array.from({length:L},(_,j)=>'<i'+(j===ai?' class="is-on"':'')+'></i>').join(''):'';
   const b=$('totehmize');
-  if(!s){$('cl-title').textContent='';$('cl-facts').innerHTML='';b.classList.add('hide');$('cl-more').classList.add('hide');return;}
+  if(!s){$('cl-title').textContent='';$('cl-facts').innerHTML='';b.classList.add('hide');$('cl-go').classList.add('hide');$('cl-more').classList.add('hide');return;}
   const left=avail(s);
   $('cl-title').textContent=s.title||'';
   /* 23/10 : au début, SEULEMENT ce qui reste. Le prix arrive à la fin, dans ORDER,
@@ -837,6 +855,7 @@ function paintCloth(){
      +'<span class="bar"><i style="--p:'+(tot?Math.round(left/tot*100):0)+'%"></i></span>'
     :'<span class="out">sold out</span>';
   b.classList.remove('hide');b.disabled=left<=0;b.setAttribute('aria-label',left>0?'Totehmize this cloth':'Sold out');
+  const go=$('cl-go');go.classList.remove('hide');go.disabled=left<=0;go.textContent=left>0?'Totehmize it':'Sold out';
   const cw=$('cl-wear');cw.classList.toggle('hide',!F.el);
   if(F.el){cw.style.setProperty('--skin',SKIN[F.el.view]||'#333366');cw.innerHTML='<small>'+esc(NOM[F.el.view]?.[0]||'my element')+'</small><b>'+esc(F.el.text)+'</b>';}
   $('cl-more').classList.toggle('hide',!s.details);$('cl-detail').textContent=s.details||'';$('cl-detail').classList.remove('is-on');
@@ -850,6 +869,7 @@ function angle(d){
   const L=imgs(cur()).length,n=ai+d;if(n<0||n>=L){placeViewer();return;}
   ai=n;ANG[ci]=ai;placeViewer();paintCloth();save();
 }
+$('cl-go').onclick=()=>{ if(!cur()||avail(cur())<=0)return; totehmize(); };
 $('m-prev').onclick=()=>model(-1);$('m-next').onclick=()=>model(1);
 $('a-up').onclick=()=>angle(-1);$('a-down').onclick=()=>angle(1);
 $('cl-more').onclick=()=>$('cl-detail').classList.toggle('is-on');
@@ -1014,7 +1034,7 @@ function paintSeam(l){
   $('tz-seam').innerHTML=Object.keys(INTS).map(i=>'<i style="--c:'+icol(i)+'"'+(on.has(i)?' class="is-on"':'')+'></i>').join('');
 }
 function renderEl(dir){
-  OPEN=null;MT_SEQ++;
+  OPEN=null;MT_SEQ++;$('el-go').classList.add('hide');$('s-element').classList.remove('is-picked');
   const head=$('el-head'),list=$('el-list');
   if(GRIND.includes(vue))head.classList.add('is-grind');
   $('tz-papers').querySelectorAll('[data-v]').forEach(b=>b.classList.toggle('is-here',b.dataset.v===vue));
@@ -1027,6 +1047,12 @@ function renderEl(dir){
   list.innerHTML=l.length?l.map((o,k)=>boxHTML(o,k)).join(''):'<div class="v-empty">nothing written here yet<button class="lnk" id="el-write" type="button">write it on totehm.com</button></div>';
   if($('el-write'))$('el-write').onclick=()=>ssoVersDomaine(sb,'com',COM_IN);
   /* La liste arrive d'en haut, comme le papier qui se déplie : une transition. */
+  /* 25/10 : revenir sur l'étape du TOTEHM ne perd pas le choix — la box choisie
+     se retrouve allumée dans sa liste, et [Next] attend là où on l'a laissé. */
+  if(F.el&&F.el.view===vue){
+    const i=l.findIndex(o=>String(o.ref)===String(F.el.ref));
+    if(i>=0&&list.children[i]){list.children[i].classList.add('is-on');$('el-go').classList.remove('hide');}
+  }
   if(dir){list.style.transition='none';list.style.opacity='0';list.style.transform='translateY(-14px)';void list.offsetWidth;
     list.style.transition='';list.style.opacity='';list.style.transform='';}
   list.scrollTop=0;
@@ -1092,10 +1118,10 @@ async function openEl(b){
   /* Un AUTRE élément : ses sous-box repartent toutes allumées. Le même : on
      garde ce qui a été éteint (revenir en arrière ne défait pas un choix). */
   if(!F.el||F.el.ref!==ref||F.el.kind!==KIND[v])F.hide=[];
-  F.el={kind:KIND[v],ref,view:v,text:o.text,is:o.is||[]};paintCloth();
+  F.el={kind:KIND[v],ref,view:v,text:o.text,is:o.is||[]};paintCloth();save();
+  $('s-element').classList.add('is-picked');$('el-go').classList.remove('hide');
   $('matter')?.remove();OPEN={b,o,m:null};
   const c=document.createElement('div');c.id='matter';c.innerHTML='<div class="mono">reading the element…</div>';b.appendChild(c);
-  show('name');
   const{data:m,error}=await sb.rpc('my_box_matter',{p_kind:KIND[v],p_ref:ref});
   if(seq!==MT_SEQ)return;
   if(error)console.error('[my_box_matter]',error.message);
@@ -1128,15 +1154,19 @@ $('el-list').addEventListener('click',e=>{
   /* La matière (et son bouton) garde ses propres gestes. */
   if(e.target.closest('#matter'))return;
   /* Élément déjà porté : un tap sur lui rouvre la liste — on change d'avis. */
-  if($('s-element').classList.contains('is-picked')){if(e.target.closest('.bx'))goBackTo('element');return;}
+  if($('s-element').classList.contains('is-picked')){
+    if(e.target.closest('.bx')){$('s-element').classList.remove('is-picked');$('el-go').classList.add('hide');}
+    return;
+  }
   const b=e.target.closest('.bx');if(b)openEl(b);
 });
 $('el-list').addEventListener('keydown',e=>{
   if(e.key!=='Enter'&&e.key!==' ')return;
   const b=e.target.closest('.bx');if(!b)return;e.preventDefault();
-  if($('s-element').classList.contains('is-picked')){goBackTo('element');return;}
+  if($('s-element').classList.contains('is-picked')){$('s-element').classList.remove('is-picked');$('el-go').classList.add('hide');return;}
   openEl(b);
 });
+$('el-go').onclick=()=>{ if(F.el)show('name'); };
 
 /* ══ 3 · NAME — vérifié en direct par le serveur ══════════════════════ */
 let NM_SEQ=0,nmTimer=null;

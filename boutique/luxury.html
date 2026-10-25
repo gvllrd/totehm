@@ -112,30 +112,6 @@ button.chip.is-on{background:var(--s3);color:#fff;border-color:#fff}
 
 @media(hover:hover){.lnk:hover{background:var(--s4);color:#fff}.btn-back:hover{color:#fff;background:var(--s2)}}
 
-/* ══ LA MANETTE — le manche de SPACE/COM ═════════════════════════════ */
-#nav{position:fixed;z-index:70;bottom:calc(18px + var(--bot));left:50%;transform:translateX(-50%);
-  display:grid;grid-template-columns:22px var(--joy-d) 22px;grid-template-rows:22px var(--joy-d) 22px;align-items:center;justify-items:center}
-#nav-say{position:absolute;left:50%;bottom:calc(100% + 6px);transform:translateX(-50%);font-size:9px;letter-spacing:.18em;white-space:nowrap;
-  color:var(--lo);pointer-events:none;text-transform:uppercase;transition:color .15s}
-#nav-say.is-preview{color:#fff}
-/* Un voile noir sous le manche : le texte qui défile dessous ne se lit pas à travers. */
-#nav::before{content:'';position:absolute;left:-90px;right:-90px;top:-34px;bottom:-30px;background:radial-gradient(closest-side,#000 62%,rgba(0,0,0,0));z-index:-1;pointer-events:none}
-#nav-h{grid-area:1/2/2/3}#nav-g{grid-area:2/1/3/2}#nav-box{grid-area:2/2/3/3}#nav-d{grid-area:2/3/3/4}#nav-b{grid-area:3/2/4/3}
-#nav-box{width:var(--joy-d);height:var(--joy-d);position:relative;border:none;padding:0;border-radius:50%;background:var(--joy-vue,var(--navy));
-  touch-action:none;cursor:grab;-webkit-tap-highlight-color:transparent;transition:background-color .3s ease}
-#nav-box:focus-visible{outline:1px solid var(--mid);outline-offset:4px}
-#nav-stack{position:absolute;inset:0;transform:translate(var(--mx,0px),var(--my,0px));transition:transform .26s cubic-bezier(.22,.9,.3,1)}
-#nav-box.is-held #nav-stack{transition:none}
-#nav-stack i{--d:12px;position:absolute;left:50%;display:block;width:var(--d);height:var(--d);margin:calc(var(--d) / -2) 0 0 calc(var(--d) / -2);
-  border-radius:50%;background:var(--c);transition:opacity .18s,transform .18s,background-color .4s ease}
-#nav-stack .o{top:23%;--c:var(--blue)}#nav-stack .h{top:50%;--c:var(--navy)}#nav-stack .r{top:77%;--c:var(--rep)}
-#nav-stack i.is-current{opacity:0;transform:scale(.4)}
-.nav-cur{background:none;border:none;padding:0;cursor:pointer;display:flex;align-items:center;justify-content:center;width:22px;height:22px;
-  opacity:.85;color:#fff;-webkit-tap-highlight-color:transparent;transition:opacity .15s,transform .15s}
-.nav-cur.is-dead{opacity:.14;pointer-events:none}
-.nav-cur.is-preview{opacity:1;transform:scale(1.3)}
-.nav-cur svg{width:14px;height:14px;display:block;stroke:currentColor;fill:none;stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round}
-
 
 /* ══ COPIÉ DE /streetwear · 24/10/2026 — produits indépendants = fichiers
    indépendants : ces blocs sont une COPIE, jamais un import. Le TOTEHM qui se
@@ -270,14 +246,25 @@ button.mi.is-off{background:transparent;box-shadow:inset 0 0 0 1px rgba(255,255,
 #nm-input::placeholder{color:rgba(251,213,202,.3);text-transform:lowercase}
 
 
-/* ── LE PROJET SE DÉPOSE : chaque étape APPARAÎT sous la précédente ── */
-#form{gap:16px}
+/* ── LE DÉPÔT, PLEIN ÉCRAN · 25/10 (Wah) : « full-screen step-by-step…
+   une step à la fois, fluidité, un focus sur le centre ». Le flux prend tout
+   l'écran ; la page (le prix, mes projets, HOW IT WORKS) l'attend derrière. ── */
+#form{position:fixed;inset:0;z-index:60;background:#000;display:none;overflow:hidden}
+#form.is-on{display:block}
+#fm-x{position:fixed;top:calc(10px + var(--top));right:12px;z-index:62;width:38px;height:38px;display:none;
+  align-items:center;justify-content:center;background:none;border:0;color:var(--lo);cursor:pointer}
+#form.is-on ~ #fm-x{display:flex}
+#fm-x svg{width:15px;height:15px;stroke:currentColor;stroke-width:1.7;fill:none}
+@media(hover:hover){#fm-x:hover{color:#fff}}
 /* La page est centrée ; une box, elle, se lit à gauche — comme partout ailleurs. */
 #el-list,#el-list .bx,#matter{text-align:left}
-.step{display:none;flex-direction:column;align-items:center;gap:10px;width:100%;
-  opacity:0;transform:translateY(14px);transition:opacity .4s ease,transform .45s var(--ease)}
+.step{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:safe center;gap:10px;
+  padding:calc(var(--top) + 54px) 16px calc(28px + var(--bot));overflow-y:auto;overscroll-behavior:contain;
+  opacity:0;transform:translateY(20px);transition:opacity .34s ease,transform .44s var(--ease)}
+.step>*{width:100%;max-width:430px;flex:0 0 auto}
 .step.is-open{display:flex}
 .step.is-in{opacity:1;transform:none}
+.step.is-out{opacity:0;transform:translateY(-20px);pointer-events:none}
 /* LA PHOTO — la boîte navy perforée, comme Decode : on y dépose sa pièce. */
 #ph-tile{position:relative;display:flex;align-items:center;justify-content:center;width:100%;max-width:300px;min-height:132px;
   background:var(--navy);border:7px solid transparent;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round;
@@ -313,7 +300,6 @@ button.mi.is-off{background:transparent;box-shadow:inset 0 0 0 1px rgba(255,255,
 .qt .qn:hover,
 .qt .lnk:hover,
 .qa small:hover,
-#nav-say:hover,
 .bx .sb:hover,
 #matter .w:hover{color:#fff}
 }
@@ -394,8 +380,11 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
   <!-- MES PROJETS -->
   <section id="quotes" class="hide" aria-label="My projects"></section>
 
-  <!-- LE DÉPÔT — un seul écran qui se remplit : la photo, le TOTEHM, le nom, 500 € -->
-  <section id="form" class="hide" aria-label="Deposit my project">
+  <!-- LE PORCHE : ce qu'on lit avant d'entrer. Le dépôt, lui, prend l'écran. -->
+  <div id="fm-open" class="hide"><button class="btn cta" id="fm-go" type="button">Deposit my project</button></div>
+
+  <!-- LE DÉPÔT — plein écran, une étape à la fois : la photo, le TOTEHM, le nom, 500 € -->
+  <section id="form" aria-label="Deposit my project">
 
     <!-- 1 · LA PIÈCE, EN PHOTO -->
     <div class="step is-open is-in" id="st-photo">
@@ -430,10 +419,9 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
       </div>
       <div id="tz-seam" aria-hidden="true"></div>
       <div id="el-sub"></div>
-        <div id="tz-seam" aria-hidden="true"></div>
-        <div id="el-sub"></div>
       </div>
       <div id="el-list"></div>
+      <button class="btn cta hide" id="el-go" type="button">Next</button>
     </div>
 
     <!-- 3 · LE NOM — un identifiant, dans la boîte navy perforée -->
@@ -442,6 +430,7 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
       <label id="nm-field"><span id="nm-prefix">0.</span><input id="nm-input" maxlength="40" placeholder="name" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="text" enterkeyhint="done" aria-label="The name of the piece"></label>
       <div class="note dim" id="name-note"></div>
       <div class="say">0 = this collection, june to may. Decode the name to find the piece.</div>
+      <button class="btn cta" id="nm-go" type="button" disabled>Next</button>
     </div>
 
     <!-- 4 · LE DÉPÔT -->
@@ -452,6 +441,7 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
       <div class="note" id="ask-n"></div>
     </div>
   </section>
+  <button id="fm-x" type="button" aria-label="Leave"><svg viewBox="0 0 16 16"><path d="M3 3 L13 13 M13 3 L3 13"/></svg></button>
 
   <!-- HOW IT WORKS — le métier, en quatre gestes -->
   <section id="how">
@@ -478,13 +468,7 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
 </main>
 
 <!-- MY TOTEHM — SELECT MODE : quelle Box matérialiser ? -->
-<div id="nav" role="group" aria-label="The boutique joystick">
-  <button class="nav-cur" id="nav-h" type="button" aria-label="Streetwear"><svg viewBox="0 0 16 16"><path d="M3 10 L8 5 L13 10"/></svg></button>
-  <button class="nav-cur" id="nav-g" type="button" aria-label="Higher"><svg viewBox="0 0 16 16"><path d="M10 3 L5 8 L10 13"/></svg></button>
-  <button id="nav-box" type="button" aria-label="Act"><span id="nav-stack" aria-hidden="true"><i class="o"></i><i class="h"></i><i class="r"></i></span></button><span id="nav-say"></span>
-  <button class="nav-cur is-dead" id="nav-d" type="button" aria-label="Right"><svg viewBox="0 0 16 16"><path d="M6 3 L11 8 L6 13"/></svg></button>
-  <button class="nav-cur" id="nav-b" type="button" aria-label="Decode"><svg viewBox="0 0 16 16"><path d="M3 6 L8 11 L13 6"/></svg></button>
-</div>
+
 
 <script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
@@ -607,7 +591,7 @@ sb.auth.onAuthStateChange(ev => {
 
 
 /* ══ L'ÉTAT — une lecture, un écran ═════════════════════════════════ */
-const BUILD = '2026-10-24-depot';
+const BUILD = '2026-10-25-plein-ecran';
 let A = null, ADM = [], SEQ = 0, BUSY = false, ME = null;
 /* Le diagnostic — des booléens et des compteurs, jamais une valeur de membre. */
 window.__totehm_luxury = () => ({ build: BUILD, signed_in: !!A?.signed_in, thp: !!A?.thp, open: !!A?.open,
@@ -615,15 +599,16 @@ window.__totehm_luxury = () => ({ build: BUILD, signed_in: !!A?.signed_in, thp: 
   quotes: (A?.quotes || []).length, quoted: (A?.quotes || []).filter(q => q.status === 'quoted').length,
   admin: !!A?.admin, to_answer: ADM.length, test: !!A?.test_mode,
   photo: !!PHOTO, box: !!PICK, hidden: HIDE.length, named: NAME_OK,
-  papers: $('el-head')?.classList.contains('is-split') || false, steps: document.querySelectorAll('#form .step.is-open').length,
-  how: $('how')?.classList.contains('is-on') || false, joystick: !!$('nav-box') });
+  papers: $('el-head')?.classList.contains('is-split') || false,
+  how: $('how')?.classList.contains('is-on') || false, flow: $('form')?.classList.contains('is-on') || false,
+  step: [...document.querySelectorAll('#form .step.is-open')].map(e => e.id)[0] || null });
 
 const money = (c, cur) => (c/100).toLocaleString('en-GB', { style:'currency', currency:(cur||'eur').toUpperCase(), minimumFractionDigits: c % 100 ? 2 : 0 });
 const esc = s => { const d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; };
 const okColor = c => /^#[0-9a-f]{3,8}$/i.test(String(c || ''));
 const SKINQ = { habits:'var(--navy)', objectives:'var(--blue)', repulsions:'var(--rep)', wisdom:'var(--rep)', visions:'var(--blue)' };
 const STATUS = { requested:'waiting for our answer', quoted:'deposit to pay', paid:'deposited · we study it', declined:'not this time · refunded', cancelled:'cancelled' };
-const ETATS = ['s-wait','s-out','s-nothp','s-closed','form','quotes'];
+const ETATS = ['s-wait','s-out','s-nothp','s-closed','fm-open','quotes'];
 function show(...on){ ETATS.forEach(id => $(id).classList.toggle('hide', !on.includes(id))); }
 async function call(fn, body){
   const { data:{ session } } = await sb.auth.getSession();
@@ -657,10 +642,9 @@ async function load(){
   if(!A.signed_in) show('s-out');
   else if(!A.thp) show('s-nothp');
   else if(!A.open) show('s-closed', 'quotes');
-  else { show('form', 'quotes'); steps(); }
+  else { show('fm-open', 'quotes'); }
   paintQuotes();
   if(A.admin) loadAdmin(); else $('admin').classList.add('hide');
-  joyPaint();
 }
 
 /* ── MES DEVIS — la Box qui le porte, son statut, le prix posé par Wah ── */
@@ -734,7 +718,7 @@ $('ph-file').addEventListener('change', async e => {
     PHOTO = path;
     const im = $('ph-img'); im.src = URL.createObjectURL(blob); im.hidden = false; $('ph-lab').textContent = 'another photo';
     phNote('');
-    steps();
+    etape('s-element');
   }catch(err){ console.error('[photo]', err && err.message || err); phNote('the photo did not go through', 'no'); }
   finally{ UPLOADING = false; $('ph-tile').classList.remove('is-busy'); }
 });
@@ -829,7 +813,7 @@ $('tz-papers').addEventListener('click',async e=>{
   const v=e.target.closest('[data-v]');if(!v||!VIEWS[v.dataset.v])return;
   if(!TOT)await loadTotehm();
   const change=v.dataset.v!==vue;vue=v.dataset.v;
-  if(PICK){PICK=null;HIDE=[];$('s-element').classList.remove('is-picked');steps();renderEl('in');return;}
+  if(PICK){PICK=null;HIDE=[];$('s-element').classList.remove('is-picked');$('el-go').classList.add('hide');renderEl('in');return;}
   if(change)renderEl('in');
 });
 /* LA MATIÈRE — ce qui est relié à l'élément, calculé en base (`my_box_matter`). */
@@ -841,10 +825,9 @@ async function openEl(b){
   const seq=++MT_SEQ,v=vue,ref=String(o.ref);
   if(!PICK||PICK.ref!==ref||PICK.kind!==KIND[v])HIDE=[];
   PICK={kind:KIND[v],ref,view:v,text:o.text};
-  $('s-element').classList.add('is-picked');
+  $('s-element').classList.add('is-picked');$('el-go').classList.remove('hide');
   $('matter')?.remove();OPEN={b,o};
   const c=document.createElement('div');c.id='matter';c.innerHTML='<div class="mono">reading the element…</div>';b.appendChild(c);
-  steps();
   const{data:m,error}=await sb.rpc('my_box_matter',{p_kind:KIND[v],p_ref:ref});
   if(seq!==MT_SEQ)return;
   if(error)console.error('[my_box_matter]',error.message);
@@ -866,7 +849,7 @@ async function openEl(b){
 $('el-list').addEventListener('click',e=>{
   if(e.target.closest('#matter'))return;
   if($('s-element').classList.contains('is-picked')){
-    if(e.target.closest('.bx')){PICK=null;HIDE=[];$('s-element').classList.remove('is-picked');steps();}
+    if(e.target.closest('.bx')){PICK=null;HIDE=[];$('s-element').classList.remove('is-picked');$('el-go').classList.add('hide');}
     return;
   }
   const b=e.target.closest('.bx');if(b)openEl(b);
@@ -874,9 +857,10 @@ $('el-list').addEventListener('click',e=>{
 $('el-list').addEventListener('keydown',e=>{
   if(e.key!=='Enter'&&e.key!==' ')return;
   const b=e.target.closest('.bx');if(!b)return;e.preventDefault();
-  if($('s-element').classList.contains('is-picked')){PICK=null;HIDE=[];$('s-element').classList.remove('is-picked');steps();return;}
+  if($('s-element').classList.contains('is-picked')){PICK=null;HIDE=[];$('s-element').classList.remove('is-picked');$('el-go').classList.add('hide');return;}
   openEl(b);
 });
+$('el-go').onclick=()=>{ if(PICK)etape('st-name'); };
 
 /* ══ 3 · LE NOM — un IDENTIFIANT (minuscules, sans espace) ; le « 0. » est au serveur ══ */
 function epochPrefix(){ const d = new Date(), y = d.getFullYear(), ey = d.getMonth() >= 5 ? y : y - 1; return Math.max(ey - 2026, 0) + '.'; }
@@ -885,7 +869,7 @@ const cleanName=v=>String(v||'').toLowerCase().replace(/^\s*\d+\.\s*/,'').replac
 let NAME_OK=false,NAME_SEQ=0,nameTimer=null;
 $('nm-input').addEventListener('input',()=>{
   const v=cleanName($('nm-input').value);if(v!==$('nm-input').value)$('nm-input').value=v;
-  NAME_OK=false;clearTimeout(nameTimer);steps();
+  NAME_OK=false;clearTimeout(nameTimer);$('nm-go').disabled=true;
   const note=$('name-note');
   if(v.length<2){note.className='note dim';note.textContent=v?'at least 2 characters':'';return;}
   note.className='note dim';note.textContent='checking…';
@@ -896,26 +880,37 @@ $('nm-input').addEventListener('input',()=>{
     if(error){console.error('[name_available]',error.message);note.className='note dim';note.textContent='try again';return;}
     NAME_OK=data===true;
     note.className='note '+(NAME_OK?'ok':'no');note.textContent=NAME_OK?'available':'already taken';
-    steps();
+    $('nm-go').disabled=!NAME_OK;
   },420);
 });
 
 /* ══ CHAQUE ÉTAPE APPARAÎT SOUS LA PRÉCÉDENTE ══════════════════════════ */
-function steps(){
-  const ouvert=[['st-photo',true],['s-element',!!PHOTO],['st-name',!!PICK],['st-pay',!!PICK&&NAME_OK]];
-  ouvert.forEach(([id,on])=>{
-    const el=$(id);if(!el)return;
-    if(on&&!el.classList.contains('is-open')){
-      el.classList.add('is-open');
-      requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add('is-in')));
-      /* Le TOTEHM arrive ENTIER : c'est le tap qui le décompose (Wah). On lit
-         seulement son Totehm d'avance, pour que le tap n'attende rien. */
-      if(id==='s-element'&&ME&&!TOT)loadTotehm();
-      setTimeout(()=>el.scrollIntoView({behavior:'smooth',block:'center'}),80);
-    }else if(!on){ el.classList.remove('is-open','is-in'); }
-  });
-  joyPaint();
+/* ══ UNE ÉTAPE À LA FOIS, PLEIN ÉCRAN (25/10) ══════════════════════════
+   Celle qu'on quitte s'efface vers le haut, celle qui arrive monte à sa place.
+   Le DOM ne garde qu'une étape visible : on ne lit jamais deux choses à la fois. */
+const ETAPES=['st-photo','s-element','st-name','st-pay'];
+let ETAPE=null, SORTIE=null;
+function etape(id){
+  if(!ETAPES.includes(id)||id===ETAPE)return;
+  const vieux=ETAPE&&$(ETAPE);
+  if(vieux){ vieux.classList.remove('is-in');vieux.classList.add('is-out');vieux.inert=true;
+    clearTimeout(SORTIE);SORTIE=setTimeout(()=>vieux.classList.remove('is-open','is-out'),360); }
+  const el=$(id);if(!el)return;
+  el.classList.remove('is-out');el.classList.add('is-open');el.inert=false;el.scrollTop=0;
+  requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add('is-in')));
+  /* Le TOTEHM arrive ENTIER : c'est le tap qui le décompose (Wah). On lit
+     seulement son Totehm d'avance, pour que le tap n'attende rien. */
+  if(id==='s-element'&&ME&&!TOT)loadTotehm();
+  if(id==='st-name')setTimeout(()=>$('nm-input').focus({preventScroll:true}),380);
+  ETAPE=id;
 }
+function ouvrirFlux(){ $('form').classList.add('is-on');document.body.style.overflow='hidden'; if(!ETAPE)etape('st-photo'); }
+function fermerFlux(){ $('form').classList.remove('is-on');document.body.style.overflow=''; }
+$('fm-go').onclick=()=>{ if(!ME){ssoLogin(false,'/luxury');return;} ouvrirFlux(); };
+$('fm-x').onclick=fermerFlux;
+window.addEventListener('keydown',e=>{ if(e.key==='Escape'&&$('form').classList.contains('is-on'))fermerFlux(); });
+$('nm-go').onclick=()=>{ if(NAME_OK)etape('st-pay'); };
+$('nm-input').addEventListener('keydown',e=>{ if(e.key==='Enter'){e.preventDefault();if(NAME_OK)etape('st-pay');} });
 
 /* ══ 4 · LE DÉPÔT — 500 €, puis Stripe. Le montant vient du serveur ══════ */
 $('ask').onclick = async () => {
@@ -942,7 +937,7 @@ $('ask').onclick = async () => {
     box_not_found:'that element changed — pick it again', photo:'the photo did not go through — try again',
     too_many:'three projects are waiting already', no_session:'sign in again',
     name:'engrave its name', name_taken:'that name is taken' })[d.error] || 'try again';
-  if(d.error === 'name_taken'){ NAME_OK = false; $('name-note').className = 'note no'; $('name-note').textContent = 'already taken'; steps(); }
+  if(d.error === 'name_taken'){ NAME_OK = false; $('name-note').className = 'note no'; $('name-note').textContent = 'already taken'; $('nm-go').disabled = true; etape('st-name'); }
 };
 $('how-btn').onclick = () => { const h = $('how'), on = h.classList.toggle('is-on'); $('how-btn').setAttribute('aria-expanded', String(on)); };
 $('signin').onclick = () => ssoLogin(false, '/luxury');
@@ -990,69 +985,6 @@ async function answer(id, action){
   n.className = 'note no'; n.textContent = ({ forbidden:'not an administrator', price:'a price between €0.50 and €50,000', not_found:'already answered' })[d.error] || 'try again';
 }
 
-/* ══ LA MANETTE — la porte luxury de la boutique (05/10/2026) ═══════════
-   Le même manche que l'accueil (rayon 15 px, seuil 9 px) : pousser vers une
-   direction la nomme et la colore AVANT d'y aller ; relâcher y va. Le
-   centre AGIT : l'action principale de la page. Copié, pas importé. */
-const NAV_TO = { g:'home', h:'streetwear', b:'decode' };
-const NAV_COLOR = { home:'var(--navy)', streetwear:'var(--blue)', luxury:'var(--rep)', decode:'var(--navy)', news:'var(--blue)' };
-const NAV_NAME = { home:'Higher', streetwear:'Streetwear', luxury:'Luxury', decode:'Decode', news:'News' };
-const NAV_URL = { home:'/', streetwear:'/streetwear', luxury:'/luxury', decode:'/#decode', news:'/#news' };
-const NAV_DOT = { home:'h', streetwear:'o', luxury:'r', decode:'h', news:'o' };
-let NAV_MOVES = 0;
-function joyPaint(preview){
-  const t = preview && NAV_TO[preview];
-  $('nav-box').style.setProperty('--joy-vue', NAV_COLOR[t || 'luxury']);
-  const cur = NAV_DOT[t || 'luxury'];
-  for(const k of ['o','h','r']) $('nav-stack').querySelector('.'+k).classList.toggle('is-current', k === cur);
-  for(const d of ['h','g','d','b']){ $('nav-'+d).classList.toggle('is-dead', !NAV_TO[d]); $('nav-'+d).classList.toggle('is-preview', preview === d && !!NAV_TO[d]); }
-  const say = $('nav-say'), act = navAction();
-  say.textContent = t ? NAV_NAME[t] : (act ? act[0] : NAV_NAME['luxury']);
-  say.classList.toggle('is-preview', !!t);
-  $('nav-box').setAttribute('aria-label', act ? act[0] : 'Act');
-}
-function navStep(d){ const t = NAV_TO[d]; if(!t) return; NAV_MOVES++; location.href = NAV_URL[t]; }
-function navTap(){ const a = navAction(); if(a) a[1](); }
-(function manette(){
-  const bx = $('nav-box'), st = $('nav-stack'), R = 15, threshold = 9;
-  let id = null, x0 = 0, y0 = 0, dx = 0, dy = 0, moved = 0;
-  const pose = (a, b) => { st.style.setProperty('--mx', a.toFixed(1)+'px'); st.style.setProperty('--my', b.toFixed(1)+'px'); };
-  const dirOf = () => Math.max(Math.abs(dx), Math.abs(dy)) >= threshold ? (Math.abs(dx) > Math.abs(dy) ? (dx < 0 ? 'g' : 'd') : (dy < 0 ? 'h' : 'b')) : null;
-  bx.addEventListener('pointerdown', e => {
-    if(e.button > 0 || id !== null) return;
-    id = e.pointerId; x0 = e.clientX; y0 = e.clientY; dx = dy = moved = 0; bx.classList.add('is-held');
-    try{ bx.setPointerCapture(id); }catch(_){} e.preventDefault();
-  });
-  bx.addEventListener('pointermove', e => {
-    if(id !== e.pointerId) return;
-    const a = e.clientX - x0, b = e.clientY - y0, d = Math.hypot(a, b), k = d > R ? R / d : 1;
-    dx = a * k; dy = b * k; moved = Math.max(moved, d); pose(dx, dy); joyPaint(dirOf());
-  });
-  function finish(e, cancel){
-    if(id === null || e.pointerId !== id) return;
-    id = null; bx.classList.remove('is-held'); pose(0, 0); const d = dirOf(); joyPaint();
-    if(cancel) return;
-    if(moved < 4) navTap(); else if(d) navStep(d);
-  }
-  bx.addEventListener('pointerup', e => finish(e, false));
-  bx.addEventListener('pointercancel', e => finish(e, true));
-  bx.addEventListener('click', e => { if(e.detail === 0) navTap(); });
-  for(const d of ['h','g','d','b']) $('nav-'+d).onclick = () => navStep(d);
-})();
-
-/* Le centre : payer un devis prêt, sinon prendre la Box, sinon demander. */
-function navAction(){
-  const vis = id => !$(id).classList.contains('hide');
-  if(document.querySelector('[data-pay]')) return ['Pay', () => { const b = document.querySelector('[data-pay]'); b.scrollIntoView({ behavior:'smooth', block:'center' }); b.click(); }];
-  if(vis('form')){
-    if(!PHOTO) return ['Photo', () => $('ph-file').click()];
-    if(!PICK) return ['Element', () => { $('totehmize').scrollIntoView({ behavior:'smooth', block:'center' }); $('totehmize').click(); }];
-    return ['Deposit', () => $('ask').click()];
-  }
-  if(vis('s-out')) return ['Sign in', () => ssoLogin(false, '/luxury')];
-  if(vis('s-nothp')) return ['Get Higher', () => $('get-higher').click()];
-  return null;
-}
 const isOpen = id => $(id).classList.contains('is-open');
 
 /* ── La session : le vrai pseudo (03/10), puis l'état ── */
@@ -1065,7 +997,6 @@ async function mePaint(){
 }
 sb.auth.onAuthStateChange((ev, session) => { ME = session?.user || null; setTimeout(mePaint, 0); if(ev === 'SIGNED_IN' || ev === 'SIGNED_OUT') setTimeout(load, 0); });
 { const { data:{ session } } = await sb.auth.getSession(); ME = session?.user || null; mePaint(); }
-joyPaint();
 await load();
 </script>
 <script data-ecosystem-ui="2026-10-05">
