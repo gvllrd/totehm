@@ -279,13 +279,38 @@ try{
   // ══ LE FILTRE INTELLIGENT (20/10) : le Totehm docké l'ouvre DIRECTEMENT — une vue, puis une box de cette vue ══
   await pg.click('#gate-asteroid');await pg.waitForTimeout(500);
   const fz=await pg.evaluate(()=>({vu:!document.getElementById("lv-sh-sf").hidden, pick:!document.getElementById('lv-sh-pick').hidden,
-    vues:[...document.querySelectorAll('#lv-sh-sf .sfv')].map(e=>e.textContent), boxes:document.querySelectorAll('#lv-sh-sf .sfb').length}));
-  ok(fz.vu&&!fz.pick&&fz.vues.length===5&&fz.boxes===0,'le Totehm docké ouvre le FILTRE : d\'abord les cinq vues ('+fz.vues.join(' · ')+')');
-  await pg.click('#lv-sh-sf .sfv[data-v="objectives"]');await pg.waitForTimeout(400);
+    papiers:document.querySelectorAll('#lv-sh-sf .sfcmd .sfv').length,
+    vues:[...document.querySelectorAll('#lv-sh-sf [data-sf="vue"]')].map(e=>e.textContent), boxes:document.querySelectorAll('#lv-sh-sf .sfb').length}));
+  ok(fz.vu&&!fz.pick&&fz.papiers===3&&fz.vues.length===5&&fz.boxes===0,
+    'le Totehm docké ouvre le FILTRE : le logo, ses trois papiers, les cinq vues ('+fz.vues.join(' · ')+')');
+  /* 24/10 (Wah) : « fusionne le filtre avec le logo ». Replié, le bloc de commande EST le
+     TOTEHM : un seul papier visible, ses trois calques dessus. Un tap le décompose. */
+  const plie=await pg.evaluate(()=>{const c=document.querySelector('#lv-sh-sf .sfcmd');
+    return {logo:c.classList.contains('is-logo'), calques:c.querySelectorAll('.sf-lg .gl').length,
+      cotes:[...c.querySelectorAll('.sfv-s,.sfv-v')].map(e=>+getComputedStyle(e).opacity)};});
+  ok(plie.logo&&plie.calques===3&&plie.cotes.every(o=>o<0.05),
+    '24/10 · le filtre arrive en LOGO : le rail, le T et le mot sur le papier, les deux côtés posés dessous');
+  await pg.click('#lv-sh-sf [data-sf="grind"]');await pg.waitForTimeout(900);
+  const ouvert=await pg.evaluate(()=>{const c=document.querySelector('#lv-sh-sf .sfcmd'),p=c.querySelector('.sfpile'),
+      g=c.querySelector('.sfv-g').getBoundingClientRect();
+    return {split:c.classList.contains('is-split'), lg:+getComputedStyle(c.querySelector('.sf-lg')).opacity,
+      cotes:[...c.querySelectorAll('.sfv-s,.sfv-v')].map(e=>+getComputedStyle(e).opacity),
+      pile:+getComputedStyle(p).opacity, large:Math.round(p.getBoundingClientRect().width), papier:Math.round(g.width),
+      noms:[...p.querySelectorAll('i')].map(e=>e.textContent)};});
+  ok(ouvert.split&&ouvert.lg<0.05&&ouvert.cotes.every(o=>o>0.9),
+    '… il se décompose : les calques fondent, les deux papiers glissent aux extrémités');
+  await pg.click('#lv-sh-sf [data-sf="grind"]');await pg.waitForTimeout(600);
+  const grind=await pg.evaluate(()=>{const c=document.querySelector('#lv-sh-sf .sfcmd'),p=c.querySelector('.sfpile');
+    return {op:+getComputedStyle(p).opacity, large:Math.round(p.getBoundingClientRect().width),
+      papier:Math.round(c.querySelector('.sfv-g').getBoundingClientRect().width),
+      noms:[...p.querySelectorAll('i')].map(e=>e.textContent)};});
+  ok(grind.op>0.9&&grind.large<=grind.papier&&grind.noms.join(',')==='my objectives,my habits,my repulsions',
+    '… et MY GRIND empile ses trois boutons DANS son navy : courts ('+grind.large+' px pour un papier de '+grind.papier+' px)');
+  await pg.click('#lv-sh-sf [data-sf="vue"][data-v="objectives"]');await pg.waitForTimeout(400);
   const f1b=await pg.evaluate(()=>({boxes:[...document.querySelectorAll('#lv-sh-sf .sfb .tb .v-name')].map(e=>e.textContent),
     peau:(()=>{const h=document.querySelector('#lv-sh-sf .sfb .tb .h-body');return h?getComputedStyle(h).backgroundColor:'';})()}));
   ok(f1b.boxes.join('|')==='Ship it'&&f1b.peau==='rgb(54, 73, 140)','une vue choisie déplie SES boxes, au format Totehm (objectif : bleu clair) : '+f1b.boxes.join(' · '));
-  await pg.click('#lv-sh-sf .sfv[data-v="habits"]');await pg.waitForTimeout(400);
+  await pg.click('#lv-sh-sf [data-sf="vue"][data-v="habits"]');await pg.waitForTimeout(400);
   await pg.locator('#lv-sh-sf .sfb').filter({hasText:'Run the hill'}).first().click();await pg.waitForTimeout(600);
   const f1c=await pg.evaluate(()=>({ferme:document.getElementById('lv-sh-sf').hidden, items:window.__totehm_sh().items,
     tete:(document.querySelector('#lv-sh .tl-sel .tb .v-name')||{}).textContent||'', minis:document.querySelectorAll('#lv-sh .tl-sel .tb .mini').length}));

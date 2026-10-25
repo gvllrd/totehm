@@ -115,14 +115,18 @@ a{color:inherit;text-decoration:none}
 #a-dots i.is-on,#m-dots i.is-on{background:#fff}
 #m-dots{display:flex;gap:7px;justify-content:center;min-height:5px}
 #cl-title{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:#fff;text-align:center}
-/* CE QUI RESTE SE VOIT · 24/10 (Wah) : c'est cette rareté qui tient le prix —
-   le nombre est GRAND, en Quantico, coral ; le reste l'accompagne. */
-#cl-facts{display:flex;flex-wrap:wrap;gap:3px 14px;justify-content:center;align-items:baseline;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo)}
+/* CE QUI RESTE SE VOIT · 24/10 (Wah, bis) : pas un gros chiffre coral (le Coral
+   est le NOM d'un Totehm, nulle part ailleurs — BRAND.md), mais une JAUGE : un
+   trait d'un pixel qui se vide à mesure que la série part, et le compte en
+   Quantico blanc, à la taille du titre. Visible parce que c'est MESURÉ. */
+#cl-facts{display:flex;flex-wrap:wrap;gap:2px 14px;justify-content:center;align-items:baseline;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo)}
 #cl-facts .left{display:flex;align-items:baseline;gap:6px}
-#cl-facts .left b{font-family:var(--q);font-weight:700;font-size:26px;line-height:1;letter-spacing:0;color:var(--coral)}
-#cl-facts .left i{font-style:normal;font-size:11px;letter-spacing:.06em;color:rgba(255,255,255,.5)}
-#cl-facts .left em{font-style:normal;font-size:9px;letter-spacing:.22em;color:rgba(255,255,255,.72)}
-#cl-facts .out{font-family:var(--q);font-weight:700;font-size:15px;letter-spacing:.1em;color:var(--rep)}
+#cl-facts .left b{font-family:var(--q);font-weight:700;font-size:14px;line-height:1;letter-spacing:.02em;color:#fff}
+#cl-facts .left i{font-style:normal;font-size:10px;letter-spacing:.06em;color:rgba(255,255,255,.42)}
+#cl-facts .left em{font-style:normal;font-size:9px;letter-spacing:.22em;color:rgba(255,255,255,.62)}
+#cl-facts .bar{flex:0 0 100%;height:1px;width:min(68%,150px);margin:6px auto 0;background:rgba(255,255,255,.16);position:relative}
+#cl-facts .bar i{position:absolute;left:0;top:0;bottom:0;width:var(--p,100%);background:#fff;transition:width .4s ease}
+#cl-facts .out{font-family:var(--q);font-weight:700;font-size:13px;letter-spacing:.1em;color:var(--rep)}
 /* 08/10 (ter) — l'élément déjà choisi (arrivé de COM, ou repris) : dit sous le vêtement, à sa couleur. */
 #cl-wear{display:flex;align-items:baseline;gap:9px;max-width:min(100%,360px);padding:6px 12px;background:var(--skin,#333366);color:#fff}
 #cl-wear small{flex:none;font-size:8.5px;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.72)}
@@ -150,7 +154,13 @@ a{color:inherit;text-decoration:none}
 #matter{width:100%;display:flex;flex-direction:column;gap:9px;margin-top:9px;padding:9px 0 2px;border-top:1px solid rgba(255,255,255,.22)}
 #matter .grp{display:flex;flex-wrap:wrap;gap:5px;align-items:center}
 #matter .w{font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.62);min-width:64px}
-.mi{font-family:var(--q);font-size:11px;color:#fff;padding:2px 7px;background:var(--navy)}
+.mi{font-family:var(--q);font-size:11px;color:#fff;padding:2px 7px;background:var(--navy);border:0;text-align:left}
+/* 24/10 (Wah) : une sous-box SE DÉSELECTIONNE — éteinte, elle n'entre pas dans
+   l'œuvre. Elle reste lisible : le trait dit « hors de l'œuvre », pas l'absence. */
+button.mi{cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background-color .18s ease,color .18s ease}
+button.mi.is-off{background:transparent;box-shadow:inset 0 0 0 1px rgba(255,255,255,.28);color:rgba(255,255,255,.42);text-decoration:line-through}
+@media(hover:hover){button.mi:hover{filter:brightness(1.2)}}
+#matter .hint{margin-top:2px;opacity:.75}
 .mi.o{background:var(--blue)}.mi.r{background:var(--rep)}.mi.w{background:#5b2652}.mi.v{background:#2b3a73}
 .mi.s{background:rgba(0,0,0,.35);font-family:var(--mono);font-size:10px}
 .pal{display:flex;gap:4px}.pal i{width:18px;height:18px;display:block}
@@ -268,8 +278,8 @@ a{color:inherit;text-decoration:none}
 .st-card img,.st-card .ph{width:120px;height:120px;display:block;object-fit:cover;border-radius:10px;background:var(--c1);opacity:.6;filter:grayscale(45%);outline:1px solid transparent;transition:opacity .2s ease,filter .2s ease,outline-color .2s ease}
 .st-card b{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--lo);transition:color .2s ease}
 .st-card span{display:flex;align-items:baseline;justify-content:center;gap:4px;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.7)}
-/* Sept pièces par style : le chiffre se voit autant que celui du vêtement. */
-.st-card span b{font-family:var(--q);font-weight:700;font-size:15px;line-height:1;letter-spacing:0;color:var(--coral)}
+/* Sept pièces par style : même écriture que le vêtement, blanche. */
+.st-card span b{font-family:var(--q);font-weight:700;font-size:11px;line-height:1;letter-spacing:.02em;color:#fff}
 .st-card span.out{color:var(--rep);font-weight:700}
 .st-card.is-on img,.st-card.is-on .ph{opacity:1;filter:none;outline-color:#fff}
 .st-card.is-on b{color:#fff}
@@ -285,7 +295,7 @@ a{color:inherit;text-decoration:none}
 .recap .price{color:#fff;font-weight:700;font-size:13px;letter-spacing:.04em;margin-top:4px}
 .recap .nm{font-family:var(--q);font-size:15px;letter-spacing:0;text-transform:none;color:var(--coral)}
 .recap .rleft{display:flex;align-items:baseline;justify-content:center;flex-wrap:wrap;gap:0 6px;margin-top:5px;font-size:9px;letter-spacing:.2em;color:rgba(255,255,255,.72)}
-.recap .rleft b{font-family:var(--q);font-weight:700;font-size:17px;line-height:1;letter-spacing:0;color:var(--coral)}
+.recap .rleft b{font-family:var(--q);font-weight:700;font-size:12px;line-height:1;letter-spacing:.02em;color:#fff}
 .sizes{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
 .sz{font-weight:700;font-size:12px;color:var(--mid);background:var(--c1);border:1px solid transparent;border-radius:10px;cursor:pointer;min-width:48px;padding:3px 3px;-webkit-tap-highlight-color:transparent;transition:background .15s ease,color .15s ease,border-color .15s ease}
 .sz.is-on{background:#3a3a42;color:#fff;border-color:#fff}
@@ -674,7 +684,7 @@ const FLOW_KEY='totehm_cloth_flow';
 let supports=[],ci=0,ai=0,stage='cloth';
 const IMG={},ANG={};
 let me=null,myProfile=null,TOT=null,vue=null,styles=[],stylesLoaded=false,TEST=false;
-const F={support:null,el:null,want:null,nameRaw:'',nameOk:false,style:null,size:''};
+const F={support:null,el:null,hide:[],want:null,nameRaw:'',nameOk:false,style:null,size:''};
 let OPEN=null,ORDERING=false,GOING=false;
 const PRINT={};   /* les photos de la zone d'impression, par vêtement */
 /* L'historique est une pile LINÉAIRE des scènes (cloth → … → order) : le bouton
@@ -698,11 +708,11 @@ function note(id,cls,txt){const n=$(id);n.className='note '+cls;n.textContent=tx
 window.__totehm_cloth=()=>({build:BUILD,ready:READY,stage,side:document.body.dataset.side||'none',desktop:desktop(),signed_in:!!me,supports:supports.length,model:ci,angles:imgs(cur()).length,angle:ai,
   print:(PRINT[F.support?.id]||[]).length,papers:$('el-head').classList.contains('is-split'),melt:$('el-head').classList.contains('is-melt'),grind:$('el-head').classList.contains('is-grind'),
   views:TOT?Object.values(TOT).filter(a=>a.length).length:0,view:vue,open:!!OPEN,seam:$('tz-seam').querySelectorAll('i.is-on').length,
-  element:F.el?F.el.kind:null,wanted:!!F.want,named:F.nameOk,style:!!F.style,size:!!F.size,test:TEST,
+  element:F.el?F.el.kind:null,hidden:(F.hide||[]).length,wanted:!!F.want,named:F.nameOk,style:!!F.style,size:!!F.size,test:TEST,
   left:avail(cur()),style_left:F.style?styleLeft(F.style):null});
 
 /* ── La pièce en cours survit à l'aller-retour (connexion, Stripe annulé) ── */
-function save(s){try{sessionStorage.setItem(FLOW_KEY,JSON.stringify({s:s||stage,sid:F.support?.id??null,ai,el:F.el,wt:F.want,nm:F.nameRaw,st:F.style?.id??null,sz:F.size||''}));}catch(_){}}
+function save(s){try{sessionStorage.setItem(FLOW_KEY,JSON.stringify({s:s||stage,sid:F.support?.id??null,ai,el:F.el,hd:F.hide||[],wt:F.want,nm:F.nameRaw,st:F.style?.id??null,sz:F.size||''}));}catch(_){}}
 function readFlow(){try{return JSON.parse(sessionStorage.getItem(FLOW_KEY)||'null');}catch(_){return null;}}
 function clearFlow(){try{sessionStorage.removeItem(FLOW_KEY);}catch(_){}}
 
@@ -821,8 +831,10 @@ function paintCloth(){
   $('cl-title').textContent=s.title||'';
   /* 23/10 : au début, SEULEMENT ce qui reste. Le prix arrive à la fin, dans ORDER,
      là où on le paie ; la taille se choisit là aussi. */
+  const tot=s.max_pieces||0;
   $('cl-facts').innerHTML=left>0
-    ?'<span class="left"><b>'+left+'</b><i>of '+(s.max_pieces||0)+'</i><em>pieces left</em></span>'
+    ?'<span class="left"><b>'+left+'</b><i>/ '+tot+'</i><em>pieces left</em></span>'
+     +'<span class="bar"><i style="--p:'+(tot?Math.round(left/tot*100):0)+'%"></i></span>'
     :'<span class="out">sold out</span>';
   b.classList.remove('hide');b.disabled=left<=0;b.setAttribute('aria-label',left>0?'Totehmize this cloth':'Sold out');
   const cw=$('cl-wear');cw.classList.toggle('hide',!F.el);
@@ -1072,10 +1084,14 @@ let MT_SEQ=0;
    la box et la mettre en mode choisi, comme sur totehm.com ». Le choix est donc
    posé AU TAP, avec ce que la page a déjà en main ; la matière arrive après et
    RESTE dans la box. Le serveur relira l'élément en base de toute façon. */
+const estCache=(k,x)=>(F.hide||[]).some(h=>h.kind===k&&h.text===x);
 async function openEl(b){
   const o=((TOT&&TOT[vue])||[])[+b.dataset.k];if(!o)return;
   document.querySelectorAll('#el-list .bx').forEach(x=>x.classList.toggle('is-on',x===b));
   const seq=++MT_SEQ,v=vue,ref=String(o.ref);
+  /* Un AUTRE élément : ses sous-box repartent toutes allumées. Le même : on
+     garde ce qui a été éteint (revenir en arrière ne défait pas un choix). */
+  if(!F.el||F.el.ref!==ref||F.el.kind!==KIND[v])F.hide=[];
   F.el={kind:KIND[v],ref,view:v,text:o.text,is:o.is||[]};paintCloth();
   $('matter')?.remove();OPEN={b,o,m:null};
   const c=document.createElement('div');c.id='matter';c.innerHTML='<div class="mono">reading the element…</div>';b.appendChild(c);
@@ -1084,12 +1100,25 @@ async function openEl(b){
   if(seq!==MT_SEQ)return;
   if(error)console.error('[my_box_matter]',error.message);
   if(error||!m){c.innerHTML='<div class="mono">'+(error?'unavailable, try again':'this element is empty')+'</div>';return;}
+  /* 24/10 (Wah) : UNE SOUS-BOX SE DÉSELECTIONNE. Chaque mini-box est un bouton :
+     éteinte, elle n'entre pas dans l'œuvre. La page ne garde qu'une RÉFÉRENCE
+     (vue + texte) ; `create-checkout` relit la matière en base et n'en retire
+     que ce qui correspond — rien n'est reçu sur parole. */
   const groups=Object.entries(m.matter||{}).filter(([,a])=>(a||[]).length).map(([k,a])=>
-    '<div class="grp"><span class="w">'+esc((MI[k]||['',k])[1])+'</span>'+a.map(x=>'<span class="mi '+((MI[k]||[''])[0])+'">'+esc(x.text)+'</span>').join('')+'</div>').join('');
+    '<div class="grp"><span class="w">'+esc((MI[k]||['',k])[1])+'</span>'+a.map(x=>
+      '<button type="button" class="mi '+((MI[k]||[''])[0])+(estCache(k,x.text)?' is-off':'')+'" data-k="'+esc(k)+'" data-t="'+esc(x.text)+'" aria-pressed="'+(!estCache(k,x.text))+'">'+esc(x.text)+'</button>').join('')+'</div>').join('');
   /* La box PRESQUE ENTIÈRE (24/10) : ce qui lui est relié, en mini-boxes, et le
      SON de son intention (`intention_music`). Toujours ni palette ni rythme. */
   const son=m.extra&&m.extra.mood?'<div class="grp"><span class="w">sound</span><span class="mi s">'+esc(m.extra.mood)+'</span></div>':'';
-  c.innerHTML=groups+son;
+  c.innerHTML=groups+son+(groups?'<div class="mono hint">tap a link to keep it out</div>':'');
+  c.addEventListener('click',e=>{
+    const q=e.target.closest('.mi[data-k]');if(!q)return;
+    const k=q.dataset.k,x=q.dataset.t,off=!q.classList.contains('is-off');
+    q.classList.toggle('is-off',off);q.setAttribute('aria-pressed',String(!off));
+    F.hide=(F.hide||[]).filter(h=>!(h.kind===k&&h.text===x));
+    if(off)F.hide.push({kind:k,text:x});
+    save();
+  });
   OPEN={b,o,m};
   /* Le serveur a le dernier mot sur le texte et la vue — mais jamais sur un
      choix plus frais que lui (`MT_SEQ` a déjà tranché, F.el peut avoir changé). */
@@ -1215,7 +1244,8 @@ async function order(){
   let data={},status=0;
   try{
     const r=await fetch(FN+'create-checkout',{method:'POST',headers:{'content-type':'application/json','apikey':SB_ANON,'authorization':'Bearer '+session.access_token},
-      body:JSON.stringify({garment_id:F.support.id,box:{kind:F.el.kind,ref:F.el.ref},name:F.nameRaw,size:F.size,style_id:F.style.id})});
+      body:JSON.stringify({garment_id:F.support.id,box:{kind:F.el.kind,ref:F.el.ref},hide:(F.hide||[]).slice(0,40),
+        name:F.nameRaw,size:F.size,style_id:F.style.id})});
     status=r.status;data=await r.json().catch(()=>({}));
   }catch(e){console.error('[create-checkout]',e&&e.message||e);}
   ORDERING=false;paintOrderBtn();
@@ -1260,6 +1290,7 @@ async function restore(fl,cancelled){
   if(i<0){show('cloth','replace');return;}
   ci=i;ai=Math.max(0,Math.min(Number(fl.ai)||0,imgs(supports[i]).length-1));ANG[ci]=ai;placeViewer();paintCloth();
   F.support=supports[i];F.nameRaw=String(fl.nm||'');F.size=String(fl.sz||'');F.el=fl.el&&!!VUE_DE[fl.el.kind]?fl.el:null;
+  F.hide=Array.isArray(fl.hd)?fl.hd.filter(h=>h&&typeof h.kind==='string'&&typeof h.text==='string').slice(0,40):[];
   F.want=fl.wt&&!!VUE_DE[fl.wt.kind]?{kind:fl.wt.kind,ref:String(fl.wt.ref)}:null;
   const target=cancelled?'order':(fl.s||'cloth');
   if(target==='cloth'||target==='done'||!me){show('cloth','replace');return;}
@@ -1343,7 +1374,7 @@ async function showDone(id){
     const parentButton = scope.closest(buttonSelector);
     const buttons = [...(parentButton ? [parentButton] : []),...scope.querySelectorAll(buttonSelector)];
     buttons.forEach(b => {
-      if (b.closest('#joy,#nav,#cross,.pieces,#totehm-paper,#tz-papers,.eco-sheet') || b.matches('.pick-habit,.h-T,.h-Ti,.h-x,.w-x,.cur,#totehmize,.eco-box-zoom,.mini-toggle,.rk-a')) return;
+      if (b.closest('#joy,#nav,#cross,.pieces,#totehm-paper,#tz-papers,#matter,.eco-sheet') || b.matches('.pick-habit,.h-T,.h-Ti,.h-x,.w-x,.cur,#totehmize,.eco-box-zoom,.mini-toggle,.rk-a')) return;
       const text = b.textContent.trim(); if (!text || /^[×+−\-↑↓←→↔↕✕✖?°\d\s]+$/.test(text)) return;
       if (/^sign\s*in\b/i.test(text)) {
         const leaf = b.querySelector('#member-txt,#conn-txt') || b;

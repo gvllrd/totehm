@@ -3,7 +3,6 @@
 > L'état ACTUEL et les pièges (≤ 60 lignes). Le sens d'un vêtement : `BRAND.md`. Un lot réécrit ces lignes, en place.
 
 Des vêtements totehmisés : **n'importe quelle box** du TOTEHM d'un membre, un style déterminé, produits par Printful.
-
 **UN SEUL ÉCRAN QUI SE REMPLIT** : ni scène plein écran, ni vue latérale. Le vêtement en haut (les curseurs du manche
 autour : ← → les modèles, ↑ ↓ ses vues), son nom, CE QUI RESTE EN GRAND (le chiffre Coral, en Quantico : il tient le
 prix — même chiffre sur un style) — puis le TOTEHM. Chaque étape APPARAÎT sous la précédente et y reste ; la suivante
@@ -30,7 +29,8 @@ serveur et s'explique à ce moment-là (« 0 = this collection, june to may »).
 | `index.html` | l'accueil : la COUTURE (sept fils d'intention qui n'en font plus qu'un — la nature de la totehmisation, en TRAIT, pas un processeur), **Decode en premier** (la boîte navy perforée, bouton ET saisie), puis Streetwear, Luxury |
 | `streetwear.html` | le vêtement, la box (ou celle déjà choisie depuis COM, `?wear=<kind>:<ref>`), le nom, le style, la taille |
 | seau `totehm-cloth-support` | `<dossier>/` = les vues GÉNÉRALES (défilement ↑ ↓) · `<dossier>/print/` = la ZONE D'IMPRESSION (montrée à la commande). L'ordre vient des NOMS. Sans dossier : `image_url` (Printful, posée par n8n F) |
-| `luxury.html` · `terms_of_sale.html` | le Luxe sur devis (`luxury-quote`, puis `luxury-checkout`) · les conditions de vente |
+| `luxury.html` | le Luxe : une PHOTO de la pièce (seau `luxury-pieces`, dossier du membre), le MÊME TOTEHM que streetwear, un nom, puis **500 € pour déposer le projet** (`luxury_offer`, relu par `luxury-quote` ; remboursé si la pièce ne peut pas être travaillée) · HOW IT WORKS dit le métier : étude, préparation, peinture qui plie, tenue |
+| `terms_of_sale.html` | les conditions de vente |
 | `art-bridge.html` | `/get_higher`, `/stoner`, `/market`… y sont réécrits : il consomme le code SSO de la boutique puis en émet un pour SPACE — c'est aussi là que revient l'achat du THP (`/stoner?checked=1`) |
 
 ## Le parcours d'une pièce
@@ -57,4 +57,4 @@ choisit ; n8n C, `compose-artwork`) → **production** (n8n D : Printful) → **
 - **COM** : « + totehmize » n'est offert que sur MY STORY, et son filtre de gauche n'est pas encore le LOGO qui se décompose (`#lv-sh-pick`) — un lot COM. Le lien `?wear=<kind>:<ref>` est prêt.
 - **Une seule porte pour se connecter** : l'email OTP local de l'accueil est retiré (23/10). Tout passe par
   `totehm.com/auth` (PKCE) ; connecté, le nom ramène à COM.
-Tests : `tests/browser/` streetwear, boutique_home, com_cloths, art_bridge ; `tests/sql/` streetwear_immersive, luxury.
+Tests : `tests/browser/` streetwear, luxury, boutique_home, com_cloths, art_bridge ; `tests/sql/` streetwear_immersive, luxury.

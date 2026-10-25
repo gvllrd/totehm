@@ -3719,11 +3719,47 @@ body.is-tlv #gate-asteroid,body.is-tlv #lvjoy{opacity:0;pointer-events:none}
   font:700 9.5px/1.15 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;filter:brightness(.5);transition:filter .15s;
   display:flex;align-items:center;justify-content:center;text-align:center;min-width:0}
 .lsh-sf .sfv.is-on{filter:none;box-shadow:inset 0 0 0 1px #fff}   /* éteint = plus sombre, jamais transparent : rien ne passe à travers */
-.lsh-sf .sfcmd{--q:min(114px,26vw);display:grid;grid-template-columns:var(--q) 1fr var(--q);gap:3px;height:var(--q);width:100%}
-.lsh-sf .sfpile{display:grid;grid-template-rows:repeat(3,1fr);gap:3px;min-width:0}
-.lsh-sf .sfv-sq{width:var(--q);height:var(--q);padding:0 14%;
+/* 24/10 (Wah) : « fusionne le filtre avec le logo, mais avant réduis la longueur des
+   rectangles-couleurs de my objectives, my habits et my repulsions ». Les deux demandes
+   n'en font qu'une : les trois rectangles rentrent DANS le papier du milieu, donc ils
+   sont courts ; et les trois papiers, posés l'un sur l'autre, redeviennent le LOGO.
+   Un tap le décompose — le fond prend le dessus, le rail, le T et le mot fondent. */
+.lsh-sf .sfcmd{--q:min(114px,26vw);display:flex;gap:3px;justify-content:center;align-items:stretch;height:var(--q);width:100%}
+.lsh-sf .sfv-sq{flex:0 0 var(--q);width:var(--q);height:var(--q);min-width:0;padding:0 7px;
+  /* ⚠️ un padding en POURCENTAGE se mesure sur le panneau, pas sur le papier : à 14 % il
+     dépassait la largeur du carré sur ordinateur (117,6 px pour 114) et le papier n'était
+     plus carré. En pixels, les trois papiers restent carrés partout. */
   -webkit-mask:var(--perfo) 0 0/100% 100% no-repeat;mask:var(--perfo) 0 0/100% 100% no-repeat}
 .lsh-sf .sfv-sq.is-on{box-shadow:inset 0 0 0 2px #fff}
+.lsh-sf .sfcmd .sfv{transition:transform .5s cubic-bezier(.22,.61,.36,1),opacity .4s ease,filter .15s}
+.lsh-sf .sfv-g{position:relative;overflow:visible}
+/* 0 · les deux côtés sont POSÉS sur le centre : on ne voit qu'un logo */
+.lsh-sf .sfcmd.is-logo .sfv{filter:none}
+.lsh-sf .sfcmd.is-logo .sfv-s,.lsh-sf .sfcmd.is-logo .sfv-v{opacity:0;pointer-events:none}
+.lsh-sf .sfcmd.is-logo .sfv-s{transform:translateX(calc(100% + 3px))}
+.lsh-sf .sfcmd.is-logo .sfv-v{transform:translateX(calc(-100% - 3px))}
+/* 1 · le fond prend le dessus : le rail, le T et le mot fondent */
+.lsh-sf .sf-lg{position:absolute;inset:0;pointer-events:none;transition:opacity .45s ease,filter .5s ease,transform .5s ease}
+.lsh-sf .sf-lg .gl{position:absolute;display:block;overflow:visible;fill:#fff}
+.lsh-sf .sf-lg .g-rail{left:9.2%;top:.1%;width:7.65%;height:99.799%}
+.lsh-sf .sf-lg .g-t{left:35.501%;top:21.386%;width:29.7%;height:29.87%}
+.lsh-sf .sf-lg .g-wm{left:33.349%;top:54.268%;width:34.5%;height:20.834%}
+.lsh-sf .sfcmd.is-melt .sf-lg{opacity:0;filter:blur(7px);transform:scale(1.14)}
+.lsh-sf .sf-lab{opacity:0;transition:opacity .4s ease}
+.lsh-sf .sfcmd.is-melt .sf-lab{opacity:1}
+.lsh-sf .sfcmd.is-grind .sf-lab{opacity:0}
+/* 2 · les trois boutons, empilés AU CENTRE du navy — c'est là qu'ils raccourcissent */
+.lsh-sf .sfpile{position:absolute;left:7%;right:7%;top:50%;display:flex;flex-direction:column;gap:3px;
+  opacity:0;transform:translateY(-50%) scale(.9);pointer-events:none;transition:opacity .3s ease,transform .36s cubic-bezier(.22,.61,.36,1)}
+.lsh-sf .sfcmd.is-grind .sfpile{opacity:1;transform:translateY(-50%);pointer-events:auto}
+.lsh-sf .sfpile i{display:block;font:700 9px/1.2 'Space Mono',monospace;letter-spacing:0;text-transform:uppercase;font-style:normal;
+  padding:3px 1px;color:#fff;text-align:center;white-space:nowrap;overflow:hidden;cursor:pointer;transition:filter .2s ease}
+.lsh-sf .sfpile i[data-v=objectives]{background:#36498c}
+.lsh-sf .sfpile i[data-v=habits]{background:#3a3a70}
+.lsh-sf .sfpile i[data-v=repulsions]{background:#743169}
+.lsh-sf .sfpile i.is-on{box-shadow:inset 0 0 0 1px #fff}
+@media(hover:hover){.lsh-sf .sfpile i:hover{filter:brightness(1.25)}}
+@media(prefers-reduced-motion:reduce){.lsh-sf .sfcmd .sfv,.lsh-sf .sf-lg,.lsh-sf .sfpile,.lsh-sf .sf-lab{transition:none}}
 .lsh-sf .sfbx{display:flex;flex-direction:column;gap:3px;max-height:40vh;overflow-y:auto;overscroll-behavior:contain}
 .lsh-sf .sfb,.lsh-pick .pk-b{cursor:pointer;width:min(92vw,420px)}
 .lsh-sf .sfb.is-on{outline:1px solid #fff;outline-offset:1px}
@@ -3910,6 +3946,12 @@ body.lv-d.rdr-voir #gate-asteroid,body.lv-d.rdr-voir #lvjoy,body.rdr-voir #rdr-f
 </style>
 </head>
 <body class="gate">
+<!-- 24/10 (Wah) : « fusionne le filtre avec le logo ». Les trois calques du
+     TOTEHM, en sprite, pour que le bloc de commande du filtre PORTE le logo
+     sans toucher à celui de l'atterrissage (#gate-logo, animé). -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="lg-rail" viewBox="20.689 0.225 17.203 223.630" preserveAspectRatio="none"><defs><clipPath id="tgr_3a710ebbbe"><path d="M 20.652344 0.261719 L 37.839844 0.261719 L 37.839844 223.816406 L 20.652344 223.816406 Z M 20.652344 0.261719 " clip-rule="nonzero"/></clipPath><clipPath id="tgr_1b01f8474a"><path d="M 0.652344 0.261719 L 17.839844 0.261719 L 17.839844 223.816406 L 0.652344 223.816406 Z M 0.652344 0.261719 " clip-rule="nonzero"/></clipPath><clipPath id="tgr_95349ecf51"><rect x="0" width="18" y="0" height="224"/></clipPath></defs><g clip-path="url(#tgr_3a710ebbbe)"><g transform="matrix(1, 0, 0, 1, 20, -0.000000000000020428)"><g clip-path="url(#tgr_95349ecf51)"><g clip-path="url(#tgr_1b01f8474a)"><path fill="#626286" d="M 0.652344 0.261719 L 17.839844 0.261719 L 17.839844 223.808594 L 0.652344 223.808594 Z M 0.652344 0.261719 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g></symbol><symbol id="lg-t" viewBox="79.832 47.921 66.789 66.932" preserveAspectRatio="none"><defs><clipPath id="tgt_ad60c268aa"><path d="M 0.871094 1.027344 L 67.59375 1.027344 L 67.59375 10.664062 L 0.871094 10.664062 Z M 0.871094 1.027344 " clip-rule="nonzero"/></clipPath><clipPath id="tgt_f37d153e97"><path d="M 0.871094 0.0273438 L 67.59375 0.0273438 L 67.59375 9.664062 L 0.871094 9.664062 Z M 0.871094 0.0273438 " clip-rule="nonzero"/></clipPath><clipPath id="tgt_0eae0d8cca"><rect x="0" width="68" y="0" height="10"/></clipPath><clipPath id="tgt_d380122ed3"><path d="M 29.410156 1.027344 L 39.050781 1.027344 L 39.050781 67.75 L 29.410156 67.75 Z M 29.410156 1.027344 " clip-rule="nonzero"/></clipPath><clipPath id="tgt_75ca9fbfbb"><path d="M 0.410156 0.0273438 L 10.050781 0.0273438 L 10.050781 66.75 L 0.410156 66.75 Z M 0.410156 0.0273438 " clip-rule="nonzero"/></clipPath><clipPath id="tgt_92fddf9f0e"><rect x="0" width="11" y="0" height="67"/></clipPath><clipPath id="tgt_1e85f52e0e"><path d="M 21.183594 63.386719 L 47.28125 63.386719 L 47.28125 67.75 L 21.183594 67.75 Z M 21.183594 63.386719 " clip-rule="nonzero"/></clipPath><clipPath id="tgt_6c7bfd0f9f"><path d="M 0.183594 0.386719 L 26.28125 0.386719 L 26.28125 4.75 L 0.183594 4.75 Z M 0.183594 0.386719 " clip-rule="nonzero"/></clipPath><clipPath id="tgt_7d4c700d36"><rect x="0" width="27" y="0" height="5"/></clipPath><clipPath id="tgt_ffb4264ddd"><rect x="0" width="68" y="0" height="68"/></clipPath></defs><g transform="matrix(1, 0, 0, 1, 79, 47)"><g clip-path="url(#tgt_ffb4264ddd)"><g clip-path="url(#tgt_ad60c268aa)"><g transform="matrix(1, 0, 0, 1, 0.000000000000014211, 1)"><g clip-path="url(#tgt_0eae0d8cca)"><g clip-path="url(#tgt_f37d153e97)"><path fill="#ffffff" d="M 0.871094 0.0273438 L 67.582031 0.0273438 L 67.582031 9.664062 L 0.871094 9.664062 Z M 0.871094 0.0273438 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g><g clip-path="url(#tgt_d380122ed3)"><g transform="matrix(1, 0, 0, 1, 29, 1)"><g clip-path="url(#tgt_92fddf9f0e)"><g clip-path="url(#tgt_75ca9fbfbb)"><path fill="#ffffff" d="M 10.050781 0.0273438 L 10.050781 66.738281 L 0.410156 66.738281 L 0.410156 0.0273438 Z M 10.050781 0.0273438 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g><g clip-path="url(#tgt_1e85f52e0e)"><g transform="matrix(1, 0, 0, 1, 21, 63)"><g clip-path="url(#tgt_7d4c700d36)"><g clip-path="url(#tgt_6c7bfd0f9f)"><path fill="#ffffff" d="M 26.28125 4.75 L 0.183594 4.75 L 0.183594 0.386719 L 26.28125 0.386719 Z M 26.28125 4.75 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g></g></g></symbol><symbol id="lg-wm" viewBox="74.997 121.602 77.584 46.683" preserveAspectRatio="none"><defs><g/><clipPath id="tgw_98fd27636e"><rect x="0" width="84" y="0" height="39"/></clipPath></defs><g fill="#ffffff" fill-opacity="1"><g transform="translate(87.377054, 137.358137)"><g><path d="M 5.546875 -14.09375 L 0.09375 -14.09375 L 0.09375 -15.515625 L 12.640625 -15.515625 L 12.640625 -14.09375 L 7.1875 -14.09375 L 7.1875 0 L 5.546875 0 Z M 5.546875 -14.09375 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(99.483952, 137.358137)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(104.6725, 137.358137)"><g><path d="M 9.3125 0.140625 C 7.769531 0.140625 6.375 -0.203125 5.125 -0.890625 C 3.882812 -1.578125 2.910156 -2.519531 2.203125 -3.71875 C 1.503906 -4.914062 1.15625 -6.265625 1.15625 -7.765625 C 1.15625 -9.253906 1.503906 -10.597656 2.203125 -11.796875 C 2.910156 -12.992188 3.882812 -13.9375 5.125 -14.625 C 6.375 -15.3125 7.769531 -15.65625 9.3125 -15.65625 C 10.851562 -15.65625 12.238281 -15.3125 13.46875 -14.625 C 14.707031 -13.945312 15.679688 -13.003906 16.390625 -11.796875 C 17.097656 -10.597656 17.453125 -9.253906 17.453125 -7.765625 C 17.453125 -6.265625 17.097656 -4.910156 16.390625 -3.703125 C 15.679688 -2.503906 14.707031 -1.5625 13.46875 -0.875 C 12.238281 -0.195312 10.851562 0.140625 9.3125 0.140625 Z M 9.3125 -1.328125 C 10.539062 -1.328125 11.648438 -1.601562 12.640625 -2.15625 C 13.628906 -2.71875 14.40625 -3.488281 14.96875 -4.46875 C 15.53125 -5.445312 15.8125 -6.546875 15.8125 -7.765625 C 15.8125 -8.972656 15.53125 -10.066406 14.96875 -11.046875 C 14.40625 -12.035156 13.628906 -12.804688 12.640625 -13.359375 C 11.648438 -13.910156 10.539062 -14.1875 9.3125 -14.1875 C 8.082031 -14.1875 6.96875 -13.910156 5.96875 -13.359375 C 4.976562 -12.804688 4.195312 -12.035156 3.625 -11.046875 C 3.050781 -10.066406 2.765625 -8.972656 2.765625 -7.765625 C 2.765625 -6.546875 3.050781 -5.445312 3.625 -4.46875 C 4.195312 -3.488281 4.976562 -2.71875 5.96875 -2.15625 C 6.96875 -1.601562 8.082031 -1.328125 9.3125 -1.328125 Z M 9.3125 -1.328125 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(122.655559, 137.358137)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(127.844108, 137.358137)"><g><path d="M 5.546875 -14.09375 L 0.09375 -14.09375 L 0.09375 -15.515625 L 12.640625 -15.515625 L 12.640625 -14.09375 L 7.1875 -14.09375 L 7.1875 0 L 5.546875 0 Z M 5.546875 -14.09375 "/></g></g></g><g transform="matrix(1, 0, 0, 1, 71, 138)"><g clip-path="url(#tgw_98fd27636e)"><g fill="#ffffff" fill-opacity="1"><g transform="translate(0.838799, 30.275545)"><g><path d="M 18.59375 -2.640625 L 18.59375 0 L 3.1875 0 L 3.1875 -21.234375 L 18.171875 -21.234375 L 18.171875 -18.59375 L 6.21875 -18.59375 L 6.21875 -12.078125 L 16.875 -12.078125 L 16.875 -9.5 L 6.21875 -9.5 L 6.21875 -2.640625 Z M 18.59375 -2.640625 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(19.582399, 30.275545)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(26.163451, 30.275545)"><g><path d="M 21.453125 -21.234375 L 21.453125 0 L 18.421875 0 L 18.421875 -9.46875 L 6.21875 -9.46875 L 6.21875 0 L 3.1875 0 L 3.1875 -21.234375 L 6.21875 -21.234375 L 6.21875 -12.109375 L 18.421875 -12.109375 L 18.421875 -21.234375 Z M 21.453125 -21.234375 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(49.213997, 30.275545)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(55.79505, 30.275545)"><g><path d="M 22.875 0 L 22.84375 -15.46875 L 15.171875 -2.578125 L 13.78125 -2.578125 L 6.09375 -15.390625 L 6.09375 0 L 3.1875 0 L 3.1875 -21.234375 L 5.671875 -21.234375 L 14.53125 -6.3125 L 23.28125 -21.234375 L 25.765625 -21.234375 L 25.796875 0 Z M 22.875 0 "/></g></g></g></g></g></symbol>
+</defs></svg>
 <script>/* 21/10 — UNE SESSION GARDÉE DANS CE NAVIGATEUR S'ANNONCE AVANT LE PREMIER RENDU : tant qu'elle n'est pas lue
    (`sessionLoad`), rien de « hors connexion » ne s'affiche (`ses-attente`). Un booléen, jamais une valeur lue. */
 try{var t=localStorage.getItem('sb-abujjbkbbiumxrokozph-auth-token');if(t&&JSON.parse(t).refresh_token)document.body.classList.add('ses-attente');}catch(e){}
@@ -6152,7 +6194,8 @@ function creerFeed(conf){
      ⚠️ UNE DIFFÉRENCE ASSUMÉE AVEC SPACE : là-bas le serveur fait un OU pondéré (`space_feed`, on
      cherche CHEZ LES AUTRES) ; ici on trie MES médias, déjà en mémoire, et un filtre qui élargit
      n'aurait aucun sens — c'est donc un ET entre les groupes, un OU dedans. Zéro appel de plus. */
-  const SF={box:null, on:new Set(), ints:new Set(), piliers:new Set(), freq:false, type:'', vue:'', quand:'', qui:'', ou:''};
+  const SF={box:null, on:new Set(), ints:new Set(), piliers:new Set(), freq:false, type:'', vue:'', quand:'', qui:'', ou:'',
+            plie:true, grind:false};   /* le bloc de commande EST le logo, replié, jusqu'au premier tap */
   const PILIERS=['BODY','MENTAL','SOUL','SPIRIT'];
   const sfCount=()=>(SF.box?SF.on.size:0)+SF.ints.size+SF.piliers.size+(SF.freq?1:0)
                    +(SF.type?1:0)+(SF.vue?1:0)+(SF.quand?1:0)+(SF.qui?1:0)+(SF.ou?1:0);
@@ -6169,7 +6212,8 @@ function creerFeed(conf){
   const BOX={h:'h',o:'t',r:'r',w:'w',v:'v'};
   const VUE={h:'habits',o:'objectives',r:'repulsions',w:'wisdom',v:'visions'};
   const VUE_K={habits:'h',objectives:'t',repulsions:'r',wisdom:'w',visions:'v'};
-  const MOT={habits:'habit',objectives:'objective',repulsions:'repulsion',wisdom:'my story',visions:'vision'};
+  /* 24/10 (Wah) : « c'est my vision, my objectives, my habits, my repulsions et my wisdom story ». */
+  const MOT={habits:'my habits',objectives:'my objectives',repulsions:'my repulsions',wisdom:'my wisdom story',visions:'my vision'};
   const txtDe=(k,o)=>!o?'':((k==='t'||k==='r')?String(o.text||''):String(o.t||''));
   /* Les traits : ses intentions pour une Habit, celles qu'il HÉRITE pour les quatre autres — la MÊME
      chaîne que la boîte de chaque vue (une habitude qualifie un geste répété ; les autres héritent). */
@@ -6412,11 +6456,21 @@ function creerFeed(conf){
       /* LE BLOC DE COMMANDE (21/10, Wah) : la croix du TOTEHM en un rectangle compact — MY STORY à gauche et VISION à
          droite, deux CARRÉS PERFORÉS comme le logo, dans leur couleur, qui enferment la pile OBJECTIVE · HABIT ·
          REPULSION (de haut en bas, comme ↑ ● ↓ dans le TOTEHM déployé). */
+      /* 24/10 (Wah) : « fusionne le filtre avec le logo ». Le bloc de commande EST le TOTEHM :
+         les trois papiers posés l'un sur l'autre ne font qu'un logo ; un tap le décompose (le fond
+         prend le dessus, le rail, le T et le mot fondent), et MY GRIND ouvre ses trois boutons DANS
+         son navy — courts, à la mesure du papier, comme sur higher.boutique. */
       const vb=(v,cl)=>'<button type="button" class="sfv '+cl+' '+(PEAU[VUE_K[v]]||'')+(SF.vue===v?' is-on':'')+'"'
         +' data-sf="vue" data-v="'+v+'" aria-pressed="'+(SF.vue===v)+'"><span>'+esc(MOT[v]||v)+'</span></button>';
-      let h='<div class="sfg"><div class="sfcmd" role="group" aria-label="Views">'+vb('wisdom','sfv-sq')
-        +'<div class="sfpile">'+vb('objectives','sfv-st')+vb('habits','sfv-st')+vb('repulsions','sfv-st')+'</div>'
-        +vb('visions','sfv-sq')+'</div></div>';
+      const pile=['objectives','habits','repulsions'].map(v=>'<i'+(SF.vue===v?' class="is-on"':'')
+        +' data-sf="vue" data-v="'+v+'">'+esc(MOT[v]||v)+'</i>').join('');
+      let h='<div class="sfg"><div class="sfcmd'+(SF.plie?' is-logo':' is-melt is-split')+(SF.grind?' is-grind':'')
+        +'" role="group" aria-label="My TOTEHM">'+vb('wisdom','sfv-sq sfv-s')
+        +'<button type="button" class="sfv sfv-sq sfv-g" style="--skin:#333366" data-sf="grind" aria-label="My grind">'
+        +'<span class="sf-lg" aria-hidden="true"><svg class="gl g-rail"><use href="#lg-rail"/></svg>'
+        +'<svg class="gl g-t"><use href="#lg-t"/></svg><svg class="gl g-wm"><use href="#lg-wm"/></svg></span>'
+        +'<span class="sf-lab">my grind</span><span class="sfpile">'+pile+'</span></button>'
+        +vb('visions','sfv-sq sfv-v')+'</div></div>';
       if(SF.vue){
         const l=mesElements().filter(x=>VUE[x.k]===SF.vue);
         h+='<div class="sfg"><div class="sfl">'+esc(MOT[SF.vue]||SF.vue)+'</div><div class="sfbx">'
@@ -6805,6 +6859,17 @@ function creerFeed(conf){
       if(!t){ if(e.target===p) sfOpen(false); return; }
       const c=t.dataset.sf, v=t.dataset.v;
       if(c==='close') return sfOpen(false);
+      /* Le logo se décompose SANS repeindre le panneau : une peinture rejouerait
+         la scène à l'état final et on ne verrait jamais le papier fondre. */
+      if(c==='grind'){
+        const cmd=t.closest('.sfcmd'); if(!cmd) return;
+        if(cmd.classList.contains('is-logo')){
+          SF.plie=false; cmd.classList.add('is-melt');
+          setTimeout(()=>{ cmd.classList.remove('is-logo'); cmd.classList.add('is-split'); },340);
+          return;
+        }
+        SF.grind=!SF.grind; cmd.classList.toggle('is-grind',SF.grind); return;
+      }
       if(c==='pick') return choix('box');
       if(c==='unbox') sfBox(null);
       else if(c==='all') sfReset();
