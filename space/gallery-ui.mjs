@@ -1,11 +1,11 @@
 import {createLisbonPreview} from './gallery-lisbon.mjs';
-import {PLAY_SIGNS} from './gallery-play-installation.mjs';
 
 const reduced=matchMedia('(prefers-reduced-motion: reduce)'),body=document.body;
 const ROOMS=[
- {title:'TotehmPaper {THP}',kind:'The Stoner Experience',path:'/get_higher',collect:'/market?art=totehmpaper',action:'Collect ↗',note:'Original perforated art. Choose your TotehmPaper.'},
+ {title:'TotehmPaper {THP}',kind:'The Stoner Experience',path:'/get_higher',collect:'/market?art=totehmpaper',action:'Enter the experience ↗',note:'Original perforated art. Choose your TotehmPaper.'},
  {title:'Origins / Quantum',kind:'Twenty original works',path:'/origins',collect:'/market?collection=quantum',action:'Open the book',note:'Twenty works. Turn the pages.'},
- {title:'Play the Lisbon Street',kind:'Neuro Street Art Digital',path:'/play_lisbon_street',collect:'/market?collection=play-the-lisbon-street',action:'PLAY',note:'Choose a sign. Play the street.'}
+ {title:'Play the Lisbon Street',kind:'Neuro Street Art Digital',path:'/play_lisbon_street',collect:'/market?collection=play-the-lisbon-street',action:'PLAY ↗',note:'Choose a sign. Play the street.'},
+ {title:'The Stoner Experience',kind:'TotehmPaper {THP}',path:'/get_higher',collect:'/market?art=totehmpaper',action:'Enter the experience ↗',note:'The original paper, in its premium frame.'}
 ];
 const $=id=>document.getElementById(id),buttons=[...document.querySelectorAll('.tour [data-room]')],info=$('work-info');
 let engine=null,room=-1,fallback=false,pending=null,pendingEntry=false,listRaf=0,lastPreview=0,station=null;
@@ -17,21 +17,17 @@ function links(work){const collect=document.createElement('a'),independent=docum
 function controls(){
  const arrived=station?.focused===room&&room>=0;
  body.classList.toggle('station-focused',arrived);info.dataset.station=String(room);
- $('play-controls').hidden=room!==2||!arrived;$('leave-station').hidden=!arrived;
- $('enter-experience').hidden=arrived&&room===2;
+ $('leave-station').hidden=!arrived;
+ $('visit-stoner').hidden=room!==0;
  $('enter-experience').disabled=(!arrived&&!fallback)||(room===1&&!!station?.book?.opening);
  if(room===1)$('enter-experience').textContent=station?.book?.opening?'Opening…':ROOMS[1].action;
- if(room>=0)$('work-note').textContent=arrived?ROOMS[room].note:'Walking to the '+['counter','book','screen'][room]+'…';
- if(station?.play){const p=station.play;$('play-toggle').textContent=p.playing?'PAUSE':p.mediaState==='loading'?'Loading…':'PLAY';$('play-cover').hidden=p.view==='cover';$('play-controller').hidden=p.view==='cover';$('play-status').classList.toggle('is-error',p.mediaState==='error');$('play-toggle').setAttribute('aria-pressed',String(p.playing));
-  for(const b of $('play-signs').querySelectorAll('[data-sign]'))b.setAttribute('aria-pressed',String(b.dataset.sign===p.selectedSign));
-  $('play-status').textContent=p.mediaState==='error'?'This artwork could not load. Try another sign.':p.mediaState==='loading'?'Loading…':(p.selectedSign==='destination'?'Lisboa':PLAY_SIGNS.find(s=>s.id===p.selectedSign)?.title)||'';
- }
+ if(room>=0)$('work-note').textContent=arrived?ROOMS[room].note:'Walking to the '+['counter','book','screen','framed work'][room]+'…';
 }
 function choose(index,{hash=true}={}){
  const work=ROOMS[index];if(!work)return;pendingEntry=false;room=index;interact();
- buttons.forEach((b,i)=>b.setAttribute('aria-current',String(i===index)));
+ buttons.forEach((b,i)=>b.setAttribute('aria-current',String(i===(index===3?0:index))));
  $('work-title').textContent=work.title;$('work-kind').textContent=work.kind;$('enter-experience').textContent=work.action;links(work);info.hidden=false;
- if(hash)history.replaceState(null,'',location.pathname+location.search+'#'+['totehmpaper','origins','lisbon'][index]);
+ if(hash)history.replaceState(null,'',location.pathname+location.search+'#'+['totehmpaper','origins','lisbon','stoner'][index]);
  if(fallback||body.classList.contains('list-view')){location.assign(work.path);return;}
  station=null;controls();if(engine)engine.visit(index);else pending=index;
 }
@@ -48,14 +44,10 @@ function setList(value){pending=null;pendingEntry=false;body.classList.toggle('l
 buttons.forEach((button,index)=>button.addEventListener('click',()=>choose(index)));
 $('enter-gallery').addEventListener('click',()=>{interact();if(engine)engine.enterGallery();else pendingEntry=true;$('space').focus({preventScroll:true});});
 $('overview').addEventListener('click',overview);
-$('enter-experience').addEventListener('click',()=>{if(room>=0){if(fallback||body.classList.contains('list-view'))location.assign(ROOMS[room].path);else if(room===0)location.assign(ROOMS[room].collect);else engine?.enter(room);}});
+$('enter-experience').addEventListener('click',()=>{if(room>=0){if(fallback||body.classList.contains('list-view'))location.assign(ROOMS[room].path);else engine?.enter(room);}});
+$('visit-stoner').addEventListener('click',()=>choose(3));
 $('close-info').addEventListener('click',()=>{clearInfo();engine?.stop();});
 $('leave-station').addEventListener('click',()=>{engine?.leaveStation();clearInfo();$('space').focus({preventScroll:true});});
-$('play-prev').addEventListener('click',()=>engine?.stationAction(2,'previous'));
-$('play-next').addEventListener('click',()=>engine?.stationAction(2,'next'));
-$('play-toggle').addEventListener('click',()=>engine?.stationAction(2,'toggle'));
-$('play-cover').addEventListener('click',()=>engine?.stationAction(2,'cover'));
-for(const sign of PLAY_SIGNS){const button=document.createElement('button'),img=document.createElement('img');button.type='button';button.dataset.sign=sign.id;button.setAttribute('aria-label',sign.title);button.setAttribute('aria-pressed','false');img.src=sign.src;img.alt='';img.width=40;img.height=40;button.append(img);button.addEventListener('click',()=>engine?.stationAction(2,'sign',sign.id));$('play-signs').append(button);}
 $('view-list').addEventListener('click',()=>setList(!body.classList.contains('list-view')));
 document.querySelector('.skip').addEventListener('click',()=>setList(true));
 const member=$('member'),menu=$('member-menu');
@@ -69,7 +61,7 @@ document.addEventListener('keydown',e=>{
 });
 document.addEventListener('visibilitychange',syncPreview);reduced.addEventListener('change',syncPreview);
 addEventListener('pagehide',()=>{if(listRaf)cancelAnimationFrame(listRaf);listRaf=0;preview.pause();});addEventListener('pageshow',syncPreview);
-window.__totehm_gallery=()=>({build:'2026-10-25-space-calcada-courtyard',rooms:3,room,list:body.classList.contains('list-view'),fallback,reduced_motion:reduced.matches,experiences:ROOMS.map(w=>w.path),lisbon:preview.diagnostics(),...engine?.diagnostics()});
+window.__totehm_gallery=()=>({build:'2026-10-25-space-immersive-portals',rooms:3,room,list:body.classList.contains('list-view'),fallback,reduced_motion:reduced.matches,experiences:[...new Set(ROOMS.map(w=>w.path))],experienceNavigation:'independent-pages',inGalleryPlayback:false,lisbon:preview.diagnostics(),...engine?.diagnostics()});
 function useFallback(){fallback=true;body.classList.add('no-3d','list-view');engine?.setList(true);clearInfo();syncPreview();}
 try{
  const {createGallery}=await import('./gallery-spatial.mjs');
@@ -80,5 +72,5 @@ try{
  const selected=pending;pending=null;
  if(selected!==null)choose(selected,{hash:false});
  else if(pendingEntry){pendingEntry=false;engine.enterGallery();}
- else{const hash=location.hash;const index=[['#totehmpaper','#stoner'],['#origins','#quantum'],['#lisbon']].findIndex(h=>h.includes(hash));if(index>=0)choose(index,{hash:false});}
+ else{const hash=location.hash;const index=[['#totehmpaper'],['#origins','#quantum'],['#lisbon'],['#stoner']].findIndex(h=>h.includes(hash));if(index>=0)choose(index,{hash:false});}
 }catch(error){console.warn('[gallery] Artwork list available:',error?.name||'unavailable');useFallback();}

@@ -8,24 +8,34 @@ import {createLecternBook} from './gallery-lectern-book.mjs';
 import {createGalleryFireplace} from './gallery-fireplace.mjs';
 import {createFireAudio} from './gallery-fire-audio.mjs';
 import {createPlayInstallation} from './gallery-play-installation.mjs';
+import {createStonerInstallation} from './gallery-stoner-installation.mjs';
+import {createRenderQuality} from './gallery-render-quality.mjs';
 
 const ENTRY=L.entry,LOOK=L.look,GROUND=L.groundY,HEIGHT=L.eyeHeight;
 export async function createGallery({select,onOverview=()=>{},onStationState=()=>{},onArtwork=()=>{},interact=()=>{},fallback,reduced}){
- const host=document.getElementById('space'),mobile=innerWidth<650;
+ const host=document.getElementById('space'),mobile=innerWidth<650||(matchMedia('(pointer: coarse)').matches&&Math.min(innerWidth,innerHeight)<650);
  const renderer=new T.WebGLRenderer({antialias:true,alpha:false,powerPreference:'high-performance'});
- renderer.setPixelRatio(Math.min(devicePixelRatio,mobile?1.5:1.75));renderer.setSize(innerWidth,innerHeight);
+ const quality=createRenderQuality({mobile,pixelRatio:devicePixelRatio});
+ renderer.setPixelRatio(quality.diagnostics().pixelRatio);renderer.setSize(innerWidth,innerHeight);
  renderer.outputColorSpace=T.SRGBColorSpace;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1;
  renderer.setClearColor(0x030912);renderer.domElement.setAttribute('aria-hidden','true');host.append(renderer.domElement);
  const scene=new T.Scene(),camera=new T.PerspectiveCamera(mobile?72:60,innerWidth/innerHeight,.08,9000);
- let dirty=true,frames=0,list=false,hidden=document.hidden,paused=false,lastTime=0,lastRender=0,slow=0;
+ let dirty=true,frames=0,list=false,hidden=document.hidden,paused=false,lastTime=0,lastRender=0;
  let motionReduced=reduced.matches,tween=null,arrival=null,pendingVisit=null,stellarView=null,room=-1,focused=-1,down=null,yaw=0,pitch=0,dragged=false,initialized=false,inspecting=false,inspectionAmount=0,bookDestination=null;
- let architecture=null,book=null,play=null,lastStationState='';
+ let architecture=null,book=null,play=null,stoner=null,lastStationState='';
  const invalidate=()=>{dirty=true;};
  const landscape=createTempleLandscape(scene,renderer,{mobile,onChange:invalidate});
  architecture=createModernGallery(scene,renderer,{mobile,onChange:invalidate});
  book=createLecternBook(scene,{mobile,onChange:invalidate,onOpen:({href})=>{bookDestination=href;dirty=true;}});
  const fireplace=createGalleryFireplace(scene,{mobile,onChange:invalidate});
- play=createPlayInstallation(scene,{mobile,onChange:invalidate});
+ function openExperience({href}){
+  // Navigation releases the world instead of leaving its GPU/audio behind an
+  // iframe. Independent pages retain their own controls, pixels and access.
+  if(!['/get_higher','/play_lisbon_street'].includes(href))return false;
+  pause();sound.setMuted(true);fireSound.setMuted(true);renderer.setAnimationLoop(null);location.assign(href);return true;
+ }
+ play=createPlayInstallation(scene,{mobile,onChange:invalidate,onOpen:openExperience});
+ stoner=createStonerInstallation(scene,{mobile,onChange:invalidate,onOpen:openExperience});
  const walkway=createModernWalkway(),physics=createModernPhysics({x:ENTRY[0],z:ENTRY[2]}),sound=createGalleryAudio(),fireSound=createFireAudio();
  const eye=new T.Vector3(...ENTRY),gaze=new T.Vector3(...LOOK),keys=new Set();
  const stick=document.getElementById('joystick'),knob=stick.querySelector('span');let joystick={x:0,y:0};
@@ -35,17 +45,17 @@ export async function createGallery({select,onOverview=()=>{},onStationState=()=
  const nearStation=index=>{const s=GALLERY_STATIONS[index];return!!s&&isFloor()&&Math.hypot(eye.x-s.approach[0],eye.z-s.approach[2])<1.2;};
  function stationState(){
   if(!initialized)return;
-  const b=book.diagnostics(),p=play.diagnostics(),value={room,focused,book:b,play:p,moving:!!tween||!!pendingVisit};
-  const signature=JSON.stringify([room,focused,!!tween,!!pendingVisit,b.closed,b.opening,b.opened,p.selectedSign,p.mediaState,p.active,p.view]);
+  const b=book.diagnostics(),p=play.diagnostics(),s=stoner.diagnostics(),value={room,focused,book:b,play:p,stoner:s,moving:!!tween||!!pendingVisit};
+  const signature=JSON.stringify([room,focused,!!tween,!!pendingVisit,b.closed,b.opening,b.opened,p.active,s.active]);
   if(signature!==lastStationState){lastStationState=signature;onStationState(value);}
  }
  function angles(){const d=gaze.clone().sub(eye).normalize();yaw=Math.atan2(-d.x,-d.z);pitch=Math.asin(d.y);}
  function look(){gaze.copy(eye).add(new T.Vector3(-Math.sin(yaw)*Math.cos(pitch),Math.sin(pitch),-Math.cos(yaw)*Math.cos(pitch)));}
  function stopStick(){joystick={x:0,y:0};knob.style.transform='';}
  function stopInput(){keys.clear();stopStick();down=null;}
- function pausePlayer(){play.setActive(false);}
+ function resetPortals(){play.setActive(false);stoner.setActive(false);}
  function cancelTravel(){tween=null;arrival=null;pendingVisit=null;stellarView=null;angles();}
- function leaveStation(){bookDestination=null;book.reset();inspecting=false;room=focused=-1;pausePlayer();stationState();}
+ function leaveStation(){bookDestination=null;book.reset();inspecting=false;room=focused=-1;resetPortals();stationState();}
  function free(){inspecting=false;cancelTravel();interact();}
  function soundState(){const muted=sound.diagnostics().muted;soundButton.textContent=muted?'Sound off':'Sound on';soundButton.setAttribute('aria-pressed',String(!muted));soundButton.setAttribute('aria-label',muted?'Turn sound on':'Turn sound off');}
  try{const muted=localStorage.getItem('space-sound-muted')==='true';sound.setMuted(muted);fireSound.setMuted(muted);}catch{}
@@ -72,16 +82,16 @@ export async function createGallery({select,onOverview=()=>{},onStationState=()=
   }
   return travel(position,target,done);
  }
- function focusStation(index){if(!nearStation(index))return;focused=room=index;inspecting=index===0;if(index===2)play.setActive(true);stationState();}
+ function focusStation(index){if(!nearStation(index))return;focused=room=index;inspecting=index===0;if(index===2)play.setActive(true);if(index===3)stoner.setActive(true);stationState();}
  function visit(index){
   const station=GALLERY_STATIONS[index];if(!station||list)return false;
-  cancelTravel();pausePlayer();inspecting=false;room=index;focused=-1;
+  cancelTravel();resetPortals();inspecting=false;room=index;focused=-1;
   const result=groundedTravel(new T.Vector3(...station.approach),new T.Vector3(...station.target),()=>focusStation(index));stationState();return result;
  }
  function enter(index=room){
   if(!GALLERY_STATIONS[index]||list)return false;
   if(!nearStation(index))return visit(index);
-  focusStation(index);if(index===2)play.togglePlayback();if(index===1)book.open();dirty=true;stationState();return true;
+  focusStation(index);if(index===2)play.open();else if(index===3)stoner.open();else if(index===1)book.open();else openExperience({href:'/get_higher'});dirty=true;stationState();return true;
  }
  function enterGallery(){cancelTravel();leaveStation();onOverview();return groundedTravel(new T.Vector3(...L.inside),new T.Vector3(...L.insideTarget));}
  function overview(){cancelTravel();leaveStation();onOverview();groundedTravel(new T.Vector3(...ENTRY),new T.Vector3(...LOOK));}
@@ -96,12 +106,12 @@ export async function createGallery({select,onOverview=()=>{},onStationState=()=
  function jump(){if(list||hidden||paused)return false;const jumped=physics.jump();if(jumped){free();leaveStation();onOverview();stellarView={yaw,pitch,amount:0};dirty=true;}return jumped;}
  document.getElementById('jump').addEventListener('click',()=>{jump();host.focus({preventScroll:true});});
  const ray=new T.Raycaster(),mouse=new T.Vector2(),plane=new T.Plane(new T.Vector3(0,1,0),-GROUND),floor=new T.Vector3();
- const pickables=[...architecture.pickables,...book.pickables,...play.pickables,...(fireplace.pickables||[])];
+ const pickables=[...architecture.pickables,...book.pickables,...play.pickables,...stoner.pickables,...(fireplace.pickables||[])];
  function hit(event){
   const rect=host.getBoundingClientRect();mouse.set((event.clientX-rect.left)/rect.width*2-1,-(event.clientY-rect.top)/rect.height*2+1);ray.setFromCamera(mouse,camera);
-  const hits=ray.intersectObjects(pickables,false).filter(h=>h.object.visible&&h.object.material?.opacity!==0&&(!h.object.userData.installation||play.acceptHit(h)));
+  const hits=ray.intersectObjects(pickables,false).filter(h=>h.object.visible&&h.object.material?.opacity!==0&&(!h.object.userData.installation||play.acceptHit(h)||stoner.acceptHit(h)));
   // Glass is deliberately transparent; opaque furniture/walls still occlude a
-  // controller or page so it cannot be operated through the back of the room.
+  // portal or book so it cannot be operated through the back of the room.
   const solid=ray.intersectObjects(architecture.solids||[],false).find(h=>h.object.visible&&!h.object.material?.transparent);
   return hits.find(h=>!solid||h.distance<=solid.distance+.055);
  }
@@ -119,7 +129,10 @@ export async function createGallery({select,onOverview=()=>{},onStationState=()=
    if(nearStation(1)){focusStation(1);book.interact(h);dirty=true;stationState();}else select(1);return;
   }
   if(data?.installation==='play'){
-   if(nearStation(2)){focusStation(2);play.interact(h);dirty=true;stationState();}else select(2);return;
+   play.interact(h);return;
+  }
+  if(data?.installation==='stoner'){
+   stoner.interact(h);return;
   }
   if(data?.kind==='fireplace'){visitFireplace();return;}
   if(data?.room!==undefined){if(data.room<0)enterGallery();else select(data.room);return;}
@@ -134,6 +147,7 @@ export async function createGallery({select,onOverview=()=>{},onStationState=()=
   if(e.target.closest('input,textarea,select,[contenteditable=true]')||list||hidden||paused)return;
   const interactive=!!e.target.closest('button,a,summary,[role=button]');
   if(focused===2&&nearStation(2)&&!interactive&&play.handleKey(e)){e.preventDefault();dirty=true;stationState();return;}
+  if(focused===3&&nearStation(3)&&!interactive&&stoner.handleKey(e)){e.preventDefault();dirty=true;stationState();return;}
   if(focused===1&&nearStation(1)&&!interactive&&e.key==='Enter'){e.preventDefault();book.open();dirty=true;return;}
   if(e.key==='Escape'){cancelTravel();leaveStation();onOverview();return;}
   if(e.code==='Space'||e.key===' '){if(!interactive){e.preventDefault();if(!e.repeat)jump();}return;}
@@ -148,9 +162,9 @@ export async function createGallery({select,onOverview=()=>{},onStationState=()=
  document.getElementById('help').addEventListener('click',()=>document.querySelector('.guide').classList.toggle('is-help'));
  document.getElementById('visit-fireplace').addEventListener('click',visitFireplace);
  document.getElementById('look-sea').addEventListener('click',()=>panorama('sea'));document.getElementById('look-horizon').addEventListener('click',()=>panorama('horizon'));
- function pause(){stopInput();paused=true;bookDestination=null;book.reset();pausePlayer();syncSound();stationState();}
- addEventListener('blur',pause);addEventListener('focus',()=>{paused=false;lastTime=0;syncSound();});
- document.addEventListener('visibilitychange',()=>{hidden=document.hidden;if(hidden){stopInput();bookDestination=null;book.reset();pausePlayer();}syncSound();dirty=true;lastTime=0;stationState();});
+ function pause(){stopInput();paused=true;bookDestination=null;book.reset();resetPortals();quality.reset();syncSound();stationState();}
+ addEventListener('blur',pause);addEventListener('focus',()=>{paused=false;lastTime=0;quality.reset();syncSound();});
+ document.addEventListener('visibilitychange',()=>{hidden=document.hidden;if(hidden){stopInput();bookDestination=null;book.reset();resetPortals();}syncSound();dirty=true;lastTime=0;stationState();});
  function motionChanged(){
   motionReduced=reduced.matches;
   if(motionReduced){stellarView=null;if(tween){const t=tween;tween=null;physics.relocateHorizontal(t.to);eye.set(physics.position.x,physics.position.y+HEIGHT,physics.position.z);gaze.copy(t.target);angles();if(isFloor())t.done?.();else arrival={target:t.target.clone(),done:t.done};}}
@@ -158,12 +172,11 @@ export async function createGallery({select,onOverview=()=>{},onStationState=()=
  }
  reduced.addEventListener('change',motionChanged);
  renderer.domElement.addEventListener('webglcontextlost',e=>{e.preventDefault();pause();renderer.setAnimationLoop(null);fallback();});
- addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);dirty=true;});
+ addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setPixelRatio(quality.resize(devicePixelRatio));renderer.setSize(innerWidth,innerHeight);dirty=true;});
  function viewTarget(){return gaze.clone().lerp(new T.Vector3(...L.counter.target),inspectionAmount);}
  function animate(now){
   const elapsed=lastTime?(now-lastTime)/1000:0,dt=Math.min(elapsed,.05),physicsDt=Math.min(elapsed,.5);lastTime=now;
-  if(reduced.matches!==motionReduced)motionChanged();if(list||hidden||paused){slow=0;return;}
-  if(frames>2&&(!motionReduced||tween||!physics.diagnostics().grounded||keys.size||joystick.x||joystick.y)){slow=elapsed>.09?slow+1:0;if(slow>=3&&renderer.getPixelRatio()>.65){renderer.setPixelRatio(Math.max(.65,renderer.getPixelRatio()*.75));slow=0;dirty=true;}}
+  if(reduced.matches!==motionReduced)motionChanged();if(list||hidden||paused)return;
   const guiding=!!tween;
   if(tween){
    const t=tween,p=T.MathUtils.clamp((now-t.start)/t.duration,0,1),ease=p*p*(3-2*p),i=t.segment,distance=Math.min(t.lengths.at(-1)*ease,t.lengths[i]),length=t.lengths[i]-t.lengths[i-1];
@@ -185,7 +198,7 @@ export async function createGallery({select,onOverview=()=>{},onStationState=()=
   if(focused>=0&&!nearStation(focused)){leaveStation();onOverview();}
   const altitude=Math.max(0,eye.y-1.65),near=T.MathUtils.clamp(altitude*.002,.08,12),far=altitude>100?100000:9000;
   if(Math.abs(camera.near-near)>.0001||camera.far!==far){camera.near=near;camera.far=far;camera.updateProjectionMatrix();dirty=true;}
-  const changes=[landscape.update(dt,eye,!motionReduced),architecture.update(dt,eye,!motionReduced),book.update(dt,eye,!motionReduced),play.update(dt,eye,!motionReduced),fireplace.update(dt,eye,!motionReduced)];
+  const changes=[landscape.update(dt,eye,!motionReduced),architecture.update(dt,eye,!motionReduced),book.update(dt,eye,!motionReduced),play.update(dt,eye,!motionReduced),stoner.update(dt,eye,!motionReduced),fireplace.update(dt,eye,!motionReduced)];
   if(changes.some(Boolean))dirty=true;
   // A closer view reveals the intentionally tiny perforated paper tabs.
   const inspectionTarget=inspecting&&focused===0?1:0;
@@ -193,9 +206,10 @@ export async function createGallery({select,onOverview=()=>{},onStationState=()=
   if(Math.abs(nextInspection-inspectionAmount)>.0001){inspectionAmount=nextInspection;dirty=true;}else if(inspectionAmount!==inspectionTarget){inspectionAmount=inspectionTarget;dirty=true;}
   const targetFov=(mobile?(focused===2?88:72):60)-(mobile?16:10)*inspectionAmount;
   if(Math.abs(camera.fov-targetFov)>.001){camera.fov=motionReduced?targetFov:T.MathUtils.damp(camera.fov,targetFov,7,dt);camera.updateProjectionMatrix();dirty=true;}
-  if(dirty&&now-lastRender>=(mobile?40:32)){
+  if(dirty&&now-lastRender>=32){
    camera.position.copy(eye).add(new T.Vector3(0,.28,-.18).multiplyScalar(inspectionAmount));
-   camera.lookAt(viewTarget());camera.updateMatrixWorld();renderer.render(scene,camera);frames++;dirty=false;lastRender=now;
+   camera.lookAt(viewTarget());camera.updateMatrixWorld();const renderStart=performance.now();renderer.render(scene,camera);const renderMs=performance.now()-renderStart;frames++;dirty=false;lastRender=now;
+   const ratio=quality.sample(now,{frameMs:elapsed*1000,renderMs});if(ratio!==renderer.getPixelRatio()){renderer.setPixelRatio(ratio);dirty=true;}
    if(bookDestination){const href=bookDestination;sound.transition('enter');requestAnimationFrame(()=>{if(bookDestination===href){bookDestination=null;location.assign(href);}});}
   }
   syncSound();stationState();
@@ -203,18 +217,11 @@ export async function createGallery({select,onOverview=()=>{},onStationState=()=
  landscape.update(0,eye,false);architecture.update(0,eye,false);book.update(0,eye,!motionReduced);play.update(0,eye,!motionReduced);fireplace.update(0,eye,false);
  camera.position.copy(eye);camera.lookAt(gaze);camera.updateMatrixWorld();initialized=true;stationState();renderer.setAnimationLoop(animate);
  addEventListener('pagehide',()=>{pause();renderer.setAnimationLoop(null);});
- addEventListener('pageshow',e=>{if(e.persisted){paused=false;hidden=document.hidden;bookDestination=null;book.reset();dirty=true;lastTime=0;syncSound();renderer.setAnimationLoop(animate);}});
- function stationAction(index,action,value){
-  if(list||hidden||paused||focused!==index||!nearStation(index))return false;
-  let result=false;
-  if(index===1)result=book.open();
-  if(index===2){play.setActive(true);result=action==='sign'?play.activateSign(value):action==='next'?play.nextSign(1):action==='previous'?play.nextSign(-1):action==='cover'?play.showCover():play.togglePlayback();}
-  dirty=true;stationState();return result;
- }
- return{visit,enter,enterGallery,overview,panorama,visitFireplace,stationAction,invalidate,
+ addEventListener('pageshow',e=>{if(e.persisted){paused=false;hidden=document.hidden;bookDestination=null;book.reset();resetPortals();quality.reset();try{const muted=localStorage.getItem('space-sound-muted')==='true';sound.setMuted(muted);fireSound.setMuted(muted);}catch{}soundState();dirty=true;lastTime=0;syncSound();renderer.setAnimationLoop(animate);}});
+ return{visit,enter,enterGallery,overview,panorama,visitFireplace,invalidate,
   leaveStation(){stopInput();cancelTravel();leaveStation();onOverview();dirty=true;},
   stop(){stopInput();cancelTravel();leaveStation();dirty=true;},
   setList(value){list=!!value;stopInput();cancelTravel();leaveStation();syncSound();dirty=true;lastTime=0;},
   diagnostics:()=>({webgl:true,zone:inGallery()?'gallery':'terrace',room,focused,frames,position:[+eye.x.toFixed(2),+eye.z.toFixed(2)],moving:!!tween||!!pendingVisit||!!keys.size||!!joystick.x||!!joystick.y||!physics.diagnostics().grounded,visible:!hidden&&!list&&!paused,
-   camera:{position:camera.position.toArray(),target:viewTarget().toArray(),inspection:inspectionAmount,fov:camera.fov,aspect:camera.aspect,near:camera.near,far:camera.far,stellarOverview:!!stellarView&&!motionReduced,overviewAmount:stellarView?.amount??0},physics:physics.diagnostics(),temple:architecture.diagnostics(),stations:{play:play.diagnostics(),book:book.diagnostics()},landscape:landscape.diagnostics(),audio:sound.diagnostics(),fireAudio:fireSound.diagnostics(),fireplace:fireplace.diagnostics(),render:{pixelRatio:renderer.getPixelRatio(),calls:renderer.info.render.calls,triangles:renderer.info.render.triangles},navigation:{speed:2.6,minDuration:1450,maxDuration:4200,deferredArrival:!!arrival||!!pendingVisit,...walkway.diagnostics()}})};
+   camera:{position:camera.position.toArray(),target:viewTarget().toArray(),inspection:inspectionAmount,fov:camera.fov,aspect:camera.aspect,near:camera.near,far:camera.far,stellarOverview:!!stellarView&&!motionReduced,overviewAmount:stellarView?.amount??0},physics:physics.diagnostics(),temple:architecture.diagnostics(),stations:{play:play.diagnostics(),stoner:stoner.diagnostics(),book:book.diagnostics()},landscape:landscape.diagnostics(),audio:sound.diagnostics(),fireAudio:fireSound.diagnostics(),fireplace:fireplace.diagnostics(),render:{...quality.diagnostics(),width:renderer.domElement.width,height:renderer.domElement.height,calls:renderer.info.render.calls,triangles:renderer.info.render.triangles},navigation:{speed:2.6,minDuration:1450,maxDuration:4200,deferredArrival:!!arrival||!!pendingVisit,...walkway.diagnostics()}})};
 }

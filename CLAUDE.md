@@ -21,7 +21,7 @@ Push sur `main` = mise en ligne ; jamais réécrire l'historique.
 | totehm.com | `com/` | l'écosystème : les 5 vues, la creator economy (s'abonner à un membre = entrer dans son écosystème), l'abonnement Higher, la recherche d'un membre |
 | figher.club | `club/` | le prolongement de la vue Spots : chercher, publier des spots, se rencontrer |
 | higher.boutique | `boutique/` | les vêtements totehmisés, un style artistique déterminé, à partir des boxes MY STORY ; production n8n |
-| totehm.space | `space/` | un pavillon de verre sur une terrasse en calçada, pierre blanche à l’intérieur, au-dessus d’un monde englouti ; cheminée, THP, livre Origins et écran Lisbon, avec marketplace complète |
+| totehm.space | `space/` | l’accueil immersif dans un pavillon de verre sur calçada, pierre ancienne dedans et cheminée ; livre Origins, écran Lisbon et cadre premium Stoner ouvrent leurs propres pages ; marketplace complète |
 
 **Deux fois cinq vues.** totehm.com : ↑ Get Higher (commune à tous) · ← mes médias · ● mon TOTEHM · → les spots ·
 ↓ Higher Self (TotehmBot, abonnement Higher) ; ← ● → = l'écosystème d'un membre, ouvert par l'abonnement à ce membre.

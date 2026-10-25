@@ -12,7 +12,7 @@ export function createModernGallery(scene,renderer,{mobile=false,onChange=()=>{}
  let disposed=false,dirty=true,time=0,paperLoaded=false;
  const changed=()=>{if(!disposed){dirty=true;if(renderer?.shadowMap)renderer.shadowMap.needsUpdate=true;onChange();}};
  const geometry=g=>(geometries.add(g),g),material=m=>(materials.add(m),m);
- const anisotropy=Math.min(mobile?2:8,renderer?.capabilities?.getMaxAnisotropy?.()||1);
+ const anisotropy=Math.min(8,renderer?.capabilities?.getMaxAnisotropy?.()||1);
  const stone=createWhiteStone({mobile,anisotropy,onChange:changed});
  const pavement=createLisbonPavement({mobile,anisotropy,onChange:changed});
  const ink=material(new T.MeshStandardMaterial({color:0x080809,roughness:.58,metalness:.12}));
@@ -76,15 +76,12 @@ export function createModernGallery(scene,renderer,{mobile=false,onChange=()=>{}
  block(bronze,[0,.99,-11.025],[7,.017,.014]);block(warm,[0,.01,-11.025],[6.75,.009,.012]);
  const fallbackPaper=new T.DataTexture(new Uint8Array([51,51,102,255]),1,1,T.RGBAFormat);fallbackPaper.colorSpace=T.SRGBColorSpace;fallbackPaper.needsUpdate=true;textures.add(fallbackPaper);
  const paperMaterial=material(new T.MeshStandardMaterial({map:fallbackPaper,color:0xffffff,roughness:.84,side:T.DoubleSide,alphaTest:.12}));
- const signPaperMaterial=material(new T.MeshBasicMaterial({map:fallbackPaper,color:0xffffff,alphaTest:.12,side:T.DoubleSide,toneMapped:false}));
  const sculptedPaperMaterial=material(new T.MeshStandardMaterial({map:fallbackPaper,color:0xffffff,roughness:.58,metalness:0,alphaTest:.12,emissive:0x111120,emissiveIntensity:.16}));
  if(globalThis.document?.createElementNS){
-  const paper=new T.TextureLoader().load(TOTEHMPAPER.src,loaded=>{if(disposed){loaded.dispose();return;}for(const m of [paperMaterial,signPaperMaterial,sculptedPaperMaterial]){m.map=loaded;m.needsUpdate=true;}paperLoaded=true;changed();},undefined,changed);
+  const paper=new T.TextureLoader().load(TOTEHMPAPER.src,loaded=>{if(disposed){loaded.dispose();return;}for(const m of [paperMaterial,sculptedPaperMaterial]){m.map=loaded;m.needsUpdate=true;}paperLoaded=true;changed();},undefined,changed);
   paper.colorSpace=T.SRGBColorSpace;paper.anisotropy=anisotropy;textures.add(paper);
  }
- // One original, framed above the small physical editions, anchors the art.
- block(metal,[0,3.45,-16.73],[2.58,2.58,.09]);
- const framedPaper=mesh(planeGeo,signPaperMaterial,[0,3.45,-16.67],{x:2.4,y:2.4,z:1});station(framedPaper,'thp-framed-original','thp',0);
+ // The authentic premium shadowbox is a separate wall-mounted entry portal.
  const paperItems=[],q=new T.Quaternion(),matrix=new T.Matrix4(),s=new T.Vector3(),p=new T.Vector3();
  const tabSize=.022,tabPitch=.0233,sheetWidth=tabPitch*8,sheetDepth=tabPitch*6;
  for(const x of [-2.2,0,2.2]){

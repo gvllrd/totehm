@@ -36,15 +36,22 @@ export function createFireAudio({context:sharedContext=null,destination=null}={}
     const fine=kind==='embers';
     while(cursor<length-rate*.25){
      // Uneven pauses and little families of embers avoid a mechanical rhythm.
-     cursor+=Math.max(2,Math.floor(-Math.log(Math.max(.00001,1-rng()))*rate/(fine?25:.7)));
-     const duration=rate*(fine?.003+rng()*.015:.035+rng()*.080),count=Math.floor(duration);
-     const amplitude=fine?.035+rng()**3*.20:.19+rng()*.38;
-     const ring=170+rng()*500;
+     cursor+=Math.max(2,Math.floor(-Math.log(Math.max(.00001,1-rng()))*rate/(fine?18:1.13)));
+     const duration=rate*(fine?.003+rng()*.019:.045+rng()*.105),count=Math.floor(duration);
+     const amplitude=fine?.045+rng()**2*.25:.24+rng()*.38;
+     const ring=145+rng()*310,ring2=ring*(2.13+rng()*.28),ring3=910+rng()*950;
+     const grainPhase=rng()*Math.PI*2,secondary=.010+rng()*.025;
      let low=0;
      for(let n=0;n<count&&cursor+n<length;n++){
       const t=n/rate,x=n/count,envelope=Math.min(1,n/(rate*.0004))*Math.exp(-x*(fine?7:5));
       const white=rng()*2-1;low=low*.67+white*.33;
-      const impulse=fine?white:low*.72+Math.sin(t*ring*Math.PI*2)*.28;
+      // Wood under heat breaks with a brief bright attack, a damped hollow
+      // body and a few tiny splinters. These three time scales make a crackle
+      // recognisable instead of a bed of filtered weather-like noise.
+      const woodenBody=Math.sin(t*ring*Math.PI*2)*.23+Math.sin(t*ring2*Math.PI*2+grainPhase)*Math.exp(-t*55)*.17;
+      const dryAttack=white*Math.exp(-t*320)*.57;
+      const splinter=t>secondary?Math.sin((t-secondary)*ring3*Math.PI*2)*Math.exp(-(t-secondary)*210)*.18:0;
+      const impulse=fine?white*(.62+.38*Math.cos(t*1400)):low*.40+woodenBody+dryAttack+splinter;
       data[cursor+n]+=amplitude*envelope*impulse;
      }
     }
@@ -76,9 +83,9 @@ export function createFireAudio({context:sharedContext=null,destination=null}={}
   master=context.createGain();master.gain.value=0;
   limiter=context.createDynamicsCompressor();limiter.threshold.value=-19;limiter.knee.value=15;limiter.ratio.value=8;limiter.attack.value=.002;limiter.release.value=.19;
   limiter.connect(master);master.connect(destination||context.destination);
-  const body=layer('warmth',makeBuffer(15.37,'body',0x68656172),{gain:.43,highpass:65,lowpass:690,rate:.89,offset:.27,pan:-.08});
-  layer('embers',makeBuffer(17.83,'embers',0x656d6265),{gain:.66,highpass:540,lowpass:4100,rate:.973,offset:.83,pan:.16});
-  const wood=layer('wood',makeBuffer(21.19,'wood',0x776f6f64),{gain:.49,highpass:105,lowpass:2650,rate:1.017,offset:1.19,pan:-.16});
+  const body=layer('warmth',makeBuffer(15.37,'body',0x68656172),{gain:.29,highpass:65,lowpass:590,rate:.89,offset:.27,pan:-.08});
+  layer('embers',makeBuffer(17.83,'embers',0x656d6265),{gain:.76,highpass:480,lowpass:5400,rate:.973,offset:.83,pan:.16});
+  const wood=layer('wood',makeBuffer(21.19,'wood',0x776f6f64),{gain:.83,highpass:100,lowpass:3800,rate:1.017,offset:1.19,pan:-.16});
   modulation(body.level.gain,.091,.10,.4);modulation(body.low.frequency,.057,115,1.2);modulation(wood.level.gain,.073,.085,2.1);
  }
  async function resume(){
@@ -91,7 +98,7 @@ export function createFireAudio({context:sharedContext=null,destination=null}={}
  }
  function mix(){
   if(!context||disposed||context.state==='closed')return;
-  gainTarget=audible()?.30*proximity**1.55:0;
+  gainTarget=audible()?.36*proximity**1.55:0;
   glide(master.gain,gainTarget,gainTarget?.20:.025);
  }
  function synchronise(){
@@ -133,5 +140,5 @@ export function createFireAudio({context:sharedContext=null,destination=null}={}
   layers.length=modulators.length=buffers.length=0;master?.disconnect();limiter?.disconnect();
   if(ownsContext&&context&&context.state!=='closed')Promise.resolve(context.close()).catch(()=>{});
  }
- return{unlock,setMuted,update,dispose,diagnostics:()=>({kind:'procedural-hearth-audio',supported,unlocked,muted,active:!disposed&&active,audible:audible(),proximity,gain:disposed?0:gainTarget,maxGain:.30,state:disposed?'closed':context?.state||(supported?'uninitialized':'unsupported'),sharedContext:!ownsContext,voices:disposed?0:layers.length,modulators:disposed?0:modulators.length,loopBuffers:disposed?0:buffers.length,clock:+(context?.currentTime||0).toFixed(3),externalFiles:0,intervals:0,disposed})};
+ return{unlock,setMuted,update,dispose,diagnostics:()=>({kind:'procedural-hearth-audio',supported,unlocked,muted,active:!disposed&&active,audible:audible(),woodCrackle:true,resonantWoodPops:true,proximity,gain:disposed?0:gainTarget,maxGain:.36,state:disposed?'closed':context?.state||(supported?'uninitialized':'unsupported'),sharedContext:!ownsContext,voices:disposed?0:layers.length,modulators:disposed?0:modulators.length,loopBuffers:disposed?0:buffers.length,clock:+(context?.currentTime||0).toFixed(3),externalFiles:0,intervals:0,disposed})};
 }

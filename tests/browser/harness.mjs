@@ -48,8 +48,8 @@ function interne(dir, f){
   }
   return null;
 }
-export async function page(browser, { dir, origin, rpc = {}, tables = {}, functions = {}, network = null, session = true, viewport = { width:390, height:844 }, geo = { latitude:38.7223, longitude:-9.1393 }, hasTouch = false }){
-  const ctx = await browser.newContext({ viewport, permissions:['geolocation','camera','microphone'], geolocation: geo, hasTouch });
+export async function page(browser, { dir, origin, rpc = {}, tables = {}, functions = {}, network = null, session = true, viewport = { width:390, height:844 }, geo = { latitude:38.7223, longitude:-9.1393 }, hasTouch = false, deviceScaleFactor = 1 }){
+  const ctx = await browser.newContext({ viewport, deviceScaleFactor, permissions:['geolocation','camera','microphone'], geolocation: geo, hasTouch });
   const log = { rpc:[], upload:[], functions:[], network:[], tiles:0, other:[], errors:[] };
   if(session) await ctx.addInitScript(([u]) => {
     localStorage.setItem('sb-abujjbkbbiumxrokozph-auth-token', JSON.stringify({ access_token:'test-at', refresh_token:'test-rt', token_type:'bearer',
