@@ -38,6 +38,11 @@
 // box-element du Totehm ». Les CINQ vues se portent donc : my story, vision,
 // objective, habit, repulsion. La base les acceptait déjà (`totehm_clothes.
 // box_kind`, `_box_matter`) ; seule cette liste les fermait.
+//
+// 24/10 (v43) : Wah — « l'utilisateur doit pouvoir sélectionner ou désélectionner
+// des sous-box dans les box ». La page envoie `hide: [{kind, text}]`, des
+// RÉFÉRENCES : on filtre la matière qu'on vient de relire en base. Elle ne reçoit
+// toujours rien — au pire, une référence qui ne correspond à rien n'ôte rien.
 // ═══════════════════════════════════════════════════════════════════════
 import Stripe from 'npm:stripe@14';
 import { createClient } from 'npm:@supabase/supabase-js@2';
@@ -101,6 +106,20 @@ Deno.serve(async (req) => {
     return Response.json({ error: 'try again' }, { status: 503, headers: cors });
   }
   if (!snap?.text) return Response.json({ error: 'box not found' }, { status: 404, headers: cors });
+
+  // ── 24/10 : des SOUS-BOX ÉTEINTES (Wah). La page n'envoie que des RÉFÉRENCES
+  //    (la vue + le texte) ; on retire de NOTRE matière, relue en base, ce qui
+  //    correspond. Rien n'entre par ici : ce qui ne correspond à rien est ignoré.
+  const hide = Array.isArray(body.hide) ? (body.hide as { kind?: unknown; text?: unknown }[]).slice(0, 40) : [];
+  const off = new Set(hide.filter((h) => h && typeof h.kind === 'string' && typeof h.text === 'string')
+    .map((h) => h.kind + '\u0000' + h.text));
+  if (off.size && snap.matter && typeof snap.matter === 'object') {
+    const m = snap.matter as Record<string, { text?: unknown }[]>;
+    for (const k of Object.keys(m)) {
+      m[k] = (m[k] ?? []).filter((x) => !off.has(k + '\u0000' + String(x?.text ?? '')));
+    }
+    console.log('[create-checkout] sous-box éteintes:', off.size);
+  }
 
   // ── Prix + stock : source de vérité = DB
   const { data: g } = await sb.from('totehm_cloth_support').select('*').eq('id', garment_id).maybeSingle();

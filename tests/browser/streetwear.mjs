@@ -25,7 +25,7 @@ const rpc = {
     habit:    { text:b.p_ref,               view:'habits',     palette:['#E24B4A'], matter:{ objectives:[{ text:'Marathon in May' }] }, extra:{ freq:'every_morning' } },
     objective:{ text:'Marathon in May',     view:'objectives', palette:['#e48b31'], matter:{ habits:[{ text:'Run the hill' }] }, extra:{} },
     repulsion:{ text:'Scrolling at night',  view:'repulsions', palette:['#378ADD'], matter:{ habits:[{ text:'Cold shower' }] }, extra:{} },
-  })[b.p_kind] || { text:'Slow is smooth', view:'wisdom', palette:['#378ADD'], matter:{ objectives:[{ text:'Marathon in May' }] }, extra:{ freq:'every_morning' } },
+  })[b.p_kind] || { text:'Slow is smooth', view:'wisdom', palette:['#378ADD'], matter:{ objectives:[{ text:'Marathon in May' }], habits:[{ text:'Run the hill' }] }, extra:{ freq:'every_morning' } },
   my_streetwear_test_mode: true,
 };
 const styles = [{ id:'st1', name:'Ink Realism', active:true, status:'active', position:1, remaining_capacity:7, total_capacity:7, image_url:'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2210%22 height=%2210%22/%3E' },
@@ -55,11 +55,15 @@ await pg.waitForTimeout(80);
 // ── 1 · CLOTH (téléphone)
 let d = await D();
 ok(d.build === '2026-10-24-my-boxes' && d.stage === 'cloth' && !d.papers && !d.desktop, 'phone: CLOTH first, the TOTEHM still folded');
-const rest = await pg.evaluate(() => { const b = document.querySelector('#cl-facts .left b'); const s = getComputedStyle(b);
-  return { n: b.textContent.trim(), px: Math.round(parseFloat(s.fontSize)), col: s.color, txt: document.querySelector('#cl-facts').textContent }; });
-ok(/Higher Champion Sweatshirt/.test(await pg.textContent('#cl-title')) && rest.n === '177' && /of 177/.test(rest.txt) && /pieces left/.test(rest.txt),
+const rest = await pg.evaluate(() => { const b = document.querySelector('#cl-facts .left b'), s = getComputedStyle(b);
+  const g = document.querySelector('#cl-facts .bar i'), bar = document.querySelector('#cl-facts .bar');
+  return { n: b.textContent.trim(), px: Math.round(parseFloat(s.fontSize)), col: s.color, fam: s.fontFamily,
+           txt: document.querySelector('#cl-facts').textContent,
+           jauge: g ? Math.round(g.getBoundingClientRect().width / bar.getBoundingClientRect().width * 100) : -1 }; });
+ok(/Higher Champion Sweatshirt/.test(await pg.textContent('#cl-title')) && rest.n === '177' && /\/ 177/.test(rest.txt) && /pieces left/.test(rest.txt),
   'the title and what is left');
-ok(rest.px >= 22 && /251, 213, 202/.test(rest.col), 'what is left is READ FIRST: a big coral number ' + rest.px + 'px');
+ok(rest.px >= 13 && /Quantico/.test(rest.fam) && rest.col === 'rgb(255, 255, 255)' && rest.jauge === 100,
+  'what is left: white Quantico and a one-pixel gauge, never Coral (that is a TOTEHM name) ' + JSON.stringify(rest.jauge));
 ok(!/€|S · M · L/.test(await pg.textContent('#cl-facts')) && !(await pg.$('#cl-hint')) && !(await pg.$('#concept-btn')) && !(await pg.$('#conn-bar')) && !(await pg.$('#back')),
   'no price, no sizes, no hint, no « how it works », no member corner, no Back');
 const lay = await pg.evaluate(() => { const v = document.querySelector('#viewer').getBoundingClientRect(), b = document.querySelector('#totehmize').getBoundingClientRect();
@@ -141,6 +145,12 @@ const matter = await pg.textContent('#matter');
 ok(/Marathon in May/.test(matter) && (await D()).open && !(await pg.$('#mt-go')),
   'a tap chooses the element AND keeps its matter open inside the box — no button at all');
 ok(!/palette|rhythm|every morning/i.test(matter + await pg.textContent('#el-list')) && !(await pg.$('#matter .pal')), 'no colour palette, no time frequency on screen');
+// Une sous-box s'éteint : elle reste lisible, hors de l'œuvre — et c'est une RÉFÉRENCE qui part au serveur.
+await pg.click('#matter .mi[data-k="objectives"]');
+await pg.waitForFunction(() => window.__totehm_cloth().hidden === 1);
+const sub = await pg.$eval('#matter .mi[data-k="objectives"]', e => ({ off: e.classList.contains('is-off'), press: e.getAttribute('aria-pressed'), line: getComputedStyle(e).textDecorationLine, w: Math.round(e.getBoundingClientRect().width) }));
+ok(sub.off && sub.press === 'false' && /line-through/.test(sub.line) && sub.w < 160,
+  'a sub-box switches off inside its box — readable, struck through, out of the artwork ' + JSON.stringify(sub));
 await pg.screenshot({ path: OUT + '/sw_element.png' });
 
 // ── 3 · NAME
@@ -174,8 +184,8 @@ await pg.press('#nm-input', 'Enter');
 await pg.waitForFunction(() => window.__totehm_cloth().stage === 'style' && document.querySelectorAll('.st-card').length === 2);
 const stl = await pg.evaluate(() => { const b = document.querySelector('.st-card[data-id="st1"] span b'); const s = getComputedStyle(b);
   return { n: b.textContent.trim(), px: Math.round(parseFloat(s.fontSize)), col: s.color, out: document.querySelector('.st-card[data-id="st2"] span.out').textContent }; });
-ok(stl.n === '7' && stl.px >= 14 && /251, 213, 202/.test(stl.col) && /sold out/i.test(stl.out) && await pg.isDisabled('.st-card[data-id="st2"]'),
-  'a style says what is left, in the same big coral figure; a sold-out style is closed ' + JSON.stringify(stl));
+ok(stl.n === '7' && stl.px >= 11 && stl.col === 'rgb(255, 255, 255)' && /sold out/i.test(stl.out) && await pg.isDisabled('.st-card[data-id="st2"]'),
+  'a style says what is left in the same writing as the cloth; a sold-out style is closed ' + JSON.stringify(stl));
 await pg.click('.st-card[data-id="st1"]');
 await pg.click('#st-go');
 
@@ -192,6 +202,8 @@ await pg.click('#od-go');
 await pg.waitForURL(/checkout\.stripe\.test/);
 ok(body && body.garment_id === 's1' && body.box.kind === 'wisdom' && body.box.ref === 'w1' && body.name === 'hillstreet' && body.size === 'L' && body.style_id === 'st1',
   'order sends a reference (wisdom) and the name WITHOUT prefix (the server sets 0.)');
+ok(JSON.stringify(body.hide) === '[{"kind":"objectives","text":"Marathon in May"}]',
+  'the sub-box switched off travels as a REFERENCE; the server filters the matter it read itself ' + JSON.stringify(body.hide));
 
 // ── Paiement annulé : retour sur ORDER, tous les choix gardés
 await pg.goto('https://www.higher.boutique/streetwear?cancel=1');

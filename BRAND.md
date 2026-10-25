@@ -85,12 +85,12 @@ développement personnel, un réseau social classique, une marque streetwear cla
 
 ## L'espace
 
-TOTEHM.SPACE est le dernier temple au sommet d’une Terre engloutie : beauté, grandeur, peur et renouveau.
-Nuit permanente, arche de la Voie lactée, lune et mer déchaînée ; terrasse de pierre naturelle et trois portes monumentales.
-Sans colonnes, toit, fronton ni végétation, le refuge ouvre la vue sur les déferlants ; Espace propulse au milieu des étoiles, face au globe englouti.
-Les trois portes sans étiquette ouvrent les expériences indépendantes : TotehmPaper, Origins et Play the Lisbon Street.
-De nombreux papiers perforés flottent dans la porte THP, comme les panneaux dans celle de Lisbon. Vent et mer
-accompagnent la visite ; grave magnétique à l'approche, souffle au passage. Le marché garde achat et revente.
+TOTEHM.SPACE est un pavillon de verre au sommet d’une Terre engloutie : beauté, grandeur, peur et renouveau.
+Voie lactée à travers le toit, lune et mer déchaînée ; calçada à vagues et caravelle dehors, grandes dalles blanches et comptoir pierre dedans.
+La bouche originale, sa langue et son papier sont sculptés en façade et éclairés ; la cheminée noire réchauffe l’intérieur.
+THP en petits papiers perforés, livre noir fermé sur pupitre vers Origins à pages tournantes ; écran Lisbon seul, couverture puis panneaux jouables.
+Sans colonnes ni végétation, la terrasse ouvre la vue sur les déferlants ; Espace propulse vers les étoiles et le globe englouti.
+Vent et mer, crépitement à l’approche du feu. Pages et marché indépendants conservés ; Collect garde achat et revente.
 
 ## Les vêtements
 

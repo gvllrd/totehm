@@ -1,15 +1,20 @@
-// TOTEHM · luxury-quote — LE LUXE SUR DEVIS · 05/10/2026
-// why : Wah, 05/10 — « le luxe en mode devis ». Le membre décrit SA pièce
-//       et la Box de son TOTEHM qui la totehmise ; Wah répond par un prix ;
-//       le membre paie ce prix (luxury-checkout, quote_id). Plus de lancement
-//       à prix fixe : `luxury_offer` devient « à partir de ».
+// TOTEHM · luxury-quote — LE LUXE, UN PROJET QUE L'ON DÉPOSE · 05 → 24/10/2026
+// why : Wah, 24/10 — « simplifie largement la rubrique luxe… ici c'est 500
+//       balles pour déposer le projet (remboursé si pas de possibilité) ». Le
+//       membre PHOTOGRAPHIE sa pièce, choisit la Box qui la totehmise, et
+//       dépose : le montant du dépôt vit dans `luxury_offer` (500 €), relu ici
+//       — jamais reçu de la page. Si la pièce ne peut pas être travaillée, le
+//       dépôt est remboursé à la main (le « oui » de Wah, chez Stripe).
+//       `price` reste : le prix de l'ŒUVRE, une fois la pièce étudiée.
 // how : une fonction, quatre gestes, le compte vient TOUJOURS de la session :
 //       request — le membre (THP vérifié ici, `_art_owns_thp`) ; la Box est
 //                 relue en base dans SON Totehm (`_box_matter`), jamais reçue ;
-//                 trois demandes ouvertes au plus. 06/10 (ter) : le style du
-//                 moment (`artistic_styles` actif) et le NOM du Totehm Cloth —
-//                 le membre écrit {Nom}, le serveur pose le préfixe de l'année
-//                 (`0.` = 2026-27) : « 0.{Nom} », celui que Decode lit.
+//                 trois projets ouverts au plus. Le NOM du Totehm Cloth : le
+//                 membre écrit {Nom}, le serveur pose le préfixe de l'année
+//                 (`0.` = 2026-27) : « 0.{Nom} », celui que Decode lit. La
+//                 PHOTO n'est qu'un CHEMIN (`<uid>/…` dans `luxury-pieces`),
+//                 vérifié ici ; le style n'est plus demandé à l'avance.
+//       photos  — un administrateur : les URL SIGNÉES des pièces à regarder.
 //       price   — un administrateur (`boutique_admins`) pose le prix : c'est
 //                 le « oui » de Wah sur un prix live, par construction.
 //       decline — un administrateur refuse, avec un mot.
@@ -98,8 +103,13 @@ Deno.serve(async (req) => {
 
   // ── LA DEMANDE — le membre ─────────────────────────────────────────────
   if (action === "request") {
-    const { data: o } = await admin.from("luxury_offer").select("active").eq("slug", "launch").maybeSingle();
+    const { data: o } = await admin.from("luxury_offer")
+      .select("active, price_cents, currency").eq("slug", "launch").maybeSingle();
     if (!o?.active) return json({ error: "closed" }, 409);
+    // ⚠️ LE MONTANT DU DÉPÔT VIENT DE LA BASE. La page ne l'envoie pas et ne le
+    //    choisit pas : elle l'affiche (`luxury_access`).
+    const depot = Number(o.price_cents);
+    if (!Number.isFinite(depot) || depot < 50) { console.error("[luxury-quote] dépôt:", o.price_cents); return json({ error: "closed" }, 409); }
     const { data: thp, error: thpErr } = await admin.rpc("_art_owns_thp", { p_user: user.id });
     if (thpErr) { console.error("[luxury-quote] thp:", thpErr.message); return json({ error: "unavailable" }, 503); }
     if (thp !== true) return json({ error: "thp_required" }, 402);
@@ -110,17 +120,39 @@ Deno.serve(async (req) => {
     if (sErr) { console.error("[luxury-quote] box:", sErr.message); return json({ error: "unavailable" }, 503); }
     if (!snap?.text) return json({ error: "box_not_found" }, 404);
 
+    // 24/10 : des SOUS-BOX ÉTEINTES, comme sur /streetwear — la page n'envoie
+    // que des RÉFÉRENCES, on filtre la matière qu'on vient de relire en base.
+    const hide = Array.isArray(body.hide) ? (body.hide as { kind?: unknown; text?: unknown }[]).slice(0, 40) : [];
+    const off = new Set(hide.filter((h) => h && typeof h.kind === "string" && typeof h.text === "string")
+      .map((h) => h.kind + "\u0000" + h.text));
+    if (off.size && snap.matter && typeof snap.matter === "object") {
+      const m = snap.matter as Record<string, { text?: unknown }[]>;
+      for (const k of Object.keys(m)) m[k] = (m[k] ?? []).filter((x) => !off.has(k + "\u0000" + String(x?.text ?? "")));
+    }
+
     const { count, error: cErr } = await admin.from("luxury_quotes").select("id", { count: "exact", head: true })
-      .eq("user_id", user.id).eq("status", "requested");
+      .eq("user_id", user.id).in("status", ["requested", "quoted"]);
     if (cErr) { console.error("[luxury-quote] count:", cErr.message); return json({ error: "unavailable" }, 503); }
     if ((count ?? 0) >= 3) return json({ error: "too_many" }, 429);
 
-    // Le style : curaté, ouvert (MASTER §53), relu ici. Le nom : préfixé ici.
+    // ── LA PHOTO : un CHEMIN dans le dossier du membre, et il doit exister.
+    //    On ne reçoit jamais une image ici : elle est déjà dans `luxury-pieces`,
+    //    déposée sous RLS par son propriétaire. On vérifie le dossier ET l'objet.
+    const photo = clean(body.photo, 200);
+    if (!photo.startsWith(user.id + "/") || !/^[\w./-]{1,200}$/.test(photo)) return json({ error: "photo" }, 422);
+    const { error: phErr } = await admin.storage.from("luxury-pieces").createSignedUrl(photo, 60);
+    if (phErr) { console.error("[luxury-quote] photo:", phErr.message); return json({ error: "photo" }, 422); }
+
+    // Le style ne se choisit plus à l'avance (24/10) : il se décide avec Wah.
+    // S'il arrive quand même, il est relu comme avant — curaté et ouvert.
     const styleId = String(body.style ?? "");
-    if (!UUID.test(styleId)) return json({ error: "choose_a_style" }, 422);
-    const { data: st, error: stErr } = await admin.from("artistic_styles").select("id, active, status").eq("id", styleId).maybeSingle();
-    if (stErr) { console.error("[luxury-quote] style:", stErr.message); return json({ error: "unavailable" }, 503); }
-    if (!st?.active || (st.status && st.status !== "active")) return json({ error: "choose_a_style" }, 422);
+    let style_id: string | null = null;
+    if (UUID.test(styleId)) {
+      const { data: st, error: stErr } = await admin.from("artistic_styles").select("id, active, status").eq("id", styleId).maybeSingle();
+      if (stErr) { console.error("[luxury-quote] style:", stErr.message); return json({ error: "unavailable" }, 503); }
+      if (!st?.active || (st.status && st.status !== "active")) return json({ error: "choose_a_style" }, 422);
+      style_id = st.id;
+    }
     const bare = clean(body.name, 40).replace(/^\d+\./, "").trim();
     if (bare.length < 2) return json({ error: "name" }, 422);
     const name = `${epoch()}.${bare}`;
@@ -134,17 +166,22 @@ Deno.serve(async (req) => {
     const email = user.email.trim().toLowerCase();
     const { data: q, error } = await admin.from("luxury_quotes").insert({
       user_id: user.id, email, piece, brand, note, box_kind: box.kind, box_ref: String(box.ref),
-      box_snapshot: snap, palette: snap.palette ?? [], name, style_id: styleId,
+      box_snapshot: snap, palette: snap.palette ?? [], name, style_id, photo_path: photo,
+      status: "quoted", quote_cents: depot, currency: String(o.currency ?? "eur"),
+      quoted_at: new Date().toISOString(),
     }).select("id").single();
     if (error?.code === "23505") return json({ error: "name_taken" }, 409);   // deux demandes, un nom : l'index tranche
     if (error) { console.error("[luxury-quote] insert:", error.message); return json({ error: "db" }, 500); }
 
-    await send([email], "Your luxury quote request is in",
-      mail("REQUEST RECEIVED", [name, `${brand} · ${piece}`, "We study your piece and your Box, then we answer with a price."]));
-    await send(await adminEmails(), `Luxury quote · ${brand} · ${piece}`,
-      mail("NEW QUOTE REQUEST", [name, `${brand} · ${piece}`, note ?? "", `Box: ${String(snap.text).slice(0, 140)}`],
-        { href: PAGE + "#admin", label: "Answer with a price" }));
-    return json({ ok: true, id: q.id, status: "requested", name });
+    const prix = money(depot, String(o.currency ?? "eur"));
+    await send([email], "Your luxury project is deposited",
+      mail("PROJECT DEPOSITED", [name, prix + " · deposit",
+        "We study your piece and your element, then we tell you how far we can go.",
+        "If the piece cannot take the work, the deposit is refunded."]));
+    await send(await adminEmails(), `Luxury project · ${brand} · ${piece}`,
+      mail("NEW LUXURY PROJECT", [name, `${brand} · ${piece}`, note ?? "", `Box: ${String(snap.text).slice(0, 140)}`],
+        { href: PAGE + "#admin", label: "See the piece" }));
+    return json({ ok: true, id: q.id, status: "quoted", name, cents: depot, currency: String(o.currency ?? "eur") });
   }
 
   // ── LE RETRAIT — le membre, sa demande seulement ────────────────────────
@@ -156,7 +193,27 @@ Deno.serve(async (req) => {
     return data ? json({ ok: true, status: "cancelled" }) : json({ error: "not_found" }, 404);
   }
 
-  // ── LE PRIX ET LE REFUS — un administrateur seulement ───────────────────
+  // ── LES PHOTOS — un administrateur regarde les pièces ──────────────────
+  //    Une URL SIGNÉE d'une heure, jamais une politique « les admins voient
+  //    tout » (elle s'oublie, et elle finit par tout ouvrir) : c'est la clé de
+  //    service qui signe, ici, après avoir vérifié qui demande.
+  if (action === "photos") {
+    const { data: isAdmin, error: aErr } = await admin.rpc("_boutique_admin", { p_user: user.id });
+    if (aErr) { console.error("[luxury-quote] admin:", aErr.message); return json({ error: "unavailable" }, 503); }
+    if (isAdmin !== true) return json({ error: "forbidden" }, 403);
+    const { data: rows, error } = await admin.from("luxury_quotes")
+      .select("id, photo_path").in("status", ["requested", "quoted", "paid"])
+      .not("photo_path", "is", null).order("created_at", { ascending: false }).limit(40);
+    if (error) { console.error("[luxury-quote] photos:", error.message); return json({ error: "db" }, 500); }
+    const out: { id: string; url: string }[] = [];
+    for (const r of rows ?? []) {
+      const { data: s } = await admin.storage.from("luxury-pieces").createSignedUrl(String(r.photo_path), 3600);
+      if (s?.signedUrl) out.push({ id: r.id, url: s.signedUrl });
+    }
+    return json({ ok: true, photos: out });
+  }
+
+  // ── LE PRIX ET LE REFUS — un administrateur seulement ──────────────────
   if (action === "price" || action === "decline") {
     const { data: isAdmin, error: aErr } = await admin.rpc("_boutique_admin", { p_user: user.id });
     if (aErr) { console.error("[luxury-quote] admin:", aErr.message); return json({ error: "unavailable" }, 503); }
@@ -182,8 +239,9 @@ Deno.serve(async (req) => {
         mail("YOUR QUOTE", [`${q.brand} · ${q.piece}`, money(q.quote_cents, q.currency), word ?? ""],
           { href: PAGE, label: "See my quote" }));
     } else {
-      await send([q.email], "About your luxury quote",
-        mail("NOT THIS TIME", [`${q.brand} · ${q.piece}`, word ?? "We cannot totehmize this piece."]));
+      await send([q.email], "About your luxury project",
+        mail("NOT THIS TIME", [`${q.brand} · ${q.piece}`, word ?? "We cannot totehmize this piece.",
+          "Your deposit is refunded."]));
     }
     return json({ ok: true, status: patch.status });
   }

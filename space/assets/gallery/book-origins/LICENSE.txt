@@ -1,0 +1,39 @@
+ORIGINS — authored Polaroid works by Wah / TOTEHM.
+
+These twenty JPEG stills come from the corresponding original public videos
+already presented by /origins.html. No external image, replacement photograph,
+AI-generated artwork, crop or colour grading is used. The original Polaroid
+border and signature are retained at the source resolution (1262 × 1636).
+The stills are used only by the spatial photo book; original videos, previous
+gallery assets, independent experiences and catalogue remain unchanged.
+
+Rights remain with the original artist. This file does not grant a new licence.
+
+Public source base:
+https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/public/wah/
+
+Output     Source video   Timestamp (seconds)
+01.jpg     1.mp4         0.200
+02.jpg     2.mp4         4.153
+03.jpg     3.mp4         0.650
+04.jpg     4.mp4         3.465
+05.jpg     5.mp4         6.820
+06.jpg     6.mp4         4.290
+07.jpg     7.mp4         4.455
+08.jpg     8.mp4         5.850
+09.jpg     9.mp4         3.780
+10.jpg     10.mp4         3.832
+11.jpg     11.mp4         5.100
+12.jpg     12.mp4         5.100
+13.jpg     13.mp4         3.675
+14.jpg     14.mp4         7.100
+15.jpg     15.mp4         5.775
+16.jpg     16.mp4         5.580
+17.jpg     17.mp4         2.035
+18.jpg     18.mp4         3.930
+19.jpg     19.mp4         3.350
+20.jpg     20.mp4         2.825
+
+Frames are selected from the actual drawn composition rather than an opening
+title where possible. Chaos (01), Light (03) and Stop Think (20) intentionally
+use minimal black/white or typographic imagery in their original animations.
