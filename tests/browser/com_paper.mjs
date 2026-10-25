@@ -64,6 +64,12 @@ try{
   ok(z.compte,'retourner le papier AFFICHE le menu membre (Wah, 16/10) : pas de second geste');
   c=await card(pg);ok((await lsd(pg)).face===1&&c.cls==='is-back is-flat'&&c.tf==='','dessous, le papier est posé sur son verso, sans transformation');
   ok(await pg.$eval('#gate',e=>e.inert&&getComputedStyle(e).visibility==='visible'),'#gate est inert mais reste peint (le Totehm dessous ne se révèle jamais)');
+  /* 25/10 (Wah) : « dès que l'on retourne le totehm pour atteindre le verso et ses paramètres, les traits d'intention arrêtent
+     leur activité et sont aspirés dans le Totehm ». */
+  const asp=()=>pg.evaluate(()=>{const r=getComputedStyle(document.getElementById('lv-ram')),m=r.transform.match(/matrix\(([-\d.e]+)/);
+    return {on:document.body.classList.contains('is-aspire'),op:+r.opacity,ech:m?+m[1]:1};});
+  const a1=await asp();
+  ok(a1.on&&a1.op===0&&a1.ech<.05,'25/10 · au verso, les traits ont cessé leur activité : ASPIRÉS dans le TOTEHM → '+JSON.stringify(a1));
   // aucun contrôle ne change de vue ni ne retourne le papier
   await pg.mouse.move(195,600);for(let i=0;i<4;i++){await pg.mouse.wheel(0,90);await pg.waitForTimeout(16);}
   await pg.keyboard.press('ArrowDown');await pg.waitForTimeout(700);
@@ -81,6 +87,8 @@ try{
   await pg.click('#srch-x');await pg.waitForTimeout(2000);
   c=await card(pg);
   ok(await srch(pg)===''&&(await lsd(pg)).face===0&&c.cls==='is-flat'&&c.tf==='','la croix : dézoom, puis le papier se remet sur son recto');
+  await pg.waitForTimeout(800);const a2=await asp();
+  ok(!a2.on&&a2.op===1&&a2.ech===1,'25/10 · le papier reposé sur son recto, ses traits RESSORTENT → '+JSON.stringify(a2));
   ok(!await pg.$eval('#gate',e=>e.inert)&&JSON.stringify(await R(pg,'#gate-asteroid'))===JSON.stringify(paper),'le papier est de nouveau atteignable, exactement à sa place');
   ok(!(await pg.evaluate(()=>!!document.getElementById('ast-panel')))&&!(await pg.evaluate(()=>!!document.getElementById('conn-bar'))),
     'le dos ne porte plus de pastilles, et il n\'y a plus d\'espace membre hors du verso (#conn-bar parti)');

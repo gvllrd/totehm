@@ -36,7 +36,7 @@ try{
   const c=await pg.evaluate(()=>{const q=s=>document.querySelector(s);
     const sk=q('#lv-socket').getBoundingClientRect(),pa=q('#gate-asteroid').getBoundingClientRect(),d=window.__totehm_lv();
     const flou=[...document.querySelectorAll('#lv-proc,#lv-proc *')].some(e=>{const cs=getComputedStyle(e);return /blur/.test(cs.filter+' '+(cs.backdropFilter||''));});
-    return {vue:d.vue,mode:d.mode,dans:Math.abs((sk.x+sk.width/2)-(pa.x+pa.width/2))<1.5&&Math.abs((sk.y+sk.height/2)-(pa.y+pa.height/2))<1.5&&sk.width>pa.width*1.2,
+    return {vue:d.vue,mode:d.mode,dans:Math.abs((sk.x+sk.width/2)-(pa.x+pa.width/2))<1.5&&Math.abs((sk.y+sk.height/2)-(pa.y+pa.height/2))<1.5&&sk.width>=pa.width&&sk.width<=pa.width+12&&getComputedStyle(q('#lv-socket')).backgroundColor==='rgba(0, 0, 0, 0)',
       pistes:[...document.querySelectorAll('#lv-ram path:not(.puls):not(.sk)')].map(p=>p.getAttribute('stroke')),noeuds:document.querySelectorAll('#lv-ram rect').length,
       pales:document.querySelectorAll('#lv-ram g.r-0').length,ramOp:getComputedStyle(q('#lv-ram')).opacity,flou,
       plein:(()=>{const r=q('#lv-ram').getBoundingClientRect();return Math.round(r.width)===innerWidth&&Math.round(r.height)>=innerHeight-2;})(),
@@ -51,7 +51,7 @@ try{
       /* 18/10 : le nom a quitté l'atterrissage — il ne vit QUE sur la face verso du papier (Wah). */
       sigAbs:!q('#ast-sig'),connAbs:!q('#conn-bar'),
       tap:q('#lv-tap').textContent,bouche:getComputedStyle(q('#gate-mouth')).opacity};});
-  ok(c.vue==='c'&&c.mode==='mine'&&c.dans,(tel?'téléphone':'ordinateur')+' · centre, Mine : le papier posé DANS son socle');
+  ok(c.vue==='c'&&c.mode==='mine'&&c.dans,(tel?'téléphone':'ordinateur')+' · centre, Mine : 25/10 · le TOTEHM est le boîtier — le socle ne se voit plus, il le serre à 3 px');
   ok(JSON.stringify(c.pistes)===JSON.stringify(COULEURS)&&c.noeuds>=7&&c.pales===4&&c.ramOp==='1'&&c.plein,'le réseau PLEIN ÉCRAN : sept pistes aux 7 couleurs exactes, les nœuds = MES Habits, les quatre intentions vides en creux');
   /* 18/10 — LES SEPT PISTES VIVENT : une impulsion par intention, épaisse et à la période RÉELLE
      sur une intention habitée, en VEILLE (lente, fine) sur une intention vide ; et la couleur d'un
@@ -175,21 +175,36 @@ try{
     return {mode:d.mode,m:d.membre,pw:p.width,pcx:p.x+p.width/2,pcy:p.y+p.height/2,sk:k.width,dos:q('#gate-card').classList.contains('is-back'),
       focus:document.activeElement&&document.activeElement.id,ui:getComputedStyle(q('#mb-ui')).visibility,
       surLui:Math.abs(u.x+u.width/2-(p.x+p.width/2))<3&&u.y>p.y&&u.bottom<p.bottom,
-      ram:getComputedStyle(q('#lv-ram')).opacity,pistes:document.querySelectorAll('#lv-ram path:not(.puls):not(.sk)').length,
+      ram:getComputedStyle(q('#lv-ram')).opacity,asp:document.body.classList.contains('is-aspire'),pistes:document.querySelectorAll('#lv-ram path:not(.puls):not(.sk)').length,
       coude:(()=>{const r=[...document.querySelectorAll('#lv-ram rect')][0];return r?+r.getAttribute('y'):0;})(),
       checked:q('#lv-m-members').getAttribute('aria-checked'),gx:!!q('#gx-c'),haut:p.y<160};});
   ok(o.mode==='members'&&o.m.cherche&&o.checked==='true'&&!o.gx,(tel?'téléphone':'ordinateur')+' · [Members] : plus de galaxie, la recherche');
-  ok(o.pw>p0*1.9&&o.dos&&o.sk>o.pw*1.2&&o.haut,'le papier GRANDIT (×'+(o.pw/p0).toFixed(1)+') avec son socle, se pose sur son DOS, ancré en haut');
+  ok(o.pw>p0*1.9&&o.dos&&o.haut,'le papier GRANDIT (×'+(o.pw/p0).toFixed(1)+'), sans boîte, se pose sur son DOS, ancré en haut');
   ok(o.focus==='mb-q'&&o.ui==='visible'&&o.surLui,'la saisie est SUR le dos du papier, et elle a déjà le focus (le clavier s\'ouvre dans le geste)');
-  ok(o.ram==='1'&&o.pistes===7,'les sept traits suivent le papier agrandi');
+  ok(o.ram==='0'&&o.asp&&o.pistes===7,'25/10 · calquée sur le clic : les sept traits sont ASPIRÉS dans le TOTEHM pendant la recherche');
   if(tel) await pg.screenshot({path:OUT+'/proc_members_'+(tel?'tel':'ordi')+'.png'});
   // un nom inconnu, puis un Totehm à abonnement : un refus ne touche jamais à MON état
   await pg.fill('#mb-q','nobody');await pg.keyboard.press('Enter');await pg.waitForTimeout(500);
   const n1=await pg.evaluate(()=>({t:document.getElementById('mb-note').textContent,ro:document.body.classList.contains('ro'),h:window.__totehm_lv().ramifications.habits}));
   ok(n1.t==='no TOTEHM by that name'&&!n1.ro&&n1.h===habits0,'un nom inconnu : « '+n1.t+' », et mon Totehm n\'a pas bougé');
-  await pg.fill('#mb-q','lock');await pg.keyboard.press('Enter');await pg.waitForTimeout(700);
-  const n2=await pg.evaluate(()=>({t:document.getElementById('mb-note').textContent,b:document.getElementById('mb-go').textContent,v:!document.getElementById('mb-go').classList.contains('hide')}));
-  ok(n2.t==='subscribe to read'&&n2.v&&/^SUBSCRIBE · 24 € \/ year$/.test(n2.b),'un Totehm à abonnement : « '+n2.t+' » et UN geste, avec le prix du serveur ('+n2.b+')');
+  // 25/10 (Wah : « le mode résultat recherche pour la souscription à un Totehm … est devenu totalement obsolète ») :
+  // la recherche se termine, le papier rentre ; ses traits sont SA palette, et l'offre se pose sous le papier.
+  await pg.fill('#mb-q','lock');await pg.keyboard.press('Enter');
+  await pg.waitForFunction(()=>document.body.classList.contains('lv-verrou')&&!document.body.classList.contains('mb-cherche'),null,{timeout:6000}).catch(()=>{});
+  await calme(pg);await pg.waitForTimeout(900);
+  const n2=await pg.evaluate(()=>{const q=s=>document.querySelector(s),p=q('#gate-asteroid').getBoundingClientRect();
+    return {d:window.__totehm_lv(),pw:p.width,dos:q('#gate-card').classList.contains('is-back'),qui:q('#lv-m-who').textContent,
+      lock:q('#mb-lock').innerText.replace(/\s+/g,' ').trim(),b:(q('#mb-lock [data-mbl]')||{}).textContent||'',tap:q('#lv-tap-open').textContent,
+      asp:document.body.classList.contains('is-aspire'),pales:document.querySelectorAll('#lv-ram g.r-0').length,ro:document.body.classList.contains('ro')};});
+  ok(n2.d.membre.verrou==='lock'&&!n2.dos&&Math.abs(n2.pw-p0)<2&&n2.qui==='lock'&&!n2.ro&&!n2.asp,
+     '25/10 · un Totehm à abonnement : la recherche se termine (le papier rentre, sur son recto), SON nom sur [Members], rien de lui n\'est lu');
+  ok(/^SUBSCRIBE · 24 € \/ year$/.test(n2.b)&&/subscribers only/i.test(n2.lock)&&n2.tap==='Subscribe to open it',
+     '25/10 · sous le papier, UN geste au prix du serveur ('+n2.b+') ; le papier dit « '+n2.tap+' »');
+  ok(n2.pales===5,'25/10 · ses traits ressortent : SA palette (deux intentions habitées), cinq en creux → '+n2.pales);
+  await pg.evaluate(()=>document.getElementById('gate-enter').click());await pg.waitForTimeout(400);
+  ok(await pg.evaluate(()=>document.body.classList.contains('gate')&&!!document.activeElement&&document.activeElement.dataset.mbl==='sub'),
+     '25/10 · un tap sur SON papier n\'ouvre rien : il désigne le geste qui l\'ouvre');
+  await pg.click('#lv-m-members');await calme(pg);await pg.waitForTimeout(700);
   // le bon nom : SON écosystème
   const url0=pg.url();
   await pg.fill('#mb-q','kai3');await pg.keyboard.press('Enter');
