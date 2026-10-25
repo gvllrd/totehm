@@ -85,12 +85,12 @@ développement personnel, un réseau social classique, une marque streetwear cla
 
 ## L'espace
 
-TOTEHM.SPACE est une galerie contemporaine au sommet d’une Terre engloutie : beauté, grandeur, peur et renouveau.
-Nuit permanente, Voie lactée, lune et mer déchaînée ; calçada de Lisbonne à vagues avec une caravelle.
-La bouche originale sur la devanture ; galerie noire vitrée, comptoir THP en face, livre Origins à gauche, salon Lisbon à droite.
-Les œuvres vivent sur place : papiers perforés en feuilles et à l’unité, photos dans l’ordre, vraie manette de panneaux et écran réactif.
+TOTEHM.SPACE est un pavillon de verre au sommet d’une Terre engloutie : beauté, grandeur, peur et renouveau.
+Voie lactée visible à travers le toit, lune et mer déchaînée ; grandes dalles antiques blanches alignées et comptoir de pierre.
+La bouche originale, sa langue et son papier sont sculptés en façade et éclairés ; la cheminée noire réchauffe l’intérieur.
+THP en petits papiers perforés, livre noir fermé sur pupitre vers Origins à pages tournantes ; écran Lisbon seul, couverture puis panneaux jouables.
 Sans colonnes ni végétation, la terrasse ouvre la vue sur les déferlants ; Espace propulse vers les étoiles et le globe englouti.
-Vent et mer accompagnent la visite. Pages indépendantes conservées ; Collect rejoint le marché avec achat et revente.
+Vent et mer, crépitement à l’approche du feu. Pages et marché indépendants conservés ; Collect garde achat et revente.
 
 ## Les vêtements
 

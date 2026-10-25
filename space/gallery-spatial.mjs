@@ -4,7 +4,9 @@ import {createTempleLandscape} from './gallery-temple-landscape.mjs';
 import {createModernWalkway,createModernPhysics} from './gallery-modern-navigation.mjs';
 import {GALLERY_LAYOUT as L,GALLERY_STATIONS} from './gallery-modern-layout.mjs';
 import {createGalleryAudio} from './gallery-audio.mjs';
-import {createOriginsBook} from './gallery-origins-book.mjs';
+import {createLecternBook} from './gallery-lectern-book.mjs';
+import {createGalleryFireplace} from './gallery-fireplace.mjs';
+import {createFireAudio} from './gallery-fire-audio.mjs';
 import {createPlayInstallation} from './gallery-play-installation.mjs';
 
 const ENTRY=L.entry,LOOK=L.look,GROUND=L.groundY,HEIGHT=L.eyeHeight;
@@ -16,14 +18,15 @@ export async function createGallery({select,onOverview=()=>{},onStationState=()=
  renderer.setClearColor(0x030912);renderer.domElement.setAttribute('aria-hidden','true');host.append(renderer.domElement);
  const scene=new T.Scene(),camera=new T.PerspectiveCamera(mobile?72:60,innerWidth/innerHeight,.08,9000);
  let dirty=true,frames=0,list=false,hidden=document.hidden,paused=false,lastTime=0,lastRender=0,slow=0;
- let motionReduced=reduced.matches,tween=null,arrival=null,pendingVisit=null,stellarView=null,room=-1,focused=-1,down=null,yaw=0,pitch=0,dragged=false,initialized=false,inspecting=false,readingAmount=0,loungeAmount=0;
+ let motionReduced=reduced.matches,tween=null,arrival=null,pendingVisit=null,stellarView=null,room=-1,focused=-1,down=null,yaw=0,pitch=0,dragged=false,initialized=false,inspecting=false,inspectionAmount=0,bookDestination=null;
  let architecture=null,book=null,play=null,lastStationState='';
  const invalidate=()=>{dirty=true;};
  const landscape=createTempleLandscape(scene,renderer,{mobile,onChange:invalidate});
  architecture=createModernGallery(scene,renderer,{mobile,onChange:invalidate});
- book=createOriginsBook(scene,{mobile,onChange:invalidate,onSelect:onArtwork});
+ book=createLecternBook(scene,{mobile,onChange:invalidate,onOpen:({href})=>{bookDestination=href;dirty=true;}});
+ const fireplace=createGalleryFireplace(scene,{mobile,onChange:invalidate});
  play=createPlayInstallation(scene,{mobile,onChange:invalidate});
- const walkway=createModernWalkway(),physics=createModernPhysics({x:ENTRY[0],z:ENTRY[2]}),sound=createGalleryAudio();
+ const walkway=createModernWalkway(),physics=createModernPhysics({x:ENTRY[0],z:ENTRY[2]}),sound=createGalleryAudio(),fireSound=createFireAudio();
  const eye=new T.Vector3(...ENTRY),gaze=new T.Vector3(...LOOK),keys=new Set();
  const stick=document.getElementById('joystick'),knob=stick.querySelector('span');let joystick={x:0,y:0};
  const soundButton=document.getElementById('toggle-sound');
@@ -33,7 +36,7 @@ export async function createGallery({select,onOverview=()=>{},onStationState=()=
  function stationState(){
   if(!initialized)return;
   const b=book.diagnostics(),p=play.diagnostics(),value={room,focused,book:b,play:p,moving:!!tween||!!pendingVisit};
-  const signature=JSON.stringify([room,focused,!!tween,!!pendingVisit,b.spreadIndex,b.current,b.turning,b.loadedVisible,p.selectedSign,p.mediaState,p.active]);
+  const signature=JSON.stringify([room,focused,!!tween,!!pendingVisit,b.closed,b.opening,b.opened,p.selectedSign,p.mediaState,p.active,p.view]);
   if(signature!==lastStationState){lastStationState=signature;onStationState(value);}
  }
  function angles(){const d=gaze.clone().sub(eye).normalize();yaw=Math.atan2(-d.x,-d.z);pitch=Math.asin(d.y);}
@@ -42,15 +45,15 @@ export async function createGallery({select,onOverview=()=>{},onStationState=()=
  function stopInput(){keys.clear();stopStick();down=null;}
  function pausePlayer(){play.setActive(false);}
  function cancelTravel(){tween=null;arrival=null;pendingVisit=null;stellarView=null;angles();}
- function leaveStation(){inspecting=false;room=focused=-1;pausePlayer();stationState();}
+ function leaveStation(){bookDestination=null;book.reset();inspecting=false;room=focused=-1;pausePlayer();stationState();}
  function free(){inspecting=false;cancelTravel();interact();}
  function soundState(){const muted=sound.diagnostics().muted;soundButton.textContent=muted?'Sound off':'Sound on';soundButton.setAttribute('aria-pressed',String(!muted));soundButton.setAttribute('aria-label',muted?'Turn sound on':'Turn sound off');}
- try{sound.setMuted(localStorage.getItem('space-sound-muted')==='true');}catch{}
+ try{const muted=localStorage.getItem('space-sound-muted')==='true';sound.setMuted(muted);fireSound.setMuted(muted);}catch{}
  soundState();angles();
- function syncSound(){const distance=Math.hypot(eye.x,eye.z-L.frontZ,eye.y-1.65);sound.update({zone:physics.position.y>3000?'void':'temple',proximity:Math.max(0,1-distance/8),exposure:T.MathUtils.clamp((physics.position.y-GROUND)/10,0,1),active:!hidden&&!list&&!paused});}
- const unlock=e=>{if(e.isTrusted&&!list&&!hidden&&!paused)sound.unlock().catch(()=>{});};
+ function syncSound(){const distance=Math.hypot(eye.x,eye.z-L.frontZ,eye.y-1.65);sound.update({zone:physics.position.y>3000?'void':'temple',proximity:Math.max(0,1-distance/8),exposure:T.MathUtils.clamp((physics.position.y-GROUND)/10,0,1),active:!hidden&&!list&&!paused});const fireDistance=Math.hypot(eye.x-L.fireplace.position[0],eye.y-1,eye.z-L.fireplace.position[2]);fireSound.update({proximity:Math.max(0,1-fireDistance/13),active:!hidden&&!list&&!paused});}
+ const unlock=e=>{if(e.isTrusted&&!list&&!hidden&&!paused){sound.unlock().catch(()=>{});fireSound.unlock().catch(()=>{});}};
  document.addEventListener('pointerdown',unlock,{capture:true});document.addEventListener('keydown',unlock,{capture:true});
- soundButton.addEventListener('click',()=>{sound.setMuted(!sound.diagnostics().muted);try{localStorage.setItem('space-sound-muted',String(sound.diagnostics().muted));}catch{}soundState();});
+ soundButton.addEventListener('click',()=>{sound.setMuted(!sound.diagnostics().muted);fireSound.setMuted(sound.diagnostics().muted);try{localStorage.setItem('space-sound-muted',String(sound.diagnostics().muted));}catch{}soundState();});
  function travel(position,target,done,{air=false}={}){
   const path=air?[eye.clone(),position]:walkway.route(eye,position);if(!path)return false;
   stopInput();interact();arrival=null;stellarView=null;
@@ -69,7 +72,7 @@ export async function createGallery({select,onOverview=()=>{},onStationState=()=
   }
   return travel(position,target,done);
  }
- function focusStation(index){if(!nearStation(index))return;focused=room=index;inspecting=index===1||(mobile&&index===2);if(index===2)play.setActive(true);stationState();}
+ function focusStation(index){if(!nearStation(index))return;focused=room=index;inspecting=index===0;if(index===2)play.setActive(true);stationState();}
  function visit(index){
   const station=GALLERY_STATIONS[index];if(!station||list)return false;
   cancelTravel();pausePlayer();inspecting=false;room=index;focused=-1;
@@ -78,11 +81,12 @@ export async function createGallery({select,onOverview=()=>{},onStationState=()=
  function enter(index=room){
   if(!GALLERY_STATIONS[index]||list)return false;
   if(!nearStation(index))return visit(index);
-  focusStation(index);if(index===2)play.togglePlayback();if(index===1)book.select();dirty=true;stationState();return true;
+  focusStation(index);if(index===2)play.togglePlayback();if(index===1)book.open();dirty=true;stationState();return true;
  }
  function enterGallery(){cancelTravel();leaveStation();onOverview();return groundedTravel(new T.Vector3(...L.inside),new T.Vector3(...L.insideTarget));}
  function overview(){cancelTravel();leaveStation();onOverview();groundedTravel(new T.Vector3(...ENTRY),new T.Vector3(...LOOK));}
  function panorama(kind){cancelTravel();leaveStation();onOverview();const sea=kind==='sea';groundedTravel(new T.Vector3(sea?-13.6:13.6,1.65,8.4),new T.Vector3(sea?-700:600,sea?-75:-45,sea?-350:-800));}
+ function visitFireplace(){cancelTravel();leaveStation();onOverview();return groundedTravel(new T.Vector3(...L.fireplace.approach),new T.Vector3(...L.fireplace.target));}
  function move(dt,dx=0,dz=0,guided=false){
   const before=eye.clone(),steps=Math.max(1,Math.ceil(dt/.025));
   for(let i=0;i<steps;i++)physics.step(dt/steps,{dx:dx/steps,dz:dz/steps,guided});
@@ -92,7 +96,7 @@ export async function createGallery({select,onOverview=()=>{},onStationState=()=
  function jump(){if(list||hidden||paused)return false;const jumped=physics.jump();if(jumped){free();leaveStation();onOverview();stellarView={yaw,pitch,amount:0};dirty=true;}return jumped;}
  document.getElementById('jump').addEventListener('click',()=>{jump();host.focus({preventScroll:true});});
  const ray=new T.Raycaster(),mouse=new T.Vector2(),plane=new T.Plane(new T.Vector3(0,1,0),-GROUND),floor=new T.Vector3();
- const pickables=[...architecture.pickables,...book.pickables,...play.pickables];
+ const pickables=[...architecture.pickables,...book.pickables,...play.pickables,...(fireplace.pickables||[])];
  function hit(event){
   const rect=host.getBoundingClientRect();mouse.set((event.clientX-rect.left)/rect.width*2-1,-(event.clientY-rect.top)/rect.height*2+1);ray.setFromCamera(mouse,camera);
   const hits=ray.intersectObjects(pickables,false).filter(h=>h.object.visible&&h.object.material?.opacity!==0&&(!h.object.userData.installation||play.acceptHit(h)));
@@ -117,6 +121,7 @@ export async function createGallery({select,onOverview=()=>{},onStationState=()=
   if(data?.installation==='play'){
    if(nearStation(2)){focusStation(2);play.interact(h);dirty=true;stationState();}else select(2);return;
   }
+  if(data?.kind==='fireplace'){visitFireplace();return;}
   if(data?.room!==undefined){if(data.room<0)enterGallery();else select(data.room);return;}
   if(ray.ray.intersectPlane(plane,floor)&&walkway.allowed(floor.x,floor.z)&&floor.distanceTo(eye)<50){
    const solid=ray.intersectObjects(architecture.solids||[],false).find(h=>h.object.visible&&!h.object.material?.transparent);
@@ -129,7 +134,7 @@ export async function createGallery({select,onOverview=()=>{},onStationState=()=
   if(e.target.closest('input,textarea,select,[contenteditable=true]')||list||hidden||paused)return;
   const interactive=!!e.target.closest('button,a,summary,[role=button]');
   if(focused===2&&nearStation(2)&&!interactive&&play.handleKey(e)){e.preventDefault();dirty=true;stationState();return;}
-  if(focused===1&&nearStation(1)&&!interactive&&['ArrowLeft','ArrowRight'].includes(e.key)){e.preventDefault();e.key==='ArrowRight'?book.next():book.previous();dirty=true;return;}
+  if(focused===1&&nearStation(1)&&!interactive&&e.key==='Enter'){e.preventDefault();book.open();dirty=true;return;}
   if(e.key==='Escape'){cancelTravel();leaveStation();onOverview();return;}
   if(e.code==='Space'||e.key===' '){if(!interactive){e.preventDefault();if(!e.repeat)jump();}return;}
   if(interactive)return;
@@ -141,10 +146,11 @@ export async function createGallery({select,onOverview=()=>{},onStationState=()=
  stick.addEventListener('pointermove',e=>{if(stick.hasPointerCapture(e.pointerId))stickMove(e);});stick.addEventListener('pointerup',stopStick);stick.addEventListener('pointercancel',stopStick);
  document.getElementById('look-sky').addEventListener('click',()=>{free();pitch=.75;look();dirty=true;});
  document.getElementById('help').addEventListener('click',()=>document.querySelector('.guide').classList.toggle('is-help'));
+ document.getElementById('visit-fireplace').addEventListener('click',visitFireplace);
  document.getElementById('look-sea').addEventListener('click',()=>panorama('sea'));document.getElementById('look-horizon').addEventListener('click',()=>panorama('horizon'));
- function pause(){stopInput();paused=true;pausePlayer();syncSound();stationState();}
+ function pause(){stopInput();paused=true;bookDestination=null;book.reset();pausePlayer();syncSound();stationState();}
  addEventListener('blur',pause);addEventListener('focus',()=>{paused=false;lastTime=0;syncSound();});
- document.addEventListener('visibilitychange',()=>{hidden=document.hidden;if(hidden){stopInput();pausePlayer();}syncSound();dirty=true;lastTime=0;stationState();});
+ document.addEventListener('visibilitychange',()=>{hidden=document.hidden;if(hidden){stopInput();bookDestination=null;book.reset();pausePlayer();}syncSound();dirty=true;lastTime=0;stationState();});
  function motionChanged(){
   motionReduced=reduced.matches;
   if(motionReduced){stellarView=null;if(tween){const t=tween;tween=null;physics.relocateHorizontal(t.to);eye.set(physics.position.x,physics.position.y+HEIGHT,physics.position.z);gaze.copy(t.target);angles();if(isFloor())t.done?.();else arrival={target:t.target.clone(),done:t.done};}}
@@ -153,7 +159,7 @@ export async function createGallery({select,onOverview=()=>{},onStationState=()=
  reduced.addEventListener('change',motionChanged);
  renderer.domElement.addEventListener('webglcontextlost',e=>{e.preventDefault();pause();renderer.setAnimationLoop(null);fallback();});
  addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);dirty=true;});
- function viewTarget(){return gaze.clone().lerp(new T.Vector3(...L.origins.book),readingAmount).lerp(new T.Vector3(8,1.9,-13),loungeAmount);}
+ function viewTarget(){return gaze.clone().lerp(new T.Vector3(...L.counter.target),inspectionAmount);}
  function animate(now){
   const elapsed=lastTime?(now-lastTime)/1000:0,dt=Math.min(elapsed,.05),physicsDt=Math.min(elapsed,.5);lastTime=now;
   if(reduced.matches!==motionReduced)motionChanged();if(list||hidden||paused){slow=0;return;}
@@ -179,41 +185,36 @@ export async function createGallery({select,onOverview=()=>{},onStationState=()=
   if(focused>=0&&!nearStation(focused)){leaveStation();onOverview();}
   const altitude=Math.max(0,eye.y-1.65),near=T.MathUtils.clamp(altitude*.002,.08,12),far=altitude>100?100000:9000;
   if(Math.abs(camera.near-near)>.0001||camera.far!==far){camera.near=near;camera.far=far;camera.updateProjectionMatrix();dirty=true;}
-  const changes=[landscape.update(dt,eye,!motionReduced),architecture.update(dt,eye,!motionReduced),book.update(dt,eye,!motionReduced),play.update(dt,eye,!motionReduced)];
+  const changes=[landscape.update(dt,eye,!motionReduced),architecture.update(dt,eye,!motionReduced),book.update(dt,eye,!motionReduced),play.update(dt,eye,!motionReduced),fireplace.update(dt,eye,!motionReduced)];
   if(changes.some(Boolean))dirty=true;
-  // Lean over the physical book for reading. The body stays on the safe
-  // approach; the camera remains in free space below the gallery ceiling.
-  const readingTarget=inspecting&&focused===1?1:0;
-  const nextReading=motionReduced?readingTarget:T.MathUtils.damp(readingAmount,readingTarget,7,dt);
-  if(Math.abs(nextReading-readingAmount)>.0001){readingAmount=nextReading;dirty=true;}else if(readingAmount!==readingTarget){readingAmount=readingTarget;dirty=true;}
-  // On a narrow screen, look from above the sofa instead of cropping the TV
-  // from the side aisle. The physical body stays at its collision-safe station.
-  const loungeTarget=inspecting&&focused===2&&mobile?1:0;
-  const nextLounge=motionReduced?loungeTarget:T.MathUtils.damp(loungeAmount,loungeTarget,7,dt);
-  if(Math.abs(nextLounge-loungeAmount)>.0001){loungeAmount=nextLounge;dirty=true;}else if(loungeAmount!==loungeTarget){loungeAmount=loungeTarget;dirty=true;}
-  const readingFov=(mobile?72:60)+(mobile?12:-6)*readingAmount+(mobile?12:0)*loungeAmount;
-  if(Math.abs(camera.fov-readingFov)>.001){camera.fov=motionReduced?readingFov:T.MathUtils.damp(camera.fov,readingFov,7,dt);camera.updateProjectionMatrix();dirty=true;}
+  // A closer view reveals the intentionally tiny perforated paper tabs.
+  const inspectionTarget=inspecting&&focused===0?1:0;
+  const nextInspection=motionReduced?inspectionTarget:T.MathUtils.damp(inspectionAmount,inspectionTarget,7,dt);
+  if(Math.abs(nextInspection-inspectionAmount)>.0001){inspectionAmount=nextInspection;dirty=true;}else if(inspectionAmount!==inspectionTarget){inspectionAmount=inspectionTarget;dirty=true;}
+  const targetFov=(mobile?(focused===2?88:72):60)-(mobile?16:10)*inspectionAmount;
+  if(Math.abs(camera.fov-targetFov)>.001){camera.fov=motionReduced?targetFov:T.MathUtils.damp(camera.fov,targetFov,7,dt);camera.updateProjectionMatrix();dirty=true;}
   if(dirty&&now-lastRender>=(mobile?40:32)){
-   camera.position.copy(eye).add(new T.Vector3(0,1.55,-1.4).multiplyScalar(readingAmount)).add(new T.Vector3(-3.2,.1,2).multiplyScalar(loungeAmount));
+   camera.position.copy(eye).add(new T.Vector3(0,.28,-.18).multiplyScalar(inspectionAmount));
    camera.lookAt(viewTarget());camera.updateMatrixWorld();renderer.render(scene,camera);frames++;dirty=false;lastRender=now;
+   if(bookDestination){const href=bookDestination;sound.transition('enter');requestAnimationFrame(()=>{if(bookDestination===href){bookDestination=null;location.assign(href);}});}
   }
   syncSound();stationState();
  }
- landscape.update(0,eye,false);architecture.update(0,eye,false);book.update(0,eye,!motionReduced);play.update(0,eye,!motionReduced);
+ landscape.update(0,eye,false);architecture.update(0,eye,false);book.update(0,eye,!motionReduced);play.update(0,eye,!motionReduced);fireplace.update(0,eye,false);
  camera.position.copy(eye);camera.lookAt(gaze);camera.updateMatrixWorld();initialized=true;stationState();renderer.setAnimationLoop(animate);
  addEventListener('pagehide',()=>{pause();renderer.setAnimationLoop(null);});
- addEventListener('pageshow',e=>{if(e.persisted){paused=false;hidden=document.hidden;dirty=true;lastTime=0;syncSound();renderer.setAnimationLoop(animate);}});
+ addEventListener('pageshow',e=>{if(e.persisted){paused=false;hidden=document.hidden;bookDestination=null;book.reset();dirty=true;lastTime=0;syncSound();renderer.setAnimationLoop(animate);}});
  function stationAction(index,action,value){
   if(list||hidden||paused||focused!==index||!nearStation(index))return false;
   let result=false;
-  if(index===1)result=action==='next'?book.next():action==='previous'?book.previous():book.select(value);
-  if(index===2){play.setActive(true);result=action==='sign'?play.activateSign(value):action==='next'?play.nextSign(1):action==='previous'?play.nextSign(-1):play.togglePlayback();}
+  if(index===1)result=book.open();
+  if(index===2){play.setActive(true);result=action==='sign'?play.activateSign(value):action==='next'?play.nextSign(1):action==='previous'?play.nextSign(-1):action==='cover'?play.showCover():play.togglePlayback();}
   dirty=true;stationState();return result;
  }
- return{visit,enter,enterGallery,overview,panorama,stationAction,invalidate,
+ return{visit,enter,enterGallery,overview,panorama,visitFireplace,stationAction,invalidate,
   leaveStation(){stopInput();cancelTravel();leaveStation();onOverview();dirty=true;},
   stop(){stopInput();cancelTravel();leaveStation();dirty=true;},
   setList(value){list=!!value;stopInput();cancelTravel();leaveStation();syncSound();dirty=true;lastTime=0;},
   diagnostics:()=>({webgl:true,zone:inGallery()?'gallery':'terrace',room,focused,frames,position:[+eye.x.toFixed(2),+eye.z.toFixed(2)],moving:!!tween||!!pendingVisit||!!keys.size||!!joystick.x||!!joystick.y||!physics.diagnostics().grounded,visible:!hidden&&!list&&!paused,
-   camera:{position:camera.position.toArray(),target:viewTarget().toArray(),reading:readingAmount,lounging:loungeAmount,fov:camera.fov,aspect:camera.aspect,near:camera.near,far:camera.far,stellarOverview:!!stellarView&&!motionReduced,overviewAmount:stellarView?.amount??0},physics:physics.diagnostics(),temple:architecture.diagnostics(),stations:{play:play.diagnostics(),book:book.diagnostics()},landscape:landscape.diagnostics(),audio:sound.diagnostics(),render:{pixelRatio:renderer.getPixelRatio(),calls:renderer.info.render.calls,triangles:renderer.info.render.triangles},navigation:{speed:2.6,minDuration:1450,maxDuration:4200,deferredArrival:!!arrival||!!pendingVisit,...walkway.diagnostics()}})};
+   camera:{position:camera.position.toArray(),target:viewTarget().toArray(),inspection:inspectionAmount,fov:camera.fov,aspect:camera.aspect,near:camera.near,far:camera.far,stellarOverview:!!stellarView&&!motionReduced,overviewAmount:stellarView?.amount??0},physics:physics.diagnostics(),temple:architecture.diagnostics(),stations:{play:play.diagnostics(),book:book.diagnostics()},landscape:landscape.diagnostics(),audio:sound.diagnostics(),fireAudio:fireSound.diagnostics(),fireplace:fireplace.diagnostics(),render:{pixelRatio:renderer.getPixelRatio(),calls:renderer.info.render.calls,triangles:renderer.info.render.triangles},navigation:{speed:2.6,minDuration:1450,maxDuration:4200,deferredArrival:!!arrival||!!pendingVisit,...walkway.diagnostics()}})};
 }

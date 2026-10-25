@@ -4,11 +4,11 @@ import {PLAY_SIGNS} from './gallery-play-installation.mjs';
 const reduced=matchMedia('(prefers-reduced-motion: reduce)'),body=document.body;
 const ROOMS=[
  {title:'TotehmPaper {THP}',kind:'The Stoner Experience',path:'/get_higher',collect:'/market?art=totehmpaper',action:'Collect ↗',note:'Original perforated art. Choose your TotehmPaper.'},
- {title:'Origins / Quantum',kind:'Twenty original works',path:'/origins',collect:'/market?collection=quantum',action:'Read the book',note:'Turn the pages. Twenty photographs, in order.'},
+ {title:'Origins / Quantum',kind:'Twenty original works',path:'/origins',collect:'/market?collection=quantum',action:'Open the book',note:'Twenty works. Turn the pages.'},
  {title:'Play the Lisbon Street',kind:'Neuro Street Art Digital',path:'/play_lisbon_street',collect:'/market?collection=play-the-lisbon-street',action:'PLAY',note:'Choose a sign. Play the street.'}
 ];
 const $=id=>document.getElementById(id),buttons=[...document.querySelectorAll('.tour [data-room]')],info=$('work-info');
-let engine=null,room=-1,fallback=false,pending=null,pendingEntry=false,listRaf=0,lastPreview=0,station=null,lastBookSpread=0;
+let engine=null,room=-1,fallback=false,pending=null,pendingEntry=false,listRaf=0,lastPreview=0,station=null;
 const preview=createLisbonPreview({onChange:()=>engine?.invalidate()});
 const lisbonCard=document.querySelector('#lisbon .artwork');lisbonCard.append(preview.canvas);lisbonCard.classList.add('has-preview');
 const interact=()=>body.classList.add('exploring');
@@ -17,12 +17,12 @@ function links(work){const collect=document.createElement('a'),independent=docum
 function controls(){
  const arrived=station?.focused===room&&room>=0;
  body.classList.toggle('station-focused',arrived);info.dataset.station=String(room);
- $('book-controls').hidden=room!==1||!arrived;$('play-controls').hidden=room!==2||!arrived;$('leave-station').hidden=!arrived;
- $('enter-experience').hidden=arrived&&room>0;
- $('enter-experience').disabled=!arrived&&!fallback;
- if(room>=0)$('work-note').textContent=arrived?ROOMS[room].note:'Walking to the '+['counter','book','lounge'][room]+'…';
- if(station?.book){const b=station.book;$('book-page').textContent=b.visibleIndices.map(n=>String(n).padStart(2,'0')).join('–')+' / 20';$('book-prev').disabled=!b.canPrevious||b.turning;$('book-next').disabled=!b.canNext||b.turning;}
- if(station?.play){const p=station.play;$('play-toggle').textContent=p.playing?'PAUSE':p.mediaState==='loading'?'Loading…':'PLAY';$('play-status').classList.toggle('is-error',p.mediaState==='error');$('play-toggle').setAttribute('aria-pressed',String(p.playing));
+ $('play-controls').hidden=room!==2||!arrived;$('leave-station').hidden=!arrived;
+ $('enter-experience').hidden=arrived&&room===2;
+ $('enter-experience').disabled=(!arrived&&!fallback)||(room===1&&!!station?.book?.opening);
+ if(room===1)$('enter-experience').textContent=station?.book?.opening?'Opening…':ROOMS[1].action;
+ if(room>=0)$('work-note').textContent=arrived?ROOMS[room].note:'Walking to the '+['counter','book','screen'][room]+'…';
+ if(station?.play){const p=station.play;$('play-toggle').textContent=p.playing?'PAUSE':p.mediaState==='loading'?'Loading…':'PLAY';$('play-cover').hidden=p.view==='cover';$('play-controller').hidden=p.view==='cover';$('play-status').classList.toggle('is-error',p.mediaState==='error');$('play-toggle').setAttribute('aria-pressed',String(p.playing));
   for(const b of $('play-signs').querySelectorAll('[data-sign]'))b.setAttribute('aria-pressed',String(b.dataset.sign===p.selectedSign));
   $('play-status').textContent=p.mediaState==='error'?'This artwork could not load. Try another sign.':p.mediaState==='loading'?'Loading…':(p.selectedSign==='destination'?'Lisboa':PLAY_SIGNS.find(s=>s.id===p.selectedSign)?.title)||'';
  }
@@ -51,11 +51,10 @@ $('overview').addEventListener('click',overview);
 $('enter-experience').addEventListener('click',()=>{if(room>=0){if(fallback||body.classList.contains('list-view'))location.assign(ROOMS[room].path);else if(room===0)location.assign(ROOMS[room].collect);else engine?.enter(room);}});
 $('close-info').addEventListener('click',()=>{clearInfo();engine?.stop();});
 $('leave-station').addEventListener('click',()=>{engine?.leaveStation();clearInfo();$('space').focus({preventScroll:true});});
-$('book-prev').addEventListener('click',()=>engine?.stationAction(1,'previous'));
-$('book-next').addEventListener('click',()=>engine?.stationAction(1,'next'));
 $('play-prev').addEventListener('click',()=>engine?.stationAction(2,'previous'));
 $('play-next').addEventListener('click',()=>engine?.stationAction(2,'next'));
 $('play-toggle').addEventListener('click',()=>engine?.stationAction(2,'toggle'));
+$('play-cover').addEventListener('click',()=>engine?.stationAction(2,'cover'));
 for(const sign of PLAY_SIGNS){const button=document.createElement('button'),img=document.createElement('img');button.type='button';button.dataset.sign=sign.id;button.setAttribute('aria-label',sign.title);button.setAttribute('aria-pressed','false');img.src=sign.src;img.alt='';img.width=40;img.height=40;button.append(img);button.addEventListener('click',()=>engine?.stationAction(2,'sign',sign.id));$('play-signs').append(button);}
 $('view-list').addEventListener('click',()=>setList(!body.classList.contains('list-view')));
 document.querySelector('.skip').addEventListener('click',()=>setList(true));
@@ -70,13 +69,12 @@ document.addEventListener('keydown',e=>{
 });
 document.addEventListener('visibilitychange',syncPreview);reduced.addEventListener('change',syncPreview);
 addEventListener('pagehide',()=>{if(listRaf)cancelAnimationFrame(listRaf);listRaf=0;preview.pause();});addEventListener('pageshow',syncPreview);
-window.__totehm_gallery=()=>({build:'2026-10-24-space-living-gallery',rooms:3,room,list:body.classList.contains('list-view'),fallback,reduced_motion:reduced.matches,experiences:ROOMS.map(w=>w.path),lisbon:preview.diagnostics(),...engine?.diagnostics()});
+window.__totehm_gallery=()=>({build:'2026-10-24-space-glass-hearth',rooms:3,room,list:body.classList.contains('list-view'),fallback,reduced_motion:reduced.matches,experiences:ROOMS.map(w=>w.path),lisbon:preview.diagnostics(),...engine?.diagnostics()});
 function useFallback(){fallback=true;body.classList.add('no-3d','list-view');engine?.setList(true);clearInfo();syncPreview();}
 try{
  const {createGallery}=await import('./gallery-spatial.mjs');
  engine=await createGallery({select:choose,onOverview:clearInfo,interact,fallback:useFallback,reduced,
-  onStationState:value=>{if(room===1&&lastBookSpread!==value.book.spreadIndex)$('work-title').textContent=ROOMS[1].title;lastBookSpread=value.book.spreadIndex;station=value;controls();},
-  onArtwork:work=>{if(room!==1)return;$('work-title').textContent=work.title;$('work-links').querySelector('a').href=work.marketHref;}
+  onStationState:value=>{station=value;controls();}
  });
  engine.setList(body.classList.contains('list-view'));
  const selected=pending;pending=null;

@@ -35,3 +35,5 @@ body:not(.exploring) #space::after{content:"";position:absolute;inset:0;pointer-
 
 @media(max-width:650px){body.station-focused #work-info{bottom:110px}body.station-focused .controls{display:flex;top:137px;bottom:auto;right:12px}body.station-focused .controls>:not(#toggle-sound){display:none}body.station-focused .controls #toggle-sound{background:#000b;padding:9px;border-radius:10px}}
 @media(max-width:650px){body.station-focused #work-kind,body.station-focused #play-status:not(.is-error),body.station-focused #leave-station{display:none}}
+
+#play-cover{font:8px var(--mono);background:transparent;color:#aaa;padding:9px 0 0;min-height:28px;border:0}#play-cover:hover{color:#fff}
