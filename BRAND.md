@@ -86,8 +86,8 @@ développement personnel, un réseau social classique, une marque streetwear cla
 ## L'espace
 
 TOTEHM.SPACE est un pavillon de verre au sommet d’une Terre engloutie : beauté, grandeur, peur et renouveau.
-Voie lactée à travers le toit, lune et mer déchaînée ; calçada à vagues et caravelle dehors, grandes dalles anciennes usées et comptoir pierre dedans.
-La bouche originale, sa langue et son papier sont sculptés en façade et éclairés ; une cheminée ultra minimale sur pierre ancienne réchauffe l’intérieur.
+Voie lactée à travers le toit, lune et mer déchaînée ; calçada à vagues et caravelle dehors, vraies dalles anciennes en volume, grain photographique et comptoir pierre dedans.
+La bouche originale, sa langue et son papier sont sculptés en façade et éclairés ; une cheminée ultra minimale, sa combustion vivante et son crépitement de bois réchauffent l’intérieur.
 Space est l’accueil : livre noir fermé sur pupitre vers Origins à pages tournantes, écran Lisbon et cadre premium Stoner vers leurs propres pages plein écran ; THP en petits papiers perforés.
 Sans colonnes ni végétation, la terrasse ouvre la vue sur les déferlants ; Espace propulse vers les étoiles et le globe englouti.
 Vent et mer, crépitement à l’approche du feu. Pages et marché indépendants conservés ; Collect garde achat et revente.

@@ -10,7 +10,7 @@ Space est l’accueil immersif : le livre ouvre Origins, l’écran Lisbon et le
 |---|---|
 | `index.html` · `gallery-ui.mjs` · `gallery.css` | entrée, commandes des installations, panoramas, liste accessible et SSO existant |
 | `gallery-spatial.mjs` · `gallery-modern-navigation.mjs` · `gallery-modern-layout.mjs` | caméra, parcours autour des meubles, collisions, saut et plafond/toit |
-| `gallery-modern.mjs` · `gallery-white-stone.mjs` | structure vitrée, grandes dalles anciennes PBR, façade sculptée, comptoir pierre et pupitre |
+| `gallery-modern.mjs` · `gallery-white-stone.mjs` · `gallery-ancient-floor.mjs` | verre, vraies dalles anciennes, matière photographique PBR, comptoir et pupitre |
 | `gallery-lectern-book.mjs` · `gallery-play-installation.mjs` · `gallery-stoner-installation.mjs` | livre vers Origins ; portails Lisbon et cadre premium Stoner authentique |
 | `gallery-fireplace.mjs` · `gallery-fire-audio.mjs` | foyer panoramique, flammes volumiques, éclairage ambre, fumée extérieure et crépitement synthétisé |
 | `gallery-3d.mjs` · `gallery-temple*.mjs` · `gallery-origins-book.mjs` | anciennes architectures et livre ouvert conservés ; paysage partagé |
@@ -33,7 +33,7 @@ Space est l’accueil immersif : le livre ouvre Origins, l’écran Lisbon et le
 
 - Nuit permanente : arche galactique relevée, filaments lumineux et poussières opaques ; 18 000 / 8 500 étoiles aux cœurs fins et halos discrets, quatre températures, lune à 34 cratères. PMREM issu du ciel local, sans panorama/HDR externe.
 - Météore en ruban de 62 triangles : passage effilé de 1,15 s toutes les 47 s, sur la même horloge que le ciel ; aucun défilement autonome en mouvement réduit.
-- Intérieur et comptoir : calcaire ancien pâle PBR, grandes dalles de tailles variées, bords usés arrondis et pores minéraux, suivant la référence de Wah. Extérieur : calçada d’origine, vagues et caravelle ; socle et rebords sombres. Jonction au seuil z=−2, même hauteur et sans superposition.
+- Intérieur et comptoir : 301 vraies dalles anciennes fusionnées, opus romain, arêtes arrondies et scans photographiques couleur/normale/rugosité CC0 ; cartes partagées 2k/1k dans `assets/stone/`, licence locale. Extérieur : calçada d’origine, vagues et caravelle ; socle et rebords sombres. Jonction au seuil z=−2, même hauteur et sans superposition.
 - Océan à −96 m, crêtes de la surface principale bornées sous −11,48 m, calme à 110 m du piton ; aucun autre sol émergé. Astres/eau/embruns et simulation d’écume figés en mouvement réduit.
 - Eau détaillée sur 24 km de diamètre : 327 680 triangles ordinateur / 172 032 téléphone, 4 800 / 1 800 points d’embruns ; maillage rapproché régulier puis logarithmique, détails filtrés jusqu’à 1 800 m.
 - Trois échelles de normales spectrales ; les faces retournées reflètent l’eau sombre sous l’horizon, l’écume ancienne devient humide et translucide. Gouttes entraînées dans le vent tangent au globe.
@@ -45,11 +45,11 @@ Space est l’accueil immersif : le livre ouvre Origins, l’écran Lisbon et le
 - Volume noir fermé sur pupitre incliné à 18° : son ouverture mène à `/origins?open=1`. Origins conserve ses 20 vidéos, avec pages tournantes ; un geste de molette/inertie/swipe tourne une seule page, sans boucle.
 - Lisbon : écran seul avec sa couverture et Higher en SVG ; clic → `/play_lisbon_street` dans toute la fenêtre. Aucun lecteur, contrôleur, iframe ni vidéo dans Space.
 - Stoner : vrai cadre premium noir profond, verre et THP original, proportions du premier `/get_higher`. Clic → cette page ; les droits et la méthode `/stoner` restent contrôlés par le serveur.
-- Cheminée ultra minimale : socle du même calcaire, fine hotte acier suspendue, bûches fissurées, braises, flammes volumiques et crépitement de bois ; fumée au-dessus du verre, gel en mode réduit.
+- Cheminée ultra minimale : socle du même calcaire, fine hotte acier suspendue, bûches noueuses en volume, braises éparses et combustion continue 3D turbulente à émission thermique ; fumée au-dessus du verre, gel en mode réduit.
 - Marche 2,6 m/s, guidage 1 450–4 200 ms autour des meubles. Les boutons conduisent aux installations ; leurs objets et CTA ouvrent les expériences indépendantes, sans moteur 3D derrière.
 - Espace ou Jump : envol extérieur de 18 000 m en 14 s simulées ; plafond, murs, mobilier et toit solides. Aucune relance en l’air.
 - Guidage/réduction/cache arrière préservent altitude et vitesse ; une visite demandée en l’air attend le retour sur la terrasse avant d’entrer.
-- Vent, mer et crépitement après un geste réel ; le feu augmente à proximité. Muet commun et préférence conservés ; liste/masqué/blur suspendent les sons. Au-delà de 3 000 m, onde méditative.
+- Vent/mer dehors, atténués progressivement sous le verre ; au foyer, quatre couches stéréo de combustion, braises et fractures de bois avec réflexions courtes. Geste réel, proximité, muet commun et suspension liste/masqué/blur ; au-delà de 3 000 m, onde méditative.
 - Au sommet, cadrage doux du globe entier et 1 600 / 720 points stellaires proches ; glisser reprend la vue. Mouvement réduit : décor figé, guidage horizontal immédiat, saut intentionnel sans recadrage/FOV. Sans WebGL, liens HTML.
 - Règle : Space présente les expériences, chaque HTML possède son lecteur plein écran. Le départ suspend la 3D et les sons ; retour navigateur rétablit le monde et la préférence audio.
 - Le marché reste autonome, y compris après Stripe. Prix, stock et accès du serveur, propriété au webhook ; aucun changement SQL/Edge/tarif.

@@ -1,0 +1,24 @@
+CC0 1.0 Universal — Poly Haven / Rob Tuytel
+https://polyhaven.com/a/rock_01
+https://polyhaven.com/license
+https://creativecommons.org/publicdomain/zero/1.0/
+
+Photographed weatherworn stone surface. Locally hosted material maps;
+there is no request to Poly Haven at runtime. The source contains no joints:
+the gallery's individual worn slabs and mortar seams are real geometry.
+
+Original 2048 x 2048 source files:
+https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/rock_01/rock_01_diff_2k.jpg
+https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/rock_01/rock_01_nor_gl_2k.jpg
+https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/rock_01/rock_01_rough_2k.jpg
+
+ancient-color.webp: source diffuse photograph, neutral warm-grey limestone
+grading; original photographed pores, inclusions and scratches retained.
+ancient-normal.webp: source OpenGL tangent-space normal map, no colour-space
+conversion; local WebP encoding.
+ancient-roughness.webp: source measured roughness remapped by 0.12 + 0.78R for
+the worn satin stone centres and rough mineral cavities; local WebP encoding.
+The matching *-1k.webp files are 1024 x 1024 mip-friendly mobile derivatives.
+
+2k maps are used on desktop; 1k maps on mobile, in linear colour space except
+the sRGB diffuse photograph. All share repeat wrapping and anisotropic filtering.
