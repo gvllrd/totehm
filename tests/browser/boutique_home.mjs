@@ -21,25 +21,23 @@ const { pg, log } = await page(browser, { dir:'boutique', origin:'https://www.hi
 await pg.goto('https://www.higher.boutique/');
 await pg.waitForFunction(() => window.__totehm_boutique && /47 pieces left/.test(document.querySelector('#sw-col-sold').textContent));
 const d = await pg.evaluate(() => window.__totehm_boutique());
-ok(d.build === '2026-10-24-seam' && d.decode_first && !d.member_window, 'the physical landing page: DECODE first, no member window here');
-const sm = await pg.evaluate(() => {
-  const col = [...document.querySelectorAll('.seam .th path')].map(p => p.style.getPropertyValue('--c').trim().toUpperCase());
-  const st = document.querySelector('.seam .stitch path'), r = document.querySelector('.seam').getBoundingClientRect();
-  const nav = document.querySelector('nav').getBoundingClientRect();
-  return { col, dash: !!(st && st.getAttribute('stroke-dasharray')), above: r.bottom <= nav.top + 1, cap: document.querySelector('.seam figcaption').textContent.trim() };
-});
-ok(sm.col.join(',') === '#E24B4A,#E48B31,#FCBE21,#378ADD,#1D9E75,#7F77DD,#639922' && d.seam === 7 && !d.seam_filled,
-  'the landing page recalls the seven intentions — seven STROKES, never a surface');
-ok(sm.dash && sm.above && /one seam/i.test(sm.cap),
-  'they become one stitched line, above the menu: the nature of totehmization');
+ok(d.build === '2026-10-25-decode' && d.decode_first && !d.member_window, 'the physical landing page: DECODE first, no member window here');
 ok((await pg.$eval('#decode-btn', b => getComputedStyle(b).borderImageSource)).includes('svg') && (await pg.$eval('#decode-btn', b => getComputedStyle(b).backgroundColor)) === 'rgb(51, 51, 102)',
   'Decode is the perforated navy BOX, always — not only on hover');
+ok(!(await pg.$('.seam')) && !/one seam/i.test(await pg.textContent('body')), 'the landing page is bare again: no seam drawing, no caption');
+await pg.click('#decode-btn');
+await pg.waitForFunction(() => document.activeElement === document.querySelector('#decode-input') && document.activeElement.classList.contains('is-in'));
+const dec = await pg.evaluate(() => { const i = document.querySelector('#decode-input'), s = getComputedStyle(i), r = i.getBoundingClientRect();
+  return { px: Math.round(parseFloat(s.fontSize)), w: Math.round(r.width), col: s.color, focus: document.activeElement === i,
+           centre: Math.abs((r.left + r.right) / 2 - innerWidth / 2), bord: s.borderImageSource.includes('svg') }; });
+ok(dec.px >= 18 && dec.w > 300 && dec.focus && dec.centre < 2 && dec.bord && /251, 213, 202/.test(dec.col),
+  'Decode: the input COMES to you — big, centred, Coral, focused ' + JSON.stringify(dec));
+await pg.reload(); await pg.waitForFunction(() => window.__totehm_boutique && /47 pieces left/.test(document.querySelector('#sw-col-sold').textContent));
 ok(await pg.locator('a[data-space][href="https://www.totehm.space/"]').count()===1 && await pg.locator('#higher-btn,#lisbon-btn,a[href="/market"],a[href="/origins"]').count()===0,'digital art has one explicit SPACE destination; the physical homepage keeps its Cloth paths');
 ok(d.collab && d.logos === 0 && d.luxury_link, 'Totehm x Champion 2026 under Create, written, no logo');
 ok(d.branding_com && d.club_links === 0, 'Experience our dope branding → totehm.com');
 const order = await pg.evaluate(() => { const a = document.querySelector('a[href="streetwear.html"]').getBoundingClientRect().top, c = document.querySelector('#collab').getBoundingClientRect().top, l = document.querySelector('a[href="/luxury"]').getBoundingClientRect().top; return a < c && c < l; });
 ok(order, 'the collection sits under [Create my Totehm Streetwear Cloth], above Luxury');
-await pg.waitForTimeout(2400);   // la couture finit de se coudre : on juge l'état posé
 await pg.screenshot({ path: OUT + '/bq_landing.png' });
 await pg.click('#decode-btn');
 for(const [name, re, lvl] of [['0.hill', /Run the hill/, 'member'], ['0.lock', /reserved/, 'locked'], ['0.old', /I stay higher/, 'full']]){
