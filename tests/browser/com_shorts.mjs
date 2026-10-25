@@ -295,7 +295,7 @@ try{
   await pg.click('#rdr-sh .ssp-s .ssp-box .loupe[data-vz]');await pg.waitForTimeout(300);
   const rz=await pg.evaluate(()=>({zoom:!!document.querySelector('#rdr-sh .ssp-s .ssp-box .v-col.is-zoom'),voir:document.body.classList.contains('rdr-voir'),gate:document.body.classList.contains('gate')}));
   ok(sh2.loupe&&/rgba\(0, 0, 0/.test(sh2.ombre)&&rz.zoom&&rz.voir&&rz.gate,'22/10 · la box surélevée porte sa LOUPE : elle s\'agrandit en place, le spot reste ouvert, le Totehm fermé → '+JSON.stringify(rz));
-  ok(sh2.chips.some(t=>/oct|today|tomorrow/i.test(t))&&sh2.chips.some(t=>/location on/i.test(t))
+  ok(sh2.chips.some(t=>/oct|today|tomorrow|yesterday/i.test(t))&&sh2.chips.some(t=>/location on/i.test(t))
      &&sh2.chips.some(t=>/social/i.test(t))&&sh2.say==='Bring a coffee'&&sh2.go&&sh2.cal,
      'les informations du spot : '+sh2.chips.join(' · ')+' — son mot, GO, CALENDAR');
   ok(sh2.per.join(' ')==='I will be there','le temps courant, dans la barre : « '+sh2.per.join(' ')+' »');
@@ -496,6 +496,39 @@ try{
   ok(g.t===1&&!g.plus&&g.box.trim()==='Deep practice','← chez lui : SES médias, avec SA box (« '+g.box.trim()+' »), et pas de « + »');
   ok(!erreurs(log).length,'lecture : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
 
+ // ── 25/10 (Wah : « il faut pouvoir supprimer les media dans la vue de gauche et de droite ») : DEUX gestes, puis le serveur ──
+ {const srv=serveur(), retires=[];
+  srv.spot_remove=b=>{ retires.push(b.p_spot); return b.p_spot==='sp1'?{ok:true}:{ok:false,why:'not_mine'}; };
+  srv.vision_image_set=b=>({ok:true,image:b.p_path,old:b.p_path===null?UID+'/vision-cccccccc-cccc-4ccc-8ccc-cccccccccccc.jpg':null});
+  const{pg,log}=await page(browser,{dir:'com',origin,tables,rpc:srv});
+  await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1200);
+  await pg.click('#lvn-lf');await vers(pg,'g');await pg.waitForTimeout(700);
+  const n0=await pg.evaluate(()=>document.querySelectorAll('#lv-sh .tl[data-i]').length);
+  await pg.click('#lv-sh .tl[data-i="0"] .tl-bx',{force:true});await pg.waitForTimeout(500);
+  const d0=await pg.evaluate(()=>{const b=document.querySelector('#tlv [data-tlv="del"]');return {vu:!b.hidden,t:b.textContent};});
+  await pg.click('#tlv [data-tlv="del"]');await pg.waitForTimeout(150);
+  const d1=await pg.evaluate(()=>({t:document.querySelector('#tlv [data-tlv="del"]').textContent,ouvert:!document.getElementById('tlv').hidden}));
+  ok(d0.vu&&d0.t==='delete'&&d1.t==='delete?'&&d1.ouvert&&!log.rpc.some(r=>/element_media_remove|vision_image_set/.test(r.name)),
+     '25/10 · à gauche, [delete] sur MON média : un premier tap l\'ARME (« delete? »), rien ne part encore → '+JSON.stringify({d0,d1}));
+  await pg.click('#tlv [data-tlv="del"]');await pg.waitForTimeout(800);
+  const d2=await pg.evaluate(()=>({ferme:document.getElementById('tlv').hidden,n:document.querySelectorAll('#lv-sh .tl[data-i]').length}));
+  const r1=log.rpc.find(r=>r.name==='element_media_remove'||r.name==='vision_image_set');
+  ok(d2.ferme&&d2.n===n0-1&&r1&&(r1.name==='vision_image_set'?r1.body.p_path===null:!!r1.body.p_id),
+     '25/10 · le second tap le RETIRE au serveur ('+(r1&&r1.name)+') et la grille perd sa tuile : '+n0+' → '+d2.n);
+  // → mes spots : [delete] sur le mien seulement
+  await pg.click('#lvn-rt');await vers(pg,'c');await pg.waitForTimeout(300);await pg.click('#lvn-rt');await vers(pg,'d');await pg.waitForTimeout(900);
+  const pt=(await pg.evaluate(()=>window.__totehm_carte()))[0];
+  await pg.mouse.click(pt[0],pt[1]);await pg.waitForTimeout(1100);
+  const s0=await pg.evaluate(()=>({mien:document.querySelectorAll('#rdr-sh .ssp-s .ssp-acts [data-del="sp1"]').length,
+    autres:document.querySelectorAll('#rdr-sh .ssp-s .ssp-acts [data-del]:not([data-del="sp1"])').length}));
+  await pg.click('#rdr-sh .ssp-acts [data-del="sp1"]');await pg.waitForTimeout(150);
+  const arme=await pg.evaluate(()=>(document.querySelector('#rdr-sh .ssp-acts [data-del="sp1"]')||{}).textContent);
+  await pg.click('#rdr-sh .ssp-acts [data-del="sp1"]');await pg.waitForTimeout(900);
+  const s1=await pg.evaluate(()=>({reste:document.querySelectorAll('#rdr-sh [data-del="sp1"]').length,points:window.__totehm_carte().length}));
+  ok(s0.mien===1&&s0.autres===0&&arme==='delete?'&&retires.join()==='sp1'&&s1.reste===0&&s1.points===0,
+     '25/10 · à droite, [delete] sur MON spot seulement ; deux taps → `spot_remove`, il quitte le fil et la carte → '+JSON.stringify({s0,arme,retires,s1}));
+  ok(!erreurs(log).length,'retirer : aucune erreur '+erreurs(log).join(' | '));
+  await pg.context().close();}
  // ── mouvement réduit : la grille sans défilement doux, la carte sans transformation ──
  {const{pg,log}=await page(browser,{dir:'com',origin,tables,rpc:serveur()});
   await pg.emulateMedia({reducedMotion:'reduce'});

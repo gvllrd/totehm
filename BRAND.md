@@ -40,10 +40,10 @@ La couleur de la box dit le TYPE (navy · bleu clair · rouge-violet) ; le trait
 THP : *Neuroscience, not motivation.*) · ← **mes médias** (une grille, chaque image perforée des douze trous du logo ;
 le filtre = un bloc de commande, la croix du TOTEHM : MY STORY et VISION en carrés perforés de leur couleur,
 OBJECTIVE · HABIT · REPULSION empilés entre eux) ·
-● **mon TOTEHM** (le papier dans la boîte noire du processeur, ses sept traits branchés sur ses arêtes par des broches de
-leur couleur ; un tap déploie TOUTE la structure — le papier reste dans sa boîte, nette, qui grandit sans jamais se
-déformer, les traits suivent — et sur ordinateur
-la boîte et ses traits restent autour du TOTEHM ouvert ; le retourner montre le NOM seul — à même le navy,
+● **mon TOTEHM** (plus de boîte noire : le TOTEHM EST le boîtier du processeur, ses sept traits branchés sur ses arêtes
+par des broches de leur couleur, trois dans ses perforations ; le toucher, le retourner ou chercher un membre arrête son
+activité : ses traits sont aspirés en lui, et ressortent quand il revient ; ouvert, il est seul à l'écran ;
+le retourner montre le NOM seul — à même le navy,
 l'email dessous —, qui monte, puis
 tout d'un coup, en trois onglets : **Dashboard** d'abord (tout ce que je fais dans mon TOTEHM, en visuels : ma semaine, mes
 Habits × 7 jours suivies dans Telegram, mes intentions, mes objectifs, mon activité) · **Subscription** ([Higher], ce qu'il ouvre,
@@ -51,7 +51,7 @@ mes abonnements) · **Monetize** (*and get paid every month*) ; puis DELETE MY T
 → **les spots** (MAP ou GRID ; un spot ouvert : son image telle quelle, ses infos, sa box en bas — comme à gauche) · ↓ **Higher Self** (les traits se replient en l'anneau du profil ; j'arrive, je tape,
 mon Higher Self répond : un miroir de MON TOTEHM — la step est une de mes Habits redite avec son where, son intention, son son ;
 avec Higher, un lieu réel près de moi sous la step (GO, SPOT IT) ; quelques réponses offertes, puis l'abonnement Higher). Chercher un membre : le papier se retourne, on tape son nom, on entre chez lui.
-On navigue comme avec un MANCHE : le geste va où il pousse (vers le haut, la vue du haut), au doigt, au trackpad, à la souris — sauf dans une liste du TOTEHM, où le geste suit le défilement (plus bas que le bas de mes habitudes : mes répulsions) ; la manette est la même à l'atterrissage et dans le TOTEHM déployé (le petit socle, son manche), et dans le TOTEHM le manche prend la couleur de la vue.
+On navigue comme avec un MANCHE : le geste va où il pousse (vers le haut, la vue du haut), au doigt, au trackpad, à la souris — sauf dans une liste du TOTEHM, où le geste suit le défilement (plus bas que le bas de mes habitudes : mes répulsions) ; la manette est la même à l'atterrissage et dans le TOTEHM déployé (hors de tout cadre : un puits rond, son manche), et dans le TOTEHM le manche prend la couleur de la vue.
 
 **Confidentialité par box**, trois niveaux : PRIVATE · FIGHER CLUB (un membre : une habit, un objectif, une
 répulsion) · MY SUBSCRIBERS. Un lieu : ON = le point exact, OFF = la ville.
@@ -85,12 +85,12 @@ développement personnel, un réseau social classique, une marque streetwear cla
 
 ## L'espace
 
-TOTEHM.SPACE est une galerie contemporaine au sommet d’une Terre engloutie : beauté, grandeur, peur et renouveau.
-Nuit permanente, Voie lactée, lune et mer déchaînée ; calçada de Lisbonne à vagues avec une caravelle.
-La bouche originale sur la devanture ; galerie noire vitrée, comptoir THP en face, livre Origins à gauche, salon Lisbon à droite.
-Les œuvres vivent sur place : papiers perforés en feuilles et à l’unité, photos dans l’ordre, vraie manette de panneaux et écran réactif.
+TOTEHM.SPACE est un pavillon de verre au sommet d’une Terre engloutie : beauté, grandeur, peur et renouveau.
+Voie lactée à travers le toit, lune et mer déchaînée ; calçada à vagues et caravelle dehors, grandes dalles anciennes usées et comptoir pierre dedans.
+La bouche originale, sa langue et son papier sont sculptés en façade et éclairés ; une cheminée ultra minimale sur pierre ancienne réchauffe l’intérieur.
+Space est l’accueil : livre noir fermé sur pupitre vers Origins à pages tournantes, écran Lisbon et cadre premium Stoner vers leurs propres pages plein écran ; THP en petits papiers perforés.
 Sans colonnes ni végétation, la terrasse ouvre la vue sur les déferlants ; Espace propulse vers les étoiles et le globe englouti.
-Vent et mer accompagnent la visite. Pages indépendantes conservées ; Collect rejoint le marché avec achat et revente.
+Vent et mer, crépitement à l’approche du feu. Pages et marché indépendants conservés ; Collect garde achat et revente.
 
 ## Les vêtements
 

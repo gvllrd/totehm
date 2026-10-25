@@ -8,7 +8,7 @@ ligne une minute plus tard (Vercel).
 | **totehm.com** | `com/` | l'écosystème : les 5 vues, ton TOTEHM, chercher un membre, s'abonner à lui, l'abonnement Higher |
 | **figher.club** | `club/` | le prolongement de la vue Spots : chercher, publier des spots, se rencontrer |
 | **higher.boutique** | `boutique/` | les vêtements totehmisés à partir des boxes MY STORY |
-| **totehm.space** | `space/` | une galerie contemporaine sur la calçada, au-dessus d’un monde englouti ; THP, Origins et Lisbon vécus sur place, pages indépendantes et marketplace préservées |
+| **totehm.space** | `space/` | l’accueil immersif dans un pavillon de verre sur calçada, pierre ancienne dedans et cheminée ; livre Origins, écran Lisbon et cadre premium Stoner ouvrent leurs propres pages ; marketplace complète |
 | — | `backend/` | le serveur : base Supabase, fonctions, automatisations n8n |
 
 ```

@@ -416,19 +416,13 @@ body.v-repulsions  #t-foot{animation:respire-logo 2.8s ease-in-out infinite}
 
 /* ══ LA MANETTE = CELLE DE L'ATTERRISSAGE · 25/10/2026 ══════════════════════════════════════════════════
    Wah : « je veux le joystick de la vue d'atterrissage dans le Totehm déployé ». C'est le MÊME objet que `#lvj-box` :
-   le socle du Totehm en miniature (48 px, le verre, l'arête claire, la broche 1 dans un coin), un puits rond noir,
-   et dedans LE MANCHE — un chapeau au centre creusé, qui se tire et revient. Une seule différence : le chapeau porte
-   la COULEUR DE LA VUE (`--joy-vue`, posé au rendu : habitudes navy · objectifs, visions bleu clair · répulsions,
-   sagesse rouge-violet). Les trois ronds empilés sont partis. Le socle se centre dans sa case (`--joy-d`) : la liste
-   et la bande du bas ne bougent pas. Arêtes nettes, aucune ombre portée — comme le socle. */
-#joy-box{width:48px;height:48px;position:relative;border-radius:0;
-  background:linear-gradient(135deg,rgba(255,255,255,.10) 0%,rgba(255,255,255,.025) 40%,rgba(255,255,255,0) 65%),#0b0b0e;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.30),inset 0 0 0 1px rgba(255,255,255,.05);
-  touch-action:none;cursor:grab}
-#joy-box::before{content:"";position:absolute;left:4px;top:4px;width:5px;height:5px;
-  background:linear-gradient(135deg,rgba(255,255,255,.26) 50%,rgba(255,255,255,0) 50%)}
+   un puits rond noir (hors de tout cadre depuis le 25/10 : « sors de son cadre le joystick ») et dedans LE MANCHE —
+   un chapeau au centre creusé, qui se tire et revient. Une seule différence : le chapeau porte la COULEUR DE LA VUE
+   (`--joy-vue`, posé au rendu : habitudes navy · objectifs, visions bleu clair · répulsions, sagesse rouge-violet).
+   La case de 48 px se centre dans `--joy-d` : la liste et la bande du bas ne bougent pas. */
+#joy-box{width:48px;height:48px;position:relative;touch-action:none;cursor:grab}
 #joy-box::after{content:"";position:absolute;inset:8px;border-radius:50%;background:#000;
-  box-shadow:inset 0 1px 0 rgba(0,0,0,.95),0 1px 0 rgba(255,255,255,.08)}
+  box-shadow:inset 0 1px 0 rgba(0,0,0,.95),0 0 0 1px rgba(255,255,255,.12)}
 #joy-box:active{cursor:grabbing}
 /* Le manche se déplace d'un bloc : c'est lui qu'on tient. `--mx/--my` sont posés par le module « LA MANETTE ». */
 #joy-stack{position:absolute;inset:0;z-index:1;transform:translate(var(--mx,0px),var(--my,0px));
@@ -3028,7 +3022,7 @@ body.is-xo{overflow:hidden}
                     ramifications de mes intentions (les 7 couleurs) ; Mine · Others (la galaxie)
      ↓ REFLECTION   tout se condense : le socle devient un anneau, le papier un profil (seul #gl-bg tourne)
    Chaque vue est un panneau plein écran qui se fond et glisse dans son sens (jamais display) ; aucun flou. */
-:root{--lv-y:40dvh;--sk:calc(var(--gate-size) * 1.3)}
+:root{--lv-y:40dvh;--sk:calc(var(--gate-size) + 6px)}   /* 25/10 : le TOTEHM est le boîtier, `--sk` le serre à 3 px */
 #gate{overflow:hidden}
 #gate-top-row{margin-top:max(0px,calc(var(--lv-y) - var(--gate-size) / 2 - max(76px,13dvh)))}
 /* ── LA BOUCHE n'existe que là-haut : opacité seule, sa boîte ne bouge pas (`BOUCHE.geo()` la mesure). ── */
@@ -3118,19 +3112,14 @@ body.lv-d #lv-proc,body.lv-d #lv-slogan{opacity:0}
 .lvn-x{width:26px;height:48px}
 .lvn.is-mort{opacity:0;pointer-events:none}
 .lvn:focus-visible{outline:1px solid #fff;outline-offset:3px}
-/* ⚠️ 20/10 septies — LA MANETTE EST UN PETIT SOCLE (Wah : « un curseur dans le même style que le socle du Totehm de la
-   vue centrale, un genre de joystick PlayStation en plus minimaliste »). La base = LE SOCLE en miniature : le même
-   verre (reflet en biais, arête claire en haut), carrée — une boîte reste carrée —, la marque de la broche 1 dans
-   un coin ; au centre un puits ROND, noir ; dans le puits, LE MANCHE : un chapeau navy (le papier) au centre creusé,
-   comme un stick, qui se tire et revient. Arêtes nettes, aucun flou, aucune ombre portée — comme le socle. */
-#lvj-box{width:48px;height:48px;position:relative;border-radius:0;
-  background:linear-gradient(135deg,rgba(255,255,255,.10) 0%,rgba(255,255,255,.025) 40%,rgba(255,255,255,0) 65%),#0b0b0e;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.30),inset 0 0 0 1px rgba(255,255,255,.05);
-  touch-action:none;cursor:grab;pointer-events:auto}
-#lvj-box::before{content:"";position:absolute;left:4px;top:4px;width:5px;height:5px;
-  background:linear-gradient(135deg,rgba(255,255,255,.26) 50%,rgba(255,255,255,0) 50%)}
+/* 20/10 septies — un genre de joystick PlayStation en plus minimaliste (Wah) : un puits ROND, noir ; dans le puits,
+   LE MANCHE, un chapeau navy (le papier) au centre creusé, qui se tire et revient. */
+/* ⚠️ 25/10 — LA MANETTE SORT DE SON CADRE (Wah : « sors de son cadre le joystick sur la page d'atterrissage et sur le
+   totehm déployé ») : le petit socle carré part avec la boîte noire du Totehm. Il reste le manche : un puits rond
+   (cerclé d'un filet pour se lire sur le noir) et son chapeau. La case garde ses 48 px : rien ne bouge autour. */
+#lvj-box{width:48px;height:48px;position:relative;touch-action:none;cursor:grab;pointer-events:auto}
 #lvj-box::after{content:"";position:absolute;inset:8px;border-radius:50%;background:#000;
-  box-shadow:inset 0 1px 0 rgba(0,0,0,.95),0 1px 0 rgba(255,255,255,.08)}
+  box-shadow:inset 0 1px 0 rgba(0,0,0,.95),0 0 0 1px rgba(255,255,255,.12)}
 #lvj-box:active{cursor:grabbing}
 #lvj-stack{position:absolute;inset:0;z-index:1;transform:translate(var(--mx,0px),var(--my,0px));
   transition:transform .26s cubic-bezier(.22,.9,.3,1)}
@@ -3144,35 +3133,23 @@ body.lv-d #lv-proc,body.lv-d #lv-slogan{opacity:0}
 #lvjoy.vers-d #lvn-rt,
 #lvjoy.vers-h #lvn-up,
 #lvjoy.vers-b #lvn-dn{color:#fff}
-/* ── LE SOCLE (15/10) — la boîte Premium du TotehmPaper, à plat : un verre (le reflet en biais, l'arête claire
-   en haut), un puits noir où le papier se pose, la marque de la broche 1 dans un coin. Arêtes nettes, aucun
-   flou, aucune ombre portée. Il suit le papier : anneau autour du profil (Reflection), il rapetisse dans [Mine]
-   (Others), il s'efface quand le papier monte sur la langue (Get Higher). `--skx/--sky/--sks` : posés par `socle()`. ── */
+/* ── LE SOCLE · 25/10 : PLUS DE BOÎTE NOIRE (Wah : « enlève la boîte noire de la page d'atterrissage et mets le totehm
+   en version boîtier-processor »). Le TOTEHM est lui-même le boîtier du processeur : ses sept broches sont posées sur
+   ses arêtes (`--sk` = le papier + 6 px). `#lv-socket` ne se voit plus ; il garde sa géométrie (les broches s'y lisent)
+   et devient l'anneau du profil en bas (Reflection). `--skx/--sky/--sks` : posés par `socle()`. ── */
 #lv-proc{position:absolute;left:50%;top:calc(var(--gate-size) / 2);width:0;height:0;z-index:1;pointer-events:none;
   transition:opacity .4s ease .25s,transform var(--gate-dur) var(--gate-ease)}
-/* 22/10 — au déploiement, la boîte GRANDIT avec le papier au lieu de s'éteindre. ⚠️ JAMAIS PAR `scale()` (Wah : « elle se
-   déforme, elle fait pixélisé ») : une boîte agrandie par transformation grossit son arête, son coin et son puits, et le
-   navigateur l'étire depuis une image de 143 px. `LV.deployer()` lui donne sa VRAIE taille à chaque image (`is-geo` :
-   left/top/width/height en ligne, le puits suit le papier à 3 px) : elle reste nette et identique à la boîte au repos. */
 body.gate.entered #lv-proc{opacity:1}
-#lv-socket.is-geo{transform:none;transition:none}
 #lv-socket{position:absolute;left:calc(var(--sk) / -2);top:calc(var(--sk) / -2);width:var(--sk);height:var(--sk);
-  background:linear-gradient(135deg,rgba(255,255,255,.10) 0%,rgba(255,255,255,.025) 40%,rgba(255,255,255,0) 65%),#0b0b0e;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.30),inset 0 0 0 1px rgba(255,255,255,.05);
   transform:translate(var(--skx,0px),var(--sky,0px)) scale(var(--sks,1));
-  transition:transform .72s var(--gate-ease),border-radius .5s ease .12s,opacity .45s ease,background-color .4s ease,box-shadow .4s ease}
-#lv-socket::before{content:"";position:absolute;left:6px;top:6px;width:7px;height:7px;
-  background:linear-gradient(135deg,rgba(255,255,255,.26) 50%,rgba(255,255,255,0) 50%);transition:opacity .3s ease}
-#lv-socket .sk-well{position:absolute;inset:calc((var(--sk) - var(--gate-size)) / 2 - 3px);background:#000;
-  box-shadow:inset 0 1px 0 rgba(0,0,0,.95),0 1px 0 rgba(255,255,255,.08);transition:opacity .3s ease}
+  transition:transform .72s var(--gate-ease),border-radius .5s ease .12s,opacity .45s ease}
 #lv-socket .sk-ring{position:absolute;inset:-1px;border-radius:50%;opacity:0;transition:opacity .35s ease}
 #lv-socket .sk-ring::before{content:"";position:absolute;inset:0;border-radius:50%;box-shadow:inset 0 0 0 2px rgba(255,255,255,.2)}
 /* ⚠️ DES TRAITS D'INTENTION, PAS DES POINTS (Wah, 15/10) : autour du profil, la même ligne que dans le
    Totehm — 2 px, plate, sa couleur. Le profil est fait de mes sept intentions, pas de sept pastilles. */
 #lv-socket .sk-ring b{position:absolute;left:50%;top:50%;width:2px;height:13px;margin:-6.5px 0 0 -1px;background:var(--c);
   transform:rotate(calc(var(--k) * 51.4286deg)) translateY(calc(var(--sk) / -2))}
-body.lv-b #lv-socket{border-radius:50%;background:rgba(11,11,14,0);box-shadow:none}
-body.lv-b #lv-socket .sk-well,body.lv-b #lv-socket::before{opacity:0}
+body.lv-b #lv-socket{border-radius:50%}
 body.lv-b #lv-socket .sk-ring{opacity:1;transition-delay:.38s}
 body.lv-h #lv-socket{opacity:0}
 /* ── LES RAMIFICATIONS · 15/10 (plein écran) ───────────────────────────────────────────────────────────
@@ -3184,14 +3161,21 @@ body.lv-h #lv-socket{opacity:0}
    sa Time frequency) — c'est le Totehm qui tourne. **Déconnecté, c'est atténué et immobile.**
    Aucun flou, aucune image, aucun rAF : deux tracés et un `stroke-dashoffset`. ── */
 #lv-ram{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden;opacity:0;
-  transition:opacity .5s ease}
+  transform-origin:var(--asx,50%) var(--asy,50%);transition:opacity .5s ease,transform .7s cubic-bezier(.15,.65,.3,1)}
 body.gate.lv-c #lv-ram,body.gate.lv-h #lv-ram{opacity:1}
 /* ← et → (20/10 sexies) : le réseau est là PENDANT la transformation (`ram-morph`), puis il cède la place à la vue —
    la grille garde ses boîtes, la Terre ses spots (20/10 septies : plus aucun méridien dessiné sur le globe). */
 body.gate.ram-morph:not(.entered) #lv-ram{opacity:1;transition:opacity .2s ease}
 body.gate.lv-g #lv-ram,body.gate.lv-d #lv-ram{transition:opacity .45s ease .2s}
 body.is-door #lv-ram{opacity:0;transition:opacity .25s ease}
-body.gate.entered #lv-ram,body.gate.folding #lv-ram{opacity:1;transition:none}   /* les traits accompagnent le déploiement */
+body.gate.entered #lv-ram,body.gate.folding #lv-ram{opacity:1;transition:none}
+/* ══ L'ASPIRATION · 25/10 ══ (Wah : « dès que l'on retourne le totehm pour atteindre le verso et ses paramètres, les traits
+   d'intention arrêtent leur activité et sont aspirés dans le Totehm » ; de même au clic, de même en recherche : « on
+   cesse l'activité du Totehm pour le paramétrer et le configurer »). Le réseau entier rentre dans le papier
+   (`--asx/--asy` : son centre, posé par `LV.aspirer`), en accélérant ; les impulsions s'arrêtent. Il ressort, en
+   ralentissant, quand le papier est revenu chez lui. */
+body.is-aspire #lv-ram,body.gate.lv-c.is-aspire #lv-ram,body.gate.entered.is-aspire #lv-ram,body.gate.folding.is-aspire #lv-ram{opacity:0;transform:scale(.02);
+  transition:transform .55s cubic-bezier(.45,0,.8,.45),opacity .25s ease .3s}
 #lv-ram path{fill:none;stroke-width:2;stroke-linecap:square;stroke-linejoin:miter;
   stroke-dasharray:1 1;stroke-dashoffset:1;transition:stroke-dashoffset .85s var(--gate-ease) calc(var(--i) * 50ms)}
 #lv-ram rect{opacity:0;transition:opacity .25s ease}
@@ -3220,33 +3204,12 @@ body.gate.lv-c #lv-ram rect,body.gate.lv-h #lv-ram rect{opacity:1;
    piste existe. Et elle tourne aussi sans compte : un réseau mort ne vend rien. CSS seul, zéro rAF. */
 #lv-ram .puls{stroke-dasharray:.08 .92;stroke-dashoffset:1;stroke-width:3;opacity:0;transition:opacity .4s ease}
 #lv-ram .puls.veille{stroke-dasharray:.04 .96;stroke-width:2}
-body.gate.lv-c:not(.entered) #lv-ram .puls{opacity:1;
+body.gate.lv-c:not(.entered):not(.is-aspire) #lv-ram .puls{opacity:1;
   animation:ram-puls var(--p,3s) linear infinite;animation-delay:var(--d,0s)}
 @keyframes ram-puls{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
-/* Le TOTEHM ouvert sur ordinateur (22/10) : la boîte et ses traits restent autour de #stage. Même boîte que `#lv-socket`
-   déployée (sa taille `--as`, son puits noir `--aw`, jamais une mise à l'échelle) : à la fin du déploiement, les deux sont
-   identiques au pixel — le fondu du portail ne fait rien bouger. */
-#app-proc{position:fixed;inset:0;z-index:9;pointer-events:none;visibility:hidden}
 /* Le mouchard des gestes (`?diag=1` seulement) : en haut à gauche, il ne prend jamais un doigt. */
 #lv-diag{position:fixed;left:6px;top:6px;z-index:2147483647;margin:0;padding:6px 8px;max-width:72vw;background:rgba(0,0,0,.82);color:#9fe39f;
   font:10px/1.4 'Space Mono',monospace;white-space:pre-wrap;pointer-events:none}
-body.proc-ouvert #app-proc{visibility:visible}
-#app-ram{position:absolute;inset:0;width:100%;height:100%}
-#app-ram path{fill:none;stroke-width:2;stroke-linecap:square;stroke-linejoin:miter}
-#app-ram .r-0{opacity:.5}
-#app-ram .r-0 rect{display:none}
-#app-ram .r-0 rect.pin{display:inline}
-#app-ram .puls{stroke-dasharray:.08 .92;stroke-dashoffset:1;stroke-width:3;animation:ram-puls var(--p,3s) linear infinite;animation-delay:var(--d,0s)}
-#app-ram .puls.veille{stroke-dasharray:.04 .96;stroke-width:2}
-#app-sock{position:absolute;left:var(--ax,50%);top:var(--ay,50%);width:var(--as,var(--sk));height:var(--as,var(--sk));
-  margin:calc(var(--as,var(--sk)) / -2) 0 0 calc(var(--as,var(--sk)) / -2);
-  background:linear-gradient(135deg,rgba(255,255,255,.10) 0%,rgba(255,255,255,.025) 40%,rgba(255,255,255,0) 65%),#0b0b0e;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.30),inset 0 0 0 1px rgba(255,255,255,.05)}
-#app-sock::before{content:"";position:absolute;left:6px;top:6px;width:7px;height:7px;
-  background:linear-gradient(135deg,rgba(255,255,255,.26) 50%,rgba(255,255,255,0) 50%)}
-#app-sock::after{content:"";position:absolute;inset:var(--aw,19px);background:#000;
-  box-shadow:inset 0 1px 0 rgba(0,0,0,.95),0 1px 0 rgba(255,255,255,.08)}
-@media(prefers-reduced-motion:reduce){#app-ram .puls{display:none}}
 @media(prefers-reduced-motion:reduce){
   #lv-ram path,#lv-ram rect{transition:none}
   #lv-ram .puls{display:none}
@@ -3337,6 +3300,20 @@ body.lv-membre .lvm-lab{display:none}
 /* En bas, chez un membre : SON profil et SON offre — jamais ma Reflection. */
 body.lv-membre #lv-say,body.lv-membre #lv-say-note,body.lv-membre #lv-thread,body.lv-membre #lv-focus{display:none}
 body.lv-membre.lv-b #lv-slogan{opacity:0}
+/* 25/10 — un Totehm à abonnement, trouvé en recherche (`lv-verrou`) : son nom sur [Members], son offre sous le papier, et
+   en bas son offre encore — jamais ma Reflection. */
+body.lv-verrou .lvm-who{display:inline}
+body.lv-verrou .lvm-lab{display:none}
+body.lv-verrou #lv-say,body.lv-verrou #lv-say-note,body.lv-verrou #lv-thread{display:none}
+body.lv-verrou.lv-b #lv-slogan{opacity:0}
+body.lv-verrou #mb-offre{display:flex}
+#mb-lock{display:none;flex-direction:column;align-items:center;gap:10px;text-align:center;margin-top:14px}
+body.lv-verrou #mb-lock{display:flex}
+body.mb-cherche #mb-lock{display:none}
+#mb-lock .mbl-t{font:700 10px/1.4 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#b8b8c2}
+#mb-lock .mbl-s{font:400 10px/1.5 'Space Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:#7c7c84;min-height:15px}
+#mb-lock .lvp-cta.is-appel{animation:mbl-appel .5s ease}
+@keyframes mbl-appel{50%{transform:scale(1.06)}}
 #mb-offre{display:none;flex-direction:column;align-items:center;gap:12px;text-align:center;margin-top:6px}
 body.lv-membre #mb-offre{display:flex}
 #mb-offre .mbo-n{font:400 20px/1.2 'Quantico',sans-serif;color:#fbd5ca;max-width:90vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -3704,6 +3681,13 @@ body.lv-b #gate-logo #gl-rail,body.lv-b #gate-logo #gl-wm{opacity:0}
 .tlv-l i{font-style:normal}
 .tlv-x{position:absolute;z-index:2;border:0;background:none;cursor:pointer;color:#fff;padding:10px;top:calc(max(10px,env(safe-area-inset-top)) + 4px);right:10px}
 .tlv-x svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;display:block}
+/* 25/10 — retirer un média (Wah : « il faut pouvoir supprimer les media dans la vue de gauche et de droite ») : DEUX
+   gestes — le premier arme (`is-sur`, « delete? », 3 s), le second retire. Rien ne part sur un tap égaré. */
+.tlv-del,.ssp-acts button[data-del]{font:700 10px/1 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase}
+.tlv-del{position:absolute;z-index:2;border:0;border-radius:10px;background:rgba(0,0,0,.55);color:#b8b8c2;cursor:pointer;padding:10px 12px;
+  top:calc(max(10px,env(safe-area-inset-top)) + 4px);left:10px;transition:background-color .2s ease,color .2s ease}
+.tlv-del.is-sur,.ssp-acts button[data-del].is-sur{background:var(--rep);color:#fff}
+.tlv-del:focus-visible{outline:1px solid #fff;outline-offset:2px}
 body.is-tlv #gate-asteroid,body.is-tlv #lvjoy{opacity:0;pointer-events:none}
 /* ══ 20/10 — LA BOX DU TOTEHM, HORS DU TOTEHM (`boxTotehm`) ═══════════════════════════════════════════
    Le rendu de la liste, sans rail : le filet d'intention (2 px) EST le bord gauche, la peau celle de sa vue. */
@@ -3986,10 +3970,10 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
        la porte vers les autres. Visible pour un membre connecté ; un
        inconnu n'a rien à nommer, il ne voit que la recherche. -->
   <div id="gate-top-row">
-  <!-- ══ LE PROCESSEUR · 15/10/2026 ══ le socle (la boîte Premium du TotehmPaper, à plat : un verre, un puits) et,
+  <!-- ══ LE PROCESSEUR · 15/10/2026 ══ le socle (invisible depuis le 25/10 : le TOTEHM est le boîtier ; il reste l'anneau du profil) et,
        au-dessus, les ramifications de mes intentions (les 7 couleurs, dessinées par `RAM`). Derrière le papier. -->
   <div id="lv-proc" aria-hidden="true">
-    <div id="lv-socket"><i class="sk-well"></i><i class="sk-ring"><b style="--k:0;--c:#E24B4A"></b><b style="--k:1;--c:#e48b31"></b><b style="--k:2;--c:#fcbe21"></b><b style="--k:3;--c:#639922"></b><b style="--k:4;--c:#1D9E75"></b><b style="--k:5;--c:#378ADD"></b><b style="--k:6;--c:#7F77DD"></b></i></div>
+    <div id="lv-socket"><i class="sk-ring"><b style="--k:0;--c:#E24B4A"></b><b style="--k:1;--c:#e48b31"></b><b style="--k:2;--c:#fcbe21"></b><b style="--k:3;--c:#639922"></b><b style="--k:4;--c:#1D9E75"></b><b style="--k:5;--c:#378ADD"></b><b style="--k:6;--c:#7F77DD"></b></i></div>
   </div>
   <!-- ══ LE PAPIER · 25/09/2026 ═══════════════════════════════════
        Un petit carré de papier, deux faces, qui tourne lentement dans
@@ -4168,6 +4152,10 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
           <button type="button" role="radio" id="lv-m-mine" data-mode="mine" aria-checked="true">Mine</button>
           <button type="button" role="radio" id="lv-m-members" data-mode="members" aria-checked="false"><span class="lvm-lab">Members</span><span class="lvm-who" id="lv-m-who"></span></button>
         </div>
+        <!-- 25/10 — LE RÉSULTAT D'UNE RECHERCHE QUAND IL FAUT S'ABONNER (Wah : « le mode résultat recherche pour la
+             souscription à un Totehm … est devenu totalement obsolète »). Plus de texte au dos d'un papier géant : le papier
+             rentre chez lui, ses traits sont ceux du membre (sa palette), son nom est sur [Members], et ici UN geste. -->
+        <div id="mb-lock" aria-live="polite"></div>
       </div>
     </section>
 
@@ -4208,6 +4196,7 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
       <!-- 20/10 quater — la visionneuse de la grille : le média en grand, sa boîte, ← → et ✕. -->
       <div id="tlv" class="tlv lv-act" role="dialog" aria-modal="true" aria-label="Media" hidden>
         <div class="tlv-f"></div>
+        <button type="button" class="tlv-del" data-tlv="del" hidden>delete</button>
         <button type="button" class="tlv-x" data-tlv="x" aria-label="Close"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2 L12 12 M12 2 L2 12"/></svg></button>
       </div>
     </section>
@@ -4367,9 +4356,6 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
   </defs>
 </svg>
 
-<!-- Le TOTEHM ouvert sur ORDINATEUR : la boîte noire du processeur et ses sept traits, fixes, autour de #stage
-     (posés par `LV.posApp()` à la place exacte où le déploiement les laisse). Le téléphone ne l'affiche jamais. -->
-<div id="app-proc" aria-hidden="true"><svg id="app-ram"></svg><i id="app-sock"></i></div>
 <div id="stage">
 <div id="rail" class="sink-el"></div>
 
@@ -5793,6 +5779,9 @@ const CLUBSP=(()=>{
     /* Dans la barre, le temps courant, et rien d'autre : un tap ouvre le filtre (où se choisit le temps). */
     perChip:()=>'<button type="button" class="is-on" data-f="sf" data-per="'+st.per+'">'+NOMS[st.per]+'</button>',
     surChangement(f){ if(typeof f==='function') abon.push(f); },
+    /* 25/10 — un spot que j'ai retiré (`spot_remove`) quitte la carte, la grille et le fil d'un coup. */
+    retirer(id){ const n=st.items.length; st.items=st.items.filter(x=>!x||String(x.id)!==String(id));
+      if(st.items.length!==n){ st.total=Math.max(0,st.total-1); prevenir(); } },
     vider(){ st.seq++; st.items=[]; st.total=0; st.more=false; st.off=0; st.asOf=null; st.lu=false; st.auto=true;
       st.per='now'; st.err=''; st.charge=false; st.mine=false; st.srv={intentions:[], type:'all', scope:'world', habit:''}; },
     etat:()=>({periode:st.per, items:st.items.length, total:st.total, more:st.more, lu:st.lu, err:st.err,
@@ -6366,8 +6355,10 @@ function creerFeed(conf){
       +(z.comment?'<p class="sd-say">'+esc(String(z.comment))+'</p>':'')+'</div>';
     const acts=(ex?'<button type="button" data-go="'+esc(String(z.id))+'">go</button>':'')
       +(z.state==='will'?'<button type="button" data-ics="'+esc(String(z.id))+'">calendar</button>':'')
-      /* 25/10 (Wah) : MON spot, montré au Higher Self — un mot de plus dans la même rangée, rien de neuf à apprendre. */
-      +(z.mine&&!RO?'<button type="button" data-ask="sp:'+esc(String(z.id))+'" data-ask-t="'+esc(String(x.txt||''))+'">higher self</button>':'');
+      /* 25/10 (Wah) : MON spot, montré au Higher Self — un mot de plus dans la même rangée, rien de neuf à apprendre.
+         DELETE reste le DERNIER : ce qui détruit ne se touche pas en visant autre chose. */
+      +(z.mine&&!RO?'<button type="button" data-ask="sp:'+esc(String(z.id))+'" data-ask-t="'+esc(String(x.txt||''))+'">higher self</button>'
+                   +'<button type="button" data-del="'+esc(String(z.id))+'">delete</button>':'');
     const par=!z.mine&&z.creator?'<span class="ssp-par"><span>by</span><button type="button" class="ssp-by" data-who="'+esc(String(z.creator))+'">'+esc(String(z.creator))+'</button></span>':'';
     const box=x.id?'<div class="ssp-box" role="button" tabindex="0" data-lsh="habits|'+esc(x.id)+'">'+loupeVue(boxSpot(z))+'</div>'
                   :'<div class="ssp-box">'+loupeVue(boxSpot(z))+'</div>';
@@ -6608,6 +6599,31 @@ function creerFeed(conf){
     peindreFlt();
     observer();
   }
+  /* ══ RETIRER · 25/10 ══ (Wah : « il faut pouvoir supprimer les media dans la vue de gauche et de droite »)
+     À gauche : MES fichiers (`element_media_remove`, puis le seau) et l'image d'une de MES visions
+     (`vision_image_set(id, null)`, puis l'ancien fichier) ; à droite : MES spots (`spot_remove`). Chez un autre
+     membre (`RO`), rien ne se retire. Deux gestes : le premier arme le bouton, le second retire. */
+  const retirable=x=>!!(x&&me&&!RO&&(x.b==='em'||String(x.cle).startsWith('vi:')||(x.sp&&x.sp.mine)));
+  const arme=b=>{ if(b.classList.contains('is-sur')) return true;
+    b.classList.add('is-sur'); b.textContent='delete?'; clearTimeout(b._sur);
+    b._sur=setTimeout(()=>{ b.classList.remove('is-sur'); b.textContent='delete'; },3000); return false; };
+  async function retirer(x){
+    if(!retirable(x)) return false;
+    const cle=String(x.cle);
+    if(x.b==='em'){ await emRetirer(cle.slice(3)); maj(); return true; }
+    if(cle.startsWith('vi:')){
+      const id=cle.slice(3);
+      const {data,error}=await sb.rpc('vision_image_set',{p_id:id, p_path:null});
+      if(error){ console.error('[vision_image_set]',error.message); return false; }
+      if(!data?.ok){ console.error('[vision_image_set]',data?.why); return false; }
+      if(data.old){ const {error:er}=await sb.storage.from('moments').remove([data.old]); if(er) console.error('[moments remove]',er.message); }
+      VISIMG.delete(String(id)); maj(); return true;
+    }
+    const {data,error}=await sb.rpc('spot_remove',{p_spot:x.sp.id});
+    if(error){ console.error('[spot_remove]',error.message); return false; }
+    if(!data?.ok){ console.error('[spot_remove]',data?.why); return false; }
+    CLUBSP.retirer(x.sp.id); return true;
+  }
   /* LA VISIONNEUSE · 21/10 : un média par écran, AIMANTÉ, à la VERTICALE — le système de la vue de droite (Wah).
      Une section par média du fil filtré, vide ; chacune se remplit en approchant (son média, sa box DÉTAILLÉE). La
      vidéo visible joue, la suivante se prépare (`metadata`) : la règle d'egress des spots. ↑ ↓ pour le voisin,
@@ -6637,18 +6653,23 @@ function creerFeed(conf){
     const r=$('tlv'), f=r&&r.querySelector('.tlv-f'); if(!f||!L[i]) return fermerV();
     r.hidden=false; document.body.classList.add('is-tlv');
     f.innerHTML=L.map((_,j)=>'<section class="tlv-s" data-j="'+j+'"><div class="tlv-m"></div><div class="tlv-b"></div></section>').join('');
-    VU.i=i; etat.vu=i;
+    VU.i=i; etat.vu=i; peindreDel();
     f.scrollTop=i*f.clientHeight;
     remplir(f.children[i],true);
     if(vio) vio.disconnect();
     vio=new IntersectionObserver(es=>es.forEach(en=>{
       const sec=en.target, j=+sec.dataset.j;
-      if(en.intersectionRatio>=.6){ VU.i=j; etat.vu=j; remplir(sec,true);
+      if(en.intersectionRatio>=.6){ VU.i=j; etat.vu=j; peindreDel(); remplir(sec,true);
         if(sec.nextElementSibling) remplir(sec.nextElementSibling,false);
         if(sec.previousElementSibling) remplir(sec.previousElementSibling,false); }
       else{ const v=sec.querySelector('video'); if(v) try{ v.pause(); }catch(_){} }
     }),{root:f, threshold:[0,.6]});
     f.querySelectorAll('.tlv-s').forEach(sec=>vio.observe(sec));
+  }
+  /* [delete] n'apparaît que sur ce que je peux retirer ; il se désarme quand on change de média. */
+  function peindreDel(){
+    const b=document.querySelector('#tlv [data-tlv="del"]'); if(!b) return;
+    b.hidden=!retirable(L[VU.i]); clearTimeout(b._sur); b.classList.remove('is-sur'); b.textContent='delete';
   }
   /* Le voisin, au clavier : on fait défiler, l'aimant et l'observateur font le reste. */
   function voisinV(d){
@@ -6686,6 +6707,9 @@ function creerFeed(conf){
     r.addEventListener('click',e=>{
       if(e.target.closest('[data-tlv="x"]')){ fermerV(); return; }
       const k=e.target.closest('[data-ask]'); if(k){ demanderIA(k); return; }
+      const del=e.target.closest('[data-tlv="del"]');
+      if(del){ if(!arme(del)) return; const x=L[VU.i]; del.disabled=true;
+        retirer(x).then(ok=>{ del.disabled=false; if(ok) fermerV(); else peindreDel(); }); return; }
       const b=e.target.closest('[data-lsh]'); if(b){ ouvrirElement(b); return; }
     });
     /* Le clavier : ↑ ↓ vont d'un média à l'autre ; ← → ne font RIEN ici (et ne changent pas de vue). */
@@ -6820,6 +6844,9 @@ function creerFeed(conf){
       const k=e.target.closest('[data-ask]'); if(k){ demanderIA(k); return; }
       const b=e.target.closest('[data-lsh]'); if(b){ ouvrirElement(b); return; }
       /* Les gestes d'un spot : y aller (le point exact, si je le vois), le mettre au calendrier, voir son auteur. */
+      const del=e.target.closest('[data-del]');
+      if(del){ if(!arme(del)) return; const x=L.find(y=>y.sp&&String(y.sp.id)===String(del.dataset.del)); del.disabled=true;
+        retirer(x).then(ok=>{ if(!ok){ del.disabled=false; del.classList.remove('is-sur'); del.textContent='delete'; } }); return; }
       const g=e.target.closest('[data-go],[data-ics],[data-who]');
       if(g){ const z=(L.find(x=>x.sp&&String(x.sp.id)===String(g.dataset.go||g.dataset.ics))||{}).sp;
         /* 20/10 sexies — l'auteur : son ÉCOSYSTÈME (sur place) ; sa page de vente si sa lecture demande un abonnement. */
@@ -7502,7 +7529,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-10-25-montrer';
+const BUILD='2026-10-25-montrer-boitier';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -11383,6 +11410,7 @@ window.addEventListener('pageshow',e=>{
     if(sOpen){ fermerVerso(()=>enter(then)); return; }
     /* 15/10 : le Totehm se déconstruit depuis le CENTRE. 20/10 sexies : chez un membre, c'est SON Totehm (en lecture) qui
        s'ouvre ; pendant la recherche (le papier agrandi sur son dos), on revient d'abord à Mine. */
+    if(LV.verrou()&&!then){ LV.offrir(); return; }
     if(LV.mode()==='members'&&!LV.membre()){ LV.versMine(()=>enter(then)); return; }
     if(LV.vue()!=='c'){ LV.aller('c',()=>enter(then)); return; }
     LV.calme();
@@ -11399,7 +11427,7 @@ window.addEventListener('pageshow',e=>{
     gate.classList.remove('no-anim');
     gate.scrollTop=0;                /* on mesure toujours depuis le haut */
     measure();                       /* dernière mesure juste avant le départ */
-    try{ LV.deployer(); }catch(err){ console.error('[déploiement]',err); }   /* la boîte et ses traits grandissent AVEC lui */
+    try{ LV.deployer(); }catch(err){ console.error('[déploiement]',err); }   /* les traits sont aspirés dans le TOTEHM */
     void gate.offsetWidth;           /* reflow : garantit le point de départ  */
     body.classList.add('entered');
 
@@ -11448,7 +11476,6 @@ window.addEventListener('pageshow',e=>{
     gate.scrollTop=0;                     /*    on mesure toujours du haut */
     void gate.offsetWidth;
     measure();                            /* 3. rect NON transformé        */
-    try{ LV.replier(1); }catch(err){ console.error('[repli]',err); }   /* la boîte et les traits, là où le TOTEHM les avait */
     body.classList.add('entered');        /* 4. saut à la position d'UI    */
     void gate.offsetWidth;
     gate.classList.remove('no-anim');     /* 5. transitions rendues        */
@@ -11457,13 +11484,12 @@ window.addEventListener('pageshow',e=>{
 
     open=false;
     timer=setTimeout(()=>{
-    body.classList.remove('entered');     /* 7. et le repli part           */
-    try{ LV.replier(2); }catch(err){ console.error('[repli]',err); }   /* … et ils rentrent avec lui */
+    body.classList.remove('entered');     /* 7. et le repli part (les traits restent aspirés : `LV.revenu` les rend) */
     timer=setTimeout(()=>{
       body.classList.remove('folding');   /* le défilement redevient normal */
       moving=false;
       PAPIER.reveiller();                 /* le logo est revenu : il repart */
-      LV.revenu();                        /* mes ramifications ont pu changer dedans */
+      LV.revenu();                        /* mes ramifications (elles ont pu changer dedans) ressortent du TOTEHM */
       SH.pause(); SPOTS.pause();          /* ni vidéo ni rAF derrière l'atterrissage */
       /* ⚠️ 20/10 sexies — REPLIER LE TOTEHM D'UN MEMBRE, C'EST RETOMBER DANS SON ÉCOSYSTÈME (Wah : « on retombe dans
          l'écosystème, mais cette fois ce n'est plus le nôtre »). On ne le quitte que par MINE (ou « back to mine »). */
@@ -11546,6 +11572,7 @@ window.addEventListener('pageshow',e=>{
     if(!me){ PAPIER.poser(()=>ouvrirPorte(null)); return; }
     if(LV.vue()!=='c'||LV.mode()!=='mine') return;
     sMoving=true; fermerPorte();
+    LV.aspirer(true);   /* 25/10 : on cesse l'activité du TOTEHM pour le configurer — ses traits rentrent en lui */
     srch.classList.remove('is-pret');
     srch.classList.add('is-on','is-prep'); srch.setAttribute('aria-hidden','false');
     /* La console se lit PENDANT le retournement ; elle se montre une fois lue (1,8 s au plus après le geste). */
@@ -11586,7 +11613,7 @@ window.addEventListener('pageshow',e=>{
       srch.classList.remove('is-on','is-prep'); srch.setAttribute('aria-hidden','true');
       sansTransition(); sBg.style.transform=''; sH.style.transform='';
       sOpen=false; sMoving=false; window.__totehm_lsd.recherche=false;
-      PAPIER.poser(()=>{ paintFlip(); if(rendre&&!then) try{ $('gate-enter').focus({preventScroll:true}); }catch(_){} if(then) then(); });
+      PAPIER.poser(()=>{ paintFlip(); LV.aspirer(false); if(rendre&&!then) try{ $('gate-enter').focus({preventScroll:true}); }catch(_){} if(then) then(); });
     };
     if(RMQ.matches){ fini(); return; }
     requestAnimationFrame(()=>requestAnimationFrame(()=>{
@@ -11657,7 +11684,7 @@ window.addEventListener('pageshow',e=>{
        TOTEHM et son socle processor tout en le retournant sur son verso, avec l'invitation directe à entrer un
        identifiant ; dès qu'il est validé, on retombe dans l'écosystème — mais ce n'est plus le nôtre, c'est celui
        du membre ». `cherche` = le papier agrandi sur son dos ; `nom` = le membre dont je vis l'écosystème. */
-    const MB={cherche:false, nom:null, avant:null, seq:0};
+    const MB={cherche:false, nom:null, avant:null, seq:0, verrou:null};
     const libreMb=()=>mode!=='members'||(!!MB.nom&&!MB.cherche);
     const voisin=k=>{
       const v=(VOISINS[vue]||{})[k]||null;
@@ -11691,10 +11718,10 @@ window.addEventListener('pageshow',e=>{
         const k=.42, jb=$('lvjoy'), haut=jb?Math.max(60,H()-jb.getBoundingClientRect().top):120;
         placer(slo, W()/2-(8+larg('.lvs-self'))*k/2, H()-haut-18, 96*k);
       } else {
-        /* AU CENTRE, le badge ne s'éteint pas : il se pose en petit sur le socle, au coin du processeur —
-           le même objet, à une autre échelle. Il reprend sa taille en montant vers Get Higher. */
+        /* AU CENTRE, le badge ne s'éteint pas : il se pose en petit au coin du processeur — 25/10 : le TOTEHM est le
+           boîtier, le badge se range donc CONTRE son coin bas-droit, dehors (sur le papier, il en couvrait le coin). */
         const c=PAPIER.chez()||{x:W()/2,y:H()*.4,w:110}, sk=(sock.offsetWidth||143)/2;
-        placer(slo, c.x+sk-20, c.y+sk-7, 34);
+        placer(slo, c.x+sk+21, c.y+sk-7, 34);
       }
     }
     /* ⚠️ 21/10 — LA VUE DU HAUT SE RÈGLE SUR L'ÉCRAN (Wah : « il faut remonter la langue et le TotehmPaper puisque
@@ -11852,7 +11879,7 @@ window.addEventListener('pageshow',e=>{
       /* Ma Reflection n'existe que chez MOI ; chez un membre, le bas est SON offre. */
       const moi=mode==='mine';
       if(v==='b'&&moi) REF.armer();      /* DANS le geste : sans lui, le téléphone n'ouvre pas le clavier */
-      if(v==='b'&&!moi) OFFRE.ouvrir(MB.nom);
+      if(v==='b'&&!moi) OFFRE.ouvrir(MB.nom||MB.verrou);
       bouge=true; const de=vue; vue=v;
       const fini=garde(()=>{ bouge=false; peindreNav(); sloganPour(vue); if(vue==='b'&&mode==='mine') REF.arrive(); if(then) then(); reprendre(); },900);
       try{
@@ -11886,7 +11913,7 @@ window.addEventListener('pageshow',e=>{
     const mbGo=(t,f)=>{ if(!t){ mgo.classList.add('hide'); mgo.onclick=null; return; } mgo.textContent=t; mgo.classList.remove('hide'); mgo.onclick=f; };
     function peindreMode(){
       document.querySelectorAll('#lv-mode [data-mode]').forEach(b=>b.setAttribute('aria-checked',String(b.dataset.mode===mode)));
-      $('lv-m-who').textContent=MB.nom||'';
+      $('lv-m-who').textContent=MB.nom||MB.verrou||'';
       const t=$('lv-tap-turn'); if(t){ const sou=window.matchMedia('(hover:hover)').matches;
         t.textContent=(sou?'Turn':'Swipe')+(mode==='members'?' to search':' to configure it'); }
     }
@@ -11897,6 +11924,7 @@ window.addEventListener('pageshow',e=>{
       if(body.classList.contains('is-door')||!body.classList.contains('gate')) return;
       if(PAPIER.occupe()&&!PAPIER.vue()) return;
       diag.modes++;
+      deverrouiller();
       MB.avant=MB.nom; MB.cherche=true; mode='members'; bouge=true; MB.seq++;
       body.classList.add('lv-mb','mb-cherche');
       peindreMode(); peindreNav();
@@ -11906,16 +11934,17 @@ window.addEventListener('pageshow',e=>{
       try{ mq.focus({preventScroll:true}); }catch(_){}
       const fin=garde(()=>{ bouge=false; if(then) then(); },1400);
       try{
-        socle('c'); RAM.peindre('c',{anime:true, papier:{x:t.x, y:t.y, w:t.taille}});
+        /* 25/10 — calquée sur le clic (Wah) : sans boîte, les traits aspirés dans le TOTEHM avant qu'il ne grandisse. */
+        socle('c'); aspirer(true);
         PAPIER.poserDos(()=>{ if(!PAPIER.glisser(t,{ms:620, fin})) fin(); });
       }catch(err){ console.error('[lv] chercher',err); fin(); }
     }
-    /* Le papier redescend chez lui et se remet sur son recto ; le réseau le suit. */
+    /* Le papier redescend chez lui et se remet sur son recto ; posé, il rend son réseau (celui du membre trouvé, ou le mien). */
     function rentrer(fini){
       bouge=true;
-      const fin=garde(()=>{ bouge=false; RAM.peindre('c'); if(fini) fini(); },1400);
+      const fin=garde(()=>{ bouge=false; RAM.oublie(); RAM.peindre('c'); aspirer(false); if(fini) fini(); },1400);
       try{
-        socle('c'); RAM.oublie(); RAM.peindre('c',{anime:true});
+        socle('c'); RAM.oublie(); RAM.peindre('c');
         if(!PAPIER.glisser(null,{ms:620, fin:()=>PAPIER.poser(fin)})) PAPIER.poser(fin);
       }catch(err){ console.error('[lv] rentrer',err); fin(); }
     }
@@ -11947,13 +11976,34 @@ window.addEventListener('pageshow',e=>{
       if(error){ console.error('[totehm_of]',error.message); mbNote('unreachable · try again'); return; }
       if(!data||!data.ok){
         const w=data&&data.why;
-        if(w==='subscribe'){ const nom=String(data.pseudo||n); mbNote('subscribe to read'); mbGo('SUBSCRIBE',()=>OFFRE.abonner(nom,mbNote)); OFFRE.prix(nom).then(t=>{ if(t&&MB.cherche&&!mgo.classList.contains('hide')) mgo.textContent='SUBSCRIBE · '+t; }); return; }
+        if(w==='subscribe'){ verrouiller(String(data.pseudo||n)); return; }
         mbNote(w==='nobody'?'no TOTEHM by that name':w==='signin'?'connect first':'this TOTEHM is private'); return;
       }
       activer(data);
     }
+    /* 25/10 — UN TOTEHM À ABONNEMENT : la recherche finit comme les autres (le papier rentre, les traits ressortent), mais
+       ce sont les SIENS — sa palette (`creator_page`), rien de son contenu — et l'offre se pose sous le papier
+       (`#mb-lock`) : UN geste, au prix du serveur. Tap sur le papier : il désigne ce geste (`LV.offrir`). */
+    async function verrouiller(nom){
+      const s0=MB.seq;
+      mbNote('…');
+      const d=await OFFRE.lire(nom);
+      if(s0!==MB.seq||!MB.cherche) return;
+      finirRecherche();
+      MB.verrou=nom; mode='members';
+      body.classList.add('lv-mb','lv-verrou');
+      RAM.palette(d&&Array.isArray(d.palette)?d.palette:[]);
+      OFFRE.verrou(nom,d);
+      peindreMode(); peindreNav(); peindreCarte();
+      rentrer();
+    }
+    function deverrouiller(){
+      if(!MB.verrou) return;
+      MB.verrou=null; body.classList.remove('lv-verrou'); RAM.palette(null); OFFRE.verrou(null);
+    }
     /* Entrer dans l'écosystème d'un membre : SON Totehm en mémoire (lecture seule), SES médias, SES spots, SON offre. */
     function activer(data,direct){
+      deverrouiller();
       const nom=String(data.pseudo||'');
       RO=nom; roEnPlace=true; roSeq++; ZOOM.clear(); COPIES.clear();
       HSPACES.seq++; HSPACES.par=new Map(); ECLOTHS.seq++; ECLOTHS.par=new Map();
@@ -11998,6 +12048,7 @@ window.addEventListener('pageshow',e=>{
       const cherchait=MB.cherche, avait=!!RO;
       diag.modes++;
       if(cherchait) finirRecherche();
+      deverrouiller();
       MB.nom=null; MB.avant=null; mode='mine';
       body.classList.remove('lv-mb','lv-membre');
       SH.vider(); SPOTS.vider(); CLUBSP.vider(); OFFRE.vider(); MBM.seq++; MBM.items=[];
@@ -12232,8 +12283,11 @@ window.addEventListener('pageshow',e=>{
       const N=24;                                   /* chaque branche, rééchantillonnée : la même forme se TRANSFORME */
       const diagR={morphs:0, vib:0};
       /* Par intention : combien d'Habits, et la PLUS FRÉQUENTE — c'est elle qui donne le rythme. */
+      /* 25/10 — un Totehm fermé (abonnement) : ses traits sont sa PALETTE (`creator_page`), rien de son contenu. */
+      let pal=null;
       function compte(){
         const n={}; INTS.forEach(x=>{ n[x.id]={n:0,w:0}; });
+        if(pal){ pal.forEach(i=>{ if(n[i]) n[i].n=1; }); return n; }
         (state.habits||[]).forEach(h=>{ const l=Array.isArray(h.is)&&h.is.length?h.is:(h.i?[h.i]:[]);
           l.forEach(i=>{ const c=n[i]; if(!c) return; c.n++;
             const w=h.f?fw(h.f):0; if(w&&(!c.w||w<c.w)) c.w=w; }); });
@@ -12254,14 +12308,14 @@ window.addEventListener('pageshow',e=>{
           out.push([a[0]+(b[0]-a[0])*Math.max(0,Math.min(1,u)), a[1]+(b[1]-a[1])*Math.max(0,Math.min(1,u))]); }
         return out;
       }
-      /* ── LE CIRCUIT (vue centre) : le papier est dans la BOÎTE NOIRE du processeur (le socle) ; les sept pistes sortent
-         de ses arêtes, en haut ET en bas, par SEPT BROCHES de leur couleur (22/10, Wah : « plus de liens entre les traits
-         et la boîte noire ») — elles tiennent le milieu de l'arête, loin des coins —, un coude, puis jusqu'aux bords de
-         l'écran ; un carré au coude, un carré par Habit sur la montée. `c` = le papier (chez lui, agrandi en MEMBERS, ou
-         déployé) ; `S` = la boîte qui l'entoure. */
+      /* ── LE CIRCUIT (vue centre) : le TOTEHM EST LE BOÎTIER du processeur (25/10, Wah : « mets le totehm en version
+         boîtier-processor » — la boîte noire est partie). Les sept pistes sortent de SES arêtes, en haut ET en bas, par
+         SEPT BROCHES de leur couleur, posées au quart de demi-largeur l'une de l'autre : trois entrent dans ses
+         perforations (25 %, 50 %, 75 %), quatre tiennent l'arête entre elles ; puis un coude et jusqu'aux bords de
+         l'écran ; un carré au coude, un carré par Habit sur la montée. `c` = le papier ; `S` = le papier + 6 px. */
       function circuit(n,c,S){
         const hs=S/2, w=W(), h=H(), top=c.y-hs, bot=c.y+hs;
-        const haut=Math.max(80,top), bas=Math.max(80,h-bot), pas=hs*.72/3;
+        const haut=Math.max(80,top), bas=Math.max(80,h-bot), pas=((c.w||S-6)/2)*.25;
         return INTS.map((x,i)=>{
           const d=i-3, dir=Math.sign(d), k=Math.abs(d), q=n[x.id];
           const sx=Math.round(c.x+d*pas), sy=Math.round(top), by=Math.round(bot);
@@ -12403,15 +12457,9 @@ window.addEventListener('pageshow',e=>{
             +'<path class="puls'+(o.q.n?'':' veille')+'" pathLength="1" stroke="'+o.x.color+'"/></g>'; });
         svg.innerHTML=out;
         const gs=[...svg.querySelectorAll('g')];
-        /* `o.suivre` : l'élément dont la transition CSS donne l'heure (la boîte au déploiement) — les traits lisent SON
-           horloge à chaque image : ils ne peuvent pas se détacher de ses arêtes. Sans elle : la nôtre. */
-        const horloge=()=>{ const el=o.suivre; if(!el||!el.getAnimations) return null;
-          const a=el.getAnimations().find(x=>x.transitionProperty==='transform'); return a&&a.currentTime!=null?a.currentTime:null; };
-        let suivie=false;
         const pas=now=>{
           if(!t0) t0=now;
-          const hc=horloge(); if(hc!=null) suivie=true;
-          const u=ease(Math.min(1,(hc!=null?hc:(suivie?Dms:now-t0))/Dms));
+          const u=ease(Math.min(1,(now-t0)/Dms));
           const M=B.map((o,i)=>{ const p=A[i]||o, m=(x,y)=>x.map((q,k)=>[q[0]+((y[k]||q)[0]-q[0])*u, q[1]+((y[k]||q)[1]-q[1])*u]);
             return Object.assign({},o,{a:m(p.a,o.a), b:m(p.b,o.b)}); });
           M.forEach((o,i)=>{ const d=dDe(o); gs[i].querySelectorAll('path').forEach(pa=>pa.setAttribute('d',d)); });
@@ -12422,7 +12470,7 @@ window.addEventListener('pageshow',e=>{
         raf=requestAnimationFrame(pas);
       }
       /* Un rendu = une vue, une taille, mes Habits, la place du papier. On ne redessine pas pour rien. */
-      /* La boîte noire autour du papier : le socle suit le papier (agrandi en MEMBERS, déployé) ; `o.socle` la donne. */
+      /* Le boîtier autour du papier (`--sk` : le papier + 6 px), à l'échelle du papier ; `o.socle` le donne. */
       const boite=(c,o)=>o.socle||(c.w||110)*(((sock&&sock.offsetWidth)||143)/(((PAPIER.chez()||{}).w)||110));
       function peindre(v,o){
         if(!svg) return;
@@ -12436,9 +12484,7 @@ window.addEventListener('pageshow',e=>{
         if(o.anime&&cur&&cur.length===G.length&&svg.childNodes.length&&!RMQ.matches) morph(cur,G,o);
         else{ if(raf){ cancelAnimationFrame(raf); raf=0; document.body.classList.remove('ram-morph'); } dessiner(G); }
       }
-      /* Le circuit FIXE dans un autre calque (le TOTEHM ouvert sur ordinateur : `#app-ram`), autour d'un papier donné. */
-      function copie(el,c,S){ if(!el) return; el.setAttribute('viewBox','0 0 '+W()+' '+H()); el.innerHTML=balisage(forme('c',compte(),c,S)); }
-      return {peindre, copie, oublie(){ sig=''; },
+      return {peindre, oublie(){ sig=''; }, palette(l){ pal=Array.isArray(l)?l:null; sig=''; },
         etat:()=>({pistes:svg?svg.querySelectorAll('path:not(.puls):not(.sk)').length:0,
                    noeuds:svg?svg.querySelectorAll('rect').length:0,
                    impulsions:svg?svg.querySelectorAll('.puls').length:0,
@@ -12466,7 +12512,7 @@ window.addEventListener('pageshow',e=>{
       }
       async function peindre(nom){
         box.innerHTML='<p class="mbo-n">'+esc(nom)+'</p>';
-        const d=await lire(nom); if(!d||MB.nom!==nom) return;
+        const d=await lire(nom); if(!d||(MB.nom||MB.verrou)!==nom) return;
         const v=d.viewer||{}, p=prixDe(d);
         let h='<p class="mbo-n">'+esc(d.pseudo||nom)+'</p>';
         if(v.subscribed) h+='<p class="mbo-p">subscribed</p>'+(v.until?'<p class="mbo-s">'+(v.ending?'ends ':'renews ')+esc(new Date(v.until).toLocaleDateString())+'</p>':'');
@@ -12484,15 +12530,32 @@ window.addEventListener('pageshow',e=>{
           say(({closed:'not open to subscriptions', self:'this is your own TOTEHM', signin:'connect first', nobody:'no TOTEHM by that name'})[j&&j.error]||'checkout is unavailable · try again');
         }catch(e){ console.error('[creator-subscribe]',e&&e.message||e); say('checkout is unavailable · try again'); }
       }
-      box.addEventListener('click',e=>{ const b=e.target.closest('[data-mbo="sub"]'); if(b&&MB.nom){ b.disabled=true;
-        abonner(MB.nom,t=>{ const n=box.querySelector('.mbo-s')||box.appendChild(Object.assign(document.createElement('p'),{className:'mbo-s'})); n.textContent=t; })
+      box.addEventListener('click',e=>{ const b=e.target.closest('[data-mbo="sub"]'); const nom=MB.nom||MB.verrou; if(b&&nom){ b.disabled=true;
+        abonner(nom,t=>{ const n=box.querySelector('.mbo-s')||box.appendChild(Object.assign(document.createElement('p'),{className:'mbo-s'})); n.textContent=t; })
           .finally(()=>{ b.disabled=false; }); } });
+      /* 25/10 — sous le papier, quand la lecture demande un abonnement : ce que c'est, UN geste au prix du serveur. */
+      const lock=$('mb-lock');
+      function verrou(nom,d){
+        if(!lock) return;
+        if(!nom){ lock.innerHTML=''; return; }
+        const p=prixDe(d);
+        lock.innerHTML='<p class="mbl-t">subscribers only</p>'
+          +(p?'<button type="button" class="lvp-cta" data-mbl="sub">SUBSCRIBE · '+esc(p)+'</button>':'<p class="mbl-t">not open to subscriptions yet</p>')
+          +'<p class="mbl-s">their TOTEHM · media · spots</p>';
+      }
+      if(lock) lock.addEventListener('click',e=>{ const b=e.target.closest('[data-mbl="sub"]'); if(!b||!MB.verrou) return; b.disabled=true;
+        const n=lock.querySelector('.mbl-s'); abonner(MB.verrou,t=>{ if(n) n.textContent=t; }).finally(()=>{ b.disabled=false; }); });
       return {
         ouvrir(nom){ if(nom) peindre(nom); },
+        lire, verrou,
+        /* Un tap sur le papier d'un Totehm fermé n'ouvre rien : il désigne le geste qui l'ouvre. */
+        montrer(){ const b=lock&&lock.querySelector('[data-mbl]'); if(!b) return;
+          try{ b.focus({preventScroll:true}); }catch(_){} b.classList.remove('is-appel'); void b.offsetWidth; b.classList.add('is-appel'); },
         prix:async nom=>prixDe(await lire(nom)),
         abonner,
         vider(){ seq++; cache=null; if(box) box.innerHTML=''; },
-        etat:()=>({vu:!!(box&&box.innerHTML), abonne:!!box.querySelector('.mbo-p'), bouton:!!box.querySelector('[data-mbo]')})
+        etat:()=>({vu:!!(box&&box.innerHTML), abonne:!!box.querySelector('.mbo-p'), bouton:!!box.querySelector('[data-mbo]'),
+                   verrou:!!(lock&&lock.innerHTML), geste:!!(lock&&lock.querySelector('[data-mbl]'))})
       };
     })();
 
@@ -12508,12 +12571,12 @@ window.addEventListener('pageshow',e=>{
     /* ── LE NOM ET QUI LIT MON TOTEHM (mes réglages) — nœuds déplacés de l'espace membre (15/10) ── */
     let visSeq=0;
     function peindreCarte(){
-      const m=inscrit()&&!RO, chez=inscrit()&&!!RO;
+      const m=inscrit()&&!RO&&!MB.verrou, chez=inscrit()&&(!!RO||!!MB.verrou);
       $('lv-card').classList.toggle('hide',!m);
       /* Sans compte : ce que ça fait et pourquoi ça marche. Avec un compte : le geste, rien d'autre — chez un
          membre aussi (20/10 sexies) : tap = SON Totehm, tourner = chercher un autre membre. */
       const sou=window.matchMedia('(hover:hover)').matches;
-      $('lv-tap-open').textContent=sou?'Click to open it':'Tap to open it';
+      $('lv-tap-open').textContent=MB.verrou?'Subscribe to open it':sou?'Click to open it':'Tap to open it';
       $('lv-tap-turn').textContent=(sou?'Turn':'Swipe')+(chez?' to search':' to configure it');
       $('lv-tap').classList.toggle('hide',!(m||chez));
       $('lv-pitch').classList.toggle('hide',m||chez);
@@ -13126,7 +13189,7 @@ window.addEventListener('pageshow',e=>{
       reflection:{tours:SM.msgs.length, pret:!!etatSM().ready, gratuits:etatSM().free_left??null, envois:diag.envois, ajouts:diag.ajouts,
                   pense:!!pense, telegram:diag.telegram, spots:diag.spots|0, pos:!!SM.pos,
                   montre:SM.focus?SM.focus.kind:null, montres:diag.montres|0},
-      membre:{cherche:MB.cherche, chez:!!MB.nom, medias:MBM.items.length, offre:OFFRE.etat()}, ramifications:RAM.etat(), tours:diag.tours, tourne:!!tour,
+      membre:{cherche:MB.cherche, chez:!!MB.nom, verrou:MB.verrou, medias:MBM.items.length, offre:OFFRE.etat()}, ramifications:RAM.etat(), tours:diag.tours, tourne:!!tour,
       shorts:SH.etat(), spots:SPOTS.etat(),
       visibilite:LAND?LAND.visibility:null, createur:CREA.etat(), reglages:sOpen});
     window.__lvAller=v=>aller(v);
@@ -13157,95 +13220,22 @@ window.addEventListener('pageshow',e=>{
         let n=0; const t=setInterval(async()=>{ n++; if(lvRefresh) await lvRefresh();
           if(acces()||n>=8){ clearInterval(t); SM.paye=false; if(acces()) smNoteEtat(); else smNote('it takes a moment · reopen this view soon'); } },1500); },600);
     }
-    /* ══ LE DÉPLOIEMENT DE TOUTE LA STRUCTURE (22/10) ══ Wah : « quand j'appuie sur le Totehm, il reste dans sa boîte et
-       on voit les traits d'intention qui accompagnent l'agrandissement général de toute la structure de la vue
-       centrale ». La boîte noire (`#lv-proc`) grandit avec le fond du papier, à la MÊME courbe et la MÊME durée
-       (`--gate-dur`, `--gate-ease` : `BEZ` la recalcule) ; les sept traits se transforment au même rythme vers le
-       circuit de la boîte agrandie — leurs broches restent sur ses arêtes, au pixel. ORDINATEUR : le papier se pose
-       dans `#stage`, la boîte l'entoure de 22 px et RESTE, avec ses traits (`#app-proc`, hors du portail, à la même
-       place : le fondu du portail ne fait rien bouger). TÉLÉPHONE : le papier couvre l'écran ; la boîte et les traits
-       sortent du champ — le TOTEHM ouvert est celui d'avant, seul le déploiement change. */
-    const BEZ=(()=>{ const x1=.62, y1=.02, x2=.24, y2=1;
-      const cx=3*x1, bx=3*(x2-x1)-cx, ax=1-cx-bx, cy=3*y1, by=3*(y2-y1)-cy, ay=1-cy-by;
-      const X=t=>((ax*t+bx)*t+cx)*t, Y=t=>((ay*t+by)*t+cy)*t, dX=t=>(3*ax*t+2*bx)*t+cx;
-      return u=>{ if(u<=0) return 0; if(u>=1) return 1; let t=u;
-        for(let i=0;i<8;i++){ const e=X(t)-u, d=dX(t); if(Math.abs(e)<1e-5||!d) break; t=Math.max(0,Math.min(1,t-e/d)); }
-        return Y(t); }; })();
-    const DEP_MS=1050, MARGE=22;
-    const diagD={deploiements:0, replis:0, images:0};
-    /* Mesuré AU REPOS (le portail à plat) : la boîte au repos `A` et déployée `B`, en px de `#lv-proc` (centre, côté `S`,
-       largeur du papier `w`) ; `x`/`y` : le centre déployé à l'écran, pour les traits. */
-    /* ⚠️ 23/10 — LE REPOS SE MESURE SANS LA TAILLE POSÉE : après un déploiement, la boîte garde sa taille déployée (inline)
-       derrière le portail fermé. La lire comme « repos » faisait un repli faux (ordinateur : la boîte restait à 684 px et
-       glissait, puis sautait à 143 ; téléphone : 28 000 px, traits figés hors champ). On l'efface AVANT de mesurer
-       (même image : rien ne se voit), l'appelant repose sa géométrie juste après. */
-    function cibleDeploiement(){
-      if(sock.classList.contains('is-geo')){ cancelAnimationFrame(geoRaf); geoRaf=0; geoRendue(); }
-      const st=$('stage'), r=st&&st.getBoundingClientRect(), o=$('lv-proc').getBoundingClientRect(), pc=PAPIER.chez()||{w:110};
-      const sk=sock.offsetWidth||143, f=(sock.getBoundingClientRect().width/sk)||1, w0=(pc.w||110)/f;
-      const A={x:0, y:0, S:sk, w:w0}, R={x:pc.x, y:pc.y, w:pc.w, S:sk*f};   /* `R` : le repos à l'écran, pour les traits */
-      if(r&&r.width>40&&r.height>40){ const S=Math.max(r.width,r.height)+2*MARGE, x=r.left+r.width/2, y=r.top+r.height/2;
-        return {ordi:true, x, y, S, A, R, B:{x:(x-o.left)/f, y:(y-o.top)/f, S:S/f, w:r.width/f}}; }
-      const k=Math.max(8,+getComputedStyle(document.documentElement).getPropertyValue('--gate-bg-scale')||12);
-      return {ordi:false, x:o.left, y:o.top, S:sk*k*f, A, R, B:{x:0, y:0, S:sk*k, w:w0*k}};
+    /* ══ L'ASPIRATION · 25/10 ══ Wah : « quand on clique sur le Totehm, je veux que les traits d'intention soient aussi aspirés
+       par le Totehm » — comme au verso, comme en recherche : on cesse l'activité du TOTEHM pour le paramétrer et le
+       configurer. Plus de boîte qui grandit avec le papier, plus de boîte ni de traits autour du TOTEHM ouvert sur
+       ordinateur : au clic, le réseau rentre dans le papier (`is-aspire`, CSS seul) pendant qu'il se déploie ; il ressort
+       quand le papier est revenu chez lui (`revenu`, la fin du repli). */
+    const diagD={deploiements:0, aspire:false};
+    function aspirer(on){
+      if(on){ const c=PAPIER.chez(), ram=$('lv-ram');
+        if(c&&ram){ ram.style.setProperty('--asx',c.x.toFixed(1)+'px'); ram.style.setProperty('--asy',c.y.toFixed(1)+'px'); } }
+      body.classList.toggle('is-aspire',!!on); diagD.aspire=!!on;
     }
-    /* La boîte à sa vraie taille (jamais `scale`) : le puits noir à 3 px du papier, l'arête et le coin intacts. */
-    const puits=sock.querySelector('.sk-well');
-    function geo(g){ const st=sock.style;
-      st.left=(g.x-g.S/2).toFixed(2)+'px'; st.top=(g.y-g.S/2).toFixed(2)+'px'; st.width=st.height=g.S.toFixed(2)+'px';
-      if(puits) puits.style.inset=Math.max(0,(g.S-g.w)/2-3).toFixed(2)+'px'; }
-    function geoRendue(){ sock.classList.remove('is-geo'); ['left','top','width','height'].forEach(k=>sock.style.removeProperty(k));
-      if(puits) puits.style.removeProperty('inset'); }
-    /* L'HEURE est celle du papier (`#gl-bg`, sa transition CSS) : la boîte et les traits la lisent à la même image, ils ne
-       peuvent ni se détacher de lui ni l'un de l'autre. Sans elle (mouvement réduit, transition absente) : la nôtre. */
-    let geoRaf=0;
-    function grandir(A,B,fin){
-      cancelAnimationFrame(geoRaf); sock.classList.add('is-geo');
-      const bg=$('gl-bg'), L=(a,b,u)=>a+(b-a)*u;
-      const heure=()=>{ const a=bg&&bg.getAnimations&&bg.getAnimations().find(x=>x.transitionProperty==='transform'); return a&&a.currentTime!=null?a.currentTime:null; };
-      let t0=0, suivie=false;
-      const pas=now=>{ if(!t0) t0=now; const h=heure(); if(h!=null) suivie=true;
-        const u=RMQ.matches?1:BEZ(Math.min(1,(h!=null?h:(suivie?DEP_MS:now-t0))/DEP_MS));
-        geo({x:L(A.x,B.x,u), y:L(A.y,B.y,u), S:L(A.S,B.S,u), w:L(A.w,B.w,u)}); diagD.images++;
-        if(u<1){ geoRaf=requestAnimationFrame(pas); return; }
-        geoRaf=0; if(fin) fin(); };
-      geo(A); geoRaf=requestAnimationFrame(pas);
-    }
-    let repli=null;
-    function deployer(){
-      const T=cibleDeploiement(); diagD.deploiements++;
-      posApp(); grandir(T.A,T.B);
-      RAM.peindre('c',{anime:true, ms:DEP_MS, ease:BEZ, papier:{x:T.x, y:T.y}, socle:T.S, suivre:$('gl-bg')});
-      return T;
-    }
-    function replier(phase){
-      if(phase===1){ repli=cibleDeploiement(); diagD.replis++;
-        cancelAnimationFrame(geoRaf); sock.classList.add('is-geo'); geo(repli.B);
-        RAM.peindre('c',{papier:{x:repli.x, y:repli.y}, socle:repli.S}); return; }
-      const T=repli||cibleDeploiement(); repli=null;
-      document.body.classList.remove('proc-ouvert');   /* la boîte fixe de l'app cède sa place à la nôtre, au même pixel */
-      grandir(T.B,T.A,geoRendue);
-      /* ⚠️ 23/10 — les traits rentrent vers le REPOS mesuré au repos (`R`), jamais vers le papier lu pendant le repli
-         (il est encore déployé à cette image) : sinon ils visaient le déploiement, sortaient du champ, puis sautaient. */
-      RAM.peindre('c',{anime:true, ms:DEP_MS, ease:BEZ, papier:{x:T.R.x, y:T.R.y, w:T.R.w}, socle:T.R.S, suivre:$('gl-bg')});
-    }
-    /* Le TOTEHM ouvert sur ordinateur : la boîte et ses traits, FIXES, autour de `#stage`. */
-    function posApp(){
-      const ap=$('app-proc'), st=$('stage'); if(!ap||!st) return false;
-      const r=st.getBoundingClientRect(), ordi=r.width>40&&r.height>40;
-      document.body.classList.toggle('proc-ouvert',ordi);
-      if(!ordi) return false;
-      const S=Math.max(r.width,r.height)+2*MARGE, x=r.left+r.width/2, y=r.top+r.height/2, as=ap.style;
-      as.setProperty('--ax',x.toFixed(2)+'px'); as.setProperty('--ay',y.toFixed(2)+'px');
-      as.setProperty('--as',S.toFixed(2)+'px'); as.setProperty('--aw',Math.max(0,(S-r.width)/2-3).toFixed(2)+'px');
-      RAM.copie($('app-ram'),{x, y},S);
-      return true;
-    }
-    window.addEventListener('resize',()=>{ if(document.body.classList.contains('proc-ouvert')&&!document.body.classList.contains('gate')) posApp(); });
-    window.__totehm_deploiement=()=>({...diagD, ouvert:document.body.classList.contains('proc-ouvert')});
-    return {vue:()=>vue, mode:()=>mode, membre:()=>!!MB.nom&&!MB.cherche, aller, choisirMode, versMine, poser, reset, calme,
-            deployer, replier, posApp,
-            revenu(){ RAM.peindre(vue); socle('c'); }};
+    function deployer(){ diagD.deploiements++; aspirer(true); }
+    window.__totehm_deploiement=()=>({...diagD});
+    return {vue:()=>vue, mode:()=>mode, membre:()=>!!MB.nom&&!MB.cherche, verrou:()=>MB.verrou, offrir:()=>OFFRE.montrer(),
+            aller, choisirMode, versMine, poser, reset, calme, deployer, aspirer,
+            revenu(){ RAM.peindre(vue); socle('c'); aspirer(false); }};
   })();
 
   /* ══ LE SECOND VERROU ══

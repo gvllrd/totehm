@@ -13,8 +13,8 @@ const approaches=GALLERY_STATIONS.map(s=>({x:s.approach[0],z:s.approach[2]}));
 const groundBoxes=[
  [-13,13,-17.2,-16.8],[-13.16,-12.94,-17,-2],[12.94,13.16,-17,-2],
  [-13,-2.4,-2.2,-1.8],[2.4,13,-2.2,-1.8],
- [-3.5,3.5,-13.05,-11.05],[-9.25,-5.95,-9.1,-6.9],
- [5.6,10.4,-11.3,-9.5],[5.15,10.85,-7.2,-5.4]
+ [-3.5,3.5,-13.05,-11.05],[-8.15,-7.05,-8.48,-7.52],
+ [-10.15,-5.85,-16.8,-15.18]
 ];
 function free(x,z){
  return x>=-15.8&&x<=15.8&&z>=-17.6&&z<=16&&!groundBoxes.some(([l,r,b,f])=>x>l-.18+1e-7&&x<r+.18-1e-7&&z>b-.18+1e-7&&z<f+.18-1e-7);
@@ -39,12 +39,15 @@ function follow(from,to){
  check(p.diagnostics().grounded&&near(p.position.y,-.09),'Guidance stays on the gallery floor');
  return route;
 }
-const positions=[entry,...approaches,{x:0,z:-5},{x:0,z:-10},{x:11.8,z:-13},{x:-11.8,z:-13},
+const positions=[entry,...approaches,{x:-8,z:-12.4},{x:0,z:-5},{x:0,z:-10},{x:11.8,z:-13},{x:-11.8,z:-13},
  {x:15,z:-15},{x:-15,z:-15},{x:15,z:10},{x:-15,z:10},{x:0,z:16},{x:0,z:-17.6}];
 for(const from of positions)for(const to of positions)follow(from,to);
 check(follow(entry,approaches[0]).length===2,'The counter is directly ahead through the entrance');
 check(follow(entry,approaches[1]).length>2,'The left-hand approach goes through the doorway rather than glazing');
-check(follow(entry,approaches[2]).length>2,'The lounge approach goes around the sofa rather than through it');
+check(follow(entry,approaches[2]).length>2,'The screen approach enters through the doorway rather than glazing');
+
+check(nav.allowed(8,-10.4)&&nav.allowed(8,-6.3),'The removed coffee table and sofa leave free stone');
+check(!nav.allowed(-7.6,-8)&&!nav.allowed(-8,-16),'The lectern and fireplace have real solid footprints');
 
 // A manual body can come closer to a wall than a decorative corner waypoint.
 // Return guidance must work from those real collision contacts too.
