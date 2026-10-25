@@ -2,7 +2,7 @@
 
 > L’état actuel (≤ 60 lignes). On y travaille à la demande de Wah. Les mesures de livraison vivent dans les commits.
 
-Un pavillon de verre vit au sommet d’une Terre engloutie, sur de grandes dalles antiques blanches, face à l’océan sous la Voie lactée.
+Un pavillon de verre vit au sommet d’une Terre engloutie, sur une terrasse en calçada de Lisbonne, face à l’océan sous la Voie lactée.
 La bouche originale, sa langue et son THP sculptés sont éclairés en façade. Dedans : comptoir pierre, pupitre noir, écran Lisbon et cheminée chaleureuse.
 Le livre fermé ouvre Origins en pages tournantes ; Lisbon se joue dans l’écran. Les fichiers indépendants et toute la marketplace restent disponibles.
 
@@ -14,7 +14,7 @@ Le livre fermé ouvre Origins en pages tournantes ; Lisbon se joue dans l’écr
 | `gallery-lectern-book.mjs` · `gallery-play-installation.mjs` | volume noir fermé vers Origins ; couverture Lisbon et 22 panneaux jouables dans l’écran |
 | `gallery-fireplace.mjs` · `gallery-fire-audio.mjs` | foyer panoramique, flammes volumiques, éclairage ambre, fumée extérieure et crépitement synthétisé |
 | `gallery-3d.mjs` · `gallery-temple*.mjs` · `gallery-origins-book.mjs` | anciennes architectures et livre ouvert conservés ; paysage partagé |
-| `gallery-lisbon-pavement.mjs` | ancienne calçada à vagues et caravelle conservée dans son propre fichier |
+| `gallery-lisbon-pavement.mjs` | calçada extérieure d’origine : vagues et caravelle ; pierre blanche uniquement dans le pavillon |
 | `gallery-temple-landscape.mjs` | seul piton émergé, lune, pierre éclairée et environnement nocturne préfiltré |
 | `gallery-drowned-ocean.mjs` | océan 3D à 360°, fronts irréguliers recourbés dans la surface, creux sombres, reflets lunaires et embruns |
 | `gallery-ocean-foam.mjs` | mémoire d’écume GPU : naissance par compression, advection, drainage et dissipation |
@@ -33,7 +33,7 @@ Le livre fermé ouvre Origins en pages tournantes ; Lisbon se joue dans l’écr
 
 - Nuit permanente : arche galactique relevée, filaments lumineux et poussières opaques ; 18 000 / 8 500 étoiles aux cœurs fins et halos discrets, quatre températures, lune à 34 cratères. PMREM issu du ciel local, sans panorama/HDR externe.
 - Météore en ruban de 62 triangles : passage effilé de 1,15 s toutes les 47 s, sur la même horloge que le ciel ; aucun défilement autonome en mouvement réduit.
-- Sol et comptoir : calcaire blanc antique PBR, dalles 2,75 × 1,55 m alignées, joints de 5 mm et patine minérale ; sans image ni réseau. Ancien pavage conservé.
+- Intérieur et comptoir : calcaire blanc antique PBR, dalles 2,75 × 1,55 m alignées. Extérieur : calçada d’origine, vagues et caravelle ; socle et rebords sombres. Jonction au seuil z=−2, même hauteur et sans superposition.
 - Océan à −96 m, crêtes de la surface principale bornées sous −11,48 m, calme à 110 m du piton ; aucun autre sol émergé. Astres/eau/embruns et simulation d’écume figés en mouvement réduit.
 - Eau détaillée sur 24 km de diamètre : 327 680 triangles ordinateur / 172 032 téléphone, 4 800 / 1 800 points d’embruns ; maillage rapproché régulier puis logarithmique, détails filtrés jusqu’à 1 800 m.
 - Trois échelles de normales spectrales ; les faces retournées reflètent l’eau sombre sous l’horizon, l’écume ancienne devient humide et translucide. Gouttes entraînées dans le vent tangent au globe.

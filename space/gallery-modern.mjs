@@ -1,5 +1,6 @@
 import * as T from './vendor/three-0.180.0.mjs';
 import {createWhiteStone} from './gallery-white-stone.mjs';
+import {createLisbonPavement} from './gallery-lisbon-pavement.mjs';
 import {TOTEHMPAPER} from './gallery-artworks.mjs';
 import {GALLERY_LAYOUT,GALLERY_OBSTACLES,GALLERY_STATIONS} from './gallery-modern-layout.mjs';
 
@@ -13,6 +14,7 @@ export function createModernGallery(scene,renderer,{mobile=false,onChange=()=>{}
  const geometry=g=>(geometries.add(g),g),material=m=>(materials.add(m),m);
  const anisotropy=Math.min(mobile?2:8,renderer?.capabilities?.getMaxAnisotropy?.()||1);
  const stone=createWhiteStone({mobile,anisotropy,onChange:changed});
+ const pavement=createLisbonPavement({mobile,anisotropy,onChange:changed});
  const ink=material(new T.MeshStandardMaterial({color:0x080809,roughness:.58,metalness:.12}));
  const metal=material(new T.MeshStandardMaterial({color:0x202122,roughness:.28,metalness:.82}));
  const bronze=material(new T.MeshStandardMaterial({color:0x5d5547,roughness:.32,metalness:.86}));
@@ -29,12 +31,17 @@ export function createModernGallery(scene,renderer,{mobile=false,onChange=()=>{}
  function station(object,id,kind,room){object.userData={...object.userData,station:kind,stationId:id,action:'station',room};interactables.push({id,kind,room,object});return object;}
  function light(x,y,z,power,distance=12,colour=0xffd6a1){const lamp=new T.PointLight(colour,power,distance,2);lamp.position.set(x,y,z);root.add(lamp);return lamp;}
 
- // Monumental limestone is laid in large, exact courses. The same mineral
- // material continues through the glazing and across the stone sales counter.
- block(stone.material,[0,-.65,0],[35.6,1.1,39.6]);block(metal,[0,-.2,0],[32.6,.18,36.6]);
- const ground=mesh(geometry(new T.PlaneGeometry(32,36)),stone.material,[0,-.09,0],undefined,{solid:true,name:'Antique white limestone — large aligned slabs'});ground.rotation.x=-Math.PI/2;ground.castShadow=false;
- for(const x of [-15.8,15.8])block(stone.material,[x,-.087,0],[.28,.025,35.6]);
- for(const z of [-17.8,17.8])block(stone.material,[0,-.087,z],[31.9,.025,.28]);
+ // White limestone stops exactly at the pavilion's glazing/entrance.
+ // Five adjacent rectangles share the same height, without overlapping faces.
+ // The original world-space calçada keeps its waves and caravel outside.
+ block(ink,[0,-.65,0],[35.6,1.1,39.6]);block(metal,[0,-.2,0],[32.6,.18,36.6]);
+ const floor=(m,x,z,w,d,name)=>{const plane=mesh(geometry(new T.PlaneGeometry(w,d)),m,[x,-.09,z],undefined,{solid:true,name});plane.rotation.x=-Math.PI/2;plane.castShadow=false;return plane;};
+ floor(stone.material,0,-9.5,26,15,'Interior only — antique white limestone');
+ floor(pavement.material,0,8,32,20,'Exterior calçada — waves and caravel');
+ floor(pavement.material,0,-17.5,32,1,'Exterior calçada — behind the pavilion');
+ for(const x of [-14.5,14.5])floor(pavement.material,x,-9.5,3,15,'Exterior calçada — side terrace');
+ for(const x of [-15.8,15.8])block(metal,[x,-.035,0],[.3,.1,35.6]);
+ for(const z of [-17.8,17.8])block(metal,[0,-.035,z],[31.9,.1,.3]);
 
  // All elevations and the roof are glass, supported only by fine metal fins.
  // The full star field remains visible from every installation.
@@ -47,7 +54,7 @@ export function createModernGallery(scene,renderer,{mobile=false,onChange=()=>{}
   block(bronze,[x,.025,-9.5],[.075,.05,15]);
  }
  for(const x of [-2.43,2.43])block(metal,[x,3.02,-1.96],[.055,6.22,.12]);
- block(bronze,[0,.005,-1.98],[4.8,.018,.55]);
+ block(bronze,[0,-.098,-1.98],[4.8,.018,.55]);
  block(roofGlass,[0,6.115,-9.425],[26.7,.13,15.75],{solid:true,name:'Full celestial glass roof'});
  for(const x of [-13.3,13.3])block(metal,[x,6.18,-9.425],[.09,.16,15.8]);
  for(const z of [-17.27,-1.56])block(metal,[0,6.18,z],[26.7,.16,.09]);
@@ -165,7 +172,7 @@ export function createModernGallery(scene,renderer,{mobile=false,onChange=()=>{}
   root,solids,interactables,pickables:interactables.map(item=>item.object),obstacles:GALLERY_OBSTACLES,portals,
   anchors:{playScreen:GALLERY_LAYOUT.play.screen,originsBook:GALLERY_LAYOUT.origins.book,counter:GALLERY_LAYOUT.counter.position},setDay(){},
   update(dt,eye,motion=true){if(disposed)return false;if(motion)time+=Math.max(0,Math.min(Number(dt)||0,.1));const result=dirty;dirty=false;return result;},
-  diagnostics:()=>({kind:'celestial-glass-gallery',ready:stone.diagnostics().ready,modernGallery:true,building:true,glassStructure:true,glassRoof:true,columns:0,arches:0,doors:1,roof:true,skyLight:true,overheadLabels:0,vegetation:false,time:+time.toFixed(3),rooms:3,independentFiles:true,pavement:stone.diagnostics(),stone:stone.diagnostics(),facade:{mouth:true,originalDrawing:true,paperLoaded,threeDimensional:true,tongueVolume:true,tongueSmooth:true,tongueIndexed:true,tongueProjectionMetres:.565,paperVolume:true,paperThicknessMetres:.028,edgeNotches:12,elegantlyLit:true},thpCounter:{papers:paperItems.length,sheets:6,looseTabs:5,perforated:true,tabSizeMetres:tabSize,sheetSizeMetres:[sheetWidth,sheetDepth],stone:true,originalAsset:TOTEHMPAPER.src,loaded:paperLoaded},lounge:{sofa:false,coffeeTable:false,screenFrame:true,screenCenter:GALLERY_LAYOUT.play.screen},origins:{table:false,lectern:true,black:true,closedBook:true,bookAnchor:GALLERY_LAYOUT.origins.book,inclinationDegrees:18},portals:portals.map(({room,x,z,href})=>({room,x,z,href})),disposed}),
-  dispose(){if(disposed)return;disposed=true;root.removeFromParent();stone.dispose();for(const t of textures)t.dispose();for(const g of geometries)g.dispose();for(const m of materials)m.dispose();root.clear();}
+  diagnostics:()=>({kind:'celestial-glass-gallery',ready:stone.diagnostics().ready&&pavement.diagnostics().ready,modernGallery:true,building:true,glassStructure:true,glassRoof:true,columns:0,arches:0,doors:1,roof:true,skyLight:true,overheadLabels:0,vegetation:false,time:+time.toFixed(3),rooms:3,independentFiles:true,pavement:pavement.diagnostics(),stone:stone.diagnostics(),flooring:{interiorOnlyWhiteStone:true,exteriorOriginalCalcada:true,interiorBounds:{minX:-13,maxX:13,minZ:-17,maxZ:-2},rectangles:5,sharedHeight:-.09,exteriorDarkPlinth:true},facade:{mouth:true,originalDrawing:true,paperLoaded,threeDimensional:true,tongueVolume:true,tongueSmooth:true,tongueIndexed:true,tongueProjectionMetres:.565,paperVolume:true,paperThicknessMetres:.028,edgeNotches:12,elegantlyLit:true},thpCounter:{papers:paperItems.length,sheets:6,looseTabs:5,perforated:true,tabSizeMetres:tabSize,sheetSizeMetres:[sheetWidth,sheetDepth],stone:true,originalAsset:TOTEHMPAPER.src,loaded:paperLoaded},lounge:{sofa:false,coffeeTable:false,screenFrame:true,screenCenter:GALLERY_LAYOUT.play.screen},origins:{table:false,lectern:true,black:true,closedBook:true,bookAnchor:GALLERY_LAYOUT.origins.book,inclinationDegrees:18},portals:portals.map(({room,x,z,href})=>({room,x,z,href})),disposed}),
+  dispose(){if(disposed)return;disposed=true;root.removeFromParent();stone.dispose();pavement.dispose();for(const t of textures)t.dispose();for(const g of geometries)g.dispose();for(const m of materials)m.dispose();root.clear();}
  };
 }

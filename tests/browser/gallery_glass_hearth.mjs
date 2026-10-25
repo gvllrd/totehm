@@ -6,7 +6,7 @@ import {execFileSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
 import {PerspectiveCamera,Vector3} from '../../space/vendor/three-0.180.0.mjs';
 import {launch,page} from './harness.mjs';
-const OUT=process.argv[2]||'/tmp/totehm-production/glass-hearth',origin='https://www.totehm.space',BUILD='2026-10-24-space-glass-hearth';
+const OUT=process.argv[2]||'/tmp/totehm-production/glass-hearth',origin='https://www.totehm.space',BUILD='2026-10-25-space-calcada-courtyard';
 fs.mkdirSync(OUT,{recursive:true});
 for(const [name,filter]of [['normal','null'],['inverse','negate']])if(!fs.existsSync(OUT+'/'+name+'.mp4'))execFileSync('ffmpeg',['-hide_banner','-loglevel','error','-y','-f','lavfi','-i','testsrc2=size=192x108:rate=10','-vf',filter,'-t','40','-c:v','libx264','-threads','1','-pix_fmt','yuv420p','-movflags','+faststart',OUT+'/'+name+'.mp4']);
 const clips={normal:fs.readFileSync(OUT+'/normal.mp4'),inverse:fs.readFileSync(OUT+'/inverse.mp4')};
