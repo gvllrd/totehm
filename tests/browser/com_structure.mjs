@@ -55,7 +55,8 @@ try{
   for(const tour of [1,2]){
    if(tour===2){ await pg.click('#lv-tap-open');await pg.waitForFunction(()=>!document.body.classList.contains('gate'),null,{timeout:6000}).catch(()=>{});await pg.waitForTimeout(400); }
    await pg.evaluate(()=>{ window.__fondu=[]; const gt=document.getElementById('gate'), bg=document.getElementById('gl-bg'), lv=document.getElementById('lv'), r=document.getElementById('lv-ram'), t0=performance.now();
-     const f=()=>{ const t=performance.now()-t0; if(t>1500) return;
+     /* on ne relève qu'une fois le repli parti (`gate` posé) : une image avant le clic lirait le portail absent (largeur 0) */
+     const f=()=>{ const t=performance.now()-t0; if(t>1500) return; if(!document.body.classList.contains('gate')){ requestAnimationFrame(f); return; }
        window.__fondu.push({t, o:+getComputedStyle(gt).opacity, w:bg.getBoundingClientRect().width, lv:+getComputedStyle(lv).opacity,
          asp:document.body.classList.contains('is-aspire'), folding:document.body.classList.contains('folding')}); requestAnimationFrame(f); }; requestAnimationFrame(f); });
    await pg.evaluate(()=>document.getElementById('fold-x').click());
@@ -63,7 +64,8 @@ try{
    const lvFin=await pg.evaluate(()=>+getComputedStyle(document.getElementById('lv')).opacity);await pg.waitForTimeout(900);
    const fo=await pg.evaluate(()=>window.__fondu), w1=fo[0]&&fo[0].w, avant=fo.filter(x=>x.o<0.9);
    ok(fo.length>10&&fo[0].o<0.5&&avant.length>=3&&avant.every(x=>Math.abs(x.w-w1)<0.5)&&fo[fo.length-1].o===1&&fo[fo.length-1].w<w1/3,
-      nom+' · repli '+tour+' : le portail revient d\'abord en FONDU sur le TOTEHM ouvert ('+avant.length+' images), puis le papier rentre');
+      nom+' · repli '+tour+' : le portail revient d\'abord en FONDU sur le TOTEHM ouvert ('+avant.length+' images), puis le papier rentre '
+      +JSON.stringify({n:fo.length,o0:fo[0]&&fo[0].o,dw:avant.length?Math.max(...avant.map(x=>Math.abs(x.w-w1))):0,fin:fo[fo.length-1],w1}));
    ok(fo.filter(x=>x.folding).every(x=>x.lv===0&&x.asp)&&lvFin<1,nom+' · repli '+tour+' : pendant le repli, les traits restent aspirés et l\'atterrissage attend le papier, puis revient en fondu');
    const r=await branche(pg), rs=await reseau(pg);
    ok(Math.abs(r.s.t-b.s.t)<1&&r.pins.length===14&&!rs.aspire&&rs.echelle===1&&rs.op===1&&rs.puls==='ram-puls'&&rs.d.deploiements===tour,
