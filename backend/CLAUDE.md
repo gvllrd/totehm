@@ -4,9 +4,8 @@
 
 ## La base — Supabase `abujjbkbbiumxrokozph`
 
-- Une migration s'applique UNE fois, son fichier reste dans `supabase/migrations/` (jamais `db push`). Ce qui ne
-  passe pas du cloud → `CLAUDE_CODE.md`. Chaque migration a son auto-test `tests/sql/*_selftest.sql` (tout annulé,
-  attendu `FAIL={}`). Grants après le dernier `create` ; `search_path` vide.
+- Une migration s'applique UNE fois, son fichier reste dans `supabase/migrations/` (jamais `db push`) ; ce qui ne passe
+  pas du cloud → `CLAUDE_CODE.md`. Auto-test `tests/sql/*_selftest.sql` (`FAIL={}`). Grants après le dernier `create`.
 - **Le modèle est fermé** : HABITS = `totehms.steps` (réécrit en entier par `cloudSave`) · `objectives` · `repulsions` · `visions` ·
   `wisdom` (MY STORY) ; liens = jointures ; 7 intentions (`check`, `intentions_set` pose `is`/`i`) ; médias `element-media` ; spots
   `spot_plans` (point lu par fonction ; en retirer un des miens : `spot_remove`, il passe à `cancelled`). **Journal** `totehm_journal` : tout geste, par déclencheurs jamais bloquants ; lu par `my_board`.
@@ -15,20 +14,18 @@
 
 - Membre du Club : `_figher().member` = habit + objectif + répulsion (`needs` dit ce qui manque). Accès offert = `figher_comps`.
 - Abonné : `_subscriber_of(créateur, fan)` ; `creator_page`, `my_entitlements`, `totehm_of`, `member_media`, `club_spots_of`.
-- Audience : `private` · `figher` · `subscribers` (`public` est normalisé en `figher`) ; `_audience_ok`, `_audience_listed`,
-  `_point_ok`. Sans compte : seulement des NOMS (`totehm_galaxy`, `totehm_search`).
+- Audience : `private` · `figher` · `subscribers` (`public` → `figher`) ; `_audience_ok`, `_audience_listed`, `_point_ok`. Sans compte : des NOMS seuls (`totehm_galaxy`, `totehm_search`).
 - Par box : colonne `audience` + table `habit_audience`, règle `_box_shared`, écrivains `box_audience_put` / `_set`.
   **Inachevé** : aucune page ne les appelle ; `totehm_of` et les politiques lisent encore `_shared_with_me`.
 
 ## L'argent
 
-- `member_ledger` en ajout seul : crédit sur `invoice.paid`, idempotence `unique(source, kind)`, l'arrondi va à TOTEHM.
-  80/20 ; revente 7 %. Versement manuel le 1er : `payouts_due()` → virement → `payout_mark_paid()`. Pas de Stripe Connect.
+- `member_ledger` en ajout seul : crédit sur `invoice.paid`, idempotence `unique(source, kind)`, l'arrondi va à TOTEHM ; 80/20, revente 7 %. Versement manuel le 1er : `payouts_due()` → virement → `payout_mark_paid()`. Pas de Stripe Connect.
 - Propriété : `art_editions` · `art_transfers` (ajout seul) · `stoner_access` ; le THP = l'œuvre `totehmpaper`.
   Le marché ne s'écrit que par le webhook (`art_settle`) ; `ok:false` → `market_incidents` = remboursement à la main.
 - `stripe-webhook` : `higher` · `cloth` · `subscription` · `creator_sub` · `artwork` · `resale` · `luxury` · `higher_sub` ;
-  `stripe_events` s'efface avant un 500. Mode test (`boutique_testers`) : v44 fait suivre une pièce d'essai comme une
-  vraie, la base la retient ; mais le mode test n'a pas d'endpoint webhook — rien ne redescend encore.
+  `stripe_events` s'efface avant un 500. Test (`boutique_testers`) : v44 fait suivre une pièce d'essai comme une vraie,
+  mais le mode test n'a pas d'endpoint webhook — rien ne redescend encore.
 
 ## Les 40 Edge Functions (`supabase/functions/`)
 
@@ -45,16 +42,19 @@ Le compte vient TOUJOURS de la session, jamais du corps ; une page ne reçoit qu
 
 ## Le bot et le Higher Self
 
-- TotehmBot (Telegram) sans voix (jamais « je », zéro appel de modèle) ; relances `push_decision` au rythme de chaque Habit, 6/jour.
-- Higher Self (`higher-self`, `fmt:'r4'`) : le MIROIR. `_bot_mirror` = le TOTEHM relié (chaque Habit entière : where,
+- TotehmBot (Telegram) sans voix (jamais « je », zéro modèle) ; relances `push_decision` au rythme de chaque Habit, 6/jour.
+- Higher Self (`higher-self` v6, `fmt:'r4'`) : le MIROIR. `_bot_mirror` = le TOTEHM relié (chaque Habit entière : where,
   intentions, rythme, son, liens) ; `_shared/mirror.ts` : contexte + citations vérifiées (`@ok`). Gratuit limité (`_sm_rules`),
   puis `higher_sub` ; un lieu réel (`_mirror_places`) posé par le serveur (`@lieu`) ; `higher-map` : Lisbonne seule.
+- Ce que le membre MONTRE : `focus:{kind:'media'|'spot', id}` — une référence seule ; `montreDe()` relit la ligne dans SES
+  lignes (`element_media` non retiré, `spot_plans` publié) et la box par `_box_matter`, et dit au modèle qu'il ne VOIT
+  pas l'image. Deux lectures SQL, zéro appel payant de plus.
 
 ## n8n
 
 `n8n/README.md` (VM Oracle) · `n8n/workflows/` (A → F). n8n n'accorde jamais un accès. F corrigé ; B, C, D republiés le
-23/10 avec le CONFIG qui lit `$env` (11 clés dans le conteneur, `N8N_BLOCK_ENV_ACCESS_IN_NODE=false`) ; E reste sur
-l'ancien CONFIG (`process.env`). Zéro exécution : `stripe-webhook` envoie `apikey` (clé de service) à B, que sa version publiée exige (`serviceAuth`),
-mais aucun essai ne lui est encore parvenu. Banc hors ligne : `tests/n8n/streetwear/offline.mjs` (59 simulations, six blocages).
+23/10 avec le CONFIG qui lit `$env` (11 clés, `N8N_BLOCK_ENV_ACCESS_IN_NODE=false`) ; E reste sur l'ancien (`process.env`).
+Zéro exécution : `stripe-webhook` envoie `apikey` (clé de service) à B, que sa version publiée exige (`serviceAuth`), mais
+aucun essai ne lui est parvenu. Banc hors ligne : `tests/n8n/streetwear/offline.mjs` (59 simulations, six blocages).
 
 Avis Supabase : 2 ERROR connus (`higher_badges` lit `auth.users` ; 4 vues `security definer`, dont `signature_styles`).

@@ -41,12 +41,12 @@ const D = () => pg.evaluate(() => window.__totehm_luxury());
 await pg.goto('https://www.higher.boutique/luxury');
 await pg.waitForFunction(() => window.__totehm_luxury && window.__totehm_luxury().price_loaded);
 let d = await D();
-ok(d.build === '2026-10-24-depot' && d.deposit === 50000 && !d.photo && !d.box && d.steps === 1,
-  'le luxe s\'ouvre sur UNE étape : la pièce. Le dépôt vient du serveur (500 €)');
+ok(d.build === '2026-10-25-plein-ecran' && d.deposit === 50000 && !d.photo && !d.box && !d.flow,
+  'le luxe s\'ouvre sur son porche : le prix, le métier — le dépôt attend derrière un bouton (500 €)');
 ok(/500/.test(await pg.textContent('#price')) && /deposit/i.test(await pg.textContent('#price'))
    && /refunded/i.test(await pg.textContent('#refund')), 'le prix dit un DÉPÔT, et le remboursement est écrit');
-ok(!(await pg.$('#sel')) && !(await pg.$('.style-track')) && !(await pg.$('[data-piece]')) && !(await pg.$('[data-brand]')),
-  'simplifié : plus de modal, plus de style du moment, plus de type ni de marque à cocher');
+ok(!(await pg.$('#sel')) && !(await pg.$('.style-track')) && !(await pg.$('[data-piece]')) && !(await pg.$('[data-brand]')) && !(await pg.$('#nav-box')),
+  'simplifié : plus de modal, plus de style du moment, plus de type ni de marque — et plus de manette ombrée');
 
 // ── HOW IT WORKS : le métier, replié puis ouvert
 ok((await pg.$eval('#how-body', e => e.getBoundingClientRect().height)) < 2, 'How it works est replié');
@@ -57,16 +57,29 @@ const how = await pg.evaluate(() => ({ h: document.querySelector('#how-body').ge
 ok(how.h > 200 && /primer|abrasion/i.test(how.t) && /flex/i.test(how.t) && /top-coat/i.test(how.t) && /refunded in full/i.test(how.t),
   'How it works dit la préparation, la peinture qui plie, la tenue — et le remboursement');
 
-// ── 1 · LA PHOTO : réduite ici, déposée dans le dossier du membre
+// ── LE FLUX, PLEIN ÉCRAN : une étape à la fois
+await pg.click('#fm-go');
+await pg.waitForFunction(() => window.__totehm_luxury().flow);
+await pg.waitForTimeout(500);
+const plein = await pg.evaluate(() => { const f = document.querySelector('#form').getBoundingClientRect();
+  return { w: Math.round(f.width), h: Math.round(f.height), W: innerWidth, H: innerHeight,
+           etape: window.__totehm_luxury().step, ouvertes: document.querySelectorAll('#form .step.is-open').length,
+           croix: !!document.querySelector('#fm-x') && getComputedStyle(document.querySelector('#fm-x')).display !== 'none' }; });
+ok(plein.w === plein.W && plein.h === plein.H && plein.etape === 'st-photo' && plein.ouvertes === 1 && plein.croix,
+  'le dépôt prend TOUT l\'écran, une seule étape ouverte, une croix pour sortir ' + JSON.stringify(plein));
+
+// ── 1 · LA PIÈCE : quelques mots, puis la photo (réduite ici, déposée dans le dossier du membre)
+await pg.fill('#note', 'a 2019 bag, black leather');
 const png = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==', 'base64');
 await pg.setInputFiles('#ph-file', { name:'piece.png', mimeType:'image/png', buffer: png });
 await pg.waitForFunction(() => window.__totehm_luxury().photo);
-await pg.waitForTimeout(300);
+await pg.waitForTimeout(650);   // l'étape qui part s'efface en 360 ms
 d = await D();
 const up = log.upload.at(-1);
 ok(up && up.path.startsWith('luxury-pieces/' + USER.id + '/') && /\.jpg$/.test(up.path) && up.method === 'POST',
   'la photo part dans le DOSSIER du membre, en JPEG (' + (up ? up.path.slice(0, 60) : 'rien') + ')');
-ok(d.steps === 2 && !(await pg.$eval('#ph-img', e => e.hidden)), 'la photo déposée fait apparaître l\'étape suivante : le TOTEHM');
+ok(d.step === 's-element' && !(await pg.$eval('#ph-img', e => e.hidden)) && (await pg.$$eval('#form .step.is-open', l => l.length)) === 1,
+  'la photo déposée fait GLISSER vers l\'étape suivante : le TOTEHM, seul à l\'écran');
 
 // ── 2 · LE TOTEHM, comme sur streetwear
 ok(await pg.isVisible('#totehmize') && (await pg.$eval('#tz-logo', e => +getComputedStyle(e).opacity)) > 0.9,
@@ -83,8 +96,8 @@ await pg.click('#el-list .bx');
 await pg.waitForFunction(() => window.__totehm_luxury().box);
 await pg.waitForFunction(() => !!document.querySelector('#el-list .bx.is-on #matter .mi'));
 d = await D();
-ok(d.box && d.steps === 3 && (await pg.$$eval('#el-list .bx', l => l.filter(b => b.offsetParent).length)) === 1,
-  'la box tapée EST le choix : la liste se réduit à elle, le nom apparaît');
+ok(d.box && d.step === 's-element' && await pg.isVisible('#el-go') && (await pg.$$eval('#el-list .bx', l => l.filter(b => b.offsetParent).length)) === 1,
+  'la box tapée EST le choix : la liste se réduit à elle, et [Next] attend');
 ok(/Marathon in May/.test(await pg.textContent('#matter')) && /Low end theory/.test(await pg.textContent('#matter')),
   'elle garde sa matière ouverte — ses mini-box et le son de son intention');
 await pg.click('#matter .mi[data-k="objectives"]');
@@ -92,6 +105,8 @@ await pg.waitForFunction(() => window.__totehm_luxury().hidden === 1);
 ok(await pg.$eval('#matter .mi[data-k="objectives"]', e => e.classList.contains('is-off')),
   'une sous-box s\'éteint ici aussi');
 await pg.screenshot({ path: OUT + '/lux_element.png' });
+await pg.click('#el-go');
+await pg.waitForFunction(() => window.__totehm_luxury().step === 'st-name');
 
 // ── 3 · LE NOM — un identifiant, dans la boîte navy perforée
 ok((await pg.$eval('#nm-field', e => getComputedStyle(e).borderImageSource)).includes('svg')
@@ -99,11 +114,13 @@ ok((await pg.$eval('#nm-field', e => getComputedStyle(e).borderImageSource)).inc
   'le nom se tape dans la BOÎTE NAVY PERFORÉE');
 await pg.fill('#nm-input', '0.Sea Bag');
 await pg.waitForFunction(() => /available/.test(document.querySelector('#name-note').textContent));
-ok((await pg.inputValue('#nm-input')) === 'seabag' && (await D()).steps === 4,
-  'un IDENTIFIANT : minuscules, sans espace — et le dépôt apparaît');
+ok((await pg.inputValue('#nm-input')) === 'seabag' && !(await pg.isDisabled('#nm-go')),
+  'un IDENTIFIANT : minuscules, sans espace — et [Next] s\'ouvre');
+await pg.click('#nm-go');
+await pg.waitForFunction(() => window.__totehm_luxury().step === 'st-pay');
+ok((await pg.$$eval('#form .step.is-open', l => l.length)) === 1, 'le dépôt, seul à l\'écran');
 
 // ── 4 · LE DÉPÔT — des références, puis le Checkout
-await pg.fill('#note', 'a 2019 bag, black leather');
 await pg.click('#ask');
 await pg.waitForFunction(() => /tick the box/.test(document.querySelector('#ask-n').textContent));
 ok(true, 'sans les conditions lues, rien ne part');

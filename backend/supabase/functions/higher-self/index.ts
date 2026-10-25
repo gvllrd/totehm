@@ -35,12 +35,16 @@
 //       vivante. Higher : des lieux et événements RÉELS près de moi (`_mirror_places`, déjà en cache, zéro appel payant)
 //       — la ligne `@place` n'en nomme qu'un des donnés, et la fonction ajoute `@lieu {…}` seulement s'il existe
 //       (`_shared/mirror.ts`). `pos` (la page, arrondie à ~1 km) et `tz` (son décalage) ne sont jamais gardés.
+// 25/10 (v6) : `focus: {kind:'media'|'spot', id}` — CE QUE LE MEMBRE MONTRE (Wah : « lire et sélectionner un média
+//       ou un spot à envoyer à l'IA »). La page n'envoie qu'une RÉFÉRENCE : `montreDe()` relit la ligne dans SES
+//       lignes seules (id + user_id, média non retiré), la box par `_box_matter`, et ajoute un bloc au système. Le
+//       modèle ne voit PAS l'image : le bloc le lui dit. Zéro appel payant de plus (deux lectures SQL).
 // cost : ≈ 1,5 k jetons d'entrée + 120 de sortie par réponse (r3 : ≈ 1,9 k + 200 ; r4 : ≈ 2,5 k + 230) ; mesuré en §0.
 // what : flux texte (en-têtes X-SM-Left, X-SM-Higher) · { ok } · { error }
 
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { corsHeaders, SITE_COM } from "../_shared/origins.ts";
-import { contexteMiroir, verifierMiroir, lieuDe, type Mirror, type Lieu } from "../_shared/mirror.ts";
+import { contexteMiroir, verifierMiroir, lieuDe, local, type Mirror, type Lieu } from "../_shared/mirror.ts";
 
 const admin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
   { auth: { persistSession: false } });
@@ -283,6 +287,62 @@ async function lire(body: ReadableStream<Uint8Array>, onText: (s: string) => voi
   return usage;
 }
 
+// ── CE QUE LE MEMBRE ME MONTRE (25/10, Wah : « lire et sélectionner un média ou un spot à envoyer à l'IA »)
+// La page n'envoie qu'une RÉFÉRENCE — {kind:'media'|'spot', id} —, jamais un texte : on relit la chose ICI, dans
+// SES lignes seules (id + user_id), et la box vient de `_box_matter` (la même relecture que le vêtement). Le modèle
+// ne voit PAS l'image : on le lui dit, sinon il la décrit.
+const VUE_MOT: Record<string, string> = { h: "habit", o: "objective", r: "repulsion", w: "wisdom", v: "vision" };
+// L'état d'un spot n'est pas une colonne : il se LIT de l'heure, comme dans `club_spots`.
+function etatSpot(starts: unknown, min: unknown): string {
+  const d = new Date(String(starts ?? "")); if (isNaN(d.getTime())) return "";
+  const t = Date.now(), fin = d.getTime() + Math.max(0, Number(min) || 0) * 60000;
+  return t < d.getTime() ? "they will be there" : t < fin ? "they are there now" : "they were there";
+}
+const ints = (v: unknown) => (Array.isArray(v) ? v.map((x) => clean(x, 24)).filter(Boolean).slice(0, 7) : []);
+
+async function montreDe(uid: string, f: unknown, tz: number): Promise<string> {
+  const o = (f ?? {}) as { kind?: unknown; id?: unknown };
+  const kind = clean(o.kind, 10), id = clean(o.id, 40);
+  if (!/^[0-9a-f-]{36}$/i.test(id)) return "";
+
+  if (kind === "media") {
+    const { data, error } = await admin.from("element_media")
+      .select("kind, ref, mime, name, created_at").eq("id", id).eq("user_id", uid).is("removed_at", null).maybeSingle();
+    if (error) { console.error("[higher-self] focus media", error.message); return ""; }
+    if (!data) return "";
+    const mot = VUE_MOT[String(data.kind ?? "")]; if (!mot) return "";
+    const { data: box } = await admin.rpc("_box_matter", { p_user: uid, p_kind: mot, p_ref: String(data.ref ?? "") });
+    const txt = clean((box as { text?: unknown } | null)?.text, 160);
+    const is = ints((box as { is?: unknown } | null)?.is);
+    const vid = /^video\//.test(String(data.mime ?? ""));
+    const quand = local(data.created_at as string, tz);
+    return `WHAT THEY ARE SHOWING YOU RIGHT NOW — a ${vid ? "video" : "photo"} of theirs, attached to their ${mot}`
+      + (txt ? ` "${txt}"` : "") + (is.length ? ` (${is.join(", ")})` : "") + (quand ? `, posted ${quand}` : "") + `.
+You cannot see it: never describe it, never guess what is in it. It is a DOOR — talk about that ${mot}, and about why they are opening it now.`;
+  }
+
+  if (kind === "spot") {
+    const { data, error } = await admin.from("spot_plans")
+      .select("habit, intentions, starts_at, duration_min, place, city, venue, mode, comment, photo, video")
+      .eq("spot_id", id).eq("user_id", uid).eq("status", "published").maybeSingle();
+    if (error) { console.error("[higher-self] focus spot", error.message); return ""; }
+    if (!data) return "";
+    const is = ints(data.intentions);
+    const d = +(data.duration_min ?? 0);
+    const l = [etatSpot(data.starts_at, data.duration_min), local(data.starts_at as string, tz),
+               d > 0 ? (d < 60 ? `${d} min` : `${Math.floor(d / 60)} h${d % 60 ? " " + (d % 60) : ""}`) : "",
+               clean(data.place ?? data.venue ?? data.city, 80),
+               String(data.mode ?? "") === "silent" ? "silent, nobody disturbs them" : String(data.mode ?? "") === "social" ? "social" : "",
+               (data.photo || data.video) ? "with a media" : ""].filter(Boolean);
+    return `WHAT THEY ARE SHOWING YOU RIGHT NOW — a spot of theirs, from the Club: their habit "${clean(data.habit, 140)}"`
+      + (is.length ? ` (${is.join(", ")})` : "") + (l.length ? ` · ${l.join(" · ")}` : "")
+      + (clean(data.comment, 200) ? `\nWhat they wrote on it: "${clean(data.comment, 200)}"` : "") + `
+It is a real place and a real moment of theirs: use it, do not repeat it back.`;
+  }
+
+  return "";
+}
+
 Deno.serve(async (req) => {
   const cors = corsHeaders(req.headers.get("origin"), SITE_COM);
   const headers = { ...cors, "Cache-Control": "no-store" };
@@ -315,11 +375,12 @@ Deno.serve(async (req) => {
     const tz = Number.isFinite(Number(body.tz)) ? Math.max(-840, Math.min(840, Math.round(Number(body.tz)))) : 0;
 
     const t0 = Date.now();
-    const [{ data: b, error: bErr }, { data: mem, error: mErr }, { data: pl, error: pErr }] = await Promise.all([
+    const [{ data: b, error: bErr }, { data: mem, error: mErr }, { data: pl, error: pErr }, montre] = await Promise.all([
       admin.rpc("sm_begin", { p_user: user.id, p_kind: "say" }),
       admin.rpc(r4 ? "_bot_mirror" : "_bot_memory", { p_user: user.id }),
       r4 ? admin.rpc("_mirror_places", { p_user: user.id, p_lat: ici?.lat ?? null, p_lng: ici?.lng ?? null })
          : Promise.resolve({ data: null, error: null }),
+      body.focus ? montreDe(user.id, body.focus, tz) : Promise.resolve(""),
     ]);
     if (bErr) { console.error("[higher-self] sm_begin", bErr.message); return json({ error: "unavailable" }, 503); }
     if (!b?.ok) {
@@ -336,8 +397,9 @@ Deno.serve(async (req) => {
         .then(({ error }) => { if (error) console.error("[higher-self] sm_end", error.message); });
 
     const ac = new AbortController(); const tm = setTimeout(() => ac.abort(), TIMEOUT_MS);
-    const sys = r4 ? SYSTEM_R4 + "\n\n" + contexteMiroir(mem as Mirror, now, lieux, tz)
-                   : (r3 ? SYSTEM_R3 : SYSTEM) + "\n\n" + contexte(mem as Memory, now);
+    const sys = (r4 ? SYSTEM_R4 + "\n\n" + contexteMiroir(mem as Mirror, now, lieux, tz)
+                    : (r3 ? SYSTEM_R3 : SYSTEM) + "\n\n" + contexte(mem as Memory, now))
+              + (montre ? "\n\n" + montre : "");
     const messages = [{ role: "system", content: sys }, ...turns, { role: "user", content: text }];
     const o = await ouvrir(key, messages, ac.signal, r3 || r4);
     if (!o) { clearTimeout(tm); await fin("failed"); return json({ error: "unavailable" }, 503); }
@@ -356,6 +418,7 @@ Deno.serve(async (req) => {
           if (lieu) ctrl.enqueue(enc.encode("\n@lieu " + JSON.stringify(lieu)));
           console.log(JSON.stringify({ evt: "sm", fmt: r4 ? "r4" : r3 ? "r3" : "v2", model: o.choice.model, first_ms: first, ms: Date.now() - t0,
                                        in: u.prompt_tokens, out: u.completion_tokens, refs: ok, places: lieux.length, lieu: lieu?.kind ?? null,
+                                       montre: montre ? clean((body.focus as { kind?: unknown })?.kind, 10) : null,
                                        pos: ici ? "page" : (pl?.origin?.source ?? null) }));
           await fin(n >= 12 ? "ok" : "failed", o.choice.model, u);
         } catch (e) {

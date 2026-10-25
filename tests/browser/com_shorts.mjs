@@ -12,8 +12,13 @@ const origin='https://www.totehm.com';
 const UID='11111111-1111-4111-8111-111111111111';
 const PNG=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==','base64');
 const STEPS=[{t:'Run the hill',t0:'Run the hill',is:['fight'],f:'every_morning',o:['o1']},{t:'Read at dawn',t0:'Read at dawn',is:['focus','love']},{t:'Call mum',t0:'Call mum',is:['love']}];
+/* UN SPOT « I will be there » EST À VENIR : une date écrite en dur quitte le présent au bout d'un jour
+   (mesuré le 25/10 : « yesterday 08:00 », et le banc tombait tout seul). Toujours demain, 08:00. */
+const DEMAIN=new Date(Date.now()+864e5).toISOString().slice(0,10)+'T08:00:00Z';
 const tables={profiles:[{pseudo:'wahigher'}],totehms:[{user_id:UID,steps:STEPS,vis:'private'}]};
-const LAND={signed_in:true,pseudo:'wahigher',visibility:'private',offer:{enabled:false},higher:{active:false,price_cents:700,currency:'eur'},thp:false,subscriptions:0,subscribers:0};
+const LAND={signed_in:true,pseudo:'wahigher',visibility:'private',offer:{enabled:false},higher:{active:false,price_cents:700,currency:'eur'},thp:false,subscriptions:0,subscribers:0,
+  /* La Reflection est ouverte : c'est là que se pose ce que je MONTRE (25/10). */
+  sm:{ready:true,habit:true,objective:true,higher:false,free_total:7,free_left:6,left:6}};
 const erreurs=log=>log.errors.filter(e=>e.startsWith('pageerror'));
 const lv=pg=>pg.evaluate(()=>window.__totehm_lv());
 const vers=(pg,v)=>pg.waitForFunction(v=>{const d=window.__totehm_lv();return d.vue===v&&!d.bouge;},v,{timeout:8000}).catch(()=>{});
@@ -28,11 +33,11 @@ function serveur(){
     element_media_rekey:b=>{ let k=0; items.forEach(m=>{ if(m.kind==='h'&&m.ref===b.p_old){ m.ref=b.p_new; k++; } }); return k; },
     my_trips:{signed_in:true,trips:[{id:'o1',text:'Ship it',is:['express'],hs:['Run the hill']}],
     reps:[{id:'r1',text:'The phone',is:['focus'],hs:['Run the hill']}],wisdom:[],visions:[{id:'v1',text:'The studio'}]},
-    habit_spaces:{ok:true,mine:true,habits:[{habit:'Call mum',total:1,total_spaces:0,total_spots:1,spaces:[],spots:[{id:'sp1',format:'spot',state:'will',photo:UID+'/bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb.jpg',starts_at:'2026-10-12T08:00:00Z',exact:{lat:38.72,lng:-9.14,place:'the hill'}}]}]},
+    habit_spaces:{ok:true,mine:true,habits:[{habit:'Call mum',total:1,total_spaces:0,total_spots:1,spaces:[],spots:[{id:'sp1',format:'spot',state:'will',photo:UID+'/bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb.jpg',starts_at:DEMAIN,exact:{lat:38.72,lng:-9.14,place:'the hill'}}]}]},
     /* 20/10 quater — LA VUE DE DROITE LIT LE CLUB (`club_spots`) : maintenant rien, à venir MON spot (le point
        exact, une photo), passé le spot d'un autre membre (kai3 : sans média, la ville seule). */
     club_spots:b=>{ const f=b.p_filters||{}, mine={id:'sp1',habit:'Call mum',intentions:['love'],freq:'',state:'will',
-        starts_at:'2026-10-24T08:00:00Z',duration_min:60,city:'Lisbon',location:'on',mode:'social',audience:'figher',
+        starts_at:DEMAIN,duration_min:60,city:'Lisbon',location:'on',mode:'social',audience:'figher',
         comment:'Bring a coffee',photo:UID+'/bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb.jpg',exact:{lat:38.72,lng:-9.14,place:'the hill'},
         mine:true,creator:'wahigher',habit_box:{name:'Call mum',ints:['love'],objectives:[],repulsions:[]}};
       const autre={id:'sp2',habit:'Swim at dawn',intentions:['flow'],state:'was',starts_at:'2026-10-13T07:00:00Z',duration_min:45,
@@ -144,6 +149,30 @@ try{
   ok(await pg.evaluate(()=>window.__totehm_sh().vu===0&&window.__totehm_lv().vue==='g'),'21/10 · la molette (le doigt) remonte au média précédent : c\'est le défilement, pas un changement de vue');
   await pg.keyboard.press('Escape');await pg.waitForTimeout(300);
   ok(await pg.evaluate(()=>document.getElementById('tlv').hidden&&window.__totehm_lv().vue==='g'&&!document.querySelector('#tlv .tlv-s')),'Échap referme la visionneuse : on reste dans la grille');
+
+  // ══ 2 bis · 25/10 (Wah) : « LIRE ET SÉLECTIONNER UN MÉDIA OU UN SPOT À ENVOYER À L'IA » ══
+  // Le geste est posé SUR la chose, là où je la regarde. Il ferme la visionneuse, emmène en bas, et pose une
+  // PASTILLE au-dessus de ce que j'écris : un mot, l'élément, une croix. Seule une RÉFÉRENCE partira.
+  await pg.click('#lv-sh .tl[data-i="0"] .tl-bx',{force:true});await pg.waitForTimeout(500);
+  const ask=await pg.evaluate(()=>{const s0=document.querySelector('#tlv .tlv-s[data-j="0"]'), b=s0&&s0.querySelector('.tlv-b .sh-ask');
+    return {n:document.querySelectorAll('#tlv .sh-ask').length, mot:b?b.textContent:'', maj:b?getComputedStyle(b).textTransform:'',
+      ref:b?b.dataset.ask:'', sous:!!(b&&s0.querySelector('.tb')&&b.getBoundingClientRect().top>=s0.querySelector('.tb').getBoundingClientRect().top)};});
+  await pg.click('#tlv .tlv-s[data-j="0"] .tlv-b .sh-ask');await vers(pg,'b');await pg.waitForTimeout(500);
+  const ch=await pg.evaluate(()=>{const f=document.getElementById('lv-focus'), s=document.getElementById('lv-say');
+    return {vue:window.__totehm_lv().vue, ferme:document.getElementById('tlv').hidden, ouvert:!f.classList.contains('hide'),
+      mot:(f.querySelector('i')||{}).textContent||'', nom:(f.querySelector('b')||{}).textContent||'',
+      x:!!f.querySelector('[data-sm-unfocus]'), ecrit:!!s&&!s.classList.contains('hide'),
+      haut:!!s&&f.getBoundingClientRect().bottom<=s.getBoundingClientRect().top+1,
+      montre:window.__totehm_lv().reflection.montre, n:window.__totehm_lv().reflection.montres};});
+  ok(ask.n===1&&ask.ref==='em:m1'&&/show my higher self/i.test(ask.mot)&&ask.maj==='uppercase'&&ask.sous,
+     '25/10 · MON média porte le geste SOUS sa box, et il n\'envoie qu\'une référence ('+ask.ref+') — la vision, elle, n\'en a pas');
+  ok(ch.vue==='b'&&ch.ferme&&ch.ouvert&&ch.mot==='media'&&ch.nom==='Run the hill'&&ch.x&&ch.ecrit&&ch.haut&&ch.montre==='media'&&ch.n===1,
+     '25/10 · le geste emmène en bas : la pastille (media · Run the hill · ✕) se pose AU-DESSUS de ce que j\'écris → '+JSON.stringify(ch));
+  await pg.click('#lv-focus [data-sm-unfocus]');await pg.waitForTimeout(250);
+  ok(await pg.evaluate(()=>document.getElementById('lv-focus').classList.contains('hide')&&window.__totehm_lv().reflection.montre===null),
+     '25/10 · la croix retire ce que je montre, et ce que j\'écrivais reste');
+  await pg.click('#lvn-up');await vers(pg,'c');await pg.waitForTimeout(300);
+  await pg.click('#lvn-lf');await vers(pg,'g');await pg.waitForTimeout(700);
   // on entre dans le Totehm par le centre, et l'on ouvre l'Habit
   await pg.click('#lvn-rt');await vers(pg,'c');await pg.waitForTimeout(300);
   await pg.click('#lv-tap-open');
@@ -255,6 +284,7 @@ try{
       say:(sd&&sd.querySelector('.sd-say')||{}).textContent||'', nom:(c&&c.querySelector('.ssp-box .tb .v-name')||{}).textContent||'',
       snap:getComputedStyle(document.getElementById('rdr-sh')).scrollSnapType, plein:c?Math.round(c.getBoundingClientRect().height)===innerHeight:false,
       cal:!!(c&&c.querySelector('.ssp-acts [data-ics]')), go:!!(c&&c.querySelector('.ssp-acts [data-go]')), x:getComputedStyle(document.getElementById('rdr-x')).display,
+      ask:(()=>{const a=c&&c.querySelector('.ssp-acts [data-ask]');return a?a.dataset.ask+'|'+a.textContent:'';})(),
       per:[...document.querySelectorAll('#rdr-flt [data-per]')].map(e=>e.textContent)};});
   ok(sh2.voit&&sh2.d.voit&&sh2.n===1&&/y mandatory/.test(sh2.snap)&&sh2.plein&&sh2.x==='block',
      'un tap sur le point : SON spot en grand, par-dessus la carte (un spot par écran, aimanté), ✕ pour revenir');
@@ -269,6 +299,8 @@ try{
      &&sh2.chips.some(t=>/social/i.test(t))&&sh2.say==='Bring a coffee'&&sh2.go&&sh2.cal,
      'les informations du spot : '+sh2.chips.join(' · ')+' — son mot, GO, CALENDAR');
   ok(sh2.per.join(' ')==='I will be there','le temps courant, dans la barre : « '+sh2.per.join(' ')+' »');
+  /* 25/10 (Wah) : MON spot se montre au Higher Self — un mot de plus dans la rangée de GO et CALENDAR. */
+  ok(sh2.ask==='sp:sp1|higher self','25/10 · MON spot porte « higher self » à côté de GO et CALENDAR → '+sh2.ask);
   await pg.keyboard.press('Escape');await pg.waitForTimeout(500);
   ok(await pg.evaluate(()=>!document.body.classList.contains('rdr-voir')&&window.__totehm_lv().vue==='d'),'Échap referme la vue agrandie : on est de retour sur la carte');
   await pg.click('#lvn-lf');await vers(pg,'c');await pg.waitForTimeout(300);
@@ -393,10 +425,12 @@ try{
     return {n:document.querySelectorAll('#rdr-sh .ssp-s').length, by:(c&&c.querySelector('.ssp-by')||{}).textContent||'',
       sans:!!(c&&c.classList.contains('is-nu')&&!c.querySelector('.ssp-m')), chips:c?[...c.querySelectorAll('.sdata .sd-tag')].map(e=>e.textContent):[],
       mini:c?[...c.querySelectorAll('.ssp-box .tb .mini.m-o')].map(e=>e.textContent):[], rep:c?[...c.querySelectorAll('.ssp-box .tb .mini.m-r')].map(e=>e.textContent):[],
+      ask:!!(c&&c.querySelector('[data-ask]')),
       d:window.__totehm_rdr()};});
   ok(pas2.n===2&&pas2.by==='kai3'&&pas2.sans&&pas2.chips.some(t=>/Porto/.test(t))&&pas2.chips.some(t=>/location off/i.test(t))&&pas2.chips.some(t=>/I was here/.test(t))
      &&pas2.mini.includes('Cross the bay')&&pas2.d.club.periode==='past',
      'la tuile ouvre SON spot en grand : un AUTRE membre (kai3), sans média (les infos seules, centrées), la ville seule, sa box et ses mini-boîtes au format Totehm → '+JSON.stringify({m:pas2.mini,r:pas2.rep}));
+  ok(!pas2.ask,'25/10 · le spot d\'un AUTRE membre ne se montre pas à mon Higher Self (le serveur ne relit que mes lignes)');
   await pg.click('#rdr-sh .ssp-s.is-ici [data-who]');await pg.waitForTimeout(600);
   ok(await pg.evaluate(()=>(window.__totehm_xo()||{}).actif==='univers'),'son nom : il faut s\'abonner pour lire son Totehm → SA page de vente, sur place');
   await pg.evaluate(()=>window.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape'})));

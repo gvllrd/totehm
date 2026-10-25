@@ -429,6 +429,19 @@ try{
   await pg.click('#lv-thread [data-tg]');await pg.waitForTimeout(600);
   const o=await pg.evaluate(()=>window.__ouvert);
   ok(!o.some(u=>/wa\.me|whatsapp/i.test(String(u))),'Telegram : l\'envoi passe par le serveur — plus aucune URL WhatsApp publique');
+  /* 25/10 (Wah) : « lire et sélectionner un média ou un spot à envoyer à l'IA ». Ce que je montre part en
+     RÉFÉRENCE SEULE — le serveur le relit dans MON Totehm —, et la réponse la consomme. */
+  await pg.evaluate(()=>window.__smMontrer('media','aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa','Run the hill'));
+  await pg.waitForTimeout(250);
+  const fo1=await pg.evaluate(()=>({ouvert:!document.getElementById('lv-focus').classList.contains('hide'),
+    nom:(document.querySelector('#lv-focus b')||{}).textContent||''}));
+  await pg.fill('#lv-say-in','look at this');await pg.keyboard.press('Enter');
+  await pg.waitForFunction(()=>window.__totehm_lv().reflection.envois===2,null,{timeout:5000}).catch(()=>{});
+  await pg.waitForTimeout(250);
+  const mf=corps.filter(x=>x.action==='say').pop();
+  const fo2=await pg.evaluate(()=>document.getElementById('lv-focus').classList.contains('hide')&&window.__totehm_lv().reflection.montre===null);
+  ok(fo1.ouvert&&fo1.nom==='Run the hill'&&mf&&JSON.stringify(mf.focus)==='{"kind":"media","id":"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"}'&&fo2,
+     '25/10 · ce que je montre part en {kind,id} SEULS (jamais son texte), et la réponse le consomme → '+JSON.stringify(mf&&mf.focus));
   ok(!erreurs(log).length,'Higher : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
  {let n=0;const SMF={ready:true,habit:true,objective:true,higher:false,free_total:7,free_left:0,left:0};
   const{pg,log}=await page(browser,{dir:'com',origin,tables,viewport:{width:390,height:844},rpc:{my_landing:()=>(++n>=3?LAND({higher:{active:true},sm:{...SMF,higher:true,left:30}}):LAND({sm:SMF}))}});

@@ -3053,6 +3053,17 @@ body.lv-d #lv-proc,body.lv-d #lv-slogan{opacity:0}
 .lv-pane .lv-act{pointer-events:auto}
 .lv-mono{font-family:'Space Mono',monospace;font-size:11px;line-height:1.6;color:#9a9aa2;text-align:center}
 .lv-h2{font-family:'Space Mono',monospace;font-weight:700;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#fff}
+/* CE QUE JE MONTRE — la pastille au-dessus de la saisie, et le bouton qui l'y envoie. */
+#lv-focus{display:flex;align-items:center;gap:8px;max-width:100%;margin:0 0 7px;padding:7px 10px;background:#1f1f24;border-radius:10px;
+  font:400 11px/1.4 'Space Mono',monospace;color:#b0b0b0}
+#lv-focus.hide{display:none}
+#lv-focus b{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:400;color:#fff}
+#lv-focus i{flex:0 0 auto;font-style:normal;font-size:8.5px;letter-spacing:.2em;text-transform:uppercase;color:#8a8a92}
+#lv-focus button{flex:0 0 auto;margin-left:auto;background:none;border:0;color:#8a8a92;cursor:pointer;font:inherit;padding:2px 4px}
+@media(hover:hover){#lv-focus button:hover{color:#fff}}
+.sh-ask{font:400 10px/1.3 'Space Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#d8d8dd;background:rgba(0,0,0,.45);
+  border:0;border-radius:10px;padding:7px 12px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+@media(hover:hover){.sh-ask:hover{background:rgba(0,0,0,.7);color:#fff}}
 .lv-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;inline-size:fit-content;padding:11px 18px;border:0;border-radius:10px;background:#1f1f24;color:#b0b0b0;font:400 12px/1.4 'Space Mono',monospace;text-decoration:none;white-space:nowrap;cursor:pointer}
 .lv-btn:focus-visible{outline:1px solid #fff;outline-offset:3px}
 .lv-btn svg{width:48px;height:16px;flex:none}
@@ -3287,7 +3298,7 @@ body.mb-cherche #lv-c-acts{top:var(--mb-bas,70%)}
 body.lv-membre .lvm-who{display:inline}
 body.lv-membre .lvm-lab{display:none}
 /* En bas, chez un membre : SON profil et SON offre — jamais ma Reflection. */
-body.lv-membre #lv-say,body.lv-membre #lv-say-note,body.lv-membre #lv-thread{display:none}
+body.lv-membre #lv-say,body.lv-membre #lv-say-note,body.lv-membre #lv-thread,body.lv-membre #lv-focus{display:none}
 body.lv-membre.lv-b #lv-slogan{opacity:0}
 /* 25/10 — un Totehm à abonnement, trouvé en recherche (`lv-verrou`) : son nom sur [Members], son offre sous le papier, et
    en bas son offre encore — jamais ma Reflection. */
@@ -3934,7 +3945,7 @@ body.lv-d.rdr-voir #gate-asteroid,body.lv-d.rdr-voir #lvjoy,body.rdr-voir #rdr-f
      TOTEHM, en sprite, pour que le bloc de commande du filtre PORTE le logo
      sans toucher à celui de l'atterrissage (#gate-logo, animé). -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
-<symbol id="lg-rail" viewBox="20.689 0.225 17.203 223.630" preserveAspectRatio="none"><defs><clipPath id="tgr_3a710ebbbe"><path d="M 20.652344 0.261719 L 37.839844 0.261719 L 37.839844 223.816406 L 20.652344 223.816406 Z M 20.652344 0.261719 " clip-rule="nonzero"/></clipPath><clipPath id="tgr_1b01f8474a"><path d="M 0.652344 0.261719 L 17.839844 0.261719 L 17.839844 223.816406 L 0.652344 223.816406 Z M 0.652344 0.261719 " clip-rule="nonzero"/></clipPath><clipPath id="tgr_95349ecf51"><rect x="0" width="18" y="0" height="224"/></clipPath></defs><g clip-path="url(#tgr_3a710ebbbe)"><g transform="matrix(1, 0, 0, 1, 20, -0.000000000000020428)"><g clip-path="url(#tgr_95349ecf51)"><g clip-path="url(#tgr_1b01f8474a)"><path fill="#626286" d="M 0.652344 0.261719 L 17.839844 0.261719 L 17.839844 223.808594 L 0.652344 223.808594 Z M 0.652344 0.261719 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g></symbol><symbol id="lg-t" viewBox="79.832 47.921 66.789 66.932" preserveAspectRatio="none"><defs><clipPath id="tgt_ad60c268aa"><path d="M 0.871094 1.027344 L 67.59375 1.027344 L 67.59375 10.664062 L 0.871094 10.664062 Z M 0.871094 1.027344 " clip-rule="nonzero"/></clipPath><clipPath id="tgt_f37d153e97"><path d="M 0.871094 0.0273438 L 67.59375 0.0273438 L 67.59375 9.664062 L 0.871094 9.664062 Z M 0.871094 0.0273438 " clip-rule="nonzero"/></clipPath><clipPath id="tgt_0eae0d8cca"><rect x="0" width="68" y="0" height="10"/></clipPath><clipPath id="tgt_d380122ed3"><path d="M 29.410156 1.027344 L 39.050781 1.027344 L 39.050781 67.75 L 29.410156 67.75 Z M 29.410156 1.027344 " clip-rule="nonzero"/></clipPath><clipPath id="tgt_75ca9fbfbb"><path d="M 0.410156 0.0273438 L 10.050781 0.0273438 L 10.050781 66.75 L 0.410156 66.75 Z M 0.410156 0.0273438 " clip-rule="nonzero"/></clipPath><clipPath id="tgt_92fddf9f0e"><rect x="0" width="11" y="0" height="67"/></clipPath><clipPath id="tgt_1e85f52e0e"><path d="M 21.183594 63.386719 L 47.28125 63.386719 L 47.28125 67.75 L 21.183594 67.75 Z M 21.183594 63.386719 " clip-rule="nonzero"/></clipPath><clipPath id="tgt_6c7bfd0f9f"><path d="M 0.183594 0.386719 L 26.28125 0.386719 L 26.28125 4.75 L 0.183594 4.75 Z M 0.183594 0.386719 " clip-rule="nonzero"/></clipPath><clipPath id="tgt_7d4c700d36"><rect x="0" width="27" y="0" height="5"/></clipPath><clipPath id="tgt_ffb4264ddd"><rect x="0" width="68" y="0" height="68"/></clipPath></defs><g transform="matrix(1, 0, 0, 1, 79, 47)"><g clip-path="url(#tgt_ffb4264ddd)"><g clip-path="url(#tgt_ad60c268aa)"><g transform="matrix(1, 0, 0, 1, 0.000000000000014211, 1)"><g clip-path="url(#tgt_0eae0d8cca)"><g clip-path="url(#tgt_f37d153e97)"><path fill="#ffffff" d="M 0.871094 0.0273438 L 67.582031 0.0273438 L 67.582031 9.664062 L 0.871094 9.664062 Z M 0.871094 0.0273438 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g><g clip-path="url(#tgt_d380122ed3)"><g transform="matrix(1, 0, 0, 1, 29, 1)"><g clip-path="url(#tgt_92fddf9f0e)"><g clip-path="url(#tgt_75ca9fbfbb)"><path fill="#ffffff" d="M 10.050781 0.0273438 L 10.050781 66.738281 L 0.410156 66.738281 L 0.410156 0.0273438 Z M 10.050781 0.0273438 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g><g clip-path="url(#tgt_1e85f52e0e)"><g transform="matrix(1, 0, 0, 1, 21, 63)"><g clip-path="url(#tgt_7d4c700d36)"><g clip-path="url(#tgt_6c7bfd0f9f)"><path fill="#ffffff" d="M 26.28125 4.75 L 0.183594 4.75 L 0.183594 0.386719 L 26.28125 0.386719 Z M 26.28125 4.75 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g></g></g></symbol><symbol id="lg-wm" viewBox="74.997 121.602 77.584 46.683" preserveAspectRatio="none"><defs><g/><clipPath id="tgw_98fd27636e"><rect x="0" width="84" y="0" height="39"/></clipPath></defs><g fill="#ffffff" fill-opacity="1"><g transform="translate(87.377054, 137.358137)"><g><path d="M 5.546875 -14.09375 L 0.09375 -14.09375 L 0.09375 -15.515625 L 12.640625 -15.515625 L 12.640625 -14.09375 L 7.1875 -14.09375 L 7.1875 0 L 5.546875 0 Z M 5.546875 -14.09375 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(99.483952, 137.358137)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(104.6725, 137.358137)"><g><path d="M 9.3125 0.140625 C 7.769531 0.140625 6.375 -0.203125 5.125 -0.890625 C 3.882812 -1.578125 2.910156 -2.519531 2.203125 -3.71875 C 1.503906 -4.914062 1.15625 -6.265625 1.15625 -7.765625 C 1.15625 -9.253906 1.503906 -10.597656 2.203125 -11.796875 C 2.910156 -12.992188 3.882812 -13.9375 5.125 -14.625 C 6.375 -15.3125 7.769531 -15.65625 9.3125 -15.65625 C 10.851562 -15.65625 12.238281 -15.3125 13.46875 -14.625 C 14.707031 -13.945312 15.679688 -13.003906 16.390625 -11.796875 C 17.097656 -10.597656 17.453125 -9.253906 17.453125 -7.765625 C 17.453125 -6.265625 17.097656 -4.910156 16.390625 -3.703125 C 15.679688 -2.503906 14.707031 -1.5625 13.46875 -0.875 C 12.238281 -0.195312 10.851562 0.140625 9.3125 0.140625 Z M 9.3125 -1.328125 C 10.539062 -1.328125 11.648438 -1.601562 12.640625 -2.15625 C 13.628906 -2.71875 14.40625 -3.488281 14.96875 -4.46875 C 15.53125 -5.445312 15.8125 -6.546875 15.8125 -7.765625 C 15.8125 -8.972656 15.53125 -10.066406 14.96875 -11.046875 C 14.40625 -12.035156 13.628906 -12.804688 12.640625 -13.359375 C 11.648438 -13.910156 10.539062 -14.1875 9.3125 -14.1875 C 8.082031 -14.1875 6.96875 -13.910156 5.96875 -13.359375 C 4.976562 -12.804688 4.195312 -12.035156 3.625 -11.046875 C 3.050781 -10.066406 2.765625 -8.972656 2.765625 -7.765625 C 2.765625 -6.546875 3.050781 -5.445312 3.625 -4.46875 C 4.195312 -3.488281 4.976562 -2.71875 5.96875 -2.15625 C 6.96875 -1.601562 8.082031 -1.328125 9.3125 -1.328125 Z M 9.3125 -1.328125 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(122.655559, 137.358137)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(127.844108, 137.358137)"><g><path d="M 5.546875 -14.09375 L 0.09375 -14.09375 L 0.09375 -15.515625 L 12.640625 -15.515625 L 12.640625 -14.09375 L 7.1875 -14.09375 L 7.1875 0 L 5.546875 0 Z M 5.546875 -14.09375 "/></g></g></g><g transform="matrix(1, 0, 0, 1, 71, 138)"><g clip-path="url(#tgw_98fd27636e)"><g fill="#ffffff" fill-opacity="1"><g transform="translate(0.838799, 30.275545)"><g><path d="M 18.59375 -2.640625 L 18.59375 0 L 3.1875 0 L 3.1875 -21.234375 L 18.171875 -21.234375 L 18.171875 -18.59375 L 6.21875 -18.59375 L 6.21875 -12.078125 L 16.875 -12.078125 L 16.875 -9.5 L 6.21875 -9.5 L 6.21875 -2.640625 Z M 18.59375 -2.640625 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(19.582399, 30.275545)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(26.163451, 30.275545)"><g><path d="M 21.453125 -21.234375 L 21.453125 0 L 18.421875 0 L 18.421875 -9.46875 L 6.21875 -9.46875 L 6.21875 0 L 3.1875 0 L 3.1875 -21.234375 L 6.21875 -21.234375 L 6.21875 -12.109375 L 18.421875 -12.109375 L 18.421875 -21.234375 Z M 21.453125 -21.234375 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(49.213997, 30.275545)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(55.79505, 30.275545)"><g><path d="M 22.875 0 L 22.84375 -15.46875 L 15.171875 -2.578125 L 13.78125 -2.578125 L 6.09375 -15.390625 L 6.09375 0 L 3.1875 0 L 3.1875 -21.234375 L 5.671875 -21.234375 L 14.53125 -6.3125 L 23.28125 -21.234375 L 25.765625 -21.234375 L 25.796875 0 Z M 22.875 0 "/></g></g></g></g></g></symbol>
+<symbol id="lg-rail" viewBox="20.689 0.225 17.203 223.630" preserveAspectRatio="none"><defs><clipPath id="sfr_3a710ebbbe"><path d="M 20.652344 0.261719 L 37.839844 0.261719 L 37.839844 223.816406 L 20.652344 223.816406 Z M 20.652344 0.261719 " clip-rule="nonzero"/></clipPath><clipPath id="sfr_1b01f8474a"><path d="M 0.652344 0.261719 L 17.839844 0.261719 L 17.839844 223.816406 L 0.652344 223.816406 Z M 0.652344 0.261719 " clip-rule="nonzero"/></clipPath><clipPath id="sfr_95349ecf51"><rect x="0" width="18" y="0" height="224"/></clipPath></defs><g clip-path="url(#sfr_3a710ebbbe)"><g transform="matrix(1, 0, 0, 1, 20, -0.000000000000020428)"><g clip-path="url(#sfr_95349ecf51)"><g clip-path="url(#sfr_1b01f8474a)"><path fill="#626286" d="M 0.652344 0.261719 L 17.839844 0.261719 L 17.839844 223.808594 L 0.652344 223.808594 Z M 0.652344 0.261719 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g></symbol><symbol id="lg-t" viewBox="79.832 47.921 66.789 66.932" preserveAspectRatio="none"><defs><clipPath id="sft_ad60c268aa"><path d="M 0.871094 1.027344 L 67.59375 1.027344 L 67.59375 10.664062 L 0.871094 10.664062 Z M 0.871094 1.027344 " clip-rule="nonzero"/></clipPath><clipPath id="sft_f37d153e97"><path d="M 0.871094 0.0273438 L 67.59375 0.0273438 L 67.59375 9.664062 L 0.871094 9.664062 Z M 0.871094 0.0273438 " clip-rule="nonzero"/></clipPath><clipPath id="sft_0eae0d8cca"><rect x="0" width="68" y="0" height="10"/></clipPath><clipPath id="sft_d380122ed3"><path d="M 29.410156 1.027344 L 39.050781 1.027344 L 39.050781 67.75 L 29.410156 67.75 Z M 29.410156 1.027344 " clip-rule="nonzero"/></clipPath><clipPath id="sft_75ca9fbfbb"><path d="M 0.410156 0.0273438 L 10.050781 0.0273438 L 10.050781 66.75 L 0.410156 66.75 Z M 0.410156 0.0273438 " clip-rule="nonzero"/></clipPath><clipPath id="sft_92fddf9f0e"><rect x="0" width="11" y="0" height="67"/></clipPath><clipPath id="sft_1e85f52e0e"><path d="M 21.183594 63.386719 L 47.28125 63.386719 L 47.28125 67.75 L 21.183594 67.75 Z M 21.183594 63.386719 " clip-rule="nonzero"/></clipPath><clipPath id="sft_6c7bfd0f9f"><path d="M 0.183594 0.386719 L 26.28125 0.386719 L 26.28125 4.75 L 0.183594 4.75 Z M 0.183594 0.386719 " clip-rule="nonzero"/></clipPath><clipPath id="sft_7d4c700d36"><rect x="0" width="27" y="0" height="5"/></clipPath><clipPath id="sft_ffb4264ddd"><rect x="0" width="68" y="0" height="68"/></clipPath></defs><g transform="matrix(1, 0, 0, 1, 79, 47)"><g clip-path="url(#sft_ffb4264ddd)"><g clip-path="url(#sft_ad60c268aa)"><g transform="matrix(1, 0, 0, 1, 0.000000000000014211, 1)"><g clip-path="url(#sft_0eae0d8cca)"><g clip-path="url(#sft_f37d153e97)"><path fill="#ffffff" d="M 0.871094 0.0273438 L 67.582031 0.0273438 L 67.582031 9.664062 L 0.871094 9.664062 Z M 0.871094 0.0273438 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g><g clip-path="url(#sft_d380122ed3)"><g transform="matrix(1, 0, 0, 1, 29, 1)"><g clip-path="url(#sft_92fddf9f0e)"><g clip-path="url(#sft_75ca9fbfbb)"><path fill="#ffffff" d="M 10.050781 0.0273438 L 10.050781 66.738281 L 0.410156 66.738281 L 0.410156 0.0273438 Z M 10.050781 0.0273438 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g><g clip-path="url(#sft_1e85f52e0e)"><g transform="matrix(1, 0, 0, 1, 21, 63)"><g clip-path="url(#sft_7d4c700d36)"><g clip-path="url(#sft_6c7bfd0f9f)"><path fill="#ffffff" d="M 26.28125 4.75 L 0.183594 4.75 L 0.183594 0.386719 L 26.28125 0.386719 Z M 26.28125 4.75 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g></g></g></symbol><symbol id="lg-wm" viewBox="74.997 121.602 77.584 46.683" preserveAspectRatio="none"><defs><g/><clipPath id="sfw_98fd27636e"><rect x="0" width="84" y="0" height="39"/></clipPath></defs><g fill="#ffffff" fill-opacity="1"><g transform="translate(87.377054, 137.358137)"><g><path d="M 5.546875 -14.09375 L 0.09375 -14.09375 L 0.09375 -15.515625 L 12.640625 -15.515625 L 12.640625 -14.09375 L 7.1875 -14.09375 L 7.1875 0 L 5.546875 0 Z M 5.546875 -14.09375 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(99.483952, 137.358137)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(104.6725, 137.358137)"><g><path d="M 9.3125 0.140625 C 7.769531 0.140625 6.375 -0.203125 5.125 -0.890625 C 3.882812 -1.578125 2.910156 -2.519531 2.203125 -3.71875 C 1.503906 -4.914062 1.15625 -6.265625 1.15625 -7.765625 C 1.15625 -9.253906 1.503906 -10.597656 2.203125 -11.796875 C 2.910156 -12.992188 3.882812 -13.9375 5.125 -14.625 C 6.375 -15.3125 7.769531 -15.65625 9.3125 -15.65625 C 10.851562 -15.65625 12.238281 -15.3125 13.46875 -14.625 C 14.707031 -13.945312 15.679688 -13.003906 16.390625 -11.796875 C 17.097656 -10.597656 17.453125 -9.253906 17.453125 -7.765625 C 17.453125 -6.265625 17.097656 -4.910156 16.390625 -3.703125 C 15.679688 -2.503906 14.707031 -1.5625 13.46875 -0.875 C 12.238281 -0.195312 10.851562 0.140625 9.3125 0.140625 Z M 9.3125 -1.328125 C 10.539062 -1.328125 11.648438 -1.601562 12.640625 -2.15625 C 13.628906 -2.71875 14.40625 -3.488281 14.96875 -4.46875 C 15.53125 -5.445312 15.8125 -6.546875 15.8125 -7.765625 C 15.8125 -8.972656 15.53125 -10.066406 14.96875 -11.046875 C 14.40625 -12.035156 13.628906 -12.804688 12.640625 -13.359375 C 11.648438 -13.910156 10.539062 -14.1875 9.3125 -14.1875 C 8.082031 -14.1875 6.96875 -13.910156 5.96875 -13.359375 C 4.976562 -12.804688 4.195312 -12.035156 3.625 -11.046875 C 3.050781 -10.066406 2.765625 -8.972656 2.765625 -7.765625 C 2.765625 -6.546875 3.050781 -5.445312 3.625 -4.46875 C 4.195312 -3.488281 4.976562 -2.71875 5.96875 -2.15625 C 6.96875 -1.601562 8.082031 -1.328125 9.3125 -1.328125 Z M 9.3125 -1.328125 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(122.655559, 137.358137)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(127.844108, 137.358137)"><g><path d="M 5.546875 -14.09375 L 0.09375 -14.09375 L 0.09375 -15.515625 L 12.640625 -15.515625 L 12.640625 -14.09375 L 7.1875 -14.09375 L 7.1875 0 L 5.546875 0 Z M 5.546875 -14.09375 "/></g></g></g><g transform="matrix(1, 0, 0, 1, 71, 138)"><g clip-path="url(#sfw_98fd27636e)"><g fill="#ffffff" fill-opacity="1"><g transform="translate(0.838799, 30.275545)"><g><path d="M 18.59375 -2.640625 L 18.59375 0 L 3.1875 0 L 3.1875 -21.234375 L 18.171875 -21.234375 L 18.171875 -18.59375 L 6.21875 -18.59375 L 6.21875 -12.078125 L 16.875 -12.078125 L 16.875 -9.5 L 6.21875 -9.5 L 6.21875 -2.640625 Z M 18.59375 -2.640625 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(19.582399, 30.275545)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(26.163451, 30.275545)"><g><path d="M 21.453125 -21.234375 L 21.453125 0 L 18.421875 0 L 18.421875 -9.46875 L 6.21875 -9.46875 L 6.21875 0 L 3.1875 0 L 3.1875 -21.234375 L 6.21875 -21.234375 L 6.21875 -12.109375 L 18.421875 -12.109375 L 18.421875 -21.234375 Z M 21.453125 -21.234375 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(49.213997, 30.275545)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(55.79505, 30.275545)"><g><path d="M 22.875 0 L 22.84375 -15.46875 L 15.171875 -2.578125 L 13.78125 -2.578125 L 6.09375 -15.390625 L 6.09375 0 L 3.1875 0 L 3.1875 -21.234375 L 5.671875 -21.234375 L 14.53125 -6.3125 L 23.28125 -21.234375 L 25.765625 -21.234375 L 25.796875 0 Z M 22.875 0 "/></g></g></g></g></g></symbol>
 </defs></svg>
 <script>/* 21/10 — UNE SESSION GARDÉE DANS CE NAVIGATEUR S'ANNONCE AVANT LE PREMIER RENDU : tant qu'elle n'est pas lue
    (`sessionLoad`), rien de « hors connexion » ne s'affiche (`ses-attente`). Un booléen, jamais une valeur lue. */
@@ -4154,6 +4165,10 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
     <section class="lv-pane" id="lv-b" aria-label="My Reflection">
       <div id="rf" class="lv-act">
         <div id="rf-me" aria-hidden="true"></div>
+        <!-- 25/10 (Wah) : « lire et sélectionner un média ou un spot à envoyer à l'IA ».
+             Ce que je lui montre se pose ICI, au-dessus de ce que j'écris ; la page n'envoie
+             qu'une RÉFÉRENCE, le serveur relit la chose dans MON Totehm. -->
+        <div id="lv-focus" class="hide" aria-live="polite"></div>
         <form id="lv-say" class="hide is-vide" autocomplete="off">
           <textarea id="lv-say-in" maxlength="600" rows="1" enterkeyhint="send" autocapitalize="sentences" aria-label="Talk to my Reflection"></textarea>
           <button class="lv-btn" id="lv-say-go" type="submit">SEND</button>
@@ -6340,7 +6355,10 @@ function creerFeed(conf){
       +(z.comment?'<p class="sd-say">'+esc(String(z.comment))+'</p>':'')+'</div>';
     const acts=(ex?'<button type="button" data-go="'+esc(String(z.id))+'">go</button>':'')
       +(z.state==='will'?'<button type="button" data-ics="'+esc(String(z.id))+'">calendar</button>':'')
-      +(z.mine&&!RO?'<button type="button" data-del="'+esc(String(z.id))+'">delete</button>':'');
+      /* 25/10 (Wah) : MON spot, montré au Higher Self — un mot de plus dans la même rangée, rien de neuf à apprendre.
+         DELETE reste le DERNIER : ce qui détruit ne se touche pas en visant autre chose. */
+      +(z.mine&&!RO?'<button type="button" data-ask="sp:'+esc(String(z.id))+'" data-ask-t="'+esc(String(x.txt||''))+'">higher self</button>'
+                   +'<button type="button" data-del="'+esc(String(z.id))+'">delete</button>':'');
     const par=!z.mine&&z.creator?'<span class="ssp-par"><span>by</span><button type="button" class="ssp-by" data-who="'+esc(String(z.creator))+'">'+esc(String(z.creator))+'</button></span>':'';
     const box=x.id?'<div class="ssp-box" role="button" tabindex="0" data-lsh="habits|'+esc(x.id)+'">'+loupeVue(boxSpot(z))+'</div>'
                   :'<div class="ssp-box">'+loupeVue(boxSpot(z))+'</div>';
@@ -6617,7 +6635,7 @@ function creerFeed(conf){
     const b=sec.querySelector('.tlv-b');
     /* PAR-DESSUS LE MÉDIA, LA BOX DÉTAILLÉE (Wah) : la box du Totehm entière — filet, nom, intentions, rythme,
        mini-boîtes —, surélevée. Plus aucune redirection vers le Totehm depuis la grille. */
-    if(b&&!b.firstChild) b.innerHTML=loupeVue(boxDe(x,false));
+    if(b&&!b.firstChild) b.innerHTML=loupeVue(boxDe(x,false))+askHTML(x);
     const m=sec.querySelector('.tlv-m'); if(!m) return;
     let el=m.firstChild;
     if(!el){
@@ -6673,9 +6691,22 @@ function creerFeed(conf){
     fermerV();
     window.__totehmDeplie(()=>{ setView(v); requestAnimationFrame(()=>ouvrir(k,id)); });
   }
+  /* 25/10 (Wah) — « lire et sélectionner un média ou un spot à envoyer à l'IA » : le geste est posé SUR la chose,
+     dans la visionneuse et sur le spot ouvert, et il n'existe que pour ce qui est À MOI (le serveur ne relit que mes
+     lignes). La page n'envoie qu'une RÉFÉRENCE (`em:<id>`, `sp:<id>`) ; le texte affiché n'est qu'une étiquette. */
+  const askHTML=x=>(!me||RO||!x||x.b!=='em'||!x.cle)?''
+    :'<button type="button" class="sh-ask" data-ask="'+esc(x.cle)+'" data-ask-t="'+esc(x.txt||'')+'">show my higher self</button>';
+  function demanderIA(b){
+    const [g,id]=String(b.dataset.ask||'').split(':');
+    const kind=g==='em'?'media':g==='sp'?'spot':'';
+    if(!kind||!id||typeof window.__smMontrer!=='function') return;
+    if(conf.grille) fermerV(); else if(conf.src==='spots') SPOTS.fermerVoir();
+    window.__smMontrer(kind,id,b.dataset.askT||'');
+  }
   if(conf.grille){ const r=$('tlv'); if(r){
     r.addEventListener('click',e=>{
       if(e.target.closest('[data-tlv="x"]')){ fermerV(); return; }
+      const k=e.target.closest('[data-ask]'); if(k){ demanderIA(k); return; }
       const del=e.target.closest('[data-tlv="del"]');
       if(del){ if(!arme(del)) return; const x=L[VU.i]; del.disabled=true;
         retirer(x).then(ok=>{ del.disabled=false; if(ok) fermerV(); else peindreDel(); }); return; }
@@ -6810,6 +6841,7 @@ function creerFeed(conf){
       if(e.target.closest('[data-f-sel]')){ sfOpen(true); return; }
       const a=e.target.closest('[data-add]');
       if(a){ choix('cap',a.dataset.add||undefined); return; }
+      const k=e.target.closest('[data-ask]'); if(k){ demanderIA(k); return; }
       const b=e.target.closest('[data-lsh]'); if(b){ ouvrirElement(b); return; }
       /* Les gestes d'un spot : y aller (le point exact, si je le vois), le mettre au calendrier, voir son auteur. */
       const del=e.target.closest('[data-del]');
@@ -7497,7 +7529,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-10-25-com-boitier';
+const BUILD='2026-10-25-montrer-boitier';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -11645,7 +11677,7 @@ window.addEventListener('pageshow',e=>{
     const W=()=>innerWidth, H=()=>innerHeight;
     const ordi=()=>window.matchMedia('(hover:hover) and (pointer:fine)').matches;
     const lisse=u=>u<.5?2*u*u:1-Math.pow(-2*u+2,2)/2;
-    const diag={allers:0, modes:0, envois:0, telegram:0, ajouts:0, tours:0};
+    const diag={allers:0, modes:0, envois:0, telegram:0, ajouts:0, tours:0, montres:0};
     let vue='c', mode='mine', bouge=false;
     /* ══ MEMBERS · 20/10/2026 sexies ══ Wah : « les 5 vues (surtout les 4, celle du haut est la même pour tout le monde)
        forment L'ÉCOSYSTÈME TOTEHM. Quand on cherche un Totehm (MEMBERS), on oublie la galaxie : on agrandit le
@@ -12796,7 +12828,8 @@ window.addEventListener('pageshow',e=>{
        Rien n'est présenté comme mien sans exister dans mon Totehm : le serveur vérifie chaque citation (`@ok`) ;
        une step qui n'est pas une de mes Habits est une PROPOSITION (pointillé, « + my Habit »). La dernière
        Reflection seule, aucun historique visible ; le serveur décide de l'accès (`my_landing().sm`, `sm_begin`). */
-    const SM={seq:0, msgs:[], busy:false, live:null, offre:false, raf:0, paye:false, ajoute:new Set(), spotte:new Set(), pos:null, posRefus:false};
+    const SM={seq:0, msgs:[], busy:false, live:null, offre:false, raf:0, paye:false, ajoute:new Set(), spotte:new Set(), pos:null, posRefus:false,
+              focus:null};   /* 25/10 (Wah) : un média ou un spot MONTRÉ au Higher Self — {kind,id,txt} */
     const etatSM=()=>(LAND&&LAND.sm)||{};
     const acces=()=>!!(etatSM().higher||(LAND&&LAND.higher&&LAND.higher.active));
     const fil=$('lv-thread'), ring=document.querySelector('#lv-socket .sk-ring');
@@ -12920,11 +12953,35 @@ window.addEventListener('pageshow',e=>{
       const st=etatSM(), ouvert=!!(me&&inscrit()&&!guest()&&st.ready&&(acces()||(st.free_left|0)>0));
       $('lv-say').classList.toggle('hide',!ouvert);
       $('lv-say-go').disabled=SM.busy;
-      curseur();
+      curseur(); smFocus();
       fil.innerHTML=smHTML();
     }
     /* Le champ vide = une ligne nue et un curseur qui clignote ; dès la première lettre, il redevient un champ. */
     function curseur(){ const f=$('lv-say'), t=$('lv-say-in'); if(f&&t) f.classList.toggle('is-vide',!t.value.trim()); }
+    /* ── 25/10 (Wah) : CE QUE JE LUI MONTRE ──────────────────────────────────
+       « il faut aussi que l'on puisse lire et sélectionner un média ou un spot à envoyer à l'IA ». La chose
+       choisie se pose au-dessus de ce que j'écris, comme une pièce jointe : un mot (media · spot), son élément,
+       et une croix. La page n'envoie que {kind,id} — le serveur relit la chose dans MON Totehm. Un envoi la
+       CONSOMME (elle a été montrée) ; un envoi raté la garde, pour la réessayer telle quelle. */
+    /* Les deux seuls genres, ici comme au serveur : la liste est FERMÉE côté page. */
+    function montreMot(k){ return k==='media'?'media':k==='spot'?'spot':''; }
+    function smFocus(){
+      const b=$('lv-focus'); if(!b) return;
+      const f=SM.focus;
+      b.classList.toggle('hide',!f);
+      b.innerHTML=f?'<i>'+esc(montreMot(f.kind))+'</i><b>'+esc(f.txt||'untitled')+'</b>'
+        +'<button type="button" data-sm-unfocus aria-label="Remove what I show">✕</button>':'';
+    }
+    function smMontrer(kind,id,txt){
+      if(!montreMot(kind)||!id) return;
+      SM.focus={kind, id:String(id), txt:String(txt||'')}; diag.montres++;
+      const pose=()=>{ smFocus(); const t=$('lv-say-in');
+        if(t&&!$('lv-say').classList.contains('hide')) try{ t.focus({preventScroll:true}); }catch(_){} };
+      /* La croix du processeur : du bas on ne vient QUE du centre (← et → ne touchent pas ↓). */
+      const bas=()=>{ if(vue!=='b') aller('b',pose); else pose(); };
+      if(vue!=='c'&&vue!=='b') aller('c',bas); else bas();
+    }
+    window.__smMontrer=smMontrer;
     /* Pendant le flux : un dessin par image, pas un par morceau. */
     const smBientot=()=>{ if(!SM.raf) SM.raf=requestAnimationFrame(()=>{ SM.raf=0; smPeindre(); }); };
     window.__lvPeindreSM=smPeindre;
@@ -12982,12 +13039,15 @@ window.addEventListener('pageshow',e=>{
       const tours=SM.msgs.slice(-6).map(m=>({role:m.role,text:m.role==='sm'?sansOk(m.text):m.text}));
       SM.msgs.push({role:'me',text:t}); SM.busy=true; SM.live=''; inp.value=''; smNote(''); smPeindre(); penser(true);
       const pos=acces()?await posPermise():null;
-      const {status,d}=await smFlux({action:'say',text:t,turns:tours,now:maintenant(),tz:new Date().getTimezoneOffset(),fmt:'r4',...(pos?{pos}:{})},
+      /* Ce que je montre part en RÉFÉRENCE seule : {kind,id}. L'étiquette affichée ne quitte jamais la page. */
+      const mtr=SM.focus?{kind:SM.focus.kind, id:SM.focus.id}:null;
+      const {status,d}=await smFlux({action:'say',text:t,turns:tours,now:maintenant(),tz:new Date().getTimezoneOffset(),fmt:'r4',...(pos?{pos}:{}),...(mtr?{focus:mtr}:{})},
         txt=>{ if(seq===SM.seq){ SM.live=txt; smBientot(); } });
       if(seq!==SM.seq||me?.id!==uid) return;
       penser(false); SM.busy=false; SM.live=null;
       if(d.ok){
         SM.msgs.push({role:'sm',text:d.text,id:'r'+seq}); diag.envois++;
+        if(mtr&&SM.focus&&SM.focus.id===mtr.id) SM.focus=null;   /* montré : la pastille s'en va avec la réponse */
         if(LAND&&LAND.sm&&d.left!=null){ LAND.sm.left=d.left; if(!d.higher) LAND.sm.free_left=d.left; }
         smPeindre(); smNoteEtat(); return;
       }
@@ -13049,6 +13109,8 @@ window.addEventListener('pageshow',e=>{
       SM.ajoute.add(id); smPeindre(); smNote('in my TOTEHM'); RAM.peindre(vue);
     }
     async function smClic(e){
+      /* La croix de ce que je montre : je la retire, et je garde ce que j'étais en train d'écrire. */
+      if(e.target.closest('[data-sm-unfocus]')){ SM.focus=null; smFocus(); return; }
       /* 15/10 : TELEGRAM SEUL (Wah) — pas de Meta. Le bouton WhatsApp et son câblage sont partis ensemble. */
       const tg=e.target.closest('[data-tg]');
       if(tg){ const m=SM.msgs.find(x=>x.id===tg.dataset.tg); if(!m) return; smNote('…');
@@ -13075,6 +13137,7 @@ window.addEventListener('pageshow',e=>{
     }
     fil.addEventListener('click',smClic);
     $('lv-say-note').addEventListener('click',smClic);
+    $('lv-focus').addEventListener('click',smClic);
     /* ══ 20/10 · ON ARRIVE, ON TAPE ══ Le clavier s'ouvre en arrivant dans ma Reflection. Sur téléphone, il ne
        s'ouvre que DANS un geste : `armer()` est appelé par `aller('b')` dans le même geste (doigt, manette,
        flèche) et focalise un relais invisible ; à l'arrivée, `arrive()` passe le focus au vrai champ (le clavier
@@ -13116,6 +13179,7 @@ window.addEventListener('pageshow',e=>{
       CREA.charger();
     };
     lvQuitter=()=>{ landSeq++; SM.seq++; SM.msgs=[]; SM.busy=false; SM.live=null; SM.offre=false; SM.ajoute.clear(); penser(false);
+                    SM.focus=null; smFocus();   /* un autre compte : ce que MOI je montrais s'en va avec moi */
                     visSeq++; CREA.vider(); DASH.vider(); OFFRE.vider(); CLUBSP.vider(); smNote('');
                     /* Un autre compte : la recherche et l'écosystème d'un membre se referment (la lecture, elle, suit `sessionChange`). */
                     if(MB.cherche) finirRecherche(); if(!RO){ MB.nom=null; MB.avant=null; mode='mine'; body.classList.remove('lv-mb','lv-membre'); peindreMode(); } };
@@ -13123,7 +13187,8 @@ window.addEventListener('pageshow',e=>{
       debloques:diag.debloques, enAttente:diag.enAttente, refus:{...diag.refus}, dernierRefus:diag.dernier, haut:diagHaut,
       membre:inscrit(), higher:!!(LAND&&LAND.higher&&LAND.higher.active), thp:!!(LAND&&LAND.thp),
       reflection:{tours:SM.msgs.length, pret:!!etatSM().ready, gratuits:etatSM().free_left??null, envois:diag.envois, ajouts:diag.ajouts,
-                  pense:!!pense, telegram:diag.telegram, spots:diag.spots|0, pos:!!SM.pos},
+                  pense:!!pense, telegram:diag.telegram, spots:diag.spots|0, pos:!!SM.pos,
+                  montre:SM.focus?SM.focus.kind:null, montres:diag.montres|0},
       membre:{cherche:MB.cherche, chez:!!MB.nom, verrou:MB.verrou, medias:MBM.items.length, offre:OFFRE.etat()}, ramifications:RAM.etat(), tours:diag.tours, tourne:!!tour,
       shorts:SH.etat(), spots:SPOTS.etat(),
       visibilite:LAND?LAND.visibility:null, createur:CREA.etat(), reglages:sOpen});
