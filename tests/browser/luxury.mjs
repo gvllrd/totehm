@@ -23,6 +23,10 @@ const rpc = {
   },
   my_box_matter: b => ({ text:'Slow is smooth', view:'wisdom', palette:['#378ADD'],
     matter:{ objectives:[{ text:'Marathon in May' }], habits:[{ text:'Run the hill' }] }, extra:{ mood:'Low end theory' } }),
+  /* 26/10 — les photos du monde de la box, ici aussi. */
+  my_box_shots: () => ([
+    { kind:'media', id:'em1', bucket:'element-media', path:'u/m-1.jpg', txt:'bag.jpg', at:'2026-10-20' },
+    { kind:'spot',  id:'sp1', bucket:'moments',       path:'u/s-1.jpg', txt:'the hill', at:'2026-10-24' } ]),
 };
 const tables = { profiles: [{ pseudo:'Vallerand' }] };
 let ASK = null, CHECKOUT = null;
@@ -41,7 +45,7 @@ const D = () => pg.evaluate(() => window.__totehm_luxury());
 await pg.goto('https://www.higher.boutique/luxury');
 await pg.waitForFunction(() => window.__totehm_luxury && window.__totehm_luxury().price_loaded);
 let d = await D();
-ok(d.build === '2026-10-25-plein-ecran' && d.deposit === 50000 && !d.photo && !d.box && !d.flow,
+ok(d.build === '2026-10-26-allume' && d.deposit === 50000 && !d.photo && !d.box && !d.flow,
   'le luxe s\'ouvre sur son porche : le prix, le métier — le dépôt attend derrière un bouton (500 €)');
 ok(/500/.test(await pg.textContent('#price')) && /deposit/i.test(await pg.textContent('#price'))
    && /refunded/i.test(await pg.textContent('#refund')), 'le prix dit un DÉPÔT, et le remboursement est écrit');
@@ -100,10 +104,21 @@ ok(d.box && d.step === 's-element' && await pg.isVisible('#el-go') && (await pg.
   'la box tapée EST le choix : la liste se réduit à elle, et [Next] attend');
 ok(/Marathon in May/.test(await pg.textContent('#matter')) && /Low end theory/.test(await pg.textContent('#matter')),
   'elle garde sa matière ouverte — ses mini-box et le son de son intention');
+// 26/10 — tout part ÉTEINT ici aussi ; un tap LIE la mini-box, puis la photo.
+ok((await pg.$eval('#matter .mi[data-k="objectives"]', e => !e.classList.contains('is-on') && !/line-through/.test(getComputedStyle(e).textDecorationLine)))
+   && (await D()).linked === 0, '26/10 · par défaut une mini-box est assombrie, sans trait, et hors de la pièce');
 await pg.click('#matter .mi[data-k="objectives"]');
-await pg.waitForFunction(() => window.__totehm_luxury().hidden === 1);
-ok(await pg.$eval('#matter .mi[data-k="objectives"]', e => e.classList.contains('is-off')),
-  'une sous-box s\'éteint ici aussi');
+await pg.waitForFunction(() => window.__totehm_luxury().linked === 1);
+ok(await pg.$eval('#matter .mi[data-k="objectives"]', e => e.classList.contains('is-on')),
+  'un tap LIE la sous-box à la pièce');
+await pg.waitForSelector('#shots .sh-t');
+const ph = await pg.evaluate(() => { const l = [...document.querySelectorAll('#shots .sh-t')];
+  return { n: l.length, m: l[0].classList.contains('m'), s: l[1].classList.contains('s'),
+    on: l.some(x => x.classList.contains('is-on')), lieu: (l[1].querySelector('b') || {}).textContent || '' }; });
+ok(ph.n === 2 && ph.m && ph.s && !ph.on && ph.lieu === 'the hill',
+  '26/10 · sous la box, ses photos : le media perforé et le spot, éteints ' + JSON.stringify(ph));
+await pg.click('#shots .sh-t[data-id="em1"]');
+await pg.waitForFunction(() => window.__totehm_luxury().shots === 1);
 await pg.screenshot({ path: OUT + '/lux_element.png' });
 await pg.click('#el-go');
 await pg.waitForFunction(() => window.__totehm_luxury().step === 'st-name');
@@ -130,8 +145,8 @@ await pg.waitForURL(/checkout\.stripe\.test/);
 ok(ASK && ASK.photo === up.path.replace('luxury-pieces/', '') && ASK.box.kind === 'wisdom' && ASK.box.ref === 'w1'
    && ASK.name === 'seabag' && /2019 bag/.test(ASK.note) && !('style' in ASK) && !('piece' in ASK) && !('brand' in ASK),
   'le dépôt envoie le CHEMIN de la photo, la référence de la box et le nom — rien d\'autre');
-ok(JSON.stringify(ASK.hide) === '[{"kind":"objectives","text":"Marathon in May"}]',
-  'la sous-box éteinte voyage en RÉFÉRENCE');
+ok(JSON.stringify(ASK.pick) === '{"matter":[{"kind":"objectives","text":"Marathon in May"}],"shots":["em1"]}' && !ASK.hide,
+  '26/10 · ce qui est ALLUMÉ voyage en RÉFÉRENCES (mini-box + photo)');
 ok(CHECKOUT && CHECKOUT.quote_id === 'q1', 'le Checkout suit tout de suite, sur le devis que le serveur vient d\'écrire');
 ok(!log.functions.some(f => f.name === 'sso-mint'), 'aucun pont SSO dans tout le parcours');
 log.errors = log.errors.filter(e => !/404|Failed to load/.test(e));

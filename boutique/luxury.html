@@ -137,12 +137,31 @@ button.chip.is-on{background:var(--s3);color:#fff;border-color:#fff}
 #matter .grp{display:flex;flex-wrap:wrap;gap:5px;align-items:center}
 #matter .w{font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.62);min-width:64px}
 .mi{font-family:var(--q);font-size:11px;color:#fff;padding:2px 7px;background:var(--navy);border:0;text-align:left}
-/* 24/10 (Wah) : une sous-box SE DÉSELECTIONNE — éteinte, elle n'entre pas dans
-   l'œuvre. Elle reste lisible : le trait dit « hors de l'œuvre », pas l'absence. */
-button.mi{cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background-color .18s ease,color .18s ease}
-button.mi.is-off{background:transparent;box-shadow:inset 0 0 0 1px rgba(255,255,255,.28);color:rgba(255,255,255,.42);text-decoration:line-through}
-@media(hover:hover){button.mi:hover{filter:brightness(1.2)}}
+/* 26/10 (Wah) : « par défaut elles sont toutes désélectionnées… quand
+   l'utilisateur appuie sur une mini-box ou une photo il la LIE à la
+   totehmisation », et « seulement en format assombri, sans trait de
+   correction ». Éteinte, la mini-box est donc SOMBRE et entière : on la lit,
+   elle n'est juste pas encore dans l'œuvre. Allumée, elle reprend sa couleur. */
+button.mi{cursor:pointer;-webkit-tap-highlight-color:transparent;filter:brightness(.34) saturate(.5);
+  transition:filter .18s ease,opacity .18s ease}
+button.mi.is-on{filter:none}
+@media(hover:hover){button.mi:hover{filter:brightness(.6) saturate(.8)}button.mi.is-on:hover{filter:brightness(1.15)}}
 #matter .hint{margin-top:2px;opacity:.75}
+/* LES PHOTOS DE LA BOX (26/10) — ses medias, et les spots qu'on y a vécus. La
+   grille de la vue de gauche de totehm.com, COPIÉE : trois par ligne, carrées,
+   l'image telle qu'elle. Un media porte la perforation du TOTEHM ; un spot
+   garde son coin net et dit son lieu. Éteinte : sombre, comme une mini-box. */
+#shots{width:100%;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:3px;margin-top:9px}
+.sh-t{position:relative;aspect-ratio:1;background:#0b0b0d;border:0;padding:0;cursor:pointer;overflow:hidden;
+  -webkit-tap-highlight-color:transparent;filter:brightness(.34) saturate(.5);transition:filter .18s ease}
+.sh-t.is-on{filter:none}
+@media(hover:hover){.sh-t:hover{filter:brightness(.6) saturate(.8)}.sh-t.is-on:hover{filter:brightness(1.1)}}
+.sh-t img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .3s ease}
+.sh-t img[src]{opacity:1}
+.sh-t.m img{-webkit-mask-image:var(--perfo);mask-image:var(--perfo);-webkit-mask-size:100% 100%;mask-size:100% 100%}
+.sh-t b{position:absolute;left:4px;right:4px;bottom:4px;font-family:var(--mono);font-weight:400;font-size:8px;
+  letter-spacing:.14em;text-transform:uppercase;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.9);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:left}
 .mi.o{background:var(--blue)}.mi.r{background:var(--rep)}.mi.w{background:#5b2652}.mi.v{background:#2b3a73}
 .mi.s{background:rgba(0,0,0,.35);font-family:var(--mono);font-size:10px}
 .pal{display:flex;gap:4px}.pal i{width:18px;height:18px;display:block}
@@ -591,14 +610,14 @@ sb.auth.onAuthStateChange(ev => {
 
 
 /* ══ L'ÉTAT — une lecture, un écran ═════════════════════════════════ */
-const BUILD = '2026-10-25-plein-ecran';
+const BUILD = '2026-10-26-allume';
 let A = null, ADM = [], SEQ = 0, BUSY = false, ME = null;
 /* Le diagnostic — des booléens et des compteurs, jamais une valeur de membre. */
 window.__totehm_luxury = () => ({ build: BUILD, signed_in: !!A?.signed_in, thp: !!A?.thp, open: !!A?.open,
   price_loaded: A?.price_cents != null, deposit: A?.price_cents ?? null, mode: A?.mode || null,
   quotes: (A?.quotes || []).length, quoted: (A?.quotes || []).filter(q => q.status === 'quoted').length,
   admin: !!A?.admin, to_answer: ADM.length, test: !!A?.test_mode,
-  photo: !!PHOTO, box: !!PICK, hidden: HIDE.length, named: NAME_OK,
+  photo: !!PHOTO, box: !!PICK, linked: LIE.matter.length, shots: LIE.shots.length, named: NAME_OK,
   papers: $('el-head')?.classList.contains('is-split') || false,
   how: $('how')?.classList.contains('is-on') || false, flow: $('form')?.classList.contains('is-on') || false,
   step: [...document.querySelectorAll('#form .step.is-open')].map(e => e.id)[0] || null });
@@ -740,7 +759,7 @@ const SKIN=Object.fromEntries(Object.entries(VIEWS).map(([k,v])=>[k,v.skin]));
 const KIND=Object.fromEntries(Object.entries(VIEWS).map(([k,v])=>[k,v.kind]));
 const NOM=Object.fromEntries(Object.entries(VIEWS).map(([k,v])=>[k,[v.nom,v.sub]]));
 const GRIND=['objectives','habits','repulsions'];
-let TOT=null, vue=null, PICK=null, HIDE=[], OPEN=null, MT_SEQ=0, TOT_SEQ=0;
+let TOT=null, vue=null, PICK=null, LIE={matter:[],shots:[]}, OPEN=null, MT_SEQ=0, TOT_SEQ=0;
 async function loadTotehm(){
   const seq=++TOT_SEQ;
   const{data,error}=await sb.rpc('my_trips');
@@ -813,17 +832,19 @@ $('tz-papers').addEventListener('click',async e=>{
   const v=e.target.closest('[data-v]');if(!v||!VIEWS[v.dataset.v])return;
   if(!TOT)await loadTotehm();
   const change=v.dataset.v!==vue;vue=v.dataset.v;
-  if(PICK){PICK=null;HIDE=[];$('s-element').classList.remove('is-picked');$('el-go').classList.add('hide');renderEl('in');return;}
+  if(PICK){PICK=null;LIE={matter:[],shots:[]};$('s-element').classList.remove('is-picked');$('el-go').classList.add('hide');renderEl('in');return;}
   if(change)renderEl('in');
 });
 /* LA MATIÈRE — ce qui est relié à l'élément, calculé en base (`my_box_matter`). */
 const MI={habits:['','how'],objectives:['o','why'],repulsions:['r','instead'],wisdom:['w','learned'],visions:['v','sees']};
-const estCache=(k,x)=>HIDE.some(h=>h.kind===k&&h.text===x);
+/* 26/10 (Wah) : tout part ÉTEINT ; un tap LIE la mini-box ou la photo à l'œuvre. */
+const estAllume=(k,x)=>LIE.matter.some(h=>h.kind===k&&h.text===x);
+const photoAllumee=id=>LIE.shots.includes(id);
 async function openEl(b){
   const o=((TOT&&TOT[vue])||[])[+b.dataset.k];if(!o)return;
   document.querySelectorAll('#el-list .bx').forEach(x=>x.classList.toggle('is-on',x===b));
   const seq=++MT_SEQ,v=vue,ref=String(o.ref);
-  if(!PICK||PICK.ref!==ref||PICK.kind!==KIND[v])HIDE=[];
+  if(!PICK||PICK.ref!==ref||PICK.kind!==KIND[v])LIE={matter:[],shots:[]};
   PICK={kind:KIND[v],ref,view:v,text:o.text};
   $('s-element').classList.add('is-picked');$('el-go').classList.remove('hide');
   $('matter')?.remove();OPEN={b,o};
@@ -834,22 +855,55 @@ async function openEl(b){
   if(error||!m){c.innerHTML='<div class="mono">'+(error?'unavailable, try again':'this element is empty')+'</div>';return;}
   const groups=Object.entries(m.matter||{}).filter(([,a])=>(a||[]).length).map(([k,a])=>
     '<div class="grp"><span class="w">'+esc((MI[k]||['',k])[1])+'</span>'+a.map(x=>
-      '<button type="button" class="mi '+((MI[k]||[''])[0])+(estCache(k,x.text)?' is-off':'')+'" data-k="'+esc(k)+'" data-t="'+esc(x.text)+'" aria-pressed="'+(!estCache(k,x.text))+'">'+esc(x.text)+'</button>').join('')+'</div>').join('');
+      '<button type="button" class="mi '+((MI[k]||[''])[0])+(estAllume(k,x.text)?' is-on':'')+'" data-k="'+esc(k)+'" data-t="'+esc(x.text)+'" aria-pressed="'+estAllume(k,x.text)+'">'+esc(x.text)+'</button>').join('')+'</div>').join('');
   const son=m.extra&&m.extra.mood?'<div class="grp"><span class="w">sound</span><span class="mi s">'+esc(m.extra.mood)+'</span></div>':'';
-  c.innerHTML=groups+son+(groups?'<div class="mono hint">tap a link to keep it out</div>':'');
+  c.innerHTML=groups+son+'<div id="shots"></div>'+(groups?'<div class="mono hint">tap what goes into the piece</div>':'');
   c.addEventListener('click',e=>{
-    const q=e.target.closest('.mi[data-k]');if(!q)return;
-    const k=q.dataset.k,x=q.dataset.t,off=!q.classList.contains('is-off');
-    q.classList.toggle('is-off',off);q.setAttribute('aria-pressed',String(!off));
-    HIDE=HIDE.filter(h=>!(h.kind===k&&h.text===x));
-    if(off)HIDE.push({kind:k,text:x});
+    const q=e.target.closest('.mi[data-k]');
+    if(q){
+      const k=q.dataset.k,x=q.dataset.t,on=!q.classList.contains('is-on');
+      q.classList.toggle('is-on',on);q.setAttribute('aria-pressed',String(on));
+      LIE.matter=LIE.matter.filter(h=>!(h.kind===k&&h.text===x));
+      if(on)LIE.matter.push({kind:k,text:x});
+      return;
+    }
+    const t=e.target.closest('.sh-t[data-id]');
+    if(t){
+      const id=t.dataset.id,on=!t.classList.contains('is-on');
+      t.classList.toggle('is-on',on);t.setAttribute('aria-pressed',String(on));
+      LIE.shots=LIE.shots.filter(x=>x!==id);
+      if(on)LIE.shots.push(id);
+    }
   });
+  peindrePhotos(seq,KIND[v],ref);
   if(PICK&&PICK.ref===ref&&PICK.kind===KIND[v]){PICK.text=m.text||o.text;PICK.view=m.view||v;}
+}
+/* 26/10 (Wah) : les photos du monde de la box — ses medias (perforés) et les
+   spots qu'on y a vécus. La base rend des CHEMINS (mes lignes seules) ; la page
+   les signe une heure, le temps de les montrer. Toutes éteintes au départ. */
+async function peindrePhotos(seq,kind,ref){
+  if(!$('shots'))return;
+  const{data,error}=await sb.rpc('my_box_shots',{p_kind:kind,p_ref:ref});
+  if(seq!==MT_SEQ||!$('shots'))return;
+  if(error){console.error('[my_box_shots]',error.message);return;}
+  const l=(Array.isArray(data)?data:[]).slice(0,24);
+  if(!l.length)return;
+  $('shots').innerHTML=l.map(x=>
+    '<button type="button" class="sh-t '+(x.kind==='media'?'m':'s')+(photoAllumee(String(x.id))?' is-on':'')
+    +'" data-id="'+esc(String(x.id))+'" aria-pressed="'+photoAllumee(String(x.id))+'"'
+    +' aria-label="'+esc((x.kind==='media'?'photo · ':'spot · ')+(x.txt||''))+'">'
+    +'<img alt="" data-p="'+esc(String(x.path||''))+'" data-b="'+esc(String(x.bucket||''))+'">'
+    +(x.kind==='spot'?'<b>'+esc(String(x.txt||''))+'</b>':'')+'</button>').join('');
+  $('shots').querySelectorAll('img[data-p]').forEach(async im=>{
+    const{data:u,error:er}=await sb.storage.from(im.dataset.b).createSignedUrl(im.dataset.p,3600);
+    if(er){console.error('[shot url]',er.message);return;}
+    if(seq===MT_SEQ&&im.isConnected&&u?.signedUrl)im.src=u.signedUrl;
+  });
 }
 $('el-list').addEventListener('click',e=>{
   if(e.target.closest('#matter'))return;
   if($('s-element').classList.contains('is-picked')){
-    if(e.target.closest('.bx')){PICK=null;HIDE=[];$('s-element').classList.remove('is-picked');$('el-go').classList.add('hide');}
+    if(e.target.closest('.bx')){PICK=null;LIE={matter:[],shots:[]};$('s-element').classList.remove('is-picked');$('el-go').classList.add('hide');}
     return;
   }
   const b=e.target.closest('.bx');if(b)openEl(b);
@@ -857,7 +911,7 @@ $('el-list').addEventListener('click',e=>{
 $('el-list').addEventListener('keydown',e=>{
   if(e.key!=='Enter'&&e.key!==' ')return;
   const b=e.target.closest('.bx');if(!b)return;e.preventDefault();
-  if($('s-element').classList.contains('is-picked')){PICK=null;HIDE=[];$('s-element').classList.remove('is-picked');$('el-go').classList.add('hide');return;}
+  if($('s-element').classList.contains('is-picked')){PICK=null;LIE={matter:[],shots:[]};$('s-element').classList.remove('is-picked');$('el-go').classList.add('hide');return;}
   openEl(b);
 });
 $('el-go').onclick=()=>{ if(PICK)etape('st-name'); };
@@ -922,7 +976,8 @@ $('ask').onclick = async () => {
   if(!$('terms').checked){ n.className = 'note no'; n.textContent = 'tick the box to continue'; return; }
   BUSY = true; $('ask').disabled = true; n.className = 'note'; n.textContent = 'depositing…';
   const { d } = await call('luxury-quote', { action:'request', note: $('note').value, photo: PHOTO,
-    box: { kind: PICK.kind, ref: PICK.ref }, hide: HIDE.slice(0, 40), name: $('nm-input').value.trim() });
+    box: { kind: PICK.kind, ref: PICK.ref }, name: $('nm-input').value.trim(),
+    pick: { matter: LIE.matter.slice(0, 60), shots: LIE.shots.slice(0, 24) } });
   if(d.ok && d.id){
     n.textContent = 'opening checkout…';
     const r = await call('luxury-checkout', { quote_id: d.id });
@@ -1043,7 +1098,7 @@ await load();
     const parentButton = scope.closest(buttonSelector);
     const buttons = [...(parentButton ? [parentButton] : []),...scope.querySelectorAll(buttonSelector)];
     buttons.forEach(b => {
-      if (b.closest('#joy,#nav,#cross,.pieces,#totehm-paper,.eco-sheet') || b.matches('.pick-habit,.h-T,.h-Ti,.h-x,.w-x,.cur,.eco-box-zoom,.mini-toggle,.rk-a')) return;
+      if (b.closest('#joy,#nav,#cross,.pieces,#totehm-paper,#tz-papers,#matter,#shots,.eco-sheet') || b.matches('.pick-habit,.h-T,.h-Ti,.h-x,.w-x,.cur,#totehmize,.eco-box-zoom,.mini-toggle,.rk-a')) return;
       const text = b.textContent.trim(); if (!text || /^[×+−\-↑↓←→↔↕✕✖?°\d\s]+$/.test(text)) return;
       if (/^sign\s*in\b/i.test(text)) {
         const leaf = b.querySelector('#member-txt,#conn-txt') || b;

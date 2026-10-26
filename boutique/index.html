@@ -11,6 +11,8 @@ html{font-family:'Space Mono',monospace}button,input,select,textarea{font-family
 :root{
   --coral:#fbd5ca;--g-light:#e0e0e0;--g-mid:#909090;--g-dark:#5a5a5a;--bg:#000;--navy:#333366;--rep:#743169;--blue:#36498c;
   --futura:'Space Mono',monospace;
+  /* Le masque perforé du TOTEHM, copié de streetwear : le media d'une pièce le porte. */
+  --perfo-dc:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 224.88 224.08' preserveAspectRatio='none'%3E%3Cdefs%3E%3Cmask id='m'%3E%3Crect x='-40' y='-40' width='310' height='310' fill='%23fff'/%3E%3Ccircle cx='56.421' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='56.421' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='112.440' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='112.440' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='168.459' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='168.459' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='56.020' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='56.020' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='112.039' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='112.039' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='168.059' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='168.059' r='13.86' fill='%23000'/%3E%3C/mask%3E%3C/defs%3E%3Crect x='0.402' y='0' width='224.076' height='224.078' fill='%23fff' mask='url(%23m)'/%3E%3C/svg%3E");
   --tile-btn:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
   --tile-light:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%2336498c'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
   --tile-full:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44'%3E%3Crect width='44' height='44' fill='%23333366'/%3E%3Ccircle cx='22' cy='0' r='6' fill='%23000000'/%3E%3Ccircle cx='22' cy='44' r='6' fill='%23000000'/%3E%3Ccircle cx='0' cy='22' r='6' fill='%23000000'/%3E%3Ccircle cx='44' cy='22' r='6' fill='%23000000'/%3E%3C/svg%3E");
@@ -79,9 +81,9 @@ nav{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;max
 .note.ok{color:#639922}.note.no{color:var(--rep)}.note.dim{color:var(--g-dark)}
 
 /* FULL-SCREEN perforé : résultat Decode */
-.fs-perf{position:fixed;inset:0;z-index:90;background:var(--navy);border:11px solid transparent;border-image-source:var(--tile-full);border-image-slice:11;border-image-repeat:round;display:none;flex-direction:column;align-items:center;justify-content:center;padding:60px 30px 40px}
+.fs-perf{position:fixed;inset:0;z-index:260;background:var(--navy);border:11px solid transparent;border-image-source:var(--tile-full);border-image-slice:11;border-image-repeat:round;display:none;flex-direction:column;align-items:center;justify-content:center;padding:60px 30px 40px}
 .fs-perf.show{display:flex}
-.fs-perf .fs-back{position:fixed;top:16px;left:16px;z-index:92}
+.fs-perf .fs-back{position:fixed;top:16px;left:16px;z-index:262}
 /* 08/10 — Wah : « la page de résultat doit afficher tous les détails du totehm
    cloth, avec la box (l'élément) en position proéminente ». Fond noir dans le
    cadre perforé navy ; l'élément porte la couleur de sa vue ; le nom en Coral. */
@@ -97,6 +99,20 @@ nav{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;max
 .dc-mat{display:flex;flex-wrap:wrap;gap:5px;justify-content:center}
 .dc-mat span{font-family:'Quantico',sans-serif;font-size:11px;color:#fff;padding:2px 8px;background:var(--navy)}
 .dc-mat span.o{background:var(--blue)}.dc-mat span.r{background:var(--rep)}.dc-mat span.w{background:#5b2652}.dc-mat span.v{background:#2b3a73}
+/* 26/10 (Wah) : « le résultat de Decode doit afficher tous les éléments que
+   l'utilisateur a décidé de sélectionner ». Les mini-boxes sont déjà là
+   (`.dc-mat` : depuis le 26/10 la matière EST ce qui a été allumé) ; voici les
+   PHOTOS. Elles ne se montrent qu'à leur propriétaire — une photo de spot
+   n'appartient qu'à qui l'a vécue —, en grille carrée, le media perforé. */
+.dc-shots{width:min(100%,340px);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:3px}
+.dc-shots:empty{display:none}
+.dc-shots figure{position:relative;margin:0;aspect-ratio:1;background:#0b0b0d;overflow:hidden}
+.dc-shots img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .3s ease}
+.dc-shots img[src]{opacity:1}
+.dc-shots figure.m img{-webkit-mask-image:var(--perfo-dc);mask-image:var(--perfo-dc);-webkit-mask-size:100% 100%;mask-size:100% 100%}
+.dc-shots figcaption{position:absolute;left:4px;right:4px;bottom:4px;font:400 8px/1.3 'Space Mono',monospace;
+  letter-spacing:.14em;text-transform:uppercase;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.9);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:left}
 .dc-art{width:min(100%,340px);aspect-ratio:3/4;background:#0a0a0c;display:flex;align-items:center;justify-content:center;overflow:hidden}
 .dc-art.is-wait{aspect-ratio:auto;height:88px}
 .dc-art img{width:100%;height:100%;object-fit:contain;display:block}
@@ -127,16 +143,62 @@ nav{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;max
 #decode-btn{color:#fff;background:var(--navy);border:6px solid transparent;
   border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round;border-radius:0}
 #decode-btn:hover,#decode-btn:focus-visible{color:#fff;outline:none}
-/* 25/10 (Wah) : « la saisie doit VENIR À L'UTILISATEUR » — comme la recherche de
-   totehm.com : elle s'ouvre grande, au milieu, et prend la place du bouton. */
-#decode-input{color:var(--coral);caret-color:var(--coral);background:var(--navy);border:7px solid transparent;
-  border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round;border-radius:0;
-  font-family:'Quantico',sans-serif;font-weight:700;font-size:clamp(18px,6vw,26px);letter-spacing:.02em;
-  width:min(92vw,420px);min-width:0;padding:14px 12px;text-align:center;text-transform:lowercase;
-  transform:scale(.92);opacity:0;transition:transform .34s cubic-bezier(.22,.61,.36,1),opacity .28s ease}
-#decode-input.is-in{transform:none;opacity:1}
-#decode-input::placeholder{color:rgba(251,213,202,.35);text-transform:lowercase;font-weight:400}
-@media(prefers-reduced-motion:reduce){#decode-input{transition:none}}
+/* 26/10 (Wah) : « remets le bouton [Decode a Totehm Cloth] au format normal ».
+   La saisie n'est plus ici : elle vit DANS le Higher retourné (`#hb-q`). */
+
+/* ══ LE HIGHER SE RETOURNE (26/10) ══════════════════════════════════════
+   Wah : « quand tu cliques sur Decode a cloth, le Higher se retourne avec le
+   système de recherche mis directement dedans (avec le 0. sélectionné au
+   préalable) » · « l'utilisateur doit avoir accès au tableau de bord avec des
+   onglets appropriés à higher.boutique… EXACTEMENT le même fonctionnement que
+   totehm.com quand tu retournes le totehm ». Les blocs viennent de `#srch`
+   (com/totehm.html), COPIÉS — un produit indépendant n'importe rien. */
+.slogan{transform-origin:50% 50%;transition:transform .66s cubic-bezier(.22,.61,.36,1)}
+body.hb-on .slogan{transform:rotateY(180deg)}
+#hb{position:fixed;inset:0;z-index:240;visibility:hidden;pointer-events:none}
+#hb.is-on{visibility:visible;pointer-events:auto}
+/* Le NAVY PERFORÉ qui grandit depuis le logo : le même papier, en grand. */
+#hb-bg{position:absolute;left:50%;top:50%;width:var(--s,1200px);height:var(--s,1200px);
+  margin:calc(var(--s,1200px) / -2) 0 0 calc(var(--s,1200px) / -2);transform:scale(.03);transform-origin:50% 50%;
+  will-change:transform;transition:transform .66s cubic-bezier(.22,.61,.36,1);
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 224.88 224.08' preserveAspectRatio='none'%3E%3Cdefs%3E%3Cmask id='m'%3E%3Crect x='-40' y='-40' width='310' height='310' fill='%23fff'/%3E%3Ccircle cx='56.421' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='56.421' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='112.440' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='112.440' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='168.459' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='168.459' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='56.020' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='56.020' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='112.039' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='112.039' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='168.059' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='168.059' r='13.86' fill='%23000'/%3E%3C/mask%3E%3C/defs%3E%3Crect x='0.402' y='0' width='224.076' height='224.078' fill='%23333366' mask='url(%23m)'/%3E%3C/svg%3E") 0 0/100% 100% no-repeat}
+#hb.is-open #hb-bg{transform:scale(1)}
+#hb-ui{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;gap:10px;
+  padding:max(54px,8dvh) 16px max(28px,env(safe-area-inset-bottom));pointer-events:none;
+  overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none}
+#hb-ui::-webkit-scrollbar{display:none}
+#hb.is-open #hb-ui{pointer-events:auto}
+/* LE NOM EST LA SAISIE : Quantico, Coral, au milieu, sans fond ni trait. */
+#hb-q{width:min(560px,100%);font-family:'Quantico',sans-serif;font-weight:400;
+  font-size:clamp(26px,7.5vw,40px);line-height:1.25;color:var(--coral);background:none;border:none;
+  outline:none;caret-color:var(--coral);text-align:center;padding:2px 0;border-radius:0;
+  text-transform:lowercase;-webkit-appearance:none;appearance:none}
+#hb-q::placeholder{color:rgba(251,213,202,.42)}
+/* Le NOM seul pendant le retournement ; tout le reste arrive ENSEMBLE, après. */
+.hb-after{opacity:0;visibility:hidden;transition:opacity .15s ease,visibility 0s linear .15s}
+#hb.is-pret .hb-after{opacity:1;visibility:visible;transition:opacity .3s ease}
+#hb-note{width:min(420px,100%);min-height:14px}
+/* ⚠️ `nav{flex-direction:column}` règne sur cette page : les onglets le disent
+   à voix haute, sinon ils s'empilent (mesuré). */
+#hb-tabs{display:flex;flex-direction:row;gap:6px;width:min(94vw,420px);flex:none;margin:2px 0 4px}
+#hb-tabs button{flex:1;min-width:0;border:0;border-radius:10px;background:#1f1f24;color:#b8b8c2;cursor:pointer;
+  font:700 10px/1.2 'Space Mono',monospace;letter-spacing:.12em;text-transform:uppercase;padding:9px 4px;white-space:nowrap}
+#hb-tabs button:hover{color:#fff}
+#hb-tabs button.is-on{background:#3a3a42;color:#fff;box-shadow:inset 0 0 0 1px #fff}
+.hb-panel{width:min(94vw,420px);display:none;flex-direction:column;gap:6px;flex:none}
+#hb[data-tab="cloths"] #hb-cloths,#hb[data-tab="luxury"] #hb-luxury,#hb[data-tab="account"] #hb-account{display:flex}
+.hb-row{background:#000;padding:11px 13px;text-align:left;display:flex;flex-direction:column;gap:4px}
+.hb-row b{font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;color:var(--coral)}
+.hb-row span{font:400 9px/1.5 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#b8b8c2}
+.hb-row a,.hb-row button{align-self:flex-start;background:none;border:0;padding:0;cursor:pointer;
+  font:400 9px/1.5 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#fff;text-decoration:underline}
+.hb-vide{background:#000;padding:16px;font:400 10px/1.5 'Space Mono',monospace;color:#d2d2da;text-align:left}
+#hb-x{position:fixed;top:10px;right:10px;z-index:4;background:none;border:none;cursor:pointer;
+  padding:10px;pointer-events:none;-webkit-tap-highlight-color:transparent}
+#hb.is-open #hb-x{pointer-events:auto}
+#hb-x svg{width:20px;height:20px;color:rgba(255,255,255,.55);display:block;fill:none;stroke:currentColor;stroke-width:1.6}
+@media(hover:hover){#hb-x:hover svg{color:#fff}}
+@media(prefers-reduced-motion:reduce){.slogan,#hb-bg{transition:none}.hb-after{transition:none}}
 #conn-bar{position:fixed;top:14px;left:16px;z-index:85;display:flex;align-items:center;gap:7px;background:none;border:none;cursor:pointer;font-family:'Space Mono',monospace;font-weight:400;font-size:12px;letter-spacing:0;color:#b0b0b0;padding:4px;-webkit-tap-highlight-color:transparent;transition:color .2s}
 #conn-bar:hover{color:#fff}
 #conn-bar .dot{width:8px;height:8px;border-radius:50%;background:#888}
@@ -198,7 +260,7 @@ nav{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;max
 .brand-names:hover,
 .brand-legal:hover,
 #sw-col-sold:hover,
-#decode-input:hover::placeholder,
+#hb-q:hover::placeholder,
 #conn-bar:hover,
 .mw-close:hover,
 .mw-input:hover::placeholder,
@@ -271,8 +333,6 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
          BOÎTE navy perforée, toujours, pas seulement au survol. -->
     <div class="menu-row">
       <button class="btn-sig" id="decode-btn">Decode a Totehm Cloth</button>
-      <input class="line-input hide" id="decode-input" maxlength="40" placeholder="0.name">
-      <div class="note dim hide" id="decode-note"></div>
     </div>
 
     <!-- Physical creation and orders stay on higher.boutique. -->
@@ -332,6 +392,26 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
 </section>
 
 <!-- FULL-SCREEN : le Totehm Cloth décodé — l'élément en tête (08/10) -->
+<!-- 26/10 (Wah) : LE HIGHER RETOURNÉ — la recherche dedans, et dessous mon
+     tableau de bord. Le même objet, en mode membre, comme sur totehm.com. -->
+<div id="hb" role="dialog" aria-label="My Higher" aria-modal="true">
+  <div id="hb-bg" aria-hidden="true"></div>
+  <div id="hb-ui">
+    <input id="hb-q" maxlength="40" autocomplete="off" autocapitalize="off" spellcheck="false"
+           enterkeyhint="search" aria-label="Decode a Totehm Cloth" placeholder="0.name">
+    <div class="note dim" id="hb-note" role="status"></div>
+    <nav id="hb-tabs" class="hb-after" role="tablist" aria-label="My Higher">
+      <button type="button" role="tab" data-hb-tab="cloths" class="is-on" aria-selected="true">My cloths</button>
+      <button type="button" role="tab" data-hb-tab="luxury" aria-selected="false">My luxury</button>
+      <button type="button" role="tab" data-hb-tab="account" aria-selected="false">My account</button>
+    </nav>
+    <section id="hb-cloths" class="hb-panel hb-after" role="tabpanel" aria-label="My Totehm Cloths"></section>
+    <section id="hb-luxury" class="hb-panel hb-after" role="tabpanel" aria-label="My luxury projects"></section>
+    <section id="hb-account" class="hb-panel hb-after" role="tabpanel" aria-label="My account"></section>
+  </div>
+  <button id="hb-x" type="button" aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg></button>
+</div>
+
 <div class="fs-perf" id="decode-fs" role="dialog" aria-label="A decoded Totehm Cloth">
   <button class="btn-back fs-back" id="decode-back">Back in Time</button>
   <div class="dc" id="decode-msg"></div>
@@ -478,7 +558,6 @@ const DC_INT={fight:['Fight','#E24B4A','BODY'],flow:['Flow','#e48b31','BODY'],en
   express:['Express','#1D9E75','SOUL'],focus:['Focus','#378ADD','MENTAL'],celebrate:['Celebrate','#7F77DD','SOUL']};
 const DC_MI={habits:'',objectives:'o',repulsions:'r',wisdom:'w',visions:'v'};
 const DC_STAGE={making:'in the making',production:'in production',shipped:'shipped',cancelled:'cancelled'};
-morph($('decode-btn'),$('decode-input'),$('decode-note'));
 function decodeHTML(d,signed){
   const V=DC_VIEW[d.view]||['the element','#333366'];
   const meta=['Totehm Cloth',d.line==='luxury'?'Luxury':'Streetwear',d.created_at||'',d.edition&&d.edition_of?'No. '+d.edition+' / '+d.edition_of:'',d.test?'test':''].filter(Boolean).join(' · ');
@@ -494,7 +573,8 @@ function decodeHTML(d,signed){
   const art=d.line==='luxury'?'':'<div class="dc-art'+(d.art?'':' is-wait')+'" id="dc-art"><span>'+(d.art?'…':d.stage==='cancelled'?'cancelled':'The artwork lands with the cloth.')+'</span></div>';
   const facts=[d.garment?esc(d.garment)+(d.size?' · '+esc(d.size):''):'',d.style?esc(d.style):'',d.owner?'by <span class="by">'+esc(d.owner)+'</span>':''].filter(Boolean).map(x=>'<span>'+x+'</span>').join('');
   return '<div class="dc-name">'+esc(d.name)+'</div><div class="dc-meta">'+esc(meta)+'</div>'+el+
-    (mat.length?'<div class="dc-mat">'+mat.join('')+'</div>':'')+art+(facts?'<div class="dc-facts">'+facts+'</div>':'')+
+    (mat.length?'<div class="dc-mat">'+mat.join('')+'</div>':'')+
+    (d.mine?'<div class="dc-shots" id="dc-shots"></div>':'')+art+(facts?'<div class="dc-facts">'+facts+'</div>':'')+
     (d.stage&&DC_STAGE[d.stage]?'<div class="dc-stage">'+DC_STAGE[d.stage]+'</div>':'');
 }
 async function loadArt(name,seq){
@@ -507,7 +587,7 @@ async function loadArt(name,seq){
   }catch(e){console.error('[cloth-art]',e&&e.message||e);}
 }
 async function decode(v){
-  const note=$('decode-note');
+  const note=$('hb-note');
   if(v.length<2){note.className='note dim';note.textContent='name of the cloth';return;}
   note.className='note dim';note.textContent='decoding…';
   const seq=++DECODE_SEQ;
@@ -521,8 +601,103 @@ async function decode(v){
   $('decode-fs').classList.add('show');$('decode-fs').scrollTop=0;
   history.replaceState(null,'','/?decode='+encodeURIComponent(data.name));
   if(data.art)loadArt(data.name,seq);
+  if(data.mine)loadShots(data.name,seq);
 }
-$('decode-input').addEventListener('keydown',e=>{if(e.key==='Enter')decode($('decode-input').value.trim());});
+/* Les photos liées à MA pièce : la base rend des CHEMINS (`cloth_shots`, mes
+   lignes seules), la page les signe — son dossier, sous RLS. */
+async function loadShots(name,seq){
+  const{data,error}=await sb.rpc('cloth_shots',{p_name:name});
+  if(seq!==DECODE_SEQ)return;
+  if(error){console.error('[cloth_shots]',error.message);return;}
+  const l=(Array.isArray(data)?data:[]).slice(0,24);
+  if(DECODED)DECODED.shots=l.length;
+  const g=$('dc-shots'); if(!g||!l.length)return;
+  g.innerHTML=l.map(x=>'<figure class="'+(x.kind==='media'?'m':'s')+'">'
+    +'<img alt="" data-p="'+esc(String(x.path||''))+'" data-b="'+esc(String(x.bucket||''))+'">'
+    +(x.kind==='spot'?'<figcaption>'+esc(String(x.txt||''))+'</figcaption>':'')+'</figure>').join('');
+  g.querySelectorAll('img[data-p]').forEach(async im=>{
+    const{data:u,error:er}=await sb.storage.from(im.dataset.b).createSignedUrl(im.dataset.p,3600);
+    if(er){console.error('[shot url]',er.message);return;}
+    if(seq===DECODE_SEQ&&im.isConnected&&u?.signedUrl)im.src=u.signedUrl;
+  });
+}
+/* ══ LE HIGHER RETOURNÉ (26/10) ═══════════════════════════════════════
+   Wah : « le même fonctionnement que totehm.com quand tu retournes le totehm
+   qui se zoome avec du bleu navy full-screen ». Le logo tourne, le papier navy
+   grandit depuis lui, la recherche est DEDANS — avec le « 0. » déjà posé, le
+   curseur juste derrière — et le tableau de bord arrive ensuite, d'un bloc. */
+const HB={on:false,lu:false,seq:0};
+function hbPrefix(){ const d=new Date(),y=d.getFullYear(),e=d.getMonth()>=5?y:y-1; return Math.max(e-2026,0)+'.'; }
+function hbOuvrir(){
+  if(HB.on)return; HB.on=true;
+  const r=$('hb'); document.body.classList.add('hb-on');
+  r.classList.add('is-on'); r.dataset.tab=r.dataset.tab||'cloths';
+  /* Le papier est CARRÉ, comme le verso de totehm.com : ses perforations restent
+     rondes, et il déborde de l'écran du même 1,2 — jamais étiré. */
+  r.style.setProperty('--s',Math.ceil(Math.max(innerWidth,innerHeight)*1.2)+'px');
+  requestAnimationFrame(()=>requestAnimationFrame(()=>r.classList.add('is-open')));
+  const q=$('hb-q'); q.value=hbPrefix();
+  setTimeout(()=>{ try{ q.focus({preventScroll:true}); q.setSelectionRange(q.value.length,q.value.length); }catch(_){}
+    r.classList.add('is-pret'); },340);
+  hbTableau();
+}
+function hbFermer(){
+  if(!HB.on)return; HB.on=false;
+  const r=$('hb'); r.classList.remove('is-open','is-pret'); document.body.classList.remove('hb-on');
+  $('hb-note').textContent='';
+  setTimeout(()=>{ if(!HB.on)r.classList.remove('is-on'); },660);
+}
+$('decode-btn').onclick=hbOuvrir;
+$('hb-x').onclick=hbFermer;
+$('hb').addEventListener('click',e=>{
+  const t=e.target.closest('#hb-tabs button[data-hb-tab]');
+  if(t){ $('hb').dataset.tab=t.dataset.hbTab;
+    $('hb-tabs').querySelectorAll('button').forEach(b=>{ const on=b===t;
+      b.classList.toggle('is-on',on); b.setAttribute('aria-selected',String(on)); });
+    return; }
+  const d=e.target.closest('[data-hb-decode]');
+  if(d){ $('hb-q').value=d.dataset.hbDecode; decode(d.dataset.hbDecode); return; }
+  if(e.target.closest('[data-hb-connect]')){ ECO_AUTH.login(false,'/'); return; }
+  if(e.target.closest('[data-hb-com]')){ ssoVersDomaine(sb,'com','https://www.totehm.com/totehm'); return; }
+  if(e.target.closest('[data-hb-out]')){ sb.auth.signOut().then(()=>location.reload()); }
+});
+$('hb-q').addEventListener('keydown',e=>{ if(e.key==='Enter')decode($('hb-q').value.trim());
+  else if(e.key==='Escape'){ e.preventDefault(); hbFermer(); } });
+/* MON TABLEAU : mes pièces, mes projets luxe, mon compte. Tout vient de la base
+   (`my_boutique_board`, mes lignes seules) ; la page n'additionne rien. */
+const HB_ETAT={making:'in the making',production:'in production',shipped:'shipped',cancelled:'cancelled'};
+const HB_LUX={quoted:'deposited',paid:'paid',requested:'studied',declined:'refunded',cancelled:'cancelled'};
+const hbVide=t=>'<div class="hb-vide">'+esc(t)+'</div>';
+const hbConnect='<div class="hb-vide">Your cloths live with your TOTEHM.<br><button type="button" data-hb-connect="1">connect with my totehm</button></div>';
+async function hbTableau(){
+  const seq=++HB.seq;
+  const{data,error}=await sb.rpc('my_boutique_board');
+  if(seq!==HB.seq)return;
+  if(error){ console.error('[my_boutique_board]',error.message);
+    $('hb-cloths').innerHTML=hbVide('unavailable, try again'); return; }
+  const d=data||{};
+  if(!d.signed_in){
+    $('hb-cloths').innerHTML=hbConnect; $('hb-luxury').innerHTML=hbConnect;
+    $('hb-account').innerHTML=hbConnect; return;
+  }
+  const cl=Array.isArray(d.cloths)?d.cloths:[];
+  $('hb-cloths').innerHTML=cl.length?cl.map(c=>'<div class="hb-row"><b>'+esc(c.name||'')+'</b>'
+    +'<span>'+[c.garment,c.size,c.at,c.test?'test':''].filter(Boolean).map(esc).join(' · ')+'</span>'
+    +'<span>'+esc(HB_ETAT[c.stage]||c.stage||'')+'</span>'
+    +(c.tracking?'<a href="'+esc(c.tracking)+'" target="_blank" rel="noopener">track it</a>':'')
+    +'<button type="button" data-hb-decode="'+esc(c.name||'')+'">decode it</button></div>').join('')
+    :hbVide('No cloth yet. A box of your TOTEHM becomes one.');
+  const lx=Array.isArray(d.luxury)?d.luxury:[];
+  $('hb-luxury').innerHTML=lx.length?lx.map(q=>'<div class="hb-row"><b>'+esc(q.name||q.brand||'')+'</b>'
+    +'<span>'+[q.brand,q.piece,q.at].filter(Boolean).map(esc).join(' · ')+'</span>'
+    +'<span>'+esc(HB_LUX[q.status]||q.status||'')+'</span></div>').join('')
+    :hbVide('No luxury project yet.');
+  $('hb-account').innerHTML='<div class="hb-row"><b>'+esc(d.pseudo||'my totehm')+'</b>'
+    +'<span>higher.boutique · the pieces</span>'
+    +'<button type="button" data-hb-com="1">my totehm</button>'
+    +'<button type="button" data-hb-out="1">sign out</button></div>'
+    +'<div class="hb-vide"><a href="/terms_of_sale" target="_blank" rel="noopener">simple terms of sale</a></div>';
+}
 $('decode-back').onclick=()=>{$('decode-fs').classList.remove('show');if(new URLSearchParams(location.search).has('decode'))history.replaceState(null,'','/');};
 
 /* EXPERIENCE OUR BRANDING */
@@ -595,15 +770,17 @@ document.querySelectorAll('[data-club]').forEach(a => a.addEventListener('click'
 }));
 
 /* Diagnostic — des booléens, jamais une valeur de membre. */
-const BUILD='2026-10-25-decode';
+const BUILD='2026-10-26-higher';
 window.__totehm_boutique=()=>({ build:BUILD, page:'home', luxury_link:!!document.querySelector('a[href="/luxury"]'),
   club_links:document.querySelectorAll('[data-club]').length, logos:document.querySelectorAll('.brand-logo,img[src*="champion"]').length,
   collab:/Champion 2026/.test(document.getElementById('collab')?.textContent||''), branding_com:document.getElementById('brand-btn')?.dataset.com==='/',
   decode_first:(()=>{const m=document.getElementById('menu-main');return !!m&&m.firstElementChild?.contains(document.getElementById('decode-btn'));})(),
-  member_window:!!document.getElementById('member-window'), connect:document.getElementById('conn-bar')?.dataset.in||'0', decode:DECODED?{found:!!DECODED.found,level:DECODED.level||null,art:!!DECODED.art,stage:DECODED.stage||null}:null });
+  member_window:!!document.getElementById('member-window'), connect:document.getElementById('conn-bar')?.dataset.in||'0',
+  higher:{ouvert:HB.on, onglet:document.getElementById('hb').dataset.tab||null, pret:document.getElementById('hb').classList.contains('is-pret')},
+  decode:DECODED?{found:!!DECODED.found,level:DECODED.level||null,art:!!DECODED.art,stage:DECODED.stage||null,shots:DECODED.shots||0}:null });
 /* 08/10 — `/?decode=0.nom` ouvre directement la page du Cloth (lien de la fin de commande, partage). */
 { const q=(new URLSearchParams(location.search).get('decode')||'').trim();
-  if(q){ $('decode-btn').click(); $('decode-input').value=q; decode(q); } }
+  if(q){ hbOuvrir(); $('hb-q').value=q; decode(q); } }
 
 /* ══ LE COIN MEMBRE — UNE SEULE PORTE : TOTEHM.COM ══════════════════════
    23/10 : l'email OTP local est retiré. Il ouvrait une session qui n'était
@@ -674,7 +851,7 @@ window.__totehm_boutique=()=>({ build:BUILD, page:'home', luxury_link:!!document
     const parentButton = scope.closest(buttonSelector);
     const buttons = [...(parentButton ? [parentButton] : []),...scope.querySelectorAll(buttonSelector)];
     buttons.forEach(b => {
-      if (b.closest('#joy,#totehm-paper,.eco-sheet') || b.matches('.pick-habit,.h-T,.h-Ti,.h-x,.w-x,.cur,.eco-box-zoom,.mini-toggle,.rk-a')) return;
+      if (b.closest('#joy,#totehm-paper,#hb,.eco-sheet') || b.matches('.pick-habit,.h-T,.h-Ti,.h-x,.w-x,.cur,.eco-box-zoom,.mini-toggle,.rk-a')) return;
       const text = b.textContent.trim(); if (!text || /^[×+−\-↑↓←→↔↕✕✖?°\d\s]+$/.test(text)) return;
       if (/^sign\s*in\b/i.test(text)) {
         const leaf = b.querySelector('#member-txt,#conn-txt') || b;

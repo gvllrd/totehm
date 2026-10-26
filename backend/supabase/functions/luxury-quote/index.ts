@@ -120,15 +120,28 @@ Deno.serve(async (req) => {
     if (sErr) { console.error("[luxury-quote] box:", sErr.message); return json({ error: "unavailable" }, 503); }
     if (!snap?.text) return json({ error: "box_not_found" }, 404);
 
-    // 24/10 : des SOUS-BOX ÉTEINTES, comme sur /streetwear — la page n'envoie
-    // que des RÉFÉRENCES, on filtre la matière qu'on vient de relire en base.
-    const hide = Array.isArray(body.hide) ? (body.hide as { kind?: unknown; text?: unknown }[]).slice(0, 40) : [];
-    const off = new Set(hide.filter((h) => h && typeof h.kind === "string" && typeof h.text === "string")
+    // 26/10 : CE QUI EST ALLUMÉ, comme sur /streetwear — la page n'envoie que des
+    // RÉFÉRENCES et on GARDE, dans ce qu'on vient de relire en base, ce qui
+    // correspond. Rien n'est coché au départ : une page muette donne la box seule.
+    const pick = (body.pick ?? {}) as { matter?: unknown; shots?: unknown };
+    const on = new Set((Array.isArray(pick.matter) ? pick.matter as { kind?: unknown; text?: unknown }[] : [])
+      .slice(0, 60).filter((h) => h && typeof h.kind === "string" && typeof h.text === "string")
       .map((h) => h.kind + "\u0000" + h.text));
-    if (off.size && snap.matter && typeof snap.matter === "object") {
+    if (snap.matter && typeof snap.matter === "object") {
       const m = snap.matter as Record<string, { text?: unknown }[]>;
-      for (const k of Object.keys(m)) m[k] = (m[k] ?? []).filter((x) => !off.has(k + "\u0000" + String(x?.text ?? "")));
+      for (const k of Object.keys(m)) m[k] = (m[k] ?? []).filter((x) => on.has(k + "\u0000" + String(x?.text ?? "")));
     }
+    // Les photos de la box, relues elles aussi (`_box_shots` : mes lignes seules).
+    const ids = new Set((Array.isArray(pick.shots) ? pick.shots as unknown[] : [])
+      .slice(0, 24).map((x) => String(x ?? "")).filter(Boolean));
+    let shots: unknown[] = [];
+    if (ids.size) {
+      const { data: all, error: shErr } = await admin.rpc("_box_shots",
+        { p_user: user.id, p_kind: box.kind, p_ref: String(box.ref) });
+      if (shErr) console.error("[luxury-quote] shots:", shErr.message);
+      shots = (Array.isArray(all) ? all : []).filter((x) => ids.has(String((x as { id?: unknown })?.id ?? "")));
+    }
+    (snap as Record<string, unknown>).shots = shots;
 
     const { count, error: cErr } = await admin.from("luxury_quotes").select("id", { count: "exact", head: true })
       .eq("user_id", user.id).in("status", ["requested", "quoted"]);

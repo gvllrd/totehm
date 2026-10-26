@@ -21,8 +21,7 @@
 ## L'argent
 
 - `member_ledger` en ajout seul : crédit sur `invoice.paid`, idempotence `unique(source, kind)`, l'arrondi va à TOTEHM ; 80/20, revente 7 %. Versement manuel le 1er : `payouts_due()` → virement → `payout_mark_paid()`. Pas de Stripe Connect.
-- Propriété : `art_editions` · `art_transfers` (ajout seul) · `stoner_access` ; le THP = l'œuvre `totehmpaper`.
-  Le marché ne s'écrit que par le webhook (`art_settle`) ; `ok:false` → `market_incidents` = remboursement à la main.
+- Propriété : `art_editions` · `art_transfers` (ajout seul) · `stoner_access` ; le THP = l'œuvre `totehmpaper`. Le marché ne s'écrit que par le webhook (`art_settle`) ; `ok:false` → `market_incidents` = remboursement à la main.
 - `stripe-webhook` : `higher` · `cloth` · `subscription` · `creator_sub` · `artwork` · `resale` · `luxury` · `higher_sub` ;
   `stripe_events` s'efface avant un 500. Test (`boutique_testers`) : v44 fait suivre une pièce d'essai comme une vraie,
   mais le mode test n'a pas d'endpoint webhook — rien ne redescend encore.
@@ -33,7 +32,7 @@
 |---|---|
 | identité | `sso-mint` · `sso-redeem` |
 | argent | `stripe-webhook` · `higher-checkout` · `artwork-checkout` · `market-checkout` · `creator-subscribe` · `creator-price` · `club-billing` · `higher-sub` |
-| vêtements | `create-checkout` · `luxury-quote` · `luxury-checkout` · `compose-artwork` · `streetwear-assets` · `cloth-art` |
+| vêtements | `create-checkout` v44 · `luxury-quote` v4 · `luxury-checkout` · `compose-artwork` · `streetwear-assets` · `cloth-art` ; les deux premiers prennent `pick:{matter,shots}` — ce qui est ALLUMÉ, en références, relu par `_box_matter` et `_box_shots` |
 | vidéo, spots | `create-bunny-upload` · `bunny-video` · `bunny-webhook` · `spot-video` · `space-delete` |
 | Higher Self, bot | `higher-self` · `bot-reply` · `bot-tick` (cron) · `agenda-ingest` (cron) · `higher-map` · `stoner-gate` |
 | sans appelant visible | `totehm-bot` · `sync-knowledge` · `generate-embeddings` · `upload-leaf-videos` · `ghost-factory` · `prospects` · `bunny-maintenance` · `embed-places` · `generate_objective` · `subscription-checkout` · `creator-dashboard` · `creator-onboard` · `autobiographiste` (à vérifier dans leurs journaux avant de retirer) |
@@ -52,8 +51,9 @@ Le compte vient TOUJOURS de la session, jamais du corps ; une page ne reçoit qu
 
 ## n8n
 
-`n8n/README.md` (VM Oracle) · `n8n/workflows/` (A → F). n8n n'accorde jamais un accès. F corrigé ; B, C, D republiés le
-23/10 avec le CONFIG qui lit `$env` (11 clés, `N8N_BLOCK_ENV_ACCESS_IN_NODE=false`) ; E reste sur l'ancien (`process.env`).
+`n8n/README.md` (VM Oracle) · `n8n/workflows/` (A → F). n8n n'accorde jamais un accès. B republiée le 26/10 : elle SIGNE
+les photos allumées (`box_snapshot.shots`), les fait lire par un modèle de vision et verse ce qu'il en dit dans le prompt
+— matière, jamais instruction. C, D lisent `$env` (11 clés) ; E reste sur l'ancien (`process.env`).
 Zéro exécution : `stripe-webhook` envoie `apikey` (clé de service) à B, que sa version publiée exige (`serviceAuth`), mais
 aucun essai ne lui est parvenu. Banc hors ligne : `tests/n8n/streetwear/offline.mjs` (59 simulations, six blocages).
 
