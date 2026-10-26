@@ -3208,6 +3208,15 @@ body.gate.lv-c #lv-ram rect,body.gate.lv-h #lv-ram rect{opacity:1;
 body.gate.lv-c:not(.entered):not(.is-aspire) #lv-ram .puls{opacity:1;
   animation:ram-puls var(--p,3s) linear infinite;animation-delay:var(--d,0s)}
 @keyframes ram-puls{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+/* ← LE PASSAGE · 26/10 : l'arbre rentre dans le papier docké, puis les sept CADRES en sortent et font le tour de l'écran — les
+   deux moitiés à la fois, depuis le haut (chaque moitié = la moitié de `pathLength`) ; au retour, l'arbre repousse depuis
+   ses trous. Le réseau reste visible pendant le tracé (`ram-trace`), puis cède la place à la vue. */
+body.gate.ram-trace:not(.entered) #lv-ram{opacity:1;transition:opacity .2s ease}
+#lv-ram.is-trace > g > path:not(.puls){animation:ram-trace .75s cubic-bezier(.3,.6,.3,1) both;animation-delay:calc(var(--i) * 45ms)}
+body.lv-g #lv-ram.is-trace > g > path:not(.puls){animation-name:ram-cadre}
+body.gate.lv-c:not(.entered):not(.is-aspire) #lv-ram.is-trace .puls{opacity:0}
+@keyframes ram-trace{from{stroke-dasharray:1 1;stroke-dashoffset:1}to{stroke-dasharray:1 1;stroke-dashoffset:0}}
+@keyframes ram-cadre{from{stroke-dasharray:0 .5;stroke-dashoffset:0}to{stroke-dasharray:.5 0;stroke-dashoffset:0}}
 /* LE CŒUR · 26/10 (Wah : « le cœur est le Totehm-processor … qui peut battre très subtilement ») : un « lub-dub » de 1,4 %
    puis 0,8 %, toutes les 1,5 s, au repos au centre seulement ; il s'arrête dès que le réseau est aspiré (clic, verso,
    recherche) — `enter()` aspire AVANT de mesurer. */
@@ -12347,7 +12356,7 @@ window.addEventListener('pageshow',e=>{
     const RAM=(()=>{
       const svg=$('lv-ram'); let sig='', cur=null, raf=0;
       const N=24;                                   /* chaque branche, rééchantillonnée : la même forme se TRANSFORME */
-      const diagR={morphs:0, vib:0};
+      const diagR={morphs:0, vib:0, traces:0};
       /* Par intention : combien d'Habits, et la PLUS FRÉQUENTE — c'est elle qui donne le rythme. */
       /* 25/10 — un Totehm fermé (abonnement) : ses traits sont sa PALETTE (`creator_page`), rien de son contenu. */
       let pal=null;
@@ -12372,6 +12381,8 @@ window.addEventListener('pageshow',e=>{
           while(j<l.length-1&&seg[j]<t) j++;
           const a=l[j-1], b=l[j]||a, u=seg[j]>seg[j-1]?(t-seg[j-1])/(seg[j]-seg[j-1]):0;
           out.push([a[0]+(b[0]-a[0])*Math.max(0,Math.min(1,u)), a[1]+(b[1]-a[1])*Math.max(0,Math.min(1,u))]); }
+        /* une forme à angles (le cadre, le rail) garde ses COINS : l'échantillon le plus proche de chaque sommet s'y pose */
+        if(l.length<=8) for(let v=1;v<l.length-1;v++){ const k=Math.max(1,Math.min(N-2,Math.round(seg[v]/T*(N-1)))); out[k]=l[v].slice(); }
         return out;
       }
       /* ── L'ARBRE DE VIE (vue centre) · 26/10 — Wah : « les trous noirs qui font la perforation du Totehm sont les points de
@@ -12476,14 +12487,16 @@ window.addEventListener('pageshow',e=>{
         vraf=requestAnimationFrame(pas);
       }
       document.addEventListener('visibilitychange',()=>{ if(!document.hidden&&GH===cur) vibrer(); });
-      /* ── ← LE RAIL (20/10 sexies) : le papier se cale en haut et les sept traits en descendent jusqu'aux DEUX bords — le rail
-         du Totehm, le trait d'intention d'une boîte, à l'échelle de l'écran : les médias sont ses boîtes. Sans croisement :
-         plus une piste part à l'extérieur, plus elle tourne haut. ── */
+      /* ── ← LE CADRE (26/10, Wah : « les 7 traits d'intention, de la vue centrale à la vue de gauche, doivent ENCADRER
+         l'écran en transition ») : pendant que le papier monte se docker, l'arbre se replie en SEPT CADRES emboîtés au bord
+         de l'écran, un par intention (3 px d'écart, du dehors vers le dedans). Chaque trait fait le tour entier : sa
+         branche prend le côté gauche, sa racine le côté droit, et elles se rejoignent en bas au milieu. Puis le cadre
+         cède la place à la grille (CSS). ── */
       function rail(n){
-        const w=W(), h=H(), t=cibleHaut(), sy=t.y+22;
+        const w=W(), h=H(), mx=w/2;
         return INTS.map((x,i)=>{
-          const sx=t.x+(i-3)*5, yl=sy+12+i*4, yr=sy+12+(6-i)*4, xl=2+i*3, xr=w-2-(6-i)*3;
-          return {i, x, q:n[x.id], a:[[sx,sy],[sx,yl],[xl,yl],[xl,h+4]], b:[[sx,sy],[sx,yr],[xr,yr],[xr,h+4]], nodes:[]};
+          const m=2+i*3, t=m, b=h-m, l=m, r=w-m;
+          return {i, x, q:n[x.id], a:[[mx,t],[l,t],[l,b],[mx,b]], b:[[mx,t],[r,t],[r,b],[mx,b]], nodes:[]};
         });
       }
       /* ── → LES MÉRIDIENS (20/10 sexies) : les sept traits se plient AUTOUR DU MONDE — sept méridiens, un par intention, sur
@@ -12543,9 +12556,22 @@ window.addEventListener('pageshow',e=>{
           M.forEach((o,i)=>{ const d=dDe(o); gs[i].querySelectorAll('path').forEach(pa=>pa.setAttribute('d',d)); });
           cur=M;
           if(u<1){ raf=requestAnimationFrame(pas); return; }
-          raf=0; dessiner(B); document.body.classList.remove('ram-morph');
+          raf=0; dessiner(B); document.body.classList.remove('ram-morph'); if(o.fin) o.fin();
         };
         raf=requestAnimationFrame(pas);
+      }
+      /* ← LE PASSAGE (26/10) : vers la gauche (et en revenant), on ne déforme pas l'arbre en cadre point par point — à
+         mi-course, ça faisait des pistes brisées en travers de l'écran (mesuré). L'arbre RENTRE dans le papier qui monte se
+         docker (0,32 s), puis les sept cadres en SORTENT et font le tour de l'écran, les deux moitiés à la fois (CSS
+         `ram-cadre`) ; au retour, le cadre rentre dans le papier docké et l'arbre REPOUSSE depuis ses trous (`ram-trace`). */
+      let traceT=0;
+      function tracer(G){
+        dessiner(G); diagR.traces++; svg.classList.add('is-trace'); document.body.classList.add('ram-trace');
+        clearTimeout(traceT); traceT=setTimeout(()=>{ svg.classList.remove('is-trace'); document.body.classList.remove('ram-trace'); },1150);
+      }
+      function passer(G){
+        const p=cibleHaut(), z=l=>l.map(()=>[p.x,p.y]);
+        morph(cur, G.map(g=>Object.assign({},g,{a:z(g.a), b:z(g.b), nodes:[], pins:[]})), {ms:320, ease:u=>u*u*(3-2*u), fin:()=>tracer(G)});
       }
       /* Un rendu = une vue, une taille, mes Habits, la place du papier. On ne redessine pas pour rien. */
       /* Le boîtier autour du papier (`--sk` : le papier + 6 px), à l'échelle du papier ; `o.socle` le donne. */
@@ -12555,11 +12581,12 @@ window.addEventListener('pageshow',e=>{
         o=o||{};
         const vu=(v==='h'||v==='g'||v==='d'||v==='b')?v:'c', n=compte(), c=o.papier||PAPIER.chez()||{x:W()/2,y:H()*.55,w:110}, S=boite(c,o);
         const s=vu+'|'+W()+'x'+H()+'|'+INTS.map(x=>n[x.id].n+':'+n[x.id].w).join(',')+'|'+Math.round(c.x)+','+Math.round(c.y)+','+Math.round(c.w||110)+','+Math.round(S);
-        if(s===sig&&svg.childNodes.length){ if(vu==='h') vibrer(); return; } sig=s;
+        if(s===sig&&svg.childNodes.length){ if(vu==='h') vibrer(); return; }
+        const avant=sig.split('|')[0]; sig=s;
         if(vraf){ cancelAnimationFrame(vraf); vraf=0; }
         svg.setAttribute('viewBox','0 0 '+W()+' '+H());
         const G=forme(vu,n,c,S);
-        if(o.anime&&cur&&cur.length===G.length&&svg.childNodes.length&&!RMQ.matches) morph(cur,G,o);
+        if(o.anime&&cur&&cur.length===G.length&&svg.childNodes.length&&!RMQ.matches){ if((vu==='g')!==(avant==='g')&&avant) passer(G); else morph(cur,G,o); }
         else{ if(raf){ cancelAnimationFrame(raf); raf=0; document.body.classList.remove('ram-morph'); } dessiner(G); }
       }
       return {peindre, oublie(){ sig=''; }, palette(l){ pal=Array.isArray(l)?l:null; sig=''; },
@@ -12567,7 +12594,7 @@ window.addEventListener('pageshow',e=>{
                    noeuds:svg?svg.querySelectorAll('rect').length:0,
                    impulsions:svg?svg.querySelectorAll('.puls').length:0,
                    creux:svg?svg.querySelectorAll('.r-0').length:0, vue:sig.split('|')[0]||'', habits:sig.split('|')[2]||'',
-                   morphs:diagR.morphs, enCours:!!raf, vibre:!!vraf, vibrations:diagR.vib,
+                   morphs:diagR.morphs, enCours:!!raf, vibre:!!vraf, vibrations:diagR.vib, traces:diagR.traces,
                    ondes:GH?GH.map(o=>({c:o.x.id, f:Math.round(o.v.f*100)/100, cyc:Math.round(o.v.cyc*100)/100, amp:Math.round(o.v.amp*10)/10})):[]})};
     })();
 
