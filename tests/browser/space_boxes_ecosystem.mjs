@@ -30,7 +30,7 @@ try{
 
   // COM reader: the five native Box types open IN PLACE, no magnifier, no source mutation.
   const source={ok:true,pseudo:'studio',steps:[{t:'Deep practice',is:['focus']}],objs:{'Deep practice':['o1']},trips:[{id:'o1',text:'Build a practice',is:['focus']}],reps:[{id:71,text:'Put the phone away',is:['focus'],hs:['Deep practice']}],wisdom:[{id:'w1',text:'Attention is a choice',is:['focus']}],visions:[{id:'v1',text:'A focused life',is:['focus']}]};
-  const com=await page(browser,{dir:'com',origin:'https://www.totehm.com',tables:{profiles:[{pseudo:'wah'}]},rpc:{totehm_of:source,habit_spaces:{ok:true,mine:false,habits:[]}}});
+  const com=await page(browser,{dir:'com',origin:'https://www.totehm.com',tables:{profiles:[{pseudo:'wah'}]},rpc:{totehm_read:source,habit_spaces:{ok:true,mine:false,habits:[]}}});
   await com.pg.emulateMedia({reducedMotion:'reduce'});await com.pg.goto('https://www.totehm.com/totehm?ro=studio');await com.pg.waitForSelector('body.ro:not(.gate)');await com.pg.waitForTimeout(400);
   ok(!/set time frequency|set intention|no deadline/i.test(await com.pg.locator('#vnow').textContent()),'COM reader never invents unconfigured attributes');
   ok(await com.pg.locator('#habits .loupe').count()>=1&&await com.pg.locator('.eco-sheet').count()===0,'COM reader: a magnifier on each Box, never a window');

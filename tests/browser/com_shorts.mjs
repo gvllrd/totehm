@@ -53,7 +53,8 @@ function serveur(){
     my_visions:{ok:true,visions:[{id:'v1',image:UID+'/vision-cccccccc-cccc-4ccc-8ccc-cccccccccccc.jpg'}]},
     my_feed_badges:{ok:true,pos:{'sp:sp1':[20,30]}},
     feed_badge_set:b=>({ok:true,ref:b.p_ref,x:b.p_x,y:b.p_y}),
-    totehm_of:b=>b.p_pseudo==='kai3'?{ok:false,why:'subscribe',pseudo:'kai3'}:{ok:false,why:'nobody'},
+    spot_audience_set:b=>({ok:true,audience:b.p_audience}),
+    totehm_read:b=>b.p_pseudo==='kai3'?{ok:false,why:'subscribe',pseudo:'kai3'}:{ok:false,why:'nobody'},
     my_landing:LAND};
 }
 const VILLES={cities:[['Porto',41.15,-8.61,1,'PT'],['Lisbon',38.72,-9.14,1,'PT']]};
@@ -301,6 +302,16 @@ try{
   ok(sh2.per.join(' ')==='I will be there','le temps courant, dans la barre : « '+sh2.per.join(' ')+' »');
   /* 25/10 (Wah) : MON spot se montre au Higher Self ; 26/10 (« j'ai pas compris ») : le geste dit son verbe, « Higher » en SVG. */
   ok(sh2.ask==='sp:sp1|ask my  self|1','26/10 · MON spot porte « ask my [Higher] self » à côté de GO et CALENDAR → '+sh2.ask);
+  /* 26/10 (Wah : « concernant les spots il y a trois niveaux d'accès : private, subscribers et figher club ») : sur MON spot, le
+     niveau est un bouton ; chaque tap passe au suivant, au serveur (`spot_audience_set`), et revient au premier. */
+  const niv=[];
+  for(let k=0;k<3;k++){ const n0=log.rpc.filter(x=>x.name==='spot_audience_set').length;
+    await pg.evaluate(()=>document.querySelector('#rdr-sh [data-spaud]').click());await pg.waitForTimeout(250);
+    const e=log.rpc.filter(x=>x.name==='spot_audience_set').slice(n0);
+    niv.push((e[0]&&e[0].body.p_spot+':'+e[0].body.p_audience)+'='+await pg.evaluate(()=>document.querySelector('#rdr-sh [data-spaud]').textContent)); }
+  const autresNiv=await pg.evaluate(()=>document.querySelectorAll('#rdr-sh [data-spaud]').length);
+  ok(niv.join(' ')==='sp1:private=private sp1:subscribers=my subscribers sp1:figher=figher club'&&autresNiv===1,
+     '26/10 · MON spot : trois niveaux en boucle — '+niv.join(' · ')+' ; les spots des autres n\'ont qu\'un mot');
   await pg.keyboard.press('Escape');await pg.waitForTimeout(500);
   ok(await pg.evaluate(()=>!document.body.classList.contains('rdr-voir')&&window.__totehm_lv().vue==='d'),'Échap referme la vue agrandie : on est de retour sur la carte');
   await pg.click('#lvn-lf');await vers(pg,'c');await pg.waitForTimeout(300);
@@ -494,7 +505,7 @@ try{
  // ── en lecture (le Totehm d'un autre, 20/10 sexies) : SON écosystème — ni mes fichiers ni la capture ; à gauche SES médias ──
  {const source={ok:true,pseudo:'studio',steps:[{t:'Deep practice',is:['focus']}],objs:{},trips:[],reps:[],wisdom:[],visions:[]};
   const SID='22222222-2222-4222-8222-222222222222';
-  const{pg,log}=await page(browser,{dir:'com',origin,tables,rpc:{...serveur(),totehm_of:source,habit_spaces:{ok:true,mine:false,habits:[]},
+  const{pg,log}=await page(browser,{dir:'com',origin,tables,rpc:{...serveur(),totehm_read:source,habit_spaces:{ok:true,mine:false,habits:[]},
     member_media:{ok:true,items:[{id:'x1',kind:'h',ref:'Deep practice',path:SID+'/m-dddddddd-dddd-4ddd-8ddd-dddddddddddd.jpg',mime:'image/jpeg',created_at:'2026-10-18T10:00:00Z'}]},
     club_spots_of:{ok:true,items:[],total:0}}});
   await pg.route(/\/storage\/v1\/object\/sign\//,r=>r.request().method()==='GET'?r.fulfill({status:200,contentType:'image/png',body:PNG}):r.fallback());

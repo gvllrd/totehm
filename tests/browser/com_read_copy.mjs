@@ -7,7 +7,7 @@ const source={ok:true,pseudo:'studio',steps:[{t:'Deep practice',is:['focus'],f:'
 /* 16/10 : il n'y a plus de spaces, seulement des SPOTS — une Habit lue montre donc ses spots. */
 const hs={ok:true,mine:false,habits:[{habit:'Deep practice',total:1,total_spaces:0,total_spots:1,spaces:[],
   spots:[{id:'s1',format:'spot',state:'will',city:'Porto',starts_at:new Date(Date.now()+864e5).toISOString(),audience:'figher'}]}]};
-const rpc={my_console:{signed_in:true,offer:{enabled:false}},my_landing:{signed_in:true,pseudo:'wah',visibility:'private',offer:{enabled:false},higher:{active:false,price_cents:700,currency:'eur'},thp:false,subscriptions:1,subscribers:0},totehm_of:source,habit_spaces:b=>b.p_pseudo?hs:{ok:true,mine:true,habits:[]},
+const rpc={my_console:{signed_in:true,offer:{enabled:false}},my_landing:{signed_in:true,pseudo:'wah',visibility:'private',offer:{enabled:false},higher:{active:false,price_cents:700,currency:'eur'},thp:false,subscriptions:1,subscribers:0},totehm_read:source,habit_spaces:b=>b.p_pseudo?hs:{ok:true,mine:true,habits:[]},
   totehm_search:b=>b.p_q?[{pseudo:'studio',offer:true,price_cents:2400,currency:'eur',subscribed:true},{pseudo:'atelier',offer:true,price_cents:3600,currency:'eur',subscribed:false}]:[{pseudo:'studio',offer:true,price_cents:2400,currency:'eur',subscribed:true}],
   totehm_import_boxes:b=>({ok:true,created:b.p_selection[0].kind==='h'?1:0,reused:b.p_selection[0].kind==='h'?0:1,total:1})};
 try{
@@ -22,7 +22,7 @@ try{
   await pg.waitForFunction(()=>document.body.classList.contains('lv-membre'),null,{timeout:8000}).catch(()=>{});await pg.waitForTimeout(1200);
   const e=await pg.evaluate(()=>({who:document.getElementById('lv-m-who').textContent,ro:document.body.classList.contains('ro'),tap:document.getElementById('lv-tap').textContent.trim()}));
   ok(e.who==='studio'&&e.ro&&/(Swipe|Turn) to search$/.test(e.tap)&&/[?&]ro=studio/.test(pg.url()),'« @studio » ↵ : on vit SON écosystème (« '+e.tap+' »), sur place');
-  ok(log.rpc.filter(x=>x.name==='totehm_of').length===1&&log.rpc.some(x=>x.name==='member_media'&&x.body.p_pseudo==='studio'),'une lecture de son Totehm, une de ses médias (`member_media`)');
+  ok(log.rpc.filter(x=>x.name==='totehm_read').length===1&&log.rpc.some(x=>x.name==='member_media'&&x.body.p_pseudo==='studio'),'une lecture de son Totehm, une de ses médias (`member_media`)');
   await pg.screenshot({path:OUT+'/members_search.png'});
   ok(!erreurs(log).length,'members : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();
  }

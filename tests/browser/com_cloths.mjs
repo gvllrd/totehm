@@ -74,7 +74,7 @@ try{
  }
  /* ── 3 · le Totehm d'un autre (lecture) : ses Cloths, jamais « + totehmize » ── */
  { const { pg, log } = await page(browser, { dir:'com', origin, tables:{ profiles:[{ pseudo:'wah' }] }, network,
-     rpc:{ totehm_of:source, habit_spaces:{ ok:true, mine:false, habits:[] }, element_cloths:b => b.p_pseudo === 'studio' ? theirs : mine }, functions:{ 'sso-mint':{ code:CODE } } });
+     rpc:{ totehm_read:source, habit_spaces:{ ok:true, mine:false, habits:[] }, element_cloths:b => b.p_pseudo === 'studio' ? theirs : mine }, functions:{ 'sso-mint':{ code:CODE } } });
    await pg.goto(origin + '/totehm?ro=studio'); await pg.waitForSelector('body.ro:not(.gate)'); await pg.waitForTimeout(600);
    await vers(pg, 'ArrowLeft', 'wisdom');
    ok(log.rpc.some(x => x.name === 'element_cloths' && x.body.p_pseudo === 'studio'), 'en lecture : element_cloths(p_pseudo = studio), le serveur juge les droits');

@@ -28,7 +28,7 @@ figher.club ; `/vendor`, `/cities.json`, `/assets/signs` → SPACE ; Telegram n'
 | le déploiement | `LV.deployer()` (appelé par `enter`) : les traits sont ASPIRÉS dans le TOTEHM (`is-aspire`, CSS seul) pendant que le papier se déploie ; ouvert, rien autour ; `__totehm_deploiement()`. Le repli : le portail revient en fondu (`FONDU`), le papier rentre, `#lv` (légende, MINE/MEMBERS, manette) revient à la fin, et `LV.revenu` fait RESSORTIR les traits |
 | → les spots | `const CLUBSP=` (`club_spots`, `club_spots_of`) · `SPOTMODE` · `SPMAP` · `SPGRID` · `SHS` (un spot ouvert : `.ssp-m` puis `.ssp-info` = infos, box en bas ; sur les miens « higher self » puis [delete] : `spot_remove` → `CLUBSP.retirer`) · `BUNNY` |
 | ↓ Higher Self | `const REF=` (`higher-self`, `fmt:'r4'` le miroir) · `lireR3` · `lieuHTML` (le lieu `@lieu` posé par le serveur : GO, `spotDeLaStep` → figher.club) · `lieuInvite` · `posPermise` (Higher : position arrondie à ~1 km, jamais gardée) · **ce que je MONTRE** : `smMontrer` (depuis la gauche ou la droite, par `window.__smMontrer`), la pastille `#lv-focus` au-dessus de la saisie, `focus:{kind,id}` dans `say` — une RÉFÉRENCE seule que le serveur relit dans MES lignes ; un envoi réussi la consomme |
-| MEMBERS | `const MB=` → `chercher` (calquée sur le clic : traits aspirés ; un geste de la croix la referme, `annuler`, puis voyage) → `totehm_of` → `entrerChez()` : ses médias, son TOTEHM, ses spots, son offre (`OFFRE`) ; à abonnement : `verrouiller()` (`lv-verrou`, sa palette, l'offre `#mb-lock` sous le papier, tap = `LV.offrir` ; ↑ ↓ ouverts, ← → désignent l'offre) |
+| MEMBERS | `const MB=` → `chercher` (calquée sur le clic : traits aspirés ; un geste de la croix la referme, `annuler`, puis voyage) → `totehm_read` (box par box) → `entrerChez()` : ses médias, son TOTEHM, ses spots, son offre (`OFFRE`) ; à abonnement : `verrouiller()` (`lv-verrou`, sa palette, l'offre `#mb-lock` sous le papier, tap = `LV.offrir` ; ↑ ↓ ouverts, ← → désignent l'offre) |
 | la liste du TOTEHM déployé | `/* ══ LA BOÎTE` · `/* ══ LES TROIS VUES` · `/* ══ LES ÉCRITURES` · `const INTS=` · la manette `#joy` = celle de l'atterrissage (`#lvj-box`), hors de tout cadre : un puits rond, un manche dont la couleur = la vue (`--joy-vue`, `TEINTE`) ; module `manette` (`RAYON` 10, `SEUIL` 6, comme `manetteLV`) ; ordinateur : dans la bande noire sous le carré (`--lvj-b`), `--stage` cède sur un écran bas pour la lui garder |
 | la session | `/* ══ LA SESSION` · `sessionChange` · `sesWait` · cache `totehm_habits_v1` |
 
@@ -54,7 +54,7 @@ Diagnostics : `__totehm_lv()` (`.refus` : pourquoi un geste est refusé ; à l'�
 - Verso déplié : l'identifiant (`#self-h`) est à même le navy ; il colle en haut avec un bandeau `#333366` peint à
   `is-pret` seulement, et `top` compense le padding de `#srch-ui` (Chrome colle dessous). L'email (`#self-mail`) est
   dessous ; le pied = `.vs-acts` (boutons `.vs-acc` : Delete, Sign out) puis les conditions. Les gris lisibles (≥ #b8b8c2).
-- **Confidentialité par box : base prête, interface ABSENTE** (aucun appel à `box_audience_put/set`,
-  `my_box_audiences`). Ordre : 1) la pastille sur chaque box (`tools/audience_ui.js`), 2) les lecteurs (terminal), 3) `box_audience_set`.
+- **Visibilité** : une box est BINAIRE — la pastille `.baud` de la box OUVERTE (`AUDB` : `my_box_audiences` lu avec mon arbre,
+  `box_audience_set`, habitude = son texte) ; un autre lit par `totehm_read`. Mon spot : `[data-spaud]` → `spot_audience_set` (3 niveaux).
 
 **Tests** : `tests/browser/com_*.mjs`, `console.mjs` ; préparer et lancer : en tête de `tests/browser/harness.mjs`.

@@ -13,10 +13,10 @@
 ## Les droits
 
 - Membre du Club : `_figher().member` = habit + objectif + répulsion (`needs` dit ce qui manque). Accès offert = `figher_comps`.
-- Abonné : `_subscriber_of(créateur, fan)` ; `creator_page`, `my_entitlements`, `totehm_of`, `member_media`, `club_spots_of`.
+- Abonné : `_subscriber_of(créateur, fan)` ; `creator_page`, `my_entitlements`, `totehm_read`, `member_media`, `club_spots_of`.
 - Audience : `private` · `figher` · `subscribers` (`public` → `figher`) ; `_audience_ok`, `_audience_listed`, `_point_ok`. Sans compte : des NOMS seuls (`totehm_galaxy`, `totehm_search`).
-- Par box : colonne `audience` + table `habit_audience`, règle `_box_shared`, écrivains `box_audience_put` / `_set`.
-  **Inachevé** : aucune page ne les appelle ; `totehm_of` et les politiques lisent encore `_shared_with_me`.
+- Par box, BINAIRE (`private` · `subscribers` ; l'ancien `figher` d'une box → `subscribers`, 26/10) : colonne `audience` + `habit_audience`,
+  règle `_box_shared` ; COM écrit par `box_audience_set`, lit par `totehm_read` (box par box). Reste au terminal : `totehm_of`, les politiques.
 
 ## L'argent
 

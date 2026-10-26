@@ -53,8 +53,8 @@ mon Higher Self répond : un miroir de MON TOTEHM — la step est une de mes Hab
 avec Higher, un lieu réel près de moi sous la step (GO, SPOT IT) ; quelques réponses offertes, puis l'abonnement Higher). Chercher un membre : le papier se retourne, on tape son nom, on entre chez lui.
 On navigue comme avec un MANCHE : le geste va où il pousse (vers le haut, la vue du haut), au doigt, au trackpad, à la souris — sauf dans une liste du TOTEHM, où le geste suit le défilement (plus bas que le bas de mes habitudes : mes répulsions) ; la manette est la même à l'atterrissage et dans le TOTEHM déployé (hors de tout cadre : un puits rond, son manche), et dans le TOTEHM le manche prend la couleur de la vue.
 
-**Confidentialité par box**, trois niveaux : PRIVATE · FIGHER CLUB (un membre : une habit, un objectif, une
-répulsion) · MY SUBSCRIBERS. Un lieu : ON = le point exact, OFF = la ville.
+**Visibilité** : une box est PRIVATE ou MY SUBSCRIBERS (binaire : la pastille de la box ouverte) ; un spot a trois niveaux,
+PRIVATE · MY SUBSCRIBERS · FIGHER CLUB (un membre : une habit, un objectif, une répulsion). Un lieu : ON = le point exact, OFF = la ville.
 
 ## Le ton
 

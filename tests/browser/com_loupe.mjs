@@ -67,7 +67,7 @@ try{
    await pg.context().close();}
   /* ── 3 · LE TOTEHM D'UN AUTRE MEMBRE (lecture) : la loupe et COPY sur chaque box ── */
   {const {pg,log}=await page(browser,{dir:'com',origin,viewport:vp,hasTouch:nom==='téléphone',tables:{profiles:[{pseudo:'wah'}]},
-     rpc:{totehm_of:LU,habit_spaces:{ok:true,mine:false,habits:[]}}});
+     rpc:{totehm_read:LU,habit_spaces:{ok:true,mine:false,habits:[]}}});
    await pg.emulateMedia({reducedMotion:'reduce'});await pg.goto(origin+'/totehm?ro=studio');await pg.waitForSelector('body.ro:not(.gate)');await pg.waitForTimeout(500);
    for(const [vue,touches] of TOUR){
     for(const k of touches){ await pg.keyboard.press(k); await pg.waitForTimeout(400); }

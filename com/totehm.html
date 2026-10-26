@@ -1253,6 +1253,14 @@ body.v-visions{--paper:#2b3a73}
   transition:background .15s,color .15s}
 .btn:hover{background:#34343c;color:#fff}
 .btn.g{border-color:rgba(255,255,255,.28);color:rgba(255,255,255,.5)}
+/* 26/10 — la visibilité d'une box : PRIVATE (le cadenas) ou MY SUBSCRIBERS (l'étoile), un tap bascule */
+.baud{display:inline-flex;align-items:center;gap:7px;align-self:flex-start;margin:10px 0 2px;border:0;border-radius:10px;padding:8px 11px;
+  background:#1f1f24;color:#b8b8c2;font:700 9.5px/1 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;
+  transition:color .2s ease,box-shadow .2s ease}
+.baud svg{width:12px;height:12px;flex:none}
+.baud.is-subscribers{color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.5)}
+.baud[disabled]{opacity:.6;cursor:progress}
+@media(hover:hover){.baud:hover{color:#fff}}
 .btn.g:hover{background:none;border-color:#fff;color:#fff}
 .dash{width:100%;background:none;border:1px dashed rgba(255,255,255,.28);
   color:rgba(255,255,255,.6);cursor:pointer;padding:6px;margin-bottom:7px;
@@ -3809,6 +3817,8 @@ body.papier-haut #gate-asteroid{transition:opacity .25s ease}
   border-radius:10px;padding:3px 8px;font-variant-numeric:tabular-nums;text-decoration:none}
 .sd-tag.is-st{background:#2e2e36;color:#fff;font-weight:700}
 a.sd-tag{color:#fff;text-decoration:underline;text-decoration-color:rgba(255,255,255,.45);text-underline-offset:3px}
+button.sd-tag.is-aud{border:0;cursor:pointer;color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.4)}
+button.sd-tag.is-aud[disabled]{opacity:.6;cursor:progress}
 .sd-say{margin:0;font:400 13px/1.45 'Quantico',sans-serif;color:#fff}
 .ssp-row{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:30px;
   background:rgba(0,0,0,.86);border-radius:16px;padding:3px 3px 3px 11px}   /* posé sur l'image : lisible comme `.sdata` */
@@ -5105,7 +5115,7 @@ async function cloudLoad(){
   cacheEcrire();
 }
 /* ══ LE TOTEHM D'UN AUTRE · LECTURE SEULE ══
-   Un appel, aucune écriture : `totehm_of` rend les cinq listes, sous les
+   Un appel, aucune écriture : `totehm_read` rend les cinq listes, sous les
    droits du moment (`_shared_with_me`).
    ⚠️ 05/10/2026 — LA LECTURE REDEVIENT SIMPLE. Wah : « je veux juste qu'on
    tape le nom de l'utilisateur et ça ouvre son Totehm en read only ». Plus
@@ -5116,9 +5126,9 @@ async function cloudLoad(){
 async function loadRO(){
   ZOOM.clear(); COPIES.clear();
   const seq=++roSeq,uid=me?.id;
-  const {data,error}=await sb.rpc('totehm_of',{p_pseudo:RO});
+  const {data,error}=await sb.rpc('totehm_read',{p_pseudo:RO});
   if(seq!==roSeq||uid!==me?.id)return false;
-  if(error){ console.error('[totehm] totehm_of:',error.message);
+  if(error){ console.error('[totehm] totehm_read:',error.message);
              roFail('this Totehm could not be read'); return false; }
   /* Un Totehm à abonnement, lu par un non-abonné : sa page de vente. Entré EN PLEIN VOL, elle
      s'ouvre dans la couche `XO` (même origine, même session) — on ne quitte toujours pas la page. */
@@ -5136,7 +5146,7 @@ async function loadRO(){
 
   return poserLecture(data);
 }
-/* Poser le Totehm lu (la réponse de `totehm_of`) À LA PLACE du mien, en mémoire : MEMBERS l'appelle aussi, après
+/* Poser le Totehm lu (la réponse de `totehm_read`) À LA PLACE du mien, en mémoire : MEMBERS l'appelle aussi, après
    avoir vérifié la réponse — un refus ne touche JAMAIS mon état. */
 function poserLecture(data){
   const habits=[];const seen={};
@@ -5188,7 +5198,7 @@ let roSortir=false;
 $('ro-out').onclick=()=>{ roSortir=true; foldToGate(); };
 
 /* ══ LIRE UN AUTRE TOTEHM SANS QUITTER LA PAGE · 18/10 → 20/10/2026 sexies ═════════════════════════
-   La lecture s'arme EN PLEIN VOL par MEMBERS (`MB`, dans l'atterrissage) : il vérifie `totehm_of`, puis pose la
+   La lecture s'arme EN PLEIN VOL par MEMBERS (`MB`, dans l'atterrissage) : il vérifie `totehm_read`, puis pose la
    réponse (`poserLecture`) — on ne charge jamais un second document, l'URL suit par `replaceState`. */
 /* Sortir : on redevient soi. Tout ce que la lecture a posé est jeté AVANT de recharger —
    sinon le Totehm d'un autre resterait une image sous le mien le temps d'un aller-retour. */
@@ -6356,6 +6366,18 @@ function creerFeed(conf){
   const ASK_MOT='ask my <svg class="ask-hi" viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-badge"></use></svg> self';
   const ET={will:'I will be there', am:'I am here', was:'I was here'};
   const AUD={private:'private', figher:'figher club', subscribers:'my subscribers', public:'figher club'};
+  /* Le niveau d'un de MES spots, en boucle : private → my subscribers → figher club. Le serveur décide et rend le niveau posé. */
+  const SUITE={private:'subscribers', subscribers:'figher', figher:'private', public:'private'};
+  async function spotNiveau(b,z){
+    if(b.disabled||RO||!me||!z.mine) return;
+    const avant=String(z.audience||'private'), apres=SUITE[avant]||'private', uid=me.id;
+    b.disabled=true; b.textContent=AUD[apres]; etat.niveaux=(etat.niveaux||0)+1;
+    const {data,error}=await sb.rpc('spot_audience_set',{p_spot:String(z.id), p_audience:apres});
+    b.disabled=false;
+    if((me?me.id:null)!==uid) return;
+    if(error||!data||!data.ok){ if(error) console.error('[spot_audience_set]',error.message); b.textContent=AUD[avant]||'private'; return; }
+    z.audience=data.audience; b.textContent=AUD[data.audience]||'private';
+  }
   const hhmm=d=>String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
   /* Les mots de figher.club (`dayOf`, `fmtDur`), copiés : today · yesterday · « 24 Oct » ; 45 min · 1 h 30. */
   const jourDe=d=>{ const n=new Date(), y=new Date(n); y.setDate(n.getDate()-1);
@@ -6377,9 +6399,13 @@ function creerFeed(conf){
     const place=!lieu?'':ex?'<a class="sd-tag" href="https://www.google.com/maps/search/?api=1&query='+(+z.exact.lat).toFixed(5)+'%2C'+(+z.exact.lng).toFixed(5)
       +'" target="_blank" rel="noopener">'+esc(lieu)+'</a>':tag(lieu);
     const aud=String(z.audience||'');
+    /* 26/10 (Wah : « concernant les spots il y a trois niveaux d'accès : private, subscribers et figher club ») : sur MON
+       spot, le niveau est un bouton — un tap passe au suivant (`spot_audience_set`) ; ailleurs, un mot. */
+    const audT=z.mine&&!RO&&me?'<button type="button" class="sd-tag is-aud" data-spaud="'+esc(String(z.id))+'" aria-label="Who sees it">'+esc(AUD[aud]||'private')+'</button>'
+      :tag(AUD[aud]||'');
     const data='<div class="sdata" aria-label="Where and when">'
       +'<div class="sd-row">'+tag(ET[z.state]||'','is-st')+tag(quand)+tag(duree(dur))+'</div>'
-      +'<div class="sd-row">'+place+tag(AUD[aud]||'')+(aud==='private'?'':tag('location '+(z.location==='on'?'on':'off')))
+      +'<div class="sd-row">'+place+audT+(aud==='private'?'':tag('location '+(z.location==='on'?'on':'off')))
         +(z.location==='on'&&z.mode?tag(z.mode==='silent'?'silent · nobody disturb me':'social · we can talk'):'')+'</div>'
       +(z.comment?'<p class="sd-say">'+esc(String(z.comment))+'</p>':'')+'</div>';
     const acts=(ex?'<button type="button" data-go="'+esc(String(z.id))+'">go</button>':'')
@@ -6908,6 +6934,8 @@ function creerFeed(conf){
       const del=e.target.closest('[data-del]');
       if(del){ if(!arme(del)) return; const x=L.find(y=>y.sp&&String(y.sp.id)===String(del.dataset.del)); del.disabled=true;
         retirer(x).then(ok=>{ if(!ok){ del.disabled=false; del.classList.remove('is-sur'); del.textContent='delete'; } }); return; }
+      const sa=e.target.closest('[data-spaud]');
+      if(sa){ const z=(L.find(x=>x.sp&&String(x.sp.id)===String(sa.dataset.spaud))||{}).sp; if(z) spotNiveau(sa,z); return; }
       const g=e.target.closest('[data-go],[data-ics],[data-who]');
       if(g){ const z=(L.find(x=>x.sp&&String(x.sp.id)===String(g.dataset.go||g.dataset.ics))||{}).sp;
         /* 20/10 sexies — l'auteur : son ÉCOSYSTÈME (sur place) ; sa page de vente si sa lecture demande un abonnement. */
@@ -7594,7 +7622,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-10-26-com-manette-recherche';
+const BUILD='2026-10-26-com-arbre-de-vie';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -7816,6 +7844,7 @@ async function loadTrips(force){
     VIS=(data.visions||[]).map(v=>({id:String(v.id), t:v.text||'', t0:v.text||'',
       is:Array.isArray(v.is)?v.is:[], os:(v.os||[]).map(String)}));
     tripsLoaded=true;
+    AUDB.charger();
     /* Les spots voyagent à part : une table, une lecture, et `my_trips`
        reste la fonction de l'arbre. */
     try{
@@ -8127,6 +8156,7 @@ function boiteHTML(o){
     + (o.haut||'')
     + ((o.minis||(o.ouverte&&!RO))?'<span class="minis">'+(o.minis||'')+(o.ouverte&&!RO?fichiersHTML(o.kind,o.id):'')+'</span>':'')
     + (o.bas||'')
+    + AUDB.html(o)
     /* [Delete] EST LE DERNIER ENFANT DE LA COLONNE. Posé à côté de la
        boîte il flottait à droite et mangeait la largeur — sur un
        téléphone, la moitié de la ligne pour la commande la plus grave.
@@ -8161,6 +8191,51 @@ async function copierBox(btn,k){
   const fait=data.created?'Copied to my TOTEHM':'Already in my TOTEHM';
   COPIES.set(k,fait); btn.textContent=fait; btn.classList.add('is-done');
 }
+/* ══ LA VISIBILITÉ D'UNE BOX · 26/10 ══ Wah : « il faut que chaque box ait un niveau de visibilité : private / my
+   subscribers (binaire) ». Une pastille dans la box OUVERTE (la mienne, jamais en lecture) : un tap bascule ; le serveur
+   écrit (`box_audience_set`, le plafond du Totehm suit) et `totehm_read` ne montre à un autre que ce qu'il peut lire.
+   Lu une fois avec mon arbre (`my_box_audiences`) ; une box neuve naît PRIVATE. Habitude = son texte, le reste = son id. */
+const AUDB=(()=>{
+  let M=null, seq=0; const diagA={lectures:0, bascules:0, erreurs:0};
+  const ICO={private:'<svg viewBox="0 0 12 12" aria-hidden="true"><rect x="2.5" y="5.5" width="7" height="5" rx="1" fill="currentColor"/><path d="M4 5.5V4a2 2 0 0 1 4 0v1.5" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>',
+    subscribers:'<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 1.2l1.4 3 3.3.4-2.4 2.3.6 3.3L6 8.6 3.1 10.2l.6-3.3L1.3 4.6l3.3-.4z" fill="currentColor"/></svg>'};
+  const MOTS={private:'private', subscribers:'my subscribers'};
+  const cle=(k,id)=>{ if(k==='h'){ const h=habOf(id); return h?String(h.t||'').trim():''; } return String(id||''); };
+  const reel=id=>!!id&&!/^tmp/.test(String(id));
+  const niveau=(k,id)=>{ const a=M&&M[k]?M[k][cle(k,id)]:null; return a&&a!=='private'?'subscribers':'private'; };
+  const dedans=a=>ICO[a]+'<span>'+MOTS[a]+'</span>';
+  function peindreB(b){ const d=b.dataset.baud, i=d.indexOf(':'), a=niveau(d.slice(0,i),d.slice(i+1));
+    b.className='baud is-'+a; b.setAttribute('aria-pressed',String(a==='subscribers')); b.innerHTML=dedans(a); }
+  async function charger(){
+    if(!me||RO) return; const s0=++seq, uid=me.id;
+    const {data,error}=await sb.rpc('my_box_audiences');
+    if(s0!==seq||(me?me.id:null)!==uid) return;
+    if(error||!data||!data.ok){ if(error) console.error('[my_box_audiences]',error.message); diagA.erreurs++; return; }
+    M={h:data.h||{}, t:data.t||{}, r:data.r||{}, w:data.w||{}, v:data.v||{}}; diagA.lectures++;
+    document.querySelectorAll('[data-baud]').forEach(peindreB);
+  }
+  function html(o){
+    if(RO||!me||!o.ouverte||!reel(o.id)||!cle(o.kind,o.id)) return '';
+    const a=niveau(o.kind,o.id);
+    return '<button type="button" class="baud is-'+a+'" data-baud="'+o.kind+':'+esc(String(o.id))+'" aria-pressed="'+(a==='subscribers')+'"'
+      +' aria-label="Who sees it">'+dedans(a)+'</button>';
+  }
+  async function basculer(b){
+    if(b.disabled||RO||!me) return;
+    const d=b.dataset.baud, i=d.indexOf(':'), k=d.slice(0,i), id=d.slice(i+1), c=cle(k,id); if(!c) return;
+    const apres=niveau(k,id)==='private'?'subscribers':'private', s0=seq, uid=me.id;
+    M=M||{h:{},t:{},r:{},w:{},v:{}}; M[k]=M[k]||{}; const avant=M[k][c];
+    M[k][c]=apres; peindreB(b); b.disabled=true; diagA.bascules++;
+    const {data,error}=await sb.rpc('box_audience_set',{p_kind:k, p_id:c, p_audience:apres});
+    b.disabled=false;
+    if(s0!==seq||(me?me.id:null)!==uid) return;              /* réponse tardive d'une autre session : jetée */
+    if(error||!data||!data.ok){ if(error) console.error('[box_audience_set]',error.message); diagA.erreurs++;
+      M[k][c]=avant; peindreB(b); return; }
+    M[k][c]=data.audience; peindreB(b);
+  }
+  return {charger, html, basculer, vider(){ seq++; M=null; }, etat:()=>Object.assign({lu:!!M},diagA)};
+})();
+window.__totehm_audb=()=>AUDB.etat();
 /* La loupe : un état par boîte (`ZOOM`), qui survit aux redessins. */
 const ZOOM=new Set();
 const loupeHTML=k=>{ const on=ZOOM.has(k);
@@ -9039,9 +9114,10 @@ function cable(box){
        qui les traite existait et n'était jamais atteint. */
     const el=e.target.closest('[data-fint],[data-ffq],[data-fclear],[data-fx],'
       +'[data-open],[data-add],[data-x],[data-pk],[data-int],[data-mv],[data-go],'
-      +'[data-fq],[data-lien],[data-unlink],[data-nodate],[data-kill],[data-space],[data-spotgo],[data-cloth],[data-totehmize],[data-zoom],[data-copy],[data-cap],[data-emo],[data-emx]');
+      +'[data-fq],[data-lien],[data-unlink],[data-nodate],[data-kill],[data-space],[data-spotgo],[data-cloth],[data-totehmize],[data-zoom],[data-copy],[data-cap],[data-emo],[data-emx],[data-baud]');
     if(!el)return;
     const d=el.dataset;
+    if(d.baud){ e.stopPropagation(); AUDB.basculer(el); return; }
     if(d.copy){ e.stopPropagation(); copierBox(el,d.copy); return; }
     /* 15/10 — capturer ou importer DEPUIS l'élément ; ouvrir, retirer un de ses fichiers. */
     if(d.cap){ e.stopPropagation(); const i=d.cap.indexOf(':'); CAP.ouvrir(d.cap.slice(0,i),d.cap.slice(i+1),el); return; }
@@ -10711,7 +10787,7 @@ function quitter(){
   roSeq++; HSPACES.seq++; HSPACES.par=new Map(); ECLOTHS.seq++; ECLOTHS.par=new Map(); visImgSeq++; VISIMG.clear(); ZOOM.clear(); COPIES.clear();
   state={habits:[],vis:'private'}; myProfile=null; cloudMode=false; mySub=null; LAND=null; if(lvQuitter) lvQuitter();
   EMEDIA.seq++; EMEDIA.items=[]; EMEDIA.par=new Map(); EMEDIA.charge=false; SIGNE_EM.clear(); SH.vider(); SHS.vider(); BADGE.vider(); CAP.fermer();
-  TRIPS=[]; REPS=[]; TEACH=[]; VIS=[]; OBJ={}; tripsLoaded=false;
+  TRIPS=[]; REPS=[]; TEACH=[]; VIS=[]; OBJ={}; tripsLoaded=false; AUDB.vider();
   cacheOublier();
   closeMember();
 }
@@ -12035,7 +12111,7 @@ window.addEventListener('pageshow',e=>{
       if(MB.avant){ finirRecherche(); MB.nom=MB.avant; peindreMode(); peindreNav(); rentrer(); return; }
       quitterMembre();
     }
-    /* Valider un identifiant : `totehm_of` décide (session, abonnement, confidentialité). Un refus ne touche
+    /* Valider un identifiant : `totehm_read` décide (session, abonnement, confidentialité). Un refus ne touche
        JAMAIS à mon état : on ne pose la lecture qu'une fois la réponse acceptée. */
     async function valider(){
       if(!MB.cherche) return;
@@ -12046,9 +12122,9 @@ window.addEventListener('pageshow',e=>{
       if(moi&&n.toLowerCase()===moi.toLowerCase()){ quitterMembre(); return; }
       mbNote('…'); mbGo(null);
       const s0=++MB.seq, uid=me.id;
-      const {data,error}=await sb.rpc('totehm_of',{p_pseudo:n});
+      const {data,error}=await sb.rpc('totehm_read',{p_pseudo:n});
       if(s0!==MB.seq||(me?me.id:null)!==uid||!MB.cherche) return;
-      if(error){ console.error('[totehm_of]',error.message); mbNote('unreachable · try again'); return; }
+      if(error){ console.error('[totehm_read]',error.message); mbNote('unreachable · try again'); return; }
       if(!data||!data.ok){
         const w=data&&data.why;
         if(w==='subscribe'){ verrouiller(String(data.pseudo||n)); return; }
@@ -12094,9 +12170,9 @@ window.addEventListener('pageshow',e=>{
     async function versMembre(nom){
       nom=String(nom||'').trim(); if(!me||!nom) return false;
       const s0=++MB.seq, uid=me.id;
-      const {data,error}=await sb.rpc('totehm_of',{p_pseudo:nom});
+      const {data,error}=await sb.rpc('totehm_read',{p_pseudo:nom});
       if(s0!==MB.seq||(me?me.id:null)!==uid) return true;
-      if(error){ console.error('[totehm_of]',error.message); return false; }
+      if(error){ console.error('[totehm_read]',error.message); return false; }
       if(!data||!data.ok){ if(data&&data.why==='subscribe'){ XO.univers(String(data.pseudo||nom)); return true; } return false; }
       const go=()=>activer(data,true);
       if(vue!=='c') aller('c',go); else go();

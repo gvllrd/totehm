@@ -17,7 +17,7 @@ const tables={profiles:[{pseudo:'wahigher'}],totehms:[{user_id:UID,steps:STEPS,v
 const LAND=(o={})=>({signed_in:true,pseudo:'wahigher',visibility:'private',offer:{enabled:false,open:false},
   higher:{active:false,price_cents:700,currency:'eur',period:'month'},thp:false,subscriptions:0,subscribers:0,
   sm:{ready:true,habit:true,objective:true,higher:false,free_total:7,free_left:6,left:6},...o});
-/* Le Totehm d'un autre, lu SUR PLACE depuis MEMBERS (`totehm_of`). */
+/* Le Totehm d'un autre, lu SUR PLACE depuis MEMBERS (`totehm_read`). */
 const AUTRE={ok:true,pseudo:'kai3',steps:[{t:'Swim at dawn',i:'flow',is:['flow']},{t:'Write it down',i:'express',is:['express']}],
   trips:[],objs:{},reps:[],wisdom:[],visions:[]};
 const COULEURS=['#E24B4A','#e48b31','#fcbe21','#639922','#1D9E75','#378ADD','#7F77DD'];
@@ -166,7 +166,7 @@ try{
  for(const [vp,tel] of [[{width:390,height:844},true],[{width:1280,height:800},false]]){
   const{pg,log}=await page(browser,{dir:'com',origin,tables,viewport:vp,hasTouch:tel,
     rpc:{my_landing:LAND(),habit_spaces:{ok:true,habits:[]},element_cloths:{ok:true,elements:[]},
-         totehm_of:b=>b.p_pseudo==='kai3'?AUTRE:b.p_pseudo==='lock'?{ok:false,why:'subscribe',pseudo:'lock'}:{ok:false,why:'nobody'},
+         totehm_read:b=>b.p_pseudo==='kai3'?AUTRE:b.p_pseudo==='lock'?{ok:false,why:'subscribe',pseudo:'lock'}:{ok:false,why:'nobody'},
          creator_page:b=>b.p_pseudo==='lock'?Object.assign({},OFFRE,{pseudo:'lock'}):OFFRE,
          member_media:{ok:true,items:[]},club_spots_of:{ok:true,items:[],total:0}}});
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1000);await ouvre(pg);
