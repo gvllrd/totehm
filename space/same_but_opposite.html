@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Same but opposite — Wah · TOTEHM</title>
+<meta name="description" content="Same but opposite, a video artwork by Wah.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;background:#000;color:#f0f0f3;font-family:'Space Mono',monospace}body{display:grid;grid-template-rows:auto minmax(0,1fr);height:100dvh}header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:max(18px,env(safe-area-inset-top)) max(20px,env(safe-area-inset-right)) 18px max(20px,env(safe-area-inset-left));font-size:11px}a{color:inherit;text-decoration:none}a:hover,a:focus-visible{color:#fbd5ca}h1{font-size:11px;font-weight:400;margin:0;color:#b9b9c3}main{position:relative;min-height:0;display:grid;place-items:center;padding:0 max(12px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left))}video{width:100%;height:100%;object-fit:contain;background:#000}#play-artwork{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);padding:18px 24px;border:1px solid #777782;background:#000;color:#f0f0f3;font:11px 'Space Mono',monospace;cursor:pointer;white-space:nowrap}#play-artwork:hover,#play-artwork:focus-visible{border-color:#fbd5ca;color:#fbd5ca}[hidden]{display:none!important}#play-status{position:absolute;bottom:70px;left:24px;right:24px;margin:0;text-align:center;color:#fbd5ca;font-size:11px;pointer-events:none}
+</style>
+</head>
+<body>
+<header><a href="/" aria-label="Return to the gallery">← Gallery</a><h1>Same but opposite · Wah</h1></header>
+<main aria-label="Same but opposite artwork">
+<video id="artwork" controls playsinline preload="none" aria-label="Same but opposite by Wah" src="https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/public/higher_boutique/same_but_opposite.mp4"></video>
+<button id="play-artwork" type="button">Tap to play the artwork</button>
+<p id="play-status" role="status" aria-live="polite"></p>
+</main>
+<script type="module">
+const artwork=document.getElementById('artwork'),play=document.getElementById('play-artwork'),status=document.getElementById('play-status');
+play.addEventListener('click',async()=>{status.textContent='';try{await artwork.play();}catch{status.textContent='The artwork could not play. Tap to try again.';}});
+artwork.addEventListener('play',()=>{play.hidden=true;status.textContent='';});
+artwork.addEventListener('pause',()=>{play.hidden=false;});
+artwork.addEventListener('ended',()=>{play.hidden=false;});
+artwork.addEventListener('error',()=>{play.hidden=false;status.textContent='The artwork could not load. Tap to try again.';});
+addEventListener('pagehide',()=>artwork.pause());
+window.__totehm_opposite=()=>({build:'same-but-opposite',playing:!artwork.paused,autoplay:artwork.autoplay,ready:artwork.readyState>0});
+</script>
+</body>
+</html>

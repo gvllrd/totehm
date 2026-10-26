@@ -2,7 +2,7 @@ import {ORIGINS} from './gallery-artworks.mjs';
 const TITLES=ORIGINS.map(art=>art.title);
 const STILL=n=>'/assets/gallery/book-origins/'+String(n).padStart(2,'0')+'.jpg';
 const FILES=Array.from({length:20},(_,i)=>(i+1)+'.mp4');
-const BUILD='2026-10-24-origins-book';
+const BUILD='2026-10-26-origins-explicit-play';
 
 // A whole trackpad inertia burst belongs to one turn. The quiet interval is
 // measured from the LAST wheel event, rather than from the accepted page turn.
@@ -30,11 +30,11 @@ export function createPageGestures({move=()=>false,busy=()=>false,quiet=240,thre
 export function createOriginsReader({client,base}={}){
  const $=id=>document.getElementById(id),book=$('book'),deck=$('deck'),left=$('left-page'),right=$('right-page'),cover=$('open-book'),sheet=$('turn-sheet'),front=$('turn-front'),back=$('turn-back');
  const reduced=matchMedia('(prefers-reduced-motion: reduce)'),videos=[],loaded=Array(20).fill(false),records=new Map();
- let current=0,opened=false,turning=false,turnAnimation=null,turnTimer=0,generation=0,pointer=null,hidden=document.hidden,paused=false,lastSource='initial',turns=0,mediaErrors=0;
+ let current=0,opened=false,turning=false,turnAnimation=null,turnTimer=0,generation=0,pointer=null,hidden=document.hidden,paused=false,lastSource='initial',turns=0,mediaErrors=0,suppressPlayUntil=0;
  for(let i=0;i<20;i++){
   const n=i+1,page=document.createElement('div');page.className='work-page';page.id='work-'+n;page.hidden=true;page.setAttribute('aria-label',TITLES[i]);
   const video=document.createElement('video');video.id='vid'+i;video.muted=true;video.defaultMuted=true;video.loop=true;video.playsInline=true;video.preload='none';video.poster=STILL(n);video.setAttribute('playsinline','');video.setAttribute('aria-label',TITLES[i]);
-  video.addEventListener('playing',()=>{if(!opened||current!==n||hidden||paused||turning){video.pause();return;}syncPlay();});video.addEventListener('pause',syncPlay);video.addEventListener('error',()=>{mediaErrors++;syncPlay();});page.append(video);right.append(page);videos.push(video);
+  video.addEventListener('playing',()=>{if(!opened||current!==n||hidden||paused||turning){video.pause();return;}syncPlay();});video.addEventListener('pause',syncPlay);video.addEventListener('error',()=>{mediaErrors++;syncPlay();});page.append(video);const play=document.createElement('button');play.type='button';play.className='artwork-play';play.setAttribute('aria-controls',video.id);play.setAttribute('aria-label','Play '+TITLES[i]);play.innerHTML='<span>Tap to play the artwork</span>';play.addEventListener('click',()=>togglePlayback());page.append(play);right.append(page);videos.push(video);
   const label=document.createElement('div');label.className='book-meta gl';label.id='gl'+i;label.hidden=true;
   label.innerHTML='<div class="gl-a">Wah</div><div class="gl-t"></div><div class="gl-m">Quantum series · Digital · 2026</div><div class="gl-d"></div><div class="gl-r"><span class="gl-p">—</span><span class="gl-e">1 / 1</span></div><button class="gl-btn" type="button" disabled>Loading…</button><span class="chapter-number"></span>';
   label.querySelector('.gl-t').textContent=TITLES[i];label.querySelector('.chapter-number').textContent=String(n).padStart(2,'0')+' / 20';left.append(label);
@@ -42,11 +42,12 @@ export function createOriginsReader({client,base}={}){
  function loadVideo(index){if(index<0||index>=20||loaded[index])return;loaded[index]=true;videos[index].src=base+FILES[index];videos[index].load();}
  function preload(){if(current<1)return;[current-2,current-1,current].forEach(loadVideo);}
  function pauseAll(){for(const video of videos)video.pause();syncPlay();}
- function syncPlay(){const playing=opened&&current>0&&!videos[current-1]?.paused;$('book-play').hidden=!opened||current===0;$('book-play').textContent=playing?'PAUSE':'PLAY';$('book-play').setAttribute('aria-pressed',String(!!playing));}
+ function syncPlay(){const playing=opened&&current>0&&!videos[current-1]?.paused;$('book-play').hidden=!opened||current===0;$('book-play').textContent=playing?'PAUSE':'PLAY';$('book-play').setAttribute('aria-pressed',String(!!playing));for(let i=0;i<videos.length;i++){const active=!!playing&&current===i+1,button=$('work-'+(i+1)).querySelector('.artwork-play');button.disabled=turning;button.setAttribute('aria-label',(active?'Pause ':'Play ')+TITLES[i]);button.setAttribute('aria-pressed',String(active));button.querySelector('span').textContent=active?'Tap to pause the artwork':'Tap to play the artwork';button.classList.toggle('is-playing',active);}}
  function playCurrent(){
   if(!opened||current<1||hidden||paused||turning)return;const n=current,revision=generation;loadVideo(n-1);
   const promise=videos[n-1].play();promise?.catch(()=>{if(revision===generation&&current===n)syncPlay();});syncPlay();
  }
+ function togglePlayback(){if(current<1||turning||!opened||performance.now()<suppressPlayUntil)return;const video=videos[current-1];if(video.paused){paused=false;playCurrent();}else video.pause();syncPlay();}
  function update(){
   book.classList.toggle('is-open',opened);book.classList.toggle('is-turning',turning);document.body.classList.toggle('is-turning',turning);book.querySelector('.book-spread').inert=!opened;$('book-cover').inert=opened;cover.setAttribute('aria-expanded',String(opened));
   $('intro-left').hidden=current!==0;$('intro-right').hidden=current!==0;
@@ -56,7 +57,7 @@ export function createOriginsReader({client,base}={}){
   $('book-close').hidden=!opened;$('book-close').disabled=turning;$('book-begin').disabled=turning;$('book-state').textContent=!opened?'Origins. Closed book.':current===0?'Origins. Introduction.':TITLES[current-1]+'. Page '+current+' of 20.';syncPlay();
  }
  function finishTurn(revision){
-  if(revision!==generation||!turning)return;clearTimeout(turnTimer);turnTimer=0;turning=false;sheet.hidden=true;const animation=turnAnimation;turnAnimation=null;animation?.cancel();update();preload();playCurrent();
+  if(revision!==generation||!turning)return;clearTimeout(turnTimer);turnTimer=0;turning=false;sheet.hidden=true;const animation=turnAnimation;turnAnimation=null;animation?.cancel();update();preload();
  }
  function turnPage(next,{animate=true,source='button'}={}){
   if(turning||!Number.isInteger(next)||next<0||next>20||next===current)return false;
@@ -67,21 +68,21 @@ export function createOriginsReader({client,base}={}){
    back.textContent=next===0?'ORIGINS':String(next).padStart(2,'0')+' / 20';sheet.hidden=false;update();
    turnAnimation=sheet.animate(forward?[{transform:'rotateY(0deg)',filter:'brightness(1)'},{transform:'rotateY(-178deg)',filter:'brightness(.76)'}]:[{transform:'rotateY(-178deg)',filter:'brightness(.76)'},{transform:'rotateY(0deg)',filter:'brightness(1)'}],{duration:680,easing:'cubic-bezier(.25,.65,.25,1)',fill:'forwards'});
    turnAnimation.finished.then(()=>finishTurn(revision),()=>finishTurn(revision));turnTimer=setTimeout(()=>finishTurn(revision),760);
-  }else{update();preload();playCurrent();}
+  }else{update();preload();}
   return true;
  }
- function openBook(){if(opened||turning)return false;opened=true;lastSource='cover';generation++;update();preload();playCurrent();return true;}
+ function openBook(){if(opened||turning)return false;opened=true;lastSource='cover';generation++;update();preload();return true;}
  function closeBook(){if(!opened||turning)return false;pauseAll();opened=false;generation++;update();return true;}
  const move=(direction,source)=>{if(!opened){const accepted=direction>0?openBook():false;if(accepted)lastSource=source;return accepted;}return turnPage(current+direction,{source});};
  const gestures=createPageGestures({move,busy:()=>turning});
  cover.disabled=false;cover.addEventListener('click',openBook);$('book-begin').addEventListener('click',()=>turnPage(1));$('nav-down').addEventListener('click',()=>move(1,'button'));$('nav-up').addEventListener('click',()=>move(-1,'button'));$('book-close').addEventListener('click',closeBook);
- $('book-play').addEventListener('click',()=>{if(current<1)return;const v=videos[current-1];if(v.paused){paused=false;playCurrent();}else v.pause();syncPlay();});
+ $('book-play').addEventListener('click',togglePlayback);
  document.addEventListener('wheel',event=>{
   if(event.ctrlKey||event.target.closest('input,textarea,select,[contenteditable=true]'))return;event.preventDefault();
   const unit=event.deltaMode===1?16:event.deltaMode===2?innerHeight:1,delta=(Math.abs(event.deltaY)>=Math.abs(event.deltaX)?event.deltaY:event.deltaX)*unit;gestures.wheel(delta,performance.now());
  },{passive:false});
- deck.addEventListener('pointerdown',event=>{if(pointer||event.button!==0||event.target.closest('button,a,input,textarea,select'))return;pointer={id:event.pointerId,x:event.clientX,y:event.clientY,time:event.timeStamp};deck.setPointerCapture?.(event.pointerId);});
- deck.addEventListener('pointerup',event=>{if(!pointer||event.pointerId!==pointer.id)return;const p=pointer;pointer=null;gestures.swipe(event.clientX-p.x,event.clientY-p.y,event.timeStamp-p.time);});
+ deck.addEventListener('pointerdown',event=>{const artwork=event.target.closest('.artwork-play');if(pointer||event.button!==0||!artwork&&event.target.closest('button,a,input,textarea,select'))return;pointer={id:event.pointerId,x:event.clientX,y:event.clientY,time:event.timeStamp,artwork:!!artwork};(artwork||deck).setPointerCapture?.(event.pointerId);});
+ deck.addEventListener('pointerup',event=>{if(!pointer||event.pointerId!==pointer.id)return;const p=pointer;pointer=null;const dx=event.clientX-p.x,dy=event.clientY-p.y;if(p.artwork&&Math.hypot(dx,dy)>10)suppressPlayUntil=performance.now()+400;gestures.swipe(dx,dy,event.timeStamp-p.time);});
  deck.addEventListener('pointercancel',()=>{pointer=null;});
  document.addEventListener('keydown',event=>{
   if(event.target.closest('input,textarea,select,[contenteditable=true]')||event.altKey||event.metaKey||event.ctrlKey)return;

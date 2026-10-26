@@ -4,14 +4,14 @@
 
 Un pavillon de verre vit au sommet d’une Terre engloutie, sur une terrasse en calçada de Lisbonne, face à l’océan sous la Voie lactée.
 La bouche originale, sa langue et son THP sculptés sont éclairés en façade. Dedans : comptoir pierre, pupitre noir, écran Lisbon et cheminée chaleureuse.
-Space est l’accueil immersif : le livre ouvre Origins, l’écran Lisbon et le cadre premium Stoner ouvrent chacun leur page indépendante en plein écran. La marketplace reste complète.
+Space ouvre directement le monde, sans titre d’accueil ni commandes de panorama/saut/son. Livre Origins, écrans Lisbon et Same but opposite, cadre Stoner : chaque œuvre ouvre sa page indépendante ; marketplace conservée.
 
 | fichier | rôle |
 |---|---|
-| `index.html` · `gallery-ui.mjs` · `gallery.css` | entrée, commandes des installations, panoramas, liste accessible et SSO existant |
+| `index.html` · `gallery-ui.mjs` · `gallery.css` | entrée directe, installations, liste accessible ; bouton TOTEHM → connexion COM ou retour chez soi |
 | `gallery-spatial.mjs` · `gallery-modern-navigation.mjs` · `gallery-modern-layout.mjs` | caméra, parcours autour des meubles, collisions, saut et plafond/toit |
 | `gallery-modern.mjs` · `gallery-white-stone.mjs` · `gallery-ancient-floor.mjs` | verre, vraies dalles anciennes, matière photographique PBR, comptoir et pupitre |
-| `gallery-lectern-book.mjs` · `gallery-play-installation.mjs` · `gallery-stoner-installation.mjs` | livre vers Origins ; portails Lisbon et cadre premium Stoner authentique |
+| `gallery-lectern-book.mjs` · `gallery-play-installation.mjs` · `gallery-opposite-installation.mjs` · `gallery-stoner-installation.mjs` | livre, deux écrans et cadre premium, liens vers leurs pages |
 | `gallery-fireplace.mjs` · `gallery-fire-audio.mjs` | foyer panoramique, flammes volumiques, éclairage ambre, fumée extérieure et crépitement synthétisé |
 | `gallery-3d.mjs` · `gallery-temple*.mjs` · `gallery-origins-book.mjs` | anciennes architectures et livre ouvert conservés ; paysage partagé |
 | `gallery-lisbon-pavement.mjs` | calçada extérieure d’origine : vagues et caravelle ; pierre blanche uniquement dans le pavillon |
@@ -25,7 +25,7 @@ Space est l’accueil immersif : le livre ouvre Origins, l’écran Lisbon et le
 | `gallery-audio.mjs` · `gallery-lisbon.mjs` | vent/mer stéréo synthétisés, grave des portes et souffle Web Audio ; aperçu des vrais panneaux |
 | `get_higher.html` · `stoner.html` · `stoner_terms.html` | TotehmPaper et méthode Stoner, dans leurs propres fichiers et avec leurs droits serveur |
 | `origins.html` · `origins-book.mjs` · `origins-book.css` | livre fermé/ouvert, 20 pages vidéo dans l’ordre, prix et acquisition serveur, un geste = une page |
-| `play_lisbon_street.html` | Lisbon autonome et sa manette d’origine conservés |
+| `play_lisbon_street.html` · `same_but_opposite.html` | Lisbon autonome et sa manette ; vidéo publique originale de Boutique, lecture au toucher |
 | `market.html` | marketplace complète : achats primaires, revente, propriétaires, provenance et ma collection |
 | `social.html` · `api/card.js` | lecteur ouvert par COM `/x/space` · aperçu `/s/:id` |
 | `assets/ocean/` | deux cartes originales 1024² : normales Fourier et écume cellulaire, données linéaires avec mipmaps ; provenance dans LICENSE.txt |
@@ -42,18 +42,18 @@ Space est l’accueil immersif : le livre ouvre Origins, l’écran Lisbon et le
 - Écume persistante sur deux cibles 256² / 128² à 30 / 20 Hz : densité RG16, âge et naissance ; dissipation de 7,8 s, dentelle fine et sillages entraînés par le vent. Sans cartes ou sans rendu GPU, secours local ; état du moteur restauré après chaque passe.
 - Pavillon de 26 × 15 m, entrée de 4,8 m et toit entièrement vitré à 6,2 m ; ciel visible, fines nervures, aucune colonne ni végétation.
 - Le comptoir pierre expose 6 feuilles de 48 THP de 2,2 cm et 5 papiers détachés ; dessin perforé original, aucun prix local. Langue et THP de façade en vrai volume éclairé.
-- Volume noir fermé sur pupitre incliné à 18° : son ouverture mène à `/origins?open=1`. Origins conserve ses 20 vidéos, avec pages tournantes ; un geste de molette/inertie/swipe tourne une seule page, sans boucle.
-- Lisbon : écran seul avec sa couverture et Higher en SVG ; clic → `/play_lisbon_street` dans toute la fenêtre. Aucun lecteur, contrôleur, iframe ni vidéo dans Space.
+- Volume noir fermé sur pupitre incliné à 18° : son ouverture mène à `/origins?open=1`. Origins conserve ses 20 vidéos, avec pages tournantes et lecture uniquement au toucher (« Tap to play the artwork ») ; introduction de Wah sur les 22 œuvres, sans lecture automatique au changement de page.
+- Lisbon : couverture et Higher en SVG → `/play_lisbon_street`. Same but opposite : écran sur le verre gauche → `/same_but_opposite`, source publique `higher_boutique/same_but_opposite.mp4`. Aucun décodeur vidéo dans l’accueil 3D.
 - Stoner : vrai cadre premium noir profond, verre et THP original, proportions du premier `/get_higher`. Clic → cette page ; les droits et la méthode `/stoner` restent contrôlés par le serveur.
 - Cheminée ultra minimale : socle du même calcaire, fine hotte acier suspendue, bûches noueuses en volume, braises éparses et combustion continue 3D turbulente à émission thermique ; fumée au-dessus du verre, gel en mode réduit.
 - Marche 2,6 m/s, guidage 1 450–4 200 ms autour des meubles. Les boutons conduisent aux installations ; leurs objets et CTA ouvrent les expériences indépendantes, sans moteur 3D derrière.
-- Espace ou Jump : envol extérieur de 18 000 m en 14 s simulées ; plafond, murs, mobilier et toit solides. Aucune relance en l’air.
+- Touche Espace : envol extérieur de 18 000 m en 14 s simulées ; plafond, murs, mobilier et toit solides. Aucune relance en l’air.
 - Guidage/réduction/cache arrière préservent altitude et vitesse ; une visite demandée en l’air attend le retour sur la terrasse avant d’entrer.
-- Vent/mer dehors, atténués progressivement sous le verre ; au foyer, quatre couches stéréo de combustion, braises et fractures de bois avec réflexions courtes. Geste réel, proximité, muet commun et suspension liste/masqué/blur ; au-delà de 3 000 m, onde méditative.
+- Vent/mer dehors, atténués progressivement sous le verre ; au foyer, quatre couches stéréo de combustion, braises et fractures de bois avec réflexions courtes. Geste réel, proximité, préférence audio conservée et suspension liste/masqué/blur ; au-delà de 3 000 m, onde méditative.
 - Au sommet, cadrage doux du globe entier et 1 600 / 720 points stellaires proches ; glisser reprend la vue. Mouvement réduit : décor figé, guidage horizontal immédiat, saut intentionnel sans recadrage/FOV. Sans WebGL, liens HTML.
 - Règle : Space présente les expériences, chaque HTML possède son lecteur plein écran. Le départ suspend la 3D et les sons ; retour navigateur rétablit le monde et la préférence audio.
 - Le marché reste autonome, y compris après Stripe. Prix, stock et accès du serveur, propriété au webhook ; aucun changement SQL/Edge/tarif.
 - Téléphone : DPR initial min(natif, 2), plancher min(natif, 1,5), grâce au démarrage et adaptation graduelle réversible ; `gallery-render-quality.mjs`. Aucun effondrement permanent à 0,65.
-- Market, My collection, Collect et Full experience gardent leurs routes absolues ; les anciens modules et pages sont conservés.
+- Connexion unique : `totehm.com/auth` en PKCE ; connecté, pseudo du profil et clic → COM `/totehm` par `sso-mint`, sans menu membre local. Market, My collection, Collect et Full experience restent accessibles.
 
-Tests : `tests/browser/gallery_glass_hearth.mjs` · `origins_book.mjs` · `tests/node/modern_navigation.mjs` · `origins_page_gestures.mjs` · `gallery_render_quality.mjs`.
+Tests : `tests/browser/` : `gallery_direct.mjs`, `gallery_auth.mjs`, `gallery_glass_hearth.mjs`, `origins_book.mjs`, `same_but_opposite.mjs` ; `tests/node/` : `modern_navigation.mjs`, `origins_page_gestures.mjs`, `gallery_render_quality.mjs`.

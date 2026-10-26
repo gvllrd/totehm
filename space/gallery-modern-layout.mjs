@@ -9,6 +9,7 @@ export const GALLERY_LAYOUT=freeze({
  origins:{id:'origins',room:1,lectern:[-7.6,1.31,-8],book:[-7.6,1.37,-8],approach:[-7.6,1.65,-5.7],target:[-7.6,1.37,-8],href:'/origins'},
  play:{id:'play',room:2,screen:[8,3.1,-16.18],screenSize:[7,3.9],approach:[8,1.65,-7.5],target:[8,3.1,-16.18],href:'/play_lisbon_street'},
  stoner:{id:'stoner',room:3,position:[0,3.45,-16.30],approach:[0,1.65,-9.4],target:[0,3.45,-16.30],href:'/get_higher'},
+ opposite:{id:'opposite',room:4,screen:[-12.72,3.1,-7],screenSize:[5.6,3.15],approach:[-5,1.65,-7],target:[-12.72,3.1,-7],href:'/same_but_opposite'},
  fireplace:{position:[-8,0,-16.05],approach:[-8,1.65,-12.4],target:[-8,1.2,-15.9]}
 });
 const box=(id,minX,maxX,minZ,maxZ,minY,maxY)=>({id,minX,maxX,minZ,maxZ,minY,maxY});
@@ -25,4 +26,4 @@ export const GALLERY_OBSTACLES=freeze([
  box('fireplace-hearth',-10.15,-5.85,-16.8,-15.18,-.09,3.35),
  box('fireplace-flue',-8.22,-7.78,-16.42,-15.98,3.2,8.4)
 ]);
-export const GALLERY_STATIONS=freeze([GALLERY_LAYOUT.counter,GALLERY_LAYOUT.origins,GALLERY_LAYOUT.play,GALLERY_LAYOUT.stoner]);
+export const GALLERY_STATIONS=freeze([GALLERY_LAYOUT.counter,GALLERY_LAYOUT.origins,GALLERY_LAYOUT.play,GALLERY_LAYOUT.stoner,GALLERY_LAYOUT.opposite]);
