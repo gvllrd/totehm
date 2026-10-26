@@ -75,6 +75,7 @@ const generationResponder = (o, number=7) => {
   if(o.url.includes('/totehm_cloth_support?')) return [support];
   if(o.url.includes('/artistic_styles?')) return [{name:'Fixture style'}];
   if(o.url.includes('/images/generations')) return {data:Array.from({length:number},()=>({b64_json:'cG5n'}))};
+  if(o.url.includes('/chat/completions')) return {choices:[{message:{content:'Low sun on wet stone, cold blue shadows, worn fabric.'}}]};
   if(o.url.includes('/storage/v1/object/sign/')) return {signedURL:'/object/sign/fixture?token=simulation'};
   if(o.url.includes('/storage/v1/object/')) return {};
   if(o.url.endsWith('/cloth_concepts')) return {};
@@ -158,6 +159,38 @@ test('B generates and persists exactly seven concepts before notify',async()=>{
   assert.equal(hits(r,'/images/generations')[0].body.n,7);assert.equal(hits(r,'/storage/v1/object/streetwear-generations/','POST').length,7);
   assert.equal(hits(r,'/cloth_concepts','POST')[0].body.length,7);assert.equal(hits(r,'streetwear-generate').length,1);
   assert.ok(r.calls.findIndex(o=>rpcName(o)==='streetwear_checkpoint')<r.calls.findIndex(o=>o.url.includes('/images/generations')));
+});
+// 26/10 (Wah) : « analyser les photos des medias ou des spots photo ». Elles
+// sont SIGNÉES ici, LUES par un modèle de vision, et ce qui en sort entre dans
+// le prompt comme matière — jamais comme une instruction, jamais chez Printful.
+test('B reads the photographs the member lit, and folds them into the prompt',async()=>{
+  const avec=ticket('generation');
+  avec.cloth.box_snapshot={is:['flow'],matter:{objectives:[{text:'Fixture objective'}]},
+    shots:[{kind:'media',id:'em1',bucket:'element-media',path:'u/m-1.jpg'},
+           {kind:'spot',id:'sp1',bucket:'moments',path:'u/s-1.jpg'}]};
+  const r=await processNode('B',avec,generationResponder);ok(r);
+  const signatures=hits(r,'/storage/v1/object/sign/','POST').filter(o=>!o.url.includes('streetwear-generations'));
+  assert.equal(signatures.length,2);
+  assert.ok(signatures.some(o=>o.url.includes('/element-media/u/m-1.jpg')));
+  assert.ok(signatures.some(o=>o.url.includes('/moments/u/s-1.jpg')));
+  const lecture=hits(r,'/chat/completions','POST');
+  assert.equal(lecture.length,1);
+  assert.equal(lecture[0].body.messages[1].content.filter(c=>c.type==='image_url').length,2);
+  assert.match(lecture[0].body.messages[0].content,/Never describe a person/);
+  assert.match(hits(r,'/images/generations')[0].body.prompt,/Low sun on wet stone/);
+  assert.equal(hits(r,'streetwear_checkpoint').filter(o=>o.body.p_data?.photos_read===2).length,1);
+});
+test('B generates without photographs when none was lit',async()=>{
+  const r=await processNode('B',ticket('generation'),generationResponder);ok(r);
+  assert.equal(hits(r,'/chat/completions','POST').length,0);
+  assert.ok(!/visual material only/.test(hits(r,'/images/generations')[0].body.prompt));
+});
+test('B refuses a photograph reference that is not a bucket and a path',async()=>{
+  const faux=ticket('generation');
+  faux.cloth.box_snapshot={shots:[{bucket:'../secret',path:'x'},{bucket:'moments',path:'../../etc/passwd'},{bucket:'',path:''}]};
+  const r=await processNode('B',faux,generationResponder);ok(r);
+  assert.equal(hits(r,'/storage/v1/object/sign/','POST').filter(o=>!o.url.includes('streetwear-generations')).length,0);
+  assert.equal(hits(r,'/chat/completions','POST').length,0);
 });
 test('B rejects an incomplete generation batch',async()=>{
   const r=await processNode('B',ticket('generation'),o=>generationResponder(o,6));failed(r,'seven_images_required');
