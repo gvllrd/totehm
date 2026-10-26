@@ -3724,7 +3724,10 @@ body.is-tlv #gate-asteroid,body.is-tlv #lvjoy{opacity:0;pointer-events:none}
    n'en font qu'une : les trois rectangles rentrent DANS le papier du milieu, donc ils
    sont courts ; et les trois papiers, posés l'un sur l'autre, redeviennent le LOGO.
    Un tap le décompose — le fond prend le dessus, le rail, le T et le mot fondent. */
-.lsh-sf .sfcmd{--q:min(114px,26vw);display:flex;gap:3px;justify-content:center;align-items:stretch;height:var(--q);width:100%}
+.lsh-sf .sfcmd{--q:min(114px,26vw);display:flex;gap:3px;justify-content:center;align-items:stretch;height:var(--q);width:100%;transform-origin:50% 50%}
+.lsh-sf .sf-aj{margin:0;font-size:10px;color:#d8d8dd}
+body.lv-g.papier-haut.sf-nait #gate-asteroid{opacity:0}
+body.papier-haut #gate-asteroid{transition:opacity .25s ease}
 .lsh-sf .sfv-sq{flex:0 0 var(--q);width:var(--q);height:var(--q);min-width:0;padding:0 7px;
   /* ⚠️ un padding en POURCENTAGE se mesure sur le panneau, pas sur le papier : à 14 % il
      dépassait la largeur du carré sur ordinateur (117,6 px pour 114) et le papier n'était
@@ -6193,7 +6196,7 @@ function boxTotehm(bk,o,opts){
 }
 
 function creerFeed(conf){
-  const etat={on:false, items:0, total:0, videos:0, ici:false, pas:0, filtre:''};
+  const etat={on:false, items:0, total:0, videos:0, ici:false, pas:0, filtre:'', naissances:0, ajout:false};
   let io=null, ici=null, L=[], drag=null;
   /* ══ LE FILTRE, REPRIS DE SPACE · 19/10/2026 ter ═══════════════════════════════════════════════
      Wah : « le logo Totehm qui permettait de sélectionner une box, et le bouton filter avec TOUS les
@@ -6206,7 +6209,8 @@ function creerFeed(conf){
      cherche CHEZ LES AUTRES) ; ici on trie MES médias, déjà en mémoire, et un filtre qui élargit
      n'aurait aucun sens — c'est donc un ET entre les groupes, un OU dedans. Zéro appel de plus. */
   const SF={box:null, on:new Set(), ints:new Set(), piliers:new Set(), freq:false, type:'', vue:'', quand:'', qui:'', ou:'',
-            plie:true, grind:false};   /* le bloc de commande EST le logo, replié, jusqu'au premier tap */
+            plie:true, grind:false,    /* le bloc de commande EST le logo ; il naît décomposé du TOTEHM docké (26/10) */
+            ajout:false, ajVue:''};    /* 26/10 : le « + » ouvre le MÊME Totehm pour choisir l'élément d'un média */
   const PILIERS=['BODY','MENTAL','SOUL','SPIRIT'];
   const sfCount=()=>(SF.box?SF.on.size:0)+SF.ints.size+SF.piliers.size+(SF.freq?1:0)
                    +(SF.type?1:0)+(SF.vue?1:0)+(SF.quand?1:0)+(SF.qui?1:0)+(SF.ou?1:0);
@@ -6223,8 +6227,8 @@ function creerFeed(conf){
   const BOX={h:'h',o:'t',r:'r',w:'w',v:'v'};
   const VUE={h:'habits',o:'objectives',r:'repulsions',w:'wisdom',v:'visions'};
   const VUE_K={habits:'h',objectives:'t',repulsions:'r',wisdom:'w',visions:'v'};
-  /* 24/10 (Wah) : « c'est my vision, my objectives, my habits, my repulsions et my wisdom story ». */
-  const MOT={habits:'my habits',objectives:'my objectives',repulsions:'my repulsions',wisdom:'my wisdom story',visions:'my vision'};
+  /* 24/10 (Wah) : « c'est my vision, my objectives, my habits, my repulsions et my wisdom story » ; 26/10 : « MY WISDOM (et pas STORY) ». */
+  const MOT={habits:'my habits',objectives:'my objectives',repulsions:'my repulsions',wisdom:'my wisdom',visions:'my vision'};
   const txtDe=(k,o)=>!o?'':((k==='t'||k==='r')?String(o.text||''):String(o.t||''));
   /* Les traits : ses intentions pour une Habit, celles qu'il HÉRITE pour les quatre autres — la MÊME
      chaîne que la boîte de chaque vue (une habitude qualifie un geste répété ; les autres héritent). */
@@ -6478,27 +6482,33 @@ function creerFeed(conf){
          les trois papiers posés l'un sur l'autre ne font qu'un logo ; un tap le décompose (le fond
          prend le dessus, le rail, le T et le mot fondent), et MY GRIND ouvre ses trois boutons DANS
          son navy — courts, à la mesure du papier, comme sur higher.boutique. */
-      const vb=(v,cl)=>'<button type="button" class="sfv '+cl+' '+(PEAU[VUE_K[v]]||'')+(SF.vue===v?' is-on':'')+'"'
-        +' data-sf="vue" data-v="'+v+'" aria-pressed="'+(SF.vue===v)+'"><span>'+esc(MOT[v]||v)+'</span></button>';
-      const pile=['objectives','habits','repulsions'].map(v=>'<i'+(SF.vue===v?' class="is-on"':'')
+      /* 26/10 (Wah) : « tu cliques sur le Totehm et boom, MY WISDOM, MY GRIND et MY VISION naissent de lui » — en UN tap
+         (`naitre`) ; et le « + » ouvre le même Totehm (`SF.ajout`) : la vue choisie y est `SF.ajVue`, jamais le filtre. */
+      const cur=SF.ajout?SF.ajVue:SF.vue;
+      const vb=(v,cl)=>'<button type="button" class="sfv '+cl+' '+(PEAU[VUE_K[v]]||'')+(cur===v?' is-on':'')+'"'
+        +' data-sf="vue" data-v="'+v+'" aria-pressed="'+(cur===v)+'"><span>'+esc(MOT[v]||v)+'</span></button>';
+      const pile=['objectives','habits','repulsions'].map(v=>'<i'+(cur===v?' class="is-on"':'')
         +' data-sf="vue" data-v="'+v+'">'+esc(MOT[v]||v)+'</i>').join('');
-      let h='<div class="sfg"><div class="sfcmd'+(SF.plie?' is-logo':' is-melt is-split')+(SF.grind?' is-grind':'')
+      let h=(SF.ajout?'<p class="sfl sf-aj">+ media</p>':'')
+        +'<div class="sfg"><div class="sfcmd'+(SF.plie?' is-logo':' is-melt is-split')+(SF.grind?' is-grind':'')
         +'" role="group" aria-label="My TOTEHM">'+vb('wisdom','sfv-sq sfv-s')
         +'<button type="button" class="sfv sfv-sq sfv-g" style="--skin:#333366" data-sf="grind" aria-label="My grind">'
         +'<span class="sf-lg" aria-hidden="true"><svg class="gl g-rail"><use href="#lg-rail"/></svg>'
         +'<svg class="gl g-t"><use href="#lg-t"/></svg><svg class="gl g-wm"><use href="#lg-wm"/></svg></span>'
         +'<span class="sf-lab">my grind</span><span class="sfpile">'+pile+'</span></button>'
         +vb('visions','sfv-sq sfv-v')+'</div></div>';
-      if(SF.vue){
-        const l=mesElements().filter(x=>VUE[x.k]===SF.vue);
-        h+='<div class="sfg"><div class="sfl">'+esc(MOT[SF.vue]||SF.vue)+'</div><div class="sfbx">'
-          +(l.length?l.map(x=>{ const on=b&&b.vue===SF.vue&&b.txt===x.txt;
+      if(cur){
+        const l=mesElements().filter(x=>VUE[x.k]===cur);
+        h+='<div class="sfg"><div class="sfl">'+esc(MOT[cur]||cur)+'</div><div class="sfbx">'
+          +(l.length?l.map(x=>{ const on=!SF.ajout&&b&&b.vue===cur&&b.txt===x.txt;
               return '<div class="sfb'+(on?' is-on':'')+'" role="button" tabindex="0" data-sf="box" data-v="'+esc(x.k+'|'+x.ref)+'" aria-pressed="'+!!on+'">'
                 +(boxTotehm(BOX[x.k],objetBox(BOX[x.k],x.k==='h'?((state.habits||[]).find(z=>String(z.t||'').trim()===x.ref)||{}).id:x.ref),{})
                   ||'<span class="lsh-t">'+esc(x.txt)+'</span>')+'</div>'; }).join('')
              :'<p class="lv-note">nothing in this view yet</p>')
           +'</div></div>';
       }
+      if(SF.ajout){ h+='<div class="sfg"><div class="sfr sfa"><span></span><button type="button" class="sfc" data-sf="close">CLOSE</button></div></div>';
+        p.innerHTML=h; return; }
       h+=g('It shows', c('data-sf="type" data-v="photo"','photo',SF.type==='photo')+c('data-sf="type" data-v="video"','video',SF.type==='video'));
       h+=g('Intentions', INTS.map(chipInt).join(''));
       h+='<div class="sfg"><div class="sfr sfa"><button type="button" class="sfc" data-sf="all">ALL</button>'
@@ -6547,11 +6557,37 @@ function creerFeed(conf){
       +'<button type="button" class="sfc" data-sf="close">CLOSE</button></div></div>';
     p.innerHTML=h;
   }
-  function sfOpen(open){
+  function sfOpen(open,ajout){
     const p=pan(); if(!p) return;
+    const naissance=open&&conf.grille&&(p.hidden||!!ajout!==SF.ajout);
     p.hidden=!open;
+    SF.ajout=!!(open&&ajout&&conf.grille); if(!SF.ajout) SF.ajVue=''; etat.ajout=SF.ajout;
     if(open){ const pk=$(conf.pick); if(pk) pk.hidden=true; }
+    if(naissance){ const v=SF.ajout?SF.ajVue:SF.vue; SF.plie=true; SF.grind=['objectives','habits','repulsions'].includes(v); }
+    /* le Totehm docké QUITTE son dock pendant que le panneau est ouvert : c'est lui qui s'est décomposé (il revient à la fermeture) */
+    if(conf.grille) document.body.classList.toggle('sf-nait',!!open);
     sfPaint(); peindreFlt();
+    if(naissance) naitre();
+  }
+  /* ══ LA NAISSANCE · 26/10 ══ Wah : « on appuie sur le TOTEHM et de là naissent les 3 parties, de manière
+     fusionnée-diluée-glissée-zoomée ». Le logo part EXACTEMENT du Totehm docké (sa place, sa taille) et zoome à
+     la sienne ; pendant le zoom le rail, le T et le mot fondent ; puis MY WISDOM et MY VISION glissent de sous lui.
+     Un seul tap. Une peinture pendant la scène la finit (le panneau se peint à `SF.plie=false`). */
+  function naitre(){
+    const p=pan(), cmd=p&&p.querySelector('.sfcmd'), g=cmd&&cmd.querySelector('.sfv-g');
+    SF.plie=false; etat.naissances=(etat.naissances||0)+1;
+    if(!g) return;
+    const fin=()=>{ cmd.classList.remove('is-logo'); cmd.classList.add('is-melt','is-split'); };
+    if(RMS()) return fin();
+    const a=$('gate-asteroid'), ra=a?a.getBoundingClientRect():null, rg=g.getBoundingClientRect();
+    if(ra&&ra.width>4&&rg.width>4){
+      const k=ra.width/rg.width, dx=(ra.left+ra.width/2)-(rg.left+rg.width/2), dy=(ra.top+ra.height/2)-(rg.top+rg.height/2);
+      cmd.style.transition='none'; cmd.style.transform='translate('+dx.toFixed(1)+'px,'+dy.toFixed(1)+'px) scale('+k.toFixed(3)+')';
+      void cmd.offsetWidth;
+      cmd.style.transition='transform .46s cubic-bezier(.22,.61,.36,1)'; cmd.style.transform='';
+    }
+    setTimeout(()=>cmd.classList.add('is-melt'),240);
+    setTimeout(fin,560);
   }
   /* Un changement de filtre : à gauche on repeint ce qui est en mémoire ; à droite on REDEMANDE au serveur
      (`club_spots` filtre avant la pagination), et la carte et la grille suivent, elles lisent le même objet. */
@@ -6850,7 +6886,7 @@ function creerFeed(conf){
       /* La box choisie, en tête des résultats : la toucher rouvre le filtre. */
       if(e.target.closest('[data-f-sel]')){ sfOpen(true); return; }
       const a=e.target.closest('[data-add]');
-      if(a){ choix('cap',a.dataset.add||undefined); return; }
+      if(a){ if(conf.grille&&!a.dataset.add) return sfOpen(true,true); choix('cap',a.dataset.add||undefined); return; }
       const k=e.target.closest('[data-ask]'); if(k){ demanderIA(k); return; }
       const b=e.target.closest('[data-lsh]'); if(b){ ouvrirElement(b); return; }
       /* Les gestes d'un spot : y aller (le point exact, si je le vois), le mettre au calendrier, voir son auteur. */
@@ -6927,6 +6963,10 @@ function creerFeed(conf){
       if(!t){ if(e.target===p) sfOpen(false); return; }
       const c=t.dataset.sf, v=t.dataset.v;
       if(c==='close') return sfOpen(false);
+      /* le « + » : une vue, puis une box — elle ouvre la capture POUR elle ; le filtre n'est jamais touché */
+      if(SF.ajout&&c==='vue'){ SF.ajVue=SF.ajVue===v?'':v; sfPaint(); return; }
+      if(SF.ajout&&c==='box'){ const [k,ref]=String(v||'').split('|'); const x=mesElements().find(z=>z.k===k&&z.ref===ref);
+        if(!x) return; CAP.ouvrir(x.k,x.ref,t); sfOpen(false); return; }
       /* Le logo se décompose SANS repeindre le panneau : une peinture rejouerait
          la scène à l'état final et on ne verrait jamais le papier fondre. */
       if(c==='grind'){

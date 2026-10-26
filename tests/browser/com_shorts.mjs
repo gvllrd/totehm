@@ -309,20 +309,24 @@ try{
   await vers(pg,'c');
   await pg.click('#lvn-lf');await vers(pg,'g');await pg.waitForTimeout(1000);
   // ══ LE FILTRE INTELLIGENT (20/10) : le Totehm docké l'ouvre DIRECTEMENT — une vue, puis une box de cette vue ══
-  await pg.click('#gate-asteroid');await pg.waitForTimeout(500);
+  /* 26/10 (Wah) : « tu cliques sur le Totehm et boom, MY WISDOM, MY GRIND et MY VISION naissent de lui, fusionné-dilué-glissé-zoomé » —
+     on relève la scène image par image : le logo part de la taille du Totehm docké, zoome, fond, puis les côtés glissent. */
+  await pg.evaluate(()=>{ window.__nait=[]; const t0=performance.now(); const f=()=>{ const t=performance.now()-t0; if(t>1100) return;
+    const c=document.querySelector('#lv-sh-sf .sfcmd');
+    if(c){ const m=getComputedStyle(c).transform.match(/matrix\(([-\d.e]+)/), s=c.querySelector('.sfv-s');
+      window.__nait.push([t, m?+m[1]:1, +getComputedStyle(s).opacity, c.classList.contains('is-split')]); }
+    requestAnimationFrame(f); }; requestAnimationFrame(f); });
+  const papierDock=await pg.evaluate(()=>document.getElementById('gate-asteroid').getBoundingClientRect().width);
+  await pg.click('#gate-asteroid');await pg.waitForTimeout(1200);
+  const nait=await pg.evaluate(()=>window.__nait), cmdW=await pg.evaluate(()=>document.querySelector('#lv-sh-sf .sfv-g').getBoundingClientRect().width);
+  const k0=nait.length?nait[0][1]:1, fin=nait[nait.length-1]||[0,0,0,false];
+  ok(nait.length>15&&Math.abs(k0-papierDock/cmdW)<.08&&nait.some(x=>x[1]>k0+.05&&x[1]<.98)&&fin[1]===1&&fin[2]>.9&&fin[3],
+    '26/10 · UN tap sur le Totehm docké : le logo part de SA taille (×'+k0.toFixed(2)+'), zoome, puis MY WISDOM et MY VISION glissent de sous lui ('+nait.length+' images)');
   const fz=await pg.evaluate(()=>({vu:!document.getElementById("lv-sh-sf").hidden, pick:!document.getElementById('lv-sh-pick').hidden,
     papiers:document.querySelectorAll('#lv-sh-sf .sfcmd .sfv').length,
     vues:[...document.querySelectorAll('#lv-sh-sf [data-sf="vue"]')].map(e=>e.textContent), boxes:document.querySelectorAll('#lv-sh-sf .sfb').length}));
-  ok(fz.vu&&!fz.pick&&fz.papiers===3&&fz.vues.length===5&&fz.boxes===0,
-    'le Totehm docké ouvre le FILTRE : le logo, ses trois papiers, les cinq vues ('+fz.vues.join(' · ')+')');
-  /* 24/10 (Wah) : « fusionne le filtre avec le logo ». Replié, le bloc de commande EST le
-     TOTEHM : un seul papier visible, ses trois calques dessus. Un tap le décompose. */
-  const plie=await pg.evaluate(()=>{const c=document.querySelector('#lv-sh-sf .sfcmd');
-    return {logo:c.classList.contains('is-logo'), calques:c.querySelectorAll('.sf-lg .gl').length,
-      cotes:[...c.querySelectorAll('.sfv-s,.sfv-v')].map(e=>+getComputedStyle(e).opacity)};});
-  ok(plie.logo&&plie.calques===3&&plie.cotes.every(o=>o<0.05),
-    '24/10 · le filtre arrive en LOGO : le rail, le T et le mot sur le papier, les deux côtés posés dessous');
-  await pg.click('#lv-sh-sf [data-sf="grind"]');await pg.waitForTimeout(900);
+  ok(fz.vu&&!fz.pick&&fz.papiers===3&&fz.vues.length===5&&fz.boxes===0&&fz.vues[0]==='my wisdom'&&fz.vues[fz.vues.length-1]==='my vision',
+    'le Totehm docké ouvre le FILTRE : ses trois papiers, les cinq vues ('+fz.vues.join(' · ')+') — 26/10 : MY WISDOM, plus « story »');
   const ouvert=await pg.evaluate(()=>{const c=document.querySelector('#lv-sh-sf .sfcmd'),p=c.querySelector('.sfpile'),
       g=c.querySelector('.sfv-g').getBoundingClientRect();
     return {split:c.classList.contains('is-split'), lg:+getComputedStyle(c.querySelector('.sf-lg')).opacity,
@@ -330,7 +334,7 @@ try{
       pile:+getComputedStyle(p).opacity, large:Math.round(p.getBoundingClientRect().width), papier:Math.round(g.width),
       noms:[...p.querySelectorAll('i')].map(e=>e.textContent)};});
   ok(ouvert.split&&ouvert.lg<0.05&&ouvert.cotes.every(o=>o>0.9),
-    '… il se décompose : les calques fondent, les deux papiers glissent aux extrémités');
+    '… sans second tap : les calques ont fondu, les deux papiers ont glissé aux extrémités');
   await pg.click('#lv-sh-sf [data-sf="grind"]');await pg.waitForTimeout(600);
   const grind=await pg.evaluate(()=>{const c=document.querySelector('#lv-sh-sf .sfcmd'),p=c.querySelector('.sfpile');
     return {op:+getComputedStyle(p).opacity, large:Math.round(p.getBoundingClientRect().width),
@@ -344,7 +348,7 @@ try{
   ok(f1b.boxes.join('|')==='Ship it'&&f1b.peau==='rgb(54, 73, 140)','une vue choisie déplie SES boxes, au format Totehm (objectif : bleu clair) : '+f1b.boxes.join(' · '));
   await pg.click('#lv-sh-sf [data-sf="vue"][data-v="habits"]');await pg.waitForTimeout(400);
   await pg.locator('#lv-sh-sf .sfb').filter({hasText:'Run the hill'}).first().click();await pg.waitForTimeout(600);
-  const f1c=await pg.evaluate(()=>({ferme:document.getElementById('lv-sh-sf').hidden, items:window.__totehm_sh().items,
+  const f1c=await pg.evaluate(()=>({ferme:document.getElementById('lv-sh-sf').hidden&&!document.body.classList.contains('sf-nait'), items:window.__totehm_sh().items,
     tete:(document.querySelector('#lv-sh .tl-sel .tb .v-name')||{}).textContent||'', minis:document.querySelectorAll('#lv-sh .tl-sel .tb .mini').length}));
   ok(f1c.ferme&&f1c.items===1&&f1c.tete==='Run the hill'&&f1c.minis===2,'la box choisie filtre la grille ET revient EN TÊTE des résultats, entière ('+f1c.tete+')');
   await pg.click('#lv-sh .tl-sel');await pg.waitForTimeout(400);
@@ -380,13 +384,20 @@ try{
   const mv=log.rpc.filter(x=>x.name==='feed_badge_set');
   ok(mv.length>=1&&mv[0].body.p_y<50&&/%/.test(fy.f)&&(await pg.evaluate(()=>document.getElementById('tlv').hidden)),
     'le point de focalisation se change et se garde (object-position '+fy.f+', feed_badge_set '+(mv[0]&&Math.round(mv[0].body.p_y))+' %), sans ouvrir la visionneuse');
-  // la tuile « + » : l'élément d'abord (les cinq vues), la caméra ensuite
-  await pg.click('#lv-sh .tl-add');await pg.waitForTimeout(500);
-  const vide=await pg.evaluate(()=>({vu:!document.getElementById('lv-sh-pick').hidden,
-    l:[...document.querySelectorAll('#lv-sh-pick [data-pick]')].map(e=>e.textContent.trim())}));
-  ok(vide.vu&&vide.l.length>=5,'la tuile « + » demande l\'élément d\'abord ('+vide.l.length+' éléments, les cinq vues)');
-  await pg.click('#lv-sh-pick [data-pick="0"]');await pg.waitForTimeout(500);
-  ok(await pg.evaluate(()=>window.__totehm_sh().capture.ouvertures>0),'l\'élément choisi, la capture s\'ouvre POUR LUI');
+  // la tuile « + » (26/10, Wah : « le add a media sous la forme d'un plus, avec le Totehm qui se déploie avec la même logique —
+  // le déploiement du Totehm filtre, pas celui de la vue centrale ») : le MÊME Totehm naît, on choisit l'élément, la caméra suit
+  const fa=await pg.evaluate(()=>window.__totehm_sh().filtre), na=await pg.evaluate(()=>window.__totehm_sh().naissances);
+  await pg.click('#lv-sh .tl-add');await pg.waitForTimeout(1000);
+  const aj=await pg.evaluate(()=>({vu:!document.getElementById('lv-sh-sf').hidden, pick:!document.getElementById('lv-sh-pick').hidden, gate:document.body.classList.contains('gate'),
+    mot:(document.querySelector('#lv-sh-sf .sf-aj')||{}).textContent||'', split:!!document.querySelector('#lv-sh-sf .sfcmd.is-split'),
+    groupes:[...document.querySelectorAll('#lv-sh-sf .sfl')].map(e=>e.textContent), d:window.__totehm_sh()}));
+  ok(aj.vu&&!aj.pick&&aj.gate&&aj.mot==='+ media'&&aj.split&&aj.d.ajout&&aj.d.naissances===na+1&&!aj.groupes.some(g=>/shows|Intentions/i.test(g)),
+    '26/10 · la tuile « + » fait naître le Totehm du filtre (pas le déploiement central) : ses trois parties, rien d\'autre → '+JSON.stringify({mot:aj.mot,g:aj.groupes}));
+  await pg.click('#lv-sh-sf [data-sf="grind"]');await pg.waitForTimeout(500);
+  await pg.click('#lv-sh-sf .sfpile [data-v="habits"]');await pg.waitForTimeout(400);
+  await pg.locator('#lv-sh-sf .sfb').filter({hasText:'Run the hill'}).first().click();await pg.waitForTimeout(500);
+  const cap=await pg.evaluate(()=>({o:window.__totehm_sh().capture.ouvertures, ferme:document.getElementById('lv-sh-sf').hidden, f:window.__totehm_sh().filtre, aj:window.__totehm_sh().ajout}));
+  ok(cap.o>0&&cap.ferme&&cap.f===fa&&!cap.aj,'… MY GRIND → MY HABITS → une box : la capture s\'ouvre POUR elle, et le filtre de la grille n\'a pas bougé ('+cap.f+')');
   await pg.keyboard.press('Escape');await pg.waitForTimeout(500);
   // la vue de droite : le TOTEHM DOCKÉ ouvre le filtre — ses Habits (au format Totehm), le temps, les intentions « X [Higher] »
   await pg.click('#lvn-rt');await vers(pg,'c');await pg.click('#lvn-rt');await vers(pg,'d');await pg.waitForTimeout(1000);
