@@ -40,8 +40,8 @@ La couleur de la box dit le TYPE (navy · bleu clair · rouge-violet) ; le trait
 THP : *Neuroscience, not motivation.*) · ← **mes médias** (une grille, chaque image perforée des douze trous du logo ;
 un tap sur le TOTEHM et MY WISDOM · MY GRIND · MY VISION naissent de lui, en carrés perforés de leur couleur ;
 MY GRIND = OBJECTIVES · HABITS · REPULSIONS empilés ; le « + » d'un média fait naître le même TOTEHM) ·
-● **mon TOTEHM** (plus de boîte noire : le TOTEHM EST le boîtier du processeur, ses sept traits branchés sur ses arêtes
-par des broches de leur couleur, trois dans ses perforations ; le toucher, le retourner ou chercher un membre arrête son
+● **mon TOTEHM** (plus de boîte noire : le TOTEHM EST le boîtier du processeur et le cœur d'un ARBRE DE VIE — ses douze
+perforations toutes raccordées, ses sept traits en branches vers le haut et en racines vers le bas ; il bat, à peine ; le toucher, le retourner ou chercher un membre arrête son
 activité : ses traits sont aspirés en lui, et ressortent quand il revient ; ouvert, il est seul à l'écran ;
 le retourner montre le NOM seul — à même le navy,
 l'email dessous —, qui monte, puis

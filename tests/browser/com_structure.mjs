@@ -1,6 +1,7 @@
 // COM — la structure de la vue centrale (Wah, 22/10/2026 ; refaite le 25/10).
-// 1 · (25/10) Plus de boîte noire : le TOTEHM est le BOÎTIER du processeur. Ses sept traits sont branchés sur SES arêtes,
-//     une broche par trait en haut et en bas ; trois d'entre elles entrent dans ses perforations (25 %, 50 %, 75 %).
+// 1 · (25/10) Plus de boîte noire : le TOTEHM est le BOÎTIER du processeur. (26/10) Ses DOUZE perforations sont toutes
+//     raccordées — une broche dans chaque trou — et ses sept traits forment un ARBRE DE VIE : les branches montent en
+//     éventail jusqu'au haut de l'écran, les racines descendent en miroir ; le cœur (le TOTEHM) bat, très subtilement.
 // 2 · (25/10) Un tap sur le TOTEHM : ses traits cessent leur activité et sont ASPIRÉS dans le papier pendant qu'il se
 //     déploie (« on cesse l'activité du Totehm pour le configurer »). Ouvert : aucune boîte, aucun trait autour.
 //     Le repli : le portail revient en fondu, le papier rentre, l'atterrissage revient à la fin — et les traits ressortent.
@@ -14,12 +15,17 @@ const STEPS=[{t:'Run the hill',t0:'Run the hill',is:['fight'],f:'every_morning'}
 const tables={profiles:[{pseudo:'wahigher'}],totehms:[{user_id:UID,steps:STEPS,vis:'private'}]};
 const rpc={my_landing:{signed_in:true,pseudo:'wahigher'},my_trips:{signed_in:true,trips:[],reps:[],wisdom:[],visions:[]}};
 const erreurs=log=>log.errors.filter(e=>e.startsWith('pageerror'));
-/* Les broches et le départ de chaque trait, comparés aux arêtes du PAPIER (le boîtier). */
+/* Les broches, les douze trous du PAPIER (le boîtier : `--perfo`, trois par arête à 25, 50 et 75 %), et chaque trait : ses
+   deux sous-chemins (la branche, la racine), leur départ et leur bout. */
 const branche=pg=>pg.evaluate(()=>{const s=document.getElementById('gate-asteroid').getBoundingClientRect(),k=document.getElementById('lv-socket');
   const pins=[...document.querySelectorAll('#lv-ram rect.pin')].map(r=>{const b=r.getBoundingClientRect();return {x:b.left+b.width/2,y:b.top+b.height/2,t:b.top,b:b.bottom};});
-  const dep=[...document.querySelectorAll('#lv-ram > g')].map(g=>{const d=g.querySelector('path').getAttribute('d')||'',m=[...d.matchAll(/M\s*([-\d.]+)\s+([-\d.]+)/g)];return m.map(x=>[+x[1],+x[2]]);});
+  const trous=[]; [.25,.5,.75].forEach(f=>{ trous.push([s.left+s.width*f,s.top],[s.left+s.width*f,s.bottom],[s.left,s.top+s.height*f],[s.right,s.top+s.height*f]); });
+  const traits=[...document.querySelectorAll('#lv-ram > g')].map(g=>{const d=g.querySelector('path').getAttribute('d')||'';
+    return d.split('M').filter(Boolean).map(sp=>sp.split('L').map(q=>q.trim().split(/\s+/).map(Number)));});
   const cs=getComputedStyle(k);
-  return {s:{t:s.top,b:s.bottom,l:s.left,r:s.right,w:s.width,cx:s.left+s.width/2},pins,dep,socle:{bg:cs.backgroundColor,ombre:cs.boxShadow,puits:!!k.querySelector('.sk-well')}};});
+  return {s:{t:s.top,b:s.bottom,l:s.left,r:s.right,w:s.width,cx:s.left+s.width/2,cy:s.top+s.height/2},H:innerHeight,pins,trous,traits,
+    coeur:getComputedStyle(document.getElementById('gate-logo')).animationName,socle:{bg:cs.backgroundColor,ombre:cs.boxShadow,puits:!!k.querySelector('.sk-well')}};});
+const pres=(p,l,t)=>l.some(q=>Math.hypot(p[0]-q[0],p[1]-q[1])<=t);
 /* L'état du réseau : aspiré ou non, son échelle, son opacité, ses impulsions. */
 const reseau=pg=>pg.evaluate(()=>{const r=document.getElementById('lv-ram'),cs=getComputedStyle(r),m=cs.transform.match(/matrix\(([-\d.e]+)/),p=r.querySelector('.puls');
   return {aspire:document.body.classList.contains('is-aspire'),echelle:m?+m[1]:1,op:+cs.opacity,puls:p?getComputedStyle(p).animationName:'',d:window.__totehm_deploiement()};});
@@ -29,12 +35,16 @@ try{
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1500);
   /* ── 1 · le TOTEHM est le boîtier ── */
   const b=await branche(pg);
-  const haut=b.pins.filter(p=>Math.abs(p.b-b.s.t)<=1.5), bas=b.pins.filter(p=>Math.abs(p.t-b.s.b)<=1.5);
   ok(b.socle.bg==='rgba(0, 0, 0, 0)'&&b.socle.ombre==='none'&&!b.socle.puits,nom+' · 25/10 · plus de boîte noire : le socle ne se voit plus (ni verre, ni puits)');
-  ok(b.pins.length===14&&haut.length===7&&bas.length===7,nom+' · 14 broches posées SUR le TOTEHM : 7 contre son arête du haut, 7 contre celle du bas');
-  const trous=[.25,.5,.75].map(f=>b.s.l+b.s.w*f), dans=haut.filter(p=>trous.some(x=>Math.abs(p.x-x)<=2.5)).length;
-  ok(dans===3,nom+' · trois broches entrent dans ses perforations (25 %, 50 %, 75 %) : '+dans);
-  ok(b.dep.length===7&&b.dep.every(d=>d.length===2&&Math.abs(d[0][1]-b.s.t)<5&&Math.abs(d[1][1]-b.s.b)<5),nom+' · chaque trait part de SA broche, en haut et en bas');
+  const occupes=b.trous.filter(t=>b.pins.filter(p=>Math.hypot(p.x-t[0],p.y-t[1])<=4.5).length===1).length;
+  ok(b.pins.length===12&&occupes===12,nom+' · 26/10 · les DOUZE perforations sont raccordées : une broche dans chaque trou ('+occupes+'/12, '+b.pins.length+' broches)');
+  const departs=b.traits.flatMap(t=>t.map(sp=>sp[0])), bouts=b.traits.map(t=>[t[0][t[0].length-1],t[1][t[1].length-1]]);
+  ok(b.traits.length===7&&b.traits.every(t=>t.length===2)&&departs.every(p=>pres(p,b.trous,4.5))&&b.trous.every(t=>pres(t,departs,4.5)),
+     nom+' · 26/10 · chaque trait part d\'un trou, et chaque trou porte au moins un trait (le tronc au milieu, les deux extrêmes se séparent dans le trou du milieu de leur côté)');
+  const xa=bouts.map(x=>x[0][0]), xb=bouts.map(x=>x[1][0]), monte=xa.every((x,i)=>!i||x>xa[i-1]), descend=xb.every((x,i)=>!i||x>xb[i-1]);
+  ok(bouts.every(x=>x[0][1]<=0&&x[1][1]>=b.H)&&monte&&descend&&xa[0]<b.s.l&&xa[6]>b.s.r,
+     nom+' · 26/10 · un ARBRE DE VIE : les branches montent en éventail jusqu\'au haut de l\'écran, les racines en miroir jusqu\'en bas, sans se croiser → '+xa.map(Math.round).join(','));
+  ok(b.coeur==='coeur',nom+' · 26/10 · au repos, le cœur (le TOTEHM) bat → '+b.coeur);
   const r0=await reseau(pg);
   ok(!r0.aspire&&r0.echelle===1&&r0.op===1&&r0.puls==='ram-puls',nom+' · au repos, le réseau vit (impulsions)');
   /* ── 2 · le tap : les traits sont aspirés pendant le déploiement ── */
@@ -49,8 +59,9 @@ try{
   const fin=await pg.evaluate(()=>getComputedStyle(document.querySelector('#gl-bg>rect')).fill);
   ok(fin==='rgb(43, 43, 87)',nom+' · le papier arrive dans la couleur de l\'app (#2b2b57) → '+fin);
   await pg.waitForFunction(()=>!document.body.classList.contains('gate'),null,{timeout:6000}).catch(()=>{});await pg.waitForTimeout(400);
-  const o=await pg.evaluate(()=>({proc:!!document.getElementById('app-proc'),traits:document.querySelectorAll('svg:not(#lv-ram) rect.pin').length,r:document.body.classList.contains('is-aspire')}));
-  ok(!o.proc&&o.traits===0&&o.r,nom+' · ouvert : le TOTEHM seul — ni boîte ni traits autour, le réseau reste aspiré');
+  const o=await pg.evaluate(()=>({proc:!!document.getElementById('app-proc'),traits:document.querySelectorAll('svg:not(#lv-ram) rect.pin').length,r:document.body.classList.contains('is-aspire'),
+    coeur:getComputedStyle(document.getElementById('gate-logo')).animationName}));
+  ok(!o.proc&&o.traits===0&&o.r&&o.coeur==='none',nom+' · ouvert : le TOTEHM seul — ni boîte ni traits autour, le réseau reste aspiré, le cœur ne bat plus');
   /* ── le repli, deux fois : le portail revient en fondu, le papier rentre, l'atterrissage revient, les traits ressortent ── */
   for(const tour of [1,2]){
    if(tour===2){ await pg.click('#lv-tap-open');await pg.waitForFunction(()=>!document.body.classList.contains('gate'),null,{timeout:6000}).catch(()=>{});await pg.waitForTimeout(400); }
@@ -68,8 +79,8 @@ try{
       +JSON.stringify({n:fo.length,o0:fo[0]&&fo[0].o,dw:avant.length?Math.max(...avant.map(x=>Math.abs(x.w-w1))):0,fin:fo[fo.length-1],w1}));
    ok(fo.filter(x=>x.folding).every(x=>x.lv===0&&x.asp)&&lvFin<1,nom+' · repli '+tour+' : pendant le repli, les traits restent aspirés et l\'atterrissage attend le papier, puis revient en fondu');
    const r=await branche(pg), rs=await reseau(pg);
-   ok(Math.abs(r.s.t-b.s.t)<1&&r.pins.length===14&&!rs.aspire&&rs.echelle===1&&rs.op===1&&rs.puls==='ram-puls'&&rs.d.deploiements===tour,
-      nom+' · repli '+tour+' : le papier posé, ses traits RESSORTENT et revivent → '+JSON.stringify(rs));
+   ok(Math.abs(r.s.t-b.s.t)<1&&r.pins.length===12&&r.coeur==='coeur'&&!rs.aspire&&rs.echelle===1&&rs.op===1&&rs.puls==='ram-puls'&&rs.d.deploiements===tour,
+      nom+' · repli '+tour+' : le papier posé, ses traits RESSORTENT et revivent, le cœur rebat → '+JSON.stringify(rs));
   }
   /* ── 3 · ↓ l'anneau ── */
   const m0=(await pg.evaluate(()=>window.__totehm_lv().ramifications.morphs));
