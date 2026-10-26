@@ -155,7 +155,7 @@ try{
   // PASTILLE au-dessus de ce que j'écris : un mot, l'élément, une croix. Seule une RÉFÉRENCE partira.
   await pg.click('#lv-sh .tl[data-i="0"] .tl-bx',{force:true});await pg.waitForTimeout(500);
   const ask=await pg.evaluate(()=>{const s0=document.querySelector('#tlv .tlv-s[data-j="0"]'), b=s0&&s0.querySelector('.tlv-b .sh-ask');
-    return {n:document.querySelectorAll('#tlv .sh-ask').length, mot:b?b.textContent:'', maj:b?getComputedStyle(b).textTransform:'',
+    return {n:document.querySelectorAll('#tlv .sh-ask').length, mot:b?b.textContent:'', svg:!!(b&&b.querySelector('svg.ask-hi')), maj:b?getComputedStyle(b).textTransform:'',
       ref:b?b.dataset.ask:'', sous:!!(b&&s0.querySelector('.tb')&&b.getBoundingClientRect().top>=s0.querySelector('.tb').getBoundingClientRect().top)};});
   await pg.click('#tlv .tlv-s[data-j="0"] .tlv-b .sh-ask');await vers(pg,'b');await pg.waitForTimeout(500);
   const ch=await pg.evaluate(()=>{const f=document.getElementById('lv-focus'), s=document.getElementById('lv-say');
@@ -164,7 +164,7 @@ try{
       x:!!f.querySelector('[data-sm-unfocus]'), ecrit:!!s&&!s.classList.contains('hide'),
       haut:!!s&&f.getBoundingClientRect().bottom<=s.getBoundingClientRect().top+1,
       montre:window.__totehm_lv().reflection.montre, n:window.__totehm_lv().reflection.montres};});
-  ok(ask.n===1&&ask.ref==='em:m1'&&/show my higher self/i.test(ask.mot)&&ask.maj==='uppercase'&&ask.sous,
+  ok(ask.n===1&&ask.ref==='em:m1'&&/^ask my\s+self$/i.test(ask.mot)&&ask.svg&&ask.maj==='uppercase'&&ask.sous,
      '25/10 · MON média porte le geste SOUS sa box, et il n\'envoie qu\'une référence ('+ask.ref+') — la vision, elle, n\'en a pas');
   ok(ch.vue==='b'&&ch.ferme&&ch.ouvert&&ch.mot==='media'&&ch.nom==='Run the hill'&&ch.x&&ch.ecrit&&ch.haut&&ch.montre==='media'&&ch.n===1,
      '25/10 · le geste emmène en bas : la pastille (media · Run the hill · ✕) se pose AU-DESSUS de ce que j\'écris → '+JSON.stringify(ch));
@@ -284,7 +284,7 @@ try{
       say:(sd&&sd.querySelector('.sd-say')||{}).textContent||'', nom:(c&&c.querySelector('.ssp-box .tb .v-name')||{}).textContent||'',
       snap:getComputedStyle(document.getElementById('rdr-sh')).scrollSnapType, plein:c?Math.round(c.getBoundingClientRect().height)===innerHeight:false,
       cal:!!(c&&c.querySelector('.ssp-acts [data-ics]')), go:!!(c&&c.querySelector('.ssp-acts [data-go]')), x:getComputedStyle(document.getElementById('rdr-x')).display,
-      ask:(()=>{const a=c&&c.querySelector('.ssp-acts [data-ask]');return a?a.dataset.ask+'|'+a.textContent:'';})(),
+      ask:(()=>{const a=c&&c.querySelector('.ssp-acts [data-ask]');return a?a.dataset.ask+'|'+a.textContent+'|'+a.querySelectorAll('svg.ask-hi use[href="#higher-badge"]').length:'';})(),
       per:[...document.querySelectorAll('#rdr-flt [data-per]')].map(e=>e.textContent)};});
   ok(sh2.voit&&sh2.d.voit&&sh2.n===1&&/y mandatory/.test(sh2.snap)&&sh2.plein&&sh2.x==='block',
      'un tap sur le point : SON spot en grand, par-dessus la carte (un spot par écran, aimanté), ✕ pour revenir');
@@ -299,8 +299,8 @@ try{
      &&sh2.chips.some(t=>/social/i.test(t))&&sh2.say==='Bring a coffee'&&sh2.go&&sh2.cal,
      'les informations du spot : '+sh2.chips.join(' · ')+' — son mot, GO, CALENDAR');
   ok(sh2.per.join(' ')==='I will be there','le temps courant, dans la barre : « '+sh2.per.join(' ')+' »');
-  /* 25/10 (Wah) : MON spot se montre au Higher Self — un mot de plus dans la rangée de GO et CALENDAR. */
-  ok(sh2.ask==='sp:sp1|higher self','25/10 · MON spot porte « higher self » à côté de GO et CALENDAR → '+sh2.ask);
+  /* 25/10 (Wah) : MON spot se montre au Higher Self ; 26/10 (« j'ai pas compris ») : le geste dit son verbe, « Higher » en SVG. */
+  ok(sh2.ask==='sp:sp1|ask my  self|1','26/10 · MON spot porte « ask my [Higher] self » à côté de GO et CALENDAR → '+sh2.ask);
   await pg.keyboard.press('Escape');await pg.waitForTimeout(500);
   ok(await pg.evaluate(()=>!document.body.classList.contains('rdr-voir')&&window.__totehm_lv().vue==='d'),'Échap referme la vue agrandie : on est de retour sur la carte');
   await pg.click('#lvn-lf');await vers(pg,'c');await pg.waitForTimeout(300);
@@ -459,12 +459,15 @@ try{
   await pg.screenshot({path:OUT+'/spots_grid_'+(tel?'tel':'ordi')+'.png'});
   await pg.click('#lvn-lf');await vers(pg,'c');await pg.waitForTimeout(300);
 
-  // ══ 5 · PENDANT LA RECHERCHE MEMBERS, ON NE VOYAGE PAS ══
+  // ══ 5 · PENDANT LA RECHERCHE MEMBERS (26/10, Wah : « les mouvements de joystick ne marchent plus ») : la croix reste vivante ;
+  //      un geste referme la recherche, puis voyage ══
   await pg.click('#lv-m-members');await pg.waitForTimeout(1300);
   const gal=await pg.evaluate(()=>({lf:document.getElementById('lvn-lf').classList.contains('is-mort'),
     rt:document.getElementById('lvn-rt').classList.contains('is-mort')}));
-  await pg.evaluate(()=>window.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowRight'})));await pg.waitForTimeout(700);
-  ok(gal.lf&&gal.rt&&(await lv(pg)).vue==='c','Members (la recherche) : les chevrons latéraux s\'éteignent, ← → ne naviguent pas');
+  await pg.evaluate(()=>window.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowRight'})));await vers(pg,'d');await pg.waitForTimeout(500);
+  const ap=await lv(pg);
+  ok(!gal.lf&&!gal.rt&&ap.vue==='d'&&ap.mode==='mine'&&!ap.membre.cherche,'26/10 · Members (la recherche) : les chevrons latéraux restent vivants ; → referme la recherche et mène à MES spots');
+  await pg.click('#lvn-lf');await vers(pg,'c');await pg.waitForTimeout(300);
   ok(!erreurs(log).length,nom+' · aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
  // ── sans compte : ni « mes » shorts, ni « mes » spots ──
  {const{pg,log}=await page(browser,{dir:'com',origin,tables:{},session:false,rpc:{...serveur(),my_landing:{signed_in:false}}});

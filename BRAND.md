@@ -45,9 +45,9 @@ par des broches de leur couleur, trois dans ses perforations ; le toucher, le re
 activité : ses traits sont aspirés en lui, et ressortent quand il revient ; ouvert, il est seul à l'écran ;
 le retourner montre le NOM seul — à même le navy,
 l'email dessous —, qui monte, puis
-tout d'un coup, en trois onglets : **Dashboard** d'abord (tout ce que je fais dans mon TOTEHM, en visuels : ma semaine, mes
-Habits × 7 jours suivies dans Telegram, mes intentions, mes objectifs, mon activité) · **Subscription** ([Higher], ce qu'il ouvre,
-mes abonnements) · **Monetize** (*and get paid every month*) ; puis DELETE MY TOTEHM et SIGN OUT en boutons, les conditions) ·
+tout d'un coup, en deux parties : **Monetize my TOTEHM** (*and get paid every month*) · **Go [Higher]**, ouverte d'abord
+(tout ce que je fais dans mon TOTEHM, en visuels : ma semaine, mes Habits × 7 jours suivies dans Telegram, mes intentions,
+mes objectifs, mon activité ; puis [Higher], ce qu'il ouvre — TotehmBot —, mes abonnements) ; puis DELETE MY TOTEHM et SIGN OUT en boutons, les conditions) ·
 → **les spots** (MAP ou GRID ; un spot ouvert : son image telle quelle, ses infos, sa box en bas — comme à gauche) · ↓ **Higher Self** (les traits se replient en l'anneau du profil ; j'arrive, je tape,
 mon Higher Self répond : un miroir de MON TOTEHM — la step est une de mes Habits redite avec son where, son intention, son son ;
 avec Higher, un lieu réel près de moi sous la step (GO, SPOT IT) ; quelques réponses offertes, puis l'abonnement Higher). Chercher un membre : le papier se retourne, on tape son nom, on entre chez lui.
@@ -86,8 +86,8 @@ développement personnel, un réseau social classique, une marque streetwear cla
 ## L'espace
 
 TOTEHM.SPACE est un pavillon de verre au sommet d’une Terre engloutie : beauté, grandeur, peur et renouveau.
-Voie lactée à travers le toit, lune et mer déchaînée ; calçada à vagues et caravelle dehors, grandes dalles anciennes usées et comptoir pierre dedans.
-La bouche originale, sa langue et son papier sont sculptés en façade et éclairés ; une cheminée ultra minimale sur pierre ancienne réchauffe l’intérieur.
+Voie lactée à travers le toit, lune et mer déchaînée ; calçada à vagues et caravelle dehors, vraies dalles anciennes en volume, grain photographique et comptoir pierre dedans.
+La bouche originale, sa langue et son papier sont sculptés en façade et éclairés ; une cheminée ultra minimale, sa combustion vivante et son crépitement de bois réchauffent l’intérieur.
 Space est l’accueil : livre noir fermé sur pupitre vers Origins à pages tournantes, écran Lisbon et cadre premium Stoner vers leurs propres pages plein écran ; THP en petits papiers perforés.
 Sans colonnes ni végétation, la terrasse ouvre la vue sur les déferlants ; Espace propulse vers les étoiles et le globe englouti.
 Vent et mer, crépitement à l’approche du feu. Pages et marché indépendants conservés ; Collect garde achat et revente.

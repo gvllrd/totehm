@@ -8,7 +8,7 @@ export function createGalleryAudio() {
   let supported = typeof AudioContextClass === 'function';
   let context = null, master = null, limiter = null, noiseBuffer = null, weatherBus = null, windBus = null, seaBus = null;
   let unlocked = false, muted = false, active = false, disposed = false;
-  let zone = 'temple', proximity = 0, exposure = 0, transitions = 0;
+  let zone = 'temple', proximity = 0, exposure = 0, shelter = 0, transitions = 0;
   let suspendTimer = null, suspendPromise = null, resumePromise = null, resumeBlocked = false;
   const tones = [], breaths = new Set(), weather = [], modulators = [], weatherBuffers = [];
   const magneticGains = [0, 0];
@@ -52,11 +52,14 @@ export function createGalleryAudio() {
     glide(tones[2].gain.gain, on && zone === 'void' ? .012 : 0, .2);
     // The weather recedes at a door so its magnetic note remains intelligible.
     // All four layers share one gate; muting never changes their running graph.
-    weatherGain = on && zone === 'temple' ? .66 - .15 * proximity : 0;
+    // Glass shelters the listener. Outdoors remains unchanged; inside, wind
+    // and distant breakers recede so individual pieces of burning wood can
+    // be heard instead of disappearing beneath a continuous weather bed.
+    weatherGain = on && zone === 'temple' ? (.66 - .15 * proximity) * (1 - .60 * shelter) : 0;
     if (weatherBus) {
       glide(weatherBus.gain, weatherGain, .35);
-      glide(windBus.gain, .72 + .5 * exposure, .4);
-      glide(seaBus.gain, .94 - .12 * exposure, .4);
+      glide(windBus.gain, (.72 + .5 * exposure) * (1 - .84 * shelter), .4);
+      glide(seaBus.gain, (.94 - .12 * exposure) * (1 - .65 * shelter), .4);
     }
   }
   function cancelSuspension() {
@@ -249,12 +252,14 @@ export function createGalleryAudio() {
     const nextProximity = Number.isFinite(state.proximity) ? Math.max(0, Math.min(1, state.proximity)) : proximity;
     const nextActive = typeof state.active === 'boolean' ? state.active : active;
     const nextExposure = Number.isFinite(state.exposure) ? Math.max(0, Math.min(1, state.exposure)) : exposure;
-    const changed = nextZone !== zone || Math.abs(nextProximity - proximity) > .002 || Math.abs(nextExposure - exposure) > .01;
+    const nextShelter = Number.isFinite(state.shelter) ? Math.max(0, Math.min(1, state.shelter)) : shelter;
+    const changed = nextZone !== zone || Math.abs(nextProximity - proximity) > .002 || Math.abs(nextExposure - exposure) > .01 || Math.abs(nextShelter - shelter) > .002;
     const activityChanged = nextActive !== active;
     zone = nextZone;
     proximity = nextProximity;
     active = nextActive;
     exposure = nextExposure;
+    shelter = nextShelter;
     if (activityChanged) synchronise();
     else if (changed) mix();
   }
@@ -298,8 +303,9 @@ export function createGalleryAudio() {
         sea: weather.filter(layer => layer.kind === 'sea').length,
         layers: weather.length, stereo: weather.length > 0,
         active: audible() && zone === 'temple', gain: disposed ? 0 : weatherGain,
-        exposure, windGain: disposed ? 0 : .72 + .5 * exposure,
-        seaGain: disposed ? 0 : .94 - .12 * exposure,
+        exposure, shelter, indoorAttenuation: 1 - .60 * shelter,
+        windGain: disposed ? 0 : (.72 + .5 * exposure) * (1 - .84 * shelter),
+        seaGain: disposed ? 0 : (.94 - .12 * exposure) * (1 - .65 * shelter),
         loopBuffers: weatherBuffers.length, modulators: modulators.length,
         clock: Number((context?.currentTime || 0).toFixed(3)),
       },

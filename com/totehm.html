@@ -3064,6 +3064,7 @@ body.lv-d #lv-proc,body.lv-d #lv-slogan{opacity:0}
 .sh-ask{font:400 10px/1.3 'Space Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#d8d8dd;background:rgba(0,0,0,.45);
   border:0;border-radius:10px;padding:7px 12px;cursor:pointer;-webkit-tap-highlight-color:transparent}
 @media(hover:hover){.sh-ask:hover{background:rgba(0,0,0,.7);color:#fff}}
+.ask-hi{display:inline-block;height:1.25em;width:3.75em;vertical-align:-.32em;margin:0 .15em}
 .lv-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;inline-size:fit-content;padding:11px 18px;border:0;border-radius:10px;background:#1f1f24;color:#b0b0b0;font:400 12px/1.4 'Space Mono',monospace;text-decoration:none;white-space:nowrap;cursor:pointer}
 .lv-btn:focus-visible{outline:1px solid #fff;outline-offset:3px}
 .lv-btn svg{width:48px;height:16px;flex:none}
@@ -3478,16 +3479,20 @@ a.rf-add{text-decoration:none;display:inline-block}
 .vs-pay.hide{display:none}
 .vs-seg{display:flex;gap:6px;width:100%}
 .vs-seg button.is-on{background:#3a3a42;color:#fff;box-shadow:inset 0 0 0 1px #fff}
-/* ── LES TROIS ONGLETS DU VERSO (24/10) : Dashboard (par défaut) · Subscription · Monetize. Un onglet ne fait que montrer
-   son bloc ; le nom, l'invité et le pied (Sign out, Delete, conditions) restent partout. ── */
+/* ── LES DEUX PARTIES DU VERSO (26/10, Wah : « deux parties bien distinctes ») : MONETIZE MY TOTEHM (ce que je gagne) ·
+   GO [HIGHER] (ouverte à chaque retournement : mon tableau de bord, l'abonnement Higher, TotehmBot, mes abonnements).
+   Une partie ne fait que montrer ses blocs ; le nom, l'invité et le pied (Sign out, Delete, conditions) restent partout. ── */
 #vs-tabs{display:flex;gap:6px;width:min(94vw,420px);flex:none;margin:2px 0 4px}
 #vs-tabs button{flex:1;min-width:0;border:0;border-radius:10px;background:#1f1f24;color:#b8b8c2;cursor:pointer;
   font:700 10px/1.2 'Space Mono',monospace;letter-spacing:.12em;text-transform:uppercase;padding:9px 4px;white-space:nowrap}
 #vs-tabs button:hover{color:#fff}
 #vs-tabs button.is-on{background:#3a3a42;color:#fff;box-shadow:inset 0 0 0 1px #fff}
-#srch[data-tab="dash"] #mw-creator,#srch[data-tab="dash"] #settings,
-#srch[data-tab="sub"] #vs-dash,#srch[data-tab="sub"] #mw-creator,
+#vs-tabs button{display:inline-flex;align-items:center;justify-content:center;gap:6px}
+#vs-tabs .vs-hi{width:45px;height:15px}
+#srch[data-tab="higher"] #mw-creator,
 #srch[data-tab="money"] #vs-dash,#srch[data-tab="money"] #settings{display:none}
+/* la partie porte déjà le nom : le titre du bloc s'efface, sa promesse reste */
+#mw-creator .vs-t{display:none}
 #vs-vide{margin:0;width:min(94vw,420px);background:#000;padding:16px;font:400 10px/1.4 'Space Mono',monospace;color:#d2d2da;text-align:left}
 #vs-vide.hide{display:none}
 /* ── LE TABLEAU DE BORD (24/10) : 60 % noir, les données en blanc, les SEPT INTENTIONS en point ou en trait (jamais une
@@ -3795,6 +3800,8 @@ a.sd-tag{color:#fff;text-decoration:underline;text-decoration-color:rgba(255,255
 .ssp-acts button{border:0;border-radius:10px;background:#1f1f24;color:#fff;cursor:pointer;padding:8px 12px;
   font:700 9.5px/1 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase}
 .ssp-acts button:focus-visible,.ssp-by:focus-visible{outline:1px solid #fff;outline-offset:2px}
+.ssp-acts button{white-space:nowrap}
+@media(max-width:420px){.ssp-acts{gap:5px}.ssp-acts button{padding:8px 9px;letter-spacing:.12em}}
 /* LE MÉDIA, TEL QU'IL EST : jamais recadré, le noir autour — la place exacte de celui de la vue de gauche. */
 .ssp-m{position:absolute;left:0;right:0;top:calc(max(10px,env(safe-area-inset-top)) + 46px);bottom:calc(max(14px,env(safe-area-inset-bottom)) + 24px);background:#000}
 .ssp-m img,.ssp-m video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block;opacity:0;transition:opacity .4s ease}
@@ -4249,19 +4256,19 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
      (trois chiffres, le prix au curseur). Ce sont les nœuds de l'espace membre, DÉPLACÉS (un seul système de
      réglages) ; l'espace membre garde le compte. Pendant qu'il est ouvert, #gate est `inert` mais reste PEINT
      (le masquer révélerait le Totehm derrière le papier qui grandit) et aucun geste ne change de vue. -->
-<div id="srch" role="dialog" aria-modal="true" aria-label="My TOTEHM settings" aria-hidden="true" tabindex="-1" data-tab="dash">
+<div id="srch" role="dialog" aria-modal="true" aria-label="My TOTEHM settings" aria-hidden="true" tabindex="-1" data-tab="higher">
   <div id="srch-bg"></div>
   <div id="srch-ui">
     <div id="self-h"><button id="self-name" type="button" aria-label="Rename my TOTEHM"></button></div>
     <!-- Sous l'identifiant, le compte qui le porte (et l'état de la synchronisation) ; il arrive avec le reste. -->
     <p id="self-mail" class="srch-after"><span class="mw-mail" id="mw-mail"></span><span class="mw-sync" id="mw-sync"></span></p>
-    <!-- 24/10 — TROIS ONGLETS (Wah : « clarté et minimalisme ») : DASHBOARD, ouvert par défaut · SUBSCRIPTION · MONETIZE.
-         Ils ne font que montrer ou cacher trois blocs (`#vs-dash`, `#settings`, `#mw-creator`) : chacun garde son câblage.
-         Le tableau de bord se LIT (`my_board`) ; le suivi, lui, se fait dans Telegram. -->
+    <!-- 26/10 — DEUX PARTIES (Wah : « Monetize my Totehm - Go Higher ») : ce que je GAGNE · ce que je FAIS et ce que
+         j'achète pour moi (le tableau de bord, puis [Higher] et TotehmBot), ouverte par défaut. Elles ne font que montrer
+         ou cacher des blocs (`#mw-creator` · `#vs-dash` + `#settings`) : chacun garde son câblage. Le tableau de bord se
+         LIT (`my_board`) ; le suivi, lui, se fait dans Telegram. -->
     <nav id="vs-tabs" class="srch-after" role="tablist" aria-label="My TOTEHM">
-      <button type="button" role="tab" data-vs-tab="dash" class="is-on" aria-selected="true">Dashboard</button>
-      <button type="button" role="tab" data-vs-tab="sub" aria-selected="false">Subscription</button>
-      <button type="button" role="tab" data-vs-tab="money" aria-selected="false">Monetize</button>
+      <button type="button" role="tab" data-vs-tab="money" aria-selected="false">Monetize my TOTEHM</button>
+      <button type="button" role="tab" data-vs-tab="higher" class="is-on" aria-selected="true">Go<svg class="vs-hi" viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-badge"/></svg></button>
     </nav>
     <section id="vs-dash" class="vs srch-after" role="tabpanel" aria-label="My dashboard"></section>
     <p id="vs-vide" class="srch-after hide" role="status"></p>
@@ -6325,6 +6332,9 @@ function creerFeed(conf){
      lieu, pour qui, le point ouvert ou non, silencieux ou social · son mot —, l'auteur et les gestes (GO · CALENDAR),
      puis la Habit Box au format Totehm (`boxSpot` : la mienne avec mes liens, ou celle que le serveur me montre d'un
      autre membre, mini-boîtes comprises), tout en bas. Plus de cadre, plus de fond flou. */
+  /* 26/10 (Wah : « j'ai pas compris le Higher Self dans les spots ») : le geste dit ce qu'il fait — un verbe, et « Higher »
+     en SVG comme partout. Le même mot sur un média et sur un spot. */
+  const ASK_MOT='ask my <svg class="ask-hi" viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-badge"></use></svg> self';
   const ET={will:'I will be there', am:'I am here', was:'I was here'};
   const AUD={private:'private', figher:'figher club', subscribers:'my subscribers', public:'figher club'};
   const hhmm=d=>String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
@@ -6357,7 +6367,7 @@ function creerFeed(conf){
       +(z.state==='will'?'<button type="button" data-ics="'+esc(String(z.id))+'">calendar</button>':'')
       /* 25/10 (Wah) : MON spot, montré au Higher Self — un mot de plus dans la même rangée, rien de neuf à apprendre.
          DELETE reste le DERNIER : ce qui détruit ne se touche pas en visant autre chose. */
-      +(z.mine&&!RO?'<button type="button" data-ask="sp:'+esc(String(z.id))+'" data-ask-t="'+esc(String(x.txt||''))+'">higher self</button>'
+      +(z.mine&&!RO?'<button type="button" data-ask="sp:'+esc(String(z.id))+'" data-ask-t="'+esc(String(x.txt||''))+'">'+ASK_MOT+'</button>'
                    +'<button type="button" data-del="'+esc(String(z.id))+'">delete</button>':'');
     const par=!z.mine&&z.creator?'<span class="ssp-par"><span>by</span><button type="button" class="ssp-by" data-who="'+esc(String(z.creator))+'">'+esc(String(z.creator))+'</button></span>':'';
     const box=x.id?'<div class="ssp-box" role="button" tabindex="0" data-lsh="habits|'+esc(x.id)+'">'+loupeVue(boxSpot(z))+'</div>'
@@ -6695,7 +6705,7 @@ function creerFeed(conf){
      dans la visionneuse et sur le spot ouvert, et il n'existe que pour ce qui est À MOI (le serveur ne relit que mes
      lignes). La page n'envoie qu'une RÉFÉRENCE (`em:<id>`, `sp:<id>`) ; le texte affiché n'est qu'une étiquette. */
   const askHTML=x=>(!me||RO||!x||x.b!=='em'||!x.cle)?''
-    :'<button type="button" class="sh-ask" data-ask="'+esc(x.cle)+'" data-ask-t="'+esc(x.txt||'')+'">show my higher self</button>';
+    :'<button type="button" class="sh-ask" data-ask="'+esc(x.cle)+'" data-ask-t="'+esc(x.txt||'')+'">'+ASK_MOT+'</button>';
   function demanderIA(b){
     const [g,id]=String(b.dataset.ask||'').split(':');
     const kind=g==='em'?'media':g==='sp'?'spot':'';
@@ -7529,7 +7539,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-10-25-montrer-boitier';
+const BUILD='2026-10-26-com-manette-recherche';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -11685,11 +11695,13 @@ window.addEventListener('pageshow',e=>{
        identifiant ; dès qu'il est validé, on retombe dans l'écosystème — mais ce n'est plus le nôtre, c'est celui
        du membre ». `cherche` = le papier agrandi sur son dos ; `nom` = le membre dont je vis l'écosystème. */
     const MB={cherche:false, nom:null, avant:null, seq:0, verrou:null};
-    const libreMb=()=>mode!=='members'||(!!MB.nom&&!MB.cherche);
+    /* 26/10 (Wah : « les mouvements de joystick ne marchent plus quand j'appuie sur members ») : la recherche ne bloque
+       plus la croix — un geste la QUITTE (comme Échap) puis voyage (`demander`). Un TOTEHM verrouillé se visite aussi :
+       le haut (commun), le bas (SON offre) ; ses médias et ses spots restent derrière l'abonnement (← → désignent l'offre). */
+    const libreMb=()=>mode!=='members'||(!MB.cherche&&(!!MB.nom||!!MB.verrou));
     const voisin=k=>{
       const v=(VOISINS[vue]||{})[k]||null;
-      if(!libreMb()) return null;                       /* pendant la recherche, on ne voyage pas */
-      if((k==='g'||k==='d')&&v!=='c'&&!inscrit()) return null;
+      if((k==='g'||k==='d')&&v!=='c'&&(!inscrit()||(MB.verrou&&!MB.cherche))) return null;
       return v;
     };
     body.classList.add('lv-c');
@@ -11838,7 +11850,8 @@ window.addEventListener('pageshow',e=>{
       :body.classList.contains('is-tlv')?'visionneuse':'?';
     const quiOccupe=()=>bouge?'voyage':moving?'repli':sMoving?'verso':'papier-'+PAPIER.quoi();
     function refus(c){ diag.refus[c]=(diag.refus[c]||0)+1; diag.dernier=c; peindreDiag(); return false; }
-    const sansVoisin=d=>refus('voisin:'+vue+'>'+d+(libreMb()?'':':recherche'));
+    const sansVoisin=d=>{ if(MB.verrou&&!MB.cherche&&vue==='c'&&(d==='g'||d==='d')) OFFRE.montrer();
+      return refus('voisin:'+vue+'>'+d+(MB.verrou?':verrou':'')); };
     function peindreDiag(){ if(!diagEl) return;
       diagEl.textContent=vue+' · '+mode+(MB.cherche?' · recherche':'')+'\nvoyage '+(+bouge)+' · repli '+(+moving)+' · verso '+(+sOpen)+'/'+(+sMoving)
         +' · papier '+PAPIER.quoi()+'\nlibre '+(libre()?1:pasLibre())+' · attente '+(attente?attente.d:'-')+'\nrefus '+(diag.dernier||'-')
@@ -11851,6 +11864,9 @@ window.addEventListener('pageshow',e=>{
     let POUSSE_LVJ=null, DU_LVJ=false;
     function demander(d){
       if(!libre()) return refus('libre:'+pasLibre());
+      if(MB.cherche){ const v=voisin(d); if(!v) return sansVoisin(d);
+        if(!bouge) annuler();                               /* le papier rentre ; le voyage attend sa fin (`reprendre`) */
+        attente={d, t:Date.now()}; diag.enAttente++; if(!DU_LVJ&&POUSSE_LVJ)POUSSE_LVJ(d); guetter(); return true; }
       if(occupe()){ if(!voisin(d)) return sansVoisin(d); attente={d, t:Date.now()}; diag.enAttente++;
         if(!DU_LVJ&&POUSSE_LVJ)POUSSE_LVJ(d); guetter(); return true; }
       const v=voisin(d); if(!v) return sansVoisin(d);
@@ -11864,7 +11880,9 @@ window.addEventListener('pageshow',e=>{
     function reprendre(){
       const a=attente; attente=null;
       if(!a||Date.now()-a.t>ATTENTE) return;
-      setTimeout(()=>{ if(occupe()){ attente=a; return void guetter(); } const v=voisin(a.d); if(v) aller(v); },0);
+      setTimeout(()=>{ if(occupe()){ attente=a; return void guetter(); }
+        if(MB.cherche){ annuler(); a.t=Date.now(); attente=a; return void guetter(); }   /* reçu pendant que la recherche grandissait */
+        const v=voisin(a.d); if(v) aller(v); },0);
     }
     /* ── ALLER : une vue voisine, ou le centre ── */
     function aller(v,then){
@@ -12108,7 +12126,7 @@ window.addEventListener('pageshow',e=>{
        c'est le menu membre qui s'affiche ». Donc il est là d'emblée, sans second geste : mes réglages,
        un filet, puis mon compte — dans cet ordre, l'un sous l'autre, zéro blabla. */
     /* 24/10 : il s'ouvre sur le TABLEAU DE BORD ; la monétisation et mon tableau de bord se lisent ensemble (1,8 s au plus). */
-    surReglages=()=>{ peindreCarte(); DASH.onglet('dash'); const lu=Promise.all([CREA.charger(),DASH.charger()]).then(()=>DASH.vide());
+    surReglages=()=>{ peindreCarte(); DASH.onglet('higher'); const lu=Promise.all([CREA.charger(),DASH.charger()]).then(()=>DASH.vide());
       if(me){ $('member-window').classList.add('show');
               if(typeof memberPaint==='function') memberPaint();
               if(typeof paintMe==='function') paintMe(); }
@@ -12696,18 +12714,18 @@ window.addEventListener('pageshow',e=>{
     /* ══ LE TABLEAU DE BORD DU VERSO · 24/10 ══ Wah : « enregistrer TOUT ce que fait l'utilisateur dans son Totehm et le
        mettre sous forme de visuels » ; « le Telegram sert de tracking, pas le verso ». Le verso MONTRE, il ne coche rien :
        la base journalise tout (`totehm_journal`, ses déclencheurs) et calcule tout (`my_board`, SQL) ; la page dessine.
-       Trois onglets : Dashboard (par défaut, à chaque retournement) · Subscription · Monetize. */
+       Deux parties : Monetize my TOTEHM · Go [Higher] (par défaut, à chaque retournement : le tableau de bord en tête). */
     const DASH=(()=>{
       const el=$('vs-dash'), srch=$('srch'), COUL=Object.fromEntries(INTS.map(x=>[x.id,x.color]));
-      let seq=0, D=null, ong='dash'; const diagD={charges:0, erreurs:0};
+      let seq=0, D=null, ong='higher'; const diagD={charges:0, erreurs:0};
       const n=v=>Number.isFinite(+v)?+v:0, coul=i=>COUL[i]||'', jourDe=s=>new Date(String(s).slice(0,10)+'T12:00:00');
       const court=s=>{ const t=jourDe(s); return isNaN(t)?'':t.toLocaleDateString('en-GB',{day:'numeric',month:'short'}); };
       function onglet(t){
-        ong=['dash','sub','money'].includes(t)?t:'dash'; srch.dataset.tab=ong;
+        ong=t==='money'?'money':'higher'; srch.dataset.tab=ong;
         document.querySelectorAll('#vs-tabs [data-vs-tab]').forEach(b=>{ const on=b.dataset.vsTab===ong; b.classList.toggle('is-on',on); b.setAttribute('aria-selected',on?'true':'false'); });
         vide();
       }
-      /* Monetize sans offre lisible (invité, ou lecture en échec) : une ligne, jamais un onglet blanc. */
+      /* Monetize sans offre lisible (invité, ou lecture en échec) : une ligne, jamais une partie blanche. */
       function vide(){
         const v=$('vs-vide'); let t='';
         if(ong==='money'&&$('mw-creator').classList.contains('hide')) t=guest()?'Save my TOTEHM with my email to monetize it.':'Monetize · back in a moment.';
@@ -12805,7 +12823,7 @@ window.addEventListener('pageshow',e=>{
         el.innerHTML=h;
       }
       /* Relier Telegram : on passe sur l'onglet Subscription, là où TotehmBot vit (et où sa réponse s'écrit). */
-      el.addEventListener('click',e=>{ if(e.target.closest('[data-db-tg]')){ onglet('sub'); $('mw-telegram').click(); } });
+      el.addEventListener('click',e=>{ if(e.target.closest('[data-db-tg]')){ onglet('higher'); $('mw-telegram').click(); } });
       return {charger, onglet, vide, vider(){ seq++; D=null; el.innerHTML=''; },
         etat:()=>({onglet:ong, charge:!!D, habits:D?(D.habits||[]).length:0, cases:D?(D.habits||[]).reduce((a,x)=>a+(x.c||[]).filter(Boolean).length,0):0,
                    jours:D?(D.days||[]).length:0, heat:D?(D.heat||[]).length:0, fil:D?(D.feed||[]).length:0, telegram:!!(D&&D.telegram),

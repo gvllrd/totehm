@@ -1,5 +1,6 @@
 import * as T from './vendor/three-0.180.0.mjs';
 import {createWhiteStone} from './gallery-white-stone.mjs';
+import {createAncientFloor} from './gallery-ancient-floor.mjs';
 import {createLisbonPavement} from './gallery-lisbon-pavement.mjs';
 import {TOTEHMPAPER} from './gallery-artworks.mjs';
 import {GALLERY_LAYOUT,GALLERY_OBSTACLES,GALLERY_STATIONS} from './gallery-modern-layout.mjs';
@@ -34,9 +35,25 @@ export function createModernGallery(scene,renderer,{mobile=false,onChange=()=>{}
  // White limestone stops exactly at the pavilion's glazing/entrance.
  // Five adjacent rectangles share the same height, without overlapping faces.
  // The original world-space calçada keeps its waves and caravel outside.
- block(ink,[0,-.65,0],[35.6,1.1,39.6]);block(metal,[0,-.2,0],[32.6,.18,36.6]);
+ // The old flat floor hid these supports. Recess them ONLY beneath the new
+ // interior stone: otherwise their top faces cut through the worn arrises
+ // and hide the mortar. Each support remains one merged draw; its exterior
+ // height, outline and material are exactly the original ones.
+ const interiorSupportTop=-.15;
+ function foundation(m,halfX,halfZ,bottom,top){
+  const positions=[],normals=[],uvs=[];
+  const pieces=[[-halfX,halfX,-2,halfZ,top],[-halfX,halfX,-halfZ,-17,top],[-halfX,-13,-17,-2,top],[13,halfX,-17,-2,top],[-13,13,-17,-2,interiorSupportTop]];
+  for(const [x0,x1,z0,z1,y1] of pieces){
+   const g=new T.BoxGeometry(x1-x0,y1-bottom,z1-z0).toNonIndexed(),p=g.attributes.position,n=g.attributes.normal,uv=g.attributes.uv;
+   for(let i=0;i<p.count;i++){positions.push(p.getX(i)+(x0+x1)/2,p.getY(i)+(bottom+y1)/2,p.getZ(i)+(z0+z1)/2);normals.push(n.getX(i),n.getY(i),n.getZ(i));uvs.push(uv.getX(i),uv.getY(i));}
+   g.dispose();
+  }
+  const g=geometry(new T.BufferGeometry());g.setAttribute('position',new T.Float32BufferAttribute(positions,3));g.setAttribute('normal',new T.Float32BufferAttribute(normals,3));g.setAttribute('uv',new T.Float32BufferAttribute(uvs,2));g.computeBoundingBox();g.computeBoundingSphere();
+  return mesh(g,m,[0,0,0],undefined,{name:'Original exterior support with recessed interior'});
+ }
+ foundation(ink,17.8,19.8,-1.2,-.1);foundation(metal,16.3,18.3,-.29,-.11);
  const floor=(m,x,z,w,d,name)=>{const plane=mesh(geometry(new T.PlaneGeometry(w,d)),m,[x,-.09,z],undefined,{solid:true,name});plane.rotation.x=-Math.PI/2;plane.castShadow=false;return plane;};
- floor(stone.material,0,-9.5,26,15,'Interior only — antique white limestone');
+ const ancientFloor=createAncientFloor(root,{mobile,anisotropy,onChange:changed});solids.push(...ancientFloor.solids);
  floor(pavement.material,0,8,32,20,'Exterior calçada — waves and caravel');
  floor(pavement.material,0,-17.5,32,1,'Exterior calçada — behind the pavilion');
  for(const x of [-14.5,14.5])floor(pavement.material,x,-9.5,3,15,'Exterior calçada — side terrace');
@@ -169,7 +186,7 @@ export function createModernGallery(scene,renderer,{mobile=false,onChange=()=>{}
   root,solids,interactables,pickables:interactables.map(item=>item.object),obstacles:GALLERY_OBSTACLES,portals,
   anchors:{playScreen:GALLERY_LAYOUT.play.screen,originsBook:GALLERY_LAYOUT.origins.book,counter:GALLERY_LAYOUT.counter.position},setDay(){},
   update(dt,eye,motion=true){if(disposed)return false;if(motion)time+=Math.max(0,Math.min(Number(dt)||0,.1));const result=dirty;dirty=false;return result;},
-  diagnostics:()=>({kind:'celestial-glass-gallery',ready:stone.diagnostics().ready&&pavement.diagnostics().ready,modernGallery:true,building:true,glassStructure:true,glassRoof:true,columns:0,arches:0,doors:1,roof:true,skyLight:true,overheadLabels:0,vegetation:false,time:+time.toFixed(3),rooms:3,independentFiles:true,pavement:pavement.diagnostics(),stone:stone.diagnostics(),flooring:{interiorOnlyWhiteStone:true,exteriorOriginalCalcada:true,interiorBounds:{minX:-13,maxX:13,minZ:-17,maxZ:-2},rectangles:5,sharedHeight:-.09,exteriorDarkPlinth:true},facade:{mouth:true,originalDrawing:true,paperLoaded,threeDimensional:true,tongueVolume:true,tongueSmooth:true,tongueIndexed:true,tongueProjectionMetres:.565,paperVolume:true,paperThicknessMetres:.028,edgeNotches:12,elegantlyLit:true},thpCounter:{papers:paperItems.length,sheets:6,looseTabs:5,perforated:true,tabSizeMetres:tabSize,sheetSizeMetres:[sheetWidth,sheetDepth],stone:true,originalAsset:TOTEHMPAPER.src,loaded:paperLoaded},lounge:{sofa:false,coffeeTable:false,screenFrame:true,screenCenter:GALLERY_LAYOUT.play.screen},origins:{table:false,lectern:true,black:true,closedBook:true,bookAnchor:GALLERY_LAYOUT.origins.book,inclinationDegrees:18},portals:portals.map(({room,x,z,href})=>({room,x,z,href})),disposed}),
-  dispose(){if(disposed)return;disposed=true;root.removeFromParent();stone.dispose();pavement.dispose();for(const t of textures)t.dispose();for(const g of geometries)g.dispose();for(const m of materials)m.dispose();root.clear();}
+  diagnostics:()=>({kind:'celestial-glass-gallery',ready:stone.diagnostics().ready&&pavement.diagnostics().ready,modernGallery:true,building:true,glassStructure:true,glassRoof:true,columns:0,arches:0,doors:1,roof:true,skyLight:true,overheadLabels:0,vegetation:false,time:+time.toFixed(3),rooms:3,independentFiles:true,pavement:pavement.diagnostics(),stone:stone.diagnostics(),flooring:{ancientStone:ancientFloor.diagnostics(),trueStoneGeometry:true,opaqueSupportTop:interiorSupportTop,exteriorSupportPreserved:true,interiorOnlyWhiteStone:true,exteriorOriginalCalcada:true,interiorBounds:{minX:-13,maxX:13,minZ:-17,maxZ:-2},rectangles:5,sharedHeight:-.09,exteriorDarkPlinth:true},facade:{mouth:true,originalDrawing:true,paperLoaded,threeDimensional:true,tongueVolume:true,tongueSmooth:true,tongueIndexed:true,tongueProjectionMetres:.565,paperVolume:true,paperThicknessMetres:.028,edgeNotches:12,elegantlyLit:true},thpCounter:{papers:paperItems.length,sheets:6,looseTabs:5,perforated:true,tabSizeMetres:tabSize,sheetSizeMetres:[sheetWidth,sheetDepth],stone:true,originalAsset:TOTEHMPAPER.src,loaded:paperLoaded},lounge:{sofa:false,coffeeTable:false,screenFrame:true,screenCenter:GALLERY_LAYOUT.play.screen},origins:{table:false,lectern:true,black:true,closedBook:true,bookAnchor:GALLERY_LAYOUT.origins.book,inclinationDegrees:18},portals:portals.map(({room,x,z,href})=>({room,x,z,href})),disposed}),
+  dispose(){if(disposed)return;disposed=true;root.removeFromParent();stone.dispose();ancientFloor.dispose();pavement.dispose();for(const t of textures)t.dispose();for(const g of geometries)g.dispose();for(const m of materials)m.dispose();root.clear();}
  };
 }

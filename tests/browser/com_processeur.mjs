@@ -27,6 +27,9 @@ const R=(pg,sel)=>pg.$eval(sel,e=>{const r=e.getBoundingClientRect();return{x:r.
 const ouvre=async pg=>{await pg.evaluate(()=>{window.__ouvert=[];window.open=(u)=>{window.__ouvert.push(u);return null;};});};
 const vers=(pg,v)=>pg.waitForFunction(v=>{const d=window.__totehm_lv();return d.vue===v&&!d.bouge;},v,{timeout:6000}).catch(()=>{});
 const calme=pg=>pg.waitForFunction(()=>!window.__totehm_lv().bouge,null,{timeout:6000}).catch(()=>{});
+/* La manette de l'atterrissage tirée à la souris : 30 px dans une direction (son rayon est de 10). */
+const tire=async(pg,dx,dy)=>{const r=await pg.evaluate(()=>{const b=document.getElementById('lvj-box').getBoundingClientRect();return {x:b.x+b.width/2,y:b.y+b.height/2};});
+  await pg.mouse.move(r.x,r.y);await pg.mouse.down();await pg.mouse.move(r.x+dx/2,r.y+dy/2);await pg.mouse.move(r.x+dx,r.y+dy);await pg.mouse.up();};
 const browser=await launch();
 try{
  // ── 1 · LE CENTRE : le processeur dans son socle, sept ramifications, Mine · Others ; ni manette, ni côtés ──
@@ -204,6 +207,18 @@ try{
   await pg.evaluate(()=>document.getElementById('gate-enter').click());await pg.waitForTimeout(400);
   ok(await pg.evaluate(()=>document.body.classList.contains('gate')&&!!document.activeElement&&document.activeElement.dataset.mbl==='sub'),
      '25/10 · un tap sur SON papier n\'ouvre rien : il désigne le geste qui l\'ouvre');
+  // 26/10 (Wah : « les mouvements de joystick ne marchent plus quand j'effectue une recherche ») : sur un Totehm verrouillé,
+  // la manette va en haut (commun) et en bas (SON offre) ; ← → désignent l'offre (ses médias sont derrière l'abonnement).
+  await tire(pg,0,-30);await vers(pg,'h');await pg.waitForTimeout(400);
+  const vh=await lv(pg);await tire(pg,0,30);await vers(pg,'c');await pg.waitForTimeout(400);
+  await tire(pg,-30,0);await pg.waitForTimeout(300);
+  const vg=await pg.evaluate(()=>({d:window.__totehm_lv(),appel:!!document.querySelector('#mb-lock .is-appel')}));
+  ok(vh.vue==='h'&&vg.d.vue==='c'&&vg.d.dernierRefus==='voisin:c>g:verrou'&&vg.appel&&vg.d.membre.verrou==='lock',
+     '26/10 · Totehm verrouillé : la manette monte (Get Higher) et revient ; tirée à gauche, elle désigne l\'offre '+JSON.stringify({h:vh.vue,c:vg.d.vue,r:vg.d.dernierRefus,a:vg.appel}));
+  await tire(pg,0,30);await vers(pg,'b');await pg.waitForTimeout(500);
+  const vb=await pg.evaluate(()=>({v:window.__totehm_lv().vue,o:document.getElementById('mb-offre').textContent}));
+  ok(vb.v==='b'&&/lock/.test(vb.o)&&/SUBSCRIBE/.test(vb.o),'26/10 · Totehm verrouillé : la manette descend sur SON offre (« '+vb.o.replace(/\s+/g,' ').trim()+' »)');
+  await tire(pg,0,-30);await vers(pg,'c');await pg.waitForTimeout(500);
   await pg.click('#lv-m-members');await calme(pg);await pg.waitForTimeout(700);
   // le bon nom : SON écosystème
   const url0=pg.url();
@@ -245,6 +260,23 @@ try{
     const q=await pg.evaluate(()=>({d:window.__totehm_lv(),w:document.getElementById('gate-asteroid').getBoundingClientRect().width,dos:document.getElementById('gate-card').classList.contains('is-back')}));
     ok(q.d.mode==='mine'&&!q.d.membre.cherche&&Math.abs(q.w-p0)<2&&!q.dos,'Échap pendant la recherche : le papier rentre, sur son recto, chez moi');
   }
+  // 26/10 : pendant la recherche, la manette n'est plus morte — le geste QUITTE la recherche (comme Échap) puis voyage
+  for(const [dx,dy,v] of [[0,-30,'h'],[0,30,'b']]){
+    await pg.click('#lv-m-members');await calme(pg);await pg.waitForTimeout(600);
+    const c0=await lv(pg);
+    await tire(pg,dx,dy);await pg.waitForFunction(v=>{const d=window.__totehm_lv();return d.vue===v&&!d.bouge;},v,{timeout:5000}).catch(()=>{});await pg.waitForTimeout(500);
+    const r=await pg.evaluate(()=>({d:window.__totehm_lv(),w:document.getElementById('gate-asteroid').getBoundingClientRect().width,dos:document.getElementById('gate-card').classList.contains('is-back'),
+      asp:document.body.classList.contains('is-aspire'),ui:document.getElementById('mb-ui').getAttribute('aria-hidden')}));
+    ok(c0.membre.cherche&&r.d.vue===v&&r.d.mode==='mine'&&!r.d.membre.cherche&&!r.dos&&!r.asp&&r.ui==='true',
+       (tel?'téléphone':'ordinateur')+' · 26/10 · recherche ouverte, manette '+(v==='h'?'en haut':'en bas')+' : la recherche se referme, le papier rentre, et on arrive '+JSON.stringify({vue:r.d.vue,mode:r.d.mode,cherche:r.d.membre.cherche,refus:r.d.dernierRefus}));
+    await pg.keyboard.press(v==='h'?'ArrowDown':'ArrowUp');await vers(pg,'c');await pg.waitForTimeout(500);
+  }
+  // un geste reçu pendant que le papier GRANDIT encore : il attend, puis quitte la recherche et voyage
+  await pg.click('#lv-m-members');await pg.waitForTimeout(150);await tire(pg,0,-30);
+  await pg.waitForFunction(()=>{const d=window.__totehm_lv();return d.vue==='h'&&!d.bouge;},null,{timeout:6000}).catch(()=>{});await pg.waitForTimeout(400);
+  const t=await lv(pg);
+  ok(t.vue==='h'&&t.mode==='mine'&&!t.membre.cherche,'26/10 · un geste pendant que la recherche s\'ouvre : il attend la fin, la referme, puis monte '+JSON.stringify({vue:t.vue,mode:t.mode,refus:t.dernierRefus}));
+  await pg.keyboard.press('ArrowDown');await vers(pg,'c');
   ok(!erreurs(log).length,'MEMBERS : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
 
  // ── 4 bis · LES VUES DE CÔTÉ SONT LA TRANSFORMATION DU CENTRE : les sept traits se plient pendant le voyage ──

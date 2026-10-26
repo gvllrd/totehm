@@ -163,10 +163,11 @@ try{
   await pg.keyboard.press('ArrowDown');await vers(pg,'b');await pg.keyboard.press('ArrowDown');await pg.waitForTimeout(200);
   await pg.keyboard.press('ArrowUp');await vers(pg,'c');
   await pg.click('#lv-m-members');await pg.waitForTimeout(1500);await pg.evaluate(()=>document.activeElement.blur());
-  await pg.keyboard.press('ArrowDown');await pg.waitForTimeout(200);
-  const m=await pg.evaluate(()=>{const e=document.getElementById('lv-diag');return {r:window.__totehm_lv().refus,txt:e?e.textContent:'',pe:e?getComputedStyle(e).pointerEvents:''};});
-  ok(sans&&m.r['voisin:b>b']===1&&m.r['voisin:c>b:recherche']===1&&/refus voisin:c>b:recherche/.test(m.txt)&&m.pe==='none',
-     '22/10 · le mouchard : chaque geste refusé dit pourquoi (en bas sans voisin · pendant la recherche) ; à l\'écran avec ?diag=1 seulement → '+JSON.stringify(m.r));
+  /* 26/10 : pendant la recherche, un geste n'est plus refusé — il la referme et voyage (plus de code `:recherche`) */
+  await pg.keyboard.press('ArrowDown');await vers(pg,'b');await pg.waitForTimeout(600);
+  const m=await pg.evaluate(()=>{const e=document.getElementById('lv-diag'),d=window.__totehm_lv();return {r:d.refus,vue:d.vue,mode:d.mode,txt:e?e.textContent:'',pe:e?getComputedStyle(e).pointerEvents:''};});
+  ok(sans&&m.r['voisin:b>b']===1&&!Object.keys(m.r).some(k=>/recherche/.test(k))&&m.vue==='b'&&m.mode==='mine'&&/refus voisin:b>b/.test(m.txt)&&m.pe==='none',
+     '22/10 · le mouchard : un geste refusé dit pourquoi (en bas sans voisin) ; à l\'écran avec ?diag=1 seulement ; 26/10 · pendant la recherche, ↓ la referme et descend → '+JSON.stringify({r:m.r,vue:m.vue,mode:m.mode}));
   ok(!erreurs(log).length,'mouchard : aucune erreur '+erreurs(log).join(' | '));
   await ctx.close();}
 

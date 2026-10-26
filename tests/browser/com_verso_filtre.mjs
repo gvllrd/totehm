@@ -1,7 +1,7 @@
 // COM — le verso et le filtre de gauche (Wah, 21/10/2026).
 // 1 · Retourner le papier : le NOM seul ; il grandit et monte ; PUIS toute la console arrive ENSEMBLE, verso déployé
 //     et console lue — jamais le bas (Higher, TotehmBot, email, Sign out, terms) avant.
-// 2 · Deux mondes distincts au verso : « Monetize my TOTEHM — and get paid every month » (ce que je gagne) et
+// 2 · Deux mondes distincts au verso (26/10 : deux PARTIES, Monetize my TOTEHM · Go [Higher]) : « Monetize my TOTEHM — and get paid every month » (ce que je gagne) et
 //     l'abonnement [Higher] avec ce qu'il ouvre (Higher Self chaque jour, TotehmBot qui suit chaque Habit).
 // 3 · Le filtre de gauche : un bloc de commande rectangle — MY STORY et VISION en carrés perforés de leur couleur,
 //     qui enferment OBJECTIVE · HABIT · REPULSION empilés.
@@ -45,12 +45,12 @@ try{
    ok(avant.length>3&&!trop.length,nom+' · retournement et zoom : rien que le nom, '+avant.length+' images mesurées, '+trop.length+' avec autre chose');
    ok(avant.some(f=>f.nom>0&&f.cls.includes('is-show')),nom+' · pendant le zoom, le nom grandit et monte, SEUL ('+avant.filter(f=>f.nom>0).length+' images)');
    await pg.waitForTimeout(400); const ap=await vu(pg);
-   /* 24/10 : trois ONGLETS — le verso s'ouvre sur le Dashboard ; Subscription et Monetize montrent chacun leur bloc. */
-   ok(ap.onglets===1&&ap.dash===1&&ap.gagne===0&&ap.higher===0&&ap.abos===0&&ap.pied===1&&ap.x===1,nom+' · puis TOUT arrive ensemble, ouvert sur le DASHBOARD → '+JSON.stringify(ap));
-   await pg.click('#vs-tabs [data-vs-tab="sub"]');await pg.waitForTimeout(150); const sub=await vu(pg);
+   /* 26/10 : DEUX PARTIES — le verso s'ouvre sur GO [HIGHER] (le tableau de bord, [Higher], mes abonnements) ; MONETIZE MY TOTEHM
+      montre ce que je gagne, seul. */
+   ok(ap.onglets===1&&ap.dash===1&&ap.gagne===0&&ap.higher===1&&ap.abos===1&&ap.pied===1&&ap.x===1,nom+' · puis TOUT arrive ensemble, ouvert sur GO HIGHER → '+JSON.stringify(ap));
    await pg.click('#vs-tabs [data-vs-tab="money"]');await pg.waitForTimeout(150); const mon=await vu(pg);
-   ok(sub.higher===1&&sub.abos===1&&!sub.gagne&&!sub.dash&&mon.gagne===1&&!mon.higher&&!mon.abos&&!mon.dash&&sub.pied===1&&mon.pied===1,
-      nom+' · 24/10 · l\'onglet Subscription montre [Higher] et mes abonnements ; Monetize, ce que je gagne ; le pied reste → '+JSON.stringify({sub,mon}));
+   ok(mon.gagne===1&&!mon.higher&&!mon.abos&&!mon.dash&&mon.pied===1,
+      nom+' · 26/10 · Monetize my TOTEHM : ce que je gagne, seul ; le pied reste → '+JSON.stringify(mon));
    const t=await pg.evaluate(()=>({g:document.querySelector('#mw-creator .vs-t')?.textContent.trim(), gs:document.querySelector('#mw-creator .vs-s')?.textContent.trim(),
      h:document.querySelector('#mw-menu .vs-t')?.textContent.trim(), hb:!!document.querySelector('#mw-menu .vs-t use[href="#higher-badge"]'),
      hs:document.querySelector('#mw-menu .vs-s')?.textContent.trim(), f:[...document.querySelectorAll('#mw-menu .vs-item .vs-k')].map(e=>e.textContent.trim()),
@@ -77,7 +77,7 @@ try{
    await pg.$eval('#acct-wipe',b=>b.click());await pg.waitForTimeout(150);
    const arme=await pg.evaluate(()=>({t:document.getElementById('acct-wipe').textContent,a:document.getElementById('acct-wipe').classList.contains('armed')}));
    ok(arme.a&&/tap again/i.test(arme.t)&&!log.rpc.some(x=>x.name==='delete_my_totehm'),nom+' · Delete demande un second tap (rien n\'est effacé au premier) → '+arme.t);
-   await pg.click('#vs-tabs [data-vs-tab="dash"]');await pg.waitForTimeout(100);
+   await pg.click('#vs-tabs [data-vs-tab="higher"]');await pg.waitForTimeout(100);
    const colle=await pg.evaluate(()=>{const u=document.getElementById('srch-ui');u.scrollTo(0,99999);const h=document.getElementById('self-h').getBoundingClientRect(),x=document.getElementById('srch-x');
      const p=x.getBoundingClientRect(),t=document.elementFromPoint(p.left+p.width/2,p.top+p.height/2);return {top:Math.round(h.top),x:x.contains(t)};});
    ok(colle.top===0&&colle.x,nom+' · au défilement, l\'identifiant reste en haut (y = '+colle.top+') et la croix reste au-dessus');
