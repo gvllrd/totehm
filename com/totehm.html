@@ -7529,7 +7529,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-10-25-montrer-boitier';
+const BUILD='2026-10-26-com-manette-recherche';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -11685,11 +11685,13 @@ window.addEventListener('pageshow',e=>{
        identifiant ; dès qu'il est validé, on retombe dans l'écosystème — mais ce n'est plus le nôtre, c'est celui
        du membre ». `cherche` = le papier agrandi sur son dos ; `nom` = le membre dont je vis l'écosystème. */
     const MB={cherche:false, nom:null, avant:null, seq:0, verrou:null};
-    const libreMb=()=>mode!=='members'||(!!MB.nom&&!MB.cherche);
+    /* 26/10 (Wah : « les mouvements de joystick ne marchent plus quand j'appuie sur members ») : la recherche ne bloque
+       plus la croix — un geste la QUITTE (comme Échap) puis voyage (`demander`). Un TOTEHM verrouillé se visite aussi :
+       le haut (commun), le bas (SON offre) ; ses médias et ses spots restent derrière l'abonnement (← → désignent l'offre). */
+    const libreMb=()=>mode!=='members'||(!MB.cherche&&(!!MB.nom||!!MB.verrou));
     const voisin=k=>{
       const v=(VOISINS[vue]||{})[k]||null;
-      if(!libreMb()) return null;                       /* pendant la recherche, on ne voyage pas */
-      if((k==='g'||k==='d')&&v!=='c'&&!inscrit()) return null;
+      if((k==='g'||k==='d')&&v!=='c'&&(!inscrit()||(MB.verrou&&!MB.cherche))) return null;
       return v;
     };
     body.classList.add('lv-c');
@@ -11838,7 +11840,8 @@ window.addEventListener('pageshow',e=>{
       :body.classList.contains('is-tlv')?'visionneuse':'?';
     const quiOccupe=()=>bouge?'voyage':moving?'repli':sMoving?'verso':'papier-'+PAPIER.quoi();
     function refus(c){ diag.refus[c]=(diag.refus[c]||0)+1; diag.dernier=c; peindreDiag(); return false; }
-    const sansVoisin=d=>refus('voisin:'+vue+'>'+d+(libreMb()?'':':recherche'));
+    const sansVoisin=d=>{ if(MB.verrou&&!MB.cherche&&vue==='c'&&(d==='g'||d==='d')) OFFRE.montrer();
+      return refus('voisin:'+vue+'>'+d+(MB.verrou?':verrou':'')); };
     function peindreDiag(){ if(!diagEl) return;
       diagEl.textContent=vue+' · '+mode+(MB.cherche?' · recherche':'')+'\nvoyage '+(+bouge)+' · repli '+(+moving)+' · verso '+(+sOpen)+'/'+(+sMoving)
         +' · papier '+PAPIER.quoi()+'\nlibre '+(libre()?1:pasLibre())+' · attente '+(attente?attente.d:'-')+'\nrefus '+(diag.dernier||'-')
@@ -11851,6 +11854,9 @@ window.addEventListener('pageshow',e=>{
     let POUSSE_LVJ=null, DU_LVJ=false;
     function demander(d){
       if(!libre()) return refus('libre:'+pasLibre());
+      if(MB.cherche){ const v=voisin(d); if(!v) return sansVoisin(d);
+        if(!bouge) annuler();                               /* le papier rentre ; le voyage attend sa fin (`reprendre`) */
+        attente={d, t:Date.now()}; diag.enAttente++; if(!DU_LVJ&&POUSSE_LVJ)POUSSE_LVJ(d); guetter(); return true; }
       if(occupe()){ if(!voisin(d)) return sansVoisin(d); attente={d, t:Date.now()}; diag.enAttente++;
         if(!DU_LVJ&&POUSSE_LVJ)POUSSE_LVJ(d); guetter(); return true; }
       const v=voisin(d); if(!v) return sansVoisin(d);
@@ -11864,7 +11870,9 @@ window.addEventListener('pageshow',e=>{
     function reprendre(){
       const a=attente; attente=null;
       if(!a||Date.now()-a.t>ATTENTE) return;
-      setTimeout(()=>{ if(occupe()){ attente=a; return void guetter(); } const v=voisin(a.d); if(v) aller(v); },0);
+      setTimeout(()=>{ if(occupe()){ attente=a; return void guetter(); }
+        if(MB.cherche){ annuler(); a.t=Date.now(); attente=a; return void guetter(); }   /* reçu pendant que la recherche grandissait */
+        const v=voisin(a.d); if(v) aller(v); },0);
     }
     /* ── ALLER : une vue voisine, ou le centre ── */
     function aller(v,then){
