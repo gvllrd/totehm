@@ -3479,16 +3479,20 @@ a.rf-add{text-decoration:none;display:inline-block}
 .vs-pay.hide{display:none}
 .vs-seg{display:flex;gap:6px;width:100%}
 .vs-seg button.is-on{background:#3a3a42;color:#fff;box-shadow:inset 0 0 0 1px #fff}
-/* ── LES TROIS ONGLETS DU VERSO (24/10) : Dashboard (par défaut) · Subscription · Monetize. Un onglet ne fait que montrer
-   son bloc ; le nom, l'invité et le pied (Sign out, Delete, conditions) restent partout. ── */
+/* ── LES DEUX PARTIES DU VERSO (26/10, Wah : « deux parties bien distinctes ») : MONETIZE MY TOTEHM (ce que je gagne) ·
+   GO [HIGHER] (ouverte à chaque retournement : mon tableau de bord, l'abonnement Higher, TotehmBot, mes abonnements).
+   Une partie ne fait que montrer ses blocs ; le nom, l'invité et le pied (Sign out, Delete, conditions) restent partout. ── */
 #vs-tabs{display:flex;gap:6px;width:min(94vw,420px);flex:none;margin:2px 0 4px}
 #vs-tabs button{flex:1;min-width:0;border:0;border-radius:10px;background:#1f1f24;color:#b8b8c2;cursor:pointer;
   font:700 10px/1.2 'Space Mono',monospace;letter-spacing:.12em;text-transform:uppercase;padding:9px 4px;white-space:nowrap}
 #vs-tabs button:hover{color:#fff}
 #vs-tabs button.is-on{background:#3a3a42;color:#fff;box-shadow:inset 0 0 0 1px #fff}
-#srch[data-tab="dash"] #mw-creator,#srch[data-tab="dash"] #settings,
-#srch[data-tab="sub"] #vs-dash,#srch[data-tab="sub"] #mw-creator,
+#vs-tabs button{display:inline-flex;align-items:center;justify-content:center;gap:6px}
+#vs-tabs .vs-hi{width:45px;height:15px}
+#srch[data-tab="higher"] #mw-creator,
 #srch[data-tab="money"] #vs-dash,#srch[data-tab="money"] #settings{display:none}
+/* la partie porte déjà le nom : le titre du bloc s'efface, sa promesse reste */
+#mw-creator .vs-t{display:none}
 #vs-vide{margin:0;width:min(94vw,420px);background:#000;padding:16px;font:400 10px/1.4 'Space Mono',monospace;color:#d2d2da;text-align:left}
 #vs-vide.hide{display:none}
 /* ── LE TABLEAU DE BORD (24/10) : 60 % noir, les données en blanc, les SEPT INTENTIONS en point ou en trait (jamais une
@@ -4252,19 +4256,19 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
      (trois chiffres, le prix au curseur). Ce sont les nœuds de l'espace membre, DÉPLACÉS (un seul système de
      réglages) ; l'espace membre garde le compte. Pendant qu'il est ouvert, #gate est `inert` mais reste PEINT
      (le masquer révélerait le Totehm derrière le papier qui grandit) et aucun geste ne change de vue. -->
-<div id="srch" role="dialog" aria-modal="true" aria-label="My TOTEHM settings" aria-hidden="true" tabindex="-1" data-tab="dash">
+<div id="srch" role="dialog" aria-modal="true" aria-label="My TOTEHM settings" aria-hidden="true" tabindex="-1" data-tab="higher">
   <div id="srch-bg"></div>
   <div id="srch-ui">
     <div id="self-h"><button id="self-name" type="button" aria-label="Rename my TOTEHM"></button></div>
     <!-- Sous l'identifiant, le compte qui le porte (et l'état de la synchronisation) ; il arrive avec le reste. -->
     <p id="self-mail" class="srch-after"><span class="mw-mail" id="mw-mail"></span><span class="mw-sync" id="mw-sync"></span></p>
-    <!-- 24/10 — TROIS ONGLETS (Wah : « clarté et minimalisme ») : DASHBOARD, ouvert par défaut · SUBSCRIPTION · MONETIZE.
-         Ils ne font que montrer ou cacher trois blocs (`#vs-dash`, `#settings`, `#mw-creator`) : chacun garde son câblage.
-         Le tableau de bord se LIT (`my_board`) ; le suivi, lui, se fait dans Telegram. -->
+    <!-- 26/10 — DEUX PARTIES (Wah : « Monetize my Totehm - Go Higher ») : ce que je GAGNE · ce que je FAIS et ce que
+         j'achète pour moi (le tableau de bord, puis [Higher] et TotehmBot), ouverte par défaut. Elles ne font que montrer
+         ou cacher des blocs (`#mw-creator` · `#vs-dash` + `#settings`) : chacun garde son câblage. Le tableau de bord se
+         LIT (`my_board`) ; le suivi, lui, se fait dans Telegram. -->
     <nav id="vs-tabs" class="srch-after" role="tablist" aria-label="My TOTEHM">
-      <button type="button" role="tab" data-vs-tab="dash" class="is-on" aria-selected="true">Dashboard</button>
-      <button type="button" role="tab" data-vs-tab="sub" aria-selected="false">Subscription</button>
-      <button type="button" role="tab" data-vs-tab="money" aria-selected="false">Monetize</button>
+      <button type="button" role="tab" data-vs-tab="money" aria-selected="false">Monetize my TOTEHM</button>
+      <button type="button" role="tab" data-vs-tab="higher" class="is-on" aria-selected="true">Go<svg class="vs-hi" viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-badge"/></svg></button>
     </nav>
     <section id="vs-dash" class="vs srch-after" role="tabpanel" aria-label="My dashboard"></section>
     <p id="vs-vide" class="srch-after hide" role="status"></p>
@@ -12122,7 +12126,7 @@ window.addEventListener('pageshow',e=>{
        c'est le menu membre qui s'affiche ». Donc il est là d'emblée, sans second geste : mes réglages,
        un filet, puis mon compte — dans cet ordre, l'un sous l'autre, zéro blabla. */
     /* 24/10 : il s'ouvre sur le TABLEAU DE BORD ; la monétisation et mon tableau de bord se lisent ensemble (1,8 s au plus). */
-    surReglages=()=>{ peindreCarte(); DASH.onglet('dash'); const lu=Promise.all([CREA.charger(),DASH.charger()]).then(()=>DASH.vide());
+    surReglages=()=>{ peindreCarte(); DASH.onglet('higher'); const lu=Promise.all([CREA.charger(),DASH.charger()]).then(()=>DASH.vide());
       if(me){ $('member-window').classList.add('show');
               if(typeof memberPaint==='function') memberPaint();
               if(typeof paintMe==='function') paintMe(); }
@@ -12710,18 +12714,18 @@ window.addEventListener('pageshow',e=>{
     /* ══ LE TABLEAU DE BORD DU VERSO · 24/10 ══ Wah : « enregistrer TOUT ce que fait l'utilisateur dans son Totehm et le
        mettre sous forme de visuels » ; « le Telegram sert de tracking, pas le verso ». Le verso MONTRE, il ne coche rien :
        la base journalise tout (`totehm_journal`, ses déclencheurs) et calcule tout (`my_board`, SQL) ; la page dessine.
-       Trois onglets : Dashboard (par défaut, à chaque retournement) · Subscription · Monetize. */
+       Deux parties : Monetize my TOTEHM · Go [Higher] (par défaut, à chaque retournement : le tableau de bord en tête). */
     const DASH=(()=>{
       const el=$('vs-dash'), srch=$('srch'), COUL=Object.fromEntries(INTS.map(x=>[x.id,x.color]));
-      let seq=0, D=null, ong='dash'; const diagD={charges:0, erreurs:0};
+      let seq=0, D=null, ong='higher'; const diagD={charges:0, erreurs:0};
       const n=v=>Number.isFinite(+v)?+v:0, coul=i=>COUL[i]||'', jourDe=s=>new Date(String(s).slice(0,10)+'T12:00:00');
       const court=s=>{ const t=jourDe(s); return isNaN(t)?'':t.toLocaleDateString('en-GB',{day:'numeric',month:'short'}); };
       function onglet(t){
-        ong=['dash','sub','money'].includes(t)?t:'dash'; srch.dataset.tab=ong;
+        ong=t==='money'?'money':'higher'; srch.dataset.tab=ong;
         document.querySelectorAll('#vs-tabs [data-vs-tab]').forEach(b=>{ const on=b.dataset.vsTab===ong; b.classList.toggle('is-on',on); b.setAttribute('aria-selected',on?'true':'false'); });
         vide();
       }
-      /* Monetize sans offre lisible (invité, ou lecture en échec) : une ligne, jamais un onglet blanc. */
+      /* Monetize sans offre lisible (invité, ou lecture en échec) : une ligne, jamais une partie blanche. */
       function vide(){
         const v=$('vs-vide'); let t='';
         if(ong==='money'&&$('mw-creator').classList.contains('hide')) t=guest()?'Save my TOTEHM with my email to monetize it.':'Monetize · back in a moment.';
@@ -12819,7 +12823,7 @@ window.addEventListener('pageshow',e=>{
         el.innerHTML=h;
       }
       /* Relier Telegram : on passe sur l'onglet Subscription, là où TotehmBot vit (et où sa réponse s'écrit). */
-      el.addEventListener('click',e=>{ if(e.target.closest('[data-db-tg]')){ onglet('sub'); $('mw-telegram').click(); } });
+      el.addEventListener('click',e=>{ if(e.target.closest('[data-db-tg]')){ onglet('higher'); $('mw-telegram').click(); } });
       return {charger, onglet, vide, vider(){ seq++; D=null; el.innerHTML=''; },
         etat:()=>({onglet:ong, charge:!!D, habits:D?(D.habits||[]).length:0, cases:D?(D.habits||[]).reduce((a,x)=>a+(x.c||[]).filter(Boolean).length,0):0,
                    jours:D?(D.days||[]).length:0, heat:D?(D.heat||[]).length:0, fil:D?(D.feed||[]).length:0, telegram:!!(D&&D.telegram),

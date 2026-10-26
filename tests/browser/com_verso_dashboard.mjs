@@ -1,11 +1,12 @@
-// COM — le verso a TROIS ONGLETS et s'ouvre sur le TABLEAU DE BORD (Wah, 24/10/2026).
+// COM — le verso a DEUX PARTIES et s'ouvre sur GO [HIGHER], le TABLEAU DE BORD en tête (Wah, 24/10 puis 26/10/2026).
 // « Enregistrer TOUT ce que fait l'utilisateur dans son Totehm et le mettre sous forme de visuels » · « le Telegram sert de
 // tracking, pas le verso » · « 3 onglets : l'abonnement, la monétisation et le tableau de bord, en vue par défaut ».
-// 1 · Dashboard par défaut (à chaque retournement) · Subscription · Monetize : un onglet ne montre que son bloc.
+// 1 · (26/10, « deux parties bien distinctes : Monetize my Totehm - Go Higher ») MONETIZE MY TOTEHM · GO [HIGHER]
+//     (par défaut, à chaque retournement : le tableau de bord, puis [Higher] et TotehmBot) : une partie ne montre que ses blocs.
 // 2 · Le tableau de bord DESSINE ce que le serveur a calculé (`my_board`, appelé avec MON fuseau) : la semaine, la
 //     courbe, la matrice Habits × 7 jours (point = fait, de la couleur de l'intention ; trait = pas fait ; cercle = sans
 //     réponse), les séries, les sept intentions, les objectifs qui arrivent, 12 semaines d'activité, le fil, les totaux.
-// 3 · Il ne coche RIEN (le suivi se fait dans Telegram) ; Telegram pas relié : « Connect » mène à TotehmBot (Subscription).
+// 3 · Il ne coche RIEN (le suivi se fait dans Telegram) ; Telegram pas relié : « Connect » mène à TotehmBot (Go Higher).
 // 4 · La charte : fonds noirs, aucun fond blanc, les intentions en point ou en trait ; ce que le membre a écrit est échappé.
 // Tout est simulé (comptes, RPC) : aucune écriture en production. LANCER : node com_verso_dashboard.mjs /tmp
 import {launch,page,ok} from './harness.mjs';
@@ -48,12 +49,13 @@ try{
      rpc:{my_landing:LAND,creator_dashboard:CREA,my_console:CONS,my_board:DB,new_bot_link_code:'c0de'}});
    await pg.addInitScript(()=>{ window.__ouvert=[]; window.open=(u)=>{ window.__ouvert.push(String(u)); return null; }; });
    await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1200);
-   /* ── 1 · trois onglets, le Dashboard d'abord ── */
+   /* ── 1 · deux parties, Go Higher d'abord ── */
    await pg.click('#lv-tap-turn');
    await pg.waitForFunction(()=>document.getElementById('srch').classList.contains('is-pret'),null,{timeout:6000}).catch(()=>{});await pg.waitForTimeout(400);
-   const a=await vu(pg), tabs=await pg.$$eval('#vs-tabs [data-vs-tab]',l=>l.map(b=>b.textContent.trim()));
-   ok(tabs.join()==='Dashboard,Subscription,Monetize'&&a.tab==='dash'&&a.sel==='dash'&&a.dash===1&&!a.gagne&&!a.higher&&a.pied===1,
-      nom+' · trois onglets (Dashboard · Subscription · Monetize), ouvert sur le DASHBOARD → '+JSON.stringify(a));
+   const a=await vu(pg), tabs=await pg.$$eval('#vs-tabs [data-vs-tab]',l=>l.map(b=>b.textContent.trim()+(b.querySelector('svg use[href="#higher-badge"]')?'[Higher]':'')));
+   const ordre=await pg.evaluate(()=>{const y=s=>document.querySelector(s).getBoundingClientRect().top;return y('#vs-dash')<y('#mw-menu');});
+   ok(tabs.join()==='Monetize my TOTEHM,Go[Higher]'&&a.tab==='higher'&&a.sel==='higher'&&a.dash===1&&!a.gagne&&a.higher===1&&a.pied===1&&ordre,
+      nom+' · 26/10 · deux parties (Monetize my TOTEHM · Go [Higher]) ; ouvert sur GO HIGHER : le tableau de bord, puis [Higher] → '+JSON.stringify({tabs,a,ordre}));
    const appel=log.rpc.find(x=>x.name==='my_board');
    ok(appel&&typeof appel.body.p_tz==='string'&&appel.body.p_tz.length>0,nom+' · my_board est appelé avec MON fuseau → '+JSON.stringify(appel&&appel.body));
    /* ── 2 · ce qu'il dessine ── */
@@ -80,7 +82,7 @@ try{
    ok(d.fil===8&&/^done · Run the hill$/.test(d.filT[0])&&!d.img,nom+' · le fil : les 8 derniers gestes, en mots, rien d\'injecté → '+d.filT.slice(0,3).join(' | '));
    ok(d.tot===10&&d.tete.includes('My Habits')&&d.tete.includes('My TOTEHM'),nom+' · mon TOTEHM en chiffres (10 compteurs)');
    ok(d.fonds.every(c=>c==='rgb(0, 0, 0)')&&d.blanc===0,nom+' · la charte : des fonds NOIRS, aucun fond blanc → '+d.fonds.join());
-   ok(d.diag.onglet==='dash'&&d.diag.charge&&d.diag.habits===3&&d.diag.cases===10&&d.diag.heat===84&&!d.diag.telegram&&Object.values(d.diag).every(v=>typeof v!=='string'||v==='dash'),
+   ok(d.diag.onglet==='higher'&&d.diag.charge&&d.diag.habits===3&&d.diag.cases===10&&d.diag.heat===84&&!d.diag.telegram&&Object.values(d.diag).every(v=>typeof v!=='string'||v==='higher'),
       nom+' · __totehm_dash() : des nombres et des booléens, jamais une donnée de membre → '+JSON.stringify(d.diag));
    await pg.screenshot({path:OUT+'/dash_'+(nom==='téléphone'?'tel':'ordi')+'.png',fullPage:false});
    const sh=await pg.evaluate(()=>{const u=document.getElementById('srch-ui');return {h:u.scrollHeight,c:u.clientHeight};});
@@ -88,17 +90,19 @@ try{
    ok(!(await pg.$('#vs-dash input, #vs-dash [type="checkbox"]'))&&!log.rpc.some(x=>/habit_outcome|track/.test(x.name)),nom+' · le verso ne coche RIEN : le suivi se fait dans Telegram');
    await pg.click('#vs-dash [data-db-tg]');await pg.waitForTimeout(500);
    const t=await vu(pg);
-   ok(t.tab==='sub'&&t.higher===1&&!t.dash,nom+' · Telegram pas relié : « Connect » ouvre l\'onglet Subscription, là où vit TotehmBot → '+t.tab);
-   /* ── 1 bis · Monetize ; puis refermer et rouvrir : de nouveau le Dashboard ── */
+   ok(t.tab==='higher'&&t.higher===1&&!t.gagne,nom+' · Telegram pas relié : « Connect » reste dans Go [Higher], là où vit TotehmBot → '+t.tab);
+   /* ── 1 bis · Monetize ; puis refermer et rouvrir : de nouveau Go Higher ── */
    await pg.click('#vs-tabs [data-vs-tab="money"]');await pg.waitForTimeout(150);
    const m=await vu(pg);
-   ok(m.tab==='money'&&m.gagne===1&&!m.dash&&!m.higher&&!m.vide,nom+' · Monetize : ce que je gagne, seul');
+   const titre=await pg.evaluate(()=>({t:getComputedStyle(document.querySelector('#mw-creator .vs-t')).display,s:document.querySelector('#mw-creator .vs-s').textContent}));
+   ok(m.tab==='money'&&m.gagne===1&&!m.dash&&!m.higher&&!m.vide&&titre.t==='none'&&titre.s==='and get paid every month',
+      nom+' · Monetize my TOTEHM : ce que je gagne, seul ; le titre qui répète la partie s\'efface, la promesse reste → '+JSON.stringify(titre));
    await pg.click('#srch-x');
    await pg.waitForFunction(()=>!document.getElementById('srch').className&&!window.__totehm_lv().reglages,null,{timeout:6000}).catch(()=>{});await pg.waitForTimeout(600);
    await pg.click('#lv-tap-turn');
    await pg.waitForFunction(()=>document.getElementById('srch').classList.contains('is-pret'),null,{timeout:6000}).catch(()=>{});await pg.waitForTimeout(300);
    const r=await vu(pg);
-   ok(r.tab==='dash'&&r.dash>0.9&&log.rpc.filter(x=>x.name==='my_board').length===2,nom+' · rouvert : le Dashboard de nouveau, relu → '+JSON.stringify({r,n:log.rpc.filter(x=>x.name==='my_board').length}));
+   ok(r.tab==='higher'&&r.dash>0.9&&log.rpc.filter(x=>x.name==='my_board').length===2,nom+' · rouvert : Go Higher de nouveau, le tableau de bord relu → '+JSON.stringify({r,n:log.rpc.filter(x=>x.name==='my_board').length}));
    ok(sh.h>sh.c,nom+' · le tableau de bord se lit en défilant ('+sh.h+' px pour '+sh.c+')');
    ok(!erreurs(log).length,nom+' · aucune erreur '+erreurs(log).join(' | '));
    await pg.context().close();}
@@ -112,7 +116,7 @@ try{
   await pg.click('#vs-tabs [data-vs-tab="money"]');await pg.waitForTimeout(150);
   const v=await vu(pg), msg=await pg.textContent('#vs-vide');
   ok(/back in a moment/.test(e.t)&&e.diag.erreurs===1&&!e.diag.charge,'lecture en échec : une ligne, compté dans __totehm_dash().erreurs → '+e.t);
-  ok(v.vide===1&&!v.gagne&&/Monetize · back in a moment/.test(msg),'Monetize sans offre lisible : une ligne, jamais un onglet blanc → '+msg);
+  ok(v.vide===1&&!v.gagne&&/Monetize · back in a moment/.test(msg),'Monetize sans offre lisible : une ligne, jamais une partie blanche → '+msg);
   ok(!erreurs(log).length,'lectures en échec : aucune erreur '+erreurs(log).join(' | '));
   await pg.context().close();}
 }finally{await browser.close();}
