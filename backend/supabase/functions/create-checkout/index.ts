@@ -40,9 +40,17 @@
 // box_kind`, `_box_matter`) ; seule cette liste les fermait.
 //
 // 24/10 (v43) : Wah — « l'utilisateur doit pouvoir sélectionner ou désélectionner
-// des sous-box dans les box ». La page envoie `hide: [{kind, text}]`, des
-// RÉFÉRENCES : on filtre la matière qu'on vient de relire en base. Elle ne reçoit
-// toujours rien — au pire, une référence qui ne correspond à rien n'ôte rien.
+// des sous-box dans les box ». La page envoie des RÉFÉRENCES : on filtre la
+// matière qu'on vient de relire en base. Elle ne reçoit toujours rien.
+//
+// 26/10 (v44) : Wah — « par défaut elles sont toutes désélectionnées ; quand
+// l'utilisateur appuie sur une mini-box ou une photo il la LIE à la
+// totehmisation » · « affiche aussi les medias photo et les spots photo ».
+// Le contrat s'INVERSE : `pick: { matter: [{kind,text}], shots: [id] }` dit ce
+// qui ENTRE, plus ce qui sort. Rien de coché = la box seule, et c'est un choix,
+// pas un oubli. Les photos sont relues par `_box_shots` (mes lignes seules) :
+// la page ne peut pas faire entrer une image qui n'est pas à elle, ni un chemin
+// qu'elle aurait écrit. Ce qui part à l'usine vit dans `snap.shots`.
 // ═══════════════════════════════════════════════════════════════════════
 import Stripe from 'npm:stripe@14';
 import { createClient } from 'npm:@supabase/supabase-js@2';
@@ -107,19 +115,37 @@ Deno.serve(async (req) => {
   }
   if (!snap?.text) return Response.json({ error: 'box not found' }, { status: 404, headers: cors });
 
-  // ── 24/10 : des SOUS-BOX ÉTEINTES (Wah). La page n'envoie que des RÉFÉRENCES
-  //    (la vue + le texte) ; on retire de NOTRE matière, relue en base, ce qui
-  //    correspond. Rien n'entre par ici : ce qui ne correspond à rien est ignoré.
-  const hide = Array.isArray(body.hide) ? (body.hide as { kind?: unknown; text?: unknown }[]).slice(0, 40) : [];
-  const off = new Set(hide.filter((h) => h && typeof h.kind === 'string' && typeof h.text === 'string')
+  // ── 26/10 : CE QUI EST ALLUMÉ (Wah). La page n'envoie que des RÉFÉRENCES — la
+  //    vue + le texte pour une mini-box, un identifiant pour une photo — et on
+  //    GARDE, dans ce qu'on vient de relire en base, ce qui correspond. Rien
+  //    n'entre par ici : une référence inconnue n'ajoute rien.
+  const pick = (body.pick ?? {}) as { matter?: unknown; shots?: unknown };
+  const on = new Set((Array.isArray(pick.matter) ? pick.matter as { kind?: unknown; text?: unknown }[] : [])
+    .slice(0, 60).filter((h) => h && typeof h.kind === 'string' && typeof h.text === 'string')
     .map((h) => h.kind + '\u0000' + h.text));
-  if (off.size && snap.matter && typeof snap.matter === 'object') {
+  let garde = 0;
+  if (snap.matter && typeof snap.matter === 'object') {
     const m = snap.matter as Record<string, { text?: unknown }[]>;
     for (const k of Object.keys(m)) {
-      m[k] = (m[k] ?? []).filter((x) => !off.has(k + '\u0000' + String(x?.text ?? '')));
+      m[k] = (m[k] ?? []).filter((x) => on.has(k + '\u0000' + String(x?.text ?? '')));
+      garde += m[k].length;
     }
-    console.log('[create-checkout] sous-box éteintes:', off.size);
   }
+
+  // ── Les PHOTOS liées : relues elles aussi, jamais reçues. `_box_shots` ne rend
+  //    que MES lignes (media non retiré, spot publié) ; on ne garde que celles
+  //    que le membre a allumées. C'est cette liste que la chaîne n8n analysera.
+  const ids = new Set((Array.isArray(pick.shots) ? pick.shots as unknown[] : [])
+    .slice(0, 24).map((x) => String(x ?? '')).filter(Boolean));
+  let shots: unknown[] = [];
+  if (ids.size) {
+    const { data: all, error: shErr } = await sb.rpc('_box_shots',
+      { p_user: user.id, p_kind: box.kind, p_ref: String(box.ref) });
+    if (shErr) console.error('[create-checkout] shots', shErr.message);
+    shots = (Array.isArray(all) ? all : []).filter((s) => ids.has(String((s as { id?: unknown })?.id ?? '')));
+  }
+  (snap as Record<string, unknown>).shots = shots;
+  console.log('[create-checkout] allumés:', JSON.stringify({ matter: garde, shots: shots.length }));
 
   // ── Prix + stock : source de vérité = DB
   const { data: g } = await sb.from('totehm_cloth_support').select('*').eq('id', garment_id).maybeSingle();
