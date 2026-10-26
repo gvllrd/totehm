@@ -1,10 +1,12 @@
 import assert from 'node:assert/strict';
 import {createModernPhysics,createModernWalkway} from '../../space/gallery-modern-navigation.mjs';
+import {GLASS_SHELL,GLASS_HEARTH,glassRoofHeight,glassSmokeOpening} from '../../space/gallery-glass-shell.mjs';
 import {GALLERY_LAYOUT,GALLERY_STATIONS} from '../../space/gallery-modern-layout.mjs';
 
 let checks=0,samples=0,steps=0;
 const check=(value,message)=>{assert(value,message);checks++;};
 const near=(a,b,epsilon=2e-5)=>Math.abs(a-b)<=epsilon;
+const HEIGHT=GALLERY_LAYOUT.eyeHeight;
 const tick=(p,dt,input)=>{steps++;return p.step(dt,input);};
 const nav=createModernWalkway(),entry={x:0,z:12};
 const approaches=GALLERY_STATIONS.map(s=>({x:s.approach[0],z:s.approach[2]}));
@@ -81,7 +83,7 @@ for(const fps of [20,60,120]){
 for(const fps of [20,60,120])for(const start of [{x:0,z:-5},{x:-7.6,z:-4},{x:0,z:-2}]){
  const p=createModernPhysics(start);check(p.jump(),'A jump indoors remains intentional');let peak=-Infinity;
  for(let i=0;i<fps;i++){tick(p,1/fps);peak=Math.max(peak,p.position.y);}
- const ceiling=start.z===-2?3.1:6;
+ const ceiling=start.z===-2?3.1:glassRoofHeight(start.x,start.z);
  check(peak+1.74<=ceiling+1e-6,'The full-speed head cannot tunnel through the roof or entry lintel');
  check(p.diagnostics().headContacts===1,'The ceiling records one real head contact');
  check(p.diagnostics().grounded&&near(p.position.y,-.09),'A ceiling contact returns to the floor');
@@ -91,8 +93,8 @@ for(const fps of [20,60,120])for(const start of [{x:0,z:-5},{x:-7.6,z:-4},{x:0,z
 // terrace. Neither a guide nor a reduced-motion relocation resets altitude.
 const roof=createModernPhysics({x:0,z:-5,y:30});
 for(let i=0;i<120;i++)tick(roof,1/120);
-check(roof.diagnostics().grounded&&roof.diagnostics().onRoof&&near(roof.position.y,6.28),'Falling above the building lands on the actual roof');
-roof.relocateHorizontal({x:0,z:2});check(near(roof.position.y,6.28)&&!roof.diagnostics().grounded,'Leaving the roof preserves height and starts a fall');
+check(roof.diagnostics().grounded&&roof.diagnostics().onRoof&&Math.abs(roof.position.y-surfaceContact(0,-5).top)<.001,'Falling above the building lands on the actual roof');
+const roofExitHeight=roof.position.y;roof.relocateHorizontal({x:0,z:2});check(near(roof.position.y,roofExitHeight)&&!roof.diagnostics().grounded,'Leaving the roof preserves height and starts a fall');
 for(let i=0;i<120;i++)tick(roof,1/120);
 check(roof.diagnostics().grounded&&near(roof.position.y,-.09),'The roof edge returns to the terrace without hovering');
 const sky=createModernPhysics(entry);sky.jump();for(let i=0;i<240;i++)tick(sky,1/120);
@@ -101,6 +103,53 @@ check(sky.position.y===before.y&&sky.diagnostics().velocityY===before.v,'Immedia
 check(!sky.jump(),'Guidance cannot manufacture a second jump');
 for(let i=240;i<14*120;i++)tick(sky,1/120);
 check(sky.diagnostics().grounded&&near(sky.position.y,-.09),'The relocated flight keeps its original landing time');
+
+
+// The actual rendered roof has varying headroom, including a real smoke hole.
+// Independently sample the continuous surface at 720 angles rather than the
+// collider's sparse footprint, bounding contacts to submillimetre accuracy.
+function surfaceContact(x,z){
+ let bottom=Infinity,top=-Infinity;
+ for(let i=0;i<=720;i++){
+  const angle=i*Math.PI/360,dx=i===720?0:Math.cos(angle)*.18,dz=i===720?0:Math.sin(angle)*.18;
+  const a=x+dx,b=z+dz;if(a<GLASS_SHELL.minX||a>GLASS_SHELL.maxX||b<GLASS_SHELL.minZ||b>GLASS_SHELL.maxZ||glassSmokeOpening(a,b))continue;
+  const y=glassRoofHeight(a,b);bottom=Math.min(bottom,y);top=Math.max(top,y+GLASS_SHELL.thickness);
+ }
+ return{bottom,top};
+}
+for(const x of [-11,-5,0,6,11])for(const z of [-14,-10,-5]){
+ const expected=surfaceContact(x,z),p=createModernPhysics({x,z});
+ // Begin from a known free elevated point below the glass, then exercise
+ // a real landing and jump rather than manufacturing a grounded state.
+ p.reset({x,z,y:expected.bottom-HEIGHT-.3});
+ check(p.position.x===x&&p.position.z===z,'A valid position below the wave roof is preserved');
+ // Restore airborne, then land first on the actual floor/furniture to jump.
+ for(let i=0;i<240;i++)tick(p,1/240);
+ check(p.diagnostics().grounded&&p.jump(),'A real support allows a deliberate jump beneath each roof section');
+ for(let i=0;i<240&&!p.diagnostics().headContacts;i++)tick(p,1/240);
+ check(p.diagnostics().headContacts===1,'Every wave section records a swept head collision');
+ check(Math.abs(p.position.y+HEIGHT-expected.bottom)<.001,'Head contact follows the curved glass, rather than the old flat six-metre ceiling');
+ const fall=createModernPhysics({x,z,y:30});for(let i=0;i<240;i++)tick(fall,1/240);
+ check(fall.diagnostics().grounded&&fall.diagnostics().onRoof,'Falling visitors land on every sampled wave section');
+ check(Math.abs(fall.position.y-expected.top)<.001,'Roof support follows the highest surface under the body footprint');
+ for(const side of [1,-1])for(let i=0;i<60;i++){
+  tick(fall,1/120,{dx:side*.01});const y=surfaceContact(fall.position.x,fall.position.z).top;
+  check(fall.diagnostics().grounded&&fall.diagnostics().onRoof&&Math.abs(fall.position.y-y)<.001,'Walking both uphill and downhill stays grounded on the smooth roof');
+ }
+}
+const outlet=GLASS_HEARTH.smokeOutlet;
+const aperture=createModernPhysics({x:outlet.x,z:outlet.z,y:outlet.y+.6});
+for(let i=0;i<60;i++)tick(aperture,1/240);
+check(aperture.position.y<outlet.y-.2&&!aperture.diagnostics().onRoof,'The real smoke opening has no invisible roof across its centre');
+const rim=createModernPhysics({x:outlet.x+outlet.radius-.06,z:outlet.z,y:outlet.y+2});
+for(let i=0;i<120;i++)tick(rim,1/240);
+check(rim.diagnostics().grounded&&rim.diagnostics().onRoof,'A body overlapping the aperture rim is supported by real glass');
+const oldPipe=createModernPhysics({x:-8,z:-16.12,y:9});
+oldPipe.relocateHorizontal({x:-7.7,z:-16.12});
+check(near(oldPipe.position.x,-7.7)&&near(oldPipe.position.y,9),'The removed black chimney leaves no phantom vertical collider');
+const custom=createModernPhysics({x:0,z:0},[]);check(custom.jump(),'Custom obstacle-free physics remains supported');
+for(let i=0;i<6;i++)tick(custom,1/240);
+check(custom.position.y>10&&!custom.diagnostics().headContacts,'Custom obstacles do not silently add the gallery roof');
 
 // Invalid/long resume frames and extreme input cannot corrupt navigation.
 for(const bad of [NaN,Infinity,-Infinity,undefined,null,'0']){

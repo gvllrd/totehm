@@ -11,6 +11,7 @@ import {createPlayInstallation} from './gallery-play-installation.mjs';
 import {createOppositeInstallation} from './gallery-opposite-installation.mjs';
 import {createStonerInstallation} from './gallery-stoner-installation.mjs';
 import {createRenderQuality} from './gallery-render-quality.mjs';
+import {glassRoofHeight} from './gallery-glass-shell.mjs';
 
 const ENTRY=L.entry,LOOK=L.look,GROUND=L.groundY,HEIGHT=L.eyeHeight;
 export async function createGallery({select,onOverview=()=>{},onStationState=()=>{},onArtwork=()=>{},interact=()=>{},fallback,reduced}){
@@ -42,7 +43,7 @@ export async function createGallery({select,onOverview=()=>{},onStationState=()=
  const eye=new T.Vector3(...ENTRY),gaze=new T.Vector3(...LOOK),keys=new Set();
  const stick=document.getElementById('joystick'),knob=stick.querySelector('span');let joystick={x:0,y:0};
  const isFloor=()=>physics.diagnostics().grounded&&physics.position.y<GROUND+.2;
- const inGallery=()=>eye.x>-L.halfWidth&&eye.x<L.halfWidth&&eye.z<L.frontZ&&eye.z>L.backZ&&physics.position.y<L.height;
+ const inGallery=()=>eye.x>-L.halfWidth&&eye.x<L.halfWidth&&eye.z<L.frontZ&&eye.z>L.backZ&&eye.y<glassRoofHeight(eye.x,eye.z);
  const nearStation=index=>{const s=GALLERY_STATIONS[index];return!!s&&isFloor()&&Math.hypot(eye.x-s.approach[0],eye.z-s.approach[2])<1.2;};
  function stationState(){
   if(!initialized)return;
@@ -62,10 +63,12 @@ export async function createGallery({select,onOverview=()=>{},onStationState=()=
  angles();
  function syncSound(){
   const active=!hidden&&!list&&!paused,distance=Math.hypot(eye.x,eye.z-L.frontZ,eye.y-1.65);
-  const shelter=T.MathUtils.smoothstep(L.frontZ-eye.z,0,4)*T.MathUtils.smoothstep(L.halfWidth-Math.abs(eye.x),0,1.1)*T.MathUtils.smoothstep(eye.z-L.backZ,0,.8)*(1-T.MathUtils.smoothstep(eye.y,L.height-.8,L.height+.3));
+  const shelter=T.MathUtils.smoothstep(L.frontZ-eye.z,0,4)*T.MathUtils.smoothstep(L.halfWidth-Math.abs(eye.x),0,1.1)*T.MathUtils.smoothstep(eye.z-L.backZ,0,.8)*(1-T.MathUtils.smoothstep(eye.y,glassRoofHeight(eye.x,eye.z)-.8,glassRoofHeight(eye.x,eye.z)+.3));
   sound.update({zone:physics.position.y>3000?'void':'temple',proximity:Math.max(0,1-distance/8),exposure:T.MathUtils.clamp((physics.position.y-GROUND)/10,0,1),shelter,active});
   const fireDistance=Math.hypot(eye.x-L.fireplace.position[0],eye.y-1,eye.z-L.fireplace.position[2]);
-  fireSound.update({proximity:Math.max(0,1-fireDistance/13),active});
+  const fireX=L.fireplace.position[0]-eye.x,fireZ=L.fireplace.position[2]-eye.z;
+  const pan=T.MathUtils.clamp((fireX*Math.cos(yaw)-fireZ*Math.sin(yaw))/Math.max(.01,Math.hypot(fireX,fireZ)),-1,1)*.65;
+  fireSound.update({proximity:Math.max(0,1-fireDistance/13),pan,active});
  }
  const unlock=e=>{if(e.isTrusted&&!list&&!hidden&&!paused){sound.unlock().catch(()=>{});fireSound.unlock().catch(()=>{});}};
  document.addEventListener('pointerdown',unlock,{capture:true});document.addEventListener('keydown',unlock,{capture:true});

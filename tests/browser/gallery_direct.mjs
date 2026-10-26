@@ -24,6 +24,15 @@ try{
    check(await pg.locator('.market-nav a[href="/market"]').isVisible()&&await pg.locator('.market-nav a[href="/market?tab=mine"]').isVisible(),'market and personal collection routes remain visible at '+viewport.width);
    check(await pg.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'entrance has no horizontal overflow at '+viewport.width);
    await pg.screenshot({path:OUT+'/entry-'+viewport.width+'.png'});
+   const firePoint=await project(pg,[-8,.55,-15.99]);await pg.mouse.click(firePoint.x,firePoint.y);
+   await pg.waitForFunction(()=>{const d=__totehm_gallery();return Math.hypot(d.position[0]+9.2,d.position[1]+8.3)<.2&&Math.hypot(d.camera.position[0]+9.2,d.camera.position[2]+8.3)<.2&&!d.moving;},null,{timeout:45000});
+   check((await pg.evaluate(()=>__totehm_gallery())).fireplace.approachableFire,'touching the physical campfire guides the visitor beside the flames at '+viewport.width);
+   const fireCorners=await Promise.all([[-10.15,.02,-15.17],[-5.85,.02,-15.17],[-9.95,4.62,-15.99],[-6.05,4.62,-15.99]].map(point=>project(pg,point)));
+   sample.hearth=await pg.evaluate(()=>__totehm_gallery());sample.fireCorners=fireCorners;
+   const tourTop=await pg.locator('.tour').evaluate(node=>node.getBoundingClientRect().top);
+   check(fireCorners.every(p=>p.x>=0&&p.x<=viewport.width&&p.y>=0&&p.y<tourTop),'the complete campfire fits above the artwork navigation at '+viewport.width);
+   await pg.screenshot({path:OUT+'/hearth-'+viewport.width+'.png'});
+   await pg.click('#overview');await pg.waitForFunction(()=>{const d=__totehm_gallery();return Math.hypot(d.position[0],d.position[1]-12)<.2&&!d.moving;},null,{timeout:45000});
    await pg.click('#view-list');await pg.waitForFunction(()=>__totehm_gallery().list);
    check(await pg.locator('#same-but-opposite .artwork[href="/same_but_opposite"]').isVisible()&&await pg.locator('#lisbon .artwork[href="/play_lisbon_street"]').isVisible(),'artwork list exposes both independent screens at '+viewport.width);
    check(await pg.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'artwork list has no horizontal overflow at '+viewport.width);

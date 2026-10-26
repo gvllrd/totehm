@@ -1,3 +1,4 @@
+import {GLASS_SHELL,glassRoofHeight,glassSmokeOpening} from './gallery-glass-shell.mjs';
 import {GALLERY_LAYOUT,GALLERY_OBSTACLES} from './gallery-modern-layout.mjs';
 
 const GROUND=GALLERY_LAYOUT.groundY,HEIGHT=GALLERY_LAYOUT.eyeHeight;
@@ -17,14 +18,39 @@ function inside(b,x,z,margin){return x>b.minX-margin+EPS&&x<b.maxX+margin-EPS&&z
 // All vertical contacts sweep the complete step, including the first fast
 // centimetres of the deliberately very high outdoor jump.
 export function createModernPhysics(initial={x:0,z:12},obstacles=GALLERY_OBSTACLES){
- const solids=boxes(obstacles),position={x:0,y:GROUND,z:12};
+ const shapes=boxes(obstacles),roof=shapes.find(b=>b.waveRoof),solids=shapes.filter(b=>!b.waveRoof),position={x:0,y:GROUND,z:12};
+ // A cylinder's head/sole touches the lowest/highest glass beneath its disc.
+ // Sampling the footprint also keeps the real smoke opening passable, while
+ // a body overlapping its rim still meets glass rather than tunnelling.
+ const footprint=[[0,0],...Array.from({length:16},(_,i)=>[Math.cos(i*Math.PI/8)*RADIUS,Math.sin(i*Math.PI/8)*RADIUS])];
+ function roofAt(x,z){
+  if(!roof||!inside(roof,x,z,RADIUS))return null;
+  let bottom=Infinity,top=-Infinity;
+  const nearest=[clamp(x,roof.minX,roof.maxX)-x,clamp(z,roof.minZ,roof.maxZ)-z];
+  const contacts=Math.hypot(...nearest)<=RADIUS?[...footprint,nearest]:footprint;
+  for(const [dx,dz] of contacts){const a=x+dx,b=z+dz;
+   if(a<roof.minX-EPS||a>roof.maxX+EPS||b<roof.minZ-EPS||b>roof.maxZ+EPS||glassSmokeOpening(a,b))continue;
+   const height=glassRoofHeight(a,b);bottom=Math.min(bottom,height);top=Math.max(top,height+GLASS_SHELL.thickness);
+  }
+  return top>-Infinity?{bottom,top}:null;
+ }
+ function solidTop(b,x,z){
+  if(!b.waveWall)return b.maxY;
+  const edge=b.waveWall,along=edge.axis==='x'?z:x;
+  let top=-Infinity;
+  for(const d of [-RADIUS,0,RADIUS])top=Math.max(top,edge.axis==='x'?glassRoofHeight(edge.at,clamp(along+d,b.minZ,b.maxZ)):glassRoofHeight(clamp(along+d,b.minX,b.maxX),edge.at));
+  return top;
+ }
  let velocityY=0,grounded=true,jumps=0,landings=0,headContacts=0,support='ground';
  function validHorizontal(x,z,y){
-  return within(x,z)&&!solids.some(b=>inside(b,x,z,RADIUS)&&y<b.maxY-EPS&&y+HEIGHT>b.minY+EPS);
+  if(!within(x,z)||solids.some(b=>inside(b,x,z,RADIUS)&&y<solidTop(b,x,z)-EPS&&y+HEIGHT>b.minY+EPS))return false;
+  if(roof&&y+HEIGHT>roof.minY-EPS&&y<roof.maxY+EPS){const r=roofAt(x,z);if(r&&y<r.top-EPS&&y+HEIGHT>r.bottom+EPS)return false;}
+  return true;
  }
  function supportAt(x,z,y){
   let top=GROUND,id='ground';
-  for(const b of solids)if(b.maxY<=y+EPS&&b.maxY>top&&inside(b,x,z,RADIUS)){top=b.maxY;id=b.id||'solid';}
+  for(const b of solids)if(inside(b,x,z,RADIUS)){const height=solidTop(b,x,z);if(height<=y+EPS&&height>top){top=height;id=b.id||'solid';}}
+  if(roof&&y>=roof.minY){const r=roofAt(x,z);if(r&&r.top<=y+EPS&&r.top>top){top=r.top;id='gallery-roof';}}
   return{top,id};
  }
  function reset(next={}){
@@ -35,7 +61,7 @@ export function createModernPhysics(initial={x:0,z:12},obstacles=GALLERY_OBSTACL
    // A restore is never permission to eject somebody above a table or roof.
    // Prefer the nearest free side at the requested height, then the entrance.
    const candidates=[];
-   for(const b of solids)if(inside(b,x,z,RADIUS)&&y<b.maxY-EPS&&y+HEIGHT>b.minY+EPS){
+   for(const b of solids)if(inside(b,x,z,RADIUS)&&y<solidTop(b,x,z)-EPS&&y+HEIGHT>b.minY+EPS){
     candidates.push({x:b.minX-RADIUS-.002,z},{x:b.maxX+RADIUS+.002,z},{x,z:b.minZ-RADIUS-.002},{x,z:b.maxZ+RADIUS+.002});
    }
    candidates.push({x:0,z:12});candidates.sort((a,b)=>Math.hypot(a.x-x,a.z-z)-Math.hypot(b.x-x,b.z-z));
@@ -56,6 +82,11 @@ export function createModernPhysics(initial={x:0,z:12},obstacles=GALLERY_OBSTACL
   }
   return position;
  }
+ function moveTo(x,z){
+  const r=grounded&&support==='gallery-roof'?roofAt(x,z):null;
+  const y=r&&Math.abs(r.top-position.y)<.12?r.top:position.y;
+  if(validHorizontal(x,z,y)){position.x=x;position.z=z;position.y=y;}
+ }
  function step(dt,{dx=0,dz=0,guided=false}={}){
   const elapsed=finite(dt)?clamp(dt,0,.05):0;if(!elapsed)return position;
   dx=finite(dx)?dx:0;dz=finite(dz)?dz:0;
@@ -69,23 +100,24 @@ export function createModernPhysics(initial={x:0,z:12},obstacles=GALLERY_OBSTACL
      const upTime=Math.min(h,oldVelocity/GRAVITY),peak=oldY+oldVelocity*upTime-.5*GRAVITY*upTime*upTime;
      let ceiling=Infinity;
      for(const b of solids)if(inside(b,position.x,position.z,RADIUS)&&oldY+HEIGHT<=b.minY+EPS&&peak+HEIGHT>=b.minY-EPS)ceiling=Math.min(ceiling,b.minY);
+     if(roof&&oldY+HEIGHT<=roof.maxY+EPS&&peak+HEIGHT>=roof.minY-EPS){const r=roofAt(position.x,position.z);if(r&&oldY+HEIGHT<=r.bottom+EPS&&peak+HEIGHT>=r.bottom-EPS)ceiling=Math.min(ceiling,r.bottom);}
      if(ceiling<Infinity){nextY=ceiling-HEIGHT;nextVelocity=0;headContacts++;}
     }
     if(nextVelocity<=0){
      let top=GROUND,id='ground';
-     for(const b of solids)if(inside(b,position.x,position.z,RADIUS)&&oldY>=b.maxY-EPS&&nextY<=b.maxY+EPS&&b.maxY>top){top=b.maxY;id=b.id||'solid';}
+     for(const b of solids)if(inside(b,position.x,position.z,RADIUS)){const height=solidTop(b,position.x,position.z);if(oldY>=height-EPS&&nextY<=height+EPS&&height>top){top=height;id=b.id||'solid';}}
+     if(roof&&oldY>=roof.minY&&nextY<=roof.maxY){const r=roofAt(position.x,position.z);if(r&&oldY>=r.top-EPS&&nextY<=r.top+EPS&&r.top>top){top=r.top;id='gallery-roof';}}
      if(oldY>=top-EPS&&nextY<=top+EPS){nextY=top;nextVelocity=0;grounded=true;support=id;landings++;}
     }
     position.y=nextY;velocityY=nextVelocity;
    }
    const x=position.x+dx/steps,z=position.z+dz/steps;
-   if(validHorizontal(x,position.z,position.y))position.x=x;
-   if(validHorizontal(position.x,z,position.y))position.z=z;
+   moveTo(x,position.z);moveTo(position.x,z);
    if(grounded){const floor=supportAt(position.x,position.z,position.y);if(Math.abs(floor.top-position.y)>EPS){grounded=false;support=null;}}
   }
   return position;
  }
- function diagnostics(){return{grounded,feetHeight:+position.y.toFixed(4),velocityY:+velocityY.toFixed(4),support,supportColumn:null,jumps,landings,headContacts,onRoof:support==='gallery-roof',jumpSpeed:JUMP_SPEED,gravity:GRAVITY,jumpApex:JUMP_APEX,flightTime:FLIGHT_TIME,bodyRadius:RADIUS,bodyHeight:HEIGHT,obstacleCount:solids.length};}
+ function diagnostics(){return{grounded,feetHeight:+position.y.toFixed(4),velocityY:+velocityY.toFixed(4),support,supportColumn:null,jumps,landings,headContacts,onRoof:support==='gallery-roof',jumpSpeed:JUMP_SPEED,gravity:GRAVITY,jumpApex:JUMP_APEX,flightTime:FLIGHT_TIME,bodyRadius:RADIUS,bodyHeight:HEIGHT,obstacleCount:shapes.length,curvedRoof:!!roof};}
  reset(initial);return{position,jump,step,reset,relocateHorizontal,diagnostics};
 }
 
