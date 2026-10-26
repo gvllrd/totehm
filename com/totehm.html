@@ -3064,6 +3064,7 @@ body.lv-d #lv-proc,body.lv-d #lv-slogan{opacity:0}
 .sh-ask{font:400 10px/1.3 'Space Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#d8d8dd;background:rgba(0,0,0,.45);
   border:0;border-radius:10px;padding:7px 12px;cursor:pointer;-webkit-tap-highlight-color:transparent}
 @media(hover:hover){.sh-ask:hover{background:rgba(0,0,0,.7);color:#fff}}
+.ask-hi{display:inline-block;height:1.25em;width:3.75em;vertical-align:-.32em;margin:0 .15em}
 .lv-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;inline-size:fit-content;padding:11px 18px;border:0;border-radius:10px;background:#1f1f24;color:#b0b0b0;font:400 12px/1.4 'Space Mono',monospace;text-decoration:none;white-space:nowrap;cursor:pointer}
 .lv-btn:focus-visible{outline:1px solid #fff;outline-offset:3px}
 .lv-btn svg{width:48px;height:16px;flex:none}
@@ -3795,6 +3796,8 @@ a.sd-tag{color:#fff;text-decoration:underline;text-decoration-color:rgba(255,255
 .ssp-acts button{border:0;border-radius:10px;background:#1f1f24;color:#fff;cursor:pointer;padding:8px 12px;
   font:700 9.5px/1 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase}
 .ssp-acts button:focus-visible,.ssp-by:focus-visible{outline:1px solid #fff;outline-offset:2px}
+.ssp-acts button{white-space:nowrap}
+@media(max-width:420px){.ssp-acts{gap:5px}.ssp-acts button{padding:8px 9px;letter-spacing:.12em}}
 /* LE MÉDIA, TEL QU'IL EST : jamais recadré, le noir autour — la place exacte de celui de la vue de gauche. */
 .ssp-m{position:absolute;left:0;right:0;top:calc(max(10px,env(safe-area-inset-top)) + 46px);bottom:calc(max(14px,env(safe-area-inset-bottom)) + 24px);background:#000}
 .ssp-m img,.ssp-m video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block;opacity:0;transition:opacity .4s ease}
@@ -6325,6 +6328,9 @@ function creerFeed(conf){
      lieu, pour qui, le point ouvert ou non, silencieux ou social · son mot —, l'auteur et les gestes (GO · CALENDAR),
      puis la Habit Box au format Totehm (`boxSpot` : la mienne avec mes liens, ou celle que le serveur me montre d'un
      autre membre, mini-boîtes comprises), tout en bas. Plus de cadre, plus de fond flou. */
+  /* 26/10 (Wah : « j'ai pas compris le Higher Self dans les spots ») : le geste dit ce qu'il fait — un verbe, et « Higher »
+     en SVG comme partout. Le même mot sur un média et sur un spot. */
+  const ASK_MOT='ask my <svg class="ask-hi" viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-badge"></use></svg> self';
   const ET={will:'I will be there', am:'I am here', was:'I was here'};
   const AUD={private:'private', figher:'figher club', subscribers:'my subscribers', public:'figher club'};
   const hhmm=d=>String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
@@ -6357,7 +6363,7 @@ function creerFeed(conf){
       +(z.state==='will'?'<button type="button" data-ics="'+esc(String(z.id))+'">calendar</button>':'')
       /* 25/10 (Wah) : MON spot, montré au Higher Self — un mot de plus dans la même rangée, rien de neuf à apprendre.
          DELETE reste le DERNIER : ce qui détruit ne se touche pas en visant autre chose. */
-      +(z.mine&&!RO?'<button type="button" data-ask="sp:'+esc(String(z.id))+'" data-ask-t="'+esc(String(x.txt||''))+'">higher self</button>'
+      +(z.mine&&!RO?'<button type="button" data-ask="sp:'+esc(String(z.id))+'" data-ask-t="'+esc(String(x.txt||''))+'">'+ASK_MOT+'</button>'
                    +'<button type="button" data-del="'+esc(String(z.id))+'">delete</button>':'');
     const par=!z.mine&&z.creator?'<span class="ssp-par"><span>by</span><button type="button" class="ssp-by" data-who="'+esc(String(z.creator))+'">'+esc(String(z.creator))+'</button></span>':'';
     const box=x.id?'<div class="ssp-box" role="button" tabindex="0" data-lsh="habits|'+esc(x.id)+'">'+loupeVue(boxSpot(z))+'</div>'
@@ -6695,7 +6701,7 @@ function creerFeed(conf){
      dans la visionneuse et sur le spot ouvert, et il n'existe que pour ce qui est À MOI (le serveur ne relit que mes
      lignes). La page n'envoie qu'une RÉFÉRENCE (`em:<id>`, `sp:<id>`) ; le texte affiché n'est qu'une étiquette. */
   const askHTML=x=>(!me||RO||!x||x.b!=='em'||!x.cle)?''
-    :'<button type="button" class="sh-ask" data-ask="'+esc(x.cle)+'" data-ask-t="'+esc(x.txt||'')+'">show my higher self</button>';
+    :'<button type="button" class="sh-ask" data-ask="'+esc(x.cle)+'" data-ask-t="'+esc(x.txt||'')+'">'+ASK_MOT+'</button>';
   function demanderIA(b){
     const [g,id]=String(b.dataset.ask||'').split(':');
     const kind=g==='em'?'media':g==='sp'?'spot':'';
