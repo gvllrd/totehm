@@ -6,9 +6,9 @@
     psql "$SUPABASE_DB_URL" -f tests/sql/ecosysteme_membre_selftest.sql      (attendu : FAIL={})
     psql "$SUPABASE_DB_URL" -c "drop function public.my_dashboard(text)"
 
-## 2 · ⛔ Les lecteurs de la confidentialité par box — NE PAS appliquer
-`20261018091000_audience_par_box_lecteurs.sql` attend la pastille de niveau sur chaque box : il cacherait
-les boxes nées depuis le 18/10, sans moyen de les rouvrir.
+## 2 · Prêts : les lecteurs par box (la pastille existe depuis le 26/10 ; COM lit déjà par `totehm_read`)
+    psql "$SUPABASE_DB_URL" -f backend/supabase/migrations/20261018091000_audience_par_box_lecteurs.sql
+    psql "$SUPABASE_DB_URL" -f tests/sql/visibilite_par_box_selftest.sql      (attendu : FAIL={})
 
 ## 3 · Le mode test Stripe — les deux secrets manquent (Supabase, pas Oracle)
     supabase secrets list --project-ref abujjbkbbiumxrokozph

@@ -90,13 +90,14 @@ try{
   {const{pg,log}=await page(browser,{dir:'com',origin,tables,viewport:vp,hasTouch:nom==='téléphone',rpc:{my_landing:LAND,my_trips:{signed_in:true,trips:[],reps:[],wisdom:[],visions:[]},element_media_list:{ok:true,items:[]}}});
    await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1200);
    await pg.keyboard.press('ArrowLeft');await pg.waitForFunction(()=>{const d=window.__totehm_lv();return d.vue==='g'&&!d.bouge;},null,{timeout:6000});
-   await pg.evaluate(()=>window.__papierDock&&window.__papierDock());await pg.waitForTimeout(500);
-   /* 24/10 (Wah) : le bloc de commande EST le logo. Replié, on ne voit qu'un papier ;
-      un tap le décompose, un second ouvre MY GRIND sur ses trois boutons — DANS son navy. */
+   await pg.evaluate(()=>window.__papierDock&&window.__papierDock());await pg.waitForTimeout(80);
+   /* 24/10 (Wah) : le bloc de commande EST le logo ; 26/10 : il NAÎT décomposé du Totehm docké, en UN tap (le docké
+      s'efface : c'est lui qui s'est décomposé), et MY GRIND ouvre ses trois boutons — DANS son navy. */
    const plie=await pg.evaluate(()=>{const c=document.querySelector('.lsh-sf .sfcmd');
-     return {logo:c.classList.contains('is-logo'),calques:c.querySelectorAll('.sf-lg .gl').length};});
-   ok(plie.logo&&plie.calques===3,nom+' · le filtre arrive en LOGO (le rail, le T et le mot sur le papier)');
-   await pg.click('.lsh-sf [data-sf="grind"]');await pg.waitForTimeout(900);
+     return {logo:c.classList.contains('is-logo'),calques:c.querySelectorAll('.sf-lg .gl').length,dock:document.body.classList.contains('sf-nait')};});
+   await pg.waitForTimeout(800);
+   const ne=await pg.evaluate(()=>({split:!!document.querySelector('.lsh-sf .sfcmd.is-split'),dock:+getComputedStyle(document.getElementById('gate-asteroid')).opacity}));
+   ok(plie.logo&&plie.calques===3&&plie.dock&&ne.split&&ne.dock<0.05,nom+' · 26/10 · le logo naît du Totehm docké (le rail, le T et le mot), puis se décompose seul ; le docké s\'est effacé');
    await pg.click('.lsh-sf [data-sf="grind"]');await pg.waitForTimeout(600);
    const g=await pg.evaluate(()=>{const r={};document.querySelectorAll('.lsh-sf [data-sf="vue"]').forEach(b=>{const x=b.getBoundingClientRect(),c=getComputedStyle(b);
        r[b.dataset.v]={l:x.left,t:x.top,r:x.right,b:x.bottom,w:x.width,h:x.height,m:(c.maskImage||c.webkitMaskImage||'').includes('svg'),bg:c.backgroundColor};});

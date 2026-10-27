@@ -17,7 +17,7 @@ const tables={profiles:[{pseudo:'wahigher'}],totehms:[{user_id:UID,steps:STEPS,v
 const LAND=(o={})=>({signed_in:true,pseudo:'wahigher',visibility:'private',offer:{enabled:false,open:false},
   higher:{active:false,price_cents:700,currency:'eur',period:'month'},thp:false,subscriptions:0,subscribers:0,
   sm:{ready:true,habit:true,objective:true,higher:false,free_total:7,free_left:6,left:6},...o});
-/* Le Totehm d'un autre, lu SUR PLACE depuis MEMBERS (`totehm_of`). */
+/* Le Totehm d'un autre, lu SUR PLACE depuis MEMBERS (`totehm_read`). */
 const AUTRE={ok:true,pseudo:'kai3',steps:[{t:'Swim at dawn',i:'flow',is:['flow']},{t:'Write it down',i:'express',is:['express']}],
   trips:[],objs:{},reps:[],wisdom:[],visions:[]};
 const COULEURS=['#E24B4A','#e48b31','#fcbe21','#639922','#1D9E75','#378ADD','#7F77DD'];
@@ -114,9 +114,9 @@ try{
     for(let i=1;i<=6;i++){await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:x0+(x1-x0)*i/6,y:y0+(y1-y0)*i/6}]});await pg.waitForTimeout(16);}
     await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await calme(pg);await pg.waitForTimeout(500);return (await lv(pg)).vue;};
   const s=[await glisse(40,780,40,640),await glisse(40,640,40,780),await glisse(40,640,40,780),await glisse(40,780,40,640),
-    await glisse(330,560,200,560),await glisse(200,560,330,560),await glisse(200,560,330,560),await glisse(330,560,200,560)];
-  /* 20/10 sexies — sur la CARTE, le doigt fait tourner la Terre : l'horizontale s'éteint dans CETTE vue (la règle de la
-     galaxie d'hier) ; le chevron, la manette et le trackpad ramènent au centre. */
+    await glisse(330,560,200,560),await glisse(200,560,330,560),await glisse(200,560,330,560),await glisse(260,400,130,400)];
+  /* 20/10 sexies — sur la CARTE, le doigt POSÉ SUR la Terre la fait tourner (27/10 : seulement sur elle ; ailleurs il
+     navigue, `com_prise_spot`) ; le chevron, la manette et le trackpad ramènent au centre. */
   ok(s.join(',')==='h,c,b,c,g,c,d,d','22/10 · le doigt est un manche : haut → Get Higher, bas → la Reflection, gauche → mes shorts, droite → les spots ; sur la Terre, il la tourne : '+s.join(','));
   await pg.click('#lvn-lf');await vers(pg,'c');ok((await lv(pg)).vue==='c','le chevron ← ramène au centre');
   ok(!erreurs(log).length,'doigt : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
@@ -166,7 +166,7 @@ try{
  for(const [vp,tel] of [[{width:390,height:844},true],[{width:1280,height:800},false]]){
   const{pg,log}=await page(browser,{dir:'com',origin,tables,viewport:vp,hasTouch:tel,
     rpc:{my_landing:LAND(),habit_spaces:{ok:true,habits:[]},element_cloths:{ok:true,elements:[]},
-         totehm_of:b=>b.p_pseudo==='kai3'?AUTRE:b.p_pseudo==='lock'?{ok:false,why:'subscribe',pseudo:'lock'}:{ok:false,why:'nobody'},
+         totehm_read:b=>b.p_pseudo==='kai3'?AUTRE:b.p_pseudo==='lock'?{ok:false,why:'subscribe',pseudo:'lock'}:{ok:false,why:'nobody'},
          creator_page:b=>b.p_pseudo==='lock'?Object.assign({},OFFRE,{pseudo:'lock'}):OFFRE,
          member_media:{ok:true,items:[]},club_spots_of:{ok:true,items:[],total:0}}});
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1000);await ouvre(pg);
@@ -288,11 +288,20 @@ try{
     pane:+getComputedStyle(document.getElementById('lv-g')).opacity,pistes:document.querySelectorAll('#lv-ram path:not(.puls)').length}));
   ok(mi.r.enCours&&mi.r.morphs===m0+1&&+mi.op>.5&&mi.pane<.5&&mi.pistes===7,'← en route : les SEPT traits se transforment, visibles, avant que la vue n\'entre (vue à '+mi.pane.toFixed(2)+')');
   await vers(pg,'g');await pg.waitForTimeout(1300);
-  const g=await pg.evaluate(()=>{const d=[...document.querySelectorAll('#lv-ram path:not(.puls)')].map(p=>p.getAttribute('d'));
-    const last=s=>{const m=s.split('M')[1].trim().split('L').pop().split(' ').map(Number);return m;};
-    return {r:window.__totehm_lv().ramifications,bas:d.map(last),op:getComputedStyle(document.getElementById('lv-ram')).opacity};});
-  ok(g.r.vue==='g'&&!g.r.enCours&&g.bas.every(([x,y])=>x<30&&y>800),'arrivé à gauche : les sept traits sont devenus le RAIL du bord gauche (le trait d\'une boîte, à l\'échelle de l\'écran)');
-  ok(g.op==='0','puis le réseau cède la place à la grille');
+  /* 26/10 (Wah : « les 7 traits d'intention, de la vue centrale à la vue de gauche, doivent encadrer l'écran ») : chaque trait
+     devient un CADRE entier — sa branche fait le côté gauche, sa racine le côté droit — sept cadres emboîtés, 3 px d'écart. */
+  const g=await pg.evaluate(()=>{const d=[...document.querySelectorAll('#lv-ram > g > path:not(.puls)')].map(p=>p.getAttribute('d'));
+    const pts=s=>s.split('M').filter(Boolean).map(sp=>sp.split('L').map(q=>q.trim().split(/\s+/).map(Number)));
+    return {r:window.__totehm_lv().ramifications,t:d.map(pts),W:innerWidth,H:innerHeight,op:getComputedStyle(document.getElementById('lv-ram')).opacity};});
+  const coin=(l,x,y)=>l.some(p=>Math.abs(p[0]-x)<=.6&&Math.abs(p[1]-y)<=.6);
+  const cadres=g.t.map((t,i)=>{ const m=2+i*3, [a,b]=t;
+    return !!a&&!!b&&coin(a,m,m)&&coin(a,m,g.H-m)&&coin(b,g.W-m,m)&&coin(b,g.W-m,g.H-m)
+      &&Math.abs(a[a.length-1][0]-b[b.length-1][0])<.6&&Math.abs(a[a.length-1][1]-(g.H-m))<.6; });
+  ok(g.r.vue==='g'&&!g.r.enCours&&cadres.length===7&&cadres.every(Boolean),
+     '26/10 · arrivé à gauche : les sept traits ENCADRENT l\'écran — sept cadres emboîtés, coins nets, la branche à gauche, la racine à droite → '+cadres.map(Number).join(''));
+  await pg.waitForFunction(()=>!document.body.classList.contains('ram-trace'),null,{timeout:4000}).catch(()=>{});await pg.waitForTimeout(900);
+  const g2=await pg.evaluate(()=>({op:getComputedStyle(document.getElementById('lv-ram')).opacity,traces:window.__totehm_lv().ramifications.traces}));
+  ok(g2.op==='0'&&g2.traces===1,'puis, le cadre tracé, le réseau cède la place à la grille → '+JSON.stringify(g2));
   await pg.click('#lvn-rt');await vers(pg,'c');await pg.waitForTimeout(400);
   await pg.click('#lvn-rt');await pg.waitForTimeout(300);
   const dm=await pg.evaluate(()=>({r:window.__totehm_lv().ramifications,op:getComputedStyle(document.getElementById('lv-ram')).opacity}));
