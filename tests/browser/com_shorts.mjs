@@ -195,42 +195,59 @@ try{
     sorti:window.__totehm_sh().on||window.__totehm_rdr().on}));
   ok(l0.rows===3&&l0.sh===0&&!l0.bascule&&!l0.radar&&l0.joy==='1'&&l0.cls===0&&!l0.sorti,
      nom+' · la liste SEULE (3 Habits) : aucune bascule, aucun short, aucun radar, la manette reste, les deux moteurs à l\'arrêt');
-  // ── capturer / importer DEPUIS l'élément (le Totehm les garde) ──
+  // ── 27/10 · [Add a media] d'une box : le Totehm se replie, la vue de GAUCHE s'ouvre sur son « + », CETTE box choisie,
+  //    et la capture se pose DANS le panneau, sous elle (Wah : « la prise de média se fait dans la vue de gauche ») ──
   await pg.locator('#habits .habit.open [data-x]').first().evaluate(e=>e.click()).catch(()=>{});await pg.waitForTimeout(300);
   const h2=await pg.evaluate(()=>[...document.querySelectorAll('#habits > .habit[data-row]')][1].dataset.row);
+  const rentrer=async()=>{ await pg.click('#lvn-rt');await vers(pg,'c');await pg.waitForTimeout(300);
+    await pg.click('#lv-tap-open');
+    await pg.waitForFunction(()=>!document.body.classList.contains('gate'),null,{timeout:9000}).catch(()=>{});await pg.waitForTimeout(1200);
+    /* la box ouverte le reste au retour (elle n'a plus de `data-open`) : on ne l'ouvre que si elle est fermée */
+    await pg.evaluate(h=>{ const e=document.querySelector('#habits [data-open="h:'+h+'"]'); if(e) e.click(); },h2);await pg.waitForTimeout(400); };
+  const aGauche=()=>pg.waitForFunction(()=>window.__totehm_lv().vue==='g'&&!window.__totehm_lv().bouge&&!!document.querySelector('#lv-sh-sf .sf-cap #cap-in.is-inline'),null,{timeout:9000}).catch(()=>{});
   await pg.locator('#habits [data-open="h:'+h2+'"]').evaluate(e=>e.click());await pg.waitForTimeout(400);
   const f0=await pg.locator('#habits .habit.open [data-cap]').count();
   ok(f0===1,'la boîte ouverte (la mienne) a ses fichiers et UN SEUL [Add a media]');
-  await pg.locator('#habits .habit.open [data-cap]').first().evaluate(e=>e.click());await pg.waitForTimeout(450);
-  const c=await pg.evaluate(()=>({on:document.getElementById('cap').classList.contains('is-on'),btn:[...document.querySelectorAll('#cap .cap-b')].map(b=>b.textContent.trim()),
-    tr:getComputedStyle(document.getElementById('cap-in')).transitionDuration}));
-  ok(c.on&&c.btn.join(',')==='PHOTO,VIDEO,IMPORT'&&!/^0s/.test(c.tr),'la capture s\'ouvre depuis l\'élément (animée) : PHOTO · VIDEO · IMPORT');
+  const ordre=await pg.evaluate(()=>{ const m=document.querySelector('#habits .habit.open .minis'); if(!m) return '';
+    return [...m.querySelectorAll('[data-cap],[data-spotnew]')].map(e=>e.dataset.cap!==undefined?'media':'spot').join(','); });
+  ok(ordre==='media,spot','27/10 · dans la box, les médias PRÉCÈDENT les spots ('+ordre+')');
+  await pg.locator('#habits .habit.open [data-cap]').first().evaluate(e=>e.click());
+  await aGauche();
+  const c=await pg.evaluate(()=>({vue:window.__totehm_lv().vue, gate:document.body.classList.contains('gate'), ajout:window.__totehm_sh().ajout,
+    box:[...document.querySelectorAll('#lv-sh-sf .sfb')].map(e=>(e.classList.contains('is-on')?'+':'')+((e.querySelector('.v-name')||{}).textContent||'')),
+    btn:[...document.querySelectorAll('#lv-sh-sf .sf-cap .cap-b')].map(b=>b.textContent.trim()), modale:document.getElementById('cap').classList.contains('is-on')}));
+  ok(c.vue==='g'&&c.gate&&c.ajout&&c.box.length===1&&c.box[0]==='+Read at dawn'&&c.btn.join(',')==='PHOTO,VIDEO,IMPORT'&&!c.modale,
+     '27/10 · [Add a media] → le Totehm se replie, la vue de gauche s\'ouvre sur « + », CETTE box choisie, la capture DESSOUS ('+JSON.stringify(c)+')');
   const fc=pg.waitForEvent('filechooser',{timeout:5000});
-  await pg.click('#cap [data-capk="file"]');
+  await pg.click('#lv-sh-sf [data-capk="file"]');
   await (await fc).setFiles({name:'notes.pdf',mimeType:'application/pdf',buffer:Buffer.from('%PDF-1.4 test')});
-  await pg.waitForFunction(()=>!document.getElementById('cap').classList.contains('is-on'),null,{timeout:6000}).catch(()=>{});
+  await pg.waitForFunction(()=>document.getElementById('lv-sh-sf').hidden,null,{timeout:6000}).catch(()=>{});
   const up=log.upload.filter(u=>u.method==='POST').pop(), add=log.rpc.filter(r=>r.name==='element_media_add').pop();
   ok(up&&new RegExp('^element-media/'+UID+'/m-[0-9a-f-]{36}\\.pdf$').test(up.path),'IMPORT : le fichier part dans MON dossier, privé ('+(up&&up.path)+')');
   ok(add&&add.body.p_kind==='h'&&add.body.p_ref==='Read at dawn'&&add.body.p_mime==='application/pdf'&&add.body.p_name==='notes.pdf'&&up.path==='element-media/'+add.body.p_path,'rattaché à CETTE Habit (element_media_add : h, « Read at dawn »)');
-  const puce=await pg.evaluate(()=>[...document.querySelectorAll('#habits .habit.open .m-f .mini-t')].map(b=>b.textContent));
-  ok(puce.length===1&&puce[0]==='Visualize it','la capture se referme ; le fichier est là, dans l\'élément (« Visualize it », pas son nom)');
+  ok(await pg.evaluate(()=>document.getElementById('lv-sh-sf').hidden&&!window.__totehm_sh().capture.inline&&document.getElementById('cap').contains(document.getElementById('cap-in'))),
+     'le panneau se ferme, la capture rentre chez elle');
   ok(!log.rpc.some(r=>/^(spot_create|space_post|space_post_audience|spot_create_audience)$/.test(r.name)),'importer n\'est pas publier (aucun space, aucun spot)');
-  // une photo : elle rejoint mes médias
-  await pg.locator('#habits .habit.open [data-cap]').first().evaluate(e=>e.click());await pg.waitForTimeout(450);
+  // une photo : elle rejoint mes médias (par le même chemin)
+  await rentrer();
+  await pg.locator('#habits .habit.open [data-cap]').first().evaluate(e=>e.click());await aGauche();
   if(tel){
     const fp=pg.waitForEvent('filechooser',{timeout:5000});
-    await pg.click('#cap [data-capk="photo"]');
+    await pg.click('#lv-sh-sf [data-capk="photo"]');
     const ch=await fp;ok(await ch.element().getAttribute('capture')==='environment','PHOTO au doigt : l\'appareil photo du téléphone (capture)');
     await ch.setFiles({name:'run.png',mimeType:'image/png',buffer:PNG});
   } else {
-    await pg.click('#cap [data-capk="photo"]');await pg.waitForFunction(()=>!document.getElementById('cap-cam').classList.contains('hide'),null,{timeout:6000}).catch(()=>{});
-    ok(await pg.evaluate(()=>window.__totehm_sh().capture.camera),'PHOTO sur ordinateur : la caméra de l\'appareil');
+    await pg.click('#lv-sh-sf [data-capk="photo"]');await pg.waitForFunction(()=>!document.getElementById('cap-cam').classList.contains('hide'),null,{timeout:6000}).catch(()=>{});
+    ok(await pg.evaluate(()=>window.__totehm_sh().capture.camera),'PHOTO sur ordinateur : la caméra de l\'appareil, dans le panneau');
     await pg.waitForTimeout(500);await pg.click('#cap-shot');
   }
-  await pg.waitForFunction(()=>!document.getElementById('cap').classList.contains('is-on'),null,{timeout:8000}).catch(()=>{});
+  await pg.waitForFunction(()=>document.getElementById('lv-sh-sf').hidden,null,{timeout:8000}).catch(()=>{});
   const ph=log.rpc.filter(r=>r.name==='element_media_add').pop();
   await pg.waitForTimeout(600);
   ok(ph&&ph.body.p_mime==='image/jpeg'&&/\.jpg$/.test(ph.body.p_path),'PHOTO : un JPEG (≤ 1 600 px), rattaché à l\'élément');
+  await rentrer();
+  const puce=await pg.evaluate(()=>[...document.querySelectorAll('#habits .habit.open .m-f .mini-t')].map(b=>b.textContent));
+  ok(puce.length===2&&puce.every(t=>t==='Visualize it'),'de retour dans le Totehm, les deux fichiers sont là, dans l\'élément (« Visualize it », pas leur nom)');
   // ouvrir, retirer un fichier
   /* les fichiers disent « Visualize it » : on reconnaît le PDF à son icône de document */
   const doc=()=>pg.evaluate(()=>[...document.querySelectorAll('#habits .habit.open .m-f')].findIndex(m=>/M6 3h8/.test(m.innerHTML)));
@@ -324,7 +341,7 @@ try{
   /* 26/10 (Wah) : « tu cliques sur le Totehm et boom, MY WISDOM, MY GRIND et MY VISION naissent de lui, fusionné-dilué-glissé-zoomé » —
      on relève la scène image par image : le logo part de la taille du Totehm docké, zoome, fond, puis les côtés glissent. */
   await pg.evaluate(()=>{ window.__nait=[]; const t0=performance.now(); const f=()=>{ const t=performance.now()-t0; if(t>1100) return;
-    const c=document.querySelector('#lv-sh-sf .sfcmd');
+    const c=!document.getElementById('lv-sh-sf').hidden&&document.querySelector('#lv-sh-sf .sfcmd');   /* le panneau VISIBLE seulement */
     if(c){ const m=getComputedStyle(c).transform.match(/matrix\(([-\d.e]+)/), s=c.querySelector('.sfv-s');
       window.__nait.push([t, m?+m[1]:1, +getComputedStyle(s).opacity, c.classList.contains('is-split')]); }
     requestAnimationFrame(f); }; requestAnimationFrame(f); });
@@ -408,8 +425,14 @@ try{
   await pg.click('#lv-sh-sf [data-sf="grind"]');await pg.waitForTimeout(500);
   await pg.click('#lv-sh-sf .sfpile [data-v="habits"]');await pg.waitForTimeout(400);
   await pg.locator('#lv-sh-sf .sfb').filter({hasText:'Run the hill'}).first().click();await pg.waitForTimeout(500);
-  const cap=await pg.evaluate(()=>({o:window.__totehm_sh().capture.ouvertures, ferme:document.getElementById('lv-sh-sf').hidden, f:window.__totehm_sh().filtre, aj:window.__totehm_sh().ajout}));
-  ok(cap.o>0&&cap.ferme&&cap.f===fa&&!cap.aj,'… MY GRIND → MY HABITS → une box : la capture s\'ouvre POUR elle, et le filtre de la grille n\'a pas bougé ('+cap.f+')');
+  const cap=await pg.evaluate(()=>({o:window.__totehm_sh().capture.ouvertures, ouvert:!document.getElementById('lv-sh-sf').hidden, f:window.__totehm_sh().filtre, aj:window.__totehm_sh().ajout,
+    seule:[...document.querySelectorAll('#lv-sh-sf .sfb')].map(e=>(e.classList.contains('is-on')?'+':'')+((e.querySelector('.v-name')||{}).textContent||'')).join('|'),
+    ici:!!document.querySelector('#lv-sh-sf .sfb + *, #lv-sh-sf .sf-cap #cap-in.is-inline'), modale:document.getElementById('cap').classList.contains('is-on')}));
+  ok(cap.o>0&&cap.ouvert&&cap.aj&&cap.seule==='+Run the hill'&&cap.ici&&!cap.modale&&cap.f===fa,
+     '27/10 · … MY GRIND → MY HABITS → une box : elle reste SEULE, la capture s\'ouvre DESSOUS, dans le panneau (la continuité), le filtre n\'a pas bougé → '+JSON.stringify(cap));
+  await pg.locator('#lv-sh-sf .sfb.is-on').first().click();await pg.waitForTimeout(400);
+  ok(await pg.evaluate(()=>document.querySelectorAll('#lv-sh-sf .sfb').length>1&&!document.querySelector('#lv-sh-sf .sf-cap')&&document.getElementById('cap').contains(document.getElementById('cap-in'))),
+     '27/10 · un tap sur la box choisie rend la liste ; la capture rentre chez elle');
   await pg.keyboard.press('Escape');await pg.waitForTimeout(500);
   // la vue de droite : le TOTEHM DOCKÉ ouvre le filtre — ses Habits (au format Totehm), le temps, les intentions « X [Higher] »
   await pg.click('#lvn-rt');await vers(pg,'c');await pg.click('#lvn-rt');await vers(pg,'d');await pg.waitForTimeout(1000);
