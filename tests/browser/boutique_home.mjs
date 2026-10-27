@@ -28,37 +28,43 @@ const { pg, log } = await page(browser, { dir:'boutique', origin:'https://www.hi
 await pg.goto('https://www.higher.boutique/');
 await pg.waitForFunction(() => window.__totehm_boutique && /47 pieces left/.test(document.querySelector('#sw-col-sold').textContent));
 const d = await pg.evaluate(() => window.__totehm_boutique());
-ok(d.build === '2026-10-26-higher' && d.decode_first && !d.member_window, 'the physical landing page: DECODE first, no member window here');
-ok((await pg.$eval('#decode-btn', b => getComputedStyle(b).borderImageSource)).includes('svg') && (await pg.$eval('#decode-btn', b => getComputedStyle(b).backgroundColor)) === 'rgb(51, 51, 102)',
-  'Decode is the perforated navy BOX, always — not only on hover');
+ok(d.build === '2026-10-27-dos' && d.decode_first && !d.member_window, 'the physical landing page: DECODE first, no member window here');
+// 27/10 (Wah) : « au format NORMAL, comme ses homologues ».
+const deco = await pg.evaluate(() => { const d = getComputedStyle(document.querySelector('#decode-btn')),
+  a = getComputedStyle(document.querySelector('a[href="streetwear.html"]'));
+  return { bord: d.borderImageSource, fond: d.backgroundColor, meme: d.backgroundColor === a.backgroundColor && d.fontSize === a.fontSize }; });
+ok(deco.bord === 'none' && deco.meme, 'Decode est un bouton comme les autres ' + JSON.stringify(deco));
 ok(!(await pg.$('.seam')) && !/one seam/i.test(await pg.textContent('body')), 'the landing page is bare again: no seam drawing, no caption');
-// 26/10 — LE HIGHER SE RETOURNE : la recherche est DEDANS, le « 0. » déjà posé.
+// 27/10 (Wah) : le Higher se retourne SUR PLACE, et le nom s'écrit À SON DOS.
 await pg.click('#decode-btn');
-await pg.waitForFunction(() => document.activeElement === document.querySelector('#hb-q'));
-await pg.waitForTimeout(500);
-const dec = await pg.evaluate(() => { const i = document.querySelector('#hb-q'), s = getComputedStyle(i), r = i.getBoundingClientRect();
-  const sl = getComputedStyle(document.querySelector('.slogan')).transform, bg = document.querySelector('#hb-bg');
-  return { px: Math.round(parseFloat(s.fontSize)), col: s.color, focus: document.activeElement === i, v: i.value,
-    caret: i.selectionStart, centre: Math.abs((r.left + r.right) / 2 - innerWidth / 2), retourne: sl,
-    navy: /333366|%2333366/.test(getComputedStyle(bg).backgroundImage), zoom: getComputedStyle(bg).transform,
-    pret: document.querySelector('#hb').classList.contains('is-pret'),
-    tabs: [...document.querySelectorAll('#hb-tabs button')].map(b => b.textContent.trim()).join(','),
-    btn: Math.round(document.querySelector('#decode-btn').getBoundingClientRect().height) }; });
-ok(dec.px >= 26 && dec.focus && dec.v === '0.' && dec.caret === 2 && dec.centre < 2 && /251, 213, 202/.test(dec.col)
-   && /matrix3d|matrix\(-1/.test(dec.retourne) && dec.navy && !/matrix\(0\.03/.test(dec.zoom) && dec.pret
-   && dec.tabs === 'My cloths,My luxury,My account' && dec.btn < 60,
-  '26/10 · le Higher se RETOURNE : le navy perforé grandit, la recherche est dedans avec le « 0. » et le curseur derrière, et les onglets sont là ' + JSON.stringify(dec));
+await pg.waitForFunction(() => document.activeElement === document.querySelector('#decode-q'));
+await pg.waitForTimeout(760);
+const dec = await pg.evaluate(() => { const i = document.querySelector('#decode-q'), s = getComputedStyle(i);
+  const sl = document.querySelector('.slogan'), r = sl.getBoundingClientRect(), dos = document.querySelector('#sl-back');
+  return { col: s.color, focus: document.activeElement === i, v: i.value, caret: i.selectionStart,
+    retourne: getComputedStyle(sl).transform, dans: (() => { const b = i.getBoundingClientRect();
+      return b.top >= r.top - 1 && b.bottom <= r.bottom + 1 && b.left >= r.left - 1; })(),
+    navy: getComputedStyle(dos).backgroundColor, perfo: getComputedStyle(dos).borderImageSource.includes('svg'),
+    plein: document.querySelector('#hb').classList.contains('is-on'),
+    large: Math.round(r.width) };
+});
+ok(dec.focus && dec.v === '0.' && dec.caret === 2 && /251, 213, 202/.test(dec.col) && /matrix3d|matrix\(-1/.test(dec.retourne)
+   && dec.dans && /51, 51, 102/.test(dec.navy) && dec.perfo && !dec.plein && dec.large < 260,
+  '27/10 · le Higher se retourne SUR PLACE : le nom s\'écrit à son DOS, et rien ne passe en plein écran ' + JSON.stringify(dec));
+await pg.screenshot({ path: OUT + '/bq_dos.png' });
 await pg.reload(); await pg.waitForFunction(() => window.__totehm_boutique && /47 pieces left/.test(document.querySelector('#sw-col-sold').textContent));
 ok(await pg.locator('a[data-space][href="https://www.totehm.space/"]').count()===1 && await pg.locator('#higher-btn,#lisbon-btn,a[href="/market"],a[href="/origins"]').count()===0,'digital art has one explicit SPACE destination; the physical homepage keeps its Cloth paths');
 ok(d.collab && d.logos === 0 && d.luxury_link, 'Totehm x Champion 2026 under Create, written, no logo');
-ok(d.branding_com && d.club_links === 0, 'Experience our dope branding → totehm.com');
+ok(d.branding_space && d.club_links === 0 && !(await pg.$('a[href="https://www.totehm.space/"].btn-sig:not(#brand-btn)')),
+  '27/10 · [Digital art · SPACE] est parti ; le branding mène DIRECTEMENT à totehm.space');
 const order = await pg.evaluate(() => { const a = document.querySelector('a[href="streetwear.html"]').getBoundingClientRect().top, c = document.querySelector('#collab').getBoundingClientRect().top, l = document.querySelector('a[href="/luxury"]').getBoundingClientRect().top; return a < c && c < l; });
 ok(order, 'the collection sits under [Create my Totehm Streetwear Cloth], above Luxury');
 await pg.screenshot({ path: OUT + '/bq_landing.png' });
 await pg.click('#decode-btn');
-await pg.waitForFunction(() => document.activeElement === document.querySelector('#hb-q'));
+await pg.waitForFunction(() => document.activeElement === document.querySelector('#decode-q'));
+await pg.waitForTimeout(700);   // le Higher finit de tourner : à 90° il n'a plus de largeur
 for(const [name, re, lvl] of [['0.hill', /Run the hill/, 'member'], ['0.lock', /reserved/, 'locked'], ['0.old', /I stay higher/, 'full']]){
-  await pg.fill('#hb-q', name); await pg.press('#hb-q', 'Enter');
+  await pg.fill('#decode-q', name); await pg.press('#decode-q', 'Enter');
   await pg.waitForFunction(n => document.querySelector('#decode-fs').classList.contains('show') && window.__totehm_boutique().decode, name);
   ok(re.test(await pg.textContent('#decode-msg')) && (await pg.evaluate(() => window.__totehm_boutique().decode.level)) === lvl, 'decode ' + lvl + ': reveal_cloth');
   if(lvl === 'member'){
@@ -81,8 +87,8 @@ for(const [name, re, lvl] of [['0.hill', /Run the hill/, 'member'], ['0.lock', /
   await pg.click('#decode-back');
   ok(!/decode=/.test(pg.url()), 'Back in Time clears the address');
 }
-await pg.fill('#hb-q', '0.none'); await pg.press('#hb-q', 'Enter');
-await pg.waitForFunction(() => /no Totehm Cloth/.test(document.querySelector('#hb-note').textContent));
+await pg.fill('#decode-q', '0.none'); await pg.press('#decode-q', 'Enter');
+await pg.waitForFunction(() => /no Totehm Cloth/.test(document.querySelector('#dc-note').textContent));
 ok(true, 'decode unknown: said');
 ok(!log.errors.length, 'no page error: ' + log.errors.join(' | '));
 
@@ -102,17 +108,24 @@ ok(!log.errors.length, 'no page error: ' + log.errors.join(' | '));
   const { pg, log } = await page(browser, { dir:'boutique', origin:'https://www.higher.boutique', rpc, tables, functions, session:true, network:geo });
   await pg.goto('https://www.higher.boutique/');
   await pg.waitForFunction(() => window.__totehm_boutique);
-  await pg.click('#decode-btn');
+  await pg.click('#slogan');
   await pg.waitForFunction(() => window.__totehm_boutique().higher.pret);
   await pg.waitForFunction(() => document.querySelectorAll('#hb-cloths .hb-row').length === 1);
   await pg.waitForTimeout(400);
   const t = await pg.evaluate(() => ({
     onglet: window.__totehm_boutique().higher.onglet,
+    pseudo: document.querySelector('#hb-nom').textContent.trim(),
+    dos: document.querySelector('#sl-name').textContent.trim(),
+    rien: !document.querySelector('#hb input'),
+    plein: (() => { const b = document.querySelector('#hb-bg').getBoundingClientRect();
+      return b.width >= innerWidth && b.height >= innerHeight; })(),
     rang: (() => { const b = [...document.querySelectorAll('#hb-tabs button')].map(e => Math.round(e.getBoundingClientRect().top));
       return b.every(y => y === b[0]); })(),
     cloth: document.querySelector('#hb-cloths .hb-row').textContent.replace(/\s+/g, ' ').trim(),
     luxVisible: document.querySelector('#hb-luxury').offsetParent !== null,
     coral: getComputedStyle(document.querySelector('#hb-cloths .hb-row b')).color }));
+  ok(t.pseudo === 'Vallerand' && t.dos === 'Vallerand' && t.rien && t.plein,
+    '27/10 · le tableau vient du Higher RETOURNÉ, en plein écran : il porte le PSEUDO, jamais une recherche ' + JSON.stringify({p:t.pseudo,d:t.dos,r:t.rien,pl:t.plein}));
   ok(t.onglet === 'cloths' && t.rang && /0\.Sea/.test(t.cloth) && /Higher Champion Sweatshirt · M · 2026-10-06/.test(t.cloth)
      && /shipped/.test(t.cloth) && /track it/.test(t.cloth) && !t.luxVisible && /251, 213, 202/.test(t.coral),
     '26/10 · onglet MY CLOTHS : les trois onglets sur UNE rangée, ma pièce, son vêtement, son état, son suivi — le nom en Coral');

@@ -73,9 +73,11 @@ body{display:flex;flex-direction:column;align-items:center;min-height:100vh;over
 .btn-back{font-family:'Space Mono',monospace;font-weight:400;font-size:13px;letter-spacing:0;color:#b0b0b0;background:none;cursor:pointer;border:none;padding:0 2px;line-height:1.4;-webkit-tap-highlight-color:transparent;transition:color .15s ease,background .15s ease}
 .btn-back:hover,.btn-back:active{color:#fff;background:var(--rep)}
 
-nav{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;max-width:540px}
+/* 27/10 (Wah) : « dans le menu central, je veux plus d'aération entre les
+   grandes parties ». Chaque bloc respire ; l'intérieur d'un bloc reste serré. */
+nav{display:flex;flex-direction:column;align-items:center;gap:30px;width:100%;max-width:540px}
 .menu-row{display:flex;flex-direction:column;align-items:center;gap:8px;width:100%}
-.menu-gap{width:100%;height:16px}
+.menu-gap{width:100%;height:4px}
 .line-input{font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;letter-spacing:0;color:#fff;background:#1f1f24;outline:none;border:6px solid transparent;border-image-source:none;border-image-slice:6 fill;border-image-repeat:round;padding:0 6px;text-align:center;caret-color:var(--coral);min-width:230px;border-radius:10px}
 .note{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;min-height:12px;text-align:center}
 .note.ok{color:#639922}.note.no{color:var(--rep)}.note.dim{color:var(--g-dark)}
@@ -135,26 +137,33 @@ nav{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;max
 
 @media(max-width:600px){.slogan{width:min(60vw,185px)}.tagline{font-size:12px}}
 
-/* 06/10 (ter) — Wah : « quand on appuie sur [Decode a Totehm Cloth], le survol
-   et le mode saisie en encadré box perforé bleu Navy ». Exception DEMANDÉE à
-   « aucun motif perforé comme fond de contrôle » : ce bouton-là et sa saisie
-   seuls. La tuile navy perforée (`--tile-btn`, 6 px, remplie) : une BOÎTE,
-   donc carrée. */
-#decode-btn{color:#fff;background:var(--navy);border:6px solid transparent;
-  border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round;border-radius:0}
-#decode-btn:hover,#decode-btn:focus-visible{color:#fff;outline:none}
-/* 26/10 (Wah) : « remets le bouton [Decode a Totehm Cloth] au format normal ».
-   La saisie n'est plus ici : elle vit DANS le Higher retourné (`#hb-q`). */
+/* 27/10 (Wah) : « le bouton [Decode a Totehm Cloth] au format NORMAL, comme ses
+   homologues ». Plus de boîte navy perforée : c'est un bouton comme [Create my
+   Totehm Streetwear Cloth]. Ce qu'il ouvre, lui, n'a rien d'ordinaire — il
+   RETOURNE le Higher, et le nom s'écrit au DOS. */
 
-/* ══ LE HIGHER SE RETOURNE (26/10) ══════════════════════════════════════
-   Wah : « quand tu cliques sur Decode a cloth, le Higher se retourne avec le
-   système de recherche mis directement dedans (avec le 0. sélectionné au
-   préalable) » · « l'utilisateur doit avoir accès au tableau de bord avec des
-   onglets appropriés à higher.boutique… EXACTEMENT le même fonctionnement que
-   totehm.com quand tu retournes le totehm ». Les blocs viennent de `#srch`
-   (com/totehm.html), COPIÉS — un produit indépendant n'importe rien. */
-.slogan{transform-origin:50% 50%;transition:transform .66s cubic-bezier(.22,.61,.36,1)}
+/* ══ LE HIGHER SE RETOURNE (27/10) ══════════════════════════════════════
+   Wah : « le [Higher] en haut se retourne et EN SON DOS on peut entrer le nom
+   du Totehm Cloth » · « le full screen concerne le DASHBOARD, et il provient du
+   [Higher] que l'utilisateur retourne » · « c'est une analogie avec les
+   animations du TOTEHM sur totehm.com ». Le Higher est donc à higher.boutique
+   ce que le papier est à totehm.com : UN objet, deux faces. Il se retourne SUR
+   PLACE pour écrire un nom ; il se retourne ET grandit pour ouvrir le tableau.
+   Les blocs du plein écran viennent de `#srch` (com/totehm.html), COPIÉS. */
+.slogan{position:relative;transform-style:preserve-3d;transform-origin:50% 50%;
+  transition:transform .66s cubic-bezier(.22,.61,.36,1);cursor:pointer}
+.slogan>*{backface-visibility:hidden;-webkit-backface-visibility:hidden}
 body.hb-on .slogan{transform:rotateY(180deg)}
+/* LE DOS : le navy perforé du TOTEHM, et dessus ce qu'on écrit. */
+#sl-back{position:absolute;inset:0;transform:rotateY(180deg);display:flex;align-items:center;justify-content:center;
+  background:var(--navy);border:5px solid transparent;border-image-source:var(--tile-btn);
+  border-image-slice:6 fill;border-image-repeat:round;padding:0 10px}
+#sl-name{font-family:'Quantico',sans-serif;font-weight:700;font-size:13px;letter-spacing:.02em;
+  color:var(--coral);text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;width:100%}
+#decode-q{width:100%;min-width:0;background:none;border:0;outline:none;padding:0;text-align:center;
+  font-family:'Quantico',sans-serif;font-weight:700;font-size:clamp(13px,4.6vw,17px);letter-spacing:.02em;
+  color:var(--coral);caret-color:var(--coral);text-transform:lowercase;-webkit-appearance:none;appearance:none}
+#decode-q::placeholder{color:rgba(251,213,202,.38);font-weight:400}
 #hb{position:fixed;inset:0;z-index:240;visibility:hidden;pointer-events:none}
 #hb.is-on{visibility:visible;pointer-events:auto}
 /* Le NAVY PERFORÉ qui grandit depuis le logo : le même papier, en grand. */
@@ -168,12 +177,12 @@ body.hb-on .slogan{transform:rotateY(180deg)}
   overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none}
 #hb-ui::-webkit-scrollbar{display:none}
 #hb.is-open #hb-ui{pointer-events:auto}
-/* LE NOM EST LA SAISIE : Quantico, Coral, au milieu, sans fond ni trait. */
-#hb-q{width:min(560px,100%);font-family:'Quantico',sans-serif;font-weight:400;
-  font-size:clamp(26px,7.5vw,40px);line-height:1.25;color:var(--coral);background:none;border:none;
-  outline:none;caret-color:var(--coral);text-align:center;padding:2px 0;border-radius:0;
-  text-transform:lowercase;-webkit-appearance:none;appearance:none}
-#hb-q::placeholder{color:rgba(251,213,202,.42)}
+/* 27/10 (Wah) : « le dashboard ne doit pas contenir la recherche Totehm mais le
+   PSEUDO de l'utilisateur, qui est le nom du Totehm ». Le nom en tête, comme le
+   verso de totehm.com porte le sien — et rien d'autre à écrire ici. */
+#hb-nom{width:min(560px,100%);font-family:'Quantico',sans-serif;font-weight:400;
+  font-size:clamp(26px,7.5vw,40px);line-height:1.25;color:var(--coral);text-align:center;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 /* Le NOM seul pendant le retournement ; tout le reste arrive ENSEMBLE, après. */
 .hb-after{opacity:0;visibility:hidden;transition:opacity .15s ease,visibility 0s linear .15s}
 #hb.is-pret .hb-after{opacity:1;visibility:visible;transition:opacity .3s ease}
@@ -260,7 +269,7 @@ body.hb-on .slogan{transform:rotateY(180deg)}
 .brand-names:hover,
 .brand-legal:hover,
 #sw-col-sold:hover,
-#hb-q:hover::placeholder,
+#decode-q:hover::placeholder,
 #conn-bar:hover,
 .mw-close:hover,
 .mw-input:hover::placeholder,
@@ -321,7 +330,18 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
 </svg>
 
 <section class="hero" id="hero">
-<div class="slogan"><svg viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></div>
+<!-- 27/10 (Wah) : LE HIGHER EST L'OBJET CENTRAL — comme le papier sur COM, il a
+     une face et un DOS. Un tap dessus le retourne ET l'agrandit : le tableau de
+     bord. [Decode] le retourne SUR PLACE : on écrit le nom à son dos. -->
+<div class="slogan" id="slogan" role="button" tabindex="0" aria-label="My Higher">
+  <svg viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-slogan"></use></svg>
+  <div id="sl-back" aria-hidden="true">
+    <span id="sl-name"></span>
+    <input id="decode-q" class="hide" maxlength="40" autocomplete="off" autocapitalize="off"
+           spellcheck="false" enterkeyhint="search" aria-label="Decode a Totehm Cloth" placeholder="0.name">
+  </div>
+</div>
+<div class="note dim" id="dc-note" role="status"></div>
 <div class="tagline">OWN/YOUR/TIME&nbsp;&nbsp;&nbsp;NOW:WON&nbsp;&nbsp;&nbsp;<span id="tag-loc">WRLD</span></div>
 
 
@@ -356,12 +376,6 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
       <div class="brand-legal">Independent. Not affiliated with these brands.</div>
     </div>
 
-    <div class="menu-row art-row">
-      <a class="btn-sig" data-space="/" href="https://www.totehm.space/">Digital art · SPACE</a>
-    </div>
-
-    <div class="menu-gap"></div>
-
     <div class="menu-row">
       <button class="btn-sig" id="email-btn">Email for dope news</button>
       <input class="line-input hide" id="email-input" type="email" maxlength="120" placeholder="your@email">
@@ -388,7 +402,8 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
   <video class="ctx-vid" id="ctx-vid" playsinline muted controls preload="none"></video>
   <!-- Dope branding : juste sous la vidéo -->
   <!-- 05/10 : le branding vit sur totehm.com — un lien, par le pont (arrive connecté). -->
-  <a class="btn-sig" id="brand-btn" href="https://www.totehm.com" data-com="/">Experience our dope branding</a>
+  <!-- 27/10 (Wah) : il renvoie DIRECTEMENT sur totehm.space (par le pont : on y arrive connecté). -->
+  <a class="btn-sig" id="brand-btn" href="https://www.totehm.space/" data-space="/">Experience our dope branding</a>
 </section>
 
 <!-- FULL-SCREEN : le Totehm Cloth décodé — l'élément en tête (08/10) -->
@@ -397,8 +412,7 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
 <div id="hb" role="dialog" aria-label="My Higher" aria-modal="true">
   <div id="hb-bg" aria-hidden="true"></div>
   <div id="hb-ui">
-    <input id="hb-q" maxlength="40" autocomplete="off" autocapitalize="off" spellcheck="false"
-           enterkeyhint="search" aria-label="Decode a Totehm Cloth" placeholder="0.name">
+    <div id="hb-nom" aria-live="polite"></div>
     <div class="note dim" id="hb-note" role="status"></div>
     <nav id="hb-tabs" class="hb-after" role="tablist" aria-label="My Higher">
       <button type="button" role="tab" data-hb-tab="cloths" class="is-on" aria-selected="true">My cloths</button>
@@ -587,7 +601,7 @@ async function loadArt(name,seq){
   }catch(e){console.error('[cloth-art]',e&&e.message||e);}
 }
 async function decode(v){
-  const note=$('hb-note');
+  const note=$(HB.mode==='board'?'hb-note':'dc-note');
   if(v.length<2){note.className='note dim';note.textContent='name of the cloth';return;}
   note.className='note dim';note.textContent='decoding…';
   const seq=++DECODE_SEQ;
@@ -626,28 +640,45 @@ async function loadShots(name,seq){
    qui se zoome avec du bleu navy full-screen ». Le logo tourne, le papier navy
    grandit depuis lui, la recherche est DEDANS — avec le « 0. » déjà posé, le
    curseur juste derrière — et le tableau de bord arrive ensuite, d'un bloc. */
-const HB={on:false,lu:false,seq:0};
+const HB={mode:null,seq:0,pseudo:''};
 function hbPrefix(){ const d=new Date(),y=d.getFullYear(),e=d.getMonth()>=5?y:y-1; return Math.max(e-2026,0)+'.'; }
-function hbOuvrir(){
-  if(HB.on)return; HB.on=true;
-  const r=$('hb'); document.body.classList.add('hb-on');
+/* 27/10 (Wah) : UN objet, deux gestes. [Decode] le retourne SUR PLACE et l'on
+   écrit au dos ; un tap sur le Higher le retourne ET l'agrandit — le tableau.
+   C'est l'analogie du papier de totehm.com, avec le Higher au centre. */
+function hbDos(mode){
+  if(HB.mode===mode)return;
+  HB.mode=mode; document.body.classList.add('hb-on');
+  const q=$('decode-q'), n=$('sl-name');
+  q.classList.toggle('hide',mode!=='q'); n.classList.toggle('hide',mode==='q');
+  if(mode==='q'){
+    q.value=hbPrefix(); $('dc-note').className='note dim'; $('dc-note').textContent='';
+    setTimeout(()=>{ try{ q.focus({preventScroll:true}); q.setSelectionRange(q.value.length,q.value.length); }catch(_){} },340);
+    return;
+  }
+  const r=$('hb');
   r.classList.add('is-on'); r.dataset.tab=r.dataset.tab||'cloths';
   /* Le papier est CARRÉ, comme le verso de totehm.com : ses perforations restent
      rondes, et il déborde de l'écran du même 1,2 — jamais étiré. */
   r.style.setProperty('--s',Math.ceil(Math.max(innerWidth,innerHeight)*1.2)+'px');
   requestAnimationFrame(()=>requestAnimationFrame(()=>r.classList.add('is-open')));
-  const q=$('hb-q'); q.value=hbPrefix();
-  setTimeout(()=>{ try{ q.focus({preventScroll:true}); q.setSelectionRange(q.value.length,q.value.length); }catch(_){}
-    r.classList.add('is-pret'); },340);
+  setTimeout(()=>{ if(HB.mode==='board')r.classList.add('is-pret'); },340);
   hbTableau();
 }
 function hbFermer(){
-  if(!HB.on)return; HB.on=false;
+  if(!HB.mode)return;
+  const plein=HB.mode==='board'; HB.mode=null;
   const r=$('hb'); r.classList.remove('is-open','is-pret'); document.body.classList.remove('hb-on');
-  $('hb-note').textContent='';
-  setTimeout(()=>{ if(!HB.on)r.classList.remove('is-on'); },660);
+  $('hb-note').textContent=''; $('dc-note').textContent='';
+  try{ $('decode-q').blur(); }catch(_){}
+  if(plein)setTimeout(()=>{ if(!HB.mode)r.classList.remove('is-on'); },660);
 }
-$('decode-btn').onclick=hbOuvrir;
+$('decode-btn').onclick=()=>{ HB.mode==='q'?hbFermer():hbDos('q'); };
+$('slogan').onclick=()=>{ HB.mode?hbFermer():hbDos('board'); };
+/* ⚠️ La saisie VIT DANS le Higher : sa touche Entrée remonterait jusqu'ici et
+   refermerait l'objet au moment même où l'on décode (mesuré). Le clavier du
+   Higher ne répond donc qu'à LUI. */
+$('slogan').addEventListener('keydown',e=>{ if(e.target!==$('slogan'))return;
+  if(e.key==='Enter'||e.key===' '){ e.preventDefault(); $('slogan').click(); } });
 $('hb-x').onclick=hbFermer;
 $('hb').addEventListener('click',e=>{
   const t=e.target.closest('#hb-tabs button[data-hb-tab]');
@@ -656,13 +687,15 @@ $('hb').addEventListener('click',e=>{
       b.classList.toggle('is-on',on); b.setAttribute('aria-selected',String(on)); });
     return; }
   const d=e.target.closest('[data-hb-decode]');
-  if(d){ $('hb-q').value=d.dataset.hbDecode; decode(d.dataset.hbDecode); return; }
+  if(d){ decode(d.dataset.hbDecode); return; }
   if(e.target.closest('[data-hb-connect]')){ ECO_AUTH.login(false,'/'); return; }
   if(e.target.closest('[data-hb-com]')){ ssoVersDomaine(sb,'com','https://www.totehm.com/totehm'); return; }
   if(e.target.closest('[data-hb-out]')){ sb.auth.signOut().then(()=>location.reload()); }
 });
-$('hb-q').addEventListener('keydown',e=>{ if(e.key==='Enter')decode($('hb-q').value.trim());
+$('decode-q').addEventListener('keydown',e=>{ e.stopPropagation();
+  if(e.key==='Enter')decode($('decode-q').value.trim());
   else if(e.key==='Escape'){ e.preventDefault(); hbFermer(); } });
+$('decode-q').addEventListener('click',e=>e.stopPropagation());
 /* MON TABLEAU : mes pièces, mes projets luxe, mon compte. Tout vient de la base
    (`my_boutique_board`, mes lignes seules) ; la page n'additionne rien. */
 const HB_ETAT={making:'in the making',production:'in production',shipped:'shipped',cancelled:'cancelled'};
@@ -676,6 +709,11 @@ async function hbTableau(){
   if(error){ console.error('[my_boutique_board]',error.message);
     $('hb-cloths').innerHTML=hbVide('unavailable, try again'); return; }
   const d=data||{};
+  /* 27/10 (Wah) : « le nom du Totehm doit être un pseudo » — c'est lui qu'on
+     lit en tête du tableau et au dos du Higher, jamais une recherche. */
+  HB.pseudo=String(d.pseudo||'').trim();
+  $('hb-nom').textContent=HB.pseudo||(d.signed_in?'my totehm':'');
+  $('sl-name').textContent=HB.pseudo||'my totehm';
   if(!d.signed_in){
     $('hb-cloths').innerHTML=hbConnect; $('hb-luxury').innerHTML=hbConnect;
     $('hb-account').innerHTML=hbConnect; return;
@@ -770,17 +808,17 @@ document.querySelectorAll('[data-club]').forEach(a => a.addEventListener('click'
 }));
 
 /* Diagnostic — des booléens, jamais une valeur de membre. */
-const BUILD='2026-10-26-higher';
+const BUILD='2026-10-27-dos';
 window.__totehm_boutique=()=>({ build:BUILD, page:'home', luxury_link:!!document.querySelector('a[href="/luxury"]'),
   club_links:document.querySelectorAll('[data-club]').length, logos:document.querySelectorAll('.brand-logo,img[src*="champion"]').length,
-  collab:/Champion 2026/.test(document.getElementById('collab')?.textContent||''), branding_com:document.getElementById('brand-btn')?.dataset.com==='/',
+  collab:/Champion 2026/.test(document.getElementById('collab')?.textContent||''), branding_space:document.getElementById('brand-btn')?.dataset.space==='/',
   decode_first:(()=>{const m=document.getElementById('menu-main');return !!m&&m.firstElementChild?.contains(document.getElementById('decode-btn'));})(),
   member_window:!!document.getElementById('member-window'), connect:document.getElementById('conn-bar')?.dataset.in||'0',
   higher:{ouvert:HB.on, onglet:document.getElementById('hb').dataset.tab||null, pret:document.getElementById('hb').classList.contains('is-pret')},
   decode:DECODED?{found:!!DECODED.found,level:DECODED.level||null,art:!!DECODED.art,stage:DECODED.stage||null,shots:DECODED.shots||0}:null });
 /* 08/10 — `/?decode=0.nom` ouvre directement la page du Cloth (lien de la fin de commande, partage). */
 { const q=(new URLSearchParams(location.search).get('decode')||'').trim();
-  if(q){ hbOuvrir(); $('hb-q').value=q; decode(q); } }
+  if(q){ hbDos('q'); $('decode-q').value=q; decode(q); } }
 
 /* ══ LE COIN MEMBRE — UNE SEULE PORTE : TOTEHM.COM ══════════════════════
    23/10 : l'email OTP local est retiré. Il ouvrait une session qui n'était
