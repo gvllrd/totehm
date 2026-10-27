@@ -121,7 +121,8 @@ try{
  /* ── 1 bis · LOT S (22/10) : la manette est un MANCHE, et elle répond pendant le repli du TOTEHM ──
     Wah : « quand on ouvre le Totehm et qu'on referme, les mouvements joystick ne fonctionnent plus » (mesuré avant : un
     geste à 200, 600 ou 1 000 ms après la croix était perdu) · « tous les mouvements sont inversés, réfléchis en joystick ». */
- for(const delai of [200,1000]){
+ /* 27/10 : le repli dure 0,15 + 0,72 s ; 650 ms tombe en plein retour du papier (1 000 ms tombait avant le 27/10). */
+ for(const delai of [200,650]){
   const{pg,ctx,log}=await page(browser,{dir:'com',origin,tables,rpc:{my_landing:LAND},viewport:{width:1280,height:800}});
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1200);
   const tire=async(dx,dy)=>{const r=await pg.$eval('#lvj-box',e=>{const b=e.getBoundingClientRect();return {x:b.left+b.width/2,y:b.top+b.height/2};});

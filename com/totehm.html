@@ -3042,7 +3042,11 @@ body:not(.gate) #lv,body.entered #lv,body.is-door #lv{display:none}
    disparaît d'un coup ; au retour il ne revient qu'une fois le papier posé (fin de `folding`), en fondu — jamais par-dessus
    le papier encore grand. Les traits et la boîte (`#lv-ram`, `#lv-proc`) sont hors de `#lv` : ils rentrent avec lui. */
 body.folding #lv{opacity:0}
-#lv{transition:opacity .35s ease}
+#lv{transition:opacity .28s ease}
+/* 27/10 (Wah : « beaucoup de latence quand je ferme le totehm … beaucoup plus de fluidité, en particulier sur mobile ») :
+   le repli garde la chorégraphie du déploiement à l'envers, mais plus vif — 0,72 s au lieu de 1,05 s (`DUR_REPLI`). */
+body.folding{--gate-dur:.72s}
+body.folding #gate{transition:opacity .15s ease}   /* le portail revient en 150 ms (`FONDU`) */
 .lv-pane{position:absolute;inset:0;opacity:0;visibility:hidden;
   transition:opacity .4s ease,transform .55s var(--gate-ease),visibility 0s linear .55s}
 #lv-h{transform:translateY(-22px)}#lv-b{transform:translateY(22px)}
@@ -11610,8 +11614,8 @@ window.addEventListener('pageshow',e=>{
 
     /* ⚠️ 23/10 — LE DÉPLOIEMENT À L'ENVERS, JUSQU'AU FONDU : à l'ouverture, le portail (le papier déployé, vide, couleur de
        l'app) s'efface sur le TOTEHM ouvert (`gate-off`). Au repli, il revient INVISIBLE, en fondu par-dessus le contenu
-       (FONDU), PUIS le papier rentre. Avant, le contenu disparaissait d'un coup. FONDU + DUR + 120 < 1,5 s (`guetter`). */
-    const FONDU=260;
+       (FONDU), PUIS le papier rentre. Avant, le contenu disparaissait d'un coup. FONDU + DUR_REPLI + 80 < 1,5 s (`guetter`). */
+    const FONDU=150, DUR_REPLI=720;   /* 27/10 : 260 → 150 ms de fondu, 1 050 → 720 ms de retour (mesuré trop lent au téléphone) */
     gate.classList.add('no-anim');        /* 1. rien ne bouge              */
     gate.classList.add('gate-off');       /*    le portail, invisible      */
     body.classList.add('gate','folding'); /* 2. le gate au repos,          */
@@ -11637,7 +11641,7 @@ window.addEventListener('pageshow',e=>{
       /* ⚠️ 20/10 sexies — REPLIER LE TOTEHM D'UN MEMBRE, C'EST RETOMBER DANS SON ÉCOSYSTÈME (Wah : « on retombe dans
          l'écosystème, mais cette fois ce n'est plus le nôtre »). On ne le quitte que par MINE (ou « back to mine »). */
       if(roSortir){ roSortir=false; LV.choisirMode('mine'); }
-    },DUR+120);
+    },DUR_REPLI+80);
     },FONDU);
   }
 
