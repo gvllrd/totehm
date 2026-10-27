@@ -1,7 +1,7 @@
 // 26/10/2026 — LA VISIBILITÉ PAR BOX (Wah : « il faut que chaque box ait un niveau de visibilité : private / my subscribers
-// (binaire) »). Dans MON Totehm déployé, chaque box OUVERTE porte une pastille : PRIVATE (le cadenas) ou MY SUBSCRIBERS
-// (l'étoile) ; un tap bascule, le serveur écrit (`box_audience_set` : habitude = son texte, le reste = son id), un refus
-// remet l'ancien niveau. En lecture (le Totehm d'un autre, `totehm_read`), aucune pastille. Les cinq vues, téléphone et
+// (binaire) »). Dans MON Totehm déployé, chaque box OUVERTE porte une ligne de mots DANS sa grammaire (27/10 : « pas un gros
+// bouton noir qui fait tache ») : PRIVATE · VISIBLE TO MY SUBSCRIBERS, l'option vraie en blanc ; un tap sur l'autre, le serveur
+// écrit (`box_audience_set` : habitude = son texte, le reste = son id), un refus remet l'ancien niveau. En lecture (le Totehm d'un autre, `totehm_read`), aucune pastille. Les cinq vues, téléphone et
 // ordinateur. Tout est simulé (comptes, RPC) : aucune écriture en production. LANCER : node com_visibilite.mjs /tmp
 import {launch,page,ok} from './harness.mjs';
 const OUT=process.argv[2]||'/tmp';const browser=await launch();const origin='https://www.totehm.com';
@@ -16,14 +16,19 @@ const MES={my_landing:{signed_in:true,pseudo:'wahigher'},
   /* le serveur refuse la vision (un refus doit remettre l'ancien niveau) */
   box_audience_set:b=>b.p_kind==='v'?{ok:false,why:'not_mine'}:{ok:true,kind:b.p_kind,audience:b.p_audience,totehm:'subscribers'}};
 /* vue, touches pour y aller depuis la précédente, niveau lu, ce qui part au serveur au tap, niveau après */
-const TOUR=[['habits',[],'my subscribers',{p_kind:'h',p_id:'Run the hill',p_audience:'private'},'private'],
-  ['objectives',['ArrowUp'],'my subscribers',{p_kind:'t',p_id:'o1',p_audience:'private'},'private'],
-  ['repulsions',['ArrowDown','ArrowDown'],'private',{p_kind:'r',p_id:'r1',p_audience:'subscribers'},'my subscribers'],
-  ['wisdom',['ArrowUp','ArrowLeft'],'private',{p_kind:'w',p_id:'w1',p_audience:'subscribers'},'my subscribers'],
+const VIS='visible to my subscribers';
+const TOUR=[['habits',[],VIS,{p_kind:'h',p_id:'Run the hill',p_audience:'private'},'private'],
+  ['objectives',['ArrowUp'],VIS,{p_kind:'t',p_id:'o1',p_audience:'private'},'private'],
+  ['repulsions',['ArrowDown','ArrowDown'],'private',{p_kind:'r',p_id:'r1',p_audience:'subscribers'},VIS],
+  ['wisdom',['ArrowUp','ArrowLeft'],'private',{p_kind:'w',p_id:'w1',p_audience:'subscribers'},VIS],
   ['visions',['ArrowRight','ArrowRight'],'private',{p_kind:'v',p_id:'v1',p_audience:'subscribers'},'private']];
+/* la ligne : ses deux options, celle qui est vraie (`mot`), son style (aucun fond, ni bord : la grammaire de la box) */
 const pastille=pg=>pg.evaluate(()=>{const b=document.querySelector('#habits .habit.open .baud');if(!b) return null;
-  b.scrollIntoView({block:'center'});const r=b.getBoundingClientRect(),t=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);
-  return {mot:b.textContent.trim(),pressee:b.getAttribute('aria-pressed'),icone:!!b.querySelector('svg'),libre:t===b||b.contains(t),vue:(window.__totehm_zone||{}).vue};});
+  b.scrollIntoView({block:'center'});const on=b.querySelector('.baud-o.is-on'), r=on.getBoundingClientRect(),t=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);
+  const cs=getComputedStyle(on), off=b.querySelector('.baud-o:not(.is-on)');
+  return {mot:on.textContent.trim(),options:[...b.querySelectorAll('.baud-o')].map(e=>e.textContent.trim()).join('|'),
+    vraie:on.getAttribute('aria-checked'),fond:cs.backgroundColor,bord:cs.borderTopStyle,police:cs.fontFamily,
+    pale:off?getComputedStyle(off).color:'',libre:t===on||on.contains(t),vue:(window.__totehm_zone||{}).vue};});
 try{
  for(const [nom,vp] of [['téléphone',{width:390,height:844}],['ordinateur',{width:1280,height:800}]]){
   {const {pg,log}=await page(browser,{dir:'com',origin,viewport:vp,hasTouch:nom==='téléphone',rpc:MES,
@@ -35,10 +40,12 @@ try{
     for(const k of touches){ await pg.keyboard.press(k); await pg.waitForTimeout(700); }
     await pg.$eval('#habits .v-col[data-open]',e=>e.click());await pg.waitForTimeout(450);
     const a=await pastille(pg);
-    ok(a&&a.vue===vue&&a.mot===avant&&a.pressee===String(avant!=='private')&&a.icone&&a.libre,
-       nom+' · '+vue+' : la box ouverte porte sa pastille « '+(a&&a.mot)+' », visible, rien dessus');
+    ok(a&&a.vue===vue&&a.mot===avant&&a.vraie==='true'&&a.options==='private|'+VIS&&a.fond==='rgba(0, 0, 0, 0)'&&a.bord==='none'&&/Space Mono/.test(a.police)&&a.libre,
+       nom+' · '+vue+' : la box ouverte dit qui la voit, dans SA grammaire (ni fond ni bord) : « '+(a&&a.options)+' », vraie = « '+(a&&a.mot)+' »');
     const n0=log.rpc.filter(x=>x.name==='box_audience_set').length;
-    await pg.$eval('#habits .habit.open .baud',e=>e.click());await pg.waitForTimeout(400);
+    await pg.$eval('#habits .habit.open .baud .baud-o.is-on',e=>e.click());await pg.waitForTimeout(300);
+    ok(log.rpc.filter(x=>x.name==='box_audience_set').length===n0,nom+' · '+vue+' : un tap sur l\'option déjà vraie n\'écrit rien');
+    await pg.$eval('#habits .habit.open .baud .baud-o:not(.is-on)',e=>e.click());await pg.waitForTimeout(400);
     const b=await pastille(pg), envoye=log.rpc.filter(x=>x.name==='box_audience_set').slice(n0);
     ok(b&&b.mot===apres&&envoye.length===1&&JSON.stringify(envoye[0].body)===JSON.stringify(envoi),
        nom+' · '+vue+' : un tap → '+JSON.stringify(envoye.map(x=>x.body))+(envoi.p_kind==='v'?' ; refusé, l\'ancien niveau revient':'')+' → « '+(b&&b.mot)+' »');

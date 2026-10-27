@@ -1255,14 +1255,16 @@ body.v-visions{--paper:#2b3a73}
   transition:background .15s,color .15s}
 .btn:hover{background:#34343c;color:#fff}
 .btn.g{border-color:rgba(255,255,255,.28);color:rgba(255,255,255,.5)}
-/* 26/10 — la visibilité d'une box : PRIVATE (le cadenas) ou MY SUBSCRIBERS (l'étoile), un tap bascule */
-.baud{display:inline-flex;align-items:center;gap:7px;align-self:flex-start;margin:10px 0 2px;border:0;border-radius:10px;padding:8px 11px;
-  background:#1f1f24;color:#b8b8c2;font:700 9.5px/1 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;
-  transition:color .2s ease,box-shadow .2s ease}
-.baud svg{width:12px;height:12px;flex:none}
-.baud.is-subscribers{color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.5)}
-.baud[disabled]{opacity:.6;cursor:progress}
-@media(hover:hover){.baud:hover{color:#fff}}
+/* 27/10 — la visibilité d'une box, DANS sa grammaire (Wah : « pas un gros bouton noir qui fait tache ») : une ligne de
+   mots, comme les étiquettes de la box — PRIVATE · VISIBLE TO MY SUBSCRIBERS, l'option vraie en blanc, un tap sur l'autre */
+.baud{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 7px;align-self:flex-start;margin:10px 0 2px}
+.baud-o{background:none;border:0;padding:2px 0;cursor:pointer;font:700 8.5px/1.3 'Space Mono',monospace;letter-spacing:.2em;
+  text-transform:uppercase;color:rgba(255,255,255,.4);transition:color .2s ease}
+.baud-o.is-on{color:#fff;cursor:default}
+.baud-o[disabled]{cursor:progress}
+.baud-o:focus-visible{outline:1px solid #fff;outline-offset:2px}
+.baud-s{font:700 8.5px/1 'Space Mono',monospace;color:rgba(255,255,255,.3)}
+@media(hover:hover){.baud-o:not(.is-on):hover{color:rgba(255,255,255,.75)}}
 .btn.g:hover{background:none;border-color:#fff;color:#fff}
 .dash{width:100%;background:none;border:1px dashed rgba(255,255,255,.28);
   color:rgba(255,255,255,.6);cursor:pointer;padding:6px;margin-bottom:7px;
@@ -8535,15 +8537,13 @@ async function copierBox(btn,k){
    Lu une fois avec mon arbre (`my_box_audiences`) ; une box neuve naît PRIVATE. Habitude = son texte, le reste = son id. */
 const AUDB=(()=>{
   let M=null, seq=0; const diagA={lectures:0, bascules:0, erreurs:0};
-  const ICO={private:'<svg viewBox="0 0 12 12" aria-hidden="true"><rect x="2.5" y="5.5" width="7" height="5" rx="1" fill="currentColor"/><path d="M4 5.5V4a2 2 0 0 1 4 0v1.5" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>',
-    subscribers:'<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 1.2l1.4 3 3.3.4-2.4 2.3.6 3.3L6 8.6 3.1 10.2l.6-3.3L1.3 4.6l3.3-.4z" fill="currentColor"/></svg>'};
-  const MOTS={private:'private', subscribers:'my subscribers'};
+  const MOTS={private:'private', subscribers:'visible to my subscribers'};
   const cle=(k,id)=>{ if(k==='h'){ const h=habOf(id); return h?String(h.t||'').trim():''; } return String(id||''); };
   const reel=id=>!!id&&!/^tmp/.test(String(id));
   const niveau=(k,id)=>{ const a=M&&M[k]?M[k][cle(k,id)]:null; return a&&a!=='private'?'subscribers':'private'; };
-  const dedans=a=>ICO[a]+'<span>'+MOTS[a]+'</span>';
-  function peindreB(b){ const d=b.dataset.baud, i=d.indexOf(':'), a=niveau(d.slice(0,i),d.slice(i+1));
-    b.className='baud is-'+a; b.setAttribute('aria-pressed',String(a==='subscribers')); b.innerHTML=dedans(a); }
+  /* chaque option porte `data-baud` (la box) et `data-v` (son niveau) : elle s'allume si c'est le niveau de la box */
+  function peindreB(b){ const d=b.dataset.baud, i=d.indexOf(':'), on=niveau(d.slice(0,i),d.slice(i+1))===b.dataset.v;
+    b.classList.toggle('is-on',on); b.setAttribute('aria-checked',String(on)); }
   async function charger(){
     if(!me||RO) return; const s0=++seq, uid=me.id;
     const {data,error}=await sb.rpc('my_box_audiences');
@@ -8554,22 +8554,25 @@ const AUDB=(()=>{
   }
   function html(o){
     if(RO||!me||!o.ouverte||!reel(o.id)||!cle(o.kind,o.id)) return '';
-    const a=niveau(o.kind,o.id);
-    return '<button type="button" class="baud is-'+a+'" data-baud="'+o.kind+':'+esc(String(o.id))+'" aria-pressed="'+(a==='subscribers')+'"'
-      +' aria-label="Who sees it">'+dedans(a)+'</button>';
+    const a=niveau(o.kind,o.id), d=o.kind+':'+esc(String(o.id));
+    return '<span class="baud" role="radiogroup" aria-label="Who sees it">'
+      +['private','subscribers'].map(v=>'<button type="button" role="radio" class="baud-o'+(a===v?' is-on':'')+'" data-baud="'+d+'" data-v="'+v+'"'
+        +' aria-checked="'+(a===v)+'">'+MOTS[v]+'</button>').join('<span class="baud-s" aria-hidden="true">·</span>')+'</span>';
   }
   async function basculer(b){
     if(b.disabled||RO||!me) return;
     const d=b.dataset.baud, i=d.indexOf(':'), k=d.slice(0,i), id=d.slice(i+1), c=cle(k,id); if(!c) return;
-    const apres=niveau(k,id)==='private'?'subscribers':'private', s0=seq, uid=me.id;
+    const apres=b.dataset.v==='subscribers'?'subscribers':'private', s0=seq, uid=me.id;
+    if(niveau(k,id)===apres) return;                          /* l'option déjà vraie : rien à écrire */
+    const opts=[...(b.closest('.baud')||b.parentNode).querySelectorAll('[data-baud]')];
     M=M||{h:{},t:{},r:{},w:{},v:{}}; M[k]=M[k]||{}; const avant=M[k][c];
-    M[k][c]=apres; peindreB(b); b.disabled=true; diagA.bascules++;
+    M[k][c]=apres; opts.forEach(x=>{ peindreB(x); x.disabled=true; }); diagA.bascules++;
     const {data,error}=await sb.rpc('box_audience_set',{p_kind:k, p_id:c, p_audience:apres});
-    b.disabled=false;
+    opts.forEach(x=>{ x.disabled=false; });
     if(s0!==seq||(me?me.id:null)!==uid) return;              /* réponse tardive d'une autre session : jetée */
     if(error||!data||!data.ok){ if(error) console.error('[box_audience_set]',error.message); diagA.erreurs++;
-      M[k][c]=avant; peindreB(b); return; }
-    M[k][c]=data.audience; peindreB(b);
+      M[k][c]=avant; opts.forEach(peindreB); return; }
+    M[k][c]=data.audience; opts.forEach(peindreB);
   }
   return {charger, html, basculer, vider(){ seq++; M=null; }, etat:()=>Object.assign({lu:!!M},diagA)};
 })();
