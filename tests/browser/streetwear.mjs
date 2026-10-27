@@ -53,6 +53,9 @@ const descendre = async (pg, s) => {
   await pg.evaluate(x => document.querySelector('.stage[data-s="' + x + '"]').scrollIntoView({ block:'start' }), s);
   await pg.waitForFunction(x => window.__totehm_cloth().stage === x, s, { timeout:5000 });
 };
+/* 27/10 — remonter est le MÊME geste : le doigt. Le « back » du navigateur,
+   lui, quitte /streetwear, comme sur n'importe quelle page. */
+const monter = descendre;
 const browser = await launch();
 const { pg, ctx, log } = await page(browser, { dir:'boutique', origin:'https://www.higher.boutique', rpc, tables, network });
 let body = null;
@@ -65,7 +68,7 @@ await pg.waitForTimeout(80);
 
 // ── 1 · CLOTH (téléphone)
 let d = await D();
-ok(d.build === '2026-10-26-rouleau' && d.stage === 'cloth' && !d.papers && !d.desktop, 'phone: CLOTH first, the TOTEHM still folded');
+ok(d.build === '2026-10-27-fluide' && d.stage === 'cloth' && !d.papers && !d.desktop, 'phone: CLOTH first, the TOTEHM still folded');
 const rest = await pg.evaluate(() => { const b = document.querySelector('#cl-facts .left b'), s = getComputedStyle(b);
   const g = document.querySelector('#cl-facts .bar i'), bar = document.querySelector('#cl-facts .bar');
   return { n: b.textContent.trim(), px: Math.round(parseFloat(s.fontSize)), col: s.color, fam: s.fontFamily,
@@ -137,14 +140,23 @@ await pg.click('.pap-v');
 await pg.waitForFunction(() => window.__totehm_cloth().view === 'visions');
 ok(/A studio by the sea/.test(await pg.textContent('#el-list')), 'VISION is wearable too');
 // 26/10 — REMONTER, c'est juste remonter : le TOTEHM reste ouvert plus bas, tel qu'on l'a laissé.
-await pg.goBack();
-await pg.waitForFunction(() => window.__totehm_cloth().stage === 'cloth');
+await monter(pg, 'cloth');
 await pg.waitForTimeout(400);
 const remonte = await pg.evaluate(() => { const r = document.getElementById('stages'), c = document.getElementById('s-cloth'), e = document.getElementById('s-element');
   return { haut: Math.abs(r.scrollTop - c.offsetTop) < 3, dessous: e.offsetTop > c.offsetTop && e.classList.contains('is-open'),
     hint: +getComputedStyle(c.querySelector('.sc-hint')).opacity, vue: window.__totehm_cloth().view }; });
-ok(remonte.haut && remonte.dessous && remonte.hint === 1 && remonte.vue === 'visions',
+ok(remonte.haut && remonte.dessous && remonte.hint > 0 && remonte.vue === 'visions',
   '26/10 · remonter au vêtement ne défait rien : le TOTEHM attend dessous, sur sa vue, et l\'invitation à descendre est là ' + JSON.stringify(remonte));
+// 27/10 — LE ROULEAU EST UNE PAGE : descendre et remonter n'empile RIEN. Avant,
+// chaque écran traversé poussait une entrée (4 → 11 mesurées) et le « back »,
+// depuis le haut, REDESCENDAIT dans le flux.
+const hist = await pg.evaluate(() => history.length);
+await descendre(pg, 'element');
+await monter(pg, 'cloth');
+await descendre(pg, 'element');
+await monter(pg, 'cloth');
+ok((await pg.evaluate(() => history.length)) === hist && (await D()).stage === 'cloth',
+  '27/10 · le rouleau ne touche pas à l\'historique : deux allers-retours, ' + hist + ' entrées avant comme après');
 await pg.click('#cl-go');
 await pg.waitForFunction(() => window.__totehm_cloth().papers);
 await pg.click('.pap-s');
@@ -175,13 +187,17 @@ ok(sub.on && sub.press === 'true' && !/brightness\(0\.34\)/.test(sub.f) && sub.w
 // Les PHOTOS de la box : les medias (perforés) et les spots, éteints eux aussi.
 await pg.waitForSelector('#shots .sh-t');
 const ph = await pg.evaluate(() => { const l = [...document.querySelectorAll('#shots .sh-t')];
-  const m = l[0], im = m.querySelector('img'), g = getComputedStyle(document.getElementById('shots'));
+  const m = l[0], im = m.querySelector('img'), gEl = document.getElementById('shots'), g = getComputedStyle(gEl);
+  const bx = document.querySelector('#el-list .bx');
   return { n: l.length, m: m.classList.contains('m'), s: l[1].classList.contains('s'), on: l.some(x => x.classList.contains('is-on')),
     perfo: /svg/.test(getComputedStyle(im).maskImage + getComputedStyle(im).webkitMaskImage), cols: g.gridTemplateColumns.split(' ').length,
     carre: Math.abs(m.getBoundingClientRect().width - m.getBoundingClientRect().height) < 2,
-    f: getComputedStyle(m).filter, lieu: (l[1].querySelector('b') || {}).textContent || '' }; });
-ok(ph.n === 2 && ph.m && ph.s && !ph.on && ph.perfo && ph.cols === 3 && ph.carre && /brightness\(0\.34\)/.test(ph.f) && ph.lieu === 'the hill',
-  '26/10 · sous la box, ses PHOTOS : le media perforé et le spot avec son lieu, trois par ligne, toutes éteintes ' + JSON.stringify(ph));
+    f: getComputedStyle(m).filter, lieu: (l[1].querySelector('b') || {}).textContent || '',
+    dehors: !bx.contains(gEl), dessous: gEl.getBoundingClientRect().top >= bx.getBoundingClientRect().bottom - 1,
+    rond: getComputedStyle(l[1]).borderTopLeftRadius }; });
+ok(ph.n === 2 && ph.m && ph.s && !ph.on && ph.perfo && ph.cols === 3 && ph.carre && /brightness\(0\.34\)/.test(ph.f)
+   && ph.dehors && ph.dessous && ph.rond !== '0px' && !ph.lieu,
+  '27/10 · les photos SORTENT de la box et se posent dessous : media perforé, spot aux coins arrondis, l\'image seule ' + JSON.stringify(ph));
 await pg.click('#shots .sh-t[data-id="sp1"]');
 await pg.waitForFunction(() => window.__totehm_cloth().shots === 1);
 await pg.waitForTimeout(260);
@@ -193,8 +209,7 @@ await pg.screenshot({ path: OUT + '/sw_element.png' });
 await descendre(pg, 'name');
 d = await D();
 ok(d.stage === 'name' && d.element === 'wisdom' && d.print === 1, 'NAME: the element is kept (wisdom); the print-zone photo is loaded apart');
-await pg.goBack();
-await pg.waitForFunction(() => window.__totehm_cloth().stage === 'element');
+await monter(pg, 'element');
 await pg.waitForTimeout(200);
 ok((await pg.$eval('#el-list .bx', e => e.classList.contains('is-on'))) && (await pg.$eval('#s-name', e => e.classList.contains('is-open'))),
   'back on the TOTEHM: the chosen box is still lit and the NAME still waits below');
@@ -255,9 +270,26 @@ const rouleau = await pg.evaluate(() => { const r = document.getElementById('sta
   return { n: l.length, ids: l.map(e => e.id).join(','), snap: st.scrollSnapType, over: st.overflowY,
     plein: l.every(e => e.getBoundingClientRect().height >= innerHeight - 1),
     haut: Math.abs(r.scrollTop - o.offsetTop) < 3, align: getComputedStyle(o).scrollSnapAlign }; });
-ok(rouleau.n === 5 && rouleau.ids === 's-cloth,s-element,s-name,s-style,s-order' && /y mandatory/.test(rouleau.snap)
+ok(rouleau.n === 5 && rouleau.ids === 's-cloth,s-element,s-name,s-style,s-order' && /^y( proximity)?$/.test(rouleau.snap)
    && rouleau.over === 'auto' && rouleau.plein && rouleau.haut && rouleau.align === 'start',
   '26/10 · un seul rouleau : les cinq étapes méritées, chacune un plein écran aimanté, et ORDER sous les yeux ' + JSON.stringify(rouleau));
+// 27/10 — L'AIMANT NE DOIT PAS ENFERMER. Une étape plus haute qu'un écran (une
+// vue de huit box fait 917 px sur 844) doit pouvoir se LIRE jusqu'en bas :
+// `mandatory` repoussait le doigt vers le haut de l'étape et son bas devenait
+// inatteignable. On étire une étape et on vérifie qu'on tient son bas.
+const tenu = await pg.evaluate(async () => {
+  const r = document.getElementById('stages'), e = document.getElementById('s-order');
+  const bourre = document.createElement('div'); bourre.style.height = '420px'; bourre.id = 'bourre';
+  e.appendChild(bourre);
+  await new Promise(f => requestAnimationFrame(() => requestAnimationFrame(f)));
+  const bas = e.offsetTop + e.offsetHeight - r.clientHeight;
+  r.scrollTop = bas;
+  await new Promise(f => setTimeout(f, 700));
+  const out = { voulu: Math.round(bas), tenu: Math.round(r.scrollTop), etape: e.offsetHeight, ecran: r.clientHeight };
+  bourre.remove(); return out;
+});
+ok(tenu.etape > tenu.ecran + 4 && Math.abs(tenu.tenu - tenu.voulu) < 4,
+  '27/10 · une étape plus haute qu\'un écran se lit jusqu\'en bas — l\'aimant ne la repousse plus ' + JSON.stringify(tenu));
 // Remonter d'un écran, c'est le doigt — pas le « back » du navigateur.
 await pg.evaluate(() => document.getElementById('s-style').scrollIntoView({ block:'start' }));
 await pg.waitForFunction(() => window.__totehm_cloth().stage === 'style');
@@ -344,11 +376,9 @@ ok(!log.errors.length, 'phone: no page error: ' + log.errors.join(' | '));
   await pg.click('#cl-go');
   await pg.waitForFunction(() => window.__totehm_cloth().stage === 'name');
   ok(/Slow is smooth/.test(await pg.textContent('#el-list')) && /my wisdom story/i.test(await pg.textContent('#el-sub')), 'TOTEHMIZE goes straight to NAME, the element above it');
-  await pg.goBack();
-  await pg.waitForFunction(() => window.__totehm_cloth().stage === 'element');
-  ok((await pg.evaluate(() => window.__totehm_cloth().view)) === 'wisdom', 'Back: ELEMENT, on MY STORY (the element can still change)');
-  await pg.goForward();
-  await pg.waitForFunction(() => window.__totehm_cloth().stage === 'name');
+  await monter(pg, 'element');
+  ok((await pg.evaluate(() => window.__totehm_cloth().view)) === 'wisdom', 'remonter : ELEMENT, sur MY STORY (l\'élément peut encore changer)');
+  await descendre(pg, 'name');
   await pg.fill('#nm-input', 'sea');
   await pg.waitForFunction(() => /available/.test(document.querySelector('#nm-note').textContent));
   await pg.press('#nm-input', 'Enter');

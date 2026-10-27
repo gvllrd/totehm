@@ -91,27 +91,36 @@ a{color:inherit;text-decoration:none}
    celle d'après n'existe pas tant qu'elle n'est pas méritée. On DESCEND, on ne
    clique plus. Une étape qui déborde (la liste des box, ses photos) s'étire :
    elle garde son aimant en haut, et le rouleau reste le seul qui défile — deux
-   défilements imbriqués et le doigt ne sait plus lequel il tient. */
-#stages{position:fixed;inset:0;overflow-y:auto;overflow-x:hidden;scroll-behavior:smooth;
-  scroll-snap-type:y mandatory;overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch}
-.stage{position:relative;min-height:100dvh;display:none;flex-direction:column;align-items:center;justify-content:safe center;gap:12px;
+   défilements imbriqués et le doigt ne sait plus lequel il tient.
+   ⚠️ L'AIMANT EST DE PROXIMITÉ, jamais `mandatory` (27/10, mesuré : une vue de
+   huit box fait 917 px sur un écran de 844 — avec un aimant obligatoire, le
+   navigateur REFUSE de s'arrêter au milieu d'une étape plus haute qu'un écran
+   et son bas devient illisible ; c'était le « ça bug de ouf » de Wah). Pas de
+   `scroll-behavior:smooth` ici non plus : il se battait avec l'aimant à chaque
+   geste — c'est `aller()` qui choisit, geste par geste. */
+#stages{position:fixed;inset:0;overflow-y:auto;overflow-x:hidden;
+  scroll-snap-type:y proximity;overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch}
+/* ⚠️ `svh`, PAS `dvh` (27/10) : `dvh` suit la barre d'adresse, qui se replie à
+   chaque geste — un rouleau aimanté dont toutes les étapes changent de hauteur
+   PENDANT le défilement tremble et saute. `svh` ne bouge jamais. */
+.stage{position:relative;min-height:100svh;display:none;flex-direction:column;align-items:center;justify-content:safe center;gap:12px;
   padding:calc(var(--st) + 54px) 16px calc(28px + var(--sb));scroll-snap-align:start;
   opacity:0;transition:opacity .4s ease}
 .stage>*{width:100%;max-width:430px;flex:0 0 auto}
 .stage.is-open{display:flex}
 .stage.is-in{opacity:1}
 .inner{width:100%;display:flex;flex-direction:column;align-items:center;gap:12px}
-/* L'INVITATION À DESCENDRE : elle n'apparaît que lorsqu'il Y A quelque chose
-   dessous. Un état permanent, donc une transition — jamais une boucle. */
-.sc-hint{display:flex;flex-direction:column;align-items:center;gap:3px;margin-top:4px;
-  font-family:var(--mono);font-size:8.5px;letter-spacing:.24em;text-transform:uppercase;
-  color:rgba(255,255,255,.5);opacity:0;pointer-events:none;transition:opacity .45s ease}
-.stage.has-next .sc-hint{opacity:1}
-.sc-hint svg{width:14px;height:9px;fill:none;stroke:currentColor;stroke-width:1.6}
+/* 27/10 (Wah) : « pas besoin de mettre SCROLL, le curseur suffit et il doit se
+   positionner tout en bas ». Un chevron, rien d'autre, collé au bas de l'écran
+   — il ne paraît que lorsqu'il Y A quelque chose dessous. */
+.sc-hint{position:absolute;left:50%;bottom:calc(10px + var(--sb));transform:translateX(-50%);
+  width:16px;height:10px;opacity:0;pointer-events:none;transition:opacity .45s ease}
+.stage.has-next .sc-hint{opacity:.55}
+.sc-hint svg{width:16px;height:10px;display:block;fill:none;stroke:#fff;stroke-width:1.6}
 @media(prefers-reduced-motion:reduce){#stages{scroll-behavior:auto}.stage,.sc-hint{transition:none}}
 
 /* 1 · CLOTH — le vêtement au centre ; ← → les modèles, ↑ ↓ ses vues */
-#viewer{position:relative;width:100%;height:clamp(200px,calc(100dvh - 400px),560px);overflow:hidden;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none;background:#050506}
+#viewer{position:relative;width:100%;height:clamp(200px,calc(100svh - 400px),560px);overflow:hidden;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none;background:#050506}
 #viewer.is-drag{cursor:grabbing}
 #vw-track{position:absolute;inset:0;transition:transform .44s var(--ease)}
 .model{position:absolute;top:0;width:100%;height:100%;overflow:hidden}
@@ -181,21 +190,21 @@ button.mi{cursor:pointer;-webkit-tap-highlight-color:transparent;filter:brightne
 button.mi.is-on{filter:none}
 @media(hover:hover){button.mi:hover{filter:brightness(.6) saturate(.8)}button.mi.is-on:hover{filter:brightness(1.15)}}
 #matter .hint{margin-top:2px;opacity:.75}
-/* LES PHOTOS DE LA BOX (26/10) — ses medias, et les spots qu'on y a vécus. La
-   grille de la vue de gauche de totehm.com, COPIÉE : trois par ligne, carrées,
-   l'image telle qu'elle. Un media porte la perforation du TOTEHM ; un spot
-   garde son coin net et dit son lieu. Éteinte : sombre, comme une mini-box. */
-#shots{width:100%;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:3px;margin-top:9px}
+/* LES PHOTOS DE LA BOX (27/10, Wah) — elles SORTENT de la box et se posent
+   dessous, jamais dedans : la box reste une box. Trois par ligne, carrées,
+   l'image seule — un media porte la perforation du TOTEHM (la grille de la vue
+   de gauche de COM), un spot ses coins arrondis (la vue de droite). Éteinte :
+   sombre, comme une mini-box. */
+#shots{width:100%;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:3px;margin-top:6px}
+#shots:empty{display:none}
 .sh-t{position:relative;aspect-ratio:1;background:#0b0b0d;border:0;padding:0;cursor:pointer;overflow:hidden;
   -webkit-tap-highlight-color:transparent;filter:brightness(.34) saturate(.5);transition:filter .18s ease}
+.sh-t.s{border-radius:10px}
 .sh-t.is-on{filter:none}
 @media(hover:hover){.sh-t:hover{filter:brightness(.6) saturate(.8)}.sh-t.is-on:hover{filter:brightness(1.1)}}
 .sh-t img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .3s ease}
 .sh-t img[src]{opacity:1}
 .sh-t.m img{-webkit-mask-image:var(--perfo);mask-image:var(--perfo);-webkit-mask-size:100% 100%;mask-size:100% 100%}
-.sh-t b{position:absolute;left:4px;right:4px;bottom:4px;font-family:var(--mono);font-weight:400;font-size:8px;
-  letter-spacing:.14em;text-transform:uppercase;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.9);
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:left}
 .mi.o{background:var(--blue)}.mi.r{background:var(--rep)}.mi.w{background:#5b2652}.mi.v{background:#2b3a73}
 .mi.s{background:rgba(0,0,0,.35);font-family:var(--mono);font-size:10px}
 .pal{display:flex;gap:4px}.pal i{width:18px;height:18px;display:block}
@@ -298,11 +307,15 @@ button.mi.is-on{filter:none}
 .pals{display:flex;gap:4px;justify-content:center}.pals i{width:12px;height:12px;display:block}
 /* LE NOM — dans la BOÎTE NAVY PERFORÉE, comme le Decode de l'accueil, et c'est
    un IDENTIFIANT : minuscules, sans espace, petit. Le « 0. » est au serveur. */
-#nm-field{display:flex;align-items:baseline;justify-content:center;gap:1px;background:var(--navy);
-  border:7px solid transparent;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round;
-  border-radius:0;padding:9px 12px;width:100%;max-width:300px;cursor:text}
-#nm-prefix{font-family:var(--q);font-size:15px;color:var(--coral);opacity:.6;user-select:none;flex:0 0 auto}
-#nm-input{font-family:var(--q);font-size:15px;letter-spacing:.02em;color:var(--coral);background:none;border:none;outline:none;
+/* 27/10 (Wah) : « le nom du Totehm qui commence par 0. doit s'inscrire dans le
+   format LE DOS DU HIGHER ». Mêmes mesures que `#sl-back` de l'accueil : la
+   boîte navy perforée de 200 px, bord 5, Quantico Coral. */
+#nm-field{display:flex;align-items:center;justify-content:center;gap:1px;background:var(--navy);
+  border:5px solid transparent;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round;
+  border-radius:0;padding:0 10px;width:min(200px,70vw);height:62px;cursor:text}
+#nm-prefix{font-family:var(--q);font-weight:700;font-size:clamp(13px,4.6vw,17px);color:var(--coral);opacity:.6;user-select:none;flex:0 0 auto}
+#nm-input{font-family:var(--q);font-weight:700;font-size:clamp(13px,4.6vw,17px);letter-spacing:.02em;color:var(--coral);
+  background:none;border:none;outline:none;text-align:center;
   caret-color:var(--coral);width:100%;min-width:0;padding:1px 0;text-transform:lowercase}
 #nm-input::placeholder{color:rgba(251,213,202,.3);text-transform:lowercase}
 
@@ -501,7 +514,7 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
       <!-- Le SEUL bouton qui reste avant la commande : il ne fait pas « suivant »,
            il OUVRE (il connecte, il vérifie le passeport). Le reste se descend. -->
       <button class="btn cta" id="cl-go" type="button">Totehmize it</button>
-      <div class="sc-hint" aria-hidden="true"><svg viewBox="0 0 14 9"><path d="M1 1 L7 7 L13 1"/></svg>scroll</div>
+      <div class="sc-hint" aria-hidden="true"><svg viewBox="0 0 16 10"><path d="M2 2 L8 8 L14 2"/></svg></div>
     </div>
   </section>
 
@@ -529,9 +542,14 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
       <div id="el-sub"></div>
     </div>
     <div id="el-list"></div>
-    <!-- 26/10 : plus de bouton. La box tapée est choisie ; ses mini-boxes et ses
-         photos s'allument ici, tranquillement, et le nom attend plus bas. -->
-    <div class="sc-hint" aria-hidden="true"><svg viewBox="0 0 14 9"><path d="M1 1 L7 7 L13 1"/></svg>scroll</div>
+    <!-- 27/10 (Wah) : « toutes les images doivent SORTIR de la box et se mettre
+         en dessous d'elle ». Elles vivent donc ici, dans l'étape, jamais dans
+         la box : media perforé (grille de gauche de COM) ou spot aux coins
+         arrondis (vue de droite). L'image seule, rien d'écrit dessus. -->
+    <div id="shots"></div>
+    <!-- Plus de bouton. La box tapée est choisie ; ses mini-boxes et ses photos
+         s'allument tranquillement, et le nom attend plus bas. -->
+    <div class="sc-hint" aria-hidden="true"><svg viewBox="0 0 16 10"><path d="M2 2 L8 8 L14 2"/></svg></div>
   </section>
 
   <!-- 3 · NAME -->
@@ -539,7 +557,7 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
     <div class="inner">
       <label id="nm-field"><span id="nm-prefix">0.</span><input id="nm-input" maxlength="40" placeholder="name" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="text" enterkeyhint="next" aria-label="The name of the cloth"></label>
       <div class="note dim" id="nm-note"></div>
-      <div class="sc-hint" aria-hidden="true"><svg viewBox="0 0 14 9"><path d="M1 1 L7 7 L13 1"/></svg>scroll</div>
+      <div class="sc-hint" aria-hidden="true"><svg viewBox="0 0 16 10"><path d="M2 2 L8 8 L14 2"/></svg></div>
     </div>
   </section>
 
@@ -549,7 +567,7 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
       <div class="kicker">The style of the moment</div>
       <div id="st-rail" class="pieces" role="listbox" aria-label="Curated styles"></div>
       <div class="say">Curated. The artwork is born after payment and stays a surprise until it lands.</div>
-      <div class="sc-hint" aria-hidden="true"><svg viewBox="0 0 14 9"><path d="M1 1 L7 7 L13 1"/></svg>scroll</div>
+      <div class="sc-hint" aria-hidden="true"><svg viewBox="0 0 16 10"><path d="M2 2 L8 8 L14 2"/></svg></div>
     </div>
   </section>
 
@@ -719,7 +737,7 @@ sb.auth.onAuthStateChange(ev => {
 }
 
 /* ══ L'ÉTAT — une pièce en cours, cinq scènes ═════════════════════════ */
-const BUILD='2026-10-26-rouleau';
+const BUILD='2026-10-27-fluide';
 const STAGES=['cloth','element','name','style','order'];
 const SIZES=['XS','S','M','L','XL','2XL','3XL','4XL','5XL'];
 const FLOW_KEY='totehm_cloth_flow';
@@ -731,7 +749,7 @@ let OPEN=null,ORDERING=false,GOING=false;
 const PRINT={};   /* les photos de la zone d'impression, par vêtement */
 /* L'historique est une pile LINÉAIRE des scènes (cloth → … → order) : le bouton
    Back, la barre des étapes et le geste « retour » du téléphone disent la même chose. */
-let HIST=[],READY=false,SWAPPING=false;
+let READY=false,SWAPPING=false;
 const desktop=()=>matchMedia('(min-width:900px)').matches;
 /* La place libre (ordinateur) : la fenêtre-côté ouverte, et le vêtement qui se décale. */
 
@@ -783,7 +801,8 @@ function ouvrir(){
     const ok=fini?(x==='done'):(x!=='done'&&canShow(x));
     el.classList.toggle('is-open',ok);
     el.inert=!ok; el.setAttribute('aria-hidden',String(!ok));
-    if(ok){ requestAnimationFrame(()=>el.classList.add('is-in')); if(!VUS.has(x)){VUS.add(x);entrer(x);} }
+    if(ok){ if(!el.classList.contains('is-in'))requestAnimationFrame(()=>el.classList.add('is-in'));
+            if(!VUS.has(x)){VUS.add(x);entrer(x);} }
     else { el.classList.remove('is-in','has-next'); VUS.delete(x); }
   });
   /* L'invitation à descendre ne paraît que s'il y a VRAIMENT quelque chose dessous. */
@@ -798,61 +817,69 @@ function entrer(x){
   if(x==='style')enterStyle();
   if(x==='order')enterOrder();
 }
-/* Ce qui arrive sous les yeux DEVIENT l'étape courante — et le « back » du
-   navigateur remonte le rouleau d'un écran, comme le doigt. Un défilement que la
-   page a COMMANDÉ (un saut, un retour) ne s'empile pas : sinon il se pousserait
-   lui-même et le « back » ferait la course avec lui. */
-let PROG=false,progT=null;
+/* Ce qui arrive sous les yeux DEVIENT l'étape courante.
+   ⚠️ LE ROULEAU NE TOUCHE PAS À L'HISTORIQUE (27/10, mesuré : il s'empilait à
+   CHAQUE écran traversé, dans les deux sens — descendre puis remonter faisait
+   passer l'historique de 4 à 11 entrées, et le « back » du navigateur, depuis
+   le haut, REDESCENDAIT dans le flux). Le rouleau est UNE page : une seule
+   entrée, remplacée, pour qu'un rechargement retombe sur la bonne étape. Ce qui
+   remonte le rouleau, c'est le doigt ou Échap (`back()`) ; le « back » du
+   navigateur quitte /streetwear, comme sur n'importe quelle page. */
 function poser(x){
   if(x===stage)return;
   stage=x; document.body.dataset.stage=x;
-  if(x==='style')enterStyle();
+  /* Le récapitulatif dépend de ce qui a été choisi PLUS HAUT : il se refait à
+     chaque passage. Le rail des styles, lui, ne dépend de rien : le refaire
+     effaçait le rail sous le doigt. */
   if(x==='order')enterOrder();
-  if(PROG){ history.replaceState({s:x},''); HIST[Math.max(0,HIST.length-1)]=x; }
-  else { history.pushState({s:x},''); HIST.push(x); }
+  history.replaceState({s:x},'');
   if(x==='done')clearFlow(); else save();
 }
 function aller(x,doux){
   const el=document.querySelector('.stage[data-s="'+x+'"]');
   if(!el||!el.classList.contains('is-open'))return;
-  PROG=true; clearTimeout(progT); progT=setTimeout(()=>{PROG=false;},doux&&!RMQ.matches?900:150);
   if(doux&&!RMQ.matches){ el.scrollIntoView({behavior:'smooth',block:'start'}); return; }
-  const r=sc(); r.style.scrollBehavior='auto'; r.scrollTop=el.offsetTop; r.style.scrollBehavior='';
+  sc().scrollTop=el.offsetTop;
 }
-let scRaf=0;
-function auxYeux(){
-  const r=sc(), m=r.scrollTop+r.clientHeight*0.4;
-  for(const el of document.querySelectorAll('.stage.is-open'))
-    if(el.offsetTop<=m&&el.offsetTop+el.offsetHeight>m){ poser(el.dataset.s); return; }
+/* QUI EST SOUS LES YEUX — le navigateur le dit lui-même. Avant (27/10), on
+   mesurait les cinq étapes à chaque image du défilement : cinq calculs de mise
+   en page par image, et le rouleau accrochait. Une bande d'un pour cent à 40 %
+   de la fenêtre : une seule étape la traverse, et c'est elle. */
+let OBS=null;
+function regarder(){
+  if(OBS)OBS.disconnect();
+  OBS=new IntersectionObserver(es=>{
+    for(const e of es)
+      if(e.isIntersecting&&e.target.classList.contains('is-open')){poser(e.target.dataset.s);return;}
+  },{root:sc(),rootMargin:'-40% 0px -59% 0px',threshold:0});
+  STAGES.forEach(x=>{const el=document.querySelector('.stage[data-s="'+x+'"]');if(el)OBS.observe(el);});
 }
-sc().addEventListener('scroll',()=>{ if(scRaf)return;
-  scRaf=requestAnimationFrame(()=>{ scRaf=0; auxYeux(); }); },{passive:true});
-function show(s,mode='push'){
+regarder();
+/* `doux` = on y glisse ; sinon on y est déjà (démarrage, reprise). */
+function show(s,mode='doux'){
   if(!canShow(s))s='cloth';
   stage=s;document.body.dataset.stage=s;
   ouvrir();
   const doux=mode!=='none'&&!document.body.classList.contains('is-boot');
   requestAnimationFrame(()=>aller(s,doux));
-  if(mode==='push'){history.pushState({s},'');HIST.push(s);}
-  else if(mode==='replace'){history.replaceState({s},'');HIST[Math.max(0,HIST.length-1)]=s;}
+  history.replaceState({s},'');
   if(document.body.classList.contains('is-boot'))requestAnimationFrame(()=>requestAnimationFrame(()=>document.body.classList.remove('is-boot')));
   if(s==='done')clearFlow();else save();
 }
 /* Une étape de plus est MÉRITÉE : elle paraît dessous, et l'invitation avec.
    On n'y descend pas à la place du membre — il choisit encore ses mini-boxes. */
 function offrir(){ ouvrir(); }
-function goBackTo(s){
-  const i=HIST.lastIndexOf(s);
-  if(i>=0&&i<HIST.length-1)history.go(i-(HIST.length-1));else show(s,'replace');
-}
+/* REMONTER le rouleau — le serveur refuse un nom, une taille : on ramène le
+   membre à l'écran qui le concerne. Un glissement, pas un voyage. */
+function goBackTo(s){ show(s); }
+/* Un retour par le cache du navigateur rend l'étape où on était. */
 window.addEventListener('popstate',e=>{
-  const s=e.state?.s||'cloth',i=HIST.lastIndexOf(s);
-  if(i>=0)HIST.length=i+1;else HIST.push(s);
-  if(s!==stage)show(s,'none');
+  const s=e.state?.s;
+  if(s&&s!==stage)show(s,'none');
 });
 function back(){
   if(stage==='cloth'||stage==='done'){location.href='/';return;}
-  goBackTo(STAGES[STAGES.indexOf(stage)-1]||'cloth');
+  show(STAGES[STAGES.indexOf(stage)-1]||'cloth');
 }
 
 /* ══ 1 · CLOTH — le vêtement au centre ═══════════════════════════════ */
@@ -993,7 +1020,7 @@ sb.auth.onAuthStateChange(()=>{setTimeout(async()=>{
   const{data:{session}}=await sb.auth.getSession();const was=me?.id||null;me=session?.user||null;
   if((me?.id||null)===was)return;
   await loadProfile();TOT=null;loadTest();
-  if(!me&&stage!=='cloth'&&stage!=='done')show('cloth','replace');
+  if(!me&&stage!=='cloth'&&stage!=='done')show('cloth');
 },0);});
 
 /* ══ TOTEHMIZE — la porte du Totehm : connexion, nom, passeport ══════ */
@@ -1023,7 +1050,7 @@ async function toElement(){
        TOTEHM s'ouvre sans rien de choisi, et c'est Wah qui tape. */
     if(!applyWant()&&F.el)vue=F.el.view;else if(!F.el)vue=null;
     openTz();renderEl();
-    if(F.el){history.pushState({s:'element'},'');HIST.push('element');show('name');}else show('element');
+    show(F.el?'name':'element');
   }finally{GOING=false;$('totehmize').classList.remove('is-busy');paintCloth();}
 }
 $('pass-x').onclick=()=>$('pass').classList.remove('is-open');
@@ -1068,7 +1095,7 @@ function applyWant(){
 }
 async function arrive(want){
   clearFlow();F.want=want;F.el=null;
-  show('cloth','replace');
+  show('cloth');
   if(me&&myProfile){if(!TOT)await loadTotehm();applyWant();paintCloth();save();}
 }
 async function loadTotehm(){
@@ -1098,7 +1125,7 @@ function paintSeam(l){
   $('tz-seam').innerHTML=Object.keys(INTS).map(i=>'<i style="--c:'+icol(i)+'"'+(on.has(i)?' class="is-on"':'')+'></i>').join('');
 }
 function renderEl(dir){
-  OPEN=null;MT_SEQ++;$('s-element').classList.remove('is-picked');
+  OPEN=null;MT_SEQ++;$('shots').innerHTML='';$('s-element').classList.remove('is-picked');
   const head=$('el-head'),list=$('el-list');
   if(GRIND.includes(vue))head.classList.add('is-grind');
   $('tz-papers').querySelectorAll('[data-v]').forEach(b=>b.classList.toggle('is-here',b.dataset.v===vue));
@@ -1204,7 +1231,7 @@ async function openEl(b){
   /* La box PRESQUE ENTIÈRE (24/10) : ce qui lui est relié, en mini-boxes, et le
      SON de son intention (`intention_music`). Toujours ni palette ni rythme. */
   const son=m.extra&&m.extra.mood?'<div class="grp"><span class="w">sound</span><span class="mi s">'+esc(m.extra.mood)+'</span></div>':'';
-  c.innerHTML=groups+son+'<div id="shots"></div>'+(groups?'<div class="mono hint">tap what goes into the artwork</div>':'');
+  c.innerHTML=groups+son+(groups?'<div class="mono hint">tap what goes into the artwork</div>':'');
   c.addEventListener('click',e=>{
     const q=e.target.closest('.mi[data-k]');
     if(q){
@@ -1213,14 +1240,6 @@ async function openEl(b){
       F.pick.matter=F.pick.matter.filter(h=>!(h.kind===k&&h.text===x));
       if(on)F.pick.matter.push({kind:k,text:x});
       save();return;
-    }
-    const t=e.target.closest('.sh-t[data-id]');
-    if(t){
-      const id=t.dataset.id,on=!t.classList.contains('is-on');
-      t.classList.toggle('is-on',on);t.setAttribute('aria-pressed',String(on));
-      F.pick.shots=F.pick.shots.filter(x=>x!==id);
-      if(on)F.pick.shots.push(id);
-      save();
     }
   });
   OPEN={b,o,m};
@@ -1236,24 +1255,32 @@ async function openEl(b){
 async function peindrePhotos(seq,kind,ref){
   const g=$('shots');if(!g)return;
   const{data,error}=await sb.rpc('my_box_shots',{p_kind:kind,p_ref:ref});
-  if(seq!==MT_SEQ||!$('shots'))return;
+  if(seq!==MT_SEQ)return;
   if(error){console.error('[my_box_shots]',error.message);return;}
   const l=(Array.isArray(data)?data:[]).slice(0,24);
-  if(!l.length)return;
-  $('shots').innerHTML=l.map(x=>
+  g.innerHTML=l.map(x=>
     '<button type="button" class="sh-t '+(x.kind==='media'?'m':'s')+(photoAllumee(String(x.id))?' is-on':'')
     +'" data-id="'+esc(String(x.id))+'" aria-pressed="'+photoAllumee(String(x.id))+'"'
     +' aria-label="'+esc((x.kind==='media'?'photo · ':'spot · ')+(x.txt||''))+'">'
-    +'<img alt="" data-p="'+esc(String(x.path||''))+'" data-b="'+esc(String(x.bucket||''))+'">'
-    +(x.kind==='spot'?'<b>'+esc(String(x.txt||''))+'</b>':'')+'</button>').join('');
+    +'<img alt="" data-p="'+esc(String(x.path||''))+'" data-b="'+esc(String(x.bucket||''))+'"></button>').join('');
+  offrir();
   /* Une URL signée par image, en parallèle ; une réponse tardive n'écrase rien
      (la grille a pu changer de box entre-temps). */
-  $('shots').querySelectorAll('img[data-p]').forEach(async im=>{
+  g.querySelectorAll('img[data-p]').forEach(async im=>{
     const{data:u,error:er}=await sb.storage.from(im.dataset.b).createSignedUrl(im.dataset.p,3600);
     if(er){console.error('[shot url]',er.message);return;}
     if(seq===MT_SEQ&&im.isConnected&&u?.signedUrl)im.src=u.signedUrl;
   });
 }
+/* Le tap d'une photo vit AVEC la grille, pas avec la box. */
+$('shots').addEventListener('click',e=>{
+  const t=e.target.closest('.sh-t[data-id]');if(!t)return;
+  const id=t.dataset.id,on=!t.classList.contains('is-on');
+  t.classList.toggle('is-on',on);t.setAttribute('aria-pressed',String(on));
+  F.pick.shots=F.pick.shots.filter(x=>x!==id);
+  if(on)F.pick.shots.push(id);
+  save();
+});
 $('el-list').addEventListener('click',e=>{
   /* La matière (et son bouton) garde ses propres gestes. */
   if(e.target.closest('#matter'))return;
@@ -1285,7 +1312,10 @@ function enterName(){
   if($('nm-input').value!==F.nameRaw)$('nm-input').value=F.nameRaw;
   if(F.nameRaw&&!F.nameOk)checkNow();
   else if(!F.nameRaw)note('nm-note','dim','');
-  setTimeout(()=>{if(stage==='name')$('nm-input').focus({preventScroll:true});},380);
+  /* ⚠️ JAMAIS de focus automatique ici (27/10) : le clavier du téléphone
+     rétrécit la fenêtre, `100dvh` change, toutes les étapes du rouleau se
+     déplacent SOUS LE DOIGT — on traversait cet écran et on se retrouvait
+     ailleurs. C'est le membre qui tape dans le champ. */
 }
 async function checkName(raw){
   const{data,error}=await sb.rpc('name_available',{candidate:epochPrefix()+raw});
@@ -1418,22 +1448,21 @@ $('dn-again').onclick=()=>{location.href='/streetwear';};
 await loadSupports();
 async function restore(fl,cancelled){
   const i=supports.findIndex(s=>String(s.id)===String(fl.sid));
-  if(i<0){show('cloth','replace');return;}
+  if(i<0){show('cloth');return;}
   ci=i;ai=Math.max(0,Math.min(Number(fl.ai)||0,imgs(supports[i]).length-1));ANG[ci]=ai;placeViewer();paintCloth();
   F.support=supports[i];F.nameRaw=String(fl.nm||'');F.size=String(fl.sz||'');F.el=fl.el&&!!VUE_DE[fl.el.kind]?fl.el:null;
   F.pick={matter:Array.isArray(fl.pk?.matter)?fl.pk.matter.filter(h=>h&&typeof h.kind==='string'&&typeof h.text==='string').slice(0,60):[],
           shots:Array.isArray(fl.pk?.shots)?fl.pk.shots.map(String).slice(0,24):[]};
   F.want=fl.wt&&!!VUE_DE[fl.wt.kind]?{kind:fl.wt.kind,ref:String(fl.wt.ref)}:null;
   const target=cancelled?'order':(fl.s||'cloth');
-  if(target==='cloth'||target==='done'||!me){show('cloth','replace');return;}
-  if(!myProfile){show('cloth','replace');return;}
-  if(!await ensureTotehm()){show('cloth','replace');return;}
+  if(target==='cloth'||target==='done'||!me){show('cloth');return;}
+  if(!myProfile){show('cloth');return;}
+  if(!await ensureTotehm()){show('cloth');return;}
   const wanted=applyWant();
   if(!wanted&&F.el)vue=F.el.view;else if(!F.el)vue=null;
   openTz();renderEl();
-  /* La pile reconstruite, une scène après l'autre : Back redescend pas à pas. */
-  const pile=s=>{history.replaceState({s:'cloth'},'');HIST=['cloth'];
-    for(const st of STAGES.slice(1,STAGES.indexOf(s)+1)){history.pushState({s:st},'');HIST.push(st);}show(s,'none');};
+  /* Le rouleau rouvre à l'étape où on l'avait laissé, sans animation. */
+  const pile=s=>show(s,'none');
   if((target==='element'&&!wanted)||!F.el){pile('element');return;}
   if(F.nameRaw){const free=await checkName(F.nameRaw);F.nameOk=free===true;}
   if(fl.st){await loadStyles();F.style=styles.find(s=>String(s.id)===String(fl.st)&&styleLeft(s)>0)||null;}
@@ -1449,14 +1478,14 @@ async function showDone(id){
   if(id&&me){const{data,error}=await sb.from('totehm_clothes').select('name').eq('id',id).maybeSingle();if(error)console.error('[paid]',error.message);label=data?.name||'';}
   $('dn-name').textContent=label||'Your Totehm Cloth';
   $('dn-decode').href=label?'/?decode='+encodeURIComponent(label):'/';$('dn-decode').classList.toggle('hide',!label);
-  show('done','replace');
+  show('done');
 }
 {
   const P=new URLSearchParams(location.search);
   if(P.get('paid'))await showDone(P.get('cloth'));
   else{
     const fl=readFlow(),want=parseWear(P.get('wear'));
-    if(want)await arrive(want);else if(fl)await restore(fl,P.get('cancel')==='1');else show('cloth','replace');
+    if(want)await arrive(want);else if(fl)await restore(fl,P.get('cancel')==='1');else show('cloth');
     if(P.has('cancel')||P.has('wear'))history.replaceState(history.state,'','/streetwear');
   }
   READY=true;
