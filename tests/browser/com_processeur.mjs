@@ -114,9 +114,9 @@ try{
     for(let i=1;i<=6;i++){await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:x0+(x1-x0)*i/6,y:y0+(y1-y0)*i/6}]});await pg.waitForTimeout(16);}
     await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await calme(pg);await pg.waitForTimeout(500);return (await lv(pg)).vue;};
   const s=[await glisse(40,780,40,640),await glisse(40,640,40,780),await glisse(40,640,40,780),await glisse(40,780,40,640),
-    await glisse(330,560,200,560),await glisse(200,560,330,560),await glisse(200,560,330,560),await glisse(330,560,200,560)];
-  /* 20/10 sexies — sur la CARTE, le doigt fait tourner la Terre : l'horizontale s'éteint dans CETTE vue (la règle de la
-     galaxie d'hier) ; le chevron, la manette et le trackpad ramènent au centre. */
+    await glisse(330,560,200,560),await glisse(200,560,330,560),await glisse(200,560,330,560),await glisse(260,400,130,400)];
+  /* 20/10 sexies — sur la CARTE, le doigt POSÉ SUR la Terre la fait tourner (27/10 : seulement sur elle ; ailleurs il
+     navigue, `com_prise_spot`) ; le chevron, la manette et le trackpad ramènent au centre. */
   ok(s.join(',')==='h,c,b,c,g,c,d,d','22/10 · le doigt est un manche : haut → Get Higher, bas → la Reflection, gauche → mes shorts, droite → les spots ; sur la Terre, il la tourne : '+s.join(','));
   await pg.click('#lvn-lf');await vers(pg,'c');ok((await lv(pg)).vue==='c','le chevron ← ramène au centre');
   ok(!erreurs(log).length,'doigt : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
