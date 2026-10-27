@@ -3869,12 +3869,9 @@ body.lv-g #lv-socket,body.lv-d #lv-socket{opacity:0}
   display:flex;align-items:center;justify-content:center}
 .lsh-tp span{font:700 14px/1 'Space Mono',monospace;color:#fff;letter-spacing:0}
 .lsh-tp.is-on{box-shadow:0 0 0 2px rgba(255,255,255,.8)}
-/* Le nom de la Box choisie, à côté du papier : une ligne, jamais deux. */
 /* ⚠️ LE BOUTON N'EST PAS LE PANNEAU : deux objets, deux classes. `.lsh-sf` (le panneau) prenait
    `inset:0` au bouton — mesuré, il faisait 390 px de large et passait SOUS le papier. */
 .lsh-fb{flex:none}
-.lsh-bx{pointer-events:none;max-width:38vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
-  font:400 12px/1.3 'Quantico',sans-serif;color:var(--coral)}
 /* LE PANNEAU : plein écran, ancré EN HAUT (le clavier mobile mange le bas), champ noir. */
 .lsh-sf{position:absolute;inset:0;z-index:8;background:rgba(0,0,0,.94);
   display:flex;flex-direction:column;align-items:center;gap:9px;
@@ -5749,17 +5746,19 @@ const POSTER=(()=>{
    le serveur AVANT la pagination, ancré sur `as_of` (une page 2 ne glisse pas quand quelqu'un publie).
    Un seul objet nourrit la carte, la grille ET le polaroid : changer de mode ne redemande rien.
    ⚠️ « Mes spots » n'est pas un filtre serveur : c'est un tri sur ce qui est déjà là (`mine`). */
+/* mon nom (le pseudo de MON Totehm) : la vue de droite lit MES spots à ce nom */
+const monPseudo=()=>((me&&myProfile&&myProfile.pseudo)||'').trim();
 const CLUBSP=(()=>{
   const PER=['past','now','future'];
   const st={per:'now', items:[], total:0, more:false, off:0, asOf:null, seq:0, charge:false, lu:false, auto:true,
-            err:'', pos:null, at:0, mine:false, srv:{intentions:[], type:'all', scope:'world', habit:''}};
+            err:'', pos:null, at:0, aud:'', srv:{intentions:[], type:'all', scope:'world', habit:'', rayon:50}};
   const abon=[];
   const prevenir=()=>abon.forEach(f=>{ try{ f(); }catch(e){ console.error('[clubsp]',e&&e.message||e); } });
   function filtres(){
     const f={};
     if(st.srv.intentions.length) f.intentions=st.srv.intentions.slice();
     if(st.srv.type!=='all') f.type=st.srv.type;
-    if(st.srv.scope==='near'&&st.pos) f.scope='near';
+    if(st.srv.scope==='near'&&st.pos){ f.scope='near'; f.radius_km=st.srv.rayon||50; }
     if(st.srv.habit) f.habit=st.srv.habit;
     return f;
   }
@@ -5770,11 +5769,14 @@ const CLUBSP=(()=>{
     const args={p_period:st.per, p_filters:f,
       p_lat:f.scope==='near'?st.pos.lat:null, p_lng:f.scope==='near'?st.pos.lng:null,
       p_limit:20, p_offset:suite?st.off:0, p_as_of:suite?st.asOf:null};
-    /* 20/10 sexies — DANS L'ÉCOSYSTÈME D'UN MEMBRE, SES spots seulement (`club_spots_of`, les mêmes droits, filtrés par auteur). */
-    const {data,error}=ro?await sb.rpc('club_spots_of',Object.assign({p_pseudo:ro},args)):await sb.rpc('club_spots',args);
+    /* 20/10 sexies — DANS L'ÉCOSYSTÈME D'UN MEMBRE, SES spots seulement (`club_spots_of`, les mêmes droits, filtrés par auteur).
+       27/10 (Wah : « surtout pas everyone : totehm.com, c'est l'écosystème TOTEHM de l'utilisateur ; c'est sur figher.club que
+       l'on trouve les spots rendus visibles ») : chez MOI aussi, MES spots seuls — `club_spots_of` à mon nom. */
+    const qui=ro||monPseudo();
+    const {data,error}=qui?await sb.rpc('club_spots_of',Object.assign({p_pseudo:qui},args)):await sb.rpc('club_spots',args);
     if(s!==st.seq||(me?me.id:null)!==uid||RO!==ro) return;
     st.charge=false;
-    if(error){ console.error(ro?'[club_spots_of]':'[club_spots]',error.message); st.err='unreachable'; prevenir(); return; }
+    if(error){ console.error(qui?'[club_spots_of]':'[club_spots]',error.message); st.err='unreachable'; prevenir(); return; }
     if(!data||!data.ok){ st.err=(data&&data.why)||'refused'; if(!suite){ st.items=[]; st.total=0; st.more=false; } prevenir(); return; }
     const l=Array.isArray(data.items)?data.items:[];
     /* RIEN MAINTENANT ? À l'ARRIVÉE seulement, on montre ce qui vient, puis ce qui a été : une vue vide
@@ -5797,8 +5799,8 @@ const CLUBSP=(()=>{
         ()=>ok(false), {timeout:8000,maximumAge:600000});
     });
   }
-  /* Les trois temps, dans les mots du spot (Wah, 20/10 sexies) : I WAS HERE · I AM HERE · I WILL BE THERE. */
-  const NOMS={past:'I was here',now:'I am here',future:'I will be there'};
+  /* Les trois temps (27/10, Wah : « dans le WHEN, on doit avoir : 1. Now | 2. Past | 3. Future »). */
+  const NOMS={now:'now',past:'past',future:'future'}, ORDRE=['now','past','future'];
   return {
     lire:()=>{ st.asOf=null; return lire(false); },
     /* À l'ouverture : on relit si la lecture a plus d'une minute (un spot commence, un autre finit). */
@@ -5806,15 +5808,20 @@ const CLUBSP=(()=>{
     suite:()=>lire(true),
     periode(p){ if(!PER.includes(p)) return; st.auto=false; if(p===st.per) return;
       st.per=p; st.items=[]; st.total=0; st.more=false; st.asOf=null; prevenir(); lire(false); },
+    /* « near me » : la position est demandée À CE GESTE, puis les spots dans le rayon choisi (serveur, `radius_km`). */
     async regler(o){
+      st.err='';
       if(o.scope==='near'&&!(await position())){ st.err='location'; o.scope='world'; }
-      st.srv={intentions:o.intentions||[], type:o.type||'all', scope:o.scope||'world', habit:o.habit||''};
-      st.mine=!!o.mine; st.auto=false; st.asOf=null; lire(false);
+      st.srv={intentions:o.intentions||[], type:o.type||'all', scope:o.scope||'world', habit:o.habit||'', rayon:o.rayon||50};
+      st.aud=o.aud||''; st.auto=false; st.asOf=null; lire(false);
+      return st.srv.scope;
     },
-    /* Mes spots : un tri local (le serveur a déjà dit ce que je peux voir). */
-    items:()=>st.mine?st.items.filter(x=>x&&x.mine):st.items.slice(),
+    /* Qui le voit (mes spots : private · my subscribers · figher club) : un tri local, le serveur a déjà dit lesquels sont à moi. */
+    items:()=>st.aud?st.items.filter(x=>x&&(x.audience==='public'?'figher':x.audience)===st.aud):st.items.slice(),
     get per(){ return st.per; }, get err(){ return st.err; }, get lu(){ return st.lu; }, get charge(){ return st.charge; },
-    PER, NOMS,
+    PER, NOMS, ORDRE,
+    /* un spot que je viens de publier : le temps où il vit, relu */
+    montrer(p){ if(!PER.includes(p)) return; st.auto=false; st.per=p; st.items=[]; st.total=0; st.more=false; st.asOf=null; prevenir(); return lire(false); },
     /* Dans la barre, le temps courant, et rien d'autre : un tap ouvre le filtre (où se choisit le temps). */
     perChip:()=>'<button type="button" class="is-on" data-f="sf" data-per="'+st.per+'">'+NOMS[st.per]+'</button>',
     surChangement(f){ if(typeof f==='function') abon.push(f); },
@@ -5822,9 +5829,9 @@ const CLUBSP=(()=>{
     retirer(id){ const n=st.items.length; st.items=st.items.filter(x=>!x||String(x.id)!==String(id));
       if(st.items.length!==n){ st.total=Math.max(0,st.total-1); prevenir(); } },
     vider(){ st.seq++; st.items=[]; st.total=0; st.more=false; st.off=0; st.asOf=null; st.lu=false; st.auto=true;
-      st.per='now'; st.err=''; st.charge=false; st.mine=false; st.srv={intentions:[], type:'all', scope:'world', habit:''}; },
+      st.per='now'; st.err=''; st.charge=false; st.aud=''; st.srv={intentions:[], type:'all', scope:'world', habit:'', rayon:50}; },
     etat:()=>({periode:st.per, items:st.items.length, total:st.total, more:st.more, lu:st.lu, err:st.err,
-               filtres:filtres(), mine:st.mine, charge:st.charge})
+               filtres:filtres(), aud:st.aud, charge:st.charge, rayon:st.srv.rayon})
   };
 })();
 
@@ -6108,7 +6115,10 @@ const SPGRID=(()=>{
     const b=bx(); if(!b) return;
     L=CLUBSP.items();
     etat.tuiles=L.length;
-    b.innerHTML='<div class="tlg">'+L.map(tuile).join('')+'</div>';
+    /* 27/10 — la box choisie au filtre, TELLE QUELLE, en tête des résultats (comme à gauche) ; le « + » d'un spot ensuite */
+    const tete=typeof SHS!=='undefined'&&SHS.tete?SHS.tete():'';
+    const plus=me&&!RO?'<button type="button" class="tl tl-add" data-nspot="" aria-label="Add a spot"><span aria-hidden="true">+</span></button>':'';
+    b.innerHTML='<div class="tlg">'+(tete?'<div class="tl-sel" data-f-sel="1">'+tete+'</div>':'')+plus+L.map(tuile).join('')+'</div>';
     if(io){ io.disconnect(); io=null; }
     const s=sc(); if(!s) return;
     io=new IntersectionObserver(es=>es.forEach(en=>{ if(!en.isIntersecting) return;
@@ -6237,12 +6247,13 @@ function creerFeed(conf){
      ⚠️ UNE DIFFÉRENCE ASSUMÉE AVEC SPACE : là-bas le serveur fait un OU pondéré (`space_feed`, on
      cherche CHEZ LES AUTRES) ; ici on trie MES médias, déjà en mémoire, et un filtre qui élargit
      n'aurait aucun sens — c'est donc un ET entre les groupes, un OU dedans. Zéro appel de plus. */
-  const SF={box:null, on:new Set(), ints:new Set(), piliers:new Set(), freq:false, type:'', vue:'', quand:'', qui:'', ou:'',
+  const SF={box:null, on:new Set(), ints:new Set(), piliers:new Set(), freq:false, type:'', vue:'', quand:'', aud:'', ou:'', rayon:50,
             plie:true, grind:false,    /* le bloc de commande EST le logo ; il naît décomposé du TOTEHM docké (26/10) */
-            ajout:false, ajVue:''};    /* 26/10 : le « + » ouvre le MÊME Totehm pour choisir l'élément d'un média */
+            ajout:false, ajVue:'',     /* 26/10 : le « + » ouvre le MÊME Totehm pour choisir l'élément d'un média */
+            ajBox:null};               /* 27/10 : la box choisie — la capture s'ouvre dessous, dans le panneau */
   const PILIERS=['BODY','MENTAL','SOUL','SPIRIT'];
   const sfCount=()=>(SF.box?SF.on.size:0)+SF.ints.size+SF.piliers.size+(SF.freq?1:0)
-                   +(SF.type?1:0)+(SF.vue?1:0)+(SF.quand?1:0)+(SF.qui?1:0)+(SF.ou?1:0);
+                   +(SF.type?1:0)+(SF.vue?1:0)+(SF.quand?1:0)+(SF.aud?1:0)+(SF.ou?1:0);
   /* Les intentions ACTIVES : celles cochées, plus celles qu'apportent les piliers cochés. */
   function sfIntsActives(){
     const s=new Set(SF.ints);
@@ -6351,11 +6362,14 @@ function creerFeed(conf){
     const liens=(l,v)=>l.map(z=>({vue:v, id:String(z.id), txt:String(z.text||z.t||'')})).filter(z=>z.txt);
     const objs=(bk==='h'&&o)?liens(tripsOfHab(o),'objectives'):[];
     const reps=(bk==='h'&&o)?liens(repsOfHabX(o),'repulsions'):[];
-    SF.box={k:x.k, vue, id, txt:String(x.txt||''), freq:(bk==='h'&&o)?String(o.f||''):'', objs, reps};
+    SF.box={k:x.k, bk, vue, id, txt:String(x.txt||''), freq:(bk==='h'&&o)?String(o.f||''):'', objs, reps};
     SF.on=new Set([vue+'|'+id].concat(objs.map(z=>z.vue+'|'+z.id), reps.map(z=>z.vue+'|'+z.id)));
     SF.freq=!!SF.box.freq;
   }
-  function sfReset(){ sfBox(null); SF.ints=new Set(); SF.piliers=new Set(); SF.type=''; SF.vue=''; SF.quand=''; SF.qui=''; SF.ou=''; }
+  function sfReset(){ sfBox(null); SF.ints=new Set(); SF.piliers=new Set(); SF.type=''; SF.vue=''; SF.quand=''; SF.aud=''; SF.ou=''; SF.rayon=50; }
+  /* 27/10 — les rayons de « near me » (km) et les trois niveaux d'un spot (jamais de public) */
+  const RAYONS=[5,20,50,200];
+  const AUD_SPOT=[['private','private'],['subscribers','my subscribers'],['figher','figher club']];
   /* ══ LA VUE AGRANDIE D'UN SPOT · 21/10/2026 ══════════════════════════════════════════════════════
      Wah : « je ne veux plus de cet effet polaroid … les informations du spot juste au-dessus, dans le format
      d'origine que l'on trouve sur figher.club » · « c'est l'image telle quelle, avec le background noir, comme
@@ -6492,8 +6506,8 @@ function creerFeed(conf){
     const r=rail(); if(!r) return;
     const n=sfCount();
     let h=conf.avant?conf.avant():'';
-    /* Le papier n'est plus une copie dans la barre : c'est LE Totehm, docké au-dessus. */
-    if(SF.box) h+='<span class="lsh-bx">'+esc(SF.box.txt)+'</span>';
+    /* Le papier n'est plus une copie dans la barre : c'est LE Totehm, docké au-dessus. 27/10 (Wah : « je veux seulement la
+       box telle quelle, surtout pas un rappel en Quantico coral ») : la box choisie vit en tête des résultats, rien dans la barre. */
     h+='<button type="button" class="lsh-fb'+(n?' is-on':'')+'" data-f="sf" aria-haspopup="dialog"'
       +' aria-expanded="'+(sfOuvert()?'true':'false')+'">'+(n?'Filter · '+n:'Filter')+'</button>';
     if(conf.ajout) h+='<button type="button" class="fp" data-f="plus" data-v="1" aria-label="Add a media">+</button>';
@@ -6570,11 +6584,16 @@ function creerFeed(conf){
             return '<div class="sfb'+(on?' is-on':'')+'" role="button" tabindex="0" data-sf="box" data-v="'+esc(x.k+'|'+x.ref)+'" aria-pressed="'+on+'">'
               +(boxTotehm('h',o,{})||'<span class="lsh-t">'+esc(x.txt)+'</span>')+'</div>'; }).join('')
            :'<p class="lv-note">no habit yet</p>')+'</div></div>';
-      h+=g('When', CLUBSP.PER.map(q=>c('data-sf="per" data-v="'+q+'"', CLUBSP.NOMS[q], CLUBSP.per===q)).join(''));
+      h+=g('When', CLUBSP.ORDRE.map(q=>c('data-sf="per" data-v="'+q+'"', CLUBSP.NOMS[q], CLUBSP.per===q)).join(''));
       h+=g('Intentions', INTS.map(chipInt).join(''));
       h+=g('It shows', c('data-sf="type" data-v="photo"','photo',SF.type==='photo')+c('data-sf="type" data-v="video"','video',SF.type==='video'));
-      h+=g('Where', c('data-sf="ou" data-v=""','world',!SF.ou)+c('data-sf="ou" data-v="near"','near me',SF.ou==='near'));
-      if(!RO) h+=g('Whose', c('data-sf="qui" data-v=""','everyone',!SF.qui)+c('data-sf="qui" data-v="mine"','mine',SF.qui==='mine'));
+      /* 27/10 — « near me » lance la localisation tout de suite, puis le rayon se choisit ; refusée, une ligne le dit. */
+      const pres=SF.ou==='near'&&CLUBSP.err!=='location';
+      h+=g('Where', c('data-sf="ou" data-v=""','world',!SF.ou)+c('data-sf="ou" data-v="near"','near me',SF.ou==='near')
+        +(pres?RAYONS.map(r=>c('data-sf="rayon" data-v="'+r+'"', r+' km', SF.rayon===r, 'is-r')).join(''):'')
+        +(SF.ou==='near'&&CLUBSP.err==='location'?'<span class="lv-note sf-loc">allow my location</span>':''));
+      /* 27/10 — plus d'« everyone » : ce sont MES spots ; ils se trient par qui les voit, les trois niveaux d'un spot. */
+      if(!RO) h+=g('Who sees it', AUD_SPOT.map(([k,l])=>c('data-sf="aud" data-v="'+k+'"', l, SF.aud===k)).join(''));
       h+='<div class="sfg"><div class="sfr sfa"><button type="button" class="sfc" data-sf="all">ALL</button>'
         +'<button type="button" class="sfc" data-sf="close">CLOSE</button></div></div>';
       p.innerHTML=h; return;
@@ -6591,7 +6610,6 @@ function creerFeed(conf){
        les intentions. À droite (les spots du Club) : à qui, où, ce que ça montre, les intentions — le TEMPS
        n'est plus ici, il est dans la barre (was · now · next), comme les trois périodes de figher.club. */
     if(conf.src==='spots'){
-      h+=g('Whose', c('data-sf="qui" data-v=""','everyone',!SF.qui)+c('data-sf="qui" data-v="mine"','mine',SF.qui==='mine'));
       h+=g('Where', c('data-sf="ou" data-v=""','world',!SF.ou)+c('data-sf="ou" data-v="near"','near me',SF.ou==='near'));
     }
     h+=g('It shows', c('data-sf="type" data-v="photo"','photo',SF.type==='photo')
@@ -6639,7 +6657,7 @@ function creerFeed(conf){
   function sfApply(){
     if(conf.src==='spots'){
       CLUBSP.regler({intentions:[...sfIntsActives()], type:SF.type||'all', scope:SF.ou||'world',
-                     habit:SF.box?SF.box.txt:'', mine:SF.qui==='mine'});
+                     habit:SF.box?SF.box.txt:'', rayon:SF.rayon, aud:SF.aud}).then(()=>{ sfPaint(); peindreFlt(); });
       const s=sc(); if(s) s.scrollTop=0;
       sfPaint(); peindreFlt(); return;
     }
@@ -7040,7 +7058,8 @@ function creerFeed(conf){
         sfApply(); if(SF.box) sfOpen(false); return; }
       else if(c==='per'){ CLUBSP.periode(v); sfPaint(); peindreFlt(); return; }
       else if(c==='quand')SF.quand=SF.quand===v?'':v;
-      else if(c==='qui')  SF.qui=v||'';
+      else if(c==='aud')  SF.aud=SF.aud===v?'':(v||'');
+      else if(c==='rayon') SF.rayon=+v||50;
       else if(c==='ou')   SF.ou=v||'';
       else return;
       sfApply();
@@ -7059,6 +7078,10 @@ function creerFeed(conf){
   /* ⚠️ LA RANGÉE SE PEINT MÊME QUAND LE FEED NE TOURNE PAS : à droite, `SHS` (le polaroid) n'ouvre que sur un spot,
      mais la barre de filtres des spots doit exister sur la carte et la grille. */
   return {ouvrir:entrer, fermer:sortir, pause, maj, vider, pas, flts:peindreFlt, sf:sfOpen,
+          /* la box choisie au filtre, telle quelle (27/10) : rien quand aucune */
+          tete:()=>SF.box?(boxTotehm(SF.box.bk,objetBox(SF.box.bk,SF.box.id),{})||''):'',
+          /* 27/10 — ouvrir l'ajout d'un média avec une box DÉJÀ choisie (depuis une box du Totehm) */
+          ajouter:x=>sfAjouter(x),
           /* Le Totehm docké ouvre DIRECTEMENT le filtre : à gauche les vues puis leurs boxes, à droite les Habits. */
           box:()=>sfOpen(!sfOuvert()),
           /* Le polaroid s'ouvre SUR un spot (la carte ou la grille l'ont désigné). */

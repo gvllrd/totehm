@@ -34,17 +34,18 @@ function serveur(){
     my_trips:{signed_in:true,trips:[{id:'o1',text:'Ship it',is:['express'],hs:['Run the hill']}],
     reps:[{id:'r1',text:'The phone',is:['focus'],hs:['Run the hill']}],wisdom:[],visions:[{id:'v1',text:'The studio'}]},
     habit_spaces:{ok:true,mine:true,habits:[{habit:'Call mum',total:1,total_spaces:0,total_spots:1,spaces:[],spots:[{id:'sp1',format:'spot',state:'will',photo:UID+'/bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb.jpg',starts_at:DEMAIN,exact:{lat:38.72,lng:-9.14,place:'the hill'}}]}]},
-    /* 20/10 quater — LA VUE DE DROITE LIT LE CLUB (`club_spots`) : maintenant rien, à venir MON spot (le point
-       exact, une photo), passé le spot d'un autre membre (kai3 : sans média, la ville seule). */
-    club_spots:b=>{ const f=b.p_filters||{}, mine={id:'sp1',habit:'Call mum',intentions:['love'],freq:'',state:'will',
+    /* 27/10 — LA VUE DE DROITE = MES spots (`club_spots_of` à mon nom : « surtout pas everyone ») : maintenant rien, à venir
+       MON spot (le point exact, une photo), passés deux des miens (la ville seule ; l'un est un clip, visible à mes abonnés). */
+    club_spots_of:b=>{ if(b.p_pseudo!=='wahigher') return {ok:true,items:[],total:0};
+      const f=b.p_filters||{}, mine={id:'sp1',habit:'Call mum',intentions:['love'],freq:'',state:'will',
         starts_at:DEMAIN,duration_min:60,city:'Lisbon',location:'on',mode:'social',audience:'figher',
         comment:'Bring a coffee',photo:UID+'/bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb.jpg',exact:{lat:38.72,lng:-9.14,place:'the hill'},
         mine:true,creator:'wahigher',habit_box:{name:'Call mum',ints:['love'],objectives:[],repulsions:[]}};
       const autre={id:'sp2',habit:'Swim at dawn',intentions:['flow'],state:'was',starts_at:'2026-10-13T07:00:00Z',duration_min:45,
-        city:'Porto',location:'off',audience:'figher',mine:false,creator:'kai3',
+        city:'Porto',location:'off',audience:'figher',mine:true,creator:'wahigher',
         habit_box:{name:'Swim at dawn',ints:['flow'],freq:'every_morning',objectives:[{text:'Cross the bay'}],repulsions:[]}};
       const clip={id:'sp3',habit:'Dance',intentions:['celebrate'],state:'was',starts_at:'2026-10-11T20:00:00Z',duration_min:90,
-        city:'Lisbon',location:'off',audience:'subscribers',mine:false,creator:'kai3',clip:{id:'cccccccc-cccc-4ccc-8ccc-cccccccccccc',status:'ready'},
+        city:'Lisbon',location:'off',audience:'subscribers',mine:true,creator:'wahigher',clip:{id:'cccccccc-cccc-4ccc-8ccc-cccccccccccc',status:'ready'},
         habit_box:{name:'Dance',ints:['celebrate'],objectives:[],repulsions:[]}};
       let l=b.p_period==='future'?[mine]:b.p_period==='past'?[autre,clip]:[];
       if(Array.isArray(f.intentions)) l=l.filter(x=>x.intentions.some(i=>f.intentions.includes(i)));
@@ -261,9 +262,9 @@ try{
       bascule:[...document.querySelectorAll('#rdr-mode [data-rmode]')].map(e=>e.textContent+(e.getAttribute('aria-checked')==='true'?'*':'')),
       basculeVue:getComputedStyle(document.getElementById('rdr-mode')).display!=='none',
       haut:ra.y+ra.height/2<90&&Math.abs((ra.x+ra.width/2)-innerWidth/2)<4&&ra.width<70};});
-  const lus=log.rpc.filter(x=>x.name==='club_spots').map(x=>x.body.p_period);
-  ok(lus.join(',')==='now,future'&&d.r.club.periode==='future',
-     '→ les spots du CLUB : rien maintenant, la vue montre ce qui VIENT (club_spots : '+lus.join(' → ')+')');
+  const lus=log.rpc.filter(x=>x.name==='club_spots_of'&&x.body.p_pseudo==='wahigher').map(x=>x.body.p_period);
+  ok(lus.join(',')==='now,future'&&d.r.club.periode==='future'&&!log.rpc.some(x=>x.name==='club_spots'),
+     '27/10 · → MES spots (club_spots_of à mon nom, jamais « everyone ») : rien maintenant, la vue montre ce qui VIENT ('+lus.join(' → ')+')');
   ok(!d.radar&&d.r.mode==='map'&&d.bascule.join(' ')==='Map* Grid'&&d.basculeVue,'plus de radar : MAP · GRID, au format de MINE · MEMBERS ; la vue s\'ouvre sur la CARTE');
   ok(d.r.carte.terres>100&&d.r.carte.points===1&&d.r.carte.villes===0,'la Terre (Natural Earth, '+d.r.carte.terres+' terres) et mon spot : un carré plein, à son point');
   ok(d.plein&&d.dock&&d.haut,'la carte prend l\'écran ; le Totehm est sorti se caler EN HAUT, centré');
@@ -299,7 +300,7 @@ try{
   ok(sh2.chips.some(t=>/oct|today|tomorrow|yesterday/i.test(t))&&sh2.chips.some(t=>/location on/i.test(t))
      &&sh2.chips.some(t=>/social/i.test(t))&&sh2.say==='Bring a coffee'&&sh2.go&&sh2.cal,
      'les informations du spot : '+sh2.chips.join(' · ')+' — son mot, GO, CALENDAR');
-  ok(sh2.per.join(' ')==='I will be there','le temps courant, dans la barre : « '+sh2.per.join(' ')+' »');
+  ok(sh2.per.join(' ')==='future','27/10 · le temps courant, dans la barre : « '+sh2.per.join(' ')+' » (now · past · future)');
   /* 25/10 (Wah) : MON spot se montre au Higher Self ; 26/10 (« j'ai pas compris ») : le geste dit son verbe, « Higher » en SVG. */
   ok(sh2.ask==='sp:sp1|ask my  self|1','26/10 · MON spot porte « ask my [Higher] self » à côté de GO et CALENDAR → '+sh2.ask);
   /* 26/10 (Wah : « concernant les spots il y a trois niveaux d'accès : private, subscribers et figher club ») : sur MON spot, le
@@ -417,11 +418,12 @@ try{
     habits:[...document.querySelectorAll('#rdr-sf .sfb')].map(e=>(e.querySelector('.tb .v-name')?'':'!')+(e.querySelector('.v-name,.lsh-t')||{}).textContent.trim()),
     higher:document.querySelectorAll('#rdr-sf .sfi .sfh').length,
     quand:[...document.querySelectorAll('#rdr-sf [data-sf="per"]')].map(e=>e.textContent+(e.classList.contains('is-on')?'*':''))}));
-  ok(panD.l.join(' · ')==='Habits · When · Intentions · It shows · Where · Whose','à droite, le Totehm docké ouvre LE filtre : '+panD.l.join(' · '));
+  ok(panD.l.join(' · ')==='Habits · When · Intentions · It shows · Where · Who sees it','à droite, le Totehm docké ouvre LE filtre : '+panD.l.join(' · '));
   /* (« Read at dawn » a été renommée puis SUPPRIMÉE plus haut : il en reste deux.) */
   ok(panD.habits.join('|')==='Run the hill|Call mum','les HABITS seules, au format Totehm (un spot ne vit qu\'une Habit) : '+panD.habits.join(' · '));
-  ok(panD.quand.join(' · ')==='I was here · I am here · I will be there*'&&panD.higher===7,'le temps : '+panD.quand.join(' · ')+' ; les intentions portent le badge [Higher]');
-  // le passé : le spot d'un AUTRE membre, sans média, la ville seule, son auteur — puis la GRILLE
+  ok(panD.quand.join(' · ')==='now · past · future*'&&panD.higher===7,'27/10 · le temps : '+panD.quand.join(' · ')+' (1. Now · 2. Past · 3. Future) ; les intentions portent le badge [Higher]');
+  ok(await pg.evaluate(()=>!document.querySelector('#rdr-sf [data-sf="qui"]')&&!/everyone/i.test(document.getElementById('rdr-sf').textContent)),'27/10 · plus de WHOSE ni d\'« everyone » : ce sont MES spots');
+  // le passé : deux de MES spots, la ville seule — puis la GRILLE
   await pg.click('#rdr-sf [data-sf="per"][data-v="past"]');await pg.waitForTimeout(800);
   await pg.click('#rdr-sf [data-sf="close"]');await pg.waitForTimeout(300);
   const mp=await pg.evaluate(()=>window.__totehm_rdr().carte);
@@ -429,11 +431,12 @@ try{
   await pg.click('#rdr-mode [data-rmode="grid"]');await pg.waitForTimeout(1200);
   const gr=await pg.evaluate(()=>({d:window.__totehm_rdr(),grid:document.body.classList.contains('rdr-grid'),
     tuiles:document.querySelectorAll('#rdr-g .tl[data-cle]').length,boxes:[...document.querySelectorAll('#rdr-g .tl-bx .tb .v-name')].map(e=>e.textContent.trim()),
+    plus:!!document.querySelector('#rdr-g .tl-add[data-nspot]'),
     navy:(()=>{const h=document.querySelector('#rdr-g .tl-bx .tb .habit .h-body');return h?getComputedStyle(h).backgroundColor:'';})(),
     rond:(()=>{const t=document.querySelector('#rdr-g .tl[data-cle]');return t?getComputedStyle(t).borderRadius:'';})(),
     vign:(document.querySelector('#rdr-g img[data-bunny]')||{}).src||''}));
-  ok(gr.grid&&gr.d.mode==='grid'&&gr.tuiles===2&&gr.boxes.join('|')==='Swim at dawn|Dance'&&gr.navy==='rgb(51, 51, 102)',
-     'GRID : une tuile par spot, et dessus SA Habit Box au format Totehm ('+gr.boxes.join(' · ')+')');
+  ok(gr.grid&&gr.d.mode==='grid'&&gr.tuiles===2&&gr.plus&&gr.boxes.join('|')==='Swim at dawn|Dance'&&gr.navy==='rgb(51, 51, 102)',
+     'GRID : le « + » d\'un spot, puis une tuile par spot, et dessus SA Habit Box au format Totehm ('+gr.boxes.join(' · ')+')');
   ok(parseFloat(gr.rond)>=14,'21/10 · les images de la grille de droite sont ARRONDIES ('+gr.rond+')');
   if(!tel){ const t2=await pg.$('#rdr-g .tl[data-cle]'), b2=await t2.boundingBox(); await pg.mouse.move(b2.x+b2.width/2,b2.y+b2.height/2); await pg.waitForTimeout(350);
     const h2=await pg.evaluate(()=>{const cs=getComputedStyle(document.querySelector('#rdr-g .tl[data-cle]'));return cs.transform+' | '+cs.boxShadow;});
@@ -444,36 +447,36 @@ try{
      'le clip : sa VIGNETTE Bunny, signée par le serveur ({id, spot}) — jamais une URL en dur');
   await pg.click('#rdr-g .tl[data-cle="sp:sp2"]');await pg.waitForTimeout(900);
   const pas2=await pg.evaluate(()=>{const c=document.querySelector('#rdr-sh .ssp-s.is-ici')||document.querySelector('#rdr-sh .ssp-s');
-    return {n:document.querySelectorAll('#rdr-sh .ssp-s').length, by:(c&&c.querySelector('.ssp-by')||{}).textContent||'',
+    return {n:document.querySelectorAll('#rdr-sh .ssp-s').length,
       sans:!!(c&&c.classList.contains('is-nu')&&!c.querySelector('.ssp-m')), chips:c?[...c.querySelectorAll('.sdata .sd-tag')].map(e=>e.textContent):[],
       mini:c?[...c.querySelectorAll('.ssp-box .tb .mini.m-o')].map(e=>e.textContent):[], rep:c?[...c.querySelectorAll('.ssp-box .tb .mini.m-r')].map(e=>e.textContent):[],
-      ask:!!(c&&c.querySelector('[data-ask]')),
       d:window.__totehm_rdr()};});
-  ok(pas2.n===2&&pas2.by==='kai3'&&pas2.sans&&pas2.chips.some(t=>/Porto/.test(t))&&pas2.chips.some(t=>/location off/i.test(t))&&pas2.chips.some(t=>/I was here/.test(t))
+  ok(pas2.n===2&&pas2.sans&&pas2.chips.some(t=>/Porto/.test(t))&&pas2.chips.some(t=>/location off/i.test(t))&&pas2.chips.some(t=>/I was here/.test(t))
      &&pas2.mini.includes('Cross the bay')&&pas2.d.club.periode==='past',
-     'la tuile ouvre SON spot en grand : un AUTRE membre (kai3), sans média (les infos seules, centrées), la ville seule, sa box et ses mini-boîtes au format Totehm → '+JSON.stringify({m:pas2.mini,r:pas2.rep}));
-  ok(!pas2.ask,'25/10 · le spot d\'un AUTRE membre ne se montre pas à mon Higher Self (le serveur ne relit que mes lignes)');
-  await pg.click('#rdr-sh .ssp-s.is-ici [data-who]');await pg.waitForTimeout(600);
-  ok(await pg.evaluate(()=>(window.__totehm_xo()||{}).actif==='univers'),'son nom : il faut s\'abonner pour lire son Totehm → SA page de vente, sur place');
-  await pg.evaluate(()=>window.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape'})));
-  await pg.waitForFunction(()=>!(window.__totehm_xo()||{}).actif,null,{timeout:6000}).catch(()=>{});
-  await pg.waitForTimeout(800);
+     'la tuile ouvre MON spot en grand : sans média (les infos seules, centrées), la ville seule, sa box et ses mini-boîtes au format Totehm → '+JSON.stringify({m:pas2.mini,r:pas2.rep}));
+  await pg.click('#rdr-x');await pg.waitForTimeout(500);
   // le filtre part au SERVEUR
   await pg.click('#gate-asteroid');await pg.waitForTimeout(400);
   await pg.click('#rdr-sf [data-sf="int"][data-v="love"]');await pg.waitForTimeout(700);
-  const q1=log.rpc.filter(x=>x.name==='club_spots').pop();
-  ok(q1&&JSON.stringify(q1.body.p_filters.intentions)==='["love"]'&&(await pg.evaluate(()=>window.__totehm_rdr().club.items))===0,
-     'une intention part au SERVEUR (club_spots filtre avant la pagination) : '+JSON.stringify(q1&&q1.body.p_filters));
+  const dern=()=>log.rpc.filter(x=>x.name==='club_spots_of').pop();
+  const q1=dern();
+  ok(q1&&q1.body.p_pseudo==='wahigher'&&JSON.stringify(q1.body.p_filters.intentions)==='["love"]'&&(await pg.evaluate(()=>window.__totehm_rdr().club.items))===0,
+     'une intention part au SERVEUR (club_spots_of filtre avant la pagination) : '+JSON.stringify(q1&&q1.body.p_filters));
   await pg.click('#rdr-sf [data-sf="box"]');await pg.waitForTimeout(700);
-  const q3=log.rpc.filter(x=>x.name==='club_spots').pop();
+  const q3=dern();
   ok(q3&&q3.body.p_filters.habit==='Run the hill','une Habit choisie part au serveur (habit : '+(q3&&q3.body.p_filters.habit)+')');
   await pg.click('#gate-asteroid');await pg.waitForTimeout(400);
   await pg.click('#rdr-sf [data-sf="ou"][data-v="near"]');await pg.waitForTimeout(900);
-  const q2=log.rpc.filter(x=>x.name==='club_spots').pop();
-  ok(q2&&q2.body.p_filters.scope==='near'&&typeof q2.body.p_lat==='number','« near me » demande la position au geste et la passe au serveur');
+  const q2=dern(), ray=await pg.evaluate(()=>[...document.querySelectorAll('#rdr-sf [data-sf="rayon"]')].map(e=>e.textContent+(e.classList.contains('is-on')?'*':'')));
+  ok(q2&&q2.body.p_filters.scope==='near'&&q2.body.p_filters.radius_km===50&&typeof q2.body.p_lat==='number'&&ray.join(' ')==='5 km 20 km 50 km* 200 km',
+     '27/10 · « near me » lance la localisation et passe au serveur un PÉRIMÈTRE (radius_km '+(q2&&q2.body.p_filters.radius_km)+') ; le rayon se règle : '+ray.join(' · '));
+  await pg.click('#rdr-sf [data-sf="rayon"][data-v="200"]');await pg.waitForTimeout(700);
+  ok(dern().body.p_filters.radius_km===200,'le rayon choisi part au serveur (200 km)');
   await pg.click('#rdr-sf [data-sf="all"]');await pg.waitForTimeout(600);
-  await pg.click('#rdr-sf [data-sf="qui"][data-v="mine"]');await pg.waitForTimeout(700);
-  ok((await pg.evaluate(()=>window.__totehm_rdr())).grille.tuiles===0,'« mine » : seulement mes spots (kai3 sort)');
+  await pg.click('#rdr-sf [data-sf="per"][data-v="past"]');await pg.waitForTimeout(800);
+  await pg.click('#rdr-sf [data-sf="aud"][data-v="subscribers"]');await pg.waitForTimeout(500);
+  const au=await pg.evaluate(()=>({n:window.__totehm_rdr().grille.tuiles, l:[...document.querySelectorAll('#rdr-sf [data-sf="aud"]')].map(e=>e.textContent)}));
+  ok(au.n===1&&au.l.join(' · ')==='private · my subscribers · figher club','27/10 · « Who sees it » (les trois niveaux d\'un spot) trie MES spots : '+au.l.join(' · ')+' → '+au.n+' tuile');
   await pg.click('#rdr-sf [data-sf="all"]');await pg.waitForTimeout(600);
   await pg.keyboard.press('Escape');await pg.waitForTimeout(400);
   await pg.click('#rdr-mode [data-rmode="map"]');await pg.waitForTimeout(700);
