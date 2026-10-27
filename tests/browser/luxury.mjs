@@ -45,7 +45,7 @@ const D = () => pg.evaluate(() => window.__totehm_luxury());
 await pg.goto('https://www.higher.boutique/luxury');
 await pg.waitForFunction(() => window.__totehm_luxury && window.__totehm_luxury().price_loaded);
 let d = await D();
-ok(d.build === '2026-10-26-allume' && d.deposit === 50000 && !d.photo && !d.box && !d.flow,
+ok(d.build === '2026-10-27-gris' && d.deposit === 50000 && !d.photo && !d.box && !d.flow,
   'le luxe s\'ouvre sur son porche : le prix, le métier — le dépôt attend derrière un bouton (500 €)');
 ok(/500/.test(await pg.textContent('#price')) && /deposit/i.test(await pg.textContent('#price'))
    && /refunded/i.test(await pg.textContent('#refund')), 'le prix dit un DÉPÔT, et le remboursement est écrit');
@@ -104,6 +104,16 @@ ok(d.box && d.step === 's-element' && await pg.isVisible('#el-go') && (await pg.
   'la box tapée EST le choix : la liste se réduit à elle, et [Next] attend');
 ok(/Marathon in May/.test(await pg.textContent('#matter')) && /Low end theory/.test(await pg.textContent('#matter')),
   'elle garde sa matière ouverte — ses mini-box et le son de son intention');
+// 27/10 (Wah) : l'autre moitié de la règle — ce qui VIENT du Totehm garde son
+// dessin exact. Le papier du milieu est navy, la box porte sa couleur, le media
+// porte la perforation. C'est la boutique qui passe au gris, pas le Totehm.
+const tot = await pg.evaluate(() => ({
+  papier: getComputedStyle(document.querySelector('.pap-g')).backgroundColor,
+  perfo: getComputedStyle(document.querySelector('.pap-g')).maskImage.includes('svg'),
+  box: getComputedStyle(document.querySelector('#el-list .bx.is-on')).backgroundColor,
+  mini: getComputedStyle(document.querySelector('#matter .mi[data-k="objectives"]')).backgroundColor }));
+ok(tot.papier === 'rgb(51, 51, 102)' && tot.perfo && tot.box !== 'rgb(21, 21, 26)' && tot.mini !== 'rgb(21, 21, 26)',
+  '27/10 · le TOTEHM garde ses couleurs : le papier navy perforé, la box et sa mini-box ' + JSON.stringify(tot));
 // 26/10 — tout part ÉTEINT ici aussi ; un tap LIE la mini-box, puis la photo.
 ok((await pg.$eval('#matter .mi[data-k="objectives"]', e => !e.classList.contains('is-on') && !/line-through/.test(getComputedStyle(e).textDecorationLine)))
    && (await D()).linked === 0, '26/10 · par défaut une mini-box est assombrie, sans trait, et hors de la pièce');
@@ -111,22 +121,34 @@ await pg.click('#matter .mi[data-k="objectives"]');
 await pg.waitForFunction(() => window.__totehm_luxury().linked === 1);
 ok(await pg.$eval('#matter .mi[data-k="objectives"]', e => e.classList.contains('is-on')),
   'un tap LIE la sous-box à la pièce');
+// 27/10 — les photos SORTENT de la box et se posent DESSOUS : seulement les
+// images, le media perforé et le spot à coins arrondis.
 await pg.waitForSelector('#shots .sh-t');
 const ph = await pg.evaluate(() => { const l = [...document.querySelectorAll('#shots .sh-t')];
   return { n: l.length, m: l[0].classList.contains('m'), s: l[1].classList.contains('s'),
-    on: l.some(x => x.classList.contains('is-on')), lieu: (l[1].querySelector('b') || {}).textContent || '' }; });
-ok(ph.n === 2 && ph.m && ph.s && !ph.on && ph.lieu === 'the hill',
-  '26/10 · sous la box, ses photos : le media perforé et le spot, éteints ' + JSON.stringify(ph));
+    on: l.some(x => x.classList.contains('is-on')), lieu: l.some(x => x.querySelector('b')),
+    dehors: !document.querySelector('#matter #shots') && !!document.querySelector('#s-element > #shots'),
+    dessous: document.querySelector('#shots').getBoundingClientRect().top
+             >= document.querySelector('#el-list .bx.is-on').getBoundingClientRect().bottom - 1,
+    rond: getComputedStyle(l[1]).borderTopLeftRadius === '10px' }; });
+ok(ph.n === 2 && ph.m && ph.s && !ph.on && !ph.lieu && ph.dehors && ph.dessous && ph.rond,
+  '27/10 · les photos sortent de la box et se posent DESSOUS : media perforé, spot arrondi, éteints ' + JSON.stringify(ph));
 await pg.click('#shots .sh-t[data-id="em1"]');
 await pg.waitForFunction(() => window.__totehm_luxury().shots === 1);
 await pg.screenshot({ path: OUT + '/lux_element.png' });
 await pg.click('#el-go');
 await pg.waitForFunction(() => window.__totehm_luxury().step === 'st-name');
 
-// ── 3 · LE NOM — un identifiant, dans la boîte navy perforée
-ok((await pg.$eval('#nm-field', e => getComputedStyle(e).borderImageSource)).includes('svg')
-   && (await pg.$eval('#nm-field', e => getComputedStyle(e).backgroundColor)) === 'rgb(51, 51, 102)',
-  'le nom se tape dans la BOÎTE NAVY PERFORÉE');
+// ── 3 · LE NOM — une saisie GRISE de figher.club : pas de navy, pas de perforation
+const nmf = await pg.$eval('#nm-field', e => { const s = getComputedStyle(e);
+  return { bg: s.backgroundColor, img: s.borderImageSource, r: s.borderTopLeftRadius, b: s.borderTopWidth }; });
+ok(nmf.bg === 'rgb(21, 21, 26)' && nmf.img === 'none' && nmf.r === '10px' && nmf.b === '0px',
+  '27/10 · le nom se tape dans une SAISIE GRISE (figher.club), ni navy ni perforée ' + JSON.stringify(nmf));
+// La pièce se dépose dans une saisie grise aussi — jamais dans un papier du TOTEHM.
+const pht = await pg.$eval('#ph-tile', e => { const s = getComputedStyle(e);
+  return { bg: s.backgroundColor, img: s.borderImageSource, r: s.borderTopLeftRadius }; });
+ok(pht.bg === 'rgb(21, 21, 26)' && pht.img === 'none' && pht.r === '10px',
+  '27/10 · la photo de la pièce se dépose dans du GRIS ' + JSON.stringify(pht));
 await pg.fill('#nm-input', '0.Sea Bag');
 await pg.waitForFunction(() => /available/.test(document.querySelector('#name-note').textContent));
 ok((await pg.inputValue('#nm-input')) === 'seabag' && !(await pg.isDisabled('#nm-go')),

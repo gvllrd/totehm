@@ -8,9 +8,15 @@
 
   UN SEUL ÉCRAN QUI SE REMPLIT, comme /streetwear : la PHOTO de la pièce, puis
   le TOTEHM qui se décompose à sa place (les quatre calques du logo, copiés de
-  totehm.com), la box tapée EST le choix, le nom dans la boîte navy perforée,
-  puis le dépôt. HOW IT WORKS dit le métier : l'étude, la préparation, la
-  peinture, la tenue. Le style ne se choisit plus ici : il se décide avec Wah.
+  totehm.com), la box tapée EST le choix, le nom dans une saisie GRISE, puis le
+  dépôt. HOW IT WORKS dit le métier : l'étude, la préparation, la peinture, la
+  tenue. Le style ne se choisit plus ici : il se décide avec Wah.
+
+  ⚠️ 27/10 (Wah) : « les couleurs du Totehm restent dans le Totehm ». Ce qui
+  vient du TOTEHM garde son dessin EXACT (les trois papiers perforés, les box,
+  les mini-boxes, les medias perforés) ; tout ce que la boutique invente — la
+  photo de la pièce, le nom, une carte de devis — est du NOIR et du GRIS, dans
+  le style de figher.club (`--s1…--s4`, `--r`), jamais du navy.
 
   ⚠️ RIEN NE SE DÉCIDE ICI. Le montant du dépôt vit dans `luxury_offer` et
   `luxury-quote` le relit ; la Box est relue en base (`_box_matter`) ; la photo
@@ -42,7 +48,6 @@
   --joy-d:56px;--ease:cubic-bezier(.2,.9,.25,1);
   --bg:#000;--c1:#1f1f24;--c2:#2a2a30;--c3:#34343a;
   --logo-navy:#333366;--logo-wisdom:#5b2652;--logo-visions:#2b3a73;
-  --tile-btn:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
   --perfo:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 224.88 224.08' preserveAspectRatio='none'%3E%3Cdefs%3E%3Cmask id='m'%3E%3Crect x='-40' y='-40' width='310' height='310' fill='%23fff'/%3E%3Ccircle cx='56.421' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='56.421' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='112.440' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='112.440' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='168.459' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='168.459' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='56.020' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='56.020' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='112.039' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='112.039' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='168.059' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='168.059' r='13.86' fill='%23000'/%3E%3C/mask%3E%3C/defs%3E%3Crect x='0.402' y='0' width='224.076' height='224.078' fill='%23fff' mask='url(%23m)'/%3E%3C/svg%3E");
 }
 *{box-sizing:border-box;margin:0;padding:0}
@@ -91,16 +96,19 @@ button.chip.is-on{background:var(--s3);color:#fff;border-color:#fff}
 .note{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--lo);min-height:16px}
 .note.ok{color:var(--ok)}.note.no{color:#fff}
 #form,#s-nothp,#quotes,#admin{display:flex;flex-direction:column;align-items:center;gap:10px;width:100%}
-/* La Box ramassée — une boîte du Totehm : sa couleur, sans bordure */
-/* Un devis — la Box qui le porte, sa couleur */
-.qt{width:100%;max-width:380px;background:var(--skin,var(--navy));color:#fff;padding:12px 14px;display:flex;flex-direction:column;align-items:center;gap:7px}
-.qt small{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.7)}
-.qt .nm{font-family:var(--q);font-size:13px;line-height:1.4}
-.qt .st{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:#fff;background:rgba(0,0,0,.3);border-radius:var(--r);padding:3px 9px}
-.qt .amount{font-weight:700;font-size:17px;letter-spacing:.04em}
-.qt .qn{font-size:11px;color:rgba(255,255,255,.85)}
-.qt .btn{background:rgba(0,0,0,.42)}
-.qt .lnk{background:rgba(0,0,0,.3);color:rgba(255,255,255,.85)}
+/* UN DEVIS — une carte de figher.club : la surface est GRISE, et la couleur du
+   Totehm n'est qu'un RAIL de 3 px à sa gauche, comme le tick d'une box. Les
+   couleurs du Totehm restent dans le Totehm (27/10, Wah). */
+.qt{position:relative;width:100%;max-width:380px;background:var(--s2);border-radius:var(--r);color:var(--mid);
+  padding:12px 14px 12px 17px;display:flex;flex-direction:column;align-items:center;gap:7px;overflow:hidden}
+.qt::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--skin,var(--s4))}
+.qt small{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--lo)}
+.qt .nm{font-family:var(--q);font-size:13px;line-height:1.4;color:#fff}
+.qt .st{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--lo);background:var(--s3);border-radius:var(--r);padding:3px 9px}
+.qt .amount{font-weight:700;font-size:17px;letter-spacing:.04em;color:#fff}
+.qt .qn{font-size:11px;color:var(--lo)}
+.qt .btn{background:var(--s3)}
+.qt .lnk{background:var(--s3);color:var(--lo)}
 /* L'administrateur — répondre par un prix */
 .qa{width:100%;max-width:420px;background:var(--s2);border-radius:var(--r);padding:12px 14px;display:flex;flex-direction:column;align-items:center;gap:7px}
 .qa small{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo)}
@@ -147,21 +155,20 @@ button.mi{cursor:pointer;-webkit-tap-highlight-color:transparent;filter:brightne
 button.mi.is-on{filter:none}
 @media(hover:hover){button.mi:hover{filter:brightness(.6) saturate(.8)}button.mi.is-on:hover{filter:brightness(1.15)}}
 #matter .hint{margin-top:2px;opacity:.75}
-/* LES PHOTOS DE LA BOX (26/10) — ses medias, et les spots qu'on y a vécus. La
-   grille de la vue de gauche de totehm.com, COPIÉE : trois par ligne, carrées,
-   l'image telle qu'elle. Un media porte la perforation du TOTEHM ; un spot
-   garde son coin net et dit son lieu. Éteinte : sombre, comme une mini-box. */
-#shots{width:100%;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:3px;margin-top:9px}
+/* LES PHOTOS DE LA BOX (27/10, Wah) — elles SORTENT de la box et se posent
+   DESSOUS. Deux formats de totehm.com, copiés tels quels : un media porte la
+   perforation du TOTEHM (grille de la vue de gauche), un spot est un rectangle
+   à coins arrondis (vue de droite). SEULEMENT les images. Éteinte : sombre. */
+#shots{width:100%;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:3px;margin-top:6px}
+#shots:empty{display:none}
 .sh-t{position:relative;aspect-ratio:1;background:#0b0b0d;border:0;padding:0;cursor:pointer;overflow:hidden;
   -webkit-tap-highlight-color:transparent;filter:brightness(.34) saturate(.5);transition:filter .18s ease}
+.sh-t.s{border-radius:10px}
 .sh-t.is-on{filter:none}
 @media(hover:hover){.sh-t:hover{filter:brightness(.6) saturate(.8)}.sh-t.is-on:hover{filter:brightness(1.1)}}
 .sh-t img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .3s ease}
 .sh-t img[src]{opacity:1}
 .sh-t.m img{-webkit-mask-image:var(--perfo);mask-image:var(--perfo);-webkit-mask-size:100% 100%;mask-size:100% 100%}
-.sh-t b{position:absolute;left:4px;right:4px;bottom:4px;font-family:var(--mono);font-weight:400;font-size:8px;
-  letter-spacing:.14em;text-transform:uppercase;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.9);
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:left}
 .mi.o{background:var(--blue)}.mi.r{background:var(--rep)}.mi.w{background:#5b2652}.mi.v{background:#2b3a73}
 .mi.s{background:rgba(0,0,0,.35);font-family:var(--mono);font-size:10px}
 .pal{display:flex;gap:4px}.pal i{width:18px;height:18px;display:block}
@@ -249,20 +256,18 @@ button.mi.is-on{filter:none}
 #tz-seam i.is-on{opacity:1;height:14px}
 @media(prefers-reduced-motion:reduce){.pap,#tz-logo,.g3,.pap-lab{transition:none!important}}
 
-/* 3 · NAME — l'élément en tête, le nom en Quantico Coral */
-.el-tile{width:100%;max-width:360px;background:var(--skin,#333366);color:#fff;padding:12px 16px 13px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
-.el-tile small{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.72)}
-.el-tile b{font-family:var(--q);font-weight:400;font-size:16px;line-height:1.4;word-break:break-word}
-.pals{display:flex;gap:4px;justify-content:center}.pals i{width:12px;height:12px;display:block}
-/* LE NOM — dans la BOÎTE NAVY PERFORÉE, comme le Decode de l'accueil, et c'est
-   un IDENTIFIANT : minuscules, sans espace, petit. Le « 0. » est au serveur. */
-#nm-field{display:flex;align-items:baseline;justify-content:center;gap:1px;background:var(--navy);
-  border:7px solid transparent;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round;
-  border-radius:0;padding:9px 12px;width:100%;max-width:300px;cursor:text}
-#nm-prefix{font-family:var(--q);font-size:15px;color:var(--coral);opacity:.6;user-select:none;flex:0 0 auto}
-#nm-input{font-family:var(--q);font-size:15px;letter-spacing:.02em;color:var(--coral);background:none;border:none;outline:none;
-  caret-color:var(--coral);width:100%;min-width:0;padding:1px 0;text-transform:lowercase}
-#nm-input::placeholder{color:rgba(251,213,202,.3);text-transform:lowercase}
+/* 3 · LE NOM — une SAISIE de figher.club (`.field` de /create) : du gris, pas
+   de navy, pas de perforation. Le navy et la perforation sont le papier du
+   TOTEHM ; ce champ est à la boutique. C'est un IDENTIFIANT : minuscules, sans
+   espace. Le « 0. » est au serveur. */
+#nm-field{display:flex;align-items:baseline;justify-content:center;gap:1px;background:var(--s2);border:none;
+  border-radius:var(--r);padding:11px 13px;width:100%;max-width:300px;cursor:text;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,0);transition:box-shadow .18s ease}
+#nm-field:focus-within{box-shadow:inset 0 0 0 1px rgba(255,255,255,.45)}
+#nm-prefix{font-family:var(--q);font-size:15px;color:var(--dim);user-select:none;flex:0 0 auto}
+#nm-input{font-family:var(--q);font-size:15px;letter-spacing:.02em;color:#fff;background:none;border:none;outline:none;
+  caret-color:#fff;width:100%;min-width:0;padding:1px 0;text-transform:lowercase}
+#nm-input::placeholder{color:var(--dim);text-transform:lowercase}
 
 
 /* ── LE DÉPÔT, PLEIN ÉCRAN · 25/10 (Wah) : « full-screen step-by-step…
@@ -284,13 +289,16 @@ button.mi.is-on{filter:none}
 .step.is-open{display:flex}
 .step.is-in{opacity:1;transform:none}
 .step.is-out{opacity:0;transform:translateY(-20px);pointer-events:none}
-/* LA PHOTO — la boîte navy perforée, comme Decode : on y dépose sa pièce. */
+/* LA PHOTO — la saisie du spot de figher.club (vue du bas) : une surface GRISE,
+   un coin arrondi, un filet d'un pixel. Rien de navy : la pièce n'est pas un
+   papier du TOTEHM, c'est un objet qu'on dépose. */
 #ph-tile{position:relative;display:flex;align-items:center;justify-content:center;width:100%;max-width:300px;min-height:132px;
-  background:var(--navy);border:7px solid transparent;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round;
-  cursor:pointer;overflow:hidden;-webkit-tap-highlight-color:transparent}
-#ph-lab{font-family:var(--q);font-weight:700;font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:#fff;text-align:center;padding:0 14px}
+  background:var(--s2);border:none;border-radius:var(--r);box-shadow:inset 0 0 0 1px rgba(255,255,255,.1);
+  cursor:pointer;overflow:hidden;-webkit-tap-highlight-color:transparent;transition:background .15s ease}
+#ph-lab{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--lo);text-align:center;padding:0 14px}
 #ph-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
 #ph-tile.is-busy{opacity:.5}
+@media(hover:hover){#ph-tile:hover{background:var(--s3)}#ph-tile:hover #ph-lab{color:#fff}}
 /* HOW IT WORKS — le métier, replié par défaut : on ne récite pas, on répond. */
 #how{width:100%;display:flex;flex-direction:column;align-items:center;gap:8px}
 #how-body{max-height:0;overflow:hidden;opacity:0;transition:max-height .45s var(--ease),opacity .3s ease;text-align:left;max-width:420px}
@@ -440,15 +448,16 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
       <div id="el-sub"></div>
       </div>
       <div id="el-list"></div>
+      <!-- Les photos vivent HORS de la box, sous elle (27/10) -->
+      <div id="shots"></div>
       <button class="btn cta hide" id="el-go" type="button">Next</button>
     </div>
 
-    <!-- 3 · LE NOM — un identifiant, dans la boîte navy perforée -->
+    <!-- 3 · LE NOM — un identifiant, dans une saisie grise (figher.club) -->
     <div class="step" id="st-name">
       <div class="step-h">3 · Engrave its name</div>
       <label id="nm-field"><span id="nm-prefix">0.</span><input id="nm-input" maxlength="40" placeholder="name" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="text" enterkeyhint="done" aria-label="The name of the piece"></label>
       <div class="note dim" id="name-note"></div>
-      <div class="say">0 = this collection, june to may. Decode the name to find the piece.</div>
       <button class="btn cta" id="nm-go" type="button" disabled>Next</button>
     </div>
 
@@ -610,7 +619,7 @@ sb.auth.onAuthStateChange(ev => {
 
 
 /* ══ L'ÉTAT — une lecture, un écran ═════════════════════════════════ */
-const BUILD = '2026-10-26-allume';
+const BUILD = '2026-10-27-gris';
 let A = null, ADM = [], SEQ = 0, BUSY = false, ME = null;
 /* Le diagnostic — des booléens et des compteurs, jamais une valeur de membre. */
 window.__totehm_luxury = () => ({ build: BUILD, signed_in: !!A?.signed_in, thp: !!A?.thp, open: !!A?.open,
@@ -786,8 +795,16 @@ function paintSeam(l){
   const on=new Set(l||[]);
   $('tz-seam').innerHTML=Object.keys(INTS).map(i=>'<i style="--c:'+icol(i)+'"'+(on.has(i)?' class="is-on"':'')+'></i>').join('');
 }
+/* OUBLIER le choix : la box, ce qu'on y a allumé, et les photos qui vivaient
+   sous elle. Un seul endroit, sinon une photo reste allumée sans être liée. */
+function oublier(){
+  PICK=null;LIE={matter:[],shots:[]};MT_SEQ++;
+  $('shots').innerHTML='';
+  $('s-element').classList.remove('is-picked');
+  $('el-go').classList.add('hide');
+}
 function renderEl(dir){
-  OPEN=null;MT_SEQ++;
+  OPEN=null;MT_SEQ++;$('shots').innerHTML='';
   const head=$('el-head'),list=$('el-list');
   if(GRIND.includes(vue))head.classList.add('is-grind');
   $('tz-papers').querySelectorAll('[data-v]').forEach(b=>b.classList.toggle('is-here',b.dataset.v===vue));
@@ -832,7 +849,7 @@ $('tz-papers').addEventListener('click',async e=>{
   const v=e.target.closest('[data-v]');if(!v||!VIEWS[v.dataset.v])return;
   if(!TOT)await loadTotehm();
   const change=v.dataset.v!==vue;vue=v.dataset.v;
-  if(PICK){PICK=null;LIE={matter:[],shots:[]};$('s-element').classList.remove('is-picked');$('el-go').classList.add('hide');renderEl('in');return;}
+  if(PICK){oublier();renderEl('in');return;}
   if(change)renderEl('in');
 });
 /* LA MATIÈRE — ce qui est relié à l'élément, calculé en base (`my_box_matter`). */
@@ -857,23 +874,13 @@ async function openEl(b){
     '<div class="grp"><span class="w">'+esc((MI[k]||['',k])[1])+'</span>'+a.map(x=>
       '<button type="button" class="mi '+((MI[k]||[''])[0])+(estAllume(k,x.text)?' is-on':'')+'" data-k="'+esc(k)+'" data-t="'+esc(x.text)+'" aria-pressed="'+estAllume(k,x.text)+'">'+esc(x.text)+'</button>').join('')+'</div>').join('');
   const son=m.extra&&m.extra.mood?'<div class="grp"><span class="w">sound</span><span class="mi s">'+esc(m.extra.mood)+'</span></div>':'';
-  c.innerHTML=groups+son+'<div id="shots"></div>'+(groups?'<div class="mono hint">tap what goes into the piece</div>':'');
+  c.innerHTML=groups+son+(groups?'<div class="mono hint">tap what goes into the piece</div>':'');
   c.addEventListener('click',e=>{
-    const q=e.target.closest('.mi[data-k]');
-    if(q){
-      const k=q.dataset.k,x=q.dataset.t,on=!q.classList.contains('is-on');
-      q.classList.toggle('is-on',on);q.setAttribute('aria-pressed',String(on));
-      LIE.matter=LIE.matter.filter(h=>!(h.kind===k&&h.text===x));
-      if(on)LIE.matter.push({kind:k,text:x});
-      return;
-    }
-    const t=e.target.closest('.sh-t[data-id]');
-    if(t){
-      const id=t.dataset.id,on=!t.classList.contains('is-on');
-      t.classList.toggle('is-on',on);t.setAttribute('aria-pressed',String(on));
-      LIE.shots=LIE.shots.filter(x=>x!==id);
-      if(on)LIE.shots.push(id);
-    }
+    const q=e.target.closest('.mi[data-k]');if(!q)return;
+    const k=q.dataset.k,x=q.dataset.t,on=!q.classList.contains('is-on');
+    q.classList.toggle('is-on',on);q.setAttribute('aria-pressed',String(on));
+    LIE.matter=LIE.matter.filter(h=>!(h.kind===k&&h.text===x));
+    if(on)LIE.matter.push({kind:k,text:x});
   });
   peindrePhotos(seq,KIND[v],ref);
   if(PICK&&PICK.ref===ref&&PICK.kind===KIND[v]){PICK.text=m.text||o.text;PICK.view=m.view||v;}
@@ -882,9 +889,9 @@ async function openEl(b){
    spots qu'on y a vécus. La base rend des CHEMINS (mes lignes seules) ; la page
    les signe une heure, le temps de les montrer. Toutes éteintes au départ. */
 async function peindrePhotos(seq,kind,ref){
-  if(!$('shots'))return;
+  $('shots').innerHTML='';
   const{data,error}=await sb.rpc('my_box_shots',{p_kind:kind,p_ref:ref});
-  if(seq!==MT_SEQ||!$('shots'))return;
+  if(seq!==MT_SEQ)return;
   if(error){console.error('[my_box_shots]',error.message);return;}
   const l=(Array.isArray(data)?data:[]).slice(0,24);
   if(!l.length)return;
@@ -893,17 +900,25 @@ async function peindrePhotos(seq,kind,ref){
     +'" data-id="'+esc(String(x.id))+'" aria-pressed="'+photoAllumee(String(x.id))+'"'
     +' aria-label="'+esc((x.kind==='media'?'photo · ':'spot · ')+(x.txt||''))+'">'
     +'<img alt="" data-p="'+esc(String(x.path||''))+'" data-b="'+esc(String(x.bucket||''))+'">'
-    +(x.kind==='spot'?'<b>'+esc(String(x.txt||''))+'</b>':'')+'</button>').join('');
+    +'</button>').join('');
   $('shots').querySelectorAll('img[data-p]').forEach(async im=>{
     const{data:u,error:er}=await sb.storage.from(im.dataset.b).createSignedUrl(im.dataset.p,3600);
     if(er){console.error('[shot url]',er.message);return;}
     if(seq===MT_SEQ&&im.isConnected&&u?.signedUrl)im.src=u.signedUrl;
   });
 }
+/* Les photos sont HORS de la box : leur geste est à elles. */
+$('shots').addEventListener('click',e=>{
+  const t=e.target.closest('.sh-t[data-id]');if(!t)return;
+  const id=t.dataset.id,on=!t.classList.contains('is-on');
+  t.classList.toggle('is-on',on);t.setAttribute('aria-pressed',String(on));
+  LIE.shots=LIE.shots.filter(x=>x!==id);
+  if(on)LIE.shots.push(id);
+});
 $('el-list').addEventListener('click',e=>{
   if(e.target.closest('#matter'))return;
   if($('s-element').classList.contains('is-picked')){
-    if(e.target.closest('.bx')){PICK=null;LIE={matter:[],shots:[]};$('s-element').classList.remove('is-picked');$('el-go').classList.add('hide');}
+    if(e.target.closest('.bx'))oublier();
     return;
   }
   const b=e.target.closest('.bx');if(b)openEl(b);
@@ -911,7 +926,7 @@ $('el-list').addEventListener('click',e=>{
 $('el-list').addEventListener('keydown',e=>{
   if(e.key!=='Enter'&&e.key!==' ')return;
   const b=e.target.closest('.bx');if(!b)return;e.preventDefault();
-  if($('s-element').classList.contains('is-picked')){PICK=null;LIE={matter:[],shots:[]};$('s-element').classList.remove('is-picked');$('el-go').classList.add('hide');return;}
+  if($('s-element').classList.contains('is-picked')){oublier();return;}
   openEl(b);
 });
 $('el-go').onclick=()=>{ if(PICK)etape('st-name'); };
