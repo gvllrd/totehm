@@ -10,7 +10,7 @@ Space ouvre directement le monde, sans titre d’accueil ni commandes de panoram
 |---|---|
 | `index.html` · `gallery-ui.mjs` · `gallery.css` | entrée directe, installations, liste accessible ; bouton TOTEHM → connexion COM ou retour chez soi |
 | `vercel.json` · `api/location.js` | redirection géographique temporaire, priorité aux lecteurs sociaux, diagnostic pays sans cache ni coordonnées |
-| `gallery-new-york*.mjs` · `gallery-facade.mjs` · `gallery-liberty.mjs` | briques et trottoir Manhattan, cinq niveaux reliés par rampes, sols et physique partagés ; façade originale commune, statue engloutie |
+| `gallery-new-york*.mjs` · `gallery-facade.mjs` · `gallery-liberty.mjs` | briques et trottoir Manhattan, cinq niveaux reliés par rampes, sols et physique partagés ; façade originale commune, statue entière hors de l’eau |
 | `gallery-spatial.mjs` · `gallery-modern-navigation.mjs` · `gallery-modern-layout.mjs` | caméra, parcours, saut ; collisions et appuis suivent le toit ondulé et son ouverture de fumée |
 | `gallery-modern.mjs` · `gallery-glass-shell.mjs` · `gallery-white-stone.mjs` · `gallery-ancient-floor.mjs` | toiture en vague, oculus, collecteur de verre partagé avec physique/fumée ; pierre, comptoir et pupitre |
 | `gallery-lectern-book.mjs` · `gallery-play-installation.mjs` · `gallery-opposite-installation.mjs` · `gallery-stoner-installation.mjs` | livre, deux écrans et cadre premium, liens vers leurs pages |
@@ -33,9 +33,9 @@ Space ouvre directement le monde, sans titre d’accueil ni commandes de panoram
 
 - Nuit permanente : arche galactique relevée, filaments lumineux et poussières opaques ; 18 000 / 8 500 étoiles aux cœurs fins et halos discrets, quatre températures, lune à 34 cratères. PMREM issu du ciel local, sans panorama/HDR externe.
 - Météore en ruban de 62 triangles : passage effilé de 1,15 s toutes les 47 s, sur la même horloge que le ciel ; aucun défilement autonome en mouvement réduit.
-- Intérieur et comptoir : 301 vraies dalles anciennes fusionnées, opus romain, arêtes arrondies et scans photographiques couleur/normale/rugosité CC0 ; cartes partagées 2k/1k dans `assets/stone/`, licence locale. Extérieur : calçada d’origine, vagues et caravelle ; socle et rebords sombres. Jonction au seuil z=−2, même hauteur et sans superposition.
+- Lisbon : 301 dalles anciennes fusionnées, opus romain, arêtes arrondies et scans photographiques couleur/normale/rugosité CC0, cartes 2k/1k dans `assets/stone/`, licence locale. Calçada d’origine, vagues et caravelle dehors ; socle sombre. New York : pierre blanche et rampes sur les mêmes niveaux physiques que le rendu.
 - Océan à −96 m, crêtes de la surface principale bornées sous −11,48 m, calme à 110 m du piton ; aucun autre sol émergé. Astres/eau/embruns et simulation d’écume figés en mouvement réduit.
-- New York : statue de cuivre patiné dans la zone calme existante, tête couronnée et bras à la torche émergés ; corps sous la mer. Dans Artworks, Liberty guide vers un palier vitré avec vue contrôlée à travers murs, sols et rocher.
+- New York : statue entière sur socle de pierre, pieds au-dessus de toute la mer locale, dans la zone calme existante. Dans Artworks, Liberty guide vers un palier vitré ; cadrage de tous les sommets de cuivre entre les commandes, vue vérifiée à travers murs, sols et rocher.
 - Eau détaillée sur 24 km de diamètre : 327 680 triangles ordinateur / 172 032 téléphone, 4 800 / 1 800 points d’embruns ; maillage rapproché régulier puis logarithmique, détails filtrés jusqu’à 1 800 m.
 - Trois échelles de normales spectrales ; les faces retournées reflètent l’eau sombre sous l’horizon, l’écume ancienne devient humide et translucide. Gouttes entraînées dans le vent tangent au globe.
 - Brume : 80 / 40 ellipsoïdes sur les crêtes, 160 / 80 triangles de support, cinq échantillons de densité par rayon ; éclairage lunaire et profondeur réelle du volume, opacité ≤ 0,13, sommet borné sous −3,72 m. Aucun fichier externe ni texture propre.

@@ -87,7 +87,7 @@ développement personnel, un réseau social classique, une marque streetwear cla
 
 TOTEHM.SPACE : Lisbon, pavillon de verre, et New York, galerie de briques rouges à cinq niveaux en rampes, au sommet d’une Terre engloutie : beauté, grandeur, peur et renouveau.
 Voie lactée à travers le toit, lune et mer déchaînée ; calçada à vagues et caravelle dehors, vraies dalles anciennes en volume, grain photographique et comptoir pierre dedans.
-La bouche originale, sa langue et son papier sont sculptés et éclairés sur les deux façades ; le feu vivant et son crépitement réchauffent les intérieurs. New York : blanc, pierre, asphalte et Statue de la Liberté engloutie.
+La bouche originale, sa langue et son papier sont sculptés et éclairés sur les deux façades ; le feu vivant et son crépitement réchauffent les intérieurs. New York : blanc, pierre, asphalte et Statue de la Liberté entière, la mer sous ses pieds.
 Space est l’accueil : livre noir fermé sur pupitre vers Origins à pages tournantes, écran Lisbon et cadre premium Stoner vers leurs propres pages plein écran ; THP en petits papiers perforés.
 Sans colonnes ni végétation, la terrasse ouvre la vue sur les déferlants ; Espace propulse vers les étoiles et le globe englouti.
 Vent et mer, crépitement à l’approche du feu. Pages et marché indépendants conservés ; Collect garde achat et revente.

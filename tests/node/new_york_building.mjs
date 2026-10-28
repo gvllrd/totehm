@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import * as T from '../../space/vendor/three-0.180.0.mjs';
 import {createNewYorkGallery} from '../../space/gallery-new-york.mjs';
 import {createModernGallery} from '../../space/gallery-modern.mjs';
+import {LIBERTY_VIEW} from '../../space/gallery-liberty.mjs';
 import {NEW_YORK_FLOOR_RECTS,NEW_YORK_RAMPS,NEW_YORK_RAMP_TURNS,NEW_YORK_CONNECTORS,newYorkConnectorHeight} from '../../space/gallery-new-york-layout.mjs';
 let checks=0;const check=(value,message)=>{assert(value,message);checks++;};
 for(const mobile of [false,true]){
@@ -31,11 +32,11 @@ for(const mobile of [false,true]){
  for(const [name,x,z] of [['west',-11.5,-9.5],['east',11.5,-9.5],['back',0,-16.5],['front',0,-3]]){
   const object=gallery.root.getObjectByName('Setback roof terrace — '+name);check(gallery.walkable.includes(object),'Setback roof terrace is a rendered walkable surface');ray.set(new T.Vector3(x,24,z),new T.Vector3(0,-1,0));const hit=ray.intersectObject(object)[0];check(!!hit&&Math.abs(hit.point.y-21.71)<.000003,'Lower roof terrace matches its 21.71-metre collision support');
  }
- // Clear sight to the target centre alone can leave its chin or crown
- // cropped by deep masonry. Exercise the whole visible head and torch.
- const outlook=new T.Vector3(12.65,17.85,-4.7),targets=[];
- for(const x of [70,76,82])for(const y of [-95.1,-82,-65])for(const z of [-54,-48,-42])targets.push(new T.Vector3(x,y,z));targets.push(new T.Vector3(62,-43,-66));
- for(const target of targets){ray.set(outlook,target.clone().sub(outlook).normalize());ray.near=.03;ray.far=outlook.distanceTo(target)-.1;check(!ray.intersectObjects(gallery.solids).some(h=>h.object.visible&&!h.object.material?.transparent),'The full Liberty head and torch clear the stone window apron');}ray.near=0;ray.far=Infinity;
+ // Clear sight to the face alone can still crop the complete standing
+ // monument at its feet or torch. These points belong to the real statue.
+ const outlook=new T.Vector3(12.7,17.85,-4.7);
+ check(Array.isArray(LIBERTY_VIEW.framePoints)&&LIBERTY_VIEW.framePoints.length>=4,'Standing Liberty exports physical framing points');
+ for(const p of LIBERTY_VIEW.framePoints){const target=new T.Vector3(...p);ray.set(outlook,target.clone().sub(outlook).normalize());ray.near=.03;ray.far=outlook.distanceTo(target)-.1;check(!ray.intersectObjects(gallery.solids).some(h=>h.object.visible&&!h.object.material?.transparent),'The complete standing Liberty clears the deep masonry window');}ray.near=0;ray.far=Infinity;
  // Compare both places, including every tongue vertex and the physical
  // perforations, so they cannot silently diverge into similar drawings.
  const lisbon=createModernGallery(new T.Scene(),null,{mobile});

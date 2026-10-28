@@ -2,22 +2,30 @@ import * as T from './vendor/three-0.180.0.mjs';
 import {WORLD_RADIUS,WORLD_CENTER_Y} from './gallery-drowned-planet.mjs';
 
 // A monumental copper sculpture in the SAME sea as Lisbon. Within the
-// ocean's 110 m calm collar, displacement is exactly zero; the curved water
-// therefore cuts its neck and lower arm without ever washing over the face.
-export const LIBERTY_LOCATION=Object.freeze({x:76,y:-96,z:-48,yaw:-.9,calmRadius:110});
+// ocean's 110 m calm collar, displacement is exactly zero. All copper,
+// including both sandal soles, stands above that curved water on stone.
+const LOCAL_FOOT_Y=-87,FOOT_CLEARANCE=2.5,MAXIMUM_CALM_SEA_Y=-96;
+export const LIBERTY_LOCATION=Object.freeze({x:76,y:MAXIMUM_CALM_SEA_Y+FOOT_CLEARANCE-LOCAL_FOOT_Y,z:-48,yaw:-.9,calmRadius:110});
+const worldPoint=(x,y,z)=>Object.freeze([LIBERTY_LOCATION.x+x*Math.cos(LIBERTY_LOCATION.yaw)+z*Math.sin(LIBERTY_LOCATION.yaw),LIBERTY_LOCATION.y+y,LIBERTY_LOCATION.z-x*Math.sin(LIBERTY_LOCATION.yaw)+z*Math.cos(LIBERTY_LOCATION.yaw)]);
+export const LIBERTY_VIEW=Object.freeze({target:worldPoint(0,0,0),head:worldPoint(0,10.5,0),feet:worldPoint(0,LOCAL_FOOT_Y,7),torch:worldPoint(-23,47,.3),torchTip:worldPoint(-23+Math.sin(3.2)*1.55+2.25,54.4,.3+Math.sin(4)*.55),fov:90,framePoints:Object.freeze([
+ worldPoint(-6.8,LOCAL_FOOT_Y,-1),worldPoint(-1.2,LOCAL_FOOT_Y,11.5),worldPoint(1.2,LOCAL_FOOT_Y,2),worldPoint(6.8,LOCAL_FOOT_Y,14.5),
+ worldPoint(-6.86,10.35,.05),worldPoint(6.86,10.35,.05),
+ worldPoint(0,31.1,-3.1),worldPoint(-23+Math.sin(3.2)*1.55+2.25,54.4,.3+Math.sin(4)*.55)
+])});
 export function libertyWaterHeight(x,z){
  return WORLD_CENTER_Y+Math.sqrt(WORLD_RADIUS*WORLD_RADIUS-x*x-z*z);
 }
 
 export function createLiberty(scene,{mobile=false,onChange=()=>{}}={}){
- const root=new T.Group();root.name='Liberty — the head and raised torch above the flood';
+ const root=new T.Group();root.name='Liberty — the complete statue standing above the sea';
  root.position.set(LIBERTY_LOCATION.x,LIBERTY_LOCATION.y,LIBERTY_LOCATION.z);root.rotation.y=LIBERTY_LOCATION.yaw;scene.add(root);
  const geometries=new Set(),materials=new Set();let disposed=false,dirty=true,time=0;
  const copper=new T.MeshStandardMaterial({color:0x629b8b,roughness:.79,metalness:.28,vertexColors:true});
  const darkCopper=new T.MeshStandardMaterial({color:0x2c625a,roughness:.86,metalness:.2,vertexColors:true});
  const gold=new T.MeshStandardMaterial({color:0xba8c3d,roughness:.39,metalness:.82,vertexColors:true,emissive:0x563005,emissiveIntensity:.28});
  const recess=new T.MeshStandardMaterial({color:0x123832,roughness:.91,metalness:.24,vertexColors:true});
- for(const m of [copper,darkCopper,gold,recess])materials.add(m);
+ const stone=new T.MeshStandardMaterial({color:0x9e9c8a,roughness:.96,metalness:0,vertexColors:true});
+ for(const m of [copper,darkCopper,gold,recess,stone])materials.add(m);
  const radial=mobile?14:22,vertical=mobile?10:16;
  const hash=(x,y,z)=>{const v=Math.sin(x*12.93+y*17.17+z*7.63)*43758.5453;return v-Math.floor(v);};
  function repairPoleNormals(g){
@@ -57,19 +65,45 @@ export function createLiberty(scene,{mobile=false,onChange=()=>{}}={}){
    for(let k=0;k<=sides;k++){
     const a=k/sides*Math.PI*2,fold=1+depth*Math.cos(a*folds+t*2.2)+depth*.32*Math.cos(a*(folds*2+1)-t*3),q=p.clone().addScaledVector(frames.normals[i],Math.cos(a)*r*fold).addScaledVector(frames.binormals[i],Math.sin(a)*r*fold);
     positions.push(q.x,q.y,q.z);uvs.push(k/sides,t);
-    if(i<steps&&k<sides){const n=i*(sides+1)+k;indices.push(n,n+sides+1,n+1,n+1,n+sides+1,n+sides+2);}
+    if(i<steps&&k<sides){const n=i*(sides+1)+k;indices.push(n,n+1,n+sides+1,n+1,n+sides+2,n+sides+1);}
    }
   }
   const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(positions,3));g.setAttribute('uv',new T.Float32BufferAttribute(uvs,2));g.setIndex(indices);g.computeVertexNormals();return mesh(g,copper,[0,0,0],name);
  }
 
- // Complete submerged robe and shoulders give the water a real occluding
- // relationship with the sculpture. No pedestal or new dry land is added.
- drape([[0,-83,0],[0,-65,-1],[-1,-42,0],[0,-19,0],[0,-8,0]],[11,13,10,9,11],13,.12,'Submerged pleated robe');
- ellipsoid([0,-10,0],[12,6,6],copper,'Submerged shoulders');
- ellipsoid([0,-1.8,0],[3.7,5,3.4],copper,'Neck cut by the sea');
+ // The continuous robe ends above two visible sandal soles. Its stone
+ // pedestal enters the sea; the copper sculpture remains completely dry.
+ const robe=drape([[0,-83,0],[0,-65,-1],[-1,-42,0],[0,-19,0],[0,-8,-.5],[0,-3,-.7]],[11,13,10,9,11,3.8],13,.12,'Standing pleated robe');
+ const rp=robe.geometry.attributes.position;for(let i=0;i<rp.count;i++)rp.setZ(i,rp.getZ(i)*.63);robe.geometry.computeVertexNormals();repairPoleNormals(robe.geometry);
+ ellipsoid([0,-1.8,0],[3.7,5,3.4],copper,'Copper neck');
+ for(const [side,z] of [[-1,5],[1,8]]){
+  const x=side*4,foot=ellipsoid([x,-85.3,z],[2.7,1.7,6],copper,side<0?'Left copper foot':'Right copper foot');
+  mesh(new T.BoxGeometry(5.6,.55,12.5),darkCopper,[x,LOCAL_FOOT_Y+.275,z+.25],side<0?'Left sandal sole':'Right sandal sole');
+  for(let toe=0;toe<5;toe++)ellipsoid([x+(toe-2)*.9,-85.6,z+4.65-toe*.11],[.48-.035*toe,.43-.025*toe,1.05-.09*toe],copper,'Sculpted sandal toe');
+  line([[x-2.5,-85.2,z+2.8],[x,-83.78,z+2.9],[x+2.5,-85.2,z+2.8]],.17,darkCopper,'Copper sandal forefoot strap',mobile?10:16);
+  line([[x-2.1,-85.4,z-1],[x,-83.65,z-.8],[x+2.1,-85.4,z-1]],.16,darkCopper,'Copper sandal instep strap',mobile?10:16);
+ }
+ mesh(new T.BoxGeometry(28,1.2,32),stone,[0,LOCAL_FOOT_Y-.6,0],'Stone pedestal — continuous supporting top');
+ mesh(new T.BoxGeometry(26,16,30),stone,[0,LOCAL_FOOT_Y-9.2,0],'Stone pedestal shaft rising from the sea');
+ mesh(new T.BoxGeometry(30,2.8,34),stone,[0,LOCAL_FOOT_Y-18.6,0],'Stone pedestal submerged foundation');
+ for(const y of [-92.2,-97.2,-102.2]){
+  for(const z of [-15.015,15.015])mesh(new T.BoxGeometry(25.7,.055,.035),stone,[0,y,z],'Pedestal horizontal masonry joint');
+  for(const x of [-13.015,13.015])mesh(new T.BoxGeometry(.035,.055,29.7),stone,[x,y,0],'Pedestal side masonry joint');
+ }
  drape([[-9,-12,0],[-15,0,0],[-20,17,0],[-22,25,0]],[6,5.1,3.6,2.7],10,.16,'Raised right arm — continuous fluted sleeve');
  tapered([-22,23.5,0],[-23,31.3,.2],2.4,1.8,copper,'Exposed raised wrist');
+ drape([[9,-12,-.5],[14,-22,1],[14,-31,4],[10,-35,8]],[5.1,4.5,3.4,2.5],9,.14,'Lowered left arm cradling the tablet');
+ ellipsoid([9.8,-35,9],[2.5,2.3,1.4],copper,'Left hand supporting the tablet');
+ const tabletShape=new T.Shape();tabletShape.moveTo(-4.2,-9);tabletShape.lineTo(4.2,-9);tabletShape.lineTo(4.2,7.5);tabletShape.lineTo(2.7,9);tabletShape.lineTo(-4.2,9);tabletShape.closePath();
+ const tablet=mesh(new T.ExtrudeGeometry(tabletShape,{depth:1.6,bevelEnabled:true,bevelThickness:.15,bevelSize:.18,bevelSegments:2,steps:1}),copper,[9,-29,8],'Liberty tablet — bevelled copper with chamfered corner');tablet.rotation.z=-.14;tablet.updateMatrix();
+ const letters={J:[[[.8,1],[.8,.2],[.6,0],[.2,0],[0,.2]]],U:[[[0,1],[0,.2],[.2,0],[.6,0],[.8,.2],[.8,1]]],L:[[[0,1],[0,0],[.8,0]]],Y:[[[0,1],[.4,.55],[.8,1]],[[.4,.55],[.4,0]]],I:[[[0,1],[.8,1]],[[.4,1],[.4,0]],[[0,0],[.8,0]]],V:[[[0,1],[.4,0],[.8,1]]],M:[[[0,0],[0,1],[.4,.5],[.8,1],[.8,0]]],D:[[[0,0],[0,1],[.5,1],[.8,.75],[.8,.25],[.5,0],[0,0]]],C:[[[.8,.9],[.6,1],[.2,1],[0,.75],[0,.25],[.2,0],[.6,0],[.8,.1]]],X:[[[0,1],[.8,0]],[[0,0],[.8,1]]]};
+ for(const [text,y,size] of [['JULY IV',3.6,.92],['MDCCLXXVI',.6,.68]]){
+  const width=text.length*size,start=-width/2;
+  for(let letter=0;letter<text.length;letter++)for(const stroke of letters[text[letter]]||[])for(let i=1;i<stroke.length;i++){
+   const a=new T.Vector3(start+letter*size+stroke[i-1][0]*size,y+stroke[i-1][1]*1.3,1.79).applyMatrix4(tablet.matrix),b=new T.Vector3(start+letter*size+stroke[i][0]*size,y+stroke[i][1]*1.3,1.79).applyMatrix4(tablet.matrix);
+   tapered(a.toArray(),b.toArray(),.038,.038,darkCopper,'Tablet embossed date');
+  }
+ }
 
  // Bartholdi's long classical face: high cheeks, deep-set eyes, straight
  // nose and closed mouth; the head is sculpted with true depth throughout.
@@ -159,10 +193,15 @@ export function createLiberty(scene,{mobile=false,onChange=()=>{}}={}){
  const faceFill=new T.PointLight(0xa6dace,210,80,2);faceFill.position.set(0,19,19);root.add(faceFill);
  root.updateMatrixWorld(true);
  const worldBounds=new T.Box3().setFromObject(root),headBounds=new T.Box3().setFromObject(head),flameBounds=new T.Box3().setFromObject(flame);
- let radiusBound=0;root.traverse(o=>{if(!o.isMesh)return;const p=o.geometry.attributes.position,v=new T.Vector3();for(let i=0;i<p.count;i++){v.fromBufferAttribute(p,i).applyMatrix4(o.matrixWorld);radiusBound=Math.max(radiusBound,Math.hypot(v.x,v.z));}});
+ const statueBounds=new T.Box3(),footBounds=new T.Box3();let radiusBound=0,minimumCopperClearance=Infinity,minimumFootClearance=Infinity;
+ root.traverse(o=>{if(!o.isMesh)return;const p=o.geometry.attributes.position,v=new T.Vector3(),isCopper=o.material!==stone,isFoot=/copper foot|sandal sole/i.test(o.name);for(let i=0;i<p.count;i++){
+  v.fromBufferAttribute(p,i).applyMatrix4(o.matrixWorld);radiusBound=Math.max(radiusBound,Math.hypot(v.x,v.z));
+  if(isCopper){statueBounds.expandByPoint(v);minimumCopperClearance=Math.min(minimumCopperClearance,v.y-libertyWaterHeight(v.x,v.z));}
+  if(isFoot){footBounds.expandByPoint(v);minimumFootClearance=Math.min(minimumFootClearance,v.y-libertyWaterHeight(v.x,v.z));}
+ }});
  const triangles=[...geometries].reduce((sum,g)=>sum+(g.index?.count||g.attributes.position.count)/3,0);
  // The facial, crown and sleeve sculpting is batched by metal. This distant
- // monument costs four draw calls on phones, rather than one per small part.
+ // monument costs four metal draws plus its single stone pedestal draw.
  const batches=new Map();
  for(const object of [...root.children]){
   if(!object.isMesh)continue;
@@ -177,12 +216,12 @@ export function createLiberty(scene,{mobile=false,onChange=()=>{}}={}){
  for(const g of geometries)g.dispose();geometries.clear();
  for(const [material,batch] of batches){
   const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(batch.p,3));g.setAttribute('normal',new T.Float32BufferAttribute(batch.n,3));g.setAttribute('color',new T.Float32BufferAttribute(batch.c,3));g.setIndex(batch.i);g.computeBoundingSphere();g.computeBoundingBox();geometries.add(g);
-  const object=new T.Mesh(g,material);object.name='Liberty — batched '+(material===gold?'gilded torch':material===copper?'patinated copper':material===darkCopper?'dark copper folds':'crown recesses');object.userData.parts=batch.parts;object.receiveShadow=true;root.add(object);
+  const object=new T.Mesh(g,material);object.name='Liberty — batched '+(material===stone?'stone pedestal':material===gold?'gilded torch':material===copper?'patinated copper':material===darkCopper?'dark copper folds':'crown recesses');object.userData.parts=batch.parts;object.userData.materialKind=material===stone?'stone':'copper';object.receiveShadow=true;root.add(object);
  }
  return{
   root,
   update(dt,eye,motion=true){if(disposed)return false;const result=dirty;dirty=false;if(motion){time+=Math.max(0,Math.min(Number(dt)||0,.1));lamp.intensity=110+Math.sin(time*.7)*3;return true;}return result;},
-  diagnostics:()=>({kind:'submerged-statue-of-liberty',ready:!disposed,sculpted:true,proceduralGeometry:true,externalAssets:0,patinatedCopper:true,crownRays:7,crownWindows:13,raisedRightArm:true,gildedTorch:true,submergedBody:true,onlyHeadAndArmAboveSea:true,pedestal:false,newDryLand:false,location:[LIBERTY_LOCATION.x,LIBERTY_LOCATION.y,LIBERTY_LOCATION.z],calmRadius:110,maximumMeshRadius:+radiusBound.toFixed(3),insideCalmWater:radiusBound<110,waterHeight:+libertyWaterHeight(LIBERTY_LOCATION.x,LIBERTY_LOCATION.z).toFixed(3),headMinimum:+headBounds.min.y.toFixed(3),torchMinimum:+flameBounds.min.y.toFixed(3),bounds:{min:worldBounds.min.toArray(),max:worldBounds.max.toArray()},drawMeshes:batches.size,triangles,time:+time.toFixed(3),disposed}),
+  diagnostics:()=>({kind:'standing-statue-of-liberty',ready:!disposed,sculpted:true,proceduralGeometry:true,externalAssets:0,patinatedCopper:true,crownRays:7,crownWindows:13,raisedRightArm:true,loweredLeftArm:true,tablet:true,gildedTorch:true,submergedBody:false,onlyHeadAndArmAboveSea:false,entireStatueAboveSea:true,feetVisible:true,feetAboveWater:true,pedestal:true,pedestalSupport:{topY:LIBERTY_LOCATION.y+LOCAL_FOOT_Y,bottomY:LIBERTY_LOCATION.y+LOCAL_FOOT_Y-20,width:28,depth:32,footContact:Math.abs(footBounds.min.y-(LIBERTY_LOCATION.y+LOCAL_FOOT_Y))<.00001,foundationBelowSea:true},newDryLand:false,location:[LIBERTY_LOCATION.x,LIBERTY_LOCATION.y,LIBERTY_LOCATION.z],view:LIBERTY_VIEW,calmRadius:110,maximumMeshRadius:+radiusBound.toFixed(3),insideCalmWater:radiusBound<110,waterHeight:+libertyWaterHeight(LIBERTY_LOCATION.x,LIBERTY_LOCATION.z).toFixed(3),absoluteWaveClearance:FOOT_CLEARANCE,minimumCopperClearance:+minimumCopperClearance.toFixed(3),minimumFootClearance:+minimumFootClearance.toFixed(3),footMinimum:+footBounds.min.y.toFixed(3),headMinimum:+headBounds.min.y.toFixed(3),torchMinimum:+flameBounds.min.y.toFixed(3),bounds:{min:worldBounds.min.toArray(),max:worldBounds.max.toArray()},statueBounds:{min:statueBounds.min.toArray(),max:statueBounds.max.toArray()},drawMeshes:batches.size,triangles,time:+time.toFixed(3),disposed}),
   dispose(){if(disposed)return;disposed=true;root.removeFromParent();for(const g of geometries)g.dispose();for(const m of materials)m.dispose();root.clear();onChange();}
  };
 }

@@ -1,6 +1,8 @@
 // Both city entry points use the production modules and native WebGL.
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import * as T from '../../space/vendor/three-0.180.0.mjs';
+import {createLiberty} from '../../space/gallery-liberty.mjs';
 import {launch,page} from './harness.mjs';
 const OUT=process.argv[2]||'/tmp/gallery-new-york',origin='https://www.totehm.space';
 const landmarkOnly=process.argv.includes('--landmark-only');
@@ -23,7 +25,8 @@ try{
    sample.entry=await pg.evaluate(()=>__totehm_gallery());
    check(sample.entry.place==='new-york'&&sample.entry.physics.levels===5,'New York entry loads its own five-floor world at '+viewport.width);
    check(sample.entry.temple.levels===5&&sample.entry.temple.stairs===0,'building has five levels with ramps and no stairs at '+viewport.width);
-   check(sample.entry.liberty&&sample.entry.fireplace.flameHeight===4.34,'New York shares the campfire and includes submerged Liberty at '+viewport.width);
+   check(sample.entry.liberty.entireStatueAboveSea&&sample.entry.liberty.minimumFootClearance>=2.5&&sample.entry.fireplace.flameHeight===4.34,'New York keeps the campfire and the complete statue above its sea at '+viewport.width);
+   check(sample.entry.liberty.maximumMeshRadius<sample.entry.landscape.ocean.centralCalmRadius&&sample.entry.liberty.footMinimum>sample.entry.landscape.ocean.baseHeight,'the actual ocean calm zone and water ceiling remain below every foot at '+viewport.width);
    check(await pg.locator('.panorama-nav,.welcome,.controls,#jump,#toggle-sound').count()===0,'direct immersive entrance keeps the removed HUD absent at '+viewport.width);
    check(await pg.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'New York has no horizontal overflow at '+viewport.width);
    await pg.screenshot({path:OUT+'/entry-'+viewport.width+'.png'});
@@ -43,8 +46,15 @@ try{
    check((await pg.evaluate(()=>__totehm_gallery())).stations.opposite.active,'Same but opposite remains reachable in New York at '+viewport.width);
    }
    await pg.click('#view-list');await pg.click('#visit-liberty');
-   await pg.waitForFunction(()=>{const d=__totehm_gallery();return !d.moving&&d.liberty.viewClear&&d.camera.target[1]===-82&&d.camera.position[1]>7;});
+   await pg.waitForFunction(()=>{const d=__totehm_gallery();return !d.moving&&d.liberty.viewClear&&d.liberty.fullFigureView&&Math.abs(d.camera.fov-d.liberty.viewFov)<.01&&d.camera.position[1]>7;});
    check((await pg.evaluate(()=>__totehm_gallery())).liberty.viewClear,'Liberty destination has a clear view through masonry, slabs and the actual island at '+viewport.width);
+   const framing=await pg.evaluate(()=>({camera:__totehm_gallery().camera,top:document.querySelector('header').getBoundingClientRect().bottom+16,bottom:document.querySelector('.tour').getBoundingClientRect().top-16}));
+   const scene=new T.Scene(),statue=createLiberty(scene,{mobile:viewport.width<650}),camera=new T.PerspectiveCamera(framing.camera.fov,framing.camera.aspect,framing.camera.near,framing.camera.far);
+   scene.updateMatrixWorld(true);camera.position.fromArray(framing.camera.position);camera.lookAt(new T.Vector3(...framing.camera.target));camera.updateMatrixWorld();
+   const point=new T.Vector3(),pixels=[];
+   statue.root.traverse(object=>{if(!object.isMesh||object.userData.materialKind!=='copper')return;const vertices=object.geometry.attributes.position;for(let i=0;i<vertices.count;i++){point.fromBufferAttribute(vertices,i).applyMatrix4(object.matrixWorld).project(camera);pixels.push([(point.x+1)*viewport.width/2,(1-point.y)*viewport.height/2]);}});
+   check(pixels.every(([x,y])=>x>=16&&x<=viewport.width-16&&y>=framing.top&&y<=framing.bottom),'every copper vertex from feet to torch fits between the controls at '+viewport.width);
+   sample.statueView={camera:framing.camera,footClearance:statue.diagnostics().minimumFootClearance};statue.dispose();
    await pg.screenshot({path:OUT+'/liberty-'+viewport.width+'.png'});
    sample.errors=log.errors;
    check(!log.errors.some(e=>/pageerror:|THREE.WebGLProgram|VALIDATE_STATUS|shader error|WebGL: INVALID/i.test(e)),'New York has no JavaScript or shader failure at '+viewport.width);
