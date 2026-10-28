@@ -43,7 +43,10 @@ async function fixture({signedIn=false,callback=false,wrongState=false,deferProf
   if(url.origin===SPACE){
    if(url.pathname==='/auth-test-empty')return route.fulfill({contentType:'text/html',body:'<!doctype html><title>Auth fixture</title>'});
    if(url.pathname==='/gallery-spatial.mjs')return route.fulfill({contentType:'text/javascript',body:"export async function createGallery(){throw new Error('GPU intentionally omitted in identity tests');}"});
-   let file=path.join(ROOT,'space',url.pathname.endsWith('/')?url.pathname+'index.html':url.pathname);
+   // The real Vercel config serves the same entry under both explicit city
+   // routes; keep the address untouched so PKCE return paths are exercised.
+   const filePath=['/new-york','/lisbon-space'].includes(url.pathname)?'/index.html':url.pathname.endsWith('/')?url.pathname+'index.html':url.pathname;
+   let file=path.join(ROOT,'space',filePath);
    if(!path.extname(file))file+='.html';
    if(!fs.existsSync(file))return route.fulfill({status:404,body:'not found'});
    return route.fulfill({contentType:TYPES[path.extname(file)]||'application/octet-stream',body:fs.readFileSync(file)});
@@ -70,6 +73,19 @@ try{
   check(!log.mint.length&&!log.redeem.length&&!log.errors.length,'anonymous connection makes no handoff request or JavaScript error');
   await ctx.close();
  }
+ for(const cityPath of ['/new-york','/lisbon-space']){
+  const {ctx,pg,log}=await fixture();
+  await pg.goto(SPACE+cityPath+'?campaign=city-auth');
+  await pg.waitForFunction(()=>document.querySelector('#member')?.textContent==='CONNECT WITH MY TOTEHM');
+  await pg.click('#member');await pg.waitForURL(COM+'/auth?**');
+  const outgoing=new URL(pg.url());
+  check(outgoing.searchParams.get('client')==='space'&&outgoing.searchParams.get('return')===cityPath+'?campaign=city-auth',cityPath+' anonymous login returns to the same city through COM');
+  await pg.goto(SPACE+'/auth-test-empty');
+  const pk=await pg.evaluate(()=>JSON.parse(sessionStorage.getItem('totehm_sso_pkce')));
+  check(pk.state===outgoing.searchParams.get('state')&&createHash('sha256').update(pk.verifier).digest('base64url')===outgoing.searchParams.get('challenge'),cityPath+' keeps its matching PKCE verifier and state on the Space origin');
+  check(!log.mint.length&&!log.redeem.length&&!log.errors.length,cityPath+' anonymous login makes no premature handoff or JavaScript error');
+  await ctx.close();
+ }
  {
   const {ctx,pg,log}=await fixture({signedIn:true});
   await pg.goto(SPACE+'/');await pg.waitForFunction(()=>document.querySelector('#member')?.textContent==='wah');
@@ -79,9 +95,9 @@ try{
   check(pg.url()===COM+'/totehm#sso='+HANDOFF&&!pg.url().includes('synthetic-space-access'),'connected identity opens the central TOTEHM with a one-use code');
   check(!log.errors.length,'connected identity navigation has no JavaScript errors');await ctx.close();
  }
- for(const wrongState of [false,true]){
+ for(const {callbackPath,wrongState} of [{callbackPath:'/',wrongState:false},{callbackPath:'/',wrongState:true},{callbackPath:'/new-york',wrongState:false}]){
   const {ctx,pg,log}=await fixture({callback:true,wrongState});
-  await pg.goto(SPACE+'/?campaign=callback#chapter-2&sso='+CODE+'&state='+STATE);
+  await pg.goto(SPACE+callbackPath+'?campaign=callback#chapter-2&sso='+CODE+'&state='+STATE);
   await pg.waitForFunction(()=>!location.href.includes('sso='));
   await pg.waitForFunction(()=>document.querySelector('#member')?.textContent===('wah'),null,{timeout:wrongState?500:10000}).catch(error=>{if(!wrongState)throw error;});
   if(wrongState){
@@ -92,7 +108,7 @@ try{
    check(!log.redeem[0].url.includes('sso=')&&!log.redeem[0].url.includes('state='),'callback secrets leave the address before redemption');
    check(await pg.textContent('#member')==='wah','redeemed session paints the current TOTEHM identity');
   }
-  check(pg.url()===SPACE+'/?campaign=callback#chapter-2','callback keeps useful query and fragment while removing auth parameters');
+  check(pg.url()===SPACE+callbackPath+'?campaign=callback#chapter-2',callbackPath+' callback keeps its city path, useful query and fragment while removing auth parameters');
   check(!log.errors.length,'callback has no JavaScript exception');await ctx.close();
  }
  {
