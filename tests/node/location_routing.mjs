@@ -1,7 +1,10 @@
 import assert from 'node:assert/strict';
-import {readFile} from 'node:fs/promises';
+import {readFile,readdir} from 'node:fs/promises';
 import handler from '../../space/api/location.js';
 const config=JSON.parse(await readFile(new URL('../../space/vercel.json',import.meta.url)));
+// Vercel's public clean URLs are distinct from the source filenames. Its
+// index document is exposed at /, as in the actual static filesystem router.
+const publicFiles=new Map((await readdir(new URL('../../space/',import.meta.url))).filter(name=>name.endsWith('.html')).map(name=>[name==='index.html'?'/':'/'+(config.cleanUrls?name.slice(0,-5):name),name]));
 let checks=0;const check=(condition,message)=>{assert(condition,message);checks++;};
 function request(country,method='GET',otherHeaders={}){
  const response={headers:{},code:0,body:null,setHeader(key,value){this.headers[key.toLowerCase()]=value;},status(value){this.code=value;return this;},end(body){this.body=body;return this;}};
@@ -43,7 +46,9 @@ for(const path of ['/','/index.html']){
 }
 for(const path of ['/lisbon-space','/new-york']){
  check(!redirect(path,'PT')&&!redirect(path,'US'),'An explicit space URL bypasses geographic redirects without a loop');
- check(config.rewrites.find(rule=>rule.source===path)?.destination==='/index.html','Both locations serve the shared gallery entry');
+ const destination=config.rewrites.find(rule=>rule.source===path)?.destination;
+ check(publicFiles.get(destination)==='index.html','Both places target the publicly exposed index document under cleanUrls');
+ check((await readFile(new URL('../../space/'+publicFiles.get(destination),import.meta.url),'utf8')).includes('src="/gallery-ui.mjs"'),'The resolved public target contains the actual gallery entry, not an absent file');
 }
 check(redirect('/lisbon','PT')?.destination==='/play_lisbon_street','Existing Lisbon artwork route remains intact');
 check(config.rewrites.some(rule=>rule.source==='/s/:id'&&rule.destination==='/api/card?id=:id'),'Shared card route remains intact');

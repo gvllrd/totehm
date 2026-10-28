@@ -3,7 +3,7 @@
 > L’état actuel (≤ 60 lignes). On y travaille à la demande de Wah. Les mesures de livraison vivent dans les commits.
 
 Deux lieux partagent l’île, l’océan, la nuit étoilée et le grand feu de bois : Lisbon, pavillon de verre en vague sur calçada, et New York, immeuble de briques rouges à cinq niveaux, dernier étage en retrait, intérieur blanc et rampes de pierre.
-Vercel dirige le Portugal vers `/lisbon-space`, les autres pays ou le pays inconnu vers `/new-york` ; pays issu de l’IP, sans GPS ni certitude physique. Les deux adresses restent directement visitables ; `/lisbon` reste l’œuvre Lisbon.
+Vercel dirige le Portugal vers `/lisbon-space`, les autres pays ou le pays inconnu vers `/new-york` ; les deux réécrivent vers la racine canonique `/` sous cleanUrls, sans rejouer les redirections. Pays issu de l’IP, sans GPS ni certitude physique ; `/lisbon` reste l’œuvre Lisbon.
 Space ouvre directement le monde, sans titre d’accueil ni commandes de panorama/saut/son. Livre Origins, écrans Lisbon et Same but opposite, cadre Stoner : chaque œuvre ouvre sa page indépendante ; marketplace conservée.
 
 | fichier | rôle |

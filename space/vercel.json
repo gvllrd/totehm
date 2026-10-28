@@ -171,11 +171,11 @@
   "rewrites": [
     {
       "source": "/lisbon-space",
-      "destination": "/index.html"
+      "destination": "/"
     },
     {
       "source": "/new-york",
-      "destination": "/index.html"
+      "destination": "/"
     },
     {
       "source": "/s/:id/i",
