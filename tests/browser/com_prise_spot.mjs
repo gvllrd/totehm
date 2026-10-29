@@ -41,6 +41,9 @@ try{
   // ══ 1 · NOW, depuis le « + » de la MAP ══
   const plus=await pg.evaluate(()=>{const b=document.getElementById('rdr-plus');return !!b&&!b.hidden&&getComputedStyle(b).display!=='none'&&window.__totehm_rdr().mode==='map';});
   ok(plus,nom+' · MAP : un « + » pour prendre un spot (la GRID a sa tuile)');
+  /* 29/10 (Wah : « ajouter un spot dans le mode MAP comme dans le mode GRID ») : la MÊME tuile, à la même place */
+  const tuileMap=await pg.evaluate(()=>{const t=document.querySelector('#rdr-plus .tl-add[data-nspot]');if(!t)return null;const r=t.getBoundingClientRect(),cs=getComputedStyle(t);
+    return {r:[r.x,r.y,r.width,r.height].map(Math.round),o:cs.outlineStyle,c:cs.color,t:t.textContent.trim(),dessus:document.elementFromPoint(r.x+r.width/2,r.y+r.height/2)?.closest('.tl-add')===t};});
   await clic(pg,'#rdr-plus');await pg.waitForTimeout(400);
   const e0=await etapes(pg), b0=await pg.evaluate(()=>[...document.querySelectorAll('#rdr-new .sfb .v-name')].map(e=>e.textContent.trim()));
   ok(await pg.evaluate(()=>!document.getElementById('rdr-new').hidden&&document.body.classList.contains('is-nspot'))&&e0.join('|')==='+ spot|which habit?'&&b0.join('|')==='Run the hill|Call mum',
@@ -108,6 +111,9 @@ try{
 
   // ══ 2 · LATER, depuis la tuile « + » de la GRID, le point POSÉ sur la Terre ══
   await clic(pg,'#rdr-mode [data-rmode="grid"]');await pg.waitForTimeout(700);
+  const tuileGrid=await pg.evaluate(()=>{const t=document.querySelector('#rdr-g .tl-add[data-nspot]');if(!t)return null;const r=t.getBoundingClientRect();return [r.x,r.y,r.width,r.height].map(Math.round);});
+  ok(tuileMap&&tuileGrid&&tuileMap.dessus&&tuileMap.t==='+'&&tuileMap.o==='dashed'&&tuileMap.r.every((v,i)=>Math.abs(v-tuileGrid[i])<=2),
+     nom+' · le « + » de la MAP EST la tuile de la GRID : même place, même taille, même trait → MAP '+JSON.stringify(tuileMap&&tuileMap.r)+' · GRID '+JSON.stringify(tuileGrid));
   ok(await pg.evaluate(()=>!!document.querySelector('#rdr-g .tl-add[data-nspot]')&&getComputedStyle(document.getElementById('rdr-plus')).display==='none'),
      nom+' · GRID : la tuile « + » (le « + » de la MAP s\'efface)');
   await clic(pg,'#rdr-g .tl-add[data-nspot]');await pg.waitForTimeout(400);

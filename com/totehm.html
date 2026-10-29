@@ -3905,11 +3905,13 @@ body.lv-g #lv-socket,body.lv-d #lv-socket{opacity:0}
 .ns-go:focus-visible{outline:1px solid #fff;outline-offset:2px}
 @media(hover:hover){.ns-go:not(:disabled):hover{background:#55555f}}
 .ns-note:empty{display:none}
-/* le « + » de la MAP (la GRID a sa tuile) ; la pose d'un point : le panneau s'efface, une ligne en haut */
-#rdr-plus{position:absolute;right:14px;bottom:calc(var(--lvj-h,64px) + 26px);z-index:6;width:40px;height:40px;border:0;border-radius:10px;
-  background:#1f1f24;color:#b0b0b0;cursor:pointer;font:400 22px/1 'Space Mono',monospace;transition:color .15s}
-#rdr-plus:focus-visible{outline:1px solid #fff;outline-offset:3px}
-@media(hover:hover){#rdr-plus:hover{color:#fff}}
+/* le « + » de la MAP = la tuile « + » de la GRID, à la même place (la même grille, une seule tuile, posée sur la Terre) ;
+   la pose d'un point : le panneau s'efface, une ligne en haut */
+#rdr-plus{position:absolute;top:0;left:0;right:0;z-index:6;pointer-events:none;padding-bottom:0;gap:5px;padding-left:5px;padding-right:5px}
+#rdr-plus[hidden]{display:none}
+#rdr-plus .tl{pointer-events:auto;border-radius:14px}
+#rdr-plus .tl-add:focus-visible{outline:1px solid #fff;outline-offset:-9px}
+@media(min-width:700px){#rdr-plus{gap:8px;padding-left:0;padding-right:0}#rdr-plus .tl{border-radius:16px}}
 body.rdr-grid #rdr-plus,body.rdr-voir #rdr-plus,body.is-nspot #rdr-plus{display:none}
 #rdr-pique{position:absolute;left:50%;transform:translateX(-50%);top:calc(max(10px,env(safe-area-inset-top)) + 64px);z-index:9;
   display:none;border:0;border-radius:10px;padding:9px 14px;background:#1f1f24;color:#d8d8dd;cursor:pointer;
@@ -4283,7 +4285,9 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
       <div id="rdr-sf" class="lsh-sf lv-act" role="dialog" aria-label="Filter the spots" hidden></div>
       <!-- 27/10 : prendre un spot ICI (NOW · LATER, pas à pas), le « + » de la MAP, et la pose d'un point sur le globe -->
       <div id="rdr-new" class="lsh-sf lv-act" role="dialog" aria-label="Add a spot" hidden></div>
-      <button type="button" id="rdr-plus" class="lv-act" aria-label="Add a spot" hidden>+</button>
+      <!-- 29/10 (Wah : « on doit pouvoir ajouter un spot dans le mode MAP comme dans le mode GRID ») : la MÊME tuile « + »,
+           à la même place que dans la grille. -->
+      <div id="rdr-plus" class="tlg lv-act" hidden><button type="button" class="tl tl-add" data-nspot="" aria-label="Add a spot"><span aria-hidden="true">+</span></button></div>
       <button type="button" id="rdr-pique" class="lv-act">tap the place · cancel</button>
       <p class="lv-note" id="rdr-say" role="status" aria-live="polite"></p>
       <div id="rdr-mode" class="lv-act" role="radiogroup" aria-label="Map or grid">
