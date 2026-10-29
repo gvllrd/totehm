@@ -1,6 +1,6 @@
-// 12/10/2026 — UNE PLATEFORME (Wah) : SPACE et le Club vivent dans totehm.com (`/x/space`, `/x/club`, même
-// origine, même session, sans pont), dans une couche chargée d'avance. Un space, un spot, « + a space »,
-// « + a spot » s'ouvrent SUR PLACE ; la croix, Échap et « précédent » rendent le Totehm. Et COM parle moins :
+// 12/10/2026 — UNE PLATEFORME (Wah) : SPACE vit dans totehm.com (`/x/space`, même origine, même session, sans pont),
+// dans une couche chargée d'avance. 29/10 : le Club n'y est plus — un spot s'ouvre dans la visionneuse de la vue de
+// droite (`VX`), au-dessus du Totehm ; la croix, Échap et « précédent » rendent le Totehm. Et COM parle moins :
 // plus de [Higher] STRATEGY ni de phrase, le nom écrit sur le papier navy, Get Higher à GAUCHE, la recherche
 // EN HAUT, le trackpad lu comme SPACE (deltaX > 0 → la vue de droite). 13/10 : la croix de Wah → com_croix.mjs. Tout est simulé. LANCER : node com_plateforme.mjs /tmp
 import fs from 'node:fs';
@@ -16,10 +16,10 @@ const rpc = { my_landing:land, habit_spaces:{ ok:true, mine:true, habits:[{ habi
   my_trips:{ signed_in:true, trips:[{ id:'o1', text:'Build a practice', is:['focus'] }], reps:[], wisdom:[], visions:[] }, element_cloths:{ ok:true, mine:true, elements:[] },
   spot_get:b => ({ ok:true, spot:item(b.p_id, b.p_id.startsWith('p') ? 'spot' : 'space') }), spot_rules:{ clip_seconds:33, duration_min:5, duration_max:720, horizon_days:90 },
   spot_schedule_audience:{ ok:true, id:'p9', state:'will' }, spot_box_set:{ ok:true },
+  club_spots_of:b => ({ ok:true, items:b.p_period === 'future' && b.p_filters && b.p_filters.habit === 'Deep practice' ? [item('p1','spot')] : [], total:0 }),
   space_feed:{ ok:true, spots:[], more:false }, space_pulse:{ spaces_week:1, vibes_week:0 }, space_habits:{ ok:true, habits }, space_discover:{ spots:[], more:false }, spots_feed:{ spots:[], more:false } };
 const tables = { profiles:[{ pseudo:'wahigher' }], totehms:[{ user_id:'u', steps:[{ t:'Deep practice', f:'daily', is:['focus'], i:'focus' }], totehm_visibility:'private' }] };
 const xo = pg => pg.evaluate(() => window.__totehm_xo());
-const cadre = (pg, k) => pg.frame({ url:u => String(u).includes('/x/' + k) });
 const browser = await launch();
 try{
  /* ── 1 · l'atterrissage : moins de mots, le nom sur le papier, la croix, le trackpad ── */
@@ -34,13 +34,15 @@ try{
    ok(!c.why && !c.strat && !c.thp && !c.tag, 'COM : plus de « [Higher] STRATEGY », de phrase sous lui, de texte du THP ni de slogan TotehmSM');
    ok(c.pitch && /to open it · (Turn|Swipe) to configure it/.test(c.tap), '15/10 bis : un MEMBRE ne lit pas l\'argumentaire — le geste seul');
    ok(c.connAbs && c.sigInPaper && c.nameBtn === 'none', 'le nom du Totehm ne vit QUE sur la face verso (18/10) — ni en haut de l\'atterrissage, ni sur le recto du papier');
-   ok(c.build === '2026-10-29-com-arbre-repli', 'BUILD 2026-10-29-com-arbre-repli');
+   ok(c.build === '2026-10-29-com-visionneuses', 'BUILD 2026-10-29-com-visionneuses');
    await pg.screenshot({ path:OUT + '/plateforme_centre.png' });
    /* 15/10 : les trois vues, leurs gestes, la galaxie et la Reflection sont dans com_processeur.mjs. */
    /* La couche se réchauffe toute seule, sans rien charger dans SPACE ni le Club. */
-   await pg.waitForFunction(() => window.__totehm_xo && window.__totehm_xo().prets.length === 2, null, { timeout:12000 }).catch(() => {});
+   await pg.waitForFunction(() => window.__totehm_xo && window.__totehm_xo().prets.length === 1, null, { timeout:12000 }).catch(() => {});
+   await pg.waitForTimeout(600);
    const x = await xo(pg);
-   ok(x.prets.includes('space') && x.prets.includes('club') && !x.actif, 'SPACE et le Club sont chargés d\'avance, invisibles (' + x.prets.join(',') + ')');
+   ok(x.prets.join(',') === 'space' && !x.actif && !(await pg.locator('#xo iframe[data-k="club"]').count()),
+      'SPACE est chargé d\'avance, invisible — et plus aucun cadre figher.club (29/10) → ' + x.prets.join(','));
    ok(!log.rpc.some(r => r.name === 'space_feed' || r.name === 'space_discover') && !log.functions.some(f => f.name === 'create-bunny-upload'),
      'réchauffés, ils ne lisent ni le fil, ni les spots, ni la vidéo');
    ok(!erreurs(log).length, 'atterrissage : aucune erreur ' + erreurs(log).join(' | '));
@@ -59,15 +61,16 @@ try{
    const url0 = pg.url();
    ok(await pg.locator('#habits [data-format="space"]').count() === 0 && await pg.locator('#habits [data-format="spot"]').count() === 1
       && !await pg.locator('#habits [data-newspace]').count(), 'la Habit Box ne montre plus que ses SPOTS, et « + a space » est parti');
-   /* un spot → le Club, sur place ; la croix rend le Totehm tel qu'il était */
+   /* un spot → (29/10) la visionneuse de la vue de DROITE, au-dessus du Totehm ; « précédent » rend le Totehm tel qu'il était */
    await pg.locator('#habits [data-format="spot"]').click();
-   await pg.waitForFunction(() => window.__totehm_xo().actif === 'club');
-   const cl = cadre(pg, 'club'); await cl.waitForSelector('#detail.is-open', { timeout:10000 });
-   ok(pg.url() === url0 && !log.functions.some(f => f.name === 'sso-mint'), 'un spot s\'ouvre SUR PLACE : même page, aucun pont SSO');
-   ok(await cl.evaluate(() => document.body.classList.contains('is-embed')), 'dans la couche : le Club sans son coin membre (COM le tient)');
+   await pg.waitForFunction(() => window.__totehm_vx().pret, null, { timeout:8000 }).catch(() => {});
+   const v = await pg.evaluate(() => ({ xo:window.__totehm_xo().actif, club:!!document.querySelector('#xo iframe[data-k="club"]'), vu:!!document.querySelector('#vx #rdr-sh .lsh[data-lsh-k="sp:p1"]') }));
+   ok(pg.url() === url0 && !v.xo && !v.club && v.vu && !log.functions.some(f => f.name === 'sso-mint'),
+      'un spot s\'ouvre SUR PLACE, dans la visionneuse de la vue de droite : même page, aucun cadre figher.club, aucun pont SSO → ' + JSON.stringify(v));
    await pg.screenshot({ path:OUT + '/plateforme_spot.png' });
-   await pg.goBack(); await pg.waitForFunction(() => !window.__totehm_xo().actif);
-   ok(pg.url() === url0 && await pg.locator('#habits [data-space]').count() === 1, '« précédent » referme la couche, sans quitter le Totehm (la Habit toujours ouverte)');
+   await pg.goBack(); await pg.waitForFunction(() => !window.__totehm_vx().ouvert, null, { timeout:6000 }).catch(() => {}); await pg.waitForTimeout(400);
+   ok(pg.url() === url0 && await pg.locator('#habits [data-space]').count() === 1 && await pg.evaluate(() => document.getElementById('vx').hidden),
+      '« précédent » referme la visionneuse, sans quitter le Totehm (la Habit toujours ouverte)');
    /* 27/10 — [Add a spot] : le Totehm se replie, la vue de DROITE s'ouvre sur la prise de spot, CETTE Habit choisie
       (Wah : « la prise de spot se fait dans la vue de droite ») ; aucune autre page, aucun cadre */
    await pg.locator('#habits [data-spotnew]').click();

@@ -2828,6 +2828,15 @@ body.gate.entered #filter-badge{
 @media(hover:hover){#xo-x:hover{color:#fff}}
 .xo-f{position:absolute;inset:0;width:100%;height:100%;border:0;display:block;background:#000;visibility:hidden}
 #xo.is-open .xo-f.is-on{visibility:visible}
+/* VX (29/10) : la couche des visionneuses prêtées au TOTEHM déployé — elle s'ouvre en fondu sur lui, le média monte de
+   quelques pixels (l'objet arrive, il ne surgit pas), et se referme en fondu : on retrouve le Totehm tel qu'il était. */
+#vx{position:fixed;inset:0;z-index:410;background:#000;opacity:0;transition:opacity .26s ease}
+#vx[hidden]{display:none}
+#vx.is-on{opacity:1}
+#vx .tlv,#vx #rdr-sh{position:absolute;inset:0;transform:translateY(14px);transition:transform .34s cubic-bezier(.22,.9,.3,1)}
+#vx.is-on .tlv,#vx.is-on #rdr-sh{transform:none}
+#vx #rdr-sh,#vx #rdr-x{display:block}
+@media(prefers-reduced-motion:reduce){#vx,#vx .tlv,#vx #rdr-sh{transition:none}}
 body.is-xo{overflow:hidden}
 @media(prefers-reduced-motion:reduce){#xo,#xo.is-open{transition:none}}
 /* Personal spaces: owner-only history, opened from the member menu. */
@@ -3403,7 +3412,7 @@ body.rf-clavier #lvjoy{opacity:0;pointer-events:none}
 .rf-add{border:0;border-radius:10px;padding:7px 11px;background:rgba(0,0,0,.3);color:#d6d6dc;font:700 9.5px/1.3 'Space Mono',monospace;letter-spacing:.1em;text-transform:uppercase;cursor:pointer}
 .rf-add:disabled{opacity:.6;cursor:default}
 /* 22/10 — LE LIEU DE LA STEP (le miroir) : un carré plein (comme un point de la carte), son nom, ce qui le situe, l'heure ;
-   GO l'ouvre (Maps, ou la billetterie d'un événement), SPOT IT l'annonce sur figher.club. Rien n'est inventé : la page
+   GO l'ouvre (Maps, ou la billetterie d'un événement), SPOT IT en fait un de mes spots. Rien n'est inventé : la page
    n'affiche que le lieu que le serveur a vérifié (`@lieu`). */
 .rf-lieu{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,.14)}
 .rf-lieu-n{font:400 13px/1.35 'Quantico',sans-serif;color:#fff}
@@ -5309,7 +5318,7 @@ const ETAT_SPACE={will:'I will be here',am:'I am here',was:'I was there'};
 const quandSpace=s=>{ const d=new Date(s.starts_at); if(isNaN(d)) return '';
   return d.toLocaleDateString('en',{day:'numeric',month:'short'})+' · '
         +d.toLocaleTimeString('en',{hour:'2-digit',minute:'2-digit',hour12:false}); };
-const miniSpace=s=>'<button type="button" class="mini m-s" data-space="'+esc(String(s.id))+'" data-format="'+(s.format==='spot'?'spot':'space')+'">'
+const miniSpace=(s,hab)=>'<button type="button" class="mini m-s" data-space="'+esc(String(s.id))+'" data-format="'+(s.format==='spot'?'spot':'space')+'"'+(hab?' data-hab="'+esc(String(hab))+'"':'')+'>'
   +'<span class="ms-st'+(s.format==='spot'&&s.state==='am'?' is-live':'')+'">'+esc(s.format==='spot'?(ETAT_SPACE[s.state]||'spot'):'posted')+'</span>'
   +'<span class="ms-w">'+esc([(s.exact&&s.exact.place)||s.city||'', quandSpace(s)].filter(Boolean).join(' · '))+'</span></button>';
 const spacesDe=x=>HSPACES.par.get(norm(srv(x)))||null;
@@ -5334,8 +5343,8 @@ async function villeDe(lat,lng){
    Wah : « il faut que SPACE et le Club vivent sur totehm.com ; dans mon Totehm, quand je
    clique sur un de mes spaces ou un de mes spots je suis redirigé vers une autre page alors
    que la fluidité est LA chose la plus importante ; pareil pour ajouter un space ou un spot à
-   mon Habitude ». totehm.com SERT SPACE et le Club (réécritures Vercel `/x/space`, `/x/club`,
-   `com/vercel.json`) : même origine, donc même session, aucun pont SSO. Ils vivent dans une
+   mon Habitude ». totehm.com SERT SPACE (réécriture Vercel `/x/space`, `com/vercel.json` ; le Club en est sorti le 29/10,
+   ses spots vivent dans la vue de droite) : même origine, donc même session, aucun pont SSO. Il vit dans une
    COUCHE (`#xo`) chargée d'avance, invisible (3 s après l'arrivée d'un membre, au repos du
    navigateur) ; ouvrir un space, en filmer un, annoncer un spot se fait sur place, et la
    croix, « précédent » ou Échap rendent le Totehm tel qu'il était (il relit ses spaces).
@@ -5350,8 +5359,10 @@ const XO=(()=>{
      Même origine, donc la même session : rien à repasser, rien à reconnecter. */
   /* `univers` naît VIDE : son adresse dépend du nom cherché, et charger `/creator` pour le remplacer
      aussitôt serait une requête pour rien. */
-  const SRC={space:'/x/space?embed=1', club:'/x/club?embed=1', console:'/console?embed=1', univers:'about:blank'};
-  const NOM={space:'SPACE', club:'FIGHER.CLUB', console:'MY SUBSCRIPTIONS', univers:'A TOTEHM'};
+  /* 29/10 (Wah : « un gros nettoyage avec tout le figher.club ») : le Club ne vit plus dans une couche de COM. Un spot
+     s'ouvre dans la visionneuse de la vue de droite (`VX`), on en prend un dans la vue de droite (`NSPOT`). */
+  const SRC={space:'/x/space?embed=1', console:'/console?embed=1', univers:'about:blank'};
+  const NOM={space:'SPACE', console:'MY SUBSCRIPTIONS', univers:'A TOTEHM'};
   const ALLOW='camera; microphone; geolocation; autoplay; fullscreen; clipboard-write; web-share';
   const C={}; let actif=null, hist=false, uid=null, retour=null;
   const diag={ouverts:0, arrivees:0, perdus:0, cmds:0};
@@ -5404,7 +5415,11 @@ const XO=(()=>{
   /* Ce que demande le cadre : SPACE ↔ Club sur place, totehm.com chez lui, le reste par le pont. */
   function aller(cible,url){
     let u; try{ u=new URL(url,location.origin); }catch(_){ return; }
-    if(cible==='space'||cible==='club'){ ouvrir(cible,u.search.replace(/^\?/,'')); return; }
+    if(cible==='space'){ ouvrir(cible,u.search.replace(/^\?/,'')); return; }
+    /* SPACE demande le Club (« Spot it ») : la prise de spot de la vue de droite, son Habit choisie. */
+    if(cible==='club'){ const h=u.searchParams.get('habit')||''; fermer();
+      const go=()=>{ if(lvAller) lvAller('d',()=>NSPOT.ouvrir(h)); };
+      setTimeout(()=>{ if(document.body.classList.contains('gate')) go(); else foldToGate(go); },360); return; }
     if(cible==='com'){
       if(u.pathname==='/totehm'&&!u.search){ fermer(); if(u.hash==='#in'&&typeof window.__totehmDeplie==='function') setTimeout(()=>window.__totehmDeplie(),400); return; }
       location.href=u.pathname+u.search+u.hash; return;
@@ -5427,7 +5442,7 @@ const XO=(()=>{
   /* Un autre compte : les cadres ont lu l'ancienne session, on les jette (puis on réchauffe). */
   sb.auth.onAuthStateChange((ev,session)=>{ const id=session?.user?.id||null;
     if(id!==uid&&Object.keys(C).length){ oublier(); } uid=id; if(id) bientot(); });
-  function prechauffer(){ if(!me||document.body.classList.contains('is-door')) return; uid=me.id; cadre('space'); cadre('club'); }
+  function prechauffer(){ if(!me||document.body.classList.contains('is-door')) return; uid=me.id; cadre('space'); }
   let tic=0;
   function bientot(){ clearTimeout(tic); tic=setTimeout(()=>{ (window.requestIdleCallback||(f=>setTimeout(f,0)))(prechauffer); },3000); }
   bientot();
@@ -6380,7 +6395,18 @@ function creerFeed(conf){
   }
   /* TOUT ce que j'ai posé : mes fichiers (images et vidéos), la photo d'un spot, l'image d'une VISION.
      À droite, seuls les SPOTS — c'est la vue des spots, en shorts. */
+  /* 29/10 — UNE LISTE PRÊTÉE (`montrer`) : la visionneuse ouverte depuis le TOTEHM déployé montre CETTE liste-là. */
+  let ext=null, onFin=null;
+  const chez=new Map();
+  function itemSpot(z){
+    const hb=z.habit_box||{}, ints=Array.isArray(hb.ints)?hb.ints:(Array.isArray(z.intentions)?z.intentions:[]);
+    const mien=(z.mine||RO)?habByT(String(z.habit||'')):null;
+    return {cle:'sp:'+z.id, src:String(z.photo||z.video||''), b:'moments', vid:!!((z.clip&&z.clip.id)||z.video),
+            st:String(z.state||'will'), sp:z, bk:'h', vue:'habits', id:mien?String(mien.id):'',
+            txt:String(hb.name||z.habit||''), cols:ints.map(intColor), ints};
+  }
   function liste(){
+    if(ext) return ext.slice();
     const l=[];
     if(!me) return l;
     /* 20/10 sexies — DANS L'ÉCOSYSTÈME D'UN MEMBRE, SES médias (`member_media` : ceux dont la box m'est partagée). */
@@ -6391,14 +6417,7 @@ function creerFeed(conf){
     });
     /* 20/10 quater — À DROITE, LES SPOTS DU CLUB (`CLUBSP`, `club_spots`) : les miens et ceux que j'ai le droit
        de voir, filtrés par le SERVEUR. Un spot sans média reste dans le fil : il a sa carte, pas d'image. */
-    if(conf.src==='spots') CLUBSP.items().forEach(z=>{
-      if(!z||!z.id) return;
-      const hb=z.habit_box||{}, ints=Array.isArray(hb.ints)?hb.ints:(Array.isArray(z.intentions)?z.intentions:[]);
-      const mien=(z.mine||RO)?habByT(String(z.habit||'')):null;
-      l.push({cle:'sp:'+z.id, src:String(z.photo||z.video||''), b:'moments', vid:!!((z.clip&&z.clip.id)||z.video),
-              st:String(z.state||'will'), sp:z, bk:'h', vue:'habits', id:mien?String(mien.id):'',
-              txt:String(hb.name||z.habit||''), cols:ints.map(intColor), ints});
-    });
+    if(conf.src==='spots') CLUBSP.items().forEach(z=>{ if(z&&z.id) l.push(itemSpot(z)); });
     if(conf.src!=='spots'&&!RO) VISIMG.forEach((img,id)=>{
       const o=visOf(id);
       l.push({cle:'vi:'+id, src:String(img), b:'moments', vid:false, st:'',
@@ -6882,6 +6901,7 @@ function creerFeed(conf){
     r.querySelectorAll('video').forEach(v=>{ try{ v.pause(); }catch(_){} });
     const f=r.querySelector('.tlv-f'); if(f) f.innerHTML='';
     r.hidden=true; document.body.classList.remove('is-tlv'); VU.i=-1; etat.vu=-1;
+    if(ext&&conf.grille){ ext=null; porter(r,null); L=[]; if(etat.on) grille(); finir(); }
   }
   /* Ouvrir l'élément d'une boîte dans le Totehm, sur SA vue (`__totehmDeplie` est le seul chemin d'entrée). */
   function ouvrirElement(b){
@@ -6950,6 +6970,29 @@ function creerFeed(conf){
     if(el){ el.addEventListener('load',quand,true); el.addEventListener('loadedmetadata',quand,true); }
     let rt=0; window.addEventListener('resize',()=>{ clearTimeout(rt); rt=setTimeout(()=>{ const r=conf.grille?$('tlv'):sc();
       if(r&&r.offsetParent!==null) r.querySelectorAll('.tlv-s,.lsh').forEach(caler); },120); }); }
+  /* ══ PRÊTÉE AU TOTEHM DÉPLOYÉ · 29/10 ══ (Wah : « quand on clique sur une mini-box spot du Totehm … un résultat
+     fullscreen identique au clic d'un élément de la grid de la vue de droite » · « [Visualize it] … le même résultat que
+     lorsqu'on clique sur un élément de la vue de gauche »). La visionneuse QUITTE sa vue (cachée sous le Totehm) pour
+     l'hôte qu'on lui donne (`#vx`), montre la liste qu'on lui prête, puis RENTRE chez elle : le même rendu, les mêmes
+     gestes, aucune copie. */
+  function porter(el,hote){
+    if(!el) return;
+    if(hote){ if(!chez.has(el)) chez.set(el,{p:el.parentNode,n:el.nextSibling}); hote.appendChild(el); return; }
+    const c=chez.get(el); if(!c) return; chez.delete(el);
+    if(c.n&&c.n.parentNode===c.p) c.p.insertBefore(el,c.n); else c.p.appendChild(el);
+  }
+  function finir(){ const f=onFin; onFin=null; if(typeof f==='function') try{ f(); }catch(e){ console.error('[vx]',e&&e.message||e); } }
+  function montrer(items,cle,hote,fin){
+    if(!items||!items.length||!hote) return false;
+    ext=items.slice(); onFin=fin||null; etat.prete=(etat.prete|0)+1;
+    if(conf.grille){ porter($('tlv'),hote); L=ext; voir(Math.max(0,L.findIndex(x=>x.cle===cle))); return true; }
+    porter(sc(),hote); ici=cle; entrer(); return true;
+  }
+  function cacher(){
+    if(!ext) return;
+    if(conf.grille){ fermerV(); return; }
+    sortir(); ext=null; ici=null; porter(sc(),null); const b=bx(); if(b) b.innerHTML=''; finir();
+  }
   function peindre(){
     if(conf.grille) return grille();
     const b=bx(); if(!b) return;
@@ -7207,6 +7250,7 @@ function creerFeed(conf){
           box:()=>sfOpen(!sfOuvert()),
           /* Le polaroid s'ouvre SUR un spot (la carte ou la grille l'ont désigné). */
           ouvrirA:cle=>{ ici=cle; entrer(); },
+          items:()=>liste(), depuis:l=>(l||[]).filter(z=>z&&z.id).map(itemSpot), montrer, cacher, prete:()=>!!ext,
           flt:()=>({type:SF.type||'all', vue:SF.vue||'all', quand:SF.quand||'all',
                    ints:[...sfIntsActives()], piliers:[...SF.piliers], freq:SF.freq,
                    box:SF.box?SF.box.txt:'', on:[...SF.on], n:sfCount()}),
@@ -7258,6 +7302,74 @@ const SPOTS=(()=>{
     mode:()=>SPOTMODE.get(),
     etat:()=>({mode:SPOTMODE.get(), voit, carte:SPMAP.etat(), grille:SPGRID.etat(), polaroid:SHS.etat()})
   };
+})();
+/* ══ VX — LES VISIONNEUSES ← ET →, AU-DESSUS DU TOTEHM DÉPLOYÉ · 29/10/2026 ═════════════════════════════════════════
+   Wah : « quand on clique sur un spot dans le Totehm déployé, on tombe sur toute l'infrastructure figher.club … l'infra-
+   structure qui prévaut est celle de la vue de droite » · « [Visualize it] … dans une fenêtre, le même résultat que
+   lorsqu'on clique sur un élément de la vue de gauche ». Plus de cadre figher.club : `#vx` reçoit la visionneuse de la
+   vue (`SH.montrer` : `#tlv` ; `SHS.montrer` : le fil des spots) avec la liste de la box — ses fichiers (images, vidéos)
+   ou les spots de son Habit (`club_spots_of`, les trois temps) —, s'ouvre en fondu sur le Totehm, et se ferme par ✕,
+   Échap ou « précédent » : le Totehm est là, tel qu'il était. Un document (PDF…) s'ouvre toujours à part. */
+const VX=(()=>{
+  const hote=()=>$('vx');
+  let qui=null, seq=0, hist=false;
+  const diag={media:0, spots:0, fermes:0, introuvables:0};
+  function ouvrirHote(){
+    const h=hote(); h.hidden=false; void h.offsetWidth; h.classList.add('is-on'); document.body.classList.add('is-vx');
+    if(!hist){ try{ history.pushState({vx:1},''); hist=true; }catch(_){} }
+  }
+  function fini(){
+    qui=null; diag.fermes++; const h=hote(); h.classList.remove('is-on','is-spots'); document.body.classList.remove('is-vx');
+    const x=$('rdr-x'); if(x&&h.contains(x)) porterX(false);
+    setTimeout(()=>{ if(!qui) h.hidden=true; },260);
+    if(hist){ hist=false; if(history.state&&history.state.vx) try{ history.back(); }catch(_){} }
+  }
+  /* la croix de la vue de droite vient avec son fil, puis rentre */
+  let xChez=null;
+  function porterX(oui){ const x=$('rdr-x'); if(!x) return;
+    if(oui){ xChez={p:x.parentNode,n:x.nextSibling}; hote().appendChild(x); }
+    else if(xChez){ if(xChez.n&&xChez.n.parentNode===xChez.p) xChez.p.insertBefore(x,xChez.n); else xChez.p.appendChild(x); xChez=null; } }
+  /* ← [Visualize it] : les fichiers de CETTE box, en commençant par celui qu'on a touché. */
+  function media(id){
+    const m=EMEDIA.items.find(x=>String(x.id)===String(id)); if(!m||qui) return false;
+    if(!emImg(m)&&!emVid(m)){ emOuvrir(id); return true; }
+    const cles=EMEDIA.items.filter(x=>x.kind===m.kind&&x.ref===m.ref&&(emImg(x)||emVid(x))).map(x=>'em:'+x.id);
+    const tous=SH.items(), items=cles.map(c=>tous.find(x=>x.cle===c)).filter(Boolean);
+    if(!items.length){ emOuvrir(id); return true; }
+    qui='media'; diag.media++; ouvrirHote();
+    if(!SH.montrer(items,'em:'+id,hote(),fini)) fini();
+    return true;
+  }
+  /* → une mini-box spot : les spots de son Habit (à venir, maintenant, passés), en commençant par celui-là. Sans Habit
+     (un lien `?open=spot`), tout ce que j'ai le droit de voir. Le serveur décide de ce qui se voit. */
+  async function spot(id,habit){
+    if(qui||!id) return;
+    qui='spots'; diag.spots++; const n=++seq, uid=me?me.id:null;
+    ouvrirHote(); hote().classList.add('is-spots');
+    const qn=RO||monPseudo(), f=habit?{habit:String(habit)}:{};
+    const lire=p=>qn&&habit?sb.rpc('club_spots_of',{p_pseudo:qn,p_period:p,p_filters:f,p_limit:40,p_offset:0}):sb.rpc('club_spots',{p_period:p,p_filters:f,p_limit:40,p_offset:0});
+    const rs=await Promise.all(['future','now','past'].map(lire));
+    if(n!==seq||qui!=='spots'||(me?me.id:null)!==uid) return;
+    const vus=new Set(); let l=[];
+    rs.forEach(({data,error})=>{ if(error) console.error('[vx spots]',error.message); else if(data&&data.ok&&Array.isArray(data.items)) l=l.concat(data.items); });
+    l=l.filter(z=>z&&z.id&&!vus.has(String(z.id))&&vus.add(String(z.id)));
+    l.sort((a,b)=>String(b.starts_at||'').localeCompare(String(a.starts_at||'')));
+    if(!l.some(z=>String(z.id)===String(id))){ diag.introuvables++; fini(); return; }
+    porterX(true);
+    if(!SHS.montrer(SHS.depuis(l),'sp:'+id,hote(),fini)) fini();
+  }
+  function fermer(){ if(qui==='media') SH.cacher(); else if(qui==='spots'){ if(SHS.prete()) SHS.cacher(); else { seq++; fini(); } } }
+  window.addEventListener('popstate',()=>{ if(qui){ hist=false; fermer(); } });
+  hote().addEventListener('click',e=>{ if(qui==='spots'&&e.target.closest('#rdr-x')){ e.stopImmediatePropagation(); fermer(); } },true);
+  /* Le clavier, pendant la couche : Échap ferme ; ↑ ↓ passent d'un spot à l'autre ; rien n'atteint le Totehm dessous. */
+  window.addEventListener('keydown',e=>{
+    if(qui!=='spots') return;
+    if(e.key==='Escape'){ e.preventDefault(); e.stopImmediatePropagation(); fermer(); }
+    else if(e.key==='ArrowDown'||e.key==='ArrowUp'){ e.preventDefault(); e.stopImmediatePropagation(); SHS.pas(e.key==='ArrowDown'?1:-1); }
+    else if(e.key==='ArrowLeft'||e.key==='ArrowRight'){ e.preventDefault(); e.stopImmediatePropagation(); }
+  },true);
+  window.__totehm_vx=()=>({...diag, ouvert:qui||'', pret:!!(qui&&(SH.prete()||SHS.prete()))});
+  return {media, spot, fermer, ouvert:()=>!!qui};
 })();
 /* ══ → PRENDRE UN SPOT, DANS LA VUE DE DROITE · 27/10/2026 ═══════════════════════════════════════════════════════════
    Wah : « sur la vue de droite, la prise de spot doit être la même que sur figher.club : la vue d'en bas (les options
@@ -8034,7 +8146,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-10-29-com-arbre-repli';
+const BUILD='2026-10-29-com-visionneuses';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -9012,7 +9124,7 @@ function vueHabitude(x,k){
      (`data-spotnew`) ; `[Add a media]` (groupe `files`) fait de même vers la gauche. */
   const minis = groupe('why',gO,pkO) + groupe('trigger',gR,pkR)
     + (ouverte&&!RO?fichiersHTML('h',x.id):'')
-    + (ouverte&&spots.length?groupe(nSt>3?'SPOTS · 3 of '+nSt:'SPOTS',spots.map(miniSpace).join('')):'')
+    + (ouverte&&spots.length?groupe(nSt>3?'SPOTS · 3 of '+nSt:'SPOTS',spots.map(z=>miniSpace(z,srv(x))).join('')):'')
     + (ouverte&&!RO?'<button type="button" class="dash" data-spotnew="'+esc(String(x.id))+'">Add a spot</button>':'');
   let haut='';
   if(ouverte&&pkOn('int','h',x.id))  haut=intPicker(x,'h');
@@ -9521,7 +9633,7 @@ function cable(box){
        elle, la box pré-sélectionnée ». Le Totehm se replie, la vue de gauche s'ouvre sur le « + » de CETTE box. */
     if(d.cap){ e.stopPropagation(); const i=d.cap.indexOf(':'), x={k:d.cap.slice(0,i), ref:d.cap.slice(i+1)};
       foldToGate(()=>{ if(lvAller) lvAller('g',()=>SH.ajouter(x)); }); return; }
-    if(d.emo){ e.stopPropagation(); emOuvrir(d.emo); return; }
+    if(d.emo){ e.stopPropagation(); if(!VX.media(d.emo)) emOuvrir(d.emo); return; }
     if(d.emx){ e.stopPropagation(); emRetirer(d.emx); return; }
     /* La loupe agrandit la boîte EN PLACE, sans l'ouvrir ni la redessiner. */
     if(d.zoom){ e.stopPropagation(); const k=d.zoom, on=!ZOOM.has(k); if(on)ZOOM.add(k); else ZOOM.delete(k);
@@ -9531,7 +9643,8 @@ function cable(box){
     /* 12/10 — un spot s'ouvre SUR PLACE, dans la couche (même en lecture).
        16/10 : « + a space » est parti avec les spaces, et ANNONCER un spot ne quitte plus la boîte
        (`spotnew`, plus bas) — le Club reste la vitrine, COM reste l'atelier. */
-    if(d.space){ e.stopPropagation(); XO.ouvrir(d.format==='spot'?'club':'space','spot='+encodeURIComponent(d.space)); return; }
+    /* 29/10 (Wah) : un spot s'ouvre comme dans la vue de droite, au-dessus du Totehm (`VX`) — plus de figher.club ici. */
+    if(d.space){ e.stopPropagation(); if(d.format==='spot') VX.spot(d.space,d.hab||''); else XO.ouvrir('space','spot='+encodeURIComponent(d.space)); return; }
     /* …et la prise de spot dans la vue de droite, CETTE Habit choisie. */
     if(d.spotnew!==undefined){ e.stopPropagation(); if(RO) return; const h=habOf(d.spotnew)||(state.habits||[]).find(z=>String(z.id)===d.spotnew);
       const t=h?String(srv(h)||h.t||'').trim():''; if(!t) return;
@@ -10315,7 +10428,7 @@ window.addEventListener('touchend',(e)=>{
    Ils passent sous Book et Next (z-index) : on ouvre par eux, on referme par
    le T de la page ouverte, les flèches du clavier ou Échap. */
 function navBlocked(){
-  return busy||fpOpen()||document.body.classList.contains('is-xo')||CAP.ouvert()
+  return busy||fpOpen()||document.body.classList.contains('is-xo')||document.body.classList.contains('is-vx')||CAP.ouvert()
     ||$('member-window').classList.contains('show')
     ||false
     ||!$('habit-peek').classList.contains('hide')
@@ -13526,7 +13639,7 @@ window.addEventListener('pageshow',e=>{
         +(r.teach&&r.teach.text?'<div class="rf-teach"><span class="rf-k">Teaching from the story</span>'+ref('teach')+p(r.teach)+'</div>':'')+'</div>';
       return h;
     }
-    /* 22/10 — le lieu de la step : vérifié par le serveur ; GO (Maps ou la billetterie), SPOT IT (figher.club) quand la step
+    /* 22/10 — le lieu de la step : vérifié par le serveur ; GO (Maps ou la billetterie), SPOT IT (un de mes spots) quand la step
        est une de MES Habits, que le lieu a un point et une heure à venir. */
     const quandDe=v=>{ const d=new Date(v); if(isNaN(d)) return '';
       return d.toLocaleString('en-GB',{weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}); };
@@ -13724,7 +13837,7 @@ window.addEventListener('pageshow',e=>{
     /* Une Reflection, telle qu'elle part ailleurs : ses trois étages, en clair. */
     const aPartager=m=>{ const r=lireR3(m.text); return [r.dir&&r.dir.text, r.obs&&r.obs.text, r.teach&&r.teach.text, r.step&&r.step.text&&('→ '+r.step.text),
       r.lieu&&r.lieu.name&&('◼ '+r.lieu.name+(r.lieu.maps||r.lieu.url?' '+(r.lieu.kind==='event'&&r.lieu.url?r.lieu.url:r.lieu.maps):''))].filter(Boolean).join('\n'); };
-    /* SPOT IT : la step (une de MES Habits) au lieu vérifié, à son heure → un spot sur figher.club, la vue → le montre.
+    /* SPOT IT : la step (une de MES Habits) au lieu vérifié, à son heure → un de MES spots (vue de droite), visible du Club.
        Le serveur décide de tout (`spot_schedule_audience`) : la Habit, l'heure à venir, le point. */
     async function spotDeLaStep(id,btn){
       if(RO||!me||!inscrit()||guest()) return;
@@ -13741,7 +13854,7 @@ window.addEventListener('pageshow',e=>{
       if(error){ console.error('[spot_schedule_audience]',error.message); smNote('not announced · try again'); if(btn) btn.disabled=false; return; }
       if(!data||!data.ok){ smNote(({habit:'not my habit',when:'a time, later than now',too_many:'too many spots ahead'})[data&&data.why]||'not announced · try again');
         if(btn) btn.disabled=false; return; }
-      diag.spots=(diag.spots|0)+1; SM.spotte.add(id); CLUBSP.vider(); smPeindre(); smNote('spotted · figher.club');
+      diag.spots=(diag.spots|0)+1; SM.spotte.add(id); CLUBSP.vider(); smPeindre(); smNote('spotted');
     }
     function ajouterHabit(id){
       if(RO||!me||!inscrit()||guest()) return;
@@ -13844,12 +13957,12 @@ window.addEventListener('pageshow',e=>{
     if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>{ if(!bouge) sloganPour(vue); sloFini(); });
     else requestAnimationFrame(sloFini);
 
-    /* 13/10 — `/@nom` ouvre un space ou un spot SUR PLACE : `?open=space|spot&id=<uuid>`
-       (un identifiant, jamais une URL reçue ; les droits restent ceux de SPACE / du Club). */
+    /* 13/10 — `/@nom` ouvre un space ou un spot SUR PLACE : `?open=space|spot&id=<uuid>` (un identifiant, jamais une URL
+       reçue). 29/10 : un spot s'ouvre dans la visionneuse de la vue de droite (`VX`, ce que le serveur me laisse voir). */
     { const qs=new URLSearchParams(location.search), k=qs.get('open'), id=qs.get('id')||'';
       if((k==='space'||k==='spot')&&/^[0-9a-f-]{36}$/i.test(id)){
         history.replaceState(null,'',location.pathname);
-        setTimeout(()=>XO.ouvrir(k==='spot'?'club':'space','spot='+encodeURIComponent(id)),0); } }
+        setTimeout(()=>{ if(k==='spot') VX.spot(id,''); else XO.ouvrir('space','spot='+encodeURIComponent(id)); },0); } }
 
     /* La page de vente de l'abonnement Higher renvoie ici quand il est déjà à moi (`?higher=open`). */
     if(new URLSearchParams(location.search).get('higher')==='open'){
@@ -14052,6 +14165,8 @@ window.addEventListener('pageshow',e=>{
   <input id="cap-f-file" type="file" accept="image/jpeg,image/png,image/webp,video/mp4,video/webm,video/quicktime,application/pdf,audio/mpeg,audio/mp4,audio/webm,audio/ogg,text/plain" hidden>
 </div>
 <!-- 12/10 : SPACE et le Club, servis par totehm.com, posés par-dessus le Totehm (`XO`). -->
+<!-- 29/10 — VX : les visionneuses ← et → viennent ici, au-dessus du TOTEHM déployé ([Visualize it], une mini-box spot). -->
+<div id="vx" role="dialog" aria-modal="true" aria-label="My TOTEHM · view" hidden></div>
 <div id="xo" aria-hidden="true"><button id="xo-x" type="button" aria-label="Back to the galaxy">×</button></div>
 </body>
 </html>
