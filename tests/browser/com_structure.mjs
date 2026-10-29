@@ -23,7 +23,8 @@ const branche=pg=>pg.evaluate(()=>{const s=document.getElementById('gate-asteroi
   const traits=[...document.querySelectorAll('#lv-ram > g')].map(g=>{const d=g.querySelector('path').getAttribute('d')||'';
     return d.split('M').filter(Boolean).map(sp=>sp.split('L').map(q=>q.trim().split(/\s+/).map(Number)));});
   const cs=getComputedStyle(k);
-  return {s:{t:s.top,b:s.bottom,l:s.left,r:s.right,w:s.width,cx:s.left+s.width/2,cy:s.top+s.height/2},H:innerHeight,pins,trous,traits,
+  const pads=[...document.querySelectorAll('#lv-ram circle')].map(c=>{const r=c.getBoundingClientRect();return {x:r.left+r.width/2,y:r.top+r.height/2};});
+  return {pads,rameaux:document.querySelectorAll('#lv-ram path.fk').length,s:{t:s.top,b:s.bottom,l:s.left,r:s.right,w:s.width,cx:s.left+s.width/2,cy:s.top+s.height/2},H:innerHeight,pins,trous,traits,
     coeur:getComputedStyle(document.getElementById('gate-logo')).animationName,socle:{bg:cs.backgroundColor,ombre:cs.boxShadow,puits:!!k.querySelector('.sk-well')}};});
 const pres=(p,l,t)=>l.some(q=>Math.hypot(p[0]-q[0],p[1]-q[1])<=t);
 /* L'état du réseau : aspiré ou non, son échelle, son opacité, ses impulsions. */
@@ -41,9 +42,15 @@ try{
   const departs=b.traits.flatMap(t=>t.map(sp=>sp[0])), bouts=b.traits.map(t=>[t[0][t[0].length-1],t[1][t[1].length-1]]);
   ok(b.traits.length===7&&b.traits.every(t=>t.length===2)&&departs.every(p=>pres(p,b.trous,4.5))&&b.trous.every(t=>pres(t,departs,4.5)),
      nom+' · 26/10 · chaque trait part d\'un trou, et chaque trou porte au moins un trait (le tronc au milieu, les deux extrêmes se séparent dans le trou du milieu de leur côté)');
+  /* 29/10 (Wah : « il faut que ça forme un arbre » + l'image : un circuit imprimé en éventail) : chaque trait monte en TRONC
+     étroit, s'ouvre en COURONNE (son brin du milieu + 4 rameaux, chacun fini par une pastille), et descend en racine
+     jusqu'à la rangée de pastilles du pied. */
   const xa=bouts.map(x=>x[0][0]), xb=bouts.map(x=>x[1][0]), monte=xa.every((x,i)=>!i||x>xa[i-1]), descend=xb.every((x,i)=>!i||x>xb[i-1]);
-  ok(bouts.every(x=>x[0][1]<=0&&x[1][1]>=b.H)&&monte&&descend&&xa[0]<b.s.l&&xa[6]>b.s.r,
-     nom+' · 26/10 · un ARBRE DE VIE : les branches montent en éventail jusqu\'au haut de l\'écran, les racines en miroir jusqu\'en bas, sans se croiser → '+xa.map(Math.round).join(','));
+  const pads=b.pads, cime=pads.filter(p=>p.y<b.s.t), pied=pads.filter(p=>p.y>b.s.b), W=vp.width;
+  ok(bouts.every(x=>x[0][1]<b.s.t-20&&x[1][1]>b.s.b+20)&&monte&&descend&&pads.length===42&&cime.length===35&&pied.length===7
+     &&Math.min(...cime.map(p=>p.x))<b.s.l-40&&Math.max(...cime.map(p=>p.x))>b.s.r+40&&pads.every(p=>p.x>0&&p.x<W&&p.y>0&&p.y<b.H)
+     &&Math.max(...pied.map(p=>p.y))-Math.min(...pied.map(p=>p.y))<1&&b.rameaux===28,
+     nom+' · 29/10 · un ARBRE (le circuit imprimé de Wah) : 7 troncs, une couronne de 35 pastilles plus large que le TOTEHM, 28 rameaux, 7 racines alignées au pied, sans se croiser → '+xa.map(Math.round).join(','));
   ok(b.coeur==='coeur',nom+' · 26/10 · au repos, le cœur (le TOTEHM) bat → '+b.coeur);
   const r0=await reseau(pg);
   ok(!r0.aspire&&r0.echelle===1&&r0.op===1&&r0.puls==='ram-puls',nom+' · au repos, le réseau vit (impulsions)');

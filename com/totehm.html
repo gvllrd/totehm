@@ -3187,6 +3187,10 @@ body.is-aspire #lv-ram,body.gate.lv-c.is-aspire #lv-ram,body.gate.entered.is-asp
 #lv-ram path{fill:none;stroke-width:2;stroke-linecap:square;stroke-linejoin:miter;
   stroke-dasharray:1 1;stroke-dashoffset:1;transition:stroke-dashoffset .85s var(--gate-ease) calc(var(--i) * 50ms)}
 #lv-ram rect{opacity:0;transition:opacity .25s ease}
+/* L'ARBRE (le circuit imprimé de Wah) : chaque piste finit sur une PASTILLE annulaire ; pleine = une Habit l'habite. */
+#lv-ram circle{fill:#000;stroke-width:1.5;opacity:0;transition:opacity .25s ease}
+#lv-ram .fk{stroke-width:1.5}
+body.gate.lv-c #lv-ram circle{opacity:1;transition:opacity .35s ease calc(var(--i) * 50ms + .8s)}
 /* ⚠️ 18/10 · LA COULEUR SE LIT, MÊME EN CREUX (Wah : « plus de vie dans les traits d'intention, ET
    AFFICHER LES COULEURS, dans la page processor »). Une intention sans Habit était à .22 : à ce
    niveau, le rouge-violet et le navy sont du gris, et les 7 couleurs — les 10 % de la composition —
@@ -3285,7 +3289,7 @@ body.gate.lv-h:not(.entered):not(.is-door) #lv-sell{opacity:1}
 /* ── LE CENTRE : « Tap to open it », Mine · Others ── */
 #lv-c-acts{position:absolute;left:50%;top:calc(var(--lv-y) + var(--sk) / 2 + 18px);transform:translateX(-50%);
   display:flex;flex-direction:column;align-items:center;gap:12px;width:min(94vw,460px)}
-#lv-tap{display:flex;align-items:center;justify-content:center;gap:0;background:none;border:0;padding:4px 10px;
+#lv-tap{display:flex;align-items:center;justify-content:center;gap:0;background:#000;border:0;border-radius:10px;padding:4px 10px; /* la légende coupe les racines de l'arbre, comme une étiquette sur un circuit */
   font:700 9.5px/1.4 'Space Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:#9a9aa2;white-space:nowrap;transition:opacity .3s ease}
 #lv-tap button{background:none;border:0;padding:0;font:inherit;letter-spacing:inherit;text-transform:inherit;color:inherit;cursor:pointer}
 #lv-tap button:focus-visible{outline:1px solid #fff;outline-offset:3px}
@@ -12807,30 +12811,63 @@ window.addEventListener('pageshow',e=>{
          séparent en branche et en racine. Les Habits sont les FRUITS : un carré par Habit sur la branche. Le cœur bat
          (`coeur`, CSS). `c` = le papier (centre, largeur) ; les trous viennent de `--perfo` (rayon 6,16 % du côté). */
       const TROUS=[['L',.5,'L',.5],['L',.25,'L',.75],['T',.25,'B',.25],['T',.5,'B',.5],['T',.75,'B',.75],['R',.25,'R',.75],['R',.5,'R',.5]];
-      const EVENTAIL=[.03,.19,.345,.5,.655,.81,.97];   /* où chaque branche touche le haut de l'écran (et sa racine, le bas) */
+      /* 29/10 — Wah : « il faut que ça forme un ARBRE » (l'inspiration : un arbre de CIRCUIT IMPRIMÉ en éventail, un ginkgo de
+         pistes). Les sept traits sortent de leurs perforations en pistes de circuit (droites et biais à 45°, parallèles),
+         contournent le papier, se rangent côte à côte et MONTENT EN TRONC ; en haut du tronc, chaque trait fourche en CINQ
+         rameaux qui s'ouvrent en éventail jusqu'à une COURONNE en demi-cercle, chacun fini par une pastille ronde — PLEINE
+         pour une Habit (cinq au plus), en CREUX sinon. Dessous, le PIED : les mêmes sept pistes descendent serrées et
+         s'écartent sur une rangée de pastilles. Le TOTEHM est le cœur, branché à ses douze perforations. */
+      const BRINS=5;
       function circuit(n,c,S){
-        const w=W(), h=H(), pw=c.w||S-6, hp=pw/2, r=pw*.0616, cx=c.x, cy=c.y;
+        const w=W(), h=H(), pw=c.w||S-6, hp=pw/2, r=pw*.0616, cx=c.x, cy=c.y, D=Math.PI/180;
+        const haut=cy-hp, bas=cy+hp, mh=Math.max(14,Math.min(30,h*.03)), g=Math.max(4,Math.min(7,pw*.05));
         /* un trou : son centre sur l'arête, la normale qui en sort, la broche un peu DANS l'encoche (le réseau passe sous le papier) */
         const trou=(e,f)=>{ const N={T:[0,-1],B:[0,1],L:[-1,0],R:[1,0]}[e];
           const p=e==='T'?[cx-hp+pw*f,cy-hp]:e==='B'?[cx-hp+pw*f,cy+hp]:e==='L'?[cx-hp,cy-hp+pw*f]:[cx+hp,cy-hp+pw*f];
-          return {p, N, in:[p[0]-N[0]*r*.35, p[1]-N[1]*r*.35]}; };
-        /* une courbe de Bézier du trou au bord de l'écran : elle SORT perpendiculaire à l'arête et MONTE (ou descend) se
-           poser sur le haut (ou le bas) de l'écran — la couronne et les racines s'ouvrent en éventail, sans se croiser */
-        const pousse=(T,ex,sens)=>{ const E=[ex, sens<0?-4:h+4], L=Math.hypot(E[0]-T.p[0],E[1]-T.p[1]), k1=Math.max(16,L*.3), k2=L*.42;
-          const P=[T.in, [T.p[0]+T.N[0]*k1, T.p[1]+T.N[1]*k1], [E[0], E[1]-sens*k2], E], out=[];
-          for(let z=0;z<=32;z++){ const t=z/32, m=1-t;
+          return {p, N, e, f, in:[p[0]-N[0]*r*.35, p[1]-N[1]*r*.35]}; };
+        const voie=i=>cx+(i-3)*g;                         /* la place de chaque trait dans le tronc (et dans le pied) */
+        /* LA COURONNE : un demi-cercle (élargi sur un écran large) dont le centre est au-dessus du tronc */
+        const A=Math.max(120,haut-mh), tronc0=hp+5*g+14;
+        let RY=Math.min(w/2-14,A*.66); if(A-1.18*RY<tronc0) RY=Math.max(40,(A-tronc0)/1.18);
+        const RX=Math.min(w/2-14,RY*1.45), yT=mh+RY*1.18, yO=yT-RY*.18;
+        const cime=u=>{ const th=(176-172*u/(7*BRINS-1))*D; return [cx+RX*Math.cos(th), yO-RY*Math.sin(th)]; };
+        /* LE PIED : sous le papier, une rangée de pastilles plus écartées que les pistes */
+        const yP=Math.min(h-mh-20, bas+Math.max(70,Math.min(170,(h-bas)*.36))), gp=g*2.6;
+        /* une piste de circuit : de la perforation, droite puis biais à 45° jusqu'à sa voie (sens = -1 vers le haut, +1 vers le bas) */
+        function piste(T,i,sens){
+          const L=[T.in], x=voie(i);
+          if(T.e==='T'||T.e==='B'){
+            const y0=T.p[1]+sens*g; L.push([T.p[0],y0]);
+            const dx=x-T.p[0]; L.push([x, y0+sens*Math.abs(dx)]);
+          } else {
+            const side=T.e==='L'?-1:1, o=T.f===.5?2:1, xo=cx+side*(hp+o*g);
+            L.push([xo,T.p[1]]);
+            const yd=(sens<0?haut:bas)+sens*g*(1+o); L.push([xo,yd]);
+            L.push([x, yd+sens*Math.abs(xo-x)]);
+          }
+          return L; }
+        const bez=(P,k)=>{ const out=[]; for(let z=1;z<=k;z++){ const t=z/k, m=1-t;
             out.push([m*m*m*P[0][0]+3*m*m*t*P[1][0]+3*m*t*t*P[2][0]+t*t*t*P[3][0], m*m*m*P[0][1]+3*m*m*t*P[1][1]+3*m*t*t*P[2][1]+t*t*t*P[3][1]]); }
           return out; };
-        const sp=Math.max(3,Math.min(5,r*.75));
+        /* un rameau : il quitte le haut du tronc à la verticale, puis s'ouvre vers sa pastille de la couronne */
+        const rameau=(x,u)=>{ const E=cime(u), d=Math.hypot(E[0]-cx,E[1]-yO)||1;
+          return [[x,yT]].concat(bez([[x,yT],[x,yT-RY*.32],[cx+(E[0]-cx)*.42, yO-(yO-E[1])*.42-RY*.12*Math.abs(E[0]-cx)/d],E],18)); };
+        const sp=Math.max(3,Math.min(5,r*.75)), rp=Math.max(2,Math.min(3.2,g*.55));
         return INTS.map((x,i)=>{
-          const q=n[x.id], [ea,fa,eb,fb]=TROUS[i], ex=w*EVENTAIL[i];
-          const ta=trou(ea,fa), tb=trou(eb,fb);
-          const a=pousse(ta,ex,-1), b=pousse(tb,ex,1);
-          const nodes=[[...a[10],4],[...b[10],4]], m=Math.min(6,q.n);
-          for(let z=0;z<m;z++){ const pt=a[Math.round(14+16*(z+1)/(m+1))]; nodes.push([pt[0],pt[1],3]); }
+          const q=n[x.id], [ea,fa,eb,fb]=TROUS[i], ta=trou(ea,fa), tb=trou(eb,fb), xv=voie(i);
+          /* la branche : la piste, le tronc, puis le rameau du milieu ; les quatre autres rameaux fourchent au même point */
+          const brins=Array.from({length:BRINS},(_,j)=>rameau(xv,i*BRINS+j)), mil=Math.floor(BRINS/2);
+          const a=piste(ta,i,-1).concat([[xv,yT]], brins[mil].slice(1));
+          const fk=brins.filter((_,j)=>j!==mil);
+          /* la racine : la piste, le pied, puis le biais vers sa pastille */
+          const pb=piste(tb,i,1), xp=cx+(i-3)*gp, dxp=Math.abs(xp-xv);
+          const b=pb.concat([[xv,yP-dxp-g],[xp,yP-g],[xp,yP]]);
+          /* les pastilles : celles de la couronne (pleines pour les Habits, depuis le rameau du milieu), celle du pied */
+          const ordre=[mil,mil-1,mil+1,mil-2,mil+2], pleines=new Set(ordre.slice(0,Math.min(BRINS,q.n)));
+          const pads=brins.map((l,j)=>{ const e=l[l.length-1]; return [e[0],e[1],rp,pleines.has(j)]; }).concat([[xp,yP,rp,q.n>0]]);
           const pin=t=>[t.in[0]-sp/2, t.in[1]-sp/2, sp, sp];
           const pins=ea===eb&&fa===fb?[pin(ta)]:[pin(ta),pin(tb)];
-          return {i, x, q, a, b, nodes, pins};
+          return {i, x, q, a, b, nodes:[], pins, fk, pads};
         });
       }
       /* ── ↓ L'ANNEAU (22/10, Wah : « les traits de la vue centrale doivent, à l'image de la gauche et de la droite, se
@@ -12924,7 +12961,9 @@ window.addEventListener('pageshow',e=>{
       }
       function forme(v,n,c,S){
         const l=v==='h'?cerveau(n):v==='g'?rail(n):v==='d'?meridiens(n):v==='b'?anneau(n):circuit(n,c,S);
-        l.forEach(o=>{ o.a=reech(o.a); o.b=reech(o.b); });
+        /* l'échantillon (N points) sert la TRANSFORMATION d'une vue à l'autre ; le dessin posé garde le tracé d'origine (`A`, `B`) :
+           les coins à 45° de l'arbre restent nets */
+        l.forEach(o=>{ o.A=o.a; o.B=o.b; o.a=reech(o.a); o.b=reech(o.b); });
         return l;
       }
       const dDe=o=>'M'+o.a.map(p=>r1(p[0])+' '+r1(p[1])).join('L')+'M'+o.b.map(p=>r1(p[0])+' '+r1(p[1])).join('L');
@@ -12934,12 +12973,16 @@ window.addEventListener('pageshow',e=>{
           /* Habitée : la période RÉELLE de son Habit. Vide : la veille, lente et commune. Le cerveau : ses ondes
              (immobiles si le mouvement est réduit, à plat sinon — la vibration les lève). */
           const st=' style="--i:'+o.i+';--p:'+(o.q.n?periode(o.q.w):'6.2')+'s;--d:'+(o.i*.42).toFixed(2)+'s"',
-            d=o.v?dDe({a:onde(o.v,-1,0,RMQ.matches?1:0), b:onde(o.v,1,0,RMQ.matches?1:0)}):dDe(o);
+            d=o.v?dDe({a:onde(o.v,-1,0,RMQ.matches?1:0), b:onde(o.v,1,0,RMQ.matches?1:0)}):dDe(o.A?{a:o.A,b:o.B}:o);
           out+='<g'+(o.q.n?'':' class="r-0"')+st+'>'
             +'<path pathLength="1" d="'+d+'" stroke="'+o.x.color+'"/>'
             +'<path class="puls'+(o.q.n?'':' veille')+'" pathLength="1" d="'+d+'" stroke="'+o.x.color+'"/>'
+            /* les rameaux de l'arbre : dessinés une fois la forme posée (ils ne se transforment pas d'une vue à l'autre) */
+            +(o.fk||[]).map(f=>'<path class="fk" pathLength="1" d="M'+f.map(p=>r1(p[0])+' '+r1(p[1])).join('L')+'" stroke="'+o.x.color+'"/>').join('')
             +o.nodes.map(r=>'<rect x="'+r1(r[0]-r[2]/2)+'" y="'+r1(r[1]-r[2]/2)+'" width="'+r[2]+'" height="'+r[2]+'" fill="'+o.x.color+'"/>').join('')
             +(o.pins||[]).map(r=>'<rect class="pin" x="'+r1(r[0])+'" y="'+r1(r[1])+'" width="'+r[2]+'" height="'+r[3]+'" fill="'+o.x.color+'"/>').join('')
+            +(o.pads||[]).map(r=>'<circle class="pad'+(r[3]?' is-plein':'')+'" cx="'+r1(r[0])+'" cy="'+r1(r[1])+'" r="'+r1(r[2])+'" stroke="'+o.x.color+'"'
+              +(r[3]?' fill="'+o.x.color+'"':'')+'/>').join('')
             +'</g>';
         });
         return out;
@@ -13003,7 +13046,7 @@ window.addEventListener('pageshow',e=>{
         else{ if(raf){ cancelAnimationFrame(raf); raf=0; document.body.classList.remove('ram-morph'); } dessiner(G); }
       }
       return {peindre, oublie(){ sig=''; }, palette(l){ pal=Array.isArray(l)?l:null; sig=''; },
-        etat:()=>({pistes:svg?svg.querySelectorAll('path:not(.puls):not(.sk)').length:0,
+        etat:()=>({pistes:svg?svg.querySelectorAll('path:not(.puls):not(.sk):not(.fk)').length:0, rameaux:svg?svg.querySelectorAll('path.fk').length:0,
                    noeuds:svg?svg.querySelectorAll('rect').length:0,
                    impulsions:svg?svg.querySelectorAll('.puls').length:0,
                    creux:svg?svg.querySelectorAll('.r-0').length:0, vue:sig.split('|')[0]||'', habits:sig.split('|')[2]||'',

@@ -40,7 +40,8 @@ try{
     const sk=q('#lv-socket').getBoundingClientRect(),pa=q('#gate-asteroid').getBoundingClientRect(),d=window.__totehm_lv();
     const flou=[...document.querySelectorAll('#lv-proc,#lv-proc *')].some(e=>{const cs=getComputedStyle(e);return /blur/.test(cs.filter+' '+(cs.backdropFilter||''));});
     return {vue:d.vue,mode:d.mode,dans:Math.abs((sk.x+sk.width/2)-(pa.x+pa.width/2))<1.5&&Math.abs((sk.y+sk.height/2)-(pa.y+pa.height/2))<1.5&&sk.width>=pa.width&&sk.width<=pa.width+12&&getComputedStyle(q('#lv-socket')).backgroundColor==='rgba(0, 0, 0, 0)',
-      pistes:[...document.querySelectorAll('#lv-ram path:not(.puls):not(.sk)')].map(p=>p.getAttribute('stroke')),noeuds:document.querySelectorAll('#lv-ram rect').length,
+      pistes:[...document.querySelectorAll('#lv-ram path:not(.puls):not(.sk):not(.fk)')].map(p=>p.getAttribute('stroke')),noeuds:document.querySelectorAll('#lv-ram circle.is-plein').length,
+      pads:document.querySelectorAll('#lv-ram circle').length,rameaux:document.querySelectorAll('#lv-ram path.fk').length,broches:document.querySelectorAll('#lv-ram rect.pin').length,
       pales:document.querySelectorAll('#lv-ram g.r-0').length,ramOp:getComputedStyle(q('#lv-ram')).opacity,flou,
       plein:(()=>{const r=q('#lv-ram').getBoundingClientRect();return Math.round(r.width)===innerWidth&&Math.round(r.height)>=innerHeight-2;})(),
       puls:[...document.querySelectorAll('#lv-ram .puls')].map(e=>getComputedStyle(e).animationName+'/'+getComputedStyle(e).animationDuration),
@@ -55,7 +56,7 @@ try{
       sigAbs:!q('#ast-sig'),connAbs:!q('#conn-bar'),
       tap:q('#lv-tap').textContent,bouche:getComputedStyle(q('#gate-mouth')).opacity};});
   ok(c.vue==='c'&&c.mode==='mine'&&c.dans,(tel?'téléphone':'ordinateur')+' · centre, Mine : 25/10 · le TOTEHM est le boîtier — le socle ne se voit plus, il le serre à 3 px');
-  ok(JSON.stringify(c.pistes)===JSON.stringify(COULEURS)&&c.noeuds>=7&&c.pales===4&&c.ramOp==='1'&&c.plein,'le réseau PLEIN ÉCRAN : sept pistes aux 7 couleurs exactes, les nœuds = MES Habits, les quatre intentions vides en creux');
+  ok(JSON.stringify(c.pistes)===JSON.stringify(COULEURS)&&c.noeuds>=3&&c.pads===42&&c.rameaux===28&&c.broches===12&&c.pales===4&&c.ramOp==='1'&&c.plein,'le réseau PLEIN ÉCRAN, en ARBRE (le circuit imprimé de Wah) : sept pistes aux 7 couleurs exactes, 12 broches dans les perforations, 28 rameaux en couronne, 42 pastilles dont les PLEINES = MES Habits, les quatre intentions vides en creux → '+JSON.stringify({n:c.noeuds,pads:c.pads,r:c.rameaux,b:c.broches}));
   /* 18/10 — LES SEPT PISTES VIVENT : une impulsion par intention, épaisse et à la période RÉELLE
      sur une intention habitée, en VEILLE (lente, fine) sur une intention vide ; et la couleur d'un
      creux se LIT (.5, elle valait .22). Wah : « plus de vie dans les traits d'intention, et afficher
@@ -178,7 +179,7 @@ try{
     return {mode:d.mode,m:d.membre,pw:p.width,pcx:p.x+p.width/2,pcy:p.y+p.height/2,sk:k.width,dos:q('#gate-card').classList.contains('is-back'),
       focus:document.activeElement&&document.activeElement.id,ui:getComputedStyle(q('#mb-ui')).visibility,
       surLui:Math.abs(u.x+u.width/2-(p.x+p.width/2))<3&&u.y>p.y&&u.bottom<p.bottom,
-      ram:getComputedStyle(q('#lv-ram')).opacity,asp:document.body.classList.contains('is-aspire'),pistes:document.querySelectorAll('#lv-ram path:not(.puls):not(.sk)').length,
+      ram:getComputedStyle(q('#lv-ram')).opacity,asp:document.body.classList.contains('is-aspire'),pistes:document.querySelectorAll('#lv-ram path:not(.puls):not(.sk):not(.fk)').length,
       coude:(()=>{const r=[...document.querySelectorAll('#lv-ram rect')][0];return r?+r.getAttribute('y'):0;})(),
       checked:q('#lv-m-members').getAttribute('aria-checked'),gx:!!q('#gx-c'),haut:p.y<160};});
   ok(o.mode==='members'&&o.m.cherche&&o.checked==='true'&&!o.gx,(tel?'téléphone':'ordinateur')+' · [Members] : plus de galaxie, la recherche');
