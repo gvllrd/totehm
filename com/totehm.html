@@ -2115,8 +2115,8 @@ body:not(.gate) #gate{display:none}
 .ast-say{position:relative;z-index:2;white-space:pre;text-align:center;
   font-family:'Quantico',sans-serif;font-weight:400;font-size:10px;
   line-height:1.3;letter-spacing:.04em;color:#b0b0b0;transition:color .15s ease}
-.ast-say.is-name{color:rgba(255,255,255,.88)}
-@media(hover:hover){#gate-asteroid:hover .ast-say{color:#fff}}
+.ast-say.is-name{color:#fbd5ca}   /* le NOM d'un TOTEHM est Coral (BRAND) — le même que déplié : le zoom ne change pas sa couleur */
+@media(hover:hover){#gate-asteroid:hover .ast-say:not(.is-name){color:#fff}}
 /* La zone cliquable du verso : un vrai bouton, comme #gate-enter sur le
    recto. `inert` (posé par le moteur) retire la face cachée de la
    tabulation ; sans lui, deux boutons pour un seul objet. */
@@ -3440,7 +3440,7 @@ a.rf-add{text-decoration:none;display:inline-block}
 #self-h{position:sticky;top:calc(-1 * max(54px,8dvh));z-index:3;   /* Chrome colle sous le padding de #srch-ui : on le rend */display:flex;flex-direction:column;align-items:center;gap:8px;
   transform-origin:50% 50%;will-change:transform;flex:none;align-self:stretch;margin:0 -16px;padding:8px 16px 6px;background:transparent}
 #srch.is-pret #self-h{background:#333366}
-#self-name{font:400 clamp(19px,5vw,26px)/1.2 'Quantico',sans-serif;color:#fbd5ca;text-align:center;
+#self-name{font:400 clamp(19px,5vw,26px)/1.2 'Quantico',sans-serif;letter-spacing:.04em;color:#fbd5ca;text-align:center;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:88vw;display:block;
   background:none;border:0;padding:0;cursor:pointer}
 #self-name:empty{display:none}
@@ -7998,7 +7998,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-10-27-com-prise-de-spot';
+const BUILD='2026-10-29-com-arbre-repli';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -10766,17 +10766,11 @@ function paintAsteroid(){
   el.style.fontSize='';
   el.textContent=p;
   if(!p||!el.offsetWidth) return;
-  const max=(el.parentElement.clientWidth||110)*.76;
-  if(el.offsetWidth>max&&p.length>3){
-    const mi=p.length/2; let cut=Math.ceil(mi);
-    for(let d=0;d<=4;d++){
-      const a=Math.floor(mi)-d, b=Math.ceil(mi)+d;
-      if(/[_\-. ]/.test(p[a]||'')){ cut=a+1; break; }
-      if(/[_\-. ]/.test(p[b-1]||'')){ cut=b; break; }
-    }
-    el.textContent=p.slice(0,cut).trim()+'\n'+p.slice(cut).trim();
-  }
-  for(let fs=10; el.offsetWidth>max&&fs>7.5;){ fs-=.5; el.style.fontSize=fs+'px'; }
+  /* 29/10 (Wah : « le nom du totehm sur UNE ligne, pour que le déploiement se fasse dans des proportions adéquates
+     jusqu'au dashboard ») : jamais coupé ; trop long, il rapetisse (une mesure, une règle de trois). Le verso déplié
+     (`#self-name`) porte la même ligne, dans la même police et le même interlettrage : le zoom n'est qu'une échelle. */
+  const max=(el.parentElement.clientWidth||110)*.84, w=el.offsetWidth;
+  if(w>max) el.style.fontSize=Math.max(5.5,10*max/w).toFixed(2)+'px';
 }
 if(document.fonts&&document.fonts.ready) document.fonts.ready.then(paintAsteroid);
 async function loadProfile(){
@@ -12066,14 +12060,28 @@ window.addEventListener('pageshow',e=>{
     flipLink.textContent=PAPIER.face()===1 ? 'Turn it back · my TOTEHM' : 'Turn it over · my Higher Self';
   }
   /* Où sont le verso et son titre, où va le titre de la page — mesuré À CHAQUE FOIS. */
+  /* Le nom déplié tient sur UNE ligne : trop long, il rapetisse (jamais d'ellipse au milieu d'un zoom). */
+  function nomSurUneLigne(){
+    const sn=$('self-name'); if(!sn||!sn.textContent) return;
+    sn.style.fontSize=''; const max=Math.min(innerWidth*.88,(srch.clientWidth||innerWidth)-32), w=sn.scrollWidth;
+    if(w>max) sn.style.fontSize=(parseFloat(getComputedStyle(sn).fontSize)*max/w).toFixed(2)+'px';
+  }
+  /* ⚠️ 29/10 — LE ZOOM SE CALE SUR LE NOM, LETTRE POUR LETTRE. Il se calait sur les BOÎTES (`#ast-verso` → `#self-h`, son
+     padding compris) : le nom déplié partait 35 % plus petit que celui du papier, puis sautait. Maintenant l'échelle =
+     largeur du nom du papier / largeur du nom déplié (même police, même interlettrage, une ligne chacun), et la
+     translation amène le CENTRE du nom déplié sur le centre du nom du papier (l'origine du transform est le centre de
+     `#self-h`). Au premier instant du zoom, les deux noms se superposent au pixel. */
   function geometrie(){
+    nomSurUneLigne();
     const R=srch.getBoundingClientRect(), W=R.width, H=R.height;
     const t=document.querySelector('#ast-back .ast-tile').getBoundingClientRect();
-    const n=$('ast-verso').getBoundingClientRect(), q=sH.getBoundingClientRect();
+    const n=$('ast-name').getBoundingClientRect(), q=sH.getBoundingClientRect(), s=$('self-name').getBoundingClientRect();
     const S=Math.ceil(Math.max(W,H)*1.2), w=t.width||110;
-    return {S, k:w/S, kq:(n.height||10)/(q.height||40),
+    const kq=n.width&&s.width ? n.width/s.width : (n.height||10)/(q.height||40);
+    const cx=q.left+q.width/2, cy=q.top+q.height/2, sx=s.width?s.left+s.width/2:cx, sy=s.height?s.top+s.height/2:cy;
+    return {S, k:w/S, kq,
             dx:(t.left+t.width/2)-(R.left+W/2), dy:(t.top+t.height/2)-(R.top+H/2),
-            qx:(n.left+n.width/2)-(q.left+q.width/2), qy:(n.top+n.height/2)-(q.top+q.height/2)};
+            qx:(n.left+n.width/2)-cx-kq*(sx-cx), qy:(n.top+n.height/2)-cy-kq*(sy-cy)};
   }
   const sansTransition=()=>{ sBg.style.transition='none'; sH.style.transition='none'; };
   const avecTransition=()=>{ sBg.style.transition=sH.style.transition='transform '+SDUR+'ms var(--gate-ease)'; };

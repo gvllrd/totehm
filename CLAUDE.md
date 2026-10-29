@@ -54,6 +54,9 @@ personne. `oracle/` : jamais lu, jamais recopié. Une base Supabase (`abujjbkbbi
   Une erreur de RPC se journalise. Une réponse tardive n'écrase jamais un état plus frais. CORS : `corsHeaders()`.
 - **Interface** : états en `is-…` ; un état permanent = une `transition` ; un verrou de navigation se rend toujours ;
   overlays ancrés en haut. Couleurs, polices, mots : `BRAND.md`.
+- **Continuité** (Wah, la règle la plus importante de l'expérience) : d'une vue, d'une page, d'une couche à l'autre, le
+  moins de coupure possible — un objet ne disparaît pas pour réapparaître, il se TRANSFORME (le papier grandit, les traits
+  se plient, le nom zoome lettre pour lettre) ; jamais une image figée ni un saut. Ça se mesure image par image, au téléphone.
 - **Coût** : le gratuit reste mécanique (SQL, zéro centime) ; un LLM seulement pour ce que le membre achète.
 - **Claude Code** : une commande simple par ligne, jamais `cd X && …`.
 - **Lecture** : jamais un gros fichier en entier (`com/totehm.html` ≈ 12 850 lignes, `club/*.html`, migrations) :

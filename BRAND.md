@@ -79,9 +79,9 @@ développement personnel, un réseau social classique, une marque streetwear cla
 - **Coral `#fbd5ca`** = le NOM d'un TOTEHM, la méthode Stoner, le « Get » de [Get Higher]. Nulle part ailleurs.
 - **Space Mono et Quantico, rien d'autre.** Quantico = ce que le membre tape et le nom d'un TOTEHM (Coral, sans
   espace, seulement au verso). Space Mono = tout le reste ; un titre = Space Mono Bold en capitales.
-- Aucune bordure autour d'une box (elle se détache par sa valeur) ; carrée, avec sa loupe (× 1,25, en place) partout où
-  elle est détaillée ; une tuile de grille grandit au survol (× 1,06 : l'image et sa box ensemble).
-- Contrôles gris, `border-radius:10px`, ajustés au label ; aucun fond blanc ; au survol le gris devient blanc (`tools/hover.py`).
+- Aucune bordure autour d'une box (elle se détache par sa valeur) ; carrée, avec sa loupe (× 1,25, en place) partout où elle est
+  détaillée ; une tuile grandit au survol (× 1,06). Contrôles gris, `border-radius:10px`, ajustés au label, jamais un fond blanc ; au survol le gris devient blanc (`tools/hover.py`).
+- **Continuité** : rien ne se coupe entre deux vues, deux pages, deux couches — l'objet se transforme, jamais un écran figé.
 
 ## L'espace
 
