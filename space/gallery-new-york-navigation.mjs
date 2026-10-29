@@ -1,4 +1,4 @@
-import {NEW_YORK_LAYOUT as L,NEW_YORK_FLOORS as FLOORS,NEW_YORK_RAMPS as RAMPS,NEW_YORK_RAMP_TURNS as TURNS,NEW_YORK_FLOOR_RECTS as RECTS,NEW_YORK_LANDINGS as LANDINGS,NEW_YORK_GROUND_OBSTACLES as FURNITURE,newYorkSurfacesAt,newYorkRoofHeight} from './gallery-new-york-layout.mjs';
+import {NEW_YORK_LAYOUT as L,NEW_YORK_FLOORS as FLOORS,NEW_YORK_RAMPS as RAMPS,NEW_YORK_RAMP_TURNS as TURNS,NEW_YORK_FLOOR_RECTS as RECTS,NEW_YORK_LANDINGS as LANDINGS,NEW_YORK_GROUND_OBSTACLES as FURNITURE,NEW_YORK_EXHIBITION_OBSTACLES as EXHIBITION,newYorkSurfacesAt,newYorkRoofHeight} from './gallery-new-york-layout.mjs';
 
 const H=L.eyeHeight,R=.18,EPS=1e-5,G=8*18000/14**2,V=4*18000/14;
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x)),finite=Number.isFinite;
@@ -16,7 +16,7 @@ const WALLS=[
  {id:'ny-upper-back',minX:-10,maxX:10,minZ:-16.2,maxZ:-15.9,minY:21.51,maxY:27},
  {id:'ny-upper-front',minX:-10,maxX:10,minZ:-4.1,maxZ:-3.9,minY:21.51,maxY:27}
 ];
-const SOLIDS=[...WALLS,...FURNITURE];
+const SOLIDS=[...WALLS,...FURNITURE,...EXHIBITION];
 const horizontalClear=(x,z,y)=>bounds(x,z)&&!SOLIDS.some(b=>inside(b,x,z,R)&&y<b.maxY-EPS&&y+H>b.minY+EPS);
 function roofSurface(x,z){
  if(x< -13||x>13||z< -17||z> -2)return null;
@@ -108,12 +108,12 @@ export function createNewYorkWalkway(){
  function localRoute(from,to,y){
   if(!allowed(from.x,from.z,y)||!allowed(to.x,to.z,y))return null;
   if(clearAt(from,to,y))return[{...from,y:y+H},{...to,y:y+H}];
-  const candidates=[];
+  const candidates=[],candidateKeys=new Set(),candidate=(x,z)=>{const key=x.toFixed(5)+','+z.toFixed(5);if(!candidateKeys.has(key)&&allowed(x,z,y)){candidateKeys.add(key);candidates.push({x,y:y+H,z});}};
   const level=Math.round((y-ground)/5.4);
-  for(const r of RECTS.filter(r=>r.floor===level))for(const x of [r.minX+.3,(r.minX+r.maxX)/2,r.maxX-.3])for(const z of [r.minZ+.3,(r.minZ+r.maxZ)/2,r.maxZ-.3])if(allowed(x,z,y))candidates.push({x,y:y+H,z});
+  for(const r of RECTS.filter(r=>r.floor===level))for(const x of [r.minX+.3,(r.minX+r.maxX)/2,r.maxX-.3])for(const z of [r.minZ+.3,(r.minZ+r.maxZ)/2,r.maxZ-.3])candidate(x,z);
+  for(const b of SOLIDS.filter(b=>b.minY<y+H&&b.maxY>y))for(const x of [b.minX-.3,b.maxX+.3])for(const z of [b.minZ-.3,b.maxZ+.3])candidate(x,z);
   if(level===0){
-   for(const b of [...FURNITURE,...WALLS])for(const x of [b.minX-.3,b.maxX+.3])for(const z of [b.minZ-.3,b.maxZ+.3])if(allowed(x,z,y))candidates.push({x,y:y+H,z});
-   for(const x of [-14,0,10.7,14])for(const z of [-17.5,-3.4,0,12,15])if(allowed(x,z,y))candidates.push({x,y:y+H,z});
+   for(const x of [-14,0,10.7,14])for(const z of [-17.5,-3.4,0,12,15])candidate(x,z);
   }
   const nodes=[{...from,y:y+H},...candidates,{...to,y:y+H}],end=nodes.length-1,dist=nodes.map(()=>Infinity),prev=nodes.map(()=>-1),done=new Set();dist[0]=0;
   while(done.size<nodes.length){let i=-1;for(let n=0;n<nodes.length;n++)if(!done.has(n)&&(i<0||dist[n]<dist[i]))i=n;if(i<0||!finite(dist[i]))return null;if(i===end)break;done.add(i);
@@ -148,5 +148,5 @@ export function createNewYorkWalkway(){
   else{for(let i=Math.ceil(av)-1;i>=Math.ceil(bv);i--)middle.push(asEye(chain[i]));}
   return [...a.route,...middle,...b.route.slice().reverse()].filter((p,i,array)=>!i||Math.hypot(p.x-array[i-1].x,p.y-array[i-1].y,p.z-array[i-1].z)>.001);
  }
- return{allowed,clear:(a,b)=>Math.abs(feet(a)-feet(b))<.12&&clearAt(a,b,feet(a)),route,portalAt:()=>null,floorAt:(x,z,y=ground)=>nearby(x,z,y),diagnostics:()=>({kind:'new-york-five-floor-ramp-walkway',floors:5,ramps:RAMPS.length,stairs:0,continuousAscent:true,eyeCoordinates:true})};
+ return{allowed,clear:(a,b)=>Math.abs(feet(a)-feet(b))<.12&&clearAt(a,b,feet(a)),route,portalAt:()=>null,floorAt:(x,z,y=ground)=>nearby(x,z,y),diagnostics:()=>({kind:'new-york-five-floor-ramp-walkway',floors:5,ramps:RAMPS.length,stairs:0,exhibitionWalls:EXHIBITION.length,continuousAscent:true,eyeCoordinates:true})};
 }

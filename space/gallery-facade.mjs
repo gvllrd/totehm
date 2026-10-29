@@ -2,8 +2,8 @@ import * as T from './vendor/three-0.180.0.mjs';
 
 // The original drawing and sculpted THP are shared by both places. Resource
 // ownership stays with the caller, including the photograph on the paper.
-export function createGalleryFacade(root,{mobile=false,geometry,material,station,black,sculptedPaperMaterial,position=[0,4.6,-1.76]}){
- const sign=new T.Group();sign.name='The original mouth — sculpted tongue and dimensional THP';sign.position.set(...position);root.add(sign);
+export function createGalleryFacade(root,{mobile=false,geometry,material,station,black,sculptedPaperMaterial,position=[0,4.6,-1.76],scale=1}){
+ const sign=new T.Group();sign.name='The original mouth — sculpted tongue and dimensional THP';sign.position.set(...position);sign.scale.setScalar(scale);root.add(sign);
  const signScale=.00235,point=v=>[(v[0]-540)*signScale,(940-v[1])*signScale];
  function curveShape(points){const shape=new T.Shape();shape.moveTo(...point(points[0]));for(let i=0;i<points.length-1;i++){const a=points[i-1]||points[i],b=points[i],c=points[i+1],d=points[i+2]||c;shape.bezierCurveTo(...point([b[0]+(c[0]-a[0])/6,b[1]+(c[1]-a[1])/6]),...point([c[0]-(d[0]-b[0])/6,c[1]-(d[1]-b[1])/6]),...point(c));}shape.closePath();return shape;}
  const top=[[47,740],[95,668],[150,580],[205,490],[262,410],[318,355],[378,334],[460,346],[540,360],[620,346],[702,334],[762,355],[818,410],[875,490],[930,580],[985,668],[1033,740]],bottom=[[47,740],[92,825],[140,915],[195,1005],[300,1080],[540,1120],[780,1080],[885,1005],[940,915],[988,825],[1033,740]],upper=[[110,740],[195,694],[285,648],[405,590],[540,608],[675,590],[795,648],[885,694],[970,740]],lower=[[110,740],[200,786],[290,826],[400,852],[540,862],[680,852],[790,826],[880,786],[970,740]];
