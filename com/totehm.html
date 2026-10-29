@@ -1964,6 +1964,7 @@ body.ro #fv-inner{top:calc(var(--band-t) + var(--ro-h))}
   --gate-btn-gap:24px;          /* = margin-top de #btn-slogan (stoner.html) */
   --gate-dur:1.05s;             /* durée de la déconstruction */
   --gate-ease:cubic-bezier(.62,.02,.24,1);
+  --fold-ease:cubic-bezier(.46,.2,.16,1);  /* le repli : zoom perçu uniforme (l'échelle ×14 suit une exponentielle), adouci aux bouts */
   --gate-bg-scale:60;           /* zoom du fond perforé */
   --gate-bg-fade:1;             /* opacité finale du fond (0.3 pour filigrane) */
   --gate-reveal:.52s;           /* retard avant l'apparition de l'UI */
@@ -3041,7 +3042,11 @@ body.folding #lv{opacity:0}
 /* 27/10 (Wah : « beaucoup de latence quand je ferme le totehm … beaucoup plus de fluidité, en particulier sur mobile ») :
    le repli garde la chorégraphie du déploiement à l'envers, mais plus vif — 0,72 s au lieu de 1,05 s (`DUR_REPLI`). */
 body.folding{--gate-dur:.72s}
-body.folding #gate{transition:opacity .15s ease}   /* le portail revient en 150 ms (`FONDU`) */
+body.folding #gate-logo .glayer,body.folding #gl-bg>rect{transition-timing-function:var(--fold-ease)}
+body.folding #gate{transition:opacity .15s ease}   /* le portail revient en 150 ms, pendant que le papier part déjà */
+/* `is-pose` (les 40 derniers % du repli) : le papier se pose, l'atterrissage revient en fondu et l'arbre ressort de lui. */
+body.folding.is-pose #lv{opacity:1}
+body.gate.folding.is-pose:not(.is-aspire) #lv-ram{opacity:1;transition:opacity .45s ease,transform .7s cubic-bezier(.15,.65,.3,1)}
 .lv-pane{position:absolute;inset:0;opacity:0;visibility:hidden;
   transition:opacity .4s ease,transform .55s var(--gate-ease),visibility 0s linear .55s}
 #lv-h{transform:translateY(-22px)}#lv-b{transform:translateY(22px)}
@@ -11972,11 +11977,14 @@ window.addEventListener('pageshow',e=>{
     if(!open||moving) return;
     moving=true;
     clearTimeout(timer);
-
-    /* ⚠️ 23/10 — LE DÉPLOIEMENT À L'ENVERS, JUSQU'AU FONDU : à l'ouverture, le portail (le papier déployé, vide, couleur de
-       l'app) s'efface sur le TOTEHM ouvert (`gate-off`). Au repli, il revient INVISIBLE, en fondu par-dessus le contenu
-       (FONDU), PUIS le papier rentre. Avant, le contenu disparaissait d'un coup. FONDU + DUR_REPLI + 80 < 1,5 s (`guetter`). */
-    const FONDU=150, DUR_REPLI=720;   /* 27/10 : 260 → 150 ms de fondu, 1 050 → 720 ms de retour (mesuré trop lent au téléphone) */
+    /* ⚠️ 29/10 — LE REPLI D'UN SEUL MOUVEMENT (Wah : « le déploiement inverse … bug et fait des sautages ; super fluide »).
+       Mesuré image par image (390 px, processeur ÷4) : ~100 ms de clic, 150 ms de fondu SANS mouvement, puis une courbe
+       lente au départ (`--gate-ease` sur une échelle ×14 : 9 % du chemin au quart du temps) — 450 ms où rien ne bougeait —,
+       un rétrécissement brutal au milieu, et l'arbre qui n'attendait que la fin pour ressortir. Maintenant : le papier part
+       DANS le même souffle que le fondu, sur `--fold-ease` (zoom perçu uniforme : l'échelle suit une exponentielle, adoucie
+       aux deux bouts), l'arbre et l'atterrissage ressortent PENDANT que le papier se pose (`POSE`, `is-pose`), et les
+       écritures partent une image après le départ (elles ne volent plus la première image). */
+    const DUR_REPLI=720, POSE=.6;
     gate.classList.add('no-anim');        /* 1. rien ne bouge              */
     gate.classList.add('gate-off');       /*    le portail, invisible      */
     body.classList.add('gate','folding'); /* 2. le gate au repos,          */
@@ -11988,23 +11996,25 @@ window.addEventListener('pageshow',e=>{
     void gate.offsetWidth;
     gate.classList.remove('no-anim');     /* 5. transitions rendues        */
     void gate.offsetWidth;
-    gate.classList.remove('gate-off');    /* 6. le portail revient en fondu sur le TOTEHM ouvert */
+    gate.classList.remove('gate-off');    /* 6. le portail revient en fondu sur le TOTEHM ouvert… */
+    body.classList.remove('entered');     /* 7. …et le papier rentre DANS le même souffle (les traits restent aspirés) */
+    requestAnimationFrame(()=>setTimeout(ecrireTout,60));   /* replier = quitter la saisie : ce qui dort part, après la 1re image */
 
     open=false;
     timer=setTimeout(()=>{
-    body.classList.remove('entered');     /* 7. et le repli part (les traits restent aspirés : `LV.revenu` les rend) */
+      body.classList.add('is-pose');      /* 8. le papier se pose : l'atterrissage revient en fondu, */
+      LV.revenu();                        /*    mes ramifications (elles ont pu changer dedans) ressortent du TOTEHM */
     timer=setTimeout(()=>{
-      body.classList.remove('folding');   /* le défilement redevient normal */
+      body.classList.remove('folding','is-pose');   /* le défilement redevient normal */
       moving=false;
       PAPIER.reveiller();                 /* le logo est revenu : il repart */
-      LV.revenu();                        /* mes ramifications (elles ont pu changer dedans) ressortent du TOTEHM */
       SH.pause(); SPOTS.pause();          /* ni vidéo ni rAF derrière l'atterrissage */
       /* ⚠️ 20/10 sexies — REPLIER LE TOTEHM D'UN MEMBRE, C'EST RETOMBER DANS SON ÉCOSYSTÈME (Wah : « on retombe dans
          l'écosystème, mais cette fois ce n'est plus le nôtre »). On ne le quitte que par MINE (ou « back to mine »). */
       if(roSortir){ roSortir=false; LV.choisirMode('mine'); }
       if(typeof then==='function') then();
-    },DUR_REPLI+80);
-    },FONDU);
+    },DUR_REPLI*(1-POSE)+40);
+    },DUR_REPLI*POSE);
   }
 
   /* Le reste du script replie par ici. */

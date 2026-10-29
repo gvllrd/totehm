@@ -4,7 +4,7 @@
 //     éventail jusqu'au haut de l'écran, les racines descendent en miroir ; le cœur (le TOTEHM) bat, très subtilement.
 // 2 · (25/10) Un tap sur le TOTEHM : ses traits cessent leur activité et sont ASPIRÉS dans le papier pendant qu'il se
 //     déploie (« on cesse l'activité du Totehm pour le configurer »). Ouvert : aucune boîte, aucun trait autour.
-//     Le repli : le portail revient en fondu, le papier rentre, l'atterrissage revient à la fin — et les traits ressortent.
+//     Le repli (29/10) : UN mouvement — le papier part pendant le fondu, l'arbre et l'atterrissage ressortent pendant qu'il se pose.
 // 3 · Vers le bas, les traits se TRANSFORMENT en les sept traits de l'anneau du profil (comme ← et →).
 // 4 · Le papier arrive dans la couleur de l'app — la fin du portail et l'app sont la même image.
 // Tout est simulé (comptes, RPC) : aucune écriture en production. LANCER : node com_structure.mjs /tmp
@@ -76,15 +76,22 @@ try{
      /* on ne relève qu'une fois le repli parti (`gate` posé) : une image avant le clic lirait le portail absent (largeur 0) */
      const f=()=>{ const t=performance.now()-t0; if(t>1500) return; if(!document.body.classList.contains('gate')){ requestAnimationFrame(f); return; }
        window.__fondu.push({t, o:+getComputedStyle(gt).opacity, w:bg.getBoundingClientRect().width, lv:+getComputedStyle(lv).opacity,
-         asp:document.body.classList.contains('is-aspire'), folding:document.body.classList.contains('folding')}); requestAnimationFrame(f); }; requestAnimationFrame(f); });
+         asp:document.body.classList.contains('is-aspire'), folding:document.body.classList.contains('folding'), pose:document.body.classList.contains('is-pose')}); requestAnimationFrame(f); }; requestAnimationFrame(f); });
    await pg.evaluate(()=>document.getElementById('fold-x').click());
    await pg.waitForFunction(()=>document.body.classList.contains('gate')&&!document.body.classList.contains('folding'),null,{timeout:6000}).catch(()=>{});
    const lvFin=await pg.evaluate(()=>+getComputedStyle(document.getElementById('lv')).opacity);await pg.waitForTimeout(900);
-   const fo=await pg.evaluate(()=>window.__fondu), w1=fo[0]&&fo[0].w, avant=fo.filter(x=>x.o<0.9);
-   ok(fo.length>10&&fo[0].o<0.5&&avant.length>=3&&avant.every(x=>Math.abs(x.w-w1)<0.5)&&fo[fo.length-1].o===1&&fo[fo.length-1].w<w1/3,
-      nom+' · repli '+tour+' : le portail revient d\'abord en FONDU sur le TOTEHM ouvert ('+avant.length+' images), puis le papier rentre '
-      +JSON.stringify({n:fo.length,o0:fo[0]&&fo[0].o,dw:avant.length?Math.max(...avant.map(x=>Math.abs(x.w-w1))):0,fin:fo[fo.length-1],w1}));
-   ok(fo.filter(x=>x.folding).every(x=>x.lv===0&&x.asp)&&lvFin<1,nom+' · repli '+tour+' : pendant le repli, les traits restent aspirés et l\'atterrissage attend le papier, puis revient en fondu');
+   /* 29/10 (Wah : « le déploiement inverse … fait des sautages ; super fluide ») : UN SEUL MOUVEMENT. Le portail revient en
+      fondu PENDANT que le papier part déjà ; le papier ne s'arrête jamais avant d'être posé (aucune image figée plus de
+      100 ms), ne regrandit jamais ; l'arbre et l'atterrissage ressortent pendant qu'il se pose (`is-pose`), pas après. */
+   const fo=await pg.evaluate(()=>window.__fondu), w1=fo[0]&&fo[0].w, wf=fo[fo.length-1].w, t1=fo[0]&&fo[0].t;
+   const route=fo.filter(x=>x.w>wf+2); let fige=0, run=0;
+   for(let i=1;i<route.length;i++){ run=Math.abs(route[i].w-route[i-1].w)<0.5?run+(route[i].t-route[i-1].t):0; fige=Math.max(fige,run); }
+   const part=fo.find(x=>x.w<w1-1), pose=fo.find(x=>x.pose), finRoute=route.length?route[route.length-1].t:0;
+   const jamaisPlus=fo.every((x,i)=>!i||x.w<=fo[i-1].w+0.5);
+   ok(fo.length>10&&fo[0].o<0.5&&part&&part.t-t1<120&&fige<100&&jamaisPlus&&fo[fo.length-1].o===1&&wf<w1/3&&finRoute-t1<800,
+      nom+' · repli '+tour+' : UN mouvement — le papier part '+Math.round(part?part.t-t1:-1)+' ms après le clic, pendant le fondu ; jamais figé (pire : '+Math.round(fige)+' ms), jamais en arrière ; posé en '+Math.round(finRoute-t1)+' ms');
+   ok(fo.filter(x=>x.folding&&!x.pose).every(x=>x.lv===0&&x.asp)&&pose&&pose.w>wf+2&&lvFin>0.5,
+      nom+' · repli '+tour+' : les traits restent aspirés, puis l\'arbre et l\'atterrissage ressortent PENDANT que le papier se pose (papier à '+Math.round(pose?pose.w:0)+' px, posé à '+Math.round(wf)+'), pas après');
    const r=await branche(pg), rs=await reseau(pg);
    ok(Math.abs(r.s.t-b.s.t)<1&&r.pins.length===12&&r.coeur==='coeur'&&!rs.aspire&&rs.echelle===1&&rs.op===1&&rs.puls==='ram-puls'&&rs.d.deploiements===tour,
       nom+' · repli '+tour+' : le papier posé, ses traits RESSORTENT et revivent, le cœur rebat → '+JSON.stringify(rs));
