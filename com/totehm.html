@@ -14144,6 +14144,48 @@ window.addEventListener('pageshow',e=>{
      plus rien à faire descendre ni de vidéo à charger. */
 })();
 
+/* ══ « PRÉCÉDENT » · 29/10/2026 ══════════════════════════════════════════════════════════════════════════════════
+   Wah : « les boutons "précédent" natifs des téléphones et ordinateurs doivent s'intégrer adroitement aux endroits clés,
+   pour éviter que l'utilisateur sorte du site ». Tant qu'on n'est pas à l'accueil (le TOTEHM au centre, MINE), UNE
+   entrée d'historique nous garde (`garde`) ; « précédent » la consomme et rejoue ÉCHAP — le geste qui, partout, referme
+   la couche du dessus, dans le bon ordre : la prise de spot, une visionneuse, un panneau, le verso, le TOTEHM déployé
+   (replié en un mouvement), une vue de côté (retour au centre), MEMBERS (retour à MINE). Puis, si l'on est encore
+   ailleurs qu'à l'accueil, la garde revient. À l'accueil, « précédent » quitte le site, comme partout.
+   `XO` et `VX` ont leur propre entrée : leur retour ne consomme pas la garde (l'état d'arrivée est encore `garde`).
+   L'état se lit sur les classes de `body` (un observateur, une pause de 140 ms : on ne s'accroche pas à un mouvement). */
+(()=>{
+  const body=document.body, lv=()=>(window.__totehm_lv?window.__totehm_lv():{})||{};
+  const diag={gardes:0, retours:0, sorties:0};
+  let garde=false, attente=false, t=0;
+  const ailleurs=()=>{ const c=body.classList, d=lv();
+    if(c.contains('is-xo')||c.contains('is-vx')) return null;        /* elles tiennent leur propre entrée : la garde ne bouge pas */
+    if(!c.contains('gate')||c.contains('entered')) return true;       /* le TOTEHM déployé */
+    return (d.vue&&d.vue!=='c')||d.mode==='members'||c.contains('searching')||c.contains('is-tlv')||c.contains('rdr-voir')||c.contains('is-nspot')
+      ||!!document.querySelector('#member-window.show'); };
+  const notreEntree=()=>!!(history.state&&history.state.totehm==='garde');
+  function sync(){
+    if(attente) return;
+    const p=ailleurs(); if(p===null) return;
+    if(p&&!garde){ if(!notreEntree()){ try{ history.pushState({totehm:'garde'},''); }catch(_){ return; } diag.gardes++; } garde=true; }
+    else if(!p&&garde){ if(notreEntree()){ attente=true; history.back(); } else garde=false; }
+  }
+  const bientot=()=>{ clearTimeout(t); t=setTimeout(sync,140); };
+  new MutationObserver(bientot).observe(body,{attributes:true,attributeFilter:['class']});
+  { const mw=document.getElementById('member-window'); if(mw) new MutationObserver(bientot).observe(mw,{attributes:true,attributeFilter:['class']}); }
+  window.addEventListener('popstate',()=>{
+    if(attente){ attente=false; garde=false; bientot(); return; }   /* notre propre retour (on était revenu à l'accueil) */
+    if(notreEntree()) return;                                        /* XO / VX ont rendu leur entrée : la garde est toujours là */
+    if(!garde) return;
+    garde=false;
+    if(!ailleurs()){ diag.sorties++; return; }
+    diag.retours++;
+    /* ÉCHAP, depuis le corps de la page : chaque couche l'entend avec ses propres règles (capture, priorités) */
+    body.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',code:'Escape',bubbles:true,cancelable:true}));
+    bientot();
+  });
+  window.__totehm_retour=()=>({...diag, garde, attente, ailleurs:ailleurs()});
+})();
+
 /* ══ LOUPE SUPPRIMÉE · 07/09/2026 ══════════════════════════════════════
    La mise en avant de la première ligne (agrandissement + 3D) a été
    retirée : elle troublait la lecture au lieu de la guider. La liste
