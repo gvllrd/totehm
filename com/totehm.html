@@ -3701,7 +3701,7 @@ body.lv-b #gate-logo #gl-rail,body.lv-b #gate-logo #gl-wm{opacity:0}
 .tlv-f::-webkit-scrollbar{display:none}
 .tlv-s{position:relative;height:100%;scroll-snap-align:start;scroll-snap-stop:always;overflow:hidden}
 .tlv-m{position:absolute;left:0;right:0;top:calc(max(10px,env(safe-area-inset-top)) + 46px);bottom:calc(max(14px,env(safe-area-inset-bottom)) + 24px)}
-.tlv-m img,.tlv-m video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block;opacity:0;transition:opacity .3s ease}
+.tlv-m img,.tlv-m video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:50% 0;display:block;opacity:0;transition:opacity .3s ease}
 .tlv-m img[src],.tlv-m video[src],.tlv-m video[poster]{opacity:1}
 .tlv-b{display:flex;flex-direction:column;align-items:center;gap:7px;padding:0 16px;max-width:min(100%,560px)}
 .tlv-b:empty{display:none}
@@ -3737,7 +3737,7 @@ body.is-tlv #gate-asteroid,body.is-tlv #lvjoy{opacity:0;pointer-events:none}
 .tl-sel{grid-column:1/-1;padding:2px 0 8px;cursor:pointer}
 @media(max-width:699px){.tl-sel{padding:2px 8px 8px}}
 /* La visionneuse : la box DÉTAILLÉE par-dessus le média, en bas, surélevée. */
-.tlv-s .tlv-b{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(max(14px,env(safe-area-inset-bottom)) + 18px);
+.tlv-s .tlv-b{position:absolute;left:50%;transform:translate(-50%,var(--dy,0px));transition:transform .38s cubic-bezier(.22,.9,.3,1);bottom:calc(max(14px,env(safe-area-inset-bottom)) + 18px);
   width:min(calc(100vw - 32px),520px);max-width:none;padding:0;display:block;box-shadow:0 14px 34px rgba(0,0,0,.7)}
 /* Le filtre : d'abord les cinq vues en UN bloc de commande rectangle (la croix du TOTEHM) ; puis les boxes de la vue
    choisie. Les deux carrés portent les douze trous du logo (`--perfo`, la même variable que les médias). */
@@ -3807,7 +3807,7 @@ body.papier-haut #gate-asteroid{transition:opacity .25s ease}
    en premier, son mot en Quantico) —, l'auteur et les gestes, puis la Habit Box (format Totehm) surélevée, tout en bas.
    Sans média, le bloc se centre. */
 .ssp-c{position:absolute;inset:0}
-.ssp-info{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(max(14px,env(safe-area-inset-bottom)) + 18px);z-index:1;
+.ssp-info{position:absolute;left:50%;transform:translate(-50%,var(--dy,0px));transition:transform .38s cubic-bezier(.22,.9,.3,1);bottom:calc(max(14px,env(safe-area-inset-bottom)) + 18px);z-index:1;
   width:min(calc(100vw - 32px),520px);display:flex;flex-direction:column;gap:7px}
 .ssp-s.is-nu .ssp-info{bottom:auto;top:50%;transform:translate(-50%,-50%)}
 .ssp-box{box-shadow:0 14px 34px rgba(0,0,0,.7)}
@@ -3835,7 +3835,7 @@ button.sd-tag.is-aud[disabled]{opacity:.6;cursor:progress}
 @media(max-width:420px){.ssp-acts{gap:5px}.ssp-acts button{padding:8px 9px;letter-spacing:.12em}}
 /* LE MÉDIA, TEL QU'IL EST : jamais recadré, le noir autour — la place exacte de celui de la vue de gauche. */
 .ssp-m{position:absolute;left:0;right:0;top:calc(max(10px,env(safe-area-inset-top)) + 46px);bottom:calc(max(14px,env(safe-area-inset-bottom)) + 24px);background:#000}
-.ssp-m img,.ssp-m video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block;opacity:0;transition:opacity .4s ease}
+.ssp-m img,.ssp-m video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:50% 0;display:block;opacity:0;transition:opacity .4s ease}
 .ssp-m img[src],.ssp-m video[src],.ssp-m video[poster]{opacity:1}
 .ssp-etat{position:absolute;left:0;right:0;top:12px;text-align:center;font:700 8.5px/1.3 'Space Mono',monospace;
   letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.55);z-index:1}
@@ -6842,6 +6842,7 @@ function creerFeed(conf){
         if(el.tagName==='VIDEO'&&VU.i===j) el.play().catch(()=>{}); });
     }
     if(el.tagName==='VIDEO'){ if(joue){ if(el.getAttribute('src')) el.play().catch(()=>{}); } else try{ el.pause(); }catch(_){} }
+    if(el.tagName==='IMG'&&el.complete&&el.naturalWidth) caler(sec);
   }
   function voir(i){
     const r=$('tlv'), f=r&&r.querySelector('.tlv-f'); if(!f||!L[i]) return fermerV();
@@ -6914,6 +6915,37 @@ function creerFeed(conf){
       else if(e.key==='ArrowRight'||e.key==='ArrowLeft'){ e.preventDefault(); e.stopImmediatePropagation(); }
     },{capture:true});
   } }
+  /* ══ L'IMAGE EN HAUT · 29/10 ══ (Wah : « sur mobile, les images doivent être affichées le plus haut possible : on garde
+     leur format d'origine, et au milieu, la box du Totehm et les informations du spot la cachent totalement »). Le média,
+     TEL QU'IL EST (jamais recadré), se colle sous la croix (`object-position` en haut). S'il tient au-dessus de ce qui le
+     couvre (la box, les infos du spot) en gardant au moins les deux tiers de sa taille, il s'y range : rien ne le cache.
+     Sinon — un portrait qui prend tout l'écran — il garde sa taille, et la box se pose sur son bas, comme une légende. */
+  /* Et quand l'image laisse de la place, la box (et les infos du spot) REMONTENT juste sous elle, en glissant (`--dy`) :
+     l'image et ce qui la dit forment un seul bloc, en haut — jamais un grand vide noir entre les deux. */
+  const GARDE=.66, SOUS=14;
+  function caler(sec){
+    const m=sec&&sec.querySelector('.tlv-m,.ssp-m'), el=m&&m.querySelector('img,video'), info=sec&&sec.querySelector('.tlv-b,.ssp-info');
+    if(!m||!el) return;
+    const nw=el.naturalWidth||el.videoWidth, nh=el.naturalHeight||el.videoHeight; if(!nw||!nh) return;
+    /* en coordonnées de la section (`offset*`) : ni le glissement de la box ni l'arrivée de la couche ne faussent la mesure */
+    m.style.bottom=''; const top=m.offsetTop, w=m.offsetWidth, h=m.offsetHeight, H=sec.offsetHeight; if(!w||!h) return;
+    const hPlein=nh*Math.min(w/nw,h/nh), iTop=info&&info.offsetHeight?info.offsetTop:null;
+    const dispo=(iTop!=null?iTop:top+h)-8-top;
+    if(iTop!=null&&hPlein+SOUS<=dispo){
+      info.style.setProperty('--dy',Math.round(top+hPlein+SOUS-iTop)+'px'); m.dataset.cale='bloc';
+    } else {
+      if(info) info.style.removeProperty('--dy');
+      const range=hPlein>dispo&&dispo/hPlein>=GARDE;
+      if(range) m.style.bottom=Math.round(H-(top+dispo))+'px';
+      m.dataset.cale=hPlein<=dispo||range?'dessus':'dessous';
+    }
+    etat.cales=(etat.cales|0)+1;
+  }
+  { const el=conf.grille?$('tlv'):sc();
+    const quand=e=>{ const t=e.target; if(t&&(t.tagName==='IMG'||t.tagName==='VIDEO')) caler(t.closest('.tlv-s,.lsh')); };
+    if(el){ el.addEventListener('load',quand,true); el.addEventListener('loadedmetadata',quand,true); }
+    let rt=0; window.addEventListener('resize',()=>{ clearTimeout(rt); rt=setTimeout(()=>{ const r=conf.grille?$('tlv'):sc();
+      if(r&&r.offsetParent!==null) r.querySelectorAll('.tlv-s,.lsh').forEach(caler); },120); }); }
   function peindre(){
     if(conf.grille) return grille();
     const b=bx(); if(!b) return;

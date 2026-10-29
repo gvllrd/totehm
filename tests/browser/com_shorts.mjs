@@ -122,14 +122,16 @@ try{
     return {vu:!document.getElementById('tlv').hidden, img:!!im, fit:im?getComputedStyle(im).objectFit:'',
       box:(b&&b.querySelector('.tb .v-name')||{}).textContent||'', sub:(b&&b.querySelector('.tb .v-sub')||{}).textContent||'',
       minis:b?[...b.querySelectorAll('.tb .mini')].map(e=>e.textContent):[],
-      dessus:b&&m?b.getBoundingClientRect().top<m.getBoundingClientRect().bottom&&getComputedStyle(b).position==='absolute':false,
+      /* 29/10 : la box est posée DANS l'écran du média — sous l'image quand elle y tient, sinon sur le bas d'un portrait */
+      dessus:b&&m?b.getBoundingClientRect().top>m.getBoundingClientRect().top&&b.getBoundingClientRect().bottom<=innerHeight&&getComputedStyle(b).position==='absolute':false,
+      geo:b&&m?[b.getBoundingClientRect().top,b.getBoundingClientRect().bottom,m.getBoundingClientRect().top,m.getBoundingClientRect().bottom,innerHeight,m.dataset.cale||'',getComputedStyle(b).position].map(x=>typeof x==='number'?Math.round(x):x):null,
       n:document.querySelectorAll('#tlv .tlv-s').length, fleches:document.querySelectorAll('#tlv .tlv-p,#tlv .tlv-n,#tlv [data-tlv="1"],#tlv [data-tlv="-1"]').length,
       snap:f?getComputedStyle(f).scrollSnapType:'', ox:f?getComputedStyle(f).overflowX:'', oy:f?getComputedStyle(f).overflowY:'',
       haut:s0&&f?Math.abs(s0.getBoundingClientRect().height-f.clientHeight)<2:false,
       gate:document.body.classList.contains('gate'), papier:getComputedStyle(document.getElementById('gate-asteroid')).opacity};});
   ok(v.vu&&v.img&&v.fit==='contain'&&v.gate&&v.papier==='0','un tap (même sur la box) ouvre le MÉDIA en grand, TEL QU\'IL EST (contain) — plus aucune redirection vers le Totehm');
   ok(v.box==='Run the hill'&&/fight/i.test(v.sub)&&v.minis.includes('Ship it')&&v.minis.includes('The phone')&&v.dessus,
-     'par-dessus, la box DÉTAILLÉE du Totehm : '+v.box+' · '+v.sub+' · '+v.minis.join(' / '));
+     'par-dessus, la box DÉTAILLÉE du Totehm : '+v.box+' · '+v.sub+' · '+v.minis.join(' / ')+' '+JSON.stringify(v.geo));
   /* 22/10 — la LOUPE, aussi dans la visionneuse : elle agrandit la box en place, puis la rend ; rien d'autre ne bouge. */
   const LP='#tlv .tlv-s[data-j="0"] .tlv-b .loupe[data-vz]';
   const lp=await pg.evaluate(s=>({n:document.querySelectorAll('#tlv .tlv-s[data-j="0"] .tlv-b .loupe').length, vis:(e=>e?getComputedStyle(e).display:'')(document.querySelector(s))}),LP);
@@ -295,7 +297,7 @@ try{
     return {d:window.__totehm_rdr(), voit:document.body.classList.contains('rdr-voir'), n:document.querySelectorAll('#rdr-sh .ssp-s').length,
       pol:document.querySelectorAll('#rdr-sh .lsh-pol,#rdr-sh [data-pol],#rdr-sh .ssp-bg,#rdr-sh .ssp-top').length,
       fond:c?getComputedStyle(c).backgroundColor:'', dessus:info&&m&&sd&&bx?sd.getBoundingClientRect().bottom<=bx.getBoundingClientRect().top+1
-        &&bx.getBoundingClientRect().bottom>=innerHeight-90&&info.getBoundingClientRect().top>m.getBoundingClientRect().top:false,
+        &&bx.getBoundingClientRect().bottom<=innerHeight&&info.getBoundingClientRect().top>m.getBoundingClientRect().top:false,
       ombre:bx?getComputedStyle(bx).boxShadow:'', loupe:!!(bx&&bx.querySelector('.loupe[data-vz]')),
       fit:im?getComputedStyle(im).objectFit:'', src:!!(im&&im.getAttribute('src')), rond:im?getComputedStyle(im).borderRadius:'',
       sdR:sd?getComputedStyle(sd).borderRadius:'', st:(sd&&sd.querySelector('.sd-tag.is-st')||{}).textContent||'',
@@ -310,7 +312,7 @@ try{
   ok(sh2.pol===0&&sh2.fond==='rgb(0, 0, 0)'&&sh2.src&&sh2.fit==='contain'&&sh2.rond==='0px',
      '21/10 · PLUS DE POLAROID : l\'image TELLE QU\'ELLE (contain, ni cadre ni recadrage) sur le NOIR → '+JSON.stringify({pol:sh2.pol,fond:sh2.fond,fit:sh2.fit}));
   ok(sh2.dessus&&sh2.nom==='Call mum'&&sh2.sdR==='16px'&&/I will be there/i.test(sh2.st)&&/Space Mono/.test(sh2.tagF),
-     '22/10 · comme à gauche : la Habit Box TOUT EN BAS, par-dessus l\'image, et JUSTE AU-DESSUS les infos au format de figher.club (`.sdata` : rayon 16, étiquettes Space Mono, l\'état en premier)');
+     '22/10 · comme à gauche : la Habit Box en bas du bloc, et JUSTE AU-DESSUS les infos au format de figher.club (`.sdata` : rayon 16, étiquettes Space Mono, l\'état en premier) ; 29/10 : le bloc remonte sous l\'image quand il y tient');
   await pg.click('#rdr-sh .ssp-s .ssp-box .loupe[data-vz]');await pg.waitForTimeout(300);
   const rz=await pg.evaluate(()=>({zoom:!!document.querySelector('#rdr-sh .ssp-s .ssp-box .v-col.is-zoom'),voir:document.body.classList.contains('rdr-voir'),gate:document.body.classList.contains('gate')}));
   ok(sh2.loupe&&/rgba\(0, 0, 0/.test(sh2.ombre)&&rz.zoom&&rz.voir&&rz.gate,'22/10 · la box surélevée porte sa LOUPE : elle s\'agrandit en place, le spot reste ouvert, le Totehm fermé → '+JSON.stringify(rz));
