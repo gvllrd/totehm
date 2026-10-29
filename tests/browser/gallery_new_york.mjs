@@ -1,11 +1,8 @@
 // Both city entry points use the production modules and native WebGL.
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import * as T from '../../space/vendor/three-0.180.0.mjs';
-import {createLiberty} from '../../space/gallery-liberty.mjs';
 import {launch,page} from './harness.mjs';
 const OUT=process.argv[2]||'/tmp/gallery-new-york',origin='https://www.totehm.space';
-const landmarkOnly=process.argv.includes('--landmark-only');
 fs.mkdirSync(OUT,{recursive:true});
 let checks=0;const results=[];
 const check=(condition,message)=>{assert(condition,message);checks++;console.log('PASS '+message);};
@@ -17,7 +14,8 @@ async function floor(pg,level){
 }
 try{
  for(const viewport of [{width:1440,height:1000},{width:390,height:844}]){
-  const {pg,ctx,log}=await page(browser,{dir:'space',origin,viewport,session:false,hasTouch:viewport.width<650});
+  const requests=[];
+  const {pg,ctx,log}=await page(browser,{dir:'space',origin,viewport,session:false,hasTouch:viewport.width<650,network:url=>{requests.push(url.pathname);return null;}});
   const sample={viewport};results.push(sample);
   try{
    await pg.emulateMedia({reducedMotion:'reduce'});
@@ -25,12 +23,18 @@ try{
    sample.entry=await pg.evaluate(()=>__totehm_gallery());
    check(sample.entry.place==='new-york'&&sample.entry.physics.levels===5,'New York entry loads its own five-floor world at '+viewport.width);
    check(sample.entry.temple.levels===5&&sample.entry.temple.stairs===0,'building has five levels with ramps and no stairs at '+viewport.width);
-   check(sample.entry.liberty.entireStatueAboveSea&&sample.entry.liberty.minimumFootClearance>=2.5&&sample.entry.fireplace.flameHeight===4.34,'New York keeps the campfire and the complete statue above its sea at '+viewport.width);
-   check(sample.entry.liberty.maximumMeshRadius<sample.entry.landscape.ocean.centralCalmRadius&&sample.entry.liberty.footMinimum>sample.entry.landscape.ocean.baseHeight,'the actual ocean calm zone and water ceiling remain below every foot at '+viewport.width);
+   const building=sample.entry.temple;
+   check(building.facadeOnlyMasonry&&building.windowsFrontOnly&&building.windows===28&&building.centralWindows===0,'New York has front-only brick and windows around a windowless central spine at '+viewport.width);
+   check(building.glassSides&&building.glassRear&&building.glassRoof&&building.minimalWhiteInterior,'New York has clear side/rear/roof glazing and a minimal white interior at '+viewport.width);
+   check(building.facade.monumental&&building.facade.centered&&building.facade.scale===2.6&&building.facade.blankCenter&&building.facade.paperLoaded,'New York displays the enormous original tongue and TOTEHM centrally at '+viewport.width);
+   check(building.flooring.sameAsLisbon&&building.flooring.ancientStone.physicalSlabs&&building.flooring.ancientStone.ramps&&building.flooring.ancientStone.photographicMapsReady,'New York has actual Lisbon stone slabs on floors and ramps at '+viewport.width);
+   check(building.exhibition.walls===10&&building.exhibition.levels===5&&building.exhibition.reservedSlots===29&&!building.exhibition.rampsCrossArtwork,'each New York floor reserves white artwork walls clear of the ramps at '+viewport.width);
+   check(sample.entry.liberty===null&&sample.entry.fireplace.flameHeight===4.34,'New York removes the statue and preserves the campfire at '+viewport.width);
+   check(await pg.locator('#visit-liberty').count()===0&&!requests.some(p=>/gallery-liberty/.test(p)),'the removed statue has no destination or module request at '+viewport.width);
    check(await pg.locator('.panorama-nav,.welcome,.controls,#jump,#toggle-sound').count()===0,'direct immersive entrance keeps the removed HUD absent at '+viewport.width);
    check(await pg.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'New York has no horizontal overflow at '+viewport.width);
    await pg.screenshot({path:OUT+'/entry-'+viewport.width+'.png'});
-   if(!landmarkOnly){for(const level of [1,2,3,4]){
+   for(const level of [1,2,3,4]){
     await floor(pg,level);
     check((await pg.evaluate(()=>__totehm_gallery())).physics.level===level,'guided visit reaches physical level '+level+' at '+viewport.width);
    }
@@ -42,33 +46,32 @@ try{
    await floor(pg,0);
    await pg.click('.tour [data-room="1"]');await pg.waitForFunction(()=>__totehm_gallery().focused===1&&!__totehm_gallery().moving);
    check((await pg.evaluate(()=>__totehm_gallery())).stations.book.closed,'Origins book remains reachable and closed in New York at '+viewport.width);
+   await pg.screenshot({path:OUT+'/interior-'+viewport.width+'.png'});
    await pg.click('.tour [data-room="4"]');await pg.waitForFunction(()=>__totehm_gallery().focused===4&&!__totehm_gallery().moving);
    check((await pg.evaluate(()=>__totehm_gallery())).stations.opposite.active,'Same but opposite remains reachable in New York at '+viewport.width);
-   }
-   await pg.click('#view-list');await pg.click('#visit-liberty');
-   await pg.waitForFunction(()=>{const d=__totehm_gallery();return !d.moving&&d.liberty.viewClear&&d.liberty.fullFigureView&&Math.abs(d.camera.fov-d.liberty.viewFov)<.01&&d.camera.position[1]>7;});
-   check((await pg.evaluate(()=>__totehm_gallery())).liberty.viewClear,'Liberty destination has a clear view through masonry, slabs and the actual island at '+viewport.width);
-   const framing=await pg.evaluate(()=>({camera:__totehm_gallery().camera,top:document.querySelector('header').getBoundingClientRect().bottom+16,bottom:document.querySelector('.tour').getBoundingClientRect().top-16}));
-   const scene=new T.Scene(),statue=createLiberty(scene,{mobile:viewport.width<650}),camera=new T.PerspectiveCamera(framing.camera.fov,framing.camera.aspect,framing.camera.near,framing.camera.far);
-   scene.updateMatrixWorld(true);camera.position.fromArray(framing.camera.position);camera.lookAt(new T.Vector3(...framing.camera.target));camera.updateMatrixWorld();
-   const point=new T.Vector3(),pixels=[];
-   statue.root.traverse(object=>{if(!object.isMesh||object.userData.materialKind!=='copper')return;const vertices=object.geometry.attributes.position;for(let i=0;i<vertices.count;i++){point.fromBufferAttribute(vertices,i).applyMatrix4(object.matrixWorld).project(camera);pixels.push([(point.x+1)*viewport.width/2,(1-point.y)*viewport.height/2]);}});
-   check(pixels.every(([x,y])=>x>=16&&x<=viewport.width-16&&y>=framing.top&&y<=framing.bottom),'every copper vertex from feet to torch fits between the controls at '+viewport.width);
-   sample.statueView={camera:framing.camera,footClearance:statue.diagnostics().minimumFootClearance};statue.dispose();
-   await pg.screenshot({path:OUT+'/liberty-'+viewport.width+'.png'});
    sample.errors=log.errors;
    check(!log.errors.some(e=>/pageerror:|THREE.WebGLProgram|VALIDATE_STATUS|shader error|WebGL: INVALID/i.test(e)),'New York has no JavaScript or shader failure at '+viewport.width);
-   if(!landmarkOnly){await pg.goto(origin+'/lisbon-space',{waitUntil:'domcontentloaded'});await ready(pg);
+   await pg.goto(origin+'/lisbon-space',{waitUntil:'domcontentloaded'});await ready(pg);
    sample.lisbon=await pg.evaluate(()=>__totehm_gallery());
    check(sample.lisbon.place==='lisbon'&&sample.lisbon.temple.waveGlass&&!sample.lisbon.liberty,'explicit Lisbon URL preserves the glass pavilion at '+viewport.width);
+   const lisbon=sample.lisbon.temple;
+   check(lisbon.facadeOnlyMasonry&&lisbon.glassSides&&lisbon.glassRear&&lisbon.glassRoof,'Lisbon preserves glass around its separate historical front facade at '+viewport.width);
+   check(lisbon.facade.windows===12&&lisbon.facade.historicWindowRows===3&&lisbon.facade.centralBay.windowFree&&lisbon.facade.limestoneSurrounds&&lisbon.facade.realCurledIronGeometry&&lisbon.facade.upperBalconies===8,'Lisbon facade has the reference window rows, stone surrounds and ornate balconies outside its blank center at '+viewport.width);
+   check(lisbon.facade.originalProceduralPattern&&lisbon.facade.referenceMotif==='cobalt and white elongated lozenges'&&lisbon.facade.externalImages===0,'Lisbon draws precise original cobalt/white lozenges without loading the watermarked reference at '+viewport.width);
+   check(lisbon.facade.monumental&&lisbon.facade.centered&&lisbon.facade.scale===1.6&&lisbon.facade.paperLoaded,'Lisbon displays the imposing centered original tongue and TOTEHM at '+viewport.width);
+   check(lisbon.flooring.ancientStone.physicalSlabs&&lisbon.flooring.ancientStone.slabs===301&&lisbon.exhibition.walls===2&&lisbon.exhibition.reservedSlots===5,'Lisbon retains its actual stone floor with minimal white exhibition walls at '+viewport.width);
    check(await pg.locator('#building-levels').isHidden(),'New York floor controls stay out of Lisbon at '+viewport.width);
-   }
+   await pg.screenshot({path:OUT+'/lisbon-entry-'+viewport.width+'.png'});
+   await pg.click('.tour [data-room="1"]');await pg.waitForFunction(()=>__totehm_gallery().focused===1&&!__totehm_gallery().moving);
+   sample.lisbonInterior=await pg.evaluate(()=>__totehm_gallery());
+   await pg.screenshot({path:OUT+'/lisbon-interior-'+viewport.width+'.png'});
+   check(!log.errors.some(e=>/pageerror:|THREE.WebGLProgram|VALIDATE_STATUS|shader error|WebGL: INVALID/i.test(e)),'Lisbon has no JavaScript or shader failure at '+viewport.width);
   }finally{await ctx.close();}
  }
  // Native software rendering of the storm ocean is too slow for an animated
  // circulation check. Keep the actual building, navigation, fire and UI here;
  // the two complete scenes above independently exercise the actual ocean.
- if(!landmarkOnly){
+ {
   const lighting="import * as T from '/vendor/three-0.180.0.mjs';export function createTempleLandscape(scene){scene.add(new T.HemisphereLight(0xc3d6e6,0x302a20,1));return{update(){return false;},diagnostics(){return{kind:'navigation-test-lighting',skyLoaded:true};}};}";
   const {pg,ctx,log}=await page(browser,{dir:'space',origin,viewport:{width:1100,height:900},session:false,network:url=>url.pathname==='/gallery-temple-landscape.mjs'?{contentType:'text/javascript',body:lighting}:null});
   try{

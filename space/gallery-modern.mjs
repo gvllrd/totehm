@@ -3,9 +3,10 @@ import {createWhiteStone} from './gallery-white-stone.mjs';
 import {createAncientFloor} from './gallery-ancient-floor.mjs';
 import {createLisbonPavement} from './gallery-lisbon-pavement.mjs';
 import {TOTEHMPAPER} from './gallery-artworks.mjs';
-import {GALLERY_LAYOUT,GALLERY_OBSTACLES,GALLERY_STATIONS} from './gallery-modern-layout.mjs';
+import {GALLERY_LAYOUT,GALLERY_OBSTACLES,GALLERY_STATIONS,GALLERY_EXHIBITION_WALLS} from './gallery-modern-layout.mjs';
 import {GLASS_SHELL,GLASS_HEARTH,glassRoofHeight} from './gallery-glass-shell.mjs';
 import {createGalleryFacade} from './gallery-facade.mjs';
+import {createLisbonFacade,LISBON_FACADE} from './gallery-lisbon-facade.mjs';
 
 // The glass pavilion is one spatial visit. Original pages and the market keep
 // their own identity, media, prices and access checks.
@@ -27,6 +28,7 @@ export function createModernGallery(scene,renderer,{mobile=false,onChange=()=>{}
  const lit=material(new T.MeshBasicMaterial({color:0xffe3bb,toneMapped:false}));
  const warm=material(new T.MeshBasicMaterial({color:0xffcc84,toneMapped:false}));
  const black=material(new T.MeshBasicMaterial({color:0x000000,toneMapped:false}));
+ const whiteWall=material(new T.MeshStandardMaterial({color:0xf1eee7,roughness:.92}));
  const boxGeo=geometry(new T.BoxGeometry(1,1,1)),planeGeo=geometry(new T.PlaneGeometry(1,1));
  function mesh(g,m,p,s={x:1,y:1,z:1},{solid=false,name=''}={}){
   const object=new T.Mesh(g,m);object.position.set(...p);object.scale.set(s.x,s.y,s.z);object.castShadow=!m.transparent;object.receiveShadow=true;object.name=name;root.add(object);if(solid)solids.push(object);return object;
@@ -57,6 +59,10 @@ export function createModernGallery(scene,renderer,{mobile=false,onChange=()=>{}
  foundation(ink,17.8,19.8,-1.2,-.1);foundation(metal,16.3,18.3,-.29,-.11);
  const floor=(m,x,z,w,d,name)=>{const plane=mesh(geometry(new T.PlaneGeometry(w,d)),m,[x,-.09,z],undefined,{solid:true,name});plane.rotation.x=-Math.PI/2;plane.castShadow=false;return plane;};
  const ancientFloor=createAncientFloor(root,{mobile,anisotropy,onChange:changed});solids.push(...ancientFloor.solids);
+ const artSurfaces=GALLERY_EXHIBITION_WALLS.map(w=>{
+  const panel=block(whiteWall,[w.x,w.y,w.z],[w.depth,w.height,w.width],{solid:true,name:w.id});panel.userData={exhibitionWall:w.id,floor:0};
+  return{id:w.id,floor:0,normal:[...w.normal],slots:w.slots};
+ });
  floor(pavement.material,0,8,32,20,'Exterior calçada — waves and caravel');
  floor(pavement.material,0,-17.5,32,1,'Exterior calçada — behind the pavilion');
  for(const x of [-14.5,14.5])floor(pavement.material,x,-9.5,3,15,'Exterior calçada — side terrace');
@@ -95,8 +101,7 @@ export function createModernGallery(scene,renderer,{mobile=false,onChange=()=>{}
   const pane=mesh(g,roofGlass,[0,0,0],undefined,{solid:true,name});pane.castShadow=false;return pane;
  }
  curvedGlazing('x',-17,-13,13,-.09,'Rear glazing following the lifted wave');
- curvedGlazing('x',-2,-13,13,3.1,'Wave entrance transom');
- for(const x of [-7.7,7.7])block(glass,[x,1.505,-2],[10.6,3.19,.08],{solid:true,name:'Frameless front glazing'});
+ const streetFacade=createLisbonFacade(root,{mobile,geometry,material,onChange:changed});solids.push(...streetFacade.solids);
  for(const x of [-13,13]){
   curvedGlazing('z',x,-17,-2,-.09,'Ocean-side glass cut to the flowing roof');
   for(const z of [-16.94,-2.05]){const height=glassRoofHeight(x,z)+.09;block(metal,[x,(height-.09)/2,z],[.036,height,.045]);}
@@ -172,19 +177,19 @@ export function createModernGallery(scene,renderer,{mobile=false,onChange=()=>{}
  block(metal,[8,3.1,-16.50],[7.16,4.06,.16]);block(black,[8,3.1,-16.405],[7,3.9,.018]);
  block(lit,[8,1.11,-16.39],[6.95,.009,.012]);
 
- createGalleryFacade(root,{mobile,geometry,material,station,black,sculptedPaperMaterial});
+ createGalleryFacade(root,{mobile,geometry,material,station,black,sculptedPaperMaterial,position:LISBON_FACADE.signPosition,scale:LISBON_FACADE.signScale});
  // Separate warm key and cool rim light reveal the depth, bevels and material.
- for(const spec of [{p:[-2.7,3,1.8],power:65,colour:0xffd59d},{p:[2.8,5.9,.5],power:36,colour:0xe1e8f1}]){
-  const spot=new T.SpotLight(spec.colour,spec.power,11,.52,.8,2);spot.position.set(...spec.p);spot.target.position.set(0,4.15,-1.4);root.add(spot,spot.target);
+ for(const spec of [{p:[-2.7,3,1.8],power:110,colour:0xffe0bb},{p:[2.8,6.8,1.5],power:80,colour:0xe1e8f1}]){
+  const spot=new T.SpotLight(spec.colour,spec.power,16,.6,.8,2);spot.position.set(...spec.p);spot.target.position.set(0,5.3,-1.4);root.add(spot,spot.target);
  }
- for(const x of [-.68,.68])block(metal,[x,4.65,-1.86],[.035,.035,.25]);
+ for(const x of [-9,9]){const spot=new T.SpotLight(0xe0eaff,140,16,.65,.75,2);spot.position.set(x,5,3);spot.target.position.set(x,4,-2);root.add(spot,spot.target);}
  const portals=GALLERY_STATIONS.map(station=>{const position=station.position||station.book||station.table||station.screen;return{room:station.room,x:position[0],z:position[2],href:station.href,approach:{x:station.approach[0],z:station.approach[2]},pickables:interactables.filter(item=>item.room===station.room).map(item=>item.object)};});
  changed();
  return{
-  root,solids,interactables,pickables:interactables.map(item=>item.object),obstacles:GALLERY_OBSTACLES,portals,
+  root,solids,artSurfaces,interactables,pickables:interactables.map(item=>item.object),obstacles:GALLERY_OBSTACLES,portals,
   anchors:{playScreen:GALLERY_LAYOUT.play.screen,originsBook:GALLERY_LAYOUT.origins.book,counter:GALLERY_LAYOUT.counter.position},setDay(){},
   update(dt,eye,motion=true){if(disposed)return false;if(motion)time+=Math.max(0,Math.min(Number(dt)||0,.1));const result=dirty;dirty=false;return result;},
-  diagnostics:()=>({kind:'wave-glass-campfire-gallery',ready:stone.diagnostics().ready&&pavement.diagnostics().ready,modernGallery:true,building:true,glassStructure:true,glassRoof:true,waveGlass:true,flatRoof:false,roofShell:{continuous:true,minimum:GLASS_SHELL.minHeight,maximum:GLASS_SHELL.maxHeight,thickness:GLASS_SHELL.thickness,triangles:waveRoof.geometry.attributes.position.count/3,ribs:5,actualAperture:true,smokeOutlet:{...o},collector:{glass:true,rearGlazingFold:true,asymmetricLip:true,baseHeight:GLASS_HEARTH.collectorBaseY,topHeight:o.y,metalHood:false,metalFlue:false,integrated:true}},columns:0,arches:0,doors:1,roof:true,skyLight:true,overheadLabels:0,vegetation:false,time:+time.toFixed(3),rooms:4,independentFiles:true,pavement:pavement.diagnostics(),stone:stone.diagnostics(),flooring:{ancientStone:ancientFloor.diagnostics(),trueStoneGeometry:true,opaqueSupportTop:interiorSupportTop,exteriorSupportPreserved:true,interiorOnlyWhiteStone:true,exteriorOriginalCalcada:true,interiorBounds:{minX:-13,maxX:13,minZ:-17,maxZ:-2},rectangles:5,sharedHeight:-.09,exteriorDarkPlinth:true},facade:{mouth:true,originalDrawing:true,paperLoaded,threeDimensional:true,tongueVolume:true,tongueSmooth:true,tongueIndexed:true,tongueProjectionMetres:.565,paperVolume:true,paperThicknessMetres:.028,edgeNotches:12,elegantlyLit:true},thpCounter:{papers:paperItems.length,sheets:6,looseTabs:5,perforated:true,tabSizeMetres:tabSize,sheetSizeMetres:[sheetWidth,sheetDepth],stone:true,originalAsset:TOTEHMPAPER.src,loaded:paperLoaded},lounge:{sofa:false,coffeeTable:false,screenFrame:true,screenCenter:GALLERY_LAYOUT.play.screen},origins:{table:false,lectern:true,black:true,closedBook:true,bookAnchor:GALLERY_LAYOUT.origins.book,inclinationDegrees:18},portals:portals.map(({room,x,z,href})=>({room,x,z,href})),disposed}),
-  dispose(){if(disposed)return;disposed=true;root.removeFromParent();stone.dispose();ancientFloor.dispose();pavement.dispose();for(const t of textures)t.dispose();for(const g of geometries)g.dispose();for(const m of materials)m.dispose();root.clear();}
+  diagnostics:()=>({kind:'lisbon-azulejo-facade-glass-gallery',ready:stone.diagnostics().ready&&pavement.diagnostics().ready,modernGallery:true,building:true,facadeOnlyMasonry:true,glassSides:true,glassRear:true,glassStructure:true,glassRoof:true,waveGlass:true,flatRoof:false,roofShell:{continuous:true,minimum:GLASS_SHELL.minHeight,maximum:GLASS_SHELL.maxHeight,thickness:GLASS_SHELL.thickness,triangles:waveRoof.geometry.attributes.position.count/3,ribs:5,actualAperture:true,smokeOutlet:{...o},collector:{glass:true,rearGlazingFold:true,asymmetricLip:true,baseHeight:GLASS_HEARTH.collectorBaseY,topHeight:o.y,metalHood:false,metalFlue:false,integrated:true}},columns:0,arches:0,doors:1,roof:true,skyLight:true,overheadLabels:0,vegetation:false,time:+time.toFixed(3),rooms:4,independentFiles:true,pavement:pavement.diagnostics(),stone:stone.diagnostics(),flooring:{ancientStone:ancientFloor.diagnostics(),trueStoneGeometry:true,opaqueSupportTop:interiorSupportTop,exteriorSupportPreserved:true,interiorOnlyWhiteStone:true,exteriorOriginalCalcada:true,interiorBounds:{minX:-13,maxX:13,minZ:-17,maxZ:-2},rectangles:5,sharedHeight:-.09,exteriorDarkPlinth:true},facade:{...streetFacade.diagnostics(),mouth:true,originalDrawing:true,paperLoaded,threeDimensional:true,tongueVolume:true,tongueSmooth:true,tongueIndexed:true,tongueProjectionMetres:.565,paperVolume:true,paperThicknessMetres:.028,edgeNotches:12,elegantlyLit:true,monumental:true,centered:true,scale:LISBON_FACADE.signScale,position:[...LISBON_FACADE.signPosition]},exhibition:{walls:artSurfaces.length,levels:1,reservedSlots:artSurfaces.reduce((n,s)=>n+s.slots.length,0),rampsCrossArtwork:false},thpCounter:{papers:paperItems.length,sheets:6,looseTabs:5,perforated:true,tabSizeMetres:tabSize,sheetSizeMetres:[sheetWidth,sheetDepth],stone:true,originalAsset:TOTEHMPAPER.src,loaded:paperLoaded},lounge:{sofa:false,coffeeTable:false,screenFrame:true,screenCenter:GALLERY_LAYOUT.play.screen},origins:{table:false,lectern:true,black:true,closedBook:true,bookAnchor:GALLERY_LAYOUT.origins.book,inclinationDegrees:18},portals:portals.map(({room,x,z,href})=>({room,x,z,href})),disposed}),
+  dispose(){if(disposed)return;disposed=true;root.removeFromParent();streetFacade.dispose();stone.dispose();ancientFloor.dispose();pavement.dispose();for(const t of textures)t.dispose();for(const g of geometries)g.dispose();for(const m of materials)m.dispose();root.clear();}
  };
 }

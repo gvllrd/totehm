@@ -46,8 +46,7 @@ export const NEW_YORK_FLOOR_RECTS=freeze([
     rect(floor,10.7,11.75,-6.7,-3.65,`ny-floor-${floor}-landing`)
    ]),
    ...(floor===3?[
-    rect(floor,8.55,11.75,-5.6,-5.0,'ny-setback-ramp-connector'),
-    rect(floor,11.4,12.9,-5.6,-3.65,'ny-liberty-window-landing')
+    rect(floor,8.55,11.75,-5.6,-5.0,'ny-setback-ramp-connector')
    ]:[])
   ];
  })
@@ -57,6 +56,21 @@ export const NEW_YORK_GROUND_OBSTACLES=freeze([
  {id:'origins-lectern',minX:-8.15,maxX:-7.05,minZ:-8.48,maxZ:-7.52,minY:-.09,maxY:1.65},
  {id:'fireplace-hearth',minX:-10.15,maxX:-5.85,minZ:-16.8,maxZ:-15.18,minY:-.09,maxY:4.65}
 ]);
+// Exhibition partitions sit INSIDE the stone gallery wings. The inclined
+// aisles stay outside them, so no ramp crosses an artwork's viewing space.
+// The asymmetric ground pair also leaves the existing independent screens
+// and the full campfire visible from their established approach positions.
+export const NEW_YORK_EXHIBITION_WALLS=freeze(NEW_YORK_FLOORS.flatMap((floorY,floor)=>[-1,1].map(side=>{
+ const x=side*(floor>=3?7:9.12),z=floor===0?(side<0?-11.8:-7.4):-9.4,width=floor===0?(side<0?2.2:3):4,height=3.8,depth=.12,normal=[-side,0,0],slotCount=floor===0&&side<0?2:3;
+ return{id:`ny-exhibition-${floor}-${side<0?'west':'east'}`,floor,x,y:floorY+height/2,z,axis:'z',width,height,depth,normal,
+  approach:[side*(floor>=3?5.5:6.3),floorY+NEW_YORK_LAYOUT.eyeHeight,z],
+  artBounds:{width:width-.4,height:2.8,bottom:floorY+.5},
+  slots:Array.from({length:slotCount},(_,i)=>({id:`ny-art-slot-${floor}-${side<0?'west':'east'}-${i}`,position:[x+normal[0]*(depth/2+.015),floorY+1.9,z+(i-(slotCount-1)/2)*width/slotCount],width:width/slotCount-.16,height:2.8,normal:[...normal]}))};
+})));
+export const NEW_YORK_EXHIBITION_OBSTACLES=freeze(NEW_YORK_EXHIBITION_WALLS.map(w=>({
+ id:w.id,minX:w.x-w.depth/2,maxX:w.x+w.depth/2,minZ:w.z-w.width/2,maxZ:w.z+w.width/2,
+ minY:NEW_YORK_FLOORS[w.floor],maxY:NEW_YORK_FLOORS[w.floor]+w.height
+})));
 export function newYorkRampHeight(ramp,x,z,margin=0){
  const dx=ramp.to.x-ramp.from.x,dz=ramp.to.z-ramp.from.z,length2=dx*dx+dz*dz;
  const raw=((x-ramp.from.x)*dx+(z-ramp.from.z)*dz)/length2;

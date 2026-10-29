@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {NEW_YORK_LAYOUT as L,NEW_YORK_FLOORS as FLOORS,NEW_YORK_RAMPS as RAMPS,NEW_YORK_LANDINGS as LANDINGS,NEW_YORK_STATIONS as STATIONS,newYorkSurfacesAt,newYorkRoofHeight} from '../../space/gallery-new-york-layout.mjs';
+import {NEW_YORK_LAYOUT as L,NEW_YORK_FLOORS as FLOORS,NEW_YORK_RAMPS as RAMPS,NEW_YORK_LANDINGS as LANDINGS,NEW_YORK_STATIONS as STATIONS,NEW_YORK_EXHIBITION_WALLS as ART_WALLS,NEW_YORK_EXHIBITION_OBSTACLES as ART_SOLIDS,NEW_YORK_GROUND_OBSTACLES as FURNITURE,newYorkRampHeight,newYorkSurfacesAt,newYorkRoofHeight} from '../../space/gallery-new-york-layout.mjs';
 import {createNewYorkPhysics,createNewYorkWalkway} from '../../space/gallery-new-york-navigation.mjs';
 
 let checks=0,steps=0;const check=(condition,message)=>{checks++;assert.ok(condition,message);};
@@ -40,7 +40,41 @@ for(const station of STATIONS){
  check(Math.abs(p.position.y-FLOORS[0])<.01,'original installation remains at ground level');
 }
 const wall=createNewYorkPhysics({x:12,z:-9});for(let i=0;i<200;i++)wall.step(.025,{dx:1});check(wall.position.x<12.75,'body cannot walk through brick wall');
-const viewpoint=createNewYorkPhysics();follow(viewpoint,walkway.route(eye(viewpoint.position),{x:12.7,y:FLOORS[3]+H,z:-4.7}),{guided:true});check(Math.abs(viewpoint.position.x-12.7)<.02&&Math.abs(viewpoint.position.y-FLOORS[3])<.02,'Liberty window landing is physically connected to the street through ramps');
+function crosses(a,b,box){
+ let low=0,high=1;
+ for(const [axis,min,max] of [['x',box.minX,box.maxX],['y',box.minY,box.maxY],['z',box.minZ,box.maxZ]]){
+  const delta=b[axis]-a[axis];if(Math.abs(delta)<1e-9){if(a[axis]<=min||a[axis]>=max)return false;continue;}
+  const enter=(min-a[axis])/delta,leave=(max-a[axis])/delta;low=Math.max(low,Math.min(enter,leave));high=Math.min(high,Math.max(enter,leave));if(low>=high)return false;
+ }return high>1e-6&&low<1-1e-6;
+}
+check(ART_WALLS.length===10,'every one of the five floors has two dedicated white exhibition walls');
+check(ART_WALLS.reduce((n,w)=>n+w.slots.length,0)===29,'twenty-nine future digital artwork positions are reserved without fake artworks');
+for(let level=0;level<5;level++){
+ const exhibition=createNewYorkPhysics({...LANDINGS[level]});
+ for(const wall of ART_WALLS.filter(w=>w.floor===level)){
+  follow(exhibition,walkway.route(eye(exhibition.position),{x:wall.approach[0],y:wall.approach[1],z:wall.approach[2]}),{guided:true});
+  check(Math.abs(exhibition.position.y-FLOORS[level])<.01,'each artwork viewpoint is physically accessible from the same-floor landing');
+  const approach={x:wall.approach[0],y:wall.approach[1],z:wall.approach[2]};
+  check(Math.abs(approach.x-wall.x)-wall.depth/2-.18>=1.2,'a clear viewer aisle remains in front of each exhibition surface');
+  for(const slot of wall.slots)for(const dy of [-slot.height/2,slot.height/2])for(const dz of [-slot.width/2,slot.width/2]){
+   const target={x:slot.position[0],y:slot.position[1]+dy,z:slot.position[2]+dz};
+   check(![...FURNITURE,...ART_SOLIDS].some(box=>crosses(approach,target,box)),'furniture and partitions do not obscure the full reserved artwork rectangle');
+   for(let i=0;i<=16;i++){
+    const t=i/16,x=approach.x+(target.x-approach.x)*t,z=approach.z+(target.z-approach.z)*t,y=approach.y+(target.y-approach.y)*t;
+    check(!RAMPS.some(r=>{const h=newYorkRampHeight(r,x,z);return h!==null&&y>h-.14&&y<h+.025;}),'no inclined aisle crosses any artwork viewing ray');
+   }
+  }
+  const barrier=createNewYorkPhysics({x:approach.x,y:FLOORS[level],z:approach.z});for(let i=0;i<100;i++)barrier.step(.025,{dx:Math.sign(wall.x)*.065});
+  check(Math.abs(barrier.position.x-wall.x)>=wall.depth/2+.18-.003,'exhibition partitions are solid physical walls');
+ }
+}
+const screenEye={x:L.opposite.approach[0],y:L.opposite.approach[1],z:L.opposite.approach[2]};
+for(const y of [1.525,4.675])for(const z of [-9.8,-4.2])check(!ART_SOLIDS.some(box=>crosses(screenEye,{x:-12.72,y,z},box)),'all four Same but opposite corners remain visible past the new walls');
+const playEye={x:L.play.approach[0],y:L.play.approach[1],z:L.play.approach[2]};
+for(const y of [1.15,5.05])for(const x of [4.5,11.5])check(!ART_SOLIDS.some(box=>crosses(playEye,{x,y,z:-16.18},box)),'all four Lisbon-screen corners remain visible past the new walls');
+const fireEye={x:L.fireplace.approach[0],y:L.fireplace.approach[1],z:L.fireplace.approach[2]};
+const fireVisit=createNewYorkPhysics();follow(fireVisit,walkway.route(eye(fireVisit.position),fireEye),{guided:true});
+for(const [x,y,z] of [[-10.15,.02,-15.17],[-5.85,.02,-15.17],[-9.95,4.62,-15.99],[-6.05,4.62,-15.99]])check(!ART_SOLIDS.some(box=>crosses(fireEye,{x,y,z},box)),'the full campfire remains visible from its original approach');
 const well=createNewYorkPhysics({x:6,z:-9,y:FLOORS[2]});for(let i=0;i<100;i++)well.step(.025,{dx:-1});check(well.position.x>5.3,'atrium guard stops visitor before floor opening');check(well.diagnostics().grounded,'edge guard preserves support');
 const ceiling=createNewYorkPhysics({x:0,z:-7,y:FLOORS[1]});check(ceiling.jump(),'intentional indoor jump starts');for(let i=0;i<20;i++)ceiling.step(.025);check(ceiling.diagnostics().headContacts>0,'slab underside intercepts high jump');check(ceiling.position.y<FLOORS[2]-H+.01,'jump cannot tunnel through upper floor');
 const teleport=createNewYorkPhysics();teleport.relocateHorizontal(top);check(Math.abs(teleport.position.y-FLOORS[4])<.01,'reduced motion relocation targets real upper floor');teleport.relocateHorizontal({x:0,y:100+H,z:-8});check(teleport.position.y<22,'unsupported altitude cannot be restored');

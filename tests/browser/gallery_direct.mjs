@@ -7,6 +7,13 @@ const browser=await launch();let checks=0;const results=[];
 const check=(value,message)=>{assert(value,message);checks++;console.log('PASS '+message);};
 const fatal=log=>log.errors.filter(e=>/pageerror:|THREE.WebGLProgram|VALIDATE_STATUS|shader error|WebGL: INVALID/i.test(e));
 async function project(pg,point){const d=await pg.evaluate(()=>({camera:__totehm_gallery().camera,width:innerWidth,height:innerHeight}));const c=new PerspectiveCamera(d.camera.fov,d.camera.aspect,d.camera.near,d.camera.far);c.position.fromArray(d.camera.position);c.lookAt(new Vector3(...d.camera.target));c.updateProjectionMatrix();c.updateMatrixWorld();const p=new Vector3(...point).project(c);return{x:(p.x+1)*d.width/2,y:(1-p.y)*d.height/2};}
+async function lookAt(pg,point){
+ const d=await pg.evaluate(()=>({camera:__totehm_gallery().camera,frames:__totehm_gallery().frames,width:innerWidth,height:innerHeight}));
+ const direction=new Vector3(...d.camera.target).sub(new Vector3(...d.camera.position)).normalize(),target=new Vector3(...point).sub(new Vector3(...d.camera.position)).normalize();
+ const dx=-(Math.atan2(-target.x,-target.z)-Math.atan2(-direction.x,-direction.z))/.004,dy=(Math.asin(target.y)-Math.asin(direction.y))/.003;
+ await pg.mouse.move(d.width/2,d.height/2);await pg.mouse.down();await pg.mouse.move(d.width/2+dx,d.height/2+dy,{steps:6});await pg.mouse.up();
+ await pg.waitForFunction(frames=>__totehm_gallery().frames>frames,d.frames);
+}
 try{
  for(const viewport of [{width:1440,height:1000},{width:390,height:844}]){
   const requests=[],sample={viewport};results.push(sample);
@@ -24,6 +31,13 @@ try{
    check(await pg.locator('.market-nav a[href="/market"]').isVisible()&&await pg.locator('.market-nav a[href="/market?tab=mine"]').isVisible(),'market and personal collection routes remain visible at '+viewport.width);
    check(await pg.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'entrance has no horizontal overflow at '+viewport.width);
    await pg.screenshot({path:OUT+'/entry-'+viewport.width+'.png'});
+   const brandPoint=await project(pg,[0,4.59272,-.95]);
+   check(brandPoint.x>=0&&brandPoint.x<=viewport.width&&brandPoint.y>=0&&brandPoint.y<=viewport.height,'the original central TOTEHM entrance projects inside the viewport at '+viewport.width);
+   await pg.mouse.click(brandPoint.x,brandPoint.y);
+   await pg.waitForFunction(()=>{const d=__totehm_gallery();return Math.hypot(d.position[0],d.position[1]+5)<.2&&!d.moving;},null,{timeout:45000});
+   check((await pg.evaluate(()=>__totehm_gallery())).zone==='gallery','clicking the actual central TOTEHM enters through the facade at '+viewport.width);
+   await pg.screenshot({path:OUT+'/interior-'+viewport.width+'.png'});
+   await lookAt(pg,[-8,.55,-15.99]);
    const firePoint=await project(pg,[-8,.55,-15.99]);await pg.mouse.click(firePoint.x,firePoint.y);
    await pg.waitForFunction(()=>{const d=__totehm_gallery();return Math.hypot(d.position[0]+9.2,d.position[1]+8.3)<.2&&Math.hypot(d.camera.position[0]+9.2,d.camera.position[2]+8.3)<.2&&!d.moving;},null,{timeout:45000});
    check((await pg.evaluate(()=>__totehm_gallery())).fireplace.approachableFire,'touching the physical campfire guides the visitor beside the flames at '+viewport.width);

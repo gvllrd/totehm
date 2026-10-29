@@ -4,6 +4,7 @@ import {createModernGallery} from '../../space/gallery-modern.mjs';
 import {GLASS_SHELL,GLASS_HEARTH,glassRoofHeight,glassSmokeOpening} from '../../space/gallery-glass-shell.mjs';
 let checks=0;const check=(v,message)=>{assert(v,message);checks++;};
 const o=GLASS_HEARTH.smokeOutlet;
+for(let x=-13;x<=13;x+=.1)check(Math.abs(glassRoofHeight(x,-2)-7.25)<1e-9,'The glass front edge meets the historic facade above its upper windows');
 // The variable section is continuous and bounded, including its four edges.
 for(let x=GLASS_SHELL.minX;x<=GLASS_SHELL.maxX;x+=.19)for(let z=GLASS_SHELL.minZ;z<=GLASS_SHELL.maxZ;z+=.19){
  const y=glassRoofHeight(x,z);check(y>=GLASS_SHELL.minHeight&&y<=GLASS_SHELL.maxHeight,'Glass height remains inside its collision envelope');
