@@ -3078,6 +3078,13 @@ body.lv-d #lv-proc,body.lv-d #lv-slogan{opacity:0}
 #lv-focus{display:flex;align-items:center;gap:8px;max-width:100%;margin:0 0 7px;padding:7px 10px;background:#1f1f24;border-radius:10px;
   font:400 11px/1.4 'Space Mono',monospace;color:#b0b0b0}
 #lv-focus.hide{display:none}
+/* MON MOMENT (29/10) : l'heure · la météo · chez moi ou dehors — une ligne grise ; le dernier mot se corrige d'un tap. */
+#lv-ici{display:flex;justify-content:center;align-items:center;gap:7px;margin:0 0 7px;font:400 9px/1.4 'Space Mono',monospace;
+  letter-spacing:.16em;text-transform:uppercase;color:#8a8a92;font-variant-numeric:tabular-nums}
+#lv-ici.hide{display:none}
+#lv-ici button{background:none;border:0;padding:2px 0;cursor:pointer;font:inherit;letter-spacing:inherit;text-transform:inherit;color:#b8b8c2;
+  text-decoration:underline dotted rgba(255,255,255,.35);text-underline-offset:3px}
+@media(hover:hover){#lv-ici button:hover{color:#fff}}
 #lv-focus b{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:400;color:#fff}
 #lv-focus i{flex:0 0 auto;font-style:normal;font-size:8.5px;letter-spacing:.2em;text-transform:uppercase;color:#8a8a92}
 #lv-focus button{flex:0 0 auto;margin-left:auto;background:none;border:0;color:#8a8a92;cursor:pointer;font:inherit;padding:2px 4px}
@@ -4248,6 +4255,8 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
         <!-- 25/10 (Wah) : « lire et sélectionner un média ou un spot à envoyer à l'IA ».
              Ce que je lui montre se pose ICI, au-dessus de ce que j'écris ; la page n'envoie
              qu'une RÉFÉRENCE, le serveur relit la chose dans MON Totehm. -->
+        <!-- 29/10 (Wah) : le Higher Self tient compte de l'heure, de la météo et de « chez moi » : ce qu'il en sait, en une ligne. -->
+        <div id="lv-ici" class="hide" aria-live="polite"></div>
         <div id="lv-focus" class="hide" aria-live="polite"></div>
         <form id="lv-say" class="hide is-vide" autocomplete="off">
           <textarea id="lv-say-in" maxlength="600" rows="1" enterkeyhint="send" autocapitalize="sentences" aria-label="Talk to my Reflection"></textarea>
@@ -8146,7 +8155,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-10-29-com-visionneuses';
+const BUILD='2026-10-29-com-retour-moment';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -13601,6 +13610,8 @@ window.addEventListener('pageshow',e=>{
         const l=l0.trim(); if(!l) continue;
         const ok=/^@ok\s+(\{.*\})\s*$/.exec(l);
         if(ok){ try{ r.ok=JSON.parse(ok[1]); }catch(_){} continue; }
+        const ic=/^@ici\s+(\{.*\})\s*$/.exec(l);
+        if(ic){ try{ r.ici=JSON.parse(ic[1]); }catch(_){} continue; }
         const li=/^@lieu\s+(\{.*\})\s*$/.exec(l);
         if(li){ try{ const x=JSON.parse(li[1]); if(x&&x.name&&/^(place|event|mine)$/.test(x.kind)) r.lieu=x; }catch(_){} continue; }
         const m=/^@(dir|obs|teach|step)\b([^\n]*)$/i.exec(l);
@@ -13712,6 +13723,7 @@ window.addEventListener('pageshow',e=>{
     function smPeindre(){
       const st=etatSM(), ouvert=!!(me&&inscrit()&&!guest()&&st.ready&&(acces()||(st.free_left|0)>0));
       $('lv-say').classList.toggle('hide',!ouvert);
+      iciPeindre();
       $('lv-say-go').disabled=SM.busy;
       curseur(); smFocus();
       fil.innerHTML=smHTML();
@@ -13778,35 +13790,80 @@ window.addEventListener('pageshow',e=>{
       return {status:200,d:{ok:txt.trim().length>=12,text:txt,left:reste===''||reste==null?null:+reste,higher:haut}};
     }
     /* Ce qui repart au modèle (les tours précédents, invisibles) : sans les lignes du serveur (vérification, lieu). */
-    const sansOk=t=>String(t||'').replace(/\n?@(?:ok|lieu)\s+\{[^\n]*\}/g,'').trim();
-    /* La position (Higher) : arrondie à ~1 km, lue seulement si le navigateur l'a DÉJÀ permise, ou donnée d'un geste
-       (« places near me ») ; jamais gardée ailleurs que dans cette page. */
-    const arrondi=c=>({lat:Math.round(c.latitude*100)/100, lng:Math.round(c.longitude*100)/100});
+    const sansOk=t=>String(t||'').replace(/\n?@(?:ok|lieu|ici)\s+\{[^\n]*\}/g,'').trim();
+    /* La position : au serveur, arrondie à ~1 km (la météo ; Higher : les lieux près de moi), jamais gardée. 29/10 : pour
+       TOUS les membres — la météo et « chez moi » sont mécaniques (zéro centime) ; le navigateur demande UNE fois, au
+       premier message, et la réponse part sans attendre plus de 1,5 s (la position suivra au message d'après). */
+    const arrondi=c=>({lat:Math.round(c.lat*100)/100, lng:Math.round(c.lng*100)/100});
     const lirePos=ms=>new Promise(res=>{ if(!navigator.geolocation) return res(null);
-      let fini=false; const fin=v=>{ if(!fini){ fini=true; res(v); } };
-      navigator.geolocation.getCurrentPosition(p=>fin(p&&p.coords?arrondi(p.coords):null),()=>fin(null),{timeout:ms,maximumAge:600000});
-      setTimeout(()=>fin(null),ms+200); });
-    async function posPermise(){
-      if(SM.pos) return SM.pos;
-      try{ const st=navigator.permissions&&await navigator.permissions.query({name:'geolocation'}); if(!st||st.state!=='granted') return null; }
-      catch(_){ return null; }
-      const p=await lirePos(1500); if(p) SM.pos=p; return p;
+      let fini=false; const fin=v=>{ if(v) SM.fin={...v,at:Date.now()}; if(!fini){ fini=true; res(v); } };
+      navigator.geolocation.getCurrentPosition(p=>fin(p&&p.coords?{lat:p.coords.latitude,lng:p.coords.longitude}:null),()=>fin(null),{timeout:8000,maximumAge:600000});
+      setTimeout(()=>{ if(!fini){ fini=true; res(null); } },ms); });
+    async function posFine(){
+      if(SM.fin&&Date.now()-SM.fin.at<10*60e3) return SM.fin;
+      let st='prompt'; try{ const q=navigator.permissions&&await navigator.permissions.query({name:'geolocation'}); if(q) st=q.state; }catch(_){}
+      if(st==='denied') return null;
+      return lirePos(1500);
     }
+    /* ══ CHEZ MOI · 29/10 ══ (Wah : « la vue du bas doit prendre en compte l'heure, la météo et la position : détecter si je
+       suis chez moi, et me proposer une activité chez moi, ou une action dehors aux alentours »). C'est le TÉLÉPHONE qui
+       apprend : à chaque message, la position FINE (~100 m) et l'heure sont notées dans CE navigateur seul (`totehm_ici_v1`,
+       jamais envoyées) ; « chez moi » = le point le plus vu la nuit (21 h – 8 h, sur deux nuits au moins, à 200 m près), ou
+       celui que je désigne d'un tap. Au serveur ne part qu'un mot : home · out. */
+    const ICI=(()=>{
+      const K='totehm_ici_v1', R=.2;
+      const lire=()=>{ try{ return JSON.parse(localStorage.getItem(K)||'{}')||{}; }catch(_){ return {}; } };
+      const ecrire=o=>{ try{ localStorage.setItem(K,JSON.stringify(o)); }catch(_){} };
+      const fin3=c=>({lat:Math.round(c.lat*1000)/1000, lng:Math.round(c.lng*1000)/1000});
+      const km=(a,b)=>{ const r=Math.PI/180, x=(b.lng-a.lng)*r*Math.cos((a.lat+b.lat)*r/2), y=(b.lat-a.lat)*r; return Math.hypot(x,y)*6371; };
+      function noter(c){ if(!c) return; const o=lire(), d=new Date(), l=Array.isArray(o.vu)?o.vu:[];
+        l.push({...fin3(c),h:d.getHours(),j:d.toISOString().slice(0,10)}); o.vu=l.slice(-120); ecrire(o); }
+      function maison(){
+        const o=lire(); if(o.moi) return o.moi;
+        const pas=Array.isArray(o.pas)?o.pas:[], nuit=(o.vu||[]).filter(v=>(v.h>=21||v.h<8)&&!pas.some(p=>km(p,v)<=R)); let best=null, n=0;
+        for(const v of nuit){ const j=new Set(nuit.filter(w=>km(v,w)<=R).map(w=>w.j)); if(j.size>n){ n=j.size; best=v; } }
+        return n>=2?{lat:best.lat,lng:best.lng}:null;
+      }
+      const etat=c=>{ if(!c) return ''; const m=maison(); if(m) return km(m,c)<=R?'home':'out';
+        return (lire().pas||[]).some(p=>km(p,c)<=R)?'out':''; };
+      /* un tap corrige : « home » ici devient « out » (ce point n'est pas chez moi), « out » devient « home » (c'est ici) */
+      function corriger(c){ if(!c) return ''; const o=lire();
+        if(etat(c)==='home'){ delete o.moi; o.pas=(Array.isArray(o.pas)?o.pas:[]).concat([fin3(c)]).slice(-8); ecrire(o); return 'out'; }
+        o.moi=fin3(c); o.pas=(o.pas||[]).filter(p=>km(p,c)>R); ecrire(o); return 'home'; }
+      return {noter, etat, corriger, connu:()=>!!maison()};
+    })();
+    const HEURE=()=>{ const d=new Date(); return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); };
+    const CIEL=c=>String(c||'').replace(/_(day|night|polartwilight)$/,'').replace('clearsky','clear').replace('partlycloudy','cloudy').replace('lightrain','light rain')
+      .replace('heavyrain','heavy rain').replace(/andthunder$/,' + thunder').replace(/showers$/,' showers').replace(/\s+/g,' ').trim();
+    function iciPeindre(){
+      const el=$('lv-ici'); if(!el) return;
+      const ouvert=!$('lv-say').classList.contains('hide'), m=SM.ici||{}, ou=SM.fin?ICI.etat(SM.fin):'';
+      el.classList.toggle('hide',!ouvert);
+      if(!ouvert) return;
+      const b=[esc(HEURE())];
+      if(m.t!=null||m.ciel) b.push(esc([m.t!=null?Math.round(m.t)+'°':'',CIEL(m.ciel)].filter(Boolean).join(' ')));
+      if(ou) b.push('<button type="button" data-ici aria-label="Home or out — tap to correct">'+(ou==='home'?'home':'out')+'</button>');
+      el.innerHTML=b.join('<span aria-hidden="true">·</span>');
+    }
+    $('lv-ici').addEventListener('click',e=>{ if(!e.target.closest('[data-ici]')||!SM.fin) return; ICI.corriger(SM.fin); diag.ici=(diag.ici|0)+1; iciPeindre(); });
     $('lv-say').addEventListener('submit',async e=>{
       e.preventDefault(); if(SM.busy) return;
       const inp=$('lv-say-in'), t=inp.value.trim(); if(t.length<2){ smNote('a few words'); return; }
       const uid=me&&me.id, seq=++SM.seq;
       const tours=SM.msgs.slice(-6).map(m=>({role:m.role,text:m.role==='sm'?sansOk(m.text):m.text}));
       SM.msgs.push({role:'me',text:t}); SM.busy=true; SM.live=''; inp.value=''; smNote(''); smPeindre(); penser(true);
-      const pos=acces()?await posPermise():null;
+      const fine=await posFine(), pos=fine?(SM.pos=arrondi(fine)):null;
+      if(fine) ICI.noter(fine);
+      const ou=fine?ICI.etat(fine):'';
       /* Ce que je montre part en RÉFÉRENCE seule : {kind,id}. L'étiquette affichée ne quitte jamais la page. */
       const mtr=SM.focus?{kind:SM.focus.kind, id:SM.focus.id}:null;
-      const {status,d}=await smFlux({action:'say',text:t,turns:tours,now:maintenant(),tz:new Date().getTimezoneOffset(),fmt:'r4',...(pos?{pos}:{}),...(mtr?{focus:mtr}:{})},
+      const {status,d}=await smFlux({action:'say',text:t,turns:tours,now:maintenant(),tz:new Date().getTimezoneOffset(),fmt:'r4',...(pos?{pos}:{}),...(ou?{ou}:{}),...(mtr?{focus:mtr}:{})},
         txt=>{ if(seq===SM.seq){ SM.live=txt; smBientot(); } });
       if(seq!==SM.seq||me?.id!==uid) return;
       penser(false); SM.busy=false; SM.live=null;
       if(d.ok){
         SM.msgs.push({role:'sm',text:d.text,id:'r'+seq}); diag.envois++;
+        { const r=lireR3(d.text); if(r.ici) SM.ici=r.ici; }
         if(mtr&&SM.focus&&SM.focus.id===mtr.id) SM.focus=null;   /* montré : la pastille s'en va avec la réponse */
         if(LAND&&LAND.sm&&d.left!=null){ LAND.sm.left=d.left; if(!d.higher) LAND.sm.free_left=d.left; }
         smPeindre(); smNoteEtat(); return;
@@ -13881,7 +13938,7 @@ window.addEventListener('pageshow',e=>{
       const add=e.target.closest('[data-rf-add]');
       if(add){ add.disabled=true; ajouterHabit(add.dataset.rfAdd); return; }
       if(e.target.closest('[data-rf-pos]')){ smNote('…'); const p=await lirePos(8000);
-        if(p){ SM.pos=p; smNote('near me · on my next reflection'); } else { SM.posRefus=true; smNote('no position · my own places stay'); }
+        if(p){ SM.pos=arrondi(p); ICI.noter(p); iciPeindre(); smNote('near me · on my next reflection'); } else { SM.posRefus=true; smNote('no position · my own places stay'); }
         smPeindre(); return; }
       const sp=e.target.closest('[data-rf-spot]');
       if(sp){ sp.disabled=true; spotDeLaStep(sp.dataset.rfSpot,sp); return; }

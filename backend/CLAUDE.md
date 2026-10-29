@@ -42,9 +42,9 @@ Le compte vient TOUJOURS de la session, jamais du corps ; une page ne reçoit qu
 ## Le bot et le Higher Self
 
 - TotehmBot (Telegram) sans voix (jamais « je », zéro modèle) ; relances `push_decision` au rythme de chaque Habit, 6/jour.
-- Higher Self (`higher-self` v6, `fmt:'r4'`) : le MIROIR. `_bot_mirror` = le TOTEHM relié (chaque Habit entière : where,
-  intentions, rythme, son, liens) ; `_shared/mirror.ts` : contexte + citations vérifiées (`@ok`). Gratuit limité (`_sm_rules`),
-  puis `higher_sub` ; un lieu réel (`_mirror_places`) posé par le serveur (`@lieu`) ; `higher-map` : Lisbonne seule.
+- Higher Self (`higher-self` v7, `fmt:'r4'`) : le MIROIR. `_bot_mirror` = le TOTEHM relié (where, intentions, rythme, son, liens) ;
+  `_shared/mirror.ts` : contexte + citations vérifiées (`@ok`) ; gratuit limité (`_sm_rules`), puis `higher_sub` ; un lieu réel (`_mirror_places`, `@lieu`).
+  MON MOMENT : l'heure, la météo (`_shared/meteo.ts`, MET Norway, gratuite, 1,2 s au plus) et `ou` (home · out, de la page) → chez moi ou dehors (`@ici`). `higher-map` : Lisbonne seule.
 - Ce que le membre MONTRE : `focus:{kind:'media'|'spot', id}` — une référence seule ; `montreDe()` relit la ligne dans SES
   lignes (`element_media` non retiré, `spot_plans` publié) et la box par `_box_matter`, et dit au modèle qu'il ne VOIT
   pas l'image. Deux lectures SQL, zéro appel payant de plus.
