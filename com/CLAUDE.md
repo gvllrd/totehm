@@ -32,27 +32,27 @@ figher.club ; `/vendor`, `/cities.json`, `/assets/signs` → SPACE ; Telegram n'
 | la liste du TOTEHM déployé | `/* ══ LA BOÎTE` (une Habit : why · trigger · ses médias · ses spots ; [Add a media] → ←, [Add a spot] → →) · `/* ══ LES TROIS VUES` · `/* ══ LES ÉCRITURES` · `#vnow` (le titre, en haut au centre) · `const INTS=` · la manette `#joy` = celle de l'atterrissage (`#lvj-box`), hors de tout cadre : un puits rond, un manche dont la couleur = la vue (`--joy-vue`, `TEINTE`) ; module `manette` (`RAYON` 10, `SEUIL` 6, comme `manetteLV`) ; ordinateur : dans la bande noire sous le carré (`--lvj-b`), `--stage` cède sur un écran bas pour la lui garder |
 | la session | `/* ══ LA SESSION` · `sessionChange` · `sesWait` · cache `totehm_habits_v1` |
 
-Diagnostics : `__totehm_lv()` (`.refus` : pourquoi un geste est refusé ; à l'écran : `/totehm?diag=1`) · `__totehm_xo()` · `__totehm_sh()` · `__totehm_rdr()` · `__totehm_carte()` · `__totehm_nspot()` · `__totehm_zone()`.
+Diagnostics : `__totehm_lv()` (`.refus` : pourquoi un geste est refusé ; à l'écran : `/totehm?diag=1`) · `__totehm_xo()` · `__totehm_sh()` · `__totehm_rdr()` · `__totehm_carte()` · `__totehm_nspot()` · `__totehm_zone()` · `__totehm_save()`.
 
 ## Les pièges
 
 - Hors du TOTEHM, une box est rendue par les rendus de la liste (`boxTotehm`), jamais une copie.
 - `cloudSave()` réécrit `steps` en entier : rien d'autre ne s'y range. `FREQS` (page) = `_freq_minutes` (base) : identiques.
-- Ne jamais redéfinir `--perfo` (une seconde définition l'écrase en silence).
+  La lettre va au cache (`save({local:1})`) ; le serveur après `PAUSE_FRAPPE` (2,5 s, `differe`) ou dès qu'on quitte le champ (`ecrireTout` :
+  Entrée, focusout, repli, onglet caché) ; un envoi identique ne part pas, un seul à la fois ; « saved » = le serveur a dit oui.
 - Un verrou de navigation se rend toujours ; un geste reçu pendant un voyage OU le repli du TOTEHM attend sa fin (`guetter`,
   1,5 s au plus). Tout geste de navigation est un MANCHE (il va où il pousse : doigt, trackpad, souris, manette, papier) SAUF dans la liste du TOTEHM déployé (`#fv-inner`) : là il suit le défilement (plus bas que le bas → la vue du dessous) ;
   et il POUSSE le manche à l'écran — `POUSSE_JOY` (app), `POUSSE_LVJ` (atterrissage) : 240 ms, puis retour au centre ;
   la main posée sur la manette commande seule (`DU_MANCHE`, `DU_LVJ`). Trackpad : un geste ET son inertie = UNE vue (le
   verrou se prolonge tant que l'inertie dure : atterrissage, manette, liste — sinon deux vues d'un geste, mesuré).
-- Session gardée : ni la vente ni CONNECT avant la fin de la lecture ; aucune écriture sur la foi du cache.
+- Session gardée : ni la vente ni CONNECT avant la fin de la lecture ; aucune écriture sur la foi du cache. Ne jamais redéfinir `--perfo`.
 - Le socle `#lv-socket` ne se voit plus (le TOTEHM est le boîtier, `--sk` = le papier + 6 px) mais il donne la taille du
   boîtier et devient l'anneau du profil : ne pas le retirer. `enter()` aspire AVANT de mesurer (le cœur grossit le papier). Verso, clic, recherche = `LV.aspirer(true)` ; chaque
   sortie doit rendre `LV.aspirer(false)` (sinon le réseau reste caché). Fin du portail = l'app au pixel (papier `--paper`).
 - Verso : le dos du papier porte le NOM seul ; déplié, tout ce qui n'est pas le nom porte `.srch-after` et n'apparaît
   qu'à `is-pret` (verso déployé ET console lue, 1,8 s au plus) — un nœud ajouté au verso sans `.srch-after` s'affiche trop tôt.
-- Verso déplié : l'identifiant (`#self-h`) est à même le navy ; il colle en haut avec un bandeau `#333366` peint à
-  `is-pret` seulement, et `top` compense le padding de `#srch-ui` (Chrome colle dessous). L'email (`#self-mail`) est
-  dessous ; le pied = `.vs-acts` (boutons `.vs-acc` : Delete, Sign out) puis les conditions. Les gris lisibles (≥ #b8b8c2).
+- Verso déplié : `#self-h` à même le navy, collé en haut (bandeau `#333366` à `is-pret` seulement, `top` compense le padding de
+  `#srch-ui`) ; l'email (`#self-mail`) dessous ; le pied = `.vs-acts` (Delete, Sign out) puis les conditions. Gris lisibles ≥ #b8b8c2.
 - **Visibilité** : une box est BINAIRE, privée par défaut — une ligne de mots dans la box OUVERTE (`.baud` : `.baud-o` PRIVATE · VISIBLE TO
   MY SUBSCRIBERS ; `AUDB`, `box_audience_set`) ; un autre lit par `totehm_read`. Mon spot : `[data-spaud]` → `spot_audience_set` (3 niveaux).
 - La capture EN LIGNE vit dans un panneau qui se repeint : `CAP.dans(p)` → `CAP.fermer()` AVANT la peinture, sinon `#cap-in` est détruit.

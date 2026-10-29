@@ -258,7 +258,7 @@ try{
   ok(log.rpc.some(r=>r.name==='element_media_remove')&&log.upload.filter(u=>u.method==='DELETE').length===dels+1&&(await doc())===-1,'« × » : element_media_remove, le fichier s\'efface de mon dossier');
   // renommer : ses fichiers suivent ; supprimer : ils partent
   await pg.locator('#habits .habit.open .v-name[data-edit]').click();
-  await pg.keyboard.press('End');await pg.keyboard.type(' slow');await pg.waitForTimeout(1600);
+  await pg.keyboard.press('End');await pg.keyboard.type(' slow');await pg.keyboard.press('Enter');await pg.waitForTimeout(700);   /* 29/10 : Entrée envoie tout de suite (sinon : après 2,5 s de pause) */
   const rk=log.rpc.find(r=>r.name==='element_media_rekey');
   ok(rk&&rk.body.p_old==='Read at dawn'&&rk.body.p_new==='Read at dawn slow'&&log.rpc.some(r=>r.name==='habit_rename_links'),'renommée : element_media_rekey avec habit_rename_links (ses fichiers la suivent)');
   const rm0=log.rpc.filter(r=>r.name==='element_media_remove').length;

@@ -5078,21 +5078,44 @@ function saveFilter(){
 try{const _rf=JSON.parse(localStorage.getItem(KEYF())||'null');
     if(_rf){filterF=_rf.f||null;filterI=_rf.i||null;}}catch(e){}
 
-function save(){
+/* ══ LA SAUVEGARDE INTELLIGENTE (Wah : « à chaque lettre, ça "saved", c'est trop ») ══
+   La lettre va en MÉMOIRE et dans le cache du téléphone (zéro réseau). Le serveur ne reçoit qu'après une vraie PAUSE
+   (`PAUSE_FRAPPE`), ou tout de suite quand on quitte le champ (Entrée, curseur ailleurs, box refermée, Totehm replié,
+   onglet caché). Un envoi identique au dernier ne part pas ; un seul envoi à la fois (le suivant attend, jamais deux
+   réponses dans le désordre). « saved » ne s'affiche qu'une fois le serveur d'accord. Rien de tout ça n'est une Edge
+   Function : `steps` = un upsert PostgREST, les renommages = des RPC SQL. */
+const PAUSE_FRAPPE=2500;
+const SAUVE={envois:0,identiques:0,rafales:0,echecs:0};
+let dernierEnvoi=null, envoiEnVol=null, envoiEncore=false;
+function direSaved(){ $('fv-status').textContent='saved';
+  setTimeout(()=>{if($('fv-status').textContent==='saved')$('fv-status').textContent='';},1100); }
+function save(o){
   /* ══ LE VERROU ══ Un seul point de sortie pour toute écriture locale ET
      nuage. Le mode lecture s'arrête ICI : pas plus loin, jamais ailleurs. */
   if(RO||!me)return;
+  o=o||{};
   cacheEcrire();
-  if(cloudMode){scheduleCloudSave();}
-  $('fv-status').textContent='saved';
-  setTimeout(()=>{if($('fv-status').textContent==='saved')$('fv-status').textContent='';},1100);
+  if(o.local) return;              /* la lettre : le cache seul ; la minuterie du champ (`differe`) enverra */
+  if(cloudMode){ if(o.maintenant){ clearTimeout(cloudSaveTimer); cloudSaveTimer=null; cloudSave(); }
+    else scheduleCloudSave(900); }
+  else direSaved();
 }
+/* Tout ce qui dort part MAINTENANT : les renommages en minuterie (`pousse`) et l'arbre (`steps`). */
+function ecrireTout(){ if(RO||!me)return; pousse(); if(cloudSaveTimer){ clearTimeout(cloudSaveTimer); cloudSaveTimer=null; cloudSave(); } }
+document.addEventListener('visibilitychange',()=>{ if(document.hidden) ecrireTout(); });
+addEventListener('pagehide',()=>ecrireTout());
+window.__totehm_save=()=>({...SAUVE,attente:!!cloudSaveTimer,minuteries:wSlots.size,enVol:!!envoiEnVol,pause:PAUSE_FRAPPE});
 
 /* ── CLOUD : un snapshot = une ligne totehms ── */
 async function cloudSave(){
   if(RO)return;                 /* second verrou, ceinture et bretelles */
   if(!me)return;
+  cloudSaveTimer=null;
+  if(envoiEnVol){ envoiEncore=true; return; }   /* un envoi à la fois : le suivant part à sa fin, avec l'état le plus frais */
+  const envoi=JSON.stringify(state.habits);
+  if(envoi===dernierEnvoi){ SAUVE.identiques++; return; }
   $('mw-sync').textContent='syncing…';
+  let fin; envoiEnVol=new Promise(r=>{fin=r;}); EN_VOL.add(envoiEnVol); const vol=envoiEnVol;
   try{
     /* ══ `bot` N'EST PLUS DANS CE SNAPSHOT — CORRIGÉ LE 03/09/2026 ══
        La colonne était écrite ici avec `bot:!!profile.bot`, un champ
@@ -5111,11 +5134,15 @@ async function cloudSave(){
       updated_at:new Date().toISOString()
     },{onConflict:'user_id'});
     if(error)throw error;
-    $('mw-sync').textContent='synced ✓';
+    dernierEnvoi=envoi; SAUVE.envois++;
+    $('mw-sync').textContent='synced ✓'; if(!envoiEncore&&!cloudSaveTimer) direSaved();
     setTimeout(()=>{if($('mw-sync').textContent==='synced ✓')$('mw-sync').textContent='';},1400);
-  }catch(e){$('mw-sync').textContent='sync failed — will retry';}
+  }catch(e){ SAUVE.echecs++; console.error('[totehm] save:',e&&e.message||e); $('mw-sync').textContent='sync failed — will retry';
+    if(!cloudSaveTimer) cloudSaveTimer=setTimeout(cloudSave,PAUSE_FRAPPE*2); }
+  finally{ EN_VOL.delete(vol); envoiEnVol=null; fin();
+    if(envoiEncore){ envoiEncore=false; cloudSave(); } }
 }
-function scheduleCloudSave(){clearTimeout(cloudSaveTimer);cloudSaveTimer=setTimeout(cloudSave,900);}
+function scheduleCloudSave(d){ if(!cloudSaveTimer) SAUVE.rafales++; clearTimeout(cloudSaveTimer); cloudSaveTimer=setTimeout(cloudSave,d||900); }
 async function cloudLoad(){
   if(!me)return;
   const {data,error}=await sb.from('totehms').select('*').eq('user_id',me.id);
@@ -8276,7 +8303,7 @@ const wSlots=new Map();
 function differe(cle,fn){
   if(typeof cle==='function'){ fn=cle; cle='_'; }
   const old=wSlots.get(cle); if(old)clearTimeout(old.t);
-  wSlots.set(cle,{fn,t:setTimeout(()=>{wSlots.delete(cle);fn();},700)});
+  wSlots.set(cle,{fn,t:setTimeout(()=>{wSlots.delete(cle);fn();},PAUSE_FRAPPE)});
 }
 /* ══ RIEN NE SE JETTE PARCE QUE LE SERVEUR EST LENT · 21/09/2026 ═════
    ⚠️ C'EST LA CAUSE DE « je ne peux pas encore rajouter de répulsion ».
@@ -9541,19 +9568,19 @@ function cable(box){
          boîte se vidait de ses liens le temps de la frappe. Maintenant
          la mémoire suit la lettre, et seul le réseau attend. */
       if(p[0]==='h'){ const x=habOf(p[1]); if(!x)return;
-        x.t=v; save();
+        x.t=v; save({local:1});
         /* Renommer ne doit pas orpheliner ce qui s'y rattache. `t0` est
            l'ancien nom VRAI — celui que la base a — et pas « le texte
            d'il y a une lettre », qui partait avant et cassait les liens
            pour de bon. La clé de minuterie est celle de CETTE habitude :
            écrire ailleurs ne l'annule plus, ça la pousse. */
-        differe('h:'+x.id,()=>{ save();
+        differe('h:'+x.id,()=>{
           const ancien=x.t0;
           if(me&&ancien&&ancien!==x.t){
             REPS.forEach(r=>{const i=(r.hs||[]).indexOf(ancien); if(i>=0)r.hs[i]=x.t;});
             if(OBJ[ancien]){OBJ[x.t]=OBJ[ancien]; delete OBJ[ancien];}
             apres(sb.rpc('habit_rename_links',{p_old:ancien,p_new:x.t})); emRenommer(ancien,x.t);}
-          x.t0=x.t; }); }
+          x.t0=x.t; save({maintenant:1}); }); }   /* t0 voyage dans `steps` : UN envoi, après lui */
       /* ⚠️ RIEN NE PART TANT QUE L'OBJET EST PROVISOIRE. Le texte
          s'écrit en mémoire ; la minuterie est posée sur l'identifiant
          COURANT, qui sera le vrai quand elle se déclenchera (`baptise`
@@ -9599,6 +9626,8 @@ function cable(box){
      `blur`), donc un seul écouteur sur la boîte suffit. */
   box.addEventListener('focusout',e=>{
     if(e.target&&e.target.dataset&&e.target.dataset.son) ecritSon(e.target);
+    /* le curseur quitte un champ : ce qu'il portait part sans attendre la pause */
+    if(e.target&&e.target.dataset&&e.target.dataset.edit&&!RO){ pousse(e.target.dataset.edit); ecrireTout(); }
   });
   /* ══ ⛔ ENTRÉE ENREGISTRE. PARTOUT. · 22/09/2026 ══════════════════
      Wah : « dès que je pousse Entrée ça doit enregistrer sur mobile
