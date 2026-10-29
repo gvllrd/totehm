@@ -12286,6 +12286,9 @@ window.addEventListener('pageshow',e=>{
     document.body.classList.remove('searching');
     gate.inert=false;
     const fini=()=>{
+      /* ⚠️ 29/10 — le compte vit DANS le verso : le verso fermé le ferme. Il gardait `show`, et l'atterrissage refusait
+         ensuite chaque geste (`libre:espace-membre`, mesuré : verso ouvert puis fermé → ← refusé). */
+      $('member-window').classList.remove('show');
       srch.classList.remove('is-on','is-prep'); srch.setAttribute('aria-hidden','true');
       sansTransition(); sBg.style.transform=''; sH.style.transform='';
       sOpen=false; sMoving=false; window.__totehm_lsd.recherche=false;
