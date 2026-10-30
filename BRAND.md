@@ -85,9 +85,9 @@ développement personnel, un réseau social classique, une marque streetwear cla
 
 ## L'espace
 
-TOTEHM.SPACE : Lisbon, façade d’azulejos bleus et blancs, et New York, façade de briques rouges à cinq niveaux en rampes ; autres murs et toiture en verre, au sommet d’une Terre engloutie : beauté, grandeur, peur et renouveau.
+TOTEHM.SPACE : Lisbon, azulejos bleus et blancs, et New York, briques rouges à cinq niveaux en rampes. Ruine et ultra-moderne : pans de pierre incomplets, arases cassées, azulejos disparus et briques fracturées dans de grands plans de verre nets, entrées aux cadres fins et lumière chaude rasante, au sommet d’une Terre engloutie : beauté, grandeur, peur et renouveau.
 Voie lactée à travers le toit, lune et mer déchaînée ; calçada à vagues et caravelle dehors, vraies dalles anciennes en volume, grain photographique et comptoir pierre dedans.
-La bouche originale, sa langue et son TOTEHM monumentaux occupent le centre sans fenêtres des deux façades ; feu vivant et crépitement dedans. Intérieurs minimalistes blancs, mêmes dalles anciennes dans les deux lieux ; murs d’exposition dégagés des rampes à chaque étage. New York conserve son asphalte, sans Statue de la Liberté.
+La bouche originale, sa langue et son TOTEHM monumentaux occupent le centre sans fenêtres des deux façades ; feu vivant et crépitement dedans. Intérieurs minimalistes, pierre ancienne visible derrière le verre, mêmes dalles dans les deux lieux ; murs blancs d’exposition dégagés des rampes à chaque étage. New York conserve son asphalte, sans Statue de la Liberté.
 Space est l’accueil : livre noir fermé sur pupitre vers Origins à pages tournantes, écran Lisbon et cadre premium Stoner vers leurs propres pages plein écran ; THP en petits papiers perforés.
 Sans colonnes ni végétation, la terrasse ouvre la vue sur les déferlants ; Espace propulse vers les étoiles et le globe englouti.
 Vent et mer, crépitement à l’approche du feu. Pages et marché indépendants conservés ; Collect garde achat et revente.

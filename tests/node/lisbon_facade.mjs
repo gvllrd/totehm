@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import * as T from '../../space/vendor/three-0.180.0.mjs';
-import {createLisbonFacade,LISBON_FACADE as F,LISBON_FACADE_BALCONIES} from '../../space/gallery-lisbon-facade.mjs';
+import {createLisbonFacade,LISBON_FACADE as F,LISBON_FACADE_BALCONIES,LISBON_PARAPET_GAPS} from '../../space/gallery-lisbon-facade.mjs';
 let checks=0;const check=(value,message)=>{assert(value,message);checks++;};
 for(const mobile of [false,true]){
  const scene=new T.Scene(),facade=createLisbonFacade(scene,{mobile}),d=facade.diagnostics();scene.updateMatrixWorld(true);
@@ -19,7 +19,14 @@ for(const mobile of [false,true]){
  const geometryNames=facade.root.children.flatMap(o=>o.userData.facadeParts||[]);
  check(geometryNames.filter(name=>name==='Hand-curled wrought-iron scroll').length===64,'All sixty-four paired iron curls exist in the rendered mesh');
  check(geometryNames.filter(name=>name==='Oval at the heart of the wrought-iron panel').length===32,'The original-style iron panels contain thirty-two actual oval ornaments');
- const balusters=facade.root.getObjectByName('Lisbon roofline — turned stone balustrade');check(balusters.isInstancedMesh&&balusters.count===58,'The pale roofline has fifty-eight turned physical stone balusters');
+ const balusters=facade.root.getObjectByName('Lisbon roofline — turned stone balustrade'),stumps=facade.root.getObjectByName('Lisbon roofline — broken stone baluster stumps');
+ check(d.ruined&&d.brokenParapet&&balusters.isInstancedMesh&&balusters.count===d.stoneBalusters&&balusters.count>25&&balusters.count<58,'The ruined parapet preserves actual groups of the old turned balustrade');
+ check(stumps.isInstancedMesh&&stumps.count===d.brokenBalusterStumps&&stumps.count>2,'Several balusters survive as irregular physical broken stumps');
+ for(const [a,b] of LISBON_PARAPET_GAPS){
+  check(a< b&&(b< -F.centralBayHalfWidth||a>F.centralBayHalfWidth),'The original solid TOTEHM bay is outside every parapet breach');
+  ray.set(new T.Vector3((a+b)/2,7.60,3),new T.Vector3(0,0,-1));check(ray.intersectObject(facade.root,true).length===0,'Each broken group has a real open silhouette instead of a dark painted patch');
+  ray.set(new T.Vector3(a-.20,7.60,3),new T.Vector3(0,0,-1));check(ray.intersectObjects(facade.solids,false).length>0,'Retained stone rail remains solid immediately beside a real breach');
+ }
  let triangles=0;const p=new T.Vector3(),instance=new T.Matrix4();
  for(const object of facade.root.children.filter(o=>o.isMesh)){
   const g=object.geometry,a=g.attributes.position,n=g.attributes.normal;triangles+=(g.index?.count||a.count)/3*(object.isInstancedMesh?object.count:1);if(object.isInstancedMesh)object.getMatrixAt(0,instance);else instance.identity();
@@ -34,6 +41,7 @@ for(const mobile of [false,true]){
  check(facade.root.children.filter(o=>o.isMesh).length<=9,'Ornaments are batched rather than becoming hundreds of draw calls');
  check(d.tiles.externalImages===0&&d.tiles.originalProcedural&&d.tiles.elongatedDiamonds&&d.tiles.blueAndWhite,'Cobalt lozenges are original physical-scale patterns with no watermarked image download');
  check(d.tiles.diamondPeriod[1]>d.tiles.diamondPeriod[0]&&d.tiles.antiAliased&&d.border.border,'The reference elongated lozenges and fine tile borders keep separate scales and distance filtering');
+ check(d.weatheredTiles&&d.tiles.weatheredTiles&&d.tiles.missingTilePatches===5&&d.tiles.exposedLime&&d.tiles.fineCracks&&d.tiles.chippedGlaze,'The surviving original cobalt pattern has coherent missing patches, bare lime, fine cracks and worn glaze');
  let released=0;for(const object of facade.root.children.filter(o=>o.isMesh))object.geometry.addEventListener('dispose',()=>released++);
  const meshCount=facade.root.children.filter(o=>o.isMesh).length;facade.dispose();facade.dispose();
  check(scene.children.length===0&&released===meshCount&&facade.diagnostics().disposed,'Standalone façade release is complete and idempotent');

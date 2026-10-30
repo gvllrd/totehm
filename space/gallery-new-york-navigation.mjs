@@ -1,4 +1,5 @@
 import {NEW_YORK_LAYOUT as L,NEW_YORK_FLOORS as FLOORS,NEW_YORK_RAMPS as RAMPS,NEW_YORK_RAMP_TURNS as TURNS,NEW_YORK_FLOOR_RECTS as RECTS,NEW_YORK_LANDINGS as LANDINGS,NEW_YORK_GROUND_OBSTACLES as FURNITURE,NEW_YORK_EXHIBITION_OBSTACLES as EXHIBITION,newYorkSurfacesAt,newYorkRoofHeight} from './gallery-new-york-layout.mjs';
+import {heritageObstacles} from './gallery-heritage-layout.mjs';
 
 const H=L.eyeHeight,R=.18,EPS=1e-5,G=8*18000/14**2,V=4*18000/14;
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x)),finite=Number.isFinite;
@@ -16,7 +17,7 @@ const WALLS=[
  {id:'ny-upper-back',minX:-10,maxX:10,minZ:-16.2,maxZ:-15.9,minY:21.51,maxY:27},
  {id:'ny-upper-front',minX:-10,maxX:10,minZ:-4.1,maxZ:-3.9,minY:21.51,maxY:27}
 ];
-const SOLIDS=[...WALLS,...FURNITURE,...EXHIBITION];
+const HERITAGE=heritageObstacles('new-york'),SOLIDS=[...WALLS,...FURNITURE,...EXHIBITION,...HERITAGE];
 const horizontalClear=(x,z,y)=>bounds(x,z)&&!SOLIDS.some(b=>inside(b,x,z,R)&&y<b.maxY-EPS&&y+H>b.minY+EPS);
 function roofSurface(x,z){
  if(x< -13||x>13||z< -17||z> -2)return null;
@@ -25,7 +26,7 @@ function roofSurface(x,z){
 }
 function surfaces(x,z){
  const result=newYorkSurfacesAt(x,z),roof=roofSurface(x,z);if(roof)result.push(roof);
- for(const wall of WALLS)if(inside(wall,x,z,R))result.push({y:wall.maxY,id:'ny-roof',roof:true});
+ for(const wall of [...WALLS,...HERITAGE])if(inside(wall,x,z,R))result.push({y:wall.maxY,id:'ny-roof',roof:true});
  return result;
 }
 function nearby(x,z,y,step=.13){return surfaces(x,z).filter(s=>s.y<=y+step&&s.y>=y-.23).sort((a,b)=>b.y-a.y)[0]??null;}

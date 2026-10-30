@@ -2,6 +2,7 @@ import * as T from './vendor/three-0.180.0.mjs';
 import {createWhiteStone} from './gallery-white-stone.mjs';
 import {createAncientStoneSurfaces} from './gallery-ancient-floor.mjs';
 import {createGalleryFacade} from './gallery-facade.mjs';
+import {createHeritageIntervention} from './gallery-heritage-intervention.mjs';
 import {createNewYorkBrick,createNewYorkPavement} from './gallery-new-york-materials.mjs';
 import {TOTEHMPAPER} from './gallery-artworks.mjs';
 import {NEW_YORK_LAYOUT as L,NEW_YORK_FLOORS,NEW_YORK_RAMPS,NEW_YORK_RAMP_TURNS,NEW_YORK_FLOOR_RECTS,NEW_YORK_CONNECTORS,newYorkConnectorHeight,NEW_YORK_STATIONS,NEW_YORK_EXHIBITION_WALLS} from './gallery-new-york-layout.mjs';
@@ -25,6 +26,7 @@ export function createNewYorkGallery(scene,renderer,{mobile=false,onChange=()=>{
  const glass=material(new T.MeshPhysicalMaterial({color:0xd5e6ef,transparent:true,opacity:.045,roughness:.055,metalness:.015,side:T.DoubleSide,depthWrite:false,envMapIntensity:1.2}));
  const smokeGlass=material(new T.MeshPhysicalMaterial({color:0xdce6ea,transparent:true,opacity:.045,roughness:.035,side:T.DoubleSide,depthWrite:false}));
  const boxGeo=geometry(new T.BoxGeometry(1,1,1)),planeGeo=geometry(new T.PlaneGeometry(1,1));
+ const heritage=createHeritageIntervention(root,{place:'new-york',mobile,anisotropy,geometry,material,onChange:changed});solids.push(...heritage.solids);
  function mesh(g,m,p=[0,0,0],{name='',solid=false,walk=false}={}){
   const item=new T.Mesh(g,m);item.position.set(...p);item.name=name;item.castShadow=!m.transparent;item.receiveShadow=true;root.add(item);if(solid)solids.push(item);if(walk){walkable.push(item);item.userData.walkable=true;}return item;
  }
@@ -90,6 +92,10 @@ export function createNewYorkGallery(scene,renderer,{mobile=false,onChange=()=>{
  // are clear glass, so the island, ocean and stars remain the building's view.
  const storeys=NEW_YORK_FLOORS.map((y,floor)=>({y,floor,minX:floor===4?-10:-13,maxX:floor===4?10:13,minZ:floor===4?-16:-17,maxZ:floor===4?-4:-2}));
  let windowCount=0;
+ const crownProfiles=[
+  [[-10,.56],[-9.8,.64],[-9.65,.21],[-9.1,.18],[-8.92,.45],[-8.5,.39],[-8.28,.84],[-7.65,.76],[-7.49,.32],[-7.06,.25],[-6.9,.51],[-6.39,.44],[-6.2,.10],[-5.75,0],[-5.62,.28],[-5.16,.35],[-4.99,.79],[-4.36,.72],[-4.1,.23],[-3.4,0]],
+  [[3.4,0],[3.85,.19],[4.02,.67],[4.58,.76],[4.77,.35],[5.2,.29],[5.39,.62],[6.08,.73],[6.26,.18],[6.87,.09],[7.02,.42],[7.46,.51],[7.63,.16],[8.2,.24],[8.39,.89],[8.94,.80],[9.12,.43],[9.62,.36],[9.8,.69],[10,.75]]
+ ];
  function facadeSegment(s,a,b,bottom,top,name){
   if(b-a<.001||top-bottom<.001)return;
   if(s.floor===0&&bottom<3.1&&a<2.4&&b>-2.4){
@@ -100,9 +106,26 @@ export function createNewYorkGallery(scene,renderer,{mobile=false,onChange=()=>{
   const p=[(a+b)/2,(bottom+top)/2,s.maxZ],size=[b-a,top-bottom,.38];
   block(brick,p,size,{solid:true,name});block(white,[p[0],p[1],s.maxZ-.216],[size[0],size[1],.045],{solid:true,name:'Plain white back of the street facade'});
  }
+ function brokenCrown(s,bottom){
+  const top=s.y+5.4;
+  for(const [index,profile] of crownProfiles.entries()){
+   const shape=new T.Shape();shape.moveTo(profile[0][0],bottom);shape.lineTo(profile.at(-1)[0],bottom);
+   for(const [x,loss] of [...profile].reverse())shape.lineTo(x,top-loss);shape.closePath();
+   const old=geometry(new T.ExtrudeGeometry(shape,{depth:.38,bevelEnabled:false,curveSegments:1}));
+   mesh(old,brick,[0,0,s.maxZ-.19],{solid:true,name:'Broken surviving brick crown — '+index});
+   const back=geometry(new T.ExtrudeGeometry(shape,{depth:.045,bevelEnabled:false,curveSegments:1}));
+   mesh(back,white,[0,0,s.maxZ-.2385],{solid:true,name:'White interior behind the fractured crown — '+index});
+   // The old silhouette is incomplete; a continuous, very thin modern
+   // glass plane seals the missing crown while the outer profile stays open.
+   const min=profile[0][0],max=profile.at(-1)[0];
+   block(glass,[(min+max)/2,(bottom+27)/2,s.maxZ-.12],[max-min,27-bottom,.035],{solid:true,name:'Unbroken modern glass behind the ruined crown'});
+  }
+  facadeSegment(s,-3.4,3.4,bottom,top,'Unbroken windowless central TOTEHM masonry spine');
+ }
  function frontElevation(s){
   const centers=s.floor===4?[-8.1,-5.1,5.1,8.1]:[-11.3,-8.2,-5.1,5.1,8.2,11.3],lower=s.y+.8,upper=s.y+4.35,w=1.72;
-  facadeSegment(s,s.minX,s.maxX,s.y,lower,'Street facade brick spandrels');facadeSegment(s,s.minX,s.maxX,upper,s.y+5.4,'Street facade brick lintel courses');
+  facadeSegment(s,s.minX,s.maxX,s.y,lower,'Street facade brick spandrels');
+  if(s.floor===4)brokenCrown(s,upper);else facadeSegment(s,s.minX,s.maxX,upper,s.y+5.4,'Street facade brick lintel courses');
   let edge=s.minX;
   for(const c of centers){
    const a=c-w/2,b=c+w/2;facadeSegment(s,edge,a,lower,upper,'Windowless central TOTEHM spine and red-brick piers');edge=b;
@@ -121,8 +144,15 @@ export function createNewYorkGallery(scene,renderer,{mobile=false,onChange=()=>{
    block(glass,[x,s.y+2.7,(s.minZ+s.maxZ)/2],[.065,5.4,s.maxZ-s.minZ],{name:'Continuous clear side glass',solid:true});
    block(iron,[x,s.y+2.7,s.minZ],[.035,5.4,.035],{name:'Fine glass corner joint'});
   }
-  block(trim,[0,s.y+5.26,s.maxZ],[s.maxX-s.minX+.55,.18,.66],{name:'Street facade limestone cornice'});
-  block(iron,[0,s.y+5.43,s.maxZ],[s.maxX-s.minX+.72,.13,.8],{name:'Street facade projecting SoHo cornice'});
+  if(s.floor===4){
+   block(trim,[0,s.y+5.26,s.maxZ],[6.8,.18,.66],{name:'Retained cornice over the central TOTEHM spine'});
+   for(const [x,width,y] of [[-5.83,.54,26.56],[6.68,.40,26.60],[7.87,.42,26.47]])block(trim,[x,y,s.maxZ],[width,.12,.57],{name:'Isolated surviving fragment of the old stone cornice'});
+   block(iron,[0,26.9775,s.maxZ-.12],[20.1,.045,.065],{name:'Ultra-modern uninterrupted glass roof edge'});
+   for(const x of [-10.015,10.015])block(iron,[x,26.44,s.maxZ-.12],[.035,1.12,.045],{name:'Slender modern glazing edge beside the broken masonry'});
+  }else{
+   block(trim,[0,s.y+5.26,s.maxZ],[s.maxX-s.minX+.55,.18,.66],{name:'Street facade limestone cornice'});
+   block(iron,[0,s.y+5.43,s.maxZ],[s.maxX-s.minX+.72,.13,.8],{name:'Street facade projecting SoHo cornice'});
+  }
   light([0,s.y+4.8,-9.4],105,18,0xf0ece3);
   for(const x of [-6.5,6.5])block(lightMaterial,[x,s.y+4.95,-9.4],[.025,.012,3.0]);
  }
@@ -186,7 +216,7 @@ export function createNewYorkGallery(scene,renderer,{mobile=false,onChange=()=>{
  return{
   root,solids,walkable,exhibitionWalls,artSurfaces,facadeWindows,interactables,pickables:interactables.map(i=>i.object),portals,setDay(){},
   update(dt,eye,motion=true){if(disposed)return false;if(motion)time+=Math.max(0,Math.min(Number(dt)||0,.1));const result=dirty;dirty=false;return result;},
-  diagnostics:()=>({kind:'new-york-brick-facade-glass-gallery',ready:!disposed,building:true,modernGallery:true,levels:5,floorHeights:[...NEW_YORK_FLOORS],topFloorSetback:{...L.upper},redBrick:true,runningBond:true,facadeOnlyMasonry:true,windows:windowCount,windowsFrontOnly:true,centralWindows:0,glassSides:true,glassRear:true,minimalWhiteInterior:true,stoneFloors:true,flooring:{sameAsLisbon:true,ancientStone:ancientFloor.diagnostics()},stairs:0,ramps:NEW_YORK_RAMPS.length,rampWidth:L.rampWidth,continuousAscent:true,walkableMeshes:walkable.length,atrium:true,roof:true,glassRoof:true,exhibition:{walls:exhibitionWalls.length,levels:NEW_YORK_FLOORS.length,reservedSlots:artSurfaces.reduce((n,s)=>n+s.slots.length,0),rampsCrossArtwork:false},smokeOutlet:{x:-8,y:roofY,z:-15.2,radius:.45,radiusZ:.45},facade:{mouth:true,originalDrawing:true,paperLoaded,threeDimensional:true,tongueVolume:true,tongueSmooth:true,paperVolume:true,edgeNotches:12,elegantlyLit:true,monumental:true,centered:true,scale:2.6,position:facadeSign.position.toArray(),blankCenter:true},pavement:{kind:'manhattan-bluestone-and-asphalt',calcada:false,curbs:true,cellarGrates:true,utilityCovers:true,crosswalk:true},stone:stone.diagnostics(),portals,rooms:4,independentFiles:true,time:+time.toFixed(3),disposed}),
-  dispose(){if(disposed)return;disposed=true;root.removeFromParent();ancientFloor.dispose();stone.dispose();for(const t of textures)t.dispose();for(const g of geometries)g.dispose();for(const m of materials)m.dispose();root.clear();}
+  diagnostics:()=>({heritage:heritage.diagnostics(),kind:'new-york-brick-facade-glass-gallery',ready:!disposed,building:true,modernGallery:true,levels:5,floorHeights:[...NEW_YORK_FLOORS],topFloorSetback:{...L.upper},redBrick:true,runningBond:true,ruinedHistoricFacade:true,brokenMasonryCrown:true,modernGlassSeal:true,crown:{brokenWings:2,centralSpineHalfWidth:3.4,maximumLossMetres:.89,modernGlassTop:27},facadeOnlyMasonry:true,windows:windowCount,windowsFrontOnly:true,centralWindows:0,glassSides:true,glassRear:true,minimalWhiteInterior:true,stoneFloors:true,flooring:{sameAsLisbon:true,ancientStone:ancientFloor.diagnostics()},stairs:0,ramps:NEW_YORK_RAMPS.length,rampWidth:L.rampWidth,continuousAscent:true,walkableMeshes:walkable.length,atrium:true,roof:true,glassRoof:true,exhibition:{walls:exhibitionWalls.length,levels:NEW_YORK_FLOORS.length,reservedSlots:artSurfaces.reduce((n,s)=>n+s.slots.length,0),rampsCrossArtwork:false},smokeOutlet:{x:-8,y:roofY,z:-15.2,radius:.45,radiusZ:.45},facade:{mouth:true,originalDrawing:true,paperLoaded,threeDimensional:true,tongueVolume:true,tongueSmooth:true,paperVolume:true,edgeNotches:12,elegantlyLit:true,monumental:true,centered:true,scale:2.6,position:facadeSign.position.toArray(),blankCenter:true},pavement:{kind:'manhattan-bluestone-and-asphalt',calcada:false,curbs:true,cellarGrates:true,utilityCovers:true,crosswalk:true},stone:stone.diagnostics(),portals,rooms:4,independentFiles:true,time:+time.toFixed(3),disposed}),
+  dispose(){if(disposed)return;disposed=true;root.removeFromParent();heritage.dispose();ancientFloor.dispose();stone.dispose();for(const t of textures)t.dispose();for(const g of geometries)g.dispose();for(const m of materials)m.dispose();root.clear();}
  };
 }

@@ -1,5 +1,6 @@
 import {GLASS_SHELL} from './gallery-glass-shell.mjs';
 import {LISBON_FACADE,LISBON_FACADE_BALCONIES} from './gallery-lisbon-facade.mjs';
+import {heritageObstacles} from './gallery-heritage-layout.mjs';
 // Shared world metres for the pavilion, furniture and collision/navigation.
 // Historical temple dimensions remain in their independent module.
 const freeze=value=>{if(value&&typeof value==='object'){Object.values(value).forEach(freeze);Object.freeze(value);}return value;};
@@ -28,6 +29,7 @@ export const GALLERY_OBSTACLES=freeze([
  box('gallery-front-right',2.4,13,-2.2,-1.8,-.09,LISBON_FACADE.height),
  box('gallery-entry-lintel',-2.4,2.4,-2.2,-1.8,3.1,LISBON_FACADE.height),
  ...LISBON_FACADE_BALCONIES,
+ ...heritageObstacles('lisbon'),
  box('gallery-roof',GLASS_SHELL.minX,GLASS_SHELL.maxX,GLASS_SHELL.minZ,GLASS_SHELL.maxZ,GLASS_SHELL.minHeight,GLASS_SHELL.maxHeight+GLASS_SHELL.thickness,{waveRoof:true}),
  box('thp-counter',-3.5,3.5,-13.05,-11.05,-.09,1.03),
  box('origins-lectern',-8.15,-7.05,-8.48,-7.52,-.09,1.65),

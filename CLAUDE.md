@@ -21,7 +21,7 @@ Push sur `main` = mise en ligne ; jamais réécrire l'historique.
 | totehm.com | `com/` | l'écosystème : les 5 vues, la creator economy (s'abonner à un membre = entrer dans son écosystème), l'abonnement Higher, la recherche d'un membre |
 | figher.club | `club/` | le prolongement de la vue Spots : chercher, publier des spots, se rencontrer |
 | higher.boutique | `boutique/` | les vêtements totehmisés, un style artistique déterminé, à partir des boxes MY STORY ; production n8n |
-| totehm.space | `space/` | Lisbon au Portugal, New York ailleurs selon Vercel ; façades azulejos ou briques, autres parois de verre, pierre et espaces d’exposition ; mer et feu communs, œuvres et marché indépendants |
+| totehm.space | `space/` | Lisbon au Portugal, New York ailleurs selon Vercel ; ruine et verre ultra-moderne, azulejos ou briques, pierre cassée et espaces d’exposition ; mer et feu communs, œuvres et marché indépendants |
 
 **Deux fois cinq vues.** totehm.com : ↑ Get Higher (commune à tous) · ← mes médias · ● mon TOTEHM · → les spots ·
 ↓ Higher Self (TotehmBot, abonnement Higher) ; ← ● → = l'écosystème d'un membre, ouvert par l'abonnement à ce membre.

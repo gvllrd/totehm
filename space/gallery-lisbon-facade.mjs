@@ -4,6 +4,9 @@ import {createLisbonAzulejos} from './gallery-lisbon-tiles.mjs';
 // Project the sculpted mouth beyond the deepest cornice, including its rear
 // bevel, so no pale stone rail cuts across the original black silhouette.
 export const LISBON_FACADE=Object.freeze({halfWidth:13,height:7.65,wallTop:7.24,frontZ:-1.835,backZ:-2.16,entryWidth:4.8,entryHeight:3.1,centralBayHalfWidth:3.2,signPosition:[0,5.45,-1.42],signScale:1.6});
+// The old parapet has real missing groups, while its central solid bay still
+// carries the original monumental mouth. Ground-level apertures stay intact.
+export const LISBON_PARAPET_GAPS=Object.freeze([[-11.25,-9.9],[-7.2,-5.85],[5.7,6.9],[10.2,11.55]].map(Object.freeze));
 const WINDOW_ROWS=Object.freeze([{y:1.40,height:1.90,arched:false,balcony:false},{y:3.95,height:1.80,arched:false,balcony:true},{y:6.25,height:1.45,arched:true,balcony:true}]);
 const WINDOW_X=Object.freeze([-10.25,-5.90,5.90,10.25]);
 export const LISBON_FACADE_BALCONIES=Object.freeze(WINDOW_ROWS.flatMap((row,r)=>!row.balcony?[]:WINDOW_X.flatMap((x,c)=>{
@@ -23,7 +26,20 @@ export function createLisbonFacade(parent,{mobile=false,geometry=null,material=n
  let disposed=false;
  const ownG=g=>{geometries.add(g);return geometry?geometry(g):g;},ownM=m=>{materials.add(m);return material?material(m):m;};
  const tiles=createLisbonAzulejos(),border=createLisbonAzulejos({border:true});ownM(tiles.material);ownM(border.material);
- const limestone=ownM(new T.MeshStandardMaterial({color:0xd9d8ca,roughness:.87,metalness:0}));
+ const limestone=ownM(new T.MeshStandardMaterial({color:0xc3baaa,roughness:.93,metalness:0}));
+ limestone.name='Weathered Lisbon limestone — eroded pale surrounds and fractured cornice';
+ limestone.customProgramCacheKey=()=> 'lisbon-weathered-limestone-v1';
+ limestone.onBeforeCompile=shader=>{
+  shader.vertexShader=shader.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vLisbonLimestone;').replace('#include <project_vertex>','vLisbonLimestone=(modelMatrix*vec4(transformed,1.)).xyz;\n#include <project_vertex>');
+  shader.fragmentShader=shader.fragmentShader.replace('#include <common>',`#include <common>
+   varying vec3 vLisbonLimestone;
+   float lisboaMineral(vec3 p){p=fract(p*.1031);p+=dot(p,p.yzx+33.33);return fract((p.x+p.y)*p.z);}
+  `).replace('#include <color_fragment>',`#include <color_fragment>
+   float lisboaPore=lisboaMineral(floor(vLisbonLimestone*86.));
+   float lisboaStoneWash=.5+.5*sin(vLisbonLimestone.x*4.7+vLisbonLimestone.y*.39);
+   diffuseColor.rgb*=.80+.13*lisboaPore+.08*lisboaStoneWash;
+  `);
+ };
  const white=ownM(new T.MeshStandardMaterial({color:0xf0eee4,roughness:.88,metalness:0}));
  const iron=ownM(new T.MeshStandardMaterial({color:0x12262d,roughness:.47,metalness:.68}));
  const glass=ownM(new T.MeshPhysicalMaterial({color:0xc7dce7,transparent:true,opacity:.075,roughness:.055,metalness:.01,side:T.DoubleSide,depthWrite:false,envMapIntensity:1.1}));
@@ -85,19 +101,36 @@ export function createLisbonFacade(parent,{mobile=false,geometry=null,material=n
  }
  // Stone courses stop at the solid central TOTEHM bay. There is no opening,
  // sash or balcony behind the monumental tongue above the real entrance.
- for(const [y,height,depth] of [[.02,.18,.32],[2.61,.14,.38],[5.13,.16,.40],[7.18,.15,.42]])for(const [x,width] of [[-8.1,9.8],[8.1,9.8]])block(limestone,x,y,-1.72,width,height,depth,'Historic limestone string course');
+ for(const [y,height,depth] of [[.02,.18,.32],[2.61,.14,.38],[5.13,.16,.40]])for(const [x,width] of [[-8.1,9.8],[8.1,9.8]])block(limestone,x,y,-1.72,width,height,depth,'Historic limestone string course');
  for(const y of [2.83,5.35])for(const x of [-8.1,8.1])block(border.material,x,y,-1.79,9.7,.17,.035,'Cobalt lozenge frieze between the window rows');
  for(const x of [-12.84,-3.18,3.18,12.84])block(limestone,x,3.62,-1.79,.20,7.18,.26,'Pale limestone vertical façade trim');
- for(const [y,height,depth] of [[7.21,.12,.46],[7.30,.09,.50],[7.60,.10,.44]])block(limestone,0,y,-1.76,26.25,height,depth,'Stepped pale limestone cornice and balustrade rail');
+ const parapetSegments=[];let edge=-13.125;
+ for(const [a,b] of LISBON_PARAPET_GAPS){parapetSegments.push([edge,a]);edge=b;}parapetSegments.push([edge,13.125]);
+ function fracturedCourse(a,b,y,height,depth){
+  const bottom=y-height/2,top=y+height/2,chip=Math.min(.045,(b-a)*.08),s=new T.Shape();
+  s.moveTo(a+chip,bottom);s.lineTo(b-chip*.3,bottom);s.lineTo(b,bottom+height*.27);s.lineTo(b-chip*.7,bottom+height*.53);s.lineTo(b-chip*.25,top-height*.10);s.lineTo(b-chip,top);
+  s.lineTo(a+chip*.2,top);s.lineTo(a+chip*.8,top-height*.29);s.lineTo(a,top-height*.48);s.lineTo(a+chip*.55,bottom+height*.17);s.closePath();
+  const g=new T.ExtrudeGeometry(s,{depth,bevelEnabled:false});g.translate(0,0,-1.76-depth/2);add(g,limestone,'Fractured historic cornice — real missing stone groups',{solid:true});
+ }
+ for(const [y,height,depth] of [[7.18,.15,.42],[7.21,.12,.46],[7.30,.09,.50],[7.60,.10,.44]])for(const [a,b] of parapetSegments)fracturedCourse(a,b,y,height,depth);
  const profile=[[.055,0],[.067,.035],[.045,.085],[.072,.15],[.073,.19],[.043,.26],[.045,.29],[.064,.32]].map(p=>new T.Vector2(...p));
  const balusterGeometry=new T.LatheGeometry(profile,mobile?6:8);balusterGeometry.normalizeNormals();
- const count=58,balusters=new T.InstancedMesh(ownG(balusterGeometry),limestone,count),matrix=new T.Matrix4();
- balusters.name='Lisbon roofline — turned stone balustrade';for(let i=0;i<count;i++){matrix.makeTranslation(-12.54+i*(25.08/(count-1)),7.31,-1.76);balusters.setMatrixAt(i,matrix);}balusters.instanceMatrix.needsUpdate=true;balusters.computeBoundingSphere();balusters.castShadow=true;balusters.receiveShadow=true;root.add(balusters);
+ const survivors=[],stumps=[];
+ for(let i=0;i<58;i++){
+  const x=-12.54+i*(25.08/57);if(LISBON_PARAPET_GAPS.some(([a,b])=>x>a-.07&&x<b+.07))continue;
+  if(Math.abs(x)>3.4&&(i%7===2||i%11===0))stumps.push({x,height:.09+(i%4)*.027});else survivors.push(x);
+ }
+ const count=survivors.length,balusters=new T.InstancedMesh(ownG(balusterGeometry),limestone,count),matrix=new T.Matrix4();
+ balusters.name='Lisbon roofline — turned stone balustrade';survivors.forEach((x,i)=>{matrix.makeTranslation(x,7.31,-1.76);balusters.setMatrixAt(i,matrix);});balusters.instanceMatrix.needsUpdate=true;balusters.computeBoundingSphere();balusters.castShadow=true;balusters.receiveShadow=true;root.add(balusters);
+ const stumpGeometry=new T.CylinderGeometry(.058,.065,1,mobile?6:8),stumpP=stumpGeometry.attributes.position;
+ for(let i=0;i<stumpP.count;i++)if(stumpP.getY(i)>.49)stumpP.setY(i,.5+Math.sin(stumpP.getX(i)*79+stumpP.getZ(i)*117)*.105);stumpGeometry.computeVertexNormals();
+ const brokenBalusters=new T.InstancedMesh(ownG(stumpGeometry),limestone,stumps.length),rotation=new T.Quaternion();brokenBalusters.name='Lisbon roofline — broken stone baluster stumps';
+ stumps.forEach((stump,i)=>{matrix.compose(new T.Vector3(stump.x,7.31+stump.height/2,-1.76),rotation,new T.Vector3(1,stump.height,1));brokenBalusters.setMatrixAt(i,matrix);});brokenBalusters.instanceMatrix.needsUpdate=true;brokenBalusters.computeBoundingSphere();brokenBalusters.castShadow=true;brokenBalusters.receiveShadow=true;root.add(brokenBalusters);
  for(const [m,data] of batches){const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(data.p,3));g.setAttribute('normal',new T.Float32BufferAttribute(data.n,3));g.setAttribute('uv',new T.Float32BufferAttribute(data.uv,2));g.computeBoundingBox();g.computeBoundingSphere();const object=add(g,m,data.names.join(' · '),{solid:data.solid,batch:false});object.userData.facadeParts=data.names;}
  root.updateMatrixWorld(true);const bounds=new T.Box3().setFromObject(root);onChange();
  return{
   root,solids,pickables:[],windows:windows.map(w=>({...w})),height:LISBON_FACADE.height,
-  diagnostics:()=>({kind:'lisbon-azulejo-street-facade',frontOnly:true,referenceMotif:'cobalt and white elongated lozenges',originalProceduralPattern:true,externalImages:0,historicWindowRows:3,windows:windows.length,upperBalconies:8,pairedScrollPanels:32,realCurledIronGeometry:true,stoneBalusters:count,limestoneSurrounds:true,whiteInterior:true,centralWindow:false,centralBay:{minX:-3.2,maxX:3.2,entranceHeight:3.1,windowFree:true},entryWidth:4.8,height:LISBON_FACADE.height,frontBounds:{minX:bounds.min.x,maxX:bounds.max.x,minZ:bounds.min.z,maxZ:bounds.max.z},tiles:tiles.diagnostics(),border:border.diagnostics(),wallTriangles:wallMesh.geometry.index?.count/3||wallMesh.geometry.attributes.position.count/3,meshes:root.children.filter(o=>o.isMesh).length,disposed}),
+  diagnostics:()=>({kind:'lisbon-azulejo-street-facade',frontOnly:true,referenceMotif:'cobalt and white elongated lozenges',originalProceduralPattern:true,externalImages:0,historicWindowRows:3,windows:windows.length,upperBalconies:8,pairedScrollPanels:32,realCurledIronGeometry:true,stoneBalusters:count,brokenBalusterStumps:stumps.length,ruined:true,brokenParapet:true,parapetGaps:LISBON_PARAPET_GAPS.map(([a,b])=>[a,b]),weatheredTiles:true,limestoneSurrounds:true,whiteInterior:true,centralWindow:false,centralBay:{minX:-3.2,maxX:3.2,entranceHeight:3.1,windowFree:true},entryWidth:4.8,height:LISBON_FACADE.height,frontBounds:{minX:bounds.min.x,maxX:bounds.max.x,minZ:bounds.min.z,maxZ:bounds.max.z},tiles:tiles.diagnostics(),border:border.diagnostics(),wallTriangles:wallMesh.geometry.index?.count/3||wallMesh.geometry.attributes.position.count/3,meshes:root.children.filter(o=>o.isMesh).length,disposed}),
   dispose(){if(disposed)return;disposed=true;root.removeFromParent();if(!geometry)for(const g of geometries)g.dispose();if(!material)for(const m of materials)m.dispose();root.clear();}
  };
 }

@@ -11,7 +11,16 @@ for(const mobile of [false,true]){
  check(d.facadeOnlyMasonry&&d.windowsFrontOnly&&d.glassSides&&d.glassRear&&d.glassRoof,'Only the front elevation is masonry; the remaining envelope is glass');
  check(d.windows===28&&gallery.facadeWindows.every(w=>w.minX>=3.4||w.maxX<=-3.4),'Every facade window stays completely outside the central TOTEHM spine');
  check(d.flooring.sameAsLisbon&&d.flooring.ancientStone.physicalSlabs,'Every New York level uses actual Lisbon opus-romain stone');
+ check(d.ruinedHistoricFacade&&d.brokenMasonryCrown&&d.modernGlassSeal,'The surviving historical facade has a physically broken crown inside a complete modern glass seal');
  const ray=new T.Raycaster();
+ for(const x of [-8.0,8.6]){
+  ray.set(new T.Vector3(x,26.6,0),new T.Vector3(0,0,-1));ray.far=4.5;
+  const hits=ray.intersectObjects(gallery.solids);
+  check(hits.some(h=>h.object.material?.transparent),'Real glass seals each gap above the broken old crown');
+  check(!hits.some(h=>!h.object.material?.transparent),'Each missing crown section is a real empty masonry silhouette, not a painted patch');
+ }
+ ray.set(new T.Vector3(0,26.4,0),new T.Vector3(0,0,-1));
+ check(ray.intersectObjects(gallery.solids).some(h=>!h.object.material?.transparent),'The central TOTEHM spine remains complete and windowless above the ruins');ray.far=Infinity;
  const floorHit=(x,y,z)=>{ray.set(new T.Vector3(x,y+.04,z),new T.Vector3(0,-1,0));return ray.intersectObjects(gallery.walkable).find(h=>h.point.y<=y+.001&&h.point.y>=y-.0275);};
  for(const r of NEW_YORK_FLOOR_RECTS){
   const hit=floorHit((r.minX+r.maxX)/2,r.y,(r.minZ+r.maxZ)/2);
