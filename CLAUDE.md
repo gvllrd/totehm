@@ -21,7 +21,7 @@ Push sur `main` = mise en ligne ; jamais réécrire l'historique.
 | totehm.com | `com/` | l'écosystème : les 5 vues, la creator economy (s'abonner à un membre = entrer dans son écosystème), l'abonnement Higher, la recherche d'un membre |
 | figher.club | `club/` | le prolongement de la vue Spots : chercher, publier des spots, se rencontrer |
 | higher.boutique | `boutique/` | les vêtements totehmisés, un style artistique déterminé, à partir des boxes MY STORY ; production n8n |
-| totehm.space | `space/` | l’accueil immersif dans un pavillon de verre sur calçada, pierre ancienne dedans et cheminée ; livre Origins, écran Lisbon et cadre premium Stoner ouvrent leurs propres pages ; marketplace complète |
+| totehm.space | `space/` | Lisbon au Portugal, New York ailleurs selon Vercel ; façades azulejos ou briques, autres parois de verre, pierre et espaces d’exposition ; mer et feu communs, œuvres et marché indépendants |
 
 **Deux fois cinq vues.** totehm.com : ↑ Get Higher (commune à tous) · ← mes médias · ● mon TOTEHM · → les spots ·
 ↓ Higher Self (TotehmBot, abonnement Higher) ; ← ● → = l'écosystème d'un membre, ouvert par l'abonnement à ce membre.
@@ -53,7 +53,11 @@ personne. `oracle/` : jamais lu, jamais recopié. Une base Supabase (`abujjbkbbi
 - **Front** : Supabase en module ES. Liens internes ABSOLUS (`cleanUrls`). Retirer un nœud = retirer son câblage.
   Une erreur de RPC se journalise. Une réponse tardive n'écrase jamais un état plus frais. CORS : `corsHeaders()`.
 - **Interface** : états en `is-…` ; un état permanent = une `transition` ; un verrou de navigation se rend toujours ;
-  overlays ancrés en haut. Couleurs, polices, mots : `BRAND.md`.
+  overlays ancrés en haut ; « précédent » (téléphone, ordinateur) referme la couche du dessus et ne quitte le site
+  qu'à l'accueil. Couleurs, polices, mots : `BRAND.md`.
+- **Continuité** (Wah, la règle la plus importante de l'expérience) : d'une vue, d'une page, d'une couche à l'autre, le
+  moins de coupure possible — un objet ne disparaît pas pour réapparaître, il se TRANSFORME (le papier grandit, les traits
+  se plient, le nom zoome lettre pour lettre) ; jamais une image figée ni un saut. Ça se mesure image par image, au téléphone.
 - **Coût** : le gratuit reste mécanique (SQL, zéro centime) ; un LLM seulement pour ce que le membre achète.
 - **Claude Code** : une commande simple par ligne, jamais `cd X && …`.
 - **Lecture** : jamais un gros fichier en entier (`com/totehm.html` ≈ 12 850 lignes, `club/*.html`, migrations) :

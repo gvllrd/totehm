@@ -114,6 +114,40 @@
       "permanent": false
     },
     {
+      "source": "/",
+      "has": [{ "type": "query", "key": "take" }],
+      "destination": "/social",
+      "permanent": false
+    },
+    {
+      "source": "/index.html",
+      "has": [{ "type": "query", "key": "take" }],
+      "destination": "/social",
+      "permanent": false
+    },
+    {
+      "source": "/",
+      "has": [{ "type": "header", "key": "x-vercel-ip-country", "value": "PT" }],
+      "destination": "/lisbon-space",
+      "permanent": false
+    },
+    {
+      "source": "/index.html",
+      "has": [{ "type": "header", "key": "x-vercel-ip-country", "value": "PT" }],
+      "destination": "/lisbon-space",
+      "permanent": false
+    },
+    {
+      "source": "/",
+      "destination": "/new-york",
+      "permanent": false
+    },
+    {
+      "source": "/index.html",
+      "destination": "/new-york",
+      "permanent": false
+    },
+    {
       "source": "/lisbon",
       "destination": "/play_lisbon_street",
       "permanent": false
@@ -136,6 +170,14 @@
   ],
   "rewrites": [
     {
+      "source": "/lisbon-space",
+      "destination": "/"
+    },
+    {
+      "source": "/new-york",
+      "destination": "/"
+    },
+    {
       "source": "/s/:id/i",
       "destination": "/api/card?id=:id&img=1"
     },
@@ -145,6 +187,22 @@
     }
   ],
   "headers": [
+    {
+      "source": "/",
+      "headers": [
+        { "key": "Cache-Control", "value": "private, no-store" },
+        { "key": "Vercel-CDN-Cache-Control", "value": "no-store" },
+        { "key": "Vary", "value": "X-Vercel-IP-Country" }
+      ]
+    },
+    {
+      "source": "/index.html",
+      "headers": [
+        { "key": "Cache-Control", "value": "private, no-store" },
+        { "key": "Vercel-CDN-Cache-Control", "value": "no-store" },
+        { "key": "Vary", "value": "X-Vercel-IP-Country" }
+      ]
+    },
     {
       "source": "/(.*)",
       "headers": [

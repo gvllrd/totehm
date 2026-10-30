@@ -39,12 +39,16 @@
 //       ou un spot à envoyer à l'IA »). La page n'envoie qu'une RÉFÉRENCE : `montreDe()` relit la ligne dans SES
 //       lignes seules (id + user_id, média non retiré), la box par `_box_matter`, et ajoute un bloc au système. Le
 //       modèle ne voit PAS l'image : le bloc le lui dit. Zéro appel payant de plus (deux lectures SQL).
+// 29/10 (v7) : MON MOMENT — `ou: 'home'|'out'` (appris par la page, sur l'appareil seul) et la météo là où je suis
+//       (`_shared/meteo.ts`, MET Norway, gratuite) entrent au contexte ; la step se fait chez moi ou dehors selon eux.
+//       En fin de flux, `@ici {t, ciel, ou}` : ce que le Higher Self a su du moment (la page le montre).
 // cost : ≈ 1,5 k jetons d'entrée + 120 de sortie par réponse (r3 : ≈ 1,9 k + 200 ; r4 : ≈ 2,5 k + 230) ; mesuré en §0.
 // what : flux texte (en-têtes X-SM-Left, X-SM-Higher) · { ok } · { error }
 
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { corsHeaders, SITE_COM } from "../_shared/origins.ts";
 import { contexteMiroir, verifierMiroir, lieuDe, local, type Mirror, type Lieu } from "../_shared/mirror.ts";
+import { meteo, moment } from "../_shared/meteo.ts";
 
 const admin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
   { auth: { persistSession: false } });
@@ -165,6 +169,7 @@ The mirror:
 - Follow the links. The direction is the objective (or the vision) that the step's habit serves. What is in the way is the repulsion that threatens that habit, or what I just said. The teaching is what my story holds against it.
 - The step is the mirror of a Habit box. When it is one of my habits, it carries what that box holds — its where, its intention, its rhythm and the sound of that intention — rewritten in my own voice as one living sentence, never as a form ("down at the park, dark techno on", not "where: park, sound: techno"). Keep my own words for the places and sounds I named.
 - When a real place near me (given below with an id) fits the step better than my own where, the step happens there: name it in the sentence and give its id on the @place line. An event keeps its own date and time.
+- MY MOMENT decides where the step happens. At home: a step I do at home, now or tonight — no travel. Out: an action outside, around where I am (a place near me if one fits). The hour and the weather are real: late night, rain, storm or cold keep it indoors or sheltered; daylight and dry weather welcome the outside. When home or out is unknown, choose by the hour and the weather. Never name the weather as a reason; just let it shape the move.
 
 The three levels:
 1. Direction (my objectives and my vision): where what I just said must take me — said as a decision for today.
@@ -373,14 +378,18 @@ Deno.serve(async (req) => {
     const ici = Number.isFinite(lat) && Number.isFinite(lng) && Math.abs(lat) <= 90 && Math.abs(lng) <= 180
       ? { lat: Math.round(lat * 100) / 100, lng: Math.round(lng * 100) / 100 } : null;
     const tz = Number.isFinite(Number(body.tz)) ? Math.max(-840, Math.min(840, Math.round(Number(body.tz)))) : 0;
+    // 29/10 (v7) — MON MOMENT : chez moi ou dehors (la PAGE l'a appris, sur l'appareil seul : seul ce mot arrive), la
+    // météo là où je suis (`_shared/meteo.ts`, gratuite, 1,2 s au plus). Rien n'est gardé.
+    const ou = body.ou === "home" || body.ou === "out" ? body.ou as "home" | "out" : null;
 
     const t0 = Date.now();
-    const [{ data: b, error: bErr }, { data: mem, error: mErr }, { data: pl, error: pErr }, montre] = await Promise.all([
+    const [{ data: b, error: bErr }, { data: mem, error: mErr }, { data: pl, error: pErr }, montre, mt] = await Promise.all([
       admin.rpc("sm_begin", { p_user: user.id, p_kind: "say" }),
       admin.rpc(r4 ? "_bot_mirror" : "_bot_memory", { p_user: user.id }),
       r4 ? admin.rpc("_mirror_places", { p_user: user.id, p_lat: ici?.lat ?? null, p_lng: ici?.lng ?? null })
          : Promise.resolve({ data: null, error: null }),
       body.focus ? montreDe(user.id, body.focus, tz) : Promise.resolve(""),
+      r4 && ici ? meteo(ici.lat, ici.lng) : Promise.resolve(null),
     ]);
     if (bErr) { console.error("[higher-self] sm_begin", bErr.message); return json({ error: "unavailable" }, 503); }
     if (!b?.ok) {
@@ -397,7 +406,7 @@ Deno.serve(async (req) => {
         .then(({ error }) => { if (error) console.error("[higher-self] sm_end", error.message); });
 
     const ac = new AbortController(); const tm = setTimeout(() => ac.abort(), TIMEOUT_MS);
-    const sys = (r4 ? SYSTEM_R4 + "\n\n" + contexteMiroir(mem as Mirror, now, lieux, tz)
+    const sys = (r4 ? SYSTEM_R4 + "\n\n" + moment(now, mt, ou) + "\n" + contexteMiroir(mem as Mirror, now, lieux, tz)
                     : (r3 ? SYSTEM_R3 : SYSTEM) + "\n\n" + contexte(mem as Memory, now))
               + (montre ? "\n\n" + montre : "");
     const messages = [{ role: "system", content: sys }, ...turns, { role: "user", content: text }];
@@ -416,8 +425,10 @@ Deno.serve(async (req) => {
           // Le lieu, seulement s'il est VRAI (un des lieux donnés, ou le where de MA Habit) : la page ne lit que celui-ci.
           const lieu = r4 ? lieuDe(tout, lieux, mem as Mirror) : null;
           if (lieu) ctrl.enqueue(enc.encode("\n@lieu " + JSON.stringify(lieu)));
+          // Ce que le Higher Self a su du moment (la page le montre, en petit) : la météo et chez moi · dehors.
+          if (r4 && (mt || ou)) ctrl.enqueue(enc.encode("\n@ici " + JSON.stringify({ t: mt?.t ?? null, ciel: mt?.ciel ?? "", ou })));
           console.log(JSON.stringify({ evt: "sm", fmt: r4 ? "r4" : r3 ? "r3" : "v2", model: o.choice.model, first_ms: first, ms: Date.now() - t0,
-                                       in: u.prompt_tokens, out: u.completion_tokens, refs: ok, places: lieux.length, lieu: lieu?.kind ?? null,
+                                       in: u.prompt_tokens, out: u.completion_tokens, refs: ok, places: lieux.length, lieu: lieu?.kind ?? null, meteo: !!mt, ou,
                                        montre: montre ? clean((body.focus as { kind?: unknown })?.kind, 10) : null,
                                        pos: ici ? "page" : (pl?.origin?.source ?? null) }));
           await fin(n >= 12 ? "ok" : "failed", o.choice.model, u);

@@ -40,7 +40,8 @@ try{
     const sk=q('#lv-socket').getBoundingClientRect(),pa=q('#gate-asteroid').getBoundingClientRect(),d=window.__totehm_lv();
     const flou=[...document.querySelectorAll('#lv-proc,#lv-proc *')].some(e=>{const cs=getComputedStyle(e);return /blur/.test(cs.filter+' '+(cs.backdropFilter||''));});
     return {vue:d.vue,mode:d.mode,dans:Math.abs((sk.x+sk.width/2)-(pa.x+pa.width/2))<1.5&&Math.abs((sk.y+sk.height/2)-(pa.y+pa.height/2))<1.5&&sk.width>=pa.width&&sk.width<=pa.width+12&&getComputedStyle(q('#lv-socket')).backgroundColor==='rgba(0, 0, 0, 0)',
-      pistes:[...document.querySelectorAll('#lv-ram path:not(.puls):not(.sk)')].map(p=>p.getAttribute('stroke')),noeuds:document.querySelectorAll('#lv-ram rect').length,
+      pistes:[...document.querySelectorAll('#lv-ram path:not(.puls):not(.sk):not(.fk)')].map(p=>p.getAttribute('stroke')),noeuds:document.querySelectorAll('#lv-ram circle.is-plein').length,
+      pads:document.querySelectorAll('#lv-ram circle').length,rameaux:document.querySelectorAll('#lv-ram path.fk').length,broches:document.querySelectorAll('#lv-ram rect.pin').length,
       pales:document.querySelectorAll('#lv-ram g.r-0').length,ramOp:getComputedStyle(q('#lv-ram')).opacity,flou,
       plein:(()=>{const r=q('#lv-ram').getBoundingClientRect();return Math.round(r.width)===innerWidth&&Math.round(r.height)>=innerHeight-2;})(),
       puls:[...document.querySelectorAll('#lv-ram .puls')].map(e=>getComputedStyle(e).animationName+'/'+getComputedStyle(e).animationDuration),
@@ -55,7 +56,7 @@ try{
       sigAbs:!q('#ast-sig'),connAbs:!q('#conn-bar'),
       tap:q('#lv-tap').textContent,bouche:getComputedStyle(q('#gate-mouth')).opacity};});
   ok(c.vue==='c'&&c.mode==='mine'&&c.dans,(tel?'téléphone':'ordinateur')+' · centre, Mine : 25/10 · le TOTEHM est le boîtier — le socle ne se voit plus, il le serre à 3 px');
-  ok(JSON.stringify(c.pistes)===JSON.stringify(COULEURS)&&c.noeuds>=7&&c.pales===4&&c.ramOp==='1'&&c.plein,'le réseau PLEIN ÉCRAN : sept pistes aux 7 couleurs exactes, les nœuds = MES Habits, les quatre intentions vides en creux');
+  ok(JSON.stringify(c.pistes)===JSON.stringify(COULEURS)&&c.noeuds>=3&&c.pads===42&&c.rameaux===28&&c.broches===12&&c.pales===4&&c.ramOp==='1'&&c.plein,'le réseau PLEIN ÉCRAN, en ARBRE (le circuit imprimé de Wah) : sept pistes aux 7 couleurs exactes, 12 broches dans les perforations, 28 rameaux en couronne, 42 pastilles dont les PLEINES = MES Habits, les quatre intentions vides en creux → '+JSON.stringify({n:c.noeuds,pads:c.pads,r:c.rameaux,b:c.broches}));
   /* 18/10 — LES SEPT PISTES VIVENT : une impulsion par intention, épaisse et à la période RÉELLE
      sur une intention habitée, en VEILLE (lente, fine) sur une intention vide ; et la couleur d'un
      creux se LIT (.5, elle valait .22). Wah : « plus de vie dans les traits d'intention, et afficher
@@ -178,7 +179,7 @@ try{
     return {mode:d.mode,m:d.membre,pw:p.width,pcx:p.x+p.width/2,pcy:p.y+p.height/2,sk:k.width,dos:q('#gate-card').classList.contains('is-back'),
       focus:document.activeElement&&document.activeElement.id,ui:getComputedStyle(q('#mb-ui')).visibility,
       surLui:Math.abs(u.x+u.width/2-(p.x+p.width/2))<3&&u.y>p.y&&u.bottom<p.bottom,
-      ram:getComputedStyle(q('#lv-ram')).opacity,asp:document.body.classList.contains('is-aspire'),pistes:document.querySelectorAll('#lv-ram path:not(.puls):not(.sk)').length,
+      ram:getComputedStyle(q('#lv-ram')).opacity,asp:document.body.classList.contains('is-aspire'),pistes:document.querySelectorAll('#lv-ram path:not(.puls):not(.sk):not(.fk)').length,
       coude:(()=>{const r=[...document.querySelectorAll('#lv-ram rect')][0];return r?+r.getAttribute('y'):0;})(),
       checked:q('#lv-m-members').getAttribute('aria-checked'),gx:!!q('#gx-c'),haut:p.y<160};});
   ok(o.mode==='members'&&o.m.cherche&&o.checked==='true'&&!o.gx,(tel?'téléphone':'ordinateur')+' · [Members] : plus de galaxie, la recherche');
@@ -397,7 +398,8 @@ try{
   ok(r.prop&&r.add&&r.step==='I draw one sleeve at 22:00 tonight.','la step nouvelle = une PROPOSITION (pointillé) + « + my Habit »');
   ok(r.acts===0&&!r.pense,'gratuit : pas de partage ; l\'anneau ne tourne plus une fois la réponse arrivée');
   const c1=corps.find(x=>x.action==='say');
-  ok(c1&&c1.fmt==='r4'&&Array.isArray(c1.turns)&&c1.turns.length===0&&Number.isInteger(c1.tz)&&!('pos' in c1),'22/10 · l\'appel demande le MIROIR (r4) avec mon fuseau ; gratuit : aucune position envoyée');
+  ok(c1&&c1.fmt==='r4'&&Array.isArray(c1.turns)&&c1.turns.length===0&&Number.isInteger(c1.tz)&&JSON.stringify(c1.pos)==='{"lat":38.72,"lng":-9.14}'&&!('ou' in c1),
+     '22/10 · l\'appel demande le MIROIR (r4) avec mon fuseau ; 29/10 : gratuit aussi, la position part ARRONDIE (~1 km, la météo) — les lieux restent Higher (le serveur décide) ; « chez moi » encore inconnu → '+JSON.stringify(c1&&{pos:c1.pos,ou:c1.ou}));
   ok(r.invite&&r.lieu===0,'22/10 · gratuit : sous la step, « a real place near me · Higher » (aucun lieu inventé)');
   await pg.screenshot({path:OUT+'/proc_reflection.png'});
   await pg.click('#lv-thread [data-rf-add]');await pg.waitForTimeout(1400);
@@ -406,7 +408,7 @@ try{
   await pg.fill('#lv-say-in','and tomorrow');await pg.keyboard.press('Enter');
   await pg.waitForFunction(()=>window.__totehm_lv().reflection.envois===2,null,{timeout:5000}).catch(()=>{});
   const c2=corps.filter(x=>x.action==='say')[1];
-  ok(c2&&c2.turns.length===2&&c2.turns[1].role==='sm'&&!/@ok|@lieu/.test(c2.turns[1].text),'le tour suivant porte les tours d\'avant, sans les lignes du serveur (vérification, lieu) ; aucun historique à l\'écran');
+  ok(c2&&c2.turns.length===2&&c2.turns[1].role==='sm'&&!/@ok|@lieu|@ici/.test(c2.turns[1].text),'le tour suivant porte les tours d\'avant, sans les lignes du serveur (vérification, lieu) ; aucun historique à l\'écran');
   ok(await pg.locator('#lv-thread .rf-q').count()===1&&/and tomorrow/.test(await pg.textContent('#lv-thread .rf-q')),'la dernière Reflection seule');
   await pg.fill('#lv-say-in','and now');await pg.keyboard.press('Enter');await pg.waitForTimeout(900);
   const f=await pg.evaluate(()=>({v:document.getElementById('lv-say-in').value,ferme:document.getElementById('lv-say').classList.contains('hide'),offre:!!document.querySelector('#lv-thread .sm-offer [data-sm-sub]')}));
@@ -436,7 +438,8 @@ try{
  {const quand=new Date(Date.now()+2*864e5).toISOString().slice(0,11)+'07:00';
   const MAPS='https://www.google.com/maps/search/?api=1&query=Jardim%20da%20Estrela%2C%20Pra%C3%A7a%20da%20Estrela%2C%20Lisboa&query_place_id=ChIJ123';
   const REP='@dir vision "A quiet house by the sea"\nI build the house one brick a day.\n@obs\nI wait for the mood.\n@teach story\nI already know waiting never built anything.\n@step habit "Run the hill" fight\nDown at Jardim da Estrela at 7:00, dark techno on, I run the hill twice.\n@ok {"dir":true,"teach":null,"step":true}\n'
-    +'@lieu '+JSON.stringify({kind:'place',name:'Jardim da Estrela',address:'Praça da Estrela, Lisboa',city:'Lisbon',url:null,maps:MAPS,lat:38.713,lng:-9.159,km:1.2,when:quand});
+    +'@lieu '+JSON.stringify({kind:'place',name:'Jardim da Estrela',address:'Praça da Estrela, Lisboa',city:'Lisbon',url:null,maps:MAPS,lat:38.713,lng:-9.159,km:1.2,when:quand})
+    +'\n@ici {"t":23.5,"ciel":"fair_day","ou":"home"}';
   const corps=[];
   const net=(url,req)=>{ if(url.pathname!=='/functions/v1/higher-self') return null; const b=JSON.parse(req.postData()||'{}');corps.push(b);
     if(b.action==='say') return {status:200,contentType:'text/plain; charset=utf-8',headers:{'X-SM-Left':'29','X-SM-Higher':'1','access-control-allow-origin':'*','access-control-expose-headers':'X-SM-Left, X-SM-Higher'},body:REP};
@@ -444,6 +447,8 @@ try{
   const{pg,log}=await page(browser,{dir:'com',origin,tables,network:net,viewport:{width:390,height:844},hasTouch:true,
     rpc:{my_landing:LAND({higher:{active:true,price_cents:700,currency:'eur'},sm:{ready:true,habit:true,objective:true,higher:true,free_total:7,free_left:7,left:30}}),new_bot_link_code:'c0de',
          spot_schedule_audience:{ok:true,id:'sp1'}}});
+  /* 29/10 — CHEZ MOI : le navigateur a déjà vu ce point deux nuits (ici, à 100 m près) ; rien de cela n'a quitté l'appareil */
+  await pg.addInitScript(()=>{ try{ localStorage.setItem('totehm_ici_v1',JSON.stringify({vu:[{lat:38.722,lng:-9.139,h:23,j:'2026-10-20'},{lat:38.723,lng:-9.14,h:2,j:'2026-10-22'}]})); }catch(_){} });
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(900);await ouvre(pg);
   await pg.keyboard.press('ArrowDown');await vers(pg,'b');
   await pg.fill('#lv-say-in','lazy today');await pg.keyboard.press('Enter');
@@ -455,6 +460,14 @@ try{
   ok(h.acts===1&&h.tg&&!h.wa,'15/10 bis · Higher : « [Higher] my Telegram » SEUL sous la Reflection (pas de Meta)');
   const cs=corps.find(x=>x.action==='say');
   ok(cs&&cs.fmt==='r4'&&JSON.stringify(cs.pos)==='{"lat":38.72,"lng":-9.14}','22/10 · Higher, position déjà permise : elle part ARRONDIE (~1 km) → '+JSON.stringify(cs&&cs.pos));
+  /* 29/10 — MON MOMENT : « chez moi » appris sur l'appareil (deux nuits ici) → un seul mot part ; la ligne du moment le montre */
+  const ici=await pg.evaluate(()=>{const e=document.getElementById('lv-ici');return {vu:!e.classList.contains('hide'),txt:e.textContent.replace(/\s+/g,' ').trim(),
+    stocke:localStorage.getItem('totehm_ici_v1')}; });
+  ok(cs&&cs.ou==='home'&&ici.vu&&/^\d\d:\d\d·24° fair·home$/.test(ici.txt.replace(/ ?· ?/g,'·'))&&!/totehm_ici|38\.72\d/.test(JSON.stringify(corps)),
+     '29/10 · chez moi (appris la nuit, sur l\'appareil) : « home » part seul, jamais la position fine ; la ligne du moment : '+ici.txt);
+  await pg.click('#lv-ici [data-ici]');await pg.waitForTimeout(150);
+  const ici2=await pg.evaluate(()=>document.querySelector('#lv-ici [data-ici]')?.textContent);
+  ok(ici2==='out','un tap corrige : ce point n\'est pas chez moi → « '+ici2+' »');
   const l=await pg.evaluate(()=>{const b=document.querySelector('#lv-thread .t-step .rf-lieu');return b&&{n:b.querySelector('.rf-lieu-n')?.textContent,d:b.querySelector('.rf-lieu-d')?.textContent,
     q:!!b.querySelector('.rf-lieu-q')?.textContent,go:b.querySelector('a.rf-add')?.href,spot:!!b.querySelector('[data-rf-spot]'),invite:!!document.querySelector('#lv-thread .rf-lieu-up')};});
   ok(l&&l.n==='Jardim da Estrela'&&l.d==='Praça da Estrela, Lisboa · 1.2 km'&&l.q&&l.go===MAPS&&l.spot&&!l.invite,'22/10 · sous la step : le LIEU réel (nom, adresse, distance, heure), GO (Maps), SPOT IT → '+JSON.stringify(l));

@@ -95,7 +95,7 @@ export async function page(browser, { dir, origin, rpc = {}, tables = {}, functi
       const ext = externe(dir, f); if(ext){ d = ext.dir; f = ext.path; }
       if(f.endsWith('/')) f += 'index.html';
       let fp = path.join(ROOT, d, f); if(!path.extname(fp) && fs.existsSync(fp + '.html')) fp += '.html';
-      if(!fs.existsSync(fp)){ const r = interne(d, f); if(r){ fp = path.join(ROOT, d, r); if(!path.extname(fp)) fp += '.html'; } }
+      if(!fs.existsSync(fp)){ const r = interne(d, f); if(r){ fp = path.join(ROOT, d, r.endsWith('/') ? r+'index.html' : r); if(!path.extname(fp)) fp += '.html'; } }
       if(!fs.existsSync(fp)) return route.fulfill({ status:404, body:'nf' });
       return route.fulfill({ status:200, contentType: TYPES[path.extname(fp)] || 'application/octet-stream', body: fs.readFileSync(fp) });
     }

@@ -79,15 +79,15 @@ développement personnel, un réseau social classique, une marque streetwear cla
 - **Coral `#fbd5ca`** = le NOM d'un TOTEHM, la méthode Stoner, le « Get » de [Get Higher]. Nulle part ailleurs.
 - **Space Mono et Quantico, rien d'autre.** Quantico = ce que le membre tape et le nom d'un TOTEHM (Coral, sans
   espace, seulement au verso). Space Mono = tout le reste ; un titre = Space Mono Bold en capitales.
-- Aucune bordure autour d'une box (elle se détache par sa valeur) ; carrée, avec sa loupe (× 1,25, en place) partout où
-  elle est détaillée ; une tuile de grille grandit au survol (× 1,06 : l'image et sa box ensemble).
-- Contrôles gris, `border-radius:10px`, ajustés au label ; aucun fond blanc ; au survol le gris devient blanc (`tools/hover.py`).
+- Aucune bordure autour d'une box (elle se détache par sa valeur) ; carrée, avec sa loupe (× 1,25, en place) partout où elle est
+  détaillée ; une tuile grandit au survol (× 1,06). Contrôles gris, `border-radius:10px`, ajustés au label, jamais un fond blanc ; au survol le gris devient blanc (`tools/hover.py`).
+- **Continuité** : rien ne se coupe entre deux vues, deux pages, deux couches — l'objet se transforme, jamais un écran figé.
 
 ## L'espace
 
-TOTEHM.SPACE est un pavillon de verre au sommet d’une Terre engloutie : beauté, grandeur, peur et renouveau.
+TOTEHM.SPACE : Lisbon, façade d’azulejos bleus et blancs, et New York, façade de briques rouges à cinq niveaux en rampes ; autres murs et toiture en verre, au sommet d’une Terre engloutie : beauté, grandeur, peur et renouveau.
 Voie lactée à travers le toit, lune et mer déchaînée ; calçada à vagues et caravelle dehors, vraies dalles anciennes en volume, grain photographique et comptoir pierre dedans.
-La bouche originale, sa langue et son papier sont sculptés en façade et éclairés ; une cheminée ultra minimale, sa combustion vivante et son crépitement de bois réchauffent l’intérieur.
+La bouche originale, sa langue et son TOTEHM monumentaux occupent le centre sans fenêtres des deux façades ; feu vivant et crépitement dedans. Intérieurs minimalistes blancs, mêmes dalles anciennes dans les deux lieux ; murs d’exposition dégagés des rampes à chaque étage. New York conserve son asphalte, sans Statue de la Liberté.
 Space est l’accueil : livre noir fermé sur pupitre vers Origins à pages tournantes, écran Lisbon et cadre premium Stoner vers leurs propres pages plein écran ; THP en petits papiers perforés.
 Sans colonnes ni végétation, la terrasse ouvre la vue sur les déferlants ; Espace propulse vers les étoiles et le globe englouti.
 Vent et mer, crépitement à l’approche du feu. Pages et marché indépendants conservés ; Collect garde achat et revente.

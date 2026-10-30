@@ -39,3 +39,7 @@ body:not(.exploring) #space::after{content:"";position:absolute;inset:0;pointer-
 @media(max-width:650px){.tour{flex-wrap:wrap;justify-content:center;width:max-content}.tour [data-room]{padding:10px 8px}.tour #view-list{padding:10px 8px}.joystick{bottom:155px}body.station-focused #work-info{bottom:155px}}
 
 .asset-credits{grid-column:1/-1;margin:0;text-align:center;font-size:8px;color:#aaa3b7}.asset-credits a{border-bottom:1px solid #777;padding-bottom:3px}
+.building-levels{grid-column:1/-1;display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;padding:12px 0 24px;font-size:11px;color:#aaa}
+.building-levels[hidden]{display:none}
+.building-levels button{font:inherit;color:#bbb;background:#000;border:1px solid #333;border-radius:10px;padding:9px 12px;cursor:pointer;transition:color .2s,border-color .2s}
+.building-levels button:hover,.building-levels button:focus-visible{color:#fff;border-color:#fff}

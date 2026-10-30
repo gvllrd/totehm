@@ -1,6 +1,13 @@
 import {createLisbonPreview} from './gallery-lisbon.mjs';
 
 const reduced=matchMedia('(prefers-reduced-motion: reduce)'),body=document.body;
+const place=location.pathname.replace(/\/+$/,'')==='/new-york'?'new-york':'lisbon';
+body.dataset.place=place;
+if(place==='new-york'){
+ document.title='TOTEHM.SPACE — New York';
+ document.getElementById('space').setAttribute('aria-label','A five-floor red-brick New York gallery above a flooded world. White interiors, stone floors and continuous ramps. Drag to look, tap a floor or ramp to walk. WASD to walk, Space to jump. Find floor destinations in Artworks.');
+ document.getElementById('building-levels').hidden=false;
+}
 const ROOMS=[
  {title:'TotehmPaper {THP}',kind:'The Stoner Experience',path:'/get_higher',collect:'/market?art=totehmpaper',action:'Enter the experience ↗',note:'Original perforated art. Choose your TotehmPaper.'},
  {title:'Origins / Quantum',kind:'Twenty original works',path:'/origins',collect:'/market?collection=quantum',action:'Open the book',note:'Twenty works. Turn the pages.'},
@@ -53,6 +60,7 @@ $('visit-stoner').addEventListener('click',()=>choose(3));
 $('close-info').addEventListener('click',()=>{clearInfo();engine?.stop();});
 $('leave-station').addEventListener('click',()=>{engine?.leaveStation();clearInfo();$('space').focus({preventScroll:true});});
 $('view-list').addEventListener('click',()=>setList(!body.classList.contains('list-view')));
+document.querySelectorAll('[data-level]').forEach(button=>button.addEventListener('click',()=>{setList(false);engine?.visitLevel(Number(button.dataset.level));}));
 document.querySelector('.skip').addEventListener('click',()=>setList(true));
 document.addEventListener('keydown',e=>{
  if(e.target.closest('input,textarea,select,[contenteditable=true]'))return;
@@ -62,11 +70,11 @@ document.addEventListener('keydown',e=>{
 });
 document.addEventListener('visibilitychange',syncPreview);reduced.addEventListener('change',syncPreview);
 addEventListener('pagehide',()=>{if(listRaf)cancelAnimationFrame(listRaf);listRaf=0;preview.pause();});addEventListener('pageshow',syncPreview);
-window.__totehm_gallery=()=>({build:'2026-10-26-space-wave-campfire',rooms:4,room,list:body.classList.contains('list-view'),fallback,reduced_motion:reduced.matches,experiences:[...new Set(ROOMS.map(w=>w.path))],experienceNavigation:'independent-pages',inGalleryPlayback:false,lisbon:preview.diagnostics(),...engine?.diagnostics()});
-function useFallback(){fallback=true;body.classList.add('no-3d','list-view');engine?.setList(true);clearInfo();syncPreview();}
+window.__totehm_gallery=()=>({build:'2026-10-29-space-totehm-facades',place,rooms:4,room,list:body.classList.contains('list-view'),fallback,reduced_motion:reduced.matches,experiences:[...new Set(ROOMS.map(w=>w.path))],experienceNavigation:'independent-pages',inGalleryPlayback:false,lisbon:preview.diagnostics(),...engine?.diagnostics()});
+function useFallback(){fallback=true;body.classList.add('no-3d','list-view');$('building-levels').hidden=true;engine?.setList(true);clearInfo();syncPreview();}
 try{
  const {createGallery}=await import('./gallery-spatial.mjs');
- engine=await createGallery({select:choose,onOverview:clearInfo,interact,fallback:useFallback,reduced,
+ engine=await createGallery({place,select:choose,onOverview:clearInfo,interact,fallback:useFallback,reduced,
   onStationState:value=>{station=value;controls();}
  });
  engine.setList(body.classList.contains('list-view'));

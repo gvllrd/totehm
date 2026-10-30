@@ -2,7 +2,7 @@ import * as T from './vendor/three-0.180.0.mjs';
 import {createModernGallery} from './gallery-modern.mjs';
 import {createTempleLandscape} from './gallery-temple-landscape.mjs';
 import {createModernWalkway,createModernPhysics} from './gallery-modern-navigation.mjs';
-import {GALLERY_LAYOUT as L,GALLERY_STATIONS} from './gallery-modern-layout.mjs';
+import {GALLERY_LAYOUT as LISBON_LAYOUT,GALLERY_STATIONS} from './gallery-modern-layout.mjs';
 import {createGalleryAudio} from './gallery-audio.mjs';
 import {createLecternBook} from './gallery-lectern-book.mjs';
 import {createGalleryFireplace} from './gallery-fireplace.mjs';
@@ -13,23 +13,28 @@ import {createStonerInstallation} from './gallery-stoner-installation.mjs';
 import {createRenderQuality} from './gallery-render-quality.mjs';
 import {glassRoofHeight} from './gallery-glass-shell.mjs';
 
-const ENTRY=L.entry,LOOK=L.look,GROUND=L.groundY,HEIGHT=L.eyeHeight;
-export async function createGallery({select,onOverview=()=>{},onStationState=()=>{},onArtwork=()=>{},interact=()=>{},fallback,reduced}){
+export async function createGallery({place='lisbon',select,onOverview=()=>{},onStationState=()=>{},onArtwork=()=>{},interact=()=>{},fallback,reduced}){
+ const newYork=place==='new-york';
+ const ny=newYork?await Promise.all([import('./gallery-new-york.mjs'),import('./gallery-new-york-navigation.mjs'),import('./gallery-new-york-layout.mjs')]):null;
+ const L=newYork?ny[2].NEW_YORK_LAYOUT:LISBON_LAYOUT;
+ const ENTRY=L.entry,LOOK=L.look,GROUND=L.groundY,HEIGHT=L.eyeHeight;
+ const ceiling=(x,z)=>newYork?ny[2].newYorkRoofHeight(x,z):glassRoofHeight(x,z);
  const host=document.getElementById('space'),mobile=innerWidth<650||(matchMedia('(pointer: coarse)').matches&&Math.min(innerWidth,innerHeight)<650);
  const renderer=new T.WebGLRenderer({antialias:true,alpha:false,powerPreference:'high-performance'});
  const quality=createRenderQuality({mobile,pixelRatio:devicePixelRatio});
  renderer.setPixelRatio(quality.diagnostics().pixelRatio);renderer.setSize(innerWidth,innerHeight);
  renderer.outputColorSpace=T.SRGBColorSpace;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1;
  renderer.setClearColor(0x030912);renderer.domElement.setAttribute('aria-hidden','true');host.append(renderer.domElement);
- const scene=new T.Scene(),camera=new T.PerspectiveCamera(mobile?72:60,innerWidth/innerHeight,.08,9000);
+ const baseFov=newYork?(mobile?78:72):(mobile?72:60);
+ const scene=new T.Scene(),camera=new T.PerspectiveCamera(baseFov,innerWidth/innerHeight,.08,9000);
  let dirty=true,frames=0,list=false,hidden=document.hidden,paused=false,lastTime=0,lastRender=0;
  let motionReduced=reduced.matches,tween=null,arrival=null,pendingVisit=null,stellarView=null,room=-1,focused=-1,down=null,yaw=0,pitch=0,dragged=false,initialized=false,inspecting=false,inspectionAmount=0,bookDestination=null;
  let architecture=null,book=null,play=null,stoner=null,opposite=null,lastStationState='';
  const invalidate=()=>{dirty=true;};
  const landscape=createTempleLandscape(scene,renderer,{mobile,onChange:invalidate});
- architecture=createModernGallery(scene,renderer,{mobile,onChange:invalidate});
+ architecture=(newYork?ny[0].createNewYorkGallery:createModernGallery)(scene,renderer,{mobile,onChange:invalidate});
  book=createLecternBook(scene,{mobile,onChange:invalidate,onOpen:({href})=>{bookDestination=href;dirty=true;}});
- const fireplace=createGalleryFireplace(scene,{mobile,onChange:invalidate});
+ const fireplace=createGalleryFireplace(scene,{mobile,onChange:invalidate,...(newYork?{smokeOutlet:L.smokeOutlet}:{})});
  function openExperience({href}){
   // Navigation releases the world instead of leaving its GPU/audio behind an
   // iframe. Independent pages retain their own controls, pixels and access.
@@ -39,12 +44,12 @@ export async function createGallery({select,onOverview=()=>{},onStationState=()=
  play=createPlayInstallation(scene,{mobile,onChange:invalidate,onOpen:openExperience});
  stoner=createStonerInstallation(scene,{mobile,onChange:invalidate,onOpen:openExperience});
  opposite=createOppositeInstallation(scene,{mobile,onChange:invalidate,onOpen:openExperience});
- const walkway=createModernWalkway(),physics=createModernPhysics({x:ENTRY[0],z:ENTRY[2]}),sound=createGalleryAudio(),fireSound=createFireAudio();
+ const walkway=(newYork?ny[1].createNewYorkWalkway:createModernWalkway)(),physics=(newYork?ny[1].createNewYorkPhysics:createModernPhysics)({x:ENTRY[0],z:ENTRY[2]}),sound=createGalleryAudio(),fireSound=createFireAudio();
  const eye=new T.Vector3(...ENTRY),gaze=new T.Vector3(...LOOK),keys=new Set();
  const stick=document.getElementById('joystick'),knob=stick.querySelector('span');let joystick={x:0,y:0};
- const isFloor=()=>physics.diagnostics().grounded&&physics.position.y<GROUND+.2;
- const inGallery=()=>eye.x>-L.halfWidth&&eye.x<L.halfWidth&&eye.z<L.frontZ&&eye.z>L.backZ&&eye.y<glassRoofHeight(eye.x,eye.z);
- const nearStation=index=>{const s=GALLERY_STATIONS[index];return!!s&&isFloor()&&Math.hypot(eye.x-s.approach[0],eye.z-s.approach[2])<1.2;};
+ const isFloor=()=>physics.diagnostics().grounded&&(newYork?!physics.diagnostics().onRoof:physics.position.y<GROUND+.2);
+ const inGallery=()=>eye.x>-L.halfWidth&&eye.x<L.halfWidth&&eye.z<L.frontZ&&eye.z>L.backZ&&eye.y<ceiling(eye.x,eye.z);
+ const nearStation=index=>{const s=GALLERY_STATIONS[index];return!!s&&isFloor()&&physics.position.y<GROUND+.2&&Math.hypot(eye.x-s.approach[0],eye.z-s.approach[2])<1.2;};
  function stationState(){
   if(!initialized)return;
   const b=book.diagnostics(),p=play.diagnostics(),s=stoner.diagnostics(),o=opposite.diagnostics(),value={room,focused,book:b,play:p,stoner:s,opposite:o,moving:!!tween||!!pendingVisit};
@@ -63,7 +68,7 @@ export async function createGallery({select,onOverview=()=>{},onStationState=()=
  angles();
  function syncSound(){
   const active=!hidden&&!list&&!paused,distance=Math.hypot(eye.x,eye.z-L.frontZ,eye.y-1.65);
-  const shelter=T.MathUtils.smoothstep(L.frontZ-eye.z,0,4)*T.MathUtils.smoothstep(L.halfWidth-Math.abs(eye.x),0,1.1)*T.MathUtils.smoothstep(eye.z-L.backZ,0,.8)*(1-T.MathUtils.smoothstep(eye.y,glassRoofHeight(eye.x,eye.z)-.8,glassRoofHeight(eye.x,eye.z)+.3));
+  const shelter=T.MathUtils.smoothstep(L.frontZ-eye.z,0,4)*T.MathUtils.smoothstep(L.halfWidth-Math.abs(eye.x),0,1.1)*T.MathUtils.smoothstep(eye.z-L.backZ,0,.8)*(1-T.MathUtils.smoothstep(eye.y,ceiling(eye.x,eye.z)-.8,ceiling(eye.x,eye.z)+.3));
   sound.update({zone:physics.position.y>3000?'void':'temple',proximity:Math.max(0,1-distance/8),exposure:T.MathUtils.clamp((physics.position.y-GROUND)/10,0,1),shelter,active});
   const fireDistance=Math.hypot(eye.x-L.fireplace.position[0],eye.y-1,eye.z-L.fireplace.position[2]);
   const fireX=L.fireplace.position[0]-eye.x,fireZ=L.fireplace.position[2]-eye.z;
@@ -75,13 +80,13 @@ export async function createGallery({select,onOverview=()=>{},onStationState=()=
  function travel(position,target,done,{air=false}={}){
   const path=air?[eye.clone(),position]:walkway.route(eye,position);if(!path)return false;
   stopInput();interact();arrival=null;stellarView=null;
-  if(motionReduced||Math.hypot(eye.x-position.x,eye.z-position.z)<.03){
+  if(motionReduced||eye.distanceTo(position)<.03){
    physics.relocateHorizontal(position);eye.set(physics.position.x,physics.position.y+HEIGHT,physics.position.z);gaze.copy(target);angles();tween=null;dirty=true;
    if(isFloor())done?.();else arrival={target:target.clone(),done};return true;
   }
-  const points=path.map(p=>new T.Vector3(p.x,1.65,p.z)),lengths=[0];
+  const points=path.map(p=>new T.Vector3(p.x,newYork?p.y:1.65,p.z)),lengths=[0];
   for(let n=1;n<points.length;n++)lengths.push(lengths[n-1]+points[n-1].distanceTo(points[n]));
-  tween={points,lengths,segment:1,stalled:0,to:position,target,from:gaze.clone(),start:performance.now(),duration:Math.min(4200,Math.max(1450,lengths.at(-1)*110)),done,air};dirty=true;return true;
+  tween={points,lengths,segment:1,stalled:0,to:position,target,from:gaze.clone(),start:performance.now(),duration:Math.min(newYork?18000:4200,Math.max(1450,lengths.at(-1)*110)),done,air};dirty=true;return true;
  }
  function groundedTravel(position,target,done){
   if(!isFloor()){
@@ -104,6 +109,11 @@ export async function createGallery({select,onOverview=()=>{},onStationState=()=
  function enterGallery(){cancelTravel();leaveStation();onOverview();return groundedTravel(new T.Vector3(...L.inside),new T.Vector3(...L.insideTarget));}
  function overview(){cancelTravel();leaveStation();onOverview();groundedTravel(new T.Vector3(...ENTRY),new T.Vector3(...LOOK));}
  function visitFireplace(){cancelTravel();leaveStation();onOverview();return groundedTravel(new T.Vector3(...L.fireplace.approach),new T.Vector3(...L.fireplace.target));}
+ function visitLevel(level){
+  if(!newYork||list||!Number.isInteger(level)||!ny[2].NEW_YORK_LANDINGS[level])return false;
+  const landing=ny[2].NEW_YORK_LANDINGS[level],position=new T.Vector3(landing.x,landing.y+HEIGHT,landing.z);
+  cancelTravel();leaveStation();onOverview();return groundedTravel(position,new T.Vector3(0,position.y,-8));
+ }
  function move(dt,dx=0,dz=0,guided=false){
   const before=eye.clone(),steps=Math.max(1,Math.ceil(dt/.025));
   for(let i=0;i<steps;i++)physics.step(dt/steps,{dx:dx/steps,dz:dz/steps,guided});
@@ -143,10 +153,13 @@ export async function createGallery({select,onOverview=()=>{},onStationState=()=
   }
   if(data?.kind==='fireplace'){visitFireplace();return;}
   if(data?.room!==undefined){if(data.room<0)enterGallery();else select(data.room);return;}
-  if(ray.ray.intersectPlane(plane,floor)&&walkway.allowed(floor.x,floor.z)&&floor.distanceTo(eye)<50){
+  const surface=newYork?ray.intersectObjects(architecture.walkable||[],false).find(h=>h.face&&h.face.normal.clone().transformDirection(h.object.matrixWorld).y>.1):null;
+  const onFloor=newYork?!!surface:!!ray.ray.intersectPlane(plane,floor);
+  if(surface)floor.copy(surface.point);
+  if(onFloor&&walkway.allowed(floor.x,floor.z,newYork?floor.y:undefined)&&floor.distanceTo(eye)<50){
    const solid=ray.intersectObjects(architecture.solids||[],false).find(h=>h.object.visible&&!h.object.material?.transparent);
    if(solid&&solid.distance<floor.distanceTo(eye)-.2)return;
-   const destination=new T.Vector3(floor.x,1.65,floor.z),direction=gaze.clone().sub(eye);free();leaveStation();onOverview();groundedTravel(destination,destination.clone().add(direction));
+   const destination=new T.Vector3(floor.x,newYork?floor.y+HEIGHT:1.65,floor.z),direction=gaze.clone().sub(eye);free();leaveStation();onOverview();groundedTravel(destination,destination.clone().add(direction));
   }
  });
  host.addEventListener('pointercancel',()=>{down=null;});
@@ -187,9 +200,9 @@ export async function createGallery({select,onOverview=()=>{},onStationState=()=
    const point=new T.Vector3().lerpVectors(t.points[i-1],t.points[i],length?T.MathUtils.clamp((distance-t.lengths[i-1])/length,0,1):1),before=eye.clone();
    move(physicsDt,point.x-eye.x,point.z-eye.z,true);
    t.stalled=before.distanceToSquared(eye)<.000001&&Math.hypot(point.x-eye.x,point.z-eye.z)>.08?t.stalled+physicsDt:0;
-   if(t.segment<t.points.length-1&&Math.hypot(eye.x-t.points[i].x,eye.z-t.points[i].z)<.04)t.segment++;
+   if(t.segment<t.points.length-1&&(newYork?eye.distanceTo(t.points[i]):Math.hypot(eye.x-t.points[i].x,eye.z-t.points[i].z))<.04)t.segment++;
    gaze.lerpVectors(t.from,t.target,ease);dirty=true;
-   if(p===1&&Math.hypot(eye.x-t.to.x,eye.z-t.to.z)<.08&&(isFloor()||t.air)){
+   if(p===1&&(newYork?eye.distanceTo(t.to):Math.hypot(eye.x-t.to.x,eye.z-t.to.z))<.08&&(isFloor()||t.air)){
     tween=null;angles();if(isFloor())t.done?.();else arrival={target:t.target.clone(),done:t.done};
    }else if(t.stalled>2.5){tween=null;pendingVisit=null;angles();}
   }
@@ -208,7 +221,7 @@ export async function createGallery({select,onOverview=()=>{},onStationState=()=
   const inspectionTarget=inspecting&&focused===0?1:0;
   const nextInspection=motionReduced?inspectionTarget:T.MathUtils.damp(inspectionAmount,inspectionTarget,7,dt);
   if(Math.abs(nextInspection-inspectionAmount)>.0001){inspectionAmount=nextInspection;dirty=true;}else if(inspectionAmount!==inspectionTarget){inspectionAmount=inspectionTarget;dirty=true;}
-  const targetFov=(mobile?(focused===2||focused===4?88:72):60)-(mobile?16:10)*inspectionAmount;
+  const targetFov=(mobile&&(focused===2||focused===4)?88:baseFov)-(mobile?16:10)*inspectionAmount;
   if(Math.abs(camera.fov-targetFov)>.001){camera.fov=motionReduced?targetFov:T.MathUtils.damp(camera.fov,targetFov,7,dt);camera.updateProjectionMatrix();dirty=true;}
   if(dirty&&now-lastRender>=32){
    camera.position.copy(eye).add(new T.Vector3(0,.28,-.18).multiplyScalar(inspectionAmount));
@@ -222,10 +235,10 @@ export async function createGallery({select,onOverview=()=>{},onStationState=()=
  camera.position.copy(eye);camera.lookAt(gaze);camera.updateMatrixWorld();initialized=true;stationState();renderer.setAnimationLoop(animate);
  addEventListener('pagehide',()=>{pause();renderer.setAnimationLoop(null);});
  addEventListener('pageshow',e=>{if(e.persisted){paused=false;hidden=document.hidden;bookDestination=null;book.reset();resetPortals();quality.reset();try{const muted=localStorage.getItem('space-sound-muted')==='true';sound.setMuted(muted);fireSound.setMuted(muted);}catch{}dirty=true;lastTime=0;syncSound();renderer.setAnimationLoop(animate);}});
- return{visit,enter,enterGallery,overview,visitFireplace,invalidate,
+ return{visit,enter,enterGallery,overview,visitFireplace,visitLevel,invalidate,
   leaveStation(){stopInput();cancelTravel();leaveStation();onOverview();dirty=true;},
   stop(){stopInput();cancelTravel();leaveStation();dirty=true;},
   setList(value){list=!!value;stopInput();cancelTravel();leaveStation();syncSound();dirty=true;lastTime=0;},
-  diagnostics:()=>({webgl:true,zone:inGallery()?'gallery':'terrace',room,focused,frames,position:[+eye.x.toFixed(2),+eye.z.toFixed(2)],moving:!!tween||!!pendingVisit||!!keys.size||!!joystick.x||!!joystick.y||!physics.diagnostics().grounded,visible:!hidden&&!list&&!paused,
-   camera:{position:camera.position.toArray(),target:viewTarget().toArray(),inspection:inspectionAmount,fov:camera.fov,aspect:camera.aspect,near:camera.near,far:camera.far,stellarOverview:!!stellarView&&!motionReduced,overviewAmount:stellarView?.amount??0},physics:physics.diagnostics(),temple:architecture.diagnostics(),stations:{play:play.diagnostics(),stoner:stoner.diagnostics(),opposite:opposite.diagnostics(),book:book.diagnostics()},landscape:landscape.diagnostics(),audio:sound.diagnostics(),fireAudio:fireSound.diagnostics(),fireplace:fireplace.diagnostics(),render:{...quality.diagnostics(),width:renderer.domElement.width,height:renderer.domElement.height,calls:renderer.info.render.calls,triangles:renderer.info.render.triangles},navigation:{speed:2.6,minDuration:1450,maxDuration:4200,deferredArrival:!!arrival||!!pendingVisit,...walkway.diagnostics()}})};
+  diagnostics:()=>({webgl:true,place:newYork?'new-york':'lisbon',zone:inGallery()?'gallery':'terrace',room,focused,frames,position:[+eye.x.toFixed(2),+eye.z.toFixed(2)],moving:!!tween||!!pendingVisit||!!keys.size||!!joystick.x||!!joystick.y||!physics.diagnostics().grounded,visible:!hidden&&!list&&!paused,liberty:null,
+   camera:{position:camera.position.toArray(),target:viewTarget().toArray(),inspection:inspectionAmount,fov:camera.fov,aspect:camera.aspect,near:camera.near,far:camera.far,stellarOverview:!!stellarView&&!motionReduced,overviewAmount:stellarView?.amount??0},physics:physics.diagnostics(),temple:architecture.diagnostics(),stations:{play:play.diagnostics(),stoner:stoner.diagnostics(),opposite:opposite.diagnostics(),book:book.diagnostics()},landscape:landscape.diagnostics(),audio:sound.diagnostics(),fireAudio:fireSound.diagnostics(),fireplace:fireplace.diagnostics(),render:{...quality.diagnostics(),width:renderer.domElement.width,height:renderer.domElement.height,calls:renderer.info.render.calls,triangles:renderer.info.render.triangles},navigation:{speed:2.6,minDuration:1450,maxDuration:newYork?18000:4200,deferredArrival:!!arrival||!!pendingVisit,...walkway.diagnostics()}})};
 }

@@ -5,7 +5,7 @@ import {GLASS_HEARTH} from './gallery-glass-shell.mjs';
 // An open wood campfire held by the pavilion’s flowing glass collector.
 // Combustion, lifted embers and the plume share the world clock and freeze
 // together in reduced motion. No movie or camera-facing flame image is used.
-export function createGalleryFireplace(scene,{mobile=false,onChange=()=>{}}={}){
+export function createGalleryFireplace(scene,{mobile=false,onChange=()=>{},smokeOutlet=GLASS_HEARTH.smokeOutlet}={}){
  const root=new T.Group();root.name='The campfire — tall living flames inside a wave of glass';scene.add(root);
  const geometries=new Set(),materials=new Set(),textures=new Set(),solids=[],pickables=[];
  let time=11.7,disposed=false,dirty=true,updates=0,moving=false;
@@ -176,7 +176,7 @@ export function createGalleryFireplace(scene,{mobile=false,onChange=()=>{}}={}){
   }`}));
  const flame=piece(geo(new T.BoxGeometry(3.9,4.34,1.36)),flameMaterial,flameUniforms.uCenter.value.toArray(),'Continuous three-dimensional turbulent hardwood combustion');flame.castShadow=flame.receiveShadow=false;flame.renderOrder=4;
  const sparkCount=mobile?44:76,smokeCount=mobile?22:36;
- const outlet=GLASS_HEARTH.smokeOutlet;
+ const outlet=smokeOutlet;
  function pointGeometry(count){const g=geo(new T.BufferGeometry()),p=new Float32Array(count*3),seed=new Float32Array(count);for(let i=0;i<count;i++)seed[i]=(i*.61803398875)%1;g.setAttribute('position',new T.BufferAttribute(p,3));g.setAttribute('aSeed',new T.BufferAttribute(seed,1));return g;}
  const sparkMaterial=mat(new T.ShaderMaterial({uniforms:{uTime:{value:time},uScale:{value:mobile?700:950}},transparent:true,depthWrite:false,blending:T.AdditiveBlending,toneMapped:false,
   vertexShader:`uniform float uTime,uScale;attribute float aSeed;varying float vLife;void main(){float life=fract(aSeed+uTime*(.17+aSeed*.045));vLife=life;vec3 p=vec3(-8.+(aSeed-.5)*2.8*(1.-life*.6)+sin(life*9.+aSeed*19.)*(.08+life*.28),.38+life*5.6,-15.84+cos(aSeed*29.+life*4.)*.20);vec4 v=modelViewMatrix*vec4(p,1.);gl_Position=projectionMatrix*v;gl_PointSize=clamp((.008+aSeed*.008)*uScale/max(.2,-v.z),.5,3.5);}`,
@@ -188,7 +188,7 @@ export function createGalleryFireplace(scene,{mobile=false,onChange=()=>{}}={}){
    float y=4.25+life*(uOutlet.y+4.2-4.25),inside=1.-smoothstep(uOutlet.y-.4,uOutlet.y+.3,y);
    float gather=clamp((y-4.25)/max(.1,uOutlet.y-4.25),0.,1.);
    float spread=mix(.64,.17,gather)*inside+(1.-inside)*(.18+life*.70);
-   vec3 p=vec3(uOutlet.x+sin(aSeed*31.+life*5.)*spread+(1.-inside)*life*.62,y,uOutlet.z+cos(aSeed*23.+life*3.)*spread*.48);
+   vec3 p=vec3(mix(-8.,uOutlet.x,gather)+sin(aSeed*31.+life*5.)*spread+(1.-inside)*life*.62,y,mix(-15.99,uOutlet.z,gather)+cos(aSeed*23.+life*3.)*spread*.48);
    vec4 v=modelViewMatrix*vec4(p,1.);gl_Position=projectionMatrix*v;gl_PointSize=clamp((.30+life*.85)*uScale/max(.5,-v.z),1.,180.);
   }`,
   fragmentShader:`uniform float uTime;varying float vLife,vSeed;${noise}void main(){vec2 p=gl_PointCoord-.5;float radius=length(p*vec2(1.,.91));float cloud=turbulence(p*5.+vec2(vSeed*19.,uTime*.035));float a=smoothstep(.5,.13,radius+.10*(cloud-.5))*smoothstep(0.,.06,vLife)*pow(1.-vLife,1.15)*(.055+.026*cloud);if(a<.002)discard;vec3 c=mix(vec3(.24,.18,.13),vec3(.10,.12,.15),smoothstep(.05,.6,vLife));gl_FragColor=vec4(c,a);\n#include <colorspace_fragment>}`
