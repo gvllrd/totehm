@@ -28,7 +28,24 @@ const { pg, log } = await page(browser, { dir:'boutique', origin:'https://www.hi
 await pg.goto('https://www.higher.boutique/');
 await pg.waitForFunction(() => window.__totehm_boutique && /47 pieces left/.test(document.querySelector('#sw-col-sold').textContent));
 const d = await pg.evaluate(() => window.__totehm_boutique());
-ok(d.build === '2026-10-27-dos' && d.decode_first && !d.member_window, 'the physical landing page: DECODE first, no member window here');
+ok(d.build === '2026-10-30-main' && d.decode_first && !d.member_window, 'the physical landing page: DECODE first, no member window here');
+// 30/10 (Wah) : « la face verso du [Higher] doit avoir EXACTEMENT les mêmes
+// perforations que la face recto — logique, on retourne la même pièce ». Donc
+// UN SEUL masque dans le document, et les deux faces le référencent.
+const piece = await pg.evaluate(() => {
+  const m = [...document.querySelectorAll('mask')].filter(x => x.id === 'hmask');
+  const faces = [...document.querySelectorAll('#slogan use')].map(u => u.getAttribute('href'));
+  const refs = [...document.querySelectorAll('symbol#higher-slogan rect, symbol#higher-dos rect')].map(r => r.getAttribute('mask'));
+  const f = document.querySelector('.hi-front svg').getBoundingClientRect();
+  const b = document.querySelector('#sl-dos').getBoundingClientRect();
+  return { masques: m.length, trous: m[0] ? m[0].querySelectorAll('circle').length : 0,
+    faces: faces.join(','), refs: refs.join(','),
+    memeBoite: Math.abs(f.width - b.width) < 1 && Math.abs(f.height - b.height) < 1,
+    ratio: +(b.width / b.height).toFixed(2) };
+});
+ok(piece.masques === 1 && piece.trous === 18 && piece.faces === '#higher-slogan,#higher-dos'
+   && piece.refs === 'url(#hmask),url(#hmask)' && piece.memeBoite && piece.ratio === 3,
+  '30/10 · une seule pièce : les deux faces partagent LE MÊME masque (18 trous) et la même boîte ' + JSON.stringify(piece));
 // 27/10 (Wah) : « au format NORMAL, comme ses homologues ».
 const deco = await pg.evaluate(() => { const d = getComputedStyle(document.querySelector('#decode-btn')),
   a = getComputedStyle(document.querySelector('a[href="streetwear.html"]'));
@@ -40,17 +57,19 @@ await pg.click('#decode-btn');
 await pg.waitForFunction(() => document.activeElement === document.querySelector('#decode-q'));
 await pg.waitForTimeout(760);
 const dec = await pg.evaluate(() => { const i = document.querySelector('#decode-q'), s = getComputedStyle(i);
-  const sl = document.querySelector('.slogan'), r = sl.getBoundingClientRect(), dos = document.querySelector('#sl-back');
+  const sl = document.querySelector('#slogan'), r = sl.getBoundingClientRect();
   return { col: s.color, focus: document.activeElement === i, v: i.value, caret: i.selectionStart,
-    retourne: getComputedStyle(sl).transform, dans: (() => { const b = i.getBoundingClientRect();
+    dos: sl.classList.contains('is-back'), pose: sl.classList.contains('is-flat'),
+    dans: (() => { const b = i.getBoundingClientRect();
       return b.top >= r.top - 1 && b.bottom <= r.bottom + 1 && b.left >= r.left - 1; })(),
-    navy: getComputedStyle(dos).backgroundColor, perfo: getComputedStyle(dos).borderImageSource.includes('svg'),
+    papier: !!document.querySelector('#sl-dos use[href="#higher-dos"]'),
+    ecrit: document.querySelector('#hi').classList.contains('is-ecrit'),
     plein: document.querySelector('#hb').classList.contains('is-on'),
     large: Math.round(r.width) };
 });
-ok(dec.focus && dec.v === '0.' && dec.caret === 2 && /251, 213, 202/.test(dec.col) && /matrix3d|matrix\(-1/.test(dec.retourne)
-   && dec.dans && /51, 51, 102/.test(dec.navy) && dec.perfo && !dec.plein && dec.large < 260,
-  '27/10 · le Higher se retourne SUR PLACE : le nom s\'écrit à son DOS, et rien ne passe en plein écran ' + JSON.stringify(dec));
+ok(dec.focus && dec.v === '0.' && dec.caret === 2 && /251, 213, 202/.test(dec.col) && dec.dos && dec.pose
+   && dec.dans && dec.papier && dec.ecrit && !dec.plein && dec.large < 260,
+  '27/10 · le Higher se retourne SUR PLACE : le nom s\'écrit à son DOS (le même papier perforé), et rien ne passe en plein écran ' + JSON.stringify(dec));
 await pg.screenshot({ path: OUT + '/bq_dos.png' });
 await pg.reload(); await pg.waitForFunction(() => window.__totehm_boutique && /47 pieces left/.test(document.querySelector('#sw-col-sold').textContent));
 ok(await pg.locator('a[data-space][href="https://www.totehm.space/"]').count()===1 && await pg.locator('#higher-btn,#lisbon-btn,a[href="/market"],a[href="/origins"]').count()===0,'digital art has one explicit SPACE destination; the physical homepage keeps its Cloth paths');
@@ -108,7 +127,7 @@ ok(!log.errors.length, 'no page error: ' + log.errors.join(' | '));
   const { pg, log } = await page(browser, { dir:'boutique', origin:'https://www.higher.boutique', rpc, tables, functions, session:true, network:geo });
   await pg.goto('https://www.higher.boutique/');
   await pg.waitForFunction(() => window.__totehm_boutique);
-  await pg.click('#slogan');
+  await pg.click('#hi');
   await pg.waitForFunction(() => window.__totehm_boutique().higher.pret);
   await pg.waitForFunction(() => document.querySelectorAll('#hb-cloths .hb-row').length === 1);
   await pg.waitForTimeout(400);
@@ -151,6 +170,65 @@ ok(!log.errors.length, 'no page error: ' + log.errors.join(' | '));
     '26/10 · Decode montre TOUT ce qui a été sélectionné : les mini-boxes allumées et mes photos ' + JSON.stringify(ph));
   await pg.screenshot({ path: OUT + '/bq_decode_mine.png' });
   ok(!log.errors.length, 'le Higher retourné : aucune erreur ' + log.errors.join(' | '));
+  await pg.context().close();
+}
+// ══ 30/10 · ON LE TOURNE À LA MAIN — à la souris ET au doigt ═══════════════
+// Wah : « on doit pouvoir tourner le [Higher] sur mobile et ordinateur
+// exactement comme le totehm sur totehm.com dans la vue centrale ».
+{
+  const { pg, log } = await page(browser, { dir:'boutique', origin:'https://www.higher.boutique', rpc, tables, functions, session:true, network:geo });
+  await pg.goto('https://www.higher.boutique/');
+  await pg.waitForFunction(() => window.__totehm_boutique);
+  const boite = await pg.evaluate(() => { const r = document.querySelector('#hi').getBoundingClientRect();
+    return { x: Math.round(r.left + r.width / 2), y: Math.round(r.top + r.height / 2), w: Math.round(r.width) }; });
+  // LA SOURIS : on prend la pièce et on la tourne. Un quart de tour suffit.
+  await pg.mouse.move(boite.x, boite.y);
+  await pg.mouse.down();
+  const angles = [];
+  for(let i = 1; i <= 10; i++){
+    await pg.mouse.move(boite.x + i * 18, boite.y);
+    angles.push(await pg.evaluate(() => { const m = getComputedStyle(document.querySelector('#slogan')).transform;
+      return m === 'none' ? 0 : 1; }));
+  }
+  const tenu = await pg.evaluate(() => ({ suit: getComputedStyle(document.querySelector('#slogan')).transform,
+    tenue: document.querySelector('#hi').classList.contains('tenu'),
+    libre: !document.querySelector('#slogan').classList.contains('is-flat') }));
+  ok(angles.every(a => a === 1) && /matrix3d/.test(tenu.suit) && tenu.tenue && tenu.libre,
+    '30/10 · à la souris, la pièce SUIT la main pendant le geste (et le curseur dit qu\'on la tient)');
+  await pg.mouse.up();
+  await pg.waitForFunction(() => window.__totehm_boutique().higher.ouvert, null, { timeout:4000 });
+  await pg.waitForTimeout(900);
+  const pose = await pg.evaluate(() => ({ face: window.__totehm_boutique().higher.face,
+    mode: window.__totehm_boutique().higher.mode,
+    plat: document.querySelector('#slogan').classList.contains('is-flat'),
+    dos: document.querySelector('#slogan').classList.contains('is-back'),
+    net: getComputedStyle(document.querySelector('#slogan')).transform,
+    plein: document.querySelector('#hb').classList.contains('is-open') }));
+  ok(pose.face === 1 && pose.mode === 'board' && pose.plat && pose.dos && pose.net === 'none' && pose.plein,
+    '30/10 · un quart de tour à la main le POSE sur son dos et ouvre MON TABLEAU — posé, aucune transformation ne reste ' + JSON.stringify(pose));
+  await pg.screenshot({ path: OUT + '/bq_tourne.png' });
+  // LE DOIGT : le même geste, en tactile — et il referme en revenant sur sa face.
+  await pg.click('#hb-x');
+  await pg.waitForFunction(() => !window.__totehm_boutique().higher.ouvert);
+  await pg.waitForTimeout(900);
+  const t2 = await pg.evaluate(() => ({ face: window.__totehm_boutique().higher.face,
+    plat: document.querySelector('#slogan').classList.contains('is-flat') }));
+  ok(t2.face === 0 && t2.plat, 'refermé, il revient sur sa face, posé');
+  await pg.touchscreen.tap(boite.x, boite.y).catch(() => {});
+  const doigt = await pg.evaluate(async b => {
+    const hi = document.querySelector('#hi');
+    const env = (t, x) => hi.dispatchEvent(new PointerEvent(t, { pointerId:1, pointerType:'touch', isPrimary:true,
+      clientX:x, clientY:b.y, bubbles:true, cancelable:true, button:0 }));
+    env('pointerdown', b.x);
+    for(let i = 1; i <= 10; i++){ env('pointermove', b.x + i * 18); await new Promise(f => requestAnimationFrame(f)); }
+    const suit = getComputedStyle(document.querySelector('#slogan')).transform;
+    env('pointerup', b.x + 180);
+    return { suit, tactile: getComputedStyle(hi).touchAction };
+  }, boite);
+  await pg.waitForFunction(() => window.__totehm_boutique().higher.ouvert, null, { timeout:4000 });
+  ok(/matrix3d/.test(doigt.suit) && doigt.tactile === 'none',
+    '30/10 · au doigt, le même geste tourne la pièce : le rouleau de la page ne la vole pas (touch-action:none)');
+  ok(!log.errors.length, 'le geste du Higher : aucune erreur ' + log.errors.join(' | '));
   await pg.context().close();
 }
 await browser.close();

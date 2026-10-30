@@ -13,8 +13,6 @@ html{font-family:'Space Mono',monospace}button,input,select,textarea{font-family
   --futura:'Space Mono',monospace;
   /* Le masque perforé du TOTEHM, copié de streetwear : le media d'une pièce le porte. */
   --perfo-dc:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 224.88 224.08' preserveAspectRatio='none'%3E%3Cdefs%3E%3Cmask id='m'%3E%3Crect x='-40' y='-40' width='310' height='310' fill='%23fff'/%3E%3Ccircle cx='56.421' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='56.421' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='112.440' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='112.440' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='168.459' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='168.459' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='56.020' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='56.020' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='112.039' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='112.039' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='168.059' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='168.059' r='13.86' fill='%23000'/%3E%3C/mask%3E%3C/defs%3E%3Crect x='0.402' y='0' width='224.076' height='224.078' fill='%23fff' mask='url(%23m)'/%3E%3C/svg%3E");
-  --tile-btn:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
-  --tile-light:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%2336498c'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
   --tile-full:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44'%3E%3Crect width='44' height='44' fill='%23333366'/%3E%3Ccircle cx='22' cy='0' r='6' fill='%23000000'/%3E%3Ccircle cx='22' cy='44' r='6' fill='%23000000'/%3E%3Ccircle cx='0' cy='22' r='6' fill='%23000000'/%3E%3Ccircle cx='44' cy='22' r='6' fill='%23000000'/%3E%3C/svg%3E");
   --tile-rep:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23743169'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
 }
@@ -40,7 +38,7 @@ body{display:flex;flex-direction:column;align-items:center;min-height:100vh;over
 .bob{animation:bob 1.8s ease-in-out infinite}
 @media(prefers-reduced-motion:reduce){.bob{animation:none}html,body{scroll-behavior:auto}}
 
-.slogan{width:min(52vw,200px);margin-bottom:13px}
+/* La taille vit sur `#hi` (le porte-perspective) : voir « ON LE TOURNE À LA MAIN ». */
 .slogan svg{display:block;width:100%;height:auto}
 .tagline{font-family:'Space Mono',monospace;font-weight:400;font-size:13px;color:var(--g-mid);letter-spacing:0;text-align:center;margin-bottom:5vh}
 .realwrap{margin-top:6vh;display:flex;justify-content:center}
@@ -135,7 +133,7 @@ nav{display:flex;flex-direction:column;align-items:center;gap:30px;width:100%;ma
 #sw-col-sold{font-family:'Space Mono',monospace;font-size:10px;color:var(--g-dark);letter-spacing:.12em;text-transform:uppercase}
 
 
-@media(max-width:600px){.slogan{width:min(60vw,185px)}.tagline{font-size:12px}}
+@media(max-width:600px){.hi{width:min(60vw,185px)}.tagline{font-size:12px}}
 
 /* 27/10 (Wah) : « le bouton [Decode a Totehm Cloth] au format NORMAL, comme ses
    homologues ». Plus de boîte navy perforée : c'est un bouton comme [Create my
@@ -150,14 +148,36 @@ nav{display:flex;flex-direction:column;align-items:center;gap:30px;width:100%;ma
    ce que le papier est à totehm.com : UN objet, deux faces. Il se retourne SUR
    PLACE pour écrire un nom ; il se retourne ET grandit pour ouvrir le tableau.
    Les blocs du plein écran viennent de `#srch` (com/totehm.html), COPIÉS. */
-.slogan{position:relative;transform-style:preserve-3d;transform-origin:50% 50%;
-  transition:transform .66s cubic-bezier(.22,.61,.36,1);cursor:pointer}
-.slogan>*{backface-visibility:hidden;-webkit-backface-visibility:hidden}
-body.hb-on .slogan{transform:rotateY(180deg)}
-/* LE DOS : le navy perforé du TOTEHM, et dessus ce qu'on écrit. */
-#sl-back{position:absolute;inset:0;transform:rotateY(180deg);display:flex;align-items:center;justify-content:center;
-  background:var(--navy);border:5px solid transparent;border-image-source:var(--tile-btn);
-  border-image-slice:6 fill;border-image-repeat:round;padding:0 10px}
+/* ══ ON LE TOURNE À LA MAIN · 30/10 ══════════════════════════════════════
+   Wah : « on doit pouvoir tourner le [Higher] sur mobile ET ordinateur
+   exactement comme le totehm sur totehm.com dans la vue centrale ». Donc la
+   même mécanique que `#gate-asteroid` / `#gate-card` : la PERSPECTIVE est sur
+   le parent, la carte est en `preserve-3d`, et `touch-action:none` pour que le
+   doigt tourne l'objet au lieu de faire défiler la page.
+   ⚠️ POSÉ, LA FACE VISIBLE N'A AUCUNE TRANSFORMATION (`is-flat`, `is-back`) :
+   on n'garde jamais un `rotateY(180deg)` éternel — c'est l'invariant de COM. */
+.hi{position:relative;width:min(52vw,200px);margin-bottom:13px;perspective:480px;
+  cursor:grab;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+.hi.tenu{cursor:grabbing}
+/* Quand on écrit au dos, le doigt sert à écrire, pas à tourner. */
+.hi.is-ecrit{touch-action:auto;cursor:text}
+.hi:focus-visible{outline:1px solid rgba(255,255,255,.35);outline-offset:10px}
+.slogan{position:relative;width:100%;transform-style:preserve-3d;transform-origin:50% 50%;will-change:transform}
+.hi-face{backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.hi-face>*{backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.hi-front{position:relative;transform:translateZ(.5px)}
+.slogan.is-flat .hi-front{transform:none}
+.slogan.is-back .hi-front{visibility:hidden}
+/* LE DOS : le MÊME papier perforé, vu de l'autre côté — et dessus ce qu'on écrit. */
+#sl-back{position:absolute;inset:0;transform:rotateY(180deg) translateZ(.5px);
+  display:flex;align-items:center;justify-content:center;padding:0 10px}
+.slogan.is-back #sl-back{transform:translateZ(.5px)}
+.slogan.is-back.is-flat #sl-back{transform:none}
+#sl-dos{position:absolute;inset:0;width:100%;height:100%;display:block}
+#sl-name,#decode-q{position:relative;z-index:2}
+/* La lumière : un voile posé par le moteur selon l'angle de la pièce face à une
+   lumière venue d'en haut à gauche. Masqué par `#hmask`, donc jamais dans un trou. */
+.hi-light{pointer-events:none}
 #sl-name{font-family:'Quantico',sans-serif;font-weight:700;font-size:13px;letter-spacing:.02em;
   color:var(--coral);text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;width:100%}
 #decode-q{width:100%;min-width:0;background:none;border:0;outline:none;padding:0;text-align:center;
@@ -207,7 +227,7 @@ body.hb-on .slogan{transform:rotateY(180deg)}
 #hb.is-open #hb-x{pointer-events:auto}
 #hb-x svg{width:20px;height:20px;color:rgba(255,255,255,.55);display:block;fill:none;stroke:currentColor;stroke-width:1.6}
 @media(hover:hover){#hb-x:hover svg{color:#fff}}
-@media(prefers-reduced-motion:reduce){.slogan,#hb-bg{transition:none}.hb-after{transition:none}}
+@media(prefers-reduced-motion:reduce){#hb-bg{transition:none}.hb-after{transition:none}}
 #conn-bar{position:fixed;top:14px;left:16px;z-index:85;display:flex;align-items:center;gap:7px;background:none;border:none;cursor:pointer;font-family:'Space Mono',monospace;font-weight:400;font-size:12px;letter-spacing:0;color:#b0b0b0;padding:4px;-webkit-tap-highlight-color:transparent;transition:color .2s}
 #conn-bar:hover{color:#fff}
 #conn-bar .dot{width:8px;height:8px;border-radius:50%;background:#888}
@@ -317,12 +337,24 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
+    <!-- ⚠️ UNE SEULE DÉFINITION DES PERFORATIONS · 30/10/2026 (Wah : « la face
+         verso du [Higher] doit avoir exactement les mêmes perforations que la
+         face recto — logique, on retourne la même pièce »). Le masque vit ICI,
+         HORS des deux symboles, et les DEUX faces le référencent : elles ne
+         peuvent plus diverger. Sept trous en haut, sept en bas, deux à gauche,
+         deux à droite, rayon 14, sur 600 × 200. C'est le même principe que
+         `.ast-tile` sur totehm.com : « les perforations sont symétriques, donc
+         le dos a exactement la silhouette de la face ». -->
+    <mask id="hmask"><rect width="600" height="200" fill="white"/>
+      <circle cx="60" cy="0" r="14" fill="black"/><circle cx="140" cy="0" r="14" fill="black"/><circle cx="220" cy="0" r="14" fill="black"/><circle cx="300" cy="0" r="14" fill="black"/><circle cx="380" cy="0" r="14" fill="black"/><circle cx="460" cy="0" r="14" fill="black"/><circle cx="540" cy="0" r="14" fill="black"/>
+      <circle cx="60" cy="200" r="14" fill="black"/><circle cx="140" cy="200" r="14" fill="black"/><circle cx="220" cy="200" r="14" fill="black"/><circle cx="300" cy="200" r="14" fill="black"/><circle cx="380" cy="200" r="14" fill="black"/><circle cx="460" cy="200" r="14" fill="black"/><circle cx="540" cy="200" r="14" fill="black"/>
+      <circle cx="0" cy="70" r="14" fill="black"/><circle cx="0" cy="130" r="14" fill="black"/><circle cx="600" cy="70" r="14" fill="black"/><circle cx="600" cy="130" r="14" fill="black"/>
+    </mask>
+    <!-- LE DOS : la MÊME pièce, le MÊME masque, sans l'encre. -->
+    <symbol id="higher-dos" viewBox="0 0 600 200">
+      <rect width="600" height="200" fill="#333366" mask="url(#hmask)"/>
+    </symbol>
     <symbol id="higher-slogan" viewBox="0 0 600 200">
-      <defs><mask id="hmask"><rect width="600" height="200" fill="white"/>
-        <circle cx="60" cy="0" r="14" fill="black"/><circle cx="140" cy="0" r="14" fill="black"/><circle cx="220" cy="0" r="14" fill="black"/><circle cx="300" cy="0" r="14" fill="black"/><circle cx="380" cy="0" r="14" fill="black"/><circle cx="460" cy="0" r="14" fill="black"/><circle cx="540" cy="0" r="14" fill="black"/>
-        <circle cx="60" cy="200" r="14" fill="black"/><circle cx="140" cy="200" r="14" fill="black"/><circle cx="220" cy="200" r="14" fill="black"/><circle cx="300" cy="200" r="14" fill="black"/><circle cx="380" cy="200" r="14" fill="black"/><circle cx="460" cy="200" r="14" fill="black"/><circle cx="540" cy="200" r="14" fill="black"/>
-        <circle cx="0" cy="70" r="14" fill="black"/><circle cx="0" cy="130" r="14" fill="black"/><circle cx="600" cy="70" r="14" fill="black"/><circle cx="600" cy="130" r="14" fill="black"/>
-      </mask></defs>
       <rect width="600" height="200" fill="#333366" mask="url(#hmask)"/>
       <!-- Higher : le slogan VECTORISÉ (27/09 — aucune webfont) --><g fill="#ffffff" transform="translate(34.32, 144.42)"><path transform="translate(0.000,0) scale(0.144,-0.144)" d="M596 700H832L692 0H456ZM238 0H2L142 700H378ZM523 258H274L313 452H562Z"/><path transform="translate(115.776,0) scale(0.144,-0.144)" d="M-5 0 104 547H329L220 0ZM241 591Q182 591 147.5 622.0Q113 653 113 698Q113 751 152.5 786.0Q192 821 257 821Q316 821 350.5 792.0Q385 763 385 718Q385 662 345.5 626.5Q306 591 241 591Z"/><path transform="translate(162.576,0) scale(0.144,-0.144)" d="M255 -204Q172 -204 103.5 -187.0Q35 -170 -16 -136L80 18Q113 -7 161.5 -21.5Q210 -36 259 -36Q325 -36 355.0 -8.5Q385 19 395 68L409 138L450 294L485 464L501 547H716L629 110Q596 -57 499.5 -130.5Q403 -204 255 -204ZM260 30Q200 30 146.0 58.0Q92 86 58.0 139.0Q24 192 24 266Q24 327 46.5 379.5Q69 432 109.5 472.0Q150 512 203.5 534.5Q257 557 318 557Q379 557 424.5 533.0Q470 509 490.0 451.5Q510 394 493 294Q478 204 446.0 145.5Q414 87 367.0 58.5Q320 30 260 30ZM332 207Q361 207 383.0 219.5Q405 232 417.0 255.0Q429 278 429 309Q429 340 408.5 359.5Q388 379 350 379Q321 379 299.0 366.5Q277 354 264.5 331.0Q252 308 252 277Q252 246 273.5 226.5Q295 207 332 207Z"/><path transform="translate(264.960,0) scale(0.144,-0.144)" d="M470 557Q535 557 584.0 528.5Q633 500 654.5 443.5Q676 387 659 302L599 0H373L428 275Q437 320 424.0 343.5Q411 367 375 367Q337 367 311.0 341.5Q285 316 274 263L221 0H-5L143 742H369L300 396L260 436Q299 499 356.5 528.0Q414 557 470 557Z"/><path transform="translate(366.048,0) scale(0.144,-0.144)" d="M321 -10Q231 -10 163.5 21.0Q96 52 58.0 109.0Q20 166 20 243Q20 333 62.0 404.0Q104 475 180.5 516.0Q257 557 359 557Q447 557 509.0 526.0Q571 495 604.0 441.0Q637 387 637 316Q637 291 633.5 267.0Q630 243 625 221H200L221 330H521L427 301Q435 333 426.5 355.5Q418 378 398.0 390.5Q378 403 349 403Q308 403 284.0 381.0Q260 359 249.5 324.0Q239 289 239 251Q239 200 266.5 178.5Q294 157 347 157Q378 157 409.0 166.5Q440 176 466 195L560 58Q504 20 443.5 5.0Q383 -10 321 -10Z"/><path transform="translate(459.360,0) scale(0.144,-0.144)" d="M-5 0 104 547H317L286 392L265 436Q299 501 359.5 529.0Q420 557 498 557L458 357Q444 359 432.5 360.0Q421 361 409 361Q353 361 318.5 336.0Q284 311 272 253L221 0Z"/></g>
     </symbol>
@@ -330,16 +362,30 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
 </svg>
 
 <section class="hero" id="hero">
-<!-- 27/10 (Wah) : LE HIGHER EST L'OBJET CENTRAL — comme le papier sur COM, il a
-     une face et un DOS. Un tap dessus le retourne ET l'agrandit : le tableau de
-     bord. [Decode] le retourne SUR PLACE : on écrit le nom à son dos. -->
-<div class="slogan" id="slogan" role="button" tabindex="0" aria-label="My Higher">
-  <svg viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-slogan"></use></svg>
-  <div id="sl-back" aria-hidden="true">
+<!-- 30/10 (Wah) : LE HIGHER EST L'OBJET CENTRAL de higher.boutique — et il SE
+     TOURNE À LA MAIN, au doigt comme à la souris, exactement comme le papier au
+     centre de totehm.com. Posé sur son dos il ouvre MON TABLEAU ; [Decode] le
+     retourne sur place et l'on écrit le nom à son dos. Deux faces, une pièce :
+     `#hi` donne la perspective, `#slogan` est la carte qui tourne, et la
+     `.hi-light` de chaque face est un rectangle MASQUÉ PAR `#hmask` — la
+     lumière suit donc les trous, par construction. -->
+<!-- Pas de `role=button` : la pièce PORTE une saisie, et un bouton ne contient
+     pas de champ. Comme `#gate-asteroid` sur COM, c'est un objet qu'on prend —
+     le clavier l'ouvre par Entrée ou Espace (`aria-label` + `tabindex`). -->
+<div class="hi" id="hi" tabindex="0" aria-label="My Higher — turn it to open my board">
+<div class="slogan" id="slogan">
+  <div class="hi-face hi-front">
+    <svg viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-slogan"></use>
+      <rect class="hi-light" width="600" height="200" mask="url(#hmask)" fill="#000" opacity="0"></rect></svg>
+  </div>
+  <div class="hi-face" id="sl-back" aria-hidden="true">
+    <svg id="sl-dos" viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-dos"></use>
+      <rect class="hi-light" width="600" height="200" mask="url(#hmask)" fill="#000" opacity="0"></rect></svg>
     <span id="sl-name"></span>
     <input id="decode-q" class="hide" maxlength="40" autocomplete="off" autocapitalize="off"
            spellcheck="false" enterkeyhint="search" aria-label="Decode a Totehm Cloth" placeholder="0.name">
   </div>
+</div>
 </div>
 <div class="note dim" id="dc-note" role="status"></div>
 <div class="tagline">OWN/YOUR/TIME&nbsp;&nbsp;&nbsp;NOW:WON&nbsp;&nbsp;&nbsp;<span id="tag-loc">WRLD</span></div>
@@ -642,17 +688,170 @@ async function loadShots(name,seq){
    curseur juste derrière — et le tableau de bord arrive ensuite, d'un bloc. */
 const HB={mode:null,seq:0,pseudo:''};
 function hbPrefix(){ const d=new Date(),y=d.getFullYear(),e=d.getMonth()>=5?y:y-1; return Math.max(e-2026,0)+'.'; }
+
+/* ══ LE HIGHER SE TOURNE À LA MAIN · 30/10/2026 ═══════════════════════════
+   Wah : « on doit pouvoir tourner le [Higher] sur mobile et ordinateur
+   EXACTEMENT comme le totehm sur totehm.com dans la vue centrale, pour accéder
+   au dashboard propre à chaque plateforme… sur higher.boutique le focus c'est
+   bien l'élément [Higher] ». C'est donc le moteur de `PAPIER` (com/totehm.html),
+   COPIÉ avec ses mesures — produits indépendants, fichiers indépendants :
+     · 0,72 degré par pixel de doigt, l'inclinaison bornée à 14° ;
+     · l'élan = la vitesse des 100 DERNIÈRES ms (pas l'écart entre deux
+       événements : la cadence varie d'un appareil à l'autre, et un doigt qui
+       s'arrête avant de lâcher n'a plus d'élan) ;
+     · un QUART de tour change de face — jamais un tour entier. Une pichenette
+       (≥ 30°, ≥ 350°/s, qui s'éloigne de la face de départ) le retourne aussi ;
+       un glissé lent qui n'a pas fait un quart de tour revient sur sa face ;
+     · l'arrivée est une courbe d'Hermite qui PART à la vitesse du doigt, et la
+       feuille se SOULÈVE au milieu du retournement ;
+     · posé, la face visible n'a AUCUNE transformation.
+   Un glissé n'est pas un tap : le clic qui le suit n'ouvre rien. */
+const HI=(()=>{
+  const sc=$('hi'), card=$('slogan');
+  const api={face:()=>0, aller:(f,cb)=>{ if(cb)cb(); }, occupe:()=>false, bloquer(){}, surVerso:null, surFace:null};
+  if(!sc||!card) return api;
+  const RM=matchMedia('(prefers-reduced-motion:reduce)');
+  const lights=[...card.querySelectorAll('.hi-light')];      /* [face, dos] */
+  const R=Math.PI/180, DEG_PX=.72;
+  const LUM=(()=>{ const x=-.35,y=-.55,z=1,n=Math.hypot(x,y,z); return [x/n,y/n,z/n]; })();
+  const borne=(v,a,b)=>Math.max(a,Math.min(b,v||0));
+  const ressort=(x,v,g,k,z,dt)=>{ const a=k*(g-x)-2*z*Math.sqrt(k)*v; v+=a*dt; return [x+v*dt,v]; };
+  let mode='plat', raf=0, last=0, face=0, bloque=false;
+  let th=0, om=0, rx=0, vrx=0, ec=1, vec=0, appui=null, pose=null, aGlisse=false;
+  const kick=()=>{ if(!raf&&mode!=='plat') raf=requestAnimationFrame(frame); };
+  function frame(now){
+    raf=0;
+    const dt=Math.min(.05,Math.max(0,(now-(last||now))/1000)); last=now;
+    if(mode==='tenu'){ [rx,vrx]=ressort(rx,vrx,appui?appui.rx:0,90,.62,dt);
+                       [ec,vec]=ressort(ec,vec,1.05,170,.55,dt); }
+    else if(mode==='pose') poserPas(now);
+    if(mode==='plat') return;
+    peindre();
+    if(!document.hidden) raf=requestAnimationFrame(frame);
+  }
+  function peindre(){
+    card.style.transform='rotateX('+rx.toFixed(2)+'deg) rotateY('+th.toFixed(2)+'deg) scale('+ec.toFixed(4)+')';
+    /* La normale de la face : (0,0,1) passée par le demi-tour, puis par l'inclinaison. */
+    let x=Math.sin(th*R), y=0, z=Math.cos(th*R);
+    const co=Math.cos(rx*R), si=Math.sin(rx*R), t=y*co-z*si; z=y*si+z*co; y=t;
+    const d=(x*LUM[0]+y*LUM[1]+z*LUM[2])/LUM[2];
+    eclairer(lights[0],d); eclairer(lights[1],-d);
+  }
+  function eclairer(el,f){
+    if(!el) return;
+    if(f<=0){ el.setAttribute('opacity','0'); return; }   /* face détournée : cachée */
+    if(f<1){ el.setAttribute('fill','#000'); el.setAttribute('opacity',Math.min(.5,(1-f)*.6).toFixed(3)); }
+    else   { el.setAttribute('fill','#fff'); el.setAttribute('opacity',Math.min(.06,(f-1)*.3).toFixed(3)); }
+  }
+  function aPlat(f){
+    if(raf){ cancelAnimationFrame(raf); raf=0; }
+    const avant=face;
+    mode='plat'; face=f?1:0; th=0; om=0; rx=0; vrx=0; ec=1; vec=0; appui=null; pose=null;
+    card.style.transform='';
+    lights.forEach(l=>l.setAttribute('opacity','0'));
+    card.classList.add('is-flat'); card.classList.toggle('is-back',face===1);
+    sc.classList.remove('tenu');
+    if(avant!==face&&typeof api.surFace==='function') api.surFace(face);
+  }
+  /* Quitter le repos : il redevient un objet en 3D, la face visible gardée
+     telle quelle (le verso posé = un demi-tour, au pixel près). */
+  const quitterRepos=()=>{ card.classList.remove('is-flat','is-back'); th=face?180:0; rx=0; vrx=0; ec=1; vec=0; };
+  function atterrir(cible,cb){
+    cible=cible?1:0;
+    /* Un atterrissage déjà en route : on enchaîne, on ne perd jamais une suite. */
+    if(mode==='pose'){ const p=pose.cb; pose.cb=()=>{ if(p)p(); atterrir(cible,cb); }; return; }
+    const deRepos=mode==='plat';
+    if(deRepos){
+      if(face===cible){ aPlat(cible); if(cb)cb(); return; }
+      if(RM.matches){ aPlat(cible); if(cb)cb(); return; }
+      quitterRepos(); om=0;
+    }
+    /* La face d'arrivée la plus proche dans le sens du geste — l'élan compte,
+       mais il ne peut pas ajouter plus d'un tiers de demi-tour. */
+    const base=cible?180:0, p=th+borne(om*.12,-60,60);
+    const tT=base+360*Math.round((p-base)/360);
+    const span=Math.abs(tT-th);
+    const D=Math.min(.75,Math.max(.36,.3+span/180*.32));
+    pose={t0:performance.now(),D,th0:th,tT,v:borne(om,-span*2/D,span*2/D),rx0:rx,ec0:ec,cible,cb,leve:deRepos};
+    appui=null; mode='pose'; last=0; sc.classList.remove('tenu'); kick();
+  }
+  function poserPas(now){
+    const u=Math.min(1,(now-pose.t0)/1000/pose.D);
+    const h00=2*u*u*u-3*u*u+1, h10=u*u*u-2*u*u+u, h01=-2*u*u*u+3*u*u;
+    th=h00*pose.th0+h10*pose.D*pose.v+h01*pose.tT;
+    const l=pose.leve?Math.sin(Math.PI*u):0;      /* une feuille qu'on retourne se soulève */
+    rx=pose.rx0*(1-u)-9*l;
+    ec=pose.ec0+(1-pose.ec0)*u+.14*l;
+    if(u>=1){ const {cb,cible}=pose; aPlat(cible); if(cb)cb(); }
+  }
+  function elan(now){
+    const h=(appui&&appui.hist)||[]; let s=null;
+    for(const p of h){ if(now-p.t<=100){ s=p; break; } }
+    if(!s||now-s.t<8) return 0;
+    return (th-s.th)/((now-s.t)/1000);
+  }
+  sc.addEventListener('pointerdown',e=>{
+    if(bloque||appui||(e.pointerType==='mouse'&&e.button!==0)) return;
+    if(mode!=='plat') return;
+    appui={id:e.pointerId,x0:e.clientX,y0:e.clientY,th0:th,rx:0,on:false,hist:[]};
+    aGlisse=false;
+    try{ sc.setPointerCapture(e.pointerId); }catch(_){}
+  });
+  /* L'appui long d'Android appelle un menu : pas sur le papier. */
+  sc.addEventListener('contextmenu',e=>{ if(!bloque) e.preventDefault(); });
+  sc.addEventListener('pointermove',e=>{
+    if(!appui||e.pointerId!==appui.id) return;
+    if(!appui.on){
+      if(Math.hypot(e.clientX-appui.x0,e.clientY-appui.y0)<7) return;
+      appui.on=true; aGlisse=true;
+      if(mode==='plat') quitterRepos();
+      appui.th0=th; om=0; mode='tenu'; last=0; sc.classList.add('tenu'); kick();
+    }
+    /* Tout le geste compte, depuis le point touché (pas depuis le seuil). */
+    const now=performance.now();
+    th=appui.th0+(e.clientX-appui.x0)*DEG_PX;
+    appui.hist.push({t:now,th}); if(appui.hist.length>12) appui.hist.shift();
+    appui.rx=borne(-(e.clientY-appui.y0)*.12,-14,14);
+  });
+  const lacher=e=>{
+    if(!appui||e.pointerId!==appui.id) return;
+    if(!appui.on){ appui=null; return; }          /* un tap : le clic s'en charge */
+    om=elan(performance.now());
+    const d=th-appui.th0, a=Math.abs(d)%360;
+    const pichenette=a>=30&&a<90&&Math.abs(om)>=350&&Math.sign(om)===Math.sign(d);
+    const cible=(a>90&&a<270)||pichenette ? 1-face : face;
+    /* RETOURNÉ PAR LA MAIN, IL OUVRE LE TABLEAU : la décision se prend ICI,
+       dans le geste, comme `surVerso` sur totehm.com. */
+    if(e.type==='pointerup'&&cible===1&&face===0&&typeof api.surVerso==='function') api.surVerso();
+    atterrir(cible);
+  };
+  sc.addEventListener('pointerup',lacher);
+  sc.addEventListener('pointercancel',lacher);
+  sc.addEventListener('click',e=>{ if(aGlisse){ aGlisse=false; e.stopPropagation(); e.preventDefault(); } },true);
+  api.face=()=>face;
+  api.occupe=()=>mode!=='plat';
+  api.aller=(f,cb)=>atterrir(f,cb);
+  api.bloquer=b=>{ bloque=!!b; sc.classList.toggle('is-ecrit',!!b); };
+  aPlat(0);
+  return api;
+})();
 /* 27/10 (Wah) : UN objet, deux gestes. [Decode] le retourne SUR PLACE et l'on
    écrit au dos ; un tap sur le Higher le retourne ET l'agrandit — le tableau.
    C'est l'analogie du papier de totehm.com, avec le Higher au centre. */
-function hbDos(mode){
+function hbDos(mode,deLaMain){
   if(HB.mode===mode)return;
-  HB.mode=mode; document.body.classList.add('hb-on');
+  HB.mode=mode;
   const q=$('decode-q'), n=$('sl-name');
   q.classList.toggle('hide',mode!=='q'); n.classList.toggle('hide',mode==='q');
+  /* En mode écriture, le doigt écrit : il ne tourne plus la pièce. */
+  HI.bloquer(mode==='q');
+  /* Le dos arrive par le MOTEUR, pas par une classe : c'est le même
+     retournement, qu'il vienne du bouton ou de la main. Venu de la MAIN, le
+     geste le pose lui-même : on ne lui commande pas un second atterrissage. */
+  if(!deLaMain) HI.aller(1);
   if(mode==='q'){
     q.value=hbPrefix(); $('dc-note').className='note dim'; $('dc-note').textContent='';
-    setTimeout(()=>{ try{ q.focus({preventScroll:true}); q.setSelectionRange(q.value.length,q.value.length); }catch(_){} },340);
+    setTimeout(()=>{ try{ q.focus({preventScroll:true}); q.setSelectionRange(q.value.length,q.value.length); }catch(_){} },420);
     return;
   }
   const r=$('hb');
@@ -667,18 +866,24 @@ function hbDos(mode){
 function hbFermer(){
   if(!HB.mode)return;
   const plein=HB.mode==='board'; HB.mode=null;
-  const r=$('hb'); r.classList.remove('is-open','is-pret'); document.body.classList.remove('hb-on');
+  const r=$('hb'); r.classList.remove('is-open','is-pret');
   $('hb-note').textContent=''; $('dc-note').textContent='';
   try{ $('decode-q').blur(); }catch(_){}
+  HI.bloquer(false); HI.aller(0);
   if(plein)setTimeout(()=>{ if(!HB.mode)r.classList.remove('is-on'); },660);
 }
+/* LA MAIN : posé sur son dos, le Higher ouvre MON TABLEAU — et remis sur sa
+   face, il referme tout. Le geste décide, le reste suit. */
+HI.surVerso=()=>{ if(!HB.mode) hbDos('board',true); };
+HI.surFace=f=>{ if(f===0&&HB.mode) hbFermer(); };
 $('decode-btn').onclick=()=>{ HB.mode==='q'?hbFermer():hbDos('q'); };
-$('slogan').onclick=()=>{ HB.mode?hbFermer():hbDos('board'); };
+/* Un tap vaut un retournement (COM : un clic sur le papier le retourne aussi). */
+$('hi').onclick=()=>{ if(HI.occupe())return; HB.mode?hbFermer():hbDos('board'); };
 /* ⚠️ La saisie VIT DANS le Higher : sa touche Entrée remonterait jusqu'ici et
    refermerait l'objet au moment même où l'on décode (mesuré). Le clavier du
    Higher ne répond donc qu'à LUI. */
-$('slogan').addEventListener('keydown',e=>{ if(e.target!==$('slogan'))return;
-  if(e.key==='Enter'||e.key===' '){ e.preventDefault(); $('slogan').click(); } });
+$('hi').addEventListener('keydown',e=>{ if(e.target!==$('hi'))return;
+  if(e.key==='Enter'||e.key===' '){ e.preventDefault(); $('hi').click(); } });
 $('hb-x').onclick=hbFermer;
 $('hb').addEventListener('click',e=>{
   const t=e.target.closest('#hb-tabs button[data-hb-tab]');
@@ -808,13 +1013,14 @@ document.querySelectorAll('[data-club]').forEach(a => a.addEventListener('click'
 }));
 
 /* Diagnostic — des booléens, jamais une valeur de membre. */
-const BUILD='2026-10-27-dos';
+const BUILD='2026-10-30-main';
 window.__totehm_boutique=()=>({ build:BUILD, page:'home', luxury_link:!!document.querySelector('a[href="/luxury"]'),
   club_links:document.querySelectorAll('[data-club]').length, logos:document.querySelectorAll('.brand-logo,img[src*="champion"]').length,
   collab:/Champion 2026/.test(document.getElementById('collab')?.textContent||''), branding_space:document.getElementById('brand-btn')?.dataset.space==='/',
   decode_first:(()=>{const m=document.getElementById('menu-main');return !!m&&m.firstElementChild?.contains(document.getElementById('decode-btn'));})(),
   member_window:!!document.getElementById('member-window'), connect:document.getElementById('conn-bar')?.dataset.in||'0',
-  higher:{ouvert:HB.on, onglet:document.getElementById('hb').dataset.tab||null, pret:document.getElementById('hb').classList.contains('is-pret')},
+  higher:{ouvert:!!HB.mode, mode:HB.mode, face:HI.face(), tourne:HI.occupe(),
+          onglet:document.getElementById('hb').dataset.tab||null, pret:document.getElementById('hb').classList.contains('is-pret')},
   decode:DECODED?{found:!!DECODED.found,level:DECODED.level||null,art:!!DECODED.art,stage:DECODED.stage||null,shots:DECODED.shots||0}:null });
 /* 08/10 — `/?decode=0.nom` ouvre directement la page du Cloth (lien de la fin de commande, partage). */
 { const q=(new URLSearchParams(location.search).get('decode')||'').trim();
