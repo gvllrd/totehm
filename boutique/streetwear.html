@@ -48,7 +48,6 @@ html{font-family:'Space Mono',monospace}button,input,select,textarea{font-family
   /* Les papiers du logo (mêmes valeurs que com/totehm.html) */
   --logo-navy:#333366;--logo-wisdom:#5b2652;--logo-visions:#2b3a73;
   /* La tuile navy perforée des contrôles (copiée de boutique/index.html) */
-  --tile-btn:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
   --mid:#b0b0b0;--lo:#909090;--dim:#5a5a5a;--bg:#000;--c1:#1f1f24;--c2:#2a2a30;--c3:#34343a;--ok:#639922;
   --q:'Quantico',sans-serif;--mono:'Space Mono',monospace;--ease:cubic-bezier(.22,.61,.36,1);
   --st:env(safe-area-inset-top,0px);--sb:env(safe-area-inset-bottom,0px);--head:calc(var(--st) + 84px);
@@ -97,14 +96,20 @@ a{color:inherit;text-decoration:none}
    navigateur REFUSE de s'arrêter au milieu d'une étape plus haute qu'un écran
    et son bas devient illisible ; c'était le « ça bug de ouf » de Wah). Pas de
    `scroll-behavior:smooth` ici non plus : il se battait avec l'aimant à chaque
-   geste — c'est `aller()` qui choisit, geste par geste. */
+   geste — c'est `aller()` qui choisit, geste par geste.
+   ⚠️ UNE LANCÉE = UNE ÉTAPE (30/10, Wah : « je veux un scrolling plus agréable
+   et direct ») : `scroll-snap-stop:always` interdit au doigt de SAUTER une
+   étape, même lancé fort. C'est ce qui fait le pas à pas. */
 #stages{position:fixed;inset:0;overflow-y:auto;overflow-x:hidden;
   scroll-snap-type:y proximity;overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch}
-/* ⚠️ `svh`, PAS `dvh` (27/10) : `dvh` suit la barre d'adresse, qui se replie à
-   chaque geste — un rouleau aimanté dont toutes les étapes changent de hauteur
-   PENDANT le défilement tremble et saute. `svh` ne bouge jamais. */
-.stage{position:relative;min-height:100svh;display:none;flex-direction:column;align-items:center;justify-content:safe center;gap:12px;
-  padding:calc(var(--st) + 54px) 16px calc(28px + var(--sb));scroll-snap-align:start;
+/* ⚠️ `100%`, ni `dvh` ni `svh` (30/10, mesuré) : une étape vaut EXACTEMENT la
+   fenêtre du rouleau, parce que `#stages` est `position:fixed;inset:0` et que
+   `100%` s'y résout. `dvh` suit la barre d'adresse (toutes les étapes changent
+   de hauteur pendant le geste : ça tremble) et `svh` est TROP COURT quand la
+   barre est repliée — l'étape d'après dépassait en bas et l'aimant tombait à
+   côté. C'était le « manque d'agrément » du 27/10. */
+.stage{position:relative;min-height:100%;display:none;flex-direction:column;align-items:center;justify-content:safe center;gap:12px;
+  padding:calc(var(--st) + 54px) 16px calc(28px + var(--sb));scroll-snap-align:start;scroll-snap-stop:always;
   opacity:0;transition:opacity .4s ease}
 .stage>*{width:100%;max-width:430px;flex:0 0 auto}
 .stage.is-open{display:flex}
@@ -307,12 +312,19 @@ button.mi.is-on{filter:none}
 .pals{display:flex;gap:4px;justify-content:center}.pals i{width:12px;height:12px;display:block}
 /* LE NOM — dans la BOÎTE NAVY PERFORÉE, comme le Decode de l'accueil, et c'est
    un IDENTIFIANT : minuscules, sans espace, petit. Le « 0. » est au serveur. */
-/* 27/10 (Wah) : « le nom du Totehm qui commence par 0. doit s'inscrire dans le
-   format LE DOS DU HIGHER ». Mêmes mesures que `#sl-back` de l'accueil : la
-   boîte navy perforée de 200 px, bord 5, Quantico Coral. */
-#nm-field{display:flex;align-items:center;justify-content:center;gap:1px;background:var(--navy);
-  border:5px solid transparent;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round;
-  border-radius:0;padding:0 10px;width:min(200px,70vw);height:62px;cursor:text}
+/* 30/10 (Wah) : « je veux EXACTEMENT le même format de la face verso du
+   [Higher] quant au choix du nom du Totehm ». Donc ce n'est plus une bordure
+   imitée : c'est LA PIÈCE, le `#higher-dos` de l'accueil copié dans le sprite,
+   avec SES perforations (sept en haut, sept en bas, deux de chaque côté) — le
+   même rapport 600 × 200 que le Higher, la même largeur, Quantico Coral
+   dessus. Le format vient du dos du Higher, il ne le ressemble pas. */
+#nm-field{position:relative;display:flex;align-items:center;justify-content:center;gap:1px;
+  padding:0 10px;width:min(200px,70vw);aspect-ratio:3/1;cursor:text}
+#nm-dos{position:absolute;inset:0;width:100%;height:100%;display:block}
+/* Le « 0. » et le nom sont UNE chaîne : le nom commence juste après le point,
+   sinon le préfixe part à gauche et le nom flotte au milieu. */
+#nm-prefix,#nm-input{position:relative;z-index:2}
+#nm-input{text-align:left}
 #nm-prefix{font-family:var(--q);font-weight:700;font-size:clamp(13px,4.6vw,17px);color:var(--coral);opacity:.6;user-select:none;flex:0 0 auto}
 #nm-input{font-family:var(--q);font-weight:700;font-size:clamp(13px,4.6vw,17px);letter-spacing:.02em;color:var(--coral);
   background:none;border:none;outline:none;text-align:center;
@@ -480,6 +492,20 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
      le rail, le T et le mot. Le quatrième calque — le fond perforé — EST
      le papier lui-même (son masque). Un bloc commun se COPIE, jamais ne s'importe. -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<!-- ⚠️ LE DOS DU HIGHER, COPIÉ DE L'ACCUEIL · 30/10/2026 (Wah : « je veux
+     EXACTEMENT le même format de la face verso du [Higher] quant au choix du
+     nom du Totehm »). Produits indépendants, fichiers indépendants : le masque
+     et le dos sont une COPIE de `boutique/index.html`, jamais un import. Sept
+     trous en haut, sept en bas, deux à gauche, deux à droite, rayon 14, sur
+     600 × 200 — exactement la pièce que l'on retourne sur l'accueil. -->
+<mask id="hmask"><rect width="600" height="200" fill="white"/>
+  <circle cx="60" cy="0" r="14" fill="black"/><circle cx="140" cy="0" r="14" fill="black"/><circle cx="220" cy="0" r="14" fill="black"/><circle cx="300" cy="0" r="14" fill="black"/><circle cx="380" cy="0" r="14" fill="black"/><circle cx="460" cy="0" r="14" fill="black"/><circle cx="540" cy="0" r="14" fill="black"/>
+  <circle cx="60" cy="200" r="14" fill="black"/><circle cx="140" cy="200" r="14" fill="black"/><circle cx="220" cy="200" r="14" fill="black"/><circle cx="300" cy="200" r="14" fill="black"/><circle cx="380" cy="200" r="14" fill="black"/><circle cx="460" cy="200" r="14" fill="black"/><circle cx="540" cy="200" r="14" fill="black"/>
+  <circle cx="0" cy="70" r="14" fill="black"/><circle cx="0" cy="130" r="14" fill="black"/><circle cx="600" cy="70" r="14" fill="black"/><circle cx="600" cy="130" r="14" fill="black"/>
+</mask>
+<symbol id="higher-dos" viewBox="0 0 600 200">
+  <rect width="600" height="200" fill="#333366" mask="url(#hmask)"/>
+</symbol>
 <symbol id="lg-rail" viewBox="20.689 0.225 17.203 223.630" preserveAspectRatio="none"><defs><clipPath id="tgr_3a710ebbbe"><path d="M 20.652344 0.261719 L 37.839844 0.261719 L 37.839844 223.816406 L 20.652344 223.816406 Z M 20.652344 0.261719 " clip-rule="nonzero"/></clipPath><clipPath id="tgr_1b01f8474a"><path d="M 0.652344 0.261719 L 17.839844 0.261719 L 17.839844 223.816406 L 0.652344 223.816406 Z M 0.652344 0.261719 " clip-rule="nonzero"/></clipPath><clipPath id="tgr_95349ecf51"><rect x="0" width="18" y="0" height="224"/></clipPath></defs><g clip-path="url(#tgr_3a710ebbbe)"><g transform="matrix(1, 0, 0, 1, 20, -0.000000000000020428)"><g clip-path="url(#tgr_95349ecf51)"><g clip-path="url(#tgr_1b01f8474a)"><path fill="#626286" d="M 0.652344 0.261719 L 17.839844 0.261719 L 17.839844 223.808594 L 0.652344 223.808594 Z M 0.652344 0.261719 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g></symbol>
 <symbol id="lg-t" viewBox="79.832 47.921 66.789 66.932" preserveAspectRatio="none"><defs><clipPath id="tgt_ad60c268aa"><path d="M 0.871094 1.027344 L 67.59375 1.027344 L 67.59375 10.664062 L 0.871094 10.664062 Z M 0.871094 1.027344 " clip-rule="nonzero"/></clipPath><clipPath id="tgt_f37d153e97"><path d="M 0.871094 0.0273438 L 67.59375 0.0273438 L 67.59375 9.664062 L 0.871094 9.664062 Z M 0.871094 0.0273438 " clip-rule="nonzero"/></clipPath><clipPath id="tgt_0eae0d8cca"><rect x="0" width="68" y="0" height="10"/></clipPath><clipPath id="tgt_d380122ed3"><path d="M 29.410156 1.027344 L 39.050781 1.027344 L 39.050781 67.75 L 29.410156 67.75 Z M 29.410156 1.027344 " clip-rule="nonzero"/></clipPath><clipPath id="tgt_75ca9fbfbb"><path d="M 0.410156 0.0273438 L 10.050781 0.0273438 L 10.050781 66.75 L 0.410156 66.75 Z M 0.410156 0.0273438 " clip-rule="nonzero"/></clipPath><clipPath id="tgt_92fddf9f0e"><rect x="0" width="11" y="0" height="67"/></clipPath><clipPath id="tgt_1e85f52e0e"><path d="M 21.183594 63.386719 L 47.28125 63.386719 L 47.28125 67.75 L 21.183594 67.75 Z M 21.183594 63.386719 " clip-rule="nonzero"/></clipPath><clipPath id="tgt_6c7bfd0f9f"><path d="M 0.183594 0.386719 L 26.28125 0.386719 L 26.28125 4.75 L 0.183594 4.75 Z M 0.183594 0.386719 " clip-rule="nonzero"/></clipPath><clipPath id="tgt_7d4c700d36"><rect x="0" width="27" y="0" height="5"/></clipPath><clipPath id="tgt_ffb4264ddd"><rect x="0" width="68" y="0" height="68"/></clipPath></defs><g transform="matrix(1, 0, 0, 1, 79, 47)"><g clip-path="url(#tgt_ffb4264ddd)"><g clip-path="url(#tgt_ad60c268aa)"><g transform="matrix(1, 0, 0, 1, 0.000000000000014211, 1)"><g clip-path="url(#tgt_0eae0d8cca)"><g clip-path="url(#tgt_f37d153e97)"><path fill="#ffffff" d="M 0.871094 0.0273438 L 67.582031 0.0273438 L 67.582031 9.664062 L 0.871094 9.664062 Z M 0.871094 0.0273438 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g><g clip-path="url(#tgt_d380122ed3)"><g transform="matrix(1, 0, 0, 1, 29, 1)"><g clip-path="url(#tgt_92fddf9f0e)"><g clip-path="url(#tgt_75ca9fbfbb)"><path fill="#ffffff" d="M 10.050781 0.0273438 L 10.050781 66.738281 L 0.410156 66.738281 L 0.410156 0.0273438 Z M 10.050781 0.0273438 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g><g clip-path="url(#tgt_1e85f52e0e)"><g transform="matrix(1, 0, 0, 1, 21, 63)"><g clip-path="url(#tgt_7d4c700d36)"><g clip-path="url(#tgt_6c7bfd0f9f)"><path fill="#ffffff" d="M 26.28125 4.75 L 0.183594 4.75 L 0.183594 0.386719 L 26.28125 0.386719 Z M 26.28125 4.75 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g></g></g></symbol>
 <symbol id="lg-wm" viewBox="74.997 121.602 77.584 46.683" preserveAspectRatio="none"><defs><g/><clipPath id="tgw_98fd27636e"><rect x="0" width="84" y="0" height="39"/></clipPath></defs><g fill="#ffffff" fill-opacity="1"><g transform="translate(87.377054, 137.358137)"><g><path d="M 5.546875 -14.09375 L 0.09375 -14.09375 L 0.09375 -15.515625 L 12.640625 -15.515625 L 12.640625 -14.09375 L 7.1875 -14.09375 L 7.1875 0 L 5.546875 0 Z M 5.546875 -14.09375 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(99.483952, 137.358137)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(104.6725, 137.358137)"><g><path d="M 9.3125 0.140625 C 7.769531 0.140625 6.375 -0.203125 5.125 -0.890625 C 3.882812 -1.578125 2.910156 -2.519531 2.203125 -3.71875 C 1.503906 -4.914062 1.15625 -6.265625 1.15625 -7.765625 C 1.15625 -9.253906 1.503906 -10.597656 2.203125 -11.796875 C 2.910156 -12.992188 3.882812 -13.9375 5.125 -14.625 C 6.375 -15.3125 7.769531 -15.65625 9.3125 -15.65625 C 10.851562 -15.65625 12.238281 -15.3125 13.46875 -14.625 C 14.707031 -13.945312 15.679688 -13.003906 16.390625 -11.796875 C 17.097656 -10.597656 17.453125 -9.253906 17.453125 -7.765625 C 17.453125 -6.265625 17.097656 -4.910156 16.390625 -3.703125 C 15.679688 -2.503906 14.707031 -1.5625 13.46875 -0.875 C 12.238281 -0.195312 10.851562 0.140625 9.3125 0.140625 Z M 9.3125 -1.328125 C 10.539062 -1.328125 11.648438 -1.601562 12.640625 -2.15625 C 13.628906 -2.71875 14.40625 -3.488281 14.96875 -4.46875 C 15.53125 -5.445312 15.8125 -6.546875 15.8125 -7.765625 C 15.8125 -8.972656 15.53125 -10.066406 14.96875 -11.046875 C 14.40625 -12.035156 13.628906 -12.804688 12.640625 -13.359375 C 11.648438 -13.910156 10.539062 -14.1875 9.3125 -14.1875 C 8.082031 -14.1875 6.96875 -13.910156 5.96875 -13.359375 C 4.976562 -12.804688 4.195312 -12.035156 3.625 -11.046875 C 3.050781 -10.066406 2.765625 -8.972656 2.765625 -7.765625 C 2.765625 -6.546875 3.050781 -5.445312 3.625 -4.46875 C 4.195312 -3.488281 4.976562 -2.71875 5.96875 -2.15625 C 6.96875 -1.601562 8.082031 -1.328125 9.3125 -1.328125 Z M 9.3125 -1.328125 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(122.655559, 137.358137)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(127.844108, 137.358137)"><g><path d="M 5.546875 -14.09375 L 0.09375 -14.09375 L 0.09375 -15.515625 L 12.640625 -15.515625 L 12.640625 -14.09375 L 7.1875 -14.09375 L 7.1875 0 L 5.546875 0 Z M 5.546875 -14.09375 "/></g></g></g><g transform="matrix(1, 0, 0, 1, 71, 138)"><g clip-path="url(#tgw_98fd27636e)"><g fill="#ffffff" fill-opacity="1"><g transform="translate(0.838799, 30.275545)"><g><path d="M 18.59375 -2.640625 L 18.59375 0 L 3.1875 0 L 3.1875 -21.234375 L 18.171875 -21.234375 L 18.171875 -18.59375 L 6.21875 -18.59375 L 6.21875 -12.078125 L 16.875 -12.078125 L 16.875 -9.5 L 6.21875 -9.5 L 6.21875 -2.640625 Z M 18.59375 -2.640625 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(19.582399, 30.275545)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(26.163451, 30.275545)"><g><path d="M 21.453125 -21.234375 L 21.453125 0 L 18.421875 0 L 18.421875 -9.46875 L 6.21875 -9.46875 L 6.21875 0 L 3.1875 0 L 3.1875 -21.234375 L 6.21875 -21.234375 L 6.21875 -12.109375 L 18.421875 -12.109375 L 18.421875 -21.234375 Z M 21.453125 -21.234375 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(49.213997, 30.275545)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(55.79505, 30.275545)"><g><path d="M 22.875 0 L 22.84375 -15.46875 L 15.171875 -2.578125 L 13.78125 -2.578125 L 6.09375 -15.390625 L 6.09375 0 L 3.1875 0 L 3.1875 -21.234375 L 5.671875 -21.234375 L 14.53125 -6.3125 L 23.28125 -21.234375 L 25.765625 -21.234375 L 25.796875 0 Z M 22.875 0 "/></g></g></g></g></g></symbol>
@@ -555,7 +581,8 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
   <!-- 3 · NAME -->
   <section class="stage" id="s-name" data-s="name" aria-label="Name the cloth">
     <div class="inner">
-      <label id="nm-field"><span id="nm-prefix">0.</span><input id="nm-input" maxlength="40" placeholder="name" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="text" enterkeyhint="next" aria-label="The name of the cloth"></label>
+      <!-- LE DOS DU HIGHER : la pièce perforée, et le nom écrit dessus (30/10) -->
+      <label id="nm-field"><svg id="nm-dos" viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-dos"></use></svg><span id="nm-prefix">0.</span><input id="nm-input" maxlength="40" placeholder="name" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="text" enterkeyhint="next" aria-label="The name of the cloth"></label>
       <div class="note dim" id="nm-note"></div>
       <div class="sc-hint" aria-hidden="true"><svg viewBox="0 0 16 10"><path d="M2 2 L8 8 L14 2"/></svg></div>
     </div>
@@ -737,7 +764,7 @@ sb.auth.onAuthStateChange(ev => {
 }
 
 /* ══ L'ÉTAT — une pièce en cours, cinq scènes ═════════════════════════ */
-const BUILD='2026-10-27-fluide';
+const BUILD='2026-10-30-dos';
 const STAGES=['cloth','element','name','style','order'];
 const SIZES=['XS','S','M','L','XL','2XL','3XL','4XL','5XL'];
 const FLOW_KEY='totehm_cloth_flow';

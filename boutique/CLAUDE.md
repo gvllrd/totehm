@@ -4,16 +4,16 @@
 
 Des vêtements totehmisés : **n'importe quelle box** d'un membre, un style déterminé, produits par Printful.
 **UN SEUL ROULEAU** (26/10, Wah : « à la place des [next], un scrolling fullscreen par fullscreen, ultra-fluide ») :
-les étapes MÉRITÉES (`canShow` → `ouvrir()`) vivent l'une sous l'autre dans `#stages`, chacune au moins un plein écran
-(`100svh`, jamais `dvh` : la barre d'adresse se replie et tout le rouleau tremblerait), aimantée en PROXIMITÉ — jamais
-`mandatory`, qui interdisait de lire le bas d'une étape plus haute qu'un écran (huit box = 917 px sur 844). Un chevron
+les étapes MÉRITÉES (`canShow` → `ouvrir()`) vivent l'une sous l'autre dans `#stages`, chacune valant EXACTEMENT la
+fenêtre (`min-height:100%` du rouleau, ni `dvh` qui tremble avec la barre d'adresse, ni `svh` trop court quand elle se
+replie), aimantée en PROXIMITÉ — jamais `mandatory`, qui interdisait de lire le bas d'une étape plus haute qu'un écran
+(huit box = 917 px sur 844) — et `scroll-snap-stop:always`, pour qu'une lancée ne SAUTE jamais une étape. Un chevron
 (`.sc-hint`) collé au bas de l'écran invite à descendre, seulement s'il y a VRAIMENT quelque chose dessous. L'étape
 courante est celle qu'on a SOUS LES YEUX — dite par le navigateur (`IntersectionObserver`, 40 %), pas mesurée à chaque
 image. ⚠️ **Le rouleau ne touche pas à l'historique** : UNE entrée remplacée (un rechargement retombe juste) ; le doigt
 remonte, le « back » du navigateur QUITTE la page. ⚠️ Aucun focus automatique : le clavier rétrécit la fenêtre et
 déplace les étapes sous le doigt. Deux boutons, aucun ne dit « suivant » : `#cl-go` (il connecte et vérifie le
-passeport — un geste, sinon le navigateur refuse) et `#od-go` (il paie). CE QUI RESTE se lit sous le nom : un compte
-BLANC, une jauge d'un pixel. **Rien n'est simulé** : ORDER montre la PHOTO.
+passeport) et `#od-go` (il paie). CE QUI RESTE se lit sous le nom. **Rien n'est simulé** : ORDER montre la PHOTO.
 
 **Le TOTEHM est la commande** : son logo — **les quatre calques de totehm.com copiés tels quels** (`#gl-bg` perforé,
 `#gl-rail`, `#gl-t`, `#gl-wm`) — se décompose À SA PLACE : le FOND prend le dessus, le rail, le T et le mot FONDENT,
@@ -26,15 +26,16 @@ son monde (`#shots`, `my_box_shots`) — SEULEMENT les images, trois par ligne :
 TOTEHM (grille de gauche de COM), un spot en rectangle à coins arrondis (vue de droite). Un tap LIE : la page envoie
 `pick:{matter,shots}`, des RÉFÉRENCES, et le serveur relit `_box_matter` et `_box_shots` puis ne garde que ça — jamais
 un texte ni un chemin reçu. Sept intentions = une COUTURE sous les papiers (UN seul `#tz-seam`). Scène NOIRE, les
-papiers portent la couleur. **Le nom est un IDENTIFIANT** (minuscules, sans espace) dans LE DOS DU HIGHER : bloc navy
-perforé, Quantico Coral, 200 × 62 ; le serveur pose le `0.`. ⚠️ `tools/ecosystem_ui*` écrase la taille d'un bouton
-portant du texte — `#totehmize`, `#tz-papers`, `#matter`, `#shots`, `#hb` en sont exemptés (dans les copies ET dans
+papiers portent la couleur. **Le nom est un IDENTIFIANT** (minuscules, sans espace) écrit SUR LE DOS DU HIGHER — la
+pièce elle-même (`#higher-dos` + `#hmask`, copiés de l'accueil), pas une bordure qui l'imite ; le serveur pose le `0.`.
+⚠️ `tools/ecosystem_ui*` écrase la taille d'un bouton portant du texte — `#totehmize`, `#tz-papers`, `#matter`,
+`#shots`, `#hb` en sont exemptés (dans les copies ET dans
 `tools/`) ; plié, un papier n'a pas de prise (`pointer-events:none`), sinon celui de droite mange le tap du logo ;
 `.pap{min-width:0}`, sinon un titre décentre.
 
 | fichier | rôle |
 |---|---|
-| `index.html` | l'accueil : **le HIGHER est l'élément central**, à deux faces (`preserve-3d`, `rotateY(180deg)`, blocs du verso de COM copiés) — exactement les deux animations du TOTEHM de totehm.com. **[Decode a Totehm Cloth]**, au format de ses homologues, le retourne SUR PLACE : la recherche (`#decode-q`) est à son dos, le « 0. » posé, le curseur derrière ; le résultat paraît sous lui (`#dc-note`, `.dc-shots`). **Un tap sur le HIGHER lui-même** le retourne ET l'agrandit au plein écran (`#hb`) : le TABLEAU DE BORD, ses trois onglets (MY CLOTHS · MY LUXURY · MY ACCOUNT, `my_boutique_board`) et, en tête, le PSEUDO du membre — jamais une recherche. ⚠️ `nav{flex-direction:column}` règne : `#hb-tabs` dit `row` à voix haute ; `.fs-perf` (260) passe AU-DESSUS de `#hb` (240) ; un Enter dans `#decode-q` doit s'arrêter là (`stopPropagation`), sinon il referme le Higher. Puis Streetwear, Luxury. [Experience our dope branding] part sur totehm.space. Aucune illustration |
+| `index.html` | l'accueil : **le HIGHER est l'élément central** — UNE pièce, deux faces, QU'ON TOURNE À LA MAIN (doigt et souris) : le moteur `HI` est celui de `PAPIER` (com/totehm.html) COPIÉ avec ses mesures (0,72°/px, élan sur 100 ms, un QUART de tour change de face, jamais un tour entier ; posé, la face visible n'a AUCUNE transformation — `is-flat`/`is-back`). ⚠️ **UN SEUL `#hmask`** dans le document, hors des symboles : `#higher-slogan` et `#higher-dos` le référencent tous les deux, donc le dos a EXACTEMENT les perforations de la face (18 trous, 600 × 200) ; la `.hi-light` de chaque face est un rectangle masqué par lui, la lumière suit donc les trous. Posé sur son dos (à la main ou d'un tap) il ouvre LE TABLEAU en plein écran (`#hb`, blocs de `#srch` de COM) : trois onglets (MY CLOTHS · MY LUXURY · MY ACCOUNT, `my_boutique_board`) et, en tête, le PSEUDO — jamais une recherche. **[Decode a Totehm Cloth]**, au format de ses homologues, le retourne SUR PLACE et la recherche (`#decode-q`) s'écrit à son dos, le « 0. » posé ; le résultat paraît sous lui (`#dc-note`, `.dc-shots`). ⚠️ `nav{flex-direction:column}` règne : `#hb-tabs` dit `row` à voix haute ; `.fs-perf` (260) passe AU-DESSUS de `#hb` (240) ; un Enter dans `#decode-q` s'arrête là (`stopPropagation`) ; en écriture la pièce ne tourne plus (`HI.bloquer`, `.is-ecrit`). Puis Streetwear, Luxury. [Experience our dope branding] part sur totehm.space. Aucune illustration |
 | `streetwear.html` | le vêtement, la box (ou celle déjà choisie depuis COM, `?wear=<kind>:<ref>`), le nom, le style, la taille |
 | seau `totehm-cloth-support` | `<dossier>/` = les vues GÉNÉRALES · `<dossier>/print/` = la ZONE D'IMPRESSION (montrée à la commande). L'ordre vient des NOMS. Sans dossier : `image_url` (Printful, n8n F) |
 | `luxury.html` | le Luxe, en plein écran comme streetwear : une PHOTO de la pièce (seau `luxury-pieces`, dossier du membre), le MÊME TOTEHM, un nom, puis **500 € pour déposer le projet** (`luxury_offer`, relu par `luxury-quote` ; remboursé si la pièce ne peut pas être travaillée) · HOW IT WORKS dit le métier : étude, préparation, peinture qui plie, tenue. Plus de manette : le parcours n'a plus de côtés. ⚠️ **NOIR ET GRIS** (27/10) : ce qui vient du TOTEHM garde son dessin EXACT (papiers perforés, box, mini-boxes, media perforé) ; tout ce que la boutique invente est du gris de figher.club (`--s2`, `--r`, le `.field` de `/create`) — la photo, le nom, une carte de devis (la couleur du Totehm n'y est qu'un rail de 3 px). Jamais de navy ailleurs |

@@ -68,7 +68,7 @@ await pg.waitForTimeout(80);
 
 // ── 1 · CLOTH (téléphone)
 let d = await D();
-ok(d.build === '2026-10-27-fluide' && d.stage === 'cloth' && !d.papers && !d.desktop, 'phone: CLOTH first, the TOTEHM still folded');
+ok(d.build === '2026-10-30-dos' && d.stage === 'cloth' && !d.papers && !d.desktop, 'phone: CLOTH first, the TOTEHM still folded');
 const rest = await pg.evaluate(() => { const b = document.querySelector('#cl-facts .left b'), s = getComputedStyle(b);
   const g = document.querySelector('#cl-facts .bar i'), bar = document.querySelector('#cl-facts .bar');
   return { n: b.textContent.trim(), px: Math.round(parseFloat(s.fontSize)), col: s.color, fam: s.fontFamily,
@@ -219,8 +219,21 @@ await pg.click('#el-list .bx');
 await descendre(pg, 'name');
 ok(!(await pg.$('#nm-el')) && /Slow is smooth/.test(await pg.textContent('#el-list')) && (await pg.$$eval('#el-list .bx', l => l.filter(b => b.offsetParent).length)) === 1,
   'the chosen element stays alone on screen — never written twice');
-ok((await pg.textContent('#nm-prefix')) === '0.' && (await pg.$eval('#nm-field', e => getComputedStyle(e).borderImageSource)).includes('svg')
-   && (await pg.$eval('#nm-field', e => getComputedStyle(e).backgroundColor)) === 'rgb(51, 51, 102)', 'the name is typed in the perforated navy BOX');
+// 30/10 (Wah) : « EXACTEMENT le même format de la face verso du [Higher] ».
+// Ce n'est plus une bordure imitée : c'est la pièce, son masque, ses 18 trous.
+const nmf = await pg.evaluate(() => { const f = document.querySelector('#nm-field'), d = document.querySelector('#nm-dos');
+  const m = [...document.querySelectorAll('mask')].filter(x => x.id === 'hmask');
+  const r = d.getBoundingClientRect();
+  return { prefix: document.querySelector('#nm-prefix').textContent,
+    piece: d.getAttribute('viewBox') + ' ' + (d.querySelector('use') || {}).getAttribute?.('href'),
+    masque: m.length === 1 && m[0].querySelectorAll('circle').length === 18,
+    ref: (document.querySelector('symbol#higher-dos rect') || {}).getAttribute?.('mask'),
+    bord: getComputedStyle(f).borderImageSource, ratio: +(r.width / r.height).toFixed(2),
+    couvre: Math.abs(r.width - f.getBoundingClientRect().width) < 1 };
+});
+ok(nmf.prefix === '0.' && nmf.piece === '0 0 600 200 #higher-dos' && nmf.masque && nmf.ref === 'url(#hmask)'
+   && nmf.bord === 'none' && nmf.ratio === 3 && nmf.couvre,
+  '30/10 · le nom s\'écrit sur LE DOS DU HIGHER : la même pièce perforée, ses 18 trous, 600 × 200 ' + JSON.stringify(nmf));
 await pg.fill('#nm-input', 'taken');
 await pg.waitForFunction(() => /already taken/.test(document.querySelector('#nm-note').textContent));
 ok(NAMES.includes('0.taken') && !(await pg.$eval('#s-style', e => e.classList.contains('is-open'))),
@@ -273,6 +286,17 @@ const rouleau = await pg.evaluate(() => { const r = document.getElementById('sta
 ok(rouleau.n === 5 && rouleau.ids === 's-cloth,s-element,s-name,s-style,s-order' && /^y( proximity)?$/.test(rouleau.snap)
    && rouleau.over === 'auto' && rouleau.plein && rouleau.haut && rouleau.align === 'start',
   '26/10 · un seul rouleau : les cinq étapes méritées, chacune un plein écran aimanté, et ORDER sous les yeux ' + JSON.stringify(rouleau));
+// 30/10 (Wah) : « un scrolling plus agréable et DIRECT ». Une étape vaut
+// EXACTEMENT la fenêtre (ni dvh qui tremble, ni svh trop court : l'étape
+// d'après dépassait en bas), et une lancée ne peut pas sauter une étape.
+const pas = await pg.evaluate(() => { const r = document.getElementById('stages');
+  const l = [...document.querySelectorAll('.stage.is-open')];
+  return { ecran: r.clientHeight, hauteurs: l.map(e => e.offsetHeight),
+    exact: l.every(e => e.offsetHeight === r.clientHeight),
+    colles: l.every((e, i) => i === 0 || e.offsetTop === l[i - 1].offsetTop + l[i - 1].offsetHeight),
+    stop: getComputedStyle(l[1]).scrollSnapStop }; });
+ok(pas.exact && pas.colles && pas.stop === 'always',
+  '30/10 · une étape = un écran au pixel, et une lancée ne saute jamais une étape ' + JSON.stringify(pas));
 // 27/10 — L'AIMANT NE DOIT PAS ENFERMER. Une étape plus haute qu'un écran (une
 // vue de huit box fait 917 px sur 844) doit pouvoir se LIRE jusqu'en bas :
 // `mandatory` repoussait le doigt vers le haut de l'étape et son bas devenait
