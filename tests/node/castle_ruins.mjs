@@ -2,8 +2,6 @@ import assert from 'node:assert/strict';
 import * as T from '../../space/vendor/three-0.180.0.mjs';
 import {createCastleRuins} from '../../space/gallery-castle-ruins.mjs';
 import {castleTowers,castleBelvedere,castleObstacles} from '../../space/gallery-heritage-layout.mjs';
-import {createNewYorkWalkway} from '../../space/gallery-new-york-navigation.mjs';
-import {NEW_YORK_LAYOUT,NEW_YORK_LANDINGS} from '../../space/gallery-new-york-layout.mjs';
 
 let checks=0;
 const check=(value,message)=>{assert(value,message);checks++;};
@@ -33,11 +31,5 @@ for(const place of ['lisbon','new-york']){
  }
  castle.dispose();castle.dispose();check(scene.children.length===0&&castle.diagnostics().disposed,'Castle disposal is complete and repeatable');
  stone.dispose();glass.dispose();metal.dispose();
-}
-const walkway=createNewYorkWalkway(),eye=NEW_YORK_LAYOUT.eyeHeight,landing=NEW_YORK_LANDINGS[1];
-for(const tower of castleTowers('new-york')){
- const route=walkway.route({x:tower.x,y:tower.minY+eye,z:tower.z},{x:landing.x,y:landing.y+eye,z:landing.z});
- check(route?.length>2,'A visitor inside either hollow tower can reach the first exhibition floor');
- check(route.some(p=>Math.abs(p.x-tower.x)<.01&&p.z>tower.z+tower.radius),'The guided route leaves through the actual front arch before approaching the gallery');
 }
 console.log('PASS '+checks+' physical castle ruin checks');

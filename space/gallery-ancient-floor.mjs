@@ -116,12 +116,12 @@ export function createAncientStoneSurfaces(scene,{mobile=false,anisotropy=4,onCh
   ].filter(r=>r.maxX-r.minX>.012&&r.maxZ-r.minZ>.012);
  }
  function merge(pieces,name){
-  const keys=['position','uv','color','aAncientEdge'],sizes={position:3,uv:2,color:3,aAncientEdge:1},values=Object.fromEntries(keys.map(k=>[k,[]])),indices=[];let offset=0;
-  for(const g of pieces){for(const key of keys){const a=g.attributes[key];if(a)values[key].push(...a.array);else values[key].push(...new Float32Array(g.attributes.position.count*sizes[key]));}
+  const keys=['position','uv','color','aAncientEdge'],sizes={position:3,uv:2,color:3,aAncientEdge:1},count=pieces.reduce((n,g)=>n+g.attributes.position.count,0),values=Object.fromEntries(keys.map(k=>[k,new Float32Array(count*sizes[k])])),indices=[];let offset=0;
+  for(const g of pieces){for(const key of keys){const a=g.attributes[key];if(a)values[key].set(a.array,offset*sizes[key]);}
    if(g.index)for(const i of g.index.array)indices.push(offset+i);else for(let i=0;i<g.attributes.position.count;i++)indices.push(offset+i);
    offset+=g.attributes.position.count;g.dispose();
   }
-  const g=new T.BufferGeometry();for(const key of keys)g.setAttribute(key,new T.Float32BufferAttribute(values[key],sizes[key]));g.setIndex(indices);g.computeVertexNormals();g.computeBoundingBox();g.computeBoundingSphere();g.name=name;geometries.add(g);return g;
+  const g=new T.BufferGeometry();for(const key of keys)g.setAttribute(key,new T.BufferAttribute(values[key],sizes[key]));g.setIndex(indices);g.computeVertexNormals();g.computeBoundingBox();g.computeBoundingSphere();g.name=name;geometries.add(g);return g;
  }
  function descriptor(s,index){
   if(s.kind==='ramp'||s.from&&s.to){

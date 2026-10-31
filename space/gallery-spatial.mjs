@@ -25,7 +25,7 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
  renderer.setPixelRatio(quality.diagnostics().pixelRatio);renderer.setSize(innerWidth,innerHeight);
  renderer.outputColorSpace=T.SRGBColorSpace;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1;
  renderer.setClearColor(0x030912);renderer.domElement.setAttribute('aria-hidden','true');host.append(renderer.domElement);
- const baseFov=newYork?(mobile?78:72):(mobile?72:60);
+ const baseFov=mobile?72:60;
  const scene=new T.Scene(),camera=new T.PerspectiveCamera(baseFov,innerWidth/innerHeight,.08,9000);
  let dirty=true,frames=0,list=false,hidden=document.hidden,paused=false,lastTime=0,lastRender=0;
  let motionReduced=reduced.matches,tween=null,arrival=null,pendingVisit=null,stellarView=null,room=-1,focused=-1,down=null,yaw=0,pitch=0,dragged=false,initialized=false,inspecting=false,inspectionAmount=0,bookDestination=null;
@@ -47,7 +47,7 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
  const walkway=(newYork?ny[1].createNewYorkWalkway:createModernWalkway)(),physics=(newYork?ny[1].createNewYorkPhysics:createModernPhysics)({x:ENTRY[0],z:ENTRY[2]}),sound=createGalleryAudio(),fireSound=createFireAudio();
  const eye=new T.Vector3(...ENTRY),gaze=new T.Vector3(...LOOK),keys=new Set();
  const stick=document.getElementById('joystick'),knob=stick.querySelector('span');let joystick={x:0,y:0};
- const isFloor=()=>physics.diagnostics().grounded&&(newYork?!physics.diagnostics().onRoof:physics.position.y<GROUND+.2);
+ const isFloor=()=>physics.diagnostics().grounded&&physics.position.y<GROUND+.2;
  const inGallery=()=>eye.x>-L.halfWidth&&eye.x<L.halfWidth&&eye.z<L.frontZ&&eye.z>L.backZ&&eye.y<ceiling(eye.x,eye.z);
  const nearStation=index=>{const s=GALLERY_STATIONS[index];return!!s&&isFloor()&&physics.position.y<GROUND+.2&&Math.hypot(eye.x-s.approach[0],eye.z-s.approach[2])<1.2;};
  function stationState(){
@@ -86,7 +86,7 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
   }
   const points=path.map(p=>new T.Vector3(p.x,newYork?p.y:1.65,p.z)),lengths=[0];
   for(let n=1;n<points.length;n++)lengths.push(lengths[n-1]+points[n-1].distanceTo(points[n]));
-  tween={points,lengths,segment:1,stalled:0,to:position,target,from:gaze.clone(),start:performance.now(),duration:Math.min(newYork?18000:4200,Math.max(1450,lengths.at(-1)*110)),done,air};dirty=true;return true;
+  tween={points,lengths,segment:1,stalled:0,to:position,target,from:gaze.clone(),start:performance.now(),duration:Math.min(4200,Math.max(1450,lengths.at(-1)*110)),done,air};dirty=true;return true;
  }
  function groundedTravel(position,target,done){
   if(!isFloor()){
@@ -109,11 +109,8 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
  function enterGallery(){cancelTravel();leaveStation();onOverview();return groundedTravel(new T.Vector3(...L.inside),new T.Vector3(...L.insideTarget));}
  function overview(){cancelTravel();leaveStation();onOverview();groundedTravel(new T.Vector3(...ENTRY),new T.Vector3(...LOOK));}
  function visitFireplace(){cancelTravel();leaveStation();onOverview();return groundedTravel(new T.Vector3(...L.fireplace.approach),new T.Vector3(...L.fireplace.target));}
- function visitLevel(level){
-  if(!newYork||list||!Number.isInteger(level)||!ny[2].NEW_YORK_LANDINGS[level])return false;
-  const landing=ny[2].NEW_YORK_LANDINGS[level],position=new T.Vector3(landing.x,landing.y+HEIGHT,landing.z);
-  cancelTravel();leaveStation();onOverview();return groundedTravel(position,new T.Vector3(0,position.y,-8));
- }
+ // A single uninterrupted gallery has no secondary floor destinations.
+ function visitLevel(level){return level===0&&!list?enterGallery():false;}
  function move(dt,dx=0,dz=0,guided=false){
   const before=eye.clone(),steps=Math.max(1,Math.ceil(dt/.025));
   for(let i=0;i<steps;i++)physics.step(dt/steps,{dx:dx/steps,dz:dz/steps,guided});
@@ -153,13 +150,11 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
   }
   if(data?.kind==='fireplace'){visitFireplace();return;}
   if(data?.room!==undefined){if(data.room<0)enterGallery();else select(data.room);return;}
-  const surface=newYork?ray.intersectObjects(architecture.walkable||[],false).find(h=>h.face&&h.face.normal.clone().transformDirection(h.object.matrixWorld).y>.1):null;
-  const onFloor=newYork?!!surface:!!ray.ray.intersectPlane(plane,floor);
-  if(surface)floor.copy(surface.point);
-  if(onFloor&&walkway.allowed(floor.x,floor.z,newYork?floor.y:undefined)&&floor.distanceTo(eye)<50){
+  const onFloor=!!ray.ray.intersectPlane(plane,floor);
+  if(onFloor&&walkway.allowed(floor.x,floor.z)&&floor.distanceTo(eye)<50){
    const solid=ray.intersectObjects(architecture.solids||[],false).find(h=>h.object.visible&&!h.object.material?.transparent);
    if(solid&&solid.distance<floor.distanceTo(eye)-.2)return;
-   const destination=new T.Vector3(floor.x,newYork?floor.y+HEIGHT:1.65,floor.z),direction=gaze.clone().sub(eye);free();leaveStation();onOverview();groundedTravel(destination,destination.clone().add(direction));
+   const destination=new T.Vector3(floor.x,GROUND+HEIGHT,floor.z),direction=gaze.clone().sub(eye);free();leaveStation();onOverview();groundedTravel(destination,destination.clone().add(direction));
   }
  });
  host.addEventListener('pointercancel',()=>{down=null;});
@@ -240,5 +235,5 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
   stop(){stopInput();cancelTravel();leaveStation();dirty=true;},
   setList(value){list=!!value;stopInput();cancelTravel();leaveStation();syncSound();dirty=true;lastTime=0;},
   diagnostics:()=>({webgl:true,place:newYork?'new-york':'lisbon',zone:inGallery()?'gallery':'terrace',room,focused,frames,position:[+eye.x.toFixed(2),+eye.z.toFixed(2)],moving:!!tween||!!pendingVisit||!!keys.size||!!joystick.x||!!joystick.y||!physics.diagnostics().grounded,visible:!hidden&&!list&&!paused,liberty:null,
-   camera:{position:camera.position.toArray(),target:viewTarget().toArray(),inspection:inspectionAmount,fov:camera.fov,aspect:camera.aspect,near:camera.near,far:camera.far,stellarOverview:!!stellarView&&!motionReduced,overviewAmount:stellarView?.amount??0},physics:physics.diagnostics(),temple:architecture.diagnostics(),stations:{play:play.diagnostics(),stoner:stoner.diagnostics(),opposite:opposite.diagnostics(),book:book.diagnostics()},landscape:landscape.diagnostics(),audio:sound.diagnostics(),fireAudio:fireSound.diagnostics(),fireplace:fireplace.diagnostics(),render:{...quality.diagnostics(),width:renderer.domElement.width,height:renderer.domElement.height,calls:renderer.info.render.calls,triangles:renderer.info.render.triangles},navigation:{speed:2.6,minDuration:1450,maxDuration:newYork?18000:4200,deferredArrival:!!arrival||!!pendingVisit,...walkway.diagnostics()}})};
+   camera:{position:camera.position.toArray(),target:viewTarget().toArray(),inspection:inspectionAmount,fov:camera.fov,aspect:camera.aspect,near:camera.near,far:camera.far,stellarOverview:!!stellarView&&!motionReduced,overviewAmount:stellarView?.amount??0},physics:physics.diagnostics(),temple:architecture.diagnostics(),stations:{play:play.diagnostics(),stoner:stoner.diagnostics(),opposite:opposite.diagnostics(),book:book.diagnostics()},landscape:landscape.diagnostics(),audio:sound.diagnostics(),fireAudio:fireSound.diagnostics(),fireplace:fireplace.diagnostics(),render:{...quality.diagnostics(),width:renderer.domElement.width,height:renderer.domElement.height,calls:renderer.info.render.calls,triangles:renderer.info.render.triangles},navigation:{speed:2.6,minDuration:1450,maxDuration:4200,deferredArrival:!!arrival||!!pendingVisit,...walkway.diagnostics()}})};
 }
