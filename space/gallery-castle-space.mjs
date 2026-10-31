@@ -1,6 +1,7 @@
 import * as T from './vendor/three-0.180.0.mjs';
 import {createCastleFabric} from './gallery-castle-fabric.mjs';
 import {createAncientStoneSurfaces} from './gallery-ancient-floor.mjs';
+import {createLisbonPavement} from './gallery-lisbon-pavement.mjs';
 import {createWhiteStone} from './gallery-white-stone.mjs';
 import {createGalleryFacade} from './gallery-facade.mjs';
 import {TOTEHMPAPER} from './gallery-artworks.mjs';
@@ -34,11 +35,27 @@ export function createCastleSpace(scene,renderer,{place='lisbon',mobile=false,on
  function block(m,p,size,name,solid=false){const o=mesh(box,m,p,name,solid);o.scale.set(...size);return o;}
  function station(object,id,kind,room){object.userData={...object.userData,station:kind,stationId:id,action:'station',room};interactables.push({id,kind,room,object});return object;}
  function beam(a,b,width,depth,m,name){const start=new T.Vector3(...a),end=new T.Vector3(...b),v=end.clone().sub(start);const o=block(m,start.clone().add(end).multiplyScalar(.5).toArray(),[width,v.length(),depth],name);o.quaternion.setFromUnitVectors(new T.Vector3(0,1,0),v.normalize());return o;}
- // One continuous worn limestone surface flows from the open terrace inside.
- // No street, platform stripes or glossy black podium interrupts the castle.
+ // Lisbon keeps its original exterior calçada; worn limestone begins at the
+ // glazing. Adjacent surfaces share the walking height without overlapping.
  block(stone.material,[0,-.83,-.1],[32.2,1.32,36.2],'Old castle foundation under the terrace');
- const floor=createAncientStoneSurfaces(root,{mobile,anisotropy,onChange:changed,surfaces:[{id:'castle-stone-terrace',floor:0,minX:-16,maxX:16,minZ:-18.1,maxZ:17.9,y:L.groundY}]});
+ const lisbon=place==='lisbon';
+ const floor=createAncientStoneSurfaces(root,{mobile,anisotropy,onChange:changed,surfaces:[lisbon
+  ?{id:'castle-stone-interior',floor:0,minX:-13,maxX:13,minZ:-17,maxZ:-2,y:L.groundY}
+  :{id:'castle-stone-terrace',floor:0,minX:-16,maxX:16,minZ:-18.1,maxZ:17.9,y:L.groundY}]});
  solids.push(...floor.solids);
+ const walkable=[...floor.solids];
+ const pavement=lisbon?createLisbonPavement({mobile,anisotropy,onChange:changed}):null;
+ if(pavement){
+  const terraces=[
+   [0,8,32,20,'Exterior calçada — waves and caravel'],
+   [0,-17.5,32,1,'Exterior calçada — behind the pavilion'],
+   ...[-14.5,14.5].map(x=>[x,-9.5,3,15,'Exterior calçada — side terrace'])
+  ];
+  for(const [x,z,width,depth,name] of terraces){
+   const plane=mesh(geometry(new T.PlaneGeometry(width,depth)),pavement.material,[x,L.groundY,z],name,true);
+   plane.rotation.x=-Math.PI/2;plane.castShadow=false;plane.userData={walkable:true,lisbonPavement:true};walkable.push(plane);
+  }
+ }
  const fabric=createCastleFabric(root,{place,mobile,anisotropy,onChange:changed,geometry,material});solids.push(...fabric.solids);
  // Large clear panes are cut to one sloping plane. A few deep bronze fins
  // carry the glass; no window grid competes with the ruins or the artworks.
@@ -111,10 +128,10 @@ export function createCastleSpace(scene,renderer,{place='lisbon',mobile=false,on
  const sign=createGalleryFacade(root,{mobile,geometry,material,station,black,sculptedPaperMaterial,position:[6.55,2.25,-1.68],scale:.42});
  changed();
  const portals=GALLERY_STATIONS.map(s=>{const p=s.position||s.book||s.screen||s.table;return{room:s.room,x:p[0],z:p[2],href:s.href};});
- return {root,solids,walkable:floor.solids,interactables,pickables:interactables.map(i=>i.object),artSurfaces:[],portals,obstacles:GALLERY_OBSTACLES,
+ return {root,solids,walkable,interactables,pickables:interactables.map(i=>i.object),artSurfaces:[],portals,obstacles:GALLERY_OBSTACLES,
   anchors:{playScreen:L.play.screen,originsBook:L.origins.book,counter:L.counter.position},setDay(){},
   update(dt,eye,motion=true){if(disposed)return false;if(motion)time+=Math.min(.1,Math.max(0,Number(dt)||0));const was=dirty;dirty=false;return was;},
-  diagnostics:()=>({kind:'coastal-castle-glass-museum',place,rebuilt:true,building:true,modernGallery:true,ready:!disposed,levels:1,airyInterior:true,interiorPartitions:0,glassRoof:true,flatSlopingRoof:true,waveGlass:false,glassSides:true,glassRear:true,castle:fabric.diagnostics(),fabric:fabric.diagnostics(),glassCompiled,roofShell:{minimum:S.minHeight,maximum:S.maxHeight,actualAperture:true,smokeOutlet:{...o}},flooring:{continuousStone:true,ancientStone:floor.diagnostics()},stone:stone.diagnostics(),facade:{paperLoaded,originalDrawing:true,smallEntranceMark:true,scale:.42,position:sign.position.toArray()},thpCounter:{sheets:6,looseTabs:5,papers:items.length,tabSizeMetres:tabSize,sheetSizeMetres:[sheetWidth,sheetDepth]},origins:{lectern:true,black:true,closedBook:true},exhibition:{walls:0,levels:1,reservedSlots:0},rooms:4,independentFiles:true,time,disposed}),
-  dispose(){if(disposed)return;disposed=true;root.removeFromParent();fabric.dispose();floor.dispose();stone.dispose();for(const t of textures)t.dispose();for(const g of geometries)g.dispose();for(const m of materials)m.dispose();root.clear();}
+  diagnostics:()=>({kind:'coastal-castle-glass-museum',place,rebuilt:true,building:true,modernGallery:true,ready:!disposed,levels:1,airyInterior:true,interiorPartitions:0,glassRoof:true,flatSlopingRoof:true,waveGlass:false,glassSides:true,glassRear:true,castle:fabric.diagnostics(),fabric:fabric.diagnostics(),glassCompiled,roofShell:{minimum:S.minHeight,maximum:S.maxHeight,actualAperture:true,smokeOutlet:{...o}},pavement:pavement?.diagnostics()||null,flooring:{continuousStone:!lisbon,exterior:lisbon?'lisbon-calcada':'ancient-stone',ancientStone:floor.diagnostics()},stone:stone.diagnostics(),facade:{paperLoaded,originalDrawing:true,smallEntranceMark:true,scale:.42,position:sign.position.toArray()},thpCounter:{sheets:6,looseTabs:5,papers:items.length,tabSizeMetres:tabSize,sheetSizeMetres:[sheetWidth,sheetDepth]},origins:{lectern:true,black:true,closedBook:true},exhibition:{walls:0,levels:1,reservedSlots:0},rooms:4,independentFiles:true,time,disposed}),
+  dispose(){if(disposed)return;disposed=true;root.removeFromParent();fabric.dispose();floor.dispose();pavement?.dispose();stone.dispose();for(const t of textures)t.dispose();for(const g of geometries)g.dispose();for(const m of materials)m.dispose();root.clear();}
  };
 }

@@ -2,7 +2,7 @@
 
 > L’état actuel (≤ 60 lignes). Les mesures de livraison vivent dans les commits.
 
-Lisbon et New York sont deux galeries littorales de plain-pied : un château asymétrique en ruine, un donjon rectangulaire en retrait, trois baies voûtées profondes et un grand espace double hauteur en verre clair. Lisbon a une pierre plus chaude, New York plus grise. Sol ancien continu entre terrasse et intérieur, profils bronze fins, lumière chaude rasante, aucun cloisonnement vide. L’île, la mer déchaînée, le ciel étoilé, le feu et les œuvres indépendantes sont communs.
+Lisbon et New York sont deux galeries littorales de plain-pied : un château asymétrique en ruine, un donjon rectangulaire en retrait, trois baies voûtées profondes et un grand espace double hauteur en verre clair. Lisbon a une pierre plus chaude, New York plus grise. Lisbon conserve sa calçada extérieure d’origine, aux vagues noires et blanches et au médaillon de caravelle ; pierre ancienne à l’intérieur. New York conserve son sol ancien continu entre terrasse et intérieur. Profils bronze fins, lumière chaude rasante, aucun cloisonnement vide. L’île, la mer déchaînée, le ciel étoilé, le feu et les œuvres indépendantes sont communs.
 Vercel dirige le Portugal vers `/lisbon-space`, les autres pays ou le pays inconnu vers `/new-york` ; ces deux entrées réécrivent vers `/`. Pays issu de l’IP, sans GPS ni certitude physique ; `/lisbon` reste l’œuvre Lisbon.
 Space ouvre directement le monde, sans titre d’accueil ni commandes de panorama/saut/son. La navigation Artworks présente les expériences, sans destinations d’étage.
 
@@ -15,6 +15,7 @@ Space ouvre directement le monde, sans titre d’accueil ni commandes de panoram
 | `gallery-modern-layout.mjs` · `gallery-modern-navigation.mjs` | ancrages des œuvres, parcours au sol, collisions du verre et du château, saut et appuis |
 | `gallery-new-york-layout.mjs` · `gallery-new-york-navigation.mjs` | même espace de plain-pied pour l’entrée New York |
 | `gallery-glass-shell.mjs` | plan incliné du toit et véritable ouverture de fumée partagés par rendu, physique et sons |
+| `gallery-lisbon-pavement.mjs` | calçada extérieure originale de Lisbon, quatre surfaces jointives sans recouvrement du sol intérieur |
 | `gallery-ancient-floor.mjs` · `gallery-white-stone.mjs` | dalles physiques à arêtes usées, cartes photographiques CC0 locales, table et pierre du foyer |
 | `gallery-heritage-masonry.mjs` | chargeur partagé de matériaux photographiques pour la nouvelle maçonnerie |
 | `gallery-lectern-book.mjs` · `gallery-play-installation.mjs` · `gallery-opposite-installation.mjs` · `gallery-stoner-installation.mjs` | livre Origins, écrans Lisbon et Same but opposite, cadre Stoner : chacun ouvre sa page indépendante |
@@ -33,7 +34,7 @@ Space ouvre directement le monde, sans titre d’accueil ni commandes de panoram
 - Mer à −96 m, crêtes bornées sous −11,48 m, calme à 110 m du piton. Eau détaillée sur 24 km de diamètre : 327 680 triangles ordinateur / 172 032 téléphone. Trois échelles de normales spectrales et courbure sur le globe de rayon 6 500 m.
 - Écume persistante GPU sur deux cibles 256² / 128² à 30 / 20 Hz, dissipation de 7,8 s. Brume : 80 / 40 volumes, cinq échantillons par rayon, opacité ≤ 0,13 ; aucun autre sol émergé.
 - Les deux galeries ont un seul sol à −0,09 m, un intérieur de 26 × 15 m, une entrée libre de 5,6 × 5,1 m et un toit vitré incliné d’environ 7,2 à 9,8 m. Aucune rampe ni étage intermédiaire. Les murs pleins restent au périmètre ; trois arches sont réellement vides et le donjon se visite.
-- Tous les sols sont en pierre ancienne, jusque sur la terrasse. Les textures couleur/normale/rugosité locales restent vérifiées ; le grand maillage se fusionne par tableaux typés pour éviter la limite des arguments JavaScript.
+- Lisbon : calçada extérieure originale à −0,09 m, caravelle centrée en [0, 4] et vagues Mar Largo ; pierre ancienne limitée à l’intérieur vitré, sans surfaces superposées. New York : pierre ancienne continue sur la terrasse et à l’intérieur. Les textures locales et les tableaux typés restent partagés.
 - La table de pierre de 3,6 m expose six feuilles physiques de 48 THP de 2,2 cm et cinq papiers détachés. Dessin perforé original, prix et droits du serveur. La bouche originale devient une petite marque tactile à l’entrée.
 - Les ancrages des œuvres sont conservés : Origins sur pupitre noir incliné à 18°, Lisbon sur son grand écran, Same but opposite sur le verre gauche, Stoner dans son cadre premium. Aucun décodeur vidéo dans l’accueil 3D.
 - Feu partagé de 4,34 m, neuf bûches, braises et étincelles. Le verre conduit la fumée à un véritable oculus. Toucher le bois guide au foyer. Son local stéréo de 25,54 s, boucle fondue ; source et crédit `assets/fire/LICENSE.txt`.

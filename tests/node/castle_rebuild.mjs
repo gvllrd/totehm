@@ -28,6 +28,20 @@ for(const [place,factory,physicsFactory,walkwayFactory] of [
  const d=gallery.diagnostics();
  check(d.levels===1,'The '+place+' rebuild is one open double-height gallery');
  check(gallery.solids.length>0,'The '+place+' building has real collision geometry');
+ const groundRay=new T.Raycaster(new T.Vector3(),new T.Vector3(0,-1,0),0,.4);
+ const floorHits=(x,z)=>{groundRay.ray.origin.set(x,L.groundY+.1,z);return groundRay.intersectObjects(gallery.walkable);};
+ for(const [x,z] of [[0,4],[15.9,17.8],[-15.9,17.8],[0,-17.9],[-14.5,-9.5],[14.5,-9.5]]){
+  const hits=floorHits(x,z),top=hits[0];
+  check(top&&Math.abs(top.point.y-L.groundY)<.027,'The '+place+' exterior is supported at the original walking height');
+  check(place==='lisbon'?top.object.userData.lisbonPavement:top.object.userData.ancientStone||top.object.userData.ancientMortar,'The '+place+' exterior uses its own original floor material');
+  if(place==='lisbon')check(new Set(hits.map(h=>h.object)).size===1,'The Lisbon calçada is not overlaid on stone slabs or mortar');
+ }
+ check(!floorHits(0,-5).some(h=>h.object.userData.lisbonPavement),'The '+place+' interior keeps its ancient stone floor');
+ if(place==='lisbon'){
+  const terraces=gallery.walkable.filter(o=>o.userData.lisbonPavement);
+  check(terraces.length===4&&terraces.every(o=>o.material===terraces[0].material),'All four original Lisbon terraces share one continuous world-space mosaic');
+  check(d.pavement.waves&&d.pavement.boat&&d.pavement.boatCentre.join(',')==='0,4'&&d.pavement.medallionDiameter===7,'The original waves and seven-metre caravel stay in their original position');
+ }else check(d.pavement===null&&d.flooring.continuousStone,'The Lisbon restoration leaves the New York terrace unchanged');
  const ray=new T.Raycaster(new T.Vector3(0,1.65,3),new T.Vector3(0,0,-1),0,8);
  check(ray.intersectObjects(gallery.solids).filter(h=>!h.object.material.transparent).length===0,'The '+place+' castle entrance is a genuine empty passage');
  let vertices=0;
@@ -61,6 +75,7 @@ for(const [place,factory,physicsFactory,walkwayFactory] of [
  const side=physicsFactory({x:10,z:-8});for(let i=0;i<100;i++)side.step(.025,{dx:1});
  check(side.position.x<13,'The '+place+' perimeter blocks a walking body');
  gallery.dispose();gallery.dispose();check(scene.children.length===0,'The '+place+' rebuild disposes its full structure repeatably');
+ if(place==='lisbon')check(gallery.diagnostics().pavement.disposed,'The restored Lisbon pavement releases its material and boat texture');
 }
 check(GLASS_SHELL.maxHeight-GLASS_SHELL.minHeight>1,'The clear roof has a deliberate asymmetric inclination');
 console.log('PASS '+checks+' rebuilt castle geometry and movement checks');

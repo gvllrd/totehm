@@ -68,6 +68,9 @@ try{
    await pg.screenshot({path:OUT+'/'+suffix+'-entry.png'});
    check(d.place===place&&!d.fallback,'The actual '+place+' page starts a native WebGL visit at '+viewport.width);
    check(d.temple.rebuilt&&d.temple.levels===1&&d.temple.airyInterior&&d.temple.interiorPartitions===0,'The new castle has one uninterrupted double-height interior at '+suffix);
+   check(place==='lisbon'
+    ?d.temple.pavement?.compiled&&d.temple.pavement.waves&&d.temple.pavement.boat&&d.temple.pavement.boatCentre.join(',')==='0,4'&&!d.temple.flooring.continuousStone
+    :d.temple.pavement===null&&d.temple.flooring.continuousStone,'The original Lisbon calçada compiles with its waves and caravel; New York keeps its own terrace at '+suffix);
    check(d.landscape.ocean.curledSurface&&d.landscape.ocean.mainChop===1.8&&d.landscape.ocean.detailMapsLoaded===2,'The original storm ocean and both detail maps remain at '+suffix);
    check(d.landscape.sky.night&&d.landscape.sky.milkyWay&&d.landscape.sky.moon&&d.landscape.sky.stars===(viewport.width<650?8500:18000),'The original star field, Milky Way and moon remain at '+suffix);
    check(['/origins','/get_higher','/play_lisbon_street','/same_but_opposite'].every(href=>d.experiences.includes(href)),'All independent artwork destinations remain at '+suffix);
