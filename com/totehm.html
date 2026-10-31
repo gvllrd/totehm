@@ -13189,8 +13189,10 @@ window.addEventListener('pageshow',e=>{
             +(o.fk||[]).map(f=>'<path class="fk" pathLength="1" d="M'+f.map(p=>r1(p[0])+' '+r1(p[1])).join('L')+'" stroke="'+o.x.color+'"/>').join('')
             +o.nodes.map(r=>'<rect x="'+r1(r[0]-r[2]/2)+'" y="'+r1(r[1]-r[2]/2)+'" width="'+r[2]+'" height="'+r[2]+'" fill="'+o.x.color+'"/>').join('')
             +(o.pins||[]).map(r=>'<rect class="pin" x="'+r1(r[0])+'" y="'+r1(r[1])+'" width="'+r[2]+'" height="'+r[3]+'" fill="'+o.x.color+'"/>').join('')
+            /* ⚠️ 31/10 — la pastille PLEINE prend sa couleur en `style` : l'attribut `fill` perdait contre `#lv-ram circle{fill:#000}`
+               (une Habit ne se voyait pas sur l'arbre, mesuré) */
             +(o.pads||[]).map(r=>'<circle class="pad'+(r[3]?' is-plein':'')+'" cx="'+r1(r[0])+'" cy="'+r1(r[1])+'" r="'+r1(r[2])+'" stroke="'+o.x.color+'"'
-              +(r[3]?' fill="'+o.x.color+'"':'')+'/>').join('')
+              +(r[3]?' style="fill:'+o.x.color+'"':'')+'/>').join('')
             +'</g>';
         });
         return out;
