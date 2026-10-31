@@ -18,7 +18,7 @@ try{
   try{
    await pg.goto(origin+'/__ny-building');await pg.waitForFunction(()=>window.__ny?.().frames>3&&__ny().facade.paperLoaded&&__ny().stone.photographicMapsReady,null,{timeout:60000});
    const d=await pg.evaluate(()=>__ny());check(d.levels===5&&d.stairs===0&&d.ramps===16,'five floors and sixteen continuous ramp runs render at '+viewport.width);
-   check(d.redBrick&&d.facadeOnlyMasonry&&d.windowsFrontOnly&&d.windows===28&&d.centralWindows===0&&d.glassSides&&d.glassRear&&d.glassRoof,'brick facade, blank middle and the clear glass envelope compile at '+viewport.width);
+   check(!d.redBrick&&d.castleRuins&&d.panoramicGlassFront&&d.facadeOnlyMasonry&&d.windowsFrontOnly&&d.windows===28&&d.centralWindows===0&&d.glassSides&&d.glassRear&&d.glassRoof,'retained castle stone, panoramic glass and the windowless central spine compile at '+viewport.width);
    check(d.flooring.sameAsLisbon&&d.flooring.ancientStone.photographicMapsReady&&d.exhibition.walls===10&&d.exhibition.reservedSlots===29,'Lisbon stone and unobstructed exhibition walls serve all five floors at '+viewport.width);
    check(d.facade.originalDrawing&&d.facade.paperLoaded&&d.facade.edgeNotches===12&&d.facade.scale===2.6&&d.facade.position[1]===14,'the monumental centered tongue and real THP load at '+viewport.width);
    check(d.programErrors===0,'native masonry, pavement, glass, stone and flame shaders compile at '+viewport.width);

@@ -1,11 +1,11 @@
 import * as T from './vendor/three-0.180.0.mjs';
 
-// Running-bond masonry is in world metres: piers, reveals and cornices all
-// keep the same brick scale instead of stretching a small image over a wall.
-export function createNewYorkBrick(){
- const material=new T.MeshStandardMaterial({color:0x9c4938,roughness:.93,metalness:0});
- material.name='SoHo surviving red brick — spalled clay, lime scars and deep old joints';
- material.customProgramCacheKey=()=> 'ny-red-clay-world-ruin-v2';
+// Old castle masonry is in world metres: piers, reveals and broken returns all
+// keep the same limestone scale instead of stretching a small image over a wall.
+export function createNewYorkCastleStone(){
+ const material=new T.MeshStandardMaterial({color:0xc1b49b,roughness:.93,metalness:0});
+ material.name='Retained castle limestone — weathered blocks, lime scars and recessed joints';
+ material.customProgramCacheKey=()=> 'ny-castle-limestone-world-ruin-v3';
  material.onBeforeCompile=shader=>{
   shader.vertexShader=shader.vertexShader.replace('#include <common>',`#include <common>
    varying vec3 vNYBrickWorld;`);
@@ -20,8 +20,8 @@ export function createNewYorkBrick(){
    vec3 nyFace=abs(normalize(cross(dFdx(vNYBrickWorld),dFdy(vNYBrickWorld))));
    vec2 nyP=nyFace.z>=nyFace.x?vNYBrickWorld.xy:vNYBrickWorld.zy;
    if(nyFace.y>.8)nyP=vNYBrickWorld.xz;
-   float nyRow=floor(nyP.y/.083);vec2 nyGrid=vec2(nyP.x/.245+mod(nyRow,2.)*.5,nyP.y/.083);
-   vec2 nyCell=floor(nyGrid),nyUV=fract(nyGrid),nyEdge=min(nyUV,1.-nyUV)*vec2(.245,.083);
+   float nyRow=floor(nyP.y/.32);vec2 nyGrid=vec2(nyP.x/.68+mod(nyRow,2.)*.5,nyP.y/.32);
+   vec2 nyCell=floor(nyGrid),nyUV=fract(nyGrid),nyEdge=min(nyUV,1.-nyUV)*vec2(.68,.32);
    float nyDistance=min(nyEdge.x,nyEdge.y),nyAA=max(fwidth(nyDistance),.0005);
    float nyBrick=smoothstep(.0035-nyAA,.0035+nyAA,nyDistance);
    float nyBevel=smoothstep(.003,.009,nyDistance);
@@ -33,13 +33,13 @@ export function createNewYorkBrick(){
    float nyCrackWander=nyNoise(vec2(nyP.y*.84,4.7))*.15+nyNoise(vec2(nyP.y*5.4,17.2))*.025;
    float nyCrackDistance=abs(fract((nyP.x+nyCrackWander)/3.7)-.5)*3.7;
    float nyCrack=(1.-smoothstep(.003,.007+max(fwidth(nyCrackDistance),.0005),nyCrackDistance))*smoothstep(.42,.68,nyNoise(nyP*.47+11.));
-   vec3 nyClay=mix(vec3(.28,.077,.040),vec3(.52,.205,.105),nyVariation*.6+nyCloud*.4);
+   vec3 nyClay=mix(vec3(.34,.315,.263),vec3(.61,.56,.45),nyVariation*.6+nyCloud*.4);
    nyClay*=.85+.23*nyCloud+.12*(nyGrain-.5);
    nyClay*=.68+.32*nyBevel;
-   // Lost fired faces expose the warmer, porous body of the brick. The
+   // Lost faces expose the porous body of old limestone. The
    // broad broken patches and thin fractures remain distinct from grain.
-   nyClay=mix(nyClay,vec3(.42,.235,.137)*(.75+.3*nyCloud),nySpall*.72);
-   nyClay=mix(nyClay,vec3(.46,.415,.32),nyLime*.74);
+   nyClay=mix(nyClay,vec3(.54,.49,.39)*(.75+.3*nyCloud),nySpall*.72);
+   nyClay=mix(nyClay,vec3(.61,.58,.49),nyLime*.74);
    vec3 nyMortar=vec3(.27,.246,.205)*(.85+.15*nyGrain);
    diffuseColor.rgb=mix(nyMortar,nyClay,nyBrick)*(1.-nyCrack*.55);
    float nyRelief=.0055*nyBevel-.0038*nySpall-.0025*nyCrack+.00045*(nyGrain-.5);

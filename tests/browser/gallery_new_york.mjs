@@ -7,6 +7,12 @@ fs.mkdirSync(OUT,{recursive:true});
 let checks=0;const results=[];
 const check=(condition,message)=>{assert(condition,message);checks++;console.log('PASS '+message);};
 const browser=await launch();
+function preserved(d,city,width){
+ const ocean=d.landscape.ocean,sky=d.landscape.sky;
+ check(ocean.curledSurface&&ocean.mainChop===1.8&&ocean.detailMapsLoaded===2,city+' keeps the storm sea and its two original maps at '+width);
+ check(sky.night&&sky.milkyWay&&sky.moon&&sky.stars===(width<650?8500:18000),city+' keeps the original starry night and moon at '+width);
+ check(['/origins','/get_higher','/play_lisbon_street','/same_but_opposite'].every(href=>d.experiences.includes(href)),city+' keeps all four independent artwork destinations at '+width);
+}
 async function ready(pg){await pg.waitForFunction(()=>{const d=window.__totehm_gallery?.();return d?.webgl&&d.frames>1&&!d.fallback&&d.stations?.opposite?.coverReady&&d.temple?.facade?.paperLoaded;},null,{timeout:90000});}
 async function floor(pg,level){
  await pg.click('#view-list');await pg.locator('[data-level="'+level+'"]').click();
@@ -21,10 +27,11 @@ try{
    await pg.emulateMedia({reducedMotion:'reduce'});
    await pg.goto(origin+'/new-york',{waitUntil:'domcontentloaded'});await ready(pg);
    sample.entry=await pg.evaluate(()=>__totehm_gallery());
+   preserved(sample.entry,'New York',viewport.width);
    check(sample.entry.place==='new-york'&&sample.entry.physics.levels===5,'New York entry loads its own five-floor world at '+viewport.width);
    check(sample.entry.temple.levels===5&&sample.entry.temple.stairs===0,'building has five levels with ramps and no stairs at '+viewport.width);
    const building=sample.entry.temple;
-   check(building.facadeOnlyMasonry&&building.windowsFrontOnly&&building.windows===28&&building.centralWindows===0,'New York has front-only brick and windows around a windowless central spine at '+viewport.width);
+   check(building.facadeOnlyMasonry&&building.windowsFrontOnly&&building.windows===28&&building.centralWindows===0,'New York has panoramic glass around a windowless retained stone spine at '+viewport.width);
    check(building.glassSides&&building.glassRear&&building.glassRoof&&building.minimalWhiteInterior,'New York has clear side/rear/roof glazing and a minimal white interior at '+viewport.width);
    check(building.facade.monumental&&building.facade.centered&&building.facade.scale===2.6&&building.facade.blankCenter&&building.facade.paperLoaded,'New York displays the enormous original tongue and TOTEHM centrally at '+viewport.width);
    check(building.flooring.sameAsLisbon&&building.flooring.ancientStone.physicalSlabs&&building.flooring.ancientStone.ramps&&building.flooring.ancientStone.photographicMapsReady,'New York has actual Lisbon stone slabs on floors and ramps at '+viewport.width);
@@ -53,11 +60,12 @@ try{
    check(!log.errors.some(e=>/pageerror:|THREE.WebGLProgram|VALIDATE_STATUS|shader error|WebGL: INVALID/i.test(e)),'New York has no JavaScript or shader failure at '+viewport.width);
    await pg.goto(origin+'/lisbon-space',{waitUntil:'domcontentloaded'});await ready(pg);
    sample.lisbon=await pg.evaluate(()=>__totehm_gallery());
+   preserved(sample.lisbon,'Lisbon',viewport.width);
    check(sample.lisbon.place==='lisbon'&&sample.lisbon.temple.waveGlass&&!sample.lisbon.liberty,'explicit Lisbon URL preserves the glass pavilion at '+viewport.width);
    const lisbon=sample.lisbon.temple;
    check(lisbon.facadeOnlyMasonry&&lisbon.glassSides&&lisbon.glassRear&&lisbon.glassRoof,'Lisbon preserves glass around its separate historical front facade at '+viewport.width);
-   check(lisbon.facade.windows===12&&lisbon.facade.historicWindowRows===3&&lisbon.facade.centralBay.windowFree&&lisbon.facade.limestoneSurrounds&&lisbon.facade.realCurledIronGeometry&&lisbon.facade.upperBalconies===8,'Lisbon facade has the reference window rows, stone surrounds and ornate balconies outside its blank center at '+viewport.width);
-   check(lisbon.facade.originalProceduralPattern&&lisbon.facade.referenceMotif==='cobalt and white elongated lozenges'&&lisbon.facade.externalImages===0,'Lisbon draws precise original cobalt/white lozenges without loading the watermarked reference at '+viewport.width);
+   check(lisbon.facade.castleGlass&&lisbon.facade.continuousGlass&&lisbon.facade.doubleHeight&&lisbon.facade.windows===0&&lisbon.facade.balconies===0&&!lisbon.facade.opaqueFrontWall,'Lisbon replaces the tiled facade and balconies with an open double-height glass pavilion at '+viewport.width);
+   check(lisbon.facade.thinBronzeFins&&lisbon.facade.frameThickness===.035&&lisbon.facade.cantilever,'Lisbon uses fine bronze junctions and cantilevered glass against the castle remnants at '+viewport.width);
    check(lisbon.facade.monumental&&lisbon.facade.centered&&lisbon.facade.scale===1.6&&lisbon.facade.paperLoaded,'Lisbon displays the imposing centered original tongue and TOTEHM at '+viewport.width);
    check(lisbon.flooring.ancientStone.physicalSlabs&&lisbon.flooring.ancientStone.slabs===301&&lisbon.exhibition.walls===2&&lisbon.exhibition.reservedSlots===5,'Lisbon retains its actual stone floor with minimal white exhibition walls at '+viewport.width);
    check(await pg.locator('#building-levels').isHidden(),'New York floor controls stay out of Lisbon at '+viewport.width);

@@ -1,7 +1,7 @@
 // Both actual gallery factories, real WebGL/PBR, local assets and no live writes.
 import assert from 'node:assert/strict';import fs from 'node:fs';
 import {launch,page} from './harness.mjs';
-const OUT=process.argv[2]||'/tmp/gallery-heritage',origin='https://www.totehm.space';fs.mkdirSync(OUT,{recursive:true});
+const OUT=process.argv[2]||'/tmp/gallery-castle',origin='https://www.totehm.space';fs.mkdirSync(OUT,{recursive:true});
 const browser=await launch(),results=[],junctionsOnly=process.argv.includes('--junctions-only');let checks=0;
 const check=(value,message)=>{assert(value,message);checks++;console.log('PASS '+message);};
 const fixture=`<!doctype html><html><head><style>html,body{margin:0;width:100%;height:100%;background:#030914}canvas{display:block}</style></head><body><script type="module">
@@ -41,8 +41,10 @@ try{
    const geometry=await pg.evaluate(()=>__heritageGeometry());
    check(geometry.opaqueEntranceHits===0&&geometry.canopy&&geometry.walls===h.physicalFragments&&geometry.blocks&&geometry.gapClear,'Real raycasts confirm the open doorway, solid glass canopy and a genuine lacuna in the old stone'+suffix);
    check(d.exhibition.reservedSlots===(place==='new-york'?29:5)&&d.facade.centered&&d.facade.monumental,'The original central TOTEHM and future artwork surfaces remain present'+suffix);
-   check(place==='new-york'?d.levels===5&&d.stairs===0&&d.ramps===16:d.facade.windows===12&&d.waveGlass,'The two distinct historical identities and circulation remain intact'+suffix);
-   check(place==='new-york'?d.ruinedHistoricFacade&&d.brokenMasonryCrown&&d.modernGlassSeal:d.facade.ruined&&d.facade.brokenParapet&&d.facade.weatheredTiles&&d.facade.tiles.exposedLime&&d.facade.tiles.fineCracks,'The historic facade has actual broken edges and weathering beside intact modern glass'+suffix);
+   check(place==='new-york'?d.levels===5&&d.stairs===0&&d.ramps===16:d.waveGlass&&d.glassRoof,'Airy glass volumes keep five New York levels and the Lisbon wave roof'+suffix);
+   check(h.castle.towers===2&&h.castle.archedOpenings===2&&h.castle.brokenCrowns&&h.castle.hollowTowers&&h.castle.glassBelvederes===2,'Two genuinely hollow ruined castle towers meet modern glass belvederes'+suffix);
+   check(h.castle.stoneBlocks>200&&h.castle.triangles>1000,'The castle is built from real bounded stone geometry'+suffix);
+   check(d.modernGlassSeal&&d.facade.castleGlass,'The entrance elevation is a modern glass intervention within the castle ruins'+suffix);
    const name=place+'-'+viewport.width;
    const mobile=viewport.width<650;
    if(!junctionsOnly){
@@ -58,5 +60,5 @@ try{
    results.push({place,viewport,diagnostics:d,geometry,errors:log.errors});
   }finally{await ctx.close();}
  }
- fs.writeFileSync(OUT+'/results.json',JSON.stringify({checks,mode:junctionsOnly?'refined-junctions':'complete-architecture',results},null,2));console.log('PASS '+checks+' native glass-and-heritage architecture checks');
+ fs.writeFileSync(OUT+'/results.json',JSON.stringify({checks,mode:junctionsOnly?'refined-junctions':'complete-architecture',results},null,2));console.log('PASS '+checks+' native castle-and-glass architecture checks');
 }finally{await browser.close();}

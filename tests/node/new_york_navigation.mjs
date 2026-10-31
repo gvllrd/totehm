@@ -35,6 +35,13 @@ for(let level=1;level<5;level++){
  for(const target of [{x:6,y:FLOORS[level]+H,z:-7.3},{x:-6,y:FLOORS[level]+H,z:-11.8},{...LANDINGS[level],y:FLOORS[level]+H}])follow(p,walkway.route(eye(p.position),target),{guided:true});
  check(Math.abs(p.position.y-FLOORS[level])<.01,`level ${level+1} connects all gallery wings and its landing`);
 }
+for(const z of [-1,-2.5]){
+ const visitor=createNewYorkPhysics({x:0,z}),started=performance.now();
+ const route=walkway.route(eye(visitor.position),eye(LANDINGS[1]));
+ check(performance.now()-started<2000,'Near the entrance, floor guidance avoids a blocking visibility-graph rebuild');
+ follow(visitor,route,{guided:true});
+ check(Math.abs(visitor.position.y-FLOORS[1])<.01,'Both sides of the entrance lead continuously to the first exhibition floor');
+}
 for(const station of STATIONS){
  const p=createNewYorkPhysics();follow(p,walkway.route(eye(p.position),{x:station.approach[0],y:station.approach[1],z:station.approach[2]}),{guided:true});
  check(Math.abs(p.position.y-FLOORS[0])<.01,'original installation remains at ground level');

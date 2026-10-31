@@ -1,5 +1,5 @@
 import {NEW_YORK_LAYOUT as L,NEW_YORK_FLOORS as FLOORS,NEW_YORK_RAMPS as RAMPS,NEW_YORK_RAMP_TURNS as TURNS,NEW_YORK_FLOOR_RECTS as RECTS,NEW_YORK_LANDINGS as LANDINGS,NEW_YORK_GROUND_OBSTACLES as FURNITURE,NEW_YORK_EXHIBITION_OBSTACLES as EXHIBITION,newYorkSurfacesAt,newYorkRoofHeight} from './gallery-new-york-layout.mjs';
-import {heritageObstacles} from './gallery-heritage-layout.mjs';
+import {heritageObstacles,castleTowers} from './gallery-heritage-layout.mjs';
 
 const H=L.eyeHeight,R=.18,EPS=1e-5,G=8*18000/14**2,V=4*18000/14;
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x)),finite=Number.isFinite;
@@ -17,26 +17,26 @@ const WALLS=[
  {id:'ny-upper-back',minX:-10,maxX:10,minZ:-16.2,maxZ:-15.9,minY:21.51,maxY:27},
  {id:'ny-upper-front',minX:-10,maxX:10,minZ:-4.1,maxZ:-3.9,minY:21.51,maxY:27}
 ];
-const HERITAGE=heritageObstacles('new-york'),SOLIDS=[...WALLS,...FURNITURE,...EXHIBITION,...HERITAGE];
+const HERITAGE=heritageObstacles('new-york'),SUPPORTS=[...WALLS,...HERITAGE],SOLIDS=[...WALLS,...FURNITURE,...EXHIBITION,...HERITAGE],TOWERS=castleTowers('new-york');
 const horizontalClear=(x,z,y)=>bounds(x,z)&&!SOLIDS.some(b=>inside(b,x,z,R)&&y<b.maxY-EPS&&y+H>b.minY+EPS);
 function roofSurface(x,z){
  if(x< -13||x>13||z< -17||z> -2)return null;
  const o=L.smokeOutlet;if(((x-o.x)/o.radius)**2+((z-o.z)/o.radiusZ)**2<1)return null;
  return{y:newYorkRoofHeight(x,z),id:'ny-roof',roof:true};
 }
-function surfaces(x,z){
+function surfaces(x,z,minY=-Infinity,maxY=Infinity){
  const result=newYorkSurfacesAt(x,z),roof=roofSurface(x,z);if(roof)result.push(roof);
- for(const wall of [...WALLS,...HERITAGE])if(inside(wall,x,z,R))result.push({y:wall.maxY,id:'ny-roof',roof:true});
+ for(const wall of SUPPORTS)if(wall.maxY>=minY&&wall.maxY<=maxY&&inside(wall,x,z,R))result.push({y:wall.maxY,id:'ny-roof',roof:true});
  return result;
 }
-function nearby(x,z,y,step=.13){return surfaces(x,z).filter(s=>s.y<=y+step&&s.y>=y-.23).sort((a,b)=>b.y-a.y)[0]??null;}
+function nearby(x,z,y,step=.13){return surfaces(x,z,y-.23,y+step).filter(s=>s.y<=y+step&&s.y>=y-.23).sort((a,b)=>b.y-a.y)[0]??null;}
 function ceilingAt(x,z,y){
  let ceiling=Infinity;
  for(const b of SOLIDS)if(inside(b,x,z,R)&&b.minY>=y+H-EPS)ceiling=Math.min(ceiling,b.minY);
  for(const s of surfaces(x,z))if(s.y-.2>=y+H-EPS)ceiling=Math.min(ceiling,s.y-.2);
  return ceiling;
 }
-function surfaceCollision(x,z,y){return surfaces(x,z).some(s=>s.y>ground+.1&&y<s.y-.21&&y+H>s.y-.2+EPS);}
+function surfaceCollision(x,z,y){return surfaces(x,z,y+.21,y+H+.2).some(s=>s.y>ground+.1&&y<s.y-.21&&y+H>s.y-.2+EPS);}
 
 export function createNewYorkPhysics(initial={x:0,z:15}){
  const position={x:0,y:ground,z:15};let grounded=true,velocityY=0,support='ground',jumps=0,landings=0,headContacts=0;
@@ -99,20 +99,60 @@ export function createNewYorkWalkway(){
  const feet=p=>finite(p.y)?p.y-H:ground;
  function allowed(x,z,y=ground){return horizontalClear(x,z,y)&&!surfaceCollision(x,z,y)&&!!nearby(x,z,y,.1);}
  function clearAt(a,b,y){
+  // All sector collisions remain active. A segment only needs walls whose
+  // vertical range and plan bounds meet its swept body, rather than every
+  // fractured tower and belvedere on the island at every eight-centimetre step.
+  const minX=Math.min(a.x,b.x)-R,maxX=Math.max(a.x,b.x)+R,minZ=Math.min(a.z,b.z)-R,maxZ=Math.max(a.z,b.z)+R;
+  const active=SOLIDS.filter(b=>b.minY<y+H-EPS&&b.maxY>y+EPS&&b.minX<maxX&&b.maxX>minX&&b.minZ<maxZ&&b.maxZ>minZ);
   const count=Math.max(1,Math.ceil(Math.hypot(b.x-a.x,b.z-a.z)/.08));
   for(let i=0;i<=count;i++){
    const t=i/count,x=a.x+(b.x-a.x)*t,z=a.z+(b.z-a.z)*t;
-   if(!allowed(x,z,y))return false;
-   if([[0,0],[R,0],[-R,0],[0,R],[0,-R]].some(([dx,dz])=>!surfaces(x+dx,z+dz).some(s=>Math.abs(s.y-y)<.035)))return false;
+   if(!bounds(x,z)||active.some(b=>inside(b,x,z,R))||surfaceCollision(x,z,y)||!nearby(x,z,y,.1))return false;
+   if([[0,0],[R,0],[-R,0],[0,R],[0,-R]].some(([dx,dz])=>!surfaces(x+dx,z+dz,y-.035,y+.035).some(s=>Math.abs(s.y-y)<.035)))return false;
   }return true;
  }
  function localRoute(from,to,y){
   if(!allowed(from.x,from.z,y)||!allowed(to.x,to.z,y))return null;
   if(clearAt(from,to,y))return[{...from,y:y+H},{...to,y:y+H}];
+  // All inter-floor journeys enter through the one open central vestibule.
+  // Try its two actual approach points before constructing a visibility graph
+  // over the surrounding terrace. Both segments still use full collision and
+  // support checks, including every tower sector and the glass canopy.
+  if(Math.abs(y-ground)<.02){
+   const foyer={x:0,z:-3.4};
+   if(clearAt(from,foyer,y)&&clearAt(foyer,to,y))return[from,foyer,to].map(p=>({...p,y:y+H}));
+   const hollow=p=>TOWERS.find(t=>Math.hypot(p.x-t.x,p.z-t.z)<t.innerRadius-R);
+   const startTower=hollow(from),endTower=hollow(to);
+   if(startTower||endTower){
+    const exit=t=>({x:t.x,z:t.z+t.radius+.4}),a=startTower?exit(startTower):from,b=endTower?exit(endTower):to;
+    if((!startTower||clearAt(from,a,y))&&(!endTower||clearAt(b,to,y))){
+     const middle=localRoute(a,b,y);
+     if(middle)return[...(startTower?[{...from,y:y+H}]:[]),...middle,...(endTower?[{...to,y:y+H}]:[])];
+    }
+   }
+   const outside={x:0,z:1.9},inside={x:0,z:-3.4};
+   const portals=from.z>-.5&&to.z< -2.2?[outside,inside]:to.z>-.5&&from.z< -2.2?[inside,outside]:null;
+   if(portals){const path=[from,...portals,to];if(path.slice(1).every((p,i)=>clearAt(path[i],p,y)))return path.map(p=>({...p,y:y+H}));}
+  }
   const candidates=[],candidateKeys=new Set(),candidate=(x,z)=>{const key=x.toFixed(5)+','+z.toFixed(5);if(!candidateKeys.has(key)&&allowed(x,z,y)){candidateKeys.add(key);candidates.push({x,y:y+H,z});}};
   const level=Math.round((y-ground)/5.4);
   for(const r of RECTS.filter(r=>r.floor===level))for(const x of [r.minX+.3,(r.minX+r.maxX)/2,r.maxX-.3])for(const z of [r.minZ+.3,(r.minZ+r.maxZ)/2,r.maxZ-.3])candidate(x,z);
-  for(const b of SOLIDS.filter(b=>b.minY<y+H&&b.maxY>y))for(const x of [b.minX-.3,b.maxX+.3])for(const z of [b.minZ-.3,b.maxZ+.3])candidate(x,z);
+  // The round gatehouse has many precise collision sectors. Candidate
+  // waypoints only need the two exterior silhouettes; generating a corner
+  // for every stone sector made the visibility graph grow quadratically.
+  const routing=[],towers=new Map();
+  for(const b of SOLIDS.filter(b=>b.minY<y+H&&b.maxY>y)){
+   const key=/^castle-tower-(west|east)-/.exec(b.id||'')?.[1];
+   if(!key){routing.push(b);continue;}
+   const old=towers.get(key);if(!old)towers.set(key,{...b});else{
+    old.minX=Math.min(old.minX,b.minX);old.maxX=Math.max(old.maxX,b.maxX);old.minZ=Math.min(old.minZ,b.minZ);old.maxZ=Math.max(old.maxZ,b.maxZ);
+   }
+  }
+  routing.push(...towers.values());
+  // A visitor inside a hollow tower must also be able to leave through its
+  // genuine arch; the aggregate silhouette contributes no interior corner.
+  for(const t of TOWERS){candidate(t.x,t.z);candidate(t.x,t.z+t.radius+.4);}
+  for(const b of routing)for(const x of [b.minX-.3,b.maxX+.3])for(const z of [b.minZ-.3,b.maxZ+.3])candidate(x,z);
   if(level===0){
    for(const x of [-14,0,10.7,14])for(const z of [-17.5,-3.4,0,12,15])candidate(x,z);
   }

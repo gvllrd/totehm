@@ -136,7 +136,7 @@ export function createHeritageMasonry(parent,{walls=[],mobile=false,anisotropy=4
  for(const g of mortarParts){mortarData.p.push(...g.attributes.position.array);mortarData.n.push(...g.attributes.normal.array);mortarData.uv.push(...g.attributes.uv.array);g.dispose();}
  const core=merged(mortarData,'Recessed structural lime mortar behind the retained stones',mortar);if(core){core.userData={heritageMortar:true};totalTriangles+=mortarData.p.length/9;}
  changed();
- return{root,solids,
+ return{root,solids,stoneMaterial:stone,
   diagnostics:()=>({kind:'retained-weathered-stone-masonry',walls:wallData.length,fragments:wallData.length,fragmentGroups:new Set(wallData.map(w=>w.group)).size,wallData:wallData.map(w=>({...w,bounds:{...w.bounds}})),blocks,fracturedBlocks,angularChips:true,variedCourseFormats:true,physicalBlocks:true,irregularBlocks:true,beveledStone:true,deepMortar:true,mortarRecessMetres:.045,recessedEnds:true,stoneTopSupports:true,mortarTopRecessMetres:.025,compiled,photographicMapsReady:surface?.cache.loaded.size===3,loadedMaps:surface?.cache.loaded.size||0,mapFailures:surface?.cache.failed.size||0,localPhotographicMaps:true,sharedGPUMaps:true,textureSource:'https://polyhaven.com/a/old_sandstone_02',license:'CC0-1.0',materials:2,drawCalls:solids.length,triangles:totalTriangles,mobile,disposed}),
   dispose(){if(disposed)return;disposed=true;root.removeFromParent();surface?.release();if(!geometry)for(const g of geometries)g.dispose();if(!material)for(const m of materials)m.dispose();root.clear();}
  };

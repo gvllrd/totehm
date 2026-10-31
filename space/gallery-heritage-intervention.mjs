@@ -1,5 +1,6 @@
 import * as T from './vendor/three-0.180.0.mjs';
 import {createHeritageMasonry} from './gallery-heritage-masonry.mjs';
+import {createCastleRuins} from './gallery-castle-ruins.mjs';
 import {heritageWalls,heritageWallGroups,HERITAGE_PORTAL as P} from './gallery-heritage-layout.mjs';
 
 // Contemporary glass is a light addition to retained, substantial masonry.
@@ -24,6 +25,7 @@ export function createHeritageIntervention(parent,{place='lisbon',mobile=false,a
   glassCompiled=true;
  };
  const metal=ownM(new T.MeshStandardMaterial({color:0x171a1b,roughness:.38,metalness:.76}));metal.name='Restrained charcoal-bronze glass junctions';
+ const castle=createCastleRuins(root,{place,stoneMaterial:masonry.stoneMaterial,glassMaterial:glass,metalMaterial:metal,geometry,material});solids.push(...castle.solids);
  const warm=ownM(new T.MeshBasicMaterial({color:0xffd6a0,toneMapped:false}));warm.name='Warm light concealed in the stone threshold';
  const box=ownG(new T.BoxGeometry(1,1,1));
  function block(m,p,size,name,solid=false){
@@ -62,8 +64,8 @@ export function createHeritageIntervention(parent,{place='lisbon',mobile=false,a
    kind:'glass-and-retained-masonry',place,retainedMasonry:true,retainedWalls:heritageWallGroups(place).length,physicalFragments:walls.length,ruin:true,brokenWallTops:true,actualMissingMasonry:true,roughStoneReturns:true,clearGlassEnvelope:true,
    thinFrames:true,frameThickness:t,shadowGapMetres:.08,
    portal:{open:true,glass:true,clearWidth:P.clearWidth,minZ:P.minZ,maxZ:P.maxZ,projection:length,roofHeight:P.roofY,roofThickness:P.roofThickness,panes:3,doors:0,glassCompiled},
-   masonry:stone,photographicMapsReady:stone.photographicMapsReady,compiled:!!stone.compiled&&glassCompiled,warmRakingLights:4,disposed
+   masonry:stone,castle:castle.diagnostics(),photographicMapsReady:stone.photographicMapsReady,compiled:!!stone.compiled&&glassCompiled,warmRakingLights:4,disposed
   };},
-  dispose(){if(disposed)return;disposed=true;root.removeFromParent();masonry.dispose();if(!geometry)for(const g of geometries)g.dispose();if(!material)for(const m of materials)m.dispose();root.clear();}
+  dispose(){if(disposed)return;disposed=true;root.removeFromParent();castle.dispose();masonry.dispose();if(!geometry)for(const g of geometries)g.dispose();if(!material)for(const m of materials)m.dispose();root.clear();}
  };
 }

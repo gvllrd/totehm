@@ -3,27 +3,27 @@ import {createWhiteStone} from './gallery-white-stone.mjs';
 import {createAncientStoneSurfaces} from './gallery-ancient-floor.mjs';
 import {createGalleryFacade} from './gallery-facade.mjs';
 import {createHeritageIntervention} from './gallery-heritage-intervention.mjs';
-import {createNewYorkBrick,createNewYorkPavement} from './gallery-new-york-materials.mjs';
+import {createNewYorkCastleStone,createNewYorkPavement} from './gallery-new-york-materials.mjs';
 import {TOTEHMPAPER} from './gallery-artworks.mjs';
 import {NEW_YORK_LAYOUT as L,NEW_YORK_FLOORS,NEW_YORK_RAMPS,NEW_YORK_RAMP_TURNS,NEW_YORK_FLOOR_RECTS,NEW_YORK_CONNECTORS,newYorkConnectorHeight,NEW_YORK_STATIONS,NEW_YORK_EXHIBITION_WALLS} from './gallery-new-york-layout.mjs';
 
 // Five real storeys surround one open atrium. Inclined stone aisles and floor
 // openings come from the same section as collision: none are decorative stairs.
 export function createNewYorkGallery(scene,renderer,{mobile=false,onChange=()=>{}}={}){
- const root=new T.Group();root.name='TOTEHM — New York red-brick gallery';scene.add(root);
+ const root=new T.Group();root.name='TOTEHM — New York castle and crystalline gallery';scene.add(root);
  const geometries=new Set(),materials=new Set(),textures=new Set(),solids=[],walkable=[],interactables=[],batches=new Map(),stoneSurfaces=[],facadeWindows=[],exhibitionWalls=[];
  let disposed=false,dirty=true,paperLoaded=false,time=0;
  const changed=()=>{if(!disposed){dirty=true;if(renderer?.shadowMap)renderer.shadowMap.needsUpdate=true;onChange();}};
  const geometry=g=>(geometries.add(g),g),material=m=>(materials.add(m),m),anisotropy=Math.min(8,renderer?.capabilities?.getMaxAnisotropy?.()||1);
  const stone=createWhiteStone({mobile,anisotropy,onChange:changed});
- const brick=material(createNewYorkBrick()),pavement=material(createNewYorkPavement());
+ const castleStone=material(createNewYorkCastleStone()),pavement=material(createNewYorkPavement());
  const white=material(new T.MeshStandardMaterial({color:0xf1eee7,roughness:.92,metalness:0}));
- const iron=material(new T.MeshStandardMaterial({color:0x151719,roughness:.4,metalness:.75}));
+ const iron=material(new T.MeshStandardMaterial({color:0x292c2e,roughness:.27,metalness:.82}));
  const ink=material(new T.MeshStandardMaterial({color:0x090a0b,roughness:.62}));
- const trim=material(new T.MeshStandardMaterial({color:0x635a4e,roughness:.75}));
+ const trim=material(new T.MeshStandardMaterial({color:0x817d72,roughness:.83}));
  const black=material(new T.MeshBasicMaterial({color:0x000000,toneMapped:false}));
  const lightMaterial=material(new T.MeshBasicMaterial({color:0xffedcf,toneMapped:false}));
- const glass=material(new T.MeshPhysicalMaterial({color:0xd5e6ef,transparent:true,opacity:.045,roughness:.055,metalness:.015,side:T.DoubleSide,depthWrite:false,envMapIntensity:1.2}));
+ const glass=material(new T.MeshPhysicalMaterial({color:0xd5e6ef,transparent:true,opacity:.07,roughness:.04,metalness:.015,side:T.DoubleSide,depthWrite:false,envMapIntensity:1.2}));
  const smokeGlass=material(new T.MeshPhysicalMaterial({color:0xdce6ea,transparent:true,opacity:.045,roughness:.035,side:T.DoubleSide,depthWrite:false}));
  const boxGeo=geometry(new T.BoxGeometry(1,1,1)),planeGeo=geometry(new T.PlaneGeometry(1,1));
  const heritage=createHeritageIntervention(root,{place:'new-york',mobile,anisotropy,geometry,material,onChange:changed});solids.push(...heritage.solids);
@@ -88,8 +88,9 @@ export function createNewYorkGallery(scene,renderer,{mobile=false,onChange=()=>{
   stoneSurfaces.push({...c,heightAt:(x,z)=>newYorkConnectorHeight(c,x,z)});
  }
 
- // Masonry belongs only to the street facade. The other three elevations
- // are clear glass, so the island, ocean and stars remain the building's view.
+ // The new museum is a transparent insertion in a castle ruin. Its five
+ // galleries float behind uninterrupted glass; only a central retained keep
+ // and a few fractured corner fragments remain opaque. There is no loft grid.
  const storeys=NEW_YORK_FLOORS.map((y,floor)=>({y,floor,minX:floor===4?-10:-13,maxX:floor===4?10:13,minZ:floor===4?-16:-17,maxZ:floor===4?-4:-2}));
  let windowCount=0;
  const crownProfiles=[
@@ -104,7 +105,7 @@ export function createNewYorkGallery(scene,renderer,{mobile=false,onChange=()=>{
    if(top>3.1)facadeSegment(s,a,b,3.1,top,name);return;
   }
   const p=[(a+b)/2,(bottom+top)/2,s.maxZ],size=[b-a,top-bottom,.38];
-  block(brick,p,size,{solid:true,name});block(white,[p[0],p[1],s.maxZ-.216],[size[0],size[1],.045],{solid:true,name:'Plain white back of the street facade'});
+  block(castleStone,p,size,{solid:true,name});block(white,[p[0],p[1],s.maxZ-.216],[size[0],size[1],.045],{solid:true,name:'Quiet mineral lining behind the retained castle wall'});
  }
  function brokenCrown(s,bottom){
   const top=s.y+5.4;
@@ -112,9 +113,9 @@ export function createNewYorkGallery(scene,renderer,{mobile=false,onChange=()=>{
    const shape=new T.Shape();shape.moveTo(profile[0][0],bottom);shape.lineTo(profile.at(-1)[0],bottom);
    for(const [x,loss] of [...profile].reverse())shape.lineTo(x,top-loss);shape.closePath();
    const old=geometry(new T.ExtrudeGeometry(shape,{depth:.38,bevelEnabled:false,curveSegments:1}));
-   mesh(old,brick,[0,0,s.maxZ-.19],{solid:true,name:'Broken surviving brick crown — '+index});
+   mesh(old,castleStone,[0,0,s.maxZ-.19],{solid:true,name:'Broken surviving limestone crown — '+index});
    const back=geometry(new T.ExtrudeGeometry(shape,{depth:.045,bevelEnabled:false,curveSegments:1}));
-   mesh(back,white,[0,0,s.maxZ-.2385],{solid:true,name:'White interior behind the fractured crown — '+index});
+   mesh(back,white,[0,0,s.maxZ-.2385],{solid:true,name:'Quiet mineral lining behind the fractured crown — '+index});
    // The old silhouette is incomplete; a continuous, very thin modern
    // glass plane seals the missing crown while the outer profile stays open.
    const min=profile[0][0],max=profile.at(-1)[0];
@@ -123,19 +124,26 @@ export function createNewYorkGallery(scene,renderer,{mobile=false,onChange=()=>{
   facadeSegment(s,-3.4,3.4,bottom,top,'Unbroken windowless central TOTEHM masonry spine');
  }
  function frontElevation(s){
-  const centers=s.floor===4?[-8.1,-5.1,5.1,8.1]:[-11.3,-8.2,-5.1,5.1,8.2,11.3],lower=s.y+.8,upper=s.y+4.35,w=1.72;
-  facadeSegment(s,s.minX,s.maxX,s.y,lower,'Street facade brick spandrels');
-  if(s.floor===4)brokenCrown(s,upper);else facadeSegment(s,s.minX,s.maxX,upper,s.y+5.4,'Street facade brick lintel courses');
-  let edge=s.minX;
-  for(const c of centers){
-   const a=c-w/2,b=c+w/2;facadeSegment(s,edge,a,lower,upper,'Windowless central TOTEHM spine and red-brick piers');edge=b;
-   const p=[c,(lower+upper)/2,s.maxZ];block(glass,p,[w,upper-lower,.025],{name:'Street facade loft window'});
-   for(const offset of [-w/2,w/2])block(iron,[c+offset,p[1],s.maxZ],[.045,upper-lower+.1,.055]);
-   for(const offset of [-(upper-lower)/2,0,(upper-lower)/2])block(iron,[c,p[1]+offset,s.maxZ],[w,.042,.055]);
-   block(iron,p,[.035,upper-lower,.055]);block(trim,[c,lower-.07,s.maxZ],[w+.25,.14,.55]);
-   facadeWindows.push({floor:s.floor,minX:a,maxX:b,minY:lower,maxY:upper,z:s.maxZ});windowCount++;
+  // Old stone is deliberately discontinuous, letting the ocean and the stars
+  // read through the new building. The central keep carries the existing work.
+  const lower=s.y,upper=s.y+5.4;
+  facadeSegment(s,-3.4,3.4,lower,upper,'Retained castle keep — original TOTEHM backdrop');
+  for(const side of [-1,1]){
+   const edge=side<0?s.minX:s.maxX;
+   const widths=s.floor===4?[.72,.42]:s.floor===3?[.82,.51]:s.floor===2?[1.04,.62]:[1.26,.76];
+   const height=s.floor===4?4.45:s.floor===3?3.25:s.floor===2?2.15:3.9;
+   const inner=edge-side*widths[0];
+   facadeSegment(s,Math.min(edge,inner),Math.max(edge,inner),lower,lower+height,'Isolated broken stone castle return');
+   facadeSegment(s,Math.min(edge,edge-side*widths[1]),Math.max(edge,edge-side*widths[1]),lower+height,Math.min(upper,lower+height+.63),'Jagged stone castle remnant');
+   const a=side<0?s.minX:3.4,b=side<0?-3.4:s.maxX,count=s.floor===4?2:3;
+   for(let i=0;i<count;i++){
+    const x0=a+(b-a)*i/count,x1=a+(b-a)*(i+1)/count;
+    block(glass,[(x0+x1)/2,s.y+2.7,s.maxZ-.12],[x1-x0,5.4,.035],{solid:true,name:'Full-height low-iron glass museum facade'});
+    facadeWindows.push({floor:s.floor,minX:x0,maxX:x1,minY:lower,maxY:upper,z:s.maxZ-.12});windowCount++;
+    // Structural silicone joints: one quiet vertical line, never a window grid.
+    if(i)block(iron,[x0,s.y+2.7,s.maxZ-.12],[.024,5.4,.045],{name:'Slender structural glazing joint'});
+   }
   }
-  facadeSegment(s,edge,s.maxX,lower,upper,'Street facade red-brick corner pier');
  }
  for(const s of storeys){
   frontElevation(s);
@@ -144,19 +152,25 @@ export function createNewYorkGallery(scene,renderer,{mobile=false,onChange=()=>{
    block(glass,[x,s.y+2.7,(s.minZ+s.maxZ)/2],[.065,5.4,s.maxZ-s.minZ],{name:'Continuous clear side glass',solid:true});
    block(iron,[x,s.y+2.7,s.minZ],[.035,5.4,.035],{name:'Fine glass corner joint'});
   }
-  if(s.floor===4){
-   block(trim,[0,s.y+5.26,s.maxZ],[6.8,.18,.66],{name:'Retained cornice over the central TOTEHM spine'});
-   for(const [x,width,y] of [[-5.83,.54,26.56],[6.68,.40,26.60],[7.87,.42,26.47]])block(trim,[x,y,s.maxZ],[width,.12,.57],{name:'Isolated surviving fragment of the old stone cornice'});
-   block(iron,[0,26.9775,s.maxZ-.12],[20.1,.045,.065],{name:'Ultra-modern uninterrupted glass roof edge'});
-   for(const x of [-10.015,10.015])block(iron,[x,26.44,s.maxZ-.12],[.035,1.12,.045],{name:'Slender modern glazing edge beside the broken masonry'});
-  }else{
-   block(trim,[0,s.y+5.26,s.maxZ],[s.maxX-s.minX+.55,.18,.66],{name:'Street facade limestone cornice'});
-   block(iron,[0,s.y+5.43,s.maxZ],[s.maxX-s.minX+.72,.13,.8],{name:'Street facade projecting SoHo cornice'});
+  // Fine dark reveals articulate the glass additions against rough old stone.
+  // Recessed slab noses and continuous gallery lights replace projecting
+  // industrial cornices; no beam crosses the open central atrium.
+  for(const side of [-1,1]){
+   const a=side<0?s.minX:3.4,b=side<0?-3.4:s.maxX;
+   block(iron,[(a+b)/2,s.y+5.36,s.maxZ-.10],[b-a,.075,.22],{name:'Floating graphite edge of the glass gallery'});
+   block(lightMaterial,[(a+b)/2,s.y+5.26,s.maxZ-.23],[b-a,.016,.028],{name:'Warm recessed museum light'});
   }
+  if(s.floor===4)brokenCrown(s,s.y+4.35);
   light([0,s.y+4.8,-9.4],105,18,0xf0ece3);
   for(const x of [-6.5,6.5])block(lightMaterial,[x,s.y+4.95,-9.4],[.025,.012,3.0]);
  }
- // The blank masonry spine is intentional: no window interrupts the giant
+ // Three sculptural low-iron fins form a frameless crown outside the usable
+ // floorplates. They catch moonlight while the clear roof keeps the stars open.
+ for(const [x,y,z,width,length,tilt] of [[-6.9,27.38,-9.5,3.4,12,-.065],[.1,27.16,-10.2,3.1,10,.035],[6.7,27.56,-9.4,3.2,11.8,.085]]){
+  const fin=block(glass,[x,y,z],[width,.055,length],{batch:false,name:'Sculptural cantilevered glass roof fin'});fin.rotation.z=tilt;
+  const edge=block(iron,[x+width/2,y+.01,z],[.027,.035,length],{batch:false,name:'Fine graphite edge of the crystalline roof fin'});edge.rotation.z=tilt;
+ }
+ // The retained keep is intentional: no glass interrupts the giant
  // tongue and its actual TOTEHM artwork, even on the upper facade levels.
  for(const x of [-2.4,2.4])block(iron,[x,1.51,-1.80],[.055,3.2,.09]);
  block(iron,[0,3.12,-1.8],[4.86,.065,.1]);
@@ -209,14 +223,14 @@ export function createNewYorkGallery(scene,renderer,{mobile=false,onChange=()=>{
  for(const spec of [{p:[-3.6,7,3.2],power:190,color:0xffd59d},{p:[4.0,20,3.2],power:220,color:0xe1e8f1}]){
   const spot=new T.SpotLight(spec.color,spec.power,28,.5,.8,2);spot.position.set(...spec.p);spot.target.position.set(0,14,-1.3);root.add(spot,spot.target);
  }
- // Grazing facade wash reveals the red clay without replacing the night.
+ // Grazing facade wash reveals porous old limestone without replacing the night.
  for(const x of [-10,10]){const spot=new T.SpotLight(0xffd8ab,180,40,.48,.7,2);spot.position.set(x,1,3.4);spot.target.position.set(x,19,-2);root.add(spot,spot.target);}
  flush();changed();
  const portals=NEW_YORK_STATIONS.map(s=>{const p=s.position||s.book||s.screen;return{room:s.room,x:p[0],z:p[2],href:s.href};});
  return{
   root,solids,walkable,exhibitionWalls,artSurfaces,facadeWindows,interactables,pickables:interactables.map(i=>i.object),portals,setDay(){},
   update(dt,eye,motion=true){if(disposed)return false;if(motion)time+=Math.max(0,Math.min(Number(dt)||0,.1));const result=dirty;dirty=false;return result;},
-  diagnostics:()=>({heritage:heritage.diagnostics(),kind:'new-york-brick-facade-glass-gallery',ready:!disposed,building:true,modernGallery:true,levels:5,floorHeights:[...NEW_YORK_FLOORS],topFloorSetback:{...L.upper},redBrick:true,runningBond:true,ruinedHistoricFacade:true,brokenMasonryCrown:true,modernGlassSeal:true,crown:{brokenWings:2,centralSpineHalfWidth:3.4,maximumLossMetres:.89,modernGlassTop:27},facadeOnlyMasonry:true,windows:windowCount,windowsFrontOnly:true,centralWindows:0,glassSides:true,glassRear:true,minimalWhiteInterior:true,stoneFloors:true,flooring:{sameAsLisbon:true,ancientStone:ancientFloor.diagnostics()},stairs:0,ramps:NEW_YORK_RAMPS.length,rampWidth:L.rampWidth,continuousAscent:true,walkableMeshes:walkable.length,atrium:true,roof:true,glassRoof:true,exhibition:{walls:exhibitionWalls.length,levels:NEW_YORK_FLOORS.length,reservedSlots:artSurfaces.reduce((n,s)=>n+s.slots.length,0),rampsCrossArtwork:false},smokeOutlet:{x:-8,y:roofY,z:-15.2,radius:.45,radiusZ:.45},facade:{mouth:true,originalDrawing:true,paperLoaded,threeDimensional:true,tongueVolume:true,tongueSmooth:true,paperVolume:true,edgeNotches:12,elegantlyLit:true,monumental:true,centered:true,scale:2.6,position:facadeSign.position.toArray(),blankCenter:true},pavement:{kind:'manhattan-bluestone-and-asphalt',calcada:false,curbs:true,cellarGrates:true,utilityCovers:true,crosswalk:true},stone:stone.diagnostics(),portals,rooms:4,independentFiles:true,time:+time.toFixed(3),disposed}),
+  diagnostics:()=>({heritage:heritage.diagnostics(),kind:'new-york-castle-crystalline-gallery',ready:!disposed,building:true,modernGallery:true,levels:5,floorHeights:[...NEW_YORK_FLOORS],topFloorSetback:{...L.upper},redBrick:false,runningBond:false,castleRuins:true,panoramicGlassFront:true,crystallineRoofFins:3,airyInterior:true,ruinedHistoricFacade:true,brokenMasonryCrown:true,modernGlassSeal:true,crown:{brokenWings:2,centralSpineHalfWidth:3.4,maximumLossMetres:.89,modernGlassTop:27},facadeOnlyMasonry:true,windows:windowCount,windowsFrontOnly:true,centralWindows:0,glassSides:true,glassRear:true,minimalWhiteInterior:true,stoneFloors:true,flooring:{sameAsLisbon:true,ancientStone:ancientFloor.diagnostics()},stairs:0,ramps:NEW_YORK_RAMPS.length,rampWidth:L.rampWidth,continuousAscent:true,walkableMeshes:walkable.length,atrium:true,roof:true,glassRoof:true,exhibition:{walls:exhibitionWalls.length,levels:NEW_YORK_FLOORS.length,reservedSlots:artSurfaces.reduce((n,s)=>n+s.slots.length,0),rampsCrossArtwork:false},smokeOutlet:{x:-8,y:roofY,z:-15.2,radius:.45,radiusZ:.45},facade:{castleGlass:true,mouth:true,originalDrawing:true,paperLoaded,threeDimensional:true,tongueVolume:true,tongueSmooth:true,paperVolume:true,edgeNotches:12,elegantlyLit:true,monumental:true,centered:true,scale:2.6,position:facadeSign.position.toArray(),blankCenter:true},pavement:{kind:'manhattan-bluestone-and-asphalt',calcada:false,curbs:true,cellarGrates:true,utilityCovers:true,crosswalk:true},stone:stone.diagnostics(),portals,rooms:4,independentFiles:true,time:+time.toFixed(3),disposed}),
   dispose(){if(disposed)return;disposed=true;root.removeFromParent();heritage.dispose();ancientFloor.dispose();stone.dispose();for(const t of textures)t.dispose();for(const g of geometries)g.dispose();for(const m of materials)m.dispose();root.clear();}
  };
 }
