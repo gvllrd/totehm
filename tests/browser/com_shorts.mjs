@@ -316,7 +316,7 @@ try{
   await pg.click('#rdr-sh .ssp-s .ssp-box .loupe[data-vz]');await pg.waitForTimeout(300);
   const rz=await pg.evaluate(()=>({zoom:!!document.querySelector('#rdr-sh .ssp-s .ssp-box .v-col.is-zoom'),voir:document.body.classList.contains('rdr-voir'),gate:document.body.classList.contains('gate')}));
   ok(sh2.loupe&&/rgba\(0, 0, 0/.test(sh2.ombre)&&rz.zoom&&rz.voir&&rz.gate,'22/10 · la box surélevée porte sa LOUPE : elle s\'agrandit en place, le spot reste ouvert, le Totehm fermé → '+JSON.stringify(rz));
-  ok(sh2.chips.some(t=>/oct|today|tomorrow|yesterday/i.test(t))&&sh2.chips.some(t=>/location on/i.test(t))
+  ok(sh2.chips.some(t=>/\b\d{1,2} [a-z]{3}\b|today|tomorrow|yesterday/i.test(t))&&sh2.chips.some(t=>/location on/i.test(t))
      &&sh2.chips.some(t=>/social/i.test(t))&&sh2.say==='Bring a coffee'&&sh2.go&&sh2.cal,
      'les informations du spot : '+sh2.chips.join(' · ')+' — son mot, GO, CALENDAR');
   ok(sh2.per.join(' ')==='future','27/10 · le temps courant, dans la barre : « '+sh2.per.join(' ')+' » (now · past · future)');
