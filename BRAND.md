@@ -41,10 +41,10 @@ THP : *Neuroscience, not motivation.*) · ← **mes médias** (en y allant, les 
 un tap sur le TOTEHM et MY WISDOM · MY GRIND · MY VISION naissent de lui, en carrés perforés de leur couleur ;
 MY GRIND = OBJECTIVES · HABITS · REPULSIONS empilés ; le « + » d'un média fait naître le même TOTEHM, la box choisie reste seule et la capture vient dessous) ·
 ● **mon TOTEHM** (plus de boîte noire : le TOTEHM EST le boîtier du processeur et le cœur d'un ARBRE DE VIE — ses douze
-perforations toutes raccordées, ses sept traits en branches vers le haut et en racines vers le bas ; il bat, à peine ; le toucher, le retourner ou chercher un membre arrête son
+perforations toutes raccordées ; au-dessus de lui, ses sept traits en branches sur tout le haut de l'écran ; dessous, en tronc jusqu'au
+curseur, qu'ils enlacent en arche avant de s'étaler en racines d'un bord à l'autre ; il bat, à peine ; le toucher, le retourner ou chercher un membre arrête son
 activité : ses traits sont aspirés en lui, et ressortent quand il revient ; ouvert, il est seul à l'écran ;
-le retourner montre le NOM seul — à même le navy,
-l'email dessous —, qui monte, puis
+le retourner montre le NOM seul — à même le navy, l'email dessous —, qui monte, puis
 tout d'un coup, en deux parties : **Monetize my TOTEHM** (*and get paid every month*) · **Go [Higher]**, ouverte d'abord
 (tout ce que je fais dans mon TOTEHM, en visuels : ma semaine, mes Habits × 7 jours suivies dans Telegram, mes intentions,
 mes objectifs, mon activité ; puis [Higher], ce qu'il ouvre — TotehmBot —, mes abonnements) ; puis DELETE MY TOTEHM et SIGN OUT en boutons, les conditions) ·
