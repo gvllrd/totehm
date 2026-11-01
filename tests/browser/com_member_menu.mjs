@@ -102,8 +102,8 @@ try{
    ok((await pg.textContent('#mw-higher'))==='Open'&&(await pg.textContent('#mw-higher-acts'))==='Stop'&&/renews/.test(await pg.textContent('#mw-higher-hint')),'Higher active: renews on a date, Open, and Stop (at the end of the month)');
    await pg.click('[data-hsub="cancel"]');await pg.waitForFunction(()=>/it ends on/.test(document.getElementById('mw-menu-note').textContent));
    ok(log.functions.some(f=>f.name==='higher-sub'&&f.body.action==='cancel')&&(await pg.textContent('#mw-higher-acts'))==='Keep','stopping is at period end (higher-sub cancel), and it can be kept');
-   await pg.click('#mw-higher');await pg.waitForFunction(()=>window.__totehm_lv&&window.__totehm_lv().vue==='b');
-   ok(!await pg.$eval('#member-window',e=>e.classList.contains('show')),'My Higher subscription opens my Reflection (the view below, 15/10)');
+   await pg.click('#mw-higher');await pg.waitForURL(origin+'/higherself');
+   ok(pg.url()===origin+'/higherself','Higher actif ouvre son expérience autonome ; le pitch ChatGPT reste gratuit');
    ok(!log.errors.some(e=>e.startsWith('pageerror')),'Higher active: no runtime errors');await ctx.close();
   }
   {const{pg,ctx,log}=await ready(browser,{rpc:{...rpc,my_landing:LAND}});await pg.goto(origin+'/totehm?spaces=1');await pg.waitForSelector('body.member');await pg.waitForTimeout(900);

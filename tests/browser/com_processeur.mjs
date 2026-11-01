@@ -1,10 +1,10 @@
 // COM · 15/10/2026, mis à jour le 20/10 sexies — LE PROCESSEUR : CINQ vues, quatre voisins
-// (↑ Get Higher · ← Media · My TOTEHM · Spots → · ↓ My Reflection). Les deux côtés sont la TRANSFORMATION du centre :
+// (↑ Get Higher · ← Media · My TOTEHM · Spots → · ↓ Higher my ChatGPT). Les deux côtés sont la TRANSFORMATION du centre :
 // les sept traits se plient (rail à gauche, méridiens à droite). CENTRE : le papier dans son socle, les ramifications de
 // mes intentions (les 7 couleurs) ; Mine · Members (plus de galaxie : le papier grandit, se retourne, on tape un nom,
 // et l'on vit l'écosystème du membre). HAUT : la bouche du
 // 12/10, le papier sur la langue, « Get [Higher] » l'avale → higher.boutique/get_higher?from=com. BAS : la condensation
-// (seul #gl-bg tourne), le profil, la Reflection en trois étages (citations vérifiées, proposition ≠ Habit).
+// (seul #gl-bg tourne), le profil, Higher my ChatGPT en trois étages (citations vérifiées, proposition ≠ Habit).
 // Le verso = mes réglages : com_paper.mjs. Les shorts et la capture : com_shorts.mjs. Tout est simulé.
 // LANCER : node com_processeur.mjs /tmp
 import fs from 'node:fs';
@@ -93,8 +93,8 @@ try{
   ok(parseFloat(c.creuxOp)>=.45,'la couleur d\'une intention vide se LIT ('+c.creuxOp+')');
   ok(!c.flou,'aucun flou (socle, ramifications)');
   ok(!c.partis.length,'plus de manette, plus de galaxie, plus de radar (balisage retiré) '+c.partis.join(','));
-  ok(c.cotes===2&&c.up==='Get Higher'&&c.dn==='My Reflection'&&c.lf==='Media'&&c.rt==='Spots'&&c.mine==='true'&&c.others==='false',
-     'quatre chevrons discrets (↑ Get Higher, ↓ My Reflection, ← Media, → Spots) ; [Mine] coché');
+  ok(c.cotes===2&&c.up==='Get Higher'&&c.dn==='Higher my ChatGPT'&&c.lf==='Media'&&c.rt==='Spots'&&c.mine==='true'&&c.others==='false',
+     'quatre chevrons discrets (↑ Get Higher, ↓ Higher my ChatGPT, ← Media, → Spots) ; [Mine] coché');
   ok(c.sigAbs&&c.connAbs&&/to open it · (Turn|Swipe) to configure it$/.test(c.tap)&&c.bouche==='0',
     'plus de nom ni d\'espace membre sur l\'atterrissage : le nom ne vit que sur la face VERSO ; « '+c.tap+' » ; la bouche invisible au centre');
   await pg.screenshot({path:OUT+'/proc_centre_'+(tel?'tel':'ordi')+'.png'});
@@ -116,7 +116,7 @@ try{
      premier, puis part ; jamais deux voyages à la fois. */
   await pg.keyboard.press('ArrowDown');await pg.keyboard.press('ArrowUp');
   const mid=await lv(pg);await pg.waitForFunction(a=>{const d=window.__totehm_lv();return d.allers===a&&!d.bouge;},a0+2,{timeout:6000}).catch(()=>{});
-  let d=await lv(pg);ok(mid.vue==='b'&&mid.bouge&&d.vue==='c'&&d.allers===a0+2,'↓ puis ↑ aussitôt : la Reflection, PUIS le centre (le second attend, jamais deux à la fois)');
+  let d=await lv(pg);ok(mid.vue==='b'&&mid.bouge&&d.vue==='c'&&d.allers===a0+2,'↓ puis ↑ aussitôt : Higher my ChatGPT, PUIS le centre (le second attend, jamais deux à la fois)');
   await pg.keyboard.press('Escape');await vers(pg,'c');
   await pg.keyboard.press('ArrowUp');await vers(pg,'h');
   await pg.keyboard.press('ArrowUp');await pg.waitForTimeout(500);
@@ -133,7 +133,7 @@ try{
   ok(tx.join(',')==='g,c,d,c','le trackpad, horizontal : deltaX > 0 → mes shorts, < 0 → mes spots : '+tx.join(','));
   await pg.click('#lvn-dn');await vers(pg,'b');const dn=await pg.$eval('#lvn-dn',e=>getComputedStyle(e).opacity);
   await pg.click('#lvn-up');await vers(pg,'c');
-  ok((await lv(pg)).vue==='c'&&dn==='0','les chevrons : ↓ la Reflection (en bas, plus de chevron ↓), ↑ le centre');
+  ok((await lv(pg)).vue==='c'&&dn==='0','les chevrons : ↓ Higher my ChatGPT (en bas, plus de chevron ↓), ↑ le centre');
   ok(!erreurs(log).length,'gestes : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
  {const{pg,log}=await page(browser,{dir:'com',origin,tables,viewport:{width:390,height:844},hasTouch:true,rpc:{my_landing:LAND()}});
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1000);
@@ -145,7 +145,7 @@ try{
     await glisse(330,560,200,560),await glisse(200,560,330,560),await glisse(200,560,330,560),await glisse(260,400,130,400)];
   /* 20/10 sexies — sur la CARTE, le doigt POSÉ SUR la Terre la fait tourner (27/10 : seulement sur elle ; ailleurs il
      navigue, `com_prise_spot`) ; le chevron, la manette et le trackpad ramènent au centre. */
-  ok(s.join(',')==='h,c,b,c,g,c,d,d','22/10 · le doigt est un manche : haut → Get Higher, bas → la Reflection, gauche → mes shorts, droite → les spots ; sur la Terre, il la tourne : '+s.join(','));
+  ok(s.join(',')==='h,c,b,c,g,c,d,d','22/10 · le doigt est un manche : haut → Get Higher, bas → Higher my ChatGPT, gauche → mes shorts, droite → les spots ; sur la Terre, il la tourne : '+s.join(','));
   await pg.click('#lvn-lf');await vers(pg,'c');ok((await lv(pg)).vue==='c','le chevron ← ramène au centre');
   ok(!erreurs(log).length,'doigt : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
 
@@ -263,11 +263,11 @@ try{
   ok(e.qui==='kai3'&&e.quiVu&&e.couleur==='rgb(251, 213, 202)','[Members] porte SON nom, en Coral');
   ok(e.d.ramifications.habits!==habits0&&e.pales===5,'le processeur est le SIEN : ses deux intentions habitées, cinq en creux');
   ok(/to open it · (Turn|Swipe) to search$/.test(e.tap),'« '+e.tap+' »');
-  // ↓ chez lui : son offre, pas ma Reflection
+  // ↓ chez lui : son offre, pas mon pitch ChatGPT
   await pg.keyboard.press('ArrowDown');await vers(pg,'b');await pg.waitForTimeout(700);
-  const b=await pg.evaluate(()=>({o:document.getElementById('mb-offre').textContent,say:getComputedStyle(document.getElementById('lv-say')).display,
+  const b=await pg.evaluate(()=>({o:document.getElementById('mb-offre').textContent,pitch:getComputedStyle(document.getElementById('chatgpt-pitch')).display,
     p:(()=>{const p=document.getElementById('gate-asteroid').getBoundingClientRect(),m=document.getElementById('rf-me').getBoundingClientRect();return Math.abs(p.x+p.width/2-(m.x+m.width/2))<4;})()}));
-  ok(/kai3/.test(b.o)&&/SUBSCRIBE · 24 € \/ year/.test(b.o)&&b.say==='none'&&b.p,'↓ chez un membre : SON profil et SON offre (« '+b.o+' »), jamais ma Reflection');
+  ok(/kai3/.test(b.o)&&/SUBSCRIBE · 24 € \/ year/.test(b.o)&&b.pitch==='none'&&b.p,'↓ chez un membre : SON profil et SON offre (« '+b.o+' »), jamais mon pitch ChatGPT');
   await pg.keyboard.press('ArrowUp');await vers(pg,'c');await pg.waitForTimeout(500);
   // son Totehm, en lecture, puis on replie : on reste chez lui
   await pg.click('#lv-tap-open');await pg.waitForFunction(()=>!document.body.classList.contains('gate'),null,{timeout:9000}).catch(()=>{});
@@ -362,13 +362,13 @@ try{
       points:[...document.querySelectorAll('#lv-socket .sk-ring b')].map(b=>getComputedStyle(b).backgroundColor),
       centre:Math.abs(sr.x+sr.width/2-(me.x+me.width/2))<3&&Math.abs(sr.y+sr.height/2-(me.y+me.height/2))<3,
       clip:getComputedStyle(q('#ast-front')).clipPath,rail:getComputedStyle(q('#gl-rail')).opacity,wm:getComputedStyle(q('#gl-wm')).opacity,
-      t:getComputedStyle(q('#gl-t')).opacity,ram:getComputedStyle(q('#lv-ram')).opacity,self:getComputedStyle(q('#lv-slogan .lvs-self')).opacity,
+      t:getComputedStyle(q('#gl-t')).opacity,ram:getComputedStyle(q('#lv-ram')).opacity,slogan:getComputedStyle(q('#lv-slogan')).opacity,
       tourne:q('#gl-bg').getAnimations().filter(a=>a.effect&&a.effect.getKeyframes().some(k=>/rotate/.test(k.transform||''))).length};});
   ok(b.tours===1&&b.tourne===0,'il a tourné une fois, puis s\'est posé d\'aplomb');
   ok(b.rayon==='50%'&&b.anneau==='1'&&b.centre&&b.points.length===7,'le socle s\'est condensé en ANNEAU autour du profil, sept points aux couleurs des intentions');
   ok(/circle\(29\.5%/.test(b.clip)&&b.rail==='0'&&b.wm==='0'&&b.t==='1'&&b.ram==='0','le papier : un profil autour du T (le même objet), le rail et le wordmark éteints sans tourner ; les ramifications résorbées');
-  ok(b.self==='1','« [Higher] Self » sous le profil');
-  await pg.screenshot({path:OUT+'/proc_reflection_vide.png'});
+  ok(b.slogan==='0','le badge global est rangé : Higher figure dans le pitch et son CTA');
+  await pg.screenshot({path:OUT+'/proc_chatgpt.png'});
   await pg.click('#lvn-up');await pg.waitForTimeout(240);
   const ret=await pg.evaluate(()=>document.getElementById('gl-bg').getAnimations().filter(a=>a.effect&&a.effect.getKeyframes().some(k=>/rotate/.test(k.transform||''))).length);
   await vers(pg,'c');await pg.waitForTimeout(900);
@@ -376,162 +376,8 @@ try{
   ok(ret===1&&c.r==='0px'&&c.ram==='1'&&!/29\.5/.test(c.clip),'le retour aussi est animé (#gl-bg tourne à l\'envers) : le socle carré, les ramifications');
   ok(!erreurs(log).length,'condensation : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
 
- // ── 6 · LA REFLECTION : trois étages ; seules les citations VRAIES (`@ok`) s'affichent comme miennes ; une
- //    step qui n'est pas une Habit est une PROPOSITION (pointillé, « + my Habit ») ──
- {const REP='@dir objective "Ship my first collection"\nI ship before December, one detail a night.\n@obs\nI keep scrolling instead of drawing.\n'
-   +'@teach wisdom "Discipline is freedom"\nEvery night I give the screen is a night I steal from my collection.\n@step new\nI draw one sleeve at 22:00 tonight.\n'
-   +'@ok {"dir":true,"teach":false,"step":null}';
-  const corps=[];let say=0;
-  const net=(url,req)=>{ if(url.pathname!=='/functions/v1/higher-self') return null;
-    const b=JSON.parse(req.postData()||'{}');corps.push(b);
-    if(b.action==='say'&&++say<=2) return {status:200,contentType:'text/plain; charset=utf-8',headers:{'X-SM-Left':String(6-say),'X-SM-Higher':'0','access-control-allow-origin':'*','access-control-expose-headers':'X-SM-Left, X-SM-Higher'},body:REP};
-    return {status:402,contentType:'application/json',headers:{'access-control-allow-origin':'*'},body:JSON.stringify({error:'higher_required',state:{ready:true,habit:true,objective:true,higher:false,free_total:7,free_left:0,left:0}})}; };
-  const{pg,log}=await page(browser,{dir:'com',origin,tables,network:net,functions:{'higher-sub':{error:'not_ready'}},viewport:{width:390,height:844},hasTouch:true,rpc:{my_landing:LAND()}});
-  await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1000);
-  await pg.click('#lvn-dn');await vers(pg,'b');await pg.waitForTimeout(400);
-  const v=await pg.evaluate(()=>({say:!document.getElementById('lv-say').classList.contains('hide'),font:getComputedStyle(document.getElementById('lv-say-in')).fontFamily,
-    note:document.getElementById('lv-say-note').textContent,etages:[...document.querySelectorAll('#lv-thread .rf-t')].map(e=>e.className),
-    vide:document.getElementById('lv-say').classList.contains('is-vide'),cur:!!document.querySelector('#lv-say .rf-cur'),
-    go:document.getElementById('lv-say-go').textContent.trim(),goSvg:!!document.querySelector('#lv-say-go svg'),goOp:getComputedStyle(document.getElementById('lv-say-go')).opacity,
-    focus:document.activeElement===document.getElementById('lv-say-in'),ph:document.getElementById('lv-say-in').placeholder,
-    px:getComputedStyle(document.getElementById('lv-say-in')).fontSize,boite:getComputedStyle(document.getElementById('lv-say-in')).backgroundColor,
-    align:getComputedStyle(document.getElementById('lv-say-in')).textAlign,coarse:matchMedia('(pointer:coarse)').matches,
-    slo:(()=>{const r=document.getElementById('lv-slogan').getBoundingClientRect();return r.top>innerHeight*.8;})()}));
-  ok(v.say&&/Quantico/.test(v.font)&&/^6 of 7 free this month/.test(v.note),'prêt : la saisie (Quantico), « 6 of 7 free this month »');
-  ok(v.etages.length===0&&v.vide&&v.focus&&v.ph===''&&!v.cur,'20/10 septies · en arrivant : le focus est déjà dans le champ ; UN SEUL curseur, le vrai (le trait qui clignotait est parti) ; plus de « Wassup ? » → '+JSON.stringify({f:v.focus,cur:v.cur}));
-  ok(v.go==='SEND'&&!v.goSvg&&v.goOp==='0','20/10 septies · la flèche est devenue un BOUTON « SEND », caché tant que le champ est vide → '+JSON.stringify({go:v.go,svg:v.goSvg,op:v.goOp}));
-  ok(v.px==='22px'&&v.align==='left'&&v.boite==='rgba(0, 0, 0, 0)','20/10 ter · à GAUCHE, en GRAND (22 px), ni boîte ni fond → '+v.px+' '+v.align+' '+v.boite);
-  /* ↑ dans le champ vide remonte ; redescendre remet le curseur dans le champ */
-  await pg.keyboard.press('ArrowUp');await vers(pg,'c');await pg.waitForTimeout(300);
-  ok(await pg.evaluate(()=>window.__totehm_lv().vue)==='c','20/10 · ↑ dans le champ vide remonte au centre');
-  await pg.click('#lvn-dn');await vers(pg,'b');await pg.waitForTimeout(400);
-  ok(await pg.evaluate(()=>document.activeElement===document.getElementById('lv-say-in')),'20/10 · redescendre : le curseur est de nouveau dans le champ');
-  await pg.fill('#lv-say-in','I procrastinate on my collection');await pg.keyboard.press('Enter');
-  await pg.waitForFunction(()=>window.__totehm_lv().reflection.envois===1,null,{timeout:5000}).catch(()=>{});await pg.waitForTimeout(300);
-  const r=await pg.evaluate(()=>{const q=s=>document.querySelector(s),cs=e=>e&&getComputedStyle(e).backgroundColor;
-    const t=[...document.querySelectorAll('#lv-thread .rf-t')];
-    return {q:q('#lv-thread .rf-q')?.textContent,fonds:t.map(cs),refs:[...document.querySelectorAll('#lv-thread .rf-ref')].map(e=>e.textContent),
-      dir:t[0]?.querySelector('p')?.textContent,obs:t[2]?.querySelector('p')?.textContent,teachK:t[2]?.querySelector('.rf-k')?.textContent,
-      teach:t[2]?.querySelector('.rf-teach p')?.textContent,step:t[1]?.querySelector('p')?.textContent,prop:t[1]?.classList.contains('is-prop'),
-      add:!!t[1]?.querySelector('[data-rf-add]'),acts:document.querySelectorAll('#lv-thread .sm-acts').length,pense:window.__totehm_lv().reflection.pense,
-      invite:!!t[1]?.querySelector('.rf-lieu-up[data-sm-offer] .sm-hi'),lieu:document.querySelectorAll('#lv-thread .rf-lieu').length,
-      classes:t.map(e=>e.className.match(/t-\w+/)[0]),
-      haute:t[1]&&t[0]?t[1].getBoundingClientRect().width>t[0].getBoundingClientRect().width&&/matrix\(1, 0, 0, 1, 0, -\d/.test(getComputedStyle(t[1]).transform):false};});
-  ok(r.q==='I procrastinate on my collection'&&JSON.stringify(r.fonds)===JSON.stringify(['rgb(54, 73, 140)','rgb(51, 51, 102)','rgb(116, 49, 105)'])
-     &&JSON.stringify(r.classes)===JSON.stringify(['t-dir','t-step','t-obs']),'15/10 bis · direction (bleu clair) · LA HABIT (navy, AU MILIEU) · obstacle + Teaching (rouge-violet) : l\'action est le centre de gravité');
-  ok(r.haute,'la Habit est sur-élevée : plus large que les deux autres, et elle monte');
-  ok(r.dir==='I ship before December, one detail a night.'&&r.obs==='I keep scrolling instead of drawing.'&&r.teachK==='Teaching from the story'&&/screen/.test(r.teach),'direction · ce qui fait obstacle · « Teaching from the story »');
-  ok(JSON.stringify(r.refs)===JSON.stringify(['Ship my first collection']),'seule la citation VÉRIFIÉE s\'affiche comme mienne (l\'objectif) ; la croyance non vérifiée n\'est jamais présentée comme mienne');
-  ok(r.prop&&r.add&&r.step==='I draw one sleeve at 22:00 tonight.','la step nouvelle = une PROPOSITION (pointillé) + « + my Habit »');
-  ok(r.acts===0&&!r.pense,'gratuit : pas de partage ; l\'anneau ne tourne plus une fois la réponse arrivée');
-  const c1=corps.find(x=>x.action==='say');
-  ok(c1&&c1.fmt==='r4'&&Array.isArray(c1.turns)&&c1.turns.length===0&&Number.isInteger(c1.tz)&&JSON.stringify(c1.pos)==='{"lat":38.72,"lng":-9.14}'&&!('ou' in c1),
-     '22/10 · l\'appel demande le MIROIR (r4) avec mon fuseau ; 29/10 : gratuit aussi, la position part ARRONDIE (~1 km, la météo) — les lieux restent Higher (le serveur décide) ; « chez moi » encore inconnu → '+JSON.stringify(c1&&{pos:c1.pos,ou:c1.ou}));
-  ok(r.invite&&r.lieu===0,'22/10 · gratuit : sous la step, « a real place near me · Higher » (aucun lieu inventé)');
-  await pg.screenshot({path:OUT+'/proc_reflection.png'});
-  await pg.click('#lv-thread [data-rf-add]');await pg.waitForTimeout(1400);
-  const a=await pg.evaluate(()=>({h:(window.__totehm_zone||{}).habitudes,ref:[...document.querySelectorAll('#lv-thread .t-step .rf-ref')].map(e=>e.textContent),prop:document.querySelector('#lv-thread .t-step').classList.contains('is-prop'),aj:window.__totehm_lv().reflection.ajouts}));
-  ok(a.aj===1&&JSON.stringify(a.ref)===JSON.stringify(['Draw one sleeve at 22:00 tonight'])&&!a.prop,'« + my Habit » : la proposition devient une Habit de mon TOTEHM (« Draw one sleeve at 22:00 tonight »)');
-  await pg.fill('#lv-say-in','and tomorrow');await pg.keyboard.press('Enter');
-  await pg.waitForFunction(()=>window.__totehm_lv().reflection.envois===2,null,{timeout:5000}).catch(()=>{});
-  const c2=corps.filter(x=>x.action==='say')[1];
-  ok(c2&&c2.turns.length===2&&c2.turns[1].role==='sm'&&!/@ok|@lieu|@ici/.test(c2.turns[1].text),'le tour suivant porte les tours d\'avant, sans les lignes du serveur (vérification, lieu) ; aucun historique à l\'écran');
-  ok(await pg.locator('#lv-thread .rf-q').count()===1&&/and tomorrow/.test(await pg.textContent('#lv-thread .rf-q')),'la dernière Reflection seule');
-  await pg.fill('#lv-say-in','and now');await pg.keyboard.press('Enter');await pg.waitForTimeout(900);
-  const f=await pg.evaluate(()=>({v:document.getElementById('lv-say-in').value,ferme:document.getElementById('lv-say').classList.contains('hide'),offre:!!document.querySelector('#lv-thread .sm-offer [data-sm-sub]')}));
-  ok(f.v==='and now'&&f.ferme&&f.offre,'les 7 pris (402) : la phrase revient, la saisie se ferme, l\'offre Higher');
-  ok(!erreurs(log).length,'Reflection : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
- // les états : sans compte (un exemple, CONNECT), TOTEHM pas prêt, abonné Higher (partage), ?higher=paid
- {const{pg,log}=await page(browser,{dir:'com',origin,tables:{},session:false,viewport:{width:390,height:844}});
-  await pg.goto(origin+'/totehm');await pg.waitForTimeout(1000);
-  await pg.keyboard.press('ArrowDown');await vers(pg,'b');await pg.waitForTimeout(300);
-  const s=await pg.evaluate(()=>({ex:document.querySelector('#lv-thread .rf-ex')?.textContent,n:document.querySelectorAll('#lv-thread .rf-t').length,
-    btn:document.querySelector('[data-sm-connect]')?.textContent,say:document.getElementById('lv-say').classList.contains('hide'),add:document.querySelectorAll('[data-rf-add]').length}));
-  ok(s.ex==='example'&&s.n===3&&s.btn==='CONNECT WITH MY TOTEHM'&&s.say&&!s.add,'sans compte : un EXEMPLE (dit comme tel), CONNECT WITH MY TOTEHM, pas de saisie');
-  await pg.click('[data-sm-connect]');await pg.waitForTimeout(1200);
-  ok(await pg.evaluate(()=>document.body.classList.contains('is-door')&&window.__totehm_lv().vue==='c'),'CONNECT : retour au centre, la porte s\'ouvre');
-  ok(!erreurs(log).length,'sans compte : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
- {const{pg,log}=await page(browser,{dir:'com',origin,tables,viewport:{width:390,height:844},rpc:{my_landing:LAND({sm:{ready:false,habit:true,objective:false,higher:false,free_total:7,free_left:7,left:7}})}});
-  await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(900);
-  await pg.keyboard.press('ArrowDown');await vers(pg,'b');
-  const v=await pg.evaluate(()=>({say:document.getElementById('lv-say').classList.contains('hide'),h:document.querySelector('[data-sm-write="habits"]')?.className,o:document.querySelector('[data-sm-write="objectives"]')?.className}));
-  ok(v.say&&/is-ok/.test(v.h)&&!/is-ok/.test(v.o),'TOTEHM pas prêt : pas de saisie ; Habit ✓, Objective à écrire');
-  await pg.click('[data-sm-write="objectives"]');
-  await pg.waitForFunction(()=>!document.body.classList.contains('gate')&&window.__totehm_zone&&window.__totehm_zone.vue==='objectives',null,{timeout:9000}).catch(()=>{});
-  ok(await pg.evaluate(()=>!document.body.classList.contains('gate')&&window.__totehm_zone.vue==='objectives'),'« + my Objective » ouvre mon TOTEHM sur les objectifs (depuis le bas : retour au centre, puis la déconstruction)');
-  ok(!erreurs(log).length,'pas prêt : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
- /* Higher : le miroir (r4) — la step EST ma Habit « Run the hill », reformulée ; sous elle, un lieu VÉRIFIÉ par le serveur
-    (`@lieu`, jamais écrit par le modèle) : GO (Maps), SPOT IT (figher.club, à son heure) ; ma position part arrondie (~1 km). */
- {const quand=new Date(Date.now()+2*864e5).toISOString().slice(0,11)+'07:00';
-  const MAPS='https://www.google.com/maps/search/?api=1&query=Jardim%20da%20Estrela%2C%20Pra%C3%A7a%20da%20Estrela%2C%20Lisboa&query_place_id=ChIJ123';
-  const REP='@dir vision "A quiet house by the sea"\nI build the house one brick a day.\n@obs\nI wait for the mood.\n@teach story\nI already know waiting never built anything.\n@step habit "Run the hill" fight\nDown at Jardim da Estrela at 7:00, dark techno on, I run the hill twice.\n@ok {"dir":true,"teach":null,"step":true}\n'
-    +'@lieu '+JSON.stringify({kind:'place',name:'Jardim da Estrela',address:'Praça da Estrela, Lisboa',city:'Lisbon',url:null,maps:MAPS,lat:38.713,lng:-9.159,km:1.2,when:quand})
-    +'\n@ici {"t":23.5,"ciel":"fair_day","ou":"home"}';
-  const corps=[];
-  const net=(url,req)=>{ if(url.pathname!=='/functions/v1/higher-self') return null; const b=JSON.parse(req.postData()||'{}');corps.push(b);
-    if(b.action==='say') return {status:200,contentType:'text/plain; charset=utf-8',headers:{'X-SM-Left':'29','X-SM-Higher':'1','access-control-allow-origin':'*','access-control-expose-headers':'X-SM-Left, X-SM-Higher'},body:REP};
-    return {status:409,contentType:'application/json',headers:{'access-control-allow-origin':'*'},body:JSON.stringify({error:'not_linked'})}; };
-  const{pg,log}=await page(browser,{dir:'com',origin,tables,network:net,viewport:{width:390,height:844},hasTouch:true,
-    rpc:{my_landing:LAND({higher:{active:true,price_cents:700,currency:'eur'},sm:{ready:true,habit:true,objective:true,higher:true,free_total:7,free_left:7,left:30}}),new_bot_link_code:'c0de',
-         spot_schedule_audience:{ok:true,id:'sp1'}}});
-  /* 29/10 — CHEZ MOI : le navigateur a déjà vu ce point deux nuits (ici, à 100 m près) ; rien de cela n'a quitté l'appareil */
-  await pg.addInitScript(()=>{ try{ localStorage.setItem('totehm_ici_v1',JSON.stringify({vu:[{lat:38.722,lng:-9.139,h:23,j:'2026-10-20'},{lat:38.723,lng:-9.14,h:2,j:'2026-10-22'}]})); }catch(_){} });
-  await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(900);await ouvre(pg);
-  await pg.keyboard.press('ArrowDown');await vers(pg,'b');
-  await pg.fill('#lv-say-in','lazy today');await pg.keyboard.press('Enter');
-  await pg.waitForFunction(()=>window.__totehm_lv().reflection.envois===1,null,{timeout:5000}).catch(()=>{});await pg.waitForTimeout(200);
-  const h=await pg.evaluate(()=>({refs:[...document.querySelectorAll('#lv-thread .rf-ref')].map(e=>e.textContent),prop:document.querySelector('#lv-thread .t-step').classList.contains('is-prop'),
-    add:document.querySelectorAll('[data-rf-add]').length,acts:document.querySelectorAll('#lv-thread .sm-acts button').length,
-    tg:!!document.querySelector('#lv-thread [data-tg]'),wa:!!document.querySelector('#lv-thread [data-wa]')}));
-  ok(JSON.stringify(h.refs)===JSON.stringify(['A quiet house by the sea','Run the hill'])&&!h.prop&&!h.add,'une step qui EST une de mes Habits (vérifiée) : sa mini-boîte, sans pointillé ni « + my Habit »');
-  ok(h.acts===1&&h.tg&&!h.wa,'15/10 bis · Higher : « [Higher] my Telegram » SEUL sous la Reflection (pas de Meta)');
-  const cs=corps.find(x=>x.action==='say');
-  ok(cs&&cs.fmt==='r4'&&JSON.stringify(cs.pos)==='{"lat":38.72,"lng":-9.14}','22/10 · Higher, position déjà permise : elle part ARRONDIE (~1 km) → '+JSON.stringify(cs&&cs.pos));
-  /* 29/10 — MON MOMENT : « chez moi » appris sur l'appareil (deux nuits ici) → un seul mot part ; la ligne du moment le montre */
-  const ici=await pg.evaluate(()=>{const e=document.getElementById('lv-ici');return {vu:!e.classList.contains('hide'),txt:e.textContent.replace(/\s+/g,' ').trim(),
-    stocke:localStorage.getItem('totehm_ici_v1')}; });
-  ok(cs&&cs.ou==='home'&&ici.vu&&/^\d\d:\d\d·24° fair·home$/.test(ici.txt.replace(/ ?· ?/g,'·'))&&!/totehm_ici|38\.72\d/.test(JSON.stringify(corps)),
-     '29/10 · chez moi (appris la nuit, sur l\'appareil) : « home » part seul, jamais la position fine ; la ligne du moment : '+ici.txt);
-  await pg.click('#lv-ici [data-ici]');await pg.waitForTimeout(150);
-  const ici2=await pg.evaluate(()=>document.querySelector('#lv-ici [data-ici]')?.textContent);
-  ok(ici2==='out','un tap corrige : ce point n\'est pas chez moi → « '+ici2+' »');
-  const l=await pg.evaluate(()=>{const b=document.querySelector('#lv-thread .t-step .rf-lieu');return b&&{n:b.querySelector('.rf-lieu-n')?.textContent,d:b.querySelector('.rf-lieu-d')?.textContent,
-    q:!!b.querySelector('.rf-lieu-q')?.textContent,go:b.querySelector('a.rf-add')?.href,spot:!!b.querySelector('[data-rf-spot]'),invite:!!document.querySelector('#lv-thread .rf-lieu-up')};});
-  ok(l&&l.n==='Jardim da Estrela'&&l.d==='Praça da Estrela, Lisboa · 1.2 km'&&l.q&&l.go===MAPS&&l.spot&&!l.invite,'22/10 · sous la step : le LIEU réel (nom, adresse, distance, heure), GO (Maps), SPOT IT → '+JSON.stringify(l));
-  await pg.screenshot({path:OUT+'/proc_miroir.png'});
-  await pg.click('#lv-thread [data-rf-spot]');
-  await pg.waitForFunction(()=>window.__totehm_lv().reflection.spots===1,null,{timeout:5000}).catch(()=>{});
-  const sp=log.rpc.find(x=>x.name==='spot_schedule_audience'),b=sp&&sp.body;
-  ok(b&&b.p_habit==='Run the hill'&&b.p_lat===38.713&&b.p_lng===-9.159&&b.p_place==='Jardim da Estrela, Praça da Estrela, Lisboa'&&b.p_city==='Lisbon'&&b.p_audience==='figher'
-     &&new Date(b.p_starts_at).getTime()===new Date(quand).getTime(),'22/10 · SPOT IT : ma Habit, au point du lieu, à l\'heure de la step → spot_schedule_audience '+JSON.stringify(b));
-  ok(await pg.evaluate(()=>window.__totehm_lv().reflection.spots===1&&/spotted/.test(document.getElementById('lv-say-note').textContent)&&document.querySelector('#lv-thread .rf-lieu-a button:disabled')?.textContent==='spotted'),
-     '22/10 · annoncé : « spotted · figher.club », compté dans __totehm_lv().reflection.spots');
-  /* Telegram : la Reflection part par le serveur (`higher-self` action telegram), jamais par une URL publique. */
-  await pg.click('#lv-thread [data-tg]');await pg.waitForTimeout(600);
-  const o=await pg.evaluate(()=>window.__ouvert);
-  ok(!o.some(u=>/wa\.me|whatsapp/i.test(String(u))),'Telegram : l\'envoi passe par le serveur — plus aucune URL WhatsApp publique');
-  /* 25/10 (Wah) : « lire et sélectionner un média ou un spot à envoyer à l'IA ». Ce que je montre part en
-     RÉFÉRENCE SEULE — le serveur le relit dans MON Totehm —, et la réponse la consomme. */
-  await pg.evaluate(()=>window.__smMontrer('media','aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa','Run the hill'));
-  await pg.waitForTimeout(250);
-  const fo1=await pg.evaluate(()=>({ouvert:!document.getElementById('lv-focus').classList.contains('hide'),
-    nom:(document.querySelector('#lv-focus b')||{}).textContent||''}));
-  await pg.fill('#lv-say-in','look at this');await pg.keyboard.press('Enter');
-  await pg.waitForFunction(()=>window.__totehm_lv().reflection.envois===2,null,{timeout:5000}).catch(()=>{});
-  await pg.waitForTimeout(250);
-  const mf=corps.filter(x=>x.action==='say').pop();
-  const fo2=await pg.evaluate(()=>document.getElementById('lv-focus').classList.contains('hide')&&window.__totehm_lv().reflection.montre===null);
-  ok(fo1.ouvert&&fo1.nom==='Run the hill'&&mf&&JSON.stringify(mf.focus)==='{"kind":"media","id":"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"}'&&fo2,
-     '25/10 · ce que je montre part en {kind,id} SEULS (jamais son texte), et la réponse le consomme → '+JSON.stringify(mf&&mf.focus));
-  ok(!erreurs(log).length,'Higher : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
- {let n=0;const SMF={ready:true,habit:true,objective:true,higher:false,free_total:7,free_left:0,left:0};
-  const{pg,log}=await page(browser,{dir:'com',origin,tables,viewport:{width:390,height:844},rpc:{my_landing:()=>(++n>=3?LAND({higher:{active:true},sm:{...SMF,higher:true,left:30}}):LAND({sm:SMF}))}});
-  await pg.goto(origin+'/totehm?higher=paid');await pg.waitForSelector('body.member');
-  await vers(pg,'b');
-  ok(pg.url()===origin+'/totehm'&&/payment received/.test(await pg.textContent('#lv-say-note')),'?higher=paid : l\'adresse est nettoyée, la Reflection s\'ouvre');
-  await pg.waitForFunction(()=>window.__totehm_lv().higher,null,{timeout:9000}).catch(()=>{});
-  ok((await lv(pg)).higher&&!(await pg.$eval('#lv-say',e=>e.classList.contains('hide'))),'le webhook arrive : la saisie s\'ouvre ('+n+' lectures de my_landing)');
-  ok(!erreurs(log).length,'retour Stripe : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
+ // Le pitch gratuit, les états de compte et les retours Higher sont vérifiés dans com_chatgpt.mjs.
+ // Le chat retiré n'a plus de saisie, quota, ajout de Habit ou publication Spot dans cette vue.
 
  // ── 7 · MOUVEMENT RÉDUIT : tout marche, rien ne tourne ni ne glisse ──
  {const{pg,log}=await page(browser,{dir:'com',origin,tables,viewport:{width:390,height:844},rpc:{my_landing:LAND()}});
@@ -560,38 +406,4 @@ try{
   ok(await pg.evaluate(()=>window.__coin)===0,'module retardé de 1,5 s ('+vp.width+' px) : le badge [Higher] jamais au coin');
   ok(!erreurs(log).length,'chargement lent : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
 
- // ── 20/10 · TÉLÉPHONE : on glisse vers le bas, le clavier est DÉJÀ ouvert (relais focalisé DANS le geste) ──
- {const{pg,log}=await page(browser,{dir:'com',origin,tables,rpc:{my_landing:LAND()},viewport:{width:390,height:844},hasTouch:true});
-  await pg.addInitScript(()=>{const m=window.matchMedia.bind(window);window.matchMedia=q=>/^\(pointer:\s*coarse\)$/.test(q)?{matches:true,media:q,addEventListener(){},removeEventListener(){},addListener(){},removeListener(){}}:m(q);});
-  await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1200);
-  const cdp=await pg.context().newCDPSession(pg);
-  const tp=(type,x,y)=>cdp.send('Input.dispatchTouchEvent',{type,touchPoints:type==='touchEnd'?[]:[{x,y}]});
-  await tp('touchStart',195,560);for(let i=1;i<=6;i++) await tp('touchMove',195,560+i*40);await tp('touchEnd');   /* 22/10 : un manche — vers le bas, la vue du bas */
-  const geste=await pg.evaluate(()=>document.activeElement&&document.activeElement.className);
-  await pg.keyboard.type('yo');await vers(pg,'b');await pg.waitForTimeout(300);
-  const a=await pg.evaluate(()=>({act:document.activeElement&&document.activeElement.id,val:document.getElementById('lv-say-in').value,
-    clav:document.body.classList.contains('rf-clavier'),joy:getComputedStyle(document.getElementById('lvjoy')).opacity}));
-  ok(geste==='rf-proxy','20/10 · téléphone : le clavier s\'ouvre DANS le geste (relais focalisé pendant la course)');
-  ok(a.act==='lv-say-in'&&a.val==='yo','20/10 · à l\'arrivée, le focus passe au vrai champ et garde ce qui a été tapé pendant la course → '+JSON.stringify(a));
-  ok(a.clav&&a.joy==='0','20/10 · en tapant sur téléphone, la manette s\'efface');
-  ok(await pg.evaluate(()=>!document.querySelector('#lv-say .rf-cur')&&!document.getElementById('lv-say').classList.contains('is-tape')),'20/10 septies · jamais de second curseur, même pendant la course (le faux trait est retiré du balisage)');
-  ok(await pg.evaluate(()=>{const b=document.getElementById('lv-say-go');return b.textContent.trim()==='SEND'&&getComputedStyle(b).opacity==='1';}),'20/10 septies · du texte : le bouton SEND apparaît');
-  await pg.evaluate(()=>document.getElementById('lv-say-in').blur());await pg.waitForTimeout(200);
-  /* le secours : un tap n'importe où dans la vue ouvre le clavier */
-  await pg.tap('#rf',{position:{x:200,y:600}});await pg.waitForTimeout(200);
-  ok(await pg.evaluate(()=>document.activeElement===document.getElementById('lv-say-in')),'20/10 ter · un tap n\'importe où dans la vue met le curseur dans le champ (le téléphone accepte toujours un tap)');
-  await tp('touchStart',195,500);for(let i=1;i<=6;i++) await tp('touchMove',195,500-i*40);await tp('touchEnd');await vers(pg,'c');await pg.waitForTimeout(300);   /* un manche : vers le haut */
-  ok(await pg.evaluate(()=>!document.body.classList.contains('rf-clavier')&&!['lv-say-in'].includes(document.activeElement&&document.activeElement.id)&&!(document.activeElement&&document.activeElement.classList.contains('rf-proxy'))),
-    '20/10 · remonter ferme le clavier et rend la manette');
-  ok(!erreurs(log).length,'téléphone : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
-
- // ── 20/10 ter · À LA SOURIS : ↓ mène en bas, le vrai curseur est là, le trait s'efface ──
- {const{pg,log}=await page(browser,{dir:'com',origin,tables,rpc:{my_landing:LAND()},viewport:{width:1280,height:860}});
-  await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1200);
-  await pg.keyboard.press('ArrowDown');await vers(pg,'b');await pg.waitForTimeout(300);
-  const m=await pg.evaluate(()=>({coarse:matchMedia('(pointer:coarse)').matches,f:document.activeElement===document.getElementById('lv-say-in'),
-    faux:!!document.querySelector('#lv-say .rf-cur')}));
-  ok(!m.coarse&&m.f&&!m.faux,'20/10 septies · à la souris : ↓ et le curseur est dans le champ, un seul → '+JSON.stringify(m));
-  await pg.keyboard.type('hey');ok(await pg.inputValue('#lv-say-in')==='hey','20/10 ter · on tape directement, sans cliquer');
-  ok(!erreurs(log).length,'souris : aucune erreur');await pg.context().close();}
 }finally{await browser.close();}
