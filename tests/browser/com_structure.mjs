@@ -90,10 +90,13 @@ try{
       fondu PENDANT que le papier part déjà ; le papier ne s'arrête jamais avant d'être posé (aucune image figée plus de
       100 ms), ne regrandit jamais ; l'arbre et l'atterrissage ressortent pendant qu'il se pose (`is-pose`), pas après. */
    const fo=await pg.evaluate(()=>window.__fondu), w1=fo[0]&&fo[0].w, wf=fo[fo.length-1].w, t1=fo[0]&&fo[0].t;
-   const route=fo.filter(x=>x.w>wf+2); let fige=0, run=0;
+   const route=fo.filter(x=>x.folding&&x.w>wf+2); let fige=0, run=0;
    for(let i=1;i<route.length;i++){ run=Math.abs(route[i].w-route[i-1].w)<0.5?run+(route[i].t-route[i-1].t):0; fige=Math.max(fige,run); }
    const part=fo.find(x=>x.w<w1-1), pose=fo.find(x=>x.pose), finRoute=route.length?route[route.length-1].t:0;
-   const jamaisPlus=fo.every((x,i)=>!i||x.w<=fo[i-1].w+0.5);
+   // Le cœur recommence à battre APRÈS le repli : sa croissance au repos est voulue.
+   // La monotonie porte sur le trajet, pas sur ces images d'atterrissage ultérieures.
+   const pendant=fo.filter(x=>x.folding);
+   const jamaisPlus=pendant.every((x,i)=>!i||x.w<=pendant[i-1].w+0.5);
    ok(fo.length>10&&fo[0].o<0.5&&part&&part.t-t1<120&&fige<100&&jamaisPlus&&fo[fo.length-1].o===1&&wf<w1/3&&finRoute-t1<800,
       nom+' · repli '+tour+' : UN mouvement — le papier part '+Math.round(part?part.t-t1:-1)+' ms après le clic, pendant le fondu ; jamais figé (pire : '+Math.round(fige)+' ms), jamais en arrière ; posé en '+Math.round(finRoute-t1)+' ms');
    ok(fo.filter(x=>x.folding&&!x.pose).every(x=>x.lv===0&&x.asp)&&pose&&pose.w>wf+2&&lvFin>0.5,
@@ -105,7 +108,7 @@ try{
   /* ── 3 · ↓ l'anneau ── */
   const m0=(await pg.evaluate(()=>window.__totehm_lv().ramifications.morphs));
   await pg.keyboard.press('ArrowDown');
-  await pg.waitForFunction(m=>{const r=window.__totehm_lv().ramifications;return r.morphs>m&&!r.enCours;},m0,{timeout:4000}).catch(()=>{});
+  await pg.waitForFunction(m=>{const d=window.__totehm_lv(),r=d.ramifications;return r.morphs>m&&!r.enCours&&!d.bouge;},m0,{timeout:4000}).catch(()=>{});
   const an=await pg.evaluate(()=>{const ts=[...document.querySelectorAll('#lv-socket .sk-ring b')].map(b=>{const r=b.getBoundingClientRect();return [r.left+r.width/2,r.top+r.height/2];});
     const ls=[...document.querySelectorAll('#lv-ram > g')].map(e=>{const p=(e.querySelector('path').getAttribute('d')||'').split('M')[1].split('L').map(q=>q.trim().split(' ').map(Number));const a=p[0],z=p[p.length-1];return [(a[0]+z[0])/2,(a[1]+z[1])/2];});
     return {e:ts.map((t,i)=>ls[i]?Math.hypot(t[0]-ls[i][0],t[1]-ls[i][1]):99), vue:window.__totehm_lv().ramifications.vue};});

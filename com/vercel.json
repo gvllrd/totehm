@@ -114,6 +114,30 @@
   ],
   "rewrites": [
     {
+      "source": "/mcp",
+      "destination": "https://abujjbkbbiumxrokozph.supabase.co/functions/v1/chatgpt-connector/mcp"
+    },
+    {
+      "source": "/.well-known/oauth-protected-resource/mcp",
+      "destination": "https://abujjbkbbiumxrokozph.supabase.co/functions/v1/chatgpt-connector/oauth-resource"
+    },
+    {
+      "source": "/.well-known/oauth-protected-resource",
+      "destination": "https://abujjbkbbiumxrokozph.supabase.co/functions/v1/chatgpt-connector/oauth-resource"
+    },
+    {
+      "source": "/.well-known/oauth-authorization-server",
+      "destination": "https://abujjbkbbiumxrokozph.supabase.co/functions/v1/chatgpt-connector/oauth-server"
+    },
+    {
+      "source": "/chatgpt-api",
+      "destination": "https://abujjbkbbiumxrokozph.supabase.co/functions/v1/chatgpt-connector"
+    },
+    {
+      "source": "/chatgpt-api/:path*",
+      "destination": "https://abujjbkbbiumxrokozph.supabase.co/functions/v1/chatgpt-connector/:path*"
+    },
+    {
       "source": "/x/space",
       "destination": "https://www.totehm.space/social"
     },

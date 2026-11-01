@@ -1,15 +1,11 @@
 # backend/CLAUDE.md — la base, les fonctions, l'argent, le bot
-
 > L'état ACTUEL et les pièges (≤ 60 lignes). Servi par personne : `backend/` n'entre jamais dans un dossier déployé.
-
 ## La base — Supabase `abujjbkbbiumxrokozph`
-
 - Une migration s'applique UNE fois, son fichier reste dans `supabase/migrations/` (jamais `db push`) ; ce qui ne passe
   pas du cloud → `CLAUDE_CODE.md`. Auto-test `tests/sql/*_selftest.sql` (`FAIL={}`). Grants après le dernier `create`.
 - **Le modèle est fermé** : HABITS = `totehms.steps` (réécrit en entier par `cloudSave`) · `objectives` · `repulsions` · `visions` ·
   `wisdom` (MY STORY) ; liens = jointures ; 7 intentions (`check`, `intentions_set` pose `is`/`i`) ; médias `element-media` ; spots
   `spot_plans` (point lu par fonction ; en retirer un des miens : `spot_remove`, il passe à `cancelled`). **Journal** `totehm_journal` : tout geste, par déclencheurs jamais bloquants ; lu par `my_board`.
-
 ## Les droits
 
 - Membre du Club : `_figher().member` = habit + objectif + répulsion (`needs` dit ce qui manque). Accès offert = `figher_comps`.
@@ -48,6 +44,10 @@ Le compte vient TOUJOURS de la session, jamais du corps ; une page ne reçoit qu
 - Ce que le membre MONTRE : `focus:{kind:'media'|'spot', id}` — une référence seule ; `montreDe()` relit la ligne dans SES
   lignes (`element_media` non retiré, `spot_plans` publié) et la box par `_box_matter`, et dit au modèle qu'il ne VOIT
   pas l'image. Deux lectures SQL, zéro appel payant de plus.
+
+## ChatGPT — connexion dédiée, lecture seule
+
+`chatgpt-connector` est déployé et activé ; migration additive `20261101090000_chatgpt_connector.sql` appliquée, RLS et RPC réservées service_role. OAuth PKCE + jetons opaques hachés, jamais une session Supabase ; consentement `/chatgpt`, callback exact `https://chatgpt.com/connector_platform_oauth_redirect` avec `iss` (RFC 9207). Origine `https://www.totehm.com` ; `CHATGPT_CONNECTOR_ENABLED=true`. Redéployer via Management API ou `supabase functions deploy chatgpt-connector --project-ref abujjbkbbiumxrokozph --no-verify-jwt --use-api` depuis `backend/`, sans réappliquer la migration. `/mcp` : 5 outils propriétaires (contexte, élément, Spots, sons, métadonnées médias), sans écriture ni GPS/pixels ; autres membres hors v1. Tests `tests/fn/chatgpt-*` (SQL sous PGlite) + `tests/browser/chatgpt_connect.mjs`. Status/discovery publics vérifiés ; essai connecté dans ChatGPT et publication publique restent à confirmer.
 
 ## n8n
 

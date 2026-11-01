@@ -27,7 +27,7 @@ const film=pg=>pg.evaluate(()=>new Promise(res=>{const t0=performance.now(), vu=
   const vis=e=>!!e&&e.getClientRects().length>0&&getComputedStyle(e).visibility!=='hidden';
   (function pas(){ const b=document.body;
     if(vis(document.getElementById('lv-pitch'))) vu.vente++;
-    if([...document.querySelectorAll('#lv-join,[data-sm-connect]')].some(vis)) vu.connect++;
+    if([...document.querySelectorAll('#lv-join')].some(vis)) vu.connect++;
     if(b.classList.contains('ses-attente')) vu.attente++;
     if(vu.membre===null&&b.classList.contains('member')) vu.membre=Math.round(performance.now()-t0);
     if(performance.now()-t0>3500||(vu.membre!==null&&performance.now()-t0>vu.membre+400)) return res(vu);
@@ -83,10 +83,10 @@ try{
   ok(a2==='c','en haut, un glissé vers le bas qui part sur le papier posé sur la langue → le centre → '+a2);
   p=await centre();
   const a3=await glisse(p.x,p.y-20,p.x,p.y+150);
-  ok(a3==='b','au centre, vers le bas depuis le papier → la Reflection → '+a3);
+  ok(a3==='b','au centre, vers le bas depuis le papier → Higher my ChatGPT → '+a3);
   p=await centre();
   const a4=await glisse(p.x,p.y+10,p.x,p.y-160);
-  ok(a4==='c','dans la Reflection, un glissé vers le haut qui part sur le papier-profil → le centre → '+a4);
+  ok(a4==='c','dans Higher my ChatGPT, un glissé vers le haut qui part sur le papier-profil → le centre → '+a4);
   /* b · deux gestes coup sur coup : le second attend la fin du premier au lieu de se perdre */
   await vers(pg,'c');
   const d0=(await lv(pg)).enAttente;
@@ -134,9 +134,24 @@ try{
   }
   await pg.click('#lv-tap-open');await pg.waitForFunction(()=>!document.body.classList.contains('gate'),null,{timeout:6000}).catch(()=>{});await pg.waitForTimeout(500);
   const a0=(await lv(pg)).enAttente;
-  await pg.evaluate(()=>document.getElementById('fold-x').click());await pg.waitForTimeout(delai);
-  /* 23/10 : la manette est cachée pendant le fondu du repli (comme au déploiement) : à 200 ms, le geste vient du clavier. */
-  if(delai===200) await pg.keyboard.press('ArrowDown'); else await tire(0,22);
+  /* Le geste à 650 ms doit arriver PENDANT le repli : les allers-retours Playwright de quatre mousemove
+     peuvent autrement relâcher après sa fin, et tester à tort une mise en attente qui n'est plus nécessaire. */
+  if(delai===200){
+    await pg.evaluate(()=>document.getElementById('fold-x').click());await pg.waitForTimeout(delai);
+    await pg.keyboard.press('ArrowDown');
+  }else{
+    const pendant=await pg.evaluate(delai=>new Promise(resolve=>{
+      document.getElementById('fold-x').click();
+      setTimeout(()=>{
+        const el=document.getElementById('lvj-box'),r=el.getBoundingClientRect(),x=r.x+r.width/2,y=r.y+r.height/2;
+        const folding=document.body.classList.contains('folding');
+        for(const [type,dy] of [['pointerdown',0],['pointermove',22],['pointerup',22]])
+          el.dispatchEvent(new PointerEvent(type,{bubbles:true,pointerId:1,pointerType:'mouse',button:0,buttons:type==='pointerup'?0:1,clientX:x,clientY:y+dy}));
+        resolve(folding);
+      },delai);
+    }),delai);
+    ok(pendant,'le geste de manette est reçu avant la fin du repli');
+  }
   await pg.waitForTimeout(1900);
   const d=await lv(pg);
   ok(d.vue==='b'&&d.enAttente===a0+1,'22/10 · un geste ('+(delai===200?'clavier':'manette')+') '+delai+' ms après la croix (le TOTEHM se replie encore) attend la fin du repli, puis part → '+d.vue);

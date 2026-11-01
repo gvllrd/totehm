@@ -17,7 +17,6 @@ const STEPS=[{t:'Run the hill',t0:'Run the hill',is:['fight'],f:'every_morning',
 const DEMAIN=new Date(Date.now()+864e5).toISOString().slice(0,10)+'T08:00:00Z';
 const tables={profiles:[{pseudo:'wahigher'}],totehms:[{user_id:UID,steps:STEPS,vis:'private'}]};
 const LAND={signed_in:true,pseudo:'wahigher',visibility:'private',offer:{enabled:false},higher:{active:false,price_cents:700,currency:'eur'},thp:false,subscriptions:0,subscribers:0,
-  /* La Reflection est ouverte : c'est là que se pose ce que je MONTRE (25/10). */
   sm:{ready:true,habit:true,objective:true,higher:false,free_total:7,free_left:6,left:6}};
 const erreurs=log=>log.errors.filter(e=>e.startsWith('pageerror'));
 const lv=pg=>pg.evaluate(()=>window.__totehm_lv());
@@ -154,29 +153,13 @@ try{
   await pg.keyboard.press('Escape');await pg.waitForTimeout(300);
   ok(await pg.evaluate(()=>document.getElementById('tlv').hidden&&window.__totehm_lv().vue==='g'&&!document.querySelector('#tlv .tlv-s')),'Échap referme la visionneuse : on reste dans la grille');
 
-  // ══ 2 bis · 25/10 (Wah) : « LIRE ET SÉLECTIONNER UN MÉDIA OU UN SPOT À ENVOYER À L'IA » ══
-  // Le geste est posé SUR la chose, là où je la regarde. Il ferme la visionneuse, emmène en bas, et pose une
-  // PASTILLE au-dessus de ce que j'écris : un mot, l'élément, une croix. Seule une RÉFÉRENCE partira.
+  // Le chat intégré a été retiré ; la visionneuse garde ses médias et sa box sans action IA morte.
   await pg.click('#lv-sh .tl[data-i="0"] .tl-bx',{force:true});await pg.waitForTimeout(500);
-  const ask=await pg.evaluate(()=>{const s0=document.querySelector('#tlv .tlv-s[data-j="0"]'), b=s0&&s0.querySelector('.tlv-b .sh-ask');
-    return {n:document.querySelectorAll('#tlv .sh-ask').length, mot:b?b.textContent:'', svg:!!(b&&b.querySelector('svg.ask-hi')), maj:b?getComputedStyle(b).textTransform:'',
-      ref:b?b.dataset.ask:'', sous:!!(b&&s0.querySelector('.tb')&&b.getBoundingClientRect().top>=s0.querySelector('.tb').getBoundingClientRect().top)};});
-  await pg.click('#tlv .tlv-s[data-j="0"] .tlv-b .sh-ask');await vers(pg,'b');await pg.waitForTimeout(500);
-  const ch=await pg.evaluate(()=>{const f=document.getElementById('lv-focus'), s=document.getElementById('lv-say');
-    return {vue:window.__totehm_lv().vue, ferme:document.getElementById('tlv').hidden, ouvert:!f.classList.contains('hide'),
-      mot:(f.querySelector('i')||{}).textContent||'', nom:(f.querySelector('b')||{}).textContent||'',
-      x:!!f.querySelector('[data-sm-unfocus]'), ecrit:!!s&&!s.classList.contains('hide'),
-      haut:!!s&&f.getBoundingClientRect().bottom<=s.getBoundingClientRect().top+1,
-      montre:window.__totehm_lv().reflection.montre, n:window.__totehm_lv().reflection.montres};});
-  ok(ask.n===1&&ask.ref==='em:m1'&&/^ask my\s+self$/i.test(ask.mot)&&ask.svg&&ask.maj==='uppercase'&&ask.sous,
-     '25/10 · MON média porte le geste SOUS sa box, et il n\'envoie qu\'une référence ('+ask.ref+') — la vision, elle, n\'en a pas');
-  ok(ch.vue==='b'&&ch.ferme&&ch.ouvert&&ch.mot==='media'&&ch.nom==='Run the hill'&&ch.x&&ch.ecrit&&ch.haut&&ch.montre==='media'&&ch.n===1,
-     '25/10 · le geste emmène en bas : la pastille (media · Run the hill · ✕) se pose AU-DESSUS de ce que j\'écris → '+JSON.stringify(ch));
-  await pg.click('#lv-focus [data-sm-unfocus]');await pg.waitForTimeout(250);
-  ok(await pg.evaluate(()=>document.getElementById('lv-focus').classList.contains('hide')&&window.__totehm_lv().reflection.montre===null),
-     '25/10 · la croix retire ce que je montre, et ce que j\'écrivais reste');
-  await pg.click('#lvn-up');await vers(pg,'c');await pg.waitForTimeout(300);
-  await pg.click('#lvn-lf');await vers(pg,'g');await pg.waitForTimeout(700);
+  ok(await pg.locator('#tlv [data-ask],#tlv .sh-ask').count()===0,
+     'la visionneuse ne propose plus d’envoyer un média au chat retiré');
+  ok(await pg.evaluate(()=>!document.getElementById('tlv').hidden&&window.__totehm_lv().vue==='g'),
+     'le média reste consultable dans sa visionneuse');
+  await pg.keyboard.press('Escape');await pg.waitForTimeout(300);
   // on entre dans le Totehm par le centre, et l'on ouvre l'Habit
   await pg.click('#lvn-rt');await vers(pg,'c');await pg.waitForTimeout(300);
   await pg.click('#lv-tap-open');
@@ -320,8 +303,7 @@ try{
      &&sh2.chips.some(t=>/social/i.test(t))&&sh2.say==='Bring a coffee'&&sh2.go&&sh2.cal,
      'les informations du spot : '+sh2.chips.join(' · ')+' — son mot, GO, CALENDAR');
   ok(sh2.per.join(' ')==='future','27/10 · le temps courant, dans la barre : « '+sh2.per.join(' ')+' » (now · past · future)');
-  /* 25/10 (Wah) : MON spot se montre au Higher Self ; 26/10 (« j'ai pas compris ») : le geste dit son verbe, « Higher » en SVG. */
-  ok(sh2.ask==='sp:sp1|ask my  self|1','26/10 · MON spot porte « ask my [Higher] self » à côté de GO et CALENDAR → '+sh2.ask);
+  ok(sh2.ask==='', 'le Spot conserve GO et CALENDAR sans bouton vers le chat retiré');
   /* 26/10 (Wah : « concernant les spots il y a trois niveaux d'accès : private, subscribers et figher club ») : sur MON spot, le
      niveau est un bouton ; chaque tap passe au suivant, au serveur (`spot_audience_set`), et revient au premier. */
   const niv=[];

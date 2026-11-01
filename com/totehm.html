@@ -3033,7 +3033,7 @@ body.is-xo{overflow:hidden}
      ↑ GET HIGHER   la bouche du 12/10 (lot A), restaurée telle quelle : le papier se pose sur la langue
        MY TOTEHM    le processeur dans son socle (verre, d'après la boîte Premium du TotehmPaper), les
                     ramifications de mes intentions (les 7 couleurs) ; Mine · Others (la galaxie)
-     ↓ REFLECTION   tout se condense : le socle devient un anneau, le papier un profil (seul #gl-bg tourne)
+     ↓ CHATGPT      tout se condense : le socle devient un anneau, le papier un profil (seul #gl-bg tourne)
    Chaque vue est un panneau plein écran qui se fond et glisse dans son sens (jamais display) ; aucun flou. */
 :root{--lv-y:40dvh;--sk:calc(var(--gate-size) + 6px)}   /* 25/10 : le TOTEHM est le boîtier, `--sk` le serre à 3 px */
 #gate{overflow:hidden}
@@ -3074,48 +3074,26 @@ body.lv-d #lv-proc,body.lv-d #lv-slogan{opacity:0}
 .lv-pane .lv-act{pointer-events:auto}
 .lv-mono{font-family:'Space Mono',monospace;font-size:11px;line-height:1.6;color:#9a9aa2;text-align:center}
 .lv-h2{font-family:'Space Mono',monospace;font-weight:700;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#fff}
-/* CE QUE JE MONTRE — la pastille au-dessus de la saisie, et le bouton qui l'y envoie. */
-#lv-focus{display:flex;align-items:center;gap:8px;max-width:100%;margin:0 0 7px;padding:7px 10px;background:#1f1f24;border-radius:10px;
-  font:400 11px/1.4 'Space Mono',monospace;color:#b0b0b0}
-#lv-focus.hide{display:none}
-/* MON MOMENT (29/10) : l'heure · la météo · chez moi ou dehors — une ligne grise ; le dernier mot se corrige d'un tap. */
-#lv-ici{display:flex;justify-content:center;align-items:center;gap:7px;margin:0 0 7px;font:400 9px/1.4 'Space Mono',monospace;
-  letter-spacing:.16em;text-transform:uppercase;color:#8a8a92;font-variant-numeric:tabular-nums}
-#lv-ici.hide{display:none}
-#lv-ici button{background:none;border:0;padding:2px 0;cursor:pointer;font:inherit;letter-spacing:inherit;text-transform:inherit;color:#b8b8c2;
-  text-decoration:underline dotted rgba(255,255,255,.35);text-underline-offset:3px}
-@media(hover:hover){#lv-ici button:hover{color:#fff}}
-#lv-focus b{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:400;color:#fff}
-#lv-focus i{flex:0 0 auto;font-style:normal;font-size:8.5px;letter-spacing:.2em;text-transform:uppercase;color:#8a8a92}
-#lv-focus button{flex:0 0 auto;margin-left:auto;background:none;border:0;color:#8a8a92;cursor:pointer;font:inherit;padding:2px 4px}
-@media(hover:hover){#lv-focus button:hover{color:#fff}}
-.sh-ask{font:400 10px/1.3 'Space Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#d8d8dd;background:rgba(0,0,0,.45);
-  border:0;border-radius:10px;padding:7px 12px;cursor:pointer;-webkit-tap-highlight-color:transparent}
-@media(hover:hover){.sh-ask:hover{background:rgba(0,0,0,.7);color:#fff}}
-.ask-hi{display:inline-block;height:1.25em;width:3.75em;vertical-align:-.32em;margin:0 .15em}
 .lv-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;inline-size:fit-content;padding:11px 18px;border:0;border-radius:10px;background:#1f1f24;color:#b0b0b0;font:400 12px/1.4 'Space Mono',monospace;text-decoration:none;white-space:nowrap;cursor:pointer}
 .lv-btn:focus-visible{outline:1px solid #fff;outline-offset:3px}
 .lv-btn svg{width:48px;height:16px;flex:none}
 .lv-note{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#6d6d74;min-height:12px;text-align:center}
-/* ── LE SLOGAN : un seul [Higher] qui voyage — « Get [Higher] » sous la langue (LE bouton), « [Higher] Self »
-   sous le profil. Posé par `sloganPour()` ; invisible tant que le module ne l'a pas posé (09/10). ── */
+/* ── LE SLOGAN : [Higher] voyage du centre à « Get [Higher] » sous la langue (LE bouton). Posé par `sloganPour()` ; invisible tant que le module ne l'a pas posé (09/10). ── */
 #lv-slogan{position:fixed;left:0;top:0;z-index:6;width:96px;height:32px;
   transform-origin:50% 50%;transition:transform .7s var(--gate-ease),opacity .45s ease;
   background:none;border:0;padding:0;margin:0;color:#fff;pointer-events:none;-webkit-tap-highlight-color:transparent}
 #lv-slogan.no-anim,#lv-slogan.no-anim *{transition:none!important;animation:none!important}
 #lv-slogan:not(.is-pose){visibility:hidden}
 #lv-slogan svg{display:block;width:96px;height:32px}
-.lvs-pre,.lvs-post{position:absolute;top:50%;white-space:nowrap;transform:translateY(-50%)}
-.lvs-pre{right:calc(100% + 8px)}.lvs-post{left:calc(100% + 8px)}
-.lvs-pre>span,.lvs-post>span{position:absolute;top:50%;transform:translateY(-50%);opacity:0;transition:opacity .35s ease}
-.lvs-pre>span{right:0}.lvs-post>span{left:0}
+.lvs-pre{position:absolute;top:50%;right:calc(100% + 8px);white-space:nowrap;transform:translateY(-50%)}
+.lvs-pre>span{position:absolute;top:50%;right:0;transform:translateY(-50%);opacity:0;transition:opacity .35s ease}
 .lvs-get{font-family:'Quantico',sans-serif;font-size:24px;color:#fbd5ca}
-.lvs-self{font-family:'Space Mono',monospace;font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#fff}
-#lv-slogan.is-h .lvs-get,#lv-slogan.is-b .lvs-self{opacity:1;transition-delay:.3s}
+#lv-slogan.is-h .lvs-get{opacity:1;transition-delay:.3s}
+body.lv-b #lv-slogan{opacity:0;pointer-events:none}
 #lv-slogan.is-h{pointer-events:auto;cursor:pointer}
 #lv-slogan:focus-visible{outline:1px solid rgba(255,255,255,.4);outline-offset:6px}
 #lv-slogan.is-c{opacity:.45;pointer-events:none}
-#lv-slogan.is-c .lvs-pre,#lv-slogan.is-c .lvs-post{opacity:0}
+#lv-slogan.is-c .lvs-pre{opacity:0}
 /* ══ LA MANETTE DE L'ATTERRISSAGE · 18/10/2026 ══════════════════════════════════════════════════
    Wah : « je veux que tu remettes le joystick sur la page d'atterrissage tout en bas centré ».
    C'est LE MÊME OBJET que dans le Totehm — quatre chevrons autour d'un manche —, et ce sont les
@@ -3165,7 +3143,7 @@ body.lv-d #lv-proc,body.lv-d #lv-slogan{opacity:0}
 /* ── LE SOCLE · 25/10 : PLUS DE BOÎTE NOIRE (Wah : « enlève la boîte noire de la page d'atterrissage et mets le totehm
    en version boîtier-processor »). Le TOTEHM est lui-même le boîtier du processeur : ses sept broches sont posées sur
    ses arêtes (`--sk` = le papier + 6 px). `#lv-socket` ne se voit plus ; il garde sa géométrie (les broches s'y lisent)
-   et devient l'anneau du profil en bas (Reflection). `--skx/--sky/--sks` : posés par `socle()`. ── */
+   et devient l'anneau du profil en bas (ChatGPT). `--skx/--sky/--sks` : posés par `socle()`. ── */
 #lv-proc{position:absolute;left:50%;top:calc(var(--gate-size) / 2);width:0;height:0;z-index:1;pointer-events:none;
   transition:opacity .4s ease .25s,transform var(--gate-dur) var(--gate-ease)}
 body.gate.entered #lv-proc{opacity:1}
@@ -3288,7 +3266,7 @@ body.gate.lv-c:not(.entered):not(.is-aspire):not(.folding):not(.ram-morph) #gate
   background:rgba(0,0,0,.78);border-radius:10px;padding:14px 16px}   /* le réseau passe derrière : un voile, jamais un flou */
 #lv-pitch.hide{display:none}
 /* 21/10 — une session se lit encore (`ses-attente`, posé avant le premier rendu) : rien de « hors connexion ». */
-body.ses-attente:not(.member) #lv-pitch,body.ses-attente:not(.member) .sm-cta{display:none!important}
+body.ses-attente:not(.member) #lv-pitch{display:none!important}
 body.member #lv-pitch{display:none!important}   /* la vente ne parle jamais à un membre, même une image avant `peindreCarte` */
 .lvp-h{margin:0;display:flex;align-items:center;justify-content:center;gap:9px;flex-wrap:wrap}
 .lvp-h .lvp-b{width:92px;height:31px}
@@ -3364,14 +3342,14 @@ body.mb-cherche #lv-c-acts{top:var(--mb-bas,70%)}
   max-width:42vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 body.lv-membre .lvm-who{display:inline}
 body.lv-membre .lvm-lab{display:none}
-/* En bas, chez un membre : SON profil et SON offre — jamais ma Reflection. */
-body.lv-membre #lv-say,body.lv-membre #lv-say-note,body.lv-membre #lv-thread,body.lv-membre #lv-focus{display:none}
+/* En bas, chez un membre : SON profil et SON offre — la présentation ChatGPT reste chez moi. */
+body.lv-membre #chatgpt-pitch,body.lv-membre #chatgpt-entry{display:none}
 body.lv-membre.lv-b #lv-slogan{opacity:0}
 /* 25/10 — un Totehm à abonnement, trouvé en recherche (`lv-verrou`) : son nom sur [Members], son offre sous le papier, et
-   en bas son offre encore — jamais ma Reflection. */
+   en bas son offre encore — la présentation ChatGPT reste chez moi. */
 body.lv-verrou .lvm-who{display:inline}
 body.lv-verrou .lvm-lab{display:none}
-body.lv-verrou #lv-say,body.lv-verrou #lv-say-note,body.lv-verrou #lv-thread{display:none}
+body.lv-verrou #chatgpt-pitch,body.lv-verrou #chatgpt-entry{display:none}
 body.lv-verrou.lv-b #lv-slogan{opacity:0}
 body.lv-verrou #mb-offre{display:flex}
 #mb-lock{display:none;flex-direction:column;align-items:center;gap:10px;text-align:center;margin-top:14px}
@@ -3388,85 +3366,40 @@ body.lv-membre #mb-offre{display:flex}
 #mb-offre .mbo-n{font:400 20px/1.2 'Quantico',sans-serif;color:#fbd5ca;max-width:90vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 #mb-offre .mbo-p{font:700 11px/1.4 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#b0b0b0}
 #mb-offre .mbo-s{font:400 10px/1.5 'Space Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:#7c7c84}
-/* ── EN BAS : MA REFLECTION (15/10) — le profil, ce que j'écris (Quantico, au-dessus du clavier), puis TROIS
-   ÉTAGES liés, empilés comme les blocs du Totehm (séparés par du noir) ; la couleur EST le sens. ── */
-#rf{position:absolute;left:50%;top:0;bottom:0;transform:translateX(-50%);width:min(94vw,560px);
-  display:flex;flex-direction:column;align-items:stretch;gap:10px;
-  padding:calc(max(10px,env(safe-area-inset-top)) + 46px) 0 calc(var(--lvj-h) + 14px)}
-#rf-me{width:64px;height:64px;align-self:center;flex:none;margin-bottom:34px}
-#lv-say{position:relative;display:block;flex:none}
-/* ⚠️ 20/10 · ON ARRIVE, ON TAPE (Wah : « dès que l'utilisateur passe de la vue centrale à la vue du bas, le clavier
-   s'affiche direct ; pas de double curseur, pas de boîte de saisie ; minimalisme et fluidité extrêmes »).
-   UN SEUL curseur : le VRAI (le faux trait qui clignotait à côté est parti, balisage et règles). Le champ n'a ni
-   fond, ni contour, ni rayon : c'est le noir de la page. Centré sous le profil, comme ce que j'ai dit (`.rf-q`).
-   16 px : en dessous, l'iPhone ZOOME la page au focus. La flèche d'envoi n'est qu'un trait, et seulement quand
-   il y a du texte ; le clavier dit « send » (`enterkeyhint`). */
-/* 20/10 ter — à GAUCHE, en GRAND (22 px). Plus de « Wassup ? ».
-   ⚠️ 20/10 septies — Wah : « enlève le double curseur ». Le trait qui clignotait à la place du vrai curseur est
-   PARTI (balisage, règles et `is-tape`) : il ne reste que le VRAI curseur, celui du champ. Et la flèche devient
-   un BOUTON (« au lieu de l'icône Entrée, un bouton ») : SEND, un contrôle gris, sous ce que j'écris, à droite ;
-   il ne prend sa place visible qu'avec du texte (sa hauteur reste réservée : rien ne saute). */
-#lv-say textarea{display:block;width:100%;min-height:46px;max-height:150px;resize:none;border:0;border-radius:0;background:none;color:#fff;
-  font:400 22px/1.35 'Quantico',sans-serif;padding:8px 0;outline:none;caret-color:#fff;text-align:left;box-sizing:border-box}
-#lv-say .lv-btn{display:block;margin:6px 0 0 auto;min-height:34px;padding:0 14px;border:0;border-radius:10px;background:#2a2a31;color:#fff;cursor:pointer;
-  font:700 11px/1 'Space Mono',monospace;letter-spacing:.14em;transition:opacity .15s ease,background .2s ease}
-#lv-say .lv-btn:disabled{opacity:.5;cursor:default}
-#lv-say.is-vide .lv-btn{opacity:0;pointer-events:none}
-/* Le relais du clavier (tactile) : un champ invisible, en haut, focalisé DANS le geste — l'iPhone n'ouvre le
-   clavier que pendant un geste, et la course vers le bas dure 0,7 s. À l'arrivée, le focus passe au vrai champ. */
-.rf-proxy{position:fixed;top:0;left:0;width:1px;height:1px;padding:0;border:0;opacity:0;font-size:16px;pointer-events:none;caret-color:transparent}
-/* En tapant sur téléphone, la manette s'efface : le clavier, le profil, ce que j'écris — rien d'autre. */
-body.rf-clavier #lvjoy{opacity:0;pointer-events:none}
-#lv-say-note{flex:none}
-#lv-say-note:empty{display:none}
-#lv-thread{flex:0 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;display:flex;flex-direction:column;gap:3px;scrollbar-width:none}
-#lv-thread::-webkit-scrollbar{display:none}
-.rf-t{position:relative;padding:13px 16px 14px;color:#fff;transition:opacity .35s ease}
-.rf-t.t-dir{background:var(--blue)}.rf-t.t-obs{background:var(--rep)}.rf-t.t-step{background:var(--navy)}
-.rf-t.is-wait{opacity:.32;min-height:46px}
-.rf-t p{margin:0;font:400 14.5px/1.42 'Quantico',sans-serif;word-wrap:break-word}
-.rf-teach{margin-top:12px}
-.rf-k{display:block;margin:0 0 6px;font:700 8.5px/1.2 'Space Mono',monospace;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.6)}
-.rf-ref{display:inline-flex;max-width:100%;margin:0 0 8px;padding:3px 7px;font:400 11px/1.4 'Quantico',sans-serif;color:#fff}
-.t-dir .rf-ref{background:#2b3a73}.t-obs .rf-ref{background:#5b2652}.t-step .rf-ref{background:#2b2b57}
-/* ⚠️ LA HABIT EST AU MILIEU ET SUR-ÉLEVÉE : elle déborde un peu des deux autres, elle monte, et son trait
-   d'intention la borde comme dans le Totehm. C'est l'action qui porte la réponse. */
-.rf-t.t-step{margin:4px -8px 6px;transform:translateY(-3px);box-shadow:0 6px 20px rgba(0,0,0,.55);z-index:1}
-.rf-t.a-tick{padding-left:22px}
-.rf-tick{position:absolute;left:8px;top:13px;bottom:14px;width:2px;display:block}
-/* Une PROPOSITION n'est pas une de mes Habits : le pointillé d'une place vide, et « + my Habit ». */
-.t-step.is-prop p{outline:1px dashed rgba(255,255,255,.36);outline-offset:5px}
-.rf-prop{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:14px}
-.rf-add{border:0;border-radius:10px;padding:7px 11px;background:rgba(0,0,0,.3);color:#d6d6dc;font:700 9.5px/1.3 'Space Mono',monospace;letter-spacing:.1em;text-transform:uppercase;cursor:pointer}
-.rf-add:disabled{opacity:.6;cursor:default}
-/* 22/10 — LE LIEU DE LA STEP (le miroir) : un carré plein (comme un point de la carte), son nom, ce qui le situe, l'heure ;
-   GO l'ouvre (Maps, ou la billetterie d'un événement), SPOT IT en fait un de mes spots. Rien n'est inventé : la page
-   n'affiche que le lieu que le serveur a vérifié (`@lieu`). */
-.rf-lieu{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,.14)}
-.rf-lieu-n{font:400 13px/1.35 'Quantico',sans-serif;color:#fff}
-.rf-lieu-n::before{content:"";display:inline-block;width:7px;height:7px;margin-right:8px;background:#fff;vertical-align:1px}
-.rf-lieu-d,.rf-lieu-q{font:400 9.5px/1.4 'Space Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:#c8c8d0}
-.rf-lieu-a{display:flex;gap:8px;flex-basis:100%;margin-top:4px}
-a.rf-add{text-decoration:none;display:inline-block}
-.rf-lieu-up{margin-top:12px;border:0;background:none;padding:0;cursor:pointer;font:400 9.5px/1.4 'Space Mono',monospace;letter-spacing:.12em;
-  text-transform:uppercase;color:#c8c8d0;display:inline-flex;align-items:center;gap:6px}
-.rf-lieu-up .sm-hi{height:12px;width:auto}
-.rf-ex{align-self:flex-start;font:400 9px/1.4 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#5c5c64;margin:2px 0 4px}
-.rf-q{margin:0 0 8px;text-align:left;font:400 20px/1.35 'Quantico',sans-serif;color:#cfcfd6;word-wrap:break-word}
-.sm-acts{display:flex;gap:12px;padding:8px 2px 0}
-.sm-acts button{background:none;border:0;padding:2px 0;font:400 9.5px/1.4 'Space Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:#6d6d74;cursor:pointer}
-.sm-cta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;margin-top:10px}
-.sm-check{border:0;border-radius:10px;padding:8px 12px;background:#1f1f24;color:#8a8a92;font:400 10.5px/1.3 'Space Mono',monospace;cursor:pointer}
-.sm-check.is-ok{color:#fff}
-.sm-offer{display:flex;flex-direction:column;gap:8px;background:#000;border-radius:14px;padding:14px 16px;margin-top:10px}
-.sm-offer-h{display:flex;align-items:center;gap:10px;font:700 11px/1 'Space Mono',monospace;letter-spacing:.1em;color:#fff}
-.sm-offer-h svg{width:72px;height:24px;flex:none}
-.sm-offer ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px}
-.sm-offer li{font:400 11px/1.6 'Space Mono',monospace;color:#b0b0b0}
-.sm-offer li svg{display:inline-block;width:48px;height:16px;vertical-align:-4px}
-.sm-link{background:none;border:0;padding:0;font:inherit;letter-spacing:inherit;text-transform:inherit;color:#b0b0b0;cursor:pointer;vertical-align:middle}
-.sm-hi{display:inline-block;height:1.15em;width:3.45em;vertical-align:-.25em}
-.sm-link .sm-hi{height:14px;width:42px}
+/* ↓ : un manifeste, le processeur et son geste. Higher reste le slogan dessiné. */
+#rf{position:absolute;left:50%;top:0;bottom:0;transform:translateX(-50%);width:min(92vw,980px);
+ display:flex;flex-direction:column;min-height:0;padding:calc(max(10px,env(safe-area-inset-top)) + 42px) 0 calc(var(--lvj-h) + 16px)}
+#rf-me{width:58px;height:58px;align-self:center;flex:none;margin-bottom:18px}
+#chatgpt-pitch{min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#333366 #000;scroll-padding:16px;touch-action:pan-y;padding:0 16px 22px}
+#chatgpt-pitch:focus-visible{outline:1px solid #b8b8c2;outline-offset:3px}
+.cg-title{margin:0 0 20px;font:700 11px/1.5 'Space Mono',monospace;letter-spacing:.13em;color:#fff;text-transform:uppercase}
+.cg-title span{color:#b8b8c2;font-weight:400;text-transform:none;letter-spacing:0;margin-left:.5em}
+.cg-layout{display:grid;grid-template-columns:1.12fr 1fr;gap:36px;align-items:stretch}
+.cg-lead{margin:0 0 18px;font:700 clamp(30px,4.1vw,48px)/1.12 'Space Mono',monospace;letter-spacing:-.065em;color:#fff}
+.cg-lead span{color:#b8b8c2}
+.cg-intro,.cg-members p{font:400 12px/1.8 'Space Mono',monospace;color:#b8b8c2;margin:0;max-width:420px}
+.cg-intro strong{color:#fff;font-weight:400}
+.cg-system{position:relative;display:flex;flex-direction:column;justify-content:center;gap:20px;background:#333366;padding:28px 28px 28px 36px}
+.cg-seam{position:absolute;left:14px;top:28px;bottom:28px;display:flex;flex-direction:column;gap:5px;width:2px}
+.cg-seam i{flex:1;background:var(--c)}
+.cg-system p{margin:0;font:400 12px/1.8 'Space Mono',monospace;color:#d6d6de}
+.cg-system strong{font:700 15px/1.65 'Space Mono',monospace;color:#fff}
+.cg-members{margin-top:26px;display:grid;grid-template-columns:1.12fr 1fr;gap:36px;align-items:start}
+.cg-members h2{margin:0 0 10px;font:700 12px/1.5 'Space Mono',monospace;letter-spacing:.04em;color:#fff}
+.cg-signature{margin:0;font:400 13px/1.8 'Space Mono',monospace;color:#fff}
+.cg-higher{display:inline-block;width:4em;height:1.34em;vertical-align:-.35em}
+#chatgpt-entry{flex:none;display:flex;flex-direction:column;align-items:center;gap:7px;padding:16px 12px 0;background:#000}
+#chatgpt-connect{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:50px;padding:11px 18px;border:0;border-radius:10px;
+ background:#24242b;color:#d6d6de;font:700 11px/1.4 'Space Mono',monospace;letter-spacing:.06em;text-decoration:none;transition:background .2s,color .2s,transform .2s}
+#chatgpt-connect svg{display:block;width:94px;height:32px;flex:none}
+#chatgpt-connect:focus-visible{outline:1px solid #fff;outline-offset:4px}
+@media(hover:hover){#chatgpt-connect:hover{background:#33333c;color:#fff;transform:translateY(-2px)}}
+.cg-free{margin:0;font:400 9px/1.5 'Space Mono',monospace;color:#b8b8c2;letter-spacing:.05em}
+@media(max-width:620px){#rf{width:94vw}#rf-me{width:50px;height:50px;margin-bottom:15px}
+ #chatgpt-pitch{padding-left:12px;padding-right:12px}.cg-layout,.cg-members{grid-template-columns:1fr;gap:22px}
+ .cg-title{font-size:10px;margin-bottom:17px}.cg-lead{font-size:32px}.cg-system{padding:23px 24px 23px 33px;gap:16px}
+ .cg-seam{top:23px;bottom:23px}.cg-members{margin-top:24px}.cg-signature{font-size:12px}}
+@media(max-height:650px){#rf{padding-top:calc(max(10px,env(safe-area-inset-top)) + 34px)}#rf-me{width:42px;height:42px;margin-bottom:10px}#chatgpt-entry{padding-top:10px}}
 /* ── MES RÉGLAGES (le verso déplié, `#srch`) : le nom en grand, puis le panneau du même objet. ── */
 /* ⚠️ 18/10 — LE NOM EST UN IDENTIFIANT, ET IL TIENT LE HAUT DU VERSO (Wah : « affiché en haut du
    Totehm seulement sur la face verso, en mode FIXE et dans une police PLUS PETITE SANS RETOUR DE
@@ -3664,7 +3597,7 @@ body.lv-b #gate-logo #gl-rail,body.lv-b #gate-logo #gl-wm{opacity:0}
 .mw-sub-act{background:none;border:0;padding:2px 0;font:400 9.5px/1.4 'Space Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:#6d6d74;cursor:pointer}
 #srch-res .srch-open{display:flex;align-items:center;text-decoration:none;min-width:0}
 #srch-res .srch-sub{flex:none;font:400 10.5px/1.3 'Space Mono',monospace;color:#b0b0b0;background:#1f1f24;border-radius:10px;padding:7px 10px;text-decoration:none;white-space:nowrap}
-@media (prefers-reduced-motion: reduce){#lv-slogan,#lv-slogan *,.lv-pane,#ast-front,#lv-proc,#lv-socket,#lv-socket *,#lv-ram,#lv-ram path,#lv-ram rect,#mb-ui,.rf-t,#lv-tap,#gate-mouth{transition:none!important}
+@media (prefers-reduced-motion: reduce){#lv-slogan,#lv-slogan *,.lv-pane,#ast-front,#lv-proc,#lv-socket,#lv-socket *,#lv-ram,#lv-ram path,#lv-ram rect,#mb-ui,#lv-tap,#gate-mouth{transition:none!important}
   .lv-pane,#lv-h,#lv-b{transform:none!important}}
 /* ══ L'ATTERRISSAGE : MES SHORTS (gauche) ET MES SPOTS (droite) · 16/10/2026 bis ═════════════════════
    Wah : « non on garde seulement le mode liste [dans le Totehm] … sinon ça pète toute la structure.
@@ -4045,7 +3978,7 @@ body.lv-d.rdr-voir #gate-asteroid,body.lv-d.rdr-voir #lvjoy,body.rdr-voir #rdr-f
 .dash[data-cap]{display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
 .dash[data-cap] svg{width:12px;height:12px;flex:none}
 /* Sur ordinateur, le gris passe au blanc au survol (hover.py ne lit que le premier <style>). */
-@media(hover:hover){.lv-btn:hover,#lv-tap:hover,.sm-acts button:hover,.sm-check:hover,.sm-link:hover,#srch-res .srch-sub:hover,.mw-sub-act:hover,.lvn:hover,#lv-mode button:hover,.rf-add:hover{color:#fff}}
+@media(hover:hover){.lv-btn:hover,#lv-tap:hover,#srch-res .srch-sub:hover,.mw-sub-act:hover,.lvn:hover,#lv-mode button:hover{color:#fff}}
 </style>
 </head>
 <body class="gate">
@@ -4198,7 +4131,7 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
 </section>
 
   <!-- ══ LE PROCESSEUR · 15/10/2026 ══════════════════════════════════════════
-       Trois vues VERTICALES (Wah) : ↑ GET HIGHER · MY TOTEHM · ↓ MY REFLECTION. Le papier (`#gate-asteroid`)
+       Trois vues VERTICALES (Wah) : ↑ GET HIGHER · MY TOTEHM · ↓ HIGHER MY CHATGPT. Le papier (`#gate-asteroid`)
        voyage de l'une à l'autre ; chaque panneau ne porte que ce qui lui est propre. Au centre, deux modes :
        Mine (le processeur dans son socle) et Members (20/10 sexies : le papier grandit, se retourne, on tape un nom). Plus de manette, plus de
        gauche ni de droite : le doigt, le trackpad, la molette, les flèches et deux chevrons discrets. -->
@@ -4235,7 +4168,7 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
               <li><b>The habit that gets you there.</b><span>when · where</span></li>
               <li><b>What derails you.</b><span>in your own words</span></li>
             </ol>
-            <p class="lvp-out">Your Reflection turns the three into your next move — at the rhythm of each habit.</p>
+            <p class="lvp-out">Your TOTEHM holds the connections you choose to build.</p>
           </div>
           <div class="lvp-side lvp-others">
             <p class="lvp-h"><svg class="lvp-b" viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-badge"></use></svg><span>your strategy</span></p>
@@ -4269,23 +4202,33 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
 
     <section class="lv-pane" id="lv-h" aria-label="Get Higher"></section>
 
-    <!-- 15/10 : MA REFLECTION — le profil (le papier condensé, l'anneau des 7 couleurs), ce que j'écris, trois étages. -->
-    <section class="lv-pane" id="lv-b" aria-label="My Reflection">
+    <!-- ↓ : présentation gratuite de la connexion ChatGPT ; l'offre du membre reste distincte. -->
+    <section class="lv-pane" id="lv-b" aria-label="Higher my ChatGPT">
       <div id="rf" class="lv-act">
         <div id="rf-me" aria-hidden="true"></div>
-        <!-- 25/10 (Wah) : « lire et sélectionner un média ou un spot à envoyer à l'IA ».
-             Ce que je lui montre se pose ICI, au-dessus de ce que j'écris ; la page n'envoie
-             qu'une RÉFÉRENCE, le serveur relit la chose dans MON Totehm. -->
-        <!-- 29/10 (Wah) : le Higher Self tient compte de l'heure, de la météo et de « chez moi » : ce qu'il en sait, en une ligne. -->
-        <div id="lv-ici" class="hide" aria-live="polite"></div>
-        <div id="lv-focus" class="hide" aria-live="polite"></div>
-        <form id="lv-say" class="hide is-vide" autocomplete="off">
-          <textarea id="lv-say-in" maxlength="600" rows="1" enterkeyhint="send" autocapitalize="sentences" aria-label="Talk to my Reflection"></textarea>
-          <button class="lv-btn" id="lv-say-go" type="submit">SEND</button>
-        </form>
-        <div class="lv-note" id="lv-say-note" role="status" aria-live="polite"></div>
-        <div id="lv-thread" aria-live="polite"></div>
-        <!-- 20/10 sexies — DANS L'ÉCOSYSTÈME D'UN MEMBRE, le bas, c'est LUI : son nom, son offre, UN geste. -->
+        <article id="chatgpt-pitch" tabindex="0" aria-labelledby="chatgpt-title">
+          <h1 class="cg-title" id="chatgpt-title">NEUROLINK,<span>not NEURALINK.</span></h1>
+          <div class="cg-layout">
+            <div>
+              <p class="cg-lead">Your ChatGPT.<br><span>Your reasons.</span></p>
+              <p class="cg-intro">Your conversations go everywhere.<br><strong>Your TOTEHM connects what matters.</strong><br>A processor of your own choices, ready to bring your direction into the conversation.</p>
+            </div>
+            <div class="cg-system">
+              <span class="cg-seam" aria-hidden="true"><i style="--c:#E24B4A"></i><i style="--c:#e48b31"></i><i style="--c:#fcbe21"></i><i style="--c:#378ADD"></i><i style="--c:#1D9E75"></i><i style="--c:#7F77DD"></i><i style="--c:#639922"></i></span>
+              <p><strong>A habit. What it serves.<br>What you choose to do instead.<br>The future it moves you towards.</strong></p>
+              <p>Your rhythm. Your places. What your own story has taught you.</p>
+              <p>When you wonder what to do, where to go, or how to move forward — bring your own connections into the picture.</p>
+            </div>
+          </div>
+          <div class="cg-members">
+            <div><h2>ENTER ANOTHER TOTEHM.</h2><p>Subscribe to a member’s ecosystem. Explore the elements they choose to share — their habits, objectives, visions, and the connections behind them.</p></div>
+            <p class="cg-signature">Your ChatGPT remains your ChatGPT.<br>It just gets <svg class="cg-higher" viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-badge"></use></svg>.</p>
+          </div>
+        </article>
+        <div id="chatgpt-entry">
+          <a id="chatgpt-connect" href="/chatgpt" aria-label="Higher my ChatGPT"><svg class="cg-higher" viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-badge"></use></svg><span>MY CHATGPT</span><span aria-hidden="true">↗</span></a>
+          <p class="cg-free">Free to connect. Member subscriptions are separate.</p>
+        </div>
         <div id="mb-offre" aria-live="polite"></div>
       </div>
     </section>
@@ -4337,7 +4280,7 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
 
     <!-- Le slogan qui voyage : en haut, LE bouton « Get [Higher] » ; en bas, « [Higher] Self » sous le profil. -->
     <button id="lv-slogan" class="is-c" type="button" tabindex="-1" aria-label="Get Higher">
-      <span class="lvs-pre"><span class="lvs-get">Get</span></span><svg viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-badge"></use></svg><span class="lvs-post"><span class="lvs-self">Self</span></span>
+      <span class="lvs-pre"><span class="lvs-get">Get</span></span><svg viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-badge"></use></svg>
     </button>
     <!-- ══ GET HIGHER · ce que ça fait au cerveau ══ La phrase du produit, telle qu'elle est écrite dans
          BRAND.md : des techniques de performance mentale éclairées par la recherche, EEG compris, pour
@@ -4354,7 +4297,7 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
       <button id="lvn-lf" class="lvn lvn-x lv-act" type="button" aria-label="My shorts"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 L5 8 L10 13"/></svg></button>
       <div id="lvj-box" aria-hidden="true"><div id="lvj-stack"><i></i></div></div>
       <button id="lvn-rt" class="lvn lvn-x lv-act" type="button" aria-label="My spots"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3 L11 8 L6 13"/></svg></button>
-      <button id="lvn-dn" class="lvn lv-act" type="button" aria-label="My Reflection"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 6 L8 11 L13 6"/></svg></button>
+      <button id="lvn-dn" class="lvn lv-act" type="button" aria-label="Higher my ChatGPT"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 6 L8 11 L13 6"/></svg></button>
     </div>
   </div>
 </div>
@@ -6503,9 +6446,6 @@ function creerFeed(conf){
      lieu, pour qui, le point ouvert ou non, silencieux ou social · son mot —, l'auteur et les gestes (GO · CALENDAR),
      puis la Habit Box au format Totehm (`boxSpot` : la mienne avec mes liens, ou celle que le serveur me montre d'un
      autre membre, mini-boîtes comprises), tout en bas. Plus de cadre, plus de fond flou. */
-  /* 26/10 (Wah : « j'ai pas compris le Higher Self dans les spots ») : le geste dit ce qu'il fait — un verbe, et « Higher »
-     en SVG comme partout. Le même mot sur un média et sur un spot. */
-  const ASK_MOT='ask my <svg class="ask-hi" viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-badge"></use></svg> self';
   const ET={will:'I will be there', am:'I am here', was:'I was here'};
   const AUD={private:'private', figher:'figher club', subscribers:'my subscribers', public:'figher club'};
   /* Le niveau d'un de MES spots, en boucle : private → my subscribers → figher club. Le serveur décide et rend le niveau posé. */
@@ -6552,10 +6492,7 @@ function creerFeed(conf){
       +(z.comment?'<p class="sd-say">'+esc(String(z.comment))+'</p>':'')+'</div>';
     const acts=(ex?'<button type="button" data-go="'+esc(String(z.id))+'">go</button>':'')
       +(z.state==='will'?'<button type="button" data-ics="'+esc(String(z.id))+'">calendar</button>':'')
-      /* 25/10 (Wah) : MON spot, montré au Higher Self — un mot de plus dans la même rangée, rien de neuf à apprendre.
-         DELETE reste le DERNIER : ce qui détruit ne se touche pas en visant autre chose. */
-      +(z.mine&&!RO?'<button type="button" data-ask="sp:'+esc(String(z.id))+'" data-ask-t="'+esc(String(x.txt||''))+'">'+ASK_MOT+'</button>'
-                   +'<button type="button" data-del="'+esc(String(z.id))+'">delete</button>':'');
+      +(z.mine&&!RO?'<button type="button" data-del="'+esc(String(z.id))+'">delete</button>':'');
     const par=!z.mine&&z.creator?'<span class="ssp-par"><span>by</span><button type="button" class="ssp-by" data-who="'+esc(String(z.creator))+'">'+esc(String(z.creator))+'</button></span>':'';
     const box=x.id?'<div class="ssp-box" role="button" tabindex="0" data-lsh="habits|'+esc(x.id)+'">'+loupeVue(boxSpot(z))+'</div>'
                   :'<div class="ssp-box">'+loupeVue(boxSpot(z))+'</div>';
@@ -6882,7 +6819,7 @@ function creerFeed(conf){
     const b=sec.querySelector('.tlv-b');
     /* PAR-DESSUS LE MÉDIA, LA BOX DÉTAILLÉE (Wah) : la box du Totehm entière — filet, nom, intentions, rythme,
        mini-boîtes —, surélevée. Plus aucune redirection vers le Totehm depuis la grille. */
-    if(b&&!b.firstChild) b.innerHTML=loupeVue(boxDe(x,false))+askHTML(x);
+    if(b&&!b.firstChild) b.innerHTML=loupeVue(boxDe(x,false));
     const m=sec.querySelector('.tlv-m'); if(!m) return;
     let el=m.firstChild;
     if(!el){
@@ -6940,22 +6877,9 @@ function creerFeed(conf){
     fermerV();
     window.__totehmDeplie(()=>{ setView(v); requestAnimationFrame(()=>ouvrir(k,id)); });
   }
-  /* 25/10 (Wah) — « lire et sélectionner un média ou un spot à envoyer à l'IA » : le geste est posé SUR la chose,
-     dans la visionneuse et sur le spot ouvert, et il n'existe que pour ce qui est À MOI (le serveur ne relit que mes
-     lignes). La page n'envoie qu'une RÉFÉRENCE (`em:<id>`, `sp:<id>`) ; le texte affiché n'est qu'une étiquette. */
-  const askHTML=x=>(!me||RO||!x||x.b!=='em'||!x.cle)?''
-    :'<button type="button" class="sh-ask" data-ask="'+esc(x.cle)+'" data-ask-t="'+esc(x.txt||'')+'">'+ASK_MOT+'</button>';
-  function demanderIA(b){
-    const [g,id]=String(b.dataset.ask||'').split(':');
-    const kind=g==='em'?'media':g==='sp'?'spot':'';
-    if(!kind||!id||typeof window.__smMontrer!=='function') return;
-    if(conf.grille) fermerV(); else if(conf.src==='spots') SPOTS.fermerVoir();
-    window.__smMontrer(kind,id,b.dataset.askT||'');
-  }
   if(conf.grille){ const r=$('tlv'); if(r){
     r.addEventListener('click',e=>{
       if(e.target.closest('[data-tlv="x"]')){ fermerV(); return; }
-      const k=e.target.closest('[data-ask]'); if(k){ demanderIA(k); return; }
       const del=e.target.closest('[data-tlv="del"]');
       if(del){ if(!arme(del)) return; const x=L[VU.i]; del.disabled=true;
         retirer(x).then(ok=>{ del.disabled=false; if(ok) fermerV(); else peindreDel(); }); return; }
@@ -7144,7 +7068,6 @@ function creerFeed(conf){
       if(e.target.closest('[data-f-sel]')){ sfOpen(true); return; }
       const a=e.target.closest('[data-add]');
       if(a){ if(conf.grille&&!a.dataset.add) return sfOpen(true,true); choix('cap',a.dataset.add||undefined); return; }
-      const k=e.target.closest('[data-ask]'); if(k){ demanderIA(k); return; }
       const b=e.target.closest('[data-lsh]'); if(b){ ouvrirElement(b); return; }
       /* Les gestes d'un spot : y aller (le point exact, si je le vois), le mettre au calendrier, voir son auteur. */
       const del=e.target.closest('[data-del]');
@@ -11145,7 +11068,7 @@ function paintMe(){
 /* Mon abonnement Higher : actif → TotehmSM ; sinon le Checkout (prix chez Stripe). */
 $('mw-higher').onclick=async()=>{
   const h=(LAND&&LAND.higher)||{};
-  if(h.active||h.comp){ closeMember(); if(window.__lvAller) window.__lvAller('b'); return; }   /* 15/10 : ma Reflection vit en bas */
+  if(h.active||h.comp){ location.href='/higherself'; return; }
   mwNote('opening checkout…');
   const {d}=await fnAppel('higher-sub',{action:'checkout'});
   if(d.url){ location.href=d.url; return; }
@@ -12222,7 +12145,7 @@ window.addEventListener('pageshow',e=>{
      paramétrages de mon TOTEHM ; plus d'IA là »). Le verso porte le NOM et son panneau ; le retourner zoome
      dedans, le nom devient le haut de la page, dessous le panneau du même objet. Mêmes invariants : un geste à
      la fois ; aucun contrôle ne retourne le papier ni ne change de vue (les gestes de l'atterrissage sont
-     coupés tant que la feuille est ouverte). La Reflection vit en bas ; chercher, dans la galaxie (Others). */
+     coupés tant que la feuille est ouverte). La présentation ChatGPT vit en bas ; chercher un membre passe par Members. */
   const srch=$('srch'), sBg=$('srch-bg'), sH=$('self-h'), sX=$('srch-x'), flipLink=$('search-corner');
   const RMQ=window.matchMedia('(prefers-reduced-motion: reduce)');
   const SDUR=640;
@@ -12236,7 +12159,7 @@ window.addEventListener('pageshow',e=>{
   let surReglages=()=>{};
   function paintFlip(){
     if(!flipLink) return;
-    flipLink.textContent=PAPIER.face()===1 ? 'Turn it back · my TOTEHM' : 'Turn it over · my Higher Self';
+    flipLink.textContent=PAPIER.face()===1 ? 'Turn it back · my TOTEHM' : 'Turn it over · my account';
   }
   /* Où sont le verso et son titre, où va le titre de la page — mesuré À CHAQUE FOIS. */
   /* Le nom déplié tient sur UNE ligne : trop long, il rapetisse (jamais d'ellipse au milieu d'un zoom). */
@@ -12363,12 +12286,12 @@ window.addEventListener('pageshow',e=>{
 
 
   /* ══ LE PROCESSEUR · 15/10/2026 ═══════════════════════════════════════════
-     Wah : « le TOTEHM est mon processeur personnel ; il prend vie à travers une IA réflexive, la Reflection ».
+     Le TOTEHM relie le système personnel aux médias, aux Spots et à la présentation de la connexion ChatGPT.
        h  GET HIGHER   en haut : la bouche du 12/10 (lot A), telle quelle ; le papier monte se poser sur la langue
                        pendant qu'elle s'ouvre, « Get [Higher] » l'avale, puis higher.boutique par le pont
        c  MY TOTEHM    le processeur dans son socle, les ramifications de mes intentions (`RAM`) ;
                        Mine · Others (la galaxie, `GX`) ; retourné, le papier ouvre MES RÉGLAGES (`ouvrirVerso`)
-       b  REFLECTION   en bas : tout mon TOTEHM se condense en UNE présence (seul #gl-bg tourne) ; trois étages
+       b  CHATGPT      en bas : le papier devient profil ; pitch gratuit, sans conversation locale
      UNE table (`VOISINS`), UNE fonction (`aller`) : le doigt, le trackpad, la molette, les flèches et les deux
      chevrons y mènent tous. Une transition à la fois (`bouge`) : jamais deux navigations, jamais une saisie perdue. */
   const LV=(()=>{
@@ -12380,13 +12303,13 @@ window.addEventListener('pageshow',e=>{
        Les deux n'existent que pour un membre (il n'y a pas « mes shorts » sans Totehm) et jamais dans la
        galaxie, où l'horizontale fait tourner les étoiles : `voisin()` les éteint, les chevrons suivent. */
     const VOISINS={c:{h:'h',b:'b',g:'g',d:'d'}, h:{b:'c'}, b:{h:'c'}, g:{d:'c'}, d:{g:'c'}};
-    const NOMS={c:'My TOTEHM', h:'Get Higher', b:'My Reflection', g:'Media', d:'Spots'};
+    const NOMS={c:'My TOTEHM', h:'Get Higher', b:'Higher my ChatGPT', g:'Media', d:'Spots'};
     const slo=$('lv-slogan'), nUp=$('lvn-up'), nDn=$('lvn-dn'), nLf=$('lvn-lf'), nRt=$('lvn-rt'),
           sock=$('lv-socket'), BG=$('gl-bg');
     const W=()=>innerWidth, H=()=>innerHeight;
     const ordi=()=>window.matchMedia('(hover:hover) and (pointer:fine)').matches;
     const lisse=u=>u<.5?2*u*u:1-Math.pow(-2*u+2,2)/2;
-    const diag={allers:0, modes:0, envois:0, telegram:0, ajouts:0, tours:0, montres:0};
+    const diag={allers:0, modes:0, tours:0};
     let vue='c', mode='mine', bouge=false;
     /* ══ MEMBERS · 20/10/2026 sexies ══ Wah : « les 5 vues (surtout les 4, celle du haut est la même pour tout le monde)
        forment L'ÉCOSYSTÈME TOTEHM. Quand on cherche un Totehm (MEMBERS), on oublie la galaxie : on agrandit le
@@ -12405,7 +12328,7 @@ window.addEventListener('pageshow',e=>{
     };
     body.classList.add('lv-c');
 
-    /* ── LE SLOGAN : « Get [Higher] » sous la langue (LE bouton), « [Higher] Self » sous le profil ── */
+    /* ── LE SLOGAN : « Get [Higher] » sous la langue ; la vue ChatGPT porte son propre CTA. ── */
     const larg=sel=>{ const e=slo.querySelector(sel); return e?e.offsetWidth:0; };
     function placer(el,x,y,w){
       const k=(w||96)/96;
@@ -12424,10 +12347,9 @@ window.addEventListener('pageshow',e=>{
         const l=PAPIER.cibleLangue(), y=l?l.bas+28:H()*.42;
         placer(slo, W()/2+(larg('.lvs-get')+8)/2, y, 96);
       } else if(v==='b'){
-        /* « [Higher] Self » descend TOUT EN BAS, en tout petit (Wah) : la vue, c'est le profil et ce que
-           j'écris — la signature ne prend pas la place de la réponse. */
+        /* Le badge se range en bas, masqué : le pitch porte sa signature et son CTA. */
         const k=.42, jb=$('lvjoy'), haut=jb?Math.max(60,H()-jb.getBoundingClientRect().top):120;
-        placer(slo, W()/2-(8+larg('.lvs-self'))*k/2, H()-haut-18, 96*k);
+        placer(slo, W()/2-8*k/2, H()-haut-18, 96*k);
       } else {
         /* AU CENTRE, le badge ne s'éteint pas : il se pose en petit au coin du processeur — 25/10 : le TOTEHM est le
            boîtier, le badge se range donc CONTRE son coin bas-droit, dehors (sur le papier, il en couvrait le coin). */
@@ -12465,7 +12387,7 @@ window.addEventListener('pageshow',e=>{
     function peindreNav(){
       [[nUp,voisin('h')],[nDn,voisin('b')],[nLf,voisin('g')],[nRt,voisin('d')]]
         .forEach(([b,v])=>{ if(!b) return; b.classList.toggle('is-mort',!v); b.tabIndex=v?0:-1;
-          if(v){ b.setAttribute('aria-label',NOMS[v]); b.title=NOMS[v]; } else b.removeAttribute('title'); });
+          if(v){ const nom=v==='b'&&mode==='members'?'Member offer':NOMS[v]; b.setAttribute('aria-label',nom); b.title=nom; } else b.removeAttribute('title'); });
     }
     function poser(v){
       ['c','h','b','g','d'].forEach(k=>body.classList.toggle('lv-'+k,k===v));
@@ -12593,14 +12515,12 @@ window.addEventListener('pageshow',e=>{
       if(!libreMb()) return void refus('aller:recherche');                          /* la recherche MEMBERS se termine d'abord */
       if(PAPIER.occupe()&&!PAPIER.vue()) return void refus('aller:papier-'+PAPIER.quoi());
       diag.allers++;
-      /* Ma Reflection n'existe que chez MOI ; chez un membre, le bas est SON offre. */
+      /* Chez moi : HIGHER MY CHATGPT ; chez un membre : son offre. */
       const moi=mode==='mine';
-      if(v==='b'&&moi) REF.armer();      /* DANS le geste : sans lui, le téléphone n'ouvre pas le clavier */
       if(v==='b'&&!moi) OFFRE.ouvrir(MB.nom||MB.verrou);
       bouge=true; const de=vue; vue=v;
-      const fini=garde(()=>{ bouge=false; peindreNav(); sloganPour(vue); if(vue==='b'&&mode==='mine') REF.arrive(); if(then) then(); reprendre(); },900);
+      const fini=garde(()=>{ bouge=false; peindreNav(); sloganPour(vue); if(then) then(); reprendre(); },900);
       try{
-        if(de==='b'&&moi) REF.quitter();
         /* Un moteur ne tourne que dans sa vue : on ferme celui d'où l'on part, on ouvre celui où l'on va. */
         if(de==='g') SH.fermer(); else if(de==='d') SPOTS.fermer();
         if(v==='g') SH.ouvrir(); else if(v==='d') SPOTS.ouvrir();
@@ -12617,7 +12537,7 @@ window.addEventListener('pageshow',e=>{
           const l=PAPIER.cibleLangue();
           parti=PAPIER.glisser(l?{x:l.x,y:l.y,s:l.s}:{x:W()/2,y:H()*.26,s:.5},{ms:760,bouche:l?[1,1]:null,fin:fini});
         } else {
-          if(moi) REF.entre(); tourner(1);
+          tourner(1);
           parti=PAPIER.glisser(cibleProfil(),{ms:820,fin:fini});
         }
         if(!parti){ console.warn('[lv] aller: le papier refuse le voyage ('+de+' → '+v+')'); fini(); }
@@ -12630,6 +12550,7 @@ window.addEventListener('pageshow',e=>{
     const mbGo=(t,f)=>{ if(!t){ mgo.classList.add('hide'); mgo.onclick=null; return; } mgo.textContent=t; mgo.classList.remove('hide'); mgo.onclick=f; };
     function peindreMode(){
       document.querySelectorAll('#lv-mode [data-mode]').forEach(b=>b.setAttribute('aria-checked',String(b.dataset.mode===mode)));
+      $('lv-b').setAttribute('aria-label',mode==='members'?'Member offer':'Higher my ChatGPT');
       $('lv-m-who').textContent=MB.nom||MB.verrou||'';
       const t=$('lv-tap-turn'); if(t){ const sou=window.matchMedia('(hover:hover)').matches;
         t.textContent=(sou?'Turn':'Swipe')+(mode==='members'?' to search':' to configure it'); }
@@ -12861,7 +12782,7 @@ window.addEventListener('pageshow',e=>{
       &&!sOpen&&!sMoving&&!$('member-window').classList.contains('show')&&!body.classList.contains('is-xo')
       &&!body.classList.contains('is-tlv')&&!body.classList.contains('is-nspot');   /* 27/10 : un spot en cours se finit, ou se ferme (CLOSE) */
     const saisie=t=>!!(t&&(t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.tagName==='SELECT'||t.isContentEditable));
-    const LISTES='#lv-thread,#lv-sh,#rdr-g,#rdr-sh,.lsh-sf';
+    const LISTES='#chatgpt-pitch,#lv-sh,#rdr-g,#rdr-sh,.lsh-sf';
     const filDefile=(t,dy)=>{ if(!t||!t.closest||!t.closest(LISTES)) return false;
       const el=t.closest(LISTES); if(el.scrollHeight<=el.clientHeight+2) return false;
       return dy>0 ? el.scrollTop+el.clientHeight<el.scrollHeight-1 : el.scrollTop>1; };
@@ -12919,6 +12840,7 @@ window.addEventListener('pageshow',e=>{
     window.addEventListener('keydown',e=>{
       if(!libre()||saisie(e.target)||e.metaKey||e.ctrlKey||e.altKey) return;
       if(e.key==='ArrowUp'||e.key==='ArrowDown'){
+        if(e.target.closest?.('#chatgpt-pitch')&&filDefile(e.target,e.key==='ArrowUp'?-1:1)) return;
         const d=e.key==='ArrowUp'?'h':'b', v=voisin(d);
         if(v){ e.preventDefault(); demander(d); return; }
         sansVoisin(d);
@@ -13399,7 +13321,7 @@ window.addEventListener('pageshow',e=>{
     })();
 
     /* ══ EN BAS, CHEZ UN MEMBRE : LUI, ET SON OFFRE · 20/10/2026 sexies ══════════════════════════════════════════
-       Ma Reflection n'existe que chez moi. Chez un membre, le bas est SON profil (le papier condensé, comme le mien)
+       La présentation ChatGPT reste chez moi. Chez un membre, le bas est SON profil (le papier condensé, comme le mien)
        et SON offre : `creator_page` (le prix vient du serveur, toujours), UN geste — Subscribe, ou ce qui est déjà vrai.
        Le paiement part par `creator-subscribe` (la même fonction que `/@nom`) ; rien ne s'écrit ici. */
     const OFFRE=(()=>{
@@ -13722,402 +13644,6 @@ window.addEventListener('pageshow',e=>{
     $('lv-tap-open').onclick=()=>{ if(!PAPIER.occupe()) enter(); };
     $('lv-tap-turn').onclick=()=>{ if(PAPIER.occupe()) return; if(mode==='members') chercher(); else if(lvReglages) lvReglages.ouvrir(); };
 
-    /* ══ EN BAS : MA REFLECTION (15/10) ═══════════════════════════════════════
-       Wah : « toutes les données de mon TOTEHM prennent vie à travers une Reflection ». Le passage
-       est une CONDENSATION : les ramifications se résorbent dans le socle, le socle devient un anneau (les 7
-       couleurs), le papier se resserre en profil autour du T — seul #gl-bg tourne, vite, puis se pose : le même
-       objet, en mode IA. Puis TROIS ÉTAGES liés, la couleur EST le sens :
-         bleu clair    la direction — mes objectifs, ma vision
-         rouge-violet  ce qui fait obstacle, à repousser ou dépasser ; « Teaching from the story »
-         navy          la prochaine step-Habit, concrète
-       Rien n'est présenté comme mien sans exister dans mon Totehm : le serveur vérifie chaque citation (`@ok`) ;
-       une step qui n'est pas une de mes Habits est une PROPOSITION (pointillé, « + my Habit »). La dernière
-       Reflection seule, aucun historique visible ; le serveur décide de l'accès (`my_landing().sm`, `sm_begin`). */
-    const SM={seq:0, msgs:[], busy:false, live:null, offre:false, raf:0, paye:false, ajoute:new Set(), spotte:new Set(), pos:null, posRefus:false,
-              focus:null};   /* 25/10 (Wah) : un média ou un spot MONTRÉ au Higher Self — {kind,id,txt} */
-    const etatSM=()=>(LAND&&LAND.sm)||{};
-    const acces=()=>!!(etatSM().higher||(LAND&&LAND.higher&&LAND.higher.active));
-    const fil=$('lv-thread'), ring=document.querySelector('#lv-socket .sk-ring');
-    /* Le texte du modèle → {dir, obs, teach, step, ok}. Tolérant : un flux coupé au milieu se lit quand même. */
-    function lireR3(txt){
-      const r={dir:null, obs:null, teach:null, step:null, ok:null, lieu:null};
-      let cur=null;
-      for(const l0 of String(txt||'').replace(/\r/g,'').split('\n')){
-        const l=l0.trim(); if(!l) continue;
-        const ok=/^@ok\s+(\{.*\})\s*$/.exec(l);
-        if(ok){ try{ r.ok=JSON.parse(ok[1]); }catch(_){} continue; }
-        const ic=/^@ici\s+(\{.*\})\s*$/.exec(l);
-        if(ic){ try{ r.ici=JSON.parse(ic[1]); }catch(_){} continue; }
-        const li=/^@lieu\s+(\{.*\})\s*$/.exec(l);
-        if(li){ try{ const x=JSON.parse(li[1]); if(x&&x.name&&/^(place|event|mine)$/.test(x.kind)) r.lieu=x; }catch(_){} continue; }
-        const m=/^@(dir|obs|teach|step)\b([^\n]*)$/i.exec(l);
-        if(m){
-          const tete=m[2]||'', q=/"([^"]*)"|“([^”]*)”/.exec(tete);
-          /* Les mots nus de l'en-tête : le genre, puis l'intention. Jamais une valeur libre : la liste
-             des sept est FERMÉE côté page — le modèle propose, la page vérifie. */
-          const mots=tete.replace(/"[^"]*"|“[^”]*”/g,' ').trim().split(/\s+/).filter(Boolean).map(x=>x.toLowerCase());
-          cur=m[1].toLowerCase();
-          r[cur]={kind:mots[0]||'', ref:q?(q[1]??q[2]??'').trim():'', int:mots.find(w=>INT_BY_ID[w])||null, text:''};
-          continue; }
-        if(l.startsWith('@')) continue;                       /* un marqueur pas encore arrivé en entier */
-        if(cur&&r[cur]) r[cur].text=(r[cur].text?r[cur].text+' ':'')+l;
-      }
-      return r;
-    }
-    /* Une step proposée devient une Habit : « I charge my phone… » → « Charge my phone… ». */
-    const habitDe=t=>{ let s=String(t||'').trim().replace(/^(I|Je)\s+/i,'').replace(/^J['’]\s*/i,'').replace(/[.!…]+$/,'').trim();
-                       return (s.charAt(0).toUpperCase()+s.slice(1)).slice(0,120); };
-    function etages(r,o={}){
-      const ok=r.ok||{}, verif=!!r.ok||!!o.exemple;
-      const ref=k=>{ const x=r[k]; return x&&x.ref&&verif&&ok[k]===true?'<span class="rf-ref">'+esc(x.ref)+'</span>':''; };
-      const p=x=>x&&x.text?'<p>'+esc(x.text)+'</p>':'';
-      const vide=k=>!r[k]||!r[k].text;
-      /* ⚠️ L'ACTION EST AU MILIEU, ET SUR-ÉLEVÉE (Wah, 15/10) : « talk is cheap ». On lit où je vais, ce que
-         je FAIS maintenant, puis ce qui bloque et ce que mon histoire m'a appris. La couleur dit le sens. */
-      let h='<div class="rf-t t-dir'+(vide('dir')?' is-wait':'')+'">'+ref('dir')+p(r.dir)+'</div>';
-      const s=r.step, mienne=!!(s&&s.kind==='habit'&&s.ref&&verif&&ok.step===true);
-      const ajoutee=!!(s&&o.id&&SM.ajoute.has(o.id));
-      const prop=!!(s&&s.text&&!mienne&&!ajoutee);
-      /* Le trait d'intention de la step : celui que le modèle a choisi, et seulement s'il est des SEPT. */
-      const ti=s&&s.int&&INT_BY_ID[s.int]?'<i class="rf-tick" style="background:'+intColor(s.int)+'" aria-hidden="true"></i>':'';
-      h+='<div class="rf-t t-step'+(vide('step')?' is-wait':'')+(prop?' is-prop':'')+(ti?' a-tick':'')+'">'+ti
-        +(mienne?ref('step'):ajoutee?'<span class="rf-ref">'+esc(habitDe(s.text))+'</span>':'')+p(s)
-        +lieuHTML(r.lieu,{id:o.id, exemple:o.exemple, mienne})
-        +(!r.lieu&&r.ok&&o.id&&!o.exemple&&!vide('step')?lieuInvite():'')
-        +(prop&&r.ok&&o.id&&!o.exemple?'<div class="rf-prop"><button class="rf-add" type="button" data-rf-add="'+esc(o.id)+'">+ my Habit</button></div>':'')+'</div>';
-      h+='<div class="rf-t t-obs'+(vide('obs')&&vide('teach')?' is-wait':'')+'">'+p(r.obs)
-        +(r.teach&&r.teach.text?'<div class="rf-teach"><span class="rf-k">Teaching from the story</span>'+ref('teach')+p(r.teach)+'</div>':'')+'</div>';
-      return h;
-    }
-    /* 22/10 — le lieu de la step : vérifié par le serveur ; GO (Maps ou la billetterie), SPOT IT (un de mes spots) quand la step
-       est une de MES Habits, que le lieu a un point et une heure à venir. */
-    const quandDe=v=>{ const d=new Date(v); if(isNaN(d)) return '';
-      return d.toLocaleString('en-GB',{weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}); };
-    function lieuHTML(L,o){
-      if(!L||!L.name) return '';
-      const q=L.kind==='event'?quandDe(L.at):L.when?quandDe(L.when):'';
-      const det=[L.address, L.kind==='event'?L.city:'', L.km!=null?L.km+' km':''].filter(Boolean).join(' · ');
-      const go=L.kind==='event'&&L.url?L.url:L.maps;
-      const t=new Date(L.when||L.at||'');
-      const spot=!o.exemple&&o.mienne&&L.kind!=='mine'&&L.lat!=null&&L.lng!=null&&!isNaN(t)&&t.getTime()>Date.now();
-      const actes=o.exemple?'':(go&&/^https:\/\//.test(go)?'<a class="rf-add" href="'+esc(go)+'" target="_blank" rel="noopener">go</a>':'')
-        +(spot?(SM.spotte.has(o.id)?'<button class="rf-add" type="button" disabled>spotted</button>'
-          :'<button class="rf-add" type="button" data-rf-spot="'+esc(o.id)+'">spot it</button>'):'');
-      return '<div class="rf-lieu k-'+esc(L.kind)+'"><span class="rf-lieu-n">'+esc(L.name)+'</span>'
-        +(det?'<span class="rf-lieu-d">'+esc(det)+'</span>':'')+(q?'<span class="rf-lieu-q">'+esc(q)+'</span>':'')
-        +(actes?'<span class="rf-lieu-a">'+actes+'</span>':'')+'</div>';
-    }
-    /* Sans lieu : un membre Higher sans position donnée peut la donner (une fois, ~1 km) ; les autres voient ce que Higher ouvre. */
-    function lieuInvite(){
-      if(!acces()) return '<button class="rf-lieu-up" type="button" data-sm-offer>a real place near me · '+HI+'</button>';
-      return SM.pos||SM.posRefus?'':'<button class="rf-lieu-up" type="button" data-rf-pos>places near me</button>';
-    }
-    const EXEMPLE=lireR3('@dir objective "Run a marathon under 4 hours"\nI train for the finish line, not for the likes.\n@obs\nI scroll in bed and wake up wrecked.\n'
-      +'@teach wisdom "Discipline is freedom"\nEvery night I give to the screen is a morning I lose.\n@step habit "Run the hill" fight\nTomorrow 7:00, down at the park, dark techno on, I run the hill twice.\n'
-      +'@ok {"dir":true,"teach":true,"step":true}\n@lieu {"kind":"place","name":"Jardim da Estrela","address":"Praça da Estrela, Lisboa","km":1.2}');
-    const BADGE='<svg viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-badge"></use></svg>';
-    /* « Higher » est TOUJOURS le badge, même au milieu d'une phrase. */
-    const HI='<svg class="sm-hi" viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-badge"></use></svg>';
-    function offre(){
-      const prix=prixMois((LAND&&LAND.higher)||{});
-      return '<div class="sm-offer"><div class="sm-offer-h">'+BADGE+'<span>'+esc(prix||'7 € / month')+'</span></div><ul>'
-        +'<li>My '+HI+' Self, every day</li>'
-        +'<li>'+BADGE+' my Telegram · my next move, at the rhythm of each Habit</li>'
-        +'<li>TotehmBot pushes me to act, not to read</li></ul>'
-        +'<div class="sm-cta"><button class="lv-btn" type="button" data-sm-sub>Get '+HI+'</button></div></div>';
-    }
-    /* Selon l'état : sans compte · invité · TOTEHM pas prêt · prêt · les 7 pris. */
-    function smHTML(){
-      const st=etatSM();
-      if(!(me&&inscrit())){
-        return '<div class="rf-ex">example</div>'+etages(EXEMPLE,{exemple:true})
-          +'<div class="sm-cta"><button class="lv-btn" type="button" data-sm-connect>CONNECT WITH MY TOTEHM</button><span class="lv-note">'+(st.free_total||7)+' free a month</span></div>';
-      }
-      if(guest()) return '<div class="sm-cta"><button class="lv-btn" type="button" data-sm-save>Save my TOTEHM with my email</button></div>';
-      if(!st.ready){
-        return '<div class="sm-cta"><button class="sm-check'+(st.habit?' is-ok':'')+'" type="button" data-sm-write="habits">'+(st.habit?'✓ ':'+ ')+'my Habit</button>'
-          +'<button class="sm-check'+(st.objective?' is-ok':'')+'" type="button" data-sm-write="objectives">'+(st.objective?'✓ ':'+ ')+'my Objective</button></div>';
-      }
-      const moi=[...SM.msgs].reverse().find(m=>m.role==='me'), lui=[...SM.msgs].reverse().find(m=>m.role==='sm');
-      let h=moi?'<p class="rf-q">'+esc(moi.text)+'</p>':'';
-      if(SM.live!=null) h+=etages(lireR3(SM.live));
-      else if(lui&&SM.msgs.indexOf(lui)>SM.msgs.indexOf(moi)) h+=etages(lireR3(lui.text),{id:lui.id})
-        +(acces()?'<div class="sm-acts"><button type="button" data-tg="'+lui.id+'">'+BADGE+' my Telegram</button></div>':'');
-      /* ⚠️ RIEN AVANT D'AVOIR PARLÉ (Wah, 15/10) : au repos on ne voit QUE le profil et le curseur qui
-         clignote. Trois boîtes vides, c'est trois promesses vides. Elles s'ouvrent quand il y a à dire. */
-      if((!acces()&&!SM.busy&&(st.free_left|0)<=0)||(SM.offre&&!acces())) h+=offre();
-      return h;
-    }
-    function smNoteEtat(){
-      const st=etatSM();
-      if(!(me&&inscrit())||guest()||!st.ready){ smNote(''); return; }
-      if(acces()){ smNote(st.left!=null&&st.left<=5?st.left+' left today':''); return; }
-      const n=st.free_left|0;
-      if(n<=0){ smNote(''); return; }
-      $('lv-say-note').innerHTML=esc(n+' of '+(st.free_total||7)+' free this month · ')+'<button class="sm-link" type="button" data-sm-offer aria-label="Higher">'+HI+'</button> = every day';
-    }
-    function smPeindre(){
-      const st=etatSM(), ouvert=!!(me&&inscrit()&&!guest()&&st.ready&&(acces()||(st.free_left|0)>0));
-      $('lv-say').classList.toggle('hide',!ouvert);
-      iciPeindre();
-      $('lv-say-go').disabled=SM.busy;
-      curseur(); smFocus();
-      fil.innerHTML=smHTML();
-    }
-    /* Le champ vide = une ligne nue et un curseur qui clignote ; dès la première lettre, il redevient un champ. */
-    function curseur(){ const f=$('lv-say'), t=$('lv-say-in'); if(f&&t) f.classList.toggle('is-vide',!t.value.trim()); }
-    /* ── 25/10 (Wah) : CE QUE JE LUI MONTRE ──────────────────────────────────
-       « il faut aussi que l'on puisse lire et sélectionner un média ou un spot à envoyer à l'IA ». La chose
-       choisie se pose au-dessus de ce que j'écris, comme une pièce jointe : un mot (media · spot), son élément,
-       et une croix. La page n'envoie que {kind,id} — le serveur relit la chose dans MON Totehm. Un envoi la
-       CONSOMME (elle a été montrée) ; un envoi raté la garde, pour la réessayer telle quelle. */
-    /* Les deux seuls genres, ici comme au serveur : la liste est FERMÉE côté page. */
-    function montreMot(k){ return k==='media'?'media':k==='spot'?'spot':''; }
-    function smFocus(){
-      const b=$('lv-focus'); if(!b) return;
-      const f=SM.focus;
-      b.classList.toggle('hide',!f);
-      b.innerHTML=f?'<i>'+esc(montreMot(f.kind))+'</i><b>'+esc(f.txt||'untitled')+'</b>'
-        +'<button type="button" data-sm-unfocus aria-label="Remove what I show">✕</button>':'';
-    }
-    function smMontrer(kind,id,txt){
-      if(!montreMot(kind)||!id) return;
-      SM.focus={kind, id:String(id), txt:String(txt||'')}; diag.montres++;
-      const pose=()=>{ smFocus(); const t=$('lv-say-in');
-        if(t&&!$('lv-say').classList.contains('hide')) try{ t.focus({preventScroll:true}); }catch(_){} };
-      /* La croix du processeur : du bas on ne vient QUE du centre (← et → ne touchent pas ↓). */
-      const bas=()=>{ if(vue!=='b') aller('b',pose); else pose(); };
-      if(vue!=='c'&&vue!=='b') aller('c',bas); else bas();
-    }
-    window.__smMontrer=smMontrer;
-    /* Pendant le flux : un dessin par image, pas un par morceau. */
-    const smBientot=()=>{ if(!SM.raf) SM.raf=requestAnimationFrame(()=>{ SM.raf=0; smPeindre(); }); };
-    window.__lvPeindreSM=smPeindre;
-    function smEtat(){ smPeindre(); smNoteEtat(); }
-    const smNote=t=>{ $('lv-say-note').textContent=t||''; };
-    /* Elle réfléchit : l'anneau aux 7 couleurs tourne (jamais le papier). */
-    let pense=null;
-    function penser(on){
-      if(on){ if(pense||!ring||!ring.animate||RMQ.matches||vue!=='b') return;
-              pense=ring.animate([{transform:'rotate(0deg)'},{transform:'rotate(360deg)'}],{duration:1400,iterations:Infinity}); }
-      else if(pense){ try{ pense.cancel(); }catch(_){} pense=null; }
-    }
-    const maintenant=()=>{ const d=new Date(), p=n=>String(n).padStart(2,'0');
-      return ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d.getDay()]+' '+d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+' '+p(d.getHours())+':'+p(d.getMinutes()); };
-    /* L'appel en flux : texte brut, mot à mot. Une erreur arrive en JSON. */
-    async function smFlux(corps,surTexte){
-      const {data:{session}}=await sb.auth.getSession(); if(!session) return {status:401,d:{error:'no_session'}};
-      let r;
-      try{
-        r=await fetch('https://abujjbkbbiumxrokozph.supabase.co/functions/v1/higher-self',{method:'POST',
-          headers:{'content-type':'application/json',apikey:SB_ANON,authorization:'Bearer '+session.access_token},body:JSON.stringify(corps)});
-      }catch(e){ console.error('[higher-self]',e?.message||e); return {status:0,d:{error:'network'}}; }
-      if(!r.ok||!/text\/plain/.test(r.headers.get('content-type')||'')){
-        const d=await r.json().catch(()=>({})); console.error('[higher-self]',r.status,d.error||''); return {status:r.status,d};
-      }
-      const reste=r.headers.get('X-SM-Left'), haut=r.headers.get('X-SM-Higher')==='1';
-      let txt='';
-      try{
-        if(r.body&&r.body.getReader){
-          const rd=r.body.getReader(), dec=new TextDecoder();
-          for(;;){ const {value,done}=await rd.read(); if(done) break; txt+=dec.decode(value,{stream:true}); surTexte(txt); }
-        } else { txt=await r.text(); surTexte(txt); }
-      }catch(e){ console.error('[higher-self] flux',e?.message||e); }
-      return {status:200,d:{ok:txt.trim().length>=12,text:txt,left:reste===''||reste==null?null:+reste,higher:haut}};
-    }
-    /* Ce qui repart au modèle (les tours précédents, invisibles) : sans les lignes du serveur (vérification, lieu). */
-    const sansOk=t=>String(t||'').replace(/\n?@(?:ok|lieu|ici)\s+\{[^\n]*\}/g,'').trim();
-    /* La position : au serveur, arrondie à ~1 km (la météo ; Higher : les lieux près de moi), jamais gardée. 29/10 : pour
-       TOUS les membres — la météo et « chez moi » sont mécaniques (zéro centime) ; le navigateur demande UNE fois, au
-       premier message, et la réponse part sans attendre plus de 1,5 s (la position suivra au message d'après). */
-    const arrondi=c=>({lat:Math.round(c.lat*100)/100, lng:Math.round(c.lng*100)/100});
-    const lirePos=ms=>new Promise(res=>{ if(!navigator.geolocation) return res(null);
-      let fini=false; const fin=v=>{ if(v) SM.fin={...v,at:Date.now()}; if(!fini){ fini=true; res(v); } };
-      navigator.geolocation.getCurrentPosition(p=>fin(p&&p.coords?{lat:p.coords.latitude,lng:p.coords.longitude}:null),()=>fin(null),{timeout:8000,maximumAge:600000});
-      setTimeout(()=>{ if(!fini){ fini=true; res(null); } },ms); });
-    async function posFine(){
-      if(SM.fin&&Date.now()-SM.fin.at<10*60e3) return SM.fin;
-      let st='prompt'; try{ const q=navigator.permissions&&await navigator.permissions.query({name:'geolocation'}); if(q) st=q.state; }catch(_){}
-      if(st==='denied') return null;
-      return lirePos(1500);
-    }
-    /* ══ CHEZ MOI · 29/10 ══ (Wah : « la vue du bas doit prendre en compte l'heure, la météo et la position : détecter si je
-       suis chez moi, et me proposer une activité chez moi, ou une action dehors aux alentours »). C'est le TÉLÉPHONE qui
-       apprend : à chaque message, la position FINE (~100 m) et l'heure sont notées dans CE navigateur seul (`totehm_ici_v1`,
-       jamais envoyées) ; « chez moi » = le point le plus vu la nuit (21 h – 8 h, sur deux nuits au moins, à 200 m près), ou
-       celui que je désigne d'un tap. Au serveur ne part qu'un mot : home · out. */
-    const ICI=(()=>{
-      const K='totehm_ici_v1', R=.2;
-      const lire=()=>{ try{ return JSON.parse(localStorage.getItem(K)||'{}')||{}; }catch(_){ return {}; } };
-      const ecrire=o=>{ try{ localStorage.setItem(K,JSON.stringify(o)); }catch(_){} };
-      const fin3=c=>({lat:Math.round(c.lat*1000)/1000, lng:Math.round(c.lng*1000)/1000});
-      const km=(a,b)=>{ const r=Math.PI/180, x=(b.lng-a.lng)*r*Math.cos((a.lat+b.lat)*r/2), y=(b.lat-a.lat)*r; return Math.hypot(x,y)*6371; };
-      function noter(c){ if(!c) return; const o=lire(), d=new Date(), l=Array.isArray(o.vu)?o.vu:[];
-        l.push({...fin3(c),h:d.getHours(),j:d.toISOString().slice(0,10)}); o.vu=l.slice(-120); ecrire(o); }
-      function maison(){
-        const o=lire(); if(o.moi) return o.moi;
-        const pas=Array.isArray(o.pas)?o.pas:[], nuit=(o.vu||[]).filter(v=>(v.h>=21||v.h<8)&&!pas.some(p=>km(p,v)<=R)); let best=null, n=0;
-        for(const v of nuit){ const j=new Set(nuit.filter(w=>km(v,w)<=R).map(w=>w.j)); if(j.size>n){ n=j.size; best=v; } }
-        return n>=2?{lat:best.lat,lng:best.lng}:null;
-      }
-      const etat=c=>{ if(!c) return ''; const m=maison(); if(m) return km(m,c)<=R?'home':'out';
-        return (lire().pas||[]).some(p=>km(p,c)<=R)?'out':''; };
-      /* un tap corrige : « home » ici devient « out » (ce point n'est pas chez moi), « out » devient « home » (c'est ici) */
-      function corriger(c){ if(!c) return ''; const o=lire();
-        if(etat(c)==='home'){ delete o.moi; o.pas=(Array.isArray(o.pas)?o.pas:[]).concat([fin3(c)]).slice(-8); ecrire(o); return 'out'; }
-        o.moi=fin3(c); o.pas=(o.pas||[]).filter(p=>km(p,c)>R); ecrire(o); return 'home'; }
-      return {noter, etat, corriger, connu:()=>!!maison()};
-    })();
-    const HEURE=()=>{ const d=new Date(); return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); };
-    const CIEL=c=>String(c||'').replace(/_(day|night|polartwilight)$/,'').replace('clearsky','clear').replace('partlycloudy','cloudy').replace('lightrain','light rain')
-      .replace('heavyrain','heavy rain').replace(/andthunder$/,' + thunder').replace(/showers$/,' showers').replace(/\s+/g,' ').trim();
-    function iciPeindre(){
-      const el=$('lv-ici'); if(!el) return;
-      const ouvert=!$('lv-say').classList.contains('hide'), m=SM.ici||{}, ou=SM.fin?ICI.etat(SM.fin):'';
-      el.classList.toggle('hide',!ouvert);
-      if(!ouvert) return;
-      const b=[esc(HEURE())];
-      if(m.t!=null||m.ciel) b.push(esc([m.t!=null?Math.round(m.t)+'°':'',CIEL(m.ciel)].filter(Boolean).join(' ')));
-      if(ou) b.push('<button type="button" data-ici aria-label="Home or out — tap to correct">'+(ou==='home'?'home':'out')+'</button>');
-      el.innerHTML=b.join('<span aria-hidden="true">·</span>');
-    }
-    $('lv-ici').addEventListener('click',e=>{ if(!e.target.closest('[data-ici]')||!SM.fin) return; ICI.corriger(SM.fin); diag.ici=(diag.ici|0)+1; iciPeindre(); });
-    $('lv-say').addEventListener('submit',async e=>{
-      e.preventDefault(); if(SM.busy) return;
-      const inp=$('lv-say-in'), t=inp.value.trim(); if(t.length<2){ smNote('a few words'); return; }
-      const uid=me&&me.id, seq=++SM.seq;
-      const tours=SM.msgs.slice(-6).map(m=>({role:m.role,text:m.role==='sm'?sansOk(m.text):m.text}));
-      SM.msgs.push({role:'me',text:t}); SM.busy=true; SM.live=''; inp.value=''; smNote(''); smPeindre(); penser(true);
-      const fine=await posFine(), pos=fine?(SM.pos=arrondi(fine)):null;
-      if(fine) ICI.noter(fine);
-      const ou=fine?ICI.etat(fine):'';
-      /* Ce que je montre part en RÉFÉRENCE seule : {kind,id}. L'étiquette affichée ne quitte jamais la page. */
-      const mtr=SM.focus?{kind:SM.focus.kind, id:SM.focus.id}:null;
-      const {status,d}=await smFlux({action:'say',text:t,turns:tours,now:maintenant(),tz:new Date().getTimezoneOffset(),fmt:'r4',...(pos?{pos}:{}),...(ou?{ou}:{}),...(mtr?{focus:mtr}:{})},
-        txt=>{ if(seq===SM.seq){ SM.live=txt; smBientot(); } });
-      if(seq!==SM.seq||me?.id!==uid) return;
-      penser(false); SM.busy=false; SM.live=null;
-      if(d.ok){
-        SM.msgs.push({role:'sm',text:d.text,id:'r'+seq}); diag.envois++;
-        { const r=lireR3(d.text); if(r.ici) SM.ici=r.ici; }
-        if(mtr&&SM.focus&&SM.focus.id===mtr.id) SM.focus=null;   /* montré : la pastille s'en va avec la réponse */
-        if(LAND&&LAND.sm&&d.left!=null){ LAND.sm.left=d.left; if(!d.higher) LAND.sm.free_left=d.left; }
-        smPeindre(); smNoteEtat(); return;
-      }
-      SM.msgs.pop(); inp.value=t;
-      if(status===402&&LAND&&LAND.sm){ LAND.sm.free_left=0; }
-      if((status===402||status===409)&&d.state&&LAND) LAND.sm={...(LAND.sm||{}),...d.state};
-      smPeindre(); smNoteEtat();
-      if(status!==402&&status!==409) smNote(({quota:'30 a day · back tomorrow',empty:'a few words',no_session:'sign in again',email:'save my TOTEHM with my email first'})[d.error]||'try again');
-      if(status===409&&lvRefresh) lvRefresh();
-    });
-    $('lv-say-in').addEventListener('input',curseur);
-    $('lv-say-in').addEventListener('keydown',e=>{
-      if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); $('lv-say').requestSubmit(); }
-      else if(e.key==='Escape'){ e.preventDefault(); try{ e.target.blur(); }catch(_){} if(!e.target.value.trim()) aller('c'); }
-      else if(e.key==='ArrowUp'&&!e.target.value){ const v=voisin('h'); if(v){ e.preventDefault(); try{ e.target.blur(); }catch(_){} aller(v); } }
-    });
-    /* En tapant sur téléphone, la manette s'efface (`body.rf-clavier`). Un seul curseur : celui du champ (20/10 septies). */
-    function clavier(){
-      const t=$('lv-say-in'); if(!t) return;
-      document.body.classList.toggle('rf-clavier',document.activeElement===t&&tactile());
-    }
-    $('lv-say-in').addEventListener('focus',clavier);
-    $('lv-say-in').addEventListener('blur',clavier);
-    /* Le secours : si le téléphone n'a pas voulu ouvrir le clavier pendant le glissé, UN TAP n'importe où dans la
-       vue l'ouvre (un tap est toujours un geste que le téléphone accepte). */
-    $('rf').addEventListener('click',e=>{
-      if(vue!=='b'||e.target.closest('button,a,textarea,input,[data-sm-offer]')) return;
-      const t=champ(); if(t) try{ t.focus({preventScroll:true}); const n=t.value.length; t.setSelectionRange(n,n); }catch(_){}
-    });
-    /* Une Reflection, telle qu'elle part ailleurs : ses trois étages, en clair. */
-    const aPartager=m=>{ const r=lireR3(m.text); return [r.dir&&r.dir.text, r.obs&&r.obs.text, r.teach&&r.teach.text, r.step&&r.step.text&&('→ '+r.step.text),
-      r.lieu&&r.lieu.name&&('◼ '+r.lieu.name+(r.lieu.maps||r.lieu.url?' '+(r.lieu.kind==='event'&&r.lieu.url?r.lieu.url:r.lieu.maps):''))].filter(Boolean).join('\n'); };
-    /* SPOT IT : la step (une de MES Habits) au lieu vérifié, à son heure → un de MES spots (vue de droite), visible du Club.
-       Le serveur décide de tout (`spot_schedule_audience`) : la Habit, l'heure à venir, le point. */
-    async function spotDeLaStep(id,btn){
-      if(RO||!me||!inscrit()||guest()) return;
-      const m=SM.msgs.find(x=>x.id===id); if(!m) return;
-      const r=lireR3(m.text), L=r.lieu, s=r.step;
-      const t=L&&new Date(L.when||L.at||'');
-      if(!L||!s||!s.ref||!(r.ok&&r.ok.step===true)||L.lat==null||L.lng==null||!t||isNaN(t)||t.getTime()<=Date.now()){ smNote('a place and a time ahead'); return; }
-      smNote('…'); const uid=me.id;
-      const city=L.city||await villeDe(L.lat,L.lng);
-      const {data,error}=await sb.rpc('spot_schedule_audience',{p_habit:s.ref, p_starts_at:t.toISOString(), p_duration_min:60,
-        p_place:[L.name,L.kind==='place'?L.address:''].filter(Boolean).join(', ').slice(0,120), p_lat:L.lat, p_lng:L.lng,
-        p_city:city||null, p_comment:null, p_mode:'silent', p_location:'on', p_audience:'figher'});
-      if(uid!==me?.id) return;
-      if(error){ console.error('[spot_schedule_audience]',error.message); smNote('not announced · try again'); if(btn) btn.disabled=false; return; }
-      if(!data||!data.ok){ smNote(({habit:'not my habit',when:'a time, later than now',too_many:'too many spots ahead'})[data&&data.why]||'not announced · try again');
-        if(btn) btn.disabled=false; return; }
-      diag.spots=(diag.spots|0)+1; SM.spotte.add(id); CLUBSP.vider(); smPeindre(); smNote('spotted');
-    }
-    function ajouterHabit(id){
-      if(RO||!me||!inscrit()||guest()) return;
-      const m=SM.msgs.find(x=>x.id===id); if(!m) return;
-      const r=lireR3(m.text), t=r.step&&habitDe(r.step.text); if(!t) return;
-      if(!(state.habits||[]).some(h=>String(h.t||'').trim().toLowerCase()===t.toLowerCase())){
-        state.habits.unshift({id:'h'+(++HSEQ), t, t0:t, f:null, i:null, is:[], o:null}); state.ord=true; save(); diag.ajouts++;
-      }
-      SM.ajoute.add(id); smPeindre(); smNote('in my TOTEHM'); RAM.peindre(vue);
-    }
-    async function smClic(e){
-      /* La croix de ce que je montre : je la retire, et je garde ce que j'étais en train d'écrire. */
-      if(e.target.closest('[data-sm-unfocus]')){ SM.focus=null; smFocus(); return; }
-      /* 15/10 : TELEGRAM SEUL (Wah) — pas de Meta. Le bouton WhatsApp et son câblage sont partis ensemble. */
-      const tg=e.target.closest('[data-tg]');
-      if(tg){ const m=SM.msgs.find(x=>x.id===tg.dataset.tg); if(!m) return; smNote('…');
-              const {d}=await fnAppel('higher-self',{action:'telegram',text:aPartager(m)});
-              if(d.ok){ diag.telegram++; smNote('sent to my Telegram'); return; }
-              if(d.error==='not_linked'){ smNote(await lierTelegram()?'in Telegram, press Start, then send again':'try again'); return; }
-              smNote(d.error==='blocked'?'TotehmBot is blocked in Telegram':d.error==='higher_required'?'with the subscription only':'try again'); return; }
-      const add=e.target.closest('[data-rf-add]');
-      if(add){ add.disabled=true; ajouterHabit(add.dataset.rfAdd); return; }
-      if(e.target.closest('[data-rf-pos]')){ smNote('…'); const p=await lirePos(8000);
-        if(p){ SM.pos=arrondi(p); ICI.noter(p); iciPeindre(); smNote('near me · on my next reflection'); } else { SM.posRefus=true; smNote('no position · my own places stay'); }
-        smPeindre(); return; }
-      const sp=e.target.closest('[data-rf-spot]');
-      if(sp){ sp.disabled=true; spotDeLaStep(sp.dataset.rfSpot,sp); return; }
-      const w=e.target.closest('[data-sm-write]');
-      if(w){ const v=w.dataset.smWrite; enter(()=>setView(v)); return; }
-      if(e.target.closest('[data-sm-offer]')){ SM.offre=true; smPeindre(); fil.scrollTop=fil.scrollHeight; return; }
-      if(e.target.closest('[data-sm-connect]')){ aller('c',()=>{ LA_PORTE.reste=()=>aller('b'); ouvrirPorte(null); }); return; }
-      if(e.target.closest('[data-sm-save]')){ ouvrirCompte(()=>setTimeout(()=>{ try{ $('mw-save-email').focus(); }catch(_){} },120)); return; }
-      if(e.target.closest('[data-sm-sub]')){ smNote('opening checkout…'); const {d}=await fnAppel('higher-sub',{action:'checkout'});
-              if(d.url){ location.href=d.url; return; }
-              smNote(({not_ready:'opening soon',active:'already active',no_session:'sign in again'})[d.error]||'try again');
-              if(d.error==='active'&&lvRefresh) lvRefresh(); }
-    }
-    fil.addEventListener('click',smClic);
-    $('lv-say-note').addEventListener('click',smClic);
-    $('lv-focus').addEventListener('click',smClic);
-    /* ══ 20/10 · ON ARRIVE, ON TAPE ══ Le clavier s'ouvre en arrivant dans ma Reflection. Sur téléphone, il ne
-       s'ouvre que DANS un geste : `armer()` est appelé par `aller('b')` dans le même geste (doigt, manette,
-       flèche) et focalise un relais invisible ; à l'arrivée, `arrive()` passe le focus au vrai champ (le clavier
-       reste ouvert) et reprend ce qui a déjà été tapé. À la souris, le focus se pose simplement à l'arrivée.
-       ↑ et Échap naviguent toujours : dans un champ VIDE, ↑ remonte et Échap revient au centre. */
-    const tactile=()=>window.matchMedia('(pointer:coarse)').matches;
-    let relais=null;
-    const champ=()=>{ const f=$('lv-say'), t=$('lv-say-in'); return f&&t&&!f.classList.contains('hide')?t:null; };
-    const REF={
-      entre(){ smEtat(); },
-      armer(){
-        if(!champ()||!tactile()) return;
-        if(!relais){ relais=document.createElement('input'); relais.className='rf-proxy'; relais.tabIndex=-1;
-          relais.setAttribute('aria-hidden','true'); relais.autocomplete='off'; document.body.appendChild(relais); }
-        relais.value=''; try{ relais.focus({preventScroll:true}); }catch(_){}
-      },
-      arrive(){
-        if(SM.busy) penser(true);
-        const t=champ();
-        if(t&&vue==='b'){
-          if(relais&&relais.value){ t.value+=relais.value; relais.value=''; curseur(); }
-          try{ t.focus({preventScroll:true}); const n=t.value.length; t.setSelectionRange(n,n); }catch(_){}
-        } else if(relais&&document.activeElement===relais) relais.blur();
-      },
-      quitter(){ penser(false); try{ const a=document.activeElement; if(a&&($('rf').contains(a)||a===relais)) a.blur(); }catch(_){} }
-    };
-
     /* ── LES DONNÉES : `my_landing()`, une réponse tardive ne gagne jamais ── */
     let landSeq=0;
     lvPeindre=()=>{ peindreCarte(); connPaint(); paintMe(); RAM.peindre(vue); peindreNav(); };
@@ -14128,20 +13654,15 @@ window.addEventListener('pageshow',e=>{
       if(error){ console.error('[my_landing]',error.message); return; }
       LAND=data||null;
       peindreCarte(); connPaint(); paintMe(); RAM.peindre(vue); peindreNav();
-      smPeindre(); if(vue==='b'&&!SM.paye) smNoteEtat();
       CREA.charger();
     };
-    lvQuitter=()=>{ landSeq++; SM.seq++; SM.msgs=[]; SM.busy=false; SM.live=null; SM.offre=false; SM.ajoute.clear(); penser(false);
-                    SM.focus=null; smFocus();   /* un autre compte : ce que MOI je montrais s'en va avec moi */
-                    visSeq++; CREA.vider(); DASH.vider(); OFFRE.vider(); CLUBSP.vider(); smNote('');
-                    /* Un autre compte : la recherche et l'écosystème d'un membre se referment (la lecture, elle, suit `sessionChange`). */
+    lvQuitter=()=>{ landSeq++;
+                    visSeq++; CREA.vider(); DASH.vider(); OFFRE.vider(); CLUBSP.vider();
                     if(MB.cherche) finirRecherche(); if(!RO){ MB.nom=null; MB.avant=null; mode='mine'; body.classList.remove('lv-mb','lv-membre'); peindreMode(); } };
     window.__totehm_lv=()=>({build:BUILD, vue, mode, bouge, allers:diag.allers, modes:diag.modes, papier:PAPIER.vue(),
       debloques:diag.debloques, enAttente:diag.enAttente, refus:{...diag.refus}, dernierRefus:diag.dernier, haut:diagHaut,
       membre:inscrit(), higher:!!(LAND&&LAND.higher&&LAND.higher.active), thp:!!(LAND&&LAND.thp),
-      reflection:{tours:SM.msgs.length, pret:!!etatSM().ready, gratuits:etatSM().free_left??null, envois:diag.envois, ajouts:diag.ajouts,
-                  pense:!!pense, telegram:diag.telegram, spots:diag.spots|0, pos:!!SM.pos,
-                  montre:SM.focus?SM.focus.kind:null, montres:diag.montres|0},
+      chatgpt:{setup:'/chatgpt'},
       membre:{cherche:MB.cherche, chez:!!MB.nom, verrou:MB.verrou, medias:MBM.items.length, offre:OFFRE.etat()}, ramifications:RAM.etat(), tours:diag.tours, tourne:!!tour,
       shorts:SH.etat(), spots:SPOTS.etat(),
       visibilite:LAND?LAND.visibility:null, createur:CREA.etat(), reglages:sOpen});
@@ -14160,18 +13681,17 @@ window.addEventListener('pageshow',e=>{
         history.replaceState(null,'',location.pathname);
         setTimeout(()=>{ if(k==='spot') VX.spot(id,''); else XO.ouvrir('space','spot='+encodeURIComponent(id)); },0); } }
 
-    /* La page de vente de l'abonnement Higher renvoie ici quand il est déjà à moi (`?higher=open`). */
-    if(new URLSearchParams(location.search).get('higher')==='open'){
-      history.replaceState(null,'',location.pathname);
-      setTimeout(()=>aller('b'),400);
-    }
-    /* Retour de Stripe (`?higher=paid`) : la Reflection, et l'attente du webhook. */
-    if(new URLSearchParams(location.search).get('higher')==='paid'){
-      history.replaceState(null,'',location.pathname);
-      SM.paye=true;
-      setTimeout(()=>{ aller('b'); smNote('payment received · opening my Reflection');
-        let n=0; const t=setInterval(async()=>{ n++; if(lvRefresh) await lvRefresh();
-          if(acces()||n>=8){ clearInterval(t); SM.paye=false; if(acces()) smNoteEtat(); else smNote('it takes a moment · reopen this view soon'); } },1500); },600);
+    /* Les retours Higher payants restent dans leur parcours ; ChatGPT est une entrée gratuite distincte. */
+    { const retour=new URLSearchParams(location.search).get('higher');
+      if(retour==='open') location.replace('/higherself');
+      if(retour==='paid'){
+        history.replaceState(null,'',location.pathname);
+        setTimeout(()=>{ if(lvReglages) lvReglages.ouvrir(); DASH.onglet('higher'); mwNote('payment received · updating my subscription');
+          let n=0; const t=setInterval(async()=>{ n++; if(lvRefresh) await lvRefresh();
+            const h=LAND&&LAND.higher;
+            if((h&&(h.active||h.comp))||n>=8){ clearInterval(t); mwNote(h&&(h.active||h.comp)?'subscription active':'it takes a moment · check again soon'); }
+          },1500); },600);
+      }
     }
     /* ══ L'ASPIRATION · 25/10 ══ Wah : « quand on clique sur le Totehm, je veux que les traits d'intention soient aussi aspirés
        par le Totehm » — comme au verso, comme en recherche : on cesse l'activité du TOTEHM pour le paramétrer et le
