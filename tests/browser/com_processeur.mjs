@@ -55,29 +55,33 @@ try{
       /* 18/10 : le nom a quitté l'atterrissage — il ne vit QUE sur la face verso du papier (Wah). */
       sigAbs:!q('#ast-sig'),connAbs:!q('#conn-bar'),
       tap:q('#lv-tap').textContent,bouche:getComputedStyle(q('#gate-mouth')).opacity,
-      /* 31/10 — L'ARBRE PLEIN ÉCRAN : la couronne (les pastilles au-dessus du milieu du papier), les racines (sous le curseur) */
+      /* 31/10 — L'ARBRE PLEIN ÉCRAN : la couronne (les pastilles au-dessus du milieu du papier), les racines (en bas) ; 01/11 : le
+         ginkgo (les fourches), le pied en cloche autour du curseur, les chevrons et le puits jamais touchés */
       arbre:(()=>{const P=q('#gate-asteroid').getBoundingClientRect(),jb=q('#lvj-box').getBoundingClientRect(),J={x:jb.x+jb.width/2,y:jb.y+jb.height/2};
         const pts=d=>d.split('M').filter(Boolean).map(s=>s.split('L').map(p=>p.trim().split(/\s+/).map(Number)));
         const main=[...document.querySelectorAll('#lv-ram path:not(.puls):not(.sk):not(.fk)')].map(p=>pts(p.getAttribute('d')));
         const fk=[...document.querySelectorAll('#lv-ram path.fk')].map(p=>pts(p.getAttribute('d'))[0]);
         const pads=[...document.querySelectorAll('#lv-ram circle')].map(e=>[+e.getAttribute('cx'),+e.getAttribute('cy')]);
-        const haut=pads.filter(p=>p[1]<P.y+P.height/2),bas=pads.filter(p=>p[1]>J.y),tous=[].concat(...main.map(s=>[].concat(...s)),...fk);
+        const haut=pads.filter(p=>p[1]<P.y+P.height/2),bas=pads.filter(p=>p[1]>P.bottom+60),tous=[].concat(...main.map(s=>[].concat(...s)),...fk);
+        const glyphes=['lvn-up','lvn-dn','lvn-lf','lvn-rt'].map(id=>q('#'+id+' svg').getBoundingClientRect());
         const dans=p=>p[0]>=P.x-8&&p[0]<=P.right+8&&p[1]>=P.y-8&&p[1]<=P.bottom+8,mn=l=>Math.round(Math.min(...l)),mx=l=>Math.round(Math.max(...l));
         return {couronne:haut.length,cg:mn(haut.map(p=>p[0])),cd:innerWidth-mx(haut.map(p=>p[0])),ch:mn(haut.map(p=>p[1])),
-          racines:bas.length,rg:mn(bas.map(p=>p[0])),rd:innerWidth-mx(bas.map(p=>p[0])),rb:innerHeight-mx(bas.map(p=>p[1])),
+          racines:bas.length,etendue:mx(bas.map(p=>p[0]))-mn(bas.map(p=>p[0])),rg:mn(bas.map(p=>p[0])),rd:innerWidth-mx(bas.map(p=>p[0])),rb:innerHeight-mx(bas.map(p=>p[1])),
           noeud:main.length===7&&main.every(s=>s.length===2&&dans(s[0][0])&&dans(s[1][0])),
-          enlace:main.every(s=>s[1].some(p=>Math.abs(p[1]-J.y)<1.5&&Math.abs(p[0]-J.x)>54&&Math.abs(p[0]-J.x)<130)),
+          /* le pied : chaque piste du tronc passe à côté du curseur (sa sortie de la cloche), au-dehors de sa case */
+          enlace:main.every(s=>s[1].some(p=>Math.abs(p[1]-J.y)<60&&Math.abs(p[0]-J.x)>54&&Math.abs(p[0]-J.x)<140)),
+          touche:tous.filter(p=>glyphes.some(g=>p[0]>g.left-4&&p[0]<g.right+4&&p[1]>g.top-4&&p[1]<g.bottom+4)||Math.hypot(p[0]-J.x,p[1]-J.y)<24).length,
           libre:mn(tous.map(p=>Math.hypot(p[0]-J.x,p[1]-J.y))),
           fruit:(()=>{const e=q('#lv-ram circle.is-plein');return e?getComputedStyle(e).fill+'|'+e.getAttribute('stroke'):'';})()};})()};});
   ok(c.vue==='c'&&c.mode==='mine'&&c.dans,(tel?'téléphone':'ordinateur')+' · centre, Mine : 25/10 · le TOTEHM est le boîtier — le socle ne se voit plus, il le serre à 3 px');
-  ok(JSON.stringify(c.pistes)===JSON.stringify(COULEURS)&&c.noeuds>=3&&c.pads===35+c.arbre.racines&&c.rameaux===21+c.arbre.racines&&c.broches===12&&c.pales===4&&c.ramOp==='1'&&c.plein,'le réseau PLEIN ÉCRAN, en ARBRE (le circuit imprimé de Wah) : sept pistes aux 7 couleurs exactes, 12 broches dans les perforations, 28 rameaux en couronne et les radicelles, les pastilles PLEINES = MES Habits, les quatre intentions vides en creux → '+JSON.stringify({n:c.noeuds,pads:c.pads,r:c.rameaux,b:c.broches}));
+  ok(JSON.stringify(c.pistes)===JSON.stringify(COULEURS)&&c.noeuds>=3&&c.pads===56+c.arbre.racines&&c.rameaux===78+8*(c.arbre.racines===16?1:4)&&c.broches===12&&c.pales===4&&c.ramOp==='1'&&c.plein,'le réseau PLEIN ÉCRAN, en ARBRE (le circuit imprimé de Wah) : sept pistes aux 7 couleurs exactes, 12 broches dans les perforations, 77 brins en couronne (3 fourches par intention) et les radicelles, les pastilles PLEINES = MES Habits, les quatre intentions vides en creux → '+JSON.stringify({n:c.noeuds,pads:c.pads,r:c.rameaux,b:c.broches}));
   /* 31/10 — Wah : « l'arbre prend tout l'écran (en particulier la partie haute), les branches s'élargissent sur tout l'écran ; le
      Totehm-cœur fait la jonction avec les branches et le haut du tronc ; à la base des racines se trouve le curseur, intégré ». */
   const A=c.arbre;
-  ok(A.couronne===35&&A.cg<=30&&A.cd<=30&&A.ch<=30,'31/10 · la COURONNE prend tout le haut : 35 pastilles d\'un bord à l\'autre de l\'écran, jusqu\'en haut → '+JSON.stringify({n:A.couronne,g:A.cg,d:A.cd,h:A.ch}));
+  ok(A.couronne===56&&A.cg<=40&&A.cd<=40&&A.ch<=30,'31/10 · la COURONNE prend tout le haut : 01/11 · 56 feuilles (7 intentions × 3 fourches) d\'un bord à l\'autre de l\'écran, jusqu\'en haut → '+JSON.stringify({n:A.couronne,g:A.cg,d:A.cd,h:A.ch}));
   ok(A.noeud,'31/10 · le TOTEHM fait la jonction : chaque branche ET chaque piste du tronc part d\'une de ses perforations');
-  ok(A.enlace&&A.libre>=56,'31/10 · à la base du tronc, le CURSEUR : les sept pistes l\'enlacent en arche jusqu\'à son équateur, sans toucher ses chevrons (au plus près : '+A.libre+' px du centre)');
-  ok(A.racines>=8&&A.racines%8===0&&A.rg<=60&&A.rd<=60&&A.rb>=4,'31/10 · les RACINES s\'étalent sous le curseur jusqu\'aux deux bords, dans l\'écran → '+JSON.stringify({n:A.racines,g:A.rg,d:A.rd,bas:A.rb}));
+  ok(A.enlace&&!A.touche,'31/10 · à la base du tronc, le CURSEUR : 01/11 · le tronc s\'évase en cloche autour de lui, chaque piste sort à côté de sa case, sans toucher ses chevrons ni son puits (au plus près : '+A.libre+' px du centre)');
+  ok((A.racines===16||A.racines===32)&&A.etendue>=.45*vp.width&&A.rg>0&&A.rd>0&&A.rb>=4,'31/10 · les RACINES s\'étalent de part et d\'autre du curseur, dans l\'écran : 01/11 · la couronne en miroir, plus serrée → '+JSON.stringify({n:A.racines,etendue:A.etendue,g:A.rg,d:A.rd,bas:A.rb}));
   {const [f,s]=A.fruit.split('|'),hex=c=>'#'+(c.match(/\d+/g)||[]).slice(0,3).map(n=>(+n).toString(16).padStart(2,'0')).join('');
    ok(!!s&&hex(f)===s.toLowerCase(),'31/10 · une pastille PLEINE (une Habit) se voit : remplie de SA couleur ('+f+' / '+s+'), plus le noir du creux');}
   /* 18/10 — LES SEPT PISTES VIVENT : une impulsion par intention, épaisse et à la période RÉELLE

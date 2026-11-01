@@ -45,15 +45,16 @@ try{
   ok(b.traits.length===7&&b.traits.every(t=>t.length===2)&&departs.every(p=>pres(p,b.trous,4.5))&&b.trous.every(t=>pres(t,departs,4.5)),
      nom+' · 26/10 · chaque trait part d\'un trou, et chaque trou porte au moins un trait (le tronc au milieu, les deux extrêmes se séparent dans le trou du milieu de leur côté)');
   /* 31/10 (Wah : « l'arbre prend tout l'écran, les branches s'élargissent sur tout l'écran ; le Totehm-cœur fait la jonction
-     avec les branches et le haut du tronc ; à la base des racines, le curseur ») : chaque branche part du papier vers la
-     COURONNE (35 pastilles au-dessus du milieu du papier, d'un bord à l'autre), chaque piste du tronc descend jusqu'au
-     curseur et finit en racine SOUS lui ; dans l'ordre des couleurs, de gauche à droite, en haut comme en bas. */
+     avec les branches et le haut du tronc ; à la base des racines, le curseur ») ; 01/11 (« c'est vraiment pas beau, fais un
+     effort ») : chaque branche part du papier et se divise trois fois (2 → 4 → 8) jusqu'à la COURONNE (56 feuilles au-dessus du
+     milieu du papier, plus large que lui) ; chaque piste du tronc descend, s'évase en cloche autour du curseur et finit en
+     racine, en bas ; dans l'ordre des couleurs, de gauche à droite, en haut comme en bas. */
   const xa=bouts.map(x=>x[0][0]), xb=bouts.map(x=>x[1][0]), monte=xa.every((x,i)=>!i||x>xa[i-1]), descend=xb.every((x,i)=>!i||x>xb[i-1]);
-  const pads=b.pads, cime=pads.filter(p=>p.y<b.s.cy), pied=pads.filter(p=>p.y>b.J.y), W=vp.width;
-  ok(bouts.every(x=>x[0][1]<b.s.cy&&x[1][1]>b.J.y)&&monte&&descend&&cime.length===35&&pied.length>=8&&pied.length%8===0&&pads.length===35+pied.length
+  const pads=b.pads, cime=pads.filter(p=>p.y<b.s.cy), pied=pads.filter(p=>p.y>b.s.b+60), W=vp.width;
+  ok(bouts.every(x=>x[0][1]<b.s.cy&&x[1][1]>b.s.b+60)&&monte&&descend&&cime.length===56&&(pied.length===16||pied.length===32)&&pads.length===56+pied.length
      &&Math.min(...cime.map(p=>p.x))<b.s.l-40&&Math.max(...cime.map(p=>p.x))>b.s.r+40&&pads.every(p=>p.x>0&&p.x<W&&p.y>0&&p.y<b.H)
-     &&pied.some(p=>p.x<b.J.x-60)&&pied.some(p=>p.x>b.J.x+60)&&b.rameaux===21+pied.length,
-     nom+' · 31/10 · l\'ARBRE plein écran : 7 branches du papier à une couronne de 35 pastilles plus large que lui, 28 rameaux ; 7 pistes du tronc jusqu\'aux racines sous le curseur, des deux côtés, sans se croiser → '+xa.map(Math.round).join(',')+' | '+xb.map(Math.round).join(','));
+     &&pied.some(p=>p.x<b.J.x-60)&&pied.some(p=>p.x>b.J.x+60)&&b.rameaux===78+8*(pied.length===16?1:4),
+     nom+' · 01/11 · l\'ARBRE (ginkgo) : 7 branches du papier, trois fourches chacune, 56 feuilles plus larges que lui ; 7 pistes du tronc jusqu\'aux racines, des deux côtés du curseur, sans se croiser → '+xa.map(Math.round).join(',')+' | '+xb.map(Math.round).join(','));
   ok(b.coeur==='coeur',nom+' · 26/10 · au repos, le cœur (le TOTEHM) bat → '+b.coeur);
   const r0=await reseau(pg);
   ok(!r0.aspire&&r0.echelle===1&&r0.op===1&&r0.puls==='ram-puls',nom+' · au repos, le réseau vit (impulsions)');
