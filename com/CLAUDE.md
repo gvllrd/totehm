@@ -35,17 +35,17 @@
 Diagnostics : `__totehm_lv()` (`.refus` : pourquoi un geste est refusé ; à l'écran : `/totehm?diag=1`) · `__totehm_xo()` · `__totehm_sh()` · `__totehm_rdr()` · `__totehm_carte()` · `__totehm_nspot()` · `__totehm_zone()` · `__totehm_save()` · `__totehm_retour()`.
 
 ## Les pièges
-
 - Hors du TOTEHM, une box est rendue par les rendus de la liste (`boxTotehm`), jamais une copie.
 - `cloudSave()` réécrit `steps` en entier : rien d'autre ne s'y range. `FREQS` (page) = `_freq_minutes` (base) : identiques.
   La lettre va au cache (`save({local:1})`) ; le serveur après `PAUSE_FRAPPE` (2,5 s, `differe`) ou dès qu'on quitte le champ (`ecrireTout` :
-  Entrée, focusout, repli, onglet caché) ; un envoi identique ne part pas, un seul à la fois ; « saved » = le serveur a dit oui.
+  Entrée, focusout, repli, onglet caché) ; un envoi identique ne part pas, un seul à la fois ; « saved » = le serveur a dit oui ;
+  un refus = « not saved », renvoi 5 s plus tard, et la saisie reste en ATTENTE dans le cache (`NON_CONFIRME`) : au démarrage suivant elle l'emporte sur la copie du serveur et repart (`repris`) ; le cache de la page d'avant (`pseudo` sans `attente`) aussi, tant que le serveur n'a rien reçu depuis `REPARE`.
 - Un verrou de navigation se rend toujours ; un geste reçu pendant un voyage OU le repli du TOTEHM attend sa fin (`guetter`,
   1,5 s au plus). Tout geste de navigation est un MANCHE (il va où il pousse : doigt, trackpad, souris, manette, papier) SAUF dans la liste du TOTEHM déployé (`#fv-inner`) : là il suit le défilement (plus bas que le bas → la vue du dessous) ;
   et il POUSSE le manche à l'écran — `POUSSE_JOY` (app), `POUSSE_LVJ` (atterrissage) : 240 ms, puis retour au centre ;
   la main posée sur la manette commande seule (`DU_MANCHE`, `DU_LVJ`). Trackpad : un geste ET son inertie = UNE vue (le
   verrou se prolonge tant que l'inertie dure : atterrissage, manette, liste — sinon deux vues d'un geste, mesuré).
-- Session gardée : ni la vente ni CONNECT avant la fin de la lecture ; aucune écriture sur la foi du cache. Ne jamais redéfinir `--perfo`.
+- Session gardée : ni la vente ni CONNECT avant la fin de la lecture ; aucune écriture avant `cloudLoad`, et le cache ne l'emporte que pour une saisie en ATTENTE. Ne jamais redéfinir `--perfo`.
 - Le socle `#lv-socket` ne se voit plus (le TOTEHM est le boîtier, `--sk` = le papier + 6 px) mais il donne la taille du
   boîtier et devient l'anneau du profil : ne pas le retirer. `enter()` aspire AVANT de mesurer (le cœur grossit le papier). Verso, clic, recherche = `LV.aspirer(true)` ; chaque
   sortie doit rendre `LV.aspirer(false)` (sinon le réseau reste caché). Fin du portail = l'app au pixel (papier `--paper`).

@@ -4980,7 +4980,7 @@ function deduceFreq(raw){
    s'inscrivait héritait du Totehm du précédent. (`map.html` le lit
    encore pour pré-dessiner les intentions : il y trouve `habits`.) */
 const KEY='totehm_habits_v1';
-let me=null, myProfile=null, cloudMode=false, cloudSaveTimer=null, saveTimer=null;
+let me=null, myProfile=null, cloudMode=false, cloudSaveTimer=null, saveTimer=null, NON_CONFIRME=false, CHARGE=false;
 /* 11/10 : la connexion invité (anonyme) est-elle ouverte côté Auth ? Lu plus bas. */
 let ANON_OK=false;
 /* 07/10 : l'atterrissage lit UN appel (`my_landing`) — ma vignette, la visibilité
@@ -5003,7 +5003,7 @@ function cacheLire(){
 }
 function cacheEcrire(){
   if(!me)return;
-  try{ localStorage.setItem(KEY,JSON.stringify(Object.assign({},state,{uid:me.id, pseudo:myProfile&&myProfile.pseudo||null}))); }catch(e){}
+  try{ localStorage.setItem(KEY,JSON.stringify(Object.assign({},state,{uid:me.id, pseudo:myProfile&&myProfile.pseudo||null, attente:NON_CONFIRME}))); }catch(e){}
 }
 function cacheOublier(){
   try{ localStorage.removeItem(KEY); }catch(e){}
@@ -5076,8 +5076,13 @@ try{const _rf=JSON.parse(localStorage.getItem(KEYF())||'null');
    réponses dans le désordre). « saved » ne s'affiche qu'une fois le serveur d'accord. Rien de tout ça n'est une Edge
    Function : `steps` = un upsert PostgREST, les renommages = des RPC SQL. */
 const PAUSE_FRAPPE=2500;
-const SAUVE={envois:0,identiques:0,rafales:0,echecs:0};
+const SAUVE={envois:0,identiques:0,rafales:0,echecs:0,repris:0};
 let dernierEnvoi=null, envoiEnVol=null, envoiEncore=false;
+/* 01/11 — CE QUE LE SERVEUR N'A PAS CONFIRMÉ RESTE PRIORITAIRE. Du 13/10 au 01/11, la base refusait chaque sauvegarde
+   (un déclencheur sans droit : 403), et au démarrage suivant la copie du serveur écrasait celle du téléphone — chaque
+   rechargement effaçait la saisie (mesuré). Une modification non confirmée (`NON_CONFIRME`, gardée dans le cache de CE compte)
+   l'emporte désormais sur le serveur au démarrage et repart aussitôt ; elle n'existe qu'une fois le nuage lu (`CHARGE`).
+   Les deux drapeaux sont déclarés avec `me` (plus haut) : `cacheEcrire` les lit. */
 function direSaved(){ $('fv-status').textContent='saved';
   setTimeout(()=>{if($('fv-status').textContent==='saved')$('fv-status').textContent='';},1100); }
 function save(o){
@@ -5085,6 +5090,7 @@ function save(o){
      nuage. Le mode lecture s'arrête ICI : pas plus loin, jamais ailleurs. */
   if(RO||!me)return;
   o=o||{};
+  if(CHARGE) NON_CONFIRME=true;
   cacheEcrire();
   if(o.local) return;              /* la lettre : le cache seul ; la minuterie du champ (`differe`) enverra */
   if(cloudMode){ if(o.maintenant){ clearTimeout(cloudSaveTimer); cloudSaveTimer=null; cloudSave(); }
@@ -5095,7 +5101,7 @@ function save(o){
 function ecrireTout(){ if(RO||!me)return; pousse(); if(cloudSaveTimer){ clearTimeout(cloudSaveTimer); cloudSaveTimer=null; cloudSave(); } }
 document.addEventListener('visibilitychange',()=>{ if(document.hidden) ecrireTout(); });
 addEventListener('pagehide',()=>ecrireTout());
-window.__totehm_save=()=>({...SAUVE,attente:!!cloudSaveTimer,minuteries:wSlots.size,enVol:!!envoiEnVol,pause:PAUSE_FRAPPE});
+window.__totehm_save=()=>({...SAUVE,attente:!!cloudSaveTimer,minuteries:wSlots.size,enVol:!!envoiEnVol,pause:PAUSE_FRAPPE,nonConfirme:NON_CONFIRME});
 
 /* ── CLOUD : un snapshot = une ligne totehms ── */
 async function cloudSave(){
@@ -5104,7 +5110,7 @@ async function cloudSave(){
   cloudSaveTimer=null;
   if(envoiEnVol){ envoiEncore=true; return; }   /* un envoi à la fois : le suivant part à sa fin, avec l'état le plus frais */
   const envoi=JSON.stringify(state.habits);
-  if(envoi===dernierEnvoi){ SAUVE.identiques++; return; }
+  if(envoi===dernierEnvoi){ SAUVE.identiques++; if(NON_CONFIRME){ NON_CONFIRME=false; cacheEcrire(); } return; }
   $('mw-sync').textContent='syncing…';
   let fin; envoiEnVol=new Promise(r=>{fin=r;}); EN_VOL.add(envoiEnVol); const vol=envoiEnVol;
   try{
@@ -5126,9 +5132,11 @@ async function cloudSave(){
     },{onConflict:'user_id'});
     if(error)throw error;
     dernierEnvoi=envoi; SAUVE.envois++;
+    if(JSON.stringify(state.habits)===envoi){ NON_CONFIRME=false; cacheEcrire(); }
     $('mw-sync').textContent='synced ✓'; if(!envoiEncore&&!cloudSaveTimer) direSaved();
     setTimeout(()=>{if($('mw-sync').textContent==='synced ✓')$('mw-sync').textContent='';},1400);
   }catch(e){ SAUVE.echecs++; console.error('[totehm] save:',e&&e.message||e); $('mw-sync').textContent='sync failed — will retry';
+    $('fv-status').textContent='not saved';   /* 01/11 : un refus se voit, là où « saved » s'affiche ; la reprise suit */
     if(!cloudSaveTimer) cloudSaveTimer=setTimeout(cloudSave,PAUSE_FRAPPE*2); }
   finally{ EN_VOL.delete(vol); envoiEnVol=null; fin();
     if(envoiEncore){ envoiEncore=false; cloudSave(); } }
@@ -5137,7 +5145,9 @@ function scheduleCloudSave(d){ if(!cloudSaveTimer) SAUVE.rafales++; clearTimeout
 async function cloudLoad(){
   if(!me)return;
   const {data,error}=await sb.from('totehms').select('*').eq('user_id',me.id);
-  if(error||!data||!data.length)return;
+  if(error)return;
+  CHARGE=true;
+  if(!data||!data.length)return;
   const habits=[];const seen={};
   /* ⚠️ `o` EST TRANSPORTÉ, PAS DÉDUIT. Il porte l'objectif que sert cette
      habitude, et il est écrit par `habit_set_trip()` côté serveur. Le
@@ -5161,8 +5171,16 @@ async function cloudLoad(){
      premier chargement depuis le nuage. L'ordre lui-même voyage dans
      `steps` — c'est l'ordre du tableau ; seul le DRAPEAU se perdait. */
   const ordonne = !!(state && state.ord);
-  state={habits, vis:data.some(r=>['subscribers','members'].includes(r.totehm_visibility))?'subscribers':'private'};
+  /* 01/11 — ce que CE téléphone a saisi sans que le serveur le confirme l'emporte, et repart tout de suite.
+     Le cache de la page d'AVANT (il porte `pseudo` depuis le 21/10, jamais `attente`) ne contient, s'il diffère, que des
+     saisies refusées : aucune n'est passée du 13/10 09:45 au 01/11 20:46 (`REPARE`, le droit rendu). Il compte tant que
+     le serveur n'a rien reçu depuis ; après, la copie du serveur est la plus récente et elle gagne. */
+  const REPARE=Date.parse('2026-11-01T20:46:17Z'), recu=Math.max(0,...data.map(r=>Date.parse(r.updated_at)||0));
+  const c=cacheLire(), avant=!!(c&&!('attente' in c)&&('pseudo' in c)&&recu<REPARE),
+        garde=!!(c&&(c.attente||avant)&&Array.isArray(c.habits)&&c.habits.length&&JSON.stringify(c.habits)!==JSON.stringify(habits));
+  state={habits:garde?c.habits:habits, vis:data.some(r=>['subscribers','members'].includes(r.totehm_visibility))?'subscribers':'private'};
   if(ordonne)state.ord=true;
+  if(garde){ NON_CONFIRME=true; SAUVE.repris++; scheduleCloudSave(300); }
   cacheEcrire();
 }
 /* ══ LE TOTEHM D'UN AUTRE · LECTURE SEULE ══
@@ -8099,7 +8117,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-11-01-com-arbre-processor';
+const BUILD='2026-11-01-com-sauvegarde';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────

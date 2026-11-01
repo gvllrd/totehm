@@ -66,4 +66,51 @@ try{
   ok(!log.errors.filter(e=>e.startsWith('pageerror')).length,nom+' · aucune erreur '+log.errors.join(' | '));
   await pg.context().close();
  }
+ /* ── 7 · 01/11 — LE SERVEUR REFUSE (403, comme du 13/10 au 01/11 : « permission denied for function _vis_shared ») :
+       la saisie se voit « not saved » et reste EN ATTENTE dans le cache ; au démarrage suivant elle l'emporte sur la
+       copie (vieille) du serveur et repart — plus jamais un rechargement qui efface ce qu'on a écrit ── */
+ { let refuse=true; const recus=[];
+   const {pg,log}=await page(browser,{dir:'com',origin,viewport:{width:390,height:844},hasTouch:true,rpc:MES,
+     network:(url,req)=>{ if(url.pathname==='/rest/v1/totehms'&&req.method()==='POST'){
+         if(refuse) return {status:403,contentType:'application/json',body:JSON.stringify({code:'42501',message:'permission denied for function _vis_shared'})};
+         try{recus.push(JSON.parse(req.postData()));}catch(_){}
+         return {status:201,contentType:'application/json',body:'[]'}; } return null; },
+     tables:{profiles:[{pseudo:'wahigher'}],totehms:[{user_id:UID,steps:STEPS,vis:'private'}]}});
+   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1000);
+   await pg.click('#lv-tap-open');await pg.waitForFunction(()=>!document.body.classList.contains('gate'),null,{timeout:9000}).catch(()=>{});await pg.waitForTimeout(1200);
+   await pg.$eval('#habits .v-col[data-open]',e=>e.click());await pg.waitForTimeout(450);
+   await pg.locator('#habits .habit.open .v-name[data-edit]').click(); await pg.keyboard.press('End');
+   await pg.keyboard.type(' far'); await pg.keyboard.press('Enter'); await pg.waitForTimeout(900);
+   const a=await pg.evaluate(()=>({d:window.__totehm_save(), s:document.getElementById('fv-status').textContent, c:JSON.parse(localStorage.getItem('totehm_habits_v1')||'null')}));
+   ok(a.d.echecs>=1&&a.s==='not saved'&&a.d.nonConfirme===true&&!!a.c&&a.c.attente===true&&a.c.habits[0].t==='Run far',
+      '01/11 · le serveur refuse : « '+a.s+' » s\'affiche, la saisie reste en attente dans le cache du téléphone → '+JSON.stringify({echecs:a.d.echecs,attente:a.c&&a.c.attente,t:a.c&&a.c.habits[0].t}));
+   refuse=false;
+   await pg.reload(); await pg.waitForSelector('body.member');
+   await pg.waitForFunction(()=>window.__totehm_save&&window.__totehm_save().envois>=1,null,{timeout:8000}).catch(()=>{});
+   const b=await pg.evaluate(()=>({d:window.__totehm_save(), c:JSON.parse(localStorage.getItem('totehm_habits_v1')||'null')}));
+   const dernier=recus[recus.length-1];
+   ok(b.d.repris===1&&!!dernier&&dernier.steps[0].t==='Run far'&&b.d.nonConfirme===false&&b.c&&b.c.attente===false,
+      '01/11 · au démarrage suivant, la saisie non confirmée l\'emporte sur la copie du serveur (« Run ») et repart : « '+(dernier&&dernier.steps[0].t)+' », confirmée → '+JSON.stringify({repris:b.d.repris,envois:b.d.envois,attente:b.c&&b.c.attente}));
+   ok(!log.errors.filter(e=>e.startsWith('pageerror')).length,'01/11 · refus puis reprise : aucune erreur de page '+log.errors.filter(e=>e.startsWith('pageerror')).join(' | '));
+   await pg.context().close(); }
+ /* ── 8 · 01/11 — LE CACHE DE LA PAGE D'AVANT (`pseudo`, sans `attente`) : s'il diffère d'une copie du serveur antérieure
+       au droit rendu (01/11 20:46), il ne contient que des saisies refusées → il l'emporte et repart ; si le serveur a reçu
+       depuis, sa copie est la plus récente → elle gagne, rien ne part ── */
+ for(const [cas,recu,attendu] of [['serveur figé (20/08)','2026-08-20T13:41:51Z','Run uphill'],['serveur reçu après le droit rendu','2026-11-01T21:00:00Z','Run']]){
+   const recus=[];
+   const {pg,log}=await page(browser,{dir:'com',origin,viewport:{width:390,height:844},hasTouch:true,rpc:MES,
+     network:(url,req)=>{ if(url.pathname==='/rest/v1/totehms'&&req.method()==='POST'){ try{recus.push(JSON.parse(req.postData()));}catch(_){}
+         return {status:201,contentType:'application/json',body:'[]'}; } return null; },
+     tables:{profiles:[{pseudo:'wahigher'}],totehms:[{user_id:UID,steps:STEPS,vis:'private',updated_at:recu}]}});
+   await pg.addInitScript(([uid])=>{ if(sessionStorage.getItem('graine'))return; sessionStorage.setItem('graine','1');
+     localStorage.setItem('totehm_habits_v1',JSON.stringify({habits:[{t:'Run uphill',t0:'Run',f:'every_morning',i:'fight',is:['fight'],o:null}],vis:'private',uid,pseudo:'wahigher'})); },[UID]);
+   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');
+   await pg.waitForFunction(()=>window.__totehm_save&&(window.__totehm_save().envois>=1||document.body.classList.contains('member')),null,{timeout:8000}).catch(()=>{});
+   await pg.waitForTimeout(1800);
+   const d=await pg.evaluate(()=>({s:window.__totehm_save(), c:JSON.parse(localStorage.getItem('totehm_habits_v1')||'null')}));
+   const parti=recus.length?recus[recus.length-1].steps[0].t:null;
+   ok(d.c&&d.c.habits[0].t===attendu&&d.c.attente===false&&(attendu==='Run'?recus.length===0&&d.s.repris===0:parti===attendu&&d.s.repris===1),
+      '01/11 · cache de la page d\'avant, '+cas+' : « '+(d.c&&d.c.habits[0].t)+' » gagne → '+JSON.stringify({envoye:parti,repris:d.s.repris,attente:d.c&&d.c.attente}));
+   ok(!log.errors.filter(e=>e.startsWith('pageerror')).length,'01/11 · cache d\'avant ('+cas+') : aucune erreur de page '+log.errors.filter(e=>e.startsWith('pageerror')).join(' | '));
+   await pg.context().close(); }
 }finally{await browser.close();}
