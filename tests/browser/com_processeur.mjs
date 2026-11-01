@@ -56,7 +56,8 @@ try{
       sigAbs:!q('#ast-sig'),connAbs:!q('#conn-bar'),
       tap:q('#lv-tap').textContent,bouche:getComputedStyle(q('#gate-mouth')).opacity,
       /* 31/10 — L'ARBRE PLEIN ÉCRAN : la couronne (les pastilles au-dessus du milieu du papier), les racines (en bas) ; 01/11 : le
-         ginkgo (les fourches), le pied en cloche autour du curseur, les chevrons et le puits jamais touchés */
+         circuit imprimé (les fourches en Y, des pistes qui ne tournent qu'à 45°, aucune qui en croise une autre), le toit et les
+         murs autour du curseur, les chevrons et le puits jamais touchés */
       arbre:(()=>{const P=q('#gate-asteroid').getBoundingClientRect(),jb=q('#lvj-box').getBoundingClientRect(),J={x:jb.x+jb.width/2,y:jb.y+jb.height/2};
         const pts=d=>d.split('M').filter(Boolean).map(s=>s.split('L').map(p=>p.trim().split(/\s+/).map(Number)));
         const main=[...document.querySelectorAll('#lv-ram path:not(.puls):not(.sk):not(.fk)')].map(p=>pts(p.getAttribute('d')));
@@ -72,6 +73,15 @@ try{
           enlace:main.every(s=>s[1].some(p=>Math.abs(p[1]-J.y)<60&&Math.abs(p[0]-J.x)>54&&Math.abs(p[0]-J.x)<140)),
           touche:tous.filter(p=>glyphes.some(g=>p[0]>g.left-4&&p[0]<g.right+4&&p[1]>g.top-4&&p[1]<g.bottom+4)||Math.hypot(p[0]-J.x,p[1]-J.y)<24).length,
           libre:mn(tous.map(p=>Math.hypot(p[0]-J.x,p[1]-J.y))),
+          /* 01/11 — « ça doit faire processor » : chaque segment à 0, 45 ou 90° (à l'arrondi du dixième de pixel près), et deux
+             pistes ne se croisent jamais (hors des nœuds qu'elles partagent) */
+          ...(()=>{const S=[];main.concat(fk.map(l=>[l])).forEach((L,o)=>L.forEach(l=>{for(let k=1;k<l.length;k++) if(Math.hypot(l[k][0]-l[k-1][0],l[k][1]-l[k-1][1])>.3) S.push({o,a:l[k-1],b:l[k]});}));
+            const biais=S.filter(s=>{const L=Math.hypot(s.b[0]-s.a[0],s.b[1]-s.a[1]),t=Math.atan2(s.b[1]-s.a[1],s.b[0]-s.a[0])*180/Math.PI,m=((t%45)+45)%45;return L*Math.sin(Math.min(m,45-m)*Math.PI/180)>.25;}).length;
+            const pres=(p,q)=>Math.hypot(p[0]-q[0],p[1]-q[1])<1.2;let croise=0;
+            for(let i=0;i<S.length;i++) for(let j=i+1;j<S.length;j++){const A=S[i],B=S[j];if(A.o===B.o||pres(A.a,B.a)||pres(A.a,B.b)||pres(A.b,B.a)||pres(A.b,B.b)) continue;
+              const r=[A.b[0]-A.a[0],A.b[1]-A.a[1]],s=[B.b[0]-B.a[0],B.b[1]-B.a[1]],d=r[0]*s[1]-r[1]*s[0];if(Math.abs(d)<1e-9) continue;
+              const t=((B.a[0]-A.a[0])*s[1]-(B.a[1]-A.a[1])*s[0])/d,u=((B.a[0]-A.a[0])*r[1]-(B.a[1]-A.a[1])*r[0])/d;if(t>.01&&t<.99&&u>.01&&u<.99) croise++;}
+            return {biais,croise,segments:S.length};})(),
           fruit:(()=>{const e=q('#lv-ram circle.is-plein');return e?getComputedStyle(e).fill+'|'+e.getAttribute('stroke'):'';})()};})()};});
   ok(c.vue==='c'&&c.mode==='mine'&&c.dans,(tel?'téléphone':'ordinateur')+' · centre, Mine : 25/10 · le TOTEHM est le boîtier — le socle ne se voit plus, il le serre à 3 px');
   ok(JSON.stringify(c.pistes)===JSON.stringify(COULEURS)&&c.noeuds>=3&&c.pads===56+c.arbre.racines&&c.rameaux===78+8*(c.arbre.racines===16?1:4)&&c.broches===12&&c.pales===4&&c.ramOp==='1'&&c.plein,'le réseau PLEIN ÉCRAN, en ARBRE (le circuit imprimé de Wah) : sept pistes aux 7 couleurs exactes, 12 broches dans les perforations, 77 brins en couronne (3 fourches par intention) et les radicelles, les pastilles PLEINES = MES Habits, les quatre intentions vides en creux → '+JSON.stringify({n:c.noeuds,pads:c.pads,r:c.rameaux,b:c.broches}));
@@ -80,8 +90,9 @@ try{
   const A=c.arbre;
   ok(A.couronne===56&&A.cg<=40&&A.cd<=40&&A.ch<=30,'31/10 · la COURONNE prend tout le haut : 01/11 · 56 feuilles (7 intentions × 3 fourches) d\'un bord à l\'autre de l\'écran, jusqu\'en haut → '+JSON.stringify({n:A.couronne,g:A.cg,d:A.cd,h:A.ch}));
   ok(A.noeud,'31/10 · le TOTEHM fait la jonction : chaque branche ET chaque piste du tronc part d\'une de ses perforations');
-  ok(A.enlace&&!A.touche,'31/10 · à la base du tronc, le CURSEUR : 01/11 · le tronc s\'évase en cloche autour de lui, chaque piste sort à côté de sa case, sans toucher ses chevrons ni son puits (au plus près : '+A.libre+' px du centre)');
-  ok((A.racines===16||A.racines===32)&&A.etendue>=.45*vp.width&&A.rg>0&&A.rd>0&&A.rb>=4,'31/10 · les RACINES s\'étalent de part et d\'autre du curseur, dans l\'écran : 01/11 · la couronne en miroir, plus serrée → '+JSON.stringify({n:A.racines,etendue:A.etendue,g:A.rg,d:A.rd,bas:A.rb}));
+  ok(A.enlace&&!A.touche,'31/10 · à la base du tronc, le CURSEUR : 01/11 · le bus s\'ouvre en toit au-dessus de lui et descend de part et d\'autre (ses murs), sans toucher ses chevrons ni son puits (au plus près : '+A.libre+' px du centre)');
+  ok((A.racines===16||A.racines===32)&&A.etendue>=.45*vp.width&&A.rg>0&&A.rd>0&&A.rb>=4,'31/10 · les RACINES s\'étalent de part et d\'autre du curseur, dans l\'écran : 01/11 · au sol, en peignes, la couronne en miroir → '+JSON.stringify({n:A.racines,etendue:A.etendue,g:A.rg,d:A.rd,bas:A.rb}));
+  ok(A.segments>300&&A.biais===0&&A.croise===0,'01/11 · « ça doit faire PROCESSOR » : un circuit imprimé — '+A.segments+' segments, tous à 0, 45 ou 90° ('+A.biais+' de travers), aucune piste n\'en croise une autre ('+A.croise+')');
   {const [f,s]=A.fruit.split('|'),hex=c=>'#'+(c.match(/\d+/g)||[]).slice(0,3).map(n=>(+n).toString(16).padStart(2,'0')).join('');
    ok(!!s&&hex(f)===s.toLowerCase(),'31/10 · une pastille PLEINE (une Habit) se voit : remplie de SA couleur ('+f+' / '+s+'), plus le noir du creux');}
   /* 18/10 — LES SEPT PISTES VIVENT : une impulsion par intention, épaisse et à la période RÉELLE
