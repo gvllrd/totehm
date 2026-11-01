@@ -32,7 +32,7 @@
 <footer><a href="/terms">Simple terms of use</a></footer>
 <script type="module">
 import {createClient} from 'https://esm.sh/@supabase/supabase-js@2';
-const BUILD='chatgpt-connect-1';
+const BUILD='chatgpt-connect-rfc9207';
 const sb=createClient('https://abujjbkbbiumxrokozph.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us');
 const $=id=>document.getElementById(id), panel=$('panel');
 const params=new URLSearchParams(location.search), requestId=params.get('request_id');
@@ -57,10 +57,10 @@ function sayError(error){const messages={session:'Sign in again to continue.',ex
 function validRequest(){return requestId&&params.getAll('request_id').length===1&&/^[a-zA-Z0-9_-]{16,200}$/.test(requestId);}
 function validRedirect(value){
  try{
-  const u=new URL(value);if(u.protocol!=='https:'||u.username||u.password||u.hash||!u.searchParams.get('code')||u.searchParams.getAll('code').length!==1||u.searchParams.getAll('state').length!==1)return false;
-  u.searchParams.delete('code');u.searchParams.delete('state');
+  const u=new URL(value);if(u.protocol!=='https:'||u.username||u.password||u.hash||!u.searchParams.get('code')||u.searchParams.getAll('code').length!==1||u.searchParams.getAll('state').length!==1||u.searchParams.getAll('iss').length!==1||u.searchParams.get('iss')!==status?.issuer)return false;
+  u.searchParams.delete('code');u.searchParams.delete('state');u.searchParams.delete('iss');
   return Array.isArray(status?.allowed_redirect_uris)&&status.allowed_redirect_uris.some(value=>{
-   const registered=new URL(value);return registered.protocol==='https:'&&!registered.username&&!registered.password&&!registered.hash&&!registered.searchParams.has('code')&&!registered.searchParams.has('state')&&u.href===registered.href;
+   const registered=new URL(value);return registered.protocol==='https:'&&!registered.username&&!registered.password&&!registered.hash&&!['code','state','iss','error'].some(k=>registered.searchParams.has(k))&&u.href===registered.href;
   });
  }catch{return false;}
 }

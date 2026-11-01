@@ -50,10 +50,11 @@ const tool=(token,name,args)=>send('/mcp',{method:'POST',token,headers:mcpHeader
 try{
  await pg.exec(`create role anon;create role authenticated;create role service_role;create schema auth;create table auth.users(id uuid primary key);insert into auth.users values ('${A}'),('${B}');`);
  await pg.exec(await readFile(new URL('../../backend/supabase/migrations/20261101090000_chatgpt_connector.sql',import.meta.url),'utf8'));
- check((await send('?action=status')).data.ready,'Ready only after migration and configuration');
+ const status=(await send('?action=status')).data;check(status.ready&&status.issuer===ORIGIN,'Ready only after migration and configuration, with canonical issuer');
  const disabled=createConnectorHandler(db,{publicOrigin:ORIGIN,enabled:true,allowedRedirectUris:[]});
  check((await (await disabled(new Request(BASE+'?action=status'))).json()).ready===false,'No guessed callback enables the connector');
  let r=await send('/oauth-resource');check(r.data.resource===RESOURCE&&r.data.scopes_supported[0]==='totehm:read','RFC9728 exact resource metadata');
+ r=await send('/oauth-server');check(r.data.issuer===ORIGIN&&r.data.authorization_response_iss_parameter_supported===true,'Advertise RFC9207 issuer identification for the stable ChatGPT callback');
  r=await send('/mcp',{method:'POST',headers:mcpHeaders,body:{jsonrpc:'2.0',id:1,method:'initialize'}});check(r.status===401&&r.headers.get('www-authenticate').includes('oauth-protected-resource/mcp'),'MCP challenges unauthenticated callers');
  r=await send('/mcp',{method:'POST',token:'site-session-A-valid-credential',headers:mcpHeaders,body:{jsonrpc:'2.0',id:1,method:'tools/list'}});check(r.status===401,'A normal site session cannot authenticate MCP');
  r=await send('/register',{method:'POST',body:{redirect_uris:['https://evil.example/callback']}});check(r.status===400,'Reject untrusted registration callback');
@@ -64,7 +65,11 @@ try{
  r=await send('?action=request&id='+rid);check(r.data.app_name==='Fixture ChatGPT'&&r.data.scopes[0]==='totehm:read','Consent loads authoritative request metadata');
  r=await send('?action=authorize',{method:'POST',body:{request_id:rid}});check(r.status===403,'No implicit consent without origin/session');
  r=await send('?action=authorize',{method:'POST',site:true,body:{request_id:rid}});check(r.status===200,'Explicit consent under site session');const granted=new URL(r.data.redirect_url),code=granted.searchParams.get('code');check(granted.origin+granted.pathname===CALLBACK&&granted.searchParams.get('state')==='fixed-fixture-state','Return code and exact state to registered callback');
+ check(granted.searchParams.getAll('iss').length===1&&granted.searchParams.get('iss')===ORIGIN,'RFC9207 authorization response carries the exact advertised issuer');
  check((await send('?action=connection',{site:true})).data.connected===false,'Unredeemed consent is not called connected');
+ check((await send('?action=connection',{token:'site-session-A-valid-credential'})).status===200,'Same-origin browser GET needs no Origin header, with verified session');
+ check((await send('?action=connection',{token:'site-session-A-valid-credential',headers:{origin:'https://evil.example'}})).status===403,'Connection status rejects an explicitly untrusted Origin');
+ check((await send('?action=revoke',{method:'POST',token:'site-session-A-valid-credential',body:{}})).status===403,'Session-bearing mutations still require the trusted Origin');
  const exchange={grant_type:'authorization_code',client_id:cid,redirect_uri:CALLBACK,resource:RESOURCE,code_verifier:verifier,code};
  r=await send('/token',{method:'POST',form:true,body:{...exchange,code_verifier:'X'.repeat(43)}});check(r.data.error==='invalid_grant','Wrong PKCE cannot redeem code');
  r=await send('/token',{method:'POST',form:true,body:exchange});check(r.status===200&&r.data.access_token.startsWith('th_access_'),'Exchange creates isolated opaque access token');let access=r.data.access_token,refresh=r.data.refresh_token;

@@ -45,7 +45,9 @@ export function createConnectorHandler(db:DB,config:ConnectorConfig){
  async function ready(){if(!config.enabled||!config.allowedRedirectUris.length)return false;try{const r=await db.from('chatgpt_clients').select('client_id').limit(1);return !r.error;}catch{return false;}}
  async function siteUser(req:Request){
    // A site session authenticates consent/revocation only; never the MCP endpoint.
-   if(req.headers.get('origin')!==endpoints.issuer)throw new ProtocolError('invalid_origin','Same-origin consent required',403);
+   // Browsers omit Origin on a same-origin GET. Mutations always require it;
+   // the read-only connection status still requires a verified site session.
+   if((req.method!=='GET'||req.headers.has('origin'))&&req.headers.get('origin')!==endpoints.issuer)throw new ProtocolError('invalid_origin','Same-origin consent required',403);
    const token=bearerToken(req.headers);if(!token||token.startsWith('th_'))throw new ProtocolError('unauthorized','Sign in',401);
    const result=await db.auth.getUser(token);const u=result.data?.user;
    if(result.error||!u||u.is_anonymous)throw new ProtocolError('unauthorized','Sign in with your TOTEHM',401);
@@ -83,7 +85,7 @@ export function createConnectorHandler(db:DB,config:ConnectorConfig){
    if(req.method==='OPTIONS'){headers.set('access-control-allow-methods','GET,POST,OPTIONS');headers.set('access-control-allow-headers','Authorization,Content-Type,Accept,MCP-Protocol-Version');return new Response(null,{status:204,headers});}
    if(req.method==='GET'&&action==='oauth-resource')return json(protectedResourceMetadata(endpoints));
    if(req.method==='GET'&&action==='oauth-server')return json(authorizationServerMetadata(endpoints));
-   if(req.method==='GET'&&action==='status')return json({ready:await ready(),mcp_url:endpoints.resource,allowed_redirect_uris:config.allowedRedirectUris});
+   if(req.method==='GET'&&action==='status')return json({ready:await ready(),issuer:endpoints.issuer,mcp_url:endpoints.resource,allowed_redirect_uris:config.allowedRedirectUris});
    if(!(await ready()))return json({error:'temporarily_unavailable'},503);
    if(req.method==='POST'&&action==='register'){
     // Aggregate limits avoid persisting IP addresses; admission is still governed by exact callback allowlist.
@@ -134,7 +136,7 @@ export function createConnectorHandler(db:DB,config:ConnectorConfig){
     const r=await request(String(b.request_id||''));const code=randomOpaque('th_code_');
     const result=check(await db.rpc('chatgpt_authorize_request',{p_request:r.id,p_user:u.id,p_code_hash:await hashOpaque(code)}));
     if(!result?.ok||!redirectAllowed(result.redirect_uri))throw new ProtocolError(result?.error||'invalid_request');
-    const redirect=new URL(result.redirect_uri);redirect.searchParams.set('code',code);redirect.searchParams.set('state',result.state);
+    const redirect=new URL(result.redirect_uri);redirect.searchParams.set('code',code);redirect.searchParams.set('state',result.state);redirect.searchParams.set('iss',endpoints.issuer);
     return json({redirect_url:redirect.href});
    }
    if(mcp){

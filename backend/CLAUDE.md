@@ -47,7 +47,7 @@ Le compte vient TOUJOURS de la session, jamais du corps ; une page ne reçoit qu
 
 ## ChatGPT — connexion dédiée, lecture seule
 
-`chatgpt-connector` : OAuth PKCE + jetons opaques hachés, jamais une session Supabase ; consentement `/chatgpt`, callback ChatGPT préconfiguré (comparaison exacte, override optionnel `CHATGPT_REDIRECT_URIS`), activation `CHATGPT_CONNECTOR_ENABLED=true`. Migration `20261101090000_chatgpt_connector.sql` additive ; RLS et RPC réservées service_role. `/mcp` : 5 outils propriétaires (contexte, élément, Spots, sons, métadonnées médias), sans écriture ni GPS/pixels ; autres membres hors v1. Helpers `_shared/chatgpt-{protocol,server,context}.ts`. Tests `tests/fn/chatgpt-*` (SQL sous PGlite) + `tests/browser/chatgpt_connect.mjs`. Déploiement requis avant disponibilité ; voir `CLAUDE_CODE.md`.
+`chatgpt-connector` est déployé et activé ; migration additive `20261101090000_chatgpt_connector.sql` appliquée, RLS et RPC réservées service_role. OAuth PKCE + jetons opaques hachés, jamais une session Supabase ; consentement `/chatgpt`, callback exact `https://chatgpt.com/connector_platform_oauth_redirect` avec `iss` (RFC 9207). Origine `https://www.totehm.com` ; `CHATGPT_CONNECTOR_ENABLED=true`. Redéployer via Management API ou `supabase functions deploy chatgpt-connector --project-ref abujjbkbbiumxrokozph --no-verify-jwt --use-api` depuis `backend/`, sans réappliquer la migration. `/mcp` : 5 outils propriétaires (contexte, élément, Spots, sons, métadonnées médias), sans écriture ni GPS/pixels ; autres membres hors v1. Tests `tests/fn/chatgpt-*` (SQL sous PGlite) + `tests/browser/chatgpt_connect.mjs`. Status/discovery publics vérifiés ; essai connecté dans ChatGPT et publication publique restent à confirmer.
 
 ## n8n
 

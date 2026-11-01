@@ -7,11 +7,13 @@ export const MCP_PROTOCOL_VERSION = "2025-06-18";
 export const READ_SCOPE = "totehm:read";
 export const SUPPORTED_SCOPES = [READ_SCOPE] as const;
 
-// Standard ChatGPT MCP callback, pinned exactly (no hostname suffixes or wildcards).
-// Confirm compatibility in the first live OAuth exchange. An explicit deployment
-// override can replace this list if the client's callback changes.
+// Stable ChatGPT MCP callback for authorization servers implementing RFC 9207.
+// https://developers.openai.com/plugins/build/auth#redirect-url
+// The server advertises issuer identification below and MUST include the exact
+// issuer in every successful/error authorization response. No URI wildcards.
+// A reviewed deployment override may replace the exact list if needed.
 export const DEFAULT_CHATGPT_REDIRECT_URIS = [
-  "https://chatgpt.com/connector_platform/oauth/redirect",
+  "https://chatgpt.com/connector_platform_oauth_redirect",
 ] as const;
 
 export class ProtocolError extends Error {
@@ -67,6 +69,7 @@ export type Endpoints = ReturnType<typeof normalizeEndpoints>;
 export function authorizationServerMetadata(e: Endpoints) {
   return {
     issuer: e.issuer,
+    authorization_response_iss_parameter_supported: true,
     authorization_endpoint: e.authorize,
     token_endpoint: e.token,
     registration_endpoint: e.register,

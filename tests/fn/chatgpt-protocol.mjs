@@ -26,14 +26,16 @@ const tokenRequest = () => new URLSearchParams({
 });
 const rejects = (fn, code) => assert.throws(fn, (error) => error instanceof ProtocolError && (!code || error.code === code));
 
-test('ChatGPT callback is preconfigured, exact, and still supports a reviewed override or explicit disable', () => {
-  const uri='https://chatgpt.com/connector_platform/oauth/redirect';
+test('RFC 9207 stable ChatGPT callback is exact; legacy guessed paths and URI drift are rejected', () => {
+  const uri='https://chatgpt.com/connector_platform_oauth_redirect';
   assert.deepEqual(configuredRedirectUris(undefined), [uri]);
   assert.deepEqual([...DEFAULT_CHATGPT_REDIRECT_URIS], [uri]);
   assert.deepEqual(validateRegistration({redirect_uris:[uri]},configuredRedirectUris(undefined)).redirect_uris,[uri]);
   for(const other of [uri+'/',uri+'?return_to=https://evil.test',uri+'#fragment',
-    'https://chatgpt.com.evil.test/connector_platform/oauth/redirect',
-    'https://chatgpt.com/connector_platform/oauth_redirect']) {
+    'https://chatgpt.com.evil.test/connector_platform_oauth_redirect',
+    'https://chatgpt.com/connector_platform/oauth/redirect',
+    'https://chatgpt.com/connector_platform/oauth_redirect',
+    'https://chatgpt.com/connector/oauth/unregistered-callback-id']) {
     rejects(()=>validateRegistration({redirect_uris:[other]},configuredRedirectUris(undefined)));
   }
   assert.deepEqual(configuredRedirectUris(''), []);
@@ -42,6 +44,9 @@ test('ChatGPT callback is preconfigured, exact, and still supports a reviewed ov
 
 test('discovery advertises dedicated read-only credentials; callback admission fails closed', () => {
   const as = authorizationServerMetadata(endpoints), resource = protectedResourceMetadata(endpoints);
+  assert.equal(as.authorization_response_iss_parameter_supported, true);
+  assert.equal(as.issuer, 'https://www.totehm.com');
+  assert.equal(as.issuer, resource.authorization_servers[0]);
   assert.equal(resource.resource, 'https://www.totehm.com/mcp');
   assert.deepEqual(resource.authorization_servers, ['https://www.totehm.com']);
   assert.deepEqual(as.token_endpoint_auth_methods_supported, ['none']);

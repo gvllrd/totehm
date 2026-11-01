@@ -22,9 +22,3 @@ Sur la VM : les onze clés des Code nodes et `N8N_BLOCK_ENV_ACCESS_IN_NODE=false
 Puis le brouillon de E doit refuser un événement non signé et une pièce TEST (il les accepte) ; publier B, C, D, E
 ENSEMBLE. Un faux paiement lance alors sept images et Telegram, rien ne part chez Printful.
 `TOTEHM_MASTER.md`, en tête : « Domaines et accès : remplacés le 21/10/2026 par CLAUDE.md, La vision ».
-
-## ChatGPT · mise en service
-Appliquer UNE fois `backend/supabase/migrations/20261101090000_chatgpt_connector.sql` via Management API ou SQL Editor ; aucune migration existante remplacée.
-Dans `backend/` : `supabase functions deploy chatgpt-connector --project-ref abujjbkbbiumxrokozph --no-verify-jwt --use-api`.
-`CHATGPT_REDIRECT_URIS` est préconfiguré à `https://chatgpt.com/connector_platform/oauth/redirect` ; remplacement explicite seulement si le callback client change. Puis `CHATGPT_PUBLIC_ORIGIN=https://www.totehm.com` et `CHATGPT_CONNECTOR_ENABLED=true` via les secrets Supabase.
-Publier le front avec les réécritures Vercel ; vérifier `/chatgpt-api?action=status` (ready=true), discovery, consentement explicite puis outil dans ChatGPT. Accès Custom Apps selon compte, publication publique non acquise.
