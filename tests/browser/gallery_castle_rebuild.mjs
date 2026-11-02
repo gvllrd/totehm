@@ -3,6 +3,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {PerspectiveCamera,Vector3} from '../../space/vendor/three-0.180.0.mjs';
+import {GALLERY_LAYOUT as L} from '../../space/gallery-modern-layout.mjs';
 import {launch,page} from './harness.mjs';
 const OUT=process.argv[2]||'/tmp/castle-rebuild',origin='https://www.totehm.space';
 const fixtureMode=process.argv.includes('--fixture'),shotsOnly=process.argv.includes('--shots-only');
@@ -68,6 +69,13 @@ try{
    await pg.screenshot({path:OUT+'/'+suffix+'-entry.png'});
    check(d.place===place&&!d.fallback,'The actual '+place+' page starts a native WebGL visit at '+viewport.width);
    check(d.temple.rebuilt&&d.temple.levels===1&&d.temple.airyInterior&&d.temple.interiorPartitions===0,'The new castle has one uninterrupted double-height interior at '+suffix);
+   check(d.temple.facade.monumentalEntranceMark&&d.temple.facade.scale===1.5&&d.temple.facade.position[0]===0&&d.temple.facade.position[1]>L.entryHeight,'The monumental tongue is centred above the open entrance at '+suffix);
+   check(d.temple.thpCounter.packagedPapers===6&&d.temple.thpCounter.papers===6&&d.temple.thpCounter.looseTabs===0&&d.temple.thpCounter.wallPapers===0&&d.temple.thpCounter.premiumSource==='/get_higher','All six Totehmpapers have their original premium packaging and remain exclusively on the table at '+suffix);
+   check(d.temple.origins.stone&&d.temple.origins.inKeep&&d.temple.origins.closedBook&&d.temple.origins.position.join(',')===L.origins.lectern.join(','),'Origins rests on a stone plinth inside the left keep at '+suffix);
+   check(d.temple.exhibition.artworkSupport==='stone'&&d.temple.exhibition.glassMountedArtworks===0,'The wall artworks use stone supports and leave the glass clear at '+suffix);
+   check(d.stations.play.signs===22&&d.stations.play.loaded===22&&d.stations.play.originalSignImages&&d.stations.play.matchingStandaloneDrift&&d.stations.play.view==='floating-signs'&&d.stations.play.screen.join(',')===L.play.screen.join(','),'The left screen shows all 22 original floating Lisbon street signs at '+suffix);
+   check(d.stations.play.screen[0]<0&&d.stations.play.wallMounted&&d.stations.play.support==='stone','The Lisbon preview hangs on the left stone wall at '+suffix);
+   check(d.fireplace.position[0]>0&&d.fireplace.position.join(',')===L.fireplace.position.join(',')&&d.fireplace.barkRelief&&d.fireplace.splitWoodGeometry&&d.fireplace.independentFlameBreathing,'The improved wood fire is on the right at '+suffix);
    check(place==='lisbon'
     ?d.temple.pavement?.compiled&&d.temple.pavement.waves&&d.temple.pavement.boat&&d.temple.pavement.boatCentre.join(',')==='0,4'&&!d.temple.flooring.continuousStone
     :d.temple.pavement===null&&d.temple.flooring.continuousStone,'The original Lisbon calçada compiles with its waves and caravel; New York keeps its own terrace at '+suffix);
@@ -84,7 +92,7 @@ try{
      check(state.physics.grounded&&Math.abs(state.physics.feetHeight+.09)<.01,'Real guided movement reaches artwork '+room+' on the castle floor at '+suffix);
      if(room===1||room===4)await pg.screenshot({path:OUT+'/'+suffix+'-art-'+room+'.png'});
     }
-    const point=await project(pg,[-12.72,3.1,-7]);
+    const point=await project(pg,L.opposite.screen);
     check(point.x>0&&point.x<viewport.width&&point.y>0&&point.y<viewport.height,'The physical artwork screen is in view at '+suffix);
     await pg.mouse.click(point.x,point.y);
     await pg.waitForURL(url=>url.pathname==='/same_but_opposite',{timeout:20000});
