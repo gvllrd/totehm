@@ -1,4 +1,5 @@
 import * as T from './vendor/three-0.180.0.mjs';
+import {GALLERY_LAYOUT as L} from './gallery-modern-layout.mjs';
 
 // As with Lisbon, Space exhibits a cover. The full-size artwork plays only
 // in its own page, after an explicit viewer gesture.
@@ -12,8 +13,8 @@ export function createOppositeInstallation(scene,{mobile=false,onChange=()=>{},o
  texture.name='SAME_BUT_OPPOSITE_SCREEN — static artwork cover';texture.colorSpace=T.SRGBColorSpace;
  texture.minFilter=T.LinearMipmapLinearFilter;texture.magFilter=T.LinearFilter;texture.generateMipmaps=true;texture.anisotropy=4;texture.needsUpdate=true;
  const geometry=new T.PlaneGeometry(1,1),material=new T.MeshBasicMaterial({map:texture,toneMapped:false});
- const screen=new T.Mesh(geometry,material);screen.name='SAME_BUT_OPPOSITE_SCREEN';screen.position.set(-12.72,3.1,-7);screen.rotation.y=Math.PI/2;screen.scale.set(5.6,3.15,1);
- screen.userData={installation:'opposite',room:4,href};root.add(screen);
+ const screen=new T.Mesh(geometry,material);screen.name='SAME_BUT_OPPOSITE_SCREEN';screen.position.set(...L.opposite.screen);screen.rotation.y=0;screen.scale.set(...L.opposite.screenSize,1);
+ screen.userData={installation:'opposite',room:4,href,support:'stone',wallMounted:true};root.add(screen);
  const pickables=[screen];let disposed=false,active=false,focused=false,opened=false,opens=0,frames=0,clock=0;
  function drawCover(){
   if(disposed||!context)return false;
@@ -32,7 +33,7 @@ export function createOppositeInstallation(scene,{mobile=false,onChange=()=>{},o
  drawCover();globalThis.document?.fonts?.ready?.then(()=>{if(!disposed)drawCover();});
  return{root,pickables,screen,canvas,texture,open,handleKey,interact,acceptHit,setActive,
   update(dt){if(disposed)return false;clock+=Math.max(0,Math.min(Number(dt)||0,.1));return false;},
-  diagnostics:()=>({kind:'opposite-artwork-portal',portal:true,inGalleryPlayback:false,title:'Same but opposite',active,focused,opened,opens,coverReady:!!context,playing:false,mediaSource:null,videoFrames:0,frames,time:+clock.toFixed(3),screen:[-12.72,3.1,-7],standalone:href,disposed}),
+  diagnostics:()=>({kind:'opposite-artwork-portal',portal:true,inGalleryPlayback:false,title:'Same but opposite',active,focused,opened,opens,coverReady:!!context,playing:false,mediaSource:null,videoFrames:0,frames,time:+clock.toFixed(3),screen:screen.position.toArray(),screenSize:[screen.scale.x,screen.scale.y],screenRotation:screen.rotation.y,support:'stone',wallMounted:true,standalone:href,disposed}),
   dispose(){if(disposed)return;disposed=true;active=focused=false;texture.dispose();material.dispose();geometry.dispose();root.removeFromParent();root.clear();if(canvas)canvas.width=canvas.height=1;}
  };
 }

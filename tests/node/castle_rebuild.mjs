@@ -6,8 +6,10 @@ import {createNewYorkGallery} from '../../space/gallery-new-york.mjs';
 import {createModernPhysics,createModernWalkway} from '../../space/gallery-modern-navigation.mjs';
 import {createNewYorkPhysics,createNewYorkWalkway} from '../../space/gallery-new-york-navigation.mjs';
 import {GALLERY_LAYOUT as L,GALLERY_STATIONS} from '../../space/gallery-modern-layout.mjs';
-import {GLASS_SHELL,glassRoofHeight} from '../../space/gallery-glass-shell.mjs';
+import {GLASS_SHELL,GLASS_HEARTH,glassRoofHeight} from '../../space/gallery-glass-shell.mjs';
 import {createCastleFabric} from '../../space/gallery-castle-fabric.mjs';
+import {createLecternBook} from '../../space/gallery-lectern-book.mjs';
+import {createGalleryFireplace} from '../../space/gallery-fireplace.mjs';
 import {castleFabricPlan} from '../../space/gallery-castle-plan.mjs';
 
 let checks=0;
@@ -28,6 +30,47 @@ for(const [place,factory,physicsFactory,walkwayFactory] of [
  const d=gallery.diagnostics();
  check(d.levels===1,'The '+place+' rebuild is one open double-height gallery');
  check(gallery.solids.length>0,'The '+place+' building has real collision geometry');
+ // Measure the delivered objects, including their tilt and complete case
+ // depth, rather than trusting the installation's diagnostic counters.
+ const table=gallery.root.getObjectByName('A single floating limestone edition table');
+ const tableBounds=new T.Box3().setFromObject(table);
+ const cases=gallery.root.children.filter(object=>object.userData.premiumPackaging);
+ check(cases.length===6,'The '+place+' table physically holds six premium cases');
+ for(const [index,display] of cases.entries()){
+  const bounds=new T.Box3().setFromObject(display);
+  check(bounds.min.x>tableBounds.min.x&&bounds.max.x<tableBounds.max.x&&bounds.min.z>tableBounds.min.z&&bounds.max.z<tableBounds.max.z,'The '+place+' premium case '+index+' stays entirely over its stone table');
+  check(Math.abs(bounds.min.y-tableBounds.max.y)<.002,'The '+place+' premium case '+index+' rests within two millimetres of the tabletop');
+ }
+ const book=createLecternBook(scene),fire=createGalleryFireplace(scene);scene.updateMatrixWorld(true);
+ const slab=gallery.root.getObjectByName('Origins — limestone reading slab in the west keep');
+ const plinth=gallery.root.getObjectByName('Solid dressed limestone book plinth');
+ check(slab.material===table.material&&plinth.material===table.material,'The '+place+' Origins slab and plinth use the very same stone material as the table');
+ check(slab.rotation.x===book.root.rotation.x,'The '+place+' Origins book follows the actual stone reading slope');
+ const keep=castleFabricPlan(place).keep;
+ for(const [label,object] of [['slab',slab],['plinth',plinth],['book',book.root]]){
+  const bounds=new T.Box3().setFromObject(object);
+  check(bounds.min.x>keep.minX&&bounds.max.x<keep.maxX&&bounds.min.z>keep.minZ&&bounds.max.z<keep.maxZ,'The complete '+place+' Origins '+label+' stands inside the ruined west keep');
+ }
+ const masonry=gallery.solids.filter(object=>object.userData.castleFabric);
+ for(const direction of [new T.Vector3(-1,0,0),new T.Vector3(1,0,0),new T.Vector3(0,0,-1)]){
+  const enclosureRay=new T.Raycaster(new T.Vector3(...L.origins.book),direction,0,3);
+  check(enclosureRay.intersectObjects(masonry).length>0,'Actual '+place+' stone encloses the Origins corner along '+direction.toArray().join(','));
+ }
+ for(const work of [L.play,L.opposite])for(const dx of [-work.screenSize[0]/2,0,work.screenSize[0]/2])for(const dy of [-work.screenSize[1]/2,0,work.screenSize[1]/2]){
+  const supportRay=new T.Raycaster(new T.Vector3(work.screen[0]+dx,work.screen[1]+dy,work.screen[2]),new T.Vector3(0,0,-1),0,1);
+  check(supportRay.intersectObjects(masonry).length>0,'The '+place+' '+work.id+' screen has solid stone behind offset '+dx+','+dy);
+ }
+ const hearth=fire.root.getObjectByName('Low limestone campfire lip continuous with the floor');
+ const hearthBounds=new T.Box3().setFromObject(hearth),hearthCentre=hearthBounds.getCenter(new T.Vector3());
+ check(hearthBounds.min.x>0,'The complete '+place+' hearth is physically on the right of the entrance');
+ const outlet=GLASS_HEARTH.smokeOutlet;
+ check(Math.abs(hearthCentre.x-outlet.x)<.001&&Math.abs(hearthCentre.z-outlet.z)<.001,'The '+place+' smoke outlet aligns with the centre of the actual hearth');
+ const roof=gallery.root.getObjectByName('Single floating glass roof — open star oculus');
+ const apertureRay=new T.Raycaster(new T.Vector3(hearthCentre.x,0,hearthCentre.z),new T.Vector3(0,1,0),0,20);
+ check(apertureRay.intersectObject(roof).length===0,'The '+place+' glass roof is really open above the relocated fire');
+ apertureRay.ray.origin.x+=outlet.radius+.1;
+ check(apertureRay.intersectObject(roof).length>0,'The '+place+' glass roof resumes immediately beside the smoke opening');
+ book.dispose();fire.dispose();
  const groundRay=new T.Raycaster(new T.Vector3(),new T.Vector3(0,-1,0),0,.4);
  const floorHits=(x,z)=>{groundRay.ray.origin.set(x,L.groundY+.1,z);return groundRay.intersectObjects(gallery.walkable);};
  for(const [x,z] of [[0,4],[15.9,17.8],[-15.9,17.8],[0,-17.9],[-14.5,-9.5],[14.5,-9.5]]){

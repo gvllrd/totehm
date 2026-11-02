@@ -10,7 +10,7 @@ const ROOMS=[
  {title:'TotehmPaper {THP}',kind:'The Stoner Experience',path:'/get_higher',collect:'/market?art=totehmpaper',action:'Enter the experience ↗',note:'Original perforated art. Choose your TotehmPaper.'},
  {title:'Origins / Quantum',kind:'Twenty original works',path:'/origins',collect:'/market?collection=quantum',action:'Open the book',note:'Twenty works. Turn the pages.'},
  {title:'Play the Lisbon Street',kind:'Neuro Street Art Digital',path:'/play_lisbon_street',collect:'/market?collection=play-the-lisbon-street',action:'PLAY ↗',note:'Choose a sign. Play the street.'},
- {title:'The Stoner Experience',kind:'TotehmPaper {THP}',path:'/get_higher',collect:'/market?art=totehmpaper',action:'Enter the experience ↗',note:'The original paper, in its premium frame.'},
+ {title:'The Stoner Experience',kind:'TotehmPaper {THP}',path:'/get_higher',collect:'/market?art=totehmpaper',action:'Enter the experience ↗',note:'The original paper, in its premium case on the stone table.'},
  {title:'Same but opposite',kind:'Video artwork · Wah',path:'/same_but_opposite',action:'PLAY ↗',note:'Tap to play the artwork in its own full-screen experience.'}
 ];
 const $=id=>document.getElementById(id),buttons=[...document.querySelectorAll('.tour [data-room]')],info=$('work-info');
@@ -28,12 +28,12 @@ function controls(){
  const arrived=station?.focused===room&&room>=0;
  body.classList.toggle('station-focused',arrived);info.dataset.station=String(room);
  $('leave-station').hidden=!arrived;
- $('visit-stoner').hidden=room!==0;
  $('enter-experience').disabled=(!arrived&&!fallback)||(room===1&&!!station?.book?.opening);
  if(room===1)$('enter-experience').textContent=station?.book?.opening?'Opening…':ROOMS[1].action;
- if(room>=0)$('work-note').textContent=arrived?ROOMS[room].note:'Walking to the '+['counter','book','Lisbon screen','framed work','Same but opposite screen'][room]+'…';
+ if(room>=0)$('work-note').textContent=arrived?ROOMS[room].note:'Walking to the '+['counter','book','Lisbon screen','premium cases','Same but opposite screen'][room]+'…';
 }
 function choose(index,{hash=true}={}){
+ if(index===3)index=0;
  const work=ROOMS[index];if(!work)return;room=index;interact();
  buttons.forEach(b=>b.setAttribute('aria-current',String(Number(b.dataset.room)===(index===3?0:index))));
  $('work-title').textContent=work.title;$('work-kind').textContent=work.kind;$('enter-experience').textContent=work.action;links(work);info.hidden=false;
@@ -54,7 +54,6 @@ function setList(value){pending=null;body.classList.toggle('list-view',value);cl
 buttons.forEach(button=>button.addEventListener('click',()=>choose(Number(button.dataset.room))));
 $('overview').addEventListener('click',overview);
 $('enter-experience').addEventListener('click',()=>{if(room>=0){if(fallback||body.classList.contains('list-view'))location.assign(ROOMS[room].path);else engine?.enter(room);}});
-$('visit-stoner').addEventListener('click',()=>choose(3));
 $('close-info').addEventListener('click',()=>{clearInfo();engine?.stop();});
 $('leave-station').addEventListener('click',()=>{engine?.leaveStation();clearInfo();$('space').focus({preventScroll:true});});
 $('view-list').addEventListener('click',()=>setList(!body.classList.contains('list-view')));
@@ -67,7 +66,7 @@ document.addEventListener('keydown',e=>{
 });
 document.addEventListener('visibilitychange',syncPreview);reduced.addEventListener('change',syncPreview);
 addEventListener('pagehide',()=>{if(listRaf)cancelAnimationFrame(listRaf);listRaf=0;preview.pause();});addEventListener('pageshow',syncPreview);
-window.__totehm_gallery=()=>({build:'2026-10-31-space-lisbon-calcada-restored',place,rooms:4,room,list:body.classList.contains('list-view'),fallback,reduced_motion:reduced.matches,experiences:[...new Set(ROOMS.map(w=>w.path))],experienceNavigation:'independent-pages',inGalleryPlayback:false,lisbon:preview.diagnostics(),...engine?.diagnostics()});
+window.__totehm_gallery=()=>({build:'2026-11-02-space-stone-artworks-premium',place,rooms:4,room,list:body.classList.contains('list-view'),fallback,reduced_motion:reduced.matches,experiences:[...new Set(ROOMS.map(w=>w.path))],experienceNavigation:'independent-pages',inGalleryPlayback:false,lisbon:preview.diagnostics(),...engine?.diagnostics()});
 function useFallback(){fallback=true;body.classList.add('no-3d','list-view');engine?.setList(true);clearInfo();syncPreview();}
 try{
  const {createGallery}=await import('./gallery-spatial.mjs');

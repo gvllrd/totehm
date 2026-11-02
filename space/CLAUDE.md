@@ -9,7 +9,7 @@ Space ouvre directement le monde, sans titre d’accueil ni commandes de panoram
 | fichier | rôle |
 |---|---|
 | `index.html` · `gallery-ui.mjs` · `gallery.css` | entrée immersive, liste accessible et connexion COM |
-| `gallery-castle-space.mjs` | galerie commune : vitrage panoramique, toit incliné, sol de pierre, mobilier minimal, éclairage et petite sculpture d’entrée |
+| `gallery-castle-space.mjs` | galerie commune : vitrage panoramique, toit incliné, sol de pierre, mobilier minimal, éclairage et sculpture monumentale au-dessus de l’entrée |
 | `gallery-castle-plan.mjs` · `gallery-castle-fabric.mjs` | murs épais, donjon et arches réellement ouvertes ; même plan en mètres pour la maçonnerie et ses collisions |
 | `gallery-modern.mjs` · `gallery-new-york.mjs` | fabriques des deux lieux, calcaire chaud ou grisé |
 | `gallery-modern-layout.mjs` · `gallery-modern-navigation.mjs` | ancrages des œuvres, parcours au sol, collisions du verre et du château, saut et appuis |
@@ -18,7 +18,7 @@ Space ouvre directement le monde, sans titre d’accueil ni commandes de panoram
 | `gallery-lisbon-pavement.mjs` | calçada extérieure originale de Lisbon, quatre surfaces jointives sans recouvrement du sol intérieur |
 | `gallery-ancient-floor.mjs` · `gallery-white-stone.mjs` | dalles physiques à arêtes usées, cartes photographiques CC0 locales, table et pierre du foyer |
 | `gallery-heritage-masonry.mjs` | chargeur partagé de matériaux photographiques pour la nouvelle maçonnerie |
-| `gallery-lectern-book.mjs` · `gallery-play-installation.mjs` · `gallery-opposite-installation.mjs` · `gallery-stoner-installation.mjs` | livre Origins, écrans Lisbon et Same but opposite, cadre Stoner : chacun ouvre sa page indépendante |
+| `gallery-lectern-book.mjs` · `gallery-play-installation.mjs` · `gallery-opposite-installation.mjs` · `gallery-paper-packaging.mjs` | livre Origins dans le donjon, écrans sur pierre et coffrets THP sur table ; expériences indépendantes |
 | `gallery-fireplace.mjs` · `gallery-fire-audio.mjs` | grand feu ouvert et véritable enregistrement de feu de bois |
 | `gallery-temple-landscape.mjs` | seul piton émergé, lumière lunaire et environnement nocturne préfiltré |
 | `gallery-drowned-ocean.mjs` · `gallery-ocean-foam.mjs` · `gallery-ocean-spindrift.mjs` | océan 3D à 360°, crêtes, écume persistante et embruns volumétriques |
@@ -35,9 +35,9 @@ Space ouvre directement le monde, sans titre d’accueil ni commandes de panoram
 - Écume persistante GPU sur deux cibles 256² / 128² à 30 / 20 Hz, dissipation de 7,8 s. Brume : 80 / 40 volumes, cinq échantillons par rayon, opacité ≤ 0,13 ; aucun autre sol émergé.
 - Les deux galeries ont un seul sol à −0,09 m, un intérieur de 26 × 15 m, une entrée libre de 5,6 × 5,1 m et un toit vitré incliné d’environ 7,2 à 9,8 m. Aucune rampe ni étage intermédiaire. Les murs pleins restent au périmètre ; trois arches sont réellement vides et le donjon se visite.
 - Lisbon : calçada extérieure originale à −0,09 m, caravelle centrée en [0, 4] et vagues Mar Largo ; pierre ancienne limitée à l’intérieur vitré, sans surfaces superposées. New York : pierre ancienne continue sur la terrasse et à l’intérieur. Les textures locales et les tableaux typés restent partagés.
-- La table de pierre de 3,6 m expose six feuilles physiques de 48 THP de 2,2 cm et cinq papiers détachés. Dessin perforé original, prix et droits du serveur. La bouche originale devient une petite marque tactile à l’entrée.
-- Les ancrages des œuvres sont conservés : Origins sur pupitre noir incliné à 18°, Lisbon sur son grand écran, Same but opposite sur le verre gauche, Stoner dans son cadre premium. Aucun décodeur vidéo dans l’accueil 3D.
-- Feu partagé de 4,34 m, neuf bûches, braises et étincelles. Le verre conduit la fumée à un véritable oculus. Toucher le bois guide au foyer. Son local stéréo de 25,54 s, boucle fondue ; source et crédit `assets/fire/LICENSE.txt`.
+- La table de pierre de 3,6 m expose six THP individuels dans leurs coffrets premium noirs et vitrés, aux proportions exactes de `/get_higher`. Aucun papier libre ni cadre THP mural. La bouche et sa langue sculptées sont monumentales, centrées juste au-dessus de l’entrée, avec leur THP original et deux éclairages dédiés.
+- Origins repose sur un socle de la même pierre que la table, dans le donjon clos à gauche, avec sa dalle inclinée à 18°. Lisbon est à gauche et Same but opposite au centre du mur arrière en pierre ; aucun art sur le verre. Lisbon montre les 22 panneaux originaux flottant comme dans `/play_lisbon_street`, sans décodeur vidéo dans l’accueil 3D. L’ancien accès Stoner mène à la table.
+- Feu à droite de 4,34 m : neuf bûches aux écorces fendues en relief, cendres, braises et étincelles ; flammes à pulsations indépendantes et filaments translucides. Le verre conduit la fumée à un véritable oculus. Toucher le bois guide au foyer. Son local stéréo de 25,54 s, boucle fondue ; source et crédit `assets/fire/LICENSE.txt`.
 - Marche à 2,6 m/s et guidage autour des vrais obstacles. Touche Espace : envol extérieur de 18 000 m en 14 s simulées ; murs, toit et mobilier solides. Aucune relance en l’air. Une visite demandée en vol attend le retour sur la terrasse.
 - Vent/mer atténués sous la toiture réelle ; geste initial et préférence muet conservés. Liste, onglet masqué ou perte de focus suspendent la scène et le son. Retour navigateur restaure le monde.
 - Téléphone : DPR initial min(natif, 2), plancher min(natif, 1,5), adaptation graduelle réversible. Sans WebGL, les liens HTML donnent accès aux œuvres.
