@@ -41,16 +41,14 @@ THP : *Neuroscience, not motivation.*) · ← **mes médias** (en y allant, les 
 un tap sur le TOTEHM et MY WISDOM · MY GRIND · MY VISION naissent de lui, en carrés perforés de leur couleur ;
 MY GRIND = OBJECTIVES · HABITS · REPULSIONS empilés ; le « + » d'un média fait naître le même TOTEHM, la box choisie reste seule et la capture vient dessous) ·
 ● **mon TOTEHM** (plus de boîte noire : le TOTEHM EST le boîtier du processeur et le cœur d'un ARBRE DE VIE — ses douze
-perforations toutes raccordées, ses sept traits en branches vers le haut et en racines vers le bas ; il bat, à peine ; le toucher, le retourner ou chercher un membre arrête son
+perforations toutes raccordées ; c'est un CIRCUIT IMPRIMÉ — des pistes qui ne tournent qu'à 45°, jamais croisées : au-dessus, sept peignes (trois fourches en Y,
+56 feuilles, le trait qui s'affine) sur tout le haut de l'écran ; dessous, un bus de sept voies, un toit au-dessus du curseur, puis les racines au sol, en miroir ; il pousse, il bat, à peine ; le toucher, le retourner ou chercher un membre arrête son
 activité : ses traits sont aspirés en lui, et ressortent quand il revient ; ouvert, il est seul à l'écran ;
-le retourner montre le NOM seul — à même le navy,
-l'email dessous —, qui monte, puis
+le retourner montre le NOM seul — à même le navy, l'email dessous —, qui monte, puis
 tout d'un coup, en deux parties : **Monetize my TOTEHM** (*and get paid every month*) · **Go [Higher]**, ouverte d'abord
 (tout ce que je fais dans mon TOTEHM, en visuels : ma semaine, mes Habits × 7 jours suivies dans Telegram, mes intentions,
 mes objectifs, mon activité ; puis [Higher], ce qu'il ouvre — TotehmBot —, mes abonnements) ; puis DELETE MY TOTEHM et SIGN OUT en boutons, les conditions) ·
-→ **mes spots** (MAP ou GRID, MES spots seuls — les spots visibles, c'est figher.club ; filtre : NOW · PAST · FUTURE, NEAR ME et son rayon, qui le voit ; le « + » prend un spot comme figher.club, NOW ou LATER, une question à la fois ; la Terre ne tourne que sous le doigt posé sur elle ; un spot ouvert : son image telle quelle, ses infos, sa box en bas) · ↓ **Higher Self** (les traits se replient en l'anneau du profil ; j'arrive, je tape,
-mon Higher Self répond : un miroir de MON TOTEHM — la step est une de mes Habits redite avec son where, son intention, son son ;
-avec Higher, un lieu réel près de moi sous la step (GO, SPOT IT) ; quelques réponses offertes, puis l'abonnement Higher). Chercher un membre : le papier se retourne, on tape son nom, on entre chez lui.
+→ **mes spots** (MAP ou GRID, MES spots seuls — les spots visibles, c'est figher.club ; filtre : NOW · PAST · FUTURE, NEAR ME et son rayon, qui le voit ; le « + » prend un spot comme figher.club, NOW ou LATER, une question à la fois ; la Terre ne tourne que sous le doigt posé sur elle ; un spot ouvert : son image telle quelle, ses infos, sa box en bas) · ↓ **Higher my ChatGPT** (les traits se replient en l'anneau du profil ; NEUROLINK, not NEURALINK : le pitch présente les liens choisis par le membre, leur usage au bon moment dans ChatGPT et les éléments partagés des écosystèmes auxquels il s'abonne ; connexion gratuite, abonnements membres séparés ; le slogan Higher dessiné mène à `/chatgpt` (connexion/consentement), aucun chat local). Chercher un membre : le papier se retourne, on tape son nom, on entre chez lui.
 On navigue comme avec un MANCHE : le geste va où il pousse (vers le haut, la vue du haut), au doigt, au trackpad, à la souris — sauf dans une liste du TOTEHM, où le geste suit le défilement (plus bas que le bas de mes habitudes : mes répulsions) ; la manette est la même à l'atterrissage et dans le TOTEHM déployé (hors de tout cadre : un puits rond, son manche), et dans le TOTEHM le manche prend la couleur de la vue.
 
 **Visibilité** : une box est PRIVATE (par défaut) ou VISIBLE TO MY SUBSCRIBERS — une ligne de mots dans la box ouverte, jamais un bouton qui tache ; un spot a trois niveaux,
@@ -85,9 +83,9 @@ développement personnel, un réseau social classique, une marque streetwear cla
 
 ## L'espace
 
-TOTEHM.SPACE : Lisbon, façade d’azulejos bleus et blancs, et New York, façade de briques rouges à cinq niveaux en rampes ; autres murs et toiture en verre, au sommet d’une Terre engloutie : beauté, grandeur, peur et renouveau.
+TOTEHM.SPACE : Lisbon, azulejos bleus et blancs, et New York, briques rouges à cinq niveaux en rampes. Ruine et ultra-moderne : pans de pierre incomplets, arases cassées, azulejos disparus et briques fracturées dans de grands plans de verre nets, entrées aux cadres fins et lumière chaude rasante, au sommet d’une Terre engloutie : beauté, grandeur, peur et renouveau.
 Voie lactée à travers le toit, lune et mer déchaînée ; calçada à vagues et caravelle dehors, vraies dalles anciennes en volume, grain photographique et comptoir pierre dedans.
-La bouche originale, sa langue et son TOTEHM monumentaux occupent le centre sans fenêtres des deux façades ; feu vivant et crépitement dedans. Intérieurs minimalistes blancs, mêmes dalles anciennes dans les deux lieux ; murs d’exposition dégagés des rampes à chaque étage. New York conserve son asphalte, sans Statue de la Liberté.
+La bouche originale, sa langue et son TOTEHM monumentaux occupent le centre sans fenêtres des deux façades ; feu vivant et crépitement dedans. Intérieurs minimalistes, pierre ancienne visible derrière le verre, mêmes dalles dans les deux lieux ; murs blancs d’exposition dégagés des rampes à chaque étage. New York conserve son asphalte, sans Statue de la Liberté.
 Space est l’accueil : livre noir fermé sur pupitre vers Origins à pages tournantes, écran Lisbon et cadre premium Stoner vers leurs propres pages plein écran ; THP en petits papiers perforés.
 Sans colonnes ni végétation, la terrasse ouvre la vue sur les déferlants ; Espace propulse vers les étoiles et le globe englouti.
 Vent et mer, crépitement à l’approche du feu. Pages et marché indépendants conservés ; Collect garde achat et revente.

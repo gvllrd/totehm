@@ -47,7 +47,7 @@ try{
   const z=await pg.evaluate(()=>{const q=s=>document.querySelector(s);return{srch:q('#srch').className,vue:window.__totehm_lv().vue,reglages:window.__totehm_lv().reglages,
     nom:q('#self-name').textContent,ff:getComputedStyle(q('#self-name')).fontFamily,tb:getComputedStyle(q('#srch-bg')).transform,bg:getComputedStyle(q('#srch-bg')).backgroundImage.includes('333366'),
     niveaux:document.querySelectorAll('#srch [data-lvvis]').length,carte:!q('#lv-card').classList.contains('hide'),createur:!q('#mw-creator').classList.contains('hide'),
-    ia:!!q('#srch #lv-say,#srch #lv-thread'),menu:!!q('#srch #member-window'),compte:q('#member-window').classList.contains('show'),
+    ia:!!q('#srch #lv-say,#srch #lv-thread,#srch #chatgpt-pitch'),menu:!!q('#srch #member-window'),compte:q('#member-window').classList.contains('show'),
     /* 18/10 — le verso : plus de vignette, plus de confidentialité du Totehm, plus de /monetize ;
        le NOM est un identifiant fixe en haut, et la CONSOLE s'affiche une fois le verso posé. */
     vignette:!!q('#mw-avatar'),monetize:!!q('#lv-prog'),

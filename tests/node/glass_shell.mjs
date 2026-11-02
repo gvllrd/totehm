@@ -1,43 +1,44 @@
 import assert from 'node:assert/strict';
 import * as T from '../../space/vendor/three-0.180.0.mjs';
 import {createModernGallery} from '../../space/gallery-modern.mjs';
-import {GLASS_SHELL,GLASS_HEARTH,glassRoofHeight,glassSmokeOpening} from '../../space/gallery-glass-shell.mjs';
-let checks=0;const check=(v,message)=>{assert(v,message);checks++;};
+import {GLASS_SHELL as S,GLASS_HEARTH,glassRoofHeight,glassSmokeOpening} from '../../space/gallery-glass-shell.mjs';
+let checks=0;const check=(value,message)=>{assert(value,message);checks++;};
 const o=GLASS_HEARTH.smokeOutlet;
-for(let x=-13;x<=13;x+=.1)check(Math.abs(glassRoofHeight(x,-2)-7.25)<1e-9,'The glass front edge meets the historic facade above its upper windows');
-// The variable section is continuous and bounded, including its four edges.
-for(let x=GLASS_SHELL.minX;x<=GLASS_SHELL.maxX;x+=.19)for(let z=GLASS_SHELL.minZ;z<=GLASS_SHELL.maxZ;z+=.19){
- const y=glassRoofHeight(x,z);check(y>=GLASS_SHELL.minHeight&&y<=GLASS_SHELL.maxHeight,'Glass height remains inside its collision envelope');
- check(Math.abs(y-glassRoofHeight(x+.001,z))<.001&&Math.abs(y-glassRoofHeight(x,z+.001))<.001,'Roof has no jumps at panel boundaries');
+check(Math.abs(glassRoofHeight(10,-2)-glassRoofHeight(-10,-2)-1.6)<1e-9,'The roof has a deliberate transverse incline');
+check(Math.abs(glassRoofHeight(0,-17)-glassRoofHeight(0,-2)-.45)<1e-9,'The second roof incline stays independent of the facade');
+for(let x=S.minX;x<=S.maxX;x+=.31)for(let z=S.minZ;z<=S.maxZ;z+=.31){
+ const y=glassRoofHeight(x,z);check(y>=S.minHeight&&y<=S.maxHeight,'The complete roof plane stays within the physics envelope');
+ check(Math.abs(y-glassRoofHeight(x+.001,z))<.001&&Math.abs(y-glassRoofHeight(x,z+.001))<.001,'Glass has no panel-height discontinuity');
 }
 for(const mobile of [false,true]){
- const scene=new T.Scene(),gallery=createModernGallery(scene,null,{mobile}),d=gallery.diagnostics();
- scene.updateMatrixWorld(true);const roof=gallery.root.getObjectByName('Wave glass roof — open smoke oculus, no flat lid');
- check(!!roof&&d.waveGlass&&!d.flatRoof&&d.roofShell.continuous,'Actual roof geometry replaces the flat lid');
+ const scene=new T.Scene(),gallery=createModernGallery(scene,null,{mobile}),d=gallery.diagnostics();scene.updateMatrixWorld(true);
+ const roof=gallery.root.getObjectByName('Single floating glass roof — open star oculus');
+ check(!!roof&&d.flatSlopingRoof&&!d.waveGlass&&d.roofShell.actualAperture,'The current gallery renders the new inclined glass roof');
  const p=roof.geometry.attributes.position,n=roof.geometry.attributes.normal;
  for(let i=0;i<p.count;i++){
-  const x=p.getX(i),z=p.getZ(i),distance=p.getY(i)-glassRoofHeight(x,z);
-  check(Math.min(Math.abs(distance),Math.abs(distance-GLASS_SHELL.thickness))<.000002,'Every rendered roof vertex agrees with the shared physics height');
-  check(Math.abs(Math.hypot(n.getX(i),n.getY(i),n.getZ(i))-1)<.000001,'Roof has finite unit surface normals');
+  const offset=p.getY(i)-glassRoofHeight(p.getX(i),p.getZ(i));
+  check(Math.min(Math.abs(offset),Math.abs(offset-S.thickness))<.000002,'Rendered roof vertices match either physical glass face');
+  check(Math.abs(Math.hypot(n.getX(i),n.getY(i),n.getZ(i))-1)<.000002,'Every roof face has a finite unit normal');
  }
- // Interpolated faces, rather than their defining vertices alone, must
- // remain within six millimetres of the continuous collision section.
  for(let i=0;i<p.count;i+=3){
-  for(const weights of [[1/3,1/3,1/3],[.5,.5,0],[0,.5,.5],[.5,0,.5]]){
-   let x=0,y=0,z=0;for(let j=0;j<3;j++){x+=p.getX(i+j)*weights[j];y+=p.getY(i+j)*weights[j];z+=p.getZ(i+j)*weights[j];}
-   const delta=y-glassRoofHeight(x,z);check(Math.min(Math.abs(delta),Math.abs(delta-GLASS_SHELL.thickness))<.0061,'Interpolated roof faces remain within six millimetres of their analytic section');
-  }
+  let x=0,y=0,z=0;for(let j=0;j<3;j++){x+=p.getX(i+j)/3;y+=p.getY(i+j)/3;z+=p.getZ(i+j)/3;}
+  const offset=y-glassRoofHeight(x,z);
+  if(Math.abs(n.getY(i))>.9)check(Math.min(Math.abs(offset),Math.abs(offset-S.thickness))<.000002,'Glass-face interiors match the analytic plane');
+  else check(offset>=-.000002&&offset<=S.thickness+.000002,'The aperture/perimeter edge lies inside the actual glass thickness');
  }
- const ray=new T.Raycaster(new T.Vector3(o.x,12,o.z),new T.Vector3(0,-1,0));
- check(ray.intersectObject(roof).length===0,'The smoke passage is a real mesh opening');
+ const ray=new T.Raycaster(new T.Vector3(o.x,13,o.z),new T.Vector3(0,-1,0));
+ check(ray.intersectObject(roof).length===0,'The smoke opening passes through both physical glass faces');
  for(const [x,z] of [[0,-5],[-11,-12],[10,-10],[-8,-14.8]]){
-  ray.set(new T.Vector3(x,12,z),new T.Vector3(0,-1,0));const hits=ray.intersectObject(roof);
-  check(hits.length>0,'Glazing surrounds the smoke aperture');
-  check(Math.abs(hits[0].point.y-(glassRoofHeight(x,z)+GLASS_SHELL.thickness))<.0061,'Ray-cast glass top follows the continuous section');
+  ray.set(new T.Vector3(x,13,z),new T.Vector3(0,-1,0));const hits=ray.intersectObject(roof);
+  check(hits.length>=2,'The glazing has distinct top and bottom faces');
+  check(Math.abs(hits[0].point.y-(glassRoofHeight(x,z)+S.thickness))<.000002,'Raycast top agrees with body support height');
+  check(Math.abs(hits.at(-1).point.y-glassRoofHeight(x,z))<.000002,'Raycast underside agrees with head-contact height');
  }
- check(gallery.root.getObjectByName('Folded glass smoke collector continuous with the wave roof')?.geometry.attributes.position.count>500,'The clear collector is a continuous curved surface');
- check(!gallery.root.getObjectByName('Full celestial glass roof'),'No hidden flat roof remains');
- check(glassSmokeOpening(o.x,o.z)&&!glassSmokeOpening(o.x+1,o.z),'Opening mask agrees with the open oculus');
- gallery.dispose();check(scene.children.length===0,'Disposal removes complete architecture');
+ const fold=gallery.root.getObjectByName('Clear fold leading the smoke to the open roof');
+ check(!!fold&&fold.material.transparent,'A transparent smoke fold remains above the preserved fire');
+ const fp=fold.geometry.attributes.position;
+ for(let i=fp.count/2;i<fp.count;i++)check(Math.abs(fp.getY(i)-glassRoofHeight(fp.getX(i),fp.getZ(i)))<.000002,'The smoke fold actually meets the roof aperture');
+ check(glassSmokeOpening(o.x,o.z)&&!glassSmokeOpening(o.x+o.radius+.01,o.z),'The shared aperture mask leaves the same centre open');
+ gallery.dispose();gallery.dispose();check(scene.children.length===0,'Roof resources dispose with the full gallery');
 }
-console.log('PASS '+checks+' wave-glass geometry checks');
+console.log('PASS '+checks+' inclined-glass geometry checks');

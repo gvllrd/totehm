@@ -8,7 +8,7 @@ ligne une minute plus tard (Vercel).
 | **totehm.com** | `com/` | l'écosystème : les 5 vues, ton TOTEHM, chercher un membre, s'abonner à lui, l'abonnement Higher |
 | **figher.club** | `club/` | le prolongement de la vue Spots : chercher, publier des spots, se rencontrer |
 | **higher.boutique** | `boutique/` | les vêtements totehmisés à partir des boxes MY STORY |
-| **totehm.space** | `space/` | deux galeries : Lisbon à façade d’azulejos et New York à façade de briques sur cinq niveaux ; autres parois en verre, pierre ancienne et grand feu communs ; œuvres et marché indépendants |
+| **totehm.space** | `space/` | deux galeries littorales : un château en ruine, un donjon en retrait et de grands volumes de verre ; espaces de plain-pied, sols de pierre continus et intérieur minimaliste ; mer déchaînée, ciel étoilé, œuvres et marché conservés |
 | — | `backend/` | le serveur : base Supabase, fonctions, automatisations n8n |
 
 ```

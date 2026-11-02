@@ -1,0 +1,10 @@
+{
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test:chatgpt": "node chatgpt-protocol.mjs && node chatgpt-context.mjs && node chatgpt-oauth-sql.mjs && node chatgpt-server.mjs"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "0.3.14"
+  }
+}

@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import {createModernPhysics,createModernWalkway} from '../../space/gallery-modern-navigation.mjs';
 import {GLASS_SHELL,GLASS_HEARTH,glassRoofHeight,glassSmokeOpening} from '../../space/gallery-glass-shell.mjs';
 import {GALLERY_LAYOUT,GALLERY_STATIONS} from '../../space/gallery-modern-layout.mjs';
+import {CASTLE_OBSTACLES} from '../../space/gallery-castle-plan.mjs';
 
 let checks=0,samples=0,steps=0;
 const check=(value,message)=>{assert(value,message);checks++;};
@@ -14,9 +15,10 @@ const approaches=GALLERY_STATIONS.map(s=>({x:s.approach[0],z:s.approach[2]}));
 // Independent metre-space collision specification, including furniture.
 const groundBoxes=[
  [-13,13,-17.2,-16.8],[-13.16,-12.94,-17,-2],[12.94,13.16,-17,-2],
- [-13,-2.4,-2.2,-1.8],[2.4,13,-2.2,-1.8],
- [-3.5,3.5,-13.05,-11.05],[-8.15,-7.05,-8.48,-7.52],
- [-10.15,-5.85,-16.8,-15.18]
+ [-13,-2.8,-2.2,-1.8],[2.8,13,-2.2,-1.8],
+ [-1.8,1.8,-12.65,-11.45],[-8.15,-7.05,-8.48,-7.52],
+ [-10.15,-5.85,-16.8,-15.18],
+ ...CASTLE_OBSTACLES.filter(b=>b.minY<1.65&&b.maxY>-.09).map(b=>[b.minX,b.maxX,b.minZ,b.maxZ])
 ];
 function free(x,z){
  return x>=-15.8&&x<=15.8&&z>=-17.6&&z<=16&&!groundBoxes.some(([l,r,b,f])=>x>l-.18+1e-7&&x<r+.18-1e-7&&z>b-.18+1e-7&&z<f+.18-1e-7);
@@ -42,7 +44,7 @@ function follow(from,to){
  return route;
 }
 const positions=[entry,...approaches,{x:-8,z:-12.4},{x:0,z:-5},{x:0,z:-10},{x:11.8,z:-13},{x:-11.8,z:-13},
- {x:15,z:-15},{x:-15,z:-15},{x:15,z:10},{x:-15,z:10},{x:0,z:16},{x:0,z:-17.6}];
+ {x:15,z:-15},{x:-15,z:-15},{x:15,z:10},{x:-15,z:10},{x:0,z:16},{x:0,z:0}];
 for(const from of positions)for(const to of positions)follow(from,to);
 check(follow(entry,approaches[0]).length===2,'The counter is directly ahead through the entrance');
 check(follow(entry,approaches[1]).length>2,'The left-hand approach goes through the doorway rather than glazing');
@@ -83,7 +85,7 @@ for(const fps of [20,60,120]){
 for(const fps of [20,60,120])for(const start of [{x:0,z:-5},{x:-7.6,z:-4},{x:0,z:-2}]){
  const p=createModernPhysics(start);check(p.jump(),'A jump indoors remains intentional');let peak=-Infinity;
  for(let i=0;i<fps;i++){tick(p,1/fps);peak=Math.max(peak,p.position.y);}
- const ceiling=start.z===-2?3.1:glassRoofHeight(start.x,start.z);
+ const ceiling=start.z===-2?5.1:glassRoofHeight(start.x,start.z);
  check(peak+1.74<=ceiling+1e-6,'The full-speed head cannot tunnel through the roof or entry lintel');
  check(p.diagnostics().headContacts===1,'The ceiling records one real head contact');
  check(p.diagnostics().grounded&&near(p.position.y,-.09),'A ceiling contact returns to the floor');
@@ -117,20 +119,20 @@ function surfaceContact(x,z){
  }
  return{bottom,top};
 }
-for(const x of [-11,-5,0,6,11])for(const z of [-14,-10,-5]){
+for(const x of [-9,-5,0,6,11])for(const z of [-14,-10,-5]){
  const expected=surfaceContact(x,z),p=createModernPhysics({x,z});
  // Begin from a known free elevated point below the glass, then exercise
  // a real landing and jump rather than manufacturing a grounded state.
  p.reset({x,z,y:expected.bottom-HEIGHT-.3});
- check(p.position.x===x&&p.position.z===z,'A valid position below the wave roof is preserved');
+ check(p.position.x===x&&p.position.z===z,'A valid position below the inclined roof is preserved');
  // Restore airborne, then land first on the actual floor/furniture to jump.
  for(let i=0;i<240;i++)tick(p,1/240);
  check(p.diagnostics().grounded&&p.jump(),'A real support allows a deliberate jump beneath each roof section');
  for(let i=0;i<240&&!p.diagnostics().headContacts;i++)tick(p,1/240);
- check(p.diagnostics().headContacts===1,'Every wave section records a swept head collision');
- check(Math.abs(p.position.y+HEIGHT-expected.bottom)<.001,'Head contact follows the curved glass, rather than the old flat six-metre ceiling');
+ check(p.diagnostics().headContacts===1,'Every inclined section records a swept head collision');
+ check(Math.abs(p.position.y+HEIGHT-expected.bottom)<.001,'Head contact follows the sloped glass, rather than the old flat six-metre ceiling');
  const fall=createModernPhysics({x,z,y:30});for(let i=0;i<240;i++)tick(fall,1/240);
- check(fall.diagnostics().grounded&&fall.diagnostics().onRoof,'Falling visitors land on every sampled wave section');
+ check(fall.diagnostics().grounded&&fall.diagnostics().onRoof,'Falling visitors land on every sampled inclined section');
  check(Math.abs(fall.position.y-expected.top)<.001,'Roof support follows the highest surface under the body footprint');
  for(const side of [1,-1])for(let i=0;i<60;i++){
   tick(fall,1/120,{dx:side*.01});const y=surfaceContact(fall.position.x,fall.position.z).top;

@@ -1,60 +1,47 @@
 # space/CLAUDE.md — totehm.space
 
-> L’état actuel (≤ 60 lignes). On y travaille à la demande de Wah. Les mesures de livraison vivent dans les commits.
+> L’état actuel (≤ 60 lignes). Les mesures de livraison vivent dans les commits.
 
-Deux lieux partagent l’île, l’océan, la nuit étoilée et le grand feu de bois : Lisbon, façade d’azulejos sur calçada, et New York, façade de briques rouges à cinq niveaux, dernier étage en retrait. Autres murs et toits en verre, intérieurs blancs minimalistes et mêmes dalles anciennes ; rampes à New York.
-Vercel dirige le Portugal vers `/lisbon-space`, les autres pays ou le pays inconnu vers `/new-york` ; les deux réécrivent vers la racine canonique `/` sous cleanUrls, sans rejouer les redirections. Pays issu de l’IP, sans GPS ni certitude physique ; `/lisbon` reste l’œuvre Lisbon.
-Space ouvre directement le monde, sans titre d’accueil ni commandes de panorama/saut/son. Livre Origins, écrans Lisbon et Same but opposite, cadre Stoner : chaque œuvre ouvre sa page indépendante ; marketplace conservée.
+Lisbon et New York sont deux galeries littorales de plain-pied : un château asymétrique en ruine, un donjon rectangulaire en retrait, trois baies voûtées profondes et un grand espace double hauteur en verre clair. Lisbon a une pierre plus chaude, New York plus grise. Lisbon conserve sa calçada extérieure d’origine, aux vagues noires et blanches et au médaillon de caravelle ; pierre ancienne à l’intérieur. New York conserve son sol ancien continu entre terrasse et intérieur. Profils bronze fins, lumière chaude rasante, aucun cloisonnement vide. L’île, la mer déchaînée, le ciel étoilé, le feu et les œuvres indépendantes sont communs.
+Vercel dirige le Portugal vers `/lisbon-space`, les autres pays ou le pays inconnu vers `/new-york` ; ces deux entrées réécrivent vers `/`. Pays issu de l’IP, sans GPS ni certitude physique ; `/lisbon` reste l’œuvre Lisbon.
+Space ouvre directement le monde, sans titre d’accueil ni commandes de panorama/saut/son. La navigation Artworks présente les expériences, sans destinations d’étage.
 
 | fichier | rôle |
 |---|---|
-| `index.html` · `gallery-ui.mjs` · `gallery.css` | entrée directe, installations, liste accessible ; bouton TOTEHM → connexion COM ou retour chez soi |
-| `vercel.json` · `api/location.js` | redirection géographique temporaire, priorité aux lecteurs sociaux, diagnostic pays sans cache ni coordonnées |
-| `gallery-new-york*.mjs` · `gallery-facade.mjs` | façade de briques, fenêtres uniquement devant et centre plein, côtés/arrière/toit vitrés ; cinq niveaux reliés par rampes, langue et papier originaux monumentaux |
-| `gallery-lisbon-facade.mjs` · `gallery-lisbon-tiles.mjs` | façade azulejos originale : losanges cobalt/ivoire, pierre sculptée, fenêtres cintrées, balcons à volutes et balustrade, centre plein |
-| `gallery-spatial.mjs` · `gallery-modern-navigation.mjs` · `gallery-modern-layout.mjs` | caméra, parcours, saut ; collisions et appuis suivent le toit ondulé et son ouverture de fumée |
-| `gallery-modern.mjs` · `gallery-glass-shell.mjs` · `gallery-white-stone.mjs` · `gallery-ancient-floor.mjs` | toiture en vague, oculus, collecteur de verre partagé avec physique/fumée ; pierre, comptoir et pupitre |
-| `gallery-lectern-book.mjs` · `gallery-play-installation.mjs` · `gallery-opposite-installation.mjs` · `gallery-stoner-installation.mjs` | livre, deux écrans et cadre premium, liens vers leurs pages |
-| `gallery-fireplace.mjs` · `gallery-fire-audio.mjs` | feu ouvert de 4,34 m, neuf bûches, lumière chaude, fumée vers le verre et véritable enregistrement de feu de bois |
-| `gallery-lisbon-pavement.mjs` | calçada extérieure d’origine : vagues et caravelle ; pierre blanche uniquement dans le pavillon |
-| `gallery-temple-landscape.mjs` | seul piton émergé, lune, pierre éclairée et environnement nocturne préfiltré |
-| `gallery-drowned-ocean.mjs` | océan 3D à 360°, fronts irréguliers recourbés dans la surface, creux sombres, reflets lunaires et embruns |
-| `gallery-ocean-foam.mjs` · `gallery-ocean-spindrift.mjs` | mémoire d’écume GPU et volumes de brume arrachée aux crêtes, modelés par le vent et la lune |
-| `gallery-drowned-sky.mjs` | Voie lactée à filaments et poussières, étoiles fines et météore effilé ; champ proche pendant l’envol |
-| `gallery-drowned-planet.mjs` | globe submergé, relief continental sous l’eau et fine atmosphère ; teinte partagée avec la mer |
-| `gallery-temple-assets.mjs` · `assets/temple/` | 6 cartes de pierre PBR 1k chargées pour les arches et le socle ; sources CC0 dans LICENSE.txt |
-| `gallery-audio.mjs` · `gallery-lisbon.mjs` | vent/mer stéréo synthétisés, grave des portes et souffle Web Audio ; aperçu des vrais panneaux |
-| `get_higher.html` · `stoner.html` · `stoner_terms.html` | TotehmPaper et méthode Stoner, dans leurs propres fichiers et avec leurs droits serveur |
-| `origins.html` · `origins-book.mjs` · `origins-book.css` | livre fermé/ouvert, 20 pages vidéo dans l’ordre, prix et acquisition serveur, un geste = une page |
-| `play_lisbon_street.html` · `same_but_opposite.html` | Lisbon autonome et sa manette ; vidéo publique originale de Boutique, lecture au toucher |
-| `market.html` | marketplace complète : achats primaires, revente, propriétaires, provenance et ma collection |
-| `social.html` · `api/card.js` | lecteur ouvert par COM `/x/space` · aperçu `/s/:id` |
-| `vendor/` · `assets/` | Three.js/HLS, vrais médias, vingt tirages Origins et cartes originales d’océan ; sources dans les LICENSE.txt |
+| `index.html` · `gallery-ui.mjs` · `gallery.css` | entrée immersive, liste accessible et connexion COM |
+| `gallery-castle-space.mjs` | galerie commune : vitrage panoramique, toit incliné, sol de pierre, mobilier minimal, éclairage et petite sculpture d’entrée |
+| `gallery-castle-plan.mjs` · `gallery-castle-fabric.mjs` | murs épais, donjon et arches réellement ouvertes ; même plan en mètres pour la maçonnerie et ses collisions |
+| `gallery-modern.mjs` · `gallery-new-york.mjs` | fabriques des deux lieux, calcaire chaud ou grisé |
+| `gallery-modern-layout.mjs` · `gallery-modern-navigation.mjs` | ancrages des œuvres, parcours au sol, collisions du verre et du château, saut et appuis |
+| `gallery-new-york-layout.mjs` · `gallery-new-york-navigation.mjs` | même espace de plain-pied pour l’entrée New York |
+| `gallery-glass-shell.mjs` | plan incliné du toit et véritable ouverture de fumée partagés par rendu, physique et sons |
+| `gallery-lisbon-pavement.mjs` | calçada extérieure originale de Lisbon, quatre surfaces jointives sans recouvrement du sol intérieur |
+| `gallery-ancient-floor.mjs` · `gallery-white-stone.mjs` | dalles physiques à arêtes usées, cartes photographiques CC0 locales, table et pierre du foyer |
+| `gallery-heritage-masonry.mjs` | chargeur partagé de matériaux photographiques pour la nouvelle maçonnerie |
+| `gallery-lectern-book.mjs` · `gallery-play-installation.mjs` · `gallery-opposite-installation.mjs` · `gallery-stoner-installation.mjs` | livre Origins, écrans Lisbon et Same but opposite, cadre Stoner : chacun ouvre sa page indépendante |
+| `gallery-fireplace.mjs` · `gallery-fire-audio.mjs` | grand feu ouvert et véritable enregistrement de feu de bois |
+| `gallery-temple-landscape.mjs` | seul piton émergé, lumière lunaire et environnement nocturne préfiltré |
+| `gallery-drowned-ocean.mjs` · `gallery-ocean-foam.mjs` · `gallery-ocean-spindrift.mjs` | océan 3D à 360°, crêtes, écume persistante et embruns volumétriques |
+| `gallery-drowned-sky.mjs` · `gallery-drowned-planet.mjs` | Voie lactée, étoiles, météore, lune et globe submergé |
+| `gallery-spatial.mjs` · `gallery-render-quality.mjs` | caméra, visite, suspendre/reprendre, adaptation graduelle du DPR |
+| `vercel.json` · `api/location.js` · `api/card.js` | géographie, diagnostic sans cache et lecteurs sociaux |
+| `origins.html` · `origins-book.mjs` · `origins-book.css` | vingt vidéos originales, pages tournantes et lecture au toucher |
+| `get_higher.html` · `stoner.html` · `play_lisbon_street.html` · `same_but_opposite.html` | œuvres indépendantes, lecteurs et droits propres |
+| `market.html` · `social.html` | marché, collection personnelle et lecteur ouvert par COM `/x/space` |
+| `vendor/` · `assets/` | Three.js/HLS et véritables médias locaux ; licences dans les LICENSE.txt |
 
-- Nuit permanente : arche galactique relevée, filaments lumineux et poussières opaques ; 18 000 / 8 500 étoiles aux cœurs fins et halos discrets, quatre températures, lune à 34 cratères. PMREM issu du ciel local, sans panorama/HDR externe.
-- Météore en ruban de 62 triangles : passage effilé de 1,15 s toutes les 47 s, sur la même horloge que le ciel ; aucun défilement autonome en mouvement réduit.
-- Lisbon : 301 dalles anciennes fusionnées, opus romain, arêtes arrondies et scans photographiques couleur/normale/rugosité CC0, cartes 2k/1k dans `assets/stone/`, licence locale. Même géométrie de pierre à New York sur tous les sols, rampes et terrasses, hauteurs partagées avec la physique. Calçada d’origine dehors à Lisbon.
-- Océan à −96 m, crêtes de la surface principale bornées sous −11,48 m, calme à 110 m du piton ; aucun autre sol émergé. Astres/eau/embruns et simulation d’écume figés en mouvement réduit.
-- Murs blancs d’exposition indépendants du vitrage : 2 à Lisbon (5 emplacements réservés), 10 à New York (29 emplacements sur les cinq niveaux). Vues et approches dégagées, circulation derrière les panneaux ; aucune statue à New York.
-- Eau détaillée sur 24 km de diamètre : 327 680 triangles ordinateur / 172 032 téléphone, 4 800 / 1 800 points d’embruns ; maillage rapproché régulier puis logarithmique, détails filtrés jusqu’à 1 800 m.
-- Trois échelles de normales spectrales ; les faces retournées reflètent l’eau sombre sous l’horizon, l’écume ancienne devient humide et translucide. Gouttes entraînées dans le vent tangent au globe.
-- Brume : 80 / 40 ellipsoïdes sur les crêtes, 160 / 80 triangles de support, cinq échantillons de densité par rayon ; éclairage lunaire et profondeur réelle du volume, opacité ≤ 0,13, sommet borné sous −3,72 m. Aucun fichier externe ni texture propre.
-- Mer courbée sur le globe de rayon 6 500 m : le déplacement Gerstner recourbe les fronts du même maillage, avec leurs tangentes exactes, eau sombre et transmission fine. En hauteur, les continents restent sous une seule mer.
-- Écume persistante sur deux cibles 256² / 128² à 30 / 20 Hz : densité RG16, âge et naissance ; dissipation de 7,8 s, dentelle fine et sillages entraînés par le vent. Sans cartes ou sans rendu GPU, secours local ; état du moteur restauré après chaque passe.
-- Lisbon : pavillon de 26 × 15 m, entrée de 4,8 m, façade de 7,65 m ; toit ondulé de 6 à 8,4 m rejoignant la corniche à 7,25 m, cinq nervures. New York : cinq niveaux espacés de 5,4 m, dernier en retrait, atrium et rampes continues de 2,1 m ; aucun escalier. Destinations d’étage dans Artworks.
-- Le comptoir pierre expose 6 feuilles de 48 THP de 2,2 cm et 5 papiers détachés ; dessin perforé original, aucun prix local. Langue et THP de façade en vrai volume éclairé, centrés sans fenêtre derrière : échelle 1,6 à Lisbon et 2,6 à New York.
-- Volume noir fermé sur pupitre incliné à 18° : son ouverture mène à `/origins?open=1`. Origins conserve ses 20 vidéos, avec pages tournantes et lecture uniquement au toucher (« Tap to play the artwork ») ; introduction de Wah sur les 22 œuvres, sans lecture automatique au changement de page.
-- Lisbon : couverture et Higher en SVG → `/play_lisbon_street`. Same but opposite : écran sur le verre gauche → `/same_but_opposite`, source publique `higher_boutique/same_but_opposite.mp4`. Aucun décodeur vidéo dans l’accueil 3D.
-- Stoner : vrai cadre premium noir profond, verre et THP original, proportions du premier `/get_higher`. Clic → cette page ; les droits et la méthode `/stoner` restent contrôlés par le serveur.
-- Feu partagé : neuf bûches, flammes volumiques de 4,34 m, braises et étincelles. À Lisbon, le verre asymétrique rejoint son oculus vers 8,27 m ; à New York, une gaine transparente rejoint une ouverture à 27 m. Toucher le bois guide près du foyer ; gel visuel en mode réduit.
-- Marche 2,6 m/s, guidage autour des meubles et par les rampes physiques à New York ; toucher les sols permet de marcher. Les œuvres conservent leurs positions au rez-de-chaussée et ouvrent leurs pages indépendantes.
-- Touche Espace : envol extérieur de 18 000 m en 14 s simulées ; plafond, murs, mobilier et toit solides. Aucune relance en l’air.
-- Guidage/réduction/cache arrière préservent altitude et vitesse ; une visite demandée en l’air attend le retour sur la terrasse avant d’entrer.
-- Vent/mer dehors, atténués sous le toit réel ; au foyer, enregistrement stéréo de 25,54 s (ezwa, domaine public, Blanket/SoundBible), MP3 local 345 Ko, boucle fondue. Proximité et direction stéréo suivent la vue ; geste initial, muet et suspension liste/masqué/blur conservés. Source et crédit : `assets/fire/LICENSE.txt`, lien dans Artworks.
-- Au sommet, cadrage doux du globe entier et 1 600 / 720 points stellaires proches ; glisser reprend la vue. Mouvement réduit : décor figé, guidage horizontal immédiat, saut intentionnel sans recadrage/FOV. Sans WebGL, liens HTML.
-- Règle : Space présente les expériences, chaque HTML possède son lecteur plein écran. Le départ suspend la 3D et les sons ; retour navigateur rétablit le monde et la préférence audio.
-- Le marché reste autonome, y compris après Stripe. Prix, stock et accès du serveur, propriété au webhook ; aucun changement SQL/Edge/tarif.
-- Téléphone : DPR initial min(natif, 2), plancher min(natif, 1,5), grâce au démarrage et adaptation graduelle réversible ; `gallery-render-quality.mjs`. Aucun effondrement permanent à 0,65.
-- Connexion unique : `totehm.com/auth` en PKCE ; connecté, pseudo du profil et clic → COM `/totehm` par `sso-mint`, sans menu membre local. Market, My collection, Collect et Full experience restent accessibles.
+- Nuit permanente : 18 000 / 8 500 étoiles, Voie lactée et lune à 34 cratères. PMREM issu du ciel local. Météore effilé de 1,15 s toutes les 47 s ; mouvements figés en mode réduit.
+- Mer à −96 m, crêtes bornées sous −11,48 m, calme à 110 m du piton. Eau détaillée sur 24 km de diamètre : 327 680 triangles ordinateur / 172 032 téléphone. Trois échelles de normales spectrales et courbure sur le globe de rayon 6 500 m.
+- Écume persistante GPU sur deux cibles 256² / 128² à 30 / 20 Hz, dissipation de 7,8 s. Brume : 80 / 40 volumes, cinq échantillons par rayon, opacité ≤ 0,13 ; aucun autre sol émergé.
+- Les deux galeries ont un seul sol à −0,09 m, un intérieur de 26 × 15 m, une entrée libre de 5,6 × 5,1 m et un toit vitré incliné d’environ 7,2 à 9,8 m. Aucune rampe ni étage intermédiaire. Les murs pleins restent au périmètre ; trois arches sont réellement vides et le donjon se visite.
+- Lisbon : calçada extérieure originale à −0,09 m, caravelle centrée en [0, 4] et vagues Mar Largo ; pierre ancienne limitée à l’intérieur vitré, sans surfaces superposées. New York : pierre ancienne continue sur la terrasse et à l’intérieur. Les textures locales et les tableaux typés restent partagés.
+- La table de pierre de 3,6 m expose six feuilles physiques de 48 THP de 2,2 cm et cinq papiers détachés. Dessin perforé original, prix et droits du serveur. La bouche originale devient une petite marque tactile à l’entrée.
+- Les ancrages des œuvres sont conservés : Origins sur pupitre noir incliné à 18°, Lisbon sur son grand écran, Same but opposite sur le verre gauche, Stoner dans son cadre premium. Aucun décodeur vidéo dans l’accueil 3D.
+- Feu partagé de 4,34 m, neuf bûches, braises et étincelles. Le verre conduit la fumée à un véritable oculus. Toucher le bois guide au foyer. Son local stéréo de 25,54 s, boucle fondue ; source et crédit `assets/fire/LICENSE.txt`.
+- Marche à 2,6 m/s et guidage autour des vrais obstacles. Touche Espace : envol extérieur de 18 000 m en 14 s simulées ; murs, toit et mobilier solides. Aucune relance en l’air. Une visite demandée en vol attend le retour sur la terrasse.
+- Vent/mer atténués sous la toiture réelle ; geste initial et préférence muet conservés. Liste, onglet masqué ou perte de focus suspendent la scène et le son. Retour navigateur restaure le monde.
+- Téléphone : DPR initial min(natif, 2), plancher min(natif, 1,5), adaptation graduelle réversible. Sans WebGL, les liens HTML donnent accès aux œuvres.
+- Connexion unique : `totehm.com/auth` en PKCE ; connecté, pseudo du profil et clic vers COM `/totehm` par `sso-mint`. Aucun menu membre local. Market, My collection, Collect et Full experience restent accessibles.
+- Propriété et argent au webhook ; prix, stock et accès du serveur. Aucun changement SQL, Edge Function ou tarif dans la galerie.
 
-Tests : navigateur `gallery_new_york.mjs`, `gallery_direct.mjs`, `gallery_new_york_building.mjs`, `gallery_lisbon_facade.mjs`, `gallery_auth.mjs`, `origins_book.mjs` ; Node `new_york_building.mjs`, `new_york_navigation.mjs`, `lisbon_facade.mjs`, `ancient_stone_surfaces.mjs`, `glass_shell.mjs`, `modern_navigation.mjs`, `location_routing.mjs`.
+Tests actifs de la nouvelle architecture : `node tests/node/castle_rebuild.mjs` ; `tests/browser/gallery_castle_rebuild.mjs` pour les deux lieux, ordinateur/téléphone, mer/ciel et ouverture réelle des œuvres. Les tests indépendants des lecteurs, du marché, de la connexion et des gestes Origins restent propres à leurs composants.

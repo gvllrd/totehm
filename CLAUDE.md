@@ -21,10 +21,10 @@ Push sur `main` = mise en ligne ; jamais réécrire l'historique.
 | totehm.com | `com/` | l'écosystème : les 5 vues, la creator economy (s'abonner à un membre = entrer dans son écosystème), l'abonnement Higher, la recherche d'un membre |
 | figher.club | `club/` | le prolongement de la vue Spots : chercher, publier des spots, se rencontrer |
 | higher.boutique | `boutique/` | les vêtements totehmisés, un style artistique déterminé, à partir des boxes MY STORY ; production n8n |
-| totehm.space | `space/` | Lisbon au Portugal, New York ailleurs selon Vercel ; façades azulejos ou briques, autres parois de verre, pierre et espaces d’exposition ; mer et feu communs, œuvres et marché indépendants |
+| totehm.space | `space/` | Lisbon au Portugal, New York ailleurs selon Vercel ; château en ruine et verre contemporain, donjon, baies voûtées, galerie de plain-pied et intérieur minimaliste ; mer déchaînée, ciel étoilé et feu communs, œuvres et marché indépendants |
 
 **Deux fois cinq vues.** totehm.com : ↑ Get Higher (commune à tous) · ← mes médias · ● mon TOTEHM · → les spots ·
-↓ Higher Self (TotehmBot, abonnement Higher) ; ← ● → = l'écosystème d'un membre, ouvert par l'abonnement à ce membre.
+↓ Higher my ChatGPT (connexion gratuite, lecture seule autorisée) ; ← ● → = l'écosystème d'un membre, ouvert par l'abonnement à ce membre.
 Le TOTEHM déployé : HABITS · OBJECTIVES · REPULSIONS · VISIONS · MY STORY. **Les boxes sont sacrées** : un seul rendu.
 
 ## L'architecture
