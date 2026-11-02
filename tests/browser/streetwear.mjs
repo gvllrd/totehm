@@ -54,7 +54,8 @@ const network = (url, req) => {
 const ORDRE = ['cloth', 'style', 'element', 'name', 'order'];
 const descendre = async (pg, s) => {
   await pg.waitForSelector('.stage[data-s="' + s + '"].is-open', { timeout:5000 });
-  await pg.mouse.move(195, 420);
+  /* Au bord gauche, bas : jamais sur `#viewer`, qui garde son propre geste. */
+  await pg.mouse.move(20, 760);
   for(let i = 0; i < 10; i++){
     const now = await pg.evaluate(() => window.__totehm_cloth().stage);
     if(now === s) return;
@@ -138,6 +139,24 @@ ok((await pg.evaluate(() => { const l = [...document.querySelectorAll('#stages-r
 await pg.click('.st-card[data-id="st1"]');
 await pg.waitForFunction(() => window.__totehm_cloth().style);
 await pg.screenshot({ path: OUT + '/sw_style.png' });
+// 02/11 — CE QUI A DÉJÀ SON GESTE LE GARDE : sur le vêtement, un geste vertical
+// change la VUE de l'image ; maintenant qu'une étape existe en dessous, il ne
+// doit SURTOUT pas tourner la page du même doigt.
+await monter(pg, 'cloth');
+{
+  await pg.waitForTimeout(560);        // le rouleau finit de glisser : l'image est à sa place
+  const vb = await pg.locator('#viewer').boundingBox();
+  await pg.keyboard.press('ArrowUp'); await pg.keyboard.press('ArrowUp');   // revenir à la 1re vue
+  await pg.waitForFunction(() => window.__totehm_cloth().angle === 0);
+  const a0 = await pg.evaluate(() => window.__totehm_cloth().angle);
+  await pg.mouse.move(vb.x + vb.width / 2, vb.y + vb.height / 2);
+  await pg.mouse.wheel(0, 200);
+  await pg.waitForTimeout(420);
+  const ap = await pg.evaluate(() => ({ angle: window.__totehm_cloth().angle, stage: window.__totehm_cloth().stage }));
+  ok(ap.angle !== a0 && ap.stage === 'cloth',
+    '02/11 · un geste sur l\'image tourne la VUE, pas la page ' + JSON.stringify({ a0, ...ap }));
+}
+await descendre(pg, 'style');
 
 // ── 3 · ELEMENT : le TOTEHM se décompose en trois papiers (23/10)
 await descendre(pg, 'element');

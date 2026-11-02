@@ -931,7 +931,12 @@ function feuilleter(d){
 }
 /* LA MOLETTE ET LE TRACKPAD — une inertie de trackpad ne doit pas tourner trois
    pages : le verrou de `feuilleter` avale la suite du geste. */
+/* ⚠️ CE QUI A DÉJÀ SON GESTE LE GARDE : sur le vêtement, un geste vertical
+   change la VUE de l'image (`#viewer`). Sans cette garde il changeait la vue ET
+   tournait la page du même doigt. */
+const aSonGeste=t=>!!(t&&t.closest&&t.closest('#viewer'));
 sc().addEventListener('wheel',e=>{
+  if(aSonGeste(e.target))return;
   if(Math.abs(e.deltaY)<=Math.abs(e.deltaX))return;
   const d=e.deltaY>0?1:-1;
   if(resteDedans(d))return;                 /* l'étape se lit encore : on la laisse */
@@ -942,7 +947,7 @@ sc().addEventListener('wheel',e=>{
    l'étape ne pouvait plus défiler dans ce sens au moment où le doigt s'est posé. */
 let TAP=null;
 sc().addEventListener('pointerdown',e=>{
-  if(e.pointerType==='mouse')return;
+  if(e.pointerType==='mouse'||aSonGeste(e.target))return;
   TAP={id:e.pointerId,y0:e.clientY,t:performance.now(),hautOk:!resteDedans(-1),basOk:!resteDedans(1)};
 },{passive:true});
 sc().addEventListener('pointerup',e=>{
