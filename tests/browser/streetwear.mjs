@@ -48,13 +48,25 @@ const network = (url, req) => {
 };
 /* 26/10 (Wah) : plus de [next] — on DESCEND. Le banc fait le même geste que le
    doigt : il amène l'étape sous les yeux et attend qu'elle devienne la courante. */
+/* 02/11 (Wah) : « full screen par full screen, pas d'entre-deux ». Le banc fait
+   donc le VRAI geste — la molette sur le rouleau — et une étape à la fois. Si
+   l'étape déborde, on la lit d'abord jusqu'au bout, comme le doigt. */
+const ORDRE = ['cloth', 'style', 'element', 'name', 'order'];
 const descendre = async (pg, s) => {
   await pg.waitForSelector('.stage[data-s="' + s + '"].is-open', { timeout:5000 });
-  await pg.evaluate(x => document.querySelector('.stage[data-s="' + x + '"]').scrollIntoView({ block:'start' }), s);
-  await pg.waitForFunction(x => window.__totehm_cloth().stage === x, s, { timeout:5000 });
+  await pg.mouse.move(195, 420);
+  for(let i = 0; i < 10; i++){
+    const now = await pg.evaluate(() => window.__totehm_cloth().stage);
+    if(now === s) return;
+    const d = ORDRE.indexOf(s) > ORDRE.indexOf(now) ? 1 : -1;
+    await pg.evaluate(k => { const el = document.querySelector('.stage[data-s="' + window.__totehm_cloth().stage + '"]');
+      if(el) el.scrollTop = k > 0 ? el.scrollHeight : 0; }, d);
+    await pg.waitForTimeout(40);
+    await pg.mouse.wheel(0, d * 300);
+    await pg.waitForFunction(x => window.__totehm_cloth().stage !== x, now, { timeout:2000 }).catch(() => {});
+  }
+  await pg.waitForFunction(x => window.__totehm_cloth().stage === x, s, { timeout:3000 });
 };
-/* 27/10 — remonter est le MÊME geste : le doigt. Le « back » du navigateur,
-   lui, quitte /streetwear, comme sur n'importe quelle page. */
 const monter = descendre;
 const browser = await launch();
 const { pg, ctx, log } = await page(browser, { dir:'boutique', origin:'https://www.higher.boutique', rpc, tables, network });
@@ -68,7 +80,7 @@ await pg.waitForTimeout(80);
 
 // ── 1 · CLOTH (téléphone)
 let d = await D();
-ok(d.build === '2026-10-30-dos' && d.stage === 'cloth' && !d.papers && !d.desktop, 'phone: CLOTH first, the TOTEHM still folded');
+ok(d.build === '2026-11-02-pages' && d.stage === 'cloth' && !d.papers && !d.desktop, 'phone: CLOTH first, the TOTEHM still folded');
 const rest = await pg.evaluate(() => { const b = document.querySelector('#cl-facts .left b'), s = getComputedStyle(b);
   const g = document.querySelector('#cl-facts .bar i'), bar = document.querySelector('#cl-facts .bar');
   return { n: b.textContent.trim(), px: Math.round(parseFloat(s.fontSize)), col: s.color, fam: s.fontFamily,
@@ -78,8 +90,19 @@ ok(/Higher Champion Sweatshirt/.test(await pg.textContent('#cl-title')) && rest.
   'the title and what is left');
 ok(rest.px >= 13 && /Quantico/.test(rest.fam) && rest.col === 'rgb(255, 255, 255)' && rest.jauge === 100,
   'what is left: white Quantico and a one-pixel gauge, never Coral (that is a TOTEHM name) ' + JSON.stringify(rest.jauge));
-ok(!/€|S · M · L/.test(await pg.textContent('#cl-facts')) && !(await pg.$('#cl-hint')) && !(await pg.$('#concept-btn')) && !(await pg.$('#conn-bar')) && !(await pg.$('#back')),
-  'no price, no sizes, no hint, no « how it works », no member corner, no Back');
+ok(!/€/.test(await pg.textContent('#cl-facts')) && !(await pg.$('#cl-hint')) && !(await pg.$('#concept-btn')) && !(await pg.$('#conn-bar')) && !(await pg.$('#back')),
+  'no price, no hint, no « how it works », no member corner, no Back');
+// 02/11 (Wah) : « le choix de la taille, mets-la directement avec le choix du
+// modèle de vêtement » — et la première section ne montre PLUS la box héritée.
+const tailles = await pg.evaluate(() => ({
+  n: document.querySelectorAll('#cl-sizes .sz').length,
+  l: [...document.querySelectorAll('#cl-sizes .sz')].map(b => b.dataset.s).join(','),
+  off: [...document.querySelectorAll('#cl-sizes .sz[disabled]')].map(b => b.dataset.s).join(','),
+  chip: !!document.querySelector('#cl-wear'), ailleurs: !!document.querySelector('#od-sizes') }));
+ok(tailles.n === 5 && tailles.l === 'S,M,L,XL,2XL' && tailles.off === 'XL' && !tailles.chip && !tailles.ailleurs,
+  '02/11 · la taille se choisit AVEC le vêtement (et nulle part ailleurs) ; plus de box héritée ici ' + JSON.stringify(tailles));
+await pg.click('#cl-sizes .sz[data-s="M"]');
+await pg.waitForFunction(() => window.__totehm_cloth().size);
 const lay = await pg.evaluate(() => { const v = document.querySelector('#viewer').getBoundingClientRect(), b = document.querySelector('#cl-go').getBoundingClientRect();
   return { centre: Math.abs((v.left + v.right) / 2 - innerWidth / 2), ctr: Math.abs((b.left + b.right) / 2 - innerWidth / 2), scroll: document.documentElement.scrollWidth - innerWidth, over: Math.round(b.bottom - innerHeight) }; });
 ok(lay.centre < 2 && lay.ctr < 2 && lay.scroll <= 0 && lay.over <= 0, 'the cloth and its button are centered, on one screen (' + lay.centre.toFixed(1) + ' px, ctr ' + lay.ctr.toFixed(1) + ', button ' + lay.over + ' px from the bottom, scroll ' + lay.scroll + ')');
@@ -102,9 +125,22 @@ ok(true, 'back to the first cloth with the keyboard, its view is remembered');
 const src = await pg.evaluate(() => [...document.querySelectorAll('.model[data-i="0"] img')].map(i => i.getAttribute('src') || '').join('|'));
 ok(/champ\/1-front\.png/.test(src) && /champ\/3-side\.png/.test(src) && !/\.keep/.test(src), 'views = the photos of its Storage folder, in name order');
 
-// ── 2 · ELEMENT : le TOTEHM se décompose en trois papiers (23/10)
+// ── 2 · STYLE — 02/11 (Wah) : « le style artistique en section deux, et
+// ensuite la sélection de la box ».
 await pg.click('#cl-go');
-await pg.waitForFunction(() => window.__totehm_cloth().stage === 'element');
+await pg.waitForFunction(() => window.__totehm_cloth().stage === 'style');
+await pg.waitForFunction(() => document.querySelectorAll('.st-card').length === 2);
+const ordre2 = await pg.evaluate(() => [...document.querySelectorAll('.stage.is-open')].map(e => e.dataset.s).join(','));
+ok(ordre2 === 'cloth,style' && !(await pg.evaluate(() => document.querySelector('#s-element').classList.contains('is-open'))),
+  '02/11 · le STYLE vient juste après le vêtement, et la box n\'existe pas encore (' + ordre2 + ')');
+ok((await pg.evaluate(() => { const l = [...document.querySelectorAll('#stages-roll .stage')].map(e => e.dataset.s); return l.join(','); }))
+   === 'cloth,style,element,name,order,done', 'le rouleau est dans l\'ordre : vêtement · style · box · nom · commande');
+await pg.click('.st-card[data-id="st1"]');
+await pg.waitForFunction(() => window.__totehm_cloth().style);
+await pg.screenshot({ path: OUT + '/sw_style.png' });
+
+// ── 3 · ELEMENT : le TOTEHM se décompose en trois papiers (23/10)
+await descendre(pg, 'element');
 ok(!(await D()).melt && (await pg.$eval('#tz-logo', e => +getComputedStyle(e).opacity)) > 0.9, 'the TOTEHM arrives whole: background, rail, T and word');
 await pg.waitForFunction(() => window.__totehm_cloth().papers);
 await pg.waitForTimeout(650);
@@ -184,6 +220,28 @@ await pg.waitForTimeout(260);           // la couleur revient par une transition
 const sub = await pg.$eval('#matter .mi[data-k="objectives"]', e => ({ on: e.classList.contains('is-on'), press: e.getAttribute('aria-pressed'), f: getComputedStyle(e).filter, w: Math.round(e.getBoundingClientRect().width) }));
 ok(sub.on && sub.press === 'true' && !/brightness\(0\.34\)/.test(sub.f) && sub.w < 160,
   'un tap LIE la mini-box à la totehmisation : elle reprend sa couleur ' + JSON.stringify(sub));
+// 02/11 (Wah) : « quand je sélectionne une box et que je souhaite modifier mon
+// choix, RIEN ne se passe quand j'appuie sur le système de commandes des 5 vues
+// placé juste au-dessus. C'est frustrant… supprime l'étape "je dois d'abord
+// cliquer sur la box". » UN SEUL TAP, donc : la vue tapée défait le choix et
+// ouvre sa liste, avec ce qui était allumé remis à zéro.
+await pg.click('.pap-v');
+await pg.waitForFunction(() => window.__totehm_cloth().view === 'visions');
+const unTap = await pg.evaluate(() => ({ vue: window.__totehm_cloth().view,
+  choisi: !!window.__totehm_cloth().element, lie: window.__totehm_cloth().linked,
+  photos: window.__totehm_cloth().shots, filtre: document.querySelector('#s-element').classList.contains('is-picked'),
+  liste: document.querySelector('#el-list').textContent, grille: document.querySelector('#shots').children.length }));
+ok(unTap.vue === 'visions' && !unTap.choisi && unTap.lie === 0 && unTap.photos === 0 && !unTap.filtre
+   && /A studio by the sea/.test(unTap.liste) && unTap.grille === 0,
+  '02/11 · UN SEUL TAP sur une vue défait le choix et ouvre sa liste — plus besoin de retaper la box ' + JSON.stringify(unTap));
+// On revient sur MY WISDOM STORY et on refait le choix, pour la suite du parcours.
+await pg.click('.pap-s');
+await pg.waitForFunction(() => window.__totehm_cloth().view === 'wisdom');
+await pg.click('#el-list .bx');
+await pg.waitForFunction(() => !!window.__totehm_cloth().element);
+await pg.waitForSelector('#matter .mi[data-k="objectives"]');
+await pg.click('#matter .mi[data-k="objectives"]');
+await pg.waitForFunction(() => window.__totehm_cloth().linked === 1);
 // Les PHOTOS de la box : les medias (perforés) et les spots, éteints eux aussi.
 await pg.waitForSelector('#shots .sh-t');
 const ph = await pg.evaluate(() => { const l = [...document.querySelectorAll('#shots .sh-t')];
@@ -236,7 +294,7 @@ ok(nmf.prefix === '0.' && nmf.piece === '0 0 600 200 #higher-dos' && nmf.masque 
   '30/10 · le nom s\'écrit sur LE DOS DU HIGHER : la même pièce perforée, ses 18 trous, 600 × 200 ' + JSON.stringify(nmf));
 await pg.fill('#nm-input', 'taken');
 await pg.waitForFunction(() => /already taken/.test(document.querySelector('#nm-note').textContent));
-ok(NAMES.includes('0.taken') && !(await pg.$eval('#s-style', e => e.classList.contains('is-open'))),
+ok(NAMES.includes('0.taken') && !(await pg.$eval('#s-order', e => e.classList.contains('is-open'))),
   'availability is checked by the SERVER; a taken name opens nothing below');
 await pg.fill('#nm-input', '0.Hill Street');
 await pg.waitForFunction(() => /available/.test(document.querySelector('#nm-note').textContent));
@@ -247,27 +305,43 @@ ok(/251, 213, 202/.test(coral) && /Quantico/.test(coral), 'the name is Quantico 
 await pg.screenshot({ path: OUT + '/sw_name.png' });
 await pg.press('#nm-input', 'Enter');
 
-// ── 4 · STYLE
-await descendre(pg, 'style');
-await pg.waitForFunction(() => document.querySelectorAll('.st-card').length === 2);
+// ── LE STYLE a sa propre section (la 2) : ce qui reste s'y lit, pas au rappel.
+await monter(pg, 'style');
 const stl = await pg.evaluate(() => { const b = document.querySelector('.st-card[data-id="st1"] span b'); const s = getComputedStyle(b);
   return { n: b.textContent.trim(), px: Math.round(parseFloat(s.fontSize)), col: s.color, out: document.querySelector('.st-card[data-id="st2"] span.out').textContent }; });
 ok(stl.n === '7' && stl.px >= 11 && stl.col === 'rgb(255, 255, 255)' && /sold out/i.test(stl.out) && await pg.isDisabled('.st-card[data-id="st2"]'),
   'a style says what is left in the same writing as the cloth; a sold-out style is closed ' + JSON.stringify(stl));
-await pg.click('.st-card[data-id="st1"]');
 
-// ── 5 · ORDER
+// ── 5 · ORDER — le RAPPEL
 await descendre(pg, 'order');
-ok((await pg.$$eval('#od-sizes .sz', b => b.map(x => x.textContent).join(','))) === 'S,M,L,XL,2XL' && await pg.isDisabled('#od-sizes .sz[data-s="XL"]'), 'sizes from Printful, in order; a discontinued one is closed');
 ok(await pg.isVisible('#od-test') && /4242/.test(await pg.textContent('#od-test')), 'test mode said on the page');
 const pv = await pg.evaluate(() => ({ src: (document.querySelector('#od-visual img.ph') || {}).src || '', extra: document.querySelectorAll('#od-visual *').length, canvas: !!document.querySelector('#od-visual canvas') }));
 ok(/1-back-zone\.png$/.test(pv.src) && pv.extra === 1 && !pv.canvas, 'ORDER: the PHOTO of the print zone, nothing simulated over it');
-await pg.click('#od-sizes .sz[data-s="L"]');
+// 02/11 (Wah) : « la dernière section, c'est un rappel… le nom dans sa fameuse
+// box perforée bleu navy, la box du Totehm, le prix et le style (sa vignette) —
+// sans 177 of 177 pieces left ni 7 in this style, propres à leurs sections. »
+const rap = await pg.evaluate(() => { const r = document.querySelector('#od-recap');
+  const nd = r.querySelector('.od-dos use'), bx = r.querySelector('.od-box'), st = r.querySelector('.od-st');
+  return { nom: (r.querySelector('.od-nm span') || {}).textContent || '',
+    piece: nd ? nd.getAttribute('href') : null,
+    box: bx ? bx.textContent.replace(/\s+/g, ' ').trim() : '',
+    boxCouleur: bx ? getComputedStyle(bx).backgroundColor : '',
+    style: st ? st.textContent.trim() : '', vignette: !!(st && st.querySelector('img')),
+    prix: (r.querySelector('.price') || {}).textContent || '',
+    vetement: r.textContent.replace(/\s+/g, ' '),
+    restes: /pieces left|in this style/i.test(r.textContent),
+    tailles: !!document.querySelector('#od-sizes') }; });
+ok(rap.nom === '0.hillstreet' && rap.piece === '#higher-dos' && /Slow is smooth/.test(rap.box)
+   && /116, 49, 105/.test(rap.boxCouleur) && /Ink Realism/.test(rap.style) && rap.vignette
+   && /170/.test(rap.prix) && /Higher Champion Sweatshirt · M/.test(rap.vetement)
+   && !rap.restes && !rap.tailles,
+  '02/11 · le rappel : le nom dans la pièce perforée, la box dans sa couleur, la vignette du style, le vêtement, le prix — et AUCUN reste ' + JSON.stringify(rap));
 ok(/Order · 170 €/.test(await pg.textContent('#od-go')) && await pg.isEnabled('#od-go'), 'the order button carries the server price');
+await pg.waitForTimeout(560);
 await pg.screenshot({ path: OUT + '/sw_order.png' });
 await pg.click('#od-go');
 await pg.waitForURL(/checkout\.stripe\.test/);
-ok(body && body.garment_id === 's1' && body.box.kind === 'wisdom' && body.box.ref === 'w1' && body.name === 'hillstreet' && body.size === 'L' && body.style_id === 'st1',
+ok(body && body.garment_id === 's1' && body.box.kind === 'wisdom' && body.box.ref === 'w1' && body.name === 'hillstreet' && body.size === 'M' && body.style_id === 'st1',
   'order sends a reference (wisdom) and the name WITHOUT prefix (the server sets 0.)');
 ok(JSON.stringify(body.pick) === '{"matter":[{"kind":"objectives","text":"Marathon in May"}],"shots":["sp1"]}' && !body.hide,
   '26/10 · ce qui est ALLUMÉ part en RÉFÉRENCES (mini-box + photo) ; le serveur relit tout lui-même ' + JSON.stringify(body.pick));
@@ -278,49 +352,57 @@ await pg.waitForFunction(() => window.__totehm_cloth && window.__totehm_cloth().
 d = await D();
 ok(d.named && d.style && d.size && d.element === 'wisdom' && /cancelled/.test(await pg.textContent('#od-note')), 'Stripe cancelled: back on ORDER, name · style · size · element kept');
 ok(!/cancel=/.test(pg.url()), 'the ?cancel=1 leaves the address bar');
-const rouleau = await pg.evaluate(() => { const r = document.getElementById('stages'), l = [...document.querySelectorAll('.stage.is-open')];
-  const o = document.getElementById('s-order'), st = getComputedStyle(r);
-  return { n: l.length, ids: l.map(e => e.id).join(','), snap: st.scrollSnapType, over: st.overflowY,
-    plein: l.every(e => e.getBoundingClientRect().height >= innerHeight - 1),
-    haut: Math.abs(r.scrollTop - o.offsetTop) < 3, align: getComputedStyle(o).scrollSnapAlign }; });
-ok(rouleau.n === 5 && rouleau.ids === 's-cloth,s-element,s-name,s-style,s-order' && /^y( proximity)?$/.test(rouleau.snap)
-   && rouleau.over === 'auto' && rouleau.plein && rouleau.haut && rouleau.align === 'start',
-  '26/10 · un seul rouleau : les cinq étapes méritées, chacune un plein écran aimanté, et ORDER sous les yeux ' + JSON.stringify(rouleau));
-// 30/10 (Wah) : « un scrolling plus agréable et DIRECT ». Une étape vaut
-// EXACTEMENT la fenêtre (ni dvh qui tremble, ni svh trop court : l'étape
-// d'après dépassait en bas), et une lancée ne peut pas sauter une étape.
-const pas = await pg.evaluate(() => { const r = document.getElementById('stages');
-  const l = [...document.querySelectorAll('.stage.is-open')];
-  return { ecran: r.clientHeight, hauteurs: l.map(e => e.offsetHeight),
-    exact: l.every(e => e.offsetHeight === r.clientHeight),
-    colles: l.every((e, i) => i === 0 || e.offsetTop === l[i - 1].offsetTop + l[i - 1].offsetHeight),
-    stop: getComputedStyle(l[1]).scrollSnapStop }; });
-ok(pas.exact && pas.colles && pas.stop === 'always',
-  '30/10 · une étape = un écran au pixel, et une lancée ne saute jamais une étape ' + JSON.stringify(pas));
-// 27/10 — L'AIMANT NE DOIT PAS ENFERMER. Une étape plus haute qu'un écran (une
-// vue de huit box fait 917 px sur 844) doit pouvoir se LIRE jusqu'en bas :
-// `mandatory` repoussait le doigt vers le haut de l'étape et son bas devenait
-// inatteignable. On étire une étape et on vérifie qu'on tient son bas.
-const tenu = await pg.evaluate(async () => {
-  const r = document.getElementById('stages'), e = document.getElementById('s-order');
-  const bourre = document.createElement('div'); bourre.style.height = '420px'; bourre.id = 'bourre';
-  e.appendChild(bourre);
-  await new Promise(f => requestAnimationFrame(() => requestAnimationFrame(f)));
-  const bas = e.offsetTop + e.offsetHeight - r.clientHeight;
-  r.scrollTop = bas;
-  await new Promise(f => setTimeout(f, 700));
-  const out = { voulu: Math.round(bas), tenu: Math.round(r.scrollTop), etape: e.offsetHeight, ecran: r.clientHeight };
-  bourre.remove(); return out;
+// 02/11 (Wah) : « full screen par full screen, pas d'entre-deux. Je ne veux pas
+// le scrolling traditionnel. » Le rouleau ne défile donc PAS : il se pose.
+const rouleau = await pg.evaluate(() => { const r = document.getElementById('stages'), k = document.getElementById('stages-roll');
+  const l = [...document.querySelectorAll('.stage.is-open')], o = document.getElementById('s-order');
+  const dec = new DOMMatrixReadOnly(getComputedStyle(k).transform).m42;
+  return { n: l.length, ids: l.map(e => e.id).join(','), fige: getComputedStyle(r).overflowY,
+    plein: l.every(e => Math.abs(e.getBoundingClientRect().height - r.clientHeight) < 1),
+    pose: Math.abs(-dec - o.offsetTop) < 2, haut: Math.abs(o.getBoundingClientRect().top - r.getBoundingClientRect().top) < 2,
+    dedans: getComputedStyle(o).overflowY }; });
+ok(rouleau.n === 5 && rouleau.ids === 's-cloth,s-style,s-element,s-name,s-order' && rouleau.fige === 'hidden'
+   && rouleau.plein && rouleau.pose && rouleau.haut && rouleau.dedans === 'auto',
+  '02/11 · un FEUILLETEUR : la page ne défile pas, l\'étape est POSÉE plein écran, et elle seule défile si elle déborde ' + JSON.stringify(rouleau));
+// UN GESTE = UNE ÉTAPE, jamais une demie : la molette avance d'exactement une
+// section, et une inertie de trackpad n'en tourne pas trois.
+const unPas = await pg.evaluate(async () => {
+  const k = document.getElementById('stages-roll'), r = document.getElementById('stages');
+  const y = () => -new DOMMatrixReadOnly(getComputedStyle(k).transform).m42;
+  const avant = window.__totehm_cloth().stage, y0 = y();
+  r.dispatchEvent(new WheelEvent('wheel', { deltaY:-300, bubbles:true, cancelable:true }));
+  r.dispatchEvent(new WheelEvent('wheel', { deltaY:-300, bubbles:true, cancelable:true }));
+  r.dispatchEvent(new WheelEvent('wheel', { deltaY:-300, bubbles:true, cancelable:true }));
+  await new Promise(f => setTimeout(f, 620));
+  return { avant, apres: window.__totehm_cloth().stage, saut: Math.round((y0 - y()) / r.clientHeight) };
 });
-ok(tenu.etape > tenu.ecran + 4 && Math.abs(tenu.tenu - tenu.voulu) < 4,
-  '27/10 · une étape plus haute qu\'un écran se lit jusqu\'en bas — l\'aimant ne la repousse plus ' + JSON.stringify(tenu));
+ok(unPas.avant === 'order' && unPas.apres === 'name' && unPas.saut === 1,
+  '02/11 · trois crans de molette d\'affilée = UNE étape, jamais trois ' + JSON.stringify(unPas));
+// UNE ÉTAPE PLUS HAUTE QUE L'ÉCRAN SE LIT CHEZ ELLE — et le geste de page ne
+// part qu'une fois son bord atteint (sinon une vue de huit box serait illisible).
+const tenu = await pg.evaluate(async () => {
+  const r = document.getElementById('stages'), e = document.getElementById('s-name');
+  const bourre = document.createElement('div'); bourre.style.cssText = 'height:900px;flex:none'; bourre.id = 'bourre';
+  e.querySelector('.inner').appendChild(bourre);
+  await new Promise(f => requestAnimationFrame(() => requestAnimationFrame(f)));
+  const max = e.scrollHeight - e.clientHeight;
+  e.scrollTop = Math.round(max / 2);
+  const avant = window.__totehm_cloth().stage;
+  r.dispatchEvent(new WheelEvent('wheel', { deltaY:300, bubbles:true, cancelable:true }));
+  await new Promise(f => setTimeout(f, 300));
+  const out = { deborde: max > 4, milieu: Math.round(e.scrollTop), avant,
+    reste: window.__totehm_cloth().stage, hauteur: e.scrollHeight, ecran: e.clientHeight };
+  bourre.remove(); e.scrollTop = 0; return out;
+});
+ok(tenu.deborde && tenu.milieu > 0 && tenu.reste === tenu.avant,
+  '02/11 · une étape plus haute que l\'écran se lit CHEZ ELLE : le geste ne tourne pas la page tant qu\'il reste à lire ' + JSON.stringify(tenu));
 // Remonter d'un écran, c'est le doigt — pas le « back » du navigateur.
-await pg.evaluate(() => document.getElementById('s-style').scrollIntoView({ block:'start' }));
-await pg.waitForFunction(() => window.__totehm_cloth().stage === 'style');
-await pg.waitForTimeout(450);
-ok((await pg.evaluate(() => { const r = document.getElementById('stages'), s = document.getElementById('s-style');
-  return Math.abs(r.scrollTop - s.offsetTop) < 3 && document.getElementById('s-order').classList.contains('is-open'); })),
-  '26/10 · on remonte au STYLE en glissant, et la commande reste dessous');
+await monter(pg, 'style');
+await pg.waitForTimeout(560);          // le rouleau finit de glisser avant qu'on le mesure
+ok((await pg.evaluate(() => { const k = document.getElementById('stages-roll'), s = document.getElementById('s-style');
+  const dec = -new DOMMatrixReadOnly(getComputedStyle(k).transform).m42;
+  return Math.abs(dec - s.offsetTop) < 2 && document.getElementById('s-order').classList.contains('is-open'); })),
+  '26/10 · on remonte au STYLE d\'un geste, et la commande reste dessous');
 
 // ── Retour payé : le nom, et Decode
 await pg.goto('https://www.higher.boutique/streetwear?paid=1&cloth=c1');
@@ -344,7 +426,10 @@ ok(!log.errors.length, 'phone: no page error: ' + log.errors.join(' | '));
   ok(d.desktop && Math.abs(g.vc - g.w / 2) < 3, 'desktop: the cloth stands in the middle');
   await pg.screenshot({ path: OUT + '/sw_desk_cloth.png' });
   await pg.click('#cl-go');
-  await pg.waitForFunction(() => window.__totehm_cloth().stage === 'element');
+  await pg.waitForFunction(() => window.__totehm_cloth().stage === 'style');
+  await pg.click('.st-card[data-id="st1"]');
+  await pg.waitForFunction(() => window.__totehm_cloth().style);
+  await descendre(pg, 'element');
   await pg.waitForTimeout(700);
   g = await geo(); d = await D();
   ok(Math.abs((g.el.l + g.el.r) / 2 - g.w / 2) < 3 && g.vis === 'hidden',
@@ -390,27 +475,37 @@ ok(!log.errors.length, 'phone: no page error: ' + log.errors.join(' | '));
   await pg.goto('https://www.higher.boutique/streetwear?wear=wisdom:w1');
   await pg.waitForFunction(() => window.__totehm_cloth && window.__totehm_cloth().ready && window.__totehm_cloth().element === 'wisdom');
   const d = await pg.evaluate(() => window.__totehm_cloth());
-  const chip = await pg.evaluate(() => { const c = document.getElementById('cl-wear'), t = document.getElementById('cl-go').getBoundingClientRect();
-    return { on: !c.classList.contains('hide') && c.getBoundingClientRect().height > 0, txt: c.textContent, bg: getComputedStyle(c).backgroundColor, fits: t.bottom <= innerHeight }; });
-  ok(d.stage === 'cloth' && !d.wanted && chip.on && /my wisdom story/i.test(chip.txt) && /Slow is smooth/.test(chip.txt) && /116, 49, 105/.test(chip.bg),
-    'from COM: the cloth first, the element already chosen under it (my wisdom story, red-violet)');
+  // 02/11 (Wah) : « la première section concerne simplement le choix du vêtement :
+  // pas besoin d'afficher la box héritée de la deuxième section ». L'élément est
+  // bien gardé — il ne s'affiche simplement plus ici.
+  const chip = await pg.evaluate(() => ({ aucune: !document.getElementById('cl-wear'),
+    txt: document.getElementById('s-cloth').textContent,
+    fits: document.getElementById('cl-go').getBoundingClientRect().bottom <= innerHeight }));
+  ok(d.stage === 'cloth' && !d.wanted && d.element === 'wisdom' && chip.aucune && !/Slow is smooth/.test(chip.txt),
+    '02/11 · de COM : le vêtement SEUL — l\'élément est gardé mais ne s\'affiche pas dans sa section');
   ok(new URL(pg.url()).search === '' && chip.fits, 'the ?wear= leaves the address bar; the button stays on one screen');
   ok(log.rpc.some(x => x.name === 'my_trips'), 'the element is read again in MY TOTEHM (my_trips), never trusted from the address');
   await pg.screenshot({ path: OUT + '/sw_from_com.png' });
   await pg.click('#cl-go');
-  await pg.waitForFunction(() => window.__totehm_cloth().stage === 'name');
-  ok(/Slow is smooth/.test(await pg.textContent('#el-list')) && /my wisdom story/i.test(await pg.textContent('#el-sub')), 'TOTEHMIZE goes straight to NAME, the element above it');
+  // 02/11 : le style passe devant — TOTEHMIZE ouvre donc le style, puis le nom
+  // (la box, elle, vient déjà de COM).
+  await pg.waitForFunction(() => window.__totehm_cloth().stage === 'style');
+  await pg.click('.st-card[data-id="st1"]');
+  await pg.waitForFunction(() => window.__totehm_cloth().style);
+  await descendre(pg, 'name');
+  ok(/Slow is smooth/.test(await pg.textContent('#el-list')) && /my wisdom story/i.test(await pg.textContent('#el-sub')), 'de COM : la box est déjà choisie, le nom attend juste après le style');
   await monter(pg, 'element');
   ok((await pg.evaluate(() => window.__totehm_cloth().view)) === 'wisdom', 'remonter : ELEMENT, sur MY STORY (l\'élément peut encore changer)');
   await descendre(pg, 'name');
   await pg.fill('#nm-input', 'sea');
   await pg.waitForFunction(() => /available/.test(document.querySelector('#nm-note').textContent));
   await pg.press('#nm-input', 'Enter');
-  await descendre(pg, 'style');
-  await pg.waitForFunction(() => document.querySelectorAll('.st-card').length === 2);
-  await pg.click('.st-card[data-id="st1"]');
   await descendre(pg, 'order');
-  await pg.click('#od-sizes .sz[data-s="M"]'); await pg.click('#od-go');
+  await monter(pg, 'cloth');
+  await pg.click('#cl-sizes .sz[data-s="M"]');
+  await pg.waitForFunction(() => window.__totehm_cloth().size);
+  await descendre(pg, 'order');
+  await pg.click('#od-go');
   await pg.waitForURL(/checkout\.stripe\.test/);
   ok(sent && sent.box.kind === 'wisdom' && sent.box.ref === 'w1' && sent.name === 'sea' && sent.size === 'M', 'the order carries the element chosen in COM (wisdom · w1)');
   ok(!log.errors.length, 'from COM: no page error ' + log.errors.join(' | '));
@@ -420,10 +515,10 @@ ok(!log.errors.length, 'phone: no page error: ' + log.errors.join(' | '));
   const { pg, log } = await page(browser, { dir:'boutique', origin:'https://www.higher.boutique', rpc, tables, network });
   await pg.goto('https://www.higher.boutique/streetwear?wear=vision:v1');
   await pg.waitForFunction(() => window.__totehm_cloth && window.__totehm_cloth().ready && window.__totehm_cloth().element === 'vision');
-  ok(/A studio by the sea/.test(await pg.textContent('#cl-wear')) && /vision/i.test(await pg.textContent('#cl-wear')), 'a VISION from COM is worn');
+  ok((await pg.evaluate(() => window.__totehm_cloth().element)) === 'vision', 'a VISION from COM is worn');
   await pg.goto('https://www.higher.boutique/streetwear?wear=habit:Cold%20shower');
   await pg.waitForFunction(() => window.__totehm_cloth && window.__totehm_cloth().ready && window.__totehm_cloth().element === 'habit');
-  ok(/Cold shower/.test(await pg.textContent('#cl-wear')) && /habit/i.test(await pg.textContent('#cl-wear')), 'a HABIT from COM is worn — its text is its reference');
+  ok((await pg.evaluate(() => window.__totehm_cloth().element)) === 'habit', 'a HABIT from COM is worn — its text is its reference');
   ok(!log.errors.length, 'from COM, any box: no page error ' + log.errors.join(' | '));
 }
 // ── Un élément introuvable (effacé, autre compte) : oublié, la page suit son cours
@@ -432,25 +527,25 @@ ok(!log.errors.length, 'phone: no page error: ' + log.errors.join(' | '));
   await pg.goto('https://www.higher.boutique/streetwear?wear=wisdom:gone');
   await pg.waitForFunction(() => window.__totehm_cloth && window.__totehm_cloth().ready && window.__totehm_cloth().supports === 2);
   await pg.waitForTimeout(120);
-  ok(!(await pg.evaluate(() => window.__totehm_cloth().element)) && await pg.isHidden('#cl-wear'), 'an unknown element is dropped: nothing chosen, nothing shown');
+  ok(!(await pg.evaluate(() => window.__totehm_cloth().element)), 'an unknown element is dropped: nothing chosen, nothing shown');
   await pg.click('#cl-go');
-  await pg.waitForFunction(() => window.__totehm_cloth().stage === 'element');
-  ok(!log.errors.length, 'unknown element: TOTEHMIZE opens ELEMENT as usual, no page error');
+  await pg.waitForFunction(() => window.__totehm_cloth().stage === 'style');
+  ok(!log.errors.length, 'unknown element: TOTEHMIZE opens the flow as usual, no page error');
 }
 // ── Sans compte, arrivé de COM : l'élément voulu attend la connexion (PKCE), puis NAME
 {
   const { pg, ctx, log } = await page(browser, { dir:'boutique', origin:'https://www.higher.boutique', rpc, tables, network, session:false });
   await pg.goto('https://www.higher.boutique/streetwear?wear=wisdom:w1');
   await pg.waitForFunction(() => window.__totehm_cloth && window.__totehm_cloth().ready && window.__totehm_cloth().supports === 2);
-  ok((await pg.evaluate(() => window.__totehm_cloth().wanted)) && await pg.isHidden('#cl-wear'), 'signed out: the wish is kept, nothing shown before the TOTEHM is read');
+  ok((await pg.evaluate(() => window.__totehm_cloth().wanted)) && !(await pg.$('#cl-wear')), 'signed out: the wish is kept, nothing shown before the TOTEHM is read');
   // totehm.com rend la main (simulé) ; au retour, la session est là.
   await ctx.route('https://www.totehm.com/auth**', r => r.fulfill({ status:200, contentType:'text/html', body:'<script>location.replace("https://www.higher.boutique/streetwear")</script>' }));
   await ctx.addInitScript(([u]) => { if(location.host === 'www.higher.boutique') localStorage.setItem('sb-abujjbkbbiumxrokozph-auth-token', JSON.stringify({ access_token:'test-at', refresh_token:'test-rt', token_type:'bearer', expires_in:3600, expires_at: Math.floor(Date.now()/1000) + 3600, user:u })); }, [USER]);
   const req = pg.waitForRequest(r => /www\.totehm\.com\/auth\?client=boutique/.test(r.url()));
   await pg.click('#cl-go');
   ok(new URL((await req).url()).searchParams.get('return') === '/streetwear', 'signed out: TOTEHMIZE signs in through totehm.com (PKCE), back to /streetwear');
-  await pg.waitForFunction(() => window.__totehm_cloth && window.__totehm_cloth().ready && window.__totehm_cloth().stage === 'name', null, { timeout:15000 });
-  ok(/Slow is smooth/.test(await pg.textContent('#el-list')) && (await pg.evaluate(() => window.__totehm_cloth().element)) === 'wisdom', 'the wish travels through the sign-in: back, straight to NAME with the wisdom chosen in COM');
+  await pg.waitForFunction(() => window.__totehm_cloth && window.__totehm_cloth().ready && window.__totehm_cloth().stage === 'style', null, { timeout:15000 });
+  ok((await pg.evaluate(() => window.__totehm_cloth().element)) === 'wisdom', 'the wish travels through the sign-in: back with the wisdom chosen in COM, on the style');
   ok(!log.errors.filter(e => !/totehm\.com\/auth/.test(e)).length, 'signed out from COM: no page error');
 }
 // ── Le passeport : un Totehm incomplet ne s'ouvre pas

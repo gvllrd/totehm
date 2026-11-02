@@ -91,26 +91,33 @@ a{color:inherit;text-decoration:none}
    clique plus. Une étape qui déborde (la liste des box, ses photos) s'étire :
    elle garde son aimant en haut, et le rouleau reste le seul qui défile — deux
    défilements imbriqués et le doigt ne sait plus lequel il tient.
-   ⚠️ L'AIMANT EST DE PROXIMITÉ, jamais `mandatory` (27/10, mesuré : une vue de
-   huit box fait 917 px sur un écran de 844 — avec un aimant obligatoire, le
-   navigateur REFUSE de s'arrêter au milieu d'une étape plus haute qu'un écran
-   et son bas devient illisible ; c'était le « ça bug de ouf » de Wah). Pas de
-   `scroll-behavior:smooth` ici non plus : il se battait avec l'aimant à chaque
-   geste — c'est `aller()` qui choisit, geste par geste.
-   ⚠️ UNE LANCÉE = UNE ÉTAPE (30/10, Wah : « je veux un scrolling plus agréable
-   et direct ») : `scroll-snap-stop:always` interdit au doigt de SAUTER une
-   étape, même lancé fort. C'est ce qui fait le pas à pas. */
-#stages{position:fixed;inset:0;overflow-y:auto;overflow-x:hidden;
-  scroll-snap-type:y proximity;overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch}
-/* ⚠️ `100%`, ni `dvh` ni `svh` (30/10, mesuré) : une étape vaut EXACTEMENT la
-   fenêtre du rouleau, parce que `#stages` est `position:fixed;inset:0` et que
-   `100%` s'y résout. `dvh` suit la barre d'adresse (toutes les étapes changent
-   de hauteur pendant le geste : ça tremble) et `svh` est TROP COURT quand la
-   barre est repliée — l'étape d'après dépassait en bas et l'aimant tombait à
-   côté. C'était le « manque d'agrément » du 27/10. */
-.stage{position:relative;min-height:100%;display:none;flex-direction:column;align-items:center;justify-content:safe center;gap:12px;
-  padding:calc(var(--st) + 54px) 16px calc(28px + var(--sb));scroll-snap-align:start;scroll-snap-stop:always;
+   ⚠️ PLEIN ÉCRAN PAR PLEIN ÉCRAN, AUCUN ENTRE-DEUX · 02/11/2026 (Wah : « je
+   n'aime pas le système de scroll actuel : moi je veux du full screen par full
+   screen, pas d'entre-deux… un scrolling qui vire direct d'une section à une
+   autre »). Le rouleau n'est donc PLUS un défilement libre : c'est un
+   FEUILLETEUR. `#stages` ne défile pas du tout (`overflow:hidden`) et montre une
+   étape à la fois ; un geste — doigt, molette, trackpad, clavier — bascule d'UNE
+   étape, jamais d'une demie. `aller()` est le seul à déplacer le rouleau.
+   Une étape plus haute que l'écran (une vue de huit box = 917 px sur 844) garde
+   son propre défilement DEDANS (`.inner`), et le geste de page ne part que
+   lorsqu'elle est lue jusqu'au bout : c'est le seul moyen d'avoir à la fois le
+   plein écran franc et une liste lisible. */
+#stages{position:fixed;inset:0;overflow:hidden;touch-action:pan-y;
+  -webkit-user-select:none;user-select:none}
+/* `height:100%` : c'est LUI qui donne sa hauteur à chaque étape (une fenêtre
+   exactement). Ses étapes débordent de sa boîte — `#stages` les coupe. */
+#stages-roll{position:absolute;left:0;top:0;width:100%;height:100%;
+  transform:translate3d(0,var(--roll,0px),0);will-change:transform;
+  transition:transform .42s cubic-bezier(.22,.61,.36,1)}
+#stages.is-sec #stages-roll{transition:none}
+/* Une étape vaut EXACTEMENT la fenêtre : `#stages` est `position:fixed;inset:0`
+   et `100%` s'y résout. `dvh` suit la barre d'adresse (tout tremble pendant le
+   geste), `svh` est trop court quand elle se replie. */
+.stage{position:relative;height:100%;display:none;flex-direction:column;align-items:center;justify-content:safe center;gap:12px;
+  padding:calc(var(--st) + 54px) 16px calc(28px + var(--sb));
+  overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scrollbar-width:none;
   opacity:0;transition:opacity .4s ease}
+.stage::-webkit-scrollbar{display:none}
 .stage>*{width:100%;max-width:430px;flex:0 0 auto}
 .stage.is-open{display:flex}
 .stage.is-in{opacity:1}
@@ -158,9 +165,6 @@ a{color:inherit;text-decoration:none}
 #cl-facts .bar i{position:absolute;left:0;top:0;bottom:0;width:var(--p,100%);background:#fff;transition:width .4s ease}
 #cl-facts .out{font-family:var(--q);font-weight:700;font-size:13px;letter-spacing:.1em;color:var(--rep)}
 /* 08/10 (ter) — l'élément déjà choisi (arrivé de COM, ou repris) : dit sous le vêtement, à sa couleur. */
-#cl-wear{display:flex;align-items:baseline;gap:9px;max-width:min(100%,360px);padding:6px 12px;background:var(--skin,#333366);color:#fff}
-#cl-wear small{flex:none;font-size:8.5px;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.72)}
-#cl-wear b{min-width:0;font-family:var(--q);font-weight:400;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #cl-detail{font-size:11px;line-height:1.65;color:var(--lo);max-width:380px;text-align:center;overflow:hidden;max-height:0;opacity:0;transition:max-height .38s ease,opacity .3s ease}
 #cl-detail.is-on{max-height:260px;opacity:1}
 .cl-links{display:flex;gap:14px;justify-content:center}
@@ -318,17 +322,18 @@ button.mi.is-on{filter:none}
    avec SES perforations (sept en haut, sept en bas, deux de chaque côté) — le
    même rapport 600 × 200 que le Higher, la même largeur, Quantico Coral
    dessus. Le format vient du dos du Higher, il ne le ressemble pas. */
-#nm-field{position:relative;display:flex;align-items:center;justify-content:center;gap:1px;
+/* 02/11 (Wah) : « je veux que le 0. soit COLLÉ directement avec le nom ». Aucun
+   écart (`gap:0`), le préfixe à son opacité pleine, et la saisie fait la LARGEUR
+   DE CE QU'ON TAPE (`nmLarge` pose son `size`) : les deux se lisent comme une
+   seule chaîne, centrée dans la pièce. */
+#nm-field{position:relative;display:flex;align-items:center;justify-content:center;gap:0;
   padding:0 10px;width:min(200px,70vw);aspect-ratio:3/1;cursor:text}
 #nm-dos{position:absolute;inset:0;width:100%;height:100%;display:block}
-/* Le « 0. » et le nom sont UNE chaîne : le nom commence juste après le point,
-   sinon le préfixe part à gauche et le nom flotte au milieu. */
 #nm-prefix,#nm-input{position:relative;z-index:2}
-#nm-input{text-align:left}
-#nm-prefix{font-family:var(--q);font-weight:700;font-size:clamp(13px,4.6vw,17px);color:var(--coral);opacity:.6;user-select:none;flex:0 0 auto}
+#nm-prefix{font-family:var(--q);font-weight:700;font-size:clamp(13px,4.6vw,17px);color:var(--coral);user-select:none;flex:0 0 auto}
 #nm-input{font-family:var(--q);font-weight:700;font-size:clamp(13px,4.6vw,17px);letter-spacing:.02em;color:var(--coral);
-  background:none;border:none;outline:none;text-align:center;
-  caret-color:var(--coral);width:100%;min-width:0;padding:1px 0;text-transform:lowercase}
+  background:none;border:none;outline:none;text-align:left;
+  caret-color:var(--coral);flex:0 1 auto;width:auto;max-width:100%;min-width:0;padding:1px 0;text-transform:lowercase}
 #nm-input::placeholder{color:rgba(251,213,202,.3);text-transform:lowercase}
 
 /* 4 · STYLE — les styles du moment, au doigt */
@@ -353,9 +358,22 @@ button.mi.is-on{filter:none}
 #od-visual img.ph{width:100%;height:100%;object-fit:contain;display:block}
 .recap{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo);text-align:center}
 .recap .price{color:#fff;font-weight:700;font-size:13px;letter-spacing:.04em;margin-top:4px}
-.recap .nm{font-family:var(--q);font-size:15px;letter-spacing:0;text-transform:none;color:var(--coral)}
-.recap .rleft{display:flex;align-items:baseline;justify-content:center;flex-wrap:wrap;gap:0 6px;margin-top:5px;font-size:9px;letter-spacing:.2em;color:rgba(255,255,255,.72)}
-.recap .rleft b{font-family:var(--q);font-weight:700;font-size:12px;line-height:1;letter-spacing:.02em;color:#fff}
+/* LE RAPPEL (02/11) : le nom dans LE DOS DU HIGHER, la box du Totehm dans sa
+   couleur, la vignette du style. Ce qui reste (les pièces, le style) vit chez
+   le vêtement et chez le style, pas ici. */
+.recap .od-nm{position:relative;display:flex;align-items:center;justify-content:center;
+  width:min(200px,70vw);aspect-ratio:3/1;margin-bottom:2px}
+.recap .od-dos{position:absolute;inset:0;width:100%;height:100%;display:block}
+.recap .od-nm span{position:relative;z-index:2;font-family:var(--q);font-weight:700;
+  font-size:clamp(13px,4.6vw,17px);letter-spacing:.02em;text-transform:none;color:var(--coral);
+  max-width:88%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.recap .od-box{width:100%;max-width:300px;background:var(--skin,#333366);color:#fff;
+  padding:7px 12px 8px;display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center}
+.recap .od-box small{font-size:8.5px;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.72)}
+.recap .od-box b{font-family:var(--q);font-weight:400;font-size:13px;letter-spacing:0;text-transform:none;line-height:1.4;word-break:break-word}
+.recap .od-st{display:flex;align-items:center;gap:8px;margin-top:2px}
+.recap .od-st img,.recap .od-st .ph{width:34px;height:34px;object-fit:cover;display:block;background:var(--c1);flex:none}
+.recap .od-st b{font-family:var(--q);font-weight:400;font-size:12px;letter-spacing:0;text-transform:none;color:#fff}
 .sizes{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
 .sz{font-weight:700;font-size:12px;color:var(--mid);background:var(--c1);border:1px solid transparent;border-radius:10px;cursor:pointer;min-width:48px;padding:3px 3px;-webkit-tap-highlight-color:transparent;transition:background .15s ease,color .15s ease,border-color .15s ease}
 .sz.is-on{background:#3a3a42;color:#fff;border-color:#fff}
@@ -516,6 +534,9 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
      membre vit sur totehm.com. La barre des étapes suffit pour revenir. -->
 
 <main id="stages">
+<!-- LE ROULEAU : un seul bloc qu'on DÉPLACE d'une étape (02/11). La page ne
+     défile pas ; chaque étape défile chez elle si elle déborde. -->
+<div id="stages-roll">
   <!-- 1 · CLOTH -->
   <section class="stage" id="s-cloth" data-s="cloth" aria-label="Choose the cloth">
     <div class="inner">
@@ -534,7 +555,11 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
       <div id="m-dots" class="cl-only" aria-hidden="true"></div>
       <div id="cl-title"></div>
       <div id="cl-facts"></div>
-      <div id="cl-wear" class="hide"></div>
+      <!-- 02/11 (Wah) : « la première section concerne simplement le choix du
+           vêtement : pas besoin d'afficher la box héritée… le choix de la
+           taille, mets-la directement avec le choix du modèle de vêtement ». -->
+      <div class="kicker">Your size</div>
+      <div class="sizes pieces" id="cl-sizes" role="radiogroup" aria-label="Size"></div>
       <div class="cl-links"><button class="lnk" id="cl-more" type="button">details</button></div>
       <div id="cl-detail"></div>
       <!-- Le SEUL bouton qui reste avant la commande : il ne fait pas « suivant »,
@@ -544,7 +569,17 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
     </div>
   </section>
 
-  <!-- 2 · ELEMENT — LE TOTEHM SE DÉCOMPOSE : trois papiers, puis le GRIND
+  <!-- 2 · STYLE — le style artistique vient AVANT la box (02/11, Wah) -->
+  <section class="stage" id="s-style" data-s="style" aria-label="Choose the style">
+    <div class="inner">
+      <div class="kicker">The style of the moment</div>
+      <div id="st-rail" class="pieces" role="listbox" aria-label="Curated styles"></div>
+      <div class="say">Curated. The artwork is born after payment and stays a surprise until it lands.</div>
+      <div class="sc-hint" aria-hidden="true"><svg viewBox="0 0 16 10"><path d="M2 2 L8 8 L14 2"/></svg></div>
+    </div>
+  </section>
+
+  <!-- 3 · ELEMENT — LE TOTEHM SE DÉCOMPOSE : trois papiers, puis le GRIND
        s'ouvre en trois. Un tap sur le logo recompose tout. N'IMPORTE QUELLE
        box du TOTEHM se porte : my story, vision, objective, habit, repulsion. -->
   <section class="stage" id="s-element" data-s="element" aria-label="Choose an element of my TOTEHM">
@@ -578,22 +613,14 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
     <div class="sc-hint" aria-hidden="true"><svg viewBox="0 0 16 10"><path d="M2 2 L8 8 L14 2"/></svg></div>
   </section>
 
-  <!-- 3 · NAME -->
+  <!-- 4 · NAME -->
   <section class="stage" id="s-name" data-s="name" aria-label="Name the cloth">
     <div class="inner">
       <!-- LE DOS DU HIGHER : la pièce perforée, et le nom écrit dessus (30/10) -->
-      <label id="nm-field"><svg id="nm-dos" viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-dos"></use></svg><span id="nm-prefix">0.</span><input id="nm-input" maxlength="40" placeholder="name" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="text" enterkeyhint="next" aria-label="The name of the cloth"></label>
+      <label id="nm-field"><svg id="nm-dos" viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-dos"></use></svg><span id="nm-prefix">0.</span><input id="nm-input" size="4" maxlength="40" placeholder="name" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="text" enterkeyhint="next" aria-label="The name of the cloth"></label>
       <div class="note dim" id="nm-note"></div>
-      <div class="sc-hint" aria-hidden="true"><svg viewBox="0 0 16 10"><path d="M2 2 L8 8 L14 2"/></svg></div>
-    </div>
-  </section>
-
-  <!-- 4 · STYLE -->
-  <section class="stage" id="s-style" data-s="style" aria-label="Choose the style">
-    <div class="inner">
-      <div class="kicker">The style of the moment</div>
-      <div id="st-rail" class="pieces" role="listbox" aria-label="Curated styles"></div>
-      <div class="say">Curated. The artwork is born after payment and stays a surprise until it lands.</div>
+      <!-- 02/11 (Wah) : dire ce que le nom et le « 0. » veulent dire. -->
+      <div class="say">The name finds your cloth again — and the element of your TOTEHM inside it. <b>0</b> is year zero of the brand: 2026.</div>
       <div class="sc-hint" aria-hidden="true"><svg viewBox="0 0 16 10"><path d="M2 2 L8 8 L14 2"/></svg></div>
     </div>
   </section>
@@ -603,8 +630,6 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
     <div class="inner">
       <div id="od-visual"></div>
       <div class="recap" id="od-recap"></div>
-      <div class="kicker">Your size</div>
-      <div class="sizes pieces" id="od-sizes" role="radiogroup" aria-label="Size"></div>
       <div id="od-test" class="hide">test · card 4242 4242 4242 4242</div>
       <button class="btn cta" id="od-go" type="button" disabled>Order</button>
       <div class="note dim" id="od-note"></div>
@@ -622,6 +647,7 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
       <button class="lnk" id="dn-again" type="button">Another cloth</button>
     </div>
   </section>
+</div>
 </main>
 
 <!-- 23/10 : la manette s'en va. Le TOTEHM lui-même est la commande — il se
@@ -764,8 +790,10 @@ sb.auth.onAuthStateChange(ev => {
 }
 
 /* ══ L'ÉTAT — une pièce en cours, cinq scènes ═════════════════════════ */
-const BUILD='2026-10-30-dos';
-const STAGES=['cloth','element','name','style','order'];
+const BUILD='2026-11-02-pages';
+/* 02/11 (Wah) : « le style artistique en section deux, et ensuite la sélection
+   de la box ». La taille, elle, a rejoint le vêtement. */
+const STAGES=['cloth','style','element','name','order'];
 const SIZES=['XS','S','M','L','XL','2XL','3XL','4XL','5XL'];
 const FLOW_KEY='totehm_cloth_flow';
 let supports=[],ci=0,ai=0,stage='cloth';
@@ -807,10 +835,10 @@ function clearFlow(){try{sessionStorage.removeItem(FLOW_KEY);}catch(_){}}
 function canShow(s){
   if(s==='cloth'||s==='done')return true;
   if(!F.support)return false;
-  if(s==='element')return !!TOT;
-  if(s==='name')return !!F.el;
-  if(s==='style')return !!F.el&&F.nameOk;
-  if(s==='order')return !!F.el&&F.nameOk&&!!F.style;
+  if(s==='style')return !!TOT;              /* le passeport est vérifié : le style s'ouvre */
+  if(s==='element')return !!TOT&&!!F.style;
+  if(s==='name')return !!F.style&&!!F.el;
+  if(s==='order')return !!F.style&&!!F.el&&F.nameOk;
   return false;
 }
 /* 26/10 (Wah) : « à la place des boutons [next], un système de scrolling
@@ -839,10 +867,18 @@ function ouvrir(){
 /* Une étape qui s'ouvre pour la PREMIÈRE fois : on la garnit. Jamais au
    défilement — `renderEl` repartirait de zéro et effacerait le choix en cours. */
 function entrer(x){
-  if(x==='element'){openTz();renderEl();}
   if(x==='name')enterName();
   if(x==='style')enterStyle();
   if(x==='order')enterOrder();
+}
+/* ⚠️ LA DÉCOMPOSITION JOUE QUAND ON ARRIVE, PAS QUAND L'ÉTAPE S'OUVRE (02/11) :
+   depuis que le STYLE passe devant, l'étape du TOTEHM est MÉRITÉE bien avant
+   qu'on la voie — le logo se décomposait dans le vide et on arrivait sur trois
+   papiers déjà ouverts. Elle se garnit donc à la première ARRIVÉE. */
+let EL_VU=false;
+function arriver(x){
+  if(x!=='element'||EL_VU)return;
+  EL_VU=true;openTz();renderEl();
 }
 /* Ce qui arrive sous les yeux DEVIENT l'étape courante.
    ⚠️ LE ROULEAU NE TOUCHE PAS À L'HISTORIQUE (27/10, mesuré : il s'empilait à
@@ -852,41 +888,87 @@ function entrer(x){
    entrée, remplacée, pour qu'un rechargement retombe sur la bonne étape. Ce qui
    remonte le rouleau, c'est le doigt ou Échap (`back()`) ; le « back » du
    navigateur quitte /streetwear, comme sur n'importe quelle page. */
-function poser(x){
-  if(x===stage)return;
-  stage=x; document.body.dataset.stage=x;
-  /* Le récapitulatif dépend de ce qui a été choisi PLUS HAUT : il se refait à
-     chaque passage. Le rail des styles, lui, ne dépend de rien : le refaire
-     effaçait le rail sous le doigt. */
-  if(x==='order')enterOrder();
-  history.replaceState({s:x},'');
-  if(x==='done')clearFlow(); else save();
-}
+/* LE ROULEAU SE POSE — il ne défile pas. `doux` : il glisse d'une étape ;
+   sinon il y est déjà (démarrage, reprise, retour de Stripe). */
 function aller(x,doux){
   const el=document.querySelector('.stage[data-s="'+x+'"]');
   if(!el||!el.classList.contains('is-open'))return;
-  if(doux&&!RMQ.matches){ el.scrollIntoView({behavior:'smooth',block:'start'}); return; }
-  sc().scrollTop=el.offsetTop;
+  const r=sc(),k=$('stages-roll');
+  const sec=!doux||RMQ.matches;
+  if(sec)r.classList.add('is-sec');
+  k.style.setProperty('--roll',(-el.offsetTop)+'px');
+  el.scrollTop=0;
+  if(sec)requestAnimationFrame(()=>r.classList.remove('is-sec'));
 }
-/* QUI EST SOUS LES YEUX — le navigateur le dit lui-même. Avant (27/10), on
-   mesurait les cinq étapes à chaque image du défilement : cinq calculs de mise
-   en page par image, et le rouleau accrochait. Une bande d'un pour cent à 40 %
-   de la fenêtre : une seule étape la traverse, et c'est elle. */
-let OBS=null;
-function regarder(){
-  if(OBS)OBS.disconnect();
-  OBS=new IntersectionObserver(es=>{
-    for(const e of es)
-      if(e.isIntersecting&&e.target.classList.contains('is-open')){poser(e.target.dataset.s);return;}
-  },{root:sc(),rootMargin:'-40% 0px -59% 0px',threshold:0});
-  STAGES.forEach(x=>{const el=document.querySelector('.stage[data-s="'+x+'"]');if(el)OBS.observe(el);});
+/* ══ UN GESTE = UNE ÉTAPE · 02/11/2026 ════════════════════════════════════
+   Wah : « je veux du full screen par full screen, pas d'entre-deux… un
+   scrolling qui vire direct d'une section à une autre ». Le doigt, la molette,
+   le trackpad et le clavier font tous la MÊME chose : ils tournent la page.
+   Une étape plus haute que l'écran se lit chez elle d'abord ; le geste de page
+   ne part qu'une fois son bord atteint — sinon on ne pourrait plus lire une
+   vue de huit box. */
+const etapesOuvertes=()=>STAGES.map(x=>document.querySelector('.stage[data-s="'+x+'"]'))
+  .filter(e=>e&&e.classList.contains('is-open')).map(e=>e.dataset.s);
+function voisine(d){
+  const l=etapesOuvertes(),i=l.indexOf(stage);
+  if(i<0)return null;
+  const n=i+d; return n>=0&&n<l.length?l[n]:null;
 }
-regarder();
+const etapeCourante=()=>document.querySelector('.stage[data-s="'+stage+'"]');
+/* Reste-t-il à lire DANS l'étape, dans ce sens ? */
+function resteDedans(d){
+  const el=etapeCourante(); if(!el)return false;
+  const max=el.scrollHeight-el.clientHeight;
+  if(max<=2)return false;
+  return d>0 ? el.scrollTop<max-1 : el.scrollTop>1;
+}
+let TOURNE=0;
+function feuilleter(d){
+  if(TOURNE||GOING||ORDERING)return false;
+  const s=voisine(d); if(!s)return false;
+  TOURNE=1; clearTimeout(feuilleter.t); feuilleter.t=setTimeout(()=>{TOURNE=0;},RMQ.matches?80:440);
+  show(s); return true;
+}
+/* LA MOLETTE ET LE TRACKPAD — une inertie de trackpad ne doit pas tourner trois
+   pages : le verrou de `feuilleter` avale la suite du geste. */
+sc().addEventListener('wheel',e=>{
+  if(Math.abs(e.deltaY)<=Math.abs(e.deltaX))return;
+  const d=e.deltaY>0?1:-1;
+  if(resteDedans(d))return;                 /* l'étape se lit encore : on la laisse */
+  e.preventDefault();
+  if(Math.abs(e.deltaY)>=4)feuilleter(d);
+},{passive:false});
+/* LE DOIGT — on décide au RELÂCHÉ, sur la course et l'élan, et seulement si
+   l'étape ne pouvait plus défiler dans ce sens au moment où le doigt s'est posé. */
+let TAP=null;
+sc().addEventListener('pointerdown',e=>{
+  if(e.pointerType==='mouse')return;
+  TAP={id:e.pointerId,y0:e.clientY,t:performance.now(),hautOk:!resteDedans(-1),basOk:!resteDedans(1)};
+},{passive:true});
+sc().addEventListener('pointerup',e=>{
+  if(!TAP||e.pointerId!==TAP.id)return;
+  const g=TAP; TAP=null;
+  const dy=e.clientY-g.y0, dt=Math.max(1,performance.now()-g.t), v=Math.abs(dy)/dt*1000;
+  if(Math.abs(dy)<28&&v<420)return;          /* un tap, ou un frôlement */
+  const d=dy<0?1:-1;                         /* le doigt monte → la page suivante */
+  if(d>0?!g.basOk:!g.hautOk)return;          /* l'étape avait encore à lire : elle a défilé */
+  feuilleter(d);
+},{passive:true});
+sc().addEventListener('pointercancel',()=>{TAP=null;},{passive:true});
+/* La fenêtre change de taille (rotation, clavier, barre d'adresse) : l'étape
+   courante doit rester EXACTEMENT à l'écran — sinon on se retrouve entre deux. */
+let rzT=null;
+addEventListener('resize',()=>{ clearTimeout(rzT); rzT=setTimeout(()=>aller(stage,false),120); });
 /* `doux` = on y glisse ; sinon on y est déjà (démarrage, reprise). */
 function show(s,mode='doux'){
   if(!canShow(s))s='cloth';
   stage=s;document.body.dataset.stage=s;
   ouvrir();
+  /* Le récapitulatif dépend de ce qui a été choisi PLUS HAUT : il se refait à
+     chaque passage. Le rail des styles, lui, ne dépend de rien : le refaire
+     l'effaçait sous le doigt. */
+  if(s==='order')enterOrder();
+  arriver(s);
   const doux=mode!=='none'&&!document.body.classList.contains('is-boot');
   requestAnimationFrame(()=>aller(s,doux));
   history.replaceState({s},'');
@@ -974,9 +1056,26 @@ function paintCloth(){
     :'<span class="out">sold out</span>';
   b.classList.remove('hide');b.disabled=left<=0;b.setAttribute('aria-label',left>0?'Totehmize this cloth':'Sold out');
   const go=$('cl-go');go.classList.remove('hide');go.disabled=left<=0;go.textContent=left>0?'Totehmize it':'Sold out';
-  const cw=$('cl-wear');cw.classList.toggle('hide',!F.el);
-  if(F.el){cw.style.setProperty('--skin',SKIN[F.el.view]||'#333366');cw.innerHTML='<small>'+esc(NOM[F.el.view]?.[0]||'my element')+'</small><b>'+esc(F.el.text)+'</b>';}
+  peindreTailles();
   $('cl-more').classList.toggle('hide',!s.details);$('cl-detail').textContent=s.details||'';$('cl-detail').classList.remove('is-on');
+}
+/* 02/11 (Wah) : LA TAILLE EST UNE PROPRIÉTÉ DU VÊTEMENT — elle se choisit avec
+   le modèle, pas à la commande. Un modèle n'a pas les mêmes tailles qu'un autre :
+   changer de modèle oublie une taille qu'il ne fait pas. */
+function peindreTailles(){
+  const s=cur(),box=$('cl-sizes');if(!s||!box)return;
+  const vm=s.printful_variant_map||{},sz=sizesOf(s);
+  /* Un modèle QUI A des tailles et pas la mienne me la fait oublier. Un modèle
+     qui n'en annonce aucune (épuisé, pas encore chez Printful) ne touche à rien :
+     sinon passer devant lui effaçait un choix déjà fait (mesuré). */
+  if(F.size&&sz.length&&!sz.includes(F.size)){F.size='';save();}
+  box.innerHTML=sz.map(x=>{const off=vm[x]&&vm[x].availability&&vm[x].availability!=='active';
+    return '<button type="button" class="sz'+(F.size===x?' is-on':'')+'" data-s="'+esc(x)+'" role="radio" aria-checked="'+(F.size===x)+'"'+(off?' disabled':'')+'>'+esc(x)+'</button>';}).join('')
+    ||'<div class="note dim">sizes coming soon</div>';
+  box.querySelectorAll('.sz').forEach(b=>b.onclick=()=>{
+    F.size=b.dataset.s;
+    box.querySelectorAll('.sz').forEach(x=>{x.classList.toggle('is-on',x===b);x.setAttribute('aria-checked',String(x===b));});
+    paintOrderBtn();save();});
 }
 function model(d){
   if(stage!=='cloth')return;
@@ -1076,8 +1175,13 @@ async function toElement(){
     /* Un élément déjà choisi (arrivé de COM, ou repris) rouvre SA vue ; sinon le
        TOTEHM s'ouvre sans rien de choisi, et c'est Wah qui tape. */
     if(!applyWant()&&F.el)vue=F.el.view;else if(!F.el)vue=null;
-    openTz();renderEl();
-    show(F.el?'name':'element');
+    /* 02/11 : le STYLE vient d'abord. On ouvre donc là où il reste à choisir —
+       le style s'il manque, sinon la box, sinon le nom. Et on ne décompose le
+       TOTEHM que si l'on va VRAIMENT le voir : sinon il s'ouvrirait dans le vide
+       et l'on arriverait plus tard sur trois papiers déjà dépliés. */
+    const ou=!F.style?'style':(F.el?'name':'element');
+    if(ou!=='style'){EL_VU=true;openTz();renderEl();}
+    show(ou);
   }finally{GOING=false;$('totehmize').classList.remove('is-busy');paintCloth();}
 }
 $('pass-x').onclick=()=>$('pass').classList.remove('is-open');
@@ -1151,6 +1255,16 @@ function paintSeam(l){
   const on=new Set(l||[]);
   $('tz-seam').innerHTML=Object.keys(INTS).map(i=>'<i style="--c:'+icol(i)+'"'+(on.has(i)?' class="is-on"':'')+'></i>').join('');
 }
+/* OUBLIER le choix : la box, ce qu'on y a allumé, et les photos qui vivaient
+   sous elle. Un seul endroit, sinon une photo reste allumée sans être liée. */
+function oublier(){
+  F.el=null;F.pick={matter:[],shots:[]};MT_SEQ++;
+  $('shots').innerHTML='';
+  $('s-element').classList.remove('is-picked');
+  $('el-list').querySelectorAll('.bx.is-on').forEach(b=>b.classList.remove('is-on'));
+  $('matter')?.remove();
+  save();offrir();
+}
 function renderEl(dir){
   OPEN=null;MT_SEQ++;$('shots').innerHTML='';$('s-element').classList.remove('is-picked');
   const head=$('el-head'),list=$('el-list');
@@ -1211,9 +1325,12 @@ $('tz-papers').addEventListener('click',e=>{
   if(!h.classList.contains('is-split'))return;      /* la décomposition d'abord */
   const v=e.target.closest('[data-v]');
   if(v&&VIEWS[v.dataset.v]){
+    /* 02/11 (Wah) : UN SEUL TAP. Taper une vue pendant qu'une box est choisie
+       DÉFAIT le choix et ouvre cette vue tout de suite — avant, il fallait
+       d'abord retaper la box, et taper la vue ne faisait RIEN (mesuré :
+       `goBackTo('element')` nous ramenait à l'étape où l'on était déjà). */
     const change=v.dataset.v!==vue;vue=v.dataset.v;
-    /* Après un choix, taper une vue rouvre la liste de cette vue. */
-    if($('s-element').classList.contains('is-picked')){goBackTo('element');return;}
+    if($('s-element').classList.contains('is-picked')){oublier();renderEl('in');return;}
     if(change)renderEl('in');
     return;
   }
@@ -1258,7 +1375,10 @@ async function openEl(b){
   /* La box PRESQUE ENTIÈRE (24/10) : ce qui lui est relié, en mini-boxes, et le
      SON de son intention (`intention_music`). Toujours ni palette ni rythme. */
   const son=m.extra&&m.extra.mood?'<div class="grp"><span class="w">sound</span><span class="mi s">'+esc(m.extra.mood)+'</span></div>':'';
-  c.innerHTML=groups+son+(groups?'<div class="mono hint">tap what goes into the artwork</div>':'');
+  /* 02/11 (Wah) : « TAP WHAT GOES INTO THE BUILDING OF THE ARTWORK ». Ce qu'on
+     allume n'apparaît PAS tel quel dans l'œuvre : c'est de la MATIÈRE que n8n
+     donne au modèle pour la construire. Le mot juste dit ce qui se passe. */
+  c.innerHTML=groups+son+(groups?'<div class="mono hint">tap what goes into the building of the artwork</div>':'');
   c.addEventListener('click',e=>{
     const q=e.target.closest('.mi[data-k]');
     if(q){
@@ -1324,6 +1444,13 @@ $('el-list').addEventListener('keydown',e=>{
   if($('s-element').classList.contains('is-picked')){$('s-element').classList.remove('is-picked');return;}
   openEl(b);
 });
+/* Le clavier atteint aussi les cinq vues pendant qu'une box est choisie. */
+$('tz-papers').addEventListener('keydown',e=>{
+  if(e.key!=='Enter'&&e.key!==' ')return;
+  const v=e.target.closest('[data-v]');if(!v||!VIEWS[v.dataset.v])return;
+  if(!$('s-element').classList.contains('is-picked'))return;
+  e.preventDefault();vue=v.dataset.v;oublier();renderEl('in');
+});
 
 /* ══ 3 · NAME — vérifié en direct par le serveur ══════════════════════ */
 let NM_SEQ=0,nmTimer=null;
@@ -1334,9 +1461,13 @@ function paintTile(el,box){
   box.style.setProperty('--skin',SKIN[el.view]||'#333366');
   box.innerHTML='<small>'+esc(NOM[el.view]?.[0]||'my element')+'</small><b>'+esc(el.text)+'</b>';
 }
+/* La saisie fait la LARGEUR de ce qu'on tape : c'est ainsi que le « 0. » reste
+   collé au nom et que l'ensemble demeure centré dans la pièce (02/11). */
+const nmLarge=()=>{ const i=$('nm-input'); i.size=Math.max(4,Math.min(24,(i.value||i.placeholder||'').length+1)); };
 function enterName(){
   $('nm-prefix').textContent=epochPrefix();
   if($('nm-input').value!==F.nameRaw)$('nm-input').value=F.nameRaw;
+  nmLarge();
   if(F.nameRaw&&!F.nameOk)checkNow();
   else if(!F.nameRaw)note('nm-note','dim','');
   /* ⚠️ JAMAIS de focus automatique ici (27/10) : le clavier du téléphone
@@ -1364,9 +1495,10 @@ function checkNow(){
 }
 $('nm-input').addEventListener('input',()=>{
   const v=cleanName($('nm-input').value);if(v!==$('nm-input').value)$('nm-input').value=v;
+  nmLarge();
   F.nameRaw=v.trim();checkNow();
 });
-$('nm-input').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();if(F.nameOk)show('style');}});
+$('nm-input').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();if(F.nameOk)show('order');}});
 
 /* ══ 4 · STYLE — curaté, n pièces par style ═══════════════════════════ */
 const styleLeft=s=>s.remaining_capacity==null?1:s.remaining_capacity;
@@ -1403,20 +1535,28 @@ function paintPreview(){
   const s=F.support,w=$('od-visual'),im=(PRINT[s?.id]||[])[0]||imgs(s)[ANG[supports.indexOf(s)]||0]||imgs(s)[0];
   w.innerHTML=im?'<img class="ph" src="'+esc(im)+'" alt="'+esc(s?.title||'')+'">':'';
 }
+/* 02/11 (Wah) : « la dernière section, c'est un RAPPEL de tout ce qui a été fait
+   précédemment : le nom du Totehm Cloth dans sa fameuse box perforée bleu navy,
+   la box du Totehm sélectionné, le prix et le style (vignette du style) — sans
+   "177 of 177 pieces left" ni "7 in this style", propres à leurs sections ».
+   Ce qui RESTE vit donc chez le vêtement et chez le style, nulle part ailleurs. */
 function enterOrder(){
   const s=F.support;if(!s)return;
   paintPreview();
-  /* 23/10 : le prix n'apparaît QU'ICI — à la fin, au moment de payer. */
-  /* Ce qui reste est posé JUSTE AVANT le prix : c'est lui qui le justifie. */
-  const stl=F.style&&F.style.remaining_capacity!=null?styleLeft(F.style):null;
-  $('od-recap').innerHTML='<span class="nm">'+esc(epochPrefix()+F.nameRaw)+'</span><span>'+esc((NOM[F.el.view]?.[0]||'my element')+' · '+(F.style?.name||''))+'</span><span>'+esc(s.title||'')+'</span>'+
-    '<span class="rleft"><b>'+avail(s)+'</b>of '+(s.max_pieces||0)+' pieces left'+(stl!=null?'<b>'+stl+'</b>in this style':'')+'</span>'+
-    '<span class="price">'+esc(price(s))+'</span>';
-  const vm=s.printful_variant_map||{},sz=sizesOf(s);
-  if(F.size&&!sz.includes(F.size))F.size='';
-  $('od-sizes').innerHTML=sz.map(x=>{const off=vm[x]&&vm[x].availability&&vm[x].availability!=='active';
-    return '<button type="button" class="sz'+(F.size===x?' is-on':'')+'" data-s="'+esc(x)+'" role="radio" aria-checked="'+(F.size===x)+'"'+(off?' disabled':'')+'>'+esc(x)+'</button>';}).join('')||'<div class="note dim">sizes coming soon</div>';
-  $('od-sizes').querySelectorAll('.sz').forEach(b=>b.onclick=()=>{F.size=b.dataset.s;$('od-sizes').querySelectorAll('.sz').forEach(x=>{x.classList.toggle('is-on',x===b);x.setAttribute('aria-checked',String(x===b));});paintOrderBtn();save();});
+  const el=F.el,st=F.style;
+  const vignette=st&&st.image_url?'<img src="'+esc(st.image_url)+'" alt="">':'<span class="ph"></span>';
+  $('od-recap').innerHTML=
+    /* LE NOM, dans le dos du Higher — la même pièce qu'à l'étape du nom. */
+    '<div class="od-nm"><svg class="od-dos" viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-dos"></use></svg>'
+      +'<span>'+esc(epochPrefix()+F.nameRaw)+'</span></div>'
+    /* LA BOX DU TOTEHM, dans sa couleur. */
+    +(el?'<div class="od-box" style="--skin:'+(SKIN[el.view]||'#333366')+'">'
+      +'<small>'+esc(NOM[el.view]?.[0]||'my element')+'</small><b>'+esc(el.text)+'</b></div>':'')
+    /* LE STYLE, sa vignette et son nom. */
+    +(st?'<div class="od-st">'+vignette+'<b>'+esc(st.name||'')+'</b></div>':'')
+    /* LE VÊTEMENT ET SA TAILLE, puis le prix. */
+    +'<span>'+esc([s.title||'',F.size].filter(Boolean).join(' · '))+'</span>'
+    +'<span class="price">'+esc(price(s))+'</span>';
   $('od-test').classList.toggle('hide',!TEST);
   paintOrderBtn();
 }
@@ -1466,6 +1606,12 @@ window.addEventListener('keydown',e=>{
       if(n&&n!==vue){vue=n;renderEl('in');}
     }else if(e.key==='Escape'){if(vue)foldTz();else back();}
   }else if(e.key==='Escape')back();
+  /* 02/11 : le clavier tourne la page comme le doigt — une étape, jamais une
+     demie. Les flèches haut/bas du vêtement et des papiers gardent leur rôle. */
+  if(e.defaultPrevented)return;
+  const d={PageDown:1,PageUp:-1}[e.key]
+        ?? (stage!=='cloth'&&stage!=='element'?{ArrowDown:1,ArrowUp:-1}[e.key]:undefined);
+  if(d&&!resteDedans(d)){e.preventDefault();feuilleter(d);}
 });
 
 $('dn-again').onclick=()=>{location.href='/streetwear';};
@@ -1487,15 +1633,18 @@ async function restore(fl,cancelled){
   if(!await ensureTotehm()){show('cloth');return;}
   const wanted=applyWant();
   if(!wanted&&F.el)vue=F.el.view;else if(!F.el)vue=null;
-  openTz();renderEl();
   /* Le rouleau rouvre à l'étape où on l'avait laissé, sans animation. */
-  const pile=s=>show(s,'none');
+  const pile=s=>{ if(s!=='style'){EL_VU=true;openTz();renderEl();} show(s,'none'); };
+  /* Le style d'abord : on relit ce qui a été gardé AVANT de décider où rouvrir. */
+  if(fl.st){await loadStyles();F.style=styles.find(s=>String(s.id)===String(fl.st)&&styleLeft(s)>0)||null;}
+  if(!F.style){pile('style');return;}
   if((target==='element'&&!wanted)||!F.el){pile('element');return;}
   if(F.nameRaw){const free=await checkName(F.nameRaw);F.nameOk=free===true;}
-  if(fl.st){await loadStyles();F.style=styles.find(s=>String(s.id)===String(fl.st)&&styleLeft(s)>0)||null;}
+  /* 02/11 : l'ordre est vêtement · style · box · nom · commande — on rouvre à la
+     dernière étape VRAIMENT atteinte, jamais plus loin. */
   let s=target==='element'?'name':target;
-  if(s==='order'&&!(F.nameOk&&F.style))s=F.nameOk?'style':'name';
-  if(s==='style'&&!F.nameOk)s='name';
+  if(s==='style')s='name';
+  if(s==='order'&&!F.nameOk)s='name';
   pile(s);
   if(cancelled&&s==='order')note('od-note','dim','payment cancelled · nothing was charged');
   if(s==='name'&&F.nameRaw&&!F.nameOk)note('nm-note','no','already taken');
