@@ -1,9 +1,10 @@
 import * as T from './vendor/three-0.180.0.mjs';
+import {GALLERY_LAYOUT as L} from './gallery-modern-layout.mjs';
 
 // A closed physical volume on the lectern. Its pages live in /origins, which
 // retains the original moving works and server-backed acquisition details.
 export function createLecternBook(scene,{mobile=false,onChange=()=>{},onOpen=()=>{}}={}){
- const root=new T.Group();root.name='Closed black Origins volume on the lectern';root.position.set(-7.6,1.37,-8);root.rotation.x=Math.PI/10;scene.add(root);
+ const root=new T.Group();root.name='Closed Origins volume on the stone lectern in the west keep';root.position.set(...L.origins.book);root.rotation.x=Math.PI/10;scene.add(root);
  const geometries=new Set(),materials=new Set(),textures=new Set(),pickables=[];
  let disposed=false,dirty=true,opening=false,opened=false,progress=0,opens=0,lastMotion=!globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
  const geometry=g=>(geometries.add(g),g),material=m=>(materials.add(m),m);
@@ -32,7 +33,7 @@ export function createLecternBook(scene,{mobile=false,onChange=()=>{},onOpen=()=
  function open(){if(disposed||opening||opened)return false;opens++;opening=true;progress=0;notify();if(!lastMotion)complete();return true;}
  return{root,pickables,open,reset(){if(disposed)return;opening=opened=false;progress=0;hinge.rotation.z=0;notify();},interact(hit){return (hit?.object||hit)?.userData?.kind==='origins-book'?open():false;},
   update(dt,eye,motion=true){if(disposed)return false;lastMotion=!!motion;if(opening){if(!motion)complete();else{progress=Math.min(1,progress+Math.max(0,Math.min(Number(dt)||0,.1))/.85);const e=progress*progress*(3-2*progress);hinge.rotation.z=Math.PI*.74*e;dirty=true;if(progress===1)complete();}}const changed=dirty;dirty=false;return changed;},
-  diagnostics:()=>({kind:'closed-origins-lectern-volume',closed:!opening&&!opened,opening,opened,opens,progress,black:true,lectern:true,position:root.position.toArray(),tilt:Math.PI/10,dimensions:[.7,.08,.94],href:'/origins?open=1',total:20,disposed}),
+  diagnostics:()=>({kind:'closed-origins-lectern-volume',closed:!opening&&!opened,opening,opened,opens,progress,black:true,lectern:true,stoneLectern:true,location:'west-keep',position:root.position.toArray(),tilt:Math.PI/10,dimensions:[.7,.08,.94],href:'/origins?open=1',total:20,disposed}),
   dispose(){if(disposed)return;disposed=true;for(const t of textures)t.dispose();for(const m of materials)m.dispose();for(const g of geometries)g.dispose();root.removeFromParent();root.clear();}
  };
 }

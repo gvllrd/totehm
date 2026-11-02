@@ -9,7 +9,6 @@ import {createGalleryFireplace} from './gallery-fireplace.mjs';
 import {createFireAudio} from './gallery-fire-audio.mjs';
 import {createPlayInstallation} from './gallery-play-installation.mjs';
 import {createOppositeInstallation} from './gallery-opposite-installation.mjs';
-import {createStonerInstallation} from './gallery-stoner-installation.mjs';
 import {createRenderQuality} from './gallery-render-quality.mjs';
 import {glassRoofHeight} from './gallery-glass-shell.mjs';
 
@@ -29,7 +28,7 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
  const scene=new T.Scene(),camera=new T.PerspectiveCamera(baseFov,innerWidth/innerHeight,.08,9000);
  let dirty=true,frames=0,list=false,hidden=document.hidden,paused=false,lastTime=0,lastRender=0;
  let motionReduced=reduced.matches,tween=null,arrival=null,pendingVisit=null,stellarView=null,room=-1,focused=-1,down=null,yaw=0,pitch=0,dragged=false,initialized=false,inspecting=false,inspectionAmount=0,bookDestination=null;
- let architecture=null,book=null,play=null,stoner=null,opposite=null,lastStationState='';
+ let architecture=null,book=null,play=null,opposite=null,lastStationState='';
  const invalidate=()=>{dirty=true;};
  const landscape=createTempleLandscape(scene,renderer,{mobile,onChange:invalidate});
  architecture=(newYork?ny[0].createNewYorkGallery:createModernGallery)(scene,renderer,{mobile,onChange:invalidate});
@@ -42,7 +41,6 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
   pause();sound.setMuted(true);fireSound.setMuted(true);renderer.setAnimationLoop(null);location.assign(href);return true;
  }
  play=createPlayInstallation(scene,{mobile,onChange:invalidate,onOpen:openExperience});
- stoner=createStonerInstallation(scene,{mobile,onChange:invalidate,onOpen:openExperience});
  opposite=createOppositeInstallation(scene,{mobile,onChange:invalidate,onOpen:openExperience});
  const walkway=(newYork?ny[1].createNewYorkWalkway:createModernWalkway)(),physics=(newYork?ny[1].createNewYorkPhysics:createModernPhysics)({x:ENTRY[0],z:ENTRY[2]}),sound=createGalleryAudio(),fireSound=createFireAudio();
  const eye=new T.Vector3(...ENTRY),gaze=new T.Vector3(...LOOK),keys=new Set();
@@ -52,15 +50,15 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
  const nearStation=index=>{const s=GALLERY_STATIONS[index];return!!s&&isFloor()&&physics.position.y<GROUND+.2&&Math.hypot(eye.x-s.approach[0],eye.z-s.approach[2])<1.2;};
  function stationState(){
   if(!initialized)return;
-  const b=book.diagnostics(),p=play.diagnostics(),s=stoner.diagnostics(),o=opposite.diagnostics(),value={room,focused,book:b,play:p,stoner:s,opposite:o,moving:!!tween||!!pendingVisit};
-  const signature=JSON.stringify([room,focused,!!tween,!!pendingVisit,b.closed,b.opening,b.opened,p.active,s.active,o.active]);
+  const b=book.diagnostics(),p=play.diagnostics(),o=opposite.diagnostics(),value={room,focused,book:b,play:p,opposite:o,moving:!!tween||!!pendingVisit};
+  const signature=JSON.stringify([room,focused,!!tween,!!pendingVisit,b.closed,b.opening,b.opened,p.active,o.active]);
   if(signature!==lastStationState){lastStationState=signature;onStationState(value);}
  }
  function angles(){const d=gaze.clone().sub(eye).normalize();yaw=Math.atan2(-d.x,-d.z);pitch=Math.asin(d.y);}
  function look(){gaze.copy(eye).add(new T.Vector3(-Math.sin(yaw)*Math.cos(pitch),Math.sin(pitch),-Math.cos(yaw)*Math.cos(pitch)));}
  function stopStick(){joystick={x:0,y:0};knob.style.transform='';}
  function stopInput(){keys.clear();stopStick();down=null;}
- function resetPortals(){play.setActive(false);stoner.setActive(false);opposite.setActive(false);}
+ function resetPortals(){play.setActive(false);opposite.setActive(false);}
  function cancelTravel(){tween=null;arrival=null;pendingVisit=null;stellarView=null;angles();}
  function leaveStation(){bookDestination=null;book.reset();inspecting=false;room=focused=-1;resetPortals();stationState();}
  function free(){inspecting=false;cancelTravel();interact();}
@@ -95,16 +93,18 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
   }
   return travel(position,target,done);
  }
- function focusStation(index){if(!nearStation(index))return;focused=room=index;inspecting=index===0;if(index===2)play.setActive(true);if(index===3)stoner.setActive(true);if(index===4)opposite.setActive(true);stationState();}
+ function focusStation(index){if(!nearStation(index))return;focused=room=index;inspecting=index===0;if(index===2)play.setActive(true);if(index===4)opposite.setActive(true);stationState();}
  function visit(index){
+  if(index===3)index=0;
   const station=GALLERY_STATIONS[index];if(!station||list)return false;
   cancelTravel();resetPortals();inspecting=false;room=index;focused=-1;
   const result=groundedTravel(new T.Vector3(...station.approach),new T.Vector3(...station.target),()=>focusStation(index));stationState();return result;
  }
  function enter(index=room){
+  if(index===3)index=0;
   if(!GALLERY_STATIONS[index]||list)return false;
   if(!nearStation(index))return visit(index);
-  focusStation(index);if(index===2)play.open();else if(index===3)stoner.open();else if(index===4)opposite.open();else if(index===1)book.open();else openExperience({href:'/get_higher'});dirty=true;stationState();return true;
+  focusStation(index);if(index===2)play.open();else if(index===4)opposite.open();else if(index===1)book.open();else openExperience({href:'/get_higher'});dirty=true;stationState();return true;
  }
  function enterGallery(){cancelTravel();leaveStation();onOverview();return groundedTravel(new T.Vector3(...L.inside),new T.Vector3(...L.insideTarget));}
  function overview(){cancelTravel();leaveStation();onOverview();groundedTravel(new T.Vector3(...ENTRY),new T.Vector3(...LOOK));}
@@ -119,10 +119,10 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
  }
  function jump(){if(list||hidden||paused)return false;const jumped=physics.jump();if(jumped){free();leaveStation();onOverview();stellarView={yaw,pitch,amount:0};dirty=true;}return jumped;}
  const ray=new T.Raycaster(),mouse=new T.Vector2(),plane=new T.Plane(new T.Vector3(0,1,0),-GROUND),floor=new T.Vector3();
- const pickables=[...architecture.pickables,...book.pickables,...play.pickables,...stoner.pickables,...opposite.pickables,...(fireplace.pickables||[])];
+ const pickables=[...architecture.pickables,...book.pickables,...play.pickables,...opposite.pickables,...(fireplace.pickables||[])];
  function hit(event){
   const rect=host.getBoundingClientRect();mouse.set((event.clientX-rect.left)/rect.width*2-1,-(event.clientY-rect.top)/rect.height*2+1);ray.setFromCamera(mouse,camera);
-  const hits=ray.intersectObjects(pickables,false).filter(h=>h.object.visible&&h.object.material?.opacity!==0&&(!h.object.userData.installation||play.acceptHit(h)||stoner.acceptHit(h)||opposite.acceptHit(h)));
+  const hits=ray.intersectObjects(pickables,false).filter(h=>h.object.visible&&h.object.material?.opacity!==0&&(!h.object.userData.installation||play.acceptHit(h)||opposite.acceptHit(h)));
   // Glass is deliberately transparent; opaque furniture/walls still occlude a
   // portal or book so it cannot be operated through the back of the room.
   const solid=ray.intersectObjects(architecture.solids||[],false).find(h=>h.object.visible&&!h.object.material?.transparent);
@@ -145,9 +145,6 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
    play.interact(h);return;
   }
   if(data?.installation==='opposite'){opposite.interact(h);return;}
-  if(data?.installation==='stoner'){
-   stoner.interact(h);return;
-  }
   if(data?.kind==='fireplace'){visitFireplace();return;}
   if(data?.room!==undefined){if(data.room<0)enterGallery();else select(data.room);return;}
   const onFloor=!!ray.ray.intersectPlane(plane,floor);
@@ -163,7 +160,6 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
   const interactive=!!e.target.closest('button,a,summary,[role=button]');
   if(focused===2&&nearStation(2)&&!interactive&&play.handleKey(e)){e.preventDefault();dirty=true;stationState();return;}
   if(focused===4&&nearStation(4)&&!interactive&&opposite.handleKey(e)){e.preventDefault();dirty=true;stationState();return;}
-  if(focused===3&&nearStation(3)&&!interactive&&stoner.handleKey(e)){e.preventDefault();dirty=true;stationState();return;}
   if(focused===1&&nearStation(1)&&!interactive&&e.key==='Enter'){e.preventDefault();book.open();dirty=true;return;}
   if(e.key==='Escape'){cancelTravel();leaveStation();onOverview();return;}
   if(e.code==='Space'||e.key===' '){if(!interactive){e.preventDefault();if(!e.repeat)jump();}return;}
@@ -210,9 +206,9 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
   if(focused>=0&&!nearStation(focused)){leaveStation();onOverview();}
   const altitude=Math.max(0,eye.y-1.65),near=T.MathUtils.clamp(altitude*.002,.08,12),far=altitude>100?100000:9000;
   if(Math.abs(camera.near-near)>.0001||camera.far!==far){camera.near=near;camera.far=far;camera.updateProjectionMatrix();dirty=true;}
-  const changes=[landscape.update(dt,eye,!motionReduced),architecture.update(dt,eye,!motionReduced),book.update(dt,eye,!motionReduced),play.update(dt,eye,!motionReduced),stoner.update(dt,eye,!motionReduced),opposite.update(dt,eye,!motionReduced),fireplace.update(dt,eye,!motionReduced)];
+  const changes=[landscape.update(dt,eye,!motionReduced),architecture.update(dt,eye,!motionReduced),book.update(dt,eye,!motionReduced),play.update(dt,eye,!motionReduced),opposite.update(dt,eye,!motionReduced),fireplace.update(dt,eye,!motionReduced)];
   if(changes.some(Boolean))dirty=true;
-  // A closer view reveals the intentionally tiny perforated paper tabs.
+  // Lean toward the premium cases to inspect the protected paper editions.
   const inspectionTarget=inspecting&&focused===0?1:0;
   const nextInspection=motionReduced?inspectionTarget:T.MathUtils.damp(inspectionAmount,inspectionTarget,7,dt);
   if(Math.abs(nextInspection-inspectionAmount)>.0001){inspectionAmount=nextInspection;dirty=true;}else if(inspectionAmount!==inspectionTarget){inspectionAmount=inspectionTarget;dirty=true;}
@@ -235,5 +231,5 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
   stop(){stopInput();cancelTravel();leaveStation();dirty=true;},
   setList(value){list=!!value;stopInput();cancelTravel();leaveStation();syncSound();dirty=true;lastTime=0;},
   diagnostics:()=>({webgl:true,place:newYork?'new-york':'lisbon',zone:inGallery()?'gallery':'terrace',room,focused,frames,position:[+eye.x.toFixed(2),+eye.z.toFixed(2)],moving:!!tween||!!pendingVisit||!!keys.size||!!joystick.x||!!joystick.y||!physics.diagnostics().grounded,visible:!hidden&&!list&&!paused,liberty:null,
-   camera:{position:camera.position.toArray(),target:viewTarget().toArray(),inspection:inspectionAmount,fov:camera.fov,aspect:camera.aspect,near:camera.near,far:camera.far,stellarOverview:!!stellarView&&!motionReduced,overviewAmount:stellarView?.amount??0},physics:physics.diagnostics(),temple:architecture.diagnostics(),stations:{play:play.diagnostics(),stoner:stoner.diagnostics(),opposite:opposite.diagnostics(),book:book.diagnostics()},landscape:landscape.diagnostics(),audio:sound.diagnostics(),fireAudio:fireSound.diagnostics(),fireplace:fireplace.diagnostics(),render:{...quality.diagnostics(),width:renderer.domElement.width,height:renderer.domElement.height,calls:renderer.info.render.calls,triangles:renderer.info.render.triangles},navigation:{speed:2.6,minDuration:1450,maxDuration:4200,deferredArrival:!!arrival||!!pendingVisit,...walkway.diagnostics()}})};
+   camera:{position:camera.position.toArray(),target:viewTarget().toArray(),inspection:inspectionAmount,fov:camera.fov,aspect:camera.aspect,near:camera.near,far:camera.far,stellarOverview:!!stellarView&&!motionReduced,overviewAmount:stellarView?.amount??0},physics:physics.diagnostics(),temple:architecture.diagnostics(),stations:{play:play.diagnostics(),opposite:opposite.diagnostics(),book:book.diagnostics()},landscape:landscape.diagnostics(),audio:sound.diagnostics(),fireAudio:fireSound.diagnostics(),fireplace:fireplace.diagnostics(),render:{...quality.diagnostics(),width:renderer.domElement.width,height:renderer.domElement.height,calls:renderer.info.render.calls,triangles:renderer.info.render.triangles},navigation:{speed:2.6,minDuration:1450,maxDuration:4200,deferredArrival:!!arrival||!!pendingVisit,...walkway.diagnostics()}})};
 }

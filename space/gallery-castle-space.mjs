@@ -4,6 +4,7 @@ import {createAncientStoneSurfaces} from './gallery-ancient-floor.mjs';
 import {createLisbonPavement} from './gallery-lisbon-pavement.mjs';
 import {createWhiteStone} from './gallery-white-stone.mjs';
 import {createGalleryFacade} from './gallery-facade.mjs';
+import {createPaperPackaging} from './gallery-paper-packaging.mjs';
 import {TOTEHMPAPER} from './gallery-artworks.mjs';
 import {GALLERY_LAYOUT as L,GALLERY_STATIONS,GALLERY_OBSTACLES} from './gallery-modern-layout.mjs';
 import {GLASS_SHELL as S,GLASS_HEARTH,glassRoofHeight} from './gallery-glass-shell.mjs';
@@ -101,37 +102,46 @@ export function createCastleSpace(scene,renderer,{place='lisbon',mobile=false,on
   const lamp=new T.SpotLight(0xffd2a1,power,22,.62,.8,2);lamp.position.set(...p);lamp.target.position.set(...target);root.add(lamp,lamp.target);
  }
  const ambient=new T.PointLight(0xffd9b5,25,18,2);ambient.position.set(0,5.8,-9);root.add(ambient);
- // A slender cantilevered limestone table, the original six physical sheets.
+ // Six individual editions, each protected by the original premium case.
  const counter=block(stone.material,[0,.97,-12.05],[3.6,.12,1.2],'A single floating limestone edition table',true);station(counter,'thp-counter','thp',0);
  block(graphite,[0,.43,-12.1],[.5,.94,.45],'Recessed support under the stone table',true);
  const fallback=new T.DataTexture(new Uint8Array([51,51,102,255]),1,1,T.RGBAFormat);fallback.colorSpace=T.SRGBColorSpace;fallback.needsUpdate=true;textures.add(fallback);
  const paperMaterial=material(new T.MeshStandardMaterial({map:fallback,color:0xffffff,roughness:.84,side:T.DoubleSide,alphaTest:.12}));
  const sculptedPaperMaterial=material(new T.MeshStandardMaterial({map:fallback,color:0xffffff,roughness:.58,alphaTest:.12}));
  if(globalThis.document?.createElementNS){const image=new T.TextureLoader().load(TOTEHMPAPER.src,loaded=>{if(disposed)return;for(const m of [paperMaterial,sculptedPaperMaterial]){m.map=loaded;m.needsUpdate=true;}paperLoaded=true;changed();},undefined,changed);image.colorSpace=T.SRGBColorSpace;image.anisotropy=anisotropy;textures.add(image);}
- const items=[],tabSize=.022,pitch=.0233,sheetWidth=pitch*8,sheetDepth=pitch*6;
- for(const x of [-1.1,0,1.1]){
-  station(block(bronze,[x,1.04,-11.88],[.31,.014,.25],'Edition sheet tray'),'thp-tray','thp',0);
-  station(block(bronze,[x,1.15,-12.35],[.25,.19,.016],'Edition sheet inclined stand'),'thp-stand','thp',0);
-  for(let row=0;row<6;row++)for(let col=0;col<8;col++){
-   items.push({p:[x+(col-3.5)*pitch,1.052,-11.88+(row-2.5)*pitch],rx:-Math.PI/2,s:tabSize});
-   items.push({p:[x+(col-3.5)*pitch,1.15+(row-2.5)*pitch,-12.338],rx:0,s:tabSize});
-  }
+ const packages=[];
+ for(const x of [-1.1,0,1.1])for(const z of [-12.32,-11.78]){
+  const display=createPaperPackaging({paperMaterial,geometry,material,width:.38});
+  display.rotation.x=-.6;
+  // The lowest edge, including the case depth, rests on the stone slab.
+  display.position.set(x,1.03+.192*Math.cos(.6)+.054*Math.sin(.6),z);
+  root.add(display);packages.push(display);
+  display.traverse(part=>{if(part.isMesh)station(part,'thp-premium-case','thp',0);});
  }
- for(let i=0;i<5;i++)items.push({p:[-.065+i*.032,1.052,-11.56],rx:-Math.PI/2,s:.017});
- const paperGeo=geometry(new T.PlaneGeometry(1,1)),papers=new T.InstancedMesh(paperGeo,paperMaterial,items.length),matrix=new T.Matrix4(),q=new T.Quaternion();
- for(const [i,item] of items.entries()){q.setFromEuler(new T.Euler(item.rx,0,0));matrix.compose(new T.Vector3(...item.p),q,new T.Vector3(item.s,item.s,1));papers.setMatrixAt(i,matrix);}papers.instanceMatrix.needsUpdate=true;papers.computeBoundingSphere();root.add(papers);station(papers,'thp-papers','thp',0);
- const lectern=block(graphite,[-7.6,1.31,-8],[1.08,.045,1.05],'Origins — the original quiet black reading desk',true);lectern.rotation.x=Math.PI/10;station(lectern,'origins-lectern','origins',1);
- block(bronze,[-7.6,.61,-8.04],[.075,1.3,.10],'Fine lectern stem',true);block(graphite,[-7.6,-.04,-8],[.65,.1,.6],'Flush lectern footing',true);
- block(graphite,[8,3.1,-16.50],[7.12,4.02,.13],'Original Lisbon artwork support');block(black,[8,3.1,-16.425],[7,3.9,.018],'Original Lisbon artwork backing');
- // The original entrance sculpture becomes a discreet tactile mark on the
- // entry glass, allowing the architecture and the artworks to set the scale.
- const sign=createGalleryFacade(root,{mobile,geometry,material,station,black,sculptedPaperMaterial,position:[6.55,2.25,-1.68],scale:.42});
+ // A dressed limestone monolith in the sheltered west keep. The slab uses
+ // exactly the same stone material and thickness as the edition table.
+ const [bx,by,bz]=L.origins.lectern;
+ const lectern=block(stone.material,[bx,by,bz],[1.2,.12,1.1],'Origins — limestone reading slab in the west keep',true);lectern.rotation.x=Math.PI/10;station(lectern,'origins-lectern','origins',1);
+ block(stone.material,[bx,(by-.06+L.groundY)/2,bz],[.86,by-.06-L.groundY,.78],'Solid dressed limestone book plinth',true);
+ const bookLamp=new T.SpotLight(0xffe0b5,30,7,.6,.75,2);bookLamp.position.set(bx,4.3,bz+1.3);bookLamp.target.position.set(...L.origins.book);root.add(bookLamp,bookLamp.target);
+ for(const work of [L.play,L.opposite]){
+  const [x,y,z]=work.screen,[width,height]=work.screenSize;
+  block(graphite,[x,y,z-.085],[width+.12,height+.12,.12],'Recessed artwork mount fixed to the old stone');
+  block(black,[x,y,z-.019],[width,height,.012],'Thin black artwork backing on the masonry');
+ }
+ // A monumental original mouth crowns the actual entrance; its tongue ends
+ // just above the open doorway, with the dimensional THP facing arrivals.
+ const sign=createGalleryFacade(root,{mobile,geometry,material,station,black,sculptedPaperMaterial,position:[0,7.45,-1.48],scale:1.5});
+ for(const x of [-1.75,1.75])beam([x,5.1,-1.94],[x,8.4,-1.58],.045,.08,bronze,'Slender support behind the entrance sculpture');
+ for(const x of [-2.8,2.8]){
+  const light=new T.SpotLight(0xffe4ca,160,12,.62,.75,2);light.position.set(x,5.3,1.25);light.target.position.set(0,7.2,-1.15);root.add(light,light.target);
+ }
  changed();
  const portals=GALLERY_STATIONS.map(s=>{const p=s.position||s.book||s.screen||s.table;return{room:s.room,x:p[0],z:p[2],href:s.href};});
  return {root,solids,walkable,interactables,pickables:interactables.map(i=>i.object),artSurfaces:[],portals,obstacles:GALLERY_OBSTACLES,
   anchors:{playScreen:L.play.screen,originsBook:L.origins.book,counter:L.counter.position},setDay(){},
   update(dt,eye,motion=true){if(disposed)return false;if(motion)time+=Math.min(.1,Math.max(0,Number(dt)||0));const was=dirty;dirty=false;return was;},
-  diagnostics:()=>({kind:'coastal-castle-glass-museum',place,rebuilt:true,building:true,modernGallery:true,ready:!disposed,levels:1,airyInterior:true,interiorPartitions:0,glassRoof:true,flatSlopingRoof:true,waveGlass:false,glassSides:true,glassRear:true,castle:fabric.diagnostics(),fabric:fabric.diagnostics(),glassCompiled,roofShell:{minimum:S.minHeight,maximum:S.maxHeight,actualAperture:true,smokeOutlet:{...o}},pavement:pavement?.diagnostics()||null,flooring:{continuousStone:!lisbon,exterior:lisbon?'lisbon-calcada':'ancient-stone',ancientStone:floor.diagnostics()},stone:stone.diagnostics(),facade:{paperLoaded,originalDrawing:true,smallEntranceMark:true,scale:.42,position:sign.position.toArray()},thpCounter:{sheets:6,looseTabs:5,papers:items.length,tabSizeMetres:tabSize,sheetSizeMetres:[sheetWidth,sheetDepth]},origins:{lectern:true,black:true,closedBook:true},exhibition:{walls:0,levels:1,reservedSlots:0},rooms:4,independentFiles:true,time,disposed}),
+  diagnostics:()=>({kind:'coastal-castle-glass-museum',place,rebuilt:true,building:true,modernGallery:true,ready:!disposed,levels:1,airyInterior:true,interiorPartitions:0,glassRoof:true,flatSlopingRoof:true,waveGlass:false,glassSides:true,glassRear:true,castle:fabric.diagnostics(),fabric:fabric.diagnostics(),glassCompiled,roofShell:{minimum:S.minHeight,maximum:S.maxHeight,actualAperture:true,smokeOutlet:{...o}},pavement:pavement?.diagnostics()||null,flooring:{continuousStone:!lisbon,exterior:lisbon?'lisbon-calcada':'ancient-stone',ancientStone:floor.diagnostics()},stone:stone.diagnostics(),facade:{paperLoaded,originalDrawing:true,monumentalEntranceMark:true,scale:1.5,position:sign.position.toArray()},thpCounter:{packagedPapers:packages.length,looseTabs:0,papers:packages.length,wallPapers:0,premiumSource:'/get_higher',caseSizeMetres:[.38,.38,.38*50/180]},origins:{lectern:true,stone:true,inKeep:true,closedBook:true,position:L.origins.lectern},exhibition:{walls:0,levels:1,reservedSlots:0,artworkSupport:'stone',glassMountedArtworks:0},rooms:4,independentFiles:true,time,disposed}),
   dispose(){if(disposed)return;disposed=true;root.removeFromParent();fabric.dispose();floor.dispose();pavement?.dispose();stone.dispose();for(const t of textures)t.dispose();for(const g of geometries)g.dispose();for(const m of materials)m.dispose();root.clear();}
  };
 }
