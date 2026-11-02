@@ -41,8 +41,8 @@ THP : *Neuroscience, not motivation.*) · ← **mes médias** (en y allant, les 
 un tap sur le TOTEHM et MY WISDOM · MY GRIND · MY VISION naissent de lui, en carrés perforés de leur couleur ;
 MY GRIND = OBJECTIVES · HABITS · REPULSIONS empilés ; le « + » d'un média fait naître le même TOTEHM, la box choisie reste seule et la capture vient dessous) ·
 ● **mon TOTEHM** (plus de boîte noire : le TOTEHM EST le boîtier du processeur et le cœur d'un ARBRE DE VIE — ses douze
-perforations toutes raccordées ; c'est un CIRCUIT IMPRIMÉ — des pistes qui ne tournent qu'à 45°, jamais croisées : au-dessus, sept peignes (trois fourches en Y,
-56 feuilles, le trait qui s'affine) sur tout le haut de l'écran ; dessous, un bus de sept voies, un toit au-dessus du curseur, puis les racines au sol, en miroir ; il pousse, il bat, à peine ; le toucher, le retourner ou chercher un membre arrête son
+perforations toutes raccordées ; au-dessus de lui, ses sept traits en couronne de ginkgo (trois fourches, 56 feuilles, le trait qui s'affine)
+sur tout le haut de l'écran ; dessous, un tronc élancé qui s'évase en cloche autour du curseur, puis les racines en miroir ; il pousse, il bat, à peine ; le toucher, le retourner ou chercher un membre arrête son
 activité : ses traits sont aspirés en lui, et ressortent quand il revient ; ouvert, il est seul à l'écran ;
 le retourner montre le NOM seul — à même le navy, l'email dessous —, qui monte, puis
 tout d'un coup, en deux parties : **Monetize my TOTEHM** (*and get paid every month*) · **Go [Higher]**, ouverte d'abord

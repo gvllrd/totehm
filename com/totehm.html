@@ -8117,7 +8117,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-11-01-com-sauvegarde';
+const BUILD='2026-11-02-com-arbre-ginkgo';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -12963,19 +12963,12 @@ window.addEventListener('pageshow',e=>{
         if(!l||!l.length) return Array.from({length:N},()=>[0,0]);
         const seg=[0]; for(let i=1;i<l.length;i++) seg.push(seg[i-1]+Math.hypot(l[i][0]-l[i-1][0],l[i][1]-l[i-1][1]));
         const T=seg[seg.length-1]||1, out=[]; let j=1;
-        /* une forme à angles (le cadre, le rail, l'arbre — 17 sommets au plus) garde TOUS ses coins, pendant toute la
-           transformation : chaque sommet est un échantillon, les autres se répartissent sur les segments au prorata de leur
-           longueur (01/11 : sinon les coins à 45° de l'arbre s'arrondissaient, puis claquaient à l'arrivée) */
-        if(l.length>1&&l.length<=N&&seg[l.length-1]>0){
-          const V=l.length, q=[]; for(let i=1;i<V;i++) q.push((seg[i]-seg[i-1])/T*(N-V));
-          const k=q.map(Math.floor); q.map((x,i)=>[x-k[i],i]).sort((a,b)=>b[0]-a[0]).slice(0,N-V-k.reduce((a,b)=>a+b,0)).forEach(([,i])=>k[i]++);
-          out.push(l[0].slice());
-          for(let i=1;i<V;i++){ for(let z=1;z<=k[i-1];z++){ const t=z/(k[i-1]+1); out.push([l[i-1][0]+(l[i][0]-l[i-1][0])*t, l[i-1][1]+(l[i][1]-l[i-1][1])*t]); } out.push(l[i].slice()); }
-          return out; }
         for(let k=0;k<N;k++){ const t=T*k/(N-1);
           while(j<l.length-1&&seg[j]<t) j++;
           const a=l[j-1], b=l[j]||a, u=seg[j]>seg[j-1]?(t-seg[j-1])/(seg[j]-seg[j-1]):0;
           out.push([a[0]+(b[0]-a[0])*Math.max(0,Math.min(1,u)), a[1]+(b[1]-a[1])*Math.max(0,Math.min(1,u))]); }
+        /* une forme à angles (le cadre, le rail) garde ses COINS : l'échantillon le plus proche de chaque sommet s'y pose */
+        if(l.length<=8) for(let v=1;v<l.length-1;v++){ const k=Math.max(1,Math.min(N-2,Math.round(seg[v]/T*(N-1)))); out[k]=l[v].slice(); }
         return out;
       }
       /* ── L'ARBRE DE VIE (vue centre) · 26/10 — Wah : « les trous noirs qui font la perforation du Totehm sont les points de
@@ -12987,163 +12980,129 @@ window.addEventListener('pageshow',e=>{
          séparent en branche et en racine. Les Habits sont les FRUITS : un carré par Habit sur la branche. Le cœur bat
          (`coeur`, CSS). `c` = le papier (centre, largeur) ; les trous viennent de `--perfo` (rayon 6,16 % du côté). */
       const TROUS=[['L',.5,'L',.5],['L',.25,'L',.75],['T',.25,'B',.25],['T',.5,'B',.5],['T',.75,'B',.75],['R',.25,'R',.75],['R',.5,'R',.5]];
-      /* 01/11 — Wah : « pas mal ! mais ça doit faire PROCESSOR : plus géométrique » (le matin : « c'est vraiment pas beau
-         l'arbre, fais un effort : c'est la première page sur laquelle les clients arrivent » ; la veille : « l'arbre prend
-         tout l'écran, en particulier la partie haute ; le Totehm-cœur fait la jonction avec les branches et le haut du
-         tronc ; à la base des racines, le curseur, intégré harmonieusement »).
-         L'arbre est un CIRCUIT IMPRIMÉ : des pistes droites qui ne tournent qu'à 45°, des coins nets, un pas constant, et
-         aucune piste n'en touche une autre (`relier` essaie les tracés possibles et garde le premier qui ne touche rien).
-         · LA COURONNE : un bord à pans (les côtés, deux pans coupés, le haut) dont chaque pan porte des intentions ENTIÈRES ;
-           chaque intention y est un PEIGNE — ses 8 pastilles au pas du pan, trois fourches en Y symétriques (2 → 4 → 8) qui
-           arrivent d'équerre au bord — et sa tige va de SA perforation au premier nœud.
-         · LE TRONC : des trous du bas et des côtés, les pistes rejoignent un BUS de sept voies au pas constant (leurs biais
-           sont parallèles, au même pas) qui descend jusqu'au curseur.
-         · LE PIED : au-dessus du curseur, le bus s'ouvre en TOIT à 45° et descend de part et d'autre (les MURS) ; le trait du
-           milieu se partage : le curseur est dans son boîtier. Chaque piste suit le tracé du milieu à sa distance
-           (`decale` : les coins en onglet, le pas ne change pas).
-         · LES RACINES : chaque piste sort de son mur à son tour (la plus extérieure le plus haut), file vers le dehors
-           au-dessus des autres, puis descend en peigne (en 2, en 4 sur un grand écran) jusqu'au SOL : la couronne en miroir.
-           Les sept couleurs dans le même ordre partout. */
-      const NF=8, R2=Math.SQRT1_2;                         /* les feuilles d'une intention : trois fourches */
+      /* 01/11 — Wah : « c'est vraiment pas beau l'arbre, fais un effort : c'est la première page sur laquelle les clients
+         arrivent » (la veille : « l'arbre prend tout l'écran, en particulier la partie haute ; le Totehm-cœur fait la
+         jonction avec les branches et le haut du tronc ; à la base des racines, le curseur, intégré harmonieusement »).
+         L'arbre devient un GINKGO de pistes, d'un seul souffle :
+         · LA COURONNE : un éventail dont le TOTEHM est le pied. Chaque intention sort de SA perforation (haut et côtés) et
+           se divise trois fois en deux (2 → 4 → 8), comme les nervures d'une feuille de ginkgo ; chaque nœud est posé sur
+           le rayon qui va du papier au bord du dôme, au milieu de ses feuilles, et chaque fourche s'ouvre en Y. Les 56
+           feuilles se posent à intervalles égaux sur le bord d'un dôme qui couvre tout le haut de l'écran (relevé aux deux
+           bouts sur un écran large) ; le trait s'affine de la tige à la pointe.
+         · LE TRONC : des trous du bas, les pistes se rangent sous le papier en courbes concentriques, puis descendent côte
+           à côte en s'écartant à peine ; au-dessus du curseur, elles s'ÉVASENT en cloche (le pied de l'arbre) et
+           l'enlacent sans toucher ses chevrons.
+         · LES RACINES : du pied, chaque piste file sous le sol et se divise (en 2, en 4 sur un grand écran) jusqu'à un
+           bord en demi-ellipse, d'un côté à l'autre : la couronne en miroir, aplatie ; les plus extérieures partent le
+           plus haut et vont le plus loin. Les sept couleurs dans le même ordre partout, de gauche à droite. */
+      const NF=8;                                          /* les feuilles d'une intention : trois fourches */
       function circuit(n,c,S,J){
-        const w=W(), h=H(), pw=c.w||S-6, hp=pw/2, r=pw*.0616, cx=c.x, cy=c.y, bas=cy+hp, ms=12, mt=14, SQ=Math.SQRT2;
+        const w=W(), h=H(), pw=c.w||S-6, hp=pw/2, r=pw*.0616, cx=c.x, cy=c.y, D=Math.PI/180, bas=cy+hp, ms=12, mt=14;
         const unit=v=>{ const d=Math.hypot(v[0],v[1])||1; return [v[0]/d,v[1]/d]; };
         const lerp=(A,B,t)=>[A[0]+(B[0]-A[0])*t, A[1]+(B[1]-A[1])*t];
-        const pas=(A,v,k)=>[A[0]+v[0]*k, A[1]+v[1]*k];
         /* un trou : son centre sur l'arête, la normale qui en sort, la broche un peu DANS l'encoche (le réseau passe sous le papier) */
         const trou=(e,f)=>{ const N={T:[0,-1],B:[0,1],L:[-1,0],R:[1,0]}[e];
           const p=e==='T'?[cx-hp+pw*f,cy-hp]:e==='B'?[cx-hp+pw*f,cy+hp]:e==='L'?[cx-hp,cy-hp+pw*f]:[cx+hp,cy-hp+pw*f];
           return {p, N, e, f, in:[p[0]-N[0]*r*.35, p[1]-N[1]*r*.35]}; };
-        /* ── LE ROUTAGE : les segments posés (`SEG`) ; deux pistes se touchent si elles se croisent, si l'une finit sur
-           l'autre, ou si elles filent côte à côte à moins de 2,6 px — sauf à un nœud qu'elles partagent ── */
-        const SEG=[], pres=(p,q)=>Math.abs(p[0]-q[0])<.8&&Math.abs(p[1]-q[1])<.8;
-        const dSeg=(p,a,b)=>{ const x=b[0]-a[0], y=b[1]-a[1], t=Math.max(0,Math.min(1,((p[0]-a[0])*x+(p[1]-a[1])*y)/((x*x+y*y)||1))); return Math.hypot(a[0]+t*x-p[0],a[1]+t*y-p[1]); };
-        const touche=(a,b,c,d)=>{
-          if(Math.max(a[0],b[0])+3<Math.min(c[0],d[0])||Math.max(c[0],d[0])+3<Math.min(a[0],b[0])||Math.max(a[1],b[1])+3<Math.min(c[1],d[1])||Math.max(c[1],d[1])+3<Math.min(a[1],b[1])) return 0;
-          const rx=b[0]-a[0], ry=b[1]-a[1], sx=d[0]-c[0], sy=d[1]-c[1], rl=Math.hypot(rx,ry)||1, sl=Math.hypot(sx,sy)||1, x=rx*sy-ry*sx;
-          if(Math.abs(x)<1e-3*rl*sl){
-            if(Math.abs((c[0]-a[0])*ry-(c[1]-a[1])*rx)/rl>2.6) return 0;
-            const t1=((c[0]-a[0])*rx+(c[1]-a[1])*ry)/rl, t2=((d[0]-a[0])*rx+(d[1]-a[1])*ry)/rl;
-            return Math.min(rl,Math.max(t1,t2))-Math.max(0,Math.min(t1,t2))>1?1:0; }
-          const t=((c[0]-a[0])*sy-(c[1]-a[1])*sx)/x, u=((c[0]-a[0])*ry-(c[1]-a[1])*rx)/x;
-          if(t>1e-3&&t<1-1e-3&&u>1e-3&&u<1-1e-3) return 1;
-          for(const [p,A,B] of [[a,c,d],[b,c,d],[c,a,b],[d,a,b]]) if(!pres(p,A)&&!pres(p,B)&&dSeg(p,A,B)<2) return 1;
-          return 0; };
-        const conflit=L=>{ let k=0; for(let j=1;j<L.length;j++) for(const s of SEG) k+=touche(L[j-1],L[j],s[0],s[1]); return k; };
-        const poser=L=>{ for(let j=1;j<L.length;j++) if(!pres(L[j-1],L[j])) SEG.push([L[j-1],L[j]]); return L; };
-        /* les tracés de P à C, arrivée dans la direction `u` (une des huit), au moins `m` de droit au bout : de biais tôt,
-           de biais tard, au milieu, de côté d'abord, en parallélogramme — jamais un autre angle que 45° */
-        const voies=(P,C,u,m)=>{ const v=[-u[1],u[0]], dx=C[0]-P[0], dy=C[1]-P[1], a=dx*u[0]+dy*u[1], b=dx*v[0]+dy*v[1], A=Math.abs(b), sg=b<0?-1:1, a1=a-m, o={};
-          if(A<.5) return {tot:[P,C]};
-          const D=(Q,k)=>pas(pas(Q,u,k),v,sg*k);
-          if(a1>=A-.01){ o.tot=[P,D(P,A),C]; const Q=pas(P,u,a1-A); o.tard=[P,Q,D(Q,A),C]; const Q2=pas(P,u,(a1-A)/2); o.mi=[P,Q2,D(Q2,A),C]; }
-          const k=Math.max(0,Math.min(A,a1,10)), L1=pas(P,v,sg*(A-k)); o.cote=[P,L1,D(L1,k),C];
-          if(a1<A-.01) [1,.7,.45,.2].forEach(f=>{ const k2=Math.max(0,a1)*f, D1=D(P,k2); o['para'+f]=[P,D1,pas(D1,v,sg*(A-k2)),C]; });
-          for(const z in o) o[z]=o[z].filter((p,j,L)=>!j||Math.hypot(p[0]-L[j-1][0],p[1]-L[j-1][1])>.05);
-          return o; };
-        let CK=0;                                 /* les contacts qu'aucun tracé n'a pu éviter */
-        const relier=(P,C,u,m,ordre)=>{ const V=voies(P,C,u,m); let best=null, bc=1e9;
-          (ordre||['tot','tard','mi','cote','para1']).forEach((z,j)=>{ const L=V[z]; if(!L) return; const k=conflit(L)*100+j; if(k<bc){ bc=k; best=L; } });
-          CK+=Math.floor(bc/100); return poser(best||V.tot||V.cote); };
-        /* un tracé à distance `d` d'un autre, du côté `s` (dehors) : les coins en onglet, le pas reste le même */
-        const decale=(P,d,s)=>{ const N=[]; for(let j=0;j<P.length-1;j++){ const u=unit([P[j+1][0]-P[j][0],P[j+1][1]-P[j][1]]); N.push([s*u[1],-s*u[0]]); }
-          return P.map((V,j)=>{ const a=N[Math.max(0,j-1)], b=N[Math.min(N.length-1,j)], k=1+a[0]*b[0]+a[1]*b[1];
-            return [V[0]+d*(a[0]+b[0])/k, V[1]+d*(a[1]+b[1])/k]; }); };
-        /* ── LE TRONC : un bus de sept voies au pas `g`, sous le papier ; chaque piste le rejoint par un biais sur SA ligne
-           (`K` : des parallèles au même pas, assez bas pour passer sous le coin du papier) ── */
-        const jx=J.x, jy=J.y, g=Math.max(5,Math.min(8,pw*.06)), G2=g*SQ;
-        const ax=[cx-hp-10-g, cx-hp-10, cx-hp+pw*.25];
-        const K1=Math.min(cx-hp-bas-8*SQ, ax[2]-bas-8-G2), K=[K1-G2,K1,K1+G2];
-        const yBus=Math.max(...[0,1,2].map(i=>cx+(i-3)*g-K[i]))+4;
-        const versBus=i=>{ const T=trou(TROUS[i][2],TROUS[i][3]), xa=ax[i], xv=cx+(i-3)*g, L=[T.in];
-          if(T.e!=='B') L.push([xa+6,T.p[1]],[xa,T.p[1]+6]);
-          return L.concat([[xa,xa-K[i]],[xv,xv-K[i]],[xv,yBus]]); };
-        const tronc=i=>i===3?[trou('B',.5).in,[cx,yBus]]:i<3?versBus(i):versBus(6-i).map(p=>[2*cx-p[0],p[1]]);
-        /* ── LE PIED : le tracé du milieu (le trait du milieu, de part et d'autre) : le bus, le toit à 45° au-dessus des
-           chevrons du curseur, le mur à côté de lui ; chaque piste sort de son mur à `yx(k)` ── */
-        /* les racines : de chaque côté, leurs pastilles au SOL (`yrb`), au même pas (`pr`, 34 px au plus), de l'intérieur
-           (à côté du curseur) vers le dehors — 2 par piste, 4 sur un grand écran ; leur peigne a la profondeur `prof` */
-        const R0=62, dj=Math.abs(jx-cx), yrb=Math.min(h-10,jy+60), xin=R0+8, AX={};
-        [-1,1].forEach(s=>{ const dm=s<0?jx-ms:w-ms-jx; AX[s]=Math.max(xin+60,Math.min(dm,Math.max(R0+3*g+150,dm*.62))); });
-        const NR=Math.min(AX[-1],AX[1])-xin>=16*18?4:2, pr=s=>Math.min(34,(AX[s]-xin)/(4*NR)), prof=Math.max(pr(-1),pr(1))*(NR===4?1.5:.5)+(NR===4?18:8);
-        /* le toit : au-dessus des chevrons du curseur, assez haut pour que les quatre sorties passent au-dessus des peignes */
-        const yA=Math.min(jy-56,Math.max(yBus+14+dj,Math.min(jy-116,yrb-prof-114))), yW=yA+R0+8;
-        const dyx=Math.max(6,Math.min(16,(yrb-prof-14-yW)/3)), yx=k=>yW+(3-k)*dyx;
-        const milieu=s=>(dj>.5?[[cx,yBus],[cx,yBus+4],[jx,yBus+4+dj]]:[[cx,yBus]]).concat([[jx,yA],[jx+s*R0,yA+R0],[jx+s*R0,h]]);
-        const iA=dj>.5?3:1;
-        const mur=(k,s)=>{ const L=decale(milieu(s),k*g,s); L[L.length-1]=[L[L.length-1][0],yx(k)-6]; return L; };
-        const TR=INTS.map((x,i)=>{ const k=Math.abs(i-3), s=i<3?-1:i>3?1:-1; return poser(tronc(i).concat(mur(k,s).slice(1))); });
-        const JUM=poser(mur(0,1).slice(iA));     /* la moitié droite du trait du milieu, depuis le faîte du toit */
-        /* ── LA COURONNE : un bord à pans (un côté, un pan coupé, le haut, un pan coupé, l'autre côté) dont chaque pan porte
-           des intentions ENTIÈRES — les coins tombent entre deux intentions, jamais au milieu d'une. Le plan (combien
-           d'intentions par pan, la taille du pan coupé, où finit le côté) est celui qui donne le pas le plus égal d'un pan à
-           l'autre (`PLANS` : [côté, pan coupé, haut]) : un téléphone met deux intentions sur chaque côté, un ordinateur
-           trois sur le haut et deux sur chaque pan coupé, qui descend jusqu'au milieu du papier ── */
-        const xL=ms, xR=w-ms, Lg=Math.max(160,xR-xL), Hc=Math.max(80,cy-mt), PLANS=[[1,1,3],[2,1,1],[1,2,1],[0,2,3],[0,1,5]];
-        let pl=null;
-        PLANS.forEach(([a,b,c])=>[0].forEach(f=>{ const yb=mt+Hc;
-          for(let ch=30; ch<=Math.min(Lg/2-30, yb-mt-(a?40:0)); ch+=2){
-            const p=[(Lg-2*ch)/(8*c), ch*SQ/(8*b)].concat(a?[(yb-mt-ch)/(8*a)]:[]), lo=Math.min(...p), hi=Math.max(...p);
-            /* un peigne de pan coupé reçoit sa tige de biais : son premier nœud doit être au-dessus de la broche (sinon la tige fait un cran) */
-            let cran=0; for(let q=0;q<b;q++){ const i=a+q, T=TROUS[i], yp=T[0]==='T'?cy-hp:cy-hp+pw*T[1], e=(q+.5)*ch/b, pp=ch*SQ/(8*b);
-              if(mt+ch-e+(30+3.5*pp)*R2>yp-14) cran++; }
-            const sc=hi/lo+(lo<13?(13-lo)*.5:0)+f*.08+(a?0:(yb-mt-ch)/(yb-mt)*.6)+cran; if(!pl||sc<pl.sc) pl={sc,a,b,c,ch,yb}; } }));
-        if(!pl) pl={a:0,b:1,c:5,ch:Math.max(20,Math.min(Lg/2-20,Hc)),yb:mt+Hc};   /* un papier hors de sa place : un plan sûr */
-        const yc=mt+pl.ch, PANS=[[[xL,pl.yb],[xL,yc],[-1,0],pl.a],[[xL,yc],[xL+pl.ch,mt],[-R2,-R2],pl.b],[[xL+pl.ch,mt],[xR-pl.ch,mt],[0,-1],pl.c],
-          [[xR-pl.ch,mt],[xR,yc],[R2,-R2],pl.b],[[xR,yc],[xR,pl.yb],[1,0],pl.a]].filter(P=>P[3]>0);
-        /* une intention, un PEIGNE : ses 8 feuilles au pas de son pan, trois fourches en Y symétriques (le biais à 45°, puis
-           droit vers le bord) — chaque nœud au milieu de ses deux enfants, en retrait de leur demi-écart */
-        const ARB=[]; let ii=0;
-        PANS.forEach(([A,B,d,k])=>{ const L=Math.hypot(B[0]-A[0],B[1]-A[1]), p=L/(8*k), t=[(B[0]-A[0])/L,(B[1]-A[1])/L];
-          for(let q=0;q<k;q++,ii++){
-            const F=Array.from({length:NF},(_,j)=>({p:pas(A,t,(q*8+j+.5)*p), d})), nd=(X,Y,e)=>({p:pas(lerp(X.p,Y.p,.5),d,-e), d});
-            const N3=[0,1,2,3].map(m=>nd(F[2*m],F[2*m+1],8+p/2)), N2=[0,1].map(m=>nd(N3[2*m],N3[2*m+1],10+p)), N1=nd(N2[0],N2[1],12+2*p);
-            ARB[ii]={F,N3,N2,N1}; } });
-        const fourche=(P,C,m)=>{ const V=voies(P.p,C.p,C.d,m); return poser(V.tot||V.cote); };
-        const R12=ARB.map(A=>A.N2.map(C=>fourche(A.N1,C,12)));
-        const R23=ARB.map(A=>A.N3.map((C,j)=>fourche(A.N2[j>>1],C,10)));
-        const R3F=ARB.map(A=>A.F.map((C,j)=>fourche(A.N3[j>>1],C,8)));
-        /* les tiges, du milieu vers les côtés : du trou au premier nœud, de biais d'abord (une branche maîtresse), sans
-           toucher aucune autre piste */
-        /* l'ordre de pose compte (la première tige prend le plus court) : du milieu vers les côtés, ou l'inverse — on garde
-           le premier ordre où aucune tige n'en touche une autre */
-        let TIGE=null, tk=1e9, tseg=null;
-        for(const ord of [[3,2,4,1,5,0,6],[0,6,1,5,2,4,3],[3,0,6,1,5,2,4],[3,1,5,0,6,2,4]]){
-          const n0=SEG.length, c0=CK, R=[];
-          ord.forEach(i=>{ const T=trou(TROUS[i][0],TROUS[i][1]), S0=i===0?[ax[0]+6,cy]:i===6?[2*cx-ax[0]-6,cy]:pas(T.p,T.N,8);
-            R[i]=poser([T.in,S0]).concat(relier(S0,ARB[i].N1.p,ARB[i].N1.d,12,['tot','para1','para0.7','para0.45','para0.2','tard','mi','cote']).slice(1)); });
-          const k=CK-c0; if(k<tk){ tk=k; TIGE=R; tseg=SEG.slice(n0); } SEG.length=n0; CK=c0; if(!k) break; }
-        tseg.forEach(z=>SEG.push(z));
-        /* ── LES RACINES : chaque piste sort de son mur à son tour (la plus extérieure le plus haut), file vers le dehors au-dessus
-           des autres, puis descend en peigne (ses Y à 45°) jusqu'au sol : un escalier, jamais un croisement ── */
-        const racines=(k,s,M)=>{ const p=pr(s), D=[0,1], Q=Array.from({length:NR},(_,j)=>({p:[jx+s*(xin+(k*NR+j+.5)*p),yrb], d:D}));
-          const nd=(X,Y,e)=>({p:pas(lerp(X.p,Y.p,.5),D,-e), d:D});
-          const E=M[M.length-1], X=poser([E,[E[0]+s*6,E[1]+6]])[1];
-          if(NR===2){ const N1=nd(Q[0],Q[1],8+p/2), t=relier(X,N1.p,D,6,['cote','para1','tot','tard','mi']), f=Q.map(C=>fourche(N1,C,8));
-            return {Q, N1, principal:[E,X].concat(t.slice(1),f[1].slice(1)), autres:[{l:f[0],c:'f3'}]}; }
-          const N2=[nd(Q[0],Q[1],8+p/2), nd(Q[2],Q[3],8+p/2)], N1=nd(N2[0],N2[1],10+p);
-          const t=relier(X,N1.p,D,6,['cote','para1','tot','tard','mi']), f1=N2.map(C=>fourche(N1,C,10)), f2=Q.map((C,j)=>fourche(N2[j>>1],C,8));
-          return {Q, N1, principal:[E,X].concat(t.slice(1),f1[1].slice(1),f2[2].slice(1)),
-                  autres:[{l:f1[0],c:'f2'},{l:f2[0],c:'f3'},{l:f2[1],c:'f3'},{l:f2[3],c:'f3'}]}; };
-        const RAC={};                             /* de chaque côté, la plus extérieure d'abord */
-        [-1,1].forEach(s=>[3,2,1,0].forEach(k=>{ RAC[k+','+s]=racines(k,s,k===0&&s>0?JUM:TR[3+s*k]); }));
-        const sp=Math.max(3,Math.min(5,r*.75)), rp=Math.max(1.8,Math.min(3.2,Math.sqrt(w*h)/360)), nq=Math.max(3,Math.min(4.5,r*.6)), ordre=[3,4,2,5,1,6,0,7];
+        const bez=(P,k)=>{ const out=[]; for(let z=1;z<=k;z++){ const t=z/k, m=1-t;
+            out.push([m*m*m*P[0][0]+3*m*m*t*P[1][0]+3*m*t*t*P[2][0]+t*t*t*P[3][0], m*m*m*P[0][1]+3*m*m*t*P[1][1]+3*m*t*t*P[2][1]+t*t*t*P[3][1]]); }
+          return out; };
+        /* une courbe qui part de A dans la direction dA et arrive en B dans la direction dB (`k1`, `k2` : la force des deux tangentes) */
+        const courbe=(A,dA,B,dB,k,k1,k2)=>{ const d=Math.hypot(B[0]-A[0],B[1]-A[1]), a1=k1==null?d*.45:k1, a2=k2==null?d*.35:k2;
+          return bez([A,[A[0]+dA[0]*a1,A[1]+dA[1]*a1],[B[0]-dB[0]*a2,B[1]-dB[1]*a2],B],k); };
+        /* un brin d'ÉVENTAIL, de A à B autour du centre O : le rayon et l'angle glissent ensemble ; l'angle tourne d'abord, puis
+           se pose — le brin quitte sa fourche en Y et arrive dans l'axe du rayon ; il tourne toujours du même côté : jamais
+           de vague (mesuré : la courbe en S faisait onduler les branches des côtés) */
+        const eventail=(O,A,B,k)=>{ const ax=A[0]-O[0], ay=A[1]-O[1], bx=B[0]-O[0], by=B[1]-O[1], ra=Math.hypot(ax,ay), rb=Math.hypot(bx,by);
+          const ta=Math.atan2(ay,ax); let tb=Math.atan2(by,bx); if(tb-ta>Math.PI) tb-=2*Math.PI; else if(ta-tb>Math.PI) tb+=2*Math.PI;
+          const out=[]; for(let z=1;z<=k;z++){ const u=z/k, e=1-(1-u)*(1-u), rr=ra+(rb-ra)*u, th=ta+(tb-ta)*e; out.push([O[0]+rr*Math.cos(th), O[1]+rr*Math.sin(th)]); }
+          return out; };
+        /* ── LA COURONNE : le dôme, du bord gauche au bord droit (au niveau du milieu du papier) en passant par le haut de
+           l'écran ; un point s'y lit par sa part de la longueur du bord (`surDome`, de 0 à 1) ── */
+        const Lx=Math.max(40,cx-ms), Rx=Math.max(40,w-ms-cx), Hy=Math.max(60,cy-mt), EX=.8;
+        /* un écran large relève les deux bouts du dôme (sinon les branches des côtés filent à l'horizontale) */
+        const TA=Math.max(0,Math.min(.08,(Math.min(Lx,Rx)/Hy-1)*.06));
+        const dome=t=>{ const th=Math.PI*(1-TA-(1-2*TA)*t), co=Math.cos(th), si=Math.abs(Math.sin(th));
+          return [cx+(co<0?-Lx:Rx)*Math.pow(Math.abs(co),EX), cy-Hy*Math.pow(si,EX)]; };
+        const DM=320, dp=[], dl=[0];
+        for(let k=0;k<=DM;k++){ dp.push(dome(k/DM)); if(k) dl.push(dl[k-1]+Math.hypot(dp[k][0]-dp[k-1][0],dp[k][1]-dp[k-1][1])); }
+        const surDome=s=>{ const x=s*dl[DM]; let k=1; while(k<DM&&dl[k]<x) k++;
+          return lerp(dp[k-1],dp[k],Math.max(0,Math.min(1,(x-dl[k-1])/((dl[k]-dl[k-1])||1)))); };
+        /* le rayon d'un point du bord : du centre du papier vers lui ; il commence à 14 px du papier (`pied`) */
+        const rayon=s=>{ const R=surDome(s); return unit([R[0]-cx,R[1]-cy]); };
+        const pied=s=>{ const d=rayon(s), k=(hp+14)/Math.max(Math.abs(d[0]),Math.abs(d[1])); return [cx+d[0]*k, cy+d[1]*k]; };
+        const NIV=[.22,.5,.76], sF=k=>.02+.96*(k+.5)/(7*NF);
+        const noeud=(s,t)=>({p:t>=1?surDome(s):lerp(pied(s),surDome(s),t), d:rayon(s)});
+        const brin=(A,B,k)=>[A.p].concat(eventail([cx,cy],A.p,B.p,k));
+        /* une intention : sa tige (de sa perforation), puis trois fourches ; la nervure du milieu (vers la feuille 3) est la
+           piste qui se transforme d'une vue à l'autre, les autres brins s'affinent (`f2`, `f3`) */
+        const couronne=(i,ta)=>{
+          const s=Array.from({length:NF},(_,j)=>sF(i*NF+j)), moy=(a,b)=>s.slice(a,b).reduce((t,v)=>t+v,0)/(b-a);
+          const N1=noeud(moy(0,8),NIV[0]), N2=[0,1].map(m=>noeud(moy(4*m,4*m+4),NIV[1])), N3=[0,1,2,3].map(m=>noeud(moy(2*m,2*m+2),NIV[2]));
+          const F=s.map(v=>noeud(v,1)), S0=[ta.p[0]+ta.N[0]*5, ta.p[1]+ta.N[1]*5];
+          const a=[ta.in,S0].concat(courbe(S0,ta.N,N1.p,N1.d,22), brin(N1,N2[0],16).slice(1), brin(N2[0],N3[1],14).slice(1), brin(N3[1],F[3],12).slice(1));
+          const fk=[{l:brin(N1,N2[1],16)}]
+            .concat([0,2,3].map(m=>({l:brin(N2[m>>1],N3[m],14),c:'f2'})))
+            .concat([0,1,2,4,5,6,7].map(j=>({l:brin(N3[j>>1],F[j],12),c:'f3'})));
+          return {a, fk, F};
+        };
+        /* ── LE TRONC : de son trou du bas, chaque piste se range sous le papier (les trous des côtés contournent ses coins
+           en arcs concentriques), puis toutes descendent côte à côte en s'écartant à peine (`gT` → `gB`) ── */
+        const jx=J.x, jy=J.y, gT=Math.max(5,Math.min(8,pw*.06)), gB=gT*1.35, y0=bas+6, yT=bas+32;
+        const Hf=Math.max(110,Math.min(220,(jy-yT)*.55)), yF=jy-Hf, xT=i=>cx+(i-3)*gT;
+        function piste(T,i){
+          const L=[T.in]; let A;
+          if(T.e==='B'){ A=[T.p[0],y0]; L.push(A); }
+          else{ const s=T.e==='L'?-1:1, o=T.f===.5?1:0, rc=6+o*gT, xs=cx+s*(hp+10+o*gT);
+            L.push([xs-s*rc,T.p[1]]);
+            for(let z=1;z<=6;z++){ const f=z/6*Math.PI/2; L.push([xs-s*rc+s*rc*Math.sin(f), T.p[1]+rc-rc*Math.cos(f)]); }
+            A=[xs,y0]; L.push(A); }
+          return L.concat(courbe(A,[0,1],[xT(i),yT],[0,1],12,(yT-A[1])*.5,(yT-A[1])*.5)); }
+        /* ── LE PIED : au-dessus du curseur, les pistes s'évasent en CLOCHE ; chacune sort par son point (`sortie`), la plus
+           extérieure le plus haut et le plus loin, la piste du milieu à l'équateur du curseur, au-dehors de ses chevrons ── */
+        const R0=62, ex=gB*1.6, ey=18;
+        const yc=jy-60, Or=[jx,jy-100];           /* le centre de l'éventail des racines, au-dessus du curseur */
+        const sortie=(i,s)=>{ const k=Math.abs(i-3), p=[jx+s*(R0+k*ex), jy-k*ey]; return {p, d:unit([p[0]-Or[0],p[1]-Or[1]])}; };
+        const cloche=(i,s)=>{ const k=Math.abs(i-3), F=[jx+s*k*gB, yF], P=sortie(i,s);
+          return [F].concat(courbe(F,[0,1],P.p,P.d,22,(P.p[1]-F[1])*.55,Math.hypot(P.p[0]-F[0],P.p[1]-F[1])*.25)); };
+        /* ── LES RACINES : un bord en demi-ellipse par côté, de l'équateur du curseur (au loin) jusqu'à côté de lui (en bas) ;
+           sur un écran large, elles couvrent 62 % de la demi-largeur (l'arbre de vie : la couronne large, les racines en
+           miroir, plus serrées) ; leurs feuilles à intervalles égaux ; 2 par piste, 4 sur un grand écran ── */
+        const Ay=Math.max(40,Math.min(112,h-8-yc)), xin=R0+16, SOL={};
+        [-1,1].forEach(s=>{ const demi=s<0?jx-ms:w-ms-jx, Ax=Math.max(xin+20,Math.min(demi,Math.max(R0+3*ex+140,demi*.62))), pa=35*D, pb=Math.acos(xin/Ax), P=[], L=[0];
+          for(let k=0;k<=80;k++){ const f=pa+(pb-pa)*k/80; P.push([jx+s*Ax*Math.cos(f), yc+Ay*Math.sin(f)]); if(k) L.push(L[k-1]+Math.hypot(P[k][0]-P[k-1][0],P[k][1]-P[k-1][1])); }
+          SOL[s]={P,L}; });
+        const NR=Math.min(SOL[-1].L[80],SOL[1].L[80])>=16*18?4:2;
+        const surSol=(s,u)=>{ const o=SOL[s], x=u*o.L[80]; let k=1; while(k<80&&o.L[k]<x) k++;
+          return lerp(o.P[k-1],o.P[k],Math.max(0,Math.min(1,(x-o.L[k-1])/((o.L[k]-o.L[k-1])||1)))); };
+        /* les racines d'une piste : du pied de la cloche, une tige, puis une ou deux fourches ; chaque nœud se pose devant ses
+           feuilles (leur angle moyen autour du centre), de plus en plus loin ; tout brin tourne autour du centre */
+        const polaire=p=>({r:Math.hypot(p[0]-Or[0],p[1]-Or[1]), a:Math.atan2(p[1]-Or[1],p[0]-Or[0])});
+        const racines=(i,s)=>{ const k=Math.abs(i-3), P=sortie(i,s), Q=Array.from({length:NR},(_,j)=>surSol(s,((3-k)*NR+j+.5)/(4*NR)));
+          const pP=polaire(P.p), pQ=Q.map(polaire);
+          const N=(js,f)=>{ const a=js.reduce((t,j)=>t+pQ[j].a,0)/js.length, rq=js.reduce((t,j)=>t+pQ[j].r,0)/js.length, rr=pP.r+(rq-pP.r)*f;
+            return [Or[0]+rr*Math.cos(a), Or[1]+rr*Math.sin(a)]; };
+          const va=(A,B,kk)=>eventail(Or,A,B,kk), seg=(A,B,kk)=>[A].concat(va(A,B,kk));
+          const N1=N([...Array(NR).keys()],.42), tige=[P.p].concat(va(P.p,N1,16));
+          if(NR===2) return {Q, principal:tige.concat(va(N1,Q[1],12)), autres:[{l:seg(N1,Q[0],12),c:'f3'}]};
+          const N2=[0,1].map(m=>N([2*m,2*m+1],.72));
+          return {Q, principal:tige.concat(va(N1,N2[1],12), va(N2[1],Q[2],10)),
+                  autres:[{l:seg(N1,N2[0],12),c:'f2'},{l:seg(N2[0],Q[0],10),c:'f3'},{l:seg(N2[0],Q[1],10),c:'f3'},{l:seg(N2[1],Q[3],10),c:'f3'}]}; };
+        const sp=Math.max(3,Math.min(5,r*.75)), rp=Math.max(1.8,Math.min(3.2,Math.sqrt(w*h)/360)), ordre=[3,4,2,5,1,6,0,7];
         return INTS.map((x,i)=>{
-          const q=n[x.id], [ea,fa,eb,fb]=TROUS[i], ta=trou(ea,fa), tb=trou(eb,fb), A=ARB[i], pleines=new Set(ordre.slice(0,Math.min(NF,q.n)));
-          /* la branche : la tige, puis le brin vers la feuille 3 ; les autres brins s'affinent (`f2`, `f3`) */
-          const a=TIGE[i].concat(R12[i][0].slice(1), R23[i][1].slice(1), R3F[i][3].slice(1));
-          const fk=[{l:R12[i][1]}].concat([0,2,3].map(j=>({l:R23[i][j],c:'f2'})), [0,1,2,4,5,6,7].map(j=>({l:R3F[i][j],c:'f3'})));
-          /* la racine : la piste jusqu'au bus, le bus, le toit, le mur (le trait du milieu, à gauche), puis ses racines */
-          const k=Math.abs(i-3), s=i<3?-1:i>3?1:-1, rs=RAC[k+','+s];
-          const b=TR[i].concat(rs.principal.slice(1));
-          fk.push(...rs.autres);
-          const nodes=[A.N1.p, A.N2[0].p, A.N2[1].p, rs.N1.p].map(p=>[p[0],p[1],nq]);
-          const pads=A.F.map((f,j)=>[f.p[0],f.p[1],rp,pleines.has(j)]).concat(rs.Q.map(o=>[o.p[0],o.p[1],rp,q.n>0]));
-          /* le trait du milieu se partage : sa moitié droite part du faîte du toit, de l'autre côté du curseur */
-          if(i===3){ const rd=RAC['0,1']; fk.push({l:JUM.concat(rd.principal.slice(1))}, ...rd.autres); nodes.push([rd.N1.p[0],rd.N1.p[1],nq]);
-            rd.Q.forEach(o=>pads.push([o.p[0],o.p[1],rp,q.n>0])); }
+          const q=n[x.id], [ea,fa,eb,fb]=TROUS[i], ta=trou(ea,fa), tb=trou(eb,fb);
+          const cr=couronne(i,ta), pleines=new Set(ordre.slice(0,Math.min(NF,q.n)));
+          /* la racine : la piste, le tronc, la cloche (à gauche du milieu, et le trait du milieu à gauche), puis sa racine */
+          const s=i<3?-1:i>3?1:-1, rs=racines(i,s);
+          const b=piste(tb,i).concat(cloche(i,s), rs.principal.slice(1));
+          const fk=cr.fk.concat(rs.autres);
+          const pads=cr.F.map((f,j)=>[f.p[0],f.p[1],rp,pleines.has(j)]).concat(rs.Q.map(p=>[p[0],p[1],rp,q.n>0]));
+          /* le trait du milieu se partage : sa moitié droite s'évase de l'autre côté du curseur */
+          if(i===3){ const rd=racines(3,1); fk.push({l:cloche(3,1).concat(rd.principal.slice(1))}, ...rd.autres);
+            rd.Q.forEach(p=>pads.push([p[0],p[1],rp,q.n>0])); }
           const pin=t=>[t.in[0]-sp/2, t.in[1]-sp/2, sp, sp];
-          return {i, x, q, a, b, nodes, pins:ea===eb&&fa===fb?[pin(ta)]:[pin(ta),pin(tb)], fk, pads};
+          const pins=ea===eb&&fa===fb?[pin(ta)]:[pin(ta),pin(tb)];
+          return {i, x, q, a:cr.a, b, nodes:[], pins, fk, pads};
         });
       }
       /* ── ↓ L'ANNEAU (22/10, Wah : « les traits de la vue centrale doivent, à l'image de la gauche et de la droite, se
