@@ -186,12 +186,22 @@ nav{display:flex;flex-direction:column;align-items:center;gap:30px;width:100%;ma
 #decode-q::placeholder{color:rgba(251,213,202,.38);font-weight:400}
 #hb{position:fixed;inset:0;z-index:240;visibility:hidden;pointer-events:none}
 #hb.is-on{visibility:visible;pointer-events:auto}
-/* Le NAVY PERFORÉ qui grandit depuis le logo : le même papier, en grand. */
-#hb-bg{position:absolute;left:50%;top:50%;width:var(--s,1200px);height:var(--s,1200px);
-  margin:calc(var(--s,1200px) / -2) 0 0 calc(var(--s,1200px) / -2);transform:scale(.03);transform-origin:50% 50%;
+/* ⚠️ C'EST LE HIGHER QUI GRANDIT · 02/11/2026 (Wah : « c'est le slogan Higher
+   qui doit se retourner et s'agrandir jusqu'à obtenir le fullscreen bleu navy…
+   les deux plateformes ont leur propre élément central : le Totehm pour
+   totehm.com et le Higher pour higher.boutique »). Avant, le plein écran était
+   le PAPIER CARRÉ DU TOTEHM (224 × 224, 12 trous) qui montait de 0,03 à 1 : un
+   autre objet apparaissait. Maintenant c'est `#higher-dos` — LA MÊME PIÈCE que
+   l'on vient de retourner, son masque, ses 18 trous, son rapport 3 — qui part
+   EXACTEMENT de la boîte du Higher à l'écran et grandit jusqu'à couvrir.
+   Au repos il est à sa taille native (jamais flou) : c'est la fermeture qui le
+   réduit (`--k`) et le ramène sur le Higher (`--dx`, `--dy`). */
+#hb-bg{position:absolute;left:50%;top:50%;width:var(--w,1200px);height:calc(var(--w,1200px) / 3);
+  margin:calc(var(--w,1200px) / -6) 0 0 calc(var(--w,1200px) / -2);transform-origin:50% 50%;
   will-change:transform;transition:transform .66s cubic-bezier(.22,.61,.36,1);
-  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 224.88 224.08' preserveAspectRatio='none'%3E%3Cdefs%3E%3Cmask id='m'%3E%3Crect x='-40' y='-40' width='310' height='310' fill='%23fff'/%3E%3Ccircle cx='56.421' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='56.421' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='112.440' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='112.440' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='168.459' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='168.459' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='56.020' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='56.020' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='112.039' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='112.039' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='168.059' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='168.059' r='13.86' fill='%23000'/%3E%3C/mask%3E%3C/defs%3E%3Crect x='0.402' y='0' width='224.076' height='224.078' fill='%23333366' mask='url(%23m)'/%3E%3C/svg%3E") 0 0/100% 100% no-repeat}
-#hb.is-open #hb-bg{transform:scale(1)}
+  transform:translate(var(--dx,0px),var(--dy,0px)) scale(var(--k,.05))}
+#hb-bg svg{width:100%;height:100%;display:block}
+#hb.is-open #hb-bg{transform:none}
 #hb-ui{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;gap:10px;
   padding:max(54px,8dvh) 16px max(28px,env(safe-area-inset-bottom));pointer-events:none;
   overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none}
@@ -209,9 +219,15 @@ nav{display:flex;flex-direction:column;align-items:center;gap:30px;width:100%;ma
 #hb-note{width:min(420px,100%);min-height:14px}
 /* ⚠️ `nav{flex-direction:column}` règne sur cette page : les onglets le disent
    à voix haute, sinon ils s'empilent (mesuré). */
-#hb-tabs{display:flex;flex-direction:row;gap:6px;width:min(94vw,420px);flex:none;margin:2px 0 4px}
+/* `align-items:stretch` à voix haute aussi : la règle `nav` de la page centre
+   ses enfants, et un onglet sur deux lignes décalait les deux autres (mesuré). */
+#hb-tabs{display:flex;flex-direction:row;align-items:stretch;gap:6px;width:min(94vw,420px);flex:none;margin:2px 0 4px}
+/* 02/11 (Wah) : les noms entiers — MY TOTEHM STREETWEAR CLOTHS, MY TOTEHMIZATIONS.
+   Ils ne tiennent pas sur une ligne : ici, et ici seulement, un bouton revient à
+   la ligne (la règle générale de la page l'interdit, d'où le `!important`). */
 #hb-tabs button{flex:1;min-width:0;border:0;border-radius:10px;background:#1f1f24;color:#b8b8c2;cursor:pointer;
-  font:700 10px/1.2 'Space Mono',monospace;letter-spacing:.12em;text-transform:uppercase;padding:9px 4px;white-space:nowrap}
+  font:700 9px/1.3 'Space Mono',monospace;letter-spacing:.08em;text-transform:uppercase;padding:8px 5px;
+  white-space:normal!important;overflow-wrap:break-word}
 #hb-tabs button:hover{color:#fff}
 #hb-tabs button.is-on{background:#3a3a42;color:#fff;box-shadow:inset 0 0 0 1px #fff}
 .hb-panel{width:min(94vw,420px);display:none;flex-direction:column;gap:6px;flex:none}
@@ -219,8 +235,14 @@ nav{display:flex;flex-direction:column;align-items:center;gap:30px;width:100%;ma
 .hb-row{background:#000;padding:11px 13px;text-align:left;display:flex;flex-direction:column;gap:4px}
 .hb-row b{font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;color:var(--coral)}
 .hb-row span{font:400 9px/1.5 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#b8b8c2}
-.hb-row a,.hb-row button{align-self:flex-start;background:none;border:0;padding:0;cursor:pointer;
-  font:400 9px/1.5 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#fff;text-decoration:underline}
+/* 02/11 (Wah) : MY TOTEHM, SIGN OUT et SIMPLE TERMS OF SALE sont des BOUTONS de
+   la marque — du gris, aucun surlignage. C'est le même habit que les onglets. */
+.hb-row a,.hb-row button,.hb-vide a{align-self:flex-start;display:inline-block;background:#1f1f24;border:0;
+  border-radius:10px;padding:8px 12px;cursor:pointer;text-decoration:none;
+  font:700 9px/1.3 'Space Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:#b8b8c2;
+  transition:background .15s ease,color .15s ease}
+@media(hover:hover){.hb-row a:hover,.hb-row button:hover,.hb-vide a:hover{background:#3a3a42;color:#fff}}
+.hb-row .hb-acts{display:flex;flex-wrap:wrap;gap:6px;margin-top:3px}
 .hb-vide{background:#000;padding:16px;font:400 10px/1.5 'Space Mono',monospace;color:#d2d2da;text-align:left}
 #hb-x{position:fixed;top:10px;right:10px;z-index:4;background:none;border:none;cursor:pointer;
   padding:10px;pointer-events:none;-webkit-tap-highlight-color:transparent}
@@ -456,17 +478,18 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
 <!-- 26/10 (Wah) : LE HIGHER RETOURNÉ — la recherche dedans, et dessous mon
      tableau de bord. Le même objet, en mode membre, comme sur totehm.com. -->
 <div id="hb" role="dialog" aria-label="My Higher" aria-modal="true">
-  <div id="hb-bg" aria-hidden="true"></div>
+  <!-- LA MÊME PIÈCE, en grand : `#higher-dos`, pas une copie ni un autre papier. -->
+  <div id="hb-bg" aria-hidden="true"><svg viewBox="0 0 600 200" preserveAspectRatio="none"><use href="#higher-dos"></use></svg></div>
   <div id="hb-ui">
     <div id="hb-nom" aria-live="polite"></div>
     <div class="note dim" id="hb-note" role="status"></div>
     <nav id="hb-tabs" class="hb-after" role="tablist" aria-label="My Higher">
-      <button type="button" role="tab" data-hb-tab="cloths" class="is-on" aria-selected="true">My cloths</button>
-      <button type="button" role="tab" data-hb-tab="luxury" aria-selected="false">My luxury</button>
+      <button type="button" role="tab" data-hb-tab="cloths" class="is-on" aria-selected="true">My Totehm Streetwear Cloths</button>
+      <button type="button" role="tab" data-hb-tab="luxury" aria-selected="false">My Totehmizations</button>
       <button type="button" role="tab" data-hb-tab="account" aria-selected="false">My account</button>
     </nav>
-    <section id="hb-cloths" class="hb-panel hb-after" role="tabpanel" aria-label="My Totehm Cloths"></section>
-    <section id="hb-luxury" class="hb-panel hb-after" role="tabpanel" aria-label="My luxury projects"></section>
+    <section id="hb-cloths" class="hb-panel hb-after" role="tabpanel" aria-label="My Totehm Streetwear Cloths"></section>
+    <section id="hb-luxury" class="hb-panel hb-after" role="tabpanel" aria-label="My Totehmizations"></section>
     <section id="hb-account" class="hb-panel hb-after" role="tabpanel" aria-label="My account"></section>
   </div>
   <button id="hb-x" type="button" aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg></button>
@@ -856,9 +879,15 @@ function hbDos(mode,deLaMain){
   }
   const r=$('hb');
   r.classList.add('is-on'); r.dataset.tab=r.dataset.tab||'cloths';
-  /* Le papier est CARRÉ, comme le verso de totehm.com : ses perforations restent
-     rondes, et il déborde de l'écran du même 1,2 — jamais étiré. */
-  r.style.setProperty('--s',Math.ceil(Math.max(innerWidth,innerHeight)*1.2)+'px');
+  /* LA PIÈCE GARDE SON RAPPORT 3 : elle grandit d'un seul coup, ses perforations
+     restent rondes et elle déborde — jamais étirée. On la mesure SUR le Higher
+     pour qu'elle en parte exactement, à sa taille et à sa place. */
+  const b=$('hi').getBoundingClientRect();
+  const W=Math.ceil(Math.max(innerWidth,innerHeight*3)*1.06);
+  r.style.setProperty('--w',W+'px');
+  r.style.setProperty('--k',(b.width/W).toFixed(5));
+  r.style.setProperty('--dx',Math.round(b.left+b.width/2-innerWidth/2)+'px');
+  r.style.setProperty('--dy',Math.round(b.top+b.height/2-innerHeight/2)+'px');
   requestAnimationFrame(()=>requestAnimationFrame(()=>r.classList.add('is-open')));
   setTimeout(()=>{ if(HB.mode==='board')r.classList.add('is-pret'); },340);
   hbTableau();
@@ -935,11 +964,12 @@ async function hbTableau(){
     +'<span>'+[q.brand,q.piece,q.at].filter(Boolean).map(esc).join(' · ')+'</span>'
     +'<span>'+esc(HB_LUX[q.status]||q.status||'')+'</span></div>').join('')
     :hbVide('No luxury project yet.');
+  /* 02/11 (Wah) : « higher.boutique · the pieces » ne voulait rien dire — parti.
+     Le pseudo, puis trois boutons gris côte à côte. */
   $('hb-account').innerHTML='<div class="hb-row"><b>'+esc(d.pseudo||'my totehm')+'</b>'
-    +'<span>higher.boutique · the pieces</span>'
-    +'<button type="button" data-hb-com="1">my totehm</button>'
-    +'<button type="button" data-hb-out="1">sign out</button></div>'
-    +'<div class="hb-vide"><a href="/terms_of_sale" target="_blank" rel="noopener">simple terms of sale</a></div>';
+    +'<div class="hb-acts"><button type="button" data-hb-com="1">my totehm</button>'
+    +'<button type="button" data-hb-out="1">sign out</button>'
+    +'<a href="/terms_of_sale" target="_blank" rel="noopener">simple terms of sale</a></div></div>';
 }
 $('decode-back').onclick=()=>{$('decode-fs').classList.remove('show');if(new URLSearchParams(location.search).has('decode'))history.replaceState(null,'','/');};
 
@@ -1013,7 +1043,7 @@ document.querySelectorAll('[data-club]').forEach(a => a.addEventListener('click'
 }));
 
 /* Diagnostic — des booléens, jamais une valeur de membre. */
-const BUILD='2026-10-30-main';
+const BUILD='2026-11-02-higher';
 window.__totehm_boutique=()=>({ build:BUILD, page:'home', luxury_link:!!document.querySelector('a[href="/luxury"]'),
   club_links:document.querySelectorAll('[data-club]').length, logos:document.querySelectorAll('.brand-logo,img[src*="champion"]').length,
   collab:/Champion 2026/.test(document.getElementById('collab')?.textContent||''), branding_space:document.getElementById('brand-btn')?.dataset.space==='/',

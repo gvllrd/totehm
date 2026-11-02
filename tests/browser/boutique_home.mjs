@@ -28,7 +28,7 @@ const { pg, log } = await page(browser, { dir:'boutique', origin:'https://www.hi
 await pg.goto('https://www.higher.boutique/');
 await pg.waitForFunction(() => window.__totehm_boutique && /47 pieces left/.test(document.querySelector('#sw-col-sold').textContent));
 const d = await pg.evaluate(() => window.__totehm_boutique());
-ok(d.build === '2026-10-30-main' && d.decode_first && !d.member_window, 'the physical landing page: DECODE first, no member window here');
+ok(d.build === '2026-11-02-higher' && d.decode_first && !d.member_window, 'the physical landing page: DECODE first, no member window here');
 // 30/10 (Wah) : « la face verso du [Higher] doit avoir EXACTEMENT les mêmes
 // perforations que la face recto — logique, on retourne la même pièce ». Donc
 // UN SEUL masque dans le document, et les deux faces le référencent.
@@ -145,9 +145,22 @@ ok(!log.errors.length, 'no page error: ' + log.errors.join(' | '));
     coral: getComputedStyle(document.querySelector('#hb-cloths .hb-row b')).color }));
   ok(t.pseudo === 'Vallerand' && t.dos === 'Vallerand' && t.rien && t.plein,
     '27/10 · le tableau vient du Higher RETOURNÉ, en plein écran : il porte le PSEUDO, jamais une recherche ' + JSON.stringify({p:t.pseudo,d:t.dos,r:t.rien,pl:t.plein}));
+  // 02/11 (Wah) : « c'est le SLOGAN HIGHER qui doit se retourner et s'agrandir
+  // jusqu'au fullscreen navy ». Le plein écran est donc `#higher-dos` — la même
+  // pièce, son masque — et jamais le papier CARRÉ du Totehm.
+  const grand = await pg.evaluate(() => { const bg = document.querySelector('#hb-bg');
+    const u = bg.querySelector('use'), r = bg.getBoundingClientRect();
+    return { piece: u ? u.getAttribute('href') : null,
+      carre: /224\.88|224\.08/.test(getComputedStyle(bg).backgroundImage),
+      ratio: +(r.width / r.height).toFixed(2),
+      couvre: r.width >= innerWidth && r.height >= innerHeight,
+      masque: (document.querySelector('symbol#higher-dos rect') || {}).getAttribute?.('mask') }; });
+  ok(grand.piece === '#higher-dos' && !grand.carre && grand.ratio === 3 && grand.couvre
+     && grand.masque === 'url(#hmask)',
+    '02/11 · le plein écran est LE HIGHER agrandi (sa pièce, son masque, son rapport 3), jamais le papier du Totehm ' + JSON.stringify(grand));
   ok(t.onglet === 'cloths' && t.rang && /0\.Sea/.test(t.cloth) && /Higher Champion Sweatshirt · M · 2026-10-06/.test(t.cloth)
      && /shipped/.test(t.cloth) && /track it/.test(t.cloth) && !t.luxVisible && /251, 213, 202/.test(t.coral),
-    '26/10 · onglet MY CLOTHS : les trois onglets sur UNE rangée, ma pièce, son vêtement, son état, son suivi — le nom en Coral');
+    '26/10 · onglet MY CLOTHS : les trois onglets sur UNE rangée, ma pièce, son vêtement, son état, son suivi — le nom en Coral ' + JSON.stringify(t));
   await pg.screenshot({ path: OUT + '/bq_higher.png' });
   await pg.click('#hb-tabs button[data-hb-tab="luxury"]');
   await pg.waitForFunction(() => window.__totehm_boutique().higher.onglet === 'luxury');
