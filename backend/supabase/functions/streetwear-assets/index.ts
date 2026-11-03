@@ -18,6 +18,30 @@ Deno.serve(async req=>{
     return Response.json({ok:true,stripe_test_key:!!Deno.env.get('STRIPE_TEST_SECRET_KEY'),
       stripe_test_webhook:!!Deno.env.get('STRIPE_TEST_WEBHOOK_SECRET'),telegram_bot_id:telegramBotId});
   }
+  // 03/11 : les Code nodes de n8n ne savent PAS emettre des octets bruts — tout Buffer
+  // qui leur passe par le corps HTTP ressort en `{"type":"Buffer","data":[...]}`. Les sept
+  // concepts ont donc ete ecrits en JSON deguise en `image/jpeg` pendant tout ce temps :
+  // Telegram les telechargeait puis les refusait. n8n envoie desormais du base64, que le
+  // backend decode ; et on REFUSE d'ecrire ce qui ne commence pas par la signature JPEG,
+  // pour que l'erreur ne puisse plus se reproduire en silence.
+  if(body.action==='store'){
+    const clothId=String(body.cloth_id||''),batchId=String(body.batch_id||'');
+    const position=Number(body.position),b64=String(body.b64||'');
+    if(!uuid.test(clothId)||!uuid.test(batchId))return Response.json({error:'ids'},{status:400});
+    if(!Number.isInteger(position)||position<1||position>7)return Response.json({error:'position'},{status:400});
+    if(!b64||b64.length>40000000)return Response.json({error:'b64'},{status:400});
+    let octets:Uint8Array;
+    try{const brut=atob(b64);octets=new Uint8Array(brut.length);for(let i=0;i<brut.length;i++)octets[i]=brut.charCodeAt(i);}
+    catch{return Response.json({error:'b64'},{status:400});}
+    if(!(octets[0]===0xFF&&octets[1]===0xD8&&octets[2]===0xFF))return Response.json({error:'not_jpeg'},{status:400});
+    const chemin=clothId+'/'+batchId+'/concept-'+position+'.jpg';
+    const {error:upErr}=await sb.storage.from('streetwear-generations')
+      .upload(chemin,octets,{contentType:'image/jpeg',upsert:true});
+    if(upErr)return Response.json({error:'storage'},{status:503});
+    const {data:signe}=await sb.storage.from('streetwear-generations').createSignedUrl(chemin,604800);
+    if(!signe?.signedUrl)return Response.json({error:'storage'},{status:503});
+    return Response.json({storage_path:chemin,url:signe.signedUrl,octets:octets.length});
+  }
   const clothId=String(body.cloth_id||'');
   if(!uuid.test(clothId))return Response.json({error:'cloth_id'},{status:400});
   const {data:cloth,error}=await sb.from('totehm_clothes').select('id,test,artwork_storage_path').eq('id',clothId).maybeSingle();

@@ -76,6 +76,7 @@ const generationResponder = (o, number=7) => {
   if(o.url.includes('/artistic_styles?')) return [{name:'Fixture style'}];
   if(o.url.includes('/images/generations')) return {data:Array.from({length:number},()=>({b64_json:'cG5n'}))};
   if(o.url.includes('/chat/completions')) return {choices:[{message:{content:'Low sun on wet stone, cold blue shadows, worn fabric.'}}]};
+  if(o.url.includes('/functions/v1/streetwear-assets')) return {storage_path:id+'/batch/concept.jpg',url:'https://fixture.invalid/concept.jpg'};
   if(o.url.includes('/storage/v1/object/sign/')) return {signedURL:'/object/sign/fixture?token=simulation'};
   if(o.url.includes('/storage/v1/object/')) return {};
   if(o.url.endsWith('/cloth_concepts')) return {};
@@ -156,7 +157,15 @@ test('F refuses to replay a completed inbox event',async()=>{
 });
 test('B generates and persists exactly seven concepts before notify',async()=>{
   const r=await processNode('B',ticket('generation'),generationResponder);assert.equal(ok(r).stage,'generation');
-  assert.equal(hits(r,'/images/generations')[0].body.n,7);assert.equal(hits(r,'/storage/v1/object/streetwear-generations/','POST').length,7);
+  assert.equal(hits(r,'/images/generations')[0].body.n,7);
+  // 03/11 : le fichier est ecrit par le BACKEND, en base64. Un Code node n8n serialise
+  // tout Buffer en `{"type":"Buffer",...}` : ecrire les octets depuis n8n produisait du
+  // JSON deguise en `image/jpeg`, que Telegram telechargeait puis refusait.
+  const ecritures=hits(r,'/functions/v1/streetwear-assets','POST').filter(o=>o.body?.action==='store');
+  assert.equal(ecritures.length,7);
+  assert.deepEqual(ecritures.map(o=>o.position??o.body.position),[1,2,3,4,5,6,7]);
+  assert.ok(ecritures.every(o=>typeof o.body.b64==='string'&&o.body.b64.length>0));
+  assert.equal(hits(r,'/storage/v1/object/streetwear-generations/','POST').length,0);
   assert.equal(hits(r,'/cloth_concepts','POST')[0].body.length,7);assert.equal(hits(r,'streetwear-generate').length,1);
   assert.ok(r.calls.findIndex(o=>rpcName(o)==='streetwear_checkpoint')<r.calls.findIndex(o=>o.url.includes('/images/generations')));
 });
