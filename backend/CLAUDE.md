@@ -19,8 +19,8 @@
 - `member_ledger` en ajout seul : crédit sur `invoice.paid`, idempotence `unique(source, kind)`, l'arrondi va à TOTEHM ; 80/20, revente 7 %. Versement manuel le 1er : `payouts_due()` → virement → `payout_mark_paid()`. Pas de Stripe Connect.
 - Propriété : `art_editions` · `art_transfers` (ajout seul) · `stoner_access` ; le THP = l'œuvre `totehmpaper`. Le marché ne s'écrit que par le webhook (`art_settle`) ; `ok:false` → `market_incidents` = remboursement à la main.
 - `stripe-webhook` : `higher` · `cloth` · `subscription` · `creator_sub` · `artwork` · `resale` · `luxury` · `higher_sub` ;
-  `stripe_events` s'efface avant un 500. Test (`boutique_testers`) : v44 fait suivre une pièce d'essai comme une vraie,
-  mais le mode test n'a pas d'endpoint webhook — rien ne redescend encore.
+  `stripe_events` s'efface avant un 500. Test (`boutique_testers`) : v45 suit une pièce d'essai comme une vraie et le mode test REDESCEND (03/11 : endpoint `we_1UXQzu`, les deux `STRIPE_TEST_*` posés) ;
+  un événement de test n'ouvre que `cloth` et `luxury`, marqués `test`, et `handleCloth` n'appelle jamais l'API Stripe.
 
 ## Les 40 Edge Functions (`supabase/functions/`)
 
