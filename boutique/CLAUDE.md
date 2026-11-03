@@ -51,6 +51,7 @@ pièce elle-même (`#higher-dos` + `#hmask`, copiés de l'accueil), pas une bord
 
 `draft` → **paid** (`stripe-webhook`, `cloth`) → **generating** (n8n B : sept concepts) → **curation** (Telegram ; n8n
 C, `compose-artwork`) → **production** (n8n D) → **shipped** (n8n E) → l'œuvre visible (`cloth-art`).
+- **La curation montre TOUTE la commande** (03/11, Wah) : un message d'ouverture — vêtement · taille · style, la VUE et le texte de la box, les intentions, la matière reliée, la palette, le compte des photos — puis les photos que le membre a ALLUMÉES, puis les sept concepts. ⚠️ Un ALBUM Telegram ne porte AUCUN bouton par image : chaque concept part SEUL, légendé « — N sur 7 — », son bouton `PRENDRE LA N` dessous ; le dernier message ne porte que REGEN. Un album rendait le choix aveugle.
 - Le serveur pose le `0.` ; `create-checkout` v44 relit la box dans le Totehm de la session (une habit = son TEXTE).
 - Une pièce de TEST (`boutique_testers`) suit le MÊME chemin jusqu'à l'œuvre composée puis s'arrête : `test_stop` ferme Printful et le suivi, `test_budget` limite à 3 générations par 7 jours, le stock reste intact. `streetwear-assets` ne lui ferme QUE le fichier d'impression (`purpose:'print'`) : la curation doit pouvoir signer ses sept concepts, sinon l'essai n'a pas lieu.
 - n8n F tient `totehm_cloth_support` depuis Printful (les photos de Wah ne sont jamais écrasées) ; prix, stock, édition viennent d'un « oui » de Wah, posé par la session cloud. **Jamais un prix dans une page.**

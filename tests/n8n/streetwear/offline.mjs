@@ -213,13 +213,38 @@ test('B cannot proceed without generation configuration',async()=>{
   const r=await processNode('B',ticket('generation'),generationResponder,{OPENAI_KEY:''});failed(r,'generation_configuration');assert.equal(hits(r,'/images/generations').length,0);
 });
 const notifyResponder=o=>o.url.includes('/cloth_concepts?')?concepts:o.url.includes('/streetwear-assets')?{url:'https://fixture.invalid/concept.png'}:
+  o.url.includes('/totehm_cloth_support?')?[{title:'Higher Champion Sweatshirt'}]:o.url.includes('/artistic_styles?')?[{name:'Ink Realism'}]:
+  o.url.includes('/storage/v1/object/sign/')?{signedURL:'/object/sign/fixture?token=simulation'}:
+  o.url.includes('/sendPhoto')?{ok:true,result:{message_id:7}}:
   o.url.includes('/sendMediaGroup')?{ok:true,result:[]}:o.url.includes('/sendMessage')?{ok:true,result:{message_id:42}}:undefined;
-test('B offers seven choices and REGEN after a simulated media delivery',async()=>{
+// 03/11 (Wah) : « on peut pas lier le numero avec l'image ». Un ALBUM ne porte pas de
+// bouton par image : chaque concept part SEUL, avec SON bouton. Et la curation s'ouvre
+// sur TOUT ce que le membre a choisi, sinon on juge sept images dans le vide.
+test('B sends every concept with its own button, after the member context',async()=>{
   const r=await processNode('B',ticket('notify'),notifyResponder);assert.equal(ok(r).stage,'notify');
-  const rows=hits(r,'/sendMessage')[0].body.reply_markup.inline_keyboard;assert.equal(rows[0].length,7);assert.equal(rows[1][0].text,'REGEN');
+  assert.equal(hits(r,'/sendMediaGroup').length,0);
+  const photos=hits(r,'/sendPhoto');
+  const portees=photos.filter(o=>o.body.reply_markup);
+  assert.equal(portees.length,7);
+  portees.forEach((o,i)=>{
+    assert.match(o.body.caption,new RegExp('— '+(i+1)+' sur 7 —'));
+    const bouton=o.body.reply_markup.inline_keyboard[0][0];
+    assert.equal(bouton.text,'PRENDRE LA '+(i+1));
+    assert.match(bouton.callback_data,/^pick:/);
+  });
+  const contexte=hits(r,'/sendMessage')[0].body.text;
+  assert.match(contexte,/Higher Champion Sweatshirt/);
+  assert.match(contexte,/Ink Realism/);
+  assert.match(contexte,/<b>(BOX|VISION|HABIT|OBJECTIVE|REPULSION|MY STORY)<\/b>/);
+  assert.match(contexte,/A fictional story for an offline test/);
+  assert.match(contexte,/intentions · flow/);
+  assert.match(contexte,/photos allumees · \d+/);
+  const dernier=hits(r,'/sendMessage').at(-1).body.reply_markup.inline_keyboard;
+  assert.equal(dernier.length,1);assert.match(dernier[0][0].text,/^REGEN/);
 });
 test('B notification retry preserves an already sent media group',async()=>{
-  const r=await processNode('B',ticket('notify',{media_sent:true}),notifyResponder);ok(r);assert.equal(hits(r,'/sendMediaGroup').length,0);assert.equal(hits(r,'/sendMessage').length,1);
+  const r=await processNode('B',ticket('notify',{media_sent:true}),notifyResponder);ok(r);
+  assert.equal(hits(r,'/sendPhoto').length,0);assert.equal(hits(r,'/sendMessage').length,1);
 });
 const composeResponder=o=>o.url.includes('/streetwear-assets')?{url:'https://fixture.invalid/concept.png'}:
   o.url.includes('/compose-artwork')?{print_url:'https://fixture.invalid/print.png',final_url:'https://fixture.invalid/final.png',storage_path:id+'/final.png'}:
