@@ -3266,6 +3266,7 @@ body.gate.lv-c:not(.entered):not(.is-aspire):not(.folding):not(.ram-morph) #gate
   background:rgba(0,0,0,.78);border-radius:10px;padding:14px 16px}   /* le réseau passe derrière : un voile, jamais un flou */
 #lv-pitch.hide{display:none}
 #lv-pitch .lvp-headline{margin:0;color:#fff;font:700 19px/1.45 'Space Mono',monospace}
+#lv-pitch .lvp-headline svg{display:inline-block;width:72px;height:24px;vertical-align:middle}
 #lv-pitch .lvp-science{margin:0;color:#b7b7bf;font:400 11px/1.5 'Space Mono',monospace}
 #lv-explore{background:transparent;box-shadow:inset 0 0 0 1px #606068}
 /* 21/10 — une session se lit encore (`ses-attente`, posé avant le premier rendu) : rien de « hors connexion ». */
@@ -4163,7 +4164,7 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
              coup d'œil, et chaque pas est une chose que le membre va vraiment écrire. Aucun chiffre inventé,
              aucune fausse rareté, aucune promesse de résultat : la preuve est réelle ou elle n'est pas. -->
         <div id="lv-pitch" class="hide">
-          <p class="lvp-headline">Reach higher. Enjoy the journey.</p>
+          <p class="lvp-headline">Reach <svg viewBox="0 0 600 200" role="img" aria-label="higher"><use href="#higher-badge"></use></svg>. Enjoy the journey.</p>
           <p class="lvp-science">Built with behavioral science.</p>
           <button id="lv-join" class="lvp-cta" type="button">Open my TOTEHM</button>
           <button id="lv-explore" class="lvp-cta" type="button">Explore TOTEHMs</button>
