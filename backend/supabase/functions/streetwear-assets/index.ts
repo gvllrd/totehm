@@ -22,7 +22,12 @@ Deno.serve(async req=>{
   if(!uuid.test(clothId))return Response.json({error:'cloth_id'},{status:400});
   const {data:cloth,error}=await sb.from('totehm_clothes').select('id,test,artwork_storage_path').eq('id',clothId).maybeSingle();
   if(error)return Response.json({error:'db'},{status:503});
-  if(!cloth||cloth.test)return Response.json({error:cloth?.test?'test_blocked':'not_found'},{status:404});
+  if(!cloth)return Response.json({error:'not_found'},{status:404});
+  // 03/11 : une piece d'essai va JUSQU'A l'oeuvre composee — sa curation doit pouvoir
+  // signer ses sept concepts, sinon l'essai visuel, qui existe pour JUGER les visuels,
+  // n'a pas lieu. Seul le fichier d'IMPRESSION lui reste ferme ; Printful et le suivi
+  // sont deja barres en base par `streetwear_claim` (`test_stop`).
+  if(cloth.test&&body.purpose==='print')return Response.json({error:'test_blocked'},{status:404});
   let path=cloth.artwork_storage_path;
   if(body.concept_id){
     const conceptId=String(body.concept_id);

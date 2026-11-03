@@ -52,7 +52,7 @@ pièce elle-même (`#higher-dos` + `#hmask`, copiés de l'accueil), pas une bord
 `draft` → **paid** (`stripe-webhook`, `cloth`) → **generating** (n8n B : sept concepts) → **curation** (Telegram ; n8n
 C, `compose-artwork`) → **production** (n8n D) → **shipped** (n8n E) → l'œuvre visible (`cloth-art`).
 - Le serveur pose le `0.` ; `create-checkout` v44 relit la box dans le Totehm de la session (une habit = son TEXTE).
-- Une pièce de TEST (`boutique_testers`) suit le MÊME chemin jusqu'à l'œuvre composée puis s'arrête : `test_stop` ferme Printful et le suivi, `test_budget` limite à 3 générations par 7 jours, le stock reste intact.
+- Une pièce de TEST (`boutique_testers`) suit le MÊME chemin jusqu'à l'œuvre composée puis s'arrête : `test_stop` ferme Printful et le suivi, `test_budget` limite à 3 générations par 7 jours, le stock reste intact. `streetwear-assets` ne lui ferme QUE le fichier d'impression (`purpose:'print'`) : la curation doit pouvoir signer ses sept concepts, sinon l'essai n'a pas lieu.
 - n8n F tient `totehm_cloth_support` depuis Printful (les photos de Wah ne sont jamais écrasées) ; prix, stock, édition viennent d'un « oui » de Wah, posé par la session cloud. **Jamais un prix dans une page.**
 - **n8n B LIT les photos allumées** (26/10) : `box_snapshot.shots` → signées une heure → `gpt-4.1-mini` les regarde, et ce qu'il en dit entre dans le prompt comme MATIÈRE. Jamais une instruction, jamais chez Printful.
 
