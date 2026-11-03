@@ -584,4 +584,24 @@ ok(!log.errors.length, 'phone: no page error: ' + log.errors.join(' | '));
   ok(!(await pg.isVisible('#cl-go')) && (await pg.evaluate(() => window.__totehm_cloth().stage)) === 'cloth', 'empty collection: coming soon, no TOTEHMIZE');
   ok(!log.errors.length, 'empty collection: no page error ' + log.errors.join(' | '));
 }
+// ── 03/11 · LE RETOUR DE STRIPE. `?paid=1` montre l'étape finale. `done` manquait
+//    à STAGES : `ouvrir()` ne l'ouvrait jamais, le cas `fini` fermait tout le
+//    reste, et le membre retombait sur un ÉCRAN NOIR, sans la moindre erreur JS.
+{
+  const CL = '9d53364c-709a-408c-802f-15e11259dff7';
+  const { pg, log } = await page(browser, { dir:'boutique', origin:'https://www.higher.boutique', rpc,
+    tables: { ...tables, totehm_clothes: [{ id:CL, name:'0.muscle', status:'draft' }] }, network });
+  await pg.goto('https://www.higher.boutique/streetwear?paid=1&cloth=' + CL);
+  await pg.waitForFunction(() => window.__totehm_cloth && window.__totehm_cloth().stage === 'done');
+  const fin = await pg.evaluate(() => {
+    const d = document.querySelector('.stage[data-s="done"]'), r = d.getBoundingClientRect();
+    return { ouvertes: [...document.querySelectorAll('.stage.is-open')].map(e => e.dataset.s),
+             haut: Math.round(r.height), inert: !!d.inert, nom: document.querySelector('#dn-name').textContent,
+             texte: (document.body.innerText || '').trim().length };
+  });
+  ok(fin.ouvertes.length === 1 && fin.ouvertes[0] === 'done' && fin.haut > 200 && !fin.inert
+     && fin.nom === '0.muscle' && fin.texte > 20,
+    '03/11 · retour de paiement : l\'étape finale est SEULE, visible et nommée — jamais un écran noir ' + JSON.stringify(fin));
+  ok(!log.errors.length, 'retour de paiement : aucune erreur ' + log.errors.join(' | '));
+}
 await browser.close();

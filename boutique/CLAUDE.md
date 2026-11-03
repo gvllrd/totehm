@@ -9,7 +9,7 @@ d'entre-deux… un scrolling qui vire direct d'une section à une autre ») : `#
 étape, jamais une demie (verrou de 440 ms : une inertie de trackpad n'en tourne pas trois). Chaque étape vaut
 EXACTEMENT la fenêtre (`height:100%` du rouleau, ni `dvh` qui tremble, ni `svh` trop court) et défile CHEZ ELLE si elle
 déborde (une vue de huit box = 917 px sur 844) : le geste de page ne part qu'une fois son bord atteint. L'ORDRE est
-**vêtement (+ taille) · style · box · nom · commande** ; les étapes MÉRITÉES (`canShow` → `ouvrir()`) existent seules, et
+**vêtement (+ taille) · style · box · nom · commande**, et `done` CLÔT le rouleau — il est dans `STAGES`, sinon `ouvrir()` ne l'ouvre jamais, le cas `fini` ferme tout le reste et le retour de Stripe (`?paid=1`) est un ÉCRAN NOIR sans erreur ; les étapes MÉRITÉES (`canShow` → `ouvrir()`) existent seules, et
 un chevron (`.sc-hint`) invite à descendre s'il y a VRAIMENT quelque chose dessous. ⚠️ Le TOTEHM se décompose à la
 première ARRIVÉE sur son étape (`arriver`), pas quand elle s'ouvre — depuis que le style passe devant, elle est méritée
 bien avant qu'on la voie. ⚠️ **Le rouleau ne touche pas à l'historique** : UNE entrée remplacée ; le « back » du
