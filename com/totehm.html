@@ -3265,6 +3265,10 @@ body.gate.lv-c:not(.entered):not(.is-aspire):not(.folding):not(.ram-morph) #gate
 #lv-pitch{display:flex;flex-direction:column;align-items:center;gap:9px;width:min(92vw,470px);text-align:center;
   background:rgba(0,0,0,.78);border-radius:10px;padding:14px 16px}   /* le réseau passe derrière : un voile, jamais un flou */
 #lv-pitch.hide{display:none}
+#lv-pitch .lvp-headline{margin:0;color:#fff;font:700 19px/1.45 'Space Mono',monospace}
+#lv-pitch .lvp-headline svg{display:inline-block;width:72px;height:24px;vertical-align:middle}
+#lv-pitch .lvp-science{margin:0;color:#b7b7bf;font:400 11px/1.5 'Space Mono',monospace}
+#lv-explore{background:transparent;box-shadow:inset 0 0 0 1px #606068}
 /* 21/10 — une session se lit encore (`ses-attente`, posé avant le premier rendu) : rien de « hors connexion ». */
 body.ses-attente:not(.member) #lv-pitch{display:none!important}
 body.member #lv-pitch{display:none!important}   /* la vente ne parle jamais à un membre, même une image avant `peindreCarte` */
@@ -4160,30 +4164,10 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
              coup d'œil, et chaque pas est une chose que le membre va vraiment écrire. Aucun chiffre inventé,
              aucune fausse rareté, aucune promesse de résultat : la preuve est réelle ou elle n'est pas. -->
         <div id="lv-pitch" class="hide">
-          <div class="lvp-side lvp-mine">
-            <p class="lvp-h"><svg class="lvp-b" viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-badge"></use></svg><span>your brain</span></p>
-            <p class="lvp-s">An objective you keep in your head is a wish. One object turns it into a move.</p>
-            <ol class="lvp-how">
-              <li><b>What you're after.</b><span>the objective</span></li>
-              <li><b>The habit that gets you there.</b><span>when · where</span></li>
-              <li><b>What derails you.</b><span>in your own words</span></li>
-            </ol>
-            <p class="lvp-out">Your TOTEHM holds the connections you choose to build.</p>
-          </div>
-          <div class="lvp-side lvp-others">
-            <p class="lvp-h"><svg class="lvp-b" viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-badge"></use></svg><span>your strategy</span></p>
-            <p class="lvp-s">Someone already lives the habit you keep postponing. Read how.</p>
-            <ol class="lvp-how">
-              <li><b>Type a member's name.</b><span>on the back of the paper</span></li>
-              <li><b>Live in their TOTEHM.</b><span>media · spots · habits</span></li>
-              <li><b>Subscribe to one, or to many.</b><span>copy what works into yours</span></li>
-            </ol>
-            <p class="lvp-out">Their spots say where they'll be. You go.</p>
-          </div>
-          <button id="lvp-why" class="lvp-why" type="button" aria-expanded="false">Why it works</button>
-          <p class="lvp-sci hide" id="lvp-sci">A “when, where, what” plan raises follow-through: 94 studies, d&nbsp;=&nbsp;0.65 (Gollwitzer &amp; Sheeran, 2006). The words you tell yourself change how you perform under pressure (Kross et&nbsp;al., 2014).</p>
-          <button id="lv-join" class="lvp-cta" type="button">CONNECT WITH MY TOTEHM</button>
-          <p class="lvp-free">free · no card</p>
+          <p class="lvp-headline">Reach <svg viewBox="0 0 600 200" role="img" aria-label="higher"><use href="#higher-badge"></use></svg>. Enjoy the journey.</p>
+          <p class="lvp-science">Built with behavioral science.</p>
+          <button id="lv-join" class="lvp-cta" type="button">Open my TOTEHM</button>
+          <button id="lv-explore" class="lvp-cta" type="button">Explore TOTEHMs</button>
         </div>
         <!-- ⚠️ 18/10 — CHACUN FAIT CE QU'IL DIT (règle du 06/10). Depuis que `#conn-bar` est parti,
              « Turn to configure it » est la SEULE porte vers le verso quand le geste n'est pas
@@ -13370,6 +13354,8 @@ window.addEventListener('pageshow',e=>{
         why.setAttribute('aria-expanded',String(!on)); };
       const join=$('lv-join');
       if(join) join.onclick=()=>{ if(typeof ouvrirPorte==='function') ouvrirPorte(null); };
+      const explore=$('lv-explore');
+      if(explore) explore.onclick=()=>{ $('lv-m-members').click(); };
     }
 
     /* ── LE NOM ET QUI LIT MON TOTEHM (mes réglages) — nœuds déplacés de l'espace membre (15/10) ── */
