@@ -149,3 +149,19 @@ sb.auth.onAuthStateChange(ev => {
     await new Promise(() => {});
   }
 }
+
+
+/* SORTIR — la seule façon de quitter un satellite. Le repère s'efface ICI,
+   avant tout rechargement : `SIGNED_OUT` arrive trop tard (le callback est
+   asynchrone, `location.reload` gagne la course) et un repère resté en place
+   relance l'aller-retour silencieux vers totehm.com, qui redonne un code —
+   on revient connecté, le bouton ne tient pas. `SSO_TRIED` barre la route au
+   chargement suivant de cet onglet ; `scope:'local'` ne ferme QUE ce site,
+   jamais les sessions des autres appareils. Une page appelle CECI, jamais
+   `sb.auth.signOut()` directement. */
+async function ssoLogout(sb){
+  ssoStore(localStorage, SSO_KNOWN, null);
+  ssoStore(sessionStorage, SSO_TRIED, '1');
+  ssoStore(sessionStorage, SSO_PKCE, null);
+  try{ await sb.auth.signOut({ scope:'local' }); }catch(_){}
+}

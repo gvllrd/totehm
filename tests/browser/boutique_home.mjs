@@ -242,6 +242,24 @@ ok(!log.errors.length, 'no page error: ' + log.errors.join(' | '));
   ok(/matrix3d/.test(doigt.suit) && doigt.tactile === 'none',
     '30/10 · au doigt, le même geste tourne la pièce : le rouleau de la page ne la vole pas (touch-action:none)');
   ok(!log.errors.length, 'le geste du Higher : aucune erreur ' + log.errors.join(' | '));
+
+  /* 03/11 · SIGN OUT doit TENIR. Le repère `totehm_sso_known` s'efface DANS le
+     geste, avant tout rechargement : laissé en place, il relance l'aller-retour
+     silencieux vers totehm.com, qui redonne un code — on revient connecté et le
+     bouton paraît mort. `ssoLogout` pose ses trois repères avant son premier
+     `await`, donc l'état est déjà juste au retour du clic. */
+  const sortie = await pg.evaluate(() => {
+    localStorage.setItem('totehm_sso_known', '1');
+    sessionStorage.removeItem('totehm_sso_tried');
+    const b = document.querySelector('[data-hb-out]');
+    if(!b) return { absent:true };
+    b.click();
+    return { known: localStorage.getItem('totehm_sso_known'),
+             tried: sessionStorage.getItem('totehm_sso_tried'),
+             pkce:  sessionStorage.getItem('totehm_sso_pkce') };
+  });
+  ok(!sortie.absent && sortie.known === null && sortie.tried === '1' && sortie.pkce === null,
+    '03/11 · SIGN OUT tient : le repère est effacé dans le geste, la page ne repart pas en SSO ' + JSON.stringify(sortie));
   await pg.context().close();
 }
 await browser.close();

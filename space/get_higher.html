@@ -747,6 +747,18 @@ sb.auth.onAuthStateChange(ev => {
 }
 
 
+/* SORTIR — la seule façon de quitter un satellite. Le repère s'efface ICI :
+   `SIGNED_OUT` arrive trop tard et un repère resté en place relance
+   l'aller-retour silencieux, qui nous reconnecte. `scope:'local'` ne ferme
+   QUE ce site. Une page appelle CECI, jamais `sb.auth.signOut()`. */
+async function ssoLogout(sb){
+  ssoStore(localStorage, SSO_KNOWN, null);
+  ssoStore(sessionStorage, SSO_TRIED, '1');
+  ssoStore(sessionStorage, SSO_PKCE, null);
+  try{ await sb.auth.signOut({ scope:'local' }); }catch(_){}
+}
+
+
 const G=(x)=>({t:"g",x});const C=(x)=>({t:"c",x});const M=(x)=>({t:"m",x});
 
 const SLIDES=[
@@ -1607,7 +1619,7 @@ document.addEventListener('click', ev=>{
     note.textContent='';_$('mw-code').value='';_$('mw-code').style.display='none';_$('mw-email').value='';
     _$('member-window').classList.remove('show');
   });
-  _$('mw-signout').onclick=async()=>{await sb.auth.signOut();_$('member-window').classList.remove('show');};
+  _$('mw-signout').onclick=async()=>{await ssoLogout(sb);_$('member-window').classList.remove('show');};
   sb.auth.onAuthStateChange((_event,session)=>{
     me=session?.user||null;setTimeout(mbPaint,0);
   });

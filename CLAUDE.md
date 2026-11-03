@@ -46,7 +46,9 @@ personne. `oracle/` : jamais lu, jamais recopié. Une base Supabase (`abujjbkbbi
   Grants APRÈS le dernier `create`. Table neuve : RLS sans politique, lue et écrite par fonction.
 - **Identité** : totehm.com est l'autorité. Un satellite appelle `ssoLogin()` → `totehm.com/auth` (code + PKCE) →
   `sso-redeem` ; d'un domaine à l'autre : `ssoVersDomaine()`. Jamais un jeton dans une URL, jamais une URL de retour
-  reçue. Bloc copié de `tools/sso_snippet.js`. CTA : CONNECT WITH MY TOTEHM.
+  reçue. Bloc copié de `tools/sso_snippet.js`. CTA : CONNECT WITH MY TOTEHM. SORTIR d'un satellite = `ssoLogout()`,
+  jamais `sb.auth.signOut()` dans une page : le repère `SSO_KNOWN` s'efface DANS le geste, sinon le rechargement
+  relance l'aller-retour silencieux et reconnecte ; `scope:'local'` ne ferme que ce site.
 - **Argent** : le prix et l'accès viennent du serveur. Un webhook, routé sur `metadata.product` (`switch` + `default`,
   jamais retiré) ; toute nouvelle fonction de checkout pose sa `metadata.product`, en double dans
   `subscription_data.metadata`. Propriété et argent ne s'écrivent QUE par le webhook. Grand livre en ajout seul.

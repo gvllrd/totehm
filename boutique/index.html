@@ -603,7 +603,22 @@ sb.auth.onAuthStateChange(ev => {
   }
 }
 
-return {login:ssoLogin};
+/* SORTIR — la seule façon de quitter un satellite. Le repère s'efface ICI,
+   avant tout rechargement : `SIGNED_OUT` arrive trop tard (le callback est
+   asynchrone, `location.reload` gagne la course) et un repère resté en place
+   relance l'aller-retour silencieux vers totehm.com, qui redonne un code —
+   on revient connecté, le bouton ne tient pas. `SSO_TRIED` barre la route au
+   chargement suivant de cet onglet ; `scope:'local'` ne ferme QUE ce site,
+   jamais les sessions des autres appareils. Une page appelle CECI, jamais
+   `sb.auth.signOut()` directement. */
+async function ssoLogout(sb){
+  ssoStore(localStorage, SSO_KNOWN, null);
+  ssoStore(sessionStorage, SSO_TRIED, '1');
+  ssoStore(sessionStorage, SSO_PKCE, null);
+  try{ await sb.auth.signOut({ scope:'local' }); }catch(_){}
+}
+
+return {login:ssoLogin, logout:() => ssoLogout(sb)};
 })();
 document.addEventListener('click',e=>{
  if(e.target.closest('[data-eco-connect],#mw-login,#btn-send,#pt-send')){
@@ -924,7 +939,7 @@ $('hb').addEventListener('click',e=>{
   if(d){ decode(d.dataset.hbDecode); return; }
   if(e.target.closest('[data-hb-connect]')){ ECO_AUTH.login(false,'/'); return; }
   if(e.target.closest('[data-hb-com]')){ ssoVersDomaine(sb,'com','https://www.totehm.com/totehm'); return; }
-  if(e.target.closest('[data-hb-out]')){ sb.auth.signOut().then(()=>location.reload()); }
+  if(e.target.closest('[data-hb-out]')){ ECO_AUTH.logout().then(()=>location.reload()); }
 });
 $('decode-q').addEventListener('keydown',e=>{ e.stopPropagation();
   if(e.key==='Enter')decode($('decode-q').value.trim());

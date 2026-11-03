@@ -373,6 +373,18 @@ sb.auth.onAuthStateChange(ev => {
   }
 }
 
+
+/* SORTIR — la seule façon de quitter un satellite. Le repère s'efface ICI :
+   `SIGNED_OUT` arrive trop tard et un repère resté en place relance
+   l'aller-retour silencieux, qui nous reconnecte. `scope:'local'` ne ferme
+   QUE ce site. Une page appelle CECI, jamais `sb.auth.signOut()`. */
+async function ssoLogout(sb){
+  ssoStore(localStorage, SSO_KNOWN, null);
+  ssoStore(sessionStorage, SSO_TRIED, '1');
+  ssoStore(sessionStorage, SSO_PKCE, null);
+  try{ await sb.auth.signOut({ scope:'local' }); }catch(_){}
+}
+
 const BUILD='2026-10-15-space-gallery-market';
 const THP = 'totehmpaper';
 const S = { me:null, tab:'market', mv:null, mine:null, col:null, detail:null, busy:false, polls:0 };
@@ -664,7 +676,7 @@ $('mmenu').addEventListener('click', async e => {
   if(t.dataset.m === 'mine') setTab('mine');
   if(t.dataset.m === 'in') ssoLogin(false);
   if(t.dataset.m === 'console') ssoVersDomaine(sb, 'com', 'https://www.totehm.com/console');
-  if(t.dataset.m === 'out'){ await sb.auth.signOut({ scope:'local' }); }
+  if(t.dataset.m === 'out'){ await ssoLogout(sb); }
 });
 document.addEventListener('pointerdown', e => { if(!e.target.closest('#mmenu,#member')) $('mmenu').classList.remove('is-open'); });
 function paintMember(){ $('member').classList.toggle('is-in', !!S.me); $('member-txt').textContent = S.me ? (S.mine?.pseudo || 'Member') : 'CONNECT WITH MY TOTEHM';
