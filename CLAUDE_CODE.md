@@ -7,10 +7,12 @@
 ## 2 · Prêts : les lecteurs par box (la pastille existe depuis le 26/10 ; COM lit déjà par `totehm_read`)
     psql "$SUPABASE_DB_URL" -f backend/supabase/migrations/20261018091000_audience_par_box_lecteurs.sql
     psql "$SUPABASE_DB_URL" -f tests/sql/visibilite_par_box_selftest.sql      (attendu : FAIL={})
-## 3 · Le bot Telegram côté Supabase — `telegram_bot_id` est nul, son `getMe` ne répond pas
+## 3 · Deux secrets à revoir
     supabase secrets list --project-ref abujjbkbbiumxrokozph | grep TELEGRAM
-`TELEGRAM_BOT_TOKEN` manque ou est périmé dans les secrets Supabase (six fonctions le lisent, dont `totehm-bot`).
-Le jeton de la VM (`TG_TOKEN`) est bon : la curation n'est pas touchée.
+`TELEGRAM_BOT_TOKEN` manque ou est périmé côté Supabase (six fonctions le lisent). Le `TG_TOKEN` de la VM est bon.
+**La clé de service Supabase est à faire tourner** : elle voyage en en-tête `apikey` vers n8n et apparaît EN CLAIR dans
+les données d'exécution n8n (journalisation ouverte le 02/11 pour le premier essai). Nouvelle clé → `docker-compose.yml`
+(`SB_KEY`) → `docker compose up -d`.
 ## 4 · La chaîne n8n — l'essai visuel est en base depuis le 23/10 (session cloud)
     supabase functions deploy stripe-webhook --project-ref abujjbkbbiumxrokozph
     node tests/n8n/streetwear/offline.mjs                                    (attendu : 59 succès)
