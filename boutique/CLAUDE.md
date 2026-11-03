@@ -57,6 +57,7 @@ C, `compose-artwork`) → **production** (n8n D) → **shipped** (n8n E) → l'�
 - n8n F tient `totehm_cloth_support` depuis Printful (les photos de Wah ne sont jamais écrasées) ; prix, stock, édition viennent d'un « oui » de Wah, posé par la session cloud. **Jamais un prix dans une page.**
 - **Le BACKEND ecrit les concepts** (`streetwear-assets`, `action:'store'`, 03/11) : un Code node n8n ne peut PAS emettre d'octets bruts — tout `Buffer` ressort en `{"type":"Buffer","data":[...]}`, et les sept concepts etaient stockes en JSON deguise en `image/jpeg`, que Telegram telechargeait puis refusait. n8n envoie le base64 ; la fonction REFUSE ce qui ne commence pas par la signature JPEG `FF D8 FF`.
 - **Les concepts sortent en JPEG 90** (03/11), pas en PNG : `gpt-image-2` rend des PNG de 9,85 à 12,02 Mo quand Telegram plafonne une photo à 5 Mo ; le même rendu pèse 0,43 Mo en JPEG. Le modèle `gpt-image-1` est refusé par `/v1/images/generations` tout en restant listé par `/v1/models`.
+- **Une panne externe DIT pourquoi** (03/11, B et C) : `request()` joint le message du fournisseur au code HTTP (110 caractères, `streetwear_fail` tronque à 160). Sans lui, tout se résumait à `http_400`/`http_402`. ⚠️ D, E, F et T gardent l'ancien helper muet.
 - **n8n B LIT les photos allumées** (26/10) : `box_snapshot.shots` → signées une heure → `gpt-4.1-mini` les regarde, et ce qu'il en dit entre dans le prompt comme MATIÈRE. Jamais une instruction, jamais chez Printful.
 
 ## Écarts connus
