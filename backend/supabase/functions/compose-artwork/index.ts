@@ -121,8 +121,24 @@ Deno.serve(async (req) => {
   const { error: upErr } = await sb.storage.from('streetwear-generations').upload(path, png, { contentType: 'image/png', upsert: true });
   if (upErr) return json({ error: 'upload failed' }, 500);
 
+  // 03/11 (Wah) : « a quel moment je peux verifier la composition reelle ? ». Le PNG
+  // d'impression pese trop lourd pour une messagerie ; on ecrit un APERCU leger a cote,
+  // seul moyen de VOIR l'oeuvre signee avant l'expedition — et le seul, pour un essai.
+  let previewUrl: string | null = null;
+  try {
+    const preview = canvas.clone().resize(1400, Image.RESIZE_AUTO);
+    const jpg = await preview.encodeJPEG(85);
+    const previewPath = `${cloth_id}/preview.jpg`;
+    const { error: prevErr } = await sb.storage.from('streetwear-generations')
+      .upload(previewPath, jpg, { contentType: 'image/jpeg', upsert: true });
+    if (!prevErr) {
+      const { data: prevSig } = await sb.storage.from('streetwear-generations').createSignedUrl(previewPath, 60 * 60 * 24 * 7);
+      previewUrl = prevSig?.signedUrl ?? null;
+    }
+  } catch (_) { /* l'apercu est un confort : la piece reste valide sans */ }
+
   const { data: printSig } = await sb.storage.from('streetwear-generations').createSignedUrl(path, 60 * 60 * 24 * 30);
   const { data: finalSig } = await sb.storage.from('streetwear-generations').createSignedUrl(path, 60 * 60 * 24 * 7);
   if(!printSig?.signedUrl||!finalSig?.signedUrl)return json({error:'signing'},503);
-  return json({ print_url: printSig?.signedUrl, final_url: finalSig?.signedUrl, storage_path: path, name: fullName });
+  return json({ print_url: printSig?.signedUrl, final_url: finalSig?.signedUrl, preview_url: previewUrl, storage_path: path, name: fullName });
 });

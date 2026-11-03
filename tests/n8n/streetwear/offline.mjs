@@ -253,7 +253,8 @@ test('B notification retry preserves an already sent media group',async()=>{
   assert.equal(hits(r,'/sendPhoto').length,0);assert.equal(hits(r,'/sendMessage').length,0);
 });
 const composeResponder=o=>o.url.includes('/streetwear-assets')?{url:'https://fixture.invalid/concept.png'}:
-  o.url.includes('/compose-artwork')?{print_url:'https://fixture.invalid/print.png',final_url:'https://fixture.invalid/final.png',storage_path:id+'/final.png',name:'0.Simulation'}:
+  o.url.includes('/compose-artwork')?{print_url:'https://fixture.invalid/print.png',final_url:'https://fixture.invalid/final.png',preview_url:'https://fixture.invalid/preview.jpg',storage_path:id+'/final.png',name:'0.Simulation'}:
+  o.url.includes('/sendPhoto')?{ok:true,result:{message_id:11}}:
   // 03/11 (Wah) : la mission se clot sur ce qu'elle rapporte au curateur.
   o.url.includes('/sendMessage')?{ok:true,result:{message_id:9}}:
   o.url.includes('/webhook/')?{ok:true}:undefined;
@@ -279,13 +280,16 @@ test('C reuses the cached upscale for composition',async()=>{
 // gagné tant ». La mission se CLOT sur ce qu'elle rapporte, apres la composition.
 test('C closes the mission on what it pays',async()=>{
   const r=await processNode('C',ticket('curation',{upscaled_url:'https://replicate.delivery/fixture.png'}),composeResponder);ok(r);
-  const envois=hits(r,'/sendMessage');
+  // L'oeuvre composee est MONTREE, pas annoncee : une piece d'essai ne se verifie
+  // nulle part ailleurs, l'artwork restant une surprise jusqu'a l'expedition.
+  const envois=hits(r,'/sendPhoto');
   assert.equal(envois.length,1);
-  const texte=envois[0].body.text;
+  assert.equal(envois[0].body.photo,'https://fixture.invalid/preview.jpg');
+  const texte=envois[0].body.caption;
   assert.match(texte,/is encoded/);
   assert.match(texte,/You picked artwork/);
   assert.match(texte,/You earned \d+\.\d{2} €/);
-  assert.ok(r.calls.findIndex(o=>o.url.includes('/sendMessage'))>r.calls.findIndex(o=>o.url.includes('/compose-artwork')));
+  assert.ok(r.calls.findIndex(o=>o.url.includes('/sendPhoto'))>r.calls.findIndex(o=>o.url.includes('/compose-artwork')));
 });
 const orderResponder=o=>o.url.includes('/orders/@')?status(404):o.url.includes('/totehm_cloth_support?')?[support]:
   o.url.includes('/streetwear-assets')?{url:'https://fixture.invalid/print.png'}:o.url.includes('/orders?confirm=false')?{result:{id:88,external_id:id,status:'draft'}}:undefined;
