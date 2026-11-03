@@ -64,7 +64,9 @@ Deno.serve(async (req) => {
 
   const { data: cloth } = await sb.from('totehm_clothes').select('name,test,status,selected_concept_id,totehm_cloth_support(print_area)').eq('id', cloth_id).single();
   if (!cloth) return json({ error: 'cloth not found' }, 404);
-  if(cloth.test)return json({error:'test_blocked'},403);
+  // 03/11 : une piece d'essai va JUSQU'A l'oeuvre composee — c'est tout l'objet de
+  // l'essai visuel. Refuser ici rendait la curation d'un essai impossible, juste apres
+  // l'upscale. Printful et le suivi restent barres en base par `streetwear_claim`.
   if(cloth.status !== 'curation' || !cloth.selected_concept_id)return json({error:'not_selected'},409);
   let source:URL;
   try{source=new URL(String(source_url));}catch{return json({error:'source'},400);}
@@ -96,15 +98,17 @@ Deno.serve(async (req) => {
   // 3. la box signature — largeur dynamique mesurée sur {epoch}.{name}
   const fontBuf = new Uint8Array(await (await fetch(QUANTICO_URL)).arrayBuffer());
   const padX = Math.round(Math.min(84,W*.025)), padY = Math.round(Math.min(64,H*.015));
-  const text = await Image.renderText(fontBuf, Math.round(Math.min(130,H*.035)), fullName, CORAL, new TextLayout({ maxWidth: W-2*padX-192 }));
+  // 03/11 (Wah) : la signature se LIT. Elle porte le nom du cloth dans le format EXACT
+  // du streetwear — Quantico coral sur la box navy perforee, le `0.` pose par le serveur.
+  const text = await Image.renderText(fontBuf, Math.round(Math.min(200,H*.05)), fullName, CORAL, new TextLayout({ maxWidth: W-2*padX-192 }));
   const box = new Image(text.width + padX * 2, text.height + padY * 2);
   box.fill(NAVY);
   perforate(box);
   box.composite(text, padX, padY);
 
-  // 4. compositing : box en bas à droite, logo en bas à gauche
+  // 4. compositing : la signature est CENTREE en bas (03/11, Wah), le logo en bas a gauche
   const margin = Math.round(Math.min(96,W*.03,H*.03));
-  canvas.composite(box, W - box.width - margin, H - box.height - margin);
+  canvas.composite(box, Math.round((W - box.width) / 2), H - box.height - margin);
   try {
     const logoBuf = new Uint8Array(await (await fetch(LOGO_URL)).arrayBuffer());
     const logo = (await Image.decode(logoBuf)).resize(340, Image.RESIZE_AUTO);

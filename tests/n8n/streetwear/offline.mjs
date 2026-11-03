@@ -227,27 +227,35 @@ test('B sends every concept with its own button, after the member context',async
   const portees=photos.filter(o=>o.body.reply_markup);
   assert.equal(portees.length,7);
   portees.forEach((o,i)=>{
-    assert.match(o.body.caption,new RegExp('— '+(i+1)+' sur 7 —'));
+    assert.match(o.body.caption,new RegExp('— '+(i+1)+' of 7 —'));
     const bouton=o.body.reply_markup.inline_keyboard[0][0];
-    assert.equal(bouton.text,'PRENDRE LA '+(i+1));
+    assert.equal(bouton.text,'PICK '+(i+1));
     assert.match(bouton.callback_data,/^pick:/);
   });
+  // 03/11 (Wah) : la curation est une MISSION — bonjour, le gain, puis TOUT le choix du
+  // membre, les box par ordre d'importance. Et plus de REGEN : sept images par tap.
   const contexte=hits(r,'/sendMessage')[0].body.text;
+  assert.match(contexte,/^Hello/);
+  assert.match(contexte,/Curation mission/);
+  assert.match(contexte,/you earn <b>\d+\.\d{2} €<\/b>/);
   assert.match(contexte,/Higher Champion Sweatshirt/);
   assert.match(contexte,/Ink Realism/);
-  assert.match(contexte,/<b>(BOX|VISION|HABIT|OBJECTIVE|REPULSION|MY STORY)<\/b>/);
+  assert.match(contexte,/<i>\(PRIMARY box\)<\/i>/);
   assert.match(contexte,/A fictional story for an offline test/);
   assert.match(contexte,/intentions · flow/);
-  assert.match(contexte,/photos allumees · \d+/);
-  const dernier=hits(r,'/sendMessage').at(-1).body.reply_markup.inline_keyboard;
-  assert.equal(dernier.length,1);assert.match(dernier[0][0].text,/^REGEN/);
+  const consigne=hits(r,'/sendMessage')[1].body.text;
+  assert.match(consigne,/Here are the seven artworks/);
+  assert.ok(hits(r,'/sendMessage').every(o=>!o.body.reply_markup));
+  assert.ok(!JSON.stringify(r.calls).includes('regen:'));
 });
 test('B notification retry preserves an already sent media group',async()=>{
   const r=await processNode('B',ticket('notify',{media_sent:true}),notifyResponder);ok(r);
-  assert.equal(hits(r,'/sendPhoto').length,0);assert.equal(hits(r,'/sendMessage').length,1);
+  assert.equal(hits(r,'/sendPhoto').length,0);assert.equal(hits(r,'/sendMessage').length,0);
 });
 const composeResponder=o=>o.url.includes('/streetwear-assets')?{url:'https://fixture.invalid/concept.png'}:
-  o.url.includes('/compose-artwork')?{print_url:'https://fixture.invalid/print.png',final_url:'https://fixture.invalid/final.png',storage_path:id+'/final.png'}:
+  o.url.includes('/compose-artwork')?{print_url:'https://fixture.invalid/print.png',final_url:'https://fixture.invalid/final.png',storage_path:id+'/final.png',name:'0.Simulation'}:
+  // 03/11 (Wah) : la mission se clot sur ce qu'elle rapporte au curateur.
+  o.url.includes('/sendMessage')?{ok:true,result:{message_id:9}}:
   o.url.includes('/webhook/')?{ok:true}:undefined;
 test('C checkpoints a pending upscale and stops before composition',async()=>{
   const r=await processNode('C',ticket('curation'),o=>o.url.endsWith('/predictions')?{id:'prediction-fixture',status:'processing'}:composeResponder(o));
@@ -266,6 +274,18 @@ test('C records a terminal upscale failure',async()=>{
 });
 test('C reuses the cached upscale for composition',async()=>{
   const r=await processNode('C',ticket('curation',{upscaled_url:'https://replicate.delivery/fixture.png'}),composeResponder);ok(r);assert.equal(hits(r,'replicate.com').length,0);assert.equal(hits(r,'/compose-artwork').length,1);
+});
+// 03/11 (Wah) : « il en choisit une et boum un message de confirmation en mode tu as
+// gagné tant ». La mission se CLOT sur ce qu'elle rapporte, apres la composition.
+test('C closes the mission on what it pays',async()=>{
+  const r=await processNode('C',ticket('curation',{upscaled_url:'https://replicate.delivery/fixture.png'}),composeResponder);ok(r);
+  const envois=hits(r,'/sendMessage');
+  assert.equal(envois.length,1);
+  const texte=envois[0].body.text;
+  assert.match(texte,/is encoded/);
+  assert.match(texte,/You picked artwork/);
+  assert.match(texte,/You earned \d+\.\d{2} €/);
+  assert.ok(r.calls.findIndex(o=>o.url.includes('/sendMessage'))>r.calls.findIndex(o=>o.url.includes('/compose-artwork')));
 });
 const orderResponder=o=>o.url.includes('/orders/@')?status(404):o.url.includes('/totehm_cloth_support?')?[support]:
   o.url.includes('/streetwear-assets')?{url:'https://fixture.invalid/print.png'}:o.url.includes('/orders?confirm=false')?{result:{id:88,external_id:id,status:'draft'}}:undefined;
