@@ -3311,7 +3311,7 @@ body.gate.lv-h:not(.entered):not(.is-door) #lv-sell{opacity:1}
 /* ── LE CENTRE : « Tap to open it », Mine · Others ── */
 #lv-c-acts{position:absolute;left:50%;top:calc(var(--lv-y) + var(--sk) / 2 + 18px);transform:translateX(-50%);
   display:flex;flex-direction:column;align-items:center;gap:12px;width:min(94vw,460px)}
-#lv-parental{display:block;width:56px;height:auto;flex:none}
+#lv-parental{display:block;width:76px;height:auto;flex:none}
 body.mb-cherche #lv-parental{display:none}
 #lv-tap{display:flex;align-items:center;justify-content:center;gap:0;background:#000;border:0;border-radius:10px;padding:4px 10px; /* la légende coupe les racines de l'arbre, comme une étiquette sur un circuit */
   font:700 9.5px/1.4 'Space Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:#9a9aa2;white-space:nowrap;transition:opacity .3s ease}
@@ -4155,7 +4155,6 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
         <button id="mb-go" type="button" class="lvp-cta hide"></button>
       </div>
       <div id="lv-c-acts" class="lv-act">
-        <img id="lv-parental" src="https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/public/com/parental.png" alt="Expensive advisory: talk is cheap" width="278" height="200">
         <!-- ══ LE PREMIER CONTACT · 15/10/2026 ══ Un visiteur sans compte ne voit pas un objet muet : il voit
              CE QUE ça lui fait, et POURQUOI ça marche — avec de vraies références, vérifiables (jamais un
              chiffre inventé, jamais une fausse rareté). Un membre, lui, ne lit rien : il a déjà son Totehm.
@@ -4182,6 +4181,7 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
           <button type="button" role="radio" id="lv-m-mine" data-mode="mine" aria-checked="true">Mine</button>
           <button type="button" role="radio" id="lv-m-members" data-mode="members" aria-checked="false"><span class="lvm-lab">Members</span><span class="lvm-who" id="lv-m-who"></span></button>
         </div>
+        <img id="lv-parental" src="https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/public/com/parental.png" alt="Expensive advisory: talk is cheap" width="278" height="200">
         <!-- 25/10 — LE RÉSULTAT D'UNE RECHERCHE QUAND IL FAUT S'ABONNER (Wah : « le mode résultat recherche pour la
              souscription à un Totehm … est devenu totalement obsolète »). Plus de texte au dos d'un papier géant : le papier
              rentre chez lui, ses traits sont ceux du membre (sa palette), son nom est sur [Members], et ici UN geste. -->
