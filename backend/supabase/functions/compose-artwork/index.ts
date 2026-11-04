@@ -79,17 +79,24 @@ Deno.serve(async (req) => {
   const sourceResponse=await fetch(source.href,{signal:AbortSignal.timeout(30000)});
   if(!sourceResponse.ok)return json({error:'source_download'},502);
   const srcBuf = new Uint8Array(await sourceResponse.arrayBuffer());
-  if(srcBuf.length>32*1024*1024)return json({error:'source_size'},413);
-  const art = await Image.decode(srcBuf);
+  // 04/11 : un upscale x4 d'un concept 1024x1536 rend un PNG de plusieurs dizaines de
+  // Mo — 32 Mo refusait l'oeuvre juste avant la composition. La borne protege la memoire
+  // de la fonction, pas le format : elle dit desormais le poids qu'elle a vu.
+  if(srcBuf.length>80*1024*1024)return json({error:'source_size',octets:srcBuf.length},413);
+  let art: Image | null = await Image.decode(srcBuf);
 
   // 2. canvas print 12x16" @300dpi — l'artwork tient entièrement dedans (fit, pas de débord)
   const support = cloth.totehm_cloth_support as unknown as { print_area?: {width_in?:number;height_in?:number} };
   const area=support?.print_area||{};
   const W = Math.round(Math.max(600,Math.min(6000,Number(area.width_in||12)*300)));
   const H = Math.round(Math.max(600,Math.min(6000,Number(area.height_in||16)*300)));
-  const canvas = new Image(W, H);
+  // 04/11 : la fonction a rendu `not having enough compute resources`. On met l'artwork
+  // a sa taille finale AVANT d'allouer le canvas, et on lache la source decodee : trois
+  // images pleine taille en memoire en meme temps ne passent pas.
   const scale = Math.min((W * 0.92) / art.width, (H * 0.90) / art.height);
   const scaled = art.resize(Math.round(art.width * scale), Math.round(art.height * scale));
+  art = null;
+  const canvas = new Image(W, H);
   const artX = Math.round((W - scaled.width) / 2);
   const artY = Math.round((H * 0.94 - scaled.height) / 2);
   canvas.composite(scaled, artX, artY);
