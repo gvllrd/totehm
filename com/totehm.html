@@ -3375,6 +3375,8 @@ body.lv-membre #mb-offre{display:flex}
  display:flex;flex-direction:column;min-height:0;padding:calc(max(10px,env(safe-area-inset-top)) + 42px) 0 calc(var(--lvj-h) + 16px)}
 #rf-me{width:58px;height:58px;align-self:center;flex:none;margin-bottom:18px}
 #chatgpt-pitch{min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#333366 #000;scroll-padding:16px;touch-action:pan-y;padding:0 16px 22px}
+#chatgpt-pitch{text-align:center}
+.cg-simple{margin:0;color:#fff;font:700 clamp(19px,3vw,28px)/1.4 'Space Mono',monospace}
 #chatgpt-pitch:focus-visible{outline:1px solid #b8b8c2;outline-offset:3px}
 .cg-title{margin:0 0 20px;font:700 11px/1.5 'Space Mono',monospace;letter-spacing:.13em;color:#fff;text-transform:uppercase}
 .cg-title span{color:#b8b8c2;font-weight:400;text-transform:none;letter-spacing:0;margin-left:.5em}
@@ -4190,28 +4192,11 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
     <section class="lv-pane" id="lv-b" aria-label="Higher my ChatGPT">
       <div id="rf" class="lv-act">
         <div id="rf-me" aria-hidden="true"></div>
-        <article id="chatgpt-pitch" tabindex="0" aria-labelledby="chatgpt-title">
-          <h1 class="cg-title" id="chatgpt-title">NEUROLINK,<span>not NEURALINK.</span></h1>
-          <div class="cg-layout">
-            <div>
-              <p class="cg-lead">Your ChatGPT.<br><span>Your reasons.</span></p>
-              <p class="cg-intro">Your conversations go everywhere.<br><strong>Your TOTEHM connects what matters.</strong><br>A processor of your own choices, ready to bring your direction into the conversation.</p>
-            </div>
-            <div class="cg-system">
-              <span class="cg-seam" aria-hidden="true"><i style="--c:#E24B4A"></i><i style="--c:#e48b31"></i><i style="--c:#fcbe21"></i><i style="--c:#378ADD"></i><i style="--c:#1D9E75"></i><i style="--c:#7F77DD"></i><i style="--c:#639922"></i></span>
-              <p><strong>A habit. What it serves.<br>What you choose to do instead.<br>The future it moves you towards.</strong></p>
-              <p>Your rhythm. Your places. What your own story has taught you.</p>
-              <p>When you wonder what to do, where to go, or how to move forward — bring your own connections into the picture.</p>
-            </div>
-          </div>
-          <div class="cg-members">
-            <div><h2>ENTER ANOTHER TOTEHM.</h2><p>Subscribe to a member’s ecosystem. Explore the elements they choose to share — their habits, objectives, visions, and the connections behind them.</p></div>
-            <p class="cg-signature">Your ChatGPT remains your ChatGPT.<br>It just gets <svg class="cg-higher" viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-badge"></use></svg>.</p>
-          </div>
+        <article id="chatgpt-pitch" aria-labelledby="chatgpt-title">
+          <h1 class="cg-simple" id="chatgpt-title">Bring your TOTEHM into the conversation.</h1>
         </article>
         <div id="chatgpt-entry">
           <a id="chatgpt-connect" href="/chatgpt" aria-label="Higher my ChatGPT"><svg class="cg-higher" viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-badge"></use></svg><span>MY CHATGPT</span><span aria-hidden="true">↗</span></a>
-          <p class="cg-free">Free to connect. Member subscriptions are separate.</p>
         </div>
         <div id="mb-offre" aria-live="polite"></div>
       </div>
