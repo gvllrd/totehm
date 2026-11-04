@@ -70,7 +70,7 @@ const failed = (r, text) => assert.ok(r.error?.includes(text), 'Expected error '
 const queueResponder = o => {
   if(o.url.includes('/cloth_concepts?')) return [{cloth_id:id,batch_id:'lot-courant'}];
   if(o.url.includes('select=generation_batch')) return [{generation_batch:'lot-courant'}];
-  if(o.url.includes('/streetwear_jobs?')) return [{state:'done'}];
+  if(o.url.includes('/streetwear_jobs?')) return [{state:'done',data:{pick_messages:{1:301,2:302,3:303}}}];
 };
 const generationResponder = (o, number=7) => {
   if(o.url.includes('/totehm_cloth_support?')) return [support];
@@ -139,6 +139,25 @@ test('C rejects a button while the notification is unfinished',async()=>{
 test('C claims the selected concept with its cloth',async()=>{
   const r=await gate('C',callback(),o=>queueResponder(o)??(rpcName(o)==='streetwear_claim'?ticket('curation'):undefined));
   assert.equal(ok(r).stage,'curation');assert.equal(hits(r,'streetwear_claim')[0].body.p_concept,concept);
+  assert.deepEqual(ok(r).pick_messages,{1:301,2:302,3:303});
+});
+test('C closes every button once the choice is taken',async()=>{
+  const taken={...ticket('curation'),pick_messages:{1:301,2:302,3:303},concept:{id:concept,position:2}};
+  const p=await processNode('C',taken,o=>o.url.includes('/editMessage')||o.url.includes('/answerCallbackQuery')?{ok:true}
+    :o.url.includes('replicate.com')?{id:'pred',status:'starting'}
+    :rpcName(o)==='streetwear_checkpoint'?true:o.url.includes('/streetwear-assets')?{url:'https://x/y'}:undefined);
+  assert.equal(hits(p,'/editMessageCaption').length,1,'l image retenue le dit');
+  assert.equal(hits(p,'/editMessageReplyMarkup').length,2,'les autres perdent leur bouton');
+  assert.ok(hits(p,'/editMessageCaption')[0].body.caption.includes('PICKED'));
+  assert.equal(hits(p,'/editMessageCaption')[0].body.message_id,302);
+});
+test('C survives a message that can no longer be edited',async()=>{
+  const taken={...ticket('curation'),pick_messages:{1:301},concept:{id:concept,position:1}};
+  const p=await processNode('C',taken,o=>o.url.includes('/editMessage')?status(400,{description:'message to edit not found'})
+    :o.url.includes('/answerCallbackQuery')?{ok:true}
+    :o.url.includes('replicate.com')?{id:'pred',status:'starting'}
+    :rpcName(o)==='streetwear_checkpoint'?true:o.url.includes('/streetwear-assets')?{url:'https://x/y'}:undefined);
+  assert.equal(ok(p).pending,true,'la curation continue');
 });
 test('C declines a duplicate choice before upscale',async()=>{
   const r=await gate('C',callback(),o=>queueResponder(o)??(rpcName(o)==='streetwear_claim'?{ok:false,reason:'already_claimed'}:o.url.includes('/answerCallbackQuery')?{ok:true}:undefined));
