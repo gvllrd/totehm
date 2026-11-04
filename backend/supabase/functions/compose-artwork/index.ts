@@ -47,6 +47,11 @@ function punchCircle(img: Image, cx: number, cy: number, r: number, color: numbe
 const TROUS_X = [60, 140, 220, 300, 380, 460, 540].map(x => x / 600);
 const TROUS_Y = [70, 130].map(y => y / 200);
 const RAYON_RELATIF = 14 / 200;
+// 04/11 (Wah) : « les ratios ne sont pas les bons ». Le front ne dessine pas ce masque
+// sur n'importe quelle boite : `#hmask` fait 600 x 200 et `#hb-bg` lui impose
+// `height = width / 3`. Poser les dix-huit trous en proportion ne suffit donc pas — il
+// faut AUSSI le rapport, sinon l'espacement horizontal et le rayon ne s'accordent plus.
+const RATIO_BOX = 600 / 200;
 function perforate(box: Image) {
   const w = box.width, h = box.height;
   const r = Math.max(2, Math.round(h * RAYON_RELATIF));
@@ -122,10 +127,16 @@ Deno.serve(async (req) => {
   // 03/11 (Wah) : la signature se LIT. Elle porte le nom du cloth dans le format EXACT
   // du streetwear — Quantico coral sur la box navy perforee, le `0.` pose par le serveur.
   const text = await Image.renderText(fontBuf, Math.round(Math.min(200,H*.05)), fullName, CORAL, new TextLayout({ maxWidth: W-2*padX-192 }));
-  const box = new Image(text.width + padX * 2, text.height + padY * 2);
+  // la box suit le rapport 3 du front ; le texte s'y centre.
+  let bw = text.width + padX * 2;
+  let bh = text.height + padY * 2;
+  if (bw / bh < RATIO_BOX) bw = Math.round(bh * RATIO_BOX);
+  bw = Math.min(bw, Math.round(W * 0.94));
+  bh = Math.max(Math.round(bw / RATIO_BOX), bh);
+  const box = new Image(bw, bh);
   box.fill(NAVY);
   perforate(box);
-  box.composite(text, padX, padY);
+  box.composite(text, Math.round((bw - text.width) / 2), Math.round((bh - text.height) / 2));
 
   // 4. compositing : la signature, CENTREE en bas. Rien d'autre (03/11, Wah : « juste le
   //    nom du TOTEHM cloth sous son fond perfore bleu navy. Point. ») — le logo posé en
