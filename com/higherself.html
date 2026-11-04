@@ -164,6 +164,7 @@ button{font:inherit;color:inherit}
 @media(hover:hover){.int:hover{background:rgba(255,255,255,.05)}}
 .int .nm{font-family:'Quantico',sans-serif;font-weight:700;font-size:12px}
 .int .tglyph{height:14px}
+.int .clock-glyph{color:var(--art-color)}
 
 /* ── LES SPOTS TROUVÉS ───────────────────────────────────────────── */
 .spot{padding:12px 0}
@@ -200,12 +201,22 @@ a.foot-link{color:var(--coral);text-decoration:none}
 
 
 
+
+/* 03/10 — the member's TOTEHM name: Quantico Coral, without status dots. */
+#conn-bar,#conn-bar:hover,#conn-txt,#member,#member:hover,#member-txt,.mw-pseudo,.mw-pseudo:hover,.mw-who,.mw-who:hover,#mw-who,#mw-who:hover,#ro-who,#ro-who:hover,.tv-name,.tv-name:hover,#member-txt:hover,#conn-txt:hover{font-family:'Quantico',sans-serif;font-weight:400;color:#fbd5ca;text-transform:none}
+#conn-bar .dot,#conn-bar .dc,#member>i,#mw-dot{display:none!important;animation:none}
+.tname,.tname:hover{font-family:'Quantico',sans-serif;font-weight:400;color:#fbd5ca;background:#333366;border:0;border-image:none;border-radius:0;padding:6px 10px;filter:none}
+#who{color:#fbd5ca;font-weight:400}
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
-/* Le gris en survol devient blanc. Généré depuis la feuille
-   elle-même : un nouveau bloc gris entre ici tout seul.        */
-@media(hover:hover){
+/* Tout texte devient blanc sous la souris. Les dessins, surfaces
+   et contrôles désactivés gardent leur apparence. */
+@media(hover:hover) and (pointer:fine){
+:is(
+:is(a,abbr,address,b,bdi,bdo,blockquote,button,caption,cite,code,dd,del,dfn,dt,em,figcaption,h1,h2,h3,h4,h5,h6,i,input,kbd,label,legend,li,mark,option,output,p,pre,q,rp,rt,ruby,s,samp,small,span,strong,sub,summary,sup,td,textarea,th,time,u,var):hover,
+div:not(:has(> :not(br,wbr))):hover,
 .sub:hover,
-.line-input:hover::placeholder,
+.note.ok:hover,
+.note.no:hover,
 .note.dim:hover,
 .tab:hover,
 .tab .n:hover,
@@ -214,17 +225,25 @@ a.foot-link{color:var(--coral);text-decoration:none}
 .btn-sig:hover,
 .empty:hover,
 .lbl:hover,
+.int .clock-glyph:hover,
 .s-why:hover,
 .s-go:hover,
-.foot-note:hover{color:#fff}
+.foot-note:hover,
+a.foot-link:hover,
+#conn-bar:hover,
+#conn-txt:hover,
+#member:hover,
+#member-txt:hover,
+.mw-pseudo:hover,
+.mw-who:hover,
+#mw-who:hover,
+#ro-who:hover,
+.tv-name:hover,
+.tname:hover,
+#who:hover):where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *)){color:#fff!important}
+.line-input:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::placeholder{color:#fff!important}
 }
 /* ══ FIN DU BLOC GÉNÉRÉ ══ */
-
-/* 03/10 — the member's TOTEHM name: Quantico Coral, without status dots. */
-#conn-bar,#conn-bar:hover,#conn-txt,#member,#member:hover,#member-txt,.mw-pseudo,.mw-pseudo:hover,.mw-who,.mw-who:hover,#mw-who,#mw-who:hover,#ro-who,#ro-who:hover,.tv-name,.tv-name:hover,#member-txt:hover,#conn-txt:hover{font-family:'Quantico',sans-serif;font-weight:400;color:#fbd5ca;text-transform:none}
-#conn-bar .dot,#conn-bar .dc,#member>i,#mw-dot{display:none!important;animation:none}
-.tname,.tname:hover{font-family:'Quantico',sans-serif;font-weight:400;color:#fbd5ca;background:#333366;border:0;border-image:none;border-radius:0;padding:6px 10px;filter:none}
-#who{color:#fbd5ca;font-weight:400}
 </style>
 </head>
 <body>
@@ -478,7 +497,7 @@ function habitRow(h){
   if(!h.ready) bits.push('no frequency — the bot cannot ask');
   return ''
    +'<div class="row'+(h.intention?' marked':'')+'">'
-   +  '<span class="glyph" style="color:'+(h.intention?c:'#fff')+'">'+T_SVG+'</span>'
+   +  '<span class="glyph" data-hover-art style="color:'+(h.intention?c:'#fff')+'">'+T_SVG+'</span>'
    +  '<span class="tick"></span>'
    +  '<span class="body">'
    +    '<div class="r-text">'+esc(h.habit)+'</div>'
@@ -558,7 +577,7 @@ function renderNext(){
 function objRow(o){
   return ''
    +'<div class="row">'
-   +  '<span class="glyph" style="color:#fff">'+T_SVG+'</span>'
+   +  '<span class="glyph" data-hover-art style="color:#fff">'+T_SVG+'</span>'
    +  '<span class="tick"></span>'
    +  '<span class="body">'
    +    '<div class="r-text">'+esc(o.text)+'</div>'
@@ -576,7 +595,7 @@ function lineRow(x,kind){
   const c=x.i?intColor(x.i):'#fff';
   return ''
    +'<div class="row'+(x.i?' marked':'')+'">'
-   +  '<span class="glyph" style="color:'+c+'">'+T_SVG+'</span>'
+   +  '<span class="glyph" data-hover-art style="color:'+c+'">'+T_SVG+'</span>'
    +  '<span class="tick"></span>'
    +  '<span class="body"><div class="r-text">'+esc(x.text)+'</div>'
    +    (x.i?'<div class="r-meta">'+esc(intName(x.i))+'</div>':'')+'</span>'
@@ -587,7 +606,7 @@ function lineRow(x,kind){
 function addRow(kind,hint){
   return ''
    +'<div class="row add-row">'
-   +  '<span class="glyph blink" style="color:#fff">'+T_SVG+'</span>'
+   +  '<span class="glyph blink" data-hover-art style="color:#fff">'+T_SVG+'</span>'
    +  '<span class="tick"></span>'
    +  '<span class="body"><textarea rows="1" data-add="'+kind+'" placeholder="'+esc(hint)+'"></textarea></span>'
    +'</div>';
@@ -641,7 +660,7 @@ function renderSpots(){
   +   '<div class="lbl" style="margin:16px 0 6px 0">for which intention</div>'
   +   '<div class="ints">'+INTS.map(x=>
         '<button class="int'+(draft.intention===x.id?' on':'')+'" type="button" data-pick="'+x.id+'" '
-        +'style="color:'+x.color+'">'+T_SVG+'<span class="nm">'+x.name+'</span></button>').join('')
+        +'style="--art-color:'+x.color+';color:'+x.color+'">'+T_SVG+'<span class="nm">'+x.name+'</span></button>').join('')
   +   '</div>'
   +   '<div class="lbl" style="margin:16px 0 6px 0">how you are there</div>'
   +   '<div class="answer">'
@@ -683,7 +702,7 @@ function renderSpots(){
   + '<div class="lbl">the places you dropped</div>'
   + (mine.length ? mine.map(s=>''
       +'<div class="row marked">'
-      +  '<span class="glyph" style="color:'+intColor(s.intention)+'">'+T_SVG+'</span>'
+      +  '<span class="glyph" data-hover-art style="color:'+intColor(s.intention)+'">'+T_SVG+'</span>'
       +  '<span class="tick"></span>'
       +  '<span class="body"><div class="r-text">'+esc(s.activite)+'</div>'
       +    '<div class="r-meta">'+esc(intName(s.intention))
