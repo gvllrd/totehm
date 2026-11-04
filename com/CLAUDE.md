@@ -7,7 +7,7 @@
 | fichier | adresse | rôle |
 |---|---|---|
 | `totehm.html` | `/totehm` (`/` y mène) | L'APP, ≈ 13 900 lignes : jamais lue en entier |
-| `chatgpt.html` | `/chatgpt` | connexion/consentement OAuth dédié ; Higher SVG ; aucun état connecté sans jeton confirmé |
+| `chatgpt.html` | `/chatgpt` | connexion/consentement OAuth dédié ; anciens consentements = 5 outils personnels, reconnexion explicitement consentie = 10 ; Higher SVG ; aucun état connecté sans jeton confirmé |
 | `auth.html` | `/auth` | l'autorité SSO des quatre domaines (`sso-mint`) |
 | `creator.html` | `/@nom` · `/search` | la page d'un membre : lisible, réservé (flouté), Subscribe |
 | `higher.html` | `/higher` | la vente de l'abonnement Higher (`higher-sub`) |

@@ -24,6 +24,3 @@ Sur la VM : les onze clés des Code nodes et `N8N_BLOCK_ENV_ACCESS_IN_NODE=false
 Puis le brouillon de E doit refuser un événement non signé et une pièce TEST (il les accepte) ; publier B, C, D, E
 ENSEMBLE. Un faux paiement lance alors sept images et Telegram, rien ne part chez Printful.
 `TOTEHM_MASTER.md`, en tête : « Domaines et accès : remplacés le 21/10/2026 par CLAUDE.md, La vision ».
-## Higher my ChatGPT — reprise après rétablissement de l’environnement cloud
-Branche de ce lot : nouvelle vue et extension ; appliquer une fois `20261104140000_chatgpt_ecosystem.sql`, puis déployer `chatgpt-connector --no-verify-jwt --use-api` avant de publier le front.
-Vérifier OAuth dans ChatGPT via `https://www.totehm.com/mcp` : reconsentir (10 outils ; anciens jetons = 5), lire box/spot autorisés, révoquer. Aucune écriture automatique dans la mémoire native.
