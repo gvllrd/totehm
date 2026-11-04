@@ -91,32 +91,6 @@ h2{font-weight:700;font-size:12px;letter-spacing:.2em;text-transform:uppercase;c
 footer{width:100%;max-width:640px;margin:0 auto;padding:0 16px 40px}
 footer a{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo)}
 @media(hover:hover){.btn:hover{background:var(--g5);color:#fff}.btn.is-main:hover{background:#44444b}#menu .m-it:hover{background:var(--g5)}}
-
-
-
-
-
-
-
-/* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
-/* Le gris en survol devient blanc. Généré depuis la feuille
-   elle-même : un nouveau bloc gris entre ici tout seul.        */
-@media(hover:hover){
-#member:hover,
-#menu .m-it:hover,
-#menu .m-terms:hover,
-.kick:hover,
-.lead:hover,
-.fine:hover,
-.btn:hover,
-.url:hover,
-.get p:hover,
-.split span:hover,
-.split > div + div b:hover,
-.steps p:hover,
-footer a:hover{color:#fff}
-}
-/* ══ FIN DU BLOC GÉNÉRÉ ══ */
 </style>
 <style data-com-member-menu="2026-10-06">
 /* 06/10 — Wah : « le menu de higher.boutique dans le menu espace membre de
@@ -139,6 +113,35 @@ footer a:hover{color:#fff}
 .mz-say b{color:#fff}
 #member-window .cm-menu{padding:0 0 22px}
 @media(hover:hover){.cm-action:hover{background:#2c2c32;color:#fff}.cm-close:hover,#menu:has(.cm-menu) .m-it:hover{color:#fff}}
+/* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
+/* Tout texte devient blanc sous la souris. Les dessins, surfaces
+   et contrôles désactivés gardent leur apparence. */
+@media(hover:hover) and (pointer:fine){
+:is(
+:is(a,abbr,address,b,bdi,bdo,blockquote,button,caption,cite,code,dd,del,dfn,dt,em,figcaption,h1,h2,h3,h4,h5,h6,i,input,kbd,label,legend,li,mark,option,output,p,pre,q,rp,rt,ruby,s,samp,small,span,strong,sub,summary,sup,td,textarea,th,time,u,var):hover,
+div:not(:has(> :not(br,wbr))):hover,
+#member:hover,
+#member.is-in:hover,
+#menu .m-it:hover,
+#menu .m-terms:hover,
+.kick:hover,
+.lead:hover,
+.fine:hover,
+.btn:hover,
+.tname:hover,
+.url:hover,
+.get p:hover,
+.split span:hover,
+.split > div + div b:hover,
+.steps p:hover,
+footer a:hover,
+.cm-action:hover,
+.cm-hint:hover,
+#menu:has(.cm-menu) .m-it:hover,
+.cm-close:hover,
+.mz-say:hover):where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *)){color:#fff!important}
+}
+/* ══ FIN DU BLOC GÉNÉRÉ ══ */
 </style>
 </head>
 <body>

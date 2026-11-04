@@ -113,40 +113,6 @@ h2 .st.is-on{color:#fff;background:var(--g5)}
   .btn:hover{background:var(--g5);color:#fff}.btn.is-main:hover{background:#44444b}
   #menu .m-it:hover{background:var(--g5)}
 }
-
-
-
-
-
-
-
-
-
-/* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
-/* Le gris en survol devient blanc. Généré depuis la feuille
-   elle-même : un nouveau bloc gris entre ici tout seul.        */
-@media(hover:hover){
-#member:hover,
-#menu .m-it:hover,
-#menu .m-terms:hover,
-.kick:hover,
-.chip:hover,
-h2 .st:hover,
-.lead:hover,
-.note:hover,
-.step-h:hover,
-.step-h .ok:hover,
-.in:hover::placeholder,
-.unit:hover,
-.btn:hover,
-.lnk:hover,
-.seg .btn small:hover,
-.seg .btn.is-on small:hover,
-.row .sub:hover,
-.empty:hover,
-.lbl:hover{color:#fff}
-}
-/* ══ FIN DU BLOC GÉNÉRÉ ══ */
 </style>
 <style data-com-member-menu="2026-10-06">
 /* 06/10 — Wah : « le menu de higher.boutique dans le menu espace membre de
@@ -166,6 +132,44 @@ h2 .st:hover,
 .cm-close{position:fixed;top:14px;right:16px;z-index:2;background:none;border:0;padding:6px;cursor:pointer;font:400 10px 'Space Mono',monospace;letter-spacing:.12em;color:#b0b0b0}
 #member-window .cm-menu{padding:0 0 22px}
 @media(hover:hover){.cm-action:hover{background:#2c2c32;color:#fff}.cm-close:hover,#menu:has(.cm-menu) .m-it:hover{color:#fff}}
+/* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
+/* Tout texte devient blanc sous la souris. Les dessins, surfaces
+   et contrôles désactivés gardent leur apparence. */
+@media(hover:hover) and (pointer:fine){
+:is(
+:is(a,abbr,address,b,bdi,bdo,blockquote,button,caption,cite,code,dd,del,dfn,dt,em,figcaption,h1,h2,h3,h4,h5,h6,i,input,kbd,label,legend,li,mark,option,output,p,pre,q,rp,rt,ruby,s,samp,small,span,strong,sub,summary,sup,td,textarea,th,time,u,var):hover,
+div:not(:has(> :not(br,wbr))):hover,
+#member:hover,
+#member.is-in:hover,
+#menu .m-it:hover,
+#menu .m-terms:hover,
+.kick:hover,
+.tname:hover,
+.chip:hover,
+h2 .st:hover,
+.lead:hover,
+.note:hover,
+.note.no:hover,
+.note.ok:hover,
+.step-h:hover,
+.step-h .ok:hover,
+.step.is-done .step-h .ok:hover,
+.unit:hover,
+.btn:hover,
+.lnk:hover,
+.seg .btn small:hover,
+.seg .btn.is-on small:hover,
+.url:hover,
+.row .sub:hover,
+.empty:hover,
+.lbl:hover,
+.cm-action:hover,
+.cm-hint:hover,
+#menu:has(.cm-menu) .m-it:hover,
+.cm-close:hover):where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *)){color:#fff!important}
+.in:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::placeholder{color:#fff!important}
+}
+/* ══ FIN DU BLOC GÉNÉRÉ ══ */
 </style>
 </head>
 <body>

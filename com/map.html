@@ -92,6 +92,7 @@ html,body{width:100%;height:100%;background:#000;color:var(--mid);
 /* Le T.svg passe AU-DESSUS de l'intention : c'est lui qui la porte. */
 .s-int .tglyph{width:16px;height:16px;flex-shrink:0;position:relative;z-index:2;
   margin:0 0 6px}
+.s-int .tglyph,.c-int .tglyph{color:var(--art-color)}
 .s-int-name{display:flex;align-items:center;justify-content:center;
   position:relative;z-index:1;
   font-family:'Quantico',sans-serif;font-size:19px;font-weight:700;line-height:1.15}
@@ -209,7 +210,7 @@ html,body{width:100%;height:100%;background:#000;color:var(--mid);
    kind sans réécrire trois règles. */
 .c-kind{font-family:'Space Mono',monospace;font-size:10px;font-weight:700;
   letter-spacing:.16em;text-transform:uppercase;padding:3px 8px;border:none;
-  background:color-mix(in srgb,currentColor 20%,transparent)}
+  background:color-mix(in srgb,var(--chip-color,#fff) 20%,transparent)}
 /* Le contrat social d'un drop membre : silent (seul) ou social (à plusieurs).
    Même géométrie que .c-kind, à peine plus discret pour ne pas voler la vedette
    au badge DROP. Ne s'affiche QUE sur les MEMBER_DROP et si energy_mode existe. */
@@ -233,7 +234,7 @@ html,body{width:100%;height:100%;background:#000;color:var(--mid);
    la fin d'un truc qui n'avait pas commencé. */
 .c-when{font-family:'Space Mono',monospace;font-size:10px;font-weight:700;
   letter-spacing:.12em;text-transform:uppercase;padding:3px 8px;
-  border:none;background:color-mix(in srgb,currentColor 20%,transparent)}
+  border:none;background:color-mix(in srgb,var(--chip-color,#fff) 20%,transparent)}
 .c-price{font-family:'Space Mono',monospace;font-size:11px;color:var(--lo);
   margin-left:8px}
 .c-acts{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
@@ -482,29 +483,45 @@ body.in-world.view-cards #zoom{display:none}
 
 
 
+/* 03/10 — the member's TOTEHM name: Quantico Coral, without status dots. */
+#conn-bar,#conn-bar:hover,#conn-txt,#member,#member:hover,#member-txt,.mw-pseudo,.mw-pseudo:hover,.mw-who,.mw-who:hover,#mw-who,#mw-who:hover,#ro-who,#ro-who:hover,.tv-name,.tv-name:hover,#member-txt:hover,#conn-txt:hover{font-family:'Quantico',sans-serif;font-weight:400;color:#fbd5ca;text-transform:none}
+#conn-bar .dot,#conn-bar .dc,#member>i,#mw-dot{display:none!important;animation:none}
+.tname,.tname:hover{font-family:'Quantico',sans-serif;font-weight:400;color:#fbd5ca;background:#333366;border:0;border-image:none;border-radius:0;padding:6px 10px;filter:none}
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
-/* Le gris en survol devient blanc. Généré depuis la feuille
-   elle-même : un nouveau bloc gris entre ici tout seul.        */
-@media(hover:hover){
+/* Tout texte devient blanc sous la souris. Les dessins, surfaces
+   et contrôles désactivés gardent leur apparence. */
+@media(hover:hover) and (pointer:fine){
+:is(
+:is(a,abbr,address,b,bdi,bdo,blockquote,button,caption,cite,code,dd,del,dfn,dt,em,figcaption,h1,h2,h3,h4,h5,h6,i,input,kbd,label,legend,li,mark,option,output,p,pre,q,rp,rt,ruby,s,samp,small,span,strong,sub,summary,sup,td,textarea,th,time,u,var):hover,
+div:not(:has(> :not(br,wbr))):hover,
 .s-sub:hover,
+.s-int .tglyph:hover,
+.c-int .tglyph:hover,
 .s-int-def:hover,
 .s-int-pillar:hover,
+.s-int:hover .s-int-name,
+.s-int:hover .s-int-pillar,
 .s-int.cold .s-int-def:hover,
 #s-note:hover,
 .s-exit:hover,
 #count:hover,
+.c-name:hover,
 .c-why:hover,
 .c-match:hover,
 .c-price:hover,
+.c-dist:hover,
 .c-walk:hover,
 .c-go:hover,
 #info .c-x svg:hover,
+#info .c-x:hover svg,
 #view-toggle:hover,
 .deck-nav svg:hover,
+.deck-nav:hover svg,
 #filter-arrow svg:hover,
 #hm-weather:hover,
 #hm-weather b:hover,
 #zoom button:hover,
+.gm-title:hover,
 .gm-body:hover,
 .gm-x svg:hover,
 .fm-lbl:hover,
@@ -513,16 +530,23 @@ body.in-world.view-cards #zoom{display:none}
 .c-takes b:hover,
 #conn-bar:hover,
 .mw-close:hover,
-.mw-input:hover::placeholder,
+.mw-note.ok:hover,
+.mw-note.no:hover,
 .mw-note.dim:hover,
 .mw-mail:hover,
-.mw-signout:hover{color:#fff}
+.mw-signout:hover,
+#conn-txt:hover,
+#member:hover,
+#member-txt:hover,
+.mw-pseudo:hover,
+.mw-who:hover,
+#mw-who:hover,
+#ro-who:hover,
+.tv-name:hover,
+.tname:hover):where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *)){color:#fff!important}
+.mw-input:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::placeholder{color:#fff!important}
 }
 /* ══ FIN DU BLOC GÉNÉRÉ ══ */
-/* 03/10 — the member's TOTEHM name: Quantico Coral, without status dots. */
-#conn-bar,#conn-bar:hover,#conn-txt,#member,#member:hover,#member-txt,.mw-pseudo,.mw-pseudo:hover,.mw-who,.mw-who:hover,#mw-who,#mw-who:hover,#ro-who,#ro-who:hover,.tv-name,.tv-name:hover,#member-txt:hover,#conn-txt:hover{font-family:'Quantico',sans-serif;font-weight:400;color:#fbd5ca;text-transform:none}
-#conn-bar .dot,#conn-bar .dc,#member>i,#mw-dot{display:none!important;animation:none}
-.tname,.tname:hover{font-family:'Quantico',sans-serif;font-weight:400;color:#fbd5ca;background:#333366;border:0;border-image:none;border-radius:0;padding:6px 10px;filter:none}
 </style>
 </head>
 <body>
@@ -597,7 +621,7 @@ body.in-world.view-cards #zoom{display:none}
     <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 3 L13 13 M13 3 L3 13"/></svg>
   </button>
   <div class="gm-card">
-    <span id="gm-T" class="gm-T"></span>
+    <span id="gm-T" class="gm-T" data-hover-art></span>
     <div class="gm-title" id="gm-title">The radar reads your Totehm</div>
     <div class="gm-body" id="gm-body"></div>
     <div class="gm-actions">
@@ -853,12 +877,12 @@ function cardHTML(s){
   const n=takesOf(s);
   return ''
    +'<div class="c-top">'
-   +  '<span class="c-kind" style="color:'+col+'">'+(KIND[s.kind]||'Place')+'</span>'
+   +  '<span class="c-kind" style="--chip-color:'+col+';color:'+col+'">'+(KIND[s.kind]||'Place')+'</span>'
    +  (s.kind==='MEMBER_DROP'&&s.energy_mode
-       ?'<span class="c-kind c-energy" style="color:'+col+'">'+esc(s.energy_mode)+'</span>'
+       ?'<span class="c-kind c-energy" style="--chip-color:'+col+';color:'+col+'">'+esc(s.energy_mode)+'</span>'
        :'')
-   +  '<span class="c-int" style="color:'+col+'">'+tGlyph(13)+'&nbsp;&nbsp;'+esc(conf.name)+'</span>'
-   +  (when?'<span class="'+(live?'c-when':'c-kind')+'" style="color:'+col+'">'+esc(when)+'</span>':'')
+   +  '<span class="c-int" style="--art-color:'+col+';color:'+col+'">'+tGlyph(13)+'&nbsp;&nbsp;'+esc(conf.name)+'</span>'
+   +  (when?'<span class="'+(live?'c-when':'c-kind')+'" style="--chip-color:'+col+';color:'+col+'">'+esc(when)+'</span>':'')
    +'</div>'
    +'<div class="c-name">'+esc(s.activite||'place')+'</div>'
    +(desc?'<div class="c-why">'+esc(desc)+'</div>':'')
@@ -1067,6 +1091,7 @@ function renderRadar(spots){
     const el=document.createElement('button');
     el.type='button';
     el.className='marker src-'+(s.source||'spot')+' tier-'+tier;
+    el.setAttribute('data-hover-art','');
     el.style.color=c;
     el.style.opacity=st.opacity;
     el.style.filter='drop-shadow(0 0 '+st.blur+'px '+c+')';
@@ -1478,6 +1503,7 @@ function buildSelector(){
     b.className='s-int'+(cold?' cold':'')+(RAD.intention===x.id?' on':'');
     b.dataset.int=x.id;
     b.style.color=x.color;
+    b.style.setProperty('--art-color',x.color);
     /* Plus de <span> enveloppant : chaque élément est un enfant direct du
        bouton, donc chacun s'aligne sur l'axe central de la colonne. */
     b.innerHTML=tGlyph(17)

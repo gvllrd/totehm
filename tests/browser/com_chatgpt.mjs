@@ -54,15 +54,16 @@ try{
         centered:Math.abs(document.getElementById('lv-slogan').getBoundingClientRect().top+document.getElementById('lv-slogan').getBoundingClientRect().height/2-(document.getElementById('rf-me').getBoundingClientRect().top+document.getElementById('rf-me').getBoundingClientRect().height/2))<2,
         old:!!document.querySelector('#lv-say,#lv-thread,#lv-focus,#lv-ici,.rf-proxy'),form:!!panel.querySelector('form,textarea,input'),
         button:button?.getAttribute('aria-label')||button?.textContent,disabled:!!button?.disabled,
+        ctaLogo:button?.querySelector('svg use')?.getAttribute('href'),
         active:document.activeElement?.tagName,keyboard:document.body.classList.contains('rf-clavier'),geo:window.__geoCalls,
         setup:window.__totehm_lv().chatgpt?.setup,
         overflow:document.documentElement.scrollWidth>innerWidth+1};
     });
-    ok(state.label==='Higher my ChatGPT'&&/YOUR TOTEHM IN CHATGPT'S MEMORY/i.test(state.text),sample.name+' · memory signature');
+    ok(state.label==='Higher my ChatGPT'&&/YOUR TOTEHM IN CHATGPT/.test(state.text)&&!/memory|every relevant conversation/i.test(state.text),sample.name+' · signature describes on-demand context without promising native memory');
     ok(/habits/i.test(state.text)&&/goals/i.test(state.text)&&/repulsions/i.test(state.text)&&/visions/i.test(state.text)&&/story/i.test(state.text),sample.name+' · all five element kinds');
-    ok(/subscribed members/i.test(state.text)&&/Figher Club/i.test(state.text),sample.name+' · subscriptions and accessible Club spots');
+    ok(/members you subscribe to/i.test(state.text)&&/Figher Club/i.test(state.text),sample.name+' · subscriptions and accessible Club spots');
     ok(state.href==='/chatgpt'&&state.setup==='/chatgpt'&&state.logos===1&&state.centered&&state.gpt.endsWith('/com/gpt.png'),sample.name+' · singleton Higher badge is centered over GPT');
-    ok(/my ChatGPT/i.test(state.button)&&state.tab===0&&!state.overflow,sample.name+' · CTA is named, pitch is keyboard accessible, layout fits the viewport');
+    ok(/my ChatGPT/i.test(state.button)&&state.ctaLogo==='#higher-badge'&&state.tab===0&&!state.overflow,sample.name+' · CTA uses the perforated Higher logo, remains named and fits the viewport');
     ok(!state.old&&!state.form&&!state.keyboard&&!['INPUT','TEXTAREA'].includes(state.active),sample.name+' · no chat, focus relay or keyboard opens');
     await pg.focus('#chatgpt-pitch');
     const before=await pg.$eval('#chatgpt-pitch',e=>({top:e.scrollTop,overflow:e.scrollHeight>e.clientHeight+2}));

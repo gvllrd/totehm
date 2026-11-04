@@ -645,8 +645,7 @@ body.higher .set-block.higher-only{display:flex!important}
 .habit .meta{display:flex;align-items:center;gap:8px;white-space:nowrap;flex-shrink:0}
 .habit .h-x{position:absolute;right:22px;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(255,255,255,.35);font-size:16px;line-height:1;cursor:pointer;padding:6px 8px;transition:color .15s;z-index:5;-webkit-tap-highlight-color:transparent}
 .habit .h-x:hover{color:#fff}
-.habit .h-freq{font-family:'Quantico',sans-serif;font-weight:400;font-size:12px;letter-spacing:0;color:#fff;background:none;border:none;padding:0;cursor:pointer;transition:opacity .15s}
-.habit .h-freq:hover{opacity:.7}
+.habit .h-freq{font-family:'Quantico',sans-serif;font-weight:400;font-size:12px;letter-spacing:0;color:#fff;background:none;border:none;padding:0;cursor:pointer;transition:color .15s}
 .habit .h-T{background:none;border:none;padding:0;cursor:pointer;line-height:0;color:#fff;transition:opacity .15s,color .25s}
 .habit .h-T .tglyph{height:14px;width:auto;display:block}
 .habit .h-T:hover{opacity:.6}
@@ -774,7 +773,6 @@ body.v-visions{--paper:#2b3a73}
   text-align:left;width:100%;-webkit-tap-highlight-color:transparent;
   transition:opacity .15s}
 .v-meta:active{opacity:.6}
-@media(hover:hover){.v-meta:hover{opacity:.75}}
 /* L'INTENTION EST LA CHOSE LA PLUS IMPORTANTE D'UNE HABITUDE. Elle
    s'écrit, dans sa couleur, suivie de son pilier. Elle n'apparaissait
    nulle part sur la ligne — c'était ça, « on ne voit pas assez ». */
@@ -785,7 +783,6 @@ body.v-visions{--paper:#2b3a73}
   font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;
   text-transform:uppercase;font-weight:700;transition:opacity .15s}
 .v-int-b:active{opacity:.6}
-@media(hover:hover){.v-int-b:hover{opacity:.75}}
 .v-int{font-weight:700;letter-spacing:.2em}
 .v-pil{color:rgba(255,255,255,.5)}
 .v-frq{color:rgba(255,255,255,.72)}
@@ -1110,7 +1107,6 @@ body.v-visions{--paper:#2b3a73}
   font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.16em;
   text-transform:uppercase;font-weight:700;transition:opacity .15s}
 .v-b:active{opacity:.6}
-@media(hover:hover){.v-b:hover{opacity:.75}}
 /* Au pouce, une liste de trente-trois se rate. On l'aère. */
 @media(max-width:700px){
   .pk-o{padding:11px 12px;font-size:14px}
@@ -1207,8 +1203,7 @@ body.v-visions{--paper:#2b3a73}
   line-height:1.5;color:#fff;background:none;border:none;outline:none;
   width:100%;display:block;padding:0 22px 0 0;resize:none;overflow:hidden;
   text-align:left;caret-color:#fff;min-height:1.5em}
-.blk-t.go{cursor:pointer;transition:opacity .15s}
-.blk-t.go:hover{opacity:.78}
+.blk-t.go{cursor:pointer;transition:color .15s}
 /* La croix est réservée à la FERMETURE des vues (w-x, fold-x). Ce qui
    SUPPRIME s'écrit — c'est un mot, pas un signe. */
 .blk-x{position:absolute;top:7px;right:8px;background:none;border:none;
@@ -2840,172 +2835,6 @@ body.gate.entered #filter-badge{
 body.is-xo{overflow:hidden}
 @media(prefers-reduced-motion:reduce){#xo,#xo.is-open{transition:none}}
 /* Personal spaces: owner-only history, opened from the member menu. */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
-/* Le gris en survol devient blanc. Généré depuis la feuille
-   elle-même : un nouveau bloc gris entre ici tout seul.        */
-@media(hover:hover){
-.door:hover,
-#filter-arrow svg:hover,
-#vnow i:hover,
-#vnow span:hover,
-#vnow b:hover,
-.sn-btn:hover,
-.btn-back:hover,
-#fv-status:hover,
-.habit .h-x:hover,
-.v-sub:hover,
-.v-pil:hover,
-.v-frq:hover,
-.v-empty:hover,
-.h-text:hover::placeholder,
-.h-hint:hover,
-.habit.open .v-name[contenteditable]:empty:hover::before,
-.ms-st:hover,
-.mini-x:hover,
-.habit.filtre .v-name:hover,
-.mg-l:hover,
-.v-ecosystem:hover,
-#habits .in.nw:hover::placeholder,
-.pk-say:hover,
-.w-x:hover,
-.loupe:hover,
-.v-sub .copie.is-done:hover,
-.blk-lbl:hover,
-.blk-x:hover,
-.blk-u:hover,
-#habits .in:hover::placeholder,
-.btn.g:hover,
-.dash:hover,
-.add-box:hover,
-.lk-add:hover,
-.int-p:hover,
-#ordbar:hover,
-.ordbar:hover,
-.rk-a:hover,
-.void:hover,
-#filter-badge #fb-clear:hover,
-.hp-lbl:hover,
-.hp-placeholder:hover,
-.hp-def:hover,
-.fm-def:hover,
-#fp-input:hover::placeholder,
-#fp-preview:hover,
-.fp-int .df:hover,
-.fp-pillar:hover,
-.fp-skip:hover,
-.fp-opt:hover,
-.set-note:hover,
-.name-input:hover::placeholder,
-.size-btn:hover,
-.bot-txt:hover,
-.bot-txt b:hover,
-.sr-meta:hover,
-.btn-sig:hover,
-.note.dim:hover,
-#ro-tag:hover,
-#ro-out:hover,
-.r-meta:hover,
-.tv-private:hover,
-#mw-sub .s-lab:hover,
-#mw-sub .s-meta:hover,
-#mw-sub .s-perks li:hover,
-#mw-sub .s-act:hover,
-#mw-sub .s-plan .p-price:hover,
-.p-alt:hover,
-#mw-sub .s-plan .p-why:hover,
-.wp-q:hover,
-.wp-df:hover,
-.wp-pillar:hover,
-.wp-skip:hover,
-.mw-body:hover,
-.mw-close:hover,
-.mw-input:hover::placeholder,
-.mw-note.dim:hover,
-.mw-mail:hover,
-.mw-out:hover,
-.mw-terms:hover,
-.mw-link:hover,
-.mw-link-sm:hover,
-.mw-state:hover,
-.lbl-s:hover,
-.cv-say:hover,
-.cv-row:hover,
-.cv-step:hover,
-.cc-etat span:hover,
-.cc-cur:hover,
-.acct-btn:hover,
-.ast-say:hover,
-.ast-say.is-name:hover,
-.mw-guest-start:hover,
-#lv-guest:hover,
-.door-q:hover,
-#gate-turn:hover,
-#terms-corner:hover,
-#srch-q:hover::placeholder,
-.srch-hint:hover,
-.srch-meta:hover,
-.ns-label:hover,
-#srch-x svg:hover,
-#gate-search-input:hover::placeholder,
-#search-input:hover::placeholder,
-#fold-x svg:hover,
-#xo-x:hover{color:#fff}
-}
-/* ══ FIN DU BLOC GÉNÉRÉ ══ */
 </style>
 <style data-com-member-menu="2026-10-06">
 /* 06/10 — Wah : « le menu de higher.boutique dans le menu espace membre de
@@ -3306,6 +3135,7 @@ body.lv-mb .lvp-others{display:flex}
   text-align:center;display:flex;flex-direction:column;gap:8px;opacity:0;pointer-events:none;
   background:rgba(0,0,0,.78);border-radius:10px;padding:14px 16px;transition:opacity .45s ease}
 body.gate.lv-h:not(.entered):not(.is-door) #lv-sell{opacity:1}
+@media(hover:hover) and (pointer:fine){body.gate.lv-h:not(.entered):not(.is-door) #lv-sell p{pointer-events:auto}}
 .lvs-hook{margin:0;font:700 13px/1.3 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#fff}
 .lvs-sci{margin:0;font:400 11.5px/1.65 'Space Mono',monospace;color:#9a9aa2}
 .lvs-sci b{font-weight:700;color:#fbd5ca}
@@ -3382,10 +3212,11 @@ body.lv-membre #mb-offre{display:flex}
 body.lv-b #rf-gpt{animation-play-state:running}
 @keyframes cg-orbit{to{transform:rotate(360deg)}}
 #chatgpt-entry{flex:none;text-align:center;margin:0 0 12px}
-#chatgpt-connect{display:inline-block;color:#fff;background:none;padding:8px 0;text-decoration:none;
+#chatgpt-connect{display:inline-flex;align-items:center;justify-content:center;gap:.4em;color:#b8b8c2;background:none;padding:8px 0;text-decoration:none;
  font:700 clamp(18px,3vw,24px)/1.4 'Space Mono',monospace}
+#chatgpt-connect .chatgpt-higher{display:block;width:5.1em;height:1.7em;flex:none}
 #chatgpt-connect:focus-visible{outline:1px solid #fff;outline-offset:5px}
-@media(hover:hover){#chatgpt-connect:hover{color:#b8b8c2}}
+@media(hover:hover) and (pointer:fine){#chatgpt-connect:hover{color:#fff}}
 #chatgpt-pitch{width:100%;text-align:center;min-height:0;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;
  display:flex;flex-direction:column;gap:8px;background:rgba(0,0,0,.78);border-radius:10px;padding:14px 16px}
 #chatgpt-pitch .lvs-sci{margin:0}
@@ -3972,8 +3803,251 @@ body.lv-d.rdr-voir #gate-asteroid,body.lv-d.rdr-voir #lvjoy,body.rdr-voir #rdr-f
   #lv-sh{scroll-behavior:auto}}
 .dash[data-cap]{display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
 .dash[data-cap] svg{width:12px;height:12px;flex:none}
-/* Sur ordinateur, le gris passe au blanc au survol (hover.py ne lit que le premier <style>). */
-@media(hover:hover){.lv-btn:hover,#lv-tap:hover,#srch-res .srch-sub:hover,.mw-sub-act:hover,.lvn:hover,#lv-mode button:hover{color:#fff}}
+/* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
+/* Tout texte devient blanc sous la souris. Les dessins, surfaces
+   et contrôles désactivés gardent leur apparence. */
+@media(hover:hover) and (pointer:fine){
+:is(
+:is(a,abbr,address,b,bdi,bdo,blockquote,button,caption,cite,code,dd,del,dfn,dt,em,figcaption,h1,h2,h3,h4,h5,h6,i,input,kbd,label,legend,li,mark,option,output,p,pre,q,rp,rt,ruby,s,samp,small,span,strong,sub,summary,sup,td,textarea,th,time,u,var):hover,
+div:not(:has(> :not(br,wbr))):hover,
+.door .get:hover,
+.door:hover,
+#filter-arrow svg:hover,
+.cur:hover,
+#vnow i:hover,
+#vnow span:hover,
+#vnow b:hover,
+.sn-btn:hover,
+.btn-back:hover,
+#fv-status:hover,
+.habit .h-x:hover,
+.v-sub:hover,
+.v-pil:hover,
+.v-frq:hover,
+.v-sub.late:hover,
+.v-empty:hover,
+.h-hint:hover,
+.ms-st:hover,
+.mc-n:hover,
+.mini-x:hover,
+.habit.filtre .v-name:hover,
+.mg-l:hover,
+.v-ecosystem:hover,
+.pk-say:hover,
+.snd-n:hover,
+.snd .in.faux:hover,
+.w-x:hover,
+.loupe:hover,
+.v-sub .copie.is-done:hover,
+.blk-lbl:hover,
+.blk-x:hover,
+.blk-u:hover,
+.btn.g:hover,
+.baud-o:hover,
+.baud-s:hover,
+.baud-o:not(.is-on):hover,
+.dash:hover,
+.add-box:hover,
+.lk-add:hover,
+.int-p:hover,
+.int.on .int-p:hover,
+#dit:hover,
+#ordbar:hover,
+.ordbar:hover,
+.rk-a:hover,
+.void:hover,
+#filter-badge #fb-clear:hover,
+.hp-lbl:hover,
+.hp-placeholder:hover,
+.hp-def:hover,
+.fm-def:hover,
+#fp-preview:hover,
+.fp-int .df:hover,
+.fp-pillar:hover,
+.fp-skip:hover,
+.fp-opt:hover,
+.set-note:hover,
+.size-btn:hover,
+.bot-txt:hover,
+.bot-txt b:hover,
+.sr-meta:hover,
+.btn-sig:hover,
+.note.ok:hover,
+.note.no:hover,
+.note.dim:hover,
+#ro-tag:hover,
+#ro-out:hover,
+.r-meta:hover,
+.tv-private:hover,
+#mw-sub .s-lab:hover,
+#mw-sub .s-meta:hover,
+#mw-sub .s-perks li:hover,
+#mw-sub .s-act:hover,
+#mw-sub .s-plan .p-price:hover,
+.p-alt:hover,
+#mw-sub .s-plan .p-why:hover,
+.wp-q:hover,
+.wp-df:hover,
+.wp-pillar:hover,
+.wp-skip:hover,
+.mw-body:hover,
+.mw-close:hover,
+.mw-note.ok:hover,
+.mw-note.no:hover,
+.mw-note.dim:hover,
+.mw-mail:hover,
+.mw-out:hover,
+.mw-terms:hover,
+.mw-sync:hover,
+.mw-link:hover,
+.mw-link-sm:hover,
+.mw-state:hover,
+.lbl-s:hover,
+.cv-say:hover,
+.cv-row:hover,
+.cv-row b:hover,
+.cv-step:hover,
+.cc-etat span:hover,
+.cc-cur:hover,
+.acct-btn:hover,
+.ast-say:hover,
+.ast-say.is-name:hover,
+.mw-guest-start:hover,
+#lv-guest:hover,
+.door-q:hover,
+#gate-turn:hover,
+#terms-corner:hover,
+.srch-hint:hover,
+.srch-meta:hover,
+.ns-label:hover,
+#srch-x svg:hover,
+#fold-x svg:hover,
+#sn-home:hover,
+#conn-bar:hover,
+#conn-txt:hover,
+#member:hover,
+#member-txt:hover,
+.mw-pseudo:hover,
+.mw-who:hover,
+#mw-who:hover,
+#ro-who:hover,
+.tv-name:hover,
+.tname:hover,
+#gate-asteroid:hover .ast-say,
+.sr-name:hover,
+.srch-name:hover,
+.srch-row:hover .srch-name,
+#srch-q:hover,
+#name-btn.claimed:hover,
+#set-name:hover,
+#xo-x:hover,
+.cm-action:hover,
+.cm-hint:hover,
+#menu:has(.cm-menu) .m-it:hover,
+.cm-close:hover,
+.lv-mono:hover,
+.lv-btn:hover,
+.lv-note:hover,
+.lvs-get:hover,
+.lvn:hover,
+#lv-diag:hover,
+#lv-pitch .lvp-science:hover,
+.lvp-s:hover,
+.lvp-how span:hover,
+.lvp-out:hover,
+.lvp-why:hover,
+.lvp-sci:hover,
+.lvp-free:hover,
+.lvs-sci:hover,
+.lvs-sci b:hover,
+#lv-tap:hover,
+#lv-mode button:hover,
+#mb-q:hover,
+.lvm-who:hover,
+#mb-lock .mbl-t:hover,
+#mb-lock .mbl-s:hover,
+#mb-offre .mbo-n:hover,
+#mb-offre .mbo-p:hover,
+#mb-offre .mbo-s:hover,
+#chatgpt-connect:hover,
+#self-name:hover,
+#self-mail .mw-mail:hover,
+#lv-card #name-btn:hover,
+#lv-card #name-btn.claimed:hover,
+#lv-card #set-name:hover,
+.vs-s:hover,
+.vs-month i:hover,
+.vs-n i:hover,
+.vs-row i:hover,
+.vs-tog em:hover,
+.vs-row a:hover,
+.mwc-say:hover,
+.vs-val:hover,
+.vs-act:hover,
+.vs-btn:hover,
+.vs-seg button:hover,
+.vs-get:hover,
+#vs-tabs button:hover,
+#vs-vide:hover,
+.db-t i:hover,
+.db-tg:hover,
+.db-k b small:hover,
+.db-k i:hover,
+.db-k em:hover,
+.db-m .h:hover,
+.db-n small:hover,
+.db-s.is-0:hover,
+.db-leg:hover,
+.db-vide:hover,
+.db-i i:hover,
+.db-o .j.is-tard:hover,
+.db-f .q:hover,
+.db-f time:hover,
+.db-tot i:hover,
+.lv-note.is-no:hover,
+.lv-note.is-ok:hover,
+.vs-k.vs-nom:hover,
+.vs-h:hover,
+#srch .lv-note:hover,
+#srch .mw-sub-act:hover,
+.vs-acts .vs-acc:hover,
+.vs-foot .mw-terms:hover,
+.mw-sub-act:hover,
+#srch-res .srch-sub:hover,
+.tlv-l:hover,
+.tlv-del:hover,
+.lsh-sf .sf-aj:hover,
+.sd-tag:hover,
+.ssp-par:hover,
+.ssp-by:hover,
+.ssp-etat:hover,
+.lsh-flt button:hover,
+.lsh-sf .sfl:hover,
+.sfc:hover,
+.lsh-sf .sfk:hover,
+.ns-c small:hover,
+.ns-c.is-on small:hover,
+.ns-tag:hover,
+#rdr-pique:hover,
+#rdr-mode button:hover,
+.mf-x:hover,
+.cap-b:hover,
+#cap-x:hover):where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *)){color:#fff!important}
+.h-text:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::placeholder{color:#fff!important}
+.habit.open .v-name[contenteditable]:empty:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::before{color:#fff!important}
+#habits .in.nw:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::placeholder{color:#fff!important}
+#habits .in:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::placeholder{color:#fff!important}
+#fp-input:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::placeholder{color:#fff!important}
+.name-input:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::placeholder{color:#fff!important}
+.mw-input:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::placeholder{color:#fff!important}
+#srch-q:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::placeholder{color:#fff!important}
+#gate-search-input:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::placeholder{color:#fff!important}
+#search-input:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::placeholder{color:#fff!important}
+.lvp-how li:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::before{color:#fff!important}
+#mb-q:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::placeholder{color:#fff!important}
+.vs-in:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::placeholder{color:#fff!important}
+}
+/* ══ FIN DU BLOC GÉNÉRÉ ══ */
 </style>
 </head>
 <body class="gate">
@@ -4183,11 +4257,11 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
       <div id="rf" class="lv-act">
         <div id="rf-me" aria-hidden="true"><img id="rf-gpt" src="https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/public/com/gpt.png" alt="" width="1024" height="1024"></div>
         <div id="chatgpt-entry">
-          <a id="chatgpt-connect" href="/chatgpt">HIGHER my ChatGPT</a>
+          <a id="chatgpt-connect" href="/chatgpt" aria-label="Higher my ChatGPT"><svg class="chatgpt-higher" viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-badge"></use></svg><span>my ChatGPT</span></a>
         </div>
         <article id="chatgpt-pitch" tabindex="0" aria-labelledby="chatgpt-title">
-          <h1 class="lvs-hook" id="chatgpt-title">Your TOTEHM in ChatGPT's memory</h1>
-          <p class="lvs-sci">Connect your habits, goals, repulsions, visions and story with ChatGPT—alongside your media, subscribed members’ shared TOTEHMs and Figher Club’s accessible spots. Bring the connections you choose into every relevant conversation.</p>
+          <h1 class="lvs-hook" id="chatgpt-title">YOUR TOTEHM IN CHATGPT</h1>
+          <p class="lvs-sci">Ask ChatGPT what to do next. It can use your habits, goals, repulsions, visions and story—and the links you’ve built between them. Ask for inspiration from members you subscribe to, or find a Figher Club spot you can access.</p>
         </article>
         <div id="mb-offre" aria-live="polite"></div>
       </div>
@@ -8077,7 +8151,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-11-02-com-arbre-ginkgo';
+const BUILD='2026-11-04-com-chatgpt-slogan';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────

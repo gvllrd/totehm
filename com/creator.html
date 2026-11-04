@@ -163,39 +163,6 @@ main{width:100%;max-width:520px;margin:0 auto;padding:max(84px,11dvh) 16px 96px;
 .audb{display:inline-flex;align-items:center;justify-content:center;color:#9a9aa0;min-width:20px;min-height:20px}
 @media(hover:hover){.aud button:hover,.audb:hover{color:#fff}}
 /* ══ fin AUDIENCE ══ */
-
-
-
-/* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
-/* Le gris en survol devient blanc. Généré depuis la feuille
-   elle-même : un nouveau bloc gris entre ici tout seul.        */
-@media(hover:hover){
-#member:hover,
-#menu .m-it:hover,
-#menu .m-terms:hover,
-.kick:hover,
-.note:hover,
-.btn:hover,
-.lnk:hover,
-.in:hover::placeholder,
-.ints span:hover,
-.price small:hover,
-.get p:hover,
-.fine:hover,
-.state.is-off:hover,
-#q:hover::placeholder,
-.hint:hover,
-.ns-label:hover,
-.srch-meta:hover,
-.srch-row:hover::after,
-.u-head:hover,
-.u-st:hover,
-.u-t.is-locked .audb:hover,
-.u-none:hover,
-.aud button:hover,
-.audb:hover{color:#fff}
-}
-/* ══ FIN DU BLOC GÉNÉRÉ ══ */
 </style>
 <style data-com-member-menu="2026-10-06">
 /* 06/10 — Wah : « le menu de higher.boutique dans le menu espace membre de
@@ -219,6 +186,49 @@ main{width:100%;max-width:520px;margin:0 auto;padding:max(84px,11dvh) 16px 96px;
    menu n'ont rien à faire ici — l'espace membre vit au VERSO du papier, dans COM, et nulle part ailleurs. */
 html.is-embed #member,html.is-embed #menu{display:none!important}
 html.is-embed,html.is-embed body{background:#000}
+/* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
+/* Tout texte devient blanc sous la souris. Les dessins, surfaces
+   et contrôles désactivés gardent leur apparence. */
+@media(hover:hover) and (pointer:fine){
+:is(
+:is(a,abbr,address,b,bdi,bdo,blockquote,button,caption,cite,code,dd,del,dfn,dt,em,figcaption,h1,h2,h3,h4,h5,h6,i,input,kbd,label,legend,li,mark,option,output,p,pre,q,rp,rt,ruby,s,samp,small,span,strong,sub,summary,sup,td,textarea,th,time,u,var):hover,
+div:not(:has(> :not(br,wbr))):hover,
+#member:hover,
+#member.is-in:hover,
+#menu .m-it:hover,
+#menu .m-terms:hover,
+.kick:hover,
+.note:hover,
+.note.no:hover,
+.note.ok:hover,
+.btn:hover,
+.lnk:hover,
+.tname:hover,
+.ints span:hover,
+.price small:hover,
+.get p:hover,
+.fine:hover,
+.state.is-off:hover,
+#q:hover,
+.hint:hover,
+.ns-label:hover,
+.srch-name:hover,
+.srch-meta:hover,
+.u-head:hover,
+.u-st:hover,
+.u-t.is-locked .audb:hover,
+.u-none:hover,
+.aud button:hover,
+.audb:hover,
+.cm-action:hover,
+.cm-hint:hover,
+#menu:has(.cm-menu) .m-it:hover,
+.cm-close:hover):where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *)){color:#fff!important}
+.in:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::placeholder{color:#fff!important}
+#q:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::placeholder{color:#fff!important}
+.srch-row:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::after{color:#fff!important}
+}
+/* ══ FIN DU BLOC GÉNÉRÉ ══ */
 </style>
 </head>
 <body>

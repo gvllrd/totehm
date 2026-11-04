@@ -123,6 +123,31 @@ h2{font-family:'Space Mono',monospace;font-weight:700;
   letter-spacing:.26em;text-transform:uppercase;color:var(--ink-3);
   text-decoration:none}
 @media(hover:hover){.back:hover{color:var(--ink)}}
+/* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
+/* Tout texte devient blanc sous la souris. Les dessins, surfaces
+   et contrôles désactivés gardent leur apparence. */
+@media(hover:hover) and (pointer:fine){
+:is(
+:is(a,abbr,address,b,bdi,bdo,blockquote,button,caption,cite,code,dd,del,dfn,dt,em,figcaption,h1,h2,h3,h4,h5,h6,i,input,kbd,label,legend,li,mark,option,output,p,pre,q,rp,rt,ruby,s,samp,small,span,strong,sub,summary,sup,td,textarea,th,time,u,var):hover,
+div:not(:has(> :not(br,wbr))):hover,
+.kick:hover,
+h1:hover,
+h1 em:hover,
+.lede b:hover,
+.msg .t:hover,
+.me:hover,
+.bot:hover,
+.cap:hover,
+h2:hover,
+.say b:hover,
+.proof:hover,
+.proof b:hover,
+.price .lab:hover,
+.btn-sig:hover,
+.btn-sig .get:hover,
+.back:hover):where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *)){color:#fff!important}
+}
+/* ══ FIN DU BLOC GÉNÉRÉ ══ */
 </style>
 </head>
 <body>
