@@ -1,4 +1,4 @@
-// Read-only graph projections and owner retrieval for the ChatGPT connector. No model prompt,
+// Owner-only, read-only projections for the ChatGPT connector. No model prompt,
 // Deno globals or network imports: the graph/selection helpers are pure and testable.
 // The caller MUST resolve uid from its validated connector authentication.
 
@@ -165,8 +165,6 @@ export function projectGraph(snapshot: GraphSnapshot): ContextGraph {
       const ref = typeof row.id === "number" && Number.isSafeInteger(row.id) ? String(row.id) : string(row.id);
       const item = make(kind, ref, kind === "repulsion" ? row.repulsion : row.text);
       if (!item) continue;
-      item.intentions = intentions(row.is);
-      item.intention_source = item.intentions.length ? "explicit" : "none";
       if (kind === "objective" && Number.isFinite(Date.parse(string(row.target_at)))) item.target_at = string(row.target_at);
       if (kind === "repulsion" && text(row.obstacle, 300)) item.obstacle = text(row.obstacle, 300);
       add(item);
@@ -206,7 +204,7 @@ export function projectGraph(snapshot: GraphSnapshot): ContextGraph {
     }
     return [...new Set(direct)].map((key) => byKey.get(key)!).filter(Boolean);
   };
-  for (const item of items.filter((i) => i.kind !== "habit" && i.intention_source !== "explicit")) {
+  for (const item of items.filter((i) => i.kind !== "habit")) {
     item.intentions = intentions(habitsFor(item).flatMap((h) => h.intentions));
     item.intention_source = item.intentions.length ? "inherited" : "none";
   }
@@ -288,10 +286,10 @@ async function ownerRows(client: ReadClient, uid: string, table: string, columns
 async function loadGraph(client: ReadClient, uid: string): Promise<ContextGraph> {
   validateOwner(uid);
   const tables = [
-    ["totehms", "steps"], ["objectives", 'id,text,status,target_at,is'],
+    ["totehms", "steps"], ["objectives", "id,text,status,target_at"],
     // Cast bigint IDs in PostgREST output, before JSON parsing can round them.
-    ["repulsions", "id::text,repulsion,obstacle,habit_text,active,is"], ["visions", "id,text,importance,is"],
-    ["wisdom", "id,text,importance,is"], ["objective_habits", "objective_id,habit_text"],
+    ["repulsions", "id::text,repulsion,obstacle,habit_text,active"], ["visions", "id,text,importance"],
+    ["wisdom", "id,text,importance"], ["objective_habits", "objective_id,habit_text"],
     ["repulsion_habits", "repulsion_id::text,habit_text"], ["objective_visions", "objective_id,vision_id"],
     ["repulsion_teachings", "repulsion_id::text,wisdom_id"], ["teaching_objectives", "wisdom_id,objective_id"],
     ["habit_spots", "habit_text,place"],

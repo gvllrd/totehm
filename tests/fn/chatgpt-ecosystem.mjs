@@ -9,7 +9,7 @@ assert.equal(graph.items.length,5);
 assert.equal(new Set(graph.items.map(x=>x.kind)).size,5);
 assert.equal(graph.edges.length,5);
 assert(!JSON.stringify(graph).includes('private-objective'));
-assert.deepEqual(graph.items.find(x=>x.kind==='objective').intentions,['focus']);
+assert.deepEqual(graph.items.find(x=>x.kind==='objective').intentions,['express']);
 assert.equal(graph.items.find(x=>x.kind==='repulsion').ref,'9007199254740993');
 const denied=memberGraph({steps:[],trips:[],reps:[{id:9007199254740993,text:'unsafe id'}]});
 assert.equal(denied.items.length,0);

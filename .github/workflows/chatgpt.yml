@@ -34,6 +34,8 @@ jobs:
       - run: npx --prefix tests/browser playwright install --with-deps chromium
       - run: node -e "require('fs').writeFileSync('tests/browser/entry.js', 'export * from \"@supabase/supabase-js\";')"
       - run: tests/browser/node_modules/.bin/esbuild tests/browser/entry.js --bundle --format=esm --platform=browser --outfile=tests/browser/supabase.mjs
+      - run: mkdir -p work
+      - run: curl --fail --silent --show-error --output work/gpt.png https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/public/com/gpt.png
       - run: node tests/browser/com_chatgpt.mjs work/chatgpt-view
       - run: node tests/browser/chatgpt_connect.mjs work/chatgpt-connection
       - uses: actions/upload-artifact@v4

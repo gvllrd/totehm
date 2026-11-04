@@ -9,6 +9,7 @@ const STEPS=[{t:'Draw ten minutes',is:['express'],f:'every_evening'}];
 const tables={profiles:[{pseudo:'wahigher'}],totehms:[{user_id:USER.id,steps:STEPS,vis:'private'}]};
 const LAND={signed_in:true,pseudo:'wahigher',offer:{enabled:false},higher:{active:false},visibility:'private',thp:false,
   sm:{ready:true,habit:true,objective:true,free_total:7,free_left:6}};
+const gptFixture=fs.existsSync('work/gpt.png')?fs.readFileSync('work/gpt.png'):null;
 const noErrors=log=>!log.errors.some(e=>e.startsWith('pageerror'));
 const settled=(pg,v)=>pg.waitForFunction(v=>{const d=window.__totehm_lv?.();return d&&d.vue===v&&!d.bouge;},v,{timeout:9000});
 const fixtures=[
@@ -25,6 +26,7 @@ try{
     const guestUser={...USER,is_anonymous:true,email:''};
     const {pg,ctx,log}=await page(browser,{dir:'com',origin,tables,viewport:sample.viewport,hasTouch:sample.hasTouch,
       session:sample.session!==false,rpc:{my_landing:sample.land||LAND},network:(url,req)=>{
+        if(gptFixture&&url.pathname.endsWith('/com/gpt.png'))return {status:200,contentType:'image/png',body:gptFixture};
         if(url.pathname==='/functions/v1/higher-self'){attempts.push(req.method());return {status:500,contentType:'application/json',body:'{"error":"removed"}'};}
         if(sample.guest&&url.pathname==='/auth/v1/user')return {status:200,contentType:'application/json',body:JSON.stringify(guestUser)};
         return null;
@@ -88,10 +90,25 @@ try{
     await pg.waitForSelector('#mb-q:visible');await pg.fill('#mb-q','kai3');await pg.keyboard.press('Enter');
     await pg.waitForFunction(()=>document.body.classList.contains('lv-membre')&&!document.body.classList.contains('mb-cherche')&&!window.__totehm_lv().bouge);
     await pg.click('#lvn-dn');await settled(pg,'b');
+    await pg.waitForSelector('#mb-offre [data-mbo="sub"]',{state:'attached'});
     const offer=await pg.textContent('#mb-offre');
+    console.log('Member offer fixture',JSON.stringify({offer,pitchVisible:await pg.isVisible('#chatgpt-pitch'),label:await pg.getAttribute('#lv-b','aria-label')}));
+
     ok(/kai3/.test(offer)&&/SUBSCRIBE/.test(offer)&&!(await pg.isVisible('#chatgpt-pitch'))&&(await pg.getAttribute('#lv-b','aria-label'))==='Member offer','Members · its bottom view keeps the member offer and hides the personal pitch');
     await pg.click('#lvn-up');await settled(pg,'c');
     ok((await pg.evaluate(()=>window.__totehm_lv().mode))==='members'&&noErrors(log),'Members · return keeps the visited ecosystem');
+    await ctx.close();}
+
+
+  // Normal motion: GPT rotates continuously; the shared badge stays level.
+  {const {pg,ctx}=await page(browser,{dir:'com',origin,tables,session:false,viewport:{width:1280,height:860}});
+    await pg.emulateMedia({reducedMotion:'no-preference'});
+    await pg.goto(origin+'/totehm');await pg.waitForFunction(()=>window.__totehm_lv);await settled(pg,'c');
+    await pg.click('#lvn-dn');await settled(pg,'b');await pg.waitForTimeout(250);
+    const before=await pg.evaluate(()=>({gpt:getComputedStyle(document.getElementById('rf-gpt')).transform,badge:getComputedStyle(document.getElementById('lv-slogan')).transform}));
+    await pg.waitForTimeout(250);
+    const after=await pg.evaluate(()=>({gpt:getComputedStyle(document.getElementById('rf-gpt')).transform,badge:getComputedStyle(document.getElementById('lv-slogan')).transform,repeat:getComputedStyle(document.getElementById('rf-gpt')).animationIterationCount}));
+    ok(before.gpt!==after.gpt&&before.badge===after.badge&&after.repeat==='infinite','Motion · only GPT rotates infinitely');
     await ctx.close();}
 
   // Existing Higher subscribers retain their paid experience, separate from the free pitch.
