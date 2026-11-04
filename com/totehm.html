@@ -3089,7 +3089,8 @@ body.lv-d #lv-proc,body.lv-d #lv-slogan{opacity:0}
 .lvs-pre>span{position:absolute;top:50%;right:0;transform:translateY(-50%);opacity:0;transition:opacity .35s ease}
 .lvs-get{font-family:'Quantico',sans-serif;font-size:24px;color:#fbd5ca}
 #lv-slogan.is-h .lvs-get{opacity:1;transition-delay:.3s}
-body.lv-b #lv-slogan{opacity:0;pointer-events:none}
+body.lv-b #lv-slogan{opacity:1;pointer-events:none}
+body.lv-membre.lv-b #lv-slogan,body.lv-verrou.lv-b #lv-slogan{opacity:0}
 #lv-slogan.is-h{pointer-events:auto;cursor:pointer}
 #lv-slogan:focus-visible{outline:1px solid rgba(255,255,255,.4);outline-offset:6px}
 #lv-slogan.is-c{opacity:.45;pointer-events:none}
@@ -3373,42 +3374,27 @@ body.lv-membre #mb-offre{display:flex}
 #mb-offre .mbo-n{font:400 20px/1.2 'Quantico',sans-serif;color:#fbd5ca;max-width:90vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 #mb-offre .mbo-p{font:700 11px/1.4 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#b0b0b0}
 #mb-offre .mbo-s{font:400 10px/1.5 'Space Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:#7c7c84}
-/* ↓ : un manifeste, le processeur et son geste. Higher reste le slogan dessiné. */
-#rf{position:absolute;left:50%;top:0;bottom:0;transform:translateX(-50%);width:min(92vw,980px);
- display:flex;flex-direction:column;min-height:0;padding:calc(max(10px,env(safe-area-inset-top)) + 42px) 0 calc(var(--lvj-h) + 16px)}
-#rf-me{width:58px;height:58px;align-self:center;flex:none;margin-bottom:18px}
-#chatgpt-pitch{min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#333366 #000;scroll-padding:16px;touch-action:pan-y;padding:0 16px 22px}
-#chatgpt-pitch{text-align:center}
-.cg-simple{margin:0;color:#fff;font:700 clamp(19px,3vw,28px)/1.4 'Space Mono',monospace}
-#chatgpt-pitch:focus-visible{outline:1px solid #b8b8c2;outline-offset:3px}
-.cg-title{margin:0 0 20px;font:700 11px/1.5 'Space Mono',monospace;letter-spacing:.13em;color:#fff;text-transform:uppercase}
-.cg-title span{color:#b8b8c2;font-weight:400;text-transform:none;letter-spacing:0;margin-left:.5em}
-.cg-layout{display:grid;grid-template-columns:1.12fr 1fr;gap:36px;align-items:stretch}
-.cg-lead{margin:0 0 18px;font:700 clamp(30px,4.1vw,48px)/1.12 'Space Mono',monospace;letter-spacing:-.065em;color:#fff}
-.cg-lead span{color:#b8b8c2}
-.cg-intro,.cg-members p{font:400 12px/1.8 'Space Mono',monospace;color:#b8b8c2;margin:0;max-width:420px}
-.cg-intro strong{color:#fff;font-weight:400}
-.cg-system{position:relative;display:flex;flex-direction:column;justify-content:center;gap:20px;background:#333366;padding:28px 28px 28px 36px}
-.cg-seam{position:absolute;left:14px;top:28px;bottom:28px;display:flex;flex-direction:column;gap:5px;width:2px}
-.cg-seam i{flex:1;background:var(--c)}
-.cg-system p{margin:0;font:400 12px/1.8 'Space Mono',monospace;color:#d6d6de}
-.cg-system strong{font:700 15px/1.65 'Space Mono',monospace;color:#fff}
-.cg-members{margin-top:26px;display:grid;grid-template-columns:1.12fr 1fr;gap:36px;align-items:start}
-.cg-members h2{margin:0 0 10px;font:700 12px/1.5 'Space Mono',monospace;letter-spacing:.04em;color:#fff}
-.cg-signature{margin:0;font:400 13px/1.8 'Space Mono',monospace;color:#fff}
-.cg-higher{display:inline-block;width:4em;height:1.34em;vertical-align:-.35em}
-#chatgpt-entry{flex:none;display:flex;flex-direction:column;align-items:center;gap:7px;padding:16px 12px 0;background:#000}
-#chatgpt-connect{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:50px;padding:11px 18px;border:0;border-radius:10px;
- background:#24242b;color:#d6d6de;font:700 11px/1.4 'Space Mono',monospace;letter-spacing:.06em;text-decoration:none;transition:background .2s,color .2s,transform .2s}
-#chatgpt-connect svg{display:block;width:94px;height:32px;flex:none}
-#chatgpt-connect:focus-visible{outline:1px solid #fff;outline-offset:4px}
-@media(hover:hover){#chatgpt-connect:hover{background:#33333c;color:#fff;transform:translateY(-2px)}}
-.cg-free{margin:0;font:400 9px/1.5 'Space Mono',monospace;color:#b8b8c2;letter-spacing:.05em}
-@media(max-width:620px){#rf{width:94vw}#rf-me{width:50px;height:50px;margin-bottom:15px}
- #chatgpt-pitch{padding-left:12px;padding-right:12px}.cg-layout,.cg-members{grid-template-columns:1fr;gap:22px}
- .cg-title{font-size:10px;margin-bottom:17px}.cg-lead{font-size:32px}.cg-system{padding:23px 24px 23px 33px;gap:16px}
- .cg-seam{top:23px;bottom:23px}.cg-members{margin-top:24px}.cg-signature{font-size:12px}}
-@media(max-height:650px){#rf{padding-top:calc(max(10px,env(safe-area-inset-top)) + 34px)}#rf-me{width:42px;height:42px;margin-bottom:10px}#chatgpt-entry{padding-top:10px}}
+/* ↓ Higher my ChatGPT : même échelle que la langue ; un seul badge Higher voyage du centre. */
+#rf{position:absolute;left:50%;top:0;bottom:0;transform:translateX(-50%);width:min(92vw,560px);
+ display:flex;flex-direction:column;align-items:center;min-height:0;padding:max(12px,1.8dvh) 0 calc(var(--lvj-h) + 16px)}
+#rf-me{position:relative;width:clamp(140px,28dvh,240px);aspect-ratio:1;align-self:center;flex:none;margin-bottom:22px}
+#rf-gpt{display:block;width:100%;height:100%;object-fit:contain;animation:cg-orbit 30s linear infinite;animation-play-state:paused}
+body.lv-b #rf-gpt{animation-play-state:running}
+@keyframes cg-orbit{to{transform:rotate(360deg)}}
+#chatgpt-entry{flex:none;text-align:center;margin:0 0 12px}
+#chatgpt-connect{display:inline-block;color:#fff;background:none;padding:8px 0;text-decoration:none;
+ font:700 clamp(18px,3vw,24px)/1.4 'Space Mono',monospace}
+#chatgpt-connect:focus-visible{outline:1px solid #fff;outline-offset:5px}
+@media(hover:hover){#chatgpt-connect:hover{color:#b8b8c2}}
+#chatgpt-pitch{width:100%;text-align:center;min-height:0;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;
+ display:flex;flex-direction:column;gap:8px;background:rgba(0,0,0,.78);border-radius:10px;padding:14px 16px}
+#chatgpt-pitch .lvs-sci{margin:0}
+body.lv-membre #rf-me,body.lv-verrou #rf-me{width:58px;height:58px;margin-top:38px}
+body.lv-membre #rf-gpt,body.lv-verrou #rf-gpt{visibility:hidden}
+body.lv-b:not(.lv-membre):not(.lv-verrou) #ast-front{opacity:0;transition:clip-path .75s var(--gate-ease),opacity .55s ease .18s}
+body.lv-b:not(.lv-membre):not(.lv-verrou) #lv-socket{opacity:0}
+@media(prefers-reduced-motion:reduce){#rf-gpt{animation:none}}
+@media(max-height:600px){#rf-me{width:clamp(110px,25dvh,150px);margin-bottom:12px}#chatgpt-entry{margin-bottom:4px}#chatgpt-pitch{padding:10px 12px}}
 /* ── MES RÉGLAGES (le verso déplié, `#srch`) : le nom en grand, puis le panneau du même objet. ── */
 /* ⚠️ 18/10 — LE NOM EST UN IDENTIFIANT, ET IL TIENT LE HAUT DU VERSO (Wah : « affiché en haut du
    Totehm seulement sur la face verso, en mode FIXE et dans une police PLUS PETITE SANS RETOUR DE
@@ -4195,13 +4181,14 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
     <!-- ↓ : présentation gratuite de la connexion ChatGPT ; l'offre du membre reste distincte. -->
     <section class="lv-pane" id="lv-b" aria-label="Higher my ChatGPT">
       <div id="rf" class="lv-act">
-        <div id="rf-me" aria-hidden="true"></div>
-        <article id="chatgpt-pitch" aria-labelledby="chatgpt-title">
-          <h1 class="cg-simple" id="chatgpt-title">Bring your TOTEHM into the conversation.</h1>
-        </article>
+        <div id="rf-me" aria-hidden="true"><img id="rf-gpt" src="https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/public/com/gpt.png" alt="" width="1024" height="1024"></div>
         <div id="chatgpt-entry">
-          <a id="chatgpt-connect" href="/chatgpt" aria-label="Higher my ChatGPT"><svg class="cg-higher" viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-badge"></use></svg><span>MY CHATGPT</span><span aria-hidden="true">↗</span></a>
+          <a id="chatgpt-connect" href="/chatgpt">HIGHER my ChatGPT</a>
         </div>
+        <article id="chatgpt-pitch" tabindex="0" aria-labelledby="chatgpt-title">
+          <h1 class="lvs-hook" id="chatgpt-title">Your TOTEHM in ChatGPT's memory</h1>
+          <p class="lvs-sci">Connect your habits, goals, repulsions, visions and story with ChatGPT—alongside your media, subscribed members’ shared TOTEHMs and Figher Club’s accessible spots. Bring the connections you choose into every relevant conversation.</p>
+        </article>
         <div id="mb-offre" aria-live="polite"></div>
       </div>
     </section>
@@ -12338,9 +12325,9 @@ window.addEventListener('pageshow',e=>{
         const l=PAPIER.cibleLangue(), y=l?l.bas+28:H()*.42;
         placer(slo, W()/2+(larg('.lvs-get')+8)/2, y, 96);
       } else if(v==='b'){
-        /* Le badge se range en bas, masqué : le pitch porte sa signature et son CTA. */
-        const k=.42, jb=$('lvjoy'), haut=jb?Math.max(60,H()-jb.getBoundingClientRect().top):120;
-        placer(slo, W()/2-8*k/2, H()-haut-18, 96*k);
+        /* Le MÊME badge glisse au centre du GPT ; seul le PNG derrière lui tourne. */
+        const p=profil();
+        placer(slo,p.x,p.y,p.d*.94);
       } else {
         /* AU CENTRE, le badge ne s'éteint pas : il se pose en petit au coin du processeur — 25/10 : le TOTEHM est le
            boîtier, le badge se range donc CONTRE son coin bas-droit, dehors (sur le papier, il en couvrait le coin). */

@@ -6,6 +6,7 @@ import {
 } from './chatgpt-protocol.ts';
 import { retrieveContext, retrieveElement, getSpots, getSounds, getMediaMetadata, validElementRef } from './chatgpt-context.ts';
 
+import {retrieveEcosystem,readMember,listSubscribedMembers,memberMedia,clubSpots} from './chatgpt-ecosystem.ts';
 type DB = any;
 export type ConnectorConfig = { publicOrigin:string; allowedRedirectUris:string[]; enabled:boolean };
 const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -20,6 +21,11 @@ export const CHATGPT_TOOLS=[
   {name:'list_spots',description:'Use to retrieve the person’s own published Spots when relevant to a current plan. Historical or future Spots are not evidence of present location or completed practice. No GPS coordinates are returned. Do not use for public venue opening hours.',inputSchema:schema({period:{type:'string',enum:['now','past','future']},habit_ref:{type:'string',minLength:1,maxLength:4096},limit:{type:'integer',minimum:1,maximum:12}},['period']),annotations},
   {name:'get_sound',description:'Use when the person requests the sound saved for an intention or it is useful to their chosen activity. Returns only their saved links. Do not autoplay or use for unrelated music advice.',inputSchema:schema({intention:{type:'string',enum:ints}},['intention']),annotations},
   {name:'get_media',description:'Use to find metadata of media attached to an exact personal element. No image pixels, file paths, signed URLs or media analysis are provided. Do not claim to have seen a photo.',inputSchema:schema({...elementProps,limit:{type:'integer',minimum:1,maximum:12}},['kind','ref']),annotations},
+  {name:'get_ecosystem_context',description:'Retrieve relevant personal TOTEHM connections and inspiration from active subscriptions. Covers HABITS, OBJECTIVES, REPULSIONS, VISIONS and MY STORY with their links. Keep subscribed-member sources distinct from the user; inspiration is not an adopted habit. Live retrieval is not a write to ChatGPT saved memory.',inputSchema:schema({query:{type:'string',minLength:1,maxLength:1000},purpose:{type:'string',enum:['action','direction','replacement','explicit']},member:{type:'string',minLength:1,maxLength:80},limit:{type:'integer',minimum:1,maximum:12}},['query','purpose']),annotations},
+  {name:'list_subscriptions',description:'List active subscribed TOTEHM member names. Use pagination to select a member, then retrieve relevant connections or exact boxes. This is not the user’s fan list.',inputSchema:schema({offset:{type:'integer',minimum:0,maximum:10000},limit:{type:'integer',minimum:1,maximum:12}},[]),annotations},
+  {name:'read_member_element',description:'Read an exact shared box and its visible links from an active subscribed member. References must come from that member’s retrieved context. Private or expired-subscription content is unavailable.',inputSchema:schema({...elementProps,member:{type:'string',minLength:1,maxLength:80},limit:{type:'integer',minimum:1,maximum:12}},['member','kind','ref']),annotations},
+  {name:'get_member_media',description:'Read metadata of media attached to an exact authorized subscribed-member box. Does not send pixels or download URLs. Never claim to have seen an image or watched a video.',inputSchema:schema({...elementProps,member:{type:'string',minLength:1,maxLength:80},limit:{type:'integer',minimum:1,maximum:12}},['member','kind','ref']),annotations},
+  {name:'list_club_spots',description:'Find published Figher Club spots from all members that this user is permitted to see, as in the right-hand view. Filter by period and optionally city, habit or member; paginate with offset. Private and unentitled subscriber spots are excluded. A plan is not proof of actual presence. No coordinates or media files.',inputSchema:schema({period:{type:'string',enum:['now','past','future']},city:{type:'string',maxLength:120},habit_ref:{type:'string',maxLength:500},member:{type:'string',maxLength:80},offset:{type:'integer',minimum:0,maximum:10000},limit:{type:'integer',minimum:1,maximum:12}},['period']),annotations},
 ].map(tool=>({...tool,securitySchemes:[{type:'oauth2',scopes:[READ_SCOPE]}],_meta:{securitySchemes:[{type:'oauth2',scopes:[READ_SCOPE]}]}}));
 
 async function textBody(req:Request,max=16384){
@@ -35,6 +41,8 @@ function scalar(value:unknown,max=1000){if(typeof value!=='string'||!value.trim(
 function argsOnly(args:unknown,allowed:string[]){if(!isObject(args)||Object.keys(args).some(k=>!allowed.includes(k)))throw new ProtocolError('invalid_params');return args;}
 function limit(value:unknown){if(value===undefined)return 6;if(!Number.isInteger(value)||Number(value)<1||Number(value)>12)throw new ProtocolError('invalid_params');return Number(value);}
 function focus(args:Record<string,unknown>){const f={kind:args.kind,ref:args.ref};if(!validElementRef(f))throw new ProtocolError('invalid_params');return f;}
+const ECOSYSTEM_TOOLS=new Set(['get_ecosystem_context','list_subscriptions','read_member_element','get_member_media','list_club_spots']);
+function offset(value:unknown){if(value===undefined)return 0;if(!Number.isInteger(value)||Number(value)<0||Number(value)>10000)throw new ProtocolError('invalid_params');return Number(value);}
 async function challengeFor(verifier:string){const bytes=new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(verifier)));return btoa(String.fromCharCode(...bytes)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');}
 
 /** Factory isolates HTTP behavior for integration tests. db is a SERVER-ONLY service client. */
@@ -60,11 +68,18 @@ export function createConnectorHandler(db:DB,config:ConnectorConfig){
    const g=row?.grant;
    if(!row||row.kind!=='access'||!Number.isFinite(Date.parse(row.expires_at))||Date.parse(row.expires_at)<=Date.now()||!g||g.revoked_at||g.resource!==endpoints.resource||!Array.isArray(g.scope)||g.scope.length!==1||g.scope[0]!==READ_SCOPE)throw new ProtocolError('invalid_token','Connect TOTEHM',401);
    // Checking grants on every request makes revocation immediate; no auth cache.
-   return g;
+   const consent=await db.from('chatgpt_ecosystem_consents').select('version').eq('grant_id',g.id).maybeSingle();
+   return {...g,ecosystem:!consent.error&&consent.data?.version===1};
  }
  async function client(id:string){const row=check(await db.from('chatgpt_clients').select('client_id,name,redirect_uris').eq('client_id',ensureUUID(id)).maybeSingle());if(!row)throw new ProtocolError('invalid_client');return {...row,client_name:row.name,scope:READ_SCOPE};}
  async function request(id:string){const row=check(await db.from('chatgpt_requests').select('*').eq('id',ensureUUID(id)).maybeSingle());if(!row||row.used_at||Date.parse(row.expires_at)<=Date.now()||!redirectAllowed(row.redirect_uri))throw new ProtocolError('invalid_request','Expired request');return row;}
- async function callTool(name:unknown,raw:unknown,uid:string){
+ async function callTool(name:unknown,raw:unknown,uid:string,grant:any){
+   if(ECOSYSTEM_TOOLS.has(String(name))&&!grant.ecosystem)throw new ProtocolError('ecosystem_consent_required');
+   if(name==='get_ecosystem_context'){const a=argsOnly(raw,['query','purpose','member','limit']);const query=scalar(a.query);if(!['action','direction','replacement','explicit'].includes(String(a.purpose)))throw new ProtocolError('invalid_params');return retrieveEcosystem(db,grant.id,uid,{query,purpose:a.purpose as any,limit:limit(a.limit)},a.member===undefined?undefined:scalar(a.member,80));}
+   if(name==='list_subscriptions'){const a=argsOnly(raw,['offset','limit']);return listSubscribedMembers(db,grant.id,offset(a.offset),limit(a.limit));}
+   if(name==='read_member_element'){const a=argsOnly(raw,['member','kind','ref','limit']);return readMember(db,grant.id,scalar(a.member,80),{query:'',purpose:'explicit',focus:focus(a),limit:limit(a.limit)});}
+   if(name==='get_member_media'){const a=argsOnly(raw,['member','kind','ref','limit']);return memberMedia(db,grant.id,scalar(a.member,80),focus(a),limit(a.limit));}
+   if(name==='list_club_spots'){const a=argsOnly(raw,['period','city','habit_ref','member','offset','limit']);if(!['now','past','future'].includes(String(a.period)))throw new ProtocolError('invalid_params');return clubSpots(db,grant.id,{period:a.period,city:a.city===undefined?undefined:scalar(a.city,120),habit_ref:a.habit_ref===undefined?undefined:scalar(a.habit_ref,500),member:a.member===undefined?undefined:scalar(a.member,80),offset:offset(a.offset),limit:limit(a.limit)});}
    if(name==='get_context'){const a=argsOnly(raw,['query','purpose','limit']);const query=scalar(a.query);if(!['action','direction','replacement','explicit'].includes(String(a.purpose)))throw new ProtocolError('invalid_params');return retrieveContext(db,uid,{query,purpose:a.purpose as any,limit:limit(a.limit)});}
    if(name==='read_element'){const a=argsOnly(raw,['kind','ref','limit']);return retrieveElement(db,uid,focus(a),limit(a.limit));}
    if(name==='list_spots'){const a=argsOnly(raw,['period','habit_ref','limit']);if(!['now','past','future'].includes(String(a.period)))throw new ProtocolError('invalid_params');return getSpots(db,uid,{period:a.period as any,habit_ref:a.habit_ref===undefined?undefined:scalar(a.habit_ref,4096),limit:limit(a.limit)});}
@@ -110,7 +125,9 @@ export function createConnectorHandler(db:DB,config:ConnectorConfig){
    }
    if(req.method==='GET'&&action==='connection'){
     const u=await siteUser(req);const rows=check(await db.from('chatgpt_tokens').select('grant_id,grant:chatgpt_grants!inner(user_id,client_id,revoked_at)').eq('grant.user_id',u.id).is('grant.revoked_at',null).is('used_at',null).gt('expires_at',new Date().toISOString()).limit(30));
-    return json({connected:rows.length>0});
+    const ids=rows.map((r:any)=>r.grant_id);
+    const consents=ids.length?await db.from('chatgpt_ecosystem_consents').select('grant_id').in('grant_id',ids).eq('version',1):{data:[]};
+    return json({connected:rows.length>0,ecosystem_connected:!consents.error&&!!consents.data?.length});
    }
    if(req.method==='POST'&&action==='token'){
     if(!req.headers.get('content-type')?.includes('application/x-www-form-urlencoded'))throw new ProtocolError('invalid_request','Form required',415);
@@ -134,7 +151,7 @@ export function createConnectorHandler(db:DB,config:ConnectorConfig){
     const u=await siteUser(req);const b=await jsonBody(req);if(!isObject(b))throw new ProtocolError('invalid_request');
     if(action==='revoke'){const c=b.client_id==null?null:ensureUUID(b.client_id);check(await db.rpc('chatgpt_revoke',{p_user:u.id,p_client_id:c}));return json({ok:true});}
     const r=await request(String(b.request_id||''));const code=randomOpaque('th_code_');
-    const result=check(await db.rpc('chatgpt_authorize_request',{p_request:r.id,p_user:u.id,p_code_hash:await hashOpaque(code)}));
+    const result=check(await db.rpc('chatgpt_authorize_ecosystem',{p_request:r.id,p_user:u.id,p_code_hash:await hashOpaque(code)}));
     if(!result?.ok||!redirectAllowed(result.redirect_uri))throw new ProtocolError(result?.error||'invalid_request');
     const redirect=new URL(result.redirect_uri);redirect.searchParams.set('code',code);redirect.searchParams.set('state',result.state);redirect.searchParams.set('iss',endpoints.issuer);
     return json({redirect_url:redirect.href});
@@ -150,10 +167,10 @@ export function createConnectorHandler(db:DB,config:ConnectorConfig){
     if(message.id===undefined)return new Response(null,{status:202,headers});
     if(message.method==='initialize')return json(jsonRpcResult(message.id,initializeResult()));
     if(message.method==='ping')return json(jsonRpcResult(message.id,{}));
-    if(message.method==='tools/list')return json(jsonRpcResult(message.id,{tools:CHATGPT_TOOLS}));
+    if(message.method==='tools/list')return json(jsonRpcResult(message.id,{tools:CHATGPT_TOOLS.filter(t=>granted.ecosystem||!ECOSYSTEM_TOOLS.has(t.name))}));
     if(message.method==='tools/call'){
-     try{const result=await callTool(message.params?.name,message.params?.arguments??{},granted.user_id);return json(jsonRpcResult(message.id,{structuredContent:result,content:[{type:'text',text:JSON.stringify(result)}]}));}
-     catch(e){if(e instanceof ProtocolError&&['invalid_params','unknown_tool'].includes(e.code))return json(jsonRpcError(message.id,-32602,'Invalid tool arguments'));return json(jsonRpcResult(message.id,{isError:true,content:[{type:'text',text:'TOTEHM context is temporarily unavailable. Continue without inventing personal information.'}]}));}
+     try{const result=await callTool(message.params?.name,message.params?.arguments??{},granted.user_id,granted);return json(jsonRpcResult(message.id,{structuredContent:result,content:[{type:'text',text:JSON.stringify(result)}]}));}
+     catch(e){if(e instanceof ProtocolError&&e.code==='ecosystem_consent_required')return json(jsonRpcResult(message.id,{isError:true,content:[{type:'text',text:'Reconnect TOTEHM from ChatGPT to authorize subscribed-member and Club context. Existing personal access remains available.'}]}));if(e instanceof ProtocolError&&['invalid_params','unknown_tool'].includes(e.code))return json(jsonRpcError(message.id,-32602,'Invalid tool arguments'));return json(jsonRpcResult(message.id,{isError:true,content:[{type:'text',text:'TOTEHM context is temporarily unavailable. Continue without inventing personal information.'}]}));}
     }
     return json(jsonRpcError(message.id,-32601,'Method not found'));
    }
