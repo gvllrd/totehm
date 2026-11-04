@@ -50,6 +50,7 @@ const tool=(token,name,args)=>send('/mcp',{method:'POST',token,headers:mcpHeader
 try{
  await pg.exec(`create role anon;create role authenticated;create role service_role;create schema auth;create table auth.users(id uuid primary key);insert into auth.users values ('${A}'),('${B}');`);
  await pg.exec(await readFile(new URL('../../backend/supabase/migrations/20261101090000_chatgpt_connector.sql',import.meta.url),'utf8'));
+ await pg.exec(await readFile(new URL('../../backend/supabase/migrations/20261104140000_chatgpt_ecosystem.sql',import.meta.url),'utf8'));
  const status=(await send('?action=status')).data;check(status.ready&&status.issuer===ORIGIN,'Ready only after migration and configuration, with canonical issuer');
  const disabled=createConnectorHandler(db,{publicOrigin:ORIGIN,enabled:true,allowedRedirectUris:[]});
  check((await (await disabled(new Request(BASE+'?action=status'))).json()).ready===false,'No guessed callback enables the connector');
@@ -77,8 +78,15 @@ try{
  check((await send('?action=connection',{site:true})).data.connected===true,'Connection confirmed only after token exchange');
  r=await send('/mcp',{method:'POST',token:access,headers:mcpHeaders,body:{jsonrpc:'2.0',id:1,method:'initialize',params:{protocolVersion:'2025-06-18'}}});check(r.data.result.protocolVersion==='2025-06-18','MCP initialize negotiates supported protocol');
  r=await send('/mcp',{method:'POST',token:access,headers:mcpHeaders,body:{jsonrpc:'2.0',method:'notifications/initialized'}});check(r.status===202,'MCP notifications acknowledged without JSON-RPC response');
- r=await send('/mcp',{method:'POST',token:access,headers:mcpHeaders,body:{jsonrpc:'2.0',id:2,method:'tools/list'}});check(r.data.result.tools.length===5&&r.data.result.tools.every(t=>t.annotations.readOnlyHint),'Five read-only tools, no publish/write tools');
+ r=await send('/mcp',{method:'POST',token:access,headers:mcpHeaders,body:{jsonrpc:'2.0',id:2,method:'tools/list'}});check(r.data.result.tools.length===10&&r.data.result.tools.every(t=>t.annotations.readOnlyHint),'Ten read-only tools, no publish/write tools');
  r=await tool(access,'get_context',{query:'draw',purpose:'action',limit:6});const context=r.data.result.structuredContent;check(context.items.some(x=>x.text==='Draw ten minutes'),'Tool returns the authenticated owner’s Habit');check(context.edges.some(x=>x.relation==='serves'),'Tool preserves recorded relationship provenance');check(!JSON.stringify(context).includes('Private other member'),'No other member data returned');
+ const gid=(await pg.query('select grant_id from public.chatgpt_tokens where token_hash=$1',[await hashOpaque(access)])).rows[0].grant_id;
+ await pg.query('delete from public.chatgpt_ecosystem_consents where grant_id=$1',[gid]);
+ const legacy=await send('/mcp',{method:'POST',token:access,headers:mcpHeaders,body:{jsonrpc:'2.0',id:2,method:'tools/list'}});
+ check(legacy.data.result.tools.length===5,'Old grants retain only owner tools');
+ const denied=await tool(access,'get_ecosystem_context',{query:'draw',purpose:'action'});
+ check(denied.data.result.isError&&denied.data.result.content[0].text.includes('Reconnect'),'Broader access requires explicit renewed consent');
+ await pg.query('insert into public.chatgpt_ecosystem_consents(grant_id,version) values ($1,1)',[gid]);
  r=await tool(access,'get_context',{query:'draw',purpose:'action',user_id:B});check(r.data.error.code===-32602,'User ID supplied in arguments rejected');
  r=await tool(access,'publish_spot',{});check(r.data.error.code===-32602,'No undeclared write tool');
  r=await send('/mcp',{method:'POST',token:access,headers:{...mcpHeaders,origin:'https://evil.example'},body:{jsonrpc:'2.0',id:1,method:'tools/list'}});check(r.status===403,'Untrusted browser Origin rejected');

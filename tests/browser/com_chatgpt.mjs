@@ -47,17 +47,19 @@ try{
     const state=await pg.evaluate(()=>{
       const pitch=document.getElementById('chatgpt-pitch'),button=document.getElementById('chatgpt-connect'),panel=document.getElementById('lv-b');
       return {label:panel.getAttribute('aria-label'),text:pitch?.textContent.replace(/\s+/g,' ').trim(),tab:pitch?.tabIndex,
-        free:document.querySelector('#chatgpt-entry .cg-free')?.textContent,href:button?.getAttribute('href'),logos:panel.querySelectorAll('svg use[href="#higher-badge"]').length,
+        free:document.querySelector('#chatgpt-entry .cg-free')?.textContent,href:button?.getAttribute('href'),logos:document.querySelectorAll('#lv-slogan use[href="#higher-badge"]').length,
+        gpt:document.getElementById('rf-gpt')?.getAttribute('src'),
+        centered:Math.abs(document.getElementById('lv-slogan').getBoundingClientRect().top+document.getElementById('lv-slogan').getBoundingClientRect().height/2-(document.getElementById('rf-me').getBoundingClientRect().top+document.getElementById('rf-me').getBoundingClientRect().height/2))<2,
         old:!!document.querySelector('#lv-say,#lv-thread,#lv-focus,#lv-ici,.rf-proxy'),form:!!panel.querySelector('form,textarea,input'),
         button:button?.getAttribute('aria-label')||button?.textContent,disabled:!!button?.disabled,
         active:document.activeElement?.tagName,keyboard:document.body.classList.contains('rf-clavier'),geo:window.__geoCalls,
         setup:window.__totehm_lv().chatgpt?.setup,
         overflow:document.documentElement.scrollWidth>innerWidth+1};
     });
-    ok(state.label==='Higher my ChatGPT'&&/NEUROLINK/i.test(state.text)&&/NEURALINK/i.test(state.text),sample.name+' · bottom view presents NEUROLINK, not NEURALINK');
-    ok(/habit/i.test(state.text)&&/objective|what it serves/i.test(state.text)&&/story/i.test(state.text),sample.name+' · the pitch explains the personal links');
-    ok(/subscribe to a member/i.test(state.text)&&/choose to share/i.test(state.text),sample.name+' · subscriptions expose the elements a member chooses to share');
-    ok(/free to connect/i.test(state.free)&&/subscriptions are separate/i.test(state.free)&&state.href==='/chatgpt'&&state.setup==='/chatgpt'&&state.logos===2,sample.name+' · free connection setup and Higher slogan SVG are available');
+    ok(state.label==='Higher my ChatGPT'&&/YOUR TOTEHM IN CHATGPT'S MEMORY/i.test(state.text),sample.name+' · memory signature');
+    ok(/habits/i.test(state.text)&&/goals/i.test(state.text)&&/repulsions/i.test(state.text)&&/visions/i.test(state.text)&&/story/i.test(state.text),sample.name+' · all five element kinds');
+    ok(/subscribed members/i.test(state.text)&&/Figher Club/i.test(state.text),sample.name+' · subscriptions and accessible Club spots');
+    ok(state.href==='/chatgpt'&&state.setup==='/chatgpt'&&state.logos===1&&state.centered&&state.gpt.endsWith('/com/gpt.png'),sample.name+' · singleton Higher badge is centered over GPT');
     ok(/my ChatGPT/i.test(state.button)&&state.tab===0&&!state.overflow,sample.name+' · CTA is named, pitch is keyboard accessible, layout fits the viewport');
     ok(!state.old&&!state.form&&!state.keyboard&&!['INPUT','TEXTAREA'].includes(state.active),sample.name+' · no chat, focus relay or keyboard opens');
     await pg.focus('#chatgpt-pitch');

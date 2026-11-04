@@ -32,13 +32,13 @@
 <footer><a href="/terms">Simple terms of use</a></footer>
 <script type="module">
 import {createClient} from 'https://esm.sh/@supabase/supabase-js@2';
-const BUILD='chatgpt-connect-rfc9207';
+const BUILD='chatgpt-ecosystem-consent-v1';
 const sb=createClient('https://abujjbkbbiumxrokozph.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us');
 const $=id=>document.getElementById(id), panel=$('panel');
 const params=new URLSearchParams(location.search), requestId=params.get('request_id');
 let status=null, request=null, session=null, connection=null, busy=false, email='', codeSent=false, errorState='';
 const notice=t=>{$('notice').textContent=t||'';};
-const scopeLabels={'totehm:read':'Read relevant elements and links from my own TOTEHM.'};
+const scopeLabels={'totehm:read':'Read my TOTEHM, its media metadata, subscribed members’ shared boxes and media metadata, and Club spots I am allowed to see.'};
 function el(tag,text,cls){const n=document.createElement(tag);if(text!=null)n.textContent=text;if(cls)n.className=cls;return n;}
 function button(label,act,primary=false){const n=el('button',label,'button'+(primary?' primary':''));n.type='button';n.disabled=busy;n.addEventListener('click',act);return n;}
 function text(s,cls){panel.append(el('p',s,cls));}
@@ -83,12 +83,12 @@ function consent(){
  heading('CONNECT TO '+request.app_name);const account=el('div',session.user?.email||'My TOTEHM','account');panel.append(account);
  text('You choose the connection. Your TOTEHM stays yours.');const list=el('ul',null,'scope-list');
  for(const scope of request.scopes){list.append(el('li',scopeLabels[scope]||scope));}panel.append(list);
- text('ChatGPT can use this context when it helps your conversation. Read only. No image files or GPS coordinates.','subtle');
+ text('ChatGPT can retrieve all five parts of your TOTEHM and their connections, inspiration from active subscriptions, and accessible Club spots when relevant. Read only. Media metadata only; no image files or GPS coordinates.','subtle');
  actions(button('CONNECT MY TOTEHM',authorize,true),button('CANCEL',()=>{heading('Connection cancelled');text('Nothing was connected. You can close this page.');}));
- text('Disconnecting stops future access. Content already used can remain in your ChatGPT conversations.','subtle');
+ text('This connection provides live context on demand. It does not automatically save your TOTEHM in ChatGPT’s saved memory. Disconnecting stops future access; content already used can remain in your conversations.','subtle');
 }
 function setup(){
- if(connection?.connected===true){heading('YOUR TOTEHM IS CONNECTED');const s=el('p','Connected to ChatGPT','connected');panel.append(s);text('Keep using your ChatGPT. Bring your TOTEHM into the conversation when it matters.');const go=el('a','OPEN CHATGPT','button primary');go.href='https://chatgpt.com/';go.rel='noopener noreferrer';actions(go,button('DISCONNECT',revoke));text('Disconnecting stops future access. It does not erase your ChatGPT conversation history.','subtle');return;}
+ if(connection?.connected===true){heading('YOUR TOTEHM IS CONNECTED');const s=el('p','Connected to ChatGPT','connected');panel.append(s);text(connection.ecosystem_connected===true?'Your TOTEHM, shared boxes from your subscriptions and accessible Club spots are available when relevant.':'Your personal TOTEHM is connected. Reconnect TOTEHM in ChatGPT to authorize your subscriptions and Club spots.');const go=el('a','OPEN CHATGPT','button primary');go.href='https://chatgpt.com/';go.rel='noopener noreferrer';actions(go,button('DISCONNECT',revoke));text('Live context is retrieved on demand, without automatically writing to ChatGPT’s saved memory. Disconnecting stops future access; it does not erase conversation history.','subtle');return;}
  heading('CONNECT FROM CHATGPT');text('In ChatGPT, open Settings → Apps. If “Create app” is available, add TOTEHM with this address.');
  const url=serverURL();if(url){const row=el('div',null,'server');row.append(el('code',url));row.append(button('COPY',async()=>{try{await navigator.clipboard.writeText(url);notice('Address copied.');}catch{notice('Select the address above to copy it.');}}));panel.append(row);}
  text('Choose OAuth, then connect with your TOTEHM. App availability depends on your ChatGPT account.','subtle');const go=el('a','OPEN CHATGPT','button primary');go.href='https://chatgpt.com/';go.rel='noopener noreferrer';actions(go,button('CHECK CONNECTION',refresh));
