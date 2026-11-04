@@ -7,7 +7,6 @@ import { createClient } from 'npm:@supabase/supabase-js@2.57.4';
 import { streetwearServiceRequest } from '../_shared/streetwear-auth.ts';
 
 const sb = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
-const LOGO_URL = Deno.env.get('TOTEHM_LOGO_URL') ?? 'https://www.higher.boutique/assets/img/totehm_logo.png';
 const QUANTICO_URL = 'https://raw.githubusercontent.com/google/fonts/main/ofl/quantico/Quantico-Regular.ttf';
 
 // palette de marque — rgba 32 bits
@@ -106,14 +105,11 @@ Deno.serve(async (req) => {
   perforate(box);
   box.composite(text, padX, padY);
 
-  // 4. compositing : la signature est CENTREE en bas (03/11, Wah), le logo en bas a gauche
+  // 4. compositing : la signature, CENTREE en bas. Rien d'autre (03/11, Wah : « juste le
+  //    nom du TOTEHM cloth sous son fond perfore bleu navy. Point. ») — le logo posé en
+  //    bas a gauche encombrait l'oeuvre.
   const margin = Math.round(Math.min(96,W*.03,H*.03));
   canvas.composite(box, Math.round((W - box.width) / 2), H - box.height - margin);
-  try {
-    const logoBuf = new Uint8Array(await (await fetch(LOGO_URL)).arrayBuffer());
-    const logo = (await Image.decode(logoBuf)).resize(340, Image.RESIZE_AUTO);
-    canvas.composite(logo, margin, H - logo.height - margin);
-  } catch (_) { /* logo optionnel : la pièce reste valide sans */ }
 
   // 5. upload + urls signées (30j pour printful, 7j pour consultation)
   const png = await canvas.encode();

@@ -237,7 +237,8 @@ test('B sends every concept with its own button, after the member context',async
   const contexte=hits(r,'/sendMessage')[0].body.text;
   assert.match(contexte,/^Hello/);
   assert.match(contexte,/Curation mission/);
-  assert.match(contexte,/you earn <b>\d+\.\d{2} €<\/b>/);
+  // 04/11 (Wah) : « tu gagnes sur la curation 20 balles (en meme pas 10 secondes) ».
+  assert.match(contexte,/you earn <b>20 €<\/b> for under ten seconds of work/);
   assert.match(contexte,/Higher Champion Sweatshirt/);
   assert.match(contexte,/Ink Realism/);
   assert.match(contexte,/<i>\(PRIMARY box\)<\/i>/);
@@ -288,7 +289,7 @@ test('C closes the mission on what it pays',async()=>{
   const texte=envois[0].body.caption;
   assert.match(texte,/is encoded/);
   assert.match(texte,/You picked artwork/);
-  assert.match(texte,/You earned \d+\.\d{2} €/);
+  assert.match(texte,/You earned 20 €/);
   assert.ok(r.calls.findIndex(o=>o.url.includes('/sendPhoto'))>r.calls.findIndex(o=>o.url.includes('/compose-artwork')));
 });
 const orderResponder=o=>o.url.includes('/orders/@')?status(404):o.url.includes('/totehm_cloth_support?')?[support]:
