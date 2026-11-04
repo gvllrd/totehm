@@ -86,10 +86,14 @@ Deno.serve(async (req) => {
   let art: Image | null = await Image.decode(srcBuf);
 
   // 2. canvas print 12x16" @300dpi — l'artwork tient entièrement dedans (fit, pas de débord)
-  const support = cloth.totehm_cloth_support as unknown as { print_area?: {width_in?:number;height_in?:number} };
+  const support = cloth.totehm_cloth_support as unknown as { print_area?: {width_in?:number;height_in?:number;width_px?:number;height_px?:number} };
   const area=support?.print_area||{};
-  const W = Math.round(Math.max(600,Math.min(6000,Number(area.width_in||12)*300)));
-  const H = Math.round(Math.max(600,Math.min(6000,Number(area.height_in||16)*300)));
+  // 04/11 : la zone d'impression REELLE vient de Printful (`width_px`/`height_px`, mesures
+  // relevees par n8n F — 1800x2400 a 150 dpi pour le Champion). On recalculait 12x300,
+  // soit un fichier QUATRE fois plus lourd que ce que l'imprimeur exploite ; la fonction
+  // n'avait plus assez de memoire pour le composer. On suit l'imprimeur.
+  const W = Math.round(Math.max(600,Math.min(6000,Number(area.width_px)||Number(area.width_in||12)*300)));
+  const H = Math.round(Math.max(600,Math.min(6000,Number(area.height_px)||Number(area.height_in||16)*300)));
   // 04/11 : la fonction a rendu `not having enough compute resources`. On met l'artwork
   // a sa taille finale AVANT d'allouer le canvas, et on lache la source decodee : trois
   // images pleine taille en memoire en meme temps ne passent pas.
@@ -129,7 +133,9 @@ Deno.serve(async (req) => {
   // seul moyen de VOIR l'oeuvre signee avant l'expedition — et le seul, pour un essai.
   let previewUrl: string | null = null;
   try {
-    const preview = canvas.clone().resize(1400, Image.RESIZE_AUTO);
+    // Pas de `clone()` : le canvas a deja ete encode et televerse, on peut le reduire
+    // en place. Le cloner doublait la plus grosse image en memoire, pour rien.
+    const preview = canvas.resize(1400, Image.RESIZE_AUTO);
     const jpg = await preview.encodeJPEG(85);
     const previewPath = `${cloth_id}/preview.jpg`;
     const { error: prevErr } = await sb.storage.from('streetwear-generations')
