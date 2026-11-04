@@ -67,6 +67,28 @@
   ],
   "redirects": [
     {
+      "source": "/chatgpt",
+      "has": [
+        {
+          "type": "host",
+          "value": "totehm.com"
+        }
+      ],
+      "destination": "https://www.totehm.com/chatgpt",
+      "permanent": false
+    },
+    {
+      "source": "/chatgpt.html",
+      "has": [
+        {
+          "type": "host",
+          "value": "totehm.com"
+        }
+      ],
+      "destination": "https://www.totehm.com/chatgpt",
+      "permanent": false
+    },
+    {
       "source": "/",
       "destination": "/totehm",
       "permanent": false
