@@ -38,16 +38,27 @@ function punchCircle(img: Image, cx: number, cy: number, r: number, color: numbe
   }
 }
 
-// why : reproduire le border-image du front — cercles centrés sur les bords, coins pleins
-function perforate(box: Image, step = 140, r = 20, cornerGap = 70) {
+// 04/11 (Wah) : « la boite perforee ne correspond pas a la vraie ». Les mesures viennent
+// du masque du front (`#hmask`, 600x200, DIX-HUIT trous de rayon 14) : sept cercles en
+// haut, sept en bas, deux sur chaque cote. Elles etaient codees en pixels absolus
+// (step 140, rayon 20), calibres pour un canvas deux fois plus grand : en reduisant le
+// canvas a la zone reelle de l'imprimeur, les trous sont devenus enormes et clairsemes.
+// On les pose en PROPORTION, pour que la box garde le MEME dessin a toute taille.
+const TROUS_X = [60, 140, 220, 300, 380, 460, 540].map(x => x / 600);
+const TROUS_Y = [70, 130].map(y => y / 200);
+const RAYON_RELATIF = 14 / 200;
+function perforate(box: Image) {
   const w = box.width, h = box.height;
-  for (let x = cornerGap + step / 2; x <= w - cornerGap; x += step) {
-    punchCircle(box, Math.round(x), 1, r, BLACK);       // bord haut
-    punchCircle(box, Math.round(x), h, r, BLACK);       // bord bas
+  const r = Math.max(2, Math.round(h * RAYON_RELATIF));
+  for (const t of TROUS_X) {
+    const x = Math.round(t * w);
+    punchCircle(box, x, 1, r, BLACK);                   // bord haut
+    punchCircle(box, x, h, r, BLACK);                   // bord bas
   }
-  for (let y = cornerGap + step / 2; y <= h - cornerGap; y += step) {
-    punchCircle(box, 1, Math.round(y), r, BLACK);       // bord gauche
-    punchCircle(box, w, Math.round(y), r, BLACK);       // bord droit
+  for (const t of TROUS_Y) {
+    const y = Math.round(t * h);
+    punchCircle(box, 1, y, r, BLACK);                   // bord gauche
+    punchCircle(box, w, y, r, BLACK);                   // bord droit
   }
 }
 
