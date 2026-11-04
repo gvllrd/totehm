@@ -68,8 +68,9 @@ const processNode = (key,input,responder,env) => execute(key,nodeNames[key],inpu
 const ok = r => {assert.equal(r.error,undefined);return r.result?.[0]?.json;};
 const failed = (r, text) => assert.ok(r.error?.includes(text), 'Expected error '+text+', got '+r.error);
 const queueResponder = o => {
-  if(o.url.includes('/cloth_concepts?')) return [{cloth_id:id}];
-  if(o.url.includes('/streetwear_jobs?')) return [{state:'done',data:{curation_message_id:42}}];
+  if(o.url.includes('/cloth_concepts?')) return [{cloth_id:id,batch_id:'lot-courant'}];
+  if(o.url.includes('select=generation_batch')) return [{generation_batch:'lot-courant'}];
+  if(o.url.includes('/streetwear_jobs?')) return [{state:'done'}];
 };
 const generationResponder = (o, number=7) => {
   if(o.url.includes('/totehm_cloth_support?')) return [support];
@@ -122,8 +123,17 @@ test('B selects the notify stage explicitly',async()=>{
 });
 test('C rejects a forged callback',async()=>{const r=await gate('C',{body:callback().body});assert.equal(ok(r).http_status,401);assert.equal(r.calls.length,0);});
 test('C restricts callbacks to the curator',async()=>{const r=await gate('C',callback('pick',{from:{id:9001}}));assert.equal(ok(r).reason,'curator_only');assert.equal(r.calls.length,0);});
-test('C rejects buttons from an old Telegram message',async()=>{
-  const r=await gate('C',callback('pick',{message:{message_id:99,chat:{id:7001}}}),queueResponder);
+test('C rejects a button from a previous batch',async()=>{
+  const r=await gate('C',callback(),o=>o.url.includes('select=generation_batch')?[{generation_batch:'autre-lot'}]:queueResponder(o));
+  assert.equal(ok(r).reason,'stale_batch');assert.equal(hits(r,'streetwear_claim').length,0);
+});
+test('C accepts a button whatever message carries it',async()=>{
+  const r=await gate('C',callback('pick',{message:{message_id:99,chat:{id:7001}}}),
+    o=>queueResponder(o)??(rpcName(o)==='streetwear_claim'?ticket('curation'):undefined));
+  assert.equal(ok(r).stage,'curation');
+});
+test('C rejects a button while the notification is unfinished',async()=>{
+  const r=await gate('C',callback(),o=>o.url.includes('/streetwear_jobs?')?[{state:'running'}]:queueResponder(o));
   assert.equal(ok(r).reason,'stale_button');assert.equal(hits(r,'streetwear_claim').length,0);
 });
 test('C claims the selected concept with its cloth',async()=>{
