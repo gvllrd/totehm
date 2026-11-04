@@ -15,7 +15,6 @@
   règle `_box_shared` ; COM écrit par `box_audience_set`, lit par `totehm_read` (box par box). Reste au terminal : `totehm_of`, les politiques.
 
 ## L'argent
-
 - `member_ledger` en ajout seul : crédit sur `invoice.paid`, idempotence `unique(source, kind)`, l'arrondi va à TOTEHM ; 80/20, revente 7 %. Versement manuel le 1er : `payouts_due()` → virement → `payout_mark_paid()`. Pas de Stripe Connect.
 - Propriété : `art_editions` · `art_transfers` (ajout seul) · `stoner_access` ; le THP = l'œuvre `totehmpaper`. Le marché ne s'écrit que par le webhook (`art_settle`) ; `ok:false` → `market_incidents` = remboursement à la main.
 - `stripe-webhook` : `higher` · `cloth` · `subscription` · `creator_sub` · `artwork` · `resale` · `luxury` · `higher_sub` ;
@@ -23,7 +22,6 @@
   un événement de test n'ouvre que `cloth` et `luxury`, marqués `test`, et `handleCloth` n'appelle jamais l'API Stripe.
 
 ## Les 40 Edge Functions (`supabase/functions/`)
-
 | rôle | fonctions |
 |---|---|
 | identité | `sso-mint` · `sso-redeem` |
@@ -36,7 +34,6 @@
 Le compte vient TOUJOURS de la session, jamais du corps ; une page ne reçoit que des nombres déjà calculés.
 
 ## Le bot et le Higher Self
-
 - TotehmBot (Telegram) sans voix (jamais « je », zéro modèle) ; relances `push_decision` au rythme de chaque Habit, 6/jour.
 - Higher Self (`higher-self` v7, `fmt:'r4'`) : le MIROIR. `_bot_mirror` = le TOTEHM relié (where, intentions, rythme, son, liens) ;
   `_shared/mirror.ts` : contexte + citations vérifiées (`@ok`) ; gratuit limité (`_sm_rules`), puis `higher_sub` ; un lieu réel (`_mirror_places`, `@lieu`).
@@ -46,15 +43,15 @@ Le compte vient TOUJOURS de la session, jamais du corps ; une page ne reçoit qu
   pas l'image. Deux lectures SQL, zéro appel payant de plus.
 
 ## ChatGPT — connexion dédiée, lecture seule
-
 `chatgpt-connector` v6 est déployé et activé ; migrations additives `20261101090000_chatgpt_connector.sql` et `20261104140000_chatgpt_ecosystem.sql` appliquées, RLS et RPC réservées service_role. L’extension est enregistrée une seule fois dans l’historique Supabase sous `20261104133622` / `20261104140000_chatgpt_ecosystem` ; ne jamais la réappliquer. OAuth PKCE + jetons opaques hachés, jamais une session Supabase ; consentement `/chatgpt`, callback exact `https://chatgpt.com/connector_platform_oauth_redirect` avec `iss` (RFC 9207). Origine `https://www.totehm.com` ; `CHATGPT_CONNECTOR_ENABLED=true`. Redéployer via Management API ou `supabase functions deploy chatgpt-connector --project-ref abujjbkbbiumxrokozph --no-verify-jwt --use-api` depuis `backend/` ; si la CLI refuse le jeton injecté du cloud, utiliser Management API. `/mcp` : anciens consentements = 5 outils personnels ; reconnexion explicitement consentie = 10 outils, dont contexte mixte attribué, abonnements paginés, box membre, médias membre et spots Club, sans écriture ni GPS/pixels. `chatgpt-ecosystem.ts` convertit les cinq catégories et leurs liens ; ne jamais confondre inspiration et choix personnel. Consentement versionné PAR GRANT, émission atomique `chatgpt_authorize_ecosystem`. Lecteur service-only `chatgpt_read_ecosystem` relit l’abonnement à chaque appel et réutilise `totehm_read/member_media/club_spots[_of]` avec le sujet consenti, restauré ensuite. Aucun accès public élargi. Mémoire ChatGPT native : aucune écriture automatique ; contexte MCP à la demande. Tests `tests/fn/chatgpt-*` (SQL sous PGlite) + `tests/browser/chatgpt_connect.mjs`. RLS, droits et refus atomiques vérifiés en production par transaction annulée ; status/discovery publics vérifiés. L’essai réel connecté dans ChatGPT (reconsentement, lecture autorisée et révocation) nécessite l’intervention de Wah.
 
 ## n8n
-
-`n8n/README.md` (VM Oracle) · `n8n/workflows/` (A → F). n8n n'accorde jamais un accès. B republiée le 26/10 : elle SIGNE
-les photos allumées (`box_snapshot.shots`), les fait lire par un modèle de vision et verse ce qu'il en dit dans le prompt
-— matière, jamais instruction. C, D lisent `$env` (11 clés) ; E reste sur l'ancien (`process.env`).
-Zéro exécution : `stripe-webhook` envoie `apikey` (clé de service) à B, que sa version publiée exige (`serviceAuth`), mais
-aucun essai ne lui est parvenu. Banc hors ligne : `tests/n8n/streetwear/offline.mjs` (59 simulations, six blocages).
+`n8n/README.md` (VM Oracle) · `n8n/workflows/` (A → F). n8n n'accorde jamais un accès. B SIGNE les photos allumées, les
+fait lire par un modèle de vision et verse ce qu'il en dit dans le prompt — matière, jamais instruction ; les sept
+concepts partent un par un, un bouton `PICK` chacun, et elle retient quel message porte quel numéro. C ROUTE les boutons
+Telegram : `pick` (validé par le LOT, jamais par un message ; les six autres claviers tombent, l'image retenue dit
+`PICKED`), `ship`/`hold` renvoyés à D. D pose un brouillon Printful (`confirm=false` : rien de fabriqué ni facturé),
+montre le mockup du dos avec taille et adresse, et n'appelle `/confirm` que sur `SEND TO PRINT`. C, D lisent `$env`
+(11 clés) ; E reste sur l'ancien (`process.env`). Banc : `tests/n8n/streetwear/offline.mjs` (73 tests, six blocages).
 
 Avis Supabase : 2 ERROR connus (`higher_badges` lit `auth.users` ; 4 vues `security definer`, dont `signature_styles`).

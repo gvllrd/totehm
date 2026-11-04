@@ -321,8 +321,12 @@ test('C closes the mission on what it pays',async()=>{
   assert.match(texte,/You earned 20 €/);
   assert.ok(r.calls.findIndex(o=>o.url.includes('/sendPhoto'))>r.calls.findIndex(o=>o.url.includes('/compose-artwork')));
 });
+const draft=(preview=true)=>({id:88,external_id:id,status:'draft',
+  items:[{files:preview?[{type:'preview',preview_url:'https://fixture.invalid/mockup.png'}]:[]}]});
 const orderResponder=o=>o.url.includes('/orders/@')?status(404):o.url.includes('/totehm_cloth_support?')?[support]:
-  o.url.includes('/streetwear-assets')?{url:'https://fixture.invalid/print.png'}:o.url.includes('/orders?confirm=false')?{result:{id:88,external_id:id,status:'draft'}}:undefined;
+  o.url.includes('/streetwear-assets')?{url:'https://fixture.invalid/print.png'}
+  :o.url.includes('api.telegram.org')?{ok:true,result:{message_id:900}}
+  :o.url.includes('/orders?confirm=false')?{result:draft()}:undefined;
 test('D creates only a draft and keeps other print placements',async()=>{
   const r=await processNode('D',ticket('printful'),orderResponder);assert.equal(ok(r).printful_status,'draft');
   const created=hits(r,'/orders?','POST');assert.equal(created.length,1);assert.ok(created[0].url.endsWith('confirm=false'));
@@ -330,8 +334,56 @@ test('D creates only a draft and keeps other print placements',async()=>{
   assert.equal(created[0].body.items[0].files.find(f=>f.type==='back').url,'https://fixture.invalid/print.png');
 });
 test('D recovers the existing order without creating another',async()=>{
-  const r=await processNode('D',ticket('printful'),o=>o.url.includes('/orders/@')?{result:{id:88,external_id:id,status:'draft'}}:undefined);
+  const r=await processNode('D',ticket('printful'),o=>o.url.includes('/orders/@')?{result:draft()}
+    :o.url.includes('api.telegram.org')?{ok:true,result:{message_id:900}}:undefined);
   ok(r);assert.equal(hits(r,'api.printful.com','POST').length,0);
+});
+test('D asks for a quality check instead of printing',async()=>{
+  const r=await processNode('D',ticket('printful'),orderResponder);
+  const envoi=hits(r,'/sendPhoto');assert.equal(envoi.length,1,'le mockup part avec ses boutons');
+  assert.equal(envoi[0].body.photo,'https://fixture.invalid/mockup.png');
+  const boutons=envoi[0].body.reply_markup.inline_keyboard[0].map(b=>b.callback_data);
+  assert.deepEqual(boutons,['ship:'+id,'hold:'+id]);
+  assert.ok(envoi[0].body.caption.includes('Fixture street'),'l adresse se relit');
+  assert.ok(envoi[0].body.caption.includes('size M'));
+  assert.equal(hits(r,'/confirm','POST').length,0,'rien ne part a l impression tout seul');
+});
+test('D falls back to text when Printful has no mockup yet',async()=>{
+  const r=await processNode('D',ticket('printful'),o=>o.url.includes('/orders/@')?status(404)
+    :o.url.includes('/totehm_cloth_support?')?[support]
+    :o.url.includes('/streetwear-assets')?{url:'https://fixture.invalid/print.png'}
+    :o.url.includes('api.telegram.org')?{ok:true,result:{message_id:900}}
+    :o.url.includes('/orders?confirm=false')?{result:draft(false)}:undefined);
+  ok(r);assert.equal(hits(r,'/sendPhoto').length,0);
+  const envoi=hits(r,'/sendMessage');assert.equal(envoi.length,1);
+  assert.ok(envoi[0].body.text.includes('no mockup yet'));
+  assert.deepEqual(envoi[0].body.reply_markup.inline_keyboard[0].map(b=>b.callback_data),['ship:'+id,'hold:'+id]);
+});
+test('D confirms the Printful order only on SEND',async()=>{
+  const decision={ok:true,route:'ship',cloth:{id,name:'0.Simulation',printful_order_id:'88'},callback_id:'cb',message_id:900};
+  const r=await processNode('D',decision,o=>o.url.includes('/confirm')?{result:{status:'pending'}}
+    :o.url.includes('api.telegram.org')?{ok:true}:undefined);
+  assert.equal(ok(r).printful_status,'pending');
+  assert.equal(hits(r,'/orders/88/confirm','POST').length,1);
+  assert.ok(hits(r,'/editMessageCaption')[0].body.caption.includes('SENT TO PRINT'));
+});
+test('D prints nothing on HOLD',async()=>{
+  const decision={ok:true,route:'hold',cloth:{id,name:'0.Simulation',printful_order_id:'88'},callback_id:'cb',message_id:900};
+  const r=await processNode('D',decision,o=>o.url.includes('api.telegram.org')?{ok:true}:undefined);
+  assert.equal(ok(r).route,'hold');assert.equal(hits(r,'api.printful.com').length,0);
+  assert.ok(hits(r,'/editMessageCaption')[0].body.caption.includes('ON HOLD'));
+});
+test('D refuses a decision on a cloth without a draft',async()=>{
+  const r=await gate('D',internal({cloth_id:id,decision:'ship'}),o=>o.url.includes('/totehm_clothes?')?[{id,printful_order_id:null}]:undefined);
+  assert.equal(ok(r).reason,'no_draft');assert.equal(hits(r,'streetwear_claim').length,0);
+});
+test('C routes a quality-check button to Printful',async()=>{
+  const r=await gate('C',callback('ship',{message:{message_id:900,chat:{id:7001}}}));
+  assert.equal(ok(r).route,'ship');assert.equal(r.calls.length,0,'aucune lecture inutile');
+  const p=await processNode('C',ok(r),o=>o.url.includes('/webhook/')?{ok:true}:undefined);
+  const appel=hits(p,'streetwear-printful');assert.equal(appel.length,1);
+  assert.equal(appel[0].body.decision,'ship');assert.equal(appel[0].body.message_id,900);
+  assert.equal(hits(p,'/answerCallbackQuery').length,0,'D repondra lui-meme au bouton');
 });
 test('D rejects an order belonging to a different cloth',async()=>{
   const r=await processNode('D',ticket('printful'),o=>o.url.includes('/orders/@')?{result:{id:88,external_id:'different',status:'draft'}}:undefined);
