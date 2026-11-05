@@ -12,7 +12,8 @@ journalisation des succès est REFERMÉE (B, C, D, E, F, T : `saveDataSuccessExe
 les échecs restent gardés, et en gardent une copie. C'est une clé SECRÈTE NOMMÉE (`sb_secret_…`), pas la `service_role`
 historique : la remplacer ne régénère aucun JWT et ne déconnecte aucun membre. Dans l'ordre :
 1. Supabase, Project Settings → API Keys : créer une nouvelle clé secrète, sans révoquer l'ancienne tout de suite.
-2. La poser dans `docker-compose.yml` (`SB_KEY`), puis `docker compose up -d`.
+2. La poser dans le `.env` de `~/n8n-server` (ligne `SB_KEY=`) — pas dans `docker-compose.yml`, qui ne porte que la
+   référence `${SB_KEY}` — puis `docker compose up -d` depuis ce dossier.
 3. Vérifier qu'un flux répond (un PICK suffit), PUIS révoquer l'ancienne clé dans le dashboard.
 4. Purger les copies — UI n8n : Executions, tout sélectionner, supprimer ; ou :
     docker compose exec n8n n8n execution:delete --all
