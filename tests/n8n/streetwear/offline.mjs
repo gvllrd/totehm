@@ -431,6 +431,25 @@ test('C routes a quality-check button to Printful',async()=>{
   assert.equal(appel[0].body.decision,'ship');assert.equal(appel[0].body.message_id,900);
   assert.equal(hits(p,'/answerCallbackQuery').length,0,'D repondra lui-meme au bouton');
 });
+test('D says WHY Printful refused, not just the number',async()=>{
+  const r=await processNode('D',ticket('printful'),o=>o.url.includes('/orders/@')?status(404)
+    :o.url.includes('/totehm_cloth_support?')?[support]
+    :o.url.includes('/streetwear-assets')?{url:'https://fixture.invalid/print.png'}
+    :o.url.includes('/orders?confirm=false')?status(400,{error:{message:'Variant 55 is discontinued'}}):undefined);
+  failed(r,'Variant 55 is discontinued');
+  assert.ok(hits(r,'streetwear_fail')[0].body.p_code.includes('http_400'),'le numero reste');
+});
+test('F records what failed instead of a constant',async()=>{
+  const r=await gate('F',productEvent(),o=>o.url.includes('/streetwear_events')?[{}]
+    :o.url.includes('api.printful.com')?status(403,{result:'Store not accessible'}):undefined);
+  const p=await processNode('F',{...ok(r),inbox_id:'evt-1',inbox_attempts:0},
+    o=>o.url.includes('api.printful.com')?status(403,{result:'Store not accessible'})
+    :o.url.includes('/streetwear_events')?[{}]:undefined);
+  assert.ok(String(p.error||'').includes('403'),'le numero remonte : '+p.error);
+  const note=hits(p,'/streetwear_events','PATCH').pop();
+  assert.ok(String(note.body.last_error).includes('403'),'et la base le garde, au lieu d une constante');
+  assert.notEqual(note.body.last_error,'printful_event_failed');
+});
 test('D rejects an order belonging to a different cloth',async()=>{
   const r=await processNode('D',ticket('printful'),o=>o.url.includes('/orders/@')?{result:{id:88,external_id:'different',status:'draft'}}:undefined);
   failed(r,'printful_order_mismatch');assert.equal(hits(r,'streetwear_complete').length,0);
@@ -470,7 +489,7 @@ test('F deactivates a removed product that already has orders',async()=>{
 });
 test('F retains a failed event for recovery',async()=>{
   const r=await processNode('F',{...productEvent(),inbox_id:1,inbox_attempts:1},o=>o.url.includes('/store/products/')?{__transport:true}:o.url.includes('/streetwear_events?')?{}:undefined);
-  failed(r,'retained for retry');const update=hits(r,'/streetwear_events?','PATCH')[0].body;assert.equal(update.attempts,2);assert.equal(update.state,undefined);
+  failed(r,'Printful event failed');const update=hits(r,'/streetwear_events?','PATCH')[0].body;assert.equal(update.attempts,2);assert.equal(update.state,undefined);
 });
 test('Prepared E rejects an anonymous shipping event',async()=>{const r=await gate('E-prepared',{body:{type:'package_shipped',data:{order:{id:88}}}});assert.equal(ok(r).http_status,401);assert.equal(r.calls.length,0);});
 test('Prepared E blocks a TEST cloth before contacting Printful',async()=>{
@@ -508,7 +527,7 @@ test('Detect current E accepting an unverified shipping event',async()=>{
   findings.push({workflow:'E',severity:'blocker',code:'draft_tracking_unverified',detail:'Current E draft accepts an unsigned event and TEST cloth, updates shipping and attempts an email. All effects were simulated.'});
 });
 test('Detect F shipment routing explicitly held back',async()=>{
-  const r=await processNode('F',{body:{type:'package_shipped',data:{order:{id:88}}}});failed(r,'retained for retry');assert.equal(r.calls.length,0);
+  const r=await processNode('F',{body:{type:'package_shipped',data:{order:{id:88}}}});failed(r,'Printful event failed');assert.equal(r.calls.length,0);
   findings.push({workflow:'F/E',severity:'blocker',code:'tracking_not_deployed',detail:'Current F process refuses package_shipped while tracking deployment is pending.'});
 });
 

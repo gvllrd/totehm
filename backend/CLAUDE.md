@@ -55,6 +55,6 @@ montre le mockup du dos avec taille et adresse, et n'appelle `/confirm` que sur 
 `streetwear_tick_arm()` (jeton a usage unique, aucun secret dans le cron), requalifie les executions abandonnees
 (`streetwear_recover_stalled`), reserve ce qui est pret (`streetwear_due`, qui repousse de trois minutes) et rappelle le
 flux — `tracking` excepte, que Printful pousse. Une piece bloquee en `error_locked` est ANNONCEE une fois (`streetwear_alerts` pose `alerted_at`) avec deux sorties : `RETRY` (`streetwear_unlock` retire les seuls drapeaux « parti sans reponse » et la remet en file) et `REFUND`, qui redemande confirmation puis NOTE seulement (`streetwear_refund_mark`) : l'argent ne part jamais d'un tap, le remboursement se fait dans Stripe. C, D lisent `$env`
-(11 clés) ; E reste sur l'ancien (`process.env`). Banc : `tests/n8n/streetwear/offline.mjs` (79 tests, six blocages).
+(11 clés) ; E reste sur l'ancien (`process.env`). Un fournisseur qui refuse DIT pourquoi : le lecteur de réponses rend les 110 premiers caractères du refus (B, C, D, F), et F garde ce message en base au lieu de la constante `printful_event_failed`. Banc : `tests/n8n/streetwear/offline.mjs` (81 tests, six blocages).
 
 Avis Supabase : 2 ERROR connus (`higher_badges` lit `auth.users` ; 4 vues `security definer`, dont `signature_styles`).

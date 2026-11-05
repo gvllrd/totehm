@@ -26,5 +26,5 @@ Le brouillon qui le supprime attend : il accepte encore un événement non sign�
 et F sont à jour. Sur la VM, vérifier que les onze clés des Code nodes et `N8N_BLOCK_ENV_ACCESS_IN_NODE=false`
 du `docker-compose.yml` correspondent au `.env`, et qu'un Code node lit `$env.SB_KEY`.
     supabase functions deploy stripe-webhook --project-ref abujjbkbbiumxrokozph
-    node tests/n8n/streetwear/offline.mjs                                   (attendu : 79 succès)
+    node tests/n8n/streetwear/offline.mjs                                   (attendu : 81 succès)
 `TOTEHM_MASTER.md`, en tête : « Domaines et accès : remplacés le 21/10/2026 par CLAUDE.md, La vision ».
