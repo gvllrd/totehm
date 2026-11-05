@@ -21,12 +21,12 @@
   `stripe_events` s'efface avant un 500. Test (`boutique_testers`) : v45 suit une pièce d'essai comme une vraie et le mode test REDESCEND (03/11 : endpoint `we_1UXQzu`, les deux `STRIPE_TEST_*` posés) ;
   un événement de test n'ouvre que `cloth` et `luxury`, marqués `test`, et `handleCloth` n'appelle jamais l'API Stripe.
 
-## Les 40 Edge Functions (`supabase/functions/`)
+## Les 41 Edge Functions (`supabase/functions/`)
 | rôle | fonctions |
 |---|---|
 | identité | `sso-mint` · `sso-redeem` |
 | argent | `stripe-webhook` · `higher-checkout` · `artwork-checkout` · `market-checkout` · `creator-subscribe` · `creator-price` · `club-billing` · `higher-sub` |
-| vêtements | `create-checkout` v44 · `luxury-quote` v4 · `luxury-checkout` · `compose-artwork` · `streetwear-assets` · `cloth-art` ; les deux premiers prennent `pick:{matter,shots}` — ce qui est ALLUMÉ, en références, relu par `_box_matter` et `_box_shots` |
+| vêtements | `create-checkout` v44 · `luxury-quote` v4 · `luxury-checkout` · `compose-artwork` · `streetwear-assets` · `cloth-art` · `streetwear-tick` (cron) ; les deux premiers prennent `pick:{matter,shots}` — ce qui est ALLUMÉ, en références, relu par `_box_matter` et `_box_shots` |
 | vidéo, spots | `create-bunny-upload` · `bunny-video` · `bunny-webhook` · `spot-video` · `space-delete` |
 | Higher Self, bot | `higher-self` · `bot-reply` · `bot-tick` (cron) · `agenda-ingest` (cron) · `higher-map` · `stoner-gate` |
 | sans appelant visible | `totehm-bot` · `sync-knowledge` · `generate-embeddings` · `upload-leaf-videos` · `ghost-factory` · `prospects` · `bunny-maintenance` · `embed-places` · `generate_objective` · `subscription-checkout` · `creator-dashboard` · `creator-onboard` · `autobiographiste` (à vérifier dans leurs journaux avant de retirer) |
@@ -51,7 +51,10 @@ fait lire par un modèle de vision et verse ce qu'il en dit dans le prompt — m
 concepts partent un par un, un bouton `PICK` chacun, et elle retient quel message porte quel numéro. C ROUTE les boutons
 Telegram : `pick` (validé par le LOT, jamais par un message ; les six autres claviers tombent, l'image retenue dit
 `PICKED`), `ship`/`hold` renvoyés à D. D pose un brouillon Printful (`confirm=false` : rien de fabriqué ni facturé),
-montre le mockup du dos avec taille et adresse, et n'appelle `/confirm` que sur `SEND TO PRINT`. C, D lisent `$env`
+montre le mockup du dos avec taille et adresse, et n'appelle `/confirm` que sur `SEND TO PRINT`. Un job `waiting` ou `queued` dont l'heure est venue REPART : `streetwear-tick`, arme toutes les cinq minutes par
+`streetwear_tick_arm()` (jeton a usage unique, aucun secret dans le cron), requalifie les executions abandonnees
+(`streetwear_recover_stalled`), reserve ce qui est pret (`streetwear_due`, qui repousse de trois minutes) et rappelle le
+flux — `tracking` excepte, que Printful pousse, et `error_locked`, qui attend une decision. C, D lisent `$env`
 (11 clés) ; E reste sur l'ancien (`process.env`). Banc : `tests/n8n/streetwear/offline.mjs` (73 tests, six blocages).
 
 Avis Supabase : 2 ERROR connus (`higher_badges` lit `auth.users` ; 4 vues `security definer`, dont `signature_styles`).
