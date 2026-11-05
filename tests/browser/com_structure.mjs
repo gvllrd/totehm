@@ -1,7 +1,7 @@
 // COM — la structure de la vue centrale (Wah, 22/10/2026 ; refaite le 25/10).
 // 1 · (25/10) Plus de boîte noire : le TOTEHM est le BOÎTIER du processeur. (26/10) Ses DOUZE perforations sont toutes
 //     raccordées — une broche dans chaque trou — et ses sept traits forment un ARBRE DE VIE : (31/10) les branches couvrent
-//     tout le haut de l'écran ; leurs pointes touchent son bord et les racines s'ouvrent de chaque côté de la manette.
+//     tout le haut de l'écran ; le tronc contourne ADVISORY et ses racines enveloppent la manette.
 //     Le cœur (le TOTEHM) bat.
 // 2 · (25/10) Un tap sur le TOTEHM : ses traits cessent leur activité et sont ASPIRÉS dans le papier pendant qu'il se
 //     déploie (« on cesse l'activité du Totehm pour le configurer »). Ouvert : aucune boîte, aucun trait autour.
@@ -31,8 +31,15 @@ const branche=pg=>pg.evaluate(()=>{const s=document.getElementById('gate-asteroi
   const jonctions=[...document.querySelectorAll('#lv-ram circle.jonction')].map(c=>{const p=point(c);
     return {...p,liens:segments.reduce((n,sp)=>n+sp.reduce((m,q,i)=>m+(Math.hypot(p.x-q[0],p.y-q[1])<=.15?+(i>0)+ +(i<sp.length-1):0),0),0)};});
   const jb=document.getElementById('lvj-box').getBoundingClientRect();
+  const av=document.getElementById('lv-parental').getBoundingClientRect();
+  const contour=[...document.querySelectorAll('#lv-ram path:not(.puls)')].flatMap(p=>{
+    const total=p.getTotalLength(),n=Math.ceil(total/2);return Array.from({length:n+1},(_,i)=>{const q=p.getPointAtLength(total*i/Math.max(1,n));return {x:q.x,y:q.y};});});
+  const avis={l:av.left,r:av.right,t:av.top,b:av.bottom,w:av.width,h:av.height,
+    libre:!contour.some(p=>p.x>av.left-4&&p.x<av.right+4&&p.y>av.top-4&&p.y<av.bottom+4),
+    gauche:contour.some(p=>p.y>av.top&&p.y<av.bottom&&p.x<av.left-4),
+    droite:contour.some(p=>p.y>av.top&&p.y<av.bottom&&p.x>av.right+4)};
   return {pads,jonctions,rameaux:document.querySelectorAll('#lv-ram path.fk').length,s:{t:s.top,b:s.bottom,l:s.left,r:s.right,w:s.width,cx:s.left+s.width/2,cy:s.top+s.height/2},H:innerHeight,pins,trous,traits,
-    J:{x:jb.left+jb.width/2,y:jb.top+jb.height/2},
+    J:{x:jb.left+jb.width/2,y:jb.top+jb.height/2},avis,
     coeur:getComputedStyle(document.getElementById('gate-logo')).animationName,socle:{bg:cs.backgroundColor,ombre:cs.boxShadow,puits:!!k.querySelector('.sk-well')}};});
 const pres=(p,l,t)=>l.some(q=>Math.hypot(p[0]-q[0],p[1]-q[1])<=t);
 /* L'état du réseau : aspiré ou non, son échelle, son opacité, ses impulsions. */
@@ -50,8 +57,7 @@ try{
   const departs=b.traits.flatMap(t=>t.map(sp=>sp[0])), bouts=b.traits.map(t=>[t[0][t[0].length-1],t[1][t[1].length-1]]);
   ok(b.traits.length===7&&b.traits.every(t=>t.length===2)&&departs.every(p=>pres(p,b.trous,4.5))&&b.trous.every(t=>pres(t,departs,4.5)),
      nom+' · 26/10 · chaque trait part d\'un trou, et chaque trou porte au moins un trait (le tronc au milieu, les deux extrêmes se séparent dans le trou du milieu de leur côté)');
-  /* Les 56 pointes touchent le haut ; les racines continuent vers les coins du bas,
-     avec quatre vrais nœuds de bifurcation, distincts des pastilles qui représentent les Habits. */
+  /* Les 56 pointes touchent le haut ; quatre vraies fourches forment des retombées autour de la manette. */
   const xa=bouts.map(x=>x[0][0]), monte=xa.every((x,i)=>!i||x>xa[i-1]);
   const pads=b.pads, cime=pads.filter(p=>p.haut), pied=pads.filter(p=>p.racine), W=vp.width;
   ok(monte&&cime.length===56&&Math.min(...cime.map(p=>p.x))<40&&Math.max(...cime.map(p=>p.x))>W-40
@@ -59,9 +65,12 @@ try{
      nom+' · 04/11 · les 56 pointes de la couronne touchent toutes le haut de l\'écran, sur toute sa largeur');
   ok(pied.length===12&&pads.length===68&&b.jonctions.length===4&&b.jonctions.every(p=>p.liens>=3)&&b.rameaux===82
      &&pads.every(p=>p.x-p.r-.75>=0&&p.x+p.r+.75<=W&&p.y-p.r-.75>=-.15&&p.y+p.r+.75<b.H)
-     &&pied.every(p=>b.H-p.y-p.r-.75>=4&&p.y>b.J.y&&Math.abs(p.x-b.J.x)>70)
-     &&pied.some(p=>p.x<40)&&pied.some(p=>p.x>W-40)&&bouts.every(x=>pres(x[1],pied.map(p=>[p.x,p.y]),.15)),
-     nom+' · les racines ouvrent le bas vers les deux coins : 12 extrémités, 4 vraies fourches et le creux de la manette libre');
+     &&pied.every(p=>b.H-p.y-p.r-.75>=4&&p.y>b.J.y&&Math.abs(p.x-b.J.x)>=24)
+     &&pied.some(p=>p.x<b.J.x-60)&&pied.some(p=>p.x>b.J.x+60)&&pied.some(p=>p.y>b.J.y+48)
+     &&bouts.every(x=>pres(x[1],pied.map(p=>[p.x,p.y]),.15)),
+     nom+' · les racines enveloppent les flancs et le bas de la manette : 12 extrémités et 4 vraies fourches');
+  ok(b.avis.libre&&b.avis.gauche&&b.avis.droite&&b.avis.t>b.s.b&&b.avis.b<b.J.y-54&&b.avis.w>=70,
+     nom+' · ADVISORY est dans le tronc, entre papier et manette : les pistes longent ses deux côtés à plus de 4 px');
   ok(b.coeur==='coeur',nom+' · 26/10 · au repos, le cœur (le TOTEHM) bat → '+b.coeur);
   const r0=await reseau(pg);
   ok(!r0.aspire&&r0.echelle===1&&r0.op===1&&r0.puls==='ram-puls',nom+' · au repos, le réseau vit (impulsions)');
