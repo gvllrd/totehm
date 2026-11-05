@@ -84,7 +84,8 @@ try{
           avis:{integre:q('#lv-parental').parentElement!==q('#lv-c-acts')&&avis.top>P.bottom+12&&avis.bottom<joy.top-8,
             marge:Math.min(...echantillons.map(marge)),
             continu:main.every(s=>{const l=s[1];return l.some(p=>p[1]<avis.top-3)&&l.some(p=>p[1]>avis.bottom+3)
-              &&l.some(p=>p[1]>avis.top&&p[1]<avis.bottom&&(p[0]<avis.left||p[0]>avis.right));})},
+              &&l.some((p,k)=>{const a=l[k-1];return a&&Math.max(a[1],p[1])>avis.top&&Math.min(a[1],p[1])<avis.bottom
+                &&((a[0]<avis.left&&p[0]<avis.left)||(a[0]>avis.right&&p[0]>avis.right));});})},
           jonctions:jonctions.every(e=>{const p=coord(e),segments=main.flat().concat(fk);
             const liens=segments.reduce((n,l)=>n+l.reduce((m,q,j)=>m+(Math.hypot(p[0]-q[0],p[1]-q[1])<.15?+(j>0)+ +(j<l.length-1):0),0),0);
             return !e.classList.contains('is-plein')&&liens>=3&&fk.some(l=>Math.hypot(l[0][0]-p[0],l[0][1]-p[1])<.15);}),
