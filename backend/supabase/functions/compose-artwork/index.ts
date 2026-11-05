@@ -113,20 +113,27 @@ Deno.serve(async (req) => {
   // 04/11 : la fonction a rendu `not having enough compute resources`. On met l'artwork
   // a sa taille finale AVANT d'allouer le canvas, et on lache la source decodee : trois
   // images pleine taille en memoire en meme temps ne passent pas.
-  const scale = Math.min((W * 0.92) / art.width, (H * 0.90) / art.height);
+  // 05/11 (Wah) : « l'oeuvre est tres haute, pas possible de l'abaisser quitte a la
+  // reduire ». On la reduit (0,86 / 0,76 au lieu de 0,92 / 0,90) et on ne la centre plus
+  // seule : l'oeuvre, son cadre et la signature forment UN BLOC, pose un peu sous le
+  // milieu de la zone — c'est la hauteur ou un dos se regarde.
+  const scale = Math.min((W * 0.86) / art.width, (H * 0.76) / art.height);
   const scaled = art.resize(Math.round(art.width * scale), Math.round(art.height * scale));
   art = null;
   const canvas = new Image(W, H);
-  const artX = Math.round((W - scaled.width) / 2);
-  const artY = Math.round((H * 0.94 - scaled.height) / 2);
-  canvas.composite(scaled, artX, artY);
 
   // 3. la box signature — largeur dynamique mesurée sur {epoch}.{name}
   const fontBuf = new Uint8Array(await (await fetch(QUANTICO_URL)).arrayBuffer());
-  const padX = Math.round(Math.min(84,W*.025)), padY = Math.round(Math.min(64,H*.015));
+  // 05/11 : la marge HAUTE de la box se calculait sur la hauteur de la zone, pas sur le
+  // texte — c'est elle, et non la police, qui faisait une etiquette de 30 % du dos.
+  // Liee a la police, la box suit enfin ce qu'elle contient.
+  const corps = Math.round(Math.min(90, H * .025));
+  const padX = Math.round(Math.min(84,W*.025)), padY = Math.round(corps * .35);
   // 03/11 (Wah) : la signature se LIT. Elle porte le nom du cloth dans le format EXACT
   // du streetwear — Quantico coral sur la box navy perforee, le `0.` pose par le serveur.
-  const text = await Image.renderText(fontBuf, Math.round(Math.min(200,H*.05)), fullName, CORAL, new TextLayout({ maxWidth: W-2*padX-192 }));
+  // 05/11 (Wah) : « trop gros, ca doit etre discret comme une signature ». Mesure sur la
+  // zone du Champion : la box passe de 30 % a 17 % de la largeur du dos.
+  const text = await Image.renderText(fontBuf, corps, fullName, CORAL, new TextLayout({ maxWidth: W-2*padX-192 }));
   // la box suit le rapport 3 du front ; le texte s'y centre.
   let bw = text.width + padX * 2;
   let bh = text.height + padY * 2;
@@ -138,11 +145,26 @@ Deno.serve(async (req) => {
   perforate(box);
   box.composite(text, Math.round((bw - text.width) / 2), Math.round((bh - text.height) / 2));
 
-  // 4. compositing : la signature, CENTREE en bas. Rien d'autre (03/11, Wah : « juste le
-  //    nom du TOTEHM cloth sous son fond perfore bleu navy. Point. ») — le logo posé en
-  //    bas a gauche encombrait l'oeuvre.
-  const margin = Math.round(Math.min(96,W*.03,H*.03));
-  canvas.composite(box, Math.round((W - box.width) / 2), H - box.height - margin);
+  // 4. compositing : l'oeuvre dans son CADRE navy, la signature dessous. Rien d'autre
+  //    (03/11, Wah : « juste le nom du TOTEHM cloth sous son fond perfore bleu navy »).
+  //    05/11 (Wah) : « une bordure bleu navy, comme si c'etait un tableau ». Un cadre
+  //    FIN — 0,8 % de la largeur de l'oeuvre — qui la tient et rappelle la signature.
+  //    Fin a dessein : en impression directe, un aplat large craquelle au lavage.
+  const trait = Math.max(3, Math.round(scaled.width * 0.008));
+  const cadreW = scaled.width + trait * 2, cadreH = scaled.height + trait * 2;
+  const ecart = Math.round(H * 0.025);
+  const blocH = cadreH + ecart + box.height;
+  const marge = Math.round(H * 0.03);
+  // Le bloc descend d'un vingtieme de la zone sous le milieu, sans jamais deborder.
+  let haut = Math.round((H - blocH) / 2 + H * 0.05);
+  haut = Math.max(marge, Math.min(haut, H - blocH - marge));
+  const cadreX = Math.round((W - cadreW) / 2);
+
+  const cadre = new Image(cadreW, cadreH);
+  cadre.fill(NAVY);
+  canvas.composite(cadre, cadreX, haut);
+  canvas.composite(scaled, cadreX + trait, haut + trait);
+  canvas.composite(box, Math.round((W - box.width) / 2), haut + cadreH + ecart);
 
   // 5. upload + urls signées (30j pour printful, 7j pour consultation)
   const png = await canvas.encode();
