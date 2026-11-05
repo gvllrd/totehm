@@ -39,6 +39,26 @@ Deno.serve(async (req) => {
   }
   if (!allowed) return json({ error: 'unauthorized' }, 401);
 
+  // 0. une maquette a la demande : voir une piece sur le vetement, sans commande ni
+  //    facture. Printful ne fabrique rien, c'est son generateur d'images. n8n porte le
+  //    jeton Printful, donc c'est D qui travaille ; on ne fait que l'appeler.
+  let corps: Record<string, unknown> = {};
+  try { corps = await req.json(); } catch { /* un corps vide est le tic normal */ }
+  const mockup = String((corps && corps.mockup_cloth_id) || '');
+  if (/^[0-9a-f-]{36}$/i.test(mockup)) {
+    try {
+      const rep = await fetch(N8N + 'streetwear-printful', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', apikey: SERVICE },
+        body: JSON.stringify({ cloth_id: mockup, mockup: true }),
+        signal: AbortSignal.timeout(120000),
+      });
+      return json({ ok: rep.ok, route: 'mockup', statut: rep.status });
+    } catch (e) {
+      return json({ ok: false, route: 'mockup', erreur: (e as Error)?.name || 'transport' }, 502);
+    }
+  }
+
   // 1. les executions abandonnees redeviennent reprenables (ou s'arretent franchement)
   let requalifies = 0;
   const { data: rec, error: recErr } = await sb.rpc('streetwear_recover_stalled');

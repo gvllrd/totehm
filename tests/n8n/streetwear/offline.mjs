@@ -53,14 +53,19 @@ async function execute(key, nodeName, input={}, responder=()=>undefined, env={},
     if(code>=400 && !o.ignoreHttpStatusErrors) throw new Error('Simulated HTTP '+code);
     return clone(body);
   };
+  // Le temps est simule comme le reseau : une attente du flux s'ecoule instantanement ici,
+  // sinon le banc durerait des minutes et buterait sur sa propre limite de deux secondes.
+  let attentes=0;
   const context = vm.createContext({$env:{...fake,...env},$input:{first:()=>({json:clone(input)})},
-    $json:clone(input),Buffer,URL,console:{log(){},warn(){},error(){}}}, {codeGeneration:{strings:false,wasm:false}});
+    $json:clone(input),Buffer,URL,console:{log(){},warn(){},error(){}},
+    setTimeout:(fn,ms)=>{attentes+=Number(ms)||0;fn();return 0;},clearTimeout(){}},
+    {codeGeneration:{strings:false,wasm:false}});
   const fn = new vm.Script('(async function(){\n'+node.parameters.jsCode+'\n})', {filename:key+'-'+nodeName+'.js'})
     .runInContext(context,{timeout:2000});
   let result,error;
   try {result=clone(await fn.call({helpers:{httpRequest}}));} catch(e) {error=String(e.message);}
   assert.deepEqual(unexpected, [], 'All simulated requests must be declared');
-  return {result,error,calls};
+  return {result,error,calls,attentes};
 }
 const nodeNames={B:'Generate seven concepts or notify',C:'Upscale and compose',D:'Create or recover Printful draft',E:'Update DB + Email',F:'Sync Product'};
 const gate = (key,input,responder,env) => execute(key,'Authenticate and claim',input,responder,env);
@@ -430,6 +435,40 @@ test('C routes a quality-check button to Printful',async()=>{
   const appel=hits(p,'streetwear-printful');assert.equal(appel.length,1);
   assert.equal(appel[0].body.decision,'ship');assert.equal(appel[0].body.message_id,900);
   assert.equal(hits(p,'/answerCallbackQuery').length,0,'D repondra lui-meme au bouton');
+});
+test('D shows the piece on the garment without creating any order',async()=>{
+  const r=await gate('D',internal({cloth_id:id,mockup:true}),o=>o.url.includes('/totehm_clothes?')?[{id,name:'0.Simulation',size:'M',garment_id:'fixture-support'}]:undefined);
+  assert.equal(ok(r).route,'mockup');
+  let vu=0;
+  const p=await processNode('D',ok(r),o=>
+     o.url.includes('/totehm_cloth_support?')?[{printful_product_id:478633385,print_area:{placement:'back',width_px:1800,height_px:2400},printful_variant_map:{M:{variant_id:9660}}}]
+    :o.url.includes('/streetwear-assets')?{url:'https://fixture.invalid/final.png'}
+    :o.url.includes('/store/products/')?{result:{sync_variants:[{product:{product_id:146}}]}}
+    :o.url.includes('/create-task/')?{result:{task_key:'tk-1'}}
+    :o.url.includes('/mockup-generator/task')?{result:(vu++ ? {status:'completed',mockups:[{mockup_url:'https://fixture.invalid/dos.jpg'}]} : {status:'pending'})}
+    :o.url.includes('api.telegram.org')?{ok:true}:undefined);
+  assert.equal(ok(p).images,1);
+  assert.equal(hits(p,'/orders','POST').length,0,'aucune commande creee');
+  assert.equal(hits(p,'/confirm').length,0,'rien envoye a l impression');
+  const envoi=hits(p,'/sendPhoto')[0];
+  assert.equal(envoi.body.photo,'https://fixture.invalid/dos.jpg');
+  assert.ok(envoi.body.caption.includes('back'));
+  assert.equal(hits(p,'/streetwear-assets')[0].body.purpose,undefined,'jamais le fichier d impression');
+  assert.ok(p.attentes>0,'le flux attend Printful au lieu de le marteler');
+  // 05/11 : Printful a refuse une premiere maquette avec `Position field is missing`.
+  const tache=hits(p,'/create-task/')[0].body.files[0];
+  assert.deepEqual(tache.position,{area_width:1800,area_height:2400,width:1800,height:2400,top:0,left:0});
+  assert.equal(tache.placement,'back');
+});
+test('D gives up on a mockup Printful never finishes',async()=>{
+  const r=await gate('D',internal({cloth_id:id,mockup:true}),o=>o.url.includes('/totehm_clothes?')?[{id,name:'0.Simulation',size:'M',garment_id:'fixture-support'}]:undefined);
+  const p=await processNode('D',ok(r),o=>
+     o.url.includes('/totehm_cloth_support?')?[{printful_product_id:1,print_area:{placement:'back'},printful_variant_map:{M:{variant_id:9660}}}]
+    :o.url.includes('/streetwear-assets')?{url:'https://fixture.invalid/final.png'}
+    :o.url.includes('/store/products/')?{result:{sync_variants:[{product:{product_id:146}}]}}
+    :o.url.includes('/create-task/')?{result:{task_key:'tk-2'}}
+    :o.url.includes('/mockup-generator/task')?{result:{status:'failed',error:'file too small'}}:undefined);
+  failed(p,'file too small');
 });
 test('D says WHY Printful refused, not just the number',async()=>{
   const r=await processNode('D',ticket('printful'),o=>o.url.includes('/orders/@')?status(404)
