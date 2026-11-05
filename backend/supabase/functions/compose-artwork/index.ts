@@ -148,9 +148,11 @@ Deno.serve(async (req) => {
   // 4. compositing : l'oeuvre dans son CADRE navy, la signature dessous. Rien d'autre
   //    (03/11, Wah : « juste le nom du TOTEHM cloth sous son fond perfore bleu navy »).
   //    05/11 (Wah) : « une bordure bleu navy, comme si c'etait un tableau ». Un cadre
-  //    FIN — 0,8 % de la largeur de l'oeuvre — qui la tient et rappelle la signature.
-  //    Fin a dessein : en impression directe, un aplat large craquelle au lavage.
-  const trait = Math.max(3, Math.round(scaled.width * 0.008));
+  //    1,2 % de la largeur de l'oeuvre (05/11, Wah : « elargir encore un tout petit peu »,
+  //    apres un premier essai a 0,8 %) : 15 px, soit 2,5 mm a 150 dpi. On ne va pas plus
+  //    loin sans raison — en impression directe, un aplat large craquelle au lavage, et
+  //    le cadre serait le premier endroit a vieillir.
+  const trait = Math.max(3, Math.round(scaled.width * 0.012));
   const cadreW = scaled.width + trait * 2, cadreH = scaled.height + trait * 2;
   const ecart = Math.round(H * 0.025);
   const blocH = cadreH + ecart + box.height;
