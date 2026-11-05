@@ -1,7 +1,7 @@
 // COM — la structure de la vue centrale (Wah, 22/10/2026 ; refaite le 25/10).
 // 1 · (25/10) Plus de boîte noire : le TOTEHM est le BOÎTIER du processeur. (26/10) Ses DOUZE perforations sont toutes
 //     raccordées — une broche dans chaque trou — et ses sept traits forment un ARBRE DE VIE : (31/10) les branches couvrent
-//     tout le haut de l'écran ; (04/11) leurs pointes touchent son bord et les racines entourent la manette avec des jonctions.
+//     tout le haut de l'écran ; leurs pointes touchent son bord et les racines s'ouvrent de chaque côté de la manette.
 //     Le cœur (le TOTEHM) bat.
 // 2 · (25/10) Un tap sur le TOTEHM : ses traits cessent leur activité et sont ASPIRÉS dans le papier pendant qu'il se
 //     déploie (« on cesse l'activité du Totehm pour le configurer »). Ouvert : aucune boîte, aucun trait autour.
@@ -50,18 +50,18 @@ try{
   const departs=b.traits.flatMap(t=>t.map(sp=>sp[0])), bouts=b.traits.map(t=>[t[0][t[0].length-1],t[1][t[1].length-1]]);
   ok(b.traits.length===7&&b.traits.every(t=>t.length===2)&&departs.every(p=>pres(p,b.trous,4.5))&&b.trous.every(t=>pres(t,departs,4.5)),
      nom+' · 26/10 · chaque trait part d\'un trou, et chaque trou porte au moins un trait (le tronc au milieu, les deux extrêmes se séparent dans le trou du milieu de leur côté)');
-  /* 04/11 : les 56 pointes touchent le haut de l'écran ; seize pastilles entourent la manette complète,
-     avec huit vrais nœuds de bifurcation, distincts des pastilles qui représentent les Habits. */
+  /* Les 56 pointes touchent le haut ; les racines continuent vers les coins du bas,
+     avec quatre vrais nœuds de bifurcation, distincts des pastilles qui représentent les Habits. */
   const xa=bouts.map(x=>x[0][0]), monte=xa.every((x,i)=>!i||x>xa[i-1]);
   const pads=b.pads, cime=pads.filter(p=>p.haut), pied=pads.filter(p=>p.racine), W=vp.width;
   ok(monte&&cime.length===56&&Math.min(...cime.map(p=>p.x))<40&&Math.max(...cime.map(p=>p.x))>W-40
      &&cime.every(p=>Math.abs(p.y-p.r-.75)<=.15)&&bouts.every(x=>pres(x[0],cime.map(p=>[p.x,p.y]),.15)),
      nom+' · 04/11 · les 56 pointes de la couronne touchent toutes le haut de l\'écran, sur toute sa largeur');
-  ok(pied.length===16&&pads.length===72&&b.jonctions.length===8&&b.jonctions.every(p=>p.liens>=3)&&b.rameaux===86
+  ok(pied.length===12&&pads.length===68&&b.jonctions.length===4&&b.jonctions.every(p=>p.liens>=3)&&b.rameaux===82
      &&pads.every(p=>p.x-p.r-.75>=0&&p.x+p.r+.75<=W&&p.y-p.r-.75>=-.15&&p.y+p.r+.75<b.H)
-     &&pied.every(p=>b.H-p.y-p.r-.75>=4)&&pied.some(p=>p.x<b.J.x-60)&&pied.some(p=>p.x>b.J.x+60)
-     &&pied.some(p=>p.y<b.J.y-48)&&pied.some(p=>p.y>b.J.y+48)&&bouts.every(x=>pres(x[1],pied.map(p=>[p.x,p.y]),.15)),
-     nom+' · 04/11 · les racines entourent la manette : 16 pastilles dans l\'écran et 8 jonctions qui relient chacune trois brins');
+     &&pied.every(p=>b.H-p.y-p.r-.75>=4&&p.y>b.J.y&&Math.abs(p.x-b.J.x)>70)
+     &&pied.some(p=>p.x<40)&&pied.some(p=>p.x>W-40)&&bouts.every(x=>pres(x[1],pied.map(p=>[p.x,p.y]),.15)),
+     nom+' · les racines ouvrent le bas vers les deux coins : 12 extrémités, 4 vraies fourches et le creux de la manette libre');
   ok(b.coeur==='coeur',nom+' · 26/10 · au repos, le cœur (le TOTEHM) bat → '+b.coeur);
   const r0=await reseau(pg);
   ok(!r0.aspire&&r0.echelle===1&&r0.op===1&&r0.puls==='ram-puls',nom+' · au repos, le réseau vit (impulsions)');

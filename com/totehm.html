@@ -8151,7 +8151,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-11-04-com-arbre-ecran-manette';
+const BUILD='2026-11-05-com-racines-ouvertes';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -13007,8 +13007,8 @@ window.addEventListener('pageshow',e=>{
       }
       /* ── L'ARBRE DE VIE : le TOTEHM est le cœur. Ses DOUZE perforations portent chacune une broche.
          Les sept intentions se divisent en 56 pointes, toutes raccordées au bord supérieur de l'écran.
-         Sous le papier, les pistes descendent dans l'ordre, contournent la manette complète et se divisent
-         à huit jonctions vers seize pastilles. Une jonction reste creuse ; les pastilles pleines disent les Habits.
+         Sous le papier, les pistes s'ouvrent de part et d'autre de la manette et continuent vers les coins du bas.
+         Quatre jonctions marquent les bifurcations ; douze pastilles terminent les racines. Les jonctions restent creuses.
          `c` = le papier (centre, largeur) ; les trous viennent de `--perfo` (rayon 6,16 % du côté). */
       const TROUS=[['L',.5,'L',.5],['L',.25,'L',.75],['T',.25,'B',.25],['T',.5,'B',.5],['T',.75,'B',.75],['R',.25,'R',.75],['R',.5,'R',.5]];
       /* Trois fourches en Y par intention, de plus en plus fines. La couronne suit la largeur de l'écran,
@@ -13059,8 +13059,11 @@ window.addEventListener('pageshow',e=>{
         /* ── LE TRONC : de son trou du bas, chaque piste se range sous le papier (les trous des côtés contournent ses coins
            en arcs concentriques), puis toutes descendent côte à côte en s'écartant à peine (`gT` → `gB`) ── */
         const jx=J.x, jy=J.y, gT=Math.max(5,Math.min(8,pw*.06)), gB=gT*1.35;
-        const Rx=Math.min((J.w||108)/2+18,jx-ms-rp,w-jx-ms-rp), Ry=Math.min((J.h||108)/2+10,h-jy-rp-.75-4);
-        const y0=bas+6, yT=Math.max(y0,Math.min(bas+32,jy-Ry-16)), yF=yT+Math.max(0,jy-Ry-12-yT)*.55, xT=i=>cx+(i-3)*gT;
+        const demi=Math.min(jx-ms-rp,w-jx-ms-rp), pres=(J.w||108)/2+28, diagonale=(J.w||108)/2-14;
+        const ecart=Math.max(22,Math.min(46,(demi-pres)*.12)), y0=bas+6;
+        const etage=Math.min(14+(ecart-22)*2/3,Math.max(4,(jy-diagonale-y0-32)/3));
+        const ouverture=jy-diagonale-3*etage-12;
+        const yT=Math.max(y0,Math.min(bas+32,ouverture-12)), yF=yT+Math.max(0,ouverture-yT)*.5, xT=i=>cx+(i-3)*gT;
         function piste(T,i){
           const L=[T.in]; let A;
           if(T.e==='B'){ A=[T.p[0],y0]; L.push(A); }
@@ -13069,25 +13072,23 @@ window.addEventListener('pageshow',e=>{
             for(let z=1;z<=6;z++){ const f=z/6*Math.PI/2; L.push([xs-s*rc+s*rc*Math.sin(f), T.p[1]+rc-rc*Math.cos(f)]); }
             A=[xs,y0]; L.push(A); }
           return L.concat(courbe(A,[0,1],[xT(i),yT],[0,1],12,(yT-A[1])*.5,(yT-A[1])*.5)); }
-        /* ── LE PIED : les sept pistes se séparent autour de la manette complète, chevrons inclus.
-           Le tronc reste descendant, même en paysage où il dispose de peu de hauteur. ── */
-        const sortie=(i,s)=>{ const k=Math.abs(i-3), a=(k+.5)*Math.PI/4, debut=.12+k*.06, rx=Rx+8+k*8;
-          const point=t=>[jx+s*rx*Math.sin(t),jy-Ry*Math.cos(t)], direction=t=>unit([s*rx*Math.cos(t),Ry*Math.sin(t)]);
-          return {p:point(a),E:point(debut),d:direction(debut),a,debut,point}; };
-        const cloche=(i,s)=>{ const k=Math.abs(i-3), F=[jx+s*k*gB,yF], P=sortie(i,s);
-          const arrivee=Math.abs(P.E[0]-F[0])*.45/Math.max(.01,Math.abs(P.d[0]));
-          const L=[F].concat(courbe(F,[0,1],P.E,P.d,22,null,arrivee));
-          /* Les pistes extérieures vont le plus loin : les voies restent dans l'ordre du tronc,
-             sans se couper avant leurs jonctions. Chacune contourne les chevrons par une courbe continue. */
-          for(let z=1;z<=24;z++) L.push(P.point(P.debut+(P.a-P.debut)*z/24));
-          return L; };
-        /* ── LES RACINES : seize pastilles sur le contour de la manette, au-dessus, sur les côtés et dessous.
-           Le contour suit ses dimensions réelles et garde ses pastilles au-dessus de la marge basse. ── */
-        const NR=2;
-        const surSol=(s,u)=>[jx+s*Rx*Math.sin(Math.PI*u),jy-Ry*Math.cos(Math.PI*u)];
-        /* La jonction termine chaque voie, puis deux radicelles rejoignent ses pastilles sur le contour. */
-        const racines=(i,s)=>{ const k=Math.abs(i-3), P=sortie(i,s), Q=Array.from({length:NR},(_,j)=>surSol(s,(k*NR+j+.5)/(4*NR)));
-          return {Q,jonction:P.p,principal:[P.p,Q[1]],autres:[{l:[P.p,Q[0]],c:'f3'}]}; };
+        /* ── LE PIED OUVERT : les pistes extérieures s'écartent plus tôt et vont plus loin.
+           Chaque courbe descend et s'éloigne de l'axe ; rien ne revient cercler la manette. ── */
+        const nombres=[1,2,1,2], premiers=[0,1,3,4];
+        const sortie=(i,s)=>{ const k=Math.abs(i-3), p=[jx+s*(diagonale+k*ecart),jy-diagonale-k*etage];
+          const Q=Array.from({length:nombres[k]},(_,j)=>{ const rang=premiers[k]+j;
+            return [jx+s*(pres+(demi-pres)*rang/5),h-rp-.75-12-(5-rang)*2]; });
+          return {p,Q}; };
+        const cloche=(i,s)=>{ const k=Math.abs(i-3), F=[jx+s*k*gB,yF], P=sortie(i,s), Q=P.Q[P.Q.length-1];
+          const d=unit([Q[0]-P.p[0],(Q[1]-P.p[1])*.55]), dy=Math.max(0,P.p[1]-F[1]);
+          const arrivee=Math.min(Math.abs(P.p[0]-F[0])*.45/Math.max(.01,Math.abs(d[0])),dy*.35/Math.max(.01,d[1]));
+          return [F].concat(courbe(F,[0,1],P.p,d,24,dy*.45,arrivee)); };
+        /* Deux éventails vers les coins inférieurs. Les quatre vraies fourches sont ponctuées,
+           les autres racines passent simplement dans le creux des directions. */
+        const racines=(i,s)=>{ const P=sortie(i,s), Q=P.Q;
+          const brin=B=>{ const dx=Math.abs(B[0]-P.p[0]),dy=B[1]-P.p[1];
+            return [P.p].concat(bez([P.p,[P.p[0]+s*dx*.45,P.p[1]+dy*.25],[B[0]-s*dx*.2,B[1]-dy*.35],B],20)); };
+          return {Q,jonction:Q.length>1?P.p:null,principal:brin(Q[Q.length-1]),autres:Q.length>1?[{l:brin(Q[0]),c:'f3'}]:[]}; };
         return INTS.map((x,i)=>{
           const q=n[x.id], [ea,fa,eb,fb]=TROUS[i], ta=trou(ea,fa), tb=trou(eb,fb);
           const cr=couronne(i,ta), pleines=new Set(ordre.slice(0,Math.min(NF,q.n)));
@@ -13096,10 +13097,10 @@ window.addEventListener('pageshow',e=>{
           const b=piste(tb,i).concat(cloche(i,s), rs.principal.slice(1));
           const fk=cr.fk.concat(rs.autres);
           const pads=cr.F.map((f,j)=>[f.p[0],f.p[1],rp,pleines.has(j),'haut']).concat(rs.Q.map(p=>[p[0],p[1],rp,q.n>0,'racine']));
-          const jonctions=[rs.jonction];
+          const jonctions=rs.jonction?[rs.jonction]:[];
           /* le trait du milieu se partage : sa moitié droite s'évase de l'autre côté du curseur */
           if(i===3){ const rd=racines(3,1); fk.push({l:cloche(3,1).concat(rd.principal.slice(1))}, ...rd.autres);
-            rd.Q.forEach(p=>pads.push([p[0],p[1],rp,q.n>0,'racine'])); jonctions.push(rd.jonction); }
+            rd.Q.forEach(p=>pads.push([p[0],p[1],rp,q.n>0,'racine'])); if(rd.jonction)jonctions.push(rd.jonction); }
           const pin=t=>[t.in[0]-sp/2, t.in[1]-sp/2, sp, sp];
           const pins=ea===eb&&fa===fb?[pin(ta)]:[pin(ta),pin(tb)];
           return {i, x, q, a:cr.a, b, nodes:[], pins, fk, pads, jonctions};

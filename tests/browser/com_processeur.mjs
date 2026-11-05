@@ -56,8 +56,8 @@ try{
       /* 18/10 : le nom a quitté l'atterrissage — il ne vit QUE sur la face verso du papier (Wah). */
       sigAbs:!q('#ast-sig'),connAbs:!q('#conn-bar'),
       tap:q('#lv-tap').textContent,bouche:getComputedStyle(q('#gate-mouth')).opacity,
-      /* 04/11 — toutes les pointes hautes touchent le bord de l'écran ; les racines et leurs jonctions
-         entourent la manette entière, sans toucher les chevrons ni le puits. Les jonctions ne sont pas des Habits. */
+      /* Les pointes hautes touchent le bord de l'écran ; le pied reste ouvert sous la manette,
+         avec quatre vraies fourches vers les coins bas, sans toucher les chevrons ni le puits. */
       arbre:(()=>{const P=q('#gate-asteroid').getBoundingClientRect(),jb=q('#lvj-box').getBoundingClientRect(),J={x:jb.x+jb.width/2,y:jb.y+jb.height/2};
         const joy=q('#lvjoy').getBoundingClientRect();
         const pts=d=>d.split('M').filter(Boolean).map(s=>s.split('L').map(p=>p.trim().split(/\s+/).map(Number)));
@@ -72,23 +72,25 @@ try{
         return {couronne:haut.length,cg:mn(haut.map(p=>p[0])),cd:innerWidth-mx(haut.map(p=>p[0])),ch:mn(haut.map(p=>p[1])),
           hautsTouches:bordHaut.every(y=>Math.abs(y)<.15),
           racines:bas.length,etendue:mx(bas.map(p=>p[0]))-mn(bas.map(p=>p[0])),rg:mn(bas.map(p=>p[0])),rd:innerWidth-mx(bas.map(p=>p[0])),rb:innerHeight-mx(bas.map(p=>p[1])),
-          entoure:Math.min(...bas.map(p=>p[0]))<joy.left&&Math.max(...bas.map(p=>p[0]))>joy.right&&Math.min(...bas.map(p=>p[1]))<joy.top&&Math.max(...bas.map(p=>p[1]))>joy.bottom,
-          jonctions:jonctions.every(e=>!e.classList.contains('is-plein')&&fk.some(l=>Math.hypot(l[0][0]-coord(e)[0],l[0][1]-coord(e)[1])<.15)),
+          ouvert:bas.every(p=>(p[0]<joy.left-12||p[0]>joy.right+12)&&p[1]>J.y+20)
+            &&!tous.some(p=>p[1]>J.y+25&&p[0]>joy.left-4&&p[0]<joy.right+4),
+          jonctions:jonctions.every(e=>{const p=coord(e),segments=main.flat().concat(fk);
+            const liens=segments.reduce((n,l)=>n+l.reduce((m,q,j)=>m+(Math.hypot(p[0]-q[0],p[1]-q[1])<.15?+(j>0)+ +(j<l.length-1):0),0),0);
+            return !e.classList.contains('is-plein')&&liens>=3&&fk.some(l=>Math.hypot(l[0][0]-p[0],l[0][1]-p[1])<.15);}),
           noeud:main.length===7&&main.every(s=>s.length===2&&dans(s[0][0])&&dans(s[1][0])),
-          /* le pied rejoint le contour complet : au-dessus, à côté ou sous la manette, selon l'intention */
-          enlace:main.every(s=>s[1].some(p=>Math.hypot(p[0]-J.x,p[1]-J.y)<120&&(p[0]<joy.left||p[0]>joy.right||p[1]<joy.top||p[1]>joy.bottom))),
+          descend:main.every(s=>s[1].every((p,k,l)=>!k||p[1]>=l[k-1][1]-.15)),
           touche:tous.filter(p=>glyphes.some(g=>p[0]>g.left-4&&p[0]<g.right+4&&p[1]>g.top-4&&p[1]<g.bottom+4)||Math.hypot(p[0]-J.x,p[1]-J.y)<24).length,
           libre:mn(tous.map(p=>Math.hypot(p[0]-J.x,p[1]-J.y))),
           fruit:(()=>{const e=q('#lv-ram circle.is-plein');return e?getComputedStyle(e).fill+'|'+e.getAttribute('stroke'):'';})()};})()};});
   ok(c.vue==='c'&&c.mode==='mine'&&c.dans,(tel?'téléphone':'ordinateur')+' · centre, Mine : 25/10 · le TOTEHM est le boîtier — le socle ne se voit plus, il le serre à 3 px');
-  ok(JSON.stringify(c.pistes)===JSON.stringify(COULEURS)&&c.noeuds>=3&&c.pads===56+c.arbre.racines&&c.jonctions===8&&c.rameaux===86&&c.broches===12&&c.pales===4&&c.ramOp==='1'&&c.plein,'le réseau PLEIN ÉCRAN, en ARBRE : sept pistes aux 7 couleurs exactes, 12 broches dans les perforations, les pastilles PLEINES = MES Habits et huit jonctions distinctes → '+JSON.stringify({n:c.noeuds,pads:c.pads,j:c.jonctions,r:c.rameaux,b:c.broches}));
+  ok(JSON.stringify(c.pistes)===JSON.stringify(COULEURS)&&c.noeuds>=3&&c.pads===56+c.arbre.racines&&c.jonctions===4&&c.rameaux===82&&c.broches===12&&c.pales===4&&c.ramOp==='1'&&c.plein,'le réseau PLEIN ÉCRAN, en ARBRE : sept pistes aux 7 couleurs exactes, 12 broches dans les perforations, les pastilles PLEINES = MES Habits et quatre jonctions distinctes → '+JSON.stringify({n:c.noeuds,pads:c.pads,j:c.jonctions,r:c.rameaux,b:c.broches}));
   /* 31/10 — Wah : « l'arbre prend tout l'écran (en particulier la partie haute), les branches s'élargissent sur tout l'écran ; le
      Totehm-cœur fait la jonction avec les branches et le haut du tronc ; à la base des racines se trouve le curseur, intégré ». */
   const A=c.arbre;
   ok(A.couronne===56&&A.cg<=40&&A.cd<=40&&A.hautsTouches,'04/11 · les 56 pointes de la COURONNE touchent chacune le haut de l\'écran, sur toute sa largeur → '+JSON.stringify({n:A.couronne,g:A.cg,d:A.cd,h:A.ch}));
   ok(A.noeud,'31/10 · le TOTEHM fait la jonction : chaque branche ET chaque piste du tronc part d\'une de ses perforations');
-  ok(A.enlace&&!A.touche,'04/11 · les sept pistes rejoignent le contour de la manette, sans toucher ses chevrons ni son puits (au plus près : '+A.libre+' px du centre)');
-  ok(A.racines===16&&A.entoure&&A.jonctions&&A.rg>0&&A.rd>0&&A.rb>=4,'04/11 · les seize RACINES entourent la manette entière, avec huit points aux fourches, dans l\'écran → '+JSON.stringify({n:A.racines,etendue:A.etendue,g:A.rg,d:A.rd,bas:A.rb}));
+  ok(A.descend&&!A.touche,'les sept pistes descendent en laissant libres les chevrons et le puits de la manette (au plus près : '+A.libre+' px du centre)');
+  ok(A.racines===12&&A.ouvert&&A.jonctions&&A.rg<=16&&A.rd<=16&&A.rb>=4,'les douze RACINES s\'ouvrent vers les coins bas, avec quatre vraies fourches et aucun arc sous la manette → '+JSON.stringify({n:A.racines,etendue:A.etendue,g:A.rg,d:A.rd,bas:A.rb}));
   {const [f,s]=A.fruit.split('|'),hex=c=>'#'+(c.match(/\d+/g)||[]).slice(0,3).map(n=>(+n).toString(16).padStart(2,'0')).join('');
    ok(!!s&&hex(f)===s.toLowerCase(),'31/10 · une pastille PLEINE (une Habit) se voit : remplie de SA couleur ('+f+' / '+s+'), plus le noir du creux');}
   /* 18/10 — LES SEPT PISTES VIVENT : une impulsion par intention, épaisse et à la période RÉELLE
