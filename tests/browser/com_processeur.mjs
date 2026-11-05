@@ -56,10 +56,10 @@ try{
       /* 18/10 : le nom a quitté l'atterrissage — il ne vit QUE sur la face verso du papier (Wah). */
       sigAbs:!q('#ast-sig'),connAbs:!q('#conn-bar'),
       tap:q('#lv-tap').textContent,bouche:getComputedStyle(q('#gate-mouth')).opacity,
-      /* Les pointes hautes touchent le bord de l'écran ; le pied reste ouvert sous la manette,
-         avec quatre vraies fourches vers les coins bas, sans toucher les chevrons ni le puits. */
+      /* Les pointes hautes touchent l'écran ; le tronc contourne le visuel advisory et
+         les racines enveloppent les côtés et le dessous de la manette, sans toucher ses contrôles. */
       arbre:(()=>{const P=q('#gate-asteroid').getBoundingClientRect(),jb=q('#lvj-box').getBoundingClientRect(),J={x:jb.x+jb.width/2,y:jb.y+jb.height/2};
-        const joy=q('#lvjoy').getBoundingClientRect();
+        const joy=q('#lvjoy').getBoundingClientRect(),avis=q('#lv-parental').getBoundingClientRect();
         const pts=d=>d.split('M').filter(Boolean).map(s=>s.split('L').map(p=>p.trim().split(/\s+/).map(Number)));
         const main=[...document.querySelectorAll('#lv-ram path:not(.puls):not(.sk):not(.fk)')].map(p=>pts(p.getAttribute('d')));
         const fk=[...document.querySelectorAll('#lv-ram path.fk')].map(p=>pts(p.getAttribute('d'))[0]);
@@ -68,12 +68,24 @@ try{
         const jonctions=[...document.querySelectorAll('#lv-ram circle.jonction')],tous=[].concat(...main.map(s=>[].concat(...s)),...fk);
         const bordHaut=hauts.map(e=>e.getBoundingClientRect().top-parseFloat(getComputedStyle(e).strokeWidth)/2);
         const glyphes=['lvn-up','lvn-dn','lvn-lf','lvn-rt'].map(id=>q('#'+id+' svg').getBoundingClientRect());
+        const sous=glyphes[1].bottom+4;
+        const echantillons=[...document.querySelectorAll('#lv-ram path:not(.puls):not(.sk)')].flatMap(e=>{
+          const L=e.getTotalLength(),n=Math.ceil(L/.5),points=[];
+          for(let i=0;i<=n;i++){const p=e.getPointAtLength(L*i/n);if(p.y>P.bottom+2)points.push([p.x,p.y]);}return points;});
+        const marge=p=>Math.hypot(Math.max(avis.left-p[0],0,p[0]-avis.right),Math.max(avis.top-p[1],0,p[1]-avis.bottom))-1;
         const dans=p=>p[0]>=P.x-8&&p[0]<=P.right+8&&p[1]>=P.y-8&&p[1]<=P.bottom+8,mn=l=>Math.round(Math.min(...l)),mx=l=>Math.round(Math.max(...l));
         return {couronne:haut.length,cg:mn(haut.map(p=>p[0])),cd:innerWidth-mx(haut.map(p=>p[0])),ch:mn(haut.map(p=>p[1])),
           hautsTouches:bordHaut.every(y=>Math.abs(y)<.15),
           racines:bas.length,etendue:mx(bas.map(p=>p[0]))-mn(bas.map(p=>p[0])),rg:mn(bas.map(p=>p[0])),rd:innerWidth-mx(bas.map(p=>p[0])),rb:innerHeight-mx(bas.map(p=>p[1])),
-          ouvert:bas.every(p=>(p[0]<joy.left-12||p[0]>joy.right+12)&&p[1]>J.y+20)
-            &&!tous.some(p=>p[1]>J.y+25&&p[0]>joy.left-4&&p[0]<joy.right+4),
+          enveloppe:echantillons.some(p=>p[0]<joy.left-4&&p[1]>jb.top&&p[1]<joy.bottom)
+            &&echantillons.some(p=>p[0]>joy.right+4&&p[1]>jb.top&&p[1]<joy.bottom)
+            &&bas.some(p=>p[0]>joy.left&&p[0]<J.x&&p[1]>sous)&&bas.some(p=>p[0]>J.x&&p[0]<joy.right&&p[1]>sous),
+          borne:bas.every(p=>p[0]>4&&p[0]<innerWidth-4&&p[1]>J.y+20&&p[1]<innerHeight-4),
+          avis:{integre:q('#lv-parental').parentElement!==q('#lv-c-acts')&&avis.top>P.bottom+12&&avis.bottom<joy.top-8,
+            marge:Math.min(...echantillons.map(marge)),
+            continu:main.every(s=>{const l=s[1];return l.some(p=>p[1]<avis.top-3)&&l.some(p=>p[1]>avis.bottom+3)
+              &&l.some((p,k)=>{const a=l[k-1];return a&&Math.max(a[1],p[1])>avis.top&&Math.min(a[1],p[1])<avis.bottom
+                &&((a[0]<avis.left&&p[0]<avis.left)||(a[0]>avis.right&&p[0]>avis.right));});})},
           jonctions:jonctions.every(e=>{const p=coord(e),segments=main.flat().concat(fk);
             const liens=segments.reduce((n,l)=>n+l.reduce((m,q,j)=>m+(Math.hypot(p[0]-q[0],p[1]-q[1])<.15?+(j>0)+ +(j<l.length-1):0),0),0);
             return !e.classList.contains('is-plein')&&liens>=3&&fk.some(l=>Math.hypot(l[0][0]-p[0],l[0][1]-p[1])<.15);}),
@@ -90,7 +102,8 @@ try{
   ok(A.couronne===56&&A.cg<=40&&A.cd<=40&&A.hautsTouches,'04/11 · les 56 pointes de la COURONNE touchent chacune le haut de l\'écran, sur toute sa largeur → '+JSON.stringify({n:A.couronne,g:A.cg,d:A.cd,h:A.ch}));
   ok(A.noeud,'31/10 · le TOTEHM fait la jonction : chaque branche ET chaque piste du tronc part d\'une de ses perforations');
   ok(A.descend&&!A.touche,'les sept pistes descendent en laissant libres les chevrons et le puits de la manette (au plus près : '+A.libre+' px du centre)');
-  ok(A.racines===12&&A.ouvert&&A.jonctions&&A.rg<=16&&A.rd<=16&&A.rb>=4,'les douze RACINES s\'ouvrent vers les coins bas, avec quatre vraies fourches et aucun arc sous la manette → '+JSON.stringify({n:A.racines,etendue:A.etendue,g:A.rg,d:A.rd,bas:A.rb}));
+  ok(A.racines===12&&A.enveloppe&&A.jonctions&&A.borne,'les douze RACINES enveloppent les deux côtés et le dessous de la manette, avec quatre vraies fourches et des terminaisons dans l\'écran → '+JSON.stringify({n:A.racines,etendue:A.etendue,g:A.rg,d:A.rd,bas:A.rb}));
+  ok(A.avis.integre&&A.avis.continu&&A.avis.marge>=4,'le visuel advisory est dans le tronc : les sept intentions continuent autour de lui et gardent au moins 4 px autour de ses lettres → '+JSON.stringify(A.avis));
   {const [f,s]=A.fruit.split('|'),hex=c=>'#'+(c.match(/\d+/g)||[]).slice(0,3).map(n=>(+n).toString(16).padStart(2,'0')).join('');
    ok(!!s&&hex(f)===s.toLowerCase(),'31/10 · une pastille PLEINE (une Habit) se voit : remplie de SA couleur ('+f+' / '+s+'), plus le noir du creux');}
   /* 18/10 — LES SEPT PISTES VIVENT : une impulsion par intention, épaisse et à la période RÉELLE
@@ -110,6 +123,22 @@ try{
   await pg.click('#lv-tap-open');await pg.waitForFunction(()=>!document.body.classList.contains('gate'),null,{timeout:8000}).catch(()=>{});
   ok(await pg.evaluate(()=>!document.body.classList.contains('gate')),'« '+c.tap+' » ouvre mon TOTEHM (la déconstruction)');
   ok(!erreurs(log).length,'centre : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
+
+ // Le visiteur garde le visuel dans le tronc, même lorsque son pitch occupe plus de place.
+ for(const vp of [{width:390,height:664},{width:390,height:844},{width:1280,height:860},{width:844,height:390}]){
+  const{pg,log}=await page(browser,{dir:'com',origin,session:false,viewport:vp,rpc:{my_landing:{signed_in:false}}});
+  await pg.emulateMedia({reducedMotion:'reduce'});await pg.goto(origin+'/totehm');
+  await pg.waitForFunction(()=>window.__totehm_lv?.().vue==='c'&&!document.body.classList.contains('ses-attente'));
+  await pg.waitForTimeout(500);
+  const a=await pg.evaluate(()=>{
+    const r=s=>document.querySelector(s).getBoundingClientRect(),P=r('#gate-asteroid'),A=r('#lv-parental'),J=r('#lvjoy'),C=r('#lv-c-acts'),H=r('#lv-slogan svg');
+    const croise=(a,b)=>a.left<b.right+4&&a.right>b.left-4&&a.top<b.bottom+4&&a.bottom>b.top-4;
+    return{papier:P.top>=20&&P.bottom<A.top-12,avis:A.width>60&&Math.abs(A.height/A.width-200/278)<.02&&A.bottom<J.top-8,
+      separes:!croise(A,C)&&!croise(C,J),dans:C.left>=0&&C.right<=innerWidth&&C.top>=0&&C.bottom<=innerHeight,
+      higher:H.left>P.right-12&&H.top>P.bottom-20&&H.bottom<P.bottom+20};});
+  ok(a.papier&&a.avis&&a.separes&&a.dans&&a.higher,`visiteur ${vp.width}×${vp.height} : papier, pitch et advisory restent séparés de la manette ; Higher suit le coin inférieur du papier → `+JSON.stringify(a));
+  ok(!erreurs(log).length,'atterrissage visiteur : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();
+ }
 
  // ── 2 · LES GESTES : ↑ ↓ Échap, ← → sans effet, une transition à la fois ; trackpad ; doigt ; chevrons ──
  {const{pg,log}=await page(browser,{dir:'com',origin,tables,viewport:{width:1280,height:800},rpc:{my_landing:LAND()}});

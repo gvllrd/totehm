@@ -42,7 +42,7 @@ un tap sur le TOTEHM et MY WISDOM · MY GRIND · MY VISION naissent de lui, en c
 MY GRIND = OBJECTIVES · HABITS · REPULSIONS empilés ; le « + » d'un média fait naître le même TOTEHM, la box choisie reste seule et la capture vient dessous) ·
 ● **mon TOTEHM** (plus de boîte noire : le TOTEHM EST le boîtier du processeur et le cœur d'un ARBRE DE VIE — ses douze
 perforations toutes raccordées ; au-dessus de lui, ses sept traits se divisent trois fois : les 56 pointes touchent TOUTES le bord supérieur de l'écran, sur toute sa largeur ; le trait s'affine.
-Dessous, le tronc s'ouvre progressivement en deux éventails de racines vers les coins inférieurs ; le joystick reste dans leur creux, sans cadre ni ovale. Quatre jonctions ponctuent les vraies fourches, douze pastilles terminent les racines ; chaque piste reste lisible. Il pousse, il bat, à peine ; le toucher, le retourner ou chercher un membre arrête son
+Dessous, les traits d'intention entourent simplement le visuel « EXPENSIVE ADVISORY · TALK IS CHEAP », intégré au tronc ; aucune ligne ne passe sur ses lettres. Ils se prolongent en racines souples qui enveloppent le joystick et retombent en petits bouquets, ouverts sous la flèche du bas. Quatre jonctions ponctuent les vraies fourches, douze pastilles terminent les racines. Il pousse, il bat, à peine ; le toucher, le retourner ou chercher un membre arrête son
 activité : ses traits sont aspirés en lui, et ressortent quand il revient ; ouvert, il est seul à l'écran ;
 le retourner montre le NOM seul — à même le navy, l'email dessous —, qui monte, puis
 tout d'un coup, en deux parties : **Monetize my TOTEHM** (*and get paid every month*) · **Go [Higher]**, ouverte d'abord
