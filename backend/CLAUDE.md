@@ -48,13 +48,13 @@ Le compte vient TOUJOURS de la session, jamais du corps ; une page ne reçoit qu
 ## n8n
 `n8n/README.md` (VM Oracle) · `n8n/workflows/` (A → F). n8n n'accorde jamais un accès. B SIGNE les photos allumées, les
 fait lire par un modèle de vision et verse ce qu'il en dit dans le prompt — matière, jamais instruction ; les sept
-concepts partent un par un, un bouton `PICK` chacun, et elle retient quel message porte quel numéro. C ROUTE les boutons
-Telegram : `pick` (validé par le LOT, jamais par un message ; les six autres claviers tombent, l'image retenue dit
-`PICKED`), `ship`/`hold` renvoyés à D. D pose un brouillon Printful (`confirm=false` : rien de fabriqué ni facturé),
+concepts partent un par un, un bouton `PICK` chacun, et elle retient quel message porte quel numéro. C est le POSTE TELEGRAM du streetwear :
+`pick` (validé par le LOT, jamais par un message ; les six autres claviers tombent, l'image retenue dit
+`PICKED`), `ship`/`hold` renvoyés à D, `retry`/`refund` sur une pièce bloquée. D pose un brouillon Printful (`confirm=false` : rien de fabriqué ni facturé),
 montre le mockup du dos avec taille et adresse, et n'appelle `/confirm` que sur `SEND TO PRINT`. Un job `waiting` ou `queued` dont l'heure est venue REPART : `streetwear-tick`, arme toutes les cinq minutes par
 `streetwear_tick_arm()` (jeton a usage unique, aucun secret dans le cron), requalifie les executions abandonnees
 (`streetwear_recover_stalled`), reserve ce qui est pret (`streetwear_due`, qui repousse de trois minutes) et rappelle le
-flux — `tracking` excepte, que Printful pousse, et `error_locked`, qui attend une decision. C, D lisent `$env`
-(11 clés) ; E reste sur l'ancien (`process.env`). Banc : `tests/n8n/streetwear/offline.mjs` (73 tests, six blocages).
+flux — `tracking` excepte, que Printful pousse. Une piece bloquee en `error_locked` est ANNONCEE une fois (`streetwear_alerts` pose `alerted_at`) avec deux sorties : `RETRY` (`streetwear_unlock` retire les seuls drapeaux « parti sans reponse » et la remet en file) et `REFUND`, qui redemande confirmation puis NOTE seulement (`streetwear_refund_mark`) : l'argent ne part jamais d'un tap, le remboursement se fait dans Stripe. C, D lisent `$env`
+(11 clés) ; E reste sur l'ancien (`process.env`). Banc : `tests/n8n/streetwear/offline.mjs` (79 tests, six blocages).
 
 Avis Supabase : 2 ERROR connus (`higher_badges` lit `auth.users` ; 4 vues `security definer`, dont `signature_styles`).

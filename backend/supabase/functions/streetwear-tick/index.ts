@@ -5,7 +5,8 @@
 // how  : pg_cron arme la fonction toutes les cinq minutes avec un jeton a usage unique
 //        (`streetwear_tick_arm`). Elle requalifie les executions abandonnees, prend ce qui
 //        est pret (`streetwear_due`, qui reserve) et rappelle le bon webhook n8n.
-// what : un compte par etape ; aucun appel payant ici — n8n reclame le bail, lui seul decide.
+// what : un compte par etape, et l'annonce de ce qui est bloque ; aucun appel payant ici —
+//        n8n reclame le bail, lui seul decide.
 import { createClient } from 'npm:@supabase/supabase-js@2.57.4';
 
 const SERVICE = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
@@ -69,5 +70,27 @@ Deno.serve(async (req) => {
     }
   }
 
-  return json({ ok: true, requalifies, prets: jobs.length, relances: par_etape, refuses: refuses.slice(0, 10) });
+  // 4. ce qui est BLOQUE se dit. `0.muscle` dormait en `error_locked` depuis deux jours
+  //    sans que personne le sache : une piece payee qui s'arrete doit reveiller quelqu'un.
+  //    C'est n8n qui parle a Telegram (il a le jeton du bot), jamais cette fonction.
+  let annoncees = 0;
+  const { data: alerts, error: alertErr } = await sb.rpc('streetwear_alerts', { p_limit: 10 });
+  const bloquees = !alertErr && Array.isArray(alerts) ? alerts : [];
+  if (bloquees.length) {
+    try {
+      const rep = await fetch(N8N + 'curation', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', apikey: SERVICE },
+        body: JSON.stringify({ alert: bloquees }),
+        signal: AbortSignal.timeout(15000),
+      });
+      if (rep.ok) annoncees = bloquees.length;
+      else refuses.push(`alert:${rep.status}`);
+    } catch {
+      refuses.push('alert:transport');
+    }
+  }
+
+  return json({ ok: true, requalifies, prets: jobs.length, relances: par_etape,
+    bloquees: bloquees.length, annoncees, refuses: refuses.slice(0, 10) });
 });

@@ -377,6 +377,52 @@ test('D refuses a decision on a cloth without a draft',async()=>{
   const r=await gate('D',internal({cloth_id:id,decision:'ship'}),o=>o.url.includes('/totehm_clothes?')?[{id,printful_order_id:null}]:undefined);
   assert.equal(ok(r).reason,'no_draft');assert.equal(hits(r,'streetwear_claim').length,0);
 });
+test('C announces a blocked piece with its two ways out',async()=>{
+  const r=await gate('C',internal({alert:[{cloth_id:id,name:'0.Simulation',stage:'generation',last_error:'http_400',price:89,test:false}]}));
+  assert.equal(ok(r).route,'alert');
+  const p=await processNode('C',ok(r),o=>o.url.includes('api.telegram.org')?{ok:true,result:{message_id:950}}:undefined);
+  const envoi=hits(p,'/sendMessage');assert.equal(envoi.length,1);
+  assert.ok(envoi[0].body.text.includes('BLOCKED'));
+  assert.ok(envoi[0].body.text.includes('http_400'));
+  assert.deepEqual(envoi[0].body.reply_markup.inline_keyboard[0].map(b=>b.callback_data),['retry:'+id,'refund:'+id]);
+});
+test('C drops an alert carrying no usable piece',async()=>{
+  const r=await gate('C',internal({alert:[{cloth_id:'not-a-uuid'}]}));
+  assert.equal(ok(r).reason,'empty_alert');assert.equal(hits(r,'api.telegram.org').length,0);
+});
+test('C puts a blocked piece back in the queue on RETRY',async()=>{
+  const r=await gate('C',callback('retry',{message:{message_id:950,chat:{id:7001}}}));
+  assert.equal(ok(r).route,'retry');assert.equal(r.calls.length,0);
+  const p=await processNode('C',ok(r),o=>rpcName(o)==='streetwear_unlock'?{ok:true,stage:'generation'}
+    :o.url.includes('api.telegram.org')?{ok:true}:undefined);
+  assert.equal(hits(p,'streetwear_unlock').length,1);
+  assert.equal(hits(p,'streetwear_unlock')[0].body.p_cloth,id);
+  assert.ok(hits(p,'/editMessageText')[0].body.text.includes('RETRIED'));
+});
+test('C never refunds on a single tap',async()=>{
+  const r=await gate('C',callback('refund',{message:{message_id:950,chat:{id:7001}}}));
+  const p=await processNode('C',ok(r),o=>o.url.includes('api.telegram.org')?{ok:true}:undefined);
+  assert.equal(hits(p,'streetwear_refund_mark').length,0,'aucun marquage avant confirmation');
+  assert.equal(hits(p,'api.stripe.com').length,0,'jamais Stripe');
+  const clavier=hits(p,'/editMessageReplyMarkup')[0].body.reply_markup.inline_keyboard[0];
+  assert.deepEqual(clavier.map(b=>b.callback_data),['refundok:'+id,'retry:'+id]);
+});
+test('C records a refund on confirmation without touching the money',async()=>{
+  const r=await gate('C',callback('refundok',{message:{message_id:950,chat:{id:7001}}}));
+  const p=await processNode('C',ok(r),o=>rpcName(o)==='streetwear_refund_mark'?{ok:true,intent:'pi_fixture'}
+    :o.url.includes('api.telegram.org')?{ok:true}:undefined);
+  assert.equal(hits(p,'streetwear_refund_mark').length,1);
+  assert.equal(hits(p,'api.stripe.com').length,0);
+  const texte=hits(p,'/editMessageText')[0].body.text;
+  assert.ok(texte.includes('pi_fixture'));assert.ok(texte.includes('do it in Stripe'));
+});
+test('C says why a rescue was refused',async()=>{
+  const r=await gate('C',callback('retry',{message:{message_id:950,chat:{id:7001}}}));
+  const p=await processNode('C',ok(r),o=>rpcName(o)==='streetwear_unlock'?{ok:false,reason:'not_locked'}
+    :o.url.includes('api.telegram.org')?{ok:true}:undefined);
+  assert.equal(ok(p).ok,false);
+  assert.ok(hits(p,'/editMessageText')[0].body.text.includes('not_locked'));
+});
 test('C routes a quality-check button to Printful',async()=>{
   const r=await gate('C',callback('ship',{message:{message_id:900,chat:{id:7001}}}));
   assert.equal(ok(r).route,'ship');assert.equal(r.calls.length,0,'aucune lecture inutile');
