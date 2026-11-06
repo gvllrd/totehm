@@ -798,10 +798,17 @@ async function decode(v){
   note.className='note dim';note.textContent='decoding…';
   const seq=++DECODE_SEQ;
   /* 06/11 : `cloth_page` enveloppe `reveal_cloth` et ajoute ce que cette page montre —
-     le rang dans le STYLE, l'identifiant du totehmisateur, la fiche du vêtement, les dopes. */
-  const [{data,error},{data:{session}}]=await Promise.all([sb.rpc('cloth_page',{p_name:v}),sb.auth.getSession()]);
+     le rang dans le STYLE, l'identifiant du totehmisateur, la fiche du vêtement, les dopes.
+     ⚠️ UNE RPC NEUVE N'EST PAS SERVIE TOUT DE SUITE : PostgREST garde son schéma en cache
+     et rend `PGRST202` tant qu'il ne l'a pas relu. La recherche ne doit pas tomber pour
+     ça : on retombe sur `reveal_cloth`, qui dit déjà l'essentiel. */
+  let [{data,error},{data:{session}}]=await Promise.all([sb.rpc('cloth_page',{p_name:v}),sb.auth.getSession()]);
+  if(error){
+    console.error('[cloth_page]',error.message);
+    ({data,error}=await sb.rpc('reveal_cloth',{p_name:v}));
+  }
   if(seq!==DECODE_SEQ)return;
-  if(error){console.error('[cloth_page]',error.message);note.className='note dim';note.textContent='try again';return;}
+  if(error){console.error('[reveal_cloth]',error.message);note.className='note dim';note.textContent='try again';return;}
   DECODED=data||{found:false};
   if(!data?.found){note.className='note no';note.textContent='no Totehm Cloth by that name';return;}
   note.textContent='';
@@ -819,7 +826,7 @@ async function decode(v){
 async function loadDopers(name,seq){
   const{data,error}=await sb.rpc('cloth_dopers',{p_name:name});
   if(seq!==DECODE_SEQ)return;
-  if(error){console.error('[cloth_dopers]',error.message);return;}
+  if(error){console.error('[cloth_dopers]',error.message);return;}   /* pas de dopeurs : la page tient debout */
   const l=(data&&Array.isArray(data.dopers))?data.dopers:[];
   const g=$('dc-dopers'); if(!g)return;
   g.innerHTML=l.map(p=>'<a href="https://www.totehm.com/'+encodeURIComponent(p.pseudo||'')+'" rel="noopener">'
