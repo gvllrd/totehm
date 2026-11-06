@@ -2,10 +2,11 @@ import * as T from './vendor/three-0.180.0.mjs';
 
 // The last sanctuary has no daylight. This celestial sphere is generated once,
 // without a network image, and is also the temple's real lighting environment.
-export function createDrownedSky(scene,{mobile=false,onChange=()=>{}}={}){
+export function createDrownedSky(scene,{mobile=false,onChange=()=>{},place='lisbon'}={}){
  const root=new T.Group();root.name='The rebirth sky — a quiet Milky Way above the drowned world';scene.add(root);
  const geometries=new Set(),materials=new Set(),textures=new Set();
  const geometry=g=>(geometries.add(g),g),material=m=>(materials.add(m),m);
+ const isLisbon=place==='lisbon';
  let time=0,disposed=false,dirty=true,animated=false;
  let seed=0x4e494748;const random=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};
  const clamp=(n,a=0,b=1)=>Math.max(a,Math.min(b,n));
@@ -72,6 +73,11 @@ export function createDrownedSky(scene,{mobile=false,onChange=()=>{}}={}){
     r+=energy*(.70+bulge*.38)*pearl;
     g+=energy*(.81+bulge*.18)*pearl;
     b+=energy*(1.08-bulge*.22);
+    if(isLisbon){
+     const hAlpha=Math.pow(smooth(.24,.82,middle*.62+fine*.38),2.2)*(1-dust*.65)*upper;
+     const ionCyan=Math.pow(smooth(.30,.86,warp*.48+grains*.52),2.0)*(1-dust*.75)*upper;
+     r+=hAlpha*28.0;g+=ionCyan*16.0+hAlpha*5.0;b+=ionCyan*34.0+hAlpha*22.0;
+    }
     const scattered=band*(1-dust)*cloud*3.0;r+=scattered;g+=scattered*.78;b+=scattered*.64;
    }
    // A thin natural airglow, rather than a luminous horizon or ground photo.
@@ -121,7 +127,13 @@ export function createDrownedSky(scene,{mobile=false,onChange=()=>{}}={}){
  const colour=new T.Color();
  for(let i=0;i<starCount;i++){
   let direction;
-  if(i<starCount*.43){
+  if(isLisbon&&i<14){
+   // Maritime navigational stars and Pleiades cluster visible over the Atlantic ruins
+   const pleiades=[[0.32,0.58,-0.75],[0.324,0.584,-0.748],[0.318,0.579,-0.753],[0.328,0.576,-0.746],[0.315,0.586,-0.751],[0.331,0.582,-0.743],[0.322,0.574,-0.756]];
+   const navAnchors=[[-0.15,0.88,0.44],[-0.42,0.42,-0.81],[-0.38,0.39,-0.83],[-0.34,0.36,-0.85],[-0.48,0.48,-0.73],[-0.28,0.31,-0.91],[0.05,0.92,-0.38]];
+   const anchor=i<7?pleiades[i]:navAnchors[i-7];
+   direction=new T.Vector3(...anchor).normalize();
+  }else if(i<starCount*.43){
    const longitude=random()*Math.PI*2,latitude=(random()+random()+random()-1.5)*.065;
    direction=new T.Vector3().copy(core).multiplyScalar(Math.cos(longitude)).addScaledVector(tangent,Math.sin(longitude)).multiplyScalar(Math.cos(latitude)).addScaledVector(normal,Math.sin(latitude));
    if(direction.y<.035)direction.negate();
@@ -129,17 +141,27 @@ export function createDrownedSky(scene,{mobile=false,onChange=()=>{}}={}){
    const dy=.025+random()*.975,phi=random()*Math.PI*2,r=Math.sqrt(1-dy*dy);direction=new T.Vector3(Math.cos(phi)*r,dy,Math.sin(phi)*r);
   }
   positions.set(direction.multiplyScalar(1220).toArray(),i*3);
-  const bright=Math.pow(random(),24),temperature=random();
-  colour.setHex(temperature<.12?0xffd4a2:temperature<.32?0xfff0cf:temperature<.76?0xe3edff:0xaecbff);
-  colours.set(colour.toArray(),i*3);sizes[i]=.84+bright*8.0;phases[i]=random()*Math.PI*2;intensities[i]=.085+bright*.99;
+  const bright=Math.pow(random(),isLisbon?21:24),temperature=random();
+  if(isLisbon){
+   if(temperature<.06)colour.setHex(0x789eff); // O: Luminous blue supergiant
+   else if(temperature<.20)colour.setHex(0xa6c2ff); // B: Brilliant sapphire blue-white
+   else if(temperature<.52)colour.setHex(0xeef3ff); // A: Diamond white (Sirius, Vega)
+   else if(temperature<.70)colour.setHex(0xfff7ee); // F: Warm platinum
+   else if(temperature<.84)colour.setHex(0xffebaf); // G: Solar golden (Capella)
+   else if(temperature<.94)colour.setHex(0xffbe68); // K: Amber orange (Arcturus)
+   else colour.setHex(0xff7452); // M: Ruby garnet supergiant (Betelgeuse)
+  }else{
+   colour.setHex(temperature<.12?0xffd4a2:temperature<.32?0xfff0cf:temperature<.76?0xe3edff:0xaecbff);
+  }
+  colours.set(colour.toArray(),i*3);sizes[i]=isLisbon?(.80+bright*9.5):(.84+bright*8.0);phases[i]=random()*Math.PI*2;intensities[i]=isLisbon?(.09+bright*1.2):(.085+bright*.99);
  }
  const starGeometry=geometry(new T.BufferGeometry());starGeometry.setAttribute('position',new T.BufferAttribute(positions,3));starGeometry.setAttribute('aColour',new T.BufferAttribute(colours,3));starGeometry.setAttribute('aSize',new T.BufferAttribute(sizes,1));starGeometry.setAttribute('aPhase',new T.BufferAttribute(phases,1));starGeometry.setAttribute('aIntensity',new T.BufferAttribute(intensities,1));
  const timeUniform={value:0},pixelRatio={value:Math.min(globalThis.devicePixelRatio||1,1.5)};
  const starMaterial=material(new T.ShaderMaterial({uniforms:{uTime:timeUniform,uPixelRatio:pixelRatio},transparent:true,depthWrite:false,depthTest:true,blending:T.AdditiveBlending,toneMapped:false,fog:false,
   vertexShader:`attribute vec3 aColour;attribute float aSize,aPhase,aIntensity;uniform float uTime,uPixelRatio;varying vec3 vColour;varying float vIntensity,vGlint;
-   void main(){vColour=aColour;float lowAltitude=1.-clamp(position.y/1220.,0.,1.);float shimmer=.018+.065*lowAltitude*lowAltitude;vIntensity=aIntensity*(1.-shimmer+shimmer*sin(aPhase+uTime*(.21+.13*sin(aPhase))));vGlint=smoothstep(1.8,7.0,aSize);gl_PointSize=aSize*uPixelRatio;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,
+   void main(){vColour=aColour;float lowAltitude=1.-clamp(position.y/1220.,0.,1.);float shimmer=.022+.11*lowAltitude*lowAltitude;float twinkle=sin(aPhase+uTime*(.32+.16*sin(aPhase)))*.45+sin(aPhase*2.7+uTime*(1.02+.32*cos(aPhase)))*.35+sin(aPhase*6.1+uTime*2.15)*.2;vIntensity=aIntensity*(1.-shimmer+shimmer*twinkle);vGlint=smoothstep(1.5,5.8,aSize);gl_PointSize=aSize*uPixelRatio;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,
   fragmentShader:`varying vec3 vColour;varying float vIntensity,vGlint;
-   void main(){vec2 p=gl_PointCoord-.5;float r=length(p);float core=exp(-r*r*mix(19.,235.,vGlint));float halo=exp(-r*r*17.)*vGlint*.095;float glint=exp(-abs(p.x)*105.)*exp(-abs(p.y)*12.)+exp(-abs(p.y)*105.)*exp(-abs(p.x)*12.);float alpha=(core*.88+halo+glint*vGlint*.035)*vIntensity;if(r>.5)discard;gl_FragColor=vec4(vColour,alpha);
+   void main(){vec2 p=gl_PointCoord-.5;float r=length(p);if(r>.5)discard;float core=exp(-r*r*mix(24.,280.,vGlint));float halo=exp(-r*r*15.)*(vGlint*.12+.035);float glint=(exp(-abs(p.x)*95.)*exp(-abs(p.y)*11.)+exp(-abs(p.y)*95.)*exp(-abs(p.x)*11.))*vGlint*.075;float alpha=(core*.92+halo+glint)*vIntensity;gl_FragColor=vec4(vColour,alpha);
     #include <colorspace_fragment>
    }`
  }));
@@ -234,7 +256,7 @@ export function createDrownedSky(scene,{mobile=false,onChange=()=>{}}={}){
    animated=!!motion;if(animated){time+=Math.max(0,Math.min(Number(dt)||0,.1));timeUniform.value=time;dirty=true;}
    const changed=dirty;dirty=false;return changed;
   },
-  diagnostics:()=>({night:true,skyLoaded:true,textureReady:true,textureSize:[width,height],milkyWay:true,galacticClouds:'warped luminous filaments behind branching opaque dust',galacticArch:true,galacticNormal:normal.toArray(),stars:starCount,stellarDust:tinyStars,stellarProfile:'compact cores and faint optical halos',stellarColours:4,deepStars:{count:starCount,visible:deepStars.visible,distance:56000,hemisphere:'lower',galaxy:true},nearStars:{count:nearCount,stars:nearStarCount,dust:nearDustCount,visible:nearStars.visible,opacity:+nearOpacity.value.toFixed(3),nearDistance:110,farDistance:900,fadeStartAltitude:350,fullAltitude:2500,worldAnchored:true,autonomousMotion:false},spaceDarkening:+spaceUniform.value.toFixed(3),time:+time.toFixed(3),animated,moon:true,moonDirection:moonDirection.toArray(),moonDiameterDegrees:1.04,lunarCraters:lunarCraters.length,shootingStars:1,meteorPeriod:47,meteorDuration:1.15,meteorRibbon:true,meteorTriangles:meteorIndices.length/3,externalFiles:0,disposed}),
+  diagnostics:()=>({night:true,skyLoaded:true,textureReady:true,textureSize:[width,height],milkyWay:true,galacticClouds:'warped luminous filaments behind branching opaque dust',galacticArch:true,galacticNormal:normal.toArray(),stars:starCount,stellarDust:tinyStars,stellarProfile:'compact cores and faint optical halos',stellarColours:isLisbon?7:4,deepStars:{count:starCount,visible:deepStars.visible,distance:56000,hemisphere:'lower',galaxy:true},nearStars:{count:nearCount,stars:nearStarCount,dust:nearDustCount,visible:nearStars.visible,opacity:+nearOpacity.value.toFixed(3),nearDistance:110,farDistance:900,fadeStartAltitude:350,fullAltitude:2500,worldAnchored:true,autonomousMotion:false},spaceDarkening:+spaceUniform.value.toFixed(3),time:+time.toFixed(3),animated,moon:true,moonDirection:moonDirection.toArray(),moonDiameterDegrees:1.04,lunarCraters:lunarCraters.length,shootingStars:1,meteorPeriod:47,meteorDuration:1.15,meteorRibbon:true,meteorTriangles:meteorIndices.length/3,externalFiles:0,disposed}),
   dispose(){if(disposed)return;disposed=true;for(const t of textures)t.dispose();for(const m of materials)m.dispose();for(const g of geometries)g.dispose();canvas.width=canvas.height=moonCanvas.width=moonCanvas.height=haloCanvas.width=haloCanvas.height=1;root.removeFromParent();root.clear();}
  };
 }
