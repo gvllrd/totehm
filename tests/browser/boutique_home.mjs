@@ -5,12 +5,14 @@ const OUT = process.argv[2] || '.';
 const browser = await launch();
 const CLOTHS = {
   '0.hill': { found:true, name:'0.Hill', legacy:false, level:'member', line:'streetwear', view:'habits', created_at:'2026-10-05', palette:['#E24B4A'], text:'Run the hill',
-              is:['fight'], owner:'nia', matter:null, garment:'Higher Champion Sweatshirt', size:'L', style:'Ink Realism', stage:'making', edition:3, edition_of:177, art:false },
+              is:['fight'], owner:'nia', matter:null, garment:'Higher Champion Sweatshirt', size:'L', style:'Ink Realism', stage:'making', edition:3, edition_of:177, art:false,
+              style_no:3, style_of:41, owner_id:'u-nia', garment_details:'82% cotton, 18% polyester', dopes:12, i_doped:false },
   '0.lock': { found:true, name:'0.Lock', legacy:false, level:'locked', line:'streetwear', view:'wisdom', created_at:'2026-10-05', palette:null, text:null, is:null, owner:null, matter:null,
-              garment:'Higher Champion Sweatshirt', size:null, style:'Ink Realism', stage:'production', edition:1, edition_of:177, art:false },
+              garment:'Higher Champion Sweatshirt', size:null, style:'Ink Realism', stage:'production', edition:1, edition_of:177, art:false, dopes:0, i_doped:false },
   '0.old':  { found:true, name:'0.Old', legacy:true, level:'full', message:'I stay higher', created_at:'2026-09-01' },
   '0.sea':  { found:true, name:'0.Sea', legacy:false, level:'full', line:'streetwear', view:'visions', created_at:'2026-10-06', palette:['#1D9E75'], text:'A studio by the sea',
-              is:['express'], owner:'wah', matter:{ objectives:[{ text:'Save 10k' }] }, garment:'Higher Champion Sweatshirt', size:'M', style:'Analog Grain', stage:'shipped', edition:2, edition_of:177, art:true, mine:true },
+              is:['express'], owner:'wah', matter:{ objectives:[{ text:'Save 10k' }] }, garment:'Higher Champion Sweatshirt', size:'M', style:'Analog Grain', stage:'shipped', edition:2, edition_of:177, art:true, mine:true,
+              style_no:2, style_of:9, owner_id:'u-wah', garment_details:'82% cotton', dopes:3, i_doped:true },
 };
 const BOARD = { signed_in:true, pseudo:'Vallerand',
   cloths:[{ name:'0.Sea', stage:'shipped', size:'M', price:170, garment:'Higher Champion Sweatshirt', at:'2026-10-06',
@@ -18,7 +20,11 @@ const BOARD = { signed_in:true, pseudo:'Vallerand',
   luxury:[{ name:'0.Bag', status:'quoted', brand:'Hermès', piece:'bag', cents:50000, currency:'eur', at:'2026-10-24', text:'Slow is smooth' }] };
 const SHOTS = [{ kind:'media', id:'em1', bucket:'element-media', path:'u/m-1.jpg', txt:'sea.jpg' },
                { kind:'spot',  id:'sp1', bucket:'moments',       path:'u/s-1.jpg', txt:'the hill' }];
-const rpc = { reveal_cloth: b => CLOTHS[String(b.p_name).toLowerCase()] || { found:false },
+const lire = b => CLOTHS[String(b.p_name).toLowerCase()] || { found:false };
+const DOPE = [];
+const rpc = { reveal_cloth: lire, cloth_page: lire,
+              cloth_dopers: () => ({ found:true, dopers:[{ id:'u-nia', pseudo:'nia' }, { id:'u-wah', pseudo:'wah' }] }),
+              cloth_dope: b => { DOPE.push(String(b.p_name)); return { ok:true, doped:true, count:13 }; },
               my_boutique_board: () => BOARD, cloth_shots: () => SHOTS };
 const tables = { totehm_cloth_support: [{ max_pieces:50, claimed:3 }], profiles: [{ pseudo:'Vallerand' }], subscribers: [] };
 const ART = [];
@@ -85,26 +91,52 @@ await pg.waitForTimeout(700);   // le Higher finit de tourner : à 90° il n'a p
 for(const [name, re, lvl] of [['0.hill', /Run the hill/, 'member'], ['0.lock', /reserved/, 'locked'], ['0.old', /I stay higher/, 'full']]){
   await pg.fill('#decode-q', name); await pg.press('#decode-q', 'Enter');
   await pg.waitForFunction(n => document.querySelector('#decode-fs').classList.contains('show') && window.__totehm_boutique().decode, name);
-  ok(re.test(await pg.textContent('#decode-msg')) && (await pg.evaluate(() => window.__totehm_boutique().decode.level)) === lvl, 'decode ' + lvl + ': reveal_cloth');
+  ok(re.test(await pg.textContent('#decode-msg')) && (await pg.evaluate(() => window.__totehm_boutique().decode.level)) === lvl, 'decode ' + lvl + ': cloth_page');
   if(lvl === 'member'){
-    const t = await pg.evaluate(() => { const k = [...document.querySelector('#decode-msg').children].map(e => e.className);
-      const el = document.querySelector('.dc-el').getBoundingClientRect(), nm = document.querySelector('.dc-name').getBoundingClientRect();
-      return { order:k.join(','), wide: el.width >= nm.width, bg: getComputedStyle(document.querySelector('.dc-el')).backgroundColor }; });
-    ok(t.order.startsWith('dc-name,dc-meta,dc-el') && t.wide && /51, 51, 102/.test(t.bg), 'the element comes first, full width, in its view colour (habit navy)');
+    /* 06/11 (Wah) : « le moins possible », et la BOX en avant, dans son format d'origine. */
+    const t = await pg.evaluate(() => { const m = document.querySelector('#decode-msg'), bx = m.querySelector('.dc-bx');
+      return { ordre:[...m.children].map(e => e.id || e.className.split(' ')[0]).join(','),
+        cadre: getComputedStyle(document.querySelector('#decode-fs')).borderImageSource,
+        nom_repete: !!m.querySelector('.dc-name'),
+        reglette: m.querySelectorAll('.dc-bx .tick i').length,
+        mini_dedans: !!(bx && bx.querySelector('.dc-mi')), mini_dehors: !!m.querySelector(':scope > .dc-mat'),
+        zoom: bx ? getComputedStyle(bx).zoom : null, large: bx ? Math.round(bx.getBoundingClientRect().width) : 0 }; });
+    ok(t.ordre.startsWith('dc-art,dc-bx'), 'l oeuvre puis la BOX : rien devant elles · ' + t.ordre);
+    ok(t.cadre === 'none', 'plus de bordure perforee autour de l ecran');
+    ok(!t.nom_repete, 'le nom du Cloth ne se repete pas : on vient de le taper');
+    ok(t.reglette === 1 && !t.mini_dehors, 'la box garde sa reglette d intentions, rien n est dissocie');
+    ok(t.zoom === '1' || t.zoom === 'normal', 'la box n est PAS agrandie : son format d origine');
     const txt = await pg.textContent('#decode-msg');
-    ok(/No\. 3 \/ 177/.test(txt) && /Higher Champion Sweatshirt · L/.test(txt) && /Ink Realism/.test(txt) && /in the making/i.test(txt) && /nia/.test(txt), 'every detail: edition, cloth, size, style, owner, stage');
+    ok(/no\. 3 \/ 41/.test(txt) && /Ink Realism/.test(txt) && /in the making/i.test(txt) && /nia/.test(txt),
+       'le rang dans le STYLE, le style, l etape, le totehmisateur');
+    ok(!/Higher Champion Sweatshirt/.test(await pg.textContent('.dc-facts')), 'le vetement n est pas dans les faits : il est au tiroir');
+    const tiroir = await pg.evaluate(() => { const d = document.querySelector('.dc-draw');
+      return { plie: d ? !d.open : null, dedans: d ? d.textContent : '' }; });
+    ok(tiroir.plie === true && /Higher Champion Sweatshirt · L/.test(tiroir.dedans) && /82% cotton/.test(tiroir.dedans),
+       'le vetement et sa fiche sont PLIES dans un tiroir');
+    const dope = await pg.evaluate(() => ({ n: document.querySelector('#dc-dope-n').textContent,
+      qui: [...document.querySelectorAll('#dc-dopers a')].map(a => a.textContent + '>' + a.getAttribute('href')) }));
+    ok(dope.n === '12' && dope.qui.length === 2 && /nia>https:\/\/www\.totehm\.com\/nia/.test(dope.qui[0]),
+       'DOPE : le compte du serveur, et qui a dope mene a son profil sur COM');
     ok(/lands with the cloth/.test(txt) && !ART.length, 'not shipped: the artwork stays a surprise, cloth-art not called');
     ok(/decode=0\.Hill/.test(pg.url()), 'the address follows the decoded cloth (shareable)');
     ok(!/\bbox\b/i.test(txt), 'on screen: "element", never "box"');
+    /* Sans session, le bouton existe et dit le compte, mais ne dope pas : il connecte
+       d'abord. Le chemin connecte (le compte qui monte) n'est pas joue ici — cette page
+       de test tourne deconnectee, et un tap partirait vers `totehm.com/auth`. */
+    const pret = await pg.evaluate(() => { const b = document.querySelector('#dc-dope');
+      return { presse: b.getAttribute('aria-pressed'), actif: !b.disabled }; });
+    ok(pret.presse === 'false' && pret.actif && DOPE.length === 0,
+       'DOPE attend un geste : rien n est envoye au serveur tant qu on ne tape pas');
     ok(!(await pg.$('#decode-msg .dc-pal, #decode-msg [style*="#E24B4A"] i')), 'no colour palette on the cloth page (Wah, 08/10 bis)');
     await pg.screenshot({ path: OUT + '/bq_decode_member.png' });
   }
   if(lvl === 'locked'){
     ok(!/Run the hill/.test(await pg.textContent('#decode-msg')) && await pg.isVisible('#decode-msg [data-eco-connect]'), 'decode locked: no element text, CONNECT WITH MY TOTEHM');
-    ok(/in production/i.test(await pg.textContent('#decode-msg')) && /my wisdom/i.test(await pg.textContent('.dc-el')), 'locked still says the view, the cloth and the stage');
+    ok(/in production/i.test(await pg.textContent('#decode-msg')) && /my wisdom/i.test(await pg.textContent('.dc-bx')), 'locked still says the view, the cloth and the stage');
   }
   await pg.click('#decode-back');
-  ok(!/decode=/.test(pg.url()), 'Back in Time clears the address');
+  ok(!/decode=/.test(pg.url()), 'la croix referme et nettoie l adresse');
 }
 await pg.fill('#decode-q', '0.none'); await pg.press('#decode-q', 'Enter');
 await pg.waitForFunction(() => /no Totehm Cloth/.test(document.querySelector('#dc-note').textContent));
@@ -118,7 +150,7 @@ ok(!log.errors.length, 'no page error: ' + log.errors.join(' | '));
   await pg.waitForFunction(() => document.querySelector('#decode-fs').classList.contains('show') && document.querySelector('#dc-art img'));
   const txt = await pg.textContent('#decode-msg');
   ok(ART.includes('0.Sea') && /A studio by the sea/.test(txt) && /Save 10k/.test(txt) && /shipped/i.test(txt), 'shipped: the artwork shows (cloth-art), with the element, its matter and the stage');
-  ok(/36, 49, 140|54, 73, 140/.test(await pg.evaluate(() => getComputedStyle(document.querySelector('.dc-el')).backgroundColor)), 'a vision wears light blue');
+  ok(/36, 49, 140|54, 73, 140/.test(await pg.evaluate(() => getComputedStyle(document.querySelector('.dc-bx')).backgroundColor)), 'a vision wears light blue');
   ok(!log.errors.length, 'deep link: no page error ' + log.errors.join(' | '));
   await pg.screenshot({ path: OUT + '/bq_decode_shipped.png', fullPage:true });
 }
@@ -177,10 +209,19 @@ ok(!log.errors.length, 'no page error: ' + log.errors.join(' | '));
   await pg.waitForFunction(() => document.querySelector('#decode-fs').classList.contains('show'));
   await pg.waitForSelector('#dc-shots figure');
   const ph = await pg.evaluate(() => { const l = [...document.querySelectorAll('#dc-shots figure')];
+    const mi = document.querySelector('.dc-bx .dc-mi');
     return { n: l.length, m: l[0].classList.contains('m'), lieu: (l[1].querySelector('figcaption') || {}).textContent || '',
-      mat: document.querySelector('.dc-mat') ? document.querySelector('.dc-mat').textContent.trim() : '' }; });
-  ok(ph.n === 2 && ph.m && ph.lieu === 'the hill' && ph.mat === 'Save 10k',
-    '26/10 · Decode montre TOUT ce qui a été sélectionné : les mini-boxes allumées et mes photos ' + JSON.stringify(ph));
+      mat: mi ? mi.textContent.trim() : '', dedans: !!(mi && mi.closest('.dc-bx')),
+      curseur: l[0] ? getComputedStyle(l[0]).cursor : '' }; });
+  ok(ph.n === 2 && ph.m && ph.lieu === 'the hill' && ph.mat === 'Save 10k' && ph.dedans,
+    '26/10 · Decode montre TOUT ce qui a été sélectionné — et depuis le 06/11 les mini-boxes sont DANS leur box-mère ' + JSON.stringify(ph));
+  /* 06/11 (Wah) : « les media photos ou spots doivent pouvoir être affichés en full-screen ». */
+  await pg.click('#dc-shots figure:first-child');
+  const plein = await pg.evaluate(() => { const w = document.querySelector('#dc-full');
+    return { ouvert: w.classList.contains('show'), img: !!document.querySelector('#dc-full img[src]') }; });
+  ok(plein.ouvert && plein.img && ph.curseur === 'zoom-in', 'une photo tapée s ouvre en plein écran');
+  await pg.click('#dc-full-x');
+  ok(!(await pg.evaluate(() => document.querySelector('#dc-full').classList.contains('show'))), 'et la croix la referme');
   await pg.screenshot({ path: OUT + '/bq_decode_mine.png' });
   ok(!log.errors.length, 'le Higher retourné : aucune erreur ' + log.errors.join(' | '));
   await pg.context().close();

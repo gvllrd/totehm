@@ -87,7 +87,16 @@ nav{display:flex;flex-direction:column;align-items:center;gap:30px;width:100%;ma
 /* 08/10 — Wah : « la page de résultat doit afficher tous les détails du totehm
    cloth, avec la box (l'élément) en position proéminente ». Fond noir dans le
    cadre perforé navy ; l'élément porte la couleur de sa vue ; le nom en Coral. */
-#decode-fs{background:#000;justify-content:flex-start;overflow-y:auto;overscroll-behavior:contain;padding:max(56px,8dvh) 18px 40px}
+/* 06/11 (Wah) : « enlève les bordures perforées bleu navy autour de l'écran ».
+   `.fs-perf` encadre le plein écran du papier perforé ; la page d'un Cloth ne
+   s'encadre plus : l'œuvre et la box portent déjà le dessin de la marque, et
+   un cadre de plus les écrasait. Fond noir, rien autour. */
+#decode-fs{background:#000;border:0;border-image:none;justify-content:flex-start;
+  overflow-y:auto;overscroll-behavior:contain;padding:max(52px,7dvh) 16px 48px}
+#decode-fs .dc-x{position:fixed;top:14px;right:14px;z-index:262;width:34px;height:34px;padding:0;border:0;
+  background:none;color:#8a8a90;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:color .15s ease}
+#decode-fs .dc-x svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round}
+@media(hover:hover){#decode-fs .dc-x:hover{color:#fff}}
 .dc{width:100%;max-width:520px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center}
 .dc-name{font-family:'Quantico',sans-serif;font-size:clamp(24px,7vw,34px);line-height:1.2;color:var(--coral);background:#111114;border-radius:12px;padding:8px 18px;word-break:break-word}
 .dc-meta{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#909090}
@@ -118,8 +127,69 @@ nav{display:flex;flex-direction:column;align-items:center;gap:30px;width:100%;ma
 .dc-art img{width:100%;height:100%;object-fit:contain;display:block}
 .dc-art span{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:#5a5a5a;padding:0 24px;line-height:1.8}
 .dc-facts{display:flex;flex-direction:column;gap:3px;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#b0b0b0}
-.dc-facts .by{font-family:'Quantico',sans-serif;font-size:12px;letter-spacing:0;text-transform:none;color:var(--coral)}
+/* 06/11 (Wah) : « ce qui suit le BY doit reprendre la structure du totehm verso
+   avec le nom dessus, comme le système de recherche dans totehm.com ». C'est le
+   `.srch-name` de COM : le nom posé SUR le papier perforé, jamais sur un aplat. */
+.dc-facts .by{display:inline-block;font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;
+  line-height:1.4;letter-spacing:0;text-transform:none;color:var(--coral);text-decoration:none;
+  border:6px solid transparent;border-image-source:var(--tile-full);border-image-slice:6 fill;
+  border-image-repeat:round;padding:0 8px;transition:filter .15s ease}
+@media(hover:hover){.dc-facts a.by:hover{filter:brightness(1.3)}}
+.dc-facts .by-w{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:4px}
+.dc-facts .by-w i{font-style:normal;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.14em;
+  text-transform:uppercase;color:#b0b0b0}
 .dc-stage{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#fff;background:#1f1f24;border-radius:8px;padding:5px 10px}
+/* ══ LA PAGE D'UN CLOTH · 06/11/2026 (Wah) ════════════════════════════════
+   « Le moins possible. Ce qui doit être mis en avant, c'est les box du totehm
+   de l'utilisateur. » L'ordre dit la hiérarchie : l'œuvre, la box, ses photos,
+   le dope — puis, loin derrière et PLIÉ, le vêtement, « parce qu'on s'en fout
+   un peu ». Le nom du Cloth ne se répète pas : on vient de le chercher.
+   LA BOX GARDE SON FORMAT D'ORIGINE : la `.bx` de streetwear, sa réglette
+   d'intentions, ses mini-boxes DEDANS — jamais dissociées — et la loupe que
+   `tools/ecosystem_ui` pose sur toute `.bx`. Pas d'agrandissement. */
+.dc{gap:18px}
+.dc-bx{position:relative;width:100%;background:var(--skin,#333366);color:#fff;
+  padding:10px 14px 12px 16px;text-align:left}
+.dc-bx .tick{position:absolute;left:0;top:0;bottom:0;width:3px;display:flex;flex-direction:column}
+.dc-bx .tick i{flex:1 1 0;display:block}
+.dc-bx .nm{font-family:'Quantico',sans-serif;font-size:15px;line-height:1.5;word-break:break-word}
+.dc-bx .sb{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;
+  color:rgba(255,255,255,.74);margin-top:5px;display:flex;flex-wrap:wrap;gap:0 10px}
+.dc-bx .lock{font-family:'Space Mono',monospace;font-size:11px;line-height:1.7;color:rgba(255,255,255,.88)}
+.dc-grp{display:flex;flex-wrap:wrap;align-items:center;gap:4px;margin-top:9px}
+.dc-grp .w{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.2em;text-transform:uppercase;
+  color:rgba(255,255,255,.5);margin-right:3px}
+.dc-mi{font-family:'Quantico',sans-serif;font-size:11px;color:#fff;padding:2px 7px;background:var(--navy)}
+.dc-mi.o{background:var(--blue)}.dc-mi.r{background:var(--rep)}.dc-mi.w{background:#5b2652}.dc-mi.v{background:#2b3a73}
+.dc-mi.s{background:rgba(0,0,0,.35);font-family:'Space Mono',monospace;font-size:10px}
+/* LE DOPE — l'équivalent d'un like, et qui l'a donné. */
+.dc-dope{width:100%;display:flex;flex-direction:column;align-items:center;gap:8px}
+.dc-dope .go{display:inline-flex;align-items:center;gap:9px;font-family:'Quantico',sans-serif;font-size:14px;
+  letter-spacing:.04em;color:var(--coral);background:#111114;border:1px solid #26262c;border-radius:999px;
+  padding:7px 18px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background .15s ease,border-color .15s ease}
+.dc-dope .go b{font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:#fff}
+.dc-dope .go[aria-pressed=true]{background:var(--rep);border-color:var(--rep);color:#fff}
+@media(hover:hover){.dc-dope .go:hover{border-color:#50505a}}
+.dc-dope .who{display:flex;flex-wrap:wrap;gap:4px 6px;justify-content:center}
+.dc-dope .who a{font-family:'Quantico',sans-serif;font-size:11px;color:var(--coral);text-decoration:none;
+  background:#111114;padding:2px 8px;border-radius:999px}
+@media(hover:hover){.dc-dope .who a:hover{background:var(--rep);color:#fff}}
+/* LE TIROIR — le vêtement, plié. */
+.dc-draw{width:100%;border-top:1px solid #1a1a1f;padding-top:10px}
+.dc-draw summary{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;
+  color:#6a6a72;cursor:pointer;list-style:none;text-align:center}
+.dc-draw summary::-webkit-details-marker{display:none}
+@media(hover:hover){.dc-draw summary:hover{color:#b0b0b0}}
+.dc-draw .in{font-family:'Space Mono',monospace;font-size:11px;line-height:1.75;color:#9a9aa2;
+  text-align:left;margin-top:10px;white-space:pre-line}
+.dc-draw .in b{color:#d0d0d6;font-weight:400}
+/* PLEIN ÉCRAN — une photo tapée s'ouvre entière. */
+#dc-full{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.96);display:none;
+  align-items:center;justify-content:center;padding:24px}
+#dc-full.show{display:flex}
+#dc-full img{max-width:100%;max-height:100%;object-fit:contain;display:block}
+#dc-full .dc-x{position:fixed;top:14px;right:14px}
+.dc-shots figure{cursor:zoom-in}
 .fs-msg{font-family:'Quantico',sans-serif;font-weight:400;font-size:clamp(18px,4.4vw,26px);color:#fff;line-height:1.55;text-align:center;max-width:640px;font-style:italic;white-space:pre-wrap;overflow-y:auto;max-height:78vh}
 
 /* LUXURY : sous-titre + défilement horizontal logos */
@@ -495,8 +565,12 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
   <button id="hb-x" type="button" aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg></button>
 </div>
 
+<div id="dc-full" role="dialog" aria-modal="true" aria-label="Full screen">
+  <button class="dc-x" id="dc-full-x" type="button" aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg></button>
+  <img id="dc-full-img" alt="">
+</div>
 <div class="fs-perf" id="decode-fs" role="dialog" aria-label="A decoded Totehm Cloth">
-  <button class="btn-back fs-back" id="decode-back">Back in Time</button>
+  <button class="dc-x" id="decode-back" type="button" aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg></button>
   <div class="dc" id="decode-msg"></div>
 </div>
 
@@ -655,25 +729,59 @@ const DC_VIEW={habits:['my habits','#333366'],objectives:['my objectives','#3649
 const DC_INT={fight:['Fight','#E24B4A','BODY'],flow:['Flow','#e48b31','BODY'],enrich:['Enrich','#fcbe21','MENTAL'],love:['Love','#639922','SPIRIT'],
   express:['Express','#1D9E75','SOUL'],focus:['Focus','#378ADD','MENTAL'],celebrate:['Celebrate','#7F77DD','SOUL']};
 const DC_MI={habits:'',objectives:'o',repulsions:'r',wisdom:'w',visions:'v'};
+/* Le mot de chaque vue au-dessus de ses mini-boxes, comme dans streetwear. */
+const DC_MW={habits:'habit',objectives:'objective',repulsions:'repulsion',wisdom:'my story',visions:'vision'};
 const DC_STAGE={making:'in the making',production:'in production',shipped:'shipped',cancelled:'cancelled'};
-function decodeHTML(d,signed){
+/* ══ LA PAGE D'UN CLOTH · 06/11/2026 (Wah) ════════════════════════════════
+   « Le moins possible. On enlève tout le superflu qui ne sert à RIEN. »
+   Ce qui reste, dans cet ordre : L'OEUVRE imprimée · LA BOX du totehm, dans son
+   FORMAT D'ORIGINE · ses photos · le DOPE · une ligne de faits (la date, le
+   style et son rang, le totehmisateur) · et le vêtement PLIÉ dans un tiroir.
+   Le nom du Cloth ne se répète pas : on vient de le taper pour arriver ici.
+   ⚠️ La box est une `.bx` comme dans streetwear — même réglette, mêmes
+   mini-boxes DEDANS. `tools/ecosystem_ui` lui pose sa loupe tout seul. */
+function dcBox(d){
   const V=DC_VIEW[d.view]||['the element','#333366'];
-  const meta=['Totehm Cloth',d.line==='luxury'?'Luxury':'Streetwear',d.created_at||'',d.edition&&d.edition_of?'No. '+d.edition+' / '+d.edition_of:'',d.test?'test':''].filter(Boolean).join(' · ');
-  let el;
-  if(d.legacy)el='<div class="dc-el" style="--skin:#333366"><small>the message</small><b>'+esc('“'+(d.message||'')+'”')+'</b></div>';
-  else if(d.level==='locked')el='<div class="dc-el" style="--skin:'+V[1]+'"><small>'+esc(V[0])+'</small><div class="lock">This element is reserved for its owner and eligible collectors.</div>'+
-    (signed?'':'<button class="btn-sig" type="button" data-eco-connect="1">CONNECT WITH MY TOTEHM</button>')+'</div>';
-  else{
-    const ints=(d.is||[]).filter(i=>DC_INT[i]).map(i=>'<span style="color:'+DC_INT[i][1]+'">'+DC_INT[i][0]+'</span><span style="color:rgba(255,255,255,.55)">'+DC_INT[i][2]+'</span>').join('');
-    el='<div class="dc-el" style="--skin:'+V[1]+'"><small>'+esc(V[0])+'</small><b>'+esc(d.text||'')+'</b>'+(ints?'<div class="ints">'+ints+'</div>':'')+'</div>';
-  }
-  const mat=d.matter&&typeof d.matter==='object'?Object.entries(d.matter).flatMap(([k,a])=>(Array.isArray(a)?a:[]).map(x=>'<span class="'+(DC_MI[k]||'')+'">'+esc(x?.text||'')+'</span>')):[];
-  const art=d.line==='luxury'?'':'<div class="dc-art'+(d.art?'':' is-wait')+'" id="dc-art"><span>'+(d.art?'…':d.stage==='cancelled'?'cancelled':'The artwork lands with the cloth.')+'</span></div>';
-  const facts=[d.garment?esc(d.garment)+(d.size?' · '+esc(d.size):''):'',d.style?esc(d.style):'',d.owner?'by <span class="by">'+esc(d.owner)+'</span>':''].filter(Boolean).map(x=>'<span>'+x+'</span>').join('');
-  return '<div class="dc-name">'+esc(d.name)+'</div><div class="dc-meta">'+esc(meta)+'</div>'+el+
-    (mat.length?'<div class="dc-mat">'+mat.join('')+'</div>':'')+
-    (d.mine?'<div class="dc-shots" id="dc-shots"></div>':'')+art+(facts?'<div class="dc-facts">'+facts+'</div>':'')+
-    (d.stage&&DC_STAGE[d.stage]?'<div class="dc-stage">'+DC_STAGE[d.stage]+'</div>':'');
+  if(d.legacy)return '<div class="dc-bx" style="--skin:#333366"><div class="sb">the message</div><div class="nm">'+esc('“'+(d.message||'')+'”')+'</div></div>';
+  if(d.level==='locked')return '<div class="dc-bx" style="--skin:'+V[1]+'"><div class="sb">'+esc(V[0])+'</div>'+
+    '<div class="lock">This element is reserved for its owner and eligible collectors.</div></div>';
+  const tick=(d.is||[]).filter(i=>DC_INT[i]).map(i=>'<i style="background:'+DC_INT[i][1]+'"></i>').join('');
+  const i0=(d.is||[]).find(i=>DC_INT[i]);
+  const sub=i0?'<span style="color:'+DC_INT[i0][1]+';font-weight:700">'+DC_INT[i0][0]+'</span><span style="color:rgba(255,255,255,.5)">'+DC_INT[i0][2]+'</span>':'';
+  /* Les mini-boxes ne sont PAS dissociées de leur box-mère : elles vivent dedans,
+     groupées par vue, comme au moment où le membre les a allumées. */
+  const grp=d.matter&&typeof d.matter==='object'?Object.entries(d.matter).filter(([,a])=>(Array.isArray(a)?a:[]).length)
+    .map(([k,a])=>'<div class="dc-grp"><span class="w">'+esc((DC_MW[k]||k))+'</span>'+
+      a.map(x=>'<span class="dc-mi '+(DC_MI[k]||'')+'">'+esc(x&&x.text||'')+'</span>').join('')+'</div>').join(''):'';
+  return '<div class="dc-bx" style="--skin:'+V[1]+'">'+(tick?'<span class="tick">'+tick+'</span>':'')+
+    '<div class="sb">'+esc(V[0])+'</div><div class="nm">'+esc(d.text||'')+'</div>'+
+    (sub?'<div class="sb">'+sub+'</div>':'')+grp+'</div>';
+}
+function decodeHTML(d,signed){
+  /* L'OEUVRE d'abord : c'est elle qu'on est venu voir. Elle paraît avec la pièce. */
+  const art=d.line==='luxury'?'':'<div class="dc-art'+(d.art?'':' is-wait')+'" id="dc-art"><span>'+
+    (d.art?'…':d.stage==='cancelled'?'cancelled':'The artwork lands with the cloth.')+'</span></div>';
+  const serie=[d.style?esc(d.style):'', (d.style_no&&d.style_of)?('no. '+d.style_no+' / '+d.style_of):''].filter(Boolean).join(' · ');
+  /* Le totehmisateur porte son nom SUR le papier perforé, comme la recherche de COM.
+     Un tap mène à sa page sur totehm.com, où l'on peut s'abonner à lui. */
+  const nom=esc(d.owner||'');
+  const par=d.owner?('<span class="by-w"><i>by</i>'+(d.owner_id
+    ?'<a class="by" href="https://www.totehm.com/'+encodeURIComponent(d.owner)+'" rel="noopener">'+nom+'</a>'
+    :'<span class="by">'+nom+'</span>')+'</span>'):'';
+  const faits=[d.created_at?esc(String(d.created_at)):'', serie, d.test?'test':''].filter(Boolean)
+    .map(x=>'<span>'+x+'</span>').join('')+par;
+  /* LE DOPE. Le compte vient du serveur ; la liste se déplie au tap. */
+  const dope='<div class="dc-dope"><button type="button" class="go" id="dc-dope" aria-pressed="'+(d.i_doped?'true':'false')+'">'+
+    'DOPE <b id="dc-dope-n">'+(Number(d.dopes)||0)+'</b></button><div class="who" id="dc-dopers"></div></div>';
+  /* LE VÊTEMENT, plié : on s'en fout un peu, mais il doit rester lisible. */
+  const fiche=[d.garment?'<b>'+esc(d.garment)+(d.size?' · '+esc(d.size):'')+'</b>':'',
+    d.garment_details?esc(String(d.garment_details)):''].filter(Boolean).join('\n');
+  const tiroir=fiche?'<details class="dc-draw"><summary>the garment</summary><div class="in">'+fiche+'</div></details>':'';
+  return art+dcBox(d)+
+    (d.mine?'<div class="dc-shots" id="dc-shots"></div>':'')+dope+
+    (faits?'<div class="dc-facts">'+faits+'</div>':'')+
+    (d.stage&&DC_STAGE[d.stage]?'<div class="dc-stage">'+DC_STAGE[d.stage]+'</div>':'')+tiroir+
+    (signed?'':'<button class="btn-sig" type="button" data-eco-connect="1">CONNECT WITH MY TOTEHM</button>');
 }
 async function loadArt(name,seq){
   try{
@@ -689,9 +797,11 @@ async function decode(v){
   if(v.length<2){note.className='note dim';note.textContent='name of the cloth';return;}
   note.className='note dim';note.textContent='decoding…';
   const seq=++DECODE_SEQ;
-  const [{data,error},{data:{session}}]=await Promise.all([sb.rpc('reveal_cloth',{p_name:v}),sb.auth.getSession()]);
+  /* 06/11 : `cloth_page` enveloppe `reveal_cloth` et ajoute ce que cette page montre —
+     le rang dans le STYLE, l'identifiant du totehmisateur, la fiche du vêtement, les dopes. */
+  const [{data,error},{data:{session}}]=await Promise.all([sb.rpc('cloth_page',{p_name:v}),sb.auth.getSession()]);
   if(seq!==DECODE_SEQ)return;
-  if(error){console.error('[reveal_cloth]',error.message);note.className='note dim';note.textContent='try again';return;}
+  if(error){console.error('[cloth_page]',error.message);note.className='note dim';note.textContent='try again';return;}
   DECODED=data||{found:false};
   if(!data?.found){note.className='note no';note.textContent='no Totehm Cloth by that name';return;}
   note.textContent='';
@@ -700,7 +810,44 @@ async function decode(v){
   history.replaceState(null,'','/?decode='+encodeURIComponent(data.name));
   if(data.art)loadArt(data.name,seq);
   if(data.mine)loadShots(data.name,seq);
+  loadDopers(data.name,seq);
 }
+/* ── LE DOPE ──────────────────────────────────────────────────────────
+   L'équivalent d'un like. Le compte et la liste viennent du serveur : la page
+   ne tient aucun total, elle affiche celui qu'on lui rend. Un nom mène à la
+   page de son totehmisateur sur COM, où l'on peut s'abonner à lui. */
+async function loadDopers(name,seq){
+  const{data,error}=await sb.rpc('cloth_dopers',{p_name:name});
+  if(seq!==DECODE_SEQ)return;
+  if(error){console.error('[cloth_dopers]',error.message);return;}
+  const l=(data&&Array.isArray(data.dopers))?data.dopers:[];
+  const g=$('dc-dopers'); if(!g)return;
+  g.innerHTML=l.map(p=>'<a href="https://www.totehm.com/'+encodeURIComponent(p.pseudo||'')+'" rel="noopener">'
+    +esc(String(p.pseudo||''))+'</a>').join('');
+}
+async function dope(){
+  const b=$('dc-dope'); if(!b||!DECODED||!DECODED.name)return;
+  const{data:{session}}=await sb.auth.getSession();
+  if(!session){ await ECO_AUTH.login(false); return; }
+  b.disabled=true;
+  const{data,error}=await sb.rpc('cloth_dope',{p_name:DECODED.name});
+  b.disabled=false;
+  if(error){console.error('[cloth_dope]',error.message);return;}
+  if(!data||data.ok!==true){console.error('[cloth_dope]',data&&data.reason);return;}
+  b.setAttribute('aria-pressed',data.doped?'true':'false');
+  const n=$('dc-dope-n'); if(n)n.textContent=String(Number(data.count)||0);
+  DECODED.i_doped=!!data.doped; DECODED.dopes=Number(data.count)||0;
+  loadDopers(DECODED.name,DECODE_SEQ);
+}
+/* ── UNE PHOTO EN ENTIER ──────────────────────────────────────────────
+   Un media ou un spot tapé s'ouvre plein écran, sans sa perforation ni son
+   recadrage : on vient le regarder, pas le reconnaître. */
+function plein(src){
+  const w=$('dc-full'),i=$('dc-full-img'); if(!w||!i||!src)return;
+  i.src=src; w.classList.add('show');
+}
+function pleinFermer(){ const w=$('dc-full'),i=$('dc-full-img'); if(!w)return; w.classList.remove('show'); if(i)i.removeAttribute('src'); }
+
 /* Les photos liées à MA pièce : la base rend des CHEMINS (`cloth_shots`, mes
    lignes seules), la page les signe — son dossier, sous RLS. */
 async function loadShots(name,seq){
@@ -987,6 +1134,23 @@ async function hbTableau(){
     +'<a href="/terms_of_sale" target="_blank" rel="noopener">simple terms of sale</a></div></div>';
 }
 $('decode-back').onclick=()=>{$('decode-fs').classList.remove('show');if(new URLSearchParams(location.search).has('decode'))history.replaceState(null,'','/');};
+/* Le câblage de la page d'un Cloth : le dope, et une photo qu'on ouvre en entier.
+   Délégué sur le plein écran, puisque son contenu est réécrit à chaque décodage. */
+$('decode-fs').addEventListener('click',e=>{
+  if(e.target.closest('#dc-dope')){dope();return;}
+  const fig=e.target.closest('.dc-shots figure');
+  if(fig){const im=fig.querySelector('img');if(im&&im.src)plein(im.src);return;}
+  const a=e.target.closest('.dc-art img');
+  if(a&&a.src){plein(a.src);return;}
+});
+$('dc-full-x').onclick=pleinFermer;
+$('dc-full').addEventListener('click',e=>{if(e.target.id==='dc-full')pleinFermer();});
+/* « Précédent » ferme la couche du dessus, jamais le site d'un coup. */
+window.addEventListener('keydown',e=>{
+  if(e.key!=='Escape')return;
+  if($('dc-full').classList.contains('show')){pleinFermer();return;}
+  if($('decode-fs').classList.contains('show'))$('decode-back').click();
+});
 
 /* EXPERIENCE OUR BRANDING */
 document.querySelectorAll('[data-com]').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();ssoVersDomaine(sb,'com','https://www.totehm.com'+a.dataset.com);}));
