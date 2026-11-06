@@ -28,14 +28,10 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
  const scene=new T.Scene(),camera=new T.PerspectiveCamera(baseFov,innerWidth/innerHeight,.08,9000);
  let dirty=true,frames=0,list=false,hidden=document.hidden,paused=false,lastTime=0,lastRender=0;
  let motionReduced=reduced.matches,tween=null,arrival=null,pendingVisit=null,stellarView=null,room=-1,focused=-1,down=null,yaw=0,pitch=0,dragged=false,initialized=false,inspecting=false,inspectionAmount=0,bookDestination=null;
- let architecture=null,book=null,play=null,opposite=null,liberty=null,lastStationState='';
+ let architecture=null,book=null,play=null,opposite=null,lastStationState='';
  const invalidate=()=>{dirty=true;};
  const landscape=createTempleLandscape(scene,renderer,{mobile,onChange:invalidate,place});
  architecture=(newYork?ny[0].createNewYorkGallery:createModernGallery)(scene,renderer,{mobile,onChange:invalidate});
- if(newYork){
-  const {createLiberty}=await import('./gallery-liberty.mjs');
-  liberty=createLiberty(scene,{mobile,onChange:invalidate,submerged:true});
- }
  book=createLecternBook(scene,{mobile,onChange:invalidate,onOpen:({href})=>{bookDestination=href;dirty=true;}});
  const fireplace=createGalleryFireplace(scene,{mobile,onChange:invalidate,...(newYork?{smokeOutlet:L.smokeOutlet}:{})});
  function openExperience({href}){
@@ -210,7 +206,7 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
   if(focused>=0&&!nearStation(focused)){leaveStation();onOverview();}
   const altitude=Math.max(0,eye.y-1.65),near=T.MathUtils.clamp(altitude*.002,.08,12),far=altitude>100?100000:9000;
   if(Math.abs(camera.near-near)>.0001||camera.far!==far){camera.near=near;camera.far=far;camera.updateProjectionMatrix();dirty=true;}
-  const changes=[landscape.update(dt,eye,!motionReduced),architecture.update(dt,eye,!motionReduced),book.update(dt,eye,!motionReduced),play.update(dt,eye,!motionReduced),opposite.update(dt,eye,!motionReduced),fireplace.update(dt,eye,!motionReduced),liberty?.update(dt,eye,!motionReduced)];
+  const changes=[landscape.update(dt,eye,!motionReduced),architecture.update(dt,eye,!motionReduced),book.update(dt,eye,!motionReduced),play.update(dt,eye,!motionReduced),opposite.update(dt,eye,!motionReduced),fireplace.update(dt,eye,!motionReduced)];
   if(changes.some(Boolean))dirty=true;
   // Lean toward the premium cases to inspect the protected paper editions.
   const inspectionTarget=inspecting&&focused===0?1:0;
@@ -226,14 +222,14 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
   }
   syncSound();stationState();
  }
- landscape.update(0,eye,false);architecture.update(0,eye,false);book.update(0,eye,!motionReduced);play.update(0,eye,!motionReduced);fireplace.update(0,eye,false);if(liberty)liberty.update(0,eye,!motionReduced);
+ landscape.update(0,eye,false);architecture.update(0,eye,false);book.update(0,eye,!motionReduced);play.update(0,eye,!motionReduced);fireplace.update(0,eye,false);
  camera.position.copy(eye);camera.lookAt(gaze);camera.updateMatrixWorld();initialized=true;stationState();renderer.setAnimationLoop(animate);
- addEventListener('pagehide',()=>{pause();if(liberty)liberty.dispose();renderer.setAnimationLoop(null);});
+ addEventListener('pagehide',()=>{pause();renderer.setAnimationLoop(null);});
  addEventListener('pageshow',e=>{if(e.persisted){paused=false;hidden=document.hidden;bookDestination=null;book.reset();resetPortals();quality.reset();try{const muted=localStorage.getItem('space-sound-muted')==='true';sound.setMuted(muted);fireSound.setMuted(muted);}catch{}dirty=true;lastTime=0;syncSound();renderer.setAnimationLoop(animate);}});
  return{visit,enter,enterGallery,overview,visitFireplace,visitLevel,invalidate,
   leaveStation(){stopInput();cancelTravel();leaveStation();onOverview();dirty=true;},
   stop(){stopInput();cancelTravel();leaveStation();dirty=true;},
   setList(value){list=!!value;stopInput();cancelTravel();leaveStation();syncSound();dirty=true;lastTime=0;},
-  diagnostics:()=>({webgl:true,place:newYork?'new-york':'lisbon',zone:inGallery()?'gallery':'terrace',room,focused,frames,position:[+eye.x.toFixed(2),+eye.z.toFixed(2)],moving:!!tween||!!pendingVisit||!!keys.size||!!joystick.x||!!joystick.y||!physics.diagnostics().grounded,visible:!hidden&&!list&&!paused,liberty:liberty?liberty.diagnostics():null,
+  diagnostics:()=>({webgl:true,place:newYork?'new-york':'lisbon',zone:inGallery()?'gallery':'terrace',room,focused,frames,position:[+eye.x.toFixed(2),+eye.z.toFixed(2)],moving:!!tween||!!pendingVisit||!!keys.size||!!joystick.x||!!joystick.y||!physics.diagnostics().grounded,visible:!hidden&&!list&&!paused,liberty:null,
    camera:{position:camera.position.toArray(),target:viewTarget().toArray(),inspection:inspectionAmount,fov:camera.fov,aspect:camera.aspect,near:camera.near,far:camera.far,stellarOverview:!!stellarView&&!motionReduced,overviewAmount:stellarView?.amount??0},physics:physics.diagnostics(),temple:architecture.diagnostics(),stations:{play:play.diagnostics(),opposite:opposite.diagnostics(),book:book.diagnostics()},landscape:landscape.diagnostics(),audio:sound.diagnostics(),fireAudio:fireSound.diagnostics(),fireplace:fireplace.diagnostics(),render:{...quality.diagnostics(),width:renderer.domElement.width,height:renderer.domElement.height,calls:renderer.info.render.calls,triangles:renderer.info.render.triangles},navigation:{speed:2.6,minDuration:1450,maxDuration:4200,deferredArrival:!!arrival||!!pendingVisit,...walkway.diagnostics()}})};
 }
