@@ -37,6 +37,7 @@ jobs:
       - run: node tests/browser/com_chatgpt.mjs work/chatgpt-view
       - run: node tests/browser/chatgpt_connect.mjs work/chatgpt-connection
       - run: node tests/browser/com_orders.mjs work/chatgpt-orders
+      - run: node tests/browser/com_element_link.mjs work/chatgpt-elements
       - uses: actions/upload-artifact@v4
         if: always()
         with:
