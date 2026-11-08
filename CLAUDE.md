@@ -41,9 +41,11 @@ personne. `oracle/` : jamais lu, jamais recopié. Une base Supabase (`abujjbkbbi
 - **Secrets** : jamais dans une conversation ni un fichier versionné (dépôt PUBLIC) ; `Deno.env.get()` seulement.
 - **Git** : jamais `git add .` ; un commit par changement logique.
 - **Base** : pas de `supabase db push`. Une migration s'applique UNE fois (`apply_migration`) et son fichier reste dans
-  `backend/supabase/migrations/`. Le cloud ne passe pas : `drop`, `update`/`delete` sans `where`, `create or replace`
-  d'une fonction existante, `alter policy` → fichier + une ligne dans `CLAUDE_CODE.md`. La base d'abord, le code ensuite.
-  Grants APRÈS le dernier `create`. Table neuve : RLS sans politique, lue et écrite par fonction.
+  `backend/supabase/migrations/`. La session cloud passe tout ce qui a été essayé, `drop` et `create or replace` d'une
+  fonction existante et `alter policy` compris (mesuré le 08/11) ; ce qui expire malgré tout → fichier + une ligne dans
+  `CLAUDE_CODE.md`. La base d'abord, le code ensuite. Un gros lot se passe en MORCEAUX, pour qu'un blocage ne perde rien.
+  Grants APRÈS le dernier `create` ; une fonction appelée par une POLITIQUE reste accordée à `authenticated` (Postgres
+  vérifie le droit de l'appelant). Table neuve : RLS sans politique, lue et écrite par fonction.
 - **Identité** : totehm.com est l'autorité. Un satellite appelle `ssoLogin()` → `totehm.com/auth` (code + PKCE) →
   `sso-redeem` ; d'un domaine à l'autre : `ssoVersDomaine()`. Jamais un jeton dans une URL, jamais une URL de retour
   reçue. Bloc copié de `tools/sso_snippet.js`. CTA : CONNECT WITH MY TOTEHM. SORTIR d'un satellite = `ssoLogout()`,

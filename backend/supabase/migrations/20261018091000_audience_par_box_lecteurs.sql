@@ -156,7 +156,12 @@ alter policy "totehms members read"              on public.totehms using (auth.u
 alter policy "subscribers read the creator totehm" on public.totehms using (auth.uid() = user_id);
 
 -- ── 8 · LES DROITS, APRÈS LE DERNIER `create` (un `create or replace` rend le GRANT à PUBLIC) ─────
-revoke all on function public._box_shared(uuid, text) from public, anon, authenticated;
+revoke all on function public._box_shared(uuid, text) from public, anon;
+-- ⚠️ `_box_shared` reste accordée à `authenticated` : les politiques « members read » l'appellent, et
+-- Postgres vérifie le droit de L'APPELANT dans une politique (comme `_vis_shared`, `_shared_with_me`).
+-- Mesuré le 08/11 : révoquée, toute lecture de `objectives`/`visions`/`wisdom` tombe en
+-- « permission denied for function _box_shared ». `_box_audience` reste fermée : seule `totehm_of` l'appelle.
+grant execute on function public._box_shared(uuid, text) to authenticated;
 revoke all on function public._box_audience(uuid, text, text) from public, anon, authenticated;
 revoke all on function public._totehm_audience_recalc(uuid) from public, anon, authenticated;
 revoke all on function public.box_audience_set(text, text, text) from public, anon;

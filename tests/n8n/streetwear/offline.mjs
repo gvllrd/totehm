@@ -223,6 +223,24 @@ test('B reads the photographs the member lit, and folds them into the prompt',as
   assert.match(hits(r,'/images/generations')[0].body.prompt,/Low sun on wet stone/);
   assert.equal(hits(r,'streetwear_checkpoint').filter(o=>o.body.p_data?.photos_read===2).length,1);
 });
+// 08/11 : un style artistique n'avait qu'un NOM. `system_prompt_prefix` dit ce qu'il EST,
+// `negative_prompt` ce qu'il REFUSE ; les deux entrent dans le prompt comme matière. Un style
+// encore vide ne change rien — c'est ce qui permet de les remplir un par un.
+test('B lets the artistic style steer the prompt, and refuses what it refuses',async()=>{
+  const styleRempli=o=>o.url.includes('/artistic_styles?')
+    ?[{name:'Ink Realism',system_prompt_prefix:'  dense india ink on wet paper,\n  one gesture ',negative_prompt:'pastel, 3d render'}]
+    :generationResponder(o);
+  const r=await processNode('B',ticket('generation'),styleRempli);ok(r);
+  const prompt=hits(r,'/images/generations')[0].body.prompt;
+  assert.match(prompt,/Artistic style: Ink Realism\./);
+  assert.match(prompt,/What this style is: dense india ink on wet paper, one gesture\./);
+  assert.match(prompt,/Avoid: text, letters, words, numbers, logos, watermarks, signatures, frames, pastel, 3d render\./);
+});
+test('B keeps its prompt whole when the style says nothing yet',async()=>{
+  const prompt=hits(await processNode('B',ticket('generation'),generationResponder),'/images/generations')[0].body.prompt;
+  assert.ok(!/What this style is/.test(prompt));
+  assert.match(prompt,/Avoid: text, letters, words, numbers, logos, watermarks, signatures, frames\./);
+});
 test('B generates without photographs when none was lit',async()=>{
   const r=await processNode('B',ticket('generation'),generationResponder);ok(r);
   assert.equal(hits(r,'/chat/completions','POST').length,0);
