@@ -37,8 +37,7 @@ La couleur de la box dit le TYPE (navy · bleu clair · rouge-violet) ; le trait
 ## Les 5 vues de totehm.com
 
 ↑ **Get Higher** (commune à tous : la bouche, le TotehmPaper, le cerveau des sept intentions qui vibre ; elle vend le
-THP : *Neuroscience, not motivation.*) · ← **mes médias** (en y allant, les sept traits encadrent l'écran ; une grille, chaque image perforée des douze trous du logo ;
-un tap sur le TOTEHM et MY WISDOM · MY GRIND · MY VISION naissent de lui, en carrés perforés de leur couleur ;
+THP : *Neuroscience, not motivation.*) · ← **mes médias** (en y allant, les sept traits encadrent l'écran ; une grille, chaque image perforée des douze trous du logo ; un tap sur le TOTEHM et MY WISDOM · MY GRIND · MY VISION naissent de lui, en carrés perforés de leur couleur ;
 MY GRIND = OBJECTIVES · HABITS · REPULSIONS empilés ; le « + » d'un média fait naître le même TOTEHM, la box choisie reste seule et la capture vient dessous) ·
 Les traits décoratifs des intentions sont réservés à l’ordinateur : aucun arbre, réseau, cadre ou trait du profil sur mobile, dans aucune vue ni transition.
 ● **mon TOTEHM** (plus de boîte noire : le TOTEHM EST le boîtier du processeur et le cœur d'un ARBRE DE VIE — ses douze
@@ -94,6 +93,8 @@ Vent et mer, crépitement à l’approche du feu. Pages et marché indépendants
 ## Les vêtements
 
 Un vêtement porte **n'importe quelle box** du TOTEHM, dans un style artistique déterminé ; nom unique `0.Nom`
-(collection 2026-27), retrouvé par Decode. Sept concepts, Wah choisit, le client découvre l'œuvre à l'expédition.
+(collection 2026-27), retrouvé par Decode. **LE NOM D'UN CLOTH NE PARAÎT QUE DANS SON FORMAT D'ORIGINE** : Quantico
+coral sur la BOX PERFORÉE BLEU NAVY, le `0.` du serveur — dos du vêtement, œuvre, Telegram, page, message ; jamais un
+aplat, jamais une bordure qui l'imite, jamais nu. Sept concepts, Wah choisit, le client découvre l'œuvre à l'expédition.
 Sur higher.boutique **le TOTEHM est la commande** : un tap le décompose en trois papiers perforés (MY WISDOM STORY ·
 MY GRIND · MY VISION), une box tapée EST le choix ; les sept intentions y sont une COUTURE — et sur l'accueil, sept fils de couleur qui n'en font plus qu'un : la totehmisation même.

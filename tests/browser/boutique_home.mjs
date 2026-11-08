@@ -34,7 +34,7 @@ const { pg, log } = await page(browser, { dir:'boutique', origin:'https://www.hi
 await pg.goto('https://www.higher.boutique/');
 await pg.waitForFunction(() => window.__totehm_boutique && /47 pieces left/.test(document.querySelector('#sw-col-sold').textContent));
 const d = await pg.evaluate(() => window.__totehm_boutique());
-ok(d.build === '2026-11-08-sso-sortie' && d.decode_first && !d.member_window, 'the physical landing page: DECODE first, no member window here');
+ok(d.build === '2026-11-08-piece-retournee' && d.decode_first && !d.member_window, 'the physical landing page: DECODE first, no member window here');
 // 30/10 (Wah) : « la face verso du [Higher] doit avoir EXACTEMENT les mêmes
 // perforations que la face recto — logique, on retourne la même pièce ». Donc
 // UN SEUL masque dans le document, et les deux faces le référencent.
@@ -101,7 +101,8 @@ for(const [name, re, lvl] of [['0.hill', /Run the hill/, 'member'], ['0.lock', /
         reglette: m.querySelectorAll('.dc-bx .tick i').length,
         mini_dedans: !!(bx && bx.querySelector('.dc-mi')), mini_dehors: !!m.querySelector(':scope > .dc-mat'),
         zoom: bx ? getComputedStyle(bx).zoom : null, large: bx ? Math.round(bx.getBoundingClientRect().width) : 0 }; });
-    ok(t.ordre.startsWith('dc-art,dc-bx'), 'l oeuvre puis la BOX : rien devant elles · ' + t.ordre);
+    ok(t.ordre.startsWith('dc-piece,dc-joint'),
+       "08/11 · la PIECE d'abord (l oeuvre devant, tout le reste derriere), puis la jonction · " + t.ordre);
     ok(t.cadre === 'none', 'plus de bordure perforee autour de l ecran');
     ok(!t.nom_repete, 'le nom du Cloth ne se repete pas : on vient de le taper');
     ok(t.reglette === 1 && !t.mini_dehors, 'la box garde sa reglette d intentions, rien n est dissocie');
@@ -114,10 +115,40 @@ for(const [name, re, lvl] of [['0.hill', /Run the hill/, 'member'], ['0.lock', /
       return { plie: d ? !d.open : null, dedans: d ? d.textContent : '' }; });
     ok(tiroir.plie === true && /Higher Champion Sweatshirt · L/.test(tiroir.dedans) && /82% cotton/.test(tiroir.dedans),
        'le vetement et sa fiche sont PLIES dans un tiroir');
-    const dope = await pg.evaluate(() => ({ n: document.querySelector('#dc-dope-n').textContent,
-      qui: [...document.querySelectorAll('#dc-dopers a')].map(a => a.textContent + '>' + a.getAttribute('href')) }));
-    ok(dope.n === '12' && dope.qui.length === 2 && /nia>https:\/\/www\.totehm\.com\/nia/.test(dope.qui[0]),
-       'DOPE : le compte du serveur, et qui a dope mene a son profil sur COM');
+    /* 08/11 (Wah) : « je ne veux pas qu'il soit rouge-violet, ni en coral, ni en
+       majuscule », et la liste de ceux qui ont dopé « comme instagram » — une
+       ligne par membre, qui mène à sa page d'ABONNEMENT (`/@nom`). */
+    const dope = await pg.evaluate(() => { const b = document.querySelector('#dc-dope'), c = getComputedStyle(b);
+      return { n: document.querySelector('#dc-dope-n').textContent, mot: b.textContent.trim(),
+        casse: c.textTransform, couleur: c.color, fond: c.backgroundColor,
+        qui: [...document.querySelectorAll('#dc-who a')].map(a => a.textContent.trim() + '>' + a.getAttribute('href')),
+        lignes: getComputedStyle(document.querySelector('#dc-who a')).display,
+        ouverte: document.querySelector('#dc-who').classList.contains('is-open') }; });
+    ok(dope.n === '12' && dope.qui.length === 2 && dope.qui[0] === 'nia>https://www.totehm.com/@nia',
+       'DOPE : le compte du serveur, et qui a dope mene a sa page d ABONNEMENT (/@nom) · ' + dope.qui.join(' '));
+    ok(dope.mot.startsWith('dope') && dope.casse === 'lowercase'
+       && dope.couleur !== 'rgb(251, 213, 202)' && dope.fond !== 'rgb(226, 75, 74)',
+       'le DOPE n est ni en majuscule, ni coral, ni rouge-violet · ' + JSON.stringify(dope));
+    ok(dope.lignes === 'flex' && !dope.ouverte,
+       'la liste est une LISTE (une ligne par membre), fermee tant qu on ne tape pas le compte');
+    /* La pièce se RETOURNE : la face montre l'œuvre, le dos tout le reste. */
+    const tour = await pg.evaluate(async () => {
+      const p = document.querySelector('#dc-piece');
+      const avant = { dos: p.classList.contains('is-back'), h: p.style.getPropertyValue('--dcp-h') };
+      p.querySelector('.dc-devant').click();
+      await new Promise(r => setTimeout(r, 120));
+      return { avant, apres: p.classList.contains('is-back'),
+               mot: document.querySelector('#dc-turn').textContent.trim(),
+               oeuvre_devant: !!p.querySelector('.dc-devant .dc-art'),
+               box_derriere: !!p.querySelector('.dc-dos .dc-bx'),
+               h: p.style.getPropertyValue('--dcp-h') };
+    });
+    ok(!tour.avant.dos && tour.apres && tour.oeuvre_devant && tour.box_derriere
+       && /see the artwork/.test(tour.mot) && /px$/.test(tour.h),
+       "08/11 · un tap sur l oeuvre la RETOURNE et montre ce qui est derriere ; la hauteur suit la face "
+       + JSON.stringify(tour));
+    await pg.evaluate(() => document.querySelector('#dc-turn').click());
+    await pg.waitForTimeout(120);
     ok(/lands with the cloth/.test(txt) && !ART.length, 'not shipped: the artwork stays a surprise, cloth-art not called');
     ok(/decode=0\.Hill/.test(pg.url()), 'the address follows the decoded cloth (shareable)');
     ok(!/\bbox\b/i.test(txt), 'on screen: "element", never "box"');
@@ -208,6 +239,11 @@ ok(!log.errors.length, 'no page error: ' + log.errors.join(' | '));
   await pg.click('#hb-cloths .hb-row [data-hb-decode]');
   await pg.waitForFunction(() => document.querySelector('#decode-fs').classList.contains('show'));
   await pg.waitForSelector('#dc-shots figure');
+  /* 08/11 : les photos vivent au DOS de la pièce. Tant qu'elle montre l'œuvre,
+     le dos ne reçoit aucun tap (sinon il mangerait la loupe de la box) : on la
+     retourne d'abord, exactement comme le membre le fait. */
+  await pg.evaluate(() => document.querySelector('#dc-turn').click());
+  await pg.waitForTimeout(700);
   const ph = await pg.evaluate(() => { const l = [...document.querySelectorAll('#dc-shots figure')];
     const mi = document.querySelector('.dc-bx .dc-mi');
     return { n: l.length, m: l[0].classList.contains('m'), lieu: (l[1].querySelector('figcaption') || {}).textContent || '',

@@ -14,6 +14,9 @@ html{font-family:'Space Mono',monospace}button,input,select,textarea{font-family
   /* Le masque perforé du TOTEHM, copié de streetwear : le media d'une pièce le porte. */
   --perfo-dc:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 224.88 224.08' preserveAspectRatio='none'%3E%3Cdefs%3E%3Cmask id='m'%3E%3Crect x='-40' y='-40' width='310' height='310' fill='%23fff'/%3E%3Ccircle cx='56.421' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='56.421' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='112.440' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='112.440' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='168.459' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='168.459' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='56.020' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='56.020' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='112.039' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='112.039' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='168.059' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='168.059' r='13.86' fill='%23000'/%3E%3C/mask%3E%3C/defs%3E%3Crect x='0.402' y='0' width='224.076' height='224.078' fill='%23fff' mask='url(%23m)'/%3E%3C/svg%3E");
   --tile-full:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44'%3E%3Crect width='44' height='44' fill='%23333366'/%3E%3Ccircle cx='22' cy='0' r='6' fill='%23000000'/%3E%3Ccircle cx='22' cy='44' r='6' fill='%23000000'/%3E%3Ccircle cx='0' cy='22' r='6' fill='%23000000'/%3E%3Ccircle cx='44' cy='22' r='6' fill='%23000000'/%3E%3C/svg%3E");
+  /* 08/11 : la tuile du VERSO, copiée telle quelle de com/totehm.html — le nom d'un
+     membre s'y pose (`.dc-facts .by`, `.dc-who .nm`), exactement comme `.srch-name`. */
+  --tile-btn:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
   --tile-rep:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23743169'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
 }
 *{box-sizing:border-box;margin:0;padding:0}
@@ -127,12 +130,16 @@ nav{display:flex;flex-direction:column;align-items:center;gap:30px;width:100%;ma
 .dc-art img{width:100%;height:100%;object-fit:contain;display:block}
 .dc-art span{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:#5a5a5a;padding:0 24px;line-height:1.8}
 .dc-facts{display:flex;flex-direction:column;gap:3px;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#b0b0b0}
-/* 06/11 (Wah) : « ce qui suit le BY doit reprendre la structure du totehm verso
-   avec le nom dessus, comme le système de recherche dans totehm.com ». C'est le
-   `.srch-name` de COM : le nom posé SUR le papier perforé, jamais sur un aplat. */
-.dc-facts .by{display:inline-block;font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;
-  line-height:1.4;letter-spacing:0;text-transform:none;color:var(--coral);text-decoration:none;
-  border:6px solid transparent;border-image-source:var(--tile-full);border-image-slice:6 fill;
+/* 08/11 (Wah) : « reprends le côté verso du Totehm avec le nom inscrit dessus
+   dans totehm.com sur la page d'atterrissage quand tu retournes le totehm ».
+   C'est `.srch-name` de COM, RECOPIÉ À L'IDENTIQUE — `--tile-btn` (la tuile du
+   verso), 16px, blanc, `slice 6 fill`, `repeat round`, `padding 0 8px`. Ni
+   coral, ni `--tile-full` : c'était l'erreur du 06/11. Le tap mène à sa page
+   d'ABONNEMENT, `totehm.com/@nom` — l'arobase manquait. */
+.dc-facts .by{display:inline-block;max-width:68%;font-family:'Quantico',sans-serif;font-weight:400;
+  font-size:16px;line-height:1.4;letter-spacing:0;text-transform:none;color:#fff;
+  word-break:break-word;text-decoration:none;
+  border:6px solid transparent;border-image-source:var(--tile-btn);border-image-slice:6 fill;
   border-image-repeat:round;padding:0 8px;transition:filter .15s ease}
 @media(hover:hover){.dc-facts a.by:hover{filter:brightness(1.3)}}
 .dc-facts .by-w{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:4px}
@@ -162,18 +169,63 @@ nav{display:flex;flex-direction:column;align-items:center;gap:30px;width:100%;ma
 .dc-mi{font-family:'Quantico',sans-serif;font-size:11px;color:#fff;padding:2px 7px;background:var(--navy)}
 .dc-mi.o{background:var(--blue)}.dc-mi.r{background:var(--rep)}.dc-mi.w{background:#5b2652}.dc-mi.v{background:#2b3a73}
 .dc-mi.s{background:rgba(0,0,0,.35);font-family:'Space Mono',monospace;font-size:10px}
-/* LE DOPE — l'équivalent d'un like, et qui l'a donné. */
-.dc-dope{width:100%;display:flex;flex-direction:column;align-items:center;gap:8px}
-.dc-dope .go{display:inline-flex;align-items:center;gap:9px;font-family:'Quantico',sans-serif;font-size:14px;
-  letter-spacing:.04em;color:var(--coral);background:#111114;border:1px solid #26262c;border-radius:999px;
-  padding:7px 18px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background .15s ease,border-color .15s ease}
-.dc-dope .go b{font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:#fff}
-.dc-dope .go[aria-pressed=true]{background:var(--rep);border-color:var(--rep);color:#fff}
-@media(hover:hover){.dc-dope .go:hover{border-color:#50505a}}
-.dc-dope .who{display:flex;flex-wrap:wrap;gap:4px 6px;justify-content:center}
-.dc-dope .who a{font-family:'Quantico',sans-serif;font-size:11px;color:var(--coral);text-decoration:none;
-  background:#111114;padding:2px 8px;border-radius:999px}
-@media(hover:hover){.dc-dope .who a:hover{background:var(--rep);color:#fff}}
+/* ══ LA PIÈCE SE RETOURNE · 08/11/2026 (Wah) ══════════════════════════════
+   « L'œuvre artistique générée avec la possibilité de la retourner et d'avoir
+   ce qui est caché, ce qui est derrière : tout ce que l'on a fait actuellement. »
+   L'ŒUVRE est la FACE ; tout le reste — la box, les photos, la date, le style,
+   le by, le vêtement plié — est son DOS. Même moteur que le Higher de l'accueil :
+   un quart de tour, `preserve-3d`, aucune image figée (règle de CONTINUITÉ).
+   La hauteur suit la face visible, mesurée : sans ça le dos saute. */
+.dc-piece{position:relative;width:min(100%,340px);perspective:1400px;
+  height:var(--dcp-h,440px);transition:height .62s cubic-bezier(.22,.61,.36,1)}
+.dc-faces{position:absolute;inset:0;transform-style:preserve-3d;
+  transition:transform .62s cubic-bezier(.22,.61,.36,1)}
+.dc-piece.is-back .dc-faces{transform:rotateY(180deg)}
+.dc-face{position:absolute;left:0;top:0;width:100%;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.dc-face.dc-dos{transform:rotateY(180deg)}
+/* La face visible seule reçoit les taps : sinon le dos mange la loupe de la box. */
+.dc-piece:not(.is-back) .dc-dos,.dc-piece.is-back .dc-devant{pointer-events:none}
+.dc-dos{display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center}
+/* ── LE DOPE est la JONCTION : il s'assoit SUR la tranche de la pièce ──────
+   Wah, 08/11 : « je ne veux pas qu'il soit rouge-violet, ni en coral, ni en
+   majuscule, et il doit faire la jonction entre l'œuvre artistique générée
+   (le dos du totehm Cloth) ». Donc : minuscules, Quantico, le NAVY du TOTEHM
+   quand c'est dopé — jamais `--rep`, jamais `--coral`. */
+.dc-joint{width:min(100%,340px);display:flex;flex-direction:column;align-items:center;
+  position:relative;z-index:3;margin-top:-19px;transition:margin-top .62s cubic-bezier(.22,.61,.36,1)}
+/* Retournée, la pièce finit par un tiroir : la jonction ne doit plus mordre dessus. */
+.dc-piece.is-back + .dc-joint{margin-top:14px}
+.dc-joint .go{display:inline-flex;align-items:center;gap:10px;font-family:'Quantico',sans-serif;
+  font-size:14px;letter-spacing:.02em;text-transform:lowercase;color:#d6d6de;background:#15151a;
+  border:1px solid #2a2a31;padding:8px 20px;cursor:pointer;-webkit-tap-highlight-color:transparent;
+  transition:background .18s ease,border-color .18s ease,color .18s ease}
+.dc-joint .go b{font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:#8e8e98;transition:color .18s ease}
+.dc-joint .go[aria-pressed=true]{background:#333366;border-color:#333366;color:#fff}
+.dc-joint .go[aria-pressed=true] b{color:#fff}
+@media(hover:hover){.dc-joint .go:hover{border-color:#4a4a55}}
+.dc-joint .go.n{cursor:default}
+/* Le mot qui dit qu'on peut retourner : discret, il ne commande rien. */
+.dc-turn{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.22em;text-transform:uppercase;
+  color:#55555e;margin-top:7px;background:none;border:0;padding:4px 8px;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;transition:color .18s ease}
+@media(hover:hover){.dc-turn:hover{color:#9a9aa4}}
+/* ── QUI A DOPÉ — une LISTE, comme instagram ───────────────────────────────
+   Wah, 08/11 : « je t'ai demandé aussi de mettre la liste de tous les membres
+   qui ont mis dope comme instagram ». Une ligne par membre, son nom sur le
+   papier perforé du verso, un tap mène à sa page d'abonnement. Fermée au
+   départ : le compte l'ouvre. */
+.dc-who{width:min(100%,340px);max-height:0;overflow:hidden;transition:max-height .42s cubic-bezier(.22,.61,.36,1)}
+.dc-who.is-open{max-height:290px;overflow-y:auto}
+.dc-who .hd{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.22em;text-transform:uppercase;
+  color:#55555e;padding:12px 0 8px;text-align:center}
+.dc-who a{display:flex;align-items:center;gap:10px;padding:7px 2px;text-decoration:none;
+  border-top:1px solid #16161a;-webkit-tap-highlight-color:transparent}
+.dc-who a .nm{font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;line-height:1.4;color:#fff;
+  border:6px solid transparent;border-image-source:var(--tile-btn);border-image-slice:6 fill;
+  border-image-repeat:round;padding:0 8px;transition:filter .15s ease}
+@media(hover:hover){.dc-who a:hover .nm{filter:brightness(1.3)}}
+.dc-who .none{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;
+  color:#4e4e57;padding:10px 0;text-align:center}
 /* LE TIROIR — le vêtement, plié. */
 .dc-draw{width:100%;border-top:1px solid #1a1a1f;padding-top:10px}
 .dc-draw summary{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;
@@ -801,22 +853,62 @@ function decodeHTML(d,signed){
      Un tap mène à sa page sur totehm.com, où l'on peut s'abonner à lui. */
   const nom=esc(d.owner||'');
   const par=d.owner?('<span class="by-w"><i>by</i>'+(d.owner_id
-    ?'<a class="by" href="https://www.totehm.com/'+encodeURIComponent(d.owner)+'" rel="noopener">'+nom+'</a>'
+    ?'<a class="by" href="'+COM_AT(d.owner)+'" rel="noopener">'+nom+'</a>'
     :'<span class="by">'+nom+'</span>')+'</span>'):'';
   const faits=[d.created_at?esc(String(d.created_at)):'', serie, d.test?'test':''].filter(Boolean)
     .map(x=>'<span>'+x+'</span>').join('')+par;
-  /* LE DOPE. Le compte vient du serveur ; la liste se déplie au tap. */
-  const dope='<div class="dc-dope"><button type="button" class="go" id="dc-dope" aria-pressed="'+(d.i_doped?'true':'false')+'">'+
-    'DOPE <b id="dc-dope-n">'+(Number(d.dopes)||0)+'</b></button><div class="who" id="dc-dopers"></div></div>';
   /* LE VÊTEMENT, plié : on s'en fout un peu, mais il doit rester lisible. */
   const fiche=[d.garment?'<b>'+esc(d.garment)+(d.size?' · '+esc(d.size):'')+'</b>':'',
     d.garment_details?esc(String(d.garment_details)):''].filter(Boolean).join('\n');
   const tiroir=fiche?'<details class="dc-draw"><summary>the garment</summary><div class="in">'+fiche+'</div></details>':'';
-  return art+dcBox(d)+
-    (d.mine?'<div class="dc-shots" id="dc-shots"></div>':'')+dope+
+  /* 08/11 (Wah) : « ce serait stylé d'avoir l'œuvre artistique générée avec la
+     possibilité de la retourner et d'avoir ce qui est caché, ce qui est derrière :
+     c'est-à-dire tout ce que l'on a fait actuellement ». L'ŒUVRE est la face ;
+     la box, les photos, la date, le style, le by et le vêtement sont son DOS. */
+  const dos=dcBox(d)+
+    (d.mine?'<div class="dc-shots" id="dc-shots"></div>':'')+
     (faits?'<div class="dc-facts">'+faits+'</div>':'')+
-    (d.stage&&DC_STAGE[d.stage]?'<div class="dc-stage">'+DC_STAGE[d.stage]+'</div>':'')+tiroir+
+    (d.stage&&DC_STAGE[d.stage]?'<div class="dc-stage">'+DC_STAGE[d.stage]+'</div>':'')+tiroir;
+  const piece=d.line==='luxury'?dos:
+    '<div class="dc-piece" id="dc-piece"><div class="dc-faces">'+
+      '<div class="dc-face dc-devant" id="dc-devant">'+art+'</div>'+
+      '<div class="dc-face dc-dos" id="dc-dos">'+dos+'</div>'+
+    '</div></div>';
+  /* LA JONCTION : le dope s'assoit sur la tranche, entre l'œuvre et son dos.
+     Minuscules, ni coral ni rouge-violet ; le compte OUVRE la liste. */
+  const joint=d.line==='luxury'?'':
+    '<div class="dc-joint">'+
+      '<button type="button" class="go" id="dc-dope" aria-pressed="'+(d.i_doped?'true':'false')+'">'+
+      'dope <b id="dc-dope-n">'+(Number(d.dopes)||0)+'</b></button>'+
+      '<button type="button" class="dc-turn" id="dc-turn">turn it over</button>'+
+    '</div><div class="dc-who" id="dc-who"></div>';
+  return piece+joint+
     (signed?'':'<button class="btn-sig" type="button" data-eco-connect="1">CONNECT WITH MY TOTEHM</button>');
+}
+/* ── LA PIÈCE SE RETOURNE ─────────────────────────────────────────────
+   La hauteur suit la face visible, MESURÉE : sans ça le dos saute, et la
+   continuité est la règle la plus importante de l'expérience. Le tiroir et
+   les photos qui arrivent changent cette hauteur : on remesure. */
+let DC_OBS=null;
+function dcMesurer(){
+  const p=$('dc-piece'); if(!p)return;
+  const f=p.classList.contains('is-back')?$('dc-dos'):$('dc-devant');
+  if(!f)return;
+  const h=Math.ceil(f.getBoundingClientRect().height);
+  if(h>0)p.style.setProperty('--dcp-h',h+'px');
+}
+function dcRetourner(){
+  const p=$('dc-piece'); if(!p)return;
+  p.classList.toggle('is-back');
+  const t=$('dc-turn'); if(t)t.textContent=p.classList.contains('is-back')?'see the artwork':'turn it over';
+  dcMesurer();
+}
+function dcSuivre(){
+  if(DC_OBS){DC_OBS.disconnect();DC_OBS=null;}
+  const p=$('dc-piece'); if(!p||typeof ResizeObserver!=='function')return;
+  DC_OBS=new ResizeObserver(()=>dcMesurer());
+  [$('dc-devant'),$('dc-dos')].forEach(n=>{if(n)DC_OBS.observe(n);});
+  dcMesurer();
 }
 async function loadArt(name,seq){
   try{
@@ -824,7 +916,7 @@ async function loadArt(name,seq){
     const j=await r.json().catch(()=>({}));
     if(seq!==DECODE_SEQ)return;
     if(!r.ok||!j.url){if(r.status!==404)console.error('[cloth-art]',r.status,j.error);const b=$('dc-art');if(b){b.classList.add('is-wait');b.innerHTML='<span>The artwork lands with the cloth.</span>';}return;}
-    const b=$('dc-art');if(b)b.innerHTML='<img src="'+esc(j.url)+'" alt="'+esc(name)+' · the artwork">';
+    const b=$('dc-art');if(b){b.innerHTML='<img src="'+esc(j.url)+'" alt="'+esc(name)+' · the artwork">';dcMesurer();}
   }catch(e){console.error('[cloth-art]',e&&e.message||e);}
 }
 async function decode(v){
@@ -849,6 +941,7 @@ async function decode(v){
   note.textContent='';
   $('decode-msg').innerHTML=decodeHTML(data,!!session);
   $('decode-fs').classList.add('show');$('decode-fs').scrollTop=0;
+  dcSuivre();   /* la hauteur de la pièce suit la face visible, mesurée */
   history.replaceState(null,'','/?decode='+encodeURIComponent(data.name));
   if(data.art)loadArt(data.name,seq);
   if(data.mine)loadShots(data.name,seq);
@@ -858,14 +951,20 @@ async function decode(v){
    L'équivalent d'un like. Le compte et la liste viennent du serveur : la page
    ne tient aucun total, elle affiche celui qu'on lui rend. Un nom mène à la
    page de son totehmisateur sur COM, où l'on peut s'abonner à lui. */
+const COM_AT=p=>'https://www.totehm.com/@'+encodeURIComponent(String(p||''));
 async function loadDopers(name,seq){
   const{data,error}=await sb.rpc('cloth_dopers',{p_name:name});
   if(seq!==DECODE_SEQ)return;
   if(error){console.error('[cloth_dopers]',error.message);return;}   /* pas de dopeurs : la page tient debout */
   const l=(data&&Array.isArray(data.dopers))?data.dopers:[];
-  const g=$('dc-dopers'); if(!g)return;
-  g.innerHTML=l.map(p=>'<a href="https://www.totehm.com/'+encodeURIComponent(p.pseudo||'')+'" rel="noopener">'
-    +esc(String(p.pseudo||''))+'</a>').join('');
+  const g=$('dc-who'); if(!g)return;
+  /* 08/11 (Wah) : la liste de TOUS ceux qui ont dopé, « comme instagram » — une
+     ligne par membre, son nom sur le papier perforé du verso, et un tap mène à
+     sa page d'ABONNEMENT sur COM (`/@nom` : l'arobase manquait). */
+  g.innerHTML='<div class="hd">doped by</div>'+(l.length
+    ? l.map(p=>'<a href="'+COM_AT(p.pseudo)+'" rel="noopener"><span class="nm">'
+        +esc(String(p.pseudo||''))+'</span></a>').join('')
+    : '<div class="none">nobody yet</div>');
 }
 async function dope(){
   const b=$('dc-dope'); if(!b||!DECODED||!DECODED.name)return;
@@ -1179,11 +1278,17 @@ $('decode-back').onclick=()=>{$('decode-fs').classList.remove('show');if(new URL
 /* Le câblage de la page d'un Cloth : le dope, et une photo qu'on ouvre en entier.
    Délégué sur le plein écran, puisque son contenu est réécrit à chaque décodage. */
 $('decode-fs').addEventListener('click',e=>{
+  /* Le compte OUVRE la liste de ceux qui ont dopé ; le mot dope la pose. */
+  if(e.target.closest('#dc-dope-n')){const w=$('dc-who');if(w)w.classList.toggle('is-open');return;}
   if(e.target.closest('#dc-dope')){dope();return;}
+  if(e.target.closest('#dc-turn')){dcRetourner();return;}
   const fig=e.target.closest('.dc-shots figure');
   if(fig){const im=fig.querySelector('img');if(im&&im.src)plein(im.src);return;}
-  const a=e.target.closest('.dc-art img');
-  if(a&&a.src){plein(a.src);return;}
+  /* 08/11 : UN TAP SUR LA PIÈCE LA RETOURNE — comme le Higher de l'accueil et
+     le Totehm de COM. On ne retourne pas depuis le DOS : là, chaque élément a
+     déjà son geste (la loupe de la box, une photo en plein écran, le tiroir) ;
+     c'est `turn it over` qui ramène à l'œuvre. */
+  if(e.target.closest('.dc-devant')){dcRetourner();return;}
 });
 $('dc-full-x').onclick=pleinFermer;
 $('dc-full').addEventListener('click',e=>{if(e.target.id==='dc-full')pleinFermer();});
@@ -1264,7 +1369,7 @@ document.querySelectorAll('[data-club]').forEach(a => a.addEventListener('click'
 }));
 
 /* Diagnostic — des booléens, jamais une valeur de membre. */
-const BUILD='2026-11-08-sso-sortie';
+const BUILD='2026-11-08-piece-retournee';
 window.__totehm_boutique=()=>({ build:BUILD, page:'home', luxury_link:!!document.querySelector('a[href="/luxury"]'),
   club_links:document.querySelectorAll('[data-club]').length, logos:document.querySelectorAll('.brand-logo,img[src*="champion"]').length,
   collab:/Champion 2026/.test(document.getElementById('collab')?.textContent||''), branding_space:document.getElementById('brand-btn')?.dataset.space==='/',

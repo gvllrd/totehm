@@ -29,7 +29,7 @@
 |---|---|
 | identité | `sso-mint` · `sso-redeem` |
 | argent | `stripe-webhook` · `higher-checkout` · `artwork-checkout` · `market-checkout` · `creator-subscribe` · `creator-price` · `club-billing` · `higher-sub` |
-| vêtements | `create-checkout` v44 · `luxury-quote` v4 · `luxury-checkout` · `compose-artwork` v52 · `streetwear-assets` · `cloth-art` · `streetwear-tick` (cron) ; les deux premiers prennent `pick:{matter,shots}` — ce qui est ALLUMÉ, en références, relu par `_box_matter` et `_box_shots` |
+| vêtements | `create-checkout` v51 · `luxury-quote` v4 · `luxury-checkout` · `compose-artwork` v52 · `streetwear-assets` · `cloth-art` · `streetwear-tick` (cron) ; les deux premiers prennent `pick:{matter,shots}` — ce qui est ALLUMÉ, en références, relu par `_box_matter` et `_box_shots` |
 | vidéo, spots | `create-bunny-upload` · `bunny-video` · `bunny-webhook` · `spot-video` · `space-delete` |
 | Higher Self, bot | `higher-self` · `bot-reply` · `bot-tick` (cron) · `agenda-ingest` (cron) · `higher-map` · `stoner-gate` |
 | sans appelant visible | `totehm-bot` · `sync-knowledge` · `generate-embeddings` · `upload-leaf-videos` · `ghost-factory` · `prospects` · `bunny-maintenance` · `embed-places` · `generate_objective` · `subscription-checkout` · `creator-dashboard` · `creator-onboard` · `autobiographiste` (à vérifier dans leurs journaux avant de retirer) |

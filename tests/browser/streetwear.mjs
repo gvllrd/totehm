@@ -16,7 +16,7 @@ const supports = [
 const NAMES = [];
 const rpc = {
   name_available: b => { NAMES.push(b.candidate); return !/taken/i.test(b.candidate); },
-  totehm_complete: { complete:true, remplies:5, habits:true, objectives:true, repulsions:true, wisdom:true, visions:true },
+  totehm_complete: { complete:true, any:true, remplies:5, habits:true, objectives:true, repulsions:true, wisdom:true, visions:true },
   my_trips: { trips:[{ id:'o1', text:'Marathon in May', is:['flow'], days_left:200, habits:[{ t:'Run the hill', f:'every_morning', i:'fight' }] }],
               reps:[{ id:7, text:'Scrolling at night', is:['focus'] }], loose:[{ t:'Cold shower', f:'every_morning', i:'fight' }],
               wisdom:[{ id:'w1', text:'Slow is smooth', is:['focus'] }], visions:[{ id:'v1', text:'A studio by the sea', is:['express'] }] },
@@ -81,7 +81,7 @@ await pg.waitForTimeout(80);
 
 // ── 1 · CLOTH (téléphone)
 let d = await D();
-ok(d.build === '2026-11-08-sso-sortie' && d.stage === 'cloth' && !d.papers && !d.desktop, 'phone: CLOTH first, the TOTEHM still folded');
+ok(d.build === '2026-11-08-piece-retournee' && d.stage === 'cloth' && !d.papers && !d.desktop, 'phone: CLOTH first, the TOTEHM still folded');
 const rest = await pg.evaluate(() => { const b = document.querySelector('#cl-facts .left b'), s = getComputedStyle(b);
   const g = document.querySelector('#cl-facts .bar i'), bar = document.querySelector('#cl-facts .bar');
   return { n: b.textContent.trim(), px: Math.round(parseFloat(s.fontSize)), col: s.color, fam: s.fontFamily,
@@ -567,14 +567,30 @@ ok(!log.errors.length, 'phone: no page error: ' + log.errors.join(' | '));
   ok((await pg.evaluate(() => window.__totehm_cloth().element)) === 'wisdom', 'the wish travels through the sign-in: back with the wisdom chosen in COM, on the style');
   ok(!log.errors.filter(e => !/totehm\.com\/auth/.test(e)).length, 'signed out from COM: no page error');
 }
-// ── Le passeport : un Totehm incomplet ne s'ouvre pas
+// ── Le passeport : 08/11 (Wah) « une seule box dans une vue suffit »
 {
-  const { pg } = await page(browser, { dir:'boutique', origin:'https://www.higher.boutique', rpc:{ ...rpc, totehm_complete:{ complete:false, remplies:3, habits:true, objectives:true, repulsions:false, wisdom:true, visions:false } }, tables, network });
+  /* TROIS vues remplies sur cinq : ça PASSE désormais. L'ancienne règle exigeait
+     les cinq et arrêtait ce membre à la porte. */
+  const { pg } = await page(browser, { dir:'boutique', origin:'https://www.higher.boutique', rpc:{ ...rpc, totehm_complete:{ complete:false, any:true, remplies:3, habits:true, objectives:true, repulsions:false, wisdom:true, visions:false } }, tables, network });
+  await pg.goto('https://www.higher.boutique/streetwear');
+  await pg.waitForFunction(() => window.__totehm_cloth && window.__totehm_cloth().ready && window.__totehm_cloth().supports === 2);
+  await pg.click('#cl-go');
+  await pg.waitForFunction(() => window.__totehm_cloth().stage === 'style');
+  ok(!(await pg.evaluate(() => document.querySelector('#pass').classList.contains('is-open'))),
+     "08/11 · trois vues sur cinq TOTEHMISENT : une seule box suffit, la porte ne s'ouvre plus");
+}
+{
+  /* AUCUNE box : là, et là seulement, la porte se ferme — et elle dit qu'UNE suffit. */
+  const { pg } = await page(browser, { dir:'boutique', origin:'https://www.higher.boutique', rpc:{ ...rpc, totehm_complete:{ complete:false, any:false, remplies:0, habits:false, objectives:false, repulsions:false, wisdom:false, visions:false } }, tables, network });
   await pg.goto('https://www.higher.boutique/streetwear');
   await pg.waitForFunction(() => window.__totehm_cloth && window.__totehm_cloth().ready && window.__totehm_cloth().supports === 2);
   await pg.click('#cl-go');
   await pg.waitForSelector('#pass.is-open');
-  ok(/3 \/ 5 views/.test(await pg.textContent('#pass-n')) && (await pg.evaluate(() => window.__totehm_cloth().stage)) === 'cloth', 'passport: an incomplete TOTEHM stays at the door (3 / 5 views)');
+  const p = await pg.evaluate(() => ({ n: document.querySelector('#pass-n').textContent,
+    dit: document.querySelector('#pass .say').textContent, go: document.querySelector('#pass-go').textContent }));
+  ok(/one box is enough/.test(p.n) && /ONE box/.test(p.dit) && /first box/.test(p.go)
+     && (await pg.evaluate(() => window.__totehm_cloth().stage)) === 'cloth',
+     'un Totehm VIDE reste a la porte, et la porte dit qu une seule box suffit · ' + JSON.stringify(p));
 }
 // ── La collection vide, sur ordinateur : la page tient debout
 {

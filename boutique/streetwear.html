@@ -663,8 +663,8 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
   <div class="t">Your TOTEHM<br>comes first.</div>
   <div class="v" id="pass-v"><i></i><i></i><i></i><i></i><i></i></div>
   <div class="kicker" id="pass-n"></div>
-  <p class="say">A TOTEHM Cloth is born from your story. Write one element in each of the five views, then come back.</p>
-  <button class="btn cta" id="pass-go" type="button">Complete my TOTEHM</button>
+  <p class="say">A TOTEHM Cloth is born from your story. Write ONE box — in any view — then come back.</p>
+  <button class="btn cta" id="pass-go" type="button">Write my first box</button>
   <button class="btn-back" id="pass-x" type="button">back</button>
 </div>
 
@@ -824,7 +824,7 @@ document.addEventListener('visibilitychange', () => { if(!document.hidden) ssoVe
 
 
 /* ══ L'ÉTAT — une pièce en cours, cinq scènes ═════════════════════════ */
-const BUILD='2026-11-08-sso-sortie';
+const BUILD='2026-11-08-piece-retournee';
 /* 02/11 (Wah) : « le style artistique en section deux, et ensuite la sélection
    de la box ». La taille, elle, a rejoint le vêtement. */
 const STAGES=['cloth','style','element','name','order','done'];
@@ -1196,13 +1196,17 @@ async function totehmize(){
   if(!myProfile){ssoVersDomaine(sb,'com',COM_IN);return;}
   await toElement();
 }
+/* 08/11 (Wah) : « il n'est pas obligatoire d'avoir au moins une box dans chaque
+   vue. Une seule box dans une vue suffit. » La porte lit donc `any` — au moins
+   une box non vide, n'importe où. `complete` reste la règle du Club et des
+   autres portes, et le serveur vérifie la même chose (`create-checkout`). */
 async function ensureTotehm(){
   const{data:pass,error}=await sb.rpc('totehm_complete');
   if(error){console.error('[totehm_complete]',error.message);return false;}
-  if(!pass?.complete){
+  if(!pass?.any){
     const v=pass||{};
     ['wisdom','visions','habits','objectives','repulsions'].forEach((k,i)=>$('pass-v').children[i].classList.toggle('is-on',!!v[k]));
-    $('pass-n').textContent=(v.remplies||0)+' / 5 views';$('pass').classList.add('is-open');return false;
+    $('pass-n').textContent='one box is enough';$('pass').classList.add('is-open');return false;
   }
   if(!TOT)await loadTotehm();
   return !!TOT;

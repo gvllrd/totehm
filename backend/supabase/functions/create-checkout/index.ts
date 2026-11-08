@@ -16,9 +16,7 @@
 // envoie la clé anon + le jeton de session), mais l'identité est lue par
 // `auth.getUser()`, jamais crue sur parole.
 //
-// ⚠️ LE PASSEPORT (CLAUDE.md « LE TOTEHM EST LE PASSEPORT ») : la
-// génération du visuel textile est fermée tant que le Totehm n'est pas
-// complet. Vérifié ici.
+// ⚠️ LE PASSEPORT : un Totehm et UNE box suffisent (08/11, Wah). Vérifié ici.
 //
 // `message` reste rempli avec le texte de la Box : c'est ce que lit la
 // chaîne n8n. On change la matière première sans casser l'usine.
@@ -51,6 +49,9 @@
 // pas un oubli. Les photos sont relues par `_box_shots` (mes lignes seules) :
 // la page ne peut pas faire entrer une image qui n'est pas à elle, ni un chemin
 // qu'elle aurait écrit. Ce qui part à l'usine vit dans `snap.shots`.
+//
+// 08/11 (v45) : Wah — « il n'est pas obligatoire d'avoir au moins une box dans
+// chaque vue. Une seule box dans une vue suffit. » Le passeport lit `any`.
 // ═══════════════════════════════════════════════════════════════════════
 import Stripe from 'npm:stripe@14';
 import { createClient } from 'npm:@supabase/supabase-js@2';
@@ -102,7 +103,10 @@ Deno.serve(async (req) => {
     console.error('[create-checkout] passport', pErr.message);
     return Response.json({ error: 'try again' }, { status: 503, headers: cors });
   }
-  if (!pass?.complete) {
+  // 08/11 (Wah) : totehmiser demande UNE box, pas les cinq vues. `any` dit
+  // « au moins une box non vide, n'importe ou » ; `complete` reste la regle du
+  // Club et des autres portes. Le gate est ici AUSSI : la page ne decide rien.
+  if (!pass?.any) {
     return Response.json({ error: 'passport', remplies: pass?.remplies ?? 0 }, { status: 409, headers: cors });
   }
 
