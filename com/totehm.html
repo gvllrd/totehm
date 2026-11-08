@@ -3080,6 +3080,10 @@ body.gate.lv-c:not(.entered):not(.is-aspire) #lv-ram.is-trace .puls{opacity:0}
 #lv-ram.is-trace > g > path.fk.f3{animation-delay:calc(var(--i) * 45ms + .62s)}
 #lv-ram.is-trace circle{animation:ram-fruit .3s ease 1.05s both}
 @media(prefers-reduced-motion:reduce){#lv-ram .fk,#lv-ram circle{animation:none!important}}
+/* Le réseau décoratif appartient à la version ordinateur, dans chacune des cinq vues. */
+@media(max-width:699px), (hover:none) and (pointer:coarse){
+ #lv-ram,#lv-socket .sk-ring b{visibility:hidden!important}
+}
 /* LE CŒUR · 26/10 (Wah : « le cœur est le Totehm-processor … qui peut battre très subtilement ») : un « lub-dub » de 1,4 %
    puis 0,8 %, toutes les 1,5 s, au repos au centre seulement ; il s'arrête dès que le réseau est aspiré (clic, verso,
    recherche) — `enter()` aspire AVANT de mesurer. */
@@ -8188,7 +8192,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-11-08-com-tronc-large-racines-basses';
+const BUILD='2026-11-08-com-traits-desktop-seulement';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
