@@ -3,10 +3,12 @@
 ## La base — Supabase `abujjbkbbiumxrokozph`
 - Une migration s'applique UNE fois, son fichier reste dans `supabase/migrations/` (jamais `db push`) ; ce qui ne passe
   pas du cloud → `CLAUDE_CODE.md`. Auto-test `tests/sql/*_selftest.sql` (`FAIL={}`). Grants après le dernier `create`.
+- **JAMAIS une clé étrangère vers `auth.users`** (06/11, mesuré) : une table de `public` qui la référence a mis la base à genoux en une heure — `auth/v1/token` en 504/522, cron incapable de démarrer, SQL Editor en timeout, redémarrage obligatoire. Un membre se relie par `profiles`, à la LECTURE.
 - Un déclencheur aux droits de l'appelant n'appelle que ce qu'`authenticated` peut exécuter (Postgres vérifie le droit même hors de la branche prise, sinon 403 sur l'écriture) : `_vis_shared()` lui est accordée ; `sauvegarde_selftest` le vérifie.
 - **Le modèle est fermé** : HABITS = `totehms.steps` (réécrit en entier par `cloudSave`) · `objectives` · `repulsions` · `visions` ·
   `wisdom` (MY STORY) ; liens = jointures ; 7 intentions (`check`, `intentions_set` pose `is`/`i`) ; médias `element-media` ; spots
   `spot_plans` (point lu par fonction ; en retirer un des miens : `spot_remove`, il passe à `cancelled`). **Journal** `totehm_journal` : tout geste, par déclencheurs jamais bloquants ; lu par `my_board`.
+- La page d'un Cloth décodé lit `cloth_page` (elle ENVELOPPE `reveal_cloth`, jamais remplacée) : rang dans le STYLE, totehmisateur, fiche du vêtement, dopes. Le DOPE = `cloth_dopes` + `cloth_dope` (bascule) + `cloth_dopers` (pseudos, par `profiles`).
 ## Les droits
 - Membre du Club : `_figher().member` = habit + objectif + répulsion (`needs` dit ce qui manque). Accès offert = `figher_comps`.
 - Abonné : `_subscriber_of(créateur, fan)` ; `creator_page`, `my_entitlements`, `totehm_read`, `member_media`, `club_spots_of`.
@@ -26,7 +28,7 @@
 |---|---|
 | identité | `sso-mint` · `sso-redeem` |
 | argent | `stripe-webhook` · `higher-checkout` · `artwork-checkout` · `market-checkout` · `creator-subscribe` · `creator-price` · `club-billing` · `higher-sub` |
-| vêtements | `create-checkout` v44 · `luxury-quote` v4 · `luxury-checkout` · `compose-artwork` · `streetwear-assets` · `cloth-art` · `streetwear-tick` (cron) ; les deux premiers prennent `pick:{matter,shots}` — ce qui est ALLUMÉ, en références, relu par `_box_matter` et `_box_shots` |
+| vêtements | `create-checkout` v44 · `luxury-quote` v4 · `luxury-checkout` · `compose-artwork` v52 · `streetwear-assets` · `cloth-art` · `streetwear-tick` (cron) ; les deux premiers prennent `pick:{matter,shots}` — ce qui est ALLUMÉ, en références, relu par `_box_matter` et `_box_shots` |
 | vidéo, spots | `create-bunny-upload` · `bunny-video` · `bunny-webhook` · `spot-video` · `space-delete` |
 | Higher Self, bot | `higher-self` · `bot-reply` · `bot-tick` (cron) · `agenda-ingest` (cron) · `higher-map` · `stoner-gate` |
 | sans appelant visible | `totehm-bot` · `sync-knowledge` · `generate-embeddings` · `upload-leaf-videos` · `ghost-factory` · `prospects` · `bunny-maintenance` · `embed-places` · `generate_objective` · `subscription-checkout` · `creator-dashboard` · `creator-onboard` · `autobiographiste` (à vérifier dans leurs journaux avant de retirer) |
@@ -51,10 +53,7 @@ fait lire par un modèle de vision et verse ce qu'il en dit dans le prompt — m
 concepts partent un par un, un bouton `PICK` chacun, et elle retient quel message porte quel numéro. C est le POSTE TELEGRAM du streetwear :
 `pick` (validé par le LOT, jamais par un message ; les six autres claviers tombent, l'image retenue dit
 `PICKED`), `ship`/`hold` renvoyés à D, `retry`/`refund` sur une pièce bloquée. D pose un brouillon Printful (`confirm=false` : rien de fabriqué ni facturé),
-montre le mockup du dos avec taille et adresse, et n'appelle `/confirm` que sur `SEND TO PRINT`. Un job `waiting` ou `queued` dont l'heure est venue REPART : `streetwear-tick`, arme toutes les cinq minutes par
-`streetwear_tick_arm()` (jeton a usage unique, aucun secret dans le cron), requalifie les executions abandonnees
-(`streetwear_recover_stalled`), reserve ce qui est pret (`streetwear_due`, qui repousse de trois minutes) et rappelle le
-flux — `tracking` excepte, que Printful pousse. Une piece bloquee en `error_locked` est ANNONCEE une fois (`streetwear_alerts` pose `alerted_at`) avec deux sorties : `RETRY` (`streetwear_unlock` retire les seuls drapeaux « parti sans reponse » et la remet en file) et `REFUND`, qui redemande confirmation puis NOTE seulement (`streetwear_refund_mark`) : l'argent ne part jamais d'un tap, le remboursement se fait dans Stripe. C, D lisent `$env`
+montre le mockup du dos avec taille et adresse, et n'appelle `/confirm` que sur `SEND TO PRINT`. Un job `waiting` ou `queued` dont l'heure est venue REPART : `streetwear-tick`, armé toutes les cinq minutes par `streetwear_tick_arm()` (jeton à usage unique, aucun secret dans le cron), requalifie les exécutions abandonnées (`streetwear_recover_stalled`), réserve ce qui est prêt (`streetwear_due`, qui repousse de trois minutes) et rappelle le flux — `tracking` excepte, que Printful pousse. Une piece bloquee en `error_locked` est ANNONCEE une fois (`streetwear_alerts` pose `alerted_at`) avec deux sorties : `RETRY` (`streetwear_unlock` retire les seuls drapeaux « parti sans reponse » et la remet en file) et `REFUND`, qui redemande confirmation puis NOTE seulement (`streetwear_refund_mark`) : l'argent ne part jamais d'un tap, le remboursement se fait dans Stripe. C, D lisent `$env`
 (11 clés) ; E reste sur l'ancien (`process.env`). Un fournisseur qui refuse DIT pourquoi : le lecteur de réponses rend les 110 premiers caractères du refus (B, C, D, F), et F garde ce message en base au lieu de la constante `printful_event_failed`. Banc : `tests/n8n/streetwear/offline.mjs` (81 tests, six blocages).
 
 Avis Supabase : 2 ERROR connus (`higher_badges` lit `auth.users` ; 4 vues `security definer`, dont `signature_styles`).

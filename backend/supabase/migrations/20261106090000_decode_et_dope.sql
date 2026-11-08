@@ -6,9 +6,15 @@
 -- pour le tiroir, et le compte de dopes.
 
 -- QUI A DOPÉ. Une ligne par membre et par pièce ; on ne dope pas deux fois.
+-- ⚠️ AUCUNE CLÉ ÉTRANGÈRE VERS `auth.users`. La première version en posait une : une heure
+-- plus tard la base ne répondait plus — `auth/v1/token` en 504/522, le cron incapable de
+-- démarrer, le SQL Editor lui-même en timeout. Zéro échec pendant les quatre heures
+-- précédentes, dégradation continue à partir de la minute de cette migration. Il a fallu
+-- redémarrer la base et retirer la contrainte à la main. Le membre se relie par
+-- `profiles` à la LECTURE (`cloth_dopers`), comme partout ailleurs dans ce projet.
 create table if not exists public.cloth_dopes (
   cloth_id   uuid not null references public.totehm_clothes(id) on delete cascade,
-  user_id    uuid not null references auth.users(id) on delete cascade,
+  user_id    uuid not null,
   created_at timestamptz not null default now(),
   primary key (cloth_id, user_id)
 );
