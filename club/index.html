@@ -609,6 +609,7 @@ const SSO_AUTH = 'https://www.totehm.com/auth';
 const SSO_KNOWN = 'totehm_sso_known';
 const SSO_TRIED = 'totehm_sso_tried';
 const SSO_PKCE  = 'totehm_sso_pkce';
+const SSO_EPOCH = 'totehm_sso_epoch';  // localStorage : le numero de sortie vu en entrant
 const ssoB64 = bytes => btoa(String.fromCharCode(...bytes)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 const ssoStore = (s, k, v) => { try{ v === null ? s.removeItem(k) : s.setItem(k, v); }catch(_){} };
 const ssoRead = (s, k) => { try{ return s.getItem(k); }catch(_){ return null; } };
@@ -684,6 +685,39 @@ sb.auth.onAuthStateChange(ev => {
     await new Promise(() => {});
   }
 }
+/* ── SORTIR DE TOTEHM.COM SORT D'ICI AUSSI · 08/11/2026 ─────────────
+   Wah : « je ne peux pas me deconnecter d'un compte sur un domaine quand je
+   me deconnecte de totehm.com ». Mesure : com sortait en `scope:'global'`
+   (les jetons de rafraichissement sont revoques, mais CE site garde un jeton
+   d'ACCES valide jusqu'a une heure) et quatre pages de com sortaient en
+   `scope:'local'`, qui ne revoque RIEN — on restait connecte ici, sans fin.
+   La console centrale pose un NUMERO DE SORTIE en base. Ce site retient
+   celui qu'il a vu, le relit au demarrage et a chaque retour d'onglet :
+   plus grand = la console a ferme, on sort. Une lecture SQL, zero centime,
+   et la decision vit sur le SERVEUR, pas dans un navigateur. Une erreur de
+   reseau ne deconnecte JAMAIS : sans numero lisible, on ne touche a rien.
+   Le repere s'efface AVANT le rechargement, sinon l'aller-retour silencieux
+   nous reconnecte au chargement suivant. */
+async function ssoVerifierSortie(sb){
+  try{
+    const { data:{ session } } = await sb.auth.getSession();
+    if(!session){ ssoStore(localStorage, SSO_EPOCH, null); return false; }
+    const { data, error } = await sb.rpc('sso_epoch');
+    if(error){ console.error('[sso_epoch]', error.message); return false; }
+    if(typeof data !== 'number' || data <= 0) return false;
+    const vu = Number(ssoRead(localStorage, SSO_EPOCH) || 0);
+    if(!vu || data <= vu){ ssoStore(localStorage, SSO_EPOCH, String(data)); return false; }
+    ssoStore(localStorage, SSO_KNOWN, null);
+    ssoStore(localStorage, SSO_EPOCH, null);
+    ssoStore(sessionStorage, SSO_TRIED, '1');
+    try{ await sb.auth.signOut({ scope:'local' }); }catch(_){}
+    location.reload();
+    return true;
+  }catch(_){ return false; }
+}
+ssoVerifierSortie(sb);
+document.addEventListener('visibilitychange', () => { if(!document.hidden) ssoVerifierSortie(sb); });
+
 /* Les portes vers totehm.com passent TOUTES par le pont. */
 const COM = 'https://www.totehm.com';
 document.addEventListener('click', e => {
@@ -733,7 +767,7 @@ const fmtDist = m => { if(m == null || !isFinite(m)) return ''; const v = UNIT =
 const mapsURL = (lat, lng) => 'https://www.google.com/maps/search/?api=1&query=' + Number(lat).toFixed(5) + '%2C' + Number(lng).toFixed(5);
 
 /* ══ L'ÉTAT ══════════════════════════════════════════════════════════ */
-const BUILD='2026-10-13-club-who';
+const BUILD='2026-11-08-sso-sortie';
 const store = { get(k){ try{ return localStorage.getItem(k); }catch(_){ return null; } }, set(k, v){ try{ localStorage.setItem(k, v); }catch(_){} } };
 let me = null, PSEUDO = null, POS = null, RULES = { clip_seconds:33, clip_max_bytes:48000000, countdown:3, duration_min:5, duration_max:720 };
 let VIEW = 'radar';

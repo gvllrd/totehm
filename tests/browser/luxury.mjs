@@ -45,7 +45,7 @@ const D = () => pg.evaluate(() => window.__totehm_luxury());
 await pg.goto('https://www.higher.boutique/luxury');
 await pg.waitForFunction(() => window.__totehm_luxury && window.__totehm_luxury().price_loaded);
 let d = await D();
-ok(d.build === '2026-10-27-gris' && d.deposit === 50000 && !d.photo && !d.box && !d.flow,
+ok(d.build === '2026-11-08-sso-sortie' && d.deposit === 50000 && !d.photo && !d.box && !d.flow,
   'le luxe s\'ouvre sur son porche : le prix, le métier — le dépôt attend derrière un bouton (500 €)');
 ok(/500/.test(await pg.textContent('#price')) && /deposit/i.test(await pg.textContent('#price'))
    && /refunded/i.test(await pg.textContent('#refund')), 'le prix dit un DÉPÔT, et le remboursement est écrit');

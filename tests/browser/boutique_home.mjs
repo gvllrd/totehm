@@ -34,7 +34,7 @@ const { pg, log } = await page(browser, { dir:'boutique', origin:'https://www.hi
 await pg.goto('https://www.higher.boutique/');
 await pg.waitForFunction(() => window.__totehm_boutique && /47 pieces left/.test(document.querySelector('#sw-col-sold').textContent));
 const d = await pg.evaluate(() => window.__totehm_boutique());
-ok(d.build === '2026-11-02-higher' && d.decode_first && !d.member_window, 'the physical landing page: DECODE first, no member window here');
+ok(d.build === '2026-11-08-sso-sortie' && d.decode_first && !d.member_window, 'the physical landing page: DECODE first, no member window here');
 // 30/10 (Wah) : « la face verso du [Higher] doit avoir EXACTEMENT les mêmes
 // perforations que la face recto — logique, on retourne la même pièce ». Donc
 // UN SEUL masque dans le document, et les deux faces le référencent.
@@ -301,6 +301,60 @@ ok(!log.errors.length, 'no page error: ' + log.errors.join(' | '));
   });
   ok(!sortie.absent && sortie.known === null && sortie.tried === '1' && sortie.pkce === null,
     '03/11 · SIGN OUT tient : le repère est effacé dans le geste, la page ne repart pas en SSO ' + JSON.stringify(sortie));
+  await pg.context().close();
+}
+
+/* ══ 08/11 · SORTIR DE TOTEHM.COM SORT D'ICI AUSSI ══════════════════════
+   Wah : « je ne peux pas me déconnecter d'un compte sur un domaine quand je me
+   déconnecte de totehm.com ». La console pose un NUMÉRO DE SORTIE ; ce site le
+   retient, le relit au démarrage et au retour d'onglet, et sort s'il a grandi. */
+{
+  let numero = 4;
+  const { pg, log } = await page(browser, { dir:'boutique', origin:'https://www.higher.boutique',
+    rpc:{ ...rpc, sso_epoch: () => numero }, tables, functions, session:true, network:geo });
+  await pg.goto('https://www.higher.boutique/');
+  await pg.waitForFunction(() => window.__totehm_boutique);
+  await pg.waitForFunction(() => localStorage.getItem('totehm_sso_epoch') !== null, null, { timeout:4000 }).catch(()=>{});
+  const vu = await pg.evaluate(() => localStorage.getItem('totehm_sso_epoch'));
+  ok(vu === '4' && log.rpc.some(r => r.name === 'sso_epoch'),
+    "08/11 · au démarrage, le site RETIENT le numéro de sortie de la console (vu=" + vu + ')');
+
+  /* Le même numéro ne déconnecte personne : sinon chaque chargement sortirait. */
+  await pg.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
+  await pg.waitForTimeout(250);
+  const stable = await pg.evaluate(() => ({ known: localStorage.getItem('totehm_sso_known'),
+                                            epoch: localStorage.getItem('totehm_sso_epoch') }));
+  ok(stable.epoch === '4', '08/11 · un numéro INCHANGÉ laisse la session tranquille ' + JSON.stringify(stable));
+
+  /* Une erreur de la base ne déconnecte JAMAIS — sinon une coupure réseau
+     jetterait tous les membres dehors. */
+  numero = NaN;
+  await pg.evaluate(() => { localStorage.setItem('totehm_sso_known','1');
+                            document.dispatchEvent(new Event('visibilitychange')); });
+  await pg.waitForTimeout(250);
+  const malgre = await pg.evaluate(() => localStorage.getItem('totehm_sso_known'));
+  ok(malgre === '1', '08/11 · un numéro illisible ne déconnecte pas (known=' + malgre + ')');
+
+  /* La console a fermé : le numéro a grandi → on sort, et le repère s'efface
+     AVANT le rechargement, sinon l'aller-retour silencieux nous reconnecte. */
+  /* ⚠️ On mesure le RECHARGEMENT, pas l'état d'après : le harnais réinjecte une
+     session à chaque chargement, donc `totehm_sso_known` revient tout seul ici —
+     en production il n'y a plus de session à réinjecter. Le rechargement, lui,
+     n'arrive QUE par cette sortie : c'est le signal propre. */
+  let recharge = 0;
+  pg.on('framenavigated', fr => { if(fr === pg.mainFrame()) recharge++; });
+  numero = 4;
+  await pg.evaluate(() => { localStorage.setItem('totehm_sso_epoch','4');
+                            document.dispatchEvent(new Event('visibilitychange')); });
+  await pg.waitForTimeout(600);
+  const calme = recharge;
+  numero = 9;
+  await pg.evaluate(() => { localStorage.setItem('totehm_sso_epoch','4');
+                            document.dispatchEvent(new Event('visibilitychange')); });
+  await pg.waitForTimeout(1200);
+  ok(calme === 0 && recharge === 1,
+    "08/11 · un numéro PLUS GRAND fait sortir le satellite ; le même ne recharge rien " +
+    JSON.stringify({ inchange:calme, plus_grand:recharge }));
   await pg.context().close();
 }
 await browser.close();

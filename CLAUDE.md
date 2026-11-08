@@ -53,7 +53,11 @@ personne. `oracle/` : jamais lu, jamais recopié. Une base Supabase (`abujjbkbbi
   `sso-redeem` ; d'un domaine à l'autre : `ssoVersDomaine()`. Jamais un jeton dans une URL, jamais une URL de retour
   reçue. Bloc copié de `tools/sso_snippet.js`. CTA : CONNECT WITH MY TOTEHM. SORTIR d'un satellite = `ssoLogout()`,
   jamais `sb.auth.signOut()` dans une page : le repère `SSO_KNOWN` s'efface DANS le geste, sinon le rechargement
-  relance l'aller-retour silencieux et reconnecte ; `scope:'local'` ne ferme que ce site.
+  relance l'aller-retour silencieux et reconnecte ; `scope:'local'` ne ferme que ce site. **SORTIR DE TOTEHM.COM SORT
+  DE PARTOUT** : toute sortie de com passe par `comSortir(sb)` — `sso_revoke_everywhere()` d'abord (le NUMÉRO DE
+  SORTIE), `signOut({scope:'global'})` ensuite ; `scope:'local'` sur com ne révoque RIEN et laissait les satellites
+  connectés sans fin (mesuré le 08/11). Un satellite relit `sso_epoch()` au démarrage et au retour d'onglet
+  (`ssoVerifierSortie`) : plus grand que le numéro retenu = il sort. Un numéro illisible ne déconnecte JAMAIS.
 - **Argent** : le prix et l'accès viennent du serveur. Un webhook, routé sur `metadata.product` (`switch` + `default`,
   jamais retiré) ; toute nouvelle fonction de checkout pose sa `metadata.product`, en double dans
   `subscription_data.metadata`. Propriété et argent ne s'écrivent QUE par le webhook. Grand livre en ajout seul.

@@ -8197,7 +8197,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-11-08-higher-gpt-orders';
+const BUILD='2026-11-08-sso-sortie';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -11317,8 +11317,14 @@ $('mw-signout').onclick=async()=>{
   if(guest()&&!so.classList.contains('is-arm')){ so.classList.add('is-arm'); so.textContent='Sign out · this guest TOTEHM will be lost'; return; }
   so.classList.remove('is-arm'); so.textContent='Sign out';
   closeMember();
-  /* 13/10 — PARTOUT : le serveur révoque toutes mes sessions ; SPACE et le Club perdent la leur à l'expiration
-     de leur jeton (l'heure), sans rien demander. Hors ligne : au moins ici. */
+  /* PARTOUT, ET TOUT DE SUITE — 08/11 (Wah : « je ne peux pas me déconnecter d'un compte sur un domaine
+     quand je me déconnecte de totehm.com »). `scope:'global'` révoque les jetons de rafraîchissement,
+     mais un satellite garde un jeton d'ACCÈS valide jusqu'à une heure : il ne le savait pas. On pose
+     donc d'abord le NUMÉRO DE SORTIE, que chaque satellite relit au démarrage et au retour d'onglet —
+     il sort alors sans rien demander. Puis on révoque. Un refus de la base ne bloque pas la sortie. */
+  try{ const {error:eR}=await sb.rpc('sso_revoke_everywhere');
+       if(eR) console.error('[sso_revoke_everywhere]',eR.message); }
+  catch(e){ console.error('[sso_revoke_everywhere]',e&&e.message||e); }
   const {error}=await sb.auth.signOut({scope:'global'});
   if(error){ console.error('[signOut]',error.message); await sb.auth.signOut({scope:'local'}); }
   sessionChange(); };

@@ -340,7 +340,7 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
 
 <script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-const BUILD = '2026-10-16-lisbon-space';
+const BUILD = '2026-11-08-sso-sortie';
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 const HIGHER_MARKUP = '<span class="higher-inline" role="img" aria-label="Higher"><svg viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-slogan"></use></svg></span>';
 const GET_HIGHER_MARKUP = '<span class="get-word">Get</span> ' + HIGHER_MARKUP;
@@ -421,6 +421,7 @@ const SSO_AUTH = 'https://www.totehm.com/auth';
 const SSO_KNOWN = 'totehm_sso_known';   // localStorage : ce navigateur s'est déjà connecté ici
 const SSO_TRIED = 'totehm_sso_tried';   // sessionStorage : l'aller-retour silencieux a eu lieu
 const SSO_PKCE  = 'totehm_sso_pkce';    // sessionStorage : { verifier, state } le temps du voyage
+const SSO_EPOCH = 'totehm_sso_epoch';  // localStorage : le numero de sortie vu en entrant
 
 const ssoB64 = bytes => btoa(String.fromCharCode(...bytes)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 const ssoStore = (s, k, v) => { try{ v === null ? s.removeItem(k) : s.setItem(k, v); }catch(_){} };
@@ -524,6 +525,39 @@ sb.auth.onAuthStateChange(ev => {
     await new Promise(() => {});
   }
 }
+/* ── SORTIR DE TOTEHM.COM SORT D'ICI AUSSI · 08/11/2026 ─────────────
+   Wah : « je ne peux pas me deconnecter d'un compte sur un domaine quand je
+   me deconnecte de totehm.com ». Mesure : com sortait en `scope:'global'`
+   (les jetons de rafraichissement sont revoques, mais CE site garde un jeton
+   d'ACCES valide jusqu'a une heure) et quatre pages de com sortaient en
+   `scope:'local'`, qui ne revoque RIEN — on restait connecte ici, sans fin.
+   La console centrale pose un NUMERO DE SORTIE en base. Ce site retient
+   celui qu'il a vu, le relit au demarrage et a chaque retour d'onglet :
+   plus grand = la console a ferme, on sort. Une lecture SQL, zero centime,
+   et la decision vit sur le SERVEUR, pas dans un navigateur. Une erreur de
+   reseau ne deconnecte JAMAIS : sans numero lisible, on ne touche a rien.
+   Le repere s'efface AVANT le rechargement, sinon l'aller-retour silencieux
+   nous reconnecte au chargement suivant. */
+async function ssoVerifierSortie(sb){
+  try{
+    const { data:{ session } } = await sb.auth.getSession();
+    if(!session){ ssoStore(localStorage, SSO_EPOCH, null); return false; }
+    const { data, error } = await sb.rpc('sso_epoch');
+    if(error){ console.error('[sso_epoch]', error.message); return false; }
+    if(typeof data !== 'number' || data <= 0) return false;
+    const vu = Number(ssoRead(localStorage, SSO_EPOCH) || 0);
+    if(!vu || data <= vu){ ssoStore(localStorage, SSO_EPOCH, String(data)); return false; }
+    ssoStore(localStorage, SSO_KNOWN, null);
+    ssoStore(localStorage, SSO_EPOCH, null);
+    ssoStore(sessionStorage, SSO_TRIED, '1');
+    try{ await sb.auth.signOut({ scope:'local' }); }catch(_){}
+    location.reload();
+    return true;
+  }catch(_){ return false; }
+}
+ssoVerifierSortie(sb);
+document.addEventListener('visibilitychange', () => { if(!document.hidden) ssoVerifierSortie(sb); });
+
 
 
 // Artworks catalogue (video_key → artwork)

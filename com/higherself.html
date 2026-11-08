@@ -370,7 +370,22 @@ $('a-code').addEventListener('input',async()=>{
   if(error){note.className='note no';note.textContent='wrong code';return;}
   note.textContent='';
 });
-$('sign-out').onclick=async()=>{await sb.auth.signOut();location.reload();};
+/* ══ SORTIR DE TOTEHM.COM, C'EST SORTIR DE PARTOUT · 08/11/2026 ═══════
+   Wah : « je ne peux pas me déconnecter d'un compte sur un domaine quand je me
+   déconnecte de totehm.com ». Mesuré : quatre pages d'ici sortaient en
+   `scope:'local'`, qui ne révoque RIEN — les satellites restaient connectés
+   sans fin ; et même `scope:'global'` leur laisse un jeton d'accès valide une
+   heure. On pose donc d'abord le NUMÉRO DE SORTIE (`sso_revoke_everywhere`) :
+   chaque satellite le relit au démarrage et au retour d'onglet, et sort.
+   Puis on révoque pour de vrai. Un refus de la base ne bloque pas la sortie. */
+async function comSortir(sb){
+  try{ const { error } = await sb.rpc('sso_revoke_everywhere');
+       if(error) console.error('[sso_revoke_everywhere]', error.message); }
+  catch(e){ console.error('[sso_revoke_everywhere]', e && e.message || e); }
+  const { error } = await sb.auth.signOut({ scope:'global' });
+  if(error){ console.error('[signOut]', error.message); await sb.auth.signOut({ scope:'local' }); }
+}
+$('sign-out').onclick=async()=>{await comSortir(sb);location.reload();};
 
 /* ══════════════════════════════════════════════════════════════════
    L'ÉTAT — UN SEUL APPEL
