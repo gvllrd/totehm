@@ -4688,6 +4688,10 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
 
 <script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { parseElementLink, resolveElementLink } from '/totehm-link.mjs';
+let lienElement=parseElementLink(location.hash), lienEnCours=false;
+const diagLien={state:lienElement?'pending':'idle'};
+window.__totehm_element_link=()=>({...diagLien});
 const sb=createClient('https://abujjbkbbiumxrokozph.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us');
 
 /* ══ LE PONT SSO — LE BLOC À COPIER · 17/09/2026 ══════════════════════
@@ -8197,7 +8201,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-11-08-sso-sortie';
+const BUILD='2026-11-08-higher-context';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -9429,7 +9433,7 @@ function vaVers(kind,id){
    clavier, pas de curseur, pas un mot pour dire quoi faire.
    On vient d'appuyer sur « ajouter » : le clavier est exactement ce
    qu'on attend. `neuve` le dit, et seule la création le passe. */
-function ouvrir(kind,id,neuve){
+function ouvrir(kind,id,neuve,focus=true){
   open={kind,id:String(id)}; pk=null; renderZone();
   const b=$('habits').querySelector('.habit.open');
   if(!b)return;
@@ -9439,8 +9443,35 @@ function ouvrir(kind,id,neuve){
   requestAnimationFrame(()=>{const sc=$('fv-inner'); if(!sc)return;
     sc.scrollTop=sc.scrollTop+b.getBoundingClientRect().top-sc.getBoundingClientRect().top-6;});
   const f=b.querySelector('.v-name[contenteditable]');
-  if(f&&(neuve||window.innerWidth>700))f.focus();
+  if(f&&focus&&(neuve||window.innerWidth>700))f.focus();
 }
+async function ouvrirLienElement(){
+  if(!lienElement||lienEnCours)return;
+  lienEnCours=true;let reprendre=false;
+  try{
+    await sesWait();
+    if(!inscrit())return; // Keep the intention until the person signs in.
+    const uid=me.id,seq=sesSeq,sujet=RO,cible=lienElement;
+    await loadTrips();
+    if(uid!==me?.id||seq!==sesSeq||sujet!==RO||cible!==lienElement){reprendre=true;return;}
+    if(!tripsLoaded){diagLien.state='unavailable';dis('This element could not be opened. Try again.');return;}
+    habIds();
+    const found=resolveElementLink(cible,{habits:state.habits,objectives:TRIPS,repulsions:REPS,visions:VIS,wisdom:TEACH});
+    lienElement=null;
+    if(location.hash.startsWith('#element='))history.replaceState(null,'',location.pathname+location.search);
+    window.__totehmDeplie(()=>{
+      if(uid!==me?.id||seq!==sesSeq||sujet!==RO)return;
+      if(!found){diagLien.state='unavailable';dis('This element is no longer available.');return;}
+      filterF=null;filterI=null;ordering=false;
+      setView(found.view);ouvrir(found.kind,found.id,false,false);
+      diagLien.state='opened';
+    });
+  }finally{lienEnCours=false;if(reprendre&&lienElement)setTimeout(ouvrirLienElement,0);}
+}
+window.addEventListener('hashchange',()=>{
+  const next=parseElementLink(location.hash);
+  if(next){lienElement=next;diagLien.state='pending';ouvrirLienElement();}
+});
 function fermer(){
   /* Il n'y a plus de brouillon de répulsion : elle naît en base comme les
      quatre autres objets. Voir `creer()`. */
@@ -11446,6 +11477,7 @@ async function sessionLoad(){
   if(inscrit()&&!RO){loadTrips(true);loadHabitSpaces();loadElementCloths();loadVisionImages();loadElementMedia();BADGE.charger();}
   garde();
   if(n===sesSeq&&lvRefresh) lvRefresh();
+  if(n===sesSeq&&lienElement)setTimeout(ouvrirLienElement,0);
 }
 /* LA GARDE : inscrit, la porte se franchit ; pas inscrit et Totehm
    ouvert (un `#in` avec une session sans nom, un jeton expiré en
@@ -13847,9 +13879,9 @@ window.addEventListener('pageshow',e=>{
      n'a pas de nom (ou a expiré), `garde()` replie et ouvre la porte. */
   const sessionRangee=()=>{ try{ return Object.keys(localStorage).some(k=>/^sb-.+-auth-token$/.test(k)); }
                            catch(_){ return false; } };
-  const voulu = !!m5 || !!RO;
+  const voulu = !!m5 || !!RO || !!lienElement;
   const dedans = voulu && sessionRangee();
-  const ensuite = m5&&m5[1] ? ()=>{ try{ setView(m5[1]); }catch(_){} } : null;
+  const ensuite = lienElement ? ouvrirLienElement : m5&&m5[1] ? ()=>{ try{ setView(m5[1]); }catch(_){} } : null;
   if(dedans && ensuite){ setTimeout(ensuite, 80); LA_PORTE.then=ensuite; }
   /* ⚠️ IL FAUT LA RETIRER, PAS SEULEMENT NE PAS LA POSER. La classe est
      écrite dans le HTML (`<body class="gate">`) pour éviter le flash au
@@ -13984,6 +14016,8 @@ window.addEventListener('pageshow',e=>{
   new MutationObserver(bientot).observe(body,{attributes:true,attributeFilter:['class']});
   { const mw=document.getElementById('member-window'); if(mw) new MutationObserver(bientot).observe(mw,{attributes:true,attributeFilter:['class']}); }
   window.addEventListener('popstate',()=>{
+    // Following another exact source is forward navigation, not a Back gesture.
+    if(parseElementLink(location.hash)){garde=false;bientot();return;}
     if(attente){ attente=false; garde=false; bientot(); return; }   /* notre propre retour (on était revenu à l'accueil) */
     if(notreEntree()) return;                                        /* XO / VX ont rendu leur entrée : la garde est toujours là */
     if(!garde) return;

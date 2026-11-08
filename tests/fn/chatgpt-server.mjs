@@ -16,6 +16,7 @@ class Query{
  insert(value){this.value=value;return this;}
  eq(k,v){this.filters.push([k,x=>x===v]);return this;}
  is(k,v){this.filters.push([k,x=>x===v]);return this;}
+ or(v){assert.equal(v,'status.is.null,status.not.in.(achieved,abandoned,converted)');this.filters.push(['status',x=>!['achieved','abandoned','converted'].includes(x)]);return this;}
  lte(k,v){this.filters.push([k,x=>x<=v]);return this;}
  gt(k,v){this.filters.push([k,x=>x>v]);return this;}
  gte(k,v){this.filters.push([k,x=>x>=v]);return this;}
@@ -81,6 +82,19 @@ try{
  r=await send('/mcp',{method:'POST',token:access,headers:mcpHeaders,body:{jsonrpc:'2.0',method:'notifications/initialized'}});check(r.status===202,'MCP notifications acknowledged without JSON-RPC response');
  r=await send('/mcp',{method:'POST',token:access,headers:mcpHeaders,body:{jsonrpc:'2.0',id:2,method:'tools/list'}});check(r.data.result.tools.length===10&&r.data.result.tools.every(t=>t.annotations.readOnlyHint),'Ten read-only tools, no publish/write tools');
  r=await tool(access,'get_context',{query:'draw',purpose:'action',limit:6});const context=r.data.result.structuredContent;check(context.items.some(x=>x.text==='Draw ten minutes'),'Tool returns the authenticated owner’s Habit');check(context.edges.some(x=>x.relation==='serves'),'Tool preserves recorded relationship provenance');check(!JSON.stringify(context).includes('Private other member'),'No other member data returned');
+ check(new URL(context.items[0].url).hash.includes('element=habit'),'MCP results link the exact original element');
+ r=await tool(access,'get_context',{query:'Review my system',purpose:'explicit',review:true});
+ check(r.data.result.structuredContent.review.complete,'Explicit system review is available through the existing personal tool');
+ r=await tool(access,'get_context',{query:'another option',purpose:'action',search_terms:[],exclude:[{kind:'habit',ref:'Draw ten minutes'}],kinds:['habit']});
+ check(r.data.result.structuredContent.items.length===0,'Declined starting elements are not silently recommended again');
+ data.wisdom=[{user_id:A,id:O,text:'My experience. '.repeat(50)+'The decisive ending.'}];
+ r=await tool(access,'read_element',{kind:'wisdom',ref:O});
+ check(r.data.result.structuredContent.items[0].text.endsWith('The decisive ending.'),'HTTP exact read preserves a long narrative ending');
+ for(const invalid of [{text_offset:-1},{text_offset:'4000'},{text_offset:64001}]){
+  r=await tool(access,'read_element',{kind:'wisdom',ref:O,...invalid});check(r.data.error?.code===-32602,'Invalid continuation offsets are rejected');
+ }
+ r=await tool(access,'get_context',{query:'review',purpose:'action',review:true});check(r.data.error?.code===-32602,'A review must be explicitly requested as inspection');
+ r=await tool(access,'list_club_spots',{period:'future',intentions:['productive']});check(r.data.error?.code===-32602,'Unknown Club intentions cannot become a broader filter');
  data.intention_music=[{user_id:A,intention:'express',title:'Jazz',url:'https://example.test/playlist?lang=ja',active:true},{user_id:B,intention:'express',title:'Private other member',url:'https://example.test/private',active:true}];
  r=await tool(access,'get_context',{query:'創作したい',purpose:'action',intentions:['express'],kinds:['habit'],search_terms:[],include_sound:true});
  check(r.data.result.structuredContent.selection==='intentions','Canonical intention retrieves owner records across query languages');

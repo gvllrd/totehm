@@ -14,10 +14,18 @@ export type ContextOptions = {
   kinds?: ElementKind[];
   search_terms?: string[];
   include_sound?: boolean;
+  exclude?: ElementRef[];
+  text_offset?: number;
+  review?: boolean;
 };
 export type ContextItem = ElementRef & {
   key: string;
   text: string;
+  url?: string;
+  text_length?: number;
+  text_truncated?: boolean;
+  text_offset?: number;
+  next_text_offset?: number;
   intentions: string[];
   intention_source: "explicit" | "inherited" | "legacy" | "none";
   freq?: string;
@@ -46,6 +54,13 @@ export type ContextResult = ContextGraph & {
   selection: "focus" | "lexical" | "intentions" | "ranked" | "fallback" | "empty";
   source: "owner_totehm";
   sounds?: Awaited<ReturnType<typeof getSounds>>;
+  coverage?: { source_complete: boolean; more_matches: boolean; omitted_related: boolean };
+  review?: {
+    complete: boolean;
+    counts: Record<ElementKind, number>;
+    gaps: { element: ElementRef; missing: "habit" | "objective" | "vision"; url: string }[];
+    more_gaps: boolean;
+  };
 };
 
 type Row = Record<string, unknown>;
@@ -71,6 +86,7 @@ export interface ReadQuery extends PromiseLike<{ data: unknown; error: unknown }
   select(columns: string): ReadQuery;
   eq(column: string, value: unknown): ReadQuery;
   is(column: string, value: null): ReadQuery;
+  or(filters: string): ReadQuery;
   in(column: string, values: string[]): ReadQuery;
   gt(column: string, value: string): ReadQuery;
   lte(column: string, value: string): ReadQuery;
@@ -93,6 +109,8 @@ const KINDS: ElementKind[] = ["habit", "objective", "repulsion", "vision", "wisd
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const MAX_ROWS = 400;
 const MAX_ITEMS = 12;
+const MAX_TEXT = 64000;
+const TEXT_PAGE = 4000;
 const own = (value: unknown): Row => value && typeof value === "object" && !Array.isArray(value) ? value as Row : {};
 const string = (value: unknown): string => typeof value === "string" ? value : "";
 const text = (value: unknown, max = 500): string => string(value).replace(/\s+/g, " ").trim().slice(0, max);
@@ -118,6 +136,13 @@ export function validElementRef(value: unknown): value is ElementRef {
   return UUID.test(ref.ref);
 }
 
+/** Fragments never reach HTTP logs. A link is a locator, never an access grant. */
+export function elementURL(value: ElementRef, member?: string): string {
+  if (!validElementRef(value)) throw new ContextReadError("invalid_request");
+  return "https://www.totehm.com/totehm" + (member ? "?ro=" + encodeURIComponent(member) : "") +
+    "#" + new URLSearchParams({ element: value.kind, ref: value.ref });
+}
+
 function validateOwner(uid: string): void {
   if (!UUID.test(uid)) throw new ContextReadError("invalid_request");
 }
@@ -129,7 +154,10 @@ function validateOptions(options: ContextOptions): void {
     (options.intentions !== undefined && (!Array.isArray(options.intentions) || options.intentions.length > 7 || options.intentions.some(i => !INTENTIONS.includes(i)))) ||
     (options.kinds !== undefined && (!Array.isArray(options.kinds) || options.kinds.length > 5 || options.kinds.some(k => !KINDS.includes(k)))) ||
     (options.search_terms !== undefined && (!Array.isArray(options.search_terms) || options.search_terms.length > 8 || options.search_terms.some(t => typeof t !== "string" || !t.trim() || t.length > 120))) ||
-    (options.include_sound !== undefined && typeof options.include_sound !== "boolean")) {
+    (options.include_sound !== undefined && typeof options.include_sound !== "boolean") ||
+    (options.exclude !== undefined && (!Array.isArray(options.exclude) || options.exclude.length > 12 || options.exclude.some(v => !validElementRef(v)))) ||
+    (options.text_offset !== undefined && (!options.focus || !Number.isInteger(options.text_offset) || options.text_offset < 0 || options.text_offset > MAX_TEXT)) ||
+    (options.review !== undefined && (typeof options.review !== "boolean" || (options.review && (options.purpose !== "explicit" || !!options.focus))))) {
     throw new ContextReadError("invalid_request");
   }
 }
@@ -150,7 +178,10 @@ export function projectGraph(snapshot: GraphSnapshot): ContextGraph {
   };
   const make = (kind: ElementKind, ref: string, label: unknown): ContextItem | null => {
     if (!validElementRef({ kind, ref })) return null;
-    const item: ContextItem = { kind, ref, key: elementKey({ kind, ref }), text: text(label), intentions: [], intention_source: "none" };
+    const full = string(label).trim();
+    const item: ContextItem = { kind, ref, key: elementKey({ kind, ref }), text: full.slice(0, MAX_TEXT),
+      text_length: full.length, text_truncated: full.length > MAX_TEXT,
+      url: elementURL({ kind, ref }), intentions: [], intention_source: "none" };
     return item.text ? item : null;
   };
   const spots = new Map(take(snapshot.habit_spots).map((r) => [string(r.habit_text), text(r.place, 160)]));
@@ -174,7 +205,10 @@ export function projectGraph(snapshot: GraphSnapshot): ContextGraph {
     ["objective", snapshot.objectives], ["repulsion", snapshot.repulsions],
     ["vision", snapshot.visions], ["wisdom", snapshot.wisdom],
   ] as const) {
-    for (const row of take(records)) {
+    // Archives must not consume the active graph's row budget.
+    const active = records?.filter(row => kind === "objective" ? !["achieved", "abandoned", "converted"].includes(string(row.status))
+      : kind === "repulsion" ? row.active === true : true);
+    for (const row of take(active)) {
       if (kind === "objective" && ["achieved", "abandoned", "converted"].includes(string(row.status))) continue;
       if (kind === "repulsion" && row.active !== true) continue;
       // bigint may arrive as a number from PostgREST; unsafe numbers cannot
@@ -249,7 +283,8 @@ export function projectGraph(snapshot: GraphSnapshot): ContextGraph {
   return { items, edges: list, truncated };
 }
 
-const normalize = (v: string) => v.normalize("NFKC").toLowerCase().replace(/\s+/g, " ").trim();
+const normalize = (v: string) => v.normalize("NFKD").toLowerCase()
+  .replace(/(\p{Script=Latin})\p{M}+/gu, "$1").normalize("NFC").replace(/\s+/g, " ").trim();
 // ICU word boundaries work across scripts, including those without spaces.
 // Semantic interpretation/translation belongs to the calling model, not a
 // finite language/synonym dictionary or an extra paid model in this server.
@@ -274,70 +309,132 @@ export function projectContext(graph: ContextGraph, options: ContextOptions): Co
   // Legacy calls match the whole query, never a filler token such as “est”.
   const terms = options.search_terms ?? (options.query.trim() ? [options.query] : []);
   const selectedIntentions = options.intentions ?? [];
+  const excluded = new Set((options.exclude ?? []).map(elementKey));
   const byKey = new Map(graph.items.map((item) => [item.key, item]));
   const priority = (item: ContextItem): number => options.purpose === "replacement" ? (item.kind === "repulsion" ? 4 : item.kind === "habit" ? 2 : 0)
     : options.purpose === "direction" ? (item.kind === "objective" ? 4 : item.kind === "vision" ? 3 : item.kind === "wisdom" ? 1 : 0)
     : (item.kind === "habit" ? 4 : item.kind === "objective" ? 2 : 0);
-  const rank = graph.items.map((item) => {
+  const ranked = graph.items.map((item) => {
     const matches = terms.filter(term => [item.text, item.where ?? "", item.obstacle ?? ""].some(value => matchesTerm(value, term))).length;
-    const intentionMatch = selectedIntentions.some(i => item.intentions.includes(i));
-    const eligible = (!options.kinds?.length || options.kinds.includes(item.kind)) &&
-      (!selectedIntentions.length || intentionMatch);
+    const eligible = !excluded.has(item.key) && (!options.kinds?.length || options.kinds.includes(item.kind)) &&
+      (!selectedIntentions.length || selectedIntentions.some(i => item.intentions.includes(i)));
     const order = item.rank_source === "member_order" ? 0 : item.rank_source === "importance" ? 1 : item.rank_source === "saved_order" ? 2 : 3;
     return { item, score: matches * 10, priority: priority(item), eligible, order };
   }).sort((a, b) => b.score - a.score || b.priority - a.priority ||
-    // Purpose distinguishes kinds; order is only compared inside one view.
     (a.item.kind === b.item.kind ? a.order - b.order || (a.item.rank ?? Infinity) - (b.item.rank ?? Infinity) : 0) ||
     a.item.key.localeCompare(b.item.key));
+  const rankIndex = new Map(ranked.map((r, n) => [r.item.key, n]));
+  const adjacent = new Map<string, string[]>();
+  for (const edge of graph.edges) {
+    if (!byKey.has(edge.from) || !byKey.has(edge.to)) continue;
+    adjacent.set(edge.from, [...(adjacent.get(edge.from) ?? []), edge.to]);
+    adjacent.set(edge.to, [...(adjacent.get(edge.to) ?? []), edge.from]);
+  }
+  for (const keys of adjacent.values()) keys.sort((a, b) => rankIndex.get(a)! - rankIndex.get(b)!);
+  const eligible = ranked.filter(r => r.eligible);
+  const matched = eligible.filter(r => r.score > 0);
   let selection: ContextResult["selection"] = "empty";
   let seeds: ContextItem[] = [];
-  if (options.focus) {
-    const seed = byKey.get(elementKey(options.focus));
-    if (seed) { seeds = [seed]; selection = "focus"; }
-    // An explicitly requested missing record must never silently substitute
-    // another element with an approximate name.
-  } else {
-    const eligible = rank.filter(r => r.eligible);
-    const matched = eligible.filter((r) => r.score > 0);
-    if (matched.length) { seeds = matched.slice(0, Math.min(2, limit)).map((r) => r.item); selection = "lexical"; }
-    else {
-      // Specific topics that do not match stay empty instead of quietly
-      // substituting an unrelated high-ranked goal. [] means a broad request.
-      if (!options.search_terms?.length) {
-        seeds = options.kinds?.length
-          ? options.kinds.flatMap(kind => eligible.find(r => r.item.kind === kind)?.item ?? []).slice(0, limit)
-          : eligible.slice(0, Math.min(2, limit)).map(r => r.item);
-        if (seeds.length) selection = selectedIntentions.length ? "intentions" : "ranked";
+  let review: ContextResult["review"];
+  if (options.review) {
+    const counts = Object.fromEntries(KINDS.map(k => [k, graph.items.filter(i => i.kind === k).length])) as Record<ElementKind, number>;
+    // Never claim a link is absent when capped source rows may contain it.
+    const gaps: NonNullable<ContextResult["review"]>["gaps"] = [];
+    if (!graph.truncated) for (const kind of ["objective", "repulsion", "vision", "habit"] as ElementKind[]) {
+      for (const { item } of eligible.filter(r => r.item.kind === kind)) {
+        const linked = kind === "objective" ? graph.edges.some(e => e.relation === "serves" && e.to === item.key)
+          : kind === "repulsion" ? graph.edges.some(e => e.relation === "instead" && e.from === item.key)
+          : kind === "vision" ? graph.edges.some(e => e.relation === "towards" && e.to === item.key)
+          : graph.edges.some(e => e.relation === "serves" && e.from === item.key);
+        if (!linked) gaps.push({ element: { kind: item.kind, ref: item.ref },
+          missing: kind === "vision" || kind === "habit" ? "objective" : "habit", url: item.url ?? elementURL(item) });
       }
     }
+    review = { complete: !graph.truncated, counts, gaps: gaps.slice(0, limit), more_gaps: gaps.length > limit };
+    seeds = review.gaps.map(g => byKey.get(elementKey(g.element))!);
+    if (!seeds.length) seeds = options.kinds?.length
+      ? options.kinds.flatMap(k => eligible.find(r => r.item.kind === k)?.item ?? []).slice(0, limit)
+      : KINDS.flatMap(k => eligible.find(r => r.item.kind === k)?.item ?? []).slice(0, limit);
+    if (seeds.length) selection = "ranked";
+  } else if (options.focus) {
+    const seed = byKey.get(elementKey(options.focus));
+    if (seed) { seeds = [seed]; selection = "focus"; }
+  } else if (matched.length) {
+    seeds = matched.slice(0, Math.min(2, limit)).map(r => r.item); selection = "lexical";
+  } else if (!options.search_terms?.length) {
+    seeds = options.kinds?.length
+      ? options.kinds.flatMap(k => eligible.find(r => r.item.kind === k)?.item ?? []).slice(0, limit)
+      : eligible.slice(0, Math.min(2, limit)).map(r => r.item);
+    if (seeds.length) selection = selectedIntentions.length ? "intentions" : "ranked";
   }
-  const chosen = new Map(seeds.map((i) => [i.key, i]));
-  const candidates = new Set<string>(chosen.keys());
-  let frontier = seeds.map((i) => i.key);
-  // At most two graph hops: enough for Habit→Objective→Vision and
-  // Repulsion→INSTEAD Habit plus the member's linked teaching.
-  for (let depth = 0; depth < 2 && frontier.length; depth++) {
-    const next = new Set<string>();
-    for (const edge of graph.edges) {
-      if (frontier.includes(edge.from) && byKey.has(edge.to)) next.add(edge.to);
-      if (frontier.includes(edge.to) && byKey.has(edge.from)) next.add(edge.from);
+  // Store shortest recorded paths, up to the full five-view chain. A path's
+  // intermediates must fit too: never return a vision detached from its why.
+  function pathsFrom(seed: ContextItem) {
+    const paths = new Map<string, string[]>([[seed.key, [seed.key]]]);
+    let frontier = [seed.key];
+    for (let depth = 0; depth < 4 && frontier.length; depth++) {
+      const next: string[] = [];
+      for (const key of frontier) for (const neighbour of adjacent.get(key) ?? []) {
+        if (paths.has(neighbour)) continue;
+        paths.set(neighbour, [...paths.get(key)!, neighbour]); next.push(neighbour);
+      }
+      frontier = next;
     }
-    frontier = rank.filter((r) => next.has(r.item.key) && !candidates.has(r.item.key)).map((r) => r.item.key);
-    for (const key of frontier) {
-      candidates.add(key);
-      if (chosen.size < limit) chosen.set(key, byKey.get(key)!);
+    return paths;
+  }
+  const chosen = new Map<string, ContextItem>();
+  const candidates = new Set<string>();
+  const addPath = (keys: string[]) => {
+    if (chosen.size + keys.filter(k => !chosen.has(k)).length > limit) return false;
+    for (const key of keys) chosen.set(key, byKey.get(key)!);
+    return true;
+  };
+  // An explicit overview/review gives each requested starting view a place.
+  if (options.review || options.kinds?.length) for (const seed of seeds) addPath([seed.key]);
+  for (const seed of seeds) {
+    const paths = pathsFrom(seed);
+    for (const key of paths.keys()) candidates.add(key);
+    if (!addPath([seed.key])) continue;
+    const kindOrder: ElementKind[] = options.purpose === "replacement"
+      ? ["habit", "wisdom", "objective", "vision", "repulsion"]
+      : options.purpose === "direction" ? ["vision", "habit", "repulsion", "wisdom", "objective"]
+      : ["objective", "vision", "repulsion", "wisdom", "habit"];
+    for (const kind of kindOrder) {
+      if ([...chosen.values()].some(i => i.kind === kind)) continue;
+      const path = [...paths.values()].filter(p => byKey.get(p.at(-1)!)?.kind === kind)
+        .sort((a, b) => a.length - b.length || rankIndex.get(a.at(-1)!)! - rankIndex.get(b.at(-1)!)!)
+        .find(p => chosen.size + p.filter(k => !chosen.has(k)).length <= limit);
+      if (path) addPath(path);
     }
   }
-  const selectedEdges = graph.edges.filter((e) => chosen.has(e.from) && chosen.has(e.to));
+  for (const key of candidates) if (chosen.size < limit) addPath([key]);
+  const items = [...chosen.values()].map(item => {
+    const exact = options.focus && item.key === elementKey(options.focus);
+    const offset = exact ? options.text_offset ?? 0 : 0;
+    const end = offset + (exact ? TEXT_PAGE : 500);
+    const length = item.text_length ?? item.text.length;
+    return { ...item, text: item.text.slice(offset, end), text_length: length,
+      text_truncated: offset > 0 || end < length || !!item.text_truncated,
+      ...(exact ? { text_offset: offset,
+        ...(end < Math.min(length, MAX_TEXT) ? { next_text_offset: end } : {}) } : {}) };
+  });
   return {
     source: "owner_totehm", purpose: options.purpose, generated_at: new Date().toISOString(), selection,
-    items: [...chosen.values()], edges: selectedEdges,
-    truncated: graph.truncated || candidates.size > chosen.size || (!options.focus && rank.some((r) => !chosen.has(r.item.key))),
+    items, edges: graph.edges.filter(e => chosen.has(e.from) && chosen.has(e.to)),
+    truncated: graph.truncated || candidates.size > chosen.size || items.some(i => i.text_truncated) ||
+      (!options.focus && ranked.some(r => !chosen.has(r.item.key))),
+    coverage: { source_complete: !graph.truncated,
+      more_matches: (terms.length ? matched : eligible).some(r => !chosen.has(r.item.key)),
+      omitted_related: candidates.size > chosen.size },
+    ...(review ? { review } : {}),
   };
 }
 
 async function ownerRows(client: ReadClient, uid: string, table: string, columns: string): Promise<{ data: Row[]; truncated: boolean }> {
-  const result = await client.from(table).select(columns).eq("user_id", uid).limit(MAX_ROWS + 1);
+  let query = client.from(table).select(columns).eq("user_id", uid);
+  if (table === "objectives") query = query.or("status.is.null,status.not.in.(achieved,abandoned,converted)");
+  if (table === "repulsions") query = query.eq("active", true);
+  const result = await query.limit(MAX_ROWS + 1);
   if (result.error) throw new ContextReadError("read_failed");
   const all = rows(result.data);
   return { data: all.slice(0, MAX_ROWS), truncated: all.length > MAX_ROWS };
@@ -374,8 +471,8 @@ export async function retrieveContext(client: ReadClient, uid: string, options: 
   return result;
 }
 
-export function retrieveElement(client: ReadClient, uid: string, focus: ElementRef, limit = 6): Promise<ContextResult> {
-  return retrieveContext(client, uid, { query: "", purpose: "explicit", focus, limit });
+export function retrieveElement(client: ReadClient, uid: string, focus: ElementRef, limit = 6, text_offset = 0): Promise<ContextResult> {
+  return retrieveContext(client, uid, { query: "", purpose: "explicit", focus, limit, text_offset });
 }
 
 export type SpotOptions = { habit_ref?: string; period?: "now" | "past" | "future"; limit?: number; now?: string };
@@ -402,7 +499,7 @@ export async function getSpots(client: ReadClient, uid: string, options: SpotOpt
     if (!UUID.test(string(row.spot_id)) || !Number.isFinite(start) || !Number.isFinite(minutes) || minutes < 1) return [];
     const period = start > instant ? "future" : start + minutes * 60000 > instant ? "now" : "past";
     if (options.period && options.period !== period) return [];
-    return [{ ref: string(row.spot_id), habit_ref: string(row.habit), starts_at: string(row.starts_at), duration_min: minutes,
+    return [{ ref: string(row.spot_id), url: "https://www.totehm.com/totehm?open=spot&id=" + encodeURIComponent(string(row.spot_id)), habit_ref: string(row.habit), starts_at: string(row.starts_at), duration_min: minutes,
       period, place: text(row.place, 160), city: text(row.city, 120), mode: text(row.mode, 20), audience: text(row.audience, 20),
       presence_verified: false, source: "owner_spot_plan" as const }];
   }).sort((a, b) => {

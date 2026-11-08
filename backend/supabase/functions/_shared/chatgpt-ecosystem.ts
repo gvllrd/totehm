@@ -1,7 +1,7 @@
 // Ecosystem extension: all reads reuse the application's audience readers.
 // The grant comes from validated OAuth, never from tool arguments.
 import {
-  ContextReadError, projectGraph, projectContext, retrieveContext, validElementRef,
+  ContextReadError, projectGraph, projectContext, retrieveContext, validElementRef, elementURL,
   type GraphSnapshot, type ContextOptions, type ElementRef,
 } from './chatgpt-context.ts';
 
@@ -52,17 +52,20 @@ export async function readMember(db:Client,grant:string,member:string,options:Co
   const orders=await db.rpc('chatgpt_member_orders',{p_grant:grant,p_pseudo:member});
   if(orders.error||!orders.data?.ok)throw new ContextReadError('read_failed');
   const result=projectContext(memberGraph({...r,orders:orders.data.orders}),options);
-  return {...result,source:memberSource(txt(r.pseudo,80)||member)};
+  const who=txt(r.pseudo,80)||member;
+  return {...result,items:result.items.map(item=>({...item,url:elementURL(item,who)})),source:memberSource(who)};
 }
-export async function retrieveEcosystem(db:Client,grant:string,uid:string,options:ContextOptions,member?:string){
+export async function retrieveEcosystem(db:Client,grant:string,uid:string,options:ContextOptions,member?:string,subscriptionOffset=0){
   const personal=await retrieveContext(db,uid,options);
-  const subscriptions=member?{items:[{member}],has_more:false}:await listSubscribedMembers(db,grant,0,8);
+  const subscriptions=member?{items:[{member}],has_more:false,next_offset:0}:await listSubscribedMembers(db,grant,subscriptionOffset,8);
   const candidates=await Promise.all(subscriptions.items.map(async({member:who})=>{
     try{return await readMember(db,grant,who,options);}catch{return null;}
   }));
   const selected=candidates.filter(x=>x&&(member||x.selection==='lexical'||x.selection==='intentions'));
   return {personal,members:selected,generated_at:new Date().toISOString(),
     subscriptions_truncated:subscriptions.has_more,
+    subscriptions_searched:subscriptions.items.length,
+    ...(subscriptions.has_more?{next_subscription_offset:subscriptions.next_offset}:{}),
     unavailable_members:candidates.filter(x=>!x).length,
     attribution:'Only personal items belong to the user. Member items are inspiration, not adopted choices.',
     memory:'Live context retrieved on demand; no automatic write to ChatGPT saved memory.'};
@@ -86,7 +89,7 @@ export function projectClubSpots(value:unknown){
   const r=obj(value);
   return {items:list(r.items).filter(x=>UUID.test(ref(x.spot_id||x.id))).map(x=>{
     const exact=obj(x.exact), box=obj(x.habit_box);
-    return {ref:ref(x.spot_id||x.id),member:txt(x.creator||x.pseudo||x.owner_pseudo,80),
+    return {ref:ref(x.spot_id||x.id),url:'https://www.totehm.com/totehm?open=spot&id='+encodeURIComponent(ref(x.spot_id||x.id)),member:txt(x.creator||x.pseudo||x.owner_pseudo,80),
       habit:txt(box.name||x.habit),city:txt(x.city,120),place:txt(exact.place,160)||null,
       starts_at:txt(x.starts_at,80),duration_min:Number.isFinite(x.duration_min)?x.duration_min:null,
       period:x.state==='will'?'future':x.state==='was'?'past':'now',
@@ -99,7 +102,7 @@ export function projectClubSpots(value:unknown){
 export async function clubSpots(db:Client,grant:string,options:Row){
   const r=await ecosystemRead(db,grant,'spots',{
     p_period:options.period,p_pseudo:options.member||null,p_limit:options.limit||6,p_offset:options.offset||0,
-    p_filters:{...(options.city?{city:options.city}:{}),...(options.habit_ref?{habit:options.habit_ref}:{})},
+    p_filters:{...(options.city?{city:options.city}:{}),...(options.intentions?{intentions:options.intentions}:{}),...(options.habit_ref?{habit:options.habit_ref}:{})},
   });
   return projectClubSpots(r);
 }
