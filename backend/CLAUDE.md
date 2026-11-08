@@ -15,14 +15,15 @@
 - Audience : `private` · `figher` · `subscribers` (`public` → `figher`) ; `_audience_ok`, `_audience_listed`, `_point_ok`. Sans compte : des NOMS seuls (`totehm_galaxy`, `totehm_search`).
 - Par box, BINAIRE (`private` · `subscribers` ; l'ancien `figher` d'une box → `subscribers`, 26/10) : colonne `audience` + `habit_audience`,
   règle `_box_shared` ; COM écrit par `box_audience_set`, lit par `totehm_read` (box par box). Reste au terminal : `totehm_of`, les politiques.
-
 ## L'argent
+- **DEUX BOURSES, qui ne se touchent JAMAIS** : la creator economy de totehm.com (un fan s'abonne à un membre : 80/20,
+  revente 7 %) vit dans `member_ledger` ; l'argent d'un vêtement ou d'une œuvre vit dans la route `metadata.product` du
+  webhook (`cloth`, `luxury`, `artwork`, `resale`). Chaque table dit son domaine (`comment on table`, `[BOUTIQUE]`…).
 - `member_ledger` en ajout seul : crédit sur `invoice.paid`, idempotence `unique(source, kind)`, l'arrondi va à TOTEHM ; 80/20, revente 7 %. Versement manuel le 1er : `payouts_due()` → virement → `payout_mark_paid()`. Pas de Stripe Connect.
 - Propriété : `art_editions` · `art_transfers` (ajout seul) · `stoner_access` ; le THP = l'œuvre `totehmpaper`. Le marché ne s'écrit que par le webhook (`art_settle`) ; `ok:false` → `market_incidents` = remboursement à la main.
 - `stripe-webhook` : `higher` · `cloth` · `subscription` · `creator_sub` · `artwork` · `resale` · `luxury` · `higher_sub` ;
   `stripe_events` s'efface avant un 500. Test (`boutique_testers`) : v45 suit une pièce d'essai comme une vraie et le mode test REDESCEND (03/11 : endpoint `we_1UXQzu`, les deux `STRIPE_TEST_*` posés) ;
   un événement de test n'ouvre que `cloth` et `luxury`, marqués `test`, et `handleCloth` n'appelle jamais l'API Stripe.
-
 ## Les 41 Edge Functions (`supabase/functions/`)
 | rôle | fonctions |
 |---|---|
@@ -34,7 +35,6 @@
 | sans appelant visible | `totehm-bot` · `sync-knowledge` · `generate-embeddings` · `upload-leaf-videos` · `ghost-factory` · `prospects` · `bunny-maintenance` · `embed-places` · `generate_objective` · `subscription-checkout` · `creator-dashboard` · `creator-onboard` · `autobiographiste` (à vérifier dans leurs journaux avant de retirer) |
 
 Le compte vient TOUJOURS de la session, jamais du corps ; une page ne reçoit que des nombres déjà calculés.
-
 ## Le bot et le Higher Self
 - TotehmBot (Telegram) sans voix (jamais « je », zéro modèle) ; relances `push_decision` au rythme de chaque Habit, 6/jour.
 - Higher Self (`higher-self` v7, `fmt:'r4'`) : le MIROIR. `_bot_mirror` = le TOTEHM relié (where, intentions, rythme, son, liens) ;
@@ -43,10 +43,8 @@ Le compte vient TOUJOURS de la session, jamais du corps ; une page ne reçoit qu
 - Ce que le membre MONTRE : `focus:{kind:'media'|'spot', id}` — une référence seule ; `montreDe()` relit la ligne dans SES
   lignes (`element_media` non retiré, `spot_plans` publié) et la box par `_box_matter`, et dit au modèle qu'il ne VOIT
   pas l'image. Deux lectures SQL, zéro appel payant de plus.
-
 ## ChatGPT — connexion dédiée, lecture seule
 `chatgpt-connector` est déployé et activé ; migrations additives `20261101090000_chatgpt_connector.sql` et `20261104140000_chatgpt_ecosystem.sql` appliquées, RLS et RPC réservées service_role. L’extension est enregistrée une seule fois dans l’historique Supabase sous `20261104133622` / `20261104140000_chatgpt_ecosystem` ; ne jamais la réappliquer. OAuth PKCE + jetons opaques hachés, jamais une session Supabase ; consentement `/chatgpt`, callback exact `https://chatgpt.com/connector_platform_oauth_redirect` avec `iss` (RFC 9207). Origine `https://www.totehm.com` ; `CHATGPT_CONNECTOR_ENABLED=true`. Redéployer via Management API ou `supabase functions deploy chatgpt-connector --project-ref abujjbkbbiumxrokozph --no-verify-jwt --use-api` depuis `backend/` ; si la CLI refuse le jeton injecté du cloud, utiliser Management API. `/mcp` : anciens consentements = 5 outils personnels ; reconnexion explicitement consentie = 10 outils, dont contexte mixte attribué, abonnements paginés, box membre, médias membre et spots Club, sans écriture ni GPS/pixels. `chatgpt-ecosystem.ts` convertit les cinq catégories et leurs liens ; ne jamais confondre inspiration et choix personnel. Consentement versionné PAR GRANT, émission atomique `chatgpt_authorize_ecosystem`. Lecteur service-only `chatgpt_read_ecosystem` relit l’abonnement à chaque appel et réutilise `totehm_read/member_media/club_spots[_of]` avec le sujet consenti, restauré ensuite. Aucun accès public élargi. Mémoire ChatGPT native : aucune écriture automatique ; contexte MCP à la demande. Higher GPT : instructions serveur `_shared/higher-gpt.ts`, compréhension multilingue par ChatGPT → filtres `intentions`, `kinds`, `search_terms` (aucun modèle serveur), rangs par vue avec provenance, échéance ancienne signalée, `include_sound` pour les liens exacts de playlist personnels ; image de vision : présence seule. Classements : migration additive `20261108115032_element_orders.sql` appliquée, RLS sans politique, RPC propriétaire et lecteur membre filtré par audience ; les Habits gardent leur ordre dans `steps`, les quatre autres vues dans `element_orders`. Tests `tests/fn/higher-gpt.mjs`, `element-orders-sql.mjs`, `tests/browser/com_orders.mjs` et `tests/fn/chatgpt-*` (SQL sous PGlite) + `tests/browser/chatgpt_connect.mjs`. RLS, droits et refus atomiques vérifiés en production par transaction annulée ; status/discovery publics vérifiés. L’essai réel connecté dans ChatGPT (reconsentement, lecture autorisée et révocation) nécessite l’intervention de Wah.
-
 ## n8n
 `n8n/README.md` (VM Oracle) · `n8n/workflows/` (A → F). n8n n'accorde jamais un accès. B SIGNE les photos allumées, les
 fait lire par un modèle de vision et verse ce qu'il en dit dans le prompt — matière, jamais instruction ;

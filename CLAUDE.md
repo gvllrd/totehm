@@ -45,7 +45,10 @@ personne. `oracle/` : jamais lu, jamais recopié. Une base Supabase (`abujjbkbbi
   fonction existante et `alter policy` compris (mesuré le 08/11) ; ce qui expire malgré tout → fichier + une ligne dans
   `CLAUDE_CODE.md`. La base d'abord, le code ensuite. Un gros lot se passe en MORCEAUX, pour qu'un blocage ne perde rien.
   Grants APRÈS le dernier `create` ; une fonction appelée par une POLITIQUE reste accordée à `authenticated` (Postgres
-  vérifie le droit de l'appelant). Table neuve : RLS sans politique, lue et écrite par fonction.
+  vérifie le droit de l'appelant). Table neuve : RLS sans politique, lue et écrite par fonction, nom préfixé par sa
+  FONCTIONNALITÉ (`streetwear_`, `chatgpt_`, `cloth_`…, jamais par un domaine : quatre tables sont lues par les quatre
+  sites) et `comment on table` en tête `[COM]`/`[CLUB]`/`[BOUTIQUE]`/`[SPACE]`, combinés par `+`.
+  `tests/sql/domaines_selftest.sql` refuse une table muette.
 - **Identité** : totehm.com est l'autorité. Un satellite appelle `ssoLogin()` → `totehm.com/auth` (code + PKCE) →
   `sso-redeem` ; d'un domaine à l'autre : `ssoVersDomaine()`. Jamais un jeton dans une URL, jamais une URL de retour
   reçue. Bloc copié de `tools/sso_snippet.js`. CTA : CONNECT WITH MY TOTEHM. SORTIR d'un satellite = `ssoLogout()`,
