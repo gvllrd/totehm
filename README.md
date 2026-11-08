@@ -17,7 +17,7 @@ ligne une minute plus tard (Vercel).
                  ↓ HIGHER SELF (TotehmBot)
 ```
 
-Un tap sur **●** déploie le TOTEHM : HABITS · OBJECTIVES · REPULSIONS · VISIONS · MY STORY.
+Un tap sur **●** déploie le TOTEHM : HABITS · OBJECTIVES · REPULSIONS · VISIONS · MY STORY. Chaque liste conserve son classement ; Higher my ChatGPT retrouve ces priorités, leurs liens et les playlists des intentions, dans la langue de la conversation.
 
 ## Les fichiers
 

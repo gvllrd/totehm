@@ -20,8 +20,6 @@ jobs:
           node-version: '24'
       - run: npm install --prefix tests/fn --ignore-scripts
       - run: npm --prefix tests/fn run test:chatgpt
-      - run: node tests/fn/chatgpt-ecosystem.mjs
-      - run: node tests/fn/chatgpt-ecosystem-sql.mjs
   browser:
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -38,6 +36,7 @@ jobs:
       - run: curl --fail --silent --show-error --output work/gpt.png https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/public/com/gpt.png
       - run: node tests/browser/com_chatgpt.mjs work/chatgpt-view
       - run: node tests/browser/chatgpt_connect.mjs work/chatgpt-connection
+      - run: node tests/browser/com_orders.mjs work/chatgpt-orders
       - uses: actions/upload-artifact@v4
         if: always()
         with:

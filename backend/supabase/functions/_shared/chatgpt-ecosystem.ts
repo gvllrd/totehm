@@ -29,7 +29,8 @@ export function memberGraph(value: unknown) {
     steps:list(r.steps),
     objectives,
     repulsions:reps.map(x=>({...x,id:ref(x.id),repulsion:x.text,active:true})),
-    visions:list(r.visions), wisdom,
+    visions:list(r.visions).map(x=>({...x,importance:x.rang})), wisdom:wisdom.map(x=>({...x,importance:x.rang})),
+    element_orders:Object.entries(obj(r.orders)).map(([kind,refs])=>({kind,refs})),
     objective_habits:Object.entries(obj(r.objs)).flatMap(([habit_text,ids])=>
       (Array.isArray(ids)?ids:[]).map(objective_id=>({habit_text,objective_id:ref(objective_id)}))),
     repulsion_habits:reps.flatMap(x=>(Array.isArray(x.hs)?x.hs:[]).map((habit_text:string)=>({repulsion_id:ref(x.id),habit_text}))),
@@ -48,7 +49,9 @@ export async function listSubscribedMembers(db:Client,grant:string,offset=0,limi
 }
 export async function readMember(db:Client,grant:string,member:string,options:ContextOptions){
   const r=await ecosystemRead(db,grant,'member',{p_pseudo:member});
-  const result=projectContext(memberGraph(r),options);
+  const orders=await db.rpc('chatgpt_member_orders',{p_grant:grant,p_pseudo:member});
+  if(orders.error||!orders.data?.ok)throw new ContextReadError('read_failed');
+  const result=projectContext(memberGraph({...r,orders:orders.data.orders}),options);
   return {...result,source:memberSource(txt(r.pseudo,80)||member)};
 }
 export async function retrieveEcosystem(db:Client,grant:string,uid:string,options:ContextOptions,member?:string){
@@ -57,7 +60,7 @@ export async function retrieveEcosystem(db:Client,grant:string,uid:string,option
   const candidates=await Promise.all(subscriptions.items.map(async({member:who})=>{
     try{return await readMember(db,grant,who,options);}catch{return null;}
   }));
-  const selected=candidates.filter(x=>x&&(member||x.selection==='lexical'));
+  const selected=candidates.filter(x=>x&&(member||x.selection==='lexical'||x.selection==='intentions'));
   return {personal,members:selected,generated_at:new Date().toISOString(),
     subscriptions_truncated:subscriptions.has_more,
     unavailable_members:candidates.filter(x=>!x).length,

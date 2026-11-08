@@ -16,6 +16,7 @@ class Query{
  insert(value){this.value=value;return this;}
  eq(k,v){this.filters.push([k,x=>x===v]);return this;}
  is(k,v){this.filters.push([k,x=>x===v]);return this;}
+ lte(k,v){this.filters.push([k,x=>x<=v]);return this;}
  gt(k,v){this.filters.push([k,x=>x>v]);return this;}
  gte(k,v){this.filters.push([k,x=>x>=v]);return this;}
  in(k,v){this.filters.push([k,x=>v.includes(x)]);return this;}
@@ -80,6 +81,14 @@ try{
  r=await send('/mcp',{method:'POST',token:access,headers:mcpHeaders,body:{jsonrpc:'2.0',method:'notifications/initialized'}});check(r.status===202,'MCP notifications acknowledged without JSON-RPC response');
  r=await send('/mcp',{method:'POST',token:access,headers:mcpHeaders,body:{jsonrpc:'2.0',id:2,method:'tools/list'}});check(r.data.result.tools.length===10&&r.data.result.tools.every(t=>t.annotations.readOnlyHint),'Ten read-only tools, no publish/write tools');
  r=await tool(access,'get_context',{query:'draw',purpose:'action',limit:6});const context=r.data.result.structuredContent;check(context.items.some(x=>x.text==='Draw ten minutes'),'Tool returns the authenticated owner’s Habit');check(context.edges.some(x=>x.relation==='serves'),'Tool preserves recorded relationship provenance');check(!JSON.stringify(context).includes('Private other member'),'No other member data returned');
+ data.intention_music=[{user_id:A,intention:'express',title:'Jazz',url:'https://example.test/playlist?lang=ja',active:true},{user_id:B,intention:'express',title:'Private other member',url:'https://example.test/private',active:true}];
+ r=await tool(access,'get_context',{query:'創作したい',purpose:'action',intentions:['express'],kinds:['habit'],search_terms:[],include_sound:true});
+ check(r.data.result.structuredContent.selection==='intentions','Canonical intention retrieves owner records across query languages');
+ check(r.data.result.structuredContent.sounds.items.length===1&&r.data.result.structuredContent.sounds.items[0].url==='https://example.test/playlist?lang=ja','Context sound includes only the owner’s exact saved playlist');
+ for(const invalid of [{intentions:['productive']},{intentions:'express'},{kinds:['unknown']},{search_terms:['']},{include_sound:'true'}]){
+  r=await tool(access,'get_context',{query:'x',purpose:'action',...invalid});
+  check(r.data.error?.code===-32602,'Malformed multilingual filters return invalid arguments');
+ }
  const gid=(await pg.query('select grant_id from public.chatgpt_tokens where token_hash=$1',[await hashOpaque(access)])).rows[0].grant_id;
  await pg.query('delete from public.chatgpt_ecosystem_consents where grant_id=$1',[gid]);
  const legacy=await send('/mcp',{method:'POST',token:access,headers:mcpHeaders,body:{jsonrpc:'2.0',id:2,method:'tools/list'}});

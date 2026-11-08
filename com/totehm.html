@@ -4874,8 +4874,12 @@ const FREQ_BY_ID={};FREQS.forEach(f=>FREQ_BY_ID[f.id]=f);
 const fw=id=>(FREQ_BY_ID[id]||FREQ_BY_ID.daily).w;
 const flabel=id=>(FREQ_BY_ID[id]||FREQ_BY_ID.daily).label;
 
-/* norm : minuscules, sans accents, sans ponctuation */
-const norm=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim();
+/* Comparer sans effacer une écriture : accents latins repliés pour le
+   lexique historique, marques des autres écritures et symboles conservés.
+   Les références serveur restent toujours le texte original (srv/t0). */
+const norm=s=>String(s||'').normalize('NFKD').toLowerCase()
+  .replace(/(\p{Script=Latin})\p{M}+/gu,'$1')
+  .replace(/[^\p{L}\p{N}\p{M}\p{S}\u200d ]/gu,' ').replace(/\s+/g,' ').trim();
 
 /* lexique polyglotte : chaque clé regroupe des mots-racines d'une même famille */
 const LEX={
@@ -5254,7 +5258,7 @@ async function cloudLoad(){
   const c=cacheLire(), avant=!!(c&&!('attente' in c)&&('pseudo' in c)&&recu<REPARE),
         garde=!!(c&&(c.attente||avant)&&Array.isArray(c.habits)&&c.habits.length&&JSON.stringify(c.habits)!==JSON.stringify(habits));
   state={habits:garde?c.habits:habits, vis:data.some(r=>['subscribers','members'].includes(r.totehm_visibility))?'subscribers':'private'};
-  if(ordonne)state.ord=true;
+  if(ordonne||habits.length)state.ord=true;
   if(garde){ NON_CONFIRME=true; SAUVE.repris++; scheduleCloudSave(300); }
   cacheEcrire();
 }
@@ -5303,7 +5307,7 @@ function poserLecture(data){
     const li=Array.isArray(x.is)?x.is.filter(z=>INT_BY_ID[z]):[];
     habits.push({t:x.t, t0:x.t, f:FREQ_BY_ID[x.f]?x.f:null,
       i:INT_BY_ID[x.i]?x.i:(li[0]||null), is:li, o:x.o||null});});
-  state={habits, vis:'subscribers'};
+  state={habits, vis:'subscribers', ord:true};
 
   TRIPS=(data.trips||[]).map(t=>Object.assign({},t,{
     is:Array.isArray(t.is)?t.is:[], vs:(t.visions||[]).map(String)}));
@@ -5320,6 +5324,7 @@ function poserLecture(data){
      REGARDE et de l'afficher dans le Totehm d'un autre. Sans lui, on
      voyait ses propres objectifs chez quelqu'un d'autre. */
   tripsLoaded=true;
+  chargerOrdres(RO);
 
   document.body.classList.add('ro');
   $('ro-who').textContent=data.pseudo||RO;
@@ -8192,7 +8197,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-11-08-com-traits-desktop-seulement';
+const BUILD='2026-11-08-higher-gpt-orders';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -8370,6 +8375,43 @@ function renderView(){ return renderZone(); }
 /* L'arbre entier en UN appel : objectifs, leurs habitudes, les répulsions
    de chaque habitude. Chargé à la première ouverture d'une des deux vues,
    pas au démarrage — le Totehm doit s'ouvrir sans attendre le réseau. */
+let ordreEnVol=Promise.resolve(), ordreAttente=0, ordreEchecs=0, ordreLu=false, ordreRevision=0;
+const GENRE_ORDRE={habits:'habit',objectives:'objective',repulsions:'repulsion',visions:'vision',wisdom:'wisdom'};
+function appliquerOrdres(orders){
+  for(const [v,k] of Object.entries(GENRE_ORDRE)){
+    const refs=orders&&orders[k]; if(!Array.isArray(refs))continue;
+    // Habits already carry their order in steps; renaming one must not move it.
+    if(v==='habits'){state.ord=true;continue;}
+    const positions=new Map(refs.map((r,i)=>[String(r),i]));
+    const arr=listeDe(v).slice().sort((a,b)=>(positions.get(String(a.id))??Infinity)-(positions.get(String(b.id))??Infinity));
+    if(v==='objectives')TRIPS=arr;else if(v==='repulsions')REPS=arr;else if(v==='wisdom')TEACH=arr;else VIS=arr;
+  }
+}
+async function chargerOrdres(pseudo=null){
+  const uid=me?.id, seq=roSeq, revision=ordreRevision;
+  try{
+    const {data,error}=await sb.rpc('element_orders_for',{p_pseudo:pseudo});
+    if(uid!==me?.id||seq!==roSeq||RO!==pseudo)return;
+    if(error)throw error;
+    if(data?.ok){if(revision===ordreRevision)appliquerOrdres(data.orders);ordreLu=true;renderZone();}
+  }catch(e){console.error('[element_orders_for]',e.message);}
+}
+function garderOrdre(v){
+  if(RO||!me)return;
+  const uid=me.id, seq=roSeq; ordreAttente++; ordreRevision++;
+  // Serial requests prevent rapid arrow clicks from being saved out of order.
+  ordreEnVol=ordreEnVol.then(async()=>{
+    if(RO||uid!==me?.id||seq!==roSeq)return;
+    if(v==='habits'){clearTimeout(cloudSaveTimer);cloudSaveTimer=null;await cloudSave();}
+    await calme();
+    if(RO||uid!==me?.id||seq!==roSeq)return;
+    const refs=listeDe(v).map(x=>v==='habits'?srv(x):String(x.id));
+    const {data,error}=await sb.rpc('element_order_set',{p_kind:GENRE_ORDRE[v],p_refs:refs});
+    if(error||!data?.ok)throw error||new Error('order refused');
+  }).catch(e=>{ordreEchecs++;console.error('[element_order_set]',e.message);if(uid===me?.id&&!RO)dis('order not saved');})
+    .finally(()=>{ordreAttente--;});
+}
+window.__totehm_order=()=>({pending:ordreAttente,failures:ordreEchecs,loaded:ordreLu});
 async function loadTrips(force){
   /* ⚠️ EN LECTURE, ON NE CHARGE JAMAIS SON PROPRE ARBRE. `my_trips()`
      rend l'arbre DU DEMANDEUR : appelée ici, elle remplaçait les
@@ -8378,13 +8420,16 @@ async function loadTrips(force){
   if(RO)return;
   if(!me)return;
   if(tripsLoaded&&!force)return;
+  const uid=me.id;
   try{
+    await ordreEnVol;
     /* ⚠️ ON NE LIT JAMAIS L'ARBRE PENDANT QU'ON ÉCRIT DEDANS. Sans cette
        ligne, `my_trips` doublait les écritures parties et le serveur
        renvoyait l'état d'AVANT — un objectif supprimé revenait, un lien
        posé disparaissait. Voir `EN_VOL`. */
     await calme();
     const {data,error}=await sb.rpc('my_trips');
+    if(RO||uid!==me?.id)return;
     /* Une erreur de RPC se JOURNALISE, toujours : sans ce log, une liste
        vide ne dit pas si le membre n'a rien posé ou si l'appel casse. */
     if(error)throw error;
@@ -8414,6 +8459,8 @@ async function loadTrips(force){
     VIS=(data.visions||[]).map(v=>({id:String(v.id), t:v.text||'', t0:v.text||'',
       is:Array.isArray(v.is)?v.is:[], os:(v.os||[]).map(String)}));
     tripsLoaded=true;
+    await chargerOrdres();
+    if(RO||uid!==me?.id)return;
     AUDB.charger();
     /* Les spots voyagent à part : une table, une lecture, et `my_trips`
        reste la fonction de l'arbre. */
@@ -10016,10 +10063,12 @@ function glisse(redessine){
 const listeDe=v=>v==='habits'?(state.habits||[]):v==='objectives'?TRIPS
   :v==='repulsions'?REPS:v==='wisdom'?TEACH:VIS;
 function poseListe(v,arr){
+  if(RO||!me)return;
   if(v==='habits'){state.habits=arr;state.ord=true;save();}
   else if(v==='objectives')TRIPS=arr;
   else if(v==='repulsions')REPS=arr;
-  else if(v==='wisdom')TEACH=arr; else VIS=arr;}
+  else if(v==='wisdom')TEACH=arr; else VIS=arr;
+  garderOrdre(v);}
 
 if($('ordbtn'))$('ordbtn').addEventListener('click',()=>{
   ordering=!ordering;
