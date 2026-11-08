@@ -43,7 +43,8 @@ const branche=pg=>pg.evaluate(()=>{const s=document.getElementById('gate-asteroi
   const largeur=xs=>xs.every(x=>x!==null)?Math.max(...xs)-Math.min(...xs):Infinity;
   const acts=document.getElementById('lv-c-acts').getBoundingClientRect(),cap=getComputedStyle(document.querySelector('#lvj-stack i'));
   const tronc={avant:largeur(section(av.top-34)),autour:largeur(section(av.top+av.height/2)),
-    apres:largeur(section(Math.min(av.bottom+26,jb.top+jb.height/2-76))),visible:av.top-30-acts.bottom};
+    apres:largeur(section(Math.min(av.bottom+26,jb.top+jb.height/2-76))),
+    avantManette:largeur(section(jb.top+jb.height/2-68)),visible:av.top-30-acts.bottom};
   const noirs=[...cap.backgroundImage.matchAll(/rgb\((\d+), (\d+), (\d+)\)/g)].every(m=>m[1]===m[2]&&m[2]===m[3]);
   return {pads,jonctions,rameaux:document.querySelectorAll('#lv-ram path.fk').length,s:{t:s.top,b:s.bottom,l:s.left,r:s.right,w:s.width,cx:s.left+s.width/2,cy:s.top+s.height/2},H:innerHeight,pins,trous,traits,
     J:{x:jb.left+jb.width/2,y:jb.top+jb.height/2},avis,tronc,manche:{noirs,taille:parseFloat(cap.width)},
@@ -78,8 +79,9 @@ try{
      nom+' · les racines enveloppent les flancs et le bas de la manette : 12 extrémités et 4 vraies fourches');
   ok(b.avis.libre&&b.avis.gauche&&b.avis.droite&&b.avis.t>b.s.b&&b.avis.b<b.J.y-54&&b.avis.w>=70,
      nom+' · ADVISORY est dans le tronc, entre papier et manette : les pistes longent ses deux côtés à plus de 4 px');
-  ok(b.tronc.avant<=20&&b.tronc.visible>=8&&b.tronc.autour>=b.avis.w+12&&b.tronc.apres<=30,
-     nom+' · le tronc étroit reste visible, se divise autour du visuel puis se resserre avant les racines → '+JSON.stringify(b.tronc));
+  ok(b.tronc.avant>=47&&b.tronc.avant<=49&&b.tronc.visible>=8&&b.tronc.autour>=b.avis.w+12
+     &&b.tronc.apres>=55&&b.tronc.apres<=57&&b.tronc.avantManette>=55&&b.tronc.avantManette<=57,
+     nom+' · le tronc large reste parallèle jusqu’au début de la manette, puis les racines se séparent → '+JSON.stringify(b.tronc));
   ok(b.manche.noirs&&b.manche.taille>=30,nom+' · le manche noir possède un chapeau analogique de 32 px');
   ok(b.coeur==='coeur',nom+' · 26/10 · au repos, le cœur (le TOTEHM) bat → '+b.coeur);
   const r0=await reseau(pg);

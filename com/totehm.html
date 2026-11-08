@@ -8188,7 +8188,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-11-08-com-tronc-manette-noire';
+const BUILD='2026-11-08-com-tronc-large-racines-basses';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -13100,8 +13100,8 @@ window.addEventListener('pageshow',e=>{
           return {a, fk, F};
         };
         /* ── LE TRONC : de son trou du bas, chaque piste se range sous le papier (les trous des côtés contournent ses coins
-           en arcs concentriques), puis toutes descendent en sept rails espacés de 3 px ── */
-        const jx=J.x, jy=J.y, gT=3;
+           en arcs concentriques), puis toutes descendent en sept rails espacés de 8 px ── */
+        const jx=J.x, jy=J.y, gT=8;
         const avis=A||{left:cx-50,right:cx+50,top:bas+70,bottom:Math.min(jy-110,bas+142),width:100,height:72};
         const y0=bas+6,yT=Math.max(y0,Math.min(bas+32,avis.top-42)),xT=i=>cx+(i-3)*gT;
         const partage=avis.top-24,retour=Math.min(avis.bottom+26,jy-76);
@@ -13117,19 +13117,21 @@ window.addEventListener('pageshow',e=>{
            ses flancs vers les racines. Les virages restent au-dessus et au-dessous de son rectangle. */
         const contourAvis=(i,s)=>{ const k=Math.abs(i-3),x=(s<0?avis.left:avis.right)+s*(7+k*4);
           const debut=[xT(i),yT],fourche=[xT(i),Math.max(yT,partage-k*2)],haut=[x,avis.top-6],bas=[x,avis.bottom+6];
-          const fin=[jx+s*(4+k*3),Math.max(avis.bottom+10,retour)];
+          const fin=[jx+s*(4+k*8),Math.max(avis.bottom+10,retour)];
           const dy=fin[1]-bas[1];
           return [debut,fourche].concat(bez([fourche,[fourche[0],fourche[1]+8],[x,avis.top-14],haut],18),[bas],
             bez([bas,[x,bas[1]+dy*.4],[fin[0],fin[1]-dy*.4],fin],18)); };
-        /* Les racines enveloppent les diagonales de la manette, puis retombent en petits bouquets.
-           Chaque courbe a sa propre épaule et sa propre terminaison ; elles ne dessinent pas une bague. */
-        const positions=[[[28,58]],[[44,48],[62,58]],[[72,38]],[[94,22],[100,42]]];
-        const sortie=(i,s)=>{ const k=Math.abs(i-3),p=[jx+s*((J.w||108)/2+10+k*7),jy+3-k*4];
+        /* Le faisceau reste vertical jusqu'à la manette. Une épaule courte contourne son chevron du haut,
+           puis les racines suivent ses flancs ; les terminaisons descendent sans crochet. */
+        const positions=[[[28,58]],[[44,50],[58,58]],[[74,42]],[[92,28],[101,45]]];
+        const sortie=(i,s)=>{ const k=Math.abs(i-3),p=[jx+s*((J.w||108)/2+8+k*7),jy+8-k*4];
           return {p,Q:positions[k].map(([x,y])=>[jx+s*x,Math.min(h-rp-.75-4,jy+y)])}; };
-        const cloche=(i,s)=>{ const L=contourAvis(i,s),F=L[L.length-1],P=sortie(i,s),dy=Math.max(8,P.p[1]-F[1]);
-          return [F].concat(bez([F,[F[0],F[1]+dy*.22],[P.p[0],P.p[1]-dy*.78],P.p],24)); };
+        const cloche=(i,s)=>{ const k=Math.abs(i-3),L=contourAvis(i,s),F=L[L.length-1],P=sortie(i,s);
+          const D=[F[0],jy-(J.h||108)/2-12],E=[jx+s*(31+k*8),jy-(J.h||108)/2-2],B=[P.p[0],jy-18];
+          return [F,D].concat(bez([D,[D[0],D[1]+6],[E[0],E[1]-6],E],12),
+            bez([E,[E[0],E[1]+18],[B[0],B[1]-18],B],18),[P.p]); };
         const racines=(i,s)=>{ const P=sortie(i,s),Q=P.Q;
-          const brin=B=>[P.p].concat(bez([P.p,[P.p[0],P.p[1]+(B[1]-P.p[1])*.65],[B[0]+s*18,B[1]],B],20));
+          const brin=B=>[P.p].concat(bez([P.p,[P.p[0],P.p[1]+(B[1]-P.p[1])*.55],[B[0],B[1]-12],B],20));
           return {Q,jonction:Q.length>1?P.p:null,principal:brin(Q[Q.length-1]),autres:Q.length>1?[{l:brin(Q[0]),c:'f3'}]:[]}; };
         return INTS.map((x,i)=>{
           const q=n[x.id], [ea,fa,eb,fb]=TROUS[i], ta=trou(ea,fa), tb=trou(eb,fb);
