@@ -2950,22 +2950,26 @@ body.lv-membre.lv-b #lv-slogan,body.lv-verrou.lv-b #lv-slogan{opacity:0}
 .lvn.is-mort{opacity:0;pointer-events:none}
 .lvn:focus-visible{outline:1px solid #fff;outline-offset:3px}
 /* 20/10 septies — un genre de joystick PlayStation en plus minimaliste (Wah) : un puits ROND, noir ; dans le puits,
-   LE MANCHE, un chapeau navy (le papier) au centre creusé, qui se tire et revient. */
+   LE MANCHE, un chapeau noir concave et texturé de 32 px, qui se tire et revient. */
 /* ⚠️ 25/10 — LA MANETTE SORT DE SON CADRE (Wah : « sors de son cadre le joystick sur la page d'atterrissage et sur le
    totehm déployé ») : le petit socle carré part avec la boîte noire du Totehm. Il reste le manche : un puits rond
    (cerclé d'un filet pour se lire sur le noir) et son chapeau. La case garde ses 48 px : rien ne bouge autour. */
 #lvj-box{width:48px;height:48px;position:relative;touch-action:none;cursor:grab;pointer-events:auto}
-#lvj-box::after{content:"";position:absolute;inset:8px;border-radius:50%;background:#000;
-  box-shadow:inset 0 1px 0 rgba(0,0,0,.95),0 0 0 1px rgba(255,255,255,.12)}
+#lvj-box::after{content:"";position:absolute;inset:3px;border-radius:50%;
+  background:radial-gradient(circle at 50% 60%,#020202 0 58%,#171717 66%,#080808 72%);
+  box-shadow:inset 0 2px 4px #000,0 0 0 1px #303030,0 2px 4px #000}
 #lvj-box:active{cursor:grabbing}
 #lvj-stack{position:absolute;inset:0;z-index:1;transform:translate(var(--mx,0px),var(--my,0px));
   transition:transform .26s cubic-bezier(.22,.9,.3,1)}
 #lvj-box.tenu #lvj-stack{transition:none}
-#lvj-stack i{--d:22px;position:absolute;left:50%;top:50%;display:block;width:var(--d);height:var(--d);
+#lvj-stack i{--d:32px;position:absolute;left:50%;top:50%;display:block;width:var(--d);height:var(--d);
   margin:calc(var(--d) / -2) 0 0 calc(var(--d) / -2);border-radius:50%;
-  background:radial-gradient(circle,var(--navy-d) 0 50%,var(--navy) 54%);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.28);transition:background .2s ease}
-#lvjoy.tenu #lvj-stack i{background:radial-gradient(circle,var(--navy) 0 50%,var(--blue) 54%)}
+  background:radial-gradient(circle at 50% 58%,#101010 0 46%,#292929 49%,#363636 55%,#1b1b1b 61%,#080808 72%);
+  box-shadow:inset 0 1px 1px #686868,0 3px 4px #000;transition:box-shadow .2s ease}
+#lvj-stack i::after{content:"";position:absolute;inset:7px;border-radius:50%;opacity:.25;
+  background:radial-gradient(#aaa .45px,transparent .7px) 0 0/3px 3px;
+  box-shadow:inset 0 2px 3px #000}
+#lvjoy.tenu #lvj-stack i{box-shadow:inset 0 1px 1px #828282,0 4px 5px #000}
 #lvjoy.vers-g #lvn-lf,
 #lvjoy.vers-d #lvn-rt,
 #lvjoy.vers-h #lvn-up,
@@ -3146,16 +3150,32 @@ body.gate.lv-h:not(.entered):not(.is-door) #lv-sell{opacity:1}
   transform:translateX(-50%);margin:0;pointer-events:none}
 body.mb-cherche #lv-parental{display:none}
 body.gate:not(.member):not(.ses-attente){--lv-y:32dvh}
+@media(min-height:741px) and (max-width:699px){
+ body.gate:not(.member):not(.ses-attente){--lv-y:28dvh}
+}
 @media(max-height:740px){
- body.gate:not(.member):not(.ses-attente){--lv-y:24dvh}
+ body.gate.member,body.gate.ses-attente{--lv-y:36dvh}
+ body.gate:not(.member):not(.ses-attente){--lv-y:22dvh}
  body:not(.member) #lv-pitch{gap:6px;padding:9px 12px}
  body:not(.member) #lv-pitch .lvp-headline{font-size:15px;line-height:1.35}
  body:not(.member) #lv-pitch .lvp-headline svg{width:60px;height:20px}
  body:not(.member) #lv-pitch .lvp-science{font-size:10px}
  body:not(.member) #lv-pitch .lvp-cta{padding:9px 16px;font-size:10px}
 }
+@media(max-height:620px) and (max-width:649px){
+ body.gate.member,body.gate.ses-attente{--lv-y:30dvh}
+ body.gate:not(.member):not(.ses-attente){--gate-size:90px;--lv-y:16dvh}
+ body.gate:not(.member):not(.ses-attente) #gate-hero{padding-top:52px}
+ body.gate:not(.member):not(.ses-attente) #gate-top-row{margin-top:max(0px,calc(var(--lv-y) - var(--gate-size) / 2 - 52px))}
+ body:not(.member) #lv-c-acts{gap:8px}
+ body:not(.member) #lv-pitch{gap:4px;padding:6px 10px}
+ body:not(.member) #lv-pitch .lvp-headline{font-size:13px;line-height:1.35}
+ body:not(.member) #lv-pitch .lvp-headline svg{width:52px;height:18px}
+ body:not(.member) #lv-pitch .lvp-science{font-size:9px}
+ body:not(.member) #lv-pitch .lvp-cta{padding:7px 14px;font-size:9px}
+}
 @media(max-height:520px) and (min-width:650px){
- body.gate{--lv-y:28dvh}
+ body.gate,body.gate.member,body.gate.ses-attente,body.gate:not(.member):not(.ses-attente){--lv-y:20dvh}
  #gate-hero{padding-top:20px}
  #gate-top-row{margin-top:max(0px,calc(var(--lv-y) - var(--gate-size) / 2 - 20px))}
  #lv-c-acts{left:calc(50% - 330px);top:110px;width:210px;transform:none;gap:8px}
@@ -8168,7 +8188,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-11-05-com-tronc-advisory-racines';
+const BUILD='2026-11-08-com-tronc-manette-noire';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -13023,16 +13043,16 @@ window.addEventListener('pageshow',e=>{
         return out;
       }
       /* ── L'ARBRE DE VIE : le TOTEHM est le cœur. Ses DOUZE perforations portent chacune une broche.
-         Les sept intentions se divisent en 56 pointes, toutes raccordées au bord supérieur de l'écran.
-         Sous le papier, les pistes contournent le visuel ADVISORY puis enveloppent la manette en retombées souples.
+         Les sept intentions se divisent en 56 pointes sur ordinateur, 28 sur téléphone, toutes au bord supérieur de l'écran.
+         Sous le papier, sept rails resserrés se divisent autour du visuel ADVISORY, se rejoignent puis enveloppent la manette.
          Quatre jonctions marquent les bifurcations ; douze pastilles terminent les racines. Les jonctions restent creuses.
          `c` = le papier (centre, largeur) ; les trous viennent de `--perfo` (rayon 6,16 % du côté). */
       const TROUS=[['L',.5,'L',.5],['L',.25,'L',.75],['T',.25,'B',.25],['T',.5,'B',.5],['T',.75,'B',.75],['R',.25,'R',.75],['R',.5,'R',.5]];
-      /* Trois fourches en Y par intention, de plus en plus fines. La couronne suit la largeur de l'écran,
+      /* Deux divisions sur téléphone, trois sur ordinateur, de plus en plus fines. La couronne suit la largeur de l'écran,
          les racines suivent les dimensions réelles de la manette et la place disponible au-dessus du bas. */
-      const NF=8;                                          /* les feuilles d'une intention : trois fourches */
       function circuit(n,c,S,J,A){
         const w=W(), h=H(), pw=c.w||S-6, hp=pw/2, r=pw*.0616, cx=c.x, cy=c.y, bas=cy+hp, ms=12;
+        const mobile=w<700, NF=mobile?4:8;                  /* deux divisions sur téléphone, trois sur ordinateur */
         const sp=Math.max(3,Math.min(5,r*.75)), rp=Math.max(1.8,Math.min(3.2,Math.sqrt(w*h)/360)), ordre=[3,4,2,5,1,6,0,7];
         const unit=v=>{ const d=Math.hypot(v[0],v[1])||1; return [v[0]/d,v[1]/d]; };
         const lerp=(A,B,t)=>[A[0]+(B[0]-A[0])*t, A[1]+(B[1]-A[1])*t];
@@ -13065,6 +13085,12 @@ window.addEventListener('pageshow',e=>{
            piste qui se transforme d'une vue à l'autre, les autres brins s'affinent (`f2`, `f3`) */
         const couronne=(i,ta)=>{
           const s=Array.from({length:NF},(_,j)=>sF(i*NF+j)), moy=(a,b)=>s.slice(a,b).reduce((t,v)=>t+v,0)/(b-a);
+          if(mobile){
+            const N1=noeud(moy(0,4),.28),N2=[0,1].map(m=>noeud(moy(m*2,m*2+2),.65)),F=s.map(v=>noeud(v,1));
+            const S0=[ta.p[0]+ta.N[0]*5,ta.p[1]+ta.N[1]*5];
+            return {a:[ta.in,S0].concat(courbe(S0,ta.N,N1.p,N1.d,22),brin(N1,N2[0],16).slice(1),brin(N2[0],F[1],14).slice(1)),
+              fk:[{l:brin(N1,N2[1],16)}].concat([0,2,3].map(j=>({l:brin(N2[j>>1],F[j],14),c:'f3'}))),F};
+          }
           const N1=noeud(moy(0,8),NIV[0]), N2=[0,1].map(m=>noeud(moy(4*m,4*m+4),NIV[1])), N3=[0,1,2,3].map(m=>noeud(moy(2*m,2*m+2),NIV[2]));
           const F=s.map(v=>noeud(v,1)), S0=[ta.p[0]+ta.N[0]*5, ta.p[1]+ta.N[1]*5];
           const a=[ta.in,S0].concat(courbe(S0,ta.N,N1.p,N1.d,22), brin(N1,N2[0],16).slice(1), brin(N2[0],N3[1],14).slice(1), brin(N3[1],F[3],12).slice(1));
@@ -13074,10 +13100,11 @@ window.addEventListener('pageshow',e=>{
           return {a, fk, F};
         };
         /* ── LE TRONC : de son trou du bas, chaque piste se range sous le papier (les trous des côtés contournent ses coins
-           en arcs concentriques), puis toutes descendent côte à côte en s'écartant à peine (`gT` → `gB`) ── */
-        const jx=J.x, jy=J.y, gT=Math.max(5,Math.min(8,pw*.06));
+           en arcs concentriques), puis toutes descendent en sept rails espacés de 3 px ── */
+        const jx=J.x, jy=J.y, gT=3;
         const avis=A||{left:cx-50,right:cx+50,top:bas+70,bottom:Math.min(jy-110,bas+142),width:100,height:72};
-        const y0=bas+6,yT=Math.max(y0,Math.min(bas+32,avis.top-30)),xT=i=>cx+(i-3)*gT;
+        const y0=bas+6,yT=Math.max(y0,Math.min(bas+32,avis.top-42)),xT=i=>cx+(i-3)*gT;
+        const partage=avis.top-24,retour=Math.min(avis.bottom+26,jy-76);
         function piste(T,i){
           const L=[T.in]; let A;
           if(T.e==='B'){ A=[T.p[0],y0]; L.push(A); }
@@ -13088,22 +13115,25 @@ window.addEventListener('pageshow',e=>{
           return L.concat(courbe(A,[0,1],[xT(i),yT],[0,1],12,(yT-A[1])*.5,(yT-A[1])*.5)); }
         /* Le visuel appartient au tronc : les pistes contournent ses lettres puis prolongent
            ses flancs vers les racines. Les virages restent au-dessus et au-dessous de son rectangle. */
-        const contourAvis=(i,s)=>{ const k=Math.abs(i-3),x=(s<0?avis.left:avis.right)+s*(8+k*5.5);
-          const debut=[xT(i),yT],epaule=Math.max(yT,avis.top-22-k*3),haut=[x,avis.top-6];
-          return [debut].concat(bez([debut,[debut[0],epaule],[x,avis.top-12],haut],20),[[x,avis.bottom+8]]); };
+        const contourAvis=(i,s)=>{ const k=Math.abs(i-3),x=(s<0?avis.left:avis.right)+s*(7+k*4);
+          const debut=[xT(i),yT],fourche=[xT(i),Math.max(yT,partage-k*2)],haut=[x,avis.top-6],bas=[x,avis.bottom+6];
+          const fin=[jx+s*(4+k*3),Math.max(avis.bottom+10,retour)];
+          const dy=fin[1]-bas[1];
+          return [debut,fourche].concat(bez([fourche,[fourche[0],fourche[1]+8],[x,avis.top-14],haut],18),[bas],
+            bez([bas,[x,bas[1]+dy*.4],[fin[0],fin[1]-dy*.4],fin],18)); };
         /* Les racines enveloppent les diagonales de la manette, puis retombent en petits bouquets.
            Chaque courbe a sa propre épaule et sa propre terminaison ; elles ne dessinent pas une bague. */
         const positions=[[[28,58]],[[44,48],[62,58]],[[72,38]],[[94,22],[100,42]]];
-        const sortie=(i,s)=>{ const k=Math.abs(i-3),p=[jx+s*((J.w||108)/2+15+k*7),jy+4-k*4];
+        const sortie=(i,s)=>{ const k=Math.abs(i-3),p=[jx+s*((J.w||108)/2+10+k*7),jy+3-k*4];
           return {p,Q:positions[k].map(([x,y])=>[jx+s*x,Math.min(h-rp-.75-4,jy+y)])}; };
         const cloche=(i,s)=>{ const L=contourAvis(i,s),F=L[L.length-1],P=sortie(i,s),dy=Math.max(8,P.p[1]-F[1]);
-          return [F].concat(bez([F,[F[0],F[1]+dy*.45],[P.p[0],P.p[1]-dy*.38],P.p],24)); };
+          return [F].concat(bez([F,[F[0],F[1]+dy*.22],[P.p[0],P.p[1]-dy*.78],P.p],24)); };
         const racines=(i,s)=>{ const P=sortie(i,s),Q=P.Q;
           const brin=B=>[P.p].concat(bez([P.p,[P.p[0],P.p[1]+(B[1]-P.p[1])*.65],[B[0]+s*18,B[1]],B],20));
           return {Q,jonction:Q.length>1?P.p:null,principal:brin(Q[Q.length-1]),autres:Q.length>1?[{l:brin(Q[0]),c:'f3'}]:[]}; };
         return INTS.map((x,i)=>{
           const q=n[x.id], [ea,fa,eb,fb]=TROUS[i], ta=trou(ea,fa), tb=trou(eb,fb);
-          const cr=couronne(i,ta), pleines=new Set(ordre.slice(0,Math.min(NF,q.n)));
+          const cr=couronne(i,ta), pleines=new Set((mobile?[1,2,0,3]:ordre).slice(0,Math.min(NF,q.n)));
           /* la racine : la piste, le tronc, la cloche (à gauche du milieu, et le trait du milieu à gauche), puis sa racine */
           const s=i<3?-1:i>3?1:-1, rs=racines(i,s);
           const b=piste(tb,i).concat(contourAvis(i,s).slice(1),cloche(i,s).slice(1),rs.principal.slice(1));
@@ -13291,10 +13321,10 @@ window.addEventListener('pageshow',e=>{
         return r&&r.width?{x:r.left+r.width/2, y:r.top+r.height/2,w:mr&&mr.width||108,h:mr&&mr.height||108}:{x:W()/2, y:H()-66,w:108,h:108}; };
       function placerAvis(c,J){
         const img=$('lv-parental'),acts=$('lv-c-acts'); if(!img)return null;
-        const ar=acts&&acts.getBoundingClientRect(),maximum=W()>=700?120:100;
+        const ar=acts&&acts.getBoundingClientRect(),paysage=H()<520&&W()>=650,maximum=W()>=700&&!paysage?120:90;
         const dansAxe=ar&&ar.left<c.x+maximum/2&&ar.right>c.x-maximum/2;
-        const haut=Math.max(c.y+(c.w||110)/2+32,dansAxe?ar.bottom+16:0),bas=J.y-(J.h||108)/2-18;
-        const hauteur=Math.max(28,Math.min(maximum*200/278,bas-haut)),largeur=hauteur*278/200;
+        const haut=Math.max(c.y+(c.w||110)/2+(paysage?48:42),dansAxe?ar.bottom+40:0),bas=J.y-(paysage?88:102);
+        const hauteur=Math.max(32,Math.min(maximum*200/278,bas-haut)),largeur=hauteur*278/200;
         const y=haut+Math.max(0,(bas-haut-hauteur)/2);
         img.style.setProperty('--avis-w',largeur.toFixed(1)+'px');
         img.style.setProperty('--avis-y',y.toFixed(1)+'px');

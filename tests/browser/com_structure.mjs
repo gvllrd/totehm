@@ -38,8 +38,15 @@ const branche=pg=>pg.evaluate(()=>{const s=document.getElementById('gate-asteroi
     libre:!contour.some(p=>p.x>av.left-4&&p.x<av.right+4&&p.y>av.top-4&&p.y<av.bottom+4),
     gauche:contour.some(p=>p.y>av.top&&p.y<av.bottom&&p.x<av.left-4),
     droite:contour.some(p=>p.y>av.top&&p.y<av.bottom&&p.x>av.right+4)};
+  const section=y=>traits.map(t=>{const l=t[1];for(let i=1;i<l.length;i++){const a=l[i-1],b=l[i];
+    if(a[1]<=y&&b[1]>=y&&b[1]>a[1])return a[0]+(b[0]-a[0])*(y-a[1])/(b[1]-a[1]);}return null;});
+  const largeur=xs=>xs.every(x=>x!==null)?Math.max(...xs)-Math.min(...xs):Infinity;
+  const acts=document.getElementById('lv-c-acts').getBoundingClientRect(),cap=getComputedStyle(document.querySelector('#lvj-stack i'));
+  const tronc={avant:largeur(section(av.top-34)),autour:largeur(section(av.top+av.height/2)),
+    apres:largeur(section(Math.min(av.bottom+26,jb.top+jb.height/2-76))),visible:av.top-30-acts.bottom};
+  const noirs=[...cap.backgroundImage.matchAll(/rgb\((\d+), (\d+), (\d+)\)/g)].every(m=>m[1]===m[2]&&m[2]===m[3]);
   return {pads,jonctions,rameaux:document.querySelectorAll('#lv-ram path.fk').length,s:{t:s.top,b:s.bottom,l:s.left,r:s.right,w:s.width,cx:s.left+s.width/2,cy:s.top+s.height/2},H:innerHeight,pins,trous,traits,
-    J:{x:jb.left+jb.width/2,y:jb.top+jb.height/2},avis,
+    J:{x:jb.left+jb.width/2,y:jb.top+jb.height/2},avis,tronc,manche:{noirs,taille:parseFloat(cap.width)},
     coeur:getComputedStyle(document.getElementById('gate-logo')).animationName,socle:{bg:cs.backgroundColor,ombre:cs.boxShadow,puits:!!k.querySelector('.sk-well')}};});
 const pres=(p,l,t)=>l.some(q=>Math.hypot(p[0]-q[0],p[1]-q[1])<=t);
 /* L'état du réseau : aspiré ou non, son échelle, son opacité, ses impulsions. */
@@ -60,10 +67,10 @@ try{
   /* Les 56 pointes touchent le haut ; quatre vraies fourches forment des retombées autour de la manette. */
   const xa=bouts.map(x=>x[0][0]), monte=xa.every((x,i)=>!i||x>xa[i-1]);
   const pads=b.pads, cime=pads.filter(p=>p.haut), pied=pads.filter(p=>p.racine), W=vp.width;
-  ok(monte&&cime.length===56&&Math.min(...cime.map(p=>p.x))<40&&Math.max(...cime.map(p=>p.x))>W-40
+  ok(monte&&cime.length===(vp.width<700?28:56)&&Math.min(...cime.map(p=>p.x))<40&&Math.max(...cime.map(p=>p.x))>W-40
      &&cime.every(p=>Math.abs(p.y-p.r-.75)<=.15)&&bouts.every(x=>pres(x[0],cime.map(p=>[p.x,p.y]),.15)),
-     nom+' · 04/11 · les 56 pointes de la couronne touchent toutes le haut de l\'écran, sur toute sa largeur');
-  ok(pied.length===12&&pads.length===68&&b.jonctions.length===4&&b.jonctions.every(p=>p.liens>=3)&&b.rameaux===82
+     nom+' · 04/11 · les pointes adaptées à l’écran (28/56) touchent toutes le haut de l\'écran, sur toute sa largeur');
+  ok(pied.length===12&&pads.length===(vp.width<700?40:68)&&b.jonctions.length===4&&b.jonctions.every(p=>p.liens>=3)&&b.rameaux===(vp.width<700?33:82)
      &&pads.every(p=>p.x-p.r-.75>=0&&p.x+p.r+.75<=W&&p.y-p.r-.75>=-.15&&p.y+p.r+.75<b.H)
      &&pied.every(p=>b.H-p.y-p.r-.75>=4&&p.y>b.J.y&&Math.abs(p.x-b.J.x)>=24)
      &&pied.some(p=>p.x<b.J.x-60)&&pied.some(p=>p.x>b.J.x+60)&&pied.some(p=>p.y>b.J.y+48)
@@ -71,6 +78,9 @@ try{
      nom+' · les racines enveloppent les flancs et le bas de la manette : 12 extrémités et 4 vraies fourches');
   ok(b.avis.libre&&b.avis.gauche&&b.avis.droite&&b.avis.t>b.s.b&&b.avis.b<b.J.y-54&&b.avis.w>=70,
      nom+' · ADVISORY est dans le tronc, entre papier et manette : les pistes longent ses deux côtés à plus de 4 px');
+  ok(b.tronc.avant<=20&&b.tronc.visible>=8&&b.tronc.autour>=b.avis.w+12&&b.tronc.apres<=30,
+     nom+' · le tronc étroit reste visible, se divise autour du visuel puis se resserre avant les racines → '+JSON.stringify(b.tronc));
+  ok(b.manche.noirs&&b.manche.taille>=30,nom+' · le manche noir possède un chapeau analogique de 32 px');
   ok(b.coeur==='coeur',nom+' · 26/10 · au repos, le cœur (le TOTEHM) bat → '+b.coeur);
   const r0=await reseau(pg);
   ok(!r0.aspire&&r0.echelle===1&&r0.op===1&&r0.puls==='ram-puls',nom+' · au repos, le réseau vit (impulsions)');

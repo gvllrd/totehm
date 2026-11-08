@@ -95,11 +95,11 @@ try{
           libre:mn(tous.map(p=>Math.hypot(p[0]-J.x,p[1]-J.y))),
           fruit:(()=>{const e=q('#lv-ram circle.is-plein');return e?getComputedStyle(e).fill+'|'+e.getAttribute('stroke'):'';})()};})()};});
   ok(c.vue==='c'&&c.mode==='mine'&&c.dans,(tel?'téléphone':'ordinateur')+' · centre, Mine : 25/10 · le TOTEHM est le boîtier — le socle ne se voit plus, il le serre à 3 px');
-  ok(JSON.stringify(c.pistes)===JSON.stringify(COULEURS)&&c.noeuds>=3&&c.pads===56+c.arbre.racines&&c.jonctions===4&&c.rameaux===82&&c.broches===12&&c.pales===4&&c.ramOp==='1'&&c.plein,'le réseau PLEIN ÉCRAN, en ARBRE : sept pistes aux 7 couleurs exactes, 12 broches dans les perforations, les pastilles PLEINES = MES Habits et quatre jonctions distinctes → '+JSON.stringify({n:c.noeuds,pads:c.pads,j:c.jonctions,r:c.rameaux,b:c.broches}));
+  ok(JSON.stringify(c.pistes)===JSON.stringify(COULEURS)&&c.noeuds>=3&&c.pads===(tel?28:56)+c.arbre.racines&&c.jonctions===4&&c.rameaux===(tel?33:82)&&c.broches===12&&c.pales===4&&c.ramOp==='1'&&c.plein,'le réseau PLEIN ÉCRAN, en ARBRE : sept pistes aux 7 couleurs exactes, 12 broches dans les perforations, les pastilles PLEINES = MES Habits et quatre jonctions distinctes → '+JSON.stringify({n:c.noeuds,pads:c.pads,j:c.jonctions,r:c.rameaux,b:c.broches}));
   /* 31/10 — Wah : « l'arbre prend tout l'écran (en particulier la partie haute), les branches s'élargissent sur tout l'écran ; le
      Totehm-cœur fait la jonction avec les branches et le haut du tronc ; à la base des racines se trouve le curseur, intégré ». */
   const A=c.arbre;
-  ok(A.couronne===56&&A.cg<=40&&A.cd<=40&&A.hautsTouches,'04/11 · les 56 pointes de la COURONNE touchent chacune le haut de l\'écran, sur toute sa largeur → '+JSON.stringify({n:A.couronne,g:A.cg,d:A.cd,h:A.ch}));
+  ok(A.couronne===(tel?28:56)&&A.cg<=40&&A.cd<=40&&A.hautsTouches,'04/11 · les pointes (28/56) de la COURONNE touchent chacune le haut de l\'écran, sur toute sa largeur → '+JSON.stringify({n:A.couronne,g:A.cg,d:A.cd,h:A.ch}));
   ok(A.noeud,'31/10 · le TOTEHM fait la jonction : chaque branche ET chaque piste du tronc part d\'une de ses perforations');
   ok(A.descend&&!A.touche,'les sept pistes descendent en laissant libres les chevrons et le puits de la manette (au plus près : '+A.libre+' px du centre)');
   ok(A.racines===12&&A.enveloppe&&A.jonctions&&A.borne,'les douze RACINES enveloppent les deux côtés et le dessous de la manette, avec quatre vraies fourches et des terminaisons dans l\'écran → '+JSON.stringify({n:A.racines,etendue:A.etendue,g:A.rg,d:A.rd,bas:A.rb}));
@@ -125,7 +125,7 @@ try{
   ok(!erreurs(log).length,'centre : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
 
  // Le visiteur garde le visuel dans le tronc, même lorsque son pitch occupe plus de place.
- for(const vp of [{width:390,height:664},{width:390,height:844},{width:1280,height:860},{width:844,height:390}]){
+ for(const vp of [{width:320,height:568},{width:390,height:568},{width:390,height:664},{width:390,height:844},{width:1280,height:860},{width:844,height:390}]){
   const{pg,log}=await page(browser,{dir:'com',origin,session:false,viewport:vp,rpc:{my_landing:{signed_in:false}}});
   await pg.emulateMedia({reducedMotion:'reduce'});await pg.goto(origin+'/totehm');
   await pg.waitForFunction(()=>window.__totehm_lv?.().vue==='c'&&!document.body.classList.contains('ses-attente'));
