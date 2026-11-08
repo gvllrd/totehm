@@ -3,7 +3,7 @@
 ## La base — Supabase `abujjbkbbiumxrokozph`
 - Une migration s'applique UNE fois, son fichier reste dans `supabase/migrations/` (jamais `db push`) ; ce qui ne passe
   pas du cloud → `CLAUDE_CODE.md`. Auto-test `tests/sql/*_selftest.sql` (`FAIL={}`). Grants après le dernier `create`.
-- **JAMAIS une clé étrangère vers `auth.users`** (06/11, mesuré) : une table de `public` qui la référence a mis la base à genoux en une heure — `auth/v1/token` en 504/522, cron incapable de démarrer, SQL Editor en timeout, redémarrage obligatoire. Un membre se relie par `profiles`, à la LECTURE.
+- **JAMAIS AJOUTER une clé étrangère vers `auth.users`** sur la base en service (06/11 puis 08/11, mesuré) : en ajouter une a mis la base à genoux en une heure — `auth/v1/token` en 504/522, cron incapable de démarrer, SQL Editor en timeout, redémarrage obligatoire. Ce n'est pas la clé qui tue, c'est sa POSE : `add constraint` verrouille `auth.users`, que le trafic d'authentification lit sans arrêt. 50 clés y pointent déjà et tiennent ; on n'y touche pas. Une table NEUVE relie un membre par `profiles`, à la LECTURE.
 - Un déclencheur aux droits de l'appelant n'appelle que ce qu'`authenticated` peut exécuter (Postgres vérifie le droit même hors de la branche prise, sinon 403 sur l'écriture) : `_vis_shared()` lui est accordée ; `sauvegarde_selftest` le vérifie.
 - **Le modèle est fermé** : HABITS = `totehms.steps` (réécrit en entier par `cloudSave`) · `objectives` · `repulsions` · `visions` ·
   `wisdom` (MY STORY) ; liens = jointures ; 7 intentions (`check`, `intentions_set` pose `is`/`i`) ; médias `element-media` ; spots

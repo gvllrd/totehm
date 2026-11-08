@@ -1,12 +1,12 @@
 -- CHAQUE TABLE DIT SON DOMAINE — Wah, 08/11/2026 : « préciser à chaque fois de quel aspect de la
--- marque il s'agit ». Pas de renommage (92 tables, 506 fonctions, 65 politiques) : le domaine est
+-- marque il s'agit ». Pas de renommage (90 tables, 505 fonctions, 63 politiques) : le domaine est
 -- écrit en commentaire, entre crochets et en tête. Ce test REFUSE une table neuve sans domaine.
 -- Attendu : « DOMAINES · FAIL={} ». N'écrit rien.
 DO $t$
 declare
   fails text[] := '{}';
   v_muettes text; v_inconnus text; v_n int; v_trancher int;
-  VALIDES text[] := array['COM','CLUB','BOUTIQUE','SPACE','À TRANCHER'];
+  VALIDES text[] := array['COM','CLUB','BOUTIQUE','SPACE'];
 begin
   -- 1 · aucune table de `public` sans domaine en tête de son commentaire
   select string_agg(c.relname, ', ' order by c.relname) into v_muettes
@@ -32,7 +32,7 @@ begin
   if coalesce(obj_description('public.member_ledger'::regclass,'pg_class'),'') not like '%JAMAIS l''argent de higher.boutique%'
     then fails := fails || 'member_ledger ne dit pas sa limite'; end if;
 
-  -- 4 · un repère, pour voir bouger ce qui reste à trancher
+  -- 4 · plus aucune table « à trancher » : le domaine n'est plus un domaine valide, ce compteur reste à 0
   select count(*) into v_trancher from pg_class c join pg_namespace n on n.oid = c.relnamespace
    where n.nspname='public' and c.relkind='r'
      and obj_description(c.oid,'pg_class') like '[À TRANCHER]%';
