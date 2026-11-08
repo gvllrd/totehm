@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url';
 
 // Runs exported Code nodes in memory. No network client, credentials or database connection.
 const root = resolve(process.argv[2] || dirname(fileURLToPath(import.meta.url)) + '/snapshots');
-const snapshots = Object.fromEntries(await Promise.all(['B','C','D','E','F','E-prepared'].map(async key =>
+const snapshots = Object.fromEntries(await Promise.all(['B','C','D','E','F'].map(async key =>
   [key, JSON.parse(await readFile(resolve(root, key + '.json'), 'utf8'))])));
 const fake = Object.freeze({SB_KEY:'simulation-backend',PRINTFUL_TOKEN:'simulation-printful',PF_STORE_ID:'0',
   TG_TOKEN:'simulation-telegram',TG_CHAT:'7001',TG_WEBHOOK_SECRET:'simulation-webhook',TG_ADMIN_IDS:'7001',
@@ -67,7 +67,7 @@ async function execute(key, nodeName, input={}, responder=()=>undefined, env={},
   assert.deepEqual(unexpected, [], 'All simulated requests must be declared');
   return {result,error,calls,attentes};
 }
-const nodeNames={B:'Generate seven concepts or notify',C:'Upscale and compose',D:'Create or recover Printful draft',E:'Update DB + Email',F:'Sync Product'};
+const nodeNames={B:'Generate seven concepts or notify',C:'Upscale and compose',D:'Create or recover Printful draft',E:'Send verified tracking',F:'Sync Product'};
 const gate = (key,input,responder,env) => execute(key,'Authenticate and claim',input,responder,env);
 const processNode = (key,input,responder,env) => execute(key,nodeNames[key],input,responder,env);
 const ok = r => {assert.equal(r.error,undefined);return r.result?.[0]?.json;};
@@ -530,44 +530,44 @@ test('F retains a failed event for recovery',async()=>{
   const r=await processNode('F',{...productEvent(),inbox_id:1,inbox_attempts:1},o=>o.url.includes('/store/products/')?{__transport:true}:o.url.includes('/streetwear_events?')?{}:undefined);
   failed(r,'Printful event failed');const update=hits(r,'/streetwear_events?','PATCH')[0].body;assert.equal(update.attempts,2);assert.equal(update.state,undefined);
 });
-test('Prepared E rejects an anonymous shipping event',async()=>{const r=await gate('E-prepared',{body:{type:'package_shipped',data:{order:{id:88}}}});assert.equal(ok(r).http_status,401);assert.equal(r.calls.length,0);});
-test('Prepared E blocks a TEST cloth before contacting Printful',async()=>{
-  const r=await gate('E-prepared',internal({type:'package_shipped',data:{order:{id:88}}}),o=>o.url.includes('/totehm_clothes?')?[{...cloth,test:true}]:undefined);
+test('E rejects an anonymous shipping event',async()=>{const r=await gate('E',{body:{type:'package_shipped',data:{order:{id:88}}}});assert.equal(ok(r).http_status,401);assert.equal(r.calls.length,0);});
+test('E blocks a TEST cloth before contacting Printful',async()=>{
+  const r=await gate('E',internal({type:'package_shipped',data:{order:{id:88}}}),o=>o.url.includes('/totehm_clothes?')?[{...cloth,test:true}]:undefined);
   assert.equal(ok(r).reason,'test_blocked');assert.equal(hits(r,'api.printful.com').length,0);
 });
-test('Prepared E verifies ownership and the real tracking response',async()=>{
-  const r=await gate('E-prepared',internal({type:'package_shipped',data:{order:{id:88},shipment:{tracking_url:'https://untrusted.invalid'}}}),preparedTrackingResponder);
+test('E verifies ownership and the real tracking response',async()=>{
+  const r=await gate('E',internal({type:'package_shipped',data:{order:{id:88},shipment:{tracking_url:'https://untrusted.invalid'}}}),preparedTrackingResponder);
   assert.equal(ok(r).tracking_url,tracking.shipments[0].tracking_url);const patch=hits(r,'/totehm_clothes?','PATCH')[0];assert.ok(patch.url.includes('test=eq.false'));
 });
-test('Prepared E refuses an order mismatch without marking it shipped',async()=>{
-  const r=await gate('E-prepared',internal({type:'package_shipped',data:{order:{id:88}}}),o=>o.url.includes('api.printful.com/orders/88')?{result:{...tracking,external_id:'different'}}:preparedTrackingResponder(o));
+test('E refuses an order mismatch without marking it shipped',async()=>{
+  const r=await gate('E',internal({type:'package_shipped',data:{order:{id:88}}}),o=>o.url.includes('api.printful.com/orders/88')?{result:{...tracking,external_id:'different'}}:preparedTrackingResponder(o));
   assert.equal(ok(r).reason,'order_mismatch');assert.equal(hits(r,'/totehm_clothes?','PATCH').length,0);
 });
-test('Prepared E refuses a duplicate event before changing shipping state',async()=>{
-  const r=await gate('E-prepared',internal({type:'package_shipped',data:{order:{id:88}}}),o=>rpcName(o)==='streetwear_claim'?{ok:false,reason:'already_claimed'}:preparedTrackingResponder(o));
+test('E refuses a duplicate event before changing shipping state',async()=>{
+  const r=await gate('E',internal({type:'package_shipped',data:{order:{id:88}}}),o=>rpcName(o)==='streetwear_claim'?{ok:false,reason:'already_claimed'}:preparedTrackingResponder(o));
   assert.equal(ok(r).ok,false);assert.equal(hits(r,'/totehm_clothes?','PATCH').length,0);
 });
-test('Prepared E sends an escaped, idempotent simulated email',async()=>{
+test('E sends an escaped, idempotent simulated email',async()=>{
   const t={...ticket('tracking'),tracking_url:'https://fixture.invalid/?x="unsafe"',tracking_number:'<fixture>'};
-  const r=await execute('E-prepared','Send verified tracking',t,o=>o.url.includes('api.resend.com')?{id:'fixture-email'}:undefined);ok(r);
+  const r=await execute('E','Send verified tracking',t,o=>o.url.includes('api.resend.com')?{id:'fixture-email'}:undefined);ok(r);
   const email=hits(r,'api.resend.com')[0];assert.equal(email.headers['Idempotency-Key'],'streetwear-shipped-'+id);
   assert.ok(email.body.html.includes('&lt;fixture&gt;'));assert.equal(email.body.html.includes('<fixture>'),false);
 });
 
 // Findings are reported separately from passing simulations. They never turn the pipeline green.
-for(const key of ['B','C','D','E'])test('Detect published '+key+' legacy runtime failure',async()=>{
-  const r=await execute(key,'⚙️ CONFIG',{},()=>undefined,{},true);failed(r,'process is not defined');
-  findings.push({workflow:key,severity:'blocker',code:'published_legacy_config',detail:'Published CONFIG requires process.env in a runtime without process.'});
-});
-test('Detect current E accepting an unverified shipping event',async()=>{
-  const r=await processNode('E',{body:{type:'package_shipped',data:{order:{id:88},shipment:{tracking_number:'FIXTURE',tracking_url:'https://untrusted.invalid'}}}},
-    o=>o.url.includes('/totehm_clothes?')?(o.method==='GET'?[{...cloth,test:true}]:{}):o.url.includes('api.resend.com')?{id:'fixture-email'}:undefined);
-  ok(r);assert.equal(hits(r,'/totehm_clothes?','PATCH').length,1);assert.equal(hits(r,'api.printful.com').length,0);
-  findings.push({workflow:'E',severity:'blocker',code:'draft_tracking_unverified',detail:'Current E draft accepts an unsigned event and TEST cloth, updates shipping and attempts an email. All effects were simulated.'});
-});
-test('Detect F shipment routing explicitly held back',async()=>{
-  const r=await processNode('F',{body:{type:'package_shipped',data:{order:{id:88}}}});failed(r,'Printful event failed');assert.equal(r.calls.length,0);
-  findings.push({workflow:'F/E',severity:'blocker',code:'tracking_not_deployed',detail:'Current F process refuses package_shipped while tracking deployment is pending.'});
+// 08/11 : le noeud `CONFIG` qui versait les cles dans les items a disparu des cinq flux —
+// B, C, D republiees les 04 et 05/11, E le 08. Le constat n'a plus d'objet et le snapshot
+// ne garde plus l'ancienne version active, qui ne decrivait plus rien.
+test('F passe une expedition a E, avec la cle de service',async()=>{
+  /* 08/11 : F a verifie la signature de Printful ; E n'accepte qu'un appel interne. */
+  const r=await processNode('F',{body:{type:'package_shipped',data:{order:{id:88}}},inbox_id:7,inbox_attempts:0},
+    o=>o.url.includes('/webhook/streetwear-tracking')?{ok:true}:o.url.includes('/streetwear_events')?[{}]:undefined);
+  assert.equal(ok(r).action,'tracking_routed');
+  const relais=hits(r,'/webhook/streetwear-tracking');
+  assert.equal(relais.length,1);
+  assert.equal(relais[0].headers.apikey,fake.SB_KEY,'la cle de service, seule porte que E accepte');
+  assert.equal(relais[0].body.type,'package_shipped');
+  assert.equal(hits(r,'/streetwear_events','PATCH')[0].body.state,'done','l evenement est classe');
 });
 
 const results=[];
@@ -575,7 +575,7 @@ for(const {name,fn} of tests){try{await fn();results.push({name,passed:true});}c
 const report={scope:'Offline exported n8n Code nodes; external services and database RPCs are simulated.',
   snapshot_versions:Object.fromEntries(Object.entries(snapshots).map(([key,w])=>[key,{workflowId:w.workflowId||w.id,versionId:w.versionId,activeVersionId:w.activeVersionId}])),
   passed:results.filter(r=>r.passed).length,failed:results.filter(r=>!r.passed).length,findings,checks:results,
-  limitations:['Does not prove actual PostgreSQL locking or provider integration.','Prepared E is from Git commit 7bdd1223c2469f0d9bf5f3108e6959ad4dd27fb2; it is not deployed.','No real payment, provider request, Telegram message, email or Printful order is sent.']};
+  limitations:['Does not prove actual PostgreSQL locking or provider integration.','E is from Git commit 7bdd1223c2469f0d9bf5f3108e6959ad4dd27fb2; it is not deployed.','No real payment, provider request, Telegram message, email or Printful order is sent.']};
 await writeFile(resolve(root,'../results.json'),JSON.stringify(report,null,2)+'\n');
 for(const failure of results.filter(r=>!r.passed))console.error(failure.name+': '+failure.error);
 console.log(JSON.stringify({passed:report.passed,failed:report.failed,blockers:findings.length,report:resolve(root,'../results.json')}));
