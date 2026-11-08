@@ -5,6 +5,7 @@ import {createLisbonPavement} from './gallery-lisbon-pavement.mjs';
 import {createWhiteStone} from './gallery-white-stone.mjs';
 import {createGalleryFacade} from './gallery-facade.mjs';
 import {createPaperPackaging} from './gallery-paper-packaging.mjs';
+import {createLisbonStreetSigns,LISBON_SIGN_OBSTACLES} from './gallery-lisbon-street-signs.mjs';
 import {TOTEHMPAPER} from './gallery-artworks.mjs';
 import {GALLERY_LAYOUT as L,GALLERY_STATIONS,GALLERY_OBSTACLES} from './gallery-modern-layout.mjs';
 import {GLASS_SHELL as S,GLASS_HEARTH,glassRoofHeight} from './gallery-glass-shell.mjs';
@@ -136,12 +137,13 @@ export function createCastleSpace(scene,renderer,{place='lisbon',mobile=false,on
  for(const x of [-2.8,2.8]){
   const light=new T.SpotLight(0xffe4ca,160,12,.62,.75,2);light.position.set(x,5.3,1.25);light.target.position.set(0,7.2,-1.15);root.add(light,light.target);
  }
+ const streetSigns=lisbon?createLisbonStreetSigns(root,{mobile,anisotropy,onChange:changed}):null;
  changed();
  const portals=GALLERY_STATIONS.map(s=>{const p=s.position||s.book||s.screen||s.table;return{room:s.room,x:p[0],z:p[2],href:s.href};});
- return {root,solids,walkable,interactables,pickables:interactables.map(i=>i.object),artSurfaces:[],portals,obstacles:GALLERY_OBSTACLES,
+ return {root,solids,walkable,interactables,pickables:[...interactables.map(i=>i.object),...(streetSigns?.pickables||[])],artSurfaces:[],portals,obstacles:lisbon?[...GALLERY_OBSTACLES,...LISBON_SIGN_OBSTACLES]:GALLERY_OBSTACLES,
   anchors:{playScreen:L.play.screen,originsBook:L.origins.book,counter:L.counter.position},setDay(){},
   update(dt,eye,motion=true){if(disposed)return false;if(motion)time+=Math.min(.1,Math.max(0,Number(dt)||0));const was=dirty;dirty=false;return was;},
-  diagnostics:()=>({kind:'coastal-castle-glass-museum',place,rebuilt:true,building:true,modernGallery:true,ready:!disposed,levels:1,airyInterior:true,interiorPartitions:0,glassRoof:true,flatSlopingRoof:true,waveGlass:false,glassSides:true,glassRear:true,castle:fabric.diagnostics(),fabric:fabric.diagnostics(),glassCompiled,roofShell:{minimum:S.minHeight,maximum:S.maxHeight,actualAperture:true,smokeOutlet:{...o}},pavement:pavement?.diagnostics()||null,flooring:{continuousStone:!lisbon,exterior:lisbon?'lisbon-calcada':'ancient-stone',ancientStone:floor.diagnostics()},stone:stone.diagnostics(),facade:{paperLoaded,originalDrawing:true,monumentalEntranceMark:true,scale:1.5,position:sign.position.toArray()},thpCounter:{packagedPapers:packages.length,looseTabs:0,papers:packages.length,wallPapers:0,premiumSource:'/get_higher',caseSizeMetres:[.38,.38,.38*50/180]},origins:{lectern:true,stone:true,inKeep:true,closedBook:true,position:L.origins.lectern},exhibition:{walls:0,levels:1,reservedSlots:0,artworkSupport:'stone',glassMountedArtworks:0},rooms:4,independentFiles:true,time,disposed}),
-  dispose(){if(disposed)return;disposed=true;root.removeFromParent();fabric.dispose();floor.dispose();pavement?.dispose();stone.dispose();for(const t of textures)t.dispose();for(const g of geometries)g.dispose();for(const m of materials)m.dispose();root.clear();}
+  diagnostics:()=>({kind:'coastal-castle-glass-museum',place,rebuilt:true,building:true,modernGallery:true,ready:!disposed,levels:1,airyInterior:true,interiorPartitions:0,glassRoof:true,flatSlopingRoof:true,waveGlass:false,glassSides:true,glassRear:true,castle:fabric.diagnostics(),fabric:fabric.diagnostics(),streetSigns:streetSigns?.diagnostics()||null,glassCompiled,roofShell:{minimum:S.minHeight,maximum:S.maxHeight,actualAperture:true,smokeOutlet:{...o}},pavement:pavement?.diagnostics()||null,flooring:{continuousStone:!lisbon,exterior:lisbon?'lisbon-calcada':'ancient-stone',ancientStone:floor.diagnostics()},stone:stone.diagnostics(),facade:{paperLoaded,originalDrawing:true,monumentalEntranceMark:true,scale:1.5,position:sign.position.toArray()},thpCounter:{packagedPapers:packages.length,looseTabs:0,papers:packages.length,wallPapers:0,premiumSource:'/get_higher',caseSizeMetres:[.38,.38,.38*50/180]},origins:{lectern:true,stone:true,inKeep:true,closedBook:true,position:L.origins.lectern},exhibition:{walls:0,levels:1,reservedSlots:0,artworkSupport:'stone',glassMountedArtworks:0},rooms:4,independentFiles:true,time,disposed}),
+  dispose(){if(disposed)return;disposed=true;root.removeFromParent();streetSigns?.dispose();fabric.dispose();floor.dispose();pavement?.dispose();stone.dispose();for(const t of textures)t.dispose();for(const g of geometries)g.dispose();for(const m of materials)m.dispose();root.clear();}
  };
 }

@@ -42,7 +42,7 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
  }
  play=createPlayInstallation(scene,{mobile,onChange:invalidate,onOpen:openExperience});
  opposite=createOppositeInstallation(scene,{mobile,onChange:invalidate,onOpen:openExperience});
- const walkway=(newYork?ny[1].createNewYorkWalkway:createModernWalkway)(),physics=(newYork?ny[1].createNewYorkPhysics:createModernPhysics)({x:ENTRY[0],z:ENTRY[2]}),sound=createGalleryAudio(),fireSound=createFireAudio();
+ const walkway=newYork?ny[1].createNewYorkWalkway():createModernWalkway(architecture.obstacles),physics=newYork?ny[1].createNewYorkPhysics({x:ENTRY[0],z:ENTRY[2]}):createModernPhysics({x:ENTRY[0],z:ENTRY[2]},architecture.obstacles),sound=createGalleryAudio(),fireSound=createFireAudio();
  const eye=new T.Vector3(...ENTRY),gaze=new T.Vector3(...LOOK),keys=new Set();
  const stick=document.getElementById('joystick'),knob=stick.querySelector('span');let joystick={x:0,y:0};
  const isFloor=()=>physics.diagnostics().grounded&&physics.position.y<GROUND+.2;
@@ -138,6 +138,9 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
  host.addEventListener('pointerup',e=>{
   if(!down)return;down=null;if(dragged)return;
   const h=hit(e),data=h?.object.userData;
+  if(data?.kind==='lisbon-street-sign'){
+   stopInput();cancelTravel();leaveStation();interact();onArtwork({kind:'lisbon-street-sign',id:data.id,title:data.title,phrase:data.phrase});return;
+  }
   if(data?.kind==='origins-book'){
    if(nearStation(1)){focusStation(1);book.interact(h);dirty=true;stationState();}else select(1);return;
   }
