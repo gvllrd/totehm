@@ -1,0 +1,55 @@
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+const {PGlite}=await import(process.env.PGLITE_MODULE||'@electric-sql/pglite');
+const db=new PGlite();let checks=0;
+const A='11111111-1111-4111-8111-111111111111',B='22222222-2222-4222-8222-222222222222',G='33333333-3333-4333-8333-333333333333';
+const scalar=async(sql,args=[])=>Object.values((await db.query(sql,args)).rows[0])[0];
+const check=(v,m)=>{assert(v,m);checks++;};
+try{
+ await db.exec(`create role anon;create role authenticated;create role service_role;create schema auth;
+ create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;
+ create table profiles(id uuid,pseudo text);insert into profiles values ('${A}','me'),('${B}','artist');
+ create table totehms(user_id uuid,steps jsonb);insert into totehms values ('${A}','[{"t":"读书"},{"t":"Walk"}]');
+ create table objectives(id uuid,user_id uuid,status text);insert into objectives values ('${A}','${A}','active'),('${B}','${B}','active');
+ create table repulsions(id bigint,user_id uuid,active boolean);insert into repulsions values (9007199254740993,'${A}',true);
+ create table visions(id uuid,user_id uuid);insert into visions values ('${A}','${A}'),('${A}','${B}'),('${B}','${B}');
+ create table wisdom(id uuid,user_id uuid);insert into wisdom values ('${A}','${A}');
+ create table creator_subscriptions(creator_id uuid,fan_id uuid,status text);insert into creator_subscriptions values ('${B}','${A}','active');
+ create function _subscriber_of(c uuid,f uuid) returns boolean language sql as $$select exists(select 1 from public.creator_subscriptions where creator_id=c and fan_id=f and status='active')$$;
+ create function totehm_read(text) returns jsonb language sql as $$select jsonb_build_object('ok',true,'visions',jsonb_build_array(jsonb_build_object('id','${B}')))$$;
+ create table chatgpt_grants(id uuid,user_id uuid,revoked_at timestamptz);insert into chatgpt_grants values ('${G}','${A}',null);
+ create table chatgpt_ecosystem_consents(grant_id uuid,version integer);insert into chatgpt_ecosystem_consents values ('${G}',1);`);
+ await db.exec(await readFile(new URL('../../backend/supabase/migrations/20261108115032_element_orders.sql',import.meta.url),'utf8'));
+ await db.query("select set_config('request.jwt.claim.sub',$1,false)",[A]);
+ await db.exec('set role authenticated');
+ const save=(kind,refs)=>scalar('select element_order_set($1,$2)',[kind,refs]);
+ for(const [kind,refs] of [['habit',['Walk','读书']],['objective',[A]],['repulsion',['9007199254740993']],['vision',[A]],['wisdom',[A]]])check((await save(kind,refs)).ok,'All five view orders saved');
+ check((await scalar('select element_orders_for()')).orders.habit[0]==='Walk','Saved order survives a new read');
+ for(const [kind,refs] of [['habit',['foreign']],['objective',[B]],['habit',['Walk','Walk']],['habit',[null]],['vision',Array(401).fill(A)],['invented',[]]]){
+   await assert.rejects(()=>save(kind,refs));checks++;
+ }
+ await assert.rejects(()=>db.query('select * from element_orders'));checks++;
+ await assert.rejects(()=>scalar('select chatgpt_member_orders($1,$2)',[G,'artist']));checks++;
+ await db.exec('reset role');
+ await db.query("select set_config('request.jwt.claim.sub',$1,false)",[B]);
+ await scalar('select element_order_set($1,$2)',['vision',[A,B]]);
+ await db.query("select set_config('request.jwt.claim.sub',$1,false)",[A]);
+ const member=await scalar('select element_orders_for($1)',['artist']);
+ check(JSON.stringify(member.orders.vision)===JSON.stringify([B]),'Hidden box refs and ranking gaps filtered through audience reader');
+ await db.query("select set_config('request.jwt.claim.sub',$1,false)",[B]);
+ const mcp=await scalar('select chatgpt_member_orders($1,$2)',[G,'artist']);
+ check(mcp.orders.vision[0]===B,'MCP uses the consented viewer for member ranking');
+ check(await scalar('select auth.uid()')===B,'MCP restores subject claims');
+ await db.exec("update creator_subscriptions set status='cancelled' where creator_id='"+B+"'");
+ check(!(await scalar('select chatgpt_member_orders($1,$2)',[G,'artist'])).ok,'Entitlement checked again after cancellation');
+ await db.exec("update chatgpt_grants set revoked_at=now() where id='"+G+"'");
+ check((await scalar('select chatgpt_member_orders($1,$2)',[G,'artist'])).why==='consent_required','Revocation checked again');
+ await db.query("select set_config('request.jwt.claim.sub','',false)");
+ await assert.rejects(()=>save('habit',[]));checks++;
+ await db.exec('set role anon');await assert.rejects(()=>scalar('select element_orders_for()'));checks++;await db.exec('reset role');
+ check((await scalar("select relrowsecurity from pg_class where oid='element_orders'::regclass"))===true,'New table has RLS');
+ check((await scalar("select count(*)::int from pg_constraint where conrelid='element_orders'::regclass and contype='f'"))===0,'No auth.users foreign key');
+ await db.query('delete from public.profiles where id=$1',[A]);
+ check(await scalar('select count(*)::int from element_orders where user_id=$1',[A])===0,'Deleting the TOTEHM profile also erases its saved orders');
+ console.log(JSON.stringify({suite:'Element orders SQL',checks,passed:checks}));
+}finally{await db.close();}

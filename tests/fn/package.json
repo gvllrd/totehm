@@ -2,7 +2,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test:chatgpt": "node chatgpt-protocol.mjs && node chatgpt-context.mjs && node chatgpt-oauth-sql.mjs && node chatgpt-server.mjs"
+    "test:chatgpt": "node chatgpt-protocol.mjs && node chatgpt-context.mjs && node higher-gpt.mjs && node element-orders-sql.mjs && node chatgpt-oauth-sql.mjs && node chatgpt-server.mjs && node chatgpt-ecosystem.mjs && node chatgpt-ecosystem-sql.mjs"
   },
   "devDependencies": {
     "@electric-sql/pglite": "0.3.14"

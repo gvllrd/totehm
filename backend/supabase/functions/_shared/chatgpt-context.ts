@@ -10,6 +10,10 @@ export type ContextOptions = {
   purpose: Purpose;
   limit?: number;
   focus?: ElementRef;
+  intentions?: string[];
+  kinds?: ElementKind[];
+  search_terms?: string[];
+  include_sound?: boolean;
 };
 export type ContextItem = ElementRef & {
   key: string;
@@ -20,6 +24,9 @@ export type ContextItem = ElementRef & {
   where?: string;
   target_at?: string;
   obstacle?: string;
+  rank?: number;
+  rank_source?: "member_order" | "saved_order" | "importance" | "default";
+  target_state?: "past_target" | "future_target";
 };
 export type Relation = "serves" | "instead" | "towards" | "learned_from" | "informs";
 export type ContextEdge = {
@@ -36,8 +43,9 @@ export type ContextGraph = {
 export type ContextResult = ContextGraph & {
   generated_at: string;
   purpose: Purpose;
-  selection: "focus" | "lexical" | "fallback" | "empty";
+  selection: "focus" | "lexical" | "intentions" | "ranked" | "fallback" | "empty";
   source: "owner_totehm";
+  sounds?: Awaited<ReturnType<typeof getSounds>>;
 };
 
 type Row = Record<string, unknown>;
@@ -53,6 +61,7 @@ export type GraphSnapshot = {
   repulsion_teachings?: Row[];
   teaching_objectives?: Row[];
   habit_spots?: Row[];
+  element_orders?: Row[];
   truncated?: boolean;
 };
 
@@ -63,6 +72,8 @@ export interface ReadQuery extends PromiseLike<{ data: unknown; error: unknown }
   eq(column: string, value: unknown): ReadQuery;
   is(column: string, value: null): ReadQuery;
   in(column: string, values: string[]): ReadQuery;
+  gt(column: string, value: string): ReadQuery;
+  lte(column: string, value: string): ReadQuery;
   order(column: string, options?: { ascending?: boolean }): ReadQuery;
   limit(count: number): ReadQuery;
 }
@@ -114,7 +125,11 @@ function validateOwner(uid: string): void {
 function validateOptions(options: ContextOptions): void {
   if (!options || typeof options.query !== "string" || options.query.length > 2000 ||
     !["action", "direction", "replacement", "explicit"].includes(options.purpose) ||
-    (options.focus !== undefined && !validElementRef(options.focus))) {
+    (options.focus !== undefined && !validElementRef(options.focus)) ||
+    (options.intentions !== undefined && (!Array.isArray(options.intentions) || options.intentions.length > 7 || options.intentions.some(i => !INTENTIONS.includes(i)))) ||
+    (options.kinds !== undefined && (!Array.isArray(options.kinds) || options.kinds.length > 5 || options.kinds.some(k => !KINDS.includes(k)))) ||
+    (options.search_terms !== undefined && (!Array.isArray(options.search_terms) || options.search_terms.length > 8 || options.search_terms.some(t => typeof t !== "string" || !t.trim() || t.length > 120))) ||
+    (options.include_sound !== undefined && typeof options.include_sound !== "boolean")) {
     throw new ContextReadError("invalid_request");
   }
 }
@@ -150,6 +165,8 @@ export function projectGraph(snapshot: GraphSnapshot): ContextGraph {
     item.intentions = declared.length ? declared : legacy;
     item.intention_source = declared.length ? "explicit" : legacy.length ? "legacy" : "none";
     if (text(step.f, 60)) item.freq = text(step.f, 60);
+    item.rank = items.filter(i => i.kind === "habit").length + 1;
+    item.rank_source = "saved_order";
     if (spots.get(ref)) item.where = spots.get(ref);
     add(item);
   }
@@ -165,7 +182,14 @@ export function projectGraph(snapshot: GraphSnapshot): ContextGraph {
       const ref = typeof row.id === "number" && Number.isSafeInteger(row.id) ? String(row.id) : string(row.id);
       const item = make(kind, ref, kind === "repulsion" ? row.repulsion : row.text);
       if (!item) continue;
-      if (kind === "objective" && Number.isFinite(Date.parse(string(row.target_at)))) item.target_at = string(row.target_at);
+      if (kind === "objective" && Number.isFinite(Date.parse(string(row.target_at)))) {
+        item.target_at = string(row.target_at);
+        item.target_state = Date.parse(item.target_at) < Date.now() ? "past_target" : "future_target";
+      }
+      if (typeof row.importance === "number" && Number.isFinite(row.importance)) {
+        item.rank = row.importance;
+        item.rank_source = "importance";
+      }
       if (kind === "repulsion" && text(row.obstacle, 300)) item.obstacle = text(row.obstacle, 300);
       add(item);
     }
@@ -208,32 +232,63 @@ export function projectGraph(snapshot: GraphSnapshot): ContextGraph {
     item.intentions = intentions(habitsFor(item).flatMap((h) => h.intentions));
     item.intention_source = item.intentions.length ? "inherited" : "none";
   }
+  // Order only known items. Hidden member refs must never be exposed, including
+  // gaps in a member's private ranking. Each view has its own independent rank.
+  for (const order of take(snapshot.element_orders)) {
+    const refs = Array.isArray(order.refs) ? order.refs.filter(r => typeof r === "string") : [];
+    let position = 0;
+    if (order.kind === "habit") {
+      for (const item of items.filter(i => i.kind === "habit")) item.rank_source = "member_order";
+      continue;
+    }
+    for (const ref of [...new Set(refs)]) {
+      const item = byKey.get(elementKey({ kind: order.kind as ElementKind, ref }));
+      if (item) { item.rank = ++position; item.rank_source = "member_order"; }
+    }
+  }
   return { items, edges: list, truncated };
 }
 
-const STOP = new Set(("the a an and or to of for my me i do what should can is it now " +
-  "le la les de du des un une et ou je tu il elle on que quoi faire mon ma mes ce cette avec pour " +
-  "o os as um uma e eu meu minha que fazer agora " +
-  "el los las un una y mi mis yo hacer ahora " +
-  "il lo gli una io mio mia cosa fare ich mein meine was tun").split(/\s+/));
-const normalize = (v: string) => v.normalize("NFKD").replace(/\p{M}/gu, "").toLowerCase();
-const tokens = (v: string) => [...new Set(normalize(v).match(/[\p{L}\p{N}]+/gu) ?? [])].filter((v) => v.length > 1 && !STOP.has(v));
+const normalize = (v: string) => v.normalize("NFKC").toLowerCase().replace(/\s+/g, " ").trim();
+// ICU word boundaries work across scripts, including those without spaces.
+// Semantic interpretation/translation belongs to the calling model, not a
+// finite language/synonym dictionary or an extra paid model in this server.
+const segmenter = new Intl.Segmenter("und", { granularity: "word" });
+function matchesTerm(value: string, term: string): boolean {
+  const label = normalize(value), needle = normalize(term);
+  if (!needle) return false;
+  const boundaries = new Set<number>([0, label.length]);
+  for (const part of segmenter.segment(label)) { boundaries.add(part.index); boundaries.add(part.index + part.segment.length); }
+  let at = label.indexOf(needle);
+  while (at >= 0) {
+    if (boundaries.has(at) && boundaries.has(at + needle.length)) return true;
+    at = label.indexOf(needle, at + 1);
+  }
+  return false;
+}
 
 /** Select a small connected subset, never all personal records by default. */
 export function projectContext(graph: ContextGraph, options: ContextOptions): ContextResult {
   validateOptions(options);
   const limit = cap(options.limit);
-  const terms = tokens(options.query);
+  // Legacy calls match the whole query, never a filler token such as “est”.
+  const terms = options.search_terms ?? (options.query.trim() ? [options.query] : []);
+  const selectedIntentions = options.intentions ?? [];
   const byKey = new Map(graph.items.map((item) => [item.key, item]));
   const priority = (item: ContextItem): number => options.purpose === "replacement" ? (item.kind === "repulsion" ? 4 : item.kind === "habit" ? 2 : 0)
     : options.purpose === "direction" ? (item.kind === "objective" ? 4 : item.kind === "vision" ? 3 : item.kind === "wisdom" ? 1 : 0)
     : (item.kind === "habit" ? 4 : item.kind === "objective" ? 2 : 0);
   const rank = graph.items.map((item) => {
-    const words = tokens([item.text, item.where ?? "", item.obstacle ?? "", ...item.intentions].join(" "));
-    const matches = terms.filter((term) => words.some((w) => w === term || (term.length >= 4 && w.startsWith(term)))).length;
-    return { item, score: matches * 10, priority: priority(item) };
+    const matches = terms.filter(term => [item.text, item.where ?? "", item.obstacle ?? ""].some(value => matchesTerm(value, term))).length;
+    const intentionMatch = selectedIntentions.some(i => item.intentions.includes(i));
+    const eligible = (!options.kinds?.length || options.kinds.includes(item.kind)) &&
+      (!selectedIntentions.length || intentionMatch);
+    const order = item.rank_source === "member_order" ? 0 : item.rank_source === "importance" ? 1 : item.rank_source === "saved_order" ? 2 : 3;
+    return { item, score: matches * 10, priority: priority(item), eligible, order };
   }).sort((a, b) => b.score - a.score || b.priority - a.priority ||
-    (a.item.target_at ?? "9999").localeCompare(b.item.target_at ?? "9999") || a.item.key.localeCompare(b.item.key));
+    // Purpose distinguishes kinds; order is only compared inside one view.
+    (a.item.kind === b.item.kind ? a.order - b.order || (a.item.rank ?? Infinity) - (b.item.rank ?? Infinity) : 0) ||
+    a.item.key.localeCompare(b.item.key));
   let selection: ContextResult["selection"] = "empty";
   let seeds: ContextItem[] = [];
   if (options.focus) {
@@ -242,13 +297,18 @@ export function projectContext(graph: ContextGraph, options: ContextOptions): Co
     // An explicitly requested missing record must never silently substitute
     // another element with an approximate name.
   } else {
-    const matched = rank.filter((r) => r.score > 0);
+    const eligible = rank.filter(r => r.eligible);
+    const matched = eligible.filter((r) => r.score > 0);
     if (matched.length) { seeds = matched.slice(0, Math.min(2, limit)).map((r) => r.item); selection = "lexical"; }
     else {
-      const preferred = options.purpose === "replacement" ? rank.filter((r) => r.item.kind === "repulsion")
-        : rank.filter((r) => r.item.kind === "objective");
-      const fallback = preferred.length ? preferred : rank.filter((r) => r.item.kind === "habit");
-      if (fallback.length) { seeds = fallback.slice(0, Math.min(2, limit)).map((r) => r.item); selection = "fallback"; }
+      // Specific topics that do not match stay empty instead of quietly
+      // substituting an unrelated high-ranked goal. [] means a broad request.
+      if (!options.search_terms?.length) {
+        seeds = options.kinds?.length
+          ? options.kinds.flatMap(kind => eligible.find(r => r.item.kind === kind)?.item ?? []).slice(0, limit)
+          : eligible.slice(0, Math.min(2, limit)).map(r => r.item);
+        if (seeds.length) selection = selectedIntentions.length ? "intentions" : "ranked";
+      }
     }
   }
   const chosen = new Map(seeds.map((i) => [i.key, i]));
@@ -292,7 +352,7 @@ async function loadGraph(client: ReadClient, uid: string): Promise<ContextGraph>
     ["wisdom", "id,text,importance"], ["objective_habits", "objective_id,habit_text"],
     ["repulsion_habits", "repulsion_id::text,habit_text"], ["objective_visions", "objective_id,vision_id"],
     ["repulsion_teachings", "repulsion_id::text,wisdom_id"], ["teaching_objectives", "wisdom_id,objective_id"],
-    ["habit_spots", "habit_text,place"],
+    ["habit_spots", "habit_text,place"], ["element_orders", "kind,refs"],
   ];
   const results = await Promise.all(tables.map(([table, columns]) => ownerRows(client, uid, table, columns)));
   const snapshot: GraphSnapshot = { truncated: results.some((r) => r.truncated) };
@@ -305,7 +365,13 @@ async function loadGraph(client: ReadClient, uid: string): Promise<ContextGraph>
 
 export async function retrieveContext(client: ReadClient, uid: string, options: ContextOptions): Promise<ContextResult> {
   validateOptions(options);
-  return projectContext(await loadGraph(client, uid), options);
+  const result = projectContext(await loadGraph(client, uid), options);
+  if (options.include_sound) {
+    const selected = [...new Set(result.items.flatMap(i => i.intentions))];
+    result.sounds = await getSounds(client, uid, options.intentions?.length
+      ? selected.filter(i => options.intentions!.includes(i)) : selected);
+  }
+  return result;
 }
 
 export function retrieveElement(client: ReadClient, uid: string, focus: ElementRef, limit = 6): Promise<ContextResult> {
@@ -323,7 +389,12 @@ export async function getSpots(client: ReadClient, uid: string, options: SpotOpt
   let query = client.from("spot_plans").select("spot_id,habit,starts_at,duration_min,place,city,mode,audience,status")
     .eq("user_id", uid).eq("status", "published");
   if (options.habit_ref) query = query.eq("habit", options.habit_ref);
-  const result = await query.order("starts_at", { ascending: false }).limit(MAX_ROWS + 1);
+  // Filter and sort before the cap: a busy future calendar must not hide an
+  // ongoing spot, or return the furthest 400 plans instead of the next ones.
+  const asOf = new Date(instant).toISOString();
+  if (options.period === "future") query = query.gt("starts_at", asOf);
+  else if (options.period) query = query.lte("starts_at", asOf);
+  const result = await query.order("starts_at", { ascending: options.period === "future" }).limit(MAX_ROWS + 1);
   if (result.error) throw new ContextReadError("read_failed");
   const all = rows(result.data);
   const valid = all.slice(0, MAX_ROWS).flatMap((row) => {
@@ -350,8 +421,18 @@ export async function getSounds(client: ReadClient, uid: string, requested: stri
     .eq("user_id", uid).eq("active", true).in("intention", selected).limit(7);
   if (result.error) throw new ContextReadError("read_failed");
   return { items: rows(result.data).map((row) => ({ intention: string(row.intention), kind: text(row.title, 80),
-    url: /^https?:\/\//i.test(string(row.url)) ? string(row.url).slice(0, 2000) : null, platform: text(row.platform, 30) || null,
+    url: playlistUrl(row.url), platform: text(row.platform, 30) || null,
+    source: "owner_intention_music", content_accessed: false,
   })) };
+}
+
+function playlistUrl(value: unknown): string | null {
+  const raw = string(value);
+  if (!raw || raw.length > 8192 || /[\u0000-\u0020\u007f]/.test(raw)) return null;
+  try {
+    const url = new URL(raw);
+    return ["https:", "http:"].includes(url.protocol) && !url.username && !url.password ? raw : null;
+  } catch { return null; }
 }
 
 /** Metadata alone does not imply access to image pixels. No storage paths or
@@ -369,9 +450,15 @@ export async function getMediaMetadata(client: ReadClient, uid: string, focus: E
     .order("created_at", { ascending: false }).limit(limit + 1);
   if (result.error) throw new ContextReadError("read_failed");
   const all = rows(result.data);
+  let vision_image_available = false;
+  if (focus.kind === "vision") {
+    const image = await client.from("visions").select("id,image").eq("user_id", uid).eq("id", focus.ref).limit(1);
+    if (image.error) throw new ContextReadError("read_failed");
+    vision_image_available = rows(image.data).some(row => typeof row.image === "string" && !!row.image);
+  }
   return { items: all.slice(0, limit).filter((row) => UUID.test(string(row.id))).map((row) => ({
     ref: string(row.id), element: focus, name: text(row.name, 120), mime: text(row.mime, 100),
     bytes: typeof row.bytes === "number" && Number.isSafeInteger(row.bytes) ? row.bytes : null,
     created_at: string(row.created_at), content_shared: false,
-  })), truncated: all.length > limit };
+  })), truncated: all.length > limit, vision_image_available, content_shared: false };
 }
