@@ -34,7 +34,7 @@ const { pg, log } = await page(browser, { dir:'boutique', origin:'https://www.hi
 await pg.goto('https://www.higher.boutique/');
 await pg.waitForFunction(() => window.__totehm_boutique && /47 pieces left/.test(document.querySelector('#sw-col-sold').textContent));
 const d = await pg.evaluate(() => window.__totehm_boutique());
-ok(d.build === '2026-11-08-piece-retournee' && d.decode_first && !d.member_window, 'the physical landing page: DECODE first, no member window here');
+ok(d.build === '2026-11-09-card' && d.decode_first && !d.member_window, 'the physical landing page: DECODE first, no member window here');
 // 30/10 (Wah) : « la face verso du [Higher] doit avoir EXACTEMENT les mêmes
 // perforations que la face recto — logique, on retourne la même pièce ». Donc
 // UN SEUL masque dans le document, et les deux faces le référencent.
@@ -93,60 +93,70 @@ for(const [name, re, lvl] of [['0.hill', /Run the hill/, 'member'], ['0.lock', /
   await pg.waitForFunction(n => document.querySelector('#decode-fs').classList.contains('show') && window.__totehm_boutique().decode, name);
   ok(re.test(await pg.textContent('#decode-msg')) && (await pg.evaluate(() => window.__totehm_boutique().decode.level)) === lvl, 'decode ' + lvl + ': cloth_page');
   if(lvl === 'member'){
-    /* 06/11 (Wah) : « le moins possible », et la BOX en avant, dans son format d'origine. */
-    const t = await pg.evaluate(() => { const m = document.querySelector('#decode-msg'), bx = m.querySelector('.dc-bx');
+    /* ══ 09/11 (Wah) · LA CARD ════════════════════════════════════════════
+       « Là où se trouve l'œuvre, on trouve de l'autre côté tout ce qui s'y
+       trouve derrière, comme une certification. Le format de la card doit être
+       le même sur mobile que sur ordinateur. » */
+    const c = await pg.evaluate(() => { const m = document.querySelector('#decode-msg'),
+      p = m.querySelector('#dc-piece'), r = p.getBoundingClientRect();
       return { ordre:[...m.children].map(e => e.id || e.className.split(' ')[0]).join(','),
         cadre: getComputedStyle(document.querySelector('#decode-fs')).borderImageSource,
-        nom_repete: !!m.querySelector('.dc-name'),
-        reglette: m.querySelectorAll('.dc-bx .tick i').length,
-        mini_dedans: !!(bx && bx.querySelector('.dc-mi')), mini_dehors: !!m.querySelector(':scope > .dc-mat'),
-        zoom: bx ? getComputedStyle(bx).zoom : null, large: bx ? Math.round(bx.getBoundingClientRect().width) : 0 }; });
-    ok(t.ordre.startsWith('dc-piece,dc-joint'),
-       "08/11 · la PIECE d'abord (l oeuvre devant, tout le reste derriere), puis la jonction · " + t.ordre);
-    ok(t.cadre === 'none', 'plus de bordure perforee autour de l ecran');
-    ok(!t.nom_repete, 'le nom du Cloth ne se repete pas : on vient de le taper');
-    ok(t.reglette === 1 && !t.mini_dehors, 'la box garde sa reglette d intentions, rien n est dissocie');
-    ok(t.zoom === '1' || t.zoom === 'normal', 'la box n est PAS agrandie : son format d origine');
+        ratio: +(r.width / r.height).toFixed(3), l: Math.round(r.width), h: Math.round(r.height),
+        skin: getComputedStyle(p).getPropertyValue('--skin').trim(),
+        oeuvre: !!p.querySelector('.dc-devant .dc-art'),
+        certif: !!p.querySelector('.dc-dos .dc-scroll'),
+        reglette: p.querySelectorAll('.dc-dos .tick i').length,
+        t_totehm: !!p.querySelector('.dc-cap use[href="#lg-t"]'),
+        mot_totehm: !!p.querySelector('.dc-sig use[href="#lg-wm"]'),
+        tuile: document.querySelector('#dc-tile').textContent.trim() }; });
+    ok(c.ordre.startsWith('dc-piece,dc-joint'), 'la CARD, puis la tuile sous elle · ' + c.ordre);
+    ok(c.cadre === 'none', 'plus de bordure perforee autour de l ecran');
+    ok(c.ratio === 0.667 && c.oeuvre && c.certif,
+       "09/11 · une CARD a format FIXE (2/3) : l oeuvre devant, la certification derriere · " + JSON.stringify(c));
+    ok(c.reglette === 1 && c.t_totehm && c.mot_totehm,
+       'le verso porte la reglette d intentions, le T du TOTEHM et son mot');
+    ok(c.tuile === '0.Hill',
+       '09/11 · au RECTO la tuile sous la card porte le NOM du Cloth · ' + c.tuile);
+    /* La couleur de la card suit la VUE : habits = navy. */
+    ok(c.skin === '#333366', 'une box HABITS fait une card navy · ' + c.skin);
     const txt = await pg.textContent('#decode-msg');
     ok(/no\. 3 \/ 41/.test(txt) && /Ink Realism/.test(txt) && /in the making/i.test(txt) && /nia/.test(txt),
        'le rang dans le STYLE, le style, l etape, le totehmisateur');
-    ok(!/Higher Champion Sweatshirt/.test(await pg.textContent('.dc-facts')), 'le vetement n est pas dans les faits : il est au tiroir');
-    const tiroir = await pg.evaluate(() => { const d = document.querySelector('.dc-draw');
-      return { plie: d ? !d.open : null, dedans: d ? d.textContent : '' }; });
-    ok(tiroir.plie === true && /Higher Champion Sweatshirt · L/.test(tiroir.dedans) && /82% cotton/.test(tiroir.dedans),
-       'le vetement et sa fiche sont PLIES dans un tiroir');
-    /* 08/11 (Wah) : « je ne veux pas qu'il soit rouge-violet, ni en coral, ni en
-       majuscule », et la liste de ceux qui ont dopé « comme instagram » — une
-       ligne par membre, qui mène à sa page d'ABONNEMENT (`/@nom`). */
-    const dope = await pg.evaluate(() => { const b = document.querySelector('#dc-dope'), c = getComputedStyle(b);
-      return { n: document.querySelector('#dc-dope-n').textContent, mot: b.textContent.trim(),
-        casse: c.textTransform, couleur: c.color, fond: c.backgroundColor,
-        qui: [...document.querySelectorAll('#dc-who a')].map(a => a.textContent.trim() + '>' + a.getAttribute('href')),
-        lignes: getComputedStyle(document.querySelector('#dc-who a')).display,
-        ouverte: document.querySelector('#dc-who').classList.contains('is-open') }; });
-    ok(dope.n === '12' && dope.qui.length === 2 && dope.qui[0] === 'nia>https://www.totehm.com/@nia',
-       'DOPE : le compte du serveur, et qui a dope mene a sa page d ABONNEMENT (/@nom) · ' + dope.qui.join(' '));
-    ok(dope.mot.startsWith('dope') && dope.casse === 'lowercase'
-       && dope.couleur !== 'rgb(251, 213, 202)' && dope.fond !== 'rgb(226, 75, 74)',
-       'le DOPE n est ni en majuscule, ni coral, ni rouge-violet · ' + JSON.stringify(dope));
-    ok(dope.lignes === 'flex' && !dope.ouverte,
-       'la liste est une LISTE (une ligne par membre), fermee tant qu on ne tape pas le compte');
-    /* La pièce se RETOURNE : la face montre l'œuvre, le dos tout le reste. */
+    ok(/Higher Champion Sweatshirt · L/.test(txt) && /82% cotton/.test(txt),
+       '09/11 · le vetement entre DANS la certification : tout le contenu y rentre');
+    /* ── LE RETOURNEMENT, et la tuile qui se TRANSFORME ─────────────────── */
     const tour = await pg.evaluate(async () => {
       const p = document.querySelector('#dc-piece');
-      const avant = { dos: p.classList.contains('is-back'), h: p.style.getPropertyValue('--dcp-h') };
+      const avant = p.classList.contains('is-back');
       p.querySelector('.dc-devant').click();
-      await new Promise(r => setTimeout(r, 120));
+      await new Promise(r => setTimeout(r, 150));
+      const sc = p.querySelector('#dc-scroll');
       return { avant, apres: p.classList.contains('is-back'),
                mot: document.querySelector('#dc-turn').textContent.trim(),
-               oeuvre_devant: !!p.querySelector('.dc-devant .dc-art'),
-               box_derriere: !!p.querySelector('.dc-dos .dc-bx'),
-               h: p.style.getPropertyValue('--dcp-h') };
+               tuile: document.querySelector('#dc-tile').textContent.trim(),
+               defile: getComputedStyle(sc).overflowY };
     });
-    ok(!tour.avant.dos && tour.apres && tour.oeuvre_devant && tour.box_derriere
-       && /see the artwork/.test(tour.mot) && /px$/.test(tour.h),
-       "08/11 · un tap sur l oeuvre la RETOURNE et montre ce qui est derriere ; la hauteur suit la face "
-       + JSON.stringify(tour));
+    ok(!tour.avant && tour.apres && /see the artwork/.test(tour.mot),
+       "09/11 · un tap sur l oeuvre RETOURNE la card " + JSON.stringify(tour));
+    ok(tour.tuile === 'dope 12',
+       "09/11 · au VERSO la MEME tuile devient « dope N » · " + tour.tuile);
+    ok(tour.defile === 'auto',
+       'le verso DEFILE chez lui quand la box est longue · ' + tour.defile);
+    /* ── QUI A DOPÉ : des TOTEHM VERSO, le nom en coral ─────────────────── */
+    const dope = await pg.evaluate(async () => {
+      document.querySelector('#dc-dope-n').click();
+      await new Promise(r => setTimeout(r, 120));
+      const a = document.querySelector('#dc-who a'), sp = a && a.querySelector('span');
+      return { ouverte: document.querySelector('#dc-who').classList.contains('is-open'),
+        qui: [...document.querySelectorAll('#dc-who a')].map(x => x.textContent.trim() + '>' + x.getAttribute('href')),
+        carre: a ? +(a.getBoundingClientRect().width / a.getBoundingClientRect().height).toFixed(2) : 0,
+        papier: a ? /svg/.test(getComputedStyle(a).backgroundImage) : false,
+        couleur: sp ? getComputedStyle(sp).color : null };
+    });
+    ok(dope.ouverte && dope.qui.length === 2 && dope.qui[0] === 'nia>https://www.totehm.com/@nia',
+       'le NOMBRE ouvre la liste, et un nom mene a sa page d ABONNEMENT (/@nom) · ' + dope.qui.join(' '));
+    ok(dope.carre === 1 && dope.papier && dope.couleur === 'rgb(251, 213, 202)',
+       "09/11 · la liste est faite de TOTEHM VERSO, le nom en CORAL au milieu · " + JSON.stringify(dope));
     await pg.evaluate(() => document.querySelector('#dc-turn').click());
     await pg.waitForTimeout(120);
     ok(/lands with the cloth/.test(txt) && !ART.length, 'not shipped: the artwork stays a surprise, cloth-art not called');
@@ -155,7 +165,7 @@ for(const [name, re, lvl] of [['0.hill', /Run the hill/, 'member'], ['0.lock', /
     /* Sans session, le bouton existe et dit le compte, mais ne dope pas : il connecte
        d'abord. Le chemin connecte (le compte qui monte) n'est pas joue ici — cette page
        de test tourne deconnectee, et un tap partirait vers `totehm.com/auth`. */
-    const pret = await pg.evaluate(() => { const b = document.querySelector('#dc-dope');
+    const pret = await pg.evaluate(() => { const b = document.querySelector('#dc-tile');
       return { presse: b.getAttribute('aria-pressed'), actif: !b.disabled }; });
     ok(pret.presse === 'false' && pret.actif && DOPE.length === 0,
        'DOPE attend un geste : rien n est envoye au serveur tant qu on ne tape pas');
@@ -164,7 +174,9 @@ for(const [name, re, lvl] of [['0.hill', /Run the hill/, 'member'], ['0.lock', /
   }
   if(lvl === 'locked'){
     ok(!/Run the hill/.test(await pg.textContent('#decode-msg')) && await pg.isVisible('#decode-msg [data-eco-connect]'), 'decode locked: no element text, CONNECT WITH MY TOTEHM');
-    ok(/in production/i.test(await pg.textContent('#decode-msg')) && /my wisdom/i.test(await pg.textContent('.dc-bx')), 'locked still says the view, the cloth and the stage');
+    ok(/in production/i.test(await pg.textContent('#decode-msg')) && /my wisdom/i.test(await pg.textContent('.dc-dos')), 'locked still says the view, the cloth and the stage');
+    ok('#743169' === await pg.evaluate(() => getComputedStyle(document.querySelector('#dc-piece')).getPropertyValue('--skin').trim()),
+       '09/11 · MY STORY fait une card rouge-violet');
   }
   await pg.click('#decode-back');
   ok(!/decode=/.test(pg.url()), 'la croix referme et nettoie l adresse');
@@ -181,7 +193,9 @@ ok(!log.errors.length, 'no page error: ' + log.errors.join(' | '));
   await pg.waitForFunction(() => document.querySelector('#decode-fs').classList.contains('show') && document.querySelector('#dc-art img'));
   const txt = await pg.textContent('#decode-msg');
   ok(ART.includes('0.Sea') && /A studio by the sea/.test(txt) && /Save 10k/.test(txt) && /shipped/i.test(txt), 'shipped: the artwork shows (cloth-art), with the element, its matter and the stage');
-  ok(/36, 49, 140|54, 73, 140/.test(await pg.evaluate(() => getComputedStyle(document.querySelector('.dc-bx')).backgroundColor)), 'a vision wears light blue');
+  /* 09/11 (Wah) : la couleur de la CARD suit la vue — vision = le bleu clair. */
+  ok('#36498c' === await pg.evaluate(() => getComputedStyle(document.querySelector('#dc-piece')).getPropertyValue('--skin').trim()),
+     'une VISION fait une card bleu clair');
   ok(!log.errors.length, 'deep link: no page error ' + log.errors.join(' | '));
   await pg.screenshot({ path: OUT + '/bq_decode_shipped.png', fullPage:true });
 }
@@ -239,15 +253,15 @@ ok(!log.errors.length, 'no page error: ' + log.errors.join(' | '));
   await pg.click('#hb-cloths .hb-row [data-hb-decode]');
   await pg.waitForFunction(() => document.querySelector('#decode-fs').classList.contains('show'));
   await pg.waitForSelector('#dc-shots figure');
-  /* 08/11 : les photos vivent au DOS de la pièce. Tant qu'elle montre l'œuvre,
-     le dos ne reçoit aucun tap (sinon il mangerait la loupe de la box) : on la
-     retourne d'abord, exactement comme le membre le fait. */
+  /* 09/11 : les photos vivent DANS la card, au verso. Tant qu'elle montre
+     l'œuvre, le dos ne reçoit aucun tap : on la retourne d'abord, exactement
+     comme le membre le fait. */
   await pg.evaluate(() => document.querySelector('#dc-turn').click());
   await pg.waitForTimeout(700);
   const ph = await pg.evaluate(() => { const l = [...document.querySelectorAll('#dc-shots figure')];
-    const mi = document.querySelector('.dc-bx .dc-mi');
+    const mi = document.querySelector('.dc-dos .mi');
     return { n: l.length, m: l[0].classList.contains('m'), lieu: (l[1].querySelector('figcaption') || {}).textContent || '',
-      mat: mi ? mi.textContent.trim() : '', dedans: !!(mi && mi.closest('.dc-bx')),
+      mat: mi ? mi.textContent.trim() : '', dedans: !!(mi && mi.closest('.dc-dos')),
       curseur: l[0] ? getComputedStyle(l[0]).cursor : '' }; });
   ok(ph.n === 2 && ph.m && ph.lieu === 'the hill' && ph.mat === 'Save 10k' && ph.dedans,
     '26/10 · Decode montre TOUT ce qui a été sélectionné — et depuis le 06/11 les mini-boxes sont DANS leur box-mère ' + JSON.stringify(ph));

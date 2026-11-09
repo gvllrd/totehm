@@ -116,13 +116,6 @@ nav{display:flex;flex-direction:column;align-items:center;gap:30px;width:100%;ma
    (`.dc-mat` : depuis le 26/10 la matière EST ce qui a été allumé) ; voici les
    PHOTOS. Elles ne se montrent qu'à leur propriétaire — une photo de spot
    n'appartient qu'à qui l'a vécue —, en grille carrée, le media perforé. */
-.dc-shots{width:min(100%,340px);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:3px}
-.dc-shots:empty{display:none}
-.dc-shots figure{position:relative;margin:0;aspect-ratio:1;background:#0b0b0d;overflow:hidden}
-.dc-shots img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .3s ease}
-.dc-shots img[src]{opacity:1}
-.dc-shots figure.m img{-webkit-mask-image:var(--perfo-dc);mask-image:var(--perfo-dc);-webkit-mask-size:100% 100%;mask-size:100% 100%}
-.dc-shots figcaption{position:absolute;left:4px;right:4px;bottom:4px;font:400 8px/1.3 'Space Mono',monospace;
   letter-spacing:.14em;text-transform:uppercase;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.9);
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:left}
 .dc-art{width:min(100%,340px);aspect-ratio:3/4;background:#0a0a0c;display:flex;align-items:center;justify-content:center;overflow:hidden}
@@ -169,61 +162,110 @@ nav{display:flex;flex-direction:column;align-items:center;gap:30px;width:100%;ma
 .dc-mi{font-family:'Quantico',sans-serif;font-size:11px;color:#fff;padding:2px 7px;background:var(--navy)}
 .dc-mi.o{background:var(--blue)}.dc-mi.r{background:var(--rep)}.dc-mi.w{background:#5b2652}.dc-mi.v{background:#2b3a73}
 .dc-mi.s{background:rgba(0,0,0,.35);font-family:'Space Mono',monospace;font-size:10px}
-/* ══ LA PIÈCE SE RETOURNE · 08/11/2026 (Wah) ══════════════════════════════
-   « L'œuvre artistique générée avec la possibilité de la retourner et d'avoir
-   ce qui est caché, ce qui est derrière : tout ce que l'on a fait actuellement. »
-   L'ŒUVRE est la FACE ; tout le reste — la box, les photos, la date, le style,
-   le by, le vêtement plié — est son DOS. Même moteur que le Higher de l'accueil :
-   un quart de tour, `preserve-3d`, aucune image figée (règle de CONTINUITÉ).
-   La hauteur suit la face visible, mesurée : sans ça le dos saute. */
-.dc-piece{position:relative;width:min(100%,340px);perspective:1400px;
-  height:var(--dcp-h,440px);transition:height .62s cubic-bezier(.22,.61,.36,1)}
+/* ══ LA CARD D'UN TOTEHM CLOTH · 09/11/2026 (Wah) ═════════════════════════
+   « Qq voit l'œuvre et le nom du totehm dans la rue sur le dos du vêtement…
+   il atterrit sur la page avec l'œuvre. Il y a une possibilité de le retourner
+   comme si c'était une card : là où se trouve l'œuvre, on trouve de l'autre
+   côté tout ce qui s'y trouve derrière comme une CERTIFICATION. »
+   UNE SEULE GÉOMÉTRIE, les deux faces et les deux écrans : la card a un format
+   FIXE (2/3, celui de l'œuvre) et une largeur plafonnée — identique au doigt et
+   à la souris. Le verso DÉFILE CHEZ LUI quand la box est longue, comme COM.
+   La couleur de la card vient de la VUE de la box (Wah, 09/11) : objectif,
+   répulsion et habit restent navy ; vision est le bleu clair ; MY STORY le
+   rouge-violet. Ce sont les teintes du TOTEHM, pas des couleurs inventées. */
+.dc-piece{position:relative;width:min(100%,340px);aspect-ratio:2/3;perspective:1500px;flex:none}
 .dc-faces{position:absolute;inset:0;transform-style:preserve-3d;
-  transition:transform .62s cubic-bezier(.22,.61,.36,1)}
+  transition:transform .66s cubic-bezier(.22,.61,.36,1)}
 .dc-piece.is-back .dc-faces{transform:rotateY(180deg)}
-.dc-face{position:absolute;left:0;top:0;width:100%;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.dc-face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  overflow:hidden;background:var(--skin,#333366)}
 .dc-face.dc-dos{transform:rotateY(180deg)}
-/* La face visible seule reçoit les taps : sinon le dos mange la loupe de la box. */
+/* La face cachée ne reçoit aucun tap : sinon elle mange la loupe de la box. */
 .dc-piece:not(.is-back) .dc-dos,.dc-piece.is-back .dc-devant{pointer-events:none}
-.dc-dos{display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center}
-/* ── LE DOPE est la JONCTION : il s'assoit SUR la tranche de la pièce ──────
-   Wah, 08/11 : « je ne veux pas qu'il soit rouge-violet, ni en coral, ni en
-   majuscule, et il doit faire la jonction entre l'œuvre artistique générée
-   (le dos du totehm Cloth) ». Donc : minuscules, Quantico, le NAVY du TOTEHM
-   quand c'est dopé — jamais `--rep`, jamais `--coral`. */
-.dc-joint{width:min(100%,340px);display:flex;flex-direction:column;align-items:center;
-  position:relative;z-index:3;margin-top:-19px;transition:margin-top .62s cubic-bezier(.22,.61,.36,1)}
-/* Retournée, la pièce finit par un tiroir : la jonction ne doit plus mordre dessus. */
-.dc-piece.is-back + .dc-joint{margin-top:14px}
+/* ── RECTO : l'œuvre, encadrée par la card (la photo du dos du vêtement). */
+.dc-devant{display:flex;align-items:center;justify-content:center;padding:11px;cursor:zoom-out}
+.dc-devant .dc-art{width:100%;height:100%;background:#0a0a0c;display:flex;align-items:center;
+  justify-content:center;overflow:hidden}
+.dc-devant .dc-art img{width:100%;height:100%;object-fit:contain;display:block}
+.dc-devant .dc-art span{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.18em;
+  text-transform:uppercase;color:#6a6a74;padding:0 22px;line-height:1.8;text-align:center}
+/* ── VERSO : la certification. Le rail d'intentions à gauche, tout le reste
+      défile — « notamment si le texte de la box est très long ». */
+.dc-dos .tick{position:absolute;left:0;top:0;bottom:0;width:4px;display:flex;flex-direction:column;z-index:2}
+.dc-dos .tick i{flex:1 1 0;display:block}
+.dc-scroll{position:absolute;inset:0 0 0 4px;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  padding:12px 15px 16px;display:flex;flex-direction:column;align-items:center;text-align:left;
+  scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.28) transparent}
+.dc-scroll::-webkit-scrollbar{width:3px}
+.dc-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.28)}
+/* Le T du TOTEHM, en tête : c'est SON Totehm qu'on certifie. La densité est
+   celle de la maquette de Wah : des étiquettes minuscules, un texte de box
+   lisible, et TOUT doit tenir dans la card — le reste défile. */
+.dc-cap{position:relative;width:42px;height:42px;flex:none;margin:2px 0 10px}
+.dc-cap .gl{position:absolute;display:block;overflow:visible;fill:#fff;left:0;top:0;width:100%;height:100%}
+.dc-f,.dc-duo>div{width:100%;margin-top:11px}
+.dc-f .k,.dc-duo .k{font-family:'Space Mono',monospace;font-size:7.5px;letter-spacing:.2em;
+  text-transform:uppercase;color:rgba(255,255,255,.5);display:block;margin-bottom:4px;line-height:1.5}
+.dc-f .v,.dc-duo .v{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.05em;
+  color:#fff;display:block;line-height:1.5}
+.dc-dos .nm{display:block;font-family:'Quantico',sans-serif;font-size:13px;line-height:1.45;color:#fff;
+  word-break:break-word}
+.dc-dos .mi{display:inline-block;font-family:'Quantico',sans-serif;font-size:10px;line-height:1.5;color:#fff;
+  padding:2px 7px;background:rgba(0,0,0,.26);margin:0 4px 4px 0}
+.dc-duo{display:flex;gap:12px;width:100%;margin-top:0}
+.dc-duo>div{flex:1 1 0;min-width:0}
+.dc-ph{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;width:100%;margin-top:2px}
+.dc-ph figure{position:relative;margin:0;aspect-ratio:1;background:rgba(0,0,0,.3);overflow:hidden;cursor:zoom-in}
+.dc-ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .3s ease}
+.dc-ph img[src]{opacity:1}
+.dc-ph figure.m img{-webkit-mask-image:var(--perfo-dc);mask-image:var(--perfo-dc);
+  -webkit-mask-size:100% 100%;mask-size:100% 100%}
+.dc-ph figcaption{position:absolute;left:3px;right:3px;bottom:3px;font:400 7px/1.3 'Space Mono',monospace;
+  letter-spacing:.14em;text-transform:uppercase;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.9);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:left}
+/* LE TOTEHMISATEUR — son papier perforé, avec le mot TOTEHM dessus. */
+.dc-sig{position:relative;width:124px;aspect-ratio:1;flex:none;margin:16px auto 2px;
+  background:var(--tile-full) center/100% 100%;display:flex;flex-direction:column;align-items:center}
+.dc-sig .k{font-family:'Space Mono',monospace;font-size:6.5px;letter-spacing:.2em;text-transform:uppercase;
+  color:rgba(255,255,255,.62);margin-top:14px}
+.dc-sig .who{font-family:'Quantico',sans-serif;font-size:12px;color:var(--coral);
+  text-decoration:none;margin-top:4px;position:relative;z-index:2}
+@media(hover:hover){.dc-sig a.who:hover{filter:brightness(1.25)}}
+.dc-sig .lg{position:absolute;inset:0;pointer-events:none}
+.dc-sig .gl{position:absolute;display:block;overflow:visible;fill:#fff}
+.dc-sig .g-wm{left:16%;top:56%;width:68%;height:21%}
+/* ── SOUS LA CARD : UNE SEULE TUILE, qui se TRANSFORME ────────────────────
+   Wah : « le nom du totehm côté recto se transforme de l'autre côté verso en
+   dope avec le nombre de personnes qui ont dopé ». Même papier perforé, même
+   place : rien ne disparaît pour réapparaître (règle de CONTINUITÉ). */
+.dc-joint{width:min(100%,340px);display:flex;flex-direction:column;align-items:center;margin-top:14px}
 .dc-joint .go{display:inline-flex;align-items:center;gap:10px;font-family:'Quantico',sans-serif;
-  font-size:14px;letter-spacing:.02em;text-transform:lowercase;color:#d6d6de;background:#15151a;
-  border:1px solid #2a2a31;padding:8px 20px;cursor:pointer;-webkit-tap-highlight-color:transparent;
-  transition:background .18s ease,border-color .18s ease,color .18s ease}
-.dc-joint .go b{font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:#8e8e98;transition:color .18s ease}
-.dc-joint .go[aria-pressed=true]{background:#333366;border-color:#333366;color:#fff}
-.dc-joint .go[aria-pressed=true] b{color:#fff}
-@media(hover:hover){.dc-joint .go:hover{border-color:#4a4a55}}
-.dc-joint .go.n{cursor:default}
-/* Le mot qui dit qu'on peut retourner : discret, il ne commande rien. */
+  font-size:15px;letter-spacing:.02em;text-transform:none;color:#fff;background:none;
+  border:7px solid transparent;border-image-source:var(--tile-full);border-image-slice:7 fill;
+  border-image-repeat:round;padding:1px 10px;cursor:pointer;-webkit-tap-highlight-color:transparent;
+  transition:filter .18s ease}
+.dc-joint .go b{font-family:'Space Mono',monospace;font-size:13px;font-weight:700;color:#fff}
+@media(hover:hover){.dc-joint .go:hover{filter:brightness(1.22)}}
 .dc-turn{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.22em;text-transform:uppercase;
-  color:#55555e;margin-top:7px;background:none;border:0;padding:4px 8px;cursor:pointer;
+  color:#55555e;margin-top:9px;background:none;border:0;padding:4px 8px;cursor:pointer;
   -webkit-tap-highlight-color:transparent;transition:color .18s ease}
 @media(hover:hover){.dc-turn:hover{color:#9a9aa4}}
-/* ── QUI A DOPÉ — une LISTE, comme instagram ───────────────────────────────
-   Wah, 08/11 : « je t'ai demandé aussi de mettre la liste de tous les membres
-   qui ont mis dope comme instagram ». Une ligne par membre, son nom sur le
-   papier perforé du verso, un tap mène à sa page d'abonnement. Fermée au
-   départ : le compte l'ouvre. */
-.dc-who{width:min(100%,340px);max-height:0;overflow:hidden;transition:max-height .42s cubic-bezier(.22,.61,.36,1)}
-.dc-who.is-open{max-height:290px;overflow-y:auto}
+/* ── QUI A DOPÉ — des TOTEHM VERSO, le nom en coral au milieu ──────────────
+   Wah, 09/11 : « une liste de Totehm côté verso, c'est-à-dire de format totehm
+   verso, avec au milieu en coral le nom du totehm ». Le papier carré perforé,
+   pas une pastille. Un tap mène à sa page d'abonnement sur COM. */
+.dc-who{width:min(100%,340px);max-height:0;overflow:hidden;
+  transition:max-height .44s cubic-bezier(.22,.61,.36,1)}
+.dc-who.is-open{max-height:340px;overflow-y:auto}
 .dc-who .hd{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.22em;text-transform:uppercase;
-  color:#55555e;padding:12px 0 8px;text-align:center}
-.dc-who a{display:flex;align-items:center;gap:10px;padding:7px 2px;text-decoration:none;
-  border-top:1px solid #16161a;-webkit-tap-highlight-color:transparent}
-.dc-who a .nm{font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;line-height:1.4;color:#fff;
-  border:6px solid transparent;border-image-source:var(--tile-btn);border-image-slice:6 fill;
-  border-image-repeat:round;padding:0 8px;transition:filter .15s ease}
-@media(hover:hover){.dc-who a:hover .nm{filter:brightness(1.3)}}
+  color:#55555e;padding:14px 0 10px;text-align:center}
+.dc-who .gr{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.dc-who a{position:relative;aspect-ratio:1;display:flex;align-items:center;justify-content:center;
+  text-decoration:none;background:var(--tile-full) center/100% 100%;-webkit-tap-highlight-color:transparent;
+  transition:filter .15s ease}
+.dc-who a span{font-family:'Quantico',sans-serif;font-size:12px;line-height:1.3;color:var(--coral);
+  text-align:center;padding:0 10px;word-break:break-word}
+@media(hover:hover){.dc-who a:hover{filter:brightness(1.25)}}
 .dc-who .none{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;
   color:#4e4e57;padding:10px 0;text-align:center}
 /* LE TIROIR — le vêtement, plié. */
@@ -241,7 +283,6 @@ nav{display:flex;flex-direction:column;align-items:center;gap:30px;width:100%;ma
 #dc-full.show{display:flex}
 #dc-full img{max-width:100%;max-height:100%;object-fit:contain;display:block}
 #dc-full .dc-x{position:fixed;top:14px;right:14px}
-.dc-shots figure{cursor:zoom-in}
 .fs-msg{font-family:'Quantico',sans-serif;font-weight:400;font-size:clamp(18px,4.4vw,26px);color:#fff;line-height:1.55;text-align:center;max-width:640px;font-style:italic;white-space:pre-wrap;overflow-y:auto;max-height:78vh}
 
 /* LUXURY : sous-titre + défilement horizontal logos */
@@ -479,6 +520,11 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
 </head>
 <body data-eco-auth="central">
 
+
+<!-- 09/11 : les trois calques du TOTEHM, COPIÉS tels quels de streetwear.html
+     (eux-mêmes copiés de com/totehm.html). Le quatrième calque — le fond
+     perforé — est le papier lui-même. Ils servent au verso de la card. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="lg-rail" viewBox="20.689 0.225 17.203 223.630" preserveAspectRatio="none"><defs><clipPath id="tgr_3a710ebbbe"><path d="M 20.652344 0.261719 L 37.839844 0.261719 L 37.839844 223.816406 L 20.652344 223.816406 Z M 20.652344 0.261719 " clip-rule="nonzero"/></clipPath><clipPath id="tgr_1b01f8474a"><path d="M 0.652344 0.261719 L 17.839844 0.261719 L 17.839844 223.816406 L 0.652344 223.816406 Z M 0.652344 0.261719 " clip-rule="nonzero"/></clipPath><clipPath id="tgr_95349ecf51"><rect x="0" width="18" y="0" height="224"/></clipPath></defs><g clip-path="url(#tgr_3a710ebbbe)"><g transform="matrix(1, 0, 0, 1, 20, -0.000000000000020428)"><g clip-path="url(#tgr_95349ecf51)"><g clip-path="url(#tgr_1b01f8474a)"><path fill="#626286" d="M 0.652344 0.261719 L 17.839844 0.261719 L 17.839844 223.808594 L 0.652344 223.808594 Z M 0.652344 0.261719 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g></symbol><symbol id="lg-t" viewBox="79.832 47.921 66.789 66.932" preserveAspectRatio="none"><defs><clipPath id="tgt_ad60c268aa"><path d="M 0.871094 1.027344 L 67.59375 1.027344 L 67.59375 10.664062 L 0.871094 10.664062 Z M 0.871094 1.027344 " clip-rule="nonzero"/></clipPath><clipPath id="tgt_f37d153e97"><path d="M 0.871094 0.0273438 L 67.59375 0.0273438 L 67.59375 9.664062 L 0.871094 9.664062 Z M 0.871094 0.0273438 " clip-rule="nonzero"/></clipPath><clipPath id="tgt_0eae0d8cca"><rect x="0" width="68" y="0" height="10"/></clipPath><clipPath id="tgt_d380122ed3"><path d="M 29.410156 1.027344 L 39.050781 1.027344 L 39.050781 67.75 L 29.410156 67.75 Z M 29.410156 1.027344 " clip-rule="nonzero"/></clipPath><clipPath id="tgt_75ca9fbfbb"><path d="M 0.410156 0.0273438 L 10.050781 0.0273438 L 10.050781 66.75 L 0.410156 66.75 Z M 0.410156 0.0273438 " clip-rule="nonzero"/></clipPath><clipPath id="tgt_92fddf9f0e"><rect x="0" width="11" y="0" height="67"/></clipPath><clipPath id="tgt_1e85f52e0e"><path d="M 21.183594 63.386719 L 47.28125 63.386719 L 47.28125 67.75 L 21.183594 67.75 Z M 21.183594 63.386719 " clip-rule="nonzero"/></clipPath><clipPath id="tgt_6c7bfd0f9f"><path d="M 0.183594 0.386719 L 26.28125 0.386719 L 26.28125 4.75 L 0.183594 4.75 Z M 0.183594 0.386719 " clip-rule="nonzero"/></clipPath><clipPath id="tgt_7d4c700d36"><rect x="0" width="27" y="0" height="5"/></clipPath><clipPath id="tgt_ffb4264ddd"><rect x="0" width="68" y="0" height="68"/></clipPath></defs><g transform="matrix(1, 0, 0, 1, 79, 47)"><g clip-path="url(#tgt_ffb4264ddd)"><g clip-path="url(#tgt_ad60c268aa)"><g transform="matrix(1, 0, 0, 1, 0.000000000000014211, 1)"><g clip-path="url(#tgt_0eae0d8cca)"><g clip-path="url(#tgt_f37d153e97)"><path fill="#ffffff" d="M 0.871094 0.0273438 L 67.582031 0.0273438 L 67.582031 9.664062 L 0.871094 9.664062 Z M 0.871094 0.0273438 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g><g clip-path="url(#tgt_d380122ed3)"><g transform="matrix(1, 0, 0, 1, 29, 1)"><g clip-path="url(#tgt_92fddf9f0e)"><g clip-path="url(#tgt_75ca9fbfbb)"><path fill="#ffffff" d="M 10.050781 0.0273438 L 10.050781 66.738281 L 0.410156 66.738281 L 0.410156 0.0273438 Z M 10.050781 0.0273438 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g><g clip-path="url(#tgt_1e85f52e0e)"><g transform="matrix(1, 0, 0, 1, 21, 63)"><g clip-path="url(#tgt_7d4c700d36)"><g clip-path="url(#tgt_6c7bfd0f9f)"><path fill="#ffffff" d="M 26.28125 4.75 L 0.183594 4.75 L 0.183594 0.386719 L 26.28125 0.386719 Z M 26.28125 4.75 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g></g></g></symbol><symbol id="lg-wm" viewBox="74.997 121.602 77.584 46.683" preserveAspectRatio="none"><defs><g/><clipPath id="tgw_98fd27636e"><rect x="0" width="84" y="0" height="39"/></clipPath></defs><g fill="#ffffff" fill-opacity="1"><g transform="translate(87.377054, 137.358137)"><g><path d="M 5.546875 -14.09375 L 0.09375 -14.09375 L 0.09375 -15.515625 L 12.640625 -15.515625 L 12.640625 -14.09375 L 7.1875 -14.09375 L 7.1875 0 L 5.546875 0 Z M 5.546875 -14.09375 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(99.483952, 137.358137)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(104.6725, 137.358137)"><g><path d="M 9.3125 0.140625 C 7.769531 0.140625 6.375 -0.203125 5.125 -0.890625 C 3.882812 -1.578125 2.910156 -2.519531 2.203125 -3.71875 C 1.503906 -4.914062 1.15625 -6.265625 1.15625 -7.765625 C 1.15625 -9.253906 1.503906 -10.597656 2.203125 -11.796875 C 2.910156 -12.992188 3.882812 -13.9375 5.125 -14.625 C 6.375 -15.3125 7.769531 -15.65625 9.3125 -15.65625 C 10.851562 -15.65625 12.238281 -15.3125 13.46875 -14.625 C 14.707031 -13.945312 15.679688 -13.003906 16.390625 -11.796875 C 17.097656 -10.597656 17.453125 -9.253906 17.453125 -7.765625 C 17.453125 -6.265625 17.097656 -4.910156 16.390625 -3.703125 C 15.679688 -2.503906 14.707031 -1.5625 13.46875 -0.875 C 12.238281 -0.195312 10.851562 0.140625 9.3125 0.140625 Z M 9.3125 -1.328125 C 10.539062 -1.328125 11.648438 -1.601562 12.640625 -2.15625 C 13.628906 -2.71875 14.40625 -3.488281 14.96875 -4.46875 C 15.53125 -5.445312 15.8125 -6.546875 15.8125 -7.765625 C 15.8125 -8.972656 15.53125 -10.066406 14.96875 -11.046875 C 14.40625 -12.035156 13.628906 -12.804688 12.640625 -13.359375 C 11.648438 -13.910156 10.539062 -14.1875 9.3125 -14.1875 C 8.082031 -14.1875 6.96875 -13.910156 5.96875 -13.359375 C 4.976562 -12.804688 4.195312 -12.035156 3.625 -11.046875 C 3.050781 -10.066406 2.765625 -8.972656 2.765625 -7.765625 C 2.765625 -6.546875 3.050781 -5.445312 3.625 -4.46875 C 4.195312 -3.488281 4.976562 -2.71875 5.96875 -2.15625 C 6.96875 -1.601562 8.082031 -1.328125 9.3125 -1.328125 Z M 9.3125 -1.328125 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(122.655559, 137.358137)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(127.844108, 137.358137)"><g><path d="M 5.546875 -14.09375 L 0.09375 -14.09375 L 0.09375 -15.515625 L 12.640625 -15.515625 L 12.640625 -14.09375 L 7.1875 -14.09375 L 7.1875 0 L 5.546875 0 Z M 5.546875 -14.09375 "/></g></g></g><g transform="matrix(1, 0, 0, 1, 71, 138)"><g clip-path="url(#tgw_98fd27636e)"><g fill="#ffffff" fill-opacity="1"><g transform="translate(0.838799, 30.275545)"><g><path d="M 18.59375 -2.640625 L 18.59375 0 L 3.1875 0 L 3.1875 -21.234375 L 18.171875 -21.234375 L 18.171875 -18.59375 L 6.21875 -18.59375 L 6.21875 -12.078125 L 16.875 -12.078125 L 16.875 -9.5 L 6.21875 -9.5 L 6.21875 -2.640625 Z M 18.59375 -2.640625 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(19.582399, 30.275545)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(26.163451, 30.275545)"><g><path d="M 21.453125 -21.234375 L 21.453125 0 L 18.421875 0 L 18.421875 -9.46875 L 6.21875 -9.46875 L 6.21875 0 L 3.1875 0 L 3.1875 -21.234375 L 6.21875 -21.234375 L 6.21875 -12.109375 L 18.421875 -12.109375 L 18.421875 -21.234375 Z M 21.453125 -21.234375 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(49.213997, 30.275545)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(55.79505, 30.275545)"><g><path d="M 22.875 0 L 22.84375 -15.46875 L 15.171875 -2.578125 L 13.78125 -2.578125 L 6.09375 -15.390625 L 6.09375 0 L 3.1875 0 L 3.1875 -21.234375 L 5.671875 -21.234375 L 14.53125 -6.3125 L 23.28125 -21.234375 L 25.765625 -21.234375 L 25.796875 0 Z M 22.875 0 "/></g></g></g></g></g></symbol></svg>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
     <!-- ⚠️ UNE SEULE DÉFINITION DES PERFORATIONS · 30/10/2026 (Wah : « la face
@@ -816,6 +862,10 @@ const DC_VIEW={habits:['my habits','#333366'],objectives:['my objectives','#3649
 const DC_INT={fight:['Fight','#E24B4A','BODY'],flow:['Flow','#e48b31','BODY'],enrich:['Enrich','#fcbe21','MENTAL'],love:['Love','#639922','SPIRIT'],
   express:['Express','#1D9E75','SOUL'],focus:['Focus','#378ADD','MENTAL'],celebrate:['Celebrate','#7F77DD','SOUL']};
 const DC_MI={habits:'',objectives:'o',repulsions:'r',wisdom:'w',visions:'v'};
+/* 09/11 (Wah) : « en fonction de la box, la couleur de la card change : pour
+   objectif, répulsion et habit ça reste bleu ; vision et story / wisdom c'est
+   respectivement bleu clair ou rouge-violet. » Ce sont les teintes du TOTEHM. */
+const DC_CARD={habits:'#333366',objectives:'#333366',repulsions:'#333366',visions:'#36498c',wisdom:'#743169'};
 /* Le mot de chaque vue au-dessus de ses mini-boxes, comme dans streetwear. */
 const DC_MW={habits:'habit',objectives:'objective',repulsions:'repulsion',wisdom:'my story',visions:'vision'};
 const DC_STAGE={making:'in the making',production:'in production',shipped:'shipped',cancelled:'cancelled'};
@@ -845,70 +895,89 @@ function dcBox(d){
     (sub?'<div class="sb">'+sub+'</div>':'')+grp+'</div>';
 }
 function decodeHTML(d,signed){
-  /* L'OEUVRE d'abord : c'est elle qu'on est venu voir. Elle paraît avec la pièce. */
-  const art=d.line==='luxury'?'':'<div class="dc-art'+(d.art?'':' is-wait')+'" id="dc-art"><span>'+
+  /* ══ LA CARD · 09/11/2026 (Wah) ════════════════════════════════════════
+     « Là où se trouve l'œuvre, on trouve de l'autre côté tout ce qui s'y
+     trouve derrière, comme une CERTIFICATION. Tout le contenu doit y rentrer. »
+     DEUX FACES, UNE SEULE GÉOMÉTRIE, la même au doigt et à la souris. Le verso
+     défile CHEZ LUI quand la box est longue. */
+  const V=DC_VIEW[d.view]||['the element','#333366'];
+  const skin=d.legacy?'#333366':(DC_CARD[d.view]||'#333366');
+  const art='<div class="dc-art'+(d.art?'':' is-wait')+'" id="dc-art"><span>'+
     (d.art?'…':d.stage==='cancelled'?'cancelled':'The artwork lands with the cloth.')+'</span></div>';
-  const serie=[d.style?esc(d.style):'', (d.style_no&&d.style_of)?('no. '+d.style_no+' / '+d.style_of):''].filter(Boolean).join(' · ');
-  /* Le totehmisateur porte son nom SUR le papier perforé, comme la recherche de COM.
-     Un tap mène à sa page sur totehm.com, où l'on peut s'abonner à lui. */
+  /* ── LE VERSO, dans l'ordre de la certification ─────────────────────── */
+  const tick=(d.is||[]).filter(i=>DC_INT[i]).map(i=>'<i style="background:'+DC_INT[i][1]+'"></i>').join('');
+  const i0=(d.is||[]).find(i=>DC_INT[i]);
+  let corps='';
+  if(d.legacy){
+    corps='<div class="dc-f"><span class="k">the message</span><span class="nm">'+esc('“'+(d.message||'')+'”')+'</span></div>';
+  }else if(d.level==='locked'){
+    corps='<div class="dc-f"><span class="k">'+esc(V[0])+'</span>'+
+      '<span class="v">This element is reserved for its owner and eligible collectors.</span></div>';
+  }else{
+    corps='<div class="dc-f"><span class="k">'+esc(V[0])+'</span><span class="nm">'+esc(d.text||'')+'</span>'+
+      (i0?'<span class="k" style="margin:6px 0 0"><b style="color:'+DC_INT[i0][1]+'">'+DC_INT[i0][0]+'</b> '+DC_INT[i0][2]+'</span>':'')+'</div>';
+    /* Les mini-boxes restent DANS leur box-mère, groupées par vue. */
+    if(d.matter&&typeof d.matter==='object')
+      corps+=Object.entries(d.matter).filter(([,a])=>(Array.isArray(a)?a:[]).length)
+        .map(([k,a])=>'<div class="dc-f"><span class="k">'+esc(DC_MW[k]||k)+'</span>'+
+          a.map(x=>'<span class="mi">'+esc(x&&x.text||'')+'</span>').join('')+'</div>').join('');
+  }
+  /* LES PHOTOS : dans la card, pas dessous. Un tap les ouvre en plein écran. */
+  const media=d.mine?'<div class="dc-f"><span class="k">media</span><div class="dc-ph" id="dc-shots"></div></div>':'';
+  const serie=[d.style?esc(d.style):'', (d.style_no&&d.style_of)?('no. '+d.style_no+' / '+d.style_of):'']
+    .filter(Boolean).join(' · ');
+  const duo='<div class="dc-duo">'+
+    '<div><span class="k">totehmization date</span><span class="v">'+esc(String(d.created_at||'—'))+'</span></div>'+
+    (serie?'<div><span class="k">artistic style / artist</span><span class="v">'+serie+'</span></div>':'')+'</div>';
+  const support=d.garment?'<div class="dc-f"><span class="k">totehm cloth support</span><span class="v">'+
+    esc(d.garment)+(d.size?' · '+esc(d.size):'')+'</span>'+
+    (d.garment_details?'<span class="k" style="margin:6px 0 0;text-transform:none;letter-spacing:.04em">'+esc(String(d.garment_details))+'</span>':'')+
+    '</div>':'';
+  /* LE TOTEHMISATEUR : son papier perforé, le mot TOTEHM dessus, son nom en
+     coral — et un tap mène à sa page d'ABONNEMENT sur COM. */
   const nom=esc(d.owner||'');
-  const par=d.owner?('<span class="by-w"><i>by</i>'+(d.owner_id
-    ?'<a class="by" href="'+COM_AT(d.owner)+'" rel="noopener">'+nom+'</a>'
-    :'<span class="by">'+nom+'</span>')+'</span>'):'';
-  const faits=[d.created_at?esc(String(d.created_at)):'', serie, d.test?'test':''].filter(Boolean)
-    .map(x=>'<span>'+x+'</span>').join('')+par;
-  /* LE VÊTEMENT, plié : on s'en fout un peu, mais il doit rester lisible. */
-  const fiche=[d.garment?'<b>'+esc(d.garment)+(d.size?' · '+esc(d.size):'')+'</b>':'',
-    d.garment_details?esc(String(d.garment_details)):''].filter(Boolean).join('\n');
-  const tiroir=fiche?'<details class="dc-draw"><summary>the garment</summary><div class="in">'+fiche+'</div></details>':'';
-  /* 08/11 (Wah) : « ce serait stylé d'avoir l'œuvre artistique générée avec la
-     possibilité de la retourner et d'avoir ce qui est caché, ce qui est derrière :
-     c'est-à-dire tout ce que l'on a fait actuellement ». L'ŒUVRE est la face ;
-     la box, les photos, la date, le style, le by et le vêtement sont son DOS. */
-  const dos=dcBox(d)+
-    (d.mine?'<div class="dc-shots" id="dc-shots"></div>':'')+
-    (faits?'<div class="dc-facts">'+faits+'</div>':'')+
-    (d.stage&&DC_STAGE[d.stage]?'<div class="dc-stage">'+DC_STAGE[d.stage]+'</div>':'')+tiroir;
-  const piece=d.line==='luxury'?dos:
-    '<div class="dc-piece" id="dc-piece"><div class="dc-faces">'+
-      '<div class="dc-face dc-devant" id="dc-devant">'+art+'</div>'+
-      '<div class="dc-face dc-dos" id="dc-dos">'+dos+'</div>'+
-    '</div></div>';
-  /* LA JONCTION : le dope s'assoit sur la tranche, entre l'œuvre et son dos.
-     Minuscules, ni coral ni rouge-violet ; le compte OUVRE la liste. */
-  const joint=d.line==='luxury'?'':
-    '<div class="dc-joint">'+
-      '<button type="button" class="go" id="dc-dope" aria-pressed="'+(d.i_doped?'true':'false')+'">'+
-      'dope <b id="dc-dope-n">'+(Number(d.dopes)||0)+'</b></button>'+
+  const sig=d.owner?'<div class="dc-sig"><span class="k">totehmized by</span>'+
+    (d.owner_id?'<a class="who" href="'+COM_AT(d.owner)+'" rel="noopener">'+nom+'</a>'
+               :'<span class="who">'+nom+'</span>')+
+    '<span class="lg" aria-hidden="true"><svg class="gl g-wm"><use href="#lg-wm"/></svg></span></div>':'';
+  const etape=d.stage&&DC_STAGE[d.stage]?'<div class="dc-f"><span class="k">'+DC_STAGE[d.stage]+'</span></div>':'';
+  const dos='<div class="dc-face dc-dos" id="dc-dos">'+
+      (tick?'<span class="tick">'+tick+'</span>':'')+
+      '<div class="dc-scroll" id="dc-scroll">'+
+        '<span class="dc-cap" aria-hidden="true"><svg class="gl"><use href="#lg-t"/></svg></span>'+
+        corps+media+duo+support+etape+sig+
+      '</div></div>';
+  const card='<div class="dc-piece" id="dc-piece" style="--skin:'+skin+'">'+
+      '<div class="dc-faces">'+
+        '<div class="dc-face dc-devant" id="dc-devant">'+art+'</div>'+dos+
+      '</div></div>';
+  /* SOUS LA CARD, UNE SEULE TUILE QUI SE TRANSFORME : le NOM au recto, le DOPE
+     au verso. Même papier perforé, même place — rien ne disparaît. */
+  const joint='<div class="dc-joint">'+
+      '<button type="button" class="go" id="dc-tile" aria-pressed="'+(d.i_doped?'true':'false')+'">'+
+        '<span id="dc-tile-t">'+esc(d.name||'')+'</span></button>'+
       '<button type="button" class="dc-turn" id="dc-turn">turn it over</button>'+
     '</div><div class="dc-who" id="dc-who"></div>';
-  return piece+joint+
+  return card+joint+
     (signed?'':'<button class="btn-sig" type="button" data-eco-connect="1">CONNECT WITH MY TOTEHM</button>');
 }
-/* ── LA PIÈCE SE RETOURNE ─────────────────────────────────────────────
-   La hauteur suit la face visible, MESURÉE : sans ça le dos saute, et la
-   continuité est la règle la plus importante de l'expérience. Le tiroir et
-   les photos qui arrivent changent cette hauteur : on remesure. */
-let DC_OBS=null;
-function dcMesurer(){
-  const p=$('dc-piece'); if(!p)return;
-  const f=p.classList.contains('is-back')?$('dc-dos'):$('dc-devant');
-  if(!f)return;
-  const h=Math.ceil(f.getBoundingClientRect().height);
-  if(h>0)p.style.setProperty('--dcp-h',h+'px');
+/* Le NOM au recto, « dope N » au verso : c'est la MÊME tuile qui change de mot. */
+function dcTuile(){
+  const b=$('dc-tile'),t=$('dc-tile-t'),p=$('dc-piece');
+  if(!b||!t||!p||!DECODED)return;
+  if(p.classList.contains('is-back')){
+    b.innerHTML='dope <b id="dc-dope-n">'+(Number(DECODED.dopes)||0)+'</b>';
+    b.setAttribute('aria-pressed',DECODED.i_doped?'true':'false');
+  }else{
+    b.innerHTML='<span id="dc-tile-t">'+esc(DECODED.name||'')+'</span>';
+  }
 }
 function dcRetourner(){
   const p=$('dc-piece'); if(!p)return;
   p.classList.toggle('is-back');
   const t=$('dc-turn'); if(t)t.textContent=p.classList.contains('is-back')?'see the artwork':'turn it over';
-  dcMesurer();
-}
-function dcSuivre(){
-  if(DC_OBS){DC_OBS.disconnect();DC_OBS=null;}
-  const p=$('dc-piece'); if(!p||typeof ResizeObserver!=='function')return;
-  DC_OBS=new ResizeObserver(()=>dcMesurer());
-  [$('dc-devant'),$('dc-dos')].forEach(n=>{if(n)DC_OBS.observe(n);});
-  dcMesurer();
+  dcTuile();
+  const w=$('dc-who'); if(w&&!p.classList.contains('is-back'))w.classList.remove('is-open');
 }
 async function loadArt(name,seq){
   try{
@@ -916,7 +985,7 @@ async function loadArt(name,seq){
     const j=await r.json().catch(()=>({}));
     if(seq!==DECODE_SEQ)return;
     if(!r.ok||!j.url){if(r.status!==404)console.error('[cloth-art]',r.status,j.error);const b=$('dc-art');if(b){b.classList.add('is-wait');b.innerHTML='<span>The artwork lands with the cloth.</span>';}return;}
-    const b=$('dc-art');if(b){b.innerHTML='<img src="'+esc(j.url)+'" alt="'+esc(name)+' · the artwork">';dcMesurer();}
+    const b=$('dc-art');if(b)b.innerHTML='<img src="'+esc(j.url)+'" alt="'+esc(name)+' · the artwork">';
   }catch(e){console.error('[cloth-art]',e&&e.message||e);}
 }
 async function decode(v){
@@ -941,7 +1010,7 @@ async function decode(v){
   note.textContent='';
   $('decode-msg').innerHTML=decodeHTML(data,!!session);
   $('decode-fs').classList.add('show');$('decode-fs').scrollTop=0;
-  dcSuivre();   /* la hauteur de la pièce suit la face visible, mesurée */
+  dcTuile();    /* la tuile porte le nom du Cloth au recto */
   history.replaceState(null,'','/?decode='+encodeURIComponent(data.name));
   if(data.art)loadArt(data.name,seq);
   if(data.mine)loadShots(data.name,seq);
@@ -961,13 +1030,16 @@ async function loadDopers(name,seq){
   /* 08/11 (Wah) : la liste de TOUS ceux qui ont dopé, « comme instagram » — une
      ligne par membre, son nom sur le papier perforé du verso, et un tap mène à
      sa page d'ABONNEMENT sur COM (`/@nom` : l'arobase manquait). */
+  /* 09/11 (Wah) : « une liste de Totehm côté verso, c'est-à-dire de format
+     totehm verso, avec au milieu en coral le nom du totehm ». Le papier carré
+     perforé, pas une pastille ; un tap mène à sa page d'abonnement sur COM. */
   g.innerHTML='<div class="hd">doped by</div>'+(l.length
-    ? l.map(p=>'<a href="'+COM_AT(p.pseudo)+'" rel="noopener"><span class="nm">'
-        +esc(String(p.pseudo||''))+'</span></a>').join('')
+    ? '<div class="gr">'+l.map(p=>'<a href="'+COM_AT(p.pseudo)+'" rel="noopener"><span>'
+        +esc(String(p.pseudo||''))+'</span></a>').join('')+'</div>'
     : '<div class="none">nobody yet</div>');
 }
 async function dope(){
-  const b=$('dc-dope'); if(!b||!DECODED||!DECODED.name)return;
+  const b=$('dc-tile'); if(!b||!DECODED||!DECODED.name)return;
   const{data:{session}}=await sb.auth.getSession();
   if(!session){ await ECO_AUTH.login(false); return; }
   b.disabled=true;
@@ -975,9 +1047,8 @@ async function dope(){
   b.disabled=false;
   if(error){console.error('[cloth_dope]',error.message);return;}
   if(!data||data.ok!==true){console.error('[cloth_dope]',data&&data.reason);return;}
-  b.setAttribute('aria-pressed',data.doped?'true':'false');
-  const n=$('dc-dope-n'); if(n)n.textContent=String(Number(data.count)||0);
   DECODED.i_doped=!!data.doped; DECODED.dopes=Number(data.count)||0;
+  dcTuile();
   loadDopers(DECODED.name,DECODE_SEQ);
 }
 /* ── UNE PHOTO EN ENTIER ──────────────────────────────────────────────
@@ -1278,16 +1349,20 @@ $('decode-back').onclick=()=>{$('decode-fs').classList.remove('show');if(new URL
 /* Le câblage de la page d'un Cloth : le dope, et une photo qu'on ouvre en entier.
    Délégué sur le plein écran, puisque son contenu est réécrit à chaque décodage. */
 $('decode-fs').addEventListener('click',e=>{
-  /* Le compte OUVRE la liste de ceux qui ont dopé ; le mot dope la pose. */
+  /* Le NOMBRE ouvre la liste de ceux qui ont dopé ; le mot « dope » la pose.
+     Au RECTO la tuile porte le nom du Cloth : elle ne dope pas, elle retourne. */
   if(e.target.closest('#dc-dope-n')){const w=$('dc-who');if(w)w.classList.toggle('is-open');return;}
-  if(e.target.closest('#dc-dope')){dope();return;}
+  if(e.target.closest('#dc-tile')){
+    const p=$('dc-piece');
+    if(p&&p.classList.contains('is-back'))dope(); else dcRetourner();
+    return;
+  }
   if(e.target.closest('#dc-turn')){dcRetourner();return;}
-  const fig=e.target.closest('.dc-shots figure');
+  const fig=e.target.closest('.dc-ph figure');
   if(fig){const im=fig.querySelector('img');if(im&&im.src)plein(im.src);return;}
-  /* 08/11 : UN TAP SUR LA PIÈCE LA RETOURNE — comme le Higher de l'accueil et
-     le Totehm de COM. On ne retourne pas depuis le DOS : là, chaque élément a
-     déjà son geste (la loupe de la box, une photo en plein écran, le tiroir) ;
-     c'est `turn it over` qui ramène à l'œuvre. */
+  /* 08/11 : UN TAP SUR L'ŒUVRE LA RETOURNE — comme le Higher de l'accueil et le
+     Totehm de COM. Au verso, chaque élément a déjà son geste (une photo en plein
+     écran, le nom du totehmisateur) : c'est `turn it over` qui ramène à l'œuvre. */
   if(e.target.closest('.dc-devant')){dcRetourner();return;}
 });
 $('dc-full-x').onclick=pleinFermer;
@@ -1369,7 +1444,7 @@ document.querySelectorAll('[data-club]').forEach(a => a.addEventListener('click'
 }));
 
 /* Diagnostic — des booléens, jamais une valeur de membre. */
-const BUILD='2026-11-08-piece-retournee';
+const BUILD='2026-11-09-card';
 window.__totehm_boutique=()=>({ build:BUILD, page:'home', luxury_link:!!document.querySelector('a[href="/luxury"]'),
   club_links:document.querySelectorAll('[data-club]').length, logos:document.querySelectorAll('.brand-logo,img[src*="champion"]').length,
   collab:/Champion 2026/.test(document.getElementById('collab')?.textContent||''), branding_space:document.getElementById('brand-btn')?.dataset.space==='/',
