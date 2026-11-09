@@ -617,7 +617,7 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
   <section class="stage" id="s-name" data-s="name" aria-label="Name the cloth">
     <div class="inner">
       <!-- LE DOS DU HIGHER : la pièce perforée, et le nom écrit dessus (30/10) -->
-      <label id="nm-field"><svg id="nm-dos" viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-dos"></use></svg><span id="nm-prefix">0.</span><input id="nm-input" size="4" maxlength="40" placeholder="name" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="text" enterkeyhint="next" aria-label="The name of the cloth"></label>
+      <label id="nm-field"><svg id="nm-dos" viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-dos"></use></svg><span id="nm-prefix">0.</span><input id="nm-input" size="4" maxlength="14" placeholder="name" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="text" enterkeyhint="next" aria-label="The name of the cloth"></label>
       <div class="note dim" id="nm-note"></div>
       <!-- 02/11 (Wah) : dire ce que le nom et le « 0. » veulent dire. -->
       <div class="say">The name finds your cloth again — and the element of your TOTEHM inside it. <b>0</b> is year zero of the brand: 2026.</div>
@@ -824,7 +824,7 @@ document.addEventListener('visibilitychange', () => { if(!document.hidden) ssoVe
 
 
 /* ══ L'ÉTAT — une pièce en cours, cinq scènes ═════════════════════════ */
-const BUILD='2026-11-09-card-pieces';
+const BUILD='2026-11-09-card-format';
 /* 02/11 (Wah) : « le style artistique en section deux, et ensuite la sélection
    de la box ». La taille, elle, a rejoint le vêtement. */
 const STAGES=['cloth','style','element','name','order','done'];

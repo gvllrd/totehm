@@ -93,7 +93,11 @@ Deno.serve(async (req) => {
   if (!box.kind || !KINDS.includes(box.kind) || !box.ref) {
     return Response.json({ error: 'choose an element' }, { status: 422, headers: cors });
   }
-  if (raw.length < 2 || raw.length > 40) {
+  // 09/11 (Wah) : « 14 caracteres maximum ». Le nom s'ecrit sur le DOS DU HIGHER,
+  // en une seule ligne, au meme format partout — sur le vetement, dans la recherche
+  // et sur la card. Au-dela de 14, ce format ne tient plus : on refuse ici, pas
+  // seulement dans la page.
+  if (raw.length < 2 || raw.length > 14) {
     return Response.json({ error: 'name' }, { status: 422, headers: cors });
   }
 

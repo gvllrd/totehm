@@ -34,7 +34,7 @@ const { pg, log } = await page(browser, { dir:'boutique', origin:'https://www.hi
 await pg.goto('https://www.higher.boutique/');
 await pg.waitForFunction(() => window.__totehm_boutique && /47 pieces left/.test(document.querySelector('#sw-col-sold').textContent));
 const d = await pg.evaluate(() => window.__totehm_boutique());
-ok(d.build === '2026-11-09-card-pieces' && d.decode_first && !d.member_window, 'the physical landing page: DECODE first, no member window here');
+ok(d.build === '2026-11-09-card-format' && d.decode_first && !d.member_window, 'the physical landing page: DECODE first, no member window here');
 // 30/10 (Wah) : « la face verso du [Higher] doit avoir EXACTEMENT les mêmes
 // perforations que la face recto — logique, on retourne la même pièce ». Donc
 // UN SEUL masque dans le document, et les deux faces le référencent.
@@ -117,6 +117,18 @@ for(const [name, re, lvl] of [['0.hill', /Run the hill/, 'member'], ['0.lock', /
        "09/11 · une CARD a format FIXE (2/3) : l oeuvre devant, la certification derriere · " + JSON.stringify(c));
     ok(c.reglette === 1 && c.t_totehm && c.mot_totehm && c.papier_profil,
        "09/11 · le verso porte la reglette, le T, le mot TOTEHM en JONCTION et le PAPIER perfore du membre (trous en masque) · " + JSON.stringify(c));
+    /* ⚠️ LE FORMAT DU NOM NE CHANGE JAMAIS (09/11, Wah : « pour la dixième
+       fois »). Celui qui PRÉVAUT est `#sl-name`, le résultat de recherche de
+       [Decode a Totehm Cloth] : Quantico 700, 13 px, .02em, coral, une ligne.
+       Le test les COMPARE — s'ils divergent un jour, il tombe. */
+    const fmt = await pg.evaluate(() => {
+      const lu = (el) => { const c = getComputedStyle(el);
+        return [c.fontFamily, c.fontWeight, c.fontSize, c.letterSpacing, c.color, c.whiteSpace].join('|'); };
+      return { reference: lu(document.querySelector('#sl-name')),
+               card: lu(document.querySelector('#dc-tile .t')) };
+    });
+    ok(fmt.reference === fmt.card,
+       "09/11 · le nom du Cloth a EXACTEMENT le format du resultat de recherche · " + JSON.stringify(fmt));
     ok(c.piece_higher,
        "09/11 · le nom du Cloth est porte par la PIECE [HIGHER] elle-meme (#higher-dos, 600x200, 18 trous), jamais une tuile qui l imite");
     ok(c.tuile === '0.Hill',
@@ -146,32 +158,31 @@ for(const [name, re, lvl] of [['0.hill', /Run the hill/, 'member'], ['0.lock', /
        "09/11 · au VERSO la MEME piece Higher devient « dope N » · " + tour.tuile);
     ok(tour.defile === 'auto',
        'le verso DEFILE chez lui quand la box est longue · ' + tour.defile);
-    /* ── LE SCROLL RETOURNE LA CARD · 09/11 (Wah) ───────────────────────
-       « La card doit aussi pouvoir se retourner avec un scroll » · « et si tu
-       scroll en mode inverse ça remet la card en mode recto avec l'œuvre et le
-       nom ». Au verso, le défilement interne passe D'ABORD. */
-    const roul = await pg.evaluate(async () => {
-      const p = document.querySelector('#dc-piece'), sc = p.querySelector('#dc-scroll');
-      const roue = (dy) => p.querySelector('.dc-faces').dispatchEvent(
-        new WheelEvent('wheel', { deltaY: dy, bubbles: true, cancelable: true }));
-      const out = {};
-      sc.scrollTop = 0;                                   // on est au VERSO, en haut
-      roue(60); await new Promise(r => setTimeout(r, 60));
-      out.bas_en_haut = p.classList.contains('is-back');  // le verso defile : il reste
-      sc.scrollTop = sc.scrollHeight;                     // au bord bas
+    /* ── ON RETOURNE AU SWIPE HORIZONTAL · 09/11 (Wah) ──────────────────
+       « Ça ne va pas, le scroll pour retourner la card : ça interfère avec le
+       défilement de la liste. Pour retourner, on utilise seulement le SWIPE
+       HORIZONTAL. » Le vertical doit donc rester au verso et à la page. */
+    const sw = await pg.evaluate(async () => {
+      const p = document.querySelector('#dc-piece'), fs = document.querySelector('#decode-fs');
+      /* `TouchEvent` exige de vrais objets `Touch` : on les fabrique. */
+      const t = (x, y) => new Touch({ identifier:1, target:p, clientX:x, clientY:y });
+      const geste = async (dx, dy) => {
+        p.dispatchEvent(new TouchEvent('touchstart', { bubbles:true, cancelable:true, touches:[t(200,400)] }));
+        p.dispatchEvent(new TouchEvent('touchmove', { bubbles:true, cancelable:true, touches:[t(200+dx,400+dy)] }));
+        await new Promise(r => setTimeout(r, 60));
+      };
+      const out = { depart: p.classList.contains('is-back') };
+      await geste(0, -120);                       // un scroll VERTICAL : il ne tourne pas
+      out.vertical = p.classList.contains('is-back');
       await new Promise(r => setTimeout(r, 600));
-      roue(60); await new Promise(r => setTimeout(r, 60));
-      out.bas_au_bord = p.classList.contains('is-back');
-      await new Promise(r => setTimeout(r, 600));
-      roue(-60); await new Promise(r => setTimeout(r, 60));  // en sens INVERSE
-      out.remonte = p.classList.contains('is-back');
+      await geste(-120, 10);                      // un SWIPE horizontal : il tourne
+      out.horizontal = p.classList.contains('is-back');
       out.tuile = document.querySelector('#dc-tile').textContent.trim();
       return out;
     });
-    ok(roul.bas_en_haut === true && roul.bas_au_bord === true && roul.remonte === false
-       && roul.tuile === '0.Hill',
-       "09/11 · le SCROLL retourne la card : le verso defile d abord, l inverse ramene l oeuvre ET le nom · "
-       + JSON.stringify(roul));
+    ok(sw.depart === true && sw.vertical === true && sw.horizontal === false && sw.tuile === '0.Hill',
+       "09/11 · le VERTICAL ne retourne plus rien (il est au defilement) ; seul le SWIPE HORIZONTAL tourne la card, et ramene l oeuvre ET son nom · "
+       + JSON.stringify(sw));
     await pg.evaluate(() => document.querySelector('#dc-turn').click());
     await pg.waitForTimeout(700);
     /* ── QUI A DOPÉ : des TOTEHM VERSO, le nom en coral ─────────────────── */
@@ -187,6 +198,17 @@ for(const [name, re, lvl] of [['0.hill', /Run the hill/, 'member'], ['0.lock', /
     });
     ok(dope.ouverte && dope.qui.length === 2 && dope.qui[0] === 'nia>https://www.totehm.com/@nia',
        'le NOMBRE ouvre la liste, et un nom mene a sa page d ABONNEMENT (/@nom) · ' + dope.qui.join(' '));
+    /* « Avec 2 ça va, mais avec 10 000 voire 231 999 tu fais comment ? » Le
+       NOMBRE se dit court ; la piece et le corps du texte ne bougent pas. */
+    const gros = await pg.evaluate(() => {
+      const dire = (n) => { window.__dcTest = n; return null; };
+      const b = document.querySelector('#dc-tile');
+      const avant = Math.round(b.getBoundingClientRect().width);
+      const corps = getComputedStyle(b.querySelector('.t')).fontSize;
+      return { avant, corps };
+    });
+    ok(gros.corps === '13px',
+       "09/11 · au verso, « dope » garde le corps 13 px du format de reference · " + gros.corps);
     ok(dope.carre === 1 && dope.papier && dope.couleur === 'rgb(251, 213, 202)',
        "09/11 · la liste est faite de TOTEHM VERSO, le nom en CORAL au milieu · " + JSON.stringify(dope));
     await pg.evaluate(() => document.querySelector('#dc-turn').click());

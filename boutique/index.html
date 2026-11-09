@@ -81,6 +81,11 @@ nav{display:flex;flex-direction:column;align-items:center;gap:30px;width:100%;ma
 .menu-gap{width:100%;height:4px}
 .line-input{font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;letter-spacing:0;color:#fff;background:#1f1f24;outline:none;border:6px solid transparent;border-image-source:none;border-image-slice:6 fill;border-image-repeat:round;padding:0 6px;text-align:center;caret-color:var(--coral);min-width:230px;border-radius:10px}
 .note{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;min-height:12px;text-align:center}
+/* 09/11 (Wah) : « rapprocher un peu les messages résultat de recherche dans la
+   page d'atterrissage PRÈS DU [Higher] VERSO, plutôt que de own/your/time ». Le
+   message appartient à la pièce qu'on vient de retourner : il se colle sous elle,
+   et c'est la tagline qui s'écarte. */
+#dc-note{margin-top:-9px;margin-bottom:14px}
 .note.ok{color:#639922}.note.no{color:var(--rep)}.note.dim{color:var(--g-dark)}
 
 /* FULL-SCREEN perforé : résultat Decode */
@@ -96,10 +101,14 @@ nav{display:flex;flex-direction:column;align-items:center;gap:30px;width:100%;ma
    un cadre de plus les écrasait. Fond noir, rien autour. */
 #decode-fs{background:#000;border:0;border-image:none;justify-content:flex-start;
   overflow-y:auto;overscroll-behavior:contain;padding:max(52px,7dvh) 16px 48px}
-#decode-fs .dc-x{position:fixed;top:14px;right:14px;z-index:262;width:34px;height:34px;padding:0;border:0;
+/* 09/11 (Wah) : « quand je clique sur un media pour fermer je veux la petite
+   croix habituelle ». Elle l'était déjà ici, mais la règle était ENFERMÉE dans
+   `#decode-fs` : en plein écran, la croix n'avait ni taille, ni trait, ni
+   couleur. UNE seule règle, pour les deux. */
+.dc-x{position:fixed;top:14px;right:14px;z-index:262;width:34px;height:34px;padding:0;border:0;
   background:none;color:#8a8a90;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:color .15s ease}
-#decode-fs .dc-x svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round}
-@media(hover:hover){#decode-fs .dc-x:hover{color:#fff}}
+.dc-x svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round}
+@media(hover:hover){.dc-x:hover{color:#fff}}
 .dc{width:100%;max-width:520px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center}
 .dc-name{font-family:'Quantico',sans-serif;font-size:clamp(24px,7vw,34px);line-height:1.2;color:var(--coral);background:#111114;border-radius:12px;padding:8px 18px;word-break:break-word}
 .dc-meta{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#909090}
@@ -239,21 +248,34 @@ nav{display:flex;flex-direction:column;align-items:center;gap:30px;width:100%;ma
    MASQUE : les trous laissent voir la couleur de la card derrière — ils ne sont
    pas dessinés en noir. La forme et le nombre de trous ne changent JAMAIS ;
    si le nom est trop long, c'est le TEXTE qui rétrécit. */
-.dc-sig{position:relative;width:148px;aspect-ratio:1;flex:none;margin:18px auto 0;
-  display:flex;flex-direction:column;align-items:center;justify-content:center}
+/* 09/11 (Wah) : « le {{Nom du totehm}} en coral quantico est CENTRÉ ! Du coup il
+   faut remonter le TOTEHMIZED BY. » L'étiquette est donc posée EN HAUT du papier,
+   hors du flux, et le nom occupe le centre géométrique. Il revient à la ligne
+   autant qu'il faut tant qu'il reste CONTENU et centré dans la forme. */
+.dc-sig{position:relative;width:152px;aspect-ratio:1;flex:none;margin:18px auto 0;
+  display:flex;align-items:center;justify-content:center}
 .dc-sig .pap{position:absolute;inset:0;background:#333366;
   -webkit-mask-image:var(--perfo-dc);mask-image:var(--perfo-dc);
   -webkit-mask-size:100% 100%;mask-size:100% 100%}
-.dc-sig .k{position:relative;z-index:2;font-family:'Space Mono',monospace;font-size:6.5px;
-  letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.62);margin-bottom:5px}
-.dc-sig .who{position:relative;z-index:2;font-family:'Quantico',sans-serif;font-size:14px;
-  line-height:1.25;color:var(--coral);text-decoration:none;text-align:center;padding:0 14px;
-  max-width:100%;word-break:break-word;transition:filter .15s ease}
+.dc-sig .k{position:absolute;left:0;right:0;top:15%;z-index:2;font-family:'Space Mono',monospace;
+  font-size:6.5px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.62);
+  text-align:center}
+.dc-sig .who{position:relative;z-index:2;font-family:'Quantico',sans-serif;font-weight:700;
+  font-size:var(--dcn,15px);line-height:1.15;color:var(--coral);text-decoration:none;
+  text-align:center;padding:0 16px;max-width:100%;overflow-wrap:anywhere;
+  transition:filter .15s ease}
 @media(hover:hover){.dc-sig a.who:hover{filter:brightness(1.25)}}
 /* LE MOT TOTEHM fait la JONCTION entre le papier du membre et la CARD (Wah,
    09/11) : il chevauche le bord bas du papier et DÉBORDE de chaque côté —
    c'est ce qui relie le TOTEHM du membre au TOTEHM CLOTH CARD. */
-.dc-wm{position:relative;width:min(100%,198px);height:28px;margin:-13px auto 0;z-index:3;flex:none}
+/* ⚠️ LE TOTEHM.svg DE totehm.com, PAS UNE VERSION ÉTIRÉE (09/11, Wah). Le
+   symbole `#lg-wm` écrit « TOT » sur « EHM » : son viewBox fait 77,584 × 46,683,
+   soit un RAPPORT DE 1,662. Son rectangle DOM doit être CE rectangle — comme
+   `.g-wm` sur com, où « chaque rectangle DOM est le rectangle du glyphe ». Je
+   l'avais posé à 198 × 28 (rapport 7) : le mot était écrasé. */
+/* Il CHEVAUCHE le papier : la moitié haute dessus, la moitié basse sur la card. */
+.dc-wm{position:relative;width:94px;aspect-ratio:77.584 / 46.683;
+  margin:-28px auto 0;z-index:3;flex:none}
 .dc-wm .gl{position:absolute;inset:0;display:block;width:100%;height:100%;overflow:visible;fill:#fff}
 /* ── SOUS LA CARD : UNE SEULE TUILE, qui se TRANSFORME ────────────────────
    Wah : « le nom du totehm côté recto se transforme de l'autre côté verso en
@@ -269,15 +291,20 @@ nav{display:flex;flex-direction:column;align-items:center;gap:30px;width:100%;ma
    L'écart sous la card suit l'imprimé : 2,5 % de la hauteur (`compose-artwork`). */
 .dc-joint{--dcw:min(100%,340px);width:var(--dcw);display:flex;flex-direction:column;
   align-items:center;margin-top:calc(var(--dcw) * 1.5 * .025)}
-.dc-joint .go{position:relative;width:46%;aspect-ratio:3;display:flex;align-items:center;
-  justify-content:center;gap:8px;background:none;border:0;padding:0;cursor:pointer;
-  -webkit-tap-highlight-color:transparent;transition:filter .18s ease}
+.dc-joint .go{position:relative;width:170px;max-width:52%;aspect-ratio:3;display:flex;
+  align-items:center;justify-content:center;gap:7px;background:none;border:0;padding:0 10px;
+  cursor:pointer;-webkit-tap-highlight-color:transparent;transition:filter .18s ease}
 .dc-joint .go svg{position:absolute;inset:0;width:100%;height:100%;display:block}
-.dc-joint .go .t{position:relative;z-index:2;font-family:'Quantico',sans-serif;
-  font-size:var(--dct,15px);line-height:1.1;color:var(--coral);max-width:84%;
+/* ⚠️ LE FORMAT DU NOM NE CHANGE JAMAIS (09/11, Wah : « on doit TOUJOURS retrouver
+   EXACTEMENT le même format, pour la dixième fois »). Celui qui PRÉVAUT est celui
+   du résultat de recherche de [Decode a Totehm Cloth] : `#sl-name`, Quantico 700,
+   13 px, `letter-spacing .02em`, coral, centré, une seule ligne. Recopié ici au
+   caractère près — et la pièce fait la MÊME largeur, pour que le nom et le
+   « dope N » du verso coïncident exactement. */
+.dc-joint .go .t,.dc-joint .go b{position:relative;z-index:2;font-family:'Quantico',sans-serif;
+  font-weight:700;font-size:13px;letter-spacing:.02em;color:var(--coral);text-align:center;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.dc-joint .go b{position:relative;z-index:2;font-family:'Space Mono',monospace;
-  font-size:calc(var(--dct,15px) * .86);font-weight:700;color:#fff}
+.dc-joint .go b{color:#fff}
 @media(hover:hover){.dc-joint .go:hover{filter:brightness(1.22)}}
 /* 09/11 (Wah) : « le [TURN IT OVER] doit être pareil que le [DECODE A TOTEHM
    CLOTH] » — c'est donc `.btn-sig`, le bouton de l'accueil, rien de plus. */
@@ -316,7 +343,7 @@ nav{display:flex;flex-direction:column;align-items:center;gap:30px;width:100%;ma
   align-items:center;justify-content:center;padding:24px}
 #dc-full.show{display:flex}
 #dc-full img{max-width:100%;max-height:100%;object-fit:contain;display:block}
-#dc-full .dc-x{position:fixed;top:14px;right:14px}
+#dc-full .dc-x{z-index:302}
 .fs-msg{font-family:'Quantico',sans-serif;font-weight:400;font-size:clamp(18px,4.4vw,26px);color:#fff;line-height:1.55;text-align:center;max-width:640px;font-style:italic;white-space:pre-wrap;overflow-y:auto;max-height:78vh}
 
 /* LUXURY : sous-titre + défilement horizontal logos */
@@ -353,7 +380,7 @@ nav{display:flex;flex-direction:column;align-items:center;gap:30px;width:100%;ma
    doigt tourne l'objet au lieu de faire défiler la page.
    ⚠️ POSÉ, LA FACE VISIBLE N'A AUCUNE TRANSFORMATION (`is-flat`, `is-back`) :
    on n'garde jamais un `rotateY(180deg)` éternel — c'est l'invariant de COM. */
-.hi{position:relative;width:min(52vw,200px);margin-bottom:13px;perspective:480px;
+.hi{position:relative;width:min(52vw,200px);margin-bottom:9px;perspective:480px;
   cursor:grab;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
 .hi.tenu{cursor:grabbing}
 /* Quand on écrit au dos, le doigt sert à écrire, pas à tourner. */
@@ -606,7 +633,7 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
     <svg id="sl-dos" viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-dos"></use>
       <rect class="hi-light" width="600" height="200" mask="url(#hmask)" fill="#000" opacity="0"></rect></svg>
     <span id="sl-name"></span>
-    <input id="decode-q" class="hide" maxlength="40" autocomplete="off" autocapitalize="off"
+    <input id="decode-q" class="hide" maxlength="18" autocomplete="off" autocapitalize="off"
            spellcheck="false" enterkeyhint="search" aria-label="Decode a Totehm Cloth" placeholder="0.name">
   </div>
 </div>
@@ -1002,47 +1029,47 @@ function decodeHTML(d,signed){
    C'est le TEXTE qui rétrécit quand le nom est long : `--dct`, mesuré sur la
    largeur de la pièce, jamais moins de 9 px. */
 const HIGHER_SVG='<svg viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-dos"/></svg>';
+/* « Avec 2 ça va, mais avec 10 000 voire 231 999 tu fais comment ? » (Wah, 09/11)
+   On ne touche NI à la pièce NI au corps du texte : c'est le NOMBRE qui se dit
+   court, comme partout — 999 · 1,2k · 232k · 1,4M. Le mot « dope » et le nom du
+   Cloth tiennent donc toujours dans la même pièce, au même format. */
+function dcCompte(n){
+  n=Math.max(0,Math.floor(Number(n)||0));
+  if(n<1000)return String(n);
+  if(n<1e6){const k=n/1000;return (k<10?k.toFixed(1).replace(/\.0$/,''):Math.round(k))+'k';}
+  const m=n/1e6;return (m<10?m.toFixed(1).replace(/\.0$/,''):Math.round(m))+'M';
+}
+/* 09/11 (Wah) : « il faut que tu mettes en place un système de retour de ligne
+   pour le {{Nom du totehm}} quand il est long… on peut avoir plus de retours de
+   ligne tant que le texte est CONTENU et CENTRÉ dans la forme. » Le papier ne
+   bouge pas : le nom revient à la ligne, et s'il déborde encore, il rétrécit —
+   jamais sous 9 px, jamais hors du carré. */
+function dcNom(){
+  const w=document.querySelector('.dc-sig .who'); if(!w)return;
+  const sig=w.parentElement, max=sig.clientHeight*0.56;
+  let px=15; w.style.setProperty('--dcn',px+'px');
+  for(let i=0;i<10&&(w.scrollHeight>max||w.scrollWidth>w.clientWidth+1)&&px>9;i++){
+    px-=1; w.style.setProperty('--dcn',px+'px');
+  }
+}
 function dcTuile(){
   const b=$('dc-tile'),p=$('dc-piece');
   if(!b||!p||!DECODED)return;
   const dos=p.classList.contains('is-back');
   b.innerHTML=HIGHER_SVG+(dos
-    ?'<span class="t">dope</span><b id="dc-dope-n">'+(Number(DECODED.dopes)||0)+'</b>'
+    ?'<span class="t">dope</span><b id="dc-dope-n" title="'+(Number(DECODED.dopes)||0)+'">'+dcCompte(DECODED.dopes)+'</b>'
     :'<span class="t" id="dc-tile-t">'+esc(DECODED.name||'')+'</span>');
   b.setAttribute('aria-pressed',dos&&DECODED.i_doped?'true':'false');
-  /* Le texte tient DANS la pièce : on part de 4,4 % de sa largeur et on descend
-     tant qu'il déborde. La pièce garde ses proportions, toujours. */
-  const t=b.querySelector('.t'); if(!t)return;
-  let px=Math.max(9,Math.round(b.getBoundingClientRect().width*0.14));
-  b.style.setProperty('--dct',px+'px');
-  for(let i=0;i<14&&t.scrollWidth>t.clientWidth+1&&px>9;i++){
-    px-=1; b.style.setProperty('--dct',px+'px');
-  }
 }
-/* ══ LE SCROLL RETOURNE LA CARD · 09/11 (Wah) ═════════════════════════
-   « La card doit aussi pouvoir se retourner avec un scroll, ce qui permettra à
-   coup sûr à chacun y ait accès » · « et si tu scroll en mode inverse ça remet
-   la card en mode recto avec l'œuvre et le nom ». Vers le BAS = le verso, vers
-   le HAUT = l'œuvre. ⚠️ Au verso, le DÉFILEMENT INTERNE passe d'abord : la card
-   ne tourne qu'une fois son bord atteint — la règle du rouleau de streetwear.
-   Un verrou de 520 ms : une inertie de trackpad ne la fait pas tourner deux fois. */
-let DC_LOCK=0, DC_Y=0;
-function dcGeste(bas){
-  const p=$('dc-piece'); if(!p)return false;
-  const dos=p.classList.contains('is-back');
-  if(bas===dos){                      /* on va déjà dans le sens où l'on est */
-    if(!dos)return false;
-    const sc=$('dc-scroll');
-    if(sc&&sc.scrollTop>1)return false;          /* il reste du verso à remonter */
-    if(bas)return false;
-  }
-  if(dos){
-    const sc=$('dc-scroll');
-    if(sc){
-      if(bas&&sc.scrollTop+sc.clientHeight<sc.scrollHeight-1)return false;
-      if(!bas&&sc.scrollTop>1)return false;
-    }
-  }
+/* ══ ON RETOURNE LA CARD AU SWIPE HORIZONTAL · 09/11 (Wah) ════════════
+   « Ça ne va pas, le scroll pour retourner la card : ça interfère avec le
+   défilement de la liste. Pour retourner, on utilise seulement le SWIPE
+   HORIZONTAL. » Le vertical appartient donc entièrement au verso et à la page ;
+   seul un geste LATÉRAL tourne la pièce — comme on retourne une carte à la main.
+   Un geste n'est pris que s'il est franchement horizontal (deux fois plus large
+   que haut) et d'au moins 42 px ; verrou de 520 ms contre une inertie. */
+let DC_LOCK=0, DC_X=0, DC_Y=0, DC_PRIS=false;
+function dcTourne(){
   const t=Date.now(); if(t-DC_LOCK<520)return true;
   DC_LOCK=t; dcRetourner(); return true;
 }
@@ -1087,7 +1114,7 @@ async function decode(v){
   note.textContent='';
   $('decode-msg').innerHTML=decodeHTML(data,!!session);
   $('decode-fs').classList.add('show');$('decode-fs').scrollTop=0;
-  dcTuile();    /* la tuile porte le nom du Cloth au recto */
+  dcTuile(); dcNom();   /* la pièce porte le nom du Cloth ; le pseudo tient dans son papier */
   history.replaceState(null,'','/?decode='+encodeURIComponent(data.name));
   if(data.art)loadArt(data.name,seq);
   if(data.mine)loadShots(data.name,seq);
@@ -1442,23 +1469,32 @@ $('decode-fs').addEventListener('click',e=>{
      écran, le nom du totehmisateur) : c'est `turn it over` qui ramène à l'œuvre. */
   if(e.target.closest('.dc-devant')){dcRetourner();return;}
 });
-/* LE SCROLL RETOURNE LA CARD — molette, trackpad et DOIGT. Le verso défile
-   d'abord ; la card ne tourne qu'à son bord. On n'empêche le défilement de la
-   page que lorsqu'on prend le geste, jamais avant. */
-$('decode-fs').addEventListener('wheel',e=>{
-  const p=e.target.closest&&e.target.closest('.dc-piece'); if(!p)return;
-  if(Math.abs(e.deltaY)<4)return;
-  if(dcGeste(e.deltaY>0))e.preventDefault();
-},{passive:false});
+/* LE SWIPE HORIZONTAL RETOURNE LA CARD. Rien sur la molette : le vertical est
+   au défilement du verso et de la page — c'est la demande de Wah, mesurée chez
+   lui : le scroll leur disputait le geste. */
 $('decode-fs').addEventListener('touchstart',e=>{
-  if(e.target.closest&&e.target.closest('.dc-piece'))DC_Y=e.touches[0].clientY;
+  const p=e.target.closest&&e.target.closest('.dc-piece');
+  DC_PRIS=!!p; if(p){DC_X=e.touches[0].clientX;DC_Y=e.touches[0].clientY;}
 },{passive:true});
 $('decode-fs').addEventListener('touchmove',e=>{
-  const p=e.target.closest&&e.target.closest('.dc-piece'); if(!p)return;
-  const dy=DC_Y-e.touches[0].clientY;
-  if(Math.abs(dy)<26)return;
-  if(dcGeste(dy>0)){DC_Y=e.touches[0].clientY;if(e.cancelable)e.preventDefault();}
+  if(!DC_PRIS)return;
+  const dx=e.touches[0].clientX-DC_X, dy=e.touches[0].clientY-DC_Y;
+  if(Math.abs(dx)<42||Math.abs(dx)<Math.abs(dy)*2)return;
+  DC_PRIS=false;
+  if(dcTourne()&&e.cancelable)e.preventDefault();
 },{passive:false});
+/* Souris et trackpad : on tire la card sur le côté, même geste. */
+$('decode-fs').addEventListener('pointerdown',e=>{
+  if(e.pointerType==='touch')return;
+  const p=e.target.closest&&e.target.closest('.dc-piece');
+  DC_PRIS=!!p; if(p){DC_X=e.clientX;DC_Y=e.clientY;}
+});
+$('decode-fs').addEventListener('pointermove',e=>{
+  if(!DC_PRIS||e.pointerType==='touch'||!e.buttons)return;
+  const dx=e.clientX-DC_X, dy=e.clientY-DC_Y;
+  if(Math.abs(dx)<42||Math.abs(dx)<Math.abs(dy)*2)return;
+  DC_PRIS=false; dcTourne();
+});
 $('dc-full-x').onclick=pleinFermer;
 $('dc-full').addEventListener('click',e=>{if(e.target.id==='dc-full')pleinFermer();});
 /* « Précédent » ferme la couche du dessus, jamais le site d'un coup. */
@@ -1538,7 +1574,7 @@ document.querySelectorAll('[data-club]').forEach(a => a.addEventListener('click'
 }));
 
 /* Diagnostic — des booléens, jamais une valeur de membre. */
-const BUILD='2026-11-09-card-pieces';
+const BUILD='2026-11-09-card-format';
 window.__totehm_boutique=()=>({ build:BUILD, page:'home', luxury_link:!!document.querySelector('a[href="/luxury"]'),
   club_links:document.querySelectorAll('[data-club]').length, logos:document.querySelectorAll('.brand-logo,img[src*="champion"]').length,
   collab:/Champion 2026/.test(document.getElementById('collab')?.textContent||''), branding_space:document.getElementById('brand-btn')?.dataset.space==='/',
