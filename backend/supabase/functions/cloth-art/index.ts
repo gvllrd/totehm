@@ -37,7 +37,21 @@ Deno.serve(async (req) => {
   }
   if (!path) return json({ error: "not_yet" }, 404);
 
-  const { data: signed, error: sErr } = await sb.storage.from("streetwear-generations").createSignedUrl(String(path), 3600);
+  // 09/11 (Wah) : la CARD dessine SON cadre, a la meme proportion que l'imprime
+  // (1,2 % de la largeur de l'oeuvre). Il lui faut donc l'oeuvre NUE — sans cadre
+  // ni signature — que `compose-artwork` ecrit a cote du fichier d'impression.
+  // Le DROIT ne change pas : c'est le meme `_cloth_art_path` qui l'a autorise.
+  // Une piece composee AVANT ce lot n'a pas de `card.png` : on retombe alors sur
+  // le fichier d'impression, qui porte deja son cadre.
+  let objet = String(path);
+  if (String(body.for ?? "") === "card" && objet.endsWith("/final.png")) {
+    const nue = objet.replace(/\/final\.png$/, "/card.png");
+    const { data: tete } = await sb.storage.from("streetwear-generations")
+      .list(nue.split("/")[0], { search: "card.png" });
+    if (Array.isArray(tete) && tete.length) objet = nue;
+  }
+
+  const { data: signed, error: sErr } = await sb.storage.from("streetwear-generations").createSignedUrl(String(objet), 3600);
   if (sErr || !signed?.signedUrl) {
     console.error("[cloth-art] sign", sErr?.message ?? "no url");
     return json({ error: "unavailable" }, 503);

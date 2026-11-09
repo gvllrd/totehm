@@ -34,7 +34,7 @@ const { pg, log } = await page(browser, { dir:'boutique', origin:'https://www.hi
 await pg.goto('https://www.higher.boutique/');
 await pg.waitForFunction(() => window.__totehm_boutique && /47 pieces left/.test(document.querySelector('#sw-col-sold').textContent));
 const d = await pg.evaluate(() => window.__totehm_boutique());
-ok(d.build === '2026-11-09-card' && d.decode_first && !d.member_window, 'the physical landing page: DECODE first, no member window here');
+ok(d.build === '2026-11-09-card-pieces' && d.decode_first && !d.member_window, 'the physical landing page: DECODE first, no member window here');
 // 30/10 (Wah) : « la face verso du [Higher] doit avoir EXACTEMENT les mêmes
 // perforations que la face recto — logique, on retourne la même pièce ». Donc
 // UN SEUL masque dans le document, et les deux faces le référencent.
@@ -107,14 +107,18 @@ for(const [name, re, lvl] of [['0.hill', /Run the hill/, 'member'], ['0.lock', /
         certif: !!p.querySelector('.dc-dos .dc-scroll'),
         reglette: p.querySelectorAll('.dc-dos .tick i').length,
         t_totehm: !!p.querySelector('.dc-cap use[href="#lg-t"]'),
-        mot_totehm: !!p.querySelector('.dc-sig use[href="#lg-wm"]'),
+        mot_totehm: !!p.querySelector('.dc-wm use[href="#lg-wm"]'),
+        papier_profil: p.querySelector('.dc-sig .pap') ? /svg/.test(getComputedStyle(p.querySelector('.dc-sig .pap')).maskImage || getComputedStyle(p.querySelector('.dc-sig .pap')).webkitMaskImage || '') : false,
+        piece_higher: !!document.querySelector('#dc-tile use[href="#higher-dos"]'),
         tuile: document.querySelector('#dc-tile').textContent.trim() }; });
     ok(c.ordre.startsWith('dc-piece,dc-joint'), 'la CARD, puis la tuile sous elle · ' + c.ordre);
     ok(c.cadre === 'none', 'plus de bordure perforee autour de l ecran');
     ok(c.ratio === 0.667 && c.oeuvre && c.certif,
        "09/11 · une CARD a format FIXE (2/3) : l oeuvre devant, la certification derriere · " + JSON.stringify(c));
-    ok(c.reglette === 1 && c.t_totehm && c.mot_totehm,
-       'le verso porte la reglette d intentions, le T du TOTEHM et son mot');
+    ok(c.reglette === 1 && c.t_totehm && c.mot_totehm && c.papier_profil,
+       "09/11 · le verso porte la reglette, le T, le mot TOTEHM en JONCTION et le PAPIER perfore du membre (trous en masque) · " + JSON.stringify(c));
+    ok(c.piece_higher,
+       "09/11 · le nom du Cloth est porte par la PIECE [HIGHER] elle-meme (#higher-dos, 600x200, 18 trous), jamais une tuile qui l imite");
     ok(c.tuile === '0.Hill',
        '09/11 · au RECTO la tuile sous la card porte le NOM du Cloth · ' + c.tuile);
     /* La couleur de la card suit la VUE : habits = navy. */
@@ -122,8 +126,8 @@ for(const [name, re, lvl] of [['0.hill', /Run the hill/, 'member'], ['0.lock', /
     const txt = await pg.textContent('#decode-msg');
     ok(/no\. 3 \/ 41/.test(txt) && /Ink Realism/.test(txt) && /in the making/i.test(txt) && /nia/.test(txt),
        'le rang dans le STYLE, le style, l etape, le totehmisateur');
-    ok(/Higher Champion Sweatshirt · L/.test(txt) && /82% cotton/.test(txt),
-       '09/11 · le vetement entre DANS la certification : tout le contenu y rentre');
+    ok(/Higher Champion Sweatshirt · L/.test(txt) && !/82% cotton/.test(txt),
+       "09/11 · le vetement entre dans la certification, SANS sa description (Wah : « pas besoin »)");
     /* ── LE RETOURNEMENT, et la tuile qui se TRANSFORME ─────────────────── */
     const tour = await pg.evaluate(async () => {
       const p = document.querySelector('#dc-piece');
@@ -136,12 +140,40 @@ for(const [name, re, lvl] of [['0.hill', /Run the hill/, 'member'], ['0.lock', /
                tuile: document.querySelector('#dc-tile').textContent.trim(),
                defile: getComputedStyle(sc).overflowY };
     });
-    ok(!tour.avant && tour.apres && /see the artwork/.test(tour.mot),
+    ok(!tour.avant && tour.apres && /See the artwork/.test(tour.mot),
        "09/11 · un tap sur l oeuvre RETOURNE la card " + JSON.stringify(tour));
-    ok(tour.tuile === 'dope 12',
-       "09/11 · au VERSO la MEME tuile devient « dope N » · " + tour.tuile);
+    ok(tour.tuile === 'dope12',
+       "09/11 · au VERSO la MEME piece Higher devient « dope N » · " + tour.tuile);
     ok(tour.defile === 'auto',
        'le verso DEFILE chez lui quand la box est longue · ' + tour.defile);
+    /* ── LE SCROLL RETOURNE LA CARD · 09/11 (Wah) ───────────────────────
+       « La card doit aussi pouvoir se retourner avec un scroll » · « et si tu
+       scroll en mode inverse ça remet la card en mode recto avec l'œuvre et le
+       nom ». Au verso, le défilement interne passe D'ABORD. */
+    const roul = await pg.evaluate(async () => {
+      const p = document.querySelector('#dc-piece'), sc = p.querySelector('#dc-scroll');
+      const roue = (dy) => p.querySelector('.dc-faces').dispatchEvent(
+        new WheelEvent('wheel', { deltaY: dy, bubbles: true, cancelable: true }));
+      const out = {};
+      sc.scrollTop = 0;                                   // on est au VERSO, en haut
+      roue(60); await new Promise(r => setTimeout(r, 60));
+      out.bas_en_haut = p.classList.contains('is-back');  // le verso defile : il reste
+      sc.scrollTop = sc.scrollHeight;                     // au bord bas
+      await new Promise(r => setTimeout(r, 600));
+      roue(60); await new Promise(r => setTimeout(r, 60));
+      out.bas_au_bord = p.classList.contains('is-back');
+      await new Promise(r => setTimeout(r, 600));
+      roue(-60); await new Promise(r => setTimeout(r, 60));  // en sens INVERSE
+      out.remonte = p.classList.contains('is-back');
+      out.tuile = document.querySelector('#dc-tile').textContent.trim();
+      return out;
+    });
+    ok(roul.bas_en_haut === true && roul.bas_au_bord === true && roul.remonte === false
+       && roul.tuile === '0.Hill',
+       "09/11 · le SCROLL retourne la card : le verso defile d abord, l inverse ramene l oeuvre ET le nom · "
+       + JSON.stringify(roul));
+    await pg.evaluate(() => document.querySelector('#dc-turn').click());
+    await pg.waitForTimeout(700);
     /* ── QUI A DOPÉ : des TOTEHM VERSO, le nom en coral ─────────────────── */
     const dope = await pg.evaluate(async () => {
       document.querySelector('#dc-dope-n').click();
@@ -150,7 +182,7 @@ for(const [name, re, lvl] of [['0.hill', /Run the hill/, 'member'], ['0.lock', /
       return { ouverte: document.querySelector('#dc-who').classList.contains('is-open'),
         qui: [...document.querySelectorAll('#dc-who a')].map(x => x.textContent.trim() + '>' + x.getAttribute('href')),
         carre: a ? +(a.getBoundingClientRect().width / a.getBoundingClientRect().height).toFixed(2) : 0,
-        papier: a ? /svg/.test(getComputedStyle(a).backgroundImage) : false,
+        papier: a && a.querySelector('i') ? /svg/.test(getComputedStyle(a.querySelector('i')).maskImage || getComputedStyle(a.querySelector('i')).webkitMaskImage || '') : false,
         couleur: sp ? getComputedStyle(sp).color : null };
     });
     ok(dope.ouverte && dope.qui.length === 2 && dope.qui[0] === 'nia>https://www.totehm.com/@nia',

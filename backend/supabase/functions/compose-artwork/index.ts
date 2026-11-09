@@ -13,6 +13,14 @@ const QUANTICO_URL = 'https://raw.githubusercontent.com/google/fonts/main/ofl/qu
 const NAVY = 0x333366ff;
 const CORAL = 0xfbd5caff;
 const BLACK = 0x000000ff;
+// 09/11 (Wah) : « les bordures de l'oeuvre generee doivent prendre les couleurs de
+// la box ». Le CADRE suit donc la vue de la box — exactement les teintes de la card
+// du Cloth et du TOTEHM. La SIGNATURE, elle, reste navy : c'est la piece Higher,
+// et elle ne change jamais (BRAND.md).
+const CADRES: Record<string, number> = {
+  habit: 0x333366ff, objective: 0x333366ff, repulsion: 0x333366ff,
+  vision: 0x36498cff, wisdom: 0x743169ff,
+};
 
 const json = (b: unknown, s = 200) => new Response(JSON.stringify(b), { status: s, headers: { 'Content-Type': 'application/json' } });
 
@@ -77,7 +85,7 @@ Deno.serve(async (req) => {
   const { cloth_id, source_url } = body;
   if (!cloth_id || !source_url) return json({ error: 'missing fields' }, 400);
 
-  const { data: cloth } = await sb.from('totehm_clothes').select('name,test,status,selected_concept_id,totehm_cloth_support(print_area)').eq('id', cloth_id).single();
+  const { data: cloth } = await sb.from('totehm_clothes').select('name,test,status,selected_concept_id,box_kind,totehm_cloth_support(print_area)').eq('id', cloth_id).single();
   if (!cloth) return json({ error: 'cloth not found' }, 404);
   // 03/11 : une piece d'essai va JUSQU'A l'oeuvre composee — c'est tout l'objet de
   // l'essai visuel. Refuser ici rendait la curation d'un essai impossible, juste apres
@@ -145,13 +153,15 @@ Deno.serve(async (req) => {
   perforate(box);
   box.composite(text, Math.round((bw - text.width) / 2), Math.round((bh - text.height) / 2));
 
-  // 4. compositing : l'oeuvre dans son CADRE navy, la signature dessous. Rien d'autre
+  // 4. compositing : l'oeuvre dans son CADRE, la signature dessous. Rien d'autre
   //    (03/11, Wah : « juste le nom du TOTEHM cloth sous son fond perfore bleu navy »).
-  //    05/11 (Wah) : « une bordure bleu navy, comme si c'etait un tableau ». Un cadre
+  //    05/11 (Wah) : « une bordure, comme si c'etait un tableau ». Un cadre
   //    1,2 % de la largeur de l'oeuvre (05/11, Wah : « elargir encore un tout petit peu »,
   //    apres un premier essai a 0,8 %) : 15 px, soit 2,5 mm a 150 dpi. On ne va pas plus
   //    loin sans raison — en impression directe, un aplat large craquelle au lavage, et
   //    le cadre serait le premier endroit a vieillir.
+  //    09/11 (Wah) : ce cadre prend la COULEUR DE LA BOX, et la card du Cloth reprend
+  //    exactement la meme proportion : le dos du vetement et la card se correspondent.
   const trait = Math.max(3, Math.round(scaled.width * 0.012));
   const cadreW = scaled.width + trait * 2, cadreH = scaled.height + trait * 2;
   const ecart = Math.round(H * 0.025);
@@ -163,10 +173,21 @@ Deno.serve(async (req) => {
   const cadreX = Math.round((W - cadreW) / 2);
 
   const cadre = new Image(cadreW, cadreH);
-  cadre.fill(NAVY);
+  cadre.fill(CADRES[String((cloth as { box_kind?: string }).box_kind || '')] ?? NAVY);
   canvas.composite(cadre, cadreX, haut);
   canvas.composite(scaled, cadreX + trait, haut + trait);
   canvas.composite(box, Math.round((W - box.width) / 2), haut + cadreH + ecart);
+
+  // 09/11 (Wah) : « les proportions doivent etre parfaitement correlees entre ce qu'il
+  // y a sur le dos du vetement et le recto de la card comme le verso ». La CARD dessine
+  // SON cadre, au meme 1,2 % de la largeur de l'oeuvre : il lui faut donc l'oeuvre NUE,
+  // sans cadre ni signature. On l'ecrit a cote du fichier d'impression, une seule fois.
+  try {
+    const nue = await scaled.encode();
+    const { error: cErr } = await sb.storage.from('streetwear-generations')
+      .upload(`${cloth_id}/card.png`, nue, { contentType: 'image/png', upsert: true });
+    if (cErr) console.error('[compose-artwork] card', cErr.message);
+  } catch (e) { console.error('[compose-artwork] card', String((e as Error)?.message ?? e).slice(0, 120)); }
 
   // 5. upload + urls signées (30j pour printful, 7j pour consultation)
   const png = await canvas.encode();

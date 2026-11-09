@@ -173,17 +173,23 @@ nav{display:flex;flex-direction:column;align-items:center;gap:30px;width:100%;ma
    La couleur de la card vient de la VUE de la box (Wah, 09/11) : objectif,
    répulsion et habit restent navy ; vision est le bleu clair ; MY STORY le
    rouge-violet. Ce sont les teintes du TOTEHM, pas des couleurs inventées. */
-.dc-piece{position:relative;width:min(100%,340px);aspect-ratio:2/3;perspective:1500px;flex:none}
+.dc-piece{--dcw:min(100%,340px);position:relative;width:var(--dcw);aspect-ratio:2/3;
+  perspective:1500px;flex:none;--trait:calc(var(--dcw) * .01172)}
 .dc-faces{position:absolute;inset:0;transform-style:preserve-3d;
   transition:transform .66s cubic-bezier(.22,.61,.36,1)}
 .dc-piece.is-back .dc-faces{transform:rotateY(180deg)}
 .dc-face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;
   overflow:hidden;background:var(--skin,#333366)}
-.dc-face.dc-dos{transform:rotateY(180deg)}
+.dc-face.dc-dos{transform:rotateY(180deg);background:var(--skin,#333366)}
 /* La face cachée ne reçoit aucun tap : sinon elle mange la loupe de la box. */
 .dc-piece:not(.is-back) .dc-dos,.dc-piece.is-back .dc-devant{pointer-events:none}
 /* ── RECTO : l'œuvre, encadrée par la card (la photo du dos du vêtement). */
-.dc-devant{display:flex;align-items:center;justify-content:center;padding:11px;cursor:zoom-out}
+/* 09/11 (Wah) : « les proportions doivent être parfaitement corrélées entre ce
+   qu'il y a sur le dos du vêtement et le recto de la card comme le verso ».
+   `compose-artwork` imprime un cadre de 1,2 % de la largeur de l'ŒUVRE : ici
+   `b = .012 × (L − 2b)`, soit 1,172 % de la largeur de la CARD. Même trait au
+   verso — c'est le même objet vu de l'autre côté. */
+.dc-devant{display:flex;align-items:center;justify-content:center;padding:var(--trait);cursor:pointer}
 .dc-devant .dc-art{width:100%;height:100%;background:#0a0a0c;display:flex;align-items:center;
   justify-content:center;overflow:hidden}
 .dc-devant .dc-art img{width:100%;height:100%;object-fit:contain;display:block}
@@ -191,10 +197,10 @@ nav{display:flex;flex-direction:column;align-items:center;gap:30px;width:100%;ma
   text-transform:uppercase;color:#6a6a74;padding:0 22px;line-height:1.8;text-align:center}
 /* ── VERSO : la certification. Le rail d'intentions à gauche, tout le reste
       défile — « notamment si le texte de la box est très long ». */
-.dc-dos .tick{position:absolute;left:0;top:0;bottom:0;width:4px;display:flex;flex-direction:column;z-index:2}
+.dc-dos .tick{position:absolute;left:var(--trait);top:var(--trait);bottom:var(--trait);width:4px;display:flex;flex-direction:column;z-index:2}
 .dc-dos .tick i{flex:1 1 0;display:block}
-.dc-scroll{position:absolute;inset:0 0 0 4px;overflow-y:auto;-webkit-overflow-scrolling:touch;
-  padding:12px 15px 16px;display:flex;flex-direction:column;align-items:center;text-align:left;
+.dc-scroll{position:absolute;inset:var(--trait) var(--trait) var(--trait) calc(var(--trait) + 4px);
+  overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px 13px 20px;display:flex;flex-direction:column;align-items:center;text-align:left;
   scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.28) transparent}
 .dc-scroll::-webkit-scrollbar{width:3px}
 .dc-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.28)}
@@ -205,7 +211,10 @@ nav{display:flex;flex-direction:column;align-items:center;gap:30px;width:100%;ma
 .dc-cap .gl{position:absolute;display:block;overflow:visible;fill:#fff;left:0;top:0;width:100%;height:100%}
 .dc-f,.dc-duo>div{width:100%;margin-top:11px}
 .dc-f .k,.dc-duo .k{font-family:'Space Mono',monospace;font-size:7.5px;letter-spacing:.2em;
-  text-transform:uppercase;color:rgba(255,255,255,.5);display:block;margin-bottom:4px;line-height:1.5}
+  text-transform:uppercase;color:rgba(255,255,255,.5);display:block;margin-bottom:3px;line-height:1.4}
+/* B-A-BA : une mini-box est COLLÉE à son intitulé, pas flottante en dessous. */
+.dc-f.mat{margin-top:7px}
+.dc-f.mat .k{margin-bottom:2px}
 .dc-f .v,.dc-duo .v{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.05em;
   color:#fff;display:block;line-height:1.5}
 .dc-dos .nm{display:block;font-family:'Quantico',sans-serif;font-size:13px;line-height:1.45;color:#fff;
@@ -224,32 +233,55 @@ nav{display:flex;flex-direction:column;align-items:center;gap:30px;width:100%;ma
   letter-spacing:.14em;text-transform:uppercase;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.9);
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:left}
 /* LE TOTEHMISATEUR — son papier perforé, avec le mot TOTEHM dessus. */
-.dc-sig{position:relative;width:124px;aspect-ratio:1;flex:none;margin:16px auto 2px;
-  background:var(--tile-full) center/100% 100%;display:flex;flex-direction:column;align-items:center}
-.dc-sig .k{font-family:'Space Mono',monospace;font-size:6.5px;letter-spacing:.2em;text-transform:uppercase;
-  color:rgba(255,255,255,.62);margin-top:14px}
-.dc-sig .who{font-family:'Quantico',sans-serif;font-size:12px;color:var(--coral);
-  text-decoration:none;margin-top:4px;position:relative;z-index:2}
+/* ── LE TOTEHM DU MEMBRE · 09/11 (Wah) ────────────────────────────────────
+   « Le profil utilisateur se caractérise par le TOTEHM VERSION VERSO AVEC LE
+   NOM CENTRÉ EN CORAL. » C'est le PAPIER CARRÉ, 12 trous, `--perfo-dc` posé en
+   MASQUE : les trous laissent voir la couleur de la card derrière — ils ne sont
+   pas dessinés en noir. La forme et le nombre de trous ne changent JAMAIS ;
+   si le nom est trop long, c'est le TEXTE qui rétrécit. */
+.dc-sig{position:relative;width:148px;aspect-ratio:1;flex:none;margin:18px auto 0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center}
+.dc-sig .pap{position:absolute;inset:0;background:#333366;
+  -webkit-mask-image:var(--perfo-dc);mask-image:var(--perfo-dc);
+  -webkit-mask-size:100% 100%;mask-size:100% 100%}
+.dc-sig .k{position:relative;z-index:2;font-family:'Space Mono',monospace;font-size:6.5px;
+  letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.62);margin-bottom:5px}
+.dc-sig .who{position:relative;z-index:2;font-family:'Quantico',sans-serif;font-size:14px;
+  line-height:1.25;color:var(--coral);text-decoration:none;text-align:center;padding:0 14px;
+  max-width:100%;word-break:break-word;transition:filter .15s ease}
 @media(hover:hover){.dc-sig a.who:hover{filter:brightness(1.25)}}
-.dc-sig .lg{position:absolute;inset:0;pointer-events:none}
-.dc-sig .gl{position:absolute;display:block;overflow:visible;fill:#fff}
-.dc-sig .g-wm{left:16%;top:56%;width:68%;height:21%}
+/* LE MOT TOTEHM fait la JONCTION entre le papier du membre et la CARD (Wah,
+   09/11) : il chevauche le bord bas du papier et DÉBORDE de chaque côté —
+   c'est ce qui relie le TOTEHM du membre au TOTEHM CLOTH CARD. */
+.dc-wm{position:relative;width:min(100%,198px);height:28px;margin:-13px auto 0;z-index:3;flex:none}
+.dc-wm .gl{position:absolute;inset:0;display:block;width:100%;height:100%;overflow:visible;fill:#fff}
 /* ── SOUS LA CARD : UNE SEULE TUILE, qui se TRANSFORME ────────────────────
    Wah : « le nom du totehm côté recto se transforme de l'autre côté verso en
    dope avec le nombre de personnes qui ont dopé ». Même papier perforé, même
    place : rien ne disparaît pour réapparaître (règle de CONTINUITÉ). */
-.dc-joint{width:min(100%,340px);display:flex;flex-direction:column;align-items:center;margin-top:14px}
-.dc-joint .go{display:inline-flex;align-items:center;gap:10px;font-family:'Quantico',sans-serif;
-  font-size:15px;letter-spacing:.02em;text-transform:none;color:#fff;background:none;
-  border:7px solid transparent;border-image-source:var(--tile-full);border-image-slice:7 fill;
-  border-image-repeat:round;padding:1px 10px;cursor:pointer;-webkit-tap-highlight-color:transparent;
-  transition:filter .18s ease}
-.dc-joint .go b{font-family:'Space Mono',monospace;font-size:13px;font-weight:700;color:#fff}
+/* ── LA PIÈCE [HIGHER], VERSION VERSO · 09/11 (Wah) ───────────────────────
+   « Il y a le [Higher] version slogan en mode recto (marque) et le [Higher]
+   version slogan en mode verso (nom du Totehm Cloth). C'est toujours ainsi, il
+   ne faut surtout pas changer la forme et le nombre de trous. Si le nom est trop
+   grand alors il faut le faire plus petit. » C'est donc `#higher-dos` + `#hmask` :
+   600 × 200, RATIO 3, DIX-HUIT TROUS. Jamais une bordure qui l'imite, jamais une
+   tuile qui se répète. Le texte s'y centre et RÉTRÉCIT (`--dct`) ; la pièce, non.
+   L'écart sous la card suit l'imprimé : 2,5 % de la hauteur (`compose-artwork`). */
+.dc-joint{--dcw:min(100%,340px);width:var(--dcw);display:flex;flex-direction:column;
+  align-items:center;margin-top:calc(var(--dcw) * 1.5 * .025)}
+.dc-joint .go{position:relative;width:46%;aspect-ratio:3;display:flex;align-items:center;
+  justify-content:center;gap:8px;background:none;border:0;padding:0;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;transition:filter .18s ease}
+.dc-joint .go svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.dc-joint .go .t{position:relative;z-index:2;font-family:'Quantico',sans-serif;
+  font-size:var(--dct,15px);line-height:1.1;color:var(--coral);max-width:84%;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dc-joint .go b{position:relative;z-index:2;font-family:'Space Mono',monospace;
+  font-size:calc(var(--dct,15px) * .86);font-weight:700;color:#fff}
 @media(hover:hover){.dc-joint .go:hover{filter:brightness(1.22)}}
-.dc-turn{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.22em;text-transform:uppercase;
-  color:#55555e;margin-top:9px;background:none;border:0;padding:4px 8px;cursor:pointer;
-  -webkit-tap-highlight-color:transparent;transition:color .18s ease}
-@media(hover:hover){.dc-turn:hover{color:#9a9aa4}}
+/* 09/11 (Wah) : « le [TURN IT OVER] doit être pareil que le [DECODE A TOTEHM
+   CLOTH] » — c'est donc `.btn-sig`, le bouton de l'accueil, rien de plus. */
+.dc-turn{margin-top:12px}
 /* ── QUI A DOPÉ — des TOTEHM VERSO, le nom en coral au milieu ──────────────
    Wah, 09/11 : « une liste de Totehm côté verso, c'est-à-dire de format totehm
    verso, avec au milieu en coral le nom du totehm ». Le papier carré perforé,
@@ -261,10 +293,12 @@ nav{display:flex;flex-direction:column;align-items:center;gap:30px;width:100%;ma
   color:#55555e;padding:14px 0 10px;text-align:center}
 .dc-who .gr{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .dc-who a{position:relative;aspect-ratio:1;display:flex;align-items:center;justify-content:center;
-  text-decoration:none;background:var(--tile-full) center/100% 100%;-webkit-tap-highlight-color:transparent;
-  transition:filter .15s ease}
-.dc-who a span{font-family:'Quantico',sans-serif;font-size:12px;line-height:1.3;color:var(--coral);
-  text-align:center;padding:0 10px;word-break:break-word}
+  text-decoration:none;-webkit-tap-highlight-color:transparent;transition:filter .15s ease}
+.dc-who a i{position:absolute;inset:0;background:#333366;
+  -webkit-mask-image:var(--perfo-dc);mask-image:var(--perfo-dc);
+  -webkit-mask-size:100% 100%;mask-size:100% 100%}
+.dc-who a span{position:relative;z-index:2;font-family:'Quantico',sans-serif;font-size:12px;
+  line-height:1.25;color:var(--coral);text-align:center;padding:0 12px;word-break:break-word}
 @media(hover:hover){.dc-who a:hover{filter:brightness(1.25)}}
 .dc-who .none{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;
   color:#4e4e57;padding:10px 0;text-align:center}
@@ -919,7 +953,7 @@ function decodeHTML(d,signed){
     /* Les mini-boxes restent DANS leur box-mère, groupées par vue. */
     if(d.matter&&typeof d.matter==='object')
       corps+=Object.entries(d.matter).filter(([,a])=>(Array.isArray(a)?a:[]).length)
-        .map(([k,a])=>'<div class="dc-f"><span class="k">'+esc(DC_MW[k]||k)+'</span>'+
+        .map(([k,a])=>'<div class="dc-f mat"><span class="k">'+esc(DC_MW[k]||k)+'</span>'+
           a.map(x=>'<span class="mi">'+esc(x&&x.text||'')+'</span>').join('')+'</div>').join('');
   }
   /* LES PHOTOS : dans la card, pas dessous. Un tap les ouvre en plein écran. */
@@ -929,17 +963,16 @@ function decodeHTML(d,signed){
   const duo='<div class="dc-duo">'+
     '<div><span class="k">totehmization date</span><span class="v">'+esc(String(d.created_at||'—'))+'</span></div>'+
     (serie?'<div><span class="k">artistic style / artist</span><span class="v">'+serie+'</span></div>':'')+'</div>';
+  /* 09/11 (Wah) : « pas besoin de la description du vêtement dans le verso ». */
   const support=d.garment?'<div class="dc-f"><span class="k">totehm cloth support</span><span class="v">'+
-    esc(d.garment)+(d.size?' · '+esc(d.size):'')+'</span>'+
-    (d.garment_details?'<span class="k" style="margin:6px 0 0;text-transform:none;letter-spacing:.04em">'+esc(String(d.garment_details))+'</span>':'')+
-    '</div>':'';
+    esc(d.garment)+(d.size?' · '+esc(d.size):'')+'</span></div>':'';
   /* LE TOTEHMISATEUR : son papier perforé, le mot TOTEHM dessus, son nom en
      coral — et un tap mène à sa page d'ABONNEMENT sur COM. */
   const nom=esc(d.owner||'');
-  const sig=d.owner?'<div class="dc-sig"><span class="k">totehmized by</span>'+
+  const sig=d.owner?'<div class="dc-sig"><i class="pap"></i><span class="k">totehmized by</span>'+
     (d.owner_id?'<a class="who" href="'+COM_AT(d.owner)+'" rel="noopener">'+nom+'</a>'
                :'<span class="who">'+nom+'</span>')+
-    '<span class="lg" aria-hidden="true"><svg class="gl g-wm"><use href="#lg-wm"/></svg></span></div>':'';
+    '</div><span class="dc-wm" aria-hidden="true"><svg class="gl"><use href="#lg-wm"/></svg></span>':'';
   const etape=d.stage&&DC_STAGE[d.stage]?'<div class="dc-f"><span class="k">'+DC_STAGE[d.stage]+'</span></div>':'';
   const dos='<div class="dc-face dc-dos" id="dc-dos">'+
       (tick?'<span class="tick">'+tick+'</span>':'')+
@@ -953,35 +986,79 @@ function decodeHTML(d,signed){
       '</div></div>';
   /* SOUS LA CARD, UNE SEULE TUILE QUI SE TRANSFORME : le NOM au recto, le DOPE
      au verso. Même papier perforé, même place — rien ne disparaît. */
+  /* LA PIÈCE [HIGHER] en mode VERSO : elle porte le NOM du Cloth au recto de la
+     card, « dope N » au verso. Même pièce, même place — 600×200, 18 trous. */
   const joint='<div class="dc-joint">'+
       '<button type="button" class="go" id="dc-tile" aria-pressed="'+(d.i_doped?'true':'false')+'">'+
-        '<span id="dc-tile-t">'+esc(d.name||'')+'</span></button>'+
-      '<button type="button" class="dc-turn" id="dc-turn">turn it over</button>'+
+        '<svg viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-dos"/></svg>'+
+        '<span class="t" id="dc-tile-t">'+esc(d.name||'')+'</span></button>'+
+      '<button type="button" class="btn-sig dc-turn" id="dc-turn">Turn it over</button>'+
     '</div><div class="dc-who" id="dc-who"></div>';
   return card+joint+
     (signed?'':'<button class="btn-sig" type="button" data-eco-connect="1">CONNECT WITH MY TOTEHM</button>');
 }
-/* Le NOM au recto, « dope N » au verso : c'est la MÊME tuile qui change de mot. */
+/* Le NOM au recto, « dope N » au verso : c'est la MÊME pièce qui change de mot.
+   ⚠️ LA PIÈCE NE CHANGE JAMAIS (Wah, 09/11) — ni sa forme, ni ses 18 trous.
+   C'est le TEXTE qui rétrécit quand le nom est long : `--dct`, mesuré sur la
+   largeur de la pièce, jamais moins de 9 px. */
+const HIGHER_SVG='<svg viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-dos"/></svg>';
 function dcTuile(){
-  const b=$('dc-tile'),t=$('dc-tile-t'),p=$('dc-piece');
-  if(!b||!t||!p||!DECODED)return;
-  if(p.classList.contains('is-back')){
-    b.innerHTML='dope <b id="dc-dope-n">'+(Number(DECODED.dopes)||0)+'</b>';
-    b.setAttribute('aria-pressed',DECODED.i_doped?'true':'false');
-  }else{
-    b.innerHTML='<span id="dc-tile-t">'+esc(DECODED.name||'')+'</span>';
+  const b=$('dc-tile'),p=$('dc-piece');
+  if(!b||!p||!DECODED)return;
+  const dos=p.classList.contains('is-back');
+  b.innerHTML=HIGHER_SVG+(dos
+    ?'<span class="t">dope</span><b id="dc-dope-n">'+(Number(DECODED.dopes)||0)+'</b>'
+    :'<span class="t" id="dc-tile-t">'+esc(DECODED.name||'')+'</span>');
+  b.setAttribute('aria-pressed',dos&&DECODED.i_doped?'true':'false');
+  /* Le texte tient DANS la pièce : on part de 4,4 % de sa largeur et on descend
+     tant qu'il déborde. La pièce garde ses proportions, toujours. */
+  const t=b.querySelector('.t'); if(!t)return;
+  let px=Math.max(9,Math.round(b.getBoundingClientRect().width*0.14));
+  b.style.setProperty('--dct',px+'px');
+  for(let i=0;i<14&&t.scrollWidth>t.clientWidth+1&&px>9;i++){
+    px-=1; b.style.setProperty('--dct',px+'px');
   }
+}
+/* ══ LE SCROLL RETOURNE LA CARD · 09/11 (Wah) ═════════════════════════
+   « La card doit aussi pouvoir se retourner avec un scroll, ce qui permettra à
+   coup sûr à chacun y ait accès » · « et si tu scroll en mode inverse ça remet
+   la card en mode recto avec l'œuvre et le nom ». Vers le BAS = le verso, vers
+   le HAUT = l'œuvre. ⚠️ Au verso, le DÉFILEMENT INTERNE passe d'abord : la card
+   ne tourne qu'une fois son bord atteint — la règle du rouleau de streetwear.
+   Un verrou de 520 ms : une inertie de trackpad ne la fait pas tourner deux fois. */
+let DC_LOCK=0, DC_Y=0;
+function dcGeste(bas){
+  const p=$('dc-piece'); if(!p)return false;
+  const dos=p.classList.contains('is-back');
+  if(bas===dos){                      /* on va déjà dans le sens où l'on est */
+    if(!dos)return false;
+    const sc=$('dc-scroll');
+    if(sc&&sc.scrollTop>1)return false;          /* il reste du verso à remonter */
+    if(bas)return false;
+  }
+  if(dos){
+    const sc=$('dc-scroll');
+    if(sc){
+      if(bas&&sc.scrollTop+sc.clientHeight<sc.scrollHeight-1)return false;
+      if(!bas&&sc.scrollTop>1)return false;
+    }
+  }
+  const t=Date.now(); if(t-DC_LOCK<520)return true;
+  DC_LOCK=t; dcRetourner(); return true;
 }
 function dcRetourner(){
   const p=$('dc-piece'); if(!p)return;
   p.classList.toggle('is-back');
-  const t=$('dc-turn'); if(t)t.textContent=p.classList.contains('is-back')?'see the artwork':'turn it over';
+  const t=$('dc-turn'); if(t)t.textContent=p.classList.contains('is-back')?'See the artwork':'Turn it over';
   dcTuile();
   const w=$('dc-who'); if(w&&!p.classList.contains('is-back'))w.classList.remove('is-open');
 }
 async function loadArt(name,seq){
   try{
-    const r=await fetch(SSO_FN+'cloth-art',{method:'POST',headers:{'content-type':'application/json','apikey':SB_ANON,'authorization':'Bearer '+SB_ANON},body:JSON.stringify({name})});
+    /* 09/11 : `for:'card'` rend l'ŒUVRE NUE — la card dessine SON cadre, au même
+       1,2 % que l'imprimé. Une pièce composée avant ce lot n'a pas de fichier nu :
+       le serveur retombe alors sur l'impression, qui porte déjà le sien. */
+    const r=await fetch(SSO_FN+'cloth-art',{method:'POST',headers:{'content-type':'application/json','apikey':SB_ANON,'authorization':'Bearer '+SB_ANON},body:JSON.stringify({name,for:'card'})});
     const j=await r.json().catch(()=>({}));
     if(seq!==DECODE_SEQ)return;
     if(!r.ok||!j.url){if(r.status!==404)console.error('[cloth-art]',r.status,j.error);const b=$('dc-art');if(b){b.classList.add('is-wait');b.innerHTML='<span>The artwork lands with the cloth.</span>';}return;}
@@ -1034,7 +1111,7 @@ async function loadDopers(name,seq){
      totehm verso, avec au milieu en coral le nom du totehm ». Le papier carré
      perforé, pas une pastille ; un tap mène à sa page d'abonnement sur COM. */
   g.innerHTML='<div class="hd">doped by</div>'+(l.length
-    ? '<div class="gr">'+l.map(p=>'<a href="'+COM_AT(p.pseudo)+'" rel="noopener"><span>'
+    ? '<div class="gr">'+l.map(p=>'<a href="'+COM_AT(p.pseudo)+'" rel="noopener"><i></i><span>'
         +esc(String(p.pseudo||''))+'</span></a>').join('')+'</div>'
     : '<div class="none">nobody yet</div>');
 }
@@ -1365,6 +1442,23 @@ $('decode-fs').addEventListener('click',e=>{
      écran, le nom du totehmisateur) : c'est `turn it over` qui ramène à l'œuvre. */
   if(e.target.closest('.dc-devant')){dcRetourner();return;}
 });
+/* LE SCROLL RETOURNE LA CARD — molette, trackpad et DOIGT. Le verso défile
+   d'abord ; la card ne tourne qu'à son bord. On n'empêche le défilement de la
+   page que lorsqu'on prend le geste, jamais avant. */
+$('decode-fs').addEventListener('wheel',e=>{
+  const p=e.target.closest&&e.target.closest('.dc-piece'); if(!p)return;
+  if(Math.abs(e.deltaY)<4)return;
+  if(dcGeste(e.deltaY>0))e.preventDefault();
+},{passive:false});
+$('decode-fs').addEventListener('touchstart',e=>{
+  if(e.target.closest&&e.target.closest('.dc-piece'))DC_Y=e.touches[0].clientY;
+},{passive:true});
+$('decode-fs').addEventListener('touchmove',e=>{
+  const p=e.target.closest&&e.target.closest('.dc-piece'); if(!p)return;
+  const dy=DC_Y-e.touches[0].clientY;
+  if(Math.abs(dy)<26)return;
+  if(dcGeste(dy>0)){DC_Y=e.touches[0].clientY;if(e.cancelable)e.preventDefault();}
+},{passive:false});
 $('dc-full-x').onclick=pleinFermer;
 $('dc-full').addEventListener('click',e=>{if(e.target.id==='dc-full')pleinFermer();});
 /* « Précédent » ferme la couche du dessus, jamais le site d'un coup. */
@@ -1444,7 +1538,7 @@ document.querySelectorAll('[data-club]').forEach(a => a.addEventListener('click'
 }));
 
 /* Diagnostic — des booléens, jamais une valeur de membre. */
-const BUILD='2026-11-09-card';
+const BUILD='2026-11-09-card-pieces';
 window.__totehm_boutique=()=>({ build:BUILD, page:'home', luxury_link:!!document.querySelector('a[href="/luxury"]'),
   club_links:document.querySelectorAll('[data-club]').length, logos:document.querySelectorAll('.brand-logo,img[src*="champion"]').length,
   collab:/Champion 2026/.test(document.getElementById('collab')?.textContent||''), branding_space:document.getElementById('brand-btn')?.dataset.space==='/',

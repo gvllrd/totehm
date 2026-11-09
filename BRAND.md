@@ -61,8 +61,7 @@ useful.** Quelque chose qu'on découvre, pas qu'une entreprise annonce. Jamais u
 développement personnel, un réseau social classique, une marque streetwear classique.
 - *Think same. But opposite.* : JUST DO IT → **GET HIGHER** · FIGHT CLUB → **FIGHER CLUB** · MAKE AMERICA GREAT AGAIN
   → **MAKE THE WORLD GREAT AGAIN** (pas un produit politique).
-- Chaque punchline atterrit sur une idée concrète. *Don't perform your life. · Your clothes should mean something.*
-- **Préférer** : GET HIGHER · BUILD YOUR SYSTEM · DECODE · TOTEHMIZE · WRITE IT · WEAR IT · PLAY THE STREET. **Jamais** :
+- Chaque punchline atterrit sur une idée concrète. *Don't perform your life. · Your clothes should mean something.* - **Préférer** : GET HIGHER · BUILD YOUR SYSTEM · DECODE · TOTEHMIZE · WRITE IT · WEAR IT · PLAY THE STREET. **Jamais** :
   platform · solution · innovative · seamless · empower · next-generation · AI-powered · community-driven.
 - Interface en anglais, **le moins de mots possible : le design parle** ; un mot qu'une autre ligne dit déjà s'efface,
   et une expérience ne s'explique pas (ni « how it works », ni titre qui répète le nom de la collection). À l'écran « element », jamais « Box » ;
@@ -86,15 +85,16 @@ développement personnel, un réseau social classique, une marque streetwear cla
 TOTEHM.SPACE : Lisbon, azulejos bleus et blancs, et New York, briques rouges à cinq niveaux en rampes. Ruine et ultra-moderne : pans de pierre incomplets, arases cassées, azulejos disparus et briques fracturées dans de grands plans de verre nets, entrées aux cadres fins et lumière chaude rasante, au sommet d’une Terre engloutie : beauté, grandeur, peur et renouveau.
 Voie lactée à travers le toit, lune et mer déchaînée ; calçada à vagues et caravelle dehors, vraies dalles anciennes en volume, grain photographique et comptoir pierre dedans.
 La bouche originale, sa langue et son TOTEHM monumentaux occupent le centre sans fenêtres des deux façades ; feu vivant et crépitement dedans. Intérieurs minimalistes, pierre ancienne visible derrière le verre, mêmes dalles dans les deux lieux ; murs blancs d’exposition dégagés des rampes à chaque étage. New York conserve son asphalte, sans Statue de la Liberté.
-Space est l’accueil : livre noir fermé sur pupitre vers Origins à pages tournantes, écran Lisbon et cadre premium Stoner vers leurs propres pages plein écran ; THP en petits papiers perforés.
-Sans colonnes ni végétation, la terrasse ouvre la vue sur les déferlants ; Espace propulse vers les étoiles et le globe englouti.
+Space est l’accueil : livre noir fermé sur pupitre vers Origins à pages tournantes, écran Lisbon et cadre premium Stoner vers leurs propres pages plein écran ; THP en petits papiers perforés. Sans colonnes ni végétation, la terrasse ouvre la vue sur les déferlants ; Espace propulse vers les étoiles et le globe englouti.
 Vent et mer, crépitement à l’approche du feu. Pages et marché indépendants conservés ; Collect garde achat et revente.
 
 ## Les vêtements
 
 Un vêtement porte **n'importe quelle box** du TOTEHM, dans un style artistique déterminé ; nom unique `0.Nom`
-(collection 2026-27), retrouvé par Decode. **LE NOM D'UN CLOTH NE PARAÎT QUE DANS SON FORMAT D'ORIGINE** : Quantico
-coral sur la BOX PERFORÉE BLEU NAVY, le `0.` du serveur — dos du vêtement, œuvre, Telegram, page, message ; jamais un
-aplat, jamais une bordure qui l'imite, jamais nu. Sept concepts, Wah choisit, le client découvre l'œuvre à l'expédition.
+(collection 2026-27), retrouvé par Decode. **DEUX PIÈCES, DEUX MODES, JAMAIS DÉFORMÉES.** Le **[Higher]** (600 × 200,
+ratio 3, **18 trous**) : recto = le slogan, la marque ; **verso = le NOM D'UN CLOTH**, Quantico coral. Le **[TOTEHM]**
+(carré, **12 trous**) : recto = le logo, normal ou déplié ; **verso = le NOM D'UN MEMBRE, centré en coral** ; zoomé = son
+tableau de bord. La forme et le nombre de trous ne changent JAMAIS — un nom trop long RÉTRÉCIT, la pièce non ; les trous
+laissent voir ce qu'il y a derrière. Jamais un aplat, jamais une bordure qui l'imite, jamais nu. Sept concepts, Wah choisit, le client découvre l'œuvre à l'expédition.
 Sur higher.boutique **le TOTEHM est la commande** : un tap le décompose en trois papiers perforés (MY WISDOM STORY ·
 MY GRIND · MY VISION), une box tapée EST le choix ; les sept intentions y sont une COUTURE — et sur l'accueil, sept fils de couleur qui n'en font plus qu'un : la totehmisation même.
