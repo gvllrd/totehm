@@ -6,7 +6,7 @@ ligne une minute plus tard (Vercel).
 | site | dossier | ce que c'est |
 |---|---|---|
 | **totehm.com** | `com/` | l'écosystème : les 5 vues, ton TOTEHM, chercher un membre, s'abonner à lui, l'abonnement Higher |
-| **figher.club** | `club/` | le prolongement de la vue Spots : chercher, publier des spots, se rencontrer |
+| **figher.club** | `club/` | la sixième vue : le radar et la grille des spots visibles, le filtre par Habits parentes, publier un spot |
 | **higher.boutique** | `boutique/` | les vêtements totehmisés à partir des boxes MY STORY |
 | **totehm.space** | `space/` | deux galeries littorales : un château en ruine, un donjon en retrait et de grands volumes de verre ; espaces de plain-pied, sols de pierre continus et intérieur minimaliste ; mer déchaînée, ciel étoilé, œuvres et marché conservés |
 | — | `backend/` | le serveur : base Supabase, fonctions, automatisations n8n |
@@ -27,7 +27,7 @@ Un tap sur **●** déploie le TOTEHM : HABITS · OBJECTIVES · REPULSIONS · VI
 | `com/auth.html` · `creator.html` · `higher.html` | la connexion des 4 sites · la page d'un membre (`/@nom`) · la vente de Higher |
 | `com/console.html` · `monetize.html` · `terms.html` | l'ancienne console (encore liée par les paiements) · la plaquette créateur · les conditions |
 | `com/higherself.html` · `map.html` · `spot.html` · `club/totehmbot.html` | ce qu'ouvre TotehmBot sur Telegram |
-| `club/index.html` · `club/create.html` | le Club (radar) · son moteur de spot, ouvert dans totehm.com |
+| `club/index.html` · `club/create.html` | le Club (RADAR \| GRID, filtre, prise de spot) · l'ancien moteur, encore ouvert par TotehmBot |
 | `boutique/index.html` · `streetwear.html` · `luxury.html` · `terms_of_sale.html` | l'accueil · Streetwear · Luxury sur devis · les conditions de vente |
 | `space/index.html` + `gallery-*.mjs` | la galerie 3D |
 | `space/get_higher.html` · `stoner.html` · `play_lisbon_street.html` · `market.html`… | les œuvres et le marché de l'art |
