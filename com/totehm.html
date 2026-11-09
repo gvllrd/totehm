@@ -2166,6 +2166,11 @@ body.is-door #gate-door{opacity:1;transform:none;visibility:visible;pointer-even
 body.gate.entered #gate-door{opacity:0;visibility:hidden}
 #gate-door #mw-out-state,#gate-door #mw-claim-state{width:100%}
 #gate-door .mw-input{margin-bottom:0}
+/* ⚠️ 09/11 : AU TÉLÉPHONE, LA PORTE SOUS LE TOTEHM (Wah). Au-dessus, elle sortait de l'écran (email à −26 px sur
+   375×667, mesuré). Ordinateur inchangé. */
+@media(max-width:699px), (hover:none) and (pointer:coarse){
+  #gate-door{bottom:auto;top:calc(100% + clamp(22px,4dvh,40px));transform:translateY(6px)}
+}
 /* 11/10 — sans email : un compte invité Supabase (anonyme), le Totehm vit dans le nuage
    sous CET appareil ; « save it with my email » le rattache au même compte. */
 .mw-guest-start{border:0;border-radius:10px;padding:9px 14px;background:#1f1f24;color:#cfcfd6;cursor:pointer;
@@ -8293,7 +8298,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-11-09-spot-quand-ou';
+const BUILD='2026-11-09-porte-sous-totehm';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
