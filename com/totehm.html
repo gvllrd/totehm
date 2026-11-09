@@ -3730,6 +3730,15 @@ body.lv-g #lv-socket,body.lv-d #lv-socket{opacity:0}
 .ns-c small{font-size:9px;letter-spacing:.04em;color:#8a8a92}
 .ns-c.is-on small{color:#b8b8c2}
 .ns-tag{display:inline-block;padding:8px 2px;font:400 11.5px/1.3 'Space Mono',monospace;color:#b8b8c2}
+.ns-def{margin:0;font:400 10.5px/1.55 'Space Mono',monospace;color:#8a8a92;max-width:54ch}
+.ns-note-g{color:#b8b8c2}
+.ns-adr{display:flex;flex-wrap:wrap;gap:5px;align-items:center;width:100%}
+.ns-adr .ns-adrin{flex:1 1 160px;min-width:0;background:#1f1f24;border-radius:10px;padding:9px 11px}
+.ns-hits{display:flex;flex-direction:column;gap:4px;width:100%;margin-top:4px}
+.ns-hit{display:block;width:100%;text-align:left;border:0;border-radius:9px;padding:9px 11px;background:#1f1f24;
+  color:#b0b0b0;font:400 11px/1.4 'Space Mono',monospace;cursor:pointer}
+.ns-hit.is-on{background:#3a3a42;color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.45)}
+.ns-hit:focus-visible{outline:1px solid #fff;outline-offset:2px}
 .ns-in{border:0;outline:0;color:#fff;font-family:'Quantico',sans-serif;font-size:13px;color-scheme:dark}
 .ns-in:focus-visible{box-shadow:inset 0 0 0 1px rgba(255,255,255,.45)}
 .ns-min{width:76px}
@@ -4069,6 +4078,7 @@ div:not(:has(> :not(br,wbr))):hover,
 .ns-c small:hover,
 .ns-c.is-on small:hover,
 .ns-tag:hover,
+.ns-hit:hover,
 #rdr-pique:hover,
 #rdr-mode button:hover,
 .mf-x:hover,
@@ -7426,24 +7436,31 @@ const VX=(()=>{
   window.__totehm_vx=()=>({...diag, ouvert:qui||'', pret:!!(qui&&(SH.prete()||SHS.prete()))});
   return {media, spot, fermer, ouvert:()=>!!qui};
 })();
-/* ══ → PRENDRE UN SPOT, DANS LA VUE DE DROITE · 27/10/2026 ═══════════════════════════════════════════════════════════
-   Wah : « sur la vue de droite, la prise de spot doit être la même que sur figher.club : la vue d'en bas (les options
-   s'affichent petit à petit) ET celle d'en haut si l'utilisateur publie le spot NOW ou LATER — une fusion intelligente ».
-   Un panneau (`#rdr-new`, ancré en haut) : la Habit Box telle quelle → NOW | LATER → une question à la fois.
-     NOW   · I AM HERE      : la photo ou la vidéo (la capture en ligne, ≤ `clip_seconds`) → qui le voit → location on/off
-                              (+ together) → où (ma position, la ville en découle) → la durée → un mot
-     LATER · I WILL BE HERE : qui le voit → together (le point exact, toujours) → quand → où (ma position, ou un point posé
-                              sur la MAP) → la durée → un mot → une photo ou une vidéo (facultative)
-   Le serveur décide de tout (`spot_create_audience`, `spot_schedule_audience`, `spot_video_attach`) ; un spot NAÎT CACHÉ,
-   `spot_box_set` (rien d'éteint) montre sa box entière. Pendant la prise, la navigation attend (`is-nspot`) : CLOSE la rend. */
+/* ══ → PRENDRE UN SPOT, DANS LA VUE DE DROITE · 09/11/2026 ═══════════════════════════════════════════════════════════
+   Wah : « le questionnaire est intelligent : le choix d'une réponse entraîne ou non d'autres choix, avec une logique
+   implacable dans le flow ». Un panneau (`#rdr-new`, ancré en haut) qui DIT D'ABORD ce qu'est un spot, puis une
+   question à la fois — chacune n'apparaît que si la précédente l'appelle :
+     la Habit (la box telle quelle)
+     WHEN   [now] → aucune date : c'est maintenant   |   [later] → la date ET l'heure, tout de suite
+     WHERE  [here] = ma position, prise sur le geste |   [elsewhere] = une ADRESSE, lue et placée (Nominatim)
+            NOW impose HERE : « maintenant » ailleurs n'existe pas (logique de Wah).
+     WHO SEES IT  private · my subscribers · figher club (tous les TOTEHM : le plus proche de public)
+     TOGETHER  silent | social — le point est TOUJOURS exact, donc la question est toujours posée
+     la durée · un mot · le média (obligatoire en NOW, c'est la preuve ; facultatif en LATER)
+   `location on/off` n'existe plus : WHERE le disait déjà (doublon, Wah). Un spot porte donc son point exact, et c'est
+   « who sees it » qui garde la vie privée. Le serveur décide de tout (`spot_create_audience`,
+   `spot_schedule_audience`, `spot_video_attach`) ; un spot NAÎT CACHÉ, `spot_box_set` (rien d'éteint) montre sa box
+   entière. Pendant la prise, la navigation attend (`is-nspot`) : CLOSE la rend. */
 const NSPOT=(()=>{
   const DURS=[15,30,45,60,90,120,180];
-  const AUD=[['private','private'],['subscribers','my subscribers'],['figher','figher club']];
-  const POURQUOI={signin:'sign in again', habit:'save this Habit first', location:'location', mode:'silent or social',
+  const DEF='A spot is a Habit of your TOTEHM that becomes an action in space and time — one exact place, one exact moment.';
+  const CLUB='a habit, an objective, a repulsion — the closest thing to public.';
+  const AUD=[['private','private','me only'],['subscribers','my subscribers','only them'],['figher','figher club','every TOTEHM']];
+  const POURQUOI={signin:'sign in again', habit:'save this Habit first', location:'where', mode:'silent or social',
     duration:'the duration', video:'the photo or the video', position:'allow my location', too_many:'enough spots for now',
-    city:'no city near me · choose ON', audience:'who sees it', when:'a future date and time', place:'where'};
+    city:'no city near me', audience:'who sees it', when:'a future date and time', place:'where'};
   let R={clip_seconds:33, clip_max_bytes:48e6, duration_min:5, duration_max:720, horizon_days:90}, regles=false, seqPos=0;
-  const diag={ouverts:0, publies:0, refus:0, medias:0, cartes:0};
+  const diag={ouverts:0, publies:0, refus:0, medias:0, cartes:0, adresses:0};
   const N={};
   const pan=()=>$('rdr-new');
   const pad=n=>String(n).padStart(2,'0');
@@ -7452,9 +7469,11 @@ const NSPOT=(()=>{
   function neuf(){
     lacher(); seqPos++;
     const d=new Date(Date.now()+864e5);
-    Object.assign(N,{h:null, quand:'', media:null, path:'', capOuverte:false, aud:'', loc:'', mode:'', pos:null, city:'',
-      posErr:false, posBusy:false, dur:0, mot:'', date:d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()),
-      time:pad(d.getHours())+':'+pad(d.getMinutes()), point:null, pointSrc:'', pointVille:'', place:'', occupe:false, note:''});
+    Object.assign(N,{h:null, quand:'', media:null, path:'', capOuverte:false, aud:'', mode:'', ou:'',
+      pt:null, ptSrc:'', ptVille:'', ptNom:'', posErr:false, posBusy:false,
+      adr:'', hits:[], hit:-1, adrBusy:false, adrErr:'', adrSeq:0,
+      dur:0, mot:'', date:d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()),
+      time:pad(d.getHours())+':'+pad(d.getMinutes()), place:'', occupe:false, note:''});
   }
   neuf();
   async function lireRegles(){
@@ -7488,27 +7507,64 @@ const NSPOT=(()=>{
     if(error){ console.error('[moments upload]',error.message); return ''; }
     return path;
   }
+  /* ── LE LIEU : UN SEUL POINT (`N.pt`), d'où qu'il vienne ── La ville se déduit TOUJOURS de `cities.json`
+     (`villeDe`), jamais du géocodeur : c'est le même vocabulaire que le filtre `city` et que la carte. */
+  function poser(ll,src,nom){
+    const s=++seqPos;
+    N.pt={lat:ll.lat, lng:ll.lng}; N.ptSrc=src; N.ptNom=nom||''; N.ptVille=''; N.posErr=false; N.posBusy=false;
+    SPMAP.epingler(N.pt);
+    villeDe(ll.lat,ll.lng).then(v=>{ if(s===seqPos){ N.ptVille=v||''; peindre(); } });
+    peindre();
+  }
   /* la position, À CE GESTE seulement ; une réponse tardive n'écrase jamais une demande plus fraîche */
-  function localiser(pour){
+  function localiser(){
     const s=++seqPos; N.posErr=false; N.posBusy=true;
     if(!navigator.geolocation){ N.posBusy=false; N.posErr=true; return; }
-    navigator.geolocation.getCurrentPosition(async q=>{
+    navigator.geolocation.getCurrentPosition(q=>{
       if(s!==seqPos) return;
-      const ll={lat:q.coords.latitude, lng:q.coords.longitude}, v=await villeDe(ll.lat,ll.lng)||'';
-      if(s!==seqPos) return; N.posBusy=false;
-      if(pour==='point'){ N.point=ll; N.pointSrc='ici'; N.pointVille=v; SPMAP.epingler(ll); } else { N.pos=ll; N.city=v; }
-      peindre();
-    },()=>{ if(s!==seqPos) return; N.posBusy=false; N.posErr=true; peindre(); },{enableHighAccuracy:true, timeout:9000, maximumAge:120000});
+      poser({lat:q.coords.latitude, lng:q.coords.longitude},'ici','');
+    },()=>{ if(s!==seqPos) return; N.posBusy=false; N.posErr=true; peindre(); },
+      {enableHighAccuracy:true, timeout:9000, maximumAge:120000});
+  }
+  /* ── L'ADRESSE → UN POINT ── Nominatim (OpenStreetMap : le même fonds que les tuiles du Club). UNE requête
+     par GESTE, jamais à la frappe (leur règle, et la nôtre : rien de systématique) ; chaque réponse est gardée.
+     Injoignable, le refus se VOIT et le membre garde [here] ou la carte. */
+  const ADR=new Map();
+  async function chercherAdresse(){
+    const q=N.adr.trim();
+    if(q.length<3){ N.adrErr='write the address first'; return peindre(); }
+    if(N.adrBusy) return;
+    const s=++N.adrSeq, k=q.toLowerCase();
+    N.adrBusy=true; N.adrErr=''; N.hits=[]; N.hit=-1; peindre();
+    let l=ADR.get(k);
+    if(!l){
+      try{
+        const r=await fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=5&q='+encodeURIComponent(q),
+          {headers:{Accept:'application/json'}, referrerPolicy:'strict-origin-when-cross-origin'});
+        if(!r.ok) throw new Error('http '+r.status);
+        const d=await r.json();
+        l=(Array.isArray(d)?d:[]).map(x=>({lat:+x.lat, lng:+x.lon, nom:String(x.display_name||'').slice(0,160)}))
+          .filter(x=>Number.isFinite(x.lat)&&Number.isFinite(x.lng)&&x.lat>=-90&&x.lat<=90&&x.lng>=-180&&x.lng<=180);
+        ADR.set(k,l); if(ADR.size>40) ADR.delete(ADR.keys().next().value);
+      }catch(e){
+        console.error('[adresse]',e&&e.message||e);
+        if(s===N.adrSeq){ N.adrBusy=false; N.adrErr='addresses are unreachable · use here or the map'; peindre(); }
+        return;
+      }
+    }
+    if(s!==N.adrSeq) return;
+    diag.adresses++;
+    N.adrBusy=false; N.hits=l; N.adrErr=l.length?'':'no place with this address';
+    peindre();
   }
   /* LATER — un point posé sur la Terre : le panneau s'efface, un tap sur le globe le donne */
   function surLaCarte(){
     const p=pan(); if(!p) return;
     if(SPOTMODE.get()!=='map') SPOTMODE.set('map');
     p.hidden=true; document.body.classList.add('rdr-pique'); diag.cartes++;
-    SPMAP.piquer(async ll=>{
+    SPMAP.piquer(ll=>{
       document.body.classList.remove('rdr-pique');
-      if(ll){ const s=++seqPos; N.point=ll; N.pointSrc='carte'; N.pointVille='';
-        const v=await villeDe(ll.lat,ll.lng)||''; if(s===seqPos) N.pointVille=v; }
+      if(ll) poser(ll,'carte','');
       if(document.body.classList.contains('is-nspot')){ p.hidden=false; peindre(); }
     });
   }
@@ -7516,6 +7572,8 @@ const NSPOT=(()=>{
   const chip=(a,mot,on,sous)=>'<button type="button" class="sfc ns-c'+(on?' is-on':'')+'" '+a+' aria-pressed="'+!!on+'">'
     +esc(mot)+(sous?'<small>'+esc(sous)+'</small>':'')+'</button>';
   const grp=(mot,corps)=>'<div class="sfg"><div class="sfl">'+esc(mot)+'</div><div class="sfr">'+corps+'</div></div>';
+  const tag=t=>'<span class="ns-tag">'+esc(t)+'</span>';
+  const note=t=>'<p class="ns-def ns-note-g">'+esc(t)+'</p>';
   function habitHTML(){
     if(N.h) return '<div class="sfg"><div class="sfl">my habit</div><div class="sfbx"><div class="sfb is-on" role="button" tabindex="0" data-ns="reh"'
       +' aria-label="Change the Habit">'+boxTotehm('h',N.h,{})+'</div></div></div>';
@@ -7533,56 +7591,78 @@ const NSPOT=(()=>{
     if(oblig||N.capOuverte) return '<div class="sfg"><div class="sfl">'+esc(mot)+'</div><div class="ns-cap"></div></div>';
     return grp(mot,chip('data-ns="capo"','add one',false));
   }
-  const audHTML=()=>grp('who sees it',AUD.map(([v,m])=>chip('data-ns="aud" data-v="'+v+'"',m,N.aud===v)).join(''));
-  function locHTML(plan){
-    let h=grp('location',plan?'<span class="sfc ns-c is-on">on<small>the exact point</small></span>'
-      :chip('data-ns="loc" data-v="on"','on',N.loc==='on','the exact point')+chip('data-ns="loc" data-v="off"','off',N.loc==='off','the city only'));
-    if(plan||N.loc==='on') h+=grp('together',chip('data-ns="mode" data-v="silent"','silent',N.mode==='silent','nobody disturb me')
-      +chip('data-ns="mode" data-v="social"','social',N.mode==='social','we can talk'));
+  /* WHEN : deux réponses, et la date SEULEMENT si c'est « later ». */
+  const quandHTML=()=>grp('when',chip('data-ns="quand" data-v="now"','now',N.quand==='now','I am here')
+    +chip('data-ns="quand" data-v="later"','later',N.quand==='later','I will be here'));
+  const dateHTML=()=>grp('the day and the hour','<input class="sfc ns-in" type="date" aria-label="Date" data-nsi="date" value="'+esc(N.date)+'">'
+    +'<input class="sfc ns-in" type="time" aria-label="Time" data-nsi="time" value="'+esc(N.time)+'">'
+    +(dateOk()?'':tag('a future date · '+(R.horizon_days||90)+' days at most')));
+  /* WHERE : [here] ou [elsewhere]. NOW n'a pas le choix — maintenant, c'est ici. */
+  function ouHTML(){
+    const now=N.quand==='now';
+    let c=now?'<span class="sfc ns-c is-on">here<small>my position</small></span>'
+      :chip('data-ns="ou" data-v="ici"','here',N.ou==='ici','my position')
+       +chip('data-ns="ou" data-v="ailleurs"','elsewhere',N.ou==='ailleurs','an address');
+    if(N.pt) c+=tag(N.ptVille||N.ptNom.split(',')[0].trim()||'the exact point');
+    else if(N.ou==='ici'||now) c+=N.posErr?tag('allow my location')+chip('data-ns="retry"','try again',false):tag('finding my place…');
+    let h=grp('where',c);
+    if(N.ou==='ailleurs') h+=adresseHTML();
+    if(N.pt&&!now) h+='<div class="sfg"><input class="sfc ns-in ns-place" type="text" maxlength="120" autocomplete="off"'
+      +' placeholder="the place · optional" aria-label="The place" data-nsi="place" value="'+esc(N.place)+'"></div>';
     return h;
   }
-  const tag=t=>'<span class="ns-tag">'+esc(t)+'</span>';
-  function ouHTML(){
-    if(N.pos) return grp('where',tag(N.city||(N.loc==='off'?'no city near me · choose ON':'the exact point')));
-    return grp('where',N.posErr?tag('allow my location')+chip('data-ns="retry"','try again',false):tag('finding my place…'));
+  function adresseHTML(){
+    let h='<div class="sfg"><div class="sfl">the address</div><div class="ns-adr">'
+      +'<input class="sfc ns-in ns-adrin" type="text" maxlength="160" autocomplete="off" enterkeyhint="search"'
+      +' placeholder="street, number, city" aria-label="The address" data-nsi="adr" value="'+esc(N.adr)+'">'
+      +'<button type="button" class="sfc" data-ns="find"'+(N.adrBusy?' disabled':'')+'>'+(N.adrBusy?'reading…':'read it')+'</button>'
+      +'</div>';
+    if(N.adrErr) h+='<p class="lv-note">'+esc(N.adrErr)+'</p>';
+    if(N.hits.length) h+='<div class="ns-hits">'+N.hits.map((x,i)=>'<button type="button" class="ns-hit'+(N.hit===i?' is-on':'')
+      +'" data-ns="hit" data-v="'+i+'">'+esc(x.nom)+'</button>').join('')+'</div>';
+    h+='</div>';
+    h+=grp('or',chip('data-ns="carte"','on the map',N.ptSrc==='carte',N.ptSrc==='carte'?'the point is set':'tap the place'));
+    return h;
   }
+  const audHTML=()=>grp('who sees it',AUD.map(([v,m,s])=>chip('data-ns="aud" data-v="'+v+'"',m,N.aud===v,s)).join(''))
+    +(N.aud==='figher'?note(CLUB):'');
+  const ensHTML=()=>grp('together',chip('data-ns="mode" data-v="silent"','silent',N.mode==='silent','nobody disturb me')
+    +chip('data-ns="mode" data-v="social"','social',N.mode==='social','we can talk'));
   const durHTML=()=>grp('duration',DURS.map(d=>chip('data-ns="dur" data-v="'+d+'"',dureeTxt(d),N.dur===d)).join('')
     +'<input class="sfc ns-in ns-min" type="number" inputmode="numeric" min="'+(R.duration_min||5)+'" max="'+(R.duration_max||720)
     +'" placeholder="min" aria-label="Duration in minutes" data-nsi="dur" value="'+(N.dur&&!DURS.includes(N.dur)?N.dur:'')+'">');
   const motHTML=()=>'<div class="sfg"><div class="sfl">a word · optional</div><textarea class="sfc ns-in ns-mot" maxlength="400" rows="2"'
     +' placeholder="A word" aria-label="A word" data-nsi="mot">'+esc(N.mot)+'</textarea></div>';
-  const quandHTML=()=>grp('when','<input class="sfc ns-in" type="date" aria-label="Date" data-nsi="date" value="'+esc(N.date)+'">'
-    +'<input class="sfc ns-in" type="time" aria-label="Time" data-nsi="time" value="'+esc(N.time)+'">'
-    +(dateOk()?'':tag('a future date · '+(R.horizon_days||90)+' days at most')));
-  function pointHTML(){
-    let h=chip('data-ns="ici"','here',N.pointSrc==='ici',N.posBusy?'finding…':N.posErr?'allow my location':'my position')
-      +chip('data-ns="carte"','on the map',N.pointSrc==='carte','tap the place');
-    if(N.point) h+=tag(N.pointVille||'the exact point');
-    return grp('where',h)+(N.point?'<div class="sfg"><input class="sfc ns-in ns-place" type="text" maxlength="120" autocomplete="off"'
-      +' placeholder="the place · optional" aria-label="The place" data-nsi="place" value="'+esc(N.place)+'"></div>':'');
-  }
   const envoiHTML=mot=>'<div class="sfg"><button type="button" class="ns-go" data-ns="go"'+(N.occupe?' disabled':'')+'>'+mot+'</button>'
     +'<p class="lv-note ns-note" role="status" aria-live="polite">'+esc(N.note)+'</p></div>';
   function peindre(){
     const p=pan(); if(!p) return;
     if(CAP.dans(p)) CAP.fermer();          /* la capture en ligne rentre chez elle AVANT la peinture */
     if(p.hidden) return;
-    let h='<p class="sfl sf-aj">+ spot</p>'+habitHTML(), cap=false;
+    let h='<p class="sfl sf-aj">+ spot</p><p class="ns-def">'+esc(DEF)+'</p>'+habitHTML(), cap=false;
     if(N.h){
-      h+=grp('when',chip('data-ns="quand" data-v="now"','now',N.quand==='now','I am here')+chip('data-ns="quand" data-v="later"','later',N.quand==='later','I will be here'));
-      if(N.quand==='now'){
-        h+=mediaHTML(true); cap=!N.media;
-        if(N.media){ h+=audHTML();
-          if(N.aud){ h+=locHTML(false);
-            if(N.loc==='off'||(N.loc==='on'&&N.mode)){ h+=ouHTML();
-              if(N.pos&&(N.loc==='on'||N.city)){ h+=durHTML(); if(N.dur) h+=motHTML()+envoiHTML('I AM HERE'); } } } }
-      } else if(N.quand==='later'){
-        h+=audHTML();
-        if(N.aud){ h+=locHTML(true);
-          if(N.mode){ h+=quandHTML();
-            if(dateOk()){ h+=pointHTML();
-              if(N.point){ h+=durHTML();
-                if(N.dur){ h+=motHTML()+mediaHTML(false); cap=N.capOuverte&&!N.media; h+=envoiHTML('I WILL BE HERE'); } } } } }
+      h+=quandHTML();
+      const plan=N.quand==='later';
+      if(plan) h+=dateHTML();
+      if(N.quand&&(!plan||dateOk())){
+        h+=ouHTML();
+        if(N.pt){
+          h+=audHTML();
+          if(N.aud){
+            h+=ensHTML();
+            if(N.mode){
+              if(!plan){ h+=mediaHTML(true); cap=!N.media; }
+              if(plan||N.media){
+                h+=durHTML();
+                if(N.dur){
+                  h+=motHTML();
+                  if(plan){ h+=mediaHTML(false); cap=N.capOuverte&&!N.media; }
+                  h+=envoiHTML(plan?'I WILL BE HERE':'I AM HERE');
+                }
+              }
+            }
+          }
+        }
       }
     }
     h+='<div class="sfg"><div class="sfr sfa"><span></span><button type="button" class="sfc" data-ns="close">CLOSE</button></div></div>';
@@ -7591,19 +7671,20 @@ const NSPOT=(()=>{
       if(ho) CAP.ouvrir('h',String(N.h.t||'').trim(),null,{hote:ho, prendre, max:R.clip_seconds||33, fini:()=>peindre()}); }
   }
   function dire(t){ N.note=t||''; const n=pan()&&pan().querySelector('.ns-note'); if(n) n.textContent=N.note; }
-  /* ── LA PUBLICATION : le serveur dit oui ou pourquoi ── */
+  /* ── LA PUBLICATION : le serveur dit oui ou pourquoi ── Le point est TOUJOURS exact (`p_location:'on'`), donc
+     `p_mode` est toujours rempli : c'est ce que le serveur exige d'un spot dont le lieu est précis. */
   async function publier(){
-    if(N.occupe||!me||RO||!N.h) return;
+    if(N.occupe||!me||RO||!N.h||!N.pt||!N.mode) return;
     const plan=N.quand==='later', uid=me.id;
     N.occupe=true; dire(plan?'announcing…':'sending…'); const go=pan()&&pan().querySelector('.ns-go'); if(go) go.disabled=true;
     const fin=t=>{ N.occupe=false; diag.refus++; dire(t); const g=pan()&&pan().querySelector('.ns-go'); if(g) g.disabled=false; };
     if(!plan&&!N.path){ N.path=await envoyerMedia(N.media); if(uid!==(me&&me.id)) return; if(!N.path) return fin('not sent · try again'); }
+    const commun={p_habit:srv(N.h), p_duration_min:N.dur, p_lat:N.pt.lat, p_lng:N.pt.lng, p_city:N.ptVille||null,
+      p_comment:N.mot.trim()||null, p_mode:N.mode, p_location:'on', p_audience:N.aud};
     const corps=plan
-      ?{p_habit:srv(N.h), p_starts_at:new Date(N.date+'T'+N.time).toISOString(), p_duration_min:N.dur,
-        p_place:(N.place.trim()||N.pointVille||'the planned place').slice(0,120), p_lat:N.point.lat, p_lng:N.point.lng,
-        p_city:N.pointVille||null, p_comment:N.mot.trim()||null, p_mode:N.mode, p_location:'on', p_audience:N.aud}
-      :{p_habit:srv(N.h), p_duration_min:N.dur, p_video:N.path, p_lat:N.pos.lat, p_lng:N.pos.lng, p_city:N.city||null,
-        p_comment:N.mot.trim()||null, p_mode:N.loc==='on'?N.mode:null, p_location:N.loc, p_audience:N.aud};
+      ?Object.assign({}, commun, {p_starts_at:new Date(N.date+'T'+N.time).toISOString(),
+        p_place:(N.place.trim()||N.ptNom.split(',')[0].trim()||N.ptVille||'the planned place').slice(0,120)})
+      :Object.assign({}, commun, {p_video:N.path});
     const fn=plan?'spot_schedule_audience':'spot_create_audience';
     let {data,error}=await sb.rpc(fn,corps);
     /* une Habit toute neuve n'est peut-être pas encore en base (l'enregistrement attend) : on l'y pose, une fois */
@@ -7642,6 +7723,9 @@ const NSPOT=(()=>{
     if(CAP.dans(p)) CAP.fermer();
     p.hidden=true; p.innerHTML=''; SPMAP.epingler(null); neuf();
   }
+  /* Changer de temps ou de lieu REND le lieu : « now » reprend ma position, « elsewhere » repart de l'adresse. */
+  function oublierLieu(){ seqPos++; N.adrSeq++; N.pt=null; N.ptSrc=''; N.ptVille=''; N.ptNom=''; N.posErr=false;
+    N.posBusy=false; N.adrBusy=false; N.hits=[]; N.hit=-1; N.adrErr=''; N.place=''; SPMAP.epingler(null); }
   { const p=pan(); if(p){
     p.addEventListener('click',e=>{
       const t=e.target.closest('[data-ns]'); if(!t) return;
@@ -7651,24 +7735,32 @@ const NSPOT=(()=>{
       if(N.occupe) return;
       if(c==='h') N.h=(state.habits||[]).find(h=>String(h.id)===String(v))||null;
       else if(c==='reh') N.h=null;
-      else if(c==='quand'){ if(N.quand===v) return; N.quand=v; N.loc=v==='later'?'on':''; N.mode=''; N.capOuverte=false; }
+      else if(c==='quand'){ if(N.quand===v) return; N.quand=v; N.mode=''; N.capOuverte=false; oublierLieu();
+        /* NOW : le lieu ne se demande pas, il se prend (logique de Wah : maintenant = ici). */
+        if(v==='now'){ N.ou='ici'; localiser(); } else N.ou=''; }
+      else if(c==='ou'){ if(N.ou===v) return; N.ou=v; oublierLieu(); if(v==='ici') localiser(); }
+      else if(c==='retry') localiser();
+      else if(c==='find') return void chercherAdresse();
+      else if(c==='hit'){ const x=N.hits[+v]; if(!x) return; N.hit=+v; return poser(x,'adresse',x.nom); }
+      else if(c==='carte') return surLaCarte();
       else if(c==='nomedia'){ lacher(); N.capOuverte=true; }
       else if(c==='capo') N.capOuverte=true;
       else if(c==='aud') N.aud=v;
-      else if(c==='loc'){ N.loc=v; if(v==='off') N.mode=''; if(!N.pos&&!N.posBusy) localiser('pos'); }
-      else if(c==='mode'){ N.mode=v; if(N.quand==='now'&&!N.pos&&!N.posBusy) localiser('pos'); }
-      else if(c==='retry') localiser('pos');
+      else if(c==='mode') N.mode=v;
       else if(c==='dur') N.dur=+v||0;
-      else if(c==='ici') localiser('point');
-      else if(c==='carte') return surLaCarte();
       else return;
       peindre();
     });
     p.addEventListener('keydown',e=>{ const t=e.target.closest&&e.target.closest('.sfb[data-ns]');
       if(t&&(e.key==='Enter'||e.key===' ')){ e.preventDefault(); t.click(); } });
-    /* un mot, le nom du lieu : gardés à la frappe (rien ne se repeint sous le doigt) ; date, heure, durée : à la validation */
+    /* un mot, le nom du lieu, l'adresse : gardés à la frappe (rien ne se repeint sous le doigt) ; Entrée dans
+       l'adresse LIT l'adresse — une requête par geste, jamais une par lettre. Date, heure, durée : à la validation. */
     p.addEventListener('input',e=>{ const f=e.target.closest('[data-nsi]'); if(!f) return;
-      if(f.dataset.nsi==='mot') N.mot=f.value; else if(f.dataset.nsi==='place') N.place=f.value; });
+      const k=f.dataset.nsi;
+      if(k==='mot') N.mot=f.value; else if(k==='place') N.place=f.value;
+      else if(k==='adr'){ N.adr=f.value; N.adrErr=''; } });
+    p.addEventListener('keydown',e=>{ const f=e.target.closest&&e.target.closest('[data-nsi="adr"]');
+      if(f&&e.key==='Enter'){ e.preventDefault(); chercherAdresse(); } });
     p.addEventListener('change',e=>{ const f=e.target.closest('[data-nsi]'); if(!f||N.occupe) return; const k=f.dataset.nsi;
       if(k==='date') N.date=f.value; else if(k==='time') N.time=f.value;
       else if(k==='dur'){ const n=Math.round(+f.value); N.dur=n>=(R.duration_min||5)&&n<=(R.duration_max||720)?n:0; }
@@ -7686,7 +7778,7 @@ const NSPOT=(()=>{
   },{capture:true});
   return {ouvrir, fermer, ouvert:()=>document.body.classList.contains('is-nspot'),
           etat:()=>Object.assign({ouvert:document.body.classList.contains('is-nspot'), habit:!!N.h, quand:N.quand, media:!!N.media,
-            aud:N.aud, loc:N.loc, mode:N.mode, pos:!!N.pos, point:!!N.point, dur:N.dur}, diag)};
+            aud:N.aud, ou:N.ou, mode:N.mode, pt:!!N.pt, ptSrc:N.ptSrc, hits:N.hits.length, dur:N.dur}, diag)};
 })();
 window.__totehm_nspot=()=>NSPOT.etat();
 window.__totehm_rdr=()=>Object.assign(SPOTS.etat(),{club:CLUBSP.etat()});
@@ -8201,7 +8293,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-11-08-higher-context';
+const BUILD='2026-11-09-spot-quand-ou';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
