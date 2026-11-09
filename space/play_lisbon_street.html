@@ -202,6 +202,9 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
 .xp-lr{display:flex;justify-content:space-between;align-items:baseline}
 .xp-lp{font-family:'Space Mono',monospace;font-size:12px;color:var(--coral);letter-spacing:.04em}
 .xp-le{font-family:'Space Mono',monospace;font-size:8px;color:#8a8a8a;letter-spacing:.1em;text-transform:uppercase}
+.xp-teaser{margin-top:15px;padding-top:12px;border-top:1px solid #222}
+.xp-teaser p{margin:0 0 10px;font:10px/1.6 'Space Mono',monospace;color:#999}
+#xp-get-higher{display:inline-flex;align-items:center;gap:5px;min-height:40px;padding:9px 12px;text-decoration:none;font-size:11px;letter-spacing:.02em}
 
 /* ─── ROTATE PROMPT (board mode, portrait mobile) ─── */
 #rotate-prompt{
@@ -226,7 +229,7 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
 .thp-price::after{content:var(--thp,"")}
 
 @media(prefers-reduced-motion:reduce){
-  .disc-block,.world,.xp,.vbox-scene{transition:none}
+  .disc-block,.world,.xp,.vbox-scene,#xp-label{transition:none}
   .bob-chev,.sign-spin img,.rotate-spinner{animation:none}
 }
 
@@ -310,6 +313,10 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
       <span class="xp-lp" id="xp-artw-price">—</span>
       <span class="xp-le" id="xp-artw-edition">—</span>
     </div>
+    <div class="xp-teaser">
+      <p>Get a Totehmpaper, then go through the Stoner experience to get it.</p>
+      <a id="xp-get-higher" class="btn-sig" href="/get_higher" aria-label="Get Higher to get it"><span class="get-word">Get</span> <span class="higher-inline" role="img" aria-label="Higher"><svg viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-slogan"></use></svg></span> <span>to get it</span></a>
+    </div>
   </div>
   <button id="xp-buy" class="btn-sig" aria-label="Get Higher"><span class="get-word">Get</span> <span class="higher-inline" role="img" aria-label="Higher"><svg viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-slogan"></use></svg></span><span class="thp-price"></span></button>
 </div>
@@ -340,7 +347,7 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
 
 <script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-const BUILD = '2026-11-08-sso-sortie';
+const BUILD = '2026-11-09-lisbon-sign-animation-teaser';
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 const HIGHER_MARKUP = '<span class="higher-inline" role="img" aria-label="Higher"><svg viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-slogan"></use></svg></span>';
 const GET_HIGHER_MARKUP = '<span class="get-word">Get</span> ' + HIGHER_MARKUP;
@@ -562,10 +569,14 @@ document.addEventListener('visibilitychange', () => { if(!document.hidden) ssoVe
 
 // Artworks catalogue (video_key → artwork)
 const artworkMap = new Map();
+let refreshArtworkLabel = ()=>{};
 sb.from('artworks')
   .select('id,slug,title,price_cents,currency,edition_total,edition_sold,status,video_key')
   .eq('series','lisbonne')
-  .then(({ data }) => { if(data) data.forEach(a => artworkMap.set(a.video_key, a)); });
+  .then(({ data }) => {
+    if(data) data.forEach(a => artworkMap.set(a.video_key, a));
+    refreshArtworkLabel();
+  });
 
 async function hasAccess(){
   try{
@@ -589,6 +600,7 @@ let OWNED = false;
   // (sign sans oeuvre associee), au lieu de proposer "Get Higher — <prix>"
   // (achat THP), on propose [Get Higher] direct vers la methode.
   applyOwnedFallback();
+  document.getElementById('xp-get-higher').href = METHOD;
 })();
 
 function applyOwnedFallback(){
@@ -721,6 +733,13 @@ const SIGNS = {
   stop:               [73.3, 66.0, 11.6],
 };
 
+// A gallery gesture may select one original animation directly. Only the
+// catalogue's exact IDs select media; no URL or return destination is accepted.
+const entryQuery = new URLSearchParams(location.search);
+const requestedSign = entryQuery.get('sign');
+const directSign = entryQuery.get('play')==='1' && Object.hasOwn(SIGNS,requestedSign) ? requestedSign : null;
+const fromSpace = !!directSign && entryQuery.get('from')==='space';
+
 const world      = document.getElementById('world');
 const board      = document.getElementById('board');
 const xp         = document.getElementById('xp');
@@ -732,6 +751,12 @@ const xpBuy      = document.getElementById('xp-buy');
 
 let streetBusy = false;
 let resumeVideo = null;
+let activeSign = null;
+let playAttempted = false;
+let playbackBlocked = false;
+refreshArtworkLabel = ()=>{
+  if(activeSign && xp.classList.contains('up')) renderXpArtwork(activeSign);
+};
 
 for(const [id,[l,t,w]] of Object.entries(SIGNS)){
   const b = document.createElement('button');
@@ -790,16 +815,7 @@ function _vbTS(e){const t=e.changedTouches[0];vbGrab=true;vbSX=t.clientX;vbSY=t.
 function _vbTM(e){if(!vbGrab)return;const t=e.changedTouches[0];vbRX=Math.max(-80,Math.min(80,vbDRX-(t.clientY-vbSY)*.5));vbRY=vbDRY+(t.clientX-vbSX)*.7;}
 function _vbTE(){vbGrab=false;vbVX=0;vbVY=0;}
 
-function launchXp(id){
-  if(streetBusy) return;
-  streetBusy=true; lastXpFrom='world';
-  vid.src=VID_BASE+id+'.mp4'; vid.load();
-  vidWrap.classList.remove('in'); closeWorld(); xp.classList.add('up');
-
-  // Gallery label
-  const xpLabel = document.getElementById('xp-label');
-  xpLabel.classList.remove('in');
-  setBrandedText(document.getElementById('xp-artw-phrase'), PHRASES[id]);
+function renderXpArtwork(id){
   const aw = artworkMap.get(id);
   if(aw){
     setBrandedText(document.getElementById('xp-artw-title'), aw.title);
@@ -833,23 +849,50 @@ function launchXp(id){
       xpBuy.innerHTML = GET_HIGHER_MARKUP + '<span class="thp-price"></span>';
     }
   }
+}
+
+function launchXp(id,{immediate=false}={}){
+  if(streetBusy || !Object.hasOwn(SIGNS,id)) return;
+  activeSign=id;
+  streetBusy=true; lastXpFrom='world';
+  // The gallery's cross-page gesture cannot reliably carry audio activation.
+  // Muted autoplay starts the animation; native controls keep sound available.
+  vid.muted=!!immediate;vid.controls=!!immediate;
+  vid.src=VID_BASE+id+'.mp4'; vid.load();
+  vidWrap.classList.remove('in'); closeWorld(); xp.classList.add('up');
+
+  // Gallery label
+  const xpLabel = document.getElementById('xp-label');
+  xpLabel.classList.remove('in');
+  setBrandedText(document.getElementById('xp-artw-phrase'), PHRASES[id]);
+  renderXpArtwork(id);
 
   setTimeout(()=>{
     if(!xp.classList.contains('up')) return;
     vidWrap.classList.add('in');
     xpLabel.classList.add('in');
     if(document.hidden){ vid.controls=true; return; }
-    vid.play().catch(()=>{ vid.controls=true; });
+    playSignVideo();
     startVidBox();
-  },400);
+  },immediate?0:400);
+}
+
+function playSignVideo(){
+  playAttempted=true;playbackBlocked=false;
+  const source=vid.src;
+  vid.play().catch(()=>{
+    if(!xp.classList.contains('up') || vid.src!==source) return;
+    playbackBlocked=true;vid.controls=true;
+  });
 }
 
 function comeBack(){
   resumeVideo=null;
   vid.pause(); stopVidBox();
+  if(fromSpace){ location.assign('/lisbon-space'); return; }
   xp.classList.remove('up'); vidWrap.classList.remove('in');
   setTimeout(()=>{
-    vid.src=''; streetBusy=false;
+    vid.src=''; streetBusy=false;activeSign=null;
     if(lastXpFrom==='world'){ openWorld(); }
     else{
       ROCKS.forEach(r=>{ r.img.style.filter=''; });
@@ -862,10 +905,14 @@ function closeAll(){
   resumeVideo=null;
   vid.pause(); stopVidBox();
   xp.classList.remove('up'); closeWorld(); vidWrap.classList.remove('in');
-  setTimeout(()=>{ vid.src=''; streetBusy=false; },300);
+  setTimeout(()=>{ vid.src=''; streetBusy=false;activeSign=null; },300);
 }
 
-vid.addEventListener('ended', comeBack);
+vid.addEventListener('ended', ()=>{
+  // Keep the invitation visible after the direct teaser finishes.
+  if(directSign){ stopVidBox();vid.controls=true;return; }
+  comeBack();
+});
 xpClose.addEventListener('click', comeBack);
 worldClose.addEventListener('click', closeAll);
 
@@ -999,9 +1046,9 @@ function resetRocks(){
 function startAsteroids(){
   if(astRaf) return;
   if(!ROCKS.length) SIGN_ENTRIES.forEach(([id,[l,t,w]])=>ROCKS.push(spawnRock(id,l,t,w)));
-  if(reducedMotion.matches || document.hidden || snapping || boardMode) return;
+  if(reducedMotion.matches || document.hidden || snapping || boardMode || xp.classList.contains('up')) return;
   function tick(){
-    if(snapping || boardMode || reducedMotion.matches || document.hidden){ astRaf=null; return; }
+    if(snapping || boardMode || reducedMotion.matches || document.hidden || xp.classList.contains('up')){ astRaf=null; return; }
     const W=window.innerWidth,H=window.innerHeight;
     for(let i=0;i<ROCKS.length;i++){
       for(let j=i+1;j<ROCKS.length;j++){
@@ -1067,10 +1114,10 @@ function enterBoardMode(){
   const br=getBoardRect();
   ROCKS.forEach(r=>{
     if(r.id!=='destination'){
-      const angle=(Math.random()*80-40).toFixed(1);
+      const angle=(Math.random()*20-10).toFixed(1);
       const ox=(Math.random()*12-6).toFixed(1);
       const oy=(Math.random()*12-6).toFixed(1);
-      r.uLabel.style.cssText=`position:absolute;top:${50+Number(oy)}%;left:${50+Number(ox)}%;width:75%;transform:translate(-50%,-50%) rotate(${angle}deg);pointer-events:none;opacity:${r._pressed?1:0};transition:opacity .3s ease;`;
+      r.uLabel.style.cssText=`position:absolute;top:${50+Number(oy)}%;left:${50+Number(ox)}%;width:24%;transform:translate(-50%,-50%) rotate(${angle}deg);pointer-events:none;opacity:${r._pressed?1:0};transition:opacity .3s ease;`;
       r.uLabel.innerHTML='<svg viewBox="0 0 600 200" style="width:100%;height:auto;display:block"><use href="#higher-slogan"></use></svg>';
     }
     if(SPINNING.has(r.id) && !reducedMotion.matches){
@@ -1173,53 +1220,22 @@ function snapToBoard(){
 }
 
 function launchXpFromDisc(id){
-  if(streetBusy) return; streetBusy=true; lastXpFrom='disc';
+  if(streetBusy || !Object.hasOwn(SIGNS,id)) return; streetBusy=true; lastXpFrom='disc';activeSign=id;
+  vid.muted=false;vid.controls=false;
   vid.src=VID_BASE+id+'.mp4'; vid.load();
   vidWrap.classList.remove('in'); xp.classList.add('up');
 
   const xpLabel = document.getElementById('xp-label');
   xpLabel.classList.remove('in');
   setBrandedText(document.getElementById('xp-artw-phrase'), PHRASES[id]);
-  const aw = artworkMap.get(id);
-  if(aw){
-    setBrandedText(document.getElementById('xp-artw-title'), aw.title);
-    document.getElementById('xp-artw-price').textContent = new Intl.NumberFormat('en', { style:'currency', currency:String(aw.currency || 'eur').toUpperCase(), minimumFractionDigits: aw.price_cents % 100 ? 2 : 0 }).format(aw.price_cents/100);
-    const avail = aw.edition_total - aw.edition_sold;
-    const isSold = aw.status==='sold' || avail<=0;
-    document.getElementById('xp-artw-edition').textContent = isSold ? 'sold out' : avail+' / '+aw.edition_total;
-    xpBuy.dataset.artworkId = aw.id;
-    xpBuy.dataset.slug = aw.slug || '';
-    xpBuy.dataset.sold = isSold ? '1' : '0';
-    xpBuy.dataset.mode = '';
-    xpBuy.removeAttribute('aria-label');
-    xpBuy.textContent = isSold ? '— Sold —' : 'Acquire →';
-    xpBuy.disabled = isSold;
-    xpBuy.style.color = isSold ? '#222' : '';
-  } else {
-    document.getElementById('xp-artw-title').textContent = '';
-    document.getElementById('xp-artw-price').textContent = '';
-    document.getElementById('xp-artw-edition').textContent = '';
-    xpBuy.dataset.artworkId = '';
-    xpBuy.dataset.sold = '0';
-    xpBuy.disabled = false;
-    xpBuy.style.color = '';
-    if(OWNED){
-      xpBuy.dataset.mode = 'owned';
-      xpBuy.setAttribute('aria-label','Get Higher');
-      xpBuy.innerHTML = GET_HIGHER_MARKUP;
-    } else {
-      xpBuy.dataset.mode = '';
-      xpBuy.setAttribute('aria-label','Get Higher');
-      xpBuy.innerHTML = GET_HIGHER_MARKUP + '<span class="thp-price"></span>';
-    }
-  }
+  renderXpArtwork(id);
 
   setTimeout(()=>{
     if(!xp.classList.contains('up')) return;
     vidWrap.classList.add('in');
     xpLabel.classList.add('in');
     if(document.hidden){ vid.controls=true; return; }
-    vid.play().catch(()=>{vid.controls=true;});
+    playSignVideo();
     startVidBox();
   },400);
 }
@@ -1279,6 +1295,7 @@ function sdiscPrev(){
 
 /* démarrage */
 resetRocks(); sdiscReset(); startAsteroids();
+if(directSign){ stopAsteroids();launchXp(directSign,{immediate:true}); }
 
 sdiscBack.addEventListener('click',()=>{ window.location.href='/#lisbon'; });
 sdiscTrig.addEventListener('click',sdiscNext);
@@ -1343,7 +1360,9 @@ window.addEventListener('pageshow',syncMotion);
 window.__totehm_lisbon=()=>({
   build:BUILD,step:sdiscCur,board:boardMode,rocks:ROCKS.length,moving:!!astRaf,
   snapping,reduced_motion:reducedMotion.matches,visible:!document.hidden,
-  artwork:xp.classList.contains('up'),auth:authOverlay.classList.contains('in')
+  artwork:xp.classList.contains('up'),auth:authOverlay.classList.contains('in'),
+  activeSign,directSign,fromSpace,playAttempted,playbackBlocked,videoMuted:vid.muted,
+  teaser:true,teaserHref:document.getElementById('xp-get-higher').getAttribute('href')
 });
 }
 </script>

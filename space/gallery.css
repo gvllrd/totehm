@@ -43,3 +43,5 @@ body:not(.exploring) #space::after{content:"";position:absolute;inset:0;pointer-
 .building-levels[hidden]{display:none}
 .building-levels button{font:inherit;color:#bbb;background:#000;border:1px solid #333;border-radius:10px;padding:9px 12px;cursor:pointer;transition:color .2s,border-color .2s}
 .building-levels button:hover,.building-levels button:focus-visible{color:#fff;border-color:#fff}
+
+.street-sign-hint{position:fixed;left:50%;bottom:132px;transform:translateX(-50%);z-index:5;pointer-events:none;padding:10px 16px;background:#08080eea;border:1px solid #ffffff35;border-radius:6px;font:10px var(--mono);color:#fff;max-width:calc(100vw - 32px);text-align:center}.street-sign-links{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-top:28px}.street-sign-links a{display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 4px;border:1px solid #ffffff20;font-size:9px}.street-sign-links img{width:52px;height:52px;object-fit:contain}.street-sign-links small{color:#b9b5cb;font-size:8px}@media(max-width:650px){.street-sign-links{grid-template-columns:repeat(2,minmax(0,1fr))}.street-sign-hint{bottom:146px}}

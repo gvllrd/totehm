@@ -1,4 +1,4 @@
-// Native sign renders and actual pointer-to-card UI. The ocean is replaced
+// Native street objects and actual pointer-to-animation navigation. The ocean is replaced
 // by neutral test lighting so this focused check avoids its unrelated GPU cost.
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -13,7 +13,9 @@ let checks=0;const results=[];
 const check=(value,message)=>{assert(value,message);checks++;console.log('PASS '+message);};
 const canonicalIds=['fire_exit','Heli','aed','green_walk','red_walk','pharma','destination','lisboa_city_hall','speed_bump_caution','crosswalk_caution','no_entry','no_parking','hospital','parking','Hotel','dead_end','roundabout','left_or_straight','no_uturn','priority','crosswalk','stop'];
 assert.deepEqual(LISBON_STREET_SIGNS.map(s=>s.id).sort(),canonicalIds.slice().sort());
-const screenshotSigns=['priority','stop','roundabout','parking'].map(id=>LISBON_STREET_SIGNS.find(sign=>sign.id===id));
+const screenshotIds=['priority','Heli','crosswalk','Hotel','green_walk','destination','lisboa_city_hall','pharma'];
+const screenshotSigns=screenshotIds.map(id=>LISBON_STREET_SIGNS.find(sign=>sign.id===id));
+const animationClip=fs.readFileSync(new URL('../../space/assets/slides/init.mp4',import.meta.url));
 const fatal=log=>log.errors.filter(e=>/pageerror:|THREE.WebGLProgram|VALIDATE_STATUS|shader error|WebGL: INVALID/i.test(e));
 const fixture=`<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;width:100%;height:100%;background:#0c1420}canvas{display:block}</style></head><body><script type="module">
 import * as T from '/vendor/three-0.180.0.mjs';
@@ -24,15 +26,15 @@ const scene=new T.Scene();scene.background=new T.Color(0x0c1420);scene.add(new T
 const lamp=new T.DirectionalLight(0xffe5c7,2.2);lamp.position.set(12,25,35);scene.add(lamp);
 const camera=new T.PerspectiveCamera(48,innerWidth/innerHeight,.08,100);let dirty=true,frames=0;
 const gallery=createModernGallery(scene,renderer,{mobile:innerWidth<650,onChange:()=>{dirty=true;}});
-window.__signView=id=>{const sign=LISBON_STREET_SIGNS.find(s=>s.id===id),normal=new T.Vector3(Math.sin(sign.rotationY),0,Math.cos(sign.rotationY)),target=new T.Vector3(...sign.position);camera.position.copy(target).addScaledVector(normal,innerWidth<650?2.5:2.2);camera.position.y+=.12;camera.lookAt(target);camera.updateProjectionMatrix();dirty=true;};
+window.__signView=id=>{const sign=LISBON_STREET_SIGNS.find(s=>s.id===id),normal=new T.Vector3(Math.sin(sign.rotationY),0,Math.cos(sign.rotationY)),target=new T.Vector3(...sign.position),ground=sign.presentation.startsWith('ground-');if(ground){camera.position.copy(target).add(new T.Vector3(0,Math.max(5,sign.width*(innerWidth<650?2.7:1.35)),Math.max(2,sign.width*.5)));}else{camera.position.copy(target).addScaledVector(normal,Math.max(innerWidth<650?2.5:2.2,sign.width*(innerWidth<650?2.7:1.5)));camera.position.y+=.12;}camera.lookAt(target);camera.updateProjectionMatrix();dirty=true;};
 __signView('priority');
 renderer.setAnimationLoop(()=>{if(!dirty)return;dirty=false;gallery.update(0,camera.position,false);renderer.render(scene,camera);frames++;});
 window.__stickerContribution=id=>{
  let group;gallery.root.traverse(object=>{if(object.userData.lisbonStreetSign&&object.userData.signId===id)group=object;});
- const sticker=group.children.find(object=>object.name.startsWith('Higher sticker'));
- const target=new T.WebGLRenderTarget(96,96),visiblePixels=new Uint8Array(96*96*4),hiddenPixels=new Uint8Array(96*96*4),previous=renderer.getRenderTarget();
- renderer.setRenderTarget(target);renderer.render(scene,camera);renderer.readRenderTargetPixels(target,0,0,96,96,visiblePixels);
- sticker.visible=false;renderer.render(scene,camera);renderer.readRenderTargetPixels(target,0,0,96,96,hiddenPixels);sticker.visible=true;
+ const sticker=group.getObjectByName('Higher sticker — '+id);
+ const target=new T.WebGLRenderTarget(256,256),visiblePixels=new Uint8Array(256*256*4),hiddenPixels=new Uint8Array(256*256*4),previous=renderer.getRenderTarget();
+ renderer.setRenderTarget(target);renderer.render(scene,camera);renderer.readRenderTargetPixels(target,0,0,256,256,visiblePixels);
+ sticker.visible=false;renderer.render(scene,camera);renderer.readRenderTargetPixels(target,0,0,256,256,hiddenPixels);sticker.visible=true;
  renderer.setRenderTarget(previous);target.dispose();dirty=true;
  let different=0;for(let n=0;n<visiblePixels.length;n+=4)if(Math.abs(visiblePixels[n]-hiddenPixels[n])+Math.abs(visiblePixels[n+1]-hiddenPixels[n+1])+Math.abs(visiblePixels[n+2]-hiddenPixels[n+2])>12)different++;
  return different;
@@ -59,8 +61,11 @@ async function viewPriority(pg){
  await pg.waitForFunction(n=>__totehm_gallery().frames>n,before,{timeout:30000});
  const point=await project(pg,target.clone().addScaledVector(normal,.03).toArray());
  check(point.x>0&&point.x<await pg.evaluate(()=>innerWidth)&&point.y>0&&point.y<await pg.evaluate(()=>innerHeight),'The physical Priority sign is in the visitor viewport');
+ await pg.mouse.move(point.x,point.y);
+ if(await pg.evaluate(()=>innerWidth)>=650){await pg.waitForSelector('#street-sign-hint:not([hidden])');check((await pg.locator('#street-sign-hint').textContent()).includes('Make it useful'),'Hovering the physical cue offers Make it useful');}
  await pg.mouse.click(point.x,point.y);
- await pg.waitForFunction(()=>document.getElementById('work-info').dataset.artwork==='priority'&&!document.getElementById('work-info').hidden,null,{timeout:10000});
+ await pg.waitForURL(url=>url.pathname==='/play_lisbon_street'&&url.searchParams.get('sign')==='priority'&&url.searchParams.get('play')==='1'&&url.searchParams.get('from')==='space',{timeout:15000});
+ await pg.waitForFunction(()=>window.__totehm_lisbon?.().artwork&&__totehm_lisbon().activeSign==='priority',null,{timeout:15000});
 }
 const browser=await launch();
 try{
@@ -70,46 +75,47 @@ try{
    await pg.emulateMedia({reducedMotion:'reduce'});
    await pg.goto(origin+'/__street_sign_fixture');
    await pg.waitForFunction(()=>window.__signFixture?.().signs?.ready&&__signFixture().frames>0&&!__signFixture().pending,null,{timeout:60000});
-   for(const sign of screenshotSigns){
+   for(const sign of screenshotSigns.filter(sign=>viewport.width>=650||['priority','Heli','green_walk','pharma'].includes(sign.id))){
     const before=await pg.evaluate(()=>__signFixture().frames);
     await pg.evaluate(id=>__signView(id),sign.id);
     await pg.waitForFunction(n=>__signFixture().frames>n&&!__signFixture().pending,before,{timeout:30000});
     const contribution=await pg.evaluate(id=>__stickerContribution(id),sign.id);
-    check(contribution>10,'The '+sign.id+' Higher sticker visibly changes rendered pixels at '+viewport.width);
+    check(contribution>2,'The smaller '+sign.id+' Higher sticker still visibly changes rendered pixels at '+viewport.width);
     await pg.waitForFunction(()=>!__signFixture().pending);
     await pg.screenshot({path:OUT+'/'+viewport.width+'-'+sign.id+'.png'});
    }
    const d=await pg.evaluate(()=>__signFixture());
    check(d.signs.count===22&&d.signs.loaded===23&&d.signs.failed===0,'All twenty-two original sign PNGs and the Higher SVG load at '+viewport.width);
    check(d.shaderFailures===0&&!fatal(log).length,'The native street-sign collection compiles without browser or GPU errors at '+viewport.width);
-   check(d.signs.outside===12&&d.signs.inside===10&&d.signs.posts===16,'The full collection spans exterior and interior with sixteen solid street posts at '+viewport.width);
+   check(d.signs.semanticObjects&&d.signs.pharmacyAnimated&&d.signs.pedestrianPair,'The street objects include a luminous pharmacy and one paired pedestrian signal at '+viewport.width);
    results.push({kind:'fixture',viewport,diagnostics:d,errors:log.errors});
   }finally{await ctx.close();}
   if(fixtureOnly)continue;
   for(const place of ['lisbon','new-york']){
-   const {pg,ctx,log}=await page(browser,{dir:'space',origin,viewport,session:false,hasTouch:viewport.width<650,network:url=>url.pathname==='/gallery-temple-landscape.mjs'?{contentType:'text/javascript',body:neutralLandscape}:url.pathname==='/gallery-spatial.mjs'?{contentType:'text/javascript',body:spatialWithView}:null});
+   const {pg,ctx,log}=await page(browser,{dir:'space',origin,viewport,session:false,hasTouch:viewport.width<650,network:url=>url.pathname.startsWith('/storage/v1/object/public/play-signals/')?{contentType:'video/mp4',body:animationClip}:url.pathname==='/gallery-temple-landscape.mjs'?{contentType:'text/javascript',body:neutralLandscape}:url.pathname==='/gallery-spatial.mjs'?{contentType:'text/javascript',body:spatialWithView}:null});
    try{
     await pg.emulateMedia({reducedMotion:'reduce'});
     await pg.goto(origin+(place==='lisbon'?'/lisbon-space':'/new-york'),{waitUntil:'domcontentloaded'});
     await pg.waitForFunction(()=>{const d=window.__totehm_gallery?.();return d?.webgl&&!d.fallback&&d.frames>0&&(d.place!=='lisbon'||d.temple?.streetSigns?.ready);},null,{timeout:60000});
     if(place==='lisbon'){
+     const accessible=pg.locator('#lisbon .street-sign-links a');
+     check(await accessible.count()===22,'All original cues have accessible Make it useful links at '+viewport.width);
+     check(await accessible.filter({hasText:'Make it useful'}).count()===22,'The accessible cue actions use Make it useful at '+viewport.width);
      await viewPriority(pg);
-     check((await pg.locator('#work-note').textContent()).includes('Focus on your objectives'),'Clicking the real sign reveals its authored reading at '+viewport.width);
-     check(await pg.locator('#enter-experience').getAttribute('aria-label')==='Get Higher'&&await pg.locator('#enter-experience').isEnabled(),'The sign card offers Get Higher at '+viewport.width);
-     check(await pg.locator('#work-links a').getAttribute('href')==='/play_lisbon_street'&&await pg.locator('#work-links a').getAttribute('aria-label')==='Higher the Lisbon Streets','The sign card links to Higher the Lisbon Streets at '+viewport.width);
-     check(!await pg.locator('body').evaluate(o=>o.classList.contains('station-focused')),'The sign card does not inherit another artwork station layout at '+viewport.width);
-     await pg.screenshot({path:OUT+'/'+viewport.width+'-priority-card.png'});
-     await pg.click('#close-info');
-     check(await pg.locator('#work-info').isHidden()&&await pg.evaluate(()=>__totehm_gallery().selectedSign===null),'Closing the sign card clears its selection at '+viewport.width);
-     await viewPriority(pg);
-     await pg.click('.tour [data-room="0"]');
-     await pg.waitForFunction(()=>__totehm_gallery().focused===0&&!__totehm_gallery().moving,null,{timeout:30000});
-     check(await pg.evaluate(()=>__totehm_gallery().selectedSign===null)&&await pg.locator('#work-info').getAttribute('data-artwork')===null,'Choosing the edition table restores the normal artwork state at '+viewport.width);
-     await viewPriority(pg);
-     await pg.click('#enter-experience');
-     await pg.waitForURL(url=>url.pathname==='/get_higher',{timeout:15000});
-     check(new URL(pg.url()).pathname==='/get_higher','The sign Get Higher button opens the independent experience at '+viewport.width);
-    }else check(await pg.evaluate(()=>__totehm_gallery().temple.streetSigns===null&&__totehm_gallery().selectedSign===null),'New York keeps its scene free of Lisbon sign mounts and selection at '+viewport.width);
+     check(await pg.locator('#vid').getAttribute('src')===
+      'https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/public/play-signals/priority.mp4','The physical Priority cue opens its own original animation at '+viewport.width);
+     await pg.waitForFunction(()=>__totehm_lisbon().playAttempted&&!document.getElementById('vid').paused,null,{timeout:15000});
+     check(await pg.evaluate(()=>__totehm_lisbon().videoMuted&&document.getElementById('vid').controls),'Direct animation playback starts muted with visible controls at '+viewport.width);
+     check(await pg.locator('#xp-get-higher').getAttribute('href')==='/get_higher'&&await pg.locator('#xp-get-higher').getAttribute('aria-label')==='Get Higher to get it','The teaser points to Get Higher to get it at '+viewport.width);
+     check(await pg.locator('#xp-get-higher svg use[href="#higher-slogan"]').count()===1,'The teaser preserves the original Higher vector at '+viewport.width);
+     check((await pg.locator('.xp-teaser').textContent()).includes('Totehmpaper')&&(await pg.locator('.xp-teaser').textContent()).includes('Stoner'),'The cue remains a teaser for Totehmpaper and Stoner at '+viewport.width);
+     await pg.screenshot({path:OUT+'/'+viewport.width+'-priority-animation.png'});
+     await pg.click('#xp-get-higher');await pg.waitForURL(url=>url.pathname==='/get_higher',{timeout:15000});
+     check(new URL(pg.url()).pathname==='/get_higher','The teaser opens the Totehmpaper entry at '+viewport.width);
+     await pg.goBack();await pg.waitForSelector('#xp.up');await pg.click('#xp-close');
+     await pg.waitForURL(url=>url.pathname==='/lisbon-space',{timeout:15000});
+     check(new URL(pg.url()).pathname==='/lisbon-space','Back from an individual animation restores the Lisbon entry at '+viewport.width);
+    }else check(await pg.evaluate(()=>__totehm_gallery().temple.streetSigns===null&&__totehm_gallery().hoveredSign===null),'New York keeps its scene free of Lisbon sign mounts and selection at '+viewport.width);
     check(!fatal(log).length,'The '+place+' sign interaction check has no JavaScript or GPU errors at '+viewport.width);
     results.push({kind:'application',place,viewport,errors:log.errors});
    }finally{await ctx.close();}

@@ -12,7 +12,7 @@ import {createOppositeInstallation} from './gallery-opposite-installation.mjs';
 import {createRenderQuality} from './gallery-render-quality.mjs';
 import {glassRoofHeight} from './gallery-glass-shell.mjs';
 
-export async function createGallery({place='lisbon',select,onOverview=()=>{},onStationState=()=>{},onArtwork=()=>{},interact=()=>{},fallback,reduced}){
+export async function createGallery({place='lisbon',select,onOverview=()=>{},onStationState=()=>{},onArtwork=()=>{},onSignFocus=()=>{},interact=()=>{},fallback,reduced}){
  const newYork=place==='new-york';
  const ny=newYork?await Promise.all([import('./gallery-new-york.mjs'),import('./gallery-new-york-navigation.mjs'),import('./gallery-new-york-layout.mjs')]):null;
  const L=newYork?ny[2].NEW_YORK_LAYOUT:LISBON_LAYOUT;
@@ -130,9 +130,9 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
  }
  host.addEventListener('pointerdown',e=>{if(e.button!==0)return;host.focus({preventScroll:true});host.setPointerCapture(e.pointerId);down={x:e.clientX,y:e.clientY,lx:e.clientX,ly:e.clientY};dragged=false;});
  host.addEventListener('pointermove',e=>{
-  if(!down){host.style.cursor=hit(e)?'pointer':'grab';return;}
+  if(!down){const h=hit(e),data=h?.object.userData;host.style.cursor=h?'pointer':'grab';onSignFocus(data?.kind==='lisbon-street-sign'?{id:data.id,title:data.title}:null);return;}
   if(Math.hypot(e.clientX-down.x,e.clientY-down.y)>6)dragged=true;
-  if(dragged){free();yaw-=(e.clientX-down.lx)*.004;pitch=T.MathUtils.clamp(pitch+(e.clientY-down.ly)*.003,-1.55,1.35);look();dirty=true;}
+  if(dragged){onSignFocus(null);free();yaw-=(e.clientX-down.lx)*.004;pitch=T.MathUtils.clamp(pitch+(e.clientY-down.ly)*.003,-1.55,1.35);look();dirty=true;}
   down.lx=e.clientX;down.ly=e.clientY;
  });
  host.addEventListener('pointerup',e=>{
@@ -157,7 +157,8 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
    const destination=new T.Vector3(floor.x,GROUND+HEIGHT,floor.z),direction=gaze.clone().sub(eye);free();leaveStation();onOverview();groundedTravel(destination,destination.clone().add(direction));
   }
  });
- host.addEventListener('pointercancel',()=>{down=null;});
+ host.addEventListener('pointercancel',()=>{down=null;onSignFocus(null);});
+ host.addEventListener('pointerleave',()=>onSignFocus(null));
  document.addEventListener('keydown',e=>{
   if(e.target.closest('input,textarea,select,[contenteditable=true]')||list||hidden||paused)return;
   const interactive=!!e.target.closest('button,a,summary,[role=button]');
