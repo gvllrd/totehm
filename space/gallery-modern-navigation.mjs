@@ -17,7 +17,8 @@ function inside(b,x,z,margin){return x>b.minX-margin+EPS&&x<b.maxX+margin-EPS&&z
 // Rendering and movement read the same metre-sized wall and furniture boxes.
 // All vertical contacts sweep the complete step, including the first fast
 // centimetres of the deliberately very high outdoor jump.
-export function createModernPhysics(initial={x:0,z:12},obstacles=GALLERY_OBSTACLES){
+export function createModernPhysics(initial={x:0,z:12},obstacles=GALLERY_OBSTACLES,profile={}){
+ const roofHeight=profile?.height||glassRoofHeight,smokeOpening=profile?.smokeOpening||glassSmokeOpening,roofThickness=profile?.thickness??GLASS_SHELL.thickness;
  const shapes=boxes(obstacles),roof=shapes.find(b=>b.waveRoof),solids=shapes.filter(b=>!b.waveRoof),position={x:0,y:GROUND,z:12};
  // A cylinder's head/sole touches the lowest/highest glass beneath its disc.
  // Sampling the footprint also keeps the real smoke opening passable, while
@@ -29,8 +30,8 @@ export function createModernPhysics(initial={x:0,z:12},obstacles=GALLERY_OBSTACL
   const nearest=[clamp(x,roof.minX,roof.maxX)-x,clamp(z,roof.minZ,roof.maxZ)-z];
   const contacts=Math.hypot(...nearest)<=RADIUS?[...footprint,nearest]:footprint;
   for(const [dx,dz] of contacts){const a=x+dx,b=z+dz;
-   if(a<roof.minX-EPS||a>roof.maxX+EPS||b<roof.minZ-EPS||b>roof.maxZ+EPS||glassSmokeOpening(a,b))continue;
-   const height=glassRoofHeight(a,b);bottom=Math.min(bottom,height);top=Math.max(top,height+GLASS_SHELL.thickness);
+   if(a<roof.minX-EPS||a>roof.maxX+EPS||b<roof.minZ-EPS||b>roof.maxZ+EPS||smokeOpening(a,b))continue;
+   const height=roofHeight(a,b);bottom=Math.min(bottom,height);top=Math.max(top,height+roofThickness);
   }
   return top>-Infinity?{bottom,top}:null;
  }
@@ -38,7 +39,7 @@ export function createModernPhysics(initial={x:0,z:12},obstacles=GALLERY_OBSTACL
   if(!b.waveWall)return b.maxY;
   const edge=b.waveWall,along=edge.axis==='x'?z:x;
   let top=-Infinity;
-  for(const d of [-RADIUS,0,RADIUS])top=Math.max(top,edge.axis==='x'?glassRoofHeight(edge.at,clamp(along+d,b.minZ,b.maxZ)):glassRoofHeight(clamp(along+d,b.minX,b.maxX),edge.at));
+  for(const d of [-RADIUS,0,RADIUS])top=Math.max(top,edge.axis==='x'?roofHeight(edge.at,clamp(along+d,b.minZ,b.maxZ)):roofHeight(clamp(along+d,b.minX,b.maxX),edge.at));
   return top;
  }
  let velocityY=0,grounded=true,jumps=0,landings=0,headContacts=0,support='ground';

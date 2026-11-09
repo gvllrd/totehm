@@ -43,7 +43,7 @@ async function project(pg,point){
 }
 const browser=await launch();
 try{
- for(const viewport of (desktopOnly?[{width:1440,height:1000}]:[{width:1440,height:1000},{width:390,height:844}]))for(const place of ['lisbon','new-york']){
+ for(const viewport of (desktopOnly?[{width:1440,height:1000}]:[{width:1440,height:1000},{width:390,height:844}]))for(const place of ['new-york']){
   const suffix=place+'-'+viewport.width;
   const {pg,ctx,log}=await page(browser,{dir:'space',origin,viewport,session:false,hasTouch:viewport.width<650,network:url=>fixtureMode&&url.pathname==='/__castle_rebuild'?{contentType:'text/html',body:fixture}:null});
   try{

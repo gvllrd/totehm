@@ -12,12 +12,14 @@ const tick=(p,dt,input)=>{steps++;return p.step(dt,input);};
 const nav=createModernWalkway(),entry={x:0,z:12};
 const approaches=GALLERY_STATIONS.map(s=>({x:s.approach[0],z:s.approach[2]}));
 
-// Independent metre-space collision specification, including furniture.
+// The default shared engine retains New York's castle plan. Lisbon supplies
+// its restored azulejo obstacles/profile and is exercised in its own test.
+// Keep these furniture dimensions independent of the production obstacle list.
 const groundBoxes=[
  [-13,13,-17.2,-16.8],[-13.16,-12.94,-17,-2],[12.94,13.16,-17,-2],
  [-13,-2.8,-2.2,-1.8],[2.8,13,-2.2,-1.8],
- [-1.8,1.8,-12.65,-11.45],[-8.15,-7.05,-8.48,-7.52],
- [-10.15,-5.85,-16.8,-15.18],
+ [-1.8,1.8,-12.65,-11.45],[-12.65,-11.35,-16.25,-15.05],
+ [5.85,10.15,-16.8,-15.18],
  ...CASTLE_OBSTACLES.filter(b=>b.minY<1.65&&b.maxY>-.09).map(b=>[b.minX,b.maxX,b.minZ,b.maxZ])
 ];
 function free(x,z){
@@ -43,15 +45,17 @@ function follow(from,to){
  check(p.diagnostics().grounded&&near(p.position.y,-.09),'Guidance stays on the gallery floor');
  return route;
 }
-const positions=[entry,...approaches,{x:-8,z:-12.4},{x:0,z:-5},{x:0,z:-10},{x:11.8,z:-13},{x:-11.8,z:-13},
+const positions=[entry,...approaches,{x:8,z:-11},{x:-8,z:-12.4},{x:0,z:-5},{x:0,z:-10},{x:11.8,z:-13},{x:-11.8,z:-13},
  {x:15,z:-15},{x:-15,z:-15},{x:15,z:10},{x:-15,z:10},{x:0,z:16},{x:0,z:0}];
+for(const position of positions)check(free(position.x,position.z),'Every station and route endpoint stands outside the current castle walls and furniture');
 for(const from of positions)for(const to of positions)follow(from,to);
 check(follow(entry,approaches[0]).length===2,'The counter is directly ahead through the entrance');
 check(follow(entry,approaches[1]).length>2,'The left-hand approach goes through the doorway rather than glazing');
 check(follow(entry,approaches[2]).length>2,'The screen approach enters through the doorway rather than glazing');
 
 check(nav.allowed(8,-10.4)&&nav.allowed(8,-6.3),'The removed coffee table and sofa leave free stone');
-check(!nav.allowed(-7.6,-8)&&!nav.allowed(-8,-16),'The lectern and fireplace have real solid footprints');
+check(!nav.allowed(-12,-15.65)&&!nav.allowed(8,-15.99),'The current left reading alcove and right-hand fireplace have real solid footprints');
+check(nav.allowed(-7.6,-8)&&nav.allowed(-8,-16),'The former lectern and fireplace positions have no phantom furniture collisions');
 
 // A manual body can come closer to a wall than a decorative corner waypoint.
 // Return guidance must work from those real collision contacts too.

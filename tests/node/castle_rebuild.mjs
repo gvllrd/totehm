@@ -1,4 +1,5 @@
-// Exercise the new built geometry and its actual shared movement engine.
+// New York retains the castle; Lisbon's restored azulejo pavilion has its
+// own geometry and movement checks in lisbon_azulejo_restoration.mjs.
 import assert from 'node:assert/strict';
 import * as T from '../../space/vendor/three-0.180.0.mjs';
 import {createModernGallery} from '../../space/gallery-modern.mjs';
@@ -15,7 +16,6 @@ import {castleFabricPlan} from '../../space/gallery-castle-plan.mjs';
 let checks=0;
 const check=(value,message)=>{assert(value,message);checks++;};
 for(const [place,factory,physicsFactory,walkwayFactory] of [
- ['lisbon',createModernGallery,createModernPhysics,createModernWalkway],
  ['new-york',createNewYorkGallery,createNewYorkPhysics,createNewYorkWalkway]
 ]){
  const fabricScene=new T.Scene(),fabric=createCastleFabric(fabricScene,{place});fabricScene.updateMatrixWorld(true);

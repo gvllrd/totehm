@@ -8,7 +8,7 @@ ligne une minute plus tard (Vercel).
 | **totehm.com** | `com/` | l'écosystème : les 5 vues, ton TOTEHM, chercher un membre, s'abonner à lui, l'abonnement Higher |
 | **figher.club** | `club/` | la sixième vue : le radar et la grille des spots visibles, le filtre par Habits parentes, publier un spot |
 | **higher.boutique** | `boutique/` | les vêtements totehmisés à partir des boxes MY STORY |
-| **totehm.space** | `space/` | deux galeries littorales : un château en ruine, un donjon en retrait et de grands volumes de verre ; espaces de plain-pied, sols de pierre continus et intérieur minimaliste ; mer déchaînée, ciel étoilé, œuvres et marché conservés |
+| **totehm.space** | `space/` | deux galeries littorales de plain-pied : Lisbon retrouve son bâtiment intact aux azulejos bleu/blanc, balcons et toit de verre ondulé ; New York conserve son château en ruine et son toit vitré incliné ; mer, ciel étoilé, œuvres, signes de Lisbonne et marché conservés |
 | — | `backend/` | le serveur : base Supabase, fonctions, automatisations n8n |
 
 ```

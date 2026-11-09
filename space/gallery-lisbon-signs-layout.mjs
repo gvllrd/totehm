@@ -13,12 +13,12 @@ const ROWS = [
   ['lisboa_city_hall','Lisboa','Time creates the vibe. Travel creates discoveries.',[-8.1,4.8,-1.73],0,1.35,'square','stone','outside',.035],
   ['Heli','Helicopter','The power of Habits: The sky is the limit.',[12,-.074,13.2],0,5,'circle','ground','outside',-.045],
   ['green_walk','Walk','Advance with love. It leads to the best path.',[2.25,2.25,8.4],0,.38,'circle','signal','outside',.03],
-  ['roundabout','Roundabout','The supreme objective now is to appreciate the 360 of now.',[-10.26,2.35,-13.75],Math.PI/2,0.94,'circle','stone','inside',-0.06],
-  ['no_entry','No entry','Access denied to mental bullshit.',[12.78,2.35,-10.65],-Math.PI/2,0.94,'circle','stone','inside',0.07],
-  ['parking','Parking','Powerful Presence.',[11.65,2.35,-16.79],0,0.98,'square','stone','inside',-0.07],
-  ['fire_exit','Fire exit','To avoid a headache, stop thinking with your head.',[-10.05,4.25,-2.95],Math.PI,.65,'square','stone','inside',.025],
-  ['aed','Defibrillator','Consult your heart. The response is automatic.',[9.2,2.2,-2.88],Math.PI,.38,'square','stone','inside',-.025],
-  ['pharma','Pharmacy','Attract all you love.',[-11,4.1,-11.95],0,1.2,'square','stone','inside',.03],
+  ['roundabout','Roundabout','The supreme objective now is to appreciate the 360 of now.',[-10.26,2.35,-13.75],Math.PI/2,0.94,'circle','post','inside',-0.06],
+  ['no_entry','No entry','Access denied to mental bullshit.',[11.7,2.35,-10.65],-Math.PI/2,0.94,'circle','post','inside',0.07],
+  ['parking','Parking','Powerful Presence.',[11.65,2.35,-15.6],0,0.98,'square','post','inside',-0.07],
+  ['fire_exit','Fire exit','To avoid a headache, stop thinking with your head.',[0,3.45,-2.22],Math.PI,.65,'square','stone','inside',.025],
+  ['aed','Defibrillator','Consult your heart. The response is automatic.',[8,2.2,-2.22],Math.PI,.38,'square','stone','inside',-.025],
+  ['pharma','Pharmacy','Attract all you love.',[8,3.9,-1.70],0,1.2,'square','stone','outside',.03],
   ['red_walk','Wait','To stop mental bullsht: stay immobile one instant, avoid the crash.',[2.25,2.7,8.4],0,.38,'circle','signal','outside',-.03],
   ['hospital','Hospital','Healing is a process.',[8.7,2.25,-7.4],-0.20,0.94,'square','post','inside',0.06],
   ['Hotel','Hotel','Hard fights lead to hard peace.',[-7.5,1.75,-1.73],0,.44,'square','stone','outside',-.025],
@@ -42,8 +42,8 @@ export const LISBON_STREET_SIGNS=Object.freeze(ROWS.map(([id,title,phrase,positi
  presentation:'road-sign',stickerWidth:Math.min(.22,width*.22),...DETAILS[id],src:'/assets/signs/'+id+'.png'
 })));
 
-// Collision footprints follow the real supports: nine ordinary posts, two
-// motorway posts and one shared pedestrian-signal pole. Ground paint is flat.
+// Collision footprints follow the real road-sign supports, two motorway
+// posts and one shared pedestrian-signal pole. Ground paint is flat.
 const footprint=(id,x,z,top,radius=.18)=>Object.freeze({id,minX:x-radius,maxX:x+radius,minZ:z-radius,maxZ:z+radius,minY:-.09,maxY:top});
 export const LISBON_SIGN_OBSTACLES=Object.freeze(LISBON_STREET_SIGNS.flatMap(sign=>{
  const [x,y,z]=sign.position;

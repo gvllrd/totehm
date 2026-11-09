@@ -17,7 +17,7 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
  const ny=newYork?await Promise.all([import('./gallery-new-york.mjs'),import('./gallery-new-york-navigation.mjs'),import('./gallery-new-york-layout.mjs')]):null;
  const L=newYork?ny[2].NEW_YORK_LAYOUT:LISBON_LAYOUT;
  const ENTRY=L.entry,LOOK=L.look,GROUND=L.groundY,HEIGHT=L.eyeHeight;
- const ceiling=(x,z)=>newYork?ny[2].newYorkRoofHeight(x,z):glassRoofHeight(x,z);
+ const ceiling=(x,z)=>newYork?ny[2].newYorkRoofHeight(x,z):(architecture?.roofHeight||glassRoofHeight)(x,z);
  const host=document.getElementById('space'),mobile=innerWidth<650||(matchMedia('(pointer: coarse)').matches&&Math.min(innerWidth,innerHeight)<650);
  const renderer=new T.WebGLRenderer({antialias:true,alpha:false,powerPreference:'high-performance'});
  const quality=createRenderQuality({mobile,pixelRatio:devicePixelRatio});
@@ -33,7 +33,7 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
  const landscape=createTempleLandscape(scene,renderer,{mobile,onChange:invalidate,place});
  architecture=(newYork?ny[0].createNewYorkGallery:createModernGallery)(scene,renderer,{mobile,onChange:invalidate});
  book=createLecternBook(scene,{mobile,onChange:invalidate,onOpen:({href})=>{bookDestination=href;dirty=true;}});
- const fireplace=createGalleryFireplace(scene,{mobile,onChange:invalidate,...(newYork?{smokeOutlet:L.smokeOutlet}:{})});
+ const fireplace=createGalleryFireplace(scene,{mobile,onChange:invalidate,...(architecture.smokeOutlet?{smokeOutlet:architecture.smokeOutlet}:newYork?{smokeOutlet:L.smokeOutlet}:{})});
  function openExperience({href}){
   // Navigation releases the world instead of leaving its GPU/audio behind an
   // iframe. Independent pages retain their own controls, pixels and access.
@@ -42,7 +42,7 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
  }
  play=createPlayInstallation(scene,{mobile,onChange:invalidate,onOpen:openExperience});
  opposite=createOppositeInstallation(scene,{mobile,onChange:invalidate,onOpen:openExperience});
- const walkway=newYork?ny[1].createNewYorkWalkway():createModernWalkway(architecture.obstacles),physics=newYork?ny[1].createNewYorkPhysics({x:ENTRY[0],z:ENTRY[2]}):createModernPhysics({x:ENTRY[0],z:ENTRY[2]},architecture.obstacles),sound=createGalleryAudio(),fireSound=createFireAudio();
+ const walkway=newYork?ny[1].createNewYorkWalkway():createModernWalkway(architecture.obstacles),physics=newYork?ny[1].createNewYorkPhysics({x:ENTRY[0],z:ENTRY[2]}):createModernPhysics({x:ENTRY[0],z:ENTRY[2]},architecture.obstacles,architecture.roofProfile),sound=createGalleryAudio(),fireSound=createFireAudio();
  const eye=new T.Vector3(...ENTRY),gaze=new T.Vector3(...LOOK),keys=new Set();
  const stick=document.getElementById('joystick'),knob=stick.querySelector('span');let joystick={x:0,y:0};
  const isFloor=()=>physics.diagnostics().grounded&&physics.position.y<GROUND+.2;

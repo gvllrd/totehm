@@ -5,7 +5,7 @@ const reduced=matchMedia('(prefers-reduced-motion: reduce)'),body=document.body;
 const place=location.pathname.replace(/\/+$/,'')==='/new-york'?'new-york':'lisbon';
 body.dataset.place=place;
 document.title='TOTEHM.SPACE — '+(place==='new-york'?'New York':'Lisbon');
-document.getElementById('space').setAttribute('aria-label','An airy coastal castle gallery: ancient stone ruins, modern glass and original artworks above the storm sea. Drag to look, tap the stone floor to walk. WASD to walk, Space to jump.');
+document.getElementById('space').setAttribute('aria-label',(place==='lisbon'?'The Lisbon azulejo building: blue and white tiles, wrought-iron balconies and a wave-shaped glass roof. ':'An airy coastal castle gallery: ancient stone ruins and modern glass. ')+'Original artworks above the storm sea. Drag to look, tap the stone floor to walk. WASD to walk, Space to jump.');
 document.getElementById('building-levels')?.remove();
 const ROOMS=[
  {title:'TotehmPaper {THP}',kind:'The Stoner Experience',path:'/get_higher',collect:'/market?art=totehmpaper',action:'Enter the experience ↗',note:'Original perforated art. Choose your TotehmPaper.'},
@@ -104,7 +104,7 @@ document.addEventListener('keydown',e=>{
 });
 document.addEventListener('visibilitychange',syncPreview);reduced.addEventListener('change',syncPreview);
 addEventListener('pagehide',()=>{if(listRaf)cancelAnimationFrame(listRaf);listRaf=0;preview.pause();});addEventListener('pageshow',syncPreview);
-window.__totehm_gallery=()=>({build:'2026-11-09-lisbon-useful-objects',place,rooms:4,room,hoveredSign,list:body.classList.contains('list-view'),fallback,reduced_motion:reduced.matches,experiences:[...new Set(ROOMS.map(w=>w.path))],experienceNavigation:'independent-pages',inGalleryPlayback:false,lisbon:preview.diagnostics(),...engine?.diagnostics()});
+window.__totehm_gallery=()=>({build:'2026-11-09-lisbon-azulejo-restored',place,rooms:4,room,hoveredSign,list:body.classList.contains('list-view'),fallback,reduced_motion:reduced.matches,experiences:[...new Set(ROOMS.map(w=>w.path))],experienceNavigation:'independent-pages',inGalleryPlayback:false,lisbon:preview.diagnostics(),...engine?.diagnostics()});
 function useFallback(){fallback=true;body.classList.add('no-3d','list-view');engine?.setList(true);clearInfo();syncPreview();}
 try{
  const {createGallery}=await import('./gallery-spatial.mjs');

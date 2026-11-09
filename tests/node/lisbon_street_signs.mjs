@@ -5,7 +5,6 @@ import {createModernGallery} from '../../space/gallery-modern.mjs';
 import {createNewYorkGallery} from '../../space/gallery-new-york.mjs';
 import {createModernPhysics,createModernWalkway} from '../../space/gallery-modern-navigation.mjs';
 import {GALLERY_LAYOUT as L,GALLERY_STATIONS} from '../../space/gallery-modern-layout.mjs';
-import {castleFabricPlan} from '../../space/gallery-castle-plan.mjs';
 import {LISBON_STREET_SIGNS,LISBON_SIGN_OBSTACLES} from '../../space/gallery-lisbon-signs-layout.mjs';
 import {createLisbonStreetSigns} from '../../space/gallery-lisbon-street-signs.mjs';
 
@@ -21,7 +20,7 @@ const physicalSize=object=>{object.geometry.computeBoundingBox();return object.g
 const obstacleContains=(obstacle,b)=>obstacle.minX<=b.min.x+.001&&obstacle.maxX>=b.max.x-.001&&obstacle.minZ<=b.min.z+.001&&obstacle.maxZ>=b.max.z-.001&&obstacle.minY<=b.min.y+.001&&obstacle.maxY>=b.max.y-.001;
 for(const mobile of [false,true]){
  const scene=new T.Scene(),gallery=createModernGallery(scene,null,{mobile});scene.updateMatrixWorld(true);
- const signs=signGroups(gallery.root),masonry=gallery.solids.filter(o=>o.userData.castleFabric),byId=id=>signs.find(o=>o.userData.signId===id);
+ const signs=signGroups(gallery.root),masonry=gallery.solids.filter(o=>o.userData.exhibitionStone||o.userData.facadeParts||o.name==='Lisbon façade — actual limestone-backed masonry and window apertures'),byId=id=>signs.find(o=>o.userData.signId===id);
  check(signs.length===22,'Lisbon contains exactly twenty-two distinct physical cues on '+(mobile?'mobile':'desktop'));
  check(signs.some(s=>s.userData.zone==='outside')&&signs.some(s=>s.userData.zone==='inside'),'The original cues occupy both the calçada and the gallery');
  for(const expected of LISBON_STREET_SIGNS){
@@ -70,17 +69,14 @@ for(const mobile of [false,true]){
  const pharmacy=byId('pharma').getObjectByName('Pharmacy illuminated cross body');
  check(pharmacy?.isMesh,'The pharmacy cue has an extruded illuminated cross body');
  pharmacy.geometry.computeBoundingBox();check(pharmacy.geometry.boundingBox.getSize(new T.Vector3()).z>.15,'The pharmacy cross has real projecting volume');
- const nav=createModernWalkway(gallery.obstacles),body=createModernPhysics({x:L.entry[0],z:L.entry[2]},gallery.obstacles);
+ const nav=createModernWalkway(gallery.obstacles),body=createModernPhysics({x:L.entry[0],z:L.entry[2]},gallery.obstacles,gallery.roofProfile);
  check(LISBON_SIGN_OBSTACLES.every(o=>gallery.obstacles.some(actual=>actual.id===o.id)),'The real visitor engine receives every new solid support');
  check(!LISBON_SIGN_OBSTACLES.some(o=>o.id==='lisbon-sign-post-crosswalk'||o.id==='lisbon-sign-post-Heli'),'Painted ground cues introduce no solid street-sign obstacle');
  check(nav.clear({x:L.entry[0],z:L.entry[2]},{x:L.inside[0],z:L.inside[2]}),'The central arrival path remains walkable through the painted crossing');
- for(const arch of castleFabricPlan('lisbon').arches){
-  const origin=arch.axis==='x'?new T.Vector3(arch.centre,1.65,arch.fixed+arch.depth/2+.7):new T.Vector3(arch.fixed+arch.depth/2+.7,1.65,arch.centre);
-  const direction=arch.axis==='x'?new T.Vector3(0,0,-1):new T.Vector3(-1,0,0);
-  check(new T.Raycaster(origin,direction,0,arch.depth+1.4).intersectObjects(signs,true).length===0,'The physical cues keep the '+arch.id+' opening clear');
- }
+ const entranceRay=new T.Raycaster(new T.Vector3(0,1.65,3),new T.Vector3(0,0,-1),0,8);
+ check(entranceRay.intersectObjects(signs,true).length===0,'The cues keep the restored azulejo entrance clear');
  const priority=byId('priority').getObjectByName('Full-height galvanized street post — priority'),pc=bounds(priority).getCenter(new T.Vector3());
- const walking=createModernPhysics({x:pc.x,z:pc.z+.8},gallery.obstacles);for(let i=0;i<100;i++)walking.step(.025,{dz:-.025});
+ const walking=createModernPhysics({x:pc.x,z:pc.z+.8},gallery.obstacles,gallery.roofProfile);for(let i=0;i<100;i++)walking.step(.025,{dz:-.025});
  check(walking.position.z>pc.z+.18&&walking.position.z<pc.z+.5&&walking.diagnostics().grounded,'The real walking body stops at an ordinary road-sign support');
  for(const station of GALLERY_STATIONS){
   const route=nav.route({x:body.position.x,y:body.position.y+L.eyeHeight,z:body.position.z},{x:station.approach[0],y:station.approach[1],z:station.approach[2]});

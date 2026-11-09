@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import * as T from '../../space/vendor/three-0.180.0.mjs';
-import {createModernGallery} from '../../space/gallery-modern.mjs';
+// New York retains the inclined plane; Lisbon's restored wave has its own suite.
+import {createNewYorkGallery} from '../../space/gallery-new-york.mjs';
 import {GLASS_SHELL as S,GLASS_HEARTH,glassRoofHeight,glassSmokeOpening} from '../../space/gallery-glass-shell.mjs';
 let checks=0;const check=(value,message)=>{assert(value,message);checks++;};
 const o=GLASS_HEARTH.smokeOutlet;
@@ -11,7 +12,7 @@ for(let x=S.minX;x<=S.maxX;x+=.31)for(let z=S.minZ;z<=S.maxZ;z+=.31){
  check(Math.abs(y-glassRoofHeight(x+.001,z))<.001&&Math.abs(y-glassRoofHeight(x,z+.001))<.001,'Glass has no panel-height discontinuity');
 }
 for(const mobile of [false,true]){
- const scene=new T.Scene(),gallery=createModernGallery(scene,null,{mobile}),d=gallery.diagnostics();scene.updateMatrixWorld(true);
+ const scene=new T.Scene(),gallery=createNewYorkGallery(scene,null,{mobile}),d=gallery.diagnostics();scene.updateMatrixWorld(true);
  const roof=gallery.root.getObjectByName('Single floating glass roof — open star oculus');
  check(!!roof&&d.flatSlopingRoof&&!d.waveGlass&&d.roofShell.actualAperture,'The current gallery renders the new inclined glass roof');
  const p=roof.geometry.attributes.position,n=roof.geometry.attributes.normal;

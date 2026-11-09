@@ -1,5 +1,7 @@
 import * as T from './vendor/three-0.180.0.mjs';
 import {createCastleFabric} from './gallery-castle-fabric.mjs';
+import {createLisbonAzulejoBuilding} from './gallery-lisbon-azulejo-building.mjs';
+import {createLisbonExhibitionStone} from './gallery-lisbon-exhibition-stone.mjs';
 import {createAncientStoneSurfaces} from './gallery-ancient-floor.mjs';
 import {createLisbonPavement} from './gallery-lisbon-pavement.mjs';
 import {createWhiteStone} from './gallery-white-stone.mjs';
@@ -12,8 +14,9 @@ import {GLASS_SHELL as S,GLASS_HEARTH,glassRoofHeight} from './gallery-glass-she
 
 // A new coastal museum: a single, quiet glass insertion in the surviving castle.
 // The original works are installations inside it, not part of its architecture.
-export function createCastleSpace(scene,renderer,{place='lisbon',mobile=false,onChange=()=>{}}={}){
- const root=new T.Group();root.name='The coastal castle — '+place;scene.add(root);
+export function createCastleSpace(scene,renderer,{place='lisbon',style='castle',mobile=false,onChange=()=>{}}={}){
+ const azulejo=place==='lisbon'&&style==='azulejo';
+ const root=new T.Group();root.name=azulejo?'Lisbon — restored azulejo pavilion':'The coastal castle — '+place;scene.add(root);
  const geometries=new Set(),materials=new Set(),textures=new Set(),solids=[],interactables=[];
  let disposed=false,dirty=true,paperLoaded=false,time=0;
  const changed=()=>{if(disposed)return;dirty=true;if(renderer?.shadowMap)renderer.shadowMap.needsUpdate=true;onChange();};
@@ -39,7 +42,7 @@ export function createCastleSpace(scene,renderer,{place='lisbon',mobile=false,on
  function beam(a,b,width,depth,m,name){const start=new T.Vector3(...a),end=new T.Vector3(...b),v=end.clone().sub(start);const o=block(m,start.clone().add(end).multiplyScalar(.5).toArray(),[width,v.length(),depth],name);o.quaternion.setFromUnitVectors(new T.Vector3(0,1,0),v.normalize());return o;}
  // Lisbon keeps its original exterior calçada; worn limestone begins at the
  // glazing. Adjacent surfaces share the walking height without overlapping.
- block(stone.material,[0,-.83,-.1],[32.2,1.32,36.2],'Old castle foundation under the terrace');
+ block(azulejo?graphite:stone.material,[0,-.83,-.1],[32.2,1.32,36.2],azulejo?'Dark pavilion foundation under the calçada':'Old castle foundation under the terrace');
  const lisbon=place==='lisbon';
  const floor=createAncientStoneSurfaces(root,{mobile,anisotropy,onChange:changed,surfaces:[lisbon
   ?{id:'castle-stone-interior',floor:0,minX:-13,maxX:13,minZ:-17,maxZ:-2,y:L.groundY}
@@ -58,7 +61,9 @@ export function createCastleSpace(scene,renderer,{place='lisbon',mobile=false,on
    plane.rotation.x=-Math.PI/2;plane.castShadow=false;plane.userData={walkable:true,lisbonPavement:true};walkable.push(plane);
   }
  }
- const fabric=createCastleFabric(root,{place,mobile,anisotropy,onChange:changed,geometry,material});solids.push(...fabric.solids);
+ const fabric=azulejo?createLisbonExhibitionStone(root,{mobile,anisotropy,onChange:changed}):createCastleFabric(root,{place,mobile,anisotropy,onChange:changed,geometry,material});solids.push(...fabric.solids);
+ let restored=null,o=GLASS_HEARTH.smokeOutlet;
+ if(azulejo){restored=createLisbonAzulejoBuilding(root,{mobile,onChange:changed});solids.push(...restored.solids);o=restored.smokeOutlet;}else{
  // Large clear panes are cut to one sloping plane. A few deep bronze fins
  // carry the glass; no window grid competes with the ruins or the artworks.
  function pane(axis,fixed,start,end,bottom,name){
@@ -75,7 +80,7 @@ export function createCastleSpace(scene,renderer,{place='lisbon',mobile=false,on
  for(const x of [-2.82,2.82])beam([x,-.06,-1.94],[x,5.1,-1.94],.035,.09,bronze,'Open entry jamb');
  beam([-2.82,5.1,-1.94],[2.82,5.1,-1.94],.035,.08,bronze,'Open entry head');
  // Four corners and an actual open oculus, triangulated as a single roof.
- const o=GLASS_HEARTH.smokeOutlet;
+ o=GLASS_HEARTH.smokeOutlet;
  const outline=[new T.Vector2(S.minX,S.minZ),new T.Vector2(S.maxX,S.minZ),new T.Vector2(S.maxX,S.maxZ),new T.Vector2(S.minX,S.maxZ)];
  const hole=Array.from({length:48},(_,i)=>{const a=i/48*Math.PI*2;return new T.Vector2(o.x+o.radius*Math.cos(a),o.z+o.radiusZ*Math.sin(a));});
  const roofPoints=[...outline,...hole],faces=T.ShapeUtils.triangulateShape(outline,[hole]),roofPositions=[];
@@ -98,6 +103,7 @@ export function createCastleSpace(scene,renderer,{place='lisbon',mobile=false,on
   if(!j&&i<segments){const k=i;indices.push(k,k+1,k+segments+1,k+1,k+segments+2,k+segments+1);}
  }
  const collectorGeo=geometry(new T.BufferGeometry());collectorGeo.setAttribute('position',new T.Float32BufferAttribute(positions,3));collectorGeo.setIndex(indices);collectorGeo.computeVertexNormals();collectorGeo.computeBoundingSphere();mesh(collectorGeo,collectorGlass,[0,0,0],'Clear fold leading the smoke to the open roof');
+ }
  // Sparse warm raking light reveals the thickness of the retained stone.
  for(const [p,target,power] of [[[4.8,.35,2.0],[9,5.5,-2],180],[[-4.8,.35,2.0],[-10,5,-2],165],[[11.6,.45,-12],[13,5,-12],100],[[-11.3,.4,-10],[-13,6,-12],90]]){
   const lamp=new T.SpotLight(0xffd2a1,power,22,.62,.8,2);lamp.position.set(...p);lamp.target.position.set(...target);root.add(lamp,lamp.target);
@@ -132,18 +138,19 @@ export function createCastleSpace(scene,renderer,{place='lisbon',mobile=false,on
  }
  // A monumental original mouth crowns the actual entrance; its tongue ends
  // just above the open doorway, with the dimensional THP facing arrivals.
- const sign=createGalleryFacade(root,{mobile,geometry,material,station,black,sculptedPaperMaterial,position:[0,7.45,-1.48],scale:1.5});
- for(const x of [-1.75,1.75])beam([x,5.1,-1.94],[x,8.4,-1.58],.045,.08,bronze,'Slender support behind the entrance sculpture');
+ const sign=createGalleryFacade(root,{mobile,geometry,material,station,black,sculptedPaperMaterial,position:restored?.facadeSign.position||[0,7.45,-1.48],scale:restored?.facadeSign.scale||1.5});
+ if(!azulejo)for(const x of [-1.75,1.75])beam([x,5.1,-1.94],[x,8.4,-1.58],.045,.08,bronze,'Slender support behind the entrance sculpture');
  for(const x of [-2.8,2.8]){
-  const light=new T.SpotLight(0xffe4ca,160,12,.62,.75,2);light.position.set(x,5.3,1.25);light.target.position.set(0,7.2,-1.15);root.add(light,light.target);
+  const light=new T.SpotLight(0xffe4ca,160,12,.62,.75,2);light.position.set(x,azulejo?3.3:5.3,1.25);light.target.position.set(0,azulejo?5.2:7.2,-1.15);root.add(light,light.target);
  }
  const streetSigns=lisbon?createLisbonStreetSigns(root,{mobile,anisotropy,onChange:changed}):null;
  changed();
  const portals=GALLERY_STATIONS.map(s=>{const p=s.position||s.book||s.screen||s.table;return{room:s.room,x:p[0],z:p[2],href:s.href};});
- return {root,solids,walkable,interactables,pickables:[...interactables.map(i=>i.object),...(streetSigns?.pickables||[])],artSurfaces:[],portals,obstacles:lisbon?[...GALLERY_OBSTACLES,...LISBON_SIGN_OBSTACLES]:GALLERY_OBSTACLES,
+ return {root,solids,walkable,interactables,pickables:[...interactables.map(i=>i.object),...(streetSigns?.pickables||[])],artSurfaces:[],portals,obstacles:azulejo?[...restored.obstacles,...fabric.obstacles,...GALLERY_OBSTACLES.filter(box=>['thp-counter','origins-lectern','fireplace-hearth'].includes(box.id)),...LISBON_SIGN_OBSTACLES]:lisbon?[...GALLERY_OBSTACLES,...LISBON_SIGN_OBSTACLES]:GALLERY_OBSTACLES,
+  roofHeight:restored?.roofHeight,roofProfile:restored?.roofProfile,smokeOutlet:restored?.smokeOutlet,
   anchors:{playScreen:L.play.screen,originsBook:L.origins.book,counter:L.counter.position},setDay(){},
   update(dt,eye,motion=true){if(disposed)return false;if(motion)time+=Math.min(.1,Math.max(0,Number(dt)||0));const signsChanged=!!streetSigns?.update?.(dt,eye,motion),was=dirty||signsChanged;dirty=false;return was;},
-  diagnostics:()=>({kind:'coastal-castle-glass-museum',place,rebuilt:true,building:true,modernGallery:true,ready:!disposed,levels:1,airyInterior:true,interiorPartitions:0,glassRoof:true,flatSlopingRoof:true,waveGlass:false,glassSides:true,glassRear:true,castle:fabric.diagnostics(),fabric:fabric.diagnostics(),streetSigns:streetSigns?.diagnostics()||null,glassCompiled,roofShell:{minimum:S.minHeight,maximum:S.maxHeight,actualAperture:true,smokeOutlet:{...o}},pavement:pavement?.diagnostics()||null,flooring:{continuousStone:!lisbon,exterior:lisbon?'lisbon-calcada':'ancient-stone',ancientStone:floor.diagnostics()},stone:stone.diagnostics(),facade:{paperLoaded,originalDrawing:true,monumentalEntranceMark:true,scale:1.5,position:sign.position.toArray()},thpCounter:{packagedPapers:packages.length,looseTabs:0,papers:packages.length,wallPapers:0,premiumSource:'/get_higher',caseSizeMetres:[.38,.38,.38*50/180]},origins:{lectern:true,stone:true,inKeep:true,closedBook:true,position:L.origins.lectern},exhibition:{walls:0,levels:1,reservedSlots:0,artworkSupport:'stone',glassMountedArtworks:0},rooms:4,independentFiles:true,time,disposed}),
-  dispose(){if(disposed)return;disposed=true;root.removeFromParent();streetSigns?.dispose();fabric.dispose();floor.dispose();pavement?.dispose();stone.dispose();for(const t of textures)t.dispose();for(const g of geometries)g.dispose();for(const m of materials)m.dispose();root.clear();}
+  diagnostics:()=>({kind:azulejo?'lisbon-azulejo-gallery':'coastal-castle-glass-museum',place,azulejoBuilding:restored?.diagnostics()||null,rebuilt:true,building:true,modernGallery:true,ready:!disposed,levels:1,airyInterior:true,interiorPartitions:azulejo?4:0,glassRoof:true,flatSlopingRoof:!azulejo,waveGlass:azulejo,glassSides:true,glassRear:true,castle:azulejo?null:fabric.diagnostics(),fabric:fabric.diagnostics(),streetSigns:streetSigns?.diagnostics()||null,glassCompiled,roofShell:{minimum:azulejo?6:S.minHeight,maximum:azulejo?8.4:S.maxHeight,actualAperture:true,smokeOutlet:{...o}},pavement:pavement?.diagnostics()||null,flooring:{continuousStone:!lisbon,exterior:lisbon?'lisbon-calcada':'ancient-stone',ancientStone:floor.diagnostics()},stone:stone.diagnostics(),facade:{paperLoaded,originalDrawing:true,monumentalEntranceMark:true,scale:restored?.facadeSign.scale||1.5,position:sign.position.toArray()},thpCounter:{packagedPapers:packages.length,looseTabs:0,papers:packages.length,wallPapers:0,premiumSource:'/get_higher',caseSizeMetres:[.38,.38,.38*50/180]},origins:{lectern:true,stone:true,inKeep:!azulejo,readingAlcove:azulejo,closedBook:true,position:L.origins.lectern},exhibition:{walls:azulejo?4:0,levels:1,reservedSlots:0,artworkSupport:'stone',glassMountedArtworks:0},rooms:4,independentFiles:true,time,disposed}),
+  dispose(){if(disposed)return;disposed=true;root.removeFromParent();streetSigns?.dispose();restored?.dispose();fabric.dispose();floor.dispose();pavement?.dispose();stone.dispose();for(const t of textures)t.dispose();for(const g of geometries)g.dispose();for(const m of materials)m.dispose();root.clear();}
  };
 }
