@@ -65,7 +65,7 @@ développement personnel, un réseau social classique, une marque streetwear cla
   platform · solution · innovative · seamless · empower · next-generation · AI-powered · community-driven.
 - Interface en anglais, **le moins de mots possible : le design parle** ; un mot qu'une autre ligne dit déjà s'efface,
   et une expérience ne s'explique pas (ni « how it works », ni titre qui répète le nom de la collection). À l'écran « element », jamais « Box » ;
-  WISDOM se dit **MY STORY** ; « Higher » est toujours le SVG ; « Simple terms of use » = dernière entrée du menu.
+  WISDOM se dit **MY STORY** ; « Higher » est toujours le SVG ; « Simple terms of use » = dernière entrée du menu, ou tout en bas, discret, jamais sur une vue qui défile.
 - Un pitch vrai : jamais un chiffre non mesuré, jamais de fausse rareté, jamais « Harvard ».
 
 ## Ce qu'on voit
@@ -73,7 +73,7 @@ développement personnel, un réseau social classique, une marque streetwear cla
 - **60 / 30 / 10** sur chaque page : 60 % noir PUR `#000` (jamais un gris sombre) · 30 % l'objet — navy `#333366`,
   bleu clair `#36498c`, rouge-violet `#743169` (les panneaux un ton en arrière : `#22224a` · `#263362` · `#51224a`) ·
   10 % les sept intentions, en trait ou en point, jamais une surface. Exception : le TOTEHM déployé, où le navy domine.
-- **Coral `#fbd5ca`** = le NOM d'un TOTEHM, la méthode Stoner, le « Get » de [Get Higher]. Nulle part ailleurs.
+- **Coral `#fbd5ca`** = le NOM d'un TOTEHM (toujours sur son papier navy perforé, même au coin membre), la méthode Stoner, le « Get » de [Get Higher]. Nulle part ailleurs : CONNECT WITH MY TOTEHM est un bouton normal.
 - **Space Mono et Quantico, rien d'autre.** Quantico = ce que le membre tape et le nom d'un TOTEHM (Coral, sans
   espace, seulement au verso). Space Mono = tout le reste ; un titre = Space Mono Bold en capitales.
 - Aucune bordure autour d'une box (elle se détache par sa valeur) ; carrée, avec sa loupe (× 1,25, en place) partout où elle est

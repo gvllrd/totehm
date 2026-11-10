@@ -364,6 +364,35 @@ body[data-eco-auth="central"] #mw-email,body[data-eco-auth="central"] #mw-code,b
    un bouton ne passe jamais à la ligne (sous 350 px, il rapetisse encore). */
 button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-space:nowrap!important}
 @media(max-width:350px){.btn-sig,a.btn-sig{font-size:11.5px!important}}
+/* ══ LE COIN MEMBRE — copié de tools/member_corner.css dans chaque page (jamais importé), EN DERNIER dans son style ══
+   L'élément porte la classe `mc` ; la page pose `is-in` quand le membre est connecté (rien d'autre à faire).
+   Déconnecté : CONNECT WITH MY TOTEHM = un bouton normal (gris, 10 px de rayon, ajusté au label), jamais coral.
+   Connecté : le NOM, en Quantico coral, centré sur son papier navy perforé — le TOTEHM au verso (carré, 12 trous) :
+   il rappelle que totehm.com est le centre. Un nom long RÉTRÉCIT (`--mc-fs`, posé par member_corner.js), la pièce non.
+   « Simple terms of use » (`mc-terms`) : tout en bas, discret ; la page l'efface sur une vue qui défile. */
+.mc:not(.is-in){font:700 10px/1.45 'Space Mono',monospace!important;letter-spacing:.06em!important;text-transform:uppercase!important;
+  color:#b0b0b0!important;background:#252529!important;border:0!important;border-radius:10px!important;padding:.65em .95em!important;
+  width:auto!important;height:auto!important;min-width:0!important;max-width:min(62vw,250px)!important;text-align:left!important;
+  white-space:normal!important;overflow-wrap:normal!important;box-shadow:none!important;gap:0!important;cursor:pointer}
+.mc:not(.is-in) *{font:inherit!important;letter-spacing:inherit!important;text-transform:inherit!important;color:inherit!important;
+  max-width:none!important;white-space:normal!important;overflow:visible!important}
+.mc.is-in{--mc-s:64px;width:var(--mc-s)!important;height:var(--mc-s)!important;min-width:var(--mc-s)!important;max-width:var(--mc-s)!important;
+  flex:none!important;box-sizing:border-box!important;padding:0 calc(var(--mc-s) * .1)!important;border:0!important;border-radius:0!important;box-shadow:none!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;text-align:center!important;overflow:hidden!important;gap:0!important;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 224.88 224.08' preserveAspectRatio='none'%3E%3Cdefs%3E%3Cmask id='m'%3E%3Crect x='-40' y='-40' width='310' height='310' fill='%23fff'/%3E%3Ccircle cx='56.421' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='56.421' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='112.440' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='112.440' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='168.459' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='168.459' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='56.020' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='56.020' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='112.039' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='112.039' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='168.059' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='168.059' r='13.86' fill='%23000'/%3E%3C/mask%3E%3C/defs%3E%3Crect x='0.402' y='0' width='224.076' height='224.078' fill='%23333366' mask='url(%23m)'/%3E%3C/svg%3E") 0 0/100% 100% no-repeat!important;
+  font:400 var(--mc-fs,12px)/1.15 'Quantico',sans-serif!important;letter-spacing:0!important;text-transform:none!important;color:#fbd5ca!important;
+  white-space:nowrap!important;cursor:pointer;animation:mc-pose .35s cubic-bezier(.2,.9,.25,1) both}
+.mc.is-in[data-mc-long]{white-space:normal!important;overflow-wrap:anywhere!important}
+.mc>i,.mc>.dot,.mc>.dc{display:none!important}
+.mc.is-in *{font:inherit!important;letter-spacing:0!important;text-transform:none!important;color:inherit!important;background:none!important;
+  max-width:100%!important;overflow:visible!important;text-overflow:clip!important;white-space:inherit!important;padding:0!important}
+@keyframes mc-pose{from{opacity:0;transform:scale(.86)}}
+@media(max-width:600px){.mc.is-in{--mc-s:58px}}
+.mc-terms{position:fixed;left:12px;bottom:calc(8px + env(safe-area-inset-bottom,0px));z-index:30;font:400 8px/1.3 'Space Mono',monospace;
+  letter-spacing:.08em;text-transform:uppercase;color:#707077;text-decoration:none;padding:4px;opacity:1;visibility:visible;
+  transition:opacity .25s,visibility 0s}
+@media(hover:hover){.mc:hover,.mc:hover *,.mc-terms:hover{color:#fff!important}}
+@media(prefers-reduced-motion:reduce){.mc.is-in{animation:none}.mc-terms{transition:none}}
 </style>
 </head>
 <body data-eco-auth="central">
@@ -383,7 +412,7 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
 </svg>
 <header id="top">
   <a class="btn-back" id="home" href="/#luxury">Back</a>
-  <button id="member" type="button" aria-label="Member" class="eco-connect">CONNECT WITH MY TOTEHM</button>
+  <button id="member" type="button" aria-label="Member" class="mc eco-connect">CONNECT WITH MY TOTEHM</button>
 </header>
 <main>
   <div class="kicker">Totehm · Luxury</div>
@@ -653,7 +682,7 @@ document.addEventListener('visibilitychange', () => { if(!document.hidden) ssoVe
 
 
 /* ══ L'ÉTAT — une lecture, un écran ═════════════════════════════════ */
-const BUILD = '2026-11-08-sso-sortie';
+const BUILD = '2026-11-10-coin-membre';
 let A = null, ADM = [], SEQ = 0, BUSY = false, ME = null;
 /* Le diagnostic — des booléens et des compteurs, jamais une valeur de membre. */
 window.__totehm_luxury = () => ({ build: BUILD, signed_in: !!A?.signed_in, thp: !!A?.thp, open: !!A?.open,
@@ -1097,7 +1126,7 @@ async function mePaint(){
   const seq = ++meSeq, uid = ME?.id; let name = ME ? 'My TOTEHM' : 'CONNECT WITH MY TOTEHM';
   if(uid){ const { data, error } = await sb.from('profiles').select('pseudo').eq('id', uid).maybeSingle();
     if(error) console.error('[profiles]', error.message); if(seq !== meSeq || ME?.id !== uid) return; name = data?.pseudo || name; }
-  $('member').textContent = name; $('member').classList.toggle('eco-connect', !ME);
+  $('member').textContent = name; $('member').classList.toggle('eco-connect', !ME); $('member').classList.toggle('is-in', !!ME);
 }
 sb.auth.onAuthStateChange((ev, session) => { ME = session?.user || null; setTimeout(mePaint, 0); if(ev === 'SIGNED_IN' || ev === 'SIGNED_OUT') setTimeout(load, 0); });
 { const { data:{ session } } = await sb.auth.getSession(); ME = session?.user || null; mePaint(); }
@@ -1201,6 +1230,30 @@ await load();
     }).observe(document.body,{childList:true,subtree:true});
   };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded',start,{once:true}); else start();
+})();
+</script>
+<script>
+/* ══ LE COIN MEMBRE — copié de tools/member_corner.js dans chaque page (jamais importé) ══
+   Le NOM d'un membre tient sur son papier : il RÉTRÉCIT (13 → 8 px sur une ligne, puis deux lignes jusqu'à 6 px),
+   le papier ne change jamais. Mesuré, jamais deviné : à chaque nom posé, à chaque taille, une fois les polices là. */
+(() => {
+  const fit = el => {
+    if (!el.classList.contains('is-in')) { el.style.removeProperty('--mc-fs'); delete el.dataset.mcLong; return; }
+    if (!el.clientWidth) return;
+    let fs = 13; delete el.dataset.mcLong; el.style.setProperty('--mc-fs', fs + 'px');
+    while (fs > 8 && el.scrollWidth > el.clientWidth + .5) { fs -= .5; el.style.setProperty('--mc-fs', fs + 'px'); }
+    if (el.scrollWidth > el.clientWidth + .5) {
+      el.dataset.mcLong = '1';
+      while (fs > 6 && el.scrollHeight > el.clientHeight + .5) { fs -= .5; el.style.setProperty('--mc-fs', fs + 'px'); }
+    }
+  };
+  const ro = typeof ResizeObserver === 'function' ? new ResizeObserver(list => list.forEach(e => fit(e.target))) : null;
+  const watch = el => {
+    if (el.__mc) return; el.__mc = 1; fit(el); if (ro) ro.observe(el);
+    new MutationObserver(() => fit(el)).observe(el, { childList:true, characterData:true, subtree:true, attributes:true, attributeFilter:['class'] });
+  };
+  const start = () => { document.querySelectorAll('.mc').forEach(watch); document.fonts?.ready?.then(() => document.querySelectorAll('.mc').forEach(fit)); };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once:true }); else start();
 })();
 </script>
 </body>

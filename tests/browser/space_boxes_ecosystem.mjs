@@ -11,7 +11,7 @@ const rpc={space_habits:{ok:true,habits},spot_rules:{clip_seconds:33,duration_mi
 const browser=await launch();
 try{
   const {pg,log}=await page(browser,{dir:'space',origin,rpc,tables:{profiles:[{pseudo:'wah'}]},hasTouch:true});
-  await pg.goto(origin+'/');await pg.waitForFunction(()=>window.__totehm_space?.().view==='feed');
+  await pg.goto(origin+'/social');await pg.waitForFunction(()=>window.__totehm_space?.().view==='feed');
   await pg.click('#cur-g');await pg.waitForFunction(()=>window.__totehm_space().view==='home');await pg.waitForTimeout(500);   // 12/10 : le pouls, à gauche du fil
   const identity=await pg.$eval('#member-txt',e=>({font:getComputedStyle(e).fontFamily,color:getComputedStyle(e).color}));ok(identity.font.includes('Quantico')&&identity.color==='rgb(251, 213, 202)','connected identity keeps Quantico Coral after the login label changes');
   ok((await pg.textContent('#tp-hint')).trim().toUpperCase()==='TAP TO SHARE A SPACE','short invitation: tap to share a space (11/10 bis)');
@@ -49,7 +49,7 @@ try{
     // 13/10 (lot B) : sur figher.club, le coin membre EST le bouton CONNECT (plus de menu).
     let connect=sample.pg.locator('[data-eco-connect]:visible').first();
     if(!(await connect.count())){
-      if(await sample.pg.locator('#member:visible').count()) connect=sample.pg.locator('#member');
+      if(await sample.pg.locator('#member:visible,#conn-bar:visible').count()) connect=sample.pg.locator('#member:visible,#conn-bar:visible').first();
       else{await sample.pg.locator('#conn-bar,#conn').first().click();connect=sample.pg.locator('[data-eco-connect]:visible,[data-signin]:visible,#mw-login:visible,#btn-send:visible,#pt-send:visible').first();}
     }
     await connect.waitFor();
