@@ -21,9 +21,9 @@ assert.throws(()=>trackingKeyboard('not-id'));checks++;
 await handleTrackingUpdate(db,message('/suivi'),telegram);check(calls.at(-1).name==='tracking_list'&&sent.at(-1).payload.reply_markup.inline_keyboard.length===1,'Explicit tracking opens exact current habits');
 await handleTrackingUpdate(db,callback('t:n:'+'a'.repeat(32)),telegram);check(sent.at(-1).payload.reply_markup.inline_keyboard.flat().some(b=>b.callback_data==='t:a:9007199254740993:done'),'A selected habit gets a string identity');
 await handleTrackingUpdate(db,callback('t:a:9007199254740993:partial'),telegram);check(calls.at(-1).args.p_outcome==='9007199254740993'&&calls.at(-1).args.p_status==='partial','A partial report is sent atomically without Number conversion');
-check(sent.at(-1).payload.text.includes('obstacle')&&sent.at(-1).payload.reply_markup.inline_keyboard.flat().some(b=>b.text.includes('facultatif')),'Context remains optional');
+check(sent.at(-1).payload.text.includes('obstacle')&&sent.at(-1).payload.reply_markup.inline_keyboard.flat().some(b=>b.text.includes('Optional')),'Context remains optional');
 answer={...answer,already:true};await handleTrackingUpdate(db,callback('o:9007199254740993:done'),telegram);
-check(sent.at(-1).payload.text.includes('Déjà'),'Legacy buttons are idempotent and cannot change a prior answer');
+check(sent.at(-1).payload.text.includes('Already'),'Legacy buttons are idempotent and cannot change a prior answer');
 const before=calls.length;
 await handleTrackingUpdate(db,callback('t:a:1:invented'),telegram);check(calls.length===before,'Invalid statuses cause no database writes');
 check(!await handleTrackingUpdate(db,{message:{chat:{type:'group',id:-5},from:{id:101},text:'/bilan'}},telegram),'Private reports are not shown in groups');
@@ -32,10 +32,17 @@ check(!await handleTrackingUpdate(db,message('an unrelated thought'),telegram),'
 await handleTrackingUpdate(db,callback('t:d:9007199254740993:open'),telegram);
 check(draft.kind==='tracking','Private details require an explicitly opened draft');
 await handleTrackingUpdate(db,message('/minutes 20'),telegram);check(calls.at(-1).args.p_field==='minutes'&&calls.at(-1).args.p_value==='20'&&!draft,'Explicit duration is recorded and the draft closes');
-await handleTrackingUpdate(db,message('/bilan'),telegram);check(sent.at(-1).payload.text.includes('sans réponse : on ne sait pas'),'Review distinguishes unknown from missed');
+await handleTrackingUpdate(db,message('/bilan'),telegram);check(sent.at(-1).payload.text.includes('unanswered: unknown'),'Review distinguishes unknown from missed');
 await handleTrackingUpdate(db,message('/pause'),telegram);check(calls.at(-1).args.p_paused===true,'Pause uses the verified linked Telegram identity');
 check(!calls.some(c=>/repulsion|wisdom|objective|model/i.test(c.name)),'Tracking does not write the five views or run a model');
-check(trackingReview({counts:{},trend:{state:'insufficient'}}).includes('Pas encore assez'),'Sparse data produces no invented trend');
+check(trackingReview({counts:{},trend:{state:'insufficient'}}).includes('Not enough'),'Sparse data produces no invented trend');
+
+check(trackingKeyboard('1').inline_keyboard.flat().map(b=>b.text).join('|')==='Done|In part|Not done|Not today','Default report controls are English');
+await handleTrackingUpdate(db,message('/track'),telegram);check(sent.at(-1).payload.text==='Which Habit would you like to report?','English command opens English prompt');
+await handleTrackingUpdate(db,callback('t:d:9007199254740993:open'),telegram);
+await handleTrackingUpdate(db,message('/energy 4'),telegram);check(calls.at(-1).args.p_field==='energy'&&calls.at(-1).args.p_value==='4'&&!draft,'English energy command records optional energy');
+await handleTrackingUpdate(db,callback('t:d:9007199254740993:open'),telegram);
+await handleTrackingUpdate(db,message('/cancel'),telegram);check(!draft&&sent.at(-1).payload.text==='Detail cancelled.','English cancel discards an optional draft');
 
 const tickCalls=[];let sendCount=0,status=200,throwNetwork=false,bodyOk=true;
 const tickDb={rpc:async(name,args)=>{tickCalls.push({name,args});return {data:name==='bot_tick_consume'?args.p_token==='purpose-token':name==='tracking_delivered'?true:{send:true,id:'9007199254740993',lease:'lease',habit:'Write',chat_id:'101'},error:null};},

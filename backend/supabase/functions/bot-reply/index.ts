@@ -20,7 +20,7 @@ const APP  = "https://www.totehm.com/totehm";
 const ok   = () => new Response("ok", { status: 200 });
 
 // The main TOTEHM opens in the browser; linking never pretends to create a browser session.
-const kbApp = (label = "Ouvrir mon Totehm") => ({
+const kbApp = (label = "Open my TOTEHM") => ({
   inline_keyboard: [[{ text: label, url: APP }]],
 });
 
@@ -64,19 +64,19 @@ const INTS: Array<{ id: string; name: string }> = [
 ];
 const intName = (id: string) => INTS.find((x) => x.id === id)?.name ?? id;
 
-const HELP =
-  "TotehmBot.\n\n" +
-  "/suivi — noter une Habit, sans obligation de tout faire\n" +
-  "/bilan · /moi — les faits enregistrés et les obstacles déclarés\n" +
-  "/reglages — fuseau, heures calmes et plafond de questions\n" +
-  "/tonight — ce qui se passe autour de toi, rangé par tes intentions\n" +
-  "/spot — poser un lieu sur la carte du Club\n" +
-  "/spots — chercher les lieux du Club autour de toi\n" +
-  "/wisdom <ta leçon> — poser une leçon\n" +
-  "/objectif <ton objectif> — poser un objectif\n" +
-  "/carte — ouvrir la Higher Map\n" +
-  "/pause · /reprendre — couper ou relancer la question quotidienne\n" +
-  "/annuler — abandonner ce qui est en cours";
+const HELP = `TotehmBot.
+
+/track — report a Habit
+/review — your reports and declared obstacles
+/settings — timezone, quiet hours and daily limit
+/tonight — nearby events matched to your intentions
+/spot — share a Club spot
+/spots — find nearby Club spots
+/wisdom <lesson> — save a lesson
+/objective <objective> — save an objective
+/map — open Higher Map
+/pause · /resume — pause or resume questions
+/cancel — cancel the current step`;
 
 // ─────────────────────────────────────────────────────────────────────────
 // LE BROUILLON
@@ -152,15 +152,15 @@ const kbIntentions = () => ({
   ],
 });
 const kbLocation = () => ({
-  keyboard: [[{ text: "\u{1F4CD} Envoyer ma position", request_location: true }]],
+  keyboard: [[{ text: "\u{1F4CD} Share my location", request_location: true }]],
   resize_keyboard: true,
   one_time_keyboard: true,
 });
 const kbWhen = () => ({
   inline_keyboard: [
-    [{ text: "Maintenant — 1 h", callback_data: "s:w:60" },
-     { text: "Maintenant — 3 h", callback_data: "s:w:180" }],
-    [{ text: "C'est un lieu, pas un moment", callback_data: "s:w:0" }],
+    [{ text: "Now — 1 h", callback_data: "s:w:60" },
+     { text: "Now — 3 h", callback_data: "s:w:180" }],
+    [{ text: "A place, without an end time", callback_data: "s:w:0" }],
   ],
 });
 const kbVisibility = () => ({
@@ -171,26 +171,26 @@ const kbVisibility = () => ({
 });
 const kbEnergy = () => ({
   inline_keyboard: [
-    [{ text: "\u{1F507} Silent — tête baissée", callback_data: "s:e:silent" },
-     { text: "\u{1F30A} Social — en présence", callback_data: "s:e:social" }],
+    [{ text: "\u{1F507} Silent — focused, on your own", callback_data: "s:e:silent" },
+     { text: "\u{1F30A} Social — together", callback_data: "s:e:social" }],
   ],
 });
 
 async function askActivite(chat: string) {
   await say(chat,
-    "Qu'est-ce qu'on y fait, exactement ?\n" +
-    "Une ligne. « Session de travail silencieuse », pas « bosser ».",
-    { force_reply: true, input_field_placeholder: "l'activité précise" });
+    "What will people do here?\n" +
+    "One line. For example: Quiet coworking session.",
+    { force_reply: true, input_field_placeholder: "the specific activity" });
 }
 async function askComment(chat: string) {
   await say(chat,
-    "Pourquoi là ?\n" +
-    "C'est la phrase que liront les autres. Écris-la, ou envoie /passer.",
-    { force_reply: true, input_field_placeholder: "ce que cet endroit a de particulier" });
+    "Why here?\n" +
+    "Others will read this. Write a sentence or send /skip.",
+    { force_reply: true, input_field_placeholder: "what makes this place special" });
 }
 async function askLocation(chat: string) {
   await say(chat,
-    "Où ça ?\nEnvoie ta position — ou celle du lieu si tu n'y es pas.",
+    "Where?\nShare your location or the location of the place.",
     kbLocation());
 }
 
@@ -214,7 +214,7 @@ function fmtWhen(iso: string | null): string {
   if (!iso) return "";
   const d = new Date(iso);
   if (isNaN(d.getTime())) return "";
-  return d.toLocaleString("fr-FR", {
+  return d.toLocaleString("en-GB", {
     weekday: "short", day: "numeric", month: "short",
     hour: "2-digit", minute: "2-digit", timeZone: "UTC",
   });
@@ -224,8 +224,8 @@ async function tonight(chat: string, uid: string, lat: number, lng: number) {
   const ints = await myIntentions(uid);
   if (!ints.length) {
     await say(chat,
-      "Donne une intention à au moins une habitude — c'est elle qui décide " +
-      "de ce que je regarde autour de toi.\n" + MAP);
+      "Give at least one Habit an intention to guide " +
+      "what I look for nearby.\n" + MAP);
     return;
   }
 
@@ -249,7 +249,7 @@ async function tonight(chat: string, uid: string, lat: number, lng: number) {
   for (const e of (live ?? []) as Record<string, unknown>[]) {
     const when  = fmtWhen(e.starts_at as string | null);
     const price = e.price_min != null
-      ? ` · dès ${Math.round(Number(e.price_min))} ${esc(e.currency ?? "")}`.trimEnd()
+      ? ` · from ${Math.round(Number(e.price_min))} ${esc(e.currency ?? "")}`.trimEnd()
       : "";
     const title = e.url
       ? `<a href="${esc(e.url)}">${esc(e.name)}</a>`
@@ -266,13 +266,13 @@ async function tonight(chat: string, uid: string, lat: number, lng: number) {
 
   if (!lines.length && !placeLines.length) {
     await say(chat,
-      "Rien autour de toi qui corresponde à ton Totehm pour l'instant.\n" +
-      "La carte garde la mémoire de ce coin — repasse dans quelques heures.");
+      "Nothing nearby matches your TOTEHM yet.\n" +
+      "Check the map again in a few hours.");
     return;
   }
 
   let out = "";
-  if (lines.length) out += "<b>CE QUI SE PASSE</b>\n\n" + lines.join("\n\n");
+  if (lines.length) out += "<b>WHAT'S ON</b>\n\n" + lines.join("\n\n");
   if (placeLines.length) {
     if (out) out += "\n\n";
     out += "<b>ET SI TU NE BOUGES PAS LOIN</b>\n" + placeLines.join("\n");
@@ -318,7 +318,7 @@ Deno.serve(async (req) => {
       const { data: prof } = await admin
         .from("profiles").select("id").eq("telegram_id", tgId).maybeSingle();
       if (!prof?.id) {
-        await say(chat, "Ouvre ton Totehm sur totehm.com pour lier ton compte.");
+        await say(chat, "Open your TOTEHM on totehm.com to connect your account.");
         return ok();
       }
       const uid = prof.id as string;
@@ -326,7 +326,7 @@ Deno.serve(async (req) => {
       // ── LE SPOT ──
       if (parts[0] === "s") {
         const d = await draftGet(tgId);
-        if (!d) { await say(chat, "Ce brouillon a expiré. /spot pour recommencer."); return ok(); }
+        if (!d) { await say(chat, "This draft expired. Use /spot to start again."); return ok(); }
         const data = (d.data ?? {}) as Record<string, any>;
 
         if (parts[1] === "i") {
@@ -350,9 +350,9 @@ Deno.serve(async (req) => {
           }
           await draftSet(tgId, uid, "visibilite", data);
           await say(chat,
-            "Qui peut le voir ?\n" +
-            "• Club — seulement les membres, sur leur carte\n" +
-            "• Public — tout le monde",
+            "Who can see it?\n" +
+            "• Club — members only, on their map\n" +
+            "• Public — everyone",
             kbVisibility());
           return ok();
         }
@@ -363,9 +363,9 @@ Deno.serve(async (req) => {
           data.is_public = parts[2] === "public";
           await draftSet(tgId, uid, "energie", data);
           await say(chat,
-            "Comment on y est ?\n" +
-            "• Silent — tête baissée, seul\n" +
-            "• Social — en présence, à plusieurs",
+            "What is the atmosphere?\n" +
+            "• Silent — focused, on your own, seul\n" +
+            "• Social — together, with others",
             kbEnergy());
           return ok();
         }
@@ -392,25 +392,25 @@ Deno.serve(async (req) => {
           };
           if (!row.intention || !row.activite || !isFinite(row.lat) || !isFinite(row.lng)) {
             await draftClear(tgId);
-            await say(chat, "Il manquait quelque chose. /spot pour recommencer.");
+            await say(chat, "Something is missing. Use /spot to start again.");
             return ok();
           }
           const { error } = await admin.from("spots").insert(row);
           await draftClear(tgId);
           if (error) {
             console.error("spot insert:", error.message);
-            await say(chat, "Je n'ai pas réussi à le poser. Réessaie dans un moment.");
+            await say(chat, "Could not save this spot. Try again shortly.");
             return ok();
           }
           const when = row.expires_at
-            ? `pendant ${Math.round((row.duration_min ?? 0) / 60)} h`
-            : "en permanence";
+            ? `for ${Math.round((row.duration_min ?? 0) / 60)} h`
+            : "without an end time";
           const energyLabel = em === "silent" ? "Silent" : "Social";
           await say(chat,
-            `C'est posé.\n\n${intName(row.intention)} · ${row.activite}\n` +
+            `Spot saved.\n\n${intName(row.intention)} · ${row.activite}\n` +
             `${pub ? "Public" : "Club"} · ${energyLabel}, ${when}.\n\n` +
-            `Il apparaît maintenant sur la carte de ceux qui portent ${intName(row.intention)} ` +
-            `dans leur Totehm, autour de ce point.`);
+            `It now appears nearby for people who have ${intName(row.intention)} ` +
+            `in their TOTEHM.`);
           return ok();
         }
         return ok();
@@ -430,7 +430,7 @@ Deno.serve(async (req) => {
           p_obstacle: pend.said, p_repulsion: text,
         });
         await say(chat,
-          `C'est noté : ${text}.\nJe te le rappellerai au bon moment — pas avant.`);
+          `Saved: ${text}.\nI will remind you at the right time.`);
         return ok();
       }
       return ok();
@@ -452,19 +452,19 @@ Deno.serve(async (req) => {
         const { data: prof } = await admin
           .from("profiles").select("pseudo").eq("telegram_id", tgId).maybeSingle();
         await say(chat, prof
-          ? `On est liés, ${prof.pseudo}.\n\n${HELP}`
-          : "Pour lier ton compte : ouvre ton Totehm sur totehm.com, menu membre, « Connect TotehmBot ».",
-          prof ? kbApp("Ouvrir mon Totehm") : undefined);
+          ? `Connected, ${prof.pseudo}.\n\n${HELP}`
+          : "To connect your account, open your TOTEHM on totehm.com and choose Connect TotehmBot in the member menu.",
+          prof ? kbApp("Open my TOTEHM") : undefined);
         return ok();
       }
       const {data:linked,error:linkError}=await admin.rpc("tracking_link",{p_code:code,p_telegram:tgId});
-      if(linkError||!linked?.ok){await say(chat,"Ce lien a expiré. Redemande-en un depuis ton TOTEHM.");return ok();}
+      if(linkError||!linked?.ok){await say(chat,"This link has expired. Request a new one from your TOTEHM.");return ok();}
       const settings=linked.settings??{};
       await say(chat,
-        `TotehmBot est lié.\n\n/suivi pour noter une Habit, /bilan pour relire les faits. Fait, en partie, pas fait ou pas aujourd’hui : tu choisis.\n\n`+
-        `${settings.timezone} · calme de ${settings.quiet_from} h à ${settings.quiet_to} h · ${settings.max_daily} questions maximum par jour. /pause coupe les questions.\n\n`+
-        `Une absence de réponse reste inconnue. `+(settings.share_chatgpt?'Le partage des bilans avec ChatGPT est activé dans ton dashboard, où tu peux le couper.':'Le partage des bilans avec ChatGPT reste désactivé tant que tu ne l’actives pas dans ton dashboard.'),
-        kbApp("Ouvrir mon TOTEHM"));
+        `TotehmBot connected.\n\n/track to report a Habit, /review to review your reports. Done, in part, not done or not today: your choice.\n\n`+
+        `${settings.timezone} · quiet hours ${settings.quiet_from}:00 to ${settings.quiet_to}:00 · ${settings.max_daily} questions maximum per day. /pause pauses questions.\n\n`+
+        `An unanswered question stays unknown. `+(settings.share_chatgpt?'Practice sharing with ChatGPT is enabled. You can turn it off in your dashboard.':'Practice sharing with ChatGPT stays off until you enable it in your dashboard.'),
+        kbApp("Open my TOTEHM"));
       return ok();
     }
 
@@ -472,18 +472,18 @@ Deno.serve(async (req) => {
     const { data: prof } = await admin
       .from("profiles").select("id").eq("telegram_id", tgId).maybeSingle();
     if (!prof?.id) {
-      await say(chat, "Ouvre ton Totehm sur totehm.com pour lier ton compte.");
+      await say(chat, "Open your TOTEHM on totehm.com to connect your account.");
       return ok();
     }
     const uid = prof.id as string;
 
-    if (text === "/annuler") {
+    if ((text === "/cancel" || text === "/annuler")) {
       await draftClear(tgId);
-      await say(chat, "Abandonné.", { remove_keyboard: true });
+      await say(chat, "Cancelled.", { remove_keyboard: true });
       return ok();
     }
     if (text === "/aide" || text === "/help") {
-      await say(chat, HELP, kbApp("Ouvrir mon Totehm"));
+      await say(chat, HELP, kbApp("Open my TOTEHM"));
       return ok();
     }
     if (text === "/carte" || text === "/map") { await say(chat, MAP); return ok(); }
@@ -492,35 +492,35 @@ Deno.serve(async (req) => {
     if (text.startsWith("/wisdom") || text.startsWith("/lecon") || text.startsWith("/leçon")) {
       const body = text.replace(/^\/(wisdom|lecon|leçon)\s*/i, "").trim();
       if (!body) {
-        await say(chat, "Écris la leçon après la commande.\nExemple : /wisdom on ne rattrape jamais une nuit blanche");
+        await say(chat, "Write your lesson after the command.\nExample: /wisdom sleep comes first");
         return ok();
       }
       const { error } = await admin.rpc("add_wisdom_admin",
         { p_user: uid, p_text: body, p_intention: null });
-      await say(chat, error ? "Je n'ai pas réussi à la poser." : "Posée dans ton Wisdom.",
-        error ? undefined : kbApp("Voir mes leçons"));
+      await say(chat, error ? "Could not save your lesson." : "Saved to MY STORY.",
+        error ? undefined : kbApp("View MY STORY"));
       return ok();
     }
     if (text.startsWith("/objectif") || text.startsWith("/objective")) {
       const body = text.replace(/^\/(objectif|objective)\s*/i, "").trim();
       if (!body) {
-        await say(chat, "Écris l'objectif après la commande.\nExemple : /objectif finir le morceau avant vendredi");
+        await say(chat, "Write your objective after the command.\nExample: /objective finish the track by Friday");
         return ok();
       }
       const { error } = await admin.rpc("add_objective_admin", { p_user: uid, p_text: body });
-      await say(chat, error ? "Je n'ai pas réussi à le poser." : "Posé dans tes objectifs.",
-        error ? undefined : kbApp("Voir mes objectifs"));
+      await say(chat, error ? "Could not save your objective." : "Saved to your Objectives.",
+        error ? undefined : kbApp("View my Objectives"));
       return ok();
     }
 
     // ── /spots : chercher les lieux du Club ──
     if (text === "/spots") {
       if (!(await isMember(uid))) {
-        await say(chat, "Les lieux du Club font partie de l'adhésion.");
+        await say(chat, "Club spots require membership.");
         return ok();
       }
       await draftSet(tgId, uid, "lieu", {}, "spots");
-      await say(chat, "Tu es où ?", kbLocation());
+      await say(chat, "Where are you?", kbLocation());
       return ok();
     }
 
@@ -528,12 +528,12 @@ Deno.serve(async (req) => {
     if (text === "/tonight" || text === "/cesoir") {
       if (!(await isMember(uid))) {
         await say(chat,
-          "La carte fait partie de l'adhésion.\n" +
-          "Ton premier mois s'ouvre depuis ton Totehm, sur totehm.com.");
+          "The map requires membership.\n" +
+          "Manage membership from your TOTEHM on totehm.com.");
         return ok();
       }
       await draftSet(tgId, uid, "lieu", {}, "tonight");
-      await say(chat, "Tu es où ?", kbLocation());
+      await say(chat, "Where are you?", kbLocation());
       return ok();
     }
 
@@ -541,14 +541,14 @@ Deno.serve(async (req) => {
     if (text === "/spot") {
       if (!(await canPost(uid))) {
         await say(chat,
-          "Poser un lieu est réservé aux membres du Club.\n" +
-          "Ton premier mois s'ouvre depuis ton Totehm, sur totehm.com.");
+          "Sharing a spot requires Club membership.\n" +
+          "Manage membership from your TOTEHM on totehm.com.");
         return ok();
       }
       await draftSet(tgId, uid, "intention", {});
       await say(chat,
-        "Un lieu, pour quelle intention ?\n" +
-        "C'est elle qui décidera à qui il apparaît.",
+        "Which intention is this spot for?\n" +
+        "This determines who discovers it.",
         kbIntentions());
       return ok();
     }
@@ -565,7 +565,7 @@ Deno.serve(async (req) => {
       // ── /spots : une seule étape, la position ──
       if (draft.kind === "spots") {
         if (!loc) {
-          await say(chat, "J'ai besoin d'une position pour chercher autour de toi.", kbLocation());
+          await say(chat, "Share a location to find nearby spots.", kbLocation());
           return ok();
         }
         await draftClear(tgId);
@@ -576,17 +576,17 @@ Deno.serve(async (req) => {
         const list = (rows ?? []) as Record<string, unknown>[];
         if (!list.length) {
           await say(chat,
-            "Aucun lieu posé autour de toi. /spot pour être le premier.",
+            "No spots nearby yet. Use /spot to share the first.",
             { remove_keyboard: true });
           return ok();
         }
         await sayHtml(chat,
-          "<b>LES LIEUX DU CLUB</b>\n\n" + list.map((s) =>
+          "<b>CLUB SPOTS</b>\n\n" + list.map((s) =>
             `<b>${esc(s.activite)}</b> · ${esc(intName(String(s.intention)))}\n` +
             (s.commentaire ? `${esc(String(s.commentaire).slice(0, 90))}\n` : "") +
             `${fmtDist(Number(s.dist_m ?? 0))}` +
             (s.energy_mode ? ` · ${esc(s.energy_mode)}` : "") +
-            ` · <a href="https://www.google.com/maps/dir/?api=1&destination=${s.lat},${s.lng}">y aller</a>`
+            ` · <a href="https://www.google.com/maps/dir/?api=1&destination=${s.lat},${s.lng}">directions</a>`
           ).join("\n\n"),
           { remove_keyboard: true });
         return ok();
@@ -595,7 +595,7 @@ Deno.serve(async (req) => {
       // ── /tonight : une seule étape, la position ──
       if (draft.kind === "tonight") {
         if (!loc) {
-          await say(chat, "J'ai besoin d'une position pour regarder autour de toi.", kbLocation());
+          await say(chat, "Share a location to explore nearby.", kbLocation());
           return ok();
         }
         await draftClear(tgId);
@@ -606,15 +606,15 @@ Deno.serve(async (req) => {
       // La position : native Telegram, donc aucun géocodage, donc 0 €.
       if (draft.step === "lieu") {
         if (!loc) {
-          await say(chat, "J'ai besoin d'une position, pas d'un texte.", kbLocation());
+          await say(chat, "Please use the location button.", kbLocation());
           return ok();
         }
         data.lat = loc.latitude;
         data.lng = loc.longitude;
         if (msg.venue?.title && !data.activite) data.activite = String(msg.venue.title).slice(0, 80);
         await draftSet(tgId, uid, "quand", data);
-        await say(chat, "Position reçue.", { remove_keyboard: true });
-        await say(chat, "C'est pour quand ?", kbWhen());
+        await say(chat, "Location received.", { remove_keyboard: true });
+        await say(chat, "When?", kbWhen());
         return ok();
       }
 
@@ -627,7 +627,7 @@ Deno.serve(async (req) => {
       }
 
       if (draft.step === "commentaire") {
-        if (text !== "/passer") {
+        if (!["/skip", "/passer"].includes(text)) {
           if (!text || text.startsWith("/")) { await askComment(chat); return ok(); }
           data.commentaire = text.slice(0, 300);
         }
@@ -637,16 +637,16 @@ Deno.serve(async (req) => {
       }
 
       // Une étape à boutons : on rappelle le bouton plutôt que d'avaler le texte.
-      if (draft.step === "intention") { await say(chat, "Choisis une intention.", kbIntentions()); return ok(); }
-      if (draft.step === "quand")     { await say(chat, "C'est pour quand ?", kbWhen()); return ok(); }
-      if (draft.step === "visibilite"){ await say(chat, "Club ou public ?", kbVisibility()); return ok(); }
-      if (draft.step === "energie")   { await say(chat, "Silent ou social ?", kbEnergy()); return ok(); }
+      if (draft.step === "intention") { await say(chat, "Choose an intention.", kbIntentions()); return ok(); }
+      if (draft.step === "quand")     { await say(chat, "When?", kbWhen()); return ok(); }
+      if (draft.step === "visibilite"){ await say(chat, "Club or public?", kbVisibility()); return ok(); }
+      if (draft.step === "energie")   { await say(chat, "Silent or social?", kbEnergy()); return ok(); }
       return ok();
     }
 
     // A note is collected only after the person explicitly opens a tracking detail.
     // Unrelated messages never mutate a Repulsion, an Objective or MY STORY.
-    await say(chat,"/suivi pour noter une Habit · /bilan pour relire ton suivi · /aide pour les autres portes.");
+    await say(chat,"/track to report a Habit · /review for your practice · /help for more.");
     return ok();
 
   } catch (e) {

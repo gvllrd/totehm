@@ -39,7 +39,7 @@ export function createTrackingTick(c:Config){
     if(body?.mode==='dry_run'){bump('due');continue;}
     let state='uncertain',message:number|null=null,code='network_uncertain';
     try{
-     const delivered=await telegram('sendMessage',{chat_id:d.chat_id,text:String(d.habit)+' — où en es-tu ?',reply_markup:trackingKeyboard(String(d.id))});
+     const delivered=await telegram('sendMessage',{chat_id:d.chat_id,text:String(d.habit)+' — how did it go?',reply_markup:trackingKeyboard(String(d.id))});
      if(delivered.status===200&&delivered.data?.ok===true&&Number.isSafeInteger(delivered.data.result?.message_id)){
       state='sent';message=delivered.data.result.message_id;code='';
      }else if((delivered.status>=400&&delivered.status<500)||(delivered.data?.ok===false&&delivered.data?.error_code>=400&&delivered.data?.error_code<500)){
