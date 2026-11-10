@@ -17,7 +17,7 @@ ligne une minute plus tard (Vercel).
                  ↓ HIGHER MY CHATGPT
 ```
 
-Un tap sur **●** déploie le TOTEHM : HABITS · OBJECTIVES · REPULSIONS · VISIONS · MY STORY. Chaque liste conserve son classement ; Higher my ChatGPT retrouve ces priorités, leurs liens et les playlists des intentions, dans la langue de la conversation. Le TOTEHM porte les choix ; TotehmBot envoie une notification avec la Habit complète et Done/Missed, sans menu ni questionnaire ; le dashboard montre les faits sur 7 ou 28 jours, puis la configuration du bot. Higher ChatGPT peut lire la même période après partage explicite et proposer un ajustement sur demande, sans écrire dans le TOTEHM ou dans sa mémoire native.
+Un tap sur **●** déploie le TOTEHM : HABITS · OBJECTIVES · REPULSIONS · VISIONS · MY STORY. Chaque liste conserve son classement ; Higher my ChatGPT retrouve ces priorités, leurs liens, les médias illustratifs en métadonnées et les spots associés, ainsi que les inspirations autorisées des TOTEHM auxquels le membre est abonné, toujours attribuées. Les playlists des intentions restent personnelles ; la réponse suit la langue de la conversation. Le TOTEHM porte les choix ; TotehmBot envoie une notification avec la Habit complète et Done/Missed, sans menu ni questionnaire ; le dashboard montre les faits sur 7 ou 28 jours, puis la configuration du bot. Higher ChatGPT peut lire la même période après partage explicite et proposer un ajustement sur demande, sans écrire dans le TOTEHM ou dans sa mémoire native.
 
 ## Les fichiers
 

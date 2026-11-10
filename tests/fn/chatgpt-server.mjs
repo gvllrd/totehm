@@ -8,6 +8,7 @@ const pg=new PGlite();let checks=0;
 const check=(v,msg)=>{assert(v,msg);checks++;};
 const ORIGIN='https://www.totehm.com',BASE=ORIGIN+'/functions/v1/chatgpt-connector',CALLBACK='https://chatgpt.example.test/oauth/callback',RESOURCE=ORIGIN+'/mcp';
 const A='11111111-1111-4111-8111-111111111111',B='22222222-2222-4222-8222-222222222222',O='33333333-3333-4333-8333-333333333333';
+const ownerReads=[];
 const data={totehms:[{user_id:A,steps:[{t:'Draw ten minutes',is:['express'],f:'every_evening'}]},{user_id:B,steps:[{t:'Private other member habit'}]}],objectives:[{user_id:A,id:O,text:'Finish my sketchbook',status:'active',target_at:null}],objective_habits:[{user_id:A,objective_id:O,habit_text:'Draw ten minutes'}],repulsions:[],visions:[],wisdom:[],repulsion_habits:[],objective_visions:[],repulsion_teachings:[],teaching_objectives:[],habit_spots:[],spot_plans:[],intention_music:[],element_media:[]};
 const tableName=n=>{assert(/^[a-z_]+$/.test(n));return 'public.'+n;};
 class Query{
@@ -30,7 +31,7 @@ class Query{
    if(this.value){const keys=Object.keys(this.value);keys.forEach(k=>assert(/^[a-z_]+$/.test(k)));rows=(await pg.query(`insert into ${tableName(this.table)} (${keys.join(',')}) values (${keys.map((_,i)=>'$'+(i+1)).join(',')}) returning *`,keys.map(k=>this.value[k]))).rows;}
    else rows=(await pg.query('select * from '+tableName(this.table))).rows;
    if(this.table==='chatgpt_tokens')for(const row of rows)row.grant=(await pg.query('select * from public.chatgpt_grants where id=$1',[row.grant_id])).rows[0];
-  }else rows=structuredClone(data[this.table]||[]);
+  }else {ownerReads.push(this.table);rows=structuredClone(data[this.table]||[]);}
   rows=JSON.parse(JSON.stringify(rows));
   rows=rows.filter(row=>this.filters.every(([key,test])=>test(key.split('.').reduce((v,k)=>v?.[k],row))));
   if(this.sort){const [k,asc]=this.sort;rows.sort((a,b)=>String(a[k]??'').localeCompare(String(b[k]??''))*(asc?1:-1));}
@@ -89,6 +90,34 @@ try{
  r=await tool(access,'get_context',{query:'draw',purpose:'action',limit:6});const context=r.data.result.structuredContent;check(context.items.some(x=>x.text==='Draw ten minutes'),'Tool returns the authenticated owner’s Habit');check(context.edges.some(x=>x.relation==='serves'),'Tool preserves recorded relationship provenance');check(!JSON.stringify(context).includes('Private other member'),'No other member data returned');
  check(new URL(context.items[0].url).hash.includes('element=habit'),'MCP results link the exact original element');
  check(practiceReads.length===0,'Ordinary context does not read practice history automatically');
+ const mediaID='44444444-4444-4444-8444-444444444444',spotID='55555555-5555-4555-8555-555555555555';
+ data.element_media=[{user_id:A,id:mediaID,kind:'h',ref:'Draw ten minutes',mime:'image/png',name:'My sketch reference',bytes:123,created_at:'2026-11-01',removed_at:null,path:'NEVER_PRIVATE_STORAGE_PATH'},
+  {user_id:B,id:spotID,kind:'h',ref:'Draw ten minutes',mime:'image/png',name:'NEVER_OTHER_OWNER',removed_at:null}];
+ data.spot_plans=[{user_id:A,spot_id:spotID,habit:'Draw ten minutes',starts_at:'2099-01-01T10:00:00Z',duration_min:60,format:'spot',status:'published',place:'My studio',city:'Lisbon',mode:'silent',comment:'Bring my sketchbook',intentions:['express'],lat:38.7123,lng:-9.1234},
+  {user_id:A,spot_id:O,habit:'Draw ten minutes',starts_at:'2099-01-01T10:00:00Z',duration_min:60,format:'space',status:'published',place:'NEVER_OLD_SPACE'},
+  {user_id:B,spot_id:mediaID,habit:'Draw ten minutes',starts_at:'2099-01-01T10:00:00Z',duration_min:60,format:'spot',status:'published',place:'NEVER_OTHER_PLACE'}];
+ const readsBeforeResources=ownerReads.filter(t=>t==='element_media'||t==='spot_plans').length;
+ await tool(access,'get_context',{query:'draw',purpose:'action',include_resources:false});
+ check(ownerReads.filter(t=>t==='element_media'||t==='spot_plans').length===readsBeforeResources,'False resources flag performs no attachment or venue reads');
+ for(const invalid of ['true',null,1]){
+  r=await tool(access,'get_context',{query:'draw',purpose:'action',include_resources:invalid});
+  check(r.data.error?.code===-32602,'Malformed resource flag is rejected before retrieval');
+ }
+ check(ownerReads.filter(t=>t==='element_media'||t==='spot_plans').length===readsBeforeResources,'Invalid resource flags do not cause private resource reads');
+ const readsBeforeResourcePractice=practiceReads.length;
+ r=await tool(access,'get_context',{query:'draw',purpose:'action',include_resources:true});
+ const enriched=r.data.result.structuredContent,resources=enriched.resources;
+ check(resources.metadata_only&&resources.scope==='selected_elements'&&resources.elements.length<=3,'Context resources are explicit and bounded to selected elements');
+ const attachment=resources.elements.find(e=>e.element.kind==='habit');
+ check(attachment.media.items[0].name==='My sketch reference'&&attachment.media.items[0].url===enriched.items.find(i=>i.kind==='habit').url,'An illustrative attachment opens its exact personal original element');
+ check(attachment.spots.future.items.length===1&&attachment.spots.future.items[0].place==='My studio'&&attachment.spots.future.items[0].comment==='Bring my sketchbook','Selected Habit includes only its published spots with useful saved context');
+ check(!JSON.stringify(resources).includes('NEVER_')&&!JSON.stringify(resources).includes('38.7123')&&!JSON.stringify(resources).includes('-9.1234'),'Bundle excludes another owner, old spaces, storage paths and coordinates');
+ check(practiceReads.length===readsBeforeResourcePractice,'Reading media and spots never opts into practice sharing');
+ check(JSON.stringify(enriched.items)===JSON.stringify(context.items)&&JSON.stringify(enriched.edges)===JSON.stringify(context.edges),'Adding resources preserves personal choices, ordering and graph relationships');
+ r=await tool(access,'read_element',{kind:'habit',ref:'Draw ten minutes',include_resources:true});
+ check(r.data.result.structuredContent.resources.elements[0].media.items[0].content_shared===false,'An exact read can deepen its attachments without image contents');
+ data.element_media=[];data.spot_plans=[];
+
  r=await tool(access,'get_context',{query:'my practice',purpose:'action',search_terms:[],include_tracking:true});
  check(r.data.result.structuredContent.practice.why==='not_enabled','An existing grant is not a separate sharing choice');
  check(practiceReads[0].p_days===28&&practiceReads[0].p_habits.length===1&&practiceReads[0].p_habits[0]==='Draw ten minutes'&&!('p_user' in practiceReads[0]),'Practice is selected from personal context and bound to the verified grant, not a tool-supplied user');
@@ -186,6 +215,9 @@ try{
  r=await send('/token',{method:'POST',form:true,body:{grant_type:'refresh_token',client_id:cid,resource:RESOURCE,refresh_token:refresh}});check(r.status===200&&r.data.refresh_token!==refresh,'Refresh token rotated');const nextAccess=r.data.access_token,nextRefresh=r.data.refresh_token;
  r=await send('/token',{method:'POST',form:true,body:{grant_type:'refresh_token',client_id:cid,resource:RESOURCE,refresh_token:refresh}});check(r.data.error==='invalid_grant','Refresh replay rejected and grant revoked');
  r=await tool(nextAccess,'get_context',{query:'draw',purpose:'action'});check(r.status===401,'Refresh replay invalidates the token family');
+ const resourceReadsBeforeRevoked=ownerReads.length;
+ r=await tool(nextAccess,'get_context',{query:'draw',purpose:'action',include_resources:true});
+ check(r.status===401&&ownerReads.length===resourceReadsBeforeRevoked,'Revocation blocks resource retrieval before owner table reads');
  const readsBeforeRevoked=practiceReads.length;
  r=await tool(nextAccess,'get_context',{query:'my week',purpose:'explicit',review:true,include_tracking:true,tracking_days:7});
  check(r.status===401&&practiceReads.length===readsBeforeRevoked,'Revocation blocks period-based practice before any history RPC');
