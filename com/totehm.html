@@ -3373,6 +3373,15 @@ body.lv-b:not(.lv-membre):not(.lv-verrou) #lv-socket{opacity:0}
 #vs-tabs button.is-on{background:#3a3a42;color:#fff;box-shadow:inset 0 0 0 1px #fff}
 #vs-tabs button{display:inline-flex;align-items:center;justify-content:center;gap:6px}
 #vs-tabs .vs-hi{width:45px;height:15px}
+/* LA LOUPE DU VERSO · 10/11 — Wah : « le contenu des parties MONETIZE MY TOTEHM et GO Higher doit pouvoir être zoomé
+   en un coup, c'est quelquefois difficilement lisible ». La loupe des boxes, au bout des deux onglets : un tap agrandit
+   la partie montrée EN PLACE (+25 %, le texte se remet en page dans la même colonne), un second la rend. L'état tient
+   d'une partie à l'autre. `#vs-dash` a une largeur fixe : on la divise par le zoom pour garder la même colonne. */
+#vs-tabs .vs-loupe{flex:none;width:40px;padding:0}
+#vs-tabs .vs-loupe svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round}
+#vs-tabs .vs-loupe[aria-pressed=true]{background:#3a3a42;color:#fff}
+#srch.is-loupe #mw-creator,#srch.is-loupe #settings{zoom:1.25}
+#srch.is-loupe #vs-dash{zoom:1.25;width:calc(min(94vw,420px) / 1.25)}
 #srch[data-tab="higher"] #mw-creator,
 #srch[data-tab="money"] #vs-dash,#srch[data-tab="money"] #settings{display:none}
 /* la partie porte déjà le nom : le titre du bloc s'efface, sa promesse reste */
@@ -4418,6 +4427,7 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
     <nav id="vs-tabs" class="srch-after" role="tablist" aria-label="My TOTEHM">
       <button type="button" role="tab" data-vs-tab="money" aria-selected="false">Monetize my TOTEHM</button>
       <button type="button" role="tab" data-vs-tab="higher" class="is-on" aria-selected="true">Go<svg class="vs-hi" viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-badge"/></svg></button>
+      <button type="button" class="vs-loupe" id="vs-loupe" aria-pressed="false" aria-label="Bigger"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6.5"/><path d="M15 15l6 6M7.5 10h5M10 7.5v5"/></svg></button>
     </nav>
     <section id="vs-dash" class="vs srch-after" role="tabpanel" aria-label="My dashboard"></section>
     <p id="vs-vide" class="srch-after hide" role="status"></p>
@@ -13797,6 +13807,10 @@ window.addEventListener('pageshow',e=>{
         v.textContent=t; v.classList.toggle('hide',!t);
       }
       $('vs-tabs').addEventListener('click',e=>{ const b=e.target.closest('[data-vs-tab]'); if(b) onglet(b.dataset.vsTab); });
+      /* la loupe du verso : la partie montrée, plus grande, en place ; l'icône dit ce que fera le prochain tap */
+      $('vs-loupe').addEventListener('click',()=>{ const s=$('srch'), l=$('vs-loupe'), on=!s.classList.contains('is-loupe');
+        s.classList.toggle('is-loupe',on); l.setAttribute('aria-pressed',String(on)); l.setAttribute('aria-label',on?'Smaller':'Bigger');
+        const p=l.querySelector('path'); if(p) p.setAttribute('d','M15 15l6 6M7.5 10h5'+(on?'':'M10 7.5v5')); });
       async function charger(){
         if(!me){ D=null; el.innerHTML=''; return; }
         const s=++seq, uid=me.id; let tz=null; try{ tz=Intl.DateTimeFormat().resolvedOptions().timeZone||null; }catch(_){}
