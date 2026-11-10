@@ -3526,20 +3526,14 @@ body.lv-b #gate-logo #gl-rail,body.lv-b #gate-logo #gl-wm{opacity:0}
 /* Une vidéo : un petit triangle blanc, en haut à droite — elle joue dans la visionneuse. */
 .tl-v{position:absolute;top:7px;right:7px;width:0;height:0;border-style:solid;border-width:6px 0 6px 10px;
   border-color:transparent transparent transparent #fff;filter:drop-shadow(0 1px 2px rgba(0,0,0,.6))}
-/* LA BOÎTE, SURÉLEVÉE : la couleur de son type (navy · bleu clair · rouge-violet), son filet, son texte. */
-.tl-b{position:absolute;left:6px;bottom:6px;max-width:calc(100% - 12px);display:block;border:0;cursor:pointer;
-  background:var(--tc,var(--navy));color:#fff;text-align:left;padding:5px 7px 5px 10px;
-  box-shadow:0 8px 18px rgba(0,0,0,.6),0 2px 4px rgba(0,0,0,.45);transform:translateY(-3px)}
-.tl-i{position:absolute;left:0;top:0;bottom:0;width:3px;display:flex;flex-direction:column}
-.tl-i i{flex:1;width:100%;display:block}
-.tl-n{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
-  font:400 10.5px/1.25 'Quantico',sans-serif;color:#fff;word-break:break-word}
-@media(min-width:700px){.tl-b{left:9px;bottom:9px;max-width:calc(100% - 18px);padding:7px 10px 7px 12px}.tl-n{font-size:12.5px}}
-.tl-b:focus-visible{outline:1px solid #fff;outline-offset:2px}
+/* La box d'ATTENTE : sa couleur, sa place, sans texte, tant que l'arbre n'est pas revenu ; elle respire, puis se remplit. */
+.tb-attente .v-name{display:block;width:5.5em}
+.tb-attente{animation:tb-respire 1.6s ease-in-out infinite}
+@keyframes tb-respire{0%,100%{opacity:.75}50%{opacity:.45}}
 /* La tuile « + » : une place vide (le pointillé est permis à une place vide). */
 .tl-add{display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.04);
   outline:1px dashed rgba(255,255,255,.3);outline-offset:-9px;color:#fff;font:400 30px/1 'Space Mono',monospace}
-@media(hover:hover){.tl-add:hover{background:rgba(255,255,255,.1)}.tl:hover .tl-b{transform:translateY(-5px)}}
+@media(hover:hover){.tl-add:hover{background:rgba(255,255,255,.1)}}
 /* 22/10 — Wah : « dans les grilles de gauche et de droite, au survol des images et de leur box, un effet d'agrandissement ».
    La tuile ENTIÈRE grandit (l'image et sa box ensemble, la box n'est jamais séparée de son image), au-dessus de ses voisines ;
    à gauche l'ombre suit les douze trous (`drop-shadow`), à droite les coins arrondis. Souris seulement. */
@@ -3563,9 +3557,6 @@ body.lv-b #gate-logo #gl-rail,body.lv-b #gate-logo #gl-wm{opacity:0}
 .tlv-m img[src],.tlv-m video[src],.tlv-m video[poster]{opacity:1}
 .tlv-b{display:flex;flex-direction:column;align-items:center;gap:7px;padding:0 16px;max-width:min(100%,560px)}
 .tlv-b:empty{display:none}
-.tlv-b .tl-b{position:relative;left:auto;bottom:auto;max-width:100%;padding:9px 14px 9px 16px}
-.tlv-b .tl-i{width:5px}
-.tlv-b .tl-n{font-size:15px;-webkit-line-clamp:3}
 .tlv-l{font:700 8.5px/1.4 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.6)}
 .tlv-l i{font-style:normal}
 .tlv-x{position:absolute;z-index:2;border:0;background:none;cursor:pointer;color:#fff;padding:10px;top:calc(max(10px,env(safe-area-inset-top)) + 4px);right:10px}
@@ -3602,7 +3593,7 @@ body.is-tlv #gate-asteroid,body.is-tlv #lvjoy{opacity:0;pointer-events:none}
 .lsh-sf .sfv{border:0;border-radius:0;cursor:pointer;background:var(--skin,var(--navy));color:#fff;padding:0 8px;
   font:700 9.5px/1.15 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;filter:brightness(.5);transition:filter .15s;
   display:flex;align-items:center;justify-content:center;text-align:center;min-width:0}
-.lsh-sf .sfv.is-on{filter:none;box-shadow:inset 0 0 0 1px #fff}   /* éteint = plus sombre, jamais transparent : rien ne passe à travers */
+.lsh-sf .sfv.is-on{filter:none}   /* éteint = plus sombre, jamais transparent ; allumé = sa couleur pleine, SANS trait blanc (Wah, 10/11) */
 /* 24/10 (Wah) : « fusionne le filtre avec le logo, mais avant réduis la longueur des
    rectangles-couleurs de my objectives, my habits et my repulsions ». Les deux demandes
    n'en font qu'une : les trois rectangles rentrent DANS le papier du milieu, donc ils
@@ -3617,7 +3608,6 @@ body.papier-haut #gate-asteroid{transition:opacity .25s ease}
      dépassait la largeur du carré sur ordinateur (117,6 px pour 114) et le papier n'était
      plus carré. En pixels, les trois papiers restent carrés partout. */
   -webkit-mask:var(--perfo) 0 0/100% 100% no-repeat;mask:var(--perfo) 0 0/100% 100% no-repeat}
-.lsh-sf .sfv-sq.is-on{box-shadow:inset 0 0 0 2px #fff}
 .lsh-sf .sfcmd .sfv{transition:transform .5s cubic-bezier(.22,.61,.36,1),opacity .4s ease,filter .15s}
 .lsh-sf .sfv-g{position:relative;overflow:visible}
 /* 0 · les deux côtés sont POSÉS sur le centre : on ne voit qu'un logo */
@@ -3644,7 +3634,8 @@ body.papier-haut #gate-asteroid{transition:opacity .25s ease}
 .lsh-sf .sfpile i[data-v=objectives]{background:#36498c}
 .lsh-sf .sfpile i[data-v=habits]{background:#3a3a70}
 .lsh-sf .sfpile i[data-v=repulsions]{background:#743169}
-.lsh-sf .sfpile i.is-on{box-shadow:inset 0 0 0 1px #fff}
+/* le choisi garde sa couleur pleine, les deux autres s'assombrissent — la règle des carrés, sans trait blanc */
+.lsh-sf .sfpile:has(i.is-on) i:not(.is-on){filter:brightness(.5)}
 @media(hover:hover){.lsh-sf .sfpile i:hover{filter:brightness(1.25)}}
 @media(prefers-reduced-motion:reduce){.lsh-sf .sfcmd .sfv,.lsh-sf .sf-lg,.lsh-sf .sfpile,.lsh-sf .sf-lab{transition:none}}
 .lsh-sf .sfbx{display:flex;flex-direction:column;gap:3px;max-height:40vh;overflow-y:auto;overscroll-behavior:contain}
@@ -3870,8 +3861,8 @@ body.lv-d.rdr-voir #gate-asteroid,body.lv-d.rdr-voir #lvjoy,body.rdr-voir #rdr-f
 #cap-x{position:fixed;top:10px;right:10px;background:none;border:0;cursor:pointer;padding:10px;line-height:0;color:rgba(255,255,255,.6)}
 #cap-x svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round}
 @media(hover:hover){.cap-b:hover,#cap-x:hover{color:#fff}}
-@media (prefers-reduced-motion: reduce){#cap,#cap-in,.lsh img,.lsh video,.tl-ph img,.tl-ph video,.ssp-m img,.ssp-m video,.tlv-m img,.tlv-m video,.tl-b,.tl-bx,.tl{transition:none!important}
-  #lv-sh{scroll-behavior:auto}}
+@media (prefers-reduced-motion: reduce){#cap,#cap-in,.lsh img,.lsh video,.tl-ph img,.tl-ph video,.ssp-m img,.ssp-m video,.tlv-m img,.tlv-m video,.tl-bx,.tl{transition:none!important}
+  #lv-sh{scroll-behavior:auto}.tb-attente{animation:none}}
 .dash[data-cap]{display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
 .dash[data-cap] svg{width:12px;height:12px;flex:none}
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
@@ -6886,12 +6877,20 @@ function creerFeed(conf){
      soulève. En tête, la tuile « + » ajoute un média (l'élément d'abord, la caméra ensuite). Un tap sur
      l'image l'ouvre en GRAND ; un tap sur la boîte ouvre l'élément dans le Totehm ; un appui long règle le
      point de focalisation. */
-  const TCOUL={habits:'var(--navy)', objectives:'var(--blue)', repulsions:'var(--rep)', wisdom:'var(--rep)', visions:'var(--blue)'};
-  const boite=(x,cl)=>x.txt?'<button type="button" class="tl-b'+(cl?' '+cl:'')+'" data-lsh="'+esc(x.vue+'|'+x.id)+'" style="--tc:'+(TCOUL[x.vue]||'var(--navy)')+'">'
-    +((x.cols||[]).length?'<span class="tl-i" aria-hidden="true">'+x.cols.map(c=>'<i style="background:'+c+'"></i>').join('')+'</span>':'')
-    +'<span class="tl-n">'+esc(x.txt)+'</span></button>':'';
-  /* La box d'un média : celle du Totehm (`boxTotehm`) ; si l'arbre n'est pas encore revenu, son nom seul. */
-  const boxDe=(x,court)=>boxTotehm(x.bk,objetBox(x.bk,x.id),{court})||boite(x);
+  /* La box d'un média : celle du Totehm (`boxTotehm`), TOUJOURS au format du Totehm (« les box sont sacrées »).
+     10/11 (Wah : « certaines boxes ne s'affichent pas ou mal sur les vignettes ») — mesuré : avant l'arrivée de
+     l'arbre (`my_trips`), 5 vignettes sur 7 n'avaient AUCUNE box, et une Habit introuvable tombait dans l'ancien
+     rendu `.tl-b`. Désormais : une Habit non retrouvée garde SA box, de son nom ; les quatre autres posent une box
+     d'ATTENTE à leur couleur, à la même place, qui se remplit quand l'arbre arrive (`SH.maj`) — elle se transforme,
+     elle n'apparaît pas. */
+  const boxAttente=bk=>'<div class="tb '+(PEAU[bk]||'blk-h')+' tb-attente" aria-hidden="true"><div class="habit"><span class="h-body">'
+    +'<span class="v-col"><span class="v-name">&nbsp;</span></span></span></div></div>';
+  const boxDe=(x,court)=>{
+    const o=objetBox(x.bk,x.id);
+    if(o) return boxTotehm(x.bk,o,{court});
+    if(x.bk==='h'&&x.txt) return boxTotehm('h',{id:'',t:x.txt,t0:x.txt,is:x.ints||[],i:(x.ints||[])[0]||null},{court});
+    return boxAttente(x.bk);
+  };
   function tuile(x,i){
     const u=x.b==='em'&&!x.vid?emCache(x.src):'';
     /* Une vidéo s'affiche par sa VIGNETTE (`POSTER`) : un téléphone ne dessine pas l'image d'une vidéo arrêtée. */
@@ -8318,7 +8317,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-11-09-porte-sous-totehm';
+const BUILD='2026-11-10-grille-boxes';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
