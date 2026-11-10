@@ -31,10 +31,14 @@ const browser=await launch();
 try{
   // ══ 1 · L'EN-TÊTE, déconnecté puis connecté, au téléphone ══
   for(const session of [false,true]){
-    const {pg,log}=await page(browser,{dir:'club',origin,session,tables:{profiles:[{pseudo:'wahigher'}]},rpc:rpcs([],false)});
+    const lus=[];
+    const {pg,log}=await page(browser,{dir:'club',origin,session,tables:{profiles:[{pseudo:'wahigher'}]},rpc:rpcs(lus,false)});
     await pg.goto(origin+'/'); await pg.waitForFunction(()=>window.__totehm_club?.().club.lu,null,{timeout:12000}); await pg.waitForTimeout(800);
     const m=await boite(pg,'#member'), l=await boite(pg,'#club-logo'), s=await boite(pg,'#rdr-mode');
     const qui=session?'connecté':'déconnecté';
+    if(!session){ const v=await pg.evaluate(()=>({t:document.getElementById('radar-empty').textContent, loc:window.__totehm_club().located}));
+      ok(!lus.length&&!v.loc&&/connect with my TOTEHM/i.test(v.t),
+         'téléphone déconnecté · le serveur ne montrerait rien : zéro lecture du Club, zéro demande de position, « '+v.t+' »'); }
     ok(!croise(m,l)&&!croise(l,s)&&!croise(m,s)&&l.y<20&&s.y<20,
        'téléphone '+qui+' · coin membre, logo TOTEHM et RADAR · GRID · SHORTS sur une ligne, sans chevauchement (logo '+Math.round(l.x)+'→'+Math.round(l.r)+', bascule dès '+Math.round(s.x)+')');
     ok(!erreurs(log).length,'téléphone '+qui+' · aucune erreur');
