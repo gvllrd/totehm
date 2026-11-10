@@ -85,7 +85,10 @@ try{
   ok(b.manche.noirs&&b.manche.taille>=30,nom+' · le manche noir possède un chapeau analogique de 32 px');
   ok(b.coeur==='coeur',nom+' · 26/10 · au repos, le cœur (le TOTEHM) bat → '+b.coeur);
   const r0=await reseau(pg);
-  ok(!r0.aspire&&r0.echelle===1&&r0.op===1&&r0.puls==='ram-puls',nom+' · au repos, le réseau vit (impulsions)');
+  /* 10/11 — au téléphone, l'arbre est INVISIBLE (`#lv-ram` en `visibility:hidden`) : ses impulsions ne tournent plus, elles
+     recalculaient le style à chaque image pour rien (mesuré pendant le repli). Sur ordinateur, le réseau vit. */
+  const pulsAttendu=nom==='téléphone'?'none':'ram-puls';
+  ok(!r0.aspire&&r0.echelle===1&&r0.op===1&&r0.puls===pulsAttendu,nom+' · au repos, le réseau '+(nom==='téléphone'?'(invisible ici) ne coûte rien':'vit (impulsions)')+' → '+r0.puls);
   /* ── 2 · le tap : les traits sont aspirés pendant le déploiement ── */
   await pg.evaluate(()=>{ window.__asp=[]; const r=document.getElementById('lv-ram'), t0=performance.now();
     const f=()=>{ const t=performance.now()-t0; if(t>1200) return; const cs=getComputedStyle(r), m=cs.transform.match(/matrix\(([-\d.e]+)/);
@@ -95,8 +98,12 @@ try{
   const decroit=ech.every((v,i)=>!i||v<=ech[i-1]+1e-3), mi=asp.filter(x=>x[0]>150&&x[0]<450);
   ok(asp.length>20&&decroit&&ech[ech.length-1]<.05&&asp[asp.length-1][2]===0&&mi.some(x=>x[1]<1&&x[1]>.05),
      nom+' · 25/10 · au tap, les traits sont ASPIRÉS dans le TOTEHM : l\'échelle tombe de 1 à '+ech[ech.length-1].toFixed(2)+' en continu ('+asp.length+' images), puis ils disparaissent');
-  const fin=await pg.evaluate(()=>getComputedStyle(document.querySelector('#gl-bg>rect')).fill);
-  ok(fin==='rgb(43, 43, 87)',nom+' · le papier arrive dans la couleur de l\'app (#2b2b57) → '+fin);
+  /* 10/11 — la couleur de l'app arrive par l'OPACITÉ de `#gl-paint` (même forme, même transformation) ; le rectangle reste navy :
+     il n'est jamais retracé pendant que le papier est agrandi ×14 (mesuré : 1 087 → ~150 ms de raster au repli). */
+  const fin=await pg.evaluate(()=>{ const p=getComputedStyle(document.getElementById('gl-paint'));
+    return {fond:p.backgroundColor, op:p.opacity, rect:getComputedStyle(document.querySelector('#gl-bg>rect')).fill}; });
+  ok(fin.fond==='rgb(43, 43, 87)'&&fin.op==='1'&&fin.rect==='rgb(51, 51, 102)',
+     nom+' · le papier arrive dans la couleur de l\'app (#2b2b57), portée par #gl-paint opaque ; le rectangle navy n\'est jamais retracé → '+JSON.stringify(fin));
   await pg.waitForFunction(()=>!document.body.classList.contains('gate'),null,{timeout:6000}).catch(()=>{});await pg.waitForTimeout(400);
   const o=await pg.evaluate(()=>({proc:!!document.getElementById('app-proc'),traits:document.querySelectorAll('svg:not(#lv-ram) rect.pin').length,r:document.body.classList.contains('is-aspire'),
     coeur:getComputedStyle(document.getElementById('gate-logo')).animationName}));
@@ -128,7 +135,7 @@ try{
    ok(fo.filter(x=>x.folding&&!x.pose).every(x=>x.lv===0&&x.asp)&&pose&&pose.w>wf+2&&lvFin>0.5,
       nom+' · repli '+tour+' : les traits restent aspirés, puis l\'arbre et l\'atterrissage ressortent PENDANT que le papier se pose (papier à '+Math.round(pose?pose.w:0)+' px, posé à '+Math.round(wf)+'), pas après');
    const r=await branche(pg), rs=await reseau(pg);
-   ok(Math.abs(r.s.t-b.s.t)<1&&r.pins.length===12&&r.coeur==='coeur'&&!rs.aspire&&rs.echelle===1&&rs.op===1&&rs.puls==='ram-puls'&&rs.d.deploiements===tour,
+   ok(Math.abs(r.s.t-b.s.t)<1&&r.pins.length===12&&r.coeur==='coeur'&&!rs.aspire&&rs.echelle===1&&rs.op===1&&rs.puls===pulsAttendu&&rs.d.deploiements===tour,
       nom+' · repli '+tour+' : le papier posé, ses traits RESSORTENT et revivent, le cœur rebat → '+JSON.stringify(rs));
   }
   /* ── 3 · ↓ l'anneau ── */
