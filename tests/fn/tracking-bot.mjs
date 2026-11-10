@@ -49,6 +49,7 @@ const req=(body={},auth='Bearer service-fixture',token)=>new Request('https://pr
 check((await handler(req({},'Bearer prefix-service-fixture-suffix'))).status===403,'Service authentication requires an exact credential, not substring matching');
 check((await handler(req({},'', 'wrong-token'))).status===403,'An invalid cron token cannot send');
 let response=await handler(req({mode:'health'}));check((await response.json()).ready&&sendCount===0,'Health checks verify the configured bot/webhook without messaging users');
+response=await handler(req({mode:'health'},'','purpose-token'));check((await response.json()).ready&&sendCount===0,'A single-use purpose-bound operator token can run only the requested read-only probe');
 response=await handler(req({mode:'dry_run'}));check((await response.json()).sent===0&&sendCount===0&&!tickCalls.some(c=>c.name==='tracking_claim'),'Dry run makes no reservations or sends');
 response=await handler(req());check((await response.json()).sent===1&&sendCount===1,'Duplicate TOTEHM rows cannot duplicate a send');
 check(tickCalls.at(-1).name==='tracking_delivered'&&tickCalls.at(-1).args.p_status==='sent','A confirmed Telegram response finalizes delivery');

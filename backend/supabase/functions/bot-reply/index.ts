@@ -287,7 +287,7 @@ Deno.serve(async (req) => {
   // Read-only operator probe. Older deployed versions answer GET without sending messages.
   if(req.method==='GET'&&new URL(req.url).searchParams.get('health')==='1'){
     const health=createTrackingTick({db:admin,token:TG,serviceKey:Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,webhookSecret:Deno.env.get('TELEGRAM_WEBHOOK_SECRET'),projectOrigin:Deno.env.get('SUPABASE_URL')!});
-    return health(new Request(req.url,{method:'POST',headers:{authorization:req.headers.get('authorization')??'','content-type':'application/json'},body:JSON.stringify({mode:'health'})}));
+    return health(new Request(req.url,{method:'POST',headers:{authorization:req.headers.get('authorization')??'','x-tick-token':req.headers.get('x-tick-token')??'','content-type':'application/json'},body:JSON.stringify({mode:'health'})}));
   }
   if (req.method !== "POST") return ok();
 
