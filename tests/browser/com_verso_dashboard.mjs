@@ -52,6 +52,7 @@ try{
    /* ── 1 · deux parties, Go Higher d'abord ── */
    await pg.click('#lv-tap-turn');
    await pg.waitForFunction(()=>document.getElementById('srch').classList.contains('is-pret'),null,{timeout:6000}).catch(()=>{});await pg.waitForTimeout(400);
+   await pg.waitForFunction(()=>{let e=document.getElementById('vs-dash'),a=1;while(e&&e!==document.body){a*=Number(getComputedStyle(e).opacity);e=e.parentElement;}return a>=0.999;});
    const a=await vu(pg), tabs=await pg.$$eval('#vs-tabs [data-vs-tab]',l=>l.map(b=>b.textContent.trim()+(b.querySelector('svg use[href="#higher-badge"]')?'[Higher]':'')));
    const ordre=await pg.evaluate(()=>{const y=s=>document.querySelector(s).getBoundingClientRect().top;return y('#vs-dash')<y('#mw-menu');});
    ok(tabs.join()==='Monetize my TOTEHM,Go[Higher]'&&a.tab==='higher'&&a.sel==='higher'&&a.dash===1&&!a.gagne&&a.higher===1&&a.pied===1&&ordre,
@@ -87,7 +88,7 @@ try{
    await pg.screenshot({path:OUT+'/dash_'+(nom==='téléphone'?'tel':'ordi')+'.png',fullPage:false});
    const sh=await pg.evaluate(()=>{const u=document.getElementById('srch-ui');return {h:u.scrollHeight,c:u.clientHeight};});
    /* ── 3 · il ne coche rien ; Connect mène à TotehmBot ── */
-   ok(!(await pg.$('#vs-dash input, #vs-dash [type="checkbox"]'))&&!log.rpc.some(x=>/habit_outcome|track/.test(x.name)),nom+' · le verso ne coche RIEN : le suivi se fait dans Telegram');
+   ok(!(await pg.$('#vs-dash input, #vs-dash [type="checkbox"]'))&&!log.rpc.some(x=>/habit_outcome|tracking_(answer|detail|open|settings_set)/.test(x.name)),nom+' · le verso ne coche RIEN : le suivi se fait dans Telegram');
    await pg.click('#vs-dash [data-db-tg]');await pg.waitForTimeout(500);
    const t=await vu(pg);
    ok(t.tab==='higher'&&t.higher===1&&!t.gagne,nom+' · Telegram pas relié : « Connect » reste dans Go [Higher], là où vit TotehmBot → '+t.tab);

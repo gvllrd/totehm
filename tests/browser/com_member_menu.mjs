@@ -38,7 +38,7 @@ try{
        my_console:{...base,offer:{enabled:false,open:false},subscriptions:SUBS},creator_payout_set:{ok:true},
        monetization_set:b=>b.p_enabled===true?{ok:false,why:'payout_first'}:{ok:true}},
      functions:{'sso-mint':{code:'b'.repeat(64)},'higher-sub':{error:'not_ready'},'club-billing':b=>({ok:true,until:'2027-03-01',action:b.action})}});
-   await pg.addInitScript(()=>{window.__opened=[];window.open=(u)=>{window.__opened.push(u);return null;};});
+   await pg.addInitScript(()=>{window.__opened=[];window.open=(u)=>{const item={url:u};window.__opened.push(item);return {opener:null,location:{replace:v=>item.url=v},close:()=>item.closed=true};};});
    await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(900);await retourner(pg);
    await pg.waitForFunction(()=>!document.getElementById('mw-creator').classList.contains('hide'),null,{timeout:9000});
    /* 20/10 — LE VERSO = MON ARGENT, EN UN ÉCRAN (Wah : « totalement ILLISIBLE … ULTRA-SIMPLIFIÉ »). */
@@ -72,7 +72,7 @@ try{
    ok(log.functions.some(f=>f.name==='club-billing'&&f.body.action==='cancel_creator'&&f.body.pseudo==='alice'),'Stop = club-billing cancel_creator, at the end of the year');
    ok(await pg.locator('#mw-menu .vs-hi use[href="#higher-badge"]').count()===2&&!/higher/i.test(await pg.$eval('#mw-menu',e=>e.textContent)),'« Higher » is the SVG, never text (the title and [Higher] Self)');
    const acts=await pg.$$eval('#mw-menu .vs-act',l=>l.map(e=>e.textContent));
-   ok(JSON.stringify(acts)==='["Connect","Get"]','one gesture per line → '+acts.join(' | '));
+   ok(JSON.stringify(acts)==='["Connect","Manage","Get"]'&&await pg.$$eval('#mw-menu .vs-item',rows=>rows.every(r=>r.querySelectorAll('button').length<=1)),'one gesture per line → '+acts.join(' | '));
    await pg.keyboard.press('Escape');
    await pg.waitForFunction(()=>!document.getElementById('srch').classList.contains('is-open'),null,{timeout:6000});
    await pg.waitForTimeout(1800);
@@ -85,7 +85,7 @@ try{
    ok(await pg.isVisible('#mw-menu-note'),'the menu note is VISIBLE in the member window (11/10: it was written into the hidden door note)');
    ok(log.functions.some(f=>f.name==='higher-sub'&&f.body.action==='checkout'),'Get (Higher) asks the server for a checkout — no live price yet: « opening soon »');
    await pg.click('#mw-telegram');await pg.waitForFunction(()=>window.__opened.length===1);
-   ok(await pg.evaluate(()=>window.__opened[0])==='https://t.me/TotehmBot?start=CODE123','Connect TotehmBot: a one-use link code, then Telegram');
+   ok(await pg.evaluate(()=>window.__opened[0].url)==='https://t.me/TotehmBot?start=CODE123','Connect TotehmBot: a one-use link code, then Telegram');
    /* 18/10 — PLUS DE PHOTO DE PROFIL (Wah) : la vignette, son champ de fichier et `avatar_set` sont
       partis ensemble. Le papier EST l'image du membre. */
    ok(!await pg.locator('#mw-avatar,#mw-avatar-file,#mw-avatar-note').count()&&!log.rpc.some(x=>x.name==='avatar_set'),
