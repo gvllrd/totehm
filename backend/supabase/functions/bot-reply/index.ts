@@ -1,42 +1,12 @@
-// TOTEHM · bot-reply v6 — TOTEHMBOT, LE TOTEHM DANS LA POCHE
-// why  : Telegram n'accepte QU'UN webhook par bot. Le geste quotidien
-//        (DONE/MISSED/WHY), la production de contenu (/spot) et la lecture
-//        du monde (/tonight) vivent donc dans la MÊME fonction. Les séparer
-//        demanderait un second bot, donc un second token, donc un second
-//        compte à lier — pour rien.
-// how  : la liaison d'abord, puis un brouillon en base pour tenir une
-//        conversation à plusieurs temps. ZÉRO appel IA dans la boucle : la
-//        position vient de Telegram, la décision vient de PostgreSQL, les
-//        mots d'une Repulsion sont ceux du membre.
-// what : 200 toujours — un 500 fait rejouer Telegram en boucle.
-//
-// CE QUI A CHANGÉ EN v5
-//   1. /tonight — la Higher Map dans Telegram. Événements Ticketmaster et
-//      lieux, autour de la position envoyée, rangés par les intentions du
-//      Totehm. C'est la moitié « Ticketmaster » du produit, accessible sans
-//      ouvrir un navigateur.
-//   2. LA LIAISON ALLUME LE BOT. `totehms.bot` valait `false` pour tout le
-//      monde et rien ne le passait à `true` : même réparé, le bot n'aurait
-//      eu personne à servir. Lier TotehmBot EST la permission — on ne la
-//      demande pas deux fois. /pause la retire.
-//   3. /aide, /pause, /reprendre, /carte. Un bot sans liste de commandes
-//      est un bot qu'on n'utilise qu'une fois.
-//
-// CE QUI A CHANGÉ EN v6 — le bot devient le PROLONGEMENT des quatre écrans
-//   · Un bouton `web_app` ouvre HigherSelf DANS Telegram. C'est le Totehm
-//     entier — habitudes avec leur série, leçons, objectifs, spots — sans
-//     quitter la conversation. Un bouton, pas une explication.
-//   · /moi rend le tracking : ce qui attend une réponse, les séries en
-//     cours, la consistance. Déduit, jamais saisi.
-//   · /wisdom et /objectif posent une leçon ou un objectif en une ligne.
-//     Une idée se note là où elle arrive, pas là où il y a un écran.
-//   · /spots cherche les lieux du Club autour de la position envoyée.
-//
-// verify_jwt = false — Telegram n'a pas de JWT Supabase. La sécurité vient
-// de `TELEGRAM_WEBHOOK_SECRET`, vérifié ci-dessous.
+// TotehmBot: private self reports and optional context, no model in the tracking loop.
+// The verified Telegram sender maps to a linked profile; readers and writes enforce that owner.
+// Existing Club/Map commands remain separate from practice collection.
+// Deploy without gateway JWT verification; Telegram webhook secret is mandatory.
 
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { liveWarm, LIVE_RADIUS_M } from "../_shared/live.ts";
+import {handleTrackingUpdate} from "../_shared/tracking-bot.ts";
+import {createTrackingTick} from "../_shared/tracking-tick.ts";
 
 const admin = createClient(
   Deno.env.get("SUPABASE_URL")!,
@@ -46,24 +16,22 @@ const admin = createClient(
 
 const TG   = Deno.env.get("TELEGRAM_BOT_TOKEN");
 const MAP  = "https://www.totehm.com/map";
-const APP  = "https://www.totehm.com/higherself";
+const APP  = "https://www.totehm.com/totehm";
 const ok   = () => new Response("ok", { status: 200 });
 
-// Un bouton `web_app` ouvre une page DANS Telegram, plein écran, avec la
-// session déjà là. C'est ce qui fait la différence entre « va sur le
-// site » et « c'est ouvert ». Rien à configurer chez BotFather : la
-// seule contrainte est le HTTPS.
+// The main TOTEHM opens in the browser; linking never pretends to create a browser session.
 const kbApp = (label = "Ouvrir mon Totehm") => ({
-  inline_keyboard: [[{ text: label, web_app: { url: APP } }]],
+  inline_keyboard: [[{ text: label, url: APP }]],
 });
 
 async function tg(method: string, payload: unknown) {
-  const r = await fetch(`https://api.telegram.org/bot${TG}/${method}`, {
+  let r:Response;try{r = await fetch(`https://api.telegram.org/bot${TG}/${method}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
-  if (!r.ok) console.error("telegram", method, r.status, (await r.text()).slice(0, 200));
+  }catch{throw new Error("telegram_unavailable");}
+  if (!r.ok) console.error("telegram", method, r.status);
 }
 
 const say = (chat: string, text: string, markup?: unknown) =>
@@ -98,7 +66,9 @@ const intName = (id: string) => INTS.find((x) => x.id === id)?.name ?? id;
 
 const HELP =
   "TotehmBot.\n\n" +
-  "/moi — où tu en es : séries, consistance, ce qui attend\n" +
+  "/suivi — noter une Habit, sans obligation de tout faire\n" +
+  "/bilan · /moi — les faits enregistrés et les obstacles déclarés\n" +
+  "/reglages — fuseau, heures calmes et plafond de questions\n" +
   "/tonight — ce qui se passe autour de toi, rangé par tes intentions\n" +
   "/spot — poser un lieu sur la carte du Club\n" +
   "/spots — chercher les lieux du Club autour de toi\n" +
@@ -314,10 +284,15 @@ async function tonight(chat: string, uid: string, lat: number, lng: number) {
 
 // ─────────────────────────────────────────────────────────────────────────
 Deno.serve(async (req) => {
+  // Read-only operator probe. Older deployed versions answer GET without sending messages.
+  if(req.method==='GET'&&new URL(req.url).searchParams.get('health')==='1'){
+    const health=createTrackingTick({db:admin,token:TG,serviceKey:Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,webhookSecret:Deno.env.get('TELEGRAM_WEBHOOK_SECRET'),projectOrigin:Deno.env.get('SUPABASE_URL')!});
+    return health(new Request(req.url,{method:'POST',headers:{authorization:req.headers.get('authorization')??'','x-tick-token':req.headers.get('x-tick-token')??'','content-type':'application/json'},body:JSON.stringify({mode:'health'})}));
+  }
   if (req.method !== "POST") return ok();
 
   const expected = Deno.env.get("TELEGRAM_WEBHOOK_SECRET");
-  if (expected && req.headers.get("x-telegram-bot-api-secret-token") !== expected) {
+  if (!expected || req.headers.get("x-telegram-bot-api-secret-token") !== expected) {
     return new Response("forbidden", { status: 403 });
   }
 
@@ -325,6 +300,10 @@ Deno.serve(async (req) => {
   try { u = await req.json(); } catch (_) { return ok(); }
 
   try {
+    // Personal data stays in the linked person's private Telegram conversation.
+    const origin=u.callback_query?.message??u.message, sender=u.callback_query?.from??u.message?.from;
+    if(origin&&(origin.chat?.type!=="private"||String(origin.chat.id)!==String(sender?.id)))return ok();
+    if(await handleTrackingUpdate(admin,u,tg))return ok();
     // ═══════════════════════════════════════════════════════════════════
     // UN BOUTON
     // ═══════════════════════════════════════════════════════════════════
@@ -437,31 +416,6 @@ Deno.serve(async (req) => {
         return ok();
       }
 
-      // ── DONE / MISSED ── le geste quotidien
-      if (parts[0] === "o") {
-        const outId = Number(parts[1]);
-        const val   = parts[2];
-
-        const { data: row } = await admin
-          .from("habit_outcomes").select("habit_text")
-          .eq("id", outId).eq("user_id", uid).maybeSingle();
-        if (!row) return ok();
-
-        await admin.from("habit_outcomes")
-          .update({ outcome: val, answered_at: new Date().toISOString() })
-          .eq("id", outId).eq("user_id", uid);
-
-        if (val === "done") {
-          await say(chat, "✓");
-        } else {
-          await say(chat, `Pourquoi ?`, {
-            force_reply: true,
-            input_field_placeholder: "en une phrase — ou ignore",
-          });
-        }
-        return ok();
-      }
-
       // ── la Repulsion, choisie dans le corpus ──
       if (parts[0] === "r") {
         const { data: pend } = await admin
@@ -503,37 +457,14 @@ Deno.serve(async (req) => {
           prof ? kbApp("Ouvrir mon Totehm") : undefined);
         return ok();
       }
-      const { data: link } = await admin
-        .from("bot_link_codes").select("user_id, created_at, used_at")
-        .eq("code", code).maybeSingle();
-      const fresh = link && !link.used_at &&
-        (Date.now() - new Date(link.created_at).getTime()) < 10 * 60000;
-      if (!fresh) {
-        await say(chat, "Ce lien a expiré. Redemande-en un depuis ton Totehm.");
-        return ok();
-      }
-      // Un compte Telegram ne peut être branché que sur un Totehm à la fois.
-      await admin.from("profiles").update({ telegram_id: null }).eq("telegram_id", tgId);
-      await admin.from("profiles").update({ telegram_id: tgId }).eq("id", link!.user_id);
-      await admin.from("bot_link_codes")
-        .update({ used_at: new Date().toISOString() }).eq("code", code);
-
-      // ══ LIER, C'EST DONNER LA PERMISSION ══
-      // `totehms.bot` restait `false` : le membre branchait le bot et le bot
-      // se taisait. On ne demande pas deux fois la même chose.
-      const { error: botErr } = await admin
-        .from("totehms").update({ bot: true, updated_at: new Date().toISOString() })
-        .eq("user_id", link!.user_id);
-      if (botErr) console.error("bot on:", botErr.message);
-
-      const { data: prof } = await admin
-        .from("profiles").select("pseudo").eq("id", link!.user_id).maybeSingle();
+      const {data:linked,error:linkError}=await admin.rpc("tracking_link",{p_code:code,p_telegram:tgId});
+      if(linkError||!linked?.ok){await say(chat,"Ce lien a expiré. Redemande-en un depuis ton TOTEHM.");return ok();}
+      const settings=linked.settings??{};
       await say(chat,
-        `C'est lié, ${prof?.pseudo ?? ""}.\n\n` +
-        `Je te demanderai si tu as tenu tes habitudes. Deux taps, pas plus. ` +
-        `Jamais entre 22 h et 8 h, jamais plus de deux fois par jour, et je me tais ` +
-        `une semaine si tu m'ignores trois fois.\n\n${HELP}`,
-        kbApp("Ouvrir mon Totehm"));
+        `TotehmBot est lié.\n\n/suivi pour noter une Habit, /bilan pour relire les faits. Fait, en partie, pas fait ou pas aujourd’hui : tu choisis.\n\n`+
+        `${settings.timezone} · calme de ${settings.quiet_from} h à ${settings.quiet_to} h · ${settings.max_daily} questions maximum par jour. /pause coupe les questions.\n\n`+
+        `Une absence de réponse reste inconnue. `+(settings.share_chatgpt?'Le partage des bilans avec ChatGPT est activé dans ton dashboard, où tu peux le couper.':'Le partage des bilans avec ChatGPT reste désactivé tant que tu ne l’actives pas dans ton dashboard.'),
+        kbApp("Ouvrir mon TOTEHM"));
       return ok();
     }
 
@@ -556,47 +487,6 @@ Deno.serve(async (req) => {
       return ok();
     }
     if (text === "/carte" || text === "/map") { await say(chat, MAP); return ok(); }
-
-    if (text === "/pause") {
-      await admin.from("totehms").update({ bot: false }).eq("user_id", uid);
-      await say(chat, "Je me tais. /reprendre quand tu veux — /tonight et /spot marchent toujours.");
-      return ok();
-    }
-    if (text === "/reprendre") {
-      await admin.from("totehms").update({ bot: true }).eq("user_id", uid);
-      await say(chat, "C'est reparti. Je reprends mes questions, aux mêmes horaires.");
-      return ok();
-    }
-
-    // ══ /moi — LE TRACKING, DÉDUIT ══════════════════════════════════
-    // Exactement les chiffres de la mini-app : `higherself_state()` est
-    // la MÊME fonction, appelée avec l'uuid parce que le bot n'a pas de
-    // session. Deux surfaces, un seul calcul — sinon elles finiraient par
-    // ne pas dire la même chose du même membre.
-    if (text === "/moi" || text === "/me") {
-      const { data: st } = await admin.rpc("higherself_state", { p_user: uid });
-      const habits = (st?.habits ?? []) as Record<string, unknown>[];
-      if (!habits.length) {
-        await say(chat, "Ton Totehm est vide. Écris une première habitude, puis reviens.",
-          kbApp("Ouvrir mon Totehm"));
-        return ok();
-      }
-      const waiting = habits.filter((h) => h.pending_id);
-      const lines = habits.map((h) => {
-        const bits: string[] = [];
-        if (h.streak && Number(h.streak) > 0) bits.push(`${h.streak} d'affilée`);
-        if (h.consistency != null)            bits.push(`${h.consistency}% tenu`);
-        if (!h.ready)                         bits.push("pas de fréquence");
-        return `<b>${esc(h.habit)}</b>${bits.length ? "\n" + esc(bits.join(" · ")) : ""}`;
-      });
-      await sayHtml(chat,
-        (waiting.length
-          ? `<b>${waiting.length}</b> question${waiting.length > 1 ? "s" : ""} attend${waiting.length > 1 ? "ent" : ""} une réponse.\n\n`
-          : "Rien en attente.\n\n") +
-        lines.join("\n\n"),
-        kbApp("Répondre dans mon Totehm"));
-      return ok();
-    }
 
     // ══ /wisdom et /objectif — une idée se note où elle arrive ═══════
     if (text.startsWith("/wisdom") || text.startsWith("/lecon") || text.startsWith("/leçon")) {
@@ -754,50 +644,9 @@ Deno.serve(async (req) => {
       return ok();
     }
 
-    // ═══ LE GESTE QUOTIDIEN ═══
-    if (!msg.text) return ok();
-
-    // Une commande inconnue ne doit JAMAIS être enregistrée comme l'obstacle
-    // d'une habitude ratée. Le membre a tapé /truc, pas raconté sa journée.
-    if (text.startsWith("/")) { await say(chat, HELP); return ok(); }
-
-    const { data: last } = await admin
-      .from("habit_outcomes").select("id, habit_text, obstacle")
-      .eq("user_id", uid)
-      .order("asked_at", { ascending: false }).limit(1).maybeSingle();
-    if (!last) { await say(chat, HELP); return ok(); }
-
-    if (last.obstacle) {
-      await admin.rpc("set_repulsion_admin", {
-        p_user: uid, p_habit: last.habit_text,
-        p_obstacle: last.obstacle, p_repulsion: text,
-      });
-      await say(chat, `C'est noté : ${text}.\nJe te le rappellerai au bon moment.`);
-      return ok();
-    }
-
-    const { data: obs } = await admin.rpc("record_obstacle_admin", {
-      p_user: uid, p_habit: last.habit_text,
-      p_said: text, p_outcome: last.id,
-    });
-
-    if (obs?.recurring && !obs?.already_handled) {
-      const { data: sug } = await admin.rpc("suggest_repulsions_admin", {
-        p_user: uid, p_obstacle: text, p_habit: last.habit_text,
-      });
-      const rows = (sug?.from_corpus ?? []).slice(0, 3).map((c: any) => ([{
-        text: String(c.repulsion).slice(0, 60),
-        callback_data: `r::${encodeURIComponent(String(c.repulsion)).slice(0, 50)}`,
-      }]));
-      await say(chat,
-        `Ça revient souvent.\n\n${sug?.frame ?? "Qu'est-ce que tu repousses ?"}\n` +
-        (rows.length ? "Choisis, ou écris la tienne." : "Écris-la — tu es le premier."),
-        rows.length
-          ? { inline_keyboard: rows }
-          : { force_reply: true, input_field_placeholder: "je repousse..." });
-    } else {
-      await say(chat, "✓");
-    }
+    // A note is collected only after the person explicitly opens a tracking detail.
+    // Unrelated messages never mutate a Repulsion, an Objective or MY STORY.
+    await say(chat,"/suivi pour noter une Habit · /bilan pour relire ton suivi · /aide pour les autres portes.");
     return ok();
 
   } catch (e) {

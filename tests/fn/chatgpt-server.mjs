@@ -38,7 +38,8 @@ class Query{
  }catch(e){return {data:null,error:{message:e.message}};}}
  then(ok,no){return this.run().then(ok,no);}
 }
-const db={from:table=>new Query(table),auth:{getUser:async token=>token==='site-session-A-valid-credential'?{data:{user:{id:A,is_anonymous:false}},error:null}:{data:{user:null},error:{message:'bad'}}},rpc:async(name,args)=>{try{const keys=Object.keys(args);assert(/^[a-z_]+$/.test(name));const result=await pg.query(`select public.${name}(${keys.map((k,i)=>k+'=> $'+(i+1)).join(',')}) as result`,keys.map(k=>args[k]));return {data:result.rows[0].result,error:null};}catch(e){return {data:null,error:{message:e.message}};}}};
+const practiceReads=[];let sharePractice=false;
+const db={from:table=>new Query(table),auth:{getUser:async token=>token==='site-session-A-valid-credential'?{data:{user:{id:A,is_anonymous:false}},error:null}:{data:{user:null},error:{message:'bad'}}},rpc:async(name,args)=>{if(name==='chatgpt_tracking'){practiceReads.push(args);return {data:sharePractice?{available:true,summary:{source:'self_report',habits:(args.p_habits||[]).map(ref=>({ref,done:2}))}}:{available:false,why:'not_enabled'},error:null};}try{const keys=Object.keys(args);assert(/^[a-z_]+$/.test(name));const result=await pg.query(`select public.${name}(${keys.map((k,i)=>k+'=> $'+(i+1)).join(',')}) as result`,keys.map(k=>args[k]));return {data:result.rows[0].result,error:null};}catch(e){return {data:null,error:{message:e.message}};}}};
 const handler=createConnectorHandler(db,{publicOrigin:ORIGIN,enabled:true,allowedRedirectUris:[CALLBACK]});
 async function send(path,{method='GET',body,site=false,token,form=false,headers={}}={}){
  const h=new Headers(headers);if(site){h.set('origin',ORIGIN);h.set('authorization','Bearer site-session-A-valid-credential');}if(token)h.set('authorization','Bearer '+token);
@@ -83,6 +84,17 @@ try{
  r=await send('/mcp',{method:'POST',token:access,headers:mcpHeaders,body:{jsonrpc:'2.0',id:2,method:'tools/list'}});check(r.data.result.tools.length===10&&r.data.result.tools.every(t=>t.annotations.readOnlyHint),'Ten read-only tools, no publish/write tools');
  r=await tool(access,'get_context',{query:'draw',purpose:'action',limit:6});const context=r.data.result.structuredContent;check(context.items.some(x=>x.text==='Draw ten minutes'),'Tool returns the authenticated owner’s Habit');check(context.edges.some(x=>x.relation==='serves'),'Tool preserves recorded relationship provenance');check(!JSON.stringify(context).includes('Private other member'),'No other member data returned');
  check(new URL(context.items[0].url).hash.includes('element=habit'),'MCP results link the exact original element');
+ check(practiceReads.length===0,'Ordinary context does not read practice history automatically');
+ r=await tool(access,'get_context',{query:'my practice',purpose:'action',search_terms:[],include_tracking:true});
+ check(r.data.result.structuredContent.practice.why==='not_enabled','An existing grant is not a separate sharing choice');
+ check(practiceReads[0].p_habits.length===1&&practiceReads[0].p_habits[0]==='Draw ten minutes'&&!('p_user' in practiceReads[0]),'Practice is selected from personal context and bound to the verified grant, not a tool-supplied user');
+ sharePractice=true;
+ r=await tool(access,'read_element',{kind:'habit',ref:'Draw ten minutes',include_tracking:true});
+ check(r.data.result.structuredContent.practice.available,'Explicitly requested practice can accompany the exact personal element');
+ r=await tool(access,'get_context',{query:'practice',purpose:'action',include_tracking:'yes'});
+ check(r.data.error?.code===-32602,'Practice retrieval rejects malformed sharing flags');
+ sharePractice=false;
+
  r=await tool(access,'get_context',{query:'Review my system',purpose:'explicit',review:true});
  check(r.data.result.structuredContent.review.complete,'Explicit system review is available through the existing personal tool');
  r=await tool(access,'get_context',{query:'another option',purpose:'action',search_terms:[],exclude:[{kind:'habit',ref:'Draw ten minutes'}],kinds:['habit']});

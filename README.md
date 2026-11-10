@@ -14,16 +14,16 @@ ligne une minute plus tard (Vercel).
 ```
                  ↑ GET HIGHER (commune à tous)
   ← MES MÉDIAS   ● MON TOTEHM   → LES SPOTS      (← ● → = l'écosystème d'un membre)
-                 ↓ HIGHER SELF (TotehmBot)
+                 ↓ HIGHER MY CHATGPT
 ```
 
-Un tap sur **●** déploie le TOTEHM : HABITS · OBJECTIVES · REPULSIONS · VISIONS · MY STORY. Chaque liste conserve son classement ; Higher my ChatGPT retrouve ces priorités, leurs liens et les playlists des intentions, dans la langue de la conversation.
+Un tap sur **●** déploie le TOTEHM : HABITS · OBJECTIVES · REPULSIONS · VISIONS · MY STORY. Chaque liste conserve son classement ; Higher my ChatGPT retrouve ces priorités, leurs liens et les playlists des intentions, dans la langue de la conversation. Le TOTEHM porte les choix ; TotehmBot recueille les déclarations dans Telegram ; le dashboard montre les faits ; le partage facultatif des bilans permet à Higher ChatGPT de proposer des ajustements, sans écrire dans le TOTEHM ou dans sa mémoire native.
 
 ## Les fichiers
 
 | où | quoi |
 |---|---|
-| `com/totehm.html` | l'app totehm.com (toutes les vues) |
+| `com/totehm.html` · `tracking.mjs` | l’app et son dashboard privé ; réglages du suivi et partage explicite avec Higher ChatGPT |
 | `com/auth.html` · `creator.html` · `higher.html` | la connexion des 4 sites · la page d'un membre (`/@nom`) · la vente de Higher |
 | `com/console.html` · `monetize.html` · `terms.html` | l'ancienne console (encore liée par les paiements) · la plaquette créateur · les conditions |
 | `com/higherself.html` · `map.html` · `spot.html` · `club/totehmbot.html` | ce qu'ouvre TotehmBot sur Telegram |
@@ -32,6 +32,7 @@ Un tap sur **●** déploie le TOTEHM : HABITS · OBJECTIVES · REPULSIONS · VI
 | `space/index.html` + `gallery-*.mjs` | la galerie 3D |
 | `space/get_higher.html` · `stoner.html` · `play_lisbon_street.html` · `market.html`… | les œuvres et le marché de l'art |
 | `*/art-bridge.html` | les anciens liens d'œuvres (et les retours de paiement) → totehm.space, connexion gardée |
+| `backend/supabase/functions/_shared/tracking-*.ts` | suivi déterministe : quatre états, contexte facultatif, livraisons vérifiées, horaires et plafonds ; `/suivi`, `/bilan`, `/pause`, `/reprendre` |
 | `backend/supabase/migrations/` · `functions/` | les modifications de la base, dans l'ordre · les 40 fonctions serveur |
 | `backend/n8n/` | les automatisations du vêtement (A → F) et la VM Oracle |
 | `tools/` | 8 blocs communs, copiés dans les pages (connexion, confidentialité, loupe, menu, survol) |

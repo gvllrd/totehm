@@ -274,7 +274,7 @@ export function initializeResult() {
   return {
     protocolVersion: MCP_PROTOCOL_VERSION,
     capabilities: { tools: { listChanged: false } },
-    serverInfo: { name: "totehm", version: "1.2.0" },
+    serverInfo: { name: "totehm", version: "1.3.0" },
     instructions: HIGHER_GPT,
   };
 }

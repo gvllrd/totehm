@@ -2840,6 +2840,22 @@ body.gate.entered #filter-badge{
 body.is-xo{overflow:hidden}
 @media(prefers-reduced-motion:reduce){#xo,#xo.is-open{transition:none}}
 /* Personal spaces: owner-only history, opened from the member menu. */
+
+/* Private practice: reported outcomes, optional settings, no check-ins on the dashboard. */
+.tracking-caption{font:10px/1.8 var(--mono,'Space Mono',monospace);color:#b8b8c2;margin:12px 0}
+.tracking-panel{display:grid;grid-template-rows:0fr;transition:grid-template-rows .25s ease}
+.tracking-panel.is-open{grid-template-rows:1fr}
+#tracking-settings{overflow:hidden;min-height:0}
+.tracking-form{padding:12px 0;display:grid;gap:12px}
+.tracking-form label{display:grid;gap:6px;font:11px/1.6 'Space Mono',monospace;color:#b8b8c2}
+.tracking-form input:not([type=checkbox]){width:100%;box-sizing:border-box;background:#000;color:#fff;border:1px solid #666;border-radius:10px;padding:10px;font:12px 'Space Mono',monospace}
+.tracking-hours{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tracking-form .tracking-check{display:flex;align-items:flex-start;gap:9px}
+.tracking-check .vs-hi{display:inline-block;width:65px;height:22px;vertical-align:middle;margin:0}
+.tracking-check input{accent-color:#333366;margin-top:3px}
+.db-c.is-p:before{background:linear-gradient(90deg,var(--c) 50%,transparent 50%);border:1px solid var(--c)}
+.db-c.is-s:before{width:3px;height:3px;background:#b8b8c2}
+.db-n a{color:inherit;text-decoration:none}.db-n a:hover{text-decoration:underline;color:#fff}
 </style>
 <style data-com-member-menu="2026-10-06">
 /* 06/10 — Wah : « le menu de higher.boutique dans le menu espace membre de
@@ -4471,6 +4487,8 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
             <p class="vs-s">fewer limits · TotehmBot tracks every outcome</p></header>
           <div class="vs-item"><span class="vs-k vs-hs"><svg class="vs-hi" viewBox="0 0 600 200" aria-label="Higher"><use href="#higher-badge"/></svg>Self</span><span class="vs-h" id="mw-hs-hint">every day</span></div>
           <div class="vs-item"><span class="vs-k">TotehmBot</span><span class="vs-h" id="mw-tg-hint">tracks each Habit's outcome, at its rhythm</span><button class="vs-act" id="mw-telegram" type="button">Connect</button></div>
+          <div class="vs-item"><span class="vs-k">My practice</span><button class="vs-act" id="tracking-manage" type="button" aria-controls="tracking-settings">Manage</button></div>
+          <div class="tracking-panel"><div id="tracking-settings"></div></div>
           <div class="vs-item vs-plan"><span class="vs-h" id="mw-higher-hint"></span><span id="mw-higher-acts"></span><button class="vs-act vs-get" id="mw-higher" type="button">Get</button></div>
         </section>
         <div class="lv-note" id="mw-menu-note" role="status"></div>
@@ -4704,6 +4722,8 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
 <script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { parseElementLink, resolveElementLink } from '/totehm-link.mjs';
+import {renderPractice,createTrackingControls} from '/tracking.mjs';
+let trackingRefresh=()=>Promise.resolve();
 let lienElement=parseElementLink(location.hash), lienEnCours=false;
 const diagLien={state:lienElement?'pending':'idle'};
 window.__totehm_element_link=()=>({...diagLien});
@@ -11331,7 +11351,7 @@ function paintMe(){
     acts.innerHTML='<button class="mw-sub-act" type="button" data-hsub="'+(h.ending?'resume':'cancel')+'">'+(h.ending?'Keep':'Stop')+'</button>'; }
   else { btn.textContent='Get'; hint.textContent=prixMois(h); acts.innerHTML=''; }
   btn.classList.toggle('vs-get',!(h.comp||h.active));
-  $('mw-telegram').textContent=L.telegram?'Connected':'Connect';
+  $('mw-telegram').textContent=L.telegram?'Open':'Connect';
   const sm=L.sm||{}, libre=sm.free_total||7;
   $('mw-hs-hint').textContent=(h.active||h.comp)?'every day':'every day · free: '+libre+' a month';
 }
@@ -11352,15 +11372,24 @@ $('mw-higher-acts').onclick=async e=>{
   if(d.ok){ mwNote(d.ending?'it ends on '+jourFmt(d.until):'it continues'); LAND&&LAND.higher&&(LAND.higher.ending=!!d.ending,LAND.higher.until=d.until); paintMe(); return; }
   mwNote('try again');
 };
+const trackingControls=createTrackingControls({sb,host:$('tracking-settings'),button:$('tracking-manage'),getUserId:()=>me?.id,onChange:async()=>{if(lvRefresh)await lvRefresh();await trackingRefresh();}});
 /* TotehmBot : un code de liaison (10 min), puis Telegram. */
+let telegramLinking=false;
 async function lierTelegram(){
-  const {data,error}=await sb.rpc('new_bot_link_code');
-  if(error||!data){ if(error) console.error('[new_bot_link_code]',error.message); return false; }
-  window.open('https://t.me/TotehmBot?start='+encodeURIComponent(data),'_blank','noopener');
-  return true;
+  if(telegramLinking)return false;telegramLinking=true;
+  const tab=window.open('about:blank','_blank');if(tab)tab.opener=null;
+  try{
+    let timezone=null;try{timezone=Intl.DateTimeFormat().resolvedOptions().timeZone;}catch(_){}
+    if(timezone){const pref=await sb.rpc('tracking_setup_timezone',{p_timezone:timezone});if(pref.error)console.error('[tracking_setup_timezone]',pref.error.message);}
+    const {data,error}=await sb.rpc('new_bot_link_code');
+    if(error||!data){if(error)console.error('[new_bot_link_code]',error.message);if(tab)tab.close();return false;}
+    const url='https://t.me/TotehmBot?start='+encodeURIComponent(data);
+    if(tab)tab.location.replace(url);else location.assign(url);
+    return true;
+  }finally{telegramLinking=false;}
 }
 $('mw-telegram').onclick=async()=>{
-  if(LAND&&LAND.telegram){ mwNote('TotehmBot is connected'); return; }
+  if(LAND&&LAND.telegram){ window.open('https://t.me/TotehmBot?start=tracking','_blank','noopener'); return; }
   mwNote(await lierTelegram()?'in Telegram, press Start':'try again');
 };
 const _mpOrig=memberPaint;
@@ -11525,6 +11554,7 @@ $('mw-save-code').addEventListener('input',async()=>{
    frame ou pour de bon, le Totehm de celui d'avant. */
 let sesSeq=0;
 function quitter(){
+  trackingControls.reset();
   roSeq++; HSPACES.seq++; HSPACES.par=new Map(); ECLOTHS.seq++; ECLOTHS.par=new Map(); visImgSeq++; VISIMG.clear(); ZOOM.clear(); COPIES.clear();
   state={habits:[],vis:'private'}; myProfile=null; cloudMode=false; mySub=null; LAND=null; if(lvQuitter) lvQuitter();
   EMEDIA.seq++; EMEDIA.items=[]; EMEDIA.par=new Map(); EMEDIA.charge=false; SIGNE_EM.clear(); SH.vider(); SHS.vider(); BADGE.vider(); CAP.fermer();
@@ -13753,7 +13783,7 @@ window.addEventListener('pageshow',e=>{
        Deux parties : Monetize my TOTEHM · Go [Higher] (par défaut, à chaque retournement : le tableau de bord en tête). */
     const DASH=(()=>{
       const el=$('vs-dash'), srch=$('srch'), COUL=Object.fromEntries(INTS.map(x=>[x.id,x.color]));
-      let seq=0, D=null, ong='higher'; const diagD={charges:0, erreurs:0};
+      let seq=0, D=null, P=null, ong='higher'; const diagD={charges:0, erreurs:0};
       const n=v=>Number.isFinite(+v)?+v:0, coul=i=>COUL[i]||'', jourDe=s=>new Date(String(s).slice(0,10)+'T12:00:00');
       const court=s=>{ const t=jourDe(s); return isNaN(t)?'':t.toLocaleDateString('en-GB',{day:'numeric',month:'short'}); };
       function onglet(t){
@@ -13771,11 +13801,13 @@ window.addEventListener('pageshow',e=>{
       async function charger(){
         if(!me){ D=null; el.innerHTML=''; return; }
         const s=++seq, uid=me.id; let tz=null; try{ tz=Intl.DateTimeFormat().resolvedOptions().timeZone||null; }catch(_){}
-        const {data,error}=await sb.rpc('my_board',{p_tz:tz});
+        const [board,practice]=await Promise.all([sb.rpc('my_board',{p_tz:tz}),sb.rpc('tracking_summary_for_me',{p_days:28})]);
+        const {data,error}=board;
+        if(practice.error)console.error('[tracking_summary_for_me]',practice.error.message);
         if(s!==seq||(me?.id||null)!==uid) return;
         if(error||!data||!data.ok){ if(error) console.error('[my_board]',error.message); diagD.erreurs++;
           if(!D) el.innerHTML='<div class="db"><p class="db-vide">My dashboard · back in a moment.</p></div>'; return; }
-        D=data; diagD.charges++; peindre();
+        D=data; P=practice.error?(P?{...P,stale:true}:{unavailable:true}):practice.data?.ok?practice.data:null; diagD.charges++; peindre();
       }
       /* LA COURBE : la part des Habits demandées (Telegram) qui ont été FAITES, jour par jour ; un jour sans demande, un trou. */
       function courbe(days,today){
@@ -13808,7 +13840,7 @@ window.addEventListener('pageshow',e=>{
         objective_converted:'objective → habit',objective_edited:'objective moved',objective_removed:'objective removed',
         repulsion_added:'new repulsion',repulsion_retired:'repulsion beaten',vision_added:'new vision',vision_removed:'vision let go',
         story_added:'my story grew',story_removed:'story removed',media_added:'new media',media_removed:'media removed',
-        spot_planned:'spot planned',reflection:'reflection',tracked_done:'done',tracked_missed:'missed',chapter_written:'new chapter',
+        spot_planned:'spot planned',reflection:'reflection',tracked_done:'done',tracked_missed:'missed',tracked_partial:'in part',tracked_skipped:'set aside',chapter_written:'new chapter',
         where_set:'new where',sound_set:'new sound',link_added:'linked'};
       function ilya(at){
         const t=new Date(at), s=(Date.now()-t.getTime())/1000; if(isNaN(t)) return '';
@@ -13822,6 +13854,9 @@ window.addEventListener('pageshow',e=>{
         let h='';
         h+='<div class="db-tg">'+(D.telegram?'<span><b>TotehmBot</b> tracks in Telegram · it lands here</span>'
           :'<span><b>TotehmBot</b> tracks each Habit in Telegram</span><button class="vs-act" type="button" data-db-tg>Connect</button>')+'</div>';
+        if(P?.ok)h+=renderPractice(P);
+        else if(P?.unavailable)h+='<p class="tracking-caption">Practice is unavailable for the moment. Your reports have not been changed.</p>';
+        else {
         h+='<div class="db-k">'
           +'<div><i>this week</i><b>'+(taux==null?'—':taux+'<small>%</small>')+'</b><div class="db-bar"><span style="width:'+(taux||0)+'%"></span></div><i>'+fait+(n(W.cible)?' / '+n(W.cible):'')+' done</i></div>'
           +'<div><i>today</i><b>'+n(W.aujourdhui)+'<small>/ '+n(W.demandes)+'</small></b><i>done / asked</i></div>'
@@ -13842,6 +13877,7 @@ window.addEventListener('pageshow',e=>{
         const I=D.intentions||{}, maxI=Math.max(1,...INTS.map(x=>n((I[x.id]||{}).fait)));
         h+='<div class="db"><p class="db-t">My intentions<i>done · 28 days</i></p><div class="db-i">'
           +INTS.map(x=>{ const v=I[x.id]||{}, f=n(v.fait); return '<i>'+esc(x.name)+'</i><div class="tr" style="--c:'+x.color+'"><span style="width:'+(f?100*f/maxI:0)+'%"></span></div><b>'+f+'</b>'; }).join('')+'</div></div>';
+        }
         const O=D.objectives||[];
         if(O.length) h+='<div class="db"><p class="db-t">Next objectives<i>time gone</i></p><div class="db-o">'+O.map(o=>{
           const j=o.jours, J=j==null?'—':j<0?'late':j===0?'today':'D-'+j;
@@ -13859,8 +13895,10 @@ window.addEventListener('pageshow',e=>{
         el.innerHTML=h;
       }
       /* Relier Telegram : on passe sur l'onglet Subscription, là où TotehmBot vit (et où sa réponse s'écrit). */
-      el.addEventListener('click',e=>{ if(e.target.closest('[data-db-tg]')){ onglet('higher'); $('mw-telegram').click(); } });
-      return {charger, onglet, vide, vider(){ seq++; D=null; el.innerHTML=''; },
+      el.addEventListener('click',e=>{ if(e.target.closest('[data-db-tg]')){ onglet('higher'); $('mw-telegram').click(); } else if(e.target.closest('[data-track-manage]')){onglet('higher');trackingControls.open();} });
+      trackingRefresh=charger;
+      document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&srch.classList.contains('is-pret')&&ong==='higher')charger();});
+      return {charger, onglet, vide, vider(){ seq++; D=null; P=null; el.innerHTML=''; },
         etat:()=>({onglet:ong, charge:!!D, habits:D?(D.habits||[]).length:0, cases:D?(D.habits||[]).reduce((a,x)=>a+(x.c||[]).filter(Boolean).length,0):0,
                    jours:D?(D.days||[]).length:0, heat:D?(D.heat||[]).length:0, fil:D?(D.feed||[]).length:0, telegram:!!(D&&D.telegram),
                    charges:diagD.charges, erreurs:diagD.erreurs})};
