@@ -1,5 +1,5 @@
 import {corsHeaders,SITE_SPACE} from '../_shared/origins.ts';
-import {admin,owner,config,bunny,library,sha256Hex,UUID,MAX_BYTES,configured} from '../_shared/bunny.ts';
+import {admin,owner,config,bunny,sha256Hex,UUID,MAX_BYTES,configured} from '../_shared/bunny.ts';
 Deno.serve(async(req:Request)=>{
  const headers=corsHeaders(req.headers.get('origin'),SITE_SPACE);
  if(req.method==='OPTIONS') return new Response('ok',{headers});
@@ -21,7 +21,8 @@ Deno.serve(async(req:Request)=>{
   const v=await r.json();if(!UUID.test(v.guid)) throw new Error('bunny_id_invalid');
   const update=await admin.from('videos').update({bunny_video_id:v.guid}).eq('id',id);if(update.error) throw new Error('video_write_failed');
   const expires=Math.floor(Date.now()/1000)+3600;
-  const signature=await sha256Hex(library+Deno.env.get('BUNNY_API_KEY')!+expires+v.guid);
-  return Response.json({id,endpoint:'https://video.bunnycdn.com/tusupload',headers:{AuthorizationSignature:signature,AuthorizationExpire:String(expires),VideoId:v.guid,LibraryId:library}},{headers});
+  // The TUS signature uses the RESOLVED library and its key (found from the account key alone, 10/11).
+  const signature=await sha256Hex(c.library+c.api+expires+v.guid);
+  return Response.json({id,endpoint:'https://video.bunnycdn.com/tusupload',headers:{AuthorizationSignature:signature,AuthorizationExpire:String(expires),VideoId:v.guid,LibraryId:c.library}},{headers});
  }catch{console.error('create_bunny_upload_failed');return Response.json({error:'upload_failed'},{status:502,headers});}
 });
