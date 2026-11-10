@@ -1,0 +1,14 @@
+Statue of Liberty 3D Photogrammetry Model
+==========================================
+
+Source: "Statue Of Liberty Bronze Model" by jerryfisher
+URL: https://sketchfab.com/3d-models/statue-of-liberty-bronze-model-5b9aa58d51624f01b9009b52379bf18a
+Origin: Photogrammetric scan of a 19th-century bronze cast of the Statue of Liberty by Frédéric-Auguste Bartholdi.
+License: Creative Commons Attribution 4.0 International (CC BY 4.0)
+License URL: http://creativecommons.org/licenses/by/4.0/
+
+Modifications:
+- Derived and fitted to Historic American Engineering Record measurements (HAER NY-138)
+- Re-textured with weathered copper verdigris patina and gilded torch flame
+- Optimized into Level-of-Detail GLB files (liberty_statue_l0.glb and liberty_statue_l1.glb)
+- Positioned in the submerged ocean of the New York coastal space

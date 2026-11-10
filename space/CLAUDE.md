@@ -24,6 +24,7 @@ Space ouvre directement le monde, sans titre d’accueil ni commandes de panoram
 | `gallery-lisbon-street-signs.mjs` | 22 signes de Lisbon : marquages au sol, signalisation routière, plaques, feux piétons, croix de pharmacie et emblème en relief |
 | `gallery-fireplace.mjs` · `gallery-fire-audio.mjs` | grand feu ouvert et véritable enregistrement de feu de bois |
 | `gallery-temple-landscape.mjs` | seul piton émergé, lumière lunaire et environnement nocturne préfiltré |
+| `gallery-liberty.mjs` | scan 3D photogrammétrique de la statue de la Liberté submergée dans la mer de New York : cuivre et torche dorée |
 | `gallery-drowned-ocean.mjs` · `gallery-ocean-foam.mjs` · `gallery-ocean-spindrift.mjs` | océan 3D à 360°, crêtes, écume persistante et embruns volumétriques |
 | `gallery-drowned-sky.mjs` · `gallery-drowned-planet.mjs` | Voie lactée, étoiles, météore, lune et globe submergé |
 | `gallery-spatial.mjs` · `gallery-render-quality.mjs` | caméra, visite, suspendre/reprendre, adaptation graduelle du DPR |
@@ -33,7 +34,7 @@ Space ouvre directement le monde, sans titre d’accueil ni commandes de panoram
 | `market.html` · `social.html` | marché, collection personnelle et lecteur ouvert par COM `/x/space` |
 | `vendor/` · `assets/` | Three.js/HLS et véritables médias locaux ; licences dans les LICENSE.txt |
 
-- Nuit permanente : 18 000 / 8 500 étoiles, Voie lactée et lune à 34 cratères. Lisbon : ciel étoilé sublimé à 7 classes spectrales O-M, nébuleuses ionisées et Pléiades maritimes. PMREM issu du ciel local. Météore effilé de 1,15 s toutes les 47 s ; mouvements figés en mode réduit.
+- Nuit permanente : 18 000 / 8 500 étoiles, Voie lactée et lune à 34 cratères. Lisbon : ciel étoilé sublimé à 7 classes spectrales O-M, nébuleuses ionisées et Pléiades maritimes. New York : scan 3D photogrammétrique de la statue de la Liberté submergée dans la houle. PMREM issu du ciel local. Météore effilé de 1,15 s toutes les 47 s ; mouvements figés en mode réduit.
 - Mer à −96 m, crêtes bornées sous −11,48 m, calme à 110 m du piton. Eau détaillée sur 24 km de diamètre : 327 680 triangles ordinateur / 172 032 téléphone. Trois échelles de normales spectrales et courbure sur le globe de rayon 6 500 m.
 - Écume persistante GPU sur deux cibles 256² / 128² à 30 / 20 Hz, dissipation de 7,8 s. Brume : 80 / 40 volumes, cinq échantillons par rayon, opacité ≤ 0,13 ; aucun autre sol émergé.
 - Les deux galeries ont un seul sol à −0,09 m et un intérieur de 26 × 15 m, sans rampe ni étage intermédiaire. Lisbon : entrée de 4,8 × 3,1 m, façade de 7,65 m et toit vitré en onde de 6 à 8,4 m rejoignant la corniche à 7,25 m. New York : entrée de 5,6 × 5,1 m, toit plan incliné d’environ 7,2 à 9,8 m ; trois arches réellement vides et donjon visitable.
