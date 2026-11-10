@@ -35,7 +35,7 @@ Un tap sur **●** déploie le TOTEHM : HABITS · OBJECTIVES · REPULSIONS · VI
 | `backend/supabase/functions/_shared/tracking-*.ts` | suivi déterministe : quatre états, contexte facultatif, livraisons vérifiées, horaires et plafonds ; `/suivi`, `/bilan`, `/pause`, `/reprendre` |
 | `backend/supabase/migrations/` · `functions/` | les modifications de la base, dans l'ordre · les 40 fonctions serveur |
 | `backend/n8n/` | les automatisations du vêtement (A → F) et la VM Oracle |
-| `tools/` | 8 blocs communs, copiés dans les pages (connexion, confidentialité, loupe, menu, survol) |
+| `tools/` | 11 blocs communs, copiés dans les pages (connexion, coin membre, envoi vidéo Bunny, confidentialité, loupe, menu, survol) |
 | `tests/` | les tests (navigateur avec une base simulée, SQL, logique) |
 
 ## Les documents

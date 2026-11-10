@@ -3766,6 +3766,9 @@ body.lv-g #lv-socket,body.lv-d #lv-socket{opacity:0}
 .ns-c.is-on small{color:#b8b8c2}
 .ns-tag{display:inline-block;padding:8px 2px;font:400 11.5px/1.3 'Space Mono',monospace;color:#b8b8c2}
 .ns-def{margin:0;font:400 10.5px/1.55 'Space Mono',monospace;color:#8a8a92;max-width:54ch}
+/* la définition d'un spot, mise en avant (Wah, 10/11) : grande, blanche, juste sous « + spot » */
+.ns-def.ns-what{width:min(92vw,420px);max-width:none;margin:2px 0 10px;font-size:14px;line-height:1.5;color:#fff}
+@media(min-width:700px){.ns-def.ns-what{font-size:15px}}
 .ns-note-g{color:#b8b8c2}
 .ns-adr{display:flex;flex-wrap:wrap;gap:5px;align-items:center;width:100%}
 .ns-adr .ns-adrin{flex:1 1 160px;min-width:0;background:#1f1f24;border-radius:10px;padding:9px 11px}
@@ -7484,6 +7487,49 @@ const VX=(()=>{
   window.__totehm_vx=()=>({...diag, ouvert:qui||'', pret:!!(qui&&(SH.prete()||SHS.prete()))});
   return {media, spot, fermer, ouvert:()=>!!qui};
 })();
+/* ══ LA VIDÉO PART CHEZ BUNNY — copié de tools/bunny_upload.js dans chaque page (jamais importé) ══
+   Bunny Stream découpe la vidéo en cinq qualités (240p → 1080p) et la sert en HLS signé depuis le point du CDN le plus
+   proche : elle démarre tout de suite et s'adapte au réseau, comme TikTok. L'envoi est TUS : par morceaux de 6 Mo,
+   repris après une coupure. Compte pas prêt (`create-bunny-upload` → available:false) : `dispo()` dit non et la page
+   garde le seau `moments`. Rend la référence que le serveur attend : 'bunny:<id>'. */
+function bunnyEnvoi(sb){
+  let pret = null;
+  const appel = async (nom, body) => { const { data, error } = await sb.functions.invoke(nom, { body }); if(error) throw error; return data; };
+  const dispo = () => pret ||= appel('create-bunny-upload', { action:'status' }).then(d => !!(d && d.available))
+    .catch(e => { console.error('[bunny status]', e && e.message || e); pret = null; return false; });
+  async function envoyer(blob, secondes, progres){
+    const c = await appel('create-bunny-upload', { bytes:blob.size, seconds:secondes });
+    const h = { ...c.headers, 'Tus-Resumable':'1.0.0' };
+    const meta = 'filetype ' + btoa(blob.type || 'video/mp4') + ',title ' + btoa('Spot ' + c.id);
+    const debut = await fetch(c.endpoint, { method:'POST', headers:{ ...h, 'Upload-Length':String(blob.size), 'Upload-Metadata':meta } });
+    if(!debut.ok) throw new Error('upload could not start');
+    const url = new URL(debut.headers.get('Location'), c.endpoint);
+    if(url.origin !== 'https://video.bunnycdn.com') throw new Error('upload address invalid');
+    let off = 0, essais = 0;
+    while(off < blob.size){
+      try{
+        const r = await fetch(url, { method:'PATCH', headers:{ ...h, 'Upload-Offset':String(off), 'Content-Type':'application/offset+octet-stream' },
+          body:blob.slice(off, off + 6 * 1024 * 1024) });
+        if(!r.ok) throw new Error('upload interrupted');
+        const n = Number(r.headers.get('Upload-Offset'));
+        if(!Number.isFinite(n) || n <= off || n > blob.size) throw new Error('upload offset invalid');
+        off = n; essais = 0; if(progres) progres(Math.round(off / blob.size * 100));
+      }catch(e){
+        if(++essais > 3) throw e;
+        await new Promise(r => setTimeout(r, Math.min(4000, essais * 1000)));
+        const t = await fetch(url, { method:'HEAD', headers:h });
+        if(!t.ok) continue;
+        const n = Number(t.headers.get('Upload-Offset')); if(Number.isInteger(n) && n >= 0 && n <= blob.size) off = n;
+      }
+    }
+    const d = await appel('bunny-video', { id:c.id, action:'complete' });
+    if(!d || !['processing','ready'].includes(d.status)) throw new Error('video could not be processed');
+    return 'bunny:' + c.id;
+  }
+  return { dispo, envoyer, oublier:() => { pret = null; } };
+}
+const VID=bunnyEnvoi(sb);
+
 /* ══ → PRENDRE UN SPOT, DANS LA VUE DE DROITE · 09/11/2026 ═══════════════════════════════════════════════════════════
    Wah : « le questionnaire est intelligent : le choix d'une réponse entraîne ou non d'autres choix, avec une logique
    implacable dans le flow ». Un panneau (`#rdr-new`, ancré en haut) qui DIT D'ABORD ce qu'est un spot, puis une
@@ -7501,7 +7547,7 @@ const VX=(()=>{
    entière. Pendant la prise, la navigation attend (`is-nspot`) : CLOSE la rend. */
 const NSPOT=(()=>{
   const DURS=[15,30,45,60,90,120,180];
-  const DEF='A spot is a Habit of your TOTEHM that becomes an action in space and time — one exact place, one exact moment.';
+  const DEF='A spot is a Habit of your TOTEHM that becomes an action in one exact place, one exact moment.';
   const CLUB='a habit, an objective, a repulsion — the closest thing to public.';
   const AUD=[['private','private','me only'],['subscribers','my subscribers','only them'],['figher','figher club','every TOTEHM']];
   const POURQUOI={signin:'sign in again', habit:'save this Habit first', location:'where', mode:'silent or social',
@@ -7549,6 +7595,11 @@ const NSPOT=(()=>{
     return {ok:true};
   }
   async function envoyerMedia(m){
+    /* la vidéo chez Bunny (cinq qualités, le CDN le plus proche : elle démarre tout de suite) ; refusée → `moments` */
+    if(!m.photo&&await VID.dispo()){
+      try{ return await VID.envoyer(m.blob,m.secs,p=>dire('sending… '+p+' %')); }
+      catch(e){ console.error('[bunny upload]',e&&e.message||e); }
+    }
     const ext=m.photo?'jpg':m.type.includes('mp4')?'mp4':m.type.includes('quicktime')?'mov':'webm';
     const path=me.id+'/'+crypto.randomUUID()+'.'+ext;
     const {error}=await sb.storage.from('moments').upload(path,m.blob,{contentType:m.photo?'image/jpeg':(m.type||'video/'+ext),upsert:false});
@@ -7687,7 +7738,7 @@ const NSPOT=(()=>{
     const p=pan(); if(!p) return;
     if(CAP.dans(p)) CAP.fermer();          /* la capture en ligne rentre chez elle AVANT la peinture */
     if(p.hidden) return;
-    let h='<p class="sfl sf-aj">+ spot</p><p class="ns-def">'+esc(DEF)+'</p>'+habitHTML(), cap=false;
+    let h='<p class="sfl sf-aj">+ spot</p><p class="ns-def ns-what">'+esc(DEF)+'</p>'+habitHTML(), cap=false;
     if(N.h){
       h+=quandHTML();
       const plan=N.quand==='later';
@@ -7758,7 +7809,7 @@ const NSPOT=(()=>{
   function ouvrir(x){
     const p=pan(); if(!p||!me||RO) return;
     if(SPMAP.pique()) SPMAP.piquer(null);
-    neuf(); lireRegles();
+    neuf(); lireRegles(); VID.dispo();
     if(x) N.h=habByT(String(x))||(state.habits||[]).find(h=>String(h.t||'').trim()===String(x).trim())||null;
     SPOTS.fermerVoir(); SHS.sf&&SHS.sf(false);
     p.hidden=false; document.body.classList.add('is-nspot'); diag.ouverts++;
@@ -8341,7 +8392,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-11-10-repli-fluide';
+const BUILD='2026-11-10-spot-bunny';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
