@@ -6,6 +6,7 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { liveWarm, LIVE_RADIUS_M } from "../_shared/live.ts";
 import {handleTrackingUpdate} from "../_shared/tracking-bot.ts";
+import {createTelegramTransport,TelegramAPIError} from '../_shared/tracking-telegram.ts';
 import {createTrackingTick} from "../_shared/tracking-tick.ts";
 
 const admin = createClient(
@@ -24,15 +25,7 @@ const kbApp = (label = "Open my TOTEHM") => ({
   inline_keyboard: [[{ text: label, url: APP }]],
 });
 
-async function tg(method: string, payload: unknown) {
-  let r:Response;try{r = await fetch(`https://api.telegram.org/bot${TG}/${method}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
-  }catch{throw new Error("telegram_unavailable");}
-  if (!r.ok) console.error("telegram", method, r.status);
-}
+const tg=createTelegramTransport(TG);
 
 const say = (chat: string, text: string, markup?: unknown) =>
   tg("sendMessage", { chat_id: chat, text, reply_markup: markup });
@@ -41,7 +34,11 @@ const sayHtml = (chat: string, text: string, markup?: unknown) =>
     chat_id: chat, text, parse_mode: "HTML",
     link_preview_options: { is_disabled: true }, reply_markup: markup,
   });
-const ack   = (id: string) => tg("answerCallbackQuery", { callback_query_id: id });
+const ack = async(id:string)=>{
+  // Callback acknowledgement is cosmetic; Club writes still perform their own checks.
+  try{return await tg("answerCallbackQuery",{callback_query_id:id});}
+  catch{console.error('[bot-reply]','callback_ack_failed');}
+};
 const strip = (chat: string, msg: number) =>
   tg("editMessageReplyMarkup",
      { chat_id: chat, message_id: msg, reply_markup: { inline_keyboard: [] } });
@@ -66,8 +63,8 @@ const intName = (id: string) => INTS.find((x) => x.id === id)?.name ?? id;
 
 const HELP = `TotehmBot.
 
-/track — report a Habit
-/review — your reports and declared obstacles
+/track — how check-ins work
+/review — your practice summary
 /settings — timezone, quiet hours and daily limit
 /tonight — nearby events matched to your intentions
 /spot — share a Club spot
@@ -277,7 +274,7 @@ async function tonight(chat: string, uid: string, lat: number, lng: number) {
     if (out) out += "\n\n";
     out += "<b>ET SI TU NE BOUGES PAS LOIN</b>\n" + placeLines.join("\n");
   }
-  out += `\n\n<a href="${MAP}">Ouvrir la Higher Map</a>`;
+  out += `\n\n<a href="${MAP}">Open Higher Map</a>`;
 
   await sayHtml(chat, out, { remove_keyboard: true });
 }
@@ -461,7 +458,7 @@ Deno.serve(async (req) => {
       if(linkError||!linked?.ok){await say(chat,"This link has expired. Request a new one from your TOTEHM.");return ok();}
       const settings=linked.settings??{};
       await say(chat,
-        `TotehmBot connected.\n\n/track to report a Habit, /review to review your reports. Done, in part, not done or not today: your choice.\n\n`+
+        `TotehmBot connected.\n\nYour Habit check-ins arrive here automatically. Tap Done or Missed. /review to review your practice.\n\n`+
         `${settings.timezone} · quiet hours ${settings.quiet_from}:00 to ${settings.quiet_to}:00 · ${settings.max_daily} questions maximum per day. /pause pauses questions.\n\n`+
         `An unanswered question stays unknown. `+(settings.share_chatgpt?'Practice sharing with ChatGPT is enabled. You can turn it off in your dashboard.':'Practice sharing with ChatGPT stays off until you enable it in your dashboard.'),
         kbApp("Open my TOTEHM"));
@@ -646,11 +643,16 @@ Deno.serve(async (req) => {
 
     // A note is collected only after the person explicitly opens a tracking detail.
     // Unrelated messages never mutate a Repulsion, an Objective or MY STORY.
-    await say(chat,"/track to report a Habit · /review for your practice · /help for more.");
+    await say(chat,"Your check-ins arrive here automatically. /review for your practice · /settings for notifications · /help for more.");
     return ok();
 
   } catch (e) {
-    console.error("bot-reply:", e);
-    return ok();
+    console.error("[bot-reply]",e instanceof TelegramAPIError?e.message:"update_failed");
+    const cq=u.callback_query;
+    if(cq?.id&&cq.message?.chat?.type==='private'&&String(cq.message.chat.id)===String(cq.from?.id)){
+      try{await tg('answerCallbackQuery',{callback_query_id:String(cq.id),text:'Could not confirm this update. Try again to check the saved result.',show_alert:true});}catch{/* The safe transport logs the delivery failure without exposing member content. */}
+    }
+    // Acknowledge the transport to avoid Telegram replaying writes or partially sent messages.
+    return Response.json({ok:false,error:"update_failed"},{status:200});
   }
 });

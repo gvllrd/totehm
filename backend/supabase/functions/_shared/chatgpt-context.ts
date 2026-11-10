@@ -111,6 +111,10 @@ const MAX_ROWS = 400;
 const MAX_ITEMS = 12;
 const MAX_TEXT = 64000;
 const TEXT_PAGE = 4000;
+export const HABIT_REF_MAX = 16000;
+// Offsets remain UTF-16 indexes, but an excerpt never cuts an emoji in half.
+const textEnd = (value: string, end: number): number => end > 0 && end < value.length &&
+  /[\uD800-\uDBFF]/.test(value[end - 1]) && /[\uDC00-\uDFFF]/.test(value[end]) ? end - 1 : end;
 const own = (value: unknown): Row => value && typeof value === "object" && !Array.isArray(value) ? value as Row : {};
 const string = (value: unknown): string => typeof value === "string" ? value : "";
 const text = (value: unknown, max = 500): string => string(value).replace(/\s+/g, " ").trim().slice(0, max);
@@ -131,7 +135,7 @@ export function elementKey(ref: ElementRef): string {
 export function validElementRef(value: unknown): value is ElementRef {
   const ref = own(value);
   if (!KINDS.includes(ref.kind as ElementKind) || typeof ref.ref !== "string") return false;
-  if (ref.kind === "habit") return ref.ref.length > 0 && ref.ref.length <= 500 && ref.ref === ref.ref.trim();
+  if (ref.kind === "habit") return ref.ref.length > 0 && ref.ref.length <= HABIT_REF_MAX && ref.ref === ref.ref.trim();
   if (ref.kind === "repulsion") return /^[1-9][0-9]{0,18}$/.test(ref.ref);
   return UUID.test(ref.ref);
 }
@@ -179,7 +183,7 @@ export function projectGraph(snapshot: GraphSnapshot): ContextGraph {
   const make = (kind: ElementKind, ref: string, label: unknown): ContextItem | null => {
     if (!validElementRef({ kind, ref })) return null;
     const full = string(label).trim();
-    const item: ContextItem = { kind, ref, key: elementKey({ kind, ref }), text: full.slice(0, MAX_TEXT),
+    const item: ContextItem = { kind, ref, key: elementKey({ kind, ref }), text: full.slice(0, textEnd(full, MAX_TEXT)),
       text_length: full.length, text_truncated: full.length > MAX_TEXT,
       url: elementURL({ kind, ref }), intentions: [], intention_source: "none" };
     return item.text ? item : null;
@@ -411,12 +415,13 @@ export function projectContext(graph: ContextGraph, options: ContextOptions): Co
   const items = [...chosen.values()].map(item => {
     const exact = options.focus && item.key === elementKey(options.focus);
     const offset = exact ? options.text_offset ?? 0 : 0;
-    const end = offset + (exact ? TEXT_PAGE : 500);
+    if (exact && offset > 0 && /[\uD800-\uDBFF]/.test(item.text[offset - 1] ?? "") && /[\uDC00-\uDFFF]/.test(item.text[offset] ?? "")) throw new ContextReadError("invalid_request");
+    const end = textEnd(item.text, offset + (exact ? TEXT_PAGE : 500));
     const length = item.text_length ?? item.text.length;
     return { ...item, text: item.text.slice(offset, end), text_length: length,
       text_truncated: offset > 0 || end < length || !!item.text_truncated,
       ...(exact ? { text_offset: offset,
-        ...(end < Math.min(length, MAX_TEXT) ? { next_text_offset: end } : {}) } : {}) };
+        ...(end < item.text.length ? { next_text_offset: end } : {}) } : {}) };
   });
   return {
     source: "owner_totehm", purpose: options.purpose, generated_at: new Date().toISOString(), selection,

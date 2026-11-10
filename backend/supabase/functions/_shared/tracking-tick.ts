@@ -1,12 +1,9 @@
 import {trackingKeyboard} from './tracking-bot.ts';
-type Config={db:any;token?:string;serviceKey:string;webhookSecret?:string;projectOrigin:string;fetcher?:typeof fetch};
+import {createTelegramTransport,TelegramAPIError,telegramTextParts} from './tracking-telegram.ts';
+type Config={db:any;token?:string;serviceKey:string;webhookSecret?:string;projectOrigin:string;fetcher?:typeof fetch;pause?:(milliseconds:number)=>Promise<void>};
 export function createTrackingTick(c:Config){
- const send=c.fetcher??fetch;
- const telegram=async(method:string,body:unknown)=>{
-  const r=await send(`https://api.telegram.org/bot${c.token}/${method}`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body),signal:AbortSignal.timeout(15000)});
-  let data:any;try{data=await r.json();}catch{data={};}
-  return {status:r.status,data};
- };
+ const telegram=createTelegramTransport(c.token,c.fetcher??fetch);
+ const pause=c.pause??((milliseconds:number)=>new Promise<void>(resolve=>setTimeout(resolve,milliseconds)));
  return async(req:Request)=>{
   if(req.method!=='POST')return new Response('method not allowed',{status:405});
   let authorized=!!c.serviceKey&&req.headers.get('authorization')==='Bearer '+c.serviceKey;
@@ -18,10 +15,10 @@ export function createTrackingTick(c:Config){
   if(body?.mode==='health'){
    try{
     const me=await telegram('getMe',{}),wh=await telegram('getWebhookInfo',{});
-    const tokenValid=me.status===200&&me.data.ok===true;
-    const expectedBot=tokenValid&&String(me.data.result?.username).toLowerCase()==='totehmbot';
-    const webhook=wh.data?.result??{};
-    const webhookCorrect=wh.data?.ok===true&&webhook.url===c.projectOrigin+'/functions/v1/bot-reply';
+    const tokenValid=me.ok===true;
+    const expectedBot=tokenValid&&String(me.result?.username).toLowerCase()==='totehmbot';
+    const webhook=wh.result??{};
+    const webhookCorrect=wh.ok===true&&webhook.url===c.projectOrigin+'/functions/v1/bot-reply';
     return Response.json({ok:true,token_valid:tokenValid,expected_bot:expectedBot,webhook_correct:webhookCorrect,webhook_secret_configured:!!c.webhookSecret,
       pending_updates:Number(webhook.pending_update_count)||0,ready:tokenValid&&expectedBot&&webhookCorrect&&!!c.webhookSecret});
    }catch{return Response.json({ok:false,error:'telegram_unavailable'},{status:503});}
@@ -37,15 +34,22 @@ export function createTrackingTick(c:Config){
     const d=claim.data;
     if(claim.error){bump('claim_failed');continue;}if(!d?.send){bump(String(d?.why??'not_due'));continue;}
     if(body?.mode==='dry_run'){bump('due');continue;}
-    let state='uncertain',message:number|null=null,code='network_uncertain';
+    let state='uncertain',message:number|null=null,code='network_uncertain',partsSent=0;
     try{
-     const delivered=await telegram('sendMessage',{chat_id:d.chat_id,text:String(d.habit)+' — how did it go?',reply_markup:trackingKeyboard(String(d.id))});
-     if(delivered.status===200&&delivered.data?.ok===true&&Number.isSafeInteger(delivered.data.result?.message_id)){
-      state='sent';message=delivered.data.result.message_id;code='';
-     }else if((delivered.status>=400&&delivered.status<500)||(delivered.data?.ok===false&&delivered.data?.error_code>=400&&delivered.data?.error_code<500)){
-      state='failed';code='telegram_'+delivered.status;
-     }else{state='uncertain';code='telegram_uncertain';}
-    }catch{/* An uncertain network response must never trigger an automatic duplicate. */}
+     const text=String(d.habit)+'\n\n'+(d.period_label?String(d.period_label)+'\n':'')+'Did you do it?';
+     const parts=telegramTextParts(text);
+     for(let n=0;n<parts.length;n++){
+      if(n)await pause(1100);
+      const delivered=await telegram('sendMessage',{chat_id:d.chat_id,text:parts[n],...(n===parts.length-1?{reply_markup:trackingKeyboard(String(d.id))}:{}),link_preview_options:{is_disabled:true}});
+      if(!Number.isSafeInteger(delivered.result?.message_id))throw new TelegramAPIError('sendMessage',200,0,false);
+      partsSent++;message=delivered.result.message_id;
+     }
+     state='sent';code='';
+    }catch(error){
+     // A partial text delivery or lost response must never trigger an automatic duplicate.
+     state=partsSent===0&&error instanceof TelegramAPIError&&error.definite?'failed':'uncertain';
+     code=partsSent?'telegram_partial_delivery':error instanceof TelegramAPIError?'telegram_'+(error.code||'network_uncertain'):'telegram_uncertain';
+    }
     const saved=await c.db.rpc('tracking_delivered',{p_lease:d.lease,p_status:state,p_message:message,p_code:code||null});
     if(saved.error||saved.data!==true)bump('delivery_unconfirmed');
     if(state==='sent')sent++;else bump(state==='failed'?'telegram_failed':'delivery_uncertain');
