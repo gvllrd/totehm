@@ -488,8 +488,8 @@ export async function getSpots(client: ReadClient, uid: string, options: SpotOpt
   const instant = options.now ? Date.parse(options.now) : Date.now();
   if (!Number.isFinite(instant)) throw new ContextReadError("invalid_request");
   // No GPS, private storage paths, inferred present location, or other members.
-  let query = client.from("spot_plans").select("spot_id,habit,starts_at,duration_min,place,city,mode,audience,status")
-    .eq("user_id", uid).eq("status", "published");
+  let query = client.from("spot_plans").select("spot_id,habit,starts_at,duration_min,place,city,mode,audience,status,format,comment,intentions")
+    .eq("user_id", uid).eq("status", "published").eq("format", "spot");
   if (options.habit_ref) query = query.eq("habit", options.habit_ref);
   // Filter and sort before the cap: a busy future calendar must not hide an
   // ongoing spot, or return the furthest 400 plans instead of the next ones.
@@ -506,6 +506,7 @@ export async function getSpots(client: ReadClient, uid: string, options: SpotOpt
     if (options.period && options.period !== period) return [];
     return [{ ref: string(row.spot_id), url: "https://www.totehm.com/totehm?open=spot&id=" + encodeURIComponent(string(row.spot_id)), habit_ref: string(row.habit), starts_at: string(row.starts_at), duration_min: minutes,
       period, place: text(row.place, 160), city: text(row.city, 120), mode: text(row.mode, 20), audience: text(row.audience, 20),
+      comment: text(row.comment, 400), intentions: intentions(Array.isArray(row.intentions) ? row.intentions : []),
       presence_verified: false, source: "owner_spot_plan" as const }];
   }).sort((a, b) => {
     const aTime = Date.parse(a.starts_at), bTime = Date.parse(b.starts_at);
@@ -544,7 +545,7 @@ export async function getMediaMetadata(client: ReadClient, uid: string, focus: E
   validateOwner(uid);
   if (!validElementRef(focus)) throw new ContextReadError("invalid_request");
   const exists = await retrieveElement(client, uid, focus, 1);
-  if (!exists.items.length) return { items: [], truncated: false };
+  if (!exists.items.length) return { items: [], truncated: false, element_available: false };
   const letters: Record<ElementKind, string> = { habit: "h", objective: "o", repulsion: "r", vision: "v", wisdom: "w" };
   const limit = cap(options.limit, 4);
   const result = await client.from("element_media").select("id,kind,ref,mime,name,bytes,created_at")
@@ -559,8 +560,8 @@ export async function getMediaMetadata(client: ReadClient, uid: string, focus: E
     vision_image_available = rows(image.data).some(row => typeof row.image === "string" && !!row.image);
   }
   return { items: all.slice(0, limit).filter((row) => UUID.test(string(row.id))).map((row) => ({
-    ref: string(row.id), element: focus, name: text(row.name, 120), mime: text(row.mime, 100),
+    ref: string(row.id), element: focus, url: elementURL(focus), source: "owner_element_media", name: text(row.name, 120), mime: text(row.mime, 100),
     bytes: typeof row.bytes === "number" && Number.isSafeInteger(row.bytes) ? row.bytes : null,
     created_at: string(row.created_at), content_shared: false,
-  })), truncated: all.length > limit, vision_image_available, content_shared: false };
+  })), truncated: all.length > limit, vision_image_available, content_shared: false, element_available: true };
 }
