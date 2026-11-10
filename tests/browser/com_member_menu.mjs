@@ -84,7 +84,7 @@ try{
    await pg.click('#mw-higher');await pg.waitForFunction(()=>/opening soon/.test(document.getElementById('mw-menu-note').textContent));
    ok(await pg.isVisible('#mw-menu-note'),'the menu note is VISIBLE in the member window (11/10: it was written into the hidden door note)');
    ok(log.functions.some(f=>f.name==='higher-sub'&&f.body.action==='checkout'),'Get (Higher) asks the server for a checkout — no live price yet: « opening soon »');
-   await pg.click('#mw-telegram');await pg.waitForFunction(()=>window.__opened.length===1);
+   await pg.click('#mw-telegram');await pg.waitForFunction(()=>window.__opened.length===1&&window.__opened[0].url.startsWith('https://t.me/TotehmBot?start='));
    ok(await pg.evaluate(()=>window.__opened[0].url)==='https://t.me/TotehmBot?start=CODE123','Connect TotehmBot: a one-use link code, then Telegram');
    /* 18/10 — PLUS DE PHOTO DE PROFIL (Wah) : la vignette, son champ de fichier et `avatar_set` sont
       partis ensemble. Le papier EST l'image du membre. */
