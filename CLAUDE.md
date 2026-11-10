@@ -26,7 +26,7 @@ Push sur `main` = mise en ligne ; jamais réécrire l'historique.
 **Deux fois cinq vues.** totehm.com : ↑ Get Higher (commune à tous) · ← mes médias · ● mon TOTEHM · → les spots ·
 ↓ Higher my ChatGPT (connexion gratuite, lecture seule autorisée) ; ← ● → = l'écosystème d'un membre, ouvert par l'abonnement à ce membre.
 Le TOTEHM déployé : HABITS · OBJECTIVES · REPULSIONS · VISIONS · MY STORY. **Les boxes sont sacrées** : un seul rendu.
-Le suivi : TOTEHM = choix ; TotehmBot = déclarations privées ; dashboard = faits ; Higher ChatGPT = ajustements proposés, après partage explicite des bilans. Pas de réponse = inconnu, pas un échec. Aucun changement automatique des cinq vues.
+Le suivi : TOTEHM = choix ; TotehmBot = notification privée + Done/Missed ; dashboard = faits sur 7/28 jours et configuration du bot, sans bloc Higher subscription ; Higher ChatGPT = un ajustement proposé à la demande, après partage explicite. Silence = inconnu, pas un échec ; historiques partiel/mis de côté conservés. Aucun changement automatique des cinq vues.
 
 ## L'architecture
 

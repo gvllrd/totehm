@@ -3340,11 +3340,9 @@ body.lv-b:not(.lv-membre):not(.lv-verrou) #lv-socket{opacity:0}
 .vs-head{display:flex;flex-direction:column;gap:5px;padding:0 2px 8px;text-align:left}
 .vs-t{margin:0;display:flex;align-items:center;gap:8px;font:700 12px/1.2 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#fff}
 .vs-t .vs-hi{width:66px;height:22px}
-.vs-hs{display:inline-flex;align-items:center;gap:6px}
-.vs-hs .vs-hi{width:42px;height:14px}
 .vs-s{margin:0;font:400 10px/1.4 'Space Mono',monospace;letter-spacing:.04em;color:#d2d2da}
 #srch #vs-subs-s{margin-top:26px}
-#mw-menu .vs-h{white-space:normal;overflow:visible}   /* ce que Higher ouvre se lit en entier, sur deux lignes s'il le faut */
+#mw-menu .vs-h{white-space:normal;overflow:visible}
 .vs.hide{display:none}
 .vs-top{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#000;padding:18px 16px 16px}
 .vs-month{display:flex;flex-direction:column;gap:6px;min-width:0}
@@ -3372,13 +3370,12 @@ body.lv-b:not(.lv-membre):not(.lv-verrou) #lv-socket{opacity:0}
   font:700 10px/1.2 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;padding:8px 11px;white-space:nowrap}
 .vs-val{letter-spacing:.06em;text-transform:none;font-weight:400;font-size:11px}
 .vs-val.is-todo{color:#fff}
-.vs-get{color:#fbd5ca}
 .vs-pay{display:flex;flex-wrap:wrap;gap:8px;background:#000;padding:4px 16px 14px}
 .vs-pay.hide{display:none}
 .vs-seg{display:flex;gap:6px;width:100%}
 .vs-seg button.is-on{background:#3a3a42;color:#fff;box-shadow:inset 0 0 0 1px #fff}
 /* ── LES DEUX PARTIES DU VERSO (26/10, Wah : « deux parties bien distinctes ») : MONETIZE MY TOTEHM (ce que je gagne) ·
-   GO [HIGHER] (ouverte à chaque retournement : mon tableau de bord, l'abonnement Higher, TotehmBot, mes abonnements).
+   GO [HIGHER] (ouverte à chaque retournement : tableau de bord, configuration TotehmBot, abonnements aux membres).
    Une partie ne fait que montrer ses blocs ; le nom, l'invité et le pied (Sign out, Delete, conditions) restent partout. ── */
 #vs-tabs{display:flex;gap:6px;width:min(94vw,420px);flex:none;margin:2px 0 4px}
 #vs-tabs button{flex:1;min-width:0;border:0;border-radius:10px;background:#1f1f24;color:#b8b8c2;cursor:pointer;
@@ -3399,13 +3396,32 @@ body.lv-b:not(.lv-membre):not(.lv-verrou) #lv-socket{opacity:0}
 #srch[data-tab="higher"] #mw-creator,
 #srch[data-tab="money"] #vs-dash,#srch[data-tab="money"] #settings{display:none}
 /* la partie porte déjà le nom : le titre du bloc s'efface, sa promesse reste */
-#mw-creator .vs-t{display:none}
+#mw-creator > .vs-head .vs-t{display:none}
 #vs-vide{margin:0;width:min(94vw,420px);background:#000;padding:16px;font:400 10px/1.4 'Space Mono',monospace;color:#d2d2da;text-align:left}
 #vs-vide.hide{display:none}
 /* ── LE TABLEAU DE BORD (24/10) : 60 % noir, les données en blanc, les SEPT INTENTIONS en point ou en trait (jamais une
    surface). Ce que le membre a écrit (ses Habits, ses objectifs) en Quantico ; tout le reste en Space Mono. ── */
 #vs-dash{width:min(94vw,420px);flex:none}
 #vs-dash:empty{display:none}
+.tracking-period,.tracking-actions{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px}
+.tracking-period .is-on{box-shadow:inset 0 0 0 1px #fff;color:#fff}
+.tracking-scroll{max-width:100%;overflow:auto;overscroll-behavior-x:contain}
+.tracking-matrix{display:grid;grid-template-columns:minmax(95px,150px) repeat(var(--tracking-days),minmax(24px,1fr));align-items:center;gap:8px 4px;min-width:100%;width:max-content}
+.tracking-matrix.is-week{width:100%}
+.tracking-matrix .h{font:9px 'Space Mono',monospace;text-align:center;color:#b8b8c2}
+.tracking-matrix .tracking-name{position:sticky;left:0;background:#000;z-index:1;min-width:0}
+.tracking-matrix .db-n{padding:9px 5px 9px 0;overflow-wrap:anywhere;white-space:normal}
+.tracking-matrix .db-n>a,.tracking-matrix .db-n>span{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden;font:14px/1.25 'Quantico',sans-serif;color:#fff;text-decoration:underline;text-decoration-color:#555}
+.tracking-matrix .db-n small{display:block;font:9px/1.5 'Space Mono',monospace;color:#b8b8c2;margin-top:5px;white-space:normal}
+.tracking-cell{font:10px/1.5 'Space Mono',monospace;text-align:center;color:#b8b8c2;min-width:24px;white-space:normal;overflow-wrap:anywhere}
+.tracking-cell.has-done{color:#fff}.tracking-cell.has-missed{border-bottom:1px solid #b8b8c2}
+.tracking-history{background:#000;margin-top:12px;text-align:left}
+.tracking-history>summary{padding:15px;font:700 10px 'Space Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#b8b8c2;cursor:pointer}
+.tracking-review .vs-hi{width:60px;height:20px;vertical-align:middle;display:inline-block}
+.tracking-review a.vs-act{text-decoration:none;display:inline-flex;align-items:center;gap:5px}
+.tracking-caption{overflow-wrap:anywhere}
+.tracking-caption a{color:#fff;text-decoration-color:#666}
+
 .db{background:#000;padding:14px 14px 13px;text-align:left}
 .db-t{margin:0 0 11px;display:flex;align-items:baseline;justify-content:space-between;gap:10px;
   font:700 10px/1.2 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#fff}
@@ -3421,14 +3437,6 @@ body.lv-b:not(.lv-membre):not(.lv-verrou) #lv-socket{opacity:0}
 .db-k em{font:400 11px/1.25 'Quantico',sans-serif;font-style:normal;color:#d2d2da;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .db-bar{height:2px;background:#26262c;position:relative;overflow:hidden}
 .db-bar span{position:absolute;inset:0 auto 0 0;background:#fff;transition:width .6s var(--gate-ease)}
-.db-courbe{display:block;width:100%;height:auto;overflow:visible}
-.db-courbe .g{stroke:#26262c;stroke-width:1}
-.db-courbe .l{fill:none;stroke:#fff;stroke-width:1.6;stroke-linejoin:round;stroke-linecap:round}
-.db-courbe .p{fill:#000;stroke:#fff;stroke-width:1.4}
-.db-courbe .p.is-auj{fill:#fff}
-.db-courbe text{font:400 8.5px 'Space Mono',monospace;fill:#8e8e98}
-.db-courbe text.is-auj{fill:#fff;font-weight:700}
-.db-courbe text.v{fill:#d2d2da}
 .db-m{display:grid;grid-template-columns:minmax(0,1fr) repeat(7,17px) 30px;gap:7px 4px;align-items:center}
 .db-m .h{font:400 9px/1 'Space Mono',monospace;color:#8e8e98;text-align:center;text-transform:uppercase}
 .db-m .h.is-auj{color:#fff;font-weight:700}
@@ -3487,7 +3495,6 @@ body.lv-b:not(.lv-membre):not(.lv-verrou) #lv-socket{opacity:0}
 .vs-hi{display:block;width:54px;height:18px}
 .vs-h{flex:1;min-width:0;font:400 10px/1.3 'Space Mono',monospace;color:#bdbdc7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #srch .lv-note{color:#c8c8d0}
-#srch .mw-sub-act{color:#c8c8d0}
 /* LE COMPTE : des boutons gris arrondis, ajustés au label, comme tous les contrôles du verso ; puis les conditions. */
 .vs-foot{display:flex;flex-direction:column;align-items:center;gap:16px;margin-top:30px}
 .vs-acts{display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
@@ -3505,7 +3512,6 @@ body.gate.lv-b:not(.entered):not(.folding) #ast-front{clip-path:circle(29.5% at 
 body.lv-b #gate-logo #gl-rail,body.lv-b #gate-logo #gl-wm{opacity:0}
 /* ── LE MEMBRE : sa vignette ── */
 /* ⚠️ La vignette a quitté le haut le 16/10 (elle vit au verso, dans le compte) : la règle part avec elle. */
-.mw-sub-act{background:none;border:0;padding:2px 0;font:400 9.5px/1.4 'Space Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:#6d6d74;cursor:pointer}
 #srch-res .srch-open{display:flex;align-items:center;text-decoration:none;min-width:0}
 #srch-res .srch-sub{flex:none;font:400 10.5px/1.3 'Space Mono',monospace;color:#b0b0b0;background:#1f1f24;border-radius:10px;padding:7px 10px;text-decoration:none;white-space:nowrap}
 @media (prefers-reduced-motion: reduce){#lv-slogan,#lv-slogan *,.lv-pane,#ast-front,#lv-proc,#lv-socket,#lv-socket *,#lv-ram,#lv-ram path,#lv-ram rect,#mb-ui,#lv-tap,#gate-mouth{transition:none!important}
@@ -4074,7 +4080,6 @@ div:not(:has(> :not(br,wbr))):hover,
 .vs-act:hover,
 .vs-btn:hover,
 .vs-seg button:hover,
-.vs-get:hover,
 #vs-tabs button:hover,
 #vs-vide:hover,
 .db-t i:hover,
@@ -4097,10 +4102,8 @@ div:not(:has(> :not(br,wbr))):hover,
 .vs-k.vs-nom:hover,
 .vs-h:hover,
 #srch .lv-note:hover,
-#srch .mw-sub-act:hover,
 .vs-acts .vs-acc:hover,
 .vs-foot .mw-terms:hover,
-.mw-sub-act:hover,
 #srch-res .srch-sub:hover,
 .tlv-l:hover,
 .tlv-del:hover,
@@ -4481,6 +4484,11 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
         </div>
         <div class="vs-row hide" id="vs-page"><i>my page</i><a id="vs-page-a" href="/"></a><button class="vs-val" id="vs-copy" type="button">copy</button></div>
         <div class="lv-note" id="mwc-note" role="status"></div>
+        <section class="vs hide" id="vs-subs-s" aria-label="I subscribe to">
+          <header class="vs-head"><h3 class="vs-t">My subscriptions</h3></header>
+          <div class="vs-list" id="vs-subs"></div>
+          <div class="lv-note" id="vs-subs-note" role="status"></div>
+        </section>
       </section>
       <button class="hide" id="lv-guest" type="button">Guest TOTEHM · save it with my email</button>
     </div>
@@ -4497,23 +4505,13 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
         <div class="mw-note dim" id="mw-save-note"></div>
       </div>
       <div id="settings" class="mw-dash">
-        <!-- Ce que J'ACHÈTE pour moi, à part de ce que je gagne : l'abonnement Higher et ce qu'il ouvre (Higher Self
-             chaque jour au lieu de quelques réponses par mois ; TotehmBot, qui demande sur Telegram ce que chaque Habit a
-             donné, à SON rythme, et tient le compte). Puis les TOTEHMs auxquels je suis abonné. -->
-        <section class="vs" id="mw-menu" aria-label="Higher subscription">
-          <header class="vs-head"><h3 class="vs-t"><svg class="vs-hi" viewBox="0 0 600 200" aria-label="Higher"><use href="#higher-badge"/></svg><span>subscription</span></h3>
-            <p class="vs-s">fewer limits · TotehmBot tracks every outcome</p></header>
-          <div class="vs-item"><span class="vs-k vs-hs"><svg class="vs-hi" viewBox="0 0 600 200" aria-label="Higher"><use href="#higher-badge"/></svg>Self</span><span class="vs-h" id="mw-hs-hint">every day</span></div>
-          <div class="vs-item"><span class="vs-k">TotehmBot</span><span class="vs-h" id="mw-tg-hint">tracks each Habit's outcome, at its rhythm</span><button class="vs-act" id="mw-telegram" type="button">Connect</button></div>
-          <div class="vs-item"><span class="vs-k">My practice</span><button class="vs-act" id="tracking-manage" type="button" aria-controls="tracking-settings">Manage</button></div>
+        <section class="vs" id="mw-menu" aria-label="TotehmBot configuration">
+          <header class="vs-head"><h3 class="vs-t">TotehmBot</h3><p class="vs-s">Notifications · Done or Missed</p></header>
+          <div class="vs-item"><span class="vs-k">Telegram</span><span class="vs-h" id="mw-tg-hint">One notification, one response</span><button class="vs-act" id="mw-telegram" type="button">Connect</button></div>
+          <div class="vs-item"><span class="vs-k">Configuration</span><button class="vs-act" id="tracking-manage" type="button" aria-controls="tracking-settings">Configure</button></div>
           <div class="tracking-panel"><div id="tracking-settings"></div></div>
-          <div class="vs-item vs-plan"><span class="vs-h" id="mw-higher-hint"></span><span id="mw-higher-acts"></span><button class="vs-act vs-get" id="mw-higher" type="button">Get</button></div>
         </section>
         <div class="lv-note" id="mw-menu-note" role="status"></div>
-        <section class="vs hide" id="vs-subs-s" aria-label="I subscribe to">
-          <header class="vs-head"><h3 class="vs-t">My subscriptions</h3></header>
-          <div class="vs-list" id="vs-subs"></div>
-        </section>
       </div>
       <!-- Le compte : des BOUTONS (Delete demande un second tap), puis les conditions, la dernière entrée. -->
       <div class="vs-foot">
@@ -4740,7 +4738,7 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
 <script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { parseElementLink, resolveElementLink } from '/totehm-link.mjs';
-import {renderPractice,createTrackingControls} from '/tracking.mjs';
+import {renderPractice,createTrackingControls,PRACTICE_REVIEW_PROMPT} from '/tracking.mjs';
 let trackingRefresh=()=>Promise.resolve();
 let lienElement=parseElementLink(location.hash), lienEnCours=false;
 const diagLien={state:lienElement?'pending':'idle'};
@@ -8392,7 +8390,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-11-10-spot-bunny';
+const BUILD='2026-11-10-quiet-practice';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -11390,17 +11388,14 @@ $('gate-door').addEventListener('keydown',e=>{
    Il n'y a plus de porte sur l'atterrissage : on RETOURNE le papier. Une
    seule place pour le nom, une seule porte vers ce qui se règle. */
 
-/* Le Dashboard se repeint à chaque ouverture : réglages (nom, visibilité,
-   suppression) + abonnement (offre unique). */
+/* Le dashboard se relit à chaque ouverture ; TotehmBot se configure séparément. */
 
 /* ══ L'ESPACE MEMBRE, C'EST L'UTILISATEUR · 07/10/2026 ══════════════════
-   Son abonnement Higher, ses abonnements, son TotehmBot — et, depuis le
+   Son TotehmBot et ses abonnements aux membres — depuis le
    18/10, la console elle-même, sur le verso. Tout vient
    de `my_landing()` (LAND) ; une écriture passe par sa fonction serveur. */
 function prixFmt(c,cur){ try{ return (c/100).toLocaleString('en-GB',{style:'currency',currency:String(cur||'eur').toUpperCase(),minimumFractionDigits:c%100?2:0}); }catch(_){ return ''; } }
 function prixAn(c,cur){ const p=prixFmt(c,cur); return p?p+' / year':''; }
-function prixMois(h){ return h&&h.price_cents!=null?prixFmt(h.price_cents,h.currency)+' / month':''; }
-const jourFmt=d=>{ try{ return d?new Date(d).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}):''; }catch(_){ return ''; } };
 /* Une Edge Function sous MA session ; l'erreur se journalise, toujours. */
 async function fnAppel(fn,body){
   const {data:{session}}=await sb.auth.getSession(); if(!session) return {status:401,d:{error:'no_session'}};
@@ -11412,40 +11407,13 @@ async function fnAppel(fn,body){
     return {status:r.status,d};
   }catch(e){ console.error('['+fn+']',e?.message||e); return {status:0,d:{error:'network'}}; }
 }
-/* 11/10 : la note du MENU (Higher, Telegram) a son propre id — elle partageait
+/* La note de configuration Telegram a son propre id — elle partageait
    `mw-note` avec la porte et s'écrivait dans un nœud caché. */
 const mwNote=t=>{ $('mw-menu-note').textContent=t||''; };
 function paintMe(){
   if(!me) return;
-  /* 20/10 — une ligne chacun : la marque (le SVG Higher, jamais du texte), l'état en peu de mots, UN geste. */
-  const L=LAND||{}, h=L.higher||{};
-  const btn=$('mw-higher'), hint=$('mw-higher-hint'), acts=$('mw-higher-acts');
-  if(h.comp){ btn.textContent='Open'; hint.textContent='offered'; acts.innerHTML=''; }
-  else if(h.active){ btn.textContent='Open'; hint.textContent=(h.ending?'ends ':'renews ')+jourFmt(h.until);
-    acts.innerHTML='<button class="mw-sub-act" type="button" data-hsub="'+(h.ending?'resume':'cancel')+'">'+(h.ending?'Keep':'Stop')+'</button>'; }
-  else { btn.textContent='Get'; hint.textContent=prixMois(h); acts.innerHTML=''; }
-  btn.classList.toggle('vs-get',!(h.comp||h.active));
-  $('mw-telegram').textContent=L.telegram?'Open':'Connect';
-  const sm=L.sm||{}, libre=sm.free_total||7;
-  $('mw-hs-hint').textContent=(h.active||h.comp)?'every day':'every day · free: '+libre+' a month';
+  $('mw-telegram').textContent=LAND?.telegram?'Open':'Connect';
 }
-/* Mon abonnement Higher : actif → TotehmSM ; sinon le Checkout (prix chez Stripe). */
-$('mw-higher').onclick=async()=>{
-  const h=(LAND&&LAND.higher)||{};
-  if(h.active||h.comp){ location.href='/higherself'; return; }
-  mwNote('opening checkout…');
-  const {d}=await fnAppel('higher-sub',{action:'checkout'});
-  if(d.url){ location.href=d.url; return; }
-  mwNote(({not_ready:'opening soon',active:'already active',no_session:'sign in again'})[d.error]||'try again');
-  if(d.error==='active'&&lvRefresh) lvRefresh();
-};
-$('mw-higher-acts').onclick=async e=>{
-  const a=e.target.closest('[data-hsub]'); if(!a) return;
-  mwNote('…');
-  const {d}=await fnAppel('higher-sub',{action:a.dataset.hsub});
-  if(d.ok){ mwNote(d.ending?'it ends on '+jourFmt(d.until):'it continues'); LAND&&LAND.higher&&(LAND.higher.ending=!!d.ending,LAND.higher.until=d.until); paintMe(); return; }
-  mwNote('try again');
-};
 const trackingControls=createTrackingControls({sb,host:$('tracking-settings'),button:$('tracking-manage'),getUserId:()=>me?.id,onChange:async()=>{if(lvRefresh)await lvRefresh();await trackingRefresh();}});
 /* TotehmBot : un code de liaison (10 min), puis Telegram. */
 let telegramLinking=false;
@@ -13838,16 +13806,16 @@ window.addEventListener('pageshow',e=>{
         try{ await navigator.clipboard.writeText(u); dit('link copied','ok'); }catch(_){ dit(u); }
       };
       $('vs-subs').addEventListener('click',async e=>{
-        const b=e.target.closest('[data-stop]'); if(!b) return; b.disabled=true; mwNote('…');
+        const b=e.target.closest('[data-stop]'); if(!b) return; b.disabled=true; $('vs-subs-note').textContent='…';
         const {status,d:x}=await fnAppel('club-billing',{action:'cancel_creator',pseudo:b.dataset.stop});
-        if(status!==200){ mwNote(x.error||'try again'); b.disabled=false; return; }
-        mwNote('stops on '+jour(x.until)); charger();
+        if(status!==200){ $('vs-subs-note').textContent=x.error||'try again'; b.disabled=false; return; }
+        $('vs-subs-note').textContent='stops on '+jour(x.until); charger();
       });
       $('mw-pay').onclick=async()=>{
         mwNote('…'); const {d:x}=await fnAppel('club-billing',{action:'portal'});
         if(x.url){ location.href=x.url; return; } mwNote('try again');
       };
-      return {charger, vider(){ seq++; d=null; C=null; box.classList.add('hide'); $('vs-subs-s').classList.add('hide'); $('vs-pay-f').classList.add('hide'); dit(''); },
+      return {charger, vider(){ seq++; d=null; C=null; box.classList.add('hide'); $('vs-subs-s').classList.add('hide'); $('vs-pay-f').classList.add('hide'); $('vs-subs-note').textContent=''; dit(''); },
         etat:()=>({vu:!box.classList.contains('hide'), prix:d?d.price_cents:null, offre:tog.dataset.etat||null, versement:!!(C&&C.offer&&C.offer.payout_fin), abonnements:((C&&C.subscriptions)||[]).length})};
     })();
 
@@ -13857,7 +13825,7 @@ window.addEventListener('pageshow',e=>{
        Deux parties : Monetize my TOTEHM · Go [Higher] (par défaut, à chaque retournement : le tableau de bord en tête). */
     const DASH=(()=>{
       const el=$('vs-dash'), srch=$('srch'), COUL=Object.fromEntries(INTS.map(x=>[x.id,x.color]));
-      let seq=0, D=null, P=null, ong='higher'; const diagD={charges:0, erreurs:0};
+      let seq=0, D=null, P=null, period=7, ong='higher'; const diagD={charges:0, erreurs:0};
       const n=v=>Number.isFinite(+v)?+v:0, coul=i=>COUL[i]||'', jourDe=s=>new Date(String(s).slice(0,10)+'T12:00:00');
       const court=s=>{ const t=jourDe(s); return isNaN(t)?'':t.toLocaleDateString('en-GB',{day:'numeric',month:'short'}); };
       function onglet(t){
@@ -13879,30 +13847,13 @@ window.addEventListener('pageshow',e=>{
       async function charger(){
         if(!me){ D=null; el.innerHTML=''; return; }
         const s=++seq, uid=me.id; let tz=null; try{ tz=Intl.DateTimeFormat().resolvedOptions().timeZone||null; }catch(_){}
-        const [board,practice]=await Promise.all([sb.rpc('my_board',{p_tz:tz}),sb.rpc('tracking_summary_for_me',{p_days:28})]);
+        const [board,practice]=await Promise.all([sb.rpc('my_board',{p_tz:tz}),sb.rpc('tracking_summary_for_me',{p_days:period})]);
         const {data,error}=board;
         if(practice.error)console.error('[tracking_summary_for_me]',practice.error.message);
         if(s!==seq||(me?.id||null)!==uid) return;
-        if(error||!data||!data.ok){ if(error) console.error('[my_board]',error.message); diagD.erreurs++;
-          if(!D) el.innerHTML='<div class="db"><p class="db-vide">My dashboard · back in a moment.</p></div>'; return; }
-        D=data; P=practice.error?(P?{...P,stale:true}:{unavailable:true}):practice.data?.ok?practice.data:null; diagD.charges++; peindre();
-      }
-      /* LA COURBE : la part des Habits demandées (Telegram) qui ont été FAITES, jour par jour ; un jour sans demande, un trou. */
-      function courbe(days,today){
-        const W=300, x=i=>18+i*44, y=r=>84-r*70, P=days.map((d,i)=>{ const q=n(d.demande); return {i, r:q?n(d.fait)/q:null, d:d.d}; });
-        let path='', prev=null;
-        P.forEach(p=>{ if(p.r==null){ prev=null; return; }
-          const X=x(p.i), Y=y(p.r);
-          if(!prev) path+='M'+X+' '+Y.toFixed(1);
-          else { const a=x(prev.i), b=y(prev.r); path+=' C'+(a+(X-a)*.45).toFixed(1)+' '+b.toFixed(1)+','+(a+(X-a)*.55).toFixed(1)+' '+Y.toFixed(1)+','+X+' '+Y.toFixed(1); }
-          prev=p; });
-        const pts=P.filter(p=>p.r!=null).map(p=>'<circle class="p'+(p.d===today?' is-auj':'')+'" cx="'+x(p.i)+'" cy="'+y(p.r).toFixed(1)+'" r="3"/>'
-          +'<text class="v" x="'+x(p.i)+'" y="'+(y(p.r)-8).toFixed(1)+'" text-anchor="middle">'+Math.round(p.r*100)+'</text>').join('');
-        const lab=P.map(p=>'<text'+(p.d===today?' class="is-auj"':'')+' x="'+x(p.i)+'" y="104" text-anchor="middle">'
-          +esc(jourDe(p.d).toLocaleDateString('en-GB',{weekday:'short'}).slice(0,2))+'</text>').join('');
-        return '<svg class="db-courbe" viewBox="0 0 '+W+' 110" role="img" aria-label="This week, day by day">'
-          +'<line class="g" x1="0" x2="'+W+'" y1="14" y2="14"/><line class="g" x1="0" x2="'+W+'" y1="49" y2="49"/><line class="g" x1="0" x2="'+W+'" y1="84" y2="84"/>'
-          +(path?'<path class="l" d="'+path+'"/>':'')+pts+lab+'</svg>';
+        if(error||!data||!data.ok){ if(error) console.error('[my_board]',error.message); diagD.erreurs++; D=null; }
+        else D=data;
+        P=practice.error?(P?{...P,stale:true}:{unavailable:true}):practice.data?.ok?practice.data:{unavailable:true}; diagD.charges++; peindre();
       }
       /* L'ACTIVITÉ : 12 semaines, une case par jour, une colonne par semaine (lundi en haut) ; la valeur = mes gestes. */
       function chaleur(heat,today){
@@ -13926,41 +13877,18 @@ window.addEventListener('pageshow',e=>{
           :t.toLocaleDateString('en-GB',{day:'numeric',month:'short'});
       }
       function peindre(){
-        if(!D) return;
-        const W=D.week||{}, H=D.habits||[], days=D.days||[], T=D.totals||{}, today=D.today;
-        const fait=n(W.fait), manque=n(W.manque), rep=fait+manque, taux=rep?Math.round(100*fait/rep):null, top=W.top;
+        const T=D?.totals||{}, today=D?.today;
         let h='';
-        h+='<div class="db-tg">'+(D.telegram?'<span><b>TotehmBot</b> tracks in Telegram · it lands here</span>'
-          :'<span><b>TotehmBot</b> tracks each Habit in Telegram</span><button class="vs-act" type="button" data-db-tg>Connect</button>')+'</div>';
-        if(P?.ok)h+=renderPractice(P);
-        else if(P?.unavailable)h+='<p class="tracking-caption">Practice is unavailable for the moment. Your reports have not been changed.</p>';
-        else {
-        h+='<div class="db-k">'
-          +'<div><i>this week</i><b>'+(taux==null?'—':taux+'<small>%</small>')+'</b><div class="db-bar"><span style="width:'+(taux||0)+'%"></span></div><i>'+fait+(n(W.cible)?' / '+n(W.cible):'')+' done</i></div>'
-          +'<div><i>today</i><b>'+n(W.aujourdhui)+'<small>/ '+n(W.demandes)+'</small></b><i>done / asked</i></div>'
-          +'<div><i>streak</i><b>'+(top?n(top.serie)+'<small>d</small>':'—')+'</b><em>'+(top?esc(top.t):'—')+'</em></div></div>';
-        h+='<div class="db"><p class="db-t">This week<i>done, of what TotehmBot asked</i></p>'+courbe(days,today)+'</div>';
-        /* LA MATRICE : mes Habits × 7 jours. Un point (la couleur de son intention) = fait ; un trait = pas fait ; un cercle = demandé, sans réponse. */
-        let m='<div class="db-m"><span></span>'+days.map(d=>'<span class="h'+(d.d===today?' is-auj':'')+'">'+esc(jourDe(d.d).toLocaleDateString('en-GB',{weekday:'narrow'}))+'</span>').join('')+'<span class="h">row</span>';
-        H.forEach(x=>{ const c=coul((x.is||[])[0]);
-          m+='<div class="db-n" style="--c:'+(c||'#3a3a42')+'">'+esc(x.t)+'<small>'+n(x.fait)+(x.cible?' / '+x.cible:'')+' this week'+(n(x.record)>1?' · best '+n(x.record)+'d':'')+'</small></div>'
-            +(x.c||[]).map(v=>'<span class="db-c'+(v?' is-'+v:'')+'" style="--c:'+(c||'#fff')+'"></span>').join('')
-            +'<span class="db-s'+(n(x.serie)?'':' is-0')+'">'+n(x.serie)+'d</span>'; });
-        m+='</div>';
-        const rien=!H.some(x=>(x.c||[]).some(Boolean));
-        h+='<div class="db"><p class="db-t">My Habits<i>tracked in Telegram</i></p>'+(H.length?m:'<p class="db-vide">No Habit yet · my TOTEHM starts with one.</p>')
-          +(H.length&&rien?'<p class="db-vide">Nothing tracked this week · TotehmBot asks, I answer in Telegram.</p>':'')
-          +(H.length?'<div class="db-leg"><span><span class="db-c is-d" style="--c:#fff"></span>done</span><span><span class="db-c is-m"></span>missed</span><span><span class="db-c is-a"></span>no answer</span><span>2d · days in a row</span></div>':'')+'</div>';
-        /* LES SEPT INTENTIONS : ce qui a été fait en 28 jours, une ligne de sa couleur par intention. */
-        const I=D.intentions||{}, maxI=Math.max(1,...INTS.map(x=>n((I[x.id]||{}).fait)));
-        h+='<div class="db"><p class="db-t">My intentions<i>done · 28 days</i></p><div class="db-i">'
-          +INTS.map(x=>{ const v=I[x.id]||{}, f=n(v.fait); return '<i>'+esc(x.name)+'</i><div class="tr" style="--c:'+x.color+'"><span style="width:'+(f?100*f/maxI:0)+'%"></span></div><b>'+f+'</b>'; }).join('')+'</div></div>';
-        }
+
+        if(P?.ok)h+=renderPractice(P,{requestedDays:period});
+        else h+='<p class="tracking-caption">Practice is unavailable for the moment. Your reports have not been changed.</p>';
+        if(!D){h+='<p class="tracking-caption">History temporarily unavailable.</p>';el.innerHTML=h;return;}
         const O=D.objectives||[];
-        if(O.length) h+='<div class="db"><p class="db-t">Next objectives<i>time gone</i></p><div class="db-o">'+O.map(o=>{
+        if(O.length) h+='<div class="db"><p class="db-t">Next objectives<i>due dates</i></p><div class="db-o">'+O.map(o=>{
           const j=o.jours, J=j==null?'—':j<0?'late':j===0?'today':'D-'+j;
           return '<div><span class="n" style="--c:'+(coul(o.i)||'#3a3a42')+'">'+esc(o.t)+'</span><span class="j'+(j!=null&&j<0?' is-tard':'')+'">'+J+'</span>'
-            +'<div class="db-bar"><span style="width:'+Math.round(100*n(o.temps))+'%"></span></div></div>'; }).join('')+'</div></div>';
+            +'</div>'; }).join('')+'</div></div>';
+        h+='<details class="tracking-history"><summary>My TOTEHM history</summary>';
         const heat=D.heat||[];
         h+='<div class="db"><p class="db-t">My activity<i>'+heat.reduce((a,v)=>a+n(v),0)+' gestures · 12 weeks</i></p>'+chaleur(heat,today)+'</div>';
         const F=D.feed||[];
@@ -13970,14 +13898,20 @@ window.addEventListener('pageshow',e=>{
           ['my story',T.story],['media',T.media],['spots',T.spots],['reflections',T.reflections],['chapters',T.chapters]];
         h+='<div class="db"><p class="db-t">My TOTEHM<i>'+(D.since?'since '+esc(court(D.since))+' · ':'')+n(T.gestes)+' gestures</i></p></div>'
           +'<div class="db-tot">'+tot.map(([k,v])=>'<span><b>'+n(v)+'</b><i>'+k+'</i></span>').join('')+'</div>';
+        h+='</details>';
         el.innerHTML=h;
       }
-      /* Relier Telegram : on passe sur l'onglet Subscription, là où TotehmBot vit (et où sa réponse s'écrit). */
-      el.addEventListener('click',e=>{ if(e.target.closest('[data-db-tg]')){ onglet('higher'); $('mw-telegram').click(); } else if(e.target.closest('[data-track-manage]')){onglet('higher');trackingControls.open();} });
+      /* Configuration unique : le dashboard ne recueille aucune déclaration. */
+      el.addEventListener('click',async e=>{
+        const choice=e.target.closest('[data-track-period]');
+        if(choice){const next=Number(choice.dataset.trackPeriod);if([7,28].includes(next)&&next!==period){period=next;await charger();}return;}
+        if(e.target.closest('[data-track-copy]')){const status=el.querySelector('[data-track-copy-status]');try{await navigator.clipboard.writeText('Use the past '+period+' days. '+PRACTICE_REVIEW_PROMPT);if(status?.isConnected)status.textContent='Copied. Paste it in ChatGPT when you choose.';}catch{if(status?.isConnected)status.textContent='Use the past '+period+' days. '+PRACTICE_REVIEW_PROMPT;}return;}
+        if(e.target.closest('[data-track-manage]')){onglet('higher');trackingControls.open();}
+      });
       trackingRefresh=charger;
       document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&srch.classList.contains('is-pret')&&ong==='higher')charger();});
-      return {charger, onglet, vide, vider(){ seq++; D=null; P=null; el.innerHTML=''; },
-        etat:()=>({onglet:ong, charge:!!D, habits:D?(D.habits||[]).length:0, cases:D?(D.habits||[]).reduce((a,x)=>a+(x.c||[]).filter(Boolean).length,0):0,
+      return {charger, onglet, vide, vider(){ seq++; D=null; P=null; period=7; el.innerHTML=''; },
+        etat:()=>({onglet:ong, charge:!!D||!!P?.ok, habits:P?.ok?(P.habits||[]).length:D?(D.habits||[]).length:0, cases:D?(D.habits||[]).reduce((a,x)=>a+(x.c||[]).filter(Boolean).length,0):0,
                    jours:D?(D.days||[]).length:0, heat:D?(D.heat||[]).length:0, fil:D?(D.feed||[]).length:0, telegram:!!(D&&D.telegram),
                    charges:diagD.charges, erreurs:diagD.erreurs})};
     })();

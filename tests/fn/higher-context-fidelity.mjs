@@ -1,6 +1,6 @@
 // Synthetic narratives and authorized source fixtures; no member data or model calls.
 import assert from 'node:assert/strict';
-import {projectGraph,projectContext,retrieveContext,retrieveElement,elementURL} from '../../backend/supabase/functions/_shared/chatgpt-context.ts';
+import {projectGraph,projectContext,retrieveContext,retrieveElement,elementURL,validElementRef} from '../../backend/supabase/functions/_shared/chatgpt-context.ts';
 import {retrieveEcosystem,readMember,clubSpots} from '../../backend/supabase/functions/_shared/chatgpt-ecosystem.ts';
 import {parseElementLink,resolveElementLink} from '../../com/totehm-link.mjs';
 import {CHATGPT_TOOLS} from '../../backend/supabase/functions/_shared/chatgpt-server.ts';
@@ -33,6 +33,22 @@ let restored='',offset=0,next;
 do{const page=projectContext(longGraph,{query:'story',purpose:'explicit',focus:{kind:'wisdom',ref:id(9)},text_offset:offset}).items[0];
  restored+=page.text;next=page.next_text_offset;offset=next;}while(next!==undefined);
 check(restored===veryLong,'Exact text pages reconstruct a long original without loss or duplication');
+const longHabit='x'.repeat(3999)+'🌍読書 '.repeat(420)+'The exact ending.';
+const habitGraph=projectGraph({steps:[{t:longHabit,is:['focus']}]});
+check(habitGraph.items.length===1&&habitGraph.items[0].ref===longHabit,'A long Unicode Habit remains an exact graph reference rather than disappearing above 500 characters');
+const habitURL=new URL(habitGraph.items[0].url);
+check(new URLSearchParams(habitURL.hash.slice(1)).get('ref')===longHabit&&!habitURL.search,'The source locator preserves the complete Unicode Habit in the fragment only');
+restored='';offset=0;
+do{const page=projectContext(habitGraph,{query:'practice',purpose:'explicit',focus:{kind:'habit',ref:longHabit},text_offset:offset}).items[0];
+ check(page.text.length<=4000&&page.text.isWellFormed(),'Each exact Habit page fits the page bound without splitting a Unicode surrogate pair');
+ restored+=page.text;next=page.next_text_offset;offset=next;}while(next!==undefined);
+check(restored===longHabit,'Paged exact Habit reads reconstruct all original characters and the decisive ending');
+assert.throws(()=>projectContext(habitGraph,{query:'practice',purpose:'explicit',focus:{kind:'habit',ref:longHabit},text_offset:4000}));checks++;
+const excerptEmoji=projectContext(projectGraph({steps:[{t:'a'.repeat(499)+'🌍 end'}]}),{query:'practice',purpose:'action',search_terms:[]}).items[0];
+check(excerptEmoji.text.isWellFormed()&&excerptEmoji.text.length===499&&excerptEmoji.text_truncated,'A short discovery excerpt also preserves emoji integrity');
+check(validElementRef({kind:'habit',ref:'a'.repeat(16000)})&&!validElementRef({kind:'habit',ref:'a'.repeat(16001)}),'Only Habit references receive the explicit 16000-unit bound');
+check(!validElementRef({kind:'objective',ref:longHabit})&&!validElementRef({kind:'vision',ref:longHabit})&&!validElementRef({kind:'repulsion',ref:longHabit}),'Long Habit support never relaxes UUID or numeric identifiers of other views');
+
 for(const options of [{text_offset:-1,focus:{kind:'wisdom',ref:id(4)}},{text_offset:1.5,focus:{kind:'wisdom',ref:id(4)}},{text_offset:0},{exclude:[{kind:'habit',ref:''}]},{exclude:Array(13).fill({kind:'habit',ref:'Read'})},{review:true}]){
  assert.throws(()=>query(options));checks++;
 }
@@ -74,13 +90,14 @@ const club=await clubSpots({rpc:async(name,args)=>{
  return {data:{ok:true,items:[{id:id(8),city:'Lisbon',intentions:['express'],state:'will'}]},error:null};
 }},'consented-grant',{period:'future',city:'Lisbon',intentions:['express']});
 check(club.items[0].url.endsWith(id(8))&&club.items[0].presence_verified===false,'Club sources are actionable without claiming actual presence');
-for(const ref of [{kind:'habit',ref:'Écrire & lire #1 / 読む'},{kind:'objective',ref:id(1)},{kind:'repulsion',ref:'9007199254740993'}]){
+for(const ref of [{kind:'habit',ref:longHabit},{kind:'habit',ref:'Écrire & lire #1 / 読む'},{kind:'objective',ref:id(1)},{kind:'repulsion',ref:'9007199254740993'}]){
  const u=new URL(elementURL(ref));check(!u.search&&JSON.stringify(parseElementLink(u.hash))===JSON.stringify(ref),'Exact references survive fragment encoding without appearing in an HTTP query');
 }
 for(const hash of ['#element=habit&ref=Read&ref=Other','#element=__proto__&ref=x','#element=objective&ref=not-a-uuid','#element=habit&ref=%00x','#element=habit&ref=Read&url=https://evil.test']){
  check(parseElementLink(hash)===null,'Reject malformed/ambiguous locators');
 }
 check(resolveElementLink({kind:'habit',ref:'Écrire mon livre'},{habits:[{id:'h7',t:'Draft being typed',t0:'Écrire mon livre'}]}).id==='h7','A habit resolves by its exact persisted reference');
+check(resolveElementLink(parseElementLink(habitURL.hash),{habits:[{id:'hLong',t:longHabit,t0:longHabit}]}).id==='hLong','The long Unicode Higher source locator resolves the exact native Habit without abbreviation');
 check(resolveElementLink({kind:'habit',ref:'ecrire mon livre'},{habits:[{id:'h7',t:'Écrire mon livre'}]})===null,'Opening a source never substitutes an approximately matching element');
 check(resolveElementLink({kind:'objective',ref:id(1)},{objectives:[]})===null,'A locator cannot make an unavailable/private source appear');
 check(CHATGPT_TOOLS.length===10&&CHATGPT_TOOLS.find(t=>t.name==='get_context').inputSchema.properties.review,'The same ten tools support an optional review without expanding grants');

@@ -3,10 +3,10 @@
 const types={habit:['habits','h'],objective:['objectives','t'],repulsion:['repulsions','r'],vision:['visions','v'],wisdom:['wisdom','w']};
 const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 export function parseElementLink(hash){
-  if(typeof hash!=='string'||hash.length>8192||!hash.startsWith('#element='))return null;
+  if(typeof hash!=='string'||hash.length>256000||!hash.startsWith('#element='))return null;
   const p=new URLSearchParams(hash.slice(1)),kind=p.get('element'),ref=p.get('ref');
   if(p.size!==2||p.getAll('element').length!==1||p.getAll('ref').length!==1||!Object.hasOwn(types,kind)||typeof ref!=='string')return null;
-  if(kind==='habit' ? !ref.length||ref.length>500||ref!==ref.trim()||/[\u0000-\u001f\u007f]/.test(ref)
+  if(kind==='habit' ? !ref.length||ref.length>16000||ref!==ref.trim()||/[\u0000-\u001f\u007f]/.test(ref)
     : kind==='repulsion' ? !/^[1-9][0-9]{0,18}$/.test(ref) : !uuid.test(ref))return null;
   return {kind,ref};
 }

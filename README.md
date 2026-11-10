@@ -17,7 +17,7 @@ ligne une minute plus tard (Vercel).
                  ↓ HIGHER MY CHATGPT
 ```
 
-Un tap sur **●** déploie le TOTEHM : HABITS · OBJECTIVES · REPULSIONS · VISIONS · MY STORY. Chaque liste conserve son classement ; Higher my ChatGPT retrouve ces priorités, leurs liens et les playlists des intentions, dans la langue de la conversation. Le TOTEHM porte les choix ; TotehmBot recueille les déclarations dans Telegram ; le dashboard montre les faits ; le partage facultatif des bilans permet à Higher ChatGPT de proposer des ajustements, sans écrire dans le TOTEHM ou dans sa mémoire native.
+Un tap sur **●** déploie le TOTEHM : HABITS · OBJECTIVES · REPULSIONS · VISIONS · MY STORY. Chaque liste conserve son classement ; Higher my ChatGPT retrouve ces priorités, leurs liens et les playlists des intentions, dans la langue de la conversation. Le TOTEHM porte les choix ; TotehmBot envoie une notification avec la Habit complète et Done/Missed, sans menu ni questionnaire ; le dashboard montre les faits sur 7 ou 28 jours, puis la configuration du bot. Higher ChatGPT peut lire la même période après partage explicite et proposer un ajustement sur demande, sans écrire dans le TOTEHM ou dans sa mémoire native.
 
 ## Les fichiers
 
@@ -32,7 +32,7 @@ Un tap sur **●** déploie le TOTEHM : HABITS · OBJECTIVES · REPULSIONS · VI
 | `space/index.html` + `gallery-*.mjs` | la galerie 3D |
 | `space/get_higher.html` · `stoner.html` · `play_lisbon_street.html` · `market.html`… | les œuvres et le marché de l'art |
 | `*/art-bridge.html` | les anciens liens d'œuvres (et les retours de paiement) → totehm.space, connexion gardée |
-| `backend/supabase/functions/_shared/tracking-*.ts` | suivi déterministe : quatre états, contexte facultatif, livraisons vérifiées, horaires et plafonds ; `/suivi`, `/bilan`, `/pause`, `/reprendre` |
+| `backend/supabase/functions/_shared/tracking-*.ts` | notifications déterministes : Done/Missed dans le même message, périodes conservées, historique intact, livraisons vérifiées, horaires et plafonds ; `/review`, `/settings`, `/pause`, `/resume` |
 | `backend/supabase/migrations/` · `functions/` | les modifications de la base, dans l'ordre · les 40 fonctions serveur |
 | `backend/n8n/` | les automatisations du vêtement (A → F) et la VM Oracle |
 | `tools/` | 11 blocs communs, copiés dans les pages (connexion, coin membre, envoi vidéo Bunny, confidentialité, loupe, menu, survol) |
