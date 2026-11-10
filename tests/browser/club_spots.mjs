@@ -57,11 +57,12 @@ try{
   ok(s0.mode==='radar'&&s0.club.items===2&&s0.radar.lieux===2&&s0.radar.radius>40,
      nom+' · le Club se lit et le RADAR place ses spots (r='+s0.radar.radius+', lieux='+s0.radar.lieux+', portée '+s0.radar.portee+')');
   const nu=await pg.evaluate(()=>({joy:!!document.getElementById('joy'), about:!!document.getElementById('space-about'),
-    quoi:/what is a spot/i.test(document.body.innerText), titre:(document.getElementById('club-title')||{}).innerText||''}));
-  ok(!nu.joy&&!nu.about&&!nu.quoi&&/spots/i.test(nu.titre),
-     nom+' · plus de joystick, plus de « What is a spot? » ; le titre reste [Higher] Spots');
+    quoi:/what is a spot/i.test(document.body.innerText), titre:!!document.getElementById('club-title'),
+    logo:!!document.querySelector('#club-logo svg rect[mask]')&&!!document.querySelector('#club-logo svg path')}));
+  ok(!nu.joy&&!nu.about&&!nu.quoi&&!nu.titre&&nu.logo,
+     nom+' · plus de joystick, plus de « What is a spot? », plus de « [Higher] Spots » : le TOTEHM docké de totehm.com en tête');
   const barre=await pg.evaluate(()=>[...document.querySelectorAll('#rdr-flt button')].map(e=>e.textContent));
-  ok(barre.join('|')==='now|Filter',nom+' · la barre : le temps courant, puis Filter — rien d\'autre');
+  ok(barre.join('|')==='now|Filter · 1',nom+' · la barre : le temps courant, puis Filter (near me, posé à l\'arrivée) — rien d\'autre');
   await pg.screenshot({path:OUT+'/club_radar_'+(tel?'tel':'ordi')+'.png'});
 
   // ══ 2 · RADAR | GRID, le même objet ══
@@ -76,7 +77,7 @@ try{
   await clic(pg,'#rdr-flt button:last-child'); await pg.waitForTimeout(500);
   const f0=await pg.evaluate(()=>({l:[...document.querySelectorAll('#rdr-sf .sfl')].map(e=>e.textContent),
     h:[...document.querySelectorAll('#rdr-sf [data-sf="habit"] .v-name')].map(e=>e.textContent)}));
-  ok(f0.h.join('|')==='Run the hill|Call mum'&&f0.l.join('|')==='my habits|When|Intentions|Mood|It shows|Together|Where',
+  ok(f0.h.join('|')==='Run the hill|Call mum'&&f0.l.join('|')==='Habits|When|Where|Together|Intentions|It shows',
      nom+' · le filtre s\'ouvre sur MES Habits, au format du TOTEHM, puis : '+f0.l.slice(1).join(' · '));
   appels=[];
   await pg.$eval('#rdr-sf [data-sf="habit"]',e=>e.click());
@@ -91,7 +92,7 @@ try{
   await clic(pg,'#rdr-sf [data-sf="close"]'); await pg.waitForTimeout(500);
   const kin=await pg.evaluate(()=>({k:[...document.querySelectorAll('.tl-kin')].map(e=>e.textContent),
     n:(document.querySelector('#rdr-flt button:last-child')||{}).textContent}));
-  ok(kin.k.join('|')==='same habit|same intentions'&&kin.n==='Filter · 1',
+  ok(kin.k.join('|')==='same habit|same intentions'&&kin.n==='Filter · 2',
      nom+' · chaque spot DIT pourquoi il répond : '+kin.k.join(' · ')+' ; la barre compte le filtre ('+kin.n+')');
   appels=[];
   await clic(pg,'#rdr-flt button:last-child'); await pg.waitForTimeout(400);
@@ -113,7 +114,7 @@ try{
   const p0=await pg.evaluate(()=>({def:(document.querySelector('#rdr-new .ns-def')||{}).textContent||'',
     l:[...document.querySelectorAll('#rdr-new .sfl')].map(e=>e.textContent),
     h:[...document.querySelectorAll('#rdr-new [data-ns="h"] .v-name')].map(e=>e.textContent)}));
-  ok(/^A spot is a Habit of your TOTEHM that becomes an action in space and time/.test(p0.def)
+  ok(/^A spot is a Habit of your TOTEHM that becomes an action in one exact place, one exact moment\.$/.test(p0.def)
      &&p0.l.join('|')==='+ spot|which habit?'&&p0.h.join('|')==='Run the hill|Call mum',
      nom+' · la prise DIT ce qu\'est un spot, puis MES Habits : '+p0.h.join(' · '));
   await pg.locator('#rdr-new [data-ns="h"]').filter({hasText:'Call mum'}).first().click(); await pg.waitForTimeout(300);
@@ -132,11 +133,11 @@ try{
     ville:[...document.querySelectorAll('#rdr-new .ns-tag')].map(e=>e.textContent).join('|')}));
   ok(geocodes===1&&ad.d.pt&&ad.d.ptSrc==='adresse'&&ad.ville==='Porto',
      nom+' · UNE requête par geste ; l\'adresse choisie devient le point, sa ville vient de cities.json (« '+ad.ville+' »)');
-  await clic(pg,'#rdr-new [data-ns="aud"][data-v="figher"]'); await pg.waitForTimeout(300);
-  const cl=await pg.evaluate(()=>({n:[...document.querySelectorAll('#rdr-new .ns-def')].map(e=>e.textContent),
+  const cl=await pg.evaluate(()=>({choix:document.querySelectorAll('#rdr-new [data-ns="aud"]').length,
+    qui:[...document.querySelectorAll('#rdr-new .sfl')].filter(e=>e.textContent==='who sees it').map(e=>e.nextElementSibling.innerText.replace(/\s+/g,' ')).join(''),
     l:[...document.querySelectorAll('#rdr-new .sfl')].map(e=>e.textContent)}));
-  ok(cl.n.length===2&&/a habit, an objective, a repulsion/.test(cl.n[1])&&cl.l.slice(-1)[0]==='together'&&!cl.l.includes('location'),
-     nom+' · figher club se PRÉCISE (« '+cl.n[1]+' ») ; puis together, et jamais « location »');
+  ok(cl.choix===0&&/^figher club every TOTEHM$/i.test(cl.qui)&&cl.l.slice(-1)[0]==='together'&&!cl.l.includes('location'),
+     nom+' · publié d\'ici, FIGHER CLUB d\'office : montré (« '+cl.qui+' »), jamais demandé ; puis together, et jamais « location »');
   await clic(pg,'#rdr-new [data-ns="mode"][data-v="silent"]'); await pg.waitForTimeout(300);
   await clic(pg,'#rdr-new [data-ns="dur"][data-v="90"]'); await pg.waitForTimeout(300);
   const l2=await pg.evaluate(()=>({l:[...document.querySelectorAll('#rdr-new .sfl')].map(e=>e.textContent).slice(-2),

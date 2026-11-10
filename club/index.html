@@ -39,36 +39,68 @@ button,input,textarea,select{font:inherit;color:inherit;color-scheme:dark}
   font-family:var(--q);font-weight:400;font-size:12px;color:#fbd5ca;padding:6px 4px}
 #member-txt{max-width:calc(100vw - 150px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-/* ══ LE TITRE — [Higher] Spots, en haut au centre, comme le titre d'une vue de COM ══ */
-/* Le titre sur SA ligne : à 390 px, le coin membre et la bascule tiennent la première, le titre la deuxième
-   (mesuré en production le 09/11 : « CONNECT WITH MY TOTEHM » passait SOUS le titre). */
-#club-title{position:fixed;top:calc(50px + var(--top));left:50%;transform:translateX(-50%);z-index:94;
-  display:flex;align-items:center;gap:7px;pointer-events:none}
-#club-title svg{width:54px;height:18px;display:block}
-#club-title b{font:400 15px/1 var(--q);color:#fff;letter-spacing:.02em}
+/* ══ LE LOGO — le TOTEHM docké de la vue de droite de totehm.com, en haut au centre ; un tap ramène au centre ══ */
+#club-logo{position:fixed;top:calc(12px + var(--top));left:50%;transform:translateX(-50%);z-index:99;width:44px;height:44px;display:block;
+  -webkit-tap-highlight-color:transparent;transition:opacity .2s ease}
+#club-logo svg{width:100%;height:100%;display:block;overflow:visible}
+#club-logo:focus-visible{outline:1px solid #fff;outline-offset:3px}
+@media(min-width:700px){#club-logo{width:48px;height:48px}}
+/* À 390 px le coin membre, le logo et la bascule tiennent sur UNE ligne : CONNECT passe sur deux lignes avant le logo. */
+#who .mc:not(.is-in){max-width:calc(50vw - 40px)!important}
 
-/* ══ LA BARRE : le temps courant, puis [Filter · N] — un tap ouvre le panneau ══ */
-#rdr-flt{position:fixed;top:calc(84px + var(--top));left:0;right:0;z-index:92;display:flex;flex-wrap:wrap;
-  justify-content:center;align-items:center;gap:5px;padding:0 12px}
-#rdr-flt button{font:400 10px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--lo);
-  background:var(--s2);border:0;border-radius:var(--r);padding:7px 11px;cursor:pointer;-webkit-tap-highlight-color:transparent}
-#rdr-flt button.is-on{background:var(--s4);color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.45)}
-#rdr-say{position:fixed;top:calc(116px + var(--top));left:0;right:0;z-index:91;text-align:center;
-  font:400 10px/1.5 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--dim);pointer-events:none}
+/* ══ LA BARRE : le temps courant, puis [Filter · N] — sous le logo, au format de la vue de droite de totehm.com ══ */
+#rdr-flt{position:fixed;top:calc(64px + var(--top));left:0;right:0;z-index:92;display:flex;flex-wrap:nowrap;
+  justify-content:center;align-items:center;gap:7px;padding:0 12px;pointer-events:none}
+#rdr-flt button{pointer-events:auto;border:0;border-radius:10px;padding:5px 9px;background:rgba(22,22,26,.82);color:#8a8a92;
+  font:700 8.5px/1.3 var(--mono);letter-spacing:.16em;text-transform:uppercase;cursor:pointer;-webkit-tap-highlight-color:transparent}
+#rdr-flt button.is-on{background:#3a3a42;color:#fff}
+#rdr-flt button:focus-visible{outline:1px solid #fff;outline-offset:2px}
+@media(min-width:700px){#rdr-flt{top:calc(68px + var(--top))}}
+#rdr-say{position:fixed;top:calc(94px + var(--top));left:0;right:0;z-index:91;text-align:center;margin:0;
+  font:400 9.5px/1.5 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--dim);pointer-events:none}
 
-/* ══ RADAR | GRID — le même choix que MAP | GRID sur COM, à la même place ══ */
+/* ══ RADAR · GRID · SHORTS — en haut à droite : le bas reste au pouce et la vue défile librement (Wah) ══ */
 #rdr-mode{position:fixed;right:12px;top:calc(12px + var(--top));z-index:95;display:flex;gap:4px}
-#rdr-mode button{font:700 9px/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--lo);
-  background:var(--s2);border:0;border-radius:var(--r);padding:8px 10px;cursor:pointer;-webkit-tap-highlight-color:transparent}
-#rdr-mode button.is-on{background:var(--s4);color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.45)}
+#rdr-mode button{font:700 8.5px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:#8a8a92;
+  background:#1f1f24;border:0;border-radius:10px;padding:8px 8px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+#rdr-mode button.is-on{background:#3a3a42;color:#fff;box-shadow:0 0 0 1px #fff}
+#rdr-mode button:focus-visible{outline:1px solid #fff;outline-offset:3px}
+@media(min-width:700px){#rdr-mode button{padding:8px 12px;font-size:9px;letter-spacing:.16em}}
 
-/* ══ LES DEUX MODES ══ */
-.view{position:fixed;inset:0;z-index:10;visibility:hidden;opacity:0;transition:opacity .28s ease,visibility 0s .28s}
+/* ══ LES TROIS MODES — chacun DÉFILE librement sous l'en-tête ══ */
+.view{position:fixed;inset:0;z-index:10;visibility:hidden;opacity:0;transition:opacity .28s ease,visibility 0s .28s;
+  overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
 .view.is-on{visibility:visible;opacity:1;transition:opacity .28s ease,visibility 0s}
-#v-radar canvas{position:absolute;inset:0;width:100%;height:100%}
-#v-grid{overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;z-index:12}
-#rdr-g-f{padding:calc(140px + var(--top)) 5px calc(24px + var(--bot))}
+#v-grid,#v-shorts{z-index:12}
+/* ce qui défile passe SOUS l'en-tête : un fondu noir le garde lisible (la grille, le radar qui glisse, les shorts) */
+body::before{content:'';position:fixed;left:0;right:0;top:0;height:calc(112px + var(--top));z-index:90;pointer-events:none;
+  background:linear-gradient(#000 52%,rgba(0,0,0,0));opacity:0;transition:opacity .25s ease}
+body.rdr-grid::before,body.is-scrolled::before{opacity:1}
+body.rdr-shorts::before{opacity:.55}
+.rd-top{position:relative;height:100dvh;min-height:440px}
+/* le radar laisse passer le défilement vertical : la vue glisse sous le doigt, l'anneau tourne de côté */
+#v-radar canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:pan-y}
+#rdr-g-f{padding:calc(100px + var(--top)) 5px calc(24px + var(--bot))}
 .empty{position:absolute;left:0;right:0;top:46%;text-align:center;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
+/* SOUS LE RADAR : les spots autour de moi, du plus proche au plus loin */
+#rdr-list{display:flex;flex-direction:column;align-items:center;gap:10px;padding:0 12px calc(90px + var(--bot))}
+#rdr-list:empty{display:none}
+#rdr-list .sfl{width:min(92vw,520px)}
+.rl{width:min(92vw,520px);cursor:pointer;-webkit-tap-highlight-color:transparent}
+.rl .sdata{margin-top:4px}
+.rl:focus-visible{outline:1px solid #fff;outline-offset:2px}
+/* SHORTS — un spot par écran, son média à la verticale, aimanté (le format TikTok) ; l'image TELLE QU'ELLE, sur le noir */
+#v-shorts{scroll-snap-type:y mandatory;background:#000}
+.sh{position:relative;height:100dvh;scroll-snap-align:start;scroll-snap-stop:always;overflow:hidden;background:#000}
+.sh-m{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.sh-m video,.sh-m img{width:100%;height:100%;object-fit:contain;background:#000;display:block}
+.sh-m .video-status{top:46%}
+.sh-b{position:absolute;left:10px;right:10px;bottom:calc(78px + var(--bot));z-index:2;max-width:520px;margin:0 auto;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;filter:drop-shadow(0 8px 18px rgba(0,0,0,.7))}
+.sh-b .sdata{margin-top:6px}
+.sh-b:focus-visible{outline:1px solid #fff;outline-offset:2px}
+.sh-vide{height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:0 24px;text-align:center}
+.sh-vide .note{letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
 
 /* ══ LA GRILLE : une tuile carrée par spot, sa box posée dessus (la grammaire de COM) ══ */
 .tlg{display:grid;grid-template-columns:repeat(2,1fr);gap:5px}
@@ -98,51 +130,62 @@ button,input,textarea,select{font:inherit;color:inherit;color-scheme:dark}
 @media(hover:hover){#rdr-plus .tl-add:hover{color:#fff}}
 body.rdr-grid #rdr-plus,body.is-nspot #rdr-plus,body.is-sf #rdr-plus,body.is-detail #rdr-plus{display:none}
 
-/* ══ LES OUTILS DU RADAR ══ */
+/* ══ LES OUTILS DU RADAR — dans le haut du radar : ils défilent avec lui ══ */
 #radar-tools{display:contents}
-#cmp,#rdr-here{position:fixed;z-index:65;transform:translateX(-50%)}
-#radar-tools:not(.is-placed) #cmp,#radar-tools:not(.is-placed) #rdr-here{visibility:hidden}
-body.rdr-grid #radar-tools,body.is-nspot #radar-tools,body.is-sf #radar-tools{display:none}
+#cmp,#rdr-here,#rdr-down{position:absolute;z-index:5;transform:translateX(-50%)}
+#radar-tools:not(.is-placed) #cmp,#radar-tools:not(.is-placed) #rdr-here,#radar-tools:not(.is-placed) #rdr-down{visibility:hidden}
 #cmp{font-size:8px;line-height:1.6;text-align:center;padding:5px 8px;white-space:nowrap}
 #rdr-here{padding:4px 10px;min-width:30px;text-align:center}
+#rdr-down{padding:6px 10px;white-space:nowrap}
+#rdr-down[hidden]{display:none}
 
-/* ══ LES PANNEAUX (filtre, prise) — ancrés en HAUT, la grammaire de COM ══ */
-.sf{position:fixed;inset:0;z-index:98;background:rgba(0,0,0,.94);display:flex;flex-direction:column;align-items:center;gap:7px;
-  padding:calc(18px + var(--top)) 14px calc(34px + var(--bot));overflow-y:auto;overscroll-behavior:contain}
+/* ══ LES PANNEAUX (filtre, prise) — le format de la vue de droite de totehm.com : ancrés en HAUT, sous le logo,
+   une question par groupe, la puce grise ajustée à son mot, son sens en petit dessous ══ */
+.sf{position:fixed;inset:0;z-index:98;background:rgba(0,0,0,.94);display:flex;flex-direction:column;align-items:center;gap:9px;
+  padding:calc(70px + var(--top)) 14px calc(34px + var(--bot));overflow-y:auto;overscroll-behavior:contain}
 .sfg{width:min(92vw,420px);display:flex;flex-direction:column;gap:5px}
-.sfl{font:700 8.5px/1.3 var(--mono);letter-spacing:.2em;text-transform:uppercase;color:#6d6d74}
+.sfl{font:700 8.5px/1.3 var(--mono);letter-spacing:.2em;text-transform:uppercase;color:#6d6d74;margin:0}
 .sfr{display:flex;flex-wrap:wrap;gap:5px}
-.sfbx{display:flex;flex-direction:column;gap:6px}
-.sfb{cursor:pointer;border-radius:0;opacity:.52;transition:opacity .15s,box-shadow .15s}
-.sfb.is-on{opacity:1;box-shadow:0 0 0 1px rgba(255,255,255,.5)}
-.sfc{border:0;border-radius:var(--r);padding:8px 11px;background:var(--s3);color:var(--lo);cursor:pointer;
-  font:400 10px/1.25 var(--mono);letter-spacing:.14em;text-transform:uppercase;text-align:left;-webkit-tap-highlight-color:transparent}
-.sfc.is-on{background:var(--s4);color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.45)}
-.sfc.is-int{border-left:3px solid var(--c,#fff)}
-.sfc small{display:block;font-size:9px;letter-spacing:.04em;text-transform:none;color:var(--dim);margin-top:2px}
-.sfc.is-on small{color:var(--mid)}
+.sfbx{display:flex;flex-direction:column;gap:3px;max-height:40vh;overflow-y:auto;overscroll-behavior:contain}
+.sfb{cursor:pointer;width:min(92vw,420px)}
+.sfb.is-on{outline:1px solid #fff;outline-offset:1px}
+.sfb:focus-visible{outline:1px solid #fff;outline-offset:2px}
+.sfc{border:0;border-radius:10px;padding:8px 11px;background:#1f1f24;color:#b0b0b0;cursor:pointer;
+  font:400 11.5px/1.3 var(--mono);text-align:left;max-width:100%;overflow:hidden;text-overflow:ellipsis;-webkit-tap-highlight-color:transparent}
+.sfc.is-on{background:#3a3a42;color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.45)}
 .sfc:focus-visible{outline:1px solid #fff;outline-offset:2px}
+/* une intention se dit avec le badge : « Fight [Higher] » — un POINT de sa couleur, le mot gris */
+.sfi i{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--c);margin-right:6px;vertical-align:1px}
+.sfi .sfh{display:inline-block;width:38px;height:13px;margin-left:5px;vertical-align:-2px}
 .sfa{justify-content:space-between;margin-top:6px}
-.ns-def{margin:0;font:400 10.5px/1.55 var(--mono);color:#8a8a92;max-width:54ch}
-.ns-note-g{color:var(--mid)}
 .ns-c{display:inline-flex;flex-direction:column;align-items:flex-start;gap:2px}
-.ns-tag{display:inline-block;padding:8px 2px;font:400 11.5px/1.3 var(--mono);color:var(--mid)}
-.ns-in{border:0;outline:0;background:var(--s2);border-radius:var(--r);padding:9px 11px;color:#fff;font-family:var(--q);font-size:13px}
-.ns-in:focus-visible{box-shadow:inset 0 0 0 1px rgba(255,255,255,.45)}
-.ns-min{width:80px}
-.ns-mot,.ns-place{width:100%;resize:none}
+.ns-c small{font-size:9px;letter-spacing:.04em;color:#8a8a92}
+.ns-c.is-on small{color:#b8b8c2}
+.ns-tag{display:inline-block;padding:8px 2px;font:400 11.5px/1.3 var(--mono);color:#b8b8c2}
+.ns-def{margin:0;font:400 10.5px/1.55 var(--mono);color:#8a8a92;max-width:54ch}
+.ns-note-g{color:#b8b8c2}
+/* LA DÉFINITION, mise en avant (Wah) : grande, blanche, juste sous « + spot » */
+.ns-what{width:min(92vw,420px);max-width:none;margin:2px 0 10px;font:400 14px/1.5 var(--mono);color:#fff}
+@media(min-width:700px){.ns-what{font-size:15px}}
 .ns-adr{display:flex;flex-wrap:wrap;gap:5px;align-items:center;width:100%}
-.ns-adr .ns-adrin{flex:1 1 160px;min-width:0}
+.ns-adr .ns-adrin{flex:1 1 160px;min-width:0;background:#1f1f24;border-radius:10px;padding:9px 11px}
 .ns-hits{display:flex;flex-direction:column;gap:4px;width:100%;margin-top:4px}
-.ns-hit{display:block;width:100%;text-align:left;border:0;border-radius:9px;padding:9px 11px;background:var(--s2);
-  color:var(--lo);font:400 11px/1.4 var(--mono);cursor:pointer}
-.ns-hit.is-on{background:var(--s4);color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.45)}
-.ns-m{width:min(34vw,150px);aspect-ratio:9/16;background:#0b0b0d;border-radius:var(--r);overflow:hidden}
+.ns-hit{display:block;width:100%;text-align:left;border:0;border-radius:9px;padding:9px 11px;background:#1f1f24;
+  color:#b0b0b0;font:400 11px/1.4 var(--mono);cursor:pointer}
+.ns-hit.is-on{background:#3a3a42;color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.45)}
+.ns-hit:focus-visible{outline:1px solid #fff;outline-offset:2px}
+.ns-in{border:0;outline:0;color:#fff;font-family:var(--q);font-size:13px;color-scheme:dark}
+.ns-in:focus-visible{box-shadow:inset 0 0 0 1px rgba(255,255,255,.45)}
+.ns-min{width:76px}
+.ns-mot,.ns-place{width:100%;resize:none}
+.ns-m{width:min(34vw,150px);aspect-ratio:9/16;background:#0b0b0d;border-radius:10px;overflow:hidden}
 .ns-m img,.ns-m video{width:100%;height:100%;object-fit:cover;display:block}
-.ns-go{border:0;border-radius:var(--r);padding:13px 16px;background:#3a3a42;color:#fff;cursor:pointer;
-  font:700 11.5px/1 var(--mono);letter-spacing:.18em}
+.ns-go{border:0;border-radius:10px;padding:13px 16px;background:#3a3a42;color:#fff;cursor:pointer;
+  font:700 11px/1 var(--mono);letter-spacing:.2em;transition:background .15s}
 .ns-go:disabled{opacity:.45;cursor:default}
-@media(hover:hover){.ns-go:not(:disabled):hover{background:#55555f}.ns-hit:hover,.sfc:hover{color:#fff}}
+.ns-go:focus-visible{outline:1px solid #fff;outline-offset:2px}
+.ns-note:empty{display:none}
+@media(hover:hover){.ns-go:not(:disabled):hover{background:#55555f}.ns-hit:hover,.sfc:hover{color:#fff}.sfb:hover .h-body{filter:brightness(1.18)}}
 
 /* ══ LA BOX D'UN SPOT — copiée telle quelle : ce qui vient du TOTEHM garde son format ══ */
 .habit{position:relative;display:flex;align-items:center;min-height:30px}
@@ -206,14 +249,15 @@ body.rdr-grid #radar-tools,body.is-nspot #radar-tools,body.is-sf #radar-tools{di
 @media(min-width:900px){#detail{left:50%;right:auto;width:min(600px,calc(100vw - 40px));border-radius:var(--r) var(--r) 0 0;transform:translate(-50%,104%)}
   #detail.is-open{transform:translate(-50%,0)}}
 @media(prefers-reduced-motion:reduce){.view,#detail{transition:none!important}}
-body.is-detail #rdr-flt,body.is-detail #rdr-mode,body.is-detail #club-title,body.is-detail #who,
-body.is-detail #radar-tools,body.is-detail #rdr-plus{opacity:0;pointer-events:none;transition:opacity .2s ease}
-body.is-nspot #rdr-flt,body.is-nspot #rdr-mode,body.is-nspot #club-title,body.is-nspot #who,
-body.is-sf #rdr-flt,body.is-sf #rdr-mode,body.is-sf #club-title,body.is-sf #who{opacity:0;pointer-events:none}
-/* « Simple terms of use » tout en bas ; une vue qui DÉFILE (la grille) l'efface. */
-body.rdr-grid #terms{opacity:0;visibility:hidden;pointer-events:none;transition:opacity .25s,visibility 0s .25s}
+body.is-detail #rdr-flt,body.is-detail #rdr-mode,body.is-detail #club-logo,body.is-detail #who,body.is-detail #rdr-say,
+body.is-detail #rdr-plus{opacity:0;pointer-events:none;transition:opacity .2s ease}
+/* un panneau ouvert : le logo reste au-dessus de lui, comme le TOTEHM docké de totehm.com ; le reste s'efface */
+body.is-nspot #rdr-flt,body.is-nspot #rdr-mode,body.is-nspot #who,body.is-nspot #rdr-say,
+body.is-sf #rdr-flt,body.is-sf #rdr-mode,body.is-sf #who,body.is-sf #rdr-say{opacity:0;pointer-events:none}
+/* « Simple terms of use » tout en bas ; une vue qui DÉFILE (la grille, les shorts, le radar dès qu'il glisse) l'efface. */
+body.rdr-grid #terms,body.rdr-shorts #terms,body.is-scrolled #terms{opacity:0;visibility:hidden;pointer-events:none;transition:opacity .25s,visibility 0s .25s}
 @media(hover:hover){#member:hover,#terms:hover,.sd-tag:hover,.note:hover,.v-sub:hover,.mg-l:hover,.by:hover,
-  .empty:hover,#rdr-say:hover,#rdr-flt button:hover,#rdr-mode button:hover,.chip:hover,.ns-tag:hover,.ns-def:hover{color:#fff}}
+  .empty:hover,#rdr-say:hover,#rdr-flt button:hover,#rdr-mode button:hover,.chip:hover,.ns-tag:hover,.ns-def:hover,.sfl:hover{color:#fff}}
 /* ══ LE COIN MEMBRE — copié de tools/member_corner.css dans chaque page (jamais importé), EN DERNIER dans son style ══
    L'élément porte la classe `mc` ; la page pose `is-in` quand le membre est connecté (rien d'autre à faire).
    Déconnecté : CONNECT WITH MY TOTEHM = un bouton normal (gris, 10 px de rayon, ajusté au label), jamais coral.
@@ -248,25 +292,30 @@ body.rdr-grid #terms{opacity:0;visibility:hidden;pointer-events:none;transition:
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="higher-badge" viewBox="0 0 600 200"><defs><mask id="hbmask"><rect width="600" height="200" fill="white"/><circle cx="60" cy="0" r="14" fill="black"/><circle cx="140" cy="0" r="14" fill="black"/><circle cx="220" cy="0" r="14" fill="black"/><circle cx="300" cy="0" r="14" fill="black"/><circle cx="380" cy="0" r="14" fill="black"/><circle cx="460" cy="0" r="14" fill="black"/><circle cx="540" cy="0" r="14" fill="black"/><circle cx="60" cy="200" r="14" fill="black"/><circle cx="140" cy="200" r="14" fill="black"/><circle cx="220" cy="200" r="14" fill="black"/><circle cx="300" cy="200" r="14" fill="black"/><circle cx="380" cy="200" r="14" fill="black"/><circle cx="460" cy="200" r="14" fill="black"/><circle cx="540" cy="200" r="14" fill="black"/><circle cx="0" cy="70" r="14" fill="black"/><circle cx="0" cy="130" r="14" fill="black"/><circle cx="600" cy="70" r="14" fill="black"/><circle cx="600" cy="130" r="14" fill="black"/></mask></defs><rect width="600" height="200" fill="#333366" mask="url(#hbmask)"/><g fill="#ffffff" transform="translate(34.32, 144.42)"><path transform="translate(0.000,0) scale(0.144,-0.144)" d="M596 700H832L692 0H456ZM238 0H2L142 700H378ZM523 258H274L313 452H562Z"/><path transform="translate(115.776,0) scale(0.144,-0.144)" d="M-5 0 104 547H329L220 0ZM241 591Q182 591 147.5 622.0Q113 653 113 698Q113 751 152.5 786.0Q192 821 257 821Q316 821 350.5 792.0Q385 763 385 718Q385 662 345.5 626.5Q306 591 241 591Z"/><path transform="translate(162.576,0) scale(0.144,-0.144)" d="M255 -204Q172 -204 103.5 -187.0Q35 -170 -16 -136L80 18Q113 -7 161.5 -21.5Q210 -36 259 -36Q325 -36 355.0 -8.5Q385 19 395 68L409 138L450 294L485 464L501 547H716L629 110Q596 -57 499.5 -130.5Q403 -204 255 -204ZM260 30Q200 30 146.0 58.0Q92 86 58.0 139.0Q24 192 24 266Q24 327 46.5 379.5Q69 432 109.5 472.0Q150 512 203.5 534.5Q257 557 318 557Q379 557 424.5 533.0Q470 509 490.0 451.5Q510 394 493 294Q478 204 446.0 145.5Q414 87 367.0 58.5Q320 30 260 30ZM332 207Q361 207 383.0 219.5Q405 232 417.0 255.0Q429 278 429 309Q429 340 408.5 359.5Q388 379 350 379Q321 379 299.0 366.5Q277 354 264.5 331.0Q252 308 252 277Q252 246 273.5 226.5Q295 207 332 207Z"/><path transform="translate(264.960,0) scale(0.144,-0.144)" d="M470 557Q535 557 584.0 528.5Q633 500 654.5 443.5Q676 387 659 302L599 0H373L428 275Q437 320 424.0 343.5Q411 367 375 367Q337 367 311.0 341.5Q285 316 274 263L221 0H-5L143 742H369L300 396L260 436Q299 499 356.5 528.0Q414 557 470 557Z"/><path transform="translate(366.048,0) scale(0.144,-0.144)" d="M321 -10Q231 -10 163.5 21.0Q96 52 58.0 109.0Q20 166 20 243Q20 333 62.0 404.0Q104 475 180.5 516.0Q257 557 359 557Q447 557 509.0 526.0Q571 495 604.0 441.0Q637 387 637 316Q637 291 633.5 267.0Q630 243 625 221H200L221 330H521L427 301Q435 333 426.5 355.5Q418 378 398.0 390.5Q378 403 349 403Q308 403 284.0 381.0Q260 359 249.5 324.0Q239 289 239 251Q239 200 266.5 178.5Q294 157 347 157Q378 157 409.0 166.5Q440 176 466 195L560 58Q504 20 443.5 5.0Q383 -10 321 -10Z"/><path transform="translate(459.360,0) scale(0.144,-0.144)" d="M-5 0 104 547H317L286 392L265 436Q299 501 359.5 529.0Q420 557 498 557L458 357Q444 359 432.5 360.0Q421 361 409 361Q353 361 318.5 336.0Q284 311 272 253L221 0Z"/></g></symbol></svg>
 <div id="who"><button id="member" class="mc" type="button" aria-label="Connect with my TOTEHM"><i></i><span id="member-txt">CONNECT WITH MY TOTEHM</span></button><a id="terms" class="mc-terms" href="https://www.totehm.com/terms" target="_blank" rel="noopener">Simple terms of use</a></div>
 
-<div id="club-title"><svg viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-badge"></use></svg><b>Spots</b></div>
-<div id="rdr-mode" role="group" aria-label="Radar or grid">
-  <button type="button" data-rmode="radar" class="is-on">radar</button>
-  <button type="button" data-rmode="grid">grid</button>
+<a id="club-logo" href="https://www.totehm.com/totehm" aria-label="TOTEHM · back to totehm.com"><svg viewBox="0 0 224.88 224.08" aria-hidden="true"><defs><mask id="clg-m" maskUnits="userSpaceOnUse" x="-40" y="-40" width="310" height="310"><rect x="-40" y="-40" width="310" height="310" fill="#fff"/><circle cx="56.421" cy="0" r="13.86" fill="#000"/><circle cx="56.421" cy="224.078" r="13.86" fill="#000"/><circle cx="112.44" cy="0" r="13.86" fill="#000"/><circle cx="112.44" cy="224.078" r="13.86" fill="#000"/><circle cx="168.459" cy="0" r="13.86" fill="#000"/><circle cx="168.459" cy="224.078" r="13.86" fill="#000"/><circle cx="0.402" cy="56.02" r="13.86" fill="#000"/><circle cx="224.478" cy="56.02" r="13.86" fill="#000"/><circle cx="0.402" cy="112.039" r="13.86" fill="#000"/><circle cx="224.478" cy="112.039" r="13.86" fill="#000"/><circle cx="0.402" cy="168.059" r="13.86" fill="#000"/><circle cx="224.478" cy="168.059" r="13.86" fill="#000"/></mask></defs><rect x="0.402" y="0" width="224.076" height="224.078" fill="#333366" mask="url(#clg-m)"/><rect x="20.652" y="0.262" width="17.188" height="223.547" fill="#626286"/><g fill="#fff"><rect x="79.871" y="48.027" width="66.711" height="9.637"/><rect x="108.41" y="48.027" width="9.641" height="66.711"/><rect x="100.184" y="110.387" width="26.098" height="4.363"/><path transform="translate(87.3771 137.3581)" d="M 5.546875 -14.09375 L 0.09375 -14.09375 L 0.09375 -15.515625 L 12.640625 -15.515625 L 12.640625 -14.09375 L 7.1875 -14.09375 L 7.1875 0 L 5.546875 0 Z M 5.546875 -14.09375"/><path transform="translate(104.6725 137.3581)" d="M 9.3125 0.140625 C 7.769531 0.140625 6.375 -0.203125 5.125 -0.890625 C 3.882812 -1.578125 2.910156 -2.519531 2.203125 -3.71875 C 1.503906 -4.914062 1.15625 -6.265625 1.15625 -7.765625 C 1.15625 -9.253906 1.503906 -10.597656 2.203125 -11.796875 C 2.910156 -12.992188 3.882812 -13.9375 5.125 -14.625 C 6.375 -15.3125 7.769531 -15.65625 9.3125 -15.65625 C 10.851562 -15.65625 12.238281 -15.3125 13.46875 -14.625 C 14.707031 -13.945312 15.679688 -13.003906 16.390625 -11.796875 C 17.097656 -10.597656 17.453125 -9.253906 17.453125 -7.765625 C 17.453125 -6.265625 17.097656 -4.910156 16.390625 -3.703125 C 15.679688 -2.503906 14.707031 -1.5625 13.46875 -0.875 C 12.238281 -0.195312 10.851562 0.140625 9.3125 0.140625 Z M 9.3125 -1.328125 C 10.539062 -1.328125 11.648438 -1.601562 12.640625 -2.15625 C 13.628906 -2.71875 14.40625 -3.488281 14.96875 -4.46875 C 15.53125 -5.445312 15.8125 -6.546875 15.8125 -7.765625 C 15.8125 -8.972656 15.53125 -10.066406 14.96875 -11.046875 C 14.40625 -12.035156 13.628906 -12.804688 12.640625 -13.359375 C 11.648438 -13.910156 10.539062 -14.1875 9.3125 -14.1875 C 8.082031 -14.1875 6.96875 -13.910156 5.96875 -13.359375 C 4.976562 -12.804688 4.195312 -12.035156 3.625 -11.046875 C 3.050781 -10.066406 2.765625 -8.972656 2.765625 -7.765625 C 2.765625 -6.546875 3.050781 -5.445312 3.625 -4.46875 C 4.195312 -3.488281 4.976562 -2.71875 5.96875 -2.15625 C 6.96875 -1.601562 8.082031 -1.328125 9.3125 -1.328125 Z M 9.3125 -1.328125"/><path transform="translate(127.8441 137.3581)" d="M 5.546875 -14.09375 L 0.09375 -14.09375 L 0.09375 -15.515625 L 12.640625 -15.515625 L 12.640625 -14.09375 L 7.1875 -14.09375 L 7.1875 0 L 5.546875 0 Z M 5.546875 -14.09375"/><path transform="translate(71.8388 168.2755)" d="M 18.59375 -2.640625 L 18.59375 0 L 3.1875 0 L 3.1875 -21.234375 L 18.171875 -21.234375 L 18.171875 -18.59375 L 6.21875 -18.59375 L 6.21875 -12.078125 L 16.875 -12.078125 L 16.875 -9.5 L 6.21875 -9.5 L 6.21875 -2.640625 Z M 18.59375 -2.640625"/><path transform="translate(97.1635 168.2755)" d="M 21.453125 -21.234375 L 21.453125 0 L 18.421875 0 L 18.421875 -9.46875 L 6.21875 -9.46875 L 6.21875 0 L 3.1875 0 L 3.1875 -21.234375 L 6.21875 -21.234375 L 6.21875 -12.109375 L 18.421875 -12.109375 L 18.421875 -21.234375 Z M 21.453125 -21.234375"/><path transform="translate(126.7951 168.2755)" d="M 22.875 0 L 22.84375 -15.46875 L 15.171875 -2.578125 L 13.78125 -2.578125 L 6.09375 -15.390625 L 6.09375 0 L 3.1875 0 L 3.1875 -21.234375 L 5.671875 -21.234375 L 14.53125 -6.3125 L 23.28125 -21.234375 L 25.765625 -21.234375 L 25.796875 0 Z M 22.875 0"/></g></svg></a>
+<div id="rdr-mode" role="group" aria-label="Radar, grid or shorts">
+  <button type="button" data-rmode="radar" class="is-on" aria-pressed="true">radar</button>
+  <button type="button" data-rmode="grid" aria-pressed="false">grid</button>
+  <button type="button" data-rmode="shorts" aria-pressed="false">shorts</button>
 </div>
 <div id="rdr-flt" role="group" aria-label="Spots: filters"></div>
 <p id="rdr-say" role="status" aria-live="polite"></p>
 
 <section class="view is-on" id="v-radar" aria-label="Radar">
-  <canvas id="canvas"></canvas>
-  <div class="empty hide" id="radar-empty"></div>
+  <div class="rd-top">
+    <canvas id="canvas"></canvas>
+    <div class="empty hide" id="radar-empty"></div>
+    <div id="radar-tools" role="group" aria-label="Radar controls">
+      <button id="cmp" class="chip" type="button" aria-label="Compass">000° N<br>turn the ring</button>
+      <button id="rdr-down" class="chip" type="button" hidden>spots ↓</button>
+      <button id="rdr-here" class="chip" type="button" aria-label="My position">◎</button>
+    </div>
+  </div>
+  <div id="rdr-list" aria-label="Spots around me"></div>
 </section>
 <div id="rdr-plus" hidden><button type="button" class="tl tl-add" data-nspot="" aria-label="Add a spot"><b aria-hidden="true">+</b><span>spot</span></button></div>
 <section class="view" id="v-grid" aria-label="Spots grid"><div id="rdr-g-f"></div></section>
-
-<div id="radar-tools" role="group" aria-label="Radar controls">
-  <button id="cmp" class="chip" type="button" aria-label="Compass">000° N<br>turn the ring</button>
-  <button id="rdr-here" class="chip" type="button" aria-label="My position">◎</button>
-</div>
+<section class="view" id="v-shorts" aria-label="Spots shorts"><div id="rdr-sh-f"></div></section>
 
 <aside id="rdr-sf" class="sf" role="dialog" aria-label="Spots: filters" hidden></aside>
 <aside id="rdr-new" class="sf" role="dialog" aria-label="Add a spot" hidden></aside>
@@ -281,7 +330,7 @@ const sb = createClient(SB_URL, SB_ANON);
 const $ = id => document.getElementById(id);
 const esc = s => { const d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; };
 const COM = 'https://www.totehm.com';
-const BUILD = '2026-11-10-coin-membre';
+const BUILD = '2026-11-10-figher-v2';
 
 /* ══ AUDIENCE — 13/10 : trois niveaux, une pastille. COPIÉ tel quel depuis tools/audience_ui.js
    (jamais importé). PRIVATE = moi · FIGHER CLUB = les membres · MY SUBSCRIBERS = mes abonnés ;
@@ -477,14 +526,15 @@ let RULES = { clip_seconds:33, clip_max_bytes:48000000, duration_min:5, duration
 let DETAIL = null, suppressClickUntil = 0;
 const store = { get(k){ try{ return localStorage.getItem(k); }catch(_){ return null; } }, set(k, v){ try{ localStorage.setItem(k, v); }catch(_){} } };
 
-/* ══ LE MODE : RADAR ou GRID ══ Le choix tient d'une visite à l'autre ; les deux lisent le MÊME objet. */
+/* ══ LE MODE : RADAR · GRID · SHORTS ══ Le choix tient d'une visite à l'autre ; les trois lisent le MÊME objet. */
+const MODES = ['radar', 'grid', 'shorts'];
 const MODE = (() => {
   const CLE = 'figher_mode';
   let m = 'radar';
-  try{ const v = store.get(CLE); if(v === 'radar' || v === 'grid') m = v; }catch(_){}
+  try{ const v = store.get(CLE); if(MODES.includes(v)) m = v; }catch(_){}
   const abon = [];
   return { get:()=>m,
-    set(x){ if((x !== 'radar' && x !== 'grid') || x === m) return; m = x; store.set(CLE, x); abon.forEach(f => { try{ f(x); }catch(_){} }); },
+    set(x){ if(!MODES.includes(x) || x === m) return; m = x; store.set(CLE, x); abon.forEach(f => { try{ f(x); }catch(_){} }); },
     sur(f){ if(typeof f === 'function') abon.push(f); } };
 })();
 
@@ -494,7 +544,7 @@ const MODE = (() => {
    partent au SERVEUR, et la PARENTÉ (`akin`) trie les plus proches de la Habit choisie d'abord. */
 const CLUBSP = (() => {
   const PER = ['past','now','future'];
-  const st = { per:'now', items:[], total:0, more:false, off:0, asOf:null, seq:0, charge:false, lu:false, auto:true,
+  const st = { per:'now', items:[], total:0, more:false, off:0, asOf:null, seq:0, charge:false, lu:false, auto:true, elargi:false,
                err:'', at:0, srv:{intentions:[], type:'all', scope:'world', mode:'all', akin:'', exact:false, rayon:50} };
   const abon = [];
   const prevenir = () => abon.forEach(f => { try{ f(); }catch(e){ console.error('[clubsp]', e && e.message || e); } });
@@ -523,7 +573,13 @@ const CLUBSP = (() => {
     const l = Array.isArray(data.items) ? data.items : [];
     /* RIEN MAINTENANT ? À l'ARRIVÉE seulement, on montre ce qui vient, puis ce qui a été : une vue vide
        quand le Club a des spots, c'est une vue qui ment. Un choix du membre n'est jamais contredit. */
-    if(!suite && st.auto && !l.length && !Object.keys(f).length){
+    if(!suite && st.auto && !l.length && !Object.keys(f).some(k => k !== 'scope' && k !== 'radius_km')){
+      /* À l'arrivée, PRÈS DE MOI d'abord (Wah : « figher.club, c'est trouver un spot accompagné ») : maintenant,
+         puis bientôt ; rien autour → tout le Club, et la barre le DIT. */
+      if(f.scope === 'near'){
+        if(st.per === 'now'){ st.per = 'future'; return lire(false); }
+        st.srv.scope = 'world'; st.per = 'now'; st.elargi = true; return lire(false);
+      }
       const nx = st.per === 'now' ? 'future' : st.per === 'future' ? 'past' : null;
       if(nx){ st.per = nx; return lire(false); }
     }
@@ -539,16 +595,17 @@ const CLUBSP = (() => {
     suite:()=>lire(true),
     periode(p){ if(!PER.includes(p)) return; st.auto = false; if(p === st.per) return;
       st.per = p; st.items = []; st.total = 0; st.more = false; st.asOf = null; prevenir(); lire(false); },
-    async regler(o){
-      st.err = '';
+    async regler(o, auto){
+      st.err = ''; st.elargi = false;
       if(o.scope === 'near' && !(await position())){ st.err = 'location'; o.scope = 'world'; }
       st.srv = { intentions:o.intentions || [], type:o.type || 'all', scope:o.scope || 'world', mode:o.mode || 'all',
                  akin:o.akin || '', exact:!!o.exact, rayon:o.rayon || 50 };
-      st.auto = false; st.asOf = null; lire(false);
+      st.auto = !!auto; if(auto) st.per = 'now'; st.asOf = null; lire(false);
       return st.srv.scope;
     },
     items:()=>st.items.slice(),
     get per(){ return st.per; }, get err(){ return st.err; }, get lu(){ return st.lu; }, get charge(){ return st.charge; },
+    get more(){ return st.more; }, get scope(){ return st.srv.scope; }, get elargi(){ return st.elargi; },
     get akin(){ return st.srv.akin; },
     PER, NOMS, ORDRE,
     montrer(p){ if(!PER.includes(p)) return; st.auto = false; st.per = p; st.items = []; st.total = 0; st.more = false;
@@ -557,7 +614,7 @@ const CLUBSP = (() => {
       if(st.items.length !== n){ st.total = Math.max(0, st.total - 1); prevenir(); } },
     sur(f){ if(typeof f === 'function') abon.push(f); },
     etat:()=>({ periode:st.per, items:st.items.length, total:st.total, more:st.more, lu:st.lu, err:st.err,
-                filtres:filtres(), charge:st.charge, rayon:st.srv.rayon })
+                filtres:filtres(), charge:st.charge, rayon:st.srv.rayon, elargi:st.elargi })
   };
 })();
 /* « Près de moi » demande la position : on la DEMANDE seulement au geste du membre. */
@@ -621,6 +678,17 @@ function spotHTML(z){
     + (z.comment ? '<p class="sd-say">' + esc(z.comment) + '</p>' : '') + '</div>'
     + (!z.mine && z.creator ? '<div class="by"><span>by</span><button class="tname" type="button" data-com="/@'
        + encodeURIComponent(z.creator) + '">' + esc(z.creator) + '</button></div>' : '');
+}
+
+/* Une ligne : l'état, le moment, la distance (ou la ville), together, la parenté — la liste du radar et les shorts. */
+function ligneSpot(z){
+  const state = spotState(z), st = new Date(z.starts_at), end = new Date(z.ends_at || st.getTime() + (z.duration_min || 0) * 60e3);
+  const when = state === 'will' ? 'I WILL BE HERE' : state === 'am' ? 'I AM HERE' : 'I WAS THERE';
+  const d = POS && z.exact && z.exact.lat != null ? fmtDist(hav(POS, z.exact)) : '';
+  return '<div class="sdata"><div class="sd-row">' + sdTag(when, 'is-st')
+    + sdTag(state === 'am' ? 'until ' + hhmm(end) : esc(dayOf(st)) + ' ' + hhmm(st))
+    + sdTag(d || esc(z.city || 'somewhere')) + (z.mode ? sdTag(z.mode === 'social' ? 'social · we can talk' : 'silent') : '')
+    + (kinMot(z) ? sdTag(kinMot(z)) : '') + '</div></div>';
 }
 
 /* ══ LA VIDÉO D'UN SPOT : BUNNY (HLS), SIGNÉE AU MOMENT DE JOUER ══ `bunny-video` rend une URL signée et
@@ -729,7 +797,7 @@ async function situer(){
   em.textContent = CLUBSP.charge ? 'reading the club…' : CLUBSP.err === 'location' ? 'allow my location'
     : CLUBSP.err ? 'the club is unreachable' : RAD.lieux.length ? '' : 'no spot ' + CLUBSP.per;
   em.classList.toggle('hide', !em.textContent || MODE.get() !== 'radar');
-  radarOn();
+  radarOn(); LISTE.peindre();
 }
 function paintCmp(){
   const h = Math.round(norm360(RAD.head)) % 360;
@@ -741,7 +809,7 @@ function draw(t){
   RAD.raf = 0;
   /* Un panneau ouvert ou un spot ouvert : le radar s'ARRÊTE — rien à montrer derrière, et la batterie
      du téléphone n'a pas à tourner pour ça. Il repart à la fermeture (`radarOn`). */
-  if(document.hidden || MODE.get() !== 'radar') return;
+  if(document.hidden || MODE.get() !== 'radar' || $('v-radar').scrollTop > RAD.H) return;
   if(document.body.classList.contains('is-nspot') || document.body.classList.contains('is-sf')) return;
   const moving = Math.abs(RAD.tx - RAD.cx) + Math.abs(RAD.ty - RAD.cy) + Math.abs(RAD.tr - RAD.rpx) > 1 || RAD.turn || RAD.headTo !== null;
   const fps = moving ? 60 : 15;
@@ -756,7 +824,8 @@ function draw(t){
   const layout = pos.join('|');
   if(tools._layout !== layout){ tools._layout = layout; tools.classList.add('is-placed');
     $('cmp').style.left = pos[0]; $('cmp').style.top = pos[2];
-    $('rdr-here').style.left = pos[1]; $('rdr-here').style.top = pos[2]; }
+    $('rdr-here').style.left = pos[1]; $('rdr-here').style.top = pos[2];
+    $('rdr-down').style.left = RAD.cx.toFixed(1) + 'px'; $('rdr-down').style.top = pos[2]; }
   paintCmp();
   const x = $('canvas').getContext('2d'), { dpr, cx, cy, rpx } = RAD;
   x.setTransform(dpr, 0, 0, dpr, 0, 0); if(RAD.dirty) x.clearRect(...RAD.dirty);
@@ -815,16 +884,18 @@ $('cmp').onclick = async () => {
 $('rdr-here').onclick = async () => { if(await position()){ RAD.headTo = 0; situer(); } else dire('allow my location'); };
 {
   const cv = $('canvas');
+  /* le repère du radar : le canevas DÉFILE avec la vue, ses coordonnées sont les siennes */
+  const ici = e => { const r = cv.getBoundingClientRect(); return { x:e.clientX - r.left, y:e.clientY - r.top }; };
   cv.addEventListener('pointerdown', e => {
-    const d = Math.hypot(e.clientX - RAD.cx, e.clientY - RAD.cy);
+    const q = ici(e), d = Math.hypot(q.x - RAD.cx, q.y - RAD.cy);
     if(d < RAD.rpx - 18 || d > RAD.rpx + 35) return;
     compassOff(); RAD.headTo = null;
-    RAD.turn = { id:e.pointerId, a:Math.atan2(e.clientX - RAD.cx, RAD.cy - e.clientY), h:RAD.head };
+    RAD.turn = { id:e.pointerId, a:Math.atan2(q.x - RAD.cx, RAD.cy - q.y), h:RAD.head };
     cv.setPointerCapture(e.pointerId); e.stopImmediatePropagation();
   });
   cv.addEventListener('pointermove', e => {
     if(!RAD.turn || e.pointerId !== RAD.turn.id) return;
-    const a = Math.atan2(e.clientX - RAD.cx, RAD.cy - e.clientY);
+    const q = ici(e), a = Math.atan2(q.x - RAD.cx, RAD.cy - q.y);
     RAD.head = norm360(RAD.turn.h - (a - RAD.turn.a) / DEG); suppressClickUntil = Date.now() + 500;
     e.preventDefault(); e.stopImmediatePropagation();
   });
@@ -832,12 +903,18 @@ $('rdr-here').onclick = async () => { if(await position()){ RAD.headTo = 0; situ
     cv.addEventListener(name, e => { if(RAD.turn?.id === e.pointerId){ RAD.turn = null; suppressClickUntil = Date.now() + 500; } });
   cv.addEventListener('click', e => {
     if(Date.now() < suppressClickUntil || RAD.turn) return;
-    let best = null, bd = 22;
-    for(const p of RAD.pts){ const d = Math.hypot(p.px - e.clientX, p.py - e.clientY); if(d < bd){ bd = d; best = p.z; } }
+    let best = null, bd = 22; const q = ici(e);
+    for(const p of RAD.pts){ const d = Math.hypot(p.px - q.x, p.py - q.y); if(d < bd){ bd = d; best = p.z; } }
     if(best) ouvrirDetail(best);
   });
 }
 addEventListener('resize', () => radarOn());
+$('v-radar').addEventListener('scroll', () => {
+  const y = $('v-radar').scrollTop;
+  document.body.classList.toggle('is-scrolled', y > 40);
+  if(y <= RAD.H) radarOn();
+}, { passive:true });
+$('rdr-down').onclick = () => $('rdr-list').scrollIntoView({ behavior:matchMedia('(prefers-reduced-motion:reduce)').matches ? 'auto' : 'smooth', block:'start' });
 
 /* ══ LA GRILLE — la même qu'à droite de COM : une tuile carrée par spot, sa box posée dessus ══ */
 const GRID = (() => {
@@ -892,6 +969,115 @@ const GRID = (() => {
     etat:()=>Object.assign({}, etat) };
 })();
 
+/* ══ SOUS LE RADAR — les spots autour de moi, du plus proche au plus loin ══ Wah : « sur la vue grid et radar on doit
+   pouvoir défiler aisément le contenu ». Le radar reste en haut ; dessous, les MÊMES spots en lignes (box + où, quand,
+   together) ; un tap ouvre le spot. Pagination : la dernière ligne à l'écran demande la suite. */
+const LISTE = (() => {
+  const etat = { lignes:0 };
+  let L = [], io = null;
+  function peindre(){
+    const b = $('rdr-list'); if(!b) return;
+    const items = CLUBSP.items(), c = centre();
+    const dist = new Map(RAD.lieux.map(x => [String(x.z.id), c ? hav(c, x.p) : null]));
+    L = c ? items.slice().sort((a, z) => (dist.get(String(a.id)) ?? 1e12) - (dist.get(String(z.id)) ?? 1e12)) : items;
+    etat.lignes = L.length;
+    if(io){ io.disconnect(); io = null; }
+    const d = $('rdr-down');
+    if(d){ d.hidden = !L.length; d.textContent = L.length + (CLUBSP.more ? '+' : '') + (L.length > 1 ? ' spots' : ' spot') + ' ↓'; }
+    if(!L.length){ b.innerHTML = ''; return; }
+    b.innerHTML = '<p class="sfl">' + (POS && CLUBSP.scope === 'near' ? 'around me' : 'the club') + ' · ' + CLUBSP.NOMS[CLUBSP.per] + '</p>'
+      + L.map((z, i) => '<article class="rl" data-cle="' + esc(String(z.id)) + '" data-i="' + i + '" tabindex="0" role="button" aria-label="'
+        + esc(z.habit || 'spot') + '">' + boxSpot(z, true) + ligneSpot(z) + '</article>').join('');
+    const der = b.querySelector('.rl:last-child');
+    if(der && CLUBSP.more){ io = new IntersectionObserver(es => { if(es.some(x => x.isIntersecting)) CLUBSP.suite(); },
+      { root:$('v-radar'), rootMargin:'400px 0px' }); io.observe(der); }
+  }
+  { const b = $('rdr-list');
+    b.addEventListener('click', e => { const t = e.target.closest('.rl[data-cle]'); if(!t) return;
+      const z = L.find(x => String(x.id) === t.dataset.cle); if(z) ouvrirDetail(z); });
+    b.addEventListener('keydown', e => { const t = e.target.closest && e.target.closest('.rl[data-cle]');
+      if(t && (e.key === 'Enter' || e.key === ' ')){ e.preventDefault(); t.click(); } }); }
+  return { peindre, etat:()=>Object.assign({}, etat) };
+})();
+
+/* ══ SHORTS — un spot par écran, son média à la verticale ══ Wah : « une vue Shorts en affichant verticalement les
+   vidéos-spot ». Les MÊMES spots que le radar et la grille (mêmes filtres), ceux qui portent un média, aimantés un par
+   écran. UN seul joue : celui qui est à l'écran ; le suivant se prépare (il démarre sans attendre) ; tout le reste
+   est LÂCHÉ (Bunny : rien ne coule hors de l'écran). Un tap sur l'image : le son ; un tap sur la box : le spot. */
+const SHORTS = (() => {
+  const etat = { cartes:0, joues:0, son:false };
+  let L = [], io = null, courant = null, tSon = 0;
+  const aMedia = z => !!((z.clip && z.clip.id) || z.photo || z.video);
+  function carte(z, i){
+    const clip = z.clip && z.clip.id ? String(z.clip.id) : '';
+    const m = clip ? '<video data-bunny="' + esc(clip) + '" data-spot="' + esc(String(z.id)) + '" playsinline muted loop preload="none"></video>'
+      : z.photo ? '<img alt="" data-moment="' + esc(String(z.photo)) + '" decoding="async">'
+      : '<video data-moment-v="' + esc(String(z.video)) + '" playsinline muted loop preload="none"></video>';
+    return '<article class="sh" data-cle="' + esc(String(z.id)) + '" data-i="' + i + '"><div class="sh-m">' + m
+      + '<span class="video-status note"></span></div><div class="sh-b" role="button" tabindex="0" aria-label="Open the spot">'
+      + boxSpot(z, true) + ligneSpot(z) + '</div></article>';
+  }
+  async function charger(el){
+    if(!el) return null;
+    const b = el.querySelector('video[data-bunny]'); if(b){ await BUNNY.poser(b); return b; }
+    const i = el.querySelector('img[data-moment]');
+    if(i){ if(!i.getAttribute('src')){ const u = await urlMoments(i.dataset.moment); if(u && i.isConnected){ i.onerror = () => i.remove(); i.src = u; } } return null; }
+    const v = el.querySelector('video[data-moment-v]');
+    if(v && !v.getAttribute('src')){ const u = await urlMoments(v.dataset.momentV); if(u && v.isConnected){ v.preload = 'auto'; v.src = u; } }
+    return v;
+  }
+  function lacher(el){ if(el) el.querySelectorAll('video').forEach(v => { try{ v.pause(); }catch(_){} if(v.dataset.bunny) BUNNY.lacher(v); }); }
+  function jouer(el){
+    if(courant === el) return;
+    const avant = courant; courant = el; etat.joues++;
+    /* l'écran d'avant se tait ; seuls lui, le précédent et le suivant gardent leur flux */
+    if(avant) avant.querySelectorAll('video').forEach(v => { try{ v.pause(); }catch(_){} });
+    const i = +el.dataset.i;
+    $('rdr-sh-f').querySelectorAll('.sh').forEach(x => { if(Math.abs(+x.dataset.i - i) > 1) lacher(x); });
+    charger(el).then(v => { if(!v || courant !== el || !v.isConnected) return; v.muted = !etat.son; v.play().catch(() => {}); });
+    charger(el.nextElementSibling);
+    if(i >= L.length - 3) CLUBSP.suite();
+  }
+  const cle = l => l.map(z => String(z.id)).join('|');
+  function peindre(){
+    const b = $('rdr-sh-f'); if(!b) return;
+    const n = CLUBSP.items().filter(aMedia);
+    /* la suite d'une page s'AJOUTE : rien ne se recharge sous le doigt */
+    if(L.length && n.length > L.length && cle(n.slice(0, L.length)) === cle(L) && b.querySelector('.sh')){
+      const plus = n.slice(L.length); L = n; etat.cartes = L.length;
+      b.insertAdjacentHTML('beforeend', plus.map((z, k) => carte(z, L.length - plus.length + k)).join(''));
+      b.querySelectorAll('.sh:not([data-vu])').forEach(el => { el.dataset.vu = '1'; if(io) io.observe(el); });
+      return;
+    }
+    if(cle(n) === cle(L) && b.childElementCount) return;
+    arreter(); L = n; etat.cartes = L.length;
+    if(io){ io.disconnect(); io = null; }
+    b.innerHTML = L.length ? L.map(carte).join('')
+      : '<div class="sh-vide"><p class="note">' + (CLUBSP.charge ? 'reading the club…' : 'no spot video ' + CLUBSP.NOMS[CLUBSP.per]) + '</p>'
+        + (me ? '<button type="button" class="sfc" data-nspot="">+ spot</button>' : '') + '</div>';
+    io = new IntersectionObserver(es => es.forEach(en => { if(en.isIntersecting && en.intersectionRatio >= .6) jouer(en.target); }),
+      { root:$('v-shorts'), threshold:[0, .6] });
+    b.querySelectorAll('.sh').forEach(el => { el.dataset.vu = '1'; io.observe(el); });
+  }
+  function arreter(){ if(courant){ lacher(courant); courant = null; } }
+  { const s = $('v-shorts');
+    s.addEventListener('click', e => {
+      if(e.target.closest('[data-nspot]')){ e.stopPropagation(); return NSPOT.ouvrir(); }
+      const bx = e.target.closest('.sh-b');
+      if(bx){ const z = L.find(x => String(x.id) === bx.closest('.sh').dataset.cle); if(z) ouvrirDetail(z); return; }
+      const m = e.target.closest('.sh-m'); if(!m) return;
+      etat.son = !etat.son; const v = m.querySelector('video');
+      if(v){ v.muted = !etat.son; if(v.paused) v.play().catch(() => {}); }
+      dire(etat.son ? 'sound on' : 'sound off'); clearTimeout(tSon); tSon = setTimeout(() => dire(''), 1200);
+    });
+    s.addEventListener('keydown', e => { const t = e.target.closest && e.target.closest('.sh-b');
+      if(t && (e.key === 'Enter' || e.key === ' ')){ e.preventDefault(); t.click(); } }); }
+  return { peindre, maj(){ if(MODE.get() === 'shorts') peindre(); }, arreter,
+    pause(){ if(courant) courant.querySelectorAll('video').forEach(v => { try{ v.pause(); }catch(_){} }); },
+    reprendre(){ if(!courant || MODE.get() !== 'shorts') return; const v = courant.querySelector('video'); if(v && v.getAttribute('src')) v.play().catch(() => {}); },
+    etat:()=>Object.assign({ courant:courant ? +courant.dataset.i : -1 }, etat) };
+})();
+
 /* ══ MES HABITS — la source du filtre ET de la prise (`space_habits` : mes boxes, telles quelles) ══ */
 let HABITS = null, habitsEnCours = null;
 function mesHabits(){
@@ -906,21 +1092,23 @@ function mesHabits(){
 }
 const dire = t => { const s = $('rdr-say'); if(s) s.textContent = t || ''; };
 
-/* ══ LE FILTRE DE FIGHER.CLUB · 09/11/2026 ═══════════════════════════════════════════════════════
-   Wah : « quand l'utilisateur choisit une habitude de son Totehm dans le filtre, il souhaite voir des
-   spots avec des Habits de Totehm SIMILAIRE ». Donc une Habit choisie ouvre d'abord ses PARENTES, les
-   plus proches d'abord (le serveur calcule `akin` : radicaux, trigrammes, intentions, pilier — zéro
-   centime), et chaque spot DIT pourquoi il répond. [exactly] referme sur cette Habit seule.
-   Le reste sert à se rencontrer : le temps, les intentions, ce que ça montre, où, et avec qui on peut parler. */
+/* ══ LE FILTRE DE FIGHER.CLUB · 10/11/2026 ═══════════════════════════════════════════════════════
+   Wah : « le format, c'est celui de la vue de droite de totehm.com ; le contenu, tu peux beaucoup mieux faire ».
+   Le MÊME panneau que totehm.com (les Habits en box du TOTEHM, des puces grises ajustées à leur mot, « Fight [Higher] »),
+   et ce qui sert à TROUVER UN SPOT ACCOMPAGNÉ, dans cet ordre :
+     Habits   les miennes → les spots dont la Habit leur RESSEMBLE (`akin`, le serveur trie et dit pourquoi) ;
+              [exactly this one] referme sur elle seule (`habit`)
+     When     now · past · future
+     Where    near me (posé dès l'arrivée si la position est donnée) et son rayon · world
+     Together social · we can talk | silent · nobody disturb me — se rencontrer, ou non
+     Intentions · It shows
+   « Mood » est parti : les quatre piliers redisaient les sept intentions. Tout part au SERVEUR. */
 const RAYONS = [5, 20, 50, 200];
-const SF = { ints:new Set(), piliers:new Set(), type:'', ou:'', rayon:50, mode:'', akin:'', exact:false };
-const PILIERS = ['BODY','MENTAL','SOUL','SPIRIT'];
-const sfCount = () => SF.ints.size + SF.piliers.size + (SF.type ? 1 : 0) + (SF.ou ? 1 : 0) + (SF.mode ? 1 : 0) + (SF.akin ? 1 : 0);
-function sfIntsActives(){
-  const s = new Set(SF.ints);
-  SF.piliers.forEach(p => Object.keys(INTS).filter(i => INTS[i].pillar === p).forEach(i => s.add(i)));
-  return s;
-}
+const SF = { ints:new Set(), type:'', ou:'', rayon:50, mode:'', akin:'', exact:false, touche:false };
+const INT_ORDRE = ['fight','flow','enrich','love','express','focus','celebrate'];   /* l'ordre de totehm.com */
+const sfCount = () => SF.ints.size + (SF.type ? 1 : 0) + (SF.ou ? 1 : 0) + (SF.mode ? 1 : 0) + (SF.akin ? 1 : 0);
+const sfOpts = () => ({ intentions:[...SF.ints], type:SF.type || 'all', scope:SF.ou || 'world', mode:SF.mode || 'all',
+                        akin:SF.akin, exact:SF.exact, rayon:SF.rayon });
 const sfOuvert = () => !$('rdr-sf').hidden;
 function peindreBarre(){
   const r = $('rdr-flt'); if(!r) return;
@@ -931,34 +1119,34 @@ function peindreBarre(){
   if(r.dataset.h === h) return;
   r.dataset.h = h; r.innerHTML = h;
 }
+/* une Habit au format du TOTEHM : son nom, ses intentions, son rythme, ses objectifs et répulsions */
+const boxHabit = x => '<div class="habit">' + tickHTML(x.ints) + '<span class="h-body"><span class="v-col">' + habitInner(x, false) + '</span></span></div>';
 function sfPaint(){
   const p = $('rdr-sf'); if(!p || p.hidden) return;
-  const c = (attr, mot, on, sous) => '<button type="button" class="sfc' + (on ? ' is-on' : '') + '" ' + attr + ' aria-pressed="' + !!on + '">'
-    + esc(mot) + (sous ? '<small>' + esc(sous) + '</small>' : '') + '</button>';
+  const c = (attr, mot, on, sous) => '<button type="button" class="sfc' + (sous ? ' ns-c' : '') + (on ? ' is-on' : '') + '" ' + attr
+    + ' aria-pressed="' + !!on + '">' + esc(mot) + (sous ? '<small>' + esc(sous) + '</small>' : '') + '</button>';
   const g = (lab, inner) => inner ? '<div class="sfg"><div class="sfl">' + esc(lab) + '</div><div class="sfr">' + inner + '</div></div>' : '';
-  const chipInt = i => '<button type="button" class="sfc is-int' + (SF.ints.has(i) ? ' is-on' : '') + '" data-sf="int" data-v="' + i + '"'
-    + ' aria-pressed="' + SF.ints.has(i) + '" style="--c:' + INTS[i].c + '">' + esc(INTS[i].n) + '</button>';
-  /* MES HABITS, au format du TOTEHM. Une choisie → ses parentes ; [exactly] → elle seule. */
-  let h = '<div class="sfg"><div class="sfl">my habits</div><div class="sfbx">';
-  if(!me) h += '<p class="note">connect with my TOTEHM to search by my own habits</p>';
-  else if(!HABITS) h += '<p class="note">reading my TOTEHM…</p>';
-  else if(!HABITS.length) h += '<p class="note">write a Habit in my TOTEHM first</p>';
+  const chipInt = i => '<button type="button" class="sfc sfi' + (SF.ints.has(i) ? ' is-on' : '') + '" data-sf="int" data-v="' + i + '"'
+    + ' aria-pressed="' + SF.ints.has(i) + '" style="--c:' + INTS[i].c + '"><i aria-hidden="true"></i>' + esc(INTS[i].n)
+    + '<svg class="sfh" viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-badge"></use></svg></button>';
+  let h = '<div class="sfg"><div class="sfl">Habits</div><div class="sfbx">';
+  if(!me) h += '<p class="ns-def">connect with my TOTEHM to find the spots of habits like mine</p>';
+  else if(!HABITS) h += '<p class="ns-def">reading my TOTEHM…</p>';
+  else if(!HABITS.length) h += '<p class="ns-def">write a Habit in my TOTEHM first</p>';
   else h += HABITS.map(x => '<div class="sfb' + (SF.akin === x.name ? ' is-on' : '') + '" role="button" tabindex="0" data-sf="habit"'
-    + ' data-v="' + esc(x.name) + '" aria-pressed="' + (SF.akin === x.name) + '">'
-    + '<div class="habit">' + tickHTML(x.ints) + '<span class="h-body"><span class="v-col">' + habitInner(x, true) + '</span></span></div></div>').join('');
+    + ' data-v="' + esc(x.name) + '" aria-pressed="' + (SF.akin === x.name) + '">' + boxHabit(x) + '</div>').join('');
   h += '</div></div>';
   if(SF.akin) h += g('how close', c('data-sf="near" data-v="akin"', 'akin habits', !SF.exact, 'the closest first')
     + c('data-sf="near" data-v="exact"', 'exactly this one', SF.exact, 'nothing else'));
   h += g('When', CLUBSP.ORDRE.map(q => c('data-sf="per" data-v="' + q + '"', CLUBSP.NOMS[q], CLUBSP.per === q)).join(''));
-  h += g('Intentions', CHAKRA.map(chipInt).join(''));
-  h += g('Mood', PILIERS.map(x => c('data-sf="pil" data-v="' + x + '"', x.toLowerCase(), SF.piliers.has(x))).join(''));
-  h += g('It shows', c('data-sf="type" data-v="photo"', 'photo', SF.type === 'photo') + c('data-sf="type" data-v="video"', 'video', SF.type === 'video'));
-  h += g('Together', c('data-sf="mode" data-v="social"', 'social', SF.mode === 'social', 'we can talk')
-    + c('data-sf="mode" data-v="silent"', 'silent', SF.mode === 'silent', 'nobody disturb me'));
   const pres = SF.ou === 'near' && CLUBSP.err !== 'location';
   h += g('Where', c('data-sf="ou" data-v=""', 'world', !SF.ou) + c('data-sf="ou" data-v="near"', 'near me', SF.ou === 'near')
     + (pres ? RAYONS.map(r => c('data-sf="rayon" data-v="' + r + '"', r + ' km', SF.rayon === r)).join('') : '')
-    + (SF.ou === 'near' && CLUBSP.err === 'location' ? '<span class="note">allow my location</span>' : ''));
+    + (SF.ou === 'near' && CLUBSP.err === 'location' ? '<span class="ns-tag">allow my location</span>' : ''));
+  h += g('Together', c('data-sf="mode" data-v="social"', 'social', SF.mode === 'social', 'we can talk')
+    + c('data-sf="mode" data-v="silent"', 'silent', SF.mode === 'silent', 'nobody disturb me'));
+  h += g('Intentions', INT_ORDRE.map(chipInt).join(''));
+  h += g('It shows', c('data-sf="type" data-v="photo"', 'photo', SF.type === 'photo') + c('data-sf="type" data-v="video"', 'video', SF.type === 'video'));
   h += '<div class="sfg"><div class="sfr sfa"><button type="button" class="sfc" data-sf="all">ALL</button>'
     + '<button type="button" class="sfc" data-sf="close">CLOSE</button></div></div>';
   p.innerHTML = h;
@@ -966,12 +1154,12 @@ function sfPaint(){
 function sfOpen(open){
   const p = $('rdr-sf'); if(!p) return;
   p.hidden = !open; document.body.classList.toggle('is-sf', !!open);
-  if(open) mesHabits().then(() => sfPaint()); else radarOn();
+  if(open){ p.scrollTop = 0; mesHabits().then(() => sfPaint()); } else radarOn();
   sfPaint(); peindreBarre();
 }
 function sfApply(){
-  CLUBSP.regler({ intentions:[...sfIntsActives()], type:SF.type || 'all', scope:SF.ou || 'world', mode:SF.mode || 'all',
-                  akin:SF.akin, exact:SF.exact, rayon:SF.rayon }).then(() => { sfPaint(); peindreBarre(); });
+  SF.touche = true;
+  CLUBSP.regler(sfOpts()).then(() => { if(CLUBSP.scope !== 'near' && SF.ou === 'near') SF.ou = ''; sfPaint(); peindreBarre(); });
   sfPaint(); peindreBarre();
 }
 {
@@ -982,12 +1170,11 @@ function sfApply(){
     const t = e.target.closest('[data-sf]'); if(!t) return;
     const k = t.dataset.sf, v = t.dataset.v;
     if(k === 'close') return sfOpen(false);
-    if(k === 'all'){ SF.ints.clear(); SF.piliers.clear(); SF.type = ''; SF.ou = ''; SF.mode = ''; SF.akin = ''; SF.exact = false; return sfApply(); }
+    if(k === 'all'){ SF.ints.clear(); SF.type = ''; SF.ou = ''; SF.mode = ''; SF.akin = ''; SF.exact = false; return sfApply(); }
     if(k === 'habit'){ SF.akin = SF.akin === v ? '' : v; SF.exact = false; return sfApply(); }
     if(k === 'near'){ SF.exact = v === 'exact'; return sfApply(); }
-    if(k === 'per'){ CLUBSP.periode(v); sfPaint(); peindreBarre(); return; }
+    if(k === 'per'){ SF.touche = true; CLUBSP.periode(v); sfPaint(); peindreBarre(); return; }
     if(k === 'int'){ SF.ints.has(v) ? SF.ints.delete(v) : SF.ints.add(v); return sfApply(); }
-    if(k === 'pil'){ SF.piliers.has(v) ? SF.piliers.delete(v) : SF.piliers.add(v); return sfApply(); }
     if(k === 'type'){ SF.type = SF.type === v ? '' : v; return sfApply(); }
     if(k === 'mode'){ SF.mode = SF.mode === v ? '' : v; return sfApply(); }
     if(k === 'ou'){ SF.ou = v || ''; return sfApply(); }
@@ -1015,7 +1202,7 @@ function mediaHTML(z){
   return '';
 }
 async function ouvrirDetail(z){
-  DETAIL = z;
+  DETAIL = z; SHORTS.pause();
   const d = $('detail');
   d.innerHTML = mediaHTML(z) + spotHTML(z) + actsHTML(z);
   d.classList.add('is-open'); document.body.classList.add('is-detail');
@@ -1028,7 +1215,7 @@ async function ouvrirDetail(z){
 function fermerDetail(){
   const d = $('detail');
   d.querySelectorAll('video').forEach(v => BUNNY.lacher(v));
-  d.classList.remove('is-open'); document.body.classList.remove('is-detail'); DETAIL = null;
+  d.classList.remove('is-open'); document.body.classList.remove('is-detail'); DETAIL = null; SHORTS.reprendre();
   setTimeout(() => { if(!DETAIL) d.innerHTML = ''; }, 340);
 }
 function actsSay(button, text, creator){
@@ -1090,6 +1277,49 @@ addEventListener('keydown', e => {
   if(DETAIL){ e.preventDefault(); fermerDetail(); }
 });
 
+/* ══ LA VIDÉO PART CHEZ BUNNY — copié de tools/bunny_upload.js dans chaque page (jamais importé) ══
+   Bunny Stream découpe la vidéo en cinq qualités (240p → 1080p) et la sert en HLS signé depuis le point du CDN le plus
+   proche : elle démarre tout de suite et s'adapte au réseau, comme TikTok. L'envoi est TUS : par morceaux de 6 Mo,
+   repris après une coupure. Compte pas prêt (`create-bunny-upload` → available:false) : `dispo()` dit non et la page
+   garde le seau `moments`. Rend la référence que le serveur attend : 'bunny:<id>'. */
+function bunnyEnvoi(sb){
+  let pret = null;
+  const appel = async (nom, body) => { const { data, error } = await sb.functions.invoke(nom, { body }); if(error) throw error; return data; };
+  const dispo = () => pret ||= appel('create-bunny-upload', { action:'status' }).then(d => !!(d && d.available))
+    .catch(e => { console.error('[bunny status]', e && e.message || e); pret = null; return false; });
+  async function envoyer(blob, secondes, progres){
+    const c = await appel('create-bunny-upload', { bytes:blob.size, seconds:secondes });
+    const h = { ...c.headers, 'Tus-Resumable':'1.0.0' };
+    const meta = 'filetype ' + btoa(blob.type || 'video/mp4') + ',title ' + btoa('Spot ' + c.id);
+    const debut = await fetch(c.endpoint, { method:'POST', headers:{ ...h, 'Upload-Length':String(blob.size), 'Upload-Metadata':meta } });
+    if(!debut.ok) throw new Error('upload could not start');
+    const url = new URL(debut.headers.get('Location'), c.endpoint);
+    if(url.origin !== 'https://video.bunnycdn.com') throw new Error('upload address invalid');
+    let off = 0, essais = 0;
+    while(off < blob.size){
+      try{
+        const r = await fetch(url, { method:'PATCH', headers:{ ...h, 'Upload-Offset':String(off), 'Content-Type':'application/offset+octet-stream' },
+          body:blob.slice(off, off + 6 * 1024 * 1024) });
+        if(!r.ok) throw new Error('upload interrupted');
+        const n = Number(r.headers.get('Upload-Offset'));
+        if(!Number.isFinite(n) || n <= off || n > blob.size) throw new Error('upload offset invalid');
+        off = n; essais = 0; if(progres) progres(Math.round(off / blob.size * 100));
+      }catch(e){
+        if(++essais > 3) throw e;
+        await new Promise(r => setTimeout(r, Math.min(4000, essais * 1000)));
+        const t = await fetch(url, { method:'HEAD', headers:h });
+        if(!t.ok) continue;
+        const n = Number(t.headers.get('Upload-Offset')); if(Number.isInteger(n) && n >= 0 && n <= blob.size) off = n;
+      }
+    }
+    const d = await appel('bunny-video', { id:c.id, action:'complete' });
+    if(!d || !['processing','ready'].includes(d.status)) throw new Error('video could not be processed');
+    return 'bunny:' + c.id;
+  }
+  return { dispo, envoyer, oublier:() => { pret = null; } };
+}
+const VID = bunnyEnvoi(sb);
+
 /* ══ PRENDRE UN SPOT, ICI ═══════════════════════════════════════════════════════════════════════
    Wah : « figher.club permet aussi de créer un spot sans forcément passer par totehm.com ». C'est le
    MÊME questionnaire que la vue de droite de totehm.com, dans la même logique : chaque question
@@ -1097,13 +1327,13 @@ addEventListener('keydown', e => {
      la Habit (ma box, telle quelle)
      WHEN   [now] → aucune date   |   [later] → la date ET l'heure, tout de suite
      WHERE  [here] = ma position  |   [elsewhere] = une ADRESSE, lue et placée ; NOW impose HERE
-     WHO SEES IT · TOGETHER · la durée · un mot · le média (obligatoire en NOW, c'est la preuve)
-   Le serveur décide de tout ; un spot NAÎT CACHÉ, `spot_box_set` montre sa box entière. */
+     TOGETHER · la durée · un mot · le média (obligatoire en NOW, c'est la preuve)
+   Publié d'ici, un spot est TOUJOURS visible par FIGHER CLUB (Wah) : « who sees it » ne se demande pas, il se montre.
+   Le serveur décide de tout ; un spot NAÎT CACHÉ, `spot_box_set` montre sa box entière. Une vidéo part chez Bunny
+   (`VID`, TUS) quand le compte est prêt ; sinon dans le seau `moments`. */
 const NSPOT = (() => {
   const DURS = [15, 30, 45, 60, 90, 120, 180];
-  const DEF = 'A spot is a Habit of your TOTEHM that becomes an action in space and time — one exact place, one exact moment.';
-  const CLUB = 'a habit, an objective, a repulsion — the closest thing to public.';
-  const QUI = [['private','private','me only'],['subscribers','my subscribers','only them'],['figher','figher club','every TOTEHM']];
+  const DEF = 'A spot is a Habit of your TOTEHM that becomes an action in one exact place, one exact moment.';
   const POURQUOI = { signin:'sign in again', habit:'save this Habit first', location:'where', mode:'silent or social',
     duration:'the duration', video:'the photo or the video', position:'allow my location', too_many:'enough spots for now',
     city:'no city near me', audience:'who sees it', when:'a future date and time', place:'where' };
@@ -1116,7 +1346,7 @@ const NSPOT = (() => {
   function neuf(){
     lacher(); seqPos++;
     const d = new Date(Date.now() + 864e5);
-    Object.assign(N, { h:null, quand:'', media:null, path:'', aud:'', mode:'', ou:'',
+    Object.assign(N, { h:null, quand:'', media:null, path:'', aud:'figher', mode:'', ou:'',
       pt:null, ptSrc:'', ptVille:'', ptNom:'', posErr:false, posBusy:false,
       adr:'', hits:[], hit:-1, adrBusy:false, adrErr:'', adrSeq:0,
       dur:0, mot:'', date:d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()),
@@ -1160,6 +1390,11 @@ const NSPOT = (() => {
     peindre();
   }
   async function envoyerMedia(m){
+    /* la vidéo chez Bunny : cinq qualités, le CDN le plus proche, elle démarre tout de suite ; refusée → `moments` */
+    if(!m.photo && await VID.dispo()){
+      try{ return await VID.envoyer(m.blob, m.secs, p => note2('sending… ' + p + ' %')); }
+      catch(e){ console.error('[bunny upload]', e && e.message || e); }
+    }
     const ext = m.photo ? 'jpg' : m.type.includes('mp4') ? 'mp4' : m.type.includes('quicktime') ? 'mov' : 'webm';
     const path = me.id + '/' + crypto.randomUUID() + '.' + ext;
     const { error } = await sb.storage.from('moments').upload(path, m.blob, { contentType:m.photo ? 'image/jpeg' : (m.type || 'video/' + ext), upsert:false });
@@ -1221,7 +1456,7 @@ const NSPOT = (() => {
   const tag = t => '<span class="ns-tag">' + esc(t) + '</span>';
   const note = t => '<p class="ns-def ns-note-g">' + esc(t) + '</p>';
   function habitHTML(){
-    const box = x => '<div class="habit">' + tickHTML(x.ints) + '<span class="h-body"><span class="v-col">' + habitInner(x, true) + '</span></span></div>';
+    const box = boxHabit;
     if(N.h) return '<div class="sfg"><div class="sfl">my habit</div><div class="sfbx"><div class="sfb is-on" role="button" tabindex="0"'
       + ' data-ns="reh" aria-label="Change the Habit">' + box(N.h) + '</div></div></div>';
     const hs = HABITS || [];
@@ -1266,8 +1501,8 @@ const NSPOT = (() => {
       + ' placeholder="the place · optional" aria-label="The place" data-nsi="place" value="' + esc(N.place) + '"></div>';
     return h;
   }
-  const quiHTML = () => grp('who sees it', QUI.map(([v, m, s]) => chip('data-ns="aud" data-v="' + v + '"', m, N.aud === v, s)).join(''))
-    + (N.aud === 'figher' ? note(CLUB) : '');
+  /* publié d'ici : FIGHER CLUB, d'office — montré, jamais demandé */
+  const quiHTML = () => grp('who sees it', '<span class="sfc ns-c is-on" aria-disabled="true">figher club<small>every TOTEHM</small></span>');
   const ensHTML = () => grp('together', chip('data-ns="mode" data-v="silent"', 'silent', N.mode === 'silent', 'nobody disturb me')
     + chip('data-ns="mode" data-v="social"', 'social', N.mode === 'social', 'we can talk'));
   const durHTML = () => grp('duration', DURS.map(d => chip('data-ns="dur" data-v="' + d + '"', dureeTxt(d), N.dur === d)).join('')
@@ -1279,7 +1514,7 @@ const NSPOT = (() => {
     + '<p class="note ns-note" role="status" aria-live="polite">' + esc(N.note) + '</p></div>';
   function peindre(){
     const p = pan(); if(!p || p.hidden) return;
-    let h = '<p class="sfl">+ spot</p><p class="ns-def">' + esc(DEF) + '</p>' + habitHTML();
+    let h = '<p class="sfl">+ spot</p><p class="ns-def ns-what">' + esc(DEF) + '</p>' + habitHTML();
     if(N.h){
       h += quandHTML();
       const plan = N.quand === 'later';
@@ -1287,18 +1522,15 @@ const NSPOT = (() => {
       if(N.quand && (!plan || dateOk())){
         h += ouHTML();
         if(N.pt){
-          h += quiHTML();
-          if(N.aud){
-            h += ensHTML();
-            if(N.mode){
-              if(!plan) h += medHTML(true);
-              if(plan || N.media){
-                h += durHTML();
-                if(N.dur){
-                  h += motHTML();
-                  if(plan) h += medHTML(false);
-                  h += envoiHTML(plan ? 'I WILL BE HERE' : 'I AM HERE');
-                }
+          h += quiHTML() + ensHTML();
+          if(N.mode){
+            if(!plan) h += medHTML(true);
+            if(plan || N.media){
+              h += durHTML();
+              if(N.dur){
+                h += motHTML();
+                if(plan) h += medHTML(false);
+                h += envoiHTML(plan ? 'I WILL BE HERE' : 'I AM HERE');
               }
             }
           }
@@ -1318,7 +1550,7 @@ const NSPOT = (() => {
     const fin = t => { N.occupe = false; diag.refus++; note2(t); const g = pan() && pan().querySelector('.ns-go'); if(g) g.disabled = false; };
     if(!plan && !N.path){ N.path = await envoyerMedia(N.media); if(uid !== (me && me.id)) return; if(!N.path) return fin('not sent · try again'); }
     const commun = { p_habit:N.h.name, p_duration_min:N.dur, p_lat:N.pt.lat, p_lng:N.pt.lng, p_city:N.ptVille || null,
-      p_comment:N.mot.trim() || null, p_mode:N.mode, p_location:'on', p_audience:N.aud };
+      p_comment:N.mot.trim() || null, p_mode:N.mode, p_location:'on', p_audience:'figher' };
     const corps = plan
       ? Object.assign({}, commun, { p_starts_at:new Date(N.date + 'T' + N.time).toISOString(),
           p_place:(N.place.trim() || N.ptNom.split(',')[0].trim() || N.ptVille || 'the planned place').slice(0, 120) })
@@ -1347,7 +1579,7 @@ const NSPOT = (() => {
   function ouvrir(x){
     const p = pan(); if(!p) return;
     if(!me) return ssoLogin(false);
-    neuf(); lireRegles();
+    neuf(); lireRegles(); VID.dispo();
     p.hidden = false; document.body.classList.add('is-nspot'); diag.ouverts++;
     mesHabits().then(() => {
       if(x && !N.h) N.h = (HABITS || []).find(h => String(h.name || '').trim() === String(x).trim()) || null;
@@ -1388,7 +1620,6 @@ const NSPOT = (() => {
       else if(c === 'cam') return fichier(true);
       else if(c === 'file') return fichier(false);
       else if(c === 'nomedia'){ lacher(); }
-      else if(c === 'aud') N.aud = v;
       else if(c === 'mode') N.mode = v;
       else if(c === 'dur') N.dur = +v || 0;
       else return;
@@ -1424,28 +1655,37 @@ function paintMember(){
   const pl = $('rdr-plus'); if(pl) pl.hidden = !me;
 }
 $('member').onclick = () => me ? ssoVersDomaine(sb, 'com', COM + '/totehm#in') : ssoLogin(false);
+$('club-logo').addEventListener('click', e => { if(!me) return; e.preventDefault(); ssoVersDomaine(sb, 'com', COM + '/totehm'); });
 
-/* ══ LES DEUX MODES ══ */
+/* ══ LES TROIS MODES ══ */
 function peindreMode(){
   const m = MODE.get();
-  document.body.classList.toggle('rdr-grid', m === 'grid');
-  document.body.classList.toggle('rdr-radar', m === 'radar');
-  $('v-radar').classList.toggle('is-on', m === 'radar');
-  $('v-grid').classList.toggle('is-on', m === 'grid');
-  $('rdr-mode').querySelectorAll('[data-rmode]').forEach(b => b.classList.toggle('is-on', b.dataset.rmode === m));
-  if(m === 'grid') GRID.peindre(); else radarOn();
+  for(const k of MODES){ document.body.classList.toggle('rdr-' + k, m === k); $('v-' + k).classList.toggle('is-on', m === k); }
+  $('rdr-mode').querySelectorAll('[data-rmode]').forEach(b => { const on = b.dataset.rmode === m;
+    b.classList.toggle('is-on', on); b.setAttribute('aria-pressed', String(on)); });
+  if(m !== 'shorts') SHORTS.arreter();
+  if(m === 'grid') GRID.peindre(); else if(m === 'shorts') SHORTS.peindre(); else { radarOn(); LISTE.peindre(); }
+  document.body.classList.toggle('is-scrolled', m === 'radar' && $('v-radar').scrollTop > 40);
 }
 $('rdr-mode').addEventListener('click', e => { const b = e.target.closest('[data-rmode]'); if(b) MODE.set(b.dataset.rmode); });
 MODE.sur(() => peindreMode());
-CLUBSP.sur(() => { situer(); GRID.maj(); peindreBarre(); if(sfOuvert()) sfPaint(); });
+CLUBSP.sur(() => {
+  /* rien près de moi : le Club entier, et le filtre le dit (une seule fois) */
+  if(CLUBSP.elargi && SF.ou === 'near' && !SF.touche){ SF.ou = ''; dire('nothing near me yet · the whole club'); }
+  situer(); GRID.maj(); SHORTS.maj(); peindreBarre(); if(sfOuvert()) sfPaint();
+});
 
 /* ══ LE DÉMARRAGE ══ */
 window.__totehm_club = () => ({ build:BUILD, mode:MODE.get(), signed_in:!!me, located:!!POS, detail:!!DETAIL,
-  filtre:sfOuvert(), filtres:sfCount(), habits:(HABITS || []).length, akin:!!SF.akin, exact:SF.exact,
+  filtre:sfOuvert(), filtres:sfCount(), habits:(HABITS || []).length, akin:!!SF.akin, exact:SF.exact, ou:SF.ou || 'world',
+  logo:!!$('club-logo'), liste:LISTE.etat(), shorts:SHORTS.etat(), scrolled:document.body.classList.contains('is-scrolled'),
   radar:{ cx:Math.round(RAD.cx), cy:Math.round(RAD.cy), radius:Math.round(RAD.rpx), heading:Math.round(norm360(RAD.head)),
           points:RAD.pts.length, lieux:RAD.lieux.length, portee:Math.round(RAD.range) },
   grille:GRID.etat(), club:CLUBSP.etat(), prise:NSPOT.etat() });
 
+/* `boot` lit la session et le Club UNE fois ; le premier événement de session (INITIAL_SESSION) n'en relance pas
+   une seconde lecture (mesuré : une lecture du Club entier partait pour rien avant celle « près de moi »). */
+let DEMARRE = false;
 async function boot(){
   const { data:{ session } } = await sb.auth.getSession();
   me = session?.user || null;
@@ -1456,7 +1696,17 @@ async function boot(){
     mesHabits();
   }
   paintMember(); peindreMode(); peindreBarre();
-  await CLUBSP.lire();
+  /* Wah : « il faut demander directement la localisation à l'utilisateur, pour le placer et lui montrer ce qui est
+     pertinent autour de lui ». Demandée À L'ARRIVÉE ; donnée vite → le Club PRÈS DE MOI d'abord ; tardive → le Club
+     entier tout de suite, puis près de moi dès qu'elle arrive — sauf si le membre a touché au filtre entre-temps. */
+  const ici = position();
+  const vite = await Promise.race([ici, new Promise(r => setTimeout(() => r(null), 1500))]);
+  DEMARRE = true;
+  if(vite === true){ SF.ou = 'near'; await CLUBSP.regler(sfOpts(), true); }
+  else{
+    await CLUBSP.lire();
+    ici.then(ok => { if(!ok || SF.touche) return; SF.ou = 'near'; RAD.headTo = 0; CLUBSP.regler(sfOpts(), true); });
+  }
   /* Un lien partagé (`?spot=…`) ouvre CE spot, quels que soient les filtres. */
   const p = new URLSearchParams(location.search);
   if(p.get('spot')){
@@ -1469,13 +1719,14 @@ async function boot(){
   }
 }
 sb.auth.onAuthStateChange((ev, s) => {
+  if(!DEMARRE) return;
   const id = s?.user?.id || null;
   if(id === (me ? me.id : null)) return;
-  me = s?.user || null; PSEUDO = null; HABITS = null;
+  me = s?.user || null; PSEUDO = null; HABITS = null; VID.oublier();
   paintMember(); CLUBSP.lire();
   if(me) sb.from('profiles').select('pseudo').eq('id', me.id).maybeSingle().then(({data}) => { PSEUDO = data?.pseudo || null; paintMember(); });
 });
-document.addEventListener('visibilitychange', () => { if(!document.hidden){ CLUBSP.ouvrir(); radarOn(); } });
+document.addEventListener('visibilitychange', () => { if(document.hidden){ SHORTS.pause(); return; } CLUBSP.ouvrir(); radarOn(); SHORTS.reprendre(); });
 boot();
 </script>
 <script>
