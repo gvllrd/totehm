@@ -36,6 +36,7 @@ body:not(.exploring) #space::after{content:"";position:absolute;inset:0;pointer-
 /* A direct view into the world; only identity, art and movement remain. */
 #member{max-width:100%;text-align:left;overflow-wrap:anywhere}
 .artwork.opposite{background:#000;font:700 clamp(16px,2.2vw,26px)/1.6 var(--mono)}.artwork.opposite small{font-size:10px;font-weight:400;color:#b9b9c3}
+.opposites-list{grid-column:1/-1;text-align:center}.opposites-list h2{font:700 clamp(16px,2vw,26px) Quantico,sans-serif;letter-spacing:.08em;margin:0 0 28px}.opposites-list-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:clamp(8px,1.2vw,24px)}.opposites-list-grid a{display:flex;flex-direction:column;gap:12px;align-items:center;font:9px/1.4 var(--mono)}.opposites-list-grid img{display:block;width:100%;max-width:200px;aspect-ratio:200/356;object-fit:contain;background:#080808;border:7px solid #080808;box-shadow:0 0 0 1px #666}.opposites-list-grid a:hover img,.opposites-list-grid a:focus-visible img{box-shadow:0 0 0 2px #fbd5ca}@media(max-width:750px){.opposites-list-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:26px 12px}}
 @media(max-width:650px){.tour{flex-wrap:wrap;justify-content:center;width:max-content}.tour [data-room]{padding:10px 8px}.tour #view-list{padding:10px 8px}.joystick{bottom:155px}body.station-focused #work-info{bottom:155px}}
 
 .asset-credits{grid-column:1/-1;margin:0;text-align:center;font-size:8px;color:#aaa3b7}.asset-credits a{border-bottom:1px solid #777;padding-bottom:3px}

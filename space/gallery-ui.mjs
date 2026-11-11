@@ -1,5 +1,6 @@
 import {createLisbonPreview} from './gallery-lisbon.mjs';
 import {LISBON_STREET_SIGNS} from './gallery-lisbon-signs-layout.mjs';
+import {OPPOSITES} from './gallery-opposites.mjs';
 
 const reduced=matchMedia('(prefers-reduced-motion: reduce)'),body=document.body;
 const place=location.pathname.replace(/\/+$/,'')==='/new-york'?'new-york':'lisbon';
@@ -18,6 +19,18 @@ const $=id=>document.getElementById(id),buttons=[...document.querySelectorAll('.
 let engine=null,room=-1,fallback=false,pending=null,listRaf=0,lastPreview=0,station=null,hoveredSign=null;
 const preview=createLisbonPreview({onChange:()=>engine?.invalidate()});
 const lisbonCard=document.querySelector('#lisbon .artwork');lisbonCard.append(preview.canvas);lisbonCard.classList.add('has-preview');
+if(place==='new-york'){
+ $('space').setAttribute('aria-label','New York gallery. Enter to find six framed Think same but opposite artworks aligned on a white wall. Click a work to open its English Discover story. Walk around either end of the wall for TotehmPaper, Origins, Play the street and Same but opposite.');
+ const exhibition=document.createElement('section');exhibition.className='opposites-list';exhibition.setAttribute('aria-label','Think same but opposite — six New York artworks');
+ const heading=document.createElement('h2');heading.textContent='Think same but opposite';exhibition.append(heading);
+ const grid=document.createElement('div');grid.className='opposites-list-grid';
+ for(const work of OPPOSITES){
+  const link=document.createElement('a');link.href='/think_same_but_opposite?work='+encodeURIComponent(work.id);link.setAttribute('aria-label','Discover '+work.title);
+  const image=document.createElement('img');image.src=work.image;image.alt=work.title;image.loading='lazy';
+  const label=document.createElement('span');label.textContent=work.title;link.append(image,label);grid.append(link);
+ }
+ exhibition.append(grid);$('gallery').prepend(exhibition);
+}
 const interact=()=>body.classList.add('exploring');
 function higherWord(){
  const word=document.createElement('span'),svg=document.createElementNS('http://www.w3.org/2000/svg','svg'),use=document.createElementNS('http://www.w3.org/2000/svg','use');
@@ -104,7 +117,7 @@ document.addEventListener('keydown',e=>{
 });
 document.addEventListener('visibilitychange',syncPreview);reduced.addEventListener('change',syncPreview);
 addEventListener('pagehide',()=>{if(listRaf)cancelAnimationFrame(listRaf);listRaf=0;preview.pause();});addEventListener('pageshow',syncPreview);
-window.__totehm_gallery=()=>({build:'2026-11-09-lisbon-azulejo-restored',place,rooms:4,room,hoveredSign,list:body.classList.contains('list-view'),fallback,reduced_motion:reduced.matches,experiences:[...new Set(ROOMS.map(w=>w.path))],experienceNavigation:'independent-pages',inGalleryPlayback:false,lisbon:preview.diagnostics(),...engine?.diagnostics()});
+window.__totehm_gallery=()=>({build:'new-york-six-opposites',place,rooms:4,room,hoveredSign,list:body.classList.contains('list-view'),fallback,reduced_motion:reduced.matches,experiences:[...new Set(ROOMS.map(w=>w.path)),...(place==='new-york'?['/think_same_but_opposite']:[])],experienceNavigation:'independent-pages',inGalleryPlayback:false,lisbon:preview.diagnostics(),...engine?.diagnostics()});
 function useFallback(){fallback=true;body.classList.add('no-3d','list-view');engine?.setList(true);clearInfo();syncPreview();}
 try{
  const {createGallery}=await import('./gallery-spatial.mjs');

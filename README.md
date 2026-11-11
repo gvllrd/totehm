@@ -37,8 +37,8 @@ La creator economy est à retravailler : rendre la valeur et le prix **annuel** 
 | `com/higherself.html` · `map.html` · `spot.html` · `club/totehmbot.html` | ce qu'ouvre TotehmBot sur Telegram |
 | `club/index.html` · `club/create.html` | le Club (RADAR \| GRID, filtre, prise de spot) · l'ancien moteur, encore ouvert par TotehmBot |
 | `boutique/index.html` · `streetwear.html` · `luxury.html` · `terms_of_sale.html` | l'accueil · Streetwear · Luxury sur devis · les conditions de vente |
-| `space/index.html` + `gallery-*.mjs` | la galerie 3D |
-| `space/get_higher.html` · `stoner.html` · `play_lisbon_street.html` · `market.html`… | les œuvres et le marché de l'art |
+| `space/index.html` + `gallery-*.mjs` | la galerie 3D, dont le mur des six oppositions à New York |
+| `space/get_higher.html` · `stoner.html` · `play_lisbon_street.html` · `think_same_but_opposite.html` · `market.html`… | les œuvres, les six parcours Discover et le marché de l'art |
 | `*/art-bridge.html` | les anciens liens d'œuvres (et les retours de paiement) → totehm.space, connexion gardée |
 | `backend/supabase/functions/_shared/tracking-*.ts` | notifications déterministes : Done/Missed dans le même message, périodes conservées, historique intact, livraisons vérifiées, horaires et plafonds ; `/review`, `/settings`, `/pause`, `/resume` |
 | `backend/supabase/migrations/` · `functions/` | les modifications de la base, dans l'ordre · les 40 fonctions serveur |

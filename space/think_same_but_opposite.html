@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<title>Think same but opposite — TOTEHM.SPACE</title>
+<link href="https://fonts.googleapis.com/css2?family=Quantico:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#000;color:#f4f4f5;font-family:'Space Mono',monospace}body{min-height:100dvh;display:flex;flex-direction:column}a{color:inherit;text-decoration:none}button{font:inherit;cursor:pointer;color:inherit}header{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:18px max(22px,env(safe-area-inset-right)) 18px max(22px,env(safe-area-inset-left));font-size:10px;letter-spacing:.08em}header a,header button{background:none;border:0;padding:8px}header a:hover,header button:hover,header a:focus-visible,header button:focus-visible{color:#fbd5ca}.progress{color:#aaa}main{flex:1;min-height:0;display:grid;grid-template-columns:minmax(150px,240px) minmax(0,1fr);align-items:center;gap:clamp(20px,6vw,120px);padding:24px clamp(24px,9vw,160px) 75px}.frame{justify-self:center;width:min(100%,240px);padding:11px;background:#080808;border:2px solid #3b3b3b;box-shadow:0 18px 60px #000}.frame img{width:100%;height:auto;aspect-ratio:200/356;display:block;object-fit:contain}.story{display:flex;flex-direction:column;justify-content:center;min-height:280px;max-width:760px}.eyebrow{font-size:10px;letter-spacing:.17em;color:#a9a9b7;text-transform:uppercase;margin:0 0 28px}#slide{min-height:155px;display:flex;flex-direction:column;justify-content:center;gap:23px;opacity:0;transform:translateY(16px);transition:opacity .65s ease,transform .65s ease}#slide.show{opacity:1;transform:none}#slide p{font:400 clamp(17px,2vw,29px)/1.46 'Space Mono',monospace;margin:0;white-space:pre-line}#slide p:first-child{color:#fff}#slide p:nth-child(2){color:#bbb}#slide.is-first p{font-family:Quantico,sans-serif;font-weight:700;line-height:1.13;font-size:clamp(26px,4.1vw,58px)}.actions{display:flex;align-items:center;flex-wrap:wrap;gap:16px;margin-top:40px}.actions button,.actions a{border:1px solid #555;padding:13px 19px;background:#14141c;font-size:11px}.actions button:hover,.actions a:hover,.actions button:focus-visible,.actions a:focus-visible{border-color:#fbd5ca;color:#fbd5ca}.actions .primary{background:#303062;border-color:#494981}.actions a[hidden],.actions button[hidden]{display:none}.hint{font-size:9px;color:#999;margin:17px 0 0}.rail{display:flex;gap:5px;align-items:center;margin-top:28px}.rail span{width:27px;height:2px;background:#555}.rail span.on{background:#fbd5ca}@media(max-width:650px){header{padding:12px 14px}.progress{font-size:9px}main{grid-template-columns:1fr;gap:18px;align-content:start;padding:10px 23px max(35px,env(safe-area-inset-bottom))}.frame{width:90px;padding:5px}.story{min-height:0}.eyebrow{margin:6px 0 20px;font-size:9px}#slide{min-height:220px;justify-content:flex-start}#slide p{font-size:17px}#slide.is-first p{font-size:clamp(24px,8vw,42px)}.actions{margin-top:22px}.hint{display:none}}
+@media(prefers-reduced-motion:reduce){#slide{transition:none}}
+</style>
+</head>
+<body>
+<header><a href="/new-york">← Gallery</a><span class="progress" id="progress">THINK SAME BUT OPPOSITE</span><button id="close" type="button" aria-label="Close Discover">Close ×</button></header>
+<main>
+ <div class="frame"><img id="image" alt=""></div>
+ <section class="story" aria-label="Discover the artwork"><p class="eyebrow" id="title"></p><div id="slide" role="status" aria-live="polite"></div><div class="rail" id="rail" aria-hidden="true"></div><div class="actions"><button id="prev" type="button">← Back</button><button class="primary" id="next" type="button">Continue →</button><a id="action" hidden>Explore TOTEHM ↗</a><a id="next-work" hidden>Next artwork →</a></div><p class="hint">Click, scroll, swipe or use the arrow keys to continue.</p></section>
+</main>
+<script type="module">
+import {OPPOSITES,oppositeById} from './gallery-opposites.mjs';
+const $=id=>document.getElementById(id),params=new URLSearchParams(location.search),work=oppositeById(params.get('work'))||OPPOSITES[0],reduced=matchMedia('(prefers-reduced-motion:reduce)');
+let step=0,locked=false,touchY=null;
+document.title=work.title+' — Think same but opposite · TOTEHM.SPACE';$('title').textContent=work.title;$('image').src=work.image;$('image').alt=work.title+' artwork';$('action').href=work.href;$('action').textContent=work.action+' ↗';
+const following=OPPOSITES[(OPPOSITES.indexOf(work)+1)%OPPOSITES.length];$('next-work').href='/think_same_but_opposite?work='+following.id;$('next-work').setAttribute('aria-label','Next artwork: '+following.title);
+const dots=work.slides.map(()=>{const dot=document.createElement('span');$('rail').append(dot);return dot;});
+function show(index,instant=false){
+ if(index<0||index>=work.slides.length||locked)return;
+ locked=true;const slide=$('slide');slide.classList.remove('show');
+ const apply=()=>{step=index;slide.replaceChildren(...work.slides[step].map(text=>{const p=document.createElement('p');p.textContent=text;return p;}));slide.classList.toggle('is-first',step===0);dots.forEach((dot,i)=>dot.classList.toggle('on',i===step));$('progress').textContent=(step+1)+' / '+work.slides.length;$('prev').hidden=step===0;$('next').hidden=step===work.slides.length-1;$('action').hidden=step!==work.slides.length-1;$('next-work').hidden=step!==work.slides.length-1;requestAnimationFrame(()=>slide.classList.add('show'));if(instant||reduced.matches)locked=false;else setTimeout(()=>locked=false,650);};
+ if(instant||reduced.matches)apply();else setTimeout(apply,180);
+}
+const next=()=>show(step+1),prev=()=>show(step-1);
+$('next').addEventListener('click',next);$('prev').addEventListener('click',prev);$('close').addEventListener('click',()=>location.assign('/new-york'));
+document.addEventListener('keydown',event=>{if(event.target.closest('input,textarea,select,[contenteditable=true]'))return;if(['ArrowRight','ArrowDown','PageDown'].includes(event.key)||event.key===' '&&!event.target.closest('a,button')){event.preventDefault();next();}if(['ArrowLeft','ArrowUp','PageUp'].includes(event.key)){event.preventDefault();prev();}if(event.key==='Escape')location.assign('/new-york');});
+let wheelLock=0;addEventListener('wheel',event=>{const now=performance.now();if(now-wheelLock<680)return;wheelLock=now;if(event.deltaY>0)next();else if(event.deltaY<0)prev();},{passive:true});
+addEventListener('touchstart',event=>{touchY=event.changedTouches[0].clientY;},{passive:true});addEventListener('touchend',event=>{if(touchY===null)return;const delta=touchY-event.changedTouches[0].clientY;touchY=null;if(Math.abs(delta)>42)(delta>0?next:prev)();},{passive:true});
+window.__totehm_opposites=()=>({build:'new-york-six-works',work:work.id,step,count:work.slides.length,image:$('image').complete,action:$('action').href});
+show(0,true);
+</script>
+</body>
+</html>
