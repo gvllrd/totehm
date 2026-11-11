@@ -12,7 +12,7 @@
 | qui | fait |
 |---|---|
 | **Claude, session cloud** | conçoit ET exécute : code, migrations, Edge Functions, push sur `main`, contrôle de la prod, Stripe (lecture, tests) |
-| **Claude Code, terminal de Wah** | seulement ce qui exige sa machine : VM Oracle, n8n, et les migrations que le cloud ne passe pas (voir Base) |
+| **Claude Code, terminal de Wah** | seulement ce qui exige sa machine : la VM Oracle elle-même, et les migrations que le cloud ne passe pas (voir Base). **Un flux n8n se publie depuis le cloud** (11/11, mesuré : le MCP n8n atteint la production) |
 | **Wah** | la vision, les tests sur téléphone, le « oui » avant : un prix live, un remboursement, l'endpoint webhook Stripe |
 
 Wah fait le minimum (sauf OAuth, 2FA, décision produit). Une demande = un lot complet, sans plan à valider.
@@ -24,7 +24,7 @@ Push sur `main` = mise en ligne ; jamais réécrire l'historique.
 |---|---|---|
 | totehm.com | `com/` | l'écosystème : les 5 vues, la creator economy (s'abonner à un membre = entrer dans son écosystème), la recherche d'un membre |
 | figher.club | `club/` | le prolongement de la vue Spots : chercher, publier des spots, se rencontrer |
-| higher.boutique | `boutique/` | les vêtements totehmisés, un style artistique choisi, à partir de toute catégorie personnelle ; une box suffit, production n8n |
+| higher.boutique | `boutique/` | les vêtements totehmisés, un style artistique choisi, à partir de toute catégorie personnelle ; une box suffit, production n8n. Le LUXE est un atelier : une pièce d'exception, un artiste LOCAL via une galerie partenaire, acompte de 770 € remboursé si aucun artiste en 30 jours |
 | totehm.space | `space/` | Lisbon au Portugal : bâtiment intact aux azulejos bleu/blanc de `c8ddaf0`, douze fenêtres, huit balcons et toit de verre ondulé ; New York ailleurs selon Vercel : château en ruine, donjon et verre à toit plan incliné ; plain-pied, mer, ciel et œuvres indépendantes conservés |
 
 **Deux fois cinq vues.** totehm.com : ↑ Get Higher (commune à tous) · ← mes médias · ● mon TOTEHM · → les spots ·
