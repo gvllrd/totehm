@@ -117,19 +117,32 @@ a{color:inherit;text-decoration:none}
   padding:calc(var(--st) + 54px) 16px calc(28px + var(--sb));
   overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scrollbar-width:none;
   opacity:0;transition:opacity .4s ease}
+/* 11/11 — la place du bouton [NEXT] : réservée SEULEMENT quand il est là, pour
+   qu'il ne couvre jamais le dernier élément de l'étape. `box-sizing:border-box`
+   + `height:100%` : cette marge ne déplace AUCUN `offsetTop`, le rouleau ne
+   bouge donc pas d'un pixel quand le bouton paraît ou s'en va. */
+#stages.has-next .stage{padding-bottom:calc(66px + var(--sb))}
 .stage::-webkit-scrollbar{display:none}
 .stage>*{width:100%;max-width:430px;flex:0 0 auto}
 .stage.is-open{display:flex}
 .stage.is-in{opacity:1}
 .inner{width:100%;display:flex;flex-direction:column;align-items:center;gap:12px}
 /* 27/10 (Wah) : « pas besoin de mettre SCROLL, le curseur suffit et il doit se
-   positionner tout en bas ». Un chevron, rien d'autre, collé au bas de l'écran
-   — il ne paraît que lorsqu'il Y A quelque chose dessous. */
-.sc-hint{position:absolute;left:50%;bottom:calc(10px + var(--sb));transform:translateX(-50%);
-  width:16px;height:10px;opacity:0;pointer-events:none;transition:opacity .45s ease}
-.stage.has-next .sc-hint{opacity:.55}
-.sc-hint svg{width:16px;height:10px;display:block;fill:none;stroke:#fff;stroke-width:1.6}
-@media(prefers-reduced-motion:reduce){#stages{scroll-behavior:auto}.stage,.sc-hint{transition:none}}
+   positionner tout en bas ». Le chevron reste — mais 11/11 (Wah : « peut-être
+   rajouter un bouton [Next] pour pallier à un éventuel bug de scrolling ») il
+   est devenu un VRAI BOUTON, et il y en a UN SEUL pour tout le rouleau, posé
+   dans `#stages` et non dans l'étape : collé au bas de l'ÉCRAN, il reste sous
+   le pouce même quand l'étape, plus haute que la fenêtre, défile chez elle (un
+   chevron posé dans l'étape, lui, s'en allait avec le contenu). */
+#st-next{position:absolute;left:50%;bottom:calc(12px + var(--sb));transform:translateX(-50%);z-index:8;
+  display:flex;align-items:center;gap:7px;padding:9px 16px;border:0;border-radius:999px;
+  background:rgba(255,255,255,.1);color:#fff;font-family:var(--mono);font-size:9px;letter-spacing:.2em;
+  text-transform:uppercase;cursor:pointer;-webkit-tap-highlight-color:transparent;
+  opacity:0;visibility:hidden;transition:opacity .45s ease,visibility 0s linear .45s,background .2s ease}
+#stages.has-next #st-next{opacity:.82;visibility:visible;transition-delay:0s,0s,0s}
+#st-next svg{width:14px;height:9px;display:block;fill:none;stroke:#fff;stroke-width:1.8}
+@media(hover:hover){#st-next:hover{background:rgba(255,255,255,.2);opacity:1}}
+@media(prefers-reduced-motion:reduce){#stages{scroll-behavior:auto}.stage,#st-next{transition:none}}
 
 /* 1 · CLOTH — le vêtement au centre ; ← → les modèles, ↑ ↓ ses vues */
 #viewer{position:relative;width:100%;height:clamp(200px,calc(100svh - 400px),560px);overflow:hidden;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none;background:#050506}
@@ -350,30 +363,15 @@ button.mi.is-on{filter:none}
 .st-card.is-on b{color:#fff}
 .st-card:disabled{opacity:.35;cursor:default}
 
-/* 5 · ORDER — la PHOTO de la zone d'impression, la taille, le prix.
-   24/10 (Wah) : « le preview n'a aucune utilité » — le cadre pointillé, la
-   vignette du style posée dedans et le nom gravé en direct sont retirés. On ne
-   montre plus une fausse œuvre : l'œuvre arrive après le paiement. */
-#od-visual{position:relative;width:min(100%,300px);aspect-ratio:1/1;overflow:hidden;background:#050506}
-#od-visual img.ph{width:100%;height:100%;object-fit:contain;display:block}
+/* 5 · ORDER — LE PRIX ET LE PAIEMENT, RIEN D'AUTRE.
+   11/11 (Wah) : « supprimer tous les rappels de la dernière section… garder
+   seulement le prix et le paiement. C'est simple : si l'utilisateur veut revoir
+   son questionnaire, il faut simplement qu'il remonte les parties. » Le rappel
+   du 02/11 (le nom dans le dos du Higher, la box, la vignette du style, la
+   photo de la zone d'impression) est donc RETIRÉ : chaque choix se revoit dans
+   SA section, en remontant le rouleau. Ici, le prix — et le bouton qui paie. */
 .recap{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo);text-align:center}
-.recap .price{color:#fff;font-weight:700;font-size:13px;letter-spacing:.04em;margin-top:4px}
-/* LE RAPPEL (02/11) : le nom dans LE DOS DU HIGHER, la box du Totehm dans sa
-   couleur, la vignette du style. Ce qui reste (les pièces, le style) vit chez
-   le vêtement et chez le style, pas ici. */
-.recap .od-nm{position:relative;display:flex;align-items:center;justify-content:center;
-  width:min(200px,70vw);aspect-ratio:3/1;margin-bottom:2px}
-.recap .od-dos{position:absolute;inset:0;width:100%;height:100%;display:block}
-.recap .od-nm span{position:relative;z-index:2;font-family:var(--q);font-weight:700;
-  font-size:clamp(13px,4.6vw,17px);letter-spacing:.02em;text-transform:none;color:var(--coral);
-  max-width:88%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.recap .od-box{width:100%;max-width:300px;background:var(--skin,#333366);color:#fff;
-  padding:7px 12px 8px;display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center}
-.recap .od-box small{font-size:8.5px;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.72)}
-.recap .od-box b{font-family:var(--q);font-weight:400;font-size:13px;letter-spacing:0;text-transform:none;line-height:1.4;word-break:break-word}
-.recap .od-st{display:flex;align-items:center;gap:8px;margin-top:2px}
-.recap .od-st img,.recap .od-st .ph{width:34px;height:34px;object-fit:cover;display:block;background:var(--c1);flex:none}
-.recap .od-st b{font-family:var(--q);font-weight:400;font-size:12px;letter-spacing:0;text-transform:none;color:#fff}
+.recap .price{color:#fff;font-weight:700;font-family:var(--q);font-size:30px;letter-spacing:.02em;line-height:1.1}
 .sizes{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
 .sz{font-weight:700;font-size:12px;color:var(--mid);background:var(--c1);border:1px solid transparent;border-radius:10px;cursor:pointer;min-width:48px;padding:3px 3px;-webkit-tap-highlight-color:transparent;transition:background .15s ease,color .15s ease,border-color .15s ease}
 .sz.is-on{background:#3a3a42;color:#fff;border-color:#fff}
@@ -503,6 +501,14 @@ body[data-eco-auth="central"] #mw-email,body[data-eco-auth="central"] #mw-code,b
    un bouton ne passe jamais à la ligne (sous 350 px, il rapetisse encore). */
 button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-space:nowrap!important}
 @media(max-width:350px){.btn-sig,a.btn-sig{font-size:11.5px!important}}
+/* ⚠️ 11/11 (Wah) — UNE MINI-BOX N'EST PAS UN BOUTON D'INTERFACE : c'est un
+   TEXTE du TOTEHM, et il doit se lire ENTIER. La règle d'au-dessus (un bouton
+   tient sur une ligne) le coupait dès qu'il était long. Elle s'arrête ici :
+   une mini-box revient à la ligne, et une ligne trop longue se coupe dans le
+   mot plutôt que de déborder. Même exemption pour la box elle-même (`.bx .nm`),
+   qui HÉRITAIT du `nowrap` de son parent. */
+.mi,button.mi,#matter .mi,.bx .nm,.bx .sb{white-space:normal!important;overflow-wrap:anywhere;word-break:break-word}
+#matter .grp .mi{flex:0 1 auto;min-width:0;max-width:100%;line-height:1.4;padding:3px 7px}
 </style>
 </head>
 <body data-eco-auth="central" data-stage="cloth" class="is-boot">
@@ -565,7 +571,6 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
       <!-- Le SEUL bouton qui reste avant la commande : il ne fait pas « suivant »,
            il OUVRE (il connecte, il vérifie le passeport). Le reste se descend. -->
       <button class="btn cta" id="cl-go" type="button">Totehmize it</button>
-      <div class="sc-hint" aria-hidden="true"><svg viewBox="0 0 16 10"><path d="M2 2 L8 8 L14 2"/></svg></div>
     </div>
   </section>
 
@@ -575,7 +580,6 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
       <div class="kicker">The style of the moment</div>
       <div id="st-rail" class="pieces" role="listbox" aria-label="Curated styles"></div>
       <div class="say">Curated. The artwork is born after payment and stays a surprise until it lands.</div>
-      <div class="sc-hint" aria-hidden="true"><svg viewBox="0 0 16 10"><path d="M2 2 L8 8 L14 2"/></svg></div>
     </div>
   </section>
 
@@ -585,7 +589,7 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
   <section class="stage" id="s-element" data-s="element" aria-label="Choose an element of my TOTEHM">
     <div id="el-head" class="is-logo">
       <div id="tz-papers" role="group" aria-label="My TOTEHM, unfolded">
-        <button class="pap pap-s" type="button" data-v="wisdom"><span class="pap-lab">my wisdom story</span></button>
+        <button class="pap pap-s" type="button" data-v="wisdom"><span class="pap-lab">my story</span></button>
         <button class="pap pap-g" id="totehmize" type="button" data-g="1" aria-label="Totehmize this cloth">
           <!-- LE LOGO : le fond perforé, le rail, le T, le mot. Le fond prend le
                dessus, les trois autres fondent — et MY GRIND reste. -->
@@ -610,7 +614,6 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
     <div id="shots"></div>
     <!-- Plus de bouton. La box tapée est choisie ; ses mini-boxes et ses photos
          s'allument tranquillement, et le nom attend plus bas. -->
-    <div class="sc-hint" aria-hidden="true"><svg viewBox="0 0 16 10"><path d="M2 2 L8 8 L14 2"/></svg></div>
   </section>
 
   <!-- 4 · NAME -->
@@ -621,14 +624,12 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
       <div class="note dim" id="nm-note"></div>
       <!-- 02/11 (Wah) : dire ce que le nom et le « 0. » veulent dire. -->
       <div class="say">The name finds your cloth again — and the element of your TOTEHM inside it. <b>0</b> is year zero of the brand: 2026.</div>
-      <div class="sc-hint" aria-hidden="true"><svg viewBox="0 0 16 10"><path d="M2 2 L8 8 L14 2"/></svg></div>
     </div>
   </section>
 
   <!-- 5 · ORDER -->
   <section class="stage" id="s-order" data-s="order" aria-label="Size and order">
     <div class="inner">
-      <div id="od-visual"></div>
       <div class="recap" id="od-recap"></div>
       <div id="od-test" class="hide">test · card 4242 4242 4242 4242</div>
       <button class="btn cta" id="od-go" type="button" disabled>Order</button>
@@ -648,6 +649,10 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
     </div>
   </section>
 </div>
+<!-- 11/11 (Wah) — LE BOUTON [NEXT], UN SEUL, HORS DU ROULEAU : il tourne la
+     page quoi qu'il arrive au geste. Il n'existe que s'il y a VRAIMENT une
+     étape dessous (`#stages.has-next`) : il ne promet jamais rien. -->
+<button id="st-next" type="button" aria-label="Next step">next<svg viewBox="0 0 16 10" aria-hidden="true"><path d="M2 2 L8 8 L14 2"/></svg></button>
 </main>
 
 <!-- 23/10 : la manette s'en va. Le TOTEHM lui-même est la commande — il se
@@ -897,6 +902,9 @@ function ouvrir(){
   /* L'invitation à descendre ne paraît que s'il y a VRAIMENT quelque chose dessous. */
   const o=STAGES.map(x=>document.querySelector('.stage[data-s="'+x+'"]')).filter(el=>el&&el.classList.contains('is-open'));
   o.forEach((el,i)=>el.classList.toggle('has-next',i<o.length-1));
+  /* 11/11 — LE BOUTON [NEXT] : il n'existe que s'il y a une étape sous CELLE
+     QU'ON REGARDE. Sa place est réservée dans l'étape par la même classe. */
+  sc().classList.toggle('has-next',!!voisine(1));
 }
 /* Une étape qui s'ouvre pour la PREMIÈRE fois : on la garnit. Jamais au
    défilement — `renderEl` repartirait de zéro et effacerait le choix en cours. */
@@ -977,23 +985,51 @@ sc().addEventListener('wheel',e=>{
   e.preventDefault();
   if(Math.abs(e.deltaY)>=4)feuilleter(d);
 },{passive:false});
-/* LE DOIGT — on décide au RELÂCHÉ, sur la course et l'élan, et seulement si
-   l'étape ne pouvait plus défiler dans ce sens au moment où le doigt s'est posé. */
-let TAP=null;
-sc().addEventListener('pointerdown',e=>{
-  if(e.pointerType==='mouse'||aSonGeste(e.target))return;
-  TAP={id:e.pointerId,y0:e.clientY,t:performance.now(),hautOk:!resteDedans(-1),basOk:!resteDedans(1)};
+/* ⚠️ LE DOIGT — 11/11/2026, LE BUG DE STRUCTURE (Wah : « le scroll ne fonctionne
+   pas pour passer d'une partie du questionnaire à une autre, en particulier sur
+   mobile »). MESURÉ : la page écoutait `pointerdown`/`pointerup`. Dès qu'une
+   étape débordait d'un seul pixel, le navigateur PRENAIT le geste pour défiler
+   dedans et tirait un `pointercancel` — `pointerup` n'arrivait jamais, et la
+   page ne tournait PLUS JAMAIS au doigt sur cette étape. Seules les étapes qui
+   tenaient pile dans la fenêtre tournaient : c'est pourquoi ça marchait
+   « parfois ».
+   LA RÈGLE MAINTENANT : ce sont les ÉVÉNEMENTS TACTILES qui décident, et au
+   PREMIER mouvement. Si l'étape ne peut plus défiler dans ce sens, la page
+   PREND le geste (`preventDefault` sur un `touchmove` encore annulable) : le
+   navigateur ne défile pas, n'annule rien, et `touchend` arrive à coup sûr.
+   Sinon elle le LAISSE au navigateur, qui défile nativement dans l'étape. Un
+   geste horizontal n'est jamais une page. */
+let TCH=null;
+sc().addEventListener('touchstart',e=>{
+  if(e.touches.length!==1||aSonGeste(e.target)){TCH=null;return;}
+  const t=e.touches[0];
+  TCH={y0:t.clientY,x0:t.clientX,t:performance.now(),dy:0,pris:false,mort:false};
 },{passive:true});
-sc().addEventListener('pointerup',e=>{
-  if(!TAP||e.pointerId!==TAP.id)return;
-  const g=TAP; TAP=null;
-  const dy=e.clientY-g.y0, dt=Math.max(1,performance.now()-g.t), v=Math.abs(dy)/dt*1000;
-  if(Math.abs(dy)<28&&v<420)return;          /* un tap, ou un frôlement */
-  const d=dy<0?1:-1;                         /* le doigt monte → la page suivante */
-  if(d>0?!g.basOk:!g.hautOk)return;          /* l'étape avait encore à lire : elle a défilé */
-  feuilleter(d);
+sc().addEventListener('touchmove',e=>{
+  const g=TCH; if(!g||g.mort)return;
+  const t=e.touches[0]; if(!t)return;
+  const dy=t.clientY-g.y0, dx=t.clientX-g.x0;
+  g.dy=dy;
+  if(!g.pris){
+    if(Math.abs(dy)<8&&Math.abs(dx)<8)return;        /* trop tôt : on ne sait pas encore */
+    if(Math.abs(dx)>Math.abs(dy)){g.mort=true;return;}
+    const d=dy<0?1:-1;                                /* le doigt monte → la page suivante */
+    if(resteDedans(d)||!voisine(d)){g.mort=true;return;} /* à lire dessous, ou rien : au navigateur */
+    g.pris=true;
+  }
+  if(e.cancelable)e.preventDefault();
+},{passive:false});
+sc().addEventListener('touchend',()=>{
+  const g=TCH; TCH=null;
+  if(!g||!g.pris)return;
+  const dt=Math.max(1,performance.now()-g.t), v=Math.abs(g.dy)/dt*1000;
+  if(Math.abs(g.dy)<28&&v<420)return;                 /* un tap, ou un frôlement */
+  feuilleter(g.dy<0?1:-1);
 },{passive:true});
-sc().addEventListener('pointercancel',()=>{TAP=null;},{passive:true});
+sc().addEventListener('touchcancel',()=>{TCH=null;},{passive:true});
+/* LE BOUTON — le même geste, en un tap : il tourne la page même si le doigt,
+   la molette ou le navigateur n'en font rien. */
+$('st-next').addEventListener('click',()=>{feuilleter(1);});
 /* La fenêtre change de taille (rotation, clavier, barre d'adresse) : l'étape
    courante doit rester EXACTEMENT à l'écran — sinon on se retrouve entre deux. */
 let rzT=null;
@@ -1239,10 +1275,13 @@ const icol=i=>(INTS[i]||[])[1]||'#ffffff';
    papiers — MY STORY · GRIND · VISION — et le GRIND s'ouvre en ses trois boutons.
    Le serveur relit l'élément dans le Totehm de la session : la page ne décide rien. */
 /* 24/10 (Wah) : les vues portent leur nom entier — « my vision, my objectives,
-   my habits, my repulsions, my wisdom story ». C'est MON Totehm, jamais « la »
-   vue : le possessif est la marque. */
+   my habits, my repulsions, my story ». C'est MON Totehm, jamais « la »
+   vue : le possessif est la marque.
+   ⚠️ 11/11 (Wah) : la vue s'appelle **MY STORY**, comme sur totehm.com — plus
+   jamais « my wisdom story » sur un bouton de sélection. `wisdom` reste la CLÉ
+   technique (la base, `KIND`, `?wear=wisdom:…`) ; seul le mot affiché change. */
 const VIEWS={
-  wisdom:    {nom:'my wisdom story',sub:'what I pass on', kind:'wisdom',    skin:'#743169', paper:'#5b2652'},
+  wisdom:    {nom:'my story',       sub:'what I pass on', kind:'wisdom',    skin:'#743169', paper:'#5b2652'},
   visions:   {nom:'my vision',      sub:'what I imagine', kind:'vision',    skin:'#36498c', paper:'#263362'},
   objectives:{nom:'my objectives',  sub:'what I chase',   kind:'objective', skin:'#36498c', paper:'#22224a'},
   habits:    {nom:'my habits',      sub:'what I repeat',  kind:'habit',     skin:'#333366', paper:'#22224a'},
@@ -1571,35 +1610,16 @@ async function enterStyle(){
   const on=r.querySelector('.is-on');if(on)on.scrollIntoView({block:'nearest',inline:'center'});
 }
 
-/* ══ 5 · ORDER — la photo, la taille, le prix ═════════════════════════
-   ORDER montre la PHOTO de la zone d'impression (`<dossier>/print/`), sinon la vue
-   affichée. Rien n'est simulé : l'œuvre ne se voit qu'une fois le vêtement arrivé. */
-function paintPreview(){
-  const s=F.support,w=$('od-visual'),im=(PRINT[s?.id]||[])[0]||imgs(s)[ANG[supports.indexOf(s)]||0]||imgs(s)[0];
-  w.innerHTML=im?'<img class="ph" src="'+esc(im)+'" alt="'+esc(s?.title||'')+'">':'';
-}
-/* 02/11 (Wah) : « la dernière section, c'est un RAPPEL de tout ce qui a été fait
-   précédemment : le nom du Totehm Cloth dans sa fameuse box perforée bleu navy,
-   la box du Totehm sélectionné, le prix et le style (vignette du style) — sans
-   "177 of 177 pieces left" ni "7 in this style", propres à leurs sections ».
-   Ce qui RESTE vit donc chez le vêtement et chez le style, nulle part ailleurs. */
+/* ══ 5 · ORDER — LE PRIX ET LE PAIEMENT ══════════════════════════════
+   11/11 (Wah) : « supprimer tous les rappels de la dernière section du
+   questionnaire streetwear et garder seulement le prix et le paiement ». Plus
+   de photo de la zone d'impression, plus de nom dans le dos du Higher, plus de
+   box ni de vignette de style : chaque choix se revoit EN REMONTANT, dans la
+   section qui le porte. Ici, le prix du vêtement — relu du serveur — et le
+   bouton qui ouvre la page sécurisée. */
 function enterOrder(){
   const s=F.support;if(!s)return;
-  paintPreview();
-  const el=F.el,st=F.style;
-  const vignette=st&&st.image_url?'<img src="'+esc(st.image_url)+'" alt="">':'<span class="ph"></span>';
-  $('od-recap').innerHTML=
-    /* LE NOM, dans le dos du Higher — la même pièce qu'à l'étape du nom. */
-    '<div class="od-nm"><svg class="od-dos" viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-dos"></use></svg>'
-      +'<span>'+esc(epochPrefix()+F.nameRaw)+'</span></div>'
-    /* LA BOX DU TOTEHM, dans sa couleur. */
-    +(el?'<div class="od-box" style="--skin:'+(SKIN[el.view]||'#333366')+'">'
-      +'<small>'+esc(NOM[el.view]?.[0]||'my element')+'</small><b>'+esc(el.text)+'</b></div>':'')
-    /* LE STYLE, sa vignette et son nom. */
-    +(st?'<div class="od-st">'+vignette+'<b>'+esc(st.name||'')+'</b></div>':'')
-    /* LE VÊTEMENT ET SA TAILLE, puis le prix. */
-    +'<span>'+esc([s.title||'',F.size].filter(Boolean).join(' · '))+'</span>'
-    +'<span class="price">'+esc(price(s))+'</span>';
+  $('od-recap').innerHTML='<span class="price">'+esc(price(s))+'</span>';
   $('od-test').classList.toggle('hide',!TEST);
   paintOrderBtn();
 }
