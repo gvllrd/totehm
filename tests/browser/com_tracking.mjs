@@ -35,7 +35,7 @@ try{
   check(text.includes('1 / 5 Habits with observations'),'Coverage distinguishes observed Habits from all choices');
   check((await pg.locator('.tracking-cell.has-done.has-missed').count())===1&&(await pg.locator('.tracking-cell.has-done.has-missed').textContent()).includes('×'),'One successful report cannot hide a missed report on the same day');
   check(!await pg.locator('#vs-dash input').count()&&!log.rpc.some(x=>/tracking_(answer|detail|open|settings_set)/.test(x.name)),'The dashboard never writes reports or consent');
-  check(!await pg.locator('#vs-dash .db-n b').count()&&(await pg.locator('#vs-dash .db-n a').textContent())===steps[0].t,'The full long Unicode Habit is escaped and linked to its original');
+  check(!await pg.locator('#vs-dash .db-n b').count()&&(await pg.locator('#vs-dash .db-n a .v-name').textContent())===steps[0].t,'The full long Unicode Habit is escaped and linked to its original');
   check(await pg.locator('.tracking-matrix .db-n').evaluate(e=>e.getBoundingClientRect().height<=200),'A very long Habit remains a readable preview, with its exact source kept intact');
   check(text.includes('2 Missed reports')&&text.includes('do not explain why')&&!text.includes('Consider a smaller'),'Insights attribute reported counts without inventing a cause');
   check(text.includes('not counted as unanswered'),'Delivery failures are distinct from unknown practice');
