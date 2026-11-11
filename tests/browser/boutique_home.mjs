@@ -34,7 +34,7 @@ const { pg, log } = await page(browser, { dir:'boutique', origin:'https://www.hi
 await pg.goto('https://www.higher.boutique/');
 await pg.waitForFunction(() => window.__totehm_boutique && /47 pieces left/.test(document.querySelector('#sw-col-sold').textContent));
 const d = await pg.evaluate(() => window.__totehm_boutique());
-ok(d.build === '2026-11-09-card-format' && d.decode_first && !d.member_window, 'the physical landing page: DECODE first, no member window here');
+ok(d.build === '2026-11-10-coin-membre' && d.decode_first && !d.member_window, 'the physical landing page: DECODE first, no member window here');
 // 30/10 (Wah) : « la face verso du [Higher] doit avoir EXACTEMENT les mêmes
 // perforations que la face recto — logique, on retourne la même pièce ». Donc
 // UN SEUL masque dans le document, et les deux faces le référencent.
