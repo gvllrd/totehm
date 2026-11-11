@@ -37,7 +37,7 @@ Diagnostics : `__totehm_lv()` (`.refus` : pourquoi un geste est refusé ; à l'�
 Seuls les abonnements aux créateurs sont proposés. Higher GPT et TotehmBot sont gratuits ; les menus des pages secondaires suivent `tools/com_member_menu.js`, sans vente Higher. La console garde les abonnements créateurs et le portail de facturation historique.
 
 ## Les pièges
-- Hors du TOTEHM, une box est rendue par les rendus de la liste (`boxTotehm`), jamais une copie.
+- Hors du TOTEHM, toute box reprend `boxTotehm` et sa peau native (navy Habit, bleu Objective/Vision, violet Repulsion/MY STORY), dashboard inclus : suivi, objectifs, historique. Source Habit exacte ; journal historique inerte, sans liens inventés.
 - `cloudSave()` réécrit `steps` en entier : rien d'autre ne s'y range. `FREQS` (page) = `_freq_minutes` (base) : identiques.
   La lettre va au cache (`save({local:1})`) ; le serveur après `PAUSE_FRAPPE` (2,5 s, `differe`) ou dès qu'on quitte le champ (`ecrireTout` :
   Entrée, focusout, repli, onglet caché) ; un envoi identique ne part pas, un seul à la fois ; « saved » = le serveur a dit oui ;

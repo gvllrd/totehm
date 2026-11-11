@@ -3395,7 +3395,11 @@ body.lv-b:not(.lv-membre):not(.lv-verrou) #lv-socket{opacity:0}
 .tracking-matrix .h{font:9px 'Space Mono',monospace;text-align:center;color:#b8b8c2}
 .tracking-matrix .tracking-name{position:sticky;left:0;background:#000;z-index:1;min-width:0}
 .tracking-matrix .db-n{padding:9px 5px 9px 0;overflow-wrap:anywhere;white-space:normal}
-.tracking-matrix .db-n>a,.tracking-matrix .db-n>span{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden;font:14px/1.25 'Quantico',sans-serif;color:#fff;text-decoration:underline;text-decoration-color:#555}
+#vs-dash .tracking-source{display:block;color:inherit;text-decoration:none}
+#vs-dash .tracking-source:focus-visible{outline:2px solid #fff;outline-offset:3px}
+#vs-dash .tb .v-name{overflow-wrap:anywhere;white-space:normal}
+.tracking-matrix .tb .v-name{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden}
+.tracking-focus{margin-top:10px}
 .tracking-matrix .db-n small{display:block;font:9px/1.5 'Space Mono',monospace;color:#b8b8c2;margin-top:5px;white-space:normal}
 .tracking-cell{font:10px/1.5 'Space Mono',monospace;text-align:center;color:#b8b8c2;min-width:24px;white-space:normal;overflow-wrap:anywhere}
 .tracking-cell.has-done{color:#fff}.tracking-cell.has-missed{border-bottom:1px solid #b8b8c2}
@@ -3444,9 +3448,7 @@ body.lv-b:not(.lv-membre):not(.lv-verrou) #lv-socket{opacity:0}
 .db-i .tr span{position:absolute;inset:0 auto 0 0;background:var(--c);min-width:2px}
 .db-i b{font:700 10px/1 'Space Mono',monospace;color:#fff;text-align:right}
 .db-o{display:flex;flex-direction:column;gap:12px}
-.db-o>div{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 10px;align-items:baseline}
-.db-o .n{font:400 12px/1.25 'Quantico',sans-serif;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-  padding-left:8px;box-shadow:inset 2px 0 0 var(--c,#3a3a42)}
+.db-o>div{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 10px;align-items:center}
 .db-o .j{font:700 10px/1 'Space Mono',monospace;color:#fff;letter-spacing:.06em}
 .db-o .j.is-tard{color:#b8b8c2;font-weight:400}
 .db-o .db-bar{grid-column:1/-1}
@@ -3457,7 +3459,8 @@ body.lv-b:not(.lv-membre):not(.lv-verrou) #lv-socket{opacity:0}
 .db-f{display:flex;flex-direction:column;gap:9px}
 .db-f>div{display:grid;grid-template-columns:7px minmax(0,1fr) auto;gap:9px;align-items:baseline}
 .db-f .pt{width:5px;height:5px;border-radius:50%;background:var(--c,#5c5c66);transform:translateY(-1px)}
-.db-f .q{min-width:0;font:400 10px/1.35 'Space Mono',monospace;color:#d2d2da;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.db-f .q{min-width:0;font:400 10px/1.35 'Space Mono',monospace;color:#d2d2da;overflow-wrap:anywhere}
+.db-f .q .tb{margin-top:6px}
 .db-f .q em{font:400 11.5px/1.3 'Quantico',sans-serif;font-style:normal;color:#fff}
 .db-f time{font:400 9px/1 'Space Mono',monospace;color:#8e8e98;white-space:nowrap}
 .db-tot{display:grid;grid-template-columns:repeat(5,1fr);gap:2px}
@@ -8370,7 +8373,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-11-11-creator-economy';
+const BUILD='2026-11-11-dashboard-native-boxes';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -13807,20 +13810,25 @@ window.addEventListener('pageshow',e=>{
         const T=D?.totals||{}, today=D?.today;
         let h='';
 
-        if(P?.ok)h+=renderPractice(P,{requestedDays:period});
+        if(P?.ok)h+=renderPractice(P,{requestedDays:period,renderHabit:h=>boxTotehm('h',(state.habits||[]).find(x=>x.t===h.ref)||{id:'',t:h.habit,t0:h.habit,is:h.intentions||[],f:h.frequency},{court:true})});
         else h+='<p class="tracking-caption">Practice is unavailable for the moment. Your reports have not been changed.</p>';
         if(!D){h+='<p class="tracking-caption">History temporarily unavailable.</p>';el.innerHTML=h;return;}
         const O=D.objectives||[];
         if(O.length) h+='<div class="db"><p class="db-t">Next objectives<i>due dates</i></p><div class="db-o">'+O.map(o=>{
           const j=o.jours, J=j==null?'—':j<0?'late':j===0?'today':'D-'+j;
-          return '<div><span class="n" style="--c:'+(coul(o.i)||'#3a3a42')+'">'+esc(o.t)+'</span><span class="j'+(j!=null&&j<0?' is-tard':'')+'">'+J+'</span>'
+          const found=TRIPS.filter(t=>t.text===o.t), native=found.length===1?{...found[0],days_left:o.jours}:{id:'',text:o.t,days_left:o.jours,target_at:o.by};
+          return '<div>'+boxTotehm('t',native,{court:true})+'<span class="j'+(j!=null&&j<0?' is-tard':'')+'">'+J+'</span>'
             +'</div>'; }).join('')+'</div></div>';
         h+='<details class="tracking-history"><summary>My TOTEHM history</summary>';
         const heat=D.heat||[];
         h+='<div class="db"><p class="db-t">My activity<i>'+heat.reduce((a,v)=>a+n(v),0)+' gestures · 12 weeks</i></p>'+chaleur(heat,today)+'</div>';
         const F=D.feed||[];
-        if(F.length) h+='<div class="db"><p class="db-t">Lately<i>everything I do in my TOTEHM</i></p><div class="db-f">'+F.slice(0,8).map(f=>
-          '<div><span class="pt" style="--c:'+(coul(f.i)||'#5c5c66')+'"></span><span class="q">'+esc(DIT[f.k]||f.k)+(f.l?' · <em>'+esc(f.l)+'</em>':'')+'</span><time>'+esc(ilya(f.at))+'</time></div>').join('')+'</div></div>';
+        if(F.length) h+='<div class="db"><p class="db-t">Lately<i>everything I do in my TOTEHM</i></p><div class="db-f">'+F.slice(0,8).map(f=>{
+          const bk={habit:'h',objective:'t',repulsion:'r',story:'w',wisdom:'w',vision:'v'}[f.box||String(f.k).split('_')[0]];
+          // A journal label is historical: render its category without inventing current links or an editable source.
+          const preview=bk&&f.l?boxTotehm(bk,{id:'',t:f.l,t0:f.l,text:f.l,is:f.i?[f.i]:[],hs:[],ws:[],os:[]},{court:true}):'';
+          return '<div><span class="pt" style="--c:'+(coul(f.i)||'#5c5c66')+'"></span><div class="q">'+esc(DIT[f.k]||f.k)+(preview|| (f.l?' · <em>'+esc(f.l)+'</em>':''))+'</div><time>'+esc(ilya(f.at))+'</time></div>';
+        }).join('')+'</div></div>';
         const tot=[['habits',T.habits],['objectives',T.objectives],['achieved',T.achieved],['repulsions',T.repulsions],['visions',T.visions],
           ['my story',T.story],['media',T.media],['spots',T.spots],['reflections',T.reflections],['chapters',T.chapters]];
         h+='<div class="db"><p class="db-t">My TOTEHM<i>'+(D.since?'since '+esc(court(D.since))+' · ':'')+n(T.gestes)+' gestures</i></p></div>'

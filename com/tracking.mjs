@@ -2,10 +2,11 @@
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const number=v=>Number.isFinite(Number(v))?Number(v):0;
 const source=ref=>typeof ref==='string'&&ref.length>0&&ref.length<=16000&&ref===ref.trim()&&!/[\u0000-\u001f\u007f]/.test(ref)?'https://www.totehm.com/totehm#'+new URLSearchParams({element:'habit',ref}):null;
-const habitLink=(ref,label)=>source(ref)?'<a href="'+esc(source(ref))+'" title="Open original">'+esc(label)+'</a>':'<span>'+esc(label)+'</span><small>Source link unavailable. Open this Habit directly in your TOTEHM.</small>';
+const habitLink=(ref,label,content=esc(label))=>source(ref)?'<a class="tracking-source" href="'+esc(source(ref))+'" title="Open original">'+content+'</a>':'<div>'+content+'</div><small>Source link unavailable. Open this Habit directly in your TOTEHM.</small>';
 const higher='<svg class="vs-hi" viewBox="0 0 600 200" aria-label="Higher"><use href="#higher-badge"/></svg>';
 export const PRACTICE_REVIEW_PROMPT='Review my reported practice alongside my TOTEHM. Separate Done, Missed and missing reports. Explain what the evidence supports and suggest one small adjustment, without changing my TOTEHM.';
-export function renderPractice(s,{requestedDays=s.days_count}={}){
+export function renderPractice(s,{requestedDays=s.days_count,renderHabit}={}){
+ const habitPreview=h=>habitLink(h.ref,h.habit,renderHabit?renderHabit(h):esc(h.habit));
  const c=s.counts??{},habits=s.habits??[],days=s.days??[],settings=s.settings??{},span=number(s.days_count)||7,coverage=s.coverage??{};
  const answered=number(c.answered),pending=number(c.pending),unanswered=number(c.unanswered);
  const observed=coverage.observed_habits??habits.filter(h=>number(h.reports)>0||number(h.attempts)+number(h.unanswered)>0).length;
@@ -22,7 +23,7 @@ export function renderPractice(s,{requestedDays=s.days_count}={}){
  let matrix='<div class="tracking-scroll" tabindex="0" role="region" aria-label="Habit reports by day"><div class="tracking-matrix'+(days.length<=7?' is-week':'')+'" style="--tracking-days:'+days.length+'"><span class="tracking-name"></span>'+days.map(d=>'<span class="h" title="'+esc(d.day)+'">'+esc(new Date(d.day+'T12:00:00').toLocaleDateString('en-GB',{day:'numeric'}))+'</span>').join('');
  for(const h of habits){
   const cells=h.day_counts??(h.days??[]).map((v,i)=>({day:days[i]?.day,...(legacy[v]?{[legacy[v]]:1}:{})}));
-  matrix+='<div class="db-n tracking-name">'+habitLink(h.ref,h.habit)+'<small>'+number(h.done)+' done · '+number(h.missed)+' missed · '+number(h.unanswered)+' unknown'+(number(h.partial)?' · '+number(h.partial)+' in part':'')+(number(h.skipped)?' · '+number(h.skipped)+' set aside':'')+'</small></div>';
+  matrix+='<div class="db-n tracking-name">'+habitPreview(h)+'<small>'+number(h.done)+' done · '+number(h.missed)+' missed · '+number(h.unanswered)+' unknown'+(number(h.partial)?' · '+number(h.partial)+' in part':'')+(number(h.skipped)?' · '+number(h.skipped)+' set aside':'')+'</small></div>';
   for(let i=0;i<days.length;i++){
    const v=cells[i]??{},done=number(v.done),missed=number(v.missed),partial=number(v.partial),skipped=number(v.skipped),unknown=number(v.unanswered),waiting=number(v.pending);
    const values=[done,missed,partial,skipped,unknown,waiting],labels=['done','missed','in part','set aside','unknown','pending'];
@@ -35,7 +36,7 @@ export function renderPractice(s,{requestedDays=s.days_count}={}){
  html+='<div class="db"><p class="db-t">My Habits<i>'+span+' days · open an original</i></p>'+(habits.length?matrix:'<p class="db-vide">Your first Habit starts the system.</p>')
   +'<p class="tracking-caption">✓ Done · × Missed · ? no response · … pending'+(number(c.partial)||number(c.skipped)?' · ◐ in part · · set aside':'')+'</p></div>';
  const missed=habits.filter(h=>number(h.missed)>=2).sort((a,b)=>number(b.missed)-number(a.missed))[0];
- if(missed)html+='<div class="db"><p class="db-t">Worth a look<i>'+span+' days</i></p><p class="tracking-caption">'+number(missed.missed)+' Missed reports for '+habitLink(missed.ref,'this Habit')+'. The reports do not explain why.</p></div>';
+ if(missed)html+='<div class="db"><p class="db-t">Worth a look<i>'+span+' days</i></p><p class="tracking-caption">'+number(missed.missed)+' Missed reports for this Habit. The reports do not explain why.</p><div class="tracking-focus">'+habitPreview(missed)+'</div></div>';
  const t=s.trend??{};
  if(t.state==='more_done'||t.state==='fewer_done')html+='<div class="db"><p class="db-t">Two weeks compared<i>reported attempts</i></p><p class="tracking-caption">'+number(t.recent_done)+' / '+number(t.recent_attempts)+' Done, compared with '+number(t.previous_done)+' / '+number(t.previous_attempts)+' previously. This describes your reports.</p></div>';
  else if(t.state==='insufficient')html+='<p class="tracking-caption">More comparable reports are needed before describing a trend.</p>';
