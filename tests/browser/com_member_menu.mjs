@@ -113,9 +113,14 @@ try{
   }
   for(const path of ['/search','/console','/monetize']){
    const{pg,ctx,log}=await ready(browser,{rpc:{...rpc,my_console:{...base,offer:{enabled:true}}}});await pg.goto(origin+path);await pg.waitForFunction(()=>document.querySelector('[data-com-monetize]')?.textContent==='My monetization');await pg.click('#member');
-   ok(await pg.locator('#menu .cm-item').count()===7&&await pg.getAttribute('[data-com-monetize]','href')==='/console',path+' keeps the same seven actions and server-derived offer state');
+   ok(await pg.locator('#menu .cm-item').count()===6&&await pg.getAttribute('[data-com-monetize]','href')==='/console',path+' keeps six actions with free Higher GPT and server-derived offer state');
+   ok(await pg.locator('#menu a[href="/chatgpt"]').count()===1&&!await pg.locator('#menu a[href="/higher"],#menu a[href="/higherself"]').count(),path+' offers the free connector without obsolete Higher sales');
    ok(await pg.$eval('#menu',e=>e.lastElementChild.textContent.trim().toLowerCase())==='simple terms of use',path+' ends its menu with terms');
    ok(!log.errors.some(e=>e.startsWith('pageerror')),path+' has no runtime errors');await ctx.close();
+  }
+  for(const path of ['/higher']){
+   const{pg,ctx,log}=await ready(browser);await pg.goto(origin+path);await pg.waitForURL('**/chatgpt');
+   ok(!log.functions.some(f=>f.name==='higher-sub')&&!log.errors.some(e=>e.startsWith('pageerror')),path+' opens free Higher GPT without checkout');await ctx.close();
   }
   {const{pg,ctx,log}=await ready(browser,{session:false,viewport:{width:1280,height:900}});await pg.goto(origin+'/monetize');await pg.waitForFunction(()=>window.__totehm_monetize?.().signed_in===false);await pg.waitForTimeout(300);
    /* 16/10 — la page ne montre plus que SA part (la doctrine du grand livre : on affiche sa part, pas le brut),

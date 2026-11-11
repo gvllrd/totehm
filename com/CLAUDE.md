@@ -10,12 +10,12 @@
 | `chatgpt.html` | `/chatgpt` | entrée sans `www` redirigée vers l’origine OAuth `https://www.totehm.com` (requête conservée) ; anciens consentements = 5 outils personnels, reconnexion explicitement consentie = 10 ; Higher SVG ; aucun état connecté sans jeton confirmé ; lien Practice sharing vers les réglages, partage des bilans séparé du consentement des boxes |
 | `auth.html` | `/auth` | l'autorité SSO des quatre domaines (`sso-mint`) |
 | `creator.html` | `/@nom` · `/search` | la page d'un membre : lisible, réservé (flouté), Subscribe |
-| `higher.html` | `/higher` | la vente de l'abonnement Higher (`higher-sub`) |
+| `higher.html` | `/higher` | ancien lien retiré, redirigé vers `/chatgpt` gratuit |
 | `console.html` | `/console` | l'ancienne console, encore cible des retours Stripe et des satellites |
 | `monetize.html` · `terms.html` | | la plaquette créateur · les conditions |
-| `higherself.html` · `map.html` · `spot.html` · `club/totehmbot.html` | | ce qu'ouvre TotehmBot (Telegram) |
+| `map.html` · `spot.html` | | les lieux ouverts depuis les liens natifs |
 
-`vercel.json` : `/x/space` → SPACE (SUR PLACE, `XO`) ; `/x/club` ne sert que `spot.html` (TotehmBot), aucun cadre Club dans l'app ; `/club` → figher.club ; `/vendor`, `/cities.json`, `/assets/signs` → SPACE ; Telegram n'encadre que `/higherself`.
+`vercel.json` : `/x/space` → SPACE (SUR PLACE, `XO`) ; `/x/club` ne sert que `spot.html` (TotehmBot), aucun cadre Club dans l'app ; `/club` → figher.club ; `/vendor`, `/cities.json`, `/assets/signs` → SPACE ; Les anciens `/higher` et `/higherself` (aussi `.html`) vont à `/chatgpt` ; `/club/totehmbot` va aux réglages du bot.
 
 ## Les 5 vues dans `totehm.html` (`grep -n` le repère)
 
@@ -31,8 +31,10 @@
 | MEMBERS | `const MB=` → `chercher` (calquée sur le clic : traits aspirés ; un geste de la croix la referme, `annuler`, puis voyage) → `totehm_read` (box par box) → `entrerChez()` : ses médias, son TOTEHM, ses spots, son offre (`OFFRE`) ; à abonnement : `verrouiller()` (`lv-verrou`, sa palette, l'offre `#mb-lock` sous le papier, tap = `LV.offrir` ; ↑ ↓ ouverts, ← → désignent l'offre) |
 | la liste du TOTEHM déployé | `/* ══ LA BOÎTE` (une Habit : why · trigger · ses médias · ses spots ; [Add a media] → ←, [Add a spot] → →) · `/* ══ LES TROIS VUES` · `/* ══ LES ÉCRITURES` · `#vnow` (le titre, en haut au centre) · `const INTS=` · la manette `#joy` = celle de l'atterrissage (`#lvj-box`), hors de tout cadre : un puits rond, un manche dont la couleur = la vue (`--joy-vue`, `TEINTE`) ; module `manette` (`RAYON` 10, `SEUIL` 6, comme `manetteLV`) ; ordinateur : dans la bande noire sous le carré (`--lvj-b`), `--stage` cède sur un écran bas pour la lui garder |
 | VX, au-dessus du TOTEHM déployé | `const VX=` : [Visualize it] (`VX.media`) et une mini-box spot (`VX.spot`, `club_spots_of` + `habit`, 3 temps) PRÊTENT la visionneuse de la vue (`SH/SHS.montrer` → `#vx`, `cacher` la rend) ; `caler` : l'image TELLE QU'ELLE, en haut, la box juste dessous (`--dy`) ou sur le bas d'un portrait ; `__totehm_vx()` |
-| la session | `/* ══ LA SESSION` · `sessionChange` · `sesWait` · cache `totehm_habits_v1` ; Higher payant actif et `?higher=open` → `/higherself` autonome ; `?higher=paid` → réglages abonnement du verso, jamais le pitch gratuit. |
+| la session | `/* ══ LA SESSION` · `sessionChange` · `sesWait` · cache `totehm_habits_v1` ; anciens `?higher=open` / `?higher=paid` → `/chatgpt` gratuit ; aucun lecteur d’accréditation payante dans l’app. |
 Diagnostics : `__totehm_lv()` (`.refus` : pourquoi un geste est refusé ; à l'écran : `/totehm?diag=1`) · `__totehm_xo()` · `__totehm_sh()` · `__totehm_rdr()` · `__totehm_carte()` · `__totehm_nspot()` · `__totehm_zone()` · `__totehm_save()` · `__totehm_retour()`.
+
+Seuls les abonnements aux créateurs sont proposés. Higher GPT et TotehmBot sont gratuits ; les menus des pages secondaires suivent `tools/com_member_menu.js`, sans vente Higher. La console garde les abonnements créateurs et le portail de facturation historique.
 
 ## Les pièges
 - Hors du TOTEHM, une box est rendue par les rendus de la liste (`boxTotehm`), jamais une copie.
@@ -43,14 +45,12 @@ Diagnostics : `__totehm_lv()` (`.refus` : pourquoi un geste est refusé ; à l'�
 - Un verrou de navigation se rend toujours ; un geste reçu pendant un voyage OU le repli du TOTEHM attend sa fin (`guetter`,
   1,5 s au plus). Tout geste de navigation est un MANCHE (il va où il pousse : doigt, trackpad, souris, manette, papier) SAUF dans la liste du TOTEHM déployé (`#fv-inner`) : là il suit le défilement (plus bas que le bas → la vue du dessous) ;
   et il POUSSE le manche à l'écran — `POUSSE_JOY` (app), `POUSSE_LVJ` (atterrissage) : 240 ms, puis retour au centre ;
-  la main posée sur la manette commande seule (`DU_MANCHE`, `DU_LVJ`). Trackpad : un geste ET son inertie = UNE vue (le
-  verrou se prolonge tant que l'inertie dure : atterrissage, manette, liste — sinon deux vues d'un geste, mesuré).
+  la main posée sur la manette commande seule (`DU_MANCHE`, `DU_LVJ`). Trackpad : un geste ET son inertie = UNE vue (le verrou se prolonge tant que l'inertie dure : atterrissage, manette, liste — sinon deux vues d'un geste, mesuré).
 - Session gardée : ni la vente ni CONNECT avant la fin de la lecture ; aucune écriture avant `cloudLoad`, et le cache ne l'emporte que pour une saisie en ATTENTE. Ne jamais redéfinir `--perfo`.
 - Le socle `#lv-socket` ne se voit plus (le TOTEHM est le boîtier, `--sk` = le papier + 6 px) mais il donne la taille du
   boîtier et devient l'anneau du profil : ne pas le retirer. `enter()` aspire AVANT de mesurer (le cœur grossit le papier). Verso, clic, recherche = `LV.aspirer(true)` ; chaque
   sortie doit rendre `LV.aspirer(false)` (sinon le réseau reste caché). Fin du portail = l'app au pixel (papier `--paper`).
-- Verso : le dos du papier porte le NOM seul ; déplié, tout ce qui n'est pas le nom porte `.srch-after` et n'apparaît
-  qu'à `is-pret` (verso déployé ET console lue, 1,8 s au plus) — un nœud ajouté au verso sans `.srch-after` s'affiche trop tôt.
+- Verso : le dos du papier porte le NOM seul ; déplié, tout ce qui n'est pas le nom porte `.srch-after` et n'apparaît qu'à `is-pret` (verso déployé ET console lue, 1,8 s au plus) — un nœud ajouté au verso sans `.srch-after` s'affiche trop tôt.
 - Verso déplié : `#self-h` à même le navy, collé en haut (bandeau `#333366` à `is-pret` seulement, `top` compense le padding de
   `#srch-ui`) ; l'email (`#self-mail`) dessous ; le pied = `.vs-acts` (Delete, Sign out) puis les conditions. Gris lisibles ≥ #b8b8c2.
 - **Visibilité** : une box est BINAIRE, privée par défaut — une ligne de mots dans la box OUVERTE (`.baud` : `.baud-o` PRIVATE · VISIBLE TO
