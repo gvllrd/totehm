@@ -1,6 +1,6 @@
 # boutique/CLAUDE.md — higher.boutique
 
-> L'état ACTUEL et les pièges (≤ 60 lignes). Le sens d'un vêtement : `BRAND.md`. Un lot réécrit ces lignes, en place.
+> L'état ACTUEL et les pièges (≤ 60 lignes). Le sens d'un vêtement : `BRAND.md`. Un lot réécrit ces lignes, en place. **Règle n° 1 : les boxes sont le branding essentiel ; conserver partout leur rendu natif intégral, sans réinterprétation locale (voir `BRAND.md`, règle n° 1).**
 
 Des vêtements totehmisés : **n'importe quelle box** d'un membre, un style déterminé, produits par Printful. Higher GPT prépare sur demande un lien vers la sélection native : UUID/numérique en `?wear=kind:ref`, Habit sans libellé en query. SSO et `my_trips` revérifient le propriétaire ; aucune commande, photo ou style n’est sélectionné par le helper.
 **Totehmiser demande un Totehm et UNE box, pas les cinq vues** (08/11, Wah) : la porte lit `totehm_complete().any`, côté page ET dans `create-checkout` ; `complete` reste la règle du Club et des autres portes.

@@ -1,6 +1,6 @@
 # space/CLAUDE.md — totehm.space
 
-> L’état actuel (≤ 60 lignes). Les mesures de livraison vivent dans les commits.
+> L’état actuel (≤ 60 lignes). Les mesures de livraison vivent dans les commits. **Règle n° 1 : les boxes sont le branding essentiel ; conserver partout leur rendu natif intégral, sans réinterprétation locale (voir `BRAND.md`, règle n° 1).**
 
 Lisbon retrouve le bâtiment intact du commit `c8ddaf0` : façade d’azulejos cobalt et ivoire, douze fenêtres sur trois rangées, huit balcons en fer et cinquante-huit balustres, prolongée par un toit de verre ondulé. New York conserve son château asymétrique en ruine, son donjon, ses trois baies voûtées et son grand volume de verre à toit plan incliné. Les deux galeries restent de plain-pied ; Lisbon garde sa calçada extérieure aux vagues et à la caravelle, New York sa pierre ancienne continue. L’île, la mer déchaînée, le ciel étoilé, le feu et les œuvres indépendantes sont communs.
 Vercel dirige le Portugal vers `/lisbon-space`, les autres pays ou le pays inconnu vers `/new-york` ; ces deux entrées réécrivent vers `/`. Pays issu de l’IP, sans GPS ni certitude physique ; `/lisbon` reste l’œuvre Lisbon.

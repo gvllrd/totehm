@@ -3,6 +3,10 @@
 > Lu à chaque session, ≤ 100 lignes, au PRÉSENT. Un domaine : `<dossier>/CLAUDE.md`. La marque : `BRAND.md`.
 > La carte des fichiers : `README.md`. L'histoire : `git log` (rien d'autre).
 
+## Règle n° 1 — les boxes sont la marque
+
+**Règle n° 1 — les boxes sont un invariant de marque.** Toute représentation visuelle d’un élément du TOTEHM, dans le TOTEHM ou ailleurs dans l’écosystème, conserve strictement sa box native : forme, couleur de catégorie, typographie, proportions, traits d’intention et états. Réutiliser le rendu de référence ; aucun composant, carte, badge ou style local ne le réinterprète. Une évolution se fait à la source puis se répercute partout, jamais sur un seul écran.
+
 ## Qui fait quoi
 
 | qui | fait |
