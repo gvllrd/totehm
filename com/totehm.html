@@ -13810,13 +13810,13 @@ window.addEventListener('pageshow',e=>{
         const T=D?.totals||{}, today=D?.today;
         let h='';
 
-        if(P?.ok)h+=renderPractice(P,{requestedDays:period,renderHabit:h=>boxTotehm('h',(state.habits||[]).find(x=>x.t===h.ref)||{id:'',t:h.habit,t0:h.habit,is:h.intentions||[],f:h.frequency},{court:true})});
+        if(P?.ok)h+=renderPractice(P,{requestedDays:period,renderHabit:h=>boxTotehm('h',(!RO&&(state.habits||[]).find(x=>x.t===h.ref))||{id:'',t:h.habit,t0:h.habit,is:h.intentions||[],f:h.frequency},{court:true})});
         else h+='<p class="tracking-caption">Practice is unavailable for the moment. Your reports have not been changed.</p>';
         if(!D){h+='<p class="tracking-caption">History temporarily unavailable.</p>';el.innerHTML=h;return;}
         const O=D.objectives||[];
         if(O.length) h+='<div class="db"><p class="db-t">Next objectives<i>due dates</i></p><div class="db-o">'+O.map(o=>{
           const j=o.jours, J=j==null?'—':j<0?'late':j===0?'today':'D-'+j;
-          const found=TRIPS.filter(t=>t.text===o.t), native=found.length===1?{...found[0],days_left:o.jours}:{id:'',text:o.t,days_left:o.jours,target_at:o.by};
+          const found=RO?[]:TRIPS.filter(t=>t.text===o.t), native=found.length===1?{...found[0],days_left:o.jours}:{id:'',text:o.t,days_left:o.jours,target_at:o.by};
           return '<div>'+boxTotehm('t',native,{court:true})+'<span class="j'+(j!=null&&j<0?' is-tard':'')+'">'+J+'</span>'
             +'</div>'; }).join('')+'</div></div>';
         h+='<details class="tracking-history"><summary>My TOTEHM history</summary>';
