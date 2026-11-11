@@ -53,6 +53,7 @@ const db={from:table=>new Query(table),rpc:async(name,args)=>{
  assert.equal(name,'chatgpt_read_ecosystem','Only the native ecosystem permission reader is used');
  assert.equal(args.p_grant,G,'Native reads remain bound to the validated opaque grant');
  if(args.p_action==='members')return {data:{ok:true,items:MEMBERS.filter(w=>subscribed.has(w)).map(pseudo=>({pseudo})),has_more:false,next_offset:3},error:null};
+ if(args.p_action==='spots'&&args.p_pseudo===null)return {data:{ok:true,items:[{id:SPOT,creator:'club_member_not_subscribed',habit:HABIT,city:args.p_filters.city??'Lisbon',state:args.p_period==='future'?'will':'am',duration_min:60,exact:{place:'Club rehearsal room',lat:38.7654321},habit_box:{name:HABIT}}],has_more:false,next_offset:1},error:null};
  const who=args.p_pseudo;
  assert(MEMBERS.includes(who),'Each foreign resource request names a subscribed creator');
  if(!subscribed.has(who))return {data:{ok:false,why:'unavailable'},error:null};
@@ -115,6 +116,34 @@ const exact=response.data.result.structuredContent;
 check(exact.resources.elements.length===1&&exact.resources.elements[0].element.source.member===MEMBERS[2],'An exact member read can deepen the third creator without confusing attribution');
 check(exact.resources.elements[0].spots.future.items[0].member===MEMBERS[2],'Exact depth retrieves the selected creator venue');
 
+const extraStart=resourceReads();
+response=await tool('get_ecosystem_context',{...args,include_boutique:true,include_club_spots:false});
+check(response.data.result.structuredContent.personal.boutique.available&&!response.data.result.structuredContent.club_plan&&resourceReads()===extraStart,'A free boutique handoff does not read media, venues or global Club spots');
+for(const field of ['include_boutique','include_club_spots'])for(const flag of ['true',null,1]){
+ const n=native.length,own=reads.length;
+ response=await tool('get_ecosystem_context',{...args,[field]:flag});
+ check(response.data.error?.code===-32602&&native.length===n&&reads.length===own,'Invalid planning flag is rejected before source retrieval');
+}
+const globalStart=native.length;
+response=await tool('get_ecosystem_context',{...args,include_resources:true,include_boutique:true,include_club_spots:true,club_city:'Lisbon'});
+const prepared=response.data.result.structuredContent;
+check(prepared.personal.resources&&prepared.personal.boutique&&prepared.members[0].resources&&prepared.club_plan,'One explicit preparation combines personal choices, creator resources, Club opportunities and boutique locators');
+check(prepared.club_plan.now.items[0].member==='club_member_not_subscribed'&&prepared.club_plan.future.items[0].period==='future','Club opportunities are not restricted to creator subscriptions');
+check(native.slice(globalStart).filter(q=>q.args.p_action==='spots'&&q.args.p_pseudo===null).every(q=>q.args.p_limit===3&&q.args.p_filters.city==='Lisbon'),'Explicit global discovery remains bounded and uses the supplied city');
+check(prepared.members.every(m=>!m.boutique)&&prepared.personal.boutique.order_created===false&&prepared.personal.boutique.photos_selected===false,'Reading creator inspiration never adopts it into a garment or creates an order');
+check(prepared.personal.boutique.candidates.every(c=>new URL(c.url).search===''),'Habit text is not exported into boutique query strings');
+const noCityStart=native.length;
+response=await tool('get_ecosystem_context',{...args,include_club_spots:true});
+check(response.data.result.structuredContent.club_plan.city===null&&native.slice(noCityStart).filter(q=>q.args.p_action==='spots').every(q=>!('city' in q.args.p_filters)),'Current location is not guessed when no city is supplied');
+response=await tool('get_ecosystem_context',{...args,include_club_spots:true,club_city:''});
+check(response.data.error?.code===-32602,'A blank supplied city is not a valid location filter');
+data.objectives.push({user_id:A,id:OBJECTIVE,text:'My recorded creative direction',status:'active'});
+response=await tool('read_element',{kind:'objective',ref:OBJECTIVE,include_boutique:true});
+check(new URL(response.data.result.structuredContent.boutique.candidates[0].url).searchParams.get('wear')==='objective:'+OBJECTIVE,'An exact personal non-text reference opens the existing native boutique selection');
+data.objectives.pop();
+response=await tool('read_member_element',{member:MEMBERS[0],kind:'habit',ref:HABIT,include_boutique:true});
+check(response.data.error?.code===-32602,'A foreign creator element cannot request a personal boutique handoff');
+
 ownerMediaUnavailable=true;
 response=await tool('get_context',{...args,include_resources:true});
 const partial=response.data.result.structuredContent.resources;
@@ -144,6 +173,6 @@ check(response.data.result.structuredContent.resources.metadata_only&&native.len
 
 ecosystem=true;revoked=true;
 before=resourceReads();const ownerBefore=reads.length,nativeBefore=native.length;
-response=await tool('get_ecosystem_context',{...args,include_resources:true});
+response=await tool('get_ecosystem_context',{...args,include_resources:true,include_boutique:true});
 check(response.status===401&&resourceReads()===before&&reads.length===ownerBefore&&native.length===nativeBefore,'A revoked opaque grant is rejected before any personal or foreign resource read');
 console.log(JSON.stringify({suite:'Higher rich-resource HTTP orchestration',checks,passed:checks,scope:'Synthetic native reader fixtures; production ACL behavior is covered separately by SQL tests'}));

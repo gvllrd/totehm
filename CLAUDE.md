@@ -20,12 +20,13 @@ Push sur `main` = mise en ligne ; jamais réécrire l'historique.
 |---|---|---|
 | totehm.com | `com/` | l'écosystème : les 5 vues, la creator economy (s'abonner à un membre = entrer dans son écosystème), l'abonnement Higher, la recherche d'un membre |
 | figher.club | `club/` | le prolongement de la vue Spots : chercher, publier des spots, se rencontrer |
-| higher.boutique | `boutique/` | les vêtements totehmisés, un style artistique déterminé, à partir des boxes MY STORY ; production n8n |
+| higher.boutique | `boutique/` | les vêtements totehmisés, un style artistique choisi, à partir de toute catégorie personnelle ; une box suffit, production n8n |
 | totehm.space | `space/` | Lisbon au Portugal : bâtiment intact aux azulejos bleu/blanc de `c8ddaf0`, douze fenêtres, huit balcons et toit de verre ondulé ; New York ailleurs selon Vercel : château en ruine, donjon et verre à toit plan incliné ; plain-pied, mer, ciel et œuvres indépendantes conservés |
 
 **Deux fois cinq vues.** totehm.com : ↑ Get Higher (commune à tous) · ← mes médias · ● mon TOTEHM · → les spots ·
 ↓ Higher my ChatGPT (connexion gratuite, lecture seule autorisée) ; ← ● → = l'écosystème d'un membre, ouvert par l'abonnement à ce membre.
 Le TOTEHM déployé : HABITS · OBJECTIVES · REPULSIONS · VISIONS · MY STORY. **Les boxes sont sacrées** : un seul rendu.
+Higher GPT prépare à la demande un prochain pas avec médias, spots personnels, inspirations des abonnements et spots Club autorisés ; passage facultatif vers higher.boutique, sans commande automatique. La connexion est gratuite ; abonnements créateurs et fabrication gardent leurs propres conditions.
 Le suivi : TOTEHM = choix ; TotehmBot = notification privée + Done/Missed ; dashboard = faits sur 7/28 jours et configuration du bot, sans bloc Higher subscription ; Higher ChatGPT = un ajustement proposé à la demande, après partage explicite. Silence = inconnu, pas un échec ; historiques partiel/mis de côté conservés. Aucun changement automatique des cinq vues.
 
 ## L'architecture

@@ -104,7 +104,7 @@ export class ContextReadError extends Error {
   }
 }
 
-const INTENTIONS = ["fight", "flow", "enrich", "love", "express", "focus", "celebrate"];
+export const INTENTIONS = ["fight", "flow", "enrich", "love", "express", "focus", "celebrate"];
 const KINDS: ElementKind[] = ["habit", "objective", "repulsion", "vision", "wisdom"];
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const MAX_ROWS = 400;
