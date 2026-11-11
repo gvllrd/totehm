@@ -531,21 +531,6 @@ body.ro #vnow{top:calc(max(10px,env(safe-area-inset-top)) + 30px + var(--ro-h))}
 /* Le nom de la vue, sous les carrés, centré comme eux. */
 /* `#vname` a disparu ; `#vnow` porte le nom de la vue courante. */
 .higher-inline{height:1.5em;width:auto;display:inline-block;vertical-align:-.32em}
-/* ══ HIGHER : EXCLUSIVITÉ ABSOLUE ══
-   Slogan, bouton, badge : rien de la marque HIGHER ne paraît tant que
-   `body.higher` n'est pas posée — et elle ne l'est que pour un membre
-   connecté qui a un abonnement VIVANT **et** la méthode Stoner faite sur
-   totehm.com. Masqué PAR DÉFAUT, en CSS : si la vérification échoue, si le
-   réseau tombe, si le JS casse, rien ne s'affiche. L'inverse — afficher
-   puis retirer — laisse toujours une fenêtre où l'exclusivité fuit. */
-.higher-only{display:none!important}
-body.higher .higher-only{display:revert!important}
-body.higher a.higher-only,body.higher .higher-only.btn-sig{display:inline-block!important}
-/* Le conteneur aussi : masquer seulement le lien laissait une boite de
-   hauteur 0 qui consommait quand meme les 12px de `gap` du menu, au-dessus
-   ET en dessous. `revert` rendrait `display:block` et casserait le flex. */
-body.higher .set-block.higher-only{display:flex!important}
-
 /* menu-row : structure d'un bouton-saisie (Name of your Totehm, Search a Totehm) */
 .menu-row{display:flex;flex-direction:column;align-items:center;gap:8px;width:100%}
 
@@ -3335,8 +3320,7 @@ body.lv-b:not(.lv-membre):not(.lv-verrou) #lv-socket{opacity:0}
 #lv-card #name-btn.claimed{display:none}
 #lv-card #set-name{caret-color:#fbd5ca;width:220px}
 .vs{display:flex;flex-direction:column;gap:2px;width:100%}
-/* Deux mondes, deux titres : ce que je GAGNE (Monetize my TOTEHM) et ce que j'ACHÈTE pour moi ([Higher] subscription),
-   puis les TOTEHMs que je suis. Le titre se pose sur le papier, au-dessus de ses boîtes noires. */
+/* Creator income and subscriptions live in Monetize; practice and bot configuration in the dashboard. */
 .vs-head{display:flex;flex-direction:column;gap:5px;padding:0 2px 8px;text-align:left}
 .vs-t{margin:0;display:flex;align-items:center;gap:8px;font:700 12px/1.2 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#fff}
 .vs-t .vs-hi{width:66px;height:22px}
@@ -5118,7 +5102,7 @@ let me=null, myProfile=null, cloudMode=false, cloudSaveTimer=null, saveTimer=nul
 /* 11/10 : la connexion invité (anonyme) est-elle ouverte côté Auth ? Lu plus bas. */
 let ANON_OK=false;
 /* 07/10 : l'atterrissage lit UN appel (`my_landing`) — ma vignette, la visibilité
-   et l'offre de mon Totehm, mon abonnement Higher, mon THP, Telegram. Peint par
+   et l'offre de mon Totehm, mon THP, Telegram. Peint par
    la croix (`lvRefresh`), vidé au changement de compte (`lvQuitter`). */
 let LAND=null, lvRefresh=null, lvPeindre=null, lvQuitter=null, lvReglages=null, lvMembreBoot=null, lvVersMembre=null, lvAller=null;
 /* 20/10 sexies — LES MÉDIAS DU MEMBRE QUE JE LIS (`member_media` : ceux dont la box m'est partagée), pour sa vue de gauche. */
@@ -7925,9 +7909,8 @@ function renderHabits(){ return renderZone(); }
 
    Confirmation a deux temps, sans popup : le bouton s'arme, se nomme, et se
    desarme seul au bout de 6 s. Un clic distrait ne peut pas suffire. */
-let wipeArmed=0, mySub=null;
+let wipeArmed=0;
 async function refreshSub(){
-  mySub = me ? await loadSubscription() : null;
   acctPaint();
 }
 function acctPaint(){
@@ -7959,7 +7942,7 @@ $('acct-wipe').onclick=async()=>{
     /* Le local doit suivre le serveur, sinon le prochain cloudSave
        reecrirait ce qu'on vient d'effacer. */
     state={habits:[],vis:'private'};
-    myProfile=null; cloudMode=false; mySub=null;
+    myProfile=null; cloudMode=false;
     cacheOublier();
     renderHabits(); connPaint(); renderSettings();
     /* Sans nom, plus inscrit : le tiroir se ferme, et la porte du papier
@@ -8047,10 +8030,8 @@ function openHabitPeek(i){
   const s=state.habits[i]; if(!s||!s.f||!s.i)return;
   const x=INT_BY_ID[s.i]||null;
   $('hp-freq-val').textContent=flabel(s.f);
-  /* Le badge n'est plus collé à CHAQUE intention : il ne veut rien dire
-     s'il est partout. Il ne paraît que si le membre le porte vraiment. */
   $('hp-int-val').innerHTML=x
-    ? '<span style="color:'+x.color+'">'+T_SVG+' '+x.name+'</span>'+(myHigher?' '+HI_SVG:'')
+    ? '<span style="color:'+x.color+'">'+T_SVG+' '+x.name+'</span>'
     : '';
   $('hp-int-def').textContent=x?(x.def||''):'';
   $('hp-freq').onclick=()=>{closeHabitPeek();openFreqPanel(i,'freq');};
@@ -8219,7 +8200,6 @@ function renderFpInts(currentId){
     b.className='fp-int'+(x.id===currentId?' on':'');
     b.innerHTML='<span style="color:'+x.color+'">'+T_SVG+'</span>'
       +'<span class="nm" style="color:'+x.color+'">'+esc(x.name)+'</span>'
-      +(myHigher?'<svg class="higher-inline" viewBox="0 0 600 200" aria-label="Higher" role="img"><use href="#higher-badge"></use></svg>':'')
       +'<span class="df">'+esc(x.def)+'</span>'
       +'<span class="fp-pillar">'+esc(x.pillar)+'</span>';
     b.onclick=()=>applyIntent(x.id);
@@ -8390,7 +8370,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-11-10-quiet-practice';
+const BUILD='2026-11-11-creator-economy';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -11239,7 +11219,6 @@ function paintAsteroid(){
 if(document.fonts&&document.fonts.ready) document.fonts.ready.then(paintAsteroid);
 async function loadProfile(){
   if(!me){myProfile=null;cloudMode=false;connPaint();return;}
-  loadHigher().then(connPaint);
   refreshSub();
   const {data}=await sb.from('profiles').select('pseudo').eq('id',me.id).maybeSingle();
   myProfile=data||null;
@@ -11257,58 +11236,6 @@ async function loadProfile(){
    NOM : le brief disait « Figher Club ». Je l'ai lu « Higher Club » — cohérent
    avec la marque HIGHER omniprésente (asset #higher-word, « Get Higher »…).
    Pour revenir en arrière : change simplement CLUB.name ci-dessous. */
-
-/* Lit l'abonnement de l'utilisateur. Rien n'est écrit depuis le client :
-   c'est le webhook du fournisseur de paiement qui fait foi. */
-/* Deux chemins, deux objets en base, aucun email côté client :
-   ma propre accréditation vient de stoner_access, protégée par une policy
-   « ma ligne » ; celle d'autrui vient de la vue higher_badges, qui n'expose
-   que l'id et le pseudo. */
-let myHigher=false;
-const HI_SVG='<span class="hi-badge" title="Higher"><svg viewBox="0 0 600 200" aria-label="Higher" role="img"><use href="#higher-badge"></use></svg></span>';
-/* Un seul endroit pose la classe, un seul endroit la retire : le drapeau et
-   l'affichage ne peuvent pas diverger. */
-function paintHigher(){
-  document.body.classList.toggle('higher',!!myHigher);
-  /* Plus d'iframe à prévenir : `body.higher` suffit, tout est dans ce
-     document et lit la même classe. */
-}
-async function loadHigher(){
-  myHigher=false; paintHigher();
-  if(!me)return;
-  try{
-    /* ══ DEUX CONDITIONS, PAS UNE ══
-       Le badge disait « j'ai fait la méthode Stoner ». Il doit dire
-       « je suis membre actif ET j'ai fait la méthode » — c'est l'engagement
-       complet dans l'écosystème qu'il valorise, pas un achat isolé sur .com.
-       La RLS de `stoner_access` restreint déjà la lecture à sa propre ligne
-       (lower(email) = lower(auth.jwt()->>'email')) : le front ne peut pas
-       lire celle d'un autre, et ne décide de rien tout seul. */
-    const [{data:st},{data:sub}]=await Promise.all([
-      sb.from('stoner_access').select('granted_at').limit(1),
-      sb.from('subscriptions').select('status').eq('user_id',me.id)
-        .in('status',['active','trialing']).limit(1)
-    ]);
-    myHigher=!!(st&&st.length&&st[0].granted_at) && !!(sub&&sub.length);
-  }catch(_){ myHigher=false; /* illisible = pas de badge, jamais d'erreur */ }
-  paintHigher();
-}
-async function isHigher(profileId){
-  if(!me||!profileId)return false;
-  try{
-    const {data}=await sb.from('higher_badges').select('id').eq('id',profileId).limit(1);
-    return !!(data&&data.length);
-  }catch(_){ return false; }
-}
-async function loadSubscription(){
-  if(!me) return null;
-  try{
-    const {data}=await sb.from('subscriptions')
-      .select('tier,status,current_period_end,cancel_at_period_end')
-      .eq('user_id',me.id).maybeSingle();
-    return data||null;
-  }catch(e){ return null; }
-}
 
 function memberPaint(){
   $('mw-out-state').classList.toggle('hide',!!me);
@@ -11598,7 +11525,7 @@ let sesSeq=0;
 function quitter(){
   trackingControls.reset();
   roSeq++; HSPACES.seq++; HSPACES.par=new Map(); ECLOTHS.seq++; ECLOTHS.par=new Map(); visImgSeq++; VISIMG.clear(); ZOOM.clear(); COPIES.clear();
-  state={habits:[],vis:'private'}; myProfile=null; cloudMode=false; mySub=null; LAND=null; if(lvQuitter) lvQuitter();
+  state={habits:[],vis:'private'}; myProfile=null; cloudMode=false; LAND=null; if(lvQuitter) lvQuitter();
   EMEDIA.seq++; EMEDIA.items=[]; EMEDIA.par=new Map(); EMEDIA.charge=false; SIGNE_EM.clear(); SH.vider(); SHS.vider(); BADGE.vider(); CAP.fermer();
   TRIPS=[]; REPS=[]; TEACH=[]; VIS=[]; OBJ={}; tripsLoaded=false; AUDB.vider();
   cacheOublier();
@@ -13958,17 +13885,9 @@ window.addEventListener('pageshow',e=>{
         history.replaceState(null,'',location.pathname);
         setTimeout(()=>{ if(k==='spot') VX.spot(id,''); else XO.ouvrir('space','spot='+encodeURIComponent(id)); },0); } }
 
-    /* Les retours Higher payants restent dans leur parcours ; ChatGPT est une entrée gratuite distincte. */
+    /* Old commercial links now lead to the free, explicitly consented connector. */
     { const retour=new URLSearchParams(location.search).get('higher');
-      if(retour==='open') location.replace('/higherself');
-      if(retour==='paid'){
-        history.replaceState(null,'',location.pathname);
-        setTimeout(()=>{ if(lvReglages) lvReglages.ouvrir(); DASH.onglet('higher'); mwNote('payment received · updating my subscription');
-          let n=0; const t=setInterval(async()=>{ n++; if(lvRefresh) await lvRefresh();
-            const h=LAND&&LAND.higher;
-            if((h&&(h.active||h.comp))||n>=8){ clearInterval(t); mwNote(h&&(h.active||h.comp)?'subscription active':'it takes a moment · check again soon'); }
-          },1500); },600);
-      }
+      if(retour==='open'||retour==='paid') location.replace('/chatgpt');
     }
     /* ══ L'ASPIRATION · 25/10 ══ Wah : « quand on clique sur le Totehm, je veux que les traits d'intention soient aussi aspirés
        par le Totehm » — comme au verso, comme en recherche : on cesse l'activité du TOTEHM pour le paramétrer et le

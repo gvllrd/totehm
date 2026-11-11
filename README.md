@@ -5,7 +5,7 @@ ligne une minute plus tard (Vercel).
 
 | site | dossier | ce que c'est |
 |---|---|---|
-| **totehm.com** | `com/` | l'écosystème : les 5 vues, ton TOTEHM, chercher un membre, s'abonner à lui, l'abonnement Higher |
+| **totehm.com** | `com/` | l'écosystème : les 5 vues, ton TOTEHM, chercher un membre, s'abonner à lui |
 | **figher.club** | `club/` | la sixième vue : le radar et la grille des spots visibles, le filtre par Habits parentes, publier un spot |
 | **higher.boutique** | `boutique/` | les vêtements totehmisés à partir d’un élément personnel, dans n’importe quelle catégorie |
 | **totehm.space** | `space/` | deux galeries littorales de plain-pied : Lisbon retrouve son bâtiment intact aux azulejos bleu/blanc, balcons et toit de verre ondulé ; New York conserve son château en ruine et son toit vitré incliné ; mer, ciel étoilé, œuvres, signes de Lisbonne et marché conservés |
@@ -19,7 +19,7 @@ ligne une minute plus tard (Vercel).
 
 Un tap sur **●** déploie le TOTEHM : HABITS · OBJECTIVES · REPULSIONS · VISIONS · MY STORY. Chaque liste conserve son classement ; Higher my ChatGPT retrouve ces priorités, leurs liens, les médias illustratifs en métadonnées et les spots associés, ainsi que les inspirations autorisées des TOTEHM auxquels le membre est abonné, toujours attribuées. Les playlists des intentions restent personnelles ; la réponse suit la langue de la conversation. Le TOTEHM porte les choix ; TotehmBot envoie une notification avec la Habit complète et Done/Missed, sans menu ni questionnaire ; le dashboard montre les faits sur 7 ou 28 jours, puis la configuration du bot. Higher ChatGPT peut lire la même période après partage explicite et proposer un ajustement sur demande, sans écrire dans le TOTEHM ou dans sa mémoire native.
 
-La connexion Higher GPT est gratuite côté TOTEHM : préparation sur demande, suivi mécanique, aucun nouveau modèle serveur en boucle. Les abonnements créateurs et la fabrication des vêtements restent des opérations distinctes. Sur demande explicite, un contexte peut réunir des spots du Club de membres hors abonnements et un passage vers la boutique pour un élément personnel ; aucun achat, média ou style n’est sélectionné automatiquement.
+La connexion Higher GPT est gratuite côté TOTEHM : préparation sur demande, suivi mécanique, aucun nouveau modèle serveur en boucle. Les seuls abonnements proposés sont ceux aux créateurs ; vêtements et œuvres restent des achats distincts. Sur demande explicite, un contexte peut réunir des spots du Club de membres hors abonnements et un passage vers la boutique pour un élément personnel ; aucun achat, média ou style n’est sélectionné automatiquement.
 
 La creator economy est à retravailler : rendre la valeur et le prix **annuel** lisibles, préserver l’attribution et la distinction inspiration/adoption, empêcher les doubles souscriptions et rapprocher les comptes. Le partage est 80/20 ; les 7 % concernent la revente d’art. La découverte et l’import manuel doivent respecter la confidentialité de chaque élément.
 
@@ -28,7 +28,7 @@ La creator economy est à retravailler : rendre la valeur et le prix **annuel** 
 | où | quoi |
 |---|---|
 | `com/totehm.html` · `tracking.mjs` | l’app et son dashboard privé ; réglages du suivi et partage explicite avec Higher ChatGPT |
-| `com/auth.html` · `creator.html` · `higher.html` | la connexion des 4 sites · la page d'un membre (`/@nom`) · la vente de Higher |
+| `com/auth.html` · `creator.html` · `higher.html` | la connexion des 4 sites · la page d'un membre (`/@nom`) · le renvoi vers Higher GPT gratuit |
 | `com/console.html` · `monetize.html` · `terms.html` | l'ancienne console (encore liée par les paiements) · la plaquette créateur · les conditions |
 | `com/higherself.html` · `map.html` · `spot.html` · `club/totehmbot.html` | ce qu'ouvre TotehmBot sur Telegram |
 | `club/index.html` · `club/create.html` | le Club (RADAR \| GRID, filtre, prise de spot) · l'ancien moteur, encore ouvert par TotehmBot |

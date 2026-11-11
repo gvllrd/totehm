@@ -289,7 +289,7 @@ h2 .st:hover,
 
     <!-- 6 · TOTEHMBOT -->
     <section class="pan" id="s-bot">
-      <h2>TotehmBot · Higher Self</h2>
+      <h2>TotehmBot</h2>
       <div class="list" id="bot"></div>
     </section>
 
@@ -319,8 +319,7 @@ function comMemberLinks(home = false, enabled = null) {
     item('<a class="cm-action" data-com-open href="/totehm#in">Open my TOTEHM</a>', 'Tap on it') +
     item('<a class="cm-action" href="/search">Search a TOTEHM</a>', 'Turn it over') +
     item('<a class="cm-action" id="btn-get-higher" data-com-bridge="space" href="https://www.totehm.space/get_higher">Get ' + COM_HIGHER_BADGE + '</a>', 'Put it on your tongue') +
-    item('<a class="cm-action" href="/higherself">Reflect with my TOTEHM</a>', 'Higher Self · TotehmBot') +
-    item('<a class="cm-action" href="/higher">' + COM_HIGHER_BADGE + '</a>', 'Every day · my habits in Telegram') +
+    item('<a class="cm-action" href="/chatgpt">' + COM_HIGHER_BADGE + ' my ChatGPT</a>', 'My TOTEHM · read-only context') +
     item('<a class="cm-action" id="wear-btn" data-com-bridge="boutique" href="https://www.higher.boutique/">Totehmize my cloth</a>', 'HIGHER BOUTIQUE') +
     item('<a class="cm-action" data-com-monetize href="' + (enabled === false ? '/monetize' : '/console') + '">' + (enabled === false ? 'Monetize my TOTEHM' : 'My monetization') + '</a>', '<span data-com-offer-hint>' + (enabled === false ? 'My readers pay me, once a year' : enabled === true ? 'My price · my readers · what I am owed' : 'My price and my payout') + '</span>') +
     '</nav>';
@@ -380,7 +379,7 @@ async function comMemberBridge(sb, target, url, apiURL, publicKey) {
 wireComMemberMenu($('menu'),{bridge:(target,url)=>comMemberBridge(sb,target,url,SB_URL,SB_ANON)});
 
 const esc = s => { const d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; };
-const BUILD='2026-11-10-coin-membre';
+const BUILD='2026-11-11-creator-economy';
 const money = (c, cur) => { try{ return new Intl.NumberFormat('en', { style:'currency', currency:(cur||'eur').toUpperCase(), maximumFractionDigits: (c||0) % 100 ? 2 : 0 }).format((c||0)/100); }catch(_){ return ((c||0)/100) + ' ' + (cur||'eur'); } };
 const day = iso => iso ? new Date(iso).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' }) : '—';
 async function fn(name, body){
@@ -488,10 +487,8 @@ function paint(){
       (live && !s.ending ? '<br><button class="lnk" type="button" data-cancel="' + esc(s.creator) + '">Stop at the end of the year</button>' : '')); }).join('')
     : '<div class="empty">I do not subscribe to any TOTEHM yet.</div>';
   /* ── 6 · TotehmBot ── */
-  const b = C.bot || {};
-  $('bot').innerHTML = row('<span>' + (b.active ? (b.comp ? 'Open · offered' : 'Active') : 'Not active') + '</span>',
-      money(b.price_cents || 700, b.currency || 'eur') + ' / month · separate from any TOTEHM subscription' + (b.until ? '<br>' + (b.ending ? 'ends ' : 'renews ') + day(b.until) : '')) +
-    '<div class="empty" style="padding-top:6px">' + (b.active ? '<a class="lnk" href="/higherself">Open Higher Self</a>' : '<a class="lnk" href="/club/totehmbot">What TotehmBot does</a>') + '</div>';
+  $('bot').innerHTML = row('<span>Free habit tracking</span>', 'Private notifications · Done / Missed') +
+    '<div class="empty" style="padding-top:6px"><a class="lnk" href="/totehm#settings">Configure TotehmBot</a></div>';
   /* ── 7 · mes paiements ── */
   const m = C.membership;
   $('bill').innerHTML = m && m.status ? row('<span>FIGHER CLUB · yearly</span>', esc(m.status) + (m.until ? '<br>' + (m.ending ? 'ends ' : 'renews ') + day(m.until) : '')) : '<div class="empty">Every payment I make is in Stripe: cards and invoices.</div>';
