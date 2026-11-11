@@ -2,6 +2,10 @@
 
 > À lire avant toute copy, tout nom, toute interface. Au PRÉSENT : une décision de Wah se réécrit ici, à sa place.
 
+## Règle n° 1 — les boxes sont la marque
+
+**Règle n° 1 — les boxes sont un invariant de marque.** Toute représentation visuelle d’un élément du TOTEHM, dans le TOTEHM ou ailleurs dans l’écosystème, conserve strictement sa box native : forme, couleur de catégorie, typographie, proportions, traits d’intention et états. Réutiliser le rendu de référence ; aucun composant, carte, badge ou style local ne le réinterprète. Une évolution se fait à la source puis se répercute partout, jamais sur un seul écran. La couleur dit le TYPE : Habit navy `#333366`, Objective/Vision bleu `#36498c`, Repulsion/MY STORY violet `#743169` ; le trait dit l’INTENTION. Cette règle vaut pour les dashboards, médias, spots, sélecteurs, aperçus, historiques, satellites et futurs écrans.
+
 ## L'idée
 
 > TOTEHM is a connected ecosystem of independent products: an experience that changes how you perceive, a system
@@ -30,9 +34,6 @@ MY STORY. Chacun porte une ou plusieurs des sept intentions :
 | Express | `#1D9E75` | Give form to emotion through creation. | SOUL |
 | Celebrate | `#7F77DD` | Elevate energy through collective effervescence. | SOUL |
 | Love | `#639922` | Contemplate life through connection & beauty. | SPIRIT |
-
-La couleur de la box dit le TYPE (navy · bleu clair · rouge-violet) ; le trait du bord gauche dit l'INTENTION.
-**Les boxes sont sacrées** : ce qui vient du TOTEHM garde son format partout (un spot, un vêtement, un autre domaine).
 
 ## Les 5 vues de totehm.com
 

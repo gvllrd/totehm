@@ -23,6 +23,10 @@ La connexion Higher GPT est gratuite côté TOTEHM : préparation sur demande, s
 
 La creator economy est à retravailler : rendre la valeur et le prix **annuel** lisibles, préserver l’attribution et la distinction inspiration/adoption, empêcher les doubles souscriptions et rapprocher les comptes. Le partage est 80/20 ; les 7 % concernent la revente d’art. La découverte et l’import manuel doivent respecter la confidentialité de chaque élément.
 
+## Règle n° 1 — les boxes sont la marque
+
+**Règle n° 1 — les boxes sont un invariant de marque.** Toute représentation visuelle d’un élément du TOTEHM, dans le TOTEHM ou ailleurs dans l’écosystème, conserve strictement sa box native : forme, couleur de catégorie, typographie, proportions, traits d’intention et états. Réutiliser le rendu de référence ; aucun composant, carte, badge ou style local ne le réinterprète. Une évolution se fait à la source puis se répercute partout, jamais sur un seul écran. Référence visuelle : `BRAND.md`.
+
 ## Les fichiers
 
 | où | quoi |

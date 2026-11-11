@@ -1,6 +1,6 @@
 # com/CLAUDE.md — totehm.com
 
-> L'état ACTUEL et les pièges (≤ 60 lignes). Le sens des vues : `BRAND.md`. Classement des cinq listes : `element_order_set`, relu par `element_orders_for` (propriétaire ou membre autorisé) ; écritures sérialisées, erreurs visibles ; Habits = ordre de `steps`, les autres = références persistées. `norm` préserve les écritures non latines ; les références serveur ne sont pas normalisées. Un lot réécrit ces lignes, en place.
+> L'état ACTUEL et les pièges (≤ 60 lignes). Le sens des vues : `BRAND.md`. Classement des cinq listes : `element_order_set`, relu par `element_orders_for` (propriétaire ou membre autorisé) ; écritures sérialisées, erreurs visibles ; Habits = ordre de `steps`, les autres = références persistées. `norm` préserve les écritures non latines ; les références serveur ne sont pas normalisées. Un lot réécrit ces lignes, en place. **Règle n° 1 : les boxes sont le branding essentiel ; conserver partout leur rendu natif intégral, sans réinterprétation locale (voir `BRAND.md`, règle n° 1).**
 
 ## Les pages
 

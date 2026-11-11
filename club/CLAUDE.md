@@ -1,6 +1,6 @@
 # club/CLAUDE.md — figher.club
 
-> L'état ACTUEL et les pièges (≤ 60 lignes). Un lot réécrit ces lignes, en place.
+> L'état ACTUEL et les pièges (≤ 60 lignes). Un lot réécrit ces lignes, en place. **Règle n° 1 : les boxes sont le branding essentiel ; conserver partout leur rendu natif intégral, sans réinterprétation locale (voir `BRAND.md`, règle n° 1).**
 
 **La sixième vue** : le prolongement de la vue → Spots de totehm.com. Deux choses, et deux seulement — TROUVER les
 spots rendus visibles autour de soi, et en PUBLIER un sans passer par totehm.com. Un spot = une Habit du TOTEHM
