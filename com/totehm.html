@@ -13824,7 +13824,7 @@ window.addEventListener('pageshow',e=>{
         h+='<div class="db"><p class="db-t">My activity<i>'+heat.reduce((a,v)=>a+n(v),0)+' gestures · 12 weeks</i></p>'+chaleur(heat,today)+'</div>';
         const F=D.feed||[];
         if(F.length) h+='<div class="db"><p class="db-t">Lately<i>everything I do in my TOTEHM</i></p><div class="db-f">'+F.slice(0,8).map(f=>{
-          const bk={habit:'h',objective:'t',repulsion:'r',story:'w',wisdom:'w',vision:'v'}[f.box||String(f.k).split('_')[0]];
+          const bk={habit:'h',track:'h',objective:'t',repulsion:'r',story:'w',wisdom:'w',vision:'v'}[f.box||String(f.k).split('_')[0]];
           // A journal label is historical: render its category without inventing current links or an editable source.
           const preview=bk&&f.l?boxTotehm(bk,{id:'',t:f.l,t0:f.l,text:f.l,is:f.i?[f.i]:[],hs:[],ws:[],os:[]},{court:true}):'';
           return '<div><span class="pt" style="--c:'+(coul(f.i)||'#5c5c66')+'"></span><div class="q">'+esc(DIT[f.k]||f.k)+(preview|| (f.l?' · <em>'+esc(f.l)+'</em>':''))+'</div><time>'+esc(ilya(f.at))+'</time></div>';

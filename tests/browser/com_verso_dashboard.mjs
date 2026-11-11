@@ -7,7 +7,7 @@ const origin='https://www.totehm.com',today='2026-11-10',browser=await launch();
 const check=(v,m)=>{assert(v,m);checks++;};
 const habits=[{t:'Run the hill',is:['fight'],f:'daily'}];
 const board={ok:true,today,telegram:false,habits:[],days:[],week:{fait:99,manque:1,top:{serie:99}},totals:{habits:1},heat:Array(84).fill(1),
- objectives:[{t:'Run a marathon',jours:12,temps:.62}],feed:['habit','objective','repulsion','vision','story'].map(box=>({at:today,box,k:box+'_added',l:'<img src=x onerror=alert(1)>',i:'fight'}))};
+ objectives:[{t:'Run a marathon',jours:12,temps:.62}],feed:['habit','objective','repulsion','vision','story','track'].map(box=>({at:today,box,k:box==='track'?'tracked_done':box+'_added',l:'<img src=x onerror=alert(1)>',i:'fight'}))};
 const practice={ok:true,days_count:7,counts:{done:2,missed:1,unanswered:1,answered:3},coverage:{total_habits:1,observed_habits:1},habits:[{ref:'Run the hill',habit:'Run the hill',done:2,missed:1,unanswered:1,day_counts:Array.from({length:7},(_,i)=>({done:i<2?1:0,missed:i===2?1:0,unanswered:i===3?1:0}))}],days:Array.from({length:7},(_,i)=>({day:'2026-11-'+String(4+i).padStart(2,'0')})),trend:{state:'insufficient'},settings:{linked:false,share_chatgpt:false}};
 const rpc={my_landing:{signed_in:true,pseudo:'fixture',telegram:false,higher:{active:true}},my_board:board,tracking_summary_for_me:practice,
  creator_dashboard:{ok:true,subscribers:3,month_cents:1920,pending_cents:1920,currency:'eur',next_payout:'2026-12-01',threshold_cents:2500,part:80,price_cents:2400,min_cents:300,max_cents:100000},
@@ -26,7 +26,7 @@ try{
   await pg.locator('.tracking-history summary').click();
   check((await pg.locator('.db-heat span:not([style*="hidden"])').count())===84&&(await pg.locator('.db-tot span').count())===10,'Account history and inventory are available on demand');
   const native=await pg.locator('.db-f .tb').evaluateAll(nodes=>nodes.map(n=>({skin:[...n.classList].find(c=>c.startsWith('blk-')),background:getComputedStyle(n.querySelector('.h-body')).backgroundColor,square:getComputedStyle(n.querySelector('.h-body')).borderRadius,controls:n.querySelectorAll('button,input,[data-open]').length})));
-  check(native.map(n=>n.skin).join(',')==='blk-h,blk-o,blk-r,blk-v,blk-w'&&native.map(n=>n.background).join('|')==='rgb(51, 51, 102)|rgb(54, 73, 140)|rgb(116, 49, 105)|rgb(54, 73, 140)|rgb(116, 49, 105)'&&native.every(n=>n.square==='0px'&&n.controls===0),'All five history categories keep native skins, square format and inert content');
+  check(native.map(n=>n.skin).join(',')==='blk-h,blk-o,blk-r,blk-v,blk-w,blk-h'&&native.map(n=>n.background).join('|')==='rgb(51, 51, 102)|rgb(54, 73, 140)|rgb(116, 49, 105)|rgb(54, 73, 140)|rgb(116, 49, 105)|rgb(51, 51, 102)'&&native.every(n=>n.square==='0px'&&n.controls===0),'All five history categories keep native skins, square format and inert content');
   check(await pg.locator('.tracking-name .tb.blk-h .v-name').textContent()==='Run the hill'&&await pg.locator('.db-o .tb.blk-o .v-name').textContent()==='Run a marathon','Practice and due objectives use native TOTEHM boxes');
   check(!await pg.locator('#vs-dash img').count()&&(await pg.locator('.db-f').textContent()).includes('<img'),'History text is escaped');
   await pg.locator('[data-track-manage]').click();await pg.waitForSelector('#tracking-settings form');
