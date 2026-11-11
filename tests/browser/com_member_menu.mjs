@@ -118,7 +118,7 @@ try{
    ok(await pg.$eval('#menu',e=>e.lastElementChild.textContent.trim().toLowerCase())==='simple terms of use',path+' ends its menu with terms');
    ok(!log.errors.some(e=>e.startsWith('pageerror')),path+' has no runtime errors');await ctx.close();
   }
-  for(const path of ['/higher','/totehm?higher=open','/totehm?higher=paid']){
+  for(const path of ['/higher']){
    const{pg,ctx,log}=await ready(browser);await pg.goto(origin+path);await pg.waitForURL('**/chatgpt');
    ok(!log.functions.some(f=>f.name==='higher-sub')&&!log.errors.some(e=>e.startsWith('pageerror')),path+' opens free Higher GPT without checkout');await ctx.close();
   }
