@@ -24,7 +24,7 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
  renderer.setPixelRatio(quality.diagnostics().pixelRatio);renderer.setSize(innerWidth,innerHeight);
  renderer.outputColorSpace=T.SRGBColorSpace;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1;
  renderer.setClearColor(0x030912);renderer.domElement.setAttribute('aria-hidden','true');host.append(renderer.domElement);
- const baseFov=mobile?72:60;
+ const baseFov=newYork?82:mobile?72:60;
  const scene=new T.Scene(),camera=new T.PerspectiveCamera(baseFov,innerWidth/innerHeight,.08,9000);
  let dirty=true,frames=0,list=false,hidden=document.hidden,paused=false,lastTime=0,lastRender=0;
  let motionReduced=reduced.matches,tween=null,arrival=null,pendingVisit=null,stellarView=null,room=-1,focused=-1,down=null,yaw=0,pitch=0,dragged=false,initialized=false,inspecting=false,inspectionAmount=0,bookDestination=null;
@@ -41,7 +41,7 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
  function openExperience({href}){
   // Navigation releases the world instead of leaving its GPU/audio behind an
   // iframe. Independent pages retain their own controls, pixels and access.
-  if(!['/get_higher','/play_lisbon_street','/same_but_opposite'].includes(href))return false;
+  if(!['/get_higher','/play_lisbon_street','/same_but_opposite'].includes(href)&&!/^\/think_same_but_opposite\?work=[a-z-]+$/.test(href))return false;
   pause();sound.setMuted(true);fireSound.setMuted(true);renderer.setAnimationLoop(null);location.assign(href);return true;
  }
  play=createPlayInstallation(scene,{mobile,onChange:invalidate,onOpen:openExperience});
@@ -144,6 +144,9 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
   const h=hit(e),data=h?.object.userData;
   if(data?.kind==='lisbon-street-sign'){
    stopInput();cancelTravel();leaveStation();interact();onArtwork({kind:'lisbon-street-sign',id:data.id,title:data.title,phrase:data.phrase});return;
+  }
+  if(data?.kind==='new-york-opposite'){
+   stopInput();cancelTravel();leaveStation();interact();openExperience({href:data.href});return;
   }
   if(data?.kind==='origins-book'){
    if(nearStation(1)){focusStation(1);book.interact(h);dirty=true;stationState();}else select(1);return;

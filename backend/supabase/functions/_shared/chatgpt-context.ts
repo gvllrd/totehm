@@ -104,13 +104,17 @@ export class ContextReadError extends Error {
   }
 }
 
-const INTENTIONS = ["fight", "flow", "enrich", "love", "express", "focus", "celebrate"];
+export const INTENTIONS = ["fight", "flow", "enrich", "love", "express", "focus", "celebrate"];
 const KINDS: ElementKind[] = ["habit", "objective", "repulsion", "vision", "wisdom"];
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const MAX_ROWS = 400;
 const MAX_ITEMS = 12;
 const MAX_TEXT = 64000;
 const TEXT_PAGE = 4000;
+export const HABIT_REF_MAX = 16000;
+// Offsets remain UTF-16 indexes, but an excerpt never cuts an emoji in half.
+const textEnd = (value: string, end: number): number => end > 0 && end < value.length &&
+  /[\uD800-\uDBFF]/.test(value[end - 1]) && /[\uDC00-\uDFFF]/.test(value[end]) ? end - 1 : end;
 const own = (value: unknown): Row => value && typeof value === "object" && !Array.isArray(value) ? value as Row : {};
 const string = (value: unknown): string => typeof value === "string" ? value : "";
 const text = (value: unknown, max = 500): string => string(value).replace(/\s+/g, " ").trim().slice(0, max);
@@ -131,7 +135,7 @@ export function elementKey(ref: ElementRef): string {
 export function validElementRef(value: unknown): value is ElementRef {
   const ref = own(value);
   if (!KINDS.includes(ref.kind as ElementKind) || typeof ref.ref !== "string") return false;
-  if (ref.kind === "habit") return ref.ref.length > 0 && ref.ref.length <= 500 && ref.ref === ref.ref.trim();
+  if (ref.kind === "habit") return ref.ref.length > 0 && ref.ref.length <= HABIT_REF_MAX && ref.ref === ref.ref.trim();
   if (ref.kind === "repulsion") return /^[1-9][0-9]{0,18}$/.test(ref.ref);
   return UUID.test(ref.ref);
 }
@@ -179,7 +183,7 @@ export function projectGraph(snapshot: GraphSnapshot): ContextGraph {
   const make = (kind: ElementKind, ref: string, label: unknown): ContextItem | null => {
     if (!validElementRef({ kind, ref })) return null;
     const full = string(label).trim();
-    const item: ContextItem = { kind, ref, key: elementKey({ kind, ref }), text: full.slice(0, MAX_TEXT),
+    const item: ContextItem = { kind, ref, key: elementKey({ kind, ref }), text: full.slice(0, textEnd(full, MAX_TEXT)),
       text_length: full.length, text_truncated: full.length > MAX_TEXT,
       url: elementURL({ kind, ref }), intentions: [], intention_source: "none" };
     return item.text ? item : null;
@@ -411,12 +415,13 @@ export function projectContext(graph: ContextGraph, options: ContextOptions): Co
   const items = [...chosen.values()].map(item => {
     const exact = options.focus && item.key === elementKey(options.focus);
     const offset = exact ? options.text_offset ?? 0 : 0;
-    const end = offset + (exact ? TEXT_PAGE : 500);
+    if (exact && offset > 0 && /[\uD800-\uDBFF]/.test(item.text[offset - 1] ?? "") && /[\uDC00-\uDFFF]/.test(item.text[offset] ?? "")) throw new ContextReadError("invalid_request");
+    const end = textEnd(item.text, offset + (exact ? TEXT_PAGE : 500));
     const length = item.text_length ?? item.text.length;
     return { ...item, text: item.text.slice(offset, end), text_length: length,
       text_truncated: offset > 0 || end < length || !!item.text_truncated,
       ...(exact ? { text_offset: offset,
-        ...(end < Math.min(length, MAX_TEXT) ? { next_text_offset: end } : {}) } : {}) };
+        ...(end < item.text.length ? { next_text_offset: end } : {}) } : {}) };
   });
   return {
     source: "owner_totehm", purpose: options.purpose, generated_at: new Date().toISOString(), selection,
@@ -483,8 +488,8 @@ export async function getSpots(client: ReadClient, uid: string, options: SpotOpt
   const instant = options.now ? Date.parse(options.now) : Date.now();
   if (!Number.isFinite(instant)) throw new ContextReadError("invalid_request");
   // No GPS, private storage paths, inferred present location, or other members.
-  let query = client.from("spot_plans").select("spot_id,habit,starts_at,duration_min,place,city,mode,audience,status")
-    .eq("user_id", uid).eq("status", "published");
+  let query = client.from("spot_plans").select("spot_id,habit,starts_at,duration_min,place,city,mode,audience,status,format,comment,intentions")
+    .eq("user_id", uid).eq("status", "published").eq("format", "spot");
   if (options.habit_ref) query = query.eq("habit", options.habit_ref);
   // Filter and sort before the cap: a busy future calendar must not hide an
   // ongoing spot, or return the furthest 400 plans instead of the next ones.
@@ -501,6 +506,7 @@ export async function getSpots(client: ReadClient, uid: string, options: SpotOpt
     if (options.period && options.period !== period) return [];
     return [{ ref: string(row.spot_id), url: "https://www.totehm.com/totehm?open=spot&id=" + encodeURIComponent(string(row.spot_id)), habit_ref: string(row.habit), starts_at: string(row.starts_at), duration_min: minutes,
       period, place: text(row.place, 160), city: text(row.city, 120), mode: text(row.mode, 20), audience: text(row.audience, 20),
+      comment: text(row.comment, 400), intentions: intentions(Array.isArray(row.intentions) ? row.intentions : []),
       presence_verified: false, source: "owner_spot_plan" as const }];
   }).sort((a, b) => {
     const aTime = Date.parse(a.starts_at), bTime = Date.parse(b.starts_at);
@@ -539,7 +545,7 @@ export async function getMediaMetadata(client: ReadClient, uid: string, focus: E
   validateOwner(uid);
   if (!validElementRef(focus)) throw new ContextReadError("invalid_request");
   const exists = await retrieveElement(client, uid, focus, 1);
-  if (!exists.items.length) return { items: [], truncated: false };
+  if (!exists.items.length) return { items: [], truncated: false, element_available: false };
   const letters: Record<ElementKind, string> = { habit: "h", objective: "o", repulsion: "r", vision: "v", wisdom: "w" };
   const limit = cap(options.limit, 4);
   const result = await client.from("element_media").select("id,kind,ref,mime,name,bytes,created_at")
@@ -554,8 +560,8 @@ export async function getMediaMetadata(client: ReadClient, uid: string, focus: E
     vision_image_available = rows(image.data).some(row => typeof row.image === "string" && !!row.image);
   }
   return { items: all.slice(0, limit).filter((row) => UUID.test(string(row.id))).map((row) => ({
-    ref: string(row.id), element: focus, name: text(row.name, 120), mime: text(row.mime, 100),
+    ref: string(row.id), element: focus, url: elementURL(focus), source: "owner_element_media", name: text(row.name, 120), mime: text(row.mime, 100),
     bytes: typeof row.bytes === "number" && Number.isSafeInteger(row.bytes) ? row.bytes : null,
     created_at: string(row.created_at), content_shared: false,
-  })), truncated: all.length > limit, vision_image_available, content_shared: false };
+  })), truncated: all.length > limit, vision_image_available, content_shared: false, element_available: true };
 }

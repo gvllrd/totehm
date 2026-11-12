@@ -1,11 +1,15 @@
-// TOTEHM · luxury-quote — LE LUXE, UN PROJET QUE L'ON DÉPOSE · 05 → 24/10/2026
-// why : Wah, 24/10 — « simplifie largement la rubrique luxe… ici c'est 500
-//       balles pour déposer le projet (remboursé si pas de possibilité) ». Le
-//       membre PHOTOGRAPHIE sa pièce, choisit la Box qui la totehmise, et
-//       dépose : le montant du dépôt vit dans `luxury_offer` (500 €), relu ici
-//       — jamais reçu de la page. Si la pièce ne peut pas être travaillée, le
-//       dépôt est remboursé à la main (le « oui » de Wah, chez Stripe).
-//       `price` reste : le prix de l'ŒUVRE, une fois la pièce étudiée.
+// TOTEHM · luxury-quote — LE LUXE, UN PROJET QUE L'ON DÉPOSE · 05/10 → 11/11/2026
+// why : Wah, 11/11 — « avant tout règlement de l'acompte de 770 €, l'utilisateur
+//       doit obligatoirement fournir : le nom exact du produit (parmi les 3
+//       marques d'exception), une photo ou une vidéo haute définition de sa
+//       pièce, sa ville, une Box de son Totehm, un style artistique (liste ou
+//       photo d'un artiste) et son budget ». TOUT est donc exigé ICI, avant le
+//       moindre paiement. Le montant de l'acompte vit dans `luxury_offer`
+//       (770 €), relu ici — jamais reçu de la page. L'artiste est LOCAL (la
+//       ville), la mise en relation passe par une galerie partenaire, et nous
+//       avons 30 JOURS pour le sécuriser : sans artiste, remboursement intégral
+//       à la main (le « oui » de Wah, chez Stripe). `price` reste : le prix de
+//       l'ŒUVRE, une fois la pièce étudiée, avec l'artiste et sa galerie.
 // how : une fonction, quatre gestes, le compte vient TOUJOURS de la session :
 //       request — le membre (THP vérifié ici, `_art_owns_thp`) ; la Box est
 //                 relue en base dans SON Totehm (`_box_matter`), jamais reçue ;
@@ -13,7 +17,9 @@
 //                 membre écrit {Nom}, le serveur pose le préfixe de l'année
 //                 (`0.` = 2026-27) : « 0.{Nom} », celui que Decode lit. La
 //                 PHOTO n'est qu'un CHEMIN (`<uid>/…` dans `luxury-pieces`),
-//                 vérifié ici ; le style n'est plus demandé à l'avance.
+//                 vérifié ici — et c'est TOUJOURS une image, même quand le
+//                 membre envoie une vidéo (la page en tire une image fixe) :
+//                 c'est elle que le modèle de vision étudiera (n8n, `material`).
 //       photos  — un administrateur : les URL SIGNÉES des pièces à regarder.
 //       price   — un administrateur (`boutique_admins`) pose le prix : c'est
 //                 le « oui » de Wah sur un prix live, par construction.
@@ -34,6 +40,16 @@ const admin = createClient(
 
 const PIECES = ["bag", "jacket", "shoes", "other"] as const;
 const KINDS = ["habit", "objective", "repulsion", "wisdom", "vision"] as const;
+// 11/11 (Wah) : « le nom exact du produit, parmi les 3 marques d'exception avec
+// lesquelles nous travaillons ». Trois, pas une de plus : la page les propose,
+// le serveur les VÉRIFIE — une marque reçue qui n'est pas là est refusée.
+const BRANDS = ["Hermès", "Louis Vuitton", "Gucci"] as const;
+const MEDIA = ["photo", "video"] as const;
+// Le budget de l'ŒUVRE (pas l'acompte) : il décide du rang de l'artiste qu'on
+// se permet d'aller chercher. Des bornes larges, et rien d'autre : le prix
+// définitif vient toujours du serveur, après l'étude.
+const BUDGET_MIN = 100_000;        //   1 000 €
+const BUDGET_MAX = 100_000_000;    // 1 000 000 €
 const FROM = "TOTEHM <no-reply@higher.boutique>";
 const LOGO = "https://www.higher.boutique/assets/img/totehm_logo.png";
 const PAGE = SITE_BOUT + "/luxury";
@@ -151,13 +167,24 @@ Deno.serve(async (req) => {
     // ── LA PHOTO : un CHEMIN dans le dossier du membre, et il doit exister.
     //    On ne reçoit jamais une image ici : elle est déjà dans `luxury-pieces`,
     //    déposée sous RLS par son propriétaire. On vérifie le dossier ET l'objet.
+    //    11/11 : `photo` reste L'IMAGE À ÉTUDIER — même quand le membre envoie
+    //    une VIDÉO, la page en tire une image fixe et dépose les deux. Le modèle
+    //    de vision lit toujours une image ; l'atelier regarde la vidéo.
+    const aMoi = async (p: string, quoi: string) => {
+      if (!p.startsWith(user.id + "/") || !/^[\w./-]{1,200}$/.test(p)) return false;
+      const { error } = await admin.storage.from("luxury-pieces").createSignedUrl(p, 60);
+      if (error) { console.error("[luxury-quote] " + quoi + ":", error.message); return false; }
+      return true;
+    };
     const photo = clean(body.photo, 200);
-    if (!photo.startsWith(user.id + "/") || !/^[\w./-]{1,200}$/.test(photo)) return json({ error: "photo" }, 422);
-    const { error: phErr } = await admin.storage.from("luxury-pieces").createSignedUrl(photo, 60);
-    if (phErr) { console.error("[luxury-quote] photo:", phErr.message); return json({ error: "photo" }, 422); }
+    if (!await aMoi(photo, "photo")) return json({ error: "photo" }, 422);
+    // Ce que le membre a VRAIMENT envoyé : la photo elle-même, ou la vidéo HD.
+    const media_kind = MEDIA.includes(body.media_kind as typeof MEDIA[number]) ? String(body.media_kind) : "photo";
+    const media = clean(body.media, 200) || photo;
+    if (media !== photo && !await aMoi(media, "media")) return json({ error: "photo" }, 422);
 
-    // Le style ne se choisit plus à l'avance (24/10) : il se décide avec Wah.
-    // S'il arrive quand même, il est relu comme avant — curaté et ouvert.
+    // ── LE STYLE — l'un ou l'autre, jamais rien (11/11, Wah) : un style de la
+    //    liste proposée, OU la photo du style d'un artiste qu'il aime.
     const styleId = String(body.style ?? "");
     let style_id: string | null = null;
     if (UUID.test(styleId)) {
@@ -166,6 +193,19 @@ Deno.serve(async (req) => {
       if (!st?.active || (st.status && st.status !== "active")) return json({ error: "choose_a_style" }, 422);
       style_id = st.id;
     }
+    const styleRef = clean(body.style_ref, 200);
+    if (styleRef && !await aMoi(styleRef, "style_ref")) return json({ error: "style_ref" }, 422);
+    if (!style_id && !styleRef) return json({ error: "choose_a_style" }, 422);
+
+    // ── LA MARQUE, LE PRODUIT, LA VILLE, LE BUDGET — tout avant de payer.
+    const brand = BRANDS.includes(body.brand as typeof BRANDS[number]) ? String(body.brand) : "";
+    if (!brand) return json({ error: "brand" }, 422);
+    const product = clean(body.product, 60);
+    if (product.length < 2) return json({ error: "product" }, 422);
+    const city = clean(body.city, 60);
+    if (city.length < 2) return json({ error: "city" }, 422);
+    const budget = Math.round(Number(body.budget_cents));
+    if (!Number.isFinite(budget) || budget < BUDGET_MIN || budget > BUDGET_MAX) return json({ error: "budget" }, 422);
     const bare = clean(body.name, 40).replace(/^\d+\./, "").trim();
     if (bare.length < 2) return json({ error: "name" }, 422);
     const name = `${epoch()}.${bare}`;
@@ -174,12 +214,13 @@ Deno.serve(async (req) => {
     if (free !== true) return json({ error: "name_taken" }, 409);
 
     const piece = PIECES.includes(body.piece as typeof PIECES[number]) ? String(body.piece) : "other";
-    const brand = clean(body.brand, 40) || "Other";
     const note = clean(body.note, 280) || null;
     const email = user.email.trim().toLowerCase();
     const { data: q, error } = await admin.from("luxury_quotes").insert({
-      user_id: user.id, email, piece, brand, note, box_kind: box.kind, box_ref: String(box.ref),
+      user_id: user.id, email, piece, brand, product, city, note,
+      box_kind: box.kind, box_ref: String(box.ref),
       box_snapshot: snap, palette: snap.palette ?? [], name, style_id, photo_path: photo,
+      media_path: media, media_kind, style_ref_path: styleRef || null, budget_cents: budget,
       status: "quoted", quote_cents: depot, currency: String(o.currency ?? "eur"),
       quoted_at: new Date().toISOString(),
     }).select("id").single();
@@ -188,11 +229,14 @@ Deno.serve(async (req) => {
 
     const prix = money(depot, String(o.currency ?? "eur"));
     await send([email], "Your luxury project is deposited",
-      mail("PROJECT DEPOSITED", [name, prix + " · deposit",
-        "We study your piece and your element, then we tell you how far we can go.",
-        "If the piece cannot take the work, the deposit is refunded."]));
-    await send(await adminEmails(), `Luxury project · ${brand} · ${piece}`,
-      mail("NEW LUXURY PROJECT", [name, `${brand} · ${piece}`, note ?? "", `Box: ${String(snap.text).slice(0, 140)}`],
+      mail("PROJECT DEPOSITED", [name, `${brand} ${product}`, prix + " · deposit",
+        "We study the material of your piece, then we look for an artist in " + city + ".",
+        "We give ourselves 30 days to secure the right one. If we cannot, the deposit is refunded in full.",
+        "Once the artist is secured, the work is in the partner gallery within two weeks."]));
+    await send(await adminEmails(), `Luxury project · ${brand} ${product} · ${city}`,
+      mail("NEW LUXURY PROJECT", [name, `${brand} ${product} · ${piece}`, `City: ${city}`,
+        `Budget: ${money(budget, String(o.currency ?? "eur"))}`, note ?? "",
+        `Box: ${String(snap.text).slice(0, 140)}`],
         { href: PAGE + "#admin", label: "See the piece" }));
     return json({ ok: true, id: q.id, status: "quoted", name, cents: depot, currency: String(o.currency ?? "eur") });
   }
@@ -215,13 +259,24 @@ Deno.serve(async (req) => {
     if (aErr) { console.error("[luxury-quote] admin:", aErr.message); return json({ error: "unavailable" }, 503); }
     if (isAdmin !== true) return json({ error: "forbidden" }, 403);
     const { data: rows, error } = await admin.from("luxury_quotes")
-      .select("id, photo_path").in("status", ["requested", "quoted", "paid"])
+      .select("id, photo_path, media_path, media_kind, style_ref_path").in("status", ["requested", "quoted", "paid"])
       .not("photo_path", "is", null).order("created_at", { ascending: false }).limit(40);
     if (error) { console.error("[luxury-quote] photos:", error.message); return json({ error: "db" }, 500); }
-    const out: { id: string; url: string }[] = [];
+    const signer = async (p: unknown) => {
+      if (!p) return null;
+      const { data: s } = await admin.storage.from("luxury-pieces").createSignedUrl(String(p), 3600);
+      return s?.signedUrl ?? null;
+    };
+    const out: { id: string; url: string; media?: string; kind?: string; style?: string }[] = [];
     for (const r of rows ?? []) {
-      const { data: s } = await admin.storage.from("luxury-pieces").createSignedUrl(String(r.photo_path), 3600);
-      if (s?.signedUrl) out.push({ id: r.id, url: s.signedUrl });
+      const url = await signer(r.photo_path);
+      if (!url) continue;
+      // La vidéo et la référence de style suivent la photo : c'est le même
+      // dossier privé, et c'est la clé de service qui signe, ici, après avoir
+      // vérifié qui demande.
+      const media = r.media_path && r.media_path !== r.photo_path ? await signer(r.media_path) : null;
+      const style = await signer(r.style_ref_path);
+      out.push({ id: r.id, url, ...(media ? { media, kind: String(r.media_kind ?? "video") } : {}), ...(style ? { style } : {}) });
     }
     return json({ ok: true, photos: out });
   }
@@ -239,6 +294,11 @@ Deno.serve(async (req) => {
       const cents = Math.round(Number(body.cents));
       if (!Number.isFinite(cents) || cents < 50 || cents > 5_000_000) return json({ error: "price" }, 422);
       patch = { status: "quoted", quote_cents: cents, quote_note: word, quoted_at: new Date().toISOString() };
+      // 11/11 — L'ARTISTE LOCAL ET SA GALERIE, posés au même geste : c'est à
+      // partir de là que courent les DEUX SEMAINES de l'œuvre.
+      const artist = clean(body.artist, 80), gallery = clean(body.gallery, 80);
+      if (artist) { patch.artist = artist; patch.artist_at = new Date().toISOString(); }
+      if (gallery) patch.gallery = gallery;
     } else {
       patch = { status: "declined", quote_note: word };
     }
@@ -249,12 +309,14 @@ Deno.serve(async (req) => {
 
     if (action === "price") {
       await send([q.email], "Your luxury quote is ready",
-        mail("YOUR QUOTE", [`${q.brand} · ${q.piece}`, money(q.quote_cents, q.currency), word ?? ""],
+        mail("YOUR QUOTE", [`${q.brand} · ${q.piece}`, money(q.quote_cents, q.currency),
+          patch.artist ? `Artist: ${patch.artist}` : "", patch.gallery ? `Gallery: ${patch.gallery}` : "",
+          patch.artist ? "The work is in the gallery within two weeks." : "", word ?? ""].filter(Boolean),
           { href: PAGE, label: "See my quote" }));
     } else {
       await send([q.email], "About your luxury project",
         mail("NOT THIS TIME", [`${q.brand} · ${q.piece}`, word ?? "We cannot totehmize this piece.",
-          "Your deposit is refunded."]));
+          "Your deposit is refunded in full."]));
     }
     return json({ ok: true, status: patch.status });
   }

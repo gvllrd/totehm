@@ -8,6 +8,7 @@ const pg=new PGlite();let checks=0;
 const check=(v,msg)=>{assert(v,msg);checks++;};
 const ORIGIN='https://www.totehm.com',BASE=ORIGIN+'/functions/v1/chatgpt-connector',CALLBACK='https://chatgpt.example.test/oauth/callback',RESOURCE=ORIGIN+'/mcp';
 const A='11111111-1111-4111-8111-111111111111',B='22222222-2222-4222-8222-222222222222',O='33333333-3333-4333-8333-333333333333';
+const ownerReads=[];
 const data={totehms:[{user_id:A,steps:[{t:'Draw ten minutes',is:['express'],f:'every_evening'}]},{user_id:B,steps:[{t:'Private other member habit'}]}],objectives:[{user_id:A,id:O,text:'Finish my sketchbook',status:'active',target_at:null}],objective_habits:[{user_id:A,objective_id:O,habit_text:'Draw ten minutes'}],repulsions:[],visions:[],wisdom:[],repulsion_habits:[],objective_visions:[],repulsion_teachings:[],teaching_objectives:[],habit_spots:[],spot_plans:[],intention_music:[],element_media:[]};
 const tableName=n=>{assert(/^[a-z_]+$/.test(n));return 'public.'+n;};
 class Query{
@@ -30,7 +31,7 @@ class Query{
    if(this.value){const keys=Object.keys(this.value);keys.forEach(k=>assert(/^[a-z_]+$/.test(k)));rows=(await pg.query(`insert into ${tableName(this.table)} (${keys.join(',')}) values (${keys.map((_,i)=>'$'+(i+1)).join(',')}) returning *`,keys.map(k=>this.value[k]))).rows;}
    else rows=(await pg.query('select * from '+tableName(this.table))).rows;
    if(this.table==='chatgpt_tokens')for(const row of rows)row.grant=(await pg.query('select * from public.chatgpt_grants where id=$1',[row.grant_id])).rows[0];
-  }else rows=structuredClone(data[this.table]||[]);
+  }else {ownerReads.push(this.table);rows=structuredClone(data[this.table]||[]);}
   rows=JSON.parse(JSON.stringify(rows));
   rows=rows.filter(row=>this.filters.every(([key,test])=>test(key.split('.').reduce((v,k)=>v?.[k],row))));
   if(this.sort){const [k,asc]=this.sort;rows.sort((a,b)=>String(a[k]??'').localeCompare(String(b[k]??''))*(asc?1:-1));}
@@ -38,8 +39,12 @@ class Query{
  }catch(e){return {data:null,error:{message:e.message}};}}
  then(ok,no){return this.run().then(ok,no);}
 }
-const practiceReads=[];let sharePractice=false;
-const db={from:table=>new Query(table),auth:{getUser:async token=>token==='site-session-A-valid-credential'?{data:{user:{id:A,is_anonymous:false}},error:null}:{data:{user:null},error:{message:'bad'}}},rpc:async(name,args)=>{if(name==='chatgpt_tracking'){practiceReads.push(args);return {data:sharePractice?{available:true,summary:{source:'self_report',habits:(args.p_habits||[]).map(ref=>({ref,done:2}))}}:{available:false,why:'not_enabled'},error:null};}try{const keys=Object.keys(args);assert(/^[a-z_]+$/.test(name));const result=await pg.query(`select public.${name}(${keys.map((k,i)=>k+'=> $'+(i+1)).join(',')}) as result`,keys.map(k=>args[k]));return {data:result.rows[0].result,error:null};}catch(e){return {data:null,error:{message:e.message}};}}};
+const practiceReads=[];let sharePractice=false,practiceUnavailable=false;
+const practiceSummary=args=>({source:'self_report',period:{start:args.p_days===7?'2026-11-04':'2026-10-14',end:'2026-11-10',timezone:'Europe/Lisbon',days:args.p_days},
+ coverage:{total_habits:2,observed_habits:1,answered:3,delivered:5,unanswered:1,pending:1},
+ counts:{done:1,missed:1,partial:1,skipped:0,unanswered:1,pending:1,answered:3},
+ habits:(args.p_habits??['Draw ten minutes']).map(ref=>({ref,done:1,missed:1,partial:1,days:['d'],day_counts:[{day:'2026-11-10',done:1,missed:1,partial:1,skipped:0,unanswered:0,pending:0}]}))});
+const db={from:table=>new Query(table),auth:{getUser:async token=>token==='site-session-A-valid-credential'?{data:{user:{id:A,is_anonymous:false}},error:null}:{data:{user:null},error:{message:'bad'}}},rpc:async(name,args)=>{if(name==='chatgpt_tracking_period'){practiceReads.push(args);return practiceUnavailable?{data:null,error:{message:'fixture_unavailable'}}:{data:sharePractice?{available:true,summary:practiceSummary(args)}:{available:false,why:'not_enabled'},error:null};}try{const keys=Object.keys(args);assert(/^[a-z_]+$/.test(name));const result=await pg.query(`select public.${name}(${keys.map((k,i)=>k+'=> $'+(i+1)).join(',')}) as result`,keys.map(k=>args[k]));return {data:result.rows[0].result,error:null};}catch(e){return {data:null,error:{message:e.message}};}}};
 const handler=createConnectorHandler(db,{publicOrigin:ORIGIN,enabled:true,allowedRedirectUris:[CALLBACK]});
 async function send(path,{method='GET',body,site=false,token,form=false,headers={}}={}){
  const h=new Headers(headers);if(site){h.set('origin',ORIGIN);h.set('authorization','Bearer site-session-A-valid-credential');}if(token)h.set('authorization','Bearer '+token);
@@ -85,12 +90,74 @@ try{
  r=await tool(access,'get_context',{query:'draw',purpose:'action',limit:6});const context=r.data.result.structuredContent;check(context.items.some(x=>x.text==='Draw ten minutes'),'Tool returns the authenticated owner’s Habit');check(context.edges.some(x=>x.relation==='serves'),'Tool preserves recorded relationship provenance');check(!JSON.stringify(context).includes('Private other member'),'No other member data returned');
  check(new URL(context.items[0].url).hash.includes('element=habit'),'MCP results link the exact original element');
  check(practiceReads.length===0,'Ordinary context does not read practice history automatically');
+ const mediaID='44444444-4444-4444-8444-444444444444',spotID='55555555-5555-4555-8555-555555555555';
+ data.element_media=[{user_id:A,id:mediaID,kind:'h',ref:'Draw ten minutes',mime:'image/png',name:'My sketch reference',bytes:123,created_at:'2026-11-01',removed_at:null,path:'NEVER_PRIVATE_STORAGE_PATH'},
+  {user_id:B,id:spotID,kind:'h',ref:'Draw ten minutes',mime:'image/png',name:'NEVER_OTHER_OWNER',removed_at:null}];
+ data.spot_plans=[{user_id:A,spot_id:spotID,habit:'Draw ten minutes',starts_at:'2099-01-01T10:00:00Z',duration_min:60,format:'spot',status:'published',place:'My studio',city:'Lisbon',mode:'silent',comment:'Bring my sketchbook',intentions:['express'],lat:38.7123,lng:-9.1234},
+  {user_id:A,spot_id:O,habit:'Draw ten minutes',starts_at:'2099-01-01T10:00:00Z',duration_min:60,format:'space',status:'published',place:'NEVER_OLD_SPACE'},
+  {user_id:B,spot_id:mediaID,habit:'Draw ten minutes',starts_at:'2099-01-01T10:00:00Z',duration_min:60,format:'spot',status:'published',place:'NEVER_OTHER_PLACE'}];
+ const readsBeforeResources=ownerReads.filter(t=>t==='element_media'||t==='spot_plans').length;
+ await tool(access,'get_context',{query:'draw',purpose:'action',include_resources:false});
+ check(ownerReads.filter(t=>t==='element_media'||t==='spot_plans').length===readsBeforeResources,'False resources flag performs no attachment or venue reads');
+ for(const invalid of ['true',null,1]){
+  r=await tool(access,'get_context',{query:'draw',purpose:'action',include_resources:invalid});
+  check(r.data.error?.code===-32602,'Malformed resource flag is rejected before retrieval');
+ }
+ check(ownerReads.filter(t=>t==='element_media'||t==='spot_plans').length===readsBeforeResources,'Invalid resource flags do not cause private resource reads');
+ const readsBeforeResourcePractice=practiceReads.length;
+ r=await tool(access,'get_context',{query:'draw',purpose:'action',include_resources:true});
+ const enriched=r.data.result.structuredContent,resources=enriched.resources;
+ check(resources.metadata_only&&resources.scope==='selected_elements'&&resources.elements.length<=3,'Context resources are explicit and bounded to selected elements');
+ const attachment=resources.elements.find(e=>e.element.kind==='habit');
+ check(attachment.media.items[0].name==='My sketch reference'&&attachment.media.items[0].url===enriched.items.find(i=>i.kind==='habit').url,'An illustrative attachment opens its exact personal original element');
+ check(attachment.spots.future.items.length===1&&attachment.spots.future.items[0].place==='My studio'&&attachment.spots.future.items[0].comment==='Bring my sketchbook','Selected Habit includes only its published spots with useful saved context');
+ check(!JSON.stringify(resources).includes('NEVER_')&&!JSON.stringify(resources).includes('38.7123')&&!JSON.stringify(resources).includes('-9.1234'),'Bundle excludes another owner, old spaces, storage paths and coordinates');
+ check(practiceReads.length===readsBeforeResourcePractice,'Reading media and spots never opts into practice sharing');
+ check(JSON.stringify(enriched.items)===JSON.stringify(context.items)&&JSON.stringify(enriched.edges)===JSON.stringify(context.edges),'Adding resources preserves personal choices, ordering and graph relationships');
+ r=await tool(access,'read_element',{kind:'habit',ref:'Draw ten minutes',include_resources:true});
+ check(r.data.result.structuredContent.resources.elements[0].media.items[0].content_shared===false,'An exact read can deepen its attachments without image contents');
+ data.element_media=[];data.spot_plans=[];
+
  r=await tool(access,'get_context',{query:'my practice',purpose:'action',search_terms:[],include_tracking:true});
  check(r.data.result.structuredContent.practice.why==='not_enabled','An existing grant is not a separate sharing choice');
- check(practiceReads[0].p_habits.length===1&&practiceReads[0].p_habits[0]==='Draw ten minutes'&&!('p_user' in practiceReads[0]),'Practice is selected from personal context and bound to the verified grant, not a tool-supplied user');
+ check(practiceReads[0].p_days===28&&practiceReads[0].p_habits.length===1&&practiceReads[0].p_habits[0]==='Draw ten minutes'&&!('p_user' in practiceReads[0]),'Practice is selected from personal context and bound to the verified grant, not a tool-supplied user');
  sharePractice=true;
  r=await tool(access,'read_element',{kind:'habit',ref:'Draw ten minutes',include_tracking:true});
  check(r.data.result.structuredContent.practice.available,'Explicitly requested practice can accompany the exact personal element');
+ check(r.data.result.structuredContent.practice.summary.period.days===28,'Default practice window remains explicit in the returned evidence');
+ r=await tool(access,'get_context',{query:'draw',purpose:'action',limit:6,include_tracking:true,tracking_days:7});
+ const contextualPractice=r.data.result.structuredContent;
+ check(JSON.stringify(contextualPractice.items)===JSON.stringify(context.items)&&JSON.stringify(contextualPractice.edges)===JSON.stringify(context.edges),'Practice augments the saved personal graph without rewriting ranks, choices, recorded links or original URLs');
+
+ r=await tool(access,'get_context',{query:'Review my week',purpose:'explicit',review:true,include_tracking:true,tracking_days:7});
+ const weekly=r.data.result.structuredContent.practice.summary;
+ check(practiceReads.at(-1).p_days===7&&practiceReads.at(-1).p_habits===null,'Only an explicit overall review requests the full personal reporting window');
+ check(weekly.period.days===7&&weekly.period.timezone==='Europe/Lisbon'&&weekly.period.start==='2026-11-04','Period and timezone from the common summary reach Higher without reinterpretation');
+ check(weekly.coverage.answered===3&&weekly.coverage.delivered===5&&weekly.counts.pending===1&&weekly.counts.unanswered===1,'Coverage, open questions and unknown observations remain distinct from completion');
+ check(weekly.habits[0].day_counts[0].done===1&&weekly.habits[0].day_counts[0].missed===1&&weekly.counts.partial===1,'Same-day occurrences and historic partial reports are preserved, not flattened into binary success');
+ r=await tool(access,'read_element',{kind:'habit',ref:'Draw ten minutes',include_tracking:true,tracking_days:7});
+ check(practiceReads.at(-1).p_days===7&&practiceReads.at(-1).p_habits.length===1&&practiceReads.at(-1).p_habits[0]==='Draw ten minutes','Exact element practice keeps both the chosen period and the selected original reference');
+ const readsBeforeDisabled=practiceReads.length;
+ await tool(access,'get_context',{query:'draw',purpose:'action',include_tracking:false,tracking_days:7});
+ await tool(access,'read_element',{kind:'habit',ref:'Draw ten minutes',tracking_days:7});
+ check(practiceReads.length===readsBeforeDisabled,'Choosing a period never silently enables history retrieval');
+ for(const tracking_days of [0,1,14,90,'7',null,7.5]){
+  const before=practiceReads.length;
+  r=await tool(access,'get_context',{query:'practice',purpose:'action',include_tracking:true,tracking_days});
+  check(r.data.error?.code===-32602&&practiceReads.length===before,'Invalid reporting windows fail before practice is read');
+ }
+ const readsBeforeForeign=practiceReads.length;
+ r=await tool(access,'read_member_element',{member:B,kind:'habit',ref:'Private other member habit',include_tracking:true,tracking_days:7});
+ check(r.data.error?.code===-32602&&practiceReads.length===readsBeforeForeign,'Member-element tools cannot accept tracking flags or read another member’s practice');
+ practiceUnavailable=true;
+ r=await tool(access,'read_element',{kind:'habit',ref:'Draw ten minutes',include_tracking:true,tracking_days:7});
+ check(r.data.result.structuredContent.practice.available===false&&r.data.result.structuredContent.practice.why==='temporarily_unavailable','Unavailable evidence stays unavailable rather than becoming an invented empty or missed history');
+ practiceUnavailable=false;
+ sharePractice=false;
+ r=await tool(access,'read_element',{kind:'habit',ref:'Draw ten minutes',include_tracking:true,tracking_days:7});
+ check(r.data.result.structuredContent.practice.why==='not_enabled','Turning sharing off immediately blocks the new reporting-window path');
+ sharePractice=true;
+
  r=await tool(access,'get_context',{query:'practice',purpose:'action',include_tracking:'yes'});
  check(r.data.error?.code===-32602,'Practice retrieval rejects malformed sharing flags');
  sharePractice=false;
@@ -102,6 +169,26 @@ try{
  data.wisdom=[{user_id:A,id:O,text:'My experience. '.repeat(50)+'The decisive ending.'}];
  r=await tool(access,'read_element',{kind:'wisdom',ref:O});
  check(r.data.result.structuredContent.items[0].text.endsWith('The decisive ending.'),'HTTP exact read preserves a long narrative ending');
+ const longHabit='h'.repeat(3999)+'🌍習慣 '.repeat(300)+'An exact final detail.';
+ data.totehms[0].steps.push({t:longHabit,is:['focus'],f:'daily'});
+ let longRestored='',longOffset=0;
+ do{
+  r=await tool(access,'read_element',{kind:'habit',ref:longHabit,text_offset:longOffset});
+  const item=r.data.result.structuredContent.items[0];
+  check(item.ref===longHabit&&item.text.isWellFormed()&&item.text.length<=4000,'HTTP accepts an exact long Unicode Habit and returns intact bounded pages');
+  check(new URLSearchParams(new URL(item.url).hash.slice(1)).get('ref')===longHabit,'HTTP source URLs retain the exact long original reference');
+  longRestored+=item.text;longOffset=item.next_text_offset;
+ }while(longOffset!==undefined);
+ check(longRestored===longHabit,'HTTP pagination reconstructs the long Habit without losing emoji or its ending');
+ r=await tool(access,'read_element',{kind:'objective',ref:longHabit});
+ check(r.data.error?.code===-32602,'A long Habit cannot masquerade as an objective UUID');
+ r=await tool(access,'read_element',{kind:'habit',ref:longHabit,text_offset:4000});
+ check(r.data.error?.code===-32602,'An offset splitting an emoji is rejected, not returned as malformed Unicode');
+ const readsBeforeOversized=practiceReads.length;
+ r=await tool(access,'read_element',{kind:'habit',ref:'x'.repeat(17000),include_tracking:true});
+ check(r.status===400&&r.data.error?.code===-32600&&practiceReads.length===readsBeforeOversized,'The existing global HTTP body bound stays enforced before any practice read');
+ data.totehms[0].steps.pop();
+
  for(const invalid of [{text_offset:-1},{text_offset:'4000'},{text_offset:64001}]){
   r=await tool(access,'read_element',{kind:'wisdom',ref:O,...invalid});check(r.data.error?.code===-32602,'Invalid continuation offsets are rejected');
  }
@@ -128,6 +215,13 @@ try{
  r=await send('/token',{method:'POST',form:true,body:{grant_type:'refresh_token',client_id:cid,resource:RESOURCE,refresh_token:refresh}});check(r.status===200&&r.data.refresh_token!==refresh,'Refresh token rotated');const nextAccess=r.data.access_token,nextRefresh=r.data.refresh_token;
  r=await send('/token',{method:'POST',form:true,body:{grant_type:'refresh_token',client_id:cid,resource:RESOURCE,refresh_token:refresh}});check(r.data.error==='invalid_grant','Refresh replay rejected and grant revoked');
  r=await tool(nextAccess,'get_context',{query:'draw',purpose:'action'});check(r.status===401,'Refresh replay invalidates the token family');
+ const resourceReadsBeforeRevoked=ownerReads.length;
+ r=await tool(nextAccess,'get_context',{query:'draw',purpose:'action',include_resources:true});
+ check(r.status===401&&ownerReads.length===resourceReadsBeforeRevoked,'Revocation blocks resource retrieval before owner table reads');
+ const readsBeforeRevoked=practiceReads.length;
+ r=await tool(nextAccess,'get_context',{query:'my week',purpose:'explicit',review:true,include_tracking:true,tracking_days:7});
+ check(r.status===401&&practiceReads.length===readsBeforeRevoked,'Revocation blocks period-based practice before any history RPC');
+
  check((await send('?action=connection',{site:true})).data.connected===false,'Revoked grant no longer appears connected');
  const stored=await pg.query('select token_hash from public.chatgpt_tokens');check(stored.rows.every(x=>/^[a-f0-9]{64}$/.test(x.token_hash))&&!JSON.stringify(stored.rows).includes(nextRefresh),'Only hashes stored');
  // A second grant exercises RFC7009 revoke separately from browser-session revoke.

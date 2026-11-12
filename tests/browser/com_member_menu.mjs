@@ -67,23 +67,25 @@ try{
    ok(log.rpc.some(x=>x.name==='creator_payout_set'&&x.body.p_method==='paypal'&&x.body.p_handle==='me@paypal.test')&&await pg.inputValue('#vs-pay-in')===''&&!await pg.isVisible('#vs-pay-in'),
       'the payout is written by creator_payout_set, then wiped from the screen');
    await onglet(pg,'higher');
+   ok(!await pg.isVisible('#vs-subs-s'),'Go Higher contains no subscription list, only practice and TotehmBot configuration');
+   await onglet(pg,'money');
+   ok(await pg.isVisible('#vs-subs-s'),'Member subscriptions remain available under Monetize my TOTEHM');
    ok(await pg.textContent('#vs-subs .vs-nom')==='alice'&&/renews 1 Mar/.test(await pg.textContent('#vs-subs')),'what I pay: the Totehms I subscribe to, one line each');
-   await pg.click('#vs-subs [data-stop]');await pg.waitForFunction(()=>/stops on/.test(document.getElementById('mw-menu-note').textContent));
+   await pg.click('#vs-subs [data-stop]');await pg.waitForFunction(()=>/stops on/.test(document.getElementById('vs-subs-note').textContent));
    ok(log.functions.some(f=>f.name==='club-billing'&&f.body.action==='cancel_creator'&&f.body.pseudo==='alice'),'Stop = club-billing cancel_creator, at the end of the year');
-   ok(await pg.locator('#mw-menu .vs-hi use[href="#higher-badge"]').count()===2&&!/higher/i.test(await pg.$eval('#mw-menu',e=>e.textContent)),'« Higher » is the SVG, never text (the title and [Higher] Self)');
+   ok(await pg.isVisible('#vs-subs-note'),'Subscription feedback remains visible beside its action');
+   await onglet(pg,'higher');
+   ok(!await pg.locator('#mw-higher,#mw-higher-hint,#mw-higher-acts,#mw-hs-hint').count()&&await pg.getAttribute('#mw-menu','aria-label')==='TotehmBot configuration','The dashboard keeps only TotehmBot configuration, without the duplicate Higher subscription');
    const acts=await pg.$$eval('#mw-menu .vs-act',l=>l.map(e=>e.textContent));
-   ok(JSON.stringify(acts)==='["Connect","Manage","Get"]'&&await pg.$$eval('#mw-menu .vs-item',rows=>rows.every(r=>r.querySelectorAll('button').length<=1)),'one gesture per line → '+acts.join(' | '));
+   ok(JSON.stringify(acts)==='["Connect","Configure"]','one gesture per configuration line → '+acts.join(' | '));
    await pg.keyboard.press('Escape');
    await pg.waitForFunction(()=>!document.getElementById('srch').classList.contains('is-open'),null,{timeout:6000});
    await pg.waitForTimeout(1800);
    await retourner(pg);await pg.waitForSelector('#member-window.show');await onglet(pg,'higher');
-   ok(/€7 \/ month/.test(await pg.textContent('#mw-higher-hint')),'the Higher price comes from the server (my_landing)');
    const fmt=await pg.locator('#srch .vs-act,#srch .vs-val,#srch .vs-tog').evaluateAll(items=>items.every(e=>{const s=getComputedStyle(e);return s.backgroundColor==='rgb(31, 31, 36)'&&s.whiteSpace==='nowrap'&&s.borderTopLeftRadius==='10px';}));
    ok(fmt,'controls: grey, 10 px radius, one line'+(fmt?'':' → '+JSON.stringify(await pg.locator('#srch .vs-act,#srch .vs-val,#srch .vs-tog').evaluateAll(l=>l.map(e=>{const s=getComputedStyle(e);return e.id+'/'+e.className+':'+s.backgroundColor+','+s.whiteSpace+','+s.borderTopLeftRadius;})))));
    ok(await pg.$eval('#mw-in-state',e=>[...e.querySelectorAll('a,button')].pop().textContent.trim().toLowerCase())==='simple terms of use','terms remain the final member entry');
-   await pg.click('#mw-higher');await pg.waitForFunction(()=>/opening soon/.test(document.getElementById('mw-menu-note').textContent));
-   ok(await pg.isVisible('#mw-menu-note'),'the menu note is VISIBLE in the member window (11/10: it was written into the hidden door note)');
-   ok(log.functions.some(f=>f.name==='higher-sub'&&f.body.action==='checkout'),'Get (Higher) asks the server for a checkout — no live price yet: « opening soon »');
+   ok(!log.functions.some(f=>f.name==='higher-sub'),'Opening the dashboard never triggers billing');
    await pg.click('#mw-telegram');await pg.waitForFunction(()=>window.__opened.length===1&&window.__opened[0].url.startsWith('https://t.me/TotehmBot?start='));
    ok(await pg.evaluate(()=>window.__opened[0].url)==='https://t.me/TotehmBot?start=CODE123','Connect TotehmBot: a one-use link code, then Telegram');
    /* 18/10 — PLUS DE PHOTO DE PROFIL (Wah) : la vignette, son champ de fichier et `avatar_set` sont
@@ -95,16 +97,10 @@ try{
    ok(!log.errors.some(e=>e.startsWith('pageerror')),'member window: no runtime errors');await ctx.close();
   }
   {const until=new Date(Date.now()+20*864e5).toISOString();
-   const{pg,ctx,log}=await ready(browser,{rpc:{...rpc,my_landing:{...LAND,higher:{...LAND.higher,active:true,status:'active',until,ending:false}}},
-     functions:{'sso-mint':{code:'b'.repeat(64)},'higher-sub':b=>({ok:true,ending:b.action==='cancel',until})}});
-   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(900);await retourner(pg);
-   await pg.waitForFunction(()=>/renews/.test(document.getElementById('mw-higher-hint').textContent));await onglet(pg,'higher');
-   ok((await pg.textContent('#mw-higher'))==='Open'&&(await pg.textContent('#mw-higher-acts'))==='Stop'&&/renews/.test(await pg.textContent('#mw-higher-hint')),'Higher active: renews on a date, Open, and Stop (at the end of the month)');
-   await pg.click('[data-hsub="cancel"]');await pg.waitForFunction(()=>/it ends on/.test(document.getElementById('mw-menu-note').textContent));
-   ok(log.functions.some(f=>f.name==='higher-sub'&&f.body.action==='cancel')&&(await pg.textContent('#mw-higher-acts'))==='Keep','stopping is at period end (higher-sub cancel), and it can be kept');
-   await pg.click('#mw-higher');await pg.waitForURL(origin+'/higherself');
-   ok(pg.url()===origin+'/higherself','Higher actif ouvre son expérience autonome ; le pitch ChatGPT reste gratuit');
-   ok(!log.errors.some(e=>e.startsWith('pageerror')),'Higher active: no runtime errors');await ctx.close();
+   const{pg,ctx,log}=await ready(browser,{rpc:{...rpc,my_landing:{...LAND,higher:{...LAND.higher,active:true,status:'active',until,ending:false}}}});
+   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(900);await retourner(pg);await onglet(pg,'higher');
+   ok(!await pg.locator('#mw-higher,[data-hsub]').count()&&!log.functions.some(f=>f.name==='higher-sub'),'An existing Higher subscription adds no duplicate dashboard controls and is never changed');
+   ok(!log.errors.some(e=>e.startsWith('pageerror')),'Existing subscriber: no runtime errors');await ctx.close();
   }
   {const{pg,ctx,log}=await ready(browser,{rpc:{...rpc,my_landing:LAND}});await pg.goto(origin+'/totehm?spaces=1');await pg.waitForSelector('body.member');await pg.waitForTimeout(900);
    ok(!log.errors.some(e=>e.startsWith('pageerror'))&&!await pg.locator('#myspaces').count(),'16/10: the old ?spaces=1 deep link opens nothing and breaks nothing');await ctx.close();
@@ -117,9 +113,14 @@ try{
   }
   for(const path of ['/search','/console','/monetize']){
    const{pg,ctx,log}=await ready(browser,{rpc:{...rpc,my_console:{...base,offer:{enabled:true}}}});await pg.goto(origin+path);await pg.waitForFunction(()=>document.querySelector('[data-com-monetize]')?.textContent==='My monetization');await pg.click('#member');
-   ok(await pg.locator('#menu .cm-item').count()===7&&await pg.getAttribute('[data-com-monetize]','href')==='/console',path+' keeps the same seven actions and server-derived offer state');
+   ok(await pg.locator('#menu .cm-item').count()===6&&await pg.getAttribute('[data-com-monetize]','href')==='/console',path+' keeps six actions with free Higher GPT and server-derived offer state');
+   ok(await pg.locator('#menu a[href="/chatgpt"]').count()===1&&!await pg.locator('#menu a[href="/higher"],#menu a[href="/higherself"]').count(),path+' offers the free connector without obsolete Higher sales');
    ok(await pg.$eval('#menu',e=>e.lastElementChild.textContent.trim().toLowerCase())==='simple terms of use',path+' ends its menu with terms');
    ok(!log.errors.some(e=>e.startsWith('pageerror')),path+' has no runtime errors');await ctx.close();
+  }
+  for(const path of ['/higher']){
+   const{pg,ctx,log}=await ready(browser);await pg.goto(origin+path);await pg.waitForURL('**/chatgpt');
+   ok(!log.functions.some(f=>f.name==='higher-sub')&&!log.errors.some(e=>e.startsWith('pageerror')),path+' opens free Higher GPT without checkout');await ctx.close();
   }
   {const{pg,ctx,log}=await ready(browser,{session:false,viewport:{width:1280,height:900}});await pg.goto(origin+'/monetize');await pg.waitForFunction(()=>window.__totehm_monetize?.().signed_in===false);await pg.waitForTimeout(300);
    /* 16/10 — la page ne montre plus que SA part (la doctrine du grand livre : on affiche sa part, pas le brut),

@@ -105,3 +105,15 @@ exclusivement à `stripe-webhook` et à la table `stoner_access`.
 n8n s'occupe de Totehm Cloth : génération d'image, upscale, Printful,
 email de confirmation. Deux systèmes, deux responsabilités, aucun
 recouvrement.
+
+## Flux L — l'étude de matière du Luxe (11/11/2026)
+
+`workflows/n8n_L_luxury_material.js` EST la source du flux publié
+(« TOTEHM L — Luxury material study »), écrite avec le SDK n8n et posée
+depuis la session cloud par le MCP n8n : plus besoin de la machine de Wah
+pour publier un flux. Toutes les 15 minutes il réserve au plus trois pièces
+(`luxury_material_due`), signe leur image, la fait lire par un modèle de
+vision et écrit l'étude (`luxury_material_set`). Les deux RPC sont réservées
+à `service_role` : un membre ne déclenche jamais un appel payant.
+⚠️ Le parseur du SDK refuse toute méthode native (`join`, `map`…) hors d'un
+nœud Code : le code d'un nœud s'écrit en UNE chaîne, avec des `\n`.

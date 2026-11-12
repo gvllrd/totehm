@@ -11,6 +11,7 @@ import {createLisbonStreetSigns,LISBON_SIGN_OBSTACLES} from './gallery-lisbon-st
 import {TOTEHMPAPER} from './gallery-artworks.mjs';
 import {GALLERY_LAYOUT as L,GALLERY_STATIONS,GALLERY_OBSTACLES} from './gallery-modern-layout.mjs';
 import {GLASS_SHELL as S,GLASS_HEARTH,glassRoofHeight} from './gallery-glass-shell.mjs';
+import {OPPOSITES} from './gallery-opposites.mjs';
 
 // A new coastal museum: a single, quiet glass insertion in the surviving castle.
 // The original works are installations inside it, not part of its architecture.
@@ -136,6 +137,35 @@ export function createCastleSpace(scene,renderer,{place='lisbon',style='castle',
   block(graphite,[x,y,z-.085],[width+.12,height+.12,.12],'Recessed artwork mount fixed to the old stone');
   block(black,[x,y,z-.019],[width,height,.012],'Thin black artwork backing on the masonry');
  }
+ // New York's first sightline ends at a six-work white exhibition wall.
+ // Walkers pass around either end to reach the existing installations.
+ const oppositeFrames=[],oppositePickables=[];
+ if(place==='new-york'){
+  block(material(new T.MeshBasicMaterial({color:0xf8f8f5,toneMapped:false})),[0,2.79,-9],[14.8,4.95,.2],'THINK SAME BUT OPPOSITE — white exhibition wall',true);
+  block(black,[0,2.79,-9.12],[14.96,5.1,.13],'Black edge of the New York exhibition wall');
+  if(globalThis.document?.createElement){
+   const titleCanvas=document.createElement('canvas');titleCanvas.width=2048;titleCanvas.height=160;
+   const titleContext=titleCanvas.getContext('2d');
+   if(titleContext){titleContext.clearRect(0,0,2048,160);titleContext.fillStyle='#111';titleContext.textAlign='center';titleContext.textBaseline='middle';titleContext.font='700 106px Quantico, sans-serif';titleContext.fillText('THINK SAME BUT OPPOSITE',1024,80);}
+   const titleTexture=new T.CanvasTexture(titleCanvas);titleTexture.colorSpace=T.SRGBColorSpace;textures.add(titleTexture);
+   const title=mesh(geometry(new T.PlaneGeometry(10.8,.84)),material(new T.MeshBasicMaterial({map:titleTexture,transparent:true,depthWrite:false,toneMapped:false})),[0,4.77,-8.885],'New York exhibition title');title.castShadow=false;
+  }
+  const xs=[-5.55,-3.33,-1.11,1.11,3.33,5.55];
+  OPPOSITES.forEach((work,index)=>{
+   const x=xs[index];
+   const frame=block(black,[x,2.75,-8.83],[1.86,3.48,.13],work.title+' — black frame');
+   const border=block(material(new T.MeshBasicMaterial({color:0x222225,toneMapped:false})),[x,2.75,-8.754],[1.68,3.3,.012],work.title+' — inner mount');
+   const texture=globalThis.document?.createElement?new T.TextureLoader().load(work.image,()=>changed(),undefined,()=>changed()):new T.DataTexture(new Uint8Array([32,32,32,255]),1,1,T.RGBAFormat);
+   texture.colorSpace=T.SRGBColorSpace;texture.anisotropy=anisotropy;texture.needsUpdate=true;textures.add(texture);
+   const image=mesh(geometry(new T.PlaneGeometry(1.58,2.8124)),material(new T.MeshBasicMaterial({map:texture,toneMapped:false})),[x,2.75,-8.742],work.title+' — original artwork');
+   image.castShadow=false;
+   for(const object of [frame,border,image])object.userData={kind:'new-york-opposite',id:work.id,title:work.title,href:'/think_same_but_opposite?work='+encodeURIComponent(work.id)};
+   oppositeFrames.push(image);oppositePickables.push(frame,border,image);
+  });
+  for(const x of [-5.6,5.6]){
+   const light=new T.SpotLight(0xffffff,65,12,.68,.8,2);light.position.set(x,5.8,-5.4);light.target.position.set(x,2.7,-9);root.add(light,light.target);
+  }
+ }
  // A monumental original mouth crowns the actual entrance; its tongue ends
  // just above the open doorway, with the dimensional THP facing arrivals.
  const sign=createGalleryFacade(root,{mobile,geometry,material,station,black,sculptedPaperMaterial,position:restored?.facadeSign.position||[0,7.45,-1.48],scale:restored?.facadeSign.scale||1.5});
@@ -146,11 +176,11 @@ export function createCastleSpace(scene,renderer,{place='lisbon',style='castle',
  const streetSigns=lisbon?createLisbonStreetSigns(root,{mobile,anisotropy,onChange:changed}):null;
  changed();
  const portals=GALLERY_STATIONS.map(s=>{const p=s.position||s.book||s.screen||s.table;return{room:s.room,x:p[0],z:p[2],href:s.href};});
- return {root,solids,walkable,interactables,pickables:[...interactables.map(i=>i.object),...(streetSigns?.pickables||[])],artSurfaces:[],portals,obstacles:azulejo?[...restored.obstacles,...fabric.obstacles,...GALLERY_OBSTACLES.filter(box=>['thp-counter','origins-lectern','fireplace-hearth'].includes(box.id)),...LISBON_SIGN_OBSTACLES]:lisbon?[...GALLERY_OBSTACLES,...LISBON_SIGN_OBSTACLES]:GALLERY_OBSTACLES,
+ return {root,solids,walkable,interactables,pickables:[...interactables.map(i=>i.object),...oppositePickables,...(streetSigns?.pickables||[])],artSurfaces:[],portals,obstacles:azulejo?[...restored.obstacles,...fabric.obstacles,...GALLERY_OBSTACLES.filter(box=>['thp-counter','origins-lectern','fireplace-hearth'].includes(box.id)),...LISBON_SIGN_OBSTACLES]:lisbon?[...GALLERY_OBSTACLES,...LISBON_SIGN_OBSTACLES]:GALLERY_OBSTACLES,
   roofHeight:restored?.roofHeight,roofProfile:restored?.roofProfile,smokeOutlet:restored?.smokeOutlet,
   anchors:{playScreen:L.play.screen,originsBook:L.origins.book,counter:L.counter.position},setDay(){},
   update(dt,eye,motion=true){if(disposed)return false;if(motion)time+=Math.min(.1,Math.max(0,Number(dt)||0));const signsChanged=!!streetSigns?.update?.(dt,eye,motion),was=dirty||signsChanged;dirty=false;return was;},
-  diagnostics:()=>({kind:azulejo?'lisbon-azulejo-gallery':'coastal-castle-glass-museum',place,azulejoBuilding:restored?.diagnostics()||null,rebuilt:true,building:true,modernGallery:true,ready:!disposed,levels:1,airyInterior:true,interiorPartitions:azulejo?4:0,glassRoof:true,flatSlopingRoof:!azulejo,waveGlass:azulejo,glassSides:true,glassRear:true,castle:azulejo?null:fabric.diagnostics(),fabric:fabric.diagnostics(),streetSigns:streetSigns?.diagnostics()||null,glassCompiled,roofShell:{minimum:azulejo?6:S.minHeight,maximum:azulejo?8.4:S.maxHeight,actualAperture:true,smokeOutlet:{...o}},pavement:pavement?.diagnostics()||null,flooring:{continuousStone:!lisbon,exterior:lisbon?'lisbon-calcada':'ancient-stone',ancientStone:floor.diagnostics()},stone:stone.diagnostics(),facade:{paperLoaded,originalDrawing:true,monumentalEntranceMark:true,scale:restored?.facadeSign.scale||1.5,position:sign.position.toArray()},thpCounter:{packagedPapers:packages.length,looseTabs:0,papers:packages.length,wallPapers:0,premiumSource:'/get_higher',caseSizeMetres:[.38,.38,.38*50/180]},origins:{lectern:true,stone:true,inKeep:!azulejo,readingAlcove:azulejo,closedBook:true,position:L.origins.lectern},exhibition:{walls:azulejo?4:0,levels:1,reservedSlots:0,artworkSupport:'stone',glassMountedArtworks:0},rooms:4,independentFiles:true,time,disposed}),
+  diagnostics:()=>({kind:azulejo?'lisbon-azulejo-gallery':'coastal-castle-glass-museum',place,azulejoBuilding:restored?.diagnostics()||null,rebuilt:true,building:true,modernGallery:true,ready:!disposed,levels:1,airyInterior:true,interiorPartitions:azulejo?4:0,glassRoof:true,flatSlopingRoof:!azulejo,waveGlass:azulejo,glassSides:true,castle:azulejo?null:fabric.diagnostics(),fabric:fabric.diagnostics(),streetSigns:streetSigns?.diagnostics()||null,opposites:{count:oppositeFrames.length,ids:oppositeFrames.map(frame=>frame.userData.id),whiteWall:place==='new-york'},glassCompiled,roofShell:{minimum:azulejo?6:S.minHeight,maximum:azulejo?8.4:S.maxHeight,actualAperture:true,smokeOutlet:{...o}},pavement:pavement?.diagnostics()||null,flooring:{continuousStone:!lisbon,exterior:lisbon?'lisbon-calcada':'ancient-stone',ancientStone:floor.diagnostics()},stone:stone.diagnostics(),facade:{paperLoaded,originalDrawing:true,monumentalEntranceMark:true,scale:restored?.facadeSign.scale||1.5,position:sign.position.toArray()},thpCounter:{packagedPapers:packages.length,looseTabs:0,papers:packages.length,wallPapers:0,premiumSource:'/get_higher',caseSizeMetres:[.38,.38,.38*50/180]},origins:{lectern:true,stone:true,inKeep:!azulejo,readingAlcove:azulejo,closedBook:true,position:L.origins.lectern},exhibition:{walls:azulejo?4:0,levels:1,reservedSlots:0,artworkSupport:'stone',glassMountedArtworks:0},rooms:4,independentFiles:true,time,disposed}),
   dispose(){if(disposed)return;disposed=true;root.removeFromParent();streetSigns?.dispose();restored?.dispose();fabric.dispose();floor.dispose();pavement?.dispose();stone.dispose();for(const t of textures)t.dispose();for(const g of geometries)g.dispose();for(const m of materials)m.dispose();root.clear();}
  };
 }

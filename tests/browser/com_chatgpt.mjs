@@ -112,17 +112,12 @@ try{
     ok(before.gpt!==after.gpt&&before.badge===after.badge&&after.repeat==='infinite','Motion · only GPT rotates infinitely');
     await ctx.close();}
 
-  // Existing Higher subscribers retain their paid experience, separate from the free pitch.
-  {const {pg,ctx}=await page(browser,{dir:'com',origin,tables,rpc:{my_landing:LAND}});
-    await pg.goto(origin+'/totehm?higher=open');await pg.waitForURL(origin+'/higherself');
-    ok(pg.url()===origin+'/higherself','Higher open · existing deep link reaches the standalone experience');
-    await ctx.close();}
-  {let reads=0;const {pg,ctx,log}=await page(browser,{dir:'com',origin,tables,rpc:{my_landing:()=>({...LAND,higher:{active:++reads>=3}})}});
-    await pg.emulateMedia({reducedMotion:'reduce'});
-    await pg.goto(origin+'/totehm?higher=paid');
-    await pg.waitForFunction(()=>window.__totehm_lv?.().reglages&&document.getElementById('member-window').classList.contains('show'),null,{timeout:12000});
-    await pg.waitForFunction(()=>window.__totehm_lv?.().higher,null,{timeout:15000});
-    ok(pg.url()===origin+'/totehm'&&(await pg.evaluate(()=>window.__totehm_lv().vue))==='c','Higher paid · cleaned URL opens subscription settings instead of the free pitch');
-    ok(reads>=3&&/payment received|subscription active/i.test(await pg.textContent('#mw-menu-note'))&&noErrors(log),'Higher paid · state refresh observes the subscription after the webhook');
-    await ctx.close();}
+  // Retired sales callbacks lead to free Higher GPT, including for historical subscribers.
+  for(const active of [false,true])for(const retour of ['open','paid']){
+    const {pg,ctx,log}=await page(browser,{dir:'com',origin,tables,rpc:{my_landing:{...LAND,higher:{active}}}});
+    await pg.goto(origin+'/totehm?higher='+retour);await pg.waitForURL(origin+'/chatgpt');
+    ok(pg.url()===origin+'/chatgpt'&&noErrors(log),'Legacy Higher '+retour+' · free connector for active='+active);
+    ok(!log.functions.some(f=>f.name==='higher-sub'),'Legacy Higher '+retour+' · no checkout, resume or cancellation');
+    await ctx.close();
+  }
 }finally{await browser.close();}

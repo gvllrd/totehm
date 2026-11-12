@@ -61,7 +61,8 @@ export async function retrieveEcosystem(db:Client,grant:string,uid:string,option
   const candidates=await Promise.all(subscriptions.items.map(async({member:who})=>{
     try{return await readMember(db,grant,who,options);}catch{return null;}
   }));
-  const selected=candidates.filter(x=>x&&(member||x.selection==='lexical'||x.selection==='intentions'));
+  const broad=Array.isArray(options.search_terms)&&options.search_terms.length===0;
+  const selected=candidates.filter(x=>x&&(member||(x.items.length>0&&(broad||x.selection==='lexical'||x.selection==='intentions'))));
   return {personal,members:selected,generated_at:new Date().toISOString(),
     subscriptions_truncated:subscriptions.has_more,
     subscriptions_searched:subscriptions.items.length,
@@ -74,13 +75,13 @@ export async function retrieveEcosystem(db:Client,grant:string,uid:string,option
 export async function memberMedia(db:Client,grant:string,member:string,focus:ElementRef,limit=6){
   if(!validElementRef(focus))throw new ContextReadError('invalid_request');
   const element=await readMember(db,grant,member,{query:'',purpose:'explicit',focus,limit:1});
-  if(!element.items.length)return {items:[],truncated:false,source:memberSource(member)};
+  if(!element.items.length)return {items:[],truncated:false,element_available:false,source:memberSource(member)};
   const r=await ecosystemRead(db,grant,'media',{p_pseudo:member});
   const letters={habit:'h',objective:'o',repulsion:'r',vision:'v',wisdom:'w'};
   const all=list(r.items).filter(x=>x.kind===letters[focus.kind]&&x.ref===focus.ref&&UUID.test(ref(x.id)));
   return {source:memberSource(member),items:all.slice(0,limit).map(x=>({
-    ref:ref(x.id),element:focus,mime:txt(x.mime,100),created_at:txt(x.created_at,80),content_shared:false,
-  })),truncated:all.length>limit};
+    ref:ref(x.id),element:focus,url:elementURL(focus,member),source:memberSource(member),mime:txt(x.mime,100),created_at:txt(x.created_at,80),content_shared:false,
+  })),truncated:all.length>limit,element_available:true};
 }
 
 /** Project already authorized Club views. No coordinates, snapshots, private
@@ -91,6 +92,7 @@ export function projectClubSpots(value:unknown){
     const exact=obj(x.exact), box=obj(x.habit_box);
     return {ref:ref(x.spot_id||x.id),url:'https://www.totehm.com/totehm?open=spot&id='+encodeURIComponent(ref(x.spot_id||x.id)),member:txt(x.creator||x.pseudo||x.owner_pseudo,80),
       habit:txt(box.name||x.habit),city:txt(x.city,120),place:txt(exact.place,160)||null,
+      mode:txt(x.mode,20)||null,comment:txt(x.comment,400),audience:txt(x.audience,20)||null,
       starts_at:txt(x.starts_at,80),duration_min:Number.isFinite(x.duration_min)?x.duration_min:null,
       period:x.state==='will'?'future':x.state==='was'?'past':'now',
       intentions:Array.isArray(x.intentions)?x.intentions.filter((i:unknown)=>typeof i==='string').slice(0,7):[],
@@ -104,5 +106,8 @@ export async function clubSpots(db:Client,grant:string,options:Row){
     p_period:options.period,p_pseudo:options.member||null,p_limit:options.limit||6,p_offset:options.offset||0,
     p_filters:{...(options.city?{city:options.city}:{}),...(options.intentions?{intentions:options.intentions}:{}),...(options.habit_ref?{habit:options.habit_ref}:{})},
   });
-  return projectClubSpots(r);
+  // Native discovery intentionally matches names without case. An attachment
+  // bundle must retain the exact server reference, before labels are shortened.
+  const exact=options.habit_ref===undefined?r:{...r,items:list(r.items).filter(x=>(obj(x.habit_box).name||x.habit)===options.habit_ref)};
+  return projectClubSpots(exact);
 }

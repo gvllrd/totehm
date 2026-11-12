@@ -1,6 +1,7 @@
 // Behavioral retrieval checks. No model, remote requests or personal records.
 import assert from 'node:assert/strict';
 import {projectGraph,projectContext,retrieveContext,getSounds,getMediaMetadata,getSpots} from '../../backend/supabase/functions/_shared/chatgpt-context.ts';
+import {readMember,memberMedia} from '../../backend/supabase/functions/_shared/chatgpt-ecosystem.ts';
 import {initializeResult} from '../../backend/supabase/functions/_shared/chatgpt-protocol.ts';
 import {CHATGPT_TOOLS} from '../../backend/supabase/functions/_shared/chatgpt-server.ts';
 const uid='11111111-1111-4111-8111-111111111111';
@@ -60,12 +61,30 @@ const vision=await getMediaMetadata(db,uid,{kind:'vision',ref:id(3)});
 check(vision.vision_image_available&&!JSON.stringify(vision).includes('private-image'),'Vision image availability without its storage path or pixels');
 const bad=tables.intention_music[0];
 for(const url of ['javascript:alert(1)','https://user:pass@example.test','https://','https://example.test/ space']){bad.url=url;check((await getSounds(db,uid,['focus'])).items[0].url===null,'Reject unsafe/malformed playlist URL');}
-tables.spot_plans=Array.from({length:405},(_,n)=>({spot_id:id(n+1000),habit:'Lire',starts_at:new Date(Date.UTC(2027,0,n+1)).toISOString(),duration_min:60,status:'published'}));
- tables.spot_plans.push({spot_id:id(999),habit:'Lire',starts_at:'2026-11-08T11:30:00.000Z',duration_min:60,status:'published'});
+tables.spot_plans=Array.from({length:405},(_,n)=>({spot_id:id(n+1000),habit:'Lire',starts_at:new Date(Date.UTC(2027,0,n+1)).toISOString(),duration_min:60,status:'published',format:'spot'}));
+ tables.spot_plans.push({spot_id:id(999),habit:'Lire',starts_at:'2026-11-08T11:30:00.000Z',duration_min:60,status:'published',format:'spot'});
  const now=await getSpots(db,uid,{period:'now',now:'2026-11-08T12:00:00Z'});
  check(now.items[0]?.ref===id(999),'405 future plans cannot hide the ongoing spot');
  const next=await getSpots(db,uid,{period:'future',now:'2026-11-08T12:00:00Z',limit:1});
  check(next.items[0]?.ref===id(1000)&&next.truncated,'Future cap returns the next plan, not the furthest plan');
+// Resources remain tied to their exact element and source, even when labels match.
+tables.element_media=[
+ {id:id(610),kind:'h',ref:'Lire',removed_at:null,name:'My chosen illustration',mime:'image/png',created_at:'2026-11-10T12:00:00Z',path:'private/original.png',pixels:'not shared'},
+ {id:id(611),kind:'h',ref:'Lire ailleurs',removed_at:null,name:'Unrelated illustration',mime:'image/png',created_at:'2026-11-10T12:00:00Z'}];
+const ownIllustration=await getMediaMetadata(db,uid,{kind:'habit',ref:'Lire'});
+check(ownIllustration.items.length===1&&ownIllustration.items[0].element.ref==='Lire','Illustrations follow the exact personal element, not a similar label');
+check(ownIllustration.items[0].content_shared===false&&!JSON.stringify(ownIllustration).includes('private/original.png')&&!JSON.stringify(ownIllustration).includes('not shared'),'An illustrative medium remains metadata, without its pixels or private storage location');
+const creatorCalls=[];
+const creatorDb={rpc:async(name,args)=>{creatorCalls.push({name,args});return {error:null,data:name==='chatgpt_member_orders'?{ok:true,orders:{}}:
+ args.p_action==='member'?{ok:true,pseudo:'writer',steps:[{t:'Lire',is:['focus']}]}:
+ {ok:true,items:[{id:id(612),kind:'h',ref:'Lire',mime:'image/png',path:'creator/private.png'}]}};}};
+const creatorElement=await readMember(creatorDb,'checked-grant','writer',{query:'reading',purpose:'action',intentions:['focus'],search_terms:[]});
+const creatorIllustration=await memberMedia(creatorDb,'checked-grant','writer',{kind:'habit',ref:'Lire'});
+check(creatorElement.source.kind==='subscribed_member'&&creatorElement.source.member==='writer'&&creatorElement.source.adopted_by_user===false,'A subscribed creator is attributed inspiration, not a personal choice with the same label');
+check(new URL(creatorElement.items[0].url).searchParams.get('ro')==='writer'&&creatorIllustration.source.member==='writer','The creator element and its illustration preserve the same original source');
+check(creatorCalls.every(c=>c.args.p_grant==='checked-grant')&&creatorIllustration.items[0].content_shared===false&&!JSON.stringify(creatorIllustration).includes('creator/private.png'),'Creator resources keep the checked grant and never become a media download channel');
+const personalPlace=await getSpots(db,uid,{period:'now',habit_ref:'Lire',now:'2026-11-08T12:00:00Z'});
+check(personalPlace.items.every(s=>s.habit_ref==='Lire'&&s.source==='owner_spot_plan'&&s.presence_verified===false),'A possible place is a personal plan linked to the Habit, not proof of current presence');
 check(CHATGPT_TOOLS.filter(t=>t.name.includes('context')).every(t=>t.inputSchema.properties.intentions&&t.inputSchema.properties.search_terms),'Multilingual filters advertised on both retrieval tools');
 check(initializeResult().instructions.includes('short follow-ups')&&initializeResult().instructions.includes('within each view'),'Higher GPT behavior delivered by MCP initialization');
 console.log(JSON.stringify({suite:'Higher GPT',checks,passed:checks,query_languages:12,record_scripts:8}));

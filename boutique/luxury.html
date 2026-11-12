@@ -65,18 +65,69 @@ a{color:inherit;text-decoration:none}
   padding:2px 3px;cursor:pointer;display:inline-flex;align-items:center;gap:.4em;transition:background .15s,color .15s}
 .btn-back{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo);background:none;border:none;border-radius:var(--r);padding:2px 2px;cursor:pointer}
 
-/* UNE COLONNE CENTRÉE */
-main{min-height:100svh;display:flex;flex-direction:column;align-items:center;gap:14px;padding:64px 16px 150px;text-align:center;max-width:540px;margin:0 auto}
+/* ══ LE ROULEAU — plein écran par plein écran (11/11, Wah : « refaire le front
+   sur le modèle de streetwear »). `#stages` NE DÉFILE PAS : il montre une étape
+   à la fois, et `#stages-roll` se DÉPLACE d'une étape. Une étape plus haute que
+   l'écran garde son propre défilement DEDANS, et le geste de page ne part
+   qu'une fois son bord atteint — c'est le seul moyen d'avoir à la fois le plein
+   écran franc et un texte long qui se lit. ══ */
+#stages{position:fixed;inset:0;overflow:hidden;touch-action:pan-y;-webkit-user-select:none;user-select:none}
+#stages-roll{position:absolute;left:0;top:0;width:100%;height:100%;
+  transform:translate3d(0,var(--roll,0px),0);will-change:transform;
+  transition:transform .42s cubic-bezier(.22,.61,.36,1)}
+#stages.is-sec #stages-roll{transition:none}
+/* Une étape vaut EXACTEMENT la fenêtre : `100%` de `#stages`, ni `dvh` qui
+   tremble avec la barre d'adresse, ni `svh` trop court quand elle se replie. */
+.stage{position:relative;height:100%;display:none;flex-direction:column;align-items:center;justify-content:safe center;
+  padding:calc(var(--top) + 54px) 16px calc(28px + var(--bot));text-align:center;
+  overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scrollbar-width:none;
+  opacity:0;transition:opacity .4s ease}
+.stage::-webkit-scrollbar{display:none}
+.stage.is-open{display:flex}
+.stage.is-in{opacity:1}
+.inner{width:100%;max-width:430px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:12px}
+/* La place du bouton [NEXT] : réservée seulement quand il est là. */
+#stages.has-next .stage{padding-bottom:calc(66px + var(--bot))}
+#st-next{position:absolute;left:50%;bottom:calc(12px + var(--bot));transform:translateX(-50%);z-index:8;
+  display:flex;align-items:center;gap:7px;padding:9px 16px;border:0;border-radius:999px;
+  background:rgba(255,255,255,.1);color:#fff;font-family:var(--mono);font-size:9px;letter-spacing:.2em;
+  text-transform:uppercase;cursor:pointer;-webkit-tap-highlight-color:transparent;
+  opacity:0;visibility:hidden;transition:opacity .45s ease,visibility 0s linear .45s,background .2s ease}
+#stages.has-next #st-next{opacity:.82;visibility:visible;transition-delay:0s,0s,0s}
+#st-next svg{width:14px;height:9px;display:block;fill:none;stroke:#fff;stroke-width:1.8}
+@media(hover:hover){#st-next:hover{background:rgba(255,255,255,.2);opacity:1}}
+/* L'INTRO : le manifeste se lit à gauche, le reste reste centré. */
+.man{text-align:left;display:flex;flex-direction:column;gap:9px;max-width:420px}
+.man p{font-size:11.5px;line-height:1.75;color:var(--lo)}
+.man b{color:#fff;font-weight:700}
+.man .pin{color:#fff}
+/* LES PASTILLES — la marque, le budget : du gris de figher.club, jamais du navy. */
+.chips{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;width:100%}
+.chip{font-size:11px;letter-spacing:.04em;text-transform:none;color:var(--mid);background:var(--s2);border:0;border-radius:var(--r);
+  padding:8px 13px;cursor:pointer;-webkit-tap-highlight-color:transparent;
+  transition:background .15s ease,color .15s ease,box-shadow .15s ease}
+.chip.is-on{color:#fff;background:var(--s3);box-shadow:inset 0 0 0 1px rgba(255,255,255,.45)}
+@media(hover:hover){.chip:hover{color:#fff;background:var(--s3)}}
+/* LE RAIL DES STYLES — copié de /streetwear, au doigt. */
+#st-rail{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;width:100%;padding:6px 4px 10px}
+#st-rail::-webkit-scrollbar{display:none}
+.st-card{flex:0 0 auto;width:120px;display:flex;flex-direction:column;align-items:center;gap:6px;background:none;border:none;padding:0;cursor:pointer;scroll-snap-align:center;-webkit-tap-highlight-color:transparent}
+.st-card img,.st-card .ph{width:120px;height:120px;display:block;object-fit:cover;border-radius:var(--r);background:var(--c1);opacity:.6;filter:grayscale(45%);outline:1px solid transparent;transition:opacity .2s ease,filter .2s ease,outline-color .2s ease}
+.st-card b{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--lo);transition:color .2s ease}
+.st-card.is-on img,.st-card.is-on .ph{opacity:1;filter:none;outline-color:#fff}
+.st-card.is-on b{color:#fff}
+/* LE PRIX DU DÉPÔT, à la dernière étape : le prix et le paiement, rien d'autre. */
+.recap{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo)}
+.recap .price{color:#fff;font-weight:700;font-family:var(--q);font-size:30px;letter-spacing:.02em;line-height:1.1}
 .kicker{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--lo)}
 h1{font-weight:700;font-size:20px;letter-spacing:.06em;text-transform:uppercase;color:#fff;line-height:1.2}
 .say{max-width:38ch;font-size:12.5px}
 .sub{font-size:8.6px;letter-spacing:.22em;color:var(--dim);font-weight:700;text-transform:uppercase}
 .names{font-size:11px}
 .legal{font-size:8.6px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
-.chips{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
-.chip{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--mid);background:var(--s2);border:1px solid transparent;border-radius:var(--r);padding:2px 3px;cursor:default}
-button.chip{cursor:pointer;transition:background .15s,color .15s,border-color .15s}
-button.chip.is-on{background:var(--s3);color:#fff;border-color:#fff}
+/* 11/11 — UNE SEULE DÉFINITION DE LA PASTILLE (plus haut, avec le rouleau) :
+   l'ancienne, copiée et jamais portée, écrasait la nouvelle et mettait les
+   noms de marque en capitales. Un nom de marque s'écrit comme la marque. */
 #price{font-weight:700;font-size:13px;color:#fff;letter-spacing:.04em;min-height:22px}
 #test-badge{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:#fff;background:var(--s3);border-radius:var(--r);padding:5px 10px}
 .btn{font-weight:700;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#fff;background:var(--s3);border:none;border-radius:var(--r);
@@ -95,7 +146,8 @@ button.chip.is-on{background:var(--s3);color:#fff;border-color:#fff}
 .tick a{text-decoration:underline}.tick input{accent-color:#fff}
 .note{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--lo);min-height:16px}
 .note.ok{color:var(--ok)}.note.no{color:#fff}
-#form,#s-nothp,#quotes,#admin{display:flex;flex-direction:column;align-items:center;gap:10px;width:100%}
+#s-nothp,#quotes,#admin{display:flex;flex-direction:column;align-items:center;gap:10px;width:100%}
+#admin-list{display:flex;flex-direction:column;align-items:center;gap:10px;width:100%}
 /* UN DEVIS — une carte de figher.club : la surface est GRISE, et la couleur du
    Totehm n'est qu'un RAIL de 3 px à sa gauche, comme le tick d'une box. Les
    couleurs du Totehm restent dans le Totehm (27/10, Wah). */
@@ -273,22 +325,8 @@ button.mi.is-on{filter:none}
 /* ── LE DÉPÔT, PLEIN ÉCRAN · 25/10 (Wah) : « full-screen step-by-step…
    une step à la fois, fluidité, un focus sur le centre ». Le flux prend tout
    l'écran ; la page (le prix, mes projets, HOW IT WORKS) l'attend derrière. ── */
-#form{position:fixed;inset:0;z-index:60;background:#000;display:none;overflow:hidden}
-#form.is-on{display:block}
-#fm-x{position:fixed;top:calc(10px + var(--top));right:12px;z-index:62;width:38px;height:38px;display:none;
-  align-items:center;justify-content:center;background:none;border:0;color:var(--lo);cursor:pointer}
-#form.is-on ~ #fm-x{display:flex}
-#fm-x svg{width:15px;height:15px;stroke:currentColor;stroke-width:1.7;fill:none}
-@media(hover:hover){#fm-x:hover{color:#fff}}
 /* La page est centrée ; une box, elle, se lit à gauche — comme partout ailleurs. */
 #el-list,#el-list .bx,#matter{text-align:left}
-.step{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:safe center;gap:10px;
-  padding:calc(var(--top) + 54px) 16px calc(28px + var(--bot));overflow-y:auto;overscroll-behavior:contain;
-  opacity:0;transform:translateY(20px);transition:opacity .34s ease,transform .44s var(--ease)}
-.step>*{width:100%;max-width:430px;flex:0 0 auto}
-.step.is-open{display:flex}
-.step.is-in{opacity:1;transform:none}
-.step.is-out{opacity:0;transform:translateY(-20px);pointer-events:none}
 /* LA PHOTO — la saisie du spot de figher.club (vue du bas) : une surface GRISE,
    un coin arrondi, un filet d'un pixel. Rien de navy : la pièce n'est pas un
    papier du TOTEHM, c'est un objet qu'on dépose. */
@@ -296,7 +334,16 @@ button.mi.is-on{filter:none}
   background:var(--s2);border:none;border-radius:var(--r);box-shadow:inset 0 0 0 1px rgba(255,255,255,.1);
   cursor:pointer;overflow:hidden;-webkit-tap-highlight-color:transparent;transition:background .15s ease}
 #ph-lab{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--lo);text-align:center;padding:0 14px}
-#ph-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+#ph-img,#ph-vid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+/* LA RÉFÉRENCE DE STYLE — la même saisie grise, plus basse : c'est une image
+   d'inspiration, pas la pièce. */
+#sr-tile{position:relative;display:flex;align-items:center;justify-content:center;width:100%;max-width:220px;min-height:92px;
+  background:var(--s2);border:none;border-radius:var(--r);box-shadow:inset 0 0 0 1px rgba(255,255,255,.1);
+  cursor:pointer;overflow:hidden;-webkit-tap-highlight-color:transparent;transition:background .15s ease}
+#sr-lab{font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--lo);text-align:center;padding:0 12px}
+#sr-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+#sr-tile.is-busy{opacity:.5}
+@media(hover:hover){#sr-tile:hover{background:var(--s3)}#sr-tile:hover #sr-lab{color:#fff}}
 #ph-tile.is-busy{opacity:.5}
 @media(hover:hover){#ph-tile:hover{background:var(--s3)}#ph-tile:hover #ph-lab{color:#fff}}
 /* HOW IT WORKS — le métier, replié par défaut : on ne récite pas, on répond. */
@@ -363,6 +410,10 @@ body[data-eco-auth="central"] #mw-email,body[data-eco-auth="central"] #mw-code,b
    bouton reste sur UNE ligne ». Les tailles de 12 à 18 px ont perdu 1 px ;
    un bouton ne passe jamais à la ligne (sous 350 px, il rapetisse encore). */
 button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-space:nowrap!important}
+/* ⚠️ 11/11 — UNE MINI-BOX N'EST PAS UN BOUTON D'INTERFACE : c'est un TEXTE du
+   TOTEHM, et il doit se lire ENTIER. La règle d'au-dessus s'arrête ici. */
+.mi,button.mi,#matter .mi,.bx .nm,.bx .sb{white-space:normal!important;overflow-wrap:anywhere;word-break:break-word}
+#matter .grp .mi{flex:0 1 auto;min-width:0;max-width:100%;line-height:1.4;padding:3px 7px}
 @media(max-width:350px){.btn-sig,a.btn-sig{font-size:11.5px!important}}
 /* ══ LE COIN MEMBRE — copié de tools/member_corner.css dans chaque page (jamais importé), EN DERNIER dans son style ══
    L'élément porte la classe `mc` ; la page pose `is-in` quand le membre est connecté (rien d'autre à faire).
@@ -414,53 +465,125 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
   <a class="btn-back" id="home" href="/#luxury">Back</a>
   <button id="member" type="button" aria-label="Member" class="mc eco-connect">CONNECT WITH MY TOTEHM</button>
 </header>
-<main>
-  <div class="kicker">Totehm · Luxury</div>
-  <h1>Totehmize<br>my cloth &amp; stuff</h1>
-  <p class="say">Your own piece — a bag, a jacket, a pair of shoes — hand-painted from one element of your TOTEHM.</p>
-  <span class="sub">Brands we totehmize</span>
-  <div class="names">Hermès · Louis Vuitton · Gucci · any piece you own</div>
-  <div class="legal">Independent. Not affiliated with these brands.</div>
-  <div id="price"></div>
-  <div id="test-badge" class="hide"></div>
+<main id="stages">
+<!-- ══ LE ROULEAU — plein écran par plein écran, comme /streetwear (11/11, Wah :
+     « la branche luxury, il faut la refaire en front sur le modèle de
+     streetwear »). `#stages` ne défile PAS : `#stages-roll` se DÉPLACE d'une
+     étape, et chaque étape défile chez elle si elle déborde. ══ -->
+<div id="stages-roll">
 
-  <div id="s-wait" class="note">…</div>
-  <div id="s-out" class="hide"><button class="btn eco-connect" id="signin" type="button">CONNECT WITH MY TOTEHM</button></div>
-  <div id="s-nothp" class="hide">
-    <p class="say">The luxury totehmization is for TotehmPaper owners.</p>
-    <button class="btn gh" id="get-higher" type="button"><span class="get">Get</span><svg viewBox="0 0 600 200" aria-label="Higher"><use href="#higher-slogan"></use></svg></button>
-  </div>
-  <div id="s-closed" class="hide note">closed for now</div>
-  <div id="s-paid" class="hide note ok">deposited — we study your piece and write to you</div>
+  <!-- 0 · L'INTRO — TOUT SE DIT AVANT (11/11, Wah : « poser le contexte dès
+       l'introduction… bref, donner envie »). Les matières, l'artiste local, la
+       galerie partenaire, les délais et le remboursement : rien ne se découvre
+       après le paiement. -->
+  <section class="stage" id="s-intro" data-s="intro" aria-label="Totehm Luxury">
+    <div class="inner">
+      <div class="kicker">Totehm · Luxury</div>
+      <h1>Totehmize<br>my piece</h1>
+      <p class="say">One element of your TOTEHM, hand-painted on a piece you already own — by an artist who lives in your city.</p>
+      <!-- 12/11 (Wah) : DEUX blocs au-dessus du bouton, pas quatre — sur
+           téléphone, le dépôt arrivait après deux écrans de lecture. Ce qui
+           reste : ce qui DURE, et ce qu'on GARANTIT. Le sur-mesure et
+           l'artiste local se lisent juste dessous, dans HOW IT WORKS. -->
+      <div class="man">
+        <p><b>Pigments that outlive us.</b> Only the finest paints and primers, ultra-high-end, matched to the exact leather, canvas or textile of a luxury piece. A Totehm is an object made to last, and to be passed from one generation to the next.</p>
+        <p><b>Thirty days, or refunded.</b> We give ourselves one month to find and secure the right artist — local, through a partner gallery — for your budget and your taste. If the project cannot be done, the deposit is refunded <span class="pin">in full</span>. Once the artist is secured, the work is in the gallery within two weeks.</p>
+      </div>
+      <span class="sub">Brands we totehmize</span>
+      <div class="names">Hermès · Louis Vuitton · Gucci</div>
+      <div class="legal">Independent. Not affiliated with these brands.</div>
+      <div id="price"></div>
+      <div id="test-badge" class="hide"></div>
+      <div id="s-wait" class="note">…</div>
+      <div id="s-closed" class="hide note">closed for now</div>
+      <div id="s-paid" class="hide note ok">deposited — we study your piece and we look for your artist</div>
+      <div id="s-out" class="hide"><button class="btn eco-connect" id="signin" type="button">CONNECT WITH MY TOTEHM</button></div>
+      <div id="s-nothp" class="hide">
+        <p class="say">The luxury totehmization is for TotehmPaper owners.</p>
+        <button class="btn gh" id="get-higher" type="button"><span class="get">Get</span><svg viewBox="0 0 600 200" aria-label="Higher"><use href="#higher-slogan"></use></svg></button>
+      </div>
+      <!-- LE SEUL bouton avant le dépôt : il ne dit pas « suivant », il OUVRE
+           (il connecte et vérifie le TotehmPaper). Le reste se descend. -->
+      <button class="btn cta hide" id="go" type="button">Deposit my project</button>
+      <div class="note dim" id="go-note"></div>
 
-  <!-- MES PROJETS -->
-  <section id="quotes" class="hide" aria-label="My projects"></section>
+      <!-- MES PROJETS -->
+      <section id="quotes" class="hide" aria-label="My projects"></section>
 
-  <!-- LE PORCHE : ce qu'on lit avant d'entrer. Le dépôt, lui, prend l'écran. -->
-  <div id="fm-open" class="hide"><button class="btn cta" id="fm-go" type="button">Deposit my project</button></div>
+      <!-- HOW IT WORKS — le métier, replié : on ne récite pas, on répond. -->
+      <section id="how">
+        <button class="lnk" id="how-btn" type="button" aria-expanded="false">How it works</button>
+        <div id="how-body">
+          <h3>1 · We read the material — <span class="pin">100 % bespoke</span></h3>
+          <p>Nothing is painted before your piece is studied. Your photo or video is read automatically, then by us: the material, its texture, its grain, its coating. Leather takes the work differently from coated canvas, and some finishes refuse it altogether. The primer and the paint are then chosen for <span class="pin">that piece alone</span>. That answer comes first, and it costs you nothing: if the piece cannot be painted, <span class="pin">the deposit is refunded in full</span>.</p>
+          <h3>2 · We find your artist, where you are — <span class="pin">local artists, always</span></h3>
+          <p>Ask from Los Angeles, and the artist is from Los Angeles. It is written into the TOTEHM DNA. The mise en relation goes through a <span class="pin">partner art gallery</span> — the official and unavoidable intermediary — and we draw on the largest private network of galleries and artists there is. Your city, your budget and the style you chose decide who we go after: the higher the budget, the more prestigious the names we allow ourselves to approach. We give ourselves <span class="pin">30 days</span>; past that, without an artist, you are refunded in full.</p>
+          <h3>3 · We prepare the piece</h3>
+          <p>The step nobody sees, and the only one that decides whether the work lasts: degreasing, a light abrasion of the factory finish, hardware and linings masked, then an adhesion primer mixed for that exact material. A paint laid on an unprepared surface looks perfect for a week and cracks at the first fold.</p>
+          <h3>4 · The artist paints it by hand</h3>
+          <p>Leather-grade pigments — made to bend with the material, never a hardware-store paint — laid in thin layers, each one dried before the next. Your element becomes the artwork. Nothing is printed, nothing is a transfer, nothing is a sticker. The artist has <span class="pin">two weeks</span> to finish and to drop the work at the partner gallery.</p>
+          <h3>5 · It holds</h3>
+          <p>The paint is heat-set, then sealed with a flexible top-coat — matte or satin, your call — that takes water, UV and the folds of a piece you actually wear.</p>
+          <h3>The deposit</h3>
+          <p><span class="pin" id="how-price">770 €</span> deposits the project: it pays for the study of your material, the tests on it and the search for your artist. If no artist is secured within 30 days, or if the piece cannot take the work, <span class="pin">you are refunded in full</span>. If it can, we tell you the price of the artwork <span class="pin">before anything is painted</span>, and the deposit counts towards it.</p>
+        </div>
+      </section>
 
-  <!-- LE DÉPÔT — plein écran, une étape à la fois : la photo, le TOTEHM, le nom, 500 € -->
-  <section id="form" aria-label="Deposit my project">
+      <!-- L'ADMINISTRATEUR -->
+      <section id="admin" class="hide" aria-label="Projects to answer">
+        <div class="step-h">Projects to answer</div>
+        <div id="admin-list"></div>
+      </section>
+    </div>
+  </section>
 
-    <!-- 1 · LA PIÈCE, EN PHOTO -->
-    <div class="step is-open is-in" id="st-photo">
+  <!-- 1 · LA PIÈCE — la photo ou la vidéo D'ABORD, puis la marque, le nom exact
+       du produit et la ville (11/11, Wah : « une photo ou une vidéo haute
+       définition de sa pièce qui doit arriver en premier lieu dès le départ »). -->
+  <section class="stage" id="s-piece" data-s="piece" aria-label="Your piece">
+    <div class="inner">
       <div class="step-h">1 · Your piece</div>
       <label id="ph-tile" for="ph-file">
-        <span id="ph-lab">Take a photo of your piece</span>
+        <span id="ph-lab">Photo or HD video of your piece</span>
         <img id="ph-img" alt="" hidden>
+        <video id="ph-vid" playsinline muted loop hidden></video>
       </label>
-      <input type="file" id="ph-file" accept="image/*" capture="environment" class="hide">
+      <input type="file" id="ph-file" accept="image/*,video/*" class="hide">
       <div class="note dim" id="ph-note"></div>
-      <input class="field" id="note" maxlength="280" placeholder="your piece, in a few words">
+      <div class="step-h">The brand</div>
+      <div class="chips" id="br-chips" role="radiogroup" aria-label="Brand"></div>
+      <input class="field" id="product" maxlength="60" placeholder="exact product name" autocomplete="off">
+      <input class="field" id="city" maxlength="60" placeholder="your city" autocomplete="address-level2">
+      <input class="field" id="note" maxlength="280" placeholder="your piece, in a few words (optional)">
+      <div class="note dim" id="pc-note"></div>
     </div>
+  </section>
 
-    <!-- 2 · LE TOTEHM — il se décompose À SA PLACE, une box tapée EST le choix -->
-    <div class="step" id="s-element">
-      <div class="step-h">2 · The element that totehmizes it</div>
+  <!-- 2 · LE STYLE — l'un ou l'autre : un style de la liste, ou la photo du
+       style d'un artiste aimé. Et le BUDGET vit ici, avec le style : c'est lui
+       qui décide du rang de l'artiste. -->
+  <section class="stage" id="s-style" data-s="style" aria-label="The artistic style">
+    <div class="inner">
+      <div class="step-h">2 · The artistic style</div>
+      <div id="st-rail" class="pieces" role="listbox" aria-label="Curated styles"></div>
+      <div class="say">Or send the work of an artist you love — we read the style, never copy it.</div>
+      <label id="sr-tile" for="sr-file">
+        <span id="sr-lab">A photo of the style I want</span>
+        <img id="sr-img" alt="" hidden>
+      </label>
+      <input type="file" id="sr-file" accept="image/*" class="hide">
+      <div class="note dim" id="sr-note"></div>
+    </div>
+  </section>
+
+  <!-- 3 · LE TOTEHM — il se décompose À SA PLACE, une box tapée EST le choix -->
+  <section class="stage" id="s-element" data-s="element" aria-label="Choose an element of my TOTEHM">
+    <div class="inner">
+      <div class="step-h">3 · The element that totehmizes it</div>
       <div id="el-head" class="is-logo">
         <div id="tz-papers" role="group" aria-label="My TOTEHM, unfolded">
-        <button class="pap pap-s" type="button" data-v="wisdom"><span class="pap-lab">my wisdom story</span></button>
-        <button class="pap pap-g" id="totehmize" type="button" data-g="1" aria-label="Totehmize this cloth">
+        <button class="pap pap-s" type="button" data-v="wisdom"><span class="pap-lab">my story</span></button>
+        <button class="pap pap-g" id="totehmize" type="button" data-g="1" aria-label="Totehmize this piece">
           <!-- LE LOGO : le fond perforé, le rail, le T, le mot. Le fond prend le
                dessus, les trois autres fondent — et MY GRIND reste. -->
           <span id="tz-logo" class="lg" aria-hidden="true"><svg class="gl g-rail"><use href="#lg-rail"/></svg><svg class="gl g-t"><use href="#lg-t"/></svg><svg class="gl g-wm"><use href="#lg-wm"/></svg></span>
@@ -479,49 +602,51 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
       <div id="el-list"></div>
       <!-- Les photos vivent HORS de la box, sous elle (27/10) -->
       <div id="shots"></div>
-      <button class="btn cta hide" id="el-go" type="button">Next</button>
     </div>
+  </section>
 
-    <!-- 3 · LE NOM — un identifiant, dans une saisie grise (figher.club) -->
-    <div class="step" id="st-name">
-      <div class="step-h">3 · Engrave its name</div>
+  <!-- 4 · LE BUDGET — celui de l'ŒUVRE, jamais l'acompte -->
+  <section class="stage" id="s-budget" data-s="budget" aria-label="Your budget">
+    <div class="inner">
+      <div class="step-h">4 · Your budget for the artwork</div>
+      <div class="chips" id="bg-chips" role="radiogroup" aria-label="Budget"></div>
+      <div class="say">The deposit is not the artwork. The higher the budget, the more prestigious the artists we allow ourselves to approach for you.</div>
+    </div>
+  </section>
+
+  <!-- 5 · LE NOM — un IDENTIFIANT, dans une saisie grise (figher.club) -->
+  <section class="stage" id="s-name" data-s="name" aria-label="Name the piece">
+    <div class="inner">
+      <div class="step-h">5 · Engrave its name</div>
       <label id="nm-field"><span id="nm-prefix">0.</span><input id="nm-input" maxlength="40" placeholder="name" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="text" enterkeyhint="done" aria-label="The name of the piece"></label>
       <div class="note dim" id="name-note"></div>
-      <button class="btn cta" id="nm-go" type="button" disabled>Next</button>
     </div>
+  </section>
 
-    <!-- 4 · LE DÉPÔT -->
-    <div class="step" id="st-pay">
+  <!-- 6 · LE DÉPÔT — le prix et le paiement, rien d'autre -->
+  <section class="stage" id="s-pay" data-s="pay" aria-label="Deposit">
+    <div class="inner">
+      <div class="recap" id="pay-price"></div>
       <label class="tick"><input type="checkbox" id="terms"> I read the <a href="/terms_of_sale" target="_blank" rel="noopener">Simple terms of sale</a></label>
       <button class="btn cta" id="ask" type="button">Deposit my project</button>
       <div class="say" id="refund"></div>
       <div class="note" id="ask-n"></div>
     </div>
   </section>
-  <button id="fm-x" type="button" aria-label="Leave"><svg viewBox="0 0 16 16"><path d="M3 3 L13 13 M13 3 L3 13"/></svg></button>
 
-  <!-- HOW IT WORKS — le métier, en quatre gestes -->
-  <section id="how">
-    <button class="lnk" id="how-btn" type="button" aria-expanded="false">How it works</button>
-    <div id="how-body">
-      <h3>1 · We study the piece</h3>
-      <p>You send one photo. We look at the material, its grain, its coating — leather takes the work differently from coated canvas, and some finishes refuse it altogether. That answer comes first, and it costs you nothing: if the piece cannot be painted, <span class="pin">the deposit is refunded in full</span>.</p>
-      <h3>2 · We prepare it</h3>
-      <p>This is the step nobody sees and the only one that decides whether the work lasts: degreasing, a light abrasion of the factory finish, hardware and linings masked, then an adhesion primer chosen for that exact material. A paint laid on an unprepared surface looks perfect for a week and cracks at the first fold.</p>
-      <h3>3 · We paint it by hand</h3>
-      <p>Leather-grade acrylics — pigments made to bend with the material, never a hardware-store paint — laid in thin layers, each one dried before the next. Your element becomes the artwork, painted by the artist. Nothing is printed, nothing is a transfer, nothing is a sticker.</p>
-      <h3>4 · We make it hold</h3>
-      <p>The paint is heat-set, then sealed with a flexible top-coat — matte or satin, your call — that takes water, UV and the folds of a piece you actually wear. The piece then rests, we check it under light, and only then does it travel back to you.</p>
-      <h3>The deposit</h3>
-      <p><span class="pin" id="how-price">500 €</span> deposits the project: it pays for the study, the tests on your material and a slot in the workshop. If the piece cannot take the work, it comes back to you. If it can, we tell you the price of the artwork <span class="pin">before anything is painted</span>, and the deposit counts towards it.</p>
+  <!-- 7 · DÉPOSÉ — le retour de Stripe -->
+  <section class="stage" id="s-done" data-s="done" aria-label="Deposited">
+    <div class="inner">
+      <div class="kicker">Totehm · Luxury</div>
+      <h1>Deposited</h1>
+      <p class="say">We read the material of your piece, then we go and find your artist. You hear from us within 30 days — or you are refunded in full.</p>
+      <a class="btn" href="/#luxury">Back to the boutique</a>
     </div>
   </section>
-
-  <!-- L'ADMINISTRATEUR -->
-  <section id="admin" class="hide" aria-label="Projects to answer">
-    <div class="step-h">Projects to answer</div>
-    <div id="admin-list" style="display:flex;flex-direction:column;align-items:center;gap:10px;width:100%"></div>
-  </section>
+</div>
+<!-- LE BOUTON [NEXT], UN SEUL, HORS DU ROULEAU : il tourne la page quoi qu'il
+     arrive au geste, et n'existe que si une étape attend VRAIMENT dessous. -->
+<button id="st-next" type="button" aria-label="Next step">next<svg viewBox="0 0 16 10" aria-hidden="true"><path d="M2 2 L8 8 L14 2"/></svg></button>
 </main>
 
 <!-- MY TOTEHM — SELECT MODE : quelle Box matérialiser ? -->
@@ -682,24 +807,27 @@ document.addEventListener('visibilitychange', () => { if(!document.hidden) ssoVe
 
 
 /* ══ L'ÉTAT — une lecture, un écran ═════════════════════════════════ */
-const BUILD = '2026-11-10-coin-membre';
+const BUILD = '2026-11-11-atelier-local';
 let A = null, ADM = [], SEQ = 0, BUSY = false, ME = null;
 /* Le diagnostic — des booléens et des compteurs, jamais une valeur de membre. */
 window.__totehm_luxury = () => ({ build: BUILD, signed_in: !!A?.signed_in, thp: !!A?.thp, open: !!A?.open,
   price_loaded: A?.price_cents != null, deposit: A?.price_cents ?? null, mode: A?.mode || null,
   quotes: (A?.quotes || []).length, quoted: (A?.quotes || []).filter(q => q.status === 'quoted').length,
   admin: !!A?.admin, to_answer: ADM.length, test: !!A?.test_mode,
-  photo: !!PHOTO, box: !!PICK, linked: LIE.matter.length, shots: LIE.shots.length, named: NAME_OK,
+  photo: !!PHOTO, media: MEDIA_KIND, box: !!PICK, linked: LIE.matter.length, shots: LIE.shots.length, named: NAME_OK,
+  brand: !!BRAND, product: $('product').value.trim().length > 1, city: $('city').value.trim().length > 1,
+  style: !!STYLE, style_ref: !!STYLE_REF, budget: BUDGET,
   papers: $('el-head')?.classList.contains('is-split') || false,
-  how: $('how')?.classList.contains('is-on') || false, flow: $('form')?.classList.contains('is-on') || false,
-  step: [...document.querySelectorAll('#form .step.is-open')].map(e => e.id)[0] || null });
+  how: $('how')?.classList.contains('is-on') || false,
+  flow: stage !== 'intro', stage, next: !!voisine(1),
+  ouvertes: [...document.querySelectorAll('.stage.is-open')].map(e => e.dataset.s) });
 
 const money = (c, cur) => (c/100).toLocaleString('en-GB', { style:'currency', currency:(cur||'eur').toUpperCase(), minimumFractionDigits: c % 100 ? 2 : 0 });
 const esc = s => { const d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; };
 const okColor = c => /^#[0-9a-f]{3,8}$/i.test(String(c || ''));
 const SKINQ = { habits:'var(--navy)', objectives:'var(--blue)', repulsions:'var(--rep)', wisdom:'var(--rep)', visions:'var(--blue)' };
 const STATUS = { requested:'waiting for our answer', quoted:'deposit to pay', paid:'deposited · we study it', declined:'not this time · refunded', cancelled:'cancelled' };
-const ETATS = ['s-wait','s-out','s-nothp','s-closed','fm-open','quotes'];
+const ETATS = ['s-wait','s-out','s-nothp','s-closed','go','quotes'];
 function show(...on){ ETATS.forEach(id => $(id).classList.toggle('hide', !on.includes(id))); }
 async function call(fn, body){
   const { data:{ session } } = await sb.auth.getSession();
@@ -724,8 +852,9 @@ async function load(){
   $('price').textContent = dep ? dep + ' · deposit' : 'on quote';
   if(dep) $('how-price').textContent = dep;
   $('refund').textContent = dep
-    ? dep + ' deposits the project. Refunded in full if your piece cannot take the work.'
-    : 'Refunded in full if your piece cannot take the work.';
+    ? dep + ' deposits the project. No artist secured within 30 days, or a piece that cannot take the work: refunded in full.'
+    : 'Refunded in full if no artist is secured within 30 days.';
+  paintDepot();
   /* 05/10 (soir) : un testeur paie en MODE TEST Stripe — aucun argent réel. */
   $('test-badge').classList.toggle('hide', !A.test_mode);
   $('test-badge').textContent = A.test_mode ? 'test mode · card 4242 4242 4242 4242 · no real money' : '';
@@ -733,7 +862,7 @@ async function load(){
   if(!A.signed_in) show('s-out');
   else if(!A.thp) show('s-nothp');
   else if(!A.open) show('s-closed', 'quotes');
-  else { show('fm-open', 'quotes'); }
+  else { show('go', 'quotes'); }
   paintQuotes();
   if(A.admin) loadAdmin(); else $('admin').classList.add('hide');
 }
@@ -778,40 +907,101 @@ async function cancel(id){
   if(d.ok) await load(); else qNote(id, 'try again', 'no');
 }
 
-/* ══ 1 · LA PIÈCE, EN PHOTO ═══════════════════════════════════════════
-   Wah : « invite l'utilisateur à prendre une photo de son article ». La photo
-   est RÉDUITE dans le navigateur (1600 px, JPEG) puis déposée dans le dossier
-   du membre (`luxury-pieces/<uid>/…`, seau privé, RLS). La page n'envoie
-   ensuite qu'un CHEMIN : `luxury-quote` vérifie qu'il existe et qu'il est bien
-   le sien. Jamais une image dans un corps de requête. */
-let PHOTO = null, UPLOADING = false;
+/* ══ 1 · LA PIÈCE — UNE PHOTO **OU UNE VIDÉO HD**, EN PREMIER ══════════
+   11/11 (Wah) : « une photo ou une vidéo haute définition de sa pièce qui doit
+   arriver en premier lieu dès le départ ». Deux fichiers partent donc dans le
+   dossier privé du membre (`luxury-pieces/<uid>/…`, RLS) :
+     · `media` — ce que le membre a VRAIMENT envoyé (la photo, ou la vidéo),
+     · `photo` — TOUJOURS une image : d'une vidéo, la page tire une image fixe.
+   Pourquoi : le modèle de vision qui étudie la matière lit une IMAGE. Extraire
+   l'image ICI, dans le navigateur, évite de décoder la vidéo sur la VM — et
+   l'atelier garde la vidéo, qui dit le grain mieux qu'une photo.
+   La page n'envoie ensuite que des CHEMINS : `luxury-quote` vérifie qu'ils
+   existent et qu'ils sont bien les siens. Jamais une image dans une requête. */
+let PHOTO = null, MEDIA_PATH = null, MEDIA_KIND = 'photo', UPLOADING = false;
 const phNote = (txt, cls) => { const n = $('ph-note'); n.className = 'note ' + (cls || 'dim'); n.textContent = txt; };
+function versJpeg(source, w, h){
+  const max = 1600, k = Math.min(1, max / Math.max(w, h));
+  const c = document.createElement('canvas'); c.width = Math.round(w * k); c.height = Math.round(h * k);
+  c.getContext('2d').drawImage(source, 0, 0, c.width, c.height);
+  return new Promise(ok => c.toBlob(ok, 'image/jpeg', 0.85));
+}
 async function reduire(file){
   const img = await new Promise((ok, ko) => { const i = new Image(); i.onload = () => ok(i); i.onerror = ko; i.src = URL.createObjectURL(file); });
-  const max = 1600, k = Math.min(1, max / Math.max(img.width, img.height));
-  const c = document.createElement('canvas'); c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
-  c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+  const b = await versJpeg(img, img.width, img.height);
   URL.revokeObjectURL(img.src);
-  return await new Promise(ok => c.toBlob(ok, 'image/jpeg', 0.85));
+  return b;
+}
+/* L'IMAGE FIXE D'UNE VIDÉO : une seconde dedans (ou la moitié si elle est plus
+   courte) — le début est souvent flou, le temps que la main se pose. */
+async function imageDeVideo(file){
+  const url = URL.createObjectURL(file);
+  try{
+    const v = document.createElement('video');
+    v.muted = true; v.playsInline = true; v.preload = 'auto'; v.src = url;
+    await new Promise((ok, ko) => { v.onloadeddata = ok; v.onerror = () => ko(new Error('video')); });
+    const t = Math.min(1, (v.duration || 2) / 2);
+    await new Promise((ok, ko) => { v.onseeked = ok; v.onerror = () => ko(new Error('seek')); v.currentTime = t; });
+    return await versJpeg(v, v.videoWidth || 1280, v.videoHeight || 720);
+  } finally { URL.revokeObjectURL(url); }
+}
+const monChemin = ext => ME.id + '/' + (crypto.randomUUID ? crypto.randomUUID() : String(Date.now())) + '.' + ext;
+async function deposer(blob, path, type){
+  const { error } = await sb.storage.from('luxury-pieces').upload(path, blob, { contentType:type, upsert:false });
+  if(error){ console.error('[luxury media]', error.message); return false; }
+  return true;
 }
 $('ph-file').addEventListener('change', async e => {
   const f = e.target.files && e.target.files[0]; e.target.value = '';
   if(!f || UPLOADING) return;
   if(!ME){ ssoLogin(false, '/luxury'); return; }
-  if(!/^image\//.test(f.type)){ phNote('a photo, please', 'no'); return; }
-  UPLOADING = true; $('ph-tile').classList.add('is-busy'); phNote('sending the photo…');
+  const estVideo = /^video\//.test(f.type);
+  if(!estVideo && !/^image\//.test(f.type)){ phNote('a photo or a video, please', 'no'); return; }
+  if(f.size > 50 * 1024 * 1024){ phNote('this file is too heavy (50 MB max)', 'no'); return; }
+  UPLOADING = true; $('ph-tile').classList.add('is-busy');
+  phNote(estVideo ? 'sending the video…' : 'sending the photo…');
+  try{
+    /* L'IMAGE À ÉTUDIER, d'abord : sans elle, rien à lire pour la matière. */
+    const still = estVideo ? await imageDeVideo(f) : await reduire(f);
+    if(!still){ phNote('this file could not be read', 'no'); return; }
+    const pPhoto = monChemin('jpg');
+    if(!await deposer(still, pPhoto, 'image/jpeg')){ phNote('it did not go through', 'no'); return; }
+    let pMedia = pPhoto;
+    if(estVideo){
+      const ext = (f.name.split('.').pop() || 'mp4').toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 4) || 'mp4';
+      pMedia = monChemin(ext);
+      if(!await deposer(f, pMedia, f.type)){ phNote('the video did not go through', 'no'); return; }
+    }
+    PHOTO = pPhoto; MEDIA_PATH = pMedia; MEDIA_KIND = estVideo ? 'video' : 'photo';
+    const im = $('ph-img'), vd = $('ph-vid');
+    if(estVideo){ vd.src = URL.createObjectURL(f); vd.hidden = false; im.hidden = true; vd.play().catch(() => {}); }
+    else { im.src = URL.createObjectURL(still); im.hidden = false; vd.hidden = true; }
+    $('ph-lab').textContent = '';
+    phNote(estVideo ? 'video received' : 'photo received', 'ok');
+    ouvrir();
+  }catch(err){ console.error('[luxury media]', err && err.message || err); phNote('it did not go through', 'no'); }
+  finally{ UPLOADING = false; $('ph-tile').classList.remove('is-busy'); }
+});
+/* LA RÉFÉRENCE DE STYLE — la photo du style d'un artiste aimé, quand le membre
+   n'en choisit pas un dans la liste (11/11, Wah). Même dossier privé. */
+let SR_BUSY = false;
+$('sr-file').addEventListener('change', async e => {
+  const f = e.target.files && e.target.files[0]; e.target.value = '';
+  if(!f || SR_BUSY) return;
+  if(!ME){ ssoLogin(false, '/luxury'); return; }
+  if(!/^image\//.test(f.type)){ $('sr-note').className = 'note no'; $('sr-note').textContent = 'an image, please'; return; }
+  SR_BUSY = true; $('sr-tile').classList.add('is-busy');
+  $('sr-note').className = 'note dim'; $('sr-note').textContent = 'sending…';
   try{
     const blob = await reduire(f);
-    if(blob.size > 8 * 1024 * 1024){ phNote('this photo is too heavy', 'no'); return; }
-    const path = ME.id + '/' + (crypto.randomUUID ? crypto.randomUUID() : String(Date.now())) + '.jpg';
-    const { error } = await sb.storage.from('luxury-pieces').upload(path, blob, { contentType:'image/jpeg', upsert:false });
-    if(error){ console.error('[photo]', error.message); phNote('the photo did not go through', 'no'); return; }
-    PHOTO = path;
-    const im = $('ph-img'); im.src = URL.createObjectURL(blob); im.hidden = false; $('ph-lab').textContent = 'another photo';
-    phNote('');
-    etape('s-element');
-  }catch(err){ console.error('[photo]', err && err.message || err); phNote('the photo did not go through', 'no'); }
-  finally{ UPLOADING = false; $('ph-tile').classList.remove('is-busy'); }
+    const path = monChemin('jpg');
+    if(!await deposer(blob, path, 'image/jpeg')){ $('sr-note').className = 'note no'; $('sr-note').textContent = 'it did not go through'; return; }
+    STYLE_REF = path;
+    const im = $('sr-img'); im.src = URL.createObjectURL(blob); im.hidden = false; $('sr-lab').textContent = '';
+    $('sr-note').className = 'note ok'; $('sr-note').textContent = 'style received';
+    ouvrir();
+  }catch(err){ console.error('[style ref]', err && err.message || err); $('sr-note').className = 'note no'; $('sr-note').textContent = 'it did not go through'; }
+  finally{ SR_BUSY = false; $('sr-tile').classList.remove('is-busy'); }
 });
 
 /* ══ 2 · LE TOTEHM — copié de /streetwear : le logo se décompose À SA PLACE,
@@ -864,7 +1054,7 @@ function oublier(){
   PICK=null;LIE={matter:[],shots:[]};MT_SEQ++;
   $('shots').innerHTML='';
   $('s-element').classList.remove('is-picked');
-  $('el-go').classList.add('hide');
+  ouvrir();
 }
 function renderEl(dir){
   OPEN=null;MT_SEQ++;$('shots').innerHTML='';
@@ -926,7 +1116,9 @@ async function openEl(b){
   const seq=++MT_SEQ,v=vue,ref=String(o.ref);
   if(!PICK||PICK.ref!==ref||PICK.kind!==KIND[v])LIE={matter:[],shots:[]};
   PICK={kind:KIND[v],ref,view:v,text:o.text};
-  $('s-element').classList.add('is-picked');$('el-go').classList.remove('hide');
+  /* 11/11 — plus de bouton [Next] dans l'étape : la box tapée EST le choix, et
+     l'étape du budget paraît DESSOUS. On descend, ou l'on tape [NEXT]. */
+  $('s-element').classList.add('is-picked');ouvrir();
   $('matter')?.remove();OPEN={b,o};
   const c=document.createElement('div');c.id='matter';c.innerHTML='<div class="mono">reading the element…</div>';b.appendChild(c);
   const{data:m,error}=await sb.rpc('my_box_matter',{p_kind:KIND[v],p_ref:ref});
@@ -992,7 +1184,6 @@ $('el-list').addEventListener('keydown',e=>{
   if($('s-element').classList.contains('is-picked')){oublier();return;}
   openEl(b);
 });
-$('el-go').onclick=()=>{ if(PICK)etape('st-name'); };
 
 /* ══ 3 · LE NOM — un IDENTIFIANT (minuscules, sans espace) ; le « 0. » est au serveur ══ */
 function epochPrefix(){ const d = new Date(), y = d.getFullYear(), ey = d.getMonth() >= 5 ? y : y - 1; return Math.max(ey - 2026, 0) + '.'; }
@@ -1001,7 +1192,7 @@ const cleanName=v=>String(v||'').toLowerCase().replace(/^\s*\d+\.\s*/,'').replac
 let NAME_OK=false,NAME_SEQ=0,nameTimer=null;
 $('nm-input').addEventListener('input',()=>{
   const v=cleanName($('nm-input').value);if(v!==$('nm-input').value)$('nm-input').value=v;
-  NAME_OK=false;clearTimeout(nameTimer);$('nm-go').disabled=true;
+  NAME_OK=false;clearTimeout(nameTimer);ouvrir();
   const note=$('name-note');
   if(v.length<2){note.className='note dim';note.textContent=v?'at least 2 characters':'';return;}
   note.className='note dim';note.textContent='checking…';
@@ -1012,48 +1203,228 @@ $('nm-input').addEventListener('input',()=>{
     if(error){console.error('[name_available]',error.message);note.className='note dim';note.textContent='try again';return;}
     NAME_OK=data===true;
     note.className='note '+(NAME_OK?'ok':'no');note.textContent=NAME_OK?'available':'already taken';
-    $('nm-go').disabled=!NAME_OK;
+    ouvrir();
   },420);
 });
 
-/* ══ CHAQUE ÉTAPE APPARAÎT SOUS LA PRÉCÉDENTE ══════════════════════════ */
-/* ══ UNE ÉTAPE À LA FOIS, PLEIN ÉCRAN (25/10) ══════════════════════════
-   Celle qu'on quitte s'efface vers le haut, celle qui arrive monte à sa place.
-   Le DOM ne garde qu'une étape visible : on ne lit jamais deux choses à la fois. */
-const ETAPES=['st-photo','s-element','st-name','st-pay'];
-let ETAPE=null, SORTIE=null;
-function etape(id){
-  if(!ETAPES.includes(id)||id===ETAPE)return;
-  const vieux=ETAPE&&$(ETAPE);
-  if(vieux){ vieux.classList.remove('is-in');vieux.classList.add('is-out');vieux.inert=true;
-    clearTimeout(SORTIE);SORTIE=setTimeout(()=>vieux.classList.remove('is-open','is-out'),360); }
-  const el=$(id);if(!el)return;
-  el.classList.remove('is-out');el.classList.add('is-open');el.inert=false;el.scrollTop=0;
-  requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add('is-in')));
-  /* Le TOTEHM arrive ENTIER : c'est le tap qui le décompose (Wah). On lit
-     seulement son Totehm d'avance, pour que le tap n'attende rien. */
-  if(id==='s-element'&&ME&&!TOT)loadTotehm();
-  if(id==='st-name')setTimeout(()=>$('nm-input').focus({preventScroll:true}),380);
-  ETAPE=id;
+/* ══ LE FEUILLETEUR — UN GESTE = UNE ÉTAPE · 11/11/2026 ═══════════════════
+   Wah : « la branche luxury, il faut la refaire en front sur le modèle de
+   streetwear ». Le moteur est donc CELUI de /streetwear, copié (un bloc commun
+   se COPIE, jamais ne s'importe) : `ouvrir()` rend visible tout ce qui est
+   MÉRITÉ, `aller()` POSE le rouleau sur une étape, et le doigt, la molette, le
+   clavier et le bouton [NEXT] font tous la même chose — tourner d'UNE page.
+   ⚠️ LE DOIGT se décide au PREMIER mouvement : si l'étape ne peut plus défiler
+   dans ce sens, la page PREND le geste (`preventDefault` sur un `touchmove`
+   encore annulable) ; sinon elle le laisse au navigateur. C'est ce qui manquait
+   sur /streetwear : avec `pointerdown`/`pointerup`, dès qu'une étape débordait
+   d'un pixel le navigateur avalait le geste et la page ne tournait plus. */
+const STAGES=['intro','piece','style','element','budget','name','pay','done'];
+let stage='intro';
+const sc=()=>$('stages');
+const RMQ=matchMedia('(prefers-reduced-motion:reduce)');
+/* Ce qui est MÉRITÉ : une étape n'existe que lorsque la précédente est faite. */
+function canShow(x){
+  if(x==='intro'||x==='done')return true;
+  if(!OUVERT)return false;                       /* le passeport : connecté + TotehmPaper */
+  if(x==='piece')return true;
+  if(x==='style')return !!PHOTO;
+  if(x==='element')return !!PHOTO&&!!(STYLE||STYLE_REF);
+  if(x==='budget')return !!PICK;
+  if(x==='name')return !!PICK&&!!BUDGET;
+  if(x==='pay')return !!PICK&&!!BUDGET&&NAME_OK;
+  return false;
 }
-function ouvrirFlux(){ $('form').classList.add('is-on');document.body.style.overflow='hidden'; if(!ETAPE)etape('st-photo'); }
-function fermerFlux(){ $('form').classList.remove('is-on');document.body.style.overflow=''; }
-$('fm-go').onclick=()=>{ if(!ME){ssoLogin(false,'/luxury');return;} ouvrirFlux(); };
-$('fm-x').onclick=fermerFlux;
-window.addEventListener('keydown',e=>{ if(e.key==='Escape'&&$('form').classList.contains('is-on'))fermerFlux(); });
-$('nm-go').onclick=()=>{ if(NAME_OK)etape('st-pay'); };
-$('nm-input').addEventListener('keydown',e=>{ if(e.key==='Enter'){e.preventDefault();if(NAME_OK)etape('st-pay');} });
+let VUS=new Set();
+function ouvrir(){
+  const fini=stage==='done';
+  STAGES.forEach(x=>{
+    const el=document.querySelector('.stage[data-s="'+x+'"]'); if(!el)return;
+    const ok=fini?(x==='done'):(x!=='done'&&canShow(x));
+    el.classList.toggle('is-open',ok);
+    el.inert=!ok; el.setAttribute('aria-hidden',String(!ok));
+    if(ok){ if(!el.classList.contains('is-in'))requestAnimationFrame(()=>el.classList.add('is-in'));
+            if(!VUS.has(x)){VUS.add(x);entrer(x);} }
+    else { el.classList.remove('is-in'); VUS.delete(x); }
+  });
+  sc().classList.toggle('has-next',!!voisine(1));
+}
+/* Une étape qui s'ouvre pour la PREMIÈRE fois : on la garnit. */
+function entrer(x){
+  if(x==='style')loadStyles();
+  if(x==='pay')paintDepot();
+}
+/* ⚠️ LE TOTEHM se décompose à la première ARRIVÉE sur son étape, pas quand elle
+   s'ouvre : elle est méritée bien avant qu'on la voie. */
+let EL_VU=false;
+function arriver(x){
+  if(x!=='element'||EL_VU)return;
+  EL_VU=true;if(ME&&!TOT)loadTotehm();
+}
+/* LE ROULEAU SE POSE — il ne défile pas. */
+function aller(x,doux){
+  const el=document.querySelector('.stage[data-s="'+x+'"]');
+  if(!el||!el.classList.contains('is-open'))return;
+  const r=sc(),k=$('stages-roll');
+  const sec=!doux||RMQ.matches;
+  if(sec)r.classList.add('is-sec');
+  k.style.setProperty('--roll',(-el.offsetTop)+'px');
+  el.scrollTop=0;
+  if(sec)requestAnimationFrame(()=>r.classList.remove('is-sec'));
+}
+function etape(x,mode){
+  if(!canShow(x))x='intro';
+  stage=x;document.body.dataset.stage=x;
+  ouvrir();arriver(x);
+  const doux=mode!=='none';
+  requestAnimationFrame(()=>aller(x,doux));
+  history.replaceState({s:x},'');
+}
+const etapesOuvertes=()=>STAGES.map(x=>document.querySelector('.stage[data-s="'+x+'"]'))
+  .filter(e=>e&&e.classList.contains('is-open')).map(e=>e.dataset.s);
+function voisine(d){
+  const l=etapesOuvertes(),i=l.indexOf(stage);
+  if(i<0)return null;
+  const n=i+d; return n>=0&&n<l.length?l[n]:null;
+}
+const etapeCourante=()=>document.querySelector('.stage[data-s="'+stage+'"]');
+/* Reste-t-il à lire DANS l'étape, dans ce sens ? */
+function resteDedans(d){
+  const el=etapeCourante(); if(!el)return false;
+  const max=el.scrollHeight-el.clientHeight;
+  if(max<=2)return false;
+  return d>0 ? el.scrollTop<max-1 : el.scrollTop>1;
+}
+let TOURNE=0;
+function feuilleter(d){
+  if(TOURNE)return false;
+  const x=voisine(d); if(!x)return false;
+  TOURNE=1; clearTimeout(feuilleter.t); feuilleter.t=setTimeout(()=>{TOURNE=0;},RMQ.matches?80:440);
+  etape(x); return true;
+}
+/* LA MOLETTE ET LE TRACKPAD — une inertie ne tourne pas trois pages. */
+const aSonGeste=t=>!!(t&&t.closest&&t.closest('#st-rail'));
+sc().addEventListener('wheel',e=>{
+  if(aSonGeste(e.target))return;
+  if(Math.abs(e.deltaY)<=Math.abs(e.deltaX))return;
+  const d=e.deltaY>0?1:-1;
+  if(resteDedans(d))return;
+  e.preventDefault();
+  if(Math.abs(e.deltaY)>=4)feuilleter(d);
+},{passive:false});
+let TCH=null;
+sc().addEventListener('touchstart',e=>{
+  if(e.touches.length!==1||aSonGeste(e.target)){TCH=null;return;}
+  const t=e.touches[0];
+  TCH={y0:t.clientY,x0:t.clientX,t:performance.now(),dy:0,pris:false,mort:false};
+},{passive:true});
+sc().addEventListener('touchmove',e=>{
+  const g=TCH; if(!g||g.mort)return;
+  const t=e.touches[0]; if(!t)return;
+  const dy=t.clientY-g.y0, dx=t.clientX-g.x0;
+  g.dy=dy;
+  if(!g.pris){
+    if(Math.abs(dy)<8&&Math.abs(dx)<8)return;
+    if(Math.abs(dx)>Math.abs(dy)){g.mort=true;return;}
+    const d=dy<0?1:-1;
+    if(resteDedans(d)||!voisine(d)){g.mort=true;return;}
+    g.pris=true;
+  }
+  if(e.cancelable)e.preventDefault();
+},{passive:false});
+sc().addEventListener('touchend',()=>{
+  const g=TCH; TCH=null;
+  if(!g||!g.pris)return;
+  const dt=Math.max(1,performance.now()-g.t), v=Math.abs(g.dy)/dt*1000;
+  if(Math.abs(g.dy)<28&&v<420)return;
+  feuilleter(g.dy<0?1:-1);
+},{passive:true});
+sc().addEventListener('touchcancel',()=>{TCH=null;},{passive:true});
+$('st-next').addEventListener('click',()=>{feuilleter(1);});
+/* La fenêtre change de taille (rotation, clavier) : l'étape reste À L'ÉCRAN. */
+let rzT=null;
+addEventListener('resize',()=>{ clearTimeout(rzT); rzT=setTimeout(()=>aller(stage,false),120); });
+window.addEventListener('keydown',e=>{
+  if(document.body.classList.contains('eco-modal'))return;
+  const t=e.target;if(t&&t.closest&&t.closest('input,textarea'))return;
+  const d={PageDown:1,PageUp:-1,ArrowDown:1,ArrowUp:-1}[e.key];
+  if(d&&!resteDedans(d)){e.preventDefault();feuilleter(d);}
+});
 
-/* ══ 4 · LE DÉPÔT — 500 €, puis Stripe. Le montant vient du serveur ══════ */
+/* ══ LA PORTE — elle connecte et vérifie le TotehmPaper, elle ne dit pas
+   « suivant » : le reste se descend. ═══════════════════════════════════ */
+let OUVERT=false;
+$('go').onclick=()=>{
+  if(!ME){ssoLogin(false,'/luxury');return;}
+  if(!A?.thp){$('go-note').className='note no';$('go-note').textContent='a TotehmPaper is needed';return;}
+  if(!A?.open){$('go-note').className='note no';$('go-note').textContent='closed for now';return;}
+  OUVERT=true;$('go-note').textContent='';etape('piece');
+};
+
+/* ══ 2 · LE STYLE — l'un OU l'autre : la liste, ou la photo d'un artiste ══ */
+let STYLE=null, STYLE_REF=null, STYLES=[], stylesLus=false;
+async function loadStyles(){
+  if(stylesLus)return; stylesLus=true;
+  const{data,error}=await sb.from('artistic_styles').select('id,name,image_url,active,status,position').eq('active',true).order('position');
+  if(error){console.error('[artistic_styles]',error.message);stylesLus=false;return;}
+  STYLES=(data||[]).filter(x=>!x.status||x.status==='active');
+  $('st-rail').innerHTML=STYLES.map(x=>'<button class="st-card" type="button" data-id="'+esc(x.id)+'" role="option" aria-selected="false">'+
+    (x.image_url?'<img src="'+esc(x.image_url)+'" alt="">':'<span class="ph"></span>')+'<b>'+esc(x.name||'')+'</b></button>').join('');
+  $('st-rail').querySelectorAll('.st-card').forEach(b=>b.onclick=()=>{
+    STYLE=STYLES.find(x=>String(x.id)===b.dataset.id)||null;
+    $('st-rail').querySelectorAll('.st-card').forEach(c=>{const on=c===b;c.classList.toggle('is-on',on);c.setAttribute('aria-selected',String(on));});
+    ouvrir();
+  });
+}
+
+/* ══ 4 · LE BUDGET — celui de l'ŒUVRE. Il décide du rang de l'artiste qu'on se
+   permet d'aller chercher ; il n'est JAMAIS un prix (le prix vient du serveur,
+   après l'étude de la pièce). ═══════════════════════════════════════════ */
+let BUDGET=null;
+const PALIERS=[200000,500000,1000000,2500000,5000000,10000000];
+function paintBudget(){
+  $('bg-chips').innerHTML=PALIERS.map((c,i)=>'<button class="chip" type="button" data-b="'+c+'" role="radio" aria-checked="false">'+
+    (i===PALIERS.length-1?money(c,A?.currency)+' +':money(c,A?.currency))+'</button>').join('');
+  $('bg-chips').querySelectorAll('[data-b]').forEach(b=>b.onclick=()=>{
+    BUDGET=Number(b.dataset.b);
+    $('bg-chips').querySelectorAll('[data-b]').forEach(c=>{const on=c===b;c.classList.toggle('is-on',on);c.setAttribute('aria-checked',String(on));});
+    ouvrir();
+  });
+}
+/* ══ LA MARQUE — trois, pas une de plus ; le serveur les revérifie. ══ */
+const BRANDS=['Hermès','Louis Vuitton','Gucci'];
+let BRAND=null;
+function paintBrands(){
+  $('br-chips').innerHTML=BRANDS.map(b=>'<button class="chip" type="button" data-br="'+esc(b)+'" role="radio" aria-checked="false">'+esc(b)+'</button>').join('');
+  $('br-chips').querySelectorAll('[data-br]').forEach(b=>b.onclick=()=>{
+    BRAND=b.dataset.br;
+    $('br-chips').querySelectorAll('[data-br]').forEach(c=>{const on=c===b;c.classList.toggle('is-on',on);c.setAttribute('aria-checked',String(on));});
+  });
+}
+
+/* ══ 6 · LE DÉPÔT — le prix et le paiement, rien d'autre ═══════════════ */
+function paintDepot(){
+  const dep=A?.price_cents!=null?money(A.price_cents,A.currency):null;
+  $('pay-price').innerHTML=dep?'<span class="price">'+esc(dep)+'</span><span>deposit</span>':'<span>on quote</span>';
+  $('ask').textContent=dep?'Deposit · '+dep:'Deposit my project';
+}
 $('ask').onclick = async () => {
   if(BUSY) return;
   const n = $('ask-n');
-  if(!PHOTO){ n.className = 'note no'; n.textContent = 'a photo of your piece first'; return; }
-  if(!PICK){ n.className = 'note no'; n.textContent = 'pick the element'; return; }
-  if(!NAME_OK){ n.className = 'note no'; n.textContent = 'engrave its name'; $('nm-input').focus(); return; }
+  const manque = (txt, x) => { n.className = 'note no'; n.textContent = txt; if(x) etape(x); };
+  if(!PHOTO) return manque('a photo or a video of your piece first', 'piece');
+  if(!BRAND) return manque('pick the brand', 'piece');
+  if($('product').value.trim().length < 2) return manque('the exact name of your product', 'piece');
+  if($('city').value.trim().length < 2) return manque('your city — the artist will be local', 'piece');
+  if(!STYLE && !STYLE_REF) return manque('pick a style, or send one', 'style');
+  if(!PICK) return manque('pick the element', 'element');
+  if(!BUDGET) return manque('your budget for the artwork', 'budget');
+  if(!NAME_OK) return manque('engrave its name', 'name');
   if(!$('terms').checked){ n.className = 'note no'; n.textContent = 'tick the box to continue'; return; }
   BUSY = true; $('ask').disabled = true; n.className = 'note'; n.textContent = 'depositing…';
   const { d } = await call('luxury-quote', { action:'request', note: $('note').value, photo: PHOTO,
+    media: MEDIA_PATH || PHOTO, media_kind: MEDIA_KIND,
+    brand: BRAND, product: $('product').value.trim(), city: $('city').value.trim(),
+    style: STYLE ? STYLE.id : undefined, style_ref: STYLE_REF || undefined, budget_cents: BUDGET,
     box: { kind: PICK.kind, ref: PICK.ref }, name: $('nm-input').value.trim(),
     pick: { matter: LIE.matter.slice(0, 60), shots: LIE.shots.slice(0, 24) } });
   if(d.ok && d.id){
@@ -1068,9 +1439,14 @@ $('ask').onclick = async () => {
   n.className = 'note no';
   n.textContent = ({ thp_required:'a TotehmPaper is needed', closed:'closed for now', choose_a_box:'pick the element',
     box_not_found:'that element changed — pick it again', photo:'the photo did not go through — try again',
+    style_ref:'that style image did not go through', choose_a_style:'pick a style, or send one',
+    brand:'pick the brand', product:'the exact name of your product', city:'your city', budget:'your budget for the artwork',
     too_many:'three projects are waiting already', no_session:'sign in again',
     name:'engrave its name', name_taken:'that name is taken' })[d.error] || 'try again';
-  if(d.error === 'name_taken'){ NAME_OK = false; $('name-note').className = 'note no'; $('name-note').textContent = 'already taken'; $('nm-go').disabled = true; etape('st-name'); }
+  if(d.error === 'name_taken'){ NAME_OK = false; $('name-note').className = 'note no'; $('name-note').textContent = 'already taken'; etape('name'); }
+  if(['choose_a_style'].includes(d.error)) etape('style');
+  if(['brand','product','city','photo'].includes(d.error)) etape('piece');
+  if(d.error === 'budget') etape('budget');
 };
 $('how-btn').onclick = () => { const h = $('how'), on = h.classList.toggle('is-on'); $('how-btn').setAttribute('aria-expanded', String(on)); };
 $('signin').onclick = () => ssoLogin(false, '/luxury');
@@ -1130,6 +1506,10 @@ async function mePaint(){
 }
 sb.auth.onAuthStateChange((ev, session) => { ME = session?.user || null; setTimeout(mePaint, 0); if(ev === 'SIGNED_IN' || ev === 'SIGNED_OUT') setTimeout(load, 0); });
 { const { data:{ session } } = await sb.auth.getSession(); ME = session?.user || null; mePaint(); }
+paintBrands(); paintBudget();
+/* LE ROULEAU S'OUVRE SUR L'INTRO — et sur l'étape FINALE au retour de Stripe
+   (`?paid=1`), sans quoi l'écran serait noir : `done` ferme tout le reste. */
+etape(new URLSearchParams(location.search).get('paid') === '1' ? 'done' : 'intro', 'none');
 await load();
 </script>
 <script data-ecosystem-ui="2026-10-05">

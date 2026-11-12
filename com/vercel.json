@@ -67,6 +67,36 @@
   ],
   "redirects": [
     {
+      "source": "/higher",
+      "destination": "/chatgpt",
+      "permanent": false
+    },
+    {
+      "source": "/higher.html",
+      "destination": "/chatgpt",
+      "permanent": false
+    },
+    {
+      "source": "/higherself",
+      "destination": "/chatgpt",
+      "permanent": false
+    },
+    {
+      "source": "/higherself.html",
+      "destination": "/chatgpt",
+      "permanent": false
+    },
+    {
+      "source": "/club/totehmbot",
+      "destination": "/totehm#settings",
+      "permanent": false
+    },
+    {
+      "source": "/club/totehmbot.html",
+      "destination": "/totehm#settings",
+      "permanent": false
+    },
+    {
       "source": "/chatgpt",
       "has": [
         {

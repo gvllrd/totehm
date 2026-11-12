@@ -3,12 +3,16 @@
 > Lu à chaque session, ≤ 100 lignes, au PRÉSENT. Un domaine : `<dossier>/CLAUDE.md`. La marque : `BRAND.md`.
 > La carte des fichiers : `README.md`. L'histoire : `git log` (rien d'autre).
 
+## Règle n° 1 — les boxes sont la marque
+
+**Règle n° 1 — les boxes sont un invariant de marque.** Toute représentation visuelle d’un élément du TOTEHM, dans le TOTEHM ou ailleurs dans l’écosystème, conserve strictement sa box native : forme, couleur de catégorie, typographie, proportions, traits d’intention et états. Réutiliser le rendu de référence ; aucun composant, carte, badge ou style local ne le réinterprète. Une évolution se fait à la source puis se répercute partout, jamais sur un seul écran.
+
 ## Qui fait quoi
 
 | qui | fait |
 |---|---|
 | **Claude, session cloud** | conçoit ET exécute : code, migrations, Edge Functions, push sur `main`, contrôle de la prod, Stripe (lecture, tests) |
-| **Claude Code, terminal de Wah** | seulement ce qui exige sa machine : VM Oracle, n8n, et les migrations que le cloud ne passe pas (voir Base) |
+| **Claude Code, terminal de Wah** | seulement ce qui exige sa machine : la VM Oracle elle-même, et les migrations que le cloud ne passe pas (voir Base). **Un flux n8n se publie depuis le cloud** (11/11, mesuré : le MCP n8n atteint la production) |
 | **Wah** | la vision, les tests sur téléphone, le « oui » avant : un prix live, un remboursement, l'endpoint webhook Stripe |
 
 Wah fait le minimum (sauf OAuth, 2FA, décision produit). Une demande = un lot complet, sans plan à valider.
@@ -18,15 +22,16 @@ Push sur `main` = mise en ligne ; jamais réécrire l'historique.
 
 | domaine | dossier | fonction |
 |---|---|---|
-| totehm.com | `com/` | l'écosystème : les 5 vues, la creator economy (s'abonner à un membre = entrer dans son écosystème), l'abonnement Higher, la recherche d'un membre |
+| totehm.com | `com/` | l'écosystème : les 5 vues, la creator economy (s'abonner à un membre = entrer dans son écosystème), la recherche d'un membre |
 | figher.club | `club/` | le prolongement de la vue Spots : chercher, publier des spots, se rencontrer |
-| higher.boutique | `boutique/` | les vêtements totehmisés, un style artistique déterminé, à partir des boxes MY STORY ; production n8n |
+| higher.boutique | `boutique/` | les vêtements totehmisés, un style artistique choisi, à partir de toute catégorie personnelle ; une box suffit, production n8n. Le LUXE est un atelier : une pièce d'exception, un artiste LOCAL via une galerie partenaire, acompte de 770 € remboursé si aucun artiste en 30 jours |
 | totehm.space | `space/` | Lisbon au Portugal : bâtiment intact aux azulejos bleu/blanc de `c8ddaf0`, douze fenêtres, huit balcons et toit de verre ondulé ; New York ailleurs selon Vercel : château en ruine, donjon et verre à toit plan incliné ; plain-pied, mer, ciel et œuvres indépendantes conservés |
 
 **Deux fois cinq vues.** totehm.com : ↑ Get Higher (commune à tous) · ← mes médias · ● mon TOTEHM · → les spots ·
 ↓ Higher my ChatGPT (connexion gratuite, lecture seule autorisée) ; ← ● → = l'écosystème d'un membre, ouvert par l'abonnement à ce membre.
 Le TOTEHM déployé : HABITS · OBJECTIVES · REPULSIONS · VISIONS · MY STORY. **Les boxes sont sacrées** : un seul rendu.
-Le suivi : TOTEHM = choix ; TotehmBot = déclarations privées ; dashboard = faits ; Higher ChatGPT = ajustements proposés, après partage explicite des bilans. Pas de réponse = inconnu, pas un échec. Aucun changement automatique des cinq vues.
+Higher GPT prépare à la demande un prochain pas avec médias, spots personnels, inspirations des abonnements et spots Club autorisés ; passage facultatif vers higher.boutique, sans commande automatique. Higher GPT et le suivi mécanique TotehmBot sont gratuits ; les seuls abonnements proposés sont ceux aux créateurs. Vêtements et œuvres restent des achats distincts.
+Le suivi : TOTEHM = choix ; TotehmBot = notification privée + Done/Missed ; dashboard = faits sur 7/28 jours et configuration du bot, sans bloc Higher subscription ; Higher ChatGPT = un ajustement proposé à la demande, après partage explicite. Silence = inconnu, pas un échec ; historiques partiel/mis de côté conservés. Aucun changement automatique des cinq vues.
 
 ## L'architecture
 

@@ -6,8 +6,7 @@ function comMemberLinks(home = false, enabled = null) {
     item('<a class="cm-action" data-com-open href="/totehm#in">Open my TOTEHM</a>', 'Tap on it') +
     item('<a class="cm-action" href="/search">Search a TOTEHM</a>', 'Turn it over') +
     item('<a class="cm-action" id="btn-get-higher" data-com-bridge="space" href="https://www.totehm.space/get_higher">Get ' + COM_HIGHER_BADGE + '</a>', 'Put it on your tongue') +
-    item('<a class="cm-action" href="/higherself">Reflect with my TOTEHM</a>', 'Higher Self · TotehmBot') +
-    item('<a class="cm-action" href="/higher">' + COM_HIGHER_BADGE + '</a>', 'Every day · my habits in Telegram') +
+    item('<a class="cm-action" href="/chatgpt">' + COM_HIGHER_BADGE + ' my ChatGPT</a>', 'My TOTEHM · read-only context') +
     item('<a class="cm-action" id="wear-btn" data-com-bridge="boutique" href="https://www.higher.boutique/">Totehmize my cloth</a>', 'HIGHER BOUTIQUE') +
     item('<a class="cm-action" data-com-monetize href="' + (enabled === false ? '/monetize' : '/console') + '">' + (enabled === false ? 'Monetize my TOTEHM' : 'My monetization') + '</a>', '<span data-com-offer-hint>' + (enabled === false ? 'My readers pay me, once a year' : enabled === true ? 'My price · my readers · what I am owed' : 'My price and my payout') + '</span>') +
     '</nav>';

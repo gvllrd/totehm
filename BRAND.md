@@ -2,6 +2,10 @@
 
 > À lire avant toute copy, tout nom, toute interface. Au PRÉSENT : une décision de Wah se réécrit ici, à sa place.
 
+## Règle n° 1 — les boxes sont la marque
+
+**Règle n° 1 — les boxes sont un invariant de marque.** Toute représentation visuelle d’un élément du TOTEHM, dans le TOTEHM ou ailleurs dans l’écosystème, conserve strictement sa box native : forme, couleur de catégorie, typographie, proportions, traits d’intention et états. Réutiliser le rendu de référence ; aucun composant, carte, badge ou style local ne le réinterprète. Une évolution se fait à la source puis se répercute partout, jamais sur un seul écran. La couleur dit le TYPE : Habit navy `#333366`, Objective/Vision bleu `#36498c`, Repulsion/MY STORY violet `#743169` ; le trait dit l’INTENTION. Cette règle vaut pour les dashboards, médias, spots, sélecteurs, aperçus, historiques, satellites et futurs écrans.
+
 ## L'idée
 
 > TOTEHM is a connected ecosystem of independent products: an experience that changes how you perceive, a system
@@ -31,9 +35,6 @@ MY STORY. Chacun porte une ou plusieurs des sept intentions :
 | Celebrate | `#7F77DD` | Elevate energy through collective effervescence. | SOUL |
 | Love | `#639922` | Contemplate life through connection & beauty. | SPIRIT |
 
-La couleur de la box dit le TYPE (navy · bleu clair · rouge-violet) ; le trait du bord gauche dit l'INTENTION.
-**Les boxes sont sacrées** : ce qui vient du TOTEHM garde son format partout (un spot, un vêtement, un autre domaine).
-
 ## Les 5 vues de totehm.com
 
 ↑ **Get Higher** (commune à tous : la bouche, le TotehmPaper, le cerveau des sept intentions qui vibre ; elle vend le
@@ -46,8 +47,7 @@ Dessous, les sept traits se rapprochent en un tronc large de 48px, restent paral
 activité : ses traits sont aspirés en lui, et ressortent quand il revient ; ouvert, il est seul à l'écran ;
 le retourner montre le NOM seul — à même le navy, l'email dessous —, qui monte, puis
 tout d'un coup, en deux parties : **Monetize my TOTEHM** (*and get paid every month*) · **Go [Higher]**, ouverte d'abord
-(tout ce que je fais dans mon TOTEHM, en visuels : ma semaine, mes Habits × 7 jours déclarées dans Telegram — fait, en partie, pas fait, mis de côté ; une absence reste inconnue —, mes intentions,
-mes objectifs, mon activité ; puis [Higher], ce qu'il ouvre — TotehmBot —, mes abonnements) ; puis DELETE MY TOTEHM et SIGN OUT en boutons, les conditions) ·
+(ma pratique déclarée dans Telegram : Done/Missed, 7 ou 28 jours communs aux chiffres et à la grille ; historique partiel/mis de côté conservé, silence inconnu ; bilan Higher à la demande, activité secondaire repliée ; puis configuration TotehmBot et partage révocable, aucun bloc Higher subscription) ; puis DELETE MY TOTEHM et SIGN OUT en boutons, les conditions) ·
 → **mes spots** (MAP ou GRID, MES spots seuls — les spots visibles, c'est figher.club ; filtre : NOW · PAST · FUTURE, NEAR ME et son rayon, qui le voit ; le « + » prend un spot comme figher.club : ce qu'est un spot, puis WHEN [now \| later] et WHERE [here \| elsewhere], une question à la fois ; la Terre ne tourne que sous le doigt posé sur elle ; un spot ouvert : son image telle quelle, ses infos, sa box en bas) · ↓ **Higher my ChatGPT** (les traits se replient en l'anneau du profil ; GPT tourne derrière le Higher qui voyage du centre et reste droit ; « [Higher] my ChatGPT » porte le slogan-logo navy perforé ; le pitch explique ce que ChatGPT peut consulter à la demande : mon TOTEHM et ses liens, les éléments partagés de mes abonnements et les spots du Club autorisés ; aucune promesse de mémoire native ni de lecture dans chaque conversation ; connexion gratuite, abonnements membres séparés ; `/chatgpt` porte connexion/consentement, aucun chat local). Chercher un membre : le papier se retourne, on tape son nom, on entre chez lui.
 On navigue comme avec un MANCHE : le geste va où il pousse (vers le haut, la vue du haut), au doigt, au trackpad, à la souris — sauf dans une liste du TOTEHM, où le geste suit le défilement (plus bas que le bas de mes habitudes : mes répulsions) ; la manette est la même à l'atterrissage et dans le TOTEHM déployé (hors de tout cadre : un puits rond, son manche), et dans le TOTEHM le manche prend la couleur de la vue.
 

@@ -42,6 +42,7 @@ jobs:
       - run: node tests/browser/com_tracking.mjs work/chatgpt-tracking
       - run: node tests/browser/com_verso_dashboard.mjs work/chatgpt-dashboard
       - run: node tests/browser/com_member_menu.mjs work/chatgpt-menu
+      - run: node tests/browser/com_verso_loupe.mjs work/chatgpt-loupe
       - uses: actions/upload-artifact@v4
         if: always()
         with:

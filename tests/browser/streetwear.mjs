@@ -25,7 +25,10 @@ const rpc = {
     habit:    { text:b.p_ref,               view:'habits',     palette:['#E24B4A'], matter:{ objectives:[{ text:'Marathon in May' }] }, extra:{ freq:'every_morning' } },
     objective:{ text:'Marathon in May',     view:'objectives', palette:['#e48b31'], matter:{ habits:[{ text:'Run the hill' }] }, extra:{} },
     repulsion:{ text:'Scrolling at night',  view:'repulsions', palette:['#378ADD'], matter:{ habits:[{ text:'Cold shower' }] }, extra:{} },
-  })[b.p_kind] || { text:'Slow is smooth', view:'wisdom', palette:['#378ADD'], matter:{ objectives:[{ text:'Marathon in May' }], habits:[{ text:'Run the hill' }] }, extra:{ freq:'every_morning' } },
+  })[b.p_kind] || { text:'Slow is smooth', view:'wisdom', palette:['#378ADD'],
+    /* 11/11 — une mini-box LONGUE : c'est elle qui mesure le retour à la ligne. */
+    matter:{ objectives:[{ text:'Marathon in May' }],
+             habits:[{ text:'Run the hill' }, { text:'Run the hill again before anyone else wakes up, even when the rain has turned the trail into a river' }] }, extra:{ freq:'every_morning' } },
   /* 26/10 — les photos du monde de la box : un media (perforé) et un spot. */
   my_box_shots: () => ([
     { kind:'media', id:'em1', bucket:'element-media', path:'u/m-1.jpg', txt:'hill.jpg', at:'2026-10-20' },
@@ -81,7 +84,7 @@ await pg.waitForTimeout(80);
 
 // ── 1 · CLOTH (téléphone)
 let d = await D();
-ok(d.build === '2026-11-09-card-format' && d.stage === 'cloth' && !d.papers && !d.desktop, 'phone: CLOTH first, the TOTEHM still folded');
+ok(d.build === '2026-11-11-feuilleteur' && d.stage === 'cloth' && !d.papers && !d.desktop, 'phone: CLOTH first, the TOTEHM still folded');
 const rest = await pg.evaluate(() => { const b = document.querySelector('#cl-facts .left b'), s = getComputedStyle(b);
   const g = document.querySelector('#cl-facts .bar i'), bar = document.querySelector('#cl-facts .bar');
   return { n: b.textContent.trim(), px: Math.round(parseFloat(s.fontSize)), col: s.color, fam: s.fontFamily,
@@ -165,7 +168,7 @@ await pg.waitForFunction(() => window.__totehm_cloth().papers);
 await pg.waitForTimeout(650);
 d = await D();
 ok(d.papers && d.melt && !d.grind && d.view === null && d.views === 5, 'the TOTEHM has melted into three papers, no view chosen yet, the five views are there');
-ok((await pg.$$eval('#tz-papers .pap-lab', l => l.map(b => b.textContent.trim()))).join(',') === 'my wisdom story,my grind,my vision'
+ok((await pg.$$eval('#tz-papers .pap-lab', l => l.map(b => b.textContent.trim()))).join(',') === 'my story,my grind,my vision'
    && (await pg.$eval('#el-list', e => e.children.length)) === 0, 'MY WISDOM STORY · MY GRIND · MY VISION, and nothing listed before a tap');
 ok((await pg.$eval('#tz-logo', e => +getComputedStyle(e).opacity)) < 0.05 && (await pg.$$eval('#tz-logo .gl', l => l.length)) === 3,
   'the logo (rail · T · word — the three SVGs of totehm.com) has dissolved; only its background is left');
@@ -199,7 +202,7 @@ await monter(pg, 'cloth');
 await pg.waitForTimeout(400);
 const remonte = await pg.evaluate(() => { const r = document.getElementById('stages'), c = document.getElementById('s-cloth'), e = document.getElementById('s-element');
   return { haut: Math.abs(r.scrollTop - c.offsetTop) < 3, dessous: e.offsetTop > c.offsetTop && e.classList.contains('is-open'),
-    hint: +getComputedStyle(c.querySelector('.sc-hint')).opacity, vue: window.__totehm_cloth().view }; });
+    hint: +getComputedStyle(document.getElementById('st-next')).opacity, vue: window.__totehm_cloth().view }; });
 ok(remonte.haut && remonte.dessous && remonte.hint > 0 && remonte.vue === 'visions',
   '26/10 · remonter au vêtement ne défait rien : le TOTEHM attend dessous, sur sa vue, et l\'invitation à descendre est là ' + JSON.stringify(remonte));
 // 27/10 — LE ROULEAU EST UNE PAGE : descendre et remonter n'empile RIEN. Avant,
@@ -216,7 +219,7 @@ await pg.click('#cl-go');
 await pg.waitForFunction(() => window.__totehm_cloth().papers);
 await pg.click('.pap-s');
 await pg.waitForFunction(() => window.__totehm_cloth().view === 'wisdom');
-ok(/Slow is smooth/.test(await pg.textContent('#el-list')) && /my wisdom story/i.test(await pg.textContent('#el-sub')), 'MY WISDOM STORY · what I pass on');
+ok(/Slow is smooth/.test(await pg.textContent('#el-list')) && /my story/i.test(await pg.textContent('#el-sub')), 'MY STORY · what I pass on');
 ok((await D()).seam === 1, 'the seam lights the intention of what is on screen (focus)');
 await pg.click('#el-list .bx');
 // Le tap EST le choix (comme sur totehm.com) : la liste se réduit à elle, sa matière reste ouverte,
@@ -331,30 +334,24 @@ const stl = await pg.evaluate(() => { const b = document.querySelector('.st-card
 ok(stl.n === '7' && stl.px >= 11 && stl.col === 'rgb(255, 255, 255)' && /sold out/i.test(stl.out) && await pg.isDisabled('.st-card[data-id="st2"]'),
   'a style says what is left in the same writing as the cloth; a sold-out style is closed ' + JSON.stringify(stl));
 
-// ── 5 · ORDER — le RAPPEL
+// ── 5 · ORDER — LE PRIX ET LE PAIEMENT, RIEN D'AUTRE
 await descendre(pg, 'order');
 ok(await pg.isVisible('#od-test') && /4242/.test(await pg.textContent('#od-test')), 'test mode said on the page');
-const pv = await pg.evaluate(() => ({ src: (document.querySelector('#od-visual img.ph') || {}).src || '', extra: document.querySelectorAll('#od-visual *').length, canvas: !!document.querySelector('#od-visual canvas') }));
-ok(/1-back-zone\.png$/.test(pv.src) && pv.extra === 1 && !pv.canvas, 'ORDER: the PHOTO of the print zone, nothing simulated over it');
-// 02/11 (Wah) : « la dernière section, c'est un rappel… le nom dans sa fameuse
-// box perforée bleu navy, la box du Totehm, le prix et le style (sa vignette) —
-// sans 177 of 177 pieces left ni 7 in this style, propres à leurs sections. »
-const rap = await pg.evaluate(() => { const r = document.querySelector('#od-recap');
-  const nd = r.querySelector('.od-dos use'), bx = r.querySelector('.od-box'), st = r.querySelector('.od-st');
-  return { nom: (r.querySelector('.od-nm span') || {}).textContent || '',
-    piece: nd ? nd.getAttribute('href') : null,
-    box: bx ? bx.textContent.replace(/\s+/g, ' ').trim() : '',
-    boxCouleur: bx ? getComputedStyle(bx).backgroundColor : '',
-    style: st ? st.textContent.trim() : '', vignette: !!(st && st.querySelector('img')),
-    prix: (r.querySelector('.price') || {}).textContent || '',
-    vetement: r.textContent.replace(/\s+/g, ' '),
-    restes: /pieces left|in this style/i.test(r.textContent),
-    tailles: !!document.querySelector('#od-sizes') }; });
-ok(rap.nom === '0.hillstreet' && rap.piece === '#higher-dos' && /Slow is smooth/.test(rap.box)
-   && /116, 49, 105/.test(rap.boxCouleur) && /Ink Realism/.test(rap.style) && rap.vignette
-   && /170/.test(rap.prix) && /Higher Champion Sweatshirt · M/.test(rap.vetement)
-   && !rap.restes && !rap.tailles,
-  '02/11 · le rappel : le nom dans la pièce perforée, la box dans sa couleur, la vignette du style, le vêtement, le prix — et AUCUN reste ' + JSON.stringify(rap));
+// 11/11 (Wah) : « supprimer tous les rappels de la dernière section… garder
+// seulement le prix et le paiement ». On MESURE qu'il ne reste rien du rappel :
+// ni photo, ni nom dans le dos du Higher, ni box, ni vignette de style.
+const fin = await pg.evaluate(() => { const r = document.querySelector('#od-recap'), st = document.querySelector('#s-order');
+  return { prix: (r.querySelector('.price') || {}).textContent || '',
+    px: Math.round(parseFloat(getComputedStyle(r.querySelector('.price')).fontSize)),
+    noeuds: r.children.length,
+    visual: !!document.querySelector('#od-visual'),
+    nom: !!st.querySelector('.od-nm, .od-dos'), box: !!st.querySelector('.od-box'), style: !!st.querySelector('.od-st'),
+    photo: !!st.querySelector('img'),
+    texte: st.textContent.replace(/\s+/g, ' ').trim(),
+    paie: (document.querySelector('#od-go') || {}).textContent || '' }; });
+ok(/170/.test(fin.prix) && fin.px >= 22 && fin.noeuds === 1 && !fin.visual && !fin.nom && !fin.box && !fin.style && !fin.photo
+   && !/hillstreet|Slow is smooth|Ink Realism|Champion/.test(fin.texte) && /170/.test(fin.paie),
+  '11/11 · la dernière section ne dit plus que le PRIX et le PAIEMENT ' + JSON.stringify(fin));
 ok(/Order · 170 €/.test(await pg.textContent('#od-go')) && await pg.isEnabled('#od-go'), 'the order button carries the server price');
 await pg.waitForTimeout(560);
 await pg.screenshot({ path: OUT + '/sw_order.png' });
@@ -469,7 +466,7 @@ ok(!log.errors.length, 'phone: no page error: ' + log.errors.join(' | '));
   await pg.click('.st-card[data-id="st1"]');
   await descendre(pg, 'order');
   await pg.waitForTimeout(500);
-  ok(await pg.isVisible('#od-visual') && (await geo()).vis === 'hidden', 'ORDER takes the screen alone: the cloth has rolled off it');
+  ok(await pg.isVisible('#od-recap') && (await geo()).vis === 'hidden', 'ORDER takes the screen alone: the cloth has rolled off it');
   await pg.screenshot({ path: OUT + '/sw_desk_order.png' });
   log.errors = log.errors.filter(e => !/404|Failed to load/.test(e));
   ok(!log.errors.length, 'desktop: no page error ' + log.errors.join(' | '));
@@ -512,7 +509,7 @@ ok(!log.errors.length, 'phone: no page error: ' + log.errors.join(' | '));
   await pg.click('.st-card[data-id="st1"]');
   await pg.waitForFunction(() => window.__totehm_cloth().style);
   await descendre(pg, 'name');
-  ok(/Slow is smooth/.test(await pg.textContent('#el-list')) && /my wisdom story/i.test(await pg.textContent('#el-sub')), 'de COM : la box est déjà choisie, le nom attend juste après le style');
+  ok(/Slow is smooth/.test(await pg.textContent('#el-list')) && /my story/i.test(await pg.textContent('#el-sub')), 'de COM : la box est déjà choisie, le nom attend juste après le style');
   await monter(pg, 'element');
   ok((await pg.evaluate(() => window.__totehm_cloth().view)) === 'wisdom', 'remonter : ELEMENT, sur MY STORY (l\'élément peut encore changer)');
   await descendre(pg, 'name');
@@ -619,5 +616,126 @@ ok(!log.errors.length, 'phone: no page error: ' + log.errors.join(' | '));
      && fin.nom === '0.muscle' && fin.texte > 20,
     '03/11 · retour de paiement : l\'étape finale est SEULE, visible et nommée — jamais un écran noir ' + JSON.stringify(fin));
   ok(!log.errors.length, 'retour de paiement : aucune erreur ' + log.errors.join(' | '));
+}
+// ══ 11/11 · LE FEUILLETEUR, DANS 100 % DES CAS ════════════════════════════
+//    Wah : « le scroll ne fonctionne pas pour passer d'une partie du
+//    questionnaire à une autre, en particulier sur mobile : GROS BUG de
+//    structure… peut-être rajouter un bouton [Next] ». On mesure les deux : le
+//    VRAI geste tactile sur une étape qui DÉBORDE (le cas qui ne marchait
+//    jamais), et le bouton.
+{
+  /* Une fenêtre COURTE (390 × 460) : chaque étape déborde, comme un téléphone
+     avec son clavier ou une vue de huit box. C'est exactement l'état où le
+     doigt ne tournait plus la page. */
+  const { pg, ctx, log } = await page(browser, { dir:'boutique', origin:'https://www.higher.boutique', rpc, tables, network,
+    viewport:{ width:390, height:460 }, hasTouch:true });
+  const cdp = await ctx.newCDPSession(pg);
+  const pt = (x, y) => [{ x, y, radiusX:12, radiusY:12, force:1, id:1 }];
+  /* LE DOIGT, POUR DE VRAI : touchStart, des touchMove, touchEnd. */
+  const glisser = async (y0, y1, pas = 10) => {
+    await cdp.send('Input.dispatchTouchEvent', { type:'touchStart', touchPoints: pt(24, y0) });
+    for(let i = 1; i <= pas; i++){
+      await cdp.send('Input.dispatchTouchEvent', { type:'touchMove', touchPoints: pt(24, Math.round(y0 + (y1 - y0) * i / pas)) });
+      await pg.waitForTimeout(12);
+    }
+    await cdp.send('Input.dispatchTouchEvent', { type:'touchEnd', touchPoints: [] });
+    await pg.waitForTimeout(520);
+  };
+  const D2 = () => pg.evaluate(() => window.__totehm_cloth());
+  await pg.goto('https://www.higher.boutique/streetwear');
+  await pg.waitForFunction(() => window.__totehm_cloth && window.__totehm_cloth().ready);
+  await pg.click('#cl-sizes .sz');
+  await pg.click('#cl-go');
+  await pg.waitForFunction(() => window.__totehm_cloth().stage === 'style');
+  /* 1 · LE DOIGT REMONTE : du style au vêtement, une étape, pas une demie. */
+  await glisser(150, 430);
+  let d2 = await D2();
+  ok(d2.stage === 'cloth', 'le doigt remonte d\'une étape (' + d2.stage + ')');
+  const deborde = await pg.evaluate(() => { const e = document.querySelector('.stage[data-s="cloth"]');
+    return { trop: Math.round(e.scrollHeight - e.clientHeight), haut: Math.round(e.scrollTop) }; });
+  ok(deborde.trop > 2 && deborde.haut === 0, 'le banc tient le VRAI cas : l\'étape DÉBORDE de la fenêtre ' + JSON.stringify(deborde));
+  /* 2 · l'étape se lit d'abord CHEZ ELLE : le doigt la défile, la page ne tourne pas. */
+  await glisser(400, 200);
+  d2 = await D2();
+  const dedans = await pg.$eval('.stage[data-s="cloth"]', e => e.scrollTop);
+  ok(d2.stage === 'cloth' && dedans > 10, 'le doigt lit l\'étape chez elle d\'abord (scrollTop ' + Math.round(dedans) + ')');
+  /* 3 · une fois son bord atteint, LE MÊME geste tourne la page. C'est ICI que
+         `pointercancel` tuait tout : la page ne tournait plus JAMAIS sur une
+         étape qui déborde — c'est-à-dire presque toujours, sur un téléphone. */
+  await pg.$eval('.stage[data-s="cloth"]', e => { e.scrollTop = e.scrollHeight; });
+  await pg.waitForTimeout(60);
+  await glisser(400, 150);
+  d2 = await D2();
+  ok(d2.stage === 'style', 'LE BUG EST MORT : au bord d\'une étape qui déborde, le doigt TOURNE LA PAGE (' + d2.stage + ')');
+  /* 4 · LÀ OÙ IL N'Y A RIEN DESSOUS, LE BOUTON N'EXISTE PAS : il ne promet
+         jamais une étape qui n'est pas méritée (ici le style, dont l'étape
+         suivante attend qu'un style soit choisi). */
+  const rien = await pg.evaluate(() => { const b = document.getElementById('st-next');
+    return { classe: document.getElementById('stages').classList.contains('has-next'),
+             vu: getComputedStyle(b).visibility, o: +getComputedStyle(b).opacity }; });
+  ok(!rien.classe && rien.vu === 'hidden' && rien.o < .1,
+    'rien dessous = pas de bouton : il ne promet jamais rien ' + JSON.stringify(rien));
+  /* 5 · LE BOUTON [NEXT] : collé au bas de l'ÉCRAN, il tourne la page, et il ne
+         couvre pas le dernier bouton de la section. */
+  await glisser(150, 430);
+  await pg.waitForFunction(() => window.__totehm_cloth().stage === 'cloth');
+  const nx = await pg.evaluate(() => { const b = document.getElementById('st-next'), r = b.getBoundingClientRect();
+    return { vu: getComputedStyle(b).visibility === 'visible' && +getComputedStyle(b).opacity > .5,
+             bas: Math.round(innerHeight - r.bottom), dedans: r.top > 0 && r.bottom <= innerHeight,
+             mot: b.textContent.trim().toLowerCase(),
+             hors: b.parentElement.id === 'stages' }; });
+  ok(nx.vu && nx.dedans && nx.bas < 40 && nx.mot === 'next' && nx.hors,
+    'le bouton [NEXT] est collé au bas de l\'ÉCRAN, hors du rouleau ' + JSON.stringify(nx));
+  await pg.$eval('.stage[data-s="cloth"]', e => { e.scrollTop = e.scrollHeight; });
+  await pg.waitForTimeout(40);
+  ok((await pg.evaluate(() => { const b = document.getElementById('st-next').getBoundingClientRect();
+        const g = document.getElementById('cl-go').getBoundingClientRect(); return g.bottom <= b.top + 1; })),
+    'au bas de l\'étape, le bouton ne couvre PAS le dernier bouton de la section');
+  await pg.click('#st-next');
+  await pg.waitForTimeout(520);
+  ok((await D2()).stage === 'style', 'un tap sur [NEXT] tourne la page');
+  await pg.screenshot({ path: OUT + '/sw_next.png' });
+  log.errors = log.errors.filter(e => !/404|Failed to load/.test(e));
+  ok(!log.errors.length, 'feuilleteur tactile : aucune erreur ' + log.errors.join(' | '));
+}
+
+// ══ 11/11 · LES MINI-BOX SE LISENT EN ENTIER ══════════════════════════════
+//    Wah : « il faut des retours de ligne concernant les textes des mini-box
+//    pour que l'on voie à chaque fois l'ensemble des textes, en particulier
+//    ceux qui sont longs ». MESURÉ : `button{white-space:nowrap!important}` (le
+//    bloc boutique du 06/10) coupait toute mini-box longue sur une ligne.
+{
+  const { pg, log } = await page(browser, { dir:'boutique', origin:'https://www.higher.boutique', rpc, tables, network });
+  await pg.goto('https://www.higher.boutique/streetwear');
+  await pg.waitForFunction(() => window.__totehm_cloth && window.__totehm_cloth().ready);
+  await pg.click('#cl-sizes .sz');
+  await pg.click('#cl-go');
+  await pg.waitForFunction(() => document.querySelector('.stage[data-s="style"]').classList.contains('is-open'));
+  await pg.evaluate(() => window.__totehm_cloth && document.getElementById('st-next').click());
+  await pg.waitForTimeout(500);
+  await pg.waitForSelector('.st-card');
+  await pg.click('.st-card[data-id="st1"]');
+  await pg.waitForTimeout(500);
+  await pg.evaluate(() => document.getElementById('st-next').click());
+  await pg.waitForFunction(() => window.__totehm_cloth().stage === 'element');
+  await pg.click('.pap-s');
+  await pg.waitForFunction(() => /Slow is smooth/.test(document.querySelector('#el-list').textContent));
+  await pg.click('#el-list .bx');
+  await pg.waitForSelector('#matter .mi[data-k="habits"]');
+  const mb = await pg.evaluate(() => {
+    const l = [...document.querySelectorAll('#matter .mi')];
+    const longue = l.find(b => b.textContent.length > 60);
+    const s = getComputedStyle(longue), r = longue.getBoundingClientRect();
+    const cadre = document.querySelector('#el-list .bx.is-on').getBoundingClientRect();
+    return { blanc: s.whiteSpace, lignes: Math.round(r.height / parseFloat(s.lineHeight)),
+             coupe: longue.scrollWidth > longue.clientWidth + 1 || longue.scrollHeight > longue.clientHeight + 1,
+             dedans: r.right <= cadre.right + 1 && r.left >= cadre.left - 1,
+             n: l.length, texte: longue.textContent.length };
+  });
+  ok(mb.blanc === 'normal' && mb.lignes >= 2 && !mb.coupe && mb.dedans,
+    '11/11 · une mini-box longue revient à la ligne et se lit EN ENTIER ' + JSON.stringify(mb));
+  await pg.screenshot({ path: OUT + '/sw_minibox.png' });
+  log.errors = log.errors.filter(e => !/404|Failed to load/.test(e));
+  ok(!log.errors.length, 'mini-box : aucune erreur ' + log.errors.join(' | '));
 }
 await browser.close();
