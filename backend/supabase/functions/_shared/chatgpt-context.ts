@@ -33,6 +33,7 @@ export type ContextItem = ElementRef & {
   target_at?: string;
   obstacle?: string;
   rank?: number;
+  rank_scope?: "view" | "available_subset";
   rank_source?: "member_order" | "saved_order" | "importance" | "default";
   target_state?: "past_target" | "future_target";
 };
@@ -284,6 +285,7 @@ export function projectGraph(snapshot: GraphSnapshot): ContextGraph {
       if (item) { item.rank = ++position; item.rank_source = "member_order"; }
     }
   }
+  for (const item of items) if (item.rank !== undefined) item.rank_scope = truncated ? "available_subset" : "view";
   return { items, edges: list, truncated };
 }
 
@@ -435,8 +437,9 @@ export function projectContext(graph: ContextGraph, options: ContextOptions): Co
   };
 }
 
-async function ownerRows(client: ReadClient, uid: string, table: string, columns: string): Promise<{ data: Row[]; truncated: boolean }> {
+async function ownerRows(client: ReadClient, uid: string, table: string, columns: string, refs?: string[]): Promise<{ data: Row[]; truncated: boolean }> {
   let query = client.from(table).select(columns).eq("user_id", uid);
+  if (refs?.length) query = query.in("id", refs);
   if (table === "objectives") query = query.or("status.is.null,status.not.in.(achieved,abandoned,converted)");
   if (table === "repulsions") query = query.eq("active", true);
   const result = await query.limit(MAX_ROWS + 1);
@@ -445,7 +448,7 @@ async function ownerRows(client: ReadClient, uid: string, table: string, columns
   return { data: all.slice(0, MAX_ROWS), truncated: all.length > MAX_ROWS };
 }
 
-async function loadGraph(client: ReadClient, uid: string): Promise<ContextGraph> {
+async function loadGraph(client: ReadClient, uid: string, focus?: ElementRef): Promise<ContextGraph> {
   validateOwner(uid);
   const tables = [
     ["totehms", "steps"], ["objectives", "id,text,status,target_at"],
@@ -457,6 +460,24 @@ async function loadGraph(client: ReadClient, uid: string): Promise<ContextGraph>
     ["habit_spots", "habit_text,place"], ["element_orders", "kind,refs"],
   ];
   const results = await Promise.all(tables.map(([table, columns]) => ownerRows(client, uid, table, columns)));
+  // A physical row cap must not hide the member's first saved choices. Bring at
+  // most MAX_ITEMS priority refs plus an exact focus into each already bounded view.
+  // Every supplemental query uses the same owner and active-row filters.
+  const orders = results[tables.findIndex(([name]) => name === "element_orders")].data;
+  await Promise.all(([['objective','objectives'],['repulsion','repulsions'],['vision','visions'],['wisdom','wisdom']] as const).map(async ([kind,table]) => {
+    const index = tables.findIndex(([name]) => name === table), current = results[index];
+    const saved = orders.find(row => row.kind === kind)?.refs;
+    const head = Array.isArray(saved) ? saved.slice(0, MAX_ITEMS) : [];
+    const wanted = [...new Set([...(focus?.kind === kind ? [focus.ref] : []), ...head]
+      .filter((ref): ref is string => typeof ref === "string" && validElementRef({kind,ref})))];
+    const known = new Set(current.data.map(row => String(row.id)));
+    const missing = wanted.filter(ref => !known.has(ref));
+    if (!missing.length) return;
+    const extra = await ownerRows(client, uid, table, tables[index][1], missing);
+    const seen = new Set<string>();
+    const combined = [...extra.data, ...current.data].filter(row => { const ref = String(row.id); if(seen.has(ref))return false; seen.add(ref);return true; });
+    results[index] = {data:combined.slice(0,MAX_ROWS),truncated:current.truncated || extra.truncated || combined.length>MAX_ROWS};
+  }));
   const snapshot: GraphSnapshot = { truncated: results.some((r) => r.truncated) };
   tables.forEach(([table], index) => {
     if (table === "totehms") snapshot.steps = Array.isArray(results[index].data[0]?.steps) ? results[index].data[0].steps as unknown[] : [];
@@ -467,7 +488,7 @@ async function loadGraph(client: ReadClient, uid: string): Promise<ContextGraph>
 
 export async function retrieveContext(client: ReadClient, uid: string, options: ContextOptions): Promise<ContextResult> {
   validateOptions(options);
-  const result = projectContext(await loadGraph(client, uid), options);
+  const result = projectContext(await loadGraph(client, uid, options.focus), options);
   if (options.include_sound) {
     const selected = [...new Set(result.items.flatMap(i => i.intentions))];
     result.sounds = await getSounds(client, uid, options.intentions?.length
