@@ -100,8 +100,8 @@ const SHORT_COUNT=new RegExp('(?<![\\p{L}\\p{N}])(\\d{1,3})\\s*/\\s*('+UNITS+')(
 const INTERVAL=new RegExp('(?:every|tous les|toutes les|a cada|cada|ogni|alle|elke|каждые|كل)\\s+(\\d{1,3})\\s+('+UNITS+')(?![\\p{L}\\p{N}])','gu');
 const DURATION=/(?:\d+\s*(?:minutes?|mins?|minutos?|minuti|minuten|минут\p{L}*|دقيقة|دقائق|分钟|分鐘|分間|분|hours?|heures?|horas?|ore|stunden|час\p{L}*|ساعات?|小时|小時|時間|시간)|vingt minutes|twenty minutes|vinte minutos|veinte minutos|venti minuti|zwanzig minuten)/u;
 const CLOCK=/(?:\b\d{1,2}\s*[:h]\s*\d{0,2}\b|\b\d{1,2}\s*(?:am|pm)\b|(?:at|à|às|a las|alle|um|om|в|الساعة)\s*\d{1,2}\b|\d{1,2}\s*[点點時시])/u;
-const QUALIFIER=bounded(any(['not','never','don t','no','non','nicht','nie','niet','nooit','не','никогда','except','unless','if','or','alternating','ne pas','jamais','sauf','si possible','si besoin','ou','não','nunca','exceto','se puder','se chover','sinon','salvo','o bien','oppure','außer','ausser','wenn','oder','behalve','als','если','кроме','или','если','لا','ليس','الا','اذا','او']));
-const CJK_QUALIFIER=/(?:如果|除外|除了|或者|不|または|以外|ない|ません|않|제외)/u;
+const QUALIFIER=bounded(any(['until','through','jusqu','à partir de','a partir de','hasta','fino a','bis','tot en met','до','حتى','not','never','don t','no','non','nicht','nie','niet','nooit','не','никогда','except','unless','if','or','alternating','ne pas','jamais','sauf','si possible','si besoin','ou','não','nunca','exceto','se puder','se chover','sinon','salvo','o bien','oppure','außer','ausser','wenn','oder','behalve','als','если','кроме','или','если','لا','ليس','الا','اذا','او']));
+const CJK_QUALIFIER=/(?:如果|除外|除了|或者|直到|截至|不|または|以外|まで|ない|ません|않|제외|까지)/u;
 const MAP={day:'daily',week:'weekly',month:'monthly',year:'yearly'};
 const PERIOD_LABEL={day:'day',week:'week',month:'month',year:'year'};
 export function parseHabitRhythm(value,{mode='habit'}={}){
@@ -114,6 +114,8 @@ export function parseHabitRhythm(value,{mode='habit'}={}){
  const exact=FREQS.find(f=>fold(f.label)===text||f.id===text);
  if(mode==='rhythm'&&exact)return {...result,status:'matched',frequency:exact.id};
  if(/(?:every|toutes les|tous les|a cada|cada|ogni|alle|elke)\s+\d+\s*(?:minutes?|minutos?|minuti|minuten|hours?|heures?|horas?|ore|stunden)/u.test(n))return {...result,status:'review',reason:'unsupported_interval'};
+ const boundedPeriod=new RegExp('(?:for|pendant|durante|fur|gedurende|на|لمدة)\\s+\\d+\\s+(?:'+UNITS+')(?![\\p{L}\\p{N}])','u');
+ if(boundedPeriod.test(n))return {...result,status:'review',reason:'bounded_period'};
  const targets=[],intervals=[];
  // Parse explicit repetition counts before CJK weekday tokens (每周三次 ≠ 每周三).
  let stripped=n;
