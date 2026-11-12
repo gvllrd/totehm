@@ -50,7 +50,7 @@ Seuls les abonnements aux créateurs sont proposés. Higher GPT et TotehmBot son
 - Le socle `#lv-socket` ne se voit plus (le TOTEHM est le boîtier, `--sk` = le papier + 6 px) mais il donne la taille du
   boîtier et devient l'anneau du profil : ne pas le retirer. `enter()` aspire AVANT de mesurer (le cœur grossit le papier). Verso, clic, recherche = `LV.aspirer(true)` ; chaque
   sortie doit rendre `LV.aspirer(false)` (sinon le réseau reste caché). Fin du portail = l'app au pixel (papier `--paper`).
-- Verso : le dos du papier porte le NOM seul ; déplié, tout ce qui n'est pas le nom porte `.srch-after` et n'apparaît qu'à `is-pret` (verso déployé ET console lue, 1,8 s au plus) — un nœud ajouté au verso sans `.srch-after` s'affiche trop tôt.
+- Verso : le dos porte le NOM sur TOUT le carré (`#ast-grid`, nomenclature `tools/totehm_name.js` copiée dans la page) ; `#ast-name` ne se VOIT plus mais reste la LIGNE que `geometrie()` mesure pour caler le zoom — ne jamais le retirer ni le passer en `display:none`. Déployé, les mêmes lettres rejoignent cette ligne (`VERSO.ligner`, `__totehm_verso()`), et tout ce qui n'est pas le nom porte `.srch-after`, qui n'apparaît qu'à `is-pret` (verso déployé ET console lue, 1,8 s au plus) — un nœud ajouté au verso sans `.srch-after` s'affiche trop tôt.
 - Verso déplié : `#self-h` à même le navy, collé en haut (bandeau `#333366` à `is-pret` seulement, `top` compense le padding de
   `#srch-ui`) ; l'email (`#self-mail`) dessous ; le pied = `.vs-acts` (Delete, Sign out) puis les conditions. Gris lisibles ≥ #b8b8c2.
 - **Visibilité** : une box est BINAIRE, privée par défaut — une ligne de mots dans la box OUVERTE (`.baud` : `.baud-o` PRIVATE · VISIBLE TO

@@ -2099,6 +2099,21 @@ body:not(.gate) #gate{display:none}
   font-family:'Quantico',sans-serif;font-weight:400;font-size:10px;
   line-height:1.3;letter-spacing:.04em;color:#b0b0b0;transition:color .15s ease}
 .ast-say.is-name{color:#fbd5ca}   /* le NOM d'un TOTEHM est Coral (BRAND) — le même que déplié : le zoom ne change pas sa couleur */
+/* ⚠️ 12/11 — LE NOM PREND TOUT LE CARRÉ DU VERSO (Wah : « éparpiller les lettres du nom dans la face verso »).
+   Sur une ligne il rapetissait jusqu'à 5,5 px (mesuré : 7,1 px pour 24 lettres sur ce papier de 110) ; posé sur
+   la trame des 12 trous il garde 16,9 px — × 2,4. `#ast-name` NE SE VOIT PLUS : il reste LA LIGNE DE RÉFÉRENCE,
+   celle que `geometrie()` mesure pour caler le zoom lettre pour lettre (ne jamais le retirer, ni le cacher par
+   `display:none` : une boîte cachée se mesure, une boîte absente ne se mesure pas). Visible, il n'y a que
+   `#ast-grid`. La nomenclature est dans `tools/totehm_name.js`, copiée plus bas : un seul rendu, les quatre sites. */
+#ast-name{visibility:hidden}
+#ast-grid{position:absolute;inset:0;z-index:2;pointer-events:none}
+.tn-l{position:absolute;left:0;top:0;z-index:2;transform-origin:0 0;white-space:pre;
+  font:400 24px/1 'Quantico',sans-serif;letter-spacing:.04em;color:#fbd5ca;
+  transition:transform 420ms var(--gate-ease)}
+.tn-v{position:absolute;z-index:1;width:2.5px;height:2.5px;border-radius:50%;background:#626286;
+  transform:translate(-50%,-50%);opacity:.5;transition:opacity .22s ease}
+#ast-grid.is-ligne .tn-v{opacity:0}
+@media(prefers-reduced-motion:reduce){.tn-l,.tn-v{transition:none}}
 @media(hover:hover){#gate-asteroid:hover .ast-say:not(.is-name){color:#fff}}
 /* La zone cliquable du verso : un vrai bouton, comme #gate-enter sur le
    recto. `inert` (posé par le moteur) retire la face cachée de la
@@ -4194,6 +4209,8 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
              vue »). Les trois pastilles (`#ast-panel`) sont parties, balisage ET câblage. Restent le
              NOM et le curseur du prix : ce que le verso règle vraiment. -->
         <div id="ast-verso"><span class="ast-say" id="ast-name"></span></div>
+        <!-- 12/11 — les lettres du nom, posées sur tout le carré ; `#ast-name` au-dessus reste la ligne mesurée. -->
+        <div id="ast-grid" aria-hidden="true"></div>
         <button id="gate-search-go" type="button" aria-label="My TOTEHM settings"></button>
         <div class="ast-light"></div>
       </div>
@@ -8177,7 +8194,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-11-12-multilingual-habit-rhythm';
+const BUILD='2026-11-12-verso-nom-carre';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -11035,6 +11052,174 @@ function connPaint(){
    proche du milieu (`_` `-` `.` espace), puis rapetisse d'un demi-pixel à
    la fois jusqu'à 7,5 px. Retourné, c'est CE nom qui grandit et devient
    la saisie de la recherche. */
+/* ══ LA NOMENCLATURE DU VERSO — copié de tools/totehm_name.js dans chaque page (jamais importé) ══
+   Le NOM d'un TOTEHM prend TOUT le carré de son verso. Sur une ligne il rapetissait jusqu'à 5,5 px
+   (mesuré : 4,1 px au coin membre pour 24 lettres) ; posé sur la trame des 12 trous il reste 2 à 2,5 fois
+   plus grand. La règle, la même partout :
+
+     1 – 5 lettres  → une ligne, centrée (en grille elles seraient PLUS PETITES : mesuré × 0,63)
+     6 – 16         → 4 colonnes, 2 à 4 lignes
+     17 – 25        → 5 colonnes, 4 à 5 lignes
+     26 +           → 25 lettres, la suite en ·
+
+   Lecture gauche → droite, haut → bas : le nom se LIT toujours. La dernière ligne est centrée. Le décalage
+   de chaque lettre (±8 % de sa case) et les points des cases vides viennent du nom LUI-MÊME : même nom,
+   même dessin, sur les quatre domaines — c'est l'empreinte du membre, jamais du hasard.
+   Quantico n'a pas de chasse fixe : on MESURE (un étalon caché), jamais on ne devine.
+   Les lettres sont dessinées à 24 px et mises à l'échelle : une position et une taille s'animent ensemble,
+   en `transform` seul, donc sans reflow — c'est ce qui permet au nom de se reformer en UNE ligne sans coupure. */
+window.TOTEHM_NOM = (() => {
+  const BASE = 24, PAD = .09, MAX = 25;
+  let etalon = null, cache = Object.create(null);
+
+  function mesurer(txt){
+    if (!txt) return 0;
+    if (cache[txt] != null) return cache[txt];
+    if (!etalon){
+      etalon = document.createElement('span');
+      etalon.setAttribute('aria-hidden', 'true');
+      etalon.style.cssText = 'position:absolute;left:-9999px;top:0;white-space:pre;visibility:hidden;'
+        + "font:400 " + BASE + "px 'Quantico',sans-serif;letter-spacing:.04em";
+      document.body.appendChild(etalon);
+    }
+    etalon.textContent = txt;
+    return (cache[txt] = etalon.getBoundingClientRect().width);
+  }
+  /* les polices arrivent après la première peinture : tout ce qui a été mesuré avant est faux */
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { cache = Object.create(null); });
+
+  function plan(nom){
+    const tout = Array.from((nom || '').trim());
+    if (!tout.length) return null;
+    const L = tout.slice(0, MAX);
+    if (tout.length > MAX) L[MAX - 1] = '·';
+    const N = L.length;
+    if (N <= 5) return { L, N, C:N, R:1, cells:L.map((c, i) => ({ c, col:i, row:0 })) };
+    const C = Math.min(5, Math.max(4, Math.ceil(Math.sqrt(N))));
+    const R = Math.ceil(N / C), reste = N - (R - 1) * C, dec = (C - reste) / 2, cells = [];
+    for (let i = 0; i < N; i++){
+      const row = Math.floor(i / C);
+      cells.push({ c:L[i], col:(i % C) + (row === R - 1 ? dec : 0), row });
+    }
+    return { L, N, C, R, cells };
+  }
+  /* FNV-1a sur le nom : stable d'un domaine à l'autre, d'une session à l'autre */
+  function bruit(nom, i){
+    let h = 2166136261; const s = nom + '|' + i;
+    for (let k = 0; k < s.length; k++){ h ^= s.charCodeAt(k); h = (h * 16777619) >>> 0; }
+    return ((h % 1000) / 1000) - .5;
+  }
+
+  /* Peint le nom dans `hote` (un carré de `S` px, positionné). Rend la taille de lettre obtenue. */
+  function poser(hote, nom, S, opt){
+    const o = opt || {}, p = plan(nom);
+    hote.textContent = '';
+    hote.removeAttribute('data-nom');
+    if (!p || !S) return 0;
+    const pad = S * PAD, inner = S - 2 * pad, k = BASE / 100;
+    let px, place;
+    if (p.R === 1){
+      px = Math.min(S * .34, inner / (mesurer(p.L.join('')) / BASE));
+      let x = (S - mesurer(p.L.join('')) * px / BASE) / 2;
+      place = (c) => { const r = [x, S / 2 - px * .36]; x += mesurer(c) * px / BASE; return r; };
+    } else {
+      const cw = inner / p.C, ch = inner / p.R;
+      let large = 0; for (const c of p.L) large = Math.max(large, mesurer(c));
+      px = Math.min(cw * .94 / (large / BASE), ch * .94);
+      place = (c, i) => {
+        const k2 = p.cells[i];
+        const cx = pad + (k2.col + .5) * cw + bruit(nom, i) * cw * .16;
+        const cy = pad + (k2.row + .5) * ch + bruit(nom, i + 99) * ch * .16;
+        return [cx - mesurer(c) * px / BASE / 2, cy - px * .36];
+      };
+    }
+    const e = px / BASE;
+    p.L.forEach((c, i) => {
+      const [x, y] = place(c, i);
+      const el = document.createElement('span');
+      el.className = 'tn-l'; el.textContent = c;
+      el.dataset.gx = x.toFixed(2); el.dataset.gy = y.toFixed(2); el.dataset.gs = e.toFixed(4);
+      el.style.transform = 'translate(' + el.dataset.gx + 'px,' + el.dataset.gy + 'px) scale(' + el.dataset.gs + ')';
+      hote.appendChild(el);
+    });
+    /* les cases vides : la trame se voit, comme les trous d'une carte perforée */
+    if (p.R > 1 && o.vides !== false){
+      const cw = inner / p.C, ch = inner / p.R, pris = {};
+      p.cells.forEach(k2 => { pris[k2.row + ':' + Math.round(k2.col * 2)] = 1; });
+      for (let r = 0; r < p.R; r++) for (let c = 0; c < p.C; c++){
+        if (pris[r + ':' + (c * 2)] || pris[r + ':' + (c * 2 + 1)]) continue;
+        const d = document.createElement('i');
+        d.className = 'tn-v';
+        d.style.left = (pad + (c + .5) * cw).toFixed(2) + 'px';
+        d.style.top = (pad + (r + .5) * ch).toFixed(2) + 'px';
+        hote.appendChild(d);
+      }
+    }
+    hote.setAttribute('data-nom', nom);
+    return px;
+  }
+
+  /* LE RETOUR À LA LIGNE — les MÊMES lettres glissent de leur case vers `cibles` (une position par lettre,
+     en px dans le repère de l'hôte) : aucune n'apparaît, aucune ne disparaît. Sans cibles, elles rentrent
+     dans leur case. C'est ce qui fait du nom reformé une TRANSFORMATION et non un autre écran. */
+  function ligner(hote, cibles){
+    const lts = hote.querySelectorAll('.tn-l');
+    hote.classList.toggle('is-ligne', !!cibles);
+    lts.forEach((el, i) => {
+      const t = cibles && cibles[i];
+      el.style.transform = t
+        ? 'translate(' + t.x.toFixed(2) + 'px,' + t.y.toFixed(2) + 'px) scale(' + (t.s).toFixed(4) + ')'
+        : 'translate(' + el.dataset.gx + 'px,' + el.dataset.gy + 'px) scale(' + el.dataset.gs + ')';
+    });
+  }
+  return { poser, ligner, plan, mesurer, BASE };
+})();
+
+/* ══ LE VERSO : LE NOM PREND LE CARRÉ · 12/11/2026 (Wah) ═══════════════════════════════════════════
+   « Les lettres du pseudo prennent l'ensemble de l'espace carré de la face verso ; quand on la retourne,
+   elles se reforment en pseudo aligné. » Ce qu'on VOIT, c'est `#ast-grid` ; ce qu'on MESURE, c'est
+   `#ast-name`, resté une ligne invisible — le zoom lettre pour lettre du 29/10 n'est pas touché.
+   Au déploiement les mêmes lettres glissent de leur case jusqu'à cette ligne, en `transform` seul :
+   aucune n'apparaît, aucune ne disparaît. Les cibles sont MESURÉES caractère par caractère (`Range`),
+   jamais calculées : Quantico n'a pas de chasse fixe, et le papier change de taille avec l'écran. */
+const VERSO=(()=>{
+  let nom='', large=0, ligne=false;
+  const el=()=>$('ast-grid');
+  function peindre(p){
+    const g=el(); if(!g||!window.TOTEHM_NOM) return;
+    const S=g.clientWidth; if(!S) return;
+    if(nom===(p||'') && large===S && !ligne) return;
+    nom=p||''; large=S; ligne=false;
+    g.classList.remove('is-ligne');
+    TOTEHM_NOM.poser(g,nom,S);
+  }
+  /* La position RÉELLE de chaque caractère du nom de référence, dans le repère de la grille. */
+  function cibles(){
+    const g=el(), sn=$('ast-name'); if(!g||!sn||!sn.firstChild) return null;
+    const r0=g.getBoundingClientRect(), fs=parseFloat(getComputedStyle(sn).fontSize)||10;
+    const t=sn.firstChild, n=(t.nodeValue||'').length;
+    if(!n) return null;
+    const r=document.createRange(), out=[];
+    for(let i=0;i<n;i++){
+      r.setStart(t,i); r.setEnd(t,i+1);
+      const b=r.getBoundingClientRect();
+      out.push({x:b.left-r0.left, y:b.top-r0.top+(b.height-fs)/2, s:fs/TOTEHM_NOM.BASE});
+    }
+    return out;
+  }
+  function ligner(on){
+    const g=el(); if(!g||!window.TOTEHM_NOM||ligne===!!on) return;
+    const c=on?cibles():null;
+    if(on&&!c) return;
+    ligne=!!on; TOTEHM_NOM.ligner(g,c);
+  }
+  if(typeof ResizeObserver==='function') try{
+    new ResizeObserver(()=>{ if(!ligne) peindre(nom); }).observe(document.documentElement);
+  }catch(_){}
+  return {peindre, ligner, enLigne:()=>ligne};
+})();
+window.__totehm_verso=()=>({ligne:VERSO.enLigne(), lettres:($('ast-grid')||{querySelectorAll:()=>[]}).querySelectorAll('.tn-l').length});
+
 function paintAsteroid(){
   const el=$('ast-name'); if(!el) return;
   const p=((me&&myProfile&&myProfile.pseudo)||'').trim();
@@ -11043,12 +11228,13 @@ function paintAsteroid(){
   el.classList.toggle('is-name',!!p);
   el.style.fontSize='';
   el.textContent=p;
-  if(!p||!el.offsetWidth) return;
+  if(!p||!el.offsetWidth){ VERSO.peindre(p); return; }
   /* 29/10 (Wah : « le nom du totehm sur UNE ligne, pour que le déploiement se fasse dans des proportions adéquates
      jusqu'au dashboard ») : jamais coupé ; trop long, il rapetisse (une mesure, une règle de trois). Le verso déplié
      (`#self-name`) porte la même ligne, dans la même police et le même interlettrage : le zoom n'est qu'une échelle. */
   const max=(el.parentElement.clientWidth||110)*.84, w=el.offsetWidth;
   if(w>max) el.style.fontSize=Math.max(5.5,10*max/w).toFixed(2)+'px';
+  VERSO.peindre(p);   /* la ligne reste la référence ; ce qu'on voit, c'est la grille */
 }
 if(document.fonts&&document.fonts.ready) document.fonts.ready.then(paintAsteroid);
 async function loadProfile(){
@@ -12317,6 +12503,9 @@ window.addEventListener('pageshow',e=>{
     /* La console se lit PENDANT le retournement ; elle se montre une fois lue (1,8 s au plus après le geste). */
     let lu=null; try{ lu=surReglages(); }catch(err){ console.error('[settings]',err?.message||err); }
     sLu=Promise.race([Promise.resolve(lu).catch(err=>console.error('[settings]',err?.message||err)),new Promise(r=>setTimeout(r,1800))]);
+    /* 12/11 — LE NOM SE REFORME PENDANT QUE LE PAPIER SE RETOURNE : les lettres de la grille rejoignent la
+       ligne (420 ms) avant que `geometrie()` ne la mesure, donc le zoom part d'un nom déjà aligné. */
+    VERSO.ligner(true);
     PAPIER.poserDos(zoomer);
   }
   function zoomer(){
@@ -12355,6 +12544,7 @@ window.addEventListener('pageshow',e=>{
       srch.classList.remove('is-on','is-prep'); srch.setAttribute('aria-hidden','true');
       sansTransition(); sBg.style.transform=''; sH.style.transform='';
       sOpen=false; sMoving=false; window.__totehm_lsd.recherche=false;
+      VERSO.ligner(false);   /* refermé, le nom retourne dans son carré */
       PAPIER.poser(()=>{ paintFlip(); LV.aspirer(false); if(rendre&&!then) try{ $('gate-enter').focus({preventScroll:true}); }catch(_){} if(then) then(); });
     };
     if(RMQ.matches){ fini(); return; }

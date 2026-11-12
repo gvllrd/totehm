@@ -1,35 +1,91 @@
-// 29/10/2026 — LE NOM SUR UNE LIGNE, ET LE ZOOM CALÉ SUR LUI (Wah : « quand on retourne le Totehm, il doit y avoir inscrit
-// le nom du totehm sur une ligne, de façon à ce que le déploiement se fasse dans des proportions adéquates dans l'animation
-// zoom qui mène au dashboard »). Au dos du papier : le nom, UNE ligne, Coral (BRAND), rapetissé s'il est long. Au premier
-// instant du zoom, le nom déplié recouvre celui du papier (même centre, même largeur), puis il grandit sans jamais
-// rapetisser ni sauter, jusqu'à UNE ligne en haut du verso. Téléphone et ordinateur, un nom court et un nom long.
-// Tout est simulé : aucune écriture en production. LANCER : node com_verso_nom.mjs /tmp
+// COM — LE VERSO : LE NOM PREND LE CARRÉ (Wah, 12/11/2026 : « éparpiller les lettres du nom dans la face verso
+// un peu à la manière d'un code binaire ; quand on la retourne, elles reforment le pseudo normal, aligné, sans
+// retour de ligne »). Sur une ligne, un nom de 24 lettres tombait à 7,1 px sur le papier de 110 ; en grille il
+// garde deux fois plus. Ce test mesure la TAILLE gagnée, la NOMENCLATURE, et surtout la CONTINUITÉ : les mêmes
+// lettres du début à la fin, aucune qui apparaisse ou disparaisse entre la grille et la ligne.
+// Comptes, réseau et RPC sont simulés. LANCER : node com_verso_nom.mjs /tmp
+import fs from 'node:fs';
 import {launch,page,ok} from './harness.mjs';
-const browser=await launch();const origin='https://www.totehm.com';
-const UID='11111111-1111-4111-8111-111111111111';
+const OUT=process.argv[2]||'/tmp';fs.mkdirSync(OUT,{recursive:true});
+const origin='https://www.totehm.com';
+const NOM='thehigherversionofme';   // 20 lettres : 5 colonnes, 4 lignes
+const tables={profiles:[{pseudo:NOM}]};
+const LAND={signed_in:true,pseudo:NOM,visibility:'private',offer:{enabled:false,open:false},
+  higher:{active:false,price_cents:700,currency:'eur',period:'month'},thp:false,subscriptions:0,subscribers:0,
+  sm:{ready:true,habit:true,objective:true,higher:false,free_total:7,free_left:6,left:6}};
+const rpc={my_landing:LAND,creator_dashboard:{ok:true,subscribers:0,month_cents:0,pending_cents:0,currency:'eur',
+  next_payout:'2026-12-01',threshold_cents:2500,part:80,price_cents:2400,min_cents:300,max_cents:100000}};
+const CORAL='rgb(251, 213, 202)';
+
+/* l'état du verso : les lettres, leur taille, ce qui dépasse, et si elles sont sur UNE ligne */
+const verso=pg=>pg.evaluate(()=>{
+  const g=document.getElementById('ast-grid'), t=document.querySelector('#ast-back .ast-tile');
+  if(!g||!t) return null;
+  const c=t.getBoundingClientRect(), L=[...g.querySelectorAll('.tn-l')];
+  let dehors=0, px=0, ys=[];
+  for(const l of L){ const b=l.getBoundingClientRect(); px=Math.max(px,b.height); ys.push(b.top);
+    if(b.left<c.left-.5||b.right>c.right+.5||b.top<c.top-.5||b.bottom>c.bottom+.5) dehors++; }
+  /* compter les RANGÉES, pas les `top` : chaque lettre porte son décalage d'empreinte (±8 % de sa case) */
+  ys.sort((a,b)=>a-b);
+  let lignes=ys.length?1:0;
+  for(let i=1;i<ys.length;i++) if(ys[i]-ys[i-1]>px*.6) lignes++;
+  const sn=document.getElementById('ast-name');
+  return {n:L.length, px:+px.toFixed(1), dehors, carre:+c.width.toFixed(1), lignes,
+    mot:L.map(l=>l.textContent).join(''),
+    couleur:L[0]?getComputedStyle(L[0]).color:'', police:L[0]?getComputedStyle(L[0]).fontFamily:'',
+    refVisible:getComputedStyle(sn).visibility, refLargeur:+sn.getBoundingClientRect().width.toFixed(1),
+    diag:window.__totehm_verso()};
+});
+const browser=await launch();
 try{
- for(const NOM of ['wah','wahigher_the_great_one']){
-  for(const [nom,vp] of [['téléphone',{width:390,height:844}],['ordinateur',{width:1280,height:800}]]){
-   const{pg,log}=await page(browser,{dir:'com',origin,viewport:vp,hasTouch:nom==='téléphone',
-     tables:{profiles:[{pseudo:NOM}],totehms:[{user_id:UID,steps:[{t:'Run',t0:'Run',is:['fight']}],vis:'private'}]},
-     rpc:{my_landing:{signed_in:true,pseudo:NOM},my_trips:{signed_in:true,trips:[],reps:[],wisdom:[],visions:[]}}});
-   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1400);
-   await pg.evaluate(()=>{ window.__z=[]; const t0=performance.now(), R=e=>{const r=e.getBoundingClientRect();return [r.left+r.width/2,r.top+r.height/2,r.width,r.height];};
-     const f=n=>{ const s=document.getElementById('srch'); if(s.classList.contains('is-show'))
-       window.__z.push({ms:n-t0,self:R(document.getElementById('self-name')),ast:R(document.getElementById('ast-name'))}); if(n-t0<3500) requestAnimationFrame(f); }; requestAnimationFrame(f); });
-   await pg.click('#lv-tap-turn'); await pg.waitForTimeout(3000);
-   const z=await pg.evaluate(()=>window.__z), a=z[0];
-   const dos=await pg.evaluate(()=>{const e=document.getElementById('ast-name'),cs=getComputedStyle(e),s=document.getElementById('self-name');
-     return {txt:e.textContent,h:e.getBoundingClientRect().height,lh:parseFloat(cs.fontSize)*1.3,col:cs.color,
-       self:{h:s.getBoundingClientRect().height,fs:parseFloat(getComputedStyle(s).fontSize),sw:s.scrollWidth,cw:s.clientWidth,col:getComputedStyle(s).color}};});
-   ok(dos.txt===NOM&&dos.h<dos.lh*1.5&&dos.col==='rgb(251, 213, 202)',nom+' · « '+NOM+' » : au dos du papier, UNE ligne, en Coral → '+JSON.stringify({h:Math.round(dos.h),fs:+(dos.lh/1.3).toFixed(1),col:dos.col}));
-   ok(dos.self.h<dos.self.fs*1.5&&dos.self.sw<=dos.self.cw+1&&dos.self.col==='rgb(251, 213, 202)',nom+' · « '+NOM+' » : déplié, UNE ligne entière (sans ellipse), en Coral → '+JSON.stringify(dos.self));
-   const ecart=a?Math.max(Math.abs(a.self[0]-a.ast[0]),Math.abs(a.self[1]-a.ast[1])):99, rap=a?a.self[2]/a.ast[2]:0;
-   ok(a&&ecart<1.5&&Math.abs(rap-1)<.03,nom+' · « '+NOM+' » : 1re image du zoom, le nom déplié RECOUVRE celui du papier (écart '+ecart.toFixed(1)+' px, largeur ×'+rap.toFixed(3)+')');
-   const w=z.map(x=>x.self[2]), monte=w.every((v,i)=>!i||v>=w[i-1]-.5), saut=Math.max(...w.slice(1).map((v,i)=>v-w[i]));
-   ok(z.length>10&&monte&&w[w.length-1]>w[0]*1.8&&saut<w[w.length-1]*.25,nom+' · « '+NOM+' » : il grandit sans rapetisser ni sauter, '+Math.round(w[0])+' → '+Math.round(w[w.length-1])+' px (plus grand pas '+Math.round(saut)+' px)');
-   ok(!log.errors.filter(e=>e.startsWith('pageerror')).length,nom+' · aucune erreur');
-   await pg.context().close();
-  }
- }
-}finally{await browser.close();}
+ const{pg,log}=await page(browser,{dir:'com',origin,rpc,tables,viewport:{width:390,height:844},hasTouch:true});
+ await pg.goto(origin+'/totehm'); await pg.waitForSelector('body.member'); await pg.waitForTimeout(1000);
+
+ // ── LE VERSO AU REPOS : la grille ───────────────────────────────────────────────
+ // Le papier est posé sur son RECTO : son dos est déjà peint (c'est ce qu'on verra en le retournant).
+ const a=await verso(pg);
+ ok(a&&a.n===NOM.length&&a.mot===NOM, 'le verso porte les '+NOM.length+' lettres du nom, dans l\'ordre ('+(a&&a.mot)+')');
+ ok(a&&!a.dehors&&a.lignes>1, 'elles prennent le carré du papier sur '+(a&&a.lignes)+' lignes, aucune dehors');
+ ok(a&&a.couleur===CORAL&&/Quantico/.test(a.police), 'Quantico coral, comme tout nom de TOTEHM ('+(a&&a.couleur)+')');
+ ok(a&&a.px>=14, 'une lettre fait '+(a&&a.px)+' px sur un papier de '+(a&&a.carre)+' (sur une ligne : 8,6)');
+ ok(a&&a.refVisible==='hidden'&&a.refLargeur>0, 'la ligne de référence reste MESURABLE sans se voir ('+(a&&a.refLargeur)+' px)');
+
+ // ── LE DÉPLOIEMENT : les mêmes lettres rejoignent la ligne ──────────────────────
+ // → retourne le papier ET déplie mes réglages : c'est le geste de Wah (« quand on la retourne, elles
+ // reforment le pseudo normal, aligné »). La recomposition part AVEC le demi-tour.
+ await pg.focus('#gate-enter'); await pg.keyboard.press('ArrowRight');
+ await pg.waitForTimeout(2400);
+ ok(/is-open/.test(await pg.$eval('#srch',e=>e.className)), 'le verso s\'est déployé');
+ const b=await verso(pg);
+ ok(b&&b.n===a.n&&b.mot===a.mot, 'déployé : les MÊMES lettres, aucune apparue ni disparue ('+(b&&b.n)+' → '+(a&&a.n)+')');
+ ok(b&&b.lignes===1, 'elles se sont reformées sur UNE ligne, le pseudo aligné ('+(b&&b.lignes)+' ligne)');
+ ok(b&&b.diag&&b.diag.ligne===true, '__totehm_verso() dit la ligne');
+ const sn=await pg.$eval('#self-name',e=>({t:e.textContent,w:e.getBoundingClientRect().width}));
+ ok(sn.t===NOM&&sn.w>0, 'le nom déplié porte le même pseudo, sur une ligne ('+sn.t+')');
+ await pg.screenshot({path:OUT+'/com_verso_nom_deploye.png'});
+
+ // ── REFERMÉ : le nom retourne dans son carré ───────────────────────────────────
+ await pg.keyboard.press('Escape');
+ await pg.waitForTimeout(2000);
+ const c=await verso(pg);
+ ok(c&&c.n===a.n&&c.lignes===a.lignes&&!c.dehors, 'refermé : le nom est revenu dans son carré ('+(c&&c.lignes)+' lignes)');
+ ok(c&&c.diag.ligne===false, '__totehm_verso() dit la grille');
+
+ // ── LA NOMENCLATURE, aux bornes ────────────────────────────────────────────────
+ const plan=await pg.evaluate(()=>['wah','wahvv','higher','seizelettresicibon','thehigherversionofmyselfetplus']
+   .map(n=>{const p=window.TOTEHM_NOM.plan(n);return [p.N,p.C,p.R];}));
+ ok(JSON.stringify(plan)===JSON.stringify([[3,3,1],[5,5,1],[6,4,2],[18,5,4],[25,5,5]]),
+   'la nomenclature : 1-5 une ligne · 6-16 en 4 colonnes · 17-25 en 5 · au-delà 25 lettres + · ('+JSON.stringify(plan)+')');
+
+ // ── L'EMPREINTE : le même nom donne TOUJOURS le même dessin ────────────────────
+ const emp=await pg.evaluate(()=>{
+   const d=document.createElement('div'); d.style.cssText='position:absolute;left:-9999px;width:110px;height:110px';
+   document.body.appendChild(d);
+   const lire=()=>{ window.TOTEHM_NOM.poser(d,'thehigherversionofme',110);
+     return [...d.querySelectorAll('.tn-l')].map(l=>l.dataset.gx+','+l.dataset.gy).join(' '); };
+   const a=lire(), b=lire(); d.remove(); return a===b&&a.length>0;
+ });
+ ok(emp, 'le dessin d\'un nom est stable : deux rendus, le même placement');
+
+ ok(!log.errors.filter(e=>e.startsWith('pageerror')).length,'aucune erreur : '+log.errors.join(' | '));
+}finally{ await browser.close(); }
