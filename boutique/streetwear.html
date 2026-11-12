@@ -1617,7 +1617,10 @@ $('nm-input').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefaul
 const styleLeft=s=>s.remaining_capacity==null?1:s.remaining_capacity;
 async function loadStyles(force){
   if(stylesLoaded&&!force)return;
-  const{data,error}=await sb.from('artistic_styles').select('id,name,image_url,position,status,remaining_capacity,total_capacity').eq('active',true).order('position');
+  /* 12/11 — DEUX BOUTIQUES, DEUX LISTES (`artistic_styles.scope`) : un style de
+     cuir peint à la main n'est pas un style d'impression. `both` paraît dans
+     les deux ; Wah bascule une ligne dans le Table Editor, sans déployer. */
+  const{data,error}=await sb.from('artistic_styles').select('id,name,image_url,position,status,remaining_capacity,total_capacity').eq('active',true).in('scope',['streetwear','both']).order('position');
   if(error)console.error('[artistic_styles]',error.message);
   styles=(data||[]).filter(s=>!s.status||s.status==='active');stylesLoaded=!error;
 }
