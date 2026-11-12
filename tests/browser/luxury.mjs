@@ -72,16 +72,28 @@ let d = await D();
 // ── 0 · L'INTRO : tout se dit AVANT
 ok(d.deposit === 77000 && d.stage === 'intro' && !d.flow && !d.photo && !d.box,
   'le luxe s\'ouvre sur son intro ; le dépôt est à 770 € ' + JSON.stringify({ deposit:d.deposit, stage:d.stage }));
-const intro = await pg.evaluate(() => document.querySelector('#s-intro').textContent.replace(/\s+/g, ' '));
+/* ⚠️ `#s-intro` contient AUSSI How it works : ce qu'on met au-dessus du bouton
+   se mesure sur le manifeste seul (`.man`), sinon tout « passe » toujours. */
+const intro = await pg.evaluate(() => document.querySelector('#s-intro .man').textContent.replace(/\s+/g, ' '));
+const entete = await pg.evaluate(() => [...document.querySelectorAll('#s-intro .inner > *')]
+  .filter(e => e.id !== 'how' && e.id !== 'admin' && e.id !== 'quotes')
+  .map(e => e.textContent).join(' ').replace(/\s+/g, ' '));
 ok(/770/.test(await pg.textContent('#price')) && /deposit/i.test(await pg.textContent('#price')),
   'le prix dit un DÉPÔT de 770 €');
-ok(/pigment/i.test(intro) && /generation/i.test(intro) && /bespoke/i.test(intro),
-  '11/11 · l\'intro pose les matières : pigments ultra-haut de gamme, 100 % sur-mesure, un objet qui se transmet');
-ok(/local/i.test(intro) && /gallery/i.test(intro) && /largest private network/i.test(intro),
-  '11/11 · l\'intro pose l\'ADN : artistes LOCAUX, galerie partenaire, le plus grand réseau privé');
-ok(/30 days|thirty days/i.test(intro) && /refunded/i.test(intro) && /two weeks/i.test(intro),
-  '11/11 · l\'intro pose les délais : 30 jours ou remboursé, puis deux semaines pour l\'œuvre');
-ok(/Hermès/.test(intro) && /Louis Vuitton/.test(intro) && /Gucci/.test(intro) && /Not affiliated/i.test(intro),
+ok(/pigment/i.test(intro) && /generation/i.test(intro),
+  '11/11 · l\'intro pose les matières : pigments ultra-haut de gamme, un objet qui se transmet');
+ok(/30 days|thirty days/i.test(intro) && /refunded/i.test(intro) && /two weeks/i.test(intro)
+   && /local/i.test(intro) && /gallery/i.test(intro),
+  '11/11 · l\'intro pose la garantie : 30 jours ou remboursé, artiste local par une galerie, deux semaines');
+// 12/11 (Wah) : DEUX blocs au-dessus du bouton, pas quatre — le dépôt arrivait
+// après deux écrans de lecture. Le détail descend dans HOW IT WORKS.
+const blocs = await pg.$$eval('#s-intro .man p', l => l.length);
+const haut = await pg.evaluate(() => { const g = document.querySelector('#go');
+  return { y: Math.round(g.getBoundingClientRect().top), h: innerHeight }; });
+ok(blocs === 2 && !/largest private network/.test(intro) && haut.y < haut.h,
+  '12/11 · l\'intro tient en DEUX blocs ; le sur-mesure et le réseau se lisent dans How it works ('
+  + blocs + ' blocs, bouton à ' + haut.y + ' px dans une fenêtre de ' + haut.h + ')');
+ok(/Hermès/.test(entete) && /Louis Vuitton/.test(entete) && /Gucci/.test(entete) && /Not affiliated/i.test(entete),
   'les trois marques d\'exception sont nommées, et l\'indépendance est écrite');
 const plein = await pg.evaluate(() => { const r = document.querySelector('#stages').getBoundingClientRect();
   return { w: Math.round(r.width), h: Math.round(r.height), W: innerWidth, H: innerHeight,
@@ -97,6 +109,9 @@ await pg.waitForTimeout(500);
 const how = await pg.textContent('#how-body');
 ok(/primer/i.test(how) && /local/i.test(how) && /30 days/i.test(how) && /two weeks/i.test(how) && /refunded in full/i.test(how),
   'How it works dit l\'étude, l\'artiste local, les 30 jours, les deux semaines et le remboursement');
+ok(/100 % bespoke/i.test(how) && /that piece alone/i.test(how) && /largest private network/i.test(how)
+   && /partner art gallery/i.test(how) && /TOTEHM DNA/i.test(how),
+  '12/11 · rien n\'est perdu : le 100 % sur-mesure, l\'ADN et le plus grand réseau privé sont DANS How it works');
 
 // ── LA PORTE : elle ouvre le dépôt (elle connecte et vérifie le TotehmPaper)
 await pg.click('#go');
