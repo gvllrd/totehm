@@ -6,6 +6,8 @@
 ## Règle n° 1 — les boxes sont la marque
 
 **Règle n° 1 — les boxes sont un invariant de marque.** Toute représentation visuelle d’un élément du TOTEHM, dans le TOTEHM ou ailleurs dans l’écosystème, conserve strictement sa box native : forme, couleur de catégorie, typographie, proportions, traits d’intention et états. Réutiliser le rendu de référence ; aucun composant, carte, badge ou style local ne le réinterprète. Une évolution se fait à la source puis se répercute partout, jamais sur un seul écran.
+**Le MOT « TOTEHM » est le TOTEHM** (Wah, 12/11) : dans TOUT texte des quatre domaines il est la PIÈCE — recto le logo, verso le nom du membre, une rotation pour toute la page, la taille du texte qui la porte. Bloc copié : `tools/totehm_word.css` PUIS `totehm_word.js` (il lit le nom tout seul : `#member-txt`, `#ast-name` ou `[data-nom]`). Jamais sur ce que le membre a ÉCRIT, ni sur une adresse (`totehm.com`), ni sur un mot qui continue (`TOTEHMIZE`) ; le mot reste dans le document, hors écran — `textContent` ne change pas. Nouveau nœud marqué `data-notw` = épargné.
+**Une box est une PHRASE** : ses intitulés (`.mg-l`) se voient et disent la logique — why · trigger · instead of · how · vision · the big why · instead · learn from · I was there to practice it. Et toute box des cinq vues porte son « + totehmize » vers higher.boutique.
 
 ## Qui fait quoi
 
@@ -70,6 +72,7 @@ personne. `oracle/` : jamais lu, jamais recopié. Une base Supabase (`abujjbkbbi
   `subscription_data.metadata`. Propriété et argent ne s'écrivent QUE par le webhook. Grand livre en ajout seul.
 - **Front** : Supabase en module ES. Liens internes ABSOLUS (`cleanUrls`). Retirer un nœud = retirer son câblage.
   Une erreur de RPC se journalise. Une réponse tardive n'écrase jamais un état plus frais. CORS : `corsHeaders()`.
+- **Confidentialité** : UNE échelle, et chaque objet dit sa PORTÉE. Une BOX = private · visible to my subscribers (jamais tous les membres). Un MÉDIA est toujours privé ; il ne se montre que par le SPOT qui le porte. Un SPOT = private · my subscribers · figher club (= EVERY MEMBER) et porte toujours son point exact. La box est un PLAFOND.
 - **Interface** : états en `is-…` ; un état permanent = une `transition` ; un verrou de navigation se rend toujours ;
   overlays ancrés en haut ; « précédent » (téléphone, ordinateur) referme la couche du dessus et ne quitte le site
   qu'à l'accueil. Couleurs, polices, mots : `BRAND.md`.
