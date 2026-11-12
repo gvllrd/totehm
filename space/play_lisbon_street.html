@@ -255,6 +255,37 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
 .rotate-hint:hover{color:#fff}
 }
 /* ══ FIN DU BLOC GÉNÉRÉ ══ */
+
+/* ══ LE MOT TOTEHM EST LE TOTEHM — copié de tools/totehm_word.css dans chaque page (jamais importé) ══
+   Wah (12/11) : « à chaque fois qu'il y a le mot totehm, le TOTEHM recto-verso rotatif — recto le logo,
+   verso le nom du membre — dont la grandeur s'adapte au texte ». Donc : dans TOUT texte des quatre
+   domaines, le mot devient LA PIÈCE. Une seule pièce de papier, vue des deux côtés, exactement celle du
+   coin membre (`tools/member_corner.css`) : mêmes faces, mêmes perforations, même nomenclature de nom
+   (`tools/totehm_name.js`). Règle n° 1 : rien n'est réinterprété ici, tout est copié de la source.
+   Le mot reste DANS le document (`.tw-s`, hors écran) : la page se lit, se cherche et s'entend comme avant.
+   ⚠️ UNE SEULE ROTATION POUR TOUTE LA PAGE : l'angle est une variable CSS posée sur `:root` par un seul
+   rAF (`--tw-th`) — vingt pièces dans un texte coûtent alors vingt `transform` de GPU, pas vingt boucles. */
+.tw{position:relative;display:inline-block;width:1.12em;height:1.12em;vertical-align:-.22em;margin:0 .16em;
+  perspective:5em;flex:none;font-size:inherit;line-height:1}
+.tw-s{position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.tw-p{position:absolute;inset:0;transform-style:preserve-3d;transform:rotateY(var(--tw-th,0deg))}
+.tw-f{position:absolute;inset:0;background:0 0/100% 100% no-repeat;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.tw-f *{backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.tw-r{transform:translateZ(.01em);background-image:url("data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20224.88%20224.08%22%20preserveAspectRatio=%22none%22%3E%3Cdefs%3E%3Cmask%20id=%22tplg%22%20maskUnits=%22userSpaceOnUse%22%20x=%22-40%22%20y=%22-40%22%20width=%22310%22%20height=%22310%22%3E%3Crect%20x=%22-40%22%20y=%22-40%22%20width=%22310%22%20height=%22310%22%20fill=%22%23fff%22/%3E%3Ccircle%20cx=%2256.42%22%20cy=%220%22%20r=%2213.86%22%20fill=%22%23000%22/%3E%3Ccircle%20cx=%2256.42%22%20cy=%22224.08%22%20r=%2213.86%22%20fill=%22%23000%22/%3E%3Ccircle%20cx=%22112.44%22%20cy=%220%22%20r=%2213.86%22%20fill=%22%23000%22/%3E%3Ccircle%20cx=%22112.44%22%20cy=%22224.08%22%20r=%2213.86%22%20fill=%22%23000%22/%3E%3Ccircle%20cx=%22168.46%22%20cy=%220%22%20r=%2213.86%22%20fill=%22%23000%22/%3E%3Ccircle%20cx=%22168.46%22%20cy=%22224.08%22%20r=%2213.86%22%20fill=%22%23000%22/%3E%3Ccircle%20cx=%220.4%22%20cy=%2256.02%22%20r=%2213.86%22%20fill=%22%23000%22/%3E%3Ccircle%20cx=%22224.48%22%20cy=%2256.02%22%20r=%2213.86%22%20fill=%22%23000%22/%3E%3Ccircle%20cx=%220.4%22%20cy=%22112.04%22%20r=%2213.86%22%20fill=%22%23000%22/%3E%3Ccircle%20cx=%22224.48%22%20cy=%22112.04%22%20r=%2213.86%22%20fill=%22%23000%22/%3E%3Ccircle%20cx=%220.4%22%20cy=%22168.06%22%20r=%2213.86%22%20fill=%22%23000%22/%3E%3Ccircle%20cx=%22224.48%22%20cy=%22168.06%22%20r=%2213.86%22%20fill=%22%23000%22/%3E%3C/mask%3E%3C/defs%3E%3Crect%20x=%220.4%22%20y=%220%22%20width=%22224.08%22%20height=%22224.08%22%20fill=%22%23333366%22%20mask=%22url(%23tplg)%22/%3E%3Crect%20x=%2220.65%22%20y=%220.26%22%20width=%2217.19%22%20height=%22223.55%22%20fill=%22%23626286%22/%3E%3Cg%20fill=%22%23fff%22%3E%3Crect%20x=%2279.87%22%20y=%2248.03%22%20width=%2266.71%22%20height=%229.64%22/%3E%3Crect%20x=%22108.41%22%20y=%2248.03%22%20width=%229.64%22%20height=%2266.71%22/%3E%3Crect%20x=%22100.18%22%20y=%22110.39%22%20width=%2226.1%22%20height=%224.36%22/%3E%3Cpath%20transform=%22translate(87.38%20137.36)%22%20d=%22M%205.55%20-14.09%20L%200.09%20-14.09%20L%200.09%20-15.52%20L%2012.64%20-15.52%20L%2012.64%20-14.09%20L%207.19%20-14.09%20L%207.19%200%20L%205.55%200%20Z%20M%205.55%20-14.09%22/%3E%3Cpath%20transform=%22translate(104.67%20137.36)%22%20d=%22M%209.31%200.14%20C%207.77%200.14%206.38%20-0.2%205.12%20-0.89%20C%203.88%20-1.58%202.91%20-2.52%202.2%20-3.72%20C%201.5%20-4.91%201.16%20-6.27%201.16%20-7.77%20C%201.16%20-9.25%201.5%20-10.6%202.2%20-11.8%20C%202.91%20-12.99%203.88%20-13.94%205.12%20-14.62%20C%206.38%20-15.31%207.77%20-15.66%209.31%20-15.66%20C%2010.85%20-15.66%2012.24%20-15.31%2013.47%20-14.62%20C%2014.71%20-13.95%2015.68%20-13%2016.39%20-11.8%20C%2017.1%20-10.6%2017.45%20-9.25%2017.45%20-7.77%20C%2017.45%20-6.27%2017.1%20-4.91%2016.39%20-3.7%20C%2015.68%20-2.5%2014.71%20-1.56%2013.47%20-0.88%20C%2012.24%20-0.2%2010.85%200.14%209.31%200.14%20Z%20M%209.31%20-1.33%20C%2010.54%20-1.33%2011.65%20-1.6%2012.64%20-2.16%20C%2013.63%20-2.72%2014.41%20-3.49%2014.97%20-4.47%20C%2015.53%20-5.45%2015.81%20-6.55%2015.81%20-7.77%20C%2015.81%20-8.97%2015.53%20-10.07%2014.97%20-11.05%20C%2014.41%20-12.04%2013.63%20-12.8%2012.64%20-13.36%20C%2011.65%20-13.91%2010.54%20-14.19%209.31%20-14.19%20C%208.08%20-14.19%206.97%20-13.91%205.97%20-13.36%20C%204.98%20-12.8%204.2%20-12.04%203.62%20-11.05%20C%203.05%20-10.07%202.77%20-8.97%202.77%20-7.77%20C%202.77%20-6.55%203.05%20-5.45%203.62%20-4.47%20C%204.2%20-3.49%204.98%20-2.72%205.97%20-2.16%20C%206.97%20-1.6%208.08%20-1.33%209.31%20-1.33%20Z%20M%209.31%20-1.33%22/%3E%3Cpath%20transform=%22translate(127.84%20137.36)%22%20d=%22M%205.55%20-14.09%20L%200.09%20-14.09%20L%200.09%20-15.52%20L%2012.64%20-15.52%20L%2012.64%20-14.09%20L%207.19%20-14.09%20L%207.19%200%20L%205.55%200%20Z%20M%205.55%20-14.09%22/%3E%3Cpath%20transform=%22translate(71.84%20168.28)%22%20d=%22M%2018.59%20-2.64%20L%2018.59%200%20L%203.19%200%20L%203.19%20-21.23%20L%2018.17%20-21.23%20L%2018.17%20-18.59%20L%206.22%20-18.59%20L%206.22%20-12.08%20L%2016.88%20-12.08%20L%2016.88%20-9.5%20L%206.22%20-9.5%20L%206.22%20-2.64%20Z%20M%2018.59%20-2.64%22/%3E%3Cpath%20transform=%22translate(97.16%20168.28)%22%20d=%22M%2021.45%20-21.23%20L%2021.45%200%20L%2018.42%200%20L%2018.42%20-9.47%20L%206.22%20-9.47%20L%206.22%200%20L%203.19%200%20L%203.19%20-21.23%20L%206.22%20-21.23%20L%206.22%20-12.11%20L%2018.42%20-12.11%20L%2018.42%20-21.23%20Z%20M%2021.45%20-21.23%22/%3E%3Cpath%20transform=%22translate(126.8%20168.28)%22%20d=%22M%2022.88%200%20L%2022.84%20-15.47%20L%2015.17%20-2.58%20L%2013.78%20-2.58%20L%206.09%20-15.39%20L%206.09%200%20L%203.19%200%20L%203.19%20-21.23%20L%205.67%20-21.23%20L%2014.53%20-6.31%20L%2023.28%20-21.23%20L%2025.77%20-21.23%20L%2025.8%200%20Z%20M%2022.88%200%22/%3E%3C/g%3E%3C/svg%3E")}
+.tw-b{transform:rotateY(180deg) translateZ(.01em);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 224.88 224.08' preserveAspectRatio='none'%3E%3Cdefs%3E%3Cmask id='m'%3E%3Crect x='-40' y='-40' width='310' height='310' fill='%23fff'/%3E%3Ccircle cx='56.421' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='56.421' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='112.440' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='112.440' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='168.459' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='168.459' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='56.020' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='56.020' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='112.039' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='112.039' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='168.059' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='168.059' r='13.86' fill='%23000'/%3E%3C/mask%3E%3C/defs%3E%3Crect x='0.402' y='0' width='224.076' height='224.078' fill='%23333366' mask='url(%23m)'/%3E%3C/svg%3E")}
+/* LES LETTRES DU data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 224.88 224.08' preserveAspectRatio='none'%3E%3Cdefs%3E%3Cmask id='m'%3E%3Crect x='-40' y='-40' width='310' height='310' fill='%23fff'/%3E%3Ccircle cx='56.421' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='56.421' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='112.440' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='112.440' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='168.459' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='168.459' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='56.020' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='56.020' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='112.039' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='112.039' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='168.059' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='168.059' r='13.86' fill='%23000'/%3E%3C/mask%3E%3C/defs%3E%3Crect x='0.402' y='0' width='224.076' height='224.078' fill='%23333366' mask='url(%23m)'/%3E%3C/svg%3E — la nomenclature les dessine à 24 px et les met à l'échelle (transform seul).
+   Les règles du coin membre portent `!important` : celles-ci sont plus spécifiques, donc elles gagnent. */
+.tw .tn-l{position:absolute;left:0;top:0;z-index:2;transform-origin:0 0;white-space:pre;
+  font:400 24px/1 'Quantico',sans-serif!important;letter-spacing:.04em!important;text-transform:none!important;
+  color:#fbd5ca!important;background:none!important;opacity:1!important}
+/* la lettre vient du CSS : elle se voit, elle ne compte dans aucun `textContent` (voir totehm_word.js) */
+.tw .tn-l::after{content:attr(data-c)}
+.tw .tn-v{position:absolute;z-index:1;width:2.5px;height:2.5px;border-radius:50%;background:#626286;
+  transform:translate(-50%,-50%);opacity:.5}
+/* Sans nom (un visiteur), la pièce ne tourne pas : elle est posée sur son logo. */
+.tw.is-plat .tw-p{transform:none}
+@media(prefers-reduced-motion:reduce){.tw-p{transform:rotateY(180deg)}.tw.is-plat .tw-p{transform:none}}
+/* ══ fin LE MOT TOTEHM ══ */
 </style>
 </head>
 <body>
@@ -1365,6 +1396,214 @@ window.__totehm_lisbon=()=>({
   teaser:true,teaserHref:document.getElementById('xp-get-higher').getAttribute('href')
 });
 }
+</script>
+<script>
+/* ══ LE MOT TOTEHM EST LE TOTEHM — copié de tools/totehm_word.js dans chaque page (jamais importé) ══
+   Wah (12/11) : « à chaque fois qu'il y a le mot totehm, mettre le TOTEHM recto-verso rotatif, recto le
+   logo, verso le nom du TOTEHM de l'utilisateur, dont la grandeur s'adapte au texte — dans tous les
+   textes des 4 plateformes ». Le mot n'est donc plus écrit : il est la PIÈCE, celle du coin membre
+   (`tools/member_corner.*`) à la taille du texte qui la porte. Règle n° 1 : rien n'est réinterprété.
+
+   CE QUI NE CHANGE PAS : le mot reste dans le document, hors écran (`.tw-s`) — la page se lit à la voix,
+   se cherche au clavier, et un test qui lit `textContent` trouve le même texte qu'avant.
+   CE QUI N'EST JAMAIS TOUCHÉ : ce que le membre a ÉCRIT (une box, une mini-box, son nom, un champ), une
+   adresse (`totehm.com`, `www.totehm.space`), un mot qui continue (`TOTEHMIZE`), et tout nœud marqué
+   `data-notw`. Un domaine se reconnaît à ce qui suit : un point SUIVI d'une lettre.
+   UNE SEULE BOUCLE pour toute la page : l'angle est une variable CSS de `:root` (`--tw-th`) ; vingt
+   pièces coûtent vingt transformations de GPU, pas vingt boucles. Elle s'arrête sans pièce, sans nom,
+   onglet caché, ou en mouvement réduit (la pièce est alors posée sur son verso, le nom lisible).
+   La taille vient de la POLICE héritée (`getComputedStyle`), jamais de `clientWidth` : mesurer la boîte
+   forcerait un calcul de mise en page à chaque peinture de la liste du Totehm. */
+window.TOTEHM_MOT = (() => {
+  const MOT = 'TOTEHM', NM = MOT.length, K = 1.12;      /* K = la taille de la pièce, en em (CSS) */
+  const SAUT = /^(SCRIPT|STYLE|TITLE|TEXTAREA|INPUT|SELECT|OPTION|CODE|PRE|NOSCRIPT|IFRAME|CANVAS|VIDEO|AUDIO|IMG|SVG)$/;
+  /* les classes de ce que le MEMBRE a écrit, et celles de la pièce elle-même */
+  const CL = ['tw', 'v-name', 'v-int', 'mini', 'mini-t', 'mi', 'nm', 'tn-l', 'mc', 'sl-name', 'ms-w', 'ns-mot'];
+  const RM = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : { matches:false };
+  const diag = { mots:0, pieces:0, passes:0, nom:'' };
+  const cache = new Map();
+  let nom = '', neuves = [], vivantes = new Set(), rafP = 0, raf = 0, th = 180, om = 0, last = 0, tmr = 0, aFaire = [];
+
+  /* ── où le mot se trouve dans un texte ───────────────────────────────── */
+  function places(s){
+    const u = s.toUpperCase(), out = [];
+    for(let i = 0;;){
+      const a = u.indexOf(MOT, i); if(a < 0) break;
+      const b = a + NM; i = b;
+      if(a > 0 && /[\w/@.\-]/.test(s[a - 1])) continue;        /* www.totehm · /@totehm · un mot collé */
+      const ap = s.slice(b, b + 2);
+      if(/^[\w\-]/.test(ap)) continue;                          /* TOTEHMIZE · totehm-link */
+      if(/^\.[A-Za-z]/.test(ap)) continue;                      /* totehm.com · totehm.space */
+      out.push(a);
+    }
+    return out;
+  }
+  /* ── ce qu'on ne traverse jamais ─────────────────────────────────────── */
+  function saute(el){
+    if(!el || el.nodeType !== 1) return false;
+    if(el.namespaceURI && el.namespaceURI !== 'http://www.w3.org/1999/xhtml') return true;
+    if(SAUT.test(el.tagName)) return true;
+    if(el.isContentEditable || el.hasAttribute('contenteditable')) return true;
+    if(el.hasAttribute('data-notw') || el.hasAttribute('data-nom') || el.hasAttribute('data-edit')) return true;
+    if(el.id === 'member-txt' || el.id === 'ast-name') return true;
+    const c = el.classList;
+    for(let i = 0; i < CL.length; i++) if(c.contains(CL[i])) return true;
+    return false;
+  }
+  const interdit = n => { for(let e = n.parentNode; e && e.nodeType === 1; e = e.parentNode) if(saute(e)) return true; return false; };
+
+  /* ── la pièce ────────────────────────────────────────────────────────── */
+  function piece(mot){
+    const s = document.createElement('span');
+    s.className = 'tw';
+    s.innerHTML = '<span class="tw-s">' + mot + '</span><span class="tw-p" aria-hidden="true">'
+      + '<span class="tw-f tw-r"></span><span class="tw-f tw-b"></span></span>';
+    diag.pieces++;
+    return s;
+  }
+  function remplacer(t){
+    const s = t.nodeValue;
+    if(!s || s.length < NM || !t.parentNode) return;
+    const occ = places(s); if(!occ.length) return;
+    const frag = document.createDocumentFragment();
+    let k = 0;
+    for(const a of occ){
+      if(a > k) frag.appendChild(document.createTextNode(s.slice(k, a)));
+      const p = piece(s.substr(a, NM));
+      frag.appendChild(p); neuves.push(p); vivantes.add(p);
+      k = a + NM;
+    }
+    if(k < s.length) frag.appendChild(document.createTextNode(s.slice(k)));
+    t.parentNode.replaceChild(frag, t);
+    diag.mots += occ.length;
+    planifier();
+  }
+  function parcourir(n){
+    if(!n) return;
+    if(n.nodeType === 3) return remplacer(n);
+    if(n.nodeType !== 1 || saute(n)) return;
+    const kids = n.childNodes, l = [];
+    for(let i = 0; i < kids.length; i++) l.push(kids[i]);
+    for(const k of l){ if(k.nodeType === 3) remplacer(k); else if(k.nodeType === 1) parcourir(k); }
+  }
+
+  /* ── le verso : le nom, par la nomenclature du TOTEHM ────────────────── */
+  function dessinNom(S){
+    const cle = nom + '|' + Math.round(S);
+    let h = cache.get(cle);
+    if(h != null) return h;
+    const tmp = document.createElement('span');
+    if(window.TOTEHM_NOM) window.TOTEHM_NOM.poser(tmp, nom, S);
+    else {
+      /* sans la nomenclature dans la page : une ligne, ajustée, jamais une devinette de grille */
+      const l = Array.from(nom).slice(0, 16), px = Math.max(3, Math.min(S * .34, S * .82 / Math.max(1, l.length * .62)));
+      const e = document.createElement('span');
+      e.className = 'tn-l'; e.textContent = l.join('');
+      e.style.cssText = 'left:50%;top:50%;transform-origin:50% 50%;transform:translate(-50%,-50%) scale(' + (px / 24).toFixed(4) + ')';
+      tmp.appendChild(e);
+    }
+    /* ⚠️ LA LETTRE N'EST PAS DU TEXTE DU DOCUMENT · 12/11. Posée en nœud de texte, elle entrait dans le
+       `textContent` de la phrase : « your TOTEHMwah Habit… ». Elle passe donc en `data-c` et c'est le CSS
+       qui la dessine (`content:attr(data-c)`) — un contenu généré ne compte dans aucun `textContent`, ni
+       dans une recherche de page, ni dans un test. Le mot hors écran (`.tw-s`) reste le seul texte. */
+    tmp.querySelectorAll('.tn-l').forEach(e => { e.setAttribute('data-c', e.textContent || ''); e.textContent = ''; });
+    h = tmp.innerHTML;
+    if(cache.size > 40) cache.clear();
+    cache.set(cle, h);
+    return h;
+  }
+  function habiller(el, S){
+    const dos = el.querySelector('.tw-b'); if(!dos) return;
+    el.classList.toggle('is-plat', !nom);
+    if(!nom || !S){ if(dos.firstChild) dos.textContent = ''; dos.removeAttribute('data-vu'); return; }
+    const cle = nom + '|' + Math.round(S);
+    if(dos.getAttribute('data-vu') === cle) return;
+    dos.innerHTML = dessinNom(S);
+    dos.setAttribute('data-vu', cle);
+  }
+  function planifier(){ if(!rafP) rafP = requestAnimationFrame(poser); }
+  function poser(){
+    rafP = 0;
+    const l = neuves; neuves = [];
+    if(!l.length){ relancer(); return; }
+    /* les tailles d'abord (calcul de style), les écritures ensuite : jamais entrelacées */
+    const t = l.map(e => e.isConnected ? parseFloat(getComputedStyle(e).fontSize) * K || 0 : 0);
+    l.forEach((e, i) => { if(t[i]) habiller(e, t[i]); });
+    diag.passes++; relancer();
+  }
+
+  /* ── la rotation, une pour toute la page ─────────────────────────────── */
+  function boucle(now){
+    raf = 0;
+    const dt = Math.min(.05, Math.max(0, (now - (last || now)) / 1000)); last = now;
+    const s = Math.sin(th * Math.PI / 180), nat = 22 * (.34 + .66 * s * s);   /* 22°/s de face : ~24 s le tour */
+    om += (nat - om) * (1 - Math.exp(-dt / 1.6));
+    th += om * dt; if(th > 3600) th %= 360;
+    document.documentElement.style.setProperty('--tw-th', th.toFixed(2) + 'deg');
+    if(vif()) raf = requestAnimationFrame(boucle);
+  }
+  const vif = () => !!nom && !document.hidden && !RM.matches && vivantes.size > 0;
+  function relancer(){
+    for(const p of vivantes) if(!p.isConnected) vivantes.delete(p);
+    if(!raf && vif()){ last = 0; raf = requestAnimationFrame(boucle); }
+  }
+  document.addEventListener('visibilitychange', relancer);
+
+  /* ── le nom : la page peut le dire, sinon il se trouve tout seul ─────── */
+  function trouver(){
+    const t = document.getElementById('member-txt');
+    if(t && (t.textContent || '').trim()) return (t.textContent || '').trim();
+    const a = document.getElementById('ast-name');
+    if(a && (a.textContent || '').trim()) return (a.textContent || '').trim();
+    const g = document.querySelector('[data-nom]');
+    if(g && (g.getAttribute('data-nom') || '').trim()) return (g.getAttribute('data-nom') || '').trim();
+    return '';
+  }
+  function setNom(n){
+    const v = String(n || '').trim();
+    if(v === nom) return;
+    nom = v; diag.nom = v; cache.clear();
+    for(const p of vivantes){ if(!p.isConnected){ vivantes.delete(p); continue; }
+      const d = p.querySelector('.tw-b'); if(d) d.removeAttribute('data-vu');
+      neuves.push(p); }
+    planifier();
+  }
+
+  /* ── les textes qui arrivent après : un seul observateur, amorti ─────── */
+  function vider(){
+    tmr = 0;
+    const l = aFaire; aFaire = [];
+    for(const n of l){ if(!n.isConnected || interdit(n)) continue; parcourir(n); }
+    setNom(trouver());
+  }
+  function observer(){
+    if(typeof MutationObserver !== 'function') return;
+    new MutationObserver(list => {
+      for(const m of list){
+        if(m.type === 'childList'){ for(const n of m.addedNodes) if(n.nodeType === 1 || n.nodeType === 3) aFaire.push(n); }
+        else if(m.target) aFaire.push(m.target);
+      }
+      if(aFaire.length && !tmr) tmr = setTimeout(vider, 60);
+    }).observe(document.body, { childList:true, subtree:true, characterData:true });
+  }
+  function demarrer(){
+    if(!document.body) return;
+    parcourir(document.body);
+    setNom(trouver());
+    observer();
+    document.fonts?.ready?.then(() => {                       /* mesuré avant la vraie police = faux */
+      cache.clear();
+      for(const p of vivantes){ const d = p.querySelector('.tw-b'); if(d) d.removeAttribute('data-vu'); neuves.push(p); }
+      planifier();
+    });
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer, { once:true }); else demarrer();
+  const api = { scan:parcourir, setNom, nom:() => nom,
+                etat:() => Object.assign({ vivantes:vivantes.size, tourne:!!raf }, diag) };
+  window.__totehm_mot = api.etat;
+  return api;
+})();
+/* ══ fin LE MOT TOTEHM ══ */
 </script>
 </body>
 </html>
