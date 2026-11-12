@@ -58,9 +58,11 @@ try{
      nom+' · le Club se lit et le RADAR place ses spots (r='+s0.radar.radius+', lieux='+s0.radar.lieux+', portée '+s0.radar.portee+')');
   const nu=await pg.evaluate(()=>({joy:!!document.getElementById('joy'), about:!!document.getElementById('space-about'),
     quoi:/what is a spot/i.test(document.body.innerText), titre:!!document.getElementById('club-title'),
-    logo:!!document.querySelector('#club-logo svg rect[mask]')&&!!document.querySelector('#club-logo svg path')}));
-  ok(!nu.joy&&!nu.about&&!nu.quoi&&!nu.titre&&nu.logo,
-     nom+' · plus de joystick, plus de « What is a spot? », plus de « [Higher] Spots » : le TOTEHM docké de totehm.com en tête');
+    /* 12/11 (Wah) : « tu peux enlever le totehm central en haut, il ne sert à rien » — le coin membre
+       porte déjà LE TOTEHM qui tourne, et un tap y ramène à totehm.com. */
+    logo:!!document.getElementById('club-logo'), coin:!!document.querySelector('#member.mc')}));
+  ok(!nu.joy&&!nu.about&&!nu.quoi&&!nu.titre&&!nu.logo&&nu.coin,
+     nom+' · plus de joystick, plus de « What is a spot? », plus de TOTEHM central en haut : le coin membre suffit');
   const barre=await pg.evaluate(()=>[...document.querySelectorAll('#rdr-flt button')].map(e=>e.textContent));
   ok(barre.join('|')==='now|Filter · 1',nom+' · la barre : le temps courant, puis Filter (near me, posé à l\'arrivée) — rien d\'autre');
   await pg.screenshot({path:OUT+'/club_radar_'+(tel?'tel':'ordi')+'.png'});
@@ -114,7 +116,7 @@ try{
   const p0=await pg.evaluate(()=>({def:(document.querySelector('#rdr-new .ns-def')||{}).textContent||'',
     l:[...document.querySelectorAll('#rdr-new .sfl')].map(e=>e.textContent),
     h:[...document.querySelectorAll('#rdr-new [data-ns="h"] .v-name')].map(e=>e.textContent)}));
-  ok(/^A spot is a Habit of your TOTEHM that becomes an action in one exact place, one exact moment\.$/.test(p0.def)
+  ok(/^A spot is your TOTEHM Habit in action: exact place, exact time, right people, your conditions\.$/.test(p0.def)
      &&p0.l.join('|')==='+ spot|which habit?'&&p0.h.join('|')==='Run the hill|Call mum',
      nom+' · la prise DIT ce qu\'est un spot, puis MES Habits : '+p0.h.join(' · '));
   await pg.locator('#rdr-new [data-ns="h"]').filter({hasText:'Call mum'}).first().click(); await pg.waitForTimeout(300);
@@ -136,7 +138,7 @@ try{
   const cl=await pg.evaluate(()=>({choix:document.querySelectorAll('#rdr-new [data-ns="aud"]').length,
     qui:[...document.querySelectorAll('#rdr-new .sfl')].filter(e=>e.textContent==='who sees it').map(e=>e.nextElementSibling.innerText.replace(/\s+/g,' ')).join(''),
     l:[...document.querySelectorAll('#rdr-new .sfl')].map(e=>e.textContent)}));
-  ok(cl.choix===0&&/^figher club every TOTEHM$/i.test(cl.qui)&&cl.l.slice(-1)[0]==='together'&&!cl.l.includes('location'),
+  ok(cl.choix===0&&/^figher club every member$/i.test(cl.qui)&&cl.l.slice(-1)[0]==='together'&&!cl.l.includes('location'),
      nom+' · publié d\'ici, FIGHER CLUB d\'office : montré (« '+cl.qui+' »), jamais demandé ; puis together, et jamais « location »');
   await clic(pg,'#rdr-new [data-ns="mode"][data-v="silent"]'); await pg.waitForTimeout(300);
   await clic(pg,'#rdr-new [data-ns="dur"][data-v="90"]'); await pg.waitForTimeout(300);
@@ -170,8 +172,32 @@ try{
   ok(d.n==='Run the hill'&&d.tags.some(t=>/I AM HERE/.test(t))&&d.acts.includes('GO')&&d.acts.includes('CLOSE'),
      nom+' · le spot ouvert : sa box, son état, ses gestes → '+d.acts.join(' · '));
   await pg.screenshot({path:OUT+'/club_spot_'+(tel?'tel':'ordi')+'.png'});
+  /* 12/11 (Wah) — ON ABAISSE LA FEUILLE : le trait en haut tient le geste à lui seul ; descendue d'un
+     tiers de sa hauteur, elle s'en va, et elle ne laisse aucun `--dy` posé. */
+  const g0=await pg.evaluate(()=>{const g=document.querySelector('#detail .dt-grab'),c=getComputedStyle(g),r=g.getBoundingClientRect();
+    return {prise:c.touchAction, colle:c.position, x:Math.round(r.x+r.width/2), y:Math.round(r.y+r.height/2)};});
+  ok(g0.prise==='none'&&g0.colle==='sticky',nom+' · la feuille porte SON trait, collé en haut → '+JSON.stringify(g0));
+  await pg.mouse.move(g0.x,g0.y); await pg.mouse.down();
+  for(let k=1;k<=8;k++){ await pg.mouse.move(g0.x,g0.y+k*40); await pg.waitForTimeout(16); }
+  const suit=await pg.evaluate(()=>document.getElementById('detail').style.getPropertyValue('--dy'));
+  await pg.mouse.up(); await pg.waitForTimeout(600);
+  const ap=await pg.evaluate(()=>({detail:!!window.__totehm_club().detail, dy:document.getElementById('detail').style.getPropertyValue('--dy')}));
+  ok(parseFloat(suit)>100&&!ap.detail&&!ap.dy,
+     nom+' · on la descend au doigt : elle SUIT ('+suit+'), puis elle s\'en va sans rien laisser posé');
+  await pg.$eval('#rdr-g-f .tl[data-cle]',e=>e.click());
+  await pg.waitForFunction(()=>window.__totehm_club().detail,null,{timeout:6000}).catch(()=>{});
+  await pg.waitForTimeout(400);
   await pg.keyboard.press('Escape'); await pg.waitForTimeout(500);
   ok(!(await etat(pg)).detail,nom+' · « précédent » referme le spot');
+  /* 12/11 (Wah) — « on doit pouvoir grossir ou dégrossir la portée ! » : les deux boutons du radar. */
+  await clic(pg,'#rdr-mode [data-rmode="radar"]'); await pg.waitForTimeout(600);
+  const z0=(await etat(pg)).radar.portee, mot0=await pg.$eval('#rdr-span',e=>e.textContent);
+  await clic(pg,'#rdr-out'); await clic(pg,'#rdr-out'); await pg.waitForTimeout(300);
+  const z1=(await etat(pg)).radar.portee, mot1=await pg.$eval('#rdr-span',e=>e.textContent);
+  await clic(pg,'#rdr-in'); await clic(pg,'#rdr-in'); await clic(pg,'#rdr-in'); await pg.waitForTimeout(300);
+  const z2=(await etat(pg)).radar.portee;
+  ok(z1>z0*2&&z2<z1&&mot1!==mot0&&/km|m\b|mi/i.test(mot1),
+     nom+' · la portée se grossit et se dégrossit, et elle est ÉCRITE : '+mot0+' → '+mot1+' ('+z0+' → '+z1+' → '+z2+' m)');
   ok(!erreurs(log).length,nom+' · aucune erreur '+erreurs(log).join(' | '));
   await pg.context().close();
  }
