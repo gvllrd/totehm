@@ -2848,9 +2848,21 @@ window.TOTEHM_MOT = (() => {
   document.addEventListener('visibilitychange', relancer);
 
   /* ── le nom : la page peut le dire, sinon il se trouve tout seul ─────── */
+  /* ⚠️ LE NOM NE SE LIT QUE SUR UN COIN CONNECTÉ · 12/11, mesuré EN PRODUCTION sur figher.club.
+     `#member-txt` existe aussi DÉCONNECTÉ : il porte alors le libellé du bouton, et le verso de chaque
+     pièce affichait « CONNECT WITH MY TOTEHM ». La marque `is-in` (posée par la page quand le membre est
+     là) est donc la condition, et on lit le nom comme `member_corner.js` : `#member-txt`, sinon le texte
+     écrit à même le bouton, sinon son dernier enfant. Sans coin connecté : `#ast-name` (com), puis un
+     `[data-nom]`, que seule la nomenclature pose — et jamais un libellé. */
   function trouver(){
-    const t = document.getElementById('member-txt');
-    if(t && (t.textContent || '').trim()) return (t.textContent || '').trim();
+    const mc = document.querySelector('.mc.is-in');
+    if(mc){
+      const t = mc.querySelector('#member-txt');
+      let v = t ? (t.textContent || '').trim() : '';
+      if(!v){ for(const n of mc.childNodes) if(n.nodeType === 3) v += n.nodeValue; v = v.trim(); }
+      if(!v){ const d = mc.querySelector(':scope > span:not(.mcp)'); v = d ? (d.textContent || '').trim() : ''; }
+      if(v) return v;
+    }
     const a = document.getElementById('ast-name');
     if(a && (a.textContent || '').trim()) return (a.textContent || '').trim();
     const g = document.querySelector('[data-nom]');

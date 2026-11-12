@@ -20,7 +20,8 @@ ${lire('tools/totehm_word.css')}
 <p id="p5"><span class="v-name">my TOTEHM habit</span></p>
 <p id="p6">totehm at the end of a sentence: TOTEHM.</p>
 <h1 id="p7">TOTEHM</h1>
-<span id="member-txt">wah</span>
+<button class="mc is-in"><span id="member-txt">wah</span></button>
+<!-- deconnecte, member-txt porte le LIBELLE du bouton : sans is-in, aucun nom n'est lu -->
 <script>${lire('tools/totehm_name.js')}</script>
 <script>${lire('tools/totehm_word.js')}</script>
 </body></html>`;
@@ -80,6 +81,17 @@ const apres = await pg.evaluate(() => ({ nom:window.__totehm_mot().nom,
   vides:document.querySelector('#p1 .tw .tw-b').querySelectorAll('.tn-v').length }));
 ok(apres.nom === 'alexandra' && apres.lettres === 9 && apres.pieces === 7,
    'le nom change : les 7 versos se refont (9 lettres), aucune pièce de plus — ' + JSON.stringify(apres));
+
+/* 12/11, mesuré en production : DÉCONNECTÉ, le coin membre porte « CONNECT WITH MY TOTEHM » dans le
+   même `#member-txt` — ce n'est pas un nom, et le verso ne doit pas l'afficher. */
+const pg3 = await (await browser.newContext({ viewport:{ width:390, height:844 } })).newPage();
+await pg3.setContent(PAGE.replace('class="mc is-in"', 'class="mc"').replace('>wah<', '>CONNECT WITH MY TOTEHM<'));
+await pg3.waitForTimeout(600);
+const hors = await pg3.evaluate(() => ({ nom:window.__totehm_mot().nom, tourne:window.__totehm_mot().tourne,
+  plat:document.querySelector('#p1 .tw').classList.contains('is-plat'),
+  lettres:document.querySelectorAll('#p1 .tw .tn-l').length }));
+ok(hors.nom === '' && !hors.tourne && hors.plat && !hors.lettres,
+   'déconnecté : aucun nom lu (le libellé du bouton n\'en est pas un), la pièce est posée sur son logo et ne tourne pas');
 
 /* mouvement réduit : la pièce est POSÉE sur son verso, le nom lisible */
 const pg2 = await (await browser.newContext({ viewport:{ width:390, height:844 }, reducedMotion:'reduce' })).newPage();
