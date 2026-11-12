@@ -27,7 +27,7 @@ try{
  insert into chatgpt_grants values('${G}','${A}',null,array['totehm:read'],'https://www.totehm.com/mcp');`);
  const freq=fs.readFileSync(new URL('../../backend/supabase/migrations/20261015160000_push_par_frequence.sql',import.meta.url),'utf8');
  await db.exec(freq.slice(freq.indexOf('create or replace function public._freq_minutes'),freq.indexOf('create or replace function public.push_decision')));
- for(const file of ['20261110120000_tracking_core.sql','20261110121000_tracking_delivery.sql','20261110122000_tracking_summary.sql','20261110145900_tracking_reference_index.sql','20261110150000_tracking_quiet.sql','20261110151000_tracking_quiet_summary.sql'])await db.exec(fs.readFileSync(new URL('../../backend/supabase/migrations/'+file,import.meta.url),'utf8'));
+ for(const file of ['20261110120000_tracking_core.sql','20261110121000_tracking_delivery.sql','20261110122000_tracking_summary.sql','20261110145900_tracking_reference_index.sql','20261110150000_tracking_quiet.sql','20261110151000_tracking_quiet_summary.sql','20261112140000_chatgpt_tracking_priority.sql'])await db.exec(fs.readFileSync(new URL('../../backend/supabase/migrations/'+file,import.meta.url),'utf8'));
  check(true,'All real tracking migrations execute');
  await db.query("select set_config('request.jwt.claim.sub',$1,false)",[A]);
  const settings=await role('authenticated',()=>rpc('tracking_settings_get',[]));
@@ -176,5 +176,45 @@ try{
  for(const actor of ['anon','authenticated'])check(await scalar('select not has_function_privilege($1,$2,\'execute\')',[actor,'public.chatgpt_tracking_period(uuid,integer,text[])']),'The period reader is service-only');
  await db.exec('delete from profiles where id=\''+A+'\'');
  check(await scalar('select count(*)=0 from tracking_settings where user_id=$1',[A]),'Account profile deletion clears the sharing preference');
+ // Native order is an actual selection policy, with one fairness turn in three.
+ const P='66666666-6666-4666-8666-666666666666';
+ await db.query('insert into profiles values($1,606)',[P]);
+ const priorities=[{t:'Z priority',f:'daily',is:['focus']},...Array.from({length:6},(_,i)=>({t:'A alternative '+i,f:'daily',is:['flow']}))];
+ await db.query("insert into totehms(user_id,steps,bot,tz,quiet_from,quiet_to,max_daily) values($1,$2,true,'UTC',0,0,1)",[P,JSON.stringify(priorities)]);
+ let at='2026-11-01T21:00:00Z';
+ let chosen=await rpc('tracking_next',[P,at]);check(chosen.habit==='Z priority'&&chosen.selection.rank===1&&chosen.selection.basis==='totehm_order','Initial selection follows native order rather than alphabetic order');
+ const deliver=async(habit,time)=>{
+  const push=await rpc('record_push',[P,habit,'isolated priority fixture',null]);
+  await db.query('update pushes set sent_at=$1 where id=$2',[time,push]);
+  await db.query("update habit_outcomes set asked_at=$1,answered_at=$1,outcome='done' where id=(select outcome_id from pushes where id=$2)",[time,push]);
+ };
+ const visits=new Map();
+ for(let day=0;day<30;day++){
+  const date=new Date('2026-11-01T21:00:00Z');date.setUTCDate(date.getUTCDate()+day);at=date.toISOString();
+  chosen=await rpc('tracking_next',[P,at]);check(chosen.send,'One due selection remains available within the saved cap');
+  check(chosen.selection.basis===(day%3===2?'rotation':'totehm_order'),'Two native-order turns and one fair rotation');
+  visits.set(chosen.habit,(visits.get(chosen.habit)||0)+1);await deliver(chosen.habit,at);
+  check((await rpc('tracking_next',[P,at])).why==='max_daily','Priority never increases the member’s notification cap');
+ }
+ check(visits.get('Z priority')===20&&priorities.slice(1).every(h=>visits.get(h.t)>0),'Priority leads ordinary turns while every lower-ranked Habit is reached in the bounded rotation');
+ // Reordering native steps is authoritative on the very next selection.
+ const reordered=[priorities[4],...priorities.filter(h=>h!==priorities[4])];
+ await db.query('update totehms set steps=$1 where user_id=$2',[JSON.stringify(reordered),P]);
+ chosen=await rpc('tracking_next',[P,'2026-12-01T21:00:00Z']);
+ check(chosen.habit===reordered[0].t&&chosen.selection.rank===1,'Changing the native order immediately changes the next ordinary choice');
+ await db.query('update totehms set bot=false where user_id=$1',[P]);
+ check((await rpc('tracking_next',[P,'2026-12-01T21:00:00Z'])).why==='paused','A priority never overrides Pause');
+ await db.query('update totehms set bot=true,quiet_from=22,quiet_to=8 where user_id=$1',[P]);
+ check((await rpc('tracking_next',[P,'2026-12-01T23:00:00Z'])).why==='quiet_hours','A priority never overrides quiet hours');
+ const W='77777777-7777-4777-8777-777777777777';
+ await db.query('insert into profiles values($1,707)',[W]);
+ await db.query("insert into totehms(user_id,steps,bot,tz,quiet_from,quiet_to,max_daily) values($1,$2,true,'UTC',0,0,2)",[W,JSON.stringify([{t:'Top weekly',f:'weekly',is:['focus']},{t:'Due daily',f:'daily',is:['flow']}])]);
+ const oldPush=await rpc('record_push',[W,'Top weekly','isolated eligibility fixture',null]);
+ await db.query("update pushes set sent_at='2026-12-01T21:00:00Z' where id=$1",[oldPush]);
+ await db.query("update habit_outcomes set asked_at='2026-12-01T21:00:00Z',answered_at='2026-12-01T21:00:00Z',outcome='done' where id=(select outcome_id from pushes where id=$1)",[oldPush]);
+ const eligible=await rpc('tracking_next',[W,'2026-12-04T21:00:00Z']);
+ check(eligible.habit==='Due daily'&&eligible.selection.rank===2,'A first-ranked Habit that is not due never blocks a due lower-ranked Habit');
+ check((await rpc('tracking_next',[W,'2026-12-04T21:00:00Z'])).habit===eligible.habit,'Read-only previews do not advance a priority or rotation turn');
+ for(const actor of ['anon','authenticated'])check(await scalar('select not has_function_privilege($1,$2,\'execute\')',[actor,'public.tracking_next(uuid,timestamptz)']),'Rank-based scheduling stays service-only');
  console.log(JSON.stringify({suite:'Intelligent tracking SQL',checks,passed:checks}));
 }catch(e){console.error(JSON.stringify({message:e.message,code:e.code,position:e.position,snippet:e.query?.slice(Math.max(0,Number(e.position)-90),Number(e.position)+90),where:e.where,stack:e.stack?.split('\n').filter(l=>l.includes('tracking-sql')).join('\n')}));process.exitCode=1;}finally{await db.close();}
