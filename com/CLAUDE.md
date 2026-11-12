@@ -38,7 +38,7 @@ Seuls les abonnements aux créateurs sont proposés. Higher GPT et TotehmBot son
 
 ## Les pièges
 - Hors du TOTEHM, toute box reprend `boxTotehm` et sa peau native (navy Habit, bleu Objective/Vision, violet Repulsion/MY STORY), dashboard inclus : suivi, objectifs, historique. Source Habit exacte ; journal historique inerte, sans liens inventés.
-- `cloudSave()` réécrit `steps` en entier : rien d'autre ne s'y range. `FREQS` (page) = `_freq_minutes` (base) : identiques.
+- Rythme dans le texte : `habit-rhythm.mjs`, 12 langues, zéro LLM ; suggestion locale dans la box native, acceptation explicite avant changement de `f`, choix manuel conservé. Durée ≠ fréquence ; `3×/semaine` propose un bilan hebdomadaire sur cet objectif, pas trois notifications. Horaires précis conservés dans le texte, pas programmés ; ambiguïtés/dates non prises en charge → choix manuel. Texte/références/liens conservés, IME et RTL natifs. Tests `habit-rhythm.mjs`, `com_habit_rhythm.mjs`. `cloudSave()` réécrit `steps` en entier : rien d'autre ne s'y range. `FREQS` (page) = `_freq_minutes` (base) : identiques.
   La lettre va au cache (`save({local:1})`) ; le serveur après `PAUSE_FRAPPE` (2,5 s, `differe`) ou dès qu'on quitte le champ (`ecrireTout` :
   Entrée, focusout, repli, onglet caché) ; un envoi identique ne part pas, un seul à la fois ; « saved » = le serveur a dit oui ;
   un refus = « not saved », renvoi 5 s plus tard, et la saisie reste en ATTENTE dans le cache (`NON_CONFIRME`) : au démarrage suivant elle l'emporte sur la copie du serveur et repart (`repris`) ; le cache de la page d'avant (`pseudo` sans `attente`) aussi, tant que le serveur n'a rien reçu depuis `REPARE`.

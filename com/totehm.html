@@ -3387,6 +3387,7 @@ body.lv-b:not(.lv-membre):not(.lv-verrou) #lv-socket{opacity:0}
    surface). Ce que le membre a écrit (ses Habits, ses objectifs) en Quantico ; tout le reste en Space Mono. ── */
 #vs-dash{width:min(94vw,420px);flex:none}
 #vs-dash:empty{display:none}
+[data-rhythm-preview]:empty{display:none}
 .tracking-period,.tracking-actions{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px}
 .tracking-period .is-on{box-shadow:inset 0 0 0 1px #fff;color:#fff}
 .tracking-scroll{max-width:100%;overflow:auto;overscroll-behavior-x:contain}
@@ -4726,6 +4727,7 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { parseElementLink, resolveElementLink } from '/totehm-link.mjs';
 import {renderPractice,createTrackingControls,PRACTICE_REVIEW_PROMPT} from '/tracking.mjs';
+import {FREQS,parseHabitRhythm,rhythmSummary} from '/habit-rhythm.mjs';
 let trackingRefresh=()=>Promise.resolve();
 let lienElement=parseElementLink(location.hash), lienEnCours=false;
 const diagLien={state:lienElement?'pending':'idle'};
@@ -4877,41 +4879,6 @@ async function logTotehmEvent(kind, habitText, detail){
 
 
 /* ══ FREQUENCY ENGINE — 33 rythmes humains, moteur multilingue ══ */
-const FREQS=[
-  {id:'every_minute',      label:'every minute',            w:1},
-  {id:'hourly',            label:'every hour',              w:60},
-  {id:'several_daily',     label:'several times a day',     w:480},
-  {id:'every_morning',     label:'every morning',           w:1436},
-  {id:'every_afternoon',   label:'every afternoon',         w:1438},
-  {id:'daily',             label:'daily',                   w:1440},
-  {id:'every_evening',     label:'every evening',           w:1441},
-  {id:'every_weekday',     label:'every weekday',           w:1442},
-  {id:'every_night',       label:'every night',             w:1443},
-  {id:'every_other_day',   label:'every other day',         w:2880},
-  {id:'twice_week',        label:'twice a week',            w:5040},
-  {id:'every_weekend',     label:'every weekend',           w:10078},
-  {id:'weekly',            label:'weekly',                  w:10080},
-  {id:'every_monday',      label:'every monday',            w:10081},
-  {id:'every_tuesday',     label:'every tuesday',           w:10082},
-  {id:'every_wednesday',   label:'every wednesday',         w:10083},
-  {id:'every_thursday',    label:'every thursday',          w:10084},
-  {id:'every_friday',      label:'every friday',            w:10085},
-  {id:'every_saturday',    label:'every saturday',          w:10086},
-  {id:'every_sunday',      label:'every sunday',            w:10087},
-  {id:'biweekly',          label:'every two weeks',         w:20160},
-  {id:'twice_month',       label:'twice a month',           w:21600},
-  {id:'monthly',           label:'monthly',                 w:43200},
-  {id:'every_1st_month',   label:'every 1st of the month',  w:43201},
-  {id:'every_15th_month',  label:'every 15th of the month', w:43202},
-  {id:'seasonal',          label:'every season change',     w:131400},
-  {id:'quarterly',         label:'every quarter',           w:129600},
-  {id:'semiannual',        label:'every six months',        w:262800},
-  {id:'yearly',            label:'yearly',                  w:525600},
-  {id:'every_birthday',    label:'every birthday',          w:525601},
-  {id:'every_newyear',     label:'every new year',          w:525602},
-  {id:'randomly',          label:'randomly',                w:9999998},
-  {id:'sometimes',         label:'sometimes',               w:9999999}
-];
 const FREQ_BY_ID={};FREQS.forEach(f=>FREQ_BY_ID[f.id]=f);
 const fw=id=>(FREQ_BY_ID[id]||FREQ_BY_ID.daily).w;
 const flabel=id=>(FREQ_BY_ID[id]||FREQ_BY_ID.daily).label;
@@ -4923,171 +4890,8 @@ const norm=s=>String(s||'').normalize('NFKD').toLowerCase()
   .replace(/(\p{Script=Latin})\p{M}+/gu,'$1')
   .replace(/[^\p{L}\p{N}\p{M}\p{S}\u200d ]/gu,' ').replace(/\s+/g,' ').trim();
 
-/* lexique polyglotte : chaque clé regroupe des mots-racines d'une même famille */
-const LEX={
-  minute:['minute','minutes','min','mins','minuto','minutos','minuti','minuten','minuut','minutlich','pol','polovina'],
-  hour:['hour','hours','hr','hrs','hourly','heure','heures','horaire','hora','horas','horario','ora','ore','orario','stunde','stunden','stundlich','uur','uurlijks'],
-  morning:['morning','mornings','matin','matins','matinal','matinee','manha','manhas','manana','mananas','matutino','mattina','mattine','mattinale','morgens','morgen','fruh','fruhstuck','ochtend','ochtenden','reveil','reveille','wakeup','aurore','dawn','sunrise','aube'],
-  afternoon:['afternoon','afternoons','apresmidi','apresmidis','aprestmidi','tarde','tardes','pomeriggio','pomeriggi','nachmittag','nachmittags','middag','siesta','apresmidii','gouter'],
-  evening:['evening','evenings','soir','soirs','soiree','sera','serate','abend','abends','avond','avonden','sunset','crepuscule','anochecer','sundown','tramonto','atardecer'],
-  night:['night','nights','nuit','nuits','noite','noites','noche','noches','notte','notti','nacht','nachte','nachts','coucher','bedtime','minuit','midnight','dormir','sommeil','sueno','sonno','schlaf','sleep','bettgehen'],
-  day:['day','days','daily','everyday','jour','jours','journee','quotidien','quotidiens','quotidienne','quotidiennes','quotidiennement','dia','dias','diario','diaria','diarios','diarias','diariamente','adiario','giorno','giorni','giornaliero','giornalmente','quotidiano','quotidiani','tag','tage','taglich','dagelijks','dag','dagen'],
-  weekday:['weekday','weekdays','workday','workdays','workweek','ouvrable','ouvrables','uteis','laborables','feriali','werktag','werktage','werkdag','werkdagen','businessday'],
-  weekend:['weekend','weekends','wochenende','wochenenden','fimdesemana','findesemana','weekender'],
-  week:['week','weeks','weekly','semaine','semaines','hebdo','hebdomadaire','hebdomadairement','semana','semanas','semanal','semanalmente','settimana','settimane','settimanale','settimanalmente','woche','wochen','wochentlich','wekelijks','weekelijks'],
-  fortnight:['fortnight','fortnightly','quinzaine','quinzena','quincena','bimensuel','bimensuelle','bimensal','quindicinale','vierzehntagig','twoweeks'],
-  month:['month','months','monthly','mois','mensuel','mensuelle','mensuellement','mes','meses','mensal','mensalmente','mensual','mensualmente','mese','mesi','mensile','mensilmente','monat','monate','monatlich','maand','maanden','maandelijks'],
-  quarter:['quarter','quarterly','trimestre','trimestres','trimestriel','trimestrielle','trimestral','quartal','vierteljahr','kwartaal','kwartaals'],
-  season:['season','seasons','seasonal','saison','saisons','saisonnier','saisonniere','estacion','estacoes','estacao','stagione','stagioni','stagionale','jahreszeit','seizoen','seizoenen'],
-  semi:['semiannual','biannual','biannually','semestre','semestres','semestriel','semestrielle','semestral','semestrale','halbjahrlich','halfjaarlijks','sixmonths'],
-  year:['year','years','yearly','annual','annually','an','ans','annee','annees','annuel','annuelle','annuellement','ano','anos','anual','anualmente','anno','anni','annuale','jahr','jahre','jahrlich','jaar','jaren','jaarlijks'],
-  birthday:['birthday','birthdays','anniversaire','anniversaires','aniversario','aniversarios','cumpleanos','compleanno','compleanni','geburtstag','geburtstage','verjaardag','verjaardagen'],
-  newyear:['newyear','newyears','nouvelan','anonuevo','anonovo','capodanno','neujahr','nieuwjaar','janone','januaryfirst'],
-  random:['random','randomly','aleatoire','aleatoirement','aleatorio','aleatoriamente','casuale','casualmente','zufallig','zufall','willekeurig','anytime','whenever','anywhen','impromptu','impromptus','improvise','improvvisamente'],
-  sometimes:['sometimes','somewhat','occasionally','parfois','quelquefois','occasionnellement','avecespirit','manchmal','soms','irregular','irregulier','sporadic','sporadique','sporadically','sporadicamente','oftentimes','oftenish','occasional','vagabond','erratic','erratique','erratico','avolte','aveces']
-};
-const DAYS={
-  monday:['monday','mondays','mon','lundi','lundis','segunda','segundafeira','lunes','lunedi','montag','montags','maandag','maandagen','pirmadienis'],
-  tuesday:['tuesday','tuesdays','tue','tues','mardi','mardis','terca','tercafeira','martes','martedi','dienstag','dienstags','dinsdag','dinsdagen','antradienis'],
-  wednesday:['wednesday','wednesdays','wed','mercredi','mercredis','quarta','quartafeira','miercoles','mercoledi','mittwoch','mittwochs','woensdag','woensdagen','treciadienis'],
-  thursday:['thursday','thursdays','thu','thur','jeudi','jeudis','quinta','quintafeira','jueves','giovedi','donnerstag','donnerstags','donderdag','donderdagen','ketvirtadienis'],
-  friday:['friday','fridays','fri','vendredi','vendredis','sexta','sextafeira','viernes','venerdi','freitag','freitags','vrijdag','vrijdagen','penktadienis'],
-  saturday:['saturday','saturdays','sat','samedi','samedis','sabado','sabados','sabato','samstag','samstags','sonnabend','zaterdag','zaterdagen','sestadienis'],
-  sunday:['sunday','sundays','sun','dimanche','dimanches','domingo','domingos','domenica','sonntag','sonntags','zondag','zondagen','sekmadienis']
-};
-
-/* phrases idiomatiques (avant tokenisation) */
-const PHRASES={
-  sometimes:['de temps en temps','de temps a autre','de vez em quando','de vez en cuando','a veces','as vezes','ogni tanto','ab und zu','af en toe','af en zo','once in a while','every now and then','now and then','from time to time','on and off','here and there','hin und wieder','ab und an','when i can','quand je peux','cuando puedo','quando posso','wenn ich kann'],
-  weekend:['fin de semaine','fin de semana','fim de semana','on weekends','le week end','au week end','ce week end','les week ends','am wochenende','nel weekend'],
-  weekday:['en semaine','dias uteis','dias laborables','dias habiles','giorni feriali','werktags','on weekdays','en semaine ouvree','wochentags'],
-  afternoon:['every afternoon','all afternoons','chaque apres midi','toutes les apres midi','tous les apres midi','tous les apres midis','todas las tardes','cada tarde','ogni pomeriggio','jeden nachmittag','elke middag','todas as tardes','cada tardes','a laprem','laprem midi'],
-  morning:['every morning','all mornings','chaque matin','tous les matins','todas las mananas','todas as manhas','ogni mattina','jeden morgen','elke ochtend','au reveil','al svegliarmi','al despertar','beim aufwachen','when i wake up','au petit dejeuner','al despertarme','en me levant'],
-  evening:['every evening','all evenings','chaque soir','tous les soirs','todas las tardes noches','todas as tardes','ogni sera','jeden abend','elke avond','avant de me coucher','avant le coucher','before bed','al tramonto','di sera','de nuit tombee'],
-  night:['every night','all nights','chaque nuit','toutes les nuits','todas las noches','todas as noites','ogni notte','jede nacht','elke nacht','avant de dormir','before sleep','vor dem schlafen','prima di dormire','antes de dormir'],
-  birthday:['every birthday','on my birthday','a mon anniversaire','chaque anniversaire','mi cumpleanos','mio compleanno','mein geburtstag','elke verjaardag'],
-  newyear:['new year','new years eve','le jour de lan','nouvel an','ano nuevo','ano novo','capo danno','neujahrs tag','nieuw jaar','1er janvier','janvier 1','january 1st'],
-  seasonal:['change of season','changement de saison','cambio de estacion','cambio di stagione','jahreszeitenwechsel','elke seizoen','al cambio de estacion','a chaque saison'],
-  every_1st_month:['every 1st of the month','on the 1st','le 1er du mois','premier du mois','el 1 del mes','el primero del mes','il primo del mese','am ersten des monats','1st monthly','le premier','the first of'],
-  every_15th_month:['every 15th of the month','on the 15th','le 15 du mois','el 15 del mes','il 15 del mese','am 15 des monats','mid month','milieu du mois','a la mi mois'],
-  daily:['every day','each day','jeden tag','ogni giorno','cada dia','cada dia','tutti i giorni','chaque jour','tous les jours','einmal am tag','einmal taglich','una vez al dia','una vez por dia','una volta al giorno','1 fois par jour','once a day','1 vez ao dia'],
-  weekly:['every week','each week','chaque semaine','toutes les semaines','ogni settimana','cada semana','jede woche','einmal die woche','once a week','1 fois par semaine']
-};
-
-/* détecte un mot-clé simple sur des tokens */
-const hasKw=(n,arr)=>arr.some(k=>new RegExp('(^|\\s)'+k+'($|\\s)').test(n));
-const hasPhr=(n,arr)=>arr.some(p=>n.indexOf(norm(p))!==-1);
-
-/* deduceFreq : trouve TOUJOURS un ID (fallback = sometimes) */
-function deduceFreq(raw){
-  const original=String(raw||'').trim();
-  let n=norm(raw);
-  /* pas de tokens latins mais du texte non vide : fallback direct */
-  if(!n){ return original.length ? 'sometimes' : null; }
-
-  /* match exact sur un label */
-  const exact=FREQS.find(f=>f.label===n);
-  if(exact)return exact.id;
-
-  /* phrases idiomatiques d'abord (avant tokenisation qui pourrait couper) */
-  const PHRASE_TO_ID={weekend:'every_weekend',weekday:'every_weekday',afternoon:'every_afternoon',morning:'every_morning',evening:'every_evening',night:'every_night',birthday:'every_birthday',newyear:'every_newyear',sometimes:'sometimes',seasonal:'seasonal',every_1st_month:'every_1st_month',every_15th_month:'every_15th_month',daily:'daily',weekly:'weekly'};
-  for(const k of Object.keys(PHRASES)){
-    if(hasPhr(n,PHRASES[k]))return PHRASE_TO_ID[k]||k;
-  }
-
-  /* fragments de label (ex "twice week" -> "twice a week") */
-  if(n.length>=4){
-    const partial=FREQS.find(f=>{
-      const fl=f.label;
-      return fl.indexOf(n)!==-1 || (n.length>=fl.length-3 && n.indexOf(fl)!==-1);
-    });
-    if(partial)return partial.id;
-  }
-
-  /* nombres en lettres → chiffres */
-  n=n.replace(/(^|\s)(deux|two|dos|due|zwei|twee)($|\s)/g,'$12$3')
-     .replace(/(^|\s)(trois|three|tres|tre|drei|drie)($|\s)/g,'$13$3')
-     .replace(/(^|\s)(quatre|four|cuatro|quattro|vier)($|\s)/g,'$14$3')
-     .replace(/(^|\s)(cinq|five|cinco|cinque|funf)($|\s)/g,'$15$3')
-     .replace(/(^|\s)(six|seis|sei|sechs|zes)($|\s)/g,'$16$3')
-     .replace(/(^|\s)(sept|seven|siete|sette|sieben|zeven)($|\s)/g,'$17$3');
-
-  let mult=false,num=null;
-  if(/(^|\s)(twice|bihebdo|zweimal)($|\s)/.test(n)){mult=true;num=2;}
-  if(/(^|\s)(thrice|dreimal)($|\s)/.test(n)){mult=true;num=3;}
-  if(/(^|\s)(once|einmal|una vez|una volta|1 fois)($|\s)/.test(n)){num=num||1;}
-  const nm=n.match(/(\d+)/);
-  if(nm)num=parseInt(nm[1],10);
-  if(/(?:^|\s)(x\d+|\d+x|times|fois|vezes|veces|vez|volte|volta|mal|keer|per|par|por|al|pro|nel|dans|dentro)(?:$|\s)/.test(n))mult=true;
-  if(/(^|\s)(several|plusieurs|varias|varios|varie|mehrmals|meermaals|multiple|many|beaucoup)($|\s)/.test(n))mult=true;
-
-  /* jours nommés */
-  for(const d in DAYS){if(hasKw(n,DAYS[d]))return 'every_'+d;}
-
-  /* dates spéciales */
-  if(hasKw(n,LEX.birthday))return 'every_birthday';
-  if(hasKw(n,LEX.newyear))return 'every_newyear';
-  if(hasKw(n,LEX.season)){return 'seasonal';}
-
-  /* fenêtres de journée */
-  if(hasKw(n,LEX.afternoon))return 'every_afternoon';
-  if(hasKw(n,LEX.morning))return 'every_morning';
-  if(hasKw(n,LEX.evening))return 'every_evening';
-  if(hasKw(n,LEX.night))return 'every_night';
-
-  /* weekend / weekday */
-  if(hasKw(n,LEX.weekend))return 'every_weekend';
-  if(hasKw(n,LEX.weekday))return 'every_weekday';
-
-  /* fortnight */
-  if(hasKw(n,LEX.fortnight))return 'biweekly';
-
-  /* random / sometimes (avant fenêtres génériques) */
-  if(hasKw(n,LEX.random))return 'randomly';
-  if(hasKw(n,LEX.sometimes))return 'sometimes';
-
-  /* minute / heure */
-  if(hasKw(n,LEX.minute))return 'every_minute';
-  if(hasKw(n,LEX.hour))return 'hourly';
-
-  /* jour */
-  if(hasKw(n,LEX.day)){
-    if(/(^|\s)(other|alterni|alternos|sur 2)($|\s)/.test(n))return 'every_other_day';
-    if(num===2&&!mult)return 'every_other_day';
-    if(mult&&num&&num>=2)return 'several_daily';
-    if(/(^|\s)(several|plusieurs|varias|varios|varie|mehrmals|meermaals)($|\s)/.test(n))return 'several_daily';
-    return 'daily';
-  }
-
-  /* semaine */
-  if(hasKw(n,LEX.week)){
-    if(num===2&&mult)return 'twice_week';
-    if(num===2&&!mult)return 'biweekly';
-    if(num&&num>=3&&!mult)return 'monthly';
-    return 'weekly';
-  }
-
-  /* mois */
-  if(hasKw(n,LEX.month)){
-    if(num===2&&mult)return 'twice_month';
-    if(num===1)return 'every_1st_month';
-    if(num===15)return 'every_15th_month';
-    if(num&&num>=5&&!mult)return 'semiannual';
-    if(num&&num>=3&&!mult)return 'quarterly';
-    return 'monthly';
-  }
-
-  /* trimestre / semestre / année */
-  if(hasKw(n,LEX.quarter))return 'quarterly';
-  if(hasKw(n,LEX.semi))return 'semiannual';
-  if(hasKw(n,LEX.year)){
-    if(num&&num>=2&&!mult)return 'sometimes';
-    return 'yearly';
-  }
-
-  /* dernier fallback : GARANTI un résultat */
-  return 'sometimes';
-}
+/* Recognition is local and conservative: no rhythm is invented for unknown text. */
+const deduceFreq=raw=>parseHabitRhythm(raw,{mode:'rhythm'}).frequency;
 
 /* ══ STORAGE — LE NUAGE, ET UN CACHE QUI APPARTIENT À UN COMPTE ══
    ⚠️ PAS INSCRIT, RIEN N'EST PERMIS · 27/09/2026. Il n'y a plus de
@@ -8218,7 +8022,7 @@ let fpDetected=null;
 $('fp-input').addEventListener('input',()=>{
   const raw=$('fp-input').value;
   fpDetected=raw.trim()?deduceFreq(raw):null;
-  $('fp-preview').textContent=fpDetected?('\u2192 '+flabel(fpDetected)):'';
+  $('fp-preview').textContent=fpDetected?('\u2192 '+flabel(fpDetected)):(raw.trim()?'Choose a rhythm below.':'');
   const box=$('fp-list');
   let hit=null;
   box.querySelectorAll('.fp-opt').forEach(b=>{
@@ -8373,7 +8177,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-11-11-dashboard-native-boxes';
+const BUILD='2026-11-12-multilingual-habit-rhythm';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -8914,7 +8718,7 @@ const groupe=(mot,contenu,sous)=>contenu
    Une répulsion n'est pas un titre : c'est ce qu'on fait À LA PLACE.
    Le mot juste fait la moitié du travail de la boîte. */
 const INVITE={
-  h:'what do I do',
+  h:'what I do · how often',
   t:'what am I after',
   r:'what I do instead',
   w:'what I learned',
@@ -8935,10 +8739,10 @@ function boiteHTML(o){
      Chaque genre dit donc ce qu'il attend, dans sa propre langue, et le
      champ vide garde une largeur de cible. */
   const nom = (o.ouverte&&!RO)
-    ? '<span class="v-name" contenteditable="plaintext-only" spellcheck="false"'
+    ? '<span class="v-name" dir="auto" contenteditable="plaintext-only" spellcheck="false"'
       +' data-say="'+esc(INVITE[o.kind]||'name it')+'"'
       +' data-edit="'+o.kind+':'+esc(String(o.id))+'">'+esc(o.titre)+'</span>'
-    : '<span class="v-name">'+esc(o.titre||'untitled')+'</span>';
+    : '<span class="v-name" dir="auto">'+esc(o.titre||'untitled')+'</span>';
   return '<span class="v-col'+(ZOOM.has(o.kind+':'+String(o.id))?' is-zoom':'')+'"'+(o.ouverte?'':' data-open="'+o.kind+':'+esc(String(o.id))+'" role="button" tabindex="0"')+'>'
     + nom
     + ((o.unit||RO) ?'<span class="v-sub">'+(o.unit||'')+(RO?copieHTML(o.kind+':'+String(o.id)):'')+'</span>':'')
@@ -9089,20 +8893,35 @@ let lastView=null;
 const pkOn=(q,k,id)=>!!pk&&pk.q===q&&pk.k===k&&String(pk.id)===String(id);
 function pkSet(q,k,id){ pk = pkOn(q,k,id) ? null : {q,k,id:String(id)}; renderZone(); }
 
-/* ══ LE RYTHME — ON L'ÉCRIT DANS SA LANGUE ═══════════════════════════
-   `deduceFreq()` lit « tous les matins », « every morning », « jeden
-   Morgen », « ogni mattina » et rend l'un des 33 rythmes. C'est ce qui
-   permet d'écrire au lieu de chercher dans une liste — et ça marche dans
-   toutes les langues sans un appel de modèle, donc sans facture.
-   La liste reste dessous : on écrit OU on choisit, jamais l'un sans
-   l'autre. */
+/* The original Habit text remains the source. Suggestions never change a rhythm on typing. */
+const rhythmIgnored=new Map();
+function rhythmHint(x){
+  if(RO||rhythmIgnored.get(String(x.id))===x.t)return '';
+  const result=parseHabitRhythm(x.t);
+  if(result.status==='matched'){
+    if(result.frequency===x.f)return '';
+    return '<span class="pk-say" role="status">Suggested: '+esc(rhythmSummary(result))+'</span>'
+      +(result.target?'<span class="pk-say">One check-in for the whole period, not one notification per session.</span>':'')
+      +(result.hasClock||result.hasDuration?'<span class="pk-say">Session length and exact times stay in your text. Notifications follow your settings.</span>':'')
+      +'<span class="tracking-actions"><button type="button" class="v-b" data-rhythm="'+esc(String(x.id))+'" data-rhythm-frequency="'+result.frequency+'">Use '+esc(flabel(result.frequency))+' check-in</button>'
+      +'<button type="button" class="v-b" data-rhythm-ignore="'+esc(String(x.id))+'">'+(x.f?'Keep current':'Not now')+'</button></span>';
+  }
+  const message=result.status==='review'?'This timing needs a manual choice. Your current rhythm is unchanged.'
+    :result.hasDuration?'A session length is not a rhythm. Add how often, or choose the rhythm above.':'';
+  return message?'<span class="pk-say" role="status">'+message+'</span>':'';
+}
+function refreshRhythmHint(x){
+  const host=[...$('habits').querySelectorAll('[data-rhythm-preview]')].find(el=>el.dataset.rhythmPreview===String(x.id));
+  if(host)host.innerHTML=rhythmHint(x);
+}
+
 function freqPicker(x){
   const devine = pk&&pk.q==='freq'&&pk.devine ? pk.devine : null;
   return '<span class="pkw">'
     +'<input class="in fq" data-fqin="'+esc(String(x.id))+'" autocomplete="off"'
     +' placeholder="write it in your language" value="'+esc(pk&&pk.txt||'')+'">'
     +(devine?'<button type="button" class="fq-hit" data-fq="'+esc(String(x.id))+'|'+devine+'">'
-      +esc(flabel(devine))+'</button>':'')
+      +esc(rhythmSummary(parseHabitRhythm(pk.txt,{mode:'rhythm'}))||flabel(devine))+'</button>':'')
     +'<span class="pk-list">'
     + FREQS.map(f=>'<button type="button" class="pk-o'+(x.f===f.id?' on':'')
         +'" data-fq="'+esc(String(x.id))+'|'+f.id+'">'+esc(f.label)+'</button>').join('')
@@ -9399,6 +9218,7 @@ function vueHabitude(x,k){
   if(ouverte&&pkOn('int','h',x.id))  haut=intPicker(x,'h');
   if(ouverte&&pkOn('freq','h',x.id)) haut=freqPicker(x);
   if(ouverte&&pkOn('spot','h',x.id)) haut=spotPicker(x);
+  if(ouverte&&!RO)haut='<span class="pkw" data-rhythm-preview="'+esc(String(x.id))+'">'+rhythmHint(x)+'</span>'+haut;
   return ligne(boiteHTML({kind:'h',id:x.id,titre:x.t,unit,minis,ouverte,haut,medias:false,tue:'Delete habit'}),
     ouverte?'open':'', intCols(x), k+1, x.id, k===0, k===NB-1);
 }
@@ -9920,7 +9740,7 @@ function cable(box){
        qui les traite existait et n'était jamais atteint. */
     const el=e.target.closest('[data-fint],[data-ffq],[data-fclear],[data-fx],'
       +'[data-open],[data-add],[data-x],[data-pk],[data-int],[data-mv],[data-go],'
-      +'[data-fq],[data-lien],[data-unlink],[data-nodate],[data-kill],[data-space],[data-spotnew],[data-cloth],[data-totehmize],[data-zoom],[data-copy],[data-cap],[data-emo],[data-emx],[data-baud]');
+      +'[data-rhythm],[data-rhythm-ignore],[data-fq],[data-lien],[data-unlink],[data-nodate],[data-kill],[data-space],[data-spotnew],[data-cloth],[data-totehmize],[data-zoom],[data-copy],[data-cap],[data-emo],[data-emx],[data-baud]');
     if(!el)return;
     const d=el.dataset;
     if(d.baud){ e.stopPropagation(); AUDB.basculer(el); return; }
@@ -9980,8 +9800,15 @@ function cable(box){
     if(d.int){ const p=d.int.split('|');
       const x=habOf(p.length>2?p[1]:p[0]); if(x)intToggle(x,p[p.length-1]);
       renderZone(); return; }
+    if(d.rhythmIgnore){const x=habOf(d.rhythmIgnore);if(x){rhythmIgnored.set(String(x.id),x.t);refreshRhythmHint(x);}return;}
+    if(d.rhythm){
+      const x=habOf(d.rhythm);if(!x)return;
+      const result=parseHabitRhythm(x.t);
+      if(result.status!=='matched'||result.frequency!==d.rhythmFrequency||!FREQ_BY_ID[result.frequency]){refreshRhythmHint(x);return;}
+      x.f=result.frequency;rhythmIgnored.set(String(x.id),x.t);save();pk=null;renderZone();return;
+    }
     if(d.fq){ const p=d.fq.split('|'); const x=habOf(p[0]);
-      if(x){x.f=p[1];save();} pk=null; renderZone(); return; }
+      if(x&&FREQ_BY_ID[p[1]]){x.f=p[1];rhythmIgnored.set(String(x.id),x.t);save();} pk=null; renderZone(); return; }
     if(d.lien){ const p=d.lien.split('|'), q=p[0].split(':');
       attache(q[0],q[1],p[1]); pk=null; renderZone(); return; }
     if(d.unlink){ const p=d.unlink.split('|'), q=p[0].split(':');
@@ -10018,7 +9845,7 @@ function cable(box){
          boîte se vidait de ses liens le temps de la frappe. Maintenant
          la mémoire suit la lettre, et seul le réseau attend. */
       if(p[0]==='h'){ const x=habOf(p[1]); if(!x)return;
-        x.t=v; save({local:1});
+        x.t=v; save({local:1});if(!e.isComposing)refreshRhythmHint(x);
         /* Renommer ne doit pas orpheliner ce qui s'y rattache. `t0` est
            l'ancien nom VRAI — celui que la base a — et pas « le texte
            d'il y a une lettre », qui partait avant et cassait les liens
@@ -10063,6 +9890,10 @@ function cable(box){
         const n=$('habits').querySelector('[data-fqin]');
         if(n){n.focus(); try{n.setSelectionRange(cur,cur);}catch(_){}} }
     }
+  });
+  box.addEventListener('compositionend',e=>{
+    if(RO||!e.target.dataset.edit?.startsWith('h:'))return;
+    const x=habOf(e.target.dataset.edit.slice(2));if(x)refreshRhythmHint(x);
   });
   box.addEventListener('change',e=>{
     if(e.target.dataset.date){ const t=tripOf(e.target.dataset.date); if(!t)return;
@@ -11526,7 +11357,7 @@ $('mw-save-code').addEventListener('input',async()=>{
    frame ou pour de bon, le Totehm de celui d'avant. */
 let sesSeq=0;
 function quitter(){
-  trackingControls.reset();
+  trackingControls.reset();rhythmIgnored.clear();
   roSeq++; HSPACES.seq++; HSPACES.par=new Map(); ECLOTHS.seq++; ECLOTHS.par=new Map(); visImgSeq++; VISIMG.clear(); ZOOM.clear(); COPIES.clear();
   state={habits:[],vis:'private'}; myProfile=null; cloudMode=false; LAND=null; if(lvQuitter) lvQuitter();
   EMEDIA.seq++; EMEDIA.items=[]; EMEDIA.par=new Map(); EMEDIA.charge=false; SIGNE_EM.clear(); SH.vider(); SHS.vider(); BADGE.vider(); CAP.fermer();
