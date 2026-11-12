@@ -31,8 +31,8 @@ try{
   const ouv = await pg.evaluate(() => ({ vimg:document.querySelectorAll('#habits [data-vimg],#habits [data-vimg-x]').length,
     media:[...document.querySelectorAll('#habits .habit.open [data-cap]')].map(e => e.textContent.trim()),
     img:!!document.querySelector('#habits .v-img') }));
-  ok(ouv.vimg === 0 && ouv.media.length === 1 && ouv.media[0] === 'Add a media' && ouv.img,
-     'ouverte : UN seul geste, [Add a media] ; plus de bouton « image » ; l\'image posée reste : ' + JSON.stringify(ouv));
+  ok(ouv.vimg === 0 && ouv.media.length === 1 && ouv.media[0] === 'Add a media to visualize it' && ouv.img,
+     'ouverte : UN seul geste, [Add a media to visualize it] ; plus de bouton « image » ; l\'image posée reste : ' + JSON.stringify(ouv));
   await pg.screenshot({ path:OUT + '/com_vision_image.png' });
   ok(!erreurs(log).length, 'aucune erreur ' + erreurs(log).join(' | '));
 }finally{ await browser.close(); }

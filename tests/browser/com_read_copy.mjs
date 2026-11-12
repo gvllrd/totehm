@@ -89,6 +89,9 @@ try{
      faisaient sauter deux vues. 8 événements « doigt » de 30 px, puis 40 d'inertie qui décroissent. */
   const vue=()=>pg.$eval('#joy',e=>(e.className.match(/v-(\w+)/)||[])[1]);
   const geste=async(sur,signe)=>{const p=sur==='dehors'?[60,400]:await pg.$eval(sur==='joy'?'#joy-box':'#fv-inner',e=>{const r=e.getBoundingClientRect();return [r.x+r.width/2,r.y+r.height/2];});
+    /* 12/11 — la liste est PLUS HAUTE depuis que les intitulés se voient : on la pose d'abord sur son bord,
+       puisque la règle qu'on mesure est « plus bas que le BAS → la vue du dessous », pas « 280 px suffisent ». */
+    if(sur==='liste'){await pg.evaluate(d=>{const e=document.querySelector('#fv-inner');if(e)e.scrollTop=d>0?e.scrollHeight:0;},signe);await pg.waitForTimeout(120);}
     await pg.mouse.move(p[0],p[1]);const vus=[await vue()];
     for(let i=0;i<48;i++){await pg.mouse.wheel(0,signe*(i<8?30:Math.max(1,Math.round(30*Math.pow(.93,i-8)))));await pg.waitForTimeout(16);
       const v=await vue();if(v!==vus[vus.length-1])vus.push(v);}

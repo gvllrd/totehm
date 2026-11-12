@@ -69,7 +69,7 @@ try{
     fixe:!!document.querySelector('#rdr-new .sfg span.sfc.ns-c.is-on'),
     choix:!document.querySelector('#rdr-new [data-ns="ou"]'),
     aud:[...document.querySelectorAll('#rdr-new [data-ns="aud"]')].map(e=>e.childNodes[0].textContent)}));
-  ok(/^A spot is a Habit of your TOTEHM that becomes an action in one exact place, one exact moment\.$/.test(n1.def),
+  ok(/^A spot is your TOTEHM Habit in action: exact place, exact time, right people, your conditions\.$/.test(n1.def),
      nom+' · le panneau DIT ce qu\'est un spot, avant tout : « '+n1.def.slice(0,72)+'… »');
   ok(!n1.l.includes('the day and the hour')&&n1.l.includes('where')&&n1.fixe&&n1.choix&&n1.ou==='Lisbon',
      nom+' · NOW : AUCUNE date, et WHERE est imposé à [here] — la position se prend seule, la ville en découle (« '+n1.ou+' »)');

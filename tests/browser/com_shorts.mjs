@@ -234,12 +234,13 @@ try{
   const puce=await pg.evaluate(()=>[...document.querySelectorAll('#habits .habit.open .m-f .mini-t')].map(b=>b.textContent));
   ok(puce.length===2&&puce.every(t=>t==='Visualize it'),'de retour dans le Totehm, les deux fichiers sont là, dans l\'élément (« Visualize it », pas leur nom)');
   // ouvrir, retirer un fichier
-  /* les fichiers disent « Visualize it » : on reconnaît le PDF à son icône de document */
-  const doc=()=>pg.evaluate(()=>[...document.querySelectorAll('#habits .habit.open .m-f')].findIndex(m=>/M6 3h8/.test(m.innerHTML)));
-  await pg.evaluate(()=>[...document.querySelectorAll('#habits .habit.open .m-f')].find(m=>/M6 3h8/.test(m.innerHTML)).querySelector('.mini-t').click());await pg.waitForTimeout(500);
+  /* 12/11 — les puces ont toutes le MÊME format, icône vidéo comprise (Wah) : le PDF se reconnaît à
+     `data-emk="file"`, le DOM dit le genre que l'œil ne trie plus. */
+  const doc=()=>pg.evaluate(()=>[...document.querySelectorAll('#habits .habit.open .m-f')].findIndex(m=>m.dataset.emk==='file'));
+  await pg.evaluate(()=>document.querySelector('#habits .habit.open .m-f[data-emk="file"] .mini-t').click());await pg.waitForTimeout(500);
   ok(await pg.evaluate(()=>window.__ouvert.some(u=>/\/storage\/v1\/object\/sign\/element-media\//.test(u))),'un fichier s\'ouvre par son URL signée');
   const dels=log.upload.filter(u=>u.method==='DELETE').length;
-  await pg.evaluate(()=>[...document.querySelectorAll('#habits .habit.open .m-f')].find(m=>/M6 3h8/.test(m.innerHTML)).querySelector('[data-emx]').click());await pg.waitForTimeout(700);
+  await pg.evaluate(()=>document.querySelector('#habits .habit.open .m-f[data-emk="file"] [data-emx]').click());await pg.waitForTimeout(700);
   ok(log.rpc.some(r=>r.name==='element_media_remove')&&log.upload.filter(u=>u.method==='DELETE').length===dels+1&&(await doc())===-1,'« × » : element_media_remove, le fichier s\'efface de mon dossier');
   // renommer : ses fichiers suivent ; supprimer : ils partent
   await pg.locator('#habits .habit.open .v-name[data-edit]').click();
@@ -316,6 +317,22 @@ try{
      '26/10 · MON spot : trois niveaux en boucle — '+niv.join(' · ')+' ; les spots des autres n\'ont qu\'un mot');
   await pg.keyboard.press('Escape');await pg.waitForTimeout(500);
   ok(await pg.evaluate(()=>!document.body.classList.contains('rdr-voir')&&window.__totehm_lv().vue==='d'),'Échap referme la vue agrandie : on est de retour sur la carte');
+  /* 12/11 (Wah) — ON ABAISSE UN SPOT AGRANDI : « qu'on puisse les fermer une fois agrandis, ou qu'on puisse
+     les abaisser en mode glisser avec un trait en haut de la fenêtre ». Le trait tient le geste à lui seul. */
+  if(tel) await pg.touchscreen.tap(pt[0],pt[1]); else await pg.mouse.click(pt[0],pt[1]);
+  await pg.waitForTimeout(900);
+  const g0=await pg.evaluate(()=>{const g=document.getElementById('rdr-grab'),c=getComputedStyle(g),r=g.getBoundingClientRect();
+    return {vu:c.display, prise:c.touchAction, x:Math.round(r.x+r.width/2), y:Math.round(r.y+r.height/2)};});
+  ok(g0.vu==='flex'&&g0.prise==='none',
+     '12/11 · un spot agrandi porte SON trait en haut, et lui seul prend le geste → '+JSON.stringify(g0));
+  await pg.mouse.move(g0.x,g0.y); await pg.mouse.down();
+  for(let k=1;k<=10;k++){ await pg.mouse.move(g0.x,g0.y+k*40); await pg.waitForTimeout(16); }
+  const suit=await pg.evaluate(()=>document.getElementById('rdr-sh').style.transform);
+  await pg.mouse.up(); await pg.waitForTimeout(700);
+  const apres=await pg.evaluate(()=>({voit:document.body.classList.contains('rdr-voir'),
+    reste:document.getElementById('rdr-sh').style.transform+'|'+document.getElementById('rdr-grab').style.transform}));
+  ok(/translateY\(\d/.test(suit)&&!apres.voit&&apres.reste==='|',
+     '12/11 · on le descend au doigt : il SUIT ('+suit+'), puis il s\'en va et rien ne reste posé');
   await pg.click('#lvn-lf');await vers(pg,'c');await pg.waitForTimeout(300);
 
   // ══ 4 bis · LE TOTEHM DOCKÉ CHOISIT LA BOX, LE FILTRE EST PROPRE À LA VUE, L'IMAGE SE RECADRE ══

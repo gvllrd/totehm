@@ -1,5 +1,5 @@
 // 08/10/2026 (ter) — COM ↔ higher.boutique : la boutique se cale dans WISDOM (MY STORY), comme SPACE dans les habits.
-// 13/10 : MY STORY seul (plus de VISION) ; le compte se dit en points (≤ 3), plus en mots.
+// 12/11 : « + totehmize » dans TOUTES les vues (Wah) ; le compte se dit en points (≤ 3), plus en mots.
 // Fermée, une leçon dit combien de Cloths la portent ; ouverte, elle les montre (nom Coral, étape) et « + totehmize »
 // part sur /streetwear avec CET élément ; un Cloth ouvre sa page Decode. Par le pont SSO. Tout est simulé.
 // LANCER : node com_cloths.mjs /tmp
@@ -56,14 +56,15 @@ try{
      '« + totehmize » → /streetwear avec l\'élément, par le pont SSO → ' + u);
    ok(!erreurs(log).length, 'WISDOM : aucune erreur ' + erreurs(log).join(' | ')); await pg.context().close();
  }
- /* ── 2 · un Cloth ouvre sa page Decode ; VISION a aussi « + totehmize » ── */
+ /* ── 2 · un Cloth ouvre sa page Decode ; 12/11 : TOUTES les vues ont « + totehmize » (Wah) ── */
  { const { pg, log } = await page(browser, { dir:'com', origin, tables:{ profiles:[{ pseudo:'wah' }] }, network,
      rpc:{ my_landing:land, my_trips:trips, habit_spaces:{ ok:true, mine:true, habits:[] }, element_cloths:mine }, functions:{ 'sso-mint':{ code:CODE } } });
    await ouvrir(pg);
    await vers(pg, 'ArrowRight', 'visions');
    await pg.locator('#habits [data-open="v:v1"]').evaluate(e => e.click()); await pg.waitForTimeout(400);
-   ok((await pg.locator('#habits [data-totehmize]').count()) === 0 && (await pg.locator('#habits [data-cloth]').count()) === 0,
-     'VISION : ni Cloth ni « + totehmize » (MY STORY seul)');
+   ok((await pg.evaluate(() => document.querySelector('#habits [data-totehmize]')?.dataset.totehmize)) === 'vision:v1'
+     && (await pg.locator('#habits [data-cloth]').count()) === 0,
+     '12/11 · VISION porte « + totehmize » (vision:v1), sans Cloth : la boutique prend N\'IMPORTE QUELLE box');
    await vers(pg, 'ArrowLeft', 'habits'); await vers(pg, 'ArrowLeft', 'wisdom');
    await pg.locator('#habits [data-open="w:w1"]').evaluate(e => e.click()); await pg.waitForTimeout(400);
    const nav = pg.waitForURL(/higher\.boutique/, { timeout:8000 }).then(() => pg.url(), () => '');
