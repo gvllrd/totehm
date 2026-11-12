@@ -12,8 +12,9 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.57.4';
 export const URL_SB=Deno.env.get('SUPABASE_URL')!;
 export const admin=createClient(URL_SB,Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,{auth:{persistSession:false}});
 const ENV_LIBRARY=Deno.env.get('BUNNY_LIBRARY_ID') || '';
-const ENV_API=Deno.env.get('BUNNY_API_KEY') || '';
-const ACCOUNT=Deno.env.get('BUNNY_ACCOUNT_API_KEY') || ENV_API;
+/* une clé collée garde parfois un espace ou un retour : invisible, il fait échouer la requête avant Bunny */
+const ENV_API=(Deno.env.get('BUNNY_API_KEY') || '').trim();
+const ACCOUNT=(Deno.env.get('BUNNY_ACCOUNT_API_KEY') || '').trim() || ENV_API;
 /** Kept for older imports; the RESOLVED library is `(await config()).library`. */
 export const library=ENV_LIBRARY;
 export const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -108,7 +109,7 @@ export async function config():Promise<Config>{
         envRead=Deno.env.get('BUNNY_READ_ONLY_API_KEY') || '';
   try{
    let lib:Json|null=null;
-   try{lib=await findLibrary(diag);}catch{diag.account_api_status='error';}
+   try{lib=await findLibrary(diag);}catch(e){diag.account_api_status='error';diag.account_error=String((e as Error)?.name || 'error').slice(0,40);}
    LIB={id:lib?.Id!=null?String(lib.Id):ENV_LIBRARY,api:(lib?.ApiKey || '') || ENV_API};
    readKey=(lib?.ReadOnlyApiKey || '') || envRead;
    if(LIB.id && LIB.api){
