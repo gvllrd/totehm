@@ -143,10 +143,12 @@ footer a:hover,
 }
 /* ══ FIN DU BLOC GÉNÉRÉ ══ */
 /* ══ LE COIN MEMBRE — copié de tools/member_corner.css dans chaque page (jamais importé), EN DERNIER dans son style ══
-   L'élément porte la classe `mc` ; la page pose `is-in` quand le membre est connecté (rien d'autre à faire).
+   L'élément porte la classe `mc` ; la page pose `is-in` quand le membre est connecté (rien d'autre à faire),
+   et met le nom dans son `#member-txt` (ou son dernier enfant texte) : le bloc fait le reste.
    Déconnecté : CONNECT WITH MY TOTEHM = un bouton normal (gris, 10 px de rayon, ajusté au label), jamais coral.
-   Connecté : le NOM, en Quantico coral, centré sur son papier navy perforé — le TOTEHM au verso (carré, 12 trous) :
-   il rappelle que totehm.com est le centre. Un nom long RÉTRÉCIT (`--mc-fs`, posé par member_corner.js), la pièce non.
+   Connecté : LE TOTEHM, une seule pièce qui TOURNE (Wah) — recto le logo plein, verso le NOM du membre en
+   Quantico coral posé sur tout le carré (nomenclature : `tools/totehm_name.js`). Un seul morceau de papier,
+   vu des deux côtés : les perforations sont symétriques, donc les deux faces ont la même silhouette.
    « Simple terms of use » (`mc-terms`) : tout en bas, discret ; la page l'efface sur une vue qui défile. */
 .mc:not(.is-in){font:700 10px/1.45 'Space Mono',monospace!important;letter-spacing:.06em!important;text-transform:uppercase!important;
   color:#b0b0b0!important;background:#252529!important;border:0!important;border-radius:10px!important;padding:.65em .95em!important;
@@ -154,23 +156,40 @@ footer a:hover,
   white-space:normal!important;overflow-wrap:normal!important;box-shadow:none!important;gap:0!important;cursor:pointer}
 .mc:not(.is-in) *{font:inherit!important;letter-spacing:inherit!important;text-transform:inherit!important;color:inherit!important;
   max-width:none!important;white-space:normal!important;overflow:visible!important}
-.mc.is-in{--mc-s:64px;width:var(--mc-s)!important;height:var(--mc-s)!important;min-width:var(--mc-s)!important;max-width:var(--mc-s)!important;
-  flex:none!important;box-sizing:border-box!important;padding:0 calc(var(--mc-s) * .1)!important;border:0!important;border-radius:0!important;box-shadow:none!important;
-  display:flex!important;align-items:center!important;justify-content:center!important;text-align:center!important;overflow:hidden!important;gap:0!important;
-  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 224.88 224.08' preserveAspectRatio='none'%3E%3Cdefs%3E%3Cmask id='m'%3E%3Crect x='-40' y='-40' width='310' height='310' fill='%23fff'/%3E%3Ccircle cx='56.421' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='56.421' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='112.440' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='112.440' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='168.459' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='168.459' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='56.020' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='56.020' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='112.039' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='112.039' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='168.059' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='168.059' r='13.86' fill='%23000'/%3E%3C/mask%3E%3C/defs%3E%3Crect x='0.402' y='0' width='224.076' height='224.078' fill='%23333366' mask='url(%23m)'/%3E%3C/svg%3E") 0 0/100% 100% no-repeat!important;
-  font:400 var(--mc-fs,12px)/1.15 'Quantico',sans-serif!important;letter-spacing:0!important;text-transform:none!important;color:#fbd5ca!important;
-  white-space:nowrap!important;cursor:pointer;animation:mc-pose .35s cubic-bezier(.2,.9,.25,1) both}
-.mc.is-in[data-mc-long]{white-space:normal!important;overflow-wrap:anywhere!important}
-.mc>i,.mc>.dot,.mc>.dc{display:none!important}
-.mc.is-in *{font:inherit!important;letter-spacing:0!important;text-transform:none!important;color:inherit!important;background:none!important;
-  max-width:100%!important;overflow:visible!important;text-overflow:clip!important;white-space:inherit!important;padding:0!important}
+/* ⚠️ LE PAPIER N'EST PLUS SUR LE BOUTON : il est sur ses DEUX FACES, sinon la pièce n'a pas d'envers.
+   `backface-visibility` AUSSI sur les enfants des faces (Safari les laisse traverser autrement). */
+.mc.is-in{--mc-s:64px;position:relative!important;display:block!important;
+  width:var(--mc-s)!important;height:var(--mc-s)!important;min-width:var(--mc-s)!important;max-width:var(--mc-s)!important;
+  flex:none!important;box-sizing:border-box!important;padding:0!important;border:0!important;border-radius:0!important;
+  box-shadow:none!important;background:none!important;overflow:visible!important;
+  perspective:calc(var(--mc-s) * 4.36);cursor:pointer;-webkit-tap-highlight-color:transparent;
+  animation:mc-pose .35s cubic-bezier(.2,.9,.25,1) both}
+.mc.is-in>*:not(.mcp){display:none!important}   /* le libellé de la page : la pièce le remplace */
+.mcp{position:absolute;inset:0;transform-style:preserve-3d;will-change:transform}
+.mcp-f{position:absolute;inset:0;background:0 0/100% 100% no-repeat;
+  backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.mcp-f *{backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.mcp-r{transform:translateZ(.5px);background-image:url("data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20224.88%20224.08%22%20preserveAspectRatio=%22none%22%3E%3Cdefs%3E%3Cmask%20id=%22tplg%22%20maskUnits=%22userSpaceOnUse%22%20x=%22-40%22%20y=%22-40%22%20width=%22310%22%20height=%22310%22%3E%3Crect%20x=%22-40%22%20y=%22-40%22%20width=%22310%22%20height=%22310%22%20fill=%22%23fff%22/%3E%3Ccircle%20cx=%2256.42%22%20cy=%220%22%20r=%2213.86%22%20fill=%22%23000%22/%3E%3Ccircle%20cx=%2256.42%22%20cy=%22224.08%22%20r=%2213.86%22%20fill=%22%23000%22/%3E%3Ccircle%20cx=%22112.44%22%20cy=%220%22%20r=%2213.86%22%20fill=%22%23000%22/%3E%3Ccircle%20cx=%22112.44%22%20cy=%22224.08%22%20r=%2213.86%22%20fill=%22%23000%22/%3E%3Ccircle%20cx=%22168.46%22%20cy=%220%22%20r=%2213.86%22%20fill=%22%23000%22/%3E%3Ccircle%20cx=%22168.46%22%20cy=%22224.08%22%20r=%2213.86%22%20fill=%22%23000%22/%3E%3Ccircle%20cx=%220.4%22%20cy=%2256.02%22%20r=%2213.86%22%20fill=%22%23000%22/%3E%3Ccircle%20cx=%22224.48%22%20cy=%2256.02%22%20r=%2213.86%22%20fill=%22%23000%22/%3E%3Ccircle%20cx=%220.4%22%20cy=%22112.04%22%20r=%2213.86%22%20fill=%22%23000%22/%3E%3Ccircle%20cx=%22224.48%22%20cy=%22112.04%22%20r=%2213.86%22%20fill=%22%23000%22/%3E%3Ccircle%20cx=%220.4%22%20cy=%22168.06%22%20r=%2213.86%22%20fill=%22%23000%22/%3E%3Ccircle%20cx=%22224.48%22%20cy=%22168.06%22%20r=%2213.86%22%20fill=%22%23000%22/%3E%3C/mask%3E%3C/defs%3E%3Crect%20x=%220.4%22%20y=%220%22%20width=%22224.08%22%20height=%22224.08%22%20fill=%22%23333366%22%20mask=%22url(%23tplg)%22/%3E%3Crect%20x=%2220.65%22%20y=%220.26%22%20width=%2217.19%22%20height=%22223.55%22%20fill=%22%23626286%22/%3E%3Cg%20fill=%22%23fff%22%3E%3Crect%20x=%2279.87%22%20y=%2248.03%22%20width=%2266.71%22%20height=%229.64%22/%3E%3Crect%20x=%22108.41%22%20y=%2248.03%22%20width=%229.64%22%20height=%2266.71%22/%3E%3Crect%20x=%22100.18%22%20y=%22110.39%22%20width=%2226.1%22%20height=%224.36%22/%3E%3Cpath%20transform=%22translate(87.38%20137.36)%22%20d=%22M%205.55%20-14.09%20L%200.09%20-14.09%20L%200.09%20-15.52%20L%2012.64%20-15.52%20L%2012.64%20-14.09%20L%207.19%20-14.09%20L%207.19%200%20L%205.55%200%20Z%20M%205.55%20-14.09%22/%3E%3Cpath%20transform=%22translate(104.67%20137.36)%22%20d=%22M%209.31%200.14%20C%207.77%200.14%206.38%20-0.2%205.12%20-0.89%20C%203.88%20-1.58%202.91%20-2.52%202.2%20-3.72%20C%201.5%20-4.91%201.16%20-6.27%201.16%20-7.77%20C%201.16%20-9.25%201.5%20-10.6%202.2%20-11.8%20C%202.91%20-12.99%203.88%20-13.94%205.12%20-14.62%20C%206.38%20-15.31%207.77%20-15.66%209.31%20-15.66%20C%2010.85%20-15.66%2012.24%20-15.31%2013.47%20-14.62%20C%2014.71%20-13.95%2015.68%20-13%2016.39%20-11.8%20C%2017.1%20-10.6%2017.45%20-9.25%2017.45%20-7.77%20C%2017.45%20-6.27%2017.1%20-4.91%2016.39%20-3.7%20C%2015.68%20-2.5%2014.71%20-1.56%2013.47%20-0.88%20C%2012.24%20-0.2%2010.85%200.14%209.31%200.14%20Z%20M%209.31%20-1.33%20C%2010.54%20-1.33%2011.65%20-1.6%2012.64%20-2.16%20C%2013.63%20-2.72%2014.41%20-3.49%2014.97%20-4.47%20C%2015.53%20-5.45%2015.81%20-6.55%2015.81%20-7.77%20C%2015.81%20-8.97%2015.53%20-10.07%2014.97%20-11.05%20C%2014.41%20-12.04%2013.63%20-12.8%2012.64%20-13.36%20C%2011.65%20-13.91%2010.54%20-14.19%209.31%20-14.19%20C%208.08%20-14.19%206.97%20-13.91%205.97%20-13.36%20C%204.98%20-12.8%204.2%20-12.04%203.62%20-11.05%20C%203.05%20-10.07%202.77%20-8.97%202.77%20-7.77%20C%202.77%20-6.55%203.05%20-5.45%203.62%20-4.47%20C%204.2%20-3.49%204.98%20-2.72%205.97%20-2.16%20C%206.97%20-1.6%208.08%20-1.33%209.31%20-1.33%20Z%20M%209.31%20-1.33%22/%3E%3Cpath%20transform=%22translate(127.84%20137.36)%22%20d=%22M%205.55%20-14.09%20L%200.09%20-14.09%20L%200.09%20-15.52%20L%2012.64%20-15.52%20L%2012.64%20-14.09%20L%207.19%20-14.09%20L%207.19%200%20L%205.55%200%20Z%20M%205.55%20-14.09%22/%3E%3Cpath%20transform=%22translate(71.84%20168.28)%22%20d=%22M%2018.59%20-2.64%20L%2018.59%200%20L%203.19%200%20L%203.19%20-21.23%20L%2018.17%20-21.23%20L%2018.17%20-18.59%20L%206.22%20-18.59%20L%206.22%20-12.08%20L%2016.88%20-12.08%20L%2016.88%20-9.5%20L%206.22%20-9.5%20L%206.22%20-2.64%20Z%20M%2018.59%20-2.64%22/%3E%3Cpath%20transform=%22translate(97.16%20168.28)%22%20d=%22M%2021.45%20-21.23%20L%2021.45%200%20L%2018.42%200%20L%2018.42%20-9.47%20L%206.22%20-9.47%20L%206.22%200%20L%203.19%200%20L%203.19%20-21.23%20L%206.22%20-21.23%20L%206.22%20-12.11%20L%2018.42%20-12.11%20L%2018.42%20-21.23%20Z%20M%2021.45%20-21.23%22/%3E%3Cpath%20transform=%22translate(126.8%20168.28)%22%20d=%22M%2022.88%200%20L%2022.84%20-15.47%20L%2015.17%20-2.58%20L%2013.78%20-2.58%20L%206.09%20-15.39%20L%206.09%200%20L%203.19%200%20L%203.19%20-21.23%20L%205.67%20-21.23%20L%2014.53%20-6.31%20L%2023.28%20-21.23%20L%2025.77%20-21.23%20L%2025.8%200%20Z%20M%2022.88%200%22/%3E%3C/g%3E%3C/svg%3E")}
+.mcp-b{transform:rotateY(180deg) translateZ(.5px);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 224.88 224.08' preserveAspectRatio='none'%3E%3Cdefs%3E%3Cmask id='m'%3E%3Crect x='-40' y='-40' width='310' height='310' fill='%23fff'/%3E%3Ccircle cx='56.421' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='56.421' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='112.440' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='112.440' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='168.459' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='168.459' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='56.020' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='56.020' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='112.039' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='112.039' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='168.059' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='168.059' r='13.86' fill='%23000'/%3E%3C/mask%3E%3C/defs%3E%3Crect x='0.402' y='0' width='224.076' height='224.078' fill='%23333366' mask='url(%23m)'/%3E%3C/svg%3E")}
+/* La lumière : un voile posé par le moteur selon l'angle de la pièce face à une lumière venue d'en haut à
+   gauche. Ce n'est pas une ombre portée (BRAND : aucune ombre) : c'est la surface qui prend la lumière,
+   découpée à la forme du papier — tout ce qui se pose SUR le papier suit ses trous. */
+.mcp-l{position:absolute;inset:0;z-index:8;pointer-events:none;opacity:0;
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 224.88 224.08' preserveAspectRatio='none'%3E%3Cdefs%3E%3Cmask id='m'%3E%3Crect x='-40' y='-40' width='310' height='310' fill='%23fff'/%3E%3Ccircle cx='56.421' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='56.421' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='112.440' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='112.440' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='168.459' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='168.459' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='56.020' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='56.020' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='112.039' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='112.039' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='168.059' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='168.059' r='13.86' fill='%23000'/%3E%3C/mask%3E%3C/defs%3E%3Crect x='0.402' y='0' width='224.076' height='224.078' fill='%23333366' mask='url(%23m)'/%3E%3C/svg%3E") center/100% 100% no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 224.88 224.08' preserveAspectRatio='none'%3E%3Cdefs%3E%3Cmask id='m'%3E%3Crect x='-40' y='-40' width='310' height='310' fill='%23fff'/%3E%3Ccircle cx='56.421' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='56.421' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='112.440' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='112.440' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='168.459' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='168.459' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='56.020' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='56.020' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='112.039' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='112.039' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='168.059' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='168.059' r='13.86' fill='%23000'/%3E%3C/mask%3E%3C/defs%3E%3Crect x='0.402' y='0' width='224.076' height='224.078' fill='%23333366' mask='url(%23m)'/%3E%3C/svg%3E") center/100% 100% no-repeat}
+/* LES LETTRES DU VERSO — dessinées à 24 px et mises à l'échelle : la position et la taille s'animent
+   ensemble, en `transform` seul. Les points sont les cases vides de la trame. */
+.tn-l{position:absolute;left:0;top:0;z-index:2;transform-origin:0 0;white-space:pre;
+  font:400 24px/1 'Quantico',sans-serif!important;letter-spacing:.04em!important;text-transform:none!important;
+  color:#fbd5ca!important;background:none!important}
+.tn-v{position:absolute;z-index:1;width:2.5px;height:2.5px;border-radius:50%;background:#626286;
+  transform:translate(-50%,-50%);opacity:.5}
 @keyframes mc-pose{from{opacity:0;transform:scale(.86)}}
 @media(max-width:600px){.mc.is-in{--mc-s:58px}}
 .mc-terms{position:fixed;left:12px;bottom:calc(8px + env(safe-area-inset-bottom,0px));z-index:30;font:400 8px/1.3 'Space Mono',monospace;
   letter-spacing:.08em;text-transform:uppercase;color:#707077;text-decoration:none;padding:4px;opacity:1;visibility:visible;
   transition:opacity .25s,visibility 0s}
-@media(hover:hover){.mc:hover,.mc:hover *,.mc-terms:hover{color:#fff!important}}
-@media(prefers-reduced-motion:reduce){.mc.is-in{animation:none}.mc-terms{transition:none}}
+@media(hover:hover){.mc:not(.is-in):hover,.mc:not(.is-in):hover *,.mc-terms:hover{color:#fff!important}}
+@media(prefers-reduced-motion:reduce){.mc.is-in{animation:none}.mcp{will-change:auto}.mcp-l{display:none}.mc-terms{transition:none}}
 </style>
 </head>
 <body>
@@ -361,26 +380,238 @@ sb.auth.onAuthStateChange(event=>{if(event!=='INITIAL_SESSION')setTimeout(sessio
 sessionChange();
 </script>
 <script>
-/* ══ LE COIN MEMBRE — copié de tools/member_corner.js dans chaque page (jamais importé) ══
-   Le NOM d'un membre tient sur son papier : il RÉTRÉCIT (13 → 8 px sur une ligne, puis deux lignes jusqu'à 6 px),
-   le papier ne change jamais. Mesuré, jamais deviné : à chaque nom posé, à chaque taille, une fois les polices là. */
-(() => {
-  const fit = el => {
-    if (!el.classList.contains('is-in')) { el.style.removeProperty('--mc-fs'); delete el.dataset.mcLong; return; }
-    if (!el.clientWidth) return;
-    let fs = 13; delete el.dataset.mcLong; el.style.setProperty('--mc-fs', fs + 'px');
-    while (fs > 8 && el.scrollWidth > el.clientWidth + .5) { fs -= .5; el.style.setProperty('--mc-fs', fs + 'px'); }
-    if (el.scrollWidth > el.clientWidth + .5) {
-      el.dataset.mcLong = '1';
-      while (fs > 6 && el.scrollHeight > el.clientHeight + .5) { fs -= .5; el.style.setProperty('--mc-fs', fs + 'px'); }
+/* ══ LA NOMENCLATURE DU VERSO — copié de tools/totehm_name.js dans chaque page (jamais importé) ══
+   Le NOM d'un TOTEHM prend TOUT le carré de son verso. Sur une ligne il rapetissait jusqu'à 5,5 px
+   (mesuré : 4,1 px au coin membre pour 24 lettres) ; posé sur la trame des 12 trous il reste 2 à 2,5 fois
+   plus grand. La règle, la même partout :
+
+     1 – 5 lettres  → une ligne, centrée (en grille elles seraient PLUS PETITES : mesuré × 0,63)
+     6 – 16         → 4 colonnes, 2 à 4 lignes
+     17 – 25        → 5 colonnes, 4 à 5 lignes
+     26 +           → 25 lettres, la suite en ·
+
+   Lecture gauche → droite, haut → bas : le nom se LIT toujours. La dernière ligne est centrée. Le décalage
+   de chaque lettre (±8 % de sa case) et les points des cases vides viennent du nom LUI-MÊME : même nom,
+   même dessin, sur les quatre domaines — c'est l'empreinte du membre, jamais du hasard.
+   Quantico n'a pas de chasse fixe : on MESURE (un étalon caché), jamais on ne devine.
+   Les lettres sont dessinées à 24 px et mises à l'échelle : une position et une taille s'animent ensemble,
+   en `transform` seul, donc sans reflow — c'est ce qui permet au nom de se reformer en UNE ligne sans coupure. */
+window.TOTEHM_NOM = (() => {
+  const BASE = 24, PAD = .09, MAX = 25;
+  let etalon = null, cache = Object.create(null);
+
+  function mesurer(txt){
+    if (!txt) return 0;
+    if (cache[txt] != null) return cache[txt];
+    if (!etalon){
+      etalon = document.createElement('span');
+      etalon.setAttribute('aria-hidden', 'true');
+      etalon.style.cssText = 'position:absolute;left:-9999px;top:0;white-space:pre;visibility:hidden;'
+        + "font:400 " + BASE + "px 'Quantico',sans-serif;letter-spacing:.04em";
+      document.body.appendChild(etalon);
     }
+    etalon.textContent = txt;
+    return (cache[txt] = etalon.getBoundingClientRect().width);
+  }
+  /* les polices arrivent après la première peinture : tout ce qui a été mesuré avant est faux */
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { cache = Object.create(null); });
+
+  function plan(nom){
+    const tout = Array.from((nom || '').trim());
+    if (!tout.length) return null;
+    const L = tout.slice(0, MAX);
+    if (tout.length > MAX) L[MAX - 1] = '·';
+    const N = L.length;
+    if (N <= 5) return { L, N, C:N, R:1, cells:L.map((c, i) => ({ c, col:i, row:0 })) };
+    const C = Math.min(5, Math.max(4, Math.ceil(Math.sqrt(N))));
+    const R = Math.ceil(N / C), reste = N - (R - 1) * C, dec = (C - reste) / 2, cells = [];
+    for (let i = 0; i < N; i++){
+      const row = Math.floor(i / C);
+      cells.push({ c:L[i], col:(i % C) + (row === R - 1 ? dec : 0), row });
+    }
+    return { L, N, C, R, cells };
+  }
+  /* FNV-1a sur le nom : stable d'un domaine à l'autre, d'une session à l'autre */
+  function bruit(nom, i){
+    let h = 2166136261; const s = nom + '|' + i;
+    for (let k = 0; k < s.length; k++){ h ^= s.charCodeAt(k); h = (h * 16777619) >>> 0; }
+    return ((h % 1000) / 1000) - .5;
+  }
+
+  /* Peint le nom dans `hote` (un carré de `S` px, positionné). Rend la taille de lettre obtenue. */
+  function poser(hote, nom, S, opt){
+    const o = opt || {}, p = plan(nom);
+    hote.textContent = '';
+    hote.removeAttribute('data-nom');
+    if (!p || !S) return 0;
+    const pad = S * PAD, inner = S - 2 * pad, k = BASE / 100;
+    let px, place;
+    if (p.R === 1){
+      px = Math.min(S * .34, inner / (mesurer(p.L.join('')) / BASE));
+      let x = (S - mesurer(p.L.join('')) * px / BASE) / 2;
+      place = (c) => { const r = [x, S / 2 - px * .36]; x += mesurer(c) * px / BASE; return r; };
+    } else {
+      const cw = inner / p.C, ch = inner / p.R;
+      let large = 0; for (const c of p.L) large = Math.max(large, mesurer(c));
+      px = Math.min(cw * .94 / (large / BASE), ch * .94);
+      place = (c, i) => {
+        const k2 = p.cells[i];
+        const cx = pad + (k2.col + .5) * cw + bruit(nom, i) * cw * .16;
+        const cy = pad + (k2.row + .5) * ch + bruit(nom, i + 99) * ch * .16;
+        return [cx - mesurer(c) * px / BASE / 2, cy - px * .36];
+      };
+    }
+    const e = px / BASE;
+    p.L.forEach((c, i) => {
+      const [x, y] = place(c, i);
+      const el = document.createElement('span');
+      el.className = 'tn-l'; el.textContent = c;
+      el.dataset.gx = x.toFixed(2); el.dataset.gy = y.toFixed(2); el.dataset.gs = e.toFixed(4);
+      el.style.transform = 'translate(' + el.dataset.gx + 'px,' + el.dataset.gy + 'px) scale(' + el.dataset.gs + ')';
+      hote.appendChild(el);
+    });
+    /* les cases vides : la trame se voit, comme les trous d'une carte perforée */
+    if (p.R > 1 && o.vides !== false){
+      const cw = inner / p.C, ch = inner / p.R, pris = {};
+      p.cells.forEach(k2 => { pris[k2.row + ':' + Math.round(k2.col * 2)] = 1; });
+      for (let r = 0; r < p.R; r++) for (let c = 0; c < p.C; c++){
+        if (pris[r + ':' + (c * 2)] || pris[r + ':' + (c * 2 + 1)]) continue;
+        const d = document.createElement('i');
+        d.className = 'tn-v';
+        d.style.left = (pad + (c + .5) * cw).toFixed(2) + 'px';
+        d.style.top = (pad + (r + .5) * ch).toFixed(2) + 'px';
+        hote.appendChild(d);
+      }
+    }
+    hote.setAttribute('data-nom', nom);
+    return px;
+  }
+
+  /* LE RETOUR À LA LIGNE — les MÊMES lettres glissent de leur case vers `cibles` (une position par lettre,
+     en px dans le repère de l'hôte) : aucune n'apparaît, aucune ne disparaît. Sans cibles, elles rentrent
+     dans leur case. C'est ce qui fait du nom reformé une TRANSFORMATION et non un autre écran. */
+  function ligner(hote, cibles){
+    const lts = hote.querySelectorAll('.tn-l');
+    hote.classList.toggle('is-ligne', !!cibles);
+    lts.forEach((el, i) => {
+      const t = cibles && cibles[i];
+      el.style.transform = t
+        ? 'translate(' + t.x.toFixed(2) + 'px,' + t.y.toFixed(2) + 'px) scale(' + (t.s).toFixed(4) + ')'
+        : 'translate(' + el.dataset.gx + 'px,' + el.dataset.gy + 'px) scale(' + el.dataset.gs + ')';
+    });
+  }
+  return { poser, ligner, plan, mesurer, BASE };
+})();
+/* ══ LE COIN MEMBRE — copié de tools/member_corner.js dans chaque page (jamais importé) ══
+   Connecté, le coin membre EST le TOTEHM : une seule pièce de papier qui tourne, recto le logo plein,
+   verso le nom (Wah : « ce totehm recto-verso en une pièce qui tourne »). Le nom prend tout le carré du
+   verso, par `tools/totehm_name.js` — ce bloc exige donc que la nomenclature soit copiée AVANT lui.
+   La page ne change pas : elle pose `is-in` et écrit le nom dans `#member-txt`, comme avant.
+   Elle tourne LENTEMENT (un tour en ~24 s), plus vite de profil que de face : une feuille qui pivote,
+   pas un carrousel. Elle s'arrête quand l'onglet est caché ; mouvement réduit = la pièce est posée sur
+   son verso, le nom lisible. Une seule boucle pour toute la page. */
+(() => {
+  const RM = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : { matches:false };
+  const R = Math.PI / 180, W0 = 22;                 /* 22°/s de face : le tour moyen fait ~24 s */
+  const LUM = (() => { const x = -.35, y = -.55, z = 1, n = Math.hypot(x, y, z); return [x / n, y / n, z / n]; })();
+  const vivantes = [];
+  let raf = 0, last = 0;
+
+  function boucle(now){
+    raf = 0;
+    const dt = Math.min(.05, Math.max(0, (now - (last || now)) / 1000)); last = now;
+    for (const p of vivantes){
+      const s = Math.sin(p.th * R), nat = W0 * (.34 + .66 * s * s);
+      p.om += (nat - p.om) * (1 - Math.exp(-dt / 1.6));
+      p.th += p.om * dt;
+      if (p.th > 3600) p.th %= 360;
+      peindre(p);
+    }
+    if (vivantes.length && !document.hidden) raf = requestAnimationFrame(boucle);
+  }
+  function relancer(){ if (!raf && vivantes.length && !document.hidden && !RM.matches){ last = 0; raf = requestAnimationFrame(boucle); } }
+  document.addEventListener('visibilitychange', relancer);
+
+  function peindre(p){
+    p.card.style.transform = 'rotateY(' + p.th.toFixed(2) + 'deg)';
+    /* la normale de la face, passée par la rotation : elle dit ce que chaque côté prend de lumière */
+    const d = (Math.sin(p.th * R) * LUM[0] + Math.cos(p.th * R) * LUM[2]) / LUM[2];
+    eclairer(p.lr, d); eclairer(p.lb, -d);
+  }
+  /* la formule du papier d'origine : la face qui se détourne s'ASSOMBRIT, celle qui se tourne vers la
+     lumière prend un souffle (jamais une ombre portée — BRAND : aucune ombre) */
+  function eclairer(el, f){
+    if (!el || f <= 0) return;
+    if (f < 1){ el.style.background = '#000'; el.style.opacity = Math.min(.5, (1 - f) * .6).toFixed(3); }
+    else      { el.style.background = '#fff'; el.style.opacity = Math.min(.06, (f - 1) * .3).toFixed(3); }
+  }
+
+  /* ⚠️ Le nom se lit SANS la pièce : elle vit dans le bouton, et ses lettres feraient un nom qui se
+     recopie lui-même. Les pages qui n'ont pas de `#member-txt` écrivent le nom à même le bouton. */
+  const nomDe = el => {
+    const t = el.querySelector('#member-txt');
+    if (t) return (t.textContent || '').trim();
+    let s = '';
+    for (const n of el.childNodes) if (n.nodeType === 3) s += n.nodeValue;   /* le nom écrit à même le bouton */
+    if ((s = s.trim())) return s;
+    const d = el.querySelector(':scope > span:not(.mcp)');
+    return d ? (d.textContent || '').trim() : '';
   };
+
+  function batir(el){
+    let card = el.querySelector('.mcp');
+    if (card) return card;
+    card = document.createElement('span'); card.className = 'mcp'; card.setAttribute('aria-hidden', 'true');
+    const r = document.createElement('span'); r.className = 'mcp-f mcp-r';
+    const b = document.createElement('span'); b.className = 'mcp-f mcp-b';
+    const lr = document.createElement('i'); lr.className = 'mcp-l';
+    const lb = document.createElement('i'); lb.className = 'mcp-l';
+    r.appendChild(lr); b.appendChild(lb);
+    card.appendChild(r); card.appendChild(b);
+    el.appendChild(card);
+    return card;
+  }
+
+  function fit(el){
+    const dedans = el.classList.contains('is-in');
+    const p = el.__mcp;
+    if (!dedans){
+      if (p){ const i = vivantes.indexOf(p); if (i >= 0) vivantes.splice(i, 1); p.card.remove(); el.__mcp = null; }
+      return;
+    }
+    const nom = nomDe(el), S = el.clientWidth;
+    if (!S || !window.TOTEHM_NOM) return;
+    const card = batir(el);
+    const dos = card.querySelector('.mcp-b');
+    if (dos.getAttribute('data-nom') !== nom) window.TOTEHM_NOM.poser(dos, nom, S);
+    if (nom) el.setAttribute('aria-label', nom + ' — my TOTEHM on totehm.com');
+    if (!el.__mcp){
+      /* elle commence sur son VERSO : le nom d'abord, le logo ensuite */
+      el.__mcp = { card, th:180, om:0, lr:card.querySelector('.mcp-r .mcp-l'), lb:card.querySelector('.mcp-b .mcp-l') };
+      if (RM.matches){ peindre(el.__mcp); return; }
+      vivantes.push(el.__mcp); relancer();
+    } else if (el.__mcp.card !== card){
+      /* ⚠️ la page qui réécrit le nom par `textContent` EFFACE la pièce : `batir` en refait une, et le
+         moteur doit suivre la nouvelle, sinon il peint un nœud détaché et la pièce reste immobile. */
+      el.__mcp.card = card;
+      el.__mcp.lr = card.querySelector('.mcp-r .mcp-l');
+      el.__mcp.lb = card.querySelector('.mcp-b .mcp-l');
+      peindre(el.__mcp); relancer();
+    }
+  }
+
   const ro = typeof ResizeObserver === 'function' ? new ResizeObserver(list => list.forEach(e => fit(e.target))) : null;
   const watch = el => {
     if (el.__mc) return; el.__mc = 1; fit(el); if (ro) ro.observe(el);
     new MutationObserver(() => fit(el)).observe(el, { childList:true, characterData:true, subtree:true, attributes:true, attributeFilter:['class'] });
   };
-  const start = () => { document.querySelectorAll('.mc').forEach(watch); document.fonts?.ready?.then(() => document.querySelectorAll('.mc').forEach(fit)); };
+  const start = () => {
+    document.querySelectorAll('.mc').forEach(watch);
+    document.fonts?.ready?.then(() => document.querySelectorAll('.mc').forEach(el => {
+      const d = el.querySelector('.mcp-b'); if (d) d.removeAttribute('data-nom');   /* mesuré avec la vraie police */
+      fit(el);
+    }));
+  };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once:true }); else start();
 })();
 </script>

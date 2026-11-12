@@ -47,8 +47,8 @@ Serveur : `club_spots`, `spot_get`, `spot_rules`, `space_habits`, `spot_create_a
 - Ce qui vient du TOTEHM reste tel quel (Habit Box, mini-boxes OBJECTIVES / REPULSIONS).
 - Membre du Club = une habit + un objectif + une répulsion (serveur, `_figher`). Un abonné voit ce que le créateur
   lui réserve. FIGHER CLUB est le niveau le plus ouvert : il n'y a pas de PUBLIC.
-- Le coin membre (`tools/member_corner.*`) = CONNECT WITH MY TOTEHM en bouton normal ; connecté = le nom coral sur son papier perforé, qui ramène
-  à COM ; « Simple terms of use » tout en bas, effacé par une vue qui défile. **Pas de SORTIR ici** : sortir de totehm.com sort de partout (`sso_epoch`).
+- Le coin membre (`tools/totehm_name.js` + `member_corner.*`) = CONNECT WITH MY TOTEHM en bouton normal ; connecté = LE TOTEHM, une
+  pièce qui TOURNE (~24 s) : recto le logo plein, verso le nom coral sur tout le carré, tap vers COM ; « Simple terms of use » tout en bas, effacé par une vue qui défile. **Pas de SORTIR ici** : sortir de totehm.com sort de partout (`sso_epoch`).
 
 ## Écarts connus
 
