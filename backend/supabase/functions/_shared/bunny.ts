@@ -134,8 +134,10 @@ export async function config():Promise<Config>{
        const signed=await signedHLS(guid,{key,host});
        const [unsigned,check]=await Promise.all([fetch('https://'+host+'/'+guid+'/playlist.m3u8',{method:'HEAD',headers:{Referer:'https://www.totehm.space/'},signal:timeout()}),fetch(signed.url,{method:'HEAD',signal:timeout()})]);
        diag.unsigned_playback_status=unsigned.status;diag.signed_playback_status=check.status;
+       // Library EMPTY: there is no real clip to read, so a signed 403 proves nothing (measured 12/11 on a fresh zone, 13 min after
+       // creation). It is accepted ONLY then; with one real clip the check is strict again (`check.ok`) and a bad token key stops uploads.
        diag.cdn_protected=(diag.cdn_token_enabled===true || !settings) && (unsigned.status===403 || unsigned.status===401);
-       if(diag.cdn_protected){if((check.ok || empty && check.status===404) && readKey && (diag.webhook_configured===true || !settings)) status='ready';}
+       if(diag.cdn_protected){if((check.ok || empty && (check.status===404 || check.status===403)) && readKey && (diag.webhook_configured===true || !settings)) status='ready';}
       }
      }
      diag.cdn_hostname_present=!!host;diag.token_key_present=!!key;diag.webhook_key_present=!!readKey;
