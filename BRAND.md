@@ -93,8 +93,8 @@ Vent et mer, crépitement à l’approche du feu. Pages et marché indépendants
 Un vêtement porte **n'importe quelle box** du TOTEHM, dans un style artistique déterminé ; nom unique `0.Nom`
 (collection 2026-27), retrouvé par Decode. **DEUX PIÈCES, DEUX MODES, JAMAIS DÉFORMÉES.** Le **[Higher]** (600 × 200,
 ratio 3, **18 trous**) : recto = le slogan, la marque ; **verso = le NOM D'UN CLOTH**, Quantico coral. Le **[TOTEHM]**
-(carré, **12 trous**) : recto = le logo, normal ou déplié ; **verso = le NOM D'UN MEMBRE, centré en coral** ; zoomé = son
-tableau de bord. La forme et le nombre de trous ne changent JAMAIS — un nom trop long RÉTRÉCIT, la pièce non ; les trous
-laissent voir ce qu'il y a derrière. Jamais un aplat, jamais une bordure qui l'imite, jamais nu. Sept concepts, Wah choisit, le client découvre l'œuvre à l'expédition.
-Sur higher.boutique **le TOTEHM est la commande** : un tap le décompose en trois papiers perforés (MY WISDOM STORY ·
-MY GRIND · MY VISION), une box tapée EST le choix ; les sept intentions y sont une COUTURE — et sur l'accueil, sept fils de couleur qui n'en font plus qu'un : la totehmisation même.
+(carré, **12 trous**) : recto = le logo ; **verso = le NOM D'UN MEMBRE, coral, sur TOUT le carré** ; zoomé = son tableau de bord.
+La forme et les trous ne changent JAMAIS ; les trous laissent voir derrière. Un nom de membre ne rétrécit plus, **il se RÉPARTIT**, lu
+gauche → droite (≤ 5 lettres une ligne, 4 colonnes, 5 au-delà de 16 ; son décalage vient du nom, donc son dessin ne change pas —
+`tools/totehm_name.js`) ; la pièce TOURNE d'un morceau, la retourner sur com reforme UNE ligne. Jamais un aplat ni une bordure qui l'imite, jamais nu. Sept concepts, Wah choisit, le client découvre à l'expédition.
+Sur higher.boutique **le TOTEHM est la commande** : un tap le décompose en trois papiers perforés (MY WISDOM STORY · MY GRIND · MY VISION), une box tapée EST le choix ; les sept intentions y sont une COUTURE — et sur l'accueil, sept fils de couleur qui n'en font plus qu'un : la totehmisation même.

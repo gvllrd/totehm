@@ -57,8 +57,8 @@ personne. `oracle/` : jamais lu, jamais recopié. Une base Supabase (`abujjbkbbi
   `tests/sql/domaines_selftest.sql` refuse une table muette.
 - **Identité** : totehm.com est l'autorité. Un satellite appelle `ssoLogin()` → `totehm.com/auth` (code + PKCE) →
   `sso-redeem` ; d'un domaine à l'autre : `ssoVersDomaine()`. Jamais un jeton dans une URL, jamais une URL de retour
-  reçue. Bloc copié de `tools/sso_snippet.js`. CTA : CONNECT WITH MY TOTEHM, un bouton normal ; connecté, le nom coral sur
-  son papier navy perforé (bloc copié de `tools/member_corner.*`, classe `mc`). SORTIR d'un satellite = `ssoLogout()`,
+  reçue. Bloc copié de `tools/sso_snippet.js`. CTA : CONNECT WITH MY TOTEHM, un bouton normal ; connecté, le TOTEHM
+  qui TOURNE, son nom coral sur tout le verso (blocs copiés : `tools/totehm_name.js` PUIS `member_corner.*`, classe `mc`). SORTIR d'un satellite = `ssoLogout()`,
   jamais `sb.auth.signOut()` dans une page : le repère `SSO_KNOWN` s'efface DANS le geste, sinon le rechargement
   relance l'aller-retour silencieux et reconnecte ; `scope:'local'` ne ferme que ce site. **SORTIR DE TOTEHM.COM SORT
   DE PARTOUT** : toute sortie de com passe par `comSortir(sb)` — `sso_revoke_everywhere()` d'abord (le NUMÉRO DE
