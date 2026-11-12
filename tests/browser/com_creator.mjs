@@ -60,7 +60,15 @@ const erreurs = log => log.errors.filter(e => !/404|Failed to load resource/i.te
   await pg.waitForFunction(() => window.__totehm_creator && window.__totehm_creator().loaded, null, { timeout:15000 });
   const t = await pg.textContent('#offer');
   ok(/€24/.test(t) && /\/ year/i.test(t), 'the yearly price, from the server');
-  ok(/kai’s whole TOTEHM/.test(t) && /read only/i.test(t) && /exact point/i.test(t) && /FIGHER CLUB/.test(t), 'what the subscription opens: the TOTEHM read only, what is shared with subscribers and FIGHER CLUB, the exact point of spots');
+  /* 12/11 (Wah) — the page must say what a subscription really is, Higher GPT included: read the five
+     views, adopt a box, their spots at the exact point, your own Higher GPT reading them, 80% to them —
+     and, said as plainly, what it is NOT (no chat, nothing private, clothes and artworks apart). */
+  ok(/Read kai’s whole TOTEHM/.test(t) && /Read only/i.test(t) && /Adopt any box/i.test(t) && /exact point/i.test(t),
+     'what it opens · read the five views, adopt a box, their spots at the exact point');
+  ok(/Higher GPT reads them too/i.test(t) && /your own ChatGPT/i.test(t),
+     'what it opens · your own Higher GPT reads the TOTEHMs you subscribe to — the real multiplier');
+  ok(/no chat and no answer owed/i.test(t) && /stays private/i.test(t) && /separate purchases/i.test(t),
+     'what it does NOT open · no chat, nothing private, clothes and artworks apart');
   ok(/80% goes to kai/.test(t), 'the 80/20 split, said plainly');
   ok(await pg.$eval('#who', e => getComputedStyle(e).fontFamily.includes('Quantico') && getComputedStyle(e).color === 'rgb(251, 213, 202)'), 'the name: Quantico Coral on its paper');
   ok(await pg.$$eval('#ints span', l => l.length) === 3, 'three intentions shown');
