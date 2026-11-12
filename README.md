@@ -17,7 +17,7 @@ ligne une minute plus tard (Vercel).
                  ↓ HIGHER MY CHATGPT
 ```
 
-Un tap sur **●** déploie le TOTEHM : HABITS · OBJECTIVES · REPULSIONS · VISIONS · MY STORY. Chaque liste conserve son classement ; Higher my ChatGPT retrouve ces priorités, leurs liens, les médias illustratifs en métadonnées et les spots associés, ainsi que les inspirations autorisées des TOTEHM auxquels le membre est abonné, toujours attribuées. Les playlists des intentions restent personnelles ; la réponse suit la langue de la conversation. Le TOTEHM porte les choix ; TotehmBot envoie une notification avec la Habit complète et Done/Missed, sans menu ni questionnaire ; le dashboard montre les faits sur 7 ou 28 jours, puis la configuration du bot. Higher ChatGPT peut lire la même période après partage explicite et proposer un ajustement sur demande, sans écrire dans le TOTEHM ou dans sa mémoire native.
+Un tap sur **●** déploie le TOTEHM : HABITS · OBJECTIVES · REPULSIONS · VISIONS · MY STORY. Chaque liste conserve son classement ; Higher my ChatGPT retrouve ces priorités, leurs liens, les médias illustratifs en métadonnées et les spots associés, ainsi que les inspirations autorisées des TOTEHM auxquels le membre est abonné, toujours attribuées. Les playlists des intentions restent personnelles ; la réponse suit la langue de la conversation. Une Habit peut contenir son rythme dans son texte : reconnaissance locale de formulations courantes en 12 langues, proposition à confirmer dans la box native, sans LLM ni transformation silencieuse du texte. Le TOTEHM porte les choix ; TotehmBot envoie une notification avec la Habit complète et Done/Missed, sans menu ni questionnaire ; le dashboard montre les faits sur 7 ou 28 jours, puis la configuration du bot. Higher ChatGPT peut lire la même période après partage explicite et proposer un ajustement sur demande, sans écrire dans le TOTEHM ou dans sa mémoire native.
 
 La connexion Higher GPT est gratuite côté TOTEHM : préparation sur demande, suivi mécanique, aucun nouveau modèle serveur en boucle. Les seuls abonnements proposés sont ceux aux créateurs ; vêtements et œuvres restent des achats distincts. Sur demande explicite, un contexte peut réunir des spots du Club de membres hors abonnements et un passage vers la boutique pour un élément personnel ; aucun achat, média ou style n’est sélectionné automatiquement.
 
@@ -31,7 +31,7 @@ La creator economy est à retravailler : rendre la valeur et le prix **annuel** 
 
 | où | quoi |
 |---|---|
-| `com/totehm.html` · `tracking.mjs` | l’app et son dashboard privé ; réglages du suivi et partage explicite avec Higher ChatGPT |
+| `com/totehm.html` · `tracking.mjs` · `habit-rhythm.mjs` | l’app et son dashboard privé ; réglages du suivi et partage explicite avec Higher ChatGPT |
 | `com/auth.html` · `creator.html` · `higher.html` | la connexion des 4 sites · la page d'un membre (`/@nom`) · le renvoi vers Higher GPT gratuit |
 | `com/console.html` · `monetize.html` · `terms.html` | l'ancienne console (encore liée par les paiements) · la plaquette créateur · les conditions |
 | `com/higherself.html` · `map.html` · `spot.html` · `club/totehmbot.html` | ce qu'ouvre TotehmBot sur Telegram |
