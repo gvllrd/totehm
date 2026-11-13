@@ -70,8 +70,11 @@ check(chunks.join('')===unicode&&chunks.every(s=>s.length<=3500),'Long Unicode t
 check(chunks.every(s=>!/[\uD800-\uDBFF]$/.test(s)&&!/^([\uDC00-\uDFFF])/.test(s)),'Text segmentation never splits an emoji surrogate pair');
 
 const tickCalls=[];let sendCount=0,status=200,throwNetwork=false,bodyOk=true,habit='Write',failAt=0;const deliveredMessages=[];
-const tickDb={rpc:async(name,args)=>{tickCalls.push({name,args});return {data:name==='bot_tick_consume'?args.p_token==='purpose-token':name==='tracking_delivered'?true:{send:true,id:'9007199254740993',lease:'lease',habit,chat_id:'101',period_label:'Today · 10 Nov 2026 (UTC)'},error:null};},
- from(){const q={select(){return q},eq(){return q},order(){return q},range(){return Promise.resolve({data:[{user_id:A},{user_id:A}],error:null})}};return q;}};
+let timingRows=[],timingError=false,timingThrow=false,claimFrequency='daily',claimEligible=true,claimError=false;
+const timingReads=[];
+const tickDb={rpc:async(name,args)=>{tickCalls.push({name,args});return {data:name==='bot_tick_consume'?args.p_token==='purpose-token':name==='tracking_delivered'?true:{send:claimEligible,id:'9007199254740993',lease:'lease',habit,frequency:claimFrequency,chat_id:'101',period_label:'Today · 10 Nov 2026 (UTC)'},error:claimError&&name==='tracking_claim'?{message:'unavailable'}:null};},
+ from(table){const filters=[];let columns,ordering;const q={select(v){columns=v;return q},eq(k,v){filters.push([k,v]);return q},order(k,v){ordering={key:k,...v};return q},range(){return Promise.resolve({data:[{user_id:A},{user_id:A}],error:null})},
+ limit(n){timingReads.push({table,columns,filters,ordering,limit:n,afterClaim:tickCalls.at(-1)?.name});if(timingThrow)throw Error('private timing error');return Promise.resolve({data:timingRows,error:timingError?{message:'private timing error'}:null});}};return q;}};
 const fetcher=async(url,opts)=>{const name=url.split('/').at(-1);if(name==='sendMessage'){sendCount++;deliveredMessages.push(JSON.parse(opts.body));if(sendCount===failAt)return Response.json({ok:false,error_code:400},{status:400});}if(throwNetwork)throw Error('offline');
  if(name==='getMe')return Response.json({ok:true,result:{username:'TotehmBot'}});
  if(name==='getWebhookInfo')return Response.json({ok:true,result:{url:'https://project.test/functions/v1/bot-reply',pending_update_count:0}});
@@ -83,6 +86,7 @@ check((await handler(req({},'', 'wrong-token'))).status===403,'An invalid cron t
 let response=await handler(req({mode:'health'}));check((await response.json()).ready&&sendCount===0,'Health checks verify the configured bot/webhook without messaging users');
 response=await handler(req({mode:'health'},'','purpose-token'));check((await response.json()).ready&&sendCount===0,'A single-use purpose-bound operator token can run only the requested read-only probe');
 response=await handler(req({mode:'dry_run'}));check((await response.json()).sent===0&&sendCount===0&&!tickCalls.some(c=>c.name==='tracking_claim'),'Dry run makes no reservations or sends');
+check(timingReads.length===0,'Health and dry run never read additional temporal wording');
 response=await handler(req());check((await response.json()).sent===1&&sendCount===1,'Duplicate TOTEHM rows cannot duplicate a send');
 check(tickCalls.at(-1).name==='tracking_delivered'&&tickCalls.at(-1).args.p_status==='sent','A confirmed Telegram response finalizes delivery');
 check(deliveredMessages.at(-1).text.includes('Today · 10 Nov 2026')&&deliveredMessages.at(-1).reply_markup.inline_keyboard[0].length===2,'Push includes the target period and two short report buttons');
@@ -96,6 +100,47 @@ check(parts.map(x=>x.text).join('')===unicode+'\n\nToday · 10 Nov 2026 (UTC)\nD
 check(parts.slice(0,-1).every(x=>!x.reply_markup)&&parts.at(-1).reply_markup.inline_keyboard.flat().map(x=>x.text).join('|')==='Done|Missed|Prepare','Only the final segment has answer and optional preparation buttons');
 check(tickCalls.at(-1).args.p_status==='sent','Full text delivery is confirmed only after all segments');
 failAt=sendCount+2;await handler(req());check(tickCalls.at(-1).args.p_status==='uncertain'&&tickCalls.at(-1).args.p_code==='telegram_partial_delivery','A definite rejection after partial text delivery cannot trigger duplicates');
+
+
+// Confirmed picker wording accompanies the claim, without adding place/media data or sends.
+failAt=0;habit='Write';
+const timingMessages=async()=>{const before=deliveredMessages.length;await handler(req());return deliveredMessages.slice(before);};
+timingRows=[{steps:[{t:'OTHER HABIT',f:'daily',rhythm_text:'UNRELATED WORDING'},
+ {t:habit,f:'daily',rhythm_text:'Trois fois par jour à 7h30',where:'PRIVATE PLACE',media:'PRIVATE MEDIA',notes:'PRIVATE NOTE'}]}];
+let enriched=await timingMessages();
+check(enriched.length===1&&enriched[0].text==='Write\n\nYour timing: Trois fois par jour à 7h30\n\nToday · 10 Nov 2026 (UTC)\nDid you do it?','The original confirmed wording appears before the immutable target period');
+check(!enriched[0].parse_mode&&!JSON.stringify(enriched).includes('PRIVATE')&&!JSON.stringify(enriched).includes('UNRELATED'),'Timing is plain text; usual place, media, notes and unrelated Habits are not exported');
+check(timingReads.every(r=>r.table==='totehms'&&r.columns==='steps'&&r.filters.length===1&&r.filters[0][0]==='user_id'&&r.filters[0][1]===A&&r.ordering.key==='updated_at'&&r.ordering.ascending===false&&r.ordering.nullsFirst===false&&r.limit===1&&r.afterClaim==='tracking_claim'),'Every optional read is bounded to the latest claimed owner after a real claim');
+check(enriched[0].reply_markup.inline_keyboard.flat().map(x=>x.text).join('|')==='Done|Missed|Prepare','Confirmed wording keeps the same report and preparation controls');
+for(const step of [
+ {t:'Write ',f:'daily',rhythm_text:'FOREIGN REF'},
+ {t:habit,f:'weekly',rhythm_text:'CHANGED SAVED RHYTHM'},
+ {t:habit,f:'daily',rhythm_text:123},
+ {t:habit,f:'daily',rhythm_text:'x'.repeat(501)},
+ {t:habit,f:'daily',rhythm_text:'bad\u0000word'},
+ {t:habit,f:'daily',rhythm_text:'broken\ud800'},
+ {t:habit,f:'daily',rhythm_text:'   '},
+ {t:habit,f:'daily'}
+]){
+ timingRows=[{steps:[step]}];enriched=await timingMessages();
+ check(enriched.map(x=>x.text).join('')==='Write\n\nToday · 10 Nov 2026 (UTC)\nDid you do it?','Unknown/stale/invalid temporal metadata falls back to the original canonical check-in');
+}
+timingRows=[{steps:[{t:habit,f:'daily',rhythm_text:'First current wording'}]},{steps:[{t:habit,f:'daily',rhythm_text:'OLDER WORDING'}]}];
+enriched=await timingMessages();check(enriched[0].text.includes('First current wording')&&!enriched[0].text.includes('OLDER'),'Only the latest row participates even if a client returns extra data');
+const timingLog=[],previousError=console.error;console.error=(...args)=>timingLog.push(args.join(' '));
+try{
+ for(const flag of ['error','throw']){
+  timingError=flag==='error';timingThrow=flag==='throw';enriched=await timingMessages();
+  check(enriched[0].text==='Write\n\nToday · 10 Nov 2026 (UTC)\nDid you do it?'&&tickCalls.at(-1).args.p_status==='sent','A failed optional timing read never prevents delivery or becomes uncertain practice');
+ }
+}finally{console.error=previousError;timingError=false;timingThrow=false;}
+check(timingLog.length===2&&timingLog.every(x=>x==='[tracking] timing_read_failed'),'Metadata failure logs contain neither private wording nor provider descriptions');
+const readsBeforeSkip=timingReads.length;claimEligible=false;await timingMessages();claimEligible=true;claimError=true;await timingMessages();claimError=false;
+check(timingReads.length===readsBeforeSkip,'No extra timing read occurs for a skipped or failed claim');
+habit=unicode;timingRows=[{steps:[{t:habit,f:'daily',rhythm_text:'🌍'.repeat(250)}]}];
+enriched=await timingMessages();
+check(enriched.map(x=>x.text).join('')===unicode+'\n\nYour timing: '+'🌍'.repeat(250)+'\n\nToday · 10 Nov 2026 (UTC)\nDid you do it?','Complete Habit plus a maximum-length Unicode timing keeps all authored text');
+check(enriched.every(x=>x.text.length<=3500&&x.text.isWellFormed())&&enriched.slice(0,-1).every(x=>!x.reply_markup)&&!!enriched.at(-1).reply_markup,'Long text remains segmented safely, with controls only on its final segment');
 
 const logs=[],oldError=console.error;console.error=(...args)=>logs.push(args.join(' '));
 try{

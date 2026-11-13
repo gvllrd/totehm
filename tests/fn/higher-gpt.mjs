@@ -86,5 +86,7 @@ check(creatorCalls.every(c=>c.args.p_grant==='checked-grant')&&creatorIllustrati
 const personalPlace=await getSpots(db,uid,{period:'now',habit_ref:'Lire',now:'2026-11-08T12:00:00Z'});
 check(personalPlace.items.every(s=>s.habit_ref==='Lire'&&s.source==='owner_spot_plan'&&s.presence_verified===false),'A possible place is a personal plan linked to the Habit, not proof of current presence');
 check(CHATGPT_TOOLS.filter(t=>t.name.includes('context')).every(t=>t.inputSchema.properties.intentions&&t.inputSchema.properties.search_terms),'Multilingual filters advertised on both retrieval tools');
+check(initializeResult().instructions.includes('WHERE I USUALLY DO IT')&&initializeResult().instructions.includes('not a verified address')&&initializeResult().instructions.includes('time-bound practice plan'),'Habitual places and timed spots carry distinct server instructions');
+check(initializeResult().instructions.includes('rhythm_text')&&initializeResult().instructions.includes('never recomputed')&&initializeResult().instructions.includes('does not schedule three notifications'),'Authored timing remains separate from the persisted bot cadence');
 check(initializeResult().instructions.includes('short follow-ups')&&initializeResult().instructions.includes('within each view'),'Higher GPT behavior delivered by MCP initialization');
 console.log(JSON.stringify({suite:'Higher GPT',checks,passed:checks,query_languages:12,record_scripts:8}));

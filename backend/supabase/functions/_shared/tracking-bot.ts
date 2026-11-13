@@ -52,7 +52,7 @@ export async function handleTrackingUpdate(db:DB,u:any,telegram:Telegram):Promis
       if(!target){await unavailable();return true;}
       if(value==='open'){
         await practiceTelegram(telegram,'sendMessage',{chat_id:chat,
-          text:'Prepare your next step. Open the original Habit with its private media, or bring its linked WHY, TRIGGER, VISION and MY STORY text into this private Telegram chat. Opening preparation never records Done or Missed.',
+          text:'Prepare your next step. Open the original Habit with its private media, or bring its recorded timing, usual place and linked WHY, TRIGGER, VISION and MY STORY text into this private Telegram chat. Opening preparation never records Done or Missed.',
           reply_markup:practiceKeyboard(id,true),link_preview_options:{is_disabled:true}});
       }else{
         const text=await readPreparation(db,target);

@@ -29,7 +29,11 @@ export type ContextItem = ElementRef & {
   intentions: string[];
   intention_source: "explicit" | "inherited" | "legacy" | "none";
   freq?: string;
+  rhythm_text?: string;
+  // Compatibility string plus explicit semantics: member-authored usual place,
+  // never a timed spot, address verification or the person's present location.
   where?: string;
+  usual_place?: { text: string; source: "habit_spots"; presence_verified: false };
   target_at?: string;
   obstacle?: string;
   rank?: number;
@@ -118,7 +122,10 @@ const textEnd = (value: string, end: number): number => end > 0 && end < value.l
   /[\uD800-\uDBFF]/.test(value[end - 1]) && /[\uDC00-\uDFFF]/.test(value[end]) ? end - 1 : end;
 const own = (value: unknown): Row => value && typeof value === "object" && !Array.isArray(value) ? value as Row : {};
 const string = (value: unknown): string => typeof value === "string" ? value : "";
-const text = (value: unknown, max = 500): string => string(value).replace(/\s+/g, " ").trim().slice(0, max);
+const text = (value: unknown, max = 500): string => {
+  const t = string(value).replace(/\s+/g, " ").trim();
+  return t.slice(0, textEnd(t, max));
+};
 const rows = (value: unknown): Row[] => Array.isArray(value) ? value.map(own) : [];
 const cap = (limit: unknown, fallback = 6): number => typeof limit === "number" && Number.isFinite(limit)
   ? Math.max(1, Math.min(MAX_ITEMS, Math.floor(limit))) : fallback;
@@ -189,7 +196,7 @@ export function projectGraph(snapshot: GraphSnapshot): ContextGraph {
       url: elementURL({ kind, ref }), intentions: [], intention_source: "none" };
     return item.text ? item : null;
   };
-  const spots = new Map(take(snapshot.habit_spots).map((r) => [string(r.habit_text), text(r.place, 160)]));
+  const usualPlaces = new Map(take(snapshot.habit_spots).map((r) => [string(r.habit_text), text(r.place, 160)]));
   const steps = take(snapshot.steps).map(own);
   for (const step of steps) {
     // t0 and hN belong to the browser. In persisted steps, t is the server key.
@@ -201,9 +208,15 @@ export function projectGraph(snapshot: GraphSnapshot): ContextGraph {
     item.intentions = declared.length ? declared : legacy;
     item.intention_source = declared.length ? "explicit" : legacy.length ? "legacy" : "none";
     if (text(step.f, 60)) item.freq = text(step.f, 60);
+    const authoredRhythm = string(step.rhythm_text).trim();
+    if (authoredRhythm) item.rhythm_text = authoredRhythm.slice(0, textEnd(authoredRhythm, 500));
     item.rank = items.filter(i => i.kind === "habit").length + 1;
     item.rank_source = "saved_order";
-    if (spots.get(ref)) item.where = spots.get(ref);
+    const usual = usualPlaces.get(ref);
+    if (usual) {
+      item.where = usual;
+      item.usual_place = { text: usual, source: "habit_spots", presence_verified: false };
+    }
     add(item);
   }
   for (const [kind, records] of [
@@ -321,7 +334,7 @@ export function projectContext(graph: ContextGraph, options: ContextOptions): Co
     : options.purpose === "direction" ? (item.kind === "objective" ? 4 : item.kind === "vision" ? 3 : item.kind === "wisdom" ? 1 : 0)
     : (item.kind === "habit" ? 4 : item.kind === "objective" ? 2 : 0);
   const ranked = graph.items.map((item) => {
-    const matches = terms.filter(term => [item.text, item.where ?? "", item.obstacle ?? ""].some(value => matchesTerm(value, term))).length;
+    const matches = terms.filter(term => [item.text, item.where ?? "", item.rhythm_text ?? "", item.obstacle ?? ""].some(value => matchesTerm(value, term))).length;
     const eligible = !excluded.has(item.key) && (!options.kinds?.length || options.kinds.includes(item.kind)) &&
       (!selectedIntentions.length || selectedIntentions.some(i => item.intentions.includes(i)));
     const order = item.rank_source === "member_order" ? 0 : item.rank_source === "importance" ? 1 : item.rank_source === "saved_order" ? 2 : 3;
