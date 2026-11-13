@@ -423,19 +423,29 @@ body.gate #wm-O,body.gate #wm-H,body.gate #t-foot,body.gate #ordbtn span{animati
    un chapeau au centre creusé, qui se tire et revient. Une seule différence : le chapeau porte la COULEUR DE LA VUE
    (`--joy-vue`, posé au rendu : habitudes navy · objectifs, visions bleu clair · répulsions, sagesse rouge-violet).
    La case de 48 px se centre dans `--joy-d` : la liste et la bande du bas ne bougent pas. */
-#joy-box{width:48px;height:48px;position:relative;touch-action:none;cursor:grab}
-#joy-box::after{content:"";position:absolute;inset:8px;border-radius:50%;background:#000;
-  box-shadow:inset 0 1px 0 rgba(0,0,0,.95),0 0 0 1px rgba(255,255,255,.12)}
+/* ══ 13/11 — LE JOYSTICK DE FIGHER.CLUB REVIENT (Wah : « le joystick avec les 3 points verticaux à l'intérieur du gros
+   point »). Le puits noir et son chapeau concave s'en vont : le manche est un GROS POINT plein, de la couleur de la vue
+   (`--joy-vue`), et TROIS POINTS VERTICAUX dedans — bleu · navy · rouge-violet, les couleurs des boîtes. Dans le Totehm
+   déployé l'axe vertical EST ce triptyque : objectifs (haut) · habitudes (centre) · répulsions (bas). Le point de la vue où
+   l'on est se fond dans le gros point (`.is-current`, même couleur) : les deux autres disent où l'on peut aller. Sur
+   MY STORY et MY VISION (les côtés), l'axe vertical n'existe plus : les trois points s'effacent (`.is-side`).
+   Les trois points suivent le manche (× .6 : ils ne sortent pas du gros point), c'est EUX qu'on tient. */
+/* ⚠️ 13/11 — LA MANETTE NE SE SÉLECTIONNE NI NE SE TRAÎNE : avec une sélection de texte active ailleurs dans la page
+   (mesuré : une recherche de membre), un appui sur le gros point démarrait un glisser-déposer NATIF — le navigateur
+   annulait alors le pointeur (`pointercancel`) au premier mouvement, et le glissé ne naviguait plus. */
+#joy-box,#joy-box *,#lvj-box,#lvj-box *{-webkit-user-select:none;user-select:none;-webkit-user-drag:none}
+#joy-box{width:48px;height:48px;position:relative;touch-action:none;cursor:grab;border-radius:50%;
+  background:var(--joy-vue,var(--navy));box-shadow:0 2px 7px rgba(0,0,0,.5);transition:background-color .42s ease}
 #joy-box:active{cursor:grabbing}
-/* Le manche se déplace d'un bloc : c'est lui qu'on tient. `--mx/--my` sont posés par le module « LA MANETTE ». */
-#joy-stack{position:absolute;inset:0;z-index:1;transform:translate(var(--mx,0px),var(--my,0px));
-  transition:transform .26s cubic-bezier(.22,.9,.3,1)}
+#joy-stack{position:absolute;inset:0;z-index:1;pointer-events:none;transform:translate(calc(var(--mx,0px) * .6),calc(var(--my,0px) * .6));
+  transition:transform .26s cubic-bezier(.22,.9,.3,1),opacity .18s}
 #joy-box.tenu #joy-stack{transition:none}
-#joy-stack i{--d:22px;position:absolute;left:50%;top:50%;display:block;width:var(--d);height:var(--d);
-  margin:calc(var(--d) / -2) 0 0 calc(var(--d) / -2);border-radius:50%;
-  background:radial-gradient(circle,rgba(0,0,0,.34) 0 50%,rgba(0,0,0,0) 54%) var(--joy-vue,var(--navy));
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.28);transition:background-color .42s ease}
-#joy.tenu #joy-stack i{background-image:radial-gradient(circle,rgba(0,0,0,.06) 0 50%,rgba(255,255,255,.16) 54%)}
+#joy-stack i{--d:10px;position:absolute;left:50%;display:block;width:var(--d);height:var(--d);
+  margin:calc(var(--d) / -2) 0 0 calc(var(--d) / -2);border-radius:50%;background:var(--c);
+  transition:opacity .18s,transform .18s}
+#joy-stack .o{top:24%;--c:var(--blue)}#joy-stack .h{top:50%;--c:var(--navy)}#joy-stack .r{top:76%;--c:var(--rep)}
+#joy-stack i.is-current{opacity:0;transform:scale(.4)}
+#joy-box.is-side #joy-stack{opacity:0}
 /* Ce qu'on vise s'allume avant qu'on lâche. L'état vit sur `#joy` : `#cur-g` PRÉCÈDE `#joy-box` dans le balisage,
    et le combinateur `~` ne regarde qu'en avant. */
 #joy.vers-g #cur-g,
@@ -509,7 +519,7 @@ body.ro #vnow{top:calc(max(10px,env(safe-area-inset-top)) + 30px + var(--ro-h))}
 #vnow.f-b{animation:face-b .42s cubic-bezier(.22,.9,.3,1)}
 #vnow.f-h{animation:face-h .42s cubic-bezier(.22,.9,.3,1)}
 @media(prefers-reduced-motion:reduce){
-  .cur,#joy-box,#joy-stack,#joy-stack i{transition:none}
+  .cur,#joy-box,#joy-stack,#joy-stack i,#lvj-box,#lvj-stack,#lvj-stack i{transition:none}
   #vnow.f-d,#vnow.f-g,#vnow.f-b,#vnow.f-h{animation:none}
 }
 
@@ -2992,12 +3002,13 @@ body.lv-membre.lv-b #lv-slogan,body.lv-verrou.lv-b #lv-slogan{opacity:0}
 .lvn-x{width:26px;height:48px}
 .lvn.is-mort{opacity:0;pointer-events:none}
 .lvn:focus-visible{outline:1px solid #fff;outline-offset:3px}
-/* 20/10 septies — un genre de joystick PlayStation en plus minimaliste (Wah) : un puits ROND, noir ; dans le puits,
-   LE MANCHE, un chapeau noir concave et texturé de 32 px, qui se tire et revient. */
-/* ⚠️ 25/10 — LA MANETTE SORT DE SON CADRE (Wah : « sors de son cadre le joystick sur la page d'atterrissage et sur le
-   totehm déployé ») : le petit socle carré part avec la boîte noire du Totehm. Il reste le manche : un puits rond
-   (cerclé d'un filet pour se lire sur le noir) et son chapeau. La case garde ses 48 px : rien ne bouge autour. */
-#lvj-box{width:48px;height:48px;position:relative;touch-action:none;cursor:grab;pointer-events:auto}
+/* Joystick de l'atterrissage : socle PlayStation du commit 11430ef et manche noir du commit 465945f. */
+#lvj-box{width:48px;height:48px;position:relative;border-radius:0;
+  background:linear-gradient(135deg,rgba(255,255,255,.10) 0%,rgba(255,255,255,.025) 40%,rgba(255,255,255,0) 65%),#0b0b0e;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.30),inset 0 0 0 1px rgba(255,255,255,.05);
+  touch-action:none;cursor:grab;pointer-events:auto}
+#lvj-box::before{content:"";position:absolute;left:4px;top:4px;width:5px;height:5px;
+  background:linear-gradient(135deg,rgba(255,255,255,.26) 50%,rgba(255,255,255,0) 50%)}
 #lvj-box::after{content:"";position:absolute;inset:3px;border-radius:50%;
   background:radial-gradient(circle at 50% 60%,#020202 0 58%,#171717 66%,#080808 72%);
   box-shadow:inset 0 2px 4px #000,0 0 0 1px #303030,0 2px 4px #000}
@@ -4722,8 +4733,8 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
   <button class="cur" id="cur-g" type="button">
     <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 L5 8 L10 13"/></svg></button>
   <div id="joy-box" aria-hidden="true">
-    <!-- 25/10 : le socle de l'atterrissage ; le manche est UN chapeau, de la couleur de la vue. -->
-    <div id="joy-stack"><i></i></div>
+    <!-- 13/11 : le gros point de la couleur de la vue, et trois points verticaux dedans — objectifs · habitudes · répulsions. -->
+    <div id="joy-stack"><i class="o"></i><i class="h"></i><i class="r"></i></div>
   </div>
   <button class="cur" id="cur-d" type="button">
     <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3 L11 8 L6 13"/></svg></button>
@@ -8486,6 +8497,12 @@ function paintZone(){
     const TEINTE={habits:'--navy', objectives:'--blue', repulsions:'--rep',
                   wisdom:'--rep',  visions:'--blue'};
     jy.style.setProperty('--joy-vue', 'var('+(TEINTE[view]||'--navy')+')');
+    /* 13/11 — les trois points disent l'axe vertical : le point de la vue où l'on est se fond dans le gros point ; sur les
+       deux côtés (MY STORY, MY VISION) l'axe n'existe plus, les trois points s'effacent. */
+    const bj=$('joy-box');
+    if(bj){ const cur={objectives:'o',habits:'h',repulsions:'r'}[view]||'';
+      bj.classList.toggle('is-side',view==='wisdom'||view==='visions');
+      bj.querySelectorAll('#joy-stack i').forEach(i=>i.classList.toggle('is-current',!!cur&&i.classList.contains(cur))); }
   }
   /* ⚠️ ON N'EN RETIRE AUCUN. Un curseur sans voisin garde sa case et s'efface (`.mort`, comme `.lvn.is-mort` à
      l'atterrissage) : le retirer de la grille déplaçait tout le contrôleur. */

@@ -41,10 +41,11 @@ try{
   ok(open.k==='h'&&open.spaces===1&&open.edit===0&&open.copied,'une Box s\'ouvre en place : ses liens, ses SPOTS, rien à modifier ; copiée, elle le reste (✓)');
   await pg.screenshot({path:OUT+'/ro_open_copy.png'});
   await pg.locator('#habits .w-x').first().evaluate(e=>e.click());await pg.waitForTimeout(200);
-  /* 25/10 (Wah) : dans le Totehm déployé, la manette = celle de l'atterrissage (le petit socle), le manche a la couleur de la vue. */
+  /* 25/10 (Wah) : dans le Totehm déployé, la manette = celle de l'atterrissage. 13/11 : un gros point de la couleur de la vue
+     et trois points verticaux dedans (objectifs · habitudes · répulsions), celui de la vue où l'on est fondu dedans. */
   const manette=()=>pg.evaluate(()=>{const b=document.querySelector('#joy-box'),s=getComputedStyle(b),i=document.querySelectorAll('#joy-stack i');
     return {w:b.getBoundingClientRect().width,bg:s.backgroundColor,lv:getComputedStyle(document.querySelector('#lvj-box')).backgroundColor,
-      puits:getComputedStyle(b,'::after').borderRadius,n:i.length,cap:i[0]&&getComputedStyle(i[0]).backgroundColor,
+      rond:s.borderRadius==='50%',n:i.length,cap:s.backgroundColor,courant:[...i].map(e=>getComputedStyle(e).opacity).join('|'),
       morts:[...document.querySelectorAll('#joy .cur.mort')].every(e=>getComputedStyle(e).opacity==='0')};});
   const mh=await manette();
   await pg.keyboard.press('ArrowUp');await pg.waitForTimeout(400);
@@ -52,9 +53,10 @@ try{
   const c2=log.rpc.filter(x=>x.name==='totehm_import_boxes')[1];
   ok(c2&&JSON.stringify(c2.body.p_selection)==='[{"kind":"t","key":"o1"}]','un objectif se copie par son id ; déjà à moi → « Already in my TOTEHM »');
   await pg.waitForTimeout(500);const mo=await manette();
-  ok(mh.w===48&&mh.bg==='rgba(0, 0, 0, 0)'&&mh.lv==='rgba(0, 0, 0, 0)'&&mh.puits==='50%'&&mh.n===1&&mh.morts,
-     '25/10 · la manette, la même à l\'atterrissage et dans le Totehm, HORS DE SON CADRE (plus de socle carré : un puits rond, un manche) '+JSON.stringify(mh));
-  ok(mh.cap==='rgb(51, 51, 102)'&&mo.cap==='rgb(54, 73, 140)','25/10 · le manche prend la couleur de la vue (habitudes '+mh.cap+' → objectifs '+mo.cap+')');
+  ok(mh.w===48&&mh.rond&&mh.lv==='rgb(51, 51, 102)'&&mh.n===3&&mh.morts,
+     '13/11 · la manette, la même à l\'atterrissage et dans le Totehm, HORS DE SON CADRE : un gros point rond, trois points verticaux dedans '+JSON.stringify(mh));
+  ok(mh.cap==='rgb(51, 51, 102)'&&mo.cap==='rgb(54, 73, 140)','25/10 · le gros point prend la couleur de la vue (habitudes '+mh.cap+' → objectifs '+mo.cap+')');
+  ok(mh.courant==='1|0|1'&&mo.courant==='0|1|1','13/11 · le point de la vue où l\'on est se fond dans le gros point (habitudes '+mh.courant+' → objectifs '+mo.courant+')');
   /* 24/10 (Wah) : le trackpad qui change de vue POUSSE le manche, qui revient ensuite au centre. */
   await pg.mouse.move(200,Math.round(H*.45));await pg.mouse.wheel(90,0);await pg.waitForTimeout(70);
   const mx=await pg.$eval('#joy-stack',e=>parseFloat(e.style.getPropertyValue('--mx'))||0);
