@@ -4806,10 +4806,15 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
 <script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { parseElementLink, resolveElementLink } from '/totehm-link.mjs';
+import {parsePracticeLink,installTelegramShell} from '/telegram-practice.mjs';
 import {renderPractice,createTrackingControls,PRACTICE_REVIEW_PROMPT} from '/tracking.mjs';
 import {FREQS,parseHabitRhythm,rhythmSummary} from '/habit-rhythm.mjs';
+installTelegramShell();
 let trackingRefresh=()=>Promise.resolve();
 let lienElement=parseElementLink(location.hash), lienEnCours=false;
+let pratique=parsePracticeLink(location.hash), pratiqueEnCours=false;
+const diagPratique={state:pratique?'pending':'idle'};
+window.__totehm_practice=()=>({...diagPratique});
 const diagLien={state:lienElement?'pending':'idle'};
 window.__totehm_element_link=()=>({...diagLien});
 const sb=createClient('https://abujjbkbbiumxrokozph.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us');
@@ -8361,7 +8366,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-11-13-joystick-trois-points';
+const BUILD='2026-11-13-practice-source-joystick';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -9678,9 +9683,33 @@ async function ouvrirLienElement(){
     });
   }finally{lienEnCours=false;if(reprendre&&lienElement)setTimeout(ouvrirLienElement,0);}
 }
+async function ouvrirPreparation(){
+  if(!pratique||pratiqueEnCours)return;
+  pratiqueEnCours=true;let reprendre=false;
+  try{
+    await sesWait();
+    if(!inscrit())return; // Telegram is not a site session; keep the intent through login.
+    const uid=me.id,seq=sesSeq,cible=pratique;
+    if(RO){pratique=null;diagPratique.state='unavailable';dis('Open preparation from your own TOTEHM.');return;}
+    diagPratique.state='resolving';
+    const r=await sb.rpc('tracking_practice_for_me',{p_outcome:cible});
+    if(uid!==me?.id||seq!==sesSeq||cible!==pratique||RO){reprendre=true;return;}
+    pratique=null;
+    if(location.hash.startsWith('#practice='))history.replaceState(null,'',location.pathname+location.search);
+    const ref=r.data?.ok&&typeof r.data.habit==='string'?r.data.habit:null;
+    const link=ref&&parseElementLink('#'+new URLSearchParams({element:'habit',ref}));
+    if(r.error||!link){
+      if(r.error)console.error('[practice]','source_read_failed');
+      diagPratique.state='unavailable';dis('This preparation is no longer available. Open a current Habit in your TOTEHM.');return;
+    }
+    diagPratique.state='resolved';lienElement=link;diagLien.state='pending';
+    await ouvrirLienElement(); // The original renderer, labels, files and places; no automatic edit.
+  }finally{pratiqueEnCours=false;if(reprendre&&pratique)setTimeout(ouvrirPreparation,0);}
+}
 window.addEventListener('hashchange',()=>{
-  const next=parseElementLink(location.hash);
-  if(next){lienElement=next;diagLien.state='pending';ouvrirLienElement();}
+  const next=parseElementLink(location.hash),practice=parsePracticeLink(location.hash);
+  if(practice){lienElement=null;pratique=practice;diagPratique.state='pending';ouvrirPreparation();}
+  else if(next){pratique=null;lienElement=next;diagLien.state='pending';ouvrirLienElement();}
 });
 function fermer(){
   /* Il n'y a plus de brouillon de répulsion : elle naît en base comme les
@@ -11794,7 +11823,8 @@ async function sessionLoad(){
   if(inscrit()&&!RO){loadTrips(true);loadHabitSpaces();loadElementCloths();loadVisionImages();loadElementMedia();BADGE.charger();}
   garde();
   if(n===sesSeq&&lvRefresh) lvRefresh();
-  if(n===sesSeq&&lienElement)setTimeout(ouvrirLienElement,0);
+  if(n===sesSeq&&pratique)setTimeout(ouvrirPreparation,0);
+  else if(n===sesSeq&&lienElement)setTimeout(ouvrirLienElement,0);
 }
 /* LA GARDE : inscrit, la porte se franchit ; pas inscrit et Totehm
    ouvert (un `#in` avec une session sans nom, un jeton expiré en
@@ -14188,9 +14218,9 @@ window.addEventListener('pageshow',e=>{
      n'a pas de nom (ou a expiré), `garde()` replie et ouvre la porte. */
   const sessionRangee=()=>{ try{ return Object.keys(localStorage).some(k=>/^sb-.+-auth-token$/.test(k)); }
                            catch(_){ return false; } };
-  const voulu = !!m5 || !!RO || !!lienElement;
+  const voulu = !!m5 || !!RO || !!lienElement || !!pratique;
   const dedans = voulu && sessionRangee();
-  const ensuite = lienElement ? ouvrirLienElement : m5&&m5[1] ? ()=>{ try{ setView(m5[1]); }catch(_){} } : null;
+  const ensuite = pratique ? ouvrirPreparation : lienElement ? ouvrirLienElement : m5&&m5[1] ? ()=>{ try{ setView(m5[1]); }catch(_){} } : null;
   if(dedans && ensuite){ setTimeout(ensuite, 80); LA_PORTE.then=ensuite; }
   /* ⚠️ IL FAUT LA RETIRER, PAS SEULEMENT NE PAS LA POSER. La classe est
      écrite dans le HTML (`<body class="gate">`) pour éviter le flash au
@@ -14326,7 +14356,7 @@ window.addEventListener('pageshow',e=>{
   { const mw=document.getElementById('member-window'); if(mw) new MutationObserver(bientot).observe(mw,{attributes:true,attributeFilter:['class']}); }
   window.addEventListener('popstate',()=>{
     // Following another exact source is forward navigation, not a Back gesture.
-    if(parseElementLink(location.hash)){garde=false;bientot();return;}
+    if(parseElementLink(location.hash)||parsePracticeLink(location.hash)){garde=false;bientot();return;}
     if(attente){ attente=false; garde=false; bientot(); return; }   /* notre propre retour (on était revenu à l'accueil) */
     if(notreEntree()) return;                                        /* XO / VX ont rendu leur entrée : la garde est toujours là */
     if(!garde) return;

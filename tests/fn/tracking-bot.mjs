@@ -16,7 +16,7 @@ const telegram=async(method,payload)=>{sent.push({method,payload});if(method==='
 const message=text=>({message:{from:{id:101},chat:{id:101,type:'private'},text}});
 const callback=(data,text='Write\n\nToday · 10 Nov\nDid you do it?')=>({callback_query:{id:'cb',from:{id:101},message:{message_id:1,text,chat:{id:101,type:'private'}},data}});
 for(const id of ['1','9007199254740993']){
- const kb=trackingKeyboard(id);check(kb.inline_keyboard.flat().length===2,'Only two default self-report choices');
+ const kb=trackingKeyboard(id);check(kb.inline_keyboard[0].length===2&&kb.inline_keyboard[1][0].text==='Prepare','Two report choices and optional preparation');
  check(kb.inline_keyboard.flat().every(b=>Buffer.byteLength(b.callback_data)<=64),'Callback identifiers fit Telegram without rounding bigint');
 }
 assert.throws(()=>trackingKeyboard('not-id'));checks++;
@@ -32,11 +32,11 @@ await handleTrackingUpdate(db,callback('t:a:9007199254740993:done'),telegram);
 check(calls.at(-1).args.p_outcome==='9007199254740993'&&calls.at(-1).args.p_status==='done','A report uses its exact string identity');
 check(sent.at(-1).method==='editMessageText'&&sent.at(-1).payload.message_id===1&&sent.at(-1).payload.text.endsWith('Saved: Done'),'A report confirms within the same message');
 check(sent.filter(s=>s.method==='sendMessage').length===beforeSend,'Answering creates no follow-up messages');
-check(sent.at(-1).payload.reply_markup.inline_keyboard.flat().map(b=>b.text).join()==='Change','Only explicit correction is offered after a report');
+check(sent.at(-1).payload.reply_markup.inline_keyboard.flat().map(b=>b.text).join()==='Change,Prepare','Correction and optional preparation after a report');
 answer={...answer,already:true,status:'partial'};await handleTrackingUpdate(db,callback('o:9007199254740993:done'),telegram);
 check(sent.at(-1).payload.text.endsWith('Saved: In part'),'Legacy replay shows the saved fact, never the requested replacement');
 await handleTrackingUpdate(db,callback('t:e:9007199254740993:open','Write\n\nSaved: Done'),telegram);
-check(sent.at(-1).method==='editMessageReplyMarkup'&&sent.at(-1).payload.reply_markup.inline_keyboard.flat().every(b=>b.callback_data.startsWith('t:c:')),'Change opens two correction buttons on the same message');
+check(sent.at(-1).method==='editMessageReplyMarkup'&&sent.at(-1).payload.reply_markup.inline_keyboard[0].every(b=>b.callback_data.startsWith('t:c:')),'Change opens two correction buttons on the same message');
 answer={...answer,already:false,status:'missed'};await handleTrackingUpdate(db,callback('t:c:9007199254740993:missed','Write\n\nSaved: Done'),telegram);
 check(calls.at(-1).name==='tracking_correct'&&sent.at(-1).payload.text==='Write\n\nSaved: Missed','Explicit correction replaces the prior status once');
 await handleTrackingUpdate(db,callback('t:a:9007199254740993:missed','x'.repeat(4096)),telegram);
@@ -60,7 +60,7 @@ await handleTrackingUpdate(db,message('/review'),telegram);check(sent.at(-1).pay
 await handleTrackingUpdate(db,message('/pause'),telegram);check(calls.at(-1).args.p_paused===true,'Pause uses the verified linked Telegram identity');
 check(!calls.some(c=>/repulsion|wisdom|objective|model/i.test(c.name)),'Tracking does not write the five views or run a model');
 check(trackingReview({counts:{},trend:{state:'insufficient'}}).includes('Not enough'),'Sparse data produces no invented trend');
-check(trackingKeyboard('1').inline_keyboard.flat().map(b=>b.text).join('|')==='Done|Missed','Default report controls are English');
+check(trackingKeyboard('1').inline_keyboard.flat().map(b=>b.text).join('|')==='Done|Missed|Prepare','Default report controls are English');
 await handleTrackingUpdate(db,callback('t:d:9007199254740993:open'),telegram);
 await handleTrackingUpdate(db,message('/energy 4'),telegram);check(calls.at(-1).args.p_field==='energy'&&calls.at(-1).args.p_value==='4'&&!draft,'English energy command remains backward compatible');
 await handleTrackingUpdate(db,callback('t:d:9007199254740993:open'),telegram);
@@ -85,7 +85,7 @@ response=await handler(req({mode:'health'},'','purpose-token'));check((await res
 response=await handler(req({mode:'dry_run'}));check((await response.json()).sent===0&&sendCount===0&&!tickCalls.some(c=>c.name==='tracking_claim'),'Dry run makes no reservations or sends');
 response=await handler(req());check((await response.json()).sent===1&&sendCount===1,'Duplicate TOTEHM rows cannot duplicate a send');
 check(tickCalls.at(-1).name==='tracking_delivered'&&tickCalls.at(-1).args.p_status==='sent','A confirmed Telegram response finalizes delivery');
-check(deliveredMessages.at(-1).text.includes('Today · 10 Nov 2026')&&deliveredMessages.at(-1).reply_markup.inline_keyboard.flat().length===2,'Push includes the target period and two short buttons');
+check(deliveredMessages.at(-1).text.includes('Today · 10 Nov 2026')&&deliveredMessages.at(-1).reply_markup.inline_keyboard[0].length===2,'Push includes the target period and two short report buttons');
 status=403;bodyOk=false;await handler(req());check(tickCalls.at(-1).args.p_status==='failed','A definite rejection is not an unanswered practice');
 status=500;await handler(req());check(tickCalls.at(-1).args.p_status==='uncertain','Server failures are uncertain, not safe automatic retries');
 throwNetwork=true;await handler(req());check(tickCalls.at(-1).args.p_status==='uncertain','A lost response cannot trigger a duplicate');
@@ -93,7 +93,7 @@ check((await handler(req({mode:'typo'}))).status===400,'An unknown diagnostic mo
 throwNetwork=false;status=200;bodyOk=true;habit=unicode;
 let start=deliveredMessages.length;await handler(req());let parts=deliveredMessages.slice(start);
 check(parts.map(x=>x.text).join('')===unicode+'\n\nToday · 10 Nov 2026 (UTC)\nDid you do it?','The push keeps the complete long Habit and target period');
-check(parts.slice(0,-1).every(x=>!x.reply_markup)&&parts.at(-1).reply_markup.inline_keyboard.flat().map(x=>x.text).join('|')==='Done|Missed','Only the final segment has answer buttons');
+check(parts.slice(0,-1).every(x=>!x.reply_markup)&&parts.at(-1).reply_markup.inline_keyboard.flat().map(x=>x.text).join('|')==='Done|Missed|Prepare','Only the final segment has answer and optional preparation buttons');
 check(tickCalls.at(-1).args.p_status==='sent','Full text delivery is confirmed only after all segments');
 failAt=sendCount+2;await handler(req());check(tickCalls.at(-1).args.p_status==='uncertain'&&tickCalls.at(-1).args.p_code==='telegram_partial_delivery','A definite rejection after partial text delivery cannot trigger duplicates');
 

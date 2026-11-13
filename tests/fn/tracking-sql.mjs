@@ -27,7 +27,7 @@ try{
  insert into chatgpt_grants values('${G}','${A}',null,array['totehm:read'],'https://www.totehm.com/mcp');`);
  const freq=fs.readFileSync(new URL('../../backend/supabase/migrations/20261015160000_push_par_frequence.sql',import.meta.url),'utf8');
  await db.exec(freq.slice(freq.indexOf('create or replace function public._freq_minutes'),freq.indexOf('create or replace function public.push_decision')));
- for(const file of ['20261110120000_tracking_core.sql','20261110121000_tracking_delivery.sql','20261110122000_tracking_summary.sql','20261110145900_tracking_reference_index.sql','20261110150000_tracking_quiet.sql','20261110151000_tracking_quiet_summary.sql','20261112140000_chatgpt_tracking_priority.sql'])await db.exec(fs.readFileSync(new URL('../../backend/supabase/migrations/'+file,import.meta.url),'utf8'));
+ for(const file of ['20261110120000_tracking_core.sql','20261110121000_tracking_delivery.sql','20261110122000_tracking_summary.sql','20261110145900_tracking_reference_index.sql','20261110150000_tracking_quiet.sql','20261110151000_tracking_quiet_summary.sql','20261112140000_chatgpt_tracking_priority.sql','20261113120000_tracking_practice_source.sql'])await db.exec(fs.readFileSync(new URL('../../backend/supabase/migrations/'+file,import.meta.url),'utf8'));
  check(true,'All real tracking migrations execute');
  await db.query("select set_config('request.jwt.claim.sub',$1,false)",[A]);
  const settings=await role('authenticated',()=>rpc('tracking_settings_get',[]));
@@ -112,6 +112,35 @@ try{
  const longHabit='Read 🌍 / 読む / lire — '+Array.from({length:5000},(_,n)=>String.fromCodePoint(0x4e00+(n*7919)%20000)).join(''),now='2026-11-10T21:00:00Z';
  await db.query('insert into profiles values ($1,$2)',[C,404]);
  await db.query('insert into totehms(user_id,steps,bot,tz,quiet_from,quiet_to,max_daily) values($1,$2,true,\'UTC\',0,0,6)',[C,JSON.stringify([{t:longHabit,f:'daily',is:['focus']},{t:'Other Habit',f:'daily',is:['express']}])]);
+ // Practice locators: no text/auth in links, exact current source and independent identities.
+ await db.query('insert into habit_outcomes(id,user_id,habit_text) values($1,$2,$3)',['880000',C,longHabit]);
+ const outcomeCount=await scalar('select count(*) from habit_outcomes');
+ await db.query("select set_config('request.jwt.claim.sub',$1,false)",[C]);
+ check((await role('authenticated',()=>rpc('tracking_practice_for_me',['880000']))).habit===longHabit,'Native preparation resolves complete Unicode text for its signed-in owner');
+ check((await role('service_role',()=>rpc('tracking_practice_target',[404,'880000']))).user_id===C,'Telegram preparation resolves only the currently linked identity');
+ check(!(await rpc('tracking_practice_target',[101,'880000'])).ok&&!(await rpc('tracking_practice_target',[-404,'880000'])).ok,'Another Telegram identity or group cannot resolve the source');
+ check(await role('authenticated',()=>rpc('tracking_practice_target',[404,'880000'])).then(()=>false,()=>true),'A member cannot impersonate a Telegram identity through the service RPC');
+ check(await role('anon',()=>rpc('tracking_practice_for_me',['880000'])).then(()=>false,()=>true),'An outcome identifier cannot replace site authentication');
+ await db.query("select set_config('request.jwt.claim.sub',$1,false)",[A]);
+ check(!(await role('authenticated',()=>rpc('tracking_practice_for_me',['880000']))).ok,'A leaked locator cannot open someone else’s Habit');
+ await db.query("select set_config('request.jwt.claim.sub',$1,false)",[C]);
+ await db.query("update habit_outcomes set asked_at=now()-interval '8 days' where id=880000");
+ check(!(await role('authenticated',()=>rpc('tracking_practice_for_me',['880000']))).ok&&!(await rpc('tracking_practice_target',[404,'880000'])).ok,'Old preparation links expire without disclosing their text');
+ await db.query('update habit_outcomes set asked_at=now() where id=880000');
+ await role('authenticated',()=>rpc('habit_rename_links',[longHabit,longHabit+' renamed']));
+ await db.query('update totehms set steps=$1 where user_id=$2',[JSON.stringify([{t:longHabit+' renamed',is:['focus']}]),C]);
+ check((await role('authenticated',()=>rpc('tracking_practice_for_me',['880000']))).habit===longHabit+' renamed','A preparation follows a native rename instead of opening stale text');
+ await db.query('update totehms set steps=\'[]\' where user_id=$1',[C]);
+ check(!(await role('authenticated',()=>rpc('tracking_practice_for_me',['880000']))).ok&&!(await rpc('tracking_practice_target',[404,'880000'])).ok,'A deleted Habit cannot be reopened from its past report');
+ await role('authenticated',()=>rpc('habit_rename_links',[longHabit+' renamed',longHabit]));
+ await db.query('update totehms set steps=$1 where user_id=$2',[JSON.stringify([{t:longHabit,f:'daily',is:['focus']},{t:'Other Habit',f:'daily',is:['express']}]),C]);
+ await db.query('update profiles set telegram_id=null where id=$1',[C]);
+ check(!(await rpc('tracking_practice_target',[404,'880000'])).ok,'Unlinking Telegram revokes future preparation reads');
+ check((await role('authenticated',()=>rpc('tracking_practice_for_me',['880000']))).ok,'Telegram revocation leaves normal site access independent');
+ check(await scalar('select count(*) from habit_outcomes')===outcomeCount,'Preparation never records or reserves practice');
+ await db.query('update profiles set telegram_id=404 where id=$1',[C]);
+ await db.query('delete from habit_outcomes where id=880000');
+ await db.query("select set_config('request.jwt.claim.sub',$1,false)",[A]);
  const full=await rpc('tracking_list',[404]);check(full.items[0].habit===longHabit&&full.items.length===2,'Long Unicode Habits retain their exact text and are never silently excluded');
  const insertReport=async(id,at,status)=>{
   await db.query('insert into habit_outcomes(id,user_id,habit_text,asked_at,answered_at,outcome) values($1,$2,$3,$4,$4,$5)',[id,C,longHabit,at,['done','missed'].includes(status)?status:null]);
