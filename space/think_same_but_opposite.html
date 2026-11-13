@@ -40,13 +40,31 @@
 .tw.is-plat .tw-p{transform:none}
 @media(prefers-reduced-motion:reduce){.tw-p{transform:rotateY(180deg)}.tw.is-plat .tw-p{transform:none}}
 /* ══ fin LE MOT TOTEHM ══ */
+/* Discover uses the same full-screen reading rhythm as Play the Street. */
+html,body{width:100%;height:100%;overflow:hidden}
+body{min-height:100dvh}
+header{position:absolute;inset:0 0 auto;z-index:2}
+main{width:100%;height:100dvh;min-height:0;display:flex;align-items:center;justify-content:center;padding:64px 24px 80px}
+.frame{display:none}
+.story{width:min(100%,680px);min-height:0;max-width:none;align-items:center}
+.eyebrow{text-align:center;margin:0 0 25px}
+#slide{width:100%;min-height:0;align-items:center;text-align:center;gap:18px}
+#slide p{font:400 clamp(16px,2vw,23px)/1.6 'Space Mono',monospace}
+#slide.is-first p{font:700 clamp(26px,4vw,51px)/1.16 Quantico,sans-serif}
+.rail{position:absolute;bottom:65px;left:50%;transform:translateX(-50%);margin:0}
+.actions{position:absolute;bottom:100px;left:16px;right:16px;justify-content:center;margin:0}
+.actions #prev,.actions #next{display:none}
+.actions a{min-height:44px;display:inline-flex;align-items:center}
+.hint{position:absolute;bottom:23px;left:0;right:0;margin:0;text-align:center;text-transform:uppercase;letter-spacing:.14em}
+body.is-last .hint{display:none}
+@media(max-width:650px){header{padding:14px}.story{width:100%}.eyebrow{margin:0 0 22px}main{padding:65px 23px 95px;align-content:initial}.frame{display:none}#slide{min-height:0;justify-content:center}#slide p{font-size:clamp(15px,4vw,17px);line-height:1.5}#slide.is-first p{font-size:clamp(26px,8vw,35px)}.actions{bottom:92px;margin:0}.hint{display:block}}
 </style>
 </head>
 <body>
 <header><a href="/new-york">← Gallery</a><span class="progress" id="progress">THINK SAME BUT OPPOSITE</span><button id="close" type="button" aria-label="Close Discover">Close ×</button></header>
 <main>
  <div class="frame"><img id="image" alt=""></div>
- <section class="story" aria-label="Discover the artwork"><p class="eyebrow" id="title"></p><div id="slide" role="status" aria-live="polite"></div><div class="rail" id="rail" aria-hidden="true"></div><div class="actions"><button id="prev" type="button">← Back</button><button class="primary" id="next" type="button">Continue →</button><a id="action" hidden>Explore TOTEHM ↗</a><a id="next-work" hidden>Next artwork →</a></div><p class="hint">Click, scroll, swipe or use the arrow keys to continue.</p></section>
+ <section class="story" aria-label="Discover the artwork"><p class="eyebrow" id="title"></p><div id="slide" role="status" aria-live="polite"></div><div class="rail" id="rail" aria-hidden="true"></div><div class="actions"><button id="prev" type="button">← Back</button><button class="primary" id="next" type="button">Continue →</button><a id="action" hidden>Explore TOTEHM ↗</a><a id="next-work" hidden>Next artwork →</a></div><p class="hint">Scroll to discover ↓</p></section>
 </main>
 <script type="module">
 import {OPPOSITES,oppositeById} from './gallery-opposites.mjs';
@@ -58,13 +76,13 @@ const dots=work.slides.map(()=>{const dot=document.createElement('span');$('rail
 function show(index,instant=false){
  if(index<0||index>=work.slides.length||locked)return;
  locked=true;const slide=$('slide');slide.classList.remove('show');
- const apply=()=>{step=index;slide.replaceChildren(...work.slides[step].map(text=>{const p=document.createElement('p');p.textContent=text;return p;}));slide.classList.toggle('is-first',step===0);dots.forEach((dot,i)=>dot.classList.toggle('on',i===step));$('progress').textContent=(step+1)+' / '+work.slides.length;$('prev').hidden=step===0;$('next').hidden=step===work.slides.length-1;$('action').hidden=step!==work.slides.length-1;$('next-work').hidden=step!==work.slides.length-1;requestAnimationFrame(()=>slide.classList.add('show'));if(instant||reduced.matches)locked=false;else setTimeout(()=>locked=false,650);};
+ const apply=()=>{step=index;slide.replaceChildren(...work.slides[step].map(text=>{const p=document.createElement('p');p.textContent=text;return p;}));slide.classList.toggle('is-first',step===0);dots.forEach((dot,i)=>dot.classList.toggle('on',i===step));$('progress').textContent=(step+1)+' / '+work.slides.length;$('prev').hidden=step===0;$('next').hidden=step===work.slides.length-1;$('action').hidden=step!==work.slides.length-1;$('next-work').hidden=step!==work.slides.length-1;document.body.classList.toggle('is-last',step===work.slides.length-1);requestAnimationFrame(()=>slide.classList.add('show'));if(instant||reduced.matches)locked=false;else setTimeout(()=>locked=false,650);};
  if(instant||reduced.matches)apply();else setTimeout(apply,180);
 }
 const next=()=>show(step+1),prev=()=>show(step-1);
 $('next').addEventListener('click',next);$('prev').addEventListener('click',prev);$('close').addEventListener('click',()=>location.assign('/new-york'));
 document.addEventListener('keydown',event=>{if(event.target.closest('input,textarea,select,[contenteditable=true]'))return;if(['ArrowRight','ArrowDown','PageDown'].includes(event.key)||event.key===' '&&!event.target.closest('a,button')){event.preventDefault();next();}if(['ArrowLeft','ArrowUp','PageUp'].includes(event.key)){event.preventDefault();prev();}if(event.key==='Escape')location.assign('/new-york');});
-let wheelLock=0;addEventListener('wheel',event=>{const now=performance.now();if(now-wheelLock<680)return;wheelLock=now;if(event.deltaY>0)next();else if(event.deltaY<0)prev();},{passive:true});
+let wheelLock=-Infinity;addEventListener('wheel',event=>{const now=performance.now();if(now-wheelLock<680)return;wheelLock=now;if(event.deltaY>0)next();else if(event.deltaY<0)prev();},{passive:true});
 addEventListener('touchstart',event=>{touchY=event.changedTouches[0].clientY;},{passive:true});addEventListener('touchend',event=>{if(touchY===null)return;const delta=touchY-event.changedTouches[0].clientY;touchY=null;if(Math.abs(delta)>42)(delta>0?next:prev)();},{passive:true});
 window.__totehm_opposites=()=>({build:'new-york-six-works',work:work.id,step,count:work.slides.length,image:$('image').complete,action:$('action').href});
 show(0,true);

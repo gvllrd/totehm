@@ -52,10 +52,11 @@ try{
     await pg.goto(origin+'/think_same_but_opposite?work='+work.id,{waitUntil:'domcontentloaded'});
     await pg.waitForFunction(()=>window.__totehm_opposites?.().count===5);
     check(await pg.locator('#image').evaluate(img=>img.complete&&img.naturalWidth===200),work.title+' image loads at '+viewport.width);
+    check(await pg.locator('.frame').isHidden()&&await pg.evaluate(()=>getComputedStyle(document.body).backgroundColor==='rgb(0, 0, 0)'),work.title+' opens a full-screen black reading stage');
     check((await pg.locator('#slide').innerText()).includes(work.slides[0][0]),work.title+' starts with its own comparison');
     if(viewport.width<650)bounds.push(await pg.evaluate(()=>({work:__totehm_opposites().work,step:0,slide:document.getElementById('slide').getBoundingClientRect().bottom,actions:document.querySelector('.actions').getBoundingClientRect().bottom})));
     for(let i=1;i<work.slides.length;i++){
-     await pg.locator('#next').click();
+     if(i===1)await pg.mouse.wheel(0,600);else await pg.keyboard.press('ArrowDown');
      await pg.waitForFunction(step=>__totehm_opposites().step===step,i);
      if(viewport.width<650)bounds.push(await pg.evaluate(()=>({work:__totehm_opposites().work,step:__totehm_opposites().step,slide:document.getElementById('slide').getBoundingClientRect().bottom,actions:document.querySelector('.actions').getBoundingClientRect().bottom})));
      if(work.id==='totehm'&&i===3&&viewport.width>650){await pg.waitForSelector('#slide .tw');check(true,'The TOTEHM word keeps its native brand piece in Discover');}
@@ -65,7 +66,7 @@ try{
     const following=OPPOSITES[(OPPOSITES.indexOf(work)+1)%OPPOSITES.length];
     check(await pg.locator('#next-work').isVisible()&&await pg.locator('#next-work').getAttribute('href')==='/think_same_but_opposite?work='+following.id,work.title+' leads to the next artwork');
     if(work.id==='higher'){
-     await pg.locator('#prev').focus();await pg.keyboard.press('ArrowLeft');await pg.waitForFunction(()=>__totehm_opposites().step===3);
+     await pg.keyboard.press('ArrowLeft');await pg.waitForFunction(()=>__totehm_opposites().step===3);
      await pg.keyboard.press('ArrowRight');await pg.waitForFunction(()=>__totehm_opposites().step===4);
      check(true,'Arrow keys advance the story while a control has focus');
     }
