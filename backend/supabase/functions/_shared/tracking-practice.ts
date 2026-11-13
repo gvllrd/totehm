@@ -27,6 +27,13 @@ const excerpt=(v:string,max=260)=>{
  const s=v.replace(/\s+/g,' ').trim();if(s.length<=max)return s;
  let end=max-1;if(/[\uD800-\uDBFF]/.test(s[end-1]??''))end--;return s.slice(0,end)+'…';
 };
+// Display only existing canonical choices; reading a phrase never changes the bot schedule.
+export function practiceCadence(value:string|undefined):string|null{
+ const labels:Record<string,string>={hourly:'every hour',several_daily:'several times a day',daily:'daily',twice_week:'twice a week',weekly:'weekly',biweekly:'every two weeks',twice_month:'twice a month',monthly:'monthly',every_1st_month:'every 1st of the month',every_15th_month:'every 15th of the month',seasonal:'every season change',quarterly:'every quarter',semiannual:'every six months',yearly:'yearly',randomly:'randomly',sometimes:'sometimes'};
+ if(!value)return null;
+ if(Object.hasOwn(labels,value))return labels[value];
+ return /^every_(minute|morning|afternoon|evening|weekday|night|other_day|weekend|monday|tuesday|wednesday|thursday|friday|saturday|sunday|birthday|newyear)$/.test(value)?value.replace(/_/g,' ').replace('newyear','new year'):null;
+}
 export function preparationText(context:ContextResult,habit:string):string{
  const root=context.items.find(i=>i.kind==='habit'&&i.ref===habit);
  if(!root)return 'This Habit is no longer available. Open your TOTEHM to choose a current step.';
@@ -40,10 +47,14 @@ export function preparationText(context:ContextResult,habit:string):string{
  const lines=['My next step','Your recorded links · excerpts'];
  const group=(title:string,items:ContextItem[])=>{if(items.length)lines.push(title,items.map(i=>'“'+excerpt(i.text)+'”').join('\n'));};
  group('TRIGGER · INSTEAD OF',triggers);group(triggers.length?'INSTEAD · MY HABIT':'MY HABIT',[root]);
+ if(root.rhythm_text)lines.push('MY TIMING · MY WORDS','“'+excerpt(root.rhythm_text)+'”');
+ const cadence=practiceCadence(root.freq);if(cadence)lines.push('SAVED CHECK-IN RHYTHM',cadence);
+ if(root.rhythm_text)lines.push('Check-in cadence does not schedule an exact alert time.');
+ if(root.usual_place?.source==='habit_spots'&&root.usual_place.text)lines.push('WHERE I USUALLY DO IT','“'+excerpt(root.usual_place.text,160)+'”','Your saved usual place, not your current position or a timed spot.');
  group('WHY',goals);group('VISION · THE BIG WHY',visions);group('MY STORY · LINKED TO THIS TRIGGER',stories);
  if(!triggers.length&&!goals.length&&!visions.length&&!stories.length)lines.push('No linked why or trigger is available in this view. You can add your own in the Habit.');
  if(context.coverage&&(!context.coverage.source_complete||context.coverage.omitted_related))lines.push('This is part of your linked context. Open the original to see more.');
- lines.push('Notice the trigger. Choose your next step.','Open the Habit for full text, private media and spots.');
+ lines.push('Notice the trigger. Choose your next step.','Open the Habit for full text, private media and dated spots.');
  return lines.join('\n\n');
 }
 export async function practiceTarget(db:any,telegram:number,id:string){

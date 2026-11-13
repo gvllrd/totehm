@@ -2,10 +2,11 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {projectGraph,projectContext} from '../../backend/supabase/functions/_shared/chatgpt-context.ts';
-import {practiceURL,practiceKeyboard,practiceTelegram,preparationText,validPracticeId,STONER_URL} from '../../backend/supabase/functions/_shared/tracking-practice.ts';
+import {practiceURL,practiceKeyboard,practiceTelegram,preparationText,practiceCadence,validPracticeId,STONER_URL} from '../../backend/supabase/functions/_shared/tracking-practice.ts';
 import {handleTrackingUpdate} from '../../backend/supabase/functions/_shared/tracking-bot.ts';
 import {TelegramAPIError} from '../../backend/supabase/functions/_shared/tracking-telegram.ts';
 import {parsePracticeLink} from '../../com/telegram-practice.mjs';
+import {FREQS} from '../../com/habit-rhythm.mjs';
 const uid='11111111-1111-4111-8111-111111111111',id=n=>`00000000-0000-4000-8000-${String(n).padStart(12,'0')}`;
 let checks=0;const check=(v,m)=>{assert(v,m);checks++;};
 for(const ref of ['1','9007199254740993','9223372036854775807']){
@@ -23,7 +24,8 @@ for(const bad of ['',0,'0','-1','01','1&token=secret','9223372036854775808','999
 check(!parsePracticeLink('#practice=1&ro=someone')&&!parsePracticeLink('#practice=1&practice=2'),'No extra values or visited-account context are accepted');
 check(STONER_URL==='https://www.totehm.space/stoner','Stoner keeps its existing native access gate');
 const habit='Lire & écrire <b>読書</b>';
-const snapshot={steps:[{t:habit,is:['express']},{t:'Unrelated Habit'}],
+const snapshot={steps:[{t:habit,is:['express'],f:'weekly',rhythm_text:'3 times a week at 7 AM'},{t:'Unrelated Habit',f:'daily',rhythm_text:'UNRELATED TIMING'}],
+ habit_spots:[{habit_text:habit,place:'My kitchen <b>読書</b>'},{habit_text:'Unrelated Habit',place:'UNRELATED PLACE'}],
  objectives:[{id:id(1),text:'Publish my book'},{id:id(2),text:'Travel unrelated'}],
  repulsions:[{id:'1',repulsion:'Scroll instead',habit_text:habit,active:true},{id:'2',repulsion:'UNRELATED TRIGGER',habit_text:'Unrelated Habit',active:true}],
  visions:[{id:id(3),text:'Share what I learn'},{id:id(6),text:'UNRELATED VISION'}],
@@ -35,12 +37,32 @@ check(['TRIGGER · INSTEAD OF','INSTEAD · MY HABIT','WHY','VISION · THE BIG WH
 check(['Scroll instead',habit,'Publish my book','Share what I learn','MY OWN WORDS'].every(t=>text.includes(t)),'Only recorded links supply the preparation chain');
 check(!text.includes('UNRELATED')&&!text.includes('Travel unrelated'),'Unconnected choices are not presented as reasons');
 check(text.includes('<b>読書</b>'),'Member text is preserved as plain text, never HTML instructions');
+check(text.includes('WHERE I USUALLY DO IT')&&text.includes('My kitchen <b>読書</b>')&&text.includes('not your current position or a timed spot'),'Only the exact Habit’s authored usual place is shown, with truthful scope');
+check(text.includes('MY TIMING · MY WORDS')&&text.includes('3 times a week at 7 AM')&&text.includes('SAVED CHECK-IN RHYTHM\n\nweekly'),'Authored practice timing is preserved separately from the selected check-in cadence');
+for(const frequency of FREQS)check(practiceCadence(frequency.id)===frequency.label,'Telegram and native picker use the same meaning for '+frequency.id);
+check(practiceCadence('unsupported')===null&&practiceCadence(undefined)===null,'Missing/unknown cadence never invents a readable schedule');
+
 check(preparationText(context({steps:[{t:habit}]}),habit).includes('No linked why or trigger'),'Missing links remain missing instead of inventing a motivation');
 check(preparationText(context({steps:[]}),habit).includes('no longer available'),'A missing current Habit never substitutes another one');
 check(preparationText({...context(snapshot),coverage:{source_complete:false,omitted_related:true}},habit).includes('part of your linked context'),'Partial context is explicitly described');
 const long=structuredClone(context(snapshot));for(const row of long.items)row.text='🌍'.repeat(4000);
 const bounded=preparationText(long,habit);
 check(bounded.length<3500&&bounded.isWellFormed()&&bounded.includes('excerpts'),'Long multilingual text and emoji fit a single consented message without broken characters');
+const fullest=structuredClone(context(snapshot)),rootFull=fullest.items.find(i=>i.ref===habit);
+rootFull.rhythm_text='🌍'.repeat(500);rootFull.usual_place.text='🌍'.repeat(500);
+for(const [kind,relation,from,to] of [['repulsion','instead',null,rootFull.key],['objective','serves',rootFull.key,null],['vision','towards',fullest.items.find(i=>i.kind==='objective').key,null],['wisdom','learned_from',null,fullest.items.find(i=>i.kind==='repulsion').key]]){
+ const row=fullest.items.find(i=>i.kind===kind),copy={...row,key:row.key+':second',ref:row.ref+':second',rank:2};
+ fullest.items.push(copy);fullest.edges.push({from:from||copy.key,to:to||copy.key,relation,provenance:[]});
+}
+for(const row of fullest.items)row.text='🌍'.repeat(4000);
+const fullMessage=preparationText(fullest,habit);
+check(fullMessage.length<3500&&fullMessage.isWellFormed()&&fullMessage.includes('does not schedule an exact alert time'),'Full recorded chain, timing and place together fit Telegram’s safe message bound');
+const maximal=structuredClone(fullest),maxRoot=maximal.items.find(i=>i.ref===habit);
+for(const row of maximal.items)row.text='a'.repeat(260);
+maxRoot.rhythm_text='b'.repeat(500);maxRoot.usual_place.text='c'.repeat(120);maxRoot.freq='every_15th_month';
+maximal.coverage={source_complete:false,omitted_related:true,more_matches:true};
+const maximalMessage=preparationText(maximal,habit);
+check(maximal.items.length===9&&maximalMessage.length<=3500&&maximalMessage.isWellFormed()&&maximalMessage.includes('part of your linked context'),'Two triggers, goals, visions and stories plus 500-character timing, usual place and partial coverage fit one safe Telegram message');
 const orders={...snapshot,objectives:[...snapshot.objectives,{id:id(7),text:'My ranked reason'}],objective_habits:[...snapshot.objective_habits,{habit_text:habit,objective_id:id(7)}],element_orders:[{kind:'objective',refs:[id(7),id(1)]}]};
 const sorted=preparationText(context(orders),habit);check(sorted.indexOf('My ranked reason')<sorted.indexOf('Publish my book'),'Multiple reasons follow their own view order');
 const calls=[],queries=[],sent=[];let allowed=true,readError=false;

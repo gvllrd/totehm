@@ -4753,7 +4753,7 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
 
 <div id="freq-panel" class="hide">
   <div class="fp-card">
-    <input id="fp-input" placeholder="type any language — or pick below" autocomplete="off" spellcheck="false">
+    <input id="fp-input" dir="auto" maxlength="500" aria-label="Time frequency in your words" placeholder="write your rhythm — or pick below" autocomplete="off" spellcheck="false">
     <button id="fp-preview" type="button"></button>
     <div id="fp-list"></div>
     <div id="fp-ints" class="hide"></div>
@@ -4974,6 +4974,7 @@ const norm=s=>String(s||'').normalize('NFKD').toLowerCase()
 
 /* Recognition is local and conservative: no rhythm is invented for unknown text. */
 const deduceFreq=raw=>parseHabitRhythm(raw,{mode:'rhythm'}).frequency;
+const timingWords=v=>typeof v==='string'&&v.trim().length<=500?v.trim():'';
 
 /* ══ STORAGE — LE NUAGE, ET UN CACHE QUI APPARTIENT À UN COMPTE ══
    ⚠️ PAS INSCRIT, RIEN N'EST PERMIS · 27/09/2026. Il n'y a plus de
@@ -5171,7 +5172,7 @@ async function cloudLoad(){
      nulle part ailleurs, qu'il se pose — le serveur est la référence. */
   data.forEach(r=>{(Array.isArray(r.steps)?r.steps:[]).forEach(s=>{const k=norm(s.t);if(s.t&&!seen[k]){seen[k]=1;
     const li=Array.isArray(s.is)?s.is.filter(z=>INT_BY_ID[z]):[];
-    habits.push({t:s.t, t0:s.t, f:FREQ_BY_ID[s.f]?s.f:null,
+    habits.push({t:s.t, t0:s.t, f:FREQ_BY_ID[s.f]?s.f:null, ...(timingWords(s.rhythm_text)?{rhythm_text:timingWords(s.rhythm_text)}:{}),
       i:INT_BY_ID[s.i]?s.i:(li[0]||null), is:li, o:s.o||null});}});});
   /* L'ORDRE DU MEMBRE EST UNE DONNÉE. `state` est reconstruit de zéro
      ici : sans ce report, l'ordre choisi à la main était oublié au
@@ -5225,6 +5226,7 @@ async function loadRO(){
 /* Poser le Totehm lu (la réponse de `totehm_read`) À LA PLACE du mien, en mémoire : MEMBERS l'appelle aussi, après
    avoir vérifié la réponse — un refus ne touche JAMAIS mon état. */
 function poserLecture(data){
+  SPOT=Object.create(null);spotSeq++; // A member's native readers never inherit the viewer's private usual places.
   const habits=[];const seen={};
   (Array.isArray(data.steps)?data.steps:[]).forEach(x=>{
     const k=norm(x.t); if(!x.t||seen[k])return; seen[k]=1;
@@ -5233,7 +5235,7 @@ function poserLecture(data){
        trait qui porte la couleur héritée des objectifs et des
        répulsions, donc le mensonge se propageait à trois vues. */
     const li=Array.isArray(x.is)?x.is.filter(z=>INT_BY_ID[z]):[];
-    habits.push({t:x.t, t0:x.t, f:FREQ_BY_ID[x.f]?x.f:null,
+    habits.push({t:x.t, t0:x.t, f:FREQ_BY_ID[x.f]?x.f:null, ...(timingWords(x.rhythm_text)?{rhythm_text:timingWords(x.rhythm_text)}:{}),
       i:INT_BY_ID[x.i]?x.i:(li[0]||null), is:li, o:x.o||null});});
   state={habits, vis:'subscribers', ord:true};
 
@@ -5263,6 +5265,7 @@ function poserLecture(data){
   return true;
 }
 function roFail(msg){
+  SPOT=Object.create(null);spotSeq++;
   document.body.classList.add('ro');
   $('ro-who').textContent=msg;
   state={habits:[],vis:'private'};
@@ -5287,7 +5290,7 @@ async function sortirLecture(){
   roSeq++; HSPACES.seq++; HSPACES.par=new Map(); ECLOTHS.seq++; ECLOTHS.par=new Map();
   MBM.seq++; MBM.nom=null; MBM.items=[];
   ZOOM.clear(); COPIES.clear();
-  state={habits:[],vis:'private'}; TRIPS=[]; REPS=[]; TEACH=[]; VIS=[]; OBJ={}; tripsLoaded=false;
+  state={habits:[],vis:'private'}; TRIPS=[]; REPS=[]; TEACH=[]; VIS=[]; OBJ={}; SPOT=Object.create(null);spotSeq++;tripsLoaded=false;
   try{ history.replaceState(null,'',location.pathname); }catch(_){}
   await sessionChange();
 }
@@ -8001,7 +8004,7 @@ function currentIntOfTarget(){
   return (state.habits[fpTarget]&&state.habits[fpTarget].i)||null;
 }
 function openFreqPanel(target,stage){
-  fpTarget=target;$('fp-input').value='';fpDetected=null;
+  fpTarget=target;$('fp-input').value=state.habits[target]?.rhythm_text||'';fpDetected=null;
   const cur=(target==='new')?pendingF
     :(target==='filter')?filterF
     :(state.habits[target]?state.habits[target].f:null);
@@ -8163,7 +8166,8 @@ function applyFreq(id){
   }
   if(!state.habits[fpTarget]){closeFreqPanel();return;}
   const prevF=state.habits[fpTarget].f;
-  state.habits[fpTarget].f=id;save();
+  const words=$('fp-input').value,x=state.habits[fpTarget];
+  confirmRhythm(x,id,(prevF===id||words!==(x.rhythm_text||''))?words:'');
   if(prevF&&prevF!==id)logTotehmEvent('freq_changed',state.habits[fpTarget].t,{from:prevF,to:id});
   if(!state.habits[fpTarget].i){showFpStage('int');renderHabits();return;}
   closeFreqPanel();renderHabits();
@@ -8205,10 +8209,11 @@ function renderFpList(currentId){
   FREQS.forEach(f=>{const b=document.createElement('button');b.className='gbtn fp-opt'+(f.id===currentId?' on':'');b.dataset.id=f.id;b.textContent=f.label;b.onclick=()=>applyFreq(f.id);box.appendChild(b);});
 }
 let fpDetected=null;
-$('fp-input').addEventListener('input',()=>{
+function refreshFpInput(e){
+  if(e?.isComposing)return;
   const raw=$('fp-input').value;
   fpDetected=raw.trim()?deduceFreq(raw):null;
-  $('fp-preview').textContent=fpDetected?('\u2192 '+flabel(fpDetected)):(raw.trim()?'Choose a rhythm below.':'');
+  $('fp-preview').textContent=fpDetected?('\u2192 '+rhythmSummary(parseHabitRhythm(raw,{mode:'rhythm'}))+' · notifications follow your settings'):(raw.trim()?'This timing needs a manual choice.':'');
   const box=$('fp-list');
   let hit=null;
   box.querySelectorAll('.fp-opt').forEach(b=>{
@@ -8217,9 +8222,12 @@ $('fp-input').addEventListener('input',()=>{
     if(on)hit=b;
   });
   if(hit)hit.scrollIntoView({block:'nearest',behavior:'smooth'});
-});
-$('fp-preview').onclick=()=>{if(fpDetected)applyFreq(fpDetected);};
+}
+$('fp-input').addEventListener('input',refreshFpInput);
+$('fp-input').addEventListener('compositionend',refreshFpInput);
+$('fp-preview').onclick=()=>{fpDetected=deduceFreq($('fp-input').value);if(fpDetected)applyFreq(fpDetected);};
 $('fp-input').addEventListener('keydown',e=>{
+  if(e.isComposing||e.keyCode===229)return;
   if(e.key==='Enter'){e.preventDefault();if(fpDetected)applyFreq(fpDetected);else{const id=deduceFreq($('fp-input').value);if(id)applyFreq(id);}}
   else if(e.key==='Escape'){closeFreqPanel();}
 });
@@ -8332,7 +8340,7 @@ let TRIPS=[], REPS=[], TEACH=[], VIS=[], tripsLoaded=false;
    répulsions. Indexé par le texte affiché, le lieu disparaîtrait à
    chaque lettre tapée dans le titre — on a mis trois lots à éteindre ce
    bug-là sur les autres liens. */
-let SPOT={};
+let SPOT=Object.create(null),spotSeq=0;
 const spotDe=x=>{const k=srv(x); return (k&&SPOT[k])||'';};
 /* ══ LE SON D'UNE INTENTION · 20/09/2026 ═════════════════════════════
    Wah : « un type de musique par intention, un texte ouvert et un lien
@@ -8363,7 +8371,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-11-13-practice-source-joystick';
+const BUILD='2026-11-13-rhythm-usual-place';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -8592,7 +8600,7 @@ async function loadTrips(force){
   if(RO)return;
   if(!me)return;
   if(tripsLoaded&&!force)return;
-  const uid=me.id;
+  const uid=me.id,session=sesSeq,places=++spotSeq;
   try{
     await ordreEnVol;
     /* ⚠️ ON NE LIT JAMAIS L'ARBRE PENDANT QU'ON ÉCRIT DEDANS. Sans cette
@@ -8601,7 +8609,7 @@ async function loadTrips(force){
        posé disparaissait. Voir `EN_VOL`. */
     await calme();
     const {data,error}=await sb.rpc('my_trips');
-    if(RO||uid!==me?.id)return;
+    if(RO||uid!==me?.id||session!==sesSeq)return;
     /* Une erreur de RPC se JOURNALISE, toujours : sans ce log, une liste
        vide ne dit pas si le membre n'a rien posé ou si l'appel casse. */
     if(error)throw error;
@@ -8632,21 +8640,27 @@ async function loadTrips(force){
       is:Array.isArray(v.is)?v.is:[], os:(v.os||[]).map(String)}));
     tripsLoaded=true;
     await chargerOrdres();
-    if(RO||uid!==me?.id)return;
+    if(RO||uid!==me?.id||session!==sesSeq)return;
     AUDB.charger();
     /* Les spots voyagent à part : une table, une lecture, et `my_trips`
        reste la fonction de l'arbre. */
     try{
-      const {data:sp}=await sb.from('habit_spots').select('habit_text,place').eq('user_id',me.id);
-      SPOT={}; (sp||[]).forEach(r=>{SPOT[r.habit_text]=r.place;});
-    }catch(_){}
+      const {data:sp,error:placeError}=await sb.from('habit_spots').select('habit_text,place').eq('user_id',uid);
+      if(RO||uid!==me?.id||session!==sesSeq)return;
+      if(places===spotSeq){
+        if(placeError)console.error('[totehm]','usual_place_read_failed');
+        else{SPOT=Object.create(null);(sp||[]).forEach(r=>{SPOT[r.habit_text]=r.place;});}
+      }
+    }catch(_){console.error('[totehm]','usual_place_read_failed');}
     /* Les sons voyagent avec les spots : deux petites lectures en
        parallèle de l'arbre, et `my_trips` reste la fonction de l'arbre.
        Un échec ici ne doit jamais empêcher le Totehm de s'afficher. */
     try{
       const {data:so}=await sb.rpc('intention_sounds');
+      if(RO||uid!==me?.id||session!==sesSeq)return;
       SONS=so||{};
-    }catch(_){ SONS={}; }
+    }catch(_){if(!RO&&uid===me?.id&&session===sesSeq)SONS={};}
+    if(RO||uid!==me?.id||session!==sesSeq)return;
     renderZone();
   }catch(e){
     console.error('[totehm] my_trips:',e&&e.message||e);
@@ -9095,13 +9109,14 @@ let pk=null;
    ligne et l'écran restait vide. */
 let lastView=null;
 const pkOn=(q,k,id)=>!!pk&&pk.q===q&&pk.k===k&&String(pk.id)===String(id);
-function pkSet(q,k,id){ pk = pkOn(q,k,id) ? null : {q,k,id:String(id)}; renderZone(); }
+function pkSet(q,k,id){ pk = pkOn(q,k,id) ? null : {q,k,id:String(id),...(q==='freq'?{txt:habOf(id)?.rhythm_text||''}:{})}; renderZone(); }
 
 /* The original Habit text remains the source. Suggestions never change a rhythm on typing. */
 const rhythmIgnored=new Map();
+const habitTiming=x=>parseHabitRhythm(x.rhythm_text||x.t,{mode:x.rhythm_text?'rhythm':'habit'});
 function rhythmHint(x){
   if(RO||rhythmIgnored.get(String(x.id))===x.t)return '';
-  const result=parseHabitRhythm(x.t);
+  const result=habitTiming(x);
   if(result.status==='matched'){
     if(result.frequency===x.f)return '';
     return '<span class="pk-say" role="status">Suggested: '+esc(rhythmSummary(result))+'</span>'
@@ -9119,31 +9134,106 @@ function refreshRhythmHint(x){
   if(host)host.innerHTML=rhythmHint(x);
 }
 
+function timingFeedback(result,words){
+  const details=result.target?'One check-in for the whole period, not one notification per session. ':'';
+  if(result.status==='matched')return details+((result.hasClock||result.hasDuration)?'Your timing words appear in check-ins. Session length and exact times do not schedule alerts. Notifications follow your settings.':'Your timing words appear in check-ins. Notifications use the confirmed rhythm.');
+  return words.trim()?'This timing needs a manual choice. Your words can be kept with a chosen check-in; exact dates, exceptions and times are not scheduled.':'';
+}
+function freqFeedback(x,words){
+  const result=parseHabitRhythm(words,{mode:'rhythm'});
+  return (result.status==='matched'?'<button type="button" class="fq-hit" data-fq-suggested="1" data-fq="'+esc(String(x.id))+'|'+result.frequency+'">'+esc(rhythmSummary(result))+'</button>':'')
+    +'<span class="pk-say" role="status">'+esc(timingFeedback(result,words))+'</span>';
+}
+function updateFreqInput(t){
+  if(!pk||pk.q!=='freq'||String(pk.id)!==t.dataset.fqin)return;
+  pk.txt=t.value;pk.dirty=true;const x=habOf(pk.id);if(!x)return;
+  const r=parseHabitRhythm(t.value,{mode:'rhythm'});pk.devine=r.status==='matched'?r.frequency:null;
+  const feedback=t.parentElement.querySelector('[data-fq-feedback]');if(feedback)feedback.innerHTML=freqFeedback(x,t.value);
+}
+function confirmRhythm(x,frequency,words=''){
+  x.f=frequency;const text=timingWords(words);
+  if(text)x.rhythm_text=text;else delete x.rhythm_text;
+  rhythmIgnored.set(String(x.id),x.t);save();
+}
 function freqPicker(x){
-  const devine = pk&&pk.q==='freq'&&pk.devine ? pk.devine : null;
+  const words=pk?.txt??x.rhythm_text??'';
   return '<span class="pkw">'
-    +'<input class="in fq" data-fqin="'+esc(String(x.id))+'" autocomplete="off"'
-    +' placeholder="write it in your language" value="'+esc(pk&&pk.txt||'')+'">'
-    +(devine?'<button type="button" class="fq-hit" data-fq="'+esc(String(x.id))+'|'+devine+'">'
-      +esc(rhythmSummary(parseHabitRhythm(pk.txt,{mode:'rhythm'}))||flabel(devine))+'</button>':'')
+    +'<input class="in fq" dir="auto" aria-label="Time frequency in your words" maxlength="500" data-fqin="'+esc(String(x.id))+'" autocomplete="off"'
+    +' placeholder="write it in your language" value="'+esc(words)+'">'
+    +'<span data-fq-feedback>'+freqFeedback(x,words)+'</span>'
     +'<span class="pk-list">'
     + FREQS.map(f=>'<button type="button" class="pk-o'+(x.f===f.id?' on':'')
         +'" data-fq="'+esc(String(x.id))+'|'+f.id+'">'+esc(f.label)+'</button>').join('')
     +'</span></span>';
 }
 
-/* ══ LE CHAMP DU SPOT ════════════════════════════════════════════════
-   Un champ, rien d'autre. Pas de carte, pas d'autocomplétion, pas
-   d'autorisation de géolocalisation à demander : on écrit l'endroit
-   comme on le dit. Le point GPS viendra du TotehmBot, quand il y aura un
-   TotehmBot — et il se posera sur la même ligne en base.
-   Vider le champ détache le lieu : c'est le seul moyen de quitter un
-   endroit sans supprimer l'habitude. */
+/* The authored usual setting is independent of a dated spot and never requests GPS. */
 const spotPicker=x=>'<span class="pkw">'
-  +'<input class="in nw" data-spot="'+esc(String(x.id))+'" autocomplete="off"'
-  +' maxlength="120" placeholder="where I do it" value="'+esc(spotDe(x))+'">'
+  +'<input class="in nw" dir="auto" aria-label="where I usually do it" data-spot-owner="'+esc(me?.id||'')+'" data-spot-session="'+sesSeq+'" data-spot-ref="'+esc(srv(x))+'" data-spot="'+esc(String(x.id))+'" autocomplete="off"'
+  +' maxlength="120" placeholder="where I usually do it" value="'+esc(spotDe(x))+'">'
   +'<span class="pk-say">the park downstairs · my kitchen · the gym on 5th</span>'
+  +'<span class="pk-say">Your usual setting. Add a spot for a specific place and time.</span>'
   +'</span>';
+// A native Habit keeps one queue for its textual key and usual place. A rename
+// waits for a blurred field, and a later place edit uses the acknowledged new key.
+const habitNativeWrites=new WeakMap();
+function habitWriteState(x,ref=srv(x)){
+  let record=habitNativeWrites.get(x);
+  if(!record){record={tail:Promise.resolve(),ref,refs:new Set([ref]),place:SPOT[ref]||'',version:0,pending:0,blocked:false};habitNativeWrites.set(x,record);}
+  return record;
+}
+function queueHabitWrite(x,record,uid,seq,action){
+  record.pending++;
+  const pending=record.tail.then(async()=>{
+    if(me?.id!==uid||seq!==sesSeq||RO||!state.habits.includes(x))return;
+    await action();
+  }).catch(()=>{console.error('[habit]','write_failed');if(me?.id===uid&&seq===sesSeq&&!RO)dis('This change could not be saved. Try again.');})
+    .finally(()=>{record.pending--;EN_VOL.delete(pending);});
+  record.tail=pending;EN_VOL.add(pending);return pending;
+}
+function paintUsualPlace(x,value){
+  const k=srv(x);++spotSeq;if(value)SPOT[k]=value;else delete SPOT[k];
+  const button=[...$('habits').querySelectorAll('[data-pk]')].find(b=>b.dataset.pk==='spot:h:'+x.id);
+  if(button)button.textContent=value||'where I usually do it';
+}
+function queueHabitRename(x,previous,next){
+  const record=habitWriteState(x,previous),uid=me.id,seq=sesSeq;record.refs.add(next);
+  return queueHabitWrite(x,record,uid,seq,async()=>{
+    if(record.blocked)return; // An uncertain rename is never blindly replayed.
+    try{
+      const {data,error}=await sb.rpc('habit_rename_links',{p_old:record.ref,p_new:next});
+      if(error||data===false||data?.ok===false)throw Error('rename_failed');
+      record.ref=next;
+    }catch(_){
+      record.blocked=true;console.error('[habit_rename_links]','save_failed');
+      if(me?.id===uid&&seq===sesSeq&&!RO)dis('Habit links could not be saved. Reload before changing its usual place.');
+    }
+  });
+}
+function saveUsualPlace(t){
+  if(RO||!me||t.dataset.spotOwner!==me.id||t.dataset.spotSession!==String(sesSeq))return;
+  const x=habOf(t.dataset.spot),k=x&&srv(x),v=t.value.trim();
+  if(!k||v.length>120)return;
+  const record=habitWriteState(x);
+  if(!record.refs.has(t.dataset.spotRef))return;
+  if(spotDe(x)===v)return;
+  if(!record.pending&&!record.blocked)record.place=spotDe(x); // Latest completed native read/acknowledgement.
+  const uid=me.id,seq=sesSeq,version=++record.version;
+  paintUsualPlace(x,v);
+  return queueHabitWrite(x,record,uid,seq,async()=>{
+    try{
+      if(record.blocked)throw Error('rename_uncertain');
+      const {data,error}=await sb.rpc('habit_spot_set',{p_habit:record.ref,p_place:v});
+      if(error||data===false||data?.ok===false)throw Error('place_failed');
+      record.place=v;
+    }catch(_){
+      console.error('[habit_spot_set]','save_failed');
+      if(me?.id===uid&&seq===sesSeq&&!RO&&state.habits.includes(x)&&version===record.version){
+        paintUsualPlace(x,record.place);dis(record.blocked?'Reload this Habit before changing its usual place.':'Usual place could not be saved. Try again.');
+      }
+    }
+  });
+}
 
 /* LES SEPT INTENTIONS — plusieurs à la fois. Pas de surlignage : la tuile
    prend un fondu de sa couleur, et se remplit quand elle est choisie. */
@@ -9379,11 +9469,11 @@ function vueHabitude(x,k){
     ? intBouton(x,'h')
       +'<button type="button" class="v-b'+(x.f?'':' vit')+'" data-pk="freq:h:'+esc(String(x.id))+'">'
       +(x.f?esc(flabel(x.f))+' ▾':'+ <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 2" fill="none" stroke="currentColor" stroke-width="2"/></svg>')+'</button>'
-      +'<button type="button" class="v-b" data-pk="spot:h:'+esc(String(x.id))+'">'
-      +esc(lieu||'where')+'</button>'
+      +'<button type="button" class="v-b" aria-label="where I usually do it" title="where I usually do it" data-pk="spot:h:'+esc(String(x.id))+'">'
+      +esc(lieu||'where I usually do it')+'</button>'
     : intMots(x)
       +(x.f?'<span class="v-frq">'+esc(flabel(x.f))+'</span>':'')
-      +(lieu?'<span class="v-frq">'+esc(lieu)+'</span>':'')
+      +(lieu?'<span class="v-frq" title="where I usually do it">'+esc(lieu)+'</span>':'')
       +(nSp?'<span class="v-frq v-spc v-ecosystem">'+compte(nSp,'SPACE')+'</span>':'')
       +(nSt?'<span class="v-frq v-spc v-ecosystem">'+compte(nSt,'SPOT')+'</span>':'');
   /* WHY au-dessus des objectifs, PROTECTED BY au-dessus des répulsions :
@@ -9425,6 +9515,7 @@ function vueHabitude(x,k){
   if(ouverte&&pkOn('int','h',x.id))  haut=intPicker(x,'h');
   if(ouverte&&pkOn('freq','h',x.id)) haut=freqPicker(x);
   if(ouverte&&pkOn('spot','h',x.id)) haut=spotPicker(x);
+  if(ouverte&&x.rhythm_text)haut='<span class="pk-say" dir="auto">'+esc(x.rhythm_text)+'</span>'+haut;
   if(ouverte&&!RO)haut='<span class="pkw" data-rhythm-preview="'+esc(String(x.id))+'">'+rhythmHint(x)+'</span>'+haut;
   return ligne(boiteHTML({kind:'h',id:x.id,titre:x.t,unit,minis,cloths:groupeCloths('h',x,ouverte),ouverte,haut,medias:false,tue:'Delete habit'}),
     ouverte?'open':'', intCols(x), k+1, x.id, k===0, k===NB-1);
@@ -10047,12 +10138,13 @@ function cable(box){
     if(d.rhythmIgnore){const x=habOf(d.rhythmIgnore);if(x){rhythmIgnored.set(String(x.id),x.t);refreshRhythmHint(x);}return;}
     if(d.rhythm){
       const x=habOf(d.rhythm);if(!x)return;
-      const result=parseHabitRhythm(x.t);
+      const result=habitTiming(x);
       if(result.status!=='matched'||result.frequency!==d.rhythmFrequency||!FREQ_BY_ID[result.frequency]){refreshRhythmHint(x);return;}
-      x.f=result.frequency;rhythmIgnored.set(String(x.id),x.t);save();pk=null;renderZone();return;
+      confirmRhythm(x,result.frequency,x.rhythm_text||'');pk=null;renderZone();return;
     }
     if(d.fq){ const p=d.fq.split('|'); const x=habOf(p[0]);
-      if(x&&FREQ_BY_ID[p[1]]){x.f=p[1];rhythmIgnored.set(String(x.id),x.t);save();} pk=null; renderZone(); return; }
+      if(d.fqSuggested&&(!pk||parseHabitRhythm(pk.txt,{mode:'rhythm'}).frequency!==p[1]))return;
+      if(x&&FREQ_BY_ID[p[1]])confirmRhythm(x,p[1],(d.fqSuggested||pk?.dirty||x.f===p[1])?pk?.txt||'':'');pk=null;renderZone();return; }
     if(d.lien){ const p=d.lien.split('|'), q=p[0].split(':');
       attache(q[0],q[1],p[1]); pk=null; renderZone(); return; }
     if(d.unlink){ const p=d.unlink.split('|'), q=p[0].split(':');
@@ -10098,9 +10190,11 @@ function cable(box){
         differe('h:'+x.id,()=>{
           const ancien=x.t0;
           if(me&&ancien&&ancien!==x.t){
+            queueHabitRename(x,ancien,x.t);
             REPS.forEach(r=>{const i=(r.hs||[]).indexOf(ancien); if(i>=0)r.hs[i]=x.t;});
             if(OBJ[ancien]){OBJ[x.t]=OBJ[ancien]; delete OBJ[ancien];}
-            apres(sb.rpc('habit_rename_links',{p_old:ancien,p_new:x.t})); emRenommer(ancien,x.t);}
+            spotSeq++;if(Object.hasOwn(SPOT,ancien)){SPOT[x.t]=SPOT[ancien];delete SPOT[ancien];}
+            emRenommer(ancien,x.t);}
           x.t0=x.t; save({maintenant:1}); }); }   /* t0 voyage dans `steps` : UN envoi, après lui */
       /* ⚠️ RIEN NE PART TANT QUE L'OBJET EST PROVISOIRE. Le texte
          s'écrit en mémoire ; la minuterie est posée sur l'identifiant
@@ -10126,17 +10220,12 @@ function cable(box){
       return;
     }
     /* Le rythme écrit dans sa langue : on devine à la frappe, sans réseau. */
-    if(t.dataset.fqin && pk){
-      pk.txt=t.value;
-      const g=(typeof deduceFreq==='function')?deduceFreq(t.value):null;
-      const av=pk.devine; pk.devine = (g&&FREQ_BY_ID[g])?g:null;
-      if(av!==pk.devine){ const cur=t.selectionStart; renderZone();
-        const n=$('habits').querySelector('[data-fqin]');
-        if(n){n.focus(); try{n.setSelectionRange(cur,cur);}catch(_){}} }
-    }
+    if(t.dataset.fqin&&pk){pk.txt=t.value;if(!e.isComposing)updateFreqInput(t);}
   });
   box.addEventListener('compositionend',e=>{
-    if(RO||!e.target.dataset.edit?.startsWith('h:'))return;
+    if(RO)return;
+    if(e.target.dataset.fqin){updateFreqInput(e.target);return;}
+    if(!e.target.dataset.edit?.startsWith('h:'))return;
     const x=habOf(e.target.dataset.edit.slice(2));if(x)refreshRhythmHint(x);
   });
   box.addEventListener('change',e=>{
@@ -10150,6 +10239,7 @@ function cable(box){
      partaient à la poubelle. `focusout` remonte (contrairement à
      `blur`), donc un seul écouteur sur la boîte suffit. */
   box.addEventListener('focusout',e=>{
+    if(e.target?.dataset.spot!==undefined)saveUsualPlace(e.target);
     if(e.target&&e.target.dataset&&e.target.dataset.son) ecritSon(e.target);
     /* le curseur quitte un champ : ce qu'il portait part sans attendre la pause */
     if(e.target&&e.target.dataset&&e.target.dataset.edit&&!RO){ pousse(e.target.dataset.edit); ecrireTout(); }
@@ -10187,12 +10277,7 @@ function cable(box){
     if(!t || !t.dataset) return false;
     /* ⚠️ LE LIEU PART AU SERVEUR AVEC LE TEXTE QUE LE SERVEUR CONNAÎT
        (`srv`), jamais avec ce qu'on est en train de taper dans le titre. */
-    if(t.dataset.spot!==undefined){
-      const x=habOf(t.dataset.spot); if(!x)return true;
-      const v=t.value.trim(), k=srv(x); if(!k)return true;
-      if(v)SPOT[k]=v; else delete SPOT[k];
-      apres(sb.rpc('habit_spot_set',{p_habit:k,p_place:v}));
-      pk=null; renderZone(); return true; }
+    if(t.dataset.spot!==undefined){saveUsualPlace(t);pk=null;renderZone();return true;}
     /* ⚠️ ENTRÉE NE REFERME PAS LE CHOIX ICI. Sur le lieu, Entrée veut
        dire « c'est posé, referme » — un seul champ. Le son en a DEUX :
        refermer après le premier obligerait à rouvrir pour coller le
@@ -10204,7 +10289,7 @@ function cable(box){
       if(!v){ pk=null; renderZone(); return true; }
       const q=t.dataset.nw.split(':'); neufEtAttache(q[0],q[1],v); return true; }
     if(t.dataset.fqin){
-      if(pk&&pk.devine){ const x=habOf(pk.id); if(x){x.f=pk.devine;save();} pk=null; renderZone(); }
+      if(pk){const r=parseHabitRhythm(t.value,{mode:'rhythm'}),x=habOf(pk.id);if(x&&r.status==='matched'){confirmRhythm(x,r.frequency,t.value);pk=null;renderZone();}}
       return true; }
     /* ⚠️ LE TITRE D'UNE BOÎTE — le cas qui manquait. Entrée POUSSE
        l'écriture différée (sinon elle dort 700 ms de plus) et rend le
@@ -10228,6 +10313,7 @@ function cable(box){
   /* Le filet du téléphone. `insertLineBreak` arrive même quand aucun
      `keydown` exploitable n'est parti. */
   box.addEventListener('beforeinput',e=>{
+    if(e.isComposing)return;
     if(e.inputType!=='insertLineBreak' && e.inputType!=='insertParagraph') return;
     e.preventDefault();          /* aucun retour à la ligne, jamais */
     valide(e.target);
@@ -11770,6 +11856,7 @@ $('mw-save-code').addEventListener('input',async()=>{
    frame ou pour de bon, le Totehm de celui d'avant. */
 let sesSeq=0;
 function quitter(){
+  SPOT=Object.create(null);spotSeq++;
   trackingControls.reset();rhythmIgnored.clear();
   roSeq++; HSPACES.seq++; HSPACES.par=new Map(); ECLOTHS.seq++; ECLOTHS.par=new Map(); visImgSeq++; VISIMG.clear(); ZOOM.clear(); COPIES.clear();
   state={habits:[],vis:'private'}; myProfile=null; cloudMode=false; LAND=null; if(lvQuitter) lvQuitter();

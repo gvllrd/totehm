@@ -5,6 +5,9 @@ const graph=memberGraph({ok:true,steps:[{t:'Draw',is:['express'],o:'private-obje
  trips:[{id:O,text:'Book',status:'active',visions:[V],is:['focus']}],objs:{Draw:[O,'private-objective']},
  reps:[{id:'9007199254740993',text:'Delay',hs:['Draw'],ws:[W]}],
  visions:[{id:V,text:'Exhibit'}],wisdom:[{id:W,text:'Start small',os:[O]}]});
+const memberTiming=memberGraph({steps:[{t:'Draw',f:'weekly',rhythm_text:'three mornings per week'}],habit_spots:[{habit_text:'Draw',place:'NOT AUTHORIZED'}]});
+assert.equal(memberTiming.items[0].rhythm_text,'three mornings per week');assert.equal(memberTiming.items[0].freq,'weekly');
+assert.equal(memberTiming.items[0].usual_place,undefined);assert(!JSON.stringify(memberTiming).includes('NOT AUTHORIZED'));
 assert.equal(graph.items.length,5);
 assert.equal(new Set(graph.items.map(x=>x.kind)).size,5);
 assert.equal(graph.edges.length,5);

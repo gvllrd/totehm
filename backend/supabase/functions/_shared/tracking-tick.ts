@@ -1,6 +1,21 @@
 import {trackingKeyboard} from './tracking-bot.ts';
 import {createTelegramTransport,TelegramAPIError,telegramTextParts} from './tracking-telegram.ts';
 type Config={db:any;token?:string;serviceKey:string;webhookSecret?:string;projectOrigin:string;fetcher?:typeof fetch;pause?:(milliseconds:number)=>Promise<void>};
+// Only the member's confirmed wording for this exact current Habit. A lookup
+// failure never prevents the already-reserved canonical check-in from arriving.
+async function confirmedTiming(db:any,uid:string,claim:any):Promise<string>{
+ try{
+  const r=await db.from('totehms').select('steps').eq('user_id',uid)
+   .order('updated_at',{ascending:false,nullsFirst:false}).limit(1);
+  if(r.error)throw new Error('unavailable');
+  const steps=Array.isArray(r.data?.[0]?.steps)?r.data[0].steps:[];
+  const current=steps.find((s:any)=>s&&typeof s.t==='string'&&s.t===claim.habit);
+  if(!current||(Object.hasOwn(claim,'frequency')&&(current.f??null)!==(claim.frequency??null)))return '';
+  const words=current.rhythm_text;
+  if(typeof words!=='string'||words.length>500||!words.isWellFormed()||/[\u0000-\u001f\u007f-\u009f]/u.test(words))return '';
+  return words.replace(/\s+/gu,' ').trim();
+ }catch{console.error('[tracking]','timing_read_failed');return '';}
+}
 export function createTrackingTick(c:Config){
  const telegram=createTelegramTransport(c.token,c.fetcher??fetch);
  const pause=c.pause??((milliseconds:number)=>new Promise<void>(resolve=>setTimeout(resolve,milliseconds)));
@@ -34,9 +49,10 @@ export function createTrackingTick(c:Config){
     const d=claim.data;
     if(claim.error){bump('claim_failed');continue;}if(!d?.send){bump(String(d?.why??'not_due'));continue;}
     if(body?.mode==='dry_run'){bump('due');continue;}
+    const timing=await confirmedTiming(c.db,uid,d);
     let state='uncertain',message:number|null=null,code='network_uncertain',partsSent=0;
     try{
-     const text=String(d.habit)+'\n\n'+(d.period_label?String(d.period_label)+'\n':'')+'Did you do it?';
+     const text=String(d.habit)+'\n\n'+(timing?'Your timing: '+timing+'\n\n':'')+(d.period_label?String(d.period_label)+'\n':'')+'Did you do it?';
      const parts=telegramTextParts(text);
      for(let n=0;n<parts.length;n++){
       if(n)await pause(1100);
