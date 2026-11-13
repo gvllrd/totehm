@@ -1,3 +1,4 @@
+import {practiceKeyboard,practiceTelegram,practiceTarget,readPreparation,practiceURL} from './tracking-practice.ts';
 // Private, deterministic tracking. The caller verifies Telegram's webhook secret.
 // No model, no location collection, no automatic changes to the five TOTEHM views.
 type DB=any;
@@ -6,7 +7,7 @@ const APP='https://www.totehm.com/totehm';
 const oid=(v:unknown)=>typeof v==='string'&&/^[1-9][0-9]{0,18}$/.test(v);
 export function trackingKeyboard(id:string,action:'a'|'c'='a'){
   if(!oid(id))throw new Error('invalid_outcome');
-  return {inline_keyboard:[[{text:'Done',callback_data:`t:${action}:${id}:done`},{text:'Missed',callback_data:`t:${action}:${id}:missed`}]]};
+  return {inline_keyboard:[[{text:'Done',callback_data:`t:${action}:${id}:done`},{text:'Missed',callback_data:`t:${action}:${id}:missed`}],[{text:'Prepare',callback_data:`t:p:${id}:open`}]]};
 }
 export function trackingReview(s:any):string{
   const c=s.counts??{};
@@ -30,12 +31,12 @@ export async function handleTrackingUpdate(db:DB,u:any,telegram:Telegram):Promis
   const notifications=()=>say('Your Habit check-ins arrive here automatically, within your notification settings. Read the Habit, then tap Done or Missed. No selection menu. /pause to pause questions.',{inline_keyboard:[[{text:'TotehmBot settings',url:APP+'#settings'}]]});
   const savedMessage=async(id:string,status:string)=>{
     const label=({done:'Done',missed:'Missed',partial:'In part',skipped:'Set aside'} as Record<string,string>)[status];
-    const markup={inline_keyboard:[[{text:'Change',callback_data:`t:e:${id}:open`}]]};
+    const markup={inline_keyboard:[[{text:'Change',callback_data:`t:e:${id}:open`}],[{text:'Prepare',callback_data:`t:p:${id}:open`}]]};
     const original=String(msg.text??'').replace(/\n\nSaved: (Done|Missed|In part|Set aside)$/, '');
     const text=original+'\n\nSaved: '+label;
     // Legacy messages can already fill Telegram's limit. Preserve their full text.
     if(original&&text.length<=4096)await telegram('editMessageText',{chat_id:chat,message_id:msg.message_id,text,reply_markup:markup,link_preview_options:{is_disabled:true}});
-    else await telegram('editMessageReplyMarkup',{chat_id:chat,message_id:msg.message_id,reply_markup:{inline_keyboard:[[{text:'Saved: '+label+' · Change',callback_data:`t:e:${id}:open`}]]}});
+    else await telegram('editMessageReplyMarkup',{chat_id:chat,message_id:msg.message_id,reply_markup:{inline_keyboard:[[{text:'Saved: '+label+' · Change',callback_data:`t:e:${id}:open`}],[{text:'Prepare',callback_data:`t:p:${id}:open`}]]}});
   };
   if(cb){
     const parts=String(cb.data??'').split(':'),legacy=parts[0]==='o';
@@ -46,6 +47,20 @@ export async function handleTrackingUpdate(db:DB,u:any,telegram:Telegram):Promis
     const op=legacy?'a':parts[1],id=legacy?parts[1]:parts[2],value=legacy?parts[2]:parts[3];
     if(op==='l'||op==='n'){await notifications();return true;}
     if(!oid(id)){await unavailable();return true;}
+    if(op==='p'&&['open','show'].includes(value)){
+      const target=await practiceTarget(db,tg,id);
+      if(!target){await unavailable();return true;}
+      if(value==='open'){
+        await practiceTelegram(telegram,'sendMessage',{chat_id:chat,
+          text:'Prepare your next step. Open the original Habit with its private media, or bring its linked WHY, TRIGGER, VISION and MY STORY text into this private Telegram chat. Opening preparation never records Done or Missed.',
+          reply_markup:practiceKeyboard(id,true),link_preview_options:{is_disabled:true}});
+      }else{
+        const text=await readPreparation(db,target);
+        await practiceTelegram(telegram,'editMessageText',{chat_id:chat,message_id:msg.message_id,text,
+          reply_markup:practiceKeyboard(id),link_preview_options:{is_disabled:true}});
+      }
+      return true;
+    }
     if((op==='a'||op==='c')&&['done','partial','missed','skipped'].includes(value)){
       const r=await call(op==='c'?'tracking_correct':'tracking_answer',{p_telegram:tg,p_outcome:id,p_status:value});
       if(!r?.ok){await unavailable();return true;}
@@ -69,6 +84,11 @@ export async function handleTrackingUpdate(db:DB,u:any,telegram:Telegram):Promis
     await unavailable();return true;
   }
   const text=String(msg.text??'').trim();
+  if(['/prepare','/preparer','/préparer','/totehm'].includes(text)){
+    await practiceTelegram(telegram,'sendMessage',{chat_id:chat,
+      text:'Prepare under a check-in opens that exact Habit: your trigger, your why, your illustrations and your spots. Show linked text is optional. Your TOTEHM account is required in the mini-app; Telegram does not replace that connection.',
+      reply_markup:{inline_keyboard:[[{text:'Open my TOTEHM',web_app:{url:practiceURL()}}]]},link_preview_options:{is_disabled:true}});return true;
+  }
   if(['/suivi','/track','/start tracking'].includes(text)){await notifications();return true;}
   if(['/bilan','/review','/moi','/me'].includes(text)){
     const r=await call('tracking_bot_summary',{p_telegram:tg});

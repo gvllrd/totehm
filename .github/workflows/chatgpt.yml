@@ -39,6 +39,8 @@ jobs:
       - run: node tests/browser/chatgpt_connect.mjs work/chatgpt-connection
       - run: node tests/browser/com_orders.mjs work/chatgpt-orders
       - run: node tests/browser/com_element_link.mjs work/chatgpt-elements
+      - run: node tests/browser/com_telegram_practice.mjs work/chatgpt-practice
+      - run: node tests/browser/com_intitules.mjs work
       - run: node tests/browser/com_habit_rhythm.mjs work/chatgpt-rhythm
       - run: node tests/browser/com_tracking.mjs work/chatgpt-tracking
       - run: node tests/browser/com_verso_dashboard.mjs work/chatgpt-dashboard
