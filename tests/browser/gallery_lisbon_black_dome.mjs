@@ -51,6 +51,10 @@ try{
    await pg.evaluate(()=>window.dispatchEvent(new Event('blur')));
    check(!(await pg.evaluate(()=>__totehm_gallery().stations.play.playing)),'Losing focus pauses the world video decoder at '+viewport.width);
    await pg.evaluate(()=>window.dispatchEvent(new Event('focus')));await pg.locator('#close-info').click();
+   await pg.locator('.tour [data-room="2"]').click();await pg.waitForFunction(()=>__totehm_gallery().focused===2);await pg.locator('#enter-experience').click();
+   await pg.waitForFunction(()=>__totehm_gallery().stations.play.playing&&__totehm_gallery().activeSign==='stop');
+   const framing=await pg.evaluate(()=>{const d=__totehm_gallery();return{eye:d.camera.position,target:d.camera.target,projection:d.stations.play.projection};});
+   check(new Vector3(...framing.target).distanceTo(new Vector3(...framing.projection))<.001&&new Vector3(...framing.eye).distanceTo(new Vector3(...framing.projection))>2.8,'The menu also frames the complete world artwork from a reachable viewpoint at '+viewport.width);await pg.locator('#close-info').click();
    failNext=true;await pg.evaluate(()=>document.querySelector('.street-sign-links a[href*="sign=pharma&"]').click());
    await pg.waitForFunction(()=>__totehm_gallery().stations.play.state==='error');
    check(await pg.locator('#enter-experience').isEnabled()&&await pg.locator('.street-get-higher').isVisible(),'A failed media request leaves Retry, Get Higher and the full experience available at '+viewport.width);
@@ -61,6 +65,9 @@ try{
      await pg.evaluate(id=>document.querySelector('.street-sign-links a[href*="sign='+id+'&"]').click(),cue.id);
      await pg.waitForFunction(id=>{const d=__totehm_gallery();return d.activeSign===id&&d.stations.play.id===id&&d.stations.play.playing;},cue.id,{timeout:15000});
      check(requests.at(-1).endsWith('/'+cue.id+'.mp4'),'The accessible '+cue.id+' control selects its respective world animation');
+     await pg.waitForFunction(approach=>{const p=__totehm_gallery().camera.position;return Math.hypot(p[0]-approach[0],p[2]-approach[2])<.02;},cue.approach);
+     const view=await pg.evaluate(()=>{const d=__totehm_gallery();return{target:d.camera.target,projection:d.stations.play.projection};});
+     check(new Vector3(...view.target).distanceTo(new Vector3(...view.projection))<.001,'The '+cue.id+' film is centred from its own reachable viewpoint');
     }
     await pg.locator('#close-info').click();
    }

@@ -128,7 +128,7 @@ document.addEventListener('keydown',e=>{
 });
 document.addEventListener('visibilitychange',syncPreview);reduced.addEventListener('change',syncPreview);
 addEventListener('pagehide',()=>{if(listRaf)cancelAnimationFrame(listRaf);listRaf=0;preview.pause();});addEventListener('pageshow',syncPreview);
-window.__totehm_gallery=()=>({build:'2026-11-13-lisbon-black-higher-dome',place,rooms:4,room,hoveredSign,activeSign,list:body.classList.contains('list-view'),fallback,reduced_motion:reduced.matches,experiences:[...new Set(ROOMS.map(w=>w.path)),...(place==='new-york'?['/think_same_but_opposite']:[])],experienceNavigation:place==='lisbon'?'street-in-world-and-independent-pages':'independent-pages',inGalleryPlayback:place==='lisbon',lisbon:preview.diagnostics(),...engine?.diagnostics()});
+window.__totehm_gallery=()=>({build:'2026-11-13-lisbon-black-higher-dome-framing',place,rooms:4,room,hoveredSign,activeSign,list:body.classList.contains('list-view'),fallback,reduced_motion:reduced.matches,experiences:[...new Set(ROOMS.map(w=>w.path)),...(place==='new-york'?['/think_same_but_opposite']:[])],experienceNavigation:place==='lisbon'?'street-in-world-and-independent-pages':'independent-pages',inGalleryPlayback:place==='lisbon',lisbon:preview.diagnostics(),...engine?.diagnostics()});
 function useFallback(){fallback=true;body.classList.add('no-3d','list-view');engine?.setList(true);clearInfo();syncPreview();}
 try{
  const {createGallery}=await import('./gallery-spatial.mjs');

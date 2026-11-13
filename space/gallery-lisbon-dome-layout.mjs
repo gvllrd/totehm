@@ -47,14 +47,20 @@ const positions={
 // A projecting pharmacy cross faces arrivals rather than showing only its
 // edge from the entrance. Its long bracket still reaches the curved shell.
 positions.pharma.position[2]+=.75;positions.pharma.normal=[0,0,1];positions.pharma.rotationY=0;positions.pharma.bracketDepth=1.05;
-export const LISBON_DOME_SIGNS=freeze(ORIGINAL_SIGNS.map(sign=>({...sign,...positions[sign.id]})));
+export const LISBON_DOME_SIGNS=freeze(ORIGINAL_SIGNS.map(sign=>{
+ const cue={...sign,...positions[sign.id]},nx=cue.normal?.[0]??Math.sin(cue.rotationY),nz=cue.normal?.[2]??Math.cos(cue.rotationY),length=Math.hypot(nx,nz);
+ return{...cue,approach:[cue.position[0]+nx/length*3.6,1.65,cue.position[2]+nz/length*3.6]};
+}));
 export const DOME_SMOKE_OUTLET=freeze({...DOME.oculus,y:domeRoofHeight(DOME.oculus.x,DOME.oculus.z)+DOME.thickness});
 const box=(id,x,z,w,d,height)=>({id,minX:x-w/2,maxX:x+w/2,minZ:z-d/2,maxZ:z+d/2,minY:-.09,maxY:height});
 const rim=[];
 for(let i=0;i<96;i++){
  const a=i/96*Math.PI*2,b=(i+1)/96*Math.PI*2,scale=.98,x0=DOME.radiusX*Math.sin(a)*scale,x1=DOME.radiusX*Math.sin(b)*scale,z0=DOME.centerZ+DOME.radiusZ*Math.cos(a)*scale,z1=DOME.centerZ+DOME.radiusZ*Math.cos(b)*scale;
  if(Math.max(Math.abs(x0),Math.abs(x1))<DOME.entryHalfWidth+.1&&z0>0)continue;
- rim.push({id:'dome-rim-'+i,minX:Math.min(x0,x1)-.055,maxX:Math.max(x0,x1)+.055,minZ:Math.min(z0,z1)-.055,maxZ:Math.max(z0,z1)+.055,minY:-.09,maxY:2.05});
+ // Include the complete low roof edge: an outside visitor's head must
+ // clear its outer face, while an inside route keeps full headroom.
+ const xs=[x0,x1,x0/scale,x1/scale],zs=[z0,z1,DOME.centerZ+(z0-DOME.centerZ)/scale,DOME.centerZ+(z1-DOME.centerZ)/scale];
+ rim.push({id:'dome-rim-'+i,minX:Math.min(...xs)-.035,maxX:Math.max(...xs)+.035,minZ:Math.min(...zs)-.035,maxZ:Math.max(...zs)+.035,minY:-.09,maxY:2.05});
 }
 export const LISBON_DOME_OBSTACLES=freeze([
  ...rim,{id:'lisbon-dome-roof',minX:-DOME.radiusX,maxX:DOME.radiusX,minZ:DOME.centerZ-DOME.radiusZ,maxZ:DOME.centerZ+DOME.radiusZ,minY:-.09,maxY:DOME.height+.2,waveRoof:true},

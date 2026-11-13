@@ -2,7 +2,7 @@ import * as T from './vendor/three-0.180.0.mjs';
 import {createModernGallery} from './gallery-modern.mjs';
 import {createTempleLandscape} from './gallery-temple-landscape.mjs';
 import {createModernWalkway,createModernPhysics} from './gallery-modern-navigation.mjs';
-import {LISBON_DOME_LAYOUT as LISBON_LAYOUT,LISBON_DOME_STATIONS} from './gallery-lisbon-dome-layout.mjs';
+import {LISBON_DOME_LAYOUT as LISBON_LAYOUT,LISBON_DOME_STATIONS,LISBON_DOME_SIGNS} from './gallery-lisbon-dome-layout.mjs';
 import {GALLERY_STATIONS as NEW_YORK_STATIONS} from './gallery-modern-layout.mjs';
 import {createGalleryAudio} from './gallery-audio.mjs';
 import {createLecternBook} from './gallery-lectern-book.mjs';
@@ -111,11 +111,21 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
   if(index===3)index=0;
   if(!STATIONS[index]||list)return false;
   if(!nearStation(index))return visit(index);
-  focusStation(index);if(index===2)play.open();else if(index===4)opposite.open();else if(index===1)book.open();else openExperience({href:'/get_higher'});dirty=true;stationState();return true;
+  focusStation(index);if(index===2){if(!newYork)return activateStreetSign(play.diagnostics().id||'priority');play.open();}else if(index===4)opposite.open();else if(index===1)book.open();else openExperience({href:'/get_higher'});dirty=true;stationState();return true;
  }
  function activateStreetSign(id){
   if(newYork||!play.start)return false;stopInput();cancelTravel();leaveStation();interact();
-  const started=play.start(id);if(started){gaze.copy(play.projection.position);angles();dirty=true;}return started;
+  const cue=LISBON_DOME_SIGNS.find(sign=>sign.id===id);if(!cue)return false;
+  const started=play.start(id);
+  if(started){
+   const target=play.projection.position.clone();
+   groundedTravel(new T.Vector3(...cue.approach),target,()=>{
+    const current=play.diagnostics();if(current.id!==id||!current.active)return;
+    if(current.state==='ended')play.start(id);gaze.copy(target);angles();dirty=true;
+   });
+   dirty=true;
+  }
+  return started;
  }
  function enterGallery(){cancelTravel();leaveStation();onOverview();return groundedTravel(new T.Vector3(...L.inside),new T.Vector3(...L.insideTarget));}
  function overview(){cancelTravel();leaveStation();onOverview();groundedTravel(new T.Vector3(...ENTRY),new T.Vector3(...LOOK));}
@@ -245,7 +255,7 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
  addEventListener('pagehide',()=>{pause();if(liberty)liberty.dispose();renderer.setAnimationLoop(null);});
  addEventListener('pageshow',e=>{if(e.persisted){paused=false;hidden=document.hidden;bookDestination=null;book.reset();resetPortals();quality.reset();try{const muted=localStorage.getItem('space-sound-muted')==='true';sound.setMuted(muted);fireSound.setMuted(muted);}catch{}dirty=true;lastTime=0;syncSound();renderer.setAnimationLoop(animate);}});
  return{visit,enter,enterGallery,overview,visitFireplace,visitLevel,invalidate,activateStreetSign,
-  replayStreetSign(){return !newYork&&play.open();},muteStreetSign(value){if(!newYork)play.setMuted(value);},
+  replayStreetSign(){return !newYork&&activateStreetSign(play.diagnostics().id||'priority');},muteStreetSign(value){if(!newYork)play.setMuted(value);},
   leaveStation(){stopInput();cancelTravel();leaveStation();onOverview();dirty=true;},
   stop(){stopInput();cancelTravel();leaveStation();dirty=true;},
   setList(value){list=!!value;stopInput();cancelTravel();leaveStation();syncSound();dirty=true;lastTime=0;},

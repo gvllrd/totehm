@@ -45,7 +45,7 @@ for(const mobile of [false,true]){
  const higher=gallery.root.getObjectByName('Boutique — original Higher piece in space');higher.geometry.computeBoundingBox();
  check(higher.geometry.userData.perforations===18&&higher.geometry.boundingBox.getSize(new T.Vector3()).z>.03,'The native Higher piece has genuine extrusion and eighteen physical notches');
  const nav=createModernWalkway(gallery.obstacles),body=createModernPhysics({x:0,z:16},gallery.obstacles,gallery.roofProfile);
- for(const station of gallery.stations){
+ for(const station of [...gallery.stations,...LISBON_DOME_SIGNS]){
   const destination={x:station.approach[0],z:station.approach[2]},route=nav.route(body.position,destination);
   check(route?.length>=2,'The '+station.id+' station has a real walkable route');
   for(const point of route.slice(1)){
