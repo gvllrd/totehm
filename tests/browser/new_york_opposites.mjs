@@ -46,15 +46,19 @@ try{
   const p=await page(browser,{dir:'space',origin,session:false,viewport,hasTouch:viewport.width<650});
   try{
    const {pg,log}=p;
+  const bounds=[];
    await pg.emulateMedia({reducedMotion:'reduce'});
    for(const work of OPPOSITES){
     await pg.goto(origin+'/think_same_but_opposite?work='+work.id,{waitUntil:'domcontentloaded'});
     await pg.waitForFunction(()=>window.__totehm_opposites?.().count===5);
     check(await pg.locator('#image').evaluate(img=>img.complete&&img.naturalWidth===200),work.title+' image loads at '+viewport.width);
     check((await pg.locator('#slide').innerText()).includes(work.slides[0][0]),work.title+' starts with its own comparison');
+    if(viewport.width<650)bounds.push(await pg.evaluate(()=>({work:__totehm_opposites().work,step:0,slide:document.getElementById('slide').getBoundingClientRect().bottom,actions:document.querySelector('.actions').getBoundingClientRect().bottom})));
     for(let i=1;i<work.slides.length;i++){
      await pg.locator('#next').click();
      await pg.waitForFunction(step=>__totehm_opposites().step===step,i);
+     if(viewport.width<650)bounds.push(await pg.evaluate(()=>({work:__totehm_opposites().work,step:__totehm_opposites().step,slide:document.getElementById('slide').getBoundingClientRect().bottom,actions:document.querySelector('.actions').getBoundingClientRect().bottom})));
+     if(work.id==='totehm'&&i===3&&viewport.width>650){await pg.waitForSelector('#slide .tw');check(true,'The TOTEHM word keeps its native brand piece in Discover');}
      if(work.id==='get-higher'&&i===2&&viewport.width<650)await pg.screenshot({path:out+'/discover-get-higher-390.png'});
     }
     check(await pg.locator('#action').isVisible()&&await pg.locator('#action').getAttribute('href')===work.href,work.title+' leads to its actual offer');
@@ -67,6 +71,7 @@ try{
     }
     if(work.id==='higher')await pg.screenshot({path:out+'/discover-'+viewport.width+'.png'});
    }
+   if(viewport.width<650)check(bounds.every(item=>item.actions<viewport.height&&item.slide<viewport.height),'All thirty mobile story screens remain fully in view: '+JSON.stringify(bounds.filter(item=>item.actions>=viewport.height||item.slide>=viewport.height)));
    check(await pg.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'Discover fits the '+viewport.width+' viewport');
    check(log.errors.filter(e=>e.startsWith('pageerror:')).length===0,'Discover has no JavaScript errors at '+viewport.width);
   }finally{await p.ctx.close();}
