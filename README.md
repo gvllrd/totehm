@@ -8,7 +8,7 @@ ligne une minute plus tard (Vercel).
 | **totehm.com** | `com/` | l'écosystème : les 5 vues, ton TOTEHM, chercher un membre, s'abonner à lui |
 | **figher.club** | `club/` | la sixième vue : le radar et la grille des spots visibles, le filtre par Habits parentes, publier un spot |
 | **higher.boutique** | `boutique/` | les vêtements totehmisés à partir d’un élément personnel, dans n’importe quelle catégorie |
-| **totehm.space** | `space/` | deux galeries littorales de plain-pied : Lisbon retrouve son bâtiment intact aux azulejos bleu/blanc, balcons et toit de verre ondulé ; New York conserve son château en ruine et son toit vitré incliné ; mer, ciel étoilé, œuvres, signes de Lisbonne et marché conservés |
+| **totehm.space** | `space/` | Lisbon : dôme noir brut, sept intentions, laboratoire THP et 22 signes interactifs ; île, océan et ciel étoilé conservés. New York : château, six œuvres Think same but opposite et statue submergée ; œuvres et marché indépendants |
 | — | `backend/` | le serveur : base Supabase, fonctions, automatisations n8n |
 
 ```

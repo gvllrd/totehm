@@ -1,9 +1,9 @@
 import * as T from './vendor/three-0.180.0.mjs';
-import {GALLERY_LAYOUT as L} from './gallery-modern-layout.mjs';
+import {GALLERY_LAYOUT as DEFAULT_LAYOUT} from './gallery-modern-layout.mjs';
 
 // As with Lisbon, Space exhibits a cover. The full-size artwork plays only
 // in its own page, after an explicit viewer gesture.
-export function createOppositeInstallation(scene,{mobile=false,onChange=()=>{},onOpen=()=>{}}={}){
+export function createOppositeInstallation(scene,{mobile=false,onChange=()=>{},onOpen=()=>{},layout:L=DEFAULT_LAYOUT}={}){
  const href='/same_but_opposite',root=new T.Group();root.name='Same but opposite — standalone artwork portal';scene.add(root);
  const hasDOM=typeof document!=='undefined'&&typeof document.createElement==='function';
  const canvas=hasDOM?document.createElement('canvas'):null;

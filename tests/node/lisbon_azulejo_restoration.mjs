@@ -2,7 +2,9 @@
 // the current installations together. No source-text or diagnostic-only test.
 import assert from 'node:assert/strict';
 import * as T from '../../space/vendor/three-0.180.0.mjs';
-import {createModernGallery} from '../../space/gallery-modern.mjs';
+import {createCastleSpace} from '../../space/gallery-castle-space.mjs';
+// Historical envelope regression. The active Lisbon dome has its own suite.
+const createModernGallery=(scene,renderer,options)=>createCastleSpace(scene,renderer,{...options,place:'lisbon',style:'azulejo'});
 import {createNewYorkGallery} from '../../space/gallery-new-york.mjs';
 import {createModernPhysics,createModernWalkway} from '../../space/gallery-modern-navigation.mjs';
 import {GALLERY_LAYOUT as L,GALLERY_STATIONS} from '../../space/gallery-modern-layout.mjs';

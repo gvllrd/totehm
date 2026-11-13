@@ -1,9 +1,9 @@
 import * as T from './vendor/three-0.180.0.mjs';
-import {GALLERY_LAYOUT as L} from './gallery-modern-layout.mjs';
+import {GALLERY_LAYOUT as DEFAULT_LAYOUT} from './gallery-modern-layout.mjs';
 
 // A closed physical volume on the lectern. Its pages live in /origins, which
 // retains the original moving works and server-backed acquisition details.
-export function createLecternBook(scene,{mobile=false,onChange=()=>{},onOpen=()=>{}}={}){
+export function createLecternBook(scene,{mobile=false,onChange=()=>{},onOpen=()=>{},layout:L=DEFAULT_LAYOUT}={}){
  const root=new T.Group();root.name='Closed Origins volume on the stone lectern in the west keep';root.position.set(...L.origins.book);root.rotation.x=Math.PI/10;scene.add(root);
  const geometries=new Set(),materials=new Set(),textures=new Set(),pickables=[];
  let disposed=false,dirty=true,opening=false,opened=false,progress=0,opens=0,lastMotion=!globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches;

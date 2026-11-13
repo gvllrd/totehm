@@ -136,7 +136,7 @@ function crosses(a,b,box,margin){
  return high>0&&low<1;
 }
 export function createModernWalkway(obstacles=GALLERY_OBSTACLES){
- const solids=boxes(obstacles).filter(b=>b.minY<GROUND+HEIGHT-EPS&&b.maxY>GROUND+EPS);
+ const solids=boxes(obstacles).filter(b=>!b.waveRoof&&b.minY<GROUND+HEIGHT-EPS&&b.maxY>GROUND+EPS);
  const allowed=(x,z)=>within(x,z)&&!solids.some(b=>inside(b,x,z,ROUTE_MARGIN));
  const clear=(a,b)=>!!(point(a)&&point(b)&&allowed(a.x,a.z)&&allowed(b.x,b.z)&&!solids.some(box=>crosses(a,b,box,ROUTE_MARGIN)));
  const candidates=[];

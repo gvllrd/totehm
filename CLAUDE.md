@@ -27,7 +27,7 @@ Push sur `main` = mise en ligne ; jamais réécrire l'historique.
 | totehm.com | `com/` | l'écosystème : les 5 vues, la creator economy (s'abonner à un membre = entrer dans son écosystème), la recherche d'un membre |
 | figher.club | `club/` | le prolongement de la vue Spots : chercher, publier des spots, se rencontrer |
 | higher.boutique | `boutique/` | les vêtements totehmisés, un style artistique choisi, à partir de toute catégorie personnelle ; une box suffit, production n8n. Le LUXE est un atelier : une pièce d'exception, un artiste LOCAL via une galerie partenaire, acompte de 770 € remboursé si aucun artiste en 30 jours |
-| totehm.space | `space/` | Lisbon au Portugal : bâtiment intact aux azulejos bleu/blanc de `c8ddaf0`, douze fenêtres, huit balcons et toit de verre ondulé ; New York ailleurs selon Vercel : château en ruine, donjon et verre à toit plan incliné ; plain-pied, mer, ciel et œuvres indépendantes conservés |
+| totehm.space | `space/` | Lisbon : dôme noir brut, sept intentions, laboratoire THP et 22 signes interactifs ; île, océan et ciel étoilé conservés. New York : château, six œuvres Think same but opposite et statue submergée ; œuvres et marché indépendants |
 
 **Deux fois cinq vues.** totehm.com : ↑ Get Higher (commune à tous) · ← mes médias · ● mon TOTEHM · → les spots ·
 ↓ Higher my ChatGPT (connexion gratuite, lecture seule autorisée) ; ← ● → = l'écosystème d'un membre, ouvert par l'abonnement à ce membre.

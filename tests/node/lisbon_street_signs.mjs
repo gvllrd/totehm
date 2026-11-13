@@ -4,8 +4,8 @@ import * as T from '../../space/vendor/three-0.180.0.mjs';
 import {createModernGallery} from '../../space/gallery-modern.mjs';
 import {createNewYorkGallery} from '../../space/gallery-new-york.mjs';
 import {createModernPhysics,createModernWalkway} from '../../space/gallery-modern-navigation.mjs';
-import {GALLERY_LAYOUT as L,GALLERY_STATIONS} from '../../space/gallery-modern-layout.mjs';
-import {LISBON_STREET_SIGNS,LISBON_SIGN_OBSTACLES} from '../../space/gallery-lisbon-signs-layout.mjs';
+import {LISBON_DOME_LAYOUT as L,LISBON_DOME_STATIONS as GALLERY_STATIONS,LISBON_DOME_SIGNS as LISBON_STREET_SIGNS,LISBON_DOME_OBSTACLES} from '../../space/gallery-lisbon-dome-layout.mjs';
+const LISBON_SIGN_OBSTACLES=LISBON_DOME_OBSTACLES.filter(o=>o.id.startsWith('motorway-')||o.id==='pedestrian-signal');
 import {createLisbonStreetSigns} from '../../space/gallery-lisbon-street-signs.mjs';
 
 let checks=0;const check=(value,message)=>{assert(value,message);checks++;};
@@ -20,7 +20,7 @@ const physicalSize=object=>{object.geometry.computeBoundingBox();return object.g
 const obstacleContains=(obstacle,b)=>obstacle.minX<=b.min.x+.001&&obstacle.maxX>=b.max.x-.001&&obstacle.minZ<=b.min.z+.001&&obstacle.maxZ>=b.max.z-.001&&obstacle.minY<=b.min.y+.001&&obstacle.maxY>=b.max.y-.001;
 for(const mobile of [false,true]){
  const scene=new T.Scene(),gallery=createModernGallery(scene,null,{mobile});scene.updateMatrixWorld(true);
- const signs=signGroups(gallery.root),masonry=gallery.solids.filter(o=>o.userData.exhibitionStone||o.userData.facadeParts||o.name==='Lisbon façade — actual limestone-backed masonry and window apertures'),byId=id=>signs.find(o=>o.userData.signId===id);
+ const signs=signGroups(gallery.root),masonry=gallery.solids.filter(o=>o.userData.domeShell||o.name==='Interior black exit-sign lintel'),byId=id=>signs.find(o=>o.userData.signId===id);
  check(signs.length===22,'Lisbon contains exactly twenty-two distinct physical cues on '+(mobile?'mobile':'desktop'));
  check(signs.some(s=>s.userData.zone==='outside')&&signs.some(s=>s.userData.zone==='inside'),'The original cues occupy both the calçada and the gallery');
  for(const expected of LISBON_STREET_SIGNS){
@@ -37,9 +37,9 @@ for(const mobile of [false,true]){
   const normal=new T.Vector3(0,0,1).applyQuaternion(sticker.getWorldQuaternion(new T.Quaternion())),centre=sticker.getWorldPosition(new T.Vector3());
   const ray=new T.Raycaster(centre.clone().addScaledVector(normal,.6),normal.clone().negate(),0,1.2);
   check(ray.intersectObjects(gallery.pickables).some(h=>h.object.userData.kind==='lisbon-street-sign'&&h.object.userData.signId===expected.id),'The '+expected.id+' physical sticker/face can be picked for its own animation');
-  if(expected.mount==='stone'){
-   const forward=new T.Vector3(Math.sin(expected.rotationY),0,Math.cos(expected.rotationY));
-   check(new T.Raycaster(new T.Vector3(...expected.position),forward.negate(),0,1.5).intersectObjects(masonry).length>0,'The '+expected.id+' wall object is attached to actual stone');
+  if(expected.mount==='shell'){
+   const forward=new T.Vector3(...expected.normal);
+   check(new T.Raycaster(new T.Vector3(...expected.position),forward.negate(),0,1.5).intersectObjects(masonry).length>0,'The '+expected.id+' wall object is attached to the actual dome');
   }
   sign.traverse(o=>{const p=o.geometry?.attributes.position;if(p)for(let i=0;i<p.count;i++)assert(Number.isFinite(p.getX(i)+p.getY(i)+p.getZ(i)),expected.id+' contains finite vertices');});
  }
@@ -74,10 +74,10 @@ for(const mobile of [false,true]){
  check(!LISBON_SIGN_OBSTACLES.some(o=>o.id==='lisbon-sign-post-crosswalk'||o.id==='lisbon-sign-post-Heli'),'Painted ground cues introduce no solid street-sign obstacle');
  check(nav.clear({x:L.entry[0],z:L.entry[2]},{x:L.inside[0],z:L.inside[2]}),'The central arrival path remains walkable through the painted crossing');
  const entranceRay=new T.Raycaster(new T.Vector3(0,1.65,3),new T.Vector3(0,0,-1),0,8);
- check(entranceRay.intersectObjects(signs,true).length===0,'The cues keep the restored azulejo entrance clear');
- const priority=byId('priority').getObjectByName('Full-height galvanized street post — priority'),pc=bounds(priority).getCenter(new T.Vector3());
+ check(entranceRay.intersectObjects(signs,true).length===0,'The cues keep the black dome entrance clear');
+ const priority=byId('destination').getObjectByName('Motorway galvanized support — 0'),pc=bounds(priority).getCenter(new T.Vector3());
  const walking=createModernPhysics({x:pc.x,z:pc.z+.8},gallery.obstacles,gallery.roofProfile);for(let i=0;i<100;i++)walking.step(.025,{dz:-.025});
- check(walking.position.z>pc.z+.18&&walking.position.z<pc.z+.5&&walking.diagnostics().grounded,'The real walking body stops at an ordinary road-sign support');
+ check(walking.position.z>pc.z+.18&&walking.position.z<pc.z+.5&&walking.diagnostics().grounded,'The real walking body stops at an motorway-sign support');
  for(const station of GALLERY_STATIONS){
   const route=nav.route({x:body.position.x,y:body.position.y+L.eyeHeight,z:body.position.z},{x:station.approach[0],y:station.approach[1],z:station.approach[2]});
   check(route&&route.length>=2,'The '+station.id+' artwork remains reachable');

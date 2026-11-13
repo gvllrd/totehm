@@ -1,5 +1,5 @@
-import {createCastleSpace} from './gallery-castle-space.mjs';
+import {createLisbonDome} from './gallery-lisbon-dome.mjs';
 
 export function createModernGallery(scene,renderer,options={}){
- return createCastleSpace(scene,renderer,{...options,place:'lisbon',style:'azulejo'});
+ return createLisbonDome(scene,renderer,options);
 }

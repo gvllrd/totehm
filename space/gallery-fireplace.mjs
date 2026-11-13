@@ -1,12 +1,12 @@
 import * as T from './vendor/three-0.180.0.mjs';
 import {createWhiteStone} from './gallery-white-stone.mjs';
 import {GLASS_HEARTH} from './gallery-glass-shell.mjs';
-import {GALLERY_LAYOUT as L} from './gallery-modern-layout.mjs';
+import {GALLERY_LAYOUT as DEFAULT_LAYOUT} from './gallery-modern-layout.mjs';
 
 // An open wood campfire held by the pavilion’s flowing glass collector.
 // Combustion, lifted embers and the plume share the world clock and freeze
 // together in reduced motion. No movie or camera-facing flame image is used.
-export function createGalleryFireplace(scene,{mobile=false,onChange=()=>{},smokeOutlet=GLASS_HEARTH.smokeOutlet}={}){
+export function createGalleryFireplace(scene,{mobile=false,onChange=()=>{},smokeOutlet=GLASS_HEARTH.smokeOutlet,layout:L=DEFAULT_LAYOUT,blackStone=false}={}){
  const [hearthX,,hearthZ]=L.fireplace.position,hearthOrigin=new T.Vector3(hearthX,0,hearthZ);
  const root=new T.Group();root.name='The campfire — tall living flames inside a wave of glass';scene.add(root);
  const geometries=new Set(),materials=new Set(),textures=new Set(),solids=[],pickables=[];
@@ -16,7 +16,7 @@ export function createGalleryFireplace(scene,{mobile=false,onChange=()=>{},smoke
  const bronze=mat(new T.MeshStandardMaterial({color:0x242321,roughness:.43,metalness:.72}));
  const soot=mat(new T.MeshStandardMaterial({color:0x080707,roughness:.96}));
  const thermalClock={value:time};
- const hearthStone=createWhiteStone({mobile,onChange});
+ const hearthStone=blackStone?{material:mat(new T.MeshStandardMaterial({color:0x000000,roughness:.65,metalness:.15})),dispose(){}}:createWhiteStone({mobile,onChange});
  soot.name='Charred hardwood — real bark relief, broken end grain and incandescent fissures';
  soot.customProgramCacheKey=()=> 'charred-hardwood-volume-v4';
  soot.onBeforeCompile=shader=>{

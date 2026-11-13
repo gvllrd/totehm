@@ -1,22 +1,22 @@
 import {createLisbonPreview} from './gallery-lisbon.mjs';
-import {LISBON_STREET_SIGNS} from './gallery-lisbon-signs-layout.mjs';
+import {LISBON_DOME_SIGNS as LISBON_STREET_SIGNS} from './gallery-lisbon-dome-layout.mjs';
 import {OPPOSITES} from './gallery-opposites.mjs';
 
 const reduced=matchMedia('(prefers-reduced-motion: reduce)'),body=document.body;
 const place=location.pathname.replace(/\/+$/,'')==='/new-york'?'new-york':'lisbon';
 body.dataset.place=place;
 document.title='TOTEHM.SPACE — '+(place==='new-york'?'New York':'Lisbon');
-document.getElementById('space').setAttribute('aria-label',(place==='lisbon'?'The Lisbon azulejo building: blue and white tiles, wrought-iron balconies and a wave-shaped glass roof. ':'An airy coastal castle gallery: ancient stone ruins and modern glass. ')+'Original artworks above the storm sea. Drag to look, tap the stone floor to walk. WASD to walk, Space to jump.');
+document.getElementById('space').setAttribute('aria-label',(place==='lisbon'?'The black Higher dome on the Lisbon island. Seven intention lines, original street signs and a black TotehmPaper laboratory beneath the stars. ':'An airy coastal castle gallery: ancient stone ruins and modern glass. ')+'Original artworks above the storm sea. Drag to look, tap the floor to walk. WASD to walk, Space to jump.');
 document.getElementById('building-levels')?.remove();
 const ROOMS=[
  {title:'TotehmPaper {THP}',kind:'The Stoner Experience',path:'/get_higher',collect:'/market?art=totehmpaper',action:'Enter the experience ↗',note:'Original perforated art. Choose your TotehmPaper.'},
  {title:'Origins / Quantum',kind:'Twenty original works',path:'/origins',collect:'/market?collection=quantum',action:'Open the book',note:'Twenty works. Turn the pages.'},
- {title:'Play the Lisbon Street',kind:'Neuro Street Art Digital',path:'/play_lisbon_street',collect:'/market?collection=play-the-lisbon-street',action:'PLAY ↗',note:'Choose a sign. Play the street.'},
- {title:'The Stoner Experience',kind:'TotehmPaper {THP}',path:'/get_higher',collect:'/market?art=totehmpaper',action:'Enter the experience ↗',note:'The original paper, in its premium case on the stone table.'},
+ {title:'Play the Lisbon Street',kind:'Neuro Street Art Digital',path:'/play_lisbon_street',collect:'/market?collection=play-the-lisbon-street',action:place==='lisbon'?'Make it useful':'PLAY ↗',note:place==='lisbon'?'Choose a sign. Its original animation appears here, in the world.':'Choose a sign. Play the street.'},
+ {title:'The Stoner Experience',kind:'TotehmPaper {THP}',path:'/get_higher',collect:'/market?art=totehmpaper',action:'Enter the experience ↗',note:place==='lisbon'?'The original paper, in its small premium case on the black laboratory table.':'The original paper, in its premium case on the stone table.'},
  {title:'Same but opposite',kind:'Video artwork · Wah',path:'/same_but_opposite',action:'PLAY ↗',note:'Tap to play the artwork in its own full-screen experience.'}
 ];
 const $=id=>document.getElementById(id),buttons=[...document.querySelectorAll('.tour [data-room]')],info=$('work-info');
-let engine=null,room=-1,fallback=false,pending=null,listRaf=0,lastPreview=0,station=null,hoveredSign=null;
+let engine=null,room=-1,fallback=false,pending=null,listRaf=0,lastPreview=0,station=null,hoveredSign=null,activeSign=null;
 const preview=createLisbonPreview({onChange:()=>engine?.invalidate()});
 const lisbonCard=document.querySelector('#lisbon .artwork');lisbonCard.append(preview.canvas);lisbonCard.classList.add('has-preview');
 if(place==='new-york'){
@@ -54,6 +54,7 @@ if(place==='lisbon'){
  for(const sign of LISBON_STREET_SIGNS){
   const link=document.createElement('a');link.href=signHref(sign.id);link.setAttribute('aria-label',sign.title+' — Make it useful');
   const image=document.createElement('img');image.src=sign.src;image.alt='';image.loading='lazy';
+  link.addEventListener('click',event=>{if(!engine||fallback||event.ctrlKey||event.metaKey||event.shiftKey||event.altKey)return;event.preventDefault();if(body.classList.contains('list-view'))setList(false);engine.activateStreetSign(sign.id);});
   const label=document.createElement('span');label.textContent=sign.title;
   const action=document.createElement('small');action.textContent='Make it useful';link.append(image,label,action);signs.append(link);
  }
@@ -65,10 +66,19 @@ function signFocus(work){
  const valid=place==='lisbon'&&work&&signIds.has(work.id);hoveredSign=valid?work.id:null;
  if(signHint){signHint.hidden=!valid;signHint.textContent=valid?'Make it useful · '+work.title:'Make it useful';}
 }
-function clearInfo(){room=-1;station=null;signFocus(null);delete info.dataset.artwork;info.hidden=true;body.classList.remove('station-focused');buttons.forEach(b=>b.setAttribute('aria-current','false'));}
+function clearInfo(){room=-1;station=null;activeSign=null;signFocus(null);delete info.dataset.artwork;info.hidden=true;body.classList.remove('station-focused','street-playing');buttons.forEach(b=>b.setAttribute('aria-current','false'));}
 function showStreetSign(work){
  if(place!=='lisbon'||work?.kind!=='lisbon-street-sign'||!signIds.has(work.id))return;
- engine?.stop();clearInfo();pending=null;interact();location.assign(signHref(work.id));
+ if(activeSign!==work.id)clearInfo();activeSign=work.id;pending=null;interact();
+ info.hidden=false;info.dataset.artwork='lisbon-street-sign';body.classList.add('street-playing');
+ $('work-kind').textContent='Play the Lisbon Street';$('work-title').textContent=work.title;
+ $('work-note').textContent=work.error||work.phrase;
+ $('enter-experience').removeAttribute('aria-label');$('enter-experience').textContent=work.state==='loading'?'Loading…':work.state==='blocked'?'Play':'Replay';$('enter-experience').disabled=work.state==='loading';
+ $('leave-station').hidden=true;
+ const get=streetExperienceLink('get');get.className='street-get-higher';
+ const original=document.createElement('a');original.href=signHref(work.id);original.textContent='Full experience ↗';
+ const mute=document.createElement('button');mute.type='button';mute.textContent=work.muted?'Sound off':'Sound on';mute.setAttribute('aria-pressed',String(!work.muted));mute.addEventListener('click',()=>engine?.muteStreetSign(!work.muted));
+ $('work-links').replaceChildren(get,mute,original);
 }
 function links(work){
  const independent=document.createElement('a');independent.href=work.path;independent.textContent='Full experience ↗';
@@ -76,12 +86,13 @@ function links(work){
  $('work-links').replaceChildren(...links,independent);
 }
 function controls(){
+ if(activeSign)return;
  const arrived=station?.focused===room&&room>=0;
  body.classList.toggle('station-focused',arrived);info.dataset.station=String(room);
  $('leave-station').hidden=!arrived;
  $('enter-experience').disabled=(!arrived&&!fallback)||(room===1&&!!station?.book?.opening);
  if(room===1)$('enter-experience').textContent=station?.book?.opening?'Opening…':ROOMS[1].action;
- if(room>=0)$('work-note').textContent=arrived?ROOMS[room].note:'Walking to the '+['counter','book','Lisbon screen','premium cases','Same but opposite screen'][room]+'…';
+ if(room>=0)$('work-note').textContent=arrived?ROOMS[room].note:'Walking to the '+['counter','book',place==='lisbon'?'street installation':'Lisbon screen','premium cases','Same but opposite screen'][room]+'…';
 }
 function choose(index,{hash=true}={}){
  if(index===3)index=0;
@@ -104,7 +115,7 @@ function animatePreview(now){
 function setList(value){pending=null;body.classList.toggle('list-view',value);clearInfo();engine?.setList(value);syncPreview();$('view-list').textContent=value?'Return to the gallery':'Artworks';$('view-list').setAttribute('aria-pressed',String(value));}
 buttons.forEach(button=>button.addEventListener('click',()=>choose(Number(button.dataset.room))));
 $('overview').addEventListener('click',overview);
-$('enter-experience').addEventListener('click',()=>{if(room>=0){if(fallback||body.classList.contains('list-view'))location.assign(ROOMS[room].path);else engine?.enter(room);}});
+$('enter-experience').addEventListener('click',()=>{if(activeSign){engine?.replayStreetSign();return;}if(room>=0){if(fallback||body.classList.contains('list-view'))location.assign(ROOMS[room].path);else engine?.enter(room);}});
 $('close-info').addEventListener('click',()=>{clearInfo();engine?.stop();});
 $('leave-station').addEventListener('click',()=>{engine?.leaveStation();clearInfo();$('space').focus({preventScroll:true});});
 $('view-list').addEventListener('click',()=>setList(!body.classList.contains('list-view')));
@@ -117,7 +128,7 @@ document.addEventListener('keydown',e=>{
 });
 document.addEventListener('visibilitychange',syncPreview);reduced.addEventListener('change',syncPreview);
 addEventListener('pagehide',()=>{if(listRaf)cancelAnimationFrame(listRaf);listRaf=0;preview.pause();});addEventListener('pageshow',syncPreview);
-window.__totehm_gallery=()=>({build:'new-york-six-opposites',place,rooms:4,room,hoveredSign,list:body.classList.contains('list-view'),fallback,reduced_motion:reduced.matches,experiences:[...new Set(ROOMS.map(w=>w.path)),...(place==='new-york'?['/think_same_but_opposite']:[])],experienceNavigation:'independent-pages',inGalleryPlayback:false,lisbon:preview.diagnostics(),...engine?.diagnostics()});
+window.__totehm_gallery=()=>({build:'2026-11-13-lisbon-black-higher-dome',place,rooms:4,room,hoveredSign,activeSign,list:body.classList.contains('list-view'),fallback,reduced_motion:reduced.matches,experiences:[...new Set(ROOMS.map(w=>w.path)),...(place==='new-york'?['/think_same_but_opposite']:[])],experienceNavigation:place==='lisbon'?'street-in-world-and-independent-pages':'independent-pages',inGalleryPlayback:place==='lisbon',lisbon:preview.diagnostics(),...engine?.diagnostics()});
 function useFallback(){fallback=true;body.classList.add('no-3d','list-view');engine?.setList(true);clearInfo();syncPreview();}
 try{
  const {createGallery}=await import('./gallery-spatial.mjs');

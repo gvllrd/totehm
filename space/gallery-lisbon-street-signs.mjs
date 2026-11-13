@@ -5,7 +5,7 @@ export {LISBON_STREET_SIGNS,LISBON_SIGN_OBSTACLES};
 
 // Each authored sign keeps its own experience identity while taking the form
 // it actually has in the city: paint, a plaque, a signal, an emblem or a sign.
-export function createLisbonStreetSigns(parent,{mobile=false,anisotropy=1,onChange=()=>{}}={}){
+export function createLisbonStreetSigns(parent,{mobile=false,anisotropy=1,onChange=()=>{},signs=LISBON_STREET_SIGNS}={}){
  const root=new T.Group();root.name='Lisbon street signs with Higher stickers';parent.add(root);
  const geometries=new Set(),materials=new Set(),textures=new Set(),instances=new Set(),pickables=[],animations=[];
  const geometry=g=>(geometries.add(g),g),material=m=>(materials.add(m),m);
@@ -73,9 +73,10 @@ export function createLisbonStreetSigns(parent,{mobile=false,anisotropy=1,onChan
   mesh(group,geometry(new T.CylinderGeometry(radius>.06?.19:.12,radius>.06?.19:.12,.04,mobile?10:16)),metal,[x,ground+.02-sign.position[1],z],'Anchored street-post foot — '+sign.id);
   return post;
  }
- for(const sign of LISBON_STREET_SIGNS){
+ for(const sign of signs){
   const presentation=sign.presentation||'road-sign',group=new T.Group();group.name='Lisbon street sign — '+sign.title;group.position.set(...sign.position);group.rotation.set(sign.rotationX||0,sign.rotationY||0,0);
-  group.userData={lisbonStreetSign:true,signId:sign.id,title:sign.title,phrase:sign.phrase,presentation,mount:sign.mount,zone:sign.zone,wallMounted:['stone','plaque','building'].includes(sign.mount),support:sign.mount==='ground'?'ground':sign.mount==='stone'?'stone':sign.mount,animated:presentation==='pharmacy'||presentation.startsWith('pedestrian-')};root.add(group);
+  if(sign.normal)group.quaternion.setFromUnitVectors(new T.Vector3(0,0,1),new T.Vector3(...sign.normal));
+  group.userData={lisbonStreetSign:true,signId:sign.id,title:sign.title,phrase:sign.phrase,presentation,mount:sign.mount,zone:sign.zone,wallMounted:['stone','plaque','building','shell'].includes(sign.mount),support:sign.mount==='ground'?'ground':sign.mount==='stone'?'stone':sign.mount,animated:presentation==='pharmacy'||presentation.startsWith('pedestrian-')};root.add(group);
   const data={kind:'lisbon-street-sign',id:sign.id,signId:sign.id,title:sign.title,phrase:sign.phrase,presentation,href:'/play_lisbon_street?sign='+encodeURIComponent(sign.id),methodHref:'/get_higher'};
   const mark=o=>{o.userData={...o.userData,...data};pickables.push(o);return o;};
   let emblem=null;
@@ -119,7 +120,7 @@ export function createLisbonStreetSigns(parent,{mobile=false,anisotropy=1,onChan
    const diameter=sign.width,green=presentation==='pedestrian-green';
    if(!sharedSignal){
     const signalGroup=new T.Group();signalGroup.position.set(sign.position[0],0,sign.position[2]);signalGroup.rotation.y=sign.rotationY||0;signalGroup.name='Shared pedestrian crossing signal';root.add(signalGroup);sharedSignal=signalGroup;
-    const greenSign=LISBON_STREET_SIGNS.find(s=>s.presentation==='pedestrian-green')||sign,redSign=LISBON_STREET_SIGNS.find(s=>s.presentation==='pedestrian-red')||sign;
+    const greenSign=signs.find(s=>s.presentation==='pedestrian-green')||sign,redSign=signs.find(s=>s.presentation==='pedestrian-red')||sign;
     const bottom=Math.min(greenSign.position[1],redSign.position[1])-diameter*.66,top=Math.max(greenSign.position[1],redSign.position[1])+diameter*.66,centre=(top+bottom)/2;
     const postHeight=top+.09;
     mesh(signalGroup,geometry(new T.CylinderGeometry(.045,.045,postHeight,mobile?10:16)),metal,[0,postHeight/2-.09,-.15],'Pedestrian crossing shared galvanized pole').userData.streetPost=true;
@@ -140,7 +141,7 @@ export function createLisbonStreetSigns(parent,{mobile=false,anisotropy=1,onChan
    shape.moveTo(-arm,h);shape.lineTo(arm,h);shape.lineTo(arm,arm);shape.lineTo(h,arm);shape.lineTo(h,-arm);shape.lineTo(arm,-arm);shape.lineTo(arm,-h);shape.lineTo(-arm,-h);shape.lineTo(-arm,-arm);shape.lineTo(-h,-arm);shape.lineTo(-h,arm);shape.lineTo(-arm,arm);shape.closePath();
    const luminous=material(new T.MeshStandardMaterial({color:0x62b830,roughness:.35,metalness:.3,emissive:0x2aca1c,emissiveIntensity:.65}));
    const cross=mark(mesh(group,extrude(shape,sign.depth||.26),luminous,[0,0,0],'Pharmacy illuminated cross body'));
-   cross.userData.volumetricCross=true;mark(block(group,metal,[0,0,-.15],[.075,.08,.32],'Pharmacy projecting wall bracket'));
+   cross.userData.volumetricCross=true;const bracket=sign.bracketDepth||.32;mark(block(group,metal,[0,0,-bracket/2],[.075,.08,bracket],'Pharmacy projecting wall bracket'));
    const front=face(w,[0,0,(sign.depth||.26)+.006],'Pharmacy authored cross face');front.material=material(faceMaterial.clone());front.material.emissiveIntensity=.5;
    const back=face(w,[0,0,-.008],'Pharmacy authored cross reverse');back.rotation.y=Math.PI;back.material=front.material;
    const ledMaterial=material(new T.MeshBasicMaterial({color:0x83ff65,toneMapped:false}));ledMaterial.name='Pharmacy animated LED field';
@@ -168,7 +169,7 @@ export function createLisbonStreetSigns(parent,{mobile=false,anisotropy=1,onChan
    if(greenLens&&redLens){const green=Math.floor(time/7)%2===0;greenLens.material.emissiveIntensity=green?.85:.025;redLens.material.emissiveIntensity=green?.025:.85;greenLens.material.color.setScalar(green?1:.23);redLens.material.color.setScalar(green?.23:1);}
    return animations.length>0||!!greenLens;
   },
-  diagnostics:()=>({count:LISBON_STREET_SIGNS.length,loaded,expectedTextures:LISBON_STREET_SIGNS.length+1,failed,ready:loaded===LISBON_STREET_SIGNS.length+1,originalSigns:true,sticker:'/assets/gallery/higher.svg',stickerRatio:3,stickerMaximumWidth:.35,outside:LISBON_STREET_SIGNS.filter(s=>s.zone==='outside').length,inside:LISBON_STREET_SIGNS.filter(s=>s.zone==='inside').length,posts:countPosts(),fullSize:true,semanticObjects:true,pharmacyAnimated:animations.length>0,pedestrianPair:!!greenLens&&!!redLens,positions:LISBON_STREET_SIGNS.map(s=>({id:s.id,position:[...s.position],rotationY:s.rotationY,zone:s.zone,mount:s.mount,width:s.width,presentation:s.presentation})),experience:'/play_lisbon_street',method:'/get_higher',disposed}),
+  diagnostics:()=>({count:signs.length,loaded,expectedTextures:signs.length+1,failed,ready:loaded===signs.length+1,originalSigns:true,sticker:'/assets/gallery/higher.svg',stickerRatio:3,stickerMaximumWidth:.35,outside:signs.filter(s=>s.zone==='outside').length,inside:signs.filter(s=>s.zone==='inside').length,posts:countPosts(),fullSize:true,semanticObjects:true,pharmacyAnimated:animations.length>0,pedestrianPair:!!greenLens&&!!redLens,positions:signs.map(s=>({id:s.id,position:[...s.position],rotationY:s.rotationY,zone:s.zone,mount:s.mount,width:s.width,presentation:s.presentation})),experience:'/play_lisbon_street',method:'/get_higher',disposed}),
   dispose(){if(disposed)return;disposed=true;root.removeFromParent();for(const t of textures)t.dispose();for(const g of geometries)g.dispose();for(const m of materials)m.dispose();for(const mesh of instances)mesh.dispose();root.clear();}
  };
 }

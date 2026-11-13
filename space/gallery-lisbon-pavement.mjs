@@ -3,7 +3,7 @@ import * as T from './vendor/three-0.180.0.mjs';
 // Original calçada design: limestone and basalt waves, with a caravel laid
 // in the same stones. It is generated locally, without a floor photograph,
 // network request, DOM canvas or an extra collision surface.
-export function createLisbonPavement({mobile=false,anisotropy=4,onChange=()=>{}}={}){
+export function createLisbonPavement({mobile=false,anisotropy=4,onChange=()=>{},boatCentre=[0,4]}={}){
  const resolution=mobile?512:1024;
  const mask=caravelMask(resolution);
  const boatTexture=new T.DataTexture(mask,resolution,resolution,T.RGBAFormat,T.UnsignedByteType);
@@ -18,6 +18,7 @@ export function createLisbonPavement({mobile=false,anisotropy=4,onChange=()=>{}}
  material.customProgramCacheKey=()=> 'lisbon-calcada-waves-caravel-v1';
  material.onBeforeCompile=shader=>{
   shader.uniforms.uLisbonBoatMask={value:boatTexture};
+  shader.uniforms.uLisbonBoatCentre={value:new T.Vector2(...boatCentre)};
   shader.vertexShader=shader.vertexShader.replace('#include <common>',`#include <common>
    // LISBON_CALCADA: the paving is measured in world metres.
    varying vec2 vLisbonPavementXZ;`);
@@ -29,6 +30,7 @@ export function createLisbonPavement({mobile=false,anisotropy=4,onChange=()=>{}}
    // LISBON_CALCADA: colour, joints, bevels and wear belong to each stone.
    varying vec2 vLisbonPavementXZ;
    uniform sampler2D uLisbonBoatMask;
+   uniform vec2 uLisbonBoatCentre;
    struct LisbonStone{vec3 colour;float roughness;float height;};
    float lisbonHash(vec2 p){p=fract(p*vec2(.1031,.11369));p+=dot(p,p.yx+19.19);return fract(p.x*p.y);}
    float lisbonGrain(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(lisbonHash(i),lisbonHash(i+vec2(1,0)),f.x),mix(lisbonHash(i+vec2(0,1)),lisbonHash(i+vec2(1)),f.x),f.y);}
@@ -60,7 +62,7 @@ export function createLisbonPavement({mobile=false,anisotropy=4,onChange=()=>{}}
     vec2 centre=vec2(centreX,centreZ);
     float wave=sin((centre.x-1.12*sin(centre.y*waveFrequency))*1.90399554763);
     float black=step(0.,wave);
-    vec2 ship=centre-vec2(0.,4.);
+    vec2 ship=centre-uLisbonBoatCentre;
     float radius=length(ship);
     float medallion=1.-smoothstep(3.47,3.53,radius);
     vec2 uv=ship/7.+.5;
@@ -110,7 +112,7 @@ export function createLisbonPavement({mobile=false,anisotropy=4,onChange=()=>{}}
    sharedMosaic:true,worldMetres:true,stoneSizeMetres:[.079,.073],
    blackStone:'basalt',whiteStone:'limestone',bevelMetres:.0037,
    pbr:true,proceduralNormals:true,proceduralRoughness:true,
-   boatCentre:[0,4],medallionDiameter:7,boatMaskSize:[resolution,resolution],
+   boatCentre:[...boatCentre],medallionDiameter:7,boatMaskSize:[resolution,resolution],
    ownTextures:1,externalFiles:0,domRequired:false,animated:false,disposed}),
   dispose(){if(disposed)return;disposed=true;material.dispose();boatTexture.dispose();}
  };
