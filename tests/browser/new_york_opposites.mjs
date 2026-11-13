@@ -32,7 +32,7 @@ try{
   await pg.waitForFunction(n=>__totehm_gallery().frames>n,before);
   await pg.screenshot({path:out+'/wall-desktop.png'});
   const d=await pg.evaluate(()=>__totehm_gallery());
-  check(d.temple.opposites.whiteWall&&d.temple.opposites.ids.join(',')===OPPOSITES.map(w=>w.id).join(','),'The six original images occupy the New York wall in order');
+  check(d.temple.opposites.blackWall&&d.temple.opposites.ids.join(',')===OPPOSITES.map(w=>w.id).join(','),'The six original images occupy the black New York wall in order');
   const left=project(d,[-6.48,2.75,-8.742]),right=project(d,[6.48,2.75,-8.742]);
   check(left.x>0&&right.x<1440,'All six frames fit in the entrance view');
   const border=project(d,[-1.11,4.35,-8.742]);
