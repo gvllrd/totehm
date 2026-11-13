@@ -45,11 +45,9 @@ const branche=pg=>pg.evaluate(()=>{const s=document.getElementById('gate-asteroi
   const tronc={avant:largeur(section(av.top-34)),autour:largeur(section(av.top+av.height/2)),
     apres:largeur(section(Math.min(av.bottom+26,jb.top+jb.height/2-76))),
     avantManette:largeur(section(jb.top+jb.height/2-68)),visible:av.top-30-acts.bottom};
-  /* 13/11 (Wah) — le joystick de figher.club revient : un GROS POINT plein de la couleur de la vue et TROIS POINTS
-     verticaux dedans (bleu · navy · rouge-violet), celui de la vue courante fondu dans le gros point. */
-  const trois={n:pts.length,col:pts.map(e=>getComputedStyle(e).backgroundColor).join('|'),
-    haut:pts.map(e=>Math.round(e.getBoundingClientRect().top+e.getBoundingClientRect().height/2)),
-    rond:gros.borderRadius==='50%',fond:gros.backgroundColor,courant:pts.map(e=>getComputedStyle(e).opacity).join('|')};
+  /* Main restores the black PlayStation-style landing joystick; the deployed app keeps its three points. */
+  const trois={n:pts.length,socleCarre:gros.borderRadius==='0px',fond:gros.backgroundColor,
+    chapeauRond:cap.borderRadius==='50%',texture:cap.backgroundImage!=='none',ombre:gros.boxShadow!=='none'};
   return {pads,jonctions,rameaux:document.querySelectorAll('#lv-ram path.fk').length,s:{t:s.top,b:s.bottom,l:s.left,r:s.right,w:s.width,cx:s.left+s.width/2,cy:s.top+s.height/2},H:innerHeight,pins,trous,traits,
     J:{x:jb.left+jb.width/2,y:jb.top+jb.height/2},avis,tronc,manche:trois,
     coeur:getComputedStyle(document.getElementById('gate-logo')).animationName,socle:{bg:cs.backgroundColor,ombre:cs.boxShadow,puits:!!k.querySelector('.sk-well')}};});
@@ -86,9 +84,8 @@ try{
   ok(b.tronc.avant>=47&&b.tronc.avant<=49&&b.tronc.visible>=8&&b.tronc.autour>=b.avis.w+12
      &&b.tronc.apres>=55&&b.tronc.apres<=57&&b.tronc.avantManette>=55&&b.tronc.avantManette<=57,
      nom+' · le tronc large reste parallèle jusqu’au début de la manette, puis les racines se séparent → '+JSON.stringify(b.tronc));
-  ok(b.manche.n===3&&b.manche.rond&&b.manche.fond==='rgb(51, 51, 102)'&&b.manche.col==='rgb(54, 73, 140)|rgb(51, 51, 102)|rgb(116, 49, 105)'
-     &&b.manche.haut[0]<b.manche.haut[1]&&b.manche.haut[1]<b.manche.haut[2]&&b.manche.courant==='1|0|1',
-     nom+' · 13/11 · la manette : un gros point navy, trois points verticaux dedans (bleu · navy · rouge-violet), celui du centre fondu → '+JSON.stringify(b.manche));
+  ok(b.manche.n===1&&b.manche.socleCarre&&b.manche.fond==='rgb(11, 11, 14)'&&b.manche.chapeauRond&&b.manche.texture&&b.manche.ombre,
+     nom+' · la manette noire d’atterrissage garde son socle et son chapeau texturé → '+JSON.stringify(b.manche));
   ok(b.coeur==='coeur',nom+' · 26/10 · au repos, le cœur (le TOTEHM) bat → '+b.coeur);
   const r0=await reseau(pg);
   /* 10/11 — au téléphone, l'arbre est INVISIBLE (`#lv-ram` en `visibility:hidden`) : ses impulsions ne tournent plus, elles
