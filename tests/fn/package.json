@@ -2,7 +2,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test:chatgpt": "node habit-rhythm.mjs && node priority-context.mjs && node retired-subscriptions.mjs && node creator-box-privacy-sql.mjs && node tracking-sql.mjs && node tracking-bot.mjs && node chatgpt-protocol.mjs && node chatgpt-context.mjs && node higher-gpt.mjs && node higher-context-fidelity.mjs && node element-orders-sql.mjs && node chatgpt-oauth-sql.mjs && node chatgpt-server.mjs && node chatgpt-resources.mjs && node chatgpt-boutique.mjs && node chatgpt-club-plan.mjs && node chatgpt-rich-http.mjs && node chatgpt-ecosystem.mjs && node chatgpt-ecosystem-sql.mjs"
+    "test:chatgpt": "node habit-rhythm.mjs && node priority-context.mjs && node retired-subscriptions.mjs && node creator-box-privacy-sql.mjs && node tracking-sql.mjs && node tracking-bot.mjs && node tracking-practice.mjs && node chatgpt-protocol.mjs && node chatgpt-context.mjs && node higher-gpt.mjs && node higher-context-fidelity.mjs && node element-orders-sql.mjs && node chatgpt-oauth-sql.mjs && node chatgpt-server.mjs && node chatgpt-resources.mjs && node chatgpt-boutique.mjs && node chatgpt-club-plan.mjs && node chatgpt-rich-http.mjs && node chatgpt-ecosystem.mjs && node chatgpt-ecosystem-sql.mjs"
   },
   "devDependencies": {
     "@electric-sql/pglite": "0.3.14"

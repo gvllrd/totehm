@@ -64,6 +64,7 @@ const intName = (id: string) => INTS.find((x) => x.id === id)?.name ?? id;
 const HELP = `TotehmBot.
 
 /track — how check-ins work
+/prepare — trigger, why and private visual context
 /review — your practice summary
 /settings — timezone, quiet hours and daily limit
 /tonight — nearby events matched to your intentions
