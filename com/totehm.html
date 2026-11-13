@@ -3002,26 +3002,28 @@ body.lv-membre.lv-b #lv-slogan,body.lv-verrou.lv-b #lv-slogan{opacity:0}
 .lvn-x{width:26px;height:48px}
 .lvn.is-mort{opacity:0;pointer-events:none}
 .lvn:focus-visible{outline:1px solid #fff;outline-offset:3px}
-/* 20/10 septies — un genre de joystick PlayStation en plus minimaliste (Wah) : un puits ROND, noir ; dans le puits,
-   LE MANCHE, un chapeau noir concave et texturé de 32 px, qui se tire et revient. */
-/* ⚠️ 25/10 — LA MANETTE SORT DE SON CADRE (Wah : « sors de son cadre le joystick sur la page d'atterrissage et sur le
-   totehm déployé ») : le petit socle carré part avec la boîte noire du Totehm. Il reste le manche : un puits rond
-   (cerclé d'un filet pour se lire sur le noir) et son chapeau. La case garde ses 48 px : rien ne bouge autour. */
-/* 13/11 — LE MÊME GROS POINT ET LES MÊMES TROIS POINTS que dans le Totehm déployé (`#joy-box`, voir plus haut) : ici
-   l'axe vertical est ↑ Get Higher · ● mon TOTEHM · ↓ Higher my ChatGPT. Le gros point prend la couleur de la vue
-   (`--joy-vue`, posée par `poser`) ; sur ← mes médias et → mes spots les trois points s'effacent. */
-#lvj-box{width:48px;height:48px;position:relative;touch-action:none;cursor:grab;pointer-events:auto;border-radius:50%;
-  background:var(--joy-vue,var(--navy));box-shadow:0 2px 7px rgba(0,0,0,.5);transition:background-color .42s ease}
+/* Joystick de l'atterrissage : socle PlayStation du commit 11430ef et manche noir du commit 465945f. */
+#lvj-box{width:48px;height:48px;position:relative;border-radius:0;
+  background:linear-gradient(135deg,rgba(255,255,255,.10) 0%,rgba(255,255,255,.025) 40%,rgba(255,255,255,0) 65%),#0b0b0e;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.30),inset 0 0 0 1px rgba(255,255,255,.05);
+  touch-action:none;cursor:grab;pointer-events:auto}
+#lvj-box::before{content:"";position:absolute;left:4px;top:4px;width:5px;height:5px;
+  background:linear-gradient(135deg,rgba(255,255,255,.26) 50%,rgba(255,255,255,0) 50%)}
+#lvj-box::after{content:"";position:absolute;inset:3px;border-radius:50%;
+  background:radial-gradient(circle at 50% 60%,#020202 0 58%,#171717 66%,#080808 72%);
+  box-shadow:inset 0 2px 4px #000,0 0 0 1px #303030,0 2px 4px #000}
 #lvj-box:active{cursor:grabbing}
-#lvj-stack{position:absolute;inset:0;z-index:1;pointer-events:none;transform:translate(calc(var(--mx,0px) * .6),calc(var(--my,0px) * .6));
-  transition:transform .26s cubic-bezier(.22,.9,.3,1),opacity .18s}
+#lvj-stack{position:absolute;inset:0;z-index:1;transform:translate(var(--mx,0px),var(--my,0px));
+  transition:transform .26s cubic-bezier(.22,.9,.3,1)}
 #lvj-box.tenu #lvj-stack{transition:none}
-#lvj-stack i{--d:10px;position:absolute;left:50%;display:block;width:var(--d);height:var(--d);
-  margin:calc(var(--d) / -2) 0 0 calc(var(--d) / -2);border-radius:50%;background:var(--c);
-  transition:opacity .18s,transform .18s}
-#lvj-stack .o{top:24%;--c:var(--blue)}#lvj-stack .h{top:50%;--c:var(--navy)}#lvj-stack .r{top:76%;--c:var(--rep)}
-#lvj-stack i.is-current{opacity:0;transform:scale(.4)}
-#lvj-box.is-side #lvj-stack{opacity:0}
+#lvj-stack i{--d:32px;position:absolute;left:50%;top:50%;display:block;width:var(--d);height:var(--d);
+  margin:calc(var(--d) / -2) 0 0 calc(var(--d) / -2);border-radius:50%;
+  background:radial-gradient(circle at 50% 58%,#101010 0 46%,#292929 49%,#363636 55%,#1b1b1b 61%,#080808 72%);
+  box-shadow:inset 0 1px 1px #686868,0 3px 4px #000;transition:box-shadow .2s ease}
+#lvj-stack i::after{content:"";position:absolute;inset:7px;border-radius:50%;opacity:.25;
+  background:radial-gradient(#aaa .45px,transparent .7px) 0 0/3px 3px;
+  box-shadow:inset 0 2px 3px #000}
+#lvjoy.tenu #lvj-stack i{box-shadow:inset 0 1px 1px #828282,0 4px 5px #000}
 #lvjoy.vers-g #lvn-lf,
 #lvjoy.vers-d #lvn-rt,
 #lvjoy.vers-h #lvn-up,
@@ -4489,7 +4491,7 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
     <div id="lvjoy" class="lv-act" role="group" aria-label="Where I am">
       <button id="lvn-up" class="lvn lv-act" type="button" aria-label="Get Higher"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 10 L8 5 L13 10"/></svg></button>
       <button id="lvn-lf" class="lvn lvn-x lv-act" type="button" aria-label="My shorts"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 L5 8 L10 13"/></svg></button>
-      <div id="lvj-box" aria-hidden="true"><div id="lvj-stack"><i class="o"></i><i class="h is-current"></i><i class="r"></i></div></div>
+      <div id="lvj-box" aria-hidden="true"><div id="lvj-stack"><i></i></div></div>
       <button id="lvn-rt" class="lvn lvn-x lv-act" type="button" aria-label="My spots"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3 L11 8 L6 13"/></svg></button>
       <button id="lvn-dn" class="lvn lv-act" type="button" aria-label="Higher my ChatGPT"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 6 L8 11 L13 6"/></svg></button>
     </div>
@@ -12920,18 +12922,7 @@ window.addEventListener('pageshow',e=>{
         .forEach(([b,v])=>{ if(!b) return; b.classList.toggle('is-mort',!v); b.tabIndex=v?0:-1;
           if(v){ const nom=v==='b'&&mode==='members'?'Member offer':NOMS[v]; b.setAttribute('aria-label',nom); b.title=nom; } else b.removeAttribute('title'); });
     }
-    /* 13/11 — le gros point de l'atterrissage prend la couleur de la vue (centre navy · haut bleu · bas rouge-violet ;
-       les côtés comme dans le Totehm déployé : ← rouge-violet, → bleu), et les trois points disent l'axe vertical :
-       ↑ Get Higher · ● mon TOTEHM · ↓ Higher my ChatGPT. Sur ← et → ils s'effacent. */
-    function peindreManche(v){
-      const bj=$('lvj-box'), jj=$('lvjoy'); if(!bj||!jj) return;
-      const cur={h:'o',c:'h',b:'r'}[v]||'';
-      bj.classList.toggle('is-side',v==='g'||v==='d');
-      bj.querySelectorAll('#lvj-stack i').forEach(i=>i.classList.toggle('is-current',!!cur&&i.classList.contains(cur)));
-      jj.style.setProperty('--joy-vue','var('+({c:'--navy',h:'--blue',b:'--rep',g:'--rep',d:'--blue'}[v]||'--navy')+')');
-    }
     function poser(v){
-      peindreManche(v);
       ['c','h','b','g','d'].forEach(k=>body.classList.toggle('lv-'+k,k===v));
       /* Le papier est DOCKÉ en haut : un tap ouvre le filtre de la vue. */
       body.classList.toggle('papier-haut',v==='g'||v==='d');
