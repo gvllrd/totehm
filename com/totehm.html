@@ -423,19 +423,29 @@ body.gate #wm-O,body.gate #wm-H,body.gate #t-foot,body.gate #ordbtn span{animati
    un chapeau au centre creusé, qui se tire et revient. Une seule différence : le chapeau porte la COULEUR DE LA VUE
    (`--joy-vue`, posé au rendu : habitudes navy · objectifs, visions bleu clair · répulsions, sagesse rouge-violet).
    La case de 48 px se centre dans `--joy-d` : la liste et la bande du bas ne bougent pas. */
-#joy-box{width:48px;height:48px;position:relative;touch-action:none;cursor:grab}
-#joy-box::after{content:"";position:absolute;inset:8px;border-radius:50%;background:#000;
-  box-shadow:inset 0 1px 0 rgba(0,0,0,.95),0 0 0 1px rgba(255,255,255,.12)}
+/* ══ 13/11 — LE JOYSTICK DE FIGHER.CLUB REVIENT (Wah : « le joystick avec les 3 points verticaux à l'intérieur du gros
+   point »). Le puits noir et son chapeau concave s'en vont : le manche est un GROS POINT plein, de la couleur de la vue
+   (`--joy-vue`), et TROIS POINTS VERTICAUX dedans — bleu · navy · rouge-violet, les couleurs des boîtes. Dans le Totehm
+   déployé l'axe vertical EST ce triptyque : objectifs (haut) · habitudes (centre) · répulsions (bas). Le point de la vue où
+   l'on est se fond dans le gros point (`.is-current`, même couleur) : les deux autres disent où l'on peut aller. Sur
+   MY STORY et MY VISION (les côtés), l'axe vertical n'existe plus : les trois points s'effacent (`.is-side`).
+   Les trois points suivent le manche (× .6 : ils ne sortent pas du gros point), c'est EUX qu'on tient. */
+/* ⚠️ 13/11 — LA MANETTE NE SE SÉLECTIONNE NI NE SE TRAÎNE : avec une sélection de texte active ailleurs dans la page
+   (mesuré : une recherche de membre), un appui sur le gros point démarrait un glisser-déposer NATIF — le navigateur
+   annulait alors le pointeur (`pointercancel`) au premier mouvement, et le glissé ne naviguait plus. */
+#joy-box,#joy-box *,#lvj-box,#lvj-box *{-webkit-user-select:none;user-select:none;-webkit-user-drag:none}
+#joy-box{width:48px;height:48px;position:relative;touch-action:none;cursor:grab;border-radius:50%;
+  background:var(--joy-vue,var(--navy));box-shadow:0 2px 7px rgba(0,0,0,.5);transition:background-color .42s ease}
 #joy-box:active{cursor:grabbing}
-/* Le manche se déplace d'un bloc : c'est lui qu'on tient. `--mx/--my` sont posés par le module « LA MANETTE ». */
-#joy-stack{position:absolute;inset:0;z-index:1;transform:translate(var(--mx,0px),var(--my,0px));
-  transition:transform .26s cubic-bezier(.22,.9,.3,1)}
+#joy-stack{position:absolute;inset:0;z-index:1;pointer-events:none;transform:translate(calc(var(--mx,0px) * .6),calc(var(--my,0px) * .6));
+  transition:transform .26s cubic-bezier(.22,.9,.3,1),opacity .18s}
 #joy-box.tenu #joy-stack{transition:none}
-#joy-stack i{--d:22px;position:absolute;left:50%;top:50%;display:block;width:var(--d);height:var(--d);
-  margin:calc(var(--d) / -2) 0 0 calc(var(--d) / -2);border-radius:50%;
-  background:radial-gradient(circle,rgba(0,0,0,.34) 0 50%,rgba(0,0,0,0) 54%) var(--joy-vue,var(--navy));
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.28);transition:background-color .42s ease}
-#joy.tenu #joy-stack i{background-image:radial-gradient(circle,rgba(0,0,0,.06) 0 50%,rgba(255,255,255,.16) 54%)}
+#joy-stack i{--d:10px;position:absolute;left:50%;display:block;width:var(--d);height:var(--d);
+  margin:calc(var(--d) / -2) 0 0 calc(var(--d) / -2);border-radius:50%;background:var(--c);
+  transition:opacity .18s,transform .18s}
+#joy-stack .o{top:24%;--c:var(--blue)}#joy-stack .h{top:50%;--c:var(--navy)}#joy-stack .r{top:76%;--c:var(--rep)}
+#joy-stack i.is-current{opacity:0;transform:scale(.4)}
+#joy-box.is-side #joy-stack{opacity:0}
 /* Ce qu'on vise s'allume avant qu'on lâche. L'état vit sur `#joy` : `#cur-g` PRÉCÈDE `#joy-box` dans le balisage,
    et le combinateur `~` ne regarde qu'en avant. */
 #joy.vers-g #cur-g,
@@ -509,7 +519,7 @@ body.ro #vnow{top:calc(max(10px,env(safe-area-inset-top)) + 30px + var(--ro-h))}
 #vnow.f-b{animation:face-b .42s cubic-bezier(.22,.9,.3,1)}
 #vnow.f-h{animation:face-h .42s cubic-bezier(.22,.9,.3,1)}
 @media(prefers-reduced-motion:reduce){
-  .cur,#joy-box,#joy-stack,#joy-stack i{transition:none}
+  .cur,#joy-box,#joy-stack,#joy-stack i,#lvj-box,#lvj-stack,#lvj-stack i{transition:none}
   #vnow.f-d,#vnow.f-g,#vnow.f-b,#vnow.f-h{animation:none}
 }
 
@@ -2997,22 +3007,21 @@ body.lv-membre.lv-b #lv-slogan,body.lv-verrou.lv-b #lv-slogan{opacity:0}
 /* ⚠️ 25/10 — LA MANETTE SORT DE SON CADRE (Wah : « sors de son cadre le joystick sur la page d'atterrissage et sur le
    totehm déployé ») : le petit socle carré part avec la boîte noire du Totehm. Il reste le manche : un puits rond
    (cerclé d'un filet pour se lire sur le noir) et son chapeau. La case garde ses 48 px : rien ne bouge autour. */
-#lvj-box{width:48px;height:48px;position:relative;touch-action:none;cursor:grab;pointer-events:auto}
-#lvj-box::after{content:"";position:absolute;inset:3px;border-radius:50%;
-  background:radial-gradient(circle at 50% 60%,#020202 0 58%,#171717 66%,#080808 72%);
-  box-shadow:inset 0 2px 4px #000,0 0 0 1px #303030,0 2px 4px #000}
+/* 13/11 — LE MÊME GROS POINT ET LES MÊMES TROIS POINTS que dans le Totehm déployé (`#joy-box`, voir plus haut) : ici
+   l'axe vertical est ↑ Get Higher · ● mon TOTEHM · ↓ Higher my ChatGPT. Le gros point prend la couleur de la vue
+   (`--joy-vue`, posée par `poser`) ; sur ← mes médias et → mes spots les trois points s'effacent. */
+#lvj-box{width:48px;height:48px;position:relative;touch-action:none;cursor:grab;pointer-events:auto;border-radius:50%;
+  background:var(--joy-vue,var(--navy));box-shadow:0 2px 7px rgba(0,0,0,.5);transition:background-color .42s ease}
 #lvj-box:active{cursor:grabbing}
-#lvj-stack{position:absolute;inset:0;z-index:1;transform:translate(var(--mx,0px),var(--my,0px));
-  transition:transform .26s cubic-bezier(.22,.9,.3,1)}
+#lvj-stack{position:absolute;inset:0;z-index:1;pointer-events:none;transform:translate(calc(var(--mx,0px) * .6),calc(var(--my,0px) * .6));
+  transition:transform .26s cubic-bezier(.22,.9,.3,1),opacity .18s}
 #lvj-box.tenu #lvj-stack{transition:none}
-#lvj-stack i{--d:32px;position:absolute;left:50%;top:50%;display:block;width:var(--d);height:var(--d);
-  margin:calc(var(--d) / -2) 0 0 calc(var(--d) / -2);border-radius:50%;
-  background:radial-gradient(circle at 50% 58%,#101010 0 46%,#292929 49%,#363636 55%,#1b1b1b 61%,#080808 72%);
-  box-shadow:inset 0 1px 1px #686868,0 3px 4px #000;transition:box-shadow .2s ease}
-#lvj-stack i::after{content:"";position:absolute;inset:7px;border-radius:50%;opacity:.25;
-  background:radial-gradient(#aaa .45px,transparent .7px) 0 0/3px 3px;
-  box-shadow:inset 0 2px 3px #000}
-#lvjoy.tenu #lvj-stack i{box-shadow:inset 0 1px 1px #828282,0 4px 5px #000}
+#lvj-stack i{--d:10px;position:absolute;left:50%;display:block;width:var(--d);height:var(--d);
+  margin:calc(var(--d) / -2) 0 0 calc(var(--d) / -2);border-radius:50%;background:var(--c);
+  transition:opacity .18s,transform .18s}
+#lvj-stack .o{top:24%;--c:var(--blue)}#lvj-stack .h{top:50%;--c:var(--navy)}#lvj-stack .r{top:76%;--c:var(--rep)}
+#lvj-stack i.is-current{opacity:0;transform:scale(.4)}
+#lvj-box.is-side #lvj-stack{opacity:0}
 #lvjoy.vers-g #lvn-lf,
 #lvjoy.vers-d #lvn-rt,
 #lvjoy.vers-h #lvn-up,
@@ -4480,7 +4489,7 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
     <div id="lvjoy" class="lv-act" role="group" aria-label="Where I am">
       <button id="lvn-up" class="lvn lv-act" type="button" aria-label="Get Higher"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 10 L8 5 L13 10"/></svg></button>
       <button id="lvn-lf" class="lvn lvn-x lv-act" type="button" aria-label="My shorts"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 L5 8 L10 13"/></svg></button>
-      <div id="lvj-box" aria-hidden="true"><div id="lvj-stack"><i></i></div></div>
+      <div id="lvj-box" aria-hidden="true"><div id="lvj-stack"><i class="o"></i><i class="h is-current"></i><i class="r"></i></div></div>
       <button id="lvn-rt" class="lvn lvn-x lv-act" type="button" aria-label="My spots"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3 L11 8 L6 13"/></svg></button>
       <button id="lvn-dn" class="lvn lv-act" type="button" aria-label="Higher my ChatGPT"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 6 L8 11 L13 6"/></svg></button>
     </div>
@@ -4722,8 +4731,8 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
   <button class="cur" id="cur-g" type="button">
     <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 L5 8 L10 13"/></svg></button>
   <div id="joy-box" aria-hidden="true">
-    <!-- 25/10 : le socle de l'atterrissage ; le manche est UN chapeau, de la couleur de la vue. -->
-    <div id="joy-stack"><i></i></div>
+    <!-- 13/11 : le gros point de la couleur de la vue, et trois points verticaux dedans — objectifs · habitudes · répulsions. -->
+    <div id="joy-stack"><i class="o"></i><i class="h"></i><i class="r"></i></div>
   </div>
   <button class="cur" id="cur-d" type="button">
     <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3 L11 8 L6 13"/></svg></button>
@@ -8352,7 +8361,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-11-12-box-phrase';
+const BUILD='2026-11-13-joystick-trois-points';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -8473,6 +8482,12 @@ function paintZone(){
     const TEINTE={habits:'--navy', objectives:'--blue', repulsions:'--rep',
                   wisdom:'--rep',  visions:'--blue'};
     jy.style.setProperty('--joy-vue', 'var('+(TEINTE[view]||'--navy')+')');
+    /* 13/11 — les trois points disent l'axe vertical : le point de la vue où l'on est se fond dans le gros point ; sur les
+       deux côtés (MY STORY, MY VISION) l'axe n'existe plus, les trois points s'effacent. */
+    const bj=$('joy-box');
+    if(bj){ const cur={objectives:'o',habits:'h',repulsions:'r'}[view]||'';
+      bj.classList.toggle('is-side',view==='wisdom'||view==='visions');
+      bj.querySelectorAll('#joy-stack i').forEach(i=>i.classList.toggle('is-current',!!cur&&i.classList.contains(cur))); }
   }
   /* ⚠️ ON N'EN RETIRE AUCUN. Un curseur sans voisin garde sa case et s'efface (`.mort`, comme `.lvn.is-mort` à
      l'atterrissage) : le retirer de la grille déplaçait tout le contrôleur. */
@@ -12875,7 +12890,18 @@ window.addEventListener('pageshow',e=>{
         .forEach(([b,v])=>{ if(!b) return; b.classList.toggle('is-mort',!v); b.tabIndex=v?0:-1;
           if(v){ const nom=v==='b'&&mode==='members'?'Member offer':NOMS[v]; b.setAttribute('aria-label',nom); b.title=nom; } else b.removeAttribute('title'); });
     }
+    /* 13/11 — le gros point de l'atterrissage prend la couleur de la vue (centre navy · haut bleu · bas rouge-violet ;
+       les côtés comme dans le Totehm déployé : ← rouge-violet, → bleu), et les trois points disent l'axe vertical :
+       ↑ Get Higher · ● mon TOTEHM · ↓ Higher my ChatGPT. Sur ← et → ils s'effacent. */
+    function peindreManche(v){
+      const bj=$('lvj-box'), jj=$('lvjoy'); if(!bj||!jj) return;
+      const cur={h:'o',c:'h',b:'r'}[v]||'';
+      bj.classList.toggle('is-side',v==='g'||v==='d');
+      bj.querySelectorAll('#lvj-stack i').forEach(i=>i.classList.toggle('is-current',!!cur&&i.classList.contains(cur)));
+      jj.style.setProperty('--joy-vue','var('+({c:'--navy',h:'--blue',b:'--rep',g:'--rep',d:'--blue'}[v]||'--navy')+')');
+    }
     function poser(v){
+      peindreManche(v);
       ['c','h','b','g','d'].forEach(k=>body.classList.toggle('lv-'+k,k===v));
       /* Le papier est DOCKÉ en haut : un tap ouvre le filtre de la vue. */
       body.classList.toggle('papier-haut',v==='g'||v==='d');
