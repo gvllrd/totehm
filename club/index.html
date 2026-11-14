@@ -156,6 +156,12 @@ body.rdr-grid #rdr-plus,body.is-nspot #rdr-plus,body.is-sf #rdr-plus,body.is-det
 .sfb{cursor:pointer;width:min(92vw,420px)}
 .sfb.is-on{outline:1px solid #fff;outline-offset:1px}
 .sfb:focus-visible{outline:1px solid #fff;outline-offset:2px}
+/* 14/11 — UNE HABIT PRIVÉE NE SE PREND PAS ICI (Wah) : grisée, non sélectionnable, et un bouton pour
+   l'ouvrir à mes abonnés. La box garde son rendu natif (règle n° 1) : c'est l'OPACITÉ qui dit l'état,
+   jamais une peau réinterprétée. */
+.sfb.is-off{cursor:default}
+.sfb.is-off>.tb,.sfb.is-off>*:not(.sfb-act){opacity:.42;filter:saturate(.5);pointer-events:none}
+.sfb-act{margin-top:4px}
 .sfc{border:0;border-radius:10px;padding:8px 11px;background:#1f1f24;color:#b0b0b0;cursor:pointer;
   font:400 11.5px/1.3 var(--mono);text-align:left;max-width:100%;overflow:hidden;text-overflow:ellipsis;-webkit-tap-highlight-color:transparent}
 .sfc.is-on{background:#3a3a42;color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.45)}
@@ -1566,7 +1572,8 @@ const NSPOT = (() => {
   const DEF = 'A spot is your TOTEHM Habit in action: exact place, exact time, right people, your conditions.';
   const POURQUOI = { signin:'sign in again', habit:'save this Habit first', location:'where', mode:'silent or social',
     duration:'the duration', video:'the photo or the video', position:'allow my location', too_many:'enough spots for now',
-    city:'no city near me', audience:'who sees it', when:'a future date and time', place:'where' };
+    city:'no city near me', audience:'who sees it', when:'a future date and time', place:'where',
+    box_private:'this Habit box is private · make it visible to my subscribers first' };
   const diag = { ouverts:0, publies:0, refus:0, medias:0, adresses:0 };
   const N = {};
   const pan = () => $('rdr-new');
@@ -1576,7 +1583,7 @@ const NSPOT = (() => {
   function neuf(){
     lacher(); seqPos++;
     const d = new Date(Date.now() + 864e5);
-    Object.assign(N, { h:null, quand:'', media:null, path:'', aud:'figher', mode:'', ou:'',
+    Object.assign(N, { h:null, quand:'', media:null, path:'', aud:'figher', mode:'', ou:'', boxBusy:false,
       pt:null, ptSrc:'', ptVille:'', ptNom:'', posErr:false, posBusy:false,
       adr:'', hits:[], hit:-1, adrBusy:false, adrErr:'', adrSeq:0,
       dur:0, mot:'', date:d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()),
@@ -1685,22 +1692,36 @@ const NSPOT = (() => {
   const grp = (mot, corps) => '<div class="sfg"><div class="sfl">' + esc(mot) + '</div><div class="sfr">' + corps + '</div></div>';
   const tag = t => '<span class="ns-tag">' + esc(t) + '</span>';
   const note = t => '<p class="ns-def ns-note-g">' + esc(t) + '</p>';
+  /* ⚠️ 14/11 — ICI, UNE HABIT PRIVÉE NE PEUT PAS PORTER UN SPOT (Wah) : « dans figher.club, audience =
+     Visible to Figher Club, verrouillée, non modifiable. Les Habit Private sont affichées GRISÉES, non
+     sélectionnables, avec un bouton "Make visible to subscribers". Si une Habit Private est sélectionnée,
+     bloquer la création. » Le niveau vient du serveur (`space_habits` → `audience`), jamais d'ici. */
+  const privee = x => !!x && String(x.audience || 'private') === 'private';
   function habitHTML(){
     const box = boxHabit;
     if(N.h) return '<div class="sfg"><div class="sfl">my habit</div><div class="sfbx"><div class="sfb is-on" role="button" tabindex="0"'
-      + ' data-ns="reh" aria-label="Change the Habit">' + box(N.h) + '</div></div></div>';
+      + ' data-ns="reh" aria-label="Change the Habit">' + box(N.h) + '</div></div>'
+      + (privee(N.h) ? '<p class="ns-def ns-what">this Habit box is private, so it cannot carry a Figher Club spot. '
+        + 'Opening it to my subscribers opens the box ITSELF in my TOTEHM — its media and its sub-boxes follow.</p>'
+        + '<div class="sfr">' + chip('data-ns="ouvrirbox"', 'make visible to subscribers', false, N.boxBusy ? '…' : 'one tap') + '</div>' : '')
+      + '</div>';
     const hs = HABITS || [];
     return '<div class="sfg"><div class="sfl">which habit?</div><div class="sfbx">' + (hs.length
-      ? hs.map(x => '<div class="sfb" role="button" tabindex="0" data-ns="h" data-v="' + esc(x.name) + '">' + box(x) + '</div>').join('')
+      ? hs.map(x => privee(x)
+          ? '<div class="sfb is-off" aria-disabled="true" title="This Habit box is private">' + box(x)
+            + '<div class="sfr sfb-act">' + chip('data-ns="ouvrirbox" data-v="' + esc(x.name) + '"', 'make visible to subscribers', false) + '</div></div>'
+          : '<div class="sfb" role="button" tabindex="0" data-ns="h" data-v="' + esc(x.name) + '">' + box(x) + '</div>').join('')
       : '<p class="note">' + (HABITS ? 'write a Habit in my TOTEHM first' : 'reading my TOTEHM…') + '</p>') + '</div></div>';
   }
-  function medHTML(oblig){
+  /* 14/11 — LE MÉDIA EST FACULTATIF (Wah : « un spot peut être sans media ») : les trois pavés restent au
+     format de la vue de droite de com, mais ils ne gardent plus la suite du questionnaire. */
+  function medHTML(){
     const m = N.media;
     if(m) return '<div class="sfg"><div class="sfl">' + (m.photo ? 'photo' : 'video') + '</div><div class="ns-m">'
       + (m.photo ? '<img alt="" src="' + esc(m.url) + '">' : '<video src="' + esc(m.url) + '" muted loop playsinline autoplay></video>')
-      + '</div><div class="sfr">' + chip('data-ns="nomedia"', 'change', false) + '</div></div>';
+      + '</div><div class="sfr">' + chip('data-ns="nomedia"', 'change', false) + chip('data-ns="sansmedia"', 'remove', false) + '</div></div>';
     return '<div class="sfg"><div class="sfl">'
-      + esc('a photo or a video · ' + (oblig ? (RULES.clip_seconds || 33) + ' s at most' : 'optional'))
+      + esc('a photo or a video · optional · ' + (RULES.clip_seconds || 33) + ' s at most')
       + '</div><div id="ns-cap">'
       + '<button type="button" class="cap-b" data-ns="capk" data-v="photo">' + ICO_PHOTO + 'PHOTO</button>'
       + '<button type="button" class="cap-b" data-ns="capk" data-v="video">' + ICO_VIDEO + 'VIDEO</button>'
@@ -1750,7 +1771,8 @@ const NSPOT = (() => {
   function peindre(){
     const p = pan(); if(!p || p.hidden) return;
     let h = '<p class="sfl">+ spot</p><p class="ns-def ns-what">' + esc(DEF) + '</p>' + habitHTML();
-    if(N.h){
+    /* une Habit privée arrête le questionnaire ici : elle ne peut pas porter un spot du Club */
+    if(N.h && !privee(N.h)){
       h += quandHTML();
       const plan = N.quand === 'later';
       if(plan) h += dateHTML();
@@ -1759,14 +1781,11 @@ const NSPOT = (() => {
         if(N.pt){
           h += quiHTML() + ensHTML();
           if(N.mode){
-            if(!plan) h += medHTML(true);
-            if(plan || N.media){
-              h += durHTML();
-              if(N.dur){
-                h += motHTML();
-                if(plan) h += medHTML(false);
-                h += envoiHTML(plan ? 'I WILL BE HERE' : 'I AM HERE');
-              }
+            h += medHTML();          /* 14/11 : facultatif, et il ne garde plus la suite */
+            h += durHTML();
+            if(N.dur){
+              h += motHTML();
+              h += envoiHTML(plan ? 'I WILL BE HERE' : 'I AM HERE');
             }
           }
         }
@@ -1776,20 +1795,38 @@ const NSPOT = (() => {
     p.innerHTML = h;
   }
   function note2(t){ N.note = t || ''; const n = pan() && pan().querySelector('.ns-note'); if(n) n.textContent = N.note; }
+  /* ── OUVRIR LA BOX DEPUIS ICI (14/11, Wah) ── « On doit pouvoir changer la confidentialité d'une box
+     aisément dans tous les endroits où elle apparaît, pas seulement dans le TOTEHM. » Le tap sur ce bouton
+     EST la confirmation : la note au-dessus dit que les médias et les sous-box suivent. Jamais l'inverse —
+     rien ici ne fait redescendre une box en private. `box_audience_set` est accordée à `authenticated`. */
+  async function ouvrirLaBox(nom){
+    const cible = nom ? (HABITS || []).find(h => String(h.name) === String(nom)) : N.h;
+    if(N.boxBusy || !cible || !me) return;
+    N.boxBusy = true; peindre();
+    const { data, error } = await sb.rpc('box_audience_set', { p_kind:'h', p_id:String(cible.name), p_audience:'subscribers' });
+    N.boxBusy = false;
+    if(error || !data || !data.ok){ if(error) console.error('[box_audience_set]', error.message);
+      note2('the box did not open · try again'); peindre(); return; }
+    cible.audience = data.audience;                    /* la liste en mémoire suit : zéro lecture de plus */
+    if(!N.h) N.h = cible;
+    peindre();
+  }
   /* ── LA PUBLICATION ── Le point est TOUJOURS exact (`p_location:'on'`), donc `p_mode` est toujours rempli. */
   async function publier(){
-    if(N.occupe || !me || !N.h || !N.pt || !N.mode) return;
+    /* 14/11 : une Habit privée BLOQUE la création — le serveur refuserait de toute façon (`box_private`) */
+    if(N.occupe || !me || !N.h || privee(N.h) || !N.pt || !N.mode) return;
     const plan = N.quand === 'later', uid = me.id;
     N.occupe = true; note2(plan ? 'announcing…' : 'sending…');
     const go = pan() && pan().querySelector('.ns-go'); if(go) go.disabled = true;
     const fin = t => { N.occupe = false; diag.refus++; note2(t); const g = pan() && pan().querySelector('.ns-go'); if(g) g.disabled = false; };
-    if(!plan && !N.path){ N.path = await envoyerMedia(N.media); if(uid !== (me && me.id)) return; if(!N.path) return fin('not sent · try again'); }
+    /* 14/11 : on n'envoie un fichier QUE s'il y en a un — un spot sans média part tel quel. */
+    if(!plan && N.media && !N.path){ N.path = await envoyerMedia(N.media); if(uid !== (me && me.id)) return; if(!N.path) return fin('not sent · try again'); }
     const commun = { p_habit:N.h.name, p_duration_min:N.dur, p_lat:N.pt.lat, p_lng:N.pt.lng, p_city:N.ptVille || null,
       p_comment:N.mot.trim() || null, p_mode:N.mode, p_location:'on', p_audience:'figher' };
     const corps = plan
       ? Object.assign({}, commun, { p_starts_at:new Date(N.date + 'T' + N.time).toISOString(),
           p_place:(N.place.trim() || N.ptNom.split(',')[0].trim() || N.ptVille || 'the planned place').slice(0, 120) })
-      : Object.assign({}, commun, { p_video:N.path });
+      : Object.assign({}, commun, { p_video:N.path || null });
     const fn = plan ? 'spot_schedule_audience' : 'spot_create_audience';
     const { data, error } = await sb.rpc(fn, corps);
     if(uid !== (me && me.id)) return;
@@ -1854,6 +1891,8 @@ const NSPOT = (() => {
       else if(c === 'hit'){ const x = N.hits[+v]; if(!x) return; N.hit = +v; return poser(x, 'adresse', x.nom); }
       else if(c === 'capk') return fichier(v);
       else if(c === 'nomedia'){ lacher(); }
+      else if(c === 'sansmedia'){ lacher(); }          /* 14/11 : publier SANS média */
+      else if(c === 'ouvrirbox') return void ouvrirLaBox(v);
       else if(c === 'mode') N.mode = v;
       else if(c === 'dur') N.dur = +v || 0;
       else return;

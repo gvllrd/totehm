@@ -176,3 +176,22 @@ revoke all on function public.spot_schedule_audience(text,timestamptz,integer,te
 grant execute on function public.spot_schedule_audience(text,timestamptz,integer,text,double precision,double precision,text,text,text,text,text) to authenticated, service_role;
 revoke all on function public.spot_audience_set(uuid,text) from public, anon;
 grant execute on function public.spot_audience_set(uuid,text) to authenticated, service_role;
+
+-- ── 5 · `space_habits` DIT LE NIVEAU DE CHAQUE BOX ───────────────────────────────────────────────────
+-- figher.club doit GRISER les Habits privées (Wah : « non sélectionnables, avec un bouton Make visible to
+-- subscribers ») : le niveau vient donc du serveur, jamais de la page. `_space_habit_box` ajoute une seule
+-- clé, `audience` — additif, aucun lecteur existant n'en perd une.
+create or replace function public._space_habit_box(p_uid uuid,p_step jsonb)
+returns jsonb language sql stable security definer set search_path=public as $$
+ select jsonb_build_object('name',p_step->>'t','freq',p_step->>'f','step',p_step,'ints',to_jsonb(public._step_intentions(p_step)),
+  'audience',public._box_audience(p_uid,'h',p_step->>'t'),
+  'place',(select h.place from public.habit_spots h where h.user_id=p_uid and h.habit_text=p_step->>'t'),
+  'objectives',coalesce((select jsonb_agg(jsonb_build_object('id',o.id,'text',o.text,'is',o."is") order by o.created_at)
+    from public.objectives o where o.user_id=p_uid and btrim(o.text)<>'' and coalesce(o.status,'active') not in ('achieved','abandoned','converted')
+     and (o.id::text=p_step->>'o' or exists(select 1 from public.objective_habits oh where oh.user_id=p_uid and oh.objective_id=o.id and oh.habit_text=p_step->>'t'))),'[]'::jsonb),
+  'repulsions',coalesce((select jsonb_agg(jsonb_build_object('id',r.id,'text',r.repulsion,'is',r."is") order by r.created_at)
+    from public.repulsions r where r.user_id=p_uid and r.active and btrim(r.repulsion)<>''
+     and (r.habit_text=p_step->>'t' or exists(select 1 from public.repulsion_habits rh where rh.user_id=p_uid and rh.repulsion_id=r.id and rh.habit_text=p_step->>'t'))),'[]'::jsonb));
+$$;
+revoke all on function public._space_habit_box(uuid,jsonb) from public, anon, authenticated;
+grant execute on function public._space_habit_box(uuid,jsonb) to service_role;
