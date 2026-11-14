@@ -1265,7 +1265,7 @@ window.addEventListener('keydown', e => {
 /* ═══ STREET BOARD ═══ */
 {
 const IMG_BASE = 'assets/signs/';
-const VID_BASE = 'https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/public/play-signals/';
+// Original street clips are opened through the THP-protected experience.
 
 const SIGNS = {
   fire_exit:          [23.1,  5.5,  6.5],
@@ -1361,17 +1361,8 @@ function _vbTM(e){if(!vbGrab)return;const t=e.changedTouches[0];vbRX=Math.max(-8
 function _vbTE(){vbGrab=false;vbVX=0;vbVY=0;}
 
 function launchXp(id){
-  if(streetBusy) return;
-  streetBusy = true; lastXpFrom='world';
-  vid.src = VID_BASE+id+'.mp4'; vid.load();
-  vidWrap.classList.remove('in');
-  closeWorld();
-  xp.classList.add('up');
-  setTimeout(()=>{
-    vidWrap.classList.add('in');
-    vid.play().catch(()=>{ vid.controls=true; });
-    startVidBox();
-  }, 400);
+  if(!Object.prototype.hasOwnProperty.call(SIGNS,id))return;
+  location.assign('/play_lisbon_street?sign='+encodeURIComponent(id)+'&play=1&from=get_higher');
 }
 
 function comeBack(){
@@ -1553,11 +1544,8 @@ function snapToBoard(){
 }
 
 function launchXpFromDisc(id){
-  if(streetBusy) return; streetBusy=true; lastXpFrom='disc';
-  vid.src=VID_BASE+id+'.mp4'; vid.load();
-  vidWrap.classList.remove('in');
-  xp.classList.add('up');
-  setTimeout(()=>{ vidWrap.classList.add('in'); vid.play().catch(()=>{vid.controls=true;}); startVidBox(); },400);
+  if(!Object.prototype.hasOwnProperty.call(SIGNS,id))return;
+  location.assign('/play_lisbon_street?sign='+encodeURIComponent(id)+'&play=1&from=get_higher');
 }
 
 function buildSdisc(sl){

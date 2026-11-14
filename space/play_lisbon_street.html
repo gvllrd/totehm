@@ -67,6 +67,7 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
   opacity:1;transition:opacity .3s ease;
 }
 #sdisc-trig.gone{opacity:0;pointer-events:none}
+#street-access-status{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);z-index:5;width:calc(100% - 40px);max-width:620px;text-align:center;color:#bbb;font:11px/1.5 "Space Mono",monospace;pointer-events:none}
 @media(pointer:coarse){#sdisc-trig .trigger-label{display:none}}
 .trigger-label{
   font-family:'Space Mono',monospace;font-size:10px;color:#9a9a9a;
@@ -308,6 +309,7 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
 </svg>
 
 <div id="street-disc">
+  <p id="street-access-status" role="status" aria-live="polite"></p>
   <div id="sdisc-bg"></div>
   <button id="sdisc-back" type="button">Back</button>
   <button id="sdisc-board-close" type="button" aria-label="Back to the story" style="display:none">✕</button>
@@ -378,7 +380,9 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
 
 <script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-const BUILD = '2026-11-09-lisbon-sign-animation-teaser';
+import {checkLisbonStreetAccess,requestLisbonStreetMedia} from './lisbon-street-access.mjs';
+import {LISBON_STREET_DISCOVER} from './lisbon-street-discover.mjs';
+const BUILD = '2026-11-14-lisbon-thp-entry';
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 const HIGHER_MARKUP = '<span class="higher-inline" role="img" aria-label="Higher"><svg viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-slogan"></use></svg></span>';
 const GET_HIGHER_MARKUP = '<span class="get-word">Get</span> ' + HIGHER_MARKUP;
@@ -609,30 +613,25 @@ sb.from('artworks')
     refreshArtworkLabel();
   });
 
-async function hasAccess(){
-  try{
-    const { data:{ session } } = await sb.auth.getSession();
-    if(!session) return false;
-    const r = await fetch(GATE_FN,{ method:'POST',
-      headers:{ 'Authorization':'Bearer '+session.access_token,'Content-Type':'application/json' }});
-    const j = await r.json();
-    return j.access === true;
-  }catch(e){ return false; }
+let OWNED=false,streetAccess={state:'checking',owned:false},accessRevision=0;
+let refreshStreetAccessUI=()=>{},revokeStreetPlayback=()=>{};
+async function refreshStreetPermission(){
+  const revision=++accessRevision;
+  const next=await checkLisbonStreetAccess({client:sb});
+  if(revision!==accessRevision)return streetAccess;
+  streetAccess=next;OWNED=next.owned;
+  if(OWNED){applyOwnedFallback();document.getElementById('xp-get-higher').href=METHOD;}
+  else{document.getElementById('xp-get-higher').href='/get_higher';revokeStreetPlayback();}
+  refreshStreetAccessUI();return next;
 }
-
-// Boot : NE PAS auto-rediriger sur METHOD. Le membre veut se promener
-// dans la boutique meme s'il a deja son totehmpaper. La bascule vers la
-// methode se fait uniquement par un click deliberé sur [Get Higher].
-let OWNED = false;
-(async function boot(){
-  OWNED = await hasAccess();
-  if(!OWNED) return;
-  // Mettre a jour le fallback #xp-buy : quand il n'y a pas d'artwork
-  // (sign sans oeuvre associee), au lieu de proposer "Get Higher — <prix>"
-  // (achat THP), on propose [Get Higher] direct vers la methode.
-  applyOwnedFallback();
-  document.getElementById('xp-get-higher').href = METHOD;
-})();
+async function hasAccess(){return (await refreshStreetPermission()).owned;}
+// Entitlement comes from the server before any controller or media opens.
+const streetAccessReady=refreshStreetPermission();
+sb.auth.onAuthStateChange?.((event)=>{
+  if(event!=='SIGNED_OUT')return;
+  accessRevision++;OWNED=false;streetAccess={state:'guest',owned:false};revokeStreetPlayback();refreshStreetAccessUI();
+});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshStreetPermission();});
 
 function applyOwnedFallback(){
   if(!OWNED) return;
@@ -712,7 +711,6 @@ inOtp.addEventListener('keydown',  e=>{ if(e.key==='Enter') btnVerify.click(); }
 /* ═══ STREET BOARD ═══ */
 {
 const IMG_BASE = 'assets/signs/';
-const VID_BASE = 'https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/public/play-signals/';
 
 const PHRASES = {
   fire_exit:          "To avoid a headache, stop thinking with your head.",
@@ -768,7 +766,9 @@ const SIGNS = {
 // catalogue's exact IDs select media; no URL or return destination is accepted.
 const entryQuery = new URLSearchParams(location.search);
 const requestedSign = entryQuery.get('sign');
-const directSign = entryQuery.get('play')==='1' && Object.hasOwn(SIGNS,requestedSign) ? requestedSign : null;
+const discoverOnly=entryQuery.get('discover')==='1';
+const directSign = !discoverOnly && entryQuery.get('play')==='1' && Object.hasOwn(SIGNS,requestedSign) ? requestedSign : null;
+const requestedBoard=!discoverOnly&&entryQuery.get('board')==='1';
 const fromSpace = !!directSign && entryQuery.get('from')==='space';
 
 const world      = document.getElementById('world');
@@ -784,7 +784,7 @@ let streetBusy = false;
 let resumeVideo = null;
 let activeSign = null;
 let playAttempted = false;
-let playbackBlocked = false;
+let playbackBlocked = false,mediaState='idle',launchRevision=0;
 refreshArtworkLabel = ()=>{
   if(activeSign && xp.classList.contains('up')) renderXpArtwork(activeSign);
 };
@@ -804,7 +804,7 @@ for(const [id,[l,t,w]] of Object.entries(SIGNS)){
   board.appendChild(b);
 }
 
-function openWorld(){ world.classList.add('on'); }
+function openWorld(){if(!OWNED){showAccessRequirement(streetAccess);return;}world.classList.add('on');}
 function closeWorld(){ world.classList.remove('on'); }
 
 let vbRaf=null,vbGrab=false,vbRX=5,vbRY=-15,vbVX=0,vbVY=0,vbT=0,vbTs=null;
@@ -882,14 +882,16 @@ function renderXpArtwork(id){
   }
 }
 
-function launchXp(id,{immediate=false}={}){
-  if(streetBusy || !Object.hasOwn(SIGNS,id)) return;
-  activeSign=id;
-  streetBusy=true; lastXpFrom='world';
-  // The gallery's cross-page gesture cannot reliably carry audio activation.
-  // Muted autoplay starts the animation; native controls keep sound available.
+async function launchXp(id,{immediate=false,from='world'}={}){
+  if(streetBusy || !Object.hasOwn(SIGNS,id))return false;
+  streetBusy=true;mediaState='checking';const revision=++launchRevision;
+  const media=await requestLisbonStreetMedia(id,{client:sb});
+  if(revision!==launchRevision)return false;
+  streetAccess={state:media.state,owned:media.owned};OWNED=media.owned;refreshStreetAccessUI();
+  if(!media.owned){streetBusy=false;mediaState=media.state;showAccessRequirement(streetAccess);return false;}
+  activeSign=id;lastXpFrom=from;mediaState='ready';
   vid.muted=!!immediate;vid.controls=!!immediate;
-  vid.src=VID_BASE+id+'.mp4'; vid.load();
+  vid.src=media.url;vid.load();
   vidWrap.classList.remove('in'); closeWorld(); xp.classList.add('up');
 
   // Gallery label
@@ -899,7 +901,7 @@ function launchXp(id,{immediate=false}={}){
   renderXpArtwork(id);
 
   setTimeout(()=>{
-    if(!xp.classList.contains('up')) return;
+    if(revision!==launchRevision||!xp.classList.contains('up')) return;
     vidWrap.classList.add('in');
     xpLabel.classList.add('in');
     if(document.hidden){ vid.controls=true; return; }
@@ -909,6 +911,7 @@ function launchXp(id,{immediate=false}={}){
 }
 
 function playSignVideo(){
+  if(!OWNED||!vid.getAttribute('src')){showAccessRequirement(streetAccess);return;}
   playAttempted=true;playbackBlocked=false;
   const source=vid.src;
   vid.play().catch(()=>{
@@ -918,12 +921,12 @@ function playSignVideo(){
 }
 
 function comeBack(){
-  resumeVideo=null;
+  const revision=++launchRevision;mediaState='idle';resumeVideo=null;
   vid.pause(); stopVidBox();
   if(fromSpace){ location.assign('/lisbon-space'); return; }
   xp.classList.remove('up'); vidWrap.classList.remove('in');
   setTimeout(()=>{
-    vid.src=''; streetBusy=false;activeSign=null;
+    if(revision!==launchRevision)return;vid.removeAttribute('src');vid.load();streetBusy=false;activeSign=null;
     if(lastXpFrom==='world'){ openWorld(); }
     else{
       ROCKS.forEach(r=>{ r.img.style.filter=''; });
@@ -933,10 +936,10 @@ function comeBack(){
 }
 
 function closeAll(){
-  resumeVideo=null;
+  const revision=++launchRevision;mediaState='idle';resumeVideo=null;
   vid.pause(); stopVidBox();
   xp.classList.remove('up'); closeWorld(); vidWrap.classList.remove('in');
-  setTimeout(()=>{ vid.src=''; streetBusy=false;activeSign=null; },300);
+  setTimeout(()=>{if(revision!==launchRevision)return;vid.removeAttribute('src');vid.load();streetBusy=false;activeSign=null;},300);
 }
 
 vid.addEventListener('ended', ()=>{
@@ -971,16 +974,7 @@ const sdiscBg        = document.getElementById('sdisc-bg');
 
 const G=(x)=>({t:"g",x});
 
-const SDSLIDES = [
-  {parts:[G("You see them everywhere, every single day."),G("Hundreds of times a day.")]},
-  {parts:[G("Your brain automatically filters them into background noise."),G("Because yeah, they look completely useless.")]},
-  {parts:[G("Now, imagine if they were stimulants."),G("Consciously or unconsciously.")]},
-  {parts:[G("What if every signal reminded you of your objectives?"),G("The daily habits to achieve them.\nThe past mistakes you swore never to repeat.")]},
-  {parts:[G("The instant trigger to elevate your mental state:"),G("To act with more efficiency and presence.")]},
-  {parts:[G("Artist Wavywah integrated Lisbon's urban signals directly into TOTEHM."),G("An artistic and cognitive performance tool conceived through neurology.")]},
-  {parts:[G("Once you get Higher, walking through Lisbon hits differently."),G("Urban signals are no longer background noise."),G("They turn into active cognitive stimuli.")]},
-  {parts:[G("You don't just walk the city anymore."),G("You operate from a Higher perspective.")]}
-];
+const SDSLIDES=LISBON_STREET_DISCOVER.map(parts=>({parts:parts.map(G)}));
 
 const SIGN_ENTRIES = Object.entries(SIGNS);
 const IMPORTANT    = new Set(['crosswalk','stop','no_entry','parking']);
@@ -1135,6 +1129,7 @@ const isPortraitMobile = ()=>
   window.matchMedia('(pointer:coarse) and (orientation:portrait)').matches;
 
 function enterBoardMode(){
+  if(!OWNED){showAccessRequirement(streetAccess);return;}
   boardMode=true;
   sdiscStage.style.display='none';
   sdiscBack.style.display='none';
@@ -1227,7 +1222,9 @@ if(window.matchMedia('(pointer:coarse)').matches){
   if(screen.orientation) screen.orientation.addEventListener('change', onRotate);
 }
 
-function snapToBoard(){
+async function snapToBoard(){
+  await streetAccessReady;
+  if(!OWNED){showAccessRequirement(streetAccess);return false;}
   if(snapping) return; snapping=true; stopAsteroids();
   const br=getBoardRect();
   const reduced=reducedMotion.matches;
@@ -1250,26 +1247,7 @@ function snapToBoard(){
   if(reduced) finish(); else setTimeout(finish,1000);
 }
 
-function launchXpFromDisc(id){
-  if(streetBusy || !Object.hasOwn(SIGNS,id)) return; streetBusy=true; lastXpFrom='disc';activeSign=id;
-  vid.muted=false;vid.controls=false;
-  vid.src=VID_BASE+id+'.mp4'; vid.load();
-  vidWrap.classList.remove('in'); xp.classList.add('up');
-
-  const xpLabel = document.getElementById('xp-label');
-  xpLabel.classList.remove('in');
-  setBrandedText(document.getElementById('xp-artw-phrase'), PHRASES[id]);
-  renderXpArtwork(id);
-
-  setTimeout(()=>{
-    if(!xp.classList.contains('up')) return;
-    vidWrap.classList.add('in');
-    xpLabel.classList.add('in');
-    if(document.hidden){ vid.controls=true; return; }
-    playSignVideo();
-    startVidBox();
-  },400);
-}
+function launchXpFromDisc(id){return launchXp(id,{from:'disc'});}
 
 function buildSdisc(sl){
   const b=document.createElement('div'); b.className='disc-block';
@@ -1281,14 +1259,40 @@ function buildSdisc(sl){
   });
   const btn=document.createElement('button');
   btn.className='btn-sig'; btn.style.marginTop='14px';
-  btn.textContent='MAKE THEM USEFUL FOR YOUR BRAIN';
-  btn.addEventListener('click',()=>snapToBoard());
+  btn.dataset.streetEnter='';
+  btn.textContent='Checking access…';btn.disabled=true;
+  btn.addEventListener('click',async()=>{
+    await streetAccessReady;
+    if(streetAccess.state==='error'){await refreshStreetPermission();if(!OWNED){showAccessRequirement(streetAccess);return;}}
+    if(!OWNED){location.assign('/get_higher');return;}
+    snapToBoard();
+  });
   b.appendChild(btn);
   return b;
 }
 SDSLIDES.forEach(sl=>sdiscStage.appendChild(buildSdisc(sl)));
+refreshStreetAccessUI=()=>{
+  document.querySelectorAll('[data-street-enter]').forEach(button=>{
+    button.disabled=streetAccess.state==='checking';
+    button.dataset.access=streetAccess.state;
+    if(OWNED){button.textContent='MAKE THEM USEFUL FOR YOUR BRAIN';button.setAttribute('aria-label','Arrange signs as a PlayStation controller');}
+    else if(streetAccess.state==='error'){button.textContent='Try access again';button.setAttribute('aria-label','Retry access verification');}
+    else if(streetAccess.state==='checking'){button.textContent='Checking access…';}
+    else{button.innerHTML=GET_HIGHER_MARKUP+' to enter';button.setAttribute('aria-label','Get Higher to enter');}
+  });
+};
+function showAccessRequirement(access){
+  launchRevision++;resumeVideo=null;streetBusy=false;activeSign=null;playAttempted=false;
+  vid.pause();vid.removeAttribute('src');vid.load();stopVidBox();xp.classList.remove('up');world.classList.remove('on');
+  if(boardMode)exitBoardMode();
+  sdiscStage.style.display='';sdiscStage.style.opacity='';sdiscBack.style.display='';sdiscBack.style.opacity='';sdiscTrig.style.display='';
+  document.getElementById('street-access-status').textContent=access.state==='error'?'Access could not be verified. Try again.':'A Totehmpaper is required to enter. Get Higher through Stoner first.';
+  storyRevision++;showSdisc(SDSLIDES.length-1,true);refreshStreetAccessUI();
+}
+revokeStreetPlayback=()=>{if(activeSign||boardMode||streetBusy)showAccessRequirement(streetAccess);};
+refreshStreetAccessUI();
 
-let sdiscCur=0, sdiscLock=false;
+let sdiscCur=0, sdiscLock=false,storyRevision=0;
 const SD_FADE=650;
 
 function showSdisc(i,instant){
@@ -1309,11 +1313,11 @@ function showSdisc(i,instant){
   if(i>0) sdiscTrig.classList.add('gone');
 }
 function sdiscReset(){
-  sdiscLock=false;
+  const revision=++storyRevision;sdiscLock=false;
   sdiscStage.querySelectorAll('.disc-block').forEach(b=>b.classList.remove('show','active','instant'));
   sdiscTrig.classList.remove('gone');
   sdiscCur=0;
-  requestAnimationFrame(()=>showSdisc(0,true));
+  requestAnimationFrame(()=>{if(revision===storyRevision)showSdisc(0,true);});
 }
 function sdiscNext(){
   if(boardMode||snapping||streetBusy||authOverlay.classList.contains('in')||sdiscLock||sdiscCur>=SDSLIDES.length-1)return;
@@ -1326,9 +1330,14 @@ function sdiscPrev(){
 
 /* démarrage */
 resetRocks(); sdiscReset(); startAsteroids();
-if(directSign){ stopAsteroids();launchXp(directSign,{immediate:true}); }
+streetAccessReady.then(access=>{
+  refreshStreetAccessUI();
+  if(discoverOnly)return;
+  if(directSign){if(access.owned){stopAsteroids();launchXp(directSign,{immediate:true});}else showAccessRequirement(access);}
+  else if(requestedBoard){if(access.owned)snapToBoard();else showAccessRequirement(access);}
+});
 
-sdiscBack.addEventListener('click',()=>{ window.location.href='/#lisbon'; });
+sdiscBack.addEventListener('click',()=>{ window.location.href='/lisbon-space'; });
 sdiscTrig.addEventListener('click',sdiscNext);
 
 let sdWlLock=false;
@@ -1350,7 +1359,7 @@ window.addEventListener('keydown',e=>{
     if(authOverlay.classList.contains('in')) closeAuth();
     else if(xp.classList.contains('up')) comeBack();
     else if(boardMode) returnToStory();
-    else if(!snapping) window.location.href='/#lisbon';
+    else if(!snapping) window.location.href='/lisbon-space';
   }
 });
 
@@ -1393,6 +1402,7 @@ window.__totehm_lisbon=()=>({
   snapping,reduced_motion:reducedMotion.matches,visible:!document.hidden,
   artwork:xp.classList.contains('up'),auth:authOverlay.classList.contains('in'),
   activeSign,directSign,fromSpace,playAttempted,playbackBlocked,videoMuted:vid.muted,
+  access:{state:streetAccess.state,owned:OWNED},mediaState,discoverOnly,requestedBoard,privateMedia:true,
   teaser:true,teaserHref:document.getElementById('xp-get-higher').getAttribute('href')
 });
 }

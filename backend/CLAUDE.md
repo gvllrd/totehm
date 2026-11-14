@@ -10,6 +10,7 @@
   `spot_plans` (point lu par fonction ; en retirer un des miens : `spot_remove`, il passe à `cancelled`). **Journal** `totehm_journal` : tout geste, par déclencheurs jamais bloquants ; lu par `my_board`.
 - La page d'un Cloth décodé lit `cloth_page` (elle ENVELOPPE `reveal_cloth`, jamais remplacée) : rang dans le STYLE, totehmisateur, fiche du vêtement, dopes. Le DOPE = `cloth_dopes` + `cloth_dope` (bascule) + `cloth_dopers` (pseudos, par `profiles`).
 ## Les droits
+- Play the Lisbon Street : `lisbon-street-media` relit le JWT et `stoner_access` comme Stoner, puis signe un seul des 22 clips pour 15 min ; aucun email, propriétaire ou chemin reçu n’accorde un droit.
 - Membre du Club : `_figher().member` = habit + objectif + répulsion (`needs` dit ce qui manque). Accès offert = `figher_comps`.
 - Abonné : `_subscriber_of(créateur, fan)` ; `creator_page`, `my_entitlements`, `totehm_read`, `member_media`, `club_spots_of`. Découverte/adoption : `_totehm_box_index` ajoute `_box_shared` par catégorie au verrou global existant (migration `20261111090000_creator_box_privacy`) ; les lots privés sont refusés atomiquement par l’import natif, provenance conservée.
 - Audience : `private` · `figher` · `subscribers` (`public` → `figher`) ; `_audience_ok`, `_audience_listed`, `_point_ok`. Sans compte : des NOMS seuls (`totehm_galaxy`, `totehm_search`).
@@ -23,13 +24,13 @@
 - `stripe-webhook` : `higher` · `cloth` · `subscription` · `creator_sub` · `artwork` · `resale` · `luxury` · `higher_sub` ;
   `stripe_events` s'efface avant un 500. Test (`boutique_testers`) : v45 suit une pièce d'essai comme une vraie et le mode test REDESCEND (03/11 : endpoint `we_1UXQzu`, les deux `STRIPE_TEST_*` posés) ;
   un événement de test n'ouvre que `cloth` et `luxury`, marqués `test`, et `handleCloth` n'appelle jamais l'API Stripe.
-## Les 41 Edge Functions (`supabase/functions/`)
+## Les 44 Edge Functions (`supabase/functions/`)
 | rôle | fonctions |
 |---|---|
 | identité | `sso-mint` · `sso-redeem` |
 | argent | `stripe-webhook` · `higher-checkout` · `artwork-checkout` · `market-checkout` · `creator-subscribe` · `creator-price` · `club-billing` · `higher-sub` |
 | vêtements | `create-checkout` v52 · `luxury-quote` v12 · `luxury-checkout` · `compose-artwork` v53 · `streetwear-assets` · `cloth-art` · `streetwear-tick` (cron) ; les deux premiers prennent `pick:{matter,shots}` — ce qui est ALLUMÉ, en références, relu par `_box_matter` et `_box_shots` |
-| vidéo, spots | `create-bunny-upload` · `bunny-video` · `bunny-webhook` · `spot-video` · `space-delete` |
+| vidéo, spots | `create-bunny-upload` · `bunny-video` · `bunny-webhook` · `spot-video` · `space-delete` · `lisbon-street-media` |
 | Higher Self, bot | `higher-self` · `bot-reply` · `bot-tick` (cron) · `agenda-ingest` (cron) · `higher-map` · `stoner-gate` |
 | sans appelant visible | `totehm-bot` · `sync-knowledge` · `generate-embeddings` · `upload-leaf-videos` · `ghost-factory` · `prospects` · `bunny-maintenance` · `embed-places` · `generate_objective` · `subscription-checkout` · `creator-dashboard` · `creator-onboard` · `autobiographiste` (à vérifier dans leurs journaux avant de retirer) |
 
