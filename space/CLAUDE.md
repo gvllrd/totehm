@@ -17,7 +17,7 @@ Space ouvre directement le monde, sans titre d’accueil ni commandes de panoram
 | `gallery-lisbon-azulejo-*.mjs` · `gallery-lisbon-shell.mjs` · `gallery-lisbon-exhibition-stone.mjs` | ancienne enveloppe conservée pour les tests de composants, hors de la visite actuelle |
 | `gallery-glass-shell.mjs` · `gallery-modern-layout.mjs` | profil et mobilier du château de New York ; oculus et physique du verre |
 | `gallery-curved-lisbon-installation.mjs` · `gallery-origins-vessel.mjs` | panorama et 22 signes en vraie courbure ; soucoupe, corridor transparent et salle Origins close |
-| `gallery-lisbon-pavement.mjs` | calçada originale découpée autour du dôme ; caravelle visible sur le parvis gauche, sans recouvrement du sol intérieur |
+| `gallery-lisbon-pavement.mjs` | calçada originale découpée autour du dôme ; caravelle au centre du parvis, sans recouvrement du sol intérieur |
 | `gallery-ancient-floor.mjs` · `gallery-white-stone.mjs` | dalles physiques à arêtes usées, cartes photographiques CC0 locales, table et pierre du foyer |
 | `gallery-heritage-masonry.mjs` | matériaux photographiques des maçonneries conservées |
 | `gallery-lectern-book.mjs` · `gallery-play-installation.mjs` · `gallery-opposite-installation.mjs` · `gallery-paper-packaging.mjs` | modules natifs du livre, des œuvres et des coffrets ; aucun Opposite à Lisbon |
@@ -48,6 +48,6 @@ Space ouvre directement le monde, sans titre d’accueil ni commandes de panoram
 - Vent/mer atténués sous la toiture réelle ; geste initial et préférence muet conservés. Liste, onglet masqué ou perte de focus suspendent la scène et le son. Retour navigateur restaure le monde.
 - Téléphone : DPR initial min(natif, 2), plancher min(natif, 1,5), adaptation graduelle réversible. Sans WebGL, les liens HTML donnent accès aux œuvres.
 - Connexion unique : `totehm.com/auth` en PKCE ; connecté, pseudo du profil et clic vers COM `/totehm` par `sso-mint`. Aucun menu membre local. Market, My collection, Collect et Full experience restent accessibles.
-- Propriété et argent au webhook ; prix, stock et accès du serveur. Aucun changement SQL, Edge Function ou tarif dans la galerie. Les clips Lisbon restent le teasing public ; la possession du THP et l’accès Stoner restent vérifiés par le serveur.
+- Propriété et argent au webhook ; prix, stock et accès du serveur. Les PNG flottants et le Discover sont le teasing public ; les films restent privés, servis par URL signée après vérification THP/Stoner. Aucun tarif ni droit d’achat modifié.
 
-Tests de restauration : `node tests/node/lisbon_azulejo_restoration.mjs` et `tests/browser/gallery_lisbon_azulejo_restoration.mjs`, avec conservation du château New York. `tests/browser/new_york_opposites.mjs` vérifie les six images, leur mur, le clic physique et les six Discover sur ordinateur et téléphone. Les tests des 22 signes contrôlent leurs objets, leurs parcours et le clic direct vers les animations. Les tests indépendants des lecteurs, du marché, de la connexion et des gestes Origins restent propres à leurs composants.
+Tests du portail : `tests/node/lisbon_street_portal.mjs`, `tests/browser/gallery_lisbon_street_portal.mjs`, `tests/browser/gallery_lisbon_portal_world.mjs` et `tests/fn/lisbon-street-media.mjs` vérifient les courbures, les tables extérieures, la porte, les droits et le trajet Origins sur ordinateur et téléphone. `tests/browser/new_york_opposites.mjs` vérifie les six œuvres de New York. Les tests indépendants des lecteurs, du marché, de la connexion et des gestes Origins restent propres à leurs composants.
