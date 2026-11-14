@@ -1260,6 +1260,11 @@ body.v-visions{--paper:#2b3a73}
 .baud-o.is-on{color:#fff;cursor:default}
 .baud-o[disabled]{cursor:progress}
 .baud-o:focus-visible{outline:1px solid #fff;outline-offset:2px}
+/* 14/11 — ARMÉ : le premier tap DEMANDE (la note devient la question), le second écrit. Jamais un niveau
+   de confidentialité sur un tap égaré — c'est l'idiome de [delete], au mot près. */
+.baud-o.is-sur{color:#fff;box-shadow:inset 0 -2px 0 var(--rep)}
+.baud-n[data-baud-n]{transition:color .2s ease}
+.baud:has(.is-sur)~.baud-n,.mg:has(.baud-o.is-sur) .baud-n{color:#fff}
 .baud-s{font:700 8.5px/1 'Space Mono',monospace;color:rgba(255,255,255,.3)}
 @media(hover:hover){.baud-o:not(.is-on):hover{color:rgba(255,255,255,.75)}}
 .btn.g:hover{background:none;border-color:#fff;color:#fff}
@@ -3421,18 +3426,24 @@ body.lv-b:not(.lv-membre):not(.lv-verrou) #lv-socket{opacity:0}
 .tracking-period,.tracking-actions{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px}
 .tracking-period .is-on{box-shadow:inset 0 0 0 1px #fff;color:#fff}
 .tracking-scroll{max-width:100%;overflow:auto;overscroll-behavior-x:contain}
-.tracking-matrix{display:grid;grid-template-columns:minmax(95px,150px) repeat(var(--tracking-days),minmax(24px,1fr));align-items:center;gap:8px 4px;min-width:100%;width:max-content}
-.tracking-matrix.is-week{width:100%}
-.tracking-matrix .h{font:9px 'Space Mono',monospace;text-align:center;color:#b8b8c2}
-.tracking-matrix .tracking-name{position:sticky;left:0;background:#000;z-index:1;min-width:0}
-.tracking-matrix .db-n{padding:9px 5px 9px 0;overflow-wrap:anywhere;white-space:normal}
+/* 14/11 — MY HABITS : une LIGNE par Habit, sa box sur TOUTE la largeur (règle n° 1 : le format natif de la
+   box est conservé partout, dashboard compris), la bande des jours dessous, en colonnes égales. Plus de
+   colonne de 95 px qui écrasait la box, et plus de défilement horizontal. */
+.tracking-matrix{display:flex;flex-direction:column;gap:14px;width:100%;min-width:0}
+.tracking-days{display:grid;grid-template-columns:repeat(var(--tracking-days),minmax(0,1fr));align-items:center;gap:0 2px}
+.tracking-row{display:flex;flex-direction:column;gap:6px;min-width:0}
+.tracking-matrix .h{font:8px/1.4 'Space Mono',monospace;text-align:center;color:#b8b8c2;overflow:hidden}
+.tracking-matrix.is-week .h{font-size:9px}
+.tracking-matrix .tracking-name{min-width:0;width:100%}
+.tracking-matrix .db-n{padding:0;overflow-wrap:anywhere;white-space:normal}
 #vs-dash .tracking-source{display:block;color:inherit;text-decoration:none}
 #vs-dash .tracking-source:focus-visible{outline:2px solid #fff;outline-offset:3px}
 #vs-dash .tb .v-name{overflow-wrap:anywhere;white-space:normal}
 .tracking-matrix .tb .v-name{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden}
 .tracking-focus{margin-top:10px}
 .tracking-matrix .db-n small{display:block;font:9px/1.5 'Space Mono',monospace;color:#b8b8c2;margin-top:5px;white-space:normal}
-.tracking-cell{font:10px/1.5 'Space Mono',monospace;text-align:center;color:#b8b8c2;min-width:24px;white-space:normal;overflow-wrap:anywhere}
+.tracking-cell{font:10px/1.5 'Space Mono',monospace;text-align:center;color:#b8b8c2;min-width:0;white-space:nowrap;overflow:hidden}
+.tracking-matrix:not(.is-week) .tracking-cell{font-size:9px}
 .tracking-cell.has-done{color:#fff}.tracking-cell.has-missed{border-bottom:1px solid #b8b8c2}
 .tracking-history{background:#000;margin-top:12px;text-align:left}
 .tracking-history>summary{padding:15px;font:700 10px 'Space Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#b8b8c2;cursor:pointer}
@@ -3610,11 +3621,17 @@ body.lv-b #gate-logo #gl-rail,body.lv-b #gate-logo #gl-wm{opacity:0}
 .tlv-x svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;display:block}
 /* 25/10 — retirer un média (Wah : « il faut pouvoir supprimer les media dans la vue de gauche et de droite ») : DEUX
    gestes — le premier arme (`is-sur`, « delete? », 3 s), le second retire. Rien ne part sur un tap égaré. */
-.tlv-del,.ssp-acts button[data-del]{font:700 10px/1 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase}
-.tlv-del{position:absolute;z-index:2;border:0;border-radius:10px;background:rgba(0,0,0,.55);color:#b8b8c2;cursor:pointer;padding:10px 12px;
-  top:calc(max(10px,env(safe-area-inset-top)) + 4px);left:10px;transition:background-color .2s ease,color .2s ease}
-.tlv-del.is-sur,.ssp-acts button[data-del].is-sur{background:var(--rep);color:#fff}
-.tlv-del:focus-visible{outline:1px solid #fff;outline-offset:2px}
+/* 14/11 (Wah) : « le bouton [Delete] de la vue de droite spot est le bon » — un seul format pour les deux
+   vues, DANS la rangée noire au-dessus de la box, jamais flottant dans un coin de l'image. */
+.ssp-acts button[data-del],.ssp-acts button[data-tlv]{font:700 10px/1 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase}
+.ssp-acts button[data-del].is-sur,.ssp-acts button[data-tlv].is-sur{background:var(--rep);color:#fff}
+.tlv-b .ssp-row{align-self:center;min-height:0;padding:3px}
+/* le niveau d'une box, PARTOUT où elle apparaît : la même ligne de mots que dans le TOTEHM, posée sous la box */
+.baud-row{align-self:stretch;display:flex;justify-content:center;background:rgba(0,0,0,.86);border-radius:16px;padding:4px 12px 6px}
+.baud-row .mg{display:flex;flex-direction:column;align-items:center;gap:0;min-width:0}
+.baud-row .baud{align-self:center;margin:4px 0 2px;justify-content:center}
+.baud-row .baud-n{text-align:center;max-width:300px}
+.ssp-info .baud-row,.tlv-b .baud-row{margin-top:6px}
 body.is-tlv #gate-asteroid,body.is-tlv #lvjoy{opacity:0;pointer-events:none}
 /* ══ 20/10 — LA BOX DU TOTEHM, HORS DU TOTEHM (`boxTotehm`) ═══════════════════════════════════════════
    Le rendu de la liste, sans rail : le filet d'intention (2 px) EST le bord gauche, la peau celle de sa vue. */
@@ -4137,7 +4154,6 @@ div:not(:has(> :not(br,wbr))):hover,
 .vs-foot .mw-terms:hover,
 #srch-res .srch-sub:hover,
 .tlv-l:hover,
-.tlv-del:hover,
 .lsh-sf .sf-aj:hover,
 .sd-tag:hover,
 .ssp-par:hover,
@@ -4439,7 +4455,8 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
       <!-- 20/10 quater — la visionneuse de la grille : le média en grand, sa boîte, ← → et ✕. -->
       <div id="tlv" class="tlv lv-act" role="dialog" aria-modal="true" aria-label="Media" hidden>
         <div class="tlv-f"></div>
-        <button type="button" class="tlv-del" data-tlv="del" hidden>delete</button>
+        <!-- 14/11 — [delete] n'est plus ici : il vit dans la rangée d'actions de CHAQUE média, au-dessus de
+             sa box, au format de la vue de droite (`remplir`). -->
         <button type="button" class="tlv-x" data-tlv="x" aria-label="Close"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2 L12 12 M12 2 L2 12"/></svg></button>
       </div>
     </section>
@@ -6511,7 +6528,13 @@ function creerFeed(conf){
     const {data,error}=await sb.rpc('spot_audience_set',{p_spot:String(z.id), p_audience:apres});
     b.disabled=false;
     if((me?me.id:null)!==uid) return;
-    if(error||!data||!data.ok){ if(error) console.error('[spot_audience_set]',error.message); b.textContent=AUD[avant]||'private'; return; }
+    if(error||!data||!data.ok){ if(error) console.error('[spot_audience_set]',error.message);
+      b.textContent=AUD[avant]||'private';
+      /* 14/11 — LE PLAFOND : la box de la Habit est privée, donc le spot ne peut pas monter. On le DIT, et
+         la ligne de la box est juste dessous — un tap y ouvre la box, un autre confirme. */
+      if(data&&data.why==='box_private'){ const s=$(conf.say);
+        if(s) s.textContent='this Habit box is private · open it to my subscribers below'; }
+      return; }
     z.audience=data.audience; b.textContent=AUD[data.audience]||'private';
   }
   const hhmm=d=>String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
@@ -6553,7 +6576,9 @@ function creerFeed(conf){
     return '<section class="lsh ssp-s'+(media?'':' is-nu')+(ici===x.cle?' is-ici':'')+'" data-lsh-k="'+esc(x.cle)+'">'
       +'<div class="ssp-c">'+(media?'<div class="ssp-m">'+media+'</div>':'')+'<div class="ssp-info">'+data
       +((par||acts)?'<div class="ssp-row">'+(par||'<span></span>')+(acts?'<span class="ssp-acts">'+acts+'</span>':'')+'</div>':'')
-      +box+'</div></div></section>';
+      /* 14/11 — deux niveaux, deux lignes, et ils ne se confondent pas : au-dessus celui du SPOT
+         (`[data-spaud]`, trois niveaux), ici celui de sa BOX (deux niveaux, le plafond). */
+      +box+(z.mine&&!RO?audBoxRow('h',x.id):'')+'</div></div></section>';
   }
   async function charger(el,prochain){
     if(!el) return;
@@ -6880,8 +6905,15 @@ function creerFeed(conf){
     const j=sec?+sec.dataset.j:-1, x=L[j]; if(!x) return;
     const b=sec.querySelector('.tlv-b');
     /* PAR-DESSUS LE MÉDIA, LA BOX DÉTAILLÉE (Wah) : la box du Totehm entière — filet, nom, intentions, rythme,
-       mini-boîtes —, surélevée. Plus aucune redirection vers le Totehm depuis la grille. */
-    if(b&&!b.firstChild) b.innerHTML=loupeVue(boxDe(x,false));
+       mini-boîtes —, surélevée. Plus aucune redirection vers le Totehm depuis la grille.
+       ⚠️ 14/11 (Wah) : « le bouton [Delete] de la vue de droite spot est le bon ; repositionne correctement
+       dans la vue de gauche les boutons [Delete] dans la grid media (actuellement en haut à gauche) ». Il
+       vit donc dans la MÊME rangée noire qu'un spot (`.ssp-row` + `.ssp-acts`), juste au-dessus de la box,
+       et plus en bouton flottant dans un coin. Et sous la box, le niveau de SA box : la confidentialité se
+       change partout où la box apparaît, pas seulement dans le TOTEHM. */
+    if(b&&!b.firstChild) b.innerHTML=(retirable(x)
+        ?'<div class="ssp-row"><span></span><span class="ssp-acts"><button type="button" data-tlv="del">delete</button></span></div>':'')
+      +loupeVue(boxDe(x,false))+audBoxRow(x.bk,x.id);
     const m=sec.querySelector('.tlv-m'); if(!m) return;
     let el=m.firstChild;
     if(!el){
@@ -6913,10 +6945,10 @@ function creerFeed(conf){
     }),{root:f, threshold:[0,.6]});
     f.querySelectorAll('.tlv-s').forEach(sec=>vio.observe(sec));
   }
-  /* [delete] n'apparaît que sur ce que je peux retirer ; il se désarme quand on change de média. */
+  /* [delete] n'est peint que sur ce que je peux retirer (`remplir`) ; il se désarme quand on change de média. */
   function peindreDel(){
-    const b=document.querySelector('#tlv [data-tlv="del"]'); if(!b) return;
-    b.hidden=!retirable(L[VU.i]); clearTimeout(b._sur); b.classList.remove('is-sur'); b.textContent='delete';
+    document.querySelectorAll('#tlv [data-tlv="del"]').forEach(b=>{
+      clearTimeout(b._sur); b.classList.remove('is-sur'); b.disabled=false; b.textContent='delete'; });
   }
   /* Le voisin, au clavier : on fait défiler, l'aimant et l'observateur font le reste. */
   function voisinV(d){
@@ -6943,7 +6975,9 @@ function creerFeed(conf){
     r.addEventListener('click',e=>{
       if(e.target.closest('[data-tlv="x"]')){ fermerV(); return; }
       const del=e.target.closest('[data-tlv="del"]');
-      if(del){ if(!arme(del)) return; const x=L[VU.i]; del.disabled=true;
+      if(del){ if(!arme(del)) return;
+        /* le bouton vit dans SA section : on retire CE média, pas « celui qui est vu » */
+        const sec=del.closest('.tlv-s'), x=L[sec?+sec.dataset.j:VU.i]; del.disabled=true;
         retirer(x).then(ok=>{ del.disabled=false; if(ok) fermerV(); else peindreDel(); }); return; }
       const b=e.target.closest('[data-lsh]'); if(b){ ouvrirElement(b); return; }
     });
@@ -7473,7 +7507,10 @@ const VID=bunnyEnvoi(sb);
             NOW impose HERE : « maintenant » ailleurs n'existe pas (logique de Wah).
      WHO SEES IT  private · my subscribers · figher club (tous les TOTEHM : le plus proche de public)
      TOGETHER  silent | social — le point est TOUJOURS exact, donc la question est toujours posée
-     la durée · un mot · le média (obligatoire en NOW, c'est la preuve ; facultatif en LATER)
+     la durée · un mot · le média — FACULTATIF (14/11, Wah : « un spot peut être sans media ; c'est
+       subtilement différent des médias où là évidemment on doit ajouter un média »). En NOW la prise
+       s'ouvre quand même tout de suite (c'est le geste naturel de la preuve), mais elle ne bloque plus
+       rien : la durée, le mot et [I AM HERE] sont dessous, média ou pas.
    `location on/off` n'existe plus : WHERE le disait déjà (doublon, Wah). Un spot porte donc son point exact, et c'est
    « who sees it » qui garde la vie privée. Le serveur décide de tout (`spot_create_audience`,
    `spot_schedule_audience`, `spot_video_attach`) ; un spot NAÎT CACHÉ, `spot_box_set` (rien d'éteint) montre sa box
@@ -7488,7 +7525,8 @@ const NSPOT=(()=>{
   const AUD=[['private','private','me only'],['subscribers','my subscribers','only them'],['figher','figher club','every member']];
   const POURQUOI={signin:'sign in again', habit:'save this Habit first', location:'where', mode:'silent or social',
     duration:'the duration', video:'the photo or the video', position:'allow my location', too_many:'enough spots for now',
-    city:'no city near me', audience:'who sees it', when:'a future date and time', place:'where'};
+    city:'no city near me', audience:'who sees it', when:'a future date and time', place:'where',
+    box_private:'this Habit box is private · open it to my subscribers first'};
   let R={clip_seconds:33, clip_max_bytes:48e6, duration_min:5, duration_max:720, horizon_days:90}, regles=false, seqPos=0;
   const diag={ouverts:0, publies:0, refus:0, medias:0, cartes:0, adresses:0};
   const N={};
@@ -7617,13 +7655,16 @@ const NSPOT=(()=>{
       ?hs.map(h=>'<div class="sfb" role="button" tabindex="0" data-ns="h" data-v="'+esc(String(h.id))+'">'+boxTotehm('h',h,{})+'</div>').join('')
       :'<p class="lv-note">write a Habit in my TOTEHM first</p>')+'</div></div>';
   }
-  function mediaHTML(oblig){
+  /* 14/11 — LE MÉDIA EST FACULTATIF, dans les deux temps (Wah). `direct` = la prise s'ouvre d'elle-même
+     (NOW : le geste de la preuve reste immédiat) ; elle ne garde plus la suite du questionnaire. Avec un
+     média posé, [remove] le retire sans rouvrir la prise — sinon on ne pouvait plus publier sans. */
+  function mediaHTML(direct){
     const m=N.media;
     if(m) return '<div class="sfg"><div class="sfl">'+(m.photo?'photo':'video')+'</div><div class="ns-m">'
       +(m.photo?'<img alt="" src="'+esc(m.url)+'">':'<video src="'+esc(m.url)+'" muted loop playsinline autoplay></video>')
-      +'</div><div class="sfr">'+chip('data-ns="nomedia"','change',false)+'</div></div>';
-    const mot='a photo or a video · '+(oblig?(R.clip_seconds||33)+' s at most':'optional');
-    if(oblig||N.capOuverte) return '<div class="sfg"><div class="sfl">'+esc(mot)+'</div><div class="ns-cap"></div></div>';
+      +'</div><div class="sfr">'+chip('data-ns="nomedia"','change',false)+chip('data-ns="sansmedia"','remove',false)+'</div></div>';
+    const mot='a photo or a video · optional'+(direct?' · '+(R.clip_seconds||33)+' s at most':'');
+    if(direct||N.capOuverte) return '<div class="sfg"><div class="sfl">'+esc(mot)+'</div><div class="ns-cap"></div></div>';
     return grp(mot,chip('data-ns="capo"','add one',false));
   }
   /* WHEN : deux réponses, et la date SEULEMENT si c'est « later ». */
@@ -7659,8 +7700,22 @@ const NSPOT=(()=>{
     h+=grp('or',chip('data-ns="carte"','on the map',N.ptSrc==='carte',N.ptSrc==='carte'?'the point is set':'tap the place'));
     return h;
   }
-  const audHTML=()=>grp('who sees it',AUD.map(([v,m,s])=>chip('data-ns="aud" data-v="'+v+'"',m,N.aud===v,s)).join(''))
-    +(N.aud==='figher'?note(CLUB):'');
+  /* ⚠️ 14/11 — LES TROIS NIVEAUX SONT TOUJOURS LÀ, ET LA BOX EST LE PLAFOND (Wah) : « Box Private → Spot
+     forcément Private ; Box Visible to subscribers → Spot Private / My subscribers / Figher club, au choix,
+     sans changer la box. Si la box Habit est Private et que l'utilisateur choisit My subscribers ou Figher
+     club, demander confirmation avant de passer la box Habit en Visible to subscribers dans le TOTEHM. »
+     Donc : on montre les trois, on n'en cache aucun, et le choix au-dessus du plafond ARME une confirmation
+     qui dit ce qu'elle ouvre. Le serveur refuse de toute façon (`why:'box_private'`). */
+  const boxPrivee=()=>!!N.h&&AUDB.niveau('h',N.h.id)==='private';
+  const audHTML=()=>{
+    const haut=N.aud==='subscribers'||N.aud==='figher';
+    let h=grp('who sees it',AUD.map(([v,m,s])=>chip('data-ns="aud" data-v="'+v+'"',m,N.aud===v,s)).join(''));
+    if(boxPrivee()&&haut) h+=note('this Habit box is private, so this spot cannot be seen yet. Opening it to my '
+      +'subscribers opens the box ITSELF in my TOTEHM — its media and its sub-boxes follow.')
+      +'<div class="sfg"><div class="sfr">'+chip('data-ns="ouvrirbox"','open the box to my subscribers',false,N.boxBusy?'…':'one tap')+'</div></div>';
+    else if(N.aud==='figher') h+=note(CLUB);
+    return h;
+  };
   const ensHTML=()=>grp('together',chip('data-ns="mode" data-v="silent"','silent',N.mode==='silent','nobody disturb me')
     +chip('data-ns="mode" data-v="social"','social',N.mode==='social','we can talk'));
   const durHTML=()=>grp('duration',DURS.map(d=>chip('data-ns="dur" data-v="'+d+'"',dureeTxt(d),N.dur===d)).join('')
@@ -7686,14 +7741,13 @@ const NSPOT=(()=>{
           if(N.aud){
             h+=ensHTML();
             if(N.mode){
-              if(!plan){ h+=mediaHTML(true); cap=!N.media; }
-              if(plan||N.media){
-                h+=durHTML();
-                if(N.dur){
-                  h+=motHTML();
-                  if(plan){ h+=mediaHTML(false); cap=N.capOuverte&&!N.media; }
-                  h+=envoiHTML(plan?'I WILL BE HERE':'I AM HERE');
-                }
+              /* 14/11 : le média ne garde plus la suite. NOW ouvre la prise d'office, LATER la propose. */
+              if(!plan){ h+=mediaHTML(!N.media); cap=!N.media; }
+              h+=durHTML();
+              if(N.dur){
+                h+=motHTML();
+                if(plan){ h+=mediaHTML(false); cap=N.capOuverte&&!N.media; }
+                h+=envoiHTML(plan?'I WILL BE HERE':'I AM HERE');
               }
             }
           }
@@ -7706,6 +7760,18 @@ const NSPOT=(()=>{
       if(ho) CAP.ouvrir('h',String(N.h.t||'').trim(),null,{hote:ho, prendre, max:R.clip_seconds||33, fini:()=>peindre()}); }
   }
   function dire(t){ N.note=t||''; const n=pan()&&pan().querySelector('.ns-note'); if(n) n.textContent=N.note; }
+  /* ── OUVRIR LA BOX DEPUIS ICI (14/11, Wah) ── « On doit pouvoir changer la confidentialité d'une box
+     aisément dans tous les endroits où elle apparaît, pas seulement dans le TOTEHM. » Le questionnaire est
+     l'un de ces endroits : la confirmation est le tap sur CE bouton, et la note au-dessus dit que les médias
+     et les sous-box suivent. Jamais l'inverse : rien ici ne fait REDESCENDRE une box. */
+  async function ouvrirLaBox(){
+    if(N.boxBusy||!N.h||!me||RO) return;
+    N.boxBusy=true; peindre();
+    const ok=await AUDB.poser('h',N.h.id,'subscribers');
+    N.boxBusy=false;
+    if(!ok) dire('the box did not open · try again');
+    peindre();
+  }
   /* ── LA PUBLICATION : le serveur dit oui ou pourquoi ── Le point est TOUJOURS exact (`p_location:'on'`), donc
      `p_mode` est toujours rempli : c'est ce que le serveur exige d'un spot dont le lieu est précis. */
   async function publier(){
@@ -7713,13 +7779,14 @@ const NSPOT=(()=>{
     const plan=N.quand==='later', uid=me.id;
     N.occupe=true; dire(plan?'announcing…':'sending…'); const go=pan()&&pan().querySelector('.ns-go'); if(go) go.disabled=true;
     const fin=t=>{ N.occupe=false; diag.refus++; dire(t); const g=pan()&&pan().querySelector('.ns-go'); if(g) g.disabled=false; };
-    if(!plan&&!N.path){ N.path=await envoyerMedia(N.media); if(uid!==(me&&me.id)) return; if(!N.path) return fin('not sent · try again'); }
+    /* 14/11 : on n'envoie un fichier QUE s'il y en a un — un spot sans média part tel quel. */
+    if(!plan&&N.media&&!N.path){ N.path=await envoyerMedia(N.media); if(uid!==(me&&me.id)) return; if(!N.path) return fin('not sent · try again'); }
     const commun={p_habit:srv(N.h), p_duration_min:N.dur, p_lat:N.pt.lat, p_lng:N.pt.lng, p_city:N.ptVille||null,
       p_comment:N.mot.trim()||null, p_mode:N.mode, p_location:'on', p_audience:N.aud};
     const corps=plan
       ?Object.assign({}, commun, {p_starts_at:new Date(N.date+'T'+N.time).toISOString(),
         p_place:(N.place.trim()||N.ptNom.split(',')[0].trim()||N.ptVille||'the planned place').slice(0,120)})
-      :Object.assign({}, commun, {p_video:N.path});
+      :Object.assign({}, commun, {p_video:N.path||null});
     const fn=plan?'spot_schedule_audience':'spot_create_audience';
     let {data,error}=await sb.rpc(fn,corps);
     /* une Habit toute neuve n'est peut-être pas encore en base (l'enregistrement attend) : on l'y pose, une fois */
@@ -7779,7 +7846,10 @@ const NSPOT=(()=>{
       else if(c==='hit'){ const x=N.hits[+v]; if(!x) return; N.hit=+v; return poser(x,'adresse',x.nom); }
       else if(c==='carte') return surLaCarte();
       else if(c==='nomedia'){ lacher(); N.capOuverte=true; }
+      else if(c==='sansmedia'){ lacher(); N.capOuverte=false; }    /* 14/11 : publier SANS média */
       else if(c==='capo') N.capOuverte=true;
+      /* le plafond de la box : un tap de plus, et il DIT ce qu'il ouvre (`audHTML`) */
+      else if(c==='ouvrirbox') return void ouvrirLaBox();
       else if(c==='aud') N.aud=v;
       else if(c==='mode') N.mode=v;
       else if(c==='dur') N.dur=+v||0;
@@ -9003,6 +9073,12 @@ async function copierBox(btn,k){
 const AUDB=(()=>{
   let M=null, seq=0; const diagA={lectures:0, bascules:0, erreurs:0};
   const MOTS={private:'private', subscribers:'visible to my subscribers'};
+  /* 14/11 (Wah) : « un média ajouté à une box prend automatiquement la confidentialité de sa box ; un média
+     n'a jamais sa propre confidentialité ». C'est ce que le serveur fait depuis le 20/10 (`member_media`,
+     `_element_media_readable` : un média se lit si SA BOX se lit) — la note le DIT enfin. */
+  const NOTE='this box, its media and its sub-boxes · each spot keeps its own level, under this one';
+  const DEMANDE={subscribers:'my subscribers will see this box, its media and its sub-boxes · tap again to confirm',
+                 private:'this box, its media and its sub-boxes go back to me only · tap again to confirm'};
   const cle=(k,id)=>{ if(k==='h'){ const h=habOf(id); return h?String(h.t||'').trim():''; } return String(id||''); };
   const reel=id=>!!id&&!/^tmp/.test(String(id));
   const niveau=(k,id)=>{ const a=M&&M[k]?M[k][cle(k,id)]:null; return a&&a!=='private'?'subscribers':'private'; };
@@ -9032,26 +9108,72 @@ const AUDB=(()=>{
       +'<span class="baud" role="radiogroup" aria-label="Who sees this box">'
       +['private','subscribers'].map(v=>'<button type="button" role="radio" class="baud-o'+(a===v?' is-on':'')+'" data-baud="'+d+'" data-v="'+v+'"'
         +' aria-checked="'+(a===v)+'">'+MOTS[v]+'</button>').join('<span class="baud-s" aria-hidden="true">·</span>')+'</span>'
-      +'<span class="baud-n">this box only · its media stay private · each spot carries its own level</span></span>';
+      +'<span class="baud-n" data-baud-n="'+d+'">'+esc(NOTE)+'</span></span>';
+  }
+  /* ⚠️ 14/11 — UNE CONFIRMATION, TOUJOURS, ET ELLE DIT CE QU'ELLE EMPORTE (Wah : « toujours demander
+     confirmation avant, en rappelant que tous ses médias et ses sous-box suivent »). Deux gestes, l'idiome
+     de la page (comme [delete]) : le premier ARME l'option et réécrit la note en question, le second écrit.
+     Trois secondes, puis le niveau revient tel qu'il est. */
+  function armer(b,apres){
+    const n=b.closest('.mg')&&b.closest('.mg').querySelector('[data-baud-n]');
+    if(b.dataset.sur==='1') return true;
+    document.querySelectorAll('[data-baud][data-sur="1"]').forEach(x=>desarmer(x));
+    b.dataset.sur='1'; b.classList.add('is-sur');
+    if(n) n.textContent=DEMANDE[apres];
+    clearTimeout(b._sur); b._sur=setTimeout(()=>desarmer(b),3500);
+    return false;
+  }
+  function desarmer(b){
+    clearTimeout(b._sur); b.dataset.sur=''; b.classList.remove('is-sur');
+    const n=b.closest('.mg')&&b.closest('.mg').querySelector('[data-baud-n]'); if(n) n.textContent=NOTE;
   }
   async function basculer(b){
     if(b.disabled||RO||!me) return;
     const d=b.dataset.baud, i=d.indexOf(':'), k=d.slice(0,i), id=d.slice(i+1), c=cle(k,id); if(!c) return;
-    const apres=b.dataset.v==='subscribers'?'subscribers':'private', s0=seq, uid=me.id;
+    const apres=b.dataset.v==='subscribers'?'subscribers':'private';
     if(niveau(k,id)===apres) return;                          /* l'option déjà vraie : rien à écrire */
+    if(!armer(b,apres)) return;                               /* le premier tap DEMANDE */
+    desarmer(b);
     const opts=[...(b.closest('.baud')||b.parentNode).querySelectorAll('[data-baud]')];
-    M=M||{h:{},t:{},r:{},w:{},v:{}}; M[k]=M[k]||{}; const avant=M[k][c];
-    M[k][c]=apres; opts.forEach(x=>{ peindreB(x); x.disabled=true; }); diagA.bascules++;
-    const {data,error}=await sb.rpc('box_audience_set',{p_kind:k, p_id:c, p_audience:apres});
-    opts.forEach(x=>{ x.disabled=false; });
-    if(s0!==seq||(me?me.id:null)!==uid) return;              /* réponse tardive d'une autre session : jetée */
-    if(error||!data||!data.ok){ if(error) console.error('[box_audience_set]',error.message); diagA.erreurs++;
-      M[k][c]=avant; opts.forEach(peindreB); return; }
-    M[k][c]=data.audience; opts.forEach(peindreB);
+    opts.forEach(x=>{ x.disabled=true; });
+    const ok=await poser(k,id,apres);
+    opts.forEach(x=>{ x.disabled=false; peindreB(x); });
+    if(!ok){ const n=b.closest('.mg')&&b.closest('.mg').querySelector('[data-baud-n]');
+      if(n) n.textContent='not saved · try again'; }
   }
-  return {charger, html, basculer, vider(){ seq++; M=null; }, etat:()=>Object.assign({lu:!!M},diagA)};
+  /* L'ÉCRITURE SEULE, sans bouton : ce que les AUTRES endroits appellent (le questionnaire d'un spot, la
+     grille, le dashboard, figher.club). Optimiste, annulée sur refus, réponse tardive jetée. */
+  async function poser(k,id,apres){
+    if(RO||!me) return false;
+    const c=cle(k,id); if(!c) return false;
+    const niv=apres==='subscribers'?'subscribers':'private', s0=seq, uid=me.id;
+    M=M||{h:{},t:{},r:{},w:{},v:{}}; M[k]=M[k]||{}; const avant=M[k][c];
+    M[k][c]=niv; document.querySelectorAll('[data-baud]').forEach(peindreB); diagA.bascules++;
+    const {data,error}=await sb.rpc('box_audience_set',{p_kind:k, p_id:c, p_audience:niv});
+    if(s0!==seq||(me?me.id:null)!==uid) return false;         /* réponse tardive d'une autre session : jetée */
+    if(error||!data||!data.ok){ if(error) console.error('[box_audience_set]',error.message); diagA.erreurs++;
+      M[k][c]=avant; document.querySelectorAll('[data-baud]').forEach(peindreB); return false; }
+    M[k][c]=data.audience; document.querySelectorAll('[data-baud]').forEach(peindreB);
+    return true;
+  }
+  return {charger, html, basculer, poser, niveau, mots:v=>MOTS[v]||v,
+          vider(){ seq++; M=null; }, etat:()=>Object.assign({lu:!!M},diagA)};
 })();
 window.__totehm_audb=()=>AUDB.etat();
+/* ══ LE NIVEAU D'UNE BOX, PARTOUT OÙ ELLE APPARAÎT · 14/11 ══ Wah : « on doit pouvoir changer la
+   confidentialité d'une box aisément dans tous les endroits où elle apparaît, pas seulement dans le
+   TOTEHM ». La box elle-même reste INTACTE (règle n° 1 : `boxTotehm` efface tous les `data-*`) — la ligne
+   de mots se pose DESSOUS, dans sa rangée noire, avec la même grammaire et la même confirmation. */
+function audBoxRow(bk,id){
+  if(!bk||!id) return '';
+  const h=AUDB.html({kind:bk, id:String(id), ouverte:true});
+  return h?'<div class="baud-row">'+h+'</div>':'';
+}
+/* La délégation de la liste du TOTEHM s'arrête à sa boîte (`stopPropagation`) : ici, tous les AUTRES endroits. */
+document.addEventListener('click',e=>{
+  const b=e.target.closest&&e.target.closest('.baud-row [data-baud]'); if(!b) return;
+  e.stopPropagation(); AUDB.basculer(b);
+});
 /* La loupe : un état par boîte (`ZOOM`), qui survit aux redessins. */
 const ZOOM=new Set();
 const loupeHTML=k=>{ const on=ZOOM.has(k);
@@ -13074,7 +13196,16 @@ window.addEventListener('pageshow',e=>{
        joystick ne fonctionnent plus ») : pendant ses 1,17 s (`moving`), `aller` refusait en silence — mesuré : un geste
        à 200, 600 ou 1 000 ms après la croix était perdu. `guetter` le rejoue dès que tout est libre. `vue` est déjà la
        destination d'un voyage : la direction se lit depuis là où l'on arrive. */
-    const ATTENTE=1500; let guetT=0;
+    /* ⚠️ 14/11 — LE CENTRE EST UN ARRÊT, JAMAIS UN PASSAGE (Wah : « quand je suis en haut ou en bas, à gauche
+       ou à droite et que je souhaite revenir au milieu ça saute : je passe de bas en haut ou de gauche à
+       droite d'un coup … il faut toujours passer ET S'ARRÊTER au milieu, pour la simple et bonne raison que
+       le milieu c'est le plus important : ON NE PEUT PAS PASSER D'UNE VUE À UNE AUTRE SANS S'ARRÊTER SUR LA
+       VUE DU MILIEU »). Mesuré : la file (`attente`) était rejouée à la FIN de chaque voyage — un geste et
+       son inertie, ou deux poussées rapides, enchaînaient donc h → c → b en un seul mouvement. Deux verrous :
+         · un geste reçu pendant qu'on REVIENT au centre n'entre pas dans la file (`vers==='c'`) ;
+         · en ARRIVANT au centre, la file est VIDÉE — il faut un nouveau geste pour repartir.
+       `vers` = la vue où le voyage en cours se rend (null hors voyage). */
+    const ATTENTE=1500; let guetT=0, vers=null;
     const occupe=()=>bouge||moving||sMoving||(PAPIER.occupe()&&!PAPIER.vue());
     /* ══ LE MOUCHARD DES GESTES (22/10) ══ Un geste refusé dit POURQUOI — un code, jamais une donnée de membre :
        `__totehm_lv().refus`, et à l'écran avec `?diag=1` (une capture suffit à trouver un blocage qu'aucun test ne
@@ -13090,7 +13221,7 @@ window.addEventListener('pageshow',e=>{
       return refus('voisin:'+vue+'>'+d+(MB.verrou?':verrou':'')); };
     function peindreDiag(){ if(!diagEl) return;
       diagEl.textContent=vue+' · '+mode+(MB.cherche?' · recherche':'')+'\nvoyage '+(+bouge)+' · repli '+(+moving)+' · verso '+(+sOpen)+'/'+(+sMoving)
-        +' · papier '+PAPIER.quoi()+'\nlibre '+(libre()?1:pasLibre())+' · attente '+(attente?attente.d:'-')+'\nrefus '+(diag.dernier||'-')
+        +' · papier '+PAPIER.quoi()+'\nlibre '+(libre()?1:pasLibre())+' · vers '+(vers||'-')+' · attente '+(attente?attente.d:'-')+'\nrefus '+(diag.dernier||'-')
         +'\n'+Object.entries(diag.refus).map(([k,n])=>k+' ×'+n).join(' · '); }
     if(/[?&]diag=1\b/.test(location.search)){ diagEl=document.createElement('pre'); diagEl.id='lv-diag'; diagEl.setAttribute('aria-hidden','true');
       document.body.appendChild(diagEl); setInterval(peindreDiag,400); }
@@ -13103,6 +13234,8 @@ window.addEventListener('pageshow',e=>{
       if(MB.cherche){ const v=voisin(d); if(!v) return sansVoisin(d);
         if(!bouge) annuler();                               /* le papier rentre ; le voyage attend sa fin (`reprendre`) */
         attente={d, t:Date.now()}; diag.enAttente++; if(!DU_LVJ&&POUSSE_LVJ)POUSSE_LVJ(d); guetter(); return true; }
+      /* on revient au centre : le geste ne se met PAS en file — le centre s'atteint et s'arrête */
+      if(vers==='c') return refus('centre:'+d);
       if(occupe()){ if(!voisin(d)) return sansVoisin(d); attente={d, t:Date.now()}; diag.enAttente++;
         if(!DU_LVJ&&POUSSE_LVJ)POUSSE_LVJ(d); guetter(); return true; }
       const v=voisin(d); if(!v) return sansVoisin(d);
@@ -13133,8 +13266,11 @@ window.addEventListener('pageshow',e=>{
       /* Chez moi : HIGHER MY CHATGPT ; chez un membre : son offre. */
       const moi=mode==='mine';
       if(v==='b'&&!moi) OFFRE.ouvrir(MB.nom||MB.verrou);
-      bouge=true; const de=vue; vue=v;
-      const fini=garde(()=>{ bouge=false; peindreNav(); sloganPour(vue); if(then) then(); reprendre(); },900);
+      bouge=true; const de=vue; vue=v; vers=v;
+      const fini=garde(()=>{ bouge=false; vers=null; peindreNav(); sloganPour(vue);
+        /* arrivé au CENTRE : la file est vidée — on ne traverse jamais le milieu (14/11) */
+        if(v==='c'){ attente=null; clearTimeout(guetT); }
+        if(then) then(); reprendre(); },900);
       try{
         /* Un moteur ne tourne que dans sa vue : on ferme celui d'où l'on part, on ouvre celui où l'on va. */
         if(de==='g') SH.fermer(); else if(de==='d') SPOTS.fermer();
@@ -14148,7 +14284,12 @@ window.addEventListener('pageshow',e=>{
         const T=D?.totals||{}, today=D?.today;
         let h='';
 
-        if(P?.ok)h+=renderPractice(P,{requestedDays:period,renderHabit:h=>boxTotehm('h',(!RO&&(state.habits||[]).find(x=>x.t===h.ref))||{id:'',t:h.habit,t0:h.habit,is:h.intentions||[],f:h.frequency},{court:true})});
+        /* 14/11 — la box garde sa LARGEUR entière (elle n'est plus une colonne de 95 px) ; elle reste un
+           aperçu en hauteur (`court`), le tableau de bord n'est pas le TOTEHM déployé. Et sa confidentialité
+           se change sur place (`audBoxRow`) : partout où la box apparaît. */
+        if(P?.ok)h+=renderPractice(P,{requestedDays:period,
+          renderHabit:x=>boxTotehm('h',(!RO&&(state.habits||[]).find(y=>y.t===x.ref))||{id:'',t:x.habit,t0:x.habit,is:x.intentions||[],f:x.frequency},{court:true}),
+          renderLevel:x=>{ const y=!RO&&(state.habits||[]).find(z=>z.t===x.ref); return y?audBoxRow('h',y.id):''; }});
         else h+='<p class="tracking-caption">Practice is unavailable for the moment. Your reports have not been changed.</p>';
         if(!D){h+='<p class="tracking-caption">History temporarily unavailable.</p>';el.innerHTML=h;return;}
         const O=D.objectives||[];
@@ -14209,7 +14350,7 @@ window.addEventListener('pageshow',e=>{
     lvQuitter=()=>{ landSeq++;
                     visSeq++; CREA.vider(); DASH.vider(); OFFRE.vider(); CLUBSP.vider();
                     if(MB.cherche) finirRecherche(); if(!RO){ MB.nom=null; MB.avant=null; mode='mine'; body.classList.remove('lv-mb','lv-membre'); peindreMode(); } };
-    window.__totehm_lv=()=>({build:BUILD, vue, mode, bouge, allers:diag.allers, modes:diag.modes, papier:PAPIER.vue(),
+    window.__totehm_lv=()=>({build:BUILD, vue, mode, bouge, vers, attente:attente?attente.d:null, allers:diag.allers, modes:diag.modes, papier:PAPIER.vue(),
       debloques:diag.debloques, enAttente:diag.enAttente, refus:{...diag.refus}, dernierRefus:diag.dernier, haut:diagHaut,
       membre:inscrit(), higher:!!(LAND&&LAND.higher&&LAND.higher.active), thp:!!(LAND&&LAND.thp),
       chatgpt:{setup:'/chatgpt'},

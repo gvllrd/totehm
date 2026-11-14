@@ -5,7 +5,7 @@ const source=ref=>typeof ref==='string'&&ref.length>0&&ref.length<=16000&&ref===
 const habitLink=(ref,label,content=esc(label))=>source(ref)?'<a class="tracking-source" href="'+esc(source(ref))+'" title="Open original">'+content+'</a>':'<div>'+content+'</div><small>Source link unavailable. Open this Habit directly in your TOTEHM.</small>';
 const higher='<svg class="vs-hi" viewBox="0 0 600 200" aria-label="Higher"><use href="#higher-badge"/></svg>';
 export const PRACTICE_REVIEW_PROMPT='Review my reported practice alongside my TOTEHM. Separate Done, Missed and missing reports. Explain what the evidence supports and suggest one small adjustment, without changing my TOTEHM.';
-export function renderPractice(s,{requestedDays=s.days_count,renderHabit}={}){
+export function renderPractice(s,{requestedDays=s.days_count,renderHabit,renderLevel}={}){
  const habitPreview=h=>habitLink(h.ref,h.habit,renderHabit?renderHabit(h):esc(h.habit));
  const c=s.counts??{},habits=s.habits??[],days=s.days??[],settings=s.settings??{},span=number(s.days_count)||7,coverage=s.coverage??{};
  const answered=number(c.answered),pending=number(c.pending),unanswered=number(c.unanswered);
@@ -20,10 +20,22 @@ export function renderPractice(s,{requestedDays=s.days_count,renderHabit}={}){
  if(s.source_complete===false)html+='<p class="tracking-caption">This is part of the recorded practice.</p>';
  html+='</div>';
  const legacy={d:'done',m:'missed',p:'partial',s:'skipped',a:'unanswered'};
- let matrix='<div class="tracking-scroll" tabindex="0" role="region" aria-label="Habit reports by day"><div class="tracking-matrix'+(days.length<=7?' is-week':'')+'" style="--tracking-days:'+days.length+'"><span class="tracking-name"></span>'+days.map(d=>'<span class="h" title="'+esc(d.day)+'">'+esc(new Date(d.day+'T12:00:00').toLocaleDateString('en-GB',{day:'numeric'}))+'</span>').join('');
+ /* ⚠️ 14/11 — UNE BOX EST SACRÉE, DONC ELLE N'EST PLUS UNE COLONNE (Wah : « il faut revoir le dashboard
+    notamment la partie My Habits, en particulier les box qui sont écrasées au niveau de la largeur …
+    son format parent hérité du totehm est respecté le plus possible dans les autres endroits où elles
+    apparaissent »). Avant : une grille `box | jour | jour | …`, la box coincée entre 95 et 150 px — un
+    rendu natif écrasé. Maintenant : une LIGNE par Habit — la box sur TOUTE la largeur du tableau de bord,
+    exactement comme dans le TOTEHM, et la bande des jours DESSOUS, en colonnes égales. Aucun défilement
+    horizontal, donc aucune box tronquée. */
+ let matrix='<div class="tracking-matrix'+(days.length<=7?' is-week':'')+'" style="--tracking-days:'+days.length+'" role="group" aria-label="Habit reports by day">'
+  +'<div class="tracking-days tracking-head" aria-hidden="true">'+days.map(d=>'<span class="h" title="'+esc(d.day)+'">'+esc(new Date(d.day+'T12:00:00').toLocaleDateString('en-GB',{day:'numeric'}))+'</span>').join('')+'</div>';
  for(const h of habits){
   const cells=h.day_counts??(h.days??[]).map((v,i)=>({day:days[i]?.day,...(legacy[v]?{[legacy[v]]:1}:{})}));
-  matrix+='<div class="db-n tracking-name">'+habitPreview(h)+'<small>'+number(h.done)+' done · '+number(h.missed)+' missed · '+number(h.unanswered)+' unknown'+(number(h.partial)?' · '+number(h.partial)+' in part':'')+(number(h.skipped)?' · '+number(h.skipped)+' set aside':'')+'</small></div>';
+  /* `renderLevel` pose le niveau de la box SOUS la box, hors du lien source (un bouton dans un lien
+     naviguerait) : la confidentialité se change partout où la box apparaît, dashboard compris. */
+  matrix+='<div class="tracking-row"><div class="db-n tracking-name">'+habitPreview(h)+'<small>'+number(h.done)+' done · '+number(h.missed)+' missed · '+number(h.unanswered)+' unknown'+(number(h.partial)?' · '+number(h.partial)+' in part':'')+(number(h.skipped)?' · '+number(h.skipped)+' set aside':'')+'</small></div>'
+   +(renderLevel?renderLevel(h)||'':'')
+   +'<div class="tracking-days">';
   for(let i=0;i<days.length;i++){
    const v=cells[i]??{},done=number(v.done),missed=number(v.missed),partial=number(v.partial),skipped=number(v.skipped),unknown=number(v.unanswered),waiting=number(v.pending);
    const values=[done,missed,partial,skipped,unknown,waiting],labels=['done','missed','in part','set aside','unknown','pending'];
@@ -31,8 +43,9 @@ export function renderPractice(s,{requestedDays=s.days_count,renderHabit}={}){
    const text=values.map((n,k)=>n?['✓','×','◐','·','?','…'][k]+(n>1?n:''):'').filter(Boolean).join(' ');
    matrix+='<span class="tracking-cell'+(done?' has-done':'')+(missed?' has-missed':'')+'" title="'+esc(days[i].day+': '+title)+'" aria-label="'+esc(days[i].day+': '+title)+'">'+esc(text||'—')+'</span>';
   }
+  matrix+='</div></div>';
  }
- matrix+='</div></div>';
+ matrix+='</div>';
  html+='<div class="db"><p class="db-t">My Habits<i>'+span+' days · open an original</i></p>'+(habits.length?matrix:'<p class="db-vide">Your first Habit starts the system.</p>')
   +'<p class="tracking-caption">✓ Done · × Missed · ? no response · … pending'+(number(c.partial)||number(c.skipped)?' · ◐ in part · · set aside':'')+'</p></div>';
  const missed=habits.filter(h=>number(h.missed)>=2).sort((a,b)=>number(b.missed)-number(a.missed))[0];
