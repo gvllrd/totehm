@@ -1,3 +1,4 @@
+import {expandOriginsBook} from './gallery-book-expansion.mjs';
 import * as T from './vendor/three-0.180.0.mjs';
 import {createModernGallery} from './gallery-modern.mjs';
 import {createTempleLandscape} from './gallery-temple-landscape.mjs';
@@ -45,7 +46,7 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
   liberty=createLiberty(scene,{mobile,onChange:invalidate,submerged:true});
  }
  if(!newYork)vessel=createOriginsVessel(scene,{mobile,transitOnly:true,onChange:invalidate,onOpen:({href})=>{bookDestination=href;dirty=true;}});
- book=newYork?createLecternBook(scene,{mobile,layout:L,onChange:invalidate,onOpen:({href})=>{bookDestination=href;dirty=true;}}):vessel.book;
+ book=newYork?createLecternBook(scene,{mobile,layout:L,onChange:invalidate,onOpen:({href})=>{expandOriginsBook(book.root,camera,href,{reduced:motionReduced,beforeNavigate:()=>pause()});}}):vessel.book;
  const fireplace=createGalleryFireplace(scene,{mobile,layout:L,blackStone:!newYork,onChange:invalidate,...(architecture.smokeOutlet?{smokeOutlet:architecture.smokeOutlet}:newYork?{smokeOutlet:L.smokeOutlet}:{})});
  function openExperience({href}){
   // Navigation releases the world instead of leaving its GPU/audio behind an

@@ -1,3 +1,4 @@
+import {expandOriginsBook} from './gallery-book-expansion.mjs';
 import * as T from './vendor/three-0.180.0.mjs';
 import {createDrownedSky} from './gallery-drowned-sky.mjs';
 import {createOriginsVessel} from './gallery-origins-vessel.mjs';
@@ -14,7 +15,7 @@ function createOriginScene(){
  const invalidate=()=>{dirty=true;};
  const sky=createDrownedSky(scene,{mobile,onChange:invalidate,place:'lisbon'});
  const pmrem=new T.PMREMGenerator(renderer),environment=pmrem.fromEquirectangular(sky.environmentTexture);scene.environment=environment.texture;scene.environmentIntensity=.12;
- const vessel=createOriginsVessel(scene,{mobile,bookOnly:true,onChange:invalidate,onOpen:()=>{opening=true;document.body.classList.add('is-arriving');setTimeout(()=>location.assign('/origins?open=1&from=origin'),reduced.matches?0:500);}});vessel.root.position.y=ORIGIN_ROOM.offset;
+ const vessel=createOriginsVessel(scene,{mobile,bookOnly:true,onChange:invalidate,onOpen:()=>{opening=true;expandOriginsBook(vessel.book.root,camera,'/origins?open=1&from=origin',{reduced:reduced.matches});}});vessel.root.position.y=ORIGIN_ROOM.offset;
  const keys=new Set();let joystick={x:0,y:0};
  function angles(){const d=target.clone().sub(eye).normalize();yaw=Math.atan2(-d.x,-d.z);pitch=Math.asin(d.y);}
  function look(){target.copy(eye).add(new T.Vector3(-Math.sin(yaw)*Math.cos(pitch),Math.sin(pitch),-Math.cos(yaw)*Math.cos(pitch)));}

@@ -14,3 +14,9 @@
 @media(min-width:701px){.intro-mobile{display:none!important}}
 @media(max-height:640px) and (min-width:701px){#book-stage{inset:71px 55px 88px}#book{height:100%}.book-meta{padding:26px 38px}.book-meta .gl-t{font-size:18px}.book-meta .gl-m{margin-top:10px}.book-meta .gl-d{margin:17px 0 12px}.intro-page{padding:25px 34px;font-size:10px;line-height:1.8}.intro-page h1{font-size:25px;margin-bottom:14px}.work-page,.turn-face{padding:19px 27px}.reader-controls{bottom:16px}.reader-hint{bottom:71px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+
+#open-book.uses-original-cover{background-color:#101010;background-size:100% 100%;background-repeat:no-repeat}#open-book.uses-original-cover>.cover-threads,#open-book.uses-original-cover>.cover-title,#open-book.uses-original-cover>.cover-series{visibility:hidden}
+/* The closed volume keeps the same 5:7 cover on every viewport. */
+#book-cover{width:min(450px,90%,calc((100dvh - 240px)*5/7));height:auto;aspect-ratio:5/7;top:50%;bottom:auto;transform:translate(-50%,-50%) rotateY(-8deg)}
+.is-open #book-cover{transform:translate(-100%,-50%) rotateY(-145deg)}
+#open-book.uses-original-cover{background-origin:border-box}
