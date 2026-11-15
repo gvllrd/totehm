@@ -7,7 +7,7 @@ export const ORIGIN_ROOM=Object.freeze({offset:3480,floor:3500,eye:3501.65,entry
 const host=document.getElementById('origin-scene'),button=document.getElementById('origin-action'),status=document.getElementById('origin-status'),stick=document.getElementById('origin-stick'),reduced=matchMedia('(prefers-reduced-motion:reduce)'),mobile=innerWidth<650;
 let engine=null;
 try{engine=createOriginScene();}catch(error){console.error('[origin scene]',error?.message);document.getElementById('origin-fallback').hidden=false;document.body.classList.add('no-webgl');document.body.classList.remove('is-arriving');}
-window.__totehm_origin=()=>({build:'2026-11-15-origin-sacred-volume',fallback:!engine,...engine?.diagnostics()});
+window.__totehm_origin=()=>({build:'2026-11-15-origin-continuous-book',fallback:!engine,...engine?.diagnostics()});
 function createOriginScene(){
  const renderer=new T.WebGLRenderer({antialias:true,powerPreference:'high-performance'}),quality=createRenderQuality({mobile,pixelRatio:devicePixelRatio});renderer.setPixelRatio(quality.diagnostics().pixelRatio);renderer.setSize(innerWidth,innerHeight);renderer.outputColorSpace=T.SRGBColorSpace;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.setClearColor(0x000000);renderer.domElement.setAttribute('aria-hidden','true');host.append(renderer.domElement);
  const scene=new T.Scene(),camera=new T.PerspectiveCamera(mobile?80:72,innerWidth/innerHeight,.05,100000),eye=new T.Vector3(...ORIGIN_ROOM.entry),target=new T.Vector3(0,3502,-15);
@@ -15,7 +15,7 @@ function createOriginScene(){
  const invalidate=()=>{dirty=true;};
  const sky=createDrownedSky(scene,{mobile,onChange:invalidate,place:'lisbon'});
  const pmrem=new T.PMREMGenerator(renderer),environment=pmrem.fromEquirectangular(sky.environmentTexture);scene.environment=environment.texture;scene.environmentIntensity=.12;
- const vessel=createOriginsVessel(scene,{mobile,bookOnly:true,onChange:invalidate,onOpen:()=>{opening=true;expandOriginsBook(vessel.book.root,camera,'/origins?open=1&from=origin',{reduced:reduced.matches});}});vessel.root.position.y=ORIGIN_ROOM.offset;
+ const vessel=createOriginsVessel(scene,{mobile,bookOnly:true,onChange:invalidate,onOpen:()=>{opening=true;expandOriginsBook(vessel.book.root,camera,'/origins?open=1&from=origin',{reduced:reduced.matches,onStart:()=>{stopInput();paint();renderer.render(scene,camera);},onClose:()=>{opening=false;vessel.book.reset();paint();dirty=true;last=0;button.focus();}});}});vessel.root.position.y=ORIGIN_ROOM.offset;
  const keys=new Set();let joystick={x:0,y:0};
  function angles(){const d=target.clone().sub(eye).normalize();yaw=Math.atan2(-d.x,-d.z);pitch=Math.asin(d.y);}
  function look(){target.copy(eye).add(new T.Vector3(-Math.sin(yaw)*Math.cos(pitch),Math.sin(pitch),-Math.cos(yaw)*Math.cos(pitch)));}
@@ -51,7 +51,7 @@ function createOriginScene(){
  document.addEventListener('visibilitychange',()=>{hidden=document.hidden;stopInput();last=0;dirty=true;});reduced.addEventListener('change',()=>{if(reduced.matches&&rail){rail=null;arrive();}dirty=true;});
  renderer.domElement.addEventListener('webglcontextlost',event=>{event.preventDefault();renderer.setAnimationLoop(null);document.getElementById('origin-fallback').hidden=false;document.body.classList.add('no-webgl');document.body.classList.remove('is-arriving');});
  function frame(now){
-  if(disposed)return;const rawElapsed=last?(now-last)/1000:0,elapsed=Math.min(rawElapsed,.25);last=now;if(hidden||blurred)return;
+  if(disposed)return;const rawElapsed=last?(now-last)/1000:0,elapsed=Math.min(rawElapsed,.25);last=now;if(hidden||blurred||opening)return;
   if(rail){rail.elapsed+=Math.min(rawElapsed,1);const p=Math.min(1,rail.elapsed/rail.duration);eye.copy(rail.curve.getPointAt(p));target.set(0,ORIGIN_ROOM.book[1],-43);dirty=true;if(p===1){rail=null;arrive();}}
   else{const forward=(keys.has('w')||keys.has('arrowup')?1:0)-(keys.has('s')||keys.has('arrowdown')?1:0)-joystick.y,side=(keys.has('d')||keys.has('arrowright')?1:0)-(keys.has('a')||keys.has('arrowleft')?1:0)+joystick.x,speed=elapsed*2.2/Math.max(1,Math.hypot(forward,side));if(forward||side)move((-Math.sin(yaw)*forward+Math.cos(yaw)*side)*speed,(-Math.cos(yaw)*forward-Math.sin(yaw)*side)*speed);}
   const fov=stage==='chamber'?(mobile?48:55):(mobile?80:72);if(Math.abs(camera.fov-fov)>.01){camera.fov=reduced.matches?fov:T.MathUtils.damp(camera.fov,fov,4,elapsed);camera.updateProjectionMatrix();dirty=true;}
@@ -62,5 +62,5 @@ function createOriginScene(){
  renderer.setAnimationLoop(frame);
  addEventListener('pagehide',event=>{if(event.persisted){hidden=true;stopInput();renderer.setAnimationLoop(null);return;}disposed=true;stopInput();renderer.setAnimationLoop(null);vessel.dispose();sky.dispose();environment.dispose();pmrem.dispose();renderer.dispose();});
  addEventListener('pageshow',event=>{if(event.persisted){hidden=document.hidden;blurred=false;last=0;opening=false;vessel.book.reset();paint();dirty=true;document.body.classList.remove('is-arriving');renderer.setAnimationLoop(frame);}});
- return{diagnostics:()=>({stage,frames,moving:!!rail,passage:rail?{elapsed:rail.elapsed,duration:rail.duration}:null,galaxy:true,island:false,ocean:false,authPrompts:0,visible:!hidden&&!blurred,position:eye.toArray(),camera:{position:camera.position.toArray(),target:target.toArray(),fov:camera.fov},vessel:vessel.diagnostics(),book:vessel.book.diagnostics(),originalBook:true,exhibitedWorks:0,bookOnly:true,reducedMotion:reduced.matches})};
+ return{diagnostics:()=>({stage,frames,reading:opening,moving:!!rail,passage:rail?{elapsed:rail.elapsed,duration:rail.duration}:null,galaxy:true,island:false,ocean:false,authPrompts:0,visible:!hidden&&!blurred,position:eye.toArray(),camera:{position:camera.position.toArray(),target:target.toArray(),fov:camera.fov},vessel:vessel.diagnostics(),book:vessel.book.diagnostics(),originalBook:true,exhibitedWorks:0,bookOnly:true,reducedMotion:reduced.matches})};
 }

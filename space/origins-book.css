@@ -20,3 +20,9 @@
 #book-cover{width:min(450px,90%,calc((100dvh - 240px)*5/7));height:auto;aspect-ratio:5/7;top:50%;bottom:auto;transform:translate(-50%,-50%) rotateY(-8deg)}
 .is-open #book-cover{transform:translate(-100%,-50%) rotateY(-145deg)}
 #open-book.uses-original-cover{background-origin:border-box}
+
+/* An incoming physical cover meets the reader before its hinge opens. */
+.reader-embedded #book-cover{transform:translate(-50%,-50%);filter:none;transition:none}
+.reader-embedded .is-open #book-cover{transform:translate(-100%,-50%) rotateY(-145deg);transition:transform .9s cubic-bezier(.2,.7,.2,1),opacity .55s}
+.reader-embedded #open-book{border:0;border-radius:0;box-shadow:none;padding:0}
+.reader-embedded .cover-open{display:none}

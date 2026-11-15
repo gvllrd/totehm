@@ -3,7 +3,7 @@ import {ORIGINS} from './gallery-artworks.mjs';
 const TITLES=ORIGINS.map(art=>art.title);
 const STILL=n=>'/assets/gallery/book-origins/'+String(n).padStart(2,'0')+'.jpg';
 const FILES=Array.from({length:20},(_,i)=>(i+1)+'.mp4');
-const BUILD='2026-11-15-origins-shared-cover-first-frame';
+const BUILD='2026-11-15-origins-continuous-reader';
 
 // A whole trackpad inertia burst belongs to one turn. The quiet interval is
 // measured from the LAST wheel event, rather than from the accepted page turn.
@@ -106,8 +106,9 @@ export function createOriginsReader({client,base}={}){
   if(error)console.warn('[origins] Artwork catalogue unavailable:',error.code||error.name||'request');
   if(data)data.forEach(art=>populate(Number(art.sort_order)-1,art));
  }).catch(error=>{console.warn('[origins] Artwork catalogue unavailable:',error?.name||'request');});
- const query=new URLSearchParams(location.search),requested=query.get('work')||'';
- if(/^[0-9]{1,2}$/.test(requested)&&Number(requested)>=1&&Number(requested)<=20){opened=true;turnPage(Number(requested),{animate:false,source:'deep-link'});}else if(query.get('open')==='1')openBook();
+ const query=new URLSearchParams(location.search),requested=query.get('work')||'',embedded=window.parent!==window&&query.get('embedded')==='1';
+ if(embedded){document.body.classList.add('reader-embedded');window.addEventListener('totehm:reader-open',()=>requestAnimationFrame(()=>requestAnimationFrame(openBook)),{once:true});}
+ if(/^[0-9]{1,2}$/.test(requested)&&Number(requested)>=1&&Number(requested)<=20){opened=true;turnPage(Number(requested),{animate:false,source:'deep-link'});}else if(query.get('open')==='1'&&!embedded)openBook();
  update();
  window.__totehm_origins=()=>({build:BUILD,book:true,work:current,total:20,sharedCover:true,firstFrameBeforePlay:true,opened,turning,page:current,playing:videos.filter(v=>!v.paused).length,loaded:loaded.filter(Boolean).length,mediaErrors,reducedMotion:reduced.matches,visible:!hidden,turns,lastSource,gestures:gestures.diagnostics(),videoFiles:FILES.slice(),catalogueRecords:records.size});
  return{open:openBook,close:closeBook,goTo:turnPage,diagnostics:window.__totehm_origins};

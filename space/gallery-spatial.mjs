@@ -46,7 +46,7 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
   liberty=createLiberty(scene,{mobile,onChange:invalidate,submerged:true});
  }
  if(!newYork)vessel=createOriginsVessel(scene,{mobile,transitOnly:true,onChange:invalidate,onOpen:({href})=>{bookDestination=href;dirty=true;}});
- book=newYork?createLecternBook(scene,{mobile,layout:L,onChange:invalidate,onOpen:({href})=>{expandOriginsBook(book.root,camera,href,{reduced:motionReduced,beforeNavigate:()=>pause()});}}):vessel.book;
+ book=newYork?createLecternBook(scene,{mobile,layout:L,onChange:invalidate,onOpen:({href})=>{expandOriginsBook(book.root,camera,href,{reduced:motionReduced,onStart:()=>{pause();renderer.render(scene,camera);},onClose:()=>{paused=false;lastTime=0;book.reset();dirty=true;syncSound();}});}}):vessel.book;
  const fireplace=createGalleryFireplace(scene,{mobile,layout:L,blackStone:!newYork,onChange:invalidate,...(architecture.smokeOutlet?{smokeOutlet:architecture.smokeOutlet}:newYork?{smokeOutlet:L.smokeOutlet}:{})});
  function openExperience({href}){
   // Navigation releases the world instead of leaving its GPU/audio behind an
