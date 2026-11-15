@@ -1,0 +1,107 @@
+{
+  "frame": 0,
+  "method": "first decoded video frame without seeking",
+  "filter": "scale=900:-2",
+  "files": [
+    {
+      "file": "01.jpg",
+      "video": "1.mp4",
+      "sha256": "a2e76220ca887fc232b38489194d22bb2f08bdae6ca3b2e61bce5ef72b78a36b"
+    },
+    {
+      "file": "02.jpg",
+      "video": "2.mp4",
+      "sha256": "26b28b49c62dd280b4c058241d554e3ee4e6ecbe9045ff0ed18267e6b532069b"
+    },
+    {
+      "file": "03.jpg",
+      "video": "3.mp4",
+      "sha256": "d1e081db8c23806a6e4056d304836a644ffa78d6b4151e5ae43bc85b5209f20a"
+    },
+    {
+      "file": "04.jpg",
+      "video": "4.mp4",
+      "sha256": "66d03d7dbf29cb51e526a904602d77ff1dd1929255d37ec6e5652ecaeab23195"
+    },
+    {
+      "file": "05.jpg",
+      "video": "5.mp4",
+      "sha256": "97a349cb1fe1e872bbff0da0ca51be7631653b7e22f767a701ed806544f01429"
+    },
+    {
+      "file": "06.jpg",
+      "video": "6.mp4",
+      "sha256": "11888882057a676f3ec0a1d9fa09ee05204be95b465f7a91cfef282c474bd081"
+    },
+    {
+      "file": "07.jpg",
+      "video": "7.mp4",
+      "sha256": "00be6dd9d2b4cc40e98a46ddea6c4dbfa5d93e8febb5cda4580792fa14fa0f5d"
+    },
+    {
+      "file": "08.jpg",
+      "video": "8.mp4",
+      "sha256": "65a480904d583c1176a4f90919238edc65f8baaa1c5d0de78fda17e9df88a913"
+    },
+    {
+      "file": "09.jpg",
+      "video": "9.mp4",
+      "sha256": "923db6818990da609f4c5e7cea2d3c6a0c4fe3d700c4bf4ce41644e252386fed"
+    },
+    {
+      "file": "10.jpg",
+      "video": "10.mp4",
+      "sha256": "cbb3308a1af02c56a41a43c0eb33708a66a3a5616d983e5986a090981bb86e86"
+    },
+    {
+      "file": "11.jpg",
+      "video": "11.mp4",
+      "sha256": "c91fcc27e1ca5b0c18185468e2f5527b1ad15b1bbf2e0c44274e762b265bda58"
+    },
+    {
+      "file": "12.jpg",
+      "video": "12.mp4",
+      "sha256": "4241d71e150f6d88bc95e9b4ccc56dcce19abd9699d315b9680974c511aa59a2"
+    },
+    {
+      "file": "13.jpg",
+      "video": "13.mp4",
+      "sha256": "5c1f723ed00fa60b8f8f36fb7f433c6fa6c1a1a333994ca89cf4112bd60656f7"
+    },
+    {
+      "file": "14.jpg",
+      "video": "14.mp4",
+      "sha256": "527d83180010fddcebe4fe2f9f851119d32cb16c26c6209e89ac1169842eab23"
+    },
+    {
+      "file": "15.jpg",
+      "video": "15.mp4",
+      "sha256": "cf726fa2d06858da2c26dde439dc9a0280309cedfffb7be6eebda59979cfff3d"
+    },
+    {
+      "file": "16.jpg",
+      "video": "16.mp4",
+      "sha256": "edd7d263af8a8d370d94465fb81a04be63a1ac06586b23341c8b33d6c2c44947"
+    },
+    {
+      "file": "17.jpg",
+      "video": "17.mp4",
+      "sha256": "e92e3fe4b0e54bb6f3321ca9241e8b19bbfb5c88d5c16e01ceaba016e6e678de"
+    },
+    {
+      "file": "18.jpg",
+      "video": "18.mp4",
+      "sha256": "14ccf4561698489936572bc810e0db26df25b239c1c3c5436828a222bf10adeb"
+    },
+    {
+      "file": "19.jpg",
+      "video": "19.mp4",
+      "sha256": "c5290fa81ff3dafaf2db1afef4ff99ae897bb236e4d1980bf7fb962a34e1911e"
+    },
+    {
+      "file": "20.jpg",
+      "video": "20.mp4",
+      "sha256": "9a89716587bbdc898346fde2a0d55d6905b4d8b99904ba6b71220929724c1c07"
+    }
+  ]
+}

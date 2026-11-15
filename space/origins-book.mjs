@@ -1,8 +1,9 @@
+import {createOriginsCoverCanvas} from './origins-cover.mjs';
 import {ORIGINS} from './gallery-artworks.mjs';
 const TITLES=ORIGINS.map(art=>art.title);
 const STILL=n=>'/assets/gallery/book-origins/'+String(n).padStart(2,'0')+'.jpg';
 const FILES=Array.from({length:20},(_,i)=>(i+1)+'.mp4');
-const BUILD='2026-10-26-origins-explicit-play';
+const BUILD='2026-11-15-origins-shared-cover-first-frame';
 
 // A whole trackpad inertia burst belongs to one turn. The quiet interval is
 // measured from the LAST wheel event, rather than from the accepted page turn.
@@ -29,6 +30,7 @@ export function createPageGestures({move=()=>false,busy=()=>false,quiet=240,thre
 
 export function createOriginsReader({client,base}={}){
  const $=id=>document.getElementById(id),book=$('book'),deck=$('deck'),left=$('left-page'),right=$('right-page'),cover=$('open-book'),sheet=$('turn-sheet'),front=$('turn-front'),back=$('turn-back');
+ const sharedCover=createOriginsCoverCanvas({onChange:canvas=>{cover.style.backgroundImage='url('+canvas.toDataURL('image/png')+')';}});cover.classList.add('uses-original-cover');
  const reduced=matchMedia('(prefers-reduced-motion: reduce)'),videos=[],loaded=Array(20).fill(false),records=new Map();
  let current=0,opened=false,turning=false,turnAnimation=null,turnTimer=0,generation=0,pointer=null,hidden=document.hidden,paused=false,lastSource='initial',turns=0,mediaErrors=0,suppressPlayUntil=0;
  for(let i=0;i<20;i++){
@@ -61,7 +63,7 @@ export function createOriginsReader({client,base}={}){
  }
  function turnPage(next,{animate=true,source='button'}={}){
   if(turning||!Number.isInteger(next)||next<0||next>20||next===current)return false;
-  pauseAll();const previous=current;current=next;lastSource=source;turns++;const revision=++generation;
+  pauseAll();for(const video of videos){if(video.readyState>=1)try{video.currentTime=0;}catch{}}const previous=current;current=next;lastSource=source;turns++;const revision=++generation;
   if(opened&&animate&&!reduced.matches&&typeof sheet.animate==='function'){
    turning=true;const forward=next>previous,shown=forward?previous:next;front.replaceChildren();
    if(shown>0){const image=document.createElement('img');image.src=STILL(shown);image.alt='';front.append(image);front.classList.remove('turn-intro');}else{front.textContent='ORIGINS';front.classList.add('turn-intro');}
@@ -72,7 +74,7 @@ export function createOriginsReader({client,base}={}){
   return true;
  }
  function openBook(){if(opened||turning)return false;opened=true;lastSource='cover';generation++;update();preload();return true;}
- function closeBook(){if(!opened||turning)return false;pauseAll();opened=false;generation++;update();return true;}
+ function closeBook(){if(!opened||turning)return false;pauseAll();for(const video of videos){if(video.readyState>=1)try{video.currentTime=0;}catch{}}opened=false;generation++;update();return true;}
  const move=(direction,source)=>{if(!opened){const accepted=direction>0?openBook():false;if(accepted)lastSource=source;return accepted;}return turnPage(current+direction,{source});};
  const gestures=createPageGestures({move,busy:()=>turning});
  cover.disabled=false;cover.addEventListener('click',openBook);$('book-begin').addEventListener('click',()=>turnPage(1));$('nav-down').addEventListener('click',()=>move(1,'button'));$('nav-up').addEventListener('click',()=>move(-1,'button'));$('book-close').addEventListener('click',closeBook);
@@ -107,6 +109,6 @@ export function createOriginsReader({client,base}={}){
  const query=new URLSearchParams(location.search),requested=query.get('work')||'';
  if(/^[0-9]{1,2}$/.test(requested)&&Number(requested)>=1&&Number(requested)<=20){opened=true;turnPage(Number(requested),{animate:false,source:'deep-link'});}else if(query.get('open')==='1')openBook();
  update();
- window.__totehm_origins=()=>({build:BUILD,book:true,work:current,total:20,opened,turning,page:current,playing:videos.filter(v=>!v.paused).length,loaded:loaded.filter(Boolean).length,mediaErrors,reducedMotion:reduced.matches,visible:!hidden,turns,lastSource,gestures:gestures.diagnostics(),videoFiles:FILES.slice(),catalogueRecords:records.size});
+ window.__totehm_origins=()=>({build:BUILD,book:true,work:current,total:20,sharedCover:true,firstFrameBeforePlay:true,opened,turning,page:current,playing:videos.filter(v=>!v.paused).length,loaded:loaded.filter(Boolean).length,mediaErrors,reducedMotion:reduced.matches,visible:!hidden,turns,lastSource,gestures:gestures.diagnostics(),videoFiles:FILES.slice(),catalogueRecords:records.size});
  return{open:openBook,close:closeBook,goTo:turnPage,diagnostics:window.__totehm_origins};
 }

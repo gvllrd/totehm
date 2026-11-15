@@ -4,7 +4,7 @@
 
 Lisbon : azulejos en ruine et verre, pierre dedans, une table noire THP/laboratoire et un hologramme vers Play the Street réservé THP. Une connexion centrale, soucoupe en vol vers un trou noir puis page Origin : couloir galactique vitré noir et seul livre sur socle. Île et océan conservés ; New York garde son château et ses six œuvres.
 Vercel dirige le Portugal vers `/lisbon-space`, les autres pays ou le pays inconnu vers `/new-york` ; ces deux entrées réécrivent vers `/`. Pays issu de l’IP, sans GPS ni certitude physique ; `/lisbon` reste l’œuvre Lisbon.
-Space ouvre directement le monde, sans titre d’accueil ni commandes de panorama/saut/son. La navigation Artworks présente les expériences, sans destinations d’étage.
+Règle indispensable : chaque expérience reprend en plein écran le même original que sa représentation dans le Space, prêt à être utilisé. Origins partage `origins-cover.mjs` entre 3D et lecteur ; agrandissement par `gallery-book-expansion.mjs`, vidéos arrêtées à leur première frame à chaque arrivée. Trou noir uni sans ornements. Space ouvre directement le monde, sans titre d’accueil ni commandes de panorama/saut/son. La navigation Artworks présente les expériences, sans destinations d’étage.
 
 | fichier | rôle |
 |---|---|
@@ -29,7 +29,7 @@ Space ouvre directement le monde, sans titre d’accueil ni commandes de panoram
 | `gallery-drowned-sky.mjs` · `gallery-drowned-planet.mjs` | Voie lactée, étoiles, météore, lune et globe submergé |
 | `gallery-spatial.mjs` · `gallery-render-quality.mjs` · `gallery-black-hole.mjs` | visite, physique, vol réel de la soucoupe et trou noir vers `/origin`, adaptation du DPR |
 | `vercel.json` · `api/location.js` · `api/card.js` | géographie, diagnostic sans cache et lecteurs sociaux |
-| `origin.html` · `origin-scene.mjs` · `origin.css` · `origins.html` · `origins-book.*` | nouvelle page du sanctuaire galactique avec le seul livre original ; lecteur de ses vingt œuvres, retour au sanctuaire |
+| `origin.html` · `origin-scene.mjs` · `origin.css` · `origins.html` · `origins-book.*` · `origins-cover.mjs` · `gallery-book-expansion.mjs` | nouvelle page du sanctuaire galactique avec le seul livre original ; lecteur de ses vingt œuvres, retour au sanctuaire |
 | `get_higher.html` · `stoner.html` · `play_lisbon_street.html` · `same_but_opposite.html` · `think_same_but_opposite.html` | œuvres indépendantes et parcours Discover anglais, lecteurs et droits propres |
 | `market.html` · `social.html` | marché, collection personnelle et lecteur ouvert par COM `/x/space` |
 | `vendor/` · `assets/` | Three.js/HLS et véritables médias locaux ; licences dans les LICENSE.txt |
