@@ -227,8 +227,10 @@ html.is-embed,html.is-embed body{background:#000}
      60 %  le NOIR — tout le fond, tout le silence autour du texte (`#000`)
      30 %  le TEXTE — blanc pour l'idée (`.dc-h`), gris clair pour son appui (`.dc-p`), gris sombre pour la
            structure (progression, rail, consigne)
-     10 %  l'ACCENT, UN SEUL — le corail du TOTEHM (`--dc-ac`) : le NOM du membre, le PRIX, le BOUTON. Rien
-           d'autre n'est coloré, jamais : ni navy, ni rouge, ni dégradé. */
+     10 %  l'ACCENT, UN SEUL — le corail du TOTEHM (`--dc-ac`), SACRÉ (Wah, 15/11) : il ne colore que le NOM du
+           membre et l'ART de Wah (le papier, la pièce). Ni le prix, ni le bouton : ils restent blancs et gris.
+           Rien d'autre n'est coloré, jamais : ni navy, ni rouge, ni dégradé.
+   L'APPEL À L'ACTION (`.dc-cta`, facultatif : la classe `has-cta` sur l'hôte) reste sous CHAQUE écran. */
 .dc{--dc-ac:#fbd5ca;position:fixed;inset:0;z-index:20;background:#000;color:#ddd;overflow:hidden;
   font-family:'Space Mono',monospace;-webkit-font-smoothing:antialiased;touch-action:pan-x;overscroll-behavior:none}
 .dc[hidden],.dc.hide{display:none}
@@ -242,13 +244,17 @@ html.is-embed,html.is-embed body{background:#000}
 .dc-p{margin:0;font:400 clamp(15px,1.9vw,21px)/1.6 'Space Mono',monospace;color:#ddd;white-space:pre-line}
 .dc-ac{color:var(--dc-ac)}
 .dc-n{font-family:Quantico,sans-serif;font-weight:700;color:var(--dc-ac)}            /* un NOM de membre */
-.dc-big{margin:0;font:700 clamp(44px,9vw,84px)/1 Quantico,sans-serif;color:var(--dc-ac);letter-spacing:.01em}
+.dc-big{margin:0;font:700 clamp(44px,9vw,84px)/1 Quantico,sans-serif;color:#fff;letter-spacing:.01em}
 .dc-big small{font:400 clamp(12px,1.6vw,16px)/1 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#888;margin-left:10px}
 .dc-fine{margin:0;font:400 11px/1.7 'Space Mono',monospace;letter-spacing:.06em;color:#888;max-width:420px}
-/* le bouton : le SEUL aplat coloré de l'écran — l'accent à 10 % */
+/* le bouton : un bouton NORMAL — gris, jamais corail (le corail est réservé au nom et à l'art) */
 .dc-btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:12px 26px;border:0;border-radius:12px;cursor:pointer;
-  background:var(--dc-ac);color:#000;font:700 12px/1.2 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;transition:transform .15s ease,opacity .15s ease}
+  background:#2a2a2a;color:#e8e8e8;font:700 12px/1.2 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;transition:transform .15s ease,opacity .15s ease}
 .dc-btn:active{transform:scale(.97)}
+.dc-cta{position:absolute;left:0;right:0;bottom:146px;display:flex;flex-direction:column;align-items:center;gap:8px;padding:0 24px;z-index:2}
+.dc-cta:empty{display:none}
+.dc.has-cta .dc-s{inset:84px 24px 214px}
+.dc.has-cta.is-last .dc-cta{bottom:96px}
 .dc-btn[disabled]{opacity:.45;pointer-events:none}
 .dc-btn.is-quiet{background:none;color:#bdbdbd;box-shadow:inset 0 0 0 1px #3a3a3a}
 .dc-lnk{background:none;border:0;padding:8px;cursor:pointer;font:400 10px/1.4 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#888;text-decoration:none}
@@ -266,8 +272,8 @@ html.is-embed,html.is-embed body{background:#000}
 .dc-next:focus-visible,.dc-btn:focus-visible,.dc-lnk:focus-visible{outline:1px solid #fff;outline-offset:3px}
 .dc.is-last .dc-next,.dc.is-last .dc-hint{opacity:0;pointer-events:none}
 @keyframes dc-bob{50%{transform:translateY(4px)}}
-@media(hover:hover){.dc-next:hover{color:#fff}.dc-lnk:hover{color:#fff}.dc-btn:hover{opacity:.9}}
-@media(max-width:650px){.dc-s{inset:76px 20px 140px;gap:16px}}
+@media(hover:hover){.dc-btn:hover{background:#383838;opacity:1}.dc-next:hover{color:#fff}.dc-lnk:hover{color:#fff}}
+@media(max-width:650px){.dc-s{inset:76px 20px 140px;gap:16px}.dc.has-cta .dc-s{inset:76px 20px 214px}}
 @media(prefers-reduced-motion:reduce){.dc-s,.dc-s.is-on{transition:none;transform:none}.dc-next svg{animation:none}}
 /* ══ fin DISCOVER ══ */
 /* ── ce qui est propre à la page d'un membre ── */
@@ -357,7 +363,6 @@ body.is-search .note:hover,
 .dc-p:hover,
 .dc-ac:hover,
 .dc-n:hover,
-.dc-big:hover,
 .dc-big small:hover,
 .dc-fine:hover,
 .dc-btn:hover,
@@ -394,6 +399,7 @@ body.is-search #q:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,t
   <section id="page" class="hide">
     <div class="dc" id="dc" role="region" aria-label="Enter this ecosystem">
       <div class="dc-stage" id="offer" aria-live="polite"></div>
+      <div class="dc-cta" id="cta"></div>
       <p class="note dc-note" id="note" aria-live="polite"></p>
     </div>
     <!-- l'univers du membre (`creator_universe`) : rangé ici, posé dans l'écran « ses spots » à chaque dessin -->
@@ -785,11 +791,14 @@ function ecransExplication(n){
   ];
 }
 function ecranPrix(s, visiteur){
-  return '<div class="dc-s"><p class="dc-big">' + esc(money(s.price_cents, s.currency)) + '<small>/ year</small></p>' +
-    (visiteur ? '<button class="dc-btn" data-do="subscribe" type="button">Subscribe for a year</button>'
-              : '<p class="dc-fine">This is what visitors see.</p>') +
+  /* le prix et le bouton vivent sous CHAQUE écran (`#cta`) : ici, seulement les conditions */
+  return '<div class="dc-s">' + (visiteur ? '<h2 class="dc-h">One year. Stop anytime.</h2>' : '<p class="dc-big">' + esc(money(s.price_cents, s.currency)) + '<small>/ year</small></p><p class="dc-fine">This is what visitors see.</p>') +
     '<p class="dc-fine">One payment a year, by Stripe — a <b>year</b> of their practice. Stop anytime on the back of your TOTEHM: it runs to the end of the year, then stops. Clothes and artworks are separate purchases; Higher GPT and TotehmBot cost nothing.</p>' +
     '<a class="dc-lnk" href="/search">Search another TOTEHM</a></div>';
+}
+function appel(s, oui){
+  $('cta').innerHTML = oui ? '<button class="dc-btn" data-do="subscribe" type="button">Subscribe · ' + esc(money(s.price_cents, s.currency)) + ' / year</button>' : '';
+  $('dc').classList.toggle('has-cta', !!oui);
 }
 function paintOffer(){
   const s = C.sale || {}, v = C.viewer || {}, n = C.pseudo, N = nomH(n);
@@ -813,6 +822,7 @@ function paintOffer(){
     e = [ '<div class="dc-s">' + papier() + '<h2 class="dc-h">Enter ' + N + '’s ecosystem.</h2><p class="dc-p">Not open yet.\n' + N + ' has not opened subscriptions.\nTheir TOTEHM keeps growing — come back.</p>' +
       '<a class="dc-lnk" href="/search">Search another TOTEHM</a></div>' ];
   }
+  appel(s, !v.me && !v.subscribed && !v.can_read && !!s.open);
   poser(e, false);
 }
 /* ══ L'UNIVERS — ce que JE peux lire, net ; ce qui est réservé (FIGHER CLUB, ses abonnés), flouté :
@@ -895,8 +905,8 @@ $('uni').addEventListener('click', e => {
   if(o){ nav('/totehm?' + new URLSearchParams({ open:o.dataset.open, id:o.dataset.id })); return; }
   const l = e.target.closest('[data-lock]'); if(!l) return;
   /* Réservé : s'abonner ouvre tout ce qui n'est pas privé (FIGHER CLUB compris). */
-  const sub = $('offer').querySelector('[data-do=subscribe]');
-  if(sub && DC){ DC.derniere(); setTimeout(() => sub.focus({ preventScroll:true }), 80); say(audName(l.dataset.lock) + ' · subscribe to open it'); }
+  const sub = $('dc').querySelector('[data-do=subscribe]');
+  if(sub){ setTimeout(() => sub.focus({ preventScroll:true }), 80); say(audName(l.dataset.lock) + ' · subscribe to open it'); }
   else say(audName(l.dataset.lock));
 });
 
@@ -918,7 +928,7 @@ async function subscribe(b){
   }catch(e){ console.error('[creator-subscribe]', e && e.message || e); say('checkout is unavailable, try again', 'no'); }
   if(b) b.disabled = false;
 }
-$('offer').addEventListener('click', async e => {
+$('dc').addEventListener('click', async e => {
   const b = e.target.closest('[data-do]'); if(!b) return;
   const d = b.dataset.do;
   if(d === 'open') nav('/totehm?ro=' + encodeURIComponent(C.pseudo));
@@ -937,7 +947,7 @@ $('offer').addEventListener('click', async e => {
 function showSignin(){
   DC?.activer(false);
   $('signin').classList.remove('hide');
-  $('offer').querySelector('[data-do=subscribe]')?.classList.add('hide');
+  $('dc').querySelector('[data-do=subscribe]')?.classList.add('hide');
   $('si-email').classList.remove('hide'); $('si-code').classList.add('hide'); $('si-code').value = '';
   $('si-note').className = 'note'; $('si-note').textContent = '';
   setTimeout(() => $('si-email').focus(), 60);
@@ -945,7 +955,7 @@ function showSignin(){
 function hideSignin(){
   DC?.activer(true);
   $('signin').classList.add('hide');
-  $('offer').querySelector('[data-do=subscribe]')?.classList.remove('hide');
+  $('dc').querySelector('[data-do=subscribe]')?.classList.remove('hide');
 }
 $('si-x').onclick = () => { WANT = null; hideSignin(); };
 $('signin').addEventListener('submit', e => e.preventDefault());

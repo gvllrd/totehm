@@ -66,7 +66,7 @@ const erreurs = log => log.errors.filter(e => !/404|Failed to load resource/i.te
     functions:{ 'creator-subscribe': { url:'https://checkout.stripe.com/c/test' } } });
   await pg.goto('https://www.totehm.com/creator?n=kai');
   await pg.waitForFunction(() => window.__totehm_creator && window.__totehm_creator().loaded, null, { timeout:15000 });
-  const t = await pg.textContent('#offer');
+  const t = await pg.textContent('#dc');
   ok(/€24/.test(t) && /\/ year/i.test(t), 'the yearly price, from the server');
   /* 15/11 (Wah : « une page doit respecter le 60 / 30 / 10 ; les textes de découverte sont trop fourre-tout ; je veux découvrir
      à la manière de play_lisbon_street?discover=1 ») : UNE idée par écran, au geste ; le contenu reste celui du 12/11 :
@@ -97,12 +97,19 @@ const erreurs = log => log.errors.filter(e => !/404|Failed to load resource/i.te
   await pg.evaluate(() => window.__totehm_discover().derniere());
   await pg.waitForTimeout(300);
   /* le 60 / 30 / 10 : sur l'écran qui AGIT, la seule couleur est l'accent (corail) — le noir tient le reste */
-  const col = await pg.evaluate(() => { const tous = [...document.querySelectorAll('#offer .dc-s.is-on, #offer .dc-s.is-on *')], vus = new Set();
+  const col = await pg.evaluate(() => { const tous = [...document.querySelectorAll('#dc .dc-s.is-on, #dc .dc-s.is-on *, #cta, #cta *')], vus = new Set();
     const chroma = c => { const m = c.match(/\d+(\.\d+)?/g); if(!m || (m[3] !== undefined && +m[3] === 0)) return false; const [r, g, b] = m.map(Number); return Math.max(r, g, b) - Math.min(r, g, b) > 24; };
     for(const e of tous){ const cs = getComputedStyle(e); if(cs.visibility === 'hidden') continue; for(const k of ['color', 'backgroundColor']) if(chroma(cs[k])) vus.add(cs[k]); }
     return { couleurs:[...vus], fond:getComputedStyle(document.getElementById('dc')).backgroundColor, dernier:window.__totehm_creator().discover }; });
-  ok(col.couleurs.length === 1 && col.couleurs[0] === 'rgb(251, 213, 202)' && col.dernier.i === col.dernier.n - 1,
-     '60 / 30 / 10 : sur le dernier écran, UNE seule couleur — le corail (prix, bouton) — sur le noir : ' + JSON.stringify(col.couleurs));
+  ok(col.couleurs.length === 0 && col.dernier.i === col.dernier.n - 1,
+     '60 / 30 / 10 : sur le dernier écran, AUCUN corail (réservé au nom et à l\'art) : noir, blanc, gris — prix et bouton compris : ' + JSON.stringify(col.couleurs));
+  /* l'appel à l'action est sous CHAQUE écran : « Subscribe · €24 / year », gris */
+  const cta = [];
+  for(let k = 0; k < 8; k++){ await pg.evaluate(k => window.__totehm_discover().aller(k, true), k);
+    cta.push(await pg.evaluate(() => { const b = document.querySelector('#cta [data-do=subscribe]'); if(!b) return null; const r = b.getBoundingClientRect();
+      return { t:b.textContent.trim(), vu:r.width > 40 && r.bottom <= innerHeight && getComputedStyle(b).backgroundColor }; })); }
+  ok(cta.every(x => x && x.t === 'Subscribe · €24 / year' && x.vu === 'rgb(42, 42, 42)'), 'Subscribe · €24 / year sous les 8 écrans, bouton gris normal → ' + JSON.stringify(cta[0]));
+  await pg.evaluate(() => window.__totehm_discover().derniere());
   const p = await propre(pg);
   ok(p.white === 0 && !p.fonts.length, 'page: no white background, Space Mono + Quantico only ' + p.fonts.join(','));
   await pg.screenshot({ path: OUT + '/creator_visitor.png', fullPage:true });
