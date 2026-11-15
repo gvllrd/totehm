@@ -77,7 +77,7 @@ personne. `oracle/` : jamais lu, jamais recopié. Une base Supabase (`abujjbkbbi
 - **Interface** : états en `is-…` ; un état permanent = une `transition` ; un verrou de navigation se rend toujours ;
   overlays ancrés en haut ; « précédent » (téléphone, ordinateur) referme la couche du dessus et ne quitte le site
   qu'à l'accueil. Couleurs, polices, mots : `BRAND.md`. **Un texte qui EXPLIQUE se DÉCOUVRE** (Wah, 15/11, comme
-  `totehm.space/play_lisbon_street?discover=1`) : un écran noir par idée, au geste (`tools/discover.*`, copié) ; 60 % noir · 30 % texte · 10 % UN accent (corail : nom, prix, bouton).
+  `totehm.space/play_lisbon_street?discover=1`) : un écran noir par idée, au geste (`tools/discover.*`, copié) ; 60 % noir · 30 % texte · 10 % UN accent. **Le corail est SACRÉ** : le nom du membre et l'art de Wah, rien d'autre (prix et bouton = blanc et gris). L'appel à l'action (Subscribe · prix) reste sous CHAQUE écran.
 - **Continuité** (Wah, la règle la plus importante de l'expérience) : d'une vue, d'une page, d'une couche à l'autre, le
   moins de coupure possible — un objet ne disparaît pas pour réapparaître, il se TRANSFORME (le papier grandit, les traits
   se plient, le nom zoome lettre pour lettre) ; jamais une image figée ni un saut. Ça se mesure image par image, au téléphone.

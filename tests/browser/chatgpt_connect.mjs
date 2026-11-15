@@ -5,7 +5,7 @@ import {launch,page} from './harness.mjs';
 const browser=await launch(), origin='https://www.totehm.com', rid='r'.repeat(32), out=process.argv[2]||'/tmp/chatgpt-connect';fs.mkdirSync(out,{recursive:true});
 let count=0;const check=(c,m)=>{assert(c,m);count++;};
 const json=b=>({status:200,contentType:'application/json',body:JSON.stringify(b)});
-async function open({ready=true,connected=false,session=true,query='',redirect='https://chatgpt.com/connector_platform_oauth_redirect?code=opaque&state=test&iss=https%3A%2F%2Fwww.totehm.com',apiError=false}={}){
+async function open({arrive=false,ready=true,connected=false,session=true,query='',redirect='https://chatgpt.com/connector_platform_oauth_redirect?code=opaque&state=test&iss=https%3A%2F%2Fwww.totehm.com',apiError=false}={}){
  const calls=[],external=[];
  const {pg,log}=await page(browser,{dir:'com',origin,session,network:async(url,req)=>{
   if(url.pathname==='/chatgpt-api'){
@@ -16,7 +16,7 @@ async function open({ready=true,connected=false,session=true,query='',redirect='
   if(url.host==='chatgpt.com'||url.host==='evil.test'){external.push(url.href);return {status:200,contentType:'text/html',body:'<p>OAuth return</p>'};}
   return null;
  }});
- await pg.goto(origin+'/chatgpt'+query);await pg.waitForFunction(()=>window.__totehm_chatgpt&&!window.__totehm_chatgpt().busy);return {pg,log,calls,external};
+ await pg.goto(origin+'/chatgpt'+query);await pg.waitForFunction(()=>window.__totehm_chatgpt&&!window.__totehm_chatgpt().busy);if(!arrive)await pg.evaluate(()=>window.__totehm_discover().derniere());return {pg,log,calls,external};
 }
 try{
  let x=await open({ready:false});check(await x.pg.getByRole('heading',{name:'THE CONNECTION IS GETTING READY'}).isVisible(),'unavailable honestly');check(x.calls.length===1,'no account reads unavailable');await x.pg.context().close();
@@ -30,5 +30,7 @@ try{
  }
  x=await open({query:'?request_id=../../oauth'});check(await x.pg.getByRole('heading',{name:'START AGAIN FROM CHATGPT'}).isVisible(),'malformed opaque id rejected');check(!x.calls.some(c=>c.a==='request'),'malformed id never requested');await x.pg.context().close();
  x=await open({connected:true});check(await x.pg.getByRole('heading',{name:'YOUR TOTEHM IS CONNECTED'}).isVisible(),'backend-confirmed connection');await x.pg.getByRole('button',{name:'DISCONNECT',exact:true}).click();await x.pg.waitForFunction(()=>!window.__totehm_chatgpt().connected&&!window.__totehm_chatgpt().busy);check(x.calls.find(c=>c.a==='revoke').auth,'revocation authenticated');await x.pg.context().close();
+ x=await open({arrive:true,session:false});{const d=await x.pg.evaluate(()=>window.__totehm_chatgpt().discover);check(d.n===5&&d.i===0&&await x.pg.locator('.dc-s.is-on .dc-h').textContent()==='Your ChatGPT. Your world.','a visitor first DISCOVERS: 5 screens, the intro first');await x.pg.keyboard.press('ArrowDown');await x.pg.waitForTimeout(800);check((await x.pg.evaluate(()=>window.__totehm_chatgpt().discover)).i===1,'↓ goes to the next idea');}await x.pg.context().close();
+ x=await open({arrive:true,query:'?request_id='+rid});{const d=await x.pg.evaluate(()=>window.__totehm_chatgpt().discover);check(d.i===d.n-1&&await x.pg.getByRole('heading',{name:'CONNECT TO CHATGPT'}).isVisible(),'a request from ChatGPT lands straight on the connection, never on the intro');}await x.pg.context().close();
  console.log(JSON.stringify({checks:count,passed:count}));
 }finally{await browser.close();}
