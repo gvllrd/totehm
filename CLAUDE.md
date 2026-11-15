@@ -76,7 +76,8 @@ personne. `oracle/` : jamais lu, jamais recopié. Une base Supabase (`abujjbkbbi
 - **Confidentialité** : UNE échelle, et chaque objet dit sa PORTÉE. Une **BOX** = private · visible to my subscribers (jamais tous les membres) ; elle se change PARTOUT où elle apparaît, et toujours en DEUX gestes — le premier demande et rappelle que ses médias et ses sous-box suivent. Un **MÉDIA** n'a jamais de niveau à lui : il prend celui de sa box (un abonné voit donc les médias des box qui lui sont ouvertes). Un **SPOT** = private · my subscribers · figher club (= EVERY MEMBER), porte toujours son point exact, et montre sa box Habit avec ses sous-box objectifs et répulsions — jamais les médias de la box. La box est le PLAFOND : box private → spot private ; monter un spot demande d'abord d'ouvrir la box (confirmation), et redescendre un spot ne fait JAMAIS redescendre sa box.
 - **Interface** : états en `is-…` ; un état permanent = une `transition` ; un verrou de navigation se rend toujours ;
   overlays ancrés en haut ; « précédent » (téléphone, ordinateur) referme la couche du dessus et ne quitte le site
-  qu'à l'accueil. Couleurs, polices, mots : `BRAND.md`.
+  qu'à l'accueil. Couleurs, polices, mots : `BRAND.md`. **Un texte qui EXPLIQUE se DÉCOUVRE** (Wah, 15/11, comme
+  `totehm.space/play_lisbon_street?discover=1`) : un écran noir par idée, au geste (`tools/discover.*`, copié) ; 60 % noir · 30 % texte · 10 % UN accent (corail : nom, prix, bouton).
 - **Continuité** (Wah, la règle la plus importante de l'expérience) : d'une vue, d'une page, d'une couche à l'autre, le
   moins de coupure possible — un objet ne disparaît pas pour réapparaître, il se TRANSFORME (le papier grandit, les traits
   se plient, le nom zoome lettre pour lettre) ; jamais une image figée ni un saut. Ça se mesure image par image, au téléphone.

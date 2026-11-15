@@ -112,28 +112,12 @@ body.is-search .note{min-height:14px;color:var(--lo)}
 .ints i{width:8px;height:8px;border-radius:50%;display:block}
 
 /* ══ L'OFFRE — un panneau sombre, carré, sans bordure ══ */
-.offer{width:100%;margin-top:28px;background:var(--navy-d);padding:22px 18px 20px;display:flex;flex-direction:column;align-items:center;gap:14px}
-.price{display:flex;align-items:baseline;gap:8px;color:#fff;font-weight:700;font-size:30px;line-height:1.1}
-.price small{font-size:11px;font-weight:400;letter-spacing:.14em;text-transform:uppercase;color:var(--lo)}
-.gets{width:100%;display:flex;flex-direction:column;gap:2px;margin:4px 0 2px;text-align:left}
-.get{display:grid;grid-template-columns:34px 1fr;gap:12px;align-items:center;background:#000;padding:12px 14px}
-.get b{display:block;font-size:11px;letter-spacing:.06em;color:#fff}
-.get p{font-size:10px;line-height:1.55;color:var(--lo)}
-/* La croix des cinq vues (une forme, jamais un contenu) */
-.croix{display:grid;grid-template-columns:repeat(3,8px);grid-template-rows:repeat(3,8px);gap:2px;justify-content:center}
-.croix i{display:block}
-.croix .c-t{grid-area:1/2;background:var(--blue)}.croix .c-w{grid-area:2/1;background:var(--wis)}.croix .c-h{grid-area:2/2;background:var(--navy)}
-.croix .c-v{grid-area:2/3;background:var(--vis)}.croix .c-r{grid-area:3/2;background:var(--rep)}
-/* Le point d'un space : là où il est, maintenant */
-.pt{position:relative;width:12px;height:12px;margin:0 auto;border-radius:50%;background:#fff}
-.pt::after{content:"";position:absolute;inset:-7px;border-radius:50%;background:rgba(255,255,255,.14)}
 .fine{font-size:9px;line-height:1.7;letter-spacing:.06em;color:var(--lo);max-width:380px}
-.state{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#fff}
-.state.is-off{color:var(--lo)}
-.mine{width:100%;display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
 #si-note{text-transform:none;letter-spacing:.04em}
-#signin{width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;background:var(--navy-d);padding:0 18px 20px}
-.foot{margin-top:26px;display:flex;flex-direction:column;align-items:center;gap:4px}
+/* se connecter : un plein écran noir par-dessus Discover, au même format (UN seul accent : le bouton) */
+#signin{position:fixed;inset:0;z-index:30;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:24px;text-align:center}
+#signin.hide{display:none}
+#signin .in{max-width:340px}
 
 /* ══ LA RECHERCHE — un champ, des noms ══ */
 #search{width:100%;display:flex;flex-direction:column;align-items:center;gap:12px}
@@ -235,6 +219,70 @@ html.is-embed,html.is-embed body{background:#000}
 /* 14/11 (Wah : « mettre le logo totehm quand il s'agit du totehm ») : `.t-ic` pose le recto de la pièce (`.tw-r`,
    copié tel quel du bloc « le mot TOTEHM ») — la MÊME image que le coin membre, jamais un dessin local (règle n° 1). */
 .t-ic{position:relative;display:block;width:32px;height:32px;margin:0 auto}
+/* ══ DISCOVER — copié de tools/discover.css dans chaque page (jamais importé) ══
+   Wah (15/11) : « une page doit respecter la règle du 60 / 30 / 10. Les textes de découverte, tout ce qui est
+   explicatif comme l'explication d'abonnement, sont trop fourre-tout. Je veux découvrir à la manière de
+   totehm.space/play_lisbon_street?discover=1. » Un écran noir, UNE idée à la fois, qui se succèdent au geste.
+   LE 60 / 30 / 10, ICI, PAR CONSTRUCTION :
+     60 %  le NOIR — tout le fond, tout le silence autour du texte (`#000`)
+     30 %  le TEXTE — blanc pour l'idée (`.dc-h`), gris clair pour son appui (`.dc-p`), gris sombre pour la
+           structure (progression, rail, consigne)
+     10 %  l'ACCENT, UN SEUL — le corail du TOTEHM (`--dc-ac`) : le NOM du membre, le PRIX, le BOUTON. Rien
+           d'autre n'est coloré, jamais : ni navy, ni rouge, ni dégradé. */
+.dc{--dc-ac:#fbd5ca;position:fixed;inset:0;z-index:20;background:#000;color:#ddd;overflow:hidden;
+  font-family:'Space Mono',monospace;-webkit-font-smoothing:antialiased;touch-action:pan-x;overscroll-behavior:none}
+.dc[hidden],.dc.hide{display:none}
+.dc-stage{position:absolute;inset:0}
+.dc-s{position:absolute;inset:84px 24px 132px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:20px;text-align:center;opacity:0;visibility:hidden;transform:translateY(14px);
+  transition:opacity .5s ease,transform .5s ease,visibility 0s linear .5s}
+.dc-s.is-on{opacity:1;visibility:visible;transform:none;transition:opacity .5s ease,transform .5s ease,visibility 0s}
+.dc-s>*{max-width:min(100%,680px)}
+.dc-h{margin:0;font:700 clamp(24px,3.6vw,44px)/1.16 Quantico,sans-serif;color:#fff;letter-spacing:.01em}
+.dc-p{margin:0;font:400 clamp(15px,1.9vw,21px)/1.6 'Space Mono',monospace;color:#ddd;white-space:pre-line}
+.dc-ac{color:var(--dc-ac)}
+.dc-n{font-family:Quantico,sans-serif;font-weight:700;color:var(--dc-ac)}            /* un NOM de membre */
+.dc-big{margin:0;font:700 clamp(44px,9vw,84px)/1 Quantico,sans-serif;color:var(--dc-ac);letter-spacing:.01em}
+.dc-big small{font:400 clamp(12px,1.6vw,16px)/1 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#888;margin-left:10px}
+.dc-fine{margin:0;font:400 11px/1.7 'Space Mono',monospace;letter-spacing:.06em;color:#888;max-width:420px}
+/* le bouton : le SEUL aplat coloré de l'écran — l'accent à 10 % */
+.dc-btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:12px 26px;border:0;border-radius:12px;cursor:pointer;
+  background:var(--dc-ac);color:#000;font:700 12px/1.2 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;transition:transform .15s ease,opacity .15s ease}
+.dc-btn:active{transform:scale(.97)}
+.dc-btn[disabled]{opacity:.45;pointer-events:none}
+.dc-btn.is-quiet{background:none;color:#bdbdbd;box-shadow:inset 0 0 0 1px #3a3a3a}
+.dc-lnk{background:none;border:0;padding:8px;cursor:pointer;font:400 10px/1.4 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#888;text-decoration:none}
+.dc-row{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.dc-slot{width:100%}
+.dc-slot:empty{display:none}
+/* la structure : progression, rail, consigne, chevron — gris sombre, jamais de couleur */
+.dc-progress{position:absolute;top:22px;right:18px;font:10px/1.4 'Space Mono',monospace;letter-spacing:.14em;color:#888;pointer-events:none}
+.dc-rail{position:absolute;bottom:72px;left:50%;transform:translateX(-50%);display:flex;gap:6px;pointer-events:none}
+.dc-rail span{width:18px;height:2px;background:#242424;transition:background .3s}
+.dc-rail span.on{background:#bdbdbd}
+.dc-hint{position:absolute;bottom:28px;left:0;right:0;text-align:center;font:9px/1.5 'Space Mono',monospace;letter-spacing:.14em;color:#888;pointer-events:none;transition:opacity .3s}
+.dc-next{position:absolute;bottom:96px;left:50%;transform:translateX(-50%);background:none;border:0;padding:10px;cursor:pointer;color:#a0a0a0;transition:color .15s,opacity .3s}
+.dc-next svg{display:block;width:22px;height:22px;animation:dc-bob 1.8s ease-in-out infinite}
+.dc-next:focus-visible,.dc-btn:focus-visible,.dc-lnk:focus-visible{outline:1px solid #fff;outline-offset:3px}
+.dc.is-last .dc-next,.dc.is-last .dc-hint{opacity:0;pointer-events:none}
+@keyframes dc-bob{50%{transform:translateY(4px)}}
+@media(hover:hover){.dc-next:hover{color:#fff}.dc-lnk:hover{color:#fff}.dc-btn:hover{opacity:.9}}
+@media(max-width:650px){.dc-s{inset:76px 20px 140px;gap:16px}}
+@media(prefers-reduced-motion:reduce){.dc-s,.dc-s.is-on{transition:none;transform:none}.dc-next svg{animation:none}}
+/* ══ fin DISCOVER ══ */
+/* ── ce qui est propre à la page d'un membre ── */
+body:has(#page:not(.hide)) main{max-width:none;padding:0}
+.dc .paper{width:min(176px,44vw);margin:0 auto}
+.dc-ints{display:flex;gap:8px;justify-content:center}
+.dc-ints i{width:7px;height:7px;border-radius:50%;display:block}
+.dc-note{position:absolute;left:0;right:0;bottom:112px;margin:0;text-align:center;font:400 10px/1.4 'Space Mono',monospace;letter-spacing:.12em;color:#888;pointer-events:none}
+.dc-note.no{color:#ff9a9a}.dc-note.ok{color:#bdbdbd}
+.dc-slot #uni{width:min(100%,360px);margin:0 auto;display:block}
+.dc-slot .u-grid:empty{display:none}
+.dc-slot .u-grid{grid-template-columns:repeat(3,1fr);gap:6px}
+.dc-slot .u-t{aspect-ratio:3/4;border-radius:8px}
+.dc-slot .u-grid:nth-child(n+2){display:none}
+@media(max-height:700px){.dc-slot .u-t{aspect-ratio:1/1}}
 /* ══ LE MOT TOTEHM EST LE TOTEHM — copié de tools/totehm_word.css dans chaque page (jamais importé) ══
    ⚠️ 14/11 (Wah) — ANNULATION DU REMPLACEMENT GÉNÉRAL : « annule la décision de remplacer TOUS les textes
    Totehm par le logo totehm. À la place, sélectionne seulement les textes TOTEHM les plus stratégiques et
@@ -294,10 +342,7 @@ body.is-search #q:hover,
 body.is-search .note:hover,
 .srch-row .tn-l:hover,
 .ints span:hover,
-.price small:hover,
-.get p:hover,
 .fine:hover,
-.state.is-off:hover,
 #q:hover,
 .u-head:hover,
 .u-st:hover,
@@ -308,6 +353,22 @@ body.is-search .note:hover,
 .mc:not(.is-in):hover,
 .tn-l:hover,
 .mc-terms:hover,
+.dc:hover,
+.dc-p:hover,
+.dc-ac:hover,
+.dc-n:hover,
+.dc-big:hover,
+.dc-big small:hover,
+.dc-fine:hover,
+.dc-btn:hover,
+.dc-btn.is-quiet:hover,
+.dc-lnk:hover,
+.dc-progress:hover,
+.dc-hint:hover,
+.dc-next:hover,
+.dc-note:hover,
+.dc-note.no:hover,
+.dc-note.ok:hover,
 .tw .tn-l:hover):where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *)){color:#fff!important}
 .in:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::placeholder{color:#fff!important}
 body.is-search #q:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::placeholder{color:#fff!important}
@@ -328,33 +389,105 @@ body.is-search #q:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,t
     <div id="res" aria-label="TOTEHMs"></div>
   </section>
 
-  <!-- ══ LA PAGE D'UN MEMBRE ══ -->
-  <section id="page" class="hide" style="width:100%;display:flex;flex-direction:column;align-items:center">
-    <div class="paper" id="paper"></div><span class="tname hide" id="who"></span>
-    <div class="ints" id="ints"></div>
-    <div class="offer" id="offer" aria-live="polite"></div>
+  <!-- ══ LA PAGE D'UN MEMBRE · 15/11 : UN PLEIN ÉCRAN DISCOVER ══ Une idée par écran, noir, au geste (voir `tools/discover.css`).
+       `#offer` EST la scène : `paintOffer()` y dessine les écrans. Le papier du membre ouvre le premier. -->
+  <section id="page" class="hide">
+    <div class="dc" id="dc" role="region" aria-label="Enter this ecosystem">
+      <div class="dc-stage" id="offer" aria-live="polite"></div>
+      <p class="note dc-note" id="note" aria-live="polite"></p>
+    </div>
+    <!-- l'univers du membre (`creator_universe`) : rangé ici, posé dans l'écran « ses spots » à chaque dessin -->
+    <div id="pool" hidden>
+      <div id="uni" class="hide">
+        <div class="u-grid" id="u-spots"></div>
+        <div class="u-grid" id="u-spaces"></div>
+      </div>
+    </div>
     <!-- Se connecter ICI (totehm.com est la source de l'identité) : un nœud fixe, jamais redessiné. -->
     <form id="signin" class="hide" novalidate>
-      <div class="kick">CONNECT WITH MY TOTEHM</div>
-      <p class="fine">Your email, then the code we send. Checkout opens right after.</p>
+      <div class="dc-h">Connect with my TOTEHM</div>
+      <p class="dc-fine">Your email, then the code we send. Checkout opens right after.</p>
       <input class="in" id="si-email" type="email" placeholder="your@email" autocomplete="email" enterkeyhint="send" aria-label="Your email">
       <input class="in hide" id="si-code" inputmode="numeric" maxlength="6" placeholder="6-digit code" autocomplete="one-time-code" aria-label="The code from your email">
       <div class="note" id="si-note" aria-live="polite"></div>
-      <button class="lnk" id="si-x" type="button">Not now</button>
+      <button class="dc-lnk" id="si-x" type="button">Not now</button>
     </form>
-    <div class="note" id="note" aria-live="polite" style="margin-top:12px"></div>
-    <!-- 13/10 : l'univers du membre (`creator_universe`). Un tap ouvre SUR PLACE dans totehm.com. -->
-    <div id="uni" class="hide">
-      <div class="u-head" id="u-h-spaces"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 1.8v8.4L10 6z" fill="currentColor"/></svg>SPACES</div>
-      <div class="u-grid" id="u-spaces"></div>
-      <div class="u-head" id="u-h-spots"><svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="4.6" fill="none" stroke="currentColor" stroke-width="1.2"/><circle cx="6" cy="6" r="2.2" fill="none" stroke="currentColor" stroke-width="1.2"/><circle cx="6" cy="6" r=".9" fill="currentColor"/></svg>SPOTS</div>
-      <div class="u-grid" id="u-spots"></div>
-    </div>
-    <div class="foot"><a class="lnk" href="/search">Search another TOTEHM</a></div>
   </section>
 </main>
 
 <script type="module">
+/* ══ DISCOVER — copié de tools/discover.js dans chaque page (jamais importé) ══
+   Le moteur du « découvrir » : des écrans `.dc-s` dans `.dc-stage`, UN visible à la fois, qui se succèdent au scroll, au
+   geste (glisser vers le haut), au clavier (↓ ↑ Page Espace) ou au chevron — comme totehm.space/play_lisbon_street?discover=1.
+   Il ne connaît NI le contenu NI la page : `monter(hote)` lit les écrans qui s'y trouvent, et `rafraichir()` les relit
+   quand la page les a redessinés. Le dernier écran est celui qui AGIT (un bouton) : la consigne et le chevron s'effacent.
+   Un champ, un bouton ou un lien dans un écran garde ses touches (Espace, Entrée) : le moteur ne les vole jamais. */
+window.TOTEHM_DISCOVER = (() => {
+  const FADE = 520, VERROU = FADE + 160, SEUIL_ROUE = 36, SEUIL_DOIGT = 44;
+  const RM = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : { matches:false };
+  const CHEVRON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
+  const ACTIF = 'input,textarea,select,button,a,[contenteditable]';
+  function monter(hote, opt){
+    const o = Object.assign({ surChangement:null, consigne:null }, opt || {});
+    let i = 0, ecrans = [], verrou = 0, cumul = 0, tCumul = 0, y0 = null, actif = true;
+    const stage = hote.querySelector('.dc-stage'), prog = document.createElement('p'), rail = document.createElement('div'),
+          hint = document.createElement('p'), next = document.createElement('button');
+    prog.className = 'dc-progress'; prog.setAttribute('aria-live', 'polite'); rail.className = 'dc-rail'; rail.setAttribute('aria-hidden', 'true');
+    hint.className = 'dc-hint'; next.className = 'dc-next'; next.type = 'button'; next.setAttribute('aria-label', 'Next'); next.innerHTML = CHEVRON;
+    hote.append(prog, rail, hint, next);
+    const doigt = () => !window.matchMedia('(hover:hover) and (pointer:fine)').matches;
+    function lire(){ ecrans = [...stage.querySelectorAll('.dc-s')]; rail.innerHTML = ecrans.map(() => '<span></span>').join(''); }
+    function peindre(instant){
+      ecrans.forEach((e, k) => { const on = k === i; e.classList.toggle('is-on', on); e.setAttribute('aria-hidden', String(!on));
+        if(instant) e.style.transition = 'none'; else e.style.removeProperty('transition'); });
+      if(instant) void hote.offsetWidth;
+      rail.querySelectorAll('span').forEach((s, k) => s.classList.toggle('on', k === i));
+      prog.textContent = ecrans.length > 1 ? (i + 1) + ' / ' + ecrans.length : '';
+      hint.textContent = o.consigne || (doigt() ? 'Swipe up to discover ↑' : 'Scroll to discover ↓');
+      hote.classList.toggle('is-last', i >= ecrans.length - 1);
+      hote.dataset.i = i; hote.dataset.n = ecrans.length;
+      if(o.surChangement) o.surChangement(i, ecrans.length);
+    }
+    function aller(k, instant){
+      k = Math.max(0, Math.min(ecrans.length - 1, k)); if(k === i && !instant) return false;
+      if(verrou && !instant) return false;
+      i = k; peindre(instant || RM.matches);
+      if(!instant && !RM.matches){ verrou = setTimeout(() => { verrou = 0; }, VERROU); }
+      return true;
+    }
+    const suivant = () => aller(i + 1), precedent = () => aller(i - 1);
+    /* la molette et le pavé tactile : un geste ET son inertie = UN écran (le verrou dure plus que le fondu) */
+    hote.addEventListener('wheel', e => {
+      if(!actif || e.target.closest('[data-dc-libre]')) return;
+      const t = Date.now(); if(t - tCumul > 180) cumul = 0; tCumul = t; cumul += e.deltaY;
+      if(Math.abs(cumul) >= SEUIL_ROUE){ const d = cumul > 0 ? 1 : -1; cumul = 0; aller(i + d); }
+      e.preventDefault();
+    }, { passive:false });
+    hote.addEventListener('touchstart', e => { y0 = e.touches.length === 1 && !e.target.closest('input,textarea,select,[data-dc-libre]') ? e.touches[0].clientY : null; }, { passive:true });
+    hote.addEventListener('touchmove', e => { if(y0 !== null) e.preventDefault(); }, { passive:false });
+    hote.addEventListener('touchend', e => {
+      if(y0 === null || !e.changedTouches.length) return; const dy = y0 - e.changedTouches[0].clientY; y0 = null;
+      if(Math.abs(dy) >= SEUIL_DOIGT) aller(i + (dy > 0 ? 1 : -1));
+    }, { passive:true });
+    function touche(e){
+      if(!actif) return; const dans = e.target.closest ? e.target.closest(ACTIF) : null, champ = dans && e.target.matches('input,textarea,select');
+      if(['ArrowDown', 'PageDown'].includes(e.key) && !champ){ e.preventDefault(); suivant(); }
+      else if(['ArrowUp', 'PageUp'].includes(e.key) && !champ){ e.preventDefault(); precedent(); }
+      else if(e.key === ' ' && !dans){ e.preventDefault(); suivant(); }
+    }
+    /* un seul écouteur : sur la page, quand rien n'a le focus et que le moteur est visible ; dedans, il remonte jusqu'ici */
+    window.addEventListener('keydown', e => { if(hote.isConnected && !hote.hidden && !hote.classList.contains('hide') && (hote.contains(e.target) || document.activeElement === document.body)) touche(e); });
+    next.addEventListener('click', suivant);
+    lire(); peindre(true);
+    return { aller, suivant, precedent, index:() => i, total:() => ecrans.length,
+      derniere:() => aller(ecrans.length - 1, true),
+      rafraichir(garder){ const k = garder ? i : 0; lire(); i = Math.min(k, Math.max(0, ecrans.length - 1)); peindre(true); },
+      activer(v){ actif = !!v; } };
+  }
+  return { monter };
+})();
+/* ══ fin DISCOVER ══ */
+
 /* ══ LE CODE À SIX CHIFFRES — copié de tools/otp_signin.js dans chaque page (jamais importé) ══
    Wah (14/11) : « encore des problèmes de connexion : je suis quelques fois obligé de rentrer DEUX FOIS
    l'email et le code pour accéder. Bug à vérifier et corriger sur toutes les plateformes. »
@@ -457,7 +590,7 @@ const audBadge = a => AUD_ICON[a] ? '<span class="audb" role="img" aria-label="'
 const audMark = (root, attr, a0) => { const a = audNorm(a0); return root?.querySelectorAll('[' + attr + ']').forEach(b => { const on = b.getAttribute(attr) === a;
   b.classList.toggle('is-on', on); b.setAttribute('aria-checked', String(on)); }); };
 /* ══ fin AUDIENCE ══ */
-const BUILD='2026-11-15-recherche-ecosysteme';
+const BUILD='2026-11-15-discover';
 
 /* ══ EN CADRE DANS COM (`?embed=1`) ═════════════════════════════════════
    Wah, 16/10 : « il ne faut pas que ça saute entre totehm.com et totehm.com/@{Nom} ». COM ouvre cette
@@ -492,7 +625,9 @@ window.__totehm_creator = () => ({ build: BUILD, mode: NAME ? 'page' : 'search',
   can_read: !!C?.viewer?.can_read, me: !!C?.viewer?.me, signin_open: !$('signin').classList.contains('hide'),
   universe: { loaded: !!U, spaces: U?.spaces?.length || 0, spots: U?.spots?.length || 0,
               locked: [...(U?.spaces || []), ...(U?.spots || [])].filter(x => x.locked).length },
-  results: $('res')?.querySelectorAll('.srch-row').length || 0 });
+  results: $('res')?.querySelectorAll('.srch-row').length || 0,
+  discover: { i: +($('dc')?.dataset.i || 0), n: +($('dc')?.dataset.n || 0) } });
+window.__totehm_discover = () => DC;
 
 /* ══ LA SESSION — un seul chemin ═════════════════════════════════════ */
 let sessionSeq=0;
@@ -581,7 +716,8 @@ function NameSearch({input,results,note,vide=true,onResults=()=>{}}){
    donc rien d'autre ne vit dedans. Sans la nomenclature (un cas qui ne devrait pas arriver), on retombe sur
    la pastille, posée APRÈS le carré. */
 function paintName(n){
-  const pap = $('paper'), w = pap.getBoundingClientRect().width || 232;
+  const pap = $('paper'); if(!pap) return;                 /* le papier naît avec le premier écran (`poser`) */
+  const w = pap.getBoundingClientRect().width || 232;
   pap.setAttribute('role', 'img'); pap.setAttribute('aria-label', n);
   if(window.TOTEHM_NOM && window.TOTEHM_NOM.poser(pap, n, w)) return;
   const L = [...n].length, e = $('who');
@@ -597,15 +733,13 @@ async function loadPage(){
   if(error){ console.error('[creator_page]', error.message); say('this page is unreachable right now', 'no'); return false; }
   C = data || {};
   if(!C.ok){
-    paintName(NAME); $('ints').innerHTML = ''; uniSeq++; U = null; $('uni').classList.add('hide');
-    $('offer').innerHTML = '<div class="state is-off">' + (C.why === 'nobody' ? 'No TOTEHM by that name' : 'This TOTEHM is private') + '</div>' +
-      '<a class="btn" href="/search' + (C.why === 'nobody' ? '?q=' + encodeURIComponent(NAME) : '') + '">Search a TOTEHM</a>';
+    uniSeq++; U = null; $('uni').classList.add('hide');
+    poser([ '<div class="dc-s"><h2 class="dc-h">' + (C.why === 'nobody' ? 'No TOTEHM by that name' : 'This TOTEHM is private') + '</h2>' +
+      '<a class="dc-btn" href="/search' + (C.why === 'nobody' ? '?q=' + encodeURIComponent(NAME) : '') + '">Search a TOTEHM</a></div>' ], false);
     document.title = 'TOTEHM';
     return true;
   }
   document.title = C.pseudo + ' · TOTEHM';
-  paintName(C.pseudo);
-  $('ints').innerHTML = (C.palette || []).map(i => '<span><i style="background:' + (COLOR[i] || '#fff') + '"></i>' + esc(i) + '</span>').join('');
   paintOffer();
   loadUniverse();
   const v = C.viewer || {};
@@ -616,77 +750,70 @@ async function loadPage(){
   return true;
 }
 
-/* ══ CE QU'UN ABONNEMENT DONNE, ET CE QU'IL NE DONNE PAS · 12/11 ════════════════════════════════════
-   Wah : « améliore grandement la page de souscription, pour voir si tu as compris quels étaient les
-   tenants et aboutissants d'un abonnement, notamment via Higher GPT en plus de l'accès au TOTEHM ».
-   Ce que j'ai compris, dans l'ordre de la valeur — du plus passif au plus actif :
-     1. LIRE son TOTEHM — les cinq vues, telles qu'elles grandissent. C'est la porte, pas le produit.
-     2. ADOPTER une de ses box — un tap la COPIE dans mon TOTEHM (`totehm_import_boxes`), avec son
-        attribution. S'inspirer n'est pas adopter : l'un regarde, l'autre ENGAGE une habit à moi.
-     3. SES SPOTS, au point exact — là où il pratique, à l'heure où il pratique : [GO] y mène.
-     4. HIGHER GPT, et c'est LE multiplicateur — mon propre ChatGPT, branché gratuitement, prépare mon
-        prochain pas en LISANT aussi les TOTEHM auxquels je suis abonné, toujours attribués. Son
-        discipline entre dans MA préparation ; sans abonnement, elle n'y entre pas.
-     5. 80 % va au créateur : l'abonnement est son revenu, pas un péage de plateforme.
-   Et ce qu'il ne donne PAS — dit aussi clairement, sinon la promesse est fausse : aucune conversation,
-   aucune réponse due, rien de ce qu'il garde privé, et ni vêtement ni œuvre (des achats à part).
-   L'ÉCHELLE DE CONFIDENTIALITÉ est la même partout : private · my subscribers · figher club. */
-/* ⚠️ 14/11 — CE QUE L'ABONNEMENT OUVRE VRAIMENT (Wah) : « le membre qui souscrit au TOTEHM ecosystème d'un
-   autre membre peut voir TOUS SES MÉDIAS (photos et vidéos qui illustrent son grind, sa vision et sa story /
-   wisdom / teachings) » — c'était déjà vrai au serveur depuis le 20/10 (`member_media` : un média se lit si
-   SA BOX se lit), ce n'était écrit nulle part. Et : « revois les icônes = mettre le logo TOTEHM quand il
-   s'agit du TOTEHM, par exemple et surtout. » Les deux avantages qui parlent du TOTEHM portent donc la
-   PIÈCE, à la même source que le coin membre (`.t-ic`). */
-const GETS = n =>
-  '<div class="gets">' +
-    '<div class="get"><span class="t-ic" aria-hidden="true"><span class="tw-f tw-r"></span></span>' +
-      '<span><b data-tw>Read ' + esc(n) + '’s whole TOTEHM</b><p>my habits · my objectives · my repulsions · my vision · my story — the five views, as they grow. Read only: nothing of yours changes.</p></span></div>' +
-    '<div class="get"><span class="g-ic" aria-hidden="true">' + MEDIA_IC + '</span>' +
-      '<span><b>See the media of every box they open</b><p>the photos and the videos that illustrate their grind, their vision and their story. A media has no level of its own: it follows its box, so a box opened to subscribers opens its media too.</p></span></div>' +
-    '<div class="get"><span class="t-ic" aria-hidden="true"><span class="tw-f tw-r"></span></span>' +
-      '<span><b>Adopt any box into your own TOTEHM</b><p>one tap copies it to you, their name kept on it. Being inspired is looking; adopting is a habit of yours, from today.</p></span></div>' +
-    '<div class="get"><span class="pt" aria-hidden="true"></span>' +
-      '<span><b>Their spots, at the exact point</b><p>every spot they keep for their subscribers — place, time, who comes, and the Habit box behind it with its objectives and repulsions. [GO] takes you there.</p></span></div>' +
-    '<div class="get"><span class="g-ic" aria-hidden="true">' + GPT_IC + '</span>' +
-      '<span><b>Your Higher GPT reads them too</b><p>ask your own ChatGPT for your next step: it may draw on the TOTEHMs you subscribe to, always named. This is what a subscription really buys — their discipline inside your own preparation.</p></span></div>' +
-    '<div class="get"><span class="g-ic" aria-hidden="true">' + AUD_ICON.subscribers + '</span>' +
-      '<span><b>80% goes to ' + esc(n) + '</b><p>one payment a year. Your subscription is their income, not a platform toll.</p></span></div>' +
-  '</div>' +
-  '<p class="fine">Not included, and said plainly: no chat and no answer owed — a TOTEHM is a practice, not an inbox. Whatever ' + esc(n) + ' keeps <b>private</b> stays private — its media with it. Clothes and artworks are separate purchases. Higher GPT and TotehmBot cost nothing, with or without a subscription.</p>';
-const MEDIA_IC = '<svg viewBox="0 0 12 12" aria-hidden="true"><rect x="1" y="2.4" width="10" height="7.2" rx="1" fill="none" stroke="currentColor" stroke-width="1.1"/><circle cx="4.1" cy="5.1" r="1.1" fill="currentColor"/><path d="M1.6 9.2l2.9-2.6 2 1.8 1.9-2 2 2.8" fill="none" stroke="currentColor" stroke-width="1.1"/></svg>';
-const COPY_IC = '<svg viewBox="0 0 12 12" aria-hidden="true"><rect x="1.2" y="1.2" width="6.4" height="6.4" fill="none" stroke="currentColor" stroke-width="1.1"/><rect x="4.4" y="4.4" width="6.4" height="6.4" fill="none" stroke="currentColor" stroke-width="1.1"/></svg>';
-const GPT_IC = '<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 1.1l1.1 2.4L9.7 4l-1.9 1.8.5 2.6L6 7.2 3.7 8.4l.5-2.6L2.3 4l2.6-.5z" fill="none" stroke="currentColor" stroke-width="1"/><path d="M6 9.1v1.8M4.2 10.9h3.6" fill="none" stroke="currentColor" stroke-width="1"/></svg>';
-const PRICE = s => '<div class="price">' + esc(money(s.price_cents, s.currency)) + '<small>/ year</small></div>';
-const FINE = n => '<p class="fine">One payment a year, by Stripe — not a month, a <b>year</b> of their practice. Stop anytime on the back of your TOTEHM: it runs to the end of the year, then stops. 80% goes to ' + esc(n) + '.</p>';
-
+/* ══ DISCOVER · 15/11 ══ Wah : « une page doit respecter le 60 / 30 / 10. Les textes de découverte sont trop
+   fourre-tout. Je veux découvrir à la manière de play_lisbon_street?discover=1. » L'ancienne page empilait six
+   cartes, un paragraphe de mentions et un panneau navy : trois champs de couleur pour une seule décision.
+   Maintenant UNE idée par écran, noir (60 %), du texte (30 %), et le seul accent — le corail — sur le NOM, le PRIX et
+   le BOUTON (10 %). Le contenu reste celui du 12/11 et du 14/11, dans l'ordre de la valeur, du plus passif au plus actif :
+     1 · LIRE son TOTEHM (la porte, pas le produit)   2 · SES MÉDIAS (une box ouverte ouvre ses médias)
+     3 · ADOPTER une box (un tap la COPIE, son nom dessus)   4 · SES SPOTS, au point exact   5 · HIGHER GPT, le multiplicateur
+     6 · 80 % va au créateur — et ce que l'abonnement ne donne PAS (aucune conversation, rien de privé)
+   puis le prix et le geste. L'échelle de confidentialité est la même partout : private · my subscribers · figher club. */
+let DC = null;
+const nomH = n => '<span class="dc-n">' + esc(n) + '</span>';
+const ecran = (h, p, extra, attrs) => '<div class="dc-s">' + (h ? '<h2 class="dc-h"' + (attrs || '') + '>' + h + '</h2>' : '') + (p ? '<p class="dc-p">' + p + '</p>' : '') + (extra || '') + '</div>';
+const papier = () => '<div class="paper" id="paper"></div>' +
+  '<div class="dc-ints" aria-hidden="true">' + (C?.palette || []).map(i => '<i style="background:' + (COLOR[i] || '#fff') + '"></i>').join('') + '</div>';
+const ouvrirB = '<button class="dc-btn" data-do="open" type="button">Open the TOTEHM</button>';
+/* Dessine les écrans dans la scène, remet le papier à son nom, et relance le moteur au premier écran (ou au même). */
+function poser(ecrans, garder){
+  $('pool').appendChild($('uni'));                       /* l'univers survit au redessin : rangé, puis reposé */
+  $('offer').innerHTML = ecrans.join('');
+  const fente = $('offer').querySelector('.dc-slot'); if(fente) fente.appendChild($('uni'));
+  if($('paper')) paintName(C?.pseudo || NAME);
+  if(!DC) DC = window.TOTEHM_DISCOVER.monter($('dc')); else DC.rafraichir(garder);
+}
+function ecransExplication(n){
+  const N = nomH(n);
+  return [
+    ecran('Their whole TOTEHM.', 'Habits, objectives, repulsions,\nvision, story — as they grow.\nRead only: nothing of yours changes.', '', ' data-tw'),
+    ecran('Every photo and video.', 'The ones that illustrate their grind,\ntheir vision and their story.\nA box opened to subscribers opens its media too.'),
+    ecran('Adopt what moves you.', 'One tap copies a box into your own TOTEHM,\ntheir name kept on it.\nBeing inspired is looking; adopting is a habit of yours.'),
+    ecran('Their spots, at the exact point.', 'Place, time, and the habit behind it.\n[GO] takes you there.', '<div class="dc-slot"></div>'),
+    ecran('Your Higher GPT reads them too.', 'Ask your own ChatGPT for your next step:\nTheir discipline inside your preparation,\nalways named.'),
+    ecran('80 % goes to ' + N + '.', 'One payment a year. Your subscription\nis their income, not a platform toll.\nNo chat, no answer owed — a practice, not an inbox.\nWhat ' + N + ' keeps private stays private.')
+  ];
+}
+function ecranPrix(s, visiteur){
+  return '<div class="dc-s"><p class="dc-big">' + esc(money(s.price_cents, s.currency)) + '<small>/ year</small></p>' +
+    (visiteur ? '<button class="dc-btn" data-do="subscribe" type="button">Subscribe for a year</button>'
+              : '<p class="dc-fine">This is what visitors see.</p>') +
+    '<p class="dc-fine">One payment a year, by Stripe — a <b>year</b> of their practice. Stop anytime on the back of your TOTEHM: it runs to the end of the year, then stops. Clothes and artworks are separate purchases; Higher GPT and TotehmBot cost nothing.</p>' +
+    '<a class="dc-lnk" href="/search">Search another TOTEHM</a></div>';
+}
 function paintOffer(){
-  const s = C.sale || {}, v = C.viewer || {}, n = C.pseudo;
-  const ouvrir = '<button class="btn is-main" data-do="open" type="button">Open the TOTEHM</button>';
-  let h = '';
+  const s = C.sale || {}, v = C.viewer || {}, n = C.pseudo, N = nomH(n);
+  let e;
   if(v.me){
-    h = '<div class="kick">This is your page</div>' +
-        /* ⚠️ 14/11 (Wah) : « il n'y a QU'UNE SEULE console et c'est celle du VERSO du totehm, pas celle qui
-           vient du bouton My console sur la page d'abonnement. Tu peux supprimer cette console=doublon. »
-           Le verso porte Monetize my TOTEHM et le tableau de bord : c'est la console. */
-        '<div class="mine"><button class="btn is-main" data-do="mine" type="button">Open my TOTEHM</button>' +
-        '<button class="btn" data-do="copy" type="button">Copy my link</button></div>' +
-        (s.open ? '<div class="kick" style="margin-top:6px">What visitors see</div>' + PRICE(s) + GETS(n) + FINE(n)
-                : '<div class="state is-off">Your subscription is off</div><p class="fine">Set a yearly price and where to pay you on the back of your TOTEHM. This page sells it.</p>');
+    const moi = '<div class="dc-row"><button class="dc-btn" data-do="mine" type="button">Open my TOTEHM</button>' +
+      '<button class="dc-btn is-quiet" data-do="copy" type="button">Copy my link</button></div>';
+    /* ⚠️ 14/11 (Wah) : « il n'y a QU'UNE SEULE console et c'est celle du VERSO du totehm » — pas de bouton My console ici. */
+    e = s.open ? [ '<div class="dc-s">' + papier() + '<h2 class="dc-h">This is your page.</h2>' + moi + '</div>', ...ecransExplication(n), ecranPrix(s, false) ]
+               : [ '<div class="dc-s">' + papier() + '<h2 class="dc-h">This is your page.</h2><p class="dc-p">Your subscription is off.\nSet a yearly price and where to pay you\non the back of your TOTEHM. This page sells it.</p>' + moi + '</div>' ];
   } else if(v.subscribed){
-    h = '<div class="kick">Your year inside ' + esc(n) + '’s ecosystem</div>' +
-        '<div class="state">' + (v.until ? (v.ending ? 'Ends ' : 'Renews ') + esc(day(v.until)) : 'Active') + '</div>' +
-        (v.can_read ? ouvrir : '<p class="fine">' + esc(n) + ' keeps their TOTEHM private for now.</p>') +
-        '<a class="lnk" href="/totehm#in">Manage it in my TOTEHM</a>';
+    e = [ '<div class="dc-s">' + papier() + '<h2 class="dc-h">Your year inside ' + N + '’s ecosystem.</h2>' +
+      '<p class="dc-p">' + (v.until ? (v.ending ? 'Ends ' : 'Renews ') + esc(day(v.until)) : 'Active') + '</p>' +
+      (v.can_read ? ouvrirB : '<p class="dc-p">' + N + ' keeps their TOTEHM private for now.</p>') +
+      '<a class="dc-lnk" href="/totehm#in">Manage it in my TOTEHM</a></div>' ];
   } else if(v.can_read){
-    h = '<div class="kick">You are inside this ecosystem</div>' + ouvrir;
+    e = [ '<div class="dc-s">' + papier() + '<h2 class="dc-h">You are inside this ecosystem.</h2>' + ouvrirB + '</div>' ];
   } else if(s.open){
-    h = '<div class="kick">Enter ' + esc(n) + '’s ecosystem</div>' + PRICE(s) + GETS(n) +
-        '<button class="btn is-main" data-do="subscribe" type="button">Subscribe for a year</button>' + FINE(n);
+    e = [ '<div class="dc-s">' + papier() + '<h2 class="dc-h">Enter ' + N + '’s ecosystem.</h2></div>', ...ecransExplication(n), ecranPrix(s, true) ];
   } else {
-    h = '<div class="kick">Enter ' + esc(n) + '’s ecosystem</div><div class="state is-off">Not open yet</div>' +
-        '<p class="fine">' + esc(n) + ' has not opened subscriptions. Their TOTEHM keeps growing — come back.</p>';
+    e = [ '<div class="dc-s">' + papier() + '<h2 class="dc-h">Enter ' + N + '’s ecosystem.</h2><p class="dc-p">Not open yet.\n' + N + ' has not opened subscriptions.\nTheir TOTEHM keeps growing — come back.</p>' +
+      '<a class="dc-lnk" href="/search">Search another TOTEHM</a></div>' ];
   }
-  $('offer').innerHTML = h;
+  poser(e, false);
 }
 /* ══ L'UNIVERS — ce que JE peux lire, net ; ce qui est réservé (FIGHER CLUB, ses abonnés), flouté :
    le serveur n'en rend que le niveau, le format et l'état. Le privé n'existe pas ici. Un tap ouvre le
@@ -757,10 +884,9 @@ async function loadUniverse(){
   if(!data?.ok){ U = null; $('uni').classList.add('hide'); return; }
   U = data;
   const sp = U.spaces || [], st = U.spots || [];
-  $('u-spaces').innerHTML = sp.map(tileHTML).join(''); $('u-spots').innerHTML = st.map(tileHTML).join('');
-  $('u-h-spaces').classList.toggle('hide', !sp.length); $('u-spaces').classList.toggle('hide', !sp.length);
-  $('u-h-spots').classList.toggle('hide', !st.length); $('u-spots').classList.toggle('hide', !st.length);
-  $('uni').classList.toggle('hide', !sp.length && !st.length);
+  /* 15/11 : l'écran « ses spots » ne montre que des SPOTS (les spaces n'existent plus qu'en mémoire du serveur) */
+  $('u-spaces').innerHTML = ''; $('u-spots').innerHTML = st.map(tileHTML).join('');
+  $('uni').classList.toggle('hide', !st.length);
   $('uni').querySelectorAll('img[data-photo]').forEach(async img => { img.onerror = () => img.remove();
     const u = await photoURL(img.dataset.photo); if(u && img.isConnected && seq === uniSeq) img.src = u; else if(!u) img.remove(); });
 }
@@ -770,12 +896,11 @@ $('uni').addEventListener('click', e => {
   const l = e.target.closest('[data-lock]'); if(!l) return;
   /* Réservé : s'abonner ouvre tout ce qui n'est pas privé (FIGHER CLUB compris). */
   const sub = $('offer').querySelector('[data-do=subscribe]');
-  $('offer').scrollIntoView({ behavior:'smooth', block:'center' });
-  if(sub){ sub.focus({ preventScroll:true }); say(audName(l.dataset.lock) + ' · subscribe to open it'); }
+  if(sub && DC){ DC.derniere(); setTimeout(() => sub.focus({ preventScroll:true }), 80); say(audName(l.dataset.lock) + ' · subscribe to open it'); }
   else say(audName(l.dataset.lock));
 });
 
-function say(t, k){ $('note').className = 'note' + (k ? ' ' + k : ''); $('note').textContent = t || ''; }
+function say(t, k){ $('note').className = 'note dc-note' + (k ? ' ' + k : ''); $('note').textContent = t || ''; }
 
 async function subscribe(b){
   if(b) b.disabled = true; say('opening checkout…');
@@ -810,6 +935,7 @@ $('offer').addEventListener('click', async e => {
    « Subscribe » sans compte : l'email, le code, puis le paiement part
    tout seul (WANT), une fois la page relue sous la nouvelle session. */
 function showSignin(){
+  DC?.activer(false);
   $('signin').classList.remove('hide');
   $('offer').querySelector('[data-do=subscribe]')?.classList.add('hide');
   $('si-email').classList.remove('hide'); $('si-code').classList.add('hide'); $('si-code').value = '';
@@ -817,6 +943,7 @@ function showSignin(){
   setTimeout(() => $('si-email').focus(), 60);
 }
 function hideSignin(){
+  DC?.activer(true);
   $('signin').classList.add('hide');
   $('offer').querySelector('[data-do=subscribe]')?.classList.remove('hide');
 }
