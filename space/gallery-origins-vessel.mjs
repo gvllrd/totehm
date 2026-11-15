@@ -1,5 +1,6 @@
 import * as T from './vendor/three-0.180.0.mjs';
 import {ORIGINS} from './gallery-artworks.mjs';
+import {createBlackHolePortal,ORIGIN_PORTAL} from './gallery-black-hole.mjs';
 import {INTENTIONS} from './gallery-lisbon-dome-layout.mjs';
 import {createLecternBook} from './gallery-lectern-book.mjs';
 
@@ -19,7 +20,7 @@ const L=ORIGINS_VESSEL_LAYOUT;
 // One continuous, world-space destination: the saucer is the boarding point,
 // the transparent corridor stays open to the ocean, and Origins occupies a
 // genuinely enclosed chamber. The caller supplies the camera journey.
-export function createOriginsVessel(scene,{mobile=false,onChange=()=>{},onOpen=()=>{}}={}){
+export function createOriginsVessel(scene,{mobile=false,onChange=()=>{},onOpen=()=>{},transitOnly=false,bookOnly=false}={}){
  const root=new T.Group();root.name='ORIGINS — vessel, glass corridor and closed chamber';scene.add(root);
  const geometries=new Set(),materials=new Set(),textures=new Set(),pickables=[],solids=[],lights=[];
  const geometry=g=>(geometries.add(g),g),material=m=>(materials.add(m),m);
@@ -76,6 +77,18 @@ export function createOriginsVessel(scene,{mobile=false,onChange=()=>{},onOpen=(
   fragmentShader:'uniform float uTime;varying vec2 vUv;void main(){float ends=smoothstep(0.,.15,vUv.y)*(1.-smoothstep(.86,1.,vUv.y));float flutes=.65+.35*pow(.5+.5*cos(vUv.x*6.2831853*24.+uTime*.14),5.);float a=.035*ends*flutes;gl_FragColor=vec4(.24,.55,.88,a);}'
  }));
  mesh(root,geometry(new T.CylinderGeometry(2.7,4.2,8.2,mobile?32:48,1,true)),beamMaterial,[0,14.6,-4.2],'Saucer translucent blue boarding light');
+ if(transitOnly){
+  const portal=createBlackHolePortal(root),shipHome=new T.Vector3(...L.saucer);let flying=false;
+  const cabin=new T.PointLight(0xc7dcff,12,7,2);cabin.position.set(0,1.9,0);saucer.add(cabin);lights.push(cabin);
+  const book={pickables:[],open:()=>false,reset(){},update:()=>false,diagnostics:()=>({closed:true,opening:false,opened:false,absent:true})};
+  return{root,pickables,solids,book,journey:{...L,outbound:[[0,1.65,13],[0,8.5,11],[0,15.8,5.5],[0,16,-4.2],[0,21.65,-4.2],[0,30,-8],[0,61,-35],[0,94,-65],[0,118,-89.7]]},
+   setFlight(eye){if(eye.y<21.7)return;flying=true;saucer.position.set(eye.x,eye.y-1.65,eye.z);beamMaterial.opacity=0;beamMaterial.visible=false;},
+   resetFlight(){flying=false;saucer.position.copy(shipHome);beamMaterial.visible=true;},
+   update(dt,eye,motion=true){if(disposed)return false;if(motion){time+=Math.max(0,Math.min(Number(dt)||0,.1));beamMaterial.uniforms.uTime.value=time;}portal.update(dt,eye,motion);const result=dirty||motion;dirty=false;return result;},
+   diagnostics:()=>({kind:'origins-saucer-black-hole-transit',saucer:true,flying,saucerPosition:saucer.position.toArray(),corridorInIsland:false,bookInIsland:false,originalWorks:0,blackHole:portal.diagnostics(),destination:ORIGIN_PORTAL.href}),
+   dispose(){if(disposed)return;disposed=true;portal.dispose();root.removeFromParent();for(const g of geometries)g.dispose();for(const m of materials)m.dispose();for(const t of textures)t.dispose();for(const light of lights)light.dispose?.();dots.dispose();root.clear();}
+  };
+ }
  // The corridor is a glass sleeve around an open volume, rather than an
  // extruded transparent block. Its floor also lets the ocean show through.
  const corridor=new T.Group();corridor.name='ORIGINS — transparent dark glass corridor';root.add(corridor);
@@ -109,7 +122,7 @@ export function createOriginsVessel(scene,{mobile=false,onChange=()=>{},onOpen=(
  ring(chamber,radius-.06,.018,20.06,centerZ,white,'Origins chamber quiet floor perimeter');
  ring(chamber,radius-.04,.02,28.94,centerZ,white,'Origins chamber crown perimeter');
  for(const x of [-2.3,2.3])block(chamber,black,[x,22.4,centerZ+Math.sqrt(radius*radius-x*x)],[.12,4.8,.16],'Origins chamber entrance jamb',true);
- label(chamber,'ORIGINS',[0,26.5,centerZ-radius+.07],5.4,.52);
+ if(!bookOnly)label(chamber,'ORIGINS',[0,26.5,centerZ-radius+.07],5.4,.52);
  INTENTIONS.forEach((intent,n)=>{
   const ink=material(new T.MeshBasicMaterial({color:intent.color,toneMapped:false})),a=(-140+n*46)*Math.PI/180;
   path(chamber,[[0,20.025,centerZ],[(radius-.1)*Math.sin(a),20.025,centerZ+(radius-.1)*Math.cos(a)]],.012,ink,'Origins chamber floor intention — '+intent.label).userData.intention=intent.id;
@@ -117,12 +130,12 @@ export function createOriginsVessel(scene,{mobile=false,onChange=()=>{},onOpen=(
  // Physical edition book at the terminus, isolated by a low circular dais.
  for(const [r,h,y] of [[2.7,.10,20.05],[2.15,.14,20.15],[1.6,.1,20.27]])mesh(chamber,geometry(new T.CylinderGeometry(r,r,h,mobile?64:96)),black,[0,y,centerZ],'Origins ceremonial concentric dais',true);
  const plinth=block(chamber,black,[0,20.74,centerZ],[.78,1.0,.78],'ORIGINS — ceremonial book plinth',true);
- const slab=block(chamber,silver,[0,21.22,centerZ],[1.2,.10,1.1],'Origins ceremonial reading slab',true);slab.rotation.x=Math.PI/10;
+ const slab=block(chamber,bookOnly?black:silver,[0,21.22,centerZ],[1.2,.10,1.1],'Origins ceremonial reading slab',true);slab.rotation.x=Math.PI/10;
  ring(chamber,2.69,.012,20.11,centerZ,white,'Origins book dais fine highlight');
  const book=createLecternBook(chamber,{mobile,onChange:changed,onOpen,layout:{origins:{book:L.bookPosition}}});
  for(const object of book.pickables){object.userData={...object.userData,kind:'origins-vessel-book',href:'/origins?open=1'};pickables.push(object);}
  const artWidth=1.85;
- ORIGINS.forEach((work,n)=>{
+ (bookOnly?[]:ORIGINS).forEach((work,n)=>{
   const a=opening+.10+(Math.PI*2-opening*2-.2)*(n+.5)/ORIGINS.length,r=radius-.18,x=Math.sin(a)*r,z=centerZ+Math.cos(a)*r,group=new T.Group();
   group.name='Origins chamber work — '+work.title;group.position.set(x,24.25,z);group.rotation.y=a+Math.PI;chamber.add(group);
   const artHeight=artWidth/work.aspect;
@@ -138,13 +151,13 @@ export function createOriginsVessel(scene,{mobile=false,onChange=()=>{},onOpen=(
  const returnLabel=label(chamber,'RETURN TO LISBON',[0,21.35,centerZ+radius-.20],2.05,.22,{rotationY:Math.PI});
  if(returnLabel)pick(returnLabel,'origins-vessel-return',{action:'return',href:'/lisbon-space'});
  for(const [p,target,power] of [[[0,27,-40],[0,21,-43],150],[[-6,26,-39],[0,21,-43],70],[[6,26,-47],[0,21,-43],70]]){
-  const light=new T.SpotLight(0xd7e5ef,power,24,.65,.8,2);light.position.set(...p);light.target.position.set(...target);chamber.add(light,light.target);lights.push(light);
+  const light=new T.SpotLight(bookOnly?0xffe7c2:0xd7e5ef,bookOnly?(power===150?230:8):power,24,bookOnly?.23:.65,.8,2);light.position.set(...p);light.target.position.set(...target);chamber.add(light,light.target);lights.push(light);
  }
- const ambient=new T.PointLight(0xb8c9dd,25,25,2);ambient.position.set(0,26,-43);chamber.add(ambient);lights.push(ambient);
+ const ambient=new T.PointLight(0xb8c9dd,bookOnly?4:25,25,2);ambient.position.set(0,26,-43);chamber.add(ambient);lights.push(ambient);
  changed();
  return{root,pickables,solids,book,journey:L,
   update(dt,eye,motion=true){if(disposed)return false;const step=Math.max(0,Math.min(Number(dt)||0,.1));if(motion){time+=step;updates++;beamMaterial.uniforms.uTime.value=time;}const bookChanged=book.update(dt,eye,motion),result=dirty||bookChanged||!!(motion&&step>0);dirty=false;return result;},
-  diagnostics:()=>({kind:'origins-flying-saucer-destination',ready:!disposed,saucer:true,saucerRadius:L.radius,saucerPosition:[...L.saucer],metallicDisk:true,glassCupola:true,blueBeam:true,corridor:{transparent:true,blackFrames:true,glassFloor:true,intentions:7,roofIntentions:7,startZ:c.startZ,endZ:c.endZ,floorY:L.floorY,width:c.width,height:c.height},chamber:{closed:true,realDoorway:true,closedCeiling:true,center:[...L.chamber.center],radius,wallHeight:L.chamber.wallHeight,originalWorks:ORIGINS.length,loadedWorks,failedWorks,bookPosition:[...L.bookPosition],bookApproach:[...L.bookApproach]},book:book.diagnostics(),cameraJourney:true,bodyPhysicsRequired:false,originalMedia:true,workTextureMaximumWidth:mobile?256:512,updates,time,disposed}),
+  diagnostics:()=>({kind:'origins-flying-saucer-destination',ready:!disposed,saucer:true,saucerRadius:L.radius,saucerPosition:[...L.saucer],metallicDisk:true,glassCupola:true,blueBeam:true,corridor:{transparent:true,blackFrames:true,glassFloor:true,intentions:7,roofIntentions:7,startZ:c.startZ,endZ:c.endZ,floorY:L.floorY,width:c.width,height:c.height},chamber:{closed:true,realDoorway:true,closedCeiling:true,center:[...L.chamber.center],radius,wallHeight:L.chamber.wallHeight,originalWorks:bookOnly?0:ORIGINS.length,loadedWorks,failedWorks,bookPosition:[...L.bookPosition],bookApproach:[...L.bookApproach]},book:book.diagnostics(),cameraJourney:true,bodyPhysicsRequired:false,originalMedia:true,workTextureMaximumWidth:mobile?256:512,updates,time,disposed}),
   dispose(){if(disposed)return;disposed=true;book.dispose();root.removeFromParent();for(const g of geometries)g.dispose();for(const m of materials)m.dispose();for(const t of textures)t.dispose();for(const light of lights)light.dispose?.();dots.dispose();root.clear();}
  };
 }

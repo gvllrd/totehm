@@ -13,7 +13,7 @@ try{
   const {pg,ctx,log}=f;
   try{
    await pg.emulateMedia({reducedMotion:'reduce'});await pg.goto(origin+'/lisbon-space',{waitUntil:'domcontentloaded'});
-   await pg.waitForFunction(()=>window.__totehm_gallery?.().stations?.play?.coverReady&&__totehm_gallery().originsJourney.vessel.chamber.loadedWorks===20,null,{timeout:90000});
+   await pg.waitForFunction(()=>window.__totehm_gallery?.().stations?.play?.coverReady&&__totehm_gallery().originsJourney.vessel.blackHole.realPortal,null,{timeout:90000});
    const start=await pg.evaluate(()=>__totehm_gallery());
    check(start.temple.kind==='lisbon-azulejo-urbex-gallery'&&!start.temple.dome&&start.temple.azulejoBuilding.ruined,'The real world has the ruined azulejo building at '+viewport.width);
    check(start.temple.thpCounter.tables===1&&start.temple.thpCounter.inside&&start.temple.laboratory.wings===2,'One indoor table combines the THP and both laboratory wings at '+viewport.width);
@@ -22,9 +22,9 @@ try{
    await pg.locator('.tour [data-room="0"]').click();await pg.waitForFunction(()=>__totehm_gallery().focused===0);
    check((await pg.evaluate(()=>__totehm_gallery().position[1]))<-2,'Visitors actually enter the building to reach the table at '+viewport.width);
    await pg.screenshot({path:out+'/'+viewport.width+'-laboratory.png',timeout:90000});await pg.locator('#close-info').click();
-   await pg.locator('.tour [data-room="1"]').click();await pg.waitForFunction(()=>__totehm_gallery().originsJourney.state==='chamber');
-   check(await pg.locator('#return-island').isVisible(),'Origins remains reachable from inside the new building at '+viewport.width);
-   await pg.locator('#return-island').click();await pg.waitForFunction(()=>__totehm_gallery().originsJourney.state==='island'&&__totehm_gallery().camera.position[1]<2);
+   await pg.locator('.tour [data-room="1"]').click();await pg.waitForURL(u=>u.pathname==='/origin');await pg.waitForFunction(()=>window.__totehm_origin?.().frames>0);
+   check(await pg.locator('#origin-return').isVisible(),'Origins is a dedicated galaxy page with a return at '+viewport.width);
+   await pg.locator('#origin-return').click();await pg.waitForFunction(()=>window.__totehm_gallery?.().stations.play.coverReady);
    await pg.locator('.tour [data-room="2"]').click();await pg.waitForFunction(()=>__totehm_gallery().focused===2);
    await pg.locator('#close-info').click();await pg.waitForFunction(()=>__totehm_gallery().room===-1);
    // Closing the info panel preserves the arrived view. The physical optical
