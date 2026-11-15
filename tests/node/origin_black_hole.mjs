@@ -19,6 +19,7 @@ for(const mobile of [false,true]){
  const floor=ship.root.getObjectByName('Saucer continuous black cabin floor');
  check(!floor.material.transparent&&new T.Raycaster(new T.Vector3(0,21.65,-4.2),new T.Vector3(0,-1,0),0,2).intersectObject(floor).length>0,'The passenger stands above a full opaque cabin floor');
  const canopy=ship.root.getObjectByName('Origins closed metallic cupola');check(!canopy.material.transparent&&new T.Raycaster(new T.Vector3(0,25,-4.2),new T.Vector3(0,-1,0),0,5).intersectObject(canopy).length>0,'An opaque metallic canopy visibly closes the top of the saucer');
+ for(const origin of [[0,16,-4.2],[1,16,-3.2]]){const ray=new T.Raycaster(new T.Vector3(...origin),new T.Vector3(0,1,0),0,8),solid=ray.intersectObjects(ship.solids).find(h=>!h.object.material.transparent),hit=ray.intersectObjects(ship.pickables).find(h=>!solid||h.distance<=solid.distance+.055);check(hit?.object.userData.kind==='origins-vessel','The closed central engine cover still boards the saucer when clicked');}
  for(const p of ship.journey.outbound.slice(0,4)){ship.setFlight(new T.Vector3(...p));check(!ship.diagnostics().flying,'The ship waits while the passenger approaches above its intact hull');}
  ship.setFlight(new T.Vector3(0,60,-40));check(ship.diagnostics().flying&&ship.diagnostics().saucerPosition.join(',')==='0,58.35,-40','The saucer moves with its passenger after boarding');
  ship.resetFlight();check(ship.diagnostics().saucerPosition.join(',')==='0,20,-4.2','Cancellation restores the physical saucer');

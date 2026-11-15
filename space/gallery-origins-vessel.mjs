@@ -60,7 +60,7 @@ export function createOriginsVessel(scene,{mobile=false,onChange=()=>{},onOpen=(
  ring(saucer,2.96,.016,.83,0,black,'Saucer fine canopy seam');
  ring(saucer,9.92,.027,.025,0,white,'Saucer fine metallic edge highlight');
  const deck=mesh(saucer,geometry(new T.CircleGeometry(2.95,mobile?64:96)),black,[0,.80,0],'Saucer continuous black cabin floor',true);deck.rotation.x=-Math.PI/2;
- mesh(saucer,geometry(new T.CylinderGeometry(2.7,2.7,.06,mobile?64:96)),silver,[0,-1.045,0],'Saucer sealed underside engine cover',true);
+ pick(mesh(saucer,geometry(new T.CylinderGeometry(2.7,2.7,.06,mobile?64:96)),silver,[0,-1.045,0],'Saucer sealed underside engine cover',true),'origins-vessel',{action:'board',href:'/origin'});
  ring(saucer,3.12,.025,-.99,0,focus,'Saucer sealed engine fine blue seam');
  for(const [r,y] of [[4.7,-.84],[7.4,-.51],[9.9,-.16]])ring(saucer,r,.012,y,0,black,'Saucer restrained engraved hull seam');
  const dots=new T.InstancedMesh(geometry(new T.CircleGeometry(.035,8)),focus,48),transform=new T.Object3D();dots.name='Saucer underside — forty-eight small landing lights';
