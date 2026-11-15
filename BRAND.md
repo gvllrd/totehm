@@ -39,7 +39,7 @@ MY STORY. Chacun porte une ou plusieurs des sept intentions :
 
 ↑ **Get Higher** (commune à tous : la bouche, le TotehmPaper, le cerveau des sept intentions qui vibre ; elle vend le
 THP : *Neuroscience, not motivation.*) · ← **mes médias** (en y allant, les sept traits encadrent l'écran ; une grille, chaque image perforée des douze trous du logo ; un tap sur le TOTEHM et MY WISDOM · MY GRIND · MY VISION naissent de lui, en carrés perforés de leur couleur ;
-MY GRIND = OBJECTIVES · HABITS · REPULSIONS empilés ; le « + » d'un média fait naître le même TOTEHM, la box choisie reste seule et la capture vient dessous) ·
+**LE GRIND** = l'ensemble des box HABITS du TOTEHM, chacune avec ses objectifs et ses répulsions ; MY GRIND = OBJECTIVES · HABITS · REPULSIONS empilés ; le « + » d'un média fait naître le même TOTEHM, la box choisie reste seule et la capture vient dessous) ·
 Les traits décoratifs des intentions sont réservés à l’ordinateur : aucun arbre, réseau, cadre ou trait du profil sur mobile, dans aucune vue ni transition.
 ● **mon TOTEHM** (plus de boîte noire : le TOTEHM EST le boîtier du processeur et le cœur d'un ARBRE DE VIE — ses douze
 perforations toutes raccordées ; au-dessus de lui, ses sept traits se divisent trois fois sur ordinateur (56 pointes), deux sur téléphone (28 pointes plus espacées) ; TOUTES touchent le bord supérieur de l’écran, sur toute sa largeur ; le trait s’affine.

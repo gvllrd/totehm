@@ -2,18 +2,20 @@
 
 > L'état ACTUEL et les pièges (≤ 60 lignes). Un lot réécrit ces lignes, en place. **Règle n° 1 : les boxes sont le branding essentiel ; conserver partout leur rendu natif intégral, sans réinterprétation locale (voir `BRAND.md`, règle n° 1).**
 
-**La sixième vue** : le prolongement de la vue → Spots de totehm.com. Deux choses, et deux seulement — TROUVER les
-spots rendus visibles autour de soi, et en PUBLIER un sans passer par totehm.com. Un spot = une Habit du TOTEHM
-devenue une action dans un temps et un lieu précis (I WILL BE HERE · I AM HERE · I WAS THERE).
-Différence avec COM : ici les spots de TOUS les membres (`club_spots`), là-bas les miens ; ici RADAR · GRID · SHORTS, là-bas MAP · GRID.
-La définition, la même sur les deux : « A spot is your TOTEHM Habit in action: exact place, exact time, right people, your conditions. »
+**La sixième vue** : le prolongement de la vue → Spots de totehm.com. Deux choses — TROUVER les spots visibles autour
+de soi, en PUBLIER un sans passer par com. Un spot = une Habit du TOTEHM devenue une action dans un temps et un lieu
+précis (I WILL BE HERE · I AM HERE · I WAS THERE).
+**À QUOI SERT LE CLUB** (Wah, 14/11) : à la RENCONTRE des membres, dans un contexte et une action déterminés, sur une
+vue PARTIELLE du grind — la box Habit dont il est question, avec ses objectifs et ses répulsions (le GRIND = TOUTES les
+box Habits du TOTEHM avec leurs objectifs et leurs répulsions). Voir la stratégie derrière le geste, c'est ÇA aussi
+l'intérêt du Club : un spot en Figher Club y montre ses sous-box. Filtrer par Habits SEMBLABLES est sa raison d'être.
+Différence avec COM : ici les spots de TOUS les membres (`club_spots`), là-bas les miens ; ici RADAR · GRID · SHORTS, là-bas MAP · GRID. La définition, la même sur les deux : « A spot is your TOTEHM Habit in action: exact place, exact time, right people, your conditions. »
 
 | fichier | rôle |
 |---|---|
 | `index.html` | la page : RADAR \| GRID \| SHORTS, la barre, le filtre, un spot ouvert, la prise de spot |
 | `create.html` | **l'ancien moteur**, encore servi : `com/spot.html` (TotehmBot, Telegram) l'encadre par `/x/club` |
-| `art-bridge.html` | anciens liens d'œuvres → totehm.space, connexion gardée |
-| `cities.json` · `video-capture.mjs` · `vendor/` | les villes · la caméra (de `create.html`) · hls.js |
+| `art-bridge.html` · `cities.json` · `video-capture.mjs` · `vendor/` | anciens liens d'œuvres → totehm.space · les villes · la caméra (de `create.html`) · hls.js |
 
 Serveur : `club_spots`, `spot_get`, `spot_rules`, `space_habits`, `spot_create_audience`, `spot_schedule_audience`,
 `spot_box_set`, `spot_video_attach`, `spot_remove`, `sso_epoch`. Droits : `_audience_ok`, `_spot_exact`, `_clip_readable`.
@@ -24,36 +26,35 @@ Serveur : `club_spots`, `spot_get`, `spot_rules`, `space_habits`, `spot_create_a
 |---|---|
 | l'en-tête | coin membre SEUL (12/11, Wah : « enlève le totehm central en haut, il ne sert à rien » — le coin porte déjà LE TOTEHM qui tourne, et un tap y ramène) · `#rdr-mode` en haut à droite : le bas reste au pouce, chaque vue DÉFILE ; ce qui glisse passe sous un fondu noir |
 | les trois modes | `const MODES=` · `MODE` (gardé, `figher_mode`) · `peindreMode()` · `body.rdr-radar` \| `rdr-grid` \| `rdr-shorts` |
-| le radar | `const RAD=` · `situer()` · `draw()` : moi au centre, un carré par spot (PLEIN = point exact, CREUX = la ville), de la couleur de TOUTES ses intentions mélangées comme des pigments (`melange`, moyenne Oklab à saturation rendue — copié de com) ; l'anneau tourne au doigt, `CMP` = la boussole. **LA PORTÉE SE RÈGLE** : `RAD.z` multiplie la portée automatique (`radarAuto`), gardé dans `figher_portee` ; trois gestes — les boutons `#rdr-zoom` (± 1,6), deux doigts sur le disque, la molette —, et `#rdr-span` ÉCRIT la portée pendant le geste. L'anneau garde sa priorité (`stopImmediatePropagation`). Il DÉFILE (`.rd-top`, ses gestes dans SON repère) : dessous, `LISTE` (du plus proche au plus loin, « N spots ↓ ») ; il s'arrête hors de l'écran ou derrière un panneau |
-| les shorts | `const SHORTS=` : les spots qui ont un média, un par écran, aimantés ; UN joue, le suivant se prépare, le reste est lâché ; tap image = le son, tap box = le spot |
-| la grille | `const GRID=` : la tuile carrée, la box du TOTEHM posée dessus, le « + » en tête (comme COM) |
-| la lecture | `const CLUBSP=` : `club_spots`, trois temps, filtres au SERVEUR, pagination ; la position est demandée À L'ARRIVÉE (`boot`) : près de moi d'abord (now → future), rien autour → tout le Club, et la barre le dit ; vide → ce qui vient, puis ce qui a été. Déconnecté : AUCUNE lecture ni position (le serveur ne montre rien sans compte), la vue invite à se connecter |
-| le filtre | `const SF=` · `sfPaint()` : le format de la vue de droite de totehm.com — Habits (box du TOTEHM, parenté), When, Where + rayon, Together, Intentions (« Fight [Higher] »), It shows |
-| la prise | `const NSPOT=` (`#rdr-new`) : la définition EN AVANT (`.ns-what`), la Habit, WHEN, WHERE, FIGHER CLUB d'office = EVERY MEMBER (montré, jamais demandé), together, durée, un mot, le média — **au format de la vue de droite de com** (12/11, Wah) : trois pavés PHOTO · VIDEO · IMPORT (`#ns-cap`, `.cap-b` et les icônes copiés de `com/totehm.html`), une entrée de fichier par pavé ; une vidéo part chez Bunny (`VID`, TUS, `tools/bunny_upload.js`), sinon dans `moments` |
-| un spot ouvert | `ouvrirDetail()` (`#detail`) : LE TRAIT en tête (`.dt-grab` : il tient le geste seul, `touch-action:none`, la feuille garde son défilement ; un tiers de sa hauteur ou un lancer et elle part — elle n'écrit que `--dy`, donc l'ordinateur centré suit la même ligne), le média, la box, GO · CALENDAR · SHARE · DELETE (les miens) · CLOSE |
+| le radar | `const RAD=` · `situer()` · `draw()` : moi au centre, un carré par spot (PLEIN = point exact, CREUX = la ville), de la couleur de TOUTES ses intentions mélangées (`melange`, moyenne Oklab à saturation rendue — copié de com) ; l'anneau tourne au doigt, `CMP` = la boussole. **LA PORTÉE SE RÈGLE** : `RAD.z` multiplie la portée automatique (`radarAuto`), gardé dans `figher_portee` ; trois gestes — `#rdr-zoom` (± 1,6), deux doigts sur le disque, la molette —, et `#rdr-span` ÉCRIT la portée pendant le geste. L'anneau garde sa priorité (`stopImmediatePropagation`). Il DÉFILE (`.rd-top`) : dessous, `LISTE` (du plus proche au plus loin) ; il s'arrête hors de l'écran ou derrière un panneau |
+| les shorts, la grille | `const SHORTS=` : les spots qui ONT un média (facultatif depuis le 14/11), un par écran, aimantés ; UN joue, le suivant se prépare ; tap image = le son, tap box = le spot · `const GRID=` : la tuile carrée, la box du TOTEHM dessus, le « + » en tête (comme COM) |
+| la lecture, le filtre | `const CLUBSP=` : `club_spots`, trois temps, filtres au SERVEUR, pagination ; la position est demandée À L'ARRIVÉE (`boot`) : près de moi d'abord, rien autour → tout le Club, et la barre le dit. Déconnecté : AUCUNE lecture ni position · `const SF=` · `sfPaint()` : le format de la vue de droite de com — Habits (box du TOTEHM, parenté), When, Where + rayon, Together, Intentions, It shows |
+| la prise | `const NSPOT=` (`#rdr-new`) : la définition EN AVANT (`.ns-what`, le mot TOTEHM y est la PIÈCE, `data-tw`), la Habit, WHEN, WHERE, FIGHER CLUB d'office = EVERY MEMBER (montré, jamais demandé), together, le média, durée, un mot. **LE MÉDIA EST FACULTATIF** (14/11, Wah : « un spot peut être sans media ») : trois pavés PHOTO · VIDEO · IMPORT au format de la vue de droite de com (`#ns-cap`, `.cap-b` et les icônes copiés de `com/totehm.html`), [remove] retire celui qu'on a pris, et rien ne garde la suite ; une vidéo part chez Bunny (`VID`, TUS, `tools/bunny_upload.js`), sinon dans `moments`. **UNE HABIT PRIVÉE NE PORTE PAS DE SPOT ICI** : `space_habits` rend le niveau de chaque box (`audience`), une box privée s'affiche GRISÉE (`.sfb.is-off`, l'opacité dit l'état — la box garde son rendu natif), non sélectionnable, avec [make visible to subscribers] ; le tap EST la confirmation (`box_audience_set`), et `publier` refuse sans lui |
+| un spot ouvert | `ouvrirDetail()` (`#detail`) : LE TRAIT en tête (`.dt-grab` tient le geste seul, `touch-action:none` ; un tiers de sa hauteur et elle part, elle n'écrit que `--dy`), son média s'il en a un, la box, GO · CALENDAR · SHARE · DELETE (les miens) · CLOSE |
 | la vidéo | `const BUNNY=` (HLS signé au moment de jouer) · `urlMoments()` (seau `moments`, URL signée d'une heure) |
 
 ## Les règles
 
-- **La parenté** (Wah) : une Habit choisie au filtre ouvre les spots dont la Habit lui RESSEMBLE — `akin` part au
-  serveur (`_habit_kin` : radicaux, trigrammes, intentions, pilier ; zéro centime), les plus proches d'abord, et
-  chaque spot DIT pourquoi (`kin.why` → same habit · same words · same intentions · close · same pillar).
-  `[exactly this one]` renvoie le filtre EXACT (`habit`). Les intentions de la Habit viennent du serveur, pas d'ici.
-- **Le lieu** : un point est un POINT. Ma position, ou une ADRESSE lue par Nominatim (OpenStreetMap, le même fonds que la carte) — UNE requête par geste, jamais une par lettre, réponses gardées. La VILLE se déduit toujours de `cities.json`, jamais du géocodeur : c'est le vocabulaire du filtre `city` et du radar.
-  Plus de `location on/off` : WHERE le disait déjà. Un spot porte son point exact ; « who sees it » garde la vie privée.
-- **WHEN décide de WHERE** : `now` impose `here` (maintenant ailleurs n'existe pas) et ne montre aucune date ;
-  `later` déplie la date et l'heure tout de suite.
-- Ce qui vient du TOTEHM reste tel quel (Habit Box, mini-boxes OBJECTIVES / REPULSIONS).
-- Membre du Club = une habit + un objectif + une répulsion (serveur, `_figher`). Un abonné voit ce que le créateur
-  lui réserve. FIGHER CLUB est le niveau le plus ouvert : il n'y a pas de PUBLIC.
-- Le coin membre (`tools/totehm_name.js` + `member_corner.*`) = CONNECT WITH MY TOTEHM en bouton normal ; connecté = LE TOTEHM, une
-  pièce qui TOURNE (~24 s) : recto le logo plein, verso le nom coral sur tout le carré, tap vers COM ; « Simple terms of use » tout en bas, effacé par une vue qui défile. **Pas de SORTIR ici** : sortir de totehm.com sort de partout (`sso_epoch`).
+- **La parenté** (Wah), le cœur du Club : une Habit choisie au filtre ouvre les spots dont la Habit lui RESSEMBLE —
+  `akin` part au serveur (`_habit_kin` : radicaux, trigrammes, intentions, pilier ; zéro centime), les plus proches
+  d'abord, et chaque spot DIT pourquoi (`kin.why`). `[exactly this one]` renvoie le filtre EXACT (`habit`). Le filtre
+  garde TOUTES mes Habits, privées comprises : il cherche chez les autres, seule la PRISE a un plafond.
+- **Le lieu** : un point est un POINT. Ma position, ou une ADRESSE lue par Nominatim — UNE requête par geste, jamais
+  une par lettre, réponses gardées. La VILLE se déduit toujours de `cities.json`, jamais du géocodeur : c'est le
+  vocabulaire du filtre `city` et du radar. Plus de `location on/off` : WHERE le disait déjà.
+- **WHEN décide de WHERE** : `now` impose `here` et ne montre aucune date ; `later` déplie la date et l'heure.
+- Ce qui vient du TOTEHM reste tel quel (Habit Box, mini-boxes OBJECTIVES / REPULSIONS). Un spot montre SA box et ses
+  sous-box, jamais les médias de la box : un média prend le niveau de SA box, et c'est l'abonnement qui l'ouvre.
+- Membre du Club = une habit + un objectif + une répulsion (serveur, `_figher`). FIGHER CLUB est le niveau le plus
+  ouvert : il n'y a pas de PUBLIC.
+- Le coin membre (`tools/totehm_name.js` + `member_corner.*`) = CONNECT WITH MY TOTEHM en bouton normal ; connecté =
+  LE TOTEHM qui TOURNE (~24 s), tap vers COM. **Pas de SORTIR ici** : sortir de totehm.com sort de partout (`sso_epoch`).
+- La connexion passe par `tools/otp_signin.js` (copié) : l'email en vol survit au rechargement, un seul essai à la fois.
 
 ## Écarts connus
 
 - figher.club est servi par Vercel et à jour, mais le projet n'est PAS dans l'équipe Vercel de Wah
   (`gvllrds-projects` n'a que `com`, `space`, `boutique`) : ni alias, ni rollback, ni variables depuis sa console.
-- `create.html` garde l'ANCIEN questionnaire (location on/off, ni adresse) et sa caméra 9:16 à décompte ; `index.html` n'a
-  pas de point sur une carte (l'adresse), et sa prise de média n'a pas la caméra EN DIRECT de l'ordinateur (com seul).
+- `create.html` garde l'ANCIEN questionnaire ; `index.html` n'a pas de point sur une carte, ni la caméra EN DIRECT.
 
 Tests : `tests/browser/club_spots.mjs`, `club_v2.mjs`, `com_spot.mjs`. Diagnostic : `__totehm_club()`.

@@ -5,7 +5,7 @@ ligne une minute plus tard (Vercel).
 
 | site | dossier | ce que c'est |
 |---|---|---|
-| **totehm.com** | `com/` | l'écosystème : les 5 vues, ton TOTEHM, chercher un membre, s'abonner à lui |
+| **totehm.com** | `com/` | l'écosystème : les 5 vues, ton TOTEHM, chercher l'ÉCOSYSTÈME d'un membre (`/search`, un onglet), s'abonner à lui |
 | **figher.club** | `club/` | la sixième vue : le radar et la grille des spots visibles, le filtre par Habits parentes, publier un spot |
 | **higher.boutique** | `boutique/` | les vêtements totehmisés à partir d’un élément personnel, dans n’importe quelle catégorie |
 | **totehm.space** | `space/` | Lisbon : dôme noir brut, sept intentions, laboratoire THP et 22 signes interactifs ; île, océan et ciel étoilé conservés. New York : château, six œuvres Think same but opposite et statue submergée ; œuvres et marché indépendants |
@@ -32,7 +32,7 @@ La creator economy est à retravailler : rendre la valeur et le prix **annuel** 
 | où | quoi |
 |---|---|
 | `com/totehm.html` · `tracking.mjs` · `habit-rhythm.mjs` · `telegram-practice.mjs` | l’app et son dashboard privé ; réglages du suivi et partage explicite avec Higher ChatGPT |
-| `com/auth.html` · `creator.html` · `higher.html` | la connexion des 4 sites · la page d'un membre (`/@nom`) · le renvoi vers Higher GPT gratuit |
+| `com/auth.html` · `creator.html` · `higher.html` | la connexion des 4 sites · chercher un écosystème (`/search`, le verso plein écran) et la page d'abonnement d'un membre (`/@nom`) · le renvoi vers Higher GPT gratuit |
 | `com/console.html` · `monetize.html` · `terms.html` | l'ancienne console (encore liée par les paiements) · la plaquette créateur · les conditions |
 | `com/map.html` · `spot.html` | les lieux ouverts par TotehmBot ; `/higherself` et `/club/totehmbot` sont des redirections historiques |
 | `club/index.html` · `club/create.html` | le Club (RADAR \| GRID, filtre, prise de spot) · l'ancien moteur, encore ouvert par TotehmBot |
@@ -43,7 +43,7 @@ La creator economy est à retravailler : rendre la valeur et le prix **annuel** 
 | `backend/supabase/functions/_shared/tracking-*.ts` | notifications déterministes : Done/Missed dans le même message, périodes conservées, historique intact, livraisons vérifiées, horaires et plafonds ; `/prepare`, `/review`, `/settings`, `/pause`, `/resume` ; préparation explicite, aucune photo exportée |
 | `backend/supabase/migrations/` · `functions/` | les modifications de la base, dans l'ordre · les 40 fonctions serveur |
 | `backend/n8n/` | les automatisations du vêtement (A → F) et la VM Oracle |
-| `tools/` | 13 blocs communs, copiés dans les pages (connexion, coin membre, **le mot TOTEHM qui devient la pièce**, envoi vidéo Bunny, confidentialité, loupe, menu, survol) |
+| `tools/` | 14 blocs communs, copiés dans les pages (connexion SSO, **le code à six chiffres**, coin membre, nomenclature du nom, **le mot TOTEHM qui devient la pièce là où la page le demande**, envoi vidéo Bunny, confidentialité, loupe, menu, survol) |
 | `tests/` | les tests (navigateur avec une base simulée, SQL, logique) |
 
 ## Les documents
