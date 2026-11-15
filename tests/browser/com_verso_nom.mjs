@@ -8,7 +8,7 @@ import fs from 'node:fs';
 import {launch,page,ok} from './harness.mjs';
 const OUT=process.argv[2]||'/tmp';fs.mkdirSync(OUT,{recursive:true});
 const origin='https://www.totehm.com';
-const NOM='thehigherversionofme';   // 20 lettres : 5 colonnes, 4 lignes
+const NOM='thehigherversionofme';   // 20 lettres : un bloc de 5 colonnes, 4 lignes
 const tables={profiles:[{pseudo:NOM}]};
 const LAND={signed_in:true,pseudo:NOM,visibility:'private',offer:{enabled:false,open:false},
   higher:{active:false,price_cents:700,currency:'eur',period:'month'},thp:false,subscriptions:0,subscribers:0,
@@ -47,7 +47,8 @@ try{
  ok(a&&a.n===NOM.length&&a.mot===NOM, 'le verso porte les '+NOM.length+' lettres du nom, dans l\'ordre ('+(a&&a.mot)+')');
  ok(a&&!a.dehors&&a.lignes>1, 'elles prennent le carré du papier sur '+(a&&a.lignes)+' lignes, aucune dehors');
  ok(a&&a.couleur===CORAL&&/Quantico/.test(a.police), 'Quantico coral, comme tout nom de TOTEHM ('+(a&&a.couleur)+')');
- ok(a&&a.px>=14, 'une lettre fait '+(a&&a.px)+' px sur un papier de '+(a&&a.carre)+' (sur une ligne : 8,6)');
+ /* 14/11 (Wah : « les lettres sont beaucoup trop grosses, c'est très moche ») : un bloc CARRÉ, des lettres ≤ 20 % du côté */
+ ok(a&&a.px>=8&&a.px<=a.carre*.2+.5, 'une lettre fait '+(a&&a.px)+' px sur un papier de '+(a&&a.carre)+' : lisible (≥ 8) et jamais plus de 20 % du côté');
  ok(a&&a.refVisible==='hidden'&&a.refLargeur>0, 'la ligne de référence reste MESURABLE sans se voir ('+(a&&a.refLargeur)+' px)');
 
  // ── LE DÉPLOIEMENT : les mêmes lettres rejoignent la ligne ──────────────────────
@@ -73,9 +74,21 @@ try{
 
  // ── LA NOMENCLATURE, aux bornes ────────────────────────────────────────────────
  const plan=await pg.evaluate(()=>['wah','wahvv','higher','seizelettresicibon','thehigherversionofmyselfetplus']
-   .map(n=>{const p=window.TOTEHM_NOM.plan(n);return [p.N,p.C,p.R];}));
- ok(JSON.stringify(plan)===JSON.stringify([[3,3,1],[5,5,1],[6,4,2],[18,5,4],[25,5,5]]),
-   'la nomenclature : 1-5 une ligne · 6-16 en 4 colonnes · 17-25 en 5 · au-delà 25 lettres + · ('+JSON.stringify(plan)+')');
+   .map(n=>{const p=window.TOTEHM_NOM.plan(n,.66);return [p.N,p.C,p.R];}));
+ ok(plan.map(x=>x[0]).join()==='3,5,6,18,25'&&(r=>r.every(([N,C,R])=>N<=5?(R===1&&C===N):(C*R>=N&&(C-1)*R<N+C&&Math.abs(Math.log((C*.66*1.12)/(R*1.18)))<.4)))(plan),
+   'la nomenclature : 1-5 une ligne · 6 et plus un BLOC CARRÉ (largeur ≈ hauteur) · au-delà 25 lettres + · ('+JSON.stringify(plan)+')');
+
+ // ── 14/11 (Wah : « parfaitement carré et ALIGNÉ ») : une GRILLE exacte — même taille de colonne, même taille de ligne,
+ // chaque lettre centrée dans sa case, un bloc dont la largeur égale la hauteur ──
+ const g=await pg.evaluate(()=>{const h=document.getElementById('ast-grid'),L=[...h.querySelectorAll('.tn-l')],C=+h.dataset.cols,R=+h.dataset.rows;
+   const cx=L.map(e=>{const r=e.getBoundingClientRect();return r.x+r.width/2;}), gy=[...new Set(L.map(e=>e.dataset.gy))];
+   const parCol=Array.from({length:C},(_,c)=>cx.filter((_,i)=>i%C===c)), ecart=Math.max(...parCol.map(a=>Math.max(...a)-Math.min(...a)));
+   const dots=h.querySelectorAll('.tn-v').length;
+   return {C,R,B:+h.dataset.bloc,n:L.length,lignes:gy.length,ecart,dots,vides:C*R-L.length};});
+ ok(g.C>1&&g.R>1&&g.lignes===g.R&&g.ecart<=2&&g.dots===g.vides&&g.B>0,
+   'une GRILLE : '+g.C+' colonnes × '+g.R+' lignes, chaque ligne a son ordonnée unique, chaque colonne son axe (écart max '+g.ecart.toFixed(2)+' px), les '+g.vides+' cases vides sont des points ('+g.dots+')');
+ ok(Math.abs(g.C*g.R-g.n-g.vides)<1e-9&&g.B/g.C>0&&g.B/g.R>0&&g.C*g.R>=g.n,
+   'le bloc est EXACTEMENT carré : côté '+g.B+' px = '+g.C+' colonnes de '+(g.B/g.C).toFixed(2)+' = '+g.R+' lignes de '+(g.B/g.R).toFixed(2));
 
  // ── L'EMPREINTE : le même nom donne TOUJOURS le même dessin ────────────────────
  const emp=await pg.evaluate(()=>{

@@ -64,19 +64,19 @@ try{
     const {pg,ctx}=await page(browser,{dir:d,origin:C[d],rpc:rpc('thehigherversionofmyself'),tables:{profiles:[{pseudo:'thehigherversionofmyself'}]}});
     await pg.goto(C[d]+p,{waitUntil:'domcontentloaded'}); await pg.waitForTimeout(2200);
     const m=await mesure(pg);
-    ok(m&&m.lettres===24&&!m.dehors&&m.px>=8&&Math.abs(m.w-m.h)<1,
-      d+p+' · 24 lettres tiennent dans le carré à '+(m&&m.px)+' px (>= 8), le papier reste carré ('+(m&&Math.round(m.w))+'×'+(m&&Math.round(m.h))+')');
-    const plan=await pg.evaluate(()=>window.TOTEHM_NOM.plan('thehigherversionofmyself'));
-    ok(plan&&plan.C===5&&plan.R===5,d+p+' · la nomenclature pose 24 lettres en 5 × 5 ('+(plan&&plan.C)+' × '+(plan&&plan.R)+')');
+    ok(m&&m.lettres===24&&!m.dehors&&m.px>=4.5&&m.px<=m.w*.2+.5&&Math.abs(m.w-m.h)<1,
+      d+p+' · 24 lettres : un bloc carré à '+(m&&m.px)+' px (≥ 4,5 et ≤ 20 % du côté), le papier reste carré ('+(m&&Math.round(m.w))+'×'+(m&&Math.round(m.h))+')');
+    const plan=await pg.evaluate(()=>window.TOTEHM_NOM.plan('thehigherversionofmyself',.66));
+    ok(plan&&(r=>r.every(([N,C,R])=>N<=5?(R===1&&C===N):(C*R>=N&&(C-1)*R<N+C&&Math.abs(Math.log((C*.66*1.12)/(R*1.18)))<.4)))([[plan.N,plan.C,plan.R]]),d+p+' · la nomenclature pose 24 lettres en un bloc CARRÉ ('+(plan&&plan.C)+' × '+(plan&&plan.R)+')');
     await ctx.close();
   }
   // La règle, aux bornes : sous 6 lettres une ligne (en grille elles seraient PLUS PETITES), 4 colonnes jusqu'à 16, 5 au-delà.
   { const {pg,ctx}=await page(browser,{dir:'club',origin:C.club,rpc:rpc('wah'),tables:{profiles:[{pseudo:'wah'}]}});
     await pg.goto(C.club+'/',{waitUntil:'domcontentloaded'}); await pg.waitForTimeout(1800);
     const r=await pg.evaluate(()=>['wah','wahvv','higher','seizelettresicibon','thehigherversionofmyselfetencoreplus']
-      .map(n=>{const p=window.TOTEHM_NOM.plan(n);return [p.N,p.C,p.R];}));
-    ok(JSON.stringify(r)===JSON.stringify([[3,3,1],[5,5,1],[6,4,2],[18,5,4],[25,5,5]]),
-      'la nomenclature : 1-5 une ligne · 6-16 en 4 colonnes · 17-25 en 5 · au-delà 25 lettres + · ('+JSON.stringify(r)+')');
+      .map(n=>{const p=window.TOTEHM_NOM.plan(n,.66);return [p.N,p.C,p.R];}));
+    ok(r.map(x=>x[0]).join()==='3,5,6,18,25'&&(r=>r.every(([N,C,R])=>N<=5?(R===1&&C===N):(C*R>=N&&(C-1)*R<N+C&&Math.abs(Math.log((C*.66*1.12)/(R*1.18)))<.4)))(r),
+      'la nomenclature : 1-5 une ligne · 6 et plus un BLOC CARRÉ · au-delà 25 lettres + · ('+JSON.stringify(r)+')');
     await ctx.close(); }
   // « Simple terms of use » : tout en bas ; une vue qui défile l'efface.
   { const {pg,ctx}=await page(browser,{dir:'club',origin:C.club,session:false});

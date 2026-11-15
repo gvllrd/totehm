@@ -466,7 +466,9 @@ window.TOTEHM_MOT = (() => {
     if(typeof MutationObserver !== 'function') return;
     new MutationObserver(list => {
       for(const m of list){
-        if(m.type === 'childList'){ for(const n of m.addedNodes) if(n.nodeType === 1) aFaire.push(n); }
+        /* ⚠️ UN TEXTE QUI ARRIVE (`textContent = …`) change le NOM : le nœud de texte ajouté compte, par son
+           parent — sans lui, le coin membre qui se remplit (« wah » après « CONNECT… ») n'était jamais relu. */
+        if(m.type === 'childList'){ for(const n of m.addedNodes){ if(n.nodeType === 1) aFaire.push(n); else if(n.parentNode) aFaire.push(n.parentNode); } }
         else if(m.target && m.target.nodeType === 1) aFaire.push(m.target);
         else if(m.target && m.target.parentNode) aFaire.push(m.target.parentNode);
       }

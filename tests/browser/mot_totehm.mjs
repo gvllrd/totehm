@@ -1,4 +1,5 @@
-// 12/11 — LE MOT TOTEHM EST LE TOTEHM (Wah). On teste LA SOURCE (`tools/totehm_word.*` + la nomenclature
+// 12/11 — LE MOT TOTEHM EST LE TOTEHM (Wah) ; 14/11 : « seulement les textes les plus stratégiques, sinon remets le
+// texte — et agrandis ceux que tu gardes » : la pièce n'existe plus QUE dans un nœud marqué `data-tw`. On teste LA SOURCE (`tools/totehm_word.*` + la nomenclature
 // `tools/totehm_name.js`), celle qui est copiée dans les pages des quatre domaines : une page minimale, des
 // textes, et on vérifie ce qui ne doit JAMAIS casser — le texte du document, les adresses, ce que le membre
 // a écrit, et la rotation. Zéro réseau, zéro compte.
@@ -13,13 +14,14 @@ const PAGE = `<!doctype html><html><head><meta charset="utf-8"><style>
 body{margin:0;background:#000;color:#fff;font:400 16px/1.6 sans-serif}
 ${lire('tools/totehm_word.css')}
 </style></head><body>
-<p id="p1">MY TOTEHM is the TOTEHM. Open my TOTEHM.</p>
-<p id="p2">Go to www.totehm.com or totehm.space — and TOTEHMIZE it, with totehm-link.</p>
-<p id="p3">A spot is your TOTEHM Habit in action: exact place, exact time, right people, your conditions.</p>
-<p id="p4" contenteditable="plaintext-only">my own TOTEHM words</p>
-<p id="p5"><span class="v-name">my TOTEHM habit</span></p>
-<p id="p6">totehm at the end of a sentence: TOTEHM.</p>
-<h1 id="p7">TOTEHM</h1>
+<p id="p1" data-tw>MY TOTEHM is the TOTEHM. Open my TOTEHM.</p>
+<p id="p2" data-tw>Go to www.totehm.com or totehm.space — and TOTEHMIZE it, with totehm-link.</p>
+<p id="p3" data-tw>A spot is your TOTEHM Habit in action: exact place, exact time, right people, your conditions.</p>
+<p id="p4" data-tw contenteditable="plaintext-only">my own TOTEHM words</p>
+<p id="p5" data-tw><span class="v-name">my TOTEHM habit</span></p>
+<p id="p6" data-tw>totehm at the end of a sentence: TOTEHM.</p>
+<h1 id="p7" data-tw>TOTEHM</h1>
+<p id="p8">Not marked: my TOTEHM stays a plain word here.</p>
 <button class="mc is-in"><span id="member-txt">wah</span></button>
 <!-- deconnecte, member-txt porte le LIBELLE du bouton : sans is-in, aucun nom n'est lu -->
 <script>${lire('tools/totehm_name.js')}</script>
@@ -39,7 +41,7 @@ const d = await pg.evaluate(() => {
   const n = id => document.getElementById(id).querySelectorAll('.tw').length;
   return { etat:window.__totehm_mot(),
     t1:t('p1'), n1:n('p1'), t2:t('p2'), n2:n('p2'), t3:t('p3'), n3:n('p3'),
-    n4:n('p4'), n5:n('p5'), t6:t('p6'), n6:n('p6'), n7:n('p7'),
+    n4:n('p4'), n5:n('p5'), t6:t('p6'), n6:n('p6'), n7:n('p7'), n8:n('p8'), t8:t('p8'),
     lettres:document.querySelector('#p1 .tw .tw-b').querySelectorAll('.tn-l[data-c]').length,
     texteDos:document.querySelector('#p1 .tw .tw-b').textContent,
     mot:document.querySelector('#p1 .tw .tw-s').textContent,
@@ -60,11 +62,13 @@ ok(d.n5 === 0, 'ce que le membre a écrit dans une box (`.v-name`) n\'est jamais
 ok(d.n6 === 2 && d.t6 === 'totehm at the end of a sentence: TOTEHM.',
    'un point de PHRASE ne fait pas une adresse : « totehm » et « TOTEHM. » deviennent la pièce');
 ok(d.n7 === 1, 'un titre qui n\'est QUE le mot devient la pièce');
+ok(d.n8 === 0 && d.t8 === 'Not marked: my TOTEHM stays a plain word here.',
+   '14/11 : un texte NON marqué `data-tw` reste le mot écrit, partout — la pièce ne se pose plus sur tout');
 ok(d.lettres === 3 && d.texteDos === '' && d.mot === 'TOTEHM',
    'le verso porte le nom en ' + d.lettres + ' lettres de CSS (`data-c`), donc rien dans le textContent ; le mot est là, hors écran');
 ok(/inset/.test(d.cache), 'le mot est hors écran (clip-path) : lu à la voix, trouvé au clavier, jamais vu');
-ok(d.cote >= 16 && d.cote <= 20 && d.grand > d.cote * 1.6,
-   'la taille suit le texte : ' + d.cote + ' px dans un paragraphe de 16 px, ' + d.grand + ' px dans le titre');
+ok(d.cote >= 32 && d.cote <= 40 && d.grand > d.cote * 1.6,
+   '14/11 : la pièce est AGRANDIE (2,2 em) et suit le texte : ' + d.cote + ' px dans un paragraphe de 16 px, ' + d.grand + ' px dans le titre');
 ok(d.etat.mots === 7 && d.etat.pieces === 7 && d.etat.nom === 'wah', 'diagnostic : ' + JSON.stringify(d.etat));
 
 await pg.waitForTimeout(500);
