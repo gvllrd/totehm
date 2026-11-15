@@ -19,7 +19,7 @@ function subtract(polygon,planes){
 }
 export function createDomeShellGeometry({mobile=false}={}){
  const sphere=new T.SphereGeometry(1,mobile?96:144,mobile?32:48,0,Math.PI*2,0,Math.PI/2),source=sphere.toNonIndexed();
- const attribute=source.attributes.position,positions=[],normals=[],door=[p=>p.x-D.entryHalfWidth,p=>-p.x-D.entryHalfWidth,p=>p.y-D.entryHeight,p=>-p.z];
+ const attribute=source.attributes.position,positions=[],normals=[],door=[p=>p.x-D.entryHalfWidth,p=>-p.x-D.entryHalfWidth,p=>p.y-D.entryHeight,p=>D.centerZ-p.z];
  const o=D.oculus,aperture=Array.from({length:40},(_,i)=>{const a=i/40*Math.PI*2,nx=Math.cos(a),nz=Math.sin(a);return p=>(p.x-o.x)*nx+(p.z-o.z)*nz-o.radius;});
  function emit(polygon){
   for(let i=1;i<polygon.length-1;i++)for(const p of [polygon[0],polygon[i],polygon[i+1]]){

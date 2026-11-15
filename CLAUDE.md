@@ -27,7 +27,7 @@ Push sur `main` = mise en ligne ; jamais réécrire l'historique.
 | totehm.com | `com/` | l'écosystème : les 5 vues, la creator economy (s'abonner à un membre = entrer dans son écosystème), la recherche d'un ÉCOSYSTÈME |
 | figher.club | `club/` | le prolongement de la vue Spots : se RENCONTRER dans un contexte et une action précis, sur une vue PARTIELLE du grind — la box Habit dont il est question, avec ses objectifs et ses répulsions. Filtrer par Habits semblables est sa raison d'être |
 | higher.boutique | `boutique/` | les vêtements totehmisés, un style artistique choisi, à partir de toute catégorie personnelle ; une box suffit, production n8n. Le LUXE est un atelier : une pièce d'exception, un artiste LOCAL via une galerie partenaire, acompte de 770 € remboursé si aucun artiste en 30 jours |
-| totehm.space | `space/` | Lisbon : dôme noir brut, sept intentions, laboratoire THP et 22 signes interactifs ; île, océan et ciel étoilé conservés. New York : château, six œuvres Think same but opposite et statue submergée ; œuvres et marché indépendants |
+| totehm.space | `space/` | Lisbon : collaboration en relief, Discover et THP dehors, porte teintée vers 22 signes flottants courbes et expérience réservée THP ; soucoupe et tunnel vitré vers Origins. Île, océan et ciel conservés ; New York garde son château et ses six œuvres |
 
 **Deux fois cinq vues.** totehm.com : ↑ Get Higher (commune à tous) · ← mes médias · ● mon TOTEHM · → les spots ·
 ↓ Higher my ChatGPT (connexion gratuite, lecture seule autorisée) ; ← ● → = l'écosystème d'un membre, ouvert par l'abonnement à ce membre.

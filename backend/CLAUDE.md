@@ -10,6 +10,7 @@
   `spot_plans` (point lu par fonction ; en retirer un des miens : `spot_remove`, il passe à `cancelled`). **Journal** `totehm_journal` : tout geste, par déclencheurs jamais bloquants ; lu par `my_board`.
 - La page d'un Cloth décodé lit `cloth_page` (elle ENVELOPPE `reveal_cloth`, jamais remplacée) : rang dans le STYLE, totehmisateur, fiche du vêtement, dopes. Le DOPE = `cloth_dopes` + `cloth_dope` (bascule) + `cloth_dopers` (pseudos, par `profiles`).
 ## Les droits
+- Play the Lisbon Street : `lisbon-street-media` relit le JWT et `stoner_access` comme Stoner, puis signe un seul des 22 clips pour 15 min ; bucket `play-signals` privé et policy publique retirée (migration `20261114162942_lisbon_street_private_media.sql` appliquée) ; aucun email, propriétaire ou chemin reçu n’accorde un droit.
 - Membre du Club : `_figher().member` = habit + objectif + répulsion (`needs` dit ce qui manque). Accès offert = `figher_comps`.
 - Abonné : `_subscriber_of(créateur, fan)` ; `creator_page`, `my_entitlements`, `totehm_read`, `member_media`, `club_spots_of`. Découverte/adoption : `_totehm_box_index` ajoute `_box_shared` par catégorie au verrou global existant (migration `20261111090000_creator_box_privacy`) ; les lots privés sont refusés atomiquement par l’import natif, provenance conservée.
 - Audience : `private` · `figher` · `subscribers` (`public` → `figher`) ; `_audience_ok`, `_audience_listed`, `_point_ok`. Sans compte : des NOMS seuls (`totehm_galaxy`, `totehm_search`).
@@ -22,16 +23,15 @@
 - Seuls abonnements vendus : `creator_sub`. Higher GPT et suivi TotehmBot gratuits. `higher-sub` refuse checkout/resume (410), garde l’annulation authentifiée des contrats historiques ; `subscription-checkout` refuse aussi l’ancienne adhésion Club et les previews (410). Webhooks/portails/historique restent en place ; `higher-checkout` vend le THP physique, à conserver. Tests `retired-subscriptions.mjs`.
 - Crédit créateur sur `invoice.paid`, idempotence `unique(source, kind)` ; virements manuels le 1er dès 25 € (`payouts_due`/`payout_mark_paid`), sans Stripe Connect. Les 7 % sont la redevance de revente d’art, pas de copie d’élément. Checkout créateur : anti-double-souscription et réconciliation à fiabiliser ; aucun prix ou contrat modifié par le connecteur.
 - Propriété : `art_editions` · `art_transfers` (ajout seul) · `stoner_access` ; le THP = l'œuvre `totehmpaper`. Le marché ne s'écrit que par le webhook (`art_settle`) ; `ok:false` → `market_incidents` = remboursement à la main.
-- `stripe-webhook` : `higher` · `cloth` · `subscription` · `creator_sub` · `artwork` · `resale` · `luxury` · `higher_sub` ;
-  `stripe_events` s'efface avant un 500. Test (`boutique_testers`) : v45 suit une pièce d'essai comme une vraie et le mode test REDESCEND (03/11 : endpoint `we_1UXQzu`, les deux `STRIPE_TEST_*` posés) ;
-  un événement de test n'ouvre que `cloth` et `luxury`, marqués `test`, et `handleCloth` n'appelle jamais l'API Stripe.
-## Les 41 Edge Functions (`supabase/functions/`)
+- `stripe-webhook` : `higher` · `cloth` · `subscription` · `creator_sub` · `artwork` · `resale` · `luxury` · `higher_sub` ; `stripe_events` s'efface avant un 500. Test (`boutique_testers`) : v45 suit une pièce d'essai comme une vraie et le mode test REDESCEND (03/11 : endpoint `we_1UXQzu`, les deux `STRIPE_TEST_*` posés) ; un événement de test n'ouvre que `cloth` et `luxury`, marqués `test`, et `handleCloth` n'appelle jamais l'API Stripe.
+## Les 44 Edge Functions (`supabase/functions/`)
 | rôle | fonctions |
 |---|---|
 | identité | `sso-mint` · `sso-redeem` |
 | argent | `stripe-webhook` · `higher-checkout` · `artwork-checkout` · `market-checkout` · `creator-subscribe` · `creator-price` · `club-billing` · `higher-sub` |
 | vêtements | `create-checkout` v52 · `luxury-quote` v12 · `luxury-checkout` · `compose-artwork` v53 · `streetwear-assets` · `cloth-art` · `streetwear-tick` (cron) ; les deux premiers prennent `pick:{matter,shots}` — ce qui est ALLUMÉ, en références, relu par `_box_matter` et `_box_shots` |
-| vidéo, spots | `create-bunny-upload` · `bunny-video` · `bunny-webhook` · `spot-video` · `space-delete` |
+| vendre | `atelier` (12/11) : la PORTE de `/atelier` (sans session — une galerie n'a pas de TOTEHM) et les ENVOIS de `/conquer`. Il RÉSERVE en base avant d'envoyer (`outreach_claim` passe la ligne à « contacté » : un double tap n'écrit jamais deux fois à la même galerie), envoie une par une par Resend depuis `atelier@higher.boutique` (texte brut, 600 ms entre deux, **20 par appel au plus**) et écrit le grand livre (`outreach_sent`) — un échec REND la ligne à la file avec son motif. Les mots viennent de `outreach_templates` : seuls `{{name}}` et `{{city}}` sont remplacés, rien n'est inventé sur un prospect |
+| vidéo, spots | `create-bunny-upload` · `bunny-video` · `bunny-webhook` · `spot-video` · `space-delete` · `lisbon-street-media` |
 | Higher Self, bot | `higher-self` · `bot-reply` · `bot-tick` (cron) · `agenda-ingest` (cron) · `higher-map` · `stoner-gate` |
 | sans appelant visible | `totehm-bot` · `sync-knowledge` · `generate-embeddings` · `upload-leaf-videos` · `ghost-factory` · `prospects` · `bunny-maintenance` · `embed-places` · `generate_objective` · `subscription-checkout` · `creator-dashboard` · `creator-onboard` · `autobiographiste` (à vérifier dans leurs journaux avant de retirer) |
 

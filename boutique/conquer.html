@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<!--
+  ══ higher.boutique/conquer — LE COCKPIT COMMERCIAL · 12/11/2026 ════════
+  Wah : « il faut que je puisse avoir un superbe dashboard Commercial et
+  communication — Conquer the world, gamifié, où ça envoie automatiquement en
+  appuyant sur des boutons, un cockpit commercial ».
+
+  UNE VILLE EST CONQUISE quand une galerie y a signé : c'est le seul compteur
+  qui dit si l'on peut vraiment prendre un acompte là-bas. Le reste — contactés,
+  réponses — n'est qu'un chemin vers lui.
+
+  ⚠️ RIEN NE S'ENVOIE DEPUIS LA PAGE. Un tap appelle `atelier` (Edge Function),
+  qui RÉSERVE en base avant d'écrire (un double tap n'écrit jamais deux fois à
+  la même galerie), envoie une par une et tient le grand livre. La clé d'envoi
+  ne quitte jamais le serveur.
+  ⚠️ VINGT PAR TAP AU PLUS : au-delà, le domaine se fait classer en indésirable
+  et higher.boutique brûle pour de bon.
+  ⚠️ Réservé aux administrateurs (`_boutique_admin`, vérifié par chaque RPC).
+  Connexion : PAR totehm.com (bloc SSO copié de tools/sso_snippet.js).
+  Diagnostic : __totehm_conquer().
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<title>Conquer · HIGHER.BOUTIQUE</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Quantico:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --s1:#0b0b0d;--s2:#15151a;--s3:#212127;--s4:#2e2e36;--r:10px;
+  --mid:#b4b4b9;--lo:#9a9aa0;--dim:#707077;
+  --coral:#fbd5ca;--ok:#639922;--rep:#743169;--gold:#e8c86a;
+  --q:'Quantico',sans-serif;--mono:'Space Mono',monospace;
+  --top:env(safe-area-inset-top,0px);--bot:env(safe-area-inset-bottom,0px);
+  --ease:cubic-bezier(.2,.9,.25,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#000;color:var(--mid);font-family:var(--mono);font-size:12px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+button,input,textarea,select{font:inherit;color:inherit;color-scheme:dark}
+a{color:inherit;text-decoration:none}
+.hide{display:none!important}
+#top{position:fixed;top:0;left:0;right:0;z-index:40;display:flex;justify-content:space-between;align-items:center;
+  padding:calc(10px + var(--top)) 12px 10px;background:linear-gradient(#000 70%,rgba(0,0,0,0))}
+.btn-back{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo);background:none;border:none;padding:2px;cursor:pointer}
+#who{font-family:var(--q);font-size:12px;color:var(--coral)}
+main{max-width:720px;margin:0 auto;padding:68px 14px calc(50px + var(--bot));display:flex;flex-direction:column;gap:14px}
+.kicker{font-size:9.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--lo);text-align:center}
+h1{font-family:var(--q);font-weight:700;font-size:27px;letter-spacing:.06em;text-transform:uppercase;color:#fff;line-height:1.1;text-align:center}
+h2{font-family:var(--q);font-weight:700;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--lo);margin-top:6px}
+.say{font-size:11.5px;line-height:1.7;color:var(--lo)}
+/* LE RANG — la seule gamification qui compte : des VILLES, pas des emails. */
+#rank{text-align:center;font-family:var(--q);font-weight:700;font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold)}
+#hero{background:var(--s2);border-radius:var(--r);padding:18px 12px;text-align:center}
+#hero b{display:block;font-family:var(--q);font-weight:700;font-size:48px;line-height:1;color:#fff}
+#hero span{display:block;font-size:9px;letter-spacing:.24em;text-transform:uppercase;color:var(--lo);margin-top:8px}
+.score{display:grid;grid-template-columns:repeat(auto-fit,minmax(88px,1fr));gap:6px}
+.sc{background:var(--s2);border-radius:var(--r);padding:10px 6px;text-align:center}
+.sc b{display:block;font-family:var(--q);font-weight:700;font-size:19px;color:#fff;line-height:1.1}
+.sc span{display:block;font-size:8px;letter-spacing:.16em;text-transform:uppercase;color:var(--lo);margin-top:4px}
+.sc.on b{color:var(--ok)}
+/* LES VILLES — une carte par ville, son état d'abord. */
+.city{background:var(--s2);border-radius:var(--r);padding:12px 13px;display:flex;flex-direction:column;gap:8px}
+.city.is-won{box-shadow:inset 0 0 0 1px var(--gold)}
+.city .h{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.city .n{font-family:var(--q);font-weight:700;font-size:15px;color:#fff;letter-spacing:.02em}
+.city .st{font-size:8.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--lo)}
+.city.is-won .st{color:var(--gold)}
+.bar{height:4px;border-radius:3px;background:var(--s4);overflow:hidden}
+.bar i{display:block;height:100%;background:#fff;transition:width .5s var(--ease)}
+.city.is-won .bar i{background:var(--gold)}
+.city .f{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.tag{font-size:8.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo);background:var(--s3);border-radius:7px;padding:3px 7px}
+.btn{font-family:var(--q);font-weight:700;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#fff;
+  background:rgba(255,255,255,.1);border:none;border-radius:var(--r);padding:11px 15px;cursor:pointer;
+  transition:background .15s,color .15s}
+.btn.sm{font-size:10px;padding:7px 11px}
+.btn.go{background:var(--s4)}
+.btn:disabled{color:var(--dim);background:var(--s2);cursor:default}
+@media(hover:hover){.btn:not(:disabled):hover{background:rgba(255,255,255,.22)}}
+.row{display:flex;flex-wrap:wrap;gap:8px}
+.row .btn{flex:1 1 auto}
+.field{font-family:var(--mono);font-size:12px;color:#fff;background:var(--s2);border:none;border-radius:var(--r);
+  padding:10px 11px;width:100%;outline:none}
+.field:focus{box-shadow:inset 0 0 0 1px rgba(255,255,255,.4)}
+.field::placeholder{color:var(--dim)}
+textarea.field{resize:vertical;min-height:84px;line-height:1.55}
+.note{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--lo);min-height:15px}
+.note.ok{color:var(--ok)}.note.no{color:#fff}
+.app{background:var(--s2);border-radius:var(--r);padding:11px 12px;display:flex;flex-direction:column;gap:6px}
+.app .n{font-family:var(--q);font-size:13px;color:#fff}
+.app .w{font-size:11px;color:var(--lo);white-space:pre-wrap;word-break:break-word}
+.log{display:flex;flex-direction:column;gap:3px}
+.log div{font-size:10px;color:var(--lo);display:flex;gap:7px}
+.log b{color:#fff;font-weight:400}
+.log .ko{color:var(--rep)}
+details{background:var(--s2);border-radius:var(--r);padding:11px 13px}
+summary{font-family:var(--q);font-weight:700;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#fff;cursor:pointer;list-style:none}
+summary::-webkit-details-marker{display:none}
+summary::after{content:' +';color:var(--lo)}
+details[open] summary::after{content:' −'}
+details > *{margin-top:9px}
+#gate{display:flex;flex-direction:column;align-items:center;gap:12px;padding-top:40px;text-align:center}
+</style>
+</head>
+<body>
+<header id="top">
+  <a class="btn-back" href="/">Back</a>
+  <span id="who"></span>
+</header>
+<main>
+  <div class="kicker">Commercial &amp; communication</div>
+  <h1>Conquer<br>the world</h1>
+  <div id="rank">—</div>
+
+  <div id="gate" class="hide">
+    <p class="say">This cockpit is for the house.</p>
+    <button class="btn" id="signin" type="button">Connect with my TOTEHM</button>
+    <div class="note" id="gate-n"></div>
+  </div>
+
+  <div id="board" class="hide" style="display:flex;flex-direction:column;gap:14px">
+    <div id="hero"><b>0</b><span>cities conquered</span></div>
+    <div class="score" id="score"></div>
+
+    <h2>Fire</h2>
+    <div class="row">
+      <button class="btn go" id="b-first" type="button">Send the next 10</button>
+      <button class="btn" id="b-follow" type="button">Follow up</button>
+      <button class="btn sm" id="b-test" type="button">Test on me</button>
+    </div>
+    <select class="field" id="pick-city"><option value="">Every city</option></select>
+    <div class="note" id="fire-n"></div>
+
+    <h2>The map</h2>
+    <div id="cities" style="display:flex;flex-direction:column;gap:8px"></div>
+
+    <h2>At the door</h2>
+    <div id="apps" style="display:flex;flex-direction:column;gap:8px"></div>
+
+    <details id="d-add">
+      <summary>Add prospects</summary>
+      <p class="say">One per line: <b>name ; city ; email ; website</b>. A line already in the list is skipped.</p>
+      <div class="row">
+        <select class="field" id="a-segment" style="flex:1 1 120px">
+          <option value="gallery">Gallery</option>
+          <option value="hotel">Hotel</option>
+          <option value="concierge">Concierge</option>
+          <option value="leather">Leather specialist</option>
+          <option value="other">Other</option>
+        </select>
+        <select class="field" id="a-rank" style="flex:1 1 120px">
+          <option value="3">Prestige · high</option>
+          <option value="2">Prestige · good</option>
+          <option value="1" selected>Prestige · normal</option>
+          <option value="0">Prestige · low</option>
+        </select>
+      </div>
+      <textarea class="field" id="a-rows" placeholder="Galeria Exemplo ; Lisbon ; hello@exemplo.pt ; exemplo.pt"></textarea>
+      <button class="btn" id="b-add" type="button">Add them</button>
+      <div class="note" id="add-n"></div>
+    </details>
+
+    <details id="d-words">
+      <summary>The words</summary>
+      <p class="say">What goes out, as it goes out. <b>{{name}}</b> and <b>{{city}}</b> are replaced at send time — nothing else is, and nothing is invented about a prospect.</p>
+      <select class="field" id="w-slug"></select>
+      <input class="field" id="w-subject" maxlength="200" placeholder="Subject">
+      <textarea class="field" id="w-body" style="min-height:220px" placeholder="Body"></textarea>
+      <button class="btn" id="b-words" type="button">Save the words</button>
+      <div class="note" id="words-n"></div>
+    </details>
+
+    <h2>Last out</h2>
+    <div class="log" id="log"></div>
+  </div>
+</main>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+const SB_URL = 'https://abujjbkbbiumxrokozph.supabase.co';
+const sb = createClient(SB_URL, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us');
+const $ = id => document.getElementById(id);
+
+const SSO_FN = 'https://abujjbkbbiumxrokozph.supabase.co/functions/v1/';
+/* ⚠️ LA CLÉ ANONYME EST OBLIGATOIRE : les Edge Functions sont déployées
+   avec `verify_jwt` ; sans en-tête, 401 avant notre code. Elle est
+   publique — déjà en clair au `createClient`. */
+const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us';
+/* LE NOM DE CE DOMAINE — 'space' | 'club' | 'boutique'. Jamais une URL. */
+const SSO_CLIENT = 'boutique';
+const SSO_AUTH = 'https://www.totehm.com/auth';
+const SSO_KNOWN = 'totehm_sso_known';   // localStorage : ce navigateur s'est déjà connecté ici
+const SSO_TRIED = 'totehm_sso_tried';   // sessionStorage : l'aller-retour silencieux a eu lieu
+const SSO_PKCE  = 'totehm_sso_pkce';    // sessionStorage : { verifier, state } le temps du voyage
+const SSO_EPOCH = 'totehm_sso_epoch';  // localStorage : le numero de sortie vu en entrant
+
+const ssoB64 = bytes => btoa(String.fromCharCode(...bytes)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+const ssoStore = (s, k, v) => { try{ v === null ? s.removeItem(k) : s.setItem(k, v); }catch(_){} };
+const ssoRead = (s, k) => { try{ return s.getItem(k); }catch(_){ return null; } };
+
+/* ── ARRIVÉE ────────────────────────────────────────────────────────
+   ⚠️ LE CODE SORT DE L'URL AVANT TOUT AUTRE GESTE — et SEULEMENT lui :
+   le reste du fragment (#create, #reveal…) reste à la page. Un code
+   laissé dans la barre d'adresse se retrouve dans un signet, un partage,
+   un historique. Avec un `state`, c'est une connexion centrale : il doit
+   être celui que CE navigateur a envoyé (sinon quelqu'un essaie de nous
+   connecter à SON compte) et le `verifier` part avec le code. */
+async function ssoArrivee(sb){
+  const h = new URLSearchParams(location.hash.replace(/^#/, ''));
+  const q = new URLSearchParams(location.search);
+  const code = h.get('sso') || q.get('sso'), st = h.get('state'), err = h.get('sso_error');
+  if(!code && !err) return false;
+  ['sso','state','sso_error'].forEach(k => { h.delete(k); q.delete(k); });
+  const reste = [...h.keys()].length ? '#' + h.toString().replace(/=(&|$)/g, '$1') : '';
+  history.replaceState(null, '', location.pathname + (q.toString() ? '?' + q : '') + reste);
+  const pk = (() => { try{ return JSON.parse(ssoRead(sessionStorage, SSO_PKCE) || 'null'); }catch(_){ return null; } })();
+  ssoStore(sessionStorage, SSO_PKCE, null);
+  if(err || !/^[a-f0-9]{64}$/.test(code || '')) return false;
+  let verifier;
+  if(st){
+    if(!pk || pk.state !== st){ console.error('[sso] state'); return false; }
+    verifier = pk.verifier;
+  }
+  try{
+    const r = await fetch(SSO_FN + 'sso-redeem', {
+      method:'POST',
+      headers:{'content-type':'application/json', 'apikey':SB_ANON, 'authorization':'Bearer '+SB_ANON},
+      body: JSON.stringify(verifier ? { code, verifier } : { code })
+    });
+    if(!r.ok){ console.error('[sso] redeem', r.status); return false; }
+    const { token_hash, email } = await r.json();
+    if(!token_hash) return false;
+    /* `verifyOtp` ouvre une session NORMALE dans ce `localStorage`. */
+    const { error } = await sb.auth.verifyOtp({ type:'email', token_hash });
+    if(error){ console.error('[sso] verify', error.message); return false; }
+    return true;
+  }catch(e){ console.error('[sso]', e && e.message || e); return false; }
+}
+
+/* ── SE CONNECTER — PAR TOTEHM.COM ──────────────────────────────────
+   `silent` : `prompt=none` — totehm.com ne montre rien, il rend un code
+   ou `login_required`. `retour` : un CHEMIN de ce domaine (jamais une
+   URL) ; totehm.com refuse tout le reste. */
+async function ssoLogin(silent, retour){
+  const v = ssoB64(crypto.getRandomValues(new Uint8Array(32)));
+  const c = ssoB64(new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(v))));
+  const st = ssoB64(crypto.getRandomValues(new Uint8Array(16)));
+  ssoStore(sessionStorage, SSO_PKCE, JSON.stringify({ verifier: v, state: st }));
+  const ret = retour || (location.pathname + location.search);
+  location.href = SSO_AUTH + '?client=' + SSO_CLIENT + '&challenge=' + c + '&state=' + st +
+                  '&return=' + encodeURIComponent(ret) + (silent ? '&prompt=none' : '');
+}
+
+/* ── DÉPART ─────────────────────────────────────────────────────────
+   `cible` est un NOM DE PRODUIT — 'com' | 'space' | 'boutique' | 'club'.
+   ⚠️ SI LE PONT ÉCHOUE, ON PART QUAND MÊME : dégradé, pas cassé. */
+async function ssoVersDomaine(sb, cible, url){
+  try{
+    const { data:{ session } } = await sb.auth.getSession();
+    if(session){
+      const r = await fetch(SSO_FN + 'sso-mint', {
+        method:'POST',
+        headers:{ 'authorization':'Bearer '+session.access_token, 'apikey':SB_ANON, 'content-type':'application/json' },
+        body: JSON.stringify({ target: cible })
+      });
+      if(r.ok){
+        const { code } = await r.json();
+        if(code){ location.href = url + (url.includes('#') ? '&' : '#') + 'sso=' + code; return; }
+      } else console.error('[sso] mint', r.status);
+    }
+  }catch(e){ console.error('[sso]', e && e.message || e); }
+  location.href = url;
+}
+
+/* ── LE DÉMARRAGE — BLOQUANT, ET JAMAIS PLUS DE 2,5 S ───────────────
+   `await` au niveau du module : quand la page lit sa session, la session
+   est déjà là. Puis, sans session et si ce navigateur s'est déjà
+   connecté ici : UN aller-retour silencieux par onglet vers totehm.com.
+   La page ne se dessine pas pendant qu'elle part (promesse qui ne se
+   résout pas) : pas de clignotement de porte fermée. Le repère se pose à
+   la connexion et s'efface à la déconnexion — sortir d'ici ne vous y
+   reconnecte pas en silence. */
+await Promise.race([ ssoArrivee(sb), new Promise(r => setTimeout(() => r(false), 2500)) ]);
+sb.auth.onAuthStateChange(ev => {
+  if(ev === 'SIGNED_IN') ssoStore(localStorage, SSO_KNOWN, '1');
+  if(ev === 'SIGNED_OUT') ssoStore(localStorage, SSO_KNOWN, null);
+});
+{
+  const { data:{ session } } = await sb.auth.getSession();
+  if(session) ssoStore(localStorage, SSO_KNOWN, '1');
+  else if(ssoRead(localStorage, SSO_KNOWN) && !ssoRead(sessionStorage, SSO_TRIED)){
+    ssoStore(sessionStorage, SSO_TRIED, '1');
+    await ssoLogin(true);
+    await new Promise(() => {});
+  }
+}
+/* ── SORTIR DE TOTEHM.COM SORT D'ICI AUSSI · 08/11/2026 ─────────────
+   Wah : « je ne peux pas me deconnecter d'un compte sur un domaine quand je
+   me deconnecte de totehm.com ». Mesure : com sortait en `scope:'global'`
+   (les jetons de rafraichissement sont revoques, mais CE site garde un jeton
+   d'ACCES valide jusqu'a une heure) et quatre pages de com sortaient en
+   `scope:'local'`, qui ne revoque RIEN — on restait connecte ici, sans fin.
+   La console centrale pose un NUMERO DE SORTIE en base. Ce site retient
+   celui qu'il a vu, le relit au demarrage et a chaque retour d'onglet :
+   plus grand = la console a ferme, on sort. Une lecture SQL, zero centime,
+   et la decision vit sur le SERVEUR, pas dans un navigateur. Une erreur de
+   reseau ne deconnecte JAMAIS : sans numero lisible, on ne touche a rien.
+   Le repere s'efface AVANT le rechargement, sinon l'aller-retour silencieux
+   nous reconnecte au chargement suivant. */
+async function ssoVerifierSortie(sb){
+  try{
+    const { data:{ session } } = await sb.auth.getSession();
+    if(!session){ ssoStore(localStorage, SSO_EPOCH, null); return false; }
+    const { data, error } = await sb.rpc('sso_epoch');
+    if(error){ console.error('[sso_epoch]', error.message); return false; }
+    if(typeof data !== 'number' || data <= 0) return false;
+    const vu = Number(ssoRead(localStorage, SSO_EPOCH) || 0);
+    if(!vu || data <= vu){ ssoStore(localStorage, SSO_EPOCH, String(data)); return false; }
+    ssoStore(localStorage, SSO_KNOWN, null);
+    ssoStore(localStorage, SSO_EPOCH, null);
+    ssoStore(sessionStorage, SSO_TRIED, '1');
+    try{ await sb.auth.signOut({ scope:'local' }); }catch(_){}
+    location.reload();
+    return true;
+  }catch(_){ return false; }
+}
+ssoVerifierSortie(sb);
+document.addEventListener('visibilitychange', () => { if(!document.hidden) ssoVerifierSortie(sb); });
+
+/* ══ LE COCKPIT ═══════════════════════════════════════════════════════ */
+const BUILD = '2026-11-12-conquer';
+let ME = null, B = null, BUSY = false;
+
+window.__totehm_conquer = () => ({ build: BUILD, signed_in: !!ME, admin: !!B && !B.error,
+  cities: (B?.cities || []).length, won: (B?.cities || []).filter(c => c.conquered).length,
+  file: (B?.file || []).length, due: B?.due_followup ?? 0,
+  apps: (B?.applications || []).length, busy: BUSY,
+  score: B?.score || null });
+
+const esc = s => { const d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; };
+const dit = (id, txt, cls) => { const n = $(id); n.className = 'note ' + (cls || ''); n.textContent = txt; };
+/* LE RANG — il ne monte qu'avec les villes. On ne se félicite pas d'un envoi. */
+const RANGS = [[10,'EMPIRE'],[5,'CONQUEROR'],[3,'ENVOY'],[1,'FIRST BLOOD'],[0,'SCOUT']];
+const rangDe = n => (RANGS.find(r => n >= r[0]) || RANGS[RANGS.length - 1])[1];
+
+async function call(body){
+  const { data:{ session } } = await sb.auth.getSession();
+  if(!session){ ssoLogin(false, '/conquer'); return { error:'no_session' }; }
+  try{
+    const r = await fetch(SSO_FN + 'atelier', { method:'POST',
+      headers:{ 'content-type':'application/json', 'apikey':SB_ANON, 'authorization':'Bearer ' + session.access_token },
+      body: JSON.stringify(body) });
+    const d = await r.json().catch(() => ({}));
+    if(!r.ok) console.error('[atelier]', r.status, d.error);
+    return d;
+  }catch(e){ console.error('[atelier]', e && e.message || e); return { error:'network' }; }
+}
+
+let SEQ = 0;
+async function load(){
+  const seq = ++SEQ;
+  const { data, error } = await sb.rpc('outreach_board', { p_city: $('pick-city').value || null });
+  if(seq !== SEQ) return;                       /* une réponse tardive n'écrase rien */
+  if(error){ console.error('[outreach_board]', error.message); dit('fire-n', 'unavailable — try again', 'no'); return; }
+  B = data || {};
+  if(B.error === 'forbidden'){ $('board').classList.add('hide'); $('gate').classList.remove('hide');
+    dit('gate-n', 'this account is not an administrator', 'no'); return; }
+  $('gate').classList.add('hide'); $('board').classList.remove('hide');
+  paint();
+}
+
+function paint(){
+  const villes = B.cities || [], gagnees = villes.filter(c => c.conquered).length, s = B.score || {};
+  $('rank').textContent = rangDe(gagnees);
+  $('hero').innerHTML = '<b>' + gagnees + '</b><span>' + (gagnees === 1 ? 'city conquered' : 'cities conquered') + '</span>';
+  $('score').innerHTML = [
+    ['prospects', s.prospects || 0, false],
+    ['to contact', s.to_contact || 0, false],
+    ['contacted', s.contacted || 0, false],
+    ['replied', s.replied || 0, (s.replied || 0) > 0],
+    ['signed', s.signed || 0, (s.signed || 0) > 0],
+  ].map(([k, v, on]) => '<div class="sc' + (on ? ' on' : '') + '"><b>' + v + '</b><span>' + k + '</span></div>').join('');
+
+  /* LA CARTE : conquise · en cours · intacte. La barre dit ce qui est touché. */
+  $('cities').innerHTML = villes.length ? villes.map(c => {
+    const touche = (c.contacted || 0) + (c.replied || 0) + (c.signed || 0);
+    const pc = c.prospects ? Math.round(touche / c.prospects * 100) : 0;
+    const etat = c.conquered ? 'conquered' : (touche ? 'in progress' : 'untouched');
+    return '<div class="city' + (c.conquered ? ' is-won' : '') + '">' +
+      '<div class="h"><span class="n">' + esc(c.city) + '</span><span class="st">' + etat + '</span></div>' +
+      '<div class="bar"><i style="width:' + pc + '%"></i></div>' +
+      '<div class="f">' +
+        '<span class="tag">' + (c.prospects || 0) + ' prospects</span>' +
+        '<span class="tag">' + (c.galleries || 0) + ' galleries</span>' +
+        '<span class="tag">' + (c.replied || 0) + ' replied</span>' +
+        '<span class="tag">' + (c.signed || 0) + ' signed</span>' +
+        (c.to_contact ? '<button class="btn sm" type="button" data-city="' + esc(c.city) + '">Send 10 in ' + esc(c.city) + '</button>' : '') +
+      '</div></div>';
+  }).join('') : '<p class="say">No prospect yet. Open “Add prospects”, paste a list, and the map appears.</p>';
+  $('cities').querySelectorAll('[data-city]').forEach(b => b.onclick = () => tirer('first', b.dataset.city));
+
+  const due = B.due_followup || 0;
+  $('b-follow').textContent = due ? 'Follow up · ' + due : 'Follow up';
+  $('b-follow').disabled = !due;
+  $('b-first').disabled = !(B.file || []).length;
+  $('b-first').textContent = 'Send the next ' + Math.min(10, (B.file || []).length || 0);
+
+  /* La liste des villes, pour viser. */
+  const cur = $('pick-city').value;
+  $('pick-city').innerHTML = '<option value="">Every city</option>' +
+    villes.map(c => '<option value="' + esc(c.city) + '">' + esc(c.city) + '</option>').join('');
+  $('pick-city').value = cur;
+
+  $('apps').innerHTML = (B.applications || []).length ? (B.applications || []).map(a =>
+    '<div class="app"><div class="n">' + esc(a.name) + ' · ' + esc(a.city) + '</div>' +
+    '<div class="say">' + esc(a.kind) + ' · ' + esc(a.email) + (a.link ? ' · <a href="' + esc(a.link) + '" target="_blank" rel="noopener noreferrer">link</a>' : '') + '</div>' +
+    (a.word ? '<div class="w">' + esc(a.word) + '</div>' : '') +
+    '<div class="row"><button class="btn sm" type="button" data-keep="' + a.id + '">Keep</button>' +
+    '<button class="btn sm" type="button" data-refuse="' + a.id + '">Not now</button></div></div>').join('')
+    : '<p class="say">Nobody at the door yet. The page is <a href="/atelier">higher.boutique/atelier</a>.</p>';
+  $('apps').querySelectorAll('[data-keep]').forEach(b => b.onclick = () => marquerApp(b.dataset.keep, 'kept'));
+  $('apps').querySelectorAll('[data-refuse]').forEach(b => b.onclick = () => marquerApp(b.dataset.refuse, 'refused'));
+
+  $('log').innerHTML = (B.recent || []).map(r =>
+    '<div><b>' + esc(r.name) + '</b><span>' + esc(r.city) + '</span>' +
+    '<span class="' + (r.ok ? '' : 'ko') + '">' + (r.ok ? r.kind : 'failed · ' + esc(r.error || '')) + '</span></div>').join('')
+    || '<div>Nothing has gone out yet.</div>';
+
+  /* LES MOTS — on garde celui qu'on regardait. */
+  const slug = $('w-slug').value;
+  const T = B.templates || [];
+  $('w-slug').innerHTML = T.map(t => '<option value="' + esc(t.slug) + '">' + esc(t.slug) + '</option>').join('');
+  if(T.length){ $('w-slug').value = T.some(t => t.slug === slug) ? slug : T[0].slug; montrerMots(); }
+}
+
+function montrerMots(){
+  const t = (B.templates || []).find(x => x.slug === $('w-slug').value);
+  $('w-subject').value = t ? t.subject : '';
+  $('w-body').value = t ? t.body : '';
+}
+$('w-slug').onchange = montrerMots;
+
+/* ══ LES BOUTONS — un tap, un lot, jamais deux fois la même galerie ════ */
+async function tirer(kind, city){
+  if(BUSY) return;
+  const ville = city || $('pick-city').value || null;
+  const quoi = kind === 'followup' ? 'following up' : 'sending';
+  BUSY = true; $('b-first').disabled = true; $('b-follow').disabled = true;
+  dit('fire-n', quoi + '…');
+  const d = await call({ action:'send', kind, city: ville, limit: 10 });
+  BUSY = false;
+  if(d.ok){
+    const ko = (d.failed || []).length;
+    dit('fire-n', d.sent + ' sent' + (ko ? ' · ' + ko + ' failed' : ''), ko ? 'no' : 'ok');
+  } else {
+    dit('fire-n', ({ forbidden:'not an administrator', no_session:'sign in again' })[d.error] || 'try again', 'no');
+  }
+  await load();
+}
+$('b-first').onclick = () => tirer('first');
+$('b-follow').onclick = () => tirer('followup');
+$('b-test').onclick = async () => {
+  if(BUSY) return; BUSY = true; dit('fire-n', 'sending a test to you…');
+  const d = await call({ action:'preview', slug: $('w-slug').value || 'gallery_first', city: $('pick-city').value || 'Lisbon' });
+  BUSY = false;
+  dit('fire-n', d.ok ? 'test sent to ' + d.to : 'test failed', d.ok ? 'ok' : 'no');
+};
+
+async function marquerApp(id, status){
+  const { data, error } = await sb.rpc('outreach_application_mark', { p_id: id, p_status: status });
+  if(error) console.error('[outreach_application_mark]', error.message);
+  if(data?.ok) await load();
+}
+
+$('b-add').onclick = async () => {
+  const lignes = $('a-rows').value.split('\n').map(l => l.trim()).filter(Boolean);
+  if(!lignes.length) return dit('add-n', 'paste a list first', 'no');
+  const segment = $('a-segment').value, rank = Number($('a-rank').value);
+  const rows = lignes.map(l => { const p = l.split(';').map(x => x.trim());
+    return { segment, rank, name: p[0] || '', city: p[1] || '', email: p[2] || '', site: p[3] || '' }; })
+    .filter(r => r.name && r.city);
+  if(!rows.length) return dit('add-n', 'a name and a city, at least', 'no');
+  dit('add-n', 'adding…');
+  const { data, error } = await sb.rpc('outreach_add', { p_rows: rows });
+  if(error){ console.error('[outreach_add]', error.message); return dit('add-n', 'try again', 'no'); }
+  if(data?.error) return dit('add-n', data.error, 'no');
+  $('a-rows').value = '';
+  dit('add-n', data.added + ' added · ' + (rows.length - data.added) + ' already there', 'ok');
+  await load();
+};
+
+$('b-words').onclick = async () => {
+  const slug = $('w-slug').value;
+  if(!slug) return;
+  dit('words-n', 'saving…');
+  const { data, error } = await sb.rpc('outreach_template_set',
+    { p_slug: slug, p_subject: $('w-subject').value, p_body: $('w-body').value });
+  if(error){ console.error('[outreach_template_set]', error.message); return dit('words-n', 'try again', 'no'); }
+  if(data?.error) return dit('words-n', data.error === 'too_short' ? 'too short' : data.error, 'no');
+  dit('words-n', 'saved', 'ok');
+  await load();
+};
+
+$('pick-city').onchange = load;
+$('signin').onclick = () => ssoLogin(false, '/conquer');
+
+/* ══ LE DÉPART ════════════════════════════════════════════════════════ */
+async function demarrer(){
+  const { data:{ session } } = await sb.auth.getSession();
+  ME = session?.user || null;
+  if(!ME){ $('gate').classList.remove('hide'); $('who').textContent = ''; return; }
+  const { data: p } = await sb.from('profiles').select('pseudo').eq('id', ME.id).maybeSingle();
+  $('who').textContent = p?.pseudo || 'My TOTEHM';
+  await load();
+}
+sb.auth.onAuthStateChange((ev) => { if(ev === 'SIGNED_IN' || ev === 'SIGNED_OUT') setTimeout(demarrer, 0); });
+await demarrer();
+</script>
+</body>
+</html>

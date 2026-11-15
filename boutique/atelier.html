@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<!--
+  ══ higher.boutique/atelier — UNE GALERIE PAR VILLE · 12/11/2026 ═════════
+  Wah : « crée-moi un système qui va vendre la solution ».
+
+  C'est la page qu'on met dans un email de prospection. Elle s'adresse à DEUX
+  métiers et à personne d'autre : une GALERIE (l'intermédiaire officiel, qui
+  garde la pièce et touche 20 %) et un ARTISTE (qui peint, et touche 55 %).
+
+  ⚠️ ELLE NE DIT QUE DES CHOSES VRAIES. Pas de « en pourparler avec », pas de
+  nom emprunté : ce qui tient, c'est qu'une machine tourne déjà (un acompte
+  encaissé, une étude de matière automatique, une chaîne qui fabrique et
+  expédie) et qu'il n'y a QU'UNE place par ville. La rareté vaut mieux qu'un
+  nom qu'on n'a pas. Les marques ne sont que des NOMS de pièces qu'on peint,
+  jamais des partenaires : la mention d'indépendance reste en bas.
+
+  ⚠️ PORTE OUVERTE : une galerie n'a pas de TOTEHM et ne peut pas se connecter.
+  La page n'a donc NI session NI client Supabase — un seul appel, `atelier`
+  (action `apply`), avec la clé anonyme. Tout est validé par le serveur.
+  Diagnostic : __totehm_atelier().
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<title>Atelier · HIGHER.BOUTIQUE</title>
+<meta name="description" content="One gallery per city. We bring the client and the commission, your artist paints, the piece never leaves your gallery.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Quantico:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --s1:#0b0b0d;--s2:#15151a;--s3:#212127;--s4:#2e2e36;--r:10px;
+  --mid:#b4b4b9;--lo:#9a9aa0;--dim:#707077;
+  --coral:#fbd5ca;--ok:#639922;--rep:#743169;
+  --q:'Quantico',sans-serif;--mono:'Space Mono',monospace;
+  --top:env(safe-area-inset-top,0px);--bot:env(safe-area-inset-bottom,0px);
+  --ease:cubic-bezier(.2,.9,.25,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#000;color:var(--mid);font-family:var(--mono);font-size:12px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+button,input,textarea,select{font:inherit;color:inherit;color-scheme:dark}
+a{color:inherit;text-decoration:none}
+.hide{display:none!important}
+#top{position:fixed;top:0;left:0;right:0;z-index:40;display:flex;justify-content:space-between;align-items:center;
+  padding:calc(10px + var(--top)) 12px 10px;background:linear-gradient(#000 60%,rgba(0,0,0,0))}
+.btn-back{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo);background:none;border:none;padding:2px;cursor:pointer}
+main{max-width:620px;margin:0 auto;padding:72px 16px calc(60px + var(--bot));display:flex;flex-direction:column;gap:16px}
+.kicker{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--lo);text-align:center}
+h1{font-family:var(--q);font-weight:700;font-size:26px;letter-spacing:.04em;text-transform:uppercase;color:#fff;line-height:1.15;text-align:center}
+h2{font-family:var(--q);font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#fff;margin-top:8px}
+.say{font-size:12.5px;line-height:1.8;color:var(--lo)}
+.say.mid{text-align:center;max-width:46ch;margin:0 auto}
+.pin{color:#fff}
+.sep{height:1px;background:rgba(255,255,255,.12);margin:10px 0}
+/* LES CHIFFRES — ce qui décide un oui, en gros et sans phrase autour. */
+.nums{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:8px}
+.num{background:var(--s2);border-radius:var(--r);padding:12px 10px;text-align:center}
+.num b{display:block;font-family:var(--q);font-weight:700;font-size:21px;color:#fff;letter-spacing:.02em;line-height:1.15}
+.num span{display:block;font-size:8.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--lo);margin-top:5px}
+.card{background:var(--s2);border-radius:var(--r);padding:16px;display:flex;flex-direction:column;gap:8px}
+.card h2{margin:0}
+ul{list-style:none;display:flex;flex-direction:column;gap:7px}
+li{font-size:12px;line-height:1.7;color:var(--lo);padding-left:14px;position:relative}
+li::before{content:'·';position:absolute;left:3px;color:#fff}
+ol{list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:9px}
+ol li{padding-left:28px;counter-increment:s}
+ol li::before{content:counter(s);position:absolute;left:0;top:0;width:19px;height:19px;border-radius:50%;
+  background:var(--s3);color:#fff;font-size:9px;display:flex;align-items:center;justify-content:center}
+/* LE FORMULAIRE — le gris de figher.club, rien d'autre. */
+.doors{display:flex;gap:8px}
+.door{flex:1;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--mid);background:var(--s2);
+  border:0;border-radius:var(--r);padding:11px 8px;cursor:pointer;transition:background .15s,color .15s,box-shadow .15s}
+.door.is-on{color:#fff;background:var(--s3);box-shadow:inset 0 0 0 1px rgba(255,255,255,.45)}
+@media(hover:hover){.door:hover{color:#fff;background:var(--s3)}}
+.field{font-family:var(--q);font-size:13px;color:#fff;background:var(--s2);border:none;border-radius:var(--r);
+  padding:11px 12px;width:100%;outline:none}
+.field:focus{box-shadow:inset 0 0 0 1px rgba(255,255,255,.45)}
+.field::placeholder{color:var(--dim)}
+textarea.field{resize:vertical;min-height:80px;font-family:var(--mono);font-size:12px;line-height:1.6}
+.btn{font-family:var(--q);font-weight:700;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:#fff;
+  background:rgba(255,255,255,.1);border:none;border-radius:var(--r);padding:12px 18px;cursor:pointer;
+  transition:background .15s,color .15s}
+.btn:disabled{color:var(--dim);background:var(--s2);cursor:default}
+@media(hover:hover){.btn:not(:disabled):hover{background:rgba(255,255,255,.2)}}
+.note{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--lo);min-height:15px}
+.note.ok{color:var(--ok)}.note.no{color:#fff}
+.legal{font-size:8.6px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);text-align:center;line-height:1.9}
+.pot{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
+details{background:var(--s2);border-radius:var(--r);padding:12px 14px}
+summary{font-family:var(--q);font-weight:700;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#fff;cursor:pointer;list-style:none}
+summary::-webkit-details-marker{display:none}
+summary::after{content:' +';color:var(--lo)}
+details[open] summary::after{content:' −'}
+details .say{margin-top:10px}
+details .say + .say{margin-top:7px}
+</style>
+</head>
+<body>
+<header id="top">
+  <a class="btn-back" href="/">Back</a>
+  <a class="btn-back" href="/luxury">See it as a client</a>
+</header>
+<main>
+  <div class="kicker">TOTEHM · Atelier</div>
+  <h1>One gallery<br>per city</h1>
+  <p class="say mid">We hand-paint one element of a person's life onto a luxury piece they already own — an Hermès, a Louis Vuitton, a Gucci. The artist always lives in the owner's city, and the gallery is the only intermediary.</p>
+
+  <div class="nums">
+    <div class="num"><b>55 %</b><span>to the artist</span></div>
+    <div class="num"><b>20 %</b><span>to the gallery</span></div>
+    <div class="num"><b>6 months</b><span>city exclusivity</span></div>
+    <div class="num"><b>770 €</b><span>deposit, paid upfront</span></div>
+    <div class="num"><b>from 2 000 €</b><span>per artwork</span></div>
+    <div class="num"><b>2 weeks</b><span>to paint it</span></div>
+  </div>
+
+  <div class="card">
+    <h2>For a gallery</h2>
+    <ul>
+      <li><span class="pin">Paid commissions, not projects.</span> The client pays a 770 € deposit before anything starts. Nobody is asked to work on a maybe.</li>
+      <li><span class="pin">The artist is one of yours.</span> We bring the brief and the budget; you choose the name that fits it.</li>
+      <li><span class="pin">The piece never travels blind.</span> The owner deposits it at your gallery, it is worked on, and it is collected there.</li>
+      <li><span class="pin">One gallery per city</span>, six months of exclusivity, renewed as long as pieces are made.</li>
+      <li>We handle the client, the brief, the material study, the payment and the after-sale. You bring the artist and the address.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>For an artist</h2>
+    <ul>
+      <li><span class="pin">55 % of the artwork</span>, paid through the gallery, on a piece that already has a buyer.</li>
+      <li><span class="pin">A brief with a story.</span> Every commission comes from one element of the owner's life — a habit, a vision, a story they wrote. You are not decorating a bag, you are painting someone.</li>
+      <li><span class="pin">The material is studied before you touch it</span>: grain, coating, finish, the primer that holds, the pigments that bend. You get the answer, not the problem.</li>
+      <li>Two weeks per piece, from the day the brief is signed.</li>
+      <li>Your name travels with the work, on the piece's certificate.</li>
+    </ul>
+  </div>
+
+  <h2>How a commission runs</h2>
+  <ol>
+    <li>An owner deposits a project and pays <span class="pin">770 €</span>. Photo or video of the piece, the exact product, their city, their budget, and the element of their life to paint.</li>
+    <li>The material is read automatically, then by us. If the piece cannot take the work, the deposit is refunded in full and nothing else happens.</li>
+    <li>We brief the partner gallery of that city. The gallery proposes an artist for the budget and the style.</li>
+    <li>The owner deposits the piece at the gallery. The artist paints it there, or at their studio under the gallery's responsibility.</li>
+    <li>Two weeks later the work is back at the gallery, photographed and certified.</li>
+    <li>The owner collects it. The artist and the gallery are paid on the artwork, the deposit counts towards it.</li>
+  </ol>
+
+  <details>
+    <summary>The agreement, in one page</summary>
+    <p class="say">We sign one page, by email, and it says exactly this:</p>
+    <p class="say">· <span class="pin">The gallery</span> is the sole intermediary for TOTEHM in its city for <span class="pin">six months</span>, renewed tacitly as long as at least one piece is made per period.</p>
+    <p class="say">· <span class="pin">The money.</span> The artwork is invoiced by TOTEHM to the owner. The artist receives 55 % and the gallery 20 % of the artwork, paid within 14 days of the owner collecting the piece. The 770 € deposit is TOTEHM's and counts towards the artwork.</p>
+    <p class="say">· <span class="pin">The piece.</span> It is deposited at the gallery by its owner and stays under the gallery's custody and insurance for the duration of the work, as for any work on consignment. TOTEHM is not the custodian.</p>
+    <p class="say">· <span class="pin">The work.</span> Two weeks from the signed brief. The artist keeps authorship; TOTEHM and the gallery may photograph and show the finished piece.</p>
+    <p class="say">· <span class="pin">Leaving.</span> Either side can end it with 30 days' notice. Commissions already started are finished and paid.</p>
+    <p class="say">· TOTEHM is independent and is not affiliated with, endorsed by or connected to any of the brands whose pieces are painted.</p>
+  </details>
+
+  <div class="sep"></div>
+
+  <h2 id="apply">Come in</h2>
+  <p class="say">Tell us who you are. We answer every message from a gallery or an artist, including the no.</p>
+  <div class="doors" role="radiogroup" aria-label="I am">
+    <button class="door is-on" id="d-gallery" type="button" data-k="gallery" role="radio" aria-checked="true">I am a gallery</button>
+    <button class="door" id="d-artist" type="button" data-k="artist" role="radio" aria-checked="false">I am an artist</button>
+  </div>
+  <input class="field" id="f-name" maxlength="120" placeholder="Gallery name" autocomplete="organization">
+  <input class="field" id="f-city" maxlength="80" placeholder="City" autocomplete="address-level2">
+  <input class="field" id="f-email" maxlength="160" type="email" placeholder="Email" autocomplete="email" inputmode="email">
+  <input class="field" id="f-link" maxlength="300" placeholder="Website or Instagram" inputmode="url">
+  <textarea class="field" id="f-word" maxlength="600" placeholder="A word about your artists — or about your work"></textarea>
+  <input class="pot" id="f-site" tabindex="-1" autocomplete="off" aria-hidden="true" placeholder="Leave this empty">
+  <button class="btn" id="go" type="button">Send</button>
+  <div class="note" id="note"></div>
+
+  <div class="sep"></div>
+  <div class="legal">TOTEHM is independent. Not affiliated with Hermès, Louis Vuitton or Gucci.<br>
+    <a href="/terms_of_sale">Simple terms of sale</a> · <a href="/luxury">higher.boutique/luxury</a></div>
+</main>
+
+<script type="module">
+/* ⚠️ AUCUNE SESSION ICI : une galerie n'a pas de TOTEHM. Un seul appel, avec la
+   clé anonyme — qui est publique par construction et ne donne rien d'autre que
+   le droit d'appeler cette fonction. Tout est revalidé par le serveur. */
+const FN = 'https://abujjbkbbiumxrokozph.supabase.co/functions/v1/atelier';
+const ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us';
+const BUILD = '2026-11-12-atelier';
+const $ = id => document.getElementById(id);
+let KIND = 'gallery', BUSY = false, SENT = false;
+
+window.__totehm_atelier = () => ({ build: BUILD, kind: KIND, sent: SENT, busy: BUSY,
+  named: $('f-name').value.trim().length > 1, city: $('f-city').value.trim().length > 1,
+  mailed: /.+@.+\..+/.test($('f-email').value.trim()) });
+
+/* DEUX PORTES, UN SEUL FORMULAIRE : seuls les mots changent. */
+const MOTS = {
+  gallery: { name:'Gallery name', word:'A word about your artists', go:'Send' },
+  artist:  { name:'Your name',    word:'A word about your work',    go:'Send' },
+};
+function porte(k){
+  KIND = k;
+  document.querySelectorAll('.door').forEach(b => { const on = b.dataset.k === k;
+    b.classList.toggle('is-on', on); b.setAttribute('aria-checked', String(on)); });
+  $('f-name').placeholder = MOTS[k].name;
+  $('f-word').placeholder = MOTS[k].word;
+}
+document.querySelectorAll('.door').forEach(b => b.onclick = () => porte(b.dataset.k));
+
+const dit = (txt, cls) => { const n = $('note'); n.className = 'note ' + (cls || ''); n.textContent = txt; };
+
+$('go').onclick = async () => {
+  if(BUSY) return;
+  const name = $('f-name').value.trim(), city = $('f-city').value.trim(), email = $('f-email').value.trim();
+  if(name.length < 2) return dit('your name, please', 'no');
+  if(city.length < 2) return dit('which city?', 'no');
+  if(!/^[^@\s]+@[^@\s]+\.[a-z]{2,}$/i.test(email)) return dit('an email we can answer', 'no');
+  BUSY = true; $('go').disabled = true; dit('sending…');
+  let d = {};
+  try{
+    const r = await fetch(FN, { method:'POST',
+      headers:{ 'content-type':'application/json', 'apikey':ANON, 'authorization':'Bearer ' + ANON },
+      body: JSON.stringify({ action:'apply', kind:KIND, name, city, email,
+        link: $('f-link').value.trim(), word: $('f-word').value.trim(), website: $('f-site').value }) });
+    d = await r.json().catch(() => ({}));
+  }catch(e){ console.error('[atelier]', e && e.message || e); }
+  BUSY = false; $('go').disabled = false;
+  if(d.ok){
+    SENT = true;
+    ['f-name','f-city','f-email','f-link','f-word'].forEach(i => $(i).value = '');
+    dit('received — we answer within 48 hours', 'ok');
+    return;
+  }
+  dit(({ name:'your name, please', city:'which city?', email:'an email we can answer',
+         kind:'pick one', too_many:'try again in a moment' })[d.error] || 'try again', 'no');
+};
+porte('gallery');
+</script>
+</body>
+</html>

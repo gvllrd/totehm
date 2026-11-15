@@ -582,6 +582,8 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
           <p>Leather-grade pigments — made to bend with the material, never a hardware-store paint — laid in thin layers, each one dried before the next. Your element becomes the artwork. Nothing is printed, nothing is a transfer, nothing is a sticker. The artist has <span class="pin">two weeks</span> to finish and to drop the work at the partner gallery.</p>
           <h3>5 · It holds</h3>
           <p>The paint is heat-set, then sealed with a flexible top-coat — matte or satin, your call — that takes water, UV and the folds of a piece you actually wear.</p>
+          <h3>A gallery, or an artist?</h3>
+          <p>We take one partner gallery per city, and we mandate local artists through it. Everything we offer — the split, the exclusivity, how a commission runs — is written here: <a class="pin" href="/atelier">higher.boutique/atelier</a>.</p>
           <h3>The deposit</h3>
           <p><span class="pin" id="how-price">770 €</span> deposits the project: it pays for the study of your material, the tests on it and the search for your artist. If no artist is secured within 30 days, or if the piece cannot take the work, <span class="pin">you are refunded in full</span>. If it can, we tell you the price of the artwork <span class="pin">before anything is painted</span>, and the deposit counts towards it.</p>
         </div>
@@ -1422,7 +1424,9 @@ $('go').onclick=()=>{
 let STYLE=null, STYLE_REF=null, STYLES=[], stylesLus=false;
 async function loadStyles(){
   if(stylesLus)return; stylesLus=true;
-  const{data,error}=await sb.from('artistic_styles').select('id,name,image_url,active,status,position').eq('active',true).order('position');
+  /* 12/11 — les styles DU LUXE seulement (`scope`) : six styles pensés pour une
+     pièce de cuir, séparés de ceux de streetwear. */
+  const{data,error}=await sb.from('artistic_styles').select('id,name,image_url,active,status,position').eq('active',true).in('scope',['luxury','both']).order('position');
   if(error){console.error('[artistic_styles]',error.message);stylesLus=false;return;}
   STYLES=(data||[]).filter(x=>!x.status||x.status==='active');
   $('st-rail').innerHTML=STYLES.map(x=>'<button class="st-card" type="button" data-id="'+esc(x.id)+'" role="option" aria-selected="false">'+
