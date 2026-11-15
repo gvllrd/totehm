@@ -260,6 +260,7 @@ document.addEventListener('visibilitychange', () => { if(!document.hidden) ssoVe
 
 
 import {createOriginsReader} from '/origins-book.mjs';
+if(new URLSearchParams(location.search).get('from')==='origin'){const back=document.querySelector('.reader-header>a');back.href='/origin?return=1';back.textContent='← Sanctuary';back.setAttribute('aria-label','Return to the Origins sanctuary');}
 createOriginsReader({client:sb,base:SB_URL+'/storage/v1/object/public/wah/'});
 </script>
 <script>
