@@ -24,14 +24,15 @@ const erreurs = log => log.errors.filter(e => !/404|Failed to load resource/i.te
   await pg.fill('#q', 'ka');
   await pg.waitForFunction(() => window.__totehm_creator().results === 2);
   const hrefs = await pg.$$eval('#res a', l => l.map(a => a.getAttribute('href')));
-  ok(hrefs[0] === '/totehm?ro=kai' && hrefs[1] === '/totehm?ro=kaito', 'a name opens its TOTEHM read only: ' + hrefs.join(' '));
+  // 14/11 (Wah) : un résultat mène à la PAGE D'ABONNEMENT ; c'est de là que part l'écosystème.
+  ok(hrefs[0] === '/@kai' && hrefs[1] === '/@kaito', 'a name opens its subscription page: ' + hrefs.join(' '));
   ok(log.rpc.every(r => r.name !== 'totehm_discover'), 'names only (totehm_search), never box search');
   await pg.fill('#q', 'k');
   await pg.waitForTimeout(400);
   ok(/two letters/i.test(await pg.textContent('#q-note')), 'one letter: two letters, minimum');
   await pg.fill('#q', '@kaito');
   await pg.waitForTimeout(400);
-  const nav = pg.waitForURL(/\/totehm\?ro=kaito$/, { timeout:5000 }).then(() => true, () => false);
+  const nav = pg.waitForURL(/\/@kaito$/, { timeout:5000 }).then(() => true, () => false);
   await pg.press('#q', 'Enter');
   ok(await nav, 'Enter opens the exact name (an @link is cleaned)');
   ok(!erreurs(log).length, 'search: no page error ' + erreurs(log).join(' | '));

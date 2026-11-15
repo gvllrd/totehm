@@ -11,24 +11,32 @@ const rpc={my_console:{signed_in:true,offer:{enabled:false}},my_landing:{signed_
   totehm_search:b=>b.p_q?[{pseudo:'studio',offer:true,price_cents:2400,currency:'eur',subscribed:true},{pseudo:'atelier',offer:true,price_cents:3600,currency:'eur',subscribed:false}]:[{pseudo:'studio',offer:true,price_cents:2400,currency:'eur',subscribed:true}],
   totehm_import_boxes:b=>({ok:true,created:b.p_selection[0].kind==='h'?1:0,reused:b.p_selection[0].kind==='h'?0:1,total:1})};
 try{
- /* ── 1 · 20/10 sexies : chercher un autre TOTEHM = MEMBERS ; le papier grandit, on tape son nom sur son dos → SON écosystème ── */
+ /* ── 1 · 14/11 : L'ÉCOSYSTÈME D'UN MEMBRE S'HABITE PAR SON ATTERRISSAGE ──
+    Wah : « ce que l'on recherche ce n'est pas le TOTEHM mais l'ÉCOSYSTÈME, et l'écosystème est visible via
+    la page d'atterrissage et le Tree » · « quand on est abonné, le verso redevient recto AVEC LE TREE et la
+    page d'atterrissage du membre, avec ses vues respectives ». Donc `?ro=` arrive sur SON atterrissage —
+    jamais dans son Totehm déployé —, et [Members] ouvre `/search` dans un onglet. */
  {const {pg,log}=await page(browser,{dir:'com',origin,rpc:Object.assign({},rpc,{member_media:{ok:true,items:[]},club_spots_of:{ok:true,items:[]}}),tables:{profiles:[{pseudo:'wah'}]}});
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(700);
   ok(/^(Tap|Click) to open it · (Swipe|Turn) to configure it$/.test((await pg.textContent('#lv-tap')).trim())&&await pg.isVisible('#lv-tap'),'au centre : « Tap to open it · Turn to configure it » (15/10 bis)');
-  await pg.click('#lv-m-members');await pg.waitForTimeout(1500);
-  const q=await pg.evaluate(()=>({v:document.getElementById('mb-q').value,ph:document.getElementById('mb-q').placeholder,f:document.activeElement.id,gx:!!document.getElementById('gx-q')}));
-  ok(q.v===''&&q.ph==="a member's TOTEHM"&&q.f==='mb-q'&&!q.gx,'[Members] : plus de galaxie, une saisie vide sur le dos du papier, « a member\'s TOTEHM », le focus déjà là');
-  await pg.fill('#mb-q','@studio');await pg.keyboard.press('Enter');
-  await pg.waitForFunction(()=>document.body.classList.contains('lv-membre'),null,{timeout:8000}).catch(()=>{});await pg.waitForTimeout(1200);
-  const e=await pg.evaluate(()=>({who:document.getElementById('lv-m-who').textContent,ro:document.body.classList.contains('ro'),tap:document.getElementById('lv-tap').textContent.trim()}));
-  ok(e.who==='studio'&&e.ro&&/(Swipe|Turn) to search$/.test(e.tap)&&/[?&]ro=studio/.test(pg.url()),'« @studio » ↵ : on vit SON écosystème (« '+e.tap+' »), sur place');
+  await pg.evaluate(()=>{window.__ouvert=[];window.open=(u)=>{window.__ouvert.push(u);return null;};});
+  await pg.click('#lv-m-members');await pg.waitForTimeout(700);
+  const q=await pg.evaluate(()=>({onglets:window.__ouvert.slice(),saisie:!!document.getElementById('mb-q'),gx:!!document.getElementById('gx-q')}));
+  ok(q.onglets.length===1&&q.onglets[0]==='/search'&&!q.saisie&&!q.gx,
+     '[Members] ouvre /search dans un onglet ; plus aucune saisie sur le verso de MON Totehm → '+JSON.stringify(q.onglets));
+  await pg.goto(origin+'/totehm?ro=studio');await pg.waitForSelector('body.member');
+  await pg.waitForFunction(()=>document.body.classList.contains('lv-membre'),null,{timeout:9000}).catch(()=>{});await pg.waitForTimeout(1200);
+  const e=await pg.evaluate(()=>({who:document.getElementById('lv-m-who').textContent,ro:document.body.classList.contains('ro'),
+    gate:document.body.classList.contains('gate'),tap:document.getElementById('lv-tap').textContent.trim()}));
+  ok(e.who==='studio'&&e.ro&&e.gate&&/(Swipe|Turn) to search$/.test(e.tap)&&/[?&]ro=studio/.test(pg.url()),
+     '`?ro=studio` : on vit SON écosystème sur SON atterrissage, pas dans son Totehm déployé (« '+e.tap+' »)');
   ok(log.rpc.filter(x=>x.name==='totehm_read').length===1&&log.rpc.some(x=>x.name==='member_media'&&x.body.p_pseudo==='studio'),'une lecture de son Totehm, une de ses médias (`member_media`)');
   await pg.screenshot({path:OUT+'/members_search.png'});
   ok(!erreurs(log).length,'members : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();
  }
  /* ── 3 · le Totehm d'un membre : joystick en bas, une Box s'ouvre en place, COPY, spaces, loupe ── */
  {const {pg,log}=await page(browser,{dir:'com',origin,rpc,tables:{profiles:[{pseudo:'wah'}]}});
-  await pg.goto(origin+'/totehm?ro=studio');await pg.waitForSelector('body.ro:not(.gate)');await pg.waitForTimeout(600);
+  await pg.goto(origin+'/totehm?ro=studio#in');await pg.waitForSelector('body.ro:not(.gate)');await pg.waitForTimeout(600);
   const joy=await pg.$eval('#joy',e=>e.getBoundingClientRect().top),H=await pg.evaluate(()=>innerHeight);
   ok(joy>H*.7,'en lecture, le joystick est EN BAS ('+Math.round(joy)+' / '+H+' px)');
   ok(await pg.locator('#habits .copie').count()===2&&await pg.locator('#habits .loupe').count()===2,'chaque Box : COPY et la loupe');
@@ -68,7 +76,7 @@ try{
  /* ── 3 ter · 25/10 (Wah : « les scroll des listes sur l'axe vertical, c'est inversé ») : au DOIGT, dans la liste, le geste suit le
     défilement ; la manette reste un manche ── */
  {const {pg,ctx}=await page(browser,{dir:'com',origin,rpc,tables:{profiles:[{pseudo:'wah'}]},viewport:{width:390,height:844},hasTouch:true});
-  await pg.goto(origin+'/totehm?ro=studio');await pg.waitForSelector('body.ro:not(.gate)');await pg.waitForTimeout(900);
+  await pg.goto(origin+'/totehm?ro=studio#in');await pg.waitForSelector('body.ro:not(.gate)');await pg.waitForTimeout(900);
   const cdp=await ctx.newCDPSession(pg);
   const vue=()=>pg.$eval('#joy',e=>(e.className.match(/v-(\w+)/)||[])[1]);
   const glisse=async(sel,dy)=>{const p=await pg.$eval(sel,e=>{const r=e.getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2};});const a=await vue();
@@ -83,7 +91,7 @@ try{
  }
  /* ── 3 bis · 25/10 (Wah : « remonte-la ») : sur ordinateur, même sur un écran bas, la manette tient dans la bande noire sous le carré ── */
  {const {pg}=await page(browser,{dir:'com',origin,rpc,tables:{profiles:[{pseudo:'wah'}]},viewport:{width:1280,height:800}});
-  await pg.goto(origin+'/totehm?ro=studio');await pg.waitForSelector('body.ro:not(.gate)');await pg.waitForTimeout(600);
+  await pg.goto(origin+'/totehm?ro=studio#in');await pg.waitForSelector('body.ro:not(.gate)');await pg.waitForTimeout(600);
   const m=await pg.evaluate(()=>{const s=document.querySelector('#stage').getBoundingClientRect(),j=document.querySelector('#joy').getBoundingClientRect();
     return {ecart:Math.round(j.top-s.bottom),bas:Math.round(innerHeight-j.bottom),carre:Math.round(s.width)};});
   ok(m.ecart>=12&&m.bas===12,'25/10 · ordinateur 1280×800 : la manette sous le carré, hors des perforations '+JSON.stringify(m));

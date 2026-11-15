@@ -178,12 +178,18 @@ try{
   await pg.goto(origin+'/totehm?diag=1');await pg.waitForSelector('body.member');await pg.waitForTimeout(1200);
   await pg.keyboard.press('ArrowDown');await vers(pg,'b');await pg.keyboard.press('ArrowDown');await pg.waitForTimeout(200);
   await pg.keyboard.press('ArrowUp');await vers(pg,'c');
-  await pg.click('#lv-m-members');await pg.waitForTimeout(1500);await pg.evaluate(()=>document.activeElement.blur());
-  /* 26/10 : pendant la recherche, un geste n'est plus refusé — il la referme et voyage (plus de code `:recherche`) */
+  /* 14/11 — [Members] n'ouvre plus de recherche ICI : il ouvre `/search` dans un ONGLET (le verso d'ici porte
+     MON nom). Sans Totehm il n'ouvre rien et mène à la porte (`members:sans-totehm`). L'atterrissage, lui,
+     reste entièrement navigable : aucun état ne le retient. */
+  await pg.evaluate(()=>{ window.__ouvert=[]; window.open=(u)=>{ window.__ouvert.push(u); return null; }; });
+  await pg.click('#lv-m-members');await pg.waitForTimeout(700);
+  const onglets=await pg.evaluate(()=>window.__ouvert.slice());
   await pg.keyboard.press('ArrowDown');await vers(pg,'b');await pg.waitForTimeout(600);
   const m=await pg.evaluate(()=>{const e=document.getElementById('lv-diag'),d=window.__totehm_lv();return {r:d.refus,vue:d.vue,mode:d.mode,txt:e?e.textContent:'',pe:e?getComputedStyle(e).pointerEvents:''};});
   ok(sans&&m.r['voisin:b>b']===1&&!Object.keys(m.r).some(k=>/recherche/.test(k))&&m.vue==='b'&&m.mode==='mine'&&/refus voisin:b>b/.test(m.txt)&&m.pe==='none',
-     '22/10 · le mouchard : un geste refusé dit pourquoi (en bas sans voisin) ; à l\'écran avec ?diag=1 seulement ; 26/10 · pendant la recherche, ↓ la referme et descend → '+JSON.stringify({r:m.r,vue:m.vue,mode:m.mode}));
+     '22/10 · le mouchard : un geste refusé dit pourquoi (en bas sans voisin) ; à l\'écran avec ?diag=1 seulement → '+JSON.stringify({r:m.r,vue:m.vue,mode:m.mode}));
+  ok(onglets.length===1&&onglets[0]==='/search',
+     '14/11 · [Members] ouvre /search dans un onglet, jamais le verso de MON Totehm → '+JSON.stringify(onglets));
   ok(!erreurs(log).length,'mouchard : aucune erreur '+erreurs(log).join(' | '));
   await ctx.close();}
 

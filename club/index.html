@@ -1716,7 +1716,9 @@ const NSPOT = (() => {
     const hs = HABITS || [];
     return '<div class="sfg"><div class="sfl">which habit?</div><div class="sfbx">' + (hs.length
       ? hs.map(x => privee(x)
-          ? '<div class="sfb is-off" aria-disabled="true" title="This Habit box is private">' + box(x)
+          /* pas d'`aria-disabled` sur l'enveloppe : son bouton, lui, DOIT rester actionnable — c'est le seul
+             geste qu'elle offre. La box n'est simplement pas interactive (ni `role`, ni `tabindex`). */
+          ? '<div class="sfb is-off" title="This Habit box is private">' + box(x)
             + '<div class="sfr sfb-act">' + chip('data-ns="ouvrirbox" data-v="' + esc(x.name) + '"', 'make visible to subscribers', false) + '</div></div>'
           : '<div class="sfb" role="button" tabindex="0" data-ns="h" data-v="' + esc(x.name) + '">' + box(x) + '</div>').join('')
       : '<p class="note">' + (HABITS ? 'write a Habit in my TOTEHM first' : 'reading my TOTEHM…') + '</p>') + '</div></div>';
@@ -1816,7 +1818,7 @@ const NSPOT = (() => {
     if(error || !data || !data.ok){ if(error) console.error('[box_audience_set]', error.message);
       note2('the box did not open · try again'); peindre(); return; }
     cible.audience = data.audience;                    /* la liste en mémoire suit : zéro lecture de plus */
-    if(!N.h) N.h = cible;
+    /* on n'enchaîne PAS sur un choix : la box est ouverte, le membre choisit sa Habit comme avant. */
     peindre();
   }
   /* ── LA PUBLICATION ── Le point est TOUJOURS exact (`p_location:'on'`), donc `p_mode` est toujours rempli. */

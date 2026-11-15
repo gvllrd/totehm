@@ -45,10 +45,19 @@ try{
     const n0=log.rpc.filter(x=>x.name==='box_audience_set').length;
     await pg.$eval('#habits .habit.open .baud .baud-o.is-on',e=>e.click());await pg.waitForTimeout(300);
     ok(log.rpc.filter(x=>x.name==='box_audience_set').length===n0,nom+' · '+vue+' : un tap sur l\'option déjà vraie n\'écrit rien');
+    /* ⚠️ 14/11 (Wah : « toujours demander confirmation avant, en rappelant que tous ses médias et ses
+       sous-box suivent ») : DEUX gestes, l'idiome de [delete]. Le premier arme et réécrit la note en
+       question, le second écrit — rien ne part sur un tap égaré. */
+    await pg.$eval('#habits .habit.open .baud .baud-o:not(.is-on)',e=>e.click());await pg.waitForTimeout(250);
+    const q=await pg.evaluate(()=>({arme:!!document.querySelector('#habits .habit.open .baud-o.is-sur'),
+      note:(document.querySelector('#habits .habit.open [data-baud-n]')||{}).textContent||''}));
+    ok(q.arme&&/tap again to confirm/i.test(q.note)&&/media/i.test(q.note)&&/sub-box/i.test(q.note)
+       &&log.rpc.filter(x=>x.name==='box_audience_set').length===n0,
+       nom+' · '+vue+' : le PREMIER tap demande et dit ce qu\'il emporte, il n\'écrit rien → « '+q.note+' »');
     await pg.$eval('#habits .habit.open .baud .baud-o:not(.is-on)',e=>e.click());await pg.waitForTimeout(400);
     const b=await pastille(pg), envoye=log.rpc.filter(x=>x.name==='box_audience_set').slice(n0);
     ok(b&&b.mot===apres&&envoye.length===1&&JSON.stringify(envoye[0].body)===JSON.stringify(envoi),
-       nom+' · '+vue+' : un tap → '+JSON.stringify(envoye.map(x=>x.body))+(envoi.p_kind==='v'?' ; refusé, l\'ancien niveau revient':'')+' → « '+(b&&b.mot)+' »');
+       nom+' · '+vue+' : le second tap écrit → '+JSON.stringify(envoye.map(x=>x.body))+(envoi.p_kind==='v'?' ; refusé, l\'ancien niveau revient':'')+' → « '+(b&&b.mot)+' »');
     await pg.$eval('#habits .habit.open [data-x]',e=>e.click());await pg.waitForTimeout(350);
    }
    if(nom==='téléphone'){ await pg.keyboard.press('ArrowLeft');await pg.waitForTimeout(600);await pg.$eval('#habits .v-col[data-open]',e=>e.click());await pg.waitForTimeout(450);
@@ -60,7 +69,7 @@ try{
   /* ── en LECTURE (le Totehm d'un autre, `totehm_read`) : aucune pastille, aucune écriture ── */
   {const {pg,log}=await page(browser,{dir:'com',origin,viewport:vp,hasTouch:nom==='téléphone',tables:{profiles:[{pseudo:'wah'}]},
      rpc:{totehm_read:LU,habit_spaces:{ok:true,mine:false,habits:[]}}});
-   await pg.goto(origin+'/totehm?ro=studio');await pg.waitForSelector('body.ro:not(.gate)');await pg.waitForTimeout(600);
+   await pg.goto(origin+'/totehm?ro=studio#in');await pg.waitForSelector('body.ro:not(.gate)');await pg.waitForTimeout(600);
    await pg.$eval('#habits .v-col[data-open]',e=>e.click());await pg.waitForTimeout(450);
    const r=await pg.evaluate(()=>({open:!!document.querySelector('#habits .habit.open'),baud:document.querySelectorAll('.baud').length}));
    ok(r.open&&r.baud===0&&log.rpc.some(x=>x.name==='totehm_read')&&!log.rpc.some(x=>/box_audience|my_box_audiences|totehm_of/.test(x.name)),

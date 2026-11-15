@@ -16,9 +16,12 @@ const MOMENT=new RegExp('^moments/'+UID+'/[0-9a-f-]{36}\\.(jpg|mp4|webm|mov)$');
 const VILLES={cities:[['Lisbon',38.72,-9.14,1,'PT'],['Porto',41.15,-8.61,1,'PT']]};
 const ADRESSES=[{lat:'41.1495',lon:'-8.6108',display_name:'Rua de Santa Catarina, Porto, Portugal'},
   {lat:'41.1579',lon:'-8.6291',display_name:'Praça da Liberdade, Porto, Portugal'}];
-const HABITS=[{name:'Run the hill',freq:'every_morning',ints:['fight'],step:{t:'Run the hill',f:'every_morning',is:['fight']},
+/* 14/11 — `space_habits` rend le NIVEAU de chaque box (`audience`) : une Habit privée ne peut pas porter un
+   spot du Club (Wah) ; elle s'affiche grisée, non sélectionnable, avec son bouton. « Secret » l'est. */
+const HABITS=[{name:'Run the hill',freq:'every_morning',ints:['fight'],audience:'subscribers',step:{t:'Run the hill',f:'every_morning',is:['fight']},
                objectives:[{text:'Move with friends'}],repulsions:[{text:'Skipping it'}]},
-              {name:'Call mum',freq:'weekly',ints:['love'],step:{t:'Call mum',f:'weekly',is:['love']},objectives:[],repulsions:[]}];
+              {name:'Call mum',freq:'weekly',ints:['love'],audience:'subscribers',step:{t:'Call mum',f:'weekly',is:['love']},objectives:[],repulsions:[]},
+              {name:'Secret',freq:'weekly',ints:['focus'],audience:'private',step:{t:'Secret',f:'weekly',is:['focus']},objectives:[],repulsions:[]}];
 const sp=(id,extra={})=>({id,habit:'Run the hill',intentions:['fight'],freq:'every_morning',visibility:'shared',mode:'social',
   creator:'nia',mine:false,city:'Lisbon',audience:'figher',starts_at:new Date(now-1000).toISOString(),
   ends_at:new Date(now+36e5).toISOString(),duration_min:60,exact:{lat:38.73,lng:-9.15,place:'the hill'},
@@ -33,7 +36,9 @@ try{
   const {pg,log}=await page(browser,{dir:'club',origin,viewport:vp,hasTouch:tel,
     tables:{profiles:[{pseudo:'wahigher'}]},
     rpc:{spot_rules:{clip_seconds:33,clip_max_bytes:48000000,duration_min:5,duration_max:720,horizon_days:90},
-         space_habits:{ok:true,habits:HABITS}, sso_epoch:1,
+         space_habits:{ok:true,habits:HABITS},
+         box_audience_set:b=>{ const h=HABITS.find(x=>x.name===b.p_id); if(h) h.audience=b.p_audience;
+                               return {ok:true,kind:b.p_kind,audience:b.p_audience}; }, sso_epoch:1,
          club_spots:b=>{ appels.push(b);
            const f=b.p_filters||{};
            const l=b.p_period!=='now'?[]
@@ -46,6 +51,7 @@ try{
          spot_create_audience:b=>MOMENT.test('moments/'+b.p_video)?{ok:true,id:'sp9',audience:b.p_audience}:{ok:false,why:'video'},
          spot_schedule_audience:{ok:true,id:'sp10',audience:'private'},
          spot_box_set:{ok:true}}});
+  HABITS.forEach(h=>{ h.audience = h.name==='Secret' ? 'private' : 'subscribers'; });   /* le mock, à neuf */
   await pg.route('**/cities.json',r=>r.fulfill({status:200,contentType:'application/json',body:JSON.stringify(VILLES)}));
   await pg.route('**nominatim.openstreetmap.org/**',r=>{geocodes++;r.fulfill({status:200,contentType:'application/json',body:JSON.stringify(ADRESSES)});});
   await pg.goto(origin+'/');
@@ -79,7 +85,9 @@ try{
   await clic(pg,'#rdr-flt button:last-child'); await pg.waitForTimeout(500);
   const f0=await pg.evaluate(()=>({l:[...document.querySelectorAll('#rdr-sf .sfl')].map(e=>e.textContent),
     h:[...document.querySelectorAll('#rdr-sf [data-sf="habit"] .v-name')].map(e=>e.textContent)}));
-  ok(f0.h.join('|')==='Run the hill|Call mum'&&f0.l.join('|')==='Habits|When|Where|Together|Intentions|It shows',
+  /* le FILTRE, lui, garde toutes mes Habits : il cherche les spots des AUTRES par parenté — le niveau de MA
+     box n'y change rien (seule la PRISE refuse une Habit privée). */
+  ok(f0.h.join('|')==='Run the hill|Call mum|Secret'&&f0.l.join('|')==='Habits|When|Where|Together|Intentions|It shows',
      nom+' · le filtre s\'ouvre sur MES Habits, au format du TOTEHM, puis : '+f0.l.slice(1).join(' · '));
   appels=[];
   await pg.$eval('#rdr-sf [data-sf="habit"]',e=>e.click());
@@ -118,7 +126,21 @@ try{
     h:[...document.querySelectorAll('#rdr-new [data-ns="h"] .v-name')].map(e=>e.textContent)}));
   ok(/^A spot is your TOTEHM Habit in action: exact place, exact time, right people, your conditions\.$/.test(p0.def)
      &&p0.l.join('|')==='+ spot|which habit?'&&p0.h.join('|')==='Run the hill|Call mum',
-     nom+' · la prise DIT ce qu\'est un spot, puis MES Habits : '+p0.h.join(' · '));
+     nom+' · la prise DIT ce qu\'est un spot, puis MES Habits OUVERTES : '+p0.h.join(' · '));
+  /* 14/11 (Wah) : « les Habit Private sont affichées GRISÉES, NON SÉLECTIONNABLES, avec un bouton Make
+     visible to subscribers. Si une Habit Private est sélectionnée, bloquer la création. » */
+  const pr=await pg.evaluate(()=>{const b=document.querySelector('#rdr-new .sfb.is-off');if(!b)return null;
+    const t=b.querySelector('.tb,.habit')||b.firstElementChild;
+    return {nom:(b.querySelector('.v-name')||{}).textContent,choisissable:!!b.getAttribute('data-ns'),
+      op:t?+getComputedStyle(t).opacity:1,bouton:(b.querySelector('[data-ns="ouvrirbox"]')||{}).textContent||''};});
+  ok(pr&&pr.nom==='Secret'&&!pr.choisissable&&pr.op<.6&&/make visible to subscribers/i.test(pr.bouton),
+     nom+' · une Habit PRIVÉE est grisée et non sélectionnable, avec « '+(pr&&pr.bouton)+' » → '+JSON.stringify(pr));
+  await pg.locator('#rdr-new .sfb.is-off [data-ns="ouvrirbox"]').first().click();
+  await pg.waitForFunction(()=>!document.querySelector('#rdr-new .sfb.is-off'),null,{timeout:6000}).catch(()=>{});
+  const ouv=log.rpc.filter(r=>r.name==='box_audience_set').pop();
+  ok(ouv&&ouv.body.p_kind==='h'&&ouv.body.p_id==='Secret'&&ouv.body.p_audience==='subscribers'
+     &&!await pg.evaluate(()=>!!document.querySelector('#rdr-new .sfb.is-off')),
+     nom+' · le tap ouvre la box à mes abonnés, et elle devient choisissable → '+JSON.stringify(ouv&&ouv.body));
   await pg.locator('#rdr-new [data-ns="h"]').filter({hasText:'Call mum'}).first().click(); await pg.waitForTimeout(300);
   await clic(pg,'#rdr-new [data-ns="quand"][data-v="later"]'); await pg.waitForTimeout(300);
   const l1=await etapes(pg);
@@ -143,9 +165,10 @@ try{
   await clic(pg,'#rdr-new [data-ns="mode"][data-v="silent"]'); await pg.waitForTimeout(300);
   await clic(pg,'#rdr-new [data-ns="dur"][data-v="90"]'); await pg.waitForTimeout(300);
   const l2=await pg.evaluate(()=>({l:[...document.querySelectorAll('#rdr-new .sfl')].map(e=>e.textContent).slice(-2),
+    media:([...document.querySelectorAll('#rdr-new .sfl')].map(e=>e.textContent).find(t=>/^a photo or a video/.test(t))||''),
     go:(document.querySelector('#rdr-new .ns-go')||{}).textContent}));
-  ok(l2.l.join('|')==='a word · optional|a photo or a video · optional'&&l2.go==='I WILL BE HERE',
-     nom+' · un mot, un média facultatif, I WILL BE HERE');
+  ok(l2.l.join('|')==='duration|a word · optional'&&l2.media&&l2.go==='I WILL BE HERE',
+     nom+' · un média FACULTATIF (« '+l2.media+' »), puis la durée et un mot, I WILL BE HERE');
   await pg.fill('#rdr-new input[data-nsi="place"]','the old court');
   await pg.screenshot({path:OUT+'/club_prise_'+(tel?'tel':'ordi')+'.png'});
   await clic(pg,'#rdr-new .ns-go');

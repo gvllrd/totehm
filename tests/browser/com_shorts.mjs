@@ -536,7 +536,7 @@ try{
     member_media:{ok:true,items:[{id:'x1',kind:'h',ref:'Deep practice',path:SID+'/m-dddddddd-dddd-4ddd-8ddd-dddddddddddd.jpg',mime:'image/jpeg',created_at:'2026-10-18T10:00:00Z'}]},
     club_spots_of:{ok:true,items:[],total:0}}});
   await pg.route(/\/storage\/v1\/object\/sign\//,r=>r.request().method()==='GET'?r.fulfill({status:200,contentType:'image/png',body:PNG}):r.fallback());
-  await pg.goto(origin+'/totehm?ro=studio');await pg.waitForSelector('body.ro:not(.gate)');await pg.waitForTimeout(700);
+  await pg.goto(origin+'/totehm?ro=studio#in');await pg.waitForSelector('body.ro:not(.gate)');await pg.waitForTimeout(700);
   await pg.locator('#habits [data-open]').first().evaluate(e=>e.click());await pg.waitForTimeout(300);
   ok(await pg.evaluate(()=>!document.getElementById('vmode')&&!document.querySelector('#habits [data-cap],#habits .m-f')),'en lecture : ni bascule, ni fichiers, ni capture');
   ok(!log.rpc.some(r=>r.name==='element_media_list')&&log.rpc.some(r=>r.name==='member_media'&&r.body.p_pseudo==='studio'),'en lecture : MES fichiers ne sont jamais lus — les SIENS (`member_media`)');

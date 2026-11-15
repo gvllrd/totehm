@@ -225,8 +225,13 @@ try{
   ok(!!r&&/\/get_higher\?from=com/.test(r.url()),'puis higher.boutique/get_higher?from=com, par le pont ('+(r&&r.url())+')');
   ok(!erreurs(log).length,'Get Higher : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
 
- // ── 4 · MEMBERS (20/10 sexies) : plus de galaxie. Le papier GRANDIT avec son socle et son réseau, se retourne,
- // la saisie est sur son dos ; validé, on retombe dans l'écosystème — le SIEN (processeur, médias, spots, offre). ──
+ // ── 4 · L'ÉCOSYSTÈME D'UN MEMBRE · 14/11 ─────────────────────────────────────────────────────────────────
+ // Wah : « quand j'appuie sur Members ça ne va pas, puisqu'il y a sur le verso du Totehm le NOM DU TOTEHM DE
+ // L'UTILISATEUR, or cette partie est destinée à chercher le nom d'un AUTRE Totehm » · « un NOUVEL ONGLET
+ // s'ouvre, l'utilisateur entre le nom dans un fullscreen bleu navy, puis la page d'abonnement, puis — abonné
+ // — le verso redevient recto avec le tree et la page d'atterrissage du membre ».
+ // Donc ici : [Members] ouvre `/search` dans un onglet et NE TOUCHE À RIEN ; l'écosystème d'un membre
+ // s'habite par `?ro=` ; un Totehm à abonnement part sur sa page de vente.
  const OFFRE={ok:true,pseudo:'kai3',palette:['flow','express'],sale:{open:true,price_cents:2400,currency:'eur',period:'year'},
    viewer:{signed_in:true,me:false,subscribed:false,until:null,ending:false,can_read:true}};
  for(const [vp,tel] of [[{width:390,height:844},true],[{width:1280,height:800},false]]){
@@ -238,76 +243,42 @@ try{
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1000);await ouvre(pg);
   const p0=await pg.evaluate(()=>document.getElementById('gate-asteroid').getBoundingClientRect().width);
   const habits0=(await lv(pg)).ramifications.habits;
+  // [Members] : un ONGLET, et l'atterrissage ne bouge pas d'un pixel (le verso d'ici porte MON nom)
   await pg.click('#lv-m-members');await calme(pg);await pg.waitForTimeout(700);
-  const o=await pg.evaluate(()=>{const q=s=>document.querySelector(s),d=window.__totehm_lv(),p=q('#gate-asteroid').getBoundingClientRect(),
-      k=q('#lv-socket').getBoundingClientRect(),u=q('#mb-q').getBoundingClientRect();
-    return {mode:d.mode,m:d.membre,pw:p.width,pcx:p.x+p.width/2,pcy:p.y+p.height/2,sk:k.width,dos:q('#gate-card').classList.contains('is-back'),
-      focus:document.activeElement&&document.activeElement.id,ui:getComputedStyle(q('#mb-ui')).visibility,
-      surLui:Math.abs(u.x+u.width/2-(p.x+p.width/2))<3&&u.y>p.y&&u.bottom<p.bottom,
-      ram:getComputedStyle(q('#lv-ram')).opacity,asp:document.body.classList.contains('is-aspire'),pistes:document.querySelectorAll('#lv-ram path:not(.puls):not(.sk):not(.fk)').length,
-      coude:(()=>{const r=[...document.querySelectorAll('#lv-ram rect')][0];return r?+r.getAttribute('y'):0;})(),
-      checked:q('#lv-m-members').getAttribute('aria-checked'),gx:!!q('#gx-c'),haut:p.y<160};});
-  ok(o.mode==='members'&&o.m.cherche&&o.checked==='true'&&!o.gx,(tel?'téléphone':'ordinateur')+' · [Members] : plus de galaxie, la recherche');
-  ok(o.pw>p0*1.9&&o.dos&&o.haut,'le papier GRANDIT (×'+(o.pw/p0).toFixed(1)+'), sans boîte, se pose sur son DOS, ancré en haut');
-  ok(o.focus==='mb-q'&&o.ui==='visible'&&o.surLui,'la saisie est SUR le dos du papier, et elle a déjà le focus (le clavier s\'ouvre dans le geste)');
-  ok(o.ram==='0'&&o.asp&&o.pistes===7,'25/10 · calquée sur le clic : les sept traits sont ASPIRÉS dans le TOTEHM pendant la recherche');
-  if(tel) await pg.screenshot({path:OUT+'/proc_members_'+(tel?'tel':'ordi')+'.png'});
-  // un nom inconnu, puis un Totehm à abonnement : un refus ne touche jamais à MON état
-  await pg.fill('#mb-q','nobody');await pg.keyboard.press('Enter');await pg.waitForTimeout(500);
-  const n1=await pg.evaluate(()=>({t:document.getElementById('mb-note').textContent,ro:document.body.classList.contains('ro'),h:window.__totehm_lv().ramifications.habits}));
-  ok(n1.t==='no TOTEHM by that name'&&!n1.ro&&n1.h===habits0,'un nom inconnu : « '+n1.t+' », et mon Totehm n\'a pas bougé');
-  // 25/10 (Wah : « le mode résultat recherche pour la souscription à un Totehm … est devenu totalement obsolète ») :
-  // la recherche se termine, le papier rentre ; ses traits sont SA palette, et l'offre se pose sous le papier.
-  await pg.fill('#mb-q','lock');await pg.keyboard.press('Enter');
-  await pg.waitForFunction(()=>document.body.classList.contains('lv-verrou')&&!document.body.classList.contains('mb-cherche'),null,{timeout:6000}).catch(()=>{});
-  await calme(pg);await pg.waitForTimeout(900);
-  const n2=await pg.evaluate(()=>{const q=s=>document.querySelector(s),p=q('#gate-asteroid').getBoundingClientRect();
-    return {d:window.__totehm_lv(),pw:p.width,dos:q('#gate-card').classList.contains('is-back'),qui:q('#lv-m-who').textContent,
-      lock:q('#mb-lock').innerText.replace(/\s+/g,' ').trim(),b:(q('#mb-lock [data-mbl]')||{}).textContent||'',tap:q('#lv-tap-open').textContent,
-      asp:document.body.classList.contains('is-aspire'),pales:document.querySelectorAll('#lv-ram g.r-0').length,ro:document.body.classList.contains('ro')};});
-  ok(n2.d.membre.verrou==='lock'&&!n2.dos&&Math.abs(n2.pw-p0)<2&&n2.qui==='lock'&&!n2.ro&&!n2.asp,
-     '25/10 · un Totehm à abonnement : la recherche se termine (le papier rentre, sur son recto), SON nom sur [Members], rien de lui n\'est lu');
-  ok(/^SUBSCRIBE · 24 € \/ year$/.test(n2.b)&&/subscribers only/i.test(n2.lock)&&n2.tap==='Subscribe to open it',
-     '25/10 · sous le papier, UN geste au prix du serveur ('+n2.b+') ; le papier dit « '+n2.tap+' »');
-  ok(n2.pales===5,'25/10 · ses traits ressortent : SA palette (deux intentions habitées), cinq en creux → '+n2.pales);
-  await pg.evaluate(()=>document.getElementById('gate-enter').click());await pg.waitForTimeout(400);
-  ok(await pg.evaluate(()=>document.body.classList.contains('gate')&&!!document.activeElement&&document.activeElement.dataset.mbl==='sub'),
-     '25/10 · un tap sur SON papier n\'ouvre rien : il désigne le geste qui l\'ouvre');
-  // 26/10 (Wah : « les mouvements de joystick ne marchent plus quand j'effectue une recherche ») : sur un Totehm verrouillé,
-  // la manette va en haut (commun) et en bas (SON offre) ; ← → désignent l'offre (ses médias sont derrière l'abonnement).
-  await tire(pg,0,-30);await vers(pg,'h');await pg.waitForTimeout(400);
-  const vh=await lv(pg);await tire(pg,0,30);await vers(pg,'c');await pg.waitForTimeout(400);
-  await tire(pg,-30,0);await pg.waitForTimeout(300);
-  const vg=await pg.evaluate(()=>({d:window.__totehm_lv(),appel:!!document.querySelector('#mb-lock .is-appel')}));
-  ok(vh.vue==='h'&&vg.d.vue==='c'&&vg.d.dernierRefus==='voisin:c>g:verrou'&&vg.appel&&vg.d.membre.verrou==='lock',
-     '26/10 · Totehm verrouillé : la manette monte (Get Higher) et revient ; tirée à gauche, elle désigne l\'offre '+JSON.stringify({h:vh.vue,c:vg.d.vue,r:vg.d.dernierRefus,a:vg.appel}));
-  await tire(pg,0,30);await vers(pg,'b');await pg.waitForTimeout(500);
-  const vb=await pg.evaluate(()=>({v:window.__totehm_lv().vue,o:document.getElementById('mb-offre').textContent}));
-  ok(vb.v==='b'&&/lock/.test(vb.o)&&/SUBSCRIBE/.test(vb.o),'26/10 · Totehm verrouillé : la manette descend sur SON offre (« '+vb.o.replace(/\s+/g,' ').trim()+' »)');
-  await tire(pg,0,-30);await vers(pg,'c');await pg.waitForTimeout(500);
-  await pg.click('#lv-m-members');await calme(pg);await pg.waitForTimeout(700);
-  // le bon nom : SON écosystème
-  const url0=pg.url();
-  await pg.fill('#mb-q','kai3');await pg.keyboard.press('Enter');
-  await pg.waitForFunction(()=>document.body.classList.contains('lv-membre')&&!document.body.classList.contains('mb-cherche'),null,{timeout:8000}).catch(()=>{});
-  await calme(pg);await pg.waitForTimeout(800);
+  const o=await pg.evaluate(()=>{const q=s=>document.querySelector(s),d=window.__totehm_lv(),p=q('#gate-asteroid').getBoundingClientRect();
+    return {onglets:window.__ouvert.slice(),mode:d.mode,vue:d.vue,pw:p.width,dos:q('#gate-card').classList.contains('is-back'),
+      asp:document.body.classList.contains('is-aspire'),ui:!!q('#mb-ui'),ram:getComputedStyle(q('#lv-ram')).opacity};});
+  ok(o.onglets.length===1&&o.onglets[0]==='/search'&&!o.ui,
+     (tel?'téléphone':'ordinateur')+' · 14/11 · [Members] ouvre /search dans un onglet ; plus aucune saisie ici → '+JSON.stringify(o.onglets));
+  ok(o.mode==='mine'&&o.vue==='c'&&Math.abs(o.pw-p0)<2&&!o.dos&&!o.asp,
+     'et l\'atterrissage ne bouge pas : le papier reste chez lui, sur son recto, ses traits dehors');
+  // un Totehm à abonnement, atteint par un lien `?ro=` : sa PAGE D'ABONNEMENT (jamais une porte fermée)
+  {const vers=pg.waitForURL(/\/@lock$/,{timeout:9000}).then(()=>true,()=>false);
+   await pg.goto(origin+'/totehm?ro=lock');
+   ok(await vers,'14/11 · `?ro=` sur un Totehm à abonnement → sa page d\'abonnement ('+pg.url().replace(origin,'')+')');}
+  // le bon nom : SON écosystème, sur place
+  await pg.goto(origin+'/totehm?ro=kai3');await pg.waitForSelector('body.member');
+  await pg.waitForFunction(()=>document.body.classList.contains('lv-membre'),null,{timeout:9000}).catch(()=>{});
+  // le papier d'un démarrage direct se pose après la porte : on attend qu'il AIT sa place
+  await pg.waitForFunction(()=>{const e=document.getElementById('gate-asteroid');return e&&e.getBoundingClientRect().width>40;},null,{timeout:9000}).catch(()=>{});
+  await calme(pg);await pg.waitForTimeout(900);await ouvre(pg);
   await pg.mouse.move(10,10);await pg.waitForTimeout(250); // la couleur au repos ; le survol des textes est blanc sur ordinateur
   const e=await pg.evaluate(()=>{const q=s=>document.querySelector(s),d=window.__totehm_lv(),p=q('#gate-asteroid').getBoundingClientRect();
     return {d,pw:p.width,dos:q('#gate-card').classList.contains('is-back'),ro:document.body.classList.contains('ro'),qui:q('#lv-m-who').textContent,
       quiVu:getComputedStyle(q('#lv-m-who')).display!=='none',couleur:getComputedStyle(q('#lv-m-who')).color,
       tap:q('#lv-tap').textContent,pales:document.querySelectorAll('#lv-ram g.r-0').length};});
-  ok(e.ro&&e.d.mode==='members'&&e.d.membre.chez&&!e.d.membre.cherche&&/[?&]ro=kai3/.test(pg.url())&&pg.url().split('?')[0]===url0.split('?')[0]&&!(await pg.evaluate(()=>window.__ouvert)).length,
-    'validé : on retombe dans l\'écosystème — le SIEN, sur place, sans navigation ('+pg.url().replace(origin,'')+')');
-  ok(Math.abs(e.pw-p0)<2&&!e.dos,'le papier redescend chez lui, sur son recto');
+  ok(e.ro&&e.d.mode==='members'&&e.d.membre.chez&&/[?&]ro=kai3/.test(pg.url()),
+    'on habite SON écosystème, sur place ('+pg.url().replace(origin,'')+')');
+  ok(Math.abs(e.pw-p0)<8&&!e.dos,'le papier est chez lui, sur son recto ('+e.pw.toFixed(0)+' vs '+p0.toFixed(0)+')');
   ok(e.qui==='kai3'&&e.quiVu&&e.couleur==='rgb(251, 213, 202)','[Members] porte SON nom, en Coral');
   ok(e.d.ramifications.habits!==habits0&&e.pales===5,'le processeur est le SIEN : ses deux intentions habitées, cinq en creux');
   ok(/to open it · (Turn|Swipe) to search$/.test(e.tap),'« '+e.tap+' »');
   // ↓ chez lui : son offre, pas mon pitch ChatGPT
-  await pg.keyboard.press('ArrowDown');await vers(pg,'b');await pg.waitForTimeout(700);
+  await tire(pg,0,30);await vers(pg,'b');await pg.waitForTimeout(900);
   const b=await pg.evaluate(()=>({o:document.getElementById('mb-offre').textContent,pitch:getComputedStyle(document.getElementById('chatgpt-pitch')).display,
     p:(()=>{const p=document.getElementById('gate-asteroid').getBoundingClientRect(),m=document.getElementById('rf-me').getBoundingClientRect();return Math.abs(p.x+p.width/2-(m.x+m.width/2))<4;})()}));
   ok(/kai3/.test(b.o)&&/SUBSCRIBE · 24 € \/ year/.test(b.o)&&b.pitch==='none'&&b.p,'↓ chez un membre : SON profil et SON offre (« '+b.o+' »), jamais mon pitch ChatGPT');
-  await pg.keyboard.press('ArrowUp');await vers(pg,'c');await pg.waitForTimeout(500);
+  await tire(pg,0,-30);await vers(pg,'c');await pg.waitForTimeout(600);
   // son Totehm, en lecture, puis on replie : on reste chez lui
   await pg.click('#lv-tap-open');await pg.waitForFunction(()=>!document.body.classList.contains('gate'),null,{timeout:9000}).catch(()=>{});
   await pg.waitForTimeout(600);
@@ -320,30 +291,14 @@ try{
   await pg.click('#lv-m-mine');await calme(pg);await pg.waitForTimeout(1200);
   const m=await pg.evaluate(()=>({d:window.__totehm_lv(),ro:document.body.classList.contains('ro'),cl:document.body.classList.contains('lv-membre')}));
   ok(m.d.mode==='mine'&&!m.ro&&!m.cl&&!/[?&]ro=/.test(pg.url()),'[Mine] : je redeviens moi, et l\'URL aussi '+JSON.stringify({mode:m.d.mode,ro:m.ro,cl:m.cl,u:pg.url().replace(origin,''),v:m.d.vue,b:m.d.bouge}));
-  // Échap pendant la recherche : on revient d'où l'on vient
-  if(!tel){
-    await pg.click('#lv-m-members');await calme(pg);await pg.waitForTimeout(600);
-    await pg.keyboard.press('Escape');await calme(pg);await pg.waitForTimeout(900);
-    const q=await pg.evaluate(()=>({d:window.__totehm_lv(),w:document.getElementById('gate-asteroid').getBoundingClientRect().width,dos:document.getElementById('gate-card').classList.contains('is-back')}));
-    ok(q.d.mode==='mine'&&!q.d.membre.cherche&&Math.abs(q.w-p0)<2&&!q.dos,'Échap pendant la recherche : le papier rentre, sur son recto, chez moi');
-  }
-  // 26/10 : pendant la recherche, la manette n'est plus morte — le geste QUITTE la recherche (comme Échap) puis voyage
+  // le milieu est un ARRÊT : une poussée de plus pendant le retour au centre ne traverse pas (14/11)
   for(const [dx,dy,v] of [[0,-30,'h'],[0,30,'b']]){
-    await pg.click('#lv-m-members');await calme(pg);await pg.waitForTimeout(600);
-    const c0=await lv(pg);
-    await tire(pg,dx,dy);await pg.waitForFunction(v=>{const d=window.__totehm_lv();return d.vue===v&&!d.bouge;},v,{timeout:5000}).catch(()=>{});await pg.waitForTimeout(500);
-    const r=await pg.evaluate(()=>({d:window.__totehm_lv(),w:document.getElementById('gate-asteroid').getBoundingClientRect().width,dos:document.getElementById('gate-card').classList.contains('is-back'),
-      asp:document.body.classList.contains('is-aspire'),ui:document.getElementById('mb-ui').getAttribute('aria-hidden')}));
-    ok(c0.membre.cherche&&r.d.vue===v&&r.d.mode==='mine'&&!r.d.membre.cherche&&!r.dos&&!r.asp&&r.ui==='true',
-       (tel?'téléphone':'ordinateur')+' · 26/10 · recherche ouverte, manette '+(v==='h'?'en haut':'en bas')+' : la recherche se referme, le papier rentre, et on arrive '+JSON.stringify({vue:r.d.vue,mode:r.d.mode,cherche:r.d.membre.cherche,refus:r.d.dernierRefus}));
-    await pg.keyboard.press(v==='h'?'ArrowDown':'ArrowUp');await vers(pg,'c');await pg.waitForTimeout(500);
+    await tire(pg,dx,dy);await vers(pg,v);await pg.waitForTimeout(400);
+    await tire(pg,-dx,-dy);await pg.waitForTimeout(80);await tire(pg,-dx,-dy);
+    await calme(pg);await pg.waitForTimeout(700);
+    const c=await lv(pg);
+    ok(c.vue==='c',(tel?'téléphone':'ordinateur')+' · 14/11 · ON NE TRAVERSE PAS LE MILIEU : depuis '+v+', deux poussées enchaînées s\'arrêtent au centre → '+JSON.stringify({vue:c.vue,vers:c.vers,attente:c.attente}));
   }
-  // un geste reçu pendant que le papier GRANDIT encore : il attend, puis quitte la recherche et voyage
-  await pg.click('#lv-m-members');await pg.waitForTimeout(150);await tire(pg,0,-30);
-  await pg.waitForFunction(()=>{const d=window.__totehm_lv();return d.vue==='h'&&!d.bouge;},null,{timeout:6000}).catch(()=>{});await pg.waitForTimeout(400);
-  const t=await lv(pg);
-  ok(t.vue==='h'&&t.mode==='mine'&&!t.membre.cherche,'26/10 · un geste pendant que la recherche s\'ouvre : il attend la fin, la referme, puis monte '+JSON.stringify({vue:t.vue,mode:t.mode,refus:t.dernierRefus}));
-  await pg.keyboard.press('ArrowDown');await vers(pg,'c');
   ok(!erreurs(log).length,'MEMBERS : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
 
  // ── 4 bis · LES VUES DE CÔTÉ SONT LA TRANSFORMATION DU CENTRE : les sept traits se plient pendant le voyage ──

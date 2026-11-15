@@ -23,7 +23,12 @@ const VILLES={cities:[['Porto',41.15,-8.61,1,'PT'],['Lisbon',38.72,-9.14,1,'PT']
 const ADRESSES=[{lat:'41.1495',lon:'-8.6108',display_name:'Rua de Santa Catarina, Porto, Portugal'},
   {lat:'41.1579',lon:'-8.6291',display_name:'Praça da Liberdade, Porto, Portugal'}];
 const MOMENT=new RegExp('^moments/'+UID+'/[0-9a-f-]{36}\\.(jpg|mp4|webm|mov)$');
+/* 14/11 — les niveaux de box entrent dans le questionnaire (le PLAFOND d'un spot) : « Run the hill » est
+   ouverte aux abonnés, « Call mum » reste privée. `box_audience_set` l'ouvre, sur confirmation. */
+let AUD_BOX={'Run the hill':'subscribers'};
 const RPC={my_landing:{signed_in:true,pseudo:'wahigher'},
+  my_box_audiences:()=>({ok:true,h:Object.assign({},AUD_BOX),t:{},r:{},w:{},v:{}}),
+  box_audience_set:b=>{ AUD_BOX[b.p_id]=b.p_audience; return {ok:true,kind:b.p_kind,audience:b.p_audience}; },
   my_trips:{signed_in:true,trips:[],reps:[],wisdom:[],visions:[]},
   habit_spaces:{ok:true,mine:true,habits:[]},
   club_spots_of:b=>({ok:true,period:b.p_period,items:[],total:0,has_more:false,next_offset:0,as_of:'2026-10-27T10:00:00Z'}),
@@ -84,8 +89,11 @@ try{
   await clic(pg,'#rdr-new [data-ns="mode"][data-v="social"]');await pg.waitForTimeout(300);
   const n2=await pg.evaluate(()=>({l:[...document.querySelectorAll('#rdr-new .sfl')].map(e=>e.textContent),
     cap:[...document.querySelectorAll('#rdr-new .ns-cap .cap-b')].map(e=>e.textContent.trim()), modale:document.getElementById('cap').classList.contains('is-on')}));
-  ok(n2.l.slice(-1)[0]==='a photo or a video · 33 s at most'&&n2.cap.join(',')==='PHOTO,VIDEO,IMPORT'&&!n2.modale,
-     nom+' · NOW : la photo ou la vidéo en dernier, la capture EN LIGNE dans le panneau');
+  /* 14/11 (Wah : « un spot peut être sans media … il faut rendre cela facultatif ») : l'intitulé le DIT, la
+     prise s'ouvre quand même d'elle-même (le geste de la preuve), et la durée est DÉJÀ dessous. */
+  ok(n2.l.includes('a photo or a video · optional · 33 s at most')&&n2.cap.join(',')==='PHOTO,VIDEO,IMPORT'&&!n2.modale
+     &&n2.l.includes('duration'),
+     nom+' · NOW : la photo ou la vidéo est FACULTATIVE (capture en ligne), et la durée est déjà dessous → '+n2.l.join(' · '));
   const fc=pg.waitForEvent('filechooser',{timeout:5000});
   await clic(pg,'#rdr-new [data-capk="file"]');
   const ch=await fc;ok((await ch.element().getAttribute('accept'))==='image/jpeg,image/png,image/webp,video/mp4,video/webm,video/quicktime',nom+' · IMPORT, pour un spot : une photo ou une vidéo seulement');
