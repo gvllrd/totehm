@@ -11,6 +11,16 @@ for(const mobile of [false,true]){
  check(!ship.root.getObjectByName('ORIGINS — enclosed chamber')&&!ship.root.getObjectByName('ORIGINS — transparent dark glass corridor'),'The island contains only the saucer and galaxy portal');
  check(ship.book.pickables.length===0&&ship.diagnostics().originalWorks===0,'No book or photos remain on the island vessel');
  check(ship.journey.outbound.at(-1)[1]===ORIGIN_PORTAL.position[1]&&Math.abs(ship.journey.outbound.at(-1)[2]-ORIGIN_PORTAL.position[2])<1,'The flight really terminates inside the event horizon');
+ scene.updateMatrixWorld(true);const hull=ship.root.getObjectByName('Origins metallic disk — continuous closed hull');
+ for(const [x,z] of [[0,0],[0,-3],[0,-6],[0,-9],[3,0],[-3,0],[0,6]]){
+  const ray=new T.Raycaster(new T.Vector3(x,16,z-4.2),new T.Vector3(0,1,0),0,6);
+  check(ray.intersectObject(hull).length>0,'Opaque saucer underside closes the centre and former rear opening at '+x+','+z);
+ }
+ const floor=ship.root.getObjectByName('Saucer continuous black cabin floor');
+ check(!floor.material.transparent&&new T.Raycaster(new T.Vector3(0,21.65,-4.2),new T.Vector3(0,-1,0),0,2).intersectObject(floor).length>0,'The passenger stands above a full opaque cabin floor');
+ const canopy=ship.root.getObjectByName('Origins closed metallic cupola');check(!canopy.material.transparent&&new T.Raycaster(new T.Vector3(0,25,-4.2),new T.Vector3(0,-1,0),0,5).intersectObject(canopy).length>0,'An opaque metallic canopy visibly closes the top of the saucer');
+ for(const origin of [[0,16,-4.2],[1,16,-3.2]]){const ray=new T.Raycaster(new T.Vector3(...origin),new T.Vector3(0,1,0),0,8),solid=ray.intersectObjects(ship.solids).find(h=>!h.object.material.transparent),hit=ray.intersectObjects(ship.pickables).find(h=>!solid||h.distance<=solid.distance+.055);check(hit?.object.userData.kind==='origins-vessel','The closed central engine cover still boards the saucer when clicked');}
+ for(const p of ship.journey.outbound.slice(0,4)){ship.setFlight(new T.Vector3(...p));check(!ship.diagnostics().flying,'The ship waits while the passenger approaches above its intact hull');}
  ship.setFlight(new T.Vector3(0,60,-40));check(ship.diagnostics().flying&&ship.diagnostics().saucerPosition.join(',')==='0,58.35,-40','The saucer moves with its passenger after boarding');
  ship.resetFlight();check(ship.diagnostics().saucerPosition.join(',')==='0,20,-4.2','Cancellation restores the physical saucer');
  check(ship.root.getObjectByName('Plain black event horizon')?.material.color.getHex()===0,'The black hole is real rendered geometry');
