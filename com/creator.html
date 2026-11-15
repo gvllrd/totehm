@@ -563,7 +563,7 @@ const audBadge = a => AUD_ICON[a] ? '<span class="audb" role="img" aria-label="'
 const audMark = (root, attr, a0) => { const a = audNorm(a0); return root?.querySelectorAll('[' + attr + ']').forEach(b => { const on = b.getAttribute(attr) === a;
   b.classList.toggle('is-on', on); b.setAttribute('aria-checked', String(on)); }); };
 /* ══ fin AUDIENCE ══ */
-const BUILD='2026-11-12-abonnement';
+const BUILD='2026-11-15-recherche-ecosysteme';
 
 /* ══ EN CADRE DANS COM (`?embed=1`) ═════════════════════════════════════
    Wah, 16/10 : « il ne faut pas que ça saute entre totehm.com et totehm.com/@{Nom} ». COM ouvre cette
