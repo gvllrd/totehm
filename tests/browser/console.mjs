@@ -57,9 +57,8 @@ const white = await pg.evaluate(() => [...document.querySelectorAll('body *')].f
 ok(white === 0, 'no white background');
 ok(!/Bebas/i.test(await pg.content()), 'no Bebas Neue');
 await pg.screenshot({ path: OUT + '/console.png', fullPage:true });
-await pg.click('#member');
-const items = await pg.$$eval('#menu .m-it', l => l.map(e => e.textContent));
-ok(items.at(-1) === 'Simple terms of use', 'terms last in the member menu: ' + items.join(' | '));
+/* 14/11 (Wah) : plus de menu membre sur com — le coin mène à son TOTEHM ; les conditions vivent au verso. */
+ok(await pg.locator('#menu,.cm-menu').count() === 0, 'no member menu on the console');
 log.errors = log.errors.filter(e => !/404|Failed to load resource/i.test(e));
 ok(!log.errors.length, 'no page error: ' + log.errors.join(' | '));
 await browser.close();

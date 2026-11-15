@@ -52,12 +52,8 @@ a{color:inherit;text-decoration:none}
   font-family:var(--mono);font-weight:700;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--mid);padding:8px 6px}
 #member.is-in{font-family:var(--q);font-weight:400;font-size:13px;letter-spacing:0;text-transform:none;color:var(--coral)}
 /* Le menu membre — SIMPLE TERMS OF USE toujours en dernier. */
-#menu{position:fixed;top:0;left:0;z-index:45;width:min(320px,88vw);background:#000;padding:58px 16px 18px;display:flex;flex-direction:column;gap:6px;
   transform:translateY(-104%);visibility:hidden;transition:transform .3s ease,visibility 0s linear .3s}
-#menu.is-open{transform:none;visibility:visible;transition:transform .3s ease}
-#menu .m-it{display:block;width:fit-content;text-align:left;background:var(--g4);border:none;border-radius:10px;padding:8px 12px;cursor:pointer;color:var(--mid);
   font-family:var(--mono);font-weight:700;font-size:10px;letter-spacing:.12em;text-transform:uppercase}
-#menu .m-terms{background:none;font-weight:400;color:var(--lo);margin-top:8px;padding-left:2px}
 
 main{width:100%;max-width:520px;margin:0 auto;padding:max(84px,11dvh) 16px 96px;display:flex;flex-direction:column;align-items:center;text-align:center}
 .kick{font-size:10px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--lo)}
@@ -156,7 +152,6 @@ body.is-search #member{color:#c9c9e0}
 @media(hover:hover){
   .btn:hover{background:var(--g5);color:#fff}.btn.is-main:hover{background:#44444b}
   .srch-row:hover{background:var(--g3)}.srch-row:hover::after{color:#fff}
-  #menu .m-it:hover{background:var(--g5)}
 }
 
 
@@ -194,70 +189,10 @@ body.is-search #member{color:#c9c9e0}
 /* ══ fin AUDIENCE ══ */
 </style>
 <style data-com-member-menu="2026-10-06">
-/* 06/10 — Wah : « le menu de higher.boutique dans le menu espace membre de
-   totehm.com : les mêmes boutons, centré, plein écran ». Boutons gris
-   arrondis Space Mono (le `.btn-sig` de la boutique), légende dessous en
-   petites capitales, le tout centré ; le texte d'un bouton ne passe jamais
-   à la ligne. Source : tools/com_member_menu.css (copiée, jamais importée). */
-.cm-menu{display:flex;flex-direction:column;align-items:center;gap:18px;width:100%}
-.cm-item{display:flex;flex-direction:column;align-items:center;gap:7px;max-width:100%}
-.cm-action{display:inline-flex;align-items:center;justify-content:center;gap:6px;inline-size:fit-content;max-inline-size:100%;padding:12px 20px;border:0;border-radius:10px;background:#1f1f24;color:#b0b0b0;font:400 12.5px/1.4 'Space Mono',monospace;letter-spacing:0;text-align:center;text-decoration:none;cursor:pointer;white-space:nowrap}
-.cm-action svg{width:57px;height:19px;flex-shrink:0}
-.cm-hint{margin:0;font:700 8.6px/1.6 'Space Mono',monospace;letter-spacing:.22em;text-transform:uppercase;color:#6b6b72;text-align:center;max-width:100%}
-.cm-action:focus-visible{outline:1px solid #fff;outline-offset:3px}
-#menu:has(.cm-menu){inset:0;width:100%;height:100dvh;max-height:none;background:#000;align-items:center;padding:max(64px,9dvh) 16px 40px;overflow-y:auto;overscroll-behavior:contain}
-#menu:has(.cm-menu) .m-it{width:fit-content;align-self:center;text-align:center;background:none;color:#8a8a92;font-size:10px}
-#menu .cm-menu{margin:0 0 26px}
-.cm-close{position:fixed;top:14px;right:16px;z-index:2;background:none;border:0;padding:6px;cursor:pointer;font:400 10px 'Space Mono',monospace;letter-spacing:.12em;color:#b0b0b0}
-#member-window .cm-menu{padding:0 0 22px}
-@media(hover:hover){.cm-action:hover{background:#2c2c32;color:#fff}.cm-close:hover,#menu:has(.cm-menu) .m-it:hover{color:#fff}}
 /* ⚠️ EN CADRE (`?embed=1`, 16/10) : la page entre dans la couche `XO` de COM. Le coin membre et son
    menu n'ont rien à faire ici — l'espace membre vit au VERSO du papier, dans COM, et nulle part ailleurs. */
-html.is-embed #member,html.is-embed #menu{display:none!important}
+html.is-embed #member{display:none!important}
 html.is-embed,html.is-embed body{background:#000}
-/* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
-/* Tout texte devient blanc sous la souris. Les dessins, surfaces
-   et contrôles désactivés gardent leur apparence. */
-@media(hover:hover) and (pointer:fine){
-:is(
-:is(a,abbr,address,b,bdi,bdo,blockquote,button,caption,cite,code,dd,del,dfn,dt,em,figcaption,h1,h2,h3,h4,h5,h6,i,input,kbd,label,legend,li,mark,option,output,p,pre,q,rp,rt,ruby,s,samp,small,span,strong,sub,summary,sup,td,textarea,th,time,u,var):hover,
-div:not(:has(> :not(br,wbr))):hover,
-#member:hover,
-#member.is-in:hover,
-#menu .m-it:hover,
-#menu .m-terms:hover,
-.kick:hover,
-.note:hover,
-.note.no:hover,
-.note.ok:hover,
-.btn:hover,
-.lnk:hover,
-.tname:hover,
-.ints span:hover,
-.price small:hover,
-.get p:hover,
-.fine:hover,
-.state.is-off:hover,
-#q:hover,
-.hint:hover,
-.ns-label:hover,
-.srch-name:hover,
-.srch-meta:hover,
-.u-head:hover,
-.u-st:hover,
-.u-t.is-locked .audb:hover,
-.u-none:hover,
-.aud button:hover,
-.audb:hover,
-.cm-action:hover,
-.cm-hint:hover,
-#menu:has(.cm-menu) .m-it:hover,
-.cm-close:hover):where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *)){color:#fff!important}
-.in:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::placeholder{color:#fff!important}
-#q:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::placeholder{color:#fff!important}
-.srch-row:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::after{color:#fff!important}
-}
-/* ══ FIN DU BLOC GÉNÉRÉ ══ */
 /* ══ LE COIN MEMBRE — copié de tools/member_corner.css dans chaque page (jamais importé), EN DERNIER dans son style ══
    L'élément porte la classe `mc` ; la page pose `is-in` quand le membre est connecté (rien d'autre à faire),
    et met le nom dans son `#member-txt` (ou son dernier enfant texte) : le bloc fait le reste.
@@ -350,13 +285,59 @@ div:not(:has(> :not(br,wbr))):hover,
 .tw.is-plat .tw-p{transform:none}
 @media(prefers-reduced-motion:reduce){.tw-p{transform:rotateY(180deg)}.tw.is-plat .tw-p{transform:none}}
 /* ══ fin LE MOT TOTEHM ══ */
+/* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
+/* Tout texte devient blanc sous la souris. Les dessins, surfaces
+   et contrôles désactivés gardent leur apparence. */
+@media(hover:hover) and (pointer:fine){
+:is(
+:is(a,abbr,address,b,bdi,bdo,blockquote,button,caption,cite,code,dd,del,dfn,dt,em,figcaption,h1,h2,h3,h4,h5,h6,i,input,kbd,label,legend,li,mark,option,output,p,pre,q,rp,rt,ruby,s,samp,small,span,strong,sub,summary,sup,td,textarea,th,time,u,var):hover,
+div:not(:has(> :not(br,wbr))):hover,
+#member:hover,
+#member.is-in:hover,
+.kick:hover,
+.note:hover,
+.note.no:hover,
+.note.ok:hover,
+.btn:hover,
+.lnk:hover,
+.paper .tn-l:hover,
+.tname:hover,
+body.is-search .kick:hover,
+body.is-search .hint:hover,
+body.is-search .note:hover,
+body.is-search #member:hover,
+.ints span:hover,
+.price small:hover,
+.get p:hover,
+.fine:hover,
+.state.is-off:hover,
+#q:hover,
+.hint:hover,
+.ns-label:hover,
+.srch-name:hover,
+.srch-meta:hover,
+.u-head:hover,
+.u-st:hover,
+.u-t.is-locked .audb:hover,
+.u-none:hover,
+.aud button:hover,
+.audb:hover,
+.mc:not(.is-in):hover,
+.tn-l:hover,
+.mc-terms:hover,
+.tw .tn-l:hover):where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *)){color:#fff!important}
+.in:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::placeholder{color:#fff!important}
+body.is-search #q:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::placeholder{color:#fff!important}
+#q:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::placeholder{color:#fff!important}
+.srch-row:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::after{color:#fff!important}
+}
+/* ══ FIN DU BLOC GÉNÉRÉ ══ */
 </style>
 </head>
 <body>
 <!-- 14/11 — le verso plein écran de la recherche : navy, et ses douze perforations rondes (voir le CSS). -->
 <div id="verso" aria-hidden="true" hidden></div>
 <button id="member" class="mc" type="button"><span id="member-txt">CONNECT WITH MY TOTEHM</span></button>
-<nav id="menu" aria-label="Member menu"></nav>
 
 <main>
   <!-- ══ SEARCH · 14/11 : LE VERSO PLEIN ÉCRAN, VIERGE ══ On cherche un ÉCOSYSTÈME, pas un Totehm : un nom,
@@ -471,73 +452,8 @@ const SB_URL = 'https://abujjbkbbiumxrokozph.supabase.co';
 const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us';
 const sb = createClient(SB_URL, SB_ANON);
 const $ = id => document.getElementById(id);
-/* COM MEMBER MENU · 2026-10-05 · source: tools/com_member_menu.js */
-/* COM member navigation. Copied into independent pages; no runtime import. */
-const COM_HIGHER_BADGE = '<svg viewBox="0 0 600 200" role="img" aria-label="Higher"><defs><mask id="cm-hbmask"><rect width="600" height="200" fill="white"/><circle cx="60" cy="0" r="14" fill="black"/><circle cx="140" cy="0" r="14" fill="black"/><circle cx="220" cy="0" r="14" fill="black"/><circle cx="300" cy="0" r="14" fill="black"/><circle cx="380" cy="0" r="14" fill="black"/><circle cx="460" cy="0" r="14" fill="black"/><circle cx="540" cy="0" r="14" fill="black"/><circle cx="60" cy="200" r="14" fill="black"/><circle cx="140" cy="200" r="14" fill="black"/><circle cx="220" cy="200" r="14" fill="black"/><circle cx="300" cy="200" r="14" fill="black"/><circle cx="380" cy="200" r="14" fill="black"/><circle cx="460" cy="200" r="14" fill="black"/><circle cx="540" cy="200" r="14" fill="black"/><circle cx="0" cy="70" r="14" fill="black"/><circle cx="0" cy="130" r="14" fill="black"/><circle cx="600" cy="70" r="14" fill="black"/><circle cx="600" cy="130" r="14" fill="black"/></mask></defs><rect width="600" height="200" fill="#333366" mask="url(#cm-hbmask)"/><g fill="#ffffff" transform="translate(34.32, 144.42)"><path transform="translate(0.000,0) scale(0.144,-0.144)" d="M596 700H832L692 0H456ZM238 0H2L142 700H378ZM523 258H274L313 452H562Z"/><path transform="translate(115.776,0) scale(0.144,-0.144)" d="M-5 0 104 547H329L220 0ZM241 591Q182 591 147.5 622.0Q113 653 113 698Q113 751 152.5 786.0Q192 821 257 821Q316 821 350.5 792.0Q385 763 385 718Q385 662 345.5 626.5Q306 591 241 591Z"/><path transform="translate(162.576,0) scale(0.144,-0.144)" d="M255 -204Q172 -204 103.5 -187.0Q35 -170 -16 -136L80 18Q113 -7 161.5 -21.5Q210 -36 259 -36Q325 -36 355.0 -8.5Q385 19 395 68L409 138L450 294L485 464L501 547H716L629 110Q596 -57 499.5 -130.5Q403 -204 255 -204ZM260 30Q200 30 146.0 58.0Q92 86 58.0 139.0Q24 192 24 266Q24 327 46.5 379.5Q69 432 109.5 472.0Q150 512 203.5 534.5Q257 557 318 557Q379 557 424.5 533.0Q470 509 490.0 451.5Q510 394 493 294Q478 204 446.0 145.5Q414 87 367.0 58.5Q320 30 260 30ZM332 207Q361 207 383.0 219.5Q405 232 417.0 255.0Q429 278 429 309Q429 340 408.5 359.5Q388 379 350 379Q321 379 299.0 366.5Q277 354 264.5 331.0Q252 308 252 277Q252 246 273.5 226.5Q295 207 332 207Z"/><path transform="translate(264.960,0) scale(0.144,-0.144)" d="M470 557Q535 557 584.0 528.5Q633 500 654.5 443.5Q676 387 659 302L599 0H373L428 275Q437 320 424.0 343.5Q411 367 375 367Q337 367 311.0 341.5Q285 316 274 263L221 0H-5L143 742H369L300 396L260 436Q299 499 356.5 528.0Q414 557 470 557Z"/><path transform="translate(366.048,0) scale(0.144,-0.144)" d="M321 -10Q231 -10 163.5 21.0Q96 52 58.0 109.0Q20 166 20 243Q20 333 62.0 404.0Q104 475 180.5 516.0Q257 557 359 557Q447 557 509.0 526.0Q571 495 604.0 441.0Q637 387 637 316Q637 291 633.5 267.0Q630 243 625 221H200L221 330H521L427 301Q435 333 426.5 355.5Q418 378 398.0 390.5Q378 403 349 403Q308 403 284.0 381.0Q260 359 249.5 324.0Q239 289 239 251Q239 200 266.5 178.5Q294 157 347 157Q378 157 409.0 166.5Q440 176 466 195L560 58Q504 20 443.5 5.0Q383 -10 321 -10Z"/><path transform="translate(459.360,0) scale(0.144,-0.144)" d="M-5 0 104 547H317L286 392L265 436Q299 501 359.5 529.0Q420 557 498 557L458 357Q444 359 432.5 360.0Q421 361 409 361Q353 361 318.5 336.0Q284 311 272 253L221 0Z"/></g></svg>';
-function comMemberLinks(home = false, enabled = null) {
-  const item = (content, hint) => '<div class="cm-item">' + content + '<p class="cm-hint">' + hint + '</p></div>';
-  return '<nav class="cm-menu" aria-label="My TOTEHM ecosystem">' +
-    item('<a class="cm-action" data-com-open href="/totehm#in">Open my TOTEHM</a>', 'Tap on it') +
-    item('<a class="cm-action" href="/search">Search a TOTEHM</a>', 'Turn it over') +
-    item('<a class="cm-action" id="btn-get-higher" data-com-bridge="space" href="https://www.totehm.space/get_higher">Get ' + COM_HIGHER_BADGE + '</a>', 'Put it on your tongue') +
-    item('<a class="cm-action" href="/chatgpt">' + COM_HIGHER_BADGE + ' my ChatGPT</a>', 'My TOTEHM · read-only context') +
-    item('<a class="cm-action" id="wear-btn" data-com-bridge="boutique" href="https://www.higher.boutique/">Totehmize my cloth</a>', 'HIGHER BOUTIQUE') +
-    item('<a class="cm-action" data-com-monetize href="' + (enabled === false ? '/monetize' : '/console') + '">' + (enabled === false ? 'Monetize my TOTEHM' : 'My monetization') + '</a>', '<span data-com-offer-hint>' + (enabled === false ? 'My readers pay me, once a year' : enabled === true ? 'My price · my readers · what I am owed' : 'My price and my payout') + '</span>') +
-    '</nav>';
-}
-function paintComMemberOffer(enabled) {
-  document.querySelectorAll('[data-com-monetize]').forEach(link => {
-    link.href = enabled === false ? '/monetize' : '/console';
-    link.textContent = enabled === false ? 'Monetize my TOTEHM' : 'My monetization';
-  });
-  document.querySelectorAll('[data-com-offer-hint]').forEach(hint => {
-    hint.textContent = enabled === false ? 'My readers pay me, once a year' : enabled === true ? 'My price · my readers · what I am owed' : 'My price and my payout';
-  });
-}
-let comOfferSeq = 0;
-function resetComMemberOffer() { comOfferSeq++; paintComMemberOffer(null); }
-async function readComMemberOffer(sb, currentUser) {
-  const uid = currentUser()?.id || null, seq = ++comOfferSeq;
-  if (!uid) { paintComMemberOffer(false); return false; }
-  try {
-    const { data, error } = await sb.rpc('my_console');
-    if (seq !== comOfferSeq || uid !== currentUser()?.id) return;
-    if (error) { console.error('[member offer]', error.message); paintComMemberOffer(null); return; }
-    const enabled=data?.signed_in && typeof data.offer?.enabled === 'boolean' ? data.offer.enabled : null;
-    paintComMemberOffer(enabled);return enabled;
-  } catch (error) {
-    if (seq !== comOfferSeq || uid !== currentUser()?.id) return;
-    console.error('[member offer]', error?.message || error); paintComMemberOffer(null);
-  }
-}
-function wireComMemberMenu(host, { open, bridge } = {}) {
-  host.addEventListener('click', event => {
-    const link = event.target.closest('a');
-    if (!link || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || event.button > 0) return;
-    if (link.hasAttribute('data-com-open') && open) { event.preventDefault(); open(link); }
-    else if (link.dataset.comBridge && bridge) { event.preventDefault(); bridge(link.dataset.comBridge, link.href); }
-  });
-}
-/* Same 60s, one-use SSO bridge as tools/sso_snippet.js. No session in URLs. */
-async function comMemberBridge(sb, target, url, apiURL, publicKey) {
-  try {
-    const { data: { session } } = await sb.auth.getSession();
-    if (session) {
-      const response = await fetch(apiURL + '/functions/v1/sso-mint', {
-        method: 'POST', headers: { authorization: 'Bearer ' + session.access_token, apikey: publicKey, 'content-type': 'application/json' },
-        body: JSON.stringify({ target })
-      });
-      if (response.ok) {
-        const { code } = await response.json();
-        if (code) { location.href = url + (url.includes('#') ? '&' : '#') + 'sso=' + code; return; }
-      } else console.error('[member bridge]', response.status);
-    }
-  } catch (error) { console.error('[member bridge]', error?.message || error); }
-  location.href = url;
-}
 
 /* END COM MEMBER MENU */
-wireComMemberMenu($('menu'),{bridge:(target,url)=>comMemberBridge(sb,target,url,SB_URL,SB_ANON)});
 
 const esc = s => { const d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; };
 /* ══ AUDIENCE — 13/10 : quatre niveaux, une pastille. COPIÉ tel quel depuis tools/audience_ui.js
@@ -610,8 +526,6 @@ async function session(){
   if(avant!==(me?.id||null)) searchViews.forEach(c=>c.authChanged());
   $('member').classList.toggle('is-in', !!me);
   $('member-txt').textContent = me ? 'My TOTEHM' : 'CONNECT WITH MY TOTEHM';
-  $('menu').innerHTML='<button class="cm-close" type="button" data-menu-close="1">Close</button>'+comMemberLinks(false,me?null:false)+(me?'<button class="m-it" type="button" data-out="1">Sign out</button>':'<button class="m-it" type="button" data-signin="1">CONNECT WITH MY TOTEHM</button>')+
-    '<a class="m-it m-terms" href="/terms" target="_blank" rel="noopener">Simple terms of use</a>';
   if(me){
     const uid=me.id;
     const {data,error}=await sb.from('profiles').select('pseudo').eq('id',uid).maybeSingle();
@@ -619,7 +533,6 @@ async function session(){
     if(seq!==sessionSeq||me?.id!==uid) return;
     if(data?.pseudo) $('member-txt').textContent=data.pseudo;
   }
-  readComMemberOffer(sb,()=>me);
 }
 
 /* ══ CHERCHER UN TOTEHM : UN NOM, ET C'EST TOUT — copié de totehm.html ══ */
@@ -912,15 +825,14 @@ $('si-code').addEventListener('input', async () => {
   await session(); if(NAME) loadPage();
 });
 
-/* ══ LE MENU ═════════════════════════════════════════════════════════ */
-$('member').onclick = () => $('menu').classList.toggle('is-open');
-$('menu').addEventListener('click', async e => {
-  if(e.target.closest('[data-menu-close]')){ $('menu').classList.remove('is-open'); return; }
-  if(e.target.closest('[data-signin]')){
-    $('menu').classList.remove('is-open');
-    if(NAME && C?.ok && C.sale?.open && !C.viewer?.subscribed && !C.viewer?.can_read){ WANT = null; showSignin(); }
-    else nav('/totehm#in');
-  }
+/* ══ LE COIN MEMBRE ═════════════════════════════════════════════════
+   14/11 (Wah : « il y avait un menu dans totehm.com, je n'en veux pas »). Plus de menu : le coin MÈNE
+   à son TOTEHM (connecté), ou ouvre la connexion. Sortir et les conditions vivent au verso du TOTEHM. */
+$('member').onclick = () => {
+  if(me){ nav('/totehm'); return; }
+  if(NAME && C?.ok && C.sale?.open && !C.viewer?.subscribed && !C.viewer?.can_read){ WANT = null; showSignin(); }
+  else nav('/totehm#in');
+};
 /* ══ SORTIR DE TOTEHM.COM, C'EST SORTIR DE PARTOUT · 08/11/2026 ═══════
    Wah : « je ne peux pas me déconnecter d'un compte sur un domaine quand je me
    déconnecte de totehm.com ». Mesuré : quatre pages d'ici sortaient en
@@ -936,14 +848,8 @@ async function comSortir(sb){
   const { error } = await sb.auth.signOut({ scope:'global' });
   if(error){ console.error('[signOut]', error.message); await sb.auth.signOut({ scope:'local' }); }
 }
-  if(e.target.closest('[data-out]')){ await comSortir(sb); $('menu').classList.remove('is-open'); await session(); if(NAME) loadPage(); else searchCtl.start($('q').value); }
-});
-document.addEventListener('pointerdown', e => { if(!e.target.closest('#menu,#member')) $('menu').classList.remove('is-open'); });
-document.addEventListener('keydown', e => { if(e.key !== 'Escape') return;
-  const ouvert = $('menu').classList.contains('is-open');
-  $('menu').classList.remove('is-open');
-  /* En cadre, Échap sur une page sans menu ouvert demande la fermeture de la couche. */
-  if(!ouvert) dire('close'); });
+/* En cadre, Échap demande la fermeture de la couche au parent. */
+document.addEventListener('keydown', e => { if(e.key === 'Escape') dire('close'); });
 
 /* ══ DÉMARRAGE ═══════════════════════════════════════════════════════ */
 const searchCtl = NameSearch({ input:$('q'), results:$('res'), note:$('q-note') });

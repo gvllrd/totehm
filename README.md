@@ -43,7 +43,7 @@ La creator economy est à retravailler : rendre la valeur et le prix **annuel** 
 | `backend/supabase/functions/_shared/tracking-*.ts` | notifications déterministes : Done/Missed dans le même message, périodes conservées, historique intact, livraisons vérifiées, horaires et plafonds ; `/prepare`, `/review`, `/settings`, `/pause`, `/resume` ; préparation explicite, aucune photo exportée |
 | `backend/supabase/migrations/` · `functions/` | les modifications de la base, dans l'ordre · les 40 fonctions serveur |
 | `backend/n8n/` | les automatisations du vêtement (A → F) et la VM Oracle |
-| `tools/` | 14 blocs communs, copiés dans les pages (connexion SSO, **le code à six chiffres**, coin membre, nomenclature du nom, **le mot TOTEHM qui devient la pièce là où la page le demande**, envoi vidéo Bunny, confidentialité, loupe, menu, survol) |
+| `tools/` | 13 blocs communs, copiés dans les pages (connexion SSO, **le code à six chiffres**, coin membre, nomenclature du nom, **le mot TOTEHM qui devient la pièce là où la page le demande**, envoi vidéo Bunny, confidentialité, loupe, menu, survol) |
 | `tests/` | les tests (navigateur avec une base simulée, SQL, logique) |
 
 ## Les documents

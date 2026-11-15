@@ -124,11 +124,10 @@ try{
   ok(m.outs[m.outs.length-1]==='Simple terms of use'&&!m.nom&&m.verso,'Simple terms of use en dernier ; le nom du Totehm vit au verso (mes réglages, 15/10), plus dans le compte');
   await pg.screenshot({path:OUT+'/member_menu.png',fullPage:true});
   ok(!erreurs(log).length,'menu membre : aucune erreur');await pg.context().close();
+  /* 14/11 : /search n'a PLUS de menu — son coin membre mène à son TOTEHM. */
   const p2=await page(browser,{dir:'com',origin,rpc,tables:{profiles:[{pseudo:'wah'}]}});
-  await p2.pg.goto(origin+'/creator');await p2.pg.waitForTimeout(800);await p2.pg.click('#member');await p2.pg.waitForTimeout(500);
-  const r=await p2.pg.$eval('#menu',e=>{const b=e.getBoundingClientRect();return {w:b.width,h:b.height,W:innerWidth,H:innerHeight};});
-  ok(r.w===r.W&&r.h===r.H&&await p2.pg.isVisible('#menu [data-menu-close]'),'/search : le même menu, plein écran, avec Close');
-  await p2.pg.click('#menu [data-menu-close]');await p2.pg.waitForTimeout(450);
-  ok(!(await p2.pg.$eval('#menu',e=>e.classList.contains('is-open'))),'Close le referme');await p2.pg.context().close();
+  await p2.pg.goto(origin+'/search');await p2.pg.waitForTimeout(800);
+  ok(await p2.pg.locator('#menu,.cm-menu').count()===0,'/search : aucun menu');
+  await p2.pg.context().close();
  }
 }finally{await browser.close();}

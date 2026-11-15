@@ -90,10 +90,10 @@ const erreurs = log => log.errors.filter(e => !/404|Failed to load resource/i.te
   ok(!erreurs(log).length, 'visitor: no page error ' + erreurs(log).join(' | '));
 }
 
-/* ── 3 · abonné · propriétaire · fermé · inconnu · privé ─────────────── */
+/* ── 3 · abonné · propriétaire · fermé · inconnu · privé ─────────────── (14/11 : « me » n'a plus de lien My console — une seule console, celle du verso du TOTEHM) */
 const cas = [
   ['subscribed', KAI({ subscribed:true, until:'2027-05-01', can_read:true }), async pg => /Renews 1 May 2027/.test(await pg.textContent('#offer')) && !!await pg.$('[data-do=open]') && !await pg.$('[data-do=subscribe]')],
-  ['me', Object.assign(KAI({ me:true }), { pseudo:'kai' }), async pg => /This is your page/i.test(await pg.textContent('#offer')) && !!await pg.$('[data-do=copy]') && !!await pg.$('a[href="/console"]') && !await pg.$('[data-do=subscribe]')],
+  ['me', Object.assign(KAI({ me:true }), { pseudo:'kai' }), async pg => /This is your page/i.test(await pg.textContent('#offer')) && !!await pg.$('[data-do=copy]') && !await pg.$('a[href="/console"]') && !await pg.$('[data-do=subscribe]')],
   ['closed', Object.assign(KAI({}), { sale:sale(false) }), async pg => /Not open yet/i.test(await pg.textContent('#offer')) && !await pg.$('[data-do=subscribe]')],
   ['nobody', { ok:false, why:'nobody' }, async pg => /No TOTEHM by that name/i.test(await pg.textContent('#offer'))],
   ['private', { ok:false, why:'private' }, async pg => /This TOTEHM is private/i.test(await pg.textContent('#offer'))],

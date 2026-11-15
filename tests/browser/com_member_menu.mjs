@@ -111,11 +111,15 @@ try{
    await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(900);await retourner(pg);await pg.click('#mw-signout');await pg.waitForSelector('body:not(.member)');await pg.waitForTimeout(900);
    ok(!await pg.locator('body.member').count(),'late account data cannot repaint the member space after sign-out');await ctx.close();
   }
+  /* 14/11 (Wah : « il y avait un menu dans totehm.com, je n'en veux pas ») : AUCUN menu sur les pages de com.
+     Le coin membre MÈNE à son TOTEHM ; sortir et les conditions vivent au verso du TOTEHM. */
   for(const path of ['/search','/console','/monetize']){
-   const{pg,ctx,log}=await ready(browser,{rpc:{...rpc,my_console:{...base,offer:{enabled:true}}}});await pg.goto(origin+path);await pg.waitForFunction(()=>document.querySelector('[data-com-monetize]')?.textContent==='My monetization');await pg.click('#member');
-   ok(await pg.locator('#menu .cm-item').count()===6&&await pg.getAttribute('[data-com-monetize]','href')==='/console',path+' keeps six actions with free Higher GPT and server-derived offer state');
-   ok(await pg.locator('#menu a[href="/chatgpt"]').count()===1&&!await pg.locator('#menu a[href="/higher"],#menu a[href="/higherself"]').count(),path+' offers the free connector without obsolete Higher sales');
-   ok(await pg.$eval('#menu',e=>e.lastElementChild.textContent.trim().toLowerCase())==='simple terms of use',path+' ends its menu with terms');
+   const{pg,ctx,log}=await ready(browser,{rpc:{...rpc,my_console:{...base,offer:{enabled:true}}}});await pg.goto(origin+path);
+   await pg.waitForFunction(()=>document.getElementById('member')&&document.getElementById('member-txt')?.textContent==='wahigher'||document.getElementById('member')?.textContent==='wahigher'||document.getElementById('member')?.textContent==='My TOTEHM',null,{timeout:9000}).catch(()=>{});
+   ok(await pg.locator('#menu,.cm-menu,.cm-action,[data-com-monetize]').count()===0,path+' n\'a plus de menu : ni #menu, ni actions, ni lien de monétisation');
+   const nav=pg.waitForURL(/\/totehm(#.*)?$/,{timeout:6000}).then(()=>true,()=>false);
+   await pg.click('#member');
+   ok(await nav,path+' : le coin membre mène à son TOTEHM → '+pg.url().replace(origin,''));
    ok(!log.errors.some(e=>e.startsWith('pageerror')),path+' has no runtime errors');await ctx.close();
   }
   for(const path of ['/higher']){
