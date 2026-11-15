@@ -36,8 +36,8 @@ const couleurs = pg => pg.evaluate(() => { const s = new Set();
     ok(t.includes(f(part)) && t.includes(f(part * 100)) && c < 10000, '« You keep 80%. » : le curseur a bougé d\'un pas (' + f(c) + ') → ' + f(part) + ', 100 lecteurs = ' + f(part * 100) + ' — le calcul, jamais une promesse'); }
   for(let k = 0; k < 6; k++){ await pg.keyboard.press('ArrowDown'); await pg.waitForTimeout(700); }
   a = await d(); ok(a.i === 7 && /Your price\.$/.test(a.titre), 'le dernier écran : « Your TOTEHM. Your readers. Your price. » → ' + JSON.stringify(a));
-  ok(await pg.locator('.dc-s.is-on [data-setup]').getAttribute('href') === '/console', 'le dernier écran AGIT : [Set my price] → /console');
-  const c = await couleurs(pg); ok(c.length === 1 && c[0] === 'rgb(251, 213, 202)', '60 / 30 / 10 : noir + gris + UN seul accent, le corail → ' + JSON.stringify(c));
+  ok(await pg.locator('#cta [data-setup]').getAttribute('href') === '/console', '[Set my price] est sous CHAQUE écran, ici le dernier → /console');
+  const c = await couleurs(pg); ok(c.length === 0, '60 / 30 / 10 : noir + blanc + gris, AUCUN corail sur un écran sans nom ni art → ' + JSON.stringify(c));
   ok(!erreurs(log).length, '/monetize : aucune erreur ' + erreurs(log).join(' | '));
   await pg.screenshot({ path:OUT + '/monetize_discover.png' });
 }
