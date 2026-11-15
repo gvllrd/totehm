@@ -1,12 +1,12 @@
 import * as T from './vendor/three-0.180.0.mjs';
 export const ORIGIN_PORTAL=Object.freeze({position:Object.freeze([0,118,-90]),radius:20,href:'/origin?arrival=1'});
 // An unadorned black opening against the galaxy: no ring or illuminated rim.
-export function createBlackHolePortal(parent){
- const root=new T.Group();root.name='Origins — galaxy event horizon';root.position.set(...ORIGIN_PORTAL.position);parent.add(root);
+export function createBlackHolePortal(parent,{position=ORIGIN_PORTAL.position,href=ORIGIN_PORTAL.href}={}){
+ const root=new T.Group();root.name='Origins — galaxy event horizon';root.position.set(...position);parent.add(root);
  const geometry=new T.CircleGeometry(ORIGIN_PORTAL.radius*.285,128),material=new T.MeshBasicMaterial({color:0x000000,side:T.DoubleSide,toneMapped:false});
  const face=new T.Mesh(geometry,material);face.name='Plain black event horizon';root.add(face);let disposed=false,time=0;
  return{root,position:root.position,update(dt,eye,motion=true){if(disposed)return false;if(eye)root.lookAt(eye);if(motion){time+=Math.max(0,Math.min(Number(dt)||0,.1));}return!!motion;},
-  diagnostics:()=>({kind:'origin-black-hole',position:root.position.toArray(),realPortal:true,eventHorizon:true,accretionDisk:false,decorativeRings:false,destination:ORIGIN_PORTAL.href,time,disposed}),
+  diagnostics:()=>({kind:'origin-black-hole',position:root.position.toArray(),realPortal:true,eventHorizon:true,accretionDisk:false,decorativeRings:false,destination:href,time,disposed}),
   dispose(){if(disposed)return;disposed=true;geometry.dispose();material.dispose();root.removeFromParent();root.clear();}};
 }
 

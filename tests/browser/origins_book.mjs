@@ -6,7 +6,7 @@ import {execFileSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
 import {launch,page} from './harness.mjs';
 import {ORIGINS} from '../../space/gallery-artworks.mjs';
-const OUT=process.argv[2]||'/tmp/totehm-production/origins-codex-book',origin='https://www.totehm.space',BUILD='2026-11-15-origins-shared-cover-first-frame';
+const OUT=process.argv[2]||'/tmp/totehm-production/origins-codex-book',origin='https://www.totehm.space',BUILD='2026-11-15-origins-continuous-reader';
 fs.mkdirSync(OUT,{recursive:true});
 const clipPath=OUT+'/portrait.mp4';if(!fs.existsSync(clipPath))execFileSync('ffmpeg',['-hide_banner','-loglevel','error','-y','-f','lavfi','-i','testsrc2=size=192x248:rate=10','-t','60','-c:v','libx264','-threads','1','-pix_fmt','yuv420p','-movflags','+faststart',clipPath]);
 const clip=fs.readFileSync(clipPath),catalogue=ORIGINS.map((a,i)=>({id:'test-art-'+(i+1),slug:'test-quantum-'+(i+1),title:a.title,price_cents:1377+i*100,currency:'eur',status:i===19?'sold':'available',sort_order:i+1}));

@@ -76,6 +76,7 @@ export function createOriginsVessel(scene,{mobile=false,onChange=()=>{},onOpen=(
   const book={pickables:[],open:()=>false,reset(){},update:()=>false,diagnostics:()=>({closed:true,opening:false,opened:false,absent:true})};
   return{root,pickables,solids,book,journey:{...L,outbound:[[0,1.65,13],[0,8.5,11],[0,15.8,7.5],[0,22,7.5],[0,21.65,-4.2],[0,30,-8],[0,61,-35],[0,94,-65],[0,118,-89.7]]},
    setFlight(eye){if(!flying&&(eye.y<21.7||eye.z>-4.25))return;flying=true;saucer.position.set(eye.x,eye.y-1.65,eye.z);beamMaterial.opacity=0;beamMaterial.visible=false;},
+   setReturnFlight(eye){if(eye.y>=21.64&&eye.z<=-4.19){flying=true;saucer.position.set(eye.x,eye.y-1.65,eye.z);beamMaterial.visible=false;}else{flying=false;saucer.position.copy(shipHome);beamMaterial.visible=true;}},
    resetFlight(){flying=false;saucer.position.copy(shipHome);beamMaterial.visible=true;},
    update(dt,eye,motion=true){if(disposed)return false;if(motion){time+=Math.max(0,Math.min(Number(dt)||0,.1));beamMaterial.uniforms.uTime.value=time;}portal.update(dt,eye,motion);const result=dirty||motion;dirty=false;return result;},
    diagnostics:()=>({kind:'origins-saucer-black-hole-transit',saucer:true,closedHull:true,closedUnderside:true,openShaft:false,flying,saucerPosition:saucer.position.toArray(),corridorInIsland:false,bookInIsland:false,originalWorks:0,blackHole:portal.diagnostics(),destination:ORIGIN_PORTAL.href}),
@@ -88,7 +89,7 @@ export function createOriginsVessel(scene,{mobile=false,onChange=()=>{},onOpen=(
  const section=[[-2.3,20],[-2.3,22.5]];
  for(let i=1;i<=32;i++){const a=Math.PI-i/32*Math.PI;section.push([Math.cos(a)*2.3,22.5+Math.sin(a)*2.3]);}
  section.push([2.3,20]);
- const c=L.corridor,positions=[],indices=[];
+ const c=bookOnly?{...L.corridor,startZ:L.saucer[2]-L.radius-.12}:L.corridor,positions=[],indices=[];
  for(let i=0;i<section.length;i++){const [x,y]=section[i];positions.push(x,y,c.startZ,x,y,c.endZ);if(i<section.length-1){const k=i*2;indices.push(k,k+1,k+2,k+1,k+3,k+2);}}
  const sleeveGeometry=geometry(new T.BufferGeometry());sleeveGeometry.setAttribute('position',new T.Float32BufferAttribute(positions,3));sleeveGeometry.setIndex(indices);sleeveGeometry.computeVertexNormals();sleeveGeometry.computeBoundingSphere();
  mesh(corridor,sleeveGeometry,glass,[0,0,0],'Origins corridor — transparent side and vaulted roof');
@@ -141,16 +142,19 @@ export function createOriginsVessel(scene,{mobile=false,onChange=()=>{},onOpen=(
  });
  // Return is part of the room, alongside the caller's accessible UI control.
  const returnPlate=pick(block(chamber,black,[0,21.35,centerZ+radius-.15],[2.2,.62,.08],'Origins return portal'),'origins-vessel-return',{action:'return',href:'/lisbon-space'});
- const returnLabel=label(chamber,'RETURN TO LISBON',[0,21.35,centerZ+radius-.20],2.05,.22,{rotationY:Math.PI});
+ const returnLabel=label(chamber,'RETURN TO THE SAUCER',[0,21.35,centerZ+radius-.20],2.05,.22,{rotationY:Math.PI});
  if(returnLabel)pick(returnLabel,'origins-vessel-return',{action:'return',href:'/lisbon-space'});
  for(const [p,target,power] of [[[0,27,-40],[0,21,-43],150],[[-6,26,-39],[0,21,-43],70],[[6,26,-47],[0,21,-43],70]]){
   const light=new T.SpotLight(bookOnly?0xffe7c2:0xd7e5ef,bookOnly?(power===150?230:8):power,24,bookOnly?.23:.65,.8,2);light.position.set(...p);light.target.position.set(...target);chamber.add(light,light.target);lights.push(light);
  }
  const ambient=new T.PointLight(0xb8c9dd,bookOnly?4:25,25,2);ambient.position.set(0,26,-43);chamber.add(ambient);lights.push(ambient);
  changed();
+ let returnFlying=false;
  return{root,pickables,solids,book,journey:L,
+  setFlight(eye){returnFlying=true;saucer.position.set(eye.x-root.position.x,eye.y-root.position.y-1.65,eye.z-root.position.z);beamMaterial.visible=false;changed();},
+  resetFlight(){returnFlying=false;saucer.position.set(...L.saucer);beamMaterial.visible=true;changed();},
   update(dt,eye,motion=true){if(disposed)return false;const step=Math.max(0,Math.min(Number(dt)||0,.1));if(motion){time+=step;updates++;beamMaterial.uniforms.uTime.value=time;}const bookChanged=book.update(dt,eye,motion),result=dirty||bookChanged||!!(motion&&step>0);dirty=false;return result;},
-  diagnostics:()=>({kind:'origins-flying-saucer-destination',ready:!disposed,saucer:true,saucerRadius:L.radius,saucerPosition:[...L.saucer],metallicDisk:true,glassCupola:true,blueBeam:true,corridor:{transparent:true,blackFrames:true,glassFloor:true,intentions:7,roofIntentions:7,startZ:c.startZ,endZ:c.endZ,floorY:L.floorY,width:c.width,height:c.height},chamber:{closed:true,realDoorway:true,closedCeiling:true,center:[...L.chamber.center],radius,wallHeight:L.chamber.wallHeight,originalWorks:bookOnly?0:ORIGINS.length,loadedWorks,failedWorks,bookPosition:[...L.bookPosition],bookApproach:[...L.bookApproach]},book:book.diagnostics(),cameraJourney:true,bodyPhysicsRequired:false,originalMedia:true,workTextureMaximumWidth:mobile?256:512,updates,time,disposed}),
+  diagnostics:()=>({kind:'origins-flying-saucer-destination',ready:!disposed,saucer:true,saucerRadius:L.radius,saucerPosition:saucer.getWorldPosition(new T.Vector3()).toArray(),flying:returnFlying,parked:!returnFlying,metallicDisk:true,closedCanopy:true,blueBeam:true,corridor:{transparent:true,blackFrames:true,glassFloor:true,intentions:7,roofIntentions:7,startZ:c.startZ,endZ:c.endZ,floorY:L.floorY,width:c.width,height:c.height},chamber:{closed:true,realDoorway:true,closedCeiling:true,center:[...L.chamber.center],radius,wallHeight:L.chamber.wallHeight,originalWorks:bookOnly?0:ORIGINS.length,loadedWorks,failedWorks,bookPosition:[...L.bookPosition],bookApproach:[...L.bookApproach]},book:book.diagnostics(),cameraJourney:true,bodyPhysicsRequired:false,originalMedia:true,workTextureMaximumWidth:mobile?256:512,updates,time,disposed}),
   dispose(){if(disposed)return;disposed=true;book.dispose();root.removeFromParent();for(const g of geometries)g.dispose();for(const m of materials)m.dispose();for(const t of textures)t.dispose();for(const light of lights)light.dispose?.();dots.dispose();root.clear();}
  };
 }
