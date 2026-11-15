@@ -85,27 +85,28 @@ main{width:100%;max-width:520px;margin:0 auto;padding:max(84px,11dvh) 16px 96px;
 .tname{display:inline-block;max-width:100%;font-family:var(--q);font-weight:400;color:var(--coral);background:var(--navy);border-radius:0;
   padding:6px 12px;line-height:1.3;overflow-wrap:anywhere}
 
-/* ══ 14/11 · CHERCHER UN ÉCOSYSTÈME — LE VERSO, PLEIN ÉCRAN ══════════════════════════════════════════════
-   Wah : « quand tu recherches un autre écosystème Totehm, que tu appuies donc sur le bouton [Members], un
-   NOUVEL ONGLET s'ouvre et l'utilisateur est invité à entrer le {{nom du Totehm}} dans un FULLSCREEN BLEU
-   NAVY (le verso du totehm). Quand le résultat est validé et qu'il existe, on a la page abonnement qui
-   s'affiche. Et quand on est abonné, le verso redevient recto avec le tree et la page d'atterrissage du
-   membre avec ses vues respectives. »
-   Ce verso-ci est VIERGE : aucun nom dessus — ce n'est pas le verso de MON Totehm, c'est la page où j'entre
-   celui d'un autre. Les douze perforations gardent leur place relative (25 · 50 · 75 % de chaque bord) et
-   restent RONDES à toute taille : étirer le carré natif les aurait transformées en ellipses. */
-body.is-search{background:var(--navy)}
-#verso{position:fixed;inset:0;z-index:0;background:var(--navy);--h:clamp(26px,7.2vmin,62px)}
-#verso i{position:absolute;width:var(--h);height:var(--h);border-radius:50%;background:var(--bg);transform:translate(-50%,-50%)}
-body.is-search main{position:relative;z-index:1;justify-content:center;min-height:100dvh;padding-top:max(84px,9dvh)}
-body.is-search #search{gap:18px}
-body.is-search .kick{color:#b9b9d6}
-body.is-search .hint,body.is-search .note{color:#a9a9c8}
-body.is-search #q{background:rgba(0,0,0,.42);font-size:clamp(24px,7vw,36px)}
-body.is-search #q::placeholder{color:rgba(251,213,202,.4)}
-body.is-search .srch-row{background:rgba(0,0,0,.52)}
-body.is-search #member{color:#c9c9e0}
-@media(hover:hover){body.is-search .srch-row:hover{background:#000}}
+/* ══ 14/11 · CHERCHER UN ÉCOSYSTÈME — PLUS SIMPLE : NOIR, UN NOM, DES VERSOS ═════════════════════════════
+   Wah : « plus simple : full screen noir, tu tapes le nom en Quantico, et les résultats sont des VERSOS de
+   TOTEHM avec le nom dessus, au format que l'on vient de travailler. » Rien d'autre : ni titre, ni consigne, ni
+   rangée. Un résultat EST un papier perforé dont le dos porte le nom en bloc carré (`tools/totehm_name.js`),
+   et un tap l'ouvre : sa page d'abonnement. */
+body.is-search{background:#000}
+body.is-search main{justify-content:flex-start;padding-top:max(96px,15dvh)}
+body.is-search #search{gap:26px}
+body.is-search #q{background:none;border-radius:0;padding:6px 0;margin:0;max-width:min(92vw,640px);
+  font:400 clamp(34px,10vw,64px)/1.1 var(--q);color:var(--coral);caret-color:var(--coral);letter-spacing:.02em}
+body.is-search #q::placeholder{color:rgba(251,213,202,.22)}
+body.is-search .note{min-height:14px;color:var(--lo)}
+#res{width:100%;display:flex;flex-wrap:wrap;justify-content:center;gap:clamp(12px,3.4vw,22px);--ps:156px}
+/* un résultat = un VERSO : le papier perforé, le nom posé dessus par la nomenclature */
+.srch-row{position:relative;display:block;flex:none;width:var(--ps);height:var(--ps);
+  background:var(--paper) 0 0/100% 100% no-repeat;transition:transform .2s ease}
+.srch-row .tn-l{position:absolute;left:0;top:0;transform-origin:0 0;white-space:pre;
+  font:400 24px/1 var(--q);letter-spacing:.04em;color:var(--coral)}
+.srch-row .tn-v{position:absolute;width:4px;height:4px;border-radius:50%;background:#626286;transform:translate(-50%,-50%);opacity:.5}
+.srch-row:focus-visible{outline:1px solid #fff;outline-offset:4px}
+@media(hover:hover){.srch-row:hover{transform:scale(1.05)}}
+@media(prefers-reduced-motion:reduce){.srch-row{transition:none}}
 .ints{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 14px;margin-top:18px;min-height:18px}
 .ints span{display:inline-flex;align-items:center;gap:6px;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--mid)}
 .ints i{width:8px;height:8px;border-radius:50%;display:block}
@@ -139,19 +140,8 @@ body.is-search #member{color:#c9c9e0}
 #q{font-size:clamp(22px,6.4vw,30px);color:var(--coral);caret-color:var(--coral);background:#000;padding:14px 16px;margin-top:6px}
 #q:focus{background:#000}
 #q::placeholder{color:rgba(251,213,202,.32)}
-.hint{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
-#res{width:100%;display:flex;flex-direction:column;gap:4px;margin-top:4px;text-align:left}
-.ns-label{font-size:9px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--lo);padding:6px 2px 4px}
-.srch-row{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#000;padding:10px 12px;transition:background .15s}
-.srch-name{font-family:var(--q);font-size:17px;color:var(--coral);background:var(--navy);border-radius:0;padding:5px 11px;line-height:1.35;max-width:72%;overflow-wrap:anywhere}
-.srch-meta{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--lo);white-space:nowrap;margin-left:auto}
-.srch-row::after{content:"\2192";font-size:14px;color:var(--dim)}
-.srch-meta:empty+*,.srch-row:has(.srch-meta:empty)::after{margin-left:auto}
-.srch-meta:empty{display:none}
-
 @media(hover:hover){
   .btn:hover{background:var(--g5);color:#fff}.btn.is-main:hover{background:#44444b}
-  .srch-row:hover{background:var(--g3)}.srch-row:hover::after{color:#fff}
 }
 
 
@@ -300,20 +290,15 @@ div:not(:has(> :not(br,wbr))):hover,
 .lnk:hover,
 .paper .tn-l:hover,
 .tname:hover,
-body.is-search .kick:hover,
-body.is-search .hint:hover,
+body.is-search #q:hover,
 body.is-search .note:hover,
-body.is-search #member:hover,
+.srch-row .tn-l:hover,
 .ints span:hover,
 .price small:hover,
 .get p:hover,
 .fine:hover,
 .state.is-off:hover,
 #q:hover,
-.hint:hover,
-.ns-label:hover,
-.srch-name:hover,
-.srch-meta:hover,
 .u-head:hover,
 .u-st:hover,
 .u-t.is-locked .audb:hover,
@@ -327,23 +312,18 @@ body.is-search #member:hover,
 .in:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::placeholder{color:#fff!important}
 body.is-search #q:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::placeholder{color:#fff!important}
 #q:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::placeholder{color:#fff!important}
-.srch-row:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::after{color:#fff!important}
 }
 /* ══ FIN DU BLOC GÉNÉRÉ ══ */
 </style>
 </head>
 <body>
-<!-- 14/11 — le verso plein écran de la recherche : navy, et ses douze perforations rondes (voir le CSS). -->
-<div id="verso" aria-hidden="true" hidden></div>
 <button id="member" class="mc" type="button"><span id="member-txt">CONNECT WITH MY TOTEHM</span></button>
 
 <main>
   <!-- ══ SEARCH · 14/11 : LE VERSO PLEIN ÉCRAN, VIERGE ══ On cherche un ÉCOSYSTÈME, pas un Totehm : un nom,
        puis sa page d'abonnement, puis — abonné — sa page d'atterrissage et son Tree. -->
   <section id="search" class="hide" aria-label="Search a TOTEHM ecosystem">
-    <div class="kick">Enter a TOTEHM</div>
     <input class="in" id="q" maxlength="80" placeholder="a name" aria-label="A TOTEHM name" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="go">
-    <div class="hint">a name · enter opens its ecosystem</div>
     <div class="note" id="q-note" aria-live="polite"></div>
     <div id="res" aria-label="TOTEHMs"></div>
   </section>
@@ -536,7 +516,7 @@ async function session(){
 /* ══ CHERCHER UN TOTEHM : UN NOM, ET C'EST TOUT — copié de totehm.html ══ */
 const searchViews=new Set();
 function NameSearch({input,results,note,vide=true,onResults=()=>{}}){
-  let seq=0,timer=0,rows=[];
+  let seq=0,timer=0,timer2=0,rows=[];
   /* ⚠️ 14/11 (Wah) : « quand le résultat est validé et qu'il existe, on a LA PAGE ABONNEMENT qui s'affiche.
      Et quand on est abonné, le verso redevient recto avec le tree et la page d'atterrissage du membre. »
      Un résultat mène donc à `/@nom` — et c'est de là que part [Open the TOTEHM] vers `/totehm?ro=`. */
@@ -544,11 +524,19 @@ function NameSearch({input,results,note,vide=true,onResults=()=>{}}){
   const propre=v=>String(v||'').trim().replace(/^https?:\/\/[^/]+\//i,'').replace(/^@/,'').replace(/[/?#].*$/,'');
   const dire=t=>{ note.textContent=t; };
   function draw(q){
-    results.innerHTML=(!q&&rows.length?'<div class="ns-label">My subscriptions</div>':'')
-      +rows.map(r=>'<a class="srch-row" href="'+href(r.pseudo)+'"><span class="srch-name">'+esc(r.pseudo)+'</span>'
-        +'<span class="srch-meta">'+(r.subscribed?'subscribed':'')+'</span></a>').join('');
-    onResults(rows.length);
+    /* UN RÉSULTAT = UN VERSO (14/11) : le papier perforé, le nom en bloc carré dessus. Le lien porte le nom pour la voix. */
+    results.innerHTML=rows.map(r=>'<a class="srch-row" href="'+href(r.pseudo)+'" data-n="'+esc(r.pseudo)+'" aria-label="'
+      +esc(r.pseudo)+(r.subscribed?' · subscribed':'')+'"></a>').join('');
+    habiller(); onResults(rows.length);
   }
+  /* la taille d'un verso : 40 % de la largeur, entre 120 et 168 px — mesurée, jamais devinée (les lettres sont en px) */
+  const taille=()=>Math.round(Math.min(168,Math.max(120,innerWidth*.4)));
+  function habiller(){
+    const S=taille(); results.style.setProperty('--ps',S+'px');
+    results.querySelectorAll('.srch-row').forEach(a=>{ if(window.TOTEHM_NOM) window.TOTEHM_NOM.poser(a,a.dataset.n,S); });
+  }
+  addEventListener('resize',()=>{ clearTimeout(timer2); timer2=setTimeout(habiller,120); });
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(habiller);
   async function run(q,ouvrir=false){
     clearTimeout(timer); const mon=++seq, uid=me?.id||null;
     if(q.length===1){ rows=[]; draw(q); dire('two letters, minimum'); return; }
@@ -864,15 +852,8 @@ if(NAME){
     history.replaceState(null, '', location.pathname);
   }
 }else{
-  /* ══ 14/11 · LE VERSO PLEIN ÉCRAN ══ Les douze perforations du papier, aux mêmes places relatives que sur
-     le carré natif (25 · 50 · 75 % de chaque bord) et RONDES à toute taille. Aucun nom : ce verso n'est pas
-     le mien, c'est celui où j'entre le nom d'un autre. */
+  /* ══ 14/11 · LA RECHERCHE : NOIR, UN NOM, DES VERSOS (voir le CSS `is-search`) ══ */
   document.body.classList.add('is-search');
-  { const v = $('verso'); v.hidden = false;
-    const P = [25.18, 50.18, 75.18], Q = [25.00, 50.00, 75.00], t = [];
-    for(const x of P){ t.push('left:' + x + '%;top:0'); t.push('left:' + x + '%;top:100%'); }
-    for(const y of Q){ t.push('left:0;top:' + y + '%'); t.push('left:100%;top:' + y + '%'); }
-    v.innerHTML = t.map(s => '<i style="' + s + '"></i>').join(''); }
   $('search').classList.remove('hide');
   const q0 = new URLSearchParams(location.search).get('q') || '';
   $('q').value = q0;

@@ -19,7 +19,14 @@ const erreurs = log => log.errors.filter(e => !/404|Failed to load resource/i.te
     tables:{ profiles:[{ pseudo:'wah' }] } });
   await pg.goto('https://www.totehm.com/creator');
   await pg.waitForFunction(() => window.__totehm_creator && window.__totehm_creator().results === 1, null, { timeout:15000 });
-  ok(/My subscriptions/i.test(await pg.textContent('#res')), 'empty search: my subscriptions');
+  /* 14/11 (Wah : « full screen noir, tu tapes le nom en Quantico, et les résultats sont des VERSOS de TOTEHM avec le
+     nom dessus ») : un résultat est un papier perforé dont le dos porte le nom en bloc, jamais une rangée de texte. */
+  const v0 = await pg.evaluate(() => { const a = document.querySelector('#res .srch-row'); if(!a) return null; const c = getComputedStyle(a), r = a.getBoundingClientRect();
+    return { nom:a.dataset.n, lettres:a.querySelectorAll('.tn-l').length, w:Math.round(r.width), h:Math.round(r.height), aria:a.getAttribute('aria-label'),
+      fond:getComputedStyle(document.body).backgroundColor, champ:getComputedStyle(document.getElementById('q')).fontFamily, kick:!!document.querySelector('#search .kick,#search .hint,#search .ns-label') }; });
+  ok(v0 && v0.lettres === v0.nom.length && v0.w === v0.h && /subscribed/.test(v0.aria) && v0.fond === 'rgb(0, 0, 0)' && /Quantico/.test(v0.champ) && !v0.kick,
+     'empty search: my subscriptions are VERSOS (the name on a square paper, ' + (v0 && v0.w) + ' px), full-screen black, the field in Quantico, no title nor hint → ' + JSON.stringify(v0));
+  await pg.screenshot({ path: OUT + '/search_versos.png' });
   ok(!await pg.$('#search-controls, .ts-modes, select'), 'no modes, no filters, no selects');
   await pg.fill('#q', 'ka');
   await pg.waitForFunction(() => window.__totehm_creator().results === 2);
