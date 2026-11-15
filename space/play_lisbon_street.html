@@ -392,97 +392,13 @@ body.is-street-board #sdisc-rail,body.is-street-board #sdisc-progress,body.is-st
   </svg>
 </div>
 
-<div id="auth-overlay">
-  <button id="auth-back-btn" type="button">Back</button>
-  <div id="auth-mail" class="mw-card">
-    <p class="t-futura" style="color:#fff;padding:0">Enter your email to continue</p>
-    <input id="in-email" class="line-input" type="email" placeholder="your@email.com" autocomplete="email">
-    <p id="err-mail" class="note" style="color:#e06060;min-height:14px"></p>
-    <button id="btn-send" class="btn-sig claimed">Send code</button>
-  </div>
-  <div id="auth-otp" class="mw-card" style="display:none">
-    <p class="t-futura" style="color:#fff;padding:0">Enter the 6-digit code sent to your email</p>
-    <input id="in-otp" class="line-input" type="text" inputmode="numeric" maxlength="6" placeholder="------">
-    <p id="err-code" class="note" style="color:#e06060;min-height:14px"></p>
-    <button id="btn-verify" class="btn-sig claimed">Enter</button>
-  </div>
-</div>
-
 <script type="module">
-/* ══ LE CODE À SIX CHIFFRES — copié de tools/otp_signin.js dans chaque page (jamais importé) ══
-   Wah (14/11) : « encore des problèmes de connexion : je suis quelques fois obligé de rentrer DEUX FOIS
-   l'email et le code pour accéder. Bug à vérifier et corriger sur toutes les plateformes. »
 
-   DEUX CAUSES, mesurées dans le code de toutes les pages de connexion :
-
-   1 · L'EMAIL NE VIVAIT QU'EN MÉMOIRE (`let mail = ''`). On demande son code, on QUITTE la page pour aller
-       le lire dans sa boîte, le téléphone décharge l'onglet (iOS le fait sans prévenir), on revient : la
-       page est rechargée, `mail` est vide, `verifyOtp({email:'', token})` échoue — « wrong code » sur un
-       code juste. Il fallait tout refaire. Le mail en vol est donc RETENU ici (30 min, la durée d'un code),
-       et une page qui redémarre retrouve l'étape du code au lieu de la perdre.
-
-   2 · DEUX VÉRIFICATIONS POUR UNE SAISIE. Le remplissage automatique d'un code (iOS, Android, un collage)
-       lève PLUSIEURS `input` d'affilée. Le premier appel consomme le code — il est à usage unique —, le
-       second reçoit « invalid token » et la page affichait « wrong code » ET vidait le champ, juste après
-       une connexion RÉUSSIE. Un seul essai à la fois (`enCours`), et le code qui a MARCHÉ est retenu : le
-       rejouer rend `{ok:true, deja:true}`, jamais une erreur.
-
-   Ce bloc ne connaît ni la page ni son balisage : il rend un verdict, la page écrit les mots.
-     TOTEHM_OTP.envoyer(sb, email)        → null, ou l'erreur (le mail est retenu si c'est parti)
-     TOTEHM_OTP.verifier(sb, code, email) → {ok} · {ok, deja} · {why:'short'|'busy'|'email'|'expired'|'wrong'}
-     TOTEHM_OTP.attendu()                 → l'email d'un code en vol (ou '') — pour reprendre l'étape du code
-     TOTEHM_OTP.chiffres(v)               → les 6 chiffres d'une saisie (un collage « 123 456 » compris)
-     TOTEHM_OTP.oublier()                 → on repart de l'email
-   `localStorage` peut lever (navigation privée, site data bloqué) : tout est en try/catch et la page
-   fonctionne sans — on retombe simplement sur le comportement d'avant. Un email n'est pas un secret de
-   session : il n'ouvre rien sans le code, qui n'est jamais retenu. */
-window.TOTEHM_OTP = (() => {
-  const CLE = 'totehm_otp_v1', VIE = 30 * 60e3;
-  let enCours = false, reussi = '';
-  const chiffres = v => String(v == null ? '' : v).replace(/\D/g, '').slice(0, 6);
-  function retenir(m){ try{ localStorage.setItem(CLE, JSON.stringify({ m:String(m || ''), t:Date.now() })); }catch(_){} }
-  function attendu(){
-    try{
-      const o = JSON.parse(localStorage.getItem(CLE) || 'null');
-      if(o && o.m && Date.now() - (+o.t || 0) < VIE) return String(o.m);
-    }catch(_){}
-    return '';
-  }
-  /* `oublier` efface le mail RETENU : on repart de l'email. Le verdict d'un code qui a marché (`reussi`)
-     ne s'efface qu'à l'envoi d'un nouveau code — sinon un second `input` le rejouerait en erreur. */
-  function oublier(){ try{ localStorage.removeItem(CLE); }catch(_){} }
-  async function envoyer(sb, email, options){
-    const m = String(email || '').trim();
-    const { error } = await sb.auth.signInWithOtp({ email:m, options:Object.assign({ shouldCreateUser:true }, options || {}) });
-    if(!error){ reussi = ''; retenir(m); }
-    return error || null;
-  }
-  async function verifier(sb, token, email){
-    const t = chiffres(token);
-    if(t.length !== 6) return { why:'short' };
-    if(t === reussi) return { ok:true, deja:true };      /* le même code rejoué par un second `input` */
-    if(enCours) return { why:'busy' };
-    const m = String(email || '').trim() || attendu();
-    if(!m) return { why:'email' };
-    enCours = true;
-    try{
-      const { error } = await sb.auth.verifyOtp({ email:m, token:t, type:'email' });
-      if(error){
-        const msg = String(error.message || '');
-        return { why:/expir/i.test(msg) ? 'expired' : 'wrong', error };
-      }
-      reussi = t; oublier();
-      return { ok:true, email:m };
-    }finally{ enCours = false; }
-  }
-  return { envoyer, verifier, attendu, oublier, chiffres, occupe:() => enCours };
-})();
-/* ══ fin LE CODE À SIX CHIFFRES ══ */
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import {checkLisbonStreetAccess,requestLisbonStreetMedia} from './lisbon-street-access.mjs';
 import {LISBON_STREET_DISCOVER} from './lisbon-street-discover.mjs';
-const BUILD = '2026-11-15-lisbon-readable-discover';
+const BUILD = '2026-11-15-single-connection-lisbon';
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 const HIGHER_MARKUP = '<span class="higher-inline" role="img" aria-label="Higher"><svg viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-slogan"></use></svg></span>';
 const GET_HIGHER_MARKUP = '<span class="get-word">Get</span> ' + HIGHER_MARKUP;
@@ -764,52 +680,8 @@ async function toStripe(){
   }
 }
 
-/* ─── AUTH OVERLAY ─── */
-const authOverlay = document.getElementById('auth-overlay');
-const authMail    = document.getElementById('auth-mail');
-const authOtp     = document.getElementById('auth-otp');
-const authBackBtn = document.getElementById('auth-back-btn');
-const btnSend     = document.getElementById('btn-send');
-const btnVerify   = document.getElementById('btn-verify');
-const inEmail     = document.getElementById('in-email');
-const inOtp       = document.getElementById('in-otp');
-let emailSent = '';
+function openAuth(){return ssoLogin(false);}
 
-function openAuth(){ authMail.style.display=''; authOtp.style.display='none'; authOverlay.classList.add('in'); }
-function closeAuth(){ authOverlay.classList.remove('in'); }
-
-authBackBtn.addEventListener('click',()=>{
-  if(authOtp.style.display==='none'){ closeAuth(); }
-  else{ authOtp.style.display='none'; authMail.style.display=''; }
-});
-btnSend.addEventListener('click',async()=>{
-  const email=inEmail.value.trim().toLowerCase();
-  const err=document.getElementById('err-mail');
-  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ err.textContent='Check the address.'; return; }
-  err.textContent=''; btnSend.disabled=true; btnSend.textContent='Sending...';
-  /* 14/11 : l'email en vol est RETENU — un onglet rechargé ne perd plus l'étape du code. */
-  const error = await TOTEHM_OTP.envoyer(sb, email);
-  btnSend.disabled=false; btnSend.textContent='Send code';
-  if(error){ err.textContent='Could not send. Try again.'; return; }
-  emailSent=email; authMail.style.display='none'; authOtp.style.display='';
-  setTimeout(()=>inOtp.focus(),50);
-});
-btnVerify.addEventListener('click',async()=>{
-  const token=TOTEHM_OTP.chiffres(inOtp.value);
-  const err=document.getElementById('err-code');
-  if(token.length!==6){ err.textContent='Six digits.'; return; }
-  err.textContent=''; btnVerify.disabled=true; btnVerify.textContent='Checking...';
-  /* 14/11 : UN SEUL essai à la fois, et l'email retenu si celui de la variable a disparu. */
-  const r = await TOTEHM_OTP.verifier(sb, token, emailSent);
-  btnVerify.disabled=false; btnVerify.textContent='Enter';
-  if(r.why==='busy'||r.why==='short') return;
-  if(!r.ok){ err.textContent=r.why==='email'?'Enter your email again.':'Wrong or expired code.'; return; }
-  closeAuth();
-  if(await hasAccess()){ (window.top||window).location.replace(METHOD); return; }
-  toStripe();
-});
-inEmail.addEventListener('keydown',e=>{ if(e.key==='Enter') btnSend.click(); });
-inOtp.addEventListener('keydown',  e=>{ if(e.key==='Enter') btnVerify.click(); });
 
 /* ═══ STREET BOARD ═══ */
 {
@@ -1426,11 +1298,11 @@ function sdiscReset(){
   requestAnimationFrame(()=>{if(revision===storyRevision)showSdisc(0,true);});
 }
 function sdiscNext(){
-  if(boardMode||snapping||streetBusy||authOverlay.classList.contains('in')||sdiscLock||sdiscCur>=SDSLIDES.length-1)return;
+  if(boardMode||snapping||streetBusy||sdiscLock||sdiscCur>=SDSLIDES.length-1)return;
   sdiscLock=!reducedMotion.matches;showSdisc(sdiscCur+1,reducedMotion.matches);if(sdiscLock)setTimeout(()=>sdiscLock=false,SD_FADE);
 }
 function sdiscPrev(){
-  if(boardMode||snapping||streetBusy||authOverlay.classList.contains('in')||sdiscLock||sdiscCur<=0)return;
+  if(boardMode||snapping||streetBusy||sdiscLock||sdiscCur<=0)return;
   sdiscLock=!reducedMotion.matches;showSdisc(sdiscCur-1,reducedMotion.matches);if(sdiscLock)setTimeout(()=>sdiscLock=false,SD_FADE);
 }
 
@@ -1462,8 +1334,7 @@ window.addEventListener('keydown',e=>{
   if(['ArrowDown','ArrowRight','PageDown'].includes(e.key)||e.key===' '&&!e.target.closest('a,button')){e.preventDefault();sdiscNext();}
   else if(['ArrowUp','ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();sdiscPrev();}
   else if(e.key==='Escape'){
-    if(authOverlay.classList.contains('in')) closeAuth();
-    else if(xp.classList.contains('up')) comeBack();
+    if(xp.classList.contains('up')) comeBack();
     else if(boardMode) returnToStory();
     else if(!snapping) window.location.href='/lisbon-space';
   }
@@ -1506,12 +1377,14 @@ window.addEventListener('pageshow',syncMotion);
 window.__totehm_lisbon=()=>({
   build:BUILD,step:sdiscCur,board:boardMode,rocks:ROCKS.length,moving:!!astRaf,
   snapping,reduced_motion:reducedMotion.matches,visible:!document.hidden,
-  artwork:xp.classList.contains('up'),auth:authOverlay.classList.contains('in'),
+  artwork:xp.classList.contains('up'),auth:false,
   activeSign,directSign,fromSpace,playAttempted,playbackBlocked,videoMuted:vid.muted,
   access:{state:streetAccess.state,owned:OWNED},mediaState,discoverOnly,requestedBoard,privateMedia:true,
   discoverFormat:'fullscreen-readable',discoverSlides:SDSLIDES.length,teaser:true,teaserHref:document.getElementById('xp-get-higher').getAttribute('href')
 });
 }
+
+window.__totehm_space_identity=()=>({build:'2026-11-15-single-space-identity',centralAuthority:'totehm.com',localEmailForms:document.querySelectorAll('input[type=email]').length,legacyPanels:document.querySelectorAll('#conn-bar,#member-window').length});
 </script>
 <script>
 /* ══ LE MOT TOTEHM EST LE TOTEHM — copié de tools/totehm_word.js dans chaque page (jamais importé) ══

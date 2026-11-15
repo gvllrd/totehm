@@ -88,7 +88,7 @@ try{
  }
  {
   const {ctx,pg,log}=await fixture({signedIn:true});
-  await pg.goto(SPACE+'/');await pg.waitForFunction(()=>document.querySelector('#member')?.textContent==='wah');
+  await pg.goto(SPACE+'/');await pg.waitForFunction(()=>document.querySelector('#member')?.firstChild?.textContent==='wah');
   check(log.profiles>0,'connected identity uses the current profile name, rather than stale user metadata');
   await pg.click('#member');await pg.waitForURL(COM+'/totehm#**');
   check(log.mint.length===1&&log.mint[0].body.target==='com'&&log.mint[0].bearer==='Bearer synthetic-space-access','connected identity mints one COM handoff with the Space session');
@@ -99,14 +99,14 @@ try{
   const {ctx,pg,log}=await fixture({callback:true,wrongState});
   await pg.goto(SPACE+callbackPath+'?campaign=callback#chapter-2&sso='+CODE+'&state='+STATE);
   await pg.waitForFunction(()=>!location.href.includes('sso='));
-  await pg.waitForFunction(()=>document.querySelector('#member')?.textContent===('wah'),null,{timeout:wrongState?500:10000}).catch(error=>{if(!wrongState)throw error;});
+  await pg.waitForFunction(()=>document.querySelector('#member')?.firstChild?.textContent===('wah'),null,{timeout:wrongState?500:10000}).catch(error=>{if(!wrongState)throw error;});
   if(wrongState){
    check(log.redeem.length===0&&log.mint.length===0,'mismatched callback state cannot redeem or mint a session');
    check(await pg.textContent('#member')==='CONNECT WITH MY TOTEHM','rejected callback keeps the visitor disconnected');
   }else{
    check(log.redeem.length===1&&log.redeem[0].body.code===CODE&&log.redeem[0].body.verifier===VERIFIER,'valid callback redeems once with the local verifier');
    check(!log.redeem[0].url.includes('sso=')&&!log.redeem[0].url.includes('state='),'callback secrets leave the address before redemption');
-   check(await pg.textContent('#member')==='wah','redeemed session paints the current TOTEHM identity');
+   check(await pg.locator('#member').evaluate(e=>e.firstChild?.textContent)==='wah','redeemed session paints the current TOTEHM identity');
   }
   check(pg.url()===SPACE+callbackPath+'?campaign=callback#chapter-2',callbackPath+' callback keeps its city path, useful query and fragment while removing auth parameters');
   check(!log.errors.length,'callback has no JavaScript exception');await ctx.close();

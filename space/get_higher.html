@@ -351,11 +351,6 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
   #sdisc-trig:hover .chev{color:#fff}
 }
 
-#conn-bar{position:fixed;top:14px;left:16px;z-index:95;display:flex;align-items:center;gap:7px;background:none;border:none;cursor:pointer;font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;letter-spacing:0;color:#b0b0b0;padding:4px;-webkit-tap-highlight-color:transparent;transition:color .2s}
-#conn-bar:hover{color:#fff}
-#conn-bar .dot{width:8px;height:8px;border-radius:50%;background:#888}
-#member-window{position:fixed;inset:0;z-index:250;background:rgba(0,0,0,.84);display:none;align-items:center;justify-content:center;padding:24px}
-#member-window.show{display:flex}
 .mw-card{background:#131316;border:none;max-width:360px;width:100%;padding:30px 24px;text-align:center;position:relative;max-height:88vh;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scrollbar-width:none}
 .mw-card::-webkit-scrollbar{display:none}
 .mw-close{position:absolute;top:12px;right:14px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;color:#b4b4b4;background:none;border:none;cursor:pointer;padding:0}
@@ -391,7 +386,6 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
 #terms-link:hover,
 #sdisc-back:hover,
 #sdisc-board-close:hover,
-#conn-bar:hover,
 .mw-close:hover,
 .mw-input:hover::placeholder,
 .mw-note.dim:hover,
@@ -593,24 +587,7 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
   <button id="xp-buy" class="btn-sig claimed">Get Higher<span class="thp-price"></span></button>
 </div>
 
-<button id="auth-back" style="display:none;position:fixed;top:14px;left:14px;z-index:10;font-family:'Space Mono',monospace;font-size:10px;color:#9a9a9a;letter-spacing:.14em;text-transform:uppercase;background:none;border:none;cursor:pointer;padding:0;transition:color .15s;">Back</button>
 
-<button id="conn-bar" type="button" aria-label="member space"><span class="dot"></span>Guest</button>
-<div id="member-window">
-  <div class="mw-card">
-    <button class="mw-close" id="mw-close">Close</button>
-    <div id="mw-out-state">
-      <input class="mw-input" id="mw-email" type="email" placeholder="your email" autocomplete="email">
-      <input class="mw-input" id="mw-code" inputmode="numeric" maxlength="6" placeholder="6-digit code" style="display:none">
-      <div class="mw-note dim" id="mw-note"></div>
-    </div>
-    <div id="mw-in-state" style="display:none">
-      <div class="mw-who" id="mw-who"></div>
-      <div class="mw-mail" id="mw-mail"></div>
-      <button class="mw-signout" id="mw-signout">Sign out</button>
-    </div>
-  </div>
-</div>
 
 <script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
@@ -836,9 +813,7 @@ async function ssoLogout(sb){
 const G=(x)=>({t:"g",x});const C=(x)=>({t:"c",x});const M=(x)=>({t:"m",x});
 
 const SLIDES=[
-  {slot:"paywall",parts:[{t:"paywall"}]},
-  {slot:"mail",parts:[{t:"mail"}]},
-  {slot:"code",parts:[{t:"code"}]}
+  {slot:"paywall",parts:[{t:"paywall"}]}
 ];
 
 const stage=document.getElementById('stage');
@@ -871,31 +846,8 @@ function buildSlide(slide){
           </div>
         </div>
         <button id="btn-buy" class="btn-sig">Buy a TotehmPaper {THP}<span class="thp-price"></span></button>
-        <button id="btn-play-street" class="btn-sig" style="margin-top:14px;">Make the Lisbon Streets <span class="higher-inline" style="width:54px;height:18px;vertical-align:middle;display:inline-flex;align-items:center;"><svg viewBox="0 0 600 200" style="width:100%;height:100%"><use href="#higher-slogan"></use></svg></span></button>
+        <p id="checkout-error" class="note" role="status" aria-live="polite"></p><button id="btn-play-street" class="btn-sig" style="margin-top:14px;">Make the Lisbon Streets <span class="higher-inline" style="width:54px;height:18px;vertical-align:middle;display:inline-flex;align-items:center;"><svg viewBox="0 0 600 200" style="width:100%;height:100%"><use href="#higher-slogan"></use></svg></span></button>
       `;
-    } else if(p.t==='mail'){
-      block.innerHTML = `
-        <div class="mw-card">
-          <div class="t-futura" style="text-transform:uppercase;font-size:15px;">Be a member to run the method.</div>
-          <input id="in-email" type="email" inputmode="email" autocomplete="email" placeholder="your@email.com" style="background:none;border:none;outline:none;color:#fff;font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;padding:6px 2px;caret-color:#fff;text-align:center;min-width:240px;">
-          <button id="btn-send" class="btn-sig">Send code</button>
-          <div class="note dim" id="err-mail"></div>
-        </div>
-      `;
-    } else if(p.t==='code'){
-      block.innerHTML = `
-        <div class="mw-card">
-          <div class="t-futura" style="text-transform:uppercase;font-size:15px;">Six digits. Check your inbox.</div>
-          <input id="in-otp" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="000000" style="background:none;border:none;outline:none;color:#fff;font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;padding:6px 2px;caret-color:#fff;text-align:center;min-width:120px;letter-spacing:.3em;">
-          <button id="btn-verify" class="btn-sig claimed">Enter</button>
-          <div class="note dim" id="err-code"></div>
-        </div>
-      `;
-    } else{
-      const d=document.createElement('div');
-      d.className=p.t==='g'?'t-futura':(p.t==='c'?'t-coral coral-line':'t-mono');
-      d.innerHTML=(p.x||'').replace(/\n/g,'<br>');
-      block.appendChild(d);
     }
   });
   return block;
@@ -1031,10 +983,10 @@ async function hasAccess(){
 })();
 
 async function toStripe(){
-  const err = document.getElementById('err-code');
+  const err = document.getElementById('checkout-error');
   try{
     const { data:{ session } } = await sb.auth.getSession();
-    if(!session){ goToSlide(1); return; } // Slide Mail
+    if(!session){ await ssoLogin(false); return; }
     const r = await fetch(PAY_FN, {
       method:'POST',
       headers:{ 'Authorization':'Bearer '+session.access_token,
@@ -1066,66 +1018,8 @@ document.addEventListener('click', async (ev) => {
   if(t.dataset.mode === 'owned'){ (window.top || window).location.href = METHOD; return; }
   const { data:{ session } } = await sb.auth.getSession();
   if(session?.user?.email){ toStripe(); return; }
-  goToSlide(1);
-  setTimeout(()=>{ const el=document.getElementById('in-email'); if(el) el.focus(); },50);
+  await ssoLogin(false);
 });
-
-// Attach Event Listeners
-setTimeout(() => {
-  const btnBuyLegacy = null;
-  if(btnBuyLegacy) {
-    btnBuyLegacy.addEventListener('click',async()=>{
-      const { data:{ session } } = await sb.auth.getSession();
-      if(session?.user?.email){ toStripe(); return; }
-      goToSlide(1); // Slide Mail
-      setTimeout(()=>document.getElementById('in-email').focus(),50);
-    });
-  }
-
-  const btnSend = document.getElementById('btn-send');
-  if(btnSend) {
-    btnSend.addEventListener('click',async()=>{
-      const email = document.getElementById('in-email').value.trim().toLowerCase();
-      const err   = document.getElementById('err-mail');
-      if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ err.textContent='Check the address.'; return; }
-      err.textContent=''; btnSend.disabled=true; btnSend.textContent='Sending...';
-      /* 14/11 : l'email en vol est RETENU — un onglet rechargé ne perd plus l'étape du code. */
-      const error = await TOTEHM_OTP.envoyer(sb, email);
-      btnSend.disabled=false; btnSend.textContent='Send code';
-      if(error){ err.textContent='Could not send. Try again.'; return; }
-      goToSlide(2); // Slide Code
-      setTimeout(()=>document.getElementById('in-otp').focus(),50);
-    });
-  }
-
-  const btnVerify = document.getElementById('btn-verify');
-  if(btnVerify) {
-    btnVerify.addEventListener('click',async()=>{
-      const email = document.getElementById('in-email').value.trim().toLowerCase();
-      const token = document.getElementById('in-otp').value.trim();
-      const err   = document.getElementById('err-code');
-      if(token.length!==6){ err.textContent='Six digits.'; return; }
-      err.textContent=''; btnVerify.disabled=true; btnVerify.textContent='Checking...';
-      /* 14/11 : UN SEUL essai à la fois, et l'email retenu si celui du champ a disparu. */
-      const r = await TOTEHM_OTP.verifier(sb, token, email);
-      btnVerify.disabled=false; btnVerify.textContent='Enter';
-      if(r.why==='busy'||r.why==='short') return;
-      if(!r.ok){ err.textContent=r.why==='email'?'Enter your email again.':'Wrong or expired code.'; return; }
-      if(await hasAccess()){ (window.top || window).location.replace(METHOD); return; }
-      toStripe();
-    });
-  }
-
-  const authBack = document.getElementById('auth-back');
-  if(authBack) authBack.addEventListener('click', () => goToSlide(curSlide - 1));
-
-  const inEmail = document.getElementById('in-email');
-  if(inEmail) inEmail.addEventListener('keydown',e=>{ if(e.key==='Enter') btnSend.click(); });
-
-  const inOtp = document.getElementById('in-otp');
-  if(inOtp) inOtp.addEventListener('keydown',e=>{ if(e.key==='Enter') btnVerify.click(); });
-
-}, 100);
 
 /* ═══ DISCOVER ═══ */
 {
@@ -1405,8 +1299,7 @@ xpBuy.addEventListener('click', async ()=>{
   closeAll();
   const { data:{ session } } = await sb.auth.getSession();
   if(session?.user?.email){ toStripe(); return; }
-  goToSlide(1);
-  setTimeout(()=>{ const el=document.getElementById('in-email'); if(el) el.focus(); },50);
+  await ssoLogin(false);
 });
 
 /* ─── STREET DISCOVER ─── */
@@ -1652,123 +1545,10 @@ document.addEventListener('click', ev=>{
 });
 }
 
-/* ══ MEMBER SPACE ══ */
-(()=>{
-  const _$=id=>document.getElementById(id);
-  let me=null,mbEmail='';
-/* ══ LE CODE À SIX CHIFFRES — copié de tools/otp_signin.js dans chaque page (jamais importé) ══
-   Wah (14/11) : « encore des problèmes de connexion : je suis quelques fois obligé de rentrer DEUX FOIS
-   l'email et le code pour accéder. Bug à vérifier et corriger sur toutes les plateformes. »
 
-   DEUX CAUSES, mesurées dans le code de toutes les pages de connexion :
 
-   1 · L'EMAIL NE VIVAIT QU'EN MÉMOIRE (`let mail = ''`). On demande son code, on QUITTE la page pour aller
-       le lire dans sa boîte, le téléphone décharge l'onglet (iOS le fait sans prévenir), on revient : la
-       page est rechargée, `mail` est vide, `verifyOtp({email:'', token})` échoue — « wrong code » sur un
-       code juste. Il fallait tout refaire. Le mail en vol est donc RETENU ici (30 min, la durée d'un code),
-       et une page qui redémarre retrouve l'étape du code au lieu de la perdre.
 
-   2 · DEUX VÉRIFICATIONS POUR UNE SAISIE. Le remplissage automatique d'un code (iOS, Android, un collage)
-       lève PLUSIEURS `input` d'affilée. Le premier appel consomme le code — il est à usage unique —, le
-       second reçoit « invalid token » et la page affichait « wrong code » ET vidait le champ, juste après
-       une connexion RÉUSSIE. Un seul essai à la fois (`enCours`), et le code qui a MARCHÉ est retenu : le
-       rejouer rend `{ok:true, deja:true}`, jamais une erreur.
-
-   Ce bloc ne connaît ni la page ni son balisage : il rend un verdict, la page écrit les mots.
-     TOTEHM_OTP.envoyer(sb, email)        → null, ou l'erreur (le mail est retenu si c'est parti)
-     TOTEHM_OTP.verifier(sb, code, email) → {ok} · {ok, deja} · {why:'short'|'busy'|'email'|'expired'|'wrong'}
-     TOTEHM_OTP.attendu()                 → l'email d'un code en vol (ou '') — pour reprendre l'étape du code
-     TOTEHM_OTP.chiffres(v)               → les 6 chiffres d'une saisie (un collage « 123 456 » compris)
-     TOTEHM_OTP.oublier()                 → on repart de l'email
-   `localStorage` peut lever (navigation privée, site data bloqué) : tout est en try/catch et la page
-   fonctionne sans — on retombe simplement sur le comportement d'avant. Un email n'est pas un secret de
-   session : il n'ouvre rien sans le code, qui n'est jamais retenu. */
-window.TOTEHM_OTP = (() => {
-  const CLE = 'totehm_otp_v1', VIE = 30 * 60e3;
-  let enCours = false, reussi = '';
-  const chiffres = v => String(v == null ? '' : v).replace(/\D/g, '').slice(0, 6);
-  function retenir(m){ try{ localStorage.setItem(CLE, JSON.stringify({ m:String(m || ''), t:Date.now() })); }catch(_){} }
-  function attendu(){
-    try{
-      const o = JSON.parse(localStorage.getItem(CLE) || 'null');
-      if(o && o.m && Date.now() - (+o.t || 0) < VIE) return String(o.m);
-    }catch(_){}
-    return '';
-  }
-  /* `oublier` efface le mail RETENU : on repart de l'email. Le verdict d'un code qui a marché (`reussi`)
-     ne s'efface qu'à l'envoi d'un nouveau code — sinon un second `input` le rejouerait en erreur. */
-  function oublier(){ try{ localStorage.removeItem(CLE); }catch(_){} }
-  async function envoyer(sb, email, options){
-    const m = String(email || '').trim();
-    const { error } = await sb.auth.signInWithOtp({ email:m, options:Object.assign({ shouldCreateUser:true }, options || {}) });
-    if(!error){ reussi = ''; retenir(m); }
-    return error || null;
-  }
-  async function verifier(sb, token, email){
-    const t = chiffres(token);
-    if(t.length !== 6) return { why:'short' };
-    if(t === reussi) return { ok:true, deja:true };      /* le même code rejoué par un second `input` */
-    if(enCours) return { why:'busy' };
-    const m = String(email || '').trim() || attendu();
-    if(!m) return { why:'email' };
-    enCours = true;
-    try{
-      const { error } = await sb.auth.verifyOtp({ email:m, token:t, type:'email' });
-      if(error){
-        const msg = String(error.message || '');
-        return { why:/expir/i.test(msg) ? 'expired' : 'wrong', error };
-      }
-      reussi = t; oublier();
-      return { ok:true, email:m };
-    }finally{ enCours = false; }
-  }
-  return { envoyer, verifier, attendu, oublier, chiffres, occupe:() => enCours };
-})();
-/* ══ fin LE CODE À SIX CHIFFRES ══ */
-
-  function mbPaint(){
-    _$('conn-bar').innerHTML='<span class="dot" style="background:'+(me?'#639922':'#888')+'"></span>'+(me?(me.email||'').split('@')[0]:'Guest');
-    _$('mw-out-state').style.display=me?'none':'';
-    _$('mw-in-state').style.display=me?'':'none';
-    if(me){_$('mw-who').textContent=(me.email||'').split('@')[0];_$('mw-mail').textContent=me.email||'';}
-  }
-  _$('conn-bar').onclick=()=>_$('member-window').classList.add('show');
-  _$('mw-close').onclick=()=>_$('member-window').classList.remove('show');
-  _$('member-window').addEventListener('click',e=>{if(e.target===_$('member-window'))_$('member-window').classList.remove('show');});
-  /* 14/11 — UN SEUL ESSAI À LA FOIS, ET L'EMAIL EN VOL SURVIT AU RECHARGEMENT (`tools/otp_signin.js`). */
-  function mwCode(ouvert){ _$('mw-code').style.display=ouvert?'':'none'; }
-  _$('mw-email').addEventListener('keydown',async e=>{
-    if(e.key!=='Enter')return;
-    const v=_$('mw-email').value.trim(),note=_$('mw-note');
-    if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)){note.className='mw-note no';note.textContent='invalid email';return;}
-    note.className='mw-note dim';note.textContent='sending…';
-    if(await TOTEHM_OTP.envoyer(sb,v)){note.className='mw-note no';note.textContent='try again in a minute';return;}
-    mbEmail=v;note.className='mw-note ok';note.textContent='code sent — check your email';
-    mwCode(true);setTimeout(()=>_$('mw-code').focus(),80);
-  });
-  _$('mw-code').addEventListener('input',async()=>{
-    const c=_$('mw-code'),note=_$('mw-note'),t=TOTEHM_OTP.chiffres(c.value);
-    if(t!==c.value)c.value=t;
-    if(t.length!==6)return;
-    note.className='mw-note dim';note.textContent='verifying…';
-    const r=await TOTEHM_OTP.verifier(sb,t,mbEmail);
-    if(r.why==='busy'||r.why==='short')return;                 /* un second `input` du même code : on ignore */
-    if(!r.ok){note.className='mw-note no';
-      note.textContent=r.why==='expired'?'code expired — ask for a new one':r.why==='email'?'enter your email again':'wrong code';
-      if(r.why==='email'){mwCode(false);_$('mw-email').focus();}
-      return;}
-    note.textContent='';c.value='';mwCode(false);_$('mw-email').value='';
-    _$('member-window').classList.remove('show');
-  });
-  /* un code demandé AVANT un rechargement : on reprend à l'étape du code, pas à l'email */
-  { const a=TOTEHM_OTP.attendu(); if(a&&!me){ mbEmail=a; _$('mw-email').value=a; mwCode(true); } }
-  _$('mw-signout').onclick=async()=>{await ssoLogout(sb);_$('member-window').classList.remove('show');};
-  sb.auth.onAuthStateChange((_event,session)=>{
-    me=session?.user||null;setTimeout(mbPaint,0);
-  });
-  sb.auth.getSession().then(({data:{session}})=>{me=session?.user||null;mbPaint();});
-})();
-
+window.__totehm_space_identity=()=>({build:'2026-11-15-single-space-identity',centralAuthority:'totehm.com',localEmailForms:document.querySelectorAll('input[type=email]').length,legacyPanels:document.querySelectorAll('#conn-bar,#member-window').length});
 </script>
 <script>
 /* ══ LE MOT TOTEHM EST LE TOTEHM — copié de tools/totehm_word.js dans chaque page (jamais importé) ══
