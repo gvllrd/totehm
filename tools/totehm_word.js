@@ -1,26 +1,34 @@
 /* ══ LE MOT TOTEHM EST LE TOTEHM — copié de tools/totehm_word.js dans chaque page (jamais importé) ══
-   Wah (12/11) : « à chaque fois qu'il y a le mot totehm, mettre le TOTEHM recto-verso rotatif, recto le
-   logo, verso le nom du TOTEHM de l'utilisateur, dont la grandeur s'adapte au texte — dans tous les
-   textes des 4 plateformes ». Le mot n'est donc plus écrit : il est la PIÈCE, celle du coin membre
-   (`tools/member_corner.*`) à la taille du texte qui la porte. Règle n° 1 : rien n'est réinterprété.
+   ⚠️ 14/11 (Wah) — ANNULATION DU REMPLACEMENT GÉNÉRAL : « annule la décision de remplacer TOUS les textes
+   Totehm par le logo totehm. À la place, sélectionne seulement les textes TOTEHM les plus stratégiques et
+   brandés = les endroits qui posent le moins de problème dans la structure globale, comme celui du texte de
+   découverte de la vue Higher GPT, "Your Totehm in chatgpt" : là, changer le texte par le logo a du sens.
+   Sinon, remets le texte. Et ceux que tu gardes doivent être AGRANDIS. »
+
+   DONC LA RÈGLE EST INVERSÉE : plus aucun parcours de la page. La pièce ne se pose QUE dans un nœud que la
+   page MARQUE `data-tw`, et nulle part ailleurs. Un texte non marqué reste le mot écrit, partout, dans les
+   quatre domaines. Les trois endroits retenus aujourd'hui :
+     · com/totehm.html  `#chatgpt-title` — « YOUR TOTEHM IN CHATGPT » (celui que Wah nomme)
+     · com + club       la définition d'un spot — « A spot is your TOTEHM Habit in action… »
+     · com/creator.html « Read <nom>'s whole TOTEHM » — la phrase qui vend l'abonnement
+   Pour en ajouter un : `data-tw` sur le nœud qui porte la phrase. Rien d'autre.
 
    CE QUI NE CHANGE PAS : le mot reste dans le document, hors écran (`.tw-s`) — la page se lit à la voix,
    se cherche au clavier, et un test qui lit `textContent` trouve le même texte qu'avant.
-   CE QUI N'EST JAMAIS TOUCHÉ : ce que le membre a ÉCRIT (une box, une mini-box, son nom, un champ), une
-   adresse (`totehm.com`, `www.totehm.space`), un mot qui continue (`TOTEHMIZE`), et tout nœud marqué
-   `data-notw`. Un domaine se reconnaît à ce qui suit : un point SUIVI d'une lettre.
-   UNE SEULE BOUCLE pour toute la page : l'angle est une variable CSS de `:root` (`--tw-th`) ; vingt
-   pièces coûtent vingt transformations de GPU, pas vingt boucles. Elle s'arrête sans pièce, sans nom,
-   onglet caché, ou en mouvement réduit (la pièce est alors posée sur son verso, le nom lisible).
+   CE QUI N'EST JAMAIS TOUCHÉ, même sous `data-tw` : ce que le membre a ÉCRIT (une box, une mini-box, son
+   nom, un champ), une adresse (`totehm.com`), un mot qui continue (`TOTEHMIZE`), et tout nœud `data-notw`.
+   UNE SEULE BOUCLE pour toute la page : l'angle est une variable CSS de `:root` (`--tw-th`). Elle s'arrête
+   sans pièce, sans nom, onglet caché, ou en mouvement réduit (la pièce est alors posée sur son verso).
    La taille vient de la POLICE héritée (`getComputedStyle`), jamais de `clientWidth` : mesurer la boîte
    forcerait un calcul de mise en page à chaque peinture de la liste du Totehm. */
 window.TOTEHM_MOT = (() => {
-  const MOT = 'TOTEHM', NM = MOT.length, K = 1.12;      /* K = la taille de la pièce, en em (CSS) */
+  /* ⚠️ K DOIT RESTER ÉGAL À `--tw-k` DE totehm_word.css (la taille de la pièce, en em). */
+  const MOT = 'TOTEHM', NM = MOT.length, K = 2.2;
   const SAUT = /^(SCRIPT|STYLE|TITLE|TEXTAREA|INPUT|SELECT|OPTION|CODE|PRE|NOSCRIPT|IFRAME|CANVAS|VIDEO|AUDIO|IMG|SVG)$/;
   /* les classes de ce que le MEMBRE a écrit, et celles de la pièce elle-même */
   const CL = ['tw', 'v-name', 'v-int', 'mini', 'mini-t', 'mi', 'nm', 'tn-l', 'mc', 'sl-name', 'ms-w', 'ns-mot'];
   const RM = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : { matches:false };
-  const diag = { mots:0, pieces:0, passes:0, nom:'' };
+  const diag = { mots:0, pieces:0, passes:0, hotes:0, nom:'' };
   const cache = new Map();
   let nom = '', neuves = [], vivantes = new Set(), rafP = 0, raf = 0, th = 180, om = 0, last = 0, tmr = 0, aFaire = [];
 
@@ -50,7 +58,6 @@ window.TOTEHM_MOT = (() => {
     for(let i = 0; i < CL.length; i++) if(c.contains(CL[i])) return true;
     return false;
   }
-  const interdit = n => { for(let e = n.parentNode; e && e.nodeType === 1; e = e.parentNode) if(saute(e)) return true; return false; };
 
   /* ── la pièce ────────────────────────────────────────────────────────── */
   function piece(mot){
@@ -85,6 +92,20 @@ window.TOTEHM_MOT = (() => {
     const kids = n.childNodes, l = [];
     for(let i = 0; i < kids.length; i++) l.push(kids[i]);
     for(const k of l){ if(k.nodeType === 3) remplacer(k); else if(k.nodeType === 1) parcourir(k); }
+  }
+  /* LES HÔTES, et eux seuls : `data-tw`, où qu'il soit (y compris sur le nœud donné lui-même). */
+  function hotes(racine){
+    const out = [];
+    if(!racine) return out;
+    if(racine.nodeType === 1){
+      if(racine.hasAttribute && racine.hasAttribute('data-tw')) out.push(racine);
+      racine.querySelectorAll && racine.querySelectorAll('[data-tw]').forEach(e => out.push(e));
+    }
+    return out;
+  }
+  function poserDans(racine){
+    const l = hotes(racine);
+    for(const e of l){ if(e.dataset.twFait === '1') continue; e.dataset.twFait = '1'; diag.hotes++; parcourir(e); }
   }
 
   /* ── le verso : le nom, par la nomenclature du TOTEHM ────────────────── */
@@ -181,26 +202,27 @@ window.TOTEHM_MOT = (() => {
     planifier();
   }
 
-  /* ── les textes qui arrivent après : un seul observateur, amorti ─────── */
+  /* ── les hôtes qui arrivent après : un seul observateur, amorti ──────── */
   function vider(){
     tmr = 0;
     const l = aFaire; aFaire = [];
-    for(const n of l){ if(!n.isConnected || interdit(n)) continue; parcourir(n); }
+    for(const n of l){ if(n.isConnected) poserDans(n); }
     setNom(trouver());
   }
   function observer(){
     if(typeof MutationObserver !== 'function') return;
     new MutationObserver(list => {
       for(const m of list){
-        if(m.type === 'childList'){ for(const n of m.addedNodes) if(n.nodeType === 1 || n.nodeType === 3) aFaire.push(n); }
-        else if(m.target) aFaire.push(m.target);
+        if(m.type === 'childList'){ for(const n of m.addedNodes) if(n.nodeType === 1) aFaire.push(n); }
+        else if(m.target && m.target.nodeType === 1) aFaire.push(m.target);
+        else if(m.target && m.target.parentNode) aFaire.push(m.target.parentNode);
       }
       if(aFaire.length && !tmr) tmr = setTimeout(vider, 60);
     }).observe(document.body, { childList:true, subtree:true, characterData:true });
   }
   function demarrer(){
     if(!document.body) return;
-    parcourir(document.body);
+    poserDans(document.body);
     setNom(trouver());
     observer();
     document.fonts?.ready?.then(() => {                       /* mesuré avant la vraie police = faux */
@@ -210,7 +232,7 @@ window.TOTEHM_MOT = (() => {
     });
   }
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer, { once:true }); else demarrer();
-  const api = { scan:parcourir, setNom, nom:() => nom,
+  const api = { scan:poserDans, setNom, nom:() => nom,
                 etat:() => Object.assign({ vivantes:vivantes.size, tourne:!!raf }, diag) };
   window.__totehm_mot = api.etat;
   return api;
