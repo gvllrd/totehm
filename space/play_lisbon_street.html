@@ -234,6 +234,27 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
   .bob-chev,.sign-spin img,.rotate-spinner{animation:none}
 }
 
+/* Discover: the full-screen type scale and reading rhythm of Think same. */
+#sdisc-stage{padding:80px 24px 118px}
+#sdisc-stage .disc-block{width:min(100%,680px);max-width:680px;gap:18px}
+#sdisc-stage .t-futura{font:400 clamp(16px,2vw,23px)/1.6 'Space Mono',monospace;letter-spacing:0;padding:0;color:#ddd;white-space:pre-line}
+#sdisc-stage .disc-block.is-first .t-futura:first-child{font:700 clamp(26px,4vw,51px)/1.16 Quantico,sans-serif}
+#sdisc-stage .higher-inline{width:3.1em}
+#sdisc-stage .disc-block>.btn-sig{font-size:12px;min-height:44px;padding:10px 18px;margin-top:22px!important;max-width:100%}
+#sdisc-bg{opacity:.2;transition:opacity .55s ease}
+body.is-street-board #sdisc-bg,body.is-snapping #sdisc-bg{opacity:1}
+#sdisc-back,#sdisc-board-close{top:22px;padding:10px;min-height:44px}
+#sdisc-progress{position:absolute;top:32px;left:50%;transform:translateX(-50%);font:10px/1.4 'Space Mono',monospace;letter-spacing:.14em;color:#888;pointer-events:none}
+#sdisc-rail{position:absolute;bottom:65px;left:50%;transform:translateX(-50%);display:flex;gap:6px;pointer-events:none}
+#sdisc-rail span{width:18px;height:2px;background:#242424;transition:background .3s}
+#sdisc-rail span.on{background:#bdbdbd}
+#sdisc-reading-hint{position:absolute;bottom:23px;left:0;right:0;color:#888;text-align:center;font:9px/1.5 'Space Mono',monospace;letter-spacing:.14em;pointer-events:none}
+#sdisc-trig{bottom:90px}
+#street-access-status{bottom:90px}
+body.is-street-board #sdisc-rail,body.is-street-board #sdisc-progress,body.is-street-board #sdisc-reading-hint,body.is-snapping #sdisc-rail,body.is-snapping #sdisc-progress,body.is-snapping #sdisc-reading-hint{display:none}
+@media(max-width:650px){#sdisc-stage{padding:74px 23px 128px}#sdisc-stage .t-futura{font-size:clamp(15px,4vw,17px);line-height:1.5}#sdisc-stage .disc-block.is-first .t-futura:first-child{font-size:clamp(26px,8vw,35px)}#sdisc-back,#sdisc-board-close{top:14px}#sdisc-progress{top:25px}#sdisc-reading-hint{padding:0 20px}}
+@media(prefers-reduced-motion:reduce){.disc-block,#sdisc-bg{transition:none}.bob-chev{animation:none}}
+
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille
    elle-même : un nouveau bloc gris entre ici tout seul.        */
@@ -321,9 +342,10 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
   <div id="sdisc-bg"></div>
   <button id="sdisc-back" type="button">Back</button>
   <button id="sdisc-board-close" type="button" aria-label="Back to the story" style="display:none">✕</button>
-  <div id="sdisc-stage"></div>
+  <div id="sdisc-stage" role="region" aria-label="Discover the Lisbon Street"></div>
+  <p id="sdisc-progress" aria-live="polite"></p><div id="sdisc-rail" aria-hidden="true"></div><p id="sdisc-reading-hint">Scroll to discover ↓</p>
   <button id="sdisc-trig" type="button" aria-label="Next">
-    <span class="trigger-label">When Street Art meets the quintessence of modern neurology</span>
+    <span class="trigger-label">Discover the Lisbon Street</span>
     <svg class="chev bob-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
   </button>
 </div>
@@ -460,7 +482,7 @@ window.TOTEHM_OTP = (() => {
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import {checkLisbonStreetAccess,requestLisbonStreetMedia} from './lisbon-street-access.mjs';
 import {LISBON_STREET_DISCOVER} from './lisbon-street-discover.mjs';
-const BUILD = '2026-11-14-lisbon-thp-entry';
+const BUILD = '2026-11-15-lisbon-readable-discover';
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 const HIGHER_MARKUP = '<span class="higher-inline" role="img" aria-label="Higher"><svg viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-slogan"></use></svg></span>';
 const GET_HIGHER_MARKUP = '<span class="get-word">Get</span> ' + HIGHER_MARKUP;
@@ -1211,7 +1233,7 @@ const isPortraitMobile = ()=>
 
 function enterBoardMode(){
   if(!OWNED){showAccessRequirement(streetAccess);return;}
-  boardMode=true;
+  boardMode=true;document.body.classList.add('is-street-board');document.body.classList.remove('is-snapping');
   sdiscStage.style.display='none';
   sdiscBack.style.display='none';
   sdiscTrig.style.display='none';
@@ -1245,7 +1267,7 @@ function enterBoardMode(){
   sdiscBoardClose.focus({preventScroll:true});
 }
 function exitBoardMode(){
-  boardMode=false;
+  boardMode=false;document.body.classList.remove('is-street-board','is-snapping');
   rotatePrompt.classList.remove('active');
   sdiscStage.style.display='';
   sdiscBack.style.display='';
@@ -1306,7 +1328,7 @@ if(window.matchMedia('(pointer:coarse)').matches){
 async function snapToBoard(){
   await streetAccessReady;
   if(!OWNED){showAccessRequirement(streetAccess);return false;}
-  if(snapping) return; snapping=true; stopAsteroids();
+  if(snapping) return; snapping=true;document.body.classList.add('is-snapping');stopAsteroids();
   const br=getBoardRect();
   const reduced=reducedMotion.matches;
   sdiscStage.style.transition=reduced?'none':'opacity .4s'; sdiscStage.style.opacity='0';
@@ -1351,7 +1373,7 @@ function buildSdisc(sl){
   b.appendChild(btn);
   return b;
 }
-SDSLIDES.forEach(sl=>sdiscStage.appendChild(buildSdisc(sl)));
+SDSLIDES.forEach((sl,index)=>{const block=buildSdisc(sl);block.classList.toggle('is-first',index===0);sdiscStage.appendChild(block);document.getElementById('sdisc-rail').appendChild(document.createElement('span'));});
 refreshStreetAccessUI=()=>{
   document.querySelectorAll('[data-street-enter]').forEach(button=>{
     button.disabled=streetAccess.state==='checking';
@@ -1377,6 +1399,9 @@ let sdiscCur=0, sdiscLock=false,storyRevision=0;
 const SD_FADE=650;
 
 function showSdisc(i,instant){
+  document.getElementById('sdisc-progress').textContent=(i+1)+' / '+SDSLIDES.length;
+  document.querySelectorAll('#sdisc-rail span').forEach((dot,n)=>dot.classList.toggle('on',n===i));
+  document.getElementById('sdisc-reading-hint').hidden=i===SDSLIDES.length-1;
   sdiscStage.querySelectorAll('.disc-block').forEach((b,idx)=>{
     if(idx===i){
       if(instant)b.classList.add('instant');
@@ -1387,7 +1412,7 @@ function showSdisc(i,instant){
       });
     } else {
       b.classList.remove('show');
-      setTimeout(()=>b.classList.remove('active'),instant?0:SD_FADE);
+      if(instant)b.classList.remove('active');else setTimeout(()=>b.classList.remove('active'),SD_FADE);
     }
   });
   sdiscCur=i;
@@ -1402,11 +1427,11 @@ function sdiscReset(){
 }
 function sdiscNext(){
   if(boardMode||snapping||streetBusy||authOverlay.classList.contains('in')||sdiscLock||sdiscCur>=SDSLIDES.length-1)return;
-  sdiscLock=true; showSdisc(sdiscCur+1,false); setTimeout(()=>sdiscLock=false,SD_FADE);
+  sdiscLock=!reducedMotion.matches;showSdisc(sdiscCur+1,reducedMotion.matches);if(sdiscLock)setTimeout(()=>sdiscLock=false,SD_FADE);
 }
 function sdiscPrev(){
   if(boardMode||snapping||streetBusy||authOverlay.classList.contains('in')||sdiscLock||sdiscCur<=0)return;
-  sdiscLock=true; showSdisc(sdiscCur-1,false); setTimeout(()=>sdiscLock=false,SD_FADE);
+  sdiscLock=!reducedMotion.matches;showSdisc(sdiscCur-1,reducedMotion.matches);if(sdiscLock)setTimeout(()=>sdiscLock=false,SD_FADE);
 }
 
 /* démarrage */
@@ -1434,8 +1459,8 @@ window.addEventListener('touchend',e=>{
 },{passive:true});
 window.addEventListener('keydown',e=>{
   if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;
-  if(e.key==='ArrowDown') sdiscNext();
-  else if(e.key==='ArrowUp') sdiscPrev();
+  if(['ArrowDown','ArrowRight','PageDown'].includes(e.key)||e.key===' '&&!e.target.closest('a,button')){e.preventDefault();sdiscNext();}
+  else if(['ArrowUp','ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();sdiscPrev();}
   else if(e.key==='Escape'){
     if(authOverlay.classList.contains('in')) closeAuth();
     else if(xp.classList.contains('up')) comeBack();
@@ -1484,7 +1509,7 @@ window.__totehm_lisbon=()=>({
   artwork:xp.classList.contains('up'),auth:authOverlay.classList.contains('in'),
   activeSign,directSign,fromSpace,playAttempted,playbackBlocked,videoMuted:vid.muted,
   access:{state:streetAccess.state,owned:OWNED},mediaState,discoverOnly,requestedBoard,privateMedia:true,
-  teaser:true,teaserHref:document.getElementById('xp-get-higher').getAttribute('href')
+  discoverFormat:'fullscreen-readable',discoverSlides:SDSLIDES.length,teaser:true,teaserHref:document.getElementById('xp-get-higher').getAttribute('href')
 });
 }
 </script>

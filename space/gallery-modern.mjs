@@ -1,5 +1,5 @@
-import {createLisbonDome} from './gallery-lisbon-dome.mjs';
+import {createLisbonUrbexGallery} from './gallery-lisbon-urbex.mjs';
 
 export function createModernGallery(scene,renderer,options={}){
- return createLisbonDome(scene,renderer,options);
+ return createLisbonUrbexGallery(scene,renderer,options);
 }

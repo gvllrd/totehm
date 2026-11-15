@@ -5,7 +5,7 @@ import {GLASS_SHELL as S,GLASS_HEARTH as H,glassRoofHeight,glassSmokeOpening,LIS
 // The complete c8ddaf0 building envelope: the original intact azulejo street
 // front and its continuous wave of glass. Furniture and artworks belong to
 // the caller, so restoring architecture never restores obsolete editions.
-export function createLisbonAzulejoBuilding(parent,{mobile=false,onChange=()=>{}}={}){
+export function createLisbonAzulejoBuilding(parent,{mobile=false,ruined=false,onChange=()=>{}}={}){
  const root=new T.Group();root.name='Lisbon — restored azulejo building and wave glass';parent.add(root);
  const geometries=new Set(),materials=new Set(),solids=[];
  let disposed=false;
@@ -57,7 +57,11 @@ export function createLisbonAzulejoBuilding(parent,{mobile=false,onChange=()=>{}
   const pane=mesh(g,roofGlass,[0,0,0],name,true);pane.castShadow=false;return pane;
  }
  curvedGlazing('x',-17,-13,13,-.09,'Rear glazing following the lifted wave');
- const facade=createLisbonFacade(root,{mobile,onChange:changed});solids.push(...facade.solids);
+ const facade=createLisbonFacade(root,{mobile,ruined,onChange:changed});solids.push(...facade.solids);
+ if(ruined){
+  const repair=geometry(new T.PlaneGeometry(6.4,4.18));
+  const pane=mesh(repair,roofGlass,[0,5.19,-2.18],'Modern glass stitch behind the broken historic central bay');pane.castShadow=false;
+ }
  for(const x of [-13,13]){
   curvedGlazing('z',x,-17,-2,-.09,'Ocean-side glass cut to the flowing roof');
   for(const z of [-16.94,-2.05]){const height=glassRoofHeight(x,z)+.09;block(metal,[x,(height-.09)/2,z],[.036,height,.045],'Slender glass corner post');}
@@ -102,7 +106,7 @@ export function createLisbonAzulejoBuilding(parent,{mobile=false,onChange=()=>{}
  changed();
  return {root,solids,obstacles,roofHeight:glassRoofHeight,smokeOutlet:o,roofProfile:LISBON_ROOF_PROFILE,
   facadeSign:{position:[...F.signPosition],scale:F.signScale},
-  diagnostics:()=>({kind:'lisbon-azulejo-pavilion',restoredFrom:'c8ddaf0',ready:!disposed,levels:1,azulejos:true,facadeOnlyMasonry:true,glassSides:true,glassRear:true,glassRoof:true,waveGlass:true,flatRoof:false,entryWidth:F.entryWidth,entryHeight:F.entryHeight,facade:facade.diagnostics(),roofShell:{continuous:true,minimum:S.minHeight,maximum:S.maxHeight,thickness:S.thickness,triangles:waveRoof.geometry.attributes.position.count/3,ribs:5,actualAperture:true,smokeOutlet:{...o},collector:{glass:true,rearGlazingFold:true,asymmetricLip:true,baseHeight:H.collectorBaseY,topHeight:o.y,metalHood:false,metalFlue:false,integrated:true}},disposed}),
+  diagnostics:()=>({kind:'lisbon-azulejo-pavilion',restoredFrom:'c8ddaf0',ready:!disposed,levels:1,azulejos:true,ruined,glassRepair:ruined,facadeOnlyMasonry:true,glassSides:true,glassRear:true,glassRoof:true,waveGlass:true,flatRoof:false,entryWidth:F.entryWidth,entryHeight:F.entryHeight,facade:facade.diagnostics(),roofShell:{continuous:true,minimum:S.minHeight,maximum:S.maxHeight,thickness:S.thickness,triangles:waveRoof.geometry.attributes.position.count/3,ribs:5,actualAperture:true,smokeOutlet:{...o},collector:{glass:true,rearGlazingFold:true,asymmetricLip:true,baseHeight:H.collectorBaseY,topHeight:o.y,metalHood:false,metalFlue:false,integrated:true}},disposed}),
   dispose(){if(disposed)return;disposed=true;root.removeFromParent();facade.dispose();for(const g of geometries)g.dispose();for(const m of materials)m.dispose();root.traverse(object=>{if(object.isLight)object.dispose?.();});root.clear();}
  };
 }

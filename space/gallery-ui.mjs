@@ -1,18 +1,18 @@
 import {createLisbonPreview} from './gallery-lisbon.mjs';
-import {LISBON_DOME_SIGNS as LISBON_STREET_SIGNS} from './gallery-lisbon-dome-layout.mjs';
+import {LISBON_HOLOGRAM_SIGNS as LISBON_STREET_SIGNS} from './gallery-lisbon-urbex-layout.mjs';
 import {OPPOSITES} from './gallery-opposites.mjs';
 
 const reduced=matchMedia('(prefers-reduced-motion: reduce)'),body=document.body;
 const place=location.pathname.replace(/\/+$/,'')==='/new-york'?'new-york':'lisbon';
 body.dataset.place=place;
 document.title='TOTEHM.SPACE — '+(place==='new-york'?'New York':'Lisbon');
-document.getElementById('space').setAttribute('aria-label',(place==='lisbon'?'Lisbon city hall and TOTEHM collaboration. A tinted glass door reveals 22 floating signs inside the black dome. Discover and sheltered TotehmPaper outside; a flying saucer leads through glass to Origins. ':'An airy coastal castle gallery: ancient stone ruins and modern glass. ')+'Original artworks above the storm sea. Drag to look, tap the floor to walk. WASD to walk, Space to jump.');
+document.getElementById('space').setAttribute('aria-label',(place==='lisbon'?'Historic Lisbon azulejo ruins joined by modern glass, with stone inside. One deep black table presents TotehmPaper and laboratory glass on both sides. A monumental hologram opens the original Play the Street Discover; a flying saucer leads through glass to Origins. ':'An airy coastal castle gallery: ancient stone ruins and modern glass. ')+'Original artworks above the storm sea. Drag to look, tap the floor to walk. WASD to walk, Space to jump.');
 document.getElementById('building-levels')?.remove();
 if(place==='lisbon'){document.querySelector('.tour [data-room="4"]')?.remove();document.getElementById('same-but-opposite')?.remove();}
 const ROOMS=[
  {title:'TotehmPaper {THP}',kind:'The Stoner Experience',path:'/get_higher',collect:'/market?art=totehmpaper',action:'Enter the experience ↗',note:'Original perforated art. Choose your TotehmPaper.'},
  {title:'Origins / Quantum',kind:'Twenty original works',path:'/origins',collect:'/market?collection=quantum',action:'Open the book',note:'Twenty works. Turn the pages.'},
- {title:'Play the Lisbon Street',kind:'Neuro Street Art Digital',path:'/play_lisbon_street',collect:'/market?collection=play-the-lisbon-street',action:place==='lisbon'?'Enter the experience':'PLAY ↗',note:place==='lisbon'?'A TotehmPaper is your key. Get Higher through Stoner, then enter the 22 Lisbon works.':'Choose a sign. Play the street.'},
+ {title:'Play the Lisbon Street',kind:'Neuro Street Art Digital',path:'/play_lisbon_street',collect:'/market?collection=play-the-lisbon-street',action:place==='lisbon'?'Discover the experience':'PLAY ↗',note:place==='lisbon'?'A TotehmPaper is your key. Get Higher through Stoner, then enter the 22 Lisbon works.':'Choose a sign. Play the street.'},
  {title:'The Stoner Experience',kind:'TotehmPaper {THP}',path:'/get_higher',collect:'/market?art=totehmpaper',action:'Enter the experience ↗',note:place==='lisbon'?'The original paper, in its small premium case on the black laboratory table.':'The original paper, in its premium case on the stone table.'},
  {title:'Same but opposite',kind:'Video artwork · Wah',path:'/same_but_opposite',action:'PLAY ↗',note:'Tap to play the artwork in its own full-screen experience.'}
 ];
@@ -50,7 +50,7 @@ if(place==='lisbon'){
  note.textContent='Get a Totehmpaper. Experience Stoner. See the Lisbon streets differently.';
  caption.querySelector('.room-actions').before(note);
  caption.querySelector('.room-actions').replaceChildren(streetExperienceLink('get'),streetExperienceLink('street'));
- const discover=document.createElement('a');discover.id='outside-discover-link';discover.href='/play_lisbon_street?discover=1';discover.textContent='Discover the experience';caption.querySelector('.room-actions').prepend(discover);
+ const discover=document.createElement('a');discover.id='lisbon-discover-link';discover.href='/play_lisbon_street?discover=1';discover.textContent='Discover the experience';caption.querySelector('.room-actions').prepend(discover);
  signHint=document.createElement('div');signHint.id='street-sign-hint';signHint.className='street-sign-hint';signHint.hidden=true;
  signHint.setAttribute('role','status');signHint.setAttribute('aria-live','polite');signHint.textContent='Make it useful';document.body.append(signHint);
 }
@@ -121,7 +121,7 @@ document.addEventListener('keydown',e=>{
 });
 document.addEventListener('visibilitychange',syncPreview);reduced.addEventListener('change',syncPreview);
 addEventListener('pagehide',()=>{if(listRaf)cancelAnimationFrame(listRaf);listRaf=0;preview.pause();});addEventListener('pageshow',syncPreview);
-window.__totehm_gallery=()=>({build:'2026-11-14-lisbon-street-portal-origins',place,rooms:place==='lisbon'?3:4,room,hoveredSign,activeSign,list:body.classList.contains('list-view'),fallback,reduced_motion:reduced.matches,experiences:[...new Set(ROOMS.filter((w,i)=>place!=='lisbon'||i!==4).map(w=>w.path)),...(place==='new-york'?['/think_same_but_opposite']:[])],experienceNavigation:place==='lisbon'?'preview-and-thp-gated-fullscreen':'independent-pages',inGalleryPlayback:false,lisbon:preview.diagnostics(),...engine?.diagnostics()});
+window.__totehm_gallery=()=>({build:'2026-11-15-lisbon-azulejo-urbex-hologram',place,rooms:place==='lisbon'?3:4,room,hoveredSign,activeSign,list:body.classList.contains('list-view'),fallback,reduced_motion:reduced.matches,experiences:[...new Set(ROOMS.filter((w,i)=>place!=='lisbon'||i!==4).map(w=>w.path)),...(place==='new-york'?['/think_same_but_opposite']:[])],experienceNavigation:place==='lisbon'?'interior-hologram-to-discover-and-thp-gated-playback':'independent-pages',inGalleryPlayback:false,lisbon:preview.diagnostics(),...engine?.diagnostics()});
 function useFallback(){fallback=true;body.classList.add('no-3d','list-view');engine?.setList(true);clearInfo();syncPreview();}
 try{
  const {createGallery}=await import('./gallery-spatial.mjs');

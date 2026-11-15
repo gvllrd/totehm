@@ -17,14 +17,14 @@ export const LISBON_FACADE_BALCONIES=Object.freeze(WINDOW_ROWS.flatMap((row,r)=>
 
 // Only the street-facing wall is historical masonry. The existing ocean-side
 // and rear glazing, roof, stone floor and installations remain separate.
-export function createLisbonFacade(parent,{mobile=false,geometry=null,material=null,onChange=()=>{}}={}){
+export function createLisbonFacade(parent,{mobile=false,ruined=false,geometry=null,material=null,onChange=()=>{}}={}){
  const root=new T.Group();root.name='Lisbon — cobalt azulejo street façade';parent.add(root);
  const geometries=new Set(),materials=new Set(),solids=[],batches=new Map(),windows=[];
  let disposed=false;
  const ownG=g=>{geometries.add(g);return geometry?geometry(g):g;},ownM=m=>{materials.add(m);return material?material(m):m;};
  const tiles=createLisbonAzulejos(),border=createLisbonAzulejos({border:true});ownM(tiles.material);ownM(border.material);
- const limestone=ownM(new T.MeshStandardMaterial({color:0xd9d8ca,roughness:.87,metalness:0}));
- const white=ownM(new T.MeshStandardMaterial({color:0xf0eee4,roughness:.88,metalness:0}));
+ const limestone=ownM(new T.MeshStandardMaterial({color:ruined?0xb6aa92:0xd9d8ca,roughness:ruined?.91:.87,metalness:0}));
+ const white=ownM(new T.MeshStandardMaterial({color:ruined?0xaaa18e:0xf0eee4,roughness:ruined?.94:.88,metalness:0}));
  const iron=ownM(new T.MeshStandardMaterial({color:0x12262d,roughness:.47,metalness:.68}));
  const glass=ownM(new T.MeshPhysicalMaterial({color:0xc7dce7,transparent:true,opacity:.075,roughness:.055,metalness:.01,side:T.DoubleSide,depthWrite:false,envMapIntensity:1.1}));
  function add(g,m,name,{solid=false,batch=true}={}){
@@ -53,17 +53,24 @@ export function createLisbonFacade(parent,{mobile=false,geometry=null,material=n
   const shape=outline(cx,cy,width+thickness*2,height+thickness*2,arch+thickness*.35);shape.holes.push(hole(outline(cx,cy,width,height,arch)));
   const g=new T.ExtrudeGeometry(shape,{depth,bevelEnabled:false,curveSegments:mobile?8:16});g.translate(0,0,z);add(g,m,name,{solid:true});
  }
- const wall=new T.Shape();wall.moveTo(-13,-.09);wall.lineTo(-2.4,-.09);wall.lineTo(-2.4,3.1);wall.lineTo(2.4,3.1);wall.lineTo(2.4,-.09);wall.lineTo(13,-.09);wall.lineTo(13,LISBON_FACADE.wallTop);wall.lineTo(-13,LISBON_FACADE.wallTop);wall.closePath();
+ const wall=new T.Shape();wall.moveTo(-13,-.09);wall.lineTo(-2.4,-.09);wall.lineTo(-2.4,3.1);wall.lineTo(2.4,3.1);wall.lineTo(2.4,-.09);wall.lineTo(13,-.09);wall.lineTo(13,LISBON_FACADE.wallTop);
+ if(ruined)for(const p of [[11.9,7.12],[11.5,7.23],[8.5,7.18],[8.1,7.05],[4.5,7.2],[3.3,7.18],[3.12,6.7],[3.2,6.45],[2.86,5.8],[3.05,5.52],[2.7,4.95],[2.8,3.45],[2.3,3.18],[1.6,3.38],[.8,3.28],[-.2,3.46],[-1.5,3.24],[-2.5,3.33],[-2.8,4.16],[-2.61,4.47],[-2.94,5.37],[-2.8,5.73],[-3.13,6.5],[-3.25,7.22],[-3.58,6.96],[-4.42,7.2],[-8.2,7.14],[-8.5,7.04],[-11.9,7.22],[-13,7.1]])wall.lineTo(...p);
+ else wall.lineTo(-13,LISBON_FACADE.wallTop);wall.closePath();
  for(const row of WINDOW_ROWS)for(const x of WINDOW_X){const spec={x,y:row.y,width:2.4,height:row.height,arch:row.arched?.20:0,balcony:row.balcony};windows.push(spec);wall.holes.push(hole(outline(x,row.y,spec.width,spec.height,spec.arch)));}
  const body=new T.ExtrudeGeometry(wall,{depth:LISBON_FACADE.frontZ-LISBON_FACADE.backZ,bevelEnabled:false,curveSegments:mobile?8:16});body.translate(0,0,LISBON_FACADE.backZ);
  const wallMesh=add(body,white,'Lisbon façade — actual limestone-backed masonry and window apertures',{solid:true,batch:false});
- const tiledFace=new T.ShapeGeometry(wall,mobile?8:16);tiledFace.translate(0,0,LISBON_FACADE.frontZ+.004);add(tiledFace,tiles.material,'Continuous cobalt and white lozenge azulejos',{batch:false});
- for(const w of windows){
+ const tileShape=wall.clone();
+ const lostTiles=ruined?[[-3.65,4.1,.68,1.6],[3.65,1.35,.6,1.7],[-8.05,3.8,.78,1.42],[8.1,1.1,.65,1.2],[-12.55,1.1,.39,1.5],[12.45,4.0,.42,1.1]]:[];
+ for(const [x,y,w,h] of lostTiles){const patch=new T.Path();[[-.5,-.5],[-.44,.15],[-.5,.34],[-.18,.5],[.16,.38],[.5,.46],[.43,-.1],[.5,-.4],[.09,-.5]].forEach(([a,b],i)=>patch[i?'lineTo':'moveTo'](x+a*w,y+b*h));patch.closePath();tileShape.holes.push(patch);}
+ const tiledFace=new T.ShapeGeometry(tileShape,mobile?8:16);tiledFace.translate(0,0,LISBON_FACADE.frontZ+.004);add(tiledFace,tiles.material,ruined?'Surviving azulejos — irregular tile losses exposing old masonry':'Continuous cobalt and white lozenge azulejos',{batch:false});
+ if(ruined){tiles.material.color.set(0xb0b6ac);iron.color.set(0x343128);}
+ for(const [index,w] of windows.entries()){
   frame(w.x,w.y,w.width+.34,w.height+.30,w.arch,.055,border.material,-1.855,.045,'Fine cobalt tile border around limestone window');
   frame(w.x,w.y,w.width,w.height,w.arch,.15,limestone,-1.965,.235,'Deep pale limestone window surround');
-  const glazed=new T.ShapeGeometry(outline(w.x,w.y,w.width-.08,w.height-.06,w.arch),mobile?8:16);glazed.translate(0,0,-2.09);add(glazed,glass,'Traditional front window glazing');
-  for(const dx of [-w.width/2+.06,0,w.width/2-.06])block(white,w.x+dx,w.y,-1.985,.055,w.height-.05,.08,'Ivory sash vertical');
-  for(const dy of [-w.height/2+.045,0,w.height/2-.06])block(white,w.x,w.y+dy,-1.985,w.width-.06,.055,.08,'Ivory sash horizontal');
+  const broken=ruined&&[1,6,10].includes(index);
+  if(!broken){const glazed=new T.ShapeGeometry(outline(w.x,w.y,w.width-.08,w.height-.06,w.arch),mobile?8:16);glazed.translate(0,0,-2.09);add(glazed,glass,'Traditional front window glazing');}
+  for(const dx of (broken?[-w.width/2+.06,w.width/2-.06]:[-w.width/2+.06,0,w.width/2-.06]))block(white,w.x+dx,w.y,-1.985,.055,w.height-.05,.08,'Ivory sash vertical');
+  for(const dy of (broken?[-w.height/2+.045]:[-w.height/2+.045,0,w.height/2-.06]))block(white,w.x,w.y+dy,-1.985,w.width-.06,.055,.08,'Ivory sash horizontal');
   block(limestone,w.x,w.y-w.height/2-.13,-1.72,w.width+.40,.15,.42,'Projecting limestone window sill');
   if(!w.balcony)continue;
   const bottom=w.y-w.height/2-.07,front=-1.19,half=w.width/2+.04;
@@ -88,16 +95,20 @@ export function createLisbonFacade(parent,{mobile=false,geometry=null,material=n
  for(const [y,height,depth] of [[.02,.18,.32],[2.61,.14,.38],[5.13,.16,.40],[7.18,.15,.42]])for(const [x,width] of [[-8.1,9.8],[8.1,9.8]])block(limestone,x,y,-1.72,width,height,depth,'Historic limestone string course');
  for(const y of [2.83,5.35])for(const x of [-8.1,8.1])block(border.material,x,y,-1.79,9.7,.17,.035,'Cobalt lozenge frieze between the window rows');
  for(const x of [-12.84,-3.18,3.18,12.84])block(limestone,x,3.62,-1.79,.20,7.18,.26,'Pale limestone vertical façade trim');
- for(const [y,height,depth] of [[7.21,.12,.46],[7.30,.09,.50],[7.60,.10,.44]])block(limestone,0,y,-1.76,26.25,height,depth,'Stepped pale limestone cornice and balustrade rail');
+ for(const [y,height,depth] of [[7.21,.12,.46],[7.30,.09,.50],[7.60,.10,.44]]){
+  if(ruined)for(const [x,width] of [[-9.05,7.9],[7.65,6.9]])block(limestone,x,y,-1.76,width,height,depth,'Surviving broken limestone cornice');
+  else block(limestone,0,y,-1.76,26.25,height,depth,'Stepped pale limestone cornice and balustrade rail');
+ }
  const profile=[[.055,0],[.067,.035],[.045,.085],[.072,.15],[.073,.19],[.043,.26],[.045,.29],[.064,.32]].map(p=>new T.Vector2(...p));
  const balusterGeometry=new T.LatheGeometry(profile,mobile?6:8);balusterGeometry.normalizeNormals();
- const count=58,balusters=new T.InstancedMesh(ownG(balusterGeometry),limestone,count),matrix=new T.Matrix4();
- balusters.name='Lisbon roofline — turned stone balustrade';for(let i=0;i<count;i++){matrix.makeTranslation(-12.54+i*(25.08/(count-1)),7.31,-1.76);balusters.setMatrixAt(i,matrix);}balusters.instanceMatrix.needsUpdate=true;balusters.computeBoundingSphere();balusters.castShadow=true;balusters.receiveShadow=true;root.add(balusters);
+ const balusterXs=Array.from({length:58},(_,i)=>-12.54+i*(25.08/57)).filter(x=>!ruined||x<-5.1||x>4.3&&x<11.1);
+ const count=balusterXs.length,balusters=new T.InstancedMesh(ownG(balusterGeometry),limestone,count),matrix=new T.Matrix4();
+ balusters.name='Lisbon roofline — turned stone balustrade';for(let i=0;i<count;i++){matrix.makeTranslation(balusterXs[i],7.31,-1.76);balusters.setMatrixAt(i,matrix);}balusters.instanceMatrix.needsUpdate=true;balusters.computeBoundingSphere();balusters.castShadow=true;balusters.receiveShadow=true;root.add(balusters);
  for(const [m,data] of batches){const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(data.p,3));g.setAttribute('normal',new T.Float32BufferAttribute(data.n,3));g.setAttribute('uv',new T.Float32BufferAttribute(data.uv,2));g.computeBoundingBox();g.computeBoundingSphere();const object=add(g,m,data.names.join(' · '),{solid:data.solid,batch:false});object.userData.facadeParts=data.names;}
  root.updateMatrixWorld(true);const bounds=new T.Box3().setFromObject(root);onChange();
  return{
   root,solids,pickables:[],windows:windows.map(w=>({...w})),height:LISBON_FACADE.height,
-  diagnostics:()=>({kind:'lisbon-azulejo-street-facade',frontOnly:true,referenceMotif:'cobalt and white elongated lozenges',originalProceduralPattern:true,externalImages:0,historicWindowRows:3,windows:windows.length,upperBalconies:8,pairedScrollPanels:32,realCurledIronGeometry:true,stoneBalusters:count,limestoneSurrounds:true,whiteInterior:true,centralWindow:false,centralBay:{minX:-3.2,maxX:3.2,entranceHeight:3.1,windowFree:true},entryWidth:4.8,height:LISBON_FACADE.height,frontBounds:{minX:bounds.min.x,maxX:bounds.max.x,minZ:bounds.min.z,maxZ:bounds.max.z},tiles:tiles.diagnostics(),border:border.diagnostics(),wallTriangles:wallMesh.geometry.index?.count/3||wallMesh.geometry.attributes.position.count/3,meshes:root.children.filter(o=>o.isMesh).length,disposed}),
+  diagnostics:()=>({kind:'lisbon-azulejo-street-facade',frontOnly:true,ruined,missingTilePatches:lostTiles.length,brokenWindows:ruined?3:0,brokenCornice:ruined,referenceMotif:'cobalt and white elongated lozenges',originalProceduralPattern:true,externalImages:0,historicWindowRows:3,windows:windows.length,upperBalconies:8,pairedScrollPanels:32,realCurledIronGeometry:true,stoneBalusters:count,limestoneSurrounds:true,whiteInterior:true,centralWindow:false,centralBay:{minX:-3.2,maxX:3.2,entranceHeight:3.1,windowFree:true},entryWidth:4.8,height:LISBON_FACADE.height,frontBounds:{minX:bounds.min.x,maxX:bounds.max.x,minZ:bounds.min.z,maxZ:bounds.max.z},tiles:tiles.diagnostics(),border:border.diagnostics(),wallTriangles:wallMesh.geometry.index?.count/3||wallMesh.geometry.attributes.position.count/3,meshes:root.children.filter(o=>o.isMesh).length,disposed}),
   dispose(){if(disposed)return;disposed=true;root.removeFromParent();if(!geometry)for(const g of geometries)g.dispose();if(!material)for(const m of materials)m.dispose();root.clear();}
  };
 }
