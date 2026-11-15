@@ -5708,7 +5708,7 @@ async function emRetirer(id){
   const {data,error}=await sb.rpc('element_media_remove',{p_id:m.id});
   if(error){ console.error('[element_media_remove]',error.message); return; }
   if(!data?.ok) console.error('[element_media_remove]',data?.why);
-  if(data?.path){ const {error:er}=await sb.storage.from('element-media').remove(emVid(m)?[data.path,POSTER.cle(data.path)]:[data.path]); if(er) console.error('[element-media remove]',er.message); }
+  if(data?.path){ const {error:er}=await sb.storage.from('element-media').remove([data.path,POSTER.cle(data.path)]); if(er) console.error('[element-media remove]',er.message); }
   EMEDIA.items=EMEDIA.items.filter(x=>String(x.id)!==String(id)); emIndexer(); renderZone();
 }
 /* Un élément supprimé emporte ses fichiers ; une Habit renommée les garde (`element_media_rekey`). */
@@ -5737,6 +5737,7 @@ async function emEnvoyer(k,ref,fichier,nom){
   const path=me.id+'/m-'+crypto.randomUUID()+'.'+EM_MIMES[mime];
   const {error:eu}=await sb.storage.from('element-media').upload(path,blob,{contentType:mime,upsert:false});
   if(eu){ console.error('[element-media upload]',eu.message); return {ok:false,why:'upload'}; }
+  if(/^image\//.test(mime)) VIGNETTE.ecrire('element-media',path,blob);     /* 15/11 : sa vignette, sans attendre */
   const corps={p_kind:k,p_ref:ref,p_path:path,p_mime:mime,p_bytes:blob.size,p_name:String(nom||'').slice(0,160)||null};
   let r=await sb.rpc('element_media_add',corps);
   /* Une Habit toute neuve n'est peut-être pas encore en base (l'enregistrement attend 900 ms) : on l'y pose, une fois. */
@@ -5903,6 +5904,73 @@ const POSTER=(()=>{
     cle, vider(){ memo.clear(); }
   };
 })();
+
+/* ══ LA VIGNETTE — copié de tools/vignette.js dans chaque page (jamais importé) ══
+   Wah (15/11) : « passer aux vignettes ». Une photo est stockée en 1600 px ; une tuile de grille en montre ~190.
+   Lire la photo entière pour la réduire à l'écran, c'est 10 à 20 fois trop d'octets. La vignette (520 px, JPEG
+   à 80 %, ~30 Ko) vit À CÔTÉ de sa photo, sous `<chemin>.jpg` — la même convention que la vignette d'une
+   vidéo dans `element-media`, lue par la même règle (`_element_media_readable`, `_clip_readable`).
+   Ce bloc ne fait QUE réduire : il ne connaît ni les seaux ni la session. La page décide d'où lire, où écrire,
+   et jamais dans le dossier d'un autre membre. Une vignette qui manque n'est pas une erreur : la grille
+   retombe sur la photo entière, et son AUTEUR la fabrique la première fois qu'il la voit. */
+window.TOTEHM_VIGNETTE = (() => {
+  const COTE = 520, QUALITE = .8;                       /* le grand côté, en px : 2,7 × une tuile de 190 */
+  const cle = p => p + '.jpg';
+  const image = src => new Promise((ok, ko) => {
+    const i = new Image(); i.crossOrigin = 'anonymous'; i.onload = () => ok(i); i.onerror = ko; i.src = src;
+  });
+  /* `source` : un Blob/File, ou une URL (signée). Rend un Blob JPEG, ou null — jamais une exception. */
+  async function reduire(source){
+    const url = typeof source === 'string' ? source : URL.createObjectURL(source);
+    try{
+      const img = await image(url), w = img.naturalWidth, h = img.naturalHeight;
+      if(!w || !h) return null;
+      const k = Math.min(1, COTE / Math.max(w, h)), c = document.createElement('canvas');
+      c.width = Math.max(1, Math.round(w * k)); c.height = Math.max(1, Math.round(h * k));
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      return await new Promise(r => c.toBlob(r, 'image/jpeg', QUALITE));
+    }catch(_){ return null; }
+    finally{ if(typeof source !== 'string') URL.revokeObjectURL(url); }
+  }
+  return { cle, reduire, COTE };
+})();
+/* ══ fin LA VIGNETTE ══ */
+
+/* ══ LA VIGNETTE D'UNE PHOTO · 15/11 ══ (Wah : « passer aux vignettes »). Une tuile de grille lit la vignette
+   (520 px, ~30 Ko) au lieu de la photo (1600 px) : 10 à 20 fois moins d'octets. Même lecture que la photo
+   (`_element_media_readable`, `_clip_readable`), donc rien de plus ouvert. Absente → la photo entière, comme avant ;
+   et son AUTEUR la fabrique la première fois qu'il la voit (jamais dans le dossier d'un autre). Écrite aussi à
+   l'envoi, pour que les abonnés la trouvent dès le premier jour. */
+const VIGNETTE=(()=>{
+  const memo=new Map(), T=window.TOTEHM_VIGNETTE, diagV={lues:0, fabriquees:0, pleines:0};
+  const plein=(seau,p)=>seau==='moments'?urlMoments(p):urlEM(p);
+  async function signe(seau,p){
+    const {data,error}=await sb.storage.from(seau).createSignedUrl(T.cle(p),3600);
+    return error||!data?.signedUrl?null:data.signedUrl;
+  }
+  async function ecrire(seau,p,blob){
+    const t=await T.reduire(blob); if(!t) return null;
+    const {error}=await sb.storage.from(seau).upload(T.cle(p),t,{contentType:'image/jpeg',upsert:true});
+    if(error){ console.error('[vignette]',error.message); return t; }
+    return t;
+  }
+  async function fabriquer(seau,p){
+    if(!me||!String(p).startsWith(me.id+'/')) return null;        /* jamais dans le dossier d'un autre */
+    const u=await plein(seau,p); if(!u) return null;
+    const t=await ecrire(seau,p,u);                                 /* `reduire` lit l'URL signée directement */
+    if(!t) return null; diagV.fabriquees++;
+    return (await signe(seau,p))||URL.createObjectURL(t);
+  }
+  return {
+    /* l'URL d'une vignette, ou null (la grille prend alors la photo entière) */
+    async de(seau,p){ if(!p||!me) return null;
+      const k=seau+':'+me.id+':'+p;
+      if(!memo.has(k)) memo.set(k,(async()=>{ const u=await signe(seau,p); if(u){ diagV.lues++; return u; } return fabriquer(seau,p); })());
+      return memo.get(k); },
+    ecrire, pleine(){ diagV.pleines++; }, vider(){ memo.clear(); }, etat:()=>Object.assign({},diagV)
+  };
+})();
+window.__totehm_vignette=()=>VIGNETTE.etat();
 
 /* ══ → LES SPOTS DU CLUB · 20/10/2026 quater ═══════════════════════════════════════════════════════
    Wah : « la vue de droite, c'est la partie Spot… ET figher.club en est son prolongement ; il faut la
@@ -6303,7 +6371,8 @@ const SPGRID=(()=>{
     const b=el.querySelector('img[data-bunny]');
     if(b){ const u=await BUNNY.vignette(b.dataset.bunny,b.dataset.spot); if(u&&b.isConnected) b.src=u; return; }
     const m=el.querySelector('img[data-sh-src]');
-    if(m){ const u=await urlMoments(m.dataset.shSrc); if(u&&m.isConnected){ m.onerror=()=>m.remove(); m.src=u; } return; }
+    if(m){ let u=await VIGNETTE.de('moments',m.dataset.shSrc); if(!u){ u=await urlMoments(m.dataset.shSrc); if(u) VIGNETTE.pleine(); }
+      if(u&&m.isConnected){ m.onerror=()=>m.remove(); m.src=u; } return; }
     const v=el.querySelector('video[data-sh-v]');
     if(v){ const u=await urlMoments(v.dataset.shV); if(u&&v.isConnected){ v.preload='metadata'; v.src=u+'#t=0.1'; } }
   }
@@ -6655,8 +6724,10 @@ function creerFeed(conf){
     const vb=el.querySelector('video[data-bunny]');
     if(vb){ await BUNNY.poser(vb); if(el.classList.contains('is-ici')&&vb.getAttribute('src')) vb.play().catch(()=>{}); return; }
     const m=el.querySelector('[data-sh-src]'); if(!m||m.dataset.ok) return; m.dataset.ok='1';
-    const p=m.dataset.shSrc;
-    const u=m.dataset.b==='moments'?await urlMoments(p):await urlEM(p);
+    const p=m.dataset.shSrc, seau=m.dataset.b==='moments'?'moments':'element-media';
+    /* 15/11 : dans la GRILLE, une photo lit sa VIGNETTE ; dans le fil plein écran, la photo entière */
+    let u=m.tagName==='IMG'&&conf.grille?await VIGNETTE.de(seau,p):null;
+    if(!u){ u=seau==='moments'?await urlMoments(p):await urlEM(p); if(m.tagName==='IMG'&&conf.grille&&u) VIGNETTE.pleine(); }
     if(!m.isConnected) return;
     if(!u){ if(m.tagName==='IMG') m.remove(); return; }
     if(m.tagName==='VIDEO'){
@@ -6905,7 +6976,7 @@ function creerFeed(conf){
     return boxAttente(x.bk);
   };
   function tuile(x,i){
-    const u=x.b==='em'&&!x.vid?emCache(x.src):'';
+    const u='';          /* 15/11 : plus de photo entière posée d'avance — la tuile lit sa vignette (`charger`) */
     /* Une vidéo s'affiche par sa VIGNETTE (`POSTER`) : un téléphone ne dessine pas l'image d'une vidéo arrêtée. */
     const media=x.vid
       ? '<img alt="" data-poster="'+esc(x.src)+'" data-b="'+esc(x.b)+'">'
@@ -6949,7 +7020,7 @@ function creerFeed(conf){
       const {data,error}=await sb.rpc('vision_image_set',{p_id:id, p_path:null});
       if(error){ console.error('[vision_image_set]',error.message); return false; }
       if(!data?.ok){ console.error('[vision_image_set]',data?.why); return false; }
-      if(data.old){ const {error:er}=await sb.storage.from('moments').remove([data.old]); if(er) console.error('[moments remove]',er.message); }
+      if(data.old){ const {error:er}=await sb.storage.from('moments').remove([data.old,TOTEHM_VIGNETTE.cle(data.old)]); if(er) console.error('[moments remove]',er.message); }
       VISIMG.delete(String(id)); maj(); return true;
     }
     const {data,error}=await sb.rpc('spot_remove',{p_spot:x.sp.id});
@@ -7640,6 +7711,7 @@ const NSPOT=(()=>{
     const path=me.id+'/'+crypto.randomUUID()+'.'+ext;
     const {error}=await sb.storage.from('moments').upload(path,m.blob,{contentType:m.photo?'image/jpeg':(m.type||'video/'+ext),upsert:false});
     if(error){ console.error('[moments upload]',error.message); return ''; }
+    if(m.photo) VIGNETTE.ecrire('moments',path,m.blob);                          /* 15/11 : sa vignette, sans attendre */
     return path;
   }
   /* ── LE LIEU : UN SEUL POINT (`N.pt`), d'où qu'il vienne ── La ville se déduit TOUJOURS de `cities.json`

@@ -892,6 +892,68 @@ const BUNNY = (() => {
   }
   return { poser, lacher, vignette };
 })();
+/* ══ LA VIGNETTE — copié de tools/vignette.js dans chaque page (jamais importé) ══
+   Wah (15/11) : « passer aux vignettes ». Une photo est stockée en 1600 px ; une tuile de grille en montre ~190.
+   Lire la photo entière pour la réduire à l'écran, c'est 10 à 20 fois trop d'octets. La vignette (520 px, JPEG
+   à 80 %, ~30 Ko) vit À CÔTÉ de sa photo, sous `<chemin>.jpg` — la même convention que la vignette d'une
+   vidéo dans `element-media`, lue par la même règle (`_element_media_readable`, `_clip_readable`).
+   Ce bloc ne fait QUE réduire : il ne connaît ni les seaux ni la session. La page décide d'où lire, où écrire,
+   et jamais dans le dossier d'un autre membre. Une vignette qui manque n'est pas une erreur : la grille
+   retombe sur la photo entière, et son AUTEUR la fabrique la première fois qu'il la voit. */
+window.TOTEHM_VIGNETTE = (() => {
+  const COTE = 520, QUALITE = .8;                       /* le grand côté, en px : 2,7 × une tuile de 190 */
+  const cle = p => p + '.jpg';
+  const image = src => new Promise((ok, ko) => {
+    const i = new Image(); i.crossOrigin = 'anonymous'; i.onload = () => ok(i); i.onerror = ko; i.src = src;
+  });
+  /* `source` : un Blob/File, ou une URL (signée). Rend un Blob JPEG, ou null — jamais une exception. */
+  async function reduire(source){
+    const url = typeof source === 'string' ? source : URL.createObjectURL(source);
+    try{
+      const img = await image(url), w = img.naturalWidth, h = img.naturalHeight;
+      if(!w || !h) return null;
+      const k = Math.min(1, COTE / Math.max(w, h)), c = document.createElement('canvas');
+      c.width = Math.max(1, Math.round(w * k)); c.height = Math.max(1, Math.round(h * k));
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      return await new Promise(r => c.toBlob(r, 'image/jpeg', QUALITE));
+    }catch(_){ return null; }
+    finally{ if(typeof source !== 'string') URL.revokeObjectURL(url); }
+  }
+  return { cle, reduire, COTE };
+})();
+/* ══ fin LA VIGNETTE ══ */
+
+/* ══ LA VIGNETTE D'UNE PHOTO · 15/11 ══ (Wah : « passer aux vignettes »). La tuile d'une grille lit la vignette
+   (520 px, ~30 Ko) de sa photo ; absente → la photo entière, comme avant. Son AUTEUR la fabrique la première fois
+   qu'il la voit, jamais dans le dossier d'un autre. Lue par `_clip_readable`, donc par la même règle que la photo. */
+const VIGNETTE = (() => {
+  const memo = new Map(), T = window.TOTEHM_VIGNETTE, diagV = { lues:0, fabriquees:0, pleines:0 };
+  async function signe(p){
+    const { data, error } = await sb.storage.from('moments').createSignedUrl(T.cle(p), 3600);
+    return error || !data?.signedUrl ? null : data.signedUrl;
+  }
+  async function ecrire(p, source){
+    const t = await T.reduire(source); if(!t) return null;
+    const { error } = await sb.storage.from('moments').upload(T.cle(p), t, { contentType:'image/jpeg', upsert:true });
+    if(error) console.error('[vignette]', error.message);
+    return t;
+  }
+  async function fabriquer(p){
+    if(!me || !String(p).startsWith(me.id + '/')) return null;              /* jamais dans le dossier d'un autre */
+    const u = await urlMoments(p); if(!u) return null;
+    const t = await ecrire(p, u); if(!t) return null; diagV.fabriquees++;
+    return (await signe(p)) || URL.createObjectURL(t);
+  }
+  return {
+    async de(p){ if(!p || !me) return null;
+      const k = me.id + ':' + p;
+      if(!memo.has(k)) memo.set(k, (async () => { const u = await signe(p); if(u){ diagV.lues++; return u; } return fabriquer(p); })());
+      return memo.get(k); },
+    ecrire, pleine(){ diagV.pleines++; }, vider(){ memo.clear(); }, etat:() => Object.assign({}, diagV)
+  };
+})();
+window.__totehm_vignette = () => VIGNETTE.etat();
+
 /* Un fichier du seau `moments` : URL signée d'une heure, gardée 50 min. Les droits sont ceux du SERVEUR
    (`_clip_readable`) : un fichier que je ne peux pas lire ne se signe pas. */
 const SIGNE = new Map();
@@ -1137,7 +1199,8 @@ const GRID = (() => {
     const b = el.querySelector('img[data-bunny]');
     if(b){ const u = await BUNNY.vignette(b.dataset.bunny, b.dataset.spot); if(u && b.isConnected) b.src = u; return; }
     const m = el.querySelector('img[data-moment]');
-    if(m){ const u = await urlMoments(m.dataset.moment); if(u && m.isConnected){ m.onerror = () => m.remove(); m.src = u; } return; }
+    if(m){ let u = await VIGNETTE.de(m.dataset.moment); if(!u){ u = await urlMoments(m.dataset.moment); if(u) VIGNETTE.pleine(); }
+      if(u && m.isConnected){ m.onerror = () => m.remove(); m.src = u; } return; }
     const v = el.querySelector('video[data-moment-v]');
     if(v){ const u = await urlMoments(v.dataset.momentV); if(u && v.isConnected){ v.preload = 'metadata'; v.src = u + '#t=0.1'; } }
   }
@@ -1644,6 +1707,7 @@ const NSPOT = (() => {
     const path = me.id + '/' + crypto.randomUUID() + '.' + ext;
     const { error } = await sb.storage.from('moments').upload(path, m.blob, { contentType:m.photo ? 'image/jpeg' : (m.type || 'video/' + ext), upsert:false });
     if(error){ console.error('[moments upload]', error.message); return ''; }
+    if(m.photo) VIGNETTE.ecrire(path, m.blob);                                  /* 15/11 : sa vignette, sans attendre */
     return path;
   }
   /* ── LE LIEU : UN SEUL POINT, d'où qu'il vienne. La ville vient TOUJOURS de `cities.json`, jamais du
