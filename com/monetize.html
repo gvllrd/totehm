@@ -35,63 +35,74 @@ a{color:inherit;text-decoration:none}
 #member{position:fixed;top:14px;left:12px;z-index:40;display:flex;align-items:center;background:none;border:none;cursor:pointer;
   font-family:var(--mono);font-weight:700;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--mid);padding:8px 6px}
 #member.is-in{font-family:var(--q);font-weight:400;font-size:13px;letter-spacing:0;text-transform:none;color:var(--coral)}
-  transform:translateY(-104%);visibility:hidden;transition:transform .3s ease,visibility 0s linear .3s}
-  font-family:var(--mono);font-weight:700;font-size:10px;letter-spacing:.12em;text-transform:uppercase}
 
-main{width:100%;max-width:640px;margin:0 auto;padding:max(84px,11dvh) 16px 64px;display:flex;flex-direction:column;gap:56px}
-section{display:flex;flex-direction:column;gap:16px}
-.kick{font-size:10px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--lo)}
-h1{font-weight:700;font-size:clamp(25px,7vw,40px);line-height:1.12;letter-spacing:.01em;text-transform:uppercase;color:#fff}
-h2{font-weight:700;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#fff}
-.lead{font-size:12.5px;line-height:1.75;color:var(--mid);max-width:520px}
-.fine{font-size:10px;line-height:1.75;color:var(--lo)}
-.btn{display:inline-flex;align-items:center;justify-content:center;width:fit-content;max-width:100%;font-family:var(--mono);font-weight:700;font-size:11px;
-  letter-spacing:.14em;text-transform:uppercase;color:var(--mid);background:var(--g4);border:none;border-radius:10px;cursor:pointer;padding:10px 15px;transition:background .15s,color .15s}
-.btn.is-main{color:#fff;background:var(--g5);padding:13px 20px;font-size:11.5px}
-.actions{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
-
-.hero{display:grid;grid-template-columns:1fr auto;gap:28px;align-items:center}
 .paper{width:min(190px,48vw);aspect-ratio:1;background:var(--paper) 0 0/100% 100% no-repeat;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:13%}
 .tname{display:inline-block;max-width:100%;font-family:var(--q);font-weight:400;color:var(--coral);background:#333366;border-radius:0;padding:5px 11px;line-height:1.3;overflow-wrap:anywhere;font-size:var(--fs,22px)}
 .url{font-size:8.5px;letter-spacing:.08em;color:rgba(255,255,255,.6);text-align:center;overflow-wrap:anywhere}
-@media(max-width:560px){.hero{grid-template-columns:1fr}.paper{order:-1;margin:0 auto}}
-
-.gets{display:flex;flex-direction:column;gap:2px}
-.get{display:grid;grid-template-columns:34px 1fr;gap:14px;align-items:center;background:var(--navy-d);padding:14px 16px}
-.get:nth-child(3n+2){background:var(--blue-d)}.get:nth-child(3n){background:var(--rep-d)}
-.get b{display:block;font-size:11px;letter-spacing:.06em;color:#fff}
-.get p{font-size:10.5px;line-height:1.6;color:var(--lo)}
-.croix{display:grid;grid-template-columns:repeat(3,8px);grid-template-rows:repeat(3,8px);gap:2px;justify-content:center}
-.croix i{display:block}
-.croix .c-t{grid-area:1/2;background:var(--blue)}.croix .c-w{grid-area:2/1;background:var(--wis)}.croix .c-h{grid-area:2/2;background:var(--navy)}
-.croix .c-v{grid-area:2/3;background:var(--vis)}.croix .c-r{grid-area:3/2;background:var(--rep)}
-.pt{position:relative;width:12px;height:12px;margin:0 auto;border-radius:50%;background:#fff}
-.pt::after{content:"";position:absolute;inset:-7px;border-radius:50%;background:rgba(255,255,255,.14)}
-.yr{font-weight:700;font-size:11px;letter-spacing:.06em;color:#fff;text-align:center;line-height:1.1}
-
-.split{display:grid;grid-template-columns:1fr 1fr;gap:2px}
-.split > div{background:var(--navy-d);padding:16px}
-.split > div + div{background:#000}
-.split b{display:block;font-size:clamp(34px,10vw,52px);line-height:1;color:#fff}
-.split span{font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--lo)}
-.split > div + div b{color:var(--dim)}
-
-.steps{display:flex;flex-direction:column;gap:2px;counter-reset:s}
-.steps li{list-style:none;display:grid;grid-template-columns:34px 1fr;gap:14px;background:#000;padding:14px 0 14px 0;counter-increment:s}
-/* 19/10 — 60/30/10 : la ligne est le champ NOIR, le numero est l'objet navy. */
-.steps li::before{content:counter(s);display:flex;align-items:center;justify-content:center;align-self:stretch;min-height:40px;background:var(--navy-d);font-weight:700;font-size:16px;color:#fff;text-align:center}
-.steps li:nth-child(3n+2)::before{background:var(--blue-d)}.steps li:nth-child(3n)::before{background:var(--rep-d)}
-.steps b{display:block;font-size:11px;letter-spacing:.06em;color:#fff}
-.steps p{font-size:10.5px;line-height:1.6;color:var(--lo)}
-.close{background:var(--navy-d);padding:24px 18px;align-items:flex-start}
-footer{width:100%;max-width:640px;margin:0 auto;padding:0 16px 40px}
-footer a{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo)}
-@media(hover:hover){.btn:hover{background:var(--g5);color:#fff}.btn.is-main:hover{background:#44444b}}
+</style>
+<style>
+/* ══ DISCOVER — copié de tools/discover.css dans chaque page (jamais importé) ══
+   Wah (15/11) : « une page doit respecter la règle du 60 / 30 / 10. Les textes de découverte, tout ce qui est
+   explicatif comme l'explication d'abonnement, sont trop fourre-tout. Je veux découvrir à la manière de
+   totehm.space/play_lisbon_street?discover=1. » Un écran noir, UNE idée à la fois, qui se succèdent au geste.
+   LE 60 / 30 / 10, ICI, PAR CONSTRUCTION :
+     60 %  le NOIR — tout le fond, tout le silence autour du texte (`#000`)
+     30 %  le TEXTE — blanc pour l'idée (`.dc-h`), gris clair pour son appui (`.dc-p`), gris sombre pour la
+           structure (progression, rail, consigne)
+     10 %  l'ACCENT, UN SEUL — le corail du TOTEHM (`--dc-ac`) : le NOM du membre, le PRIX, le BOUTON. Rien
+           d'autre n'est coloré, jamais : ni navy, ni rouge, ni dégradé. */
+.dc{--dc-ac:#fbd5ca;position:fixed;inset:0;z-index:20;background:#000;color:#ddd;overflow:hidden;
+  font-family:'Space Mono',monospace;-webkit-font-smoothing:antialiased;touch-action:pan-x;overscroll-behavior:none}
+.dc[hidden],.dc.hide{display:none}
+.dc-stage{position:absolute;inset:0}
+.dc-s{position:absolute;inset:84px 24px 132px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:20px;text-align:center;opacity:0;visibility:hidden;transform:translateY(14px);
+  transition:opacity .5s ease,transform .5s ease,visibility 0s linear .5s}
+.dc-s.is-on{opacity:1;visibility:visible;transform:none;transition:opacity .5s ease,transform .5s ease,visibility 0s}
+.dc-s>*{max-width:min(100%,680px)}
+.dc-h{margin:0;font:700 clamp(24px,3.6vw,44px)/1.16 Quantico,sans-serif;color:#fff;letter-spacing:.01em}
+.dc-p{margin:0;font:400 clamp(15px,1.9vw,21px)/1.6 'Space Mono',monospace;color:#ddd;white-space:pre-line}
+.dc-ac{color:var(--dc-ac)}
+.dc-n{font-family:Quantico,sans-serif;font-weight:700;color:var(--dc-ac)}            /* un NOM de membre */
+.dc-big{margin:0;font:700 clamp(44px,9vw,84px)/1 Quantico,sans-serif;color:var(--dc-ac);letter-spacing:.01em}
+.dc-big small{font:400 clamp(12px,1.6vw,16px)/1 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#888;margin-left:10px}
+.dc-fine{margin:0;font:400 11px/1.7 'Space Mono',monospace;letter-spacing:.06em;color:#888;max-width:420px}
+/* le bouton : le SEUL aplat coloré de l'écran — l'accent à 10 % */
+.dc-btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:12px 26px;border:0;border-radius:12px;cursor:pointer;
+  background:var(--dc-ac);color:#000;font:700 12px/1.2 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;transition:transform .15s ease,opacity .15s ease}
+.dc-btn:active{transform:scale(.97)}
+.dc-btn[disabled]{opacity:.45;pointer-events:none}
+.dc-btn.is-quiet{background:none;color:#bdbdbd;box-shadow:inset 0 0 0 1px #3a3a3a}
+.dc-lnk{background:none;border:0;padding:8px;cursor:pointer;font:400 10px/1.4 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#888;text-decoration:none}
+.dc-row{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.dc-slot{width:100%}
+.dc-slot:empty{display:none}
+/* la structure : progression, rail, consigne, chevron — gris sombre, jamais de couleur */
+.dc-progress{position:absolute;top:22px;right:18px;font:10px/1.4 'Space Mono',monospace;letter-spacing:.14em;color:#888;pointer-events:none}
+.dc-rail{position:absolute;bottom:72px;left:50%;transform:translateX(-50%);display:flex;gap:6px;pointer-events:none}
+.dc-rail span{width:18px;height:2px;background:#242424;transition:background .3s}
+.dc-rail span.on{background:#bdbdbd}
+.dc-hint{position:absolute;bottom:28px;left:0;right:0;text-align:center;font:9px/1.5 'Space Mono',monospace;letter-spacing:.14em;color:#888;pointer-events:none;transition:opacity .3s}
+.dc-next{position:absolute;bottom:96px;left:50%;transform:translateX(-50%);background:none;border:0;padding:10px;cursor:pointer;color:#a0a0a0;transition:color .15s,opacity .3s}
+.dc-next svg{display:block;width:22px;height:22px;animation:dc-bob 1.8s ease-in-out infinite}
+.dc-next:focus-visible,.dc-btn:focus-visible,.dc-lnk:focus-visible{outline:1px solid #fff;outline-offset:3px}
+.dc.is-last .dc-next,.dc.is-last .dc-hint{opacity:0;pointer-events:none}
+@keyframes dc-bob{50%{transform:translateY(4px)}}
+@media(hover:hover){.dc-next:hover{color:#fff}.dc-lnk:hover{color:#fff}.dc-btn:hover{opacity:.9}}
+@media(max-width:650px){.dc-s{inset:76px 20px 140px;gap:16px}}
+@media(prefers-reduced-motion:reduce){.dc-s,.dc-s.is-on{transition:none;transform:none}.dc-next svg{animation:none}}
+/* ══ fin DISCOVER ══ */
+/* ── ce qui est propre à cette page : le papier, le curseur, les étapes ── */
+.dc .paper{width:min(176px,44vw);flex:none;margin:0 auto}
+.dc .url{white-space:nowrap;overflow-wrap:normal}
+.dc input[type=range]{width:min(86vw,360px);accent-color:#fbd5ca}
+.dc-steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:14px;text-align:center}
+.dc-steps b{display:block;font:700 15px/1.3 Quantico,sans-serif;color:#fff}
+.dc-steps span{font:400 11px/1.6 'Space Mono',monospace;color:#888}
+.dc-big small{white-space:nowrap}
+.mz-say b{color:#fff}
 </style>
 <style data-com-member-menu="2026-10-06">
-.mz-sim input[type=range]{width:min(100%,420px);accent-color:#9a9aa2}
-.mz-say{font:400 13px/1.6 'Space Mono',monospace;color:#b0b0b0;margin:10px 0 0}
-.mz-say b{color:#fff}
 /* ══ LE COIN MEMBRE — copié de tools/member_corner.css dans chaque page (jamais importé), EN DERNIER dans son style ══
    L'élément porte la classe `mc` ; la page pose `is-in` quand le membre est connecté (rien d'autre à faire),
    et met le nom dans son `#member-txt` (ou son dernier enfant texte) : le bloc fait le reste.
@@ -188,18 +199,22 @@ footer a{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(
 div:not(:has(> :not(br,wbr))):hover,
 #member:hover,
 #member.is-in:hover,
-.kick:hover,
-.lead:hover,
-.fine:hover,
-.btn:hover,
 .tname:hover,
 .url:hover,
-.get p:hover,
-.split span:hover,
-.split > div + div b:hover,
-.steps p:hover,
-footer a:hover,
-.mz-say:hover,
+.dc:hover,
+.dc-p:hover,
+.dc-ac:hover,
+.dc-n:hover,
+.dc-big:hover,
+.dc-big small:hover,
+.dc-fine:hover,
+.dc-btn:hover,
+.dc-btn.is-quiet:hover,
+.dc-lnk:hover,
+.dc-progress:hover,
+.dc-hint:hover,
+.dc-next:hover,
+.dc-steps span:hover,
 .mc:not(.is-in):hover,
 .tn-l:hover,
 .mc-terms:hover,
@@ -211,57 +226,110 @@ footer a:hover,
 <body>
 <button id="member" class="mc" type="button" aria-expanded="false" aria-controls="menu">CONNECT WITH MY TOTEHM</button>
 
-<main>
-  <!-- Creator subscriptions: annual price set by the creator, 80% share, no promised income. -->
-  <section class="hero">
-    <div style="display:flex;flex-direction:column;gap:18px">
-      <div class="kick">Monetize my TOTEHM</div>
-      <h1>They pay to read how you build.</h1>
-      <p class="lead">Once a year. You set the price. You keep 80%.</p>
-      <div class="actions"><a class="btn is-main" data-setup href="/console">Set my price</a><a class="btn" href="/totehm#in">Build my TOTEHM</a></div>
-    </div>
-    <div class="paper" aria-hidden="true"><span class="tname" id="nm">you</span><span class="url" id="nm-url">totehm.com/@you</span></div>
-  </section>
-
-  <!-- LE CALCUL, PAS LA PROMESSE : le membre bouge le curseur et lit SA part. De l'arithmétique, jamais
-       un revenu annoncé — un chiffre inventé sur une page de vente est une dette. -->
-  <section class="mz-sim">
-    <h2>What it pays</h2>
-    <input id="mz-p" type="range" min="300" max="20000" step="100" value="2400" aria-label="My yearly price">
-    <p class="mz-say" id="mz-say"></p>
-    <p class="fine">80% is yours, to the cent. Paid on the 1st, by IBAN or PayPal, above €25.</p>
-  </section>
-
-  <section>
-    <h2>What a reader opens</h2>
-    <div class="gets">
-      <div class="get"><span class="croix" aria-hidden="true"><i class="c-t"></i><i class="c-w"></i><i class="c-h"></i><i class="c-v"></i><i class="c-r"></i></span>
-        <span><b>Your whole TOTEHM, read only</b><p>habits · objectives · repulsions · vision · my story. You stay the only one who writes.</p></span></div>
-      <div class="get"><span class="pt" aria-hidden="true"></span>
-        <span><b>Your spots</b><p>where you'll be, when you turn the point on. Off, they see the city.</p></span></div>
-      <div class="get"><span class="yr" aria-hidden="true">1×</span>
-        <span><b>One payment a year</b><p>they stop when they want — it runs to the end of their year.</p></span></div>
-    </div>
-    <p class="fine">Reading is not a meeting. A reader never gets your time, only what you wrote.</p>
-  </section>
-
-  <section>
-    <h2>Three steps</h2>
-    <ol class="steps">
-      <li><span><b>Your price</b><p>per year. Change it whenever.</p></span></li>
-      <li><span><b>Where to pay you</b><p>an IBAN or a PayPal email. Never shown on screen again.</p></span></li>
-      <li><span><b>Your page sells it</b><p>totehm.com/@yourname — copy the link, or the ready-made post.</p></span></li>
-    </ol>
-  </section>
-
-  <section class="close">
-    <h2>Your TOTEHM. Your readers. Your price.</h2>
-    <div class="actions"><a class="btn is-main" data-setup href="/console">Set my price</a></div>
-    <p class="fine">[Higher] is a separate personal offer, never part of what a reader pays you.</p>
-  </section>
+<main class="dc" id="dc">
+  <!-- 15/11 (Wah : « une page respecte le 60 / 30 / 10 ; je veux découvrir à la manière de play_lisbon_street?discover=1 ») :
+       UNE idée par écran noir, au geste. Le calcul, pas la promesse : le curseur COMPTE, il ne promet aucun revenu. -->
+  <div class="dc-stage" id="offer">
+    <div class="dc-s"><div class="paper" aria-hidden="true"><span class="tname" id="nm">you</span><span class="url" id="nm-url">totehm.com/@you</span></div>
+      <h1 class="dc-h">They pay to read how you build.</h1></div>
+    <div class="dc-s"><h2 class="dc-h">You set the price.</h2>
+      <p class="dc-big" id="mz-price">€24<small>/ year</small></p>
+      <input id="mz-p" type="range" min="300" max="20000" step="100" value="2400" aria-label="My yearly price">
+      <p class="dc-p">Once a year. Change it whenever.</p></div>
+    <div class="dc-s"><h2 class="dc-h">You keep 80%.</h2>
+      <p class="dc-p mz-say" id="mz-say"></p>
+      <p class="dc-fine">80% is yours, to the cent. Paid on the 1st, by IBAN or PayPal, above €25.</p></div>
+    <div class="dc-s"><h2 class="dc-h" data-tw>Your whole TOTEHM, read only.</h2>
+      <p class="dc-p">habits · objectives · repulsions<br>vision · my story.<br>You stay the only one who writes.</p></div>
+    <div class="dc-s"><h2 class="dc-h">Your spots.</h2>
+      <p class="dc-p">Where you'll be, when you turn the point on.<br>Off, they see the city.</p></div>
+    <div class="dc-s"><h2 class="dc-h">One payment a year.</h2>
+      <p class="dc-p">They stop when they want:<br>it runs to the end of their year.<br>Reading is not a meeting. A reader never gets your time, only what you wrote.</p></div>
+    <div class="dc-s"><h2 class="dc-h">Three steps.</h2>
+      <ol class="dc-steps">
+        <li><b>1 · Your price</b><span>per year. Change it whenever.</span></li>
+        <li><b>2 · Where to pay you</b><span>an IBAN or a PayPal email. Never shown on screen again.</span></li>
+        <li><b>3 · Your page sells it</b><span>totehm.com/@yourname — copy the link, or the ready-made post.</span></li></ol></div>
+    <div class="dc-s"><h2 class="dc-h">Your TOTEHM. Your readers. Your price.</h2>
+      <a class="dc-btn" data-setup href="/console">Set my price</a>
+      <p class="dc-fine">[Higher] is a separate personal offer, never part of what a reader pays you.</p>
+      <div class="dc-row"><a class="dc-lnk" href="/totehm#in">Build my TOTEHM</a><a class="dc-lnk" href="/terms" target="_blank" rel="noopener">Simple terms of use</a></div></div>
+  </div>
 </main>
-<footer><a href="/terms" target="_blank" rel="noopener">Simple terms of use</a></footer>
 
+<script>
+/* ══ DISCOVER — copié de tools/discover.js dans chaque page (jamais importé) ══
+   Le moteur du « découvrir » : des écrans `.dc-s` dans `.dc-stage`, UN visible à la fois, qui se succèdent au scroll, au
+   geste (glisser vers le haut), au clavier (↓ ↑ Page Espace) ou au chevron — comme totehm.space/play_lisbon_street?discover=1.
+   Il ne connaît NI le contenu NI la page : `monter(hote)` lit les écrans qui s'y trouvent, et `rafraichir()` les relit
+   quand la page les a redessinés. Le dernier écran est celui qui AGIT (un bouton) : la consigne et le chevron s'effacent.
+   Un champ, un bouton ou un lien dans un écran garde ses touches (Espace, Entrée) : le moteur ne les vole jamais. */
+window.TOTEHM_DISCOVER = (() => {
+  const FADE = 520, VERROU = FADE + 160, SEUIL_ROUE = 36, SEUIL_DOIGT = 44;
+  const RM = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : { matches:false };
+  const CHEVRON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
+  const ACTIF = 'input,textarea,select,button,a,[contenteditable]';
+  function monter(hote, opt){
+    const o = Object.assign({ surChangement:null, consigne:null }, opt || {});
+    let i = 0, ecrans = [], verrou = 0, cumul = 0, tCumul = 0, y0 = null, actif = true;
+    const stage = hote.querySelector('.dc-stage'), prog = document.createElement('p'), rail = document.createElement('div'),
+          hint = document.createElement('p'), next = document.createElement('button');
+    prog.className = 'dc-progress'; prog.setAttribute('aria-live', 'polite'); rail.className = 'dc-rail'; rail.setAttribute('aria-hidden', 'true');
+    hint.className = 'dc-hint'; next.className = 'dc-next'; next.type = 'button'; next.setAttribute('aria-label', 'Next'); next.innerHTML = CHEVRON;
+    hote.append(prog, rail, hint, next);
+    const doigt = () => !window.matchMedia('(hover:hover) and (pointer:fine)').matches;
+    function lire(){ ecrans = [...stage.querySelectorAll('.dc-s')]; rail.innerHTML = ecrans.map(() => '<span></span>').join(''); }
+    function peindre(instant){
+      ecrans.forEach((e, k) => { const on = k === i; e.classList.toggle('is-on', on); e.setAttribute('aria-hidden', String(!on));
+        if(instant) e.style.transition = 'none'; else e.style.removeProperty('transition'); });
+      if(instant) void hote.offsetWidth;
+      rail.querySelectorAll('span').forEach((s, k) => s.classList.toggle('on', k === i));
+      prog.textContent = ecrans.length > 1 ? (i + 1) + ' / ' + ecrans.length : '';
+      hint.textContent = o.consigne || (doigt() ? 'Swipe up to discover ↑' : 'Scroll to discover ↓');
+      hote.classList.toggle('is-last', i >= ecrans.length - 1);
+      hote.dataset.i = i; hote.dataset.n = ecrans.length;
+      if(o.surChangement) o.surChangement(i, ecrans.length);
+    }
+    function aller(k, instant){
+      k = Math.max(0, Math.min(ecrans.length - 1, k)); if(k === i && !instant) return false;
+      if(verrou && !instant) return false;
+      i = k; peindre(instant || RM.matches);
+      if(!instant && !RM.matches){ verrou = setTimeout(() => { verrou = 0; }, VERROU); }
+      return true;
+    }
+    const suivant = () => aller(i + 1), precedent = () => aller(i - 1);
+    /* la molette et le pavé tactile : un geste ET son inertie = UN écran (le verrou dure plus que le fondu) */
+    hote.addEventListener('wheel', e => {
+      if(!actif || e.target.closest('[data-dc-libre]')) return;
+      const t = Date.now(); if(t - tCumul > 180) cumul = 0; tCumul = t; cumul += e.deltaY;
+      if(Math.abs(cumul) >= SEUIL_ROUE){ const d = cumul > 0 ? 1 : -1; cumul = 0; aller(i + d); }
+      e.preventDefault();
+    }, { passive:false });
+    hote.addEventListener('touchstart', e => { y0 = e.touches.length === 1 && !e.target.closest('input,textarea,select,[data-dc-libre]') ? e.touches[0].clientY : null; }, { passive:true });
+    hote.addEventListener('touchmove', e => { if(y0 !== null) e.preventDefault(); }, { passive:false });
+    hote.addEventListener('touchend', e => {
+      if(y0 === null || !e.changedTouches.length) return; const dy = y0 - e.changedTouches[0].clientY; y0 = null;
+      if(Math.abs(dy) >= SEUIL_DOIGT) aller(i + (dy > 0 ? 1 : -1));
+    }, { passive:true });
+    function touche(e){
+      if(!actif) return; const dans = e.target.closest ? e.target.closest(ACTIF) : null, champ = dans && e.target.matches('input,textarea,select');
+      if(['ArrowDown', 'PageDown'].includes(e.key) && !champ){ e.preventDefault(); suivant(); }
+      else if(['ArrowUp', 'PageUp'].includes(e.key) && !champ){ e.preventDefault(); precedent(); }
+      else if(e.key === ' ' && !dans){ e.preventDefault(); suivant(); }
+    }
+    /* un seul écouteur : sur la page, quand rien n'a le focus et que le moteur est visible ; dedans, il remonte jusqu'ici */
+    window.addEventListener('keydown', e => { if(hote.isConnected && !hote.hidden && !hote.classList.contains('hide') && (hote.contains(e.target) || document.activeElement === document.body)) touche(e); });
+    next.addEventListener('click', suivant);
+    lire(); peindre(true);
+    return { aller, suivant, precedent, index:() => i, total:() => ecrans.length,
+      derniere:() => aller(ecrans.length - 1, true),
+      rafraichir(garder){ const k = garder ? i : 0; lire(); i = Math.min(k, Math.max(0, ecrans.length - 1)); peindre(true); },
+      activer(v){ actif = !!v; } };
+  }
+  return { monter };
+})();
+/* ══ fin DISCOVER ══ */
+</script>
 <script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 const SB_URL = 'https://abujjbkbbiumxrokozph.supabase.co';
@@ -271,16 +339,17 @@ const $ = id => document.getElementById(id);
 
 /* END COM MEMBER MENU */
 let me=null,offerEnabled=null,seq=0;
-const BUILD='2026-11-11-creator-economy';
+const BUILD='2026-11-15-discover';
 /* Le curseur ne promet rien : il COMPTE. 80% au membre, arrondi inférieur (la règle du grand livre). */
-const euro=c=>'€'+(c/100).toLocaleString('en',{maximumFractionDigits:c%100?2:0});
+const euro=c=>'€'+(c/100).toLocaleString('en',{minimumFractionDigits:c%100?2:0,maximumFractionDigits:c%100?2:0});
 function mzSay(){
   const c=+$('mz-p').value||0, part=Math.floor(c*0.8);
-  $('mz-say').innerHTML=euro(c)+' / year · <b>'+euro(part)+'</b> of it is yours'
-    +'<br>10 readers = <b>'+euro(part*10)+'</b> · 100 readers = <b>'+euro(part*100)+'</b> a year';
+  $('mz-price').innerHTML=euro(c)+'<small>/ year</small>';
+  $('mz-say').innerHTML=euro(c)+' a year: <b>'+euro(part)+'</b> is yours.<br>10 readers = <b>'+euro(part*10)+'</b><br>100 readers = <b>'+euro(part*100)+'</b> a year.';
 }
+const DC=window.TOTEHM_DISCOVER.monter($('dc'));
 $('mz-p').addEventListener('input',mzSay); mzSay();
-window.__totehm_monetize=()=>({build:BUILD,signed_in:!!me,offer_enabled:offerEnabled});
+window.__totehm_monetize=()=>({build:BUILD,signed_in:!!me,offer_enabled:offerEnabled,discover:{i:DC.index(),n:DC.total()}});
 /* Le papier porte MON nom quand je suis connecté : c'est ma page à venir. */
 function paintName(n){
   $('nm').textContent=n||'you'; $('nm-url').textContent='totehm.com/@'+(n||'you');

@@ -130,7 +130,7 @@ try{
    /* 16/10 — la page ne montre plus que SA part (la doctrine du grand livre : on affiche sa part, pas le brut),
       et le curseur COMPTE au lieu de promettre. On vérifie donc 80 %, l'année, et le calcul — jamais « 20 % ». */
    {const t=await pg.textContent('main');
-    ok(await pg.locator('h1').isVisible()&&/80%/.test(t)&&/[Oo]nce a year/.test(t)&&!/\d+ ?€ ?\/ ?year guaranteed/i.test(t)&&await pg.locator('#mz-p').count()===1,
+    ok(await pg.locator('h1').count()===1&&/80%/.test(t)&&/[Oo]nce a year/.test(t)&&!/\d+ ?€ ?\/ ?year guaranteed/i.test(t)&&await pg.locator('#mz-p').count()===1,
        'the sales page is public: the annual model, MY 80%, a slider that counts — and no promised revenue');}
    ok(!log.rpc.some(x=>x.name==='my_console')&&await pg.getAttribute('[data-setup]','href')==='/console','visiting the public page does not read a member console or activate an offer');
    await pg.screenshot({path:OUT+'/com_monetize_desktop.png'});await ctx.close();
