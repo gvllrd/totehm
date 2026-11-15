@@ -82,10 +82,10 @@ développement personnel, un réseau social classique, une marque streetwear cla
 
 ## L'espace
 
-TOTEHM.SPACE : deux lieux sur leur île, au sommet d’une Terre engloutie. Lisbon : dôme noir brut, façade Lisbon city hall en relief × TOTEHM natif et grand « MAKE THE LISBON STREETS HIGHER ». Sept traits d’intention soulignent le lieu.
-Calçada à vagues, caravelle au centre ; seuls l’emblème et la collaboration occupent la façade. Discover public et petits coffrets THP dans leurs abris dehors. Porte en verre teinté qui laisse entrevoir les 22 œuvres flottantes sur les courbes intérieures.
-Le THP est la clé : achat, Get Higher par Stoner, puis les 22 œuvres. Le Discover HTML original reste public ; la manette et les films sont réservés aux ayants droit, avec URLs signées. Aucun autre panneau ni marquage routier sur le parvis.
-Une soucoupe métallique au-dessus du dôme conduit par un corridor transparent noir aux sept traits jusqu’à une salle Origins close, grandiose : le livre et les vingt œuvres d’origine. New York conserve son château, ses six Think same but opposite et sa statue submergée.
+TOTEHM.SPACE : deux lieux sur leur île, au sommet d’une Terre engloutie. Lisbon : façade historique aux azulejos en ruine, corniche brisée, pierre ébréchée et verre moderne continu. Sept traits d’intention soulignent les raccords anciens et modernes.
+Calçada à vagues et caravelle au centre ; aucun panneau autour du bâtiment. À l’intérieur, une seule table très noire, futuriste et minimale : six petits coffrets THP natifs au centre, verrerie et instruments de laboratoire aux deux extrémités. Les emblèmes Lisbon city hall × TOTEHM et Higher en 3D sont à l’intérieur.
+Un immense hologramme transparent fait flotter les 22 signes devant la pierre. Son clic ouvre l’HTML Play the Lisbon Street et le Discover original en plein écran, aux polices lisibles de Think same but opposite. Le Discover reste public ; la manette et les films exigent le droit THP/Stoner, avec URLs signées.
+La soucoupe métallique conduit par un corridor transparent noir aux sept traits jusqu’à une salle Origins close : le livre et les vingt œuvres d’origine. New York conserve son château, ses six Think same but opposite et sa statue submergée.
 Océan, Voie lactée, lune et feu vivant conservés. Retour vers l’île et saut spatial. Les formes natives, perforations et proportions de TOTEHM et Higher restent intactes ; Collect garde achat et revente.
 
 ## Les vêtements
