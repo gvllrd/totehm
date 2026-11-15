@@ -2183,21 +2183,18 @@ body.paysage #gate-mouth{display:none}
    ⚠️ LA MARGE REMPLACE L'AIR DU SOCLE · 28/09/2026. Le socle réservait
    ~150 px entre le papier et cette porte ; parti avec lui, l'air se pose
    ici, en dur — sinon la porte s'ouvre collée au papier. */
+/* ⚠️ 14/11 — LA PORTE EST EN BAS DU TOTEHM, PARTOUT (Wah). Elle était au-dessus sur ordinateur et en
+   dessous au téléphone depuis le 09/11 : une seule règle maintenant, celle du téléphone. */
 #gate-door{display:flex;flex-direction:column;align-items:center;gap:9px;
   width:min(280px,78vw);position:absolute;left:50%;margin:0 0 0 calc(min(280px,78vw) / -2);
-  bottom:calc(100% + clamp(28px,5dvh,56px));z-index:3;
-  opacity:0;transform:translateY(-6px);visibility:hidden;pointer-events:none;
+  top:calc(100% + clamp(22px,4dvh,40px));z-index:6;
+  opacity:0;transform:translateY(6px);visibility:hidden;pointer-events:none;
   transition:opacity .3s ease,transform .45s cubic-bezier(.2,.7,.2,1),visibility 0s linear .45s}
 body.is-door #gate-door{opacity:1;transform:none;visibility:visible;pointer-events:auto;
   transition:opacity .45s ease .05s,transform .55s cubic-bezier(.2,.7,.2,1),visibility 0s}
 body.gate.entered #gate-door{opacity:0;visibility:hidden}
 #gate-door #mw-out-state,#gate-door #mw-claim-state{width:100%}
 #gate-door .mw-input{margin-bottom:0}
-/* ⚠️ 09/11 : AU TÉLÉPHONE, LA PORTE SOUS LE TOTEHM (Wah). Au-dessus, elle sortait de l'écran (email à −26 px sur
-   375×667, mesuré). Ordinateur inchangé. */
-@media(max-width:699px), (hover:none) and (pointer:coarse){
-  #gate-door{bottom:auto;top:calc(100% + clamp(22px,4dvh,40px));transform:translateY(6px)}
-}
 /* 11/10 — sans email : un compte invité Supabase (anonyme), le Totehm vit dans le nuage
    sous CET appareil ; « save it with my email » le rattache au même compte. */
 .mw-guest-start{border:0;border-radius:10px;padding:9px 14px;background:#1f1f24;color:#cfcfd6;cursor:pointer;
@@ -2929,7 +2926,16 @@ body.is-xo{overflow:hidden}
 #gate-mouth{opacity:0;visibility:hidden;transition:opacity .45s ease,visibility 0s linear .45s}
 body.lv-h:not(.is-door):not(.entered) #gate-mouth{opacity:1;visibility:visible;transition:opacity .35s ease}
 #lv{position:fixed;inset:0;z-index:5;pointer-events:none}
-body:not(.gate) #lv,body.entered #lv,body.is-door #lv{display:none}
+body:not(.gate) #lv,body.entered #lv{display:none}
+/* ⚠️ 14/11 (Wah) : « quand je fais un [sign in] dans totehm.com, je veux que ce soit EN BAS DU TOTEHM, SANS
+   ENLEVER LE CURSEUR ET L'IMAGE qui accompagnent les traits d'intention dans le tree ». La porte vidait
+   l'atterrissage entier (`#lv{display:none}`) et effaçait l'arbre (`#lv-ram{opacity:0}`) : on signait devant
+   un écran nu. Maintenant `#lv` RESTE, et seuls les textes qui occupaient la place de la porte s'effacent —
+   en `visibility`, jamais en `display` : la GÉOMÉTRIE ne bouge pas d'un pixel, donc `placerAvis()` garde
+   l'image dans le tronc et `manche()` garde la manette à sa place. */
+body.is-door #lv-c-acts,body.is-door #lv-slogan,body.is-door #lv-sell,body.is-door #lv-tap{
+  visibility:hidden;pointer-events:none}
+body.is-door #lv{pointer-events:none}
 /* ⚠️ 23/10 — LE REPLI EST LE DÉPLOIEMENT À L'ENVERS : au départ, l'atterrissage (légende, MINE/MEMBERS, badge, manette)
    disparaît d'un coup ; au retour il ne revient qu'une fois le papier posé (fin de `folding`), en fondu — jamais par-dessus
    le papier encore grand. Les traits et la boîte (`#lv-ram`, `#lv-proc`) sont hors de `#lv` : ils rentrent avec lui. */
@@ -2940,6 +2946,18 @@ body.folding #lv{opacity:0}
 body.folding{--gate-dur:.72s}
 body.folding #gate-logo .glayer,body.folding #gl-paint{transition-timing-function:var(--fold-ease)}
 body.folding #gate{transition:opacity .15s ease}   /* le portail revient en 150 ms, pendant que le papier part déjà */
+/* ⚠️ 14/11 (Wah : « il manque encore de la fluidité quand on ouvre et ferme le totehm, notamment sur
+   version mobile ») — L'APP NE SE PEINT PLUS SOUS LE PORTAIL. Le papier géant ne se retrace plus depuis le
+   13/11, mais `#stage` (la liste du TOTEHM déployé, ses boîtes, ses animations) continuait de se peindre
+   pendant TOUTE la durée du repli, sous un portail déjà opaque : 570 ms de peintures que personne ne voit.
+   Deux gestes, aucun recalcul de mise en page :
+     · dès que le portail est opaque (160 ms), `#stage` passe en `visibility:hidden` — un `transition` de
+       0 s RETARDÉE, l'astuce standard : rien n'est caché pendant qu'on le voit encore ;
+     · ce qui bouge dedans s'arrête tout de suite (`animation-play-state`, transitions coupées).
+   ⚠️ `folding` SEUL : `gate.entered` sans `folding`, c'est le TOTEHM OUVERT et vivant — y couper les
+   transitions figerait l'app entière. */
+body.folding #stage{pointer-events:none;visibility:hidden;transition:visibility 0s linear .16s}
+body.folding #stage *{animation-play-state:paused!important;transition:none!important}
 /* `is-pose` (les 40 derniers % du repli) : le papier se pose, l'atterrissage revient en fondu et l'arbre ressort de lui. */
 body.folding.is-pose #lv{opacity:1}
 body.gate.folding.is-pose:not(.is-aspire) #lv-ram{opacity:1;transition:opacity .45s ease,transform .7s cubic-bezier(.15,.65,.3,1)}
@@ -3062,7 +3080,8 @@ body.gate.lv-c #lv-ram,body.gate.lv-h #lv-ram{opacity:1}
    la grille garde ses boîtes, la Terre ses spots (20/10 septies : plus aucun méridien dessiné sur le globe). */
 body.gate.ram-morph:not(.entered) #lv-ram{opacity:1;transition:opacity .2s ease}
 body.gate.lv-g #lv-ram,body.gate.lv-d #lv-ram{transition:opacity .45s ease .2s}
-body.is-door #lv-ram{opacity:0;transition:opacity .25s ease}
+/* 14/11 : l'arbre RESTE pendant la porte — c'est lui qu'on vient rejoindre. */
+body.gate.is-door #lv-ram{opacity:1;transition:opacity .25s ease}
 body.gate.entered #lv-ram,body.gate.folding #lv-ram{opacity:1;transition:none}
 /* ══ L'ASPIRATION · 25/10 ══ (Wah : « dès que l'on retourne le totehm pour atteindre le verso et ses paramètres, les traits
    d'intention arrêtent leur activité et sont aspirés dans le Totehm » ; de même au clic, de même en recherche : « on
