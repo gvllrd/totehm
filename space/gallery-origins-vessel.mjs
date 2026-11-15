@@ -30,6 +30,7 @@ export function createOriginsVessel(scene,{mobile=false,onChange=()=>{},onOpen=(
  black.name='Origins — raw black architecture';
  const silver=material(new T.MeshPhysicalMaterial({color:0x767f83,roughness:.4,metalness:.9,clearcoat:.3,clearcoatRoughness:.2,side:T.DoubleSide}));
  silver.name='Origins — brushed metallic saucer hull';
+ const canopy=material(silver.clone());canopy.side=T.FrontSide;canopy.name='Origins — closed metallic canopy, outward surface';
  const hullLight=new T.SpotLight(0xc8ddf2,420,55,.9,.9,2);hullLight.position.set(0,10,12);hullLight.target.position.set(0,20,-4.2);root.add(hullLight,hullLight.target);lights.push(hullLight);
  const glass=material(new T.MeshPhysicalMaterial({color:0x344958,roughness:.035,metalness:.08,transparent:true,opacity:.07,depthWrite:false,side:T.DoubleSide,envMapIntensity:1.2,clearcoat:1}));
  glass.name='Origins — transparent smoked glass';
@@ -50,26 +51,18 @@ export function createOriginsVessel(scene,{mobile=false,onChange=()=>{},onOpen=(
   function draw(){if(disposed)return;context.clearRect(0,0,canvas.width,canvas.height);context.fillStyle=color;context.textAlign='center';context.textBaseline='middle';context.font='400 '+Math.floor(canvas.height*.62)+'px "Space Mono",monospace';context.fillText(value,canvas.width/2,canvas.height/2,canvas.width);texture.needsUpdate=true;changed();}
   draw();document.fonts?.ready?.then(draw);return object;
  }
- // Remove the rear corridor opening from the otherwise rotational hull.
- // Its connection is hidden from the frontal island view, keeping the classic
- // shallow flying-saucer silhouette from the supplied reference.
- function rearOpening(source){
-  const nonIndexed=source.index?source.toNonIndexed():source,p=nonIndexed.attributes.position,n=nonIndexed.attributes.normal,positions=[],normals=[];
-  for(let i=0;i<p.count;i+=3){let x=0,z=0;for(let j=0;j<3;j++){x+=p.getX(i+j)/3;z+=p.getZ(i+j)/3;}
-   if(Math.abs(x)<2.25&&z<-2.05)continue;
-   for(let j=0;j<3;j++){positions.push(p.getX(i+j),p.getY(i+j),p.getZ(i+j));normals.push(n.getX(i+j),n.getY(i+j),n.getZ(i+j));}
-  }
-  if(nonIndexed!==source)nonIndexed.dispose();source.dispose();const result=new T.BufferGeometry();result.setAttribute('position',new T.Float32BufferAttribute(positions,3));result.setAttribute('normal',new T.Float32BufferAttribute(normals,3));result.computeBoundingBox();result.computeBoundingSphere();return geometry(result);
- }
+ // Closed rotational hull: no removed wedge or central opening.
  const saucer=new T.Group();saucer.name='ORIGINS — hovering saucer';saucer.position.set(...L.saucer);root.add(saucer);
- const profile=[[3,.62],[3.6,.83],[5.4,.59],[7.6,.34],[9.6,.15],[10.2,0],[9.85,-.15],[7.3,-.50],[5.5,-.76],[3.3,-1.02],[2.65,-.98],[2.65,-.73],[4.2,-.5],[6.8,-.27],[9.5,-.06],[7.3,.09],[5.1,.25],[3,.42]].map(p=>new T.Vector2(...p));
- const hull=pick(mesh(saucer,rearOpening(new T.LatheGeometry(profile,mobile?96:144)),silver,[0,0,0],'Origins metallic disk — open rear connector',true),'origins-vessel',{action:'board',href:'/origins'});
+ const profile=[[0,.72],[1.9,.78],[3.6,.72],[5.4,.57],[7.8,.30],[9.85,.08],[10.2,0],[9.9,-.15],[7.4,-.50],[5,-.80],[2.7,-.96],[0,-1.02]].map(p=>new T.Vector2(...p));
+ const hull=pick(mesh(saucer,geometry(new T.LatheGeometry(profile,mobile?96:144)),silver,[0,0,0],'Origins metallic disk — continuous closed hull',true),'origins-vessel',{action:'board',href:'/origin'});
  hull.userData.saucerHull=true;
- const cupola=pick(mesh(saucer,rearOpening(new T.SphereGeometry(3,mobile?48:72,24,0,Math.PI*2,0,Math.PI/2)),glass,[0,.62,0],'Origins central glass cupola',false,[1,.48,1]),'origins-vessel',{action:'board'});
+ const cupola=pick(mesh(saucer,geometry(new T.SphereGeometry(3,mobile?48:72,24,0,Math.PI*2,0,Math.PI/2)),canopy,[0,.62,0],'Origins closed metallic cupola',false,[1,.48,1]),'origins-vessel',{action:'board'});
+ ring(saucer,2.96,.016,.83,0,black,'Saucer fine canopy seam');
  ring(saucer,9.92,.027,.025,0,white,'Saucer fine metallic edge highlight');
- const deck=mesh(saucer,geometry(new T.RingGeometry(.65,3,mobile?64:96)),glass,[0,-.03,0],'Saucer glass deck — open boarding shaft');deck.rotation.x=-Math.PI/2;
- ring(saucer,3.12,.065,-.94,0,focus,'Saucer underside blue boarding aperture');
- ring(saucer,2.72,.027,-.98,0,white,'Saucer underside white inner aperture');
+ const deck=mesh(saucer,geometry(new T.CircleGeometry(2.95,mobile?64:96)),black,[0,.80,0],'Saucer continuous black cabin floor',true);deck.rotation.x=-Math.PI/2;
+ mesh(saucer,geometry(new T.CylinderGeometry(2.7,2.7,.06,mobile?64:96)),silver,[0,-1.045,0],'Saucer sealed underside engine cover',true);
+ ring(saucer,3.12,.025,-.99,0,focus,'Saucer sealed engine fine blue seam');
+ for(const [r,y] of [[4.7,-.84],[7.4,-.51],[9.9,-.16]])ring(saucer,r,.012,y,0,black,'Saucer restrained engraved hull seam');
  const dots=new T.InstancedMesh(geometry(new T.CircleGeometry(.035,8)),focus,48),transform=new T.Object3D();dots.name='Saucer underside — forty-eight small landing lights';
  for(let i=0;i<48;i++){const a=i/48*Math.PI*2;transform.position.set(Math.sin(a)*3.35,-.95,Math.cos(a)*3.35);transform.rotation.x=Math.PI/2;transform.updateMatrix();dots.setMatrixAt(i,transform.matrix);}dots.instanceMatrix.needsUpdate=true;saucer.add(dots);
  const beamMaterial=material(new T.ShaderMaterial({transparent:true,depthWrite:false,side:T.DoubleSide,blending:T.AdditiveBlending,toneMapped:false,
@@ -81,11 +74,11 @@ export function createOriginsVessel(scene,{mobile=false,onChange=()=>{},onOpen=(
   const portal=createBlackHolePortal(root),shipHome=new T.Vector3(...L.saucer);let flying=false;
   const cabin=new T.PointLight(0xc7dcff,12,7,2);cabin.position.set(0,1.9,0);saucer.add(cabin);lights.push(cabin);
   const book={pickables:[],open:()=>false,reset(){},update:()=>false,diagnostics:()=>({closed:true,opening:false,opened:false,absent:true})};
-  return{root,pickables,solids,book,journey:{...L,outbound:[[0,1.65,13],[0,8.5,11],[0,15.8,5.5],[0,16,-4.2],[0,21.65,-4.2],[0,30,-8],[0,61,-35],[0,94,-65],[0,118,-89.7]]},
-   setFlight(eye){if(eye.y<21.7)return;flying=true;saucer.position.set(eye.x,eye.y-1.65,eye.z);beamMaterial.opacity=0;beamMaterial.visible=false;},
+  return{root,pickables,solids,book,journey:{...L,outbound:[[0,1.65,13],[0,8.5,11],[0,15.8,7.5],[0,22,7.5],[0,21.65,-4.2],[0,30,-8],[0,61,-35],[0,94,-65],[0,118,-89.7]]},
+   setFlight(eye){if(!flying&&(eye.y<21.7||eye.z>-4.25))return;flying=true;saucer.position.set(eye.x,eye.y-1.65,eye.z);beamMaterial.opacity=0;beamMaterial.visible=false;},
    resetFlight(){flying=false;saucer.position.copy(shipHome);beamMaterial.visible=true;},
    update(dt,eye,motion=true){if(disposed)return false;if(motion){time+=Math.max(0,Math.min(Number(dt)||0,.1));beamMaterial.uniforms.uTime.value=time;}portal.update(dt,eye,motion);const result=dirty||motion;dirty=false;return result;},
-   diagnostics:()=>({kind:'origins-saucer-black-hole-transit',saucer:true,flying,saucerPosition:saucer.position.toArray(),corridorInIsland:false,bookInIsland:false,originalWorks:0,blackHole:portal.diagnostics(),destination:ORIGIN_PORTAL.href}),
+   diagnostics:()=>({kind:'origins-saucer-black-hole-transit',saucer:true,closedHull:true,closedUnderside:true,openShaft:false,flying,saucerPosition:saucer.position.toArray(),corridorInIsland:false,bookInIsland:false,originalWorks:0,blackHole:portal.diagnostics(),destination:ORIGIN_PORTAL.href}),
    dispose(){if(disposed)return;disposed=true;portal.dispose();root.removeFromParent();for(const g of geometries)g.dispose();for(const m of materials)m.dispose();for(const t of textures)t.dispose();for(const light of lights)light.dispose?.();dots.dispose();root.clear();}
   };
  }

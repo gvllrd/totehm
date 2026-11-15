@@ -33,7 +33,7 @@
   max-width:none!important;white-space:normal!important;overflow:visible!important}
 /* ⚠️ LE PAPIER N'EST PLUS SUR LE BOUTON : il est sur ses DEUX FACES, sinon la pièce n'a pas d'envers.
    `backface-visibility` AUSSI sur les enfants des faces (Safari les laisse traverser autrement). */
-.mc.is-in{--mc-s:64px;position:relative!important;display:block!important;
+.mc.is-in{font-size:0!important;color:transparent!important;--mc-s:64px;position:relative!important;display:block!important;
   width:var(--mc-s)!important;height:var(--mc-s)!important;min-width:var(--mc-s)!important;max-width:var(--mc-s)!important;
   flex:none!important;box-sizing:border-box!important;padding:0!important;border:0!important;border-radius:0!important;
   box-shadow:none!important;background:none!important;overflow:visible!important;
@@ -70,7 +70,7 @@
 <body class="exploring">
 <a class="skip" href="#gallery">Skip to the artworks</a>
 <header>
-<div class="member"><button id="member" class="mc" type="button">CONNECT WITH MY TOTEHM</button></div>
+<div class="member"><button id="member" class="mc" type="button"><span id="member-txt">CONNECT WITH MY TOTEHM</span></button></div>
 <nav class="market-nav" aria-label="Art market"><a href="/market">Market</a><a href="/market?tab=mine">My collection</a></nav>
 </header>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><symbol id="higher-slogan" viewBox="0 0 600 200">
@@ -328,21 +328,21 @@ document.addEventListener('visibilitychange', () => { if(!document.hidden) ssoVe
 
 
 // A satellite uses the member's TOTEHM identity; its home is totehm.com.
-const member=$('member');
+const member=$('member'),memberText=$('member-txt');
 let me=null,memberRevision=0;
 async function paintMember(){
   const revision=++memberRevision,uid=me?.id;
   member.classList.toggle('is-in',!!me);
   member.dataset.in=me?'1':'0';
   const fallback=me?'My TOTEHM':'CONNECT WITH MY TOTEHM';
-  member.textContent=fallback;
+  memberText.textContent=fallback;
   member.setAttribute('aria-label',me?'Open my TOTEHM on totehm.com':'Connect with my TOTEHM');
   if(!uid)return;
   try{
     const {data,error}=await sb.from('profiles').select('pseudo').eq('id',uid).maybeSingle();
     if(error)console.error('[member profile]',error.message);
     if(revision!==memberRevision||me?.id!==uid)return;
-    member.textContent=data?.pseudo||fallback;
+    memberText.textContent=data?.pseudo||fallback;
   }catch(error){console.error('[member profile]',error?.message||error);}
 }
 member.addEventListener('click',()=>{
