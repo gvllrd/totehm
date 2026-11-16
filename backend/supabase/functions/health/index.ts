@@ -70,8 +70,8 @@ Deno.serve(async (req) => {
     at: new Date().toISOString(),
     stripe: { live, test, webhook_secret_set: has("STRIPE_WEBHOOK_SECRET"), test_webhook_secret_set: has("STRIPE_TEST_WEBHOOK_SECRET") },
     telegram,
-    keys: { openai: has("OPENAI_API_KEY"), resend: has("RESEND_API_KEY"), bunny_api: has("BUNNY_API_KEY"), bunny_library: has("BUNNY_LIBRARY_ID"),
-      bunny_token: has("BUNNY_TOKEN_KEY"), bunny_cdn: has("BUNNY_CDN_HOSTNAME") },
+    // Bunny : une seule clé suffit (`_shared/bunny.ts` retrouve sa bibliothèque, son jeton et son hôte avec elle).
+    keys: { openai: has("OPENAI_API_KEY"), resend: has("RESEND_API_KEY"), bunny: has("BUNNY_ACCOUNT_API_KEY") || has("BUNNY_API_KEY") },
     chatgpt: { enabled: (Deno.env.get("CHATGPT_CONNECTOR_ENABLED") ?? "") === "true", origin_set: has("CHATGPT_PUBLIC_ORIGIN"), redirects_set: has("CHATGPT_REDIRECT_URIS") },
   }, { headers: { "Cache-Control": "no-store" } });
 });
