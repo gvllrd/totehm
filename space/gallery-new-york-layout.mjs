@@ -12,8 +12,8 @@ export const NEW_YORK_RAMP_TURNS=freeze([]);
 export const NEW_YORK_CONNECTORS=freeze([]);
 export const NEW_YORK_LANDINGS=freeze([{x:0,y:GALLERY_LAYOUT.groundY,z:-5,floor:0}]);
 export const NEW_YORK_FLOOR_RECTS=freeze([{id:'castle-ground',floor:0,y:GALLERY_LAYOUT.groundY,minX:-13,maxX:13,minZ:-17,maxZ:-2}]);
-export const NEW_YORK_OPPOSITES_WALL=freeze({id:'new-york-opposites-wall',minX:-7.4,maxX:7.4,minZ:-9.1,maxZ:-8.9,minY:.28,maxY:5.3});
-export const NEW_YORK_GROUND_OBSTACLES=freeze([...GALLERY_OBSTACLES,NEW_YORK_OPPOSITES_WALL]);
+// Only the retained architecture obstructs the new projected exhibition.
+export const NEW_YORK_GROUND_OBSTACLES=freeze(GALLERY_OBSTACLES.filter(box=>!['thp-counter','origins-lectern','fireplace-hearth'].includes(box.id)));
 export const NEW_YORK_EXHIBITION_WALLS=GALLERY_EXHIBITION_WALLS;
 export const NEW_YORK_EXHIBITION_OBSTACLES=freeze([]);
 export function newYorkRampHeight(){return null;}

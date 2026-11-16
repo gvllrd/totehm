@@ -57,7 +57,7 @@ try{
   try{
    await owner.pg.goto(origin+'/play_lisbon_street?discover=1',{waitUntil:'domcontentloaded'});await ready(owner.pg,'owned');
    check(owner.mediaCalls.length===0&&owner.signedCalls.length===0,'The owner can read the full Discover without starting video at '+viewport.width);
-   await owner.pg.locator('[data-street-enter]').first().click();await owner.pg.waitForFunction(()=>__totehm_lisbon().board,null,{timeout:20000});
+   await owner.pg.locator('#sdisc-cover-next').click();await owner.pg.locator('[data-street-enter]').first().click();await owner.pg.waitForFunction(()=>__totehm_lisbon().board,null,{timeout:20000});
    check(await owner.pg.evaluate(()=>__totehm_lisbon().rocks===22),'The original PlayStation layout still contains all twenty-two cues at '+viewport.width);
    await owner.pg.screenshot({path:OUT+'/'+viewport.width+'-controller.png'});
    await owner.pg.goto(origin+'/play_lisbon_street?sign=priority&play=1&from=space',{waitUntil:'domcontentloaded'});await ready(owner.pg,'owned');

@@ -1,4 +1,6 @@
-import {createLisbonPreview} from './gallery-lisbon.mjs';
+import {createLisbonFirstPage} from './lisbon-first-page.mjs';
+import {createOppositesFront} from './opposites-front.mjs';
+import {createOriginsCoverCanvas} from './origins-cover.mjs';
 import {LISBON_HOLOGRAM_SIGNS as LISBON_STREET_SIGNS} from './gallery-lisbon-urbex-layout.mjs';
 import {OPPOSITES} from './gallery-opposites.mjs';
 
@@ -8,30 +10,27 @@ body.dataset.place=place;
 document.title='TOTEHM.SPACE — '+(place==='new-york'?'New York':'Lisbon');
 document.getElementById('space').setAttribute('aria-label',(place==='lisbon'?'Historic Lisbon azulejo ruins joined by modern glass, with stone inside. One deep black table presents TotehmPaper and laboratory glass on both sides. A monumental hologram opens the original Play the Street Discover; a flying saucer crosses the galaxy through a black hole to Origins. ':'An airy coastal castle gallery: ancient stone ruins and modern glass. ')+'Original artworks above the storm sea. Drag to look, tap the floor to walk. WASD to walk, Space to jump.');
 document.getElementById('building-levels')?.remove();
-if(place==='lisbon'){document.querySelector('#origins .origins-grid')?.remove();const originLink=document.querySelector('#origins .room-actions a');if(originLink)originLink.href='/origin';const originCaption=document.querySelector('#origins .caption>p');if(originCaption)originCaption.textContent='Wah · The original volume';document.querySelector('.tour [data-room="4"]')?.remove();document.getElementById('same-but-opposite')?.remove();}
+document.querySelector('#origins .origins-grid')?.remove();const originLink=document.querySelector('#origins .room-actions a');if(originLink)originLink.href='/origin?from='+place;const originCaption=document.querySelector('#origins .caption>p');if(originCaption)originCaption.textContent='Wah · The original volume';
+if(place==='lisbon'){document.querySelector('.tour [data-room="4"]')?.remove();document.getElementById('same-but-opposite')?.remove();}
+else{for(const index of [0,3,4])document.querySelector('.tour [data-room="'+index+'"]')?.remove();for(const id of ['totehmpaper','stoner','same-but-opposite'])document.getElementById(id)?.remove();document.querySelector('.tour [data-room="2"]').lastChild.textContent='Think same but opposite';}
 const ROOMS=[
  {title:'TotehmPaper {THP}',kind:'The Stoner Experience',path:'/get_higher',collect:'/market?art=totehmpaper',action:'Enter the experience ↗',note:'Original perforated art. Choose your TotehmPaper.'},
- {title:'Origins',kind:place==='lisbon'?'The original book':'Twenty original works',path:place==='lisbon'?'/origin':'/origins',collect:'/market?collection=quantum',action:place==='lisbon'?'Board the saucer':'Open the book',note:place==='lisbon'?'Through the galaxy. Beyond the event horizon.':'Twenty works. Turn the pages.'},
+ {title:'Origins',kind:'The original book',path:'/origin?from='+place,collect:'/market?collection=quantum',action:'Board the saucer',note:place==='lisbon'?'Through the galaxy. Beyond the event horizon.':'Twenty works. Turn the pages.'},
  {title:'Play the Lisbon Street',kind:'Neuro Street Art Digital',path:'/play_lisbon_street',collect:'/market?collection=play-the-lisbon-street',action:place==='lisbon'?'Discover the experience':'PLAY ↗',note:place==='lisbon'?'A TotehmPaper is your key. Get Higher through Stoner, then enter the 22 Lisbon works.':'Choose a sign. Play the street.'},
  {title:'The Stoner Experience',kind:'TotehmPaper {THP}',path:'/get_higher',collect:'/market?art=totehmpaper',action:'Enter the experience ↗',note:place==='lisbon'?'The original paper, in its small premium case on the black laboratory table.':'The original paper, in its premium case on the stone table.'},
  {title:'Same but opposite',kind:'Video artwork · Wah',path:'/same_but_opposite',action:'PLAY ↗',note:'Tap to play the artwork in its own full-screen experience.'}
 ];
 const $=id=>document.getElementById(id),buttons=[...document.querySelectorAll('.tour [data-room]')],info=$('work-info');
 let engine=null,room=-1,fallback=false,pending=null,listRaf=0,lastPreview=0,station=null,hoveredSign=null,activeSign=null;
-const preview=createLisbonPreview({onChange:()=>engine?.invalidate()});
+const preview=(place==='lisbon'?createLisbonFirstPage:createOppositesFront)({onChange:()=>engine?.invalidate()});
 const lisbonCard=document.querySelector('#lisbon .artwork');lisbonCard.append(preview.canvas);lisbonCard.classList.add('has-preview');
 if(place==='new-york'){
- $('space').setAttribute('aria-label','New York gallery. Enter to find six framed Think same but opposite artworks aligned on a white wall. Click a work to open its English Discover story. Walk around either end of the wall for TotehmPaper, Origins, Play the street and Same but opposite.');
- const exhibition=document.createElement('section');exhibition.className='opposites-list';exhibition.setAttribute('aria-label','Think same but opposite — six New York artworks');
- const heading=document.createElement('h2');heading.textContent='Think same but opposite';exhibition.append(heading);
- const grid=document.createElement('div');grid.className='opposites-list-grid';
- for(const work of OPPOSITES){
-  const link=document.createElement('a');link.href='/think_same_but_opposite?work='+encodeURIComponent(work.id);link.setAttribute('aria-label','Discover '+work.title);
-  const image=document.createElement('img');image.src=work.image;image.alt=work.title;image.loading='lazy';
-  const label=document.createElement('span');label.textContent=work.title;link.append(image,label);grid.append(link);
- }
- exhibition.append(grid);$('gallery').prepend(exhibition);
+ lisbonCard.href='/think_same_but_opposite';lisbonCard.setAttribute('aria-label','Enter Think same but opposite');
+ ROOMS[2]={title:'Think same but opposite',kind:'Six original digital works',path:'/think_same_but_opposite',action:'Enter the projection',note:'The six originals. The same first page, projected from the saucer.'};
+ $('space').setAttribute('aria-label','New York castle above the ocean. A flying saucer projects the six Think same but opposite originals in one black panel. Board the saucer to reach the Origins sanctuary.');
+ const card=document.querySelector('#lisbon');card.querySelector('h2').textContent='Think same but opposite';const actions=card.querySelector('.room-actions');actions.replaceChildren();const link=document.createElement('a');link.href='/think_same_but_opposite';link.textContent='Enter the experience';actions.append(link);card.querySelector('.caption>p').textContent='Six original digital works';
 }
+const originalCover=createOriginsCoverCanvas();let originCard=document.querySelector('#origins .artwork');if(!originCard){originCard=document.createElement('a');originCard.className='artwork';originCard.href='/origin?from='+place;originCard.setAttribute('aria-label','Board the saucer to Origins');document.getElementById('origins').prepend(originCard);}if(originCard){originCard.replaceChildren(originalCover.canvas);originalCover.canvas.style.cssText='display:block;width:100%;height:100%;object-fit:contain';}
 const interact=()=>body.classList.add('exploring');
 function higherWord(){
  const word=document.createElement('span'),svg=document.createElementNS('http://www.w3.org/2000/svg','svg'),use=document.createElementNS('http://www.w3.org/2000/svg','use');
@@ -98,7 +97,7 @@ function choose(index,{hash=true}={}){
 }
 function overview(){pending=null;clearInfo();interact();engine?.overview();history.replaceState(null,'',location.pathname+location.search);}
 function syncPreview(){
- if(listRaf)cancelAnimationFrame(listRaf);listRaf=0;lastPreview=0;preview.pause();
+ if(listRaf)cancelAnimationFrame(listRaf);listRaf=0;lastPreview=0;
  if(!document.hidden&&!reduced.matches&&body.classList.contains('list-view'))listRaf=requestAnimationFrame(animatePreview);
 }
 function animatePreview(now){
@@ -120,8 +119,8 @@ document.addEventListener('keydown',e=>{
  if(e.key==='PageDown'||e.key==='PageUp'){e.preventDefault();const choices=buttons.map(b=>Number(b.dataset.room)),current=choices.indexOf(room===3?0:room);choose(choices[(current+(e.key==='PageDown'?1:-1)+choices.length)%choices.length]);}
 });
 document.addEventListener('visibilitychange',syncPreview);reduced.addEventListener('change',syncPreview);
-addEventListener('pagehide',()=>{if(listRaf)cancelAnimationFrame(listRaf);listRaf=0;preview.pause();});addEventListener('pageshow',syncPreview);
-window.__totehm_gallery=()=>({build:'2026-11-15-origin-round-trip',place,rooms:place==='lisbon'?3:4,room,hoveredSign,activeSign,list:body.classList.contains('list-view'),fallback,reduced_motion:reduced.matches,experiences:[...new Set(ROOMS.filter((w,i)=>place!=='lisbon'||i!==4).map(w=>w.path)),...(place==='new-york'?['/think_same_but_opposite']:[])],experienceNavigation:place==='lisbon'?'interior-hologram-to-discover-and-thp-gated-playback':'independent-pages',inGalleryPlayback:false,lisbon:preview.diagnostics(),...engine?.diagnostics()});
+addEventListener('pagehide',()=>{if(listRaf)cancelAnimationFrame(listRaf);listRaf=0;});addEventListener('pageshow',syncPreview);
+window.__totehm_gallery=()=>({build:'2026-11-16-canonical-saucer-projections',place,rooms:place==='lisbon'?3:2,room,hoveredSign,activeSign,list:body.classList.contains('list-view'),fallback,reduced_motion:reduced.matches,experiences:place==='new-york'?['/think_same_but_opposite','/origin?from=new-york']:[...new Set(ROOMS.filter((w,i)=>i!==4).map(w=>w.path))],experienceNavigation:'canonical-first-page-projection-to-continuous-fullscreen',inGalleryPlayback:false,lisbon:preview.diagnostics(),...engine?.diagnostics()});
 function useFallback(){fallback=true;body.classList.remove('is-origin-transit','in-origins-vessel');body.classList.add('no-3d','list-view');engine?.setList(true);clearInfo();syncPreview();}
 try{
  const {createGallery}=await import('./gallery-spatial.mjs');

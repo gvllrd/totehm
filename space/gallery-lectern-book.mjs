@@ -10,8 +10,8 @@ export function createLecternBook(scene,{mobile=false,onChange=()=>{},onOpen=()=
  let disposed=false,dirty=true,opening=false,opened=false,progress=0,opens=0,lastMotion=!globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
  const geometry=g=>(geometries.add(g),g),material=m=>(materials.add(m),m);
  const leather=material(new T.MeshStandardMaterial({color:0x060606,roughness:.78,metalness:.08}));
- const paper=material(new T.MeshStandardMaterial({color:0xd5cdbd,roughness:.96}));
- const edge=material(new T.MeshStandardMaterial({color:0x302a22,roughness:.9}));
+ const paper=material(new T.MeshStandardMaterial({color:0x1b1d22,roughness:.96}));
+ const edge=material(new T.MeshStandardMaterial({color:0x373b44,roughness:.9}));
  const box=geometry(new T.BoxGeometry(1,1,1));
  function block(parent,m,p,size,name){const o=new T.Mesh(box,m);o.position.set(...p);o.scale.set(...size);o.name=name;o.castShadow=o.receiveShadow=true;parent.add(o);return o;}
  block(root,leather,[0,-.035,0],[.7,.022,.98],'Black linen back cover');
@@ -23,8 +23,9 @@ export function createLecternBook(scene,{mobile=false,onChange=()=>{},onOpen=()=
  cover.userData={kind:'origins-book',action:'open',href:'/origins?open=1'};pickables.push(cover);
  if(globalThis.document){
   const shared=createOriginsCoverCanvas({onChange:()=>{if(disposed)return;dirty=true;onChange();}}),texture=new T.CanvasTexture(shared.canvas);texture.colorSpace=T.SRGBColorSpace;textures.add(texture);
-  document.fonts?.ready?.then(()=>{if(!disposed){texture.needsUpdate=true;dirty=true;onChange();}});
-  const lettering=material(new T.MeshStandardMaterial({map:texture,roughness:.78,metalness:.02}));
+  const emission=new T.CanvasTexture(shared.emissiveCanvas);emission.colorSpace=T.SRGBColorSpace;textures.add(emission);
+  document.fonts?.ready?.then(()=>{if(!disposed){texture.needsUpdate=emission.needsUpdate=true;dirty=true;onChange();}});
+  const lettering=material(new T.MeshStandardMaterial({map:texture,roughness:.78,metalness:.02,emissive:0xffffff,emissiveMap:emission,emissiveIntensity:.38}));
   const stamp=new T.Mesh(geometry(new T.PlaneGeometry(ORIGINS_COVER.width,ORIGINS_COVER.height)),lettering);stamp.rotation.x=-Math.PI/2;stamp.position.set(.342,.015,0);stamp.name='Shared original Origins cover';stamp.userData=cover.userData;hinge.add(stamp);pickables.push(stamp);
 
  }
@@ -33,7 +34,7 @@ export function createLecternBook(scene,{mobile=false,onChange=()=>{},onOpen=()=
  function open(){if(disposed||opening||opened)return false;opens++;opening=true;progress=0;notify();complete();return true;}
  return{root,pickables,open,reset(){if(disposed)return;opening=opened=false;progress=0;hinge.rotation.z=0;notify();},interact(hit){return (hit?.object||hit)?.userData?.kind==='origins-book'?open():false;},
   update(dt,eye,motion=true){if(disposed)return false;lastMotion=!!motion;if(opening){if(!motion)complete();else{progress=Math.min(1,progress+Math.max(0,Math.min(Number(dt)||0,.1))/.85);hinge.rotation.z=0;dirty=true;if(progress===1)complete();}}const changed=dirty;dirty=false;return changed;},
-  diagnostics:()=>({kind:'closed-origins-lectern-volume',closed:!opening&&!opened,opening,opened,opens,progress,black:true,lectern:true,stoneLectern:true,location:'west-keep',position:root.position.toArray(),tilt:Math.PI/10,dimensions:[.7,.08,.98],sharedCover:true,coverRatio:ORIGINS_COVER.ratio,href:'/origins?open=1',total:20,disposed}),
+  diagnostics:()=>({kind:'closed-origins-lectern-volume',closed:!opening&&!opened,opening,opened,opens,progress,black:true,lectern:true,stoneLectern:true,location:'west-keep',position:root.position.toArray(),tilt:Math.PI/10,dimensions:[.7,.08,.98],sharedCover:true,coverRatio:ORIGINS_COVER.ratio,coverIntentions:ORIGINS_COVER.intentions,neonTraces:ORIGINS_COVER.neon,href:'/origins?open=1',total:20,disposed}),
   dispose(){if(disposed)return;disposed=true;for(const t of textures)t.dispose();for(const m of materials)m.dispose();for(const g of geometries)g.dispose();root.removeFromParent();root.clear();}
  };
 }

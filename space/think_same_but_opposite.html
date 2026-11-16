@@ -66,34 +66,51 @@ main{width:100%;height:100dvh;min-height:0;display:flex;align-items:center;justi
 .hint{position:absolute;bottom:23px;left:0;right:0;margin:0;text-align:center;text-transform:uppercase;letter-spacing:.14em}
 body.is-last .hint{display:none}
 @media(max-width:650px){header{padding:14px}.story{width:100%}.eyebrow{margin:0 0 22px}main{padding:65px 23px 95px;align-content:initial}.frame{display:none}#slide{min-height:0;justify-content:center}#slide p{font-size:clamp(15px,4vw,17px);line-height:1.5}#slide.is-first p{font-size:clamp(26px,8vw,35px)}.actions{bottom:92px;margin:0}.hint{display:block}}
+/* The projected artwork IS this first page, rendered by opposites-front.mjs. */
+#experience-front{position:fixed;inset:0;z-index:1;display:grid;place-items:center;background:#000;opacity:1;transition:opacity .5s ease;touch-action:none}
+#experience-front[hidden]{display:none}#experience-front-stage{position:relative;width:min(100vw,calc(100dvh * 16 / 9));aspect-ratio:16/9}#experience-front-canvas{display:block;width:100%;height:100%}
+.front-hit{position:absolute;border:0;background:none;color:transparent;cursor:pointer;min-width:44px;min-height:44px;transform:translate(-50%,-50%);border-radius:10px}.front-hit:focus-visible{outline:1px solid #888;outline-offset:2px}.front-hint{position:fixed;left:20px;right:20px;bottom:max(24px,env(safe-area-inset-bottom));font-size:10px;letter-spacing:.12em;text-align:center;color:#8c8c94;pointer-events:none}
+body.is-front main,body.is-entering main{opacity:0;pointer-events:none}main{opacity:1;transition:opacity .5s ease}body.is-front header,body.is-entering header{z-index:3}body.is-front #progress,body.is-entering #progress{visibility:hidden}body.is-entering #experience-front{pointer-events:none}body.is-entering .front-hint{opacity:0}header a:hover,header button:hover,header a:focus-visible,header button:focus-visible{color:#fff}.actions a:hover,.actions a:focus-visible{color:#fff;border-color:#aaa}.rail span.on{background:#aaa}
+@media(prefers-reduced-motion:reduce){#experience-front,main{transition:none}}
 </style>
 </head>
-<body>
-<header><a href="/new-york">← Gallery</a><span class="progress" id="progress">THINK SAME BUT OPPOSITE</span><button id="close" type="button" aria-label="Close Discover">Close ×</button></header>
-<main>
+<body class="is-front">
+<header><a href="/new-york" data-experience-close>← Gallery</a><span class="progress" id="progress">THINK SAME BUT OPPOSITE</span><button id="close" data-experience-close type="button" aria-label="Close Discover">Close ×</button></header>
+<section id="experience-front" aria-label="Think same but opposite — six original artworks"><div id="experience-front-stage"></div><p class="front-hint">Choose an artwork</p></section>
+<main id="discover-stage" tabindex="-1">
  <div class="frame"><img id="image" alt=""></div>
  <section class="story" aria-label="Discover the artwork"><p class="eyebrow" id="title"></p><div id="slide" role="status" aria-live="polite"></div><div class="rail" id="rail" aria-hidden="true"></div><div class="actions"><button id="prev" type="button">← Back</button><button class="primary" id="next" type="button">Continue →</button><a id="action" hidden>Explore TOTEHM ↗</a><a id="next-work" hidden>Next artwork →</a></div><p class="hint">Scroll to discover ↓</p></section>
 </main>
 <script type="module">
 import {OPPOSITES,oppositeById} from './gallery-opposites.mjs';
-const $=id=>document.getElementById(id),params=new URLSearchParams(location.search),work=oppositeById(params.get('work'))||OPPOSITES[0],reduced=matchMedia('(prefers-reduced-motion:reduce)');
-let step=0,locked=false,touchY=null;
-document.title=work.title+' — Think same but opposite · TOTEHM.SPACE';$('title').textContent=work.title;$('image').src=work.image;$('image').alt=work.title+' artwork';$('action').href=work.href;$('action').textContent=work.action+' ↗';
-const following=OPPOSITES[(OPPOSITES.indexOf(work)+1)%OPPOSITES.length];$('next-work').href='/think_same_but_opposite?work='+following.id;$('next-work').setAttribute('aria-label','Next artwork: '+following.title);
-const dots=work.slides.map(()=>{const dot=document.createElement('span');$('rail').append(dot);return dot;});
+import {createOppositesFront} from './opposites-front.mjs';
+const $=id=>document.getElementById(id),params=new URLSearchParams(location.search),reduced=matchMedia('(prefers-reduced-motion:reduce)'),embedded=window.parent!==window&&params.get('embedded')==='1';
+let work=oppositeById(params.get('work'))||OPPOSITES[0],step=0,locked=false,touchY=null,phase='front',enteringAt=0,last=0,raf=0,hidden=document.hidden,frontFrozen=embedded;
+const front=createOppositesFront({onChange:()=>{}});front.canvas.id='experience-front-canvas';$('experience-front-stage').append(front.canvas);front.setTime(Number(params.get('sceneTime'))||0);
+for(let i=0;i<OPPOSITES.length;i++){const item=OPPOSITES[i],button=document.createElement('button');button.type='button';button.className='front-hit';button.setAttribute('aria-label','Discover '+item.title);button.style.cssText='left:'+(23+i%3*27)+'%;top:'+(32+Math.floor(i/3)*44.5)+'%;width:25%;height:43%';button.addEventListener('click',()=>enterWork(item));button.addEventListener('focus',()=>{if(!frontFrozen)front.setHighlight(item.id);});button.addEventListener('pointerenter',()=>{if(!frontFrozen)front.setHighlight(item.id);});button.addEventListener('pointerleave',()=>{if(!frontFrozen)front.setHighlight('');});$('experience-front-stage').append(button);}
+const dots=[];
+function configure(item){work=item;step=0;locked=false;document.title=work.title+' — Think same but opposite · TOTEHM.SPACE';$('title').textContent=work.title;$('image').src=work.image;$('image').alt=work.title+' artwork';$('action').href=work.href;$('action').textContent=work.action+' ↗';const following=OPPOSITES[(OPPOSITES.indexOf(work)+1)%OPPOSITES.length];$('next-work').href='/think_same_but_opposite?work='+following.id;$('next-work').setAttribute('aria-label','Next artwork: '+following.title);$('rail').replaceChildren();dots.length=0;for(const slide of work.slides){const dot=document.createElement('span');$('rail').append(dot);dots.push(dot);}show(0,true);}
 function show(index,instant=false){
- if(index<0||index>=work.slides.length||locked)return;
- locked=true;const slide=$('slide');slide.classList.remove('show');
+ if(index<0||index>=work.slides.length||locked)return;locked=true;const slide=$('slide');slide.classList.remove('show');
  const apply=()=>{step=index;slide.replaceChildren(...work.slides[step].map(text=>{const p=document.createElement('p');p.textContent=text;return p;}));slide.classList.toggle('is-first',step===0);dots.forEach((dot,i)=>dot.classList.toggle('on',i===step));$('progress').textContent=(step+1)+' / '+work.slides.length;$('prev').hidden=step===0;$('next').hidden=step===work.slides.length-1;$('action').hidden=step!==work.slides.length-1;$('next-work').hidden=step!==work.slides.length-1;document.body.classList.toggle('is-last',step===work.slides.length-1);requestAnimationFrame(()=>slide.classList.add('show'));if(instant||reduced.matches)locked=false;else setTimeout(()=>locked=false,650);};
  if(instant||reduced.matches)apply();else setTimeout(apply,180);
 }
-const next=()=>show(step+1),prev=()=>show(step-1);
-$('next').addEventListener('click',next);$('prev').addEventListener('click',prev);$('close').addEventListener('click',()=>location.assign('/new-york'));
-document.addEventListener('keydown',event=>{if(event.target.closest('input,textarea,select,[contenteditable=true]'))return;if(['ArrowRight','ArrowDown','PageDown'].includes(event.key)||event.key===' '&&!event.target.closest('a,button')){event.preventDefault();next();}if(['ArrowLeft','ArrowUp','PageUp'].includes(event.key)){event.preventDefault();prev();}if(event.key==='Escape')location.assign('/new-york');});
+function finishEntrance(){phase='discover';document.body.classList.remove('is-front','is-entering');$('experience-front').hidden=true;$('experience-front').inert=true;$('discover-stage').style.opacity='';$('experience-front').style.opacity='';$('close').textContent='All six';$('close').removeAttribute('data-experience-close');$('discover-stage').focus({preventScroll:true});}
+function enterWork(item=work){if(phase!=='front')return;configure(item);frontFrozen=false;front.setHighlight(item.id);phase='entering';enteringAt=performance.now();document.body.classList.add('is-entering');if(reduced.matches){front.setFocus(work.id,1);finishEntrance();}}
+function returnToFront(){if(phase==='front'){if(!embedded)location.assign('/new-york');return;}if(phase!=='discover')return;phase='returning';locked=false;front.setFocus('',0);$('experience-front').hidden=false;$('experience-front').inert=false;document.body.classList.remove('is-last','is-entering');document.body.classList.add('is-front');const finish=()=>{phase='front';$('discover-stage').style.opacity='';$('experience-front').style.opacity='';$('close').textContent='Close ×';$('close').setAttribute('data-experience-close','');};if(reduced.matches){finish();return;}$('experience-front').animate([{opacity:0},{opacity:1}],{duration:450,easing:'ease'}).finished.then(finish,finish);$('discover-stage').animate([{opacity:1},{opacity:0}],{duration:450,easing:'ease'});}
+function frame(now){raf=0;if(hidden)return;const dt=last?Math.min(.1,(now-last)/1000):0;last=now;front.update(dt,!reduced.matches&&!frontFrozen&&phase!=='discover');if(phase==='entering'){const p=Math.min(1,(now-enteringAt)/1000),eased=1-(1-p)**3;front.setFocus(work.id,eased);const reveal=Math.max(0,(p-.52)/.48);$('experience-front').style.opacity=String(1-reveal);$('discover-stage').style.opacity=String(reveal);if(p===1)finishEntrance();}raf=requestAnimationFrame(frame);}
+function resume(){hidden=document.hidden;last=0;if(!hidden&&!raf)raf=requestAnimationFrame(frame);}
+document.addEventListener('visibilitychange',resume);addEventListener('pageshow',resume);addEventListener('pagehide',()=>{if(raf)cancelAnimationFrame(raf);raf=0;});
+addEventListener('totehm:experience-enter',()=>{frontFrozen=false;last=0;if(params.has('work'))enterWork(work);});
+const next=()=>phase==='front'?enterWork(work):phase==='discover'?show(step+1):false,prev=()=>{if(phase==='discover'){if(step===0)returnToFront();else show(step-1);}};
+$('next').addEventListener('click',next);$('prev').addEventListener('click',prev);$('close').addEventListener('click',returnToFront);
+$('next-work').addEventListener('click',event=>{event.preventDefault();const item=OPPOSITES[(OPPOSITES.indexOf(work)+1)%OPPOSITES.length];history.replaceState(history.state,'',location.pathname+'?work='+item.id+(embedded?'&embedded=1':''));configure(item);});
+document.addEventListener('keydown',event=>{if(event.target.closest('input,textarea,select,[contenteditable=true]')||event.repeat)return;if(['ArrowRight','ArrowDown','PageDown'].includes(event.key)||event.key===' '&&!event.target.closest('a,button')){event.preventDefault();next();}if(['ArrowLeft','ArrowUp','PageUp'].includes(event.key)){event.preventDefault();prev();}if(event.key==='Escape'){event.preventDefault();returnToFront();}});
 let wheelLock=-Infinity;addEventListener('wheel',event=>{const now=performance.now();if(now-wheelLock<680)return;wheelLock=now;if(event.deltaY>0)next();else if(event.deltaY<0)prev();},{passive:true});
 addEventListener('touchstart',event=>{touchY=event.changedTouches[0].clientY;},{passive:true});addEventListener('touchend',event=>{if(touchY===null)return;const delta=touchY-event.changedTouches[0].clientY;touchY=null;if(Math.abs(delta)>42)(delta>0?next:prev)();},{passive:true});
-window.__totehm_opposites=()=>({build:'new-york-six-works',work:work.id,step,count:work.slides.length,image:$('image').complete,action:$('action').href});
-show(0,true);
+window.__totehm_experience_front=()=>({...front.diagnostics(),phase,ready:front.diagnostics().ready,embedded,frozen:frontFrozen,canvas:'#experience-front-canvas'});
+window.__totehm_opposites=()=>({build:'2026-11-16-opposites-projected-front',phase,work:work.id,step,count:work.slides.length,image:$('image').complete,action:$('action').href,front:front.diagnostics()});
+configure(work);resume();
 </script>
 <script>
 /* ══ LE MOT TOTEHM EST LE TOTEHM — copié de tools/totehm_word.js dans chaque page (jamais importé) ══
