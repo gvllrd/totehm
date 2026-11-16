@@ -36,7 +36,12 @@ html{font-family:'Space Mono',monospace}button,input,select,textarea{font-family
   --no:#ff9a9a;--on:#a9d67c;--coral:#fbd5ca;--navy:#333366;--navy-d:#22224a;--blue-d:#263362;--rep-d:#51224a;--q:'Quantico',sans-serif;--mono:'Space Mono',monospace;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{background:var(--bg);color:var(--mid);font-family:var(--mono);font-size:13px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+html,body{background:var(--bg);color:var(--mid);font-family:var(--mono);font-size:13px;line-height:1.6;-webkit-font-smoothing:antialiased}
+/* ⚠️ 16/11 — `overflow-x:hidden` vit sur `html` SEUL (Wah : « en haut à gauche le totehm ne s'affiche pas entièrement, avec de
+   l'autre côté un curseur blanc pour le faire défiler »). Posé aussi sur `body`, il en faisait une boîte qui défile, haute
+   comme le seul coin membre (tout le reste est en `fixed`) : la pièce qui tourne en dépassait, coupée, et `body` montrait
+   SA barre de défilement à droite. `body` occupe l'écran et ne coupe plus rien. */
+html{overflow-x:hidden}body{min-height:100dvh}
 a{color:inherit;text-decoration:none}
 .hide{display:none!important}
 :focus-visible{outline:1px solid #fff;outline-offset:3px}
@@ -126,7 +131,7 @@ h2 .st.is-on{color:#fff;background:var(--g5)}
   max-width:none!important;white-space:normal!important;overflow:visible!important}
 /* ⚠️ LE PAPIER N'EST PLUS SUR LE BOUTON : il est sur ses DEUX FACES, sinon la pièce n'a pas d'envers.
    `backface-visibility` AUSSI sur les enfants des faces (Safari les laisse traverser autrement). */
-.mc.is-in{--mc-s:64px;position:relative!important;display:block!important;
+.mc.is-in{font-size:0!important;color:transparent!important;--mc-s:64px;position:relative!important;display:block!important;
   width:var(--mc-s)!important;height:var(--mc-s)!important;min-width:var(--mc-s)!important;max-width:var(--mc-s)!important;
   flex:none!important;box-sizing:border-box!important;padding:0!important;border:0!important;border-radius:0!important;
   box-shadow:none!important;background:none!important;overflow:visible!important;

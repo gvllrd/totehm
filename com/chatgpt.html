@@ -33,6 +33,8 @@
   gap:20px;text-align:center;opacity:0;visibility:hidden;transform:translateY(14px);
   transition:opacity .5s ease,transform .5s ease,visibility 0s linear .5s}
 .dc-s.is-on{opacity:1;visibility:visible;transform:none;transition:opacity .5s ease,transform .5s ease,visibility 0s}
+/* le sens du voyage se VOIT : l'écran qu'on quitte part vers le haut, le suivant monte d'en bas (et l'inverse au retour) */
+.dc-s.is-avant{transform:translateY(-14px)}
 .dc-s>*{max-width:min(100%,680px)}
 .dc-h{margin:0;font:700 clamp(24px,3.6vw,44px)/1.16 Quantico,sans-serif;color:#fff;letter-spacing:.01em}
 .dc-p{margin:0;font:400 clamp(15px,1.9vw,21px)/1.6 'Space Mono',monospace;color:#ddd;white-space:pre-line}
@@ -55,6 +57,13 @@
 .dc-row{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
 .dc-slot{width:100%}
 .dc-slot:empty{display:none}
+/* EN COUCHE par-dessus une page (facultatif) : `is-overlay`, invisible tant que `is-open` n'est pas posée ; `.dc-x` la referme */
+.dc.is-overlay{z-index:9000;opacity:0;visibility:hidden;transition:opacity .35s ease,visibility 0s linear .35s}
+.dc.is-overlay.is-open{opacity:1;visibility:visible;transition:opacity .35s ease,visibility 0s}
+.dc-x{position:absolute;top:8px;right:8px;z-index:3;width:44px;height:44px;border:0;padding:0;background:none;color:#a0a0a0;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;transition:color .15s}
+.dc-x svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round}
+.dc.has-x .dc-progress{right:auto;left:18px}
 /* la structure : progression, rail, consigne, chevron — gris sombre, jamais de couleur */
 .dc-progress{position:absolute;top:22px;right:18px;font:10px/1.4 'Space Mono',monospace;letter-spacing:.14em;color:#888;pointer-events:none}
 .dc-rail{position:absolute;bottom:72px;left:50%;transform:translateX(-50%);display:flex;gap:6px;pointer-events:none}
@@ -64,11 +73,22 @@
 .dc-next{position:absolute;bottom:96px;left:50%;transform:translateX(-50%);background:none;border:0;padding:10px;cursor:pointer;color:#a0a0a0;transition:color .15s,opacity .3s}
 .dc-next svg{display:block;width:22px;height:22px;animation:dc-bob 1.8s ease-in-out infinite}
 .dc-next:focus-visible,.dc-btn:focus-visible,.dc-lnk:focus-visible{outline:1px solid #fff;outline-offset:3px}
+.dc-x:focus-visible{outline:1px solid #fff;outline-offset:-6px}
 .dc.is-last .dc-next,.dc.is-last .dc-hint{opacity:0;pointer-events:none}
 @keyframes dc-bob{50%{transform:translateY(4px)}}
-@media(hover:hover){.dc-btn:hover{background:#383838;opacity:1}.dc-next:hover{color:#fff}.dc-lnk:hover{color:#fff}}
+@media(hover:hover){.dc-btn:hover{background:#383838;opacity:1}.dc-next:hover,.dc-x:hover{color:#fff}.dc-lnk:hover{color:#fff}}
 @media(max-width:650px){.dc-s{inset:76px 20px 140px;gap:16px}.dc.has-cta .dc-s{inset:76px 20px 214px}}
-@media(prefers-reduced-motion:reduce){.dc-s,.dc-s.is-on{transition:none;transform:none}.dc-next svg{animation:none}}
+/* un écran BAS (fenêtre réduite, téléphone couché) : tout se resserre et rien ne se chevauche — après la règle de largeur */
+@media(max-height:620px){
+  .dc-s{inset:60px 20px 96px;gap:12px}.dc.has-cta .dc-s{inset:60px 20px 150px}
+  .dc-cta,.dc.has-cta.is-last .dc-cta{bottom:84px}.dc-next{display:none}.dc-rail{bottom:56px}.dc-hint{bottom:22px}
+  .dc-h{font-size:clamp(19px,3.2vw,30px)}.dc-p{font-size:clamp(13px,1.6vw,16px);line-height:1.5}.dc-btn{min-height:42px;padding:9px 22px}
+}
+@media(max-height:440px){
+  .dc-s{inset:50px 20px 50px}.dc.has-cta .dc-s{inset:50px 20px 100px}
+  .dc-cta,.dc.has-cta.is-last .dc-cta{bottom:44px}.dc-rail{bottom:22px}.dc-hint{display:none}
+}
+@media(prefers-reduced-motion:reduce){.dc-s,.dc-s.is-on,.dc-s.is-avant{transition:none;transform:none}.dc-next svg{animation:none}.dc.is-overlay,.dc.is-overlay.is-open{transition:none}}
 /* ══ fin DISCOVER ══ */
 header{position:fixed;top:0;left:0;z-index:30}
 main.dc{width:auto;margin:0}
@@ -138,6 +158,7 @@ footer:hover,
 .dc-btn:hover,
 .dc-btn.is-quiet:hover,
 .dc-lnk:hover,
+.dc-x:hover,
 .dc-progress:hover,
 .dc-hint:hover,
 .dc-next:hover,
@@ -202,7 +223,7 @@ window.TOTEHM_DISCOVER = (() => {
     const doigt = () => !window.matchMedia('(hover:hover) and (pointer:fine)').matches;
     function lire(){ ecrans = [...stage.querySelectorAll('.dc-s')]; rail.innerHTML = ecrans.map(() => '<span></span>').join(''); }
     function peindre(instant){
-      ecrans.forEach((e, k) => { const on = k === i; e.classList.toggle('is-on', on); e.setAttribute('aria-hidden', String(!on));
+      ecrans.forEach((e, k) => { const on = k === i; e.classList.toggle('is-on', on); e.classList.toggle('is-avant', k < i); e.setAttribute('aria-hidden', String(!on));
         if(instant) e.style.transition = 'none'; else e.style.removeProperty('transition'); });
       if(instant) void hote.offsetWidth;
       rail.querySelectorAll('span').forEach((s, k) => s.classList.toggle('on', k === i));

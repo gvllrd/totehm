@@ -42,7 +42,12 @@ html{font-family:'Space Mono',monospace}button,input,select,textarea{font-family
   --paper:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 224.88 224.08' preserveAspectRatio='none'%3E%3Cdefs%3E%3Cmask id='m'%3E%3Crect x='-40' y='-40' width='310' height='310' fill='%23fff'/%3E%3Ccircle cx='56.421' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='56.421' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='112.440' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='112.440' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='168.459' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='168.459' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='56.020' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='56.020' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='112.039' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='112.039' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='168.059' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='168.059' r='13.86' fill='%23000'/%3E%3C/mask%3E%3C/defs%3E%3Crect x='0.402' y='0' width='224.076' height='224.078' fill='%23333366' mask='url(%23m)'/%3E%3C/svg%3E");
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{background:var(--bg);color:var(--mid);font-family:var(--mono);font-size:13px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+html,body{background:var(--bg);color:var(--mid);font-family:var(--mono);font-size:13px;line-height:1.6;-webkit-font-smoothing:antialiased}
+/* ⚠️ 16/11 — `overflow-x:hidden` vit sur `html` SEUL (Wah : « en haut à gauche le totehm ne s'affiche pas entièrement, avec de
+   l'autre côté un curseur blanc pour le faire défiler »). Posé aussi sur `body`, il en faisait une boîte qui défile, haute
+   comme le seul coin membre (tout le reste est en `fixed`) : la pièce qui tourne en dépassait, coupée, et `body` montrait
+   SA barre de défilement à droite. `body` occupe l'écran et ne coupe plus rien. */
+html{overflow-x:hidden}body{min-height:100dvh}
 a{color:inherit;text-decoration:none}
 .hide{display:none!important}
 :focus-visible{outline:1px solid #fff;outline-offset:3px}
@@ -183,7 +188,7 @@ html.is-embed,html.is-embed body{background:#000}
   max-width:none!important;white-space:normal!important;overflow:visible!important}
 /* ⚠️ LE PAPIER N'EST PLUS SUR LE BOUTON : il est sur ses DEUX FACES, sinon la pièce n'a pas d'envers.
    `backface-visibility` AUSSI sur les enfants des faces (Safari les laisse traverser autrement). */
-.mc.is-in{--mc-s:64px;position:relative!important;display:block!important;
+.mc.is-in{font-size:0!important;color:transparent!important;--mc-s:64px;position:relative!important;display:block!important;
   width:var(--mc-s)!important;height:var(--mc-s)!important;min-width:var(--mc-s)!important;max-width:var(--mc-s)!important;
   flex:none!important;box-sizing:border-box!important;padding:0!important;border:0!important;border-radius:0!important;
   box-shadow:none!important;background:none!important;overflow:visible!important;
@@ -239,6 +244,8 @@ html.is-embed,html.is-embed body{background:#000}
   gap:20px;text-align:center;opacity:0;visibility:hidden;transform:translateY(14px);
   transition:opacity .5s ease,transform .5s ease,visibility 0s linear .5s}
 .dc-s.is-on{opacity:1;visibility:visible;transform:none;transition:opacity .5s ease,transform .5s ease,visibility 0s}
+/* le sens du voyage se VOIT : l'écran qu'on quitte part vers le haut, le suivant monte d'en bas (et l'inverse au retour) */
+.dc-s.is-avant{transform:translateY(-14px)}
 .dc-s>*{max-width:min(100%,680px)}
 .dc-h{margin:0;font:700 clamp(24px,3.6vw,44px)/1.16 Quantico,sans-serif;color:#fff;letter-spacing:.01em}
 .dc-p{margin:0;font:400 clamp(15px,1.9vw,21px)/1.6 'Space Mono',monospace;color:#ddd;white-space:pre-line}
@@ -261,6 +268,13 @@ html.is-embed,html.is-embed body{background:#000}
 .dc-row{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
 .dc-slot{width:100%}
 .dc-slot:empty{display:none}
+/* EN COUCHE par-dessus une page (facultatif) : `is-overlay`, invisible tant que `is-open` n'est pas posée ; `.dc-x` la referme */
+.dc.is-overlay{z-index:9000;opacity:0;visibility:hidden;transition:opacity .35s ease,visibility 0s linear .35s}
+.dc.is-overlay.is-open{opacity:1;visibility:visible;transition:opacity .35s ease,visibility 0s}
+.dc-x{position:absolute;top:8px;right:8px;z-index:3;width:44px;height:44px;border:0;padding:0;background:none;color:#a0a0a0;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;transition:color .15s}
+.dc-x svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round}
+.dc.has-x .dc-progress{right:auto;left:18px}
 /* la structure : progression, rail, consigne, chevron — gris sombre, jamais de couleur */
 .dc-progress{position:absolute;top:22px;right:18px;font:10px/1.4 'Space Mono',monospace;letter-spacing:.14em;color:#888;pointer-events:none}
 .dc-rail{position:absolute;bottom:72px;left:50%;transform:translateX(-50%);display:flex;gap:6px;pointer-events:none}
@@ -270,15 +284,26 @@ html.is-embed,html.is-embed body{background:#000}
 .dc-next{position:absolute;bottom:96px;left:50%;transform:translateX(-50%);background:none;border:0;padding:10px;cursor:pointer;color:#a0a0a0;transition:color .15s,opacity .3s}
 .dc-next svg{display:block;width:22px;height:22px;animation:dc-bob 1.8s ease-in-out infinite}
 .dc-next:focus-visible,.dc-btn:focus-visible,.dc-lnk:focus-visible{outline:1px solid #fff;outline-offset:3px}
+.dc-x:focus-visible{outline:1px solid #fff;outline-offset:-6px}
 .dc.is-last .dc-next,.dc.is-last .dc-hint{opacity:0;pointer-events:none}
 @keyframes dc-bob{50%{transform:translateY(4px)}}
-@media(hover:hover){.dc-btn:hover{background:#383838;opacity:1}.dc-next:hover{color:#fff}.dc-lnk:hover{color:#fff}}
+@media(hover:hover){.dc-btn:hover{background:#383838;opacity:1}.dc-next:hover,.dc-x:hover{color:#fff}.dc-lnk:hover{color:#fff}}
 @media(max-width:650px){.dc-s{inset:76px 20px 140px;gap:16px}.dc.has-cta .dc-s{inset:76px 20px 214px}}
-@media(prefers-reduced-motion:reduce){.dc-s,.dc-s.is-on{transition:none;transform:none}.dc-next svg{animation:none}}
+/* un écran BAS (fenêtre réduite, téléphone couché) : tout se resserre et rien ne se chevauche — après la règle de largeur */
+@media(max-height:620px){
+  .dc-s{inset:60px 20px 96px;gap:12px}.dc.has-cta .dc-s{inset:60px 20px 150px}
+  .dc-cta,.dc.has-cta.is-last .dc-cta{bottom:84px}.dc-next{display:none}.dc-rail{bottom:56px}.dc-hint{bottom:22px}
+  .dc-h{font-size:clamp(19px,3.2vw,30px)}.dc-p{font-size:clamp(13px,1.6vw,16px);line-height:1.5}.dc-btn{min-height:42px;padding:9px 22px}
+}
+@media(max-height:440px){
+  .dc-s{inset:50px 20px 50px}.dc.has-cta .dc-s{inset:50px 20px 100px}
+  .dc-cta,.dc.has-cta.is-last .dc-cta{bottom:44px}.dc-rail{bottom:22px}.dc-hint{display:none}
+}
+@media(prefers-reduced-motion:reduce){.dc-s,.dc-s.is-on,.dc-s.is-avant{transition:none;transform:none}.dc-next svg{animation:none}.dc.is-overlay,.dc.is-overlay.is-open{transition:none}}
 /* ══ fin DISCOVER ══ */
 /* ── ce qui est propre à la page d'un membre ── */
 body:has(#page:not(.hide)) main{max-width:none;padding:0}
-.dc .paper{width:min(176px,44vw);margin:0 auto}
+.dc .paper{width:min(176px,44vw,26dvh);margin:0 auto}
 .dc-ints{display:flex;gap:8px;justify-content:center}
 .dc-ints i{width:7px;height:7px;border-radius:50%;display:block}
 .dc-note{position:absolute;left:0;right:0;bottom:112px;margin:0;text-align:center;font:400 10px/1.4 'Space Mono',monospace;letter-spacing:.12em;color:#888;pointer-events:none}
@@ -368,6 +393,7 @@ body.is-search .note:hover,
 .dc-btn:hover,
 .dc-btn.is-quiet:hover,
 .dc-lnk:hover,
+.dc-x:hover,
 .dc-progress:hover,
 .dc-hint:hover,
 .dc-next:hover,
@@ -444,7 +470,7 @@ window.TOTEHM_DISCOVER = (() => {
     const doigt = () => !window.matchMedia('(hover:hover) and (pointer:fine)').matches;
     function lire(){ ecrans = [...stage.querySelectorAll('.dc-s')]; rail.innerHTML = ecrans.map(() => '<span></span>').join(''); }
     function peindre(instant){
-      ecrans.forEach((e, k) => { const on = k === i; e.classList.toggle('is-on', on); e.setAttribute('aria-hidden', String(!on));
+      ecrans.forEach((e, k) => { const on = k === i; e.classList.toggle('is-on', on); e.classList.toggle('is-avant', k < i); e.setAttribute('aria-hidden', String(!on));
         if(instant) e.style.transition = 'none'; else e.style.removeProperty('transition'); });
       if(instant) void hote.offsetWidth;
       rail.querySelectorAll('span').forEach((s, k) => s.classList.toggle('on', k === i));

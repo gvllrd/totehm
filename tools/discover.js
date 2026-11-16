@@ -20,7 +20,7 @@ window.TOTEHM_DISCOVER = (() => {
     const doigt = () => !window.matchMedia('(hover:hover) and (pointer:fine)').matches;
     function lire(){ ecrans = [...stage.querySelectorAll('.dc-s')]; rail.innerHTML = ecrans.map(() => '<span></span>').join(''); }
     function peindre(instant){
-      ecrans.forEach((e, k) => { const on = k === i; e.classList.toggle('is-on', on); e.setAttribute('aria-hidden', String(!on));
+      ecrans.forEach((e, k) => { const on = k === i; e.classList.toggle('is-on', on); e.classList.toggle('is-avant', k < i); e.setAttribute('aria-hidden', String(!on));
         if(instant) e.style.transition = 'none'; else e.style.removeProperty('transition'); });
       if(instant) void hote.offsetWidth;
       rail.querySelectorAll('span').forEach((s, k) => s.classList.toggle('on', k === i));
