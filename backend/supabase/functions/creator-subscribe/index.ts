@@ -27,6 +27,7 @@
 import Stripe from "npm:stripe@14";
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { corsHeaders, SITE_COM } from "../_shared/origins.ts";
+import { checkoutExpiresAt, checkoutKey } from "../_shared/creator-checkout.ts";
 
 const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!);
 const sb = createClient(
@@ -77,7 +78,8 @@ Deno.serve(async (req) => {
 
   try {
     const meta = { product: "creator_sub", creator_id: offer.creator_id, fan_id: user.id };
-    const session = await stripe.checkout.sessions.create({
+    const now = Date.now();
+    const params: Stripe.Checkout.SessionCreateParams = {
       mode: "subscription",
       customer_email: user.email ?? undefined,
       line_items: [{
@@ -97,13 +99,30 @@ Deno.serve(async (req) => {
       // Connect reviendra, ces deux lignes reviendront avec lui.
       subscription_data: { metadata: meta },
       metadata: meta,
+      // 16/11 : la session ne vit qu'une demi-heure (deux au plus), comme sa clé d'idempotence.
+      expires_at: checkoutExpiresAt(now),
       success_url: depuis === "console"
         ? `${SITE_COM}/console?subscribed=${encodeURIComponent(pseudo)}`
         : `${SITE_COM}/@${encodeURIComponent(pseudo)}?subscribed=1`,
       cancel_url: depuis === "console"
         ? `${SITE_COM}/console`
         : `${SITE_COM}/@${encodeURIComponent(pseudo)}`,
-    });
+    };
+    // ⚠️ UN SEUL PAIEMENT POSSIBLE (16/11, audit de lancement). Deux onglets ou un double tap ouvraient deux
+    // sessions, donc deux abonnements pour le même créateur : la base n'en garde qu'un, l'autre était prélevé
+    // chaque année sans que personne puisse l'arrêter. Avec la clé, Stripe rend la MÊME session pendant la
+    // demi-heure. Si la clé est refusée (paramètres différents : un pseudo écrit autrement), on ouvre sans elle —
+    // le webhook arrête de toute façon un abonnement en double (`creatorCheckoutCompleted`).
+    let session: Stripe.Checkout.Session;
+    try {
+      session = await stripe.checkout.sessions.create(params,
+        { idempotencyKey: checkoutKey(offer.creator_id, user.id, offer.price_cents, depuis, now) });
+    } catch (e) {
+      const type = (e as { type?: string })?.type ?? "";
+      if (type !== "StripeIdempotencyError") throw e;
+      console.error("[creator-subscribe] clé d'idempotence refusée, session ouverte sans elle");
+      session = await stripe.checkout.sessions.create(params);
+    }
     return Response.json({ url: session.url }, { headers: cors });
   } catch (e) {
     console.error("[creator-subscribe]", e instanceof Error ? e.message : e);

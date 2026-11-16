@@ -32,6 +32,8 @@
 
 import Stripe from "npm:stripe@14";
 import { createClient } from "npm:@supabase/supabase-js@2";
+import { creatorCheckoutCompleted, creatorInvoicePaid, creatorSubscriptionChanged, invoiceSubscriptionId, periodEndOf,
+  type CreatorSubDeps } from "../_shared/creator-sub.ts";
 
 const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!, {
   apiVersion: "2024-06-20",
@@ -194,7 +196,7 @@ async function handleSubscriptionCheckout(session: Stripe.Checkout.Session) {
   const trialEnd = sub.trial_end
     ? new Date(sub.trial_end * 1000).toISOString()
     : null;
-  const periodEnd = new Date(sub.current_period_end * 1000).toISOString();
+  const periodEnd = periodEndOf(sub);   // les deux formes de l'API ; null plutôt qu'un RangeError
 
   const { error } = await admin.from("subscriptions").upsert(
     {
@@ -205,7 +207,7 @@ async function handleSubscriptionCheckout(session: Stripe.Checkout.Session) {
       member_locked_price:  lockedPrice,
       trial_started_at:     now,
       trial_ends_at:        trialEnd,
-      current_period_end:   periodEnd,
+      ...(periodEnd ? { current_period_end: periodEnd } : {}),
       started_at:           now,
     },
     { onConflict: "user_id" },
@@ -225,37 +227,49 @@ async function handleSubscriptionCheckout(session: Stripe.Checkout.Session) {
 // l'ACCÈS ; le MONTANT dû au créateur s'écrit dans le grand livre, par
 // `handleInvoicePaid`, une ligne par facture — jamais ici.
 
+// ⚠️ 16/11/2026 (audit de lancement) : la logique vit dans `_shared/creator-sub.ts`, testée sous Node
+// (`tests/fn/creator-sub.mjs`). Elle lit les DEUX formes d'un objet Stripe (un événement arrive au format de
+// l'endpoint, pas du SDK), écrit la fin de période dès le checkout, et arrête un abonnement en DOUBLE au lieu
+// de laisser le premier orphelin. Ici : seulement les vraies frontières (la base, Stripe).
+const creatorDeps: CreatorSubDeps = {
+  subscription: (id) => stripe.subscriptions.retrieve(id),
+  row: async (creator, fan) => {
+    const { data, error } = await admin.from("creator_subscriptions")
+      .select("stripe_subscription_id,status").eq("creator_id", creator).eq("fan_id", fan).maybeSingle();
+    if (error) throw new Error("creator_subscriptions: " + error.message);
+    return data;
+  },
+  upsert: async (row) => {
+    const { error } = await admin.from("creator_subscriptions").upsert(row, { onConflict: "creator_id,fan_id" });
+    if (error) throw new Error("creator_subscriptions: " + error.message);
+  },
+  update: async (id, patch) => {
+    const { error } = await admin.from("creator_subscriptions").update(patch).eq("stripe_subscription_id", id);
+    if (error) throw new Error("creator_subscriptions: " + error.message);
+  },
+  ledger: async (a) => {
+    const { data, error } = await admin.rpc("ledger_creator_invoice", a);
+    // ⚠️ UNE ERREUR DE RPC SE JOURNALISE ET SE REJOUE. Sans le `throw`,
+    // Stripe reçoit 200 et ne relivre jamais : un gain perdu en silence.
+    if (error) throw new Error("ledger: " + error.message);
+    return data;
+  },
+  cancelNow: async (id) => { await stripe.subscriptions.cancel(id); },
+  // Un incident non noté ne doit pas faire rejouer l'événement (l'arrêt du doublon est déjà fait) : on le crie.
+  incident: async (kind, session, detail) => {
+    const { error } = await admin.from("market_incidents").insert({ stripe_session: session, kind, detail });
+    if (error) console.error("INCIDENT NON NOTÉ:", kind, JSON.stringify(detail), error.message);
+  },
+};
+
 async function handleCreatorSub(session: Stripe.Checkout.Session) {
-  const creator = session.metadata?.creator_id;
-  const fan = session.metadata?.fan_id;
-  if (!creator || !fan) {
-    console.error("creator_sub sans metadata:", session.id);
-    return;
-  }
-  const { error } = await admin.from("creator_subscriptions").upsert({
-    creator_id: creator,
-    fan_id: fan,
-    stripe_subscription_id: String(session.subscription ?? ""),
-    status: "active",
-    amount_cents: session.amount_total ?? null,
-    currency: session.currency ?? "eur",
-  }, { onConflict: "creator_id,fan_id" });
-  if (error) throw error;
+  const r = await creatorCheckoutCompleted(creatorDeps, session);
+  if (!r.ok) console.error("creator_sub refusé:", session.id, JSON.stringify(r));
+  else console.log("creator_sub:", session.id, JSON.stringify(r));
 }
 
 async function handleCreatorSubState(sub: Stripe.Subscription) {
-  // On vise par l'identifiant Stripe : c'est la seule clé que les deux
-  // côtés partagent, et elle ne bouge jamais.
-  const { error } = await admin.from("creator_subscriptions")
-    .update({
-      status: sub.status,
-      current_period_end: new Date(sub.current_period_end * 1000).toISOString(),
-      // Une annulation demandée n'est pas une annulation : l'abonné garde
-      // ce qu'il a payé jusqu'à la fin de la période. La console le dit.
-      ending: !!sub.cancel_at_period_end,
-    })
-    .eq("stripe_subscription_id", sub.id);
-  if (error) throw error;
+  await creatorSubscriptionChanged(creatorDeps, sub);
 }
 
 // ══ LE GRAND LIVRE — une facture payée = une ligne · 23/09/2026 ═══════
@@ -271,49 +285,11 @@ async function handleCreatorSubState(sub: Stripe.Subscription) {
 // ⚠️ L'IDEMPOTENCE EST EN BASE (`unique (source, kind)`). Deux livraisons
 // de la même facture n'écrivent qu'une ligne, même en parallèle.
 async function handleInvoicePaid(invoice: Stripe.Invoice) {
-  const subId = typeof invoice.subscription === "string"
-    ? invoice.subscription
-    : invoice.subscription?.id;
-  if (!subId) return; // un paiement unique (THP, Cloth) n'a pas de facture d'abonnement
-
-  let meta = (invoice as unknown as { subscription_details?: { metadata?: Record<string, string> } })
-    .subscription_details?.metadata ?? {};
-  if (!meta.product) {
-    // Filet : un objet Invoice ancien ou partiel. On relit l'abonnement,
-    // qui porte la metadata posée par `creator-subscribe`.
-    const sub = await stripe.subscriptions.retrieve(subId);
-    meta = (sub.metadata ?? {}) as Record<string, string>;
-  }
-
-  switch (meta.product) {
-    case "creator_sub": {
-      if (!meta.creator_id) {
-        console.error("invoice.paid creator_sub sans creator_id:", invoice.id);
-        return;
-      }
-      const { data, error } = await admin.rpc("ledger_creator_invoice", {
-        p_invoice: invoice.id,
-        p_subscription: subId,
-        p_creator: meta.creator_id,
-        p_fan: meta.fan_id ?? null,
-        p_gross: invoice.amount_paid ?? 0,
-        p_currency: invoice.currency ?? "eur",
-      });
-      // ⚠️ UNE ERREUR DE RPC SE JOURNALISE ET SE REJOUE. Sans le `throw`,
-      // Stripe reçoit 200 et ne relivre jamais : un gain perdu en silence.
-      if (error) throw new Error("ledger: " + error.message);
-      console.log("grand livre:", invoice.id, JSON.stringify(data));
-      break;
-    }
-    case "subscription":
-      // L'adhésion FIGHER : aucun partage, rien à inscrire au grand livre.
-      break;
-    case "higher_sub":
-      // L'abonnement Higher : revenu de la plateforme, rien au grand livre.
-      break;
-    default:
-      console.log("invoice.paid ignoré — produit:", meta.product, invoice.id);
-  }
+  // Un paiement unique (THP, Cloth), l'adhésion FIGHER et l'ancien abonnement Higher n'ont rien à écrire au
+  // grand livre : `creatorInvoicePaid` les rend `skipped`. Seul `creator_sub` crédite — 80 % au créateur.
+  const r = await creatorInvoicePaid(creatorDeps, invoice);
+  if (!r.ok) console.error("invoice.paid creator_sub refusé:", invoice.id, JSON.stringify(r));
+  else console.log("invoice.paid:", invoice.id, JSON.stringify(r));
 }
 
 // ══ LE MARCHÉ FIGHER — une vente payée devient une propriété · 30/09/2026 ══
@@ -562,12 +538,12 @@ async function handleSubscriptionUpdated(sub: Stripe.Subscription) {
   const trialEnd = sub.trial_end
     ? new Date(sub.trial_end * 1000).toISOString()
     : null;
-  const periodEnd = new Date(sub.current_period_end * 1000).toISOString();
+  const periodEnd = periodEndOf(sub);   // les deux formes de l'API ; null plutôt qu'un RangeError
 
   const { error } = await admin.from("subscriptions")
     .update({
       status:              sub.status,
-      current_period_end:  periodEnd,
+      ...(periodEnd ? { current_period_end: periodEnd } : {}),
       cancel_at_period_end: sub.cancel_at_period_end,
       trial_ends_at:       trialEnd,
     })
@@ -600,9 +576,7 @@ async function handleSubscriptionDeleted(sub: Stripe.Subscription) {
 }
 
 async function handlePaymentFailed(invoice: Stripe.Invoice) {
-  const subId = typeof invoice.subscription === "string"
-    ? invoice.subscription
-    : invoice.subscription?.id;
+  const subId = invoiceSubscriptionId(invoice);
 
   if (!subId) {
     console.log("invoice.payment_failed sans subscription — ignoré:", invoice.id);

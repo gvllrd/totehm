@@ -85,10 +85,11 @@ Deno.serve(async (req) => {
           { cancel_at_period_end: true });
         await sb.from("creator_subscriptions").update({ ending: true })
           .eq("stripe_subscription_id", cs.stripe_subscription_id);
-        return Response.json({
-          ok: true,
-          until: new Date(sub.current_period_end * 1000).toISOString(),
-        }, { headers: cors });
+        // Les deux formes de l'API (la fin de période a changé de place en 2025) : jamais `new Date(NaN)`.
+        const s = sub as unknown as { current_period_end?: number; items?: { data?: { current_period_end?: number }[] } };
+        const fin = Number(s.current_period_end ?? s.items?.data?.[0]?.current_period_end);
+        return Response.json({ ok: true, until: Number.isFinite(fin) && fin > 0 ? new Date(fin * 1000).toISOString() : null },
+          { headers: cors });
       } catch (e) {
         const msg = e instanceof Error ? e.message : String(e);
         console.error("[club-billing] cancel", msg);
