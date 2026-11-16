@@ -45,7 +45,7 @@ try{
     await pg.waitForFunction(()=>typeof window.__totehm_lv==='function');
     if(sample.session!==false||sample.guest)await pg.waitForSelector('body.member');
     await settled(pg,'c');
-    await pg.click('#lvn-dn');await settled(pg,'b');
+    await pg.click('#lvn-up');await settled(pg,'b');
     const state=await pg.evaluate(()=>{
       const pitch=document.getElementById('chatgpt-pitch'),button=document.getElementById('chatgpt-connect'),panel=document.getElementById('lv-b');
       return {label:panel.getAttribute('aria-label'),text:pitch?.textContent.replace(/\s+/g,' ').trim(),tab:pitch?.tabIndex,
@@ -73,9 +73,9 @@ try{
     ok((await pg.evaluate(()=>window.__totehm_lv().vue))==='b',sample.name+' · scrolling preserves the bottom view');
     ok(attempts.length===0&&(await pg.evaluate(()=>window.__geoCalls))===0,sample.name+' · the pitch makes no Higher Self or location request');
     await pg.screenshot({path:OUT+'/'+sample.name+'.png'});
-    await pg.click('#lvn-up');await settled(pg,'c');
+    await pg.click('#lvn-dn');await settled(pg,'c');
     ok(noErrors(log),sample.name+' · back to centre without a runtime error');
-    await pg.click('#lvn-dn');await settled(pg,'b');await pg.click('#chatgpt-connect');await pg.waitForURL(origin+'/chatgpt');
+    await pg.click('#lvn-up');await settled(pg,'b');await pg.click('#chatgpt-connect');await pg.waitForURL(origin+'/chatgpt');
     ok(await pg.locator('#panel').count()===1,sample.name+' · CTA opens the connection page');
     await ctx.close();
   }
@@ -90,13 +90,13 @@ try{
     await pg.click('#lv-m-members');
     await pg.waitForSelector('#mb-q:visible');await pg.fill('#mb-q','kai3');await pg.keyboard.press('Enter');
     await pg.waitForFunction(()=>document.body.classList.contains('lv-membre')&&!document.body.classList.contains('mb-cherche')&&!window.__totehm_lv().bouge);
-    await pg.click('#lvn-dn');await settled(pg,'b');
+    await pg.click('#lvn-up');await settled(pg,'b');
     await pg.waitForSelector('#mb-offre [data-mbo="sub"]',{state:'attached'});
     const offer=await pg.textContent('#mb-offre');
     console.log('Member offer fixture',JSON.stringify({offer,pitchVisible:await pg.isVisible('#chatgpt-pitch'),label:await pg.getAttribute('#lv-b','aria-label')}));
 
     ok(/kai3/.test(offer)&&/SUBSCRIBE/.test(offer)&&!(await pg.isVisible('#chatgpt-pitch'))&&(await pg.getAttribute('#lv-b','aria-label'))==='Member offer','Members · its bottom view keeps the member offer and hides the personal pitch');
-    await pg.click('#lvn-up');await settled(pg,'c');
+    await pg.click('#lvn-dn');await settled(pg,'c');
     ok((await pg.evaluate(()=>window.__totehm_lv().mode))==='members'&&noErrors(log),'Members · return keeps the visited ecosystem');
     await ctx.close();}
 
@@ -105,7 +105,7 @@ try{
   {const {pg,ctx}=await page(browser,{dir:'com',origin,tables,session:false,viewport:{width:1280,height:860}});
     await pg.emulateMedia({reducedMotion:'no-preference'});
     await pg.goto(origin+'/totehm');await pg.waitForFunction(()=>window.__totehm_lv);await settled(pg,'c');
-    await pg.click('#lvn-dn');await settled(pg,'b');await pg.waitForTimeout(250);
+    await pg.click('#lvn-up');await settled(pg,'b');await pg.waitForTimeout(250);
     const before=await pg.evaluate(()=>({gpt:getComputedStyle(document.getElementById('rf-gpt')).transform,badge:getComputedStyle(document.getElementById('lv-slogan')).transform}));
     await pg.waitForTimeout(250);
     const after=await pg.evaluate(()=>({gpt:getComputedStyle(document.getElementById('rf-gpt')).transform,badge:getComputedStyle(document.getElementById('lv-slogan')).transform,repeat:getComputedStyle(document.getElementById('rf-gpt')).animationIterationCount}));

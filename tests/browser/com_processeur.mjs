@@ -115,7 +115,7 @@ try{
   ok(parseFloat(c.creuxOp)>=.45,'la couleur d\'une intention vide se LIT ('+c.creuxOp+')');
   ok(!c.flou,'aucun flou (socle, ramifications)');
   ok(!c.partis.length,'plus de manette, plus de galaxie, plus de radar (balisage retiré) '+c.partis.join(','));
-  ok(c.cotes===2&&c.up==='Get Higher'&&c.dn==='Higher my ChatGPT'&&c.lf==='Media'&&c.rt==='Spots'&&c.mine==='true'&&c.others==='false',
+  ok(c.cotes===2&&c.up==='Higher my ChatGPT'&&c.dn==='Get Higher'&&c.lf==='Media'&&c.rt==='Spots'&&c.mine==='true'&&c.others==='false',
      'quatre chevrons discrets (↑ Get Higher, ↓ Higher my ChatGPT, ← Media, → Spots) ; [Mine] coché');
   ok(c.sigAbs&&c.connAbs&&/to open it · (Turn|Swipe) to configure it$/.test(c.tap)&&c.bouche==='0',
     'plus de nom ni d\'espace membre sur l\'atterrissage : le nom ne vit que sur la face VERSO ; « '+c.tap+' » ; la bouche invisible au centre');
@@ -152,26 +152,26 @@ try{
   const a0=(await lv(pg)).allers;
   /* 21/10 — le second geste n'est plus PERDU (Wah : « quelquefois les mouvements ne fonctionnent pas ») : il attend la fin du
      premier, puis part ; jamais deux voyages à la fois. */
-  await pg.keyboard.press('ArrowDown');await pg.keyboard.press('ArrowUp');
+  await pg.keyboard.press('ArrowUp');await pg.keyboard.press('ArrowDown');
   const mid=await lv(pg);await pg.waitForFunction(a=>{const d=window.__totehm_lv();return d.allers===a&&!d.bouge;},a0+2,{timeout:6000}).catch(()=>{});
-  let d=await lv(pg);ok(mid.vue==='b'&&mid.bouge&&d.vue==='c'&&d.allers===a0+2,'↓ puis ↑ aussitôt : Higher my ChatGPT, PUIS le centre (le second attend, jamais deux à la fois)');
+  let d=await lv(pg);ok(mid.vue==='b'&&mid.bouge&&d.vue==='c'&&d.allers===a0+2,'↑ puis ↓ aussitôt : Higher my ChatGPT (en haut depuis le 16/11), PUIS le centre (le second attend, jamais deux à la fois)');
   await pg.keyboard.press('Escape');await vers(pg,'c');
-  await pg.keyboard.press('ArrowUp');await vers(pg,'h');
-  await pg.keyboard.press('ArrowUp');await pg.waitForTimeout(500);
-  ok((await lv(pg)).vue==='h','↑ : Get Higher ; ↑ encore : rien au-dessus');
-  await pg.keyboard.press('ArrowDown');await vers(pg,'c');ok((await lv(pg)).vue==='c','↓ depuis Get Higher : le centre');
+  await pg.keyboard.press('ArrowDown');await vers(pg,'h');
+  await pg.keyboard.press('ArrowDown');await pg.waitForTimeout(500);
+  ok((await lv(pg)).vue==='h','↓ : Get Higher ; ↓ encore : rien au-dessous');
+  await pg.keyboard.press('ArrowUp');await vers(pg,'c');ok((await lv(pg)).vue==='c','↑ depuis Get Higher : le centre');
   const geste=async dy=>{await pg.waitForTimeout(300);for(let i=0;i<4;i++){await pg.mouse.wheel(0,dy/4);await pg.waitForTimeout(16);}await calme(pg);await pg.waitForTimeout(400);return (await lv(pg)).vue;};
   await pg.mouse.move(640,600);
   const t=[await geste(220),await geste(-220),await geste(-220),await geste(220)];
-  ok(t.join(',')==='h,c,b,c','22/10 · le trackpad est un manche, vertical : deux doigts vers le haut (deltaY > 0) → Get Higher : '+t.join(','));
+  ok(t.join(',')==='b,c,h,c','22/10 · le trackpad est un manche, vertical : deux doigts vers le haut (deltaY > 0, le scroll naturel) → Higher my ChatGPT (16/11) : '+t.join(','));
   {await pg.waitForTimeout(300);await pg.mouse.wheel(0,60);await pg.waitForTimeout(900);ok((await lv(pg)).vue==='c','un petit défilement (60 px) ne change pas de vue');}
   /* 22/10 — l'horizontale est un manche : deux doigts vers la gauche (`deltaX > 0`) vont à GAUCHE. */
   const gesteX=async dx=>{await pg.waitForTimeout(300);for(let i=0;i<4;i++){await pg.mouse.wheel(dx/4,0);await pg.waitForTimeout(16);}await calme(pg);await pg.waitForTimeout(400);return (await lv(pg)).vue;};
   const tx=[await gesteX(220),await gesteX(-220),await gesteX(-220),await gesteX(220)];
   ok(tx.join(',')==='g,c,d,c','le trackpad, horizontal : deltaX > 0 → mes shorts, < 0 → mes spots : '+tx.join(','));
-  await pg.click('#lvn-dn');await vers(pg,'b');const dn=await pg.$eval('#lvn-dn',e=>getComputedStyle(e).opacity);
-  await pg.click('#lvn-up');await vers(pg,'c');
-  ok((await lv(pg)).vue==='c'&&dn==='0','les chevrons : ↓ Higher my ChatGPT (en bas, plus de chevron ↓), ↑ le centre');
+  await pg.click('#lvn-up');await vers(pg,'b');const dn=await pg.$eval('#lvn-up',e=>getComputedStyle(e).opacity);
+  await pg.click('#lvn-dn');await vers(pg,'c');
+  ok((await lv(pg)).vue==='c'&&dn==='0','les chevrons (16/11, inversés) : ↑ Higher my ChatGPT (en haut, plus de chevron ↑), ↓ le centre');
   ok(!erreurs(log).length,'gestes : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
  {const{pg,log}=await page(browser,{dir:'com',origin,tables,viewport:{width:390,height:844},hasTouch:true,rpc:{my_landing:LAND()}});
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1000);
@@ -183,7 +183,7 @@ try{
     await glisse(330,560,200,560),await glisse(200,560,330,560),await glisse(200,560,330,560),await glisse(260,400,130,400)];
   /* 20/10 sexies — sur la CARTE, le doigt POSÉ SUR la Terre la fait tourner (27/10 : seulement sur elle ; ailleurs il
      navigue, `com_prise_spot`) ; le chevron, la manette et le trackpad ramènent au centre. */
-  ok(s.join(',')==='h,c,b,c,g,c,d,d','22/10 · le doigt est un manche : haut → Get Higher, bas → Higher my ChatGPT, gauche → mes shorts, droite → les spots ; sur la Terre, il la tourne : '+s.join(','));
+  ok(s.join(',')==='b,c,h,c,g,c,d,d','22/10 · le doigt est un manche (16/11 : ↑ et ↓ inversés) : haut → Higher my ChatGPT, bas → Get Higher, gauche → mes shorts, droite → les spots ; sur la Terre, il la tourne : '+s.join(','));
   await pg.click('#lvn-lf');await vers(pg,'c');ok((await lv(pg)).vue==='c','le chevron ← ramène au centre');
   ok(!erreurs(log).length,'doigt : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
 
@@ -192,7 +192,7 @@ try{
   const{pg,log}=await page(browser,{dir:'com',origin,tables,viewport:{width:390,height:844},hasTouch:true,rpc:{my_landing:LAND()}});
   if(reduit) await pg.emulateMedia({reducedMotion:'reduce'});
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1000);
-  await pg.click('#lvn-up');await vers(pg,'h');await pg.waitForTimeout(500);
+  await pg.click('#lvn-dn');await vers(pg,'h');await pg.waitForTimeout(500);
   const h=await pg.evaluate(()=>{const q=s=>document.querySelector(s),m=q('#gate-mouth').getBoundingClientRect(),p=q('#gate-asteroid').getBoundingClientRect(),g=q('#lv-slogan').getBoundingClientRect();
     return {op:getComputedStyle(q('#gate-mouth')).opacity,ouverte:window.__totehm_lsd.bouche,haut:m.top<120,
       papier:p.top>m.top&&p.bottom<m.bottom+30&&p.width<60,get:q('#lv-slogan .lvs-get').textContent,getOp:getComputedStyle(q('#lv-slogan .lvs-get')).opacity,
@@ -273,12 +273,12 @@ try{
   ok(e.qui==='kai3'&&e.quiVu&&e.couleur==='rgb(251, 213, 202)','[Members] porte SON nom, en Coral');
   ok(e.d.ramifications.habits!==habits0&&e.pales===5,'le processeur est le SIEN : ses deux intentions habitées, cinq en creux');
   ok(/to open it · (Turn|Swipe) to search$/.test(e.tap),'« '+e.tap+' »');
-  // ↓ chez lui : son offre, pas mon pitch ChatGPT
-  await tire(pg,0,30);await vers(pg,'b');await pg.waitForTimeout(900);
+  // ↑ chez lui (16/11) : son offre, pas mon pitch ChatGPT
+  await tire(pg,0,-30);await vers(pg,'b');await pg.waitForTimeout(900);
   const b=await pg.evaluate(()=>({o:document.getElementById('mb-offre').textContent,pitch:getComputedStyle(document.getElementById('chatgpt-pitch')).display,
     p:(()=>{const p=document.getElementById('gate-asteroid').getBoundingClientRect(),m=document.getElementById('rf-me').getBoundingClientRect();return Math.abs(p.x+p.width/2-(m.x+m.width/2))<4;})()}));
-  ok(/kai3/.test(b.o)&&/SUBSCRIBE · 24 € \/ year/.test(b.o)&&b.pitch==='none'&&b.p,'↓ chez un membre : SON profil et SON offre (« '+b.o+' »), jamais mon pitch ChatGPT');
-  await tire(pg,0,-30);await vers(pg,'c');await pg.waitForTimeout(600);
+  ok(/kai3/.test(b.o)&&/SUBSCRIBE · 24 € \/ year/.test(b.o)&&b.pitch==='none'&&b.p,'↑ chez un membre : SON profil et SON offre (« '+b.o+' »), jamais mon pitch ChatGPT');
+  await tire(pg,0,30);await vers(pg,'c');await pg.waitForTimeout(600);
   // son Totehm, en lecture, puis on replie : on reste chez lui
   await pg.click('#lv-tap-open');await pg.waitForFunction(()=>!document.body.classList.contains('gate'),null,{timeout:9000}).catch(()=>{});
   await pg.waitForTimeout(600);
@@ -345,7 +345,7 @@ try{
  // ── 5 · EN BAS : LA CONDENSATION — seul #gl-bg tourne ; le socle devient un anneau (7 couleurs) ; le profil ──
  {const{pg,log}=await page(browser,{dir:'com',origin,tables,viewport:{width:390,height:844},hasTouch:true,rpc:{my_landing:LAND()}});
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1000);
-  await pg.click('#lvn-dn');await pg.waitForTimeout(260);
+  await pg.click('#lvn-up');await pg.waitForTimeout(260);
   /* les ROTATIONS seules (les fondus du rail et du wordmark sont des transitions d'opacité) */
   const mi=await pg.evaluate(()=>['gl-bg','gl-rail','gl-t','gl-wm'].map(i=>document.getElementById(i).getAnimations()
     .filter(a=>a.effect&&a.effect.getKeyframes().some(k=>/rotate/.test(k.transform||''))).length));
@@ -364,7 +364,7 @@ try{
   ok(/circle\(29\.5%/.test(b.clip)&&b.rail==='0'&&b.wm==='0'&&b.t==='1'&&b.ram==='0','le papier : un profil autour du T (le même objet), le rail et le wordmark éteints sans tourner ; les ramifications résorbées');
   ok(b.slogan==='1'&&b.higherCentre,'le même badge Higher a voyagé du centre et reste fixe au cœur du GPT');
   await pg.screenshot({path:OUT+'/proc_chatgpt.png'});
-  await pg.click('#lvn-up');await pg.waitForTimeout(240);
+  await pg.click('#lvn-dn');await pg.waitForTimeout(240);
   const ret=await pg.evaluate(()=>document.getElementById('gl-bg').getAnimations().filter(a=>a.effect&&a.effect.getKeyframes().some(k=>/rotate/.test(k.transform||''))).length);
   await vers(pg,'c');await pg.waitForTimeout(900);
   const c=await pg.evaluate(()=>({clip:getComputedStyle(document.getElementById('ast-front')).clipPath,r:getComputedStyle(document.getElementById('lv-socket')).borderTopLeftRadius,ram:getComputedStyle(document.getElementById('lv-ram')).opacity}));
@@ -378,10 +378,10 @@ try{
  {const{pg,log}=await page(browser,{dir:'com',origin,tables,viewport:{width:390,height:844},rpc:{my_landing:LAND()}});
   await pg.emulateMedia({reducedMotion:'reduce'});
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(900);
-  const tr=await pg.evaluate(()=>['lv-socket','lv-b','mb-ui'].map(i=>getComputedStyle(document.getElementById(i)).transitionDuration));
-  await pg.keyboard.press('ArrowDown');await vers(pg,'b');
+  const tr=await pg.evaluate(()=>['lv-socket','lv-b'].map(i=>getComputedStyle(document.getElementById(i)).transitionDuration));
+  await pg.keyboard.press('ArrowUp');await vers(pg,'b');
   const b=await pg.evaluate(()=>({tours:window.__totehm_lv().tours,anim:document.getElementById('gl-bg').getAnimations().filter(a=>a.effect&&a.effect.getKeyframes().some(k=>/rotate/.test(k.transform||''))).length}));
-  await pg.keyboard.press('ArrowUp');await vers(pg,'c');
+  await pg.keyboard.press('ArrowDown');await vers(pg,'c');
   await pg.click('#lv-m-members');await calme(pg);await pg.waitForTimeout(600);
   const g=await lv(pg);
   ok(tr.every(t=>/^0s/.test(t))&&b.tours===0&&b.anim===0,'mouvement réduit : aucune transition, #gl-bg ne tourne pas ('+tr.join(' ')+')');

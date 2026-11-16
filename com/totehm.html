@@ -2944,7 +2944,7 @@ body.folding.is-pose #lv{opacity:1}
 body.gate.folding.is-pose:not(.is-aspire) #lv-ram{opacity:1;transition:opacity .45s ease,transform .7s cubic-bezier(.15,.65,.3,1)}
 .lv-pane{position:absolute;inset:0;opacity:0;visibility:hidden;
   transition:opacity .4s ease,transform .55s var(--gate-ease),visibility 0s linear .55s}
-#lv-h{transform:translateY(-22px)}#lv-b{transform:translateY(22px)}
+#lv-h{transform:translateY(22px)}#lv-b{transform:translateY(-22px)}
 #lv-g{transform:translateX(-22px)}#lv-d{transform:translateX(22px)}
 body.lv-c #lv-c,body.lv-h #lv-h,body.lv-b #lv-b,body.lv-g #lv-g,body.lv-d #lv-d{opacity:1;visibility:visible;transform:none;
   transition:opacity .45s ease .16s,transform .6s var(--gate-ease) .1s}
@@ -4568,11 +4568,11 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
          au centre. Grille à plat (pas de rangée intermédiaire : une grille ne place que ses enfants
          DIRECTS, la leçon de `#joy`). Les identités ne changent pas : `#lvn-*` restent les boutons. -->
     <div id="lvjoy" class="lv-act" role="group" aria-label="Where I am">
-      <button id="lvn-up" class="lvn lv-act" type="button" aria-label="Get Higher"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 10 L8 5 L13 10"/></svg></button>
+      <button id="lvn-up" class="lvn lv-act" type="button" aria-label="Higher my ChatGPT"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 10 L8 5 L13 10"/></svg></button>
       <button id="lvn-lf" class="lvn lvn-x lv-act" type="button" aria-label="My shorts"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 L5 8 L10 13"/></svg></button>
       <div id="lvj-box" aria-hidden="true"><div id="lvj-stack"><i></i></div></div>
       <button id="lvn-rt" class="lvn lvn-x lv-act" type="button" aria-label="My spots"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3 L11 8 L6 13"/></svg></button>
-      <button id="lvn-dn" class="lvn lv-act" type="button" aria-label="Higher my ChatGPT"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 6 L8 11 L13 6"/></svg></button>
+      <button id="lvn-dn" class="lvn lv-act" type="button" aria-label="Get Higher"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 6 L8 11 L13 6"/></svg></button>
     </div>
   </div>
 </div>
@@ -13206,7 +13206,13 @@ window.addEventListener('pageshow',e=>{
          → d · LES SPOTS    (20/10 sexies) MAP · GRID, le polaroid par-dessus (`SPOTS`)
        Les deux n'existent que pour un membre (il n'y a pas « mes shorts » sans Totehm) et jamais dans la
        galaxie, où l'horizontale fait tourner les étoiles : `voisin()` les éteint, les chevrons suivent. */
-    const VOISINS={c:{h:'h',b:'b',g:'g',d:'d'}, h:{b:'c'}, b:{h:'c'}, g:{d:'c'}, d:{g:'c'}};
+    /* ⚠️ 16/11 — ↑ ET ↓ SONT INVERSÉS (Wah : « l'utilisateur a tendance à scroller, or le scroll, avec le fonctionnement
+       joystick, mène à l'expérience TotehmPaper, qui doit passer au second plan ; Higher GPT est un produit phare »).
+       Le geste naturel — glisser vers le haut, la molette — pousse le manche vers le HAUT : il mène donc à
+       HIGHER MY CHATGPT. Get Higher (le TotehmPaper) est en BAS. Les noms des vues ne changent pas (`h` = Get Higher,
+       `b` = ChatGPT : toute la CSS `lv-h` / `lv-b` reste vraie) ; seule la CROIX change — la direction `h` (haut) mène
+       à la vue `b`, la direction `b` (bas) à la vue `h`, et chacune revient au centre par le geste inverse. */
+    const VOISINS={c:{h:'b',b:'h',g:'g',d:'d'}, h:{h:'c'}, b:{b:'c'}, g:{d:'c'}, d:{g:'c'}};
     const NOMS={c:'My TOTEHM', h:'Get Higher', b:'Higher my ChatGPT', g:'Media', d:'Spots'};
     const slo=$('lv-slogan'), nUp=$('lvn-up'), nDn=$('lvn-dn'), nLf=$('lvn-lf'), nRt=$('lvn-rt'),
           sock=$('lv-socket'), BG=$('gl-bg');
@@ -13268,7 +13274,7 @@ window.addEventListener('pageshow',e=>{
        la langue est lue par `PAPIER.cibleLangue()`, la vente et la manette par leur rectangle. */
     let diagHaut=null;
     function posHaut(){
-      const m=$('gate-mouth'), se=$('lv-sell'), jb=$('lvj-box')||$('lvjoy'), rs=document.documentElement.style;
+      const m=$('gate-mouth'), se=$('lv-sell'), jb=$('lvn-up')||$('lvj-box')||$('lvjoy'), rs=document.documentElement.style;   /* 16/11 : Get Higher est EN BAS, son chevron ↑ (le retour) est allumé — il borne la vue */
       if(!m||!se||!jb||!m.offsetParent) return;
       const h=H(), op=m.offsetParent.getBoundingClientRect();
       const haut=Math.max(12,Math.round(h*.018));
@@ -13947,7 +13953,7 @@ window.addEventListener('pageshow',e=>{
         return p;
       }
       function cerveau(n){
-        const w=W(), h=H(), se=$('lv-sell'), jo=$('lvj-box')||$('lvjoy');   /* le SOCLE de la manette : en haut, son chevron ↑ est éteint */
+        const w=W(), h=H(), se=$('lv-sell'), jo=$('lvn-up')||$('lvj-box')||$('lvjoy');   /* 16/11 : le chevron ↑ de la manette (le retour au centre, allumé dans cette vue) borne le cerveau */
         const rs=se&&se.getBoundingClientRect(), rj=jo&&jo.getBoundingClientRect();
         const bas=rj&&rj.height?rj.top-10:h-120;
         let haut=rs&&rs.height?rs.bottom+16:h*.6;

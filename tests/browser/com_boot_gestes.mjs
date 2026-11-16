@@ -77,26 +77,26 @@ try{
   /* a · le doigt part SUR le papier (au centre) */
   let p=await centre();
   const a1=await glisse(p.x,p.y+20,p.x,p.y-140);
-  ok(a1==='h'&&!(await lv(pg)).reglages,'22/10 · un manche : un glissé VERS LE HAUT qui part sur le papier → Get Higher (il ne penche plus pour rien) → '+a1);
+  ok(a1==='b'&&!(await lv(pg)).reglages,'22/10 · un manche, 16/11 · ↑ et ↓ inversés : un glissé VERS LE HAUT (le geste du scroll) qui part sur le papier → HIGHER MY CHATGPT → '+a1);
   p=await centre();
   const a2=await glisse(p.x,p.y-10,p.x,p.y+150);
-  ok(a2==='c','en haut, un glissé vers le bas qui part sur le papier posé sur la langue → le centre → '+a2);
+  ok(a2==='c','en haut (ChatGPT), un glissé vers le bas qui part sur le papier-profil → le centre → '+a2);
   p=await centre();
   const a3=await glisse(p.x,p.y-20,p.x,p.y+150);
-  ok(a3==='b','au centre, vers le bas depuis le papier → Higher my ChatGPT → '+a3);
+  ok(a3==='h','au centre, vers le bas depuis le papier → Get Higher (le TotehmPaper, au second plan) → '+a3);
   p=await centre();
   const a4=await glisse(p.x,p.y+10,p.x,p.y-160);
-  ok(a4==='c','dans Higher my ChatGPT, un glissé vers le haut qui part sur le papier-profil → le centre → '+a4);
+  ok(a4==='c','dans Get Higher (en bas), un glissé vers le haut qui part sur le papier posé sur la langue → le centre → '+a4);
   /* b · deux gestes coup sur coup : le second attend la fin du premier au lieu de se perdre */
   await vers(pg,'c');
   const d0=(await lv(pg)).enAttente;
   await glisse(40,780,40,640,false); await pg.waitForTimeout(120); await glisse(40,640,40,780,false);
   await vers(pg,'c'); await pg.waitForTimeout(300);
   const d1=await lv(pg);
-  ok(d1.vue==='c'&&d1.enAttente===d0+1,'↑ puis ↓ pendant le voyage : Get Higher, puis le retour au centre (le second geste a attendu) → '+d1.vue+' · en attente '+(d1.enAttente-d0));
+  ok(d1.vue==='c'&&d1.enAttente===d0+1,'↑ puis ↓ pendant le voyage : ChatGPT, puis le retour au centre (le second geste a attendu) → '+d1.vue+' · en attente '+(d1.enAttente-d0));
   await pg.keyboard.press('ArrowUp'); await pg.waitForTimeout(80); await pg.keyboard.press('ArrowDown');
   await vers(pg,'c'); await pg.waitForTimeout(300);
-  ok((await lv(pg)).vue==='c','↑ puis ↓ au clavier, sans attendre : Get Higher puis le centre');
+  ok((await lv(pg)).vue==='c','↑ puis ↓ au clavier, sans attendre : ChatGPT puis le centre');
   /* c · un voyage qui ne se termine pas (l'onglet se cache en route : plus d'images) rend la main tout seul */
   await pg.evaluate(()=>{ window.__cache=true; Object.defineProperty(document,'hidden',{configurable:true,get:()=>window.__cache}); });
   await pg.evaluate(()=>window.__lvAller('h')); await pg.waitForTimeout(120);
@@ -105,10 +105,10 @@ try{
   const apres=await lv(pg);
   ok(bloque&&!apres.bouge&&apres.debloques===1,'voyage figé (onglet caché) : la main est rendue d\'elle-même ('+apres.debloques+' déblocage)');
   await pg.evaluate(()=>{ window.__cache=false; });
-  await pg.click('#lvn-dn'); await vers(pg,'c'); await pg.waitForTimeout(300);
+  await pg.click('#lvn-up'); await vers(pg,'c'); await pg.waitForTimeout(300);
   const fin=await lv(pg);
   ok(fin.vue==='c'&&!fin.bouge,'… et le geste suivant passe : retour au centre → '+fin.vue);
-  await pg.click('#lvn-dn'); await vers(pg,'b'); await pg.click('#lvn-up'); await vers(pg,'c');
+  await pg.click('#lvn-up'); await vers(pg,'b'); await pg.click('#lvn-dn'); await vers(pg,'c');
   ok((await lv(pg)).vue==='c','la croix fonctionne ensuite normalement');
   /* d · le retournement à l'horizontale sur le papier reste (Turn to configure it) */
   p=await centre();
@@ -129,8 +129,8 @@ try{
     await pg.mouse.move(r.x,r.y);await pg.mouse.down();await pg.mouse.move(r.x+dx,r.y+dy,{steps:4});await pg.mouse.up();};
   if(delai===200){
     await tire(-22,0);await vers(pg,'g');const g=(await lv(pg)).vue;await tire(22,0);await vers(pg,'c');
-    await tire(0,-22);await vers(pg,'h');const h=(await lv(pg)).vue;await tire(0,22);await vers(pg,'c');
-    ok(g==='g'&&h==='h','22/10 · la manette à la souris est un manche : tirée à gauche → mes shorts, vers le haut → Get Higher ('+g+', '+h+')');
+    await tire(0,-22);await vers(pg,'b');const h=(await lv(pg)).vue;await tire(0,22);await vers(pg,'c');
+    ok(g==='g'&&h==='b','22/10 · la manette à la souris est un manche : tirée à gauche → mes shorts, vers le haut → Higher my ChatGPT (16/11) ('+g+', '+h+')');
   }
   await pg.click('#lv-tap-open');await pg.waitForFunction(()=>!document.body.classList.contains('gate'),null,{timeout:6000}).catch(()=>{});await pg.waitForTimeout(500);
   const a0=(await lv(pg)).enAttente;
@@ -154,7 +154,7 @@ try{
   }
   await pg.waitForTimeout(1900);
   const d=await lv(pg);
-  ok(d.vue==='b'&&d.enAttente===a0+1,'22/10 · un geste ('+(delai===200?'clavier':'manette')+') '+delai+' ms après la croix (le TOTEHM se replie encore) attend la fin du repli, puis part → '+d.vue);
+  ok(d.vue==='h'&&d.enAttente===a0+1,'22/10 · un geste vers le bas ('+(delai===200?'clavier':'manette')+') '+delai+' ms après la croix (le TOTEHM se replie encore) attend la fin du repli, puis part → '+d.vue);
   ok(!erreurs(log).length,'repli + manette : aucune erreur '+erreurs(log).join(' | '));
   await ctx.close();}
 
@@ -176,18 +176,18 @@ try{
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(800);
   const sans=await pg.evaluate(()=>!document.getElementById('lv-diag'));
   await pg.goto(origin+'/totehm?diag=1');await pg.waitForSelector('body.member');await pg.waitForTimeout(1200);
-  await pg.keyboard.press('ArrowDown');await vers(pg,'b');await pg.keyboard.press('ArrowDown');await pg.waitForTimeout(200);
-  await pg.keyboard.press('ArrowUp');await vers(pg,'c');
+  await pg.keyboard.press('ArrowUp');await vers(pg,'b');await pg.keyboard.press('ArrowUp');await pg.waitForTimeout(200);
+  await pg.keyboard.press('ArrowDown');await vers(pg,'c');
   /* 14/11 — [Members] n'ouvre plus de recherche ICI : il ouvre `/search` dans un ONGLET (le verso d'ici porte
      MON nom). Sans Totehm il n'ouvre rien et mène à la porte (`members:sans-totehm`). L'atterrissage, lui,
      reste entièrement navigable : aucun état ne le retient. */
   await pg.evaluate(()=>{ window.__ouvert=[]; window.open=(u)=>{ window.__ouvert.push(u); return null; }; });
   await pg.click('#lv-m-members');await pg.waitForTimeout(700);
   const onglets=await pg.evaluate(()=>window.__ouvert.slice());
-  await pg.keyboard.press('ArrowDown');await vers(pg,'b');await pg.waitForTimeout(600);
+  await pg.keyboard.press('ArrowUp');await vers(pg,'b');await pg.waitForTimeout(600);
   const m=await pg.evaluate(()=>{const e=document.getElementById('lv-diag'),d=window.__totehm_lv();return {r:d.refus,vue:d.vue,mode:d.mode,txt:e?e.textContent:'',pe:e?getComputedStyle(e).pointerEvents:''};});
-  ok(sans&&m.r['voisin:b>b']===1&&!Object.keys(m.r).some(k=>/recherche/.test(k))&&m.vue==='b'&&m.mode==='mine'&&/refus voisin:b>b/.test(m.txt)&&m.pe==='none',
-     '22/10 · le mouchard : un geste refusé dit pourquoi (en bas sans voisin) ; à l\'écran avec ?diag=1 seulement → '+JSON.stringify({r:m.r,vue:m.vue,mode:m.mode}));
+  ok(sans&&m.r['voisin:b>h']===1&&!Object.keys(m.r).some(k=>/recherche/.test(k))&&m.vue==='b'&&m.mode==='mine'&&/refus voisin:b>h/.test(m.txt)&&m.pe==='none',
+     '22/10 · le mouchard : un geste refusé dit pourquoi (en haut — ChatGPT — sans voisin au-dessus) ; à l\'écran avec ?diag=1 seulement → '+JSON.stringify({r:m.r,vue:m.vue,mode:m.mode}));
   ok(onglets.length===1&&onglets[0]==='/search',
      '14/11 · [Members] ouvre /search dans un onglet, jamais le verso de MON Totehm → '+JSON.stringify(onglets));
   ok(!erreurs(log).length,'mouchard : aucune erreur '+erreurs(log).join(' | '));
@@ -197,7 +197,7 @@ try{
  for(const [w,h] of [[390,664],[375,667],[390,844],[1280,720]]){
   const{pg,ctx}=await page(browser,{dir:'com',origin,tables,rpc:{my_landing:LAND},viewport:{width:w,height:h},hasTouch:w<500});
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1000);
-  await pg.click('#lvn-up');await vers(pg,'h');await pg.waitForTimeout(700);
+  await pg.click('#lvn-dn');await vers(pg,'h');await pg.waitForTimeout(700);
   const m=await pg.evaluate(()=>{const r=s=>{const b=document.querySelector(s).getBoundingClientRect();return {t:b.top,b:b.bottom};};
     const ys=[...document.querySelectorAll('#lv-ram g path:first-child')].flatMap(p=>(p.getAttribute('d')||'').split(/[ML]/).filter(Boolean).map(t=>+t.trim().split(/[ ,]+/)[1])).filter(Number.isFinite);
     return {m:r('#gate-mouth'),s:r('#lv-slogan'),v:r('#lv-sell'),j:r('#lvj-box'),cb:Math.min(...ys),cB:Math.max(...ys),bouche:(window.__totehm_lv().haut||{}).bouche};});
