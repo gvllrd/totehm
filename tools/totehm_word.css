@@ -10,8 +10,8 @@
    nomenclature de nom (`tools/totehm_name.js`). Règle n° 1 : rien n'est réinterprété ici, tout est copié
    de la source. Le mot reste DANS le document (`.tw-s`, hors écran) : la page se lit, se cherche et
    s'entend comme avant.
-   ⚠️ UNE SEULE ROTATION POUR TOUTE LA PAGE : l'angle est une variable CSS posée sur `:root` par un seul
-   rAF (`--tw-th`) — vingt pièces dans un texte coûtent alors vingt `transform` de GPU, pas vingt boucles.
+   ⚠️ UNE SEULE ROTATION POUR TOUTE LA PAGE : un seul rAF pose l'angle (`--tw-th`) sur chaque pièce VISIBLE —
+   jamais sur `:root`, qui ferait recalculer le style de toute la page à chaque image (16/11, mesuré).
    ⚠️ `--tw-k` ET LE `K` DE totehm_word.js DOIVENT RESTER ÉGAUX : le JS dessine le nom du verso à cette
    taille sans mesurer la boîte (mesurer forcerait un calcul de mise en page à chaque peinture). */
 :root{--tw-k:2.2}

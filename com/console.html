@@ -176,8 +176,8 @@ h2 .st.is-on{color:#fff;background:var(--g5)}
    nomenclature de nom (`tools/totehm_name.js`). Règle n° 1 : rien n'est réinterprété ici, tout est copié
    de la source. Le mot reste DANS le document (`.tw-s`, hors écran) : la page se lit, se cherche et
    s'entend comme avant.
-   ⚠️ UNE SEULE ROTATION POUR TOUTE LA PAGE : l'angle est une variable CSS posée sur `:root` par un seul
-   rAF (`--tw-th`) — vingt pièces dans un texte coûtent alors vingt `transform` de GPU, pas vingt boucles.
+   ⚠️ UNE SEULE ROTATION POUR TOUTE LA PAGE : un seul rAF pose l'angle (`--tw-th`) sur chaque pièce VISIBLE —
+   jamais sur `:root`, qui ferait recalculer le style de toute la page à chaque image (16/11, mesuré).
    ⚠️ `--tw-k` ET LE `K` DE totehm_word.js DOIVENT RESTER ÉGAUX : le JS dessine le nom du verso à cette
    taille sans mesurer la boîte (mesurer forcerait un calcul de mise en page à chaque peinture). */
 :root{--tw-k:2.2}
@@ -904,8 +904,12 @@ window.TOTEHM_NOM = (() => {
    se cherche au clavier, et un test qui lit `textContent` trouve le même texte qu'avant.
    CE QUI N'EST JAMAIS TOUCHÉ, même sous `data-tw` : ce que le membre a ÉCRIT (une box, une mini-box, son
    nom, un champ), une adresse (`totehm.com`), un mot qui continue (`TOTEHMIZE`), et tout nœud `data-notw`.
-   UNE SEULE BOUCLE pour toute la page : l'angle est une variable CSS de `:root` (`--tw-th`). Elle s'arrête
-   sans pièce, sans nom, onglet caché, ou en mouvement réduit (la pièce est alors posée sur son verso).
+   UNE SEULE BOUCLE pour toute la page, et l'angle (`--tw-th`) se pose sur chaque pièce VISIBLE, jamais sur `:root`.
+   ⚠️ 16/11, mesuré (téléphone simulé, processeur ÷4) : posé sur `:root` à chaque image, il invalidait le style de
+   TOUTE la page — 1,5 s de recalcul pendant le déploiement du TOTEHM, 21 à 25 images/s, « des à-coups » (Wah).
+   Sur les pièces seules : 56 à 60 images/s. Une pièce hors de l'écran (ou dans une couche cachée) ne reçoit rien
+   (`IntersectionObserver`) ; la boucle s'arrête sans pièce visible, sans nom, onglet caché, ou en mouvement réduit
+   (la pièce est alors posée sur son verso).
    La taille vient de la POLICE héritée (`getComputedStyle`), jamais de `clientWidth` : mesurer la boîte
    forcerait un calcul de mise en page à chaque peinture de la liste du Totehm. */
 window.TOTEHM_MOT = (() => {
@@ -918,6 +922,13 @@ window.TOTEHM_MOT = (() => {
   const diag = { mots:0, pieces:0, passes:0, hotes:0, nom:'' };
   const cache = new Map();
   let nom = '', neuves = [], vivantes = new Set(), rafP = 0, raf = 0, th = 180, om = 0, last = 0, tmr = 0, aFaire = [];
+  /* les pièces À L'ÉCRAN : elles seules tournent (sans IntersectionObserver, toutes) */
+  const vues = new Set(), angle = () => th.toFixed(2) + 'deg';
+  const io = typeof IntersectionObserver === 'function' ? new IntersectionObserver(l => {
+    for(const e of l){ if(e.isIntersecting){ vues.add(e.target); e.target.style.setProperty('--tw-th', angle()); } else vues.delete(e.target); }
+    relancer();
+  }) : null;
+  const suivre = p => { vivantes.add(p); if(io) io.observe(p); else vues.add(p); };
 
   /* ── où le mot se trouve dans un texte ───────────────────────────────── */
   function places(s){
@@ -964,7 +975,7 @@ window.TOTEHM_MOT = (() => {
     for(const a of occ){
       if(a > k) frag.appendChild(document.createTextNode(s.slice(k, a)));
       const p = piece(s.substr(a, NM));
-      frag.appendChild(p); neuves.push(p); vivantes.add(p);
+      frag.appendChild(p); neuves.push(p); suivre(p);
       k = a + NM;
     }
     if(k < s.length) frag.appendChild(document.createTextNode(s.slice(k)));
@@ -1047,12 +1058,13 @@ window.TOTEHM_MOT = (() => {
     const s = Math.sin(th * Math.PI / 180), nat = 22 * (.34 + .66 * s * s);   /* 22°/s de face : ~24 s le tour */
     om += (nat - om) * (1 - Math.exp(-dt / 1.6));
     th += om * dt; if(th > 3600) th %= 360;
-    document.documentElement.style.setProperty('--tw-th', th.toFixed(2) + 'deg');
+    const a = angle();
+    for(const p of vues){ if(p.isConnected) p.style.setProperty('--tw-th', a); else vues.delete(p); }
     if(vif()) raf = requestAnimationFrame(boucle);
   }
-  const vif = () => !!nom && !document.hidden && !RM.matches && vivantes.size > 0;
+  const vif = () => !!nom && !document.hidden && !RM.matches && vues.size > 0;
   function relancer(){
-    for(const p of vivantes) if(!p.isConnected) vivantes.delete(p);
+    for(const p of vivantes) if(!p.isConnected){ vivantes.delete(p); vues.delete(p); if(io) io.unobserve(p); }
     if(!raf && vif()){ last = 0; raf = requestAnimationFrame(boucle); }
   }
   document.addEventListener('visibilitychange', relancer);
@@ -1122,7 +1134,7 @@ window.TOTEHM_MOT = (() => {
   }
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer, { once:true }); else demarrer();
   const api = { scan:poserDans, setNom, nom:() => nom,
-                etat:() => Object.assign({ vivantes:vivantes.size, tourne:!!raf }, diag) };
+                etat:() => Object.assign({ vivantes:vivantes.size, vues:vues.size, tourne:!!raf }, diag) };
   window.__totehm_mot = api.etat;
   return api;
 })();

@@ -48,7 +48,7 @@ const d = await pg.evaluate(() => {
     cache:getComputedStyle(document.querySelector('#p1 .tw .tw-s')).clipPath,
     cote:Math.round(document.querySelector('#p1 .tw').getBoundingClientRect().width),
     grand:Math.round(document.querySelector('#p7 .tw').getBoundingClientRect().width),
-    th0:getComputedStyle(document.documentElement).getPropertyValue('--tw-th').trim() };
+    th0:document.querySelector('#p1 .tw').style.getPropertyValue('--tw-th').trim(), rac0:document.documentElement.style.getPropertyValue('--tw-th') };
 });
 
 ok(d.t1 === 'MY TOTEHM is the TOTEHM. Open my TOTEHM.' && d.n1 === 3,
@@ -72,9 +72,12 @@ ok(d.cote >= 32 && d.cote <= 40 && d.grand > d.cote * 1.6,
 ok(d.etat.mots === 7 && d.etat.pieces === 7 && d.etat.nom === 'wah', 'diagnostic : ' + JSON.stringify(d.etat));
 
 await pg.waitForTimeout(500);
-const th1 = await pg.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--tw-th').trim());
-ok(parseFloat(th1) !== parseFloat(d.th0) && /deg$/.test(th1),
-   'UNE seule rotation pour toute la page : l\'angle de `:root` avance (' + d.th0 + ' → ' + th1 + ')');
+const th1 = await pg.evaluate(() => ({ p1:document.querySelector('#p1 .tw').style.getPropertyValue('--tw-th').trim(),
+  rac:document.documentElement.style.getPropertyValue('--tw-th'), vues:window.__totehm_mot().vues, tourne:window.__totehm_mot().tourne }));
+/* 16/11 — l'angle ne se pose plus sur `:root` : là, il faisait recalculer le style de TOUTE la page à chaque image
+   (le déploiement du TOTEHM tombait à 21–25 images/s au téléphone). Il avance sur chaque pièce VISIBLE. */
+ok(th1.tourne && th1.vues > 0 && parseFloat(th1.p1) !== parseFloat(d.th0) && /deg$/.test(th1.p1) && !th1.rac && !d.rac0,
+   'UNE seule rotation, posée sur les pièces visibles et jamais sur `:root` (' + d.th0 + ' → ' + th1.p1 + ', ' + th1.vues + ' pièces à l\'écran)');
 
 /* le nom change : les versos suivent, sans refaire les pièces */
 await pg.evaluate(() => { document.getElementById('member-txt').textContent = 'alexandra'; });
