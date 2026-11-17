@@ -14298,7 +14298,7 @@ window.addEventListener('pageshow',e=>{
         return r&&r.width?{x:r.left+r.width/2, y:r.top+r.height/2,w:mr&&mr.width||108,h:mr&&mr.height||108}:{x:W()/2, y:H()-66,w:108,h:108}; };
       function placerAvis(c,J){
         const img=$('lv-parental'),acts=$('lv-c-acts'); if(!img)return null;
-        const ar=acts&&acts.getBoundingClientRect(),paysage=H()<520&&W()>=650,maximum=W()>=700&&!paysage?120:90;
+        const ar=acts&&acts.getBoundingClientRect(),paysage=H()<520&&W()>=650,maximum=W()>=700&&!paysage?120:(paysage?90:130);
         const dansAxe=ar&&ar.left<c.x+maximum/2&&ar.right>c.x-maximum/2;
         const haut=Math.max(c.y+(c.w||110)/2+(paysage?48:42),dansAxe?ar.bottom+40:0),bas=J.y-(paysage?88:102);
         const hauteur=Math.max(32,Math.min(maximum*200/278,bas-haut)),largeur=hauteur*278/200;
