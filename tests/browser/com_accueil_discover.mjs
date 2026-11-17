@@ -20,7 +20,7 @@ try{
       boutons:[...document.querySelectorAll('#lv-pitch button')].filter(vu).map(b=>b.textContent.trim()),
       anciens:document.querySelectorAll('.lvp-headline,.lvp-science,#lv-explore').length,
       corail:[...document.querySelectorAll('#lv-c-acts *')].filter(e=>vu(e)&&!e.closest('.tw')&&getComputedStyle(e).color==='rgb(251, 213, 202)').length};});
-  ok(c.vu&&/^Get Higher with your TOTEHM$/i.test(c.titre)&&c.piece===1,'le titre de la vue centrale : « Get Higher with your TOTEHM », le mot TOTEHM est la PIÈCE → '+JSON.stringify(c));
+  ok(c.vu&&/^THE HIGHER WAY TO MAKE IT HAPPEN$/.test(c.titre),'le titre de la vue centrale : « THE HIGHER WAY TO MAKE IT HAPPEN » → '+JSON.stringify(c));
   ok(c.boutons.join('|')==='Open my TOTEHM|Discover'&&c.anciens===0,'sans compte : la porte et [Discover], plus de pitch à lire → '+c.boutons.join(' | '));
   ok(c.corail===0,'aucun texte corail dans les actions (le corail est réservé au nom et à l\'art)');
   /* ── le Discover : en couche, une idée par écran, la porte sous chacun ── */
