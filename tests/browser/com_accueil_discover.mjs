@@ -32,6 +32,14 @@ try{
   ok(/^A habit needs a neurological strategy\.$/.test(e0.titre)&&e0.cta==='Open my TOTEHM','le premier écran : la stratégie neurologique d\'une Habit ; la porte est dessous → '+e0.titre);
   const ill=await pg.evaluate(()=>[...document.querySelectorAll('#lvd .dc-s')].map(s=>{const i=s.querySelector('.dc-ill');return !!i&&i.innerHTML.trim().length>40;}));
   ok(ill.every(Boolean),'17/11 · une illustration sur CHAQUE écran → '+JSON.stringify(ill));
+  const cad=await pg.evaluate(async()=>{const s=[...document.querySelectorAll('#lvd .dc-s')];
+    const g=document.querySelector('#lvd .dc-grid');const im=g?[...g.querySelectorAll('.tl-ph img')]:[];
+    await Promise.all(im.map(i=>i.decode().catch(()=>null)));
+    return {titres:[...new Set(s.map(x=>x.querySelector('.dc-h').offsetTop))],cadres:[...new Set(s.map(x=>x.querySelector('.dc-ill').offsetHeight))],
+      tuiles:g?g.querySelectorAll('.tl').length:0,images:im.filter(i=>i.naturalWidth>0).length,box:g?g.querySelectorAll('.tl-bx .tb').length:0,
+      grille:s.findIndex(x=>x.contains(g))};});
+  ok(cad.titres.length===1&&cad.cadres.length===1,'17/11 · même cadre d\'illustration et titre à la même place sur les 10 écrans → '+JSON.stringify(cad));
+  ok(cad.grille===2&&cad.tuiles===6&&cad.images===5&&cad.box===5,'« Visualize it » : la grille de gauche — la tuile « + » et 5 médias, chacun avec sa box → '+JSON.stringify(cad));
   const nat=await pg.evaluate(()=>({box:document.querySelectorAll('#lvd .dc-ill .tb .habit .h-body .v-name').length,orphelins:document.querySelectorAll('#lvd .dc-ill [data-open],#lvd .dc-ill [data-go],#lvd .dc-ill button').length}));
   ok(nat.box>=4&&nat.orphelins===0,'les box des illustrations sont les box NATIVES, inertes (aucune commande) → '+JSON.stringify(nat));
   await pg.keyboard.press('ArrowDown');await pg.waitForTimeout(800);

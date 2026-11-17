@@ -14,7 +14,7 @@ import fs from 'node:fs'; import path from 'node:path';
 const ROOT = new URL('../..', import.meta.url).pathname.replace(/\/$/, '');
 const SB = 'https://abujjbkbbiumxrokozph.supabase.co';
 const BUNDLE = fs.readFileSync(new URL('./supabase.mjs', import.meta.url));
-const TYPES = { '.html':'text/html', '.js':'text/javascript', '.mjs':'text/javascript', '.json':'application/json', '.svg':'image/svg+xml', '.png':'image/png', '.css':'text/css', '.mp4':'video/mp4' };
+const TYPES = { '.html':'text/html', '.js':'text/javascript', '.mjs':'text/javascript', '.json':'application/json', '.svg':'image/svg+xml', '.png':'image/png', '.webp':'image/webp', '.css':'text/css', '.mp4':'video/mp4' };
 export const USER = { id:'11111111-1111-4111-8111-111111111111', email:'wah@example.test', aud:'authenticated', role:'authenticated' };
 export async function launch({videoFile}={}){
   const args = ['--use-fake-ui-for-media-stream','--use-fake-device-for-media-stream','--autoplay-policy=no-user-gesture-required'];

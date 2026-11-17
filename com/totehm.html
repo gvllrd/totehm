@@ -3558,8 +3558,8 @@ body.lv-b #gate-logo #gl-rail,body.lv-b #gate-logo #gl-wm{opacity:0}
 /* 21/10 bis — Wah : « les images de la grille de gauche au format PERFORÉ, avec le même nombre de trous, à la même place
    que le logo TOTEHM ». La PHOTO porte les douze trous du papier (`--perfo`, le masque du logo, 28/09) ; la box posée dessus n'est jamais
    découpée (elle est sacrée), et la tuile « + » reste une place vide en pointillé. */
-#lv-sh .tl:not(.tl-add){background:none}
-#lv-sh .tl:not(.tl-add) .tl-ph{background:#0b0b0d;-webkit-mask:var(--perfo) 0 0/100% 100% no-repeat;mask:var(--perfo) 0 0/100% 100% no-repeat}
+#lv-sh .tl:not(.tl-add),#lvd .dc-grid .tl:not(.tl-add){background:none}
+#lv-sh .tl:not(.tl-add) .tl-ph,#lvd .dc-grid .tl:not(.tl-add) .tl-ph{background:#0b0b0d;-webkit-mask:var(--perfo) 0 0/100% 100% no-repeat;mask:var(--perfo) 0 0/100% 100% no-repeat}
 .tl-ph img,.tl-ph video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
   object-position:var(--fx,50%) var(--fy,50%);display:block;opacity:0;transition:opacity .35s ease}
 .tl-ph img[src],.tl-ph video[src]{opacity:1}
@@ -4052,19 +4052,30 @@ body:not(.lv-g):not(.lv-d) #lv-slogan.is-c.is-t{opacity:1}
 /* Le Discover prend tout l'écran PAR-DESSUS l'accueil, qui ne bouge pas dessous (`body.is-dc` : ses gestes sont rendus). */
 /* 17/11 — L'ILLUSTRATION D'UN ÉCRAN (`DISC`, `ILL`) : au-dessus du titre, faite des éléments du site — box natives (leurs
    couleurs natives), la pièce TOTEHM, le badge [Higher], le GPT qui tourne. Le reste reste noir, blanc, gris. */
-#lvd .dc-ill{width:min(100%,340px);flex:none;text-align:left;pointer-events:none;-webkit-user-select:none;user-select:none}
-#lvd .dc-ill:empty{display:none}
+/* LE CADRE : la MÊME hauteur sur les dix écrans (`--ill-h`), le titre ne saute plus d'un écran à l'autre ; ce qui dépasse
+   est réduit à la mesure du cadre (`ajuster`), jamais rogné. */
+#lvd{--ill-h:clamp(128px,22dvh,190px)}
+@media(max-height:700px){#lvd{--ill-h:clamp(110px,19dvh,150px)}}
+/* le haut de l'écran est FIXE : le cadre, puis le titre, toujours à la même place ; seul le texte s'allonge vers le bas.
+   Le bloc le plus long (≈ 450 px) reste centré dans la place libre entre l'en-tête et la porte. */
+#lvd .dc-s{justify-content:flex-start;padding-top:max(0px,calc((100dvh - 298px - 450px) / 2))}
+#lvd .dc-ill{width:min(100%,340px);height:var(--ill-h);flex:none;display:flex;align-items:center;justify-content:center;
+  text-align:left;pointer-events:none;-webkit-user-select:none;user-select:none}
+#lvd .dc-ill-in{flex:none;width:100%;transform-origin:50% 50%}
+#lvd .dc-ill-in:has(.dc-slogan){width:max-content}
 #lvd .dc-ill .tb{width:100%}
-#lvd .dc-ill-c{display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
-#lvd .dc-ill:has(.dc-radar){display:flex;justify-content:center}
-#lvd .dc-radar{display:block;width:clamp(150px,24dvh,210px);height:auto;aspect-ratio:1}
+#lvd .dc-ill-c .dc-ill-in{display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
+#lvd .dc-radar{display:block;width:var(--ill-h);height:auto;aspect-ratio:1}
+/* « Visualize it » : la GRILLE DE GAUCHE (mes médias) — tuiles perforées, la box posée sur l'image, la tuile « + » */
+#lvd .dc-grid.tlg{width:100%;margin:0;padding:0;grid-template-columns:repeat(3,minmax(0,1fr));gap:3px}
+#lvd .dc-grid .tl{cursor:default}
 /* « One paper » : le bloc de commande du filtre de la vue de gauche (`.sfcmd`, `creerFeed`) tel quel, MY GRIND ouvert sur
    ses trois listes — le panneau `.lsh-sf` qui le porte est neutralisé, ses règles de papier restent les siennes. */
 #lvd .lsh-sf.dc-sf{position:relative;inset:auto;z-index:auto;width:100%;padding:0;background:none;overflow:visible}
 #lvd .dc-sf .sfg{width:100%}
 #lvd .dc-sf .sfcmd{--q:min(104px,27vw)}
 #lvd .dc-sf *{pointer-events:none!important;cursor:default}
-#lvd .dc-gpt{position:relative;display:block;width:clamp(96px,16dvh,132px);aspect-ratio:1}
+#lvd .dc-gpt{position:relative;display:block;width:var(--ill-h);aspect-ratio:1}
 #lvd .dc-gpt img{display:block;width:100%;height:100%;object-fit:contain;animation:cg-orbit 30s linear infinite}
 #lvd .dc-gpt svg{position:absolute;left:50%;top:50%;width:46%;height:auto;aspect-ratio:3;transform:translate(-50%,-50%)}
 #lvd .dc-tg{display:flex;flex-direction:column;gap:6px;width:min(100%,270px);padding:10px 12px;background:#17171b;border-radius:14px 14px 14px 4px;text-align:left}
@@ -4081,13 +4092,13 @@ body:not(.lv-g):not(.lv-d) #lv-slogan.is-c.is-t{opacity:1}
 #lvd .dc-pay-l{display:flex;justify-content:space-between;font:400 9px/1.3 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#888}
 #lvd .dc-who{display:block;margin-bottom:6px;font:400 11px/1.3 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#888}
 #lvd .dc-who .dc-n{text-transform:none;letter-spacing:.02em;font-size:14px}
-#lvd .dc-slogan{display:flex;align-items:center;gap:8px;font:400 22px/1 'Quantico',sans-serif;color:#fff}
+#lvd .dc-slogan{display:flex;align-items:center;gap:8px;white-space:nowrap;font:400 28px/1 'Quantico',sans-serif;color:#fff}
 #lvd .dc-slogan .dc-get{font-weight:700;color:var(--coral)}
-#lvd .dc-slogan svg{display:block;width:84px;height:28px;flex:none}
+#lvd .dc-slogan svg{display:block;width:108px;height:36px;flex:none}
 #lvd .dc-slogan .tw{margin:0}
 @media(max-width:380px){#lvd .dc-slogan{font-size:18px;gap:6px}#lvd .dc-slogan svg{width:70px;height:23px}}
 /* un écran bas : l'illustration se resserre, puis s'efface — le texte passe avant */
-@media(max-height:760px){#lvd .dc-ill{zoom:.86}#lvd .dc-s{gap:14px}}
+@media(max-height:760px){#lvd .dc-s{gap:14px}}
 @media(max-height:600px){#lvd .dc-ill{display:none}}
 @media(prefers-reduced-motion:reduce){#lvd .dc-gpt img{animation:none}}
 @media(max-height:520px) and (min-width:650px){#lv-title{font-size:10px;letter-spacing:.12em}}
@@ -4726,7 +4737,7 @@ Members subscribe for a year.
 You set the price. You keep 80%.</p></div>
     <div class="dc-s"><div class="dc-ill" data-ill="follow" aria-hidden="true"></div><h2 class="dc-h">Follow who inspires you.</h2><p class="dc-p">Subscribe to members to unlock their TOTEHM, visualizations, and spots.
 Take inspiration in one tap, their name stays on it.</p></div>
-    <div class="dc-s"><div class="dc-ill" data-ill="meet" aria-hidden="true"></div><h2 class="dc-h">Meet with intention.</h2><p class="dc-p">Every spot is tied to a specific TOTEHM Habit.
+    <div class="dc-s"><div class="dc-ill dc-ill-c" data-ill="meet" aria-hidden="true"></div><h2 class="dc-h">Meet with intention.</h2><p class="dc-p">Every spot is tied to a specific TOTEHM Habit.
 Join live or scheduled—grind in silence together, or connect socially.
 Figher Club: match with members building the exact same habit, in the exact place, at the exact time.</p></div>
     <div class="dc-s"><div class="dc-ill" data-ill="private" aria-hidden="true"></div><h2 class="dc-h">Private by default.</h2><p class="dc-p">Every element and post is yours to control: keep it private, or share it with your subscribers.</p></div>
@@ -14402,14 +14413,18 @@ window.addEventListener('pageshow',e=>{
          `boiteHTML` / `groupe` / `mini` / `miniSpace` que les cinq vues, puis rendue inerte (`inerteBox`) — jamais une
          imitation. Les box gardent leurs couleurs natives ; le reste de l'écran reste 60 / 30 / 10. Dessinées une fois,
          à la première ouverture (les fonctions de la page sont prêtes). */
-      const exBox=(bk,titre,o)=>inerteBox(ligne(boiteHTML(Object.assign({kind:bk,id:'dc-'+bk,titre,ouverte:false},o||{})),'',(o&&o.cols)||[]),bk);
+      const exBox=(bk,titre,o)=>inerteBox(ligne(boiteHTML(Object.assign({kind:bk,id:'dc-'+bk,titre,ouverte:false},o||{})),'',(o&&o.cols)||[]),bk,{court:!!(o&&o.court)});
       const exHab=o=>exBox('h','Run 20 minutes',Object.assign({cols:[intColor('fight')],
         unit:intMots({i:'fight'})+'<span class="v-frq">'+esc(flabel('daily'))+'</span>'},o||{}));
       const exSpot=(state,place,quand)=>miniSpace({id:'dc',format:'spot',state,exact:{place},starts_at:quand});
       const ILL={
         habit:()=>exHab({minis:groupe('why',mini('o',null,'Finish a 10K in May'))+groupe('trigger · instead of',mini('r',null,'Scrolling in bed'))}),
-        practice:()=>exHab({unit:intMots({i:'fight'})+'<span class="v-frq">'+esc(flabel('daily'))+'</span><span class="v-frq">Belém riverside</span>',
-          minis:groupe('I was there to practice it',exSpot('was','Belém riverside','2026-11-12T07:00:00'))}),
+        /* la grille de gauche : la tuile « + », puis des médias, chacun avec SA box posée dessus (format court, comme la grille) */
+        practice:()=>{ const fi=[intColor('fight')];
+          const T=(n,bk,titre)=>'<article class="tl"><div class="tl-ph"><img alt="" src="/assets/discover/lisbon-'+n+'.webp"></div>'
+            +'<div class="tl-bx">'+exBox(bk,titre,{court:true,cols:fi})+'</div></article>';
+          return '<div class="tlg dc-grid"><span class="tl tl-add"><span>+</span></span>'
+            +T(1,'h','Run 20 minutes')+T(2,'r','Scrolling in bed')+T(3,'t','Finish a 10K in May')+T(5,'v','Live by the sea')+T(4,'w','Rest is part of the work')+'</div>'; },
         money:()=>'<span class="dc-pay"><span class="dc-pay-p">€60<small> / year</small></span><span class="dc-pay-bar"><i></i><i></i></span>'
           +'<span class="dc-pay-l"><span>You · 80%</span><span>TOTEHM · 20%</span></span></span>',
         follow:()=>'<span class="dc-who"><span class="dc-n">kai</span>’s TOTEHM</span>'
@@ -14464,14 +14479,26 @@ window.addEventListener('pageshow',e=>{
       function illustrer(){
         if(illus) return; illus=true;
         el.querySelectorAll('[data-ill]').forEach(n=>{ const f=ILL[n.dataset.ill]; if(!f) return;
-          try{ n.innerHTML=f(); }catch(e){ console.error('[discover illustration]',n.dataset.ill,e&&e.message||e); } }); }
+          try{ n.innerHTML=f(); }catch(e){ console.error('[discover illustration]',n.dataset.ill,e&&e.message||e); } });
+        /* chaque illustration dans son cadre : un enveloppe que l'on peut réduire sans toucher à ce qu'elle porte */
+        el.querySelectorAll('.dc-ill').forEach(f=>{ if(f.querySelector(':scope>.dc-ill-in')) return;
+          const i=document.createElement('div'); i.className='dc-ill-in'; while(f.firstChild) i.appendChild(f.firstChild); f.appendChild(i); }); }
+      /* réduit ce qui dépasse le cadre (largeur ou hauteur), au rendu et à chaque changement d'écran ou de taille */
+      function ajuster(){
+        if(!ouvert) return;
+        el.querySelectorAll('.dc-ill-in').forEach(i=>{ const f=i.parentNode, H=f.clientHeight, W=f.clientWidth; if(!H||!W) return;
+          const k=Math.min(1,H/Math.max(1,i.offsetHeight),W/Math.max(1,i.scrollWidth));
+          const v=k<.999?'scale('+k.toFixed(3)+')':''; if(i.style.transform!==v) i.style.transform=v; }); }
+      window.addEventListener('resize',()=>{ if(ouvert) requestAnimationFrame(ajuster); });
       function peindre(){
+        ajuster();
         const rd=ouvert&&ecran()&&ecran().querySelector('.dc-radar'); if(rd) RADAR.on(rd); else RADAR.off();
         const argent=inscrit()&&!guest()&&!RO&&ecran()&&ecran().dataset.cta==='money';
         cta.textContent=argent?'Monetize my TOTEHM':'Open my TOTEHM'; cta.dataset.va=argent?'money':'open'; }
       function ouvrir(){
         if(ouvert||!window.TOTEHM_DISCOVER) return; ouvert=true; diagD.ouvertures++; origine=document.activeElement; clearTimeout(t);
         el.hidden=false; illustrer();
+        if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>ajuster());
         if(!dc) dc=window.TOTEHM_DISCOVER.monter(el,{surChangement:peindre});
         dc.activer(true); dc.aller(0,true); peindre();
         void el.offsetWidth; body.classList.add('is-dc'); el.classList.add('is-open');
