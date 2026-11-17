@@ -20,7 +20,7 @@
    LE 60 / 30 / 10, ICI, PAR CONSTRUCTION :
      60 %  le NOIR — tout le fond, tout le silence autour du texte (`#000`)
      30 %  le TEXTE — blanc pour l'idée (`.dc-h`), gris clair pour son appui (`.dc-p`), gris sombre pour la
-           structure (progression, rail, consigne)
+           structure (rail, chevron)
      10 %  l'ACCENT, UN SEUL — le corail du TOTEHM (`--dc-ac`), SACRÉ (Wah, 15/11) : il ne colore que le NOM du
            membre et l'ART de Wah (le papier, la pièce). Ni le prix, ni le bouton : ils restent blancs et gris.
            Rien d'autre n'est coloré, jamais : ni navy, ni rouge, ni dégradé.
@@ -42,6 +42,7 @@
 .dc-n{font-family:Quantico,sans-serif;font-weight:700;color:var(--dc-ac)}            /* un NOM de membre */
 .dc-big{margin:0;font:700 clamp(44px,9vw,84px)/1 Quantico,sans-serif;color:#fff;letter-spacing:.01em}
 .dc-big small{font:400 clamp(12px,1.6vw,16px)/1 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#888;margin-left:10px}
+.dc-hi{display:inline-block;width:3.2em;height:1.07em;vertical-align:-.14em}   /* « Higher » est TOUJOURS le badge (BRAND) : jamais le mot en texte */
 .dc-fine{margin:0;font:400 11px/1.7 'Space Mono',monospace;letter-spacing:.06em;color:#888;max-width:420px}
 /* le bouton : un bouton NORMAL — gris, jamais corail (le corail est réservé au nom et à l'art) */
 .dc-btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:12px 26px;border:0;border-radius:12px;cursor:pointer;
@@ -63,30 +64,27 @@
 .dc-x{position:absolute;top:8px;right:8px;z-index:3;width:44px;height:44px;border:0;padding:0;background:none;color:#a0a0a0;cursor:pointer;
   display:flex;align-items:center;justify-content:center;transition:color .15s}
 .dc-x svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round}
-.dc.has-x .dc-progress{right:auto;left:18px}
-/* la structure : progression, rail, consigne, chevron — gris sombre, jamais de couleur */
-.dc-progress{position:absolute;top:22px;right:18px;font:10px/1.4 'Space Mono',monospace;letter-spacing:.14em;color:#888;pointer-events:none}
+/* la structure : rail, chevron — gris sombre, jamais de couleur. Ni numéro d'écran (« 1 / 10 »), ni consigne écrite : la flèche du bas, qui s'anime, dit le scroll */
 .dc-rail{position:absolute;bottom:72px;left:50%;transform:translateX(-50%);display:flex;gap:6px;pointer-events:none}
 .dc-rail span{width:18px;height:2px;background:#242424;transition:background .3s}
 .dc-rail span.on{background:#bdbdbd}
-.dc-hint{position:absolute;bottom:28px;left:0;right:0;text-align:center;font:9px/1.5 'Space Mono',monospace;letter-spacing:.14em;color:#888;pointer-events:none;transition:opacity .3s}
-.dc-next{position:absolute;bottom:96px;left:50%;transform:translateX(-50%);background:none;border:0;padding:10px;cursor:pointer;color:#a0a0a0;transition:color .15s,opacity .3s}
-.dc-next svg{display:block;width:22px;height:22px;animation:dc-bob 1.8s ease-in-out infinite}
+.dc-next{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);background:none;border:0;padding:10px;cursor:pointer;color:#a0a0a0;transition:color .15s,opacity .3s}
+.dc-next svg{display:block;width:24px;height:24px;animation:dc-bob 1.6s ease-in-out infinite}
 .dc-next:focus-visible,.dc-btn:focus-visible,.dc-lnk:focus-visible{outline:1px solid #fff;outline-offset:3px}
 .dc-x:focus-visible{outline:1px solid #fff;outline-offset:-6px}
-.dc.is-last .dc-next,.dc.is-last .dc-hint{opacity:0;pointer-events:none}
-@keyframes dc-bob{50%{transform:translateY(4px)}}
+.dc.is-last .dc-next{opacity:0;pointer-events:none}
+@keyframes dc-bob{0%,100%{transform:none;opacity:.4}50%{transform:translateY(6px);opacity:1}}
 @media(hover:hover){.dc-btn:hover{background:#383838;opacity:1}.dc-next:hover,.dc-x:hover{color:#fff}.dc-lnk:hover{color:#fff}}
 @media(max-width:650px){.dc-s{inset:76px 20px 140px;gap:16px}.dc.has-cta .dc-s{inset:76px 20px 214px}}
 /* un écran BAS (fenêtre réduite, téléphone couché) : tout se resserre et rien ne se chevauche — après la règle de largeur */
 @media(max-height:620px){
   .dc-s{inset:60px 20px 96px;gap:12px}.dc.has-cta .dc-s{inset:60px 20px 150px}
-  .dc-cta,.dc.has-cta.is-last .dc-cta{bottom:84px}.dc-next{display:none}.dc-rail{bottom:56px}.dc-hint{bottom:22px}
+  .dc-cta,.dc.has-cta.is-last .dc-cta{bottom:84px}.dc-next{bottom:12px}.dc-next svg{width:20px;height:20px}.dc-rail{bottom:56px}
   .dc-h{font-size:clamp(19px,3.2vw,30px)}.dc-p{font-size:clamp(13px,1.6vw,16px);line-height:1.5}.dc-btn{min-height:42px;padding:9px 22px}
 }
 @media(max-height:440px){
   .dc-s{inset:50px 20px 50px}.dc.has-cta .dc-s{inset:50px 20px 100px}
-  .dc-cta,.dc.has-cta.is-last .dc-cta{bottom:44px}.dc-rail{bottom:22px}.dc-hint{display:none}
+  .dc-cta,.dc.has-cta.is-last .dc-cta{bottom:44px}.dc-rail{bottom:22px}.dc-next{display:none}
 }
 @media(prefers-reduced-motion:reduce){.dc-s,.dc-s.is-on,.dc-s.is-avant{transition:none;transform:none}.dc-next svg{animation:none}.dc.is-overlay,.dc.is-overlay.is-open{transition:none}}
 /* ══ fin DISCOVER ══ */
@@ -159,8 +157,6 @@ footer:hover,
 .dc-btn.is-quiet:hover,
 .dc-lnk:hover,
 .dc-x:hover,
-.dc-progress:hover,
-.dc-hint:hover,
 .dc-next:hover,
 .tw .tn-l:hover):where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *)){color:#fff!important}
 .field input:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::placeholder{color:#fff!important}
@@ -205,7 +201,7 @@ spot you can access.</p></div>
    Le moteur du « découvrir » : des écrans `.dc-s` dans `.dc-stage`, UN visible à la fois, qui se succèdent au scroll, au
    geste (glisser vers le haut), au clavier (↓ ↑ Page Espace) ou au chevron — comme totehm.space/play_lisbon_street?discover=1.
    Il ne connaît NI le contenu NI la page : `monter(hote)` lit les écrans qui s'y trouvent, et `rafraichir()` les relit
-   quand la page les a redessinés. Le dernier écran est celui qui AGIT (un bouton) : la consigne et le chevron s'effacent.
+   quand la page les a redessinés. Le dernier écran est celui qui AGIT (un bouton) : le chevron s'efface.
    Un champ, un bouton ou un lien dans un écran garde ses touches (Espace, Entrée) : le moteur ne les vole jamais. */
 window.TOTEHM_DISCOVER = (() => {
   const FADE = 520, VERROU = FADE + 160, SEUIL_ROUE = 36, SEUIL_DOIGT = 44;
@@ -213,22 +209,18 @@ window.TOTEHM_DISCOVER = (() => {
   const CHEVRON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
   const ACTIF = 'input,textarea,select,button,a,[contenteditable]';
   function monter(hote, opt){
-    const o = Object.assign({ surChangement:null, consigne:null }, opt || {});
+    const o = Object.assign({ surChangement:null }, opt || {});
     let i = 0, ecrans = [], verrou = 0, cumul = 0, tCumul = 0, y0 = null, actif = true;
-    const stage = hote.querySelector('.dc-stage'), prog = document.createElement('p'), rail = document.createElement('div'),
-          hint = document.createElement('p'), next = document.createElement('button');
-    prog.className = 'dc-progress'; prog.setAttribute('aria-live', 'polite'); rail.className = 'dc-rail'; rail.setAttribute('aria-hidden', 'true');
-    hint.className = 'dc-hint'; next.className = 'dc-next'; next.type = 'button'; next.setAttribute('aria-label', 'Next'); next.innerHTML = CHEVRON;
-    hote.append(prog, rail, hint, next);
-    const doigt = () => !window.matchMedia('(hover:hover) and (pointer:fine)').matches;
+    const stage = hote.querySelector('.dc-stage'), rail = document.createElement('div'), next = document.createElement('button');
+    rail.className = 'dc-rail'; rail.setAttribute('aria-hidden', 'true');
+    next.className = 'dc-next'; next.type = 'button'; next.setAttribute('aria-label', 'Next'); next.innerHTML = CHEVRON;
+    hote.append(rail, next);
     function lire(){ ecrans = [...stage.querySelectorAll('.dc-s')]; rail.innerHTML = ecrans.map(() => '<span></span>').join(''); }
     function peindre(instant){
       ecrans.forEach((e, k) => { const on = k === i; e.classList.toggle('is-on', on); e.classList.toggle('is-avant', k < i); e.setAttribute('aria-hidden', String(!on));
         if(instant) e.style.transition = 'none'; else e.style.removeProperty('transition'); });
       if(instant) void hote.offsetWidth;
       rail.querySelectorAll('span').forEach((s, k) => s.classList.toggle('on', k === i));
-      prog.textContent = ecrans.length > 1 ? (i + 1) + ' / ' + ecrans.length : '';
-      hint.textContent = o.consigne || (doigt() ? 'Swipe up to discover ↑' : 'Scroll to discover ↓');
       hote.classList.toggle('is-last', i >= ecrans.length - 1);
       hote.dataset.i = i; hote.dataset.n = ecrans.length;
       if(o.surChangement) o.surChangement(i, ecrans.length);

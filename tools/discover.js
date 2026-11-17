@@ -2,7 +2,7 @@
    Le moteur du « découvrir » : des écrans `.dc-s` dans `.dc-stage`, UN visible à la fois, qui se succèdent au scroll, au
    geste (glisser vers le haut), au clavier (↓ ↑ Page Espace) ou au chevron — comme totehm.space/play_lisbon_street?discover=1.
    Il ne connaît NI le contenu NI la page : `monter(hote)` lit les écrans qui s'y trouvent, et `rafraichir()` les relit
-   quand la page les a redessinés. Le dernier écran est celui qui AGIT (un bouton) : la consigne et le chevron s'effacent.
+   quand la page les a redessinés. Le dernier écran est celui qui AGIT (un bouton) : le chevron s'efface.
    Un champ, un bouton ou un lien dans un écran garde ses touches (Espace, Entrée) : le moteur ne les vole jamais. */
 window.TOTEHM_DISCOVER = (() => {
   const FADE = 520, VERROU = FADE + 160, SEUIL_ROUE = 36, SEUIL_DOIGT = 44;
@@ -10,22 +10,18 @@ window.TOTEHM_DISCOVER = (() => {
   const CHEVRON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
   const ACTIF = 'input,textarea,select,button,a,[contenteditable]';
   function monter(hote, opt){
-    const o = Object.assign({ surChangement:null, consigne:null }, opt || {});
+    const o = Object.assign({ surChangement:null }, opt || {});
     let i = 0, ecrans = [], verrou = 0, cumul = 0, tCumul = 0, y0 = null, actif = true;
-    const stage = hote.querySelector('.dc-stage'), prog = document.createElement('p'), rail = document.createElement('div'),
-          hint = document.createElement('p'), next = document.createElement('button');
-    prog.className = 'dc-progress'; prog.setAttribute('aria-live', 'polite'); rail.className = 'dc-rail'; rail.setAttribute('aria-hidden', 'true');
-    hint.className = 'dc-hint'; next.className = 'dc-next'; next.type = 'button'; next.setAttribute('aria-label', 'Next'); next.innerHTML = CHEVRON;
-    hote.append(prog, rail, hint, next);
-    const doigt = () => !window.matchMedia('(hover:hover) and (pointer:fine)').matches;
+    const stage = hote.querySelector('.dc-stage'), rail = document.createElement('div'), next = document.createElement('button');
+    rail.className = 'dc-rail'; rail.setAttribute('aria-hidden', 'true');
+    next.className = 'dc-next'; next.type = 'button'; next.setAttribute('aria-label', 'Next'); next.innerHTML = CHEVRON;
+    hote.append(rail, next);
     function lire(){ ecrans = [...stage.querySelectorAll('.dc-s')]; rail.innerHTML = ecrans.map(() => '<span></span>').join(''); }
     function peindre(instant){
       ecrans.forEach((e, k) => { const on = k === i; e.classList.toggle('is-on', on); e.classList.toggle('is-avant', k < i); e.setAttribute('aria-hidden', String(!on));
         if(instant) e.style.transition = 'none'; else e.style.removeProperty('transition'); });
       if(instant) void hote.offsetWidth;
       rail.querySelectorAll('span').forEach((s, k) => s.classList.toggle('on', k === i));
-      prog.textContent = ecrans.length > 1 ? (i + 1) + ' / ' + ecrans.length : '';
-      hint.textContent = o.consigne || (doigt() ? 'Swipe up to discover ↑' : 'Scroll to discover ↓');
       hote.classList.toggle('is-last', i >= ecrans.length - 1);
       hote.dataset.i = i; hote.dataset.n = ecrans.length;
       if(o.surChangement) o.surChangement(i, ecrans.length);

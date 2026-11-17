@@ -83,10 +83,10 @@ const erreurs = log => log.errors.filter(e => !/404|Failed to load resource/i.te
   ok(await pg.$$eval('#offer .dc-ints i', l => l.length) === 3, 'three intentions shown');
   /* ── DISCOVER : un écran à la fois, au geste, noir ── */
   const d0 = await pg.evaluate(() => ({ ...window.__totehm_creator().discover, on:document.querySelectorAll('#offer .dc-s.is-on').length,
-    fond:getComputedStyle(document.getElementById('dc')).backgroundColor, prog:document.querySelector('#dc .dc-progress').textContent,
+    fond:getComputedStyle(document.getElementById('dc')).backgroundColor, prog:document.querySelectorAll('#dc .dc-progress,#dc .dc-hint').length,
     cache:getComputedStyle(document.querySelector('#offer .dc-s:not(.is-on)')).visibility, texte:document.querySelector('#offer .dc-s.is-on').innerText.replace(/\s+/g,' ').trim() }));
-  ok(d0.n === 8 && d0.i === 0 && d0.on === 1 && d0.fond === 'rgb(0, 0, 0)' && d0.prog === '1 / 8' && d0.cache === 'hidden' && /Enter kai’s ecosystem\.$/.test(d0.texte),
-     '15/11 · DISCOVER : 8 écrans, UN seul visible, fond noir, « 1 / 8 », le premier dit « Enter kai’s ecosystem. » → ' + JSON.stringify(d0));
+  ok(d0.n === 8 && d0.i === 0 && d0.on === 1 && d0.fond === 'rgb(0, 0, 0)' && d0.prog === 0 && d0.cache === 'hidden' && /Enter kai’s ecosystem\.$/.test(d0.texte),
+     '15/11 · DISCOVER : 8 écrans, UN seul visible, fond noir, ni numéro ni consigne écrite, le premier dit « Enter kai’s ecosystem. » → ' + JSON.stringify(d0));
   await pg.keyboard.press('ArrowDown'); await pg.waitForTimeout(800);
   const d1 = await pg.evaluate(() => ({ i:window.__totehm_creator().discover.i, texte:document.querySelector('#offer .dc-s.is-on').innerText.replace(/\s+/g,' ').trim() }));
   ok(d1.i === 1 && /^Their whole TOTEHM\b/.test(d1.texte), '↓ (clavier) : l\'écran suivant, jamais deux d\'un coup → ' + JSON.stringify(d1));

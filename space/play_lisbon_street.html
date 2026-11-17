@@ -244,11 +244,10 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
 #sdisc-bg{opacity:.2;transition:opacity .55s ease}
 body.is-street-board #sdisc-bg,body.is-snapping #sdisc-bg{opacity:1}
 #sdisc-back,#sdisc-board-close{top:22px;padding:10px;min-height:44px}
-#sdisc-progress{position:absolute;top:32px;left:50%;transform:translateX(-50%);font:10px/1.4 'Space Mono',monospace;letter-spacing:.14em;color:#888;pointer-events:none}
 #sdisc-rail{position:absolute;bottom:65px;left:50%;transform:translateX(-50%);display:flex;gap:6px;pointer-events:none}
 #sdisc-rail span{width:18px;height:2px;background:#242424;transition:background .3s}
 #sdisc-rail span.on{background:#bdbdbd}
-#sdisc-reading-hint{position:absolute;bottom:23px;left:0;right:0;color:#888;text-align:center;font:9px/1.5 'Space Mono',monospace;letter-spacing:.14em;pointer-events:none}
+#sdisc-reading-hint{position:absolute;bottom:18px;left:0;right:0;margin:0;color:#a0a0a0;text-align:center;pointer-events:none}#sdisc-reading-hint svg{display:inline-block;width:24px;height:24px;animation:sdisc-bob 1.6s ease-in-out infinite}@keyframes sdisc-bob{0%,100%{transform:none;opacity:.4}50%{transform:translateY(6px);opacity:1}}@media(prefers-reduced-motion:reduce){#sdisc-reading-hint svg{animation:none}}
 #sdisc-trig{bottom:90px}
 #street-access-status{bottom:90px}
 body.is-street-board #sdisc-rail,body.is-street-board #sdisc-progress,body.is-street-board #sdisc-reading-hint,body.is-snapping #sdisc-rail,body.is-snapping #sdisc-progress,body.is-snapping #sdisc-reading-hint{display:none}
@@ -356,7 +355,7 @@ body:not(.is-street-front) #sdisc-cover-next{opacity:0;transform:translate(-50%,
   <button id="sdisc-back" data-experience-close type="button">Back</button>
   <button id="sdisc-board-close" type="button" aria-label="Back to the story" style="display:none">✕</button>
   <div id="sdisc-stage" role="region" aria-label="Discover the Lisbon Street"></div>
-  <p id="sdisc-progress" aria-live="polite"></p><div id="sdisc-rail" aria-hidden="true"></div><p id="sdisc-reading-hint">Scroll to discover ↓</p>
+  <div id="sdisc-rail" aria-hidden="true"></div><p id="sdisc-reading-hint" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></p>
   <button id="sdisc-trig" type="button" aria-label="Next">
     <span class="trigger-label">Discover the Lisbon Street</span>
     <svg class="chev bob-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
@@ -1273,7 +1272,6 @@ let sdiscCur=0, sdiscLock=false,storyRevision=0;
 const SD_FADE=650;
 
 function showSdisc(i,instant){
-  document.getElementById('sdisc-progress').textContent=(i+1)+' / '+SDSLIDES.length;
   document.querySelectorAll('#sdisc-rail span').forEach((dot,n)=>dot.classList.toggle('on',n===i));
   document.getElementById('sdisc-reading-hint').hidden=i===SDSLIDES.length-1;
   sdiscStage.querySelectorAll('.disc-block').forEach((b,idx)=>{

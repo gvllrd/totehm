@@ -231,7 +231,7 @@ html.is-embed,html.is-embed body{background:#000}
    LE 60 / 30 / 10, ICI, PAR CONSTRUCTION :
      60 %  le NOIR — tout le fond, tout le silence autour du texte (`#000`)
      30 %  le TEXTE — blanc pour l'idée (`.dc-h`), gris clair pour son appui (`.dc-p`), gris sombre pour la
-           structure (progression, rail, consigne)
+           structure (rail, chevron)
      10 %  l'ACCENT, UN SEUL — le corail du TOTEHM (`--dc-ac`), SACRÉ (Wah, 15/11) : il ne colore que le NOM du
            membre et l'ART de Wah (le papier, la pièce). Ni le prix, ni le bouton : ils restent blancs et gris.
            Rien d'autre n'est coloré, jamais : ni navy, ni rouge, ni dégradé.
@@ -253,6 +253,7 @@ html.is-embed,html.is-embed body{background:#000}
 .dc-n{font-family:Quantico,sans-serif;font-weight:700;color:var(--dc-ac)}            /* un NOM de membre */
 .dc-big{margin:0;font:700 clamp(44px,9vw,84px)/1 Quantico,sans-serif;color:#fff;letter-spacing:.01em}
 .dc-big small{font:400 clamp(12px,1.6vw,16px)/1 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#888;margin-left:10px}
+.dc-hi{display:inline-block;width:3.2em;height:1.07em;vertical-align:-.14em}   /* « Higher » est TOUJOURS le badge (BRAND) : jamais le mot en texte */
 .dc-fine{margin:0;font:400 11px/1.7 'Space Mono',monospace;letter-spacing:.06em;color:#888;max-width:420px}
 /* le bouton : un bouton NORMAL — gris, jamais corail (le corail est réservé au nom et à l'art) */
 .dc-btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:12px 26px;border:0;border-radius:12px;cursor:pointer;
@@ -274,30 +275,27 @@ html.is-embed,html.is-embed body{background:#000}
 .dc-x{position:absolute;top:8px;right:8px;z-index:3;width:44px;height:44px;border:0;padding:0;background:none;color:#a0a0a0;cursor:pointer;
   display:flex;align-items:center;justify-content:center;transition:color .15s}
 .dc-x svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round}
-.dc.has-x .dc-progress{right:auto;left:18px}
-/* la structure : progression, rail, consigne, chevron — gris sombre, jamais de couleur */
-.dc-progress{position:absolute;top:22px;right:18px;font:10px/1.4 'Space Mono',monospace;letter-spacing:.14em;color:#888;pointer-events:none}
+/* la structure : rail, chevron — gris sombre, jamais de couleur. Ni numéro d'écran (« 1 / 10 »), ni consigne écrite : la flèche du bas, qui s'anime, dit le scroll */
 .dc-rail{position:absolute;bottom:72px;left:50%;transform:translateX(-50%);display:flex;gap:6px;pointer-events:none}
 .dc-rail span{width:18px;height:2px;background:#242424;transition:background .3s}
 .dc-rail span.on{background:#bdbdbd}
-.dc-hint{position:absolute;bottom:28px;left:0;right:0;text-align:center;font:9px/1.5 'Space Mono',monospace;letter-spacing:.14em;color:#888;pointer-events:none;transition:opacity .3s}
-.dc-next{position:absolute;bottom:96px;left:50%;transform:translateX(-50%);background:none;border:0;padding:10px;cursor:pointer;color:#a0a0a0;transition:color .15s,opacity .3s}
-.dc-next svg{display:block;width:22px;height:22px;animation:dc-bob 1.8s ease-in-out infinite}
+.dc-next{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);background:none;border:0;padding:10px;cursor:pointer;color:#a0a0a0;transition:color .15s,opacity .3s}
+.dc-next svg{display:block;width:24px;height:24px;animation:dc-bob 1.6s ease-in-out infinite}
 .dc-next:focus-visible,.dc-btn:focus-visible,.dc-lnk:focus-visible{outline:1px solid #fff;outline-offset:3px}
 .dc-x:focus-visible{outline:1px solid #fff;outline-offset:-6px}
-.dc.is-last .dc-next,.dc.is-last .dc-hint{opacity:0;pointer-events:none}
-@keyframes dc-bob{50%{transform:translateY(4px)}}
+.dc.is-last .dc-next{opacity:0;pointer-events:none}
+@keyframes dc-bob{0%,100%{transform:none;opacity:.4}50%{transform:translateY(6px);opacity:1}}
 @media(hover:hover){.dc-btn:hover{background:#383838;opacity:1}.dc-next:hover,.dc-x:hover{color:#fff}.dc-lnk:hover{color:#fff}}
 @media(max-width:650px){.dc-s{inset:76px 20px 140px;gap:16px}.dc.has-cta .dc-s{inset:76px 20px 214px}}
 /* un écran BAS (fenêtre réduite, téléphone couché) : tout se resserre et rien ne se chevauche — après la règle de largeur */
 @media(max-height:620px){
   .dc-s{inset:60px 20px 96px;gap:12px}.dc.has-cta .dc-s{inset:60px 20px 150px}
-  .dc-cta,.dc.has-cta.is-last .dc-cta{bottom:84px}.dc-next{display:none}.dc-rail{bottom:56px}.dc-hint{bottom:22px}
+  .dc-cta,.dc.has-cta.is-last .dc-cta{bottom:84px}.dc-next{bottom:12px}.dc-next svg{width:20px;height:20px}.dc-rail{bottom:56px}
   .dc-h{font-size:clamp(19px,3.2vw,30px)}.dc-p{font-size:clamp(13px,1.6vw,16px);line-height:1.5}.dc-btn{min-height:42px;padding:9px 22px}
 }
 @media(max-height:440px){
   .dc-s{inset:50px 20px 50px}.dc.has-cta .dc-s{inset:50px 20px 100px}
-  .dc-cta,.dc.has-cta.is-last .dc-cta{bottom:44px}.dc-rail{bottom:22px}.dc-hint{display:none}
+  .dc-cta,.dc.has-cta.is-last .dc-cta{bottom:44px}.dc-rail{bottom:22px}.dc-next{display:none}
 }
 @media(prefers-reduced-motion:reduce){.dc-s,.dc-s.is-on,.dc-s.is-avant{transition:none;transform:none}.dc-next svg{animation:none}.dc.is-overlay,.dc.is-overlay.is-open{transition:none}}
 /* ══ fin DISCOVER ══ */
@@ -394,8 +392,6 @@ body.is-search .note:hover,
 .dc-btn.is-quiet:hover,
 .dc-lnk:hover,
 .dc-x:hover,
-.dc-progress:hover,
-.dc-hint:hover,
 .dc-next:hover,
 .dc-note:hover,
 .dc-note.no:hover,
@@ -409,6 +405,7 @@ body.is-search #q:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,t
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="higher-badge" viewBox="0 0 600 200"><defs><mask id="hbmask"><rect width="600" height="200" fill="white"/><circle cx="60" cy="0" r="14" fill="black"/><circle cx="140" cy="0" r="14" fill="black"/><circle cx="220" cy="0" r="14" fill="black"/><circle cx="300" cy="0" r="14" fill="black"/><circle cx="380" cy="0" r="14" fill="black"/><circle cx="460" cy="0" r="14" fill="black"/><circle cx="540" cy="0" r="14" fill="black"/><circle cx="60" cy="200" r="14" fill="black"/><circle cx="140" cy="200" r="14" fill="black"/><circle cx="220" cy="200" r="14" fill="black"/><circle cx="300" cy="200" r="14" fill="black"/><circle cx="380" cy="200" r="14" fill="black"/><circle cx="460" cy="200" r="14" fill="black"/><circle cx="540" cy="200" r="14" fill="black"/><circle cx="0" cy="70" r="14" fill="black"/><circle cx="0" cy="130" r="14" fill="black"/><circle cx="600" cy="70" r="14" fill="black"/><circle cx="600" cy="130" r="14" fill="black"/></mask></defs><rect width="600" height="200" fill="#333366" mask="url(#hbmask)"/><g fill="#ffffff" transform="translate(34.32, 144.42)"><path transform="translate(0.000,0) scale(0.144,-0.144)" d="M596 700H832L692 0H456ZM238 0H2L142 700H378ZM523 258H274L313 452H562Z"/><path transform="translate(115.776,0) scale(0.144,-0.144)" d="M-5 0 104 547H329L220 0ZM241 591Q182 591 147.5 622.0Q113 653 113 698Q113 751 152.5 786.0Q192 821 257 821Q316 821 350.5 792.0Q385 763 385 718Q385 662 345.5 626.5Q306 591 241 591Z"/><path transform="translate(162.576,0) scale(0.144,-0.144)" d="M255 -204Q172 -204 103.5 -187.0Q35 -170 -16 -136L80 18Q113 -7 161.5 -21.5Q210 -36 259 -36Q325 -36 355.0 -8.5Q385 19 395 68L409 138L450 294L485 464L501 547H716L629 110Q596 -57 499.5 -130.5Q403 -204 255 -204ZM260 30Q200 30 146.0 58.0Q92 86 58.0 139.0Q24 192 24 266Q24 327 46.5 379.5Q69 432 109.5 472.0Q150 512 203.5 534.5Q257 557 318 557Q379 557 424.5 533.0Q470 509 490.0 451.5Q510 394 493 294Q478 204 446.0 145.5Q414 87 367.0 58.5Q320 30 260 30ZM332 207Q361 207 383.0 219.5Q405 232 417.0 255.0Q429 278 429 309Q429 340 408.5 359.5Q388 379 350 379Q321 379 299.0 366.5Q277 354 264.5 331.0Q252 308 252 277Q252 246 273.5 226.5Q295 207 332 207Z"/><path transform="translate(264.960,0) scale(0.144,-0.144)" d="M470 557Q535 557 584.0 528.5Q633 500 654.5 443.5Q676 387 659 302L599 0H373L428 275Q437 320 424.0 343.5Q411 367 375 367Q337 367 311.0 341.5Q285 316 274 263L221 0H-5L143 742H369L300 396L260 436Q299 499 356.5 528.0Q414 557 470 557Z"/><path transform="translate(366.048,0) scale(0.144,-0.144)" d="M321 -10Q231 -10 163.5 21.0Q96 52 58.0 109.0Q20 166 20 243Q20 333 62.0 404.0Q104 475 180.5 516.0Q257 557 359 557Q447 557 509.0 526.0Q571 495 604.0 441.0Q637 387 637 316Q637 291 633.5 267.0Q630 243 625 221H200L221 330H521L427 301Q435 333 426.5 355.5Q418 378 398.0 390.5Q378 403 349 403Q308 403 284.0 381.0Q260 359 249.5 324.0Q239 289 239 251Q239 200 266.5 178.5Q294 157 347 157Q378 157 409.0 166.5Q440 176 466 195L560 58Q504 20 443.5 5.0Q383 -10 321 -10Z"/><path transform="translate(459.360,0) scale(0.144,-0.144)" d="M-5 0 104 547H317L286 392L265 436Q299 501 359.5 529.0Q420 557 498 557L458 357Q444 359 432.5 360.0Q421 361 409 361Q353 361 318.5 336.0Q284 311 272 253L221 0Z"/></g></symbol></svg>
 <button id="member" class="mc" type="button"><span id="member-txt">CONNECT WITH MY TOTEHM</span></button>
 
 <main>
@@ -452,7 +449,7 @@ body.is-search #q:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,t
    Le moteur du « découvrir » : des écrans `.dc-s` dans `.dc-stage`, UN visible à la fois, qui se succèdent au scroll, au
    geste (glisser vers le haut), au clavier (↓ ↑ Page Espace) ou au chevron — comme totehm.space/play_lisbon_street?discover=1.
    Il ne connaît NI le contenu NI la page : `monter(hote)` lit les écrans qui s'y trouvent, et `rafraichir()` les relit
-   quand la page les a redessinés. Le dernier écran est celui qui AGIT (un bouton) : la consigne et le chevron s'effacent.
+   quand la page les a redessinés. Le dernier écran est celui qui AGIT (un bouton) : le chevron s'efface.
    Un champ, un bouton ou un lien dans un écran garde ses touches (Espace, Entrée) : le moteur ne les vole jamais. */
 window.TOTEHM_DISCOVER = (() => {
   const FADE = 520, VERROU = FADE + 160, SEUIL_ROUE = 36, SEUIL_DOIGT = 44;
@@ -460,22 +457,18 @@ window.TOTEHM_DISCOVER = (() => {
   const CHEVRON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
   const ACTIF = 'input,textarea,select,button,a,[contenteditable]';
   function monter(hote, opt){
-    const o = Object.assign({ surChangement:null, consigne:null }, opt || {});
+    const o = Object.assign({ surChangement:null }, opt || {});
     let i = 0, ecrans = [], verrou = 0, cumul = 0, tCumul = 0, y0 = null, actif = true;
-    const stage = hote.querySelector('.dc-stage'), prog = document.createElement('p'), rail = document.createElement('div'),
-          hint = document.createElement('p'), next = document.createElement('button');
-    prog.className = 'dc-progress'; prog.setAttribute('aria-live', 'polite'); rail.className = 'dc-rail'; rail.setAttribute('aria-hidden', 'true');
-    hint.className = 'dc-hint'; next.className = 'dc-next'; next.type = 'button'; next.setAttribute('aria-label', 'Next'); next.innerHTML = CHEVRON;
-    hote.append(prog, rail, hint, next);
-    const doigt = () => !window.matchMedia('(hover:hover) and (pointer:fine)').matches;
+    const stage = hote.querySelector('.dc-stage'), rail = document.createElement('div'), next = document.createElement('button');
+    rail.className = 'dc-rail'; rail.setAttribute('aria-hidden', 'true');
+    next.className = 'dc-next'; next.type = 'button'; next.setAttribute('aria-label', 'Next'); next.innerHTML = CHEVRON;
+    hote.append(rail, next);
     function lire(){ ecrans = [...stage.querySelectorAll('.dc-s')]; rail.innerHTML = ecrans.map(() => '<span></span>').join(''); }
     function peindre(instant){
       ecrans.forEach((e, k) => { const on = k === i; e.classList.toggle('is-on', on); e.classList.toggle('is-avant', k < i); e.setAttribute('aria-hidden', String(!on));
         if(instant) e.style.transition = 'none'; else e.style.removeProperty('transition'); });
       if(instant) void hote.offsetWidth;
       rail.querySelectorAll('span').forEach((s, k) => s.classList.toggle('on', k === i));
-      prog.textContent = ecrans.length > 1 ? (i + 1) + ' / ' + ecrans.length : '';
-      hint.textContent = o.consigne || (doigt() ? 'Swipe up to discover ↑' : 'Scroll to discover ↓');
       hote.classList.toggle('is-last', i >= ecrans.length - 1);
       hote.dataset.i = i; hote.dataset.n = ecrans.length;
       if(o.surChangement) o.surChangement(i, ecrans.length);
@@ -817,14 +810,14 @@ function ecransExplication(n){
     ecran('Every photo and video.', 'The ones that illustrate their grind,\ntheir vision and their story.\nA box opened to subscribers opens its media too.'),
     ecran('Adopt what moves you.', 'One tap copies a box into your own TOTEHM,\ntheir name kept on it.\nBeing inspired is looking; adopting is a habit of yours.'),
     ecran('Their spots, at the exact point.', 'Place, time, and the habit behind it.\n[GO] takes you there.', '<div class="dc-slot"></div>'),
-    ecran('Your Higher GPT reads them too.', 'Ask your own ChatGPT for your next step:\nTheir discipline inside your preparation,\nalways named.'),
+    ecran('Your <svg class="dc-hi" viewBox="0 0 600 200" role="img" aria-label="Higher"><title>Higher</title><use href="#higher-badge"></use></svg> GPT reads them too.', 'Ask your own ChatGPT for your next step:\nTheir discipline inside your preparation,\nalways named.'),
     ecran('80 % goes to ' + N + '.', 'One payment a year. Your subscription\nis their income, not a platform toll.\nNo chat, no answer owed — a practice, not an inbox.\nWhat ' + N + ' keeps private stays private.')
   ];
 }
 function ecranPrix(s, visiteur){
   /* le prix et le bouton vivent sous CHAQUE écran (`#cta`) : ici, seulement les conditions */
   return '<div class="dc-s">' + (visiteur ? '<h2 class="dc-h">One year. Stop anytime.</h2>' : '<p class="dc-big">' + esc(money(s.price_cents, s.currency)) + '<small>/ year</small></p><p class="dc-fine">This is what visitors see.</p>') +
-    '<p class="dc-fine">One payment a year, by Stripe — a <b>year</b> of their practice. Stop anytime on the back of your TOTEHM: it runs to the end of the year, then stops. Clothes and artworks are separate purchases; Higher GPT and TotehmBot cost nothing.</p>' +
+    '<p class="dc-fine">One payment a year, by Stripe — a <b>year</b> of their practice. Stop anytime on the back of your TOTEHM: it runs to the end of the year, then stops. Clothes and artworks are separate purchases; <svg class="dc-hi" viewBox="0 0 600 200" role="img" aria-label="Higher"><title>Higher</title><use href="#higher-badge"></use></svg> GPT and TotehmBot cost nothing.</p>' +
     '<a class="dc-lnk" href="/search">Search another TOTEHM</a></div>';
 }
 function appel(s, oui){
