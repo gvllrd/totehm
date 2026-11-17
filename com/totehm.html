@@ -3403,17 +3403,19 @@ body.lv-b:not(.lv-membre):not(.lv-verrou) #lv-socket{opacity:0}
 #vs-dash .tracking-source:focus-visible{outline:2px solid #fff;outline-offset:3px}
 #vs-dash .tb .v-name{overflow-wrap:anywhere;white-space:normal}
 .tracking-matrix .tb .v-name{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden}
-.tracking-focus{margin-top:10px}
-.tracking-matrix .db-n small{display:block;font:9px/1.5 'Space Mono',monospace;color:#b8b8c2;margin-top:5px;white-space:normal}
 .tracking-cell{font:10px/1.5 'Space Mono',monospace;text-align:center;color:#b8b8c2;min-width:0;white-space:nowrap;overflow:hidden}
 .tracking-matrix:not(.is-week) .tracking-cell{font-size:9px}
 .tracking-cell.has-done{color:#fff}.tracking-cell.has-missed{border-bottom:1px solid #b8b8c2}
-.tracking-history{background:#000;margin-top:12px;text-align:left}
-.tracking-history>summary{padding:15px;font:700 10px 'Space Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#b8b8c2;cursor:pointer}
 .tracking-review .vs-hi{width:60px;height:20px;vertical-align:middle;display:inline-block}
 .tracking-review a.vs-act{text-decoration:none;display:inline-flex;align-items:center;gap:5px}
 .tracking-caption{overflow-wrap:anywhere}
 .tracking-caption a{color:#fff;text-decoration-color:#666}
+.tracking-review{justify-content:flex-start;flex-wrap:wrap}
+.tracking-review{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.tracking-state{margin:10px 0 0!important}
+[data-track-copy-status]:empty{display:none}
+.tracking-copy{background:none;border:0;padding:0;font:inherit;color:#d2d2da;text-decoration:underline;text-decoration-color:#555;cursor:pointer}
+.tracking-copy:hover{color:#fff}
 
 .db{background:#000;padding:14px 14px 13px;text-align:left}
 .db-t{margin:0 0 11px;display:flex;align-items:baseline;justify-content:space-between;gap:10px;
@@ -3457,22 +3459,6 @@ body.lv-b:not(.lv-membre):not(.lv-verrou) #lv-socket{opacity:0}
 .db-o .j{font:700 10px/1 'Space Mono',monospace;color:#fff;letter-spacing:.06em}
 .db-o .j.is-tard{color:#b8b8c2;font-weight:400}
 .db-o .db-bar{grid-column:1/-1}
-.db-heat{display:grid;grid-auto-flow:column;grid-template-rows:repeat(7,9px);grid-auto-columns:9px;gap:3px;justify-content:start}
-.db-heat span{border-radius:1px;background:#141418}
-.db-heat span.l1{background:#3a3a44}.db-heat span.l2{background:#6c6c78}.db-heat span.l3{background:#b0b0ba}.db-heat span.l4{background:#fff}
-.db-heat span.is-auj{box-shadow:0 0 0 1px #fff}
-.db-f{display:flex;flex-direction:column;gap:9px}
-.db-f>div{display:grid;grid-template-columns:7px minmax(0,1fr) auto;gap:9px;align-items:baseline}
-.db-f .pt{width:5px;height:5px;border-radius:50%;background:var(--c,#5c5c66);transform:translateY(-1px)}
-.db-f .q{min-width:0;font:400 10px/1.35 'Space Mono',monospace;color:#d2d2da;overflow-wrap:anywhere}
-.db-f .q .tb{margin-top:6px}
-.db-f .q em{font:400 11.5px/1.3 'Quantico',sans-serif;font-style:normal;color:#fff}
-.db-f time{font:400 9px/1 'Space Mono',monospace;color:#8e8e98;white-space:nowrap}
-.db-tot{display:grid;grid-template-columns:repeat(5,1fr);gap:2px}
-.db-tot span{background:#000;padding:10px 8px 9px;display:flex;flex-direction:column;gap:5px;min-width:0;text-align:left}
-.db-tot b{font:700 13px/1 'Space Mono',monospace;color:#fff}
-.db-tot i{font:400 8px/1.2 'Space Mono',monospace;font-style:normal;letter-spacing:.1em;text-transform:uppercase;color:#b8b8c2;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .vs-in{flex:1;min-width:0;border:0;border-radius:10px;background:#1f1f24;color:#fff;caret-color:#fff;outline:none;
   font:400 14px/1.2 'Quantico',sans-serif;padding:9px 12px}
 .vs-in::placeholder{color:#8c8c96}
@@ -4209,9 +4195,8 @@ div:not(:has(> :not(br,wbr))):hover,
 #vs-tabs button:hover,
 #vs-vide:hover,
 .tracking-matrix .h:hover,
-.tracking-matrix .db-n small:hover,
 .tracking-cell:hover,
-.tracking-history>summary:hover,
+.tracking-copy:hover,
 .db-t i:hover,
 .db-tg:hover,
 .db-k b small:hover,
@@ -4224,9 +4209,6 @@ div:not(:has(> :not(br,wbr))):hover,
 .db-vide:hover,
 .db-i i:hover,
 .db-o .j.is-tard:hover,
-.db-f .q:hover,
-.db-f time:hover,
-.db-tot i:hover,
 .lv-note.is-no:hover,
 .lv-note.is-ok:hover,
 .vs-k.vs-nom:hover,
@@ -14511,21 +14493,7 @@ window.addEventListener('pageshow',e=>{
           const found=RO?[]:TRIPS.filter(t=>t.text===o.t), native=found.length===1?{...found[0],days_left:o.jours}:{id:'',text:o.t,days_left:o.jours,target_at:o.by};
           return '<div>'+boxTotehm('t',native,{court:true})+'<span class="j'+(j!=null&&j<0?' is-tard':'')+'">'+J+'</span>'
             +'</div>'; }).join('')+'</div></div>';
-        h+='<details class="tracking-history"><summary>My TOTEHM history</summary>';
-        const heat=D.heat||[];
-        h+='<div class="db"><p class="db-t">My activity<i>'+heat.reduce((a,v)=>a+n(v),0)+' gestures · 12 weeks</i></p>'+chaleur(heat,today)+'</div>';
-        const F=D.feed||[];
-        if(F.length) h+='<div class="db"><p class="db-t">Lately<i>everything I do in my TOTEHM</i></p><div class="db-f">'+F.slice(0,8).map(f=>{
-          const bk={habit:'h',track:'h',objective:'t',repulsion:'r',story:'w',wisdom:'w',vision:'v'}[f.box||String(f.k).split('_')[0]];
-          // A journal label is historical: render its category without inventing current links or an editable source.
-          const preview=bk&&f.l?boxTotehm(bk,{id:'',t:f.l,t0:f.l,text:f.l,is:f.i?[f.i]:[],hs:[],ws:[],os:[]},{court:true}):'';
-          return '<div><span class="pt" style="--c:'+(coul(f.i)||'#5c5c66')+'"></span><div class="q">'+esc(DIT[f.k]||f.k)+(preview|| (f.l?' · <em>'+esc(f.l)+'</em>':''))+'</div><time>'+esc(ilya(f.at))+'</time></div>';
-        }).join('')+'</div></div>';
-        const tot=[['habits',T.habits],['objectives',T.objectives],['achieved',T.achieved],['repulsions',T.repulsions],['visions',T.visions],
-          ['my story',T.story],['media',T.media],['spots',T.spots],['reflections',T.reflections],['chapters',T.chapters]];
-        h+='<div class="db"><p class="db-t">My TOTEHM<i>'+(D.since?'since '+esc(court(D.since))+' · ':'')+n(T.gestes)+' gestures</i></p></div>'
-          +'<div class="db-tot">'+tot.map(([k,v])=>'<span><b>'+n(v)+'</b><i>'+k+'</i></span>').join('')+'</div>';
-        h+='</details>';
+        /* 16/11 — l'historique du compte (activité, fil, inventaire) est parti : le tableau ne garde que l'essentiel. */
         el.innerHTML=h;
       }
       /* Configuration unique : le dashboard ne recueille aucune déclaration. */

@@ -5,17 +5,20 @@ const source=ref=>typeof ref==='string'&&ref.length>0&&ref.length<=16000&&ref===
 const habitLink=(ref,label,content=esc(label))=>source(ref)?'<a class="tracking-source" href="'+esc(source(ref))+'" title="Open original">'+content+'</a>':'<div>'+content+'</div><small>Source link unavailable. Open this Habit directly in your TOTEHM.</small>';
 const higher='<svg class="vs-hi" viewBox="0 0 600 200" aria-label="Higher"><use href="#higher-badge"/></svg>';
 export const PRACTICE_REVIEW_PROMPT='Review my reported practice alongside my TOTEHM. Separate Done, Missed and missing reports. Explain what the evidence supports and suggest one small adjustment, without changing my TOTEHM.';
-export function renderPractice(s,{requestedDays=s.days_count,renderHabit,renderLevel}={}){
+export function renderPractice(s,{requestedDays=s.days_count,renderHabit}={}){
  const habitPreview=h=>habitLink(h.ref,h.habit,renderHabit?renderHabit(h):esc(h.habit));
- const c=s.counts??{},habits=s.habits??[],days=s.days??[],settings=s.settings??{},span=number(s.days_count)||7,coverage=s.coverage??{};
- const answered=number(c.answered),pending=number(c.pending),unanswered=number(c.unanswered);
- const observed=coverage.observed_habits??habits.filter(h=>number(h.reports)>0||number(h.attempts)+number(h.unanswered)>0).length;
+ const c=s.counts??{},habits=s.habits??[],days=s.days??[],settings=s.settings??{},span=number(s.days_count)||7;
+ const pending=number(c.pending),unanswered=number(c.unanswered);
  let html='<div class="db"><p class="db-t">My practice<i>'+span+' days · self-reported</i></p>'
   +'<div class="tracking-period" role="group" aria-label="Practice period">'+[7,28].map(n=>'<button class="vs-act'+(Number(requestedDays)===n?' is-on':'')+'" type="button" data-track-period="'+n+'" aria-pressed="'+(Number(requestedDays)===n)+'">'+n+' days</button>').join('')+'</div>';
  if(s.stale)html+='<p class="tracking-caption" role="status">Showing the last available '+span+' days. Refresh is temporarily unavailable.</p>';
+ /* ⚠️ 16/11 — L'ESSENTIEL (Wah : « le tableau du Go Higher laisse à désirer : garder seulement l'essentiel »). Trois
+    chiffres, la grille des Habits, une rangée d'actions. Restent seulement les phrases qui empêchent de MAL LIRE un
+    chiffre (un silence n'est pas un échec ; une période partielle ; une notification non livrée) — le reste est parti :
+    la couverture, le décompte sous chaque box (la bande des jours le dit), « Worth a look » (la grille le montre), la
+    tendance à deux semaines (« insufficient » le plus souvent). */
  html+='<div class="db-k"><div><i>Done</i><b>'+number(c.done)+'</b></div><div><i>Missed</i><b>'+number(c.missed)+'</b></div><div><i>No response</i><b>'+unanswered+'</b></div></div>'
-  +'<p class="tracking-caption">'+answered+' responses · '+unanswered+' unknown'+(pending?' · '+pending+' pending':'')+'. No response is never a Missed.</p>'
-  +'<p class="tracking-caption">'+number(observed)+' / '+number(coverage.total_habits??habits.length)+' Habits with observations. Notification limits can leave other Habits unobserved.</p>';
+  +'<p class="tracking-caption">No response is never a Missed.'+(pending?' '+pending+' pending.':'')+'</p>';
  if(number(c.partial)||number(c.skipped))html+='<p class="tracking-caption">Earlier reports: '+number(c.partial)+' in part · '+number(c.skipped)+' set aside. Kept as reported.</p>';
  if(s.source_complete===false)html+='<p class="tracking-caption">This is part of the recorded practice.</p>';
  html+='</div>';
@@ -31,10 +34,7 @@ export function renderPractice(s,{requestedDays=s.days_count,renderHabit,renderL
   +'<div class="tracking-days tracking-head" aria-hidden="true">'+days.map(d=>'<span class="h" title="'+esc(d.day)+'">'+esc(new Date(d.day+'T12:00:00').toLocaleDateString('en-GB',{day:'numeric'}))+'</span>').join('')+'</div>';
  for(const h of habits){
   const cells=h.day_counts??(h.days??[]).map((v,i)=>({day:days[i]?.day,...(legacy[v]?{[legacy[v]]:1}:{})}));
-  /* `renderLevel` pose le niveau de la box SOUS la box, hors du lien source (un bouton dans un lien
-     naviguerait) : la confidentialité se change partout où la box apparaît, dashboard compris. */
-  matrix+='<div class="tracking-row"><div class="db-n tracking-name">'+habitPreview(h)+'<small>'+number(h.done)+' done · '+number(h.missed)+' missed · '+number(h.unanswered)+' unknown'+(number(h.partial)?' · '+number(h.partial)+' in part':'')+(number(h.skipped)?' · '+number(h.skipped)+' set aside':'')+'</small></div>'
-   +(renderLevel?renderLevel(h)||'':'')
+  matrix+='<div class="tracking-row"><div class="db-n tracking-name">'+habitPreview(h)+'</div>'
    +'<div class="tracking-days">';
   for(let i=0;i<days.length;i++){
    const v=cells[i]??{},done=number(v.done),missed=number(v.missed),partial=number(v.partial),skipped=number(v.skipped),unknown=number(v.unanswered),waiting=number(v.pending);
@@ -46,16 +46,13 @@ export function renderPractice(s,{requestedDays=s.days_count,renderHabit,renderL
   matrix+='</div></div>';
  }
  matrix+='</div>';
- html+='<div class="db"><p class="db-t">My Habits<i>'+span+' days · open an original</i></p>'+(habits.length?matrix:'<p class="db-vide">Your first Habit starts the system.</p>')
+ html+='<div class="db"><p class="db-t">My Habits<i>'+span+' days</i></p>'+(habits.length?matrix:'<p class="db-vide">Your first Habit starts the system.</p>')
   +'<p class="tracking-caption">✓ Done · × Missed · ? no response · … pending'+(number(c.partial)||number(c.skipped)?' · ◐ in part · · set aside':'')+'</p></div>';
- const missed=habits.filter(h=>number(h.missed)>=2).sort((a,b)=>number(b.missed)-number(a.missed))[0];
- if(missed)html+='<div class="db"><p class="db-t">Worth a look<i>'+span+' days</i></p><p class="tracking-caption">'+number(missed.missed)+' Missed reports for this Habit. The reports do not explain why.</p><div class="tracking-focus">'+habitPreview(missed)+'</div></div>';
- const t=s.trend??{};
- if(t.state==='more_done'||t.state==='fewer_done')html+='<div class="db"><p class="db-t">Two weeks compared<i>reported attempts</i></p><p class="tracking-caption">'+number(t.recent_done)+' / '+number(t.recent_attempts)+' Done, compared with '+number(t.previous_done)+' / '+number(t.previous_attempts)+' previously. This describes your reports.</p></div>';
- else if(t.state==='insufficient')html+='<p class="tracking-caption">More comparable reports are needed before describing a trend.</p>';
  if(number(s.delivery?.failed)||number(s.delivery?.unconfirmed))html+='<p class="tracking-caption">Some notifications could not be delivered or confirmed. They are not counted as unanswered practice.</p>';
- html+='<div class="db-tg"><span>'+esc(settings.paused?'Notifications paused':settings.linked?'Telegram connected':'Telegram not connected')+' · '+(settings.share_chatgpt?'practice summaries shared with ChatGPT':'practice sharing with ChatGPT off')+'</span><button type="button" class="vs-act" data-track-manage>Configure</button></div>';
- html+='<div class="db-tg tracking-review"><a class="vs-act" href="/chatgpt">Review with '+higher+' ChatGPT</a><button class="vs-act" type="button" data-track-copy>Copy prompt</button></div><p class="tracking-caption" data-track-copy-status role="status"></p>';
+ /* UNE rangée d'actions : la revue avec Higher GPT (le produit), puis le bot ; l'état du bot en une ligne dessous. */
+ html+='<div class="db tracking-act"><div class="tracking-review"><a class="vs-act" href="/chatgpt">Review with '+higher+' ChatGPT</a><button type="button" class="vs-act" data-track-manage>TotehmBot</button></div>'
+  +'<p class="tracking-caption tracking-state">'+esc(settings.paused?'Notifications paused':settings.linked?'Telegram connected':'Telegram not connected')+' · '+(settings.share_chatgpt?'practice summaries shared with ChatGPT':'practice sharing with ChatGPT off')
+  +' · <button class="tracking-copy" type="button" data-track-copy>copy the review prompt</button></p><p class="tracking-caption" data-track-copy-status role="status"></p></div>';
  return html;
 }
 export function createTrackingControls({sb,host,button,getUserId,onChange}){

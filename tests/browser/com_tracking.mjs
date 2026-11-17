@@ -32,15 +32,15 @@ try{
   await pg.waitForFunction(()=>document.querySelector('#vs-dash')?.textContent.includes('My practice'));
   const text=await pg.locator('#vs-dash').innerText();
   check(text.includes('7 days · self-reported')&&text.includes('No response is never a Missed')&&text.includes('Earlier reports: 1 in part · 1 set aside'),'One period, honest unknowns and unchanged historical states');
-  check(text.includes('1 / 5 Habits with observations'),'Coverage distinguishes observed Habits from all choices');
+  check(!text.includes('Habits with observations')&&!text.includes('Worth a look')&&!text.includes('Two weeks compared'),'16/11 · only the essentials: no coverage caption, no « worth a look », no trend');
   check((await pg.locator('.tracking-cell.has-done.has-missed').count())===1&&(await pg.locator('.tracking-cell.has-done.has-missed').textContent()).includes('×'),'One successful report cannot hide a missed report on the same day');
   check(!await pg.locator('#vs-dash input').count()&&!log.rpc.some(x=>/tracking_(answer|detail|open|settings_set)/.test(x.name)),'The dashboard never writes reports or consent');
   check(!await pg.locator('#vs-dash .db-n b').count()&&(await pg.locator('#vs-dash .db-n a .v-name').textContent())===steps[0].t,'The full long Unicode Habit is escaped and linked to its original');
   check(await pg.locator('.tracking-matrix .db-n').evaluate(e=>e.getBoundingClientRect().height<=200),'A very long Habit remains a readable preview, with its exact source kept intact');
-  check(text.includes('2 Missed reports')&&text.includes('do not explain why')&&!text.includes('Consider a smaller'),'Insights attribute reported counts without inventing a cause');
+  check(!text.includes('Consider a smaller')&&!/\d+ done · \d+ missed/.test(text),'No invented cause, and no count line under each box (the day strip says it)');
   check(text.includes('not counted as unanswered'),'Delivery failures are distinct from unknown practice');
   check(!await pg.locator('#mw-higher,#mw-higher-acts,#mw-hs-hint').count()&&(await pg.getAttribute('#mw-menu','aria-label'))==='TotehmBot configuration','Duplicate subscription markup and controls are removed');
-  check(!await pg.locator('.tracking-history').getAttribute('open')&&!await pg.locator('.db-o .db-bar').count(),'Application history is secondary and deadlines never mimic progress');
+  check(!await pg.locator('.tracking-history,.db-heat,.db-tot,.db-f').count()&&!await pg.locator('.db-o .db-bar').count(),'16/11 · no account history on the dashboard, and deadlines never mimic progress');
   await pg.locator('[data-track-period="28"]').click();await pg.waitForFunction(()=>document.querySelector('#vs-dash').textContent.includes('28 days · self-reported'));
   check((await pg.locator('.tracking-cell').count())===28&&log.rpc.at(-1).body.p_days===28,'The selected period drives all counts and all day cells');
   check(!log.rpc.some(x=>/tracking_(answer|detail|open|settings_set)/.test(x.name)),'Changing the read period is not a settings write');

@@ -22,13 +22,9 @@ try{
   const call=log.rpc.find(r=>r.name==='my_board');check(typeof call.body.p_tz==='string'&&call.body.p_tz,'Account activity uses the browser timezone');
   const text=await pg.locator('#vs-dash').innerText();check(text.includes('2')&&text.includes('Missed')&&!text.includes('99%')&&!await pg.locator('.db-courbe').count(),'Practice does not fall back to an obsolete percentage or streak');
   check(await pg.locator('.db-o .j').textContent()==='D-12'&&!await pg.locator('.db-o .db-bar').count(),'An objective deadline is not rendered as achievement progress');
-  check(await pg.locator('.tracking-history').getAttribute('open')===null,'Account activity starts folded');
-  await pg.locator('.tracking-history summary').click();
-  check((await pg.locator('.db-heat span:not([style*="hidden"])').count())===84&&(await pg.locator('.db-tot span').count())===10,'Account history and inventory are available on demand');
-  const native=await pg.locator('.db-f .tb').evaluateAll(nodes=>nodes.map(n=>({skin:[...n.classList].find(c=>c.startsWith('blk-')),background:getComputedStyle(n.querySelector('.h-body')).backgroundColor,square:getComputedStyle(n.querySelector('.h-body')).borderRadius,controls:n.querySelectorAll('button,input,[data-open]').length})));
-  check(native.map(n=>n.skin).join(',')==='blk-h,blk-o,blk-r,blk-v,blk-w,blk-h'&&native.map(n=>n.background).join('|')==='rgb(51, 51, 102)|rgb(54, 73, 140)|rgb(116, 49, 105)|rgb(54, 73, 140)|rgb(116, 49, 105)|rgb(51, 51, 102)'&&native.every(n=>n.square==='0px'&&n.controls===0),'All five history categories keep native skins, square format and inert content');
+  check(!await pg.locator('.tracking-history,.db-heat,.db-tot,.db-f').count(),'16/11 · the dashboard keeps only the essentials: no account history');
   check(await pg.locator('.tracking-name .tb.blk-h .v-name').textContent()==='Run the hill'&&await pg.locator('.db-o .tb.blk-o .v-name').textContent()==='Run a marathon','Practice and due objectives use native TOTEHM boxes');
-  check(!await pg.locator('#vs-dash img').count()&&(await pg.locator('.db-f').textContent()).includes('<img'),'History text is escaped');
+  check(!await pg.locator('#vs-dash img').count(),'No markup from a box text is ever rendered');
   await pg.locator('[data-track-manage]').click();await pg.waitForSelector('#tracking-settings form');
   check(log.rpc.filter(r=>r.name==='tracking_settings_get').length===1&&!log.rpc.some(r=>/tracking_(answer|detail|open|settings_set)/.test(r.name)),'Configuration opens without recording practice or consent');
   await pg.click('#vs-tabs [data-vs-tab="money"]');
