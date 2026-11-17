@@ -24,7 +24,8 @@ Serveur : `club_spots`, `spot_get`, `spot_rules`, `space_habits`, `spot_create_a
 
 | quoi | repères |
 |---|---|
-| l'en-tête | coin membre SEUL (12/11, Wah : « enlève le totehm central en haut, il ne sert à rien » — le coin porte déjà LE TOTEHM qui tourne, et un tap y ramène) · `#rdr-mode` en haut à droite : le bas reste au pouce, chaque vue DÉFILE ; ce qui glisse passe sous un fondu noir |
+| l'en-tête | coin membre SEUL (il porte LE TOTEHM qui tourne, un tap ramène à COM) · `#rdr-mode` en haut à droite : le bas reste au pouce, chaque vue DÉFILE |
+| le Discover | `#club-disc` (visiteur : en bas au centre ; membre : discret en bas à droite) ouvre `#cd` — 7 écrans, moteur `tools/discover.*` COPIÉ (`tools/recopier.py`), la porte sous chacun : CONNECT sans compte, POST A SPOT avec (`const CD=`, `__totehm_club_discover()`) |
 | les trois modes | `const MODES=` · `MODE` (gardé, `figher_mode`) · `peindreMode()` · `body.rdr-radar` \| `rdr-grid` \| `rdr-shorts` |
 | le radar | `const RAD=` · `situer()` · `draw()` : moi au centre, un carré par spot (PLEIN = point exact, CREUX = la ville), de la couleur de TOUTES ses intentions mélangées (`melange`, moyenne Oklab à saturation rendue — copié de com) ; l'anneau tourne au doigt, `CMP` = la boussole. **LA PORTÉE SE RÈGLE** : `RAD.z` multiplie la portée automatique (`radarAuto`), gardé dans `figher_portee` ; trois gestes — `#rdr-zoom` (± 1,6), deux doigts sur le disque, la molette —, et `#rdr-span` ÉCRIT la portée pendant le geste. L'anneau garde sa priorité (`stopImmediatePropagation`). Il DÉFILE (`.rd-top`) : dessous, `LISTE` (du plus proche au plus loin) ; il s'arrête hors de l'écran ou derrière un panneau |
 | les shorts, la grille | `const SHORTS=` : les spots qui ONT un média (facultatif depuis le 14/11), un par écran, aimantés ; UN joue, le suivant se prépare ; tap image = le son, tap box = le spot · `const GRID=` : la tuile carrée, la box du TOTEHM dessus, le « + » en tête (comme COM) ; sa photo se lit en VIGNETTE (`VIGNETTE.de`, `tools/vignette.js`, 15/11), la photo entière seulement dans le détail et les shorts |
@@ -53,8 +54,7 @@ Serveur : `club_spots`, `spot_get`, `spot_rules`, `space_habits`, `spot_create_a
 
 ## Écarts connus
 
-- figher.club est servi par Vercel et à jour, mais le projet n'est PAS dans l'équipe Vercel de Wah
-  (`gvllrds-projects` n'a que `com`, `space`, `boutique`) : ni alias, ni rollback, ni variables depuis sa console.
+- Le projet Vercel de figher.club n'est PAS dans l'équipe de Wah (`gvllrds-projects` : `com`, `space`, `boutique`) : ni alias ni rollback d'ici.
 - `create.html` garde l'ANCIEN questionnaire ; `index.html` n'a pas de point sur une carte, ni la caméra EN DIRECT.
 
-Tests : `tests/browser/club_spots.mjs`, `club_v2.mjs`, `com_spot.mjs`. Diagnostic : `__totehm_club()`.
+Tests : `club_spots.mjs`, `club_discover.mjs`, `club_v2.mjs`, `com_spot.mjs`. Diagnostic : `__totehm_club()`.
