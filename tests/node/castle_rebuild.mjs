@@ -26,7 +26,7 @@ for(const [place,factory,physicsFactory,walkwayFactory] of [
   check(ray.intersectObjects(fabric.solids).length===0,'The '+place+' '+arch.id+' is a real full-depth arch opening');
  }
  fabric.dispose();
- const scene=new T.Scene(),gallery=factory(scene,null,{mobile:false});scene.updateMatrixWorld(true);
+ const scene=new T.Scene(),gallery=factory(scene,null,{mobile:false,projectionOnly:false});scene.updateMatrixWorld(true);
  const d=gallery.diagnostics();
  check(d.levels===1,'The '+place+' rebuild is one open double-height gallery');
  check(gallery.solids.length>0,'The '+place+' building has real collision geometry');
