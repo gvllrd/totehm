@@ -3004,6 +3004,11 @@ body.lv-d #lv-proc,body.lv-d #lv-slogan{opacity:0}
 .lvs-pre>span{position:absolute;top:50%;right:0;transform:translateY(-50%);opacity:0;transition:opacity .35s ease}
 .lvs-get{font-family:'Quantico',sans-serif;font-size:24px;color:#fbd5ca}
 #lv-slogan.is-h .lvs-get{opacity:1;transition-delay:.3s}
+/* « with your [TOTEHM] » : la suite du slogan, dans la vue du bas seulement (la pièce `data-tw` tourne comme partout). */
+.lvs-post{position:absolute;top:50%;left:calc(100% + 8px);white-space:nowrap;transform:translateY(-50%);opacity:0;transition:opacity .35s ease;
+  font-family:'Quantico',sans-serif;font-size:24px;line-height:1;color:#fbd5ca}
+#lv-slogan.is-h .lvs-post{opacity:1;transition-delay:.3s}
+@media(max-width:360px){.lvs-post{font-size:20px}}
 body.lv-b #lv-slogan{opacity:1;pointer-events:none}
 body.lv-membre.lv-b #lv-slogan,body.lv-verrou.lv-b #lv-slogan{opacity:0}
 #lv-slogan.is-h{pointer-events:auto;cursor:pointer}
@@ -4623,8 +4628,8 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
     </section>
 
     <!-- Le slogan qui voyage : en haut, LE bouton « Get [Higher] » ; en bas, « [Higher] Self » sous le profil. -->
-    <button id="lv-slogan" class="is-c" type="button" tabindex="-1" aria-label="Get Higher">
-      <span class="lvs-pre"><span class="lvs-get">Get</span></span><svg viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-badge"></use></svg>
+    <button id="lv-slogan" class="is-c" type="button" tabindex="-1" aria-label="Get Higher with your TOTEHM">
+      <span class="lvs-pre"><span class="lvs-get">Get</span></span><svg viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-badge"></use></svg><span class="lvs-post">with your <span data-tw>TOTEHM</span></span>
     </button>
     <!-- ══ GET HIGHER · ce que ça fait au cerveau ══ La phrase du produit, telle qu'elle est écrite dans
          BRAND.md : des techniques de performance mentale éclairées par la recherche, EEG compris, pour
@@ -13380,7 +13385,7 @@ window.addEventListener('pageshow',e=>{
       slo.tabIndex=v==='h'?0:-1;
       if(v==='h'){
         const l=PAPIER.cibleLangue(), y=l?l.bas+28:H()*.42;
-        placer(slo, W()/2+(larg('.lvs-get')+8)/2, y, 96);
+        placer(slo, W()/2+(larg('.lvs-get')-larg('.lvs-post'))/2, y, 96);
       } else if(v==='b'){
         /* Le MÊME badge glisse au centre du GPT ; seul le PNG derrière lui tourne. */
         const p=profil();
