@@ -21,11 +21,11 @@
 /* le sens du voyage se VOIT : l'écran qu'on quitte part vers le haut, le suivant monte d'en bas (et l'inverse au retour) */
 .dc-s.is-avant{transform:translateY(-14px)}
 .dc-s>*{max-width:min(100%,680px)}
-.dc-h{margin:0;font:700 clamp(24px,3.6vw,44px)/1.16 Quantico,sans-serif;color:#fff;letter-spacing:.01em}
+.dc-h{margin:0;font:400 clamp(24px,3.6vw,44px)/1.16 Quantico,sans-serif;color:#fff;letter-spacing:.01em}
 .dc-p{margin:0;font:400 clamp(15px,1.9vw,21px)/1.6 'Space Mono',monospace;color:#ddd;white-space:pre-line}
 .dc-ac{color:var(--dc-ac)}
 .dc-n{font-family:Quantico,sans-serif;font-weight:700;color:var(--dc-ac)}            /* un NOM de membre */
-.dc-big{margin:0;font:700 clamp(44px,9vw,84px)/1 Quantico,sans-serif;color:#fff;letter-spacing:.01em}
+.dc-big{margin:0;font:400 clamp(44px,9vw,84px)/1 Quantico,sans-serif;color:#fff;letter-spacing:.01em}
 .dc-big small{font:400 clamp(12px,1.6vw,16px)/1 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#888;margin-left:10px}
 .dc-hi{display:inline-block;width:3.2em;height:1.07em;vertical-align:-.14em}   /* « Higher » est TOUJOURS le badge (BRAND) : jamais le mot en texte */
 .dc-fine{margin:0;font:400 11px/1.7 'Space Mono',monospace;letter-spacing:.06em;color:#888;max-width:420px}

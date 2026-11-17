@@ -252,7 +252,7 @@ body:not(.gate) #bottom-doors{display:none!important}
    pas un cadre, la marque n'en veut nulle part. */
 .door-club{color:#fff;font-weight:700}
 /* ⚠️ LE CORAL EST RÉSERVÉ AU « GET » (BRAND.md). Nulle part ailleurs. */
-.door .get{font-family:'Quantico',sans-serif;font-weight:400;color:var(--coral)}
+.door .get{font-family:'Quantico',sans-serif;font-weight:700;color:var(--coral)}
 /* ⚠️ LE SLOGAN PREND LE DESSUS SUR LE MOT ORDINAIRE · 20/09/2026.
    À 1.15em, « Higher » faisait la même taille que « Get » : deux mots
    de même poids, et la porte se lisait comme une phrase quelconque.
@@ -1248,7 +1248,7 @@ body.v-visions{--paper:#2b3a73}
 /* Le liseré blanc est parti : c'est un GRIS qui donne sa surface au
    bouton. Un gris est un délimitant autorisé, un trait ne l'est plus. */
 .btn{background:rgba(255,255,255,.07);border:none;color:#fff;cursor:pointer;padding:5px 12px;
-  font-family:'Quantico',sans-serif;font-weight:700;font-size:12px;white-space:nowrap;
+  font-family:'Quantico',sans-serif;font-weight:400;font-size:12px;white-space:nowrap;
   transition:background .15s,color .15s}
 .btn:hover{background:#34343c;color:#fff}
 .btn.g{border-color:rgba(255,255,255,.28);color:rgba(255,255,255,.5)}
@@ -1357,7 +1357,7 @@ body.v-visions{--paper:#2b3a73}
   transition:background .18s ease}
 .int:hover{background:linear-gradient(180deg,color-mix(in srgb,var(--ic) 46%,transparent),transparent)}
 .int.on{background:var(--ic)}
-.int-n{display:block;font-family:'Quantico',sans-serif;font-weight:700;font-size:12px}
+.int-n{display:block;font-family:'Quantico',sans-serif;font-weight:400;font-size:12px}
 .int-p{display:block;font-family:'Space Mono',monospace;font-size:7px;
   letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.6);margin-top:2px}
 .int.on .int-p{color:rgba(0,0,0,.55)}
@@ -1503,7 +1503,7 @@ body.ordering{--rw:34px}
    pas un clignotant de plus.
    Et comme l'accroche est CE POINT-LÀ et pas la boîte entière, le reste
    de la ligne s'édite et la liste défile exactement comme en lecture. */
-.rk-n{font-family:'Quantico',sans-serif;font-weight:700;font-style:normal;
+.rk-n{font-family:'Quantico',sans-serif;font-weight:400;font-style:normal;
   font-size:18px;line-height:1;color:#fff;
   font-variant-numeric:tabular-nums;letter-spacing:-.02em;
   cursor:grab;touch-action:none;-webkit-tap-highlight-color:transparent;
@@ -1588,7 +1588,7 @@ body.rk-grab #fv-inner{overscroll-behavior:none}
 .hp-row + .hp-row{}
 .hp-lbl{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.14em;
   text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:6px}
-.hp-val{font-family:'Quantico',sans-serif;font-weight:700;font-size:19px;color:#fff;line-height:1.15}
+.hp-val{font-family:'Quantico',sans-serif;font-weight:400;font-size:19px;color:#fff;line-height:1.15}
 .hp-val .tglyph{width:16px;height:16px;margin:0 auto 6px;display:block}
 /* Placeholder pour valeur pas encore choisie : un unique tiret « — »
    qui clignote comme un curseur. Le tiret et la pulsation ensemble = "à toi
@@ -1762,19 +1762,19 @@ body.ro #fv-inner{top:calc(var(--band-t) + var(--ro-h))}
    a l'abonnement. */
 #mw-sub{width:100%;margin-top:8px;padding-top:20px;}
 #mw-sub .s-lab{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.55);margin-bottom:8px}
-#mw-sub .s-tier{font-family:'Quantico',sans-serif;font-weight:700;font-size:16px;color:#fff}
+#mw-sub .s-tier{font-family:'Quantico',sans-serif;font-weight:400;font-size:16px;color:#fff}
 #mw-sub .s-meta{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.55);margin-top:3px}
 #mw-sub .s-perks{margin:10px 0 0;padding:0;list-style:none;text-align:left}
 #mw-sub .s-perks li{font-family:var(--futura);font-weight:300;font-size:12.5px;line-height:1.55;color:rgba(255,255,255,.82);margin-bottom:6px;padding-left:13px;position:relative}
 #mw-sub .s-perks li::before{content:"";position:absolute;left:0;top:8px;width:6px;height:2px;background:rgba(255,255,255,.3)}
-#mw-sub .s-perks li b{font-family:'Quantico',sans-serif;font-weight:700;color:#fff}
+#mw-sub .s-perks li b{font-family:'Quantico',sans-serif;font-weight:400;color:#fff}
 #mw-sub .s-act{font-family:'Quantico',sans-serif;font-size:13px;color:rgba(255,255,255,.65);background:none;border:none;padding:6px 0 0;cursor:pointer;text-decoration:underline;text-underline-offset:3px;transition:color .2s}
 #mw-sub .s-act:hover{color:#fff}
 /* Les trois paliers pour qui n'en a pas */
 #mw-sub .s-plan{width:100%;text-align:left;background:rgba(255,255,255,.05);border:none;color:#fff;padding:10px 12px;margin-bottom:8px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background .2s}
 #mw-sub .s-plan:hover{background:rgba(255,255,255,.1)}
 #mw-sub .s-plan .p-top{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
-#mw-sub .s-plan .p-name{font-family:'Quantico',sans-serif;font-weight:700;font-size:14px;color:#fff}
+#mw-sub .s-plan .p-name{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;color:#fff}
 #mw-sub .s-plan .p-price{font-family:'Quantico',sans-serif;font-size:13px;color:var(--g-light);white-space:nowrap}
 .p-price{display:flex;flex-direction:column;align-items:flex-end;gap:2px}
 .p-alt{font-family:var(--futura);font-weight:300;font-size:10.5px;color:rgba(255,255,255,.55)}
@@ -1820,7 +1820,7 @@ body.ro #fv-inner{top:calc(var(--band-t) + var(--ro-h))}
 @media(hover:hover){.wp-lv:hover{background:rgba(255,255,255,.05)}}
 .wp-lv.on{background:rgba(255,255,255,.04)}
 .wp-lv .tglyph{width:16px;height:16px;flex-shrink:0;margin:0 0 6px;display:block}
-.wp-nm{font-family:'Quantico',sans-serif;font-weight:700;font-size:19px;line-height:1.15}
+.wp-nm{font-family:'Quantico',sans-serif;font-weight:400;font-size:19px;line-height:1.15}
 .wp-df{font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;
   color:#b4b4b4;line-height:1.45;margin-top:5px}
 .wp-pillar{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.22em;
@@ -1854,7 +1854,7 @@ body.ro #fv-inner{top:calc(var(--band-t) + var(--ro-h))}
 /* La navigation My Wisdom / My next objective n'est pas un réglage : elle
    reste accessible au swipe latéral et aux flèches, jamais dans le Dashboard. */
 #mw-in-state #settings-nav{display:none!important}
-.mw-title{font-family:'Quantico',sans-serif;font-weight:700;font-size:18px;color:#fff;margin-bottom:14px}
+.mw-title{font-family:'Quantico',sans-serif;font-weight:400;font-size:18px;color:#fff;margin-bottom:14px}
 .mw-body{font-family:var(--futura);font-weight:300;font-size:13px;color:var(--g-mid);line-height:1.7;margin-bottom:14px}
 .mw-close{position:absolute;top:12px;right:14px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:none;color:var(--g-mid);background:none;border:none;cursor:pointer;padding:0}
 .mw-close:hover{color:#fff}
@@ -1913,7 +1913,7 @@ body.ro #fv-inner{top:calc(var(--band-t) + var(--ro-h))}
   filter:blur(3px);opacity:.5;pointer-events:none;transition:filter .3s ease,opacity .3s ease}
 #cercle.ouvert #cercle-corps{filter:none;opacity:1;pointer-events:auto}
 
-.cv-hook{font-family:'Quantico',sans-serif;font-style:normal;font-weight:700;
+.cv-hook{font-family:'Quantico',sans-serif;font-style:normal;font-weight:400;
   font-size:clamp(18px,5.4vw,23px);line-height:1.12;color:#fff;letter-spacing:.01em;
   text-transform:uppercase}
 .cv-say{font-size:12px;line-height:1.6;color:var(--g-light);max-width:300px}
@@ -1921,7 +1921,7 @@ body.ro #fv-inner{top:calc(var(--band-t) + var(--ro-h))}
 .cv-sim{display:flex;flex-direction:column;gap:4px;width:100%;max-width:280px}
 .cv-row{display:flex;justify-content:space-between;align-items:baseline;gap:12px;
   font-size:12px;color:var(--g-mid)}
-.cv-row b{font-family:'Quantico',sans-serif;font-weight:700;font-size:15px;color:var(--love)}
+.cv-row b{font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;color:var(--love)}
 .cv-bar{width:100%;max-width:280px;height:3px;background:rgba(255,255,255,.14)}
 .cv-bar i{display:block;height:100%;width:0;background:var(--love);transition:width .4s ease}
 .cv-step{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.16em;
@@ -1943,7 +1943,7 @@ body.ro #fv-inner{top:calc(var(--band-t) + var(--ro-h))}
 .cc-split .b{background:var(--navy);flex:20}
 .cc-kpi{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .cc-tile{background:rgba(255,255,255,.05);padding:10px 10px 12px;min-width:0}
-.cc-val{font-family:'Quantico',sans-serif;font-weight:700;font-size:20px;color:#fff;
+.cc-val{font-family:'Quantico',sans-serif;font-weight:400;font-size:20px;color:#fff;
   line-height:1;white-space:nowrap}
 .cc-pay{display:flex;gap:8px}
 
@@ -3986,11 +3986,11 @@ body.lv-d.rdr-voir #gate-asteroid,body.lv-d.rdr-voir #lvjoy,body.rdr-voir #rdr-f
 /* le sens du voyage se VOIT : l'écran qu'on quitte part vers le haut, le suivant monte d'en bas (et l'inverse au retour) */
 .dc-s.is-avant{transform:translateY(-14px)}
 .dc-s>*{max-width:min(100%,680px)}
-.dc-h{margin:0;font:700 clamp(24px,3.6vw,44px)/1.16 Quantico,sans-serif;color:#fff;letter-spacing:.01em}
+.dc-h{margin:0;font:400 clamp(24px,3.6vw,44px)/1.16 Quantico,sans-serif;color:#fff;letter-spacing:.01em}
 .dc-p{margin:0;font:400 clamp(15px,1.9vw,21px)/1.6 'Space Mono',monospace;color:#ddd;white-space:pre-line}
 .dc-ac{color:var(--dc-ac)}
 .dc-n{font-family:Quantico,sans-serif;font-weight:700;color:var(--dc-ac)}            /* un NOM de membre */
-.dc-big{margin:0;font:700 clamp(44px,9vw,84px)/1 Quantico,sans-serif;color:#fff;letter-spacing:.01em}
+.dc-big{margin:0;font:400 clamp(44px,9vw,84px)/1 Quantico,sans-serif;color:#fff;letter-spacing:.01em}
 .dc-big small{font:400 clamp(12px,1.6vw,16px)/1 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#888;margin-left:10px}
 .dc-hi{display:inline-block;width:3.2em;height:1.07em;vertical-align:-.14em}   /* « Higher » est TOUJOURS le badge (BRAND) : jamais le mot en texte */
 .dc-fine{margin:0;font:400 11px/1.7 'Space Mono',monospace;letter-spacing:.06em;color:#888;max-width:420px}
@@ -4659,7 +4659,7 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
 <div class="dc is-overlay has-cta has-x" id="lvd" role="dialog" aria-modal="true" aria-label="Discover TOTEHM" hidden>
   <div class="dc-stage">
     <div class="dc-s"><h2 class="dc-h" data-tw>Get <svg class="dc-hi" viewBox="0 0 600 200" role="img" aria-label="Higher"><title>Higher</title><use href="#higher-badge"></use></svg> with your TOTEHM.</h2><p class="dc-p">Reach <svg class="dc-hi" viewBox="0 0 600 200" role="img" aria-label="Higher"><title>Higher</title><use href="#higher-badge"></use></svg>. Enjoy the journey.</p></div>
-    <div class="dc-s"><h2 class="dc-h">One page.<br>Your whole strategy.</h2><p class="dc-p">Habits. Objectives. Repulsions.
+    <div class="dc-s"><h2 class="dc-h">One paper.<br>Your whole strategy.</h2><p class="dc-p">Habits. Objectives. Repulsions.
 Visions. My story.
 Five lists, linked.</p></div>
     <div class="dc-s"><h2 class="dc-h">A habit is a sentence.</h2><p class="dc-p">Why you do it.
