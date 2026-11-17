@@ -4039,6 +4039,9 @@ body.lv-d.rdr-voir #gate-asteroid,body.lv-d.rdr-voir #lvjoy,body.rdr-voir #rdr-f
 #lv-title{margin:0;background:#000;border-radius:10px;padding:2px 12px;text-align:center;
   font:700 13px/1.6 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#fff}
 body.lv-membre #lv-title,body.lv-verrou #lv-title,body.is-door #lv-title{display:none}
+/* Le mot HIGHER du titre est la place du badge [Higher] (`#lv-slogan`, posé dessus par `sloganPour('c')`) : le mot reste dans le document, hors vue. */
+#lv-title-h{display:inline-block;width:66px;height:1em;vertical-align:middle;font-size:0;line-height:0;overflow:hidden;color:transparent}
+body:not(.lv-g):not(.lv-d) #lv-slogan.is-c.is-t{opacity:1}
 .lvp-cta.is-quiet{background:#000;color:#b8b8c2;box-shadow:inset 0 0 0 1px #3a3a42}
 .lvp-cta.is-quiet:hover{background:#17171b;color:#fff}
 /* Le Discover prend tout l'écran PAR-DESSUS l'accueil, qui ne bouge pas dessous (`body.is-dc` : ses gestes sont rendus). */
@@ -4533,7 +4536,7 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
              L'ATTERRISSAGE EST MINIMAL, ET IL VEND QUAND ON LE DEMANDE : sans compte, deux boutons — la porte, et
              [Discover], qui ouvre l'explication plein écran (`#lvd`, `DISC`) ; avec un compte, le geste et « Discover »
              dans la légende. La preuve (« Built with behavioral science ») et « Reach Higher » vivent dans le Discover. -->
-        <h1 id="lv-title">THE HIGHER WAY TO MAKE IT HAPPEN</h1>
+        <h1 id="lv-title">THE <span id="lv-title-h">HIGHER</span> WAY TO MAKE IT HAPPEN</h1>
         <div id="lv-pitch" class="hide">
           <button id="lv-join" class="lvp-cta" type="button">Open my TOTEHM</button>
           <button id="lv-discover" class="lvp-cta is-quiet" type="button">Discover</button>
@@ -13369,6 +13372,10 @@ window.addEventListener('pageshow',e=>{
          la CSS l'efface — le feed prend tout l'écran). Un seul [Higher], une seule grammaire. */
       const v=(v0==='g'||v0==='d')?'c':v0;
       ['c','h','b'].forEach(k=>slo.classList.toggle('is-'+k,k===v));
+      /* Au centre, le badge remplace le mot HIGHER du titre (net, opaque, plus grand) ; titre absent (membre, porte) = le coin du socle. */
+      let tit=null;
+      if(v==='c'){ const th=$('lv-title-h'), r=th&&th.getBoundingClientRect(); if(r&&r.width>0) tit=r; }
+      slo.classList.toggle('is-t',!!tit);
       slo.classList.add('is-pose');
       slo.tabIndex=v==='h'?0:-1;
       if(v==='h'){
@@ -13378,6 +13385,8 @@ window.addEventListener('pageshow',e=>{
         /* Le MÊME badge glisse au centre du GPT ; seul le PNG derrière lui tourne. */
         const p=profil();
         placer(slo,p.x,p.y,p.d*.94);
+      } else if(tit){
+        placer(slo, tit.left+tit.width/2, tit.top+tit.height/2, tit.width);
       } else {
         /* AU CENTRE, le badge ne s'éteint pas : il se pose en petit au coin du processeur — 25/10 : le TOTEHM est le
            boîtier, le badge se range donc CONTRE son coin bas-droit, dehors (sur le papier, il en couvrait le coin). */
