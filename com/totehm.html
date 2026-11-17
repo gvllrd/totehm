@@ -2303,6 +2303,11 @@ body.gate.entered #terms-corner{opacity:0;pointer-events:none}
    compte, la croix) arrive ENSEMBLE, une fois le verso déployé ET la console lue (`is-pret`). */
 .srch-after{opacity:0;visibility:hidden;transition:opacity .15s ease,visibility 0s linear .15s}
 #srch.is-pret .srch-after{opacity:1;visibility:visible;transition:opacity .3s ease}
+/* ⚠️ 17/11 — LE VERSO CACHÉ NE LAISSE RIEN DERRIÈRE LUI (Wah : « le verso fait une apparition de quelques microsecondes
+   quand on passe du verso au recto »). Mesuré : `.srch-after` garde `visibility:visible` 150 ms pendant son fondu, et un
+   enfant visible se montre même dans un parent caché — le tableau de bord réapparaissait À PLAT sur le recto, à la fin
+   de la pièce. Verso caché (`is-on` retiré) = ses contenus partent avec lui, sans fondu. */
+#srch:not(.is-on) .srch-after{transition:none}
 .srch-hint{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.16em;
   text-transform:uppercase;color:rgba(255,255,255,.55);text-align:center}
 #srch-note{width:min(420px,100%)}
@@ -8767,7 +8772,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-11-17-la-piece-sans-bond';
+const BUILD='2026-11-17-la-piece-sans-fantome';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────

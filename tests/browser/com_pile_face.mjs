@@ -14,7 +14,7 @@ const rpc={my_landing:{signed_in:true,pseudo:'wahigher',telegram:false,higher:{a
 const etat=pg=>pg.evaluate(()=>({gate:document.body.classList.contains('gate'),verso:document.getElementById('srch').classList.contains('is-open')}));
 const erreurs=log=>log.errors.filter(e=>e.startsWith('pageerror'));
 /* Ce que `body` a porté pendant le geste : l'atterrissage (`gate`), son repli (`folding`) ou son déploiement (`entered`). */
-const guetter=pg=>pg.evaluate(()=>{ const vu=window.__vu={gate:false,folding:false,entered:false,max3d:0,angles:[]};
+const guetter=pg=>pg.evaluate(()=>{ const vu=window.__vu={gate:false,folding:false,entered:false,max3d:0,angles:[],fantome:0};
   const lire=()=>{ const c=document.body.classList; for(const k of ['gate','folding','entered']) if(c.contains(k)) vu[k]=true; };
   window.__obs&&window.__obs.disconnect(); window.__obs=new MutationObserver(lire); window.__obs.observe(document.body,{attributes:true,attributeFilter:['class']});
   /* la pièce TOURNE vraiment : une transformation 3D sur le carré ou le verso pendant le geste */
@@ -23,6 +23,11 @@ const guetter=pg=>pg.evaluate(()=>{ const vu=window.__vu={gate:false,folding:fal
     /* l'angle de la pièce, de 0 à 180°, lu sur la largeur visible de la face qui se montre */
     if(document.body.classList.contains('is-coin')){ const w=id=>document.getElementById(id).getBoundingClientRect().width;
       vu.angles.push([performance.now(),w('stage'),w('srch-bg'),document.getElementById('stage').offsetWidth]); }
+    /* 17/11 — le FANTÔME : un contenu du verso encore visible alors que le verso est caché (il réapparaissait à plat
+       sur le recto, 150 ms, le temps de son fondu) */
+    const s=document.getElementById('srch');
+    if(!s.classList.contains('is-on')) for(const e of s.querySelectorAll('.srch-after')){ const c=getComputedStyle(e);
+      if(c.visibility==='visible'&&parseFloat(c.opacity)>.01&&e.getClientRects().length){ vu.fantome++; break; } }
     if(performance.now()-t0<1500) requestAnimationFrame(pas); };
   requestAnimationFrame(pas); });
 const vu=pg=>pg.evaluate(()=>{ window.__obs&&window.__obs.disconnect(); return window.__vu; });
@@ -54,6 +59,7 @@ try{
   ok(w.max3d>0,'ordinateur · ⟲ sur le verso : le carré TOURNE en 3D ('+w.max3d+' images)');
   let pas=plusGrandPas(w.angles,false);
   ok(w.angles.length>20&&pas<20,'ordinateur · ⟲ sur le verso : aucun bond à la tranche (au plus '+pas.toFixed(1)+'° par image, '+w.angles.length+' images)');
+  ok(w.fantome===0,'ordinateur · ⟲ sur le verso : le tableau de bord ne réapparaît pas sur le recto ('+w.fantome+' image)');
   ok(await pg.evaluate(()=>{const b=document.getElementById('fold-flip').getBoundingClientRect(),s=document.getElementById('stage').getBoundingClientRect();return b.width>20&&b.x>s.x&&b.y>s.y&&b.y<s.y+80&&getComputedStyle(document.getElementById('fold-flip')).opacity==='1';}),
      'ordinateur · le recto déployé porte le même bouton, dans son coin');
   await pg.screenshot({path:OUT+'/pile_face_recto.png'});
@@ -78,6 +84,7 @@ try{
   await pg.waitForFunction(()=>window.__totehm_piece().recto&&!window.__totehm_piece().tourne,null,{timeout:4000}).catch(()=>{});
   w=await vu(pg); e=await etat(pg);
   ok(!e.gate&&!e.verso&&!w.gate&&!w.folding,'Échap sur le verso retourné : retour au recto déployé, sans l\'atterrissage');
+  ok(w.fantome===0,'Échap sur le verso retourné : aucun fantôme du verso sur le recto ('+w.fantome+' image)');
 
   /* 4. Le wordmark du recto (mes réglages) retourne aussi la pièce. */
   await guetter(pg);
