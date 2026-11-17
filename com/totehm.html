@@ -1253,8 +1253,10 @@ body.v-visions{--paper:#2b3a73}
 .btn:hover{background:#34343c;color:#fff}
 .btn.g{border-color:rgba(255,255,255,.28);color:rgba(255,255,255,.5)}
 /* 27/10 — la visibilité d'une box, DANS sa grammaire (Wah : « pas un gros bouton noir qui fait tache ») : une ligne de
-   mots, comme les étiquettes de la box — PRIVATE · VISIBLE TO MY SUBSCRIBERS, l'option vraie en blanc, un tap sur l'autre */
-.baud{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 7px;align-self:flex-start;margin:10px 0 2px}
+   mots, comme les étiquettes de la box — PRIVATE · SUBSCRIBERS (16/11 : deux mots, un cadenas), l'option vraie en blanc, un tap sur l'autre */
+.baud{display:flex;flex-wrap:wrap;align-items:center;gap:4px 7px;align-self:flex-start;margin:8px 0 2px}
+.baud-k{width:9px;height:9px;fill:none;stroke:rgba(255,255,255,.4);stroke-width:1.2;flex:none}
+.mg-aud{gap:0}
 .baud-o{background:none;border:0;padding:2px 0;cursor:pointer;font:700 8.5px/1.3 'Space Mono',monospace;letter-spacing:.2em;
   text-transform:uppercase;color:rgba(255,255,255,.4);transition:color .2s ease}
 .baud-o.is-on{color:#fff;cursor:default}
@@ -1284,6 +1286,7 @@ body.v-visions{--paper:#2b3a73}
 /* la portée d'un réglage, sous ses options : ce qu'il gouverne, et ce qu'il ne gouverne pas */
 .baud-n{display:block;font:400 8px/1.5 'Space Mono',monospace;letter-spacing:.1em;text-transform:uppercase;
   color:rgba(255,255,255,.38);margin:0 0 2px}
+.baud-n:empty{display:none}
 .add-box{text-align:center;font:400 22px/1 'Space Mono',monospace;color:rgba(255,255,255,.7)}
 .ic{width:13px;height:13px;display:inline-block;vertical-align:-2px}
 .dash .ic{width:12px;height:12px}
@@ -3587,11 +3590,6 @@ body.lv-b #gate-logo #gl-rail,body.lv-b #gate-logo #gl-wm{opacity:0}
 .ssp-acts button[data-del].is-sur,.ssp-acts button[data-tlv].is-sur{background:var(--rep);color:#fff}
 .tlv-b .ssp-row{align-self:center;min-height:0;padding:3px}
 /* le niveau d'une box, PARTOUT où elle apparaît : la même ligne de mots que dans le TOTEHM, posée sous la box */
-.baud-row{align-self:stretch;display:flex;justify-content:center;background:rgba(0,0,0,.86);border-radius:16px;padding:4px 12px 6px}
-.baud-row .mg{display:flex;flex-direction:column;align-items:center;gap:0;min-width:0}
-.baud-row .baud{align-self:center;margin:4px 0 2px;justify-content:center}
-.baud-row .baud-n{text-align:center;max-width:300px}
-.ssp-info .baud-row,.tlv-b .baud-row{margin-top:6px}
 body.is-tlv #gate-asteroid,body.is-tlv #lvjoy{opacity:0;pointer-events:none}
 /* ══ 20/10 — LA BOX DU TOTEHM, HORS DU TOTEHM (`boxTotehm`) ═══════════════════════════════════════════
    Le rendu de la liste, sans rail : le filet d'intention (2 px) EST le bord gauche, la peau celle de sa vue. */
@@ -6809,9 +6807,8 @@ function creerFeed(conf){
     return '<section class="lsh ssp-s'+(media?'':' is-nu')+(ici===x.cle?' is-ici':'')+'" data-lsh-k="'+esc(x.cle)+'">'
       +'<div class="ssp-c">'+(media?'<div class="ssp-m">'+media+'</div>':'')+'<div class="ssp-info">'+data
       +((par||acts)?'<div class="ssp-row">'+(par||'<span></span>')+(acts?'<span class="ssp-acts">'+acts+'</span>':'')+'</div>':'')
-      /* 14/11 — deux niveaux, deux lignes, et ils ne se confondent pas : au-dessus celui du SPOT
-         (`[data-spaud]`, trois niveaux), ici celui de sa BOX (deux niveaux, le plafond). */
-      +box+(z.mine&&!RO?audBoxRow('h',x.id):'')+'</div></div></section>';
+      /* le niveau du SPOT est au-dessus (`[data-spaud]`, trois niveaux) ; celui de sa BOX se règle dans la box (16/11) */
+      +box+'</div></div></section>';
   }
   async function charger(el,prochain){
     if(!el) return;
@@ -7144,11 +7141,10 @@ function creerFeed(conf){
        ⚠️ 14/11 (Wah) : « le bouton [Delete] de la vue de droite spot est le bon ; repositionne correctement
        dans la vue de gauche les boutons [Delete] dans la grid media (actuellement en haut à gauche) ». Il
        vit donc dans la MÊME rangée noire qu'un spot (`.ssp-row` + `.ssp-acts`), juste au-dessus de la box,
-       et plus en bouton flottant dans un coin. Et sous la box, le niveau de SA box : la confidentialité se
-       change partout où la box apparaît, pas seulement dans le TOTEHM. */
+       et plus en bouton flottant dans un coin. Le niveau de la box se règle dans la box (16/11), pas ici. */
     if(b&&!b.firstChild) b.innerHTML=(retirable(x)
         ?'<div class="ssp-row"><span></span><span class="ssp-acts"><button type="button" data-tlv="del">delete</button></span></div>':'')
-      +loupeVue(boxDe(x,false))+audBoxRow(x.bk,x.id);
+      +loupeVue(boxDe(x,false));
     const m=sec.querySelector('.tlv-m'); if(!m) return;
     let el=m.firstChild;
     if(!el){
@@ -9308,13 +9304,16 @@ async function copierBox(btn,k){
    Lu une fois avec mon arbre (`my_box_audiences`) ; une box neuve naît PRIVATE. Habitude = son texte, le reste = son id. */
 const AUDB=(()=>{
   let M=null, seq=0; const diagA={lectures:0, bascules:0, erreurs:0};
-  const MOTS={private:'private', subscribers:'visible to my subscribers'};
-  /* 14/11 (Wah) : « un média ajouté à une box prend automatiquement la confidentialité de sa box ; un média
-     n'a jamais sa propre confidentialité ». C'est ce que le serveur fait depuis le 20/10 (`member_media`,
-     `_element_media_readable` : un média se lit si SA BOX se lit) — la note le DIT enfin. */
-  const NOTE='this box, its media and its sub-boxes · each spot keeps its own level, under this one';
-  const DEMANDE={subscribers:'my subscribers will see this box, its media and its sub-boxes · tap again to confirm',
-                 private:'this box, its media and its sub-boxes go back to me only · tap again to confirm'};
+  /* ⚠️ 16/11 — MINIMAL, ET DANS LA BOX SEULE (Wah : « j'ai abusé avec WHO SEES THIS BOX · PRIVATE · VISIBLE TO MY
+     SUBSCRIBERS · THIS BOX, ITS MEDIA AND ITS SUB-BOXES… : on le trouve partout et c'est trop ; on le réduit à la box
+     elle-même »). Deux mots, aucun intitulé, aucune note au repos. La règle ne change pas : un média prend le niveau de
+     SA box (serveur, `_element_media_readable`) — elle se DIT au moment où elle compte, dans la question de confirmation.
+     Ailleurs, la box ne porte plus de réglage ; seuls les endroits où le niveau BLOQUE un geste le changent (la prise
+     d'un spot sur une box privée, `ouvrirLaBox` ; figher.club, « make visible to subscribers »). */
+  const MOTS={private:'private', subscribers:'subscribers'};
+  const NOTE='';
+  const DEMANDE={subscribers:'subscribers will see it, with its media and sub-boxes · tap again',
+                 private:'back to you only, with its media and sub-boxes · tap again'};
   const cle=(k,id)=>{ if(k==='h'){ const h=habOf(id); return h?String(h.t||'').trim():''; } return String(id||''); };
   const reel=id=>!!id&&!/^tmp/.test(String(id));
   const niveau=(k,id)=>{ const a=M&&M[k]?M[k][cle(k,id)]:null; return a&&a!=='private'?'subscribers':'private'; };
@@ -9340,11 +9339,12 @@ const AUDB=(()=>{
                    lit jamais ; il ne se montre que par le SPOT auquel il est attaché ;
          un SPOT   trois niveaux, les siens — private · my subscribers · figher club (`spot_audience_set`).
        Le niveau de la box reste un PLAFOND : une box privée ne montre rien de ce qui y pend. */
-    return '<span class="mg"><span class="mg-l">who sees this box</span>'
+    return '<span class="mg mg-aud">'
       +'<span class="baud" role="radiogroup" aria-label="Who sees this box">'
+      +'<svg class="baud-k" viewBox="0 0 12 12" aria-hidden="true"><rect x="2.5" y="5.5" width="7" height="5" rx="1"/><path d="M4 5.5V4a2 2 0 0 1 4 0v1.5"/></svg>'
       +['private','subscribers'].map(v=>'<button type="button" role="radio" class="baud-o'+(a===v?' is-on':'')+'" data-baud="'+d+'" data-v="'+v+'"'
         +' aria-checked="'+(a===v)+'">'+MOTS[v]+'</button>').join('<span class="baud-s" aria-hidden="true">·</span>')+'</span>'
-      +'<span class="baud-n" data-baud-n="'+d+'">'+esc(NOTE)+'</span></span>';
+      +'<span class="baud-n" data-baud-n="'+d+'" aria-live="polite">'+esc(NOTE)+'</span></span>';
   }
   /* ⚠️ 14/11 — UNE CONFIRMATION, TOUJOURS, ET ELLE DIT CE QU'ELLE EMPORTE (Wah : « toujours demander
      confirmation avant, en rappelant que tous ses médias et ses sous-box suivent »). Deux gestes, l'idiome
@@ -9377,8 +9377,8 @@ const AUDB=(()=>{
     if(!ok){ const n=b.closest('.mg')&&b.closest('.mg').querySelector('[data-baud-n]');
       if(n) n.textContent='not saved · try again'; }
   }
-  /* L'ÉCRITURE SEULE, sans bouton : ce que les AUTRES endroits appellent (le questionnaire d'un spot, la
-     grille, le dashboard, figher.club). Optimiste, annulée sur refus, réponse tardive jetée. */
+  /* L'ÉCRITURE SEULE, sans bouton : ce que les endroits où le niveau BLOQUE un geste appellent (la prise d'un spot
+     sur une box privée). Optimiste, annulée sur refus, réponse tardive jetée. */
   async function poser(k,id,apres){
     if(RO||!me) return false;
     const c=cle(k,id); if(!c) return false;
@@ -9396,20 +9396,6 @@ const AUDB=(()=>{
           vider(){ seq++; M=null; }, etat:()=>Object.assign({lu:!!M},diagA)};
 })();
 window.__totehm_audb=()=>AUDB.etat();
-/* ══ LE NIVEAU D'UNE BOX, PARTOUT OÙ ELLE APPARAÎT · 14/11 ══ Wah : « on doit pouvoir changer la
-   confidentialité d'une box aisément dans tous les endroits où elle apparaît, pas seulement dans le
-   TOTEHM ». La box elle-même reste INTACTE (règle n° 1 : `boxTotehm` efface tous les `data-*`) — la ligne
-   de mots se pose DESSOUS, dans sa rangée noire, avec la même grammaire et la même confirmation. */
-function audBoxRow(bk,id){
-  if(!bk||!id) return '';
-  const h=AUDB.html({kind:bk, id:String(id), ouverte:true});
-  return h?'<div class="baud-row">'+h+'</div>':'';
-}
-/* La délégation de la liste du TOTEHM s'arrête à sa boîte (`stopPropagation`) : ici, tous les AUTRES endroits. */
-document.addEventListener('click',e=>{
-  const b=e.target.closest&&e.target.closest('.baud-row [data-baud]'); if(!b) return;
-  e.stopPropagation(); AUDB.basculer(b);
-});
 /* La loupe : un état par boîte (`ZOOM`), qui survit aux redessins. */
 const ZOOM=new Set();
 const loupeHTML=k=>{ const on=ZOOM.has(k);
@@ -14510,37 +14496,13 @@ window.addEventListener('pageshow',e=>{
         else D=data;
         P=practice.error?(P?{...P,stale:true}:{unavailable:true}):practice.data?.ok?practice.data:{unavailable:true}; diagD.charges++; peindre();
       }
-      /* L'ACTIVITÉ : 12 semaines, une case par jour, une colonne par semaine (lundi en haut) ; la valeur = mes gestes. */
-      function chaleur(heat,today){
-        const L=heat.length, max=Math.max(1,...heat.map(n)), t0=jourDe(today); t0.setDate(t0.getDate()-(L-1));
-        const dec=(t0.getDay()+6)%7; let h='';
-        for(let k=0;k<dec;k++) h+='<span style="visibility:hidden"></span>';
-        heat.forEach((v,i)=>{ const q=n(v), l=q?Math.max(1,Math.ceil(4*q/max)):0;
-          h+='<span class="'+(l?'l'+l:'')+(i===L-1?' is-auj':'')+'" title="'+q+'"></span>'; });
-        return '<div class="db-heat" role="img" aria-label="My activity, 12 weeks">'+h+'</div>';
-      }
-      const DIT={habit_added:'new habit',habit_removed:'habit dropped',habit_renamed:'habit renamed',intention_changed:'new intention',
-        rhythm_changed:'new rhythm',objective_added:'new objective',objective_achieved:'objective achieved',objective_abandoned:'objective let go',
-        objective_converted:'objective → habit',objective_edited:'objective moved',objective_removed:'objective removed',
-        repulsion_added:'new repulsion',repulsion_retired:'repulsion beaten',vision_added:'new vision',vision_removed:'vision let go',
-        story_added:'my story grew',story_removed:'story removed',media_added:'new media',media_removed:'media removed',
-        spot_planned:'spot planned',reflection:'reflection',tracked_done:'done',tracked_missed:'missed',tracked_partial:'in part',tracked_skipped:'set aside',chapter_written:'new chapter',
-        where_set:'new where',sound_set:'new sound',link_added:'linked'};
-      function ilya(at){
-        const t=new Date(at), s=(Date.now()-t.getTime())/1000; if(isNaN(t)) return '';
-        return s<60?'now':s<3600?Math.floor(s/60)+'m':s<86400?Math.floor(s/3600)+'h':s<7*86400?Math.floor(s/86400)+'d'
-          :t.toLocaleDateString('en-GB',{day:'numeric',month:'short'});
-      }
       function peindre(){
-        const T=D?.totals||{}, today=D?.today;
         let h='';
 
         /* 14/11 — la box garde sa LARGEUR entière (elle n'est plus une colonne de 95 px) ; elle reste un
-           aperçu en hauteur (`court`), le tableau de bord n'est pas le TOTEHM déployé. Et sa confidentialité
-           se change sur place (`audBoxRow`) : partout où la box apparaît. */
+           aperçu en hauteur (`court`), le tableau de bord n'est pas le TOTEHM déployé. */
         if(P?.ok)h+=renderPractice(P,{requestedDays:period,
-          renderHabit:x=>boxTotehm('h',(!RO&&(state.habits||[]).find(y=>y.t===x.ref))||{id:'',t:x.habit,t0:x.habit,is:x.intentions||[],f:x.frequency},{court:true}),
-          renderLevel:x=>{ const y=!RO&&(state.habits||[]).find(z=>z.t===x.ref); return y?audBoxRow('h',y.id):''; }});
+          renderHabit:x=>boxTotehm('h',(!RO&&(state.habits||[]).find(y=>y.t===x.ref))||{id:'',t:x.habit,t0:x.habit,is:x.intentions||[],f:x.frequency},{court:true})});
         else h+='<p class="tracking-caption">Practice is unavailable for the moment. Your reports have not been changed.</p>';
         if(!D){h+='<p class="tracking-caption">History temporarily unavailable.</p>';el.innerHTML=h;return;}
         const O=D.objectives||[];

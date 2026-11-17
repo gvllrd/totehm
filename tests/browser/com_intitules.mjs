@@ -51,8 +51,8 @@ try{
     'HABIT : « why » au-dessus des objectifs, « trigger · instead of » au-dessus des répulsions → ' + h.mots.join(' | '));
  ok(h.media.some(t => t === 'Add a media to visualize it'), 'HABIT : [Add a media to visualize it] → ' + h.media.join(' | '));
  ok(h.wear === 'habit:Run the hill', 'HABIT : « + totehmize » porte son TEXTE serveur → ' + h.wear);
- ok(h.baud.join(' · ') === 'private · visible to my subscribers' && /this box, its media and its sub-boxes/.test(h.portee),
-    'la visibilité dit sa PORTÉE : « ' + h.portee + ' »');
+ ok(h.baud.join(' · ') === 'private · subscribers' && h.portee === '' && !h.mots.includes('who sees this box'),
+    '16/11 · la confidentialité est MINIMALE dans la box : deux mots, ni intitulé ni note au repos (la portée se dit à la confirmation) « ' + h.portee + ' »');
  await pg.screenshot({ path:OUT + '/com_box_habit.png' });
 
  /* ── L'OBJECTIF ── */

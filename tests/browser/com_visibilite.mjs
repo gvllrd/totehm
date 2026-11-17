@@ -16,7 +16,7 @@ const MES={my_landing:{signed_in:true,pseudo:'wahigher'},
   /* le serveur refuse la vision (un refus doit remettre l'ancien niveau) */
   box_audience_set:b=>b.p_kind==='v'?{ok:false,why:'not_mine'}:{ok:true,kind:b.p_kind,audience:b.p_audience,totehm:'subscribers'}};
 /* vue, touches pour y aller depuis la précédente, niveau lu, ce qui part au serveur au tap, niveau après */
-const VIS='visible to my subscribers';
+const VIS='subscribers';   /* 16/11 : deux mots, minimal */
 const TOUR=[['habits',[],VIS,{p_kind:'h',p_id:'Run the hill',p_audience:'private'},'private'],
   ['objectives',['ArrowUp'],VIS,{p_kind:'t',p_id:'o1',p_audience:'private'},'private'],
   ['repulsions',['ArrowDown','ArrowDown'],'private',{p_kind:'r',p_id:'r1',p_audience:'subscribers'},VIS],
@@ -40,8 +40,8 @@ try{
     for(const k of touches){ await pg.keyboard.press(k); await pg.waitForTimeout(700); }
     await pg.$eval('#habits .v-col[data-open]',e=>e.click());await pg.waitForTimeout(450);
     const a=await pastille(pg);
-    ok(a&&a.vue===vue&&a.mot===avant&&a.vraie==='true'&&a.options==='private|'+VIS&&a.fond==='rgba(0, 0, 0, 0)'&&a.bord==='none'&&/Space Mono/.test(a.police)&&a.libre,
-       nom+' · '+vue+' : la box ouverte dit qui la voit, dans SA grammaire (ni fond ni bord) : « '+(a&&a.options)+' », vraie = « '+(a&&a.mot)+' »');
+    ok(a&&a.vue===vue&&a.mot===avant&&a.vraie==='true'&&a.options==='private|subscribers'&&a.fond==='rgba(0, 0, 0, 0)'&&a.bord==='none'&&/Space Mono/.test(a.police)&&a.libre,
+       nom+' · '+vue+' : la box ouverte dit qui la voit, en DEUX mots (16/11, minimal), dans SA grammaire (ni fond ni bord) : « '+(a&&a.options)+' », vraie = « '+(a&&a.mot)+' » '+JSON.stringify(a&&{vue:a.vue,vraie:a.vraie,fond:a.fond,bord:a.bord,police:a.police,libre:a.libre}));
     const n0=log.rpc.filter(x=>x.name==='box_audience_set').length;
     await pg.$eval('#habits .habit.open .baud .baud-o.is-on',e=>e.click());await pg.waitForTimeout(300);
     ok(log.rpc.filter(x=>x.name==='box_audience_set').length===n0,nom+' · '+vue+' : un tap sur l\'option déjà vraie n\'écrit rien');
@@ -51,7 +51,7 @@ try{
     await pg.$eval('#habits .habit.open .baud .baud-o:not(.is-on)',e=>e.click());await pg.waitForTimeout(250);
     const q=await pg.evaluate(()=>({arme:!!document.querySelector('#habits .habit.open .baud-o.is-sur'),
       note:(document.querySelector('#habits .habit.open [data-baud-n]')||{}).textContent||''}));
-    ok(q.arme&&/tap again to confirm/i.test(q.note)&&/media/i.test(q.note)&&/sub-box/i.test(q.note)
+    ok(q.arme&&/tap again/i.test(q.note)&&/media/i.test(q.note)&&/sub-box/i.test(q.note)
        &&log.rpc.filter(x=>x.name==='box_audience_set').length===n0,
        nom+' · '+vue+' : le PREMIER tap demande et dit ce qu\'il emporte, il n\'écrit rien → « '+q.note+' »');
     await pg.$eval('#habits .habit.open .baud .baud-o:not(.is-on)',e=>e.click());await pg.waitForTimeout(400);
