@@ -2328,6 +2328,32 @@ body.gate.entered #terms-corner{opacity:0;pointer-events:none}
 #srch-x svg{width:20px;height:20px;color:rgba(255,255,255,.55);display:block;fill:none;
   stroke:currentColor;stroke-width:1.7;stroke-linecap:round;transition:color .15s}
 @media(hover:hover){#srch-x:hover svg{color:#fff}}
+/* ══ 16/11 · PILE OU FACE, SUR ORDINATEUR ══ Wah : « sur ordinateur, ce serait bien d'avoir vraiment le verso du TOTEHM
+   comme le recto : actuellement le verso, contrairement au recto, est en plein écran ; deux facettes facilement
+   retournables de part et d'autre, pour vraiment avoir cet effet pile ou face ». Au-delà de 700 px, le verso s'arrête
+   au CARRÉ du recto déployé (`--stage`, ses perforations visibles), son contenu défile DEDANS, le noir autour ; et
+   chaque face porte un bouton « retourner » (`.flip-btn`) : le carré rentre dans le papier, le papier se retourne,
+   l'autre face grandit au même format. Au téléphone, rien ne change (le verso reste plein écran). */
+.flip-btn{display:none}
+@media(min-width:700px){
+  #srch::before{content:"";position:absolute;inset:0;background:#000;opacity:0;transition:opacity .45s ease}
+  #srch.is-show::before{opacity:1}
+  #srch-ui{left:50%;top:50%;right:auto;bottom:auto;transform:translate(-50%,-50%);
+    width:calc(var(--stage) - 2 * var(--pad));height:calc(var(--stage) - 2 * var(--pad));padding:30px 24px 24px}
+  #srch-x{top:calc(50% - var(--stage) / 2 + var(--pad) * .5);right:calc(50% - var(--stage) / 2 + var(--pad) * .5)}
+  .flip-btn{display:block;background:none;border:none;cursor:pointer;padding:10px;line-height:0;-webkit-tap-highlight-color:transparent}
+  .flip-btn svg{width:20px;height:20px;display:block;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;
+    color:rgba(255,255,255,.5);transition:color .15s,transform .35s ease}
+  .flip-btn:hover svg{color:#fff;transform:rotate(180deg)}
+  .flip-btn:focus-visible{outline:1px solid #fff;outline-offset:2px}
+  #srch-flip{position:fixed;z-index:4;pointer-events:none;
+    top:calc(50% - var(--stage) / 2 + var(--pad) * .5);right:calc(50% - var(--stage) / 2 + var(--pad) * .5 + 44px)}
+  #srch.is-open #srch-flip{pointer-events:auto}
+  #fold-flip{position:fixed;top:10px;right:54px;z-index:34}
+  body.gate #fold-flip{opacity:0;pointer-events:none;transition:opacity .55s ease}
+  body.gate.entered #fold-flip{opacity:1;pointer-events:auto;transition:opacity .55s ease var(--gate-reveal)}
+  body.ro #fold-flip{display:none}
+}
 @media(prefers-reduced-motion:reduce){.srch-after{transition:none!important}}
 
 /* ══ ÉTAT 2 — LA DÉCONSTRUCTION ══
@@ -4138,6 +4164,7 @@ div:not(:has(> :not(br,wbr))):hover,
 .srch-meta:hover,
 .ns-label:hover,
 #srch-x svg:hover,
+.flip-btn svg:hover,
 #fold-x svg:hover,
 #sn-home:hover,
 #conn-bar:hover,
@@ -4760,6 +4787,10 @@ Built with behavioral science.</p>
   <button id="srch-x" class="srch-after" type="button" aria-label="Close my settings">
     <svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2 L12 12 M12 2 L2 12"/></svg>
   </button>
+  <!-- 16/11 — PILE OU FACE (ordinateur) : le verso se retourne sur le recto déployé, au même format. -->
+  <button id="srch-flip" class="srch-after flip-btn" type="button" aria-label="Turn it over · my TOTEHM" title="Turn it over">
+    <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 6.5a5 5 0 0 1 9.2-2.3M13 9.5a5 5 0 0 1-9.2 2.3"/><path d="M12.6 1.6v2.8H9.8M3.4 14.4v-2.8h2.8"/></svg>
+  </button>
 </div>
 
 
@@ -4821,6 +4852,10 @@ Built with behavioral science.</p>
 
 <button id="fold-x" class="sink-el" type="button" aria-label="Close my Totehm">
   <svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2 L12 12 M12 2 L2 12"/></svg>
+</button>
+<!-- 16/11 — PILE OU FACE (ordinateur) : le recto déployé se retourne sur le verso, au même format. -->
+<button id="fold-flip" class="sink-el flip-btn" type="button" aria-label="Turn it over · my settings" title="Turn it over">
+  <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 6.5a5 5 0 0 1 9.2-2.3M13 9.5a5 5 0 0 1-9.2 2.3"/><path d="M12.6 1.6v2.8H9.8M3.4 14.4v-2.8h2.8"/></svg>
 </button>
 
 
@@ -13163,6 +13198,15 @@ window.addEventListener('pageshow',e=>{
     sH.style.transform='translate('+g.qx.toFixed(2)+'px,'+g.qy.toFixed(2)+'px) scale('+g.kq.toFixed(4)+')';
   }
   const pleinEcran=()=>{ sBg.style.transform='translate(0px,0px) scale(1)'; sH.style.transform='translate(0px,0px) scale(1)'; };
+  /* 16/11 — PILE OU FACE : sur ordinateur, le verso s'arrête au CARRÉ du recto déployé (`#stage`, mesuré). */
+  const CARRE=window.matchMedia('(min-width:700px)');
+  const auFormat=()=>{
+    if(!CARRE.matches) return pleinEcran();
+    const S=parseFloat(srch.style.getPropertyValue('--s'))||Math.ceil(Math.max(innerWidth,innerHeight)*1.2);
+    const st=$('stage').getBoundingClientRect().width||Math.min(innerHeight*.92,innerWidth*.78,640);
+    sBg.style.transform='translate(0px,0px) scale('+(st/S).toFixed(5)+')'; sH.style.transform='translate(0px,0px) scale(1)';
+  };
+  window.addEventListener('resize',()=>{ if(sOpen&&!sMoving){ sansTransition(); auFormat(); } });
 
   function ouvrirVerso(){
     if(open||moving||sOpen||sMoving) return;
@@ -13192,13 +13236,13 @@ window.addEventListener('pageshow',e=>{
                     sLu.then(()=>{ if(sOpen&&n===sPret) srch.classList.add('is-pret'); });
                     try{ if(!srch.contains(document.activeElement)) srch.focus({preventScroll:true}); }catch(_){} };
     sansTransition(); sBg.style.transform=''; sH.style.transform='';
-    if(RMQ.matches){ srch.classList.remove('is-prep'); pleinEcran(); fin(); return; }
+    if(RMQ.matches){ srch.classList.remove('is-prep'); auFormat(); fin(); return; }
     const g=geometrie();
     surLePapier(g);
     void sBg.offsetWidth;
     srch.classList.remove('is-prep');
     void sBg.offsetWidth;
-    avecTransition(); pleinEcran();
+    avecTransition(); auFormat();
     srch.classList.add('is-show');
     clearTimeout(sTimer); sTimer=setTimeout(fin,SDUR+140);
   }
@@ -13232,6 +13276,10 @@ window.addEventListener('pageshow',e=>{
   }
 
   if(sX) sX.onclick=()=>fermerVerso();
+  /* PILE OU FACE (ordinateur) : chaque face se retourne sur l'autre — le carré rentre dans le papier, le papier se
+     retourne, l'autre face grandit au même format. Deux animations déjà là, enchaînées : aucun saut. */
+  { const f=$('srch-flip'); if(f) f.onclick=()=>fermerVerso(()=>{ if(!open&&!moving) enter(); }); }
+  { const f=$('fold-flip'); if(f) f.onclick=()=>{ if(RO||!me||!open||moving) return; fold(()=>ouvrirVerso()); }; }
   /* La feuille est modale : Tab tourne dans mes réglages, jamais vers le Totehm dessous. */
   if(srch) srch.addEventListener('keydown',e=>{
     if(e.key!=='Tab'||!sOpen) return;
