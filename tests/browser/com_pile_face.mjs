@@ -14,15 +14,23 @@ const rpc={my_landing:{signed_in:true,pseudo:'wahigher',telegram:false,higher:{a
 const etat=pg=>pg.evaluate(()=>({gate:document.body.classList.contains('gate'),verso:document.getElementById('srch').classList.contains('is-open')}));
 const erreurs=log=>log.errors.filter(e=>e.startsWith('pageerror'));
 /* Ce que `body` a porté pendant le geste : l'atterrissage (`gate`), son repli (`folding`) ou son déploiement (`entered`). */
-const guetter=pg=>pg.evaluate(()=>{ const vu=window.__vu={gate:false,folding:false,entered:false,max3d:0};
+const guetter=pg=>pg.evaluate(()=>{ const vu=window.__vu={gate:false,folding:false,entered:false,max3d:0,angles:[]};
   const lire=()=>{ const c=document.body.classList; for(const k of ['gate','folding','entered']) if(c.contains(k)) vu[k]=true; };
   window.__obs&&window.__obs.disconnect(); window.__obs=new MutationObserver(lire); window.__obs.observe(document.body,{attributes:true,attributeFilter:['class']});
   /* la pièce TOURNE vraiment : une transformation 3D sur le carré ou le verso pendant le geste */
   const t0=performance.now();
   const pas=()=>{ for(const id of ['stage','srch-bg','srch-ui']){ const t=getComputedStyle(document.getElementById(id)).transform; if(t.startsWith('matrix3d')) vu.max3d++; }
+    /* l'angle de la pièce, de 0 à 180°, lu sur la largeur visible de la face qui se montre */
+    if(document.body.classList.contains('is-coin')){ const w=id=>document.getElementById(id).getBoundingClientRect().width;
+      vu.angles.push([performance.now(),w('stage'),w('srch-bg'),document.getElementById('stage').offsetWidth]); }
     if(performance.now()-t0<1500) requestAnimationFrame(pas); };
   requestAnimationFrame(pas); });
 const vu=pg=>pg.evaluate(()=>{ window.__obs&&window.__obs.disconnect(); return window.__vu; });
+/* 17/11 — le plus grand pas d'une image à l'autre (ramené à 16,7 ms) quand la pièce passe la tranche. La face qui part
+   rétrécit de 0 à 90°, celle qui arrive s'élargit de 90 à 180° : avant le correctif, 58° → 77° → 116° (un bond). */
+const plusGrandPas=(angles,recto)=>{ const a=angles.map(([t,st,bg,W])=>{ const de=recto?st:bg, vers=recto?bg:st;
+    const c=x=>Math.acos(Math.min(1,x/W))*180/Math.PI; return [t, de>.5?c(de):180-c(vers)]; });
+  let m=0; for(let i=1;i<a.length;i++){ const dt=a[i][0]-a[i-1][0]; if(dt>4) m=Math.max(m,(a[i][1]-a[i-1][1])/dt*16.7); } return m; };
 const auCarre=pg=>pg.evaluate(()=>{const r=id=>document.getElementById(id).getBoundingClientRect();const bg=r('srch-bg'),ui=r('srch-ui'),st=r('stage'),f=r('srch-flip');
   return {bg:[bg.x,bg.y,bg.width],st:[st.x,st.y,st.width],ui:ui.width<st.width&&ui.x>st.x&&ui.y>st.y,flip:f.width>20&&f.x>st.x&&f.y>st.y&&f.y<st.y+80};});
 const memeCarre=v=>Math.abs(v.bg[0]-v.st[0])<2&&Math.abs(v.bg[1]-v.st[1])<2&&Math.abs(v.bg[2]-v.st[2])<2;
@@ -44,6 +52,8 @@ try{
   ok(!e.gate&&!e.verso&&d.recto,'ordinateur · ⟲ sur le verso : le recto déployé est là ('+dt+' ms)');
   ok(!w.folding&&!w.entered&&d.dessous===1&&d.versRecto===1,'ordinateur · ⟲ sur le verso : aucune animation de l\'atterrissage (le recto se déploie sous le noir, la pièce tourne)');
   ok(w.max3d>0,'ordinateur · ⟲ sur le verso : le carré TOURNE en 3D ('+w.max3d+' images)');
+  let pas=plusGrandPas(w.angles,false);
+  ok(w.angles.length>20&&pas<20,'ordinateur · ⟲ sur le verso : aucun bond à la tranche (au plus '+pas.toFixed(1)+'° par image, '+w.angles.length+' images)');
   ok(await pg.evaluate(()=>{const b=document.getElementById('fold-flip').getBoundingClientRect(),s=document.getElementById('stage').getBoundingClientRect();return b.width>20&&b.x>s.x&&b.y>s.y&&b.y<s.y+80&&getComputedStyle(document.getElementById('fold-flip')).opacity==='1';}),
      'ordinateur · le recto déployé porte le même bouton, dans son coin');
   await pg.screenshot({path:OUT+'/pile_face_recto.png'});
@@ -57,6 +67,8 @@ try{
   ok(!e.gate&&e.verso,'ordinateur · ⟲ sur le recto : le verso est là ('+dt+' ms)');
   ok(!w.gate&&!w.folding,'ordinateur · ⟲ sur le recto : on ne repasse PAS par l\'atterrissage');
   ok(w.max3d>0,'ordinateur · ⟲ sur le recto : le carré TOURNE en 3D ('+w.max3d+' images)');
+  pas=plusGrandPas(w.angles,true);
+  ok(w.angles.length>20&&pas<20,'ordinateur · ⟲ sur le recto : aucun bond à la tranche (au plus '+pas.toFixed(1)+'° par image, '+w.angles.length+' images)');
   await pg.waitForTimeout(400); v=await auCarre(pg);
   ok(memeCarre(v)&&v.ui&&v.flip,'ordinateur · le verso retourné tient au même carré, son bouton dans le coin');
 

@@ -8767,7 +8767,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-11-17-la-piece';
+const BUILD='2026-11-17-la-piece-sans-bond';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -13371,7 +13371,11 @@ window.addEventListener('pageshow',e=>{
      DÉPLOYÉ sous le verso (`open`) : refermer ce verso (croix, Échap, « précédent ») le retourne sur le recto. Ouvert depuis
      l'atterrissage, le verso déploie d'abord le recto sous son noir, sans animation (`deployerDessous`), puis se retourne.
      Au téléphone : rien ne change. Diagnostic `__totehm_piece()`. */
-  const PIECE=640, P_IN='cubic-bezier(.55,0,1,.45)', P_OUT='cubic-bezier(0,.55,.45,1)', stage=$('stage'), sUi=$('srch-ui');
+  /* ⚠️ LES DEUX MOITIÉS D'UNE MÊME COURBE (Wah : « le dashboard fait un petit sautage »). Mesuré image par image : avec
+     un ease-in (pente infinie à la fin) puis un ease-out (pente infinie au départ), la pièce passait la tranche d'un bond
+     — 86° d'un côté, 63° de l'autre, en 16 ms. Sinus entrant puis sinus sortant (`easeInOutSine` coupé en deux) : la
+     même vitesse de part et d'autre de la tranche (π/2), aucun bond. */
+  const PIECE=640, P_IN='cubic-bezier(.12,0,.39,0)', P_OUT='cubic-bezier(.61,1,.88,1)', stage=$('stage'), sUi=$('srch-ui');
   const diagP={versVerso:0, versRecto:0, dessous:0};
   window.__totehm_piece=()=>({...diagP, recto:open&&!sOpen, verso:sOpen, tourne:document.body.classList.contains('is-coin')});
   /* Une face = ses calques, chacun avec sa transformation à l'angle `t` : son repos, plus la rotation. L'axe passe par le
