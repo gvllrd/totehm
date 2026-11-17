@@ -344,12 +344,17 @@ window.TOTEHM_DISCOVER = (() => {
     }, { passive:true });
     function touche(e){
       if(!actif) return; const dans = e.target.closest ? e.target.closest(ACTIF) : null, champ = dans && e.target.matches('input,textarea,select');
-      if(['ArrowDown', 'PageDown'].includes(e.key) && !champ){ e.preventDefault(); suivant(); }
-      else if(['ArrowUp', 'PageUp'].includes(e.key) && !champ){ e.preventDefault(); precedent(); }
-      else if(e.key === ' ' && !dans){ e.preventDefault(); suivant(); }
+      let pris = true;
+      if(['ArrowDown', 'PageDown'].includes(e.key) && !champ) suivant();
+      else if(['ArrowUp', 'PageUp'].includes(e.key) && !champ) precedent();
+      else if(e.key === ' ' && !dans) suivant();
+      else pris = false;
+      /* une touche PRISE ne va pas plus loin : la page dessous (une couche par-dessus un accueil qui navigue aux flèches) ne bouge pas */
+      if(pris){ e.preventDefault(); e.stopPropagation(); }
     }
-    /* un seul écouteur : sur la page, quand rien n'a le focus et que le moteur est visible ; dedans, il remonte jusqu'ici */
-    window.addEventListener('keydown', e => { if(hote.isConnected && !hote.hidden && !hote.classList.contains('hide') && (hote.contains(e.target) || document.activeElement === document.body)) touche(e); });
+    /* un seul écouteur, EN CAPTURE : une page qui arrête ses flèches en route (totehm.com le fait) ne les lui vole pas.
+       Il n'écoute que si le moteur est visible, et que le focus est dedans ou nulle part. */
+    window.addEventListener('keydown', e => { if(hote.isConnected && !hote.hidden && !hote.classList.contains('hide') && (hote.contains(e.target) || document.activeElement === document.body)) touche(e); }, true);
     next.addEventListener('click', suivant);
     lire(); peindre(true);
     return { aller, suivant, precedent, index:() => i, total:() => ecrans.length,

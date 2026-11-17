@@ -3155,44 +3155,17 @@ body.gate.lv-c:not(.entered):not(.is-aspire):not(.folding):not(.ram-morph) #gate
 /* ── LE PREMIER CONTACT (15/10) : ce que ça fait, pourquoi ça marche, une seule porte ──
    Le titre porte le badge Higher (toujours le SVG) ; la preuve se déroule au clic, elle n'occupe
    pas l'écran d'un membre. Coral pour le nom de la marque seul ; le reste reste gris et sombre. */
-#lv-pitch{display:flex;flex-direction:column;align-items:center;gap:9px;width:min(92vw,470px);text-align:center;
-  background:rgba(0,0,0,.78);border-radius:10px;padding:14px 16px}   /* le réseau passe derrière : un voile, jamais un flou */
+#lv-pitch{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px;width:min(92vw,470px);text-align:center}
 #lv-pitch.hide{display:none}
-#lv-pitch .lvp-headline{margin:0;color:#fff;font:700 19px/1.45 'Space Mono',monospace}
-#lv-pitch .lvp-headline svg{display:inline-block;width:72px;height:24px;vertical-align:middle}
-#lv-pitch .lvp-science{margin:0;color:#b7b7bf;font:400 11px/1.5 'Space Mono',monospace}
 #lv-explore{background:transparent;box-shadow:inset 0 0 0 1px #606068}
 /* 21/10 — une session se lit encore (`ses-attente`, posé avant le premier rendu) : rien de « hors connexion ». */
 body.ses-attente:not(.member) #lv-pitch{display:none!important}
 body.member #lv-pitch{display:none!important}   /* la vente ne parle jamais à un membre, même une image avant `peindreCarte` */
-.lvp-h{margin:0;display:flex;align-items:center;justify-content:center;gap:9px;flex-wrap:wrap}
-.lvp-h .lvp-b{width:92px;height:31px}
-.lvp-h span{font:700 19px/1 'Space Mono',monospace;letter-spacing:.04em;text-transform:lowercase;color:#fff}
-.lvp-s{margin:0;font:400 12.5px/1.55 'Space Mono',monospace;color:#b7b7bf;max-width:36em}
-/* Un seul des deux côtés s'affiche : Mine, ou Others. Le CTA, la preuve et « free » sont communs. */
-.lvp-side{display:flex;flex-direction:column;align-items:center;gap:9px;width:100%}
-.lvp-others,body.lv-mb .lvp-mine{display:none}
-body.lv-mb .lvp-others{display:flex}
-/* LE MÉCANISME, EN TROIS PAS. Des chiffres, pas des puces : on compte ce qu'on va faire. */
-.lvp-how{list-style:none;margin:2px 0 0;padding:0;display:flex;flex-direction:column;gap:7px;width:100%;counter-reset:lvp}
-.lvp-how li{counter-increment:lvp;display:grid;grid-template-columns:18px 1fr;gap:10px;align-items:baseline;text-align:left}
-.lvp-how li::before{content:counter(lvp);font:700 10px/1.5 'Space Mono',monospace;color:#fbd5ca;letter-spacing:.1em}
-.lvp-how b{font:700 12.5px/1.45 'Space Mono',monospace;color:#fff;letter-spacing:.01em}
-.lvp-how span{display:block;font:400 10px/1.5 'Space Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:#7c7c84}
-.lvp-out{margin:4px 0 0;font:400 11.5px/1.55 'Space Mono',monospace;color:#9a9aa2;max-width:34em}
-.lvp-why{border:0;background:none;padding:2px 6px;cursor:pointer;
-  font:700 9px/1.4 'Space Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:#8a8a92;
-  transition:color .2s ease}
-.lvp-why[aria-expanded="true"]{color:#fff}
-.lvp-sci{margin:0;font:400 11px/1.65 'Space Mono',monospace;color:#8a8a92;max-width:40em;
-  transition:opacity .3s ease}
-.lvp-sci.hide{display:none}
 .lvp-cta{border:0;border-radius:10px;padding:13px 20px;background:#2a2a31;color:#fff;cursor:pointer;
   font:700 11px/1.2 'Space Mono',monospace;letter-spacing:.14em;white-space:nowrap;
   transition:background .2s ease}
 .lvp-cta:hover{background:#3a3a42}
-.lvp-cta:focus-visible,.lvp-why:focus-visible{outline:1px solid #fff;outline-offset:3px}
-.lvp-free{margin:0;font:400 9.5px/1.4 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#6d6d74}
+.lvp-cta:focus-visible{outline:1px solid #fff;outline-offset:3px}
 /* ── LA VENTE DE GET HIGHER (vue du haut), au-dessus du cerveau ── */
 #lv-sell{position:absolute;left:50%;top:var(--sell-top,calc(49% + var(--tn-h) / 2));transform:translateX(-50%);width:min(92vw,560px);
   text-align:center;display:flex;flex-direction:column;gap:8px;opacity:0;pointer-events:none;
@@ -3214,10 +3187,7 @@ body.gate:not(.member):not(.ses-attente){--lv-y:32dvh}
 @media(max-height:740px){
  body.gate.member,body.gate.ses-attente{--lv-y:36dvh}
  body.gate:not(.member):not(.ses-attente){--lv-y:22dvh}
- body:not(.member) #lv-pitch{gap:6px;padding:9px 12px}
- body:not(.member) #lv-pitch .lvp-headline{font-size:15px;line-height:1.35}
- body:not(.member) #lv-pitch .lvp-headline svg{width:60px;height:20px}
- body:not(.member) #lv-pitch .lvp-science{font-size:10px}
+ body:not(.member) #lv-pitch{gap:6px}
  body:not(.member) #lv-pitch .lvp-cta{padding:9px 16px;font-size:10px}
 }
 @media(max-height:620px) and (max-width:649px){
@@ -3226,11 +3196,9 @@ body.gate:not(.member):not(.ses-attente){--lv-y:32dvh}
  body.gate:not(.member):not(.ses-attente) #gate-hero{padding-top:52px}
  body.gate:not(.member):not(.ses-attente) #gate-top-row{margin-top:max(0px,calc(var(--lv-y) - var(--gate-size) / 2 - 52px))}
  body:not(.member) #lv-c-acts{gap:8px}
- body:not(.member) #lv-pitch{gap:4px;padding:6px 10px}
- body:not(.member) #lv-pitch .lvp-headline{font-size:13px;line-height:1.35}
- body:not(.member) #lv-pitch .lvp-headline svg{width:52px;height:18px}
- body:not(.member) #lv-pitch .lvp-science{font-size:9px}
+ body:not(.member) #lv-pitch{gap:4px}
  body:not(.member) #lv-pitch .lvp-cta{padding:7px 14px;font-size:9px}
+ #lv-title{font-size:11px}
 }
 @media(max-height:520px) and (min-width:650px){
  body.gate,body.gate.member,body.gate.ses-attente,body.gate:not(.member):not(.ses-attente){--lv-y:20dvh}
@@ -3297,12 +3265,14 @@ body.lv-membre #mb-offre{display:flex}
 #rf-gpt{display:block;width:100%;height:100%;object-fit:contain;animation:cg-orbit 30s linear infinite;animation-play-state:paused}
 body.lv-b #rf-gpt{animation-play-state:running}
 @keyframes cg-orbit{to{transform:rotate(360deg)}}
-#chatgpt-entry{flex:none;text-align:center;margin:0 0 12px}
-#chatgpt-connect{display:inline-flex;align-items:center;justify-content:center;gap:.4em;color:#b8b8c2;background:none;padding:8px 0;text-decoration:none;
- font:700 clamp(18px,3vw,24px)/1.4 'Space Mono',monospace}
-#chatgpt-connect .chatgpt-higher{display:block;width:5.1em;height:1.7em;flex:none}
-#chatgpt-connect:focus-visible{outline:1px solid #fff;outline-offset:5px}
-@media(hover:hover) and (pointer:fine){#chatgpt-connect:hover{color:#fff}}
+#chatgpt-entry{flex:none;text-align:center;margin:12px 0 0}
+/* 16/11 — un BOUTON normal (gris, 10 px de rayon), le badge Higher dedans ; le titre de la vue est au-dessus. */
+#chatgpt-connect{display:inline-flex;align-items:center;justify-content:center;gap:.5em;color:#fff;background:#2a2a31;border-radius:10px;padding:10px 20px;text-decoration:none;
+ font:700 12px/1.2 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;transition:background .2s ease}
+#chatgpt-connect .chatgpt-higher{display:block;width:4.8em;height:1.6em;flex:none}
+#chatgpt-connect:focus-visible{outline:1px solid #fff;outline-offset:3px}
+@media(hover:hover) and (pointer:fine){#chatgpt-connect:hover{background:#3a3a42}}
+#chatgpt-title{font-size:clamp(14px,2.2vw,19px);line-height:1.6}
 #chatgpt-pitch{width:100%;text-align:center;min-height:0;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;
  display:flex;flex-direction:column;gap:8px;background:rgba(0,0,0,.78);border-radius:10px;padding:14px 16px}
 #chatgpt-pitch .lvs-sci{margin:0}
@@ -3974,6 +3944,96 @@ body.lv-d.rdr-voir #gate-asteroid,body.lv-d.rdr-voir #lvjoy,body.rdr-voir #rdr-f
 .tw.is-plat .tw-p{transform:none}
 @media(prefers-reduced-motion:reduce){.tw-p{transform:rotateY(180deg)}.tw.is-plat .tw-p{transform:none}}
 /* ══ fin LE MOT TOTEHM ══ */
+</style>
+<style data-dc="2026-11-16">
+/* ══ DISCOVER — copié de tools/discover.css dans chaque page (jamais importé) ══
+   Wah (15/11) : « une page doit respecter la règle du 60 / 30 / 10. Les textes de découverte, tout ce qui est
+   explicatif comme l'explication d'abonnement, sont trop fourre-tout. Je veux découvrir à la manière de
+   totehm.space/play_lisbon_street?discover=1. » Un écran noir, UNE idée à la fois, qui se succèdent au geste.
+   LE 60 / 30 / 10, ICI, PAR CONSTRUCTION :
+     60 %  le NOIR — tout le fond, tout le silence autour du texte (`#000`)
+     30 %  le TEXTE — blanc pour l'idée (`.dc-h`), gris clair pour son appui (`.dc-p`), gris sombre pour la
+           structure (progression, rail, consigne)
+     10 %  l'ACCENT, UN SEUL — le corail du TOTEHM (`--dc-ac`), SACRÉ (Wah, 15/11) : il ne colore que le NOM du
+           membre et l'ART de Wah (le papier, la pièce). Ni le prix, ni le bouton : ils restent blancs et gris.
+           Rien d'autre n'est coloré, jamais : ni navy, ni rouge, ni dégradé.
+   L'APPEL À L'ACTION (`.dc-cta`, facultatif : la classe `has-cta` sur l'hôte) reste sous CHAQUE écran. */
+.dc{--dc-ac:#fbd5ca;position:fixed;inset:0;z-index:20;background:#000;color:#ddd;overflow:hidden;
+  font-family:'Space Mono',monospace;-webkit-font-smoothing:antialiased;touch-action:pan-x;overscroll-behavior:none}
+.dc[hidden],.dc.hide{display:none}
+.dc-stage{position:absolute;inset:0}
+.dc-s{position:absolute;inset:84px 24px 132px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:20px;text-align:center;opacity:0;visibility:hidden;transform:translateY(14px);
+  transition:opacity .5s ease,transform .5s ease,visibility 0s linear .5s}
+.dc-s.is-on{opacity:1;visibility:visible;transform:none;transition:opacity .5s ease,transform .5s ease,visibility 0s}
+/* le sens du voyage se VOIT : l'écran qu'on quitte part vers le haut, le suivant monte d'en bas (et l'inverse au retour) */
+.dc-s.is-avant{transform:translateY(-14px)}
+.dc-s>*{max-width:min(100%,680px)}
+.dc-h{margin:0;font:700 clamp(24px,3.6vw,44px)/1.16 Quantico,sans-serif;color:#fff;letter-spacing:.01em}
+.dc-p{margin:0;font:400 clamp(15px,1.9vw,21px)/1.6 'Space Mono',monospace;color:#ddd;white-space:pre-line}
+.dc-ac{color:var(--dc-ac)}
+.dc-n{font-family:Quantico,sans-serif;font-weight:700;color:var(--dc-ac)}            /* un NOM de membre */
+.dc-big{margin:0;font:700 clamp(44px,9vw,84px)/1 Quantico,sans-serif;color:#fff;letter-spacing:.01em}
+.dc-big small{font:400 clamp(12px,1.6vw,16px)/1 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#888;margin-left:10px}
+.dc-fine{margin:0;font:400 11px/1.7 'Space Mono',monospace;letter-spacing:.06em;color:#888;max-width:420px}
+/* le bouton : un bouton NORMAL — gris, jamais corail (le corail est réservé au nom et à l'art) */
+.dc-btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:12px 26px;border:0;border-radius:12px;cursor:pointer;
+  background:#2a2a2a;color:#e8e8e8;font:700 12px/1.2 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;transition:transform .15s ease,opacity .15s ease}
+.dc-btn:active{transform:scale(.97)}
+.dc-cta{position:absolute;left:0;right:0;bottom:146px;display:flex;flex-direction:column;align-items:center;gap:8px;padding:0 24px;z-index:2}
+.dc-cta:empty{display:none}
+.dc.has-cta .dc-s{inset:84px 24px 214px}
+.dc.has-cta.is-last .dc-cta{bottom:96px}
+.dc-btn[disabled]{opacity:.45;pointer-events:none}
+.dc-btn.is-quiet{background:none;color:#bdbdbd;box-shadow:inset 0 0 0 1px #3a3a3a}
+.dc-lnk{background:none;border:0;padding:8px;cursor:pointer;font:400 10px/1.4 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#888;text-decoration:none}
+.dc-row{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.dc-slot{width:100%}
+.dc-slot:empty{display:none}
+/* EN COUCHE par-dessus une page (facultatif) : `is-overlay`, invisible tant que `is-open` n'est pas posée ; `.dc-x` la referme */
+.dc.is-overlay{z-index:9000;opacity:0;visibility:hidden;transition:opacity .35s ease,visibility 0s linear .35s}
+.dc.is-overlay.is-open{opacity:1;visibility:visible;transition:opacity .35s ease,visibility 0s}
+.dc-x{position:absolute;top:8px;right:8px;z-index:3;width:44px;height:44px;border:0;padding:0;background:none;color:#a0a0a0;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;transition:color .15s}
+.dc-x svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round}
+.dc.has-x .dc-progress{right:auto;left:18px}
+/* la structure : progression, rail, consigne, chevron — gris sombre, jamais de couleur */
+.dc-progress{position:absolute;top:22px;right:18px;font:10px/1.4 'Space Mono',monospace;letter-spacing:.14em;color:#888;pointer-events:none}
+.dc-rail{position:absolute;bottom:72px;left:50%;transform:translateX(-50%);display:flex;gap:6px;pointer-events:none}
+.dc-rail span{width:18px;height:2px;background:#242424;transition:background .3s}
+.dc-rail span.on{background:#bdbdbd}
+.dc-hint{position:absolute;bottom:28px;left:0;right:0;text-align:center;font:9px/1.5 'Space Mono',monospace;letter-spacing:.14em;color:#888;pointer-events:none;transition:opacity .3s}
+.dc-next{position:absolute;bottom:96px;left:50%;transform:translateX(-50%);background:none;border:0;padding:10px;cursor:pointer;color:#a0a0a0;transition:color .15s,opacity .3s}
+.dc-next svg{display:block;width:22px;height:22px;animation:dc-bob 1.8s ease-in-out infinite}
+.dc-next:focus-visible,.dc-btn:focus-visible,.dc-lnk:focus-visible{outline:1px solid #fff;outline-offset:3px}
+.dc-x:focus-visible{outline:1px solid #fff;outline-offset:-6px}
+.dc.is-last .dc-next,.dc.is-last .dc-hint{opacity:0;pointer-events:none}
+@keyframes dc-bob{50%{transform:translateY(4px)}}
+@media(hover:hover){.dc-btn:hover{background:#383838;opacity:1}.dc-next:hover,.dc-x:hover{color:#fff}.dc-lnk:hover{color:#fff}}
+@media(max-width:650px){.dc-s{inset:76px 20px 140px;gap:16px}.dc.has-cta .dc-s{inset:76px 20px 214px}}
+/* un écran BAS (fenêtre réduite, téléphone couché) : tout se resserre et rien ne se chevauche — après la règle de largeur */
+@media(max-height:620px){
+  .dc-s{inset:60px 20px 96px;gap:12px}.dc.has-cta .dc-s{inset:60px 20px 150px}
+  .dc-cta,.dc.has-cta.is-last .dc-cta{bottom:84px}.dc-next{display:none}.dc-rail{bottom:56px}.dc-hint{bottom:22px}
+  .dc-h{font-size:clamp(19px,3.2vw,30px)}.dc-p{font-size:clamp(13px,1.6vw,16px);line-height:1.5}.dc-btn{min-height:42px;padding:9px 22px}
+}
+@media(max-height:440px){
+  .dc-s{inset:50px 20px 50px}.dc.has-cta .dc-s{inset:50px 20px 100px}
+  .dc-cta,.dc.has-cta.is-last .dc-cta{bottom:44px}.dc-rail{bottom:22px}.dc-hint{display:none}
+}
+@media(prefers-reduced-motion:reduce){.dc-s,.dc-s.is-on,.dc-s.is-avant{transition:none;transform:none}.dc-next svg{animation:none}.dc.is-overlay,.dc.is-overlay.is-open{transition:none}}
+/* ══ fin DISCOVER ══ */
+/* ── 16/11 · L'ACCUEIL : le titre de la vue centrale, le bouton discret, et le Discover en couche ──
+   Le titre est une ÉTIQUETTE posée sur le circuit (fond noir, comme `#lv-tap`) : les racines de l'arbre passent derrière,
+   jamais sous les lettres. Il porte la pièce (`data-tw`, le mot TOTEHM). Chez un autre membre, il s'efface. */
+#lv-title{margin:0;background:#000;border-radius:10px;padding:2px 12px;text-align:center;
+  font:700 13px/1.6 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#fff}
+body.lv-membre #lv-title,body.lv-verrou #lv-title,body.is-door #lv-title{display:none}
+.lvp-cta.is-quiet{background:#000;color:#b8b8c2;box-shadow:inset 0 0 0 1px #3a3a42}
+.lvp-cta.is-quiet:hover{background:#17171b;color:#fff}
+/* Le Discover prend tout l'écran PAR-DESSUS l'accueil, qui ne bouge pas dessous (`body.is-dc` : ses gestes sont rendus). */
+#lvd .dc-h .dc-hi{display:inline-block;width:3.2em;height:1.07em;vertical-align:-.14em}
+@media(max-height:520px) and (min-width:650px){#lv-title{font-size:10px;letter-spacing:.12em}}
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Tout texte devient blanc sous la souris. Les dessins, surfaces
    et contrôles désactivés gardent leur apparence. */
@@ -4122,13 +4182,6 @@ div:not(:has(> :not(br,wbr))):hover,
 .lvs-get:hover,
 .lvn:hover,
 #lv-diag:hover,
-#lv-pitch .lvp-science:hover,
-.lvp-s:hover,
-.lvp-how span:hover,
-.lvp-out:hover,
-.lvp-why:hover,
-.lvp-sci:hover,
-.lvp-free:hover,
 .lvs-sci:hover,
 .lvs-sci b:hover,
 #lv-tap:hover,
@@ -4139,7 +4192,6 @@ div:not(:has(> :not(br,wbr))):hover,
 #mb-offre .mbo-n:hover,
 #mb-offre .mbo-p:hover,
 #mb-offre .mbo-s:hover,
-#chatgpt-connect:hover,
 #self-name:hover,
 #self-mail .mw-mail:hover,
 #lv-card #name-btn:hover,
@@ -4206,7 +4258,21 @@ div:not(:has(> :not(br,wbr))):hover,
 .mf-x:hover,
 .cap-b:hover,
 #cap-x:hover,
-.tw .tn-l:hover):where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *)){color:#fff!important}
+.tw .tn-l:hover,
+.dc:hover,
+.dc-p:hover,
+.dc-ac:hover,
+.dc-n:hover,
+.dc-big small:hover,
+.dc-fine:hover,
+.dc-btn:hover,
+.dc-btn.is-quiet:hover,
+.dc-lnk:hover,
+.dc-x:hover,
+.dc-progress:hover,
+.dc-hint:hover,
+.dc-next:hover,
+.lvp-cta.is-quiet:hover):where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *)){color:#fff!important}
 .h-text:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::placeholder{color:#fff!important}
 .habit.open .v-name[contenteditable]:empty:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::before{color:#fff!important}
 #habits .in.nw:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::placeholder{color:#fff!important}
@@ -4217,7 +4283,6 @@ div:not(:has(> :not(br,wbr))):hover,
 #srch-q:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::placeholder{color:#fff!important}
 #gate-search-input:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::placeholder{color:#fff!important}
 #search-input:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::placeholder{color:#fff!important}
-.lvp-how li:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::before{color:#fff!important}
 .vs-in:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::placeholder{color:#fff!important}
 }
 /* ══ FIN DU BLOC GÉNÉRÉ ══ */
@@ -4455,28 +4520,21 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
            son socle processor tout en retournant le totehm en mode verso, avec l'invitation directe à entrer un
            identifiant ». La saisie vit SUR le dos du papier agrandi (`MB`), ancrée en haut (le clavier mange le bas). -->
       <div id="lv-c-acts" class="lv-act">
-        <!-- ══ LE PREMIER CONTACT · 15/10/2026 ══ Un visiteur sans compte ne voit pas un objet muet : il voit
-             CE QUE ça lui fait, et POURQUOI ça marche — avec de vraies références, vérifiables (jamais un
-             chiffre inventé, jamais une fausse rareté). Un membre, lui, ne lit rien : il a déjà son Totehm.
-             Le détail se déroule au clic : le moins de mots possible, et la suite à la demande. -->
-        <!-- ⚠️ 16/10 · L'ATTERRISSAGE VEND, ET IL VEND DEUX CHOSES DIFFÉRENTES (Wah : « le HOW IT WORKS de la
-             page d'atterrissage est nul : il faut vendre ici ; il faut que l'utilisateur ait l'impression qu'il
-             DOIT utiliser le Totehm pour atteindre ses objectifs » · « quand tu cliques sur OTHERS, “Higher your
-             brain” devient “Higher your strategy” et le texte change, en mode cherche et souscris à un ou
-             plusieurs Totehm des membres ; le HOW IT WORKS change aussi »).
-             Donc DEUX blocs, un seul CTA, et trois pas numérotés dans les deux cas : le mécanisme se lit d'un
-             coup d'œil, et chaque pas est une chose que le membre va vraiment écrire. Aucun chiffre inventé,
-             aucune fausse rareté, aucune promesse de résultat : la preuve est réelle ou elle n'est pas. -->
+        <!-- ⚠️ 16/11 — LE TITRE DE LA VUE CENTRALE (Wah : « sur la vue Totehm, rajouter Get Higher with your TOTEHM avec TOTEHM
+             au format logo rotatif, pareil que Your TOTEHM in ChatGPT »). Pour tous — visiteur et membre ; chez un autre
+             membre il s'efface (son centre porte SON nom). La pièce est celle du mot TOTEHM (`data-tw`).
+             L'ATTERRISSAGE EST MINIMAL, ET IL VEND QUAND ON LE DEMANDE : sans compte, deux boutons — la porte, et
+             [Discover], qui ouvre l'explication plein écran (`#lvd`, `DISC`) ; avec un compte, le geste et « Discover »
+             dans la légende. La preuve (« Built with behavioral science ») et « Reach Higher » vivent dans le Discover. -->
+        <h1 id="lv-title" data-tw>Get Higher with your TOTEHM</h1>
         <div id="lv-pitch" class="hide">
-          <p class="lvp-headline">Reach <svg viewBox="0 0 600 200" role="img" aria-label="higher"><use href="#higher-badge"></use></svg>. Enjoy the journey.</p>
-          <p class="lvp-science">Built with behavioral science.</p>
           <button id="lv-join" class="lvp-cta" type="button">Open my TOTEHM</button>
-          <button id="lv-explore" class="lvp-cta" type="button">Explore TOTEHMs</button>
+          <button id="lv-discover" class="lvp-cta is-quiet" type="button">Discover</button>
         </div>
         <!-- ⚠️ 18/10 — CHACUN FAIT CE QU'IL DIT (règle du 06/10). Depuis que `#conn-bar` est parti,
              « Turn to configure it » est la SEULE porte vers le verso quand le geste n'est pas
              disponible (mouvement réduit, clavier) : c'est donc un vrai bouton, pas une légende. -->
-        <div id="lv-tap" class="hide"><button id="lv-tap-open" type="button">Tap to open it</button><span class="lvt-sep"> · </span><button id="lv-tap-turn" type="button">Turn to configure it</button></div>
+        <div id="lv-tap" class="hide"><button id="lv-tap-open" type="button">Tap to open it</button><span class="lvt-sep"> · </span><button id="lv-tap-turn" type="button">Turn to configure it</button><span class="lvt-sep"> · </span><button id="lv-tap-disc" type="button">Discover</button></div>
         <div id="lv-mode" role="radiogroup" aria-label="My TOTEHM or a member's">
           <button type="button" role="radio" id="lv-m-mine" data-mode="mine" aria-checked="true">Mine</button>
           <button type="button" role="radio" id="lv-m-members" data-mode="members" aria-checked="false"><span class="lvm-lab">Members</span><span class="lvm-who" id="lv-m-who"></span></button>
@@ -4495,13 +4553,14 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
     <section class="lv-pane" id="lv-b" aria-label="Higher my ChatGPT">
       <div id="rf" class="lv-act">
         <div id="rf-me" aria-hidden="true"><img id="rf-gpt" src="https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/public/com/gpt.png" alt="" width="1024" height="1024"></div>
+        <!-- 16/11 (Wah) : « Your TOTEHM in ChatGPT doit devenir le TITRE, et Higher my ChatGPT plus en mode bouton ». -->
+        <article id="chatgpt-pitch" tabindex="0" aria-labelledby="chatgpt-title">
+          <h1 class="lvs-hook" id="chatgpt-title" data-tw>YOUR TOTEHM IN CHATGPT</h1>
+          <p class="lvs-sci">Ask ChatGPT what to do next. It reads your habits, goals, repulsions, visions and story — and the links between them — plus the members you subscribe to and the Figher Club spots you can access. Free.</p>
+        </article>
         <div id="chatgpt-entry">
           <a id="chatgpt-connect" href="/chatgpt" aria-label="Higher my ChatGPT"><svg class="chatgpt-higher" viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-badge"></use></svg><span>my ChatGPT</span></a>
         </div>
-        <article id="chatgpt-pitch" tabindex="0" aria-labelledby="chatgpt-title">
-          <h1 class="lvs-hook" id="chatgpt-title" data-tw>YOUR TOTEHM IN CHATGPT</h1>
-          <p class="lvs-sci">Ask ChatGPT what to do next. It can use your habits, goals, repulsions, visions and story—and the links you’ve built between them. Ask for inspiration from members you subscribe to, or find a Figher Club spot you can access.</p>
-        </article>
         <div id="mb-offre" aria-live="polite"></div>
       </div>
     </section>
@@ -4575,6 +4634,49 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
       <button id="lvn-dn" class="lvn lv-act" type="button" aria-label="Get Higher"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 6 L8 11 L13 6"/></svg></button>
     </div>
   </div>
+</div>
+
+<!-- ══ LE DISCOVER DE L'ACCUEIL · 16/11/2026 ═══════════════════════════════
+     Wah : « j'aime ce côté minimaliste du site Supreme.com et brandé, mais je veux que les explications (les discovers)
+     soient ultra fluides, visibles et agréables partout, et ultra-vendeuses […] simple, minimaliste mais super bien
+     expliqué et vendeur QUAND L'UTILISATEUR LE SOUHAITE ». L'accueil ne dit donc qu'un titre ; [Discover] ouvre ceci :
+     une idée par écran noir, au geste (`tools/discover.*`, copié), la porte sous CHAQUE écran. Ordre de la vente :
+     ce que c'est → comment ça marche → Higher GPT et TotehmBot (gratuits) → la creator economy (être payé, puis suivre)
+     → le Club → la confidentialité. 60 / 30 / 10 : noir, texte, et le corail pour la seule pièce (l'art, le nom).
+     ⚠️ Rien ici n'est une promesse de résultat ni un chiffre inventé : chaque phrase dit ce que le produit FAIT. -->
+<div class="dc is-overlay has-cta has-x" id="lvd" role="dialog" aria-modal="true" aria-label="Discover TOTEHM" hidden>
+  <div class="dc-stage">
+    <div class="dc-s"><h2 class="dc-h" data-tw>Get Higher with your TOTEHM.</h2><p class="dc-p">Reach higher. Enjoy the journey.</p></div>
+    <div class="dc-s"><h2 class="dc-h">One page.<br>Your whole strategy.</h2><p class="dc-p">Habits. Objectives. Repulsions.
+Visions. My story.
+Five lists, linked.</p></div>
+    <div class="dc-s"><h2 class="dc-h">A habit is a sentence.</h2><p class="dc-p">Why you do it.
+What triggers it.
+What you do instead.</p></div>
+    <div class="dc-s"><h2 class="dc-h">See it. Go there.</h2><p class="dc-p">A photo or a video on every box.
+A spot: your habit at an exact place,
+at an exact time.</p></div>
+    <div class="dc-s"><h2 class="dc-h" data-tw>Your TOTEHM in ChatGPT.</h2><p class="dc-p">Ask what to do next.
+It reads your habits, your goals
+and the links between them.
+Free.</p></div>
+    <div class="dc-s"><h2 class="dc-h">TotehmBot keeps the rhythm.</h2><p class="dc-p">One private Telegram message when a habit is due.
+Done or Missed. Silence is not a failure.
+Free.</p></div>
+    <div class="dc-s" data-cta="money"><h2 class="dc-h">Get paid for how you build.</h2><p class="dc-p">Members subscribe to your TOTEHM for a year.
+You set the price.
+You keep 80%.</p></div>
+    <div class="dc-s"><h2 class="dc-h">Follow who inspires you.</h2><p class="dc-p">Subscribe to a member: their TOTEHM,
+their media, their spots.
+Adopt a box in one tap, their name kept on it.</p></div>
+    <div class="dc-s"><h2 class="dc-h">Meet on a spot.</h2><p class="dc-p">Figher Club: members with habits like yours,
+at the exact place, at the exact time.</p></div>
+    <div class="dc-s"><h2 class="dc-h">Private by default.</h2><p class="dc-p">You choose what your subscribers see.
+Built with behavioral science.</p>
+      <div class="dc-row"><a class="dc-lnk" href="https://www.figher.club/">Figher Club</a><a class="dc-lnk" href="https://www.higher.boutique/">Higher Boutique</a><a class="dc-lnk" href="/terms" target="_blank" rel="noopener">Simple terms of use</a></div></div>
+  </div>
+  <div class="dc-cta"><button class="dc-btn" id="lvd-cta" type="button">Open my TOTEHM</button></div>
+  <button class="dc-x" id="lvd-x" type="button" aria-label="Close"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2 L12 12 M12 2 L2 12"/></svg></button>
 </div>
 
 <!-- ══ LE VERSO DÉPLIÉ : MES RÉGLAGES · 15/10/2026 ═══════════════════════
@@ -13375,7 +13477,7 @@ window.addEventListener('pageshow',e=>{
     let diagEl=null;
     const pasLibre=()=>!body.classList.contains('gate')?'ouvert':body.classList.contains('entered')&&!body.classList.contains('folding')?'deploie':body.classList.contains('is-door')?'porte'
       :sOpen?'verso':sMoving?'verso-bouge':$('member-window').classList.contains('show')?'espace-membre':body.classList.contains('is-xo')?'couche'
-      :body.classList.contains('is-tlv')?'visionneuse':body.classList.contains('is-nspot')?'spot-en-cours':'?';
+      :body.classList.contains('is-tlv')?'visionneuse':body.classList.contains('is-nspot')?'spot-en-cours':body.classList.contains('is-dc')?'discover':'?';
     const quiOccupe=()=>bouge?'voyage':moving?'repli':sMoving?'verso':'papier-'+PAPIER.quoi();
     function refus(c){ diag.refus[c]=(diag.refus[c]||0)+1; diag.dernier=c; peindreDiag(); return false; }
     const sansVoisin=d=>{ if(MB.verrou&&vue==='c'&&(d==='g'||d==='d')) OFFRE.montrer();
@@ -13647,7 +13749,8 @@ window.addEventListener('pageshow',e=>{
     /* `entered` + `folding` = le fondu du début du repli (23/10) : c'est un mouvement, le geste attend (`guetter`), il n'est pas refusé. */
     const libre=()=>body.classList.contains('gate')&&(!body.classList.contains('entered')||body.classList.contains('folding'))&&!body.classList.contains('is-door')
       &&!sOpen&&!sMoving&&!$('member-window').classList.contains('show')&&!body.classList.contains('is-xo')
-      &&!body.classList.contains('is-tlv')&&!body.classList.contains('is-nspot');   /* 27/10 : un spot en cours se finit, ou se ferme (CLOSE) */
+      &&!body.classList.contains('is-tlv')&&!body.classList.contains('is-nspot')    /* 27/10 : un spot en cours se finit, ou se ferme (CLOSE) */
+      &&!body.classList.contains('is-dc');                                              /* 16/11 : le Discover tient ses propres gestes */
     const saisie=t=>!!(t&&(t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.tagName==='SELECT'||t.isContentEditable));
     const LISTES='#chatgpt-pitch,#lv-sh,#rdr-g,#rdr-sh,.lsh-sf';
     const filDefile=(t,dy)=>{ if(!t||!t.closest||!t.closest(LISTES)) return false;
@@ -14203,15 +14306,47 @@ window.addEventListener('pageshow',e=>{
       };
     })();
 
-    /* ── LE PREMIER CONTACT : la preuve se déroule au clic, la porte s'ouvre d'un geste ── */
+    /* ══ LE DISCOVER DE L'ACCUEIL · 16/11/2026 ══ L'accueil ne dit qu'un titre ; [Discover] ouvre l'explication plein
+       écran, une idée par écran (`#lvd`, moteur `tools/discover.js` copié). Sous CHAQUE écran, une porte : sans compte
+       → la porte d'inscription ; avec un compte → ouvrir mon TOTEHM, et sur l'écran « Get paid » → Monetize (le verso).
+       Ouvert, l'accueil dessous ne bouge pas : `body.is-dc` éteint ses gestes (`libre`), ÉCHAP et « précédent » referment. */
+    const DISC=(()=>{
+      const el=$('lvd'), cta=$('lvd-cta'), diagD={ouvertures:0, portes:0};
+      let dc=null, ouvert=false, origine=null, t=0;
+      const ecran=()=>el.querySelectorAll('.dc-s')[dc?dc.index():0];
+      function peindre(){
+        const argent=inscrit()&&!guest()&&!RO&&ecran()&&ecran().dataset.cta==='money';
+        cta.textContent=argent?'Monetize my TOTEHM':'Open my TOTEHM'; cta.dataset.va=argent?'money':'open'; }
+      function ouvrir(){
+        if(ouvert||!window.TOTEHM_DISCOVER) return; ouvert=true; diagD.ouvertures++; origine=document.activeElement; clearTimeout(t);
+        el.hidden=false;
+        if(!dc) dc=window.TOTEHM_DISCOVER.monter(el,{surChangement:peindre});
+        dc.activer(true); dc.aller(0,true); peindre();
+        void el.offsetWidth; body.classList.add('is-dc'); el.classList.add('is-open');
+        setTimeout(()=>{ try{ $('lvd-x').focus({preventScroll:true}); }catch(_){} },60); }
+      function fermer(then){
+        if(!ouvert){ if(then) then(); return; }
+        ouvert=false; if(dc) dc.activer(false);
+        el.classList.remove('is-open'); body.classList.remove('is-dc');
+        t=setTimeout(()=>{ if(!ouvert) el.hidden=true; },380);
+        try{ if(origine&&origine.focus) origine.focus({preventScroll:true}); }catch(_){} origine=null;
+        if(then) setTimeout(then,220); }
+      $('lvd-x').addEventListener('click',()=>fermer());
+      cta.addEventListener('click',()=>{ const va=cta.dataset.va; diagD.portes++;
+        fermer(()=>{
+          if(!inscrit()){ ouvrirPorte(null); return; }
+          if(va==='money'){ ouvrirVerso();
+            setTimeout(()=>{ const b=document.querySelector('#vs-tabs [data-vs-tab="money"]'); if(b) b.click(); },900); }
+          else $('lv-tap-open').click(); }); });
+      window.addEventListener('keydown',e=>{ if(ouvert&&e.key==='Escape'){ e.preventDefault(); e.stopImmediatePropagation(); fermer(); } },{capture:true});
+      return {ouvrir, fermer, ouvert:()=>ouvert,
+        etat:()=>({...diagD, ouvert, i:dc?dc.index():0, n:el.querySelectorAll('.dc-s').length, porte:cta.dataset.va||'open'})};
+    })();
+    window.__totehm_discover=()=>DISC.etat();
     {
-      const why=$('lvp-why'), sci=$('lvp-sci');
-      if(why) why.onclick=()=>{ const on=sci.classList.toggle('hide');
-        why.setAttribute('aria-expanded',String(!on)); };
       const join=$('lv-join');
       if(join) join.onclick=()=>{ if(typeof ouvrirPorte==='function') ouvrirPorte(null); };
-      const explore=$('lv-explore');
-      if(explore) explore.onclick=()=>{ $('lv-m-members').click(); };
+      for(const id of ['lv-discover','lv-tap-disc']){ const b=$(id); if(b) b.onclick=()=>DISC.ouvrir(); }
     }
 
     /* ── LE NOM ET QUI LIT MON TOTEHM (mes réglages) — nœuds déplacés de l'espace membre (15/10) ── */
@@ -14594,7 +14729,7 @@ window.addEventListener('pageshow',e=>{
        restait enfermé dans ses réglages. Échap n'a qu'un sens ici — fermer ce qui est ouvert. */
     if(e.type==='keydown'&&e.key==='Escape') return;
     const t=e.target;
-    if(t&&t.closest&&t.closest('#gate,#member-window,#srch')) return;
+    if(t&&t.closest&&t.closest('#gate,#member-window,#srch,#lvd')) return;   /* 16/11 : le Discover (`#lvd`) tient ses propres gestes */
     e.stopPropagation();
   };
   ['touchstart','touchmove','touchend','wheel','keydown'].forEach(t=>
@@ -14678,7 +14813,7 @@ window.addEventListener('pageshow',e=>{
   const ailleurs=()=>{ const c=body.classList, d=lv();
     if(c.contains('is-xo')||c.contains('is-vx')) return null;        /* elles tiennent leur propre entrée : la garde ne bouge pas */
     if(!c.contains('gate')||c.contains('entered')) return true;       /* le TOTEHM déployé */
-    return (d.vue&&d.vue!=='c')||d.mode==='members'||c.contains('searching')||c.contains('is-tlv')||c.contains('rdr-voir')||c.contains('is-nspot')
+    return (d.vue&&d.vue!=='c')||d.mode==='members'||c.contains('searching')||c.contains('is-tlv')||c.contains('rdr-voir')||c.contains('is-nspot')||c.contains('is-dc')
       ||!!document.querySelector('#member-window.show'); };
   const notreEntree=()=>!!(history.state&&history.state.totehm==='garde');
   function sync(){
@@ -14734,6 +14869,83 @@ window.addEventListener('pageshow',e=>{
 <div id="vx" role="dialog" aria-modal="true" aria-label="My TOTEHM · view" hidden></div>
 <div id="xo" aria-hidden="true"><button id="xo-x" type="button" aria-label="Back to the galaxy">×</button></div>
 <script>
+/* ══ DISCOVER — copié de tools/discover.js dans chaque page (jamais importé) ══
+   Le moteur du « découvrir » : des écrans `.dc-s` dans `.dc-stage`, UN visible à la fois, qui se succèdent au scroll, au
+   geste (glisser vers le haut), au clavier (↓ ↑ Page Espace) ou au chevron — comme totehm.space/play_lisbon_street?discover=1.
+   Il ne connaît NI le contenu NI la page : `monter(hote)` lit les écrans qui s'y trouvent, et `rafraichir()` les relit
+   quand la page les a redessinés. Le dernier écran est celui qui AGIT (un bouton) : la consigne et le chevron s'effacent.
+   Un champ, un bouton ou un lien dans un écran garde ses touches (Espace, Entrée) : le moteur ne les vole jamais. */
+window.TOTEHM_DISCOVER = (() => {
+  const FADE = 520, VERROU = FADE + 160, SEUIL_ROUE = 36, SEUIL_DOIGT = 44;
+  const RM = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : { matches:false };
+  const CHEVRON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
+  const ACTIF = 'input,textarea,select,button,a,[contenteditable]';
+  function monter(hote, opt){
+    const o = Object.assign({ surChangement:null, consigne:null }, opt || {});
+    let i = 0, ecrans = [], verrou = 0, cumul = 0, tCumul = 0, y0 = null, actif = true;
+    const stage = hote.querySelector('.dc-stage'), prog = document.createElement('p'), rail = document.createElement('div'),
+          hint = document.createElement('p'), next = document.createElement('button');
+    prog.className = 'dc-progress'; prog.setAttribute('aria-live', 'polite'); rail.className = 'dc-rail'; rail.setAttribute('aria-hidden', 'true');
+    hint.className = 'dc-hint'; next.className = 'dc-next'; next.type = 'button'; next.setAttribute('aria-label', 'Next'); next.innerHTML = CHEVRON;
+    hote.append(prog, rail, hint, next);
+    const doigt = () => !window.matchMedia('(hover:hover) and (pointer:fine)').matches;
+    function lire(){ ecrans = [...stage.querySelectorAll('.dc-s')]; rail.innerHTML = ecrans.map(() => '<span></span>').join(''); }
+    function peindre(instant){
+      ecrans.forEach((e, k) => { const on = k === i; e.classList.toggle('is-on', on); e.classList.toggle('is-avant', k < i); e.setAttribute('aria-hidden', String(!on));
+        if(instant) e.style.transition = 'none'; else e.style.removeProperty('transition'); });
+      if(instant) void hote.offsetWidth;
+      rail.querySelectorAll('span').forEach((s, k) => s.classList.toggle('on', k === i));
+      prog.textContent = ecrans.length > 1 ? (i + 1) + ' / ' + ecrans.length : '';
+      hint.textContent = o.consigne || (doigt() ? 'Swipe up to discover ↑' : 'Scroll to discover ↓');
+      hote.classList.toggle('is-last', i >= ecrans.length - 1);
+      hote.dataset.i = i; hote.dataset.n = ecrans.length;
+      if(o.surChangement) o.surChangement(i, ecrans.length);
+    }
+    function aller(k, instant){
+      k = Math.max(0, Math.min(ecrans.length - 1, k)); if(k === i && !instant) return false;
+      if(verrou && !instant) return false;
+      i = k; peindre(instant || RM.matches);
+      if(!instant && !RM.matches){ verrou = setTimeout(() => { verrou = 0; }, VERROU); }
+      return true;
+    }
+    const suivant = () => aller(i + 1), precedent = () => aller(i - 1);
+    /* la molette et le pavé tactile : un geste ET son inertie = UN écran (le verrou dure plus que le fondu) */
+    hote.addEventListener('wheel', e => {
+      if(!actif || e.target.closest('[data-dc-libre]')) return;
+      const t = Date.now(); if(t - tCumul > 180) cumul = 0; tCumul = t; cumul += e.deltaY;
+      if(Math.abs(cumul) >= SEUIL_ROUE){ const d = cumul > 0 ? 1 : -1; cumul = 0; aller(i + d); }
+      e.preventDefault();
+    }, { passive:false });
+    hote.addEventListener('touchstart', e => { y0 = e.touches.length === 1 && !e.target.closest('input,textarea,select,[data-dc-libre]') ? e.touches[0].clientY : null; }, { passive:true });
+    hote.addEventListener('touchmove', e => { if(y0 !== null) e.preventDefault(); }, { passive:false });
+    hote.addEventListener('touchend', e => {
+      if(y0 === null || !e.changedTouches.length) return; const dy = y0 - e.changedTouches[0].clientY; y0 = null;
+      if(Math.abs(dy) >= SEUIL_DOIGT) aller(i + (dy > 0 ? 1 : -1));
+    }, { passive:true });
+    function touche(e){
+      if(!actif) return; const dans = e.target.closest ? e.target.closest(ACTIF) : null, champ = dans && e.target.matches('input,textarea,select');
+      let pris = true;
+      if(['ArrowDown', 'PageDown'].includes(e.key) && !champ) suivant();
+      else if(['ArrowUp', 'PageUp'].includes(e.key) && !champ) precedent();
+      else if(e.key === ' ' && !dans) suivant();
+      else pris = false;
+      /* une touche PRISE ne va pas plus loin : la page dessous (une couche par-dessus un accueil qui navigue aux flèches) ne bouge pas */
+      if(pris){ e.preventDefault(); e.stopPropagation(); }
+    }
+    /* un seul écouteur, EN CAPTURE : une page qui arrête ses flèches en route (totehm.com le fait) ne les lui vole pas.
+       Il n'écoute que si le moteur est visible, et que le focus est dedans ou nulle part. */
+    window.addEventListener('keydown', e => { if(hote.isConnected && !hote.hidden && !hote.classList.contains('hide') && (hote.contains(e.target) || document.activeElement === document.body)) touche(e); }, true);
+    next.addEventListener('click', suivant);
+    lire(); peindre(true);
+    return { aller, suivant, precedent, index:() => i, total:() => ecrans.length,
+      derniere:() => aller(ecrans.length - 1, true),
+      rafraichir(garder){ const k = garder ? i : 0; lire(); i = Math.min(k, Math.max(0, ecrans.length - 1)); peindre(true); },
+      activer(v){ actif = !!v; } };
+  }
+  return { monter };
+})();
+/* ══ fin DISCOVER ══ */
+
 /* ══ LE MOT TOTEHM EST LE TOTEHM — copié de tools/totehm_word.js dans chaque page (jamais importé) ══
    ⚠️ 14/11 (Wah) — ANNULATION DU REMPLACEMENT GÉNÉRAL : « annule la décision de remplacer TOUS les textes
    Totehm par le logo totehm. À la place, sélectionne seulement les textes TOTEHM les plus stratégiques et

@@ -140,14 +140,14 @@ try{
    ok(Math.abs(r.s.t-b.s.t)<1&&r.pins.length===12&&r.coeur==='coeur'&&!rs.aspire&&rs.echelle===1&&rs.op===1&&rs.puls===pulsAttendu&&rs.d.deploiements===tour,
       nom+' · repli '+tour+' : le papier posé, ses traits RESSORTENT et revivent, le cœur rebat → '+JSON.stringify(rs));
   }
-  /* ── 3 · ↓ l'anneau ── */
+  /* ── 3 · ↑ l'anneau (Higher my ChatGPT est en haut depuis le 16/11) ── */
   const m0=(await pg.evaluate(()=>window.__totehm_lv().ramifications.morphs));
-  await pg.keyboard.press('ArrowDown');
+  await pg.keyboard.press('ArrowUp');
   await pg.waitForFunction(m=>{const d=window.__totehm_lv(),r=d.ramifications;return r.morphs>m&&!r.enCours&&!d.bouge;},m0,{timeout:4000}).catch(()=>{});
   const an=await pg.evaluate(()=>{const ts=[...document.querySelectorAll('#lv-socket .sk-ring b')].map(b=>{const r=b.getBoundingClientRect();return [r.left+r.width/2,r.top+r.height/2];});
     const ls=[...document.querySelectorAll('#lv-ram > g')].map(e=>{const p=(e.querySelector('path').getAttribute('d')||'').split('M')[1].split('L').map(q=>q.trim().split(' ').map(Number));const a=p[0],z=p[p.length-1];return [(a[0]+z[0])/2,(a[1]+z[1])/2];});
     return {e:ts.map((t,i)=>ls[i]?Math.hypot(t[0]-ls[i][0],t[1]-ls[i][1]):99), vue:window.__totehm_lv().ramifications.vue};});
-  ok(an.vue==='b'&&an.e.length===7&&Math.max(...an.e)<=1.5,nom+' · vers le bas, les 7 traits se transforment en les 7 traits de l\'anneau (écart max '+Math.max(...an.e).toFixed(1)+' px)');
+  ok(an.vue==='b'&&an.e.length===7&&Math.max(...an.e)<=1.5,nom+' · vers le haut (Higher my ChatGPT depuis le 16/11), les 7 traits se transforment en les 7 traits de l\'anneau (écart max '+Math.max(...an.e).toFixed(1)+' px)');
   ok(!erreurs(log).length,nom+' · aucune erreur '+erreurs(log).join(' | '));
   await pg.context().close();
  }
