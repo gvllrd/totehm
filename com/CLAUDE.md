@@ -39,8 +39,9 @@ seuls `/totehm` et `/totehm.html` autorisent les cadres Telegram (CSP). `overflo
   `#vs-tabs` — **Go Higher** (`const DASH=` + `tracking.mjs` : 7/28 jours, Done · Missed · No response, la grille des
   Habits en box natives, une rangée d'actions, les objectifs à échéance ; rien d'autre) et **Monetize my TOTEHM**
   (`#mw-creator`). Le nom en BLOC (`#ast-grid`, nomenclature carrée) ; `#ast-name` reste la LIGNE mesurée.
-- **Pile ou face (≥ 700 px)** : le verso s'arrête au carré de `#stage` (`auFormat()`), son contenu défile dedans ;
-  `#srch-flip` et `#fold-flip` retournent une face sur l'autre (`fermerVerso(→enter)`, `fold(→ouvrirVerso)`).
+- **Pile ou face (≥ 700 px)** : le verso s'arrête au carré de `#stage` (`auFormat()`). LA PIÈCE : `#fold-flip`, le wordmark et
+  `#srch-flip` retournent une face sur l'autre (le carré tourne jusqu'à la tranche), JAMAIS par l'atterrissage ; le recto reste
+  déployé sous le verso (`open`), le refermer le retourne ; ouvert depuis l'atterrissage → `deployerDessous()` (`__totehm_piece()`).
 
 ## Les pièges
 

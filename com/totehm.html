@@ -2332,8 +2332,8 @@ body.gate.entered #terms-corner{opacity:0;pointer-events:none}
    comme le recto : actuellement le verso, contrairement au recto, est en plein écran ; deux facettes facilement
    retournables de part et d'autre, pour vraiment avoir cet effet pile ou face ». Au-delà de 700 px, le verso s'arrête
    au CARRÉ du recto déployé (`--stage`, ses perforations visibles), son contenu défile DEDANS, le noir autour ; et
-   chaque face porte un bouton « retourner » (`.flip-btn`) : le carré rentre dans le papier, le papier se retourne,
-   l'autre face grandit au même format. Au téléphone, rien ne change (le verso reste plein écran). */
+   chaque face porte un bouton « retourner » (`.flip-btn`) : le carré se retourne comme une PIÈCE (17/11, `pieceVersVerso`),
+   sans repasser par l'atterrissage. Au téléphone, rien ne change (le verso reste plein écran). */
 .flip-btn{display:none}
 @media(min-width:700px){
   #srch::before{content:"";position:absolute;inset:0;background:#000;opacity:0;transition:opacity .45s ease}
@@ -2349,6 +2349,8 @@ body.gate.entered #terms-corner{opacity:0;pointer-events:none}
   #srch-flip{position:fixed;z-index:4;pointer-events:none;
     top:calc(50% - var(--stage) / 2 + var(--pad) * .5);right:calc(50% - var(--stage) / 2 + var(--pad) * .5 + 44px)}
   #srch.is-open #srch-flip{pointer-events:auto}
+  /* 17/11 — LA PIÈCE : la croix et ⟲ ne tournent pas avec le carré (fixes) ; ils s'effacent le temps du demi-tour. */
+  body.is-coin #srch #srch-x,body.is-coin #srch #srch-flip{opacity:0;visibility:hidden;transition:none}
   #fold-flip{position:fixed;top:10px;right:54px;z-index:34}
   body.gate #fold-flip{opacity:0;pointer-events:none;transition:opacity .55s ease}
   body.gate.entered #fold-flip{opacity:1;pointer-events:auto;transition:opacity .55s ease var(--gate-reveal)}
@@ -5314,6 +5316,9 @@ let pendingO=null;
 /* Le repli vers l'atterrissage. Assigné par le module GATE en fin de script :
    déclaré ici parce que trois gestes l'appellent bien avant d'y arriver. */
 let foldToGate=()=>{};
+/* 17/11 — sur ordinateur, le recto déployé se RETOURNE sur le verso comme une pièce (`pieceVersVerso`, module GATE) ;
+   `tournerLaPiece(true)` dit seulement si c'est possible. */
+let tournerLaPiece=null;
 
 /* Une saisie en cours n'est JAMAIS une navigation. Les flèches déplacent le
    curseur dans un champ, elles ne changent pas de page. */
@@ -8762,7 +8767,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-11-15-ecosysteme-et-plafond';
+const BUILD='2026-11-17-la-piece';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -11072,7 +11077,11 @@ function ouvrirCompte(apres){
      Totehm avec son email, par exemple), on replie d'abord : sinon on ouvrait un compte que personne ne voit. */
   const pret=()=>{ const c=document.body.classList;
     return c.contains('gate')&&!c.contains('entered')&&!c.contains('folding'); };
-  if(!pret()){
+  /* 17/11 — sur ordinateur, depuis le TOTEHM déployé, le verso arrive en RETOURNANT la pièce : plus de repli par
+     l'atterrissage (Wah). Un verso déjà ouvert (retourné) n'a rien à replier non plus. */
+  const dejaOuvert=!!(window.__totehm_lsd&&window.__totehm_lsd.recherche);
+  const piece=!pret()&&!dejaOuvert&&!!tournerLaPiece&&tournerLaPiece(true);
+  if(!pret()&&!piece&&!dejaOuvert){
     /* Dedans, ou en plein dépliage/repliage : on replie dès que c'est possible, et on n'ouvre qu'au repos.
        `foldToGate()` se refuse tout seul tant qu'une animation tourne — on le rappelle, c'est tout. */
     let n=0; const t=setInterval(()=>{
@@ -11090,6 +11099,7 @@ function ouvrirCompte(apres){
   if(lvRefresh) lvRefresh();
   const fin=()=>{ if(apres) apres(); };
   if(window.__totehm_lsd&&window.__totehm_lsd.recherche){ fin(); return; }
+  if(piece&&tournerLaPiece()){ setTimeout(fin,80); return; }
   if(lvReglages){ lvReglages.ouvrir(); setTimeout(fin,80); } else fin();
 }
 function closeMember(){ $('member-window').classList.remove('show'); if(lvReglages) lvReglages.fermer(()=>{}); }
@@ -11323,7 +11333,7 @@ window.addEventListener('touchend',(e)=>{
 function navBlocked(){
   return busy||fpOpen()||document.body.classList.contains('is-xo')||document.body.classList.contains('is-vx')||CAP.ouvert()
     ||$('member-window').classList.contains('show')
-    ||false
+    ||document.body.classList.contains('searching')||document.body.classList.contains('is-coin')   /* le verso par-dessus, ou la pièce qui tourne */
     ||!$('habit-peek').classList.contains('hide')
     ||!$('filter-modal').classList.contains('hide');
 }
@@ -11463,6 +11473,9 @@ const navRight=()=>{ if(navBlocked())return; versVoisin('d'); };
 paintZone();
 
 window.addEventListener('keydown',(e)=>{
+  /* 17/11 — le verso retourné par-dessus le recto déployé (ou la pièce en train de tourner) : ses touches sont les siennes ;
+     le recto caché dessous ne se replie pas, ne change pas de vue. */
+  if(document.body.classList.contains('searching')||document.body.classList.contains('is-coin'))return;
   if(fpOpen()){if(e.key==='Escape')closeFreqPanel();return;}
   /* LE FIX CLAVIER. Une flèche dans un champ déplace le curseur, point.
      Les habitudes sont des <textarea> : ne tester que INPUT laissait la
@@ -13149,6 +13162,7 @@ window.addEventListener('pageshow',e=>{
   /* `then` (27/10) : ce qui suit le repli, une fois l'atterrissage rendu (aller prendre un média ou un spot). */
   function fold(then){
     if(!open||moving) return;
+    if(sOpen||sMoving) return;   /* 17/11 — le verso retourné par-dessus : on le retourne d'abord (la pièce), jamais un repli caché dessous */
     moving=true;
     clearTimeout(timer);
     /* ⚠️ 29/10 — LE REPLI D'UN SEUL MOUVEMENT (Wah : « le déploiement inverse … bug et fait des sautages ; super fluide »).
@@ -13322,6 +13336,8 @@ window.addEventListener('pageshow',e=>{
   /* Le dézoom : la page redevient le dos du papier, puis le papier se remet sur son recto. */
   function fermerVerso(then){
     if(!sOpen||sMoving) return;
+    /* 17/11 — le recto est DÉPLOYÉ sous ce verso (on y est venu en retournant la pièce) : refermer = le retourner. */
+    if(open){ pieceVersRecto(then); return; }
     sMoving=true; clearTimeout(sTimer); sPret++;
     let rendre=false;
     try{ if(srch.contains(document.activeElement)){ rendre=true; document.activeElement.blur(); } }catch(_){}
@@ -13348,11 +13364,101 @@ window.addEventListener('pageshow',e=>{
     }));
   }
 
+  /* ══ 17/11 · LA PIÈCE (ordinateur) ══ Wah : « quand on retourne le TOTEHM sur ordinateur, on ne repasse pas par la page
+     d'atterrissage : il se retourne comme une pièce, recto / verso ». Au-delà de 700 px, le carré déployé (`#stage`, passé
+     DEVANT le noir) tourne sur son axe vertical jusqu'à la tranche, puis le verso (`#srch-bg` + `#srch-ui`, au même format)
+     finit le demi-tour ; le noir du verso monte (ou descend) pendant ce temps et efface (ou rend) la manette. Le recto reste
+     DÉPLOYÉ sous le verso (`open`) : refermer ce verso (croix, Échap, « précédent ») le retourne sur le recto. Ouvert depuis
+     l'atterrissage, le verso déploie d'abord le recto sous son noir, sans animation (`deployerDessous`), puis se retourne.
+     Au téléphone : rien ne change. Diagnostic `__totehm_piece()`. */
+  const PIECE=640, P_IN='cubic-bezier(.55,0,1,.45)', P_OUT='cubic-bezier(0,.55,.45,1)', stage=$('stage'), sUi=$('srch-ui');
+  const diagP={versVerso:0, versRecto:0, dessous:0};
+  window.__totehm_piece=()=>({...diagP, recto:open&&!sOpen, verso:sOpen, tourne:document.body.classList.contains('is-coin')});
+  /* Une face = ses calques, chacun avec sa transformation à l'angle `t` : son repos, plus la rotation. L'axe passe par le
+     centre de l'écran (celui du carré). `#srch-bg` tourne AVANT son échelle : sinon sa perspective rapetissait avec lui. */
+  const repos=el=>{ const m=getComputedStyle(el).transform; return m&&m!=='none'?m+' ':''; };
+  const faceRecto=()=>{ const b=repos(stage); return [[stage,t=>b+'perspective(1600px) rotateY('+t+'deg)']]; };
+  const faceVerso=()=>{ const g=sBg.style.transform||'', b=repos(sUi);
+    return [[sBg,t=>'perspective(1600px) rotateY('+t+'deg) '+g],[sUi,t=>b+'perspective(1600px) rotateY('+t+'deg)']]; };
+  const tourner=(face,de,a,ease,second)=>face.map(([el,f])=>el.animate([{transform:f(de)},{transform:f(a)}],
+    {duration:PIECE/2, easing:ease, delay:second?PIECE/2:0, fill:'both'}));
+  /* Le recto se retourne : il part vers la tranche, le verso en revient. `essai` : seulement dire si c'est possible. */
+  function pieceVersVerso(essai){
+    const peut=CARRE.matches&&!RO&&!!me&&open&&!moving&&!sOpen&&!sMoving&&LV.vue()==='c'&&LV.mode()==='mine';
+    if(essai||!peut) return peut;
+    sMoving=moving=true; diagP.versVerso++; fermerPorte();
+    document.body.classList.add('is-coin');
+    srch.classList.remove('is-pret','is-prep');
+    let lu=null; try{ lu=surReglages(); }catch(err){ console.error('[settings]',err?.message||err); }
+    sLu=Promise.race([Promise.resolve(lu).catch(err=>console.error('[settings]',err?.message||err)),new Promise(r=>setTimeout(r,1800))]);
+    srch.style.setProperty('--s',Math.ceil(Math.max(innerWidth,innerHeight)*1.2)+'px');
+    sansTransition(); sH.style.transform=''; auFormat();
+    srch.classList.add('is-on'); srch.setAttribute('aria-hidden','false');
+    const n=++sPret, anims=[];
+    /* une face imprimée : la console déjà lue arrive AVEC le verso qui tourne, pas après lui */
+    sLu.then(()=>{ if(n===sPret&&srch.classList.contains('is-on')) srch.classList.add('is-pret'); });
+    const fin=()=>{ anims.forEach(a=>a.cancel()); stage.style.zIndex='';
+      document.body.classList.remove('is-coin'); document.body.classList.add('searching'); gate.inert=true;
+      srch.classList.add('is-show','is-open');
+      sOpen=true; sMoving=moving=false; window.__totehm_lsd.recherche=true;
+      try{ if(!srch.contains(document.activeElement)) srch.focus({preventScroll:true}); }catch(_){} };
+    if(RMQ.matches){ fin(); return true; }
+    const recto=faceRecto(), verso=faceVerso();
+    stage.style.zIndex='230';                       /* devant le noir du verso (220), le temps du demi-tour */
+    anims.push(...tourner(recto,0,90,P_IN), ...tourner(verso,-90,0,P_OUT,true));
+    void srch.offsetWidth; srch.classList.add('is-show');   /* le noir monte : la manette s'efface */
+    clearTimeout(sTimer); sTimer=setTimeout(fin,PIECE+30);
+    return true;
+  }
+  tournerLaPiece=pieceVersVerso;
+  /* Le verso se retourne sur le recto déployé dessous ; ouvert depuis l'atterrissage, il le déploie d'abord sous son noir. */
+  function pieceVersRecto(then){
+    if(!sOpen||sMoving) return false;
+    if(!open&&!(CARRE.matches&&deployerDessous())) return false;
+    if(moving) return false;
+    sMoving=moving=true; diagP.versRecto++; clearTimeout(sTimer); sPret++;
+    let rendre=false;
+    try{ if(srch.contains(document.activeElement)){ rendre=true; document.activeElement.blur(); } }catch(_){}
+    document.body.classList.add('is-coin'); document.body.classList.remove('searching');
+    srch.classList.remove('is-open'); gate.inert=false;   /* `is-pret` reste : la face part avec ce qui est imprimé dessus */
+    const anims=[];
+    const fin=()=>{ anims.forEach(a=>a.cancel()); stage.style.zIndex='';
+      $('member-window').classList.remove('show');
+      srch.classList.remove('is-on','is-show','is-prep','is-pret'); srch.setAttribute('aria-hidden','true');
+      sansTransition(); sBg.style.transform=''; sH.style.transform='';
+      sOpen=false; sMoving=moving=false; window.__totehm_lsd.recherche=false;
+      document.body.classList.remove('is-coin');
+      if(rendre&&!then) try{ $('fold-flip').focus({preventScroll:true}); }catch(_){}
+      if(typeof then==='function') then(); };
+    if(RMQ.matches){ fin(); return true; }
+    const verso=faceVerso(), recto=faceRecto();
+    stage.style.zIndex='230';
+    anims.push(...tourner(verso,0,90,P_IN), ...tourner(recto,-90,0,P_OUT,true));
+    srch.classList.remove('is-show');               /* le noir descend : la manette revient pendant que le recto arrive */
+    clearTimeout(sTimer); sTimer=setTimeout(fin,PIECE+30);
+    return true;
+  }
+  /* Le recto se déploie SOUS le verso, d'un coup et sans témoin (le noir du verso le couvre) : `enter()` sans son
+     animation. Le papier de l'atterrissage se remet sur sa face pendant ce temps, pour le prochain repli. */
+  function deployerDessous(){
+    if(open||moving||!inscrit()||PAYSAGE.matches||LV.vue()!=='c'||LV.mode()!=='mine') return false;
+    diagP.dessous++;
+    LV.calme();
+    VERSO.ligner(false); PAPIER.poser(paintFlip);
+    try{ LV.deployer(); }catch(err){ console.error('[déploiement]',err); }
+    clearTimeout(timer);
+    gate.classList.add('no-anim','gate-off');
+    body.classList.remove('gate','entered');
+    open=true;
+    requestAnimationFrame(()=>requestAnimationFrame(()=>gate.classList.remove('no-anim')));
+    return true;
+  }
+
   if(sX) sX.onclick=()=>fermerVerso();
-  /* PILE OU FACE (ordinateur) : chaque face se retourne sur l'autre — le carré rentre dans le papier, le papier se
-     retourne, l'autre face grandit au même format. Deux animations déjà là, enchaînées : aucun saut. */
-  { const f=$('srch-flip'); if(f) f.onclick=()=>fermerVerso(()=>{ if(!open&&!moving) enter(); }); }
-  { const f=$('fold-flip'); if(f) f.onclick=()=>{ if(RO||!me||!open||moving) return; fold(()=>ouvrirVerso()); }; }
+  /* PILE OU FACE (ordinateur) : chaque face se retourne sur l'autre comme une pièce (ci-dessus). Les anciens chemins
+     (replier puis zoomer, dézoomer puis déployer) ne restent qu'en secours, si la pièce se refuse. */
+  { const f=$('srch-flip'); if(f) f.onclick=()=>{ if(!pieceVersRecto()) fermerVerso(()=>{ if(!open&&!moving) enter(); }); }; }
+  { const f=$('fold-flip'); if(f) f.onclick=()=>{ if(RO||!me||!open||moving) return; if(!pieceVersVerso()) fold(()=>ouvrirVerso()); }; }
   /* La feuille est modale : Tab tourne dans mes réglages, jamais vers le Totehm dessous. */
   if(srch) srch.addEventListener('keydown',e=>{
     if(e.key!=='Tab'||!sOpen) return;
