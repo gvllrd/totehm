@@ -29,7 +29,11 @@ try{
   const e0=await pg.evaluate(()=>{const h=document.getElementById('lvd'),r=h.getBoundingClientRect();return {plein:r.width===innerWidth&&r.height===innerHeight,fond:getComputedStyle(h).backgroundColor,
     on:h.querySelectorAll('.dc-s.is-on').length,titre:h.querySelector('.dc-s.is-on .dc-h').textContent.replace(/\s+/g,' ').trim(),cta:document.getElementById('lvd-cta').textContent,dc:document.body.classList.contains('is-dc')};});
   ok(d.ouvert&&d.n===10&&d.i===0&&e0.plein&&e0.fond==='rgb(0, 0, 0)'&&e0.on===1&&e0.dc,'[Discover] ouvre 10 écrans noirs plein écran, UN visible → '+JSON.stringify(e0));
-  ok(/^Get Higher with your TOTEHM\.$/.test(e0.titre)&&e0.cta==='Open my TOTEHM','le premier écran reprend le titre ; la porte est dessous');
+  ok(/^A habit needs a neurological strategy\.$/.test(e0.titre)&&e0.cta==='Open my TOTEHM','le premier écran : la stratégie neurologique d\'une Habit ; la porte est dessous → '+e0.titre);
+  const ill=await pg.evaluate(()=>[...document.querySelectorAll('#lvd .dc-s')].map(s=>{const i=s.querySelector('.dc-ill');return !!i&&i.innerHTML.trim().length>40;}));
+  ok(ill.every(Boolean),'17/11 · une illustration sur CHAQUE écran → '+JSON.stringify(ill));
+  const nat=await pg.evaluate(()=>({box:document.querySelectorAll('#lvd .dc-ill .tb .habit .h-body .v-name').length,orphelins:document.querySelectorAll('#lvd .dc-ill [data-open],#lvd .dc-ill [data-go],#lvd .dc-ill button').length}));
+  ok(nat.box>=5&&nat.orphelins===0,'les box des illustrations sont les box NATIVES, inertes (aucune commande) → '+JSON.stringify(nat));
   await pg.keyboard.press('ArrowDown');await pg.waitForTimeout(800);
   ok((await D(pg)).i===1&&(await pg.evaluate(()=>window.__totehm_lv().vue))==='c','↓ avance le Discover — l\'accueil, dessous, ne bouge pas');
   const cdp=await ctx.newCDPSession(pg);
@@ -44,11 +48,11 @@ try{
     tour.push(await pg.evaluate(k=>{const s=document.querySelectorAll('#lvd .dc-s')[k],b=document.getElementById('lvd-cta'),r=b.getBoundingClientRect();
       return {h:s.querySelector('.dc-h').textContent.replace(/\s+/g,' ').trim(),bouton:r.width>40&&r.bottom<=innerHeight&&getComputedStyle(b).backgroundColor};},k)); }
   ok(tour.every(x=>x.bouton==='rgb(42, 42, 42)'),'la porte reste sous les 10 écrans, en bouton gris normal');
-  ok(tour[4].h==='Your TOTEHM in ChatGPT.'&&tour[5].h==='TotehmBot keeps the rhythm.'&&tour[6].h==='Get paid for how you build.'&&tour[7].h==='Follow who inspires you.'&&tour[8].h==='Meet on a spot.',
+  ok(tour[3].h==='Your TOTEHM in ChatGPT.'&&tour[4].h==='TotehmBot keeps the rhythm.'&&tour[5].h==='Get paid for how you build.'&&tour[6].h==='Follow who inspires you.'&&tour[7].h==='Meet with intention.',
      'l\'ordre de la vente : Higher GPT, TotehmBot, être payé, suivre, le Club → '+tour.map(x=>x.h).join(' · '));
-  const coul=await pg.evaluate(()=>{const vus=new Set();for(const e of document.querySelectorAll('#lvd *')){ if(e.closest('.tw')) continue; const c=getComputedStyle(e);
+  const coul=await pg.evaluate(()=>{const vus=new Set();for(const e of document.querySelectorAll('#lvd *')){ if(e.closest('.tw,.dc-ill')) continue; const c=getComputedStyle(e);
       for(const v of [c.color,c.backgroundColor]){ const m=v.match(/\d+(\.\d+)?/g); if(!m||(m[3]!==undefined&&+m[3]===0)) continue; const [r,g,b]=m.map(Number); if(Math.max(r,g,b)-Math.min(r,g,b)>24) vus.add(v); } } return [...vus];});
-  ok(coul.length===0,'60 / 30 / 10 : hors de la pièce (l\'art), aucune couleur — noir, blanc, gris → '+JSON.stringify(coul));
+  ok(coul.length===0,'60 / 30 / 10 : hors de la pièce et des illustrations (box natives), aucune couleur — noir, blanc, gris → '+JSON.stringify(coul));
   await pg.screenshot({path:OUT+'/accueil_discover.png'});
   await pg.keyboard.press('Escape');await pg.waitForTimeout(600);
   d=await D(pg);
@@ -68,11 +72,11 @@ try{
     return {titre:vu(document.getElementById('lv-title')),pitch:vu(document.getElementById('lv-pitch')),legende:document.getElementById('lv-tap').textContent.replace(/\s+/g,' ').trim()};});
   ok(m.titre&&!m.pitch&&/ · Discover$/.test(m.legende),'membre : le titre, aucun bouton de vente, « Discover » au bout de la légende → '+m.legende);
   await pg.click('#lv-tap-disc');await pg.waitForTimeout(700);
-  for(let k=0;k<6;k++){await pg.keyboard.press('ArrowDown');await pg.waitForTimeout(750);}
+  for(let k=0;k<5;k++){await pg.keyboard.press('ArrowDown');await pg.waitForTimeout(750);}
   const a=await pg.evaluate(()=>({i:window.__totehm_discover().i,cta:document.getElementById('lvd-cta').textContent}));
-  ok(a.i===6&&a.cta==='Monetize my TOTEHM','sur « Get paid for how you build », la porte d\'un membre devient « Monetize my TOTEHM »');
+  ok(a.i===5&&a.cta==='Monetize my TOTEHM','sur « Get paid for how you build », la porte d\'un membre devient « Monetize my TOTEHM »');
   await pg.mouse.move(640,400);await pg.mouse.wheel(0,120);await pg.waitForTimeout(900);
-  ok((await D(pg)).i===7&&(await pg.evaluate(()=>document.getElementById('lvd-cta').textContent))==='Open my TOTEHM','la molette : un geste = un écran, et la porte redevient « Open my TOTEHM »');
+  ok((await D(pg)).i===6&&(await pg.evaluate(()=>document.getElementById('lvd-cta').textContent))==='Open my TOTEHM','la molette : un geste = un écran, et la porte redevient « Open my TOTEHM »');
   await pg.goBack().catch(()=>{});await pg.waitForTimeout(700);
   ok(!(await D(pg)).ouvert&&pg.url()===origin+'/totehm','« précédent » referme le Discover et reste sur le site');
   ok(!erreurs(log).length,'membre : aucune erreur '+erreurs(log).join(' | '));
