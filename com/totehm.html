@@ -9907,8 +9907,9 @@ function vueHabitude(x,k){
     : intMots(x)
       +(x.f?'<span class="v-frq">'+esc(flabel(x.f))+'</span>':'')
       +(lieu?'<span class="v-frq" title="where I usually do it">'+esc(lieu)+'</span>':'')
-      +(nSp?'<span class="v-frq v-spc v-ecosystem">'+compte(nSp,'SPACE')+'</span>':'')
-      +(nSt?'<span class="v-frq v-spc v-ecosystem">'+compte(nSt,'SPOT')+'</span>':'');
+      /* 17/11 (Wah) : un space est une VISUALIZATION, et un spot se dit « x SPOTS TO PRACTICE IT » — plus explicite. */
+      +(nSp?'<span class="v-frq v-spc v-ecosystem">'+compte(nSp,'VISUALIZATION')+'</span>':'')
+      +(nSt?'<span class="v-frq v-spc v-ecosystem">'+compte(nSt,'SPOT')+' TO PRACTICE IT</span>':'');
   /* WHY au-dessus des objectifs, PROTECTED BY au-dessus des répulsions :
      la boîte raconte, elle ne liste pas. */
   const gO = ouverte
