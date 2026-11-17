@@ -4056,6 +4056,8 @@ body:not(.lv-g):not(.lv-d) #lv-slogan.is-c.is-t{opacity:1}
 #lvd .dc-ill:empty{display:none}
 #lvd .dc-ill .tb{width:100%}
 #lvd .dc-ill-c{display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
+#lvd .dc-ill:has(.dc-radar){display:flex;justify-content:center}
+#lvd .dc-radar{display:block;width:clamp(150px,24dvh,210px);height:auto;aspect-ratio:1}
 /* « One paper » : le bloc de commande du filtre de la vue de gauche (`.sfcmd`, `creerFeed`) tel quel, MY GRIND ouvert sur
    ses trois listes — le panneau `.lsh-sf` qui le porte est neutralisé, ses règles de papier restent les siennes. */
 #lvd .lsh-sf.dc-sf{position:relative;inset:auto;z-index:auto;width:100%;padding:0;background:none;overflow:visible}
@@ -14412,16 +14414,59 @@ window.addEventListener('pageshow',e=>{
           +'<span class="dc-pay-l"><span>You · 80%</span><span>TOTEHM · 20%</span></span></span>',
         follow:()=>'<span class="dc-who"><span class="dc-n">kai</span>’s TOTEHM</span>'
           +exBox('h','Cold shower at 7',{cols:[intColor('focus')],unit:intMots({i:'focus'})+'<span class="v-frq">'+esc(flabel('daily'))+'</span><span class="copie">+</span>'}),
-        meet:()=>exHab({minis:groupe('SPOTS',exSpot('am','Belém riverside',new Date().toISOString())+exSpot('will','LX Factory','2026-11-21T07:00:00'))}),
+        meet:()=>'<canvas class="dc-radar" width="400" height="400" aria-hidden="true"></canvas>',
         private:()=>exHab({minis:groupe('why',mini('o',null,'Finish a 10K in May')),
           bas:'<span class="mg mg-aud"><span class="baud"><svg class="baud-k" viewBox="0 0 12 12" aria-hidden="true"><rect x="2.5" y="5.5" width="7" height="5" rx="1"/><path d="M4 5.5V4a2 2 0 0 1 4 0v1.5"/></svg>'
             +'<span class="baud-o is-on">private</span><span class="baud-s">·</span><span class="baud-o">subscribers</span></span></span>'})
       };
+      /* ⚠️ 17/11 — LE RADAR DE FIGHER.CLUB (Wah : « intégrer le radar quand on parle du figher club, avec un point précis »).
+         Les MÊMES règles de dessin que `draw()` de club/index.html : le disque en dégradé, quatre anneaux, le balayage
+         (un tour en 14 s), l'anneau gradué N · E · S · W, moi au centre (le point blanc), et UN spot au point EXACT : un
+         carré PLEIN de la couleur de son intention (`melange`), et l'anneau qui pulse parce qu'il est LIVE (I AM HERE).
+         Il ne tourne que quand son écran est visible (`peindre`), à 30 images/s ; mouvement réduit = une image fixe. */
+      const RADAR=(()=>{
+        let raf=0, cv=null, last=0;
+        const RM=()=>window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        function dessiner(tps){
+          raf=0; if(!cv||!cv.isConnected) return;
+          if(tps-last<32&&!RM()){ raf=requestAnimationFrame(dessiner); return; } last=tps;
+          const S=cv.clientWidth||180, dpr=Math.min(2,devicePixelRatio||1);
+          if(cv.width!==Math.round(S*dpr)){ cv.width=cv.height=Math.round(S*dpr); }
+          const x=cv.getContext('2d'); x.setTransform(dpr,0,0,dpr,0,0); x.clearRect(0,0,S,S);
+          const cx=S/2, cy=S/2, rpx=S/2-30, DEG=Math.PI/180;
+          const g=x.createRadialGradient(cx,cy,0,cx,cy,rpx); g.addColorStop(0,'#16161b'); g.addColorStop(1,'#0d0d10');
+          x.fillStyle=g; x.beginPath(); x.arc(cx,cy,rpx,0,Math.PI*2); x.fill();
+          x.strokeStyle='rgba(255,255,255,.07)'; x.lineWidth=1;
+          for(let k=1;k<=4;k++){ x.beginPath(); x.arc(cx,cy,rpx*k/4,0,Math.PI*2); x.stroke(); }
+          x.font='9px "Space Mono", monospace'; x.fillStyle='rgba(255,255,255,.28)'; x.textAlign='left'; x.textBaseline='alphabetic';
+          [['250 m',2],['500 m',4]].forEach(([l,k])=>x.fillText(l,cx+4,cy-rpx*k/4+11));
+          const a=((RM()?3500:tps)/14000%1)*Math.PI*2-Math.PI/2;
+          if(x.createConicGradient){ const sw=x.createConicGradient(a-.55,cx,cy);
+            sw.addColorStop(0,'rgba(255,255,255,0)'); sw.addColorStop(.0875,'rgba(255,255,255,.07)'); sw.addColorStop(.0876,'rgba(255,255,255,0)');
+            x.fillStyle=sw; x.beginPath(); x.arc(cx,cy,rpx,0,Math.PI*2); x.fill(); }
+          /* le spot : à 300 m, au sud-est (loin des étiquettes de portée) — un point exact, donc un carré PLEIN */
+          const b=128*DEG, rr=.6*rpx, px=cx+Math.sin(b)*rr, py=cy-Math.cos(b)*rr, col=melange(['fight']), s=6;
+          x.fillStyle=col; x.fillRect(px-s/2,py-s/2,s,s);
+          x.strokeStyle=col; x.globalAlpha=.35; x.lineWidth=1; x.beginPath(); x.arc(px,py,10+3*Math.sin((RM()?0:tps)/500),0,Math.PI*2); x.stroke(); x.globalAlpha=1;
+          x.fillStyle='#fff'; x.shadowColor='#fff'; x.shadowBlur=8; x.beginPath(); x.arc(cx,cy,4,0,Math.PI*2); x.fill(); x.shadowBlur=0;
+          for(let deg=0;deg<360;deg+=5){
+            const an=deg*DEG, outer=rpx+12, inner=outer-(deg%45===0?10:deg%15===0?6:3);
+            x.strokeStyle=deg%45===0?'rgba(255,255,255,.65)':'rgba(255,255,255,.25)';
+            x.beginPath(); x.moveTo(cx+Math.sin(an)*inner,cy-Math.cos(an)*inner); x.lineTo(cx+Math.sin(an)*outer,cy-Math.cos(an)*outer); x.stroke(); }
+          x.textAlign='center'; x.textBaseline='middle'; x.font='9px "Space Mono"'; x.fillStyle='rgba(255,255,255,.65)';
+          [[0,'N'],[90,'E'],[180,'S'],[270,'W']].forEach(([d,l])=>{ const an=d*DEG; x.fillText(l,cx+Math.sin(an)*(rpx+24),cy-Math.cos(an)*(rpx+24)); });
+          if(!RM()) raf=requestAnimationFrame(dessiner);
+        }
+        return { on(c){ cv=c; if(!raf) raf=requestAnimationFrame(dessiner); },
+                 off(){ if(raf) cancelAnimationFrame(raf); raf=0; cv=null; },
+                 tourne:()=>!!raf };
+      })();
       function illustrer(){
         if(illus) return; illus=true;
         el.querySelectorAll('[data-ill]').forEach(n=>{ const f=ILL[n.dataset.ill]; if(!f) return;
           try{ n.innerHTML=f(); }catch(e){ console.error('[discover illustration]',n.dataset.ill,e&&e.message||e); } }); }
       function peindre(){
+        const rd=ouvert&&ecran()&&ecran().querySelector('.dc-radar'); if(rd) RADAR.on(rd); else RADAR.off();
         const argent=inscrit()&&!guest()&&!RO&&ecran()&&ecran().dataset.cta==='money';
         cta.textContent=argent?'Monetize my TOTEHM':'Open my TOTEHM'; cta.dataset.va=argent?'money':'open'; }
       function ouvrir(){
@@ -14433,7 +14478,7 @@ window.addEventListener('pageshow',e=>{
         setTimeout(()=>{ try{ $('lvd-x').focus({preventScroll:true}); }catch(_){} },60); }
       function fermer(then){
         if(!ouvert){ if(then) then(); return; }
-        ouvert=false; if(dc) dc.activer(false);
+        ouvert=false; if(dc) dc.activer(false); RADAR.off();
         el.classList.remove('is-open'); body.classList.remove('is-dc');
         t=setTimeout(()=>{ if(!ouvert) el.hidden=true; },380);
         try{ if(origine&&origine.focus) origine.focus({preventScroll:true}); }catch(_){} origine=null;
@@ -14447,7 +14492,7 @@ window.addEventListener('pageshow',e=>{
           else $('lv-tap-open').click(); }); });
       window.addEventListener('keydown',e=>{ if(ouvert&&e.key==='Escape'){ e.preventDefault(); e.stopImmediatePropagation(); fermer(); } },{capture:true});
       return {ouvrir, fermer, ouvert:()=>ouvert,
-        etat:()=>({...diagD, ouvert, i:dc?dc.index():0, n:el.querySelectorAll('.dc-s').length, porte:cta.dataset.va||'open'})};
+        etat:()=>({...diagD, ouvert, radar:RADAR.tourne(), i:dc?dc.index():0, n:el.querySelectorAll('.dc-s').length, porte:cta.dataset.va||'open'})};
     })();
     window.__totehm_discover=()=>DISC.etat();
     {

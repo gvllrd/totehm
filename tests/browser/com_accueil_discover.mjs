@@ -33,7 +33,7 @@ try{
   const ill=await pg.evaluate(()=>[...document.querySelectorAll('#lvd .dc-s')].map(s=>{const i=s.querySelector('.dc-ill');return !!i&&i.innerHTML.trim().length>40;}));
   ok(ill.every(Boolean),'17/11 · une illustration sur CHAQUE écran → '+JSON.stringify(ill));
   const nat=await pg.evaluate(()=>({box:document.querySelectorAll('#lvd .dc-ill .tb .habit .h-body .v-name').length,orphelins:document.querySelectorAll('#lvd .dc-ill [data-open],#lvd .dc-ill [data-go],#lvd .dc-ill button').length}));
-  ok(nat.box>=5&&nat.orphelins===0,'les box des illustrations sont les box NATIVES, inertes (aucune commande) → '+JSON.stringify(nat));
+  ok(nat.box>=4&&nat.orphelins===0,'les box des illustrations sont les box NATIVES, inertes (aucune commande) → '+JSON.stringify(nat));
   await pg.keyboard.press('ArrowDown');await pg.waitForTimeout(800);
   ok((await D(pg)).i===1&&(await pg.evaluate(()=>window.__totehm_lv().vue))==='c','↓ avance le Discover — l\'accueil, dessous, ne bouge pas');
   const cdp=await ctx.newCDPSession(pg);
@@ -47,6 +47,9 @@ try{
   for(let k=0;k<10;k++){
     tour.push(await pg.evaluate(k=>{const s=document.querySelectorAll('#lvd .dc-s')[k],b=document.getElementById('lvd-cta'),r=b.getBoundingClientRect();
       return {h:s.querySelector('.dc-h').textContent.replace(/\s+/g,' ').trim(),bouton:r.width>40&&r.bottom<=innerHeight&&getComputedStyle(b).backgroundColor};},k)); }
+  const rd=await pg.evaluate(async()=>{const d=window.__totehm_discover;const avant=d().radar;
+    const s=[...document.querySelectorAll('#lvd .dc-s')].findIndex(x=>x.querySelector('.dc-radar'));return {avant,s};});
+  ok(rd.s===7&&rd.avant===false,'17/11 · le radar du Club vit sur « Meet with intention », et ne tourne pas ailleurs → '+JSON.stringify(rd));
   ok(tour.every(x=>x.bouton==='rgb(42, 42, 42)'),'la porte reste sous les 10 écrans, en bouton gris normal');
   ok(tour[3].h==='Your TOTEHM in ChatGPT.'&&tour[4].h==='TotehmBot keeps the rhythm.'&&tour[5].h==='Get paid for how you build.'&&tour[6].h==='Follow who inspires you.'&&tour[7].h==='Meet with intention.',
      'l\'ordre de la vente : Higher GPT, TotehmBot, être payé, suivre, le Club → '+tour.map(x=>x.h).join(' · '));
@@ -77,6 +80,11 @@ try{
   ok(a.i===5&&a.cta==='Monetize my TOTEHM','sur « Get paid for how you build », la porte d\'un membre devient « Monetize my TOTEHM »');
   await pg.mouse.move(640,400);await pg.mouse.wheel(0,120);await pg.waitForTimeout(900);
   ok((await D(pg)).i===6&&(await pg.evaluate(()=>document.getElementById('lvd-cta').textContent))==='Open my TOTEHM','la molette : un geste = un écran, et la porte redevient « Open my TOTEHM »');
+  await pg.keyboard.press('ArrowDown');await pg.waitForTimeout(900);
+  const rdr=await pg.evaluate(()=>{const c=document.querySelector('#lvd .dc-s.is-on .dc-radar'),x=c&&c.getContext('2d'),w=c?c.width:0;
+    const px=x?x.getImageData(0,0,w,w).data:[];let n=0;for(let i=3;i<px.length;i+=4) if(px[i]) n++;
+    const r=c&&c.getBoundingClientRect();return {i:window.__totehm_discover().i,tourne:window.__totehm_discover().radar,peint:n,taille:r?Math.round(r.width):0};});
+  ok(rdr.i===7&&rdr.tourne&&rdr.peint>1000&&rdr.taille>=150,'« Meet with intention » : le radar tourne et se dessine → '+JSON.stringify(rdr));
   await pg.goBack().catch(()=>{});await pg.waitForTimeout(700);
   ok(!(await D(pg)).ouvert&&pg.url()===origin+'/totehm','« précédent » referme le Discover et reste sur le site');
   ok(!erreurs(log).length,'membre : aucune erreur '+erreurs(log).join(' | '));
