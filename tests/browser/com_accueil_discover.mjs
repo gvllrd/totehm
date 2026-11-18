@@ -83,15 +83,18 @@ try{
   await pg.keyboard.press('Escape');await pg.waitForTimeout(600);
   d=await D(pg);
   ok(!d.ouvert&&await pg.evaluate(()=>document.getElementById('lvd').hidden&&!document.body.classList.contains('is-dc')),'ÉCHAP referme, l\'accueil reprend ses gestes');
-  /* 18/11 (Wah) : sans compte, le JOYSTICK SE VOIT (la racine de l'arbre) mais ne mène à aucune vue : chevrons morts, flèches
-     sans effet, et le toucher ouvre la porte d'inscription */
+  /* 18/11 (Wah) : sans compte, le JOYSTICK SE VOIT, ses QUATRE flèches aussi (la racine de l'arbre), mais il ne mène à aucune
+     vue : la flèche du clavier est sans effet, le manche et chaque flèche ouvrent la porte d'inscription */
   const joy=await pg.evaluate(()=>({manche:getComputedStyle(document.getElementById('lvjoy')).visibility,
-    morts:['lvn-up','lvn-dn'].every(id=>document.getElementById(id).classList.contains('is-mort'))}));
+    fleches:['lvn-up','lvn-dn','lvn-lf','lvn-rt'].filter(id=>{const e=document.getElementById(id);return e&&!e.classList.contains('is-mort')&&+getComputedStyle(e).opacity>0;}).length}));
   await pg.keyboard.press('ArrowUp');await pg.waitForTimeout(1200);
-  ok(joy.manche==='visible'&&joy.morts&&(await pg.evaluate(()=>window.__totehm_lv().vue))==='c'&&!(await D(pg)).ouvert,
-     '18/11 · sans compte : le manche se voit, ses chevrons sont morts, ↑ ne mène nulle part → '+JSON.stringify(joy));
+  ok(joy.manche==='visible'&&joy.fleches===4&&(await pg.evaluate(()=>window.__totehm_lv().vue))==='c'&&!(await D(pg)).ouvert,
+     '18/11 · sans compte : le manche et ses 4 flèches se voient, ↑ au clavier ne mène nulle part → '+JSON.stringify(joy));
   await pg.click('#lvj-box');await pg.waitForTimeout(700);
   ok(await pg.evaluate(()=>document.body.classList.contains('is-door')&&window.__totehm_lv().vue==='c'),'sans compte, toucher le joystick ouvre la porte d\'inscription');
+  await pg.keyboard.press('Escape');await pg.waitForTimeout(600);
+  await pg.click('#lvn-up');await pg.waitForTimeout(700);
+  ok(await pg.evaluate(()=>document.body.classList.contains('is-door')&&window.__totehm_lv().vue==='c'),'sans compte, une flèche du joystick ouvre la porte d\'inscription');
   await pg.keyboard.press('Escape');await pg.waitForTimeout(600);
   await pg.mouse.move(195,420);for(let k=0;k<6;k++){await pg.mouse.wheel(0,-60);await pg.waitForTimeout(40);}
   await pg.waitForTimeout(900);

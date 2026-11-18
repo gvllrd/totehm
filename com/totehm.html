@@ -8797,7 +8797,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-11-18-le-joystick-racine-de-l-arbre';
+const BUILD='2026-11-18-les-fleches-du-joystick';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -13633,10 +13633,16 @@ window.addEventListener('pageshow',e=>{
       rs.setProperty('--sell-top',Math.round(l.bas+52-sp)+'px');
       diagHaut={bouche:Math.round(w), cerveau:Math.round((jt-10)-(l.bas+52+sh+16))};
     }
+    /* 18/11 (Wah : « il faudrait montrer les flèches du joystick ») : sans compte, au centre, les QUATRE flèches se voient —
+       le manche entier est la racine de l'arbre — et chacune ouvre la porte d'inscription, comme le manche. */
+    function visiteurAuCentre(){ return !inscrit()&&vue==='c'; }
     function peindreNav(){
+      const vis=visiteurAuCentre();
       [[nUp,voisin('h')],[nDn,voisin('b')],[nLf,voisin('g')],[nRt,voisin('d')]]
-        .forEach(([b,v])=>{ if(!b) return; b.classList.toggle('is-mort',!v); b.tabIndex=v?0:-1;
-          if(v){ const nom=v==='b'&&mode==='members'?'Member offer':NOMS[v]; b.setAttribute('aria-label',nom); b.title=nom; } else b.removeAttribute('title'); });
+        .forEach(([b,v])=>{ if(!b) return; const vivant=!!v||vis; b.classList.toggle('is-mort',!vivant); b.tabIndex=vivant?0:-1;
+          if(v){ const nom=v==='b'&&mode==='members'?'Member offer':NOMS[v]; b.setAttribute('aria-label',nom); b.title=nom; }
+          else if(vis){ b.setAttribute('aria-label','Open my TOTEHM'); b.title='Open my TOTEHM'; }
+          else b.removeAttribute('title'); });
     }
     function poser(v){
       ['c','h','b','g','d'].forEach(k=>body.classList.toggle('lv-'+k,k===v));
@@ -14005,10 +14011,12 @@ window.addEventListener('pageshow',e=>{
     const filDefile=(t,dy)=>{ if(!t||!t.closest||!t.closest(LISTES)) return false;
       const el=t.closest(LISTES); if(el.scrollHeight<=el.clientHeight+2) return false;
       return dy>0 ? el.scrollTop+el.clientHeight<el.scrollHeight-1 : el.scrollTop>1; };
-    nUp.onclick=()=>demander('h');
-    nDn.onclick=()=>demander('b');
-    if(nLf) nLf.onclick=()=>demander('g');
-    if(nRt) nRt.onclick=()=>demander('d');
+    /* une flèche : vers sa vue — ou, sans compte, vers la porte d'inscription (18/11) */
+    const fleche=d=>()=>{ if(visiteurAuCentre()&&libre()){ refus('fleche:sans-totehm'); if(typeof ouvrirPorte==='function') ouvrirPorte(null); return; } demander(d); };
+    nUp.onclick=fleche('h');
+    nDn.onclick=fleche('b');
+    if(nLf) nLf.onclick=fleche('g');
+    if(nRt) nRt.onclick=fleche('d');
 
     /* ── LE MANCHE DE L'ATTERRISSAGE · 18/10/2026 ─────────────────────────────────────────────
        Le même geste que dans le Totehm, un seul sens (22/10) : tiré à gauche, il va à gauche — au
