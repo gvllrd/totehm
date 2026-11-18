@@ -237,6 +237,7 @@ try{
  for(const [vp,tel] of [[{width:390,height:844},true],[{width:1280,height:800},false]]){
   const{pg,log}=await page(browser,{dir:'com',origin,tables,viewport:vp,hasTouch:tel,
     rpc:{my_landing:LAND(),habit_spaces:{ok:true,habits:[]},element_cloths:{ok:true,elements:[]},
+         figher_access:{signed_in:true,member:true},   /* 18/11 : la recherche est au Figher Club */
          totehm_read:b=>b.p_pseudo==='kai3'?AUTRE:b.p_pseudo==='lock'?{ok:false,why:'subscribe',pseudo:'lock'}:{ok:false,why:'nobody'},
          creator_page:b=>b.p_pseudo==='lock'?Object.assign({},OFFRE,{pseudo:'lock'}):OFFRE,
          member_media:{ok:true,items:[]},club_spots_of:{ok:true,items:[],total:0}}});

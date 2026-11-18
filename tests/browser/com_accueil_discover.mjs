@@ -83,9 +83,15 @@ try{
   await pg.keyboard.press('Escape');await pg.waitForTimeout(600);
   d=await D(pg);
   ok(!d.ouvert&&await pg.evaluate(()=>document.getElementById('lvd').hidden&&!document.body.classList.contains('is-dc')),'ÉCHAP referme, l\'accueil reprend ses gestes');
-  await pg.keyboard.press('ArrowUp');
-  ok(await vers(pg,'b'),'… et ↑ mène de nouveau à Higher my ChatGPT');
-  await pg.keyboard.press('ArrowDown');await vers(pg,'c');
+  /* 18/11 (Wah) : sans compte, PAS DE JOYSTICK — ni manche, ni chevrons, ni flèches : la croix est à l'inscrit */
+  const joy=await pg.evaluate(()=>({manche:getComputedStyle(document.getElementById('lvjoy')).visibility,
+    morts:['lvn-up','lvn-dn'].every(id=>document.getElementById(id).classList.contains('is-mort'))}));
+  await pg.keyboard.press('ArrowUp');await pg.waitForTimeout(1200);
+  ok(joy.manche==='hidden'&&joy.morts&&(await pg.evaluate(()=>window.__totehm_lv().vue))==='c'&&!(await D(pg)).ouvert,
+     '18/11 · sans compte, pas de joystick : manche caché, chevrons morts, ↑ ne mène nulle part → '+JSON.stringify(joy));
+  await pg.click('#lv-m-members');await pg.waitForTimeout(700);
+  ok(await pg.evaluate(()=>document.body.classList.contains('is-door')),'sans compte, [Members] mène à la porte');
+  await pg.keyboard.press('Escape');await pg.waitForTimeout(600);
   await pg.click('#lv-discover');await pg.waitForTimeout(600);await pg.click('#lvd-cta');await pg.waitForTimeout(900);
   ok(await pg.evaluate(()=>document.body.classList.contains('is-door')&&!window.__totehm_discover().ouvert),'sans compte, la porte du Discover ouvre la porte d\'inscription');
   ok(!erreurs(log).length&&!log.rpc.some(x=>/_set|_save|_create|_delete/.test(x.name)),'visiteur : aucune erreur, aucune écriture '+erreurs(log).join(' | '));
@@ -100,6 +106,12 @@ try{
   await pg.mouse.move(640,400);await pg.mouse.wheel(0,120);
   ok(await vers(pg,'b')&&!(await D(pg)).ouvert,'18/11 · membre : la molette mène toujours à Higher my ChatGPT, pas au Discover');
   await pg.waitForTimeout(500);await pg.keyboard.press('ArrowDown');await vers(pg,'c');await pg.waitForTimeout(800);
+  /* 18/11 (Wah) : la recherche est au FIGHER CLUB — ce membre n'en est pas (`figher_access` sans `member`) */
+  let onglets=0; ctx.on('page',()=>onglets++);
+  await pg.click('#lv-m-members');await pg.waitForTimeout(800);
+  const hc=await pg.evaluate(()=>({dit:document.getElementById('lv-m-say').textContent,lock:document.getElementById('lv-m-members').classList.contains('is-locked')}));
+  ok(onglets===0&&hc.lock&&/^Search is for Figher Club members/.test(hc.dit)&&log.rpc.some(x=>x.name==='figher_access'),
+     '18/11 · hors du Club, [Members] n\'ouvre pas la recherche : il le dit en une ligne → '+JSON.stringify(hc));
   await pg.click('#lv-tap-disc');await pg.waitForTimeout(700);
   for(let k=0;k<5;k++){await pg.keyboard.press('ArrowDown');await pg.waitForTimeout(750);}
   const a=await pg.evaluate(()=>({i:window.__totehm_discover().i,cta:document.getElementById('lvd-cta').textContent}));
@@ -117,8 +129,12 @@ try{
   await ctx.close();}
 
  /* ── 3 · LA VUE CHATGPT (en haut) : le titre d'abord, puis le bouton ── */
- {const{pg,ctx,log}=await page(browser,{dir:'com',origin,tables,rpc:{my_landing:LAND},viewport:{width:390,height:844},hasTouch:true});
+ {const{pg,ctx,log}=await page(browser,{dir:'com',origin,tables,rpc:{my_landing:LAND,figher_access:{signed_in:true,member:true}},viewport:{width:390,height:844},hasTouch:true});
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1200);
+  /* 18/11 : membre du Club → [Members] ouvre /search dans un onglet */
+  const [tab]=await Promise.all([ctx.waitForEvent('page',{timeout:4000}).catch(()=>null),pg.click('#lv-m-members')]);
+  ok(!!tab&&/\/search$/.test(tab.url()||await tab.waitForURL(/\/search$/,{timeout:3000}).then(()=>tab.url()).catch(()=>'')),'18/11 · membre du Figher Club : [Members] ouvre /search dans un onglet');
+  if(tab) await tab.close();
   await pg.keyboard.press('ArrowUp');await vers(pg,'b');await pg.waitForTimeout(900);
   const g=await pg.evaluate(()=>{const t=document.getElementById('chatgpt-title').getBoundingClientRect(),b=document.getElementById('chatgpt-connect'),r=b.getBoundingClientRect(),c=getComputedStyle(b);
     return {ordre:t.bottom<=r.top,piece:document.querySelectorAll('#chatgpt-title .tw').length,fond:c.backgroundColor,rayon:c.borderTopLeftRadius,href:b.getAttribute('href'),texte:b.textContent.trim(),

@@ -7,7 +7,8 @@ const source={ok:true,pseudo:'studio',steps:[{t:'Deep practice',is:['focus'],f:'
 /* 16/10 : il n'y a plus de spaces, seulement des SPOTS — une Habit lue montre donc ses spots. */
 const hs={ok:true,mine:false,habits:[{habit:'Deep practice',total:1,total_spaces:0,total_spots:1,spaces:[],
   spots:[{id:'s1',format:'spot',state:'will',city:'Porto',starts_at:new Date(Date.now()+864e5).toISOString(),audience:'figher'}]}]};
-const rpc={my_console:{signed_in:true,offer:{enabled:false}},my_landing:{signed_in:true,pseudo:'wah',visibility:'private',offer:{enabled:false},higher:{active:false,price_cents:700,currency:'eur'},thp:false,subscriptions:1,subscribers:0},totehm_read:source,habit_spaces:b=>b.p_pseudo?hs:{ok:true,mine:true,habits:[]},
+const rpc={figher_access:{signed_in:true,member:true},   /* 18/11 : la recherche est au Figher Club */
+  my_console:{signed_in:true,offer:{enabled:false}},my_landing:{signed_in:true,pseudo:'wah',visibility:'private',offer:{enabled:false},higher:{active:false,price_cents:700,currency:'eur'},thp:false,subscriptions:1,subscribers:0},totehm_read:source,habit_spaces:b=>b.p_pseudo?hs:{ok:true,mine:true,habits:[]},
   totehm_search:b=>b.p_q?[{pseudo:'studio',offer:true,price_cents:2400,currency:'eur',subscribed:true},{pseudo:'atelier',offer:true,price_cents:3600,currency:'eur',subscribed:false}]:[{pseudo:'studio',offer:true,price_cents:2400,currency:'eur',subscribed:true}],
   totehm_import_boxes:b=>({ok:true,created:b.p_selection[0].kind==='h'?1:0,reused:b.p_selection[0].kind==='h'?0:1,total:1})};
 try{

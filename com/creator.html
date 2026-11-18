@@ -102,6 +102,9 @@ body.is-search #q{background:none;border-radius:0;padding:6px 0;margin:0;max-wid
   font:400 clamp(34px,10vw,64px)/1.1 var(--q);color:var(--coral);caret-color:var(--coral);letter-spacing:.02em}
 body.is-search #q::placeholder{color:rgba(251,213,202,.22)}
 body.is-search .note{min-height:14px;color:var(--lo)}
+/* 18/11 — hors du Figher Club : une phrase (la police de l'appui du Discover) et la porte, centrées */
+#q-club{display:flex;flex-direction:column;align-items:center;gap:20px;text-align:center;max-width:min(92vw,440px)}
+#q-club .note{margin:0;font:400 13px/1.7 'Space Mono',monospace;color:#bdbdc4;text-transform:none;letter-spacing:.01em}
 #res{width:100%;display:flex;flex-wrap:wrap;justify-content:center;gap:clamp(12px,3.4vw,22px);--ps:156px}
 /* un résultat = un VERSO : le papier perforé, le nom posé dessus par la nomenclature */
 .srch-row{position:relative;display:block;flex:none;width:var(--ps);height:var(--ps);
@@ -370,6 +373,7 @@ div:not(:has(> :not(br,wbr))):hover,
 .tname:hover,
 body.is-search #q:hover,
 body.is-search .note:hover,
+#q-club .note:hover,
 .srch-row .tn-l:hover,
 .ints span:hover,
 .fine:hover,
@@ -416,6 +420,8 @@ body.is-search #q:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,t
     <input class="in" id="q" maxlength="80" placeholder="a name" aria-label="A TOTEHM name" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="go">
     <div class="note" id="q-note" aria-live="polite"></div>
     <div id="res" aria-label="TOTEHMs"></div>
+    <!-- 18/11 (Wah) : la recherche est au FIGHER CLUB — hors du Club, une phrase et la porte du TOTEHM, rien d'autre -->
+    <div id="q-club" class="hide"><p class="note" id="q-club-t" aria-live="polite"></p><a class="dc-btn" href="https://www.totehm.com/totehm">Open my TOTEHM</a></div>
   </section>
 
   <!-- ══ LA PAGE D'UN MEMBRE · 15/11 : UN PLEIN ÉCRAN DISCOVER ══ Une idée par écran, noir, au geste (voir `tools/discover.css`).
@@ -621,7 +627,7 @@ const audBadge = a => AUD_ICON[a] ? '<span class="audb" role="img" aria-label="'
 const audMark = (root, attr, a0) => { const a = audNorm(a0); return root?.querySelectorAll('[' + attr + ']').forEach(b => { const on = b.getAttribute(attr) === a;
   b.classList.toggle('is-on', on); b.setAttribute('aria-checked', String(on)); }); };
 /* ══ fin AUDIENCE ══ */
-const BUILD='2026-11-15-discover';
+const BUILD='2026-11-18-recherche-au-club';
 
 /* ══ EN CADRE DANS COM (`?embed=1`) ═════════════════════════════════════
    Wah, 16/10 : « il ne faut pas que ça saute entre totehm.com et totehm.com/@{Nom} ». COM ouvre cette
@@ -656,7 +662,7 @@ window.__totehm_creator = () => ({ build: BUILD, mode: NAME ? 'page' : 'search',
   can_read: !!C?.viewer?.can_read, me: !!C?.viewer?.me, signin_open: !$('signin').classList.contains('hide'),
   universe: { loaded: !!U, spaces: U?.spaces?.length || 0, spots: U?.spots?.length || 0,
               locked: [...(U?.spaces || []), ...(U?.spots || [])].filter(x => x.locked).length },
-  results: $('res')?.querySelectorAll('.srch-row').length || 0,
+  results: $('res')?.querySelectorAll('.srch-row').length || 0, club: clubOk,
   discover: { i: +($('dc')?.dataset.i || 0), n: +($('dc')?.dataset.n || 0) } });
 window.__totehm_discover = () => DC;
 
@@ -677,6 +683,24 @@ async function session(){
     if(seq!==sessionSeq||me?.id!==uid) return;
     if(data?.pseudo) $('member-txt').textContent=data.pseudo;
   }
+}
+
+/* ══ 18/11 · LA RECHERCHE EST AU FIGHER CLUB ══ Wah : « la recherche est accessible seulement aux membres du figher.club ».
+   Membre = un TOTEHM avec une Habit, un objectif, une répulsion : le serveur le dit (`figher_access().member`, règle `_figher`).
+   Hors du Club, le champ disparaît : une phrase et la porte du TOTEHM. Relu au retour d'onglet (une box vient peut-être d'arriver). */
+let clubOk=false, clubSeq=0;
+async function porteClub(){
+  const seq=++clubSeq, uid=me?.id||null; let ok=false, panne=false;
+  if(me){ const {data,error}=await sb.rpc('figher_access');
+    if(seq!==clubSeq||uid!==(me?.id||null)) return clubOk;              /* réponse tardive : jetée */
+    if(error){ console.error('[figher_access]',error.message); panne=true; } else ok=!!data?.member; }
+  clubOk=ok;
+  ['q','q-note','res'].forEach(id=>$(id).classList.toggle('hide',!ok));
+  $('q-club').classList.toggle('hide',ok);
+  $('q-club-t').textContent=ok?'':panne?'Search is unreachable right now.'
+    :me?'Search is for Figher Club members: a TOTEHM with a Habit, an objective and a repulsion.'
+       :'Search is for Figher Club members. Open your TOTEHM first.';
+  return ok;
 }
 
 /* ══ CHERCHER UN TOTEHM : UN NOM, ET C'EST TOUT — copié de totehm.html ══ */
@@ -705,6 +729,7 @@ function NameSearch({input,results,note,vide=true,onResults=()=>{}}){
   if(document.fonts&&document.fonts.ready) document.fonts.ready.then(habiller);
   async function run(q,ouvrir=false){
     clearTimeout(timer); const mon=++seq, uid=me?.id||null;
+    if(!clubOk){ rows=[]; draw(q); return; }                    /* 18/11 : hors du Club, aucune recherche ne part */
     if(q.length===1){ rows=[]; draw(q); dire('two letters, minimum'); return; }
     if(!q&&(!me||!vide)){ rows=[]; draw(q); dire(''); return; }   /* vide=false : rien avant la première lettre */
     if(q) dire('searching\u2026');
@@ -1058,12 +1083,15 @@ if(NAME){
   $('search').classList.remove('hide');
   const q0 = new URLSearchParams(location.search).get('q') || '';
   $('q').value = q0;
-  searchCtl.start(q0);
-  setTimeout(() => $('q').focus(), 60);
+  if(await porteClub()){ searchCtl.start(q0); setTimeout(() => $('q').focus(), 60); }
+  document.addEventListener('visibilitychange', async () => {
+    if(document.hidden || clubOk) return;
+    if(await porteClub()){ searchCtl.start($('q').value); $('q').focus(); }
+  });
 }
 dire('ready');
 sb.auth.onAuthStateChange(event => { if(event === 'INITIAL_SESSION') return;
-  setTimeout(async () => { await session(); if(NAME) loadPage(); else searchCtl.start($('q').value); }, 0); });
+  setTimeout(async () => { await session(); if(NAME) loadPage(); else if(await porteClub()) searchCtl.start($('q').value); }, 0); });
 </script>
 <script>
 /* ══ LA NOMENCLATURE DU VERSO — copié de tools/totehm_name.js dans chaque page (jamais importé) ══

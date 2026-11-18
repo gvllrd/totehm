@@ -13,9 +13,22 @@ const propre = async pg => {
 };
 const erreurs = log => log.errors.filter(e => !/404|Failed to load resource/i.test(e));
 
+/* ── 0 · 18/11 (Wah) : la recherche est au FIGHER CLUB — sans compte ou hors du Club, ni champ ni recherche ── */
+for(const [qui, opts, mot] of [['visitor', { session:false }, /Open your TOTEHM first/], ['member outside the Club', { tables:{ profiles:[{ pseudo:'wah' }] } }, /a Habit, an objective and a repulsion/]]){
+  const { pg, log } = await page(browser, Object.assign({ dir:'com', origin:'https://www.totehm.com',
+    rpc:{ totehm_search: ROWS, figher_access: { signed_in:qui !== 'visitor', member:false } } }, opts));
+  await pg.goto('https://www.totehm.com/creator');
+  await pg.waitForFunction(() => window.__totehm_creator && window.__totehm_creator().build && document.getElementById('q-club-t').textContent, null, { timeout:15000 });
+  const g = await pg.evaluate(() => ({ champ:!!document.getElementById('q').getClientRects().length, dit:document.getElementById('q-club-t').textContent,
+    porte:document.querySelector('#q-club a')?.getAttribute('href'), club:window.__totehm_creator().club }));
+  ok(!g.champ && mot.test(g.dit) && g.porte === 'https://www.totehm.com/totehm' && g.club === false && !log.rpc.some(r => r.name === 'totehm_search'),
+     '18/11 · ' + qui + ': no field, one sentence and the door to the TOTEHM, no search sent → ' + JSON.stringify(g));
+  await pg.context().close();
+}
+
 /* ── 1 · /search : un champ, des noms ─────────────────────────────── */
 {
-  const { pg, log } = await page(browser, { dir:'com', origin:'https://www.totehm.com', rpc:{ totehm_search: b => b.p_q ? ROWS.filter(r => r.pseudo.startsWith(b.p_q)) : ROWS.filter(r => r.subscribed), my_console: { signed_in:true, offer:{ enabled:false } } },
+  const { pg, log } = await page(browser, { dir:'com', origin:'https://www.totehm.com', rpc:{ totehm_search: b => b.p_q ? ROWS.filter(r => r.pseudo.startsWith(b.p_q)) : ROWS.filter(r => r.subscribed), my_console: { signed_in:true, offer:{ enabled:false } }, figher_access: { signed_in:true, member:true } },
     tables:{ profiles:[{ pseudo:'wah' }] } });
   await pg.goto('https://www.totehm.com/creator');
   await pg.waitForFunction(() => window.__totehm_creator && window.__totehm_creator().results === 1, null, { timeout:15000 });

@@ -8,7 +8,7 @@
 | fichier | adresse | rôle |
 |---|---|---|
 | `totehm.html` | `/totehm` (`/` y mène) | L'APP, ≈ 15 000 lignes : jamais lue en entier (`grep -n` puis une plage) |
-| `creator.html` | `/search` · `/@nom` | `/search` = noir plein écran, un nom en Quantico, des résultats qui sont des VERSOS (nomenclature) → `/@nom` = la page d'abonnement en Discover (8 écrans, SUBSCRIBE · PRIX gris sous chacun, `#cta`) ; l'univers vit dans l'écran des spots |
+| `creator.html` | `/search` · `/@nom` | `/search` = au FIGHER CLUB seul (`porteClub` : hors du Club, ni champ ni appel, une phrase et [Open my TOTEHM]) ; noir plein écran, un nom en Quantico, des résultats qui sont des VERSOS (nomenclature) → `/@nom` = la page d'abonnement en Discover (8 écrans, SUBSCRIBE · PRIX gris sous chacun, `#cta`) ; l'univers vit dans l'écran des spots |
 | `chatgpt.html` | `/chatgpt` | 5 écrans en Discover, le dernier = le panneau de connexion ; une demande de ChatGPT, un compte relié ou un service indisponible arrivent droit dessus. Sans `www` → redirigé vers `https://www.totehm.com` (OAuth) |
 | `monetize.html` | `/monetize` | la vente aux créateurs en Discover (8 écrans, le curseur COMPTE, « Set my price » sous chacun) |
 | `auth.html` | `/auth` | l'autorité SSO des quatre domaines (`sso-mint`) ; toute connexion passe par `tools/otp_signin.js` (copié) |
@@ -22,13 +22,13 @@ seuls `/totehm` et `/totehm.html` autorisent les cadres Telegram (CSP). `overflo
 
 | vue | repères |
 |---|---|
-| la croix | `const LV=` · `VOISINS` (↑ = la vue `b`, ↓ = la vue `h` ; les noms `lv-h`/`lv-b` restent ceux des vues) · `demander(` · `garde(` · `guetter(` · `refus(` (le mouchard, `?diag=1`). **LE CENTRE EST UN ARRÊT** : arriver au centre vide la file. Un geste reçu pendant un voyage ou un repli attend sa fin (`guetter`, 1,5 s). **Sans compte, au centre, le SCROLL (molette, pavé, doigt vers le haut) ouvre le Discover** (`scrollDiscover`, `DISC.ouvrir(true)` tait l'inertie du geste) ; le chevron ↑, le manche et la flèche ↑ mènent toujours à Higher my ChatGPT |
+| la croix | `const LV=` · `VOISINS` (↑ = la vue `b`, ↓ = la vue `h` ; les noms `lv-h`/`lv-b` restent ceux des vues) · `demander(` · `garde(` · `guetter(` · `refus(` (le mouchard, `?diag=1`). **LE CENTRE EST UN ARRÊT** : arriver au centre vide la file. Un geste reçu pendant un voyage ou un repli attend sa fin (`guetter`, 1,5 s). **Sans compte, pas de croix** (`voisin` → null, `#lvjoy` caché par `body:not(.member)`) : **au centre, le SCROLL (molette, pavé, doigt vers le haut) ouvre le Discover** (`scrollDiscover`, `DISC.ouvrir(true)` tait l'inertie du geste) |
 | ● le centre | `#lv-title` « THE [Higher] WAY TO MAKE IT HAPPEN » (le mot est la place `#lv-title-h` : le badge `#lv-slogan` s'y pose, net, par `sloganPour('c')` ; titre absent = coin du socle) ; sans compte `#lv-pitch` = la porte + [Discover] ; avec un compte `#lv-tap` (tap · turn · Discover). `const DISC=` : la couche `#lvd` (10 écrans, moteur copié, la porte sous chacun, une illustration par écran faite des éléments du site — `ILL` dans un cadre de même hauteur (`--ill-h`, `ajuster` réduit ce qui dépasse ; le titre reste à la même place), box natives par `inerteBox`, la grille de gauche (vignettes `assets/discover/`), le radar du Club redessiné par `RADAR` (règles de `draw()` de club, ne tourne que sur son écran) ; « Monetize my TOTEHM » sur l'écran de l'argent) ; `body.is-dc` éteint les gestes de l'accueil (`libre`, `swallow` le laisse passer) ; Échap et « précédent » referment |
 | ↑ Higher my ChatGPT | `#rf` : le GPT PNG tourne, le titre `#chatgpt-title` (la pièce) puis le texte puis le BOUTON `#chatgpt-connect` → `/chatgpt`. Chez un membre : SON offre (`OFFRE`, `#mb-offre`) |
 | ↓ Get Higher | le slogan « Get [Higher] with your [TOTEHM] » (`#lv-slogan`, `.lvs-post` porte la pièce `data-tw`) · `RAM.cerveau` · `posHaut()` (la bouche rétrécit, jamais le cerveau ; le chevron ↑ borne la vue) · `#lv-sell` |
 | ← mes médias | `const SH =` · `MBM` · les tuiles lisent la VIGNETTE (`tools/vignette.js`), la visionneuse `#tlv` la photo entière ; [delete] dans la rangée noire au-dessus de la box |
 | → mes spots | `const CLUBSP=` (`club_spots_of`) · `SPMAP` · `SPGRID` · `SHS` · la prise `const NSPOT=` (définition d'abord, Habit → WHEN → WHERE → qui → durée → mot → média FACULTATIF) |
-| MEMBERS | `chercherAilleurs()` : `/search` dans un onglet, il faut un TOTEHM. `?ro=<nom>` arrive sur SON atterrissage (`const MB=`, `entrerChez()`) ; un auteur à abonnement : `verrouiller()` |
+| MEMBERS | `chercherAilleurs()` : `/search` dans un onglet, **réservé au FIGHER CLUB** (`CLUB.member` ← `figher_access`, la règle `_figher` : une Habit, un objectif, une répulsion ; relu à chaque refus et au retour d'onglet) — sans TOTEHM la porte, hors du Club une ligne (`#lv-m-say`). `?ro=<nom>` arrive sur SON atterrissage (`const MB=`, `entrerChez()`) ; un auteur à abonnement : `verrouiller()` |
 
 ## Le TOTEHM déployé et le verso
 

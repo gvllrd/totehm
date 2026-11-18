@@ -3263,6 +3263,11 @@ body.gate:not(.member):not(.ses-attente){--lv-y:32dvh}
 /* 14/11 — [Members] demande un TOTEHM : sans lui il se voit, atténué, et un tap mène à la porte. */
 #lv-mode button.is-locked{opacity:.55}
 #lv-mode button:focus-visible{outline:1px solid #fff;outline-offset:3px}
+/* 18/11 — la recherche est au FIGHER CLUB : un tap sur [Members] hors du Club le DIT ici, en une ligne, puis se tait */
+#lv-m-say{margin:8px auto 0;max-width:300px;font:400 10px/1.6 'Space Mono',monospace;color:#9a9aa2;text-align:center}
+#lv-m-say:empty{display:none}
+/* 18/11 (Wah) : SANS COMPTE, PAS DE JOYSTICK — l'accueil, [Discover] (et le scroll), la porte ; la croix est à l'inscrit */
+body:not(.member):not(.ses-attente) #lvjoy{opacity:0;visibility:hidden;pointer-events:none}
 /* ══ 14/11 · MEMBERS — LA RECHERCHE A QUITTÉ L'ATTERRISSAGE ═════════════════════════════════════════════════
    Wah : « quand j'appuie sur Members ça ne va pas, puisqu'il y a sur le verso du Totehm le NOM DU TOTEHM DE
    L'UTILISATEUR, or cette partie est destinée à chercher le nom d'un AUTRE Totehm » · « ce que l'on recherche
@@ -4263,6 +4268,7 @@ div:not(:has(> :not(br,wbr))):hover,
 .lvs-sci b:hover,
 #lv-tap:hover,
 #lv-mode button:hover,
+#lv-m-say:hover,
 .lvm-who:hover,
 #mb-lock .mbl-t:hover,
 #mb-lock .mbl-s:hover,
@@ -4616,6 +4622,7 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
           <button type="button" role="radio" id="lv-m-mine" data-mode="mine" aria-checked="true">Mine</button>
           <button type="button" role="radio" id="lv-m-members" data-mode="members" aria-checked="false"><span class="lvm-lab">Members</span><span class="lvm-who" id="lv-m-who"></span></button>
         </div>
+        <p id="lv-m-say" role="status" aria-live="polite"></p>
         <!-- 25/10 — LE RÉSULTAT D'UNE RECHERCHE QUAND IL FAUT S'ABONNER (Wah : « le mode résultat recherche pour la
              souscription à un Totehm … est devenu totalement obsolète »). Plus de texte au dos d'un papier géant : le papier
              rentre chez lui, ses traits sont ceux du membre (sa palette), son nom est sur [Members], et ici UN geste. -->
@@ -5261,7 +5268,24 @@ let ANON_OK=false;
 /* 07/10 : l'atterrissage lit UN appel (`my_landing`) — ma vignette, la visibilité
    et l'offre de mon Totehm, mon THP, Telegram. Peint par
    la croix (`lvRefresh`), vidé au changement de compte (`lvQuitter`). */
-let LAND=null, lvRefresh=null, lvPeindre=null, lvQuitter=null, lvReglages=null, lvMembreBoot=null, lvVersMembre=null, lvAller=null;
+let LAND=null, lvRefresh=null, lvPeindre=null, lvQuitter=null, lvReglages=null, lvMembreBoot=null, lvVersMembre=null, lvAller=null, lvPeindreMode=null;
+/* ══ 18/11 · LE FIGHER CLUB, LU AU SERVEUR ══ Wah : « la recherche est accessible seulement aux membres du figher.club ».
+   Membre du Club = un TOTEHM avec une Habit, un objectif, une répulsion : c'est le serveur qui le dit (`figher_access().member`,
+   la règle `_figher`), la page ne fait que le relire — à l'entrée d'un compte, au retour d'onglet, et à chaque refus. */
+const HORS_CLUB='Search is for Figher Club members: a TOTEHM with a Habit, an objective and a repulsion.';
+const CLUB={uid:null, member:false, t:0, seq:0};
+async function lireClub(force){
+  if(!me){ CLUB.uid=null; CLUB.member=false; CLUB.seq++; return false; }
+  if(!force&&CLUB.uid===me.id&&Date.now()-CLUB.t<60000) return CLUB.member;
+  const s=++CLUB.seq, uid=me.id;
+  const {data,error}=await sb.rpc('figher_access');
+  if(s!==CLUB.seq||!me||me.id!==uid) return CLUB.member;                 /* réponse tardive : jamais sur un état plus frais */
+  if(error){ console.error('[figher_access]',error.message); return CLUB.member; }
+  CLUB.uid=uid; CLUB.member=!!(data&&data.member); CLUB.t=Date.now();
+  if(lvPeindreMode) lvPeindreMode();
+  return CLUB.member;
+}
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden&&me) lireClub(true); });
 /* 20/10 sexies — LES MÉDIAS DU MEMBRE QUE JE LIS (`member_media` : ceux dont la box m'est partagée), pour sa vue de gauche. */
 const MBM={seq:0, nom:null, items:[]};
 /* TotehmBot — declare ici et pas plus bas : la remise a zero de la
@@ -8773,7 +8797,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-11-18-le-scroll-ouvre-le-discover';
+const BUILD='2026-11-18-la-croix-et-la-recherche-aux-membres';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -12048,6 +12072,7 @@ function memberPaint(){
   peindreInvite();
   /* `body.member` : le coin membre n'existe que pour un inscrit. */
   document.body.classList.toggle('member',inscrit());
+  lireClub();   /* le Club : une lecture par compte et par minute au plus */
   if(me&&myProfile) $('mw-mail').textContent=me.email||'';
   peindrePorte();
 }
@@ -13539,6 +13564,7 @@ window.addEventListener('pageshow',e=>{
        le haut (commun), le bas (SON offre) ; ses médias et ses spots restent derrière l'abonnement (← → désignent l'offre). */
     const libreMb=()=>mode!=='members'||!!MB.nom||!!MB.verrou;
     const voisin=k=>{
+      if(!inscrit()) return null;   /* 18/11 (Wah) : sans compte, pas de croix — le scroll ouvre le Discover (`scrollDiscover`) */
       const v=(VOISINS[vue]||{})[k]||null;
       if((k==='g'||k==='d')&&v!=='c'&&(!inscrit()||MB.verrou)) return null;
       return v;
@@ -13774,10 +13800,12 @@ window.addEventListener('pageshow',e=>{
          AVOIR UN TOTEHM ». Le bouton reste donc CLIQUABLE — mais sans Totehm il mène à la PORTE, pas à la
          recherche (`chercherAilleurs`) : on apprend ce qu'il faut au lieu d'appuyer sur un mort. `is-locked`
          le dit à l'œil ; jamais `aria-disabled`, qui mentirait sur ce que le tap fait. */
+      /* 18/11 (Wah) : et la recherche est au FIGHER CLUB (`CLUB.member`) : hors du Club, le tap le dit sous les boutons. */
       const mb=$('lv-m-members');
-      if(mb){ const pret=inscrit();
+      if(mb){ const pret=inscrit()&&CLUB.member;
         mb.classList.toggle('is-locked',!pret);
-        mb.title=pret?'':'Open your TOTEHM first'; }
+        mb.title=pret?'':!inscrit()?'Open your TOTEHM first':HORS_CLUB; }
+      if(CLUB.member&&$('lv-m-say').textContent===HORS_CLUB) direMembers('');
       const t=$('lv-tap-turn'); if(t){ const sou=window.matchMedia('(hover:hover)').matches;
         t.textContent=(sou?'Turn':'Swipe')+(mode==='members'?' to search':' to configure it'); }
     }
@@ -13878,8 +13906,14 @@ window.addEventListener('pageshow',e=>{
        sur `/search` — un verso VIERGE, plein écran — dans son propre onglet. Et il faut un TOTEHM pour y
        aller (Wah : « pour accéder au bouton [Member] et la partie de recherche, il faut être connecté et
        avoir un Totehm »). Le mode `members` lui-même reste : c'est lui qui fait vivre `?ro=<membre>`. */
+    let sayT=0;
+    function direMembers(t){ clearTimeout(sayT); $('lv-m-say').textContent=t||''; if(t) sayT=setTimeout(()=>direMembers(''),6000); }
     function chercherAilleurs(){
       if(!inscrit()){ refus('members:sans-totehm'); if(typeof ouvrirPorte==='function') ouvrirPorte(null); return; }
+      /* 18/11 (Wah) : la recherche est au FIGHER CLUB. Hors du Club : une ligne, et on relit le serveur (une Habit, un objectif
+         ou une répulsion vient peut-être d'arriver) — le tap suivant ouvrira la recherche. */
+      if(!CLUB.member){ refus('members:hors-club'); direMembers(HORS_CLUB); lireClub(true); return; }
+      direMembers('');
       diag.modes++;
       try{ window.open('/search','_blank','noopener'); }
       catch(err){ console.error('[lv] members',err); location.href='/search'; }
@@ -14857,6 +14891,7 @@ window.addEventListener('pageshow',e=>{
     /* ── LES DONNÉES : `my_landing()`, une réponse tardive ne gagne jamais ── */
     let landSeq=0;
     lvPeindre=()=>{ peindreCarte(); connPaint(); paintMe(); RAM.peindre(vue); peindreNav(); };
+    lvPeindreMode=()=>peindreMode();
     lvRefresh=async()=>{
       const seq=++landSeq, uid=me?me.id:null;
       const {data,error}=await sb.rpc('my_landing');
