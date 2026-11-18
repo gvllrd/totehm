@@ -10,26 +10,54 @@ const ready=pg=>pg.waitForFunction(()=>window.__totehm_gallery?.().frames>0&&__t
 const fatal=log=>log.errors.filter(e=>/pageerror:|WebGLProgram|VALIDATE_STATUS|shader error|WebGL: INVALID/i.test(e));
 const save=()=>fs.writeFileSync(out+'/results.json',JSON.stringify({checks,results},null,2));
 async function focusProjection(pg){await pg.locator('.tour [data-room="2"]').click({timeout:60000});await pg.waitForFunction(()=>__totehm_gallery().focused===2,null,{timeout:30000});await pg.waitForFunction(()=>!document.getElementById('enter-experience').disabled);}
+async function clickPanel(pg){
+ const point=await pg.evaluate(async()=>{
+  const {PerspectiveCamera,Vector3}=await import('/vendor/three-0.180.0.mjs');
+  const {camera:pose,projection}=__totehm_gallery();
+  const camera=new PerspectiveCamera(pose.fov,pose.aspect,pose.near,pose.far);
+  camera.position.fromArray(pose.position);camera.lookAt(new Vector3(...pose.target));camera.updateMatrixWorld(true);
+  const point=new Vector3(...projection.position).project(camera),rect=document.getElementById('space').getBoundingClientRect();
+  return{x:rect.left+(point.x+1)*rect.width/2,y:rect.top+(1-point.y)*rect.height/2};
+ });
+ await pg.mouse.click(point.x,point.y);
+}
 const browser=await launch();
-try{for(const viewport of [{width:800,height:600},{width:390,height:844}])for(const city of ['lisbon','new-york']){
- const requests=[],f=await page(browser,{dir:'space',origin,session:false,viewport,hasTouch:viewport.width<650,functions:{'stoner-gate':{access:false}},network:u=>{requests.push(u.pathname);return u.pathname==='/gallery-temple-landscape.mjs'?{contentType:'text/javascript',body:landscape}:u.pathname==='/gallery-drowned-sky.mjs'?{contentType:'text/javascript',body:sky}:null;}}),{pg,log}=f,sample={viewport,city,warnings:[]};results.push(sample);pg.on('console',message=>{if(message.type()==='warning')sample.warnings.push(message.text());});
+try{for(const viewport of [{width:800,height:600},{width:1100,height:760}])for(const city of ['lisbon','new-york']){
+ const requests=[],f=await page(browser,{dir:'space',origin,session:false,viewport,hasTouch:false,functions:{'stoner-gate':{access:false}},network:u=>{requests.push(u.pathname);return u.pathname==='/gallery-temple-landscape.mjs'?{contentType:'text/javascript',body:landscape}:u.pathname==='/gallery-drowned-sky.mjs'?{contentType:'text/javascript',body:sky}:null;}}),{pg,log}=f,sample={viewport,city,warnings:[]};results.push(sample);pg.on('console',message=>{if(message.type()==='warning')sample.warnings.push(message.text());});
  try{
   await pg.emulateMedia({reducedMotion:'reduce'});await pg.goto(origin+(city==='lisbon'?'/lisbon-space':'/new-york'));await ready(pg);sample.initial=await state(pg);
   check(!sample.initial.fallback&&await pg.locator('#space canvas').count()===1,city+' has an actual rendered 3D gallery at '+viewport.width);
-  check(sample.initial.fireplace.present===false&&sample.initial.fireplace.flames===0&&sample.initial.fireAudio.present===false&&sample.initial.fireAudio.sources===0,city+' has no fireplace, flame or fire audio source at '+viewport.width);
+  const {fireplace,fireAudio}=sample.initial;
+  if(city==='lisbon')check(fireplace.present&&fireplace.outdoor&&fireplace.volumetricFlames&&fireplace.charredLogs>0&&fireAudio.present&&fireAudio.woodCrackle,'Lisbon has an outdoor wood fire with volumetric flame, charred logs and crackle at '+viewport.width);
+  else check(!fireplace.present&&fireplace.flames===0&&!fireAudio.present&&fireAudio.sources===0,'New York has no hearth or fire audio source at '+viewport.width);
   const projection=sample.initial.projection;
-  check(projection.kind==='saucer-first-page-projection'&&projection.canonicalFirstPage&&projection.blackPanel&&projection.blackBeam&&projection.beamSource.join(',')==='0,18.93,-4.2',city+' projects the canonical black first page from its saucer at '+viewport.width);
+  check(projection.kind==='saucer-first-page-projection'&&projection.canonicalFirstPage&&projection.blackPanel&&projection.blackBeam&&projection.opticalBeam&&projection.beamSource.join(',')==='0,18.9,-4.2'&&projection.bottom>0,city+' projects the raised canonical screen from its saucer emitter at '+viewport.width);
   check(sample.initial.originsJourney.vessel.saucer&&!sample.initial.originsJourney.vessel.bookInIsland&&projection.videoDecoders===0,city+' keeps the original book in Origin and decodes no gallery video at '+viewport.width);
-  if(city==='lisbon')check(projection.signs===22&&projection.front.signs===22&&projection.front.loaded===22&&projection.front.dimmed&&projection.front.minimumSignSize>=138,'Lisbon displays all 22 enlarged dark moving sign originals at '+viewport.width);
+  if(city==='lisbon')check(projection.front.titleOnly&&projection.front.visibleSigns===0&&projection.front.loaded===22&&Math.abs(projection.bottom-1.625)<.0001,'Lisbon displays the Higher title alone 1.625 m above the ground at '+viewport.width);
   else{check(projection.works===6&&projection.front.count===6&&projection.front.ids.length===6&&sample.initial.temple.projectionOnly&&sample.initial.temple.legacyArtworkPickables===0&&sample.initial.temple.thpCounter.packagedPapers===0&&!sample.initial.temple.origins.lectern,'New York has only the six-work projection and saucer, without a local book or THP table at '+viewport.width);check(await pg.locator('.tour [data-room]').count()===2,'New York navigation offers only its projection and Origin at '+viewport.width);}
-  check(!requests.some(p=>/gallery-fireplace|gallery-fire-audio|\/assets\/fire\//.test(p)),city+' never loads the removed fireplace code or audio at '+viewport.width);
+  const vessel=sample.initial.originsJourney.vessel;
+  await pg.waitForTimeout(200);
+  check((await state(pg)).originsJourney.vessel.rotation===vessel.rotation,city+' keeps the saucer still with reduced motion at '+viewport.width);
+  await pg.emulateMedia({reducedMotion:'no-preference'});
+  await pg.waitForFunction(angle=>Math.abs(__totehm_gallery().originsJourney.vessel.rotation-angle)>.01,vessel.rotation);
+  check(vessel.rotationDegreesPerSecond>=3&&vessel.rotationDegreesPerSecond<=5,city+' turns the saucer slowly on its own axis at '+viewport.width);
+  await pg.emulateMedia({reducedMotion:'reduce'});
   await pg.screenshot({path:out+'/'+city+'-'+viewport.width+'-world.png'});await focusProjection(pg);sample.camera=await pg.evaluate(()=>__totehm_gallery().camera.position);await pg.evaluate(()=>window.projectionSceneToken='same scene');
   const animated=city==='lisbon'&&viewport.width===800;
-  if(animated){await pg.emulateMedia({reducedMotion:'no-preference'});await pg.evaluate(()=>{window.projectionSamples=[];const sample=()=>{const d=window.__totehm_projection_expansion?.(),image=document.querySelector('#experience-projection-dialog>img'),r=image?.getBoundingClientRect();if(d){window.projectionSamples.push({...d,box:r?{x:r.x,y:r.y,w:r.width,h:r.height}:null});if(d.stage==='experience'||d.stage==='closed')return;}requestAnimationFrame(sample);};requestAnimationFrame(sample);});}
-  await pg.locator('#enter-experience').click({timeout:60000});await pg.waitForFunction(()=>window.__totehm_projection_expansion?.().stage==='experience',null,{timeout:40000});
+  if(animated){
+   const angle=(await state(pg)).originsJourney.vessel.rotation;
+   await pg.emulateMedia({reducedMotion:'no-preference'});
+   await pg.waitForFunction(value=>Math.abs(__totehm_gallery().originsJourney.vessel.rotation-value)>.01,angle);
+   await pg.evaluate(()=>{window.projectionSamples=[];const sample=()=>{const d=window.__totehm_projection_expansion?.(),image=document.querySelector('#experience-projection-dialog>img'),r=image?.getBoundingClientRect();if(d){window.projectionSamples.push({...d,box:r?{x:r.x,y:r.y,w:r.width,h:r.height}:null});if(d.stage==='experience'||d.stage==='closed')return;}requestAnimationFrame(sample);};requestAnimationFrame(sample);});
+  }
+  await clickPanel(pg);await pg.waitForFunction(()=>window.__totehm_projection_expansion?.().stage==='experience',null,{timeout:40000});
   const frame=pg.frames().find(fr=>new URL(fr.url()).searchParams.get('embedded')==='1');check(!!frame&&await frame.evaluate(()=>__totehm_experience_front().ready),city+' opens its own ready original first page in a fullscreen frame at '+viewport.width);
   sample.front=await frame.evaluate(()=>__totehm_experience_front());
   check(city==='lisbon'?sample.front.kind===projection.front.kind&&sample.front.signs===projection.front.signs:sample.front.build===projection.front.build&&JSON.stringify(sample.front.ids)===JSON.stringify(projection.front.ids),city+' uses the same canonical canvas renderer and original catalogue in scene and page at '+viewport.width);
+  if(city==='lisbon'){
+   await frame.waitForFunction(()=>__totehm_experience_front().phase==='discover'&&__totehm_experience_front().visibleSigns===22);
+   check(!(await frame.evaluate(()=>__totehm_experience_front().titleOnly)),'The full-screen Lisbon title reveals all 22 signs into Discover at '+viewport.width);
+  }else check(!requests.some(path=>path.startsWith('/assets/fire/')),'New York never requests a fire recording at '+viewport.width);
   check(await pg.evaluate(()=>window.projectionSceneToken==='same scene'&&__totehm_projection_expansion().physicalPanelVisible===false&&__totehm_projection_expansion().overlays===0&&__totehm_projection_expansion().frames===1),city+' has one live experience and no duplicate projected image at '+viewport.width);
   if(animated){await pg.waitForFunction(()=>window.projectionSamples.at(-1)?.stage==='experience');sample.animation=await pg.evaluate(()=>window.projectionSamples);const moving=sample.animation.filter(s=>s.stage==='expanding'&&s.box),last=sample.animation.at(-1);check(moving.length>=5&&sample.animation.every(s=>!s.physicalPanelVisible&&s.frames===1&&s.overlays===(s.stage==='experience'?0:1)),'The enlargement renders multiple frames with exactly one panel representation');const corners=last.from.concat(last.target),minX=Math.min(...corners.map(p=>p.x)),maxX=Math.max(...corners.map(p=>p.x)),minY=Math.min(...corners.map(p=>p.y)),maxY=Math.max(...corners.map(p=>p.y));check(moving.every(s=>s.box.x>=minX-1&&s.box.x+s.box.w<=maxX+1&&s.box.y>=minY-1&&s.box.y+s.box.h<=maxY+1),'Every animated panel frame stays in its projected path without flipping or jumping');}
   await pg.screenshot({path:out+'/'+city+'-'+viewport.width+'-experience.png'});

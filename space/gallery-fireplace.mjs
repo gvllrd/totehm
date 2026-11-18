@@ -1,4 +1,5 @@
 import * as T from './vendor/three-0.180.0.mjs';
+import {createOutdoorCampfire} from './gallery-outdoor-campfire.mjs';
 import {createWhiteStone} from './gallery-white-stone.mjs';
 import {GLASS_HEARTH} from './gallery-glass-shell.mjs';
 import {GALLERY_LAYOUT as DEFAULT_LAYOUT} from './gallery-modern-layout.mjs';
@@ -6,7 +7,8 @@ import {GALLERY_LAYOUT as DEFAULT_LAYOUT} from './gallery-modern-layout.mjs';
 // An open wood campfire held by the pavilion’s flowing glass collector.
 // Combustion, lifted embers and the plume share the world clock and freeze
 // together in reduced motion. No movie or camera-facing flame image is used.
-export function createGalleryFireplace(scene,{mobile=false,onChange=()=>{},smokeOutlet=GLASS_HEARTH.smokeOutlet,layout:L=DEFAULT_LAYOUT,blackStone=false}={}){
+export function createGalleryFireplace(scene,{mobile=false,onChange=()=>{},smokeOutlet=GLASS_HEARTH.smokeOutlet,layout:L=DEFAULT_LAYOUT,blackStone=false,outdoor=false}={}){
+ if(outdoor)return createOutdoorCampfire(scene,{mobile,onChange,layout:L});
  const [hearthX,,hearthZ]=L.fireplace.position,hearthOrigin=new T.Vector3(hearthX,0,hearthZ);
  const root=new T.Group();root.name='The campfire — tall living flames inside a wave of glass';scene.add(root);
  const geometries=new Set(),materials=new Set(),textures=new Set(),solids=[],pickables=[];

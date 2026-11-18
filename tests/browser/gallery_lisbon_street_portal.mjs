@@ -52,7 +52,7 @@ try{
   await spoof.pg.goto(origin+'/play_lisbon_street?sign=stop&play=1');await ready(spoof.pg,'guest');
   await noVideo(spoof,'Local storage flags cannot manufacture a TotehmPaper entitlement');
  }finally{await spoof.ctx.close();}
- for(const viewport of [{width:1440,height:1000},{width:390,height:844}]){
+ for(const viewport of [{width:1440,height:1000},{width:1024,height:768}]){
   const owner=await fixture({session:true,owned:true,viewport});
   try{
    await owner.pg.goto(origin+'/play_lisbon_street?discover=1',{waitUntil:'domcontentloaded'});await ready(owner.pg,'owned');

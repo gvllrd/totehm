@@ -4,6 +4,18 @@
   "trailingSlash": false,
   "redirects": [
     {
+      "source": "/:page((?:index|lisbon-space|new-york|lisbon|discover|discover_lisbon|get_higher|global|market|origin|origins|play_lisbon_street|same_but_opposite|social|stoner|stoner_terms|think_same_but_opposite)?)",
+      "has": [{ "type": "header", "key": "sec-ch-ua-mobile", "value": "\\?1" }],
+      "destination": "/desktop",
+      "permanent": false
+    },
+    {
+      "source": "/:page((?:index|lisbon-space|new-york|lisbon|discover|discover_lisbon|get_higher|global|market|origin|origins|play_lisbon_street|same_but_opposite|social|stoner|stoner_terms|think_same_but_opposite)?)",
+      "has": [{ "type": "header", "key": "user-agent", "value": ".*(?:Android|iPhone|iPad|iPod|Mobile|Windows Phone).*" }],
+      "destination": "/desktop",
+      "permanent": false
+    },
+    {
       "source": "/",
       "has": [
         {

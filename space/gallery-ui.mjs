@@ -8,16 +8,16 @@ const reduced=matchMedia('(prefers-reduced-motion: reduce)'),body=document.body;
 const place=location.pathname.replace(/\/+$/,'')==='/new-york'?'new-york':'lisbon';
 body.dataset.place=place;
 document.title='TOTEHM.SPACE — '+(place==='new-york'?'New York':'Lisbon');
-document.getElementById('space').setAttribute('aria-label',(place==='lisbon'?'Historic Lisbon azulejo ruins joined by modern glass, with stone inside. One deep black table presents TotehmPaper and laboratory glass on both sides. A monumental hologram opens the original Play the Street Discover; a flying saucer crosses the galaxy through a black hole to Origins. ':'An airy coastal castle gallery: ancient stone ruins and modern glass. ')+'Original artworks above the storm sea. Drag to look, tap the floor to walk. WASD to walk, Space to jump.');
+document.getElementById('space').setAttribute('aria-label',(place==='lisbon'?'An open-air Lisbon lounge on the calçada. Sit in the leather armchair. Click the suspended cinema screen to discover Lisbon Streets, the controller to play, or a TotehmPaper case to inspect it. Board the saucer to Origins. ':'An airy coastal castle gallery: ancient stone ruins and modern glass. ')+'Original artworks above the storm sea. Drag to look, tap the floor to walk. WASD to walk, Space to jump.');
 document.getElementById('building-levels')?.remove();
 document.querySelector('#origins .origins-grid')?.remove();const originLink=document.querySelector('#origins .room-actions a');if(originLink)originLink.href='/origin?from='+place;const originCaption=document.querySelector('#origins .caption>p');if(originCaption)originCaption.textContent='Wah · The original volume';
 if(place==='lisbon'){document.querySelector('.tour [data-room="4"]')?.remove();document.getElementById('same-but-opposite')?.remove();}
 else{for(const index of [0,3,4])document.querySelector('.tour [data-room="'+index+'"]')?.remove();for(const id of ['totehmpaper','stoner','same-but-opposite'])document.getElementById(id)?.remove();document.querySelector('.tour [data-room="2"]').lastChild.textContent='Think same but opposite';}
 const ROOMS=[
- {title:'TotehmPaper {THP}',kind:'The Stoner Experience',path:'/get_higher',collect:'/market?art=totehmpaper',action:'Enter the experience ↗',note:'Original perforated art. Choose your TotehmPaper.'},
+ {title:'TotehmPaper {THP}',kind:'The Stoner Experience',path:'/get_higher?paper=1',collect:'/market?art=totehmpaper',action:'Inspect the premium case',note:'The original paper in its premium glass case.'},
  {title:'Origins',kind:'The original book',path:'/origin?from='+place,collect:'/market?collection=quantum',action:'Board the saucer',note:place==='lisbon'?'Through the galaxy. Beyond the event horizon.':'Twenty works. Turn the pages.'},
  {title:'Play the Lisbon Street',kind:'Neuro Street Art Digital',path:'/play_lisbon_street',collect:'/market?collection=play-the-lisbon-street',action:place==='lisbon'?'Discover the experience':'PLAY ↗',note:place==='lisbon'?'A TotehmPaper is your key. Get Higher through Stoner, then enter the 22 Lisbon works.':'Choose a sign. Play the street.'},
- {title:'The Stoner Experience',kind:'TotehmPaper {THP}',path:'/get_higher',collect:'/market?art=totehmpaper',action:'Enter the experience ↗',note:place==='lisbon'?'The original paper, in its small premium case on the black laboratory table.':'The original paper, in its premium case on the stone table.'},
+ {title:'The Stoner Experience',kind:'TotehmPaper {THP}',path:'/get_higher',collect:'/market?art=totehmpaper',action:'Enter the experience ↗',note:place==='lisbon'?'The original paper, in its premium case on the antique stone table.':'The original paper, in its premium case on the stone table.'},
  {title:'Same but opposite',kind:'Video artwork · Wah',path:'/same_but_opposite',action:'PLAY ↗',note:'Tap to play the artwork in its own full-screen experience.'}
 ];
 const $=id=>document.getElementById(id),buttons=[...document.querySelectorAll('.tour [data-room]')],info=$('work-info');
@@ -69,6 +69,14 @@ function showStreetSign(work){
  $('leave-station').hidden=true;
  const get=streetExperienceLink('get');get.className='street-get-higher';const discover=document.createElement('a');discover.href='/play_lisbon_street?discover=1';discover.textContent='Read Discover';$('work-links').replaceChildren(discover,get);
 }
+let seatButton=null;
+if(place==='lisbon'){
+ seatButton=document.createElement('button');seatButton.type='button';seatButton.id='sit-lounge';seatButton.textContent='Sit';
+ seatButton.addEventListener('click',()=>{if(station?.seated)engine?.stand();else engine?.sit();});
+ const playButton=document.createElement('button');playButton.type='button';playButton.id='lounge-play';playButton.textContent='Play';
+ playButton.addEventListener('click',()=>{if(fallback||body.classList.contains('list-view'))location.assign('/play_lisbon_street?board=1');else engine?.openController();});
+ $('view-list').before(seatButton,playButton);
+}
 const returnIslandButton=document.createElement('button');returnIslandButton.type='button';returnIslandButton.id='return-island';returnIslandButton.textContent='Return to the island';returnIslandButton.hidden=true;returnIslandButton.addEventListener('click',()=>{clearInfo();engine?.returnIsland();});document.body.append(returnIslandButton);
 function journeyState(value){returnIslandButton.hidden=!value||value==='island';body.classList.toggle('in-origins-vessel',!!value&&value!=='island');}
 function links(work){
@@ -83,7 +91,7 @@ function controls(){
  $('leave-station').hidden=!arrived;
  $('enter-experience').disabled=(!arrived&&!fallback)||(room===1&&!!station?.book?.opening);
  if(room===1)$('enter-experience').textContent=station?.book?.opening?'Opening…':ROOMS[1].action;
- if(room>=0)$('work-note').textContent=arrived?ROOMS[room].note:'Walking to the '+['counter','book',place==='lisbon'?'street installation':'Lisbon screen','premium cases','Same but opposite screen'][room]+'…';
+ if(room>=0)$('work-note').textContent=arrived?ROOMS[room].note:'Walking to the '+['counter','book',place==='lisbon'?'cinema screen':'projection','premium cases','Same but opposite screen'][room]+'…';
 }
 function choose(index,{hash=true}={}){
  if(place==='lisbon'&&index===4)return overview();
@@ -120,12 +128,12 @@ document.addEventListener('keydown',e=>{
 });
 document.addEventListener('visibilitychange',syncPreview);reduced.addEventListener('change',syncPreview);
 addEventListener('pagehide',()=>{if(listRaf)cancelAnimationFrame(listRaf);listRaf=0;});addEventListener('pageshow',syncPreview);
-window.__totehm_gallery=()=>({build:'2026-11-16-canonical-saucer-projections',place,rooms:place==='lisbon'?3:2,room,hoveredSign,activeSign,list:body.classList.contains('list-view'),fallback,reduced_motion:reduced.matches,experiences:place==='new-york'?['/think_same_but_opposite','/origin?from=new-york']:[...new Set(ROOMS.filter((w,i)=>i!==4).map(w=>w.path))],experienceNavigation:'canonical-first-page-projection-to-continuous-fullscreen',inGalleryPlayback:false,lisbon:preview.diagnostics(),...engine?.diagnostics()});
+window.__totehm_gallery=()=>({build:'2026-11-18-lisbon-open-air-lounge',place,rooms:place==='lisbon'?3:2,room,hoveredSign,activeSign,list:body.classList.contains('list-view'),fallback,reduced_motion:reduced.matches,experiences:place==='new-york'?['/think_same_but_opposite','/origin?from=new-york']:[...new Set(ROOMS.filter((w,i)=>i!==4).map(w=>w.path))],experienceNavigation:'suspended-cinema-and-original-objects-to-fullscreen',inGalleryPlayback:false,lisbon:preview.diagnostics(),...engine?.diagnostics()});
 function useFallback(){fallback=true;body.classList.remove('is-origin-transit','in-origins-vessel');body.classList.add('no-3d','list-view');engine?.setList(true);clearInfo();syncPreview();}
 try{
  const {createGallery}=await import('./gallery-spatial.mjs');
  engine=await createGallery({place,select:choose,onOverview:clearInfo,onArtwork:showStreetSign,onSignFocus:signFocus,interact,fallback:useFallback,reduced,
-  onStationState:value=>{station=value;journeyState(value.vessel);controls();}
+  onStationState:value=>{station=value;journeyState(value.vessel);if(seatButton)seatButton.textContent=value.seated?'Stand':'Sit';controls();}
  });
  engine.setList(body.classList.contains('list-view'));
  const selected=pending;pending=null;

@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<script src="/desktop-access.js"></script>
+<script>const streetEntry=new URLSearchParams(location.search);if(streetEntry.get('board')==='1'&&streetEntry.get('discover')!=='1')document.documentElement.classList.add('controller-deep-link');</script>
 <title>TOTEHM — Lisbon Streets Higher</title>
 <link href="https://fonts.googleapis.com/css2?family=Quantico:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
@@ -80,40 +82,6 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
   #sdisc-trig:hover .trigger-label,
   #sdisc-trig:hover .chev{color:#fff}
 }
-
-/* ═══ STREET BOARD ═══ */
-.world{
-  position:fixed;inset:0;z-index:80;
-  display:flex;align-items:center;justify-content:center;
-  background:#000;opacity:0;pointer-events:none;transition:opacity .55s ease;
-}
-.world.on{opacity:1;pointer-events:auto}
-.board{
-  position:relative;
-  width:min(100vw,calc(100vh * 1.7778));
-  height:min(100vh,calc(100vw / 1.7778));
-}
-@media(hover:hover) and (min-width:900px){
-  .board{width:min(66vw,calc(66vh * 1.7778));height:min(66vh,calc(66vw / 1.7778));}
-}
-.sign{
-  position:absolute;left:var(--l);top:var(--t);width:var(--w);
-  background:none;border:0;padding:0;cursor:pointer;
-  transition:transform .14s ease,filter .2s ease;
-  touch-action:manipulation;outline:none;
-}
-.sign img{width:100%;height:auto;display:block;pointer-events:none}
-@media(hover:hover){.sign:hover{filter:brightness(1.15) drop-shadow(0 0 6px rgba(255,255,255,.2))}}
-.sign:active{transform:scale(.86)}
-.sign-spin img{animation:sign-spin 18s linear infinite}
-@keyframes sign-spin{to{transform:rotate(360deg)}}
-#world-close{
-  position:absolute;top:18px;right:18px;z-index:5;
-  background:none;border:none;cursor:pointer;padding:0;
-  font-family:'Space Mono',monospace;font-size:10px;color:#9a9a9a;letter-spacing:.14em;text-transform:uppercase;
-  transition:color .15s ease;
-}
-@media(hover:hover){#world-close:hover{color:#fff}}
 
 /* ═══ SIGN XP ═══ */
 .xp{
@@ -230,8 +198,8 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
 .thp-price::after{content:var(--thp,"")}
 
 @media(prefers-reduced-motion:reduce){
-  .disc-block,.world,.xp,.vbox-scene,#xp-label{transition:none}
-  .bob-chev,.sign-spin img,.rotate-spinner{animation:none}
+  .disc-block,.xp,.vbox-scene,#xp-label{transition:none}
+  .bob-chev,.rotate-spinner{animation:none}
 }
 
 /* Discover: the full-screen type scale and reading rhythm of Think same. */
@@ -265,6 +233,19 @@ body.is-snapping #experience-front-canvas,body.is-street-board #experience-front
 body:not(.is-street-front) #sdisc-cover-next{opacity:0;transform:translate(-50%,18px);pointer-events:none}
 .is-street-front #sdisc-stage,.is-street-front #sdisc-progress,.is-street-front #sdisc-rail,.is-street-front #sdisc-reading-hint,.is-street-front #sdisc-trig{opacity:0!important;visibility:hidden;pointer-events:none}
 #sdisc-stage{transition:opacity .7s}
+#controller-3d-view{position:fixed;inset:0;pointer-events:none;opacity:0;transition:opacity .8s ease;}
+#controller-3d-canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+body.is-controller-forming #controller-3d-view,body.is-street-board #controller-3d-view,body.is-controller-entry #controller-3d-view{opacity:1}
+body.is-controller-locked #controller-3d-view{opacity:.20}
+body.is-controller-locked :is(#experience-front-canvas,#sdisc-cover-next,#sdisc-rail,#sdisc-progress,#sdisc-reading-hint,#sdisc-trig){display:none!important}
+body.is-controller-locked #street-access-status{clip-path:inset(50%)}
+body.is-controller-locked #sdisc-stage{background:radial-gradient(ellipse at center,#000d 0%,#0008 35%,transparent 66%)}
+:is(.controller-deep-link,.is-controller-entry) :is(#experience-front-canvas,#sdisc-stage,#sdisc-cover-next,#sdisc-back,#sdisc-trig,#sdisc-progress,#sdisc-rail,#sdisc-reading-hint){visibility:hidden}
+body.is-street-board.has-controller-3d #sdisc-bg>.street-rock>img{opacity:0}
+#sdisc-bg .street-rock .controller-used .higher-inline{width:100%;min-width:0}
+#sdisc-bg .street-rock .controller-used{display:block;width:36%;top:72%!important;left:65%!important;}
+body.is-street-board #sdisc-bg>.street-rock:focus-visible{outline:2px solid #a6b5d4;border-radius:8px;outline-offset:4px}
+@media(prefers-reduced-motion:reduce){#controller-3d-view{transition:none}}
 
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille
@@ -276,7 +257,6 @@ body:not(.is-street-front) #sdisc-cover-next{opacity:0;transform:translate(-50%,
 #sdisc-board-close:hover,
 .trigger-label:hover,
 .chev:hover,
-#world-close:hover,
 #xp-close:hover,
 #auth-back-btn:hover,
 .line-input:hover::placeholder,
@@ -350,7 +330,7 @@ body:not(.is-street-front) #sdisc-cover-next{opacity:0;transform:translate(-50%,
 
 <div id="street-disc">
   <p id="street-access-status" role="status" aria-live="polite"></p>
-  <div id="sdisc-bg"></div>
+  <div id="sdisc-bg"><div id="controller-3d-view" aria-hidden="true"></div></div>
   <button id="sdisc-cover-next" type="button">Discover ↓</button>
   <button id="sdisc-back" data-experience-close type="button">Back</button>
   <button id="sdisc-board-close" type="button" aria-label="Back to the story" style="display:none">✕</button>
@@ -360,11 +340,6 @@ body:not(.is-street-front) #sdisc-cover-next{opacity:0;transform:translate(-50%,
     <span class="trigger-label">Discover the Lisbon Street</span>
     <svg class="chev bob-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
   </button>
-</div>
-
-<div class="world" id="world">
-  <button id="world-close">✕</button>
-  <div class="board" id="board"></div>
 </div>
 
 <div class="xp" id="xp">
@@ -411,7 +386,8 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import {checkLisbonStreetAccess,requestLisbonStreetMedia} from './lisbon-street-access.mjs';
 import {LISBON_STREET_DISCOVER} from './lisbon-street-discover.mjs';
 import {createLisbonFirstPage} from './lisbon-first-page.mjs';
-const BUILD = '2026-11-16-lisbon-canonical-first-page';
+import {createLisbonControllerView} from './gallery-lisbon-controller.mjs';
+const BUILD = '2026-11-18-lisbon-shared-3d-controller';
 function streetReturnPath(){const destination=new URL(location.href);destination.searchParams.delete('embedded');destination.searchParams.delete('sceneTime');return destination.pathname+destination.search;}
 // A purchase or central connection leaves the projected reader as a whole.
 function navigateStreetExperience(href){
@@ -782,12 +758,9 @@ const directSign = !discoverOnly && entryQuery.get('play')==='1' && Object.hasOw
 const requestedBoard=!discoverOnly&&entryQuery.get('board')==='1';
 const fromSpace = !!directSign && entryQuery.get('from')==='space';
 
-const world      = document.getElementById('world');
-const board      = document.getElementById('board');
 const xp         = document.getElementById('xp');
 const vidWrap    = document.getElementById('vidWrap');
 const vid        = document.getElementById('vid');
-const worldClose = document.getElementById('world-close');
 const xpClose    = document.getElementById('xp-close');
 const xpBuy      = document.getElementById('xp-buy');
 
@@ -799,24 +772,6 @@ let playbackBlocked = false,mediaState='idle',launchRevision=0;
 refreshArtworkLabel = ()=>{
   if(activeSign && xp.classList.contains('up')) renderXpArtwork(activeSign);
 };
-
-for(const [id,[l,t,w]] of Object.entries(SIGNS)){
-  const b = document.createElement('button');
-  b.className = 'sign';
-  b.style.setProperty('--l', l+'%');
-  b.style.setProperty('--t', t+'%');
-  b.style.setProperty('--w', w+'%');
-  b.setAttribute('aria-label', id.replace(/_/g,' '));
-  if(id==='roundabout'||id==='left_or_straight') b.classList.add('sign-spin');
-  const img = document.createElement('img');
-  img.src = IMG_BASE+id+'.png'; img.alt=''; img.loading='lazy';
-  b.appendChild(img);
-  b.addEventListener('click', ()=>launchXp(id));
-  board.appendChild(b);
-}
-
-function openWorld(){if(!OWNED){showAccessRequirement(streetAccess);return;}world.classList.add('on');}
-function closeWorld(){ world.classList.remove('on'); }
 
 let vbRaf=null,vbGrab=false,vbRX=5,vbRY=-15,vbVX=0,vbVY=0,vbT=0,vbTs=null;
 let vbSX=0,vbSY=0,vbDRX=0,vbDRY=0,vbHX=null,vbHY=null;
@@ -893,7 +848,7 @@ function renderXpArtwork(id){
   }
 }
 
-async function launchXp(id,{immediate=false,from='world'}={}){
+async function launchXp(id,{immediate=false,from='direct'}={}){
   if(streetBusy || !Object.hasOwn(SIGNS,id))return false;
   streetBusy=true;mediaState='checking';const revision=++launchRevision;
   const media=await requestLisbonStreetMedia(id,{client:sb});
@@ -903,7 +858,7 @@ async function launchXp(id,{immediate=false,from='world'}={}){
   activeSign=id;lastXpFrom=from;mediaState='ready';
   vid.muted=!!immediate;vid.controls=!!immediate;
   vid.src=media.url;vid.load();
-  vidWrap.classList.remove('in'); closeWorld(); xp.classList.add('up');
+  vidWrap.classList.remove('in'); xp.classList.add('up');
 
   // Gallery label
   const xpLabel = document.getElementById('xp-label');
@@ -938,10 +893,15 @@ function comeBack(){
   xp.classList.remove('up'); vidWrap.classList.remove('in');
   setTimeout(()=>{
     if(revision!==launchRevision)return;vid.removeAttribute('src');vid.load();streetBusy=false;activeSign=null;
-    if(lastXpFrom==='world'){ openWorld(); }
+    if(lastXpFrom==='direct'){ snapToBoard(); }
     else{
       ROCKS.forEach(r=>{ r.img.style.filter=''; });
-      if(lastPressedRock && lastPressedRock.id!=='destination'){ lastPressedRock._pressed=true; lastPressedRock.uLabel.style.opacity='1'; } lastPressedRock=null;
+      if(lastPressedRock&&lastPressedRock.id!=='destination'){
+        lastPressedRock._pressed=true;
+        const label=lastPressedRock.uLabel;
+        label.innerHTML=HIGHER_MARKUP;label.className='controller-used';label.style.opacity='1';
+      }
+      lastPressedRock=null;
     }
   },600);
 }
@@ -949,7 +909,7 @@ function comeBack(){
 function closeAll(){
   const revision=++launchRevision;mediaState='idle';resumeVideo=null;
   vid.pause(); stopVidBox();
-  xp.classList.remove('up'); closeWorld(); vidWrap.classList.remove('in');
+  xp.classList.remove('up'); vidWrap.classList.remove('in');
   setTimeout(()=>{if(revision!==launchRevision)return;vid.removeAttribute('src');vid.load();streetBusy=false;activeSign=null;},300);
 }
 
@@ -959,7 +919,6 @@ vid.addEventListener('ended', ()=>{
   comeBack();
 });
 xpClose.addEventListener('click', comeBack);
-worldClose.addEventListener('click', closeAll);
 
 xpBuy.addEventListener('click',async()=>{
   if(xpBuy.dataset.sold==='1') return;
@@ -994,13 +953,28 @@ const firstPage=createLisbonFirstPage({width:1600,height:900});firstPage.canvas.
 firstPage.setTime(Number(entryQuery.get('sceneTime'))||0);let firstPageActive=true,frontRaf=0,frontLast=0,frontFrozen=embeddedFront;document.body.classList.add('is-street-front');
 function drawFront(now){frontRaf=0;const dt=frontLast?(now-frontLast)/1000:0;frontLast=now;if(!document.hidden&&!boardMode&&!snapping&&!xp.classList.contains('up')&&!frontFrozen)firstPage.update(dt,!reducedMotion.matches);if(!document.hidden&&!boardMode&&!snapping&&!xp.classList.contains('up')&&!frontFrozen)frontRaf=requestAnimationFrame(drawFront);}
 function startFront(){if(!frontRaf&&!document.hidden&&!frontFrozen&&!reducedMotion.matches){frontLast=0;frontRaf=requestAnimationFrame(drawFront);}}
-function beginStreetDiscover(){if(!firstPageActive)return;firstPageActive=false;frontFrozen=false;document.body.classList.remove('is-street-front');const from=firstPage.diagnostics().reveal,start=performance.now();function reveal(now){const t=reducedMotion.matches?1:Math.min(1,(now-start)/650);firstPage.setReveal(from+(1-from)*(t*t*(3-2*t)));if(t<1)requestAnimationFrame(reveal);}requestAnimationFrame(reveal);showSdisc(0,reducedMotion.matches);startFront();}
+function beginStreetDiscover({immediate=false}={}){
+  if(!firstPageActive)return;
+  firstPageActive=false;frontFrozen=false;
+  const from=firstPage.diagnostics().reveal,start=performance.now(),revision=storyRevision;
+  const instant=immediate||reducedMotion.matches;
+  let storyVisible=false;
+  const reveal=now=>{
+    if(revision!==storyRevision)return;
+    const progress=instant?1:Math.min(1,(now-start)/650);
+    firstPage.setReveal(from+(1-from)*progress*progress*(3-2*progress));
+    if(progress>=.56&&!storyVisible){storyVisible=true;document.body.classList.remove('is-street-front');showSdisc(0,instant);}
+    if(progress<1)requestAnimationFrame(reveal);
+  };
+  if(instant)reveal(start);else requestAnimationFrame(reveal);
+  startFront();
+}
 window.__totehm_experience_front=()=>({...firstPage.diagnostics(),phase:firstPageActive?'front':'discover'});
 window.addEventListener('totehm:experience-enter',beginStreetDiscover,{once:true});document.getElementById('sdisc-cover-next').addEventListener('click',beginStreetDiscover);
 firstPage.ready.then(()=>{startFront();});
 let   astRaf       = null;
 let   snapping     = false;
-let   lastXpFrom   = 'world';
+let   lastXpFrom   = 'direct';
 let   lastPressedRock = null;
 
 function getBoardRect(){
@@ -1036,7 +1010,7 @@ function spawnRock(id,tl,tt,tw){
 
   const img=document.createElement('img');
   img.src=IMG_BASE+id+'.png'; img.alt='';
-  img.style.cssText=`width:100%;height:100%;display:block;user-select:none;pointer-events:none;transition:filter .25s ease;`;
+  img.style.cssText=`width:100%;height:100%;object-fit:contain;display:block;user-select:none;pointer-events:none;transition:filter .25s ease;`;
   img.style.transform=`rotate(${rot}deg)`;
 
   const uLabel=document.createElement('div');
@@ -1097,6 +1071,51 @@ function stopAsteroids(){
 }
 
 let boardMode = false;
+let controllerView=null,controllerPromise=null,controllerEntryReady=false,directBoardActive=false,controllerPreparing=0;
+const controllerHost=document.getElementById('controller-3d-view');
+
+window.__totehm_controller_entry=()=>({ready:controllerEntryReady,owned:OWNED,phase:boardMode?'board':controllerEntryReady?'prepared':'checking',canvas:!!controllerView,model:controllerView?.model.diagnostics()||null});
+function releaseController(){
+  controllerPreparing++;
+  controllerView?.dispose();controllerView=null;controllerPromise=null;
+  document.body.classList.remove('has-controller-3d','is-controller-entry','is-controller-forming','is-controller-locked');
+}
+async function prepareController({preview=false}={}){
+  if(!OWNED&&!preview)return null;
+  if(controllerPromise)return controllerPromise;
+  const revision=++controllerPreparing;
+  try {
+    controllerView=createLisbonControllerView(controllerHost,{onLayout:()=>{if(boardMode)reSnapToBoard();}});
+    document.body.classList.add('has-controller-3d');
+    controllerPromise=controllerView.ready.then(()=>revision===controllerPreparing?controllerView:null);
+  } catch(error) {
+    console.warn('[controller]',error?.name||'unavailable');controllerPromise=Promise.resolve(null);
+  }
+  return controllerPromise;
+}
+function controllerTarget(rock){
+  const target=controllerView?.target(rock.id);if(target)return target;
+  const rect=getBoardRect(),size=rock.tw*rect.w/100;return {x:rect.x+rock.tl*rect.w/100,y:rect.y+rock.tt*rect.h/100,width:size,height:size};
+}
+function placeBoardKey(rock){
+  const {x,y,width,height}=controllerTarget(rock);
+  rock.wrap.style.width=width+'px';rock.wrap.style.height=height+'px';
+  rock.wrap.style.transform=`translate(${x}px,${y}px)`;
+}
+function enterDirectController(){
+  if(!controllerEntryReady||boardMode)return;
+  document.documentElement.classList.remove('controller-deep-link');
+  if(!OWNED){
+    document.body.classList.remove('is-controller-entry');
+    document.body.classList.toggle('is-controller-locked',!!controllerView);
+    showAccessRequirement(streetAccess);return;
+  }
+  directBoardActive=true;
+  stopAsteroids();document.body.classList.remove('is-controller-entry');
+  enterBoardMode();
+}
+window.addEventListener('totehm:controller-enter',enterDirectController);
+
 
 const rotatePrompt = document.getElementById('rotate-prompt');
 const isPortraitMobile = ()=>
@@ -1105,41 +1124,31 @@ const isPortraitMobile = ()=>
 function enterBoardMode(){
   firstPageActive=false;document.body.classList.remove('is-street-front');
   if(!OWNED){showAccessRequirement(streetAccess);return;}
-  boardMode=true;document.body.classList.add('is-street-board');document.body.classList.remove('is-snapping');
+  boardMode=true;document.body.classList.add('is-street-board');document.body.classList.remove('is-snapping','is-controller-locked');
+  document.getElementById('street-access-status').textContent='';
   sdiscStage.style.display='none';
   sdiscBack.style.display='none';
   sdiscTrig.style.display='none';
   sdiscBoardClose.style.display='block';
   if(isPortraitMobile()) rotatePrompt.classList.add('active');
-  const SPINNING=new Set(['roundabout','left_or_straight']);
-  const br=getBoardRect();
-  ROCKS.forEach(r=>{
-    if(r.id!=='destination'){
-      const angle=(Math.random()*20-10).toFixed(1);
-      const ox=(Math.random()*12-6).toFixed(1);
-      const oy=(Math.random()*12-6).toFixed(1);
-      r.uLabel.style.cssText=`position:absolute;top:${50+Number(oy)}%;left:${50+Number(ox)}%;width:24%;transform:translate(-50%,-50%) rotate(${angle}deg);pointer-events:none;opacity:${r._pressed?1:0};transition:opacity .3s ease;`;
-      r.uLabel.innerHTML='<svg viewBox="0 0 600 200" style="width:100%;height:auto;display:block"><use href="#higher-slogan"></use></svg>';
-    }
-    if(SPINNING.has(r.id) && !reducedMotion.matches){
-      const tx=br.x+(r.tl/100)*br.w, ty=br.y+(r.tt/100)*br.h;
-      r.img.style.transition=''; r.img.style.transform='';
-      r.wrap.style.transition=''; r.wrap.style.transform='';
-      r.wrap.style.translate=`${tx}px ${ty}px`;
-      r.wrap.style.animation='sign-spin 18s linear infinite';
-    }
-    r._boardClick=()=>{ lastPressedRock=r; launchXpFromDisc(r.id); };
-    r.wrap.setAttribute('role','button');
-    r.wrap.setAttribute('tabindex','0');
-    r.wrap.setAttribute('aria-label',r.id.replace(/_/g,' '));
-    r._boardKey=e=>{ if(e.key==='Enter'||e.key===' '){e.preventDefault();r._boardClick();} };
-    r.wrap.addEventListener('click',r._boardClick);
-    r.wrap.addEventListener('keydown',r._boardKey);
+  sdiscBoardClose.toggleAttribute('data-experience-close',directBoardActive&&embeddedFront);
+  sdiscBoardClose.setAttribute('aria-label',directBoardActive?'Return to the lounge':'Back to the story');
+  ROCKS.forEach(rock=>{
+    placeBoardKey(rock);
+    rock._boardClick=()=>{lastPressedRock=rock;launchXpFromDisc(rock.id);};
+    rock.wrap.setAttribute('role','button');
+    rock.wrap.setAttribute('tabindex','0');
+    rock.wrap.setAttribute('aria-label',rock.id.replace(/_/g,' '));
+    rock._boardKey=event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();rock._boardClick();}};
+    rock.wrap.addEventListener('click',rock._boardClick);
+    rock.wrap.addEventListener('keydown',rock._boardKey);
+    rock.wrap.onpointerdown=()=>controllerView?.feedback(rock.id,true);
+    rock.wrap.onpointerup=rock.wrap.onpointerleave=()=>controllerView?.feedback(rock.id,false);
   });
   sdiscBoardClose.focus({preventScroll:true});
 }
 function exitBoardMode(){
-  boardMode=false;document.body.classList.remove('is-street-board','is-snapping');
+  boardMode=false;document.body.classList.remove('is-street-board','is-snapping');releaseController();
   rotatePrompt.classList.remove('active');
   sdiscStage.style.display='';
   sdiscBack.style.display='';
@@ -1147,8 +1156,8 @@ function exitBoardMode(){
   sdiscBoardClose.style.display='none';
   ROCKS.forEach(r=>{
     r.img.style.filter=''; r.img.style.transform='rotate(0deg)';
-    r.wrap.style.animation=''; r.wrap.style.translate='';
-    r.uLabel.textContent='Useless';
+    r.wrap.onpointerdown=r.wrap.onpointerup=r.wrap.onpointerleave=null;
+    r.uLabel.textContent='Useless';r.uLabel.className='';
     r.uLabel.style.cssText=r._origLabelCss;
     r._pressed=false;
     if(r._boardClick){ r.wrap.removeEventListener('click',r._boardClick); r._boardClick=null; }
@@ -1158,6 +1167,10 @@ function exitBoardMode(){
 }
 function returnToStory(){
   if(snapping || streetBusy) return;
+  if(directBoardActive){
+    if(!embeddedFront)location.assign('/lisbon-space');
+    return;
+  }
   exitBoardMode();
   sdiscStage.style.opacity=''; sdiscBack.style.opacity=''; sdiscTrig.style.opacity='';
   sdiscTrig.style.display='';
@@ -1167,56 +1180,31 @@ function returnToStory(){
 sdiscBoardClose.addEventListener('click',returnToStory);
 
 function reSnapToBoard(){
-  const br=getBoardRect();
-  ROCKS.forEach(r=>{
-    const tx=br.x+(r.tl/100)*br.w, ty=br.y+(r.tt/100)*br.h, tw=(r.tw/100)*br.w;
-    r.wrap.style.width=tw+'px'; r.wrap.style.height=tw+'px';
-    if(r.wrap.style.animation){
-      r.wrap.style.translate=`${tx}px ${ty}px`;
-    } else {
-      r.wrap.style.transition=reducedMotion.matches?'none':'transform .5s ease,width .5s,height .5s';
-      r.wrap.style.transform=`translate(${tx}px,${ty}px)`;
-    }
-  });
-}
-
-/* Repositionne la manette quand l'écran tourne */
-if(window.matchMedia('(pointer:coarse)').matches){
-  const onRotate = ()=>{
-    if(!boardMode) return;
-    if(xp.classList.contains('up')) return;
-    if(window.matchMedia('(orientation:landscape)').matches){
-      rotatePrompt.classList.remove('active');
-      reSnapToBoard();
-    } else {
-      reSnapToBoard();
-      rotatePrompt.classList.add('active');
-    }
-  };
-  window.addEventListener('orientationchange', onRotate);
-  if(screen.orientation) screen.orientation.addEventListener('change', onRotate);
+  for(const rock of ROCKS){rock.wrap.style.transition='none';placeBoardKey(rock);}
 }
 
 async function snapToBoard(){
   await streetAccessReady;
   if(!OWNED){showAccessRequirement(streetAccess);return false;}
-  if(snapping) return; snapping=true;stopAsteroids();
-  const br=getBoardRect();
+  if(snapping||boardMode)return;snapping=true;
+  await prepareController();
+  if(!OWNED){snapping=false;releaseController();showAccessRequirement(streetAccess);return false;}
+  stopAsteroids();document.body.classList.add('is-controller-forming');
   const face=firstPage.canvas.getBoundingClientRect(),poses=firstPage.getSigns();ROCKS.forEach((r,i)=>{const pose=poses[i],im=r.img,nw=im.naturalWidth||1,nh=im.naturalHeight||1,scale=pose.size/Math.max(nw,nh);r.wrap.style.transition='none';r.wrap.style.width=nw*scale*face.width/1600+'px';r.wrap.style.height=nh*scale*face.height/900+'px';r.wrap.style.transform=`translate(${face.x+(pose.x-nw*scale/2)*face.width/1600}px,${face.y+(pose.y-nh*scale/2)*face.height/900}px)`;r.img.style.transform=`rotate(${pose.rotation}rad)`;r.img.style.filter='brightness(.29)';});sdiscBg.getBoundingClientRect();document.body.classList.add('is-snapping');
   const reduced=reducedMotion.matches;
   sdiscStage.style.transition=reduced?'none':'opacity .4s'; sdiscStage.style.opacity='0';
   sdiscBack.style.transition=reduced?'none':'opacity .4s'; sdiscBack.style.opacity='0';
   sdiscTrig.style.opacity='0';
   ROCKS.forEach(r=>{
-    const tx=br.x+(r.tl/100)*br.w, ty=br.y+(r.tt/100)*br.h, tw=(r.tw/100)*br.w;
+    const {x:tx,y:ty,width:tw,height:th}=controllerTarget(r);
     r.wrap.style.transition=reduced?'none':'transform .9s cubic-bezier(.65,0,.35,1),width .9s,height .9s';
-    r.wrap.style.width=tw+'px'; r.wrap.style.height=tw+'px';
+    r.wrap.style.width=tw+'px'; r.wrap.style.height=th+'px';
     r.wrap.style.transform=`translate(${tx}px,${ty}px)`;
     r.img.style.transition=reduced?'none':'transform .9s cubic-bezier(.65,0,.35,1),filter .25s ease';
     r.img.style.filter=''; r.img.style.transform='rotate(0deg)';
   });
   const finish=()=>{
-    snapping=false;
+    snapping=false;document.body.classList.remove('is-controller-forming');
     sdiscStage.style.transition=''; sdiscBack.style.transition='';
     enterBoardMode();
   };
@@ -1241,7 +1229,8 @@ function buildSdisc(sl){
     await streetAccessReady;
     if(streetAccess.state==='error'){await refreshStreetPermission();if(!OWNED){showAccessRequirement(streetAccess);return;}}
     if(!OWNED){navigateStreetExperience('/get_higher');return;}
-    snapToBoard();
+    if(requestedBoard&&controllerEntryReady){await prepareController();enterDirectController();}
+    else snapToBoard();
   });
   b.appendChild(btn);
   return b;
@@ -1258,9 +1247,12 @@ refreshStreetAccessUI=()=>{
   });
 };
 function showAccessRequirement(access){
-  beginStreetDiscover();launchRevision++;resumeVideo=null;streetBusy=false;activeSign=null;playAttempted=false;
-  vid.pause();vid.removeAttribute('src');vid.load();stopVidBox();xp.classList.remove('up');world.classList.remove('on');
+  if(requestedBoard&&firstPageActive){firstPageActive=false;document.body.classList.remove('is-street-front');}
+  else beginStreetDiscover({immediate:true});
+  launchRevision++;resumeVideo=null;streetBusy=false;activeSign=null;playAttempted=false;
+  vid.pause();vid.removeAttribute('src');vid.load();stopVidBox();xp.classList.remove('up');
   if(boardMode)exitBoardMode();
+  document.body.classList.remove('is-controller-entry');
   sdiscStage.style.display='';sdiscStage.style.opacity='';sdiscBack.style.display='';sdiscBack.style.opacity='';sdiscTrig.style.display='';
   document.getElementById('street-access-status').textContent=access.state==='error'?'Access could not be verified. Try again.':'A Totehmpaper is required to enter. Get Higher through Stoner first.';
   storyRevision++;showSdisc(SDSLIDES.length-1,true);refreshStreetAccessUI();
@@ -1310,11 +1302,16 @@ function sdiscPrev(){
 
 /* démarrage */
 resetRocks(); sdiscReset(); startAsteroids();
-streetAccessReady.then(access=>{
+streetAccessReady.then(async access=>{
   refreshStreetAccessUI();
   if(discoverOnly)return;
   if(directSign){if(access.owned){stopAsteroids();launchXp(directSign,{immediate:true});}else showAccessRequirement(access);}
-  else if(requestedBoard){if(access.owned)snapToBoard();else showAccessRequirement(access);}
+  else if(requestedBoard){
+    document.body.classList.add('is-controller-entry');
+    stopAsteroids();await prepareController({preview:true});
+    controllerEntryReady=true;
+    if(!embeddedFront)enterDirectController();
+  }
 });
 
 sdiscBack.addEventListener('click',()=>{ window.location.href='/lisbon-space'; });
@@ -1337,7 +1334,7 @@ window.addEventListener('keydown',e=>{
   else if(['ArrowUp','ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();sdiscPrev();}
   else if(e.key==='Escape'){
     if(xp.classList.contains('up')) comeBack();
-    else if(boardMode) returnToStory();
+    else if(boardMode){if(directBoardActive)sdiscBoardClose.click();else returnToStory();}
     else if(!snapping){if(embeddedFront)sdiscBack.click();else window.location.href='/lisbon-space';}
   }
 });
@@ -1349,20 +1346,7 @@ function pauseHiddenVideo(){
 function syncMotion(){
   if(reducedMotion.matches || document.hidden){ stopAsteroids(); stopVidBox(); }
   else if(!boardMode && !snapping) startAsteroids();
-  if(boardMode){
-    const br=getBoardRect();
-    ROCKS.forEach(r=>{
-      if(r.id!=='roundabout'&&r.id!=='left_or_straight') return;
-      const tx=br.x+(r.tl/100)*br.w, ty=br.y+(r.tt/100)*br.h;
-      if(reducedMotion.matches || document.hidden){
-        r.wrap.style.animation=''; r.wrap.style.translate='';
-        r.wrap.style.transform=`translate(${tx}px,${ty}px)`;
-      } else {
-        r.wrap.style.transform=''; r.wrap.style.translate=`${tx}px ${ty}px`;
-        r.wrap.style.animation='sign-spin 18s linear infinite';
-      }
-    });
-  }
+  if(boardMode)controllerView?.draw();
   if(document.hidden) pauseHiddenVideo();
   else {
     const source=resumeVideo; resumeVideo=null;
@@ -1378,6 +1362,7 @@ window.addEventListener('pagehide',()=>{stopAsteroids();stopVidBox();pauseHidden
 window.addEventListener('pageshow',syncMotion);
 window.__totehm_lisbon=()=>({
   build:BUILD,step:sdiscCur,board:boardMode,rocks:ROCKS.length,moving:!!frontRaf,firstPage:firstPage.diagnostics(),firstPageActive,
+  controller:controllerView?.model.diagnostics()||null,directBoard:directBoardActive,
   snapping,reduced_motion:reducedMotion.matches,visible:!document.hidden,
   artwork:xp.classList.contains('up'),auth:false,
   activeSign,directSign,fromSpace,playAttempted,playbackBlocked,videoMuted:vid.muted,

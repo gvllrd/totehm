@@ -68,6 +68,14 @@ export function createOriginsVessel(scene,{mobile=false,onChange=()=>{},onOpen=(
   uniforms:{uTime:{value:0}},vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
   fragmentShader:'uniform float uTime;varying vec2 vUv;void main(){float ends=smoothstep(0.,.15,vUv.y)*(1.-smoothstep(.86,1.,vUv.y));float flutes=.65+.35*pow(.5+.5*cos(vUv.x*6.2831853*24.+uTime*.14),5.);float a=.035*ends*flutes;gl_FragColor=vec4(.24,.55,.88,a);}'
  }));
+ const segments=new T.InstancedMesh(geometry(new T.BoxGeometry(.19,.024,.095)),white,18);
+ segments.name='Rotating machined registrations on the saucer rim';
+ for(let n=0;n<18;n++){
+  const angle=(n%6)*.038+Math.floor(n/6)*Math.PI*2/3;
+  transform.position.set(Math.sin(angle)*9.55,-.205,Math.cos(angle)*9.55);transform.rotation.set(0,angle,0);transform.updateMatrix();segments.setMatrixAt(n,transform.matrix);
+ }
+ segments.instanceMatrix.needsUpdate=true;saucer.add(segments);
+ const rotate=(dt,motion)=>{if(motion)saucer.rotation.y=(saucer.rotation.y+Math.min(Math.max(0,dt),.1)*.065)%(2*Math.PI);};
  mesh(root,geometry(new T.CylinderGeometry(2.7,4.2,8.2,mobile?32:48,1,true)),beamMaterial,[0,14.6,-4.2],'Saucer translucent blue boarding light').visible=!transitOnly;
  if(transitOnly){
   const portal=createBlackHolePortal(root),shipHome=new T.Vector3(...L.saucer);let flying=false;
@@ -77,9 +85,9 @@ export function createOriginsVessel(scene,{mobile=false,onChange=()=>{},onOpen=(
    setFlight(eye){if(!flying&&(eye.y<21.7||eye.z>-4.25))return;flying=true;saucer.position.set(eye.x,eye.y-1.65,eye.z);beamMaterial.opacity=0;beamMaterial.visible=false;},
    setReturnFlight(eye){if(eye.y>=21.64&&eye.z<=-4.19){flying=true;saucer.position.set(eye.x,eye.y-1.65,eye.z);beamMaterial.visible=false;}else{flying=false;saucer.position.copy(shipHome);beamMaterial.visible=true;}},
    resetFlight(){flying=false;saucer.position.copy(shipHome);beamMaterial.visible=true;},
-   update(dt,eye,motion=true){if(disposed)return false;if(motion){time+=Math.max(0,Math.min(Number(dt)||0,.1));beamMaterial.uniforms.uTime.value=time;}portal.update(dt,eye,motion);const result=dirty||motion;dirty=false;return result;},
-   diagnostics:()=>({kind:'origins-saucer-black-hole-transit',saucer:true,closedHull:true,closedUnderside:true,openShaft:false,flying,saucerPosition:saucer.position.toArray(),corridorInIsland:false,bookInIsland:false,originalWorks:0,blackHole:portal.diagnostics(),destination:ORIGIN_PORTAL.href}),
-   dispose(){if(disposed)return;disposed=true;portal.dispose();root.removeFromParent();for(const g of geometries)g.dispose();for(const m of materials)m.dispose();for(const t of textures)t.dispose();for(const light of lights)light.dispose?.();dots.dispose();root.clear();}
+   update(dt,eye,motion=true){if(disposed)return false;rotate(dt,motion);if(motion){time+=Math.max(0,Math.min(Number(dt)||0,.1));beamMaterial.uniforms.uTime.value=time;}portal.update(dt,eye,motion);const result=dirty||motion;dirty=false;return result;},
+   diagnostics:()=>({kind:'origins-saucer-black-hole-transit',saucer:true,rotation:saucer.rotation.y,rotationDegreesPerSecond:.065*180/Math.PI,closedHull:true,closedUnderside:true,openShaft:false,flying,saucerPosition:saucer.position.toArray(),corridorInIsland:false,bookInIsland:false,originalWorks:0,blackHole:portal.diagnostics(),destination:ORIGIN_PORTAL.href}),
+   dispose(){if(disposed)return;disposed=true;portal.dispose();root.removeFromParent();for(const g of geometries)g.dispose();for(const m of materials)m.dispose();for(const t of textures)t.dispose();for(const light of lights)light.dispose?.();dots.dispose();segments.dispose();root.clear();}
   };
  }
  // The corridor is a glass sleeve around an open volume, rather than an
@@ -144,8 +152,8 @@ export function createOriginsVessel(scene,{mobile=false,onChange=()=>{},onOpen=(
  return{root,pickables,solids,book,journey:L,
   setFlight(eye){returnFlying=true;saucer.position.set(eye.x-root.position.x,eye.y-root.position.y-1.65,eye.z-root.position.z);beamMaterial.visible=false;changed();},
   resetFlight(){returnFlying=false;saucer.position.set(...L.saucer);beamMaterial.visible=true;changed();},
-  update(dt,eye,motion=true){if(disposed)return false;const step=Math.max(0,Math.min(Number(dt)||0,.1));if(motion){time+=step;updates++;beamMaterial.uniforms.uTime.value=time;}const bookChanged=book.update(dt,eye,motion),result=dirty||bookChanged||!!(motion&&step>0);dirty=false;return result;},
-  diagnostics:()=>({kind:'origins-flying-saucer-destination',ready:!disposed,saucer:true,saucerRadius:L.radius,saucerPosition:saucer.getWorldPosition(new T.Vector3()).toArray(),flying:returnFlying,parked:!returnFlying,metallicDisk:true,closedCanopy:true,blueBeam:true,corridor:{transparent:true,blackFrames:true,glassFloor:true,intentions:0,roofIntentions:0,startZ:c.startZ,endZ:c.endZ,floorY:L.floorY,width:c.width,height:c.height},chamber:{closed:true,realDoorway:true,closedCeiling:true,center:[...L.chamber.center],radius,wallHeight:L.chamber.wallHeight,originalWorks:bookOnly?0:ORIGINS.length,intentions:0,loadedWorks,failedWorks,bookPosition:[...L.bookPosition],bookApproach:[...L.bookApproach]},book:book.diagnostics(),cameraJourney:true,bodyPhysicsRequired:false,originalMedia:true,workTextureMaximumWidth:mobile?256:512,updates,time,disposed}),
-  dispose(){if(disposed)return;disposed=true;book.dispose();root.removeFromParent();for(const g of geometries)g.dispose();for(const m of materials)m.dispose();for(const t of textures)t.dispose();for(const light of lights)light.dispose?.();dots.dispose();root.clear();}
+  update(dt,eye,motion=true){if(disposed)return false;rotate(dt,motion);const step=Math.max(0,Math.min(Number(dt)||0,.1));if(motion){time+=step;updates++;beamMaterial.uniforms.uTime.value=time;}const bookChanged=book.update(dt,eye,motion),result=dirty||bookChanged||!!(motion&&step>0);dirty=false;return result;},
+  diagnostics:()=>({kind:'origins-flying-saucer-destination',ready:!disposed,saucer:true,rotation:saucer.rotation.y,rotationDegreesPerSecond:.065*180/Math.PI,saucerRadius:L.radius,saucerPosition:saucer.getWorldPosition(new T.Vector3()).toArray(),flying:returnFlying,parked:!returnFlying,metallicDisk:true,closedCanopy:true,blueBeam:true,corridor:{transparent:true,blackFrames:true,glassFloor:true,intentions:0,roofIntentions:0,startZ:c.startZ,endZ:c.endZ,floorY:L.floorY,width:c.width,height:c.height},chamber:{closed:true,realDoorway:true,closedCeiling:true,center:[...L.chamber.center],radius,wallHeight:L.chamber.wallHeight,originalWorks:bookOnly?0:ORIGINS.length,intentions:0,loadedWorks,failedWorks,bookPosition:[...L.bookPosition],bookApproach:[...L.bookApproach]},book:book.diagnostics(),cameraJourney:true,bodyPhysicsRequired:false,originalMedia:true,workTextureMaximumWidth:mobile?256:512,updates,time,disposed}),
+  dispose(){if(disposed)return;disposed=true;book.dispose();root.removeFromParent();for(const g of geometries)g.dispose();for(const m of materials)m.dispose();for(const t of textures)t.dispose();for(const light of lights)light.dispose?.();dots.dispose();segments.dispose();root.clear();}
  };
 }

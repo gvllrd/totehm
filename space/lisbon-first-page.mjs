@@ -9,15 +9,19 @@ export function lisbonFrontSigns(time=0){
  });
 }
 export function createLisbonFirstPage({width=1600,height=900,onChange=()=>{}}={}){
- const canvas=document.createElement('canvas');canvas.width=width;canvas.height=height;canvas.setAttribute('role','img');canvas.setAttribute('aria-label','Make the Lisbon streets Higher. Twenty-two original urban signals floating in darkness.');
+ const canvas=document.createElement('canvas');canvas.width=width;canvas.height=height;canvas.setAttribute('role','img');canvas.setAttribute('aria-label','Higher the Lisbon Streets');
  const ctx=canvas.getContext('2d'),images=new Map();let time=0,reveal=0,disposed=false,loaded=false,animated=false,failures=0;
  const logo=new Image();let brand=false;
  function draw(){if(disposed)return;ctx.setTransform(width/1600,0,0,height/900,0,0);ctx.fillStyle='#000';ctx.fillRect(0,0,1600,900);
-  for(const sign of lisbonFrontSigns(time)){const image=images.get(sign.name);if(!image)continue;const scale=Math.min(sign.size/image.naturalWidth,sign.size/image.naturalHeight);ctx.save();ctx.translate(sign.x,sign.y);ctx.rotate(sign.rotation);ctx.globalAlpha=.29;ctx.drawImage(image,-image.naturalWidth*scale/2,-image.naturalHeight*scale/2,image.naturalWidth*scale,image.naturalHeight*scale);ctx.restore();}
-  if(reveal<1){ctx.save();ctx.globalAlpha=1-reveal;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='#d5d5d5';ctx.font='700 73px "Space Mono",monospace';ctx.fillText('MAKE THE LISBON',800,350);ctx.fillText('STREETS',800,438);if(brand)ctx.drawImage(logo,620,495,360,120);ctx.restore();}onChange();
+  for(const sign of lisbonFrontSigns(time)){const image=images.get(sign.name);if(!image||reveal===0)continue;const scale=Math.min(sign.size/image.naturalWidth,sign.size/image.naturalHeight);ctx.save();ctx.translate(sign.x,sign.y);ctx.rotate(sign.rotation);ctx.globalAlpha=.29*Math.min(1,reveal*2.6);ctx.drawImage(image,-image.naturalWidth*scale/2,-image.naturalHeight*scale/2,image.naturalWidth*scale,image.naturalHeight*scale);ctx.restore();}
+  if(reveal<1){
+   ctx.save();ctx.globalAlpha=1-reveal;ctx.textAlign='left';ctx.textBaseline='middle';ctx.fillStyle='#e1e2e8';ctx.font='700 63px "Space Mono",monospace';
+   const words='the Lisbon Streets',wordWidth=ctx.measureText(words).width,width=360+39+wordWidth,left=(1600-width)/2;
+   if(brand)ctx.drawImage(logo,left,390,360,120);ctx.fillText(words,left+399,450);ctx.restore();
+  }onChange();
  }
  function image(src,then){return new Promise(resolve=>{const im=new Image();im.onload=()=>{if(disposed){resolve(false);return;}then(im);draw();resolve(true);};im.onerror=()=>{failures++;resolve(false);};im.src=src;});}
  const ready=Promise.all([...LISBON_FRONT_NAMES.map(name=>image('/assets/signs/'+name+'.png',im=>images.set(name,im))),new Promise(resolve=>{logo.onload=()=>{brand=true;draw();resolve(true);};logo.onerror=()=>{failures++;resolve(false);};logo.src='/assets/gallery/higher.svg';})]).then(()=>{loaded=true;draw();return!failures;});
  draw();document.fonts?.ready.then(draw);
- return{canvas,ready,update(dt,motion=true){animated=!!motion;if(!motion||disposed)return false;time+=Math.max(0,Math.min(Number(dt)||0,.1));draw();return true;},setTime(value){time=Math.max(0,Number(value)||0);draw();},setReveal(value){reveal=Math.max(0,Math.min(1,Number(value)||0));draw();},getSigns:()=>lisbonFrontSigns(time),dispose(){disposed=true;images.clear();},diagnostics:()=>({kind:'lisbon-canonical-first-page',time:+time.toFixed(4),loaded:images.size,ready:loaded,failures,signs:22,animated,dimmed:true,reveal,ratio:16/9,minimumSignSize:138,maximumSignSize:310})};
+ return{canvas,ready,update(dt,motion=true){animated=!!motion;if(!motion||disposed)return false;time+=Math.max(0,Math.min(Number(dt)||0,.1));draw();return true;},setTime(value){time=Math.max(0,Number(value)||0);draw();},setReveal(value){reveal=Math.max(0,Math.min(1,Number(value)||0));draw();},getSigns:()=>lisbonFrontSigns(time),dispose(){disposed=true;images.clear();},diagnostics:()=>({kind:'lisbon-canonical-first-page',time:+time.toFixed(4),loaded:images.size,ready:loaded,failures,signs:22,visibleSigns:reveal>0?images.size:0,titleOnly:reveal===0,animated,dimmed:true,reveal,ratio:16/9,minimumSignSize:138,maximumSignSize:310})};
 }

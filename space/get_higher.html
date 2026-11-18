@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<script src="/desktop-access.js"></script>
 <title>TOTEHM — Get Higher</title>
 <link href="https://fonts.googleapis.com/css2?family=Quantico:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
@@ -446,6 +447,16 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
 @media(prefers-reduced-motion:reduce){.tw-p{transform:rotateY(180deg)}.tw.is-plat .tw-p{transform:none}}
 /* ══ fin LE MOT TOTEHM ══ */
 </style>
+<style>
+body.is-paper-view #totehm-paper{position:fixed;inset:0;margin:0!important;pointer-events:none}
+#premium-case-back{position:fixed;top:28px;left:28px;z-index:30;color:#bbb;font:11px 'Space Mono',monospace}
+body.is-paper-view .seq-block{position:fixed;inset:0;max-width:none;transform:none;justify-content:flex-end;padding:0 20px max(26px,4vh);pointer-events:none}
+body.is-paper-view #premium-case-canvas{display:block;width:100%;height:100%;cursor:grab;touch-action:none;pointer-events:auto}
+body.is-paper-view #down-trigger{display:none}
+body.is-paper-view #btn-buy,body.is-paper-view #btn-play-street{position:relative;z-index:1;pointer-events:auto;padding:10px 16px}
+body.is-paper-view #btn-play-street{margin-top:0!important;background:transparent}
+body.is-paper-view:not(.is-paper-entered) .seq-block>button,body.is-paper-view:not(.is-paper-entered) #premium-case-back{visibility:hidden}
+</style>
 </head>
 <body>
 
@@ -715,8 +726,11 @@ async function ssoLogin(silent, retour){
   const st = ssoB64(crypto.getRandomValues(new Uint8Array(16)));
   ssoStore(sessionStorage, SSO_PKCE, JSON.stringify({ verifier: v, state: st }));
   const ret = retour || (location.pathname + location.search);
-  location.href = SSO_AUTH + '?client=' + SSO_CLIENT + '&challenge=' + c + '&state=' + st +
+  const paper=new URLSearchParams(location.search),embeddedPaper=window.parent!==window&&paper.get('paper')==='1'&&paper.get('embedded')==='1';
+  const authURL = SSO_AUTH + '?client=' + SSO_CLIENT + '&challenge=' + c + '&state=' + st +
                   '&return=' + encodeURIComponent(ret) + (silent ? '&prompt=none' : '');
+  if(embeddedPaper){const target=new URL(authURL);target.searchParams.set('return','/get_higher?paper=1');const event=new parent.CustomEvent('totehm:experience-navigate',{cancelable:true,detail:{href:target.href}});if(parent.dispatchEvent(event))parent.location.assign(target.href);}
+  else location.href=authURL;
 }
 
 /* ── DÉPART ─────────────────────────────────────────────────────────
@@ -879,7 +893,15 @@ let hg=false;function hideHint(){if(!hg){hg=true;vhint.classList.add('gone');}}
 stage.innerHTML='';
 SLIDES.forEach(s=>stage.appendChild(buildSlide(s)));
 showSlide(0,true);
-initPaper();
+const paperViewQuery=new URLSearchParams(location.search);
+if(paperViewQuery.get('paper')==='1'){
+ const embedded=window.parent!==window&&paperViewQuery.get('embedded')==='1';
+ const back=document.createElement('a');back.id='premium-case-back';back.href='/lisbon-space';back.textContent='← Back';back.setAttribute('data-experience-close','');document.body.append(back);
+ import('/premium-case-view.mjs').then(({mountPremiumCase})=>{
+  document.body.classList.add('is-paper-view');if(!embedded)document.body.classList.add('is-paper-entered');
+  window.__totehm_paper_entry=mountPremiumCase(document.getElementById('totehm-paper'),{embedded});
+ }).catch(()=>{document.body.classList.remove('is-paper-view');window.__totehm_paper_entry=()=>({ready:true,premium:true,sharedModel:false,tongue:false});initPaper();});
+}else initPaper();
 
 function initPaper(){
   const scene = document.querySelector('.box-scene');
@@ -1541,7 +1563,13 @@ window.addEventListener('keydown',e=>{
 });
 
 document.addEventListener('click', ev=>{
-  if(ev.target.closest('#btn-play-street')) openStreetDisc();
+  if(!ev.target.closest('#btn-play-street'))return;
+  if(paperViewQuery.get('paper')!=='1'){openStreetDisc();return;}
+  const href=new URL('/play_lisbon_street',location.href).href;
+  if(window.parent!==window&&paperViewQuery.get('embedded')==='1'){
+   const event=new parent.CustomEvent('totehm:experience-navigate',{cancelable:true,detail:{href}});
+   if(parent.dispatchEvent(event))parent.location.assign(href);
+  }else location.assign(href);
 });
 }
 

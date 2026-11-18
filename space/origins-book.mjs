@@ -3,7 +3,7 @@ import {ORIGINS} from './gallery-artworks.mjs';
 const TITLES=ORIGINS.map(art=>art.title);
 const STILL=n=>'/assets/gallery/book-origins/'+String(n).padStart(2,'0')+'.jpg';
 const FILES=Array.from({length:20},(_,i)=>(i+1)+'.mp4');
-const BUILD='2026-11-15-origins-continuous-reader';
+const BUILD='2026-11-18-origins-two-sided-leaves';
 
 // A whole trackpad inertia burst belongs to one turn. The quiet interval is
 // measured from the LAST wheel event, rather than from the accepted page turn.
@@ -31,7 +31,7 @@ export function createPageGestures({move=()=>false,busy=()=>false,quiet=240,thre
 export function createOriginsReader({client,base}={}){
  const $=id=>document.getElementById(id),book=$('book'),deck=$('deck'),left=$('left-page'),right=$('right-page'),cover=$('open-book'),sheet=$('turn-sheet'),front=$('turn-front'),back=$('turn-back');
  const sharedCover=createOriginsCoverCanvas({onChange:canvas=>{cover.style.backgroundImage='url('+canvas.toDataURL('image/png')+')';}});cover.classList.add('uses-original-cover');
- const reduced=matchMedia('(prefers-reduced-motion: reduce)'),videos=[],loaded=Array(20).fill(false),records=new Map();
+ const reduced=matchMedia('(prefers-reduced-motion: reduce)'),videos=[],loaded=Array(20).fill(false),records=new Map(),leafPosters=new Map();
  let current=0,opened=false,turning=false,turnAnimation=null,turnTimer=0,generation=0,pointer=null,hidden=document.hidden,paused=false,lastSource='initial',turns=0,mediaErrors=0,suppressPlayUntil=0;
  for(let i=0;i<20;i++){
   const n=i+1,page=document.createElement('div');page.className='work-page';page.id='work-'+n;page.hidden=true;page.setAttribute('aria-label',TITLES[i]);
@@ -42,7 +42,28 @@ export function createOriginsReader({client,base}={}){
   label.querySelector('.gl-t').textContent=TITLES[i];label.querySelector('.chapter-number').textContent=String(n).padStart(2,'0')+' / 20';left.append(label);
  }
  function loadVideo(index){if(index<0||index>=20||loaded[index])return;loaded[index]=true;videos[index].src=base+FILES[index];videos[index].load();}
- function preload(){if(current<1)return;[current-2,current-1,current].forEach(loadVideo);}
+ function preload(){
+  if(current>0)[current-2,current-1,current].forEach(loadVideo);
+  if(reduced.matches){leafPosters.clear();return;}
+  const neighbours=[current-1,current,current+1].filter(n=>n>0&&n<=videos.length);
+  for(const n of leafPosters.keys())if(!neighbours.includes(n))leafPosters.delete(n);
+  for(const n of neighbours){
+   if(leafPosters.has(n))continue;
+   const image=new Image();image.alt='';image.src=videos[n-1].poster;
+   leafPosters.set(n,image);image.decode?.().catch(()=>{});
+  }
+ }
+ function paintLeafFace(face,leaf){
+  face.replaceChildren();face.classList.toggle('turn-intro',leaf===0);
+  if(leaf===0){face.textContent='ORIGINS';return;}
+  const image=leafPosters.get(leaf)?.cloneNode()||new Image();
+  image.alt='';image.src=videos[leaf-1].poster;
+  image.addEventListener('error',()=>{
+   if(image.parentNode!==face)return;
+   face.textContent=TITLES[leaf-1];face.classList.add('turn-intro');
+  },{once:true});
+  face.append(image);
+ }
  function pauseAll(){for(const video of videos)video.pause();syncPlay();}
  function syncPlay(){const playing=opened&&current>0&&!videos[current-1]?.paused;$('book-play').hidden=!opened||current===0;$('book-play').textContent=playing?'PAUSE':'PLAY';$('book-play').setAttribute('aria-pressed',String(!!playing));for(let i=0;i<videos.length;i++){const active=!!playing&&current===i+1,button=$('work-'+(i+1)).querySelector('.artwork-play');button.disabled=turning;button.setAttribute('aria-label',(active?'Pause ':'Play ')+TITLES[i]);button.setAttribute('aria-pressed',String(active));button.querySelector('span').textContent=active?'Tap to pause the artwork':'Tap to play the artwork';button.classList.toggle('is-playing',active);}}
  function playCurrent(){
@@ -65,10 +86,13 @@ export function createOriginsReader({client,base}={}){
   if(turning||!Number.isInteger(next)||next<0||next>20||next===current)return false;
   pauseAll();for(const video of videos){if(video.readyState>=1)try{video.currentTime=0;}catch{}}const previous=current;current=next;lastSource=source;turns++;const revision=++generation;
   if(opened&&animate&&!reduced.matches&&typeof sheet.animate==='function'){
-   turning=true;const forward=next>previous,shown=forward?previous:next;front.replaceChildren();
-   if(shown>0){const image=document.createElement('img');image.src=STILL(shown);image.alt='';front.append(image);front.classList.remove('turn-intro');}else{front.textContent='ORIGINS';front.classList.add('turn-intro');}
-   back.textContent=next===0?'ORIGINS':String(next).padStart(2,'0')+' / 20';sheet.hidden=false;update();
-   turnAnimation=sheet.animate(forward?[{transform:'rotateY(0deg)',filter:'brightness(1)'},{transform:'rotateY(-178deg)',filter:'brightness(.76)'}]:[{transform:'rotateY(-178deg)',filter:'brightness(.76)'},{transform:'rotateY(0deg)',filter:'brightness(1)'}],{duration:680,easing:'cubic-bezier(.25,.65,.25,1)',fill:'forwards'});
+   turning=true;
+   const forward=next>previous,leaf=forward?previous:next;
+   // The same leaf turns in either direction, with its original poster on both faces.
+   paintLeafFace(front,leaf);paintLeafFace(back,leaf);sheet.hidden=false;update();
+   // A filter on the sheet would flatten its 3D faces during the rotation.
+   const angles=forward?[0,-178]:[-178,0];
+   turnAnimation=sheet.animate(angles.map(angle=>({transform:`rotateY(${angle}deg)`})),{duration:680,easing:'cubic-bezier(.25,.65,.25,1)',fill:'forwards'});
    turnAnimation.finished.then(()=>finishTurn(revision),()=>finishTurn(revision));turnTimer=setTimeout(()=>finishTurn(revision),760);
   }else{update();preload();}
   return true;
@@ -93,7 +117,7 @@ export function createOriginsReader({client,base}={}){
   if(event.key==='Escape')closeBook();
  });
  function cancelTurn(){if(!turning)return;const revision=generation;turnAnimation?.cancel();finishTurn(revision);}
- reduced.addEventListener('change',()=>{if(reduced.matches)cancelTurn();});
+ reduced.addEventListener('change',()=>{if(reduced.matches)cancelTurn();preload();});
  document.addEventListener('visibilitychange',()=>{hidden=document.hidden;if(hidden){paused=true;pauseAll();cancelTurn();}});
  addEventListener('blur',()=>{paused=true;pauseAll();});addEventListener('focus',()=>{paused=false;});addEventListener('pagehide',()=>{paused=true;pauseAll();cancelTurn();});
  addEventListener('pageshow',event=>{if(event.persisted){hidden=document.hidden;paused=false;syncPlay();}});
