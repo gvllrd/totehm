@@ -28,15 +28,15 @@ const couleurs = pg => pg.evaluate(() => { const s = new Set();
   const d = () => pg.evaluate(() => ({ ...window.__totehm_monetize().discover, on:document.querySelectorAll('.dc-s.is-on').length,
     titre:document.querySelector('.dc-s.is-on .dc-h')?.textContent.trim(), fond:getComputedStyle(document.getElementById('dc')).backgroundColor }));
   let a = await d();
-  ok(a.n === 5 && a.i === 0 && a.on === 1 && a.fond === 'rgb(0, 0, 0)' && /^Monetize your operating system\./.test(a.titre), '/monetize : 5 écrans, UN visible, noir → ' + JSON.stringify(a));
+  ok(a.n === 3 && a.i === 0 && a.on === 1 && a.fond === 'rgb(0, 0, 0)' && /^Monetize your operating system\./.test(a.titre), '/monetize : 3 écrans, UN visible, noir → ' + JSON.stringify(a));
   await pg.keyboard.press('ArrowDown'); await pg.waitForTimeout(800);
-  a = await d(); ok(a.i === 1 && /^Your living autobiography, fully protected\./.test(a.titre), '↓ : « Your living autobiography, fully protected. » → ' + JSON.stringify(a));
+  a = await d(); ok(a.i === 1 && /^Real world control\. Zero inbox\./.test(a.titre), '↓ : « Real world control. Zero inbox. » → ' + JSON.stringify(a));
   const t = await pg.textContent('#offer');
-  ok(/You set the annual price\. You keep 80%\./.test(t) && /whatever you keep private stays strictly private/.test(t)
-     && /unlocks automatically when you open your system to your subscribers/.test(t) && /They pay to access your practice, not your calendar\./.test(t)
-     && /Stop anytime; your system, your rules\./.test(t), '18/11 · le texte de Wah, mot pour mot');
-  for(let k = 0; k < 3; k++){ await pg.keyboard.press('ArrowDown'); await pg.waitForTimeout(700); }
-  a = await d(); ok(a.i === 4 && /^Predictable, clean revenue\./.test(a.titre), 'le dernier écran : « Predictable, clean revenue. » → ' + JSON.stringify(a));
+  ok(/your grind, your story, your vision, the media behind it, and the spots where you execute/.test(t) && /You set the annual price\. You keep 80%\./.test(t)
+     && /They pay to access your practice, not your calendar\./.test(t) && /Stop anytime; your system, your rules\./.test(t)
+     && /whatever you keep private stays strictly private/.test(t), '18/11 · le texte de Wah pour les influenceurs, mot pour mot');
+  await pg.keyboard.press('ArrowDown'); await pg.waitForTimeout(800);
+  a = await d(); ok(a.i === 2 && /^Predictable, clean revenue\./.test(a.titre), 'le dernier écran : « Predictable, clean revenue. » → ' + JSON.stringify(a));
   ok(await pg.locator('#cta [data-setup]').getAttribute('href') === '/console', '[Set my price] est sous CHAQUE écran, ici le dernier → /console');
   const c = await couleurs(pg); ok(c.length === 0, '60 / 30 / 10 : noir + blanc + gris, AUCUN corail sur un écran sans nom ni art → ' + JSON.stringify(c));
   ok(!erreurs(log).length, '/monetize : aucune erreur ' + erreurs(log).join(' | '));

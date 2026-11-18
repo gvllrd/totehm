@@ -253,20 +253,15 @@ div:not(:has(> :not(br,wbr))):hover,
 
 <main class="dc has-cta" id="dc">
   <!-- 15/11 (Wah : « une page respecte le 60 / 30 / 10 ; je veux découvrir à la manière de play_lisbon_street?discover=1 ») :
-       UNE idée par écran noir, au geste. 18/11 (Wah : « ça c'est le Discover qui va dans la section [Monetize my TOTEHM] ») :
-       SON texte, mot pour mot, cinq idées. La page s'ouvre aussi par-dessus le verso ([Discover] de Monetize, `?embed=1`). -->
+       UNE idée par écran noir, au geste. 18/11 (Wah : « ça c'est le Discover qui va dans la section [Monetize my TOTEHM] »,
+       puis « modifie le Discover pour influenceurs avec ça plutôt ») : SON texte, mot pour mot, trois idées. La page s'ouvre
+       aussi par-dessus le verso ([Discover] de Monetize, `?embed=1`). -->
   <div class="dc-stage" id="offer">
     <div class="dc-s"><div class="paper" aria-hidden="true"><span class="tname" id="nm">you</span><span class="url" id="nm-url">totehm.com/@you</span></div>
       <h1 class="dc-h">Monetize your operating system.</h1>
       <p class="dc-p">Turn your discipline and your mental architecture into recurring revenue.
-Package your entire TOTEHM — your smart lists, your private media, your visualizations, and your spots.
+Package your entire TOTEHM — your grind, your story, your vision, the media behind it, and the spots where you execute.
 You set the annual price. You keep 80%.</p></div>
-    <div class="dc-s"><h2 class="dc-h">Your living autobiography, fully protected.</h2>
-      <p class="dc-p">Share your grind, your vision, and your story as you build.
-Subscribers get read-only access to your system: your core architecture remains untouched, and whatever you keep private stays strictly private.</p></div>
-    <div class="dc-s"><h2 class="dc-h">The visual proof of your empire.</h2>
-      <p class="dc-p">Every photo and video illustrating your execution unlocks automatically when you open your system to your subscribers.
-Give them the unpolished truth behind your results.</p></div>
     <div class="dc-s"><h2 class="dc-h">Real world control. Zero inbox.</h2>
       <p class="dc-p">Publish your spots when you want them live.
 Decide whether your sessions are strict SILENCE grinds or open social connections in public or private facilities — and your subscribers play by your rules or get cut off instantly.
@@ -274,7 +269,8 @@ No DMs, no coaching calls, no endless community management. They pay to access y
     <div class="dc-s"><h2 class="dc-h">Predictable, clean revenue.</h2>
       <p class="dc-p">One annual payment via Stripe, handled automatically.
 Clean income from people who actually respect your craft.
-Stop anytime; your system, your rules.</p>
+Stop anytime; your system, your rules.
+Subscribers get read-only access to your system: your core architecture remains untouched, and whatever you keep private stays strictly private.</p>
       <div class="dc-row"><a class="dc-lnk" href="/terms" target="_blank" rel="noopener">Simple terms of use</a></div></div>
   </div>
   <div class="dc-cta" id="cta"><a class="dc-btn" data-setup href="/console">Set my price</a></div>
@@ -363,7 +359,7 @@ const $ = id => document.getElementById(id);
 
 /* END COM MEMBER MENU */
 let me=null,offerEnabled=null,seq=0;
-const BUILD='2026-11-18-discover-monetize';
+const BUILD='2026-11-18-discover-influenceurs';
 /* ══ 18/11 · PAR-DESSUS LE VERSO (`?embed=1`) ══ [Discover] de la partie [Monetize my TOTEHM] ouvre cette page dans la couche
    `XO` de totehm.com (même origine, même session). Ce que le cadre change, et rien d'autre : le coin membre est caché ;
    Échap et [Set my price] referment la couche (le prix se règle juste dessous, dans Monetize) ; un autre lien sort par le
