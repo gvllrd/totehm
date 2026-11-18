@@ -500,12 +500,10 @@ body.ordering #vnow{display:none}
   font-family:'Space Mono',monospace;font-weight:400;font-size:9px;letter-spacing:.1em;
   text-transform:uppercase;color:rgba(255,255,255,.32);white-space:nowrap}
 #vnow b,#vnow i,#vnow span{padding:0}
-body.ro #vnow{top:calc(78px + var(--ro-h))}
 /* 13/10 (lot B) — PLUS DE TITRE EN HAUT (Wah : « juste les grandes vues, dans le joystick, comme le mode recherche »).
    Le nom de la vue = UN mot, gris, juste au-dessus de la manette ; la glose et l'époque partent. */
 /* 27/10 (Wah) : « une fois déployé, les titres de chaque vue ne sont pas en bas mais tout en haut, centrés ». */
 #vnow{top:calc(max(10px,env(safe-area-inset-top)) + 30px);bottom:auto}
-body.ro #vnow{top:calc(max(10px,env(safe-area-inset-top)) + 30px + var(--ro-h))}
 #vnow b{font-size:10px;font-weight:700;letter-spacing:.2em;color:#b8b8c2;text-shadow:none}
 #vnow i,#vnow span{display:none}
 /* La répercussion 3D : le nom pivote dans la direction du voyage, en
@@ -1712,30 +1710,12 @@ body.ro .rk,body.ro [data-pk],body.ro [data-lien],body.ro [data-unlink],
 body.ro [data-nodate],body.ro [data-edit],body.ro [data-add],
 body.ro #fv-status{display:none!important}
 body.ro .h-text{pointer-events:none}
-#ro-bar{position:fixed;top:0;left:0;right:0;z-index:40;display:none;
-  align-items:center;justify-content:center;gap:10px;padding:9px 14px;
-  background:rgba(0,0,0,.72);backdrop-filter:blur(6px)}
-body.ro #ro-bar{display:flex}
-/* ══ EN LECTURE, TOUT LE HAUT DESCEND · 18/09/2026 ═══════════════════
-   ⚠️ `#ro-bar` est une barre PLEINE LARGEUR en `z-index:40`, au-dessus
-   du joystick (33) et de la marque (30). Mesuré : les curseurs étaient
-   là, visibles, et le clic partait dans la barre — un contrôleur mort
-   sans un signe. Elle ne se déplace pas (elle dit qui on lit, c'est sa
-   place) : c'est le reste qui recule de sa hauteur, 38 px.
-   `--band-t` en découle, donc la liste suit toute seule. */
-body.ro{--ro-h:38px}
-/* 06/10 : le joystick vit EN BAS (#joy{top:auto;bottom}) ; la règle qui le
-   descendait sous la barre de lecture le remontait EN HAUT, sur le titre. */
-body.ro #bigT{top:calc(26px + var(--ro-h))}
-body.ro #fold-x{top:calc(10px + var(--ro-h))}   /* 06/10 : la croix passait sous la barre de lecture */
-body.ro #fv-inner{top:calc(var(--band-t) + var(--ro-h))}
-#ro-who{font-family:'Quantico',sans-serif;font-weight:700;font-size:13px;color:#fff;
-  display:flex;align-items:center;gap:5px}
-#ro-tag{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.16em;
-  text-transform:uppercase;color:#8a8a8a}
-#ro-out{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;
-  text-transform:uppercase;color:#8a8a8a;background:none;border:none;cursor:pointer;
-  padding:4px 6px;transition:color .15s}
+/* ══ 18/11 · EN LECTURE, LE TOTEHM D'UN MEMBRE A LA MISE EN PAGE DU MIEN ══ Wah : « je ne veux pas de la bande noire qui
+   plane dans la partie supérieure du TOTEHM avec le nom de l'identifiant et une petite flèche : cela ne sert à rien et
+   c'est moche » · « les titres des parties dans le TOTEHM d'un member sont décalés vers le haut en touchant le T ».
+   La barre de lecture (`#ro-bar`) est partie, et avec elle les 38 px dont tout le haut reculait (`--ro-h`) : le T
+   descendait, le titre non (ordinateur), et le T passait sur le titre. Chez un membre on sait où l'on est : son nom est
+   sur [Members], son verso porte son offre, et l'on revient à soi par [Mine]. */
 .tv-rail{position:absolute;top:0;bottom:0;left:var(--rl);width:var(--rw);background:rgba(255,255,255,.30)}
 .tv-T{position:absolute;top:24px;left:50%;transform:translateX(-50%);line-height:0}
 .tv-T svg{height:52px;width:auto;display:block}
@@ -2360,7 +2340,6 @@ body.gate.entered #terms-corner{opacity:0;pointer-events:none}
   body.gate #fold-flip{opacity:0;pointer-events:none;transition:opacity .55s ease}
   body.gate.entered #fold-flip{opacity:1;pointer-events:auto;transition:opacity .55s ease var(--gate-reveal)}
   body.ro:not(.lv-membre) #fold-flip{display:none}   /* 18/11 : chez un membre, son recto se retourne sur SON verso */
-  body.ro #fold-flip{top:calc(10px + var(--ro-h))}    /* sous la barre de lecture, comme la croix (`#fold-x`) */
 }
 @media(prefers-reduced-motion:reduce){.srch-after{transition:none!important}}
 
@@ -2581,7 +2560,6 @@ body.gate.entered #filter-badge{
      au-dessus, le titre tombait dans la bande des perforations — mesuré) — 27/10, Wah : « tout en haut centrée ». */
   #vnow,body.ro #vnow{top:calc(50% - var(--stage)/2 + 137px);bottom:auto;left:0;right:0}
   body.ro #joy{top:auto}
-  body.ro #bigT{top:calc(22px + var(--ro-h))}
 
   /* ══ LES QUATRE CURSEURS SE POSENT SUR LES QUATRE CÔTÉS DU CARRÉ ═══
      Ici il y a un DEHORS : le carré fait `--stage` de côté, centré, et
@@ -2874,7 +2852,7 @@ body.gate.entered #filter-badge{
 
 
 /* 03/10 — the member's TOTEHM name: Quantico Coral, without status dots. */
-#conn-bar,#conn-bar:hover,#conn-txt,#member,#member:hover,#member-txt,.mw-pseudo,.mw-pseudo:hover,.mw-who,.mw-who:hover,#mw-who,#mw-who:hover,#ro-who,#ro-who:hover,.tv-name,.tv-name:hover,#member-txt:hover,#conn-txt:hover{font-family:'Quantico',sans-serif;font-weight:400;color:#fbd5ca;text-transform:none}
+#conn-bar,#conn-bar:hover,#conn-txt,#member,#member:hover,#member-txt,.mw-pseudo,.mw-pseudo:hover,.mw-who,.mw-who:hover,#mw-who,#mw-who:hover,.tv-name,.tv-name:hover,#member-txt:hover,#conn-txt:hover{font-family:'Quantico',sans-serif;font-weight:400;color:#fbd5ca;text-transform:none}
 #conn-bar .dot,#conn-bar .dc,#member>i,#mw-dot{display:none!important;animation:none}
 /* 12/10 — LE NOM DU TOTEHM EST SUR LE PAPIER, PAS DANS UNE BOÎTE NOIRE (Wah : « directement imbriqué
    dans le paper et le bleu navy ») : Quantico Coral sur le navy #333366, carré comme le papier. */
@@ -4201,8 +4179,6 @@ div:not(:has(> :not(br,wbr))):hover,
 .note.ok:hover,
 .note.no:hover,
 .note.dim:hover,
-#ro-tag:hover,
-#ro-out:hover,
 .r-meta:hover,
 .tv-private:hover,
 #mw-sub .s-lab:hover,
@@ -4258,7 +4234,6 @@ div:not(:has(> :not(br,wbr))):hover,
 .mw-pseudo:hover,
 .mw-who:hover,
 #mw-who:hover,
-#ro-who:hover,
 .tv-name:hover,
 .tname:hover,
 #gate-asteroid:hover .ast-say,
@@ -4941,13 +4916,6 @@ In the highest way.</p>
 
 
 <!-- La croix : referme le Totehm et rejoue le déploiement à l'envers. -->
-<!-- ⚠️ 05/10 : la lecture redevient SIMPLE (Wah : « on tape le nom et ça
-     ouvre son Totehm en read only, simple »). Une barre : qui on lit, et
-     le retour au sien. Plus de copies, plus de revue, plus d'import. -->
-<div id="ro-bar">
-  <button id="ro-out" type="button" aria-label="Back to my TOTEHM">&larr;</button>
-  <span id="ro-who"></span>
-</div>
 
 <button id="fold-x" class="sink-el" type="button" aria-label="Close my Totehm">
   <svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2 L12 12 M12 2 L2 12"/></svg>
@@ -5289,7 +5257,7 @@ let ANON_OK=false;
 /* 07/10 : l'atterrissage lit UN appel (`my_landing`) — ma vignette, la visibilité
    et l'offre de mon Totehm, mon THP, Telegram. Peint par
    la croix (`lvRefresh`), vidé au changement de compte (`lvQuitter`). */
-let LAND=null, lvRefresh=null, lvPeindre=null, lvQuitter=null, lvReglages=null, lvMembreBoot=null, lvVersMembre=null, lvAller=null, lvPeindreMode=null, lvRecherche=null;
+let LAND=null, lvRefresh=null, lvPeindre=null, lvQuitter=null, lvReglages=null, lvMembreBoot=null, lvVersMembre=null, lvAller=null, lvPeindreMode=null, lvRecherche=null, lvDire=null;
 /* 18/11 — `?members[=<nom>]` : la recherche de [Members] sur le verso — un ancien lien `/search`, ou le retour de Stripe
    (`?members=<nom>&subscribed=1`). Lu une fois, puis retiré de l'adresse (`lvRecherche`). */
 let MEMBERS0=(()=>{ try{ const u=new URLSearchParams(location.search); if(!u.has('members')) return null;
@@ -5576,25 +5544,19 @@ function poserLecture(data){
   chargerOrdres(RO);
 
   document.body.classList.add('ro');
-  $('ro-who').textContent=data.pseudo||RO;
   document.title=(data.pseudo||RO)+' · TOTEHM';
   filterF=null;filterI=null;
   renderHabits();
   loadHabitSpaces(); loadElementCloths();
   return true;
 }
+/* 18/11 — plus de barre de lecture : un TOTEHM illisible (inconnu, privé, une panne) ne laisse pas une coquille vide à
+   l'écran. On redevient soi (`sortirLecture`) et une ligne le dit, sous [Mine] · [Members] (`lvDire`). La croix et Échap
+   replient SON TOTEHM sur SON atterrissage ; on revient à soi par [Mine] (20/10 sexies). */
 function roFail(msg){
-  SPOT=Object.create(null);spotSeq++;
-  document.body.classList.add('ro');
-  $('ro-who').textContent=msg;
-  state={habits:[],vis:'private'};
-  TRIPS=[];REPS=[];TEACH=[];VIS=[];OBJ={};tripsLoaded=true;
-  renderHabits();
+  const t=msg.charAt(0).toUpperCase()+msg.slice(1)+'.';
+  Promise.resolve(sortirLecture()).catch(e=>console.error('[lecture]',e)).finally(()=>{ if(lvDire) lvDire(t); });
 }
-/* « back to mine » : le Totehm d'un membre se replie, PUIS on quitte son écosystème (MINE). La croix et Échap,
-   eux, replient seulement : on retombe dans SON écosystème (20/10 sexies). */
-let roSortir=false;
-$('ro-out').onclick=()=>{ roSortir=true; foldToGate(); };
 
 /* ══ LIRE UN AUTRE TOTEHM SANS QUITTER LA PAGE · 18/10 → 20/10/2026 sexies ═════════════════════════
    La lecture s'arme EN PLEIN VOL par MEMBERS (`MB`, dans l'atterrissage) : il vérifie `totehm_read`, puis pose la
@@ -5772,9 +5734,11 @@ const XO=(()=>{
      le réécrit sur `/creator`) : il entre dans la couche comme SPACE et le Club — même session, aucune
      navigation, l'URL ne bouge pas, et la fermeture rejoue le geste d'entrée à l'envers (`apres`).
      Le cadre se charge PENDANT la plongée : à l'arrivée la page est déjà là, donc rien ne clignote. */
-  function univers(pseudo,apres){
+  /* 18/11 — `depuis` : 'verso' quand le Discover de la creator economy s'ouvre depuis le verso de [Members] (l'abonnement
+     ramène alors sur ce verso, et ses liens de recherche referment la couche). */
+  function univers(pseudo,apres,depuis){
     const p=String(pseudo||'').replace(/^@/,'').slice(0,32); if(!p) return;
-    const u='/@'+encodeURIComponent(p)+'?embed=1';
+    const u='/@'+encodeURIComponent(p)+'?embed=1'+(depuis==='verso'?'&from=verso':'');
     const c=cadre('univers');
     if(c.f.getAttribute('src')!==u){ c.pret=false; c.file=null; c.der=null; c.f.setAttribute('src',u); }
     retour=apres||null;
@@ -8822,7 +8786,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-11-18-members-sur-le-verso';
+const BUILD='2026-11-18-sans-barre-de-lecture';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -11244,7 +11208,7 @@ window.addEventListener('touchend',(e)=>{
      revenait à son point de départ**, exactement ce que Wah décrit — et
      symétriquement à droite, par la vision.
      Un geste né sur un contrôle appartient à ce contrôle. */
-  if(t0el&&t0el.closest&&t0el.closest('#joy,#ro-bar,#freq-panel,#habit-peek,#filter-modal,#member-window,input,textarea,select,[contenteditable]'))return;
+  if(t0el&&t0el.closest&&t0el.closest('#joy,#freq-panel,#habit-peek,#filter-modal,#member-window,input,textarea,select,[contenteditable]'))return;
   const _ae=document.activeElement;
   if(_ae&&(_ae.tagName==='TEXTAREA'||_ae.tagName==='INPUT'))return;
   if(document.body.classList.contains('gate'))return;   /* l'atterrissage défile librement */
@@ -11311,7 +11275,7 @@ window.addEventListener('touchend',(e)=>{
   addEventListener('wheel',e=>{
     if(document.body.classList.contains('gate'))return;
     /* Même raison qu'au doigt : le pavé a sa propre molette. */
-    if(e.target&&e.target.closest&&e.target.closest('#joy,#ro-bar'))return;
+    if(e.target&&e.target.closest&&e.target.closest('#joy'))return;
     if(Math.abs(e.deltaY) > Math.abs(e.deltaX)*1.6){
       if(navBlocked())return;
       /* ⚠️ 25/10 — PENDANT LE VERROU, L'INERTIE LE PROLONGE ET L'HORLOGE DU TROU AVANCE. On sortait sans toucher
@@ -13257,8 +13221,7 @@ window.addEventListener('pageshow',e=>{
       PAPIER.reveiller();                 /* le logo est revenu : il repart */
       SH.pause(); SPOTS.pause();          /* ni vidéo ni rAF derrière l'atterrissage */
       /* ⚠️ 20/10 sexies — REPLIER LE TOTEHM D'UN MEMBRE, C'EST RETOMBER DANS SON ÉCOSYSTÈME (Wah : « on retombe dans
-         l'écosystème, mais cette fois ce n'est plus le nôtre »). On ne le quitte que par MINE (ou « back to mine »). */
-      if(roSortir){ roSortir=false; LV.choisirMode('mine'); }
+         l'écosystème, mais cette fois ce n'est plus le nôtre »). On ne le quitte que par [Mine]. */
       if(typeof then==='function') then();
     },DUR_REPLI*(1-POSE)+40);
     },DUR_REPLI*POSE);
@@ -13644,10 +13607,13 @@ window.addEventListener('pageshow',e=>{
           +tuiles
           +'<div class="vs-row"><i>their TOTEHM</i><button class="vs-act" type="button" data-mb="open"'+(lu?'':' disabled')+'>Open</button></div>'; }
       else if(p){ etat='offre';
+        /* 18/11 (Wah : « ressors ici le Discover de la creator economy, qu'on ne trouve nulle part ») : [Discover] ouvre SA
+           page d'abonnement en Discover (`/@nom`, 8 écrans), par-dessus le verso (`XO.univers`, porte 'verso') */
         h='<header class="vs-head"><h3 class="vs-t">Enter their ecosystem</h3><p class="vs-s">one year · stop anytime</p></header>'
           +'<div class="vs-top"><div class="vs-month"><b>'+esc(p)+'</b><i>per year</i></div><button class="vs-act" type="button" data-mb="sub">Subscribe</button></div>'
           +tuiles
-          +'<div class="vs-row"><i>80 % goes to</i>'+N+'</div>'; }
+          +'<div class="vs-row"><i>80 % goes to</i>'+N+'</div>'
+          +'<div class="vs-row"><i>the creator economy</i><button class="vs-act" type="button" data-mb="disc">Discover</button></div>'; }
       else { etat='ferme';
         h='<header class="vs-head"><h3 class="vs-t">Not open yet</h3><p class="vs-s">'+N+' has not opened subscriptions</p></header>'; }
       res.innerHTML=h+'<p class="lv-note" id="mb-say" role="status"></p>';
@@ -13683,8 +13649,12 @@ window.addEventListener('pageshow',e=>{
       e.preventDefault();
       trouver(q.value).then(()=>{ if(d&&d.ok) try{ q.blur(); }catch(_){} });   /* trouvé : le clavier se range, le résultat se voit */
     });
+    /* [Discover] : le Discover de la creator economy (SA page d'abonnement), par-dessus le verso ; refermé, le panneau relit
+       ce qui est vrai (on a pu s'abonner dedans, dans un autre onglet…). */
+    function decouvrir(){ if(!nom) return; diagC.discover=(diagC.discover||0)+1; const n=nom;
+      XO.univers(n,()=>{ if(enRecherche()&&nom===n) trouver(n); },'verso'); }
     res.addEventListener('click',e=>{ const b=e.target.closest('[data-mb]'); if(!b||b.disabled) return;
-      if(b.dataset.mb==='sub') abonner(b); else if(b.dataset.mb==='open') versRecto(); });
+      if(b.dataset.mb==='sub') abonner(b); else if(b.dataset.mb==='open') versRecto(); else if(b.dataset.mb==='disc') decouvrir(); });
     window.__totehm_cherche=()=>({...diagC, ouvert:enRecherche()&&sOpen, etat, nom, lu:!!lu, saisie:document.activeElement===q});
     return {preparer, vider, trouver, versRecto, fermer, etat:()=>etat};
   })();
@@ -14094,6 +14064,7 @@ window.addEventListener('pageshow',e=>{
        un membre (`activer`, par la recherche ou `?ro=`). `/search` n'existe plus que pour les anciens liens : il mène ici. */
     let sayT=0;
     function direMembers(t){ clearTimeout(sayT); $('lv-m-say').textContent=t||''; if(t) sayT=setTimeout(()=>direMembers(''),6000); }
+    lvDire=t=>direMembers(t);   /* 18/11 — une lecture refusée le dit ici (plus de barre de lecture) */
     function chercherIci(nom,o){
       if(!inscrit()){ refus('members:sans-totehm'); if(typeof ouvrirPorte==='function') ouvrirPorte(null); return false; }
       /* La recherche est au FIGHER CLUB. Hors du Club : une ligne, et on relit le serveur (une Habit, un objectif ou une
@@ -15374,7 +15345,7 @@ window.addEventListener('pageshow',e=>{
 <!-- 12/10 : SPACE et le Club, servis par totehm.com, posés par-dessus le Totehm (`XO`). -->
 <!-- 29/10 — VX : les visionneuses ← et → viennent ici, au-dessus du TOTEHM déployé ([Visualize it], une mini-box spot). -->
 <div id="vx" role="dialog" aria-modal="true" aria-label="My TOTEHM · view" hidden></div>
-<div id="xo" aria-hidden="true"><button id="xo-x" type="button" aria-label="Back to the galaxy">×</button></div>
+<div id="xo" aria-hidden="true"><button id="xo-x" type="button" aria-label="Close">×</button></div>
 <script>
 /* ══ DISCOVER — copié de tools/discover.js dans chaque page (jamais importé) ══
    Le moteur du « découvrir » : des écrans `.dc-s` dans `.dc-stage`, UN visible à la fois, qui se succèdent au scroll, au

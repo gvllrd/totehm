@@ -285,7 +285,7 @@ try{
   await pg.click('#lv-tap-open');await pg.waitForFunction(()=>!document.body.classList.contains('gate'),null,{timeout:9000}).catch(()=>{});
   await pg.waitForTimeout(600);
   const x=await pg.evaluate(()=>({habits:[...document.querySelectorAll('#habits [data-open]')].map(e=>e.textContent.trim().slice(0,20)),
-    ecrit:document.querySelectorAll('#habits [contenteditable],#habits [data-kill],#habits [data-add]').length,qui:(document.getElementById('ro-who')||{}).textContent}));
+    ecrit:document.querySelectorAll('#habits [contenteditable],#habits [data-kill],#habits [data-add]').length,qui:document.title.replace(' · TOTEHM','')}));   /* 18/11 : plus de barre de lecture — le titre de la page porte son nom */
   ok(x.habits.length===2&&!x.ecrit&&x.qui==='kai3','tap : SON Totehm, en lecture, la même configuration que le mien ('+x.habits.join(' · ')+')');
   await pg.keyboard.press('Escape');await pg.waitForFunction(()=>document.body.classList.contains('gate'),null,{timeout:9000}).catch(()=>{});await pg.waitForTimeout(900);
   ok(await pg.evaluate(()=>document.body.classList.contains('lv-membre')&&document.body.classList.contains('ro')),'replier SON Totehm : on reste dans son écosystème');

@@ -602,6 +602,18 @@ const dire = (ev, extra) => { if(!EMBED) return;
 /* ⚠️ UNE SEULE SORTIE. En cadre on navigue la fenêtre du HAUT, jamais le cadre : un Checkout Stripe
    dans un cadre est refusé par Stripe, et un `/totehm` dans un cadre dans COM serait COM dans COM. */
 const nav = u => { if(EMBED){ try{ (window.top || window).location.href = u; return; }catch(_){} } location.href = u; };
+/* 18/11 — ouverte depuis le VERSO de [Members] (`?embed=1&from=verso`, le Discover de la creator economy) : l'abonnement
+   part avec la porte 'verso' (Stripe ramène sur ce verso), et un lien vers la recherche referme la couche — la recherche
+   est juste dessous. Un autre lien du site sort par le HAUT, comme `nav`. */
+const DEPUIS = EMBED && new URLSearchParams(location.search).get('from') === 'verso' ? 'verso' : 'page';
+if(EMBED) document.addEventListener('click', e => {
+  const a = e.target.closest && e.target.closest('a[href]'); if(!a || a.target === '_blank') return;
+  let u; try{ u = new URL(a.href, location.href); }catch(_){ return; }
+  if(u.origin !== location.origin) return;
+  e.preventDefault();
+  if(u.pathname === '/totehm' && u.searchParams.has('members')){ dire('close'); return; }
+  nav(u.pathname + u.search + u.hash);
+}, true);
 
 const COLOR = { fight:'#E24B4A', flow:'#e48b31', enrich:'#fcbe21', love:'#639922', express:'#1D9E75', focus:'#378ADD', celebrate:'#7F77DD' };
 const money = (c, cur) => { try{ return new Intl.NumberFormat('en', { style:'currency', currency:(cur||'eur').toUpperCase(), maximumFractionDigits: c % 100 ? 2 : 0 }).format(c/100); }catch(_){ return (c/100) + ' ' + (cur||'eur'); } };
@@ -846,7 +858,7 @@ async function subscribe(b){
     if(!s){ WANT = 'subscribe'; showSignin(); if(b) b.disabled = false; say(''); return; }
     const r = await fetch(SB_URL + '/functions/v1/creator-subscribe', { method:'POST',
       headers:{ 'content-type':'application/json', 'apikey':SB_ANON, 'authorization':'Bearer ' + s.access_token },
-      body: JSON.stringify({ pseudo: C.pseudo, from: 'page' }) });
+      body: JSON.stringify({ pseudo: C.pseudo, from: DEPUIS }) });
     const j = await r.json().catch(() => ({}));
     if(j.url){ nav(j.url); return; }
     if(j.already){ say('you are already subscribed', 'ok'); await loadPage(); return; }

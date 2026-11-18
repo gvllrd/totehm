@@ -66,6 +66,21 @@ try{
   await pg.click('#mb-res [data-mb="sub"]');await pg.waitForTimeout(700);
   const f=log.functions.find(x=>x.name==='creator-subscribe');
   ok(!!f&&f.body.pseudo==='kai'&&f.body.from==='verso',quoi+' · Subscribe : le paiement part avec `from:verso` (Stripe ramène sur ce verso) → '+JSON.stringify(f&&f.body));
+  /* 18/11 (Wah : « ressors ici le Discover de la creator economy, qu'on ne trouve nulle part ») : [Discover] ouvre SA page
+     d'abonnement en Discover par-dessus le verso ; s'y abonner part aussi avec `from:verso` ; refermé, le verso est là */
+  await pg.click('#mb-res [data-mb="disc"]');
+  const xo=await pg.waitForFunction(()=>{const x=window.__totehm_xo&&window.__totehm_xo();return x&&x.actif==='univers';},null,{timeout:8000}).then(()=>true,()=>false);
+  const src=await pg.evaluate(()=>{const e=document.querySelector('#xo .xo-f.is-on');return e&&e.getAttribute('src');});
+  const cadre=pg.frameLocator('#xo .xo-f.is-on');
+  const dc=await cadre.locator('#offer .dc-s.is-on .dc-h').textContent({timeout:9000}).catch(()=>'');
+  ok(xo&&src==='/@kai?embed=1&from=verso'&&/Enter kai/.test(dc),quoi+' · [Discover] : le Discover de la creator economy (SA page), par-dessus le verso → '+JSON.stringify({src,dc}));
+  await cadre.locator('#cta [data-do="subscribe"]').click({timeout:8000}).catch(()=>{});await pg.waitForTimeout(800);
+  const f2=log.functions.filter(x=>x.name==='creator-subscribe').at(-1);
+  ok(!!f2&&f2!==f&&f2.body.from==='verso',quoi+' · s\'abonner DANS le Discover part aussi avec `from:verso` → '+JSON.stringify(f2&&f2.body));
+  await pg.click('#xo-x');
+  await pg.waitForFunction(()=>!window.__totehm_xo().actif,null,{timeout:8000}).catch(()=>{});
+  await pg.waitForFunction(()=>window.__totehm_cherche().etat==='offre',null,{timeout:6000}).catch(()=>{});
+  ok((await C(pg)).ouvert&&(await C(pg)).etat==='offre',quoi+' · refermé : le verso est toujours là, son offre relue');
   /* taper efface le résultat : pas d'entre-deux */
   await pg.click('#mb-q');await pg.keyboard.press('End');await pg.keyboard.type('x');await pg.waitForTimeout(200);
   ok((await C(pg)).etat==='vide'&&(await pg.evaluate(()=>document.getElementById('mb-res').innerHTML))==='',quoi+' · retaper efface le résultat');
@@ -84,10 +99,10 @@ try{
   if(tel) await pg.click('#mb-res [data-mb="open"]'); else await pg.click('#srch-flip');
   await pg.waitForFunction(()=>document.body.classList.contains('ro')&&!document.body.classList.contains('gate')&&!document.getElementById('srch').classList.contains('is-on'),null,{timeout:9000}).catch(()=>{});
   await pg.waitForTimeout(500);
-  const r=await pg.evaluate(()=>({ro:document.body.classList.contains('ro'),gate:document.body.classList.contains('gate'),qui:document.getElementById('ro-who').textContent,
+  const r=await pg.evaluate(()=>({ro:document.body.classList.contains('ro'),gate:document.body.classList.contains('gate'),qui:document.title,barre:!!document.getElementById('ro-bar'),
     habits:document.querySelectorAll('#habits [data-open]').length,ecrit:document.querySelectorAll('#habits [contenteditable],#habits [data-kill],#habits [data-add]').length,
     url:location.search,mode:window.__totehm_lv().mode,piece:window.__totehm_piece()}));
-  ok(r.ro&&!r.gate&&r.qui==='gva'&&r.habits===2&&r.ecrit===0&&/ro=gva/.test(r.url)&&r.mode==='members',
+  ok(r.ro&&!r.gate&&r.qui==='gva · TOTEHM'&&!r.barre&&r.habits===2&&r.ecrit===0&&/ro=gva/.test(r.url)&&r.mode==='members',
      quoi+' · '+(tel?'[Open]':'⟲')+' : SON TOTEHM, en lecture, déployé '+(tel?'':'(la pièce se retourne) ')+'→ '+JSON.stringify({...r,piece:undefined}));
   if(!tel) ok(r.piece.versRecto>=1&&r.piece.dessous>=1,'ordinateur · la PIÈCE : son recto se déploie sous le verso puis se retourne (pas d\'atterrissage entre les deux) → '+JSON.stringify(r.piece));
   ok((await pg.evaluate(()=>document.getElementById('ast-name').textContent))==='wah',quoi+' · le dos de MON papier reprend mon nom');
@@ -143,5 +158,35 @@ try{
   const s=await pg.evaluate(()=>({etat:window.__totehm_cherche().etat,q:document.getElementById('mb-q').value,url:location.search}));
   ok(s.etat==='abonne'&&s.q==='gva'&&!/members|subscribed/.test(s.url),'retour de Stripe : mon année chez gva, et l\'adresse se nettoie → '+JSON.stringify(s));
   ok(!erreurs(log).length,'retour : aucune erreur '+erreurs(log).join(' | '));
+  await pg.context().close();}
+
+ /* ── 8 · 18/11 (Wah : « je ne veux pas de la bande noire en haut du TOTEHM, avec le nom et une petite flèche » · « les
+    titres des parties sont décalés vers le haut en touchant le T ») : le TOTEHM d'un membre a la mise en page du mien ── */
+ for(const [vp,tel] of [[{width:390,height:844},true],[{width:1280,height:800},false]]){
+  const pos={};
+  for(const qui of ['moi','gva']){
+   const{pg,log}=await page(browser,{dir:'com',origin,tables,rpc,functions,viewport:vp,hasTouch:tel});
+   await pg.goto(origin+(qui==='moi'?'/totehm#in':'/totehm?ro=gva#in'));
+   await pg.waitForFunction(()=>!document.body.classList.contains('gate'),null,{timeout:12000}).catch(()=>{});
+   await pg.waitForTimeout(1500);
+   pos[qui]=await pg.evaluate(()=>{const b=s=>{const e=document.querySelector(s);if(!e)return null;const r=e.getBoundingClientRect();return {top:Math.round(r.top),bas:Math.round(r.bottom)};};
+     return {T:b('#bigT'),titre:b('#vnow'),liste:b('#fv-inner'),croix:b('#fold-x'),barre:!!document.getElementById('ro-bar'),ro:document.body.classList.contains('ro')};});
+   if(qui==='gva') await pg.screenshot({path:OUT+'/membre_deploye_'+(tel?'tel':'ordi')+'.png'});
+   ok(!erreurs(log).length,(tel?'téléphone':'ordinateur')+' · '+qui+' déployé : aucune erreur '+erreurs(log).join(' | '));
+   await pg.context().close();
+  }
+  const m=pos.moi, g=pos.gva, quoi=tel?'téléphone':'ordinateur';
+  ok(g.ro&&!g.barre&&g.T.top===m.T.top&&g.titre.top===m.titre.top&&g.liste.top===m.liste.top&&g.croix.top===m.croix.top,
+     quoi+' · chez un membre : plus de barre noire, le T, le titre, la liste et la croix exactement où ils sont chez moi → '+JSON.stringify({moi:m,gva:g}));
+  if(!tel) ok(g.T.bas<=g.titre.top,'ordinateur · le titre de la vue ne touche plus le T ('+g.T.bas+' ≤ '+g.titre.top+')');
+ }
+
+ /* ── 9 · un lien vers un TOTEHM illisible (inconnu) : on redevient soi, et une ligne le dit — plus de coquille vide ── */
+ {const{pg,log}=await page(browser,{dir:'com',origin,tables,rpc:{...rpc,totehm_read:{ok:false,why:'nobody'}},functions,viewport:{width:390,height:844},hasTouch:true});
+  await pg.goto(origin+'/totehm?ro=personne');await pg.waitForSelector('body.member');
+  await pg.waitForFunction(()=>/No Totehm by that name/.test(document.getElementById('lv-m-say').textContent),null,{timeout:9000}).catch(()=>{});
+  const s=await pg.evaluate(()=>({dit:document.getElementById('lv-m-say').textContent,ro:document.body.classList.contains('ro'),url:location.search,mode:window.__totehm_lv().mode}));
+  ok(s.dit==='No Totehm by that name.'&&!s.ro&&!/ro=/.test(s.url)&&s.mode==='mine','`?ro=` inconnu : je redeviens moi, et une ligne le dit → '+JSON.stringify(s));
+  ok(!erreurs(log).length,'lecture refusée : aucune erreur '+erreurs(log).join(' | '));
   await pg.context().close();}
 }finally{ await browser.close(); }
