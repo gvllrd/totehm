@@ -45,6 +45,13 @@ try{
     await pg.waitForFunction(()=>typeof window.__totehm_lv==='function');
     if(sample.session!==false||sample.guest)await pg.waitForSelector('body.member');
     await settled(pg,'c');
+    /* 18/11 (Wah) : sans compte, ↑ ouvre la porte d'inscription — Higher my ChatGPT se découvre par le Discover */
+    if(sample.session===false&&!sample.guest){
+      await pg.click('#lvn-up');await pg.waitForTimeout(700);
+      ok(await pg.evaluate(()=>document.body.classList.contains('is-door')&&window.__totehm_lv().vue==='c'),sample.name+' · 18/11 · without an account, ↑ opens the sign-up door, not the ChatGPT view');
+      ok(noErrors(log),sample.name+' · no runtime error');
+      await ctx.close(); continue;
+    }
     await pg.click('#lvn-up');await settled(pg,'b');
     const state=await pg.evaluate(()=>{
       const pitch=document.getElementById('chatgpt-pitch'),button=document.getElementById('chatgpt-connect'),panel=document.getElementById('lv-b');
@@ -80,31 +87,29 @@ try{
     await ctx.close();
   }
 
-  // The bottom of another member's ecosystem still represents that member's offer.
+  // 18/11 — [Members] searches on the verso; at a member's, no top or bottom view (their offer lives on THEIR verso),
+  // so my personal ChatGPT pitch can never show inside another member's ecosystem.
   const OTHER={ok:true,pseudo:'kai3',steps:[{t:'Swim at dawn',is:['flow']}],trips:[],objs:{},reps:[],wisdom:[],visions:[]};
   const OFFER={ok:true,pseudo:'kai3',palette:['flow'],sale:{open:true,price_cents:2400,currency:'eur',period:'year'},
     viewer:{signed_in:true,me:false,subscribed:false,can_read:true}};
-  {const {pg,ctx,log}=await page(browser,{dir:'com',origin,tables,rpc:{my_landing:LAND,totehm_read:OTHER,creator_page:OFFER,member_media:{ok:true,items:[]},club_spots_of:{ok:true,items:[]}}});
+  {const {pg,ctx,log}=await page(browser,{dir:'com',origin,tables,rpc:{my_landing:LAND,figher_access:{signed_in:true,member:true},totehm_read:OTHER,creator_page:OFFER,member_media:{ok:true,items:[]},club_spots_of:{ok:true,items:[]}}});
     await pg.emulateMedia({reducedMotion:'reduce'});
     await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await settled(pg,'c');
     await pg.click('#lv-m-members');
     await pg.waitForSelector('#mb-q:visible');await pg.fill('#mb-q','kai3');await pg.keyboard.press('Enter');
-    await pg.waitForFunction(()=>document.body.classList.contains('lv-membre')&&!document.body.classList.contains('mb-cherche')&&!window.__totehm_lv().bouge);
-    await pg.click('#lvn-up');await settled(pg,'b');
-    await pg.waitForSelector('#mb-offre [data-mbo="sub"]',{state:'attached'});
-    const offer=await pg.textContent('#mb-offre');
-    console.log('Member offer fixture',JSON.stringify({offer,pitchVisible:await pg.isVisible('#chatgpt-pitch'),label:await pg.getAttribute('#lv-b','aria-label')}));
-
-    ok(/kai3/.test(offer)&&/SUBSCRIBE/.test(offer)&&!(await pg.isVisible('#chatgpt-pitch'))&&(await pg.getAttribute('#lv-b','aria-label'))==='Member offer','Members · its bottom view keeps the member offer and hides the personal pitch');
-    await pg.click('#lvn-dn');await settled(pg,'c');
-    ok((await pg.evaluate(()=>window.__totehm_lv().mode))==='members'&&noErrors(log),'Members · return keeps the visited ecosystem');
+    await pg.waitForFunction(()=>{const c=window.__totehm_cherche();return c.etat==='abonne'&&c.lu;},null,{timeout:9000});
+    await pg.keyboard.press('Escape');
+    await pg.waitForFunction(()=>document.body.classList.contains('lv-membre')&&!document.getElementById('srch').classList.contains('is-on')&&!window.__totehm_lv().bouge,null,{timeout:9000});
+    await pg.keyboard.press('ArrowUp');await pg.waitForTimeout(800);
+    ok((await pg.evaluate(()=>window.__totehm_lv().vue))==='c'&&!(await pg.isVisible('#chatgpt-pitch')),'Members · no top view at a member\'s: the personal pitch never shows');
+    ok((await pg.evaluate(()=>window.__totehm_lv().mode))==='members'&&noErrors(log),'Members · the visited ecosystem stays');
     await ctx.close();}
 
 
   // Normal motion: GPT rotates continuously; the shared badge stays level.
-  {const {pg,ctx}=await page(browser,{dir:'com',origin,tables,session:false,viewport:{width:1280,height:860}});
+  {const {pg,ctx}=await page(browser,{dir:'com',origin,tables,rpc:{my_landing:LAND},viewport:{width:1280,height:860}});   /* 18/11 : un membre (sans compte, ↑ ouvre la porte) */
     await pg.emulateMedia({reducedMotion:'no-preference'});
-    await pg.goto(origin+'/totehm');await pg.waitForFunction(()=>window.__totehm_lv);await settled(pg,'c');
+    await pg.goto(origin+'/totehm');await pg.waitForFunction(()=>window.__totehm_lv);await pg.waitForSelector('body.member');await settled(pg,'c');
     await pg.click('#lvn-up');await settled(pg,'b');await pg.waitForTimeout(250);
     const before=await pg.evaluate(()=>({gpt:getComputedStyle(document.getElementById('rf-gpt')).transform,badge:getComputedStyle(document.getElementById('lv-slogan')).transform}));
     await pg.waitForTimeout(250);

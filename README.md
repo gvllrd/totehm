@@ -35,7 +35,7 @@ Un spot a ses trois niveaux (private · my subscribers · figher club) et ne mon
 | où | quoi |
 |---|---|
 | `com/totehm.html` | l'app : l'accueil et ses cinq vues, le TOTEHM déployé, le verso (Go Higher, Monetize), le Discover |
-| `com/creator.html` | `/search` (chercher un écosystème) et `/@nom` (la page d'abonnement d'un membre, en Discover) |
+| `com/creator.html` | `/@nom` (la page d'abonnement d'un membre, en Discover) ; `/search` n'y fait plus que renvoyer au verso du TOTEHM, où vit la recherche de [Members] |
 | `com/chatgpt.html` · `monetize.html` · `auth.html` | la connexion ChatGPT · la vente aux créateurs · la connexion des quatre sites |
 | `com/console.html` · `map.html` · `spot.html` · `terms.html` | les retours de paiement · les liens de TotehmBot · les conditions |
 | `club/index.html` · `club/create.html` | le Club · l'ancien moteur, encore ouvert par TotehmBot |

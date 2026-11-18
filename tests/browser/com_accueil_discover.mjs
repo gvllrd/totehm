@@ -142,10 +142,13 @@ try{
  /* ── 3 · LA VUE CHATGPT (en haut) : le titre d'abord, puis le bouton ── */
  {const{pg,ctx,log}=await page(browser,{dir:'com',origin,tables,rpc:{my_landing:LAND,figher_access:{signed_in:true,member:true}},viewport:{width:390,height:844},hasTouch:true});
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1200);
-  /* 18/11 : membre du Club → [Members] ouvre /search dans un onglet */
-  const [tab]=await Promise.all([ctx.waitForEvent('page',{timeout:4000}).catch(()=>null),pg.click('#lv-m-members')]);
-  ok(!!tab&&/\/search$/.test(tab.url()||await tab.waitForURL(/\/search$/,{timeout:3000}).then(()=>tab.url()).catch(()=>'')),'18/11 · membre du Figher Club : [Members] ouvre /search dans un onglet');
-  if(tab) await tab.close();
+  /* 18/11 : membre du Club → [Members] retourne le TOTEHM sur son verso, en mode recherche (aucun onglet) */
+  let onglets3=0; ctx.on('page',()=>onglets3++);
+  await pg.click('#lv-m-members');
+  const v3=await pg.waitForFunction(()=>{const c=window.__totehm_cherche&&window.__totehm_cherche();return c&&c.ouvert;},null,{timeout:8000}).then(()=>true,()=>false);
+  ok(v3&&onglets3===0&&await pg.evaluate(()=>document.activeElement&&document.activeElement.id==='mb-q'),'18/11 · membre du Figher Club : [Members] retourne le TOTEHM sur son verso, la saisie prête, aucun onglet');
+  await pg.keyboard.press('Escape');await pg.waitForFunction(()=>!document.getElementById('srch').classList.contains('is-on'),null,{timeout:8000}).catch(()=>{});
+  await pg.waitForTimeout(900);
   await pg.keyboard.press('ArrowUp');await vers(pg,'b');await pg.waitForTimeout(900);
   const g=await pg.evaluate(()=>{const t=document.getElementById('chatgpt-title').getBoundingClientRect(),b=document.getElementById('chatgpt-connect'),r=b.getBoundingClientRect(),c=getComputedStyle(b);
     return {ordre:t.bottom<=r.top,piece:document.querySelectorAll('#chatgpt-title .tw').length,fond:c.backgroundColor,rayon:c.borderTopLeftRadius,href:b.getAttribute('href'),texte:b.textContent.trim(),

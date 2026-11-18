@@ -172,24 +172,27 @@ try{
   await ctx.close();}
 
  /* ── 1 ter · LE MOUCHARD (22/10) : un geste refusé dit POURQUOI (un code) ; `?diag=1` l'affiche, sinon rien ── */
- {const{pg,ctx,log}=await page(browser,{dir:'com',origin,tables,rpc:{my_landing:LAND},viewport:{width:390,height:844},hasTouch:true});
+ {const{pg,ctx,log}=await page(browser,{dir:'com',origin,tables,rpc:{my_landing:LAND,figher_access:{signed_in:true,member:true}},viewport:{width:390,height:844},hasTouch:true});
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(800);
   const sans=await pg.evaluate(()=>!document.getElementById('lv-diag'));
   await pg.goto(origin+'/totehm?diag=1');await pg.waitForSelector('body.member');await pg.waitForTimeout(1200);
   await pg.keyboard.press('ArrowUp');await vers(pg,'b');await pg.keyboard.press('ArrowUp');await pg.waitForTimeout(200);
   await pg.keyboard.press('ArrowDown');await vers(pg,'c');
-  /* 14/11 — [Members] n'ouvre plus de recherche ICI : il ouvre `/search` dans un ONGLET (le verso d'ici porte
-     MON nom). Sans Totehm il n'ouvre rien et mène à la porte (`members:sans-totehm`). L'atterrissage, lui,
-     reste entièrement navigable : aucun état ne le retient. */
+  /* 18/11 — [Members] retourne le TOTEHM sur son verso, en mode recherche (membre du Club), sans onglet. Sans Totehm il
+     n'ouvre rien et mène à la porte (`members:sans-totehm`). Refermé, l'atterrissage reste entièrement navigable :
+     aucun état ne le retient. */
   await pg.evaluate(()=>{ window.__ouvert=[]; window.open=(u)=>{ window.__ouvert.push(u); return null; }; });
-  await pg.click('#lv-m-members');await pg.waitForTimeout(700);
+  await pg.click('#lv-m-members');
+  const cherche=await pg.waitForFunction(()=>{const c=window.__totehm_cherche&&window.__totehm_cherche();return c&&c.ouvert;},null,{timeout:8000}).then(()=>true,()=>false);
   const onglets=await pg.evaluate(()=>window.__ouvert.slice());
+  await pg.keyboard.press('Escape');await pg.waitForFunction(()=>!document.getElementById('srch').classList.contains('is-on'),null,{timeout:8000}).catch(()=>{});
+  await pg.waitForTimeout(900);
   await pg.keyboard.press('ArrowUp');await vers(pg,'b');await pg.waitForTimeout(600);
   const m=await pg.evaluate(()=>{const e=document.getElementById('lv-diag'),d=window.__totehm_lv();return {r:d.refus,vue:d.vue,mode:d.mode,txt:e?e.textContent:'',pe:e?getComputedStyle(e).pointerEvents:''};});
   ok(sans&&m.r['voisin:b>h']===1&&!Object.keys(m.r).some(k=>/recherche/.test(k))&&m.vue==='b'&&m.mode==='mine'&&/refus voisin:b>h/.test(m.txt)&&m.pe==='none',
      '22/10 · le mouchard : un geste refusé dit pourquoi (en haut — ChatGPT — sans voisin au-dessus) ; à l\'écran avec ?diag=1 seulement → '+JSON.stringify({r:m.r,vue:m.vue,mode:m.mode}));
-  ok(onglets.length===1&&onglets[0]==='/search',
-     '14/11 · [Members] ouvre /search dans un onglet, jamais le verso de MON Totehm → '+JSON.stringify(onglets));
+  ok(cherche&&onglets.length===0,
+     '18/11 · [Members] retourne le TOTEHM sur son verso, en mode recherche, sans onglet → '+JSON.stringify({cherche,onglets}));
   ok(!erreurs(log).length,'mouchard : aucune erreur '+erreurs(log).join(' | '));
   await ctx.close();}
 

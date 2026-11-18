@@ -225,13 +225,11 @@ try{
   ok(!!r&&/\/get_higher\?from=com/.test(r.url()),'puis higher.boutique/get_higher?from=com, par le pont ('+(r&&r.url())+')');
   ok(!erreurs(log).length,'Get Higher : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
 
- // ── 4 · L'ÉCOSYSTÈME D'UN MEMBRE · 14/11 ─────────────────────────────────────────────────────────────────
- // Wah : « quand j'appuie sur Members ça ne va pas, puisqu'il y a sur le verso du Totehm le NOM DU TOTEHM DE
- // L'UTILISATEUR, or cette partie est destinée à chercher le nom d'un AUTRE Totehm » · « un NOUVEL ONGLET
- // s'ouvre, l'utilisateur entre le nom dans un fullscreen bleu navy, puis la page d'abonnement, puis — abonné
- // — le verso redevient recto avec le tree et la page d'atterrissage du membre ».
- // Donc ici : [Members] ouvre `/search` dans un onglet et NE TOUCHE À RIEN ; l'écosystème d'un membre
- // s'habite par `?ro=` ; un Totehm à abonnement part sur sa page de vente.
+ // ── 4 · L'ÉCOSYSTÈME D'UN MEMBRE · 18/11 ─────────────────────────────────────────────────────────────────
+ // Wah : « quand l'utilisateur clique sur [Members], le verso du TOTEHM s'affiche avec le mode recherche » · « le
+ // joystick dans la vue [Member] : seulement gauche, centrale, droite ». La recherche elle-même : com_members_verso.mjs.
+ // Ici : [Members] retourne le TOTEHM sur son verso (refermé, rien n'a bougé) ; l'écosystème d'un membre s'habite
+ // aussi par `?ro=` ; un Totehm à abonnement part sur sa page de vente.
  const OFFRE={ok:true,pseudo:'kai3',palette:['flow','express'],sale:{open:true,price_cents:2400,currency:'eur',period:'year'},
    viewer:{signed_in:true,me:false,subscribed:false,until:null,ending:false,can_read:true}};
  for(const [vp,tel] of [[{width:390,height:844},true],[{width:1280,height:800},false]]){
@@ -244,15 +242,19 @@ try{
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1000);await ouvre(pg);
   const p0=await pg.evaluate(()=>document.getElementById('gate-asteroid').getBoundingClientRect().width);
   const habits0=(await lv(pg)).ramifications.habits;
-  // [Members] : un ONGLET, et l'atterrissage ne bouge pas d'un pixel (le verso d'ici porte MON nom)
-  await pg.click('#lv-m-members');await calme(pg);await pg.waitForTimeout(700);
-  const o=await pg.evaluate(()=>{const q=s=>document.querySelector(s),d=window.__totehm_lv(),p=q('#gate-asteroid').getBoundingClientRect();
-    return {onglets:window.__ouvert.slice(),mode:d.mode,vue:d.vue,pw:p.width,dos:q('#gate-card').classList.contains('is-back'),
-      asp:document.body.classList.contains('is-aspire'),ui:!!q('#mb-ui'),ram:getComputedStyle(q('#lv-ram')).opacity};});
-  ok(o.onglets.length===1&&o.onglets[0]==='/search'&&!o.ui,
-     (tel?'téléphone':'ordinateur')+' · 14/11 · [Members] ouvre /search dans un onglet ; plus aucune saisie ici → '+JSON.stringify(o.onglets));
-  ok(o.mode==='mine'&&o.vue==='c'&&Math.abs(o.pw-p0)<2&&!o.dos&&!o.asp,
-     'et l\'atterrissage ne bouge pas : le papier reste chez lui, sur son recto, ses traits dehors');
+  // 18/11 — [Members] : le TOTEHM se retourne sur son verso, en mode recherche (le même geste que [Mine]) ; refermé, rien n'a bougé
+  await pg.click('#lv-m-members');
+  await pg.waitForFunction(()=>{const c=window.__totehm_cherche&&window.__totehm_cherche();return c&&c.ouvert;},null,{timeout:8000}).catch(()=>{});
+  const o=await pg.evaluate(()=>({onglets:window.__ouvert.slice(),mode:window.__totehm_lv().mode,cherche:window.__totehm_cherche().ouvert,
+    saisie:document.activeElement&&document.activeElement.id,asp:document.body.classList.contains('is-aspire')}));
+  ok(o.onglets.length===0&&o.cherche&&o.saisie==='mb-q'&&o.mode==='mine'&&o.asp,
+     (tel?'téléphone':'ordinateur')+' · 18/11 · [Members] retourne le TOTEHM sur son verso, en mode recherche (ses traits rentrent en lui) → '+JSON.stringify(o));
+  await pg.keyboard.press('Escape');await pg.waitForFunction(()=>!document.getElementById('srch').classList.contains('is-on'),null,{timeout:8000}).catch(()=>{});
+  await calme(pg);await pg.waitForTimeout(900);
+  const o2=await pg.evaluate(()=>{const q=s=>document.querySelector(s),d=window.__totehm_lv(),p=q('#gate-asteroid').getBoundingClientRect();
+    return {mode:d.mode,vue:d.vue,pw:p.width,dos:q('#gate-card').classList.contains('is-back'),asp:document.body.classList.contains('is-aspire')};});
+  ok(o2.mode==='mine'&&o2.vue==='c'&&Math.abs(o2.pw-p0)<2&&!o2.dos&&!o2.asp,
+     'refermée sans résultat : le papier rentre chez lui, sur son recto, ses traits dehors → '+JSON.stringify(o2));
   // un Totehm à abonnement, atteint par un lien `?ro=` : sa PAGE D'ABONNEMENT (jamais une porte fermée)
   {const vers=pg.waitForURL(/\/@lock$/,{timeout:9000}).then(()=>true,()=>false);
    await pg.goto(origin+'/totehm?ro=lock');
@@ -273,13 +275,12 @@ try{
   ok(Math.abs(e.pw-p0)<8&&!e.dos,'le papier est chez lui, sur son recto ('+e.pw.toFixed(0)+' vs '+p0.toFixed(0)+')');
   ok(e.qui==='kai3'&&e.quiVu&&e.couleur==='rgb(251, 213, 202)','[Members] porte SON nom, en Coral');
   ok(e.d.ramifications.habits!==habits0&&e.pales===5,'le processeur est le SIEN : ses deux intentions habitées, cinq en creux');
-  ok(/to open it · (Turn|Swipe) to search$/.test(e.tap),'« '+e.tap+' »');
-  // ↑ chez lui (16/11) : son offre, pas mon pitch ChatGPT
-  await tire(pg,0,-30);await vers(pg,'b');await pg.waitForTimeout(900);
-  const b=await pg.evaluate(()=>({o:document.getElementById('mb-offre').textContent,pitch:getComputedStyle(document.getElementById('chatgpt-pitch')).display,
-    p:(()=>{const p=document.getElementById('gate-asteroid').getBoundingClientRect(),m=document.getElementById('rf-me').getBoundingClientRect();return Math.abs(p.x+p.width/2-(m.x+m.width/2))<4;})()}));
-  ok(/kai3/.test(b.o)&&/SUBSCRIBE · 24 € \/ year/.test(b.o)&&b.pitch==='none'&&b.p,'↑ chez un membre : SON profil et SON offre (« '+b.o+' »), jamais mon pitch ChatGPT');
-  await tire(pg,0,30);await vers(pg,'c');await pg.waitForTimeout(600);
+  ok(/to open it · (Turn|Swipe) to search( · Discover)?$/.test(e.tap),'« '+e.tap+' »');
+  // 18/11 (Wah) : chez un membre, le joystick = gauche · centre · droite — le haut et le bas sont à [Mine]
+  await tire(pg,0,-30);await pg.waitForTimeout(1100);
+  const b=await pg.evaluate(()=>({vue:window.__totehm_lv().vue,morts:['lvn-up','lvn-dn'].every(id=>document.getElementById(id).classList.contains('is-mort')),
+    vivants:['lvn-lf','lvn-rt'].every(id=>!document.getElementById(id).classList.contains('is-mort'))}));
+  ok(b.vue==='c'&&b.morts&&b.vivants,'18/11 · chez un membre : ↑ ne mène nulle part, ↑ ↓ effacés, ← → vivants → '+JSON.stringify(b));
   // son Totehm, en lecture, puis on replie : on reste chez lui
   await pg.click('#lv-tap-open');await pg.waitForFunction(()=>!document.body.classList.contains('gate'),null,{timeout:9000}).catch(()=>{});
   await pg.waitForTimeout(600);
@@ -376,7 +377,7 @@ try{
  // Le chat retiré n'a plus de saisie, quota, ajout de Habit ou publication Spot dans cette vue.
 
  // ── 7 · MOUVEMENT RÉDUIT : tout marche, rien ne tourne ni ne glisse ──
- {const{pg,log}=await page(browser,{dir:'com',origin,tables,viewport:{width:390,height:844},rpc:{my_landing:LAND()}});
+ {const{pg,log}=await page(browser,{dir:'com',origin,tables,viewport:{width:390,height:844},rpc:{my_landing:LAND(),figher_access:{signed_in:true,member:true}}});
   await pg.emulateMedia({reducedMotion:'reduce'});
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(900);
   const tr=await pg.evaluate(()=>['lv-socket','lv-b'].map(i=>getComputedStyle(document.getElementById(i)).transitionDuration));
@@ -386,7 +387,7 @@ try{
   await pg.click('#lv-m-members');await calme(pg);await pg.waitForTimeout(600);
   const g=await lv(pg);
   ok(tr.every(t=>/^0s/.test(t))&&b.tours===0&&b.anim===0,'mouvement réduit : aucune transition, #gl-bg ne tourne pas ('+tr.join(' ')+')');
-  ok(g.mode==='members'&&g.membre.cherche&&!g.ramifications.enCours&&await pg.evaluate(()=>document.activeElement.id==='mb-q'),'MEMBERS : la saisie est là, sans animation');
+  ok(await pg.evaluate(()=>window.__totehm_cherche().ouvert&&document.activeElement.id==='mb-q')&&!g.ramifications.enCours,'MEMBERS : le verso en recherche, la saisie est là, sans animation');
   ok(!erreurs(log).length,'mouvement réduit : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
 
  // ── 8 · AU CHARGEMENT : le badge [Higher] n'apparaît jamais au coin ──

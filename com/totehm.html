@@ -2359,7 +2359,8 @@ body.gate.entered #terms-corner{opacity:0;pointer-events:none}
   #fold-flip{position:fixed;top:10px;right:54px;z-index:34}
   body.gate #fold-flip{opacity:0;pointer-events:none;transition:opacity .55s ease}
   body.gate.entered #fold-flip{opacity:1;pointer-events:auto;transition:opacity .55s ease var(--gate-reveal)}
-  body.ro #fold-flip{display:none}
+  body.ro:not(.lv-membre) #fold-flip{display:none}   /* 18/11 : chez un membre, son recto se retourne sur SON verso */
+  body.ro #fold-flip{top:calc(10px + var(--ro-h))}    /* sous la barre de lecture, comme la croix (`#fold-x`) */
 }
 @media(prefers-reduced-motion:reduce){.srch-after{transition:none!important}}
 
@@ -3266,18 +3267,12 @@ body.gate:not(.member):not(.ses-attente){--lv-y:32dvh}
 /* 18/11 — la recherche est au FIGHER CLUB : un tap sur [Members] hors du Club le DIT ici, en une ligne, puis se tait */
 #lv-m-say{margin:8px auto 0;max-width:300px;font:400 10px/1.6 'Space Mono',monospace;color:#9a9aa2;text-align:center}
 #lv-m-say:empty{display:none}
-/* 18/11 (Wah) : SANS COMPTE, LE JOYSTICK SE VOIT MAIS NE MÈNE À AUCUNE VUE — il est la racine de l'arbre (le TOTEHM, les
-   traits d'intention, le manche : l'écosystème se VOIT). Le toucher ouvre la porte d'inscription ; ses chevrons sont morts. */
-/* ══ 14/11 · MEMBERS — LA RECHERCHE A QUITTÉ L'ATTERRISSAGE ═════════════════════════════════════════════════
-   Wah : « quand j'appuie sur Members ça ne va pas, puisqu'il y a sur le verso du Totehm le NOM DU TOTEHM DE
-   L'UTILISATEUR, or cette partie est destinée à chercher le nom d'un AUTRE Totehm » · « ce que l'on recherche
-   ce n'est pas le TOTEHM mais l'ÉCOSYSTÈME, et il est visible via la page d'atterrissage et le Tree. DONC un
-   NOUVEL ONGLET s'ouvre, l'utilisateur entre le nom dans un FULLSCREEN BLEU NAVY (le verso), puis la page
-   d'abonnement, puis — abonné — le verso redevient recto avec le tree. »
-   Le verso d'ici porte MON nom : il ne peut pas être cette surface. [Members] ouvre donc `/search` dans un
-   onglet (`chercherAilleurs`), et `#mb-ui`, `#mb-q`, `#mb-note`, `#mb-go` et l'état `mb-cherche` sont partis
-   avec tout leur câblage. Ce qui RESTE : `lv-mb` (je vis l'écosystème d'un membre) et `lv-verrou` (l'auteur
-   d'un spot dont la lecture demande un abonnement : sa palette, son offre sous le papier). */
+/* 18/11 (Wah) : SANS COMPTE, LE JOYSTICK ET SES QUATRE FLÈCHES SE VOIENT MAIS NE MÈNENT À AUCUNE VUE — il est la racine de
+   l'arbre (le TOTEHM, les traits d'intention, le manche : l'écosystème se VOIT). Le manche comme chaque flèche ouvre la porte. */
+/* ══ MEMBERS — L'ÉCOSYSTÈME D'UN MEMBRE ═════════════════════════════════════════════════════════════════════════
+   La recherche vit sur le VERSO (18/11, `#srch.is-cherche`, voir `CHERCHE`), pas sur l'atterrissage. Ici : `lv-mb` (je vis
+   l'écosystème d'un membre : ← ses médias · ● son TOTEHM · → ses spots, sans haut ni bas) et `lv-verrou` (l'auteur d'un spot
+   dont la lecture demande un abonnement : sa palette, son offre sous le papier). */
 /* Chez un membre : son NOM sur [Members], en Coral Quantico — c'est un identifiant, pas une étiquette. */
 .lvm-who{display:none;font:400 13px/1 'Quantico',sans-serif;color:#fbd5ca;text-transform:none;letter-spacing:0;
   max-width:42vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -3346,6 +3341,24 @@ body.lv-b:not(.lv-membre):not(.lv-verrou) #lv-socket{opacity:0}
 #self-name:empty{display:none}
 #self-name:focus-visible{outline:1px solid rgba(255,255,255,.4);outline-offset:6px}
 #srch.is-prep #self-h{opacity:0}
+/* ══ 18/11 · [MEMBERS] : LE VERSO EN MODE RECHERCHE ══ Wah : « quand l'utilisateur clique sur [Members], le verso du TOTEHM
+   s'affiche avec le mode recherche, dans le même format que le nom du TOTEHM ; ensuite l'abonnement au même format que
+   [Monetize my TOTEHM] ». Le MÊME verso, le même zoom, la même pièce que [Mine] : seul son contenu change (`is-cherche`).
+   La saisie a la police, la taille, l'interlettrage et le corail de `#self-name` (le nom d'un membre est corail). */
+#mb-q,#mb-res{display:none}
+#srch.is-cherche #mb-q{display:block;width:min(420px,88vw);margin:0;padding:0;border:0;border-radius:0;outline:none;background:none;
+  font:400 clamp(19px,5vw,26px)/1.2 'Quantico',sans-serif;letter-spacing:.04em;color:#fbd5ca;caret-color:#fbd5ca;text-align:center;
+  -webkit-appearance:none;appearance:none}
+#mb-q::placeholder{color:rgba(251,213,202,.38)}
+#mb-q::selection{background:rgba(251,213,202,.24);color:#fff}
+#srch.is-cherche :is(#self-name,#self-mail,#vs-tabs,#vs-dash,#vs-vide,#lv-card,#member-window){display:none!important}
+#srch.is-cherche #mb-res{display:flex;flex-direction:column;gap:2px;width:min(94vw,420px);flex:none;margin-top:8px}
+#srch.is-cherche #mb-res:empty{display:none}
+#mb-res .mbr-dit{margin:0;padding:10px 2px;text-align:center}
+#mb-res .mbr-nom{font:400 13px/1.2 'Quantico',sans-serif;color:#fbd5ca}
+#mb-res .vs-act[disabled]{opacity:.45;cursor:default}
+/* ⟲ retourne le verso sur SON recto : seulement quand son TOTEHM est lu (`is-lu`) */
+#srch.is-cherche:not(.is-lu) #srch-flip{display:none}
 #self-mail{margin:-6px 0 8px;display:flex;flex-direction:column;align-items:center;gap:4px;flex:none}
 #self-mail .mw-mail{margin:0;font:400 11.5px/1.3 'Space Mono',monospace;letter-spacing:.03em;color:#d6d6de;word-break:break-all;text-align:center}
 #self-mail .mw-sync{margin:0;min-height:0;font-size:9px}
@@ -4276,6 +4289,8 @@ div:not(:has(> :not(br,wbr))):hover,
 #mb-offre .mbo-p:hover,
 #mb-offre .mbo-s:hover,
 #self-name:hover,
+#srch.is-cherche #mb-q:hover,
+#mb-res .mbr-nom:hover,
 #self-mail .mw-mail:hover,
 #lv-card #name-btn:hover,
 #lv-card #name-btn.claimed:hover,
@@ -4366,6 +4381,7 @@ div:not(:has(> :not(br,wbr))):hover,
 #srch-q:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::placeholder{color:#fff!important}
 #gate-search-input:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::placeholder{color:#fff!important}
 #search-input:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::placeholder{color:#fff!important}
+#mb-q:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::placeholder{color:#fff!important}
 .vs-in:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::placeholder{color:#fff!important}
 }
 /* ══ FIN DU BLOC GÉNÉRÉ ══ */
@@ -4773,9 +4789,14 @@ In the highest way.</p>
 <div id="srch" role="dialog" aria-modal="true" aria-label="My TOTEHM settings" aria-hidden="true" tabindex="-1" data-tab="higher">
   <div id="srch-bg"></div>
   <div id="srch-ui">
-    <div id="self-h"><button id="self-name" type="button" aria-label="Rename my TOTEHM"></button></div>
+    <div id="self-h"><button id="self-name" type="button" aria-label="Rename my TOTEHM"></button>
+      <!-- 18/11 · [MEMBERS] : le verso en mode RECHERCHE (`is-cherche`) — le nom tapé EST la saisie, au format du nom du TOTEHM.
+           Il existe dès le geste (iOS n'ouvre le clavier que pour une mise au point faite DANS le geste). -->
+      <input id="mb-q" maxlength="32" placeholder="a name" aria-label="A TOTEHM name" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go"></div>
     <!-- Sous l'identifiant, le compte qui le porte (et l'état de la synchronisation) ; il arrive avec le reste. -->
     <p id="self-mail" class="srch-after"><span class="mw-mail" id="mw-mail"></span><span class="mw-sync" id="mw-sync"></span></p>
+    <!-- 18/11 · [MEMBERS] : UN résultat, après Entrée, au format de [Monetize my TOTEHM] (`.vs-*`) : son offre, ou mon année chez lui. -->
+    <section id="mb-res" class="srch-after" aria-live="polite" aria-label="The TOTEHM found"></section>
     <!-- 26/10 — DEUX PARTIES (Wah : « Monetize my Totehm - Go Higher ») : ce que je GAGNE · ce que je FAIS et ce que
          j'achète pour moi (le tableau de bord, puis [Higher] et TotehmBot), ouverte par défaut. Elles ne font que montrer
          ou cacher des blocs (`#mw-creator` · `#vs-dash` + `#settings`) : chacun garde son câblage. Le tableau de bord se
@@ -5268,7 +5289,11 @@ let ANON_OK=false;
 /* 07/10 : l'atterrissage lit UN appel (`my_landing`) — ma vignette, la visibilité
    et l'offre de mon Totehm, mon THP, Telegram. Peint par
    la croix (`lvRefresh`), vidé au changement de compte (`lvQuitter`). */
-let LAND=null, lvRefresh=null, lvPeindre=null, lvQuitter=null, lvReglages=null, lvMembreBoot=null, lvVersMembre=null, lvAller=null, lvPeindreMode=null;
+let LAND=null, lvRefresh=null, lvPeindre=null, lvQuitter=null, lvReglages=null, lvMembreBoot=null, lvVersMembre=null, lvAller=null, lvPeindreMode=null, lvRecherche=null;
+/* 18/11 — `?members[=<nom>]` : la recherche de [Members] sur le verso — un ancien lien `/search`, ou le retour de Stripe
+   (`?members=<nom>&subscribed=1`). Lu une fois, puis retiré de l'adresse (`lvRecherche`). */
+let MEMBERS0=(()=>{ try{ const u=new URLSearchParams(location.search); if(!u.has('members')) return null;
+  return {nom:(u.get('members')||'').trim().slice(0,32), retour:u.get('subscribed')==='1'}; }catch(e){ return null; } })();
 /* ══ 18/11 · LE FIGHER CLUB, LU AU SERVEUR ══ Wah : « la recherche est accessible seulement aux membres du figher.club ».
    Membre du Club = un TOTEHM avec une Habit, un objectif, une répulsion : c'est le serveur qui le dit (`figher_access().member`,
    la règle `_figher`), la page ne fait que le relire — à l'entrée d'un compte, au retour d'onglet, et à chaque refus. */
@@ -8797,7 +8822,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-11-18-les-fleches-du-joystick';
+const BUILD='2026-11-18-members-sur-le-verso';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -12030,6 +12055,8 @@ function paintAsteroid(){
   const p=((me&&myProfile&&myProfile.pseudo)||'').trim();
   /* 18/10 — le verso porte le NOM, et le nom ne vit que là ; déplié, il en est le haut, FIXE. */
   const sn=$('self-name'); if(sn) sn.textContent=p;
+  /* 18/11 — le verso en mode RECHERCHE ([Members]) n'est pas MON verso : le dos du papier reste vierge pendant ce temps */
+  if($('srch')&&$('srch').classList.contains('is-cherche')){ el.classList.remove('is-name'); el.textContent=''; VERSO.peindre(''); return; }
   el.classList.toggle('is-name',!!p);
   el.style.fontSize='';
   el.textContent=p;
@@ -12418,6 +12445,7 @@ async function sessionLoad(){
   if(inscrit()&&!RO){loadTrips(true);loadHabitSpaces();loadElementCloths();loadVisionImages();loadElementMedia();BADGE.charger();}
   garde();
   if(n===sesSeq&&lvRefresh) lvRefresh();
+  if(n===sesSeq&&MEMBERS0&&lvRecherche){ const m=MEMBERS0; MEMBERS0=null; setTimeout(()=>lvRecherche(m),600); }   /* 18/11 */
   if(n===sesSeq&&pratique)setTimeout(ouvrirPreparation,0);
   else if(n===sesSeq&&lienElement)setTimeout(ouvrirLienElement,0);
 }
@@ -13326,23 +13354,40 @@ window.addEventListener('pageshow',e=>{
   };
   window.addEventListener('resize',()=>{ if(sOpen&&!sMoving){ sansTransition(); auFormat(); } });
 
-  function ouvrirVerso(){
-    if(open||moving||sOpen||sMoving) return;
+  /* 18/11 — `o.cherche` : [Members], le MÊME verso en mode recherche (`CHERCHE`), depuis mon atterrissage ou celui d'un membre ;
+     `o.nom` : déjà un nom (le papier d'un membre retourné, un retour de Stripe). Rend vrai s'il s'ouvre. */
+  function ouvrirVerso(o){
+    const cherche=!!(o&&o.cherche);
+    if(open||moving||sOpen||sMoving) return false;
     /* Mes réglages demandent une SESSION : sans elle, le papier se repose et la porte s'ouvre. Avec une session
        mais sans profil encore chargé, on ouvre quand même — `peindreCarte()` remplira dès que le nom arrive. */
-    if(!me){ PAPIER.poser(()=>ouvrirPorte(null)); return; }
-    if(LV.vue()!=='c'||LV.mode()!=='mine') return;
+    if(!me){ PAPIER.poser(()=>ouvrirPorte(null)); return false; }
+    if(LV.vue()!=='c'||(!cherche&&LV.mode()!=='mine')) return false;
     sMoving=true; fermerPorte();
     LV.aspirer(true);   /* 25/10 : on cesse l'activité du TOTEHM pour le configurer — ses traits rentrent en lui */
     srch.classList.remove('is-pret');
+    modeCherche(cherche, o&&o.nom, o&&o.retour);
     srch.classList.add('is-on','is-prep'); srch.setAttribute('aria-hidden','false');
-    /* La console se lit PENDANT le retournement ; elle se montre une fois lue (1,8 s au plus après le geste). */
-    let lu=null; try{ lu=surReglages(); }catch(err){ console.error('[settings]',err?.message||err); }
+    /* La console se lit PENDANT le retournement ; elle se montre une fois lue (1,8 s au plus après le geste). En recherche,
+       rien à lire avant le geste suivant : la saisie est prête tout de suite. */
+    let lu=null; if(!cherche) try{ lu=surReglages(); }catch(err){ console.error('[settings]',err?.message||err); }
     sLu=Promise.race([Promise.resolve(lu).catch(err=>console.error('[settings]',err?.message||err)),new Promise(r=>setTimeout(r,1800))]);
     /* 12/11 — LE NOM SE REFORME PENDANT QUE LE PAPIER SE RETOURNE : les lettres de la grille rejoignent la
        ligne (420 ms) avant que `geometrie()` ne la mesure, donc le zoom part d'un nom déjà aligné. */
     VERSO.ligner(true);
     PAPIER.poserDos(zoomer);
+    return true;
+  }
+  /* 18/11 — le verso passe en mode recherche, ou en revient. Le dos du papier est VIERGE en recherche (ce n'est pas MON
+     verso) ; revenu, il reprend mon nom. Les étiquettes disent ce que fait la feuille. */
+  function modeCherche(on, nom, retour){
+    const avant=srch.classList.contains('is-cherche');
+    srch.classList.toggle('is-cherche',!!on);
+    srch.setAttribute('aria-label',on?'Search a TOTEHM ecosystem':'My TOTEHM settings');
+    if(sX) sX.setAttribute('aria-label',on?'Close the search':'Close my settings');
+    { const f=$('srch-flip'); if(f) f.setAttribute('aria-label',on?'Turn it over · their TOTEHM':'Turn it over · my TOTEHM'); }
+    if(on){ CHERCHE.preparer(nom||'',!!retour); paintAsteroid(); }
+    else if(avant){ CHERCHE.vider(); }
   }
   function zoomer(){
     /* Le focus ENTRE dans la feuille (dialogue) : sinon il reste sur un nœud caché (le nom de l'espace membre)
@@ -13375,6 +13420,7 @@ window.addEventListener('pageshow',e=>{
     srch.classList.remove('is-open','is-show','is-pret');
     document.body.classList.remove('searching');
     gate.inert=false;
+    const cherchait=srch.classList.contains('is-cherche');
     const fini=()=>{
       /* ⚠️ 29/10 — le compte vit DANS le verso : le verso fermé le ferme. Il gardait `show`, et l'atterrissage refusait
          ensuite chaque geste (`libre:espace-membre`, mesuré : verso ouvert puis fermé → ← refusé). */
@@ -13383,7 +13429,9 @@ window.addEventListener('pageshow',e=>{
       sansTransition(); sBg.style.transform=''; sH.style.transform='';
       sOpen=false; sMoving=false; window.__totehm_lsd.recherche=false;
       VERSO.ligner(false);   /* refermé, le nom retourne dans son carré */
-      PAPIER.poser(()=>{ paintFlip(); LV.aspirer(false); if(rendre&&!then) try{ $('gate-enter').focus({preventScroll:true}); }catch(_){} if(then) then(); });
+      /* 18/11 — la recherche refermée : le papier, posé sur sa face, reprend mon nom au dos (jamais pendant qu'il se retourne) */
+      PAPIER.poser(()=>{ if(cherchait){ modeCherche(false); paintAsteroid(); }
+        paintFlip(); LV.aspirer(false); if(rendre&&!then) try{ $('gate-enter').focus({preventScroll:true}); }catch(_){} if(then) then(); });
     };
     if(RMQ.matches){ fini(); return; }
     requestAnimationFrame(()=>requestAnimationFrame(()=>{
@@ -13418,13 +13466,18 @@ window.addEventListener('pageshow',e=>{
   const tourner=(face,de,a,ease,second)=>face.map(([el,f])=>el.animate([{transform:f(de)},{transform:f(a)}],
     {duration:PIECE/2, easing:ease, delay:second?PIECE/2:0, fill:'both'}));
   /* Le recto se retourne : il part vers la tranche, le verso en revient. `essai` : seulement dire si c'est possible. */
-  function pieceVersVerso(essai){
-    const peut=CARRE.matches&&!RO&&!!me&&open&&!moving&&!sOpen&&!sMoving&&LV.vue()==='c'&&LV.mode()==='mine';
+  /* 18/11 — `o.cherche` : le TOTEHM déployé d'un MEMBRE se retourne sur SON verso (son offre, ou mon année chez lui), en
+     mode recherche, comme le mien se retourne sur mes réglages — « toujours même principe que [Mine] » (Wah). */
+  function pieceVersVerso(essai,o){
+    const cherche=!!(o&&o.cherche);
+    const peut=CARRE.matches&&!!me&&open&&!moving&&!sOpen&&!sMoving&&LV.vue()==='c'
+      &&(cherche?(!!RO&&LV.membre()):(!RO&&LV.mode()==='mine'));
     if(essai||!peut) return peut;
     sMoving=moving=true; diagP.versVerso++; fermerPorte();
     document.body.classList.add('is-coin');
     srch.classList.remove('is-pret','is-prep');
-    let lu=null; try{ lu=surReglages(); }catch(err){ console.error('[settings]',err?.message||err); }
+    modeCherche(cherche, o&&o.nom);
+    let lu=null; if(!cherche) try{ lu=surReglages(); }catch(err){ console.error('[settings]',err?.message||err); }
     sLu=Promise.race([Promise.resolve(lu).catch(err=>console.error('[settings]',err?.message||err)),new Promise(r=>setTimeout(r,1800))]);
     srch.style.setProperty('--s',Math.ceil(Math.max(innerWidth,innerHeight)*1.2)+'px');
     sansTransition(); sH.style.transform=''; auFormat();
@@ -13460,6 +13513,7 @@ window.addEventListener('pageshow',e=>{
     const fin=()=>{ anims.forEach(a=>a.cancel()); stage.style.zIndex='';
       $('member-window').classList.remove('show');
       srch.classList.remove('is-on','is-show','is-prep','is-pret'); srch.setAttribute('aria-hidden','true');
+      if(srch.classList.contains('is-cherche')){ modeCherche(false); paintAsteroid(); }   /* 18/11 : la recherche part avec le verso */
       sansTransition(); sBg.style.transform=''; sH.style.transform='';
       sOpen=false; sMoving=moving=false; window.__totehm_lsd.recherche=false;
       document.body.classList.remove('is-coin');
@@ -13476,7 +13530,8 @@ window.addEventListener('pageshow',e=>{
   /* Le recto se déploie SOUS le verso, d'un coup et sans témoin (le noir du verso le couvre) : `enter()` sans son
      animation. Le papier de l'atterrissage se remet sur sa face pendant ce temps, pour le prochain repli. */
   function deployerDessous(){
-    if(open||moving||!inscrit()||PAYSAGE.matches||LV.vue()!=='c'||LV.mode()!=='mine') return false;
+    /* 18/11 — chez un membre aussi : c'est SON TOTEHM (en lecture, `LV.entrer`) qui se déploie sous le verso */
+    if(open||moving||!inscrit()||PAYSAGE.matches||LV.vue()!=='c'||(LV.mode()!=='mine'&&!LV.membre())) return false;
     diagP.dessous++;
     LV.calme();
     VERSO.ligner(false); PAPIER.poser(paintFlip);
@@ -13489,11 +13544,17 @@ window.addEventListener('pageshow',e=>{
     return true;
   }
 
-  if(sX) sX.onclick=()=>fermerVerso();
+  const enRecherche=()=>srch.classList.contains('is-cherche');
+  if(sX) sX.onclick=()=>{ if(enRecherche()) CHERCHE.fermer(); else fermerVerso(); };
   /* PILE OU FACE (ordinateur) : chaque face se retourne sur l'autre comme une pièce (ci-dessus). Les anciens chemins
-     (replier puis zoomer, dézoomer puis déployer) ne restent qu'en secours, si la pièce se refuse. */
-  { const f=$('srch-flip'); if(f) f.onclick=()=>{ if(!pieceVersRecto()) fermerVerso(()=>{ if(!open&&!moving) enter(); }); }; }
-  { const f=$('fold-flip'); if(f) f.onclick=()=>{ if(RO||!me||!open||moving) return; if(!pieceVersVerso()) fold(()=>ouvrirVerso()); }; }
+     (replier puis zoomer, dézoomer puis déployer) ne restent qu'en secours, si la pièce se refuse. En recherche (18/11),
+     ⟲ retourne le verso sur le recto du MEMBRE trouvé (`CHERCHE.versRecto`). */
+  { const f=$('srch-flip'); if(f) f.onclick=()=>{ if(enRecherche()) return void CHERCHE.versRecto();
+      if(!pieceVersRecto()) fermerVerso(()=>{ if(!open&&!moving) enter(); }); }; }
+  { const f=$('fold-flip'); if(f) f.onclick=()=>{ if(!me||!open||moving) return;
+      /* 18/11 — chez un membre, son recto se retourne sur SON verso (son offre, mon année chez lui) */
+      if(RO){ if(!LV.membre()) return; const n=LV.nomMembre(); if(!pieceVersVerso(false,{cherche:true,nom:n})) fold(()=>ouvrirVerso({cherche:true,nom:n})); return; }
+      if(!pieceVersVerso()) fold(()=>ouvrirVerso()); }; }
   /* La feuille est modale : Tab tourne dans mes réglages, jamais vers le Totehm dessous. */
   if(srch) srch.addEventListener('keydown',e=>{
     if(e.key!=='Tab'||!sOpen) return;
@@ -13504,7 +13565,129 @@ window.addEventListener('pageshow',e=>{
     e.preventDefault(); f[j].focus();
   });
   /* Échap ferme mes réglages — sauf s'il annulait déjà un renommage (`#set-name`). */
-  document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&sOpen&&!e.defaultPrevented){ e.preventDefault(); fermerVerso(); } });
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&sOpen&&!e.defaultPrevented){ e.preventDefault(); if(enRecherche()) CHERCHE.fermer(); else fermerVerso(); } });
+
+  /* ══ 18/11 · [MEMBERS] : LA RECHERCHE EST SUR LE VERSO ════════════════════════════════════════════════════════════════
+     Wah : « quand l'utilisateur clique sur [Members], le verso du TOTEHM s'affiche avec le mode recherche, dans le même
+     format que le nom du TOTEHM. Ensuite l'abonnement au même format que [Monetize my TOTEHM]. Je veux la même fluidité que
+     pour [Mine]. Une fois abonné, toujours dans le verso, on retourne vers le recto et on navigue dans le TOTEHM ; on le
+     ferme, on retrouve l'atterrissage : ← ses médias, → ses spots » · « revenir à l'essentiel du web : tu entres le nom,
+     tu entres, et tu as un résultat — pas d'entre-deux ».
+     Le MÊME verso, le même zoom, la même pièce que [Mine] (`ouvrirVerso({cherche})`, `pieceVersRecto`) : seul son contenu
+     change. Le nom tapé EST la saisie (`#mb-q`) ; rien ne part avant Entrée ; Entrée → UN résultat (`creator_page` : le prix
+     et l'accès viennent du serveur), au format de Monetize (`.vs-*`). Lisible (abonné, ou partagé) : SON TOTEHM est lu
+     d'avance (`totehm_read`) ; ⟲ ou [Open] retourne le verso sur SON recto (`LV.entrer`, puis la pièce) ; la croix ramène
+     sur SON atterrissage. Une réponse tardive n'écrase jamais une frappe plus récente (`seq`). */
+  const CHERCHE=(()=>{
+    const q=$('mb-q'), res=$('mb-res');
+    const diagC={recherches:0, trouves:0, abonnements:0, rectos:0, fermetures:0};
+    let seq=0, d=null, lu=null, nom='', etat='vide';
+    const propre=v=>String(v||'').trim().replace(/^https?:\/\/[^/]+\//i,'').replace(/^@/,'').replace(/[/?#].*$/,'').slice(0,32);
+    const prix=s=>{ if(!s||!s.open||!s.price_cents) return '';
+      const v=(s.price_cents/100).toFixed(s.price_cents%100?2:0), c=String(s.currency||'eur').toUpperCase();
+      return c==='EUR'?v+' €':c==='USD'?'$'+v:v+' '+c; };
+    const jour=t=>{ try{ return new Date(t).toLocaleDateString(); }catch(_){ return ''; } };
+    const ligne=t=>'<p class="lv-note mbr-dit" role="status">'+esc(t)+'</p>';
+    const tuiles='<div class="vs-n"><span><b>TOTEHM</b><i>read only</i></span><span><b>media</b><i>photos · videos</i></span>'
+      +'<span><b>spots</b><i>exact point</i></span></div>';
+    function dire(t){ res.innerHTML=t?ligne(t):''; }
+    function noter(t){ const n=$('mb-say'); if(n) n.textContent=t||''; }
+    function vider(){ seq++; d=null; lu=null; nom=''; etat='vide'; res.innerHTML=''; srch.classList.remove('is-lu'); }
+    /* À l'ouverture : la saisie vierge, ou déjà un nom (le papier d'un membre retourné, un retour de Stripe). */
+    function preparer(n,retour){ vider(); q.value=n||''; if(n) trouver(n,retour); }
+    async function trouver(v,retour){
+      const n=propre(v); vider(); q.value=n;
+      if(!n) return;
+      if(n.length<2){ etat='court'; dire('two letters, minimum'); return; }
+      const s=++seq; diagC.recherches++; nom=n; etat='cherche'; dire('searching…');
+      const {data,error}=await sb.rpc('creator_page',{p_pseudo:n});
+      if(s!==seq) return;
+      if(error){ console.error('[creator_page]',error.message); etat='panne'; dire('search is unreachable right now'); return; }
+      d=data||{};
+      if(!d.ok){ etat=d.why==='nobody'?'personne':'prive'; dire(d.why==='nobody'?'No TOTEHM by that name.':'This TOTEHM is private.'); return; }
+      diagC.trouves++; nom=d.pseudo||n; q.value=nom;
+      peindre();
+      const vw=d.viewer||{};
+      if(!vw.me&&(vw.subscribed||vw.can_read)) lire(s);
+      else if(retour&&!vw.me) attendre(s);
+    }
+    /* Retour de Stripe : le webhook écrit l'abonnement ; on relit pendant 12 s au plus, puis on dit ce qui est vrai. */
+    async function attendre(s){
+      noter('welcome · your subscription is being written');
+      for(let k=0;k<8;k++){
+        await new Promise(r=>setTimeout(r,1500));
+        if(s!==seq) return;
+        const {data,error}=await sb.rpc('creator_page',{p_pseudo:nom});
+        if(s!==seq) return;
+        if(error){ console.error('[creator_page]',error.message); continue; }
+        const vw=(data&&data.viewer)||{};
+        if(data&&data.ok&&(vw.subscribed||vw.can_read)){ d=data; peindre(); lire(s); return; }
+      }
+      noter('payment received · it opens in a moment');
+    }
+    async function lire(s){
+      const {data,error}=await sb.rpc('totehm_read',{p_pseudo:nom});
+      if(s!==seq) return;
+      if(error){ console.error('[totehm_read]',error.message); return; }
+      if(data&&data.ok){ lu=data; srch.classList.add('is-lu'); peindre(); }
+    }
+    /* UN résultat, au format de Monetize : le titre et sa promesse, le chiffre, ce que ça ouvre, le geste. Le nom du
+       membre est corail (Quantico) ; le prix et le bouton restent blanc et gris. */
+    function peindre(){
+      if(!d||!d.ok) return;
+      const s=d.sale||{}, vw=d.viewer||{}, p=prix(s), N='<span class="mbr-nom">'+esc(nom)+'</span>';
+      let h;
+      if(vw.me){ etat='moi'; h=ligne('This is your TOTEHM.'); }
+      else if(vw.subscribed||vw.can_read){ etat='abonne';
+        h='<header class="vs-head"><h3 class="vs-t">'+(vw.subscribed?'Your year inside their ecosystem':'Their ecosystem is open to you')+'</h3>'
+          +'<p class="vs-s">'+(vw.subscribed&&vw.until?(vw.ending?'ends ':'renews ')+esc(jour(vw.until)):'read only · nothing of yours changes')+'</p></header>'
+          +tuiles
+          +'<div class="vs-row"><i>their TOTEHM</i><button class="vs-act" type="button" data-mb="open"'+(lu?'':' disabled')+'>Open</button></div>'; }
+      else if(p){ etat='offre';
+        h='<header class="vs-head"><h3 class="vs-t">Enter their ecosystem</h3><p class="vs-s">one year · stop anytime</p></header>'
+          +'<div class="vs-top"><div class="vs-month"><b>'+esc(p)+'</b><i>per year</i></div><button class="vs-act" type="button" data-mb="sub">Subscribe</button></div>'
+          +tuiles
+          +'<div class="vs-row"><i>80 % goes to</i>'+N+'</div>'; }
+      else { etat='ferme';
+        h='<header class="vs-head"><h3 class="vs-t">Not open yet</h3><p class="vs-s">'+N+' has not opened subscriptions</p></header>'; }
+      res.innerHTML=h+'<p class="lv-note" id="mb-say" role="status"></p>';
+    }
+    async function abonner(b){
+      if(!nom) return; if(b) b.disabled=true; diagC.abonnements++;
+      let deja=false;
+      try{ await LV.abonner(nom,t=>{ if(t==='already subscribed') deja=true; noter(t); },'verso'); }
+      finally{ if(b&&b.isConnected) b.disabled=false; }
+      if(deja) trouver(nom);   /* déjà abonné (un autre onglet) : le panneau relit ce qui est vrai */
+    }
+    /* Le verso se retourne sur SON recto : son TOTEHM (en lecture) remplace le mien en mémoire, sous le verso, puis la
+       pièce (ordinateur) ; au téléphone, le verso se referme et son TOTEHM se déploie — comme [Mine]. */
+    function versRecto(){
+      if(!lu||sMoving||moving) return false;
+      diagC.rectos++;
+      LV.entrer(lu);
+      if(CARRE.matches&&pieceVersRecto()) return true;
+      fermerVerso(()=>{ if(!open&&!moving) enter(); });
+      return true;
+    }
+    /* La croix : son TOTEHM lu (abonné), on retombe sur SON atterrissage — ← ses médias, → ses spots ; sinon, là d'où
+       l'on vient. Depuis son recto déployé, la croix le retourne sur ce recto. */
+    function fermer(){
+      if(sMoving) return;
+      diagC.fermetures++;
+      if(lu&&!open) LV.entrer(lu);
+      fermerVerso();
+    }
+    q.addEventListener('input',()=>{ if(etat!=='vide') vider(); });   /* pas d'entre-deux : rien ne s'affiche avant Entrée */
+    q.addEventListener('keydown',e=>{
+      if(e.key!=='Enter'||e.isComposing) return;
+      e.preventDefault();
+      trouver(q.value).then(()=>{ if(d&&d.ok) try{ q.blur(); }catch(_){} });   /* trouvé : le clavier se range, le résultat se voit */
+    });
+    res.addEventListener('click',e=>{ const b=e.target.closest('[data-mb]'); if(!b||b.disabled) return;
+      if(b.dataset.mb==='sub') abonner(b); else if(b.dataset.mb==='open') versRecto(); });
+    window.__totehm_cherche=()=>({...diagC, ouvert:enRecherche()&&sOpen, etat, nom, lu:!!lu, saisie:document.activeElement===q});
+    return {preparer, vider, trouver, versRecto, fermer, etat:()=>etat};
+  })();
 
   if(flipLink) flipLink.addEventListener('click',e=>{
     if(e.metaKey||e.ctrlKey||e.shiftKey||e.altKey||e.button) return;
@@ -13565,6 +13748,9 @@ window.addEventListener('pageshow',e=>{
     const libreMb=()=>mode!=='members'||!!MB.nom||!!MB.verrou;
     const voisin=k=>{
       if(!inscrit()) return null;   /* 18/11 (Wah) : sans compte, pas de croix — le scroll ouvre le Discover (`scrollDiscover`) */
+      /* 18/11 (Wah : « la vue d'en haut et d'en bas ne sont pas nécessaires, elles sont propres à [Mine] ; le joystick dans
+         la vue [Member] seulement gauche, centrale, droite ») : chez un membre, ← ses médias · ● son TOTEHM · → ses spots. */
+      if(mode==='members'&&(k==='h'||k==='b')) return null;
       const v=(VOISINS[vue]||{})[k]||null;
       if((k==='g'||k==='d')&&v!=='c'&&(!inscrit()||MB.verrou)) return null;
       return v;
@@ -13804,7 +13990,7 @@ window.addEventListener('pageshow',e=>{
       $('lv-m-who').textContent=MB.nom||MB.verrou||'';
       /* 14/11 (Wah) : « pour accéder au bouton [Member] et la partie de recherche, il faut être connecté et
          AVOIR UN TOTEHM ». Le bouton reste donc CLIQUABLE — mais sans Totehm il mène à la PORTE, pas à la
-         recherche (`chercherAilleurs`) : on apprend ce qu'il faut au lieu d'appuyer sur un mort. `is-locked`
+         recherche (`chercherIci`) : on apprend ce qu'il faut au lieu d'appuyer sur un mort. `is-locked`
          le dit à l'œil ; jamais `aria-disabled`, qui mentirait sur ce que le tap fait. */
       /* 18/11 (Wah) : et la recherche est au FIGHER CLUB (`CLUB.member`) : hors du Club, le tap le dit sous les boutons. */
       const mb=$('lv-m-members');
@@ -13812,6 +13998,7 @@ window.addEventListener('pageshow',e=>{
         mb.classList.toggle('is-locked',!pret);
         mb.title=pret?'':!inscrit()?'Open your TOTEHM first':HORS_CLUB; }
       if(CLUB.member&&$('lv-m-say').textContent===HORS_CLUB) direMembers('');
+      { const f=$('fold-flip'); if(f) f.setAttribute('aria-label',mode==='members'?'Turn it over · their subscription':'Turn it over · my settings'); }
       const t=$('lv-tap-turn'); if(t){ const sou=window.matchMedia('(hover:hover)').matches;
         t.textContent=(sou?'Turn':'Swipe')+(mode==='members'?' to search':' to configure it'); }
     }
@@ -13899,34 +14086,28 @@ window.addEventListener('pageshow',e=>{
       /* le papier est déjà chez lui (plus de recherche agrandie) : on rend MES traits, sur place */
       socle('c'); RAM.oublie(); RAM.peindre('c',{anime:true}); if(then) then();
     }
-    /* ⚠️ 14/11 — CHERCHER UN ÉCOSYSTÈME N'EST PLUS LE VERSO DE MON TOTEHM (Wah, deux fois) :
-         « quand j'appuie sur Members ça ne va pas, puisqu'il y a sur le verso du Totehm le NOM DU TOTEHM
-           DE L'UTILISATEUR, or cette partie est destinée à chercher le nom d'un AUTRE Totehm » ;
-         « ce que l'on recherche, ce n'est pas le TOTEHM mais l'ÉCOSYSTÈME TOTEHM de l'utilisateur, et
-           l'écosystème est visible via la page d'atterrissage et le Tree. DONC quand tu appuies sur
-           [Members], UN NOUVEL ONGLET s'ouvre et l'utilisateur est invité à entrer le nom du Totehm dans
-           un FULLSCREEN BLEU NAVY (le verso du totehm). Quand le résultat est validé et qu'il existe, on a
-           la page abonnement. Et quand on est abonné, le verso redevient recto avec le tree et la page
-           d'atterrissage du membre. »
-       Le verso d'ici porte MON nom : il ne peut pas être la surface de recherche. La recherche vit donc
-       sur `/search` — un verso VIERGE, plein écran — dans son propre onglet. Et il faut un TOTEHM pour y
-       aller (Wah : « pour accéder au bouton [Member] et la partie de recherche, il faut être connecté et
-       avoir un Totehm »). Le mode `members` lui-même reste : c'est lui qui fait vivre `?ro=<membre>`. */
+    /* ⚠️ 18/11 — [MEMBERS] RETOURNE LE TOTEHM SUR SON VERSO, EN MODE RECHERCHE (Wah : « quand l'utilisateur clique sur
+       [Members], le verso du TOTEHM s'affiche avec le mode recherche qui s'active dans le même format que le nom du TOTEHM »).
+       Le même geste et le même zoom que [Mine] (`ouvrirVerso({cherche:true})`) ; le dos du papier est vierge (ce n'est pas
+       MON verso : l'objection du 14/11) ; la saisie est mise au point DANS le geste (le clavier du téléphone). Il faut être
+       du FIGHER CLUB (`CLUB.member` : une Habit, un objectif, une répulsion). Le mode `members` naît quand on ENTRE chez
+       un membre (`activer`, par la recherche ou `?ro=`). `/search` n'existe plus que pour les anciens liens : il mène ici. */
     let sayT=0;
     function direMembers(t){ clearTimeout(sayT); $('lv-m-say').textContent=t||''; if(t) sayT=setTimeout(()=>direMembers(''),6000); }
-    function chercherAilleurs(){
-      if(!inscrit()){ refus('members:sans-totehm'); if(typeof ouvrirPorte==='function') ouvrirPorte(null); return; }
-      /* 18/11 (Wah) : la recherche est au FIGHER CLUB. Hors du Club : une ligne, et on relit le serveur (une Habit, un objectif
-         ou une répulsion vient peut-être d'arriver) — le tap suivant ouvrira la recherche. */
-      if(!CLUB.member){ refus('members:hors-club'); direMembers(HORS_CLUB); lireClub(true); return; }
+    function chercherIci(nom,o){
+      if(!inscrit()){ refus('members:sans-totehm'); if(typeof ouvrirPorte==='function') ouvrirPorte(null); return false; }
+      /* La recherche est au FIGHER CLUB. Hors du Club : une ligne, et on relit le serveur (une Habit, un objectif ou une
+         répulsion vient peut-être d'arriver) — le tap suivant ouvrira la recherche. */
+      if(!CLUB.member){ refus('members:hors-club'); direMembers(HORS_CLUB); lireClub(true); return false; }
       direMembers('');
       diag.modes++;
-      try{ window.open('/search','_blank','noopener'); }
-      catch(err){ console.error('[lv] members',err); location.href='/search'; }
+      if(!ouvrirVerso({cherche:true, nom:nom||'', retour:!!(o&&o.retour)})) return false;
+      if(!nom) try{ $('mb-q').focus({preventScroll:true}); }catch(_){}
+      return true;
     }
     function choisirMode(m,then){
       if(m!=='mine'&&m!=='members') return;
-      if(m==='members'){ chercherAilleurs(); if(then) then(); return; }
+      if(m==='members'){ chercherIci(); if(then) then(); return; }
       if(mode==='mine'){ if(then) then(); return; }
       if(bouge||open||moving||sMoving||sOpen) return;
       if(vue!=='c') return aller('c',()=>quitterMembre(then));
@@ -13949,6 +14130,14 @@ window.addEventListener('pageshow',e=>{
     });
     /* `?ro=nom` (un lien, un retour de Stripe) : on arrive DANS l'écosystème du membre, déjà lu par `loadRO`. */
     lvMembreBoot=nom=>{ if(!nom) return; roEnPlace=true; entrerChez(nom); RAM.oublie(); RAM.peindre(vue); };
+    /* 18/11 — `?members[=<nom>]` (un ancien lien `/search`, le retour de Stripe) : le verso en recherche, une fois la session lue. */
+    lvRecherche=async m=>{
+      try{ const u=new URL(location.href); u.searchParams.delete('members'); u.searchParams.delete('subscribed');
+           history.replaceState(null,'',u.pathname+u.search+u.hash); }catch(_){}
+      if(!inscrit()){ if(typeof ouvrirPorte==='function') ouvrirPorte(null); return; }
+      await lireClub(true);
+      quandLibre(()=>chercherIci(m.nom,{retour:m.retour}));
+    };
 
     /* ── GET HIGHER : posé sur la langue, il est avalé (la suite du 03/10), puis la boutique par le pont ;
        `?from=com` : la langue a déjà eu lieu ici, la boutique ne la rejoue pas. ── */
@@ -13964,8 +14153,9 @@ window.addEventListener('pageshow',e=>{
     };
     slo.addEventListener('click',()=>{ if(vue==='h') getHigher(); });
     { const b=$('gate-mouth'); if(b) b.addEventListener('click',()=>{ if(vue==='h') getHigher(); }); }
-    /* Retourner le papier : chez moi, mes réglages ; chez un membre, un autre écosystème (son onglet, 14/11). */
-    PAPIER.surVerso=()=>{ if(vue!=='c') return; if(mode==='mine') ouvrirVerso(); else if(MB.nom) chercherAilleurs(); };
+    /* Retourner le papier : chez moi, mes réglages ; chez un membre, SON verso (18/11) — son offre ou mon année chez lui,
+       et la saisie pour chercher un autre écosystème. */
+    PAPIER.surVerso=()=>{ if(vue!=='c') return; if(mode==='mine') ouvrirVerso(); else if(MB.nom) chercherIci(MB.nom); };
     PAPIER.surVertical=d=>demander(d);
     /* ⚠️ 16/10 · RETOURNER LE PAPIER AFFICHE LE MENU MEMBRE. Wah : « quand tu retournes le totehm verso,
        c'est le menu membre qui s'affiche ». Donc il est là d'emblée, sans second geste : mes réglages,
@@ -14082,7 +14272,7 @@ window.addEventListener('pageshow',e=>{
       if(e.key==='ArrowLeft'||e.key==='ArrowRight'){
         if(document.activeElement===$('gate-enter')&&vue==='c'){
           if(mode==='mine'){ e.preventDefault(); ouvrirVerso(); return; }
-          if(MB.nom){ e.preventDefault(); chercherAilleurs(); return; } }
+          if(MB.nom){ e.preventDefault(); chercherIci(MB.nom); return; } }
         const d=e.key==='ArrowLeft'?'g':'d'; if(voisin(d)){ e.preventDefault(); demander(d); } else sansVoisin(d);
         return; }
       if(e.key==='Escape'){ if(vue!=='c'){ e.preventDefault(); aller('c'); }
@@ -14525,11 +14715,12 @@ window.addEventListener('pageshow',e=>{
         else h+='<p class="mbo-s">no subscription yet</p>';
         box.innerHTML=h;
       }
-      async function abonner(nom,dire){
+      /* `depuis` : 'verso' (18/11, la recherche de [Members]) — Stripe ramène alors sur ce verso, chez ce membre. */
+      async function abonner(nom,dire,depuis){
         const say=dire||(()=>{});
         say('opening checkout…');
         try{
-          const {d:j}=await fnAppel('creator-subscribe',{pseudo:nom, from:'page'});
+          const {d:j}=await fnAppel('creator-subscribe',{pseudo:nom, from:depuis==='verso'?'verso':'page'});
           if(j&&j.url){ location.href=j.url; return; }
           if(j&&j.already){ say('already subscribed'); return; }
           say(({closed:'not open to subscriptions', self:'this is your own TOTEHM', signin:'connect first', nobody:'no TOTEHM by that name'})[j&&j.error]||'checkout is unavailable · try again');
@@ -14896,7 +15087,7 @@ window.addEventListener('pageshow',e=>{
 
     /* Le centre : « Tap to open it » ouvre MON Totehm. */
     $('lv-tap-open').onclick=()=>{ if(!PAPIER.occupe()) enter(); };
-    $('lv-tap-turn').onclick=()=>{ if(PAPIER.occupe()) return; if(mode==='members') chercherAilleurs(); else if(lvReglages) lvReglages.ouvrir(); };
+    $('lv-tap-turn').onclick=()=>{ if(PAPIER.occupe()) return; if(mode==='members') chercherIci(MB.nom||''); else if(lvReglages) lvReglages.ouvrir(); };
 
     /* ── LES DONNÉES : `my_landing()`, une réponse tardive ne gagne jamais ── */
     let landSeq=0;
@@ -14954,6 +15145,9 @@ window.addEventListener('pageshow',e=>{
     function deployer(){ diagD.deploiements++; aspirer(true); }
     window.__totehm_deploiement=()=>({...diagD});
     return {vue:()=>vue, mode:()=>mode, membre:()=>!!MB.nom, verrou:()=>MB.verrou, offrir:()=>OFFRE.montrer(),
+            /* 18/11 — le verso en recherche (`CHERCHE`) : entrer chez le membre trouvé (sa lecture déjà faite), son nom, s'abonner */
+            entrer:data=>{ if(data&&data.pseudo&&!(RO===data.pseudo&&MB.nom===data.pseudo)) activer(data,true); },
+            nomMembre:()=>MB.nom||'', abonner:(nom,dire,depuis)=>OFFRE.abonner(nom,dire,depuis),
             aller, choisirMode, versMine, poser, reset, calme, deployer, aspirer,
             revenu(){ RAM.peindre(vue); socle('c'); aspirer(false); }};
   })();
@@ -15101,7 +15295,7 @@ window.addEventListener('pageshow',e=>{
     if(v.length<2){ if(gsn){gsn.classList.remove('hide');gsn.textContent='two letters, minimum';} return; }
     /* L'atterrissage cherche SANS se déployer : on ne fait pas entrer
        quelqu'un dans son Totehm pour lui montrer une liste de noms. */
-    location.href='/search?q='+encodeURIComponent(v);
+    location.href='/totehm?members='+encodeURIComponent(v);   /* 18/11 : la recherche vit sur le verso */
   });
 
   /* SUPPRIMÉ (17/09/2026) — le module `#ctx-down` / `#ctx-up` /

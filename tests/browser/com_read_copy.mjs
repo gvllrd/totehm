@@ -16,20 +16,23 @@ try{
     Wah : « ce que l'on recherche ce n'est pas le TOTEHM mais l'ÉCOSYSTÈME, et l'écosystème est visible via
     la page d'atterrissage et le Tree » · « quand on est abonné, le verso redevient recto AVEC LE TREE et la
     page d'atterrissage du membre, avec ses vues respectives ». Donc `?ro=` arrive sur SON atterrissage —
-    jamais dans son Totehm déployé —, et [Members] ouvre `/search` dans un onglet. */
+    jamais dans son Totehm déployé —, et [Members] retourne le TOTEHM sur son verso, en mode recherche (18/11). */
  {const {pg,log}=await page(browser,{dir:'com',origin,rpc:Object.assign({},rpc,{member_media:{ok:true,items:[]},club_spots_of:{ok:true,items:[]}}),tables:{profiles:[{pseudo:'wah'}]}});
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(700);
-  ok(/^(Tap|Click) to open it · (Swipe|Turn) to configure it$/.test((await pg.textContent('#lv-tap')).trim())&&await pg.isVisible('#lv-tap'),'au centre : « Tap to open it · Turn to configure it » (15/10 bis)');
+  ok(/^(Tap|Click) to open it · (Swipe|Turn) to configure it( · Discover)?$/.test((await pg.textContent('#lv-tap')).trim())&&await pg.isVisible('#lv-tap'),'au centre : « Tap to open it · Turn to configure it » (15/10 bis)');
   await pg.evaluate(()=>{window.__ouvert=[];window.open=(u)=>{window.__ouvert.push(u);return null;};});
-  await pg.click('#lv-m-members');await pg.waitForTimeout(700);
-  const q=await pg.evaluate(()=>({onglets:window.__ouvert.slice(),saisie:!!document.getElementById('mb-q'),gx:!!document.getElementById('gx-q')}));
-  ok(q.onglets.length===1&&q.onglets[0]==='/search'&&!q.saisie&&!q.gx,
-     '[Members] ouvre /search dans un onglet ; plus aucune saisie sur le verso de MON Totehm → '+JSON.stringify(q.onglets));
+  /* 18/11 (Wah) : [Members] retourne le TOTEHM sur son verso, en mode recherche — un verso VIERGE, pas le mien */
+  await pg.click('#lv-m-members');
+  await pg.waitForFunction(()=>{const c=window.__totehm_cherche&&window.__totehm_cherche();return c&&c.ouvert;},null,{timeout:8000}).catch(()=>{});
+  const q=await pg.evaluate(()=>({onglets:window.__ouvert.slice(),saisie:document.activeElement&&document.activeElement.id,dos:document.getElementById('ast-name').textContent,gx:!!document.getElementById('gx-q')}));
+  ok(q.onglets.length===0&&q.saisie==='mb-q'&&q.dos===''&&!q.gx,
+     '[Members] : le verso en mode recherche, la saisie prête, aucun onglet, ni mon nom au dos → '+JSON.stringify(q));
+  await pg.keyboard.press('Escape');await pg.waitForFunction(()=>!document.getElementById('srch').classList.contains('is-on'),null,{timeout:8000}).catch(()=>{});
   await pg.goto(origin+'/totehm?ro=studio');await pg.waitForSelector('body.member');
   await pg.waitForFunction(()=>document.body.classList.contains('lv-membre'),null,{timeout:9000}).catch(()=>{});await pg.waitForTimeout(1200);
   const e=await pg.evaluate(()=>({who:document.getElementById('lv-m-who').textContent,ro:document.body.classList.contains('ro'),
     gate:document.body.classList.contains('gate'),tap:document.getElementById('lv-tap').textContent.trim()}));
-  ok(e.who==='studio'&&e.ro&&e.gate&&/(Swipe|Turn) to search$/.test(e.tap)&&/[?&]ro=studio/.test(pg.url()),
+  ok(e.who==='studio'&&e.ro&&e.gate&&/(Swipe|Turn) to search( · Discover)?$/.test(e.tap)&&/[?&]ro=studio/.test(pg.url()),
      '`?ro=studio` : on vit SON écosystème sur SON atterrissage, pas dans son Totehm déployé (« '+e.tap+' »)');
   ok(log.rpc.filter(x=>x.name==='totehm_read').length===1&&log.rpc.some(x=>x.name==='member_media'&&x.body.p_pseudo==='studio'),'une lecture de son Totehm, une de ses médias (`member_media`)');
   await pg.screenshot({path:OUT+'/members_search.png'});

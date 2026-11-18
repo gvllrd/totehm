@@ -55,6 +55,8 @@ Deno.serve(async (req) => {
     const body = await req.json();
     pseudo = String(body?.pseudo ?? "").trim();
     if (body?.from === "console") depuis = "console";
+    // 18/11 : la recherche de [Members] vit sur le VERSO du TOTEHM — Stripe y ramène, chez ce membre.
+    if (body?.from === "verso") depuis = "verso";
     if (!pseudo && body?.creator_id) {
       const { data: p } = await sb.from("profiles").select("pseudo")
         .eq("id", String(body.creator_id)).maybeSingle();
@@ -103,9 +105,13 @@ Deno.serve(async (req) => {
       expires_at: checkoutExpiresAt(now),
       success_url: depuis === "console"
         ? `${SITE_COM}/console?subscribed=${encodeURIComponent(pseudo)}`
+        : depuis === "verso"
+        ? `${SITE_COM}/totehm?members=${encodeURIComponent(pseudo)}&subscribed=1`
         : `${SITE_COM}/@${encodeURIComponent(pseudo)}?subscribed=1`,
       cancel_url: depuis === "console"
         ? `${SITE_COM}/console`
+        : depuis === "verso"
+        ? `${SITE_COM}/totehm?members=${encodeURIComponent(pseudo)}`
         : `${SITE_COM}/@${encodeURIComponent(pseudo)}`,
     };
     // ⚠️ UN SEUL PAIEMENT POSSIBLE (16/11, audit de lancement). Deux onglets ou un double tap ouvraient deux

@@ -1,4 +1,4 @@
-// totehm.com/search et /@nom (05/10/2026) — un nom ouvre un Totehm ; la page de vente d'un membre.
+// totehm.com/@nom (05/10/2026) — la page de vente d'un membre ; `/search` mène au verso du TOTEHM (18/11).
 import { launch, page, ok, USER } from './harness.mjs';
 const OUT = process.argv[2] || '.';
 const browser = await launch();
@@ -13,54 +13,15 @@ const propre = async pg => {
 };
 const erreurs = log => log.errors.filter(e => !/404|Failed to load resource/i.test(e));
 
-/* ── 0 · 18/11 (Wah) : la recherche est au FIGHER CLUB — sans compte ou hors du Club, ni champ ni recherche ── */
-for(const [qui, opts, mot] of [['visitor', { session:false }, /Open your TOTEHM first/], ['member outside the Club', { tables:{ profiles:[{ pseudo:'wah' }] } }, /a Habit, an objective and a repulsion/]]){
+/* ── 1 · 18/11 : `/search` n'est plus une page — la recherche de [Members] vit sur le VERSO du TOTEHM ── */
+for(const [qui, opts] of [['visitor', { session:false }], ['member', { tables:{ profiles:[{ pseudo:'wah' }] } }]]){
   const { pg, log } = await page(browser, Object.assign({ dir:'com', origin:'https://www.totehm.com',
-    rpc:{ totehm_search: ROWS, figher_access: { signed_in:qui !== 'visitor', member:false } } }, opts));
-  await pg.goto('https://www.totehm.com/creator');
-  await pg.waitForFunction(() => window.__totehm_creator && window.__totehm_creator().build && document.getElementById('q-club-t').textContent, null, { timeout:15000 });
-  const g = await pg.evaluate(() => ({ champ:!!document.getElementById('q').getClientRects().length, dit:document.getElementById('q-club-t').textContent,
-    porte:document.querySelector('#q-club a')?.getAttribute('href'), club:window.__totehm_creator().club }));
-  ok(!g.champ && mot.test(g.dit) && g.porte === 'https://www.totehm.com/totehm' && g.club === false && !log.rpc.some(r => r.name === 'totehm_search'),
-     '18/11 · ' + qui + ': no field, one sentence and the door to the TOTEHM, no search sent → ' + JSON.stringify(g));
+    rpc:{ totehm_search: ROWS, figher_access: { signed_in:qui !== 'visitor', member:true } } }, opts));
+  const vers = pg.waitForURL(/\/totehm\?members=kai$/, { timeout:9000 }).then(() => true, () => false);
+  await pg.goto('https://www.totehm.com/creator?q=kai');
+  ok(await vers, '18/11 · ' + qui + ': an old /search?q=kai link goes to the verso of the TOTEHM (' + pg.url().replace('https://www.totehm.com', '') + ')');
+  ok(!log.rpc.some(r => r.name === 'totehm_search'), '18/11 · ' + qui + ': the old name list is never asked for');
   await pg.context().close();
-}
-
-/* ── 1 · /search : un champ, des noms ─────────────────────────────── */
-{
-  const { pg, log } = await page(browser, { dir:'com', origin:'https://www.totehm.com', rpc:{ totehm_search: b => b.p_q ? ROWS.filter(r => r.pseudo.startsWith(b.p_q)) : ROWS.filter(r => r.subscribed), my_console: { signed_in:true, offer:{ enabled:false } }, figher_access: { signed_in:true, member:true } },
-    tables:{ profiles:[{ pseudo:'wah' }] } });
-  await pg.goto('https://www.totehm.com/creator');
-  await pg.waitForFunction(() => window.__totehm_creator && window.__totehm_creator().results === 1, null, { timeout:15000 });
-  /* 14/11 (Wah : « full screen noir, tu tapes le nom en Quantico, et les résultats sont des VERSOS de TOTEHM avec le
-     nom dessus ») : un résultat est un papier perforé dont le dos porte le nom en bloc, jamais une rangée de texte. */
-  const v0 = await pg.evaluate(() => { const a = document.querySelector('#res .srch-row'); if(!a) return null; const c = getComputedStyle(a), r = a.getBoundingClientRect();
-    return { nom:a.dataset.n, lettres:a.querySelectorAll('.tn-l').length, w:Math.round(r.width), h:Math.round(r.height), aria:a.getAttribute('aria-label'),
-      fond:getComputedStyle(document.body).backgroundColor, champ:getComputedStyle(document.getElementById('q')).fontFamily, kick:!!document.querySelector('#search .kick,#search .hint,#search .ns-label') }; });
-  ok(v0 && v0.lettres === v0.nom.length && v0.w === v0.h && /subscribed/.test(v0.aria) && v0.fond === 'rgb(0, 0, 0)' && /Quantico/.test(v0.champ) && !v0.kick,
-     'empty search: my subscriptions are VERSOS (the name on a square paper, ' + (v0 && v0.w) + ' px), full-screen black, the field in Quantico, no title nor hint → ' + JSON.stringify(v0));
-  await pg.screenshot({ path: OUT + '/search_versos.png' });
-  ok(!await pg.$('#search-controls, .ts-modes, select'), 'no modes, no filters, no selects');
-  await pg.fill('#q', 'ka');
-  await pg.waitForFunction(() => window.__totehm_creator().results === 2);
-  const hrefs = await pg.$$eval('#res a', l => l.map(a => a.getAttribute('href')));
-  // 14/11 (Wah) : un résultat mène à la PAGE D'ABONNEMENT ; c'est de là que part l'écosystème.
-  ok(hrefs[0] === '/@kai' && hrefs[1] === '/@kaito', 'a name opens its subscription page: ' + hrefs.join(' '));
-  ok(log.rpc.every(r => r.name !== 'totehm_discover'), 'names only (totehm_search), never box search');
-  await pg.fill('#q', 'k');
-  await pg.waitForTimeout(400);
-  ok(/two letters/i.test(await pg.textContent('#q-note')), 'one letter: two letters, minimum');
-  await pg.fill('#q', '@kaito');
-  await pg.waitForTimeout(400);
-  const nav = pg.waitForURL(/\/@kaito$/, { timeout:5000 }).then(() => true, () => false);
-  await pg.press('#q', 'Enter');
-  ok(await nav, 'Enter opens the exact name (an @link is cleaned)');
-  ok(!erreurs(log).length, 'search: no page error ' + erreurs(log).join(' | '));
-  await pg.goto('https://www.totehm.com/creator?q=ka');
-  await pg.waitForFunction(() => window.__totehm_creator && window.__totehm_creator().results === 2, null, { timeout:15000 });
-  const p = await propre(pg);
-  ok(p.white === 0 && !p.fonts.length, 'search: no white background, Space Mono + Quantico only ' + p.fonts.join(','));
-  await pg.screenshot({ path: OUT + '/creator_search.png', fullPage:true });
 }
 
 /* ── 2 · /@kai, visiteur sans compte : s'abonner = email, code, paiement ── */
@@ -97,11 +58,11 @@ for(const [qui, opts, mot] of [['visitor', { session:false }, /Open your TOTEHM 
   /* ── DISCOVER : un écran à la fois, au geste, noir ── */
   const d0 = await pg.evaluate(() => ({ ...window.__totehm_creator().discover, on:document.querySelectorAll('#offer .dc-s.is-on').length,
     fond:getComputedStyle(document.getElementById('dc')).backgroundColor, prog:document.querySelectorAll('#dc .dc-progress,#dc .dc-hint').length,
-    cache:getComputedStyle(document.querySelector('#offer .dc-s:not(.is-on)')).visibility, texte:document.querySelector('#offer .dc-s.is-on').innerText.replace(/\s+/g,' ').trim() }));
+    cache:getComputedStyle(document.querySelector('#offer .dc-s:not(.is-on)')).visibility, texte:document.querySelector('#offer .dc-s.is-on .dc-h').textContent.replace(/\s+/g,' ').trim() }));   /* 18/11 : le titre est en capitales par la police, on lit son texte */
   ok(d0.n === 8 && d0.i === 0 && d0.on === 1 && d0.fond === 'rgb(0, 0, 0)' && d0.prog === 0 && d0.cache === 'hidden' && /Enter kai’s ecosystem\.$/.test(d0.texte),
      '15/11 · DISCOVER : 8 écrans, UN seul visible, fond noir, ni numéro ni consigne écrite, le premier dit « Enter kai’s ecosystem. » → ' + JSON.stringify(d0));
   await pg.keyboard.press('ArrowDown'); await pg.waitForTimeout(800);
-  const d1 = await pg.evaluate(() => ({ i:window.__totehm_creator().discover.i, texte:document.querySelector('#offer .dc-s.is-on').innerText.replace(/\s+/g,' ').trim() }));
+  const d1 = await pg.evaluate(() => ({ i:window.__totehm_creator().discover.i, texte:document.querySelector('#offer .dc-s.is-on').textContent.replace(/\s+/g,' ').trim() }));
   ok(d1.i === 1 && /^Their whole TOTEHM\b/.test(d1.texte), '↓ (clavier) : l\'écran suivant, jamais deux d\'un coup → ' + JSON.stringify(d1));
   await pg.mouse.move(200, 300); await pg.mouse.wheel(0, 120); await pg.waitForTimeout(800);
   ok(await pg.evaluate(() => window.__totehm_creator().discover.i) === 2, 'la molette : un geste = un écran');
@@ -127,7 +88,7 @@ for(const [qui, opts, mot] of [['visitor', { session:false }, /Open your TOTEHM 
   ok(p.white === 0 && !p.fonts.length, 'page: no white background, Space Mono + Quantico only ' + p.fonts.join(','));
   await pg.screenshot({ path: OUT + '/creator_visitor.png', fullPage:true });
   await pg.click('[data-do=subscribe]');
-  ok(await pg.isVisible('#si-email'), 'Subscribe without an account: email asked here');
+  ok(await pg.waitForSelector('#si-email', { state:'visible', timeout:4000 }).then(() => true).catch(() => false), 'Subscribe without an account: email asked here');
   await pg.fill('#si-email', 'nia@example.test');
   await pg.press('#si-email', 'Enter');
   await pg.waitForSelector('#si-code:not(.hide)', { timeout:5000 });

@@ -6,9 +6,9 @@
   l'utilisateur et ça ouvre son Totehm en lecture seule, simple ; la page de
   vente, tu peux mieux faire ».
 
-  · `/search` — UN champ, des NOMS (`NameSearch`, copié de `totehm.html`,
-                jamais importé). Un nom ouvre `/totehm?ro=nom` ; Entrée ouvre
-                le nom exact, sinon le premier ; vide = mes abonnements.
+  · `/search` — n'existe plus que pour les anciens liens (18/11) : la recherche de [Members] vit sur le
+                VERSO du TOTEHM (`/totehm?members=<q>`, voir `CHERCHE` dans totehm.html). La page y renvoie
+                avant tout rendu.
   · `/@nom`   — la page de vente de CE membre (`creator_page`, ouverte à
                 tous) : son papier (le verso, son nom), ses intentions, ce
                 que l'abonnement ouvre, le prix PAR AN, UNE action selon qui
@@ -27,7 +27,11 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#000000">
 <title>TOTEHM</title>
-<meta name="description" content="Search a TOTEHM. Subscribe to the one you want to grow with.">
+<script>/* 18/11 — `/search` n'existe plus : la recherche de [Members] vit sur le verso du TOTEHM. Renvoyé avant tout rendu. */
+(function(){ try{ var u=new URLSearchParams(location.search);
+  if(!/^\/@[^/?#]{1,32}\/?$/.test(location.pathname)&&!(u.get('n')||'').trim()) location.replace('/totehm?members='+encodeURIComponent(u.get('q')||''));
+}catch(e){} })();</script>
+<meta name="description" content="Enter a TOTEHM ecosystem. Subscribe to the one you want to grow with.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Quantico:wght@400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -90,31 +94,6 @@ main{width:100%;max-width:520px;margin:0 auto;padding:max(84px,11dvh) 16px 96px;
 .tname{display:inline-block;max-width:100%;font-family:var(--q);font-weight:400;color:var(--coral);background:var(--navy);border-radius:0;
   padding:6px 12px;line-height:1.3;overflow-wrap:anywhere}
 
-/* ══ 14/11 · CHERCHER UN ÉCOSYSTÈME — PLUS SIMPLE : NOIR, UN NOM, DES VERSOS ═════════════════════════════
-   Wah : « plus simple : full screen noir, tu tapes le nom en Quantico, et les résultats sont des VERSOS de
-   TOTEHM avec le nom dessus, au format que l'on vient de travailler. » Rien d'autre : ni titre, ni consigne, ni
-   rangée. Un résultat EST un papier perforé dont le dos porte le nom en bloc carré (`tools/totehm_name.js`),
-   et un tap l'ouvre : sa page d'abonnement. */
-body.is-search{background:#000}
-body.is-search main{justify-content:flex-start;padding-top:max(96px,15dvh)}
-body.is-search #search{gap:26px}
-body.is-search #q{background:none;border-radius:0;padding:6px 0;margin:0;max-width:min(92vw,640px);
-  font:400 clamp(34px,10vw,64px)/1.1 var(--q);color:var(--coral);caret-color:var(--coral);letter-spacing:.02em}
-body.is-search #q::placeholder{color:rgba(251,213,202,.22)}
-body.is-search .note{min-height:14px;color:var(--lo)}
-/* 18/11 — hors du Figher Club : une phrase (la police de l'appui du Discover) et la porte, centrées */
-#q-club{display:flex;flex-direction:column;align-items:center;gap:20px;text-align:center;max-width:min(92vw,440px)}
-#q-club .note{margin:0;font:400 13px/1.7 'Space Mono',monospace;color:#bdbdc4;text-transform:none;letter-spacing:.01em}
-#res{width:100%;display:flex;flex-wrap:wrap;justify-content:center;gap:clamp(12px,3.4vw,22px);--ps:156px}
-/* un résultat = un VERSO : le papier perforé, le nom posé dessus par la nomenclature */
-.srch-row{position:relative;display:block;flex:none;width:var(--ps);height:var(--ps);
-  background:var(--paper) 0 0/100% 100% no-repeat;transition:transform .2s ease}
-.srch-row .tn-l{position:absolute;left:0;top:0;transform-origin:0 0;white-space:pre;
-  font:400 24px/1 var(--q);letter-spacing:.04em;color:var(--coral)}
-.srch-row .tn-v{position:absolute;width:4px;height:4px;border-radius:50%;background:#626286;transform:translate(-50%,-50%);opacity:.5}
-.srch-row:focus-visible{outline:1px solid #fff;outline-offset:4px}
-@media(hover:hover){.srch-row:hover{transform:scale(1.05)}}
-@media(prefers-reduced-motion:reduce){.srch-row{transition:none}}
 .ints{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 14px;margin-top:18px;min-height:18px}
 .ints span{display:inline-flex;align-items:center;gap:6px;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--mid)}
 .ints i{width:8px;height:8px;border-radius:50%;display:block}
@@ -127,11 +106,6 @@ body.is-search .note{min-height:14px;color:var(--lo)}
 #signin.hide{display:none}
 #signin .in{max-width:340px}
 
-/* ══ LA RECHERCHE — un champ, des noms ══ */
-#search{width:100%;display:flex;flex-direction:column;align-items:center;gap:12px}
-#q{font-size:clamp(22px,6.4vw,30px);color:var(--coral);caret-color:var(--coral);background:#000;padding:14px 16px;margin-top:6px}
-#q:focus{background:#000}
-#q::placeholder{color:rgba(251,213,202,.32)}
 @media(hover:hover){
   .btn:hover{background:var(--g5);color:#fff}.btn.is-main:hover{background:#44444b}
 }
@@ -371,13 +345,8 @@ div:not(:has(> :not(br,wbr))):hover,
 .lnk:hover,
 .paper .tn-l:hover,
 .tname:hover,
-body.is-search #q:hover,
-body.is-search .note:hover,
-#q-club .note:hover,
-.srch-row .tn-l:hover,
 .ints span:hover,
 .fine:hover,
-#q:hover,
 .u-head:hover,
 .u-st:hover,
 .u-t.is-locked .audb:hover,
@@ -403,8 +372,6 @@ body.is-search .note:hover,
 .dc-note.ok:hover,
 .tw .tn-l:hover):where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *)){color:#fff!important}
 .in:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::placeholder{color:#fff!important}
-body.is-search #q:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::placeholder{color:#fff!important}
-#q:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::placeholder{color:#fff!important}
 }
 /* ══ FIN DU BLOC GÉNÉRÉ ══ */
 </style>
@@ -414,16 +381,6 @@ body.is-search #q:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,t
 <button id="member" class="mc" type="button"><span id="member-txt">CONNECT WITH MY TOTEHM</span></button>
 
 <main>
-  <!-- ══ SEARCH · 14/11 : LE VERSO PLEIN ÉCRAN, VIERGE ══ On cherche un ÉCOSYSTÈME, pas un Totehm : un nom,
-       puis sa page d'abonnement, puis — abonné — sa page d'atterrissage et son Tree. -->
-  <section id="search" class="hide" aria-label="Search a TOTEHM ecosystem">
-    <input class="in" id="q" maxlength="80" placeholder="a name" aria-label="A TOTEHM name" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="go">
-    <div class="note" id="q-note" aria-live="polite"></div>
-    <div id="res" aria-label="TOTEHMs"></div>
-    <!-- 18/11 (Wah) : la recherche est au FIGHER CLUB — hors du Club, une phrase et la porte du TOTEHM, rien d'autre -->
-    <div id="q-club" class="hide"><p class="note" id="q-club-t" aria-live="polite"></p><a class="dc-btn" href="https://www.totehm.com/totehm">Open my TOTEHM</a></div>
-  </section>
-
   <!-- ══ LA PAGE D'UN MEMBRE · 15/11 : UN PLEIN ÉCRAN DISCOVER ══ Une idée par écran, noir, au geste (voir `tools/discover.css`).
        `#offer` EST la scène : `paintOffer()` y dessine les écrans. Le papier du membre ouvre le premier. -->
   <section id="page" class="hide">
@@ -627,7 +584,7 @@ const audBadge = a => AUD_ICON[a] ? '<span class="audb" role="img" aria-label="'
 const audMark = (root, attr, a0) => { const a = audNorm(a0); return root?.querySelectorAll('[' + attr + ']').forEach(b => { const on = b.getAttribute(attr) === a;
   b.classList.toggle('is-on', on); b.setAttribute('aria-checked', String(on)); }); };
 /* ══ fin AUDIENCE ══ */
-const BUILD='2026-11-18-recherche-au-club';
+const BUILD='2026-11-18-search-mene-au-verso';
 
 /* ══ EN CADRE DANS COM (`?embed=1`) ═════════════════════════════════════
    Wah, 16/10 : « il ne faut pas que ça saute entre totehm.com et totehm.com/@{Nom} ». COM ouvre cette
@@ -662,18 +619,16 @@ window.__totehm_creator = () => ({ build: BUILD, mode: NAME ? 'page' : 'search',
   can_read: !!C?.viewer?.can_read, me: !!C?.viewer?.me, signin_open: !$('signin').classList.contains('hide'),
   universe: { loaded: !!U, spaces: U?.spaces?.length || 0, spots: U?.spots?.length || 0,
               locked: [...(U?.spaces || []), ...(U?.spots || [])].filter(x => x.locked).length },
-  results: $('res')?.querySelectorAll('.srch-row').length || 0, club: clubOk,
   discover: { i: +($('dc')?.dataset.i || 0), n: +($('dc')?.dataset.n || 0) } });
 window.__totehm_discover = () => DC;
 
 /* ══ LA SESSION — un seul chemin ═════════════════════════════════════ */
 let sessionSeq=0;
 async function session(){
-  const seq=++sessionSeq, avant=me?.id||null;
+  const seq=++sessionSeq;
   const { data:{ session } } = await sb.auth.getSession();
   if(seq!==sessionSeq) return;
   me = session?.user || null;
-  if(avant!==(me?.id||null)) searchViews.forEach(c=>c.authChanged());
   $('member').classList.toggle('is-in', !!me);
   $('member-txt').textContent = me ? 'My TOTEHM' : 'CONNECT WITH MY TOTEHM';
   if(me){
@@ -683,84 +638,6 @@ async function session(){
     if(seq!==sessionSeq||me?.id!==uid) return;
     if(data?.pseudo) $('member-txt').textContent=data.pseudo;
   }
-}
-
-/* ══ 18/11 · LA RECHERCHE EST AU FIGHER CLUB ══ Wah : « la recherche est accessible seulement aux membres du figher.club ».
-   Membre = un TOTEHM avec une Habit, un objectif, une répulsion : le serveur le dit (`figher_access().member`, règle `_figher`).
-   Hors du Club, le champ disparaît : une phrase et la porte du TOTEHM. Relu au retour d'onglet (une box vient peut-être d'arriver). */
-let clubOk=false, clubSeq=0;
-async function porteClub(){
-  const seq=++clubSeq, uid=me?.id||null; let ok=false, panne=false;
-  if(me){ const {data,error}=await sb.rpc('figher_access');
-    if(seq!==clubSeq||uid!==(me?.id||null)) return clubOk;              /* réponse tardive : jetée */
-    if(error){ console.error('[figher_access]',error.message); panne=true; } else ok=!!data?.member; }
-  clubOk=ok;
-  ['q','q-note','res'].forEach(id=>$(id).classList.toggle('hide',!ok));
-  $('q-club').classList.toggle('hide',ok);
-  $('q-club-t').textContent=ok?'':panne?'Search is unreachable right now.'
-    :me?'Search is for Figher Club members: a TOTEHM with a Habit, an objective and a repulsion.'
-       :'Search is for Figher Club members. Open your TOTEHM first.';
-  return ok;
-}
-
-/* ══ CHERCHER UN TOTEHM : UN NOM, ET C'EST TOUT — copié de totehm.html ══ */
-const searchViews=new Set();
-function NameSearch({input,results,note,vide=true,onResults=()=>{}}){
-  let seq=0,timer=0,timer2=0,rows=[];
-  /* ⚠️ 14/11 (Wah) : « quand le résultat est validé et qu'il existe, on a LA PAGE ABONNEMENT qui s'affiche.
-     Et quand on est abonné, le verso redevient recto avec le tree et la page d'atterrissage du membre. »
-     Un résultat mène donc à `/@nom` — et c'est de là que part [Open the TOTEHM] vers `/totehm?ro=`. */
-  const href=p=>'/@'+encodeURIComponent(p);
-  const propre=v=>String(v||'').trim().replace(/^https?:\/\/[^/]+\//i,'').replace(/^@/,'').replace(/[/?#].*$/,'');
-  const dire=t=>{ note.textContent=t; };
-  function draw(q){
-    /* UN RÉSULTAT = UN VERSO (14/11) : le papier perforé, le nom en bloc carré dessus. Le lien porte le nom pour la voix. */
-    results.innerHTML=rows.map(r=>'<a class="srch-row" href="'+href(r.pseudo)+'" data-n="'+esc(r.pseudo)+'" aria-label="'
-      +esc(r.pseudo)+(r.subscribed?' · subscribed':'')+'"></a>').join('');
-    habiller(); onResults(rows.length);
-  }
-  /* la taille d'un verso : 40 % de la largeur, entre 120 et 168 px — mesurée, jamais devinée (les lettres sont en px) */
-  const taille=()=>Math.round(Math.min(168,Math.max(120,innerWidth*.4)));
-  function habiller(){
-    const S=taille(); results.style.setProperty('--ps',S+'px');
-    results.querySelectorAll('.srch-row').forEach(a=>{ if(window.TOTEHM_NOM) window.TOTEHM_NOM.poser(a,a.dataset.n,S); });
-  }
-  addEventListener('resize',()=>{ clearTimeout(timer2); timer2=setTimeout(habiller,120); });
-  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(habiller);
-  async function run(q,ouvrir=false){
-    clearTimeout(timer); const mon=++seq, uid=me?.id||null;
-    if(!clubOk){ rows=[]; draw(q); return; }                    /* 18/11 : hors du Club, aucune recherche ne part */
-    if(q.length===1){ rows=[]; draw(q); dire('two letters, minimum'); return; }
-    if(!q&&(!me||!vide)){ rows=[]; draw(q); dire(''); return; }   /* vide=false : rien avant la première lettre */
-    if(q) dire('searching\u2026');
-    const {data,error}=await sb.rpc('totehm_search',{p_q:q,p_limit:12});
-    if(mon!==seq||uid!==(me?.id||null)) return;               /* réponse tardive : jetée */
-    if(error){ console.error('[totehm_search]',error.message); dire('search is unreachable right now'); return; }
-    rows=Array.isArray(data)?data:[];
-    dire(rows.length||!q?'':'no TOTEHM by that name');
-    draw(q);
-    if(ouvrir&&rows.length){
-      const pile=rows.find(r=>r.pseudo.toLowerCase()===q.toLowerCase())||rows[0];
-      nav(href(pile.pseudo));
-    }
-  }
-  input.addEventListener('input',()=>{ clearTimeout(timer); const v=propre(input.value); timer=setTimeout(()=>run(v),220); });
-  input.addEventListener('keydown',e=>{
-    if(e.key==='Enter'){ e.preventDefault(); run(propre(input.value),true); }
-    if(e.key==='ArrowDown'){ const a0=results.querySelector('a'); if(a0){ e.preventDefault(); a0.focus(); } }
-  });
-  results.addEventListener('keydown',e=>{
-    if(!['ArrowDown','ArrowUp'].includes(e.key)) return;
-    const f=Array.from(results.querySelectorAll('a')), i=f.indexOf(document.activeElement);
-    e.preventDefault(); const j=i+(e.key==='ArrowDown'?1:-1);
-    (j<0?input:f[Math.min(j,f.length-1)]).focus();
-  });
-  const controller={
-    start(q=''){ run(propre(q)); },
-    reset(){ seq++; clearTimeout(timer); rows=[]; results.replaceChildren(); onResults(0); dire(''); },
-    authChanged(){ seq++; clearTimeout(timer); rows=[]; results.replaceChildren(); onResults(0); dire(''); }
-  };
-  searchViews.add(controller); return controller;
 }
 
 /* ══ LA PAGE D'UN MEMBRE ═════════════════════════════════════════════ */
@@ -791,7 +668,7 @@ async function loadPage(){
   if(!C.ok){
     uniSeq++; U = null; $('uni').classList.add('hide');
     poser([ '<div class="dc-s"><h2 class="dc-h">' + (C.why === 'nobody' ? 'No TOTEHM by that name' : 'This TOTEHM is private') + '</h2>' +
-      '<a class="dc-btn" href="/search' + (C.why === 'nobody' ? '?q=' + encodeURIComponent(NAME) : '') + '">Search a TOTEHM</a></div>' ], false);
+      '<a class="dc-btn" href="/totehm?members=' + (C.why === 'nobody' ? encodeURIComponent(NAME) : '') + '">Search a TOTEHM</a></div>' ], false);
     document.title = 'TOTEHM';
     return true;
   }
@@ -844,7 +721,7 @@ function ecranPrix(s, visiteur){
   /* le prix et le bouton vivent sous CHAQUE écran (`#cta`) : ici, seulement les conditions */
   return '<div class="dc-s">' + (visiteur ? '<h2 class="dc-h">One year. Stop anytime.</h2>' : '<p class="dc-big">' + esc(money(s.price_cents, s.currency)) + '<small>/ year</small></p><p class="dc-fine">This is what visitors see.</p>') +
     '<p class="dc-fine">One payment a year, by Stripe — a <b>year</b> of their practice. Stop anytime on the back of your TOTEHM: it runs to the end of the year, then stops. Clothes and artworks are separate purchases; <svg class="dc-hi" viewBox="0 0 600 200" role="img" aria-label="Higher"><title>Higher</title><use href="#higher-badge"></use></svg> GPT and TotehmBot cost nothing.</p>' +
-    '<a class="dc-lnk" href="/search">Search another TOTEHM</a></div>';
+    '<a class="dc-lnk" href="/totehm?members=">Search another TOTEHM</a></div>';
 }
 function appel(s, oui){
   $('cta').innerHTML = oui ? '<button class="dc-btn" data-do="subscribe" type="button">Subscribe · ' + esc(money(s.price_cents, s.currency)) + ' / year</button>' : '';
@@ -870,7 +747,7 @@ function paintOffer(){
     e = [ '<div class="dc-s">' + papier() + '<h2 class="dc-h">Enter ' + N + '’s ecosystem.</h2></div>', ...ecransExplication(n), ecranPrix(s, true) ];
   } else {
     e = [ '<div class="dc-s">' + papier() + '<h2 class="dc-h">Enter ' + N + '’s ecosystem.</h2><p class="dc-p">Not open yet.\n' + N + ' has not opened subscriptions.\nTheir TOTEHM keeps growing — come back.</p>' +
-      '<a class="dc-lnk" href="/search">Search another TOTEHM</a></div>' ];
+      '<a class="dc-lnk" href="/totehm?members=">Search another TOTEHM</a></div>' ];
   }
   appel(s, !v.me && !v.subscribed && !v.can_read && !!s.open);
   poser(e, false);
@@ -1064,7 +941,8 @@ async function comSortir(sb){
 document.addEventListener('keydown', e => { if(e.key === 'Escape') dire('close'); });
 
 /* ══ DÉMARRAGE ═══════════════════════════════════════════════════════ */
-const searchCtl = NameSearch({ input:$('q'), results:$('res'), note:$('q-note') });
+/* 18/11 — sans nom, c'est un ancien lien `/search` : la recherche vit sur le verso du TOTEHM (le renvoi part dès le <head>) */
+if(!NAME) location.replace('/totehm?members=' + encodeURIComponent(new URLSearchParams(location.search).get('q') || ''));
 await session();
 if(NAME){
   $('page').classList.remove('hide');
@@ -1077,21 +955,10 @@ if(NAME){
     say(C?.viewer?.subscribed ? 'you are subscribed' : 'payment received · refresh in a moment', 'ok');
     history.replaceState(null, '', location.pathname);
   }
-}else{
-  /* ══ 14/11 · LA RECHERCHE : NOIR, UN NOM, DES VERSOS (voir le CSS `is-search`) ══ */
-  document.body.classList.add('is-search');
-  $('search').classList.remove('hide');
-  const q0 = new URLSearchParams(location.search).get('q') || '';
-  $('q').value = q0;
-  if(await porteClub()){ searchCtl.start(q0); setTimeout(() => $('q').focus(), 60); }
-  document.addEventListener('visibilitychange', async () => {
-    if(document.hidden || clubOk) return;
-    if(await porteClub()){ searchCtl.start($('q').value); $('q').focus(); }
-  });
 }
 dire('ready');
 sb.auth.onAuthStateChange(event => { if(event === 'INITIAL_SESSION') return;
-  setTimeout(async () => { await session(); if(NAME) loadPage(); else if(await porteClub()) searchCtl.start($('q').value); }, 0); });
+  setTimeout(async () => { await session(); if(NAME) loadPage(); }, 0); });
 </script>
 <script>
 /* ══ LA NOMENCLATURE DU VERSO — copié de tools/totehm_name.js dans chaque page (jamais importé) ══

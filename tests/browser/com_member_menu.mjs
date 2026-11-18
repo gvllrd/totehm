@@ -113,7 +113,14 @@ try{
   }
   /* 14/11 (Wah : « il y avait un menu dans totehm.com, je n'en veux pas ») : AUCUN menu sur les pages de com.
      Le coin membre MÈNE à son TOTEHM ; sortir et les conditions vivent au verso du TOTEHM. */
-  for(const path of ['/search','/console','/monetize']){
+  /* 18/11 : `/search` n'est plus une page — la recherche de [Members] vit sur le verso du TOTEHM ; un ancien lien y mène */
+  {const{pg,ctx,log}=await ready(browser,{rpc});
+   const vers=pg.waitForURL(/\/totehm(\?|$)/,{timeout:9000}).then(()=>true,()=>false);
+   await pg.goto(origin+'/search?q=kai');
+   ok(await vers,'/search?q=kai : un ancien lien mène au verso du TOTEHM ('+pg.url().replace(origin,'')+')');
+   ok(!log.errors.some(e=>e.startsWith('pageerror')),'/search : aucune erreur');await ctx.close();
+  }
+  for(const path of ['/console','/monetize']){
    const{pg,ctx,log}=await ready(browser,{rpc:{...rpc,my_console:{...base,offer:{enabled:true}}}});await pg.goto(origin+path);
    await pg.waitForFunction(()=>document.getElementById('member')&&document.getElementById('member-txt')?.textContent==='wahigher'||document.getElementById('member')?.textContent==='wahigher'||document.getElementById('member')?.textContent==='My TOTEHM',null,{timeout:9000}).catch(()=>{});
    ok(await pg.locator('#menu,.cm-menu,.cm-action,[data-com-monetize]').count()===0,path+' n\'a plus de menu : ni #menu, ni actions, ni lien de monétisation');

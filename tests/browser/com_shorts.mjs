@@ -25,6 +25,7 @@ const ici=pg=>pg.evaluate(()=>(document.querySelector('#lv-sh .lsh.is-ici .lsh-t
 function serveur(){
   let items=[{id:'m1',kind:'h',ref:'Run the hill',path:UID+'/m-aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa.jpg',mime:'image/jpeg',bytes:1200,name:'hill.jpg',created_at:'2026-10-15T10:00:00Z'}],n=1;
   return {
+    figher_access:{signed_in:true,member:true},   /* 18/11 : la recherche de [Members] est au Figher Club */
     element_media_list:()=>({ok:true,items}),
     element_media_add:b=>{ if(!/^[0-9a-f-]{36}\/m-[0-9a-f-]{36}\.[a-z0-9]{2,5}$/.test(b.p_path)) return {ok:false,why:'path'};
       const id='m'+(++n); items=[{id,kind:b.p_kind,ref:b.p_ref,path:b.p_path,mime:b.p_mime,bytes:b.p_bytes,name:b.p_name},...items]; return {ok:true,id,mime:b.p_mime,bytes:b.p_bytes}; },
@@ -508,24 +509,29 @@ try{
   await pg.screenshot({path:OUT+'/spots_grid_'+(tel?'tel':'ordi')+'.png'});
   await pg.click('#lvn-lf');await vers(pg,'c');await pg.waitForTimeout(300);
 
-  // ══ 5 · PENDANT LA RECHERCHE MEMBERS (26/10, Wah : « les mouvements de joystick ne marchent plus ») : la croix reste vivante ;
-  //      un geste referme la recherche, puis voyage ══
-  await pg.click('#lv-m-members');await pg.waitForTimeout(1300);
-  const gal=await pg.evaluate(()=>({lf:document.getElementById('lvn-lf').classList.contains('is-mort'),
-    rt:document.getElementById('lvn-rt').classList.contains('is-mort')}));
-  await pg.evaluate(()=>window.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowRight'})));await vers(pg,'d');await pg.waitForTimeout(500);
+  // ══ 5 · PENDANT LA RECHERCHE MEMBERS (18/11 : elle vit sur le VERSO, comme mes réglages) : la croix de l'atterrissage attend
+  //      sous la feuille — une flèche y déplace le curseur, jamais la vue ; refermée (Échap), la croix repart ══
+  await pg.click('#lv-m-members');
+  await pg.waitForFunction(()=>{const c=window.__totehm_cherche&&window.__totehm_cherche();return c&&c.ouvert;},null,{timeout:8000}).catch(()=>{});
+  const pendant=await pg.evaluate(()=>window.__totehm_cherche().ouvert);
+  await pg.keyboard.press('ArrowRight');await pg.waitForTimeout(700);
+  const reste=(await lv(pg)).vue;
+  await pg.keyboard.press('Escape');await pg.waitForFunction(()=>!document.getElementById('srch').classList.contains('is-on'),null,{timeout:8000}).catch(()=>{});
+  await pg.waitForTimeout(900);
+  /* refermée, le focus revient au papier (comme mes réglages : là, ← → le RETOURNENT) — la croix, elle, voyage */
+  await pg.click('#lvn-rt');await vers(pg,'d');await pg.waitForTimeout(500);
   const ap=await lv(pg);
-  ok(!gal.lf&&!gal.rt&&ap.vue==='d'&&ap.mode==='mine'&&!ap.membre.cherche,'26/10 · Members (la recherche) : les chevrons latéraux restent vivants ; → referme la recherche et mène à MES spots');
+  ok(pendant&&reste==='c'&&ap.vue==='d'&&ap.mode==='mine','18/11 · Members (la recherche, sur le verso) : la croix attend sous la feuille ; refermée, → mène à MES spots');
   await pg.click('#lvn-lf');await vers(pg,'c');await pg.waitForTimeout(300);
   ok(!erreurs(log).length,nom+' · aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
  // ── sans compte : ni « mes » shorts, ni « mes » spots ──
  {const{pg,log}=await page(browser,{dir:'com',origin,tables:{},session:false,rpc:{...serveur(),my_landing:{signed_in:false}}});
   await pg.goto(origin+'/totehm');await pg.waitForTimeout(1600);
-  const v=await pg.evaluate(()=>({lf:document.getElementById('lvn-lf').classList.contains('is-mort'),
-    rt:document.getElementById('lvn-rt').classList.contains('is-mort'),
-    up:!document.getElementById('lvn-up').classList.contains('is-mort')}));
+  /* 18/11 (Wah) : sans compte, les quatre flèches se voient (la racine de l'arbre) mais aucune ne mène à une vue : chacune ouvre
+     la porte d'inscription (com_accueil_discover) ; la flèche du clavier ne fait rien */
+  const v=await pg.evaluate(()=>({fleches:['lvn-up','lvn-dn','lvn-lf','lvn-rt'].every(id=>!document.getElementById(id).classList.contains('is-mort'))}));
   await pg.evaluate(()=>window.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowLeft'})));await pg.waitForTimeout(700);
-  ok(v.lf&&v.rt&&v.up&&(await lv(pg)).vue==='c','sans compte : pas de shorts ni de spots (chevrons latéraux éteints) ; la vue du haut (Higher my ChatGPT) reste');
+  ok(v.fleches&&(await lv(pg)).vue==='c','18/11 · sans compte : ni shorts ni spots — les quatre flèches se voient, aucune ne mène à une vue');
   ok(!log.rpc.some(r=>r.name==='element_media_list'),'sans compte : mes fichiers ne sont jamais lus');
   ok(!erreurs(log).length,'sans compte : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
 
