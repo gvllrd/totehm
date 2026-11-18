@@ -55,21 +55,6 @@ a:hover{color:#fff}
   h1{font-size:26px}
   p,li{font-size:16px}
 }
-/* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
-/* Tout texte devient blanc sous la souris. Les dessins, surfaces
-   et contrôles désactivés gardent leur apparence. */
-@media(hover:hover) and (pointer:fine){
-:is(
-:is(a,abbr,address,b,bdi,bdo,blockquote,button,caption,cite,code,dd,del,dfn,dt,em,figcaption,h1,h2,h3,h4,h5,h6,i,input,kbd,label,legend,li,mark,option,output,p,pre,q,rp,rt,ruby,s,samp,small,span,strong,sub,summary,sup,td,textarea,th,time,u,var):hover,
-div:not(:has(> :not(br,wbr))):hover,
-.updated:hover,
-h2:hover,
-p:hover,
-li:hover,
-a:hover,
-#back:hover):where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *)){color:#fff!important}
-}
-/* ══ FIN DU BLOC GÉNÉRÉ ══ */
 
 /* ══ LE MOT TOTEHM EST LE TOTEHM — copié de tools/totehm_word.css dans chaque page (jamais importé) ══
    ⚠️ 14/11 (Wah) — ANNULATION DU REMPLACEMENT GÉNÉRAL : « annule la décision de remplacer TOUS les textes
@@ -109,6 +94,22 @@ a:hover,
 .tw.is-plat .tw-p{transform:none}
 @media(prefers-reduced-motion:reduce){.tw-p{transform:rotateY(180deg)}.tw.is-plat .tw-p{transform:none}}
 /* ══ fin LE MOT TOTEHM ══ */
+/* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
+/* Tout texte devient blanc sous la souris. Les dessins, surfaces
+   et contrôles désactivés gardent leur apparence. */
+@media(hover:hover) and (pointer:fine){
+:is(
+:is(a,abbr,address,b,bdi,bdo,blockquote,button,caption,cite,code,dd,del,dfn,dt,em,figcaption,h1,h2,h3,h4,h5,h6,i,input,kbd,label,legend,li,mark,option,output,p,pre,q,rp,rt,ruby,s,samp,small,span,strong,sub,summary,sup,td,textarea,th,time,u,var):hover,
+div:not(:has(> :not(br,wbr))):hover,
+.updated:hover,
+h2:hover,
+p:hover,
+li:hover,
+a:hover,
+#back:hover,
+.tw .tn-l:hover):where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *)){color:#fff!important}
+}
+/* ══ FIN DU BLOC GÉNÉRÉ ══ */
 </style>
 </head>
 <body>
@@ -168,6 +169,10 @@ a:hover,
     <li>We do not charge for the following period once you have cancelled.</li>
     <li>Prices may change. If they do, you will be told before the change applies to you, and you are free to leave.</li>
     <li>We never see your card. Payment is handled by our payment provider.</li>
+    <li>A creator sees the TOTEHM name of each of their subscribers — never your email.</li>
+    <li>You play by the creator's rules. A spot marked SILENCE is silent. A creator can cut off a subscriber who breaks
+    their rules: access ends at once, the subscription stops and never renews, nothing is refunded, and you can never
+    subscribe to that creator again. Other creators are not affected.</li>
   </ul>
 
   <h2>Deleting your Totehm</h2>

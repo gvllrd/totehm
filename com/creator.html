@@ -584,7 +584,7 @@ const audBadge = a => AUD_ICON[a] ? '<span class="audb" role="img" aria-label="'
 const audMark = (root, attr, a0) => { const a = audNorm(a0); return root?.querySelectorAll('[' + attr + ']').forEach(b => { const on = b.getAttribute(attr) === a;
   b.classList.toggle('is-on', on); b.setAttribute('aria-checked', String(on)); }); };
 /* ══ fin AUDIENCE ══ */
-const BUILD='2026-11-18-discover-creator-economy';
+const BUILD='2026-11-18-couper-un-abonne';
 
 /* ══ EN CADRE DANS COM (`?embed=1`) ═════════════════════════════════════
    Wah, 16/10 : « il ne faut pas que ça saute entre totehm.com et totehm.com/@{Nom} ». COM ouvre cette
@@ -859,7 +859,7 @@ async function subscribe(b){
     if(j.url){ nav(j.url); return; }
     if(j.already){ say('you are already subscribed', 'ok'); await loadPage(); return; }
     if(!r.ok) console.error('[creator-subscribe]', r.status, j.error || '');
-    say(({ closed:'not open to subscriptions', self:'this is your own TOTEHM', signin:'connect first', nobody:'no TOTEHM by that name' })[j.error] || 'checkout is unavailable, try again', 'no');
+    say(({ closed:'not open to subscriptions', self:'this is your own TOTEHM', signin:'connect first', nobody:'no TOTEHM by that name', banned:'this ecosystem is closed to you' })[j.error] || 'checkout is unavailable, try again', 'no');
   }catch(e){ console.error('[creator-subscribe]', e && e.message || e); say('checkout is unavailable, try again', 'no'); }
   if(b) b.disabled = false;
 }

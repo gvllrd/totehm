@@ -211,4 +211,42 @@ try{
   ok(!apres.xo&&apres.verso&&apres.onglet==='money','[Set my price] referme la couche : le verso est là, sur Monetize → '+JSON.stringify(apres));
   ok(!erreurs(log).length,'Monetize · Discover : aucune erreur '+erreurs(log).join(' | '));
   await pg.context().close();}
+
+ /* ── 11 · 18/11 (Wah : « your subscribers play by your rules or get cut off instantly » ; ses choix : le créateur coupe
+    depuis la liste de ses abonnés, sans remboursement, pour toujours) ── */
+ {const DASH={ok:true,price_cents:2400,min_cents:300,month_cents:0,subscribers:1,due_cents:0,open:true};
+  const FANS={ok:true,items:[{pseudo:'kai',since:'2026-11-01T10:00:00Z',until:'2027-11-01T10:00:00Z',ending:false}]};
+  const{pg,log}=await page(browser,{dir:'com',origin,tables,rpc:{...rpc,creator_dashboard:DASH,creator_subscribers:FANS,my_console:{signed_in:true,offer:{enabled:true,open:true}}},
+    functions:{...functions,'creator-cut-off':{ok:true,pseudo:'kai',stripe:true}},viewport:{width:390,height:844},hasTouch:true});
+  await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1200);
+  await pg.click('#lv-tap-turn');
+  await pg.waitForFunction(()=>document.getElementById('srch').classList.contains('is-open'),null,{timeout:9000}).catch(()=>{});
+  await pg.click('#vs-tabs [data-vs-tab="money"]');
+  await pg.waitForSelector('#vs-fans [data-cut="kai"]',{state:'visible',timeout:9000}).catch(()=>{});
+  const l=await pg.evaluate(()=>({nom:(document.querySelector('#vs-fans .vs-nom')||{}).textContent,h:(document.querySelector('#vs-fans .vs-h')||{}).textContent,
+    b:(document.querySelector('#vs-fans [data-cut]')||{}).textContent,t:(document.querySelector('#vs-fans-s .vs-t')||{}).textContent}));
+  ok(l.nom==='kai'&&/^since /.test(l.h)&&l.b==='Cut off'&&l.t==='My subscribers','Monetize · « My subscribers » : son nom TOTEHM, ses dates, [Cut off] → '+JSON.stringify(l));
+  await pg.click('#vs-fans [data-cut="kai"]');await pg.waitForTimeout(200);
+  const a1=await pg.evaluate(()=>({b:document.querySelector('#vs-fans [data-cut]').textContent,dit:document.getElementById('vs-fans-note').textContent}));
+  ok(a1.b==='Confirm'&&/no refund/.test(a1.dit)&&/never subscribe to you again/.test(a1.dit)&&!log.functions.some(f=>f.name==='creator-cut-off'),
+     '[Cut off] · premier geste : rien ne part, le bouton demande confirmation et dit ce qui arrive → '+JSON.stringify(a1));
+  await pg.click('#vs-fans [data-cut="kai"]');
+  await pg.waitForFunction(()=>/is cut off/.test(document.getElementById('vs-fans-note').textContent),null,{timeout:8000}).catch(()=>{});
+  const f=log.functions.find(x=>x.name==='creator-cut-off');
+  const a2=await pg.evaluate(()=>({dit:document.getElementById('vs-fans-note').textContent,reste:document.querySelectorAll('#vs-fans [data-cut]').length}));
+  ok(!!f&&f.body.pseudo==='kai'&&/^kai is cut off\.$/.test(a2.dit)&&a2.reste===0,'[Cut off] · second geste : creator-cut-off {pseudo} et kai quitte la liste → '+JSON.stringify({body:f&&f.body,...a2}));
+  ok(!erreurs(log).length,'Cut off : aucune erreur '+erreurs(log).join(' | '));
+  await pg.context().close();}
+
+ /* ── 12 · un abonné coupé retente de s'abonner : le serveur refuse (`banned`), le verso le dit ── */
+ {const{pg,log}=await page(browser,{dir:'com',origin,tables,rpc,functions:{'creator-subscribe':{error:'banned'}},viewport:{width:390,height:844},hasTouch:true});
+  await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1200);
+  await pg.click('#lv-m-members');await ouvert(pg);await pg.waitForTimeout(400);
+  await pg.keyboard.type('kai');await pg.keyboard.press('Enter');
+  await pg.waitForFunction(()=>window.__totehm_cherche().etat==='offre',null,{timeout:6000}).catch(()=>{});
+  await pg.click('#mb-res [data-mb="sub"]');
+  await pg.waitForFunction(()=>/closed to you/.test((document.getElementById('mb-say')||{}).textContent||''),null,{timeout:6000}).catch(()=>{});
+  ok(/^this ecosystem is closed to you$/.test(await pg.textContent('#mb-say')),'banni : « this ecosystem is closed to you », aucun paiement ne s\'ouvre');
+  ok(!erreurs(log).length,'banni : aucune erreur '+erreurs(log).join(' | '));
+  await pg.context().close();}
 }finally{ await browser.close(); }

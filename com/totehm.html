@@ -3359,7 +3359,8 @@ body.lv-b:not(.lv-membre):not(.lv-verrou) #lv-socket{opacity:0}
 .vs-t{margin:0;display:flex;align-items:center;gap:8px;font:700 12px/1.2 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#fff}
 .vs-t .vs-hi{width:66px;height:22px}
 .vs-s{margin:0;font:400 10px/1.4 'Space Mono',monospace;letter-spacing:.04em;color:#d2d2da}
-#srch #vs-subs-s{margin-top:26px}
+#srch #vs-subs-s,#srch #vs-fans-s{margin-top:26px}
+#vs-fans .vs-act.is-todo{color:#fff;box-shadow:inset 0 0 0 1px #fff}   /* 18/11 — le second geste de [Cut off] se voit */
 #mw-menu .vs-h{white-space:normal;overflow:visible}
 .vs.hide{display:none}
 .vs-top{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#000;padding:18px 16px 16px}
@@ -4819,6 +4820,13 @@ In the highest way.</p>
         </div>
         <div class="vs-row hide" id="vs-page"><i>my page</i><a id="vs-page-a" href="/"></a><button class="vs-val" id="vs-copy" type="button">copy</button></div>
         <div class="lv-note" id="mwc-note" role="status"></div>
+        <!-- 18/11 (Wah : « your subscribers play by your rules or get cut off instantly ») : MES abonnés, par leur nom TOTEHM ;
+             [Cut off] en DEUX gestes (le second dit ce qui arrive : sans remboursement, pour toujours) — `creator-cut-off`. -->
+        <section class="vs hide" id="vs-fans-s" aria-label="My subscribers">
+          <header class="vs-head"><h3 class="vs-t">My subscribers</h3><p class="vs-s">they play by your rules or get cut off</p></header>
+          <div class="vs-list" id="vs-fans"></div>
+          <div class="lv-note" id="vs-fans-note" role="status"></div>
+        </section>
         <section class="vs hide" id="vs-subs-s" aria-label="I subscribe to">
           <header class="vs-head"><h3 class="vs-t">My subscriptions</h3></header>
           <div class="vs-list" id="vs-subs"></div>
@@ -8792,7 +8800,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-11-18-discover-monetize';
+const BUILD='2026-11-18-couper-un-abonne';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -14700,7 +14708,7 @@ window.addEventListener('pageshow',e=>{
           const {d:j}=await fnAppel('creator-subscribe',{pseudo:nom, from:depuis==='verso'?'verso':'page'});
           if(j&&j.url){ location.href=j.url; return; }
           if(j&&j.already){ say('already subscribed'); return; }
-          say(({closed:'not open to subscriptions', self:'this is your own TOTEHM', signin:'connect first', nobody:'no TOTEHM by that name'})[j&&j.error]||'checkout is unavailable · try again');
+          say(({closed:'not open to subscriptions', self:'this is your own TOTEHM', signin:'connect first', nobody:'no TOTEHM by that name', banned:'this ecosystem is closed to you'})[j&&j.error]||'checkout is unavailable · try again');
         }catch(e){ console.error('[creator-subscribe]',e&&e.message||e); say('checkout is unavailable · try again'); }
       }
       box.addEventListener('click',e=>{ const b=e.target.closest('[data-mbo="sub"]'); const nom=MB.nom||MB.verrou; if(b&&nom){ b.disabled=true;
@@ -14935,8 +14943,35 @@ window.addEventListener('pageshow',e=>{
             +(vit&&!x.ending?'<button class="vs-act" type="button" data-stop="'+esc(x.creator||'')+'">Stop</button>':'')+'</div>'; }).join('');
         $('mw-pay').hidden=!(C&&C.membership&&C.membership.portal);
       }
+      /* 18/11 — MES abonnés (`creator_subscribers` : leur nom TOTEHM et leurs dates, rien d'autre). [Cut off] en DEUX gestes :
+         le premier arme le bouton et dit ce qui arrive (sans remboursement, pour toujours), le second coupe (`creator-cut-off`). */
+      let fans=[], arme=null, armeT=0;
+      function peindreFans(){
+        $('vs-fans-s').classList.toggle('hide',!fans.length);
+        $('vs-fans').innerHTML=fans.map(x=>'<div class="vs-item"><span class="vs-k vs-nom">'+esc(x.pseudo||'—')+'</span>'
+          +'<span class="vs-h">since '+esc(jour(x.since))+(x.until?' · '+(x.ending?'ends ':'renews ')+esc(jour(x.until)):'')+'</span>'
+          +'<button class="vs-act'+(arme===x.pseudo?' is-todo':'')+'" type="button" data-cut="'+esc(x.pseudo||'')+'">'+(arme===x.pseudo?'Confirm':'Cut off')+'</button></div>').join('');
+      }
+      async function chargerFans(s){
+        const {data,error}=await sb.rpc('creator_subscribers');
+        if(s!==seq) return;
+        if(error){ console.error('[creator_subscribers]',error.message); return; }
+        fans=(data&&data.ok&&Array.isArray(data.items))?data.items:[]; peindreFans();
+      }
+      $('vs-fans').addEventListener('click',async e=>{
+        const b=e.target.closest('[data-cut]'); if(!b||b.disabled) return;
+        const n=b.dataset.cut, say=$('vs-fans-note');
+        if(arme!==n){ arme=n; clearTimeout(armeT); armeT=setTimeout(()=>{ arme=null; peindreFans(); say.textContent=''; },6000);
+          peindreFans(); say.textContent=n+' loses access now, with no refund, and can never subscribe to you again.'; return; }
+        clearTimeout(armeT); arme=null; b.disabled=true; say.textContent='…';
+        const {status,d:x}=await fnAppel('creator-cut-off',{pseudo:n});
+        if(status!==200||!x||!x.ok){ say.textContent=({not_subscriber:'not one of your subscribers anymore',nobody:'no TOTEHM by that name',self:'this is you'})[x&&x.error]||'try again'; b.disabled=false; peindreFans(); return; }
+        fans=fans.filter(f=>f.pseudo!==n); peindreFans();
+        say.textContent=(x.pseudo||n)+' is cut off'+(x.stripe===false?' · stopping the payment by hand':'')+'.';
+        charger();
+      });
       async function charger(){
-        if(!(me&&inscrit())||guest()){ box.classList.add('hide'); $('vs-subs-s').classList.add('hide'); return; }
+        if(!(me&&inscrit())||guest()){ box.classList.add('hide'); $('vs-subs-s').classList.add('hide'); $('vs-fans-s').classList.add('hide'); return; }
         const s=++seq, uid=me.id;
         const [a,b]=await Promise.all([sb.rpc('creator_dashboard'),sb.rpc('my_console')]);
         if(s!==seq||(me?.id||null)!==uid) return;
@@ -14944,6 +14979,7 @@ window.addEventListener('pageshow',e=>{
         if(b.error) console.error('[my_console]',b.error.message);
         if(a.error||!a.data?.ok){ box.classList.add('hide'); return; }
         d=a.data; C=b.error?null:(b.data||null); box.classList.remove('hide'); dit('');
+        chargerFans(s);
         const p=d.price_cents||2400; r.min=String(d.min_cents||300); r.max=String(Math.max(20000,p)); r.value=String(p);
         dire(); peindre();
       }
@@ -14988,7 +15024,7 @@ window.addEventListener('pageshow',e=>{
         mwNote('…'); const {d:x}=await fnAppel('club-billing',{action:'portal'});
         if(x.url){ location.href=x.url; return; } mwNote('try again');
       };
-      return {charger, vider(){ seq++; d=null; C=null; box.classList.add('hide'); $('vs-subs-s').classList.add('hide'); $('vs-pay-f').classList.add('hide'); $('vs-subs-note').textContent=''; dit(''); },
+      return {charger, vider(){ seq++; d=null; C=null; fans=[]; arme=null; box.classList.add('hide'); $('vs-subs-s').classList.add('hide'); $('vs-fans-s').classList.add('hide'); $('vs-pay-f').classList.add('hide'); $('vs-subs-note').textContent=''; $('vs-fans-note').textContent=''; dit(''); },
         etat:()=>({vu:!box.classList.contains('hide'), prix:d?d.price_cents:null, offre:tog.dataset.etat||null, versement:!!(C&&C.offer&&C.offer.payout_fin), abonnements:((C&&C.subscriptions)||[]).length})};
     })();
 
