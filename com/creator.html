@@ -230,8 +230,9 @@ html.is-embed,html.is-embed body{background:#000}
    totehm.space/play_lisbon_street?discover=1. » Un écran noir, UNE idée à la fois, qui se succèdent au geste.
    LE 60 / 30 / 10, ICI, PAR CONSTRUCTION :
      60 %  le NOIR — tout le fond, tout le silence autour du texte (`#000`)
-     30 %  le TEXTE — blanc pour l'idée (`.dc-h`), gris clair pour son appui (`.dc-p`), gris sombre pour la
-           structure (rail, chevron)
+     30 %  le TEXTE — les polices de la vue Higher my ChatGPT (Wah, 18/11) : l'idée (`.dc-h`) comme
+           `#chatgpt-title` (Space Mono gras, capitales espacées, blanc), son appui (`.dc-p`) comme `.lvs-sci` en un peu
+           plus grand et plus clair ; gris sombre pour la structure (rail, chevron)
      10 %  l'ACCENT, UN SEUL — le corail du TOTEHM (`--dc-ac`), SACRÉ (Wah, 15/11) : il ne colore que le NOM du
            membre et l'ART de Wah (le papier, la pièce). Ni le prix, ni le bouton : ils restent blancs et gris.
            Rien d'autre n'est coloré, jamais : ni navy, ni rouge, ni dégradé.
@@ -247,11 +248,11 @@ html.is-embed,html.is-embed body{background:#000}
 /* le sens du voyage se VOIT : l'écran qu'on quitte part vers le haut, le suivant monte d'en bas (et l'inverse au retour) */
 .dc-s.is-avant{transform:translateY(-14px)}
 .dc-s>*{max-width:min(100%,680px)}
-.dc-h{margin:0;font:400 clamp(24px,3.6vw,44px)/1.16 Quantico,sans-serif;color:#fff;letter-spacing:.01em}
-.dc-p{margin:0;font:400 clamp(15px,1.9vw,21px)/1.6 'Space Mono',monospace;color:#ddd;white-space:pre-line}
+.dc-h{margin:0;font:700 clamp(14px,2.2vw,19px)/1.6 'Space Mono',monospace;color:#fff;letter-spacing:.16em;text-transform:uppercase}
+.dc-p{margin:0;font:400 clamp(13px,1.5vw,15px)/1.7 'Space Mono',monospace;color:#bdbdc4;white-space:pre-line;max-width:min(100%,540px)}
 .dc-ac{color:var(--dc-ac)}
-.dc-n{font-family:Quantico,sans-serif;font-weight:700;color:var(--dc-ac)}            /* un NOM de membre */
-.dc-big{margin:0;font:400 clamp(44px,9vw,84px)/1 Quantico,sans-serif;color:#fff;letter-spacing:.01em}
+.dc-n{font-family:Quantico,sans-serif;font-weight:700;color:var(--dc-ac);text-transform:none;letter-spacing:.02em}   /* un NOM de membre, tel qu'il l'a écrit */
+.dc-big{margin:0;font:400 clamp(34px,6vw,60px)/1 Quantico,sans-serif;color:#fff;letter-spacing:.01em}
 .dc-big small{font:400 clamp(12px,1.6vw,16px)/1 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#888;margin-left:10px}
 .dc-hi{display:inline-block;width:3.2em;height:1.07em;vertical-align:-.14em}   /* « Higher » est TOUJOURS le badge (BRAND) : jamais le mot en texte */
 .dc-fine{margin:0;font:400 11px/1.7 'Space Mono',monospace;letter-spacing:.06em;color:#888;max-width:420px}
@@ -291,7 +292,7 @@ html.is-embed,html.is-embed body{background:#000}
 @media(max-height:620px){
   .dc-s{inset:60px 20px 96px;gap:12px}.dc.has-cta .dc-s{inset:60px 20px 150px}
   .dc-cta,.dc.has-cta.is-last .dc-cta{bottom:84px}.dc-next{bottom:12px}.dc-next svg{width:20px;height:20px}.dc-rail{bottom:56px}
-  .dc-h{font-size:clamp(19px,3.2vw,30px)}.dc-p{font-size:clamp(13px,1.6vw,16px);line-height:1.5}.dc-btn{min-height:42px;padding:9px 22px}
+  .dc-h{font-size:clamp(13px,2vw,16px)}.dc-p{font-size:clamp(12px,1.4vw,14px);line-height:1.55}.dc-btn{min-height:42px;padding:9px 22px}
 }
 @media(max-height:440px){
   .dc-s{inset:50px 20px 50px}.dc.has-cta .dc-s{inset:50px 20px 100px}
