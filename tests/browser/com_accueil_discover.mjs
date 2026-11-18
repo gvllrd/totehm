@@ -23,6 +23,21 @@ try{
   ok(c.vu&&/^THE HIGHER WAY TO MAKE IT HAPPEN$/.test(c.titre),'le titre de la vue centrale : « THE HIGHER WAY TO MAKE IT HAPPEN » → '+JSON.stringify(c));
   ok(c.boutons.join('|')==='Open my TOTEHM|Discover'&&c.anciens===0,'sans compte : la porte et [Discover], plus de pitch à lire → '+c.boutons.join(' | '));
   ok(c.corail===0,'aucun texte corail dans les actions (le corail est réservé au nom et à l\'art)');
+  /* ── 18/11 · sans compte, le SCROLL ouvre le Discover — et l'inertie du geste ne le fait pas défiler ── */
+  {const cdp0=await ctx.newCDPSession(pg);
+   await cdp0.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:195,y:600}]});
+   for(let i=1;i<=5;i++){await cdp0.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:195,y:600-44*i}]});await pg.waitForTimeout(16);}
+   await cdp0.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await pg.waitForTimeout(800);
+   let s=await D(pg);
+   ok(s.ouvert&&s.i===0&&s.parScroll===1&&(await pg.evaluate(()=>window.__totehm_lv().vue))==='c','sans compte, un glissé vers le haut ouvre le Discover sur son premier écran → '+JSON.stringify(s));
+   await pg.keyboard.press('Escape');await pg.waitForTimeout(600);
+   await pg.mouse.move(195,420);
+   for(let k=0;k<12;k++){await pg.mouse.wheel(0,60);await pg.waitForTimeout(40);}
+   await pg.waitForTimeout(900);
+   s=await D(pg);
+   ok(s.ouvert&&s.i===0&&s.parScroll===2,'la molette aussi ; son inertie ne fait pas défiler le Discover → '+JSON.stringify(s));
+   await pg.keyboard.press('Escape');await pg.waitForTimeout(600);
+   ok(!(await D(pg)).ouvert&&(await pg.evaluate(()=>window.__totehm_lv().vue))==='c','ÉCHAP referme : l\'accueil, au centre');}
   /* ── le Discover : en couche, une idée par écran, la porte sous chacun ── */
   await pg.click('#lv-discover');await pg.waitForTimeout(700);
   let d=await D(pg);
@@ -82,6 +97,9 @@ try{
   const m=await pg.evaluate(()=>{const vu=e=>!!e&&e.getClientRects().length>0&&getComputedStyle(e).visibility!=='hidden';
     return {titre:vu(document.getElementById('lv-title')),pitch:vu(document.getElementById('lv-pitch')),legende:document.getElementById('lv-tap').textContent.replace(/\s+/g,' ').trim()};});
   ok(m.titre&&!m.pitch&&/ · Discover$/.test(m.legende),'membre : le titre, aucun bouton de vente, « Discover » au bout de la légende → '+m.legende);
+  await pg.mouse.move(640,400);await pg.mouse.wheel(0,120);
+  ok(await vers(pg,'b')&&!(await D(pg)).ouvert,'18/11 · membre : la molette mène toujours à Higher my ChatGPT, pas au Discover');
+  await pg.waitForTimeout(500);await pg.keyboard.press('ArrowDown');await vers(pg,'c');await pg.waitForTimeout(800);
   await pg.click('#lv-tap-disc');await pg.waitForTimeout(700);
   for(let k=0;k<5;k++){await pg.keyboard.press('ArrowDown');await pg.waitForTimeout(750);}
   const a=await pg.evaluate(()=>({i:window.__totehm_discover().i,cta:document.getElementById('lvd-cta').textContent}));
