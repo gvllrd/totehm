@@ -83,12 +83,20 @@ try{
   await pg.keyboard.press('Escape');await pg.waitForTimeout(600);
   d=await D(pg);
   ok(!d.ouvert&&await pg.evaluate(()=>document.getElementById('lvd').hidden&&!document.body.classList.contains('is-dc')),'ÉCHAP referme, l\'accueil reprend ses gestes');
-  /* 18/11 (Wah) : sans compte, PAS DE JOYSTICK — ni manche, ni chevrons, ni flèches : la croix est à l'inscrit */
+  /* 18/11 (Wah) : sans compte, le JOYSTICK SE VOIT (la racine de l'arbre) mais ne mène à aucune vue : chevrons morts, flèches
+     sans effet, et le toucher ouvre la porte d'inscription */
   const joy=await pg.evaluate(()=>({manche:getComputedStyle(document.getElementById('lvjoy')).visibility,
     morts:['lvn-up','lvn-dn'].every(id=>document.getElementById(id).classList.contains('is-mort'))}));
   await pg.keyboard.press('ArrowUp');await pg.waitForTimeout(1200);
-  ok(joy.manche==='hidden'&&joy.morts&&(await pg.evaluate(()=>window.__totehm_lv().vue))==='c'&&!(await D(pg)).ouvert,
-     '18/11 · sans compte, pas de joystick : manche caché, chevrons morts, ↑ ne mène nulle part → '+JSON.stringify(joy));
+  ok(joy.manche==='visible'&&joy.morts&&(await pg.evaluate(()=>window.__totehm_lv().vue))==='c'&&!(await D(pg)).ouvert,
+     '18/11 · sans compte : le manche se voit, ses chevrons sont morts, ↑ ne mène nulle part → '+JSON.stringify(joy));
+  await pg.click('#lvj-box');await pg.waitForTimeout(700);
+  ok(await pg.evaluate(()=>document.body.classList.contains('is-door')&&window.__totehm_lv().vue==='c'),'sans compte, toucher le joystick ouvre la porte d\'inscription');
+  await pg.keyboard.press('Escape');await pg.waitForTimeout(600);
+  await pg.mouse.move(195,420);for(let k=0;k<6;k++){await pg.mouse.wheel(0,-60);await pg.waitForTimeout(40);}
+  await pg.waitForTimeout(900);
+  ok((await D(pg)).ouvert&&(await D(pg)).i===0,'sans compte, le scroll dans l\'autre sens ouvre aussi le Discover');
+  await pg.keyboard.press('Escape');await pg.waitForTimeout(600);
   await pg.click('#lv-m-members');await pg.waitForTimeout(700);
   ok(await pg.evaluate(()=>document.body.classList.contains('is-door')),'sans compte, [Members] mène à la porte');
   await pg.keyboard.press('Escape');await pg.waitForTimeout(600);

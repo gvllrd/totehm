@@ -3266,8 +3266,8 @@ body.gate:not(.member):not(.ses-attente){--lv-y:32dvh}
 /* 18/11 — la recherche est au FIGHER CLUB : un tap sur [Members] hors du Club le DIT ici, en une ligne, puis se tait */
 #lv-m-say{margin:8px auto 0;max-width:300px;font:400 10px/1.6 'Space Mono',monospace;color:#9a9aa2;text-align:center}
 #lv-m-say:empty{display:none}
-/* 18/11 (Wah) : SANS COMPTE, PAS DE JOYSTICK — l'accueil, [Discover] (et le scroll), la porte ; la croix est à l'inscrit */
-body:not(.member):not(.ses-attente) #lvjoy{opacity:0;visibility:hidden;pointer-events:none}
+/* 18/11 (Wah) : SANS COMPTE, LE JOYSTICK SE VOIT MAIS NE MÈNE À AUCUNE VUE — il est la racine de l'arbre (le TOTEHM, les
+   traits d'intention, le manche : l'écosystème se VOIT). Le toucher ouvre la porte d'inscription ; ses chevrons sont morts. */
 /* ══ 14/11 · MEMBERS — LA RECHERCHE A QUITTÉ L'ATTERRISSAGE ═════════════════════════════════════════════════
    Wah : « quand j'appuie sur Members ça ne va pas, puisqu'il y a sur le verso du Totehm le NOM DU TOTEHM DE
    L'UTILISATEUR, or cette partie est destinée à chercher le nom d'un AUTRE Totehm » · « ce que l'on recherche
@@ -8797,7 +8797,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-11-18-la-croix-et-la-recherche-aux-membres';
+const BUILD='2026-11-18-le-joystick-racine-de-l-arbre';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -13996,10 +13996,10 @@ window.addEventListener('pageshow',e=>{
       &&!sOpen&&!sMoving&&!$('member-window').classList.contains('show')&&!body.classList.contains('is-xo')
       &&!body.classList.contains('is-tlv')&&!body.classList.contains('is-nspot')    /* 27/10 : un spot en cours se finit, ou se ferme (CLOSE) */
       &&!body.classList.contains('is-dc');                                              /* 16/11 : le Discover tient ses propres gestes */
-    /* 18/11 (Wah : « l'utilisateur a tendance à scroller ; sans compte, autant y mettre le Discover ») : SANS COMPTE (la porte et
-       [Discover] à l'écran), au centre, le SCROLL — molette, pavé, doigt vers le haut — ouvre le Discover au lieu de Higher my
-       ChatGPT. Le chevron ↑, le manche et la flèche ↑ y mènent toujours ; un membre garde la croix telle quelle. */
-    const scrollDiscover=d=>d==='h'&&vue==='c'&&!bouge&&mode==='mine'&&!$('lv-pitch').classList.contains('hide');
+    /* 18/11 (Wah : « l'utilisateur a tendance à scroller ; sans compte, autant y mettre le Discover » · « le scroll dans tous les
+       cas engage le Discover ») : SANS COMPTE (la porte et [Discover] à l'écran), au centre, TOUT SCROLL VERTICAL — molette, pavé,
+       doigt, dans les deux sens — ouvre le Discover. Le visiteur n'a pas de croix (`voisin`) ; un membre la garde telle quelle. */
+    const scrollDiscover=d=>(d==='h'||d==='b')&&vue==='c'&&!bouge&&mode==='mine'&&!$('lv-pitch').classList.contains('hide');
     const saisie=t=>!!(t&&(t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.tagName==='SELECT'||t.isContentEditable));
     const LISTES='#chatgpt-pitch,#lv-sh,#rdr-g,#rdr-sh,.lsh-sf';
     const filDefile=(t,dy)=>{ if(!t||!t.closest||!t.closest(LISTES)) return false;
@@ -14029,6 +14029,8 @@ window.addEventListener('pageshow',e=>{
       };
       bx.addEventListener('pointerdown',e=>{
         if(!libre()) return void refus('libre:'+pasLibre());
+        /* 18/11 (Wah) : sans compte, le manche ouvre la porte d'inscription — « ce qu'il y a de plus logique » */
+        if(!inscrit()){ refus('manche:sans-totehm'); e.preventDefault(); if(typeof ouvrirPorte==='function') ouvrirPorte(null); return; }
         id=e.pointerId; x0=e.clientX; y0=e.clientY; dx=dy=0;
         jy.classList.add('tenu'); bx.classList.add('tenu');
         try{ bx.setPointerCapture(id); }catch(_){}
