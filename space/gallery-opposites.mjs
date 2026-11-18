@@ -7,12 +7,12 @@ export const OPPOSITES = [
   ['TOTEHM is a symbol filled from within: habits, objectives, refusals, visions, story.','A totem for decisions you make, not a monument to the person who founded the brand.'],
   ['A name can tell the world whose label you bought. Your TOTEHM can tell you what you’re building.','Own your story. Then let it meet another’s art.']
  ]},
- {id:'higher',title:'HIGHER vs Supreme',image:'/assets/highervssupreme.png',action:'Explore HIGHER',href:'https://www.higher.boutique/',slides:[
-  ['SUPREME NAMES THE SUMMIT.','HIGHER SOUNDS LIKE AILLEURS IN FRENCH: “SOMEWHERE ELSE.”'],
-  ['Supreme made a New York street culture recognizable around the world.','But wearing a famous culture does not necessarily make your own visible.'],
-  ['The wearer lives somewhere. The artist creates from somewhere.','Their places and experiences should speak to each other. If either becomes a blank canvas for the other, the work loses half its truth.'],
-  ['HIGHER opens the frame to more artists and more lived cultures. The wearer brings an element of their TOTEHM; the artist brings a vision shaped by their own world.','The artwork is born where those worlds meet.'],
-  ['SUPREME MADE ONE PLACE A GLOBAL CODE. HIGHER WANTS ARTIST AND WEARER TO CREATE SOMEWHERE ELSE TOGETHER.','Wear a work that can hold your culture—and ask whether you are living what it says.']
+ {id:'higher',title:'HIGHER vs Supreme',image:'/assets/highervssupreme.png',action:'Create my Streetwear Cloth',href:'https://www.higher.boutique/streetwear',slides:[
+  ['SUPREME MADE A CULTURE VISIBLE.','HIGHER MAKES ROOM FOR YOURS TO MEET AN ARTIST’S.'],
+  ['Supreme turned a New York street language into a global one. That changed what streetwear could be.','But when a finished cultural code travels everywhere, the person wearing it can disappear inside it.'],
+  ['An artist should not become a machine for illustrating your identity. You should not become a billboard for the artist.','Each brings a place, a history and a point of view. The work gets stronger when neither has to surrender theirs.'],
+  ['HIGHER SOUNDS LIKE AILLEURS IN FRENCH: “SOMEWHERE ELSE.” That place is where two worlds meet.','In HIGHER Streetwear, choose a garment and an artistic style; bring a box from your TOTEHM. The artist’s language gives your story a form neither could have made alone.'],
+  ['SAME STREETWEAR. OPPOSITE RELATIONSHIP.','The artist is seen. The wearer is heard. Culture and individual finally share the same garment. Create your Streetwear Cloth.']
  ]},
  {id:'get-higher',title:'GET HIGHER vs Just Do It',image:'/assets/getHighervsJustdoit.png',action:'Experience GET HIGHER',href:'/get_higher',slides:[
   ['JUST DO IT. EVEN WHEN THE THING YOU’RE ABOUT TO DO IS THE THING YOU NEED TO CHANGE?'],
@@ -22,11 +22,11 @@ export const OPPOSITES = [
   ['JUST DO IT STARTS A MOVEMENT. GET HIGHER CHANGES THE MOVEMENT YOU CHOOSE.','Turn the downward impulse into a step up. Your next move is where the future begins.']
  ]},
  {id:'world',title:'MAKE THE WORLD HIGHER AGAIN vs Make America Great Again',image:'/assets/makeworldHigher.png',action:'Build my TOTEHM',href:'https://www.totehm.com/totehm',slides:[
-  ['SAME WORD: “AGAIN.”','OPPOSITE DIRECTION IN TIME.'],
-  ['“Make America Great Again” draws its force from nostalgia. But which past should return?','And will yesterday’s answers meet tomorrow’s challenges?'],
-  ['The crises in the news are real. They are not the whole story. Over time, advances in care, knowledge, rights and the ability to create have expanded what is possible for many people.','That progress is uneven and fragile—which is a reason to keep inventing.'],
-  ['MAKE THE WORLD HIGHER AGAIN means begin again—after a setback, after a discovery, after every step forward.','Take what is difficult and make it the starting point for more freedom, invention and joy.'],
-  ['IMAGINE A WORLD WHERE PEOPLE SEEK TO GET HIGHER INSTEAD OF SIMPLY JUST DO IT.','One person can change a move. A future takes people choosing their moves together.']
+  ['GREAT AGAIN IS FEAR SPEAKING IN THE PAST TENSE.','HIGHER AGAIN IS LIFE MOVING FORWARD.'],
+  ['The ego fears what it cannot predict. It clings to a world it already knows and calls that safety “greatness.”','But life keeps changing. No one can make yesterday fit a future that has not happened yet.'],
+  ['The crises are real. So is the progress we forget to see: more knowledge, more possibilities, more people able to shape their lives.','Progress is unfinished. That is an invitation to invent, with freedom and joy, instead of freezing in fear.'],
+  ['This is no political campaign. Politics becomes the problem when it asks us to wait for a leader to restore a world that has already gone.','Your TOTEHM gives your direction a form. GET HIGHER asks what you can change in your very next thought, feeling and action.'],
+  ['A FREE PERSON DOES NOT NEED A RULER TO TELL THEM WHO TO BECOME.','Imagine a world where each person seeks to GET HIGHER instead of merely JUST DO IT. Again means choosing the next step, together, as often as life changes.']
  ]},
  {id:'figher',title:'FIGHER CLUB vs Fight Club',image:'/assets/figherclub.png',action:'Find or create a spot',href:'https://www.figher.club/',slides:[
   ['FIGHT CLUB UNDERSTOOD THE EMPTINESS.','DESTRUCTION WAS THE WRONG PLACE TO SEND ITS ENERGY.'],
