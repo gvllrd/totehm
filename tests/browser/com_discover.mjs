@@ -13,29 +13,30 @@ for(const f of ['creator', 'monetize']){
 const erreurs = log => log.errors.filter(e => !/404|Failed to load resource/i.test(e));
 const couleurs = pg => pg.evaluate(() => { const s = new Set();
   document.querySelectorAll('.dc-s.is-on *').forEach(e => { if(!e.offsetWidth) return; const c = getComputedStyle(e);
-    for(const v of [c.color, c.backgroundColor]) if(!/^rgba?\(0, 0, 0(, 0)?\)$/.test(v) && !/^rgba?\((\d+), \1, \1(, 1)?\)$/.test(v)) s.add(v); });
+    /* une COULEUR = un écart de plus de 24 entre canaux (la même règle que com_accueil_discover) : les gris légèrement bleutés
+       de la marque (#9a9aa2, #bdbdc4) restent des gris */
+    for(const v of [c.color, c.backgroundColor]){ const m = v.match(/\d+(\.\d+)?/g); if(!m || (m[3] !== undefined && +m[3] === 0)) continue;
+      const [r, g, b] = m.map(Number); if(Math.max(r, g, b) - Math.min(r, g, b) > 24) s.add(v); } });
   return [...s]; });
 
-/* ── /monetize : 8 écrans, le curseur COMPTE, le dernier agit ── */
+/* ── /monetize : 18/11 (Wah : « ça c'est le Discover qui va dans la section [Monetize my TOTEHM] ») — SON texte, mot pour
+   mot, cinq écrans ; [Set my price] sous chacun ── */
 {
   const { pg, log } = await page(browser, { dir:'com', origin:'https://www.totehm.com', session:false, viewport:{ width:390, height:844 } });
   await pg.goto('https://www.totehm.com/monetize');
   await pg.waitForFunction(() => window.__totehm_monetize?.().signed_in === false);
   const d = () => pg.evaluate(() => ({ ...window.__totehm_monetize().discover, on:document.querySelectorAll('.dc-s.is-on').length,
-    titre:document.querySelector('.dc-s.is-on .dc-h')?.innerText.trim(), fond:getComputedStyle(document.getElementById('dc')).backgroundColor }));
+    titre:document.querySelector('.dc-s.is-on .dc-h')?.textContent.trim(), fond:getComputedStyle(document.getElementById('dc')).backgroundColor }));
   let a = await d();
-  ok(a.n === 8 && a.i === 0 && a.on === 1 && a.fond === 'rgb(0, 0, 0)' && /^They pay to read how you build\./.test(a.titre), '/monetize : 8 écrans, UN visible, noir → ' + JSON.stringify(a));
+  ok(a.n === 5 && a.i === 0 && a.on === 1 && a.fond === 'rgb(0, 0, 0)' && /^Monetize your operating system\./.test(a.titre), '/monetize : 5 écrans, UN visible, noir → ' + JSON.stringify(a));
   await pg.keyboard.press('ArrowDown'); await pg.waitForTimeout(800);
-  a = await d(); ok(a.i === 1 && /^You set the price\./.test(a.titre), '↓ : « You set the price. » → ' + JSON.stringify(a));
-  await pg.locator('#mz-p').evaluate(e => { e.value = 10000; e.dispatchEvent(new Event('input', { bubbles:true })); });
-  ok(/€100\b/.test(await pg.textContent('#mz-price')) && (await d()).i === 1, 'le curseur MET À JOUR le prix et ne change pas d\'écran');
-  await pg.locator('#mz-p').focus(); await pg.keyboard.press('ArrowDown'); await pg.waitForTimeout(700);
-  ok((await d()).i === 1, 'dans le curseur, ↓ reste au curseur (le moteur ne vole pas les touches d\'un champ)');
-  await pg.evaluate(() => document.activeElement.blur()); await pg.keyboard.press('ArrowDown'); await pg.waitForTimeout(800);
-  { const c = +await pg.locator('#mz-p').inputValue(), part = Math.floor(c * 0.8), t = await pg.textContent('#mz-say'), f = n => '€' + (n / 100).toLocaleString('en', { minimumFractionDigits:n % 100 ? 2 : 0, maximumFractionDigits:n % 100 ? 2 : 0 });
-    ok(t.includes(f(part)) && t.includes(f(part * 100)) && c < 10000, '« You keep 80%. » : le curseur a bougé d\'un pas (' + f(c) + ') → ' + f(part) + ', 100 lecteurs = ' + f(part * 100) + ' — le calcul, jamais une promesse'); }
-  for(let k = 0; k < 6; k++){ await pg.keyboard.press('ArrowDown'); await pg.waitForTimeout(700); }
-  a = await d(); ok(a.i === 7 && /Your price\.$/.test(a.titre), 'le dernier écran : « Your TOTEHM. Your readers. Your price. » → ' + JSON.stringify(a));
+  a = await d(); ok(a.i === 1 && /^Your living autobiography, fully protected\./.test(a.titre), '↓ : « Your living autobiography, fully protected. » → ' + JSON.stringify(a));
+  const t = await pg.textContent('#offer');
+  ok(/You set the annual price\. You keep 80%\./.test(t) && /whatever you keep private stays strictly private/.test(t)
+     && /unlocks automatically when you open your system to your subscribers/.test(t) && /They pay to access your practice, not your calendar\./.test(t)
+     && /Stop anytime; your system, your rules\./.test(t), '18/11 · le texte de Wah, mot pour mot');
+  for(let k = 0; k < 3; k++){ await pg.keyboard.press('ArrowDown'); await pg.waitForTimeout(700); }
+  a = await d(); ok(a.i === 4 && /^Predictable, clean revenue\./.test(a.titre), 'le dernier écran : « Predictable, clean revenue. » → ' + JSON.stringify(a));
   ok(await pg.locator('#cta [data-setup]').getAttribute('href') === '/console', '[Set my price] est sous CHAQUE écran, ici le dernier → /console');
   const c = await couleurs(pg); ok(c.length === 0, '60 / 30 / 10 : noir + blanc + gris, AUCUN corail sur un écran sans nom ni art → ' + JSON.stringify(c));
   ok(!erreurs(log).length, '/monetize : aucune erreur ' + erreurs(log).join(' | '));

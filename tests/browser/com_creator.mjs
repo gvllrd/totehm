@@ -42,28 +42,27 @@ for(const [qui, opts] of [['visitor', { session:false }], ['member', { tables:{ 
   await pg.waitForFunction(() => window.__totehm_creator && window.__totehm_creator().loaded, null, { timeout:15000 });
   const t = await pg.textContent('#dc');
   ok(/€24/.test(t) && /\/ year/i.test(t), 'the yearly price, from the server');
-  /* 15/11 (Wah : « une page doit respecter le 60 / 30 / 10 ; les textes de découverte sont trop fourre-tout ; je veux découvrir
-     à la manière de play_lisbon_street?discover=1 ») : UNE idée par écran, au geste ; le contenu reste celui du 12/11 :
-     lire les cinq vues, ses médias, adopter une box, ses spots au point exact, Higher GPT, 80 % — et ce que l'abonnement NE donne PAS. */
-  ok(/Their whole TOTEHM/.test(t) && /Read only/i.test(t) && /Adopt what moves you/i.test(t) && /exact point/i.test(t),
-     'what it opens · read the five views, adopt a box, their spots at the exact point');
-  ok(/Every photo and video/i.test(t) && /opens its media too/i.test(t), 'what it opens · their media follow their boxes');
-  ok(/Higher GPT reads them too/i.test(t) && /your own ChatGPT/i.test(t),
-     'what it opens · your own Higher GPT reads the TOTEHMs you subscribe to — the real multiplier');
-  ok(/no answer owed/i.test(t) && /stays private/i.test(t) && /separate purchases/i.test(t),
-     'what it does NOT open · no chat, nothing private, clothes and artworks apart');
-  ok(/80 % goes to kai/.test(t), 'the 80/20 split, said plainly');
+  /* 15/11 (Wah : « une page doit respecter le 60 / 30 / 10 ») : UNE idée par écran, au geste. 18/11 (Wah : « ce Discover est
+     BEAUCOUP mieux que l'actuel ») : SON texte, mot pour mot — l'esprit des meilleurs, leurs spots, les rencontrer, l'accès pur. */
+  ok(/Inside the mind of top performers/.test(t) && /their living autobiography, in their exact words, accessible even directly in ChatGPT/.test(t)
+     && /all their exclusive media behind their mind/.test(t), '18/11 · their living TOTEHM, in ChatGPT too, and their exclusive media');
+  ok(/Go to the spots they use/.test(t) && /pinned at the exact place and time/.test(t) && /straight into their footprint/.test(t),
+     '18/11 · their spots, at the exact place and time');
+  ok(/Meet them in reality/.test(t) && /if it’s marked SILENCE, you respect it strictly, or one report gets your subscription revoked/.test(t)
+     && /you’re sharing their asphalt/.test(t), '18/11 · meet them in reality — the SILENCE rule said plainly');
+  ok(/Pure access\. Zero fluff\./.test(t) && /One annual payment via Stripe/.test(t) && /it runs until the year ends/.test(t),
+     '18/11 · pure access, zero fluff: one annual payment, stop anytime');
   ok(await pg.$eval('#paper .tn-l', e => getComputedStyle(e).fontFamily.includes('Quantico') && getComputedStyle(e).color === 'rgb(251, 213, 202)'), 'the name: Quantico Coral on its paper');
   ok(await pg.$$eval('#offer .dc-ints i', l => l.length) === 3, 'three intentions shown');
   /* ── DISCOVER : un écran à la fois, au geste, noir ── */
   const d0 = await pg.evaluate(() => ({ ...window.__totehm_creator().discover, on:document.querySelectorAll('#offer .dc-s.is-on').length,
     fond:getComputedStyle(document.getElementById('dc')).backgroundColor, prog:document.querySelectorAll('#dc .dc-progress,#dc .dc-hint').length,
     cache:getComputedStyle(document.querySelector('#offer .dc-s:not(.is-on)')).visibility, texte:document.querySelector('#offer .dc-s.is-on .dc-h').textContent.replace(/\s+/g,' ').trim() }));   /* 18/11 : le titre est en capitales par la police, on lit son texte */
-  ok(d0.n === 8 && d0.i === 0 && d0.on === 1 && d0.fond === 'rgb(0, 0, 0)' && d0.prog === 0 && d0.cache === 'hidden' && /Enter kai’s ecosystem\.$/.test(d0.texte),
-     '15/11 · DISCOVER : 8 écrans, UN seul visible, fond noir, ni numéro ni consigne écrite, le premier dit « Enter kai’s ecosystem. » → ' + JSON.stringify(d0));
+  ok(d0.n === 5 && d0.i === 0 && d0.on === 1 && d0.fond === 'rgb(0, 0, 0)' && d0.prog === 0 && d0.cache === 'hidden' && /Enter kai’s ecosystem\.$/.test(d0.texte),
+     '18/11 · DISCOVER : 5 écrans (son nom, puis les quatre idées de Wah), UN seul visible, fond noir, le premier dit « Enter kai’s ecosystem. » → ' + JSON.stringify(d0));
   await pg.keyboard.press('ArrowDown'); await pg.waitForTimeout(800);
   const d1 = await pg.evaluate(() => ({ i:window.__totehm_creator().discover.i, texte:document.querySelector('#offer .dc-s.is-on').textContent.replace(/\s+/g,' ').trim() }));
-  ok(d1.i === 1 && /^Their whole TOTEHM\b/.test(d1.texte), '↓ (clavier) : l\'écran suivant, jamais deux d\'un coup → ' + JSON.stringify(d1));
+  ok(d1.i === 1 && /^Inside the mind of top performers\./.test(d1.texte), '↓ (clavier) : l\'écran suivant, jamais deux d\'un coup → ' + JSON.stringify(d1));
   await pg.mouse.move(200, 300); await pg.mouse.wheel(0, 120); await pg.waitForTimeout(800);
   ok(await pg.evaluate(() => window.__totehm_creator().discover.i) === 2, 'la molette : un geste = un écran');
   await pg.keyboard.press('ArrowUp'); await pg.waitForTimeout(800);
@@ -79,10 +78,10 @@ for(const [qui, opts] of [['visitor', { session:false }], ['member', { tables:{ 
      '60 / 30 / 10 : sur le dernier écran, AUCUN corail (réservé au nom et à l\'art) : noir, blanc, gris — prix et bouton compris : ' + JSON.stringify(col.couleurs));
   /* l'appel à l'action est sous CHAQUE écran : « Subscribe · €24 / year », gris */
   const cta = [];
-  for(let k = 0; k < 8; k++){ await pg.evaluate(k => window.__totehm_discover().aller(k, true), k);
+  for(let k = 0; k < 5; k++){ await pg.evaluate(k => window.__totehm_discover().aller(k, true), k);
     cta.push(await pg.evaluate(() => { const b = document.querySelector('#cta [data-do=subscribe]'); if(!b) return null; const r = b.getBoundingClientRect();
       return { t:b.textContent.trim(), vu:r.width > 40 && r.bottom <= innerHeight && getComputedStyle(b).backgroundColor }; })); }
-  ok(cta.every(x => x && x.t === 'Subscribe · €24 / year' && x.vu === 'rgb(42, 42, 42)'), 'Subscribe · €24 / year sous les 8 écrans, bouton gris normal → ' + JSON.stringify(cta[0]));
+  ok(cta.every(x => x && x.t === 'Subscribe · €24 / year' && x.vu === 'rgb(42, 42, 42)'), 'Subscribe · €24 / year sous les 5 écrans, bouton gris normal → ' + JSON.stringify(cta[0]));
   await pg.evaluate(() => window.__totehm_discover().derniere());
   const p = await propre(pg);
   ok(p.white === 0 && !p.fonts.length, 'page: no white background, Space Mono + Quantico only ' + p.fonts.join(','));

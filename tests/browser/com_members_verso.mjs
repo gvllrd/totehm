@@ -189,4 +189,26 @@ try{
   ok(s.dit==='No Totehm by that name.'&&!s.ro&&!/ro=/.test(s.url)&&s.mode==='mine','`?ro=` inconnu : je redeviens moi, et une ligne le dit → '+JSON.stringify(s));
   ok(!erreurs(log).length,'lecture refusée : aucune erreur '+erreurs(log).join(' | '));
   await pg.context().close();}
+ /* ── 10 · 18/11 (Wah : « ça c'est le Discover qui va dans la section [Monetize my TOTEHM] ») : [Discover] de Monetize ouvre
+    `/monetize` (son texte, cinq écrans) par-dessus le verso ; [Set my price] le referme sur le réglage du prix ── */
+ {const DASH={ok:true,price_cents:2400,min_cents:300,month_cents:0,subscribers:0,due_cents:0,open:false};
+  const{pg,log}=await page(browser,{dir:'com',origin,tables,rpc:{...rpc,creator_dashboard:DASH,my_console:{signed_in:true,offer:{enabled:false}}},functions,viewport:{width:390,height:844},hasTouch:true});
+  await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1200);
+  await pg.click('#lv-tap-turn');
+  await pg.waitForFunction(()=>document.getElementById('srch').classList.contains('is-open'),null,{timeout:9000}).catch(()=>{});
+  await pg.click('#vs-tabs [data-vs-tab="money"]');
+  await pg.waitForSelector('#mwc-disc',{state:'visible',timeout:9000}).catch(()=>{});
+  await pg.click('#mwc-disc');
+  const xo=await pg.waitForFunction(()=>{const x=window.__totehm_xo&&window.__totehm_xo();return x&&x.actif==='monetize';},null,{timeout:8000}).then(()=>true,()=>false);
+  const src=await pg.evaluate(()=>{const e=document.querySelector('#xo .xo-f.is-on');return e&&e.getAttribute('src');});
+  const cadre=pg.frameLocator('#xo .xo-f.is-on');
+  const titre=await cadre.locator('.dc-s.is-on .dc-h').textContent({timeout:9000}).catch(()=>'');
+  ok(xo&&src==='/monetize?embed=1'&&/^Monetize your operating system\./.test(titre)&&await pg.isVisible('#xo-x'),
+     '[Monetize my TOTEHM] · [Discover] : le Discover de la creator economy côté créateur, par-dessus le verso, une croix → '+JSON.stringify({src,titre}));
+  await cadre.locator('#cta [data-setup]').click({timeout:8000}).catch(()=>{});
+  await pg.waitForFunction(()=>!window.__totehm_xo().actif,null,{timeout:8000}).catch(()=>{});
+  const apres=await pg.evaluate(()=>({xo:window.__totehm_xo().actif,verso:document.getElementById('srch').classList.contains('is-open'),onglet:document.getElementById('srch').dataset.tab}));
+  ok(!apres.xo&&apres.verso&&apres.onglet==='money','[Set my price] referme la couche : le verso est là, sur Monetize → '+JSON.stringify(apres));
+  ok(!erreurs(log).length,'Monetize · Discover : aucune erreur '+erreurs(log).join(' | '));
+  await pg.context().close();}
 }finally{ await browser.close(); }

@@ -584,7 +584,7 @@ const audBadge = a => AUD_ICON[a] ? '<span class="audb" role="img" aria-label="'
 const audMark = (root, attr, a0) => { const a = audNorm(a0); return root?.querySelectorAll('[' + attr + ']').forEach(b => { const on = b.getAttribute(attr) === a;
   b.classList.toggle('is-on', on); b.setAttribute('aria-checked', String(on)); }); };
 /* ══ fin AUDIENCE ══ */
-const BUILD='2026-11-18-search-mene-au-verso';
+const BUILD='2026-11-18-discover-creator-economy';
 
 /* ══ EN CADRE DANS COM (`?embed=1`) ═════════════════════════════════════
    Wah, 16/10 : « il ne faut pas que ça saute entre totehm.com et totehm.com/@{Nom} ». COM ouvre cette
@@ -698,12 +698,11 @@ async function loadPage(){
 /* ══ DISCOVER · 15/11 ══ Wah : « une page doit respecter le 60 / 30 / 10. Les textes de découverte sont trop
    fourre-tout. Je veux découvrir à la manière de play_lisbon_street?discover=1. » L'ancienne page empilait six
    cartes, un paragraphe de mentions et un panneau navy : trois champs de couleur pour une seule décision.
-   Maintenant UNE idée par écran, noir (60 %), du texte (30 %), et le seul accent — le corail — sur le NOM, le PRIX et
-   le BOUTON (10 %). Le contenu reste celui du 12/11 et du 14/11, dans l'ordre de la valeur, du plus passif au plus actif :
-     1 · LIRE son TOTEHM (la porte, pas le produit)   2 · SES MÉDIAS (une box ouverte ouvre ses médias)
-     3 · ADOPTER une box (un tap la COPIE, son nom dessus)   4 · SES SPOTS, au point exact   5 · HIGHER GPT, le multiplicateur
-     6 · 80 % va au créateur — et ce que l'abonnement ne donne PAS (aucune conversation, rien de privé)
-   puis le prix et le geste. L'échelle de confidentialité est la même partout : private · my subscribers · figher club. */
+   Maintenant UNE idée par écran, noir (60 %), du texte (30 %), et le seul accent — le corail — sur le NOM (10 %) ; le prix
+   et le bouton restent blanc et gris. LE TEXTE EST CELUI DE WAH (18/11 : « ce Discover est BEAUCOUP mieux que l'actuel »),
+   mot pour mot, quatre idées après son nom : 1 · Inside the mind of top performers (son TOTEHM vivant, ses médias, même
+   dans ChatGPT)   2 · Go to the spots they use (son univers : `.dc-slot`)   3 · Meet them in reality (le spot LIVE, le
+   SILENCE respecté)   4 · Pure access. Zero fluff. (un paiement par an, l'arrêt au dos du TOTEHM) — puis le geste. */
 let DC = null;
 const nomH = n => '<span class="dc-n">' + esc(n) + '</span>';
 const ecran = (h, p, extra, attrs) => '<div class="dc-s">' + (h ? '<h2 class="dc-h"' + (attrs || '') + '>' + h + '</h2>' : '') + (p ? '<p class="dc-p">' + p + '</p>' : '') + (extra || '') + '</div>';
@@ -718,21 +717,18 @@ function poser(ecrans, garder){
   if($('paper')) paintName(C?.pseudo || NAME);
   if(!DC) DC = window.TOTEHM_DISCOVER.monter($('dc')); else DC.rafraichir(garder);
 }
+/* 18/11 — le texte de Wah, mot pour mot (une phrase par ligne : `.dc-p` garde les retours) */
 function ecransExplication(n){
-  const N = nomH(n);
   return [
-    ecran('Their whole TOTEHM.', 'Habits, objectives, repulsions,\nvision, story — as they grow.\nRead only: nothing of yours changes.', '', ' data-tw'),
-    ecran('Every photo and video.', 'The ones that illustrate their grind,\ntheir vision and their story.\nA box opened to subscribers opens its media too.'),
-    ecran('Adopt what moves you.', 'One tap copies a box into your own TOTEHM,\ntheir name kept on it.\nBeing inspired is looking; adopting is a habit of yours.'),
-    ecran('Their spots, at the exact point.', 'Place, time, and the habit behind it.\n[GO] takes you there.', '<div class="dc-slot"></div>'),
-    ecran('Your <svg class="dc-hi" viewBox="0 0 600 200" role="img" aria-label="Higher"><title>Higher</title><use href="#higher-badge"></use></svg> GPT reads them too.', 'Ask your own ChatGPT for your next step:\nTheir discipline inside your preparation,\nalways named.'),
-    ecran('80 % goes to ' + N + '.', 'One payment a year. Your subscription\nis their income, not a platform toll.\nNo chat, no answer owed — a practice, not an inbox.\nWhat ' + N + ' keeps private stays private.')
+    ecran('Inside the mind of top performers.', 'Unlock the raw, unfiltered TOTEHM of top performers — their grind, their vision, their story.\nWritten by their own hand, updated in real time: their living autobiography, in their exact words, accessible even directly in ChatGPT.\nAnd all their exclusive media behind their mind.'),
+    ecran('Go to the spots they use.', 'Their spots, pinned at the exact place and time.\nMore than just coordinates: a dedicated way drops you straight into their footprint.', '<div class="dc-slot"></div>'),
+    ecran('Meet them in reality.', 'When a spot goes live, you have the opportunity to grind in silence right next to them — or even connect socially in public or private facilities when they open the doors.\nVERY important: if it’s marked SILENCE, you respect it strictly, or one report gets your subscription revoked.\nYou aren’t just following their system — you’re sharing their asphalt.')
   ];
 }
 function ecranPrix(s, visiteur){
   /* le prix et le bouton vivent sous CHAQUE écran (`#cta`) : ici, seulement les conditions */
-  return '<div class="dc-s">' + (visiteur ? '<h2 class="dc-h">One year. Stop anytime.</h2>' : '<p class="dc-big">' + esc(money(s.price_cents, s.currency)) + '<small>/ year</small></p><p class="dc-fine">This is what visitors see.</p>') +
-    '<p class="dc-fine">One payment a year, by Stripe — a <b>year</b> of their practice. Stop anytime on the back of your TOTEHM: it runs to the end of the year, then stops. Clothes and artworks are separate purchases; <svg class="dc-hi" viewBox="0 0 600 200" role="img" aria-label="Higher"><title>Higher</title><use href="#higher-badge"></use></svg> GPT and TotehmBot cost nothing.</p>' +
+  return '<div class="dc-s">' + (visiteur ? '<h2 class="dc-h">Pure access. Zero fluff.</h2>' : '<p class="dc-big">' + esc(money(s.price_cents, s.currency)) + '<small>/ year</small></p><p class="dc-fine">This is what visitors see.</p>') +
+    '<p class="dc-p">One annual payment via Stripe.\nStop anytime on the back of your TOTEHM — it runs until the year ends.</p>' +
     '<a class="dc-lnk" href="/totehm?members=">Search another TOTEHM</a></div>';
 }
 function appel(s, oui){

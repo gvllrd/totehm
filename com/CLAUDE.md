@@ -8,9 +8,9 @@
 | fichier | adresse | rôle |
 |---|---|---|
 | `totehm.html` | `/totehm` (`/` y mène) | L'APP, ≈ 15 000 lignes : jamais lue en entier (`grep -n` puis une plage) |
-| `creator.html` | `/search` · `/@nom` | `/search` = un ancien lien : renvoyé dès le `<head>` à `/totehm?members=<q>` (la recherche vit sur le verso) ; `/@nom` = la page d'abonnement en Discover, le lien de vente partagé hors du site (8 écrans, SUBSCRIBE · PRIX gris sous chacun, `#cta`) ; l'univers vit dans l'écran des spots |
+| `creator.html` | `/search` · `/@nom` | `/search` = un ancien lien : renvoyé dès le `<head>` à `/totehm?members=<q>` (la recherche vit sur le verso) ; `/@nom` = la page d'abonnement en Discover, le lien de vente partagé hors du site : son nom, puis le texte de Wah mot pour mot (Inside the mind of top performers · Go to the spots they use (son univers) · Meet them in reality · Pure access. Zero fluff.), SUBSCRIBE · PRIX gris sous chacun ; ouverte aussi par [Discover] sur le verso (`?embed=1&from=verso` : l'abonnement ramène au verso) (8 écrans, SUBSCRIBE · PRIX gris sous chacun, `#cta`) ; l'univers vit dans l'écran des spots |
 | `chatgpt.html` | `/chatgpt` | 5 écrans en Discover, le dernier = le panneau de connexion ; une demande de ChatGPT, un compte relié ou un service indisponible arrivent droit dessus. Sans `www` → redirigé vers `https://www.totehm.com` (OAuth) |
-| `monetize.html` | `/monetize` | la vente aux créateurs en Discover (8 écrans, le curseur COMPTE, « Set my price » sous chacun) |
+| `monetize.html` | `/monetize` | la vente aux créateurs en Discover : le texte de Wah mot pour mot, 5 écrans (Monetize your operating system · …), « Set my price » sous chacun ; ouverte aussi par [Discover] de [Monetize my TOTEHM] sur le verso (`XO` cadre `monetize`, `?embed=1` : [Set my price] referme la couche) |
 | `auth.html` | `/auth` | l'autorité SSO des quatre domaines (`sso-mint`) ; toute connexion passe par `tools/otp_signin.js` (copié) |
 | `console.html` · `map.html` · `spot.html` · `terms.html` | | les retours de paiement · les liens de TotehmBot · les conditions |
 
@@ -28,13 +28,13 @@ seuls `/totehm` et `/totehm.html` autorisent les cadres Telegram (CSP). `overflo
 | ↓ Get Higher | le slogan « Get [Higher] with your [TOTEHM] » (`#lv-slogan`, `.lvs-post` porte la pièce `data-tw`) · `RAM.cerveau` · `posHaut()` (la bouche rétrécit, jamais le cerveau ; le chevron ↑ borne la vue) · `#lv-sell` |
 | ← mes médias | `const SH =` · `MBM` · les tuiles lisent la VIGNETTE (`tools/vignette.js`), la visionneuse `#tlv` la photo entière ; [delete] dans la rangée noire au-dessus de la box |
 | → mes spots | `const CLUBSP=` (`club_spots_of`) · `SPMAP` · `SPGRID` · `SHS` · la prise `const NSPOT=` (définition d'abord, Habit → WHEN → WHERE → qui → durée → mot → média FACULTATIF) |
-| MEMBERS | `chercherIci()` : le TOTEHM se retourne sur son VERSO en mode recherche (`ouvrirVerso({cherche})`, `#srch.is-cherche`, `const CHERCHE=`), dos du papier vierge, la saisie `#mb-q` au format de `#self-name`, mise au point dans le geste ; Entrée → UN résultat (`creator_page`) au format de Monetize (`#mb-res`) ; lisible → `totehm_read` d'avance, ⟲ / [Open] → SON recto (`LV.entrer` + la pièce), × → SON atterrissage ; Stripe revient par `?members=<nom>&subscribed=1` (`from:'verso'`). **Réservé au FIGHER CLUB** (`CLUB.member` ← `figher_access`, la règle `_figher`) — sans TOTEHM la porte, hors du Club une ligne (`#lv-m-say`). Chez un membre : ← ● → seulement (`voisin`), son recto ⟲ SON verso. `?ro=<nom>` arrive sur SON atterrissage (`entrerChez()`) ; un auteur à abonnement : `verrouiller()` |
+| MEMBERS | `chercherIci()` : le TOTEHM se retourne sur son VERSO en mode recherche (`ouvrirVerso({cherche})`, `#srch.is-cherche`, `const CHERCHE=`), dos du papier vierge, la saisie `#mb-q` au format de `#self-name`, mise au point dans le geste ; Entrée → UN résultat (`creator_page`) au format de Monetize (`#mb-res`), dont [Discover] (sa page de vente par-dessus, `XO.univers`) ; lisible → `totehm_read` d'avance, ⟲ / [Open] → SON recto (`LV.entrer` + la pièce), × → SON atterrissage ; Stripe revient par `?members=<nom>&subscribed=1` (`from:'verso'`). **Réservé au FIGHER CLUB** (`CLUB.member` ← `figher_access`, la règle `_figher`) — sans TOTEHM la porte, hors du Club une ligne (`#lv-m-say`). Chez un membre : ← ● → seulement (`voisin`), son recto ⟲ SON verso. `?ro=<nom>` arrive sur SON atterrissage (`entrerChez()`) ; un auteur à abonnement : `verrouiller()` |
 
 ## Le TOTEHM déployé et le verso
 
 - Le déploiement : `LV.deployer()` (traits aspirés), `fold(then)` = UN mouvement (`DUR_REPLI` 720) ; le papier ×14 n'est
   jamais retracé (`#gl-paint` en opacité). La boîte : `/* ══ LA BOÎTE` — chaque box est une PHRASE (`.mg-l` visibles),
-  `+ totehmize` dans les cinq vues ; la manette `#joy` = celle de l'atterrissage.
+  `+ totehmize` dans les cinq vues ; la manette `#joy` = celle de l'atterrissage. Chez un membre (`body.ro`), la MÊME mise en page que le mien : aucune barre de lecture, aucun décalage ; une lecture refusée ramène chez moi avec une ligne (`roFail` → `lvDire`).
 - Le verso : `ouvrirVerso()` (le papier se retourne, le nom zoome lettre pour lettre, `geometrie()`), deux onglets
   `#vs-tabs` — **Go Higher** (`const DASH=` + `tracking.mjs` : 7/28 jours, Done · Missed · No response, la grille des
   Habits en box natives, une rangée d'actions, les objectifs à échéance ; rien d'autre) et **Monetize my TOTEHM**

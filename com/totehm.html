@@ -4798,6 +4798,9 @@ In the highest way.</p>
       <section id="mw-creator" class="vs hide" aria-label="Monetize my TOTEHM">
         <!-- Ce que JE GAGNE : mes lecteurs paient à l'année, je suis payé chaque mois (le 1er, dès 25 €). -->
         <header class="vs-head"><h3 class="vs-t">Monetize my TOTEHM</h3><p class="vs-s">and get paid every month</p></header>
+        <!-- 18/11 (Wah : « ça c'est le Discover qui va dans la section [Monetize my TOTEHM] ») : SON texte, en cinq écrans
+             (`/monetize`), par-dessus le verso (`XO`, cadre `monetize`) ; [Set my price] le referme sur ce réglage. -->
+        <div class="vs-row"><i>the creator economy</i><button class="vs-act" id="mwc-disc" type="button">Discover</button></div>
         <div class="vs-top">
           <div class="vs-month"><b id="mwc-month">0</b><i>this month</i></div>
           <button class="vs-tog" id="vs-open" type="button" aria-pressed="false"><span aria-hidden="true"></span><em id="vs-open-t">off</em></button>
@@ -5644,8 +5647,9 @@ const XO=(()=>{
      aussitôt serait une requête pour rien. */
   /* 29/10 (Wah : « un gros nettoyage avec tout le figher.club ») : le Club ne vit plus dans une couche de COM. Un spot
      s'ouvre dans la visionneuse de la vue de droite (`VX`), on en prend un dans la vue de droite (`NSPOT`). */
-  const SRC={space:'/x/space?embed=1', console:'/console?embed=1', univers:'about:blank'};
-  const NOM={space:'SPACE', console:'MY SUBSCRIPTIONS', univers:'A TOTEHM'};
+  /* 18/11 — `monetize` : le Discover de [Monetize my TOTEHM] (`/monetize`, le texte de Wah), ouvert par [Discover] du verso */
+  const SRC={space:'/x/space?embed=1', console:'/console?embed=1', univers:'about:blank', monetize:'/monetize?embed=1'};
+  const NOM={space:'SPACE', console:'MY SUBSCRIPTIONS', univers:'A TOTEHM', monetize:'MONETIZE MY TOTEHM'};
   const ALLOW='camera; microphone; geolocation; autoplay; fullscreen; clipboard-write; web-share';
   const C={}; let actif=null, hist=false, uid=null, retour=null;
   const diag={ouverts:0, arrivees:0, perdus:0, cmds:0};
@@ -5671,8 +5675,8 @@ const XO=(()=>{
     actif=k; diag.ouverts++;
     document.body.classList.add('is-xo');
     const r=racine(); r.classList.add('is-open'); r.setAttribute('aria-hidden','false');
-    /* L'univers n'a pas de croix à lui : COM en pose une. */
-    r.classList.toggle('is-nu',k==='univers');
+    /* L'univers et le Discover de Monetize n'ont pas de croix à eux : COM en pose une. */
+    r.classList.toggle('is-nu',k==='univers'||k==='monetize');
     if(!hist){ try{ history.pushState({xo:1},''); hist=true; }catch(_){} }
     envoyer(k,{cmd:'url',q:q||''});
     setTimeout(()=>{ try{ c.f.focus(); }catch(_){} },80);
@@ -5753,6 +5757,8 @@ const XO=(()=>{
   window.__totehm_xo=()=>({actif, cadres:Object.keys(C), prets:Object.keys(C).filter(k=>C[k].pret), retour:!!retour, ...diag});
   return {ouvrir, fermer, ouvert:()=>actif, univers, prefetch};
 })();
+/* 18/11 — [Discover] de [Monetize my TOTEHM] : le Discover de la creator economy côté créateur, par-dessus le verso */
+{ const b=$('mwc-disc'); if(b) b.onclick=()=>XO.ouvrir('monetize'); }
 
 /* ══ LA BOUTIQUE APPARAÎT DANS WISDOM ET VISION · 08/10/2026 (ter) ══════
    Wah : « on a lié SPACE à COM ; on devrait faire la même chose avec
@@ -8786,7 +8792,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-11-18-sans-barre-de-lecture';
+const BUILD='2026-11-18-discover-monetize';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
