@@ -228,7 +228,7 @@ body.is-street-board #sdisc-rail,body.is-street-board #sdisc-progress,body.is-st
 #sdisc-bg{opacity:1}
 #sdisc-bg>.street-rock{opacity:0;pointer-events:none}
 body.is-snapping #sdisc-bg>.street-rock,body.is-street-board #sdisc-bg>.street-rock{opacity:1;pointer-events:auto}
-body.is-snapping #experience-front-canvas,body.is-street-board #experience-front-canvas{opacity:0}
+body.is-snapping #experience-front-canvas{opacity:0}
 #sdisc-cover-next{position:absolute;left:50%;bottom:35px;transform:translateX(-50%);z-index:3;border:1px solid #343434;border-radius:10px;background:#111;color:#aaa;font:11px 'Space Mono',monospace;padding:13px 22px;cursor:pointer;transition:opacity .4s,transform .6s}
 body:not(.is-street-front) #sdisc-cover-next{opacity:0;transform:translate(-50%,18px);pointer-events:none}
 .is-street-front #sdisc-stage,.is-street-front #sdisc-progress,.is-street-front #sdisc-rail,.is-street-front #sdisc-reading-hint,.is-street-front #sdisc-trig{opacity:0!important;visibility:hidden;pointer-events:none}
@@ -238,6 +238,7 @@ body:not(.is-street-front) #sdisc-cover-next{opacity:0;transform:translate(-50%,
 body.is-controller-forming #controller-3d-view,body.is-street-board #controller-3d-view,body.is-controller-entry #controller-3d-view{opacity:1}
 body.is-controller-locked #controller-3d-view{opacity:.20}
 body.is-controller-locked :is(#experience-front-canvas,#sdisc-cover-next,#sdisc-rail,#sdisc-progress,#sdisc-reading-hint,#sdisc-trig){display:none!important}
+body.is-street-board :is(#experience-front-canvas,#sdisc-cover-next){display:none}
 body.is-controller-locked #street-access-status{clip-path:inset(50%)}
 body.is-controller-locked #sdisc-stage{background:radial-gradient(ellipse at center,#000d 0%,#0008 35%,transparent 66%)}
 :is(.controller-deep-link,.is-controller-entry) :is(#experience-front-canvas,#sdisc-stage,#sdisc-cover-next,#sdisc-back,#sdisc-trig,#sdisc-progress,#sdisc-rail,#sdisc-reading-hint){visibility:hidden}

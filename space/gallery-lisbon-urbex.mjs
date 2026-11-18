@@ -79,7 +79,24 @@ export function createLisbonUrbexGallery(scene,renderer,{mobile=false,onChange=(
   return item;
  });
  const controller=createLisbonController({width:L.controller.width,mobile,onChange:changed});
- controller.root.position.set(...L.controller.position);root.add(controller.root);
+ const [controllerX,controllerZ]=L.controller.position;
+ root.add(controller.root);
+ controller.root.position.set(controllerX,0,controllerZ);
+ controller.root.rotation.x=L.controller.tablePitch;
+ const lowest=new T.Box3().setFromObject(controller.root,true).min.y;
+ controller.root.position.y=top-lowest+.001;
+ controller.root.updateWorldMatrix(true,true);
+ // Discreet supports meet the underside, so the angle reads as a display
+ // position when seen from the side as well as when sitting in the chair.
+ const supportMaterial=material(new T.MeshStandardMaterial({color:0x09090a,roughness:.73}));
+ const upward=new T.Raycaster(new T.Vector3(),new T.Vector3(0,1,0),0,.22);
+ for(const offset of [-.145,.145]){
+  const x=controllerX+offset,z=controllerZ-.085;
+  upward.ray.origin.set(x,top,z);
+  const base=upward.intersectObject(controller.root,true).find(hit=>hit.object.material?.visible&&hit.object.material.side!==T.BackSide);
+  if(base?.distance>0)mesh(geometry(new T.BoxGeometry(.042,base.distance,.048)),supportMaterial,[x,top+base.distance/2,z],'Low controller display rest');
+ }
+ const controllerAim=controller.root.localToWorld(new T.Vector3(0,controller.root.userData.faceCorners[0][1],0)).toArray();
  const seat=createLisbonArmchair(root,{layout:L.seat,geometry,material,texture,mark});
  solids.push(...seat.pickables);
  const installation=createLisbonHologram(root,{mobile,onChange:changed});
@@ -110,7 +127,7 @@ export function createLisbonUrbexGallery(scene,renderer,{mobile=false,onChange=(
    pavement:pavement.diagnostics(),stone:stone.diagnostics(),
    seat:{leather:true,brown:true,position:seat.position,eye:seat.eye,target:seat.target,fov:seat.fov},
    thpCounter:{tables:1,low:true,antiqueLimestone:true,size:L.counter.size,height:top,packagedPapers:cases.length,caseWidthMetres:caseWidth,paperWidthMetres:caseWidth*PAPER_CASE_FACE_RATIO,signed:cases.every(item=>!!item.root.userData.signature),premiumSource:'/get_higher',position:L.counter.position,chemistryEquipment:0},
-   controller:controller.diagnostics(),streetSigns:{count:0,experience:22},paperLoaded,
+   controller:{...controller.diagnostics(),tablePitch:L.controller.tablePitch,tableAim:controllerAim},streetSigns:{count:0,experience:22},paperLoaded,
    performance:installation.diagnostics(),installation:installation.diagnostics(),disposed
   }),
   dispose(){

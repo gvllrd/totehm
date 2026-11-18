@@ -32,6 +32,7 @@ try{
       if(owned){
         await child.waitForFunction(()=>__totehm_controller_entry().phase==='board');
         check(await child.locator('.street-rock[role=button]').count()===22,'The confirmed owner enters the 3D board directly');
+        check(await child.evaluate(()=>['experience-front-canvas','sdisc-cover-next'].every(id=>getComputedStyle(document.getElementById(id)).display==='none')),'Direct entry hides the front canvas and Discover button immediately');
         const misses=await child.locator('.street-rock[role=button]').evaluateAll(keys=>keys.flatMap(key=>{
           const box=key.getBoundingClientRect();
           const hit=document.elementFromPoint(box.x+box.width/2,box.y+box.height/2);

@@ -104,7 +104,7 @@ try{
   await close(pg,edition,shot);
 
   await pg.emulateMedia({reducedMotion:'reduce'});
-  await clickPoint(pg,[L.controller.position[0],L.controller.position[1]+.03,L.controller.position[2]]);
+  await clickPoint(pg,world.temple.controller.tableAim);
   const locked=await experience(pg,'controller');
   await locked.waitForFunction(()=>document.body.classList.contains('is-controller-locked'));
   check(await locked.evaluate(()=>{
@@ -136,7 +136,7 @@ try{
   const pg=owner.pg;
   await pg.locator('#sit-lounge').click();
   await pg.waitForFunction(()=>window.__totehm_gallery().seated);
-  await clickPoint(pg,[L.controller.position[0],L.controller.position[1]+.03,L.controller.position[2]]);
+  await clickPoint(pg,(await current(pg)).temple.controller.tableAim);
   const board=await experience(pg,'controller');
   await board.waitForFunction(()=>window.__totehm_lisbon?.().board);
   check(await board.evaluate(()=>window.__totehm_lisbon().directBoard&&window.__totehm_lisbon().access.owned&&window.__totehm_controller_entry().model.keys===22),'A confirmed THP owner enters the active 3D controller directly');

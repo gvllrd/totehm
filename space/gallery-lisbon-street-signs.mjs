@@ -16,15 +16,6 @@ export function createLisbonStreetSigns(parent,{mobile=false,anisotropy=1,onChan
   if(!hasImages)return null;
   const texture=new T.TextureLoader().load(src,loadedTexture=>{
    if(disposed)return;
-   if(src.endsWith('/Heli.png')){
-    // The authored H comes on opaque black. In the city it is white road
-    // paint: keep its exact mark and let the original paving show through.
-    const canvas=document.createElement('canvas');canvas.width=loadedTexture.image.naturalWidth||300;canvas.height=loadedTexture.image.naturalHeight||300;
-    const context=canvas.getContext('2d',{willReadFrequently:true});context.drawImage(loadedTexture.image,0,0);
-    const pixels=context.getImageData(0,0,canvas.width,canvas.height);
-    for(let n=0;n<pixels.data.length;n+=4){const brightness=Math.max(pixels.data[n],pixels.data[n+1],pixels.data[n+2]);pixels.data[n+3]=Math.round(pixels.data[n+3]*Math.max(0,Math.min(1,(brightness-25)/110)));}
-    context.putImageData(pixels,0,0);loadedTexture.image=canvas;loadedTexture.needsUpdate=true;
-   }
    if(src.endsWith('/destination.png')){
     // This authored PNG already contains a very large Higher sticker. Remove
     // that baked-in copy: the motorway board receives the same small physical
