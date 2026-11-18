@@ -31,7 +31,8 @@ export const LISBON_URBEX_LAYOUT=freeze({
  inside:[-1.7,1.65,2.55],insideTarget:seat.target,
  pavement:{size:[32,36],z:-.2,boatCentre:[0,8]},
  counter,seat,play,fireplace,controller:{position:[.59,.56,1.43],width:.52},
- paperCases:[{position:[-.83,1.33],angle:-.92},{position:[-.39,1.33],angle:-.92}],
+ paperCaseWidth:.042,
+ paperCases:[{position:[-.67,1.66],angle:-.82},{position:[-.51,1.60],angle:-.90}],
  origins:{id:'origins',room:1,book:[0,21.34,-43],lectern:[0,21.22,-43],approach:[0,1.65,8.3],target:[0,20,-4.2],href:'/origins'},
  stoner:{...counter,id:'stoner',room:3},opposite:{id:'opposite',room:4,approach:[0,1.65,-4],target:[0,3,-14]}
 });

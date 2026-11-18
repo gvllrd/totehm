@@ -450,12 +450,13 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
 <style>
 body.is-paper-view #totehm-paper{position:fixed;inset:0;margin:0!important;pointer-events:none}
 #premium-case-back{position:fixed;top:28px;left:28px;z-index:30;color:#bbb;font:11px 'Space Mono',monospace}
-body.is-paper-view .seq-block{position:fixed;inset:0;max-width:none;transform:none;justify-content:flex-end;padding:0 20px max(26px,4vh);pointer-events:none}
+#premium-case-turn{position:fixed;top:22px;left:50%;transform:translateX(-50%);z-index:30;padding:8px 14px;color:#bbb;font:11px 'Space Mono',monospace;background:#111;border:1px solid #393939;border-radius:10px;cursor:pointer}
+body.is-paper-view .seq-block.active{position:fixed;inset:0;max-width:none;transform:none;opacity:1;transition:none;justify-content:flex-end;padding:0 20px max(26px,4vh);pointer-events:none}
 body.is-paper-view #premium-case-canvas{display:block;width:100%;height:100%;cursor:grab;touch-action:none;pointer-events:auto}
 body.is-paper-view #down-trigger{display:none}
 body.is-paper-view #btn-buy,body.is-paper-view #btn-play-street{position:relative;z-index:1;pointer-events:auto;padding:10px 16px}
 body.is-paper-view #btn-play-street{margin-top:0!important;background:transparent}
-body.is-paper-view:not(.is-paper-entered) .seq-block>button,body.is-paper-view:not(.is-paper-entered) #premium-case-back{visibility:hidden}
+body.is-paper-view:not(.is-paper-entered) :is(.seq-block>button,#premium-case-back,#premium-case-turn){visibility:hidden}
 </style>
 </head>
 <body>
@@ -897,9 +898,12 @@ const paperViewQuery=new URLSearchParams(location.search);
 if(paperViewQuery.get('paper')==='1'){
  const embedded=window.parent!==window&&paperViewQuery.get('embedded')==='1';
  const back=document.createElement('a');back.id='premium-case-back';back.href='/lisbon-space';back.textContent='← Back';back.setAttribute('data-experience-close','');document.body.append(back);
+ const turnButton=document.createElement('button');
+ turnButton.id='premium-case-turn';turnButton.type='button';turnButton.textContent='Turn over';
+ turnButton.setAttribute('aria-controls','premium-case-canvas');turnButton.hidden=true;document.body.append(turnButton);
  import('/premium-case-view.mjs').then(({mountPremiumCase})=>{
   document.body.classList.add('is-paper-view');if(!embedded)document.body.classList.add('is-paper-entered');
-  window.__totehm_paper_entry=mountPremiumCase(document.getElementById('totehm-paper'),{embedded});
+  window.__totehm_paper_entry=mountPremiumCase(document.getElementById('totehm-paper'),{embedded,turnButton});turnButton.hidden=false;
  }).catch(()=>{document.body.classList.remove('is-paper-view');window.__totehm_paper_entry=()=>({ready:true,premium:true,sharedModel:false,tongue:false});initPaper();});
 }else initPaper();
 

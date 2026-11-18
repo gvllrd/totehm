@@ -36,7 +36,7 @@ function openExperience({object,camera,href,type,from=null,canvas,time,width,sho
  const config=fronts[type],previous=location.href,state=history.state,wasVisible=object.visible;
  const siblings=[...document.body.children].map(el=>[el,el.inert]);
  const dialog=document.createElement('div'),veil=document.createElement('div'),frame=document.createElement('iframe');
- let disposed=false,entering=false,stage='preparing',raf=0,timer=0,progress=0,target=null,animation=null,visual=null;
+ let disposed=false,entering=false,stage='preparing',raf=0,timer=0,progress=0,target=null,animation=null,visual=null,handoff=null;
  dialog.id='experience-projection-dialog';dialog.setAttribute('role','dialog');dialog.setAttribute('aria-modal','true');dialog.setAttribute('aria-label','Enter the original artwork');
  dialog.style.cssText='position:fixed;inset:0;z-index:100';
  veil.style.cssText='position:absolute;inset:0;background:#000;opacity:0';
@@ -52,7 +52,7 @@ function openExperience({object,camera,href,type,from=null,canvas,time,width,sho
  }
  const releaseVisual=()=>{visual?.element.remove();visual?.dispose();visual=null;};
  current=dialog;
- window.__totehm_projection_expansion=()=>({stage,type,progress,from,target,documentReloads:0,overlays:visual?.element.isConnected?1:0,physicalPanelVisible:object.visible,frames:frame.isConnected?1:0});
+ window.__totehm_projection_expansion=()=>({stage,type,progress,from,target,handoff,documentReloads:0,overlays:visual?.element.isConnected?1:0,physicalPanelVisible:object.visible,frames:frame.isConnected?1:0});
  function close(fromHistory=false){
   if(disposed)return;
   disposed=true;stage='closed';clearTimeout(timer);cancelAnimationFrame(raf);animation?.cancel();
@@ -88,8 +88,12 @@ function openExperience({object,camera,href,type,from=null,canvas,time,width,sho
     };raf=requestAnimationFrame(tick);
    });
    if(disposed)return;
+   const paperView=type==='paper'&&win.__totehm_paper_entry?.();
+   if(paperView?.sharedModel&&visual?.corners){
+    handoff={from:visual.corners(),to:paperView.faceCorners};
+   }
    frame.style.visibility='visible';stage='experience';
-   if(type!=='screen'&&!reduced&&visual){
+   if(type!=='screen'&&!handoff&&!reduced&&visual){
     veil.style.opacity='1';animation=visual.element.animate([{opacity:1},{opacity:0}],{duration:180,fill:'forwards'});
     animation.finished.then(releaseVisual,()=>{});
    }else releaseVisual();

@@ -64,6 +64,7 @@ try{
  try{
   const world=await current(pg);
   check(world.temple.openAir&&world.temple.walls===0&&world.temple.floor.surfaces===1&&world.temple.floor.caravel,'Lisbon renders one open-air calçada with its caravel');
+  check(world.temple.thpCounter.paperWidthMetres<.03&&world.temple.thpCounter.signed,'The signed cases contain blotter-sized sheets on the table');
   check(world.fireplace.outdoor&&world.fireplace.present&&world.fireAudio.present,'Only the outdoor wood fire and its audio source are in the lounge');
   check(world.projection.bottom>0&&world.projection.front.visibleSigns===0&&world.projection.front.titleOnly,'The suspended idle screen has only the authored Lisbon title');
   await pg.screenshot({path:path.join(output,'island.png')});
@@ -92,7 +93,14 @@ try{
   const edition=await experience(pg,'paper');
   check(await pg.evaluate(()=>window.caseLiftSeen),'The picked premium case lifts as one physical volume');
   check(await edition.evaluate(()=>window.__totehm_paper_entry().sharedModel&&window.__totehm_paper_entry().premium&&window.__totehm_paper_entry().shown&&!window.__totehm_langue?.().joue),'The same premium case arrives fullscreen and skips the tongue');
+  const handoff=await pg.evaluate(()=>window.__totehm_projection_expansion().handoff);
+  check(handoff?.from?.length===4&&handoff.from.every(([x,y],i)=>Math.hypot(x-handoff.to[i][0],y-handoff.to[i][1])<.1),'All four glass corners land on their fullscreen pixels within a tenth of a pixel');
+  check(await edition.evaluate(()=>__totehm_paper_entry().originalsLoaded&&__totehm_paper_entry().signature==='/assets/img/wavywah_signature.png'),'The original signed artwork is loaded on the same volume');
   await pg.screenshot({path:path.join(output,'premium-case.png')});
+  await edition.getByRole('button',{name:'Turn over',exact:true}).click();
+  await edition.waitForFunction(()=>__totehm_paper_entry().verso&&!__totehm_paper_entry().turning);
+  check(await edition.getByRole('button',{name:'Turn to the front',exact:true}).isVisible(),'The case turns over to reveal Wah’s signature');
+  await pg.screenshot({path:path.join(output,'premium-case-signed.png')});
   await close(pg,edition,shot);
 
   await pg.emulateMedia({reducedMotion:'reduce'});
