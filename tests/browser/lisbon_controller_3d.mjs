@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {launch,page} from './harness.mjs';
+import {createLisbonController} from '../../space/gallery-lisbon-controller.mjs';
+import {Mesh,Raycaster,Vector3} from '../../space/vendor/three-0.180.0.mjs';
 
 const url='https://www.totehm.space';
 const directory=process.argv[2]||'/tmp/lisbon-controller-3d';
@@ -8,7 +10,31 @@ fs.mkdirSync(directory,{recursive:true});
 const browser=await launch();
 let checks=0;
 function check(value,message){assert(value,message);checks++;console.log('PASS '+message);}
+// The authored positions and sizes from before the shell was reshaped.
+const originalKeys=[
+  ['fire_exit',-.35,-.209,.15],['Heli',0,-.234,.064],['aed',.35,-.209,.15],
+  ['green_walk',-.195,-.196,.056],['red_walk',-.195,-.126,.056],['pharma',-.35,-.10,.085],
+  ['destination',0,-.148,.24],['lisboa_city_hall',.193,-.156,.069],['speed_bump_caution',.325,-.105,.071],
+  ['crosswalk_caution',.25,-.011,.071],['no_entry',.397,-.010,.070],['no_parking',.33,.077,.076],
+  ['hospital',0,-.052,.047],['parking',0,.009,.06],['Hotel',0,.074,.062],
+  ['dead_end',-.341,.022,.065],['roundabout',-.163,.113,.107],['left_or_straight',.163,.113,.107],
+  ['no_uturn',.35,.171,.084],['priority',-.348,.177,.09],['crosswalk',0,.151,.073],['stop',.375,.28,.083]
+];
 try{
+  const model=createLisbonController();
+  try{
+    assert.deepEqual([...model.keys.values()].map(({id,button,size})=>[id,button.position.x,button.position.z,size]),originalKeys);
+    console.log('PASS The shared model retains the original order and positions for all 22 signs');
+    checks++;
+    check([...model.keys.values()].every(({button})=>button.geometry.type==='ExtrudeGeometry'&&button.geometry.boundingBox.max.z>0),'All 22 sign shapes are solid 3D buttons');
+    const hasSignAt=(id,x,y)=>{
+      const key=model.keys.get(id),mesh=new Mesh(key.button.geometry,key.button.material);
+      const scale=key.size*.93;
+      return new Raycaster(new Vector3(x*scale,y*scale,1),new Vector3(0,0,-1)).intersectObject(mesh).length>0;
+    };
+    check(hasSignAt('Heli',0,0)&&hasSignAt('Heli',.415,0)&&!hasSignAt('Heli',.28,0),'Heli has a solid H and ring with an open gap between them');
+    check(hasSignAt('stop',0,0)&&!hasSignAt('stop',.39,.39)&&hasSignAt('pharma',0,.33)&&!hasSignAt('pharma',.30,.30),'The STOP octagon and pharmacy cross have their own cut edges');
+  }finally{model.dispose();}
   for(const owned of [false,true]){
     const logged=[];
     const fixture=await page(browser,{dir:'space',origin:url,session:owned,viewport:{width:1280,height:850},functions:{'stoner-gate':{access:owned}},network:(address,request)=>{

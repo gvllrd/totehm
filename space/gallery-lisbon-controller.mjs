@@ -1,19 +1,18 @@
 import * as T from './vendor/three-0.180.0.mjs';
 import {addObjectLighting} from './gallery-object-view.mjs';
+import {createLisbonSignGeometry} from './lisbon-sign-buttons.mjs';
 
-// This is the authored Lisbon controller: traffic signs are its physical keys.
-// Coordinates are in controller-width units. The cross and face buttons flank
-// the central controls, and both handles sweep toward the player (+Z).
+// The original sign layout is shared by the table and the fullscreen reader.
+// Coordinates and sizes are in controller-width units, with the grips toward +Z.
 export const LISBON_KEYS=Object.freeze({
-  fire_exit:[-.326,-.139,.069],Heli:[0,-.225,.042],aed:[.326,-.139,.074],
-  green_walk:[-.418,-.215,.048],red_walk:[-.254,-.217,.046],pharma:[-.326,.049,.069],
-  destination:[0,-.143,.226],lisboa_city_hall:[.098,-.221,.044],speed_bump_caution:[.234,-.046,.072],
-  crosswalk_caution:[0,.052,.054],no_entry:[.326,.047,.074],no_parking:[.254,-.216,.047],
-  hospital:[-.068,-.035,.047],parking:[0,-.035,.048],Hotel:[.068,-.035,.047],
-  dead_end:[-.419,-.046,.064],roundabout:[-.171,.052,.095],left_or_straight:[.171,.052,.095],
-  no_uturn:[.419,-.215,.047],priority:[-.233,-.046,.063],crosswalk:[-.098,-.221,.046],stop:[.420,-.046,.074]
+  fire_exit:[-.35,-.209,.15],Heli:[0,-.234,.064],aed:[.35,-.209,.15],
+  green_walk:[-.195,-.196,.056],red_walk:[-.195,-.126,.056],pharma:[-.35,-.10,.085],
+  destination:[0,-.148,.24],lisboa_city_hall:[.193,-.156,.069],speed_bump_caution:[.325,-.105,.071],
+  crosswalk_caution:[.25,-.011,.071],no_entry:[.397,-.010,.070],no_parking:[.33,.077,.076],
+  hospital:[0,-.052,.047],parking:[0,.009,.06],Hotel:[0,.074,.062],
+  dead_end:[-.341,.022,.065],roundabout:[-.163,.113,.107],left_or_straight:[.163,.113,.107],
+  no_uturn:[.35,.171,.084],priority:[-.348,.177,.09],crosswalk:[0,.151,.073],stop:[.375,.28,.083]
 });
-const DIRECTIONS=new Set(['fire_exit','pharma','dead_end','priority']);
 const FACE_HEIGHT=.075;
 export function lisbonControllerShot(viewportWidth,viewportHeight){
   return {
@@ -28,10 +27,10 @@ function outline(){
   shape.bezierCurveTo(.501,.247,.479,.129,.485,-.007);
   shape.bezierCurveTo(.488,-.137,.567,-.301,.543,-.410);
   shape.bezierCurveTo(.526,-.488,.426,-.492,.373,-.427);
-  shape.bezierCurveTo(.334,-.381,.331,-.236,.266,-.139);
-  shape.bezierCurveTo(.206,-.051,.107,-.093,0,-.087);
-  shape.bezierCurveTo(-.107,-.093,-.206,-.051,-.266,-.139);
-  shape.bezierCurveTo(-.331,-.236,-.334,-.381,-.373,-.427);
+  shape.bezierCurveTo(.334,-.381,.331,-.262,.266,-.218);
+  shape.bezierCurveTo(.198,-.173,.107,-.205,0,-.201);
+  shape.bezierCurveTo(-.107,-.205,-.198,-.173,-.266,-.218);
+  shape.bezierCurveTo(-.331,-.262,-.334,-.381,-.373,-.427);
   shape.bezierCurveTo(-.426,-.492,-.526,-.488,-.543,-.410);
   shape.bezierCurveTo(-.567,-.301,-.488,-.137,-.485,-.007);
   shape.bezierCurveTo(-.479,.129,-.501,.247,-.407,.271);
@@ -103,22 +102,6 @@ function gripTexture(){
   return texture;
 }
 
-function roundedOutline(points,radius){
-  const shape=new T.Shape();
-  for(let i=0;i<points.length;i++){
-    const point=new T.Vector2(...points[i]),before=new T.Vector2(...points.at(i-1)),after=new T.Vector2(...points[(i+1)%points.length]);
-    const entry=before.sub(point).setLength(radius).add(point),exit=after.sub(point).setLength(radius).add(point);
-    if(i===0)shape.moveTo(entry.x,entry.y);else shape.lineTo(entry.x,entry.y);
-    shape.quadraticCurveTo(point.x,point.y,exit.x,exit.y);
-  }
-  shape.closePath();return shape;
-}
-
-function crossShape(){
-  const reach=.130,arm=.045;
-  return roundedOutline([[-arm,reach],[arm,reach],[arm,arm],[reach,arm],[reach,-arm],[arm,-arm],[arm,-reach],[-arm,-reach],[-arm,-arm],[-reach,-arm],[-reach,arm],[-arm,arm]],.017);
-}
-
 // An inlaid, textured skin rides a few millimetres above each curved grip.
 function gripSkin(side,mobile){
   const geometry=new T.BufferGeometry(),segments=mobile?24:48,rings=8;
@@ -177,12 +160,11 @@ export function createLisbonController({width=.52,mobile=false,onChange=()=>{}}=
   const lighting=new T.MeshBasicMaterial({color:0x7899d4,toneMapped:false});
   for(const ink of [shellInk,edgeInk,gripInk,gripSkinInk,rubberInk,buttonInk,bezelInk,lighting])materials.add(ink);
   const create=(geometry,material,x,y,z)=>{geometries.add(geometry);materials.add(material);const mesh=new T.Mesh(geometry,material);mesh.position.set(x,y,z);root.add(mesh);return mesh;};
-  function mould(shape,material,x,y,z,depth,bevel){
-    const geometry=new T.ExtrudeGeometry(shape,{depth,curveSegments:mobile?10:24,bevelEnabled:true,bevelThickness:bevel,bevelSize:bevel,bevelSegments:mobile?2:4});
-    const mesh=create(geometry,material,x,y,z);mesh.rotation.x=-Math.PI/2;
-    return mesh;
+  function shell(material,y,depth,bevel,scale){
+    const geometry=new T.ExtrudeGeometry(outline(),{depth,curveSegments:mobile?10:24,bevelEnabled:true,bevelThickness:bevel,bevelSize:bevel,bevelSegments:mobile?2:4});
+    const mesh=create(geometry,material,0,y,0);mesh.rotation.x=-Math.PI/2;
+    return bendShell(mesh,scale);
   }
-  const shell=(material,y,depth,bevel,scale)=>bendShell(mould(outline(),material,0,y,0,depth,bevel),scale);
   const lower=shell(edgeInk,-.015,.035,.025,.963);
   const belt=shell(bezelInk,.021,.004,.005,.979);
   const face=shell(shellInk,.028,.034,.013,.985);
@@ -197,11 +179,6 @@ export function createLisbonController({width=.52,mobile=false,onChange=()=>{}}=
     mesh.name=side<0?'Left stippled grip inlay':'Right stippled grip inlay';
     return mesh;
   });
-  const crossX=-.326,clusterX=.326,clusterZ=-.046;
-  const cross=bendShell(mould(crossShape(),rubberInk,crossX,FACE_HEIGHT+.001,clusterZ,.012,.004));
-  cross.name='Moulded directional cross';
-  const cluster=create(new T.CylinderGeometry(.145,.148,.008,mobile?24:54),edgeInk,clusterX,FACE_HEIGHT+shellCurve(clusterX,clusterZ)+.002,clusterZ);
-  cluster.name='Separate recessed face-button island';
   const hitGeometry=new T.ShapeGeometry(outline(),mobile?10:24);
   const hitSurface=create(hitGeometry,new T.MeshBasicMaterial({visible:false,side:T.DoubleSide}),0,.075,0);
   hitSurface.rotation.x=-Math.PI/2;hitSurface.userData.kind='lisbon-controller';
@@ -217,64 +194,49 @@ export function createLisbonController({width=.52,mobile=false,onChange=()=>{}}=
   const light=create(new T.BoxGeometry(.11,.008,.006),lighting,0,.031,-.278);
   light.name='Controller status line';
   const loader=globalThis.document?new T.TextureLoader():null;
+  const deckRay=new T.Raycaster(new T.Vector3(),new T.Vector3(0,-1,0));
+  const deckSurfaces=[face,...gripSkins];
+  for(const surface of deckSurfaces)surface.updateWorldMatrix(true,false);
   for(const [id,[x,z,size]] of Object.entries(LISBON_KEYS)){
     const stick=id==='roundabout'||id==='left_or_straight';
-    const direction=DIRECTIONS.has(id);
-    const signWidth=id==='destination'?size:size*.93,signDepth=id==='destination'?size*.39:signWidth;
-    const deckY=FACE_HEIGHT+shellCurve(x,z);
-    const keyY=deckY+(stick?.069:direction?.023:.022);
-    let base;
-    if(id==='destination'){
-      const w=size/2+.006,d=signDepth/2+.006;
-      base=mould(roundedOutline([[-w,d],[w,d],[w,-d],[-w,-d]],.017),bezelInk,x,deckY+.001,z,.014,.004);
-    }else if(direction){
-      const half=size/2;
-      base=mould(roundedOutline([[-half,half],[half,half],[half,-half],[-half,-half]],.011),buttonInk,x,keyY-.012,z,.007,.003);
-    }else if(stick){
-      const socket=create(new T.LatheGeometry([
-        new T.Vector2(.024,-.008),new T.Vector2(.062,-.008),new T.Vector2(.066,.000),
-        new T.Vector2(.064,.008),new T.Vector2(.058,.012),new T.Vector2(.046,.010),new T.Vector2(.040,.001),new T.Vector2(.024,-.008)
-      ],mobile?24:44),edgeInk,x,deckY,z);
-      socket.name=id+' recessed thumb-stick socket';
-      create(new T.SphereGeometry(.035,mobile?14:24,12),rubberInk,x,deckY+.009,z).scale.y=.78;
-      create(new T.CylinderGeometry(.017,.022,.039,20),rubberInk,x,deckY+.038,z).name=id+' thumb-stick stem';
-      base=create(new T.LatheGeometry([
-        new T.Vector2(0,-.012),new T.Vector2(.040,-.012),new T.Vector2(.052,-.009),
-        new T.Vector2(.054,-.002),new T.Vector2(.050,.002),new T.Vector2(.043,.004),
-        new T.Vector2(.036,.001),new T.Vector2(0,.001)
-      ],mobile?24:44),rubberInk,x,keyY-.0045,z);
-    }else{
-      base=create(new T.LatheGeometry([
-        new T.Vector2(0,-.009),new T.Vector2(size*.556,-.009),new T.Vector2(size*.563,-.003),
-        new T.Vector2(size*.53,.008),new T.Vector2(size*.48,.0126),new T.Vector2(0,.0126)
-      ],mobile?18:32),buttonInk,x,deckY+.007,z);
-      const rim=create(new T.TorusGeometry(size*.525,.0022,8,mobile?16:32),bezelInk,x,deckY+.006,z);
-      rim.rotation.x=-Math.PI/2;
+    // Fit the full directional plaque between Heli and Hospital at its native aspect.
+    const faceSize=size*(id==='destination'?.69:.93);
+    const depth=stick?.025:.028;
+    deckRay.ray.origin.set(x*width,.4*width,z*width);
+    const deck=deckRay.intersectObjects(deckSurfaces,false)[0];
+    const deckY=deck ? deck.point.y/width : FACE_HEIGHT+shellCurve(x,z);
+    const baseY=deckY+(stick?.039:-.008);
+    if(stick){
+      const stem=create(new T.CylinderGeometry(.021,.029,.051,28),rubberInk,x,deckY+.014,z);
+      stem.name=id+' thumb-stick stem';
     }
-    base.name=id+' physical key';
-    const ink=new T.MeshBasicMaterial({color:0xffffff,transparent:true,alphaTest:.035,toneMapped:false});
-    const mark=create(new T.PlaneGeometry(signWidth,signDepth),ink,x,keyY,z);
-    mark.visible=false;mark.rotation.x=-Math.PI/2;mark.name=id+' original sign';
+    const ink=new T.MeshStandardMaterial({
+      color:0xffffff,roughness:.46,metalness:.12,
+      emissive:0xffffff,emissiveIntensity:.20,alphaTest:.15,toneMapped:false
+    });
+    const button=create(createLisbonSignGeometry(id,faceSize,depth),ink,x,baseY,z);
+    button.name=id+' sculpted sign button';
+    button.rotation.x=-Math.PI/2;
+    button.visible=false;
     if(loader)pending.push(new Promise(resolve=>{
-      const texture=loader.load('/assets/signs/'+id+'.png',map=>{
+      const texture=loader.load('/assets/signs/'+id+'.png',()=>{
         if(!disposed){
-          const aspect=map.image.naturalWidth/map.image.naturalHeight;
-          if(Number.isFinite(aspect)&&aspect>0){mark.scale.x=Math.min(1,signDepth*aspect/signWidth);mark.scale.y=Math.min(1,signWidth/aspect/signDepth);}
-          mark.visible=true;loaded++;onChange();
+          button.visible=true;loaded++;onChange();
         }
         resolve();
       },undefined,resolve);
-      texture.colorSpace=T.SRGBColorSpace;texture.anisotropy=4;ink.map=texture;textures.add(texture);
+      texture.colorSpace=T.SRGBColorSpace;texture.anisotropy=4;
+      ink.map=texture;ink.emissiveMap=texture;textures.add(texture);
     }));
-    keys.set(id,{id,x,z,size,y:keyY,baseY:base.position.y,mark,base});
+    keys.set(id,{id,x,z,size,y:baseY+depth,baseY,button});
   }
   root.userData.kind='lisbon-controller';
   root.userData.faceCorners=[[-.56,FACE_HEIGHT,-.33],[.56,FACE_HEIGHT,-.33],[.56,FACE_HEIGHT,.48],[-.56,FACE_HEIGHT,.48]];
-  const pickables=[lower,belt,face,cross,cluster,hitSurface,...grips,...gripSkins,...shoulderControls,...[...keys.values()].map(key=>key.base)];
+  const pickables=[lower,belt,face,hitSurface,...grips,...gripSkins,...shoulderControls,...[...keys.values()].map(key=>key.button)];
   const data={kind:'lisbon-controller',action:'open',href:'/play_lisbon_street?board=1'};
   for(const mesh of pickables)Object.assign(mesh.userData,data);
   return {root,hitSurface,pickables,keys,ready:Promise.all(pending),
-    diagnostics:()=>({kind:'lisbon-controller-original-3d',width,keys:keys.size,loaded,closedShell:true,physical:true,palmGrips:grips.length,thumbSticks:2,shoulderControls:shoulderControls.length,directionalCross:true,faceCluster:true,gripInlays:gripSkins.length}),
+    diagnostics:()=>({kind:'lisbon-controller-original-3d',width,keys:keys.size,loaded,closedShell:true,physical:true,palmGrips:grips.length,thumbSticks:2,shoulderControls:shoulderControls.length,signShapedKeys:keys.size,gripInlays:gripSkins.length}),
     dispose(){disposed=true;root.removeFromParent();for(const geometry of geometries)geometry.dispose();for(const material of materials)material.dispose();for(const texture of textures)texture.dispose();}
   };
 }
@@ -308,18 +270,20 @@ export function createLisbonControllerView(host,{onLayout=()=>{}}={}){
     const key=model.keys.get(id);if(!key)return null;
     const box=renderer.domElement.getBoundingClientRect();
     const project=(x,z)=>model.root.localToWorld(new T.Vector3(x,key.y,z)).project(camera);
-    const point=project(key.x,key.z);
-    const left=project(key.x-key.size/2,key.z),right=project(key.x+key.size/2,key.z);
-    const keyDepth=id==='destination'?key.size*.39:key.size;
-    const top=project(key.x,key.z-keyDepth/2),bottom=project(key.x,key.z+keyDepth/2);
-    const width=Math.max(23,box.width*(right.x-left.x)/2),height=Math.max(23,box.height*(top.y-bottom.y)/2);
-    return {x:box.left+(point.x+1)*box.width/2-width/2,y:box.top+(1-point.y)*box.height/2-height/2,width,height};
+    const {min,max}=key.button.geometry.boundingBox;
+    const topLeft=project(key.x+min.x,key.z-max.y);
+    const bottomRight=project(key.x+max.x,key.z-min.y);
+    const width=Math.max(23,box.width*(bottomRight.x-topLeft.x)/2);
+    const height=Math.max(23,box.height*(topLeft.y-bottomRight.y)/2);
+    return {
+      x:box.left+(topLeft.x+bottomRight.x+2)*box.width/4-width/2,
+      y:box.top+(2-topLeft.y-bottomRight.y)*box.height/4-height/2,
+      width,height
+    };
   }
   function feedback(id,value){
     const key=model.keys.get(id);if(!key)return;
-    const travel=value ? .004 : 0;
-    key.base.position.y=key.baseY-travel;
-    key.mark.position.y=key.y-travel;
+    key.button.position.y=key.baseY-(value?.004:0);
     draw();
   }
   addEventListener('resize',layout);layout();
