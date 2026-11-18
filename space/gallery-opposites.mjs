@@ -3,9 +3,9 @@ export const OPPOSITES = [
  {id:'totehm',title:'TOTEHM vs Tommy Hilfiger',image:'/assets/totehmvstommy.png',action:'Create my TOTEHM',href:'https://www.totehm.com/totehm',slides:[
   ['THE DESIGNER SIGNED THE GARMENT. WHY SHOULD HE SIGN YOUR IDENTITY?'],
   ['Tommy Hilfiger made a name recognizable across the world. That takes vision.','But when you buy a garment to express yourself, why is someone else’s name the first story it tells?'],
-  ['A brand can give you a look, a language, a place to belong. It cannot write your ambitions for you.','The person inside the garment has a life the label has never lived.'],
-  ['TOTEHM is a symbol filled from within: habits, objectives, refusals, visions, story.','A totem for decisions you make, not a monument to the person who founded the brand.'],
-  ['A name can tell the world whose label you bought. Your TOTEHM can tell you what you’re building.','Own your story. Then let it meet another’s art.']
+  ['A brand can give you a look, a language, a place to belong. But it cannot reflect a life it has never lived.','When someone else’s name speaks first, how much of you can the world see?'],
+  ['TOTEHM is a reminder of the way you want to go, especially when you lose sight of it.','It does not hand you an identity. It brings you back to the one you are choosing, step by step.'],
+  ['A label can tell the world whose name you bought. Your TOTEHM can remind you where you chose to go.','Wear what points you back to yourself. Then let it meet another’s art.']
  ]},
  {id:'higher',title:'HIGHER vs Supreme',image:'/assets/highervssupreme.png',action:'Create my Streetwear Cloth',href:'https://www.higher.boutique/streetwear',slides:[
   ['SUPREME MADE A CULTURE VISIBLE.','HIGHER MAKES ROOM FOR YOURS TO MEET AN ARTIST’S.'],

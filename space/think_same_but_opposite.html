@@ -72,6 +72,9 @@ body.is-last .hint{display:none}
 #experience-front[hidden]{display:none}#experience-front-stage{position:relative;width:min(100vw,calc(100dvh * 16 / 9));aspect-ratio:16/9}#experience-front-canvas{display:block;width:100%;height:100%}
 .front-hit{position:absolute;border:0;background:none;color:transparent;cursor:pointer;min-width:44px;min-height:44px;transform:translate(-50%,-50%);border-radius:10px}.front-hit:focus-visible{outline:1px solid #888;outline-offset:2px}.front-hint{position:fixed;left:20px;right:20px;bottom:max(24px,env(safe-area-inset-bottom));font-size:10px;letter-spacing:.12em;text-align:center;color:#8c8c94;pointer-events:none}
 body.is-front main,body.is-entering main{opacity:0;pointer-events:none}main{opacity:1;transition:opacity .5s ease}body.is-front header,body.is-entering header{z-index:3}body.is-front #progress,body.is-entering #progress{visibility:hidden}body.is-entering #experience-front{pointer-events:none}body.is-entering .front-hint{opacity:0}header a:hover,header button:hover,header a:focus-visible,header button:focus-visible{color:#fff}.actions a:hover,.actions a:focus-visible{color:#fff;border-color:#aaa}.rail span.on{background:#aaa}
+.higher-inline{display:inline-block;width:3.05em;vertical-align:-.23em;margin:0 .05em;line-height:0;white-space:nowrap}
+.higher-inline img{display:block;width:100%;height:auto}
+.higher-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 @media(prefers-reduced-motion:reduce){#experience-front,main{transition:none}}
 </style>
 </head>
@@ -88,12 +91,22 @@ import {createOppositesFront} from './opposites-front.mjs';
 const $=id=>document.getElementById(id),params=new URLSearchParams(location.search),reduced=matchMedia('(prefers-reduced-motion:reduce)'),embedded=window.parent!==window&&params.get('embedded')==='1';
 let work=oppositeById(params.get('work'))||OPPOSITES[0],step=0,locked=false,touchY=null,phase='front',enteringAt=0,last=0,raf=0,hidden=document.hidden,frontFrozen=embedded;
 const front=createOppositesFront({onChange:()=>{}});front.canvas.id='experience-front-canvas';$('experience-front-stage').append(front.canvas);front.setTime(Number(params.get('sceneTime'))||0);
+function brandedText(element,value){
+ const parts=String(value).split(/(\bHIGHER\b)/gi);
+ element.replaceChildren(...parts.map(part=>{
+  if(!/^higher$/i.test(part))return document.createTextNode(part);
+  const mark=document.createElement('span'),image=document.createElement('img'),spoken=document.createElement('span');
+  mark.className='higher-inline';mark.setAttribute('role','img');mark.setAttribute('aria-label','Higher');
+  image.src='/assets/gallery/higher.svg';image.alt='';spoken.className='higher-sr';spoken.textContent=part;
+  mark.append(image,spoken);return mark;
+ }));
+}
 for(let i=0;i<OPPOSITES.length;i++){const item=OPPOSITES[i],button=document.createElement('button');button.type='button';button.className='front-hit';button.setAttribute('aria-label','Discover '+item.title);button.style.cssText='left:'+(23+i%3*27)+'%;top:'+(32+Math.floor(i/3)*44.5)+'%;width:25%;height:43%';button.addEventListener('click',()=>enterWork(item));button.addEventListener('focus',()=>{if(!frontFrozen)front.setHighlight(item.id);});button.addEventListener('pointerenter',()=>{if(!frontFrozen)front.setHighlight(item.id);});button.addEventListener('pointerleave',()=>{if(!frontFrozen)front.setHighlight('');});$('experience-front-stage').append(button);}
 const dots=[];
-function configure(item){work=item;step=0;locked=false;document.title=work.title+' — Think same but opposite · TOTEHM.SPACE';$('title').textContent=work.title;$('image').src=work.image;$('image').alt=work.title+' artwork';$('action').href=work.href;$('action').textContent=work.action+' ↗';const following=OPPOSITES[(OPPOSITES.indexOf(work)+1)%OPPOSITES.length];$('next-work').href='/think_same_but_opposite?work='+following.id;$('next-work').setAttribute('aria-label','Next artwork: '+following.title);$('rail').replaceChildren();dots.length=0;for(const slide of work.slides){const dot=document.createElement('span');$('rail').append(dot);dots.push(dot);}show(0,true);}
+function configure(item){work=item;step=0;locked=false;document.title=work.title+' — Think same but opposite · TOTEHM.SPACE';brandedText($('title'),work.title);$('image').src=work.image;$('image').alt=work.title+' artwork';$('action').href=work.href;brandedText($('action'),work.action+' ↗');const following=OPPOSITES[(OPPOSITES.indexOf(work)+1)%OPPOSITES.length];$('next-work').href='/think_same_but_opposite?work='+following.id;$('next-work').setAttribute('aria-label','Next artwork: '+following.title);$('rail').replaceChildren();dots.length=0;for(const slide of work.slides){const dot=document.createElement('span');$('rail').append(dot);dots.push(dot);}show(0,true);}
 function show(index,instant=false){
  if(index<0||index>=work.slides.length||locked)return;locked=true;const slide=$('slide');slide.classList.remove('show');
- const apply=()=>{step=index;slide.replaceChildren(...work.slides[step].map(text=>{const p=document.createElement('p');p.textContent=text;return p;}));slide.classList.toggle('is-first',step===0);dots.forEach((dot,i)=>dot.classList.toggle('on',i===step));$('prev').hidden=step===0;$('next').hidden=step===work.slides.length-1;$('action').hidden=step!==work.slides.length-1;$('next-work').hidden=step!==work.slides.length-1;document.body.classList.toggle('is-last',step===work.slides.length-1);requestAnimationFrame(()=>slide.classList.add('show'));if(instant||reduced.matches)locked=false;else setTimeout(()=>locked=false,650);};
+ const apply=()=>{step=index;slide.replaceChildren(...work.slides[step].map(text=>{const p=document.createElement('p');brandedText(p,text);return p;}));slide.classList.toggle('is-first',step===0);dots.forEach((dot,i)=>dot.classList.toggle('on',i===step));$('prev').hidden=step===0;$('next').hidden=step===work.slides.length-1;$('action').hidden=step!==work.slides.length-1;$('next-work').hidden=step!==work.slides.length-1;document.body.classList.toggle('is-last',step===work.slides.length-1);requestAnimationFrame(()=>slide.classList.add('show'));if(instant||reduced.matches)locked=false;else setTimeout(()=>locked=false,650);};
  if(instant||reduced.matches)apply();else setTimeout(apply,180);
 }
 function finishEntrance(){phase='discover';document.body.classList.remove('is-front','is-entering');$('experience-front').hidden=true;$('experience-front').inert=true;$('discover-stage').style.opacity='';$('experience-front').style.opacity='';$('close').textContent='All six';$('close').removeAttribute('data-experience-close');$('discover-stage').focus({preventScroll:true});}
