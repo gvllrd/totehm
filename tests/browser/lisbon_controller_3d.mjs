@@ -10,8 +10,8 @@ fs.mkdirSync(directory,{recursive:true});
 const browser=await launch();
 let checks=0;
 function check(value,message){assert(value,message);checks++;console.log('PASS '+message);}
-// The authored positions and sizes from before the shell was reshaped.
-const originalKeys=[
+// Version 2 artwork layout, measured against the reader in 8ca2f88.
+const version2Keys=[
   ['fire_exit',-.35,-.209,.15],['Heli',0,-.234,.064],['aed',.35,-.209,.15],
   ['green_walk',-.195,-.196,.056],['red_walk',-.195,-.126,.056],['pharma',-.35,-.10,.085],
   ['destination',0,-.148,.24],['lisboa_city_hall',.193,-.156,.069],['speed_bump_caution',.325,-.105,.071],
@@ -20,12 +20,15 @@ const originalKeys=[
   ['dead_end',-.341,.022,.065],['roundabout',-.163,.113,.107],['left_or_straight',.163,.113,.107],
   ['no_uturn',.35,.171,.084],['priority',-.348,.177,.09],['crosswalk',0,.151,.073],['stop',.375,.28,.083]
 ];
+const version2Pitch=Math.atan2(3-.032,.58);
+const version2ArtworkHeight=id=>.077+(['roundabout','left_or_straight'].includes(id)?.066:.022);
 try{
   const model=createLisbonController();
   try{
-    assert.deepEqual([...model.keys.values()].map(({id,button,size})=>[id,button.position.x,button.position.z,size]),originalKeys);
-    console.log('PASS The shared model retains the original order and positions for all 22 signs');
+    assert.deepEqual([...model.keys.values()].map(({id,button,size})=>[id,button.position.x,button.position.z,size]),version2Keys);
+    console.log('PASS The shared model retains the order and positions of all 22 version 2 signs');
     checks++;
+    check([...model.keys.values()].every(({id,button})=>Math.abs(button.position.y+button.geometry.boundingBox.max.z-version2ArtworkHeight(id))<1e-8),'The relief surfaces match the version 2 artwork heights');
     check([...model.keys.values()].every(({button})=>button.geometry.type==='ExtrudeGeometry'&&button.geometry.boundingBox.max.z>0),'All 22 sign shapes are solid 3D buttons');
     const hasSignAt=(id,x,y)=>{
       const key=model.keys.get(id),mesh=new Mesh(key.button.geometry,key.button.material);
@@ -59,6 +62,21 @@ try{
         await child.waitForFunction(()=>__totehm_controller_entry().phase==='board');
         check(await child.locator('.street-rock[role=button]').count()===22,'The confirmed owner enters the 3D board directly');
         check(await child.evaluate(()=>['experience-front-canvas','sdisc-cover-next'].every(id=>getComputedStyle(document.getElementById(id)).display==='none')),'Direct entry hides the front canvas and Discover button immediately');
+        const screen=await child.locator('.street-rock[role=button]').evaluateAll(keys=>({
+          width:innerWidth,height:innerHeight,centers:keys.map(key=>{
+            const {x,y,width,height}=key.getBoundingClientRect();
+            return [key.getAttribute('aria-label'),x+width/2,y+height/2];
+          })
+        }));
+        const scale=Math.min(screen.width*.72,1100,screen.height*.78/.68);
+        const drift=version2Keys.map(([id,x,z],i)=>{
+          const [label,actualX,actualY]=screen.centers[i];
+          assert.equal(label,id.replace(/_/g,' '));
+          const projectedY=(version2ArtworkHeight(id)-.032)*Math.cos(version2Pitch)-z*Math.sin(version2Pitch);
+          return Math.hypot(actualX-(screen.width/2+x*scale),actualY-(screen.height/2-projectedY*scale));
+        });
+        const maxDrift=Math.max(...drift);
+        check(maxDrift<.1,'All 22 fullscreen key centers match version 2 within '+maxDrift.toFixed(3)+' CSS px');
         const misses=await child.locator('.street-rock[role=button]').evaluateAll(keys=>keys.flatMap(key=>{
           const box=key.getBoundingClientRect();
           const hit=document.elementFromPoint(box.x+box.width/2,box.y+box.height/2);
