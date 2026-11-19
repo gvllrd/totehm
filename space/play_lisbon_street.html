@@ -227,8 +227,10 @@ body.is-street-board #sdisc-rail,body.is-street-board #sdisc-progress,body.is-st
 #experience-front-canvas{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(100vw,calc(100dvh * 16 / 9));height:auto;aspect-ratio:16/9;display:block;pointer-events:none;transition:opacity .7s}
 #sdisc-bg{opacity:1}
 #sdisc-bg>.street-rock{opacity:0;pointer-events:none}
-body.is-snapping #sdisc-bg>.street-rock,body.is-street-board #sdisc-bg>.street-rock{opacity:1;pointer-events:auto}
-body.is-snapping #experience-front-canvas{opacity:0}
+body.is-street-board #sdisc-bg>.street-rock{opacity:1;pointer-events:auto}
+body.is-snapping #experience-front-canvas{visibility:hidden}
+#controller-assembly{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none;z-index:1}
+body.is-snapping :is(#sdisc-stage,#sdisc-back,#sdisc-trig){opacity:0;transition:opacity .38s ease;pointer-events:none}
 #sdisc-cover-next{position:absolute;left:50%;bottom:35px;transform:translateX(-50%);z-index:3;border:1px solid #343434;border-radius:10px;background:#111;color:#aaa;font:11px 'Space Mono',monospace;padding:13px 22px;cursor:pointer;transition:opacity .4s,transform .6s}
 body:not(.is-street-front) #sdisc-cover-next{opacity:0;transform:translate(-50%,18px);pointer-events:none}
 .is-street-front #sdisc-stage,.is-street-front #sdisc-progress,.is-street-front #sdisc-rail,.is-street-front #sdisc-reading-hint,.is-street-front #sdisc-trig{opacity:0!important;visibility:hidden;pointer-events:none}
@@ -236,6 +238,7 @@ body:not(.is-street-front) #sdisc-cover-next{opacity:0;transform:translate(-50%,
 #controller-3d-view{position:fixed;inset:0;pointer-events:none;opacity:0;transition:opacity .8s ease;}
 #controller-3d-canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 body.is-controller-forming #controller-3d-view,body.is-street-board #controller-3d-view,body.is-controller-entry #controller-3d-view{opacity:1}
+body.is-controller-forming #controller-3d-view{transition:opacity 1.05s cubic-bezier(.22,.52,.32,1) 70ms}
 body.is-controller-locked #controller-3d-view{opacity:.20}
 body.is-controller-locked :is(#experience-front-canvas,#sdisc-cover-next,#sdisc-rail,#sdisc-progress,#sdisc-reading-hint,#sdisc-trig){display:none!important}
 body.is-street-board :is(#experience-front-canvas,#sdisc-cover-next){display:none}
@@ -387,9 +390,9 @@ body.is-street-board #sdisc-bg>.street-rock:focus-visible{outline:2px solid #a6b
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import {checkLisbonStreetAccess,requestLisbonStreetMedia} from './lisbon-street-access.mjs';
 import {LISBON_STREET_DISCOVER} from './lisbon-street-discover.mjs';
-import {createLisbonFirstPage} from './lisbon-first-page.mjs';
+import {LISBON_FRONT_SIZE,createLisbonFirstPage} from './lisbon-first-page.mjs';
 import {createLisbonControllerView} from './gallery-lisbon-controller.mjs';
-const BUILD = '2026-11-19-lisbon-responsive-3d-controller';
+const BUILD = '2026-11-19-lisbon-controller-assembly';
 function streetReturnPath(){const destination=new URL(location.href);destination.searchParams.delete('embedded');destination.searchParams.delete('sceneTime');return destination.pathname+destination.search;}
 // A purchase or central connection leaves the projected reader as a whole.
 function navigateStreetExperience(href){
@@ -997,7 +1000,7 @@ const IMPORTANT    = new Set(['crosswalk','stop','no_entry','parking']);
 const ROCKS        = [];
 const firstPage=createLisbonFirstPage({width:1600,height:900});firstPage.canvas.id='experience-front-canvas';sdiscBg.prepend(firstPage.canvas);
 firstPage.setTime(Number(entryQuery.get('sceneTime'))||0);let firstPageActive=true,frontRaf=0,frontLast=0,frontFrozen=embeddedFront;document.body.classList.add('is-street-front');
-function drawFront(now){frontRaf=0;const dt=frontLast?(now-frontLast)/1000:0;frontLast=now;if(!document.hidden&&!boardMode&&!snapping&&!xp.classList.contains('up')&&!frontFrozen)firstPage.update(dt,!reducedMotion.matches);if(!document.hidden&&!boardMode&&!snapping&&!xp.classList.contains('up')&&!frontFrozen)frontRaf=requestAnimationFrame(drawFront);}
+function drawFront(now){frontRaf=0;const dt=frontLast?(now-frontLast)/1000:0;frontLast=now;if(!document.hidden&&!boardMode&&!assembly&&!xp.classList.contains('up')&&!frontFrozen)firstPage.update(dt,!reducedMotion.matches);if(!document.hidden&&!boardMode&&!assembly&&!xp.classList.contains('up')&&!frontFrozen)frontRaf=requestAnimationFrame(drawFront);}
 function startFront(){if(!frontRaf&&!document.hidden&&!frontFrozen&&!reducedMotion.matches){frontLast=0;frontRaf=requestAnimationFrame(drawFront);}}
 function beginStreetDiscover({immediate=false}={}){
   if(!firstPageActive)return;
@@ -1118,11 +1121,13 @@ function stopAsteroids(){
 
 let boardMode = false;
 let controllerView=null,controllerPromise=null,controllerEntryReady=false,directBoardActive=false,controllerPreparing=0;
+let assembly=null,assemblyRevision=0;
 const controllerHost=document.getElementById('controller-3d-view');
 
 window.__totehm_controller_entry=()=>({ready:controllerEntryReady,owned:OWNED,phase:boardMode?'board':controllerEntryReady?'prepared':'checking',canvas:!!controllerView,model:controllerView?.model.diagnostics()||null});
 function releaseController(){
   controllerPreparing++;
+  clearAssembly();
   controllerView?.dispose();controllerView=null;controllerPromise=null;
   document.body.classList.remove('has-controller-3d','is-controller-entry','is-controller-forming','is-controller-locked');
 }
@@ -1131,7 +1136,10 @@ async function prepareController({preview=false}={}){
   if(controllerPromise)return controllerPromise;
   const revision=++controllerPreparing;
   try {
-    controllerView=createLisbonControllerView(controllerHost,{onLayout:()=>{if(boardMode)reSnapToBoard();}});
+    controllerView=createLisbonControllerView(controllerHost,{onLayout:()=>{
+      if(boardMode)reSnapToBoard();
+      else assembly?.resize();
+    }});
     document.body.classList.add('has-controller-3d');
     controllerPromise=controllerView.ready.then(()=>revision===controllerPreparing?controllerView:null);
   } catch(error) {
@@ -1246,32 +1254,103 @@ function reSnapToBoard(){
   for(const rock of ROCKS){rock.wrap.style.transition='none';placeBoardKey(rock);}
 }
 
+function clearAssembly(){
+  assemblyRevision++;
+  if(assembly){
+    cancelAnimationFrame(assembly.frame);
+    removeEventListener('resize',assembly.resize);
+    assembly.canvas.remove();assembly=null;
+  }
+  snapping=false;
+  sdiscStage.inert=sdiscBack.inert=sdiscTrig.inert=false;
+  document.body.classList.remove('is-snapping','is-controller-forming');
+}
+
+function assembleController(view){
+  const canvas=document.createElement('canvas');canvas.id='controller-assembly';canvas.setAttribute('aria-hidden','true');
+  const context=canvas.getContext('2d');
+  function finish(){view?.setAssembly();clearAssembly();enterBoardMode();}
+  if(!context||reducedMotion.matches){finish();return;}
+
+  const startingOpacity=firstPage.getSignOpacity();
+  const poses=new Map(firstPage.getSigns().map(pose=>[pose.name,pose]));
+  const flights=ROCKS.map((rock,index)=>({rock,pose:poses.get(rock.id),index}));
+  const levels=new Map(),blendTime=175;
+  let elapsed=0,lastFrame=null,duration=0,canvasWidth,canvasHeight;
+  const mix=(a,b,amount)=>a+(b-a)*amount;
+  const unit=value=>Math.max(0,Math.min(1,value));
+  const smooth=value=>value*value*(3-2*value);
+
+  function resize(){
+    const host=sdiscBg.getBoundingClientRect(),face=firstPage.canvas.getBoundingClientRect();
+    canvasWidth=host.width;canvasHeight=host.height;
+    const density=Math.min(devicePixelRatio,1.5);
+    canvas.width=Math.max(1,Math.round(canvasWidth*density));canvas.height=Math.max(1,Math.round(canvasHeight*density));
+    context.setTransform(canvas.width/canvasWidth,0,0,canvas.height/canvasHeight,0,0);
+    const scaleX=face.width/LISBON_FRONT_SIZE.width,scaleY=face.height/LISBON_FRONT_SIZE.height;
+    for(const flight of flights){
+      const {rock,pose,index}=flight,image=rock.img;
+      const largestSide=Math.max(image.naturalWidth,image.naturalHeight,1);
+      const target=view?.artworkTarget(rock.id)??controllerTarget(rock);
+      flight.from={x:face.left-host.left+pose.x*scaleX,y:face.top-host.top+pose.y*scaleY,
+        width:pose.size*scaleX*image.naturalWidth/largestSide,height:pose.size*scaleY*image.naturalHeight/largestSide};
+      flight.to={x:target.x-host.left+target.width/2,y:target.y-host.top+target.height/2,width:target.width,height:target.height};
+      const dx=flight.to.x-flight.from.x,dy=flight.to.y-flight.from.y,distance=Math.hypot(dx,dy);
+      const curve=Math.min(88,distance*.16)*(index%2?1:-1)/Math.max(distance,1);
+      flight.arcX=-dy*curve;flight.arcY=dx*curve;
+      flight.delay??=(index%6)*37+Math.min(122,distance*.18);
+      flight.travel??=820+Math.min(285,distance*.38);
+      duration=Math.max(duration,flight.delay+flight.travel+blendTime);
+    }
+    paint();
+  }
+
+  function paint(){
+    context.clearRect(0,0,canvasWidth,canvasHeight);levels.clear();
+    for(const {rock,pose,from,to,arcX,arcY,delay,travel} of flights){
+      const progress=unit((elapsed-delay)/travel),position=smooth(progress);
+      const dock=smooth(unit((elapsed-delay-travel)/blendTime));
+      if(dock>0)levels.set(rock.id,dock);
+      if(dock===1||!rock.img.naturalWidth)continue;
+      const arc=Math.sin(Math.PI*position);
+      const width=mix(from.width,to.width,position),height=mix(from.height,to.height,position);
+      context.save();
+      context.globalAlpha=mix(startingOpacity,1,smooth(unit(progress*1.9)))*(1-dock);
+      context.translate(mix(from.x,to.x,position)+arc*arcX,mix(from.y,to.y,position)+arc*arcY);
+      context.rotate(pose.rotation*(1-position));
+      context.drawImage(rock.img,-width/2,-height/2,width,height);
+      context.restore();
+    }
+    view?.setAssembly(levels);
+    assembly.progress=elapsed/duration;assembly.docking=levels.size;
+  }
+
+  function step(now){
+    if(!OWNED){releaseController();showAccessRequirement(streetAccess);return;}
+    if(lastFrame!==null)elapsed+=Math.min(now-lastFrame,66);
+    lastFrame=now;
+    if(elapsed>=duration||reducedMotion.matches){finish();return;}
+    paint();assembly.frame=requestAnimationFrame(step);
+  }
+
+  assembly={canvas,resize,frame:0,progress:0,docking:0};
+  resize();sdiscBg.appendChild(canvas);
+  sdiscStage.inert=sdiscBack.inert=sdiscTrig.inert=true;
+  document.body.classList.add('is-snapping','is-controller-forming');
+  if(!view)addEventListener('resize',resize);
+  assembly.frame=requestAnimationFrame(step);
+}
+
 async function snapToBoard(){
   await streetAccessReady;
   if(!OWNED){showAccessRequirement(streetAccess);return false;}
-  if(snapping||boardMode)return;snapping=true;
-  await prepareController();
-  if(!OWNED){snapping=false;releaseController();showAccessRequirement(streetAccess);return false;}
-  stopAsteroids();document.body.classList.add('is-controller-forming');
-  const face=firstPage.canvas.getBoundingClientRect(),poses=firstPage.getSigns();ROCKS.forEach((r,i)=>{const pose=poses[i],im=r.img,nw=im.naturalWidth||1,nh=im.naturalHeight||1,scale=pose.size/Math.max(nw,nh);r.wrap.style.transition='none';r.wrap.style.width=nw*scale*face.width/1600+'px';r.wrap.style.height=nh*scale*face.height/900+'px';r.wrap.style.transform=`translate(${face.x+(pose.x-nw*scale/2)*face.width/1600}px,${face.y+(pose.y-nh*scale/2)*face.height/900}px)`;r.img.style.transform=`rotate(${pose.rotation}rad)`;r.img.style.filter='brightness(.29)';});sdiscBg.getBoundingClientRect();document.body.classList.add('is-snapping');
-  const reduced=reducedMotion.matches;
-  sdiscStage.style.transition=reduced?'none':'opacity .4s'; sdiscStage.style.opacity='0';
-  sdiscBack.style.transition=reduced?'none':'opacity .4s'; sdiscBack.style.opacity='0';
-  sdiscTrig.style.opacity='0';
-  ROCKS.forEach(r=>{
-    const {x:tx,y:ty,width:tw,height:th}=controllerTarget(r);
-    r.wrap.style.transition=reduced?'none':'transform .9s cubic-bezier(.65,0,.35,1),width .9s,height .9s';
-    r.wrap.style.width=tw+'px'; r.wrap.style.height=th+'px';
-    r.wrap.style.transform=`translate(${tx}px,${ty}px)`;
-    r.img.style.transition=reduced?'none':'transform .9s cubic-bezier(.65,0,.35,1),filter .25s ease';
-    r.img.style.filter=''; r.img.style.transform='rotate(0deg)';
-  });
-  const finish=()=>{
-    snapping=false;document.body.classList.remove('is-controller-forming');
-    sdiscStage.style.transition=''; sdiscBack.style.transition='';
-    enterBoardMode();
-  };
-  if(reduced) finish(); else setTimeout(finish,1000);
+  if(snapping||boardMode)return false;
+  snapping=true;
+  const revision=++assemblyRevision;
+  const [view]=await Promise.all([prepareController(),firstPage.ready,...ROCKS.map(({img})=>img.decode().catch(()=>{}))]);
+  if(revision!==assemblyRevision)return false;
+  if(!OWNED){releaseController();showAccessRequirement(streetAccess);return false;}
+  stopAsteroids();assembleController(view);return true;
 }
 
 function showKeyHold(rock,down){
@@ -1323,6 +1402,7 @@ refreshStreetAccessUI=()=>{
   });
 };
 function showAccessRequirement(access){
+  if(snapping)releaseController();
   if(requestedBoard&&firstPageActive){firstPageActive=false;document.body.classList.remove('is-street-front');}
   else beginStreetDiscover({immediate:true});
   launchRevision++;cancelPreparing();resumeVideo=null;streetBusy=false;activeSign=null;playAttempted=false;
@@ -1334,7 +1414,7 @@ function showAccessRequirement(access){
   document.getElementById('street-access-status').textContent=access.state==='error'?'Access could not be verified. Try again.':'A Totehmpaper is required to enter. Get Higher through Stoner first.';
   storyRevision++;showSdisc(SDSLIDES.length-1,true);refreshStreetAccessUI();
 }
-revokeStreetPlayback=()=>{if(activeSign||boardMode||streetBusy)showAccessRequirement(streetAccess);};
+revokeStreetPlayback=()=>{if(activeSign||boardMode||snapping||streetBusy)showAccessRequirement(streetAccess);};
 refreshStreetAccessUI();
 
 let sdiscCur=0, sdiscLock=false,storyRevision=0;
@@ -1423,7 +1503,7 @@ function pauseHiddenVideo(){
 }
 function syncMotion(){
   if(reducedMotion.matches || document.hidden){ stopAsteroids(); stopVidBox(); }
-  else if(!boardMode && !snapping) startAsteroids();
+  else if(!boardMode && !assembly) startAsteroids();
   if(boardMode)controllerView?.draw();
   if(document.hidden) pauseHiddenVideo();
   else {
@@ -1441,7 +1521,7 @@ window.addEventListener('pageshow',syncMotion);
 window.__totehm_lisbon=()=>({
   build:BUILD,step:sdiscCur,board:boardMode,rocks:ROCKS.length,moving:!!frontRaf,firstPage:firstPage.diagnostics(),firstPageActive,
   controller:controllerView?.model.diagnostics()||null,directBoard:directBoardActive,keyFeedback:controllerView?.feedbackState()||null,
-  snapping,reduced_motion:reducedMotion.matches,visible:!document.hidden,
+  snapping,assembly:assembly&&{signs:ROCKS.length,progress:assembly.progress,docking:assembly.docking},reduced_motion:reducedMotion.matches,visible:!document.hidden,
   artwork:xp.classList.contains('up'),auth:false,
   activeSign,directSign,fromSpace,playAttempted,playbackBlocked,videoMuted:vid.muted,
   access:{state:streetAccess.state,owned:OWNED},mediaState,discoverOnly,requestedBoard,privateMedia:true,

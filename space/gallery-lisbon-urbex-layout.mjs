@@ -30,14 +30,14 @@ export const LISBON_URBEX_LAYOUT=freeze({
  entry:[3.15,1.65,11.9],look:[0,4.9,-9.1],
  inside:[-1.7,1.65,2.55],insideTarget:seat.target,
  pavement:{size:[32,36],z:-.2,boatCentre:[0,8]},
- counter,seat,play,fireplace,controller:{position:[.59,1.43],width:.52,tablePitch:Math.PI/15},
+ counter,seat,play,fireplace,controller:{position:[.54,1.56],width:.47,tablePitch:.12,tableYaw:-.16},
  paperCaseWidth:.042,
  paperCases:[{position:[-.67,1.66],angle:-.82},{position:[-.51,1.60],angle:-.90}],
  origins:{id:'origins',room:1,book:[0,21.34,-43],lectern:[0,21.22,-43],approach:[0,1.65,8.3],target:[0,20,-4.2],href:'/origins'},
  stoner:{...counter,id:'stoner',room:3},opposite:{id:'opposite',room:4,approach:[0,1.65,-4],target:[0,3,-14]}
 });
 export const LISBON_URBEX_STATIONS=freeze([LISBON_URBEX_LAYOUT.counter,LISBON_URBEX_LAYOUT.origins,play,LISBON_URBEX_LAYOUT.stoner,LISBON_URBEX_LAYOUT.opposite]);
-// The original signs belong to the experience. The idle projection is its title.
+// The original signs float on the projection and assemble in the experience.
 export const LISBON_HOLOGRAM_SIGNS=freeze(PLAY_SIGNS.map(sign=>({...sign,zone:'experience',mount:'discover'})));
 function box(id,x,z,width,depth,maxY){return{id,minX:x-width/2,maxX:x+width/2,minZ:z-depth/2,maxZ:z+depth/2,minY:groundY,maxY};}
 export const LISBON_URBEX_FURNITURE=freeze([

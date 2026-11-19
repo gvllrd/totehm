@@ -40,7 +40,7 @@ function createOpticalBeam(width,height,emitter){
 
 export function createSaucerProjection(parent,{city='lisbon',mobile=false,onChange=()=>{}}={}){
  const layout=PROJECTION_LAYOUTS[city],root=new T.Group();root.name='Suspended cinema projection';root.position.set(...layout.position);parent.add(root);
- let disposed=false,dirty=true,active=false,opened=false,opens=0,projecting=true,opacity=1,callback=()=>{},drawTime=0,clock=0;
+ let disposed=false,dirty=true,active=false,opened=false,opens=0,projecting=true,opacity=1,callback=()=>{},drawTime=0,clock=0,lisbonElapsed=0;
  const changed=()=>{if(!disposed){dirty=true;onChange();}};
  const front=globalThis.document?(city==='lisbon'?createLisbonFirstPage:createOppositesFront)({width:mobile?1024:1600,height:mobile?576:900,onChange:changed}):null;
  const texture=front?.canvas?new T.CanvasTexture(front.canvas):null;
@@ -69,7 +69,12 @@ export function createSaucerProjection(parent,{city='lisbon',mobile=false,onChan
   update(dt,eye,motion=true){
    if(disposed)return false;
    if(motion)clock+=dt;
-   if(city==='new-york')front?.update(dt,motion);
+   if(city!=='lisbon')front?.update(dt,motion);
+   else if(!motion){lisbonElapsed=0;front?.update(0,false);}
+   else{
+    lisbonElapsed+=dt;
+    if(lisbonElapsed>=1/(mobile?16:24)){front?.update(lisbonElapsed,true);lisbonElapsed=0;}
+   }
    const time=front?.diagnostics().time||0;
    if(texture&&(dirty||time-drawTime>1/(mobile?16:24))){texture.needsUpdate=true;drawTime=time;dirty=true;}
    const target=projecting?1:0,next=motion?T.MathUtils.damp(opacity,target,6,Math.min(.1,dt)):target;

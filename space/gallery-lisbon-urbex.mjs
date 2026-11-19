@@ -17,6 +17,18 @@ function roundedRectangle(width,depth,radius){
  shape.closePath();return shape;
 }
 
+function paintControllerShadow(shape){
+ if(!globalThis.document)return null;
+ const canvas=document.createElement('canvas');canvas.width=192;canvas.height=148;
+ const context=canvas.getContext('2d');
+ shape.getPoints(14).forEach(({x,y},index)=>{
+  const px=(.5+x/1.25)*canvas.width,py=(.5-y/.96)*canvas.height;
+  if(index===0)context.moveTo(px,py);else context.lineTo(px,py);
+ });
+ context.closePath();context.filter='blur(5px)';context.fillStyle='rgba(10,14,20,.44)';context.fill();
+ return new T.CanvasTexture(canvas);
+}
+
 export function createLisbonUrbexGallery(scene,renderer,{mobile=false,onChange=()=>{}}={}){
  const root=new T.Group();root.name='Lisbon — an open-air salon above the drowned city';scene.add(root);
  const geometries=new Set(),materials=new Set(),textures=new Set();
@@ -82,19 +94,33 @@ export function createLisbonUrbexGallery(scene,renderer,{mobile=false,onChange=(
  const [controllerX,controllerZ]=L.controller.position;
  root.add(controller.root);
  controller.root.position.set(controllerX,0,controllerZ);
- controller.root.rotation.x=L.controller.tablePitch;
+ controller.root.rotation.set(L.controller.tablePitch,L.controller.tableYaw,0,'YXZ');
+ controller.root.traverse(object=>{
+  if(object.isMesh&&object.material.visible&&!object.material.transparent)object.castShadow=object.receiveShadow=true;
+ });
  const lowest=new T.Box3().setFromObject(controller.root,true).min.y;
  controller.root.position.y=top-lowest+.001;
  controller.root.updateWorldMatrix(true,true);
- // Discreet supports meet the underside, so the angle reads as a display
- // position when seen from the side as well as when sitting in the chair.
+ // Short rubber feet keep the angled housing seated on the stone.
  const supportMaterial=material(new T.MeshStandardMaterial({color:0x09090a,roughness:.73}));
  const upward=new T.Raycaster(new T.Vector3(),new T.Vector3(0,1,0),0,.22);
- for(const offset of [-.145,.145]){
-  const x=controllerX+offset,z=controllerZ-.085;
-  upward.ray.origin.set(x,top,z);
+ const axisY=new T.Vector3(0,1,0),controllerWidth=L.controller.width;
+ for(const side of [-1,1]){
+  const foot=new T.Vector3(side*.30*controllerWidth,0,-.16*controllerWidth).applyAxisAngle(axisY,L.controller.tableYaw);
+  foot.add(new T.Vector3(controllerX,top,controllerZ));
+  upward.ray.origin.copy(foot);
   const base=upward.intersectObject(controller.root,true).find(hit=>hit.object.material?.visible&&hit.object.material.side!==T.BackSide);
-  if(base?.distance>0)mesh(geometry(new T.BoxGeometry(.042,base.distance,.048)),supportMaterial,[x,top+base.distance/2,z],'Low controller display rest');
+  if(base?.distance>0){
+   foot.y+=base.distance/2;
+   mesh(geometry(new T.CylinderGeometry(.019,.023,base.distance,20)),supportMaterial,foot.toArray(),'Controller rubber foot');
+  }
+ }
+ const contact=paintControllerShadow(controller.hitSurface.geometry.parameters.shapes);
+ if(contact){
+  const shadow=mesh(geometry(new T.PlaneGeometry(1.25*controllerWidth,.96*controllerWidth)),
+   material(new T.MeshBasicMaterial({map:texture(contact),transparent:true,depthWrite:false,toneMapped:false})),
+   [controllerX,top+.0006,controllerZ],'Controller contact shadow');
+  shadow.rotation.set(-Math.PI/2,L.controller.tableYaw,0,'YXZ');shadow.receiveShadow=false;
  }
  const controllerAim=controller.root.localToWorld(new T.Vector3(0,controller.root.userData.faceCorners[0][1],0)).toArray();
  const seat=createLisbonArmchair(root,{layout:L.seat,geometry,material,texture,mark});
@@ -110,6 +136,7 @@ export function createLisbonUrbexGallery(scene,renderer,{mobile=false,onChange=(
  }
  spot(0xffd3aa,23,[-2,2.7,2.2],[0,.72,1.85],.69);
  spot(0xaabdeb,19,[2.9,3.8,-.8],[.2,.6,2.55],.63);
+ spot(0xe2efff,3.75,[1.10,1.58,2.12],[controllerX,.58,controllerZ],.33);
  changed();
 
  return{
@@ -127,7 +154,7 @@ export function createLisbonUrbexGallery(scene,renderer,{mobile=false,onChange=(
    pavement:pavement.diagnostics(),stone:stone.diagnostics(),
    seat:{leather:true,brown:true,position:seat.position,eye:seat.eye,target:seat.target,fov:seat.fov},
    thpCounter:{tables:1,low:true,antiqueLimestone:true,size:L.counter.size,height:top,packagedPapers:cases.length,caseWidthMetres:caseWidth,paperWidthMetres:caseWidth*PAPER_CASE_FACE_RATIO,signed:cases.every(item=>!!item.root.userData.signature),premiumSource:'/get_higher',position:L.counter.position,chemistryEquipment:0},
-   controller:{...controller.diagnostics(),tablePitch:L.controller.tablePitch,tableAim:controllerAim},streetSigns:{count:0,experience:22},paperLoaded,
+   controller:{...controller.diagnostics(),tablePitch:L.controller.tablePitch,tableYaw:L.controller.tableYaw,contactShadow:!!contact,tableAim:controllerAim},streetSigns:{count:0,experience:22},paperLoaded,
    performance:installation.diagnostics(),installation:installation.diagnostics(),disposed
   }),
   dispose(){

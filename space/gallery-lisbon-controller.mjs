@@ -41,43 +41,62 @@ function outline(){
 // Cross-sections widen under the palm and taper into the rounded tip. The
 // loft remains inside the top silhouette and has a closed underside.
 const GRIP_PROFILE=[
-  {z:-.159,x:.306,y:.005,halfWidth:.048,halfHeight:.033},
-  {z:-.056,x:.340,y:.001,halfWidth:.103,halfHeight:.052},
-  {z:.052,x:.371,y:-.001,halfWidth:.109,halfHeight:.061},
-  {z:.153,x:.389,y:-.002,halfWidth:.101,halfHeight:.066},
-  {z:.246,x:.407,y:-.010,halfWidth:.096,halfHeight:.064},
-  {z:.310,x:.411,y:-.010,halfWidth:.072,halfHeight:.051},
-  {z:.359,x:.418,y:.000,halfWidth:.038,halfHeight:.030},
-  {z:.376,x:.419,y:.012,halfWidth:.006,halfHeight:.009}
+  {z:-.140,x:.313,y:.012,halfWidth:.050,halfHeight:.024},
+  {z:-.040,x:.346,y:.009,halfWidth:.093,halfHeight:.038},
+  {z:.062,x:.369,y:.007,halfWidth:.105,halfHeight:.045},
+  {z:.155,x:.386,y:.004,halfWidth:.103,halfHeight:.052},
+  {z:.245,x:.402,y:.006,halfWidth:.092,halfHeight:.049},
+  {z:.307,x:.412,y:.010,halfWidth:.069,halfHeight:.039},
+  {z:.349,x:.418,y:.017,halfWidth:.035,halfHeight:.027},
+  {z:.370,x:.419,y:.024,halfWidth:.006,halfHeight:.009}
 ];
 
 function palmGrip(side,mobile){
   const path=new T.CatmullRomCurve3(GRIP_PROFILE.map(p=>new T.Vector3(side*p.x,p.y,p.z)));
   const radii=new T.CatmullRomCurve3(GRIP_PROFILE.map(p=>new T.Vector3(p.halfWidth,p.halfHeight,0)));
-  const rings=mobile?20:34,sides=mobile?18:36,vertices=[],indices=[];
+  const rings=mobile?20:34,sides=mobile?18:42,stride=sides+1,vertices=[],indices=[],uvs=[];
   for(let ring=0;ring<=rings;ring++){
     const center=path.getPoint(ring/rings),radius=radii.getPoint(ring/rings);
-    for(let j=0;j<sides;j++){
+    for(let j=0;j<=sides;j++){
       const angle=j*Math.PI*2/sides;
-      vertices.push(center.x+Math.cos(angle)*radius.x,Math.max(-.069,center.y+Math.sin(angle)*radius.y),center.z);
-      if(ring<rings){
-        const a=ring*sides+j,b=ring*sides+(j+1)%sides;
-        indices.push(a,b,b+sides,a,b+sides,a+sides);
+      vertices.push(center.x+Math.cos(angle)*radius.x,center.y+Math.sin(angle)*radius.y,center.z);
+      uvs.push(j/sides,ring/rings);
+      if(ring<rings&&j<sides){
+        const a=ring*stride+j,b=a+1;
+        indices.push(a,b,b+stride,a,b+stride,a+stride);
       }
     }
   }
   for(const ring of [0,rings]){
     const center=path.getPoint(ring/rings),cap=vertices.length/3;
     vertices.push(...center.toArray());
+    uvs.push(.5,ring/rings);
     for(let j=0;j<sides;j++){
-      const a=ring*sides+j,b=ring*sides+(j+1)%sides;
+      const a=ring*stride+j,b=a+1;
       indices.push(cap,ring===0?b:a,ring===0?a:b);
     }
   }
   const geometry=new T.BufferGeometry();
   geometry.setAttribute('position',new T.Float32BufferAttribute(vertices,3));
+  geometry.setAttribute('uv',new T.Float32BufferAttribute(uvs,2));
   geometry.setIndex(indices);geometry.computeVertexNormals();
   return geometry;
+}
+
+function moldedGrain(){
+  const size=64,pixels=new Uint8Array(size*size*4);
+  let seed=44019;
+  for(let i=0;i<pixels.length;i+=4){
+    seed=(Math.imul(seed,1664525)+1013904223)>>>0;
+    const grain=98+(seed>>>25);
+    pixels[i]=pixels[i+1]=pixels[i+2]=grain;pixels[i+3]=255;
+  }
+  const texture=new T.DataTexture(pixels,size,size);
+  texture.wrapS=texture.wrapT=T.RepeatWrapping;
+  texture.repeat.set(24,24);
+  texture.magFilter=T.LinearFilter;texture.minFilter=T.LinearMipmapLinearFilter;
+  texture.generateMipmaps=true;texture.anisotropy=4;texture.needsUpdate=true;
+  return texture;
 }
 
 function shoulderGeometry(width,depth,side,mobile){
@@ -178,11 +197,12 @@ export function createLisbonController({width=.52,mobile=false,onChange=()=>{}}=
   const root=new T.Group();root.name='Lisbon · original street controller';root.scale.setScalar(width);
   const materials=new Set(),geometries=new Set(),textures=new Set(),keys=new Map(),pending=[];
   let loaded=0,disposed=false;
-  const shellInk=new T.MeshPhysicalMaterial({color:0x181e29,roughness:.38,metalness:.22,clearcoat:.52,clearcoatRoughness:.28});
-  const edgeInk=new T.MeshPhysicalMaterial({color:0x080d15,roughness:.47,metalness:.31});
-  const gripInk=new T.MeshPhysicalMaterial({color:0x11151d,roughness:.67,metalness:.04,clearcoat:.12});
-  const rubberInk=new T.MeshPhysicalMaterial({color:0x090b0f,roughness:.66,metalness:.03});
-  const bezelInk=new T.MeshPhysicalMaterial({color:0x475665,roughness:.28,metalness:.56});
+  const grain=moldedGrain();textures.add(grain);
+  const shellInk=new T.MeshPhysicalMaterial({color:0x282e39,roughness:.49,metalness:.16,clearcoat:.29,clearcoatRoughness:.38,bumpMap:grain,bumpScale:.0012});
+  const edgeInk=new T.MeshPhysicalMaterial({color:0x171d26,roughness:.57,metalness:.18});
+  const gripInk=new T.MeshPhysicalMaterial({color:0x121821,roughness:.73,metalness:.03,bumpMap:grain,bumpScale:.0024});
+  const rubberInk=new T.MeshPhysicalMaterial({color:0x151b24,roughness:.70,metalness:.03,bumpMap:grain,bumpScale:.0017});
+  const bezelInk=new T.MeshPhysicalMaterial({color:0x3b4958,roughness:.36,metalness:.42});
   const lighting=new T.MeshBasicMaterial({color:0x8aacd6,toneMapped:false});
   for(const ink of [shellInk,edgeInk,gripInk,rubberInk,bezelInk,lighting])materials.add(ink);
   const create=(geometry,material,x,y,z)=>{geometries.add(geometry);materials.add(material);const mesh=new T.Mesh(geometry,material);mesh.position.set(x,y,z);root.add(mesh);return mesh;};
@@ -190,11 +210,11 @@ export function createLisbonController({width=.52,mobile=false,onChange=()=>{}}=
     const mesh=create(new T.ExtrudeGeometry(shape,{depth,curveSegments:mobile?10:24,bevelEnabled:true,bevelThickness:bevel,bevelSize:bevel,bevelSegments:mobile?2:4}),material,0,y,0);
     mesh.rotation.x=-Math.PI/2;mesh.scale.set(scale,scale,1);return mesh;
   }
-  const lower=shell(edgeInk,-.029,.042,.025,.958);
-  const belt=shell(bezelInk,.018,.005,.007,.982);
+  const lower=shell(edgeInk,0,.025,.026,.961);
+  const belt=shell(bezelInk,.025,.003,.003,.991);
   const faceShape=outline(),faceScale=.982,displayZ=LISBON_KEYS.destination[1];
   faceShape.holes.push(roundedPanel({width:DISPLAY_FRAME.width/faceScale,depth:DISPLAY_FRAME.depth/faceScale,radius:DISPLAY_FRAME.radius/faceScale},0,-displayZ/faceScale));
-  const face=shell(shellInk,.031,.031,.018,faceScale,faceShape);
+  const face=shell(shellInk,.044,.016,.020,faceScale,faceShape);
   lower.name='Radiused controller underside';belt.name='Controller shell joint';face.name='Bevelled graphite controller shell';
   const grips=[-1,1].map(side=>{
     const mesh=create(palmGrip(side,mobile),gripInk,0,0,0);
@@ -223,11 +243,11 @@ export function createLisbonController({width=.52,mobile=false,onChange=()=>{}}=
     const isDisplay=id==='destination';
     const geometry=shoulder ? shoulderGeometry(size,.012,x<0?1:-1,mobile)
       : isStick ? thumbArtwork(size*.93)
-      : createLisbonSignGeometry(id,size*(isDisplay?1:.93),isDisplay?.0013:.034);
+      : createLisbonSignGeometry(id,size*(isDisplay?1:.93),isDisplay?.0013:.023);
     if(!isStick&&!isDisplay)tintButtonEdges(geometry,shoulder?.76:.44);
     const stick=isStick ? mountThumbStick(create,root,x,z,edgeInk,rubberInk,bezelInk) : undefined;
     const display=isDisplay ? mountDisplay(create,x,z,edgeInk) : undefined;
-    const keyY=FACE_HEIGHT+(shoulder?.018:isDisplay?-.002:isStick?.080:id==='pharma'?.033:.025);
+    const keyY=FACE_HEIGHT+(shoulder?.018:isDisplay?-.002:isStick?.080:id==='pharma'?.024:.019);
     const baseY=isStick ? 0 : keyY-geometry.boundingBox.max.z;
     const ink=isDisplay ? new T.MeshBasicMaterial({color:0xffffff,toneMapped:false,alphaTest:.15})
       : new T.MeshPhysicalMaterial({
@@ -259,6 +279,7 @@ export function createLisbonController({width=.52,mobile=false,onChange=()=>{}}=
       textures.add(texture);
     }));
     const key={id,x,z,size,y:keyY,baseY,button,shoulder,stick,display,kind:shoulder?'shoulder':isStick?'stick':isDisplay?'display':'sign'};
+    if(shoulder)key.artworkSize=[size*253/512,size*.36*253/184];
     if(shoulder)key.applyPressure=(amount,motion)=>{
       const travel=motion?.006*amount:0;
       button.position.y=baseY-travel;
@@ -282,7 +303,7 @@ export function createLisbonController({width=.52,mobile=false,onChange=()=>{}}=
   const data={kind:'lisbon-controller',action:'open',href:'/play_lisbon_street?board=1'};
   for(const mesh of pickables)Object.assign(mesh.userData,data);
   return {root,hitSurface,pickables,keys,ready:Promise.all(pending),
-    diagnostics:()=>({kind:'lisbon-controller-original-3d',version:4,width,keys:keys.size,loaded,closedShell:true,physical:true,palmGrips:grips.length,thumbSticks:2,articulatedSticks:2,shoulderControls:4,activeShoulders:2,flushDisplay:true}),
+    diagnostics:()=>({kind:'lisbon-controller-original-3d',version:5,width,keys:keys.size,loaded,closedShell:true,physical:true,palmGrips:grips.length,texturedShell:true,thumbSticks:2,articulatedSticks:2,shoulderControls:4,activeShoulders:2,flushDisplay:true}),
     dispose(){disposed=true;root.removeFromParent();for(const geometry of geometries)geometry.dispose();for(const material of materials)material.dispose();for(const texture of textures)texture.dispose();}
   };
 }
@@ -312,23 +333,49 @@ export function createLisbonControllerView(host,{onLayout=()=>{}}={}){
     camera.bottom=-rectangle.height/(2*shot.pixels);camera.top=-camera.bottom;
     camera.updateProjectionMatrix();camera.updateMatrixWorld();draw();onLayout();
   }
-  function target(id){
-    const key=model.keys.get(id);if(!key)return null;
+  function faceRectangle(key,reachX,reachZ,minimum=0){
     const box=renderer.domElement.getBoundingClientRect();
     // Use the neutral face coordinates even while the control tilts or moves.
     const project=(x,z)=>model.root.localToWorld(new T.Vector3(x,key.y,z)).project(camera);
-    const {min,max}=key.button.geometry.boundingBox;
-    const reachX=Math.max(-min.x,max.x),reachZ=Math.max(-min.y,max.y);
     const center=project(key.x,key.z);
     const topLeft=project(key.x-reachX,key.z-reachZ);
     const bottomRight=project(key.x+reachX,key.z+reachZ);
-    const width=Math.max(23,box.width*(bottomRight.x-topLeft.x)/2);
-    const height=Math.max(23,box.height*(topLeft.y-bottomRight.y)/2);
+    const width=Math.max(minimum,box.width*(bottomRight.x-topLeft.x)/2);
+    const height=Math.max(minimum,box.height*(topLeft.y-bottomRight.y)/2);
     return {
       x:box.left+(center.x+1)*box.width/2-width/2,
       y:box.top+(1-center.y)*box.height/2-height/2,
       width,height
     };
+  }
+  function target(id){
+    const key=model.keys.get(id);if(!key)return null;
+    const {min,max}=key.button.geometry.boundingBox;
+    return faceRectangle(key,Math.max(-min.x,max.x),Math.max(-min.y,max.y),23);
+  }
+  function artworkTarget(id){
+    const key=model.keys.get(id);if(!key)return null;
+    if(key.artworkSize)return faceRectangle(key,key.artworkSize[0]/2,key.artworkSize[1]/2);
+    const diameter=key.size*(key.kind==='display'?1:.93);
+    return faceRectangle(key,diameter/2,diameter/2);
+  }
+  const artworkMaterials=new Map([...model.keys].map(([id,{button}])=>[id,{
+    opacity:button.material.opacity,transparent:button.material.transparent,depthWrite:button.material.depthWrite
+  }]));
+  function setAssembly(levels){
+    let changed=false;
+    for(const [id,{button}] of model.keys){
+      const level=levels?.get(id)??(levels?0:1),material=button.material,base=artworkMaterials.get(id);
+      const fading=level>0&&level<1,opacity=base.opacity*level,transparent=base.transparent||fading;
+      const visible=!!material.map&&level>0;
+      if(visible!==button.visible||opacity!==material.opacity||transparent!==material.transparent){
+        button.visible=visible;material.opacity=opacity;
+        if(material.transparent!==transparent){material.transparent=transparent;material.needsUpdate=true;}
+        material.depthWrite=base.depthWrite&&!fading;
+        changed=true;
+      }
+    }
+    if(changed)draw();
   }
   const presses=new Map();
   let pressFrame=0,lastFeedback=null;
@@ -413,7 +460,7 @@ export function createLisbonControllerView(host,{onLayout=()=>{}}={}){
     return completed;
   }
   addEventListener('resize',layout);layout();
-  return {canvas:renderer.domElement,model,ready:model.ready.then(draw),draw,layout,target,feedback,
+  return {canvas:renderer.domElement,model,ready:model.ready.then(draw),draw,layout,target,artworkTarget,setAssembly,feedback,
     feedbackState:()=>lastFeedback,
     dispose(){
       if(drawFrame)cancelAnimationFrame(drawFrame);

@@ -52,7 +52,7 @@ async function prepare(owned){
  await fixture.pg.goto(origin+'/lisbon-space');
  await fixture.pg.waitForFunction(()=>{
   const world=window.__totehm_gallery?.();
-  return world?.frames>0&&world.projection?.ready&&world.temple?.paperLoaded&&world.temple?.controller.loaded===22;
+  return world?.frames>0&&world.projection?.ready&&world.projection.front.visibleSigns===22&&world.temple?.paperLoaded&&world.temple?.controller.loaded===22;
  },null,{timeout:90000});
  return fixture;
 }
@@ -66,7 +66,10 @@ try{
   check(world.temple.openAir&&world.temple.walls===0&&world.temple.floor.surfaces===1&&world.temple.floor.caravel,'Lisbon renders one open-air calçada with its caravel');
   check(world.temple.thpCounter.paperWidthMetres<.03&&world.temple.thpCounter.signed,'The signed cases contain blotter-sized sheets on the table');
   check(world.fireplace.outdoor&&world.fireplace.present&&world.fireAudio.present,'Only the outdoor wood fire and its audio source are in the lounge');
-  check(world.projection.bottom>0&&world.projection.front.visibleSigns===0&&world.projection.front.titleOnly,'The suspended idle screen has only the authored Lisbon title');
+  const projectionFront=world.projection.front;
+  check(world.projection.bottom>0&&projectionFront.visibleSigns===22&&projectionFront.headline==='Make them useful for your brain'&&projectionFront.subtitle==='Neurological & Digital Street Art','The suspended screen shows the full Lisbon artwork and its new copy');
+  const prop=world.temple.controller;
+  check(prop.texturedShell&&prop.contactShadow&&prop.tableYaw===L.controller.tableYaw&&prop.width===L.controller.width,'The satin controller is grounded on the table and aimed toward the chair');
   await pg.screenshot({path:path.join(output,'island.png')});
   await clickPoint(pg,[0,.96,L.seat.position[2]]);
   await pg.waitForFunction(()=>window.__totehm_gallery().seated&&window.__totehm_gallery().camera.position[1]<1.1);
@@ -121,7 +124,7 @@ try{
   check(await discover.evaluate(()=>{
    const state=window.__totehm_lisbon();
    return state.discoverSlides===9&&!state.board&&state.firstPage.signs===22;
-  }),'Clicking the title screen enters its Discover with the original signs');
+  }),'Clicking the suspended artwork enters its matching Discover with the original signs');
   await pg.screenshot({path:path.join(output,'discover.png')});
   await close(pg,discover,shot);
   check(!guest.log.errors.some(error=>error.startsWith('pageerror:')),'The physical guest journey has no page exception');
