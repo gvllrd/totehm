@@ -12,10 +12,10 @@ const OUT = process.argv[2] || '/tmp'; const browser = await launch(); const ori
 const UID = '11111111-1111-4111-8111-111111111111';
 const STEPS = [{ t:'Run the hill', t0:'Run the hill', is:['flow'], f:'daily', o:'o1' }];
 const trips = { signed_in:true,
-  trips:[{ id:'o1', text:'Marathon in May', target_at:'2027-05-01T00:00:00Z', days_left:163, habits:['Run the hill'] },
+  objectives:[{ id:'o1', text:'Marathon in May', target_at:'2027-05-01T00:00:00Z', days_left:163, habits:['Run the hill'] },
          { id:'o9', text:'', target_at:null, days_left:null, habits:[] }],
   objs:{ 'Run the hill':['o1','v1'] },
-  reps:[{ id:'r1', text:'Scrolling at night', hs:['Run the hill'], habits:['Run the hill'] }],
+  repulsions:[{ id:'r1', text:'Scrolling at night', hs:['Run the hill'], habits:['Run the hill'] }],
   stories:[{ id:'w1', text:'Slow is smooth' }],
   visions:[{ id:'v1', text:'A studio by the sea', os:[] }] };
 const land = { signed_in:true, pseudo:'wah', visibility:'private', offer:{ enabled:false },
@@ -43,7 +43,7 @@ const lire = (pg, sel) => pg.evaluate(s => {
 try{
  const { pg, log } = await page(browser, { dir:'com', origin,
    tables:{ profiles:[{ pseudo:'wah' }], totehms:[{ user_id:UID, steps:STEPS, vis:'private' }] },
-   rpc:{ my_landing:land, my_trips:trips, habit_spaces:{ ok:true, mine:true, habits:[] },
+   rpc:{ my_landing:land, my_totehm:trips, habit_spaces:{ ok:true, mine:true, habits:[] },
          my_box_audiences:{ ok:true, h:{}, t:{}, r:{}, w:{}, v:{} } } });
  await ouvrir(pg);
 

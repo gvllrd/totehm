@@ -19,7 +19,7 @@ const LAND=(o={})=>({signed_in:true,pseudo:'wahigher',visibility:'private',offer
   sm:{ready:true,habit:true,objective:true,higher:false,free_total:7,free_left:6,left:6},...o});
 /* Le Totehm d'un autre, lu SUR PLACE depuis MEMBERS (`totehm_read`). */
 const AUTRE={ok:true,pseudo:'kai3',steps:[{t:'Swim at dawn',i:'flow',is:['flow']},{t:'Write it down',i:'express',is:['express']}],
-  trips:[],objs:{},reps:[],wisdom:[],visions:[]};
+  objectives:[],objs:{},repulsions:[],stories:[],visions:[]};
 const COULEURS=['#E24B4A','#e48b31','#fcbe21','#639922','#1D9E75','#378ADD','#7F77DD'];
 const erreurs=log=>log.errors.filter(e=>e.startsWith('pageerror'));
 const lv=pg=>pg.evaluate(()=>window.__totehm_lv());

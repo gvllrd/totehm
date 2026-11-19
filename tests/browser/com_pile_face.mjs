@@ -10,7 +10,7 @@ const origin='https://www.totehm.com',browser=await launch();
 const habits=[{t:'Run the hill',is:['fight'],f:'daily'}];
 const rpc={my_landing:{signed_in:true,pseudo:'wahigher',telegram:false,higher:{active:true}},my_board:{ok:true,today:'2026-11-10',objectives:[],heat:[],feed:[],totals:{}},
  tracking_summary_for_me:{ok:true,days_count:7,counts:{done:2,missed:1,unanswered:1},days:Array.from({length:7},(_,d)=>({day:'2026-11-'+String(4+d).padStart(2,'0')})),habits:[],settings:{}},
- my_console:{signed_in:true,offer:{enabled:true,price_cents:2400,currency:'eur',payout_fin:'1234'},subscriptions:[]},my_trips:{signed_in:true,trips:[],reps:[],wisdom:[],visions:[]}};
+ my_console:{signed_in:true,offer:{enabled:true,price_cents:2400,currency:'eur',payout_fin:'1234'},subscriptions:[]},my_totehm:{signed_in:true,objectives:[],repulsions:[],stories:[],visions:[]}};
 const etat=pg=>pg.evaluate(()=>({gate:document.body.classList.contains('gate'),verso:document.getElementById('srch').classList.contains('is-open')}));
 const erreurs=log=>log.errors.filter(e=>e.startsWith('pageerror'));
 /* Ce que `body` a porté pendant le geste : l'atterrissage (`gate`), son repli (`folding`) ou son déploiement (`entered`). */

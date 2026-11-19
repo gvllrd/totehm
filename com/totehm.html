@@ -799,7 +799,7 @@ body.v-visions{--paper:#2b3a73}
    `align-items:flex-start` + `padding-top` fixe l'ancrage en haut,
    identique mobile et desktop pour rester prévisible. */
 /* ══ LA BOÎTE OUVERTE — IL N'Y A PLUS DE FENÊTRE · 06/09/2026 ═════════
-   `#trip-peek` était une modale plein écran sur un voile noir à 82 %. Elle
+   La box de l'objectif ouvrait une modale plein écran sur un voile noir à 82 %. Elle
    ne vivait pas DANS le Totehm : elle le recouvrait — plus de T, plus de
    carrés, plus de wordmark, plus de rail. Le voile est parti.
    La boîte de la ligne S'AGRANDIT à sa place, garde la couleur de sa vue,
@@ -5341,7 +5341,7 @@ const VISIMG=new Map(); let visImgSeq=0;
 let state={habits:[],vis:'private'};
 let busy=false, fpTarget=null, fpStage='freq', pendingF=null, pendingI=null, filterF=null, filterI=null;
 /* `pendingO` : l'objectif que servira la prochaine habitude ecrite.
-   Pose par le wizard [Add a trip] d'objectives.html, nul partout
+   Pose par l'ancien assistant d'objectives.html, nul partout
    ailleurs — une habitude ecrite au fil de l'eau ne sert encore rien.
    ⚠️ Il DOIT etre declare : `pendingO` est lu dans le push d'habitude,
    et un identifiant non declare ne casse pas au parse — il casse a
@@ -5538,21 +5538,21 @@ function poserLecture(data){
       i:INT_BY_ID[x.i]?x.i:(li[0]||null), is:li, o:x.o||null});});
   state={habits, vis:'subscribers', ord:true};
 
-  TRIPS=(data.trips||[]).map(t=>Object.assign({},t,{
-    is:Array.isArray(t.is)?t.is:[], vs:(t.visions||[]).map(String)}));
+  OBJECTIVES=(data.objectives||[]).map(t=>Object.assign({},t,{
+    is:Array.isArray(t.is)?t.is:[]}));
   OBJ={}; const oj=data.objs||{};
   Object.keys(oj).forEach(k=>{ OBJ[k]=(oj[k]||[]).map(String); });
-  REPS=(data.reps||[]).map(r=>({id:r.id, text:r.text||'', obstacle:r.obstacle||'',
+  REPULSIONS=(data.repulsions||[]).map(r=>({id:r.id, text:r.text||'', obstacle:r.obstacle||'',
     hs:(r.hs||[]).slice(), stories:(r.ws||[]).map(String), is:Array.isArray(r.is)?r.is:[]}));
-  STORIES=(data.stories||data.wisdom||[]).map(w=>({id:String(w.id), t:w.text||'', t0:w.text||'',
+  STORIES=(data.stories||[]).map(w=>({id:String(w.id), t:w.text||'', t0:w.text||'',
     is:Array.isArray(w.is)?w.is:[], os:(w.os||[]).map(String)}));
   VIS=(data.visions||[]).map(v=>({id:String(v.id), t:v.text||'', t0:v.text||'',
     is:Array.isArray(v.is)?v.is:[], os:(v.os||[]).map(String)}));
-  /* ⚠️ `tripsLoaded` À VRAI, ET C'EST ESSENTIEL. C'est ce drapeau qui
-     empêche `loadTrips()` de partir chercher l'arbre DE CELUI QUI
+  /* ⚠️ `totehmLoaded` À VRAI, ET C'EST ESSENTIEL. C'est ce drapeau qui
+     empêche `loadTotehm()` de partir chercher l'arbre DE CELUI QUI
      REGARDE et de l'afficher dans le Totehm d'un autre. Sans lui, on
      voyait ses propres objectifs chez quelqu'un d'autre. */
-  tripsLoaded=true;
+  totehmLoaded=true;
   chargerOrdres(RO);
 
   document.body.classList.add('ro');
@@ -5583,7 +5583,7 @@ async function sortirLecture(){
   roSeq++; HSPACES.seq++; HSPACES.par=new Map(); ECLOTHS.seq++; ECLOTHS.par=new Map();
   MBM.seq++; MBM.nom=null; MBM.items=[];
   ZOOM.clear(); COPIES.clear();
-  state={habits:[],vis:'private'}; TRIPS=[]; REPS=[]; STORIES=[]; VIS=[]; OBJ={}; SPOT=Object.create(null);spotSeq++;tripsLoaded=false;
+  state={habits:[],vis:'private'}; OBJECTIVES=[]; REPULSIONS=[]; STORIES=[]; VIS=[]; OBJ={}; SPOT=Object.create(null);spotSeq++;totehmLoaded=false;
   try{ history.replaceState(null,'',location.pathname); }catch(_){}
   await sessionChange();
 }
@@ -6770,7 +6770,7 @@ function creerFeed(conf){
     try{
       if(!o) return [];
       if(k==='h') return intCols(o);
-      if(k==='t') return colsHeritees(habsOfTrip(o));
+      if(k==='t') return colsHeritees(habsOfObjective(o));
       if(k==='r') return colsHeritees(habsOfRep(o));
       if(k==='w') return colsHeritees(repsOfStory(o).reduce((a,r)=>a.concat(habsOfRep(r)),[]));
       return colsHeritees(habsOfVision(o));
@@ -6783,7 +6783,7 @@ function creerFeed(conf){
     try{
       if(!o) return [];
       if(k==='h') return desInts(o);
-      const hs = k==='t' ? habsOfTrip(o)
+      const hs = k==='t' ? habsOfObjective(o)
                : k==='r' ? habsOfRep(o)
                : k==='w' ? repsOfStory(o).reduce((a,r)=>a.concat(habsOfRep(r)),[])
                :           habsOfVision(o);
@@ -6853,15 +6853,15 @@ function creerFeed(conf){
     if(!x){ SF.box=null; SF.on=new Set(); SF.freq=false; return; }
     /* LA GRILLE : la box choisie est UN élément — ses médias, et elle-même remise en tête des résultats. */
     if(conf.grille){ const bk=BOX[x.k]; if(!bk) return; const o=objetBox(bk,x.ref), vue=VUE[x.k], id=o?String(o.id):'';
-      SF.box={k:x.k, bk, vue, id, txt:String(x.txt||''), objs:[], reps:[], freq:''}; SF.on=new Set([vue+'|'+id]); SF.freq=false; SF.vue=vue; return; }
+      SF.box={k:x.k, bk, vue, id, txt:String(x.txt||''), objs:[], repulsions:[], freq:''}; SF.on=new Set([vue+'|'+id]); SF.freq=false; SF.vue=vue; return; }
     const bk=BOX[x.k]; if(!bk) return;
     const o=bk==='h'?habByT(String(x.ref)):objetDe(bk,String(x.ref));
     const vue=VUE[x.k], id=o?String(o.id):'';
     const liens=(l,v)=>l.map(z=>({vue:v, id:String(z.id), txt:String(z.text||z.t||'')})).filter(z=>z.txt);
-    const objs=(bk==='h'&&o)?liens(tripsOfHab(o),'objectives'):[];
-    const reps=(bk==='h'&&o)?liens(repsOfHabX(o),'repulsions'):[];
-    SF.box={k:x.k, bk, vue, id, txt:String(x.txt||''), freq:(bk==='h'&&o)?String(o.f||''):'', objs, reps};
-    SF.on=new Set([vue+'|'+id].concat(objs.map(z=>z.vue+'|'+z.id), reps.map(z=>z.vue+'|'+z.id)));
+    const objs=(bk==='h'&&o)?liens(objectivesOfHab(o),'objectives'):[];
+    const repulsions=(bk==='h'&&o)?liens(repsOfHabX(o),'repulsions'):[];
+    SF.box={k:x.k, bk, vue, id, txt:String(x.txt||''), freq:(bk==='h'&&o)?String(o.f||''):'', objs, repulsions};
+    SF.on=new Set([vue+'|'+id].concat(objs.map(z=>z.vue+'|'+z.id), repulsions.map(z=>z.vue+'|'+z.id)));
     SF.freq=!!SF.box.freq;
   }
   function sfReset(){ sfBox(null); SF.ints=new Set(); SF.piliers=new Set(); SF.type=''; SF.vue=''; SF.quand=''; SF.aud=''; SF.ou=''; SF.rayon=50; }
@@ -7111,7 +7111,7 @@ function creerFeed(conf){
     if(b&&conf.src!=='spots'){
       h+=g('This element', c('data-sf="el" data-v="'+esc(b.vue+'|'+b.id)+'"', b.txt, SF.on.has(b.vue+'|'+b.id)));
       h+=g('Objectives', b.objs.map(z=>c('data-sf="el" data-v="'+esc(z.vue+'|'+z.id)+'"', z.txt, SF.on.has(z.vue+'|'+z.id))).join(''));
-      h+=g('Repulsions', b.reps.map(z=>c('data-sf="el" data-v="'+esc(z.vue+'|'+z.id)+'"', z.txt, SF.on.has(z.vue+'|'+z.id))).join(''));
+      h+=g('Repulsions', b.repulsions.map(z=>c('data-sf="el" data-v="'+esc(z.vue+'|'+z.id)+'"', z.txt, SF.on.has(z.vue+'|'+z.id))).join(''));
       if(b.freq) h+=g('Rhythm', c('data-sf="freq"', flabel(b.freq), SF.freq));
     }
     /* 20/10 quater — CHAQUE PANNEAU SERT SA VUE. À gauche (mes médias) : ce que ça montre, la vue d'origine,
@@ -7191,7 +7191,7 @@ function creerFeed(conf){
      point de focalisation. */
   /* La box d'un média : celle du Totehm (`boxTotehm`), TOUJOURS au format du Totehm (« les box sont sacrées »).
      10/11 (Wah : « certaines boxes ne s'affichent pas ou mal sur les vignettes ») — mesuré : avant l'arrivée de
-     l'arbre (`my_trips`), 5 vignettes sur 7 n'avaient AUCUNE box, et une Habit introuvable tombait dans l'ancien
+     l'arbre (`my_totehm`), 5 vignettes sur 7 n'avaient AUCUNE box, et une Habit introuvable tombait dans l'ancien
      rendu `.tl-b`. Désormais : une Habit non retrouvée garde SA box, de son nom ; les quatre autres posent une box
      d'ATTENTE à leur couleur, à la même place, qui se remplit quand l'arbre arrive (`SH.maj`) — elle se transforme,
      elle n'apparaît pas. */
@@ -7550,8 +7550,8 @@ function creerFeed(conf){
       /* À DROITE, LES HABITS SEULES : un spot n'appartient qu'à une Habit. À gauche, les CINQ vues —
          un média illustre n'importe quel élément du Totehm. */
       if(conf.boxes==='habits') return l;
-      (TRIPS||[]).forEach(o=>{ const t=String(o.text||'').trim(); if(t) l.push({k:'o',ref:String(o.id),txt:t,cols:colsDe('t',o),ints:intsDe('t',o)}); });
-      (REPS ||[]).forEach(o=>{ const t=String(o.text||'').trim(); if(t) l.push({k:'r',ref:String(o.id),txt:t,cols:colsDe('r',o),ints:intsDe('r',o)}); });
+      (OBJECTIVES||[]).forEach(o=>{ const t=String(o.text||'').trim(); if(t) l.push({k:'o',ref:String(o.id),txt:t,cols:colsDe('t',o),ints:intsDe('t',o)}); });
+      (REPULSIONS ||[]).forEach(o=>{ const t=String(o.text||'').trim(); if(t) l.push({k:'r',ref:String(o.id),txt:t,cols:colsDe('r',o),ints:intsDe('r',o)}); });
       /* ⚠️ Sagesse et visions se lisent `t` chez moi et `text` en lecture : on accepte les deux,
          sinon la vue de gauche proposerait quatre éléments là où il y en a cinq. */
       (STORIES||[]).forEach(o=>{ const t=String(o.t||o.text||'').trim(); if(t) l.push({k:'w',ref:String(o.id),txt:t,cols:colsDe('w',o),ints:intsDe('w',o)}); });
@@ -8761,8 +8761,8 @@ function versVoisin(d){ const v=voisin(d); if(!v)return; dernierSens=d;
   if(!DU_MANCHE&&POUSSE_JOY)POUSSE_JOY(d);
   setView(v); }
 /* Les cinq listes. `state.habits` vit en local (elle est dans `steps`),
-   les quatre autres viennent du serveur en UN appel — `my_trips`. */
-let TRIPS=[], REPS=[], STORIES=[], VIS=[], tripsLoaded=false;
+   les quatre autres viennent du serveur en UN appel — `my_totehm`. */
+let OBJECTIVES=[], REPULSIONS=[], STORIES=[], VIS=[], totehmLoaded=false;
 /* ══ LE SPOT · 19/09/2026 ════════════════════════════════════════════
    Texte d'habitude → lieu. Une habitude a un ENDROIT où on la fait :
    « le parc en bas », « la salle de Benfica ». Pas une adresse — un
@@ -8802,7 +8802,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-11-19-vocabulaire-story';
+const BUILD='2026-11-19-vocabulaire-objective';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -8831,30 +8831,30 @@ const habOf  =id=>(state.habits||[]).find(x=>x.id===id)||null;
    retombe sur `t` pour ce qui n'a pas encore de texte serveur. */
 const habByT =t =>(state.habits||[]).find(x=>(x.t0!==undefined?x.t0:x.t)===t)
               ||(state.habits||[]).find(x=>x.t===t)||null;
-const tripOf =id=>TRIPS.find(t=>String(t.id)===String(id))||null;
-const repOf  =id=>REPS.find(r=>String(r.id)===String(id))||null;
+const objectiveOf =id=>OBJECTIVES.find(t=>String(t.id)===String(id))||null;
+const repOf  =id=>REPULSIONS.find(r=>String(r.id)===String(id))||null;
 const storyOf=id=>STORIES.find(w=>String(w.id)===String(id))||null;
 const visOf  =id=>VIS.find(v=>String(v.id)===String(id))||null;
 /* UN SEUL POINT D'ENTREE POUR LES CINQ. Tout ce qui est generique — les
    intentions, le renommage, la suppression — passe par ici. Cinq `if`
    recopies a cinq endroits, c'est cinq endroits ou en oublier un. */
-const objetDe=(k,id)=> k==='h'?habOf(id) : k==='t'?tripOf(id) : k==='r'?repOf(id)
+const objetDe=(k,id)=> k==='h'?habOf(id) : k==='t'?objectiveOf(id) : k==='r'?repOf(id)
                      : k==='w'?storyOf(id) : k==='v'?visOf(id) : null;
 /* ══ UNE SEULE BOX POUR LE WHY · 19/11/2026 ═══════════════════════════
    Wah : « Un objectif sans deadline est automatiquement déplacé dans la vue vision. Une vision avec
    deadline est automatiquement déplacée dans la vue objectif. » Objectif et vision sont la MÊME box
-   (`objectives` en base, `visions` = sa vue sans date) : `TRIPS` tient les datées, `VIS` les autres,
+   (`objectives` en base, `visions` = sa vue sans date) : `OBJECTIVES` tient les datées, `VIS` les autres,
    le MÊME identifiant passe de l'une à l'autre (`deplacerWhy`). Le lien objectif → vision n'existe
    plus : une Habit sert directement son why (`OBJ`), et le How d'une vision, ce sont SES Habits. */
-const whyOf        =id=>tripOf(id)||visOf(id);
+const whyOf        =id=>objectiveOf(id)||visOf(id);
 const visionsOfHab =x=>objIdsOf(x).map(visOf).filter(Boolean);
-const habsOfVision =v=>habsOfTrip(v);
+const habsOfVision =v=>habsOfObjective(v);
 const SANS_DATE='No deadline: it moves to Vision when you close it.';
 const storiesOfRep  =r=>(r&&r.stories||[]).map(storyOf).filter(Boolean);
-const repsOfStory   =w=>REPS.filter(r=>(r.stories||[]).includes(String(w.id)));
+const repsOfStory   =w=>REPULSIONS.filter(r=>(r.stories||[]).includes(String(w.id)));
 /* `hs` porte des TEXTES d'habitudes — c'est ce que rend le serveur. */
 const repsOfHab=id=>{const x=habOf(id); const k=x?(x.t0!==undefined?x.t0:x.t):'';
-  return k?REPS.filter(r=>(r.hs||[]).includes(k)):[];};
+  return k?REPULSIONS.filter(r=>(r.hs||[]).includes(k)):[];};
 const habsOfRep=r=>(r.hs||[]).map(habByT).filter(Boolean);
 /* ══ UNE HABITUDE SERT PLUSIEURS OBJECTIFS · 07/09/2026 ═══════════════
    `OBJ` fait le pont : texte d'habitude → liste d'identifiants
@@ -8866,8 +8866,8 @@ let OBJ={};
    s'évanouissent à chaque lettre. Voir `t0` dans `habIds()`. */
 const objIdsOf  =x=>{const k=x?(x.t0!==undefined?x.t0:x.t):''; 
   return (k&&OBJ[k])?OBJ[k]:(x&&x.o?[String(x.o)]:[]);};
-const tripsOfHab=x=>objIdsOf(x).map(tripOf).filter(Boolean);
-const habsOfTrip=t=>(state.habits||[]).filter(x=>objIdsOf(x).includes(String(t.id)));
+const objectivesOfHab=x=>objIdsOf(x).map(objectiveOf).filter(Boolean);
+const habsOfObjective=t=>(state.habits||[]).filter(x=>objIdsOf(x).includes(String(t.id)));
 /* Le premier lien, celui qui voyage dans `steps` : on le tient à jour à
    chaque attache ou détache, sinon le bot lirait un objectif effacé. */
 function posePremier(x){ const l=objIdsOf(x); x.o = l.length?l[0]:null; save(); }
@@ -8977,7 +8977,7 @@ function setView(v){
      boîte habitude montre ses objectifs et ses répulsions : mesuré, elle
      les affichait VIDES tant qu'on n'était pas passé par une autre vue.
      C'était ça, « les objectifs et les répulsions ne s'affichent pas ». */
-  loadTrips();
+  loadTotehm();
 }
 /* Les deux portes du bas mènent DEHORS depuis le 17/09 ; ces deux
    fonctions ne servent plus qu'à Échap, qui ramène aux habitudes. */
@@ -8997,7 +8997,7 @@ function appliquerOrdres(orders){
     if(v==='habits'){state.ord=true;continue;}
     const positions=new Map(refs.map((r,i)=>[String(r),i]));
     const arr=listeDe(v).slice().sort((a,b)=>(positions.get(String(a.id))??Infinity)-(positions.get(String(b.id))??Infinity));
-    if(v==='objectives')TRIPS=arr;else if(v==='repulsions')REPS=arr;else if(v==='stories')STORIES=arr;else VIS=arr;
+    if(v==='objectives')OBJECTIVES=arr;else if(v==='repulsions')REPULSIONS=arr;else if(v==='stories')STORIES=arr;else VIS=arr;
   }
 }
 async function chargerOrdres(pseudo=null){
@@ -9025,33 +9025,33 @@ function garderOrdre(v){
     .finally(()=>{ordreAttente--;});
 }
 window.__totehm_order=()=>({pending:ordreAttente,failures:ordreEchecs,loaded:ordreLu});
-async function loadTrips(force){
-  /* ⚠️ EN LECTURE, ON NE CHARGE JAMAIS SON PROPRE ARBRE. `my_trips()`
+async function loadTotehm(force){
+  /* ⚠️ EN LECTURE, ON NE CHARGE JAMAIS SON PROPRE ARBRE. `my_totehm()`
      rend l'arbre DU DEMANDEUR : appelée ici, elle remplaçait les
      objectifs de la personne qu'on regarde par les siens. Le verrou est
      à l'entrée de la fonction, pas chez ses quinze appelants. */
   if(RO)return;
   if(!me)return;
-  if(tripsLoaded&&!force)return;
+  if(totehmLoaded&&!force)return;
   const uid=me.id,session=sesSeq,places=++spotSeq;
   try{
     await ordreEnVol;
     /* ⚠️ ON NE LIT JAMAIS L'ARBRE PENDANT QU'ON ÉCRIT DEDANS. Sans cette
-       ligne, `my_trips` doublait les écritures parties et le serveur
+       ligne, `my_totehm` doublait les écritures parties et le serveur
        renvoyait l'état d'AVANT — un objectif supprimé revenait, un lien
        posé disparaissait. Voir `EN_VOL`. */
     await calme();
-    const {data,error}=await sb.rpc('my_trips');
+    const {data,error}=await sb.rpc('my_totehm');
     if(RO||uid!==me?.id||session!==sesSeq)return;
     /* Une erreur de RPC se JOURNALISE, toujours : sans ce log, une liste
        vide ne dit pas si le membre n'a rien posé ou si l'appel casse. */
     if(error)throw error;
     if(!data||!data.signed_in)return;
-    TRIPS=(data.trips||[]).map(t=>Object.assign({},t,{
-      is:Array.isArray(t.is)?t.is:[], vs:(t.visions||[]).map(String)}));
+    OBJECTIVES=(data.objectives||[]).map(t=>Object.assign({},t,{
+      is:Array.isArray(t.is)?t.is:[]}));
     /* ⚠️ `OBJ` VIENT MAINTENANT DU SERVEUR, ET IL ARRIVE VRAIMENT.
        On lisait `h.objectives` sur chaque habitude — une clé que
-       `my_trips` n'a JAMAIS rendue. `OBJ` restait donc vide et une
+       `my_totehm` n'a JAMAIS rendue. `OBJ` restait donc vide et une
        habitude ne montrait que l'objectif porté par `steps.o`, un seul,
        alors que `objective_habits` en portait plusieurs. Les liens
        étaient écrits en base et invisibles à l'écran.
@@ -9064,18 +9064,18 @@ async function loadTrips(force){
        liens réunies. Avant, elle n'arrivait que nichée sous l'habitude de
        sa colonne `habit_text` : un lien posé par `repulsion_link` était
        écrit en base et invisible ici. */
-    REPS=(data.reps||[]).map(r=>({id:r.id, text:r.text||'', obstacle:r.obstacle||'',
+    REPULSIONS=(data.repulsions||[]).map(r=>({id:r.id, text:r.text||'', obstacle:r.obstacle||'',
       hs:(r.hs||[]).slice(), stories:(r.ws||[]).map(String),
       is:Array.isArray(r.is)?r.is:[]}));
-    STORIES=(data.stories||data.wisdom||[]).map(w=>({id:String(w.id), t:w.text||'', t0:w.text||'',
+    STORIES=(data.stories||[]).map(w=>({id:String(w.id), t:w.text||'', t0:w.text||'',
       is:Array.isArray(w.is)?w.is:[], os:(w.os||[]).map(String)}));
     VIS=(data.visions||[]).map(v=>({id:String(v.id), t:v.text||'', t0:v.text||'',
       is:Array.isArray(v.is)?v.is:[], os:(v.os||[]).map(String)}));
-    tripsLoaded=true;
+    totehmLoaded=true;
     await chargerOrdres();
     if(RO||uid!==me?.id||session!==sesSeq)return;
     AUDB.charger();
-    /* Les spots voyagent à part : une table, une lecture, et `my_trips`
+    /* Les spots voyagent à part : une table, une lecture, et `my_totehm`
        reste la fonction de l'arbre. */
     try{
       const {data:sp,error:placeError}=await sb.from('habit_spots').select('habit_text,place').eq('user_id',uid);
@@ -9086,7 +9086,7 @@ async function loadTrips(force){
       }
     }catch(_){console.error('[totehm]','usual_place_read_failed');}
     /* Les sons voyagent avec les spots : deux petites lectures en
-       parallèle de l'arbre, et `my_trips` reste la fonction de l'arbre.
+       parallèle de l'arbre, et `my_totehm` reste la fonction de l'arbre.
        Un échec ici ne doit jamais empêcher le Totehm de s'afficher. */
     try{
       const {data:so}=await sb.rpc('intention_sounds');
@@ -9096,7 +9096,7 @@ async function loadTrips(force){
     if(RO||uid!==me?.id||session!==sesSeq)return;
     renderZone();
   }catch(e){
-    console.error('[totehm] my_trips:',e&&e.message||e);
+    console.error('[totehm] my_totehm:',e&&e.message||e);
   }
 }
 
@@ -9126,7 +9126,7 @@ let wDirty=false, wTimer=null;
    `apres()` envoyait sans jamais attendre. Supprimer faisait donc :
      1. on retire l'objectif de la liste (immédiat, à l'écran)
      2. on envoie `trip_close` (parti, pas arrivé)
-     3. `fermer()` recharge l'arbre — et `my_trips` répond AVANT que
+     3. `fermer()` recharge l'arbre — et `my_totehm` répond AVANT que
         `trip_close` ait été commité.
    Le serveur renvoyait donc l'objectif encore actif, et il réapparaissait
    sous les yeux. Rien n'était cassé : c'était une COURSE, et elle se
@@ -9298,7 +9298,7 @@ const colsHeritees = habs => {
    dans son titre, pour revenir 700 ms plus tard. `t0` ne bouge que
    lorsque le serveur a pris le renommage : la boîte ne clignote plus. */
 const srv=x=>x?(x.t0!==undefined?x.t0:x.t):'';
-const repsOfHabX=x=>{const k=srv(x); return k?REPS.filter(r=>(r.hs||[]).includes(k)):[];};
+const repsOfHabX=x=>{const k=srv(x); return k?REPULSIONS.filter(r=>(r.hs||[]).includes(k)):[];};
 
 /* ══ LE RAIL — UNE CHAÎNE DE TRAITS ══════════════════════════════════
    Le bord gauche d'une boîte habitude porte SES intentions, une par
@@ -9858,15 +9858,15 @@ function renderZone(){
                     if(filterF && x.f!==filterF) return false;
                     if(filterI && !intIds(x).includes(filterI)) return false;
                     return true; }); }, rend:vueHabitude},
-    objectives:{add:'t', mot:'Add an objective', liste:()=>TRIPS, rend:vueObjectif},
-    repulsions:{add:'r', mot:'Add a repulsion',  liste:()=>REPS,  rend:vueRepulsion},
+    objectives:{add:'t', mot:'Add an objective', liste:()=>OBJECTIVES, rend:vueObjectif},
+    repulsions:{add:'r', mot:'Add a repulsion',  liste:()=>REPULSIONS,  rend:vueRepulsion},
     stories:   {add:'w', mot:'Add my story',     liste:()=>STORIES, rend:vueStory},
     visions:   {add:'v', mot:'Add a vision',     liste:()=>VIS,   rend:vueVision}
   }[view]||{add:'h', mot:'Add a habit', liste:()=>[], rend:vueHabitude};
   const list=PLAN.liste();
   NB=list.length;
   let h=list.map((x,k)=>PLAN.rend(x,k)).join('');
-  if(!list.length) h+='<div class="void">'+(view==='habits'?((state.habits||[]).length?'—':''):(tripsLoaded?'':'…'))+'</div>';
+  if(!list.length) h+='<div class="void">'+(view==='habits'?((state.habits||[]).length?'—':''):(totehmLoaded?'':'…'))+'</div>';
   h+=ligne('<button type="button" class="add-box" data-add="'+PLAN.add+'" aria-label="'+PLAN.mot+'">+</button>','add');
 
   /* La bande « order by importance » a quitté le `innerHTML` : elle
@@ -9879,8 +9879,8 @@ function renderZone(){
   /* Mes médias et mes spots viennent de changer : les DEUX VUES de l'atterrissage se refont (sans rien
      relire — elles lisent la même mémoire). Un no-op quand elles sont fermées, c'est-à-dire presque toujours. */
   SH.maj(); SPOTS.maj();
-  window.__totehm_zone={version:BUILD, vue:view, session:!!me, arbre_charge:tripsLoaded, fichiers:EMEDIA.items.length,
-    habitudes:(state.habits||[]).length, objectifs:TRIPS.length, repulsions:REPS.length,
+  window.__totehm_zone={version:BUILD, vue:view, session:!!me, arbre_charge:totehmLoaded, fichiers:EMEDIA.items.length,
+    habitudes:(state.habits||[]).length, objectifs:OBJECTIVES.length, repulsions:REPULSIONS.length,
     lecons:STORIES.length, visions:VIS.length, images:VISIMG.size, cloths:[...ECLOTHS.par.values()].reduce((a,x)=>a+x.total,0),
     filtre:{rythme:!!filterF, intention:!!filterI},
     boite_ouverte:open?open.kind:null, choix:pk?pk.q:null,
@@ -9893,7 +9893,7 @@ function renderZone(){
      l'ancien état. Le seul test qui prouve quelque chose relit donc
      l'arbre depuis le serveur, et c'est cette ligne qui le permet.
      Elle n'expose aucune donnée : juste le verbe. */
-  window.__rechargeArbre = () => loadTrips(true);
+  window.__rechargeArbre = () => loadTotehm(true);
   /* ══ UN SEUL VERBE DE DIAGNOSTIC · 22/09/2026 ═════════════════════
      Règle du projet : « bug signalé → UN bloc à coller dans la console
      qui renvoie tout d'un coup. Une boucle, pas trois. » Encore
@@ -9913,10 +9913,10 @@ function renderZone(){
       paysage: document.body.classList.contains('paysage'),
       asteroide: window.__totehm_lsd||null});
     try{
-      const {data,error}=await sb.rpc('my_trips');
+      const {data,error}=await sb.rpc('my_totehm');
       d.serveur = error ? ('ERREUR · '+error.message)
-        : {reps:(data.reps||[]).length, stories:(data.stories||data.wisdom||[]).length,
-           visions:(data.visions||[]).length, trips:(data.trips||[]).length,
+        : {repulsions:(data.repulsions||[]).length, stories:(data.stories||[]).length,
+           visions:(data.visions||[]).length, objectives:(data.objectives||[]).length,
            signed_in:!!data.signed_in};
     }catch(e){ d.serveur='PAS JOIGNABLE · '+(e&&e.message||e); }
     try{
@@ -9935,7 +9935,7 @@ function renderZone(){
 function vueHabitude(x,k){
   const ouverte = !!open && open.kind==='h' && String(open.id)===String(x.id);
   /* 19/11 — le WHY d'une Habit : ses objectifs datés PUIS ses visions (la même box, sans date). */
-  const ts=tripsOfHab(x), vs=visionsOfHab(x), rs=repsOfHabX(x), l=intIds(x);
+  const ts=objectivesOfHab(x), vs=visionsOfHab(x), rs=repsOfHabX(x), l=intIds(x);
   /* CE QUI MANQUE RESPIRE. Une habitude sans intention ni rythme n'est pas
      encore une habitude : les deux réglages pulsent comme le T tant qu'ils
      sont vides, et s'arrêtent dès qu'ils sont posés. */
@@ -9982,9 +9982,9 @@ function vueHabitude(x,k){
   /* Un why neuf naît sans date : c'est une vision (Wah, 19/11) — une date, dans SA box, en fera un objectif. */
   const pkO = (ouverte&&pkOn('lien','o',x.id)) ? lienPicker('o',x.id,
       ts.concat(vs).map(t=>String(t.id)),
-      TRIPS.map(t=>({id:t.id,txt:t.text})).concat(VIS.map(v=>({id:v.id,txt:v.t}))), 'a new vision','v') : '';
+      OBJECTIVES.map(t=>({id:t.id,txt:t.text})).concat(VIS.map(v=>({id:v.id,txt:v.t}))), 'a new vision','v') : '';
   const pkR = (ouverte&&pkOn('lien','r',x.id)) ? lienPicker('r',x.id,
-      rs.map(r=>String(r.id)), REPS.map(r=>({id:r.id,txt:r.text})), 'a new repulsion','r') : '';
+      rs.map(r=>String(r.id)), REPULSIONS.map(r=>({id:r.id,txt:r.text})), 'a new repulsion','r') : '';
   /* ⚠️ 16/10 · PAS D'ICÔNE DANS UNE LISTE (Wah : « [Add a media] c'est mieux, et [Add a spot] pour le
      figher club, on a supprimé les spaces »). Deux boutons qui DISENT ce qu'ils font, et le groupe
      SPACES est parti avec les spaces — il ne reste que les SPOTS. `[Add a spot]` s'ouvre DANS la boîte,
@@ -10013,7 +10013,7 @@ function vueHabitude(x,k){
    Il montre SES habitudes en navy. La deadline se pose ET se retire. */
 function vueObjectif(t,k){
   const ouverte = !!open && open.kind==='t' && String(open.id)===String(t.id);
-  const hs=habsOfTrip(t), late=t.days_left!=null&&t.days_left<0;
+  const hs=habsOfObjective(t), late=t.days_left!=null&&t.days_left<0;
   /* PLUS DE COMPTEUR. « 3 habits » ne raconte rien — HOW suivi des trois
      habitudes raconte tout. La deadline reste : elle, elle périme.
      19/11 (Wah) — LA DEADLINE FAIT L'OBJECTIF : sans elle, la box part dans la vue Vision quand on la
@@ -10109,7 +10109,7 @@ function vueStory(w,k){
   const unit = nCloths(clothsDe('w',w.id)?.total|0);
   const pkWR = (ouverte&&pkOn('lien','wr',w.id)) ? lienPicker('wr',w.id,
       rs.map(r=>String(r.id)),
-      REPS.map(r=>({id:r.id,txt:r.text})), 'a new repulsion','r') : '';
+      REPULSIONS.map(r=>({id:r.id,txt:r.text})), 'a new repulsion','r') : '';
   const minis = groupe('learned from', ouverte
     ? rs.map(r=>miniDel('r',r.id,r.text,'data-unlink="wr:'+esc(String(w.id))+'|'+esc(String(r.id))+'"')).join('')
       + plus('lien','wr',w.id,'repulsion')
@@ -10238,11 +10238,11 @@ async function ouvrirLienElement(){
     await sesWait();
     if(!inscrit())return; // Keep the intention until the person signs in.
     const uid=me.id,seq=sesSeq,sujet=RO,cible=lienElement;
-    await loadTrips();
+    await loadTotehm();
     if(uid!==me?.id||seq!==sesSeq||sujet!==RO||cible!==lienElement){reprendre=true;return;}
-    if(!tripsLoaded){diagLien.state='unavailable';dis('This element could not be opened. Try again.');return;}
+    if(!totehmLoaded){diagLien.state='unavailable';dis('This element could not be opened. Try again.');return;}
     habIds();
-    const found=resolveElementLink(cible,{habits:state.habits,objectives:TRIPS,repulsions:REPS,visions:VIS,stories:STORIES});
+    const found=resolveElementLink(cible,{habits:state.habits,objectives:OBJECTIVES,repulsions:REPULSIONS,visions:VIS,stories:STORIES});
     lienElement=null;
     if(location.hash.startsWith('#element='))history.replaceState(null,'',location.pathname+location.search);
     window.__totehmDeplie(()=>{
@@ -10286,30 +10286,30 @@ window.addEventListener('hashchange',()=>{
    Wah : « il faut l'avertir très simplement que son objectif est déplacé dans la vue vision ». Une box
    ne disparaît jamais sous le doigt : elle change de vue quand on la REFERME (fermer, changer de vue,
    en ouvrir une autre), et une ligne dit où elle est partie. La base a déjà rangé (même identifiant) :
-   on déplace la mémoire pour que l'écran dise vrai tout de suite, `loadTrips` confirme ensuite. */
+   on déplace la mémoire pour que l'écran dise vrai tout de suite, `loadTotehm` confirme ensuite. */
 const diagWhy={deplaces:0};
 const joursRestants=d=>{ const t=Date.parse(d); if(!Number.isFinite(t)) return null;
   const n=new Date(); return Math.round((t-Date.UTC(n.getFullYear(),n.getMonth(),n.getDate()))/864e5); };
 function deplacerWhy(id,versVision){
   const k=String(id);
-  if(versVision){ const t=tripOf(k); if(!t) return false;
-    TRIPS=TRIPS.filter(z=>String(z.id)!==k);
+  if(versVision){ const t=objectiveOf(k); if(!t) return false;
+    OBJECTIVES=OBJECTIVES.filter(z=>String(z.id)!==k);
     VIS.push({id:k, t:t.text||'', t0:t.text||'', is:Array.isArray(t.is)?t.is:[], os:[]});
   }else{ const v=visOf(k); if(!v||!v.target_at) return false;
     VIS=VIS.filter(z=>String(z.id)!==k);
-    TRIPS.push({id:k, text:v.t||'', target_at:v.target_at, days_left:joursRestants(v.target_at),
-      status:'active', habits:[], is:Array.isArray(v.is)?v.is:[], vs:[]});
+    OBJECTIVES.push({id:k, text:v.t||'', target_at:v.target_at, days_left:joursRestants(v.target_at),
+      status:'active', habits:[], is:Array.isArray(v.is)?v.is:[]});
   }
   diagWhy.deplaces++; wDirty=true; return true;
 }
 /* 19/11 (Wah : « une box vide, elle disparaît ») — sans texte NI date, une box ne devient pas une vision vide :
    elle s'efface à la fermeture (mémoire, liens des Habits, base). */
 function effacerSiVide(){
-  const z = open.kind==='t' ? tripOf(open.id) : visOf(open.id);
+  const z = open.kind==='t' ? objectiveOf(open.id) : visOf(open.id);
   const texte = z ? String(open.kind==='t' ? z.text : z.t).trim() : '';
   if(!z||texte||z.target_at) return false;
   const id=String(z.id);
-  if(open.kind==='t') TRIPS=TRIPS.filter(o=>String(o.id)!==id); else VIS=VIS.filter(o=>String(o.id)!==id);
+  if(open.kind==='t') OBJECTIVES=OBJECTIVES.filter(o=>String(o.id)!==id); else VIS=VIS.filter(o=>String(o.id)!==id);
   (state.habits||[]).forEach(x=>{ const k=srv(x); if(k&&OBJ[k]){ OBJ[k]=OBJ[k].filter(o=>o!==id); posePremier(x);} });
   wSlots.delete(open.kind+':'+id);
   apres(sb.rpc('vision_delete',{p_id:id}));   /* une box vide est sans date : elle est dans la vue `visions` */
@@ -10318,12 +10318,12 @@ function effacerSiVide(){
 function basculeWhy(){
   if(!open||RO||estProvisoire(open.id)) return;
   if((open.kind==='t'||open.kind==='v')&&effacerSiVide()) return;
-  if(open.kind==='t'){ const t=tripOf(open.id);
+  if(open.kind==='t'){ const t=objectiveOf(open.id);
     if(t&&!t.target_at&&deplacerWhy(t.id,true)) dis('No deadline · moved to Vision'); }
   else if(open.kind==='v'){ const v=visOf(open.id);
     if(v&&v.target_at&&deplacerWhy(v.id,false)) dis('Deadline set · moved to Objectives'); }
 }
-window.__totehm_why=()=>({objectifs:TRIPS.length, visions:VIS.length, ...diagWhy});
+window.__totehm_why=()=>({objectifs:OBJECTIVES.length, visions:VIS.length, ...diagWhy});
 function fermer(){
   basculeWhy();
   /* Il n'y a plus de brouillon de répulsion : elle naît en base comme les
@@ -10336,7 +10336,7 @@ function fermer(){
   open=null; pk=null; renderZone();
   /* L'arbre se recharge ICI, une fois : pendant l'édition il fermerait la
      boîte sous les doigts, après il remet la vérité du serveur. */
-  if(wDirty){wDirty=false;loadTrips(true);}
+  if(wDirty){wDirty=false;loadTotehm(true);}
 }
 
 /* ══ CRÉER — un bouton par vue, la pièce de CETTE vue ═════════════════ */
@@ -10444,20 +10444,20 @@ async function creer(kind){
   const tmp = 'tmp-'+(++TSEQ);   /* ⚠️ JAMAIS de « : » — voir `estProvisoire` */
 
   if(kind==='t'){
-    TRIPS.push({id:tmp,text:'',target_at:null,days_left:null,habits:[],is:[],vs:[]});
+    OBJECTIVES.push({id:tmp,text:'',target_at:null,days_left:null,habits:[],is:[]});
     wDirty=true; ouvrir('t',tmp,true);
     const {data,error}=await sb.rpc('objective_create',{p_text:'',p_target:null});
     if(error||!data){console.error('[totehm] objective_create:',error&&error.message);
-      return annule(TRIPS,tmp,'objective not saved — try again');}
-    baptise(TRIPS,tmp,data); renderZone(); rendCurseur(); return;}
+      return annule(OBJECTIVES,tmp,'objective not saved — try again');}
+    baptise(OBJECTIVES,tmp,data); renderZone(); rendCurseur(); return;}
 
   if(kind==='r'){
-    REPS.push({id:tmp,text:'',obstacle:'',hs:[],stories:[],is:[]});
+    REPULSIONS.push({id:tmp,text:'',obstacle:'',hs:[],stories:[],is:[]});
     wDirty=true; ouvrir('r',tmp,true);
     const {data,error}=await sb.rpc('repulsion_create',{p_text:''});
     if(error||!data){console.error('[totehm] repulsion_create:',error&&error.message);
-      return annule(REPS,tmp,'repulsion not saved — try again');}
-    baptise(REPS,tmp,data); renderZone(); rendCurseur(); return;}
+      return annule(REPULSIONS,tmp,'repulsion not saved — try again');}
+    baptise(REPULSIONS,tmp,data); renderZone(); rendCurseur(); return;}
 
   if(kind==='w'){
     STORIES.push({id:tmp,t:'',t0:'',is:[],os:[]});
@@ -10549,7 +10549,7 @@ async function neufEtAttache(quoi,srcId,txt){
        n'est pas vide, mais la seconde règle mordrait quand même. */
     const {data,error}=await sb.rpc('repulsion_create',{p_text:txt});
     if(error){console.error('[totehm] repulsion_create:',error.message);return;}
-    REPS.unshift({id:String(data),text:txt,obstacle:'',hs:[],stories:[],is:[]});
+    REPULSIONS.unshift({id:String(data),text:txt,obstacle:'',hs:[],stories:[],is:[]});
     attache(quoi,srcId,String(data));}
   else if(quoi==='rw'){
     const {data,error}=await sb.rpc('story_create',{p_text:txt});
@@ -10652,7 +10652,7 @@ function cable(box){
       attache(q[0],q[1],p[1]); pk=null; renderZone(); return; }
     if(d.unlink){ const p=d.unlink.split('|'), q=p[0].split(':');
       detache(q[0],q[1],p[1]); renderZone(); return; }
-    if(d.nodate){ const t=tripOf(d.nodate); if(t){t.target_at=null;t.days_left=null;
+    if(d.nodate){ const t=objectiveOf(d.nodate); if(t){t.target_at=null;t.days_left=null;
       apres(sb.rpc('objective_set_target',{p_obj:t.id,p_target:null})); wDirty=true;}
       renderZone(); return; }
     if(d.kill){ const p=d.kill.split(':'); tue(p[0],p[1]); return; }
@@ -10694,7 +10694,7 @@ function cable(box){
           const ancien=x.t0;
           if(me&&ancien&&ancien!==x.t){
             queueHabitRename(x,ancien,x.t);
-            REPS.forEach(r=>{const i=(r.hs||[]).indexOf(ancien); if(i>=0)r.hs[i]=x.t;});
+            REPULSIONS.forEach(r=>{const i=(r.hs||[]).indexOf(ancien); if(i>=0)r.hs[i]=x.t;});
             if(OBJ[ancien]){OBJ[x.t]=OBJ[ancien]; delete OBJ[ancien];}
             spotSeq++;if(Object.hasOwn(SPOT,ancien)){SPOT[x.t]=SPOT[ancien];delete SPOT[ancien];}
             emRenommer(ancien,x.t);}
@@ -10704,7 +10704,7 @@ function cable(box){
          COURANT, qui sera le vrai quand elle se déclenchera (`baptise`
          l'a remplacé entre-temps). Envoyer un `rename` sur un `tmp-`
          ferait une erreur serveur et perdrait la frappe. */
-      else if(p[0]==='t'){ const z=tripOf(p[1]); if(!z)return; z.text=v; wDirty=true;
+      else if(p[0]==='t'){ const z=objectiveOf(p[1]); if(!z)return; z.text=v; wDirty=true;
         differe('t:'+z.id,()=>quandNomme(z,()=>
           apres(sb.rpc('objective_rename',{p_obj:z.id,p_text:z.text})))); }
       else if(p[0]==='r'){ const r=repOf(p[1]); if(!r)return; r.text=v; wDirty=true;
@@ -10735,7 +10735,7 @@ function cable(box){
     /* 19/11 — un objectif OU une vision : la date se pose sur la même box ; elle change de vue à la fermeture. */
     if(e.target.dataset.date){ const t=whyOf(e.target.dataset.date); if(!t)return;
       const v=e.target.value; t.target_at = v ? v+'T00:00:00Z' : null;
-      if(tripOf(t.id)) t.days_left = t.target_at ? joursRestants(t.target_at) : null;
+      if(objectiveOf(t.id)) t.days_left = t.target_at ? joursRestants(t.target_at) : null;
       apres(sb.rpc('objective_set_target',{p_obj:t.id,p_target:t.target_at}));
       wDirty=true; renderZone(); }
   });
@@ -10859,32 +10859,32 @@ function tue(kind,id){
   if(kind==='h'){ const x=habOf(id); if(!x)return;
     /* ⚠️ ON DÉTRUIT AVEC LE TEXTE DU SERVEUR. Avec le texte affiché, une
        habitude renommée puis supprimée laissait ses liens en base — et
-       `my_trips` la faisait REVENIR au rechargement suivant. C'était ça,
+       `my_totehm` la faisait REVENIR au rechargement suivant. C'était ça,
        « les suppressions ne fonctionnent pas ». Et on annule d'abord la
        minuterie de renommage : sinon elle ressuscite le lien après. */
     const k=srv(x);
     pousse('h:'+x.id); wSlots.delete('h:'+x.id);
     logTotehmEvent('habit_removed',x.t,{f:x.f,i:x.i});
     state.habits=state.habits.filter(z=>String(z.id)!==String(id));
-    REPS.forEach(r=>{const i=(r.hs||[]).indexOf(k);
+    REPULSIONS.forEach(r=>{const i=(r.hs||[]).indexOf(k);
       if(i>=0){r.hs.splice(i,1); if(me)apres(sb.rpc('repulsion_unlink',{p_id:r.id,p_habit:k}));}});
     if(k&&OBJ[k]){OBJ[k].forEach(o=>apres(sb.rpc('objective_unlink',{p_obj:o,p_habit:k})));
       delete OBJ[k];}
     save(); emPurger('h',k); }
   else if(kind==='t'){ pousse('t:'+id); wSlots.delete('t:'+id);
-    TRIPS=TRIPS.filter(t=>String(t.id)!==String(id));
+    OBJECTIVES=OBJECTIVES.filter(t=>String(t.id)!==String(id));
     (state.habits||[]).forEach(x=>{ const k=srv(x); if(k&&OBJ[k]){
       OBJ[k]=OBJ[k].filter(o=>o!==String(id)); posePremier(x);} });
     if(!estProvisoire(id)){ apres(sb.rpc('objective_close',{p_obj:id,p_outcome:'dropped'})); emPurger('o',String(id)); } }
   else if(kind==='r'){ pousse('r:'+id); wSlots.delete('r:'+id);
-    REPS=REPS.filter(z=>String(z.id)!==String(id));
+    REPULSIONS=REPULSIONS.filter(z=>String(z.id)!==String(id));
     if(!estProvisoire(id)){ apres(sb.rpc('repulsion_retire',{p_id:Number(id)})); emPurger('r',String(id)); } }
   else if(kind==='w'){ pousse('w:'+id); wSlots.delete('w:'+id);
     STORIES=STORIES.filter(z=>String(z.id)!==String(id));
     /* Une leçon supprimée ne doit pas rester accrochée aux répulsions
        qu'elle éclairait : la table de liens tombe avec la ligne côté
        serveur, on fait la même chose en mémoire. */
-    REPS.forEach(r=>{r.stories=(r.stories||[]).filter(z=>z!==String(id));});
+    REPULSIONS.forEach(r=>{r.stories=(r.stories||[]).filter(z=>z!==String(id));});
     if(!estProvisoire(id)){ apres(sb.rpc('story_delete',{p_id:String(id)})); emPurger('w',String(id)); } }
   else if(kind==='v'){ pousse('v:'+id); wSlots.delete('v:'+id);
     VIS=VIS.filter(z=>String(z.id)!==String(id));
@@ -10931,13 +10931,13 @@ function glisse(redessine){
     });
   });});
 }
-const listeDe=v=>v==='habits'?(state.habits||[]):v==='objectives'?TRIPS
-  :v==='repulsions'?REPS:v==='stories'?STORIES:VIS;
+const listeDe=v=>v==='habits'?(state.habits||[]):v==='objectives'?OBJECTIVES
+  :v==='repulsions'?REPULSIONS:v==='stories'?STORIES:VIS;
 function poseListe(v,arr){
   if(RO||!me)return;
   if(v==='habits'){state.habits=arr;state.ord=true;save();}
-  else if(v==='objectives')TRIPS=arr;
-  else if(v==='repulsions')REPS=arr;
+  else if(v==='objectives')OBJECTIVES=arr;
+  else if(v==='repulsions')REPULSIONS=arr;
   else if(v==='stories')STORIES=arr; else VIS=arr;
   garderOrdre(v);}
 
@@ -12413,7 +12413,7 @@ function quitter(){
   roSeq++; HSPACES.seq++; HSPACES.par=new Map(); ECLOTHS.seq++; ECLOTHS.par=new Map(); visImgSeq++; VISIMG.clear(); ZOOM.clear(); COPIES.clear();
   state={habits:[],vis:'private'}; myProfile=null; cloudMode=false; LAND=null; if(lvQuitter) lvQuitter();
   EMEDIA.seq++; EMEDIA.items=[]; EMEDIA.par=new Map(); EMEDIA.charge=false; SIGNE_EM.clear(); SH.vider(); SHS.vider(); BADGE.vider(); CAP.fermer();
-  TRIPS=[]; REPS=[]; STORIES=[]; VIS=[]; OBJ={}; tripsLoaded=false; AUDB.vider();
+  OBJECTIVES=[]; REPULSIONS=[]; STORIES=[]; VIS=[]; OBJ={}; totehmLoaded=false; AUDB.vider();
   cacheOublier();
   closeMember();
 }
@@ -12456,7 +12456,7 @@ async function sessionLoad(){
   }
   if(n!==sesSeq) return;
   memberPaint(); paint(); if(lvPeindre) lvPeindre();   /* la carte suit l'état TOUT DE SUITE, pas après `my_landing` */
-  if(inscrit()&&!RO){loadTrips(true);loadHabitSpaces();loadElementCloths();loadVisionImages();loadElementMedia();BADGE.charger();}
+  if(inscrit()&&!RO){loadTotehm(true);loadHabitSpaces();loadElementCloths();loadVisionImages();loadElementMedia();BADGE.charger();}
   garde();
   if(n===sesSeq&&lvRefresh) lvRefresh();
   if(n===sesSeq&&MEMBERS0&&lvRecherche){ const m=MEMBERS0; MEMBERS0=null; setTimeout(()=>lvRecherche(m),600); }   /* 18/11 */
@@ -15161,7 +15161,7 @@ window.addEventListener('pageshow',e=>{
         const O=D.objectives||[];
         if(O.length) h+='<div class="db"><p class="db-t">Next objectives<i>due dates</i></p><div class="db-o">'+O.map(o=>{
           const j=o.jours, J=j==null?'—':j<0?'late':j===0?'today':'D-'+j;
-          const found=RO?[]:TRIPS.filter(t=>t.text===o.t), native=found.length===1?{...found[0],days_left:o.jours}:{id:'',text:o.t,days_left:o.jours,target_at:o.by};
+          const found=RO?[]:OBJECTIVES.filter(t=>t.text===o.t), native=found.length===1?{...found[0],days_left:o.jours}:{id:'',text:o.t,days_left:o.jours,target_at:o.by};
           return '<div>'+boxTotehm('t',native,{court:true})+'<span class="j'+(j!=null&&j<0?' is-tard':'')+'">'+J+'</span>'
             +'</div>'; }).join('')+'</div></div>';
         /* 16/11 — l'historique du compte (activité, fil, inventaire) est parti : le tableau ne garde que l'essentiel. */

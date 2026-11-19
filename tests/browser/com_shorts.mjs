@@ -31,8 +31,8 @@ function serveur(){
       const id='m'+(++n); items=[{id,kind:b.p_kind,ref:b.p_ref,path:b.p_path,mime:b.p_mime,bytes:b.p_bytes,name:b.p_name},...items]; return {ok:true,id,mime:b.p_mime,bytes:b.p_bytes}; },
     element_media_remove:b=>{ const m=items.find(x=>x.id===b.p_id); items=items.filter(x=>x.id!==b.p_id); return m?{ok:true,path:m.path}:{ok:false,why:'not_mine'}; },
     element_media_rekey:b=>{ let k=0; items.forEach(m=>{ if(m.kind==='h'&&m.ref===b.p_old){ m.ref=b.p_new; k++; } }); return k; },
-    my_trips:{signed_in:true,trips:[{id:'o1',text:'Ship it',is:['express'],hs:['Run the hill']}],
-    reps:[{id:'r1',text:'The phone',is:['focus'],hs:['Run the hill']}],wisdom:[],visions:[{id:'v1',text:'The studio'}]},
+    my_totehm:{signed_in:true,objectives:[{id:'o1',text:'Ship it',is:['express'],hs:['Run the hill']}],
+    repulsions:[{id:'r1',text:'The phone',is:['focus'],hs:['Run the hill']}],stories:[],visions:[{id:'v1',text:'The studio'}]},
     habit_spaces:{ok:true,mine:true,habits:[{habit:'Call mum',total:1,total_spaces:0,total_spots:1,spaces:[],spots:[{id:'sp1',format:'spot',state:'will',photo:UID+'/bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb.jpg',starts_at:DEMAIN,exact:{lat:38.72,lng:-9.14,place:'the hill'}}]}]},
     /* 27/10 — LA VUE DE DROITE = MES spots (`club_spots_of` à mon nom : « surtout pas everyone ») : maintenant rien, à venir
        MON spot (le point exact, une photo), passés deux des miens (la ville seule ; l'un est un clip, visible à mes abonnés). */
@@ -536,7 +536,7 @@ try{
   ok(!erreurs(log).length,'sans compte : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
 
  // ── en lecture (le Totehm d'un autre, 20/10 sexies) : SON écosystème — ni mes fichiers ni la capture ; à gauche SES médias ──
- {const source={ok:true,pseudo:'studio',steps:[{t:'Deep practice',is:['focus']}],objs:{},trips:[],reps:[],wisdom:[],visions:[]};
+ {const source={ok:true,pseudo:'studio',steps:[{t:'Deep practice',is:['focus']}],objs:{},objectives:[],repulsions:[],stories:[],visions:[]};
   const SID='22222222-2222-4222-8222-222222222222';
   const{pg,log}=await page(browser,{dir:'com',origin,tables,rpc:{...serveur(),totehm_read:source,habit_spaces:{ok:true,mine:false,habits:[]},
     member_media:{ok:true,items:[{id:'x1',kind:'h',ref:'Deep practice',path:SID+'/m-dddddddd-dddd-4ddd-8ddd-dddddddddddd.jpg',mime:'image/jpeg',created_at:'2026-10-18T10:00:00Z'}]},

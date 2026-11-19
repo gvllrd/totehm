@@ -8,7 +8,7 @@ const browser=await launch();const origin='https://www.totehm.com';
 const UID='11111111-1111-4111-8111-111111111111';
 const STEPS=[{t:'Run',t0:'Run',is:['fight'],f:'every_morning'}];
 const MES={my_landing:{signed_in:true,pseudo:'wahigher'},
-  my_trips:{signed_in:true,trips:[{id:'o1',text:'Ship',habits:['Run']}],reps:[],wisdom:[],visions:[]},
+  my_totehm:{signed_in:true,objectives:[{id:'o1',text:'Ship',habits:['Run']}],repulsions:[],stories:[],visions:[]},
   my_box_audiences:{ok:true,h:{},t:{},r:{},w:{},v:{}}};
 try{
  for(const [nom,vp] of [['téléphone',{width:390,height:844}],['ordinateur',{width:1280,height:800}]]){

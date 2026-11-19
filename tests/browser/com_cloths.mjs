@@ -7,16 +7,16 @@ import { launch, page, ok } from './harness.mjs';
 const OUT = process.argv[2] || '/tmp'; const browser = await launch(); const origin = 'https://www.totehm.com';
 const CODE = 'c'.repeat(64);
 const erreurs = log => log.errors.filter(e => e.startsWith('pageerror'));
-const trips = { signed_in:true, trips:[{ id:'o1', text:'Marathon in May', is:['flow'] }], reps:[],
-  wisdom:[{ id:'w1', text:'Slow is smooth', is:['focus'] }, { id:'w2', text:'Breathe first', is:['flow'] }],
+const trips = { signed_in:true, objectives:[{ id:'o1', text:'Marathon in May', is:['flow'] }], repulsions:[],
+  stories:[{ id:'w1', text:'Slow is smooth', is:['focus'] }, { id:'w2', text:'Breathe first', is:['flow'] }],
   visions:[{ id:'v1', text:'A studio by the sea', is:['express'] }] };
 const mine = { ok:true, mine:true, elements:[{ kind:'wisdom', ref:'w1', total:4, cloths:[
   { name:'0.Hill', line:'streetwear', stage:'shipped', test:false }, { name:'0.Sea', line:'luxury', stage:'making', test:false },
   { name:'0.Try', line:'streetwear', stage:'making', test:true }] }] };
 const land = { signed_in:true, pseudo:'wah', visibility:'private', offer:{ enabled:false }, higher:{ active:false, price_cents:700, currency:'eur' }, thp:false, subscriptions:0, subscribers:0 };
 const network = url => url.host === 'www.higher.boutique' ? { status:200, contentType:'text/html', body:'<p>boutique</p>' } : null;
-const source = { ok:true, pseudo:'studio', steps:[{ t:'Deep practice', is:['focus'] }], objs:{}, trips:[], reps:[],
-  wisdom:[{ id:'w9', text:'Attention is a choice', is:['focus'] }], visions:[] };
+const source = { ok:true, pseudo:'studio', steps:[{ t:'Deep practice', is:['focus'] }], objs:{}, objectives:[], repulsions:[],
+  stories:[{ id:'w9', text:'Attention is a choice', is:['focus'] }], visions:[] };
 const theirs = { ok:true, mine:false, elements:[{ kind:'wisdom', ref:'w9', total:1, cloths:[{ name:'0.Calm', line:'streetwear', stage:'production', test:false }] }] };
 
 async function ouvrir(pg){
@@ -30,7 +30,7 @@ async function vers(pg, touche, vue){
 try{
  /* ── 1 · MON Totehm : WISDOM dit combien de Cloths, les montre, et « + totehmize » ── */
  { const { pg, log } = await page(browser, { dir:'com', origin, tables:{ profiles:[{ pseudo:'wah' }] }, network,
-     rpc:{ my_landing:land, my_trips:trips, habit_spaces:{ ok:true, mine:true, habits:[] }, element_cloths:mine }, functions:{ 'sso-mint':{ code:CODE } } });
+     rpc:{ my_landing:land, my_totehm:trips, habit_spaces:{ ok:true, mine:true, habits:[] }, element_cloths:mine }, functions:{ 'sso-mint':{ code:CODE } } });
    await ouvrir(pg);
    await vers(pg, 'ArrowLeft', 'stories');
    const call = log.rpc.find(x => x.name === 'element_cloths');
@@ -58,7 +58,7 @@ try{
  }
  /* ── 2 · un Cloth ouvre sa page Decode ; 12/11 : TOUTES les vues ont « + totehmize » (Wah) ── */
  { const { pg, log } = await page(browser, { dir:'com', origin, tables:{ profiles:[{ pseudo:'wah' }] }, network,
-     rpc:{ my_landing:land, my_trips:trips, habit_spaces:{ ok:true, mine:true, habits:[] }, element_cloths:mine }, functions:{ 'sso-mint':{ code:CODE } } });
+     rpc:{ my_landing:land, my_totehm:trips, habit_spaces:{ ok:true, mine:true, habits:[] }, element_cloths:mine }, functions:{ 'sso-mint':{ code:CODE } } });
    await ouvrir(pg);
    await vers(pg, 'ArrowRight', 'visions');
    await pg.locator('#habits [data-open="v:v1"]').evaluate(e => e.click()); await pg.waitForTimeout(400);
@@ -85,7 +85,7 @@ try{
  }
  /* ── 4 · le serveur tousse : journalisé, la vue tient ── */
  { const { pg, log } = await page(browser, { dir:'com', origin, tables:{ profiles:[{ pseudo:'wah' }] }, network,
-     rpc:{ my_landing:land, my_trips:trips, habit_spaces:{ ok:true, mine:true, habits:[] } },
+     rpc:{ my_landing:land, my_totehm:trips, habit_spaces:{ ok:true, mine:true, habits:[] } },
      network:url => url.pathname.endsWith('/rpc/element_cloths') ? { status:500, contentType:'application/json', body:'{"message":"boom"}' } : null });
    await ouvrir(pg); await vers(pg, 'ArrowLeft', 'stories');
    await pg.locator('#habits [data-open="w:w1"]').evaluate(e => e.click()); await pg.waitForTimeout(400);

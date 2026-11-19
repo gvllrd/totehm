@@ -6,15 +6,15 @@ const origin='https://www.totehm.com',out=process.argv[2]||'work/telegram-practi
 const id=n=>`00000000-0000-4000-8000-${String(n).padStart(12,'0')}`;
 const habit='Écrire & lire / 読む #1',second='A different next step';
 const steps=[{t:habit,is:['express'],f:'daily',o:id(1)},{t:second,is:['flow'],f:'weekly'}];
-const tree={signed_in:true,ok:true,pseudo:'fixture',steps,trips:[{id:id(1),text:'Publish',status:'active',habits:[habit]}],
- reps:[{id:'1',text:'Scrolling',hs:[habit]}],visions:[{id:id(2),text:'Transmit',os:[id(1)]}],wisdom:[{id:id(3),text:'My words'}]};
+const tree={signed_in:true,ok:true,pseudo:'fixture',steps,objectives:[{id:id(1),text:'Publish',status:'active',habits:[habit]}],
+ repulsions:[{id:'1',text:'Scrolling',hs:[habit]}],visions:[{id:id(2),text:'Transmit',os:[id(1)]}],stories:[{id:id(3),text:'My words'}]};
 let checks=0;const check=(v,m)=>{assert(v,m);checks++;};
 const browser=await launch();
 async function sample({session=true,width=390,source={ok:true,habit},sdk=true}={}){
  const writes=[];
  const x=await page(browser,{dir:'com',origin,session,viewport:{width,height:844},hasTouch:width<700,
  tables:{profiles:[{pseudo:'fixture'}],totehms:[{user_id:USER.id,steps}]},
- rpc:{my_landing:{signed_in:session,pseudo:'fixture'},my_trips:tree,element_orders_for:{ok:true,orders:{}},
+ rpc:{my_landing:{signed_in:session,pseudo:'fixture'},my_totehm:tree,element_orders_for:{ok:true,orders:{}},
   tracking_practice_for_me:source,sso_revoke_everywhere:1,habit_spaces:{ok:true,mine:true,habits:[]}},
  network:(url,req)=>{
   if(url.pathname.startsWith('/rest/v1/')&&!url.pathname.includes('/rpc/')&&req.method()!=='GET')writes.push(url.pathname);
@@ -56,7 +56,7 @@ try{
  }
  {const x=await sample({session:false});await x.pg.goto(url());await x.pg.waitForSelector('body.is-door');
   check(await x.pg.evaluate(()=>window.__totehm_practice().state==='pending'&&document.body.classList.contains('gate')),'A forged SDK identity leaves the site login gate intact');
-  check(!x.log.rpc.some(r=>r.name==='tracking_practice_for_me'||r.name==='my_trips'),'No source or own account tree is read without a site session');
+  check(!x.log.rpc.some(r=>r.name==='tracking_practice_for_me'||r.name==='my_totehm'),'No source or own account tree is read without a site session');
   await x.pg.locator('#mw-email').fill('wah@example.test');await x.pg.locator('#mw-email').press('Enter');
   await x.pg.locator('#mw-code').fill('123456');await opened(x.pg);
   check(await x.pg.locator('#habits .habit.open .v-name').textContent()===habit,'The pending source survives native email login in the same mini-app');

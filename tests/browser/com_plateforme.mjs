@@ -13,7 +13,7 @@ const item = (id, format) => ({ id, format, habit:'Deep practice', intentions:['
   starts_at:new Date(now + 3600000).toISOString(), ends_at:new Date(now + 7200000).toISOString(), duration_min:60, exact:null, creator:'studio', mine:false });
 const habits = [{ name:'Deep practice', freq:'daily', ints:['focus'], objectives:[{ text:'Build a practice' }], repulsions:[] }, { name:'Run the hill', freq:'every_morning', ints:['fight'], objectives:[], repulsions:[] }];
 const rpc = { my_landing:land, habit_spaces:{ ok:true, mine:true, habits:[{ habit:'Deep practice', total:2, total_spaces:1, total_spots:1, spaces:[item('s1','space')], spots:[item('p1','spot')] }] },
-  my_trips:{ signed_in:true, trips:[{ id:'o1', text:'Build a practice', is:['focus'] }], reps:[], wisdom:[], visions:[] }, element_cloths:{ ok:true, mine:true, elements:[] },
+  my_totehm:{ signed_in:true, objectives:[{ id:'o1', text:'Build a practice', is:['focus'] }], repulsions:[], stories:[], visions:[] }, element_cloths:{ ok:true, mine:true, elements:[] },
   spot_get:b => ({ ok:true, spot:item(b.p_id, b.p_id.startsWith('p') ? 'spot' : 'space') }), spot_rules:{ clip_seconds:33, duration_min:5, duration_max:720, horizon_days:90 },
   spot_schedule_audience:{ ok:true, id:'p9', state:'will' }, spot_box_set:{ ok:true },
   club_spots_of:b => ({ ok:true, items:b.p_period === 'future' && b.p_filters && b.p_filters.habit === 'Deep practice' ? [item('p1','spot')] : [], total:0 }),
@@ -34,7 +34,7 @@ try{
    ok(!c.why && !c.strat && !c.thp && !c.tag, 'COM : plus de « [Higher] STRATEGY », de phrase sous lui, de texte du THP ni de slogan TotehmSM');
    ok(c.pitch && /to open it · (Turn|Swipe) to configure it/.test(c.tap), '15/10 bis : un MEMBRE ne lit pas l\'argumentaire — le geste seul');
    ok(c.connAbs && c.sigInPaper && c.nameBtn === 'none', 'le nom du Totehm ne vit QUE sur la face verso (18/10) — ni en haut de l\'atterrissage, ni sur le recto du papier');
-   ok(c.build === '2026-11-15-ecosysteme-et-plafond', 'BUILD de la page : ' + c.build);
+   ok(/^20\d\d-\d\d-\d\d-[a-z0-9-]+$/.test(c.build), 'BUILD de la page (une date, puis le lot) : ' + c.build);   // il change à chaque lot : on vérifie sa forme, pas sa valeur
    await pg.screenshot({ path:OUT + '/plateforme_centre.png' });
    /* 15/10 : les trois vues, leurs gestes, la galaxie et la Reflection sont dans com_processeur.mjs. */
    /* La couche se réchauffe toute seule, sans rien charger dans SPACE ni le Club. */

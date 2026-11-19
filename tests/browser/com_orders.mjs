@@ -7,10 +7,10 @@ fs.mkdirSync(out,{recursive:true});
 const id=n=>`00000000-0000-4000-8000-${String(n).padStart(12,'0')}`;
 const steps=[{t:'読む',is:['focus'],f:'yearly'},{t:'Créer',is:['express'],f:'daily'},{t:'مشي',is:['love'],f:'hourly'}];
 const tree={signed_in:true,ok:true,pseudo:'artist',steps,
- trips:[1,2,3].map(n=>({id:id(n),text:'Objective '+n,is:[],status:'active'})),
- reps:[1,2,3].map(n=>({id:n,text:'Repulsion '+n,hs:[],ws:[]})),
+ objectives:[1,2,3].map(n=>({id:id(n),text:'Objective '+n,is:[],status:'active'})),
+ repulsions:[1,2,3].map(n=>({id:n,text:'Repulsion '+n,hs:[],ws:[]})),
  visions:[4,5,6].map(n=>({id:id(n),text:'Vision '+n,os:[]})),
- wisdom:[7,8,9].map(n=>({id:id(n),text:'Story '+n,os:[]}))};
+ stories:[7,8,9].map(n=>({id:id(n),text:'Story '+n,os:[]}))};
 const views={habits:'habit',objectives:'objective',repulsions:'repulsion',visions:'vision',stories:'story'};
 const browser=await launch();let checks=0;
 const check=(v,m)=>{assert(v,m);checks++;};
@@ -21,7 +21,7 @@ try{
    tables:{profiles:[{pseudo:'fixture'}],totehms:(_url,req)=>{
     if(req.method()==='POST')persisted=JSON.parse(req.postData()).steps;
     return [{user_id:USER.id,steps:persisted,updated_at:'2026-11-08T12:00:00Z'}];}},
-   rpc:{my_trips:tree,totehm_read:tree,my_landing:{signed_in:true,pseudo:'fixture'},element_orders_for:()=>({ok:true,orders}),
+   rpc:{my_totehm:tree,totehm_read:tree,my_landing:{signed_in:true,pseudo:'fixture'},element_orders_for:()=>({ok:true,orders}),
     element_order_set:async({p_kind,p_refs})=>{active++;maxActive=Math.max(maxActive,active);await new Promise(r=>setTimeout(r,80));orders[p_kind]=p_refs;active--;return {ok:true};}}});
   let navigation=0;
   const open=async view=>{

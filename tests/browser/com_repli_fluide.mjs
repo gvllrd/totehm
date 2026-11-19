@@ -8,7 +8,7 @@ import {launch,page,ok} from './harness.mjs';
 const UID='11111111-1111-4111-8111-111111111111';
 const STEPS=Array.from({length:8},(_,i)=>({t:'Habit '+(i+1),t0:'Habit '+(i+1),is:[['fight'],['flow'],['focus','love'],['express'],['enrich'],['celebrate'],['love'],['fight','flow']][i],f:'every_morning'}));
 const RPC={my_landing:{signed_in:true,pseudo:'wahigher',visibility:'private',offer:{enabled:false},higher:{active:false},thp:false,subscriptions:0,subscribers:0},
-  my_trips:{signed_in:true,trips:[{id:'o1',text:'Objective',is:['express'],hs:['Habit 1']}],reps:[{id:'r1',text:'Repulsion',is:['focus'],hs:['Habit 1']}],wisdom:[],visions:[]},
+  my_totehm:{signed_in:true,objectives:[{id:'o1',text:'Objective',is:['express'],hs:['Habit 1']}],repulsions:[{id:'r1',text:'Repulsion',is:['focus'],hs:['Habit 1']}],stories:[],visions:[]},
   element_media_list:{ok:true,items:[]}, habit_spaces:{ok:true,mine:true,habits:[]}, element_cloths:{ok:true,mine:true,elements:[]},
   my_visions:{ok:true,visions:[]}, my_feed_badges:{ok:true,pos:{}}, club_spots_of:b=>({ok:true,period:b.p_period,items:[],total:0})};
 const browser=await launch();

@@ -5,7 +5,7 @@ import {launch,page,USER} from './harness.mjs';
 import {elementURL} from '../../backend/supabase/functions/_shared/chatgpt-context.ts';
 const out=process.argv[2]||'work/usual-place';fs.mkdirSync(out,{recursive:true});
 const origin='https://www.totehm.com',habit='Read every evening',privatePlace='My private kitchen',nextPlace='Bibliothèque · القراءة';
-const tree={signed_in:true,trips:[],reps:[],wisdom:[],visions:[],objs:{}};
+const tree={signed_in:true,objectives:[],repulsions:[],stories:[],visions:[],objs:{}};
 let checks=0;const check=(v,m)=>{assert(v,m);checks++;};
 const browser=await launch();
 async function signal(p){let timer;try{return await Promise.race([p,new Promise((_,reject)=>timer=setTimeout(()=>reject(Error('Expected fixture request did not start')),10000))]);}finally{clearTimeout(timer);}}
@@ -14,7 +14,7 @@ async function sample({width=390,delayPlace=false,placeError=false,placeHook=nul
  const placeMap=new Map([[habit,privatePlace]]),placeCalls=[],renameCalls=[],writes=[];let announce;const placeRequested=new Promise(r=>announce=r);
  const x=await page(browser,{dir:'com',origin,viewport:{width,height:844},hasTouch:width<700,
   tables:{profiles:[{pseudo:'fixture'}],totehms:()=>[{user_id:USER.id,steps}]},
-  rpc:{my_landing:{signed_in:true,pseudo:'fixture'},my_trips:tree,element_orders_for:{ok:true,orders:{}},
+  rpc:{my_landing:{signed_in:true,pseudo:'fixture'},my_totehm:tree,element_orders_for:{ok:true,orders:{}},
    habit_spaces:{ok:true,mine:true,habits:[]},totehm_read:{...tree,ok:true,pseudo:'artist',steps:[{t:habit,is:['focus'],f:'daily'}]},
    creator_page:{ok:true,pseudo:'artist',palette:['focus'],sale:{open:false},viewer:{signed_in:true,can_read:true}},
    member_media:{ok:true,items:[]},club_spots_of:{ok:true,items:[]},sso_revoke_everywhere:1,

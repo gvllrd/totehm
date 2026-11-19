@@ -7,7 +7,7 @@ const habits=[{name:'Deep practice',freq:'daily',ints:['focus'],objectives:[{tex
 const rpc={space_habits:{ok:true,habits},spot_rules:{duration_min:5,duration_max:720,horizon_days:90,clip_seconds:33},
   space_discover:{spots:[],more:false},spots_feed:{spots:[],more:false},
   my_landing:{signed_in:true,pseudo:'studio',visibility:'private',offer:{enabled:false}},
-  my_trips:{signed_in:true,trips:[],reps:[],wisdom:[],visions:[]},habit_spaces:{ok:true,habits:[]}};
+  my_totehm:{signed_in:true,objectives:[],repulsions:[],stories:[],visions:[]},habit_spaces:{ok:true,habits:[]}};
 const browser=await launch();
 try{
   {

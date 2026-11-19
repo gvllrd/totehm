@@ -6,14 +6,14 @@ import { launch, page, ok } from './harness.mjs';
 const OUT = process.argv[2] || '/tmp'; const browser = await launch(); const origin = 'https://www.totehm.com';
 const erreurs = log => log.errors.filter(e => e.startsWith('pageerror'));
 const PNG = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==', 'base64');
-const trips = { signed_in:true, trips:[{ id:'o1', text:'Save for the house', is:['enrich'] }], reps:[], wisdom:[],
+const trips = { signed_in:true, objectives:[{ id:'o1', text:'Save for the house', is:['enrich'] }], repulsions:[], stories:[],
   visions:[{ id:'v1', text:'A quiet house by the sea', is:['love'] }, { id:'v2', text:'Run Lisbon', is:['flow'] }] };
 const land = { signed_in:true, pseudo:'wah', visibility:'private', offer:{ enabled:false }, higher:{ active:false, price_cents:700, currency:'eur' }, thp:false, subscriptions:0, subscribers:0 };
 let image = 'u/vision-old.jpg';
 const visions = () => ({ ok:true, visions:[{ id:'v1', text:'A quiet house by the sea', image, objectives:[] }, { id:'v2', text:'Run Lisbon', image:null, objectives:[] }] });
 try{
   const { pg, log } = await page(browser, { dir:'com', origin, tables:{ profiles:[{ pseudo:'wah' }] },
-    rpc:{ my_landing:land, my_trips:trips, habit_spaces:{ ok:true, mine:true, habits:[] }, element_cloths:{ ok:true, mine:true, elements:[] },
+    rpc:{ my_landing:land, my_totehm:trips, habit_spaces:{ ok:true, mine:true, habits:[] }, element_cloths:{ ok:true, mine:true, elements:[] },
       my_visions:visions, vision_image_set:b => { const old = image; image = b.p_path; return { ok:true, image:b.p_path, old }; } } });
   /* l'URL signée sert une vraie image (sinon `onerror` la retire, comme en prod) */
   await pg.route(/\/storage\/v1\/object\/sign\//, r => r.request().method() === 'GET' ? r.fulfill({ status:200, contentType:'image/png', body:PNG }) : r.fallback());

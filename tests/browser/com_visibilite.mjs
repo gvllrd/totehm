@@ -8,10 +8,10 @@ const OUT=process.argv[2]||'/tmp';const browser=await launch();const origin='htt
 const erreurs=log=>log.errors.filter(e=>e.startsWith('pageerror'));
 const UID='11111111-1111-4111-8111-111111111111';
 const STEPS=[{t:'Run the hill',t0:'Run the hill',is:['fight'],f:'every_morning',o:'o1'},{t:'Read at dawn',t0:'Read at dawn',is:['focus']}];
-const LU={ok:true,pseudo:'studio',steps:[{t:'Deep practice',is:['focus']}],objs:{},trips:[],reps:[],wisdom:[],visions:[]};
+const LU={ok:true,pseudo:'studio',steps:[{t:'Deep practice',is:['focus']}],objs:{},objectives:[],repulsions:[],stories:[],visions:[]};
 const MES={my_landing:{signed_in:true,pseudo:'wahigher'},
-  my_trips:{signed_in:true,trips:[{id:'o1',text:'Ship it',habits:['Run the hill']}],reps:[{id:'r1',text:'The phone',hs:['Run the hill'],habits:['Run the hill']}],
-    wisdom:[{id:'w1',text:'Slow is smooth'}],visions:[{id:'v1',text:'A house by the sea'}]},
+  my_totehm:{signed_in:true,objectives:[{id:'o1',text:'Ship it',habits:['Run the hill']}],repulsions:[{id:'r1',text:'The phone',hs:['Run the hill'],habits:['Run the hill']}],
+    stories:[{id:'w1',text:'Slow is smooth'}],visions:[{id:'v1',text:'A house by the sea'}]},
   my_box_audiences:{ok:true,h:{'Run the hill':'subscribers'},t:{o1:'subscribers'},r:{},w:{},v:{}},
   /* le serveur refuse la vision (un refus doit remettre l'ancien niveau) */
   box_audience_set:b=>b.p_kind==='v'?{ok:false,why:'not_mine'}:{ok:true,kind:b.p_kind,audience:b.p_audience,totehm:'subscribers'}};

@@ -89,7 +89,7 @@ try{
 
   // 18/11 — [Members] searches on the verso; at a member's, no top or bottom view (their offer lives on THEIR verso),
   // so my personal ChatGPT pitch can never show inside another member's ecosystem.
-  const OTHER={ok:true,pseudo:'kai3',steps:[{t:'Swim at dawn',is:['flow']}],trips:[],objs:{},reps:[],wisdom:[],visions:[]};
+  const OTHER={ok:true,pseudo:'kai3',steps:[{t:'Swim at dawn',is:['flow']}],objectives:[],objs:{},repulsions:[],stories:[],visions:[]};
   const OFFER={ok:true,pseudo:'kai3',palette:['flow'],sale:{open:true,price_cents:2400,currency:'eur',period:'year'},
     viewer:{signed_in:true,me:false,subscribed:false,can_read:true}};
   {const {pg,ctx,log}=await page(browser,{dir:'com',origin,tables,rpc:{my_landing:LAND,figher_access:{signed_in:true,member:true},totehm_read:OTHER,creator_page:OFFER,member_media:{ok:true,items:[]},club_spots_of:{ok:true,items:[]}}});

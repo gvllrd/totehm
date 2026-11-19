@@ -21,7 +21,7 @@ const MEDIA=[{id:'m1',kind:'h',ref:'Run the hill',path:UID+'/m-pay.jpg',mime:'im
 const spot=(id,state,quand,photo)=>({id,habit:'Run the hill',intentions:['fight'],state,starts_at:quand,duration_min:60,city:'Lisbon',
   photo:UID+'/'+photo+'.jpg',mine:true,audience:'private',location:'off',habit_box:{name:'Run the hill',ints:['fight']},comment:'up the hill'});
 const SPOTS={future:[spot('sp1','will',DEMAIN,'s-car')],now:[],past:[spot('sp2','was',HIER,'s-pay'),spot('sp3','was','2026-10-20T08:00:00Z','s-por')]};
-const RPC={my_landing:{signed_in:true,pseudo:'wahigher'},my_trips:{signed_in:true,trips:[],reps:[],wisdom:[],visions:[]},
+const RPC={my_landing:{signed_in:true,pseudo:'wahigher'},my_totehm:{signed_in:true,objectives:[],repulsions:[],stories:[],visions:[]},
   element_media_list:{ok:true,items:MEDIA},
   habit_spaces:{ok:true,mine:true,habits:[{habit:'Run the hill',total:3,total_spaces:0,total_spots:3,spaces:[],
     spots:[{id:'sp1',format:'spot',state:'will',starts_at:DEMAIN,city:'Lisbon'},{id:'sp2',format:'spot',state:'was',starts_at:HIER,city:'Lisbon'}]}]},

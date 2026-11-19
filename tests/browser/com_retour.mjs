@@ -10,7 +10,7 @@ const STEPS=[{t:'Run the hill',t0:'Run the hill',is:['fight'],f:'every_morning'}
 const DEMAIN=new Date(Date.now()+864e5).toISOString().slice(0,10)+'T08:00:00Z';
 const SP={id:'sp1',habit:'Run the hill',intentions:['fight'],state:'will',starts_at:DEMAIN,duration_min:60,city:'Lisbon',mine:true,audience:'private',location:'off',
   habit_box:{name:'Run the hill',ints:['fight']}};
-const RPC={my_landing:{signed_in:true,pseudo:'wahigher'},my_trips:{signed_in:true,trips:[],reps:[],wisdom:[],visions:[]},
+const RPC={my_landing:{signed_in:true,pseudo:'wahigher'},my_totehm:{signed_in:true,objectives:[],repulsions:[],stories:[],visions:[]},
   element_media_list:{ok:true,items:[{id:'m1',kind:'h',ref:'Run the hill',path:UID+'/m-a.jpg',mime:'image/jpeg',name:'a.jpg'}]},
   club_spots_of:b=>({ok:true,items:b.p_period==='future'||b.p_period==='now'?[SP]:[],total:1})};
 const erreurs=log=>log.errors.filter(e=>e.startsWith('pageerror'));

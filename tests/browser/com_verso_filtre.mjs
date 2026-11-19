@@ -87,7 +87,7 @@ try{
    ok(!erreurs(log).length,nom+' · verso : aucune erreur '+erreurs(log).join(' | '));
    await pg.context().close();}
   /* ── 3 · le bloc de commande du filtre ── */
-  {const{pg,log}=await page(browser,{dir:'com',origin,tables,viewport:vp,hasTouch:nom==='téléphone',rpc:{my_landing:LAND,my_trips:{signed_in:true,trips:[],reps:[],wisdom:[],visions:[]},element_media_list:{ok:true,items:[]}}});
+  {const{pg,log}=await page(browser,{dir:'com',origin,tables,viewport:vp,hasTouch:nom==='téléphone',rpc:{my_landing:LAND,my_totehm:{signed_in:true,objectives:[],repulsions:[],stories:[],visions:[]},element_media_list:{ok:true,items:[]}}});
    await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1200);
    await pg.keyboard.press('ArrowLeft');await pg.waitForFunction(()=>{const d=window.__totehm_lv();return d.vue==='g'&&!d.bouge;},null,{timeout:6000});
    await pg.evaluate(()=>window.__papierDock&&window.__papierDock());await pg.waitForTimeout(80);
@@ -104,7 +104,7 @@ try{
      const gr=document.querySelector('.lsh-sf .sfv-g').getBoundingClientRect(), cg=getComputedStyle(document.querySelector('.lsh-sf .sfv-g'));
      r.grind={l:gr.left,t:gr.top,r:gr.right,b:gr.bottom,w:gr.width,h:gr.height,m:(cg.maskImage||cg.webkitMaskImage||'').includes('svg'),bg:cg.backgroundColor};
      return r;});
-   const {wisdom:w,visions:v,objectives:o,habits:h,repulsions:p,grind:gr}=g, px=1.5;
+   const {stories:w,visions:v,objectives:o,habits:h,repulsions:p,grind:gr}=g, px=1.5;
    ok(w&&v&&Math.abs(w.w-w.h)<px&&Math.abs(v.w-v.h)<px&&w.m&&v.m&&gr.m&&Math.abs(gr.w-gr.h)<px,
      nom+' · trois CARRÉS perforés, comme les trois papiers du logo ('+Math.round(w.w)+' px)');
    ok(w.bg==='rgb(116, 49, 105)'&&v.bg==='rgb(54, 73, 140)'&&gr.bg==='rgb(51, 51, 102)',

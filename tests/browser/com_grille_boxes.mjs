@@ -1,6 +1,6 @@
 // 10/11/2026 — LA GRILLE DE GAUCHE : chaque vignette porte SA box, au format du TOTEHM, dès le premier dessin
 // (Wah : « certaines boxes ne s'affichent pas ou mal sur les vignettes-images »). Mesuré avant le correctif :
-// l'arbre (`my_trips`) arrive après les médias, et 5 vignettes sur 7 n'avaient AUCUNE box en attendant.
+// l'arbre (`my_totehm`) arrive après les médias, et 5 vignettes sur 7 n'avaient AUCUNE box en attendant.
 //   1 · avant l'arbre : une box partout — la Habit de son nom, les quatre autres une box d'ATTENTE à leur couleur ;
 //   2 · après l'arbre : la vraie box, au même endroit (jamais l'ancien rendu `.tl-b`) ;
 //   3 · le filtre : la vue choisie n'a plus de trait blanc ; MY GRIND assombrit ses deux autres boutons.
@@ -12,12 +12,12 @@ const STEPS=[{t:'Run the hill',t0:'Run the hill',is:['fight']},{t:'Call mum',t0:
 const img=n=>UID+'/m-'+String(n).repeat(8)+'-aaaa-4aaa-8aaa-aaaaaaaaaaaa.jpg';
 const items=[['h','Run the hill'],['o','o1'],['r','r1'],['w','w1'],['v','v1']].map(([kind,ref],i)=>
   ({id:'m'+i,kind,ref,path:img(i+1),mime:'image/jpeg',bytes:1200,name:'x.jpg',created_at:'2026-10-15T10:0'+i+':00Z'}));
-const ARBRE={signed_in:true,trips:[{id:'o1',text:'Ship it',is:['express'],hs:['Run the hill']}],
-  reps:[{id:'r1',text:'The phone in bed',is:['focus'],hs:['Run the hill']}],
-  wisdom:[{id:'w1',text:'I left Paris at nineteen'}],visions:[{id:'v1',text:'The studio by the sea'}]};
+const ARBRE={signed_in:true,objectives:[{id:'o1',text:'Ship it',is:['express'],hs:['Run the hill']}],
+  repulsions:[{id:'r1',text:'The phone in bed',is:['focus'],hs:['Run the hill']}],
+  stories:[{id:'w1',text:'I left Paris at nineteen'}],visions:[{id:'v1',text:'The studio by the sea'}]};
 const RPC={my_landing:{signed_in:true,pseudo:'wahigher',visibility:'private',offer:{enabled:false},higher:{active:false},thp:false,subscriptions:0,subscribers:0},
   element_media_list:()=>({ok:true,items}),
-  my_trips:async()=>{ await new Promise(r=>setTimeout(r,2500)); return ARBRE; },
+  my_totehm:async()=>{ await new Promise(r=>setTimeout(r,2500)); return ARBRE; },
   habit_spaces:{ok:true,mine:true,habits:[]}, element_cloths:{ok:true,mine:true,elements:[]},
   my_visions:{ok:true,visions:[]}, my_feed_badges:{ok:true,pos:{}},
   club_spots_of:b=>({ok:true,period:b.p_period,items:[],total:0,has_more:false,next_offset:0})};

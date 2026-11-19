@@ -29,7 +29,7 @@ let AUD_BOX={'Run the hill':'subscribers'};
 const RPC={my_landing:{signed_in:true,pseudo:'wahigher'},
   my_box_audiences:()=>({ok:true,h:Object.assign({},AUD_BOX),t:{},r:{},w:{},v:{}}),
   box_audience_set:b=>{ AUD_BOX[b.p_id]=b.p_audience; return {ok:true,kind:b.p_kind,audience:b.p_audience}; },
-  my_trips:{signed_in:true,trips:[],reps:[],wisdom:[],visions:[]},
+  my_totehm:{signed_in:true,objectives:[],repulsions:[],stories:[],visions:[]},
   habit_spaces:{ok:true,mine:true,habits:[]},
   club_spots_of:b=>({ok:true,period:b.p_period,items:[],total:0,has_more:false,next_offset:0,as_of:'2026-10-27T10:00:00Z'}),
   spot_rules:{clip_seconds:33,clip_max_bytes:48000000,duration_min:5,duration_max:720,horizon_days:90},
@@ -83,7 +83,7 @@ try{
   await clic(pg,'#rdr-new [data-ns="aud"][data-v="figher"]');await pg.waitForTimeout(250);
   const expl=await pg.evaluate(()=>({n:[...document.querySelectorAll('#rdr-new .ns-def')].map(e=>e.textContent),
     l:[...document.querySelectorAll('#rdr-new .sfl')].map(e=>e.textContent)}));
-  ok(expl.n.length===2&&/a habit, an objective, a repulsion/.test(expl.n[1])&&expl.l.slice(-1)[0]==='together'
+  ok(expl.n.length===2&&/a habit, its why, its repulsions/.test(expl.n[1])&&expl.l.slice(-1)[0]==='together'
      &&!expl.l.includes('location'),
      nom+' · figher club choisi, le Club se PRÉCISE (« '+expl.n[1]+' ») ; puis together, et plus jamais « location »');
   await clic(pg,'#rdr-new [data-ns="mode"][data-v="social"]');await pg.waitForTimeout(300);

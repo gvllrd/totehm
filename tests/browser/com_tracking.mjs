@@ -25,7 +25,7 @@ try{
     my_board:{ok:true,today,tz:'Europe/Lisbon',telegram:true,habits:[],days:[],week:{},totals:{},heat:[],objectives:[{t:'Read a book',jours:10,temps:.7}],feed:[]},
     tracking_summary_for_me:async({p_days})=>{if(delayed&&p_days===28){delayed=false;await new Promise(r=>release=r);}return snapshot(p_days,settings);},tracking_settings_get:()=>({ok:true,settings}),
     tracking_settings_set:({p_changes})=>{settings={...settings,...p_changes};return {ok:true,settings};},
-    my_trips:{signed_in:true,trips:[],reps:[],wisdom:[],visions:[],objs:{}},element_orders_for:{ok:true,orders:{}}}});
+    my_totehm:{signed_in:true,objectives:[],repulsions:[],stories:[],visions:[],objs:{}},element_orders_for:{ok:true,orders:{}}}});
   await pg.addInitScript(()=>{window.__copied=[];Object.defineProperty(navigator,'clipboard',{value:{writeText:async text=>window.__copied.push(text)}});});
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');
   await pg.click('#lv-tap-turn');await pg.waitForSelector('#srch.is-pret');

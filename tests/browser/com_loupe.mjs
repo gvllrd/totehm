@@ -9,10 +9,10 @@ const erreurs=log=>log.errors.filter(e=>e.startsWith('pageerror'));
 const UID='11111111-1111-4111-8111-111111111111';
 const STEPS=[{t:'Run the hill',t0:'Run the hill',is:['fight'],f:'every_morning',o:'o1'},{t:'Read at dawn',t0:'Read at dawn',is:['focus']},{t:'Call mum',t0:'Call mum',is:['love']}];
 const MES={my_landing:{signed_in:true,pseudo:'wahigher'},
-  my_trips:{signed_in:true,trips:[{id:'o1',text:'Ship it',habits:['Run the hill']}],reps:[{id:'r1',text:'The phone',hs:['Run the hill'],habits:['Run the hill']}],
-    wisdom:[{id:'w1',text:'Slow is smooth'}],visions:[{id:'v1',text:'A house by the sea'}]}};
-const LU={ok:true,pseudo:'studio',steps:[{t:'Deep practice',is:['focus']}],objs:{'Deep practice':['o1']},trips:[{id:'o1',text:'Build a practice',is:['focus']}],
-  reps:[{id:71,text:'Put the phone away',is:['focus'],hs:['Deep practice']}],wisdom:[{id:'w1',text:'Attention is a choice',is:['focus']}],visions:[{id:'v1',text:'A focused life',is:['focus']}]};
+  my_totehm:{signed_in:true,objectives:[{id:'o1',text:'Ship it',habits:['Run the hill']}],repulsions:[{id:'r1',text:'The phone',hs:['Run the hill'],habits:['Run the hill']}],
+    stories:[{id:'w1',text:'Slow is smooth'}],visions:[{id:'v1',text:'A house by the sea'}]}};
+const LU={ok:true,pseudo:'studio',steps:[{t:'Deep practice',is:['focus']}],objs:{'Deep practice':['o1']},objectives:[{id:'o1',text:'Build a practice',is:['focus']}],
+  repulsions:[{id:71,text:'Put the phone away',is:['focus'],hs:['Deep practice']}],stories:[{id:'w1',text:'Attention is a choice',is:['focus']}],visions:[{id:'v1',text:'A focused life',is:['focus']}]};
 /* Les cinq vues depuis les habitudes : la croix (↑ objectifs, ↓ répulsions, ← sagesse, → visions), on revient au centre entre deux. */
 const TOUR=[['habits',[]],['objectives',['ArrowUp']],['repulsions',['ArrowDown','ArrowDown']],['stories',['ArrowUp','ArrowLeft']],['visions',['ArrowRight','ArrowRight']]];
 const mesure=pg=>pg.evaluate(()=>{const cols=[...document.querySelectorAll('#habits .v-col')];
