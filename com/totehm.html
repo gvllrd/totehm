@@ -5910,7 +5910,7 @@ function fichiersHTML(kind,id){
       +'<button type="button" class="mf-x" data-emx="'+esc(String(m.id))+'" aria-label="Remove">&times;</button></span>').join('');
   /* 12/11 (Wah) : « à tous les [Add a media] je veux [Add a media to visualize it] » — le bouton dit ce
      qu'il DONNE (une visionneuse), pas ce qu'il range. */
-  return groupe('files',puces+'<button type="button" class="dash" data-cap="'+esc(e.k+':'+e.ref)+'">Add a media to visualize it</button>');
+  return groupe('Media for visualization',puces+'<button type="button" class="dash" data-cap="'+esc(e.k+':'+e.ref)+'">Add a media to visualize it</button>');
 }
 /* Ouvrir un fichier : la fenêtre part DANS le geste (sinon le navigateur la bloque), l'URL signée la suit. */
 async function emOuvrir(id){
@@ -8800,7 +8800,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-11-19-box-vide-disparait';
+const BUILD='2026-11-19-media-for-visualization';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
