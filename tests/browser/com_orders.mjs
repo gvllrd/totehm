@@ -11,7 +11,7 @@ const tree={signed_in:true,ok:true,pseudo:'artist',steps,
  reps:[1,2,3].map(n=>({id:n,text:'Repulsion '+n,hs:[],ws:[]})),
  visions:[4,5,6].map(n=>({id:id(n),text:'Vision '+n,os:[]})),
  wisdom:[7,8,9].map(n=>({id:id(n),text:'Story '+n,os:[]}))};
-const views={habits:'habit',objectives:'objective',repulsions:'repulsion',visions:'vision',wisdom:'wisdom'};
+const views={habits:'habit',objectives:'objective',repulsions:'repulsion',visions:'vision',stories:'story'};
 const browser=await launch();let checks=0;
 const check=(v,m)=>{assert(v,m);checks++;};
 try{
@@ -47,7 +47,7 @@ try{
    check(orders[kind]?.length===3,'Order saved for '+kind);
    await open(view);
    check(JSON.stringify(await texts())===JSON.stringify(expected),'Order survives reload for '+view);
-   if(view==='wisdom'&&width===390)await pg.screenshot({path:out+'/story-mobile.png'});
+   if(view==='stories'&&width===390)await pg.screenshot({path:out+'/story-mobile.png'});
   }
   check(maxActive===1,'Rapid moves serialize persistence');
   check(!log.errors.some(e=>e.startsWith('pageerror')),'No browser runtime errors');

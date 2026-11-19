@@ -112,9 +112,9 @@ try{
    ok(o.b<=h.t+px&&h.b<=p.t+px&&Math.abs(o.l-h.l)<px&&Math.abs(h.l-p.l)<px&&!o.m,nom+' · OBJECTIVES en haut, HABITS au milieu, REPULSIONS en bas, empilés');
    ok(o.l>=gr.l-px&&p.r<=gr.r+px&&o.t>gr.t&&p.b<gr.b&&w.r<=gr.l+px&&gr.r<=v.l+px,
      nom+' · la pile est DANS le navy, plus courte que lui ('+Math.round(p.r-o.l)+' px pour '+Math.round(gr.w)+' px)');
-   await pg.click('.lsh-sf [data-sf="vue"][data-v="wisdom"]');await pg.waitForTimeout(300);
+   await pg.click('.lsh-sf [data-sf="vue"][data-v="stories"]');await pg.waitForTimeout(300);
    const on=await pg.evaluate(()=>[...document.querySelectorAll('.lsh-sf [data-sf="vue"].is-on')].map(b=>b.dataset.v));
-   ok(on.join()==='wisdom',nom+' · un tap sur MY STORY la choisit → '+on.join());
+   ok(on.join()==='stories',nom+' · un tap sur MY STORY la choisit → '+on.join());
    ok(!erreurs(log).length,nom+' · filtre : aucune erreur '+erreurs(log).join(' | '));
    await pg.context().close();}
  }

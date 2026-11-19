@@ -9,7 +9,8 @@ const steps=[{t:'Écrire & lire / 読む #1',is:['express'],f:'daily'}];
 const tree={signed_in:true,ok:true,pseudo:'artist',steps,trips:[{id:id(1),text:'Publish',status:'active'}],
  reps:[{id:1,text:'Scrolling',hs:[steps[0].t],ws:[]}],visions:[{id:id(2),text:'Transmit',os:[]}],wisdom:[{id:id(3),text:'My story\n\nMy words.',os:[]}]};
 const cases=[['habit',steps[0].t,'Écrire & lire / 読む #1','habits'],['objective',id(1),'Publish','objectives'],
- ['repulsion','1','Scrolling','repulsions'],['vision',id(2),'Transmit','visions'],['wisdom',id(3),'My storyMy words.','wisdom']];
+ ['repulsion','1','Scrolling','repulsions'],['vision',id(2),'Transmit','visions'],['wisdom',id(3),'My storyMy words.','stories'],['story',id(3),'My storyMy words.','stories'],
+ ['objective',id(2),'Transmit','visions']];   // 19/11 : objectif et vision = la MÊME box ; un lien « objective » retrouve celle devenue vision
 let checks=0;const check=(v,m)=>{assert(v,m);checks++;};
 const browser=await launch();
 async function sample({session=true,member=false,denied=false,delay=0}={}){
@@ -25,7 +26,8 @@ try{
  for(const width of [390,1280]){
   const x=await sample({delay:150});await x.pg.setViewportSize({width,height:844});
   for(const [kind,ref,text,view] of cases){
-   await x.pg.goto(elementURL({kind,ref}));
+   // `story` : le nom de la box depuis le 19/11 ; le connecteur (elementURL) ne le produit pas encore, le lien est écrit à la main.
+   await x.pg.goto(kind==='story' ? origin+'/totehm#'+new URLSearchParams({element:kind,ref}) : elementURL({kind,ref}));
    try{await x.pg.waitForFunction(()=>window.__totehm_element_link?.().state==='opened',null,{timeout:15000});}
    catch(e){console.log(JSON.stringify({kind,width,state:await x.pg.evaluate(()=>({link:window.__totehm_element_link?.(),zone:window.__totehm_zone,body:document.body.className})),errors:x.log.errors}));throw e;}
    const actual=await x.pg.locator('#habits .habit.open .v-name').textContent();

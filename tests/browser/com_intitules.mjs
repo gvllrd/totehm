@@ -16,7 +16,7 @@ const trips = { signed_in:true,
          { id:'o9', text:'', target_at:null, days_left:null, habits:[] }],
   objs:{ 'Run the hill':['o1','v1'] },
   reps:[{ id:'r1', text:'Scrolling at night', hs:['Run the hill'], habits:['Run the hill'] }],
-  wisdom:[{ id:'w1', text:'Slow is smooth' }],
+  stories:[{ id:'w1', text:'Slow is smooth' }],
   visions:[{ id:'v1', text:'A studio by the sea', os:[] }] };
 const land = { signed_in:true, pseudo:'wah', visibility:'private', offer:{ enabled:false },
   higher:{ active:false, price_cents:700, currency:'eur' }, thp:false, subscriptions:0, subscribers:0 };
@@ -97,7 +97,7 @@ try{
  await pg.screenshot({ path:OUT + '/com_box_vision.png' });
 
  /* ── MY STORY ── */
- await vers(pg, 'ArrowLeft', 'habits'); await vers(pg, 'ArrowLeft', 'wisdom');
+ await vers(pg, 'ArrowLeft', 'habits'); await vers(pg, 'ArrowLeft', 'stories');
  await pg.locator('#habits [data-open="w:w1"]').evaluate(e => e.click()); await pg.waitForTimeout(500);
  const w = await lire(pg, '#habits .habit.open');
  ok(w.mots[0] === 'learned from' && w.wear === 'wisdom:w1',

@@ -356,7 +356,7 @@ try{
   const fz=await pg.evaluate(()=>({vu:!document.getElementById("lv-sh-sf").hidden, pick:!document.getElementById('lv-sh-pick').hidden,
     papiers:document.querySelectorAll('#lv-sh-sf .sfcmd .sfv').length,
     vues:[...document.querySelectorAll('#lv-sh-sf [data-sf="vue"]')].map(e=>e.textContent), boxes:document.querySelectorAll('#lv-sh-sf .sfb').length}));
-  ok(fz.vu&&!fz.pick&&fz.papiers===3&&fz.vues.length===5&&fz.boxes===0&&fz.vues[0]==='my wisdom'&&fz.vues[fz.vues.length-1]==='my vision',
+  ok(fz.vu&&!fz.pick&&fz.papiers===3&&fz.vues.length===5&&fz.boxes===0&&fz.vues[0]==='my story'&&fz.vues[fz.vues.length-1]==='my vision',
     'le Totehm docké ouvre le FILTRE : ses trois papiers, les cinq vues ('+fz.vues.join(' · ')+') — 26/10 : MY WISDOM, plus « story »');
   const ouvert=await pg.evaluate(()=>{const c=document.querySelector('#lv-sh-sf .sfcmd'),p=c.querySelector('.sfpile'),
       g=c.querySelector('.sfv-g').getBoundingClientRect();

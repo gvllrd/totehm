@@ -32,7 +32,7 @@ try{
  { const { pg, log } = await page(browser, { dir:'com', origin, tables:{ profiles:[{ pseudo:'wah' }] }, network,
      rpc:{ my_landing:land, my_trips:trips, habit_spaces:{ ok:true, mine:true, habits:[] }, element_cloths:mine }, functions:{ 'sso-mint':{ code:CODE } } });
    await ouvrir(pg);
-   await vers(pg, 'ArrowLeft', 'wisdom');
+   await vers(pg, 'ArrowLeft', 'stories');
    const call = log.rpc.find(x => x.name === 'element_cloths');
    ok(call && call.body.p_pseudo === null, 'COM lit MES Cloths (element_cloths, p_pseudo null)');
    await pg.waitForFunction(() => !!document.querySelector('#habits .v-dots'));
@@ -65,7 +65,7 @@ try{
    ok((await pg.evaluate(() => document.querySelector('#habits [data-totehmize]')?.dataset.totehmize)) === 'vision:v1'
      && (await pg.locator('#habits [data-cloth]').count()) === 0,
      '12/11 · VISION porte « + totehmize » (vision:v1), sans Cloth : la boutique prend N\'IMPORTE QUELLE box');
-   await vers(pg, 'ArrowLeft', 'habits'); await vers(pg, 'ArrowLeft', 'wisdom');
+   await vers(pg, 'ArrowLeft', 'habits'); await vers(pg, 'ArrowLeft', 'stories');
    await pg.locator('#habits [data-open="w:w1"]').evaluate(e => e.click()); await pg.waitForTimeout(400);
    const nav = pg.waitForURL(/higher\.boutique/, { timeout:8000 }).then(() => pg.url(), () => '');
    await pg.click('#habits [data-cloth="0.Hill"]');
@@ -77,7 +77,7 @@ try{
  { const { pg, log } = await page(browser, { dir:'com', origin, tables:{ profiles:[{ pseudo:'wah' }] }, network,
      rpc:{ totehm_read:source, habit_spaces:{ ok:true, mine:false, habits:[] }, element_cloths:b => b.p_pseudo === 'studio' ? theirs : mine }, functions:{ 'sso-mint':{ code:CODE } } });
    await pg.goto(origin + '/totehm?ro=studio#in'); await pg.waitForSelector('body.ro:not(.gate)'); await pg.waitForTimeout(600);
-   await vers(pg, 'ArrowLeft', 'wisdom');
+   await vers(pg, 'ArrowLeft', 'stories');
    ok(log.rpc.some(x => x.name === 'element_cloths' && x.body.p_pseudo === 'studio'), 'en lecture : element_cloths(p_pseudo = studio), le serveur juge les droits');
    await pg.locator('#habits [data-open="w:w9"]').evaluate(e => e.click()); await pg.waitForTimeout(400);
    ok((await pg.locator('#habits [data-cloth="0.Calm"]').count()) === 1 && (await pg.locator('#habits [data-totehmize]').count()) === 0, 'ses Cloths, et pas de « + totehmize » chez un autre');
@@ -87,7 +87,7 @@ try{
  { const { pg, log } = await page(browser, { dir:'com', origin, tables:{ profiles:[{ pseudo:'wah' }] }, network,
      rpc:{ my_landing:land, my_trips:trips, habit_spaces:{ ok:true, mine:true, habits:[] } },
      network:url => url.pathname.endsWith('/rpc/element_cloths') ? { status:500, contentType:'application/json', body:'{"message":"boom"}' } : null });
-   await ouvrir(pg); await vers(pg, 'ArrowLeft', 'wisdom');
+   await ouvrir(pg); await vers(pg, 'ArrowLeft', 'stories');
    await pg.locator('#habits [data-open="w:w1"]').evaluate(e => e.click()); await pg.waitForTimeout(400);
    ok((await pg.locator('#habits [data-totehmize]').count()) === 1 && !erreurs(log).length && log.errors.some(e => /element_cloths/.test(e)),
      'element_cloths en panne : journalisé, la leçon s\'ouvre, « + totehmize » reste');

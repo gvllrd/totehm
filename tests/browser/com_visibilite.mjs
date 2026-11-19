@@ -20,7 +20,7 @@ const VIS='subscribers';   /* 16/11 : deux mots, minimal */
 const TOUR=[['habits',[],VIS,{p_kind:'h',p_id:'Run the hill',p_audience:'private'},'private'],
   ['objectives',['ArrowUp'],VIS,{p_kind:'t',p_id:'o1',p_audience:'private'},'private'],
   ['repulsions',['ArrowDown','ArrowDown'],'private',{p_kind:'r',p_id:'r1',p_audience:'subscribers'},VIS],
-  ['wisdom',['ArrowUp','ArrowLeft'],'private',{p_kind:'w',p_id:'w1',p_audience:'subscribers'},VIS],
+  ['stories',['ArrowUp','ArrowLeft'],'private',{p_kind:'w',p_id:'w1',p_audience:'subscribers'},VIS],
   ['visions',['ArrowRight','ArrowRight'],'private',{p_kind:'v',p_id:'v1',p_audience:'subscribers'},'private']];
 /* la ligne : ses deux options, celle qui est vraie (`mot`), son style (aucun fond, ni bord : la grammaire de la box) */
 const pastille=pg=>pg.evaluate(()=>{const b=document.querySelector('#habits .habit.open .baud');if(!b) return null;

@@ -14,7 +14,7 @@ const MES={my_landing:{signed_in:true,pseudo:'wahigher'},
 const LU={ok:true,pseudo:'studio',steps:[{t:'Deep practice',is:['focus']}],objs:{'Deep practice':['o1']},trips:[{id:'o1',text:'Build a practice',is:['focus']}],
   reps:[{id:71,text:'Put the phone away',is:['focus'],hs:['Deep practice']}],wisdom:[{id:'w1',text:'Attention is a choice',is:['focus']}],visions:[{id:'v1',text:'A focused life',is:['focus']}]};
 /* Les cinq vues depuis les habitudes : la croix (↑ objectifs, ↓ répulsions, ← sagesse, → visions), on revient au centre entre deux. */
-const TOUR=[['habits',[]],['objectives',['ArrowUp']],['repulsions',['ArrowDown','ArrowDown']],['wisdom',['ArrowUp','ArrowLeft']],['visions',['ArrowRight','ArrowRight']]];
+const TOUR=[['habits',[]],['objectives',['ArrowUp']],['repulsions',['ArrowDown','ArrowDown']],['stories',['ArrowUp','ArrowLeft']],['visions',['ArrowRight','ArrowRight']]];
 const mesure=pg=>pg.evaluate(()=>{const cols=[...document.querySelectorAll('#habits .v-col')];
   return {vue:(window.__totehm_zone||{}).vue, n:cols.length, l:cols.map(c=>{const l=c.querySelector(':scope > .loupe');if(!l) return 'absente';
     l.scrollIntoView({block:'center'});const b=l.getBoundingClientRect(),cs=getComputedStyle(l);

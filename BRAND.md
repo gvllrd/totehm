@@ -65,7 +65,7 @@ développement personnel, un réseau social classique, une marque streetwear cla
   platform · solution · innovative · seamless · empower · next-generation · AI-powered · community-driven.
 - Interface en anglais, **le moins de mots possible : le design parle** ; un mot qu'une autre ligne dit déjà s'efface,
   et une expérience ne s'explique pas (ni « how it works », ni titre qui répète le nom de la collection). À l'écran « element », jamais « Box » ;
-  WISDOM se dit **MY STORY** ; « Higher » est toujours le SVG ; « Simple terms of use » = dernière entrée du menu, ou tout en bas, discret, jamais sur une vue qui défile.
+  la 5e box est **STORY** — « MY STORY », « Delete story », `stories` en base : un seul mot, partout (19/11) ; « Higher » est toujours le SVG ; « Simple terms of use » = dernière entrée du menu, ou tout en bas, discret, jamais sur une vue qui défile.
 - Un pitch vrai : jamais un chiffre non mesuré, jamais de fausse rareté, jamais « Harvard ».
 
 ## Ce qu'on voit
