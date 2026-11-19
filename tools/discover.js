@@ -16,7 +16,14 @@ window.TOTEHM_DISCOVER = (() => {
     rail.className = 'dc-rail'; rail.setAttribute('aria-hidden', 'true');
     next.className = 'dc-next'; next.type = 'button'; next.setAttribute('aria-label', 'Next'); next.innerHTML = CHEVRON;
     hote.append(rail, next);
-    function lire(){ ecrans = [...stage.querySelectorAll('.dc-s')]; rail.innerHTML = ecrans.map(() => '<span></span>').join(''); }
+    /* L'ILLUSTRATION tient dans son CADRE (`.dc-ill`) : son contenu passe dans `.dc-ill-in`, que le moteur RÉDUIT (largeur
+       ou hauteur) au rendu, à chaque écran et à chaque changement de taille — jamais rogné. */
+    function envelopper(){ hote.querySelectorAll('.dc-ill').forEach(f => { if(f.querySelector(':scope>.dc-ill-in')) return;
+      const n = document.createElement('div'); n.className = 'dc-ill-in'; while(f.firstChild) n.appendChild(f.firstChild); f.appendChild(n); }); }
+    function ajuster(){ hote.querySelectorAll('.dc-ill-in').forEach(n => { const f = n.parentNode, H = f.clientHeight, W = f.clientWidth; if(!H || !W) return;
+      const k = Math.min(1, H / Math.max(1, n.offsetHeight), W / Math.max(1, n.scrollWidth));
+      const v = k < .999 ? 'scale(' + k.toFixed(3) + ')' : ''; if(n.style.transform !== v) n.style.transform = v; }); }
+    function lire(){ ecrans = [...stage.querySelectorAll('.dc-s')]; rail.innerHTML = ecrans.map(() => '<span></span>').join(''); envelopper(); }
     function peindre(instant){
       ecrans.forEach((e, k) => { const on = k === i; e.classList.toggle('is-on', on); e.classList.toggle('is-avant', k < i); e.setAttribute('aria-hidden', String(!on));
         if(instant) e.style.transition = 'none'; else e.style.removeProperty('transition'); });
@@ -24,6 +31,7 @@ window.TOTEHM_DISCOVER = (() => {
       rail.querySelectorAll('span').forEach((s, k) => s.classList.toggle('on', k === i));
       hote.classList.toggle('is-last', i >= ecrans.length - 1);
       hote.dataset.i = i; hote.dataset.n = ecrans.length;
+      ajuster();
       if(o.surChangement) o.surChangement(i, ecrans.length);
     }
     function aller(k, instant){
@@ -61,11 +69,13 @@ window.TOTEHM_DISCOVER = (() => {
        Il n'écoute que si le moteur est visible, et que le focus est dedans ou nulle part. */
     window.addEventListener('keydown', e => { if(hote.isConnected && !hote.hidden && !hote.classList.contains('hide') && (hote.contains(e.target) || document.activeElement === document.body)) touche(e); }, true);
     next.addEventListener('click', suivant);
+    window.addEventListener('resize', () => { if(hote.isConnected) requestAnimationFrame(ajuster); });
+    if(document.fonts && document.fonts.ready) document.fonts.ready.then(ajuster);
     lire(); peindre(true);
     return { aller, suivant, precedent, index:() => i, total:() => ecrans.length,
       derniere:() => aller(ecrans.length - 1, true),
       rafraichir(garder){ const k = garder ? i : 0; lire(); i = Math.min(k, Math.max(0, ecrans.length - 1)); peindre(true); },
-      activer(v){ actif = !!v; } };
+      ajuster, activer(v){ actif = !!v; } };
   }
   return { monter };
 })();

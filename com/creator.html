@@ -205,6 +205,10 @@ html.is-embed,html.is-embed body{background:#000}
    Wah (15/11) : « une page doit respecter la règle du 60 / 30 / 10. Les textes de découverte, tout ce qui est
    explicatif comme l'explication d'abonnement, sont trop fourre-tout. Je veux découvrir à la manière de
    totehm.space/play_lisbon_street?discover=1. » Un écran noir, UNE idée à la fois, qui se succèdent au geste.
+   LA NOMENCLATURE (Wah, 19/11 : « dès que je change le design de la nomenclature, ça change sur tous les discovery ») :
+   tout le dessin d'un Discover vit ICI et dans `discover.js`. On le change ICI, puis `python3 tools/recopier.py` le
+   recopie dans chaque page qui le porte (com, figher.club, higher.boutique). Une page n'apporte que son CONTENU (ses
+   textes, ses illustrations) : elle ne redessine jamais ces classes — `tests/node/discover_nomenclature.mjs` le refuse.
    LE 60 / 30 / 10, ICI, PAR CONSTRUCTION :
      60 %  le NOIR — tout le fond, tout le silence autour du texte (`#000`)
      30 %  le TEXTE — les polices de la vue Higher my ChatGPT (Wah, 18/11) : l'idée (`.dc-h`) comme
@@ -214,7 +218,7 @@ html.is-embed,html.is-embed body{background:#000}
            membre et l'ART de Wah (le papier, la pièce). Ni le prix, ni le bouton : ils restent blancs et gris.
            Rien d'autre n'est coloré, jamais : ni navy, ni rouge, ni dégradé.
    L'APPEL À L'ACTION (`.dc-cta`, facultatif : la classe `has-cta` sur l'hôte) reste sous CHAQUE écran. */
-.dc{--dc-ac:#fbd5ca;position:fixed;inset:0;z-index:20;background:#000;color:#ddd;overflow:hidden;
+.dc{--dc-ac:#fbd5ca;position:fixed;inset:0;z-index:20;margin:0;width:auto;background:#000;color:#ddd;overflow:hidden;
   font-family:'Space Mono',monospace;-webkit-font-smoothing:antialiased;touch-action:pan-x;overscroll-behavior:none}
 .dc[hidden],.dc.hide{display:none}
 .dc-stage{position:absolute;inset:0}
@@ -247,6 +251,23 @@ html.is-embed,html.is-embed body{background:#000}
 .dc-row{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
 .dc-slot{width:100%}
 .dc-slot:empty{display:none}
+/* « QUI » : une petite ligne au-dessus d'une illustration (« FROM », « TOTEHMIZED BY »…), un nom de membre dedans */
+.dc-who{display:block;margin-bottom:6px;font:400 11px/1.3 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#888}
+.dc-who .dc-n{text-transform:none;letter-spacing:.02em;font-size:14px}
+/* L'ÉCRAN ILLUSTRÉ (facultatif : `is-illustre` sur l'hôte) — Wah, 17/11 : chaque écran porte une illustration faite des
+   éléments NATIFS du site (box, pièce, badge), dans un CADRE de même hauteur sur tous les écrans (`--dc-ill-h`) : le titre
+   ne saute pas d'un écran à l'autre, et ce qui dépasse est RÉDUIT au cadre par le moteur, jamais rogné. Le haut de l'écran
+   est fixe (le cadre, puis le titre) ; seul le texte s'allonge vers le bas. `.dc-ill-c` : l'illustration en colonne. */
+.dc{--dc-ill-h:clamp(128px,22dvh,190px)}
+.dc.is-illustre .dc-s{justify-content:flex-start;padding-top:max(0px,calc((100dvh - 298px - 450px) / 2))}
+.dc-ill{width:min(100%,340px);height:var(--dc-ill-h);flex:none;display:flex;align-items:center;justify-content:center;
+  text-align:left;pointer-events:none;-webkit-user-select:none;user-select:none}
+.dc-ill-in{flex:none;width:100%;transform-origin:50% 50%}
+.dc-ill-c .dc-ill-in{display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
+/* L'ÉCRAN LIBRE (facultatif : `is-libre` sur l'écran) — un formulaire, un panneau : il commence en haut, et son panneau
+   `.dc-libre` (avec `data-dc-libre`, que le moteur laisse au doigt et à la molette) défile chez lui */
+.dc-s.is-libre{justify-content:flex-start;padding-top:10px}
+.dc-libre{max-height:100%;overflow-y:auto;width:100%;display:flex;flex-direction:column;align-items:center;gap:14px}
 /* EN COUCHE par-dessus une page (facultatif) : `is-overlay`, invisible tant que `is-open` n'est pas posée ; `.dc-x` la referme */
 .dc.is-overlay{z-index:9000;opacity:0;visibility:hidden;transition:opacity .35s ease,visibility 0s linear .35s}
 .dc.is-overlay.is-open{opacity:1;visibility:visible;transition:opacity .35s ease,visibility 0s}
@@ -275,6 +296,10 @@ html.is-embed,html.is-embed body{background:#000}
   .dc-s{inset:50px 20px 50px}.dc.has-cta .dc-s{inset:50px 20px 100px}
   .dc-cta,.dc.has-cta.is-last .dc-cta{bottom:44px}.dc-rail{bottom:22px}.dc-next{display:none}
 }
+/* un écran bas : l'illustration se resserre, puis s'efface — le texte passe avant */
+@media(max-height:760px){.dc.is-illustre .dc-s{gap:14px}}
+@media(max-height:700px){.dc{--dc-ill-h:clamp(110px,19dvh,150px)}}
+@media(max-height:600px){.dc-ill{display:none}}
 @media(prefers-reduced-motion:reduce){.dc-s,.dc-s.is-on,.dc-s.is-avant{transition:none;transform:none}.dc-next svg{animation:none}.dc.is-overlay,.dc.is-overlay.is-open{transition:none}}
 /* ══ fin DISCOVER ══ */
 /* ── ce qui est propre à la page d'un membre ── */
@@ -365,6 +390,7 @@ div:not(:has(> :not(br,wbr))):hover,
 .dc-btn:hover,
 .dc-btn.is-quiet:hover,
 .dc-lnk:hover,
+.dc-who:hover,
 .dc-x:hover,
 .dc-next:hover,
 .dc-note:hover,
@@ -427,7 +453,14 @@ window.TOTEHM_DISCOVER = (() => {
     rail.className = 'dc-rail'; rail.setAttribute('aria-hidden', 'true');
     next.className = 'dc-next'; next.type = 'button'; next.setAttribute('aria-label', 'Next'); next.innerHTML = CHEVRON;
     hote.append(rail, next);
-    function lire(){ ecrans = [...stage.querySelectorAll('.dc-s')]; rail.innerHTML = ecrans.map(() => '<span></span>').join(''); }
+    /* L'ILLUSTRATION tient dans son CADRE (`.dc-ill`) : son contenu passe dans `.dc-ill-in`, que le moteur RÉDUIT (largeur
+       ou hauteur) au rendu, à chaque écran et à chaque changement de taille — jamais rogné. */
+    function envelopper(){ hote.querySelectorAll('.dc-ill').forEach(f => { if(f.querySelector(':scope>.dc-ill-in')) return;
+      const n = document.createElement('div'); n.className = 'dc-ill-in'; while(f.firstChild) n.appendChild(f.firstChild); f.appendChild(n); }); }
+    function ajuster(){ hote.querySelectorAll('.dc-ill-in').forEach(n => { const f = n.parentNode, H = f.clientHeight, W = f.clientWidth; if(!H || !W) return;
+      const k = Math.min(1, H / Math.max(1, n.offsetHeight), W / Math.max(1, n.scrollWidth));
+      const v = k < .999 ? 'scale(' + k.toFixed(3) + ')' : ''; if(n.style.transform !== v) n.style.transform = v; }); }
+    function lire(){ ecrans = [...stage.querySelectorAll('.dc-s')]; rail.innerHTML = ecrans.map(() => '<span></span>').join(''); envelopper(); }
     function peindre(instant){
       ecrans.forEach((e, k) => { const on = k === i; e.classList.toggle('is-on', on); e.classList.toggle('is-avant', k < i); e.setAttribute('aria-hidden', String(!on));
         if(instant) e.style.transition = 'none'; else e.style.removeProperty('transition'); });
@@ -435,6 +468,7 @@ window.TOTEHM_DISCOVER = (() => {
       rail.querySelectorAll('span').forEach((s, k) => s.classList.toggle('on', k === i));
       hote.classList.toggle('is-last', i >= ecrans.length - 1);
       hote.dataset.i = i; hote.dataset.n = ecrans.length;
+      ajuster();
       if(o.surChangement) o.surChangement(i, ecrans.length);
     }
     function aller(k, instant){
@@ -472,11 +506,13 @@ window.TOTEHM_DISCOVER = (() => {
        Il n'écoute que si le moteur est visible, et que le focus est dedans ou nulle part. */
     window.addEventListener('keydown', e => { if(hote.isConnected && !hote.hidden && !hote.classList.contains('hide') && (hote.contains(e.target) || document.activeElement === document.body)) touche(e); }, true);
     next.addEventListener('click', suivant);
+    window.addEventListener('resize', () => { if(hote.isConnected) requestAnimationFrame(ajuster); });
+    if(document.fonts && document.fonts.ready) document.fonts.ready.then(ajuster);
     lire(); peindre(true);
     return { aller, suivant, precedent, index:() => i, total:() => ecrans.length,
       derniere:() => aller(ecrans.length - 1, true),
       rafraichir(garder){ const k = garder ? i : 0; lire(); i = Math.min(k, Math.max(0, ecrans.length - 1)); peindre(true); },
-      activer(v){ actif = !!v; } };
+      ajuster, activer(v){ actif = !!v; } };
   }
   return { monter };
 })();
@@ -584,7 +620,7 @@ const audBadge = a => AUD_ICON[a] ? '<span class="audb" role="img" aria-label="'
 const audMark = (root, attr, a0) => { const a = audNorm(a0); return root?.querySelectorAll('[' + attr + ']').forEach(b => { const on = b.getAttribute(attr) === a;
   b.classList.toggle('is-on', on); b.setAttribute('aria-checked', String(on)); }); };
 /* ══ fin AUDIENCE ══ */
-const BUILD='2026-11-18-couper-un-abonne';
+const BUILD='2026-11-19-nomenclature-discover';
 
 /* ══ EN CADRE DANS COM (`?embed=1`) ═════════════════════════════════════
    Wah, 16/10 : « il ne faut pas que ça saute entre totehm.com et totehm.com/@{Nom} ». COM ouvre cette

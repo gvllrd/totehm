@@ -3973,6 +3973,10 @@ body.lv-d.rdr-voir #gate-asteroid,body.lv-d.rdr-voir #lvjoy,body.rdr-voir #rdr-f
    Wah (15/11) : « une page doit respecter la règle du 60 / 30 / 10. Les textes de découverte, tout ce qui est
    explicatif comme l'explication d'abonnement, sont trop fourre-tout. Je veux découvrir à la manière de
    totehm.space/play_lisbon_street?discover=1. » Un écran noir, UNE idée à la fois, qui se succèdent au geste.
+   LA NOMENCLATURE (Wah, 19/11 : « dès que je change le design de la nomenclature, ça change sur tous les discovery ») :
+   tout le dessin d'un Discover vit ICI et dans `discover.js`. On le change ICI, puis `python3 tools/recopier.py` le
+   recopie dans chaque page qui le porte (com, figher.club, higher.boutique). Une page n'apporte que son CONTENU (ses
+   textes, ses illustrations) : elle ne redessine jamais ces classes — `tests/node/discover_nomenclature.mjs` le refuse.
    LE 60 / 30 / 10, ICI, PAR CONSTRUCTION :
      60 %  le NOIR — tout le fond, tout le silence autour du texte (`#000`)
      30 %  le TEXTE — les polices de la vue Higher my ChatGPT (Wah, 18/11) : l'idée (`.dc-h`) comme
@@ -3982,7 +3986,7 @@ body.lv-d.rdr-voir #gate-asteroid,body.lv-d.rdr-voir #lvjoy,body.rdr-voir #rdr-f
            membre et l'ART de Wah (le papier, la pièce). Ni le prix, ni le bouton : ils restent blancs et gris.
            Rien d'autre n'est coloré, jamais : ni navy, ni rouge, ni dégradé.
    L'APPEL À L'ACTION (`.dc-cta`, facultatif : la classe `has-cta` sur l'hôte) reste sous CHAQUE écran. */
-.dc{--dc-ac:#fbd5ca;position:fixed;inset:0;z-index:20;background:#000;color:#ddd;overflow:hidden;
+.dc{--dc-ac:#fbd5ca;position:fixed;inset:0;z-index:20;margin:0;width:auto;background:#000;color:#ddd;overflow:hidden;
   font-family:'Space Mono',monospace;-webkit-font-smoothing:antialiased;touch-action:pan-x;overscroll-behavior:none}
 .dc[hidden],.dc.hide{display:none}
 .dc-stage{position:absolute;inset:0}
@@ -4015,6 +4019,23 @@ body.lv-d.rdr-voir #gate-asteroid,body.lv-d.rdr-voir #lvjoy,body.rdr-voir #rdr-f
 .dc-row{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
 .dc-slot{width:100%}
 .dc-slot:empty{display:none}
+/* « QUI » : une petite ligne au-dessus d'une illustration (« FROM », « TOTEHMIZED BY »…), un nom de membre dedans */
+.dc-who{display:block;margin-bottom:6px;font:400 11px/1.3 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#888}
+.dc-who .dc-n{text-transform:none;letter-spacing:.02em;font-size:14px}
+/* L'ÉCRAN ILLUSTRÉ (facultatif : `is-illustre` sur l'hôte) — Wah, 17/11 : chaque écran porte une illustration faite des
+   éléments NATIFS du site (box, pièce, badge), dans un CADRE de même hauteur sur tous les écrans (`--dc-ill-h`) : le titre
+   ne saute pas d'un écran à l'autre, et ce qui dépasse est RÉDUIT au cadre par le moteur, jamais rogné. Le haut de l'écran
+   est fixe (le cadre, puis le titre) ; seul le texte s'allonge vers le bas. `.dc-ill-c` : l'illustration en colonne. */
+.dc{--dc-ill-h:clamp(128px,22dvh,190px)}
+.dc.is-illustre .dc-s{justify-content:flex-start;padding-top:max(0px,calc((100dvh - 298px - 450px) / 2))}
+.dc-ill{width:min(100%,340px);height:var(--dc-ill-h);flex:none;display:flex;align-items:center;justify-content:center;
+  text-align:left;pointer-events:none;-webkit-user-select:none;user-select:none}
+.dc-ill-in{flex:none;width:100%;transform-origin:50% 50%}
+.dc-ill-c .dc-ill-in{display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
+/* L'ÉCRAN LIBRE (facultatif : `is-libre` sur l'écran) — un formulaire, un panneau : il commence en haut, et son panneau
+   `.dc-libre` (avec `data-dc-libre`, que le moteur laisse au doigt et à la molette) défile chez lui */
+.dc-s.is-libre{justify-content:flex-start;padding-top:10px}
+.dc-libre{max-height:100%;overflow-y:auto;width:100%;display:flex;flex-direction:column;align-items:center;gap:14px}
 /* EN COUCHE par-dessus une page (facultatif) : `is-overlay`, invisible tant que `is-open` n'est pas posée ; `.dc-x` la referme */
 .dc.is-overlay{z-index:9000;opacity:0;visibility:hidden;transition:opacity .35s ease,visibility 0s linear .35s}
 .dc.is-overlay.is-open{opacity:1;visibility:visible;transition:opacity .35s ease,visibility 0s}
@@ -4043,6 +4064,10 @@ body.lv-d.rdr-voir #gate-asteroid,body.lv-d.rdr-voir #lvjoy,body.rdr-voir #rdr-f
   .dc-s{inset:50px 20px 50px}.dc.has-cta .dc-s{inset:50px 20px 100px}
   .dc-cta,.dc.has-cta.is-last .dc-cta{bottom:44px}.dc-rail{bottom:22px}.dc-next{display:none}
 }
+/* un écran bas : l'illustration se resserre, puis s'efface — le texte passe avant */
+@media(max-height:760px){.dc.is-illustre .dc-s{gap:14px}}
+@media(max-height:700px){.dc{--dc-ill-h:clamp(110px,19dvh,150px)}}
+@media(max-height:600px){.dc-ill{display:none}}
 @media(prefers-reduced-motion:reduce){.dc-s,.dc-s.is-on,.dc-s.is-avant{transition:none;transform:none}.dc-next svg{animation:none}.dc.is-overlay,.dc.is-overlay.is-open{transition:none}}
 /* ══ fin DISCOVER ══ */
 /* ── 16/11 · L'ACCUEIL : le titre de la vue centrale, le bouton discret, et le Discover en couche ──
@@ -4059,20 +4084,11 @@ body:not(.lv-g):not(.lv-d) #lv-slogan.is-c.is-t{opacity:1}
 /* Le Discover prend tout l'écran PAR-DESSUS l'accueil, qui ne bouge pas dessous (`body.is-dc` : ses gestes sont rendus). */
 /* 17/11 — L'ILLUSTRATION D'UN ÉCRAN (`DISC`, `ILL`) : au-dessus du titre, faite des éléments du site — box natives (leurs
    couleurs natives), la pièce TOTEHM, le badge [Higher], le GPT qui tourne. Le reste reste noir, blanc, gris. */
-/* LE CADRE : la MÊME hauteur sur les dix écrans (`--ill-h`), le titre ne saute plus d'un écran à l'autre ; ce qui dépasse
-   est réduit à la mesure du cadre (`ajuster`), jamais rogné. */
-#lvd{--ill-h:clamp(128px,22dvh,190px)}
-@media(max-height:700px){#lvd{--ill-h:clamp(110px,19dvh,150px)}}
-/* le haut de l'écran est FIXE : le cadre, puis le titre, toujours à la même place ; seul le texte s'allonge vers le bas.
-   Le bloc le plus long (≈ 450 px) reste centré dans la place libre entre l'en-tête et la porte. */
-#lvd .dc-s{justify-content:flex-start;padding-top:max(0px,calc((100dvh - 298px - 450px) / 2))}
-#lvd .dc-ill{width:min(100%,340px);height:var(--ill-h);flex:none;display:flex;align-items:center;justify-content:center;
-  text-align:left;pointer-events:none;-webkit-user-select:none;user-select:none}
-#lvd .dc-ill-in{flex:none;width:100%;transform-origin:50% 50%}
+/* LE CADRE, LE HAUT FIXE DE L'ÉCRAN, LA RÉDUCTION : la nomenclature (`tools/discover.css`, `is-illustre`, `--dc-ill-h`).
+   Ici, seulement ce que CES illustrations contiennent. */
 #lvd .dc-ill-in:has(.dc-slogan){width:max-content}
 #lvd .dc-ill .tb{width:100%}
-#lvd .dc-ill-c .dc-ill-in{display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
-#lvd .dc-radar{display:block;width:var(--ill-h);height:auto;aspect-ratio:1}
+#lvd .dc-radar{display:block;width:var(--dc-ill-h);height:auto;aspect-ratio:1}
 /* « Visualize it » : la GRILLE DE GAUCHE (mes médias) — tuiles perforées, la box posée sur l'image, la tuile « + » */
 #lvd .dc-grid.tlg{width:100%;margin:0;padding:0;grid-template-columns:repeat(3,minmax(0,1fr));gap:3px}
 #lvd .dc-grid .tl{cursor:default}
@@ -4082,7 +4098,7 @@ body:not(.lv-g):not(.lv-d) #lv-slogan.is-c.is-t{opacity:1}
 #lvd .dc-sf .sfg{width:100%}
 #lvd .dc-sf .sfcmd{--q:min(104px,27vw)}
 #lvd .dc-sf *{pointer-events:none!important;cursor:default}
-#lvd .dc-gpt{position:relative;display:block;width:var(--ill-h);aspect-ratio:1}
+#lvd .dc-gpt{position:relative;display:block;width:var(--dc-ill-h);aspect-ratio:1}
 #lvd .dc-gpt img{display:block;width:100%;height:100%;object-fit:contain;animation:cg-orbit 30s linear infinite}
 #lvd .dc-gpt svg{position:absolute;left:50%;top:50%;width:46%;height:auto;aspect-ratio:3;transform:translate(-50%,-50%)}
 #lvd .dc-tg{display:flex;flex-direction:column;gap:6px;width:min(100%,270px);padding:10px 12px;background:#17171b;border-radius:14px 14px 14px 4px;text-align:left}
@@ -4097,16 +4113,11 @@ body:not(.lv-g):not(.lv-d) #lv-slogan.is-c.is-t{opacity:1}
 #lvd .dc-pay-bar i:first-child{flex:80;background:#e8e8e8}
 #lvd .dc-pay-bar i:last-child{flex:20;background:#3a3a42}
 #lvd .dc-pay-l{display:flex;justify-content:space-between;font:400 9px/1.3 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#888}
-#lvd .dc-who{display:block;margin-bottom:6px;font:400 11px/1.3 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#888}
-#lvd .dc-who .dc-n{text-transform:none;letter-spacing:.02em;font-size:14px}
 #lvd .dc-slogan{display:flex;align-items:center;gap:8px;white-space:nowrap;font:400 28px/1 'Quantico',sans-serif;color:#fff}
 #lvd .dc-slogan .dc-get{font-weight:700;color:var(--coral)}
 #lvd .dc-slogan svg{display:block;width:108px;height:36px;flex:none}
 #lvd .dc-slogan .tw{margin:0}
 @media(max-width:380px){#lvd .dc-slogan{font-size:18px;gap:6px}#lvd .dc-slogan svg{width:70px;height:23px}}
-/* un écran bas : l'illustration se resserre, puis s'efface — le texte passe avant */
-@media(max-height:760px){#lvd .dc-s{gap:14px}}
-@media(max-height:600px){#lvd .dc-ill{display:none}}
 @media(prefers-reduced-motion:reduce){#lvd .dc-gpt img{animation:none}}
 @media(max-height:520px) and (min-width:650px){#lv-title{font-size:10px;letter-spacing:.12em}}
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
@@ -4340,6 +4351,7 @@ div:not(:has(> :not(br,wbr))):hover,
 .dc-btn:hover,
 .dc-btn.is-quiet:hover,
 .dc-lnk:hover,
+.dc-who:hover,
 .dc-x:hover,
 .dc-next:hover,
 .lvp-cta.is-quiet:hover,
@@ -4347,7 +4359,6 @@ div:not(:has(> :not(br,wbr))):hover,
 #lvd .dc-tg-b span:hover,
 #lvd .dc-pay-p small:hover,
 #lvd .dc-pay-l:hover,
-#lvd .dc-who:hover,
 #lvd .dc-slogan .dc-get:hover):where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *)){color:#fff!important}
 .h-text:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::placeholder{color:#fff!important}
 .habit.open .v-name[contenteditable]:empty:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::before{color:#fff!important}
@@ -4723,7 +4734,7 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
      illustration faite des éléments du site (`ILL` dans `DISC` : box natives via `inerteBox`, pièce, badge, GPT).
      60 / 30 / 10 : noir, texte, et les seules couleurs natives des illustrations (box, pièce, nom).
      ⚠️ Rien ici n'est une promesse de résultat ni un chiffre inventé : chaque phrase dit ce que le produit FAIT. -->
-<div class="dc is-overlay has-cta has-x" id="lvd" role="dialog" aria-modal="true" aria-label="Discover TOTEHM" hidden>
+<div class="dc is-overlay is-illustre has-cta has-x" id="lvd" role="dialog" aria-modal="true" aria-label="Discover TOTEHM" hidden>
   <div class="dc-stage">
     <div class="dc-s"><div class="dc-ill" data-ill="habit" aria-hidden="true"></div><h2 class="dc-h">A habit needs a neurological strategy.</h2><p class="dc-p">What triggers it: the old habit you turn into fuel.
 What you do instead: the constructive action you repeat.
@@ -8802,7 +8813,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-11-19-vocabulaire-boutique';
+const BUILD='2026-11-19-nomenclature-discover';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -14907,18 +14918,9 @@ window.addEventListener('pageshow',e=>{
         if(illus) return; illus=true;
         el.querySelectorAll('[data-ill]').forEach(n=>{ const f=ILL[n.dataset.ill]; if(!f) return;
           try{ n.innerHTML=f(); }catch(e){ console.error('[discover illustration]',n.dataset.ill,e&&e.message||e); } });
-        /* chaque illustration dans son cadre : un enveloppe que l'on peut réduire sans toucher à ce qu'elle porte */
-        el.querySelectorAll('.dc-ill').forEach(f=>{ if(f.querySelector(':scope>.dc-ill-in')) return;
-          const i=document.createElement('div'); i.className='dc-ill-in'; while(f.firstChild) i.appendChild(f.firstChild); f.appendChild(i); }); }
-      /* réduit ce qui dépasse le cadre (largeur ou hauteur), au rendu et à chaque changement d'écran ou de taille */
-      function ajuster(){
-        if(!ouvert) return;
-        el.querySelectorAll('.dc-ill-in').forEach(i=>{ const f=i.parentNode, H=f.clientHeight, W=f.clientWidth; if(!H||!W) return;
-          const k=Math.min(1,H/Math.max(1,i.offsetHeight),W/Math.max(1,i.scrollWidth));
-          const v=k<.999?'scale('+k.toFixed(3)+')':''; if(i.style.transform!==v) i.style.transform=v; }); }
-      window.addEventListener('resize',()=>{ if(ouvert) requestAnimationFrame(ajuster); });
+        /* le cadre, l'enveloppe et la réduction de chaque illustration : le moteur de la nomenclature (`tools/discover.js`) */
+        if(dc) dc.rafraichir(true); }
       function peindre(){
-        ajuster();
         const rd=ouvert&&ecran()&&ecran().querySelector('.dc-radar'); if(rd) RADAR.on(rd); else RADAR.off();
         const argent=inscrit()&&!guest()&&!RO&&ecran()&&ecran().dataset.cta==='money';
         cta.textContent=argent?'Monetize my TOTEHM':'Open my TOTEHM'; cta.dataset.va=argent?'money':'open'; }
@@ -14930,7 +14932,6 @@ window.addEventListener('pageshow',e=>{
         if(ouvert||!window.TOTEHM_DISCOVER) return; ouvert=true; diagD.ouvertures++; origine=document.activeElement; clearTimeout(t);
         if(parScroll===true){ diagD.parScroll++; const n=Date.now(); sourdine=n+250; sourdineFin=n+1500; }
         el.hidden=false; illustrer();
-        if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>ajuster());
         if(!dc) dc=window.TOTEHM_DISCOVER.monter(el,{surChangement:peindre});
         dc.activer(true); dc.aller(0,true); peindre();
         void el.offsetWidth; body.classList.add('is-dc'); el.classList.add('is-open');
@@ -15497,7 +15498,14 @@ window.TOTEHM_DISCOVER = (() => {
     rail.className = 'dc-rail'; rail.setAttribute('aria-hidden', 'true');
     next.className = 'dc-next'; next.type = 'button'; next.setAttribute('aria-label', 'Next'); next.innerHTML = CHEVRON;
     hote.append(rail, next);
-    function lire(){ ecrans = [...stage.querySelectorAll('.dc-s')]; rail.innerHTML = ecrans.map(() => '<span></span>').join(''); }
+    /* L'ILLUSTRATION tient dans son CADRE (`.dc-ill`) : son contenu passe dans `.dc-ill-in`, que le moteur RÉDUIT (largeur
+       ou hauteur) au rendu, à chaque écran et à chaque changement de taille — jamais rogné. */
+    function envelopper(){ hote.querySelectorAll('.dc-ill').forEach(f => { if(f.querySelector(':scope>.dc-ill-in')) return;
+      const n = document.createElement('div'); n.className = 'dc-ill-in'; while(f.firstChild) n.appendChild(f.firstChild); f.appendChild(n); }); }
+    function ajuster(){ hote.querySelectorAll('.dc-ill-in').forEach(n => { const f = n.parentNode, H = f.clientHeight, W = f.clientWidth; if(!H || !W) return;
+      const k = Math.min(1, H / Math.max(1, n.offsetHeight), W / Math.max(1, n.scrollWidth));
+      const v = k < .999 ? 'scale(' + k.toFixed(3) + ')' : ''; if(n.style.transform !== v) n.style.transform = v; }); }
+    function lire(){ ecrans = [...stage.querySelectorAll('.dc-s')]; rail.innerHTML = ecrans.map(() => '<span></span>').join(''); envelopper(); }
     function peindre(instant){
       ecrans.forEach((e, k) => { const on = k === i; e.classList.toggle('is-on', on); e.classList.toggle('is-avant', k < i); e.setAttribute('aria-hidden', String(!on));
         if(instant) e.style.transition = 'none'; else e.style.removeProperty('transition'); });
@@ -15505,6 +15513,7 @@ window.TOTEHM_DISCOVER = (() => {
       rail.querySelectorAll('span').forEach((s, k) => s.classList.toggle('on', k === i));
       hote.classList.toggle('is-last', i >= ecrans.length - 1);
       hote.dataset.i = i; hote.dataset.n = ecrans.length;
+      ajuster();
       if(o.surChangement) o.surChangement(i, ecrans.length);
     }
     function aller(k, instant){
@@ -15542,11 +15551,13 @@ window.TOTEHM_DISCOVER = (() => {
        Il n'écoute que si le moteur est visible, et que le focus est dedans ou nulle part. */
     window.addEventListener('keydown', e => { if(hote.isConnected && !hote.hidden && !hote.classList.contains('hide') && (hote.contains(e.target) || document.activeElement === document.body)) touche(e); }, true);
     next.addEventListener('click', suivant);
+    window.addEventListener('resize', () => { if(hote.isConnected) requestAnimationFrame(ajuster); });
+    if(document.fonts && document.fonts.ready) document.fonts.ready.then(ajuster);
     lire(); peindre(true);
     return { aller, suivant, precedent, index:() => i, total:() => ecrans.length,
       derniere:() => aller(ecrans.length - 1, true),
       rafraichir(garder){ const k = garder ? i : 0; lire(); i = Math.min(k, Math.max(0, ecrans.length - 1)); peindre(true); },
-      activer(v){ actif = !!v; } };
+      ajuster, activer(v){ actif = !!v; } };
   }
   return { monter };
 })();
