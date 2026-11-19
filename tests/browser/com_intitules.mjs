@@ -12,7 +12,8 @@ const OUT = process.argv[2] || '/tmp'; const browser = await launch(); const ori
 const UID = '11111111-1111-4111-8111-111111111111';
 const STEPS = [{ t:'Run the hill', t0:'Run the hill', is:['flow'], f:'daily', o:'o1' }];
 const trips = { signed_in:true,
-  trips:[{ id:'o1', text:'Marathon in May', target_at:'2027-05-01T00:00:00Z', days_left:163, habits:['Run the hill'] }],
+  trips:[{ id:'o1', text:'Marathon in May', target_at:'2027-05-01T00:00:00Z', days_left:163, habits:['Run the hill'] },
+         { id:'o9', text:'', target_at:null, days_left:null, habits:[] }],
   objs:{ 'Run the hill':['o1','v1'] },
   reps:[{ id:'r1', text:'Scrolling at night', hs:['Run the hill'], habits:['Run the hill'] }],
   wisdom:[{ id:'w1', text:'Slow is smooth' }],
@@ -102,10 +103,18 @@ try{
  ok(w.mots[0] === 'learned from' && w.wear === 'wisdom:w1',
     'MY STORY : « learned from » gardé, « + totehmize » → ' + w.wear);
 
+ /* ── 19/11 · UNE BOX SANS TEXTE NI DATE DISPARAÎT (Wah : « une box vide, elle disparaît ») ── */
+ await vers(pg, 'ArrowRight', 'habits'); await vers(pg, 'ArrowUp', 'objectives');
+ await pg.locator('#habits [data-open="t:o9"]').evaluate(e => e.click()); await pg.waitForTimeout(400);
+ await vers(pg, 'ArrowDown', 'habits');
+ const vide = await pg.evaluate(() => window.__totehm_why());
+ ok(vide.objectifs === 1 && vide.visions === 1 && vide.vides === 1, 'box vide refermée : effacée, ni objectif ni vision vide → ' + JSON.stringify(vide));
+ ok(log.rpc.some(c => c.name === 'vision_delete' && c.body.p_id === 'o9'), 'elle est supprimée côté serveur');
+
  /* ── 19/11 · LA DATE DÉCIDE DE LA VUE ── */
  const dit = () => pg.evaluate(() => document.getElementById('dit')?.textContent || '');
  const why = () => pg.evaluate(() => window.__totehm_why ? window.__totehm_why() : null);
- await vers(pg, 'ArrowRight', 'habits'); await vers(pg, 'ArrowRight', 'visions');
+ await vers(pg, 'ArrowRight', 'visions');
  await pg.locator('#habits [data-open="v:v1"]').evaluate(e => e.click()); await pg.waitForTimeout(400);
  await pg.locator('#habits .habit.open input[data-date="v1"]').fill('2027-06-01'); await pg.waitForTimeout(300);
  ok(await pg.evaluate(() => !!document.querySelector('#habits .habit.open[data-id="v1"], #habits .habit.open')),

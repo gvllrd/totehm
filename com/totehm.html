@@ -8800,7 +8800,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-11-19-une-seule-box-le-why';
+const BUILD='2026-11-19-box-vide-disparait';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -10300,8 +10300,22 @@ function deplacerWhy(id,versVision){
   }
   diagWhy.deplaces++; wDirty=true; return true;
 }
+/* 19/11 (Wah : « une box vide, elle disparaît ») — sans texte NI date, une box ne devient pas une vision vide :
+   elle s'efface à la fermeture (mémoire, liens des Habits, base). */
+function effacerSiVide(){
+  const z = open.kind==='t' ? tripOf(open.id) : visOf(open.id);
+  const texte = z ? String(open.kind==='t' ? z.text : z.t).trim() : '';
+  if(!z||texte||z.target_at) return false;
+  const id=String(z.id);
+  if(open.kind==='t') TRIPS=TRIPS.filter(o=>String(o.id)!==id); else VIS=VIS.filter(o=>String(o.id)!==id);
+  (state.habits||[]).forEach(x=>{ const k=srv(x); if(k&&OBJ[k]){ OBJ[k]=OBJ[k].filter(o=>o!==id); posePremier(x);} });
+  wSlots.delete(open.kind+':'+id);
+  apres(sb.rpc('vision_delete',{p_id:id}));   /* une box vide est sans date : elle est dans la vue `visions` */
+  diagWhy.vides=(diagWhy.vides||0)+1; wDirty=true; return true;
+}
 function basculeWhy(){
   if(!open||RO||estProvisoire(open.id)) return;
+  if((open.kind==='t'||open.kind==='v')&&effacerSiVide()) return;
   if(open.kind==='t'){ const t=tripOf(open.id);
     if(t&&!t.target_at&&deplacerWhy(t.id,true)) dis('No deadline · moved to Vision'); }
   else if(open.kind==='v'){ const v=visOf(open.id);
