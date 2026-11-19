@@ -29,7 +29,7 @@ export function expandGalleryObject(object,camera,href,{kind,width,shot,...optio
  return openExperience({object,camera,href,type:kind,width,shot,...options});
 }
 
-function openExperience({object,camera,href,type,from=null,canvas,time,width,shot,reduced=false,onStart=()=>{},onClose=()=>{}}){
+function openExperience({object,camera,href,type,from=null,canvas,time,width,shot,reduced=false,onStart=()=>{},onLift=()=>{},onClose=()=>{}}){
  if(current)return false;
  const url=new URL(href,location.href);
  if(url.origin!==location.origin||!['/play_lisbon_street','/think_same_but_opposite','/get_higher'].includes(url.pathname))return false;
@@ -42,14 +42,16 @@ function openExperience({object,camera,href,type,from=null,canvas,time,width,sho
  veil.style.cssText='position:absolute;inset:0;background:#000;opacity:0';
  frame.title='The original TOTEHM experience';frame.style.cssText='position:absolute;inset:0;width:100%;height:100%;border:0;background:#000;visibility:hidden';
  const embedded=new URL(url);embedded.searchParams.set('embedded','1');if(time!==undefined)embedded.searchParams.set('sceneTime',String(time));
+ function makeLift(){
+  try{return createObjectLift(object,camera,{width,shot});}
+  catch(error){console.warn('[3D entrance]',error?.name||'unavailable');return null;}
+ }
  if(type==='screen'){
   const image=document.createElement('img');image.src=canvas.toDataURL();image.alt='The original experience first page';
   image.style.cssText=`position:absolute;left:0;top:0;width:${canvas.width}px;height:${canvas.height}px;max-width:none;transform-origin:0 0;pointer-events:none`;
   const draw=amount=>{const pose=target?from.map((point,i)=>({x:point.x+(target[i].x-point.x)*amount,y:point.y+(target[i].y-point.y)*amount})):from;image.style.transform=coverTransform(pose,canvas.width,canvas.height);};
   visual={element:image,draw,dispose(){}};draw(0);
- }else if(!reduced){
-  try{visual=createObjectLift(object,camera,{width,shot});}catch(error){console.warn('[3D entrance]',error?.name||'unavailable');}
- }
+ }else if(type==='paper'&&!reduced)visual=makeLift();
  const releaseVisual=()=>{visual?.element.remove();visual?.dispose();visual=null;};
  current=dialog;
  window.__totehm_projection_expansion=()=>({stage,type,progress,from,target,handoff,documentReloads:0,overlays:visual?.element.isConnected?1:0,physicalPanelVisible:object.visible,frames:frame.isConnected?1:0});
@@ -77,6 +79,14 @@ function openExperience({object,camera,href,type,from=null,canvas,time,width,sho
    if(disposed)return;
    const doc=win.document;await doc.fonts?.ready;if(disposed)return;
    if(config.selector)target=corners(doc.querySelector(config.selector).getBoundingClientRect());
+   if(type==='controller'&&!reduced){
+    visual=makeLift();
+    if(visual){
+     object.visible=false;
+     onLift();
+     dialog.append(visual.element);
+    }
+   }
    stage='expanding';clearTimeout(timer);
    if(!reduced&&visual)await new Promise(resolve=>{
     let start;
@@ -92,6 +102,11 @@ function openExperience({object,camera,href,type,from=null,canvas,time,width,sho
    if(paperView?.sharedModel&&visual?.corners){
     handoff={from:visual.corners(),to:paperView.faceCorners};
    }
+   const controllerView=type==='controller'&&win.__totehm_controller_entry?.();
+   if(controllerView?.faceCorners&&visual?.corners){
+    const from=visual.corners(),to=controllerView.faceCorners;
+    if(from?.length===to.length&&from.every(([x,y],i)=>Math.hypot(x-to[i][0],y-to[i][1])<.1))handoff={from,to};
+   }
    frame.style.visibility='visible';stage='experience';
    if(type!=='screen'&&!handoff&&!reduced&&visual){
     veil.style.opacity='1';animation=visual.element.animate([{opacity:1},{opacity:0}],{duration:180,fill:'forwards'});
@@ -106,7 +121,12 @@ function openExperience({object,camera,href,type,from=null,canvas,time,width,sho
      event.preventDefault();event.stopImmediatePropagation();leave(next);
     }
    },true);
-   win.addEventListener('keydown',event=>{if(event.key==='Escape'){event.preventDefault();event.stopImmediatePropagation();close();}},true);
+   win.addEventListener('keydown',event=>{
+    if(event.key!=='Escape')return;
+    const sequence=win.__totehm_lisbon?.().sequence;
+    if(sequence==='phrase'||sequence==='art')return;
+    event.preventDefault();event.stopImmediatePropagation();close();
+   },true);
    frame.focus();win.dispatchEvent(new win.Event(config.event));
   }catch(error){if(!disposed){console.warn('[experience entrance]',error?.name||'unavailable');fail();}}
  }

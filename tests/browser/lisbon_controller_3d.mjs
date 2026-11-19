@@ -85,6 +85,9 @@ try{
       if(owned){
         await child.waitForFunction(()=>__totehm_controller_entry().phase==='board');
         check(await child.locator('.street-rock[role=button]').count()===22,'The confirmed owner enters the 3D board directly');
+        const meaning=child.getByRole('link',{name:'Get Higher to see the true meaning'});
+        check(await meaning.isVisible()&&await meaning.getAttribute('href')==='/get_higher'&&await meaning.locator('use[href="#higher-slogan"]').count()===1,'The controller reveals the native Higher slogan invitation');
+        check(await meaning.locator('.get-word').evaluate(word=>getComputedStyle(word).fontFamily.includes('Quantico')&&getComputedStyle(word).color==='rgb(251, 213, 202)'),'Get uses the authored Quantico coral lettering');
         check(await child.evaluate(()=>['experience-front-canvas','sdisc-cover-next'].every(id=>getComputedStyle(document.getElementById(id)).display==='none')),'Direct entry hides the front canvas and Discover button immediately');
         const screen=await child.locator('.street-rock[role=button]').evaluateAll(keys=>({
           width:innerWidth,height:innerHeight,centers:keys.map(key=>{
@@ -121,9 +124,18 @@ try{
         await fixture.pg.mouse.up();
         await child.waitForFunction(()=>{const f=__totehm_lisbon().keyFeedback;return f?.id==='stop'&&f.mode==='activating';},null,{timeout:5000});
         check(await child.evaluate(()=>!__totehm_lisbon().artwork),'Activation retains the visible physical press before opening the original film');
-        await child.waitForFunction(()=>__totehm_lisbon().activeSign==='stop'&&__totehm_lisbon().playAttempted,null,{timeout:25000});
+        await child.waitForFunction(()=>{
+          const state=__totehm_lisbon();
+          return state.sequence==='phrase'&&state.typewriter.typed>0&&state.typewriter.typed<state.typewriter.total;
+        },null,{timeout:15000});
+        check(await child.locator('#xp-phrase').getAttribute('aria-label')==='Yes, stop that sht.'&&!(await child.locator('#vidWrap').isVisible()),'The authored phrase types fullscreen before its artwork is visible');
+        await child.waitForFunction(()=>__totehm_lisbon().activeSign==='stop'&&__totehm_lisbon().sequence==='art'&&__totehm_lisbon().playAttempted,null,{timeout:25000});
         check(logged.join(',')==='stop','The physical STOP key requests just its original signed film');
-        await child.locator('#xp-close').click();
+        check(await child.locator('#vid').evaluate(video=>{
+          const bounds=video.getBoundingClientRect();
+          return Math.abs(bounds.x+bounds.width/2-innerWidth/2)<1&&Math.abs(bounds.y+bounds.height/2-innerHeight/2)<1&&getComputedStyle(video).objectFit==='contain';
+        }),'The signed art is centred and preserves its native aspect ratio');
+        await child.locator('#vid').evaluate(video=>video.dispatchEvent(new Event('ended')));
         await child.waitForFunction(()=>{const d=__totehm_lisbon();return d.board&&d.activeSign===null&&d.keyFeedback.pressure<.01;});
         check(await child.locator('.street-rock[role=button]').count()===22,'Returning from a film releases the physical key and restores the full controller');
         await child.getByRole('button',{name:'stop',exact:true}).focus();

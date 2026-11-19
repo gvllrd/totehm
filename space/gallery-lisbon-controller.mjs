@@ -1,5 +1,5 @@
 import * as T from './vendor/three-0.180.0.mjs';
-import {addObjectLighting} from './gallery-object-view.mjs';
+import {addObjectLighting,projectModelFace} from './gallery-object-view.mjs';
 import {createLisbonSignGeometry} from './lisbon-sign-buttons.mjs';
 
 // The V2 sign groups retain their functions. The dimensions are in
@@ -19,7 +19,7 @@ const DISPLAY_GLASS={width:.248,depth:.146,radius:.012};
 export function lisbonControllerShot(viewportWidth,viewportHeight){
   return {
     center:[0,.037,.025],pitch:1.20,
-    pixels:Math.min(viewportWidth*.75,1140,viewportHeight*.82/.75)
+    pixels:.95*Math.min(viewportWidth*.75,1140,viewportHeight*.82/.75)
   };
 }
 function outline(){
@@ -461,6 +461,7 @@ export function createLisbonControllerView(host,{onLayout=()=>{}}={}){
   }
   addEventListener('resize',layout);layout();
   return {canvas:renderer.domElement,model,ready:model.ready.then(draw),draw,layout,target,artworkTarget,setAssembly,feedback,
+    faceCorners:()=>projectModelFace(model.root,camera,renderer.domElement.clientWidth,renderer.domElement.clientHeight),
     feedbackState:()=>lastFeedback,
     dispose(){
       if(drawFrame)cancelAnimationFrame(drawFrame);

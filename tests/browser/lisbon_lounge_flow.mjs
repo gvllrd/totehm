@@ -43,10 +43,15 @@ async function close(pg,frame,shot){
  check(state.seated&&state.camera.position.every((coordinate,i)=>Math.abs(coordinate-shot[i])<.001),'Closing returns to the exact seated camera');
 }
 async function prepare(owned){
+ let holdController=false,releaseController=null;
  const fixture=await page(browser,{
   dir:'space',origin,session:owned,viewport:{width:1100,height:800},
   functions:{'stoner-gate':{access:owned},'higher-checkout':{amount:1700,currency:'eur'}},
-  network:url=>url.pathname==='/gallery-temple-landscape.mjs'?{contentType:'text/javascript',body:landscape}:null
+  network:async url=>{
+   if(url.pathname==='/gallery-temple-landscape.mjs')return{contentType:'text/javascript',body:landscape};
+   if(holdController&&url.pathname==='/play_lisbon_street'&&url.searchParams.get('board')==='1'&&url.searchParams.get('embedded')==='1')await new Promise(resolve=>{releaseController=resolve;});
+   return null;
+  }
  });
  await fixture.pg.emulateMedia({reducedMotion:'reduce'});
  await fixture.pg.goto(origin+'/lisbon-space');
@@ -54,7 +59,43 @@ async function prepare(owned){
   const world=window.__totehm_gallery?.();
   return world?.frames>0&&world.projection?.ready&&world.projection.front.visibleSigns===22&&world.temple?.paperLoaded&&world.temple?.controller.loaded===22;
  },null,{timeout:90000});
+ fixture.delayController=()=>{holdController=true;};
+ fixture.releaseController=()=>{holdController=false;releaseController?.();releaseController=null;};
  return fixture;
+}
+
+async function openStableController(fixture,point){
+ const {pg}=fixture;
+ await pg.emulateMedia({reducedMotion:'no-preference'});
+ fixture.delayController();
+ const requested=pg.waitForRequest(request=>{
+  const url=new URL(request.url());
+  return url.pathname==='/play_lisbon_street'&&url.searchParams.get('board')==='1'&&url.searchParams.get('embedded')==='1';
+ });
+ await clickPoint(pg,point);await requested;
+ await pg.waitForFunction(()=>__totehm_projection_expansion?.().stage==='preparing');
+ await pg.waitForTimeout(180);
+ check(await pg.evaluate(()=>{
+  const state=__totehm_projection_expansion();
+  return state.type==='controller'&&state.stage==='preparing'&&state.physicalPanelVisible&&state.overlays===0;
+ }),'The real tabletop controller stays in place while its fullscreen reader loads');
+ await pg.evaluate(()=>{
+  window.__qaControllerLift=[];
+  const observe=()=>{
+   const state=__totehm_projection_expansion();
+   __qaControllerLift.push({stage:state.stage,overlays:state.overlays,visible:state.physicalPanelVisible});
+   if(state.stage!=='experience'&&state.stage!=='closed')requestAnimationFrame(observe);
+  };
+  requestAnimationFrame(observe);
+ });
+ fixture.releaseController();
+ const frame=await experience(pg,'controller');
+ const samples=await pg.evaluate(()=>window.__qaControllerLift);
+ check(samples.some(sample=>sample.stage==='expanding'&&sample.overlays===1&&!sample.visible)&&samples.every(sample=>sample.overlays<=1&&!(sample.overlays&&sample.visible)),'A single physical lift replaces the tabletop prop only when the reader is ready');
+ const handoff=await pg.evaluate(()=>__totehm_projection_expansion().handoff);
+ check(handoff?.from?.length===4&&handoff.to?.length===4&&handoff.from.every(([x,y],i)=>Math.hypot(x-handoff.to[i][0],y-handoff.to[i][1])<.1),'The lifted controller lands on all four fullscreen face corners within a tenth of a pixel');
+ check(await frame.evaluate(()=>__totehm_controller_entry().faceCorners?.length===4),'The actual fullscreen controller exposes the shared face used for its handoff');
+ return frame;
 }
 
 try{
@@ -106,9 +147,7 @@ try{
   await pg.screenshot({path:path.join(output,'premium-case-signed.png')});
   await close(pg,edition,shot);
 
-  await pg.emulateMedia({reducedMotion:'reduce'});
-  await clickPoint(pg,world.temple.controller.tableAim);
-  const locked=await experience(pg,'controller');
+  const locked=await openStableController(guest,world.temple.controller.tableAim);
   await locked.waitForFunction(()=>document.body.classList.contains('is-controller-locked'));
   check(await locked.evaluate(()=>{
    const controller=window.__totehm_controller_entry();
@@ -117,6 +156,7 @@ try{
   check(!guest.log.functions.some(entry=>entry.name==='lisbon-street-media'),'The locked controller requests no signed private media');
   await pg.screenshot({path:path.join(output,'controller-locked.png')});
   await close(pg,locked,shot);
+  check(await pg.evaluate(()=>{const state=__totehm_projection_expansion();return state.stage==='closed'&&state.physicalPanelVisible&&state.overlays===0;}),'Closing restores the original tabletop controller and releases its lift');
 
   await clickPoint(pg,L.play.screen);
   const discover=await experience(pg,'screen');
@@ -132,21 +172,23 @@ try{
   console.error('Lounge state',await pg.evaluate(()=>({url:location.pathname,expansion:window.__totehm_projection_expansion?.(),seated:window.__totehm_gallery?.()?.seated,camera:window.__totehm_gallery?.()?.camera})).catch(()=>null));
   console.error('Browser errors',guest.log.errors,'Warnings',warnings);
   throw error;
- }finally{await guest.ctx.close();}
+ }finally{guest.releaseController();await guest.ctx.close();}
 
  const owner=await prepare(true);
  try{
   const pg=owner.pg;
   await pg.locator('#sit-lounge').click();
   await pg.waitForFunction(()=>window.__totehm_gallery().seated);
-  await clickPoint(pg,(await current(pg)).temple.controller.tableAim);
-  const board=await experience(pg,'controller');
+  const shot=(await current(pg)).camera.position;
+  const board=await openStableController(owner,(await current(pg)).temple.controller.tableAim);
   await board.waitForFunction(()=>window.__totehm_lisbon?.().board);
   check(await board.evaluate(()=>window.__totehm_lisbon().directBoard&&window.__totehm_lisbon().access.owned&&window.__totehm_controller_entry().model.keys===22),'A confirmed THP owner enters the active 3D controller directly');
   check(await board.locator('.street-rock[role=button]').count()===22,'All twenty-two keys are actionable for the entitled member');
   check(!owner.log.functions.some(entry=>entry.name==='lisbon-street-media'),'The controller does not request signed video until an artwork key is pressed');
   await pg.screenshot({path:path.join(output,'controller-owned.png')});
+  await close(pg,board,shot);
+  check(await pg.evaluate(()=>{const state=__totehm_projection_expansion();return state.stage==='closed'&&state.physicalPanelVisible&&state.overlays===0;}),'The entitled journey also restores the original tabletop controller');
   check(!owner.log.errors.some(error=>error.startsWith('pageerror:')),'The entitled controller journey has no page exception');
- }finally{await owner.ctx.close();}
+ }finally{owner.releaseController();await owner.ctx.close();}
  console.log('PASS '+checks+' Lisbon lounge flow checks');
 }finally{await browser.close();}

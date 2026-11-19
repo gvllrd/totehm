@@ -151,6 +151,7 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
  function openObject(root,href,kind,width,shot){
   return expandGalleryObject(root,camera,href,{kind,width,shot,reduced:motionReduced,
    onStart:()=>{pause();renderer.render(scene,camera);},
+   onLift:()=>renderer.render(scene,camera),
    onClose:()=>{paused=false;lastTime=0;dirty=true;host.focus();syncSound();}});
  }
  function openController(){const model=architecture.controller;return model?openObject(model.root,'/play_lisbon_street?board=1','controller',L.controller.width,lisbonControllerShot):false;}
@@ -276,7 +277,8 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
  }
  reduced.addEventListener('change',motionChanged);
  renderer.domElement.addEventListener('webglcontextlost',e=>{e.preventDefault();pause();renderer.setAnimationLoop(null);fallback();});
- addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setPixelRatio(quality.resize(devicePixelRatio));renderer.setSize(innerWidth,innerHeight);dirty=true;});
+ let pendingRenderRatio=null;
+ addEventListener('resize',()=>{pendingRenderRatio=null;camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setPixelRatio(quality.resize(devicePixelRatio));renderer.setSize(innerWidth,innerHeight);dirty=true;});
  function viewTarget(){return gaze.clone().lerp(new T.Vector3(...L.counter.target),inspectionAmount);}
  function animate(now){
   const elapsed=lastTime?(now-lastTime)/1000:0,dt=Math.min(elapsed,.05),physicsDt=Math.min(elapsed,.5);lastTime=now;
@@ -321,9 +323,10 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
   const targetFov=seated?(L.seat.fov||70):(mobile&&(focused===2||focused===4)?88:baseFov)-(mobile?16:10)*inspectionAmount;
   if(Math.abs(camera.fov-targetFov)>.001){camera.fov=motionReduced?targetFov:T.MathUtils.damp(camera.fov,targetFov,7,dt);camera.updateProjectionMatrix();dirty=true;}
   if(dirty&&now-lastRender>=32){
+   if(pendingRenderRatio!==null){renderer.setPixelRatio(pendingRenderRatio);pendingRenderRatio=null;}
    camera.position.copy(eye).add(new T.Vector3(0,.28,-.18).multiplyScalar(inspectionAmount));
    camera.lookAt(viewTarget());camera.updateMatrixWorld();const renderStart=performance.now();renderer.render(scene,camera);const renderMs=performance.now()-renderStart;frames++;dirty=false;lastRender=now;if(returnReveal){returnReveal=false;requestAnimationFrame(()=>document.body.classList.remove('is-origin-transit'));}
-   const ratio=quality.sample(now,{frameMs:elapsed*1000,renderMs});if(ratio!==renderer.getPixelRatio()){renderer.setPixelRatio(ratio);dirty=true;}
+   const ratio=quality.sample(now,{frameMs:elapsed*1000,renderMs});if(ratio!==renderer.getPixelRatio()){pendingRenderRatio=ratio;dirty=true;}
    if(bookDestination){const href=bookDestination;sound.transition('enter');requestAnimationFrame(()=>{if(bookDestination===href){bookDestination=null;location.assign(href);}});}
   }
   syncSound();stationState();

@@ -138,6 +138,38 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
 }
 @media(hover:hover){#xp-close:hover{color:#fff}}
 
+/* Controller works are read as a fullscreen phrase before the film plays. */
+#xp[data-sequence]{
+  display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr);
+  place-items:center;padding:44px 28px;gap:0
+}
+#xp[data-sequence] #xp-close{z-index:2;min-height:44px}
+#xp[data-sequence] :is(#xp-label,#xp-buy),
+#xp[data-sequence="phrase"] #vidWrap,#xp-phrase[hidden]{display:none}
+#xp-phrase{
+  width:min(100%,1100px);margin:0;text-align:center;color:#ececf0;
+  font:400 clamp(25px,4.7vmin,64px)/1.25 'Space Mono',monospace
+}
+.xp-phrase-word{display:inline-block;white-space:nowrap}
+.xp-phrase-glyph{position:relative;opacity:0}
+.xp-phrase-glyph.is-typed{opacity:1}
+.xp-phrase-glyph.has-caret::after{
+  content:'';position:absolute;top:.18em;right:-.11em;width:.065em;height:.89em;background:currentColor
+}
+#xp[data-sequence="art"] #vidWrap{
+  grid-column:1;grid-row:1;width:min(100%,1480px);height:min(100%,1000px);
+  cursor:default;touch-action:auto;perspective:none
+}
+#xp[data-sequence="art"] #vidBox,#xp[data-sequence="art"] .vb-inner{
+  width:100%;height:100%;transform:none;will-change:auto
+}
+#xp[data-sequence="art"] #vid{object-fit:contain}
+#xp[data-sequence="art"] :is(.vb-front,.vb-back,.vbside){display:none}
+@media(prefers-reduced-motion:no-preference){
+  #xp[data-sequence="art"] #vidWrap.in{animation:xp-art-in .26s ease-out backwards}
+}
+@keyframes xp-art-in{from{opacity:0}to{opacity:1}}
+
 /* ─── AUTH OVERLAY ─── */
 #auth-overlay{
   position:fixed;inset:0;z-index:100;background:#000;
@@ -239,6 +271,17 @@ body:not(.is-street-front) #sdisc-cover-next{opacity:0;transform:translate(-50%,
 #controller-3d-canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 body.is-controller-forming #controller-3d-view,body.is-street-board #controller-3d-view,body.is-controller-entry #controller-3d-view{opacity:1}
 body.is-controller-forming #controller-3d-view{transition:opacity 1.05s cubic-bezier(.22,.52,.32,1) 70ms}
+body.is-controller-entry #controller-3d-view{transition:none}
+#controller-meaning{display:none;position:absolute;left:50%;bottom:clamp(18px,4vh,40px);transform:translateX(-50%);z-index:2;color:#c9c9ce;text-decoration:none;text-align:center;font-size:11px;line-height:1.5;padding:8px 6px}
+body.is-street-board #street-disc:not([inert]) #controller-meaning{display:flex;align-items:center;justify-content:center;gap:6px}
+#controller-meaning .get-word{font-family:Quantico,sans-serif;font-size:17px;font-weight:700;color:var(--coral)}
+#controller-meaning .higher-inline{width:52px}
+#controller-meaning:hover,#controller-meaning:focus-visible{color:#fff}
+#controller-meaning:focus-visible{outline:1px solid #a6b5d4;border-radius:6px;outline-offset:3px}
+@media(min-width:1100px) and (min-aspect-ratio: 13/10){
+ body.is-street-board #controller-meaning{left:auto;right:1.8vw;bottom:auto;top:50%;transform:translateY(-50%);width:clamp(94px,9.2vw,152px);flex-wrap:wrap}
+ #controller-meaning .meaning-caption{width:100%}
+}
 body.is-controller-locked #controller-3d-view{opacity:.20}
 body.is-controller-locked :is(#experience-front-canvas,#sdisc-cover-next,#sdisc-rail,#sdisc-progress,#sdisc-reading-hint,#sdisc-trig){display:none!important}
 body.is-street-board :is(#experience-front-canvas,#sdisc-cover-next){display:none}
@@ -339,6 +382,7 @@ body.is-street-board #sdisc-bg>.street-rock:focus-visible{outline:2px solid #a6b
   <button id="sdisc-cover-next" type="button">Discover ↓</button>
   <button id="sdisc-back" data-experience-close type="button">Back</button>
   <button id="sdisc-board-close" type="button" aria-label="Back to the story" style="display:none">✕</button>
+  <a id="controller-meaning" href="/get_higher" aria-label="Get Higher to see the true meaning"><span class="get-word">Get</span><span class="higher-inline" role="img" aria-label="Higher"><svg viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-slogan"></use></svg></span><span class="meaning-caption">to see the true meaning</span></a>
   <div id="sdisc-stage" role="region" aria-label="Discover the Lisbon Street"></div>
   <div id="sdisc-rail" aria-hidden="true"></div><p id="sdisc-reading-hint" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></p>
   <button id="sdisc-trig" type="button" aria-label="Next">
@@ -347,8 +391,9 @@ body.is-street-board #sdisc-bg>.street-rock:focus-visible{outline:2px solid #a6b
   </button>
 </div>
 
-<div class="xp" id="xp" inert aria-hidden="true">
-  <button id="xp-close">Back</button>
+<div class="xp" id="xp" role="dialog" aria-label="Lisbon street artwork" aria-modal="true" inert aria-hidden="true">
+  <button id="xp-close" type="button">Back</button>
+  <h1 id="xp-phrase" hidden><span id="xp-phrase-content" aria-hidden="true"></span></h1>
   <div class="vbox-scene" id="vidWrap">
     <div class="vbox" id="vidBox">
       <div class="vbf vb-back"></div>
@@ -392,7 +437,7 @@ import {checkLisbonStreetAccess,requestLisbonStreetMedia} from './lisbon-street-
 import {LISBON_STREET_DISCOVER} from './lisbon-street-discover.mjs';
 import {LISBON_FRONT_SIZE,createLisbonFirstPage} from './lisbon-first-page.mjs';
 import {createLisbonControllerView} from './gallery-lisbon-controller.mjs';
-const BUILD = '2026-11-19-lisbon-controller-assembly';
+const BUILD = '2026-11-19-lisbon-sequenced-works';
 function streetReturnPath(){const destination=new URL(location.href);destination.searchParams.delete('embedded');destination.searchParams.delete('sceneTime');return destination.pathname+destination.search;}
 // A purchase or central connection leaves the projected reader as a whole.
 function navigateStreetExperience(href){
@@ -768,6 +813,8 @@ const vidWrap    = document.getElementById('vidWrap');
 const vid        = document.getElementById('vid');
 const xpClose    = document.getElementById('xp-close');
 const xpBuy      = document.getElementById('xp-buy');
+const xpPhrase   = document.getElementById('xp-phrase');
+const phraseContent=document.getElementById('xp-phrase-content');
 
 let streetBusy = false;
 let resumeVideo = null;
@@ -775,6 +822,7 @@ let activeSign = null;
 let playAttempted = false;
 let playbackBlocked = false,mediaState='idle',launchRevision=0;
 let mediaRequest=null,preparingTimer=0;
+let cancelTypewriter=null,typedGlyphs=0,phraseLength=0;
 const streetDisc=document.getElementById('street-disc');
 const streetAccessStatus=document.getElementById('street-access-status');
 refreshArtworkLabel = ()=>{
@@ -861,6 +909,61 @@ function showArtwork(open){
   streetDisc.inert=open;xp.classList.toggle('up',open);
 }
 
+function clearArtworkSequence(){
+  cancelTypewriter?.();typedGlyphs=phraseLength=0;
+  xpPhrase.hidden=true;xpPhrase.removeAttribute('aria-label');phraseContent.replaceChildren();
+  delete xp.dataset.sequence;xpClose.removeAttribute('aria-label');xp.removeAttribute('aria-describedby');
+}
+
+function typeArtworkPhrase(text){
+  const phrase=document.createDocumentFragment(),glyphs=[];
+  for(const [index,word] of text.split(' ').entries()){
+    if(index)phrase.append(' ');
+    const wordNode=document.createElement('span');wordNode.className='xp-phrase-word';
+    for(const letter of word){
+      const glyph=document.createElement('span');
+      glyph.className='xp-phrase-glyph';glyph.textContent=letter;
+      glyphs.push(glyph);wordNode.appendChild(glyph);
+    }
+    phrase.appendChild(wordNode);
+  }
+  typedGlyphs=0;phraseLength=glyphs.length;phraseContent.replaceChildren(phrase);
+  xpPhrase.setAttribute('aria-label',text);xpPhrase.hidden=false;
+  xp.dataset.sequence='phrase';xp.setAttribute('aria-describedby',xpPhrase.id);
+  xpClose.setAttribute('aria-label','Back to the controller');
+  showArtwork(true);xpClose.focus({preventScroll:true});
+
+  const duration=Math.min(2700,Math.max(1200,phraseLength*39));
+  const hold=Math.min(1250,Math.max(850,phraseLength*16));
+  const lead=160;
+  return new Promise(resolve=>{
+    let frame=0,elapsed=0,lastTime=null,finishedAt=null;
+    function finish(completed){
+      cancelAnimationFrame(frame);
+      glyphs[typedGlyphs-1]?.classList.remove('has-caret');
+      cancelTypewriter=null;resolve(completed);
+    }
+    function reveal(count){
+      if(count===typedGlyphs)return;
+      glyphs[typedGlyphs-1]?.classList.remove('has-caret');
+      while(typedGlyphs<count)glyphs[typedGlyphs++].classList.add('is-typed');
+      if(typedGlyphs<phraseLength&&!reducedMotion.matches)glyphs[typedGlyphs-1]?.classList.add('has-caret');
+    }
+    function tick(now){
+      if(lastTime!==null&&!document.hidden)elapsed+=Math.min(64,now-lastTime);
+      lastTime=now;
+      const progress=Math.max(0,Math.min(1,(elapsed-lead)/duration));
+      reveal(reducedMotion.matches?phraseLength:Math.floor(phraseLength*progress));
+      if(typedGlyphs===phraseLength)finishedAt??=elapsed;
+      if(finishedAt!==null&&elapsed-finishedAt>=hold){finish(true);return;}
+      frame=requestAnimationFrame(tick);
+    }
+    cancelTypewriter=()=>finish(false);
+    if(reducedMotion.matches){reveal(phraseLength);finishedAt=0;}
+    frame=requestAnimationFrame(tick);
+  });
+}
+
 function cancelPreparing(){
   clearTimeout(preparingTimer);preparingTimer=0;
   mediaRequest?.abort();mediaRequest=null;
@@ -917,12 +1020,22 @@ async function launchXp(id,{immediate=false,from='direct',pressed=Promise.resolv
     return false;
   }
   streetAccessStatus.textContent='';
+  clearArtworkSequence();
   activeSign=id;lastXpFrom=from;mediaState='ready';
-  setBrandedText(document.getElementById('xp-artw-phrase'),PHRASES[id]);renderXpArtwork(id);
-  vidWrap.classList.add('in');document.getElementById('xp-label').classList.add('in');
-  showArtwork(true);xpClose.focus({preventScroll:true});
+  if(from==='disc'){
+    const completed=await typeArtworkPhrase(PHRASES[id]);
+    if(!completed||revision!==launchRevision||!OWNED)return false;
+    xpPhrase.hidden=true;xp.removeAttribute('aria-describedby');xp.dataset.sequence='art';
+    vidWrap.classList.add('in');
+  }else{
+    setBrandedText(document.getElementById('xp-artw-phrase'),PHRASES[id]);renderXpArtwork(id);
+    vidWrap.classList.add('in');document.getElementById('xp-label').classList.add('in');
+    showArtwork(true);xpClose.focus({preventScroll:true});
+  }
   if(document.hidden){vid.controls=true;return true;}
-  playSignVideo();startVidBox();return true;
+  playSignVideo();
+  if(from!=='disc')startVidBox();
+  return true;
 }
 
 function playSignVideo(){
@@ -937,15 +1050,16 @@ function playSignVideo(){
 
 function comeBack(){
   const revision=++launchRevision;mediaState='idle';resumeVideo=null;
-  cancelPreparing();vid.pause();stopVidBox();streetAccessStatus.textContent='';
-  if(fromSpace){ location.assign('/lisbon-space'); return; }
+  const reachedArtwork=xp.dataset.sequence!=='phrase';
+  cancelTypewriter?.();cancelPreparing();vid.pause();stopVidBox();streetAccessStatus.textContent='';
+  if(fromSpace&&lastXpFrom==='direct'){ location.assign('/lisbon-space'); return; }
   showArtwork(false);vidWrap.classList.remove('in');document.getElementById('xp-label').classList.remove('in');
   setTimeout(()=>{
-    if(revision!==launchRevision)return;vid.removeAttribute('src');vid.load();streetBusy=false;activeSign=null;
+    if(revision!==launchRevision)return;clearArtworkSequence();vid.removeAttribute('src');vid.load();streetBusy=false;activeSign=null;
     if(lastXpFrom==='direct'){ snapToBoard(); }
     else{
       ROCKS.forEach(r=>{ r.img.style.filter=''; });
-      if(lastPressedRock&&lastPressedRock.id!=='destination'){
+      if(reachedArtwork&&lastPressedRock&&lastPressedRock.id!=='destination'){
         lastPressedRock._pressed=true;
         const label=lastPressedRock.uLabel;
         label.innerHTML=HIGHER_MARKUP;label.className='controller-used';label.style.opacity='1';
@@ -957,14 +1071,14 @@ function comeBack(){
 
 function closeAll(){
   const revision=++launchRevision;mediaState='idle';resumeVideo=null;
-  cancelPreparing();vid.pause();stopVidBox();
+  cancelTypewriter?.();cancelPreparing();vid.pause();stopVidBox();
   showArtwork(false);vidWrap.classList.remove('in');document.getElementById('xp-label').classList.remove('in');
-  setTimeout(()=>{if(revision!==launchRevision)return;vid.removeAttribute('src');vid.load();streetBusy=false;activeSign=null;},300);
+  setTimeout(()=>{if(revision!==launchRevision)return;clearArtworkSequence();vid.removeAttribute('src');vid.load();streetBusy=false;activeSign=null;},reducedMotion.matches?0:560);
 }
 
 vid.addEventListener('ended', ()=>{
   // Keep the invitation visible after the direct teaser finishes.
-  if(directSign){ stopVidBox();vid.controls=true;return; }
+  if(directSign&&lastXpFrom==='direct'){stopVidBox();vid.controls=true;return;}
   comeBack();
 });
 xpClose.addEventListener('click', comeBack);
@@ -1124,7 +1238,7 @@ let controllerView=null,controllerPromise=null,controllerEntryReady=false,direct
 let assembly=null,assemblyRevision=0;
 const controllerHost=document.getElementById('controller-3d-view');
 
-window.__totehm_controller_entry=()=>({ready:controllerEntryReady,owned:OWNED,phase:boardMode?'board':controllerEntryReady?'prepared':'checking',canvas:!!controllerView,model:controllerView?.model.diagnostics()||null});
+window.__totehm_controller_entry=()=>({ready:controllerEntryReady,owned:OWNED,phase:boardMode?'board':controllerEntryReady?'prepared':'checking',canvas:!!controllerView,model:controllerView?.model.diagnostics()||null,faceCorners:controllerView?.faceCorners()||null});
 function releaseController(){
   controllerPreparing++;
   clearAssembly();
@@ -1405,7 +1519,7 @@ function showAccessRequirement(access){
   if(snapping)releaseController();
   if(requestedBoard&&firstPageActive){firstPageActive=false;document.body.classList.remove('is-street-front');}
   else beginStreetDiscover({immediate:true});
-  launchRevision++;cancelPreparing();resumeVideo=null;streetBusy=false;activeSign=null;playAttempted=false;
+  launchRevision++;cancelPreparing();clearArtworkSequence();resumeVideo=null;streetBusy=false;activeSign=null;playAttempted=false;
   vid.pause();vid.removeAttribute('src');vid.load();stopVidBox();showArtwork(false);
   vidWrap.classList.remove('in');document.getElementById('xp-label').classList.remove('in');
   if(boardMode)exitBoardMode();
@@ -1511,7 +1625,7 @@ function syncMotion(){
     if(source && xp.classList.contains('up') && source===(vid.currentSrc || vid.src) && vid.paused && !vid.ended){
       vid.play().catch(()=>{vid.controls=true;});
     }
-    if(xp.classList.contains('up') && !reducedMotion.matches) startVidBox();
+    if(xp.classList.contains('up') && !xp.dataset.sequence && !reducedMotion.matches) startVidBox();
   }
 }
 reducedMotion.addEventListener('change',syncMotion);
@@ -1522,7 +1636,9 @@ window.__totehm_lisbon=()=>({
   build:BUILD,step:sdiscCur,board:boardMode,rocks:ROCKS.length,moving:!!frontRaf,firstPage:firstPage.diagnostics(),firstPageActive,
   controller:controllerView?.model.diagnostics()||null,directBoard:directBoardActive,keyFeedback:controllerView?.feedbackState()||null,
   snapping,assembly:assembly&&{signs:ROCKS.length,progress:assembly.progress,docking:assembly.docking},reduced_motion:reducedMotion.matches,visible:!document.hidden,
-  artwork:xp.classList.contains('up'),auth:false,
+  artwork:xp.classList.contains('up')&&xp.dataset.sequence!=='phrase',auth:false,
+  sequence:xp.classList.contains('up')?xp.dataset.sequence||'direct':null,
+  typewriter:{typed:typedGlyphs,total:phraseLength},
   activeSign,directSign,fromSpace,playAttempted,playbackBlocked,videoMuted:vid.muted,
   access:{state:streetAccess.state,owned:OWNED},mediaState,discoverOnly,requestedBoard,privateMedia:true,
   discoverFormat:'fullscreen-readable',discoverSlides:SDSLIDES.length,teaser:true,teaserHref:document.getElementById('xp-get-higher').getAttribute('href')

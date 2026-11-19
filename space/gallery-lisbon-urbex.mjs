@@ -95,9 +95,6 @@ export function createLisbonUrbexGallery(scene,renderer,{mobile=false,onChange=(
  root.add(controller.root);
  controller.root.position.set(controllerX,0,controllerZ);
  controller.root.rotation.set(L.controller.tablePitch,L.controller.tableYaw,0,'YXZ');
- controller.root.traverse(object=>{
-  if(object.isMesh&&object.material.visible&&!object.material.transparent)object.castShadow=object.receiveShadow=true;
- });
  const lowest=new T.Box3().setFromObject(controller.root,true).min.y;
  controller.root.position.y=top-lowest+.001;
  controller.root.updateWorldMatrix(true,true);
