@@ -347,37 +347,109 @@ button.mi.is-on{filter:none}
 #ph-tile.is-busy{opacity:.5}
 @media(hover:hover){#ph-tile:hover{background:var(--s3)}#ph-tile:hover #ph-lab{color:#fff}}
 /* HOW IT WORKS — le métier, replié par défaut : on ne récite pas, on répond. */
-#how{width:100%;display:flex;flex-direction:column;align-items:center;gap:8px}
-#how-body{max-height:0;overflow:hidden;opacity:0;transition:max-height .45s var(--ease),opacity .3s ease;text-align:left;max-width:420px}
-#how.is-on #how-body{max-height:1400px;opacity:1}
-#how-body h3{font-family:var(--q);font-weight:700;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:#fff;margin:14px 0 4px}
-#how-body p{font-size:11.5px;line-height:1.75;color:var(--lo)}
-#how-body .pin{color:#fff}
-@media(prefers-reduced-motion:reduce){.step,#how-body{transition:none}}
+@media(prefers-reduced-motion:reduce){.step{transition:none}}
 
-/* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
-/* Le gris en survol devient blanc. Généré depuis la feuille
-   elle-même : un nouveau bloc gris entre ici tout seul.        */
-@media(hover:hover){
-.mono:hover,
-.lnk:hover,
-.btn-back:hover,
-.kicker:hover,
-.sub:hover,
-.legal:hover,
-.chip:hover,
-.step-h:hover,
-.field:hover::placeholder,
-.tick:hover,
-.note:hover,
-.qt small:hover,
-.qt .qn:hover,
-.qt .lnk:hover,
-.qa small:hover,
-.bx .sb:hover,
-#matter .w:hover{color:#fff}
+/* ══ DISCOVER — copié de tools/discover.css dans chaque page (jamais importé) ══
+   Wah (15/11) : « une page doit respecter la règle du 60 / 30 / 10. Les textes de découverte, tout ce qui est
+   explicatif comme l'explication d'abonnement, sont trop fourre-tout. Je veux découvrir à la manière de
+   totehm.space/play_lisbon_street?discover=1. » Un écran noir, UNE idée à la fois, qui se succèdent au geste.
+   LA NOMENCLATURE (Wah, 19/11 : « dès que je change le design de la nomenclature, ça change sur tous les discovery ») :
+   tout le dessin d'un Discover vit ICI et dans `discover.js`. On le change ICI, puis `python3 tools/recopier.py` le
+   recopie dans chaque page qui le porte (com, figher.club, higher.boutique). Une page n'apporte que son CONTENU (ses
+   textes, ses illustrations) : elle ne redessine jamais ces classes — `tests/node/discover_nomenclature.mjs` le refuse.
+   LE 60 / 30 / 10, ICI, PAR CONSTRUCTION :
+     60 %  le NOIR — tout le fond, tout le silence autour du texte (`#000`)
+     30 %  le TEXTE — les polices de la vue Higher my ChatGPT (Wah, 18/11) : l'idée (`.dc-h`) comme
+           `#chatgpt-title` (Space Mono gras, capitales espacées, blanc), son appui (`.dc-p`) comme `.lvs-sci` en un peu
+           plus grand et plus clair ; gris sombre pour la structure (rail, chevron)
+     10 %  l'ACCENT, UN SEUL — le corail du TOTEHM (`--dc-ac`), SACRÉ (Wah, 15/11) : il ne colore que le NOM du
+           membre et l'ART de Wah (le papier, la pièce). Ni le prix, ni le bouton : ils restent blancs et gris.
+           Rien d'autre n'est coloré, jamais : ni navy, ni rouge, ni dégradé.
+   L'APPEL À L'ACTION (`.dc-cta`, facultatif : la classe `has-cta` sur l'hôte) reste sous CHAQUE écran. */
+.dc{--dc-ac:#fbd5ca;position:fixed;inset:0;z-index:20;margin:0;width:auto;background:#000;color:#ddd;overflow:hidden;
+  font-family:'Space Mono',monospace;-webkit-font-smoothing:antialiased;touch-action:pan-x;overscroll-behavior:none}
+.dc[hidden],.dc.hide{display:none}
+.dc-stage{position:absolute;inset:0}
+.dc-s{position:absolute;inset:84px 24px 132px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:20px;text-align:center;opacity:0;visibility:hidden;transform:translateY(14px);
+  transition:opacity .5s ease,transform .5s ease,visibility 0s linear .5s}
+.dc-s.is-on{opacity:1;visibility:visible;transform:none;transition:opacity .5s ease,transform .5s ease,visibility 0s}
+/* le sens du voyage se VOIT : l'écran qu'on quitte part vers le haut, le suivant monte d'en bas (et l'inverse au retour) */
+.dc-s.is-avant{transform:translateY(-14px)}
+.dc-s>*{max-width:min(100%,680px)}
+.dc-h{margin:0;font:700 clamp(14px,2.2vw,19px)/1.6 'Space Mono',monospace;color:#fff;letter-spacing:.16em;text-transform:uppercase}
+.dc-p{margin:0;font:400 clamp(13px,1.5vw,15px)/1.7 'Space Mono',monospace;color:#bdbdc4;white-space:pre-line;max-width:min(100%,540px)}
+.dc-ac{color:var(--dc-ac)}
+.dc-n{font-family:Quantico,sans-serif;font-weight:700;color:var(--dc-ac);text-transform:none;letter-spacing:.02em}   /* un NOM de membre, tel qu'il l'a écrit */
+.dc-big{margin:0;font:400 clamp(34px,6vw,60px)/1 Quantico,sans-serif;color:#fff;letter-spacing:.01em}
+.dc-big small{font:400 clamp(12px,1.6vw,16px)/1 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#888;margin-left:10px}
+.dc-hi{display:inline-block;width:3.2em;height:1.07em;vertical-align:-.14em}   /* « Higher » est TOUJOURS le badge (BRAND) : jamais le mot en texte */
+.dc-fine{margin:0;font:400 11px/1.7 'Space Mono',monospace;letter-spacing:.06em;color:#888;max-width:420px}
+/* le bouton : un bouton NORMAL — gris, jamais corail (le corail est réservé au nom et à l'art) */
+.dc-btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:12px 26px;border:0;border-radius:12px;cursor:pointer;
+  background:#2a2a2a;color:#e8e8e8;font:700 12px/1.2 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;transition:transform .15s ease,opacity .15s ease}
+.dc-btn:active{transform:scale(.97)}
+.dc-cta{position:absolute;left:0;right:0;bottom:146px;display:flex;flex-direction:column;align-items:center;gap:8px;padding:0 24px;z-index:2}
+.dc-cta:empty{display:none}
+.dc.has-cta .dc-s{inset:84px 24px 214px}
+.dc.has-cta.is-last .dc-cta{bottom:96px}
+.dc-btn[disabled]{opacity:.45;pointer-events:none}
+.dc-btn.is-quiet{background:none;color:#bdbdbd;box-shadow:inset 0 0 0 1px #3a3a3a}
+.dc-lnk{background:none;border:0;padding:8px;cursor:pointer;font:400 10px/1.4 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#888;text-decoration:none}
+.dc-row{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.dc-slot{width:100%}
+.dc-slot:empty{display:none}
+/* « QUI » : une petite ligne au-dessus d'une illustration (« FROM », « TOTEHMIZED BY »…), un nom de membre dedans */
+.dc-who{display:block;margin-bottom:6px;font:400 11px/1.3 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#888}
+.dc-who .dc-n{text-transform:none;letter-spacing:.02em;font-size:14px}
+/* L'ÉCRAN ILLUSTRÉ (facultatif : `is-illustre` sur l'hôte) — Wah, 17/11 : chaque écran porte une illustration faite des
+   éléments NATIFS du site (box, pièce, badge), dans un CADRE de même hauteur sur tous les écrans (`--dc-ill-h`) : le titre
+   ne saute pas d'un écran à l'autre, et ce qui dépasse est RÉDUIT au cadre par le moteur, jamais rogné. Le haut de l'écran
+   est fixe (le cadre, puis le titre) ; seul le texte s'allonge vers le bas. `.dc-ill-c` : l'illustration en colonne. */
+.dc{--dc-ill-h:clamp(128px,22dvh,190px)}
+.dc.is-illustre .dc-s{justify-content:flex-start;padding-top:max(0px,calc((100dvh - 298px - 450px) / 2))}
+.dc-ill{width:min(100%,340px);height:var(--dc-ill-h);flex:none;display:flex;align-items:center;justify-content:center;
+  text-align:left;pointer-events:none;-webkit-user-select:none;user-select:none}
+.dc-ill-in{flex:none;width:100%;transform-origin:50% 50%}
+.dc-ill-c .dc-ill-in{display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
+/* L'ÉCRAN LIBRE (facultatif : `is-libre` sur l'écran) — un formulaire, un panneau : il commence en haut, et son panneau
+   `.dc-libre` (avec `data-dc-libre`, que le moteur laisse au doigt et à la molette) défile chez lui */
+.dc-s.is-libre{justify-content:flex-start;padding-top:10px}
+.dc-libre{max-height:100%;overflow-y:auto;width:100%;display:flex;flex-direction:column;align-items:center;gap:14px}
+/* EN COUCHE par-dessus une page (facultatif) : `is-overlay`, invisible tant que `is-open` n'est pas posée ; `.dc-x` la referme */
+.dc.is-overlay{z-index:9000;opacity:0;visibility:hidden;transition:opacity .35s ease,visibility 0s linear .35s}
+.dc.is-overlay.is-open{opacity:1;visibility:visible;transition:opacity .35s ease,visibility 0s}
+.dc-x{position:absolute;top:8px;right:8px;z-index:3;width:44px;height:44px;border:0;padding:0;background:none;color:#a0a0a0;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;transition:color .15s}
+.dc-x svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round}
+/* la structure : rail, chevron — gris sombre, jamais de couleur. Ni numéro d'écran (« 1 / 10 »), ni consigne écrite : la flèche du bas, qui s'anime, dit le scroll */
+.dc-rail{position:absolute;bottom:72px;left:50%;transform:translateX(-50%);display:flex;gap:6px;pointer-events:none}
+.dc-rail span{width:18px;height:2px;background:#242424;transition:background .3s}
+.dc-rail span.on{background:#bdbdbd}
+.dc-next{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);background:none;border:0;padding:10px;cursor:pointer;color:#a0a0a0;transition:color .15s,opacity .3s}
+.dc-next svg{display:block;width:24px;height:24px;animation:dc-bob 1.6s ease-in-out infinite}
+.dc-next:focus-visible,.dc-btn:focus-visible,.dc-lnk:focus-visible{outline:1px solid #fff;outline-offset:3px}
+.dc-x:focus-visible{outline:1px solid #fff;outline-offset:-6px}
+.dc.is-last .dc-next{opacity:0;pointer-events:none}
+@keyframes dc-bob{0%,100%{transform:none;opacity:.4}50%{transform:translateY(6px);opacity:1}}
+@media(hover:hover){.dc-btn:hover{background:#383838;opacity:1}.dc-next:hover,.dc-x:hover{color:#fff}.dc-lnk:hover{color:#fff}}
+@media(max-width:650px){.dc-s{inset:76px 20px 140px;gap:16px}.dc.has-cta .dc-s{inset:76px 20px 214px}}
+/* un écran BAS (fenêtre réduite, téléphone couché) : tout se resserre et rien ne se chevauche — après la règle de largeur */
+@media(max-height:620px){
+  .dc-s{inset:60px 20px 96px;gap:12px}.dc.has-cta .dc-s{inset:60px 20px 150px}
+  .dc-cta,.dc.has-cta.is-last .dc-cta{bottom:84px}.dc-next{bottom:12px}.dc-next svg{width:20px;height:20px}.dc-rail{bottom:56px}
+  .dc-h{font-size:clamp(13px,2vw,16px)}.dc-p{font-size:clamp(12px,1.4vw,14px);line-height:1.55}.dc-btn{min-height:42px;padding:9px 22px}
 }
-/* ══ FIN DU BLOC GÉNÉRÉ ══ */
+@media(max-height:440px){
+  .dc-s{inset:50px 20px 50px}.dc.has-cta .dc-s{inset:50px 20px 100px}
+  .dc-cta,.dc.has-cta.is-last .dc-cta{bottom:44px}.dc-rail{bottom:22px}.dc-next{display:none}
+}
+/* un écran bas : l'illustration se resserre, puis s'efface — le texte passe avant */
+@media(max-height:760px){.dc.is-illustre .dc-s{gap:14px}}
+@media(max-height:700px){.dc{--dc-ill-h:clamp(110px,19dvh,150px)}}
+@media(max-height:600px){.dc-ill{display:none}}
+@media(prefers-reduced-motion:reduce){.dc-s,.dc-s.is-on,.dc-s.is-avant{transition:none;transform:none}.dc-next svg{animation:none}.dc.is-overlay,.dc.is-overlay.is-open{transition:none}}
+/* ══ fin DISCOVER ══ */
 </style>
 <style data-ecosystem-ui="2026-10-05">
 /* 05/10/2026 — copied into the four platforms. Text buttons fit their label. */
@@ -403,7 +475,6 @@ body[data-eco-auth="central"] #mw-email,body[data-eco-auth="central"] #mw-code,b
 /* Standalone interface T glyphs are forbidden. The rotating TOTEHM paper keeps its brand artwork. */
 #bigT>svg{visibility:hidden!important}.tv-T{display:none!important}
 @media(hover:hover){.eco-close:hover{background:#34343a;color:#fff}.eco-connect:hover{color:#fff!important}}
-
 </style>
 <style data-boutique-type="2026-10-06">
 /* 06/10 — Wah : « réduis un peu la police sur higher.boutique ; le texte d'un
@@ -502,6 +573,69 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
 .tw.is-plat .tw-p{transform:none}
 @media(prefers-reduced-motion:reduce){.tw-p{transform:rotateY(180deg)}.tw.is-plat .tw-p{transform:none}}
 /* ══ fin LE MOT TOTEHM ══ */
+/* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
+/* Tout texte devient blanc sous la souris. Les dessins, surfaces
+   et contrôles désactivés gardent leur apparence. */
+@media(hover:hover) and (pointer:fine){
+:is(
+:is(a,abbr,address,b,bdi,bdo,blockquote,button,caption,cite,code,dd,del,dfn,dt,em,figcaption,h1,h2,h3,h4,h5,h6,i,input,kbd,label,legend,li,mark,option,output,p,pre,q,rp,rt,ruby,s,samp,small,span,strong,sub,summary,sup,td,textarea,th,time,u,var):hover,
+div:not(:has(> :not(br,wbr))):hover,
+.mono:hover,
+#member:hover,
+.lnk:hover,
+.btn-back:hover,
+.man p:hover,
+.chip:hover,
+.st-card b:hover,
+.recap:hover,
+.kicker:hover,
+.sub:hover,
+.legal:hover,
+.gh .get:hover,
+.step-h:hover,
+.tick:hover,
+.note:hover,
+.note.ok:hover,
+.qt:hover,
+.qt small:hover,
+.qt .st:hover,
+.qt .qn:hover,
+.qt .lnk:hover,
+.qa small:hover,
+#el-sub:hover,
+.bx .sb:hover,
+.v-empty:hover,
+.v-empty .lnk:hover,
+#matter .w:hover,
+#matter .mono:hover,
+#nm-prefix:hover,
+#ph-lab:hover,
+#sr-lab:hover,
+.dc:hover,
+.dc-p:hover,
+.dc-ac:hover,
+.dc-n:hover,
+.dc-big small:hover,
+.dc-fine:hover,
+.dc-btn:hover,
+.dc-btn.is-quiet:hover,
+.dc-lnk:hover,
+.dc-who:hover,
+.dc-x:hover,
+.dc-next:hover,
+.eco-connect:hover,
+.eco-connect #member-txt:hover,
+.eco-connect #conn-txt:hover,
+.eco-box-zoom:hover,
+.eco-close:hover,
+.mc:not(.is-in):hover,
+.tn-l:hover,
+.mc-terms:hover,
+.tw .tn-l:hover):where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *)){color:#fff!important}
+.field:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::placeholder{color:#fff!important}
+#nm-input:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::placeholder{color:#fff!important}
+}
+/* ══ FIN DU BLOC GÉNÉRÉ ══ */
 </style>
 </head>
 <body data-eco-auth="central">
@@ -568,26 +702,9 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
       <!-- MES PROJETS -->
       <section id="quotes" class="hide" aria-label="My projects"></section>
 
-      <!-- HOW IT WORKS — le métier, replié : on ne récite pas, on répond. -->
-      <section id="how">
-        <button class="lnk" id="how-btn" type="button" aria-expanded="false">How it works</button>
-        <div id="how-body">
-          <h3>1 · We read the material — <span class="pin">100 % bespoke</span></h3>
-          <p>Nothing is painted before your piece is studied. Your photo or video is read automatically, then by us: the material, its texture, its grain, its coating. Leather takes the work differently from coated canvas, and some finishes refuse it altogether. The primer and the paint are then chosen for <span class="pin">that piece alone</span>. That answer comes first, and it costs you nothing: if the piece cannot be painted, <span class="pin">the deposit is refunded in full</span>.</p>
-          <h3>2 · We find your artist, where you are — <span class="pin">local artists, always</span></h3>
-          <p>Ask from Los Angeles, and the artist is from Los Angeles. It is written into the TOTEHM DNA. The mise en relation goes through a <span class="pin">partner art gallery</span> — the official and unavoidable intermediary — and we draw on the largest private network of galleries and artists there is. Your city, your budget and the style you chose decide who we go after: the higher the budget, the more prestigious the names we allow ourselves to approach. We give ourselves <span class="pin">30 days</span>; past that, without an artist, you are refunded in full.</p>
-          <h3>3 · We prepare the piece</h3>
-          <p>The step nobody sees, and the only one that decides whether the work lasts: degreasing, a light abrasion of the factory finish, hardware and linings masked, then an adhesion primer mixed for that exact material. A paint laid on an unprepared surface looks perfect for a week and cracks at the first fold.</p>
-          <h3>4 · The artist paints it by hand</h3>
-          <p>Leather-grade pigments — made to bend with the material, never a hardware-store paint — laid in thin layers, each one dried before the next. Your element becomes the artwork. Nothing is printed, nothing is a transfer, nothing is a sticker. The artist has <span class="pin">two weeks</span> to finish and to drop the work at the partner gallery.</p>
-          <h3>5 · It holds</h3>
-          <p>The paint is heat-set, then sealed with a flexible top-coat — matte or satin, your call — that takes water, UV and the folds of a piece you actually wear.</p>
-          <h3>A gallery, or an artist?</h3>
-          <p>We take one partner gallery per city, and we mandate local artists through it. Everything we offer — the split, the exclusivity, how a commission runs — is written here: <a class="pin" href="/atelier">higher.boutique/atelier</a>.</p>
-          <h3>The deposit</h3>
-          <p><span class="pin" id="how-price">770 €</span> deposits the project: it pays for the study of your material, the tests on it and the search for your artist. If no artist is secured within 30 days, or if the piece cannot take the work, <span class="pin">you are refunded in full</span>. If it can, we tell you the price of the artwork <span class="pin">before anything is painted</span>, and the deposit counts towards it.</p>
-        </div>
-      </section>
+      <!-- 19/11 (Wah : « faire le discover luxury sous la même forme que les discovery de com ») — le métier ne vit plus
+           replié ici : il se DÉCOUVRE (`#lxd`, la nomenclature commune), un écran par idée. -->
+      <button class="lnk" id="lx-discover" type="button">Discover</button>
 
       <!-- L'ADMINISTRATEUR -->
       <section id="admin" class="hide" aria-label="Projects to answer">
@@ -712,6 +829,122 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
 <!-- MY TOTEHM — SELECT MODE : quelle Box matérialiser ? -->
 
 
+<!-- ══ LE DISCOVER DU LUXE (19/11) — la NOMENCLATURE commune (`tools/discover.*`, recopiée) : un écran noir par idée, au
+     geste ; sous CHAQUE écran, le geste du moment (`LXD.geste` : se connecter · Get Higher · déposer) et le prix du dépôt,
+     en gris. Les mots sont ceux de la page, inchangés : les deux idées de l'intro, puis le métier qui vivait replié dans
+     « How it works ». La page n'apporte que ce contenu : le dessin est celui de tous les Discover. ══ -->
+<div class="dc is-overlay has-cta" id="lxd" role="dialog" aria-modal="true" aria-label="Discover Totehm Luxury" hidden>
+  <button class="dc-x" id="lxd-x" type="button" aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg></button>
+  <div class="dc-stage">
+    <div class="dc-s"><h2 class="dc-h">Totehmize my piece</h2>
+      <p class="dc-p">One element of your TOTEHM, hand-painted on a piece you already own — by an artist who lives in your city.</p>
+      <p class="dc-fine">Hermès · Louis Vuitton · Gucci — independent, not affiliated with these brands.</p></div>
+    <div class="dc-s"><h2 class="dc-h">Pigments that outlive us.</h2>
+      <p class="dc-p">Only the finest paints and primers, ultra-high-end, matched to the exact leather, canvas or textile of a luxury piece. A Totehm is an object made to last, and to be passed from one generation to the next.</p></div>
+    <div class="dc-s"><h2 class="dc-h">Thirty days, or refunded.</h2>
+      <p class="dc-p">We give ourselves one month to find and secure the right artist — local, through a partner gallery — for your budget and your taste. If the project cannot be done, the deposit is refunded in full. Once the artist is secured, the work is in the gallery within two weeks.</p></div>
+    <div class="dc-s"><h2 class="dc-h">We read the material</h2><p class="dc-fine">100 % bespoke</p>
+      <p class="dc-p">Nothing is painted before your piece is studied. Your photo or video is read automatically, then by us: the material, its texture, its grain, its coating. Leather takes the work differently from coated canvas, and some finishes refuse it altogether. The primer and the paint are then chosen for that piece alone. That answer comes first, and it costs you nothing: if the piece cannot be painted, the deposit is refunded in full.</p></div>
+    <div class="dc-s"><h2 class="dc-h">We find your artist, where you are</h2><p class="dc-fine">local artists, always</p>
+      <p class="dc-p">Ask from Los Angeles, and the artist is from Los Angeles. It is written into the TOTEHM DNA. The mise en relation goes through a partner art gallery — the official and unavoidable intermediary — and we draw on the largest private network of galleries and artists there is. Your city, your budget and the style you chose decide who we go after: the higher the budget, the more prestigious the names we allow ourselves to approach. We give ourselves 30 days; past that, without an artist, you are refunded in full.</p></div>
+    <div class="dc-s"><h2 class="dc-h">We prepare the piece</h2>
+      <p class="dc-p">The step nobody sees, and the only one that decides whether the work lasts: degreasing, a light abrasion of the factory finish, hardware and linings masked, then an adhesion primer mixed for that exact material. A paint laid on an unprepared surface looks perfect for a week and cracks at the first fold.</p></div>
+    <div class="dc-s"><h2 class="dc-h">The artist paints it by hand</h2>
+      <p class="dc-p">Leather-grade pigments — made to bend with the material, never a hardware-store paint — laid in thin layers, each one dried before the next. Your element becomes the artwork. Nothing is printed, nothing is a transfer, nothing is a sticker. The artist has two weeks to finish and to drop the work at the partner gallery.</p></div>
+    <div class="dc-s"><h2 class="dc-h">It holds</h2>
+      <p class="dc-p">The paint is heat-set, then sealed with a flexible top-coat — matte or satin, your call — that takes water, UV and the folds of a piece you actually wear.</p></div>
+    <div class="dc-s"><h2 class="dc-h">A gallery, or an artist?</h2>
+      <p class="dc-p">We take one partner gallery per city, and we mandate local artists through it. Everything we offer — the split, the exclusivity, how a commission runs — is written here:</p>
+      <div class="dc-row"><a class="dc-lnk" href="/atelier">higher.boutique/atelier</a></div></div>
+    <div class="dc-s"><h2 class="dc-h">The deposit</h2>
+      <p class="dc-p"><span id="how-price">770 €</span> deposits the project: it pays for the study of your material, the tests on it and the search for your artist. If no artist is secured within 30 days, or if the piece cannot take the work, you are refunded in full. If it can, we tell you the price of the artwork before anything is painted, and the deposit counts towards it.</p></div>
+  </div>
+  <div class="dc-cta"><button class="dc-btn" id="lxd-go" type="button">Deposit my project</button><p class="dc-fine" id="lxd-prix"></p></div>
+</div>
+<script>
+/* ══ DISCOVER — copié de tools/discover.js dans chaque page (jamais importé) ══
+   Le moteur du « découvrir » : des écrans `.dc-s` dans `.dc-stage`, UN visible à la fois, qui se succèdent au scroll, au
+   geste (glisser vers le haut), au clavier (↓ ↑ Page Espace) ou au chevron — comme totehm.space/play_lisbon_street?discover=1.
+   Il ne connaît NI le contenu NI la page : `monter(hote)` lit les écrans qui s'y trouvent, et `rafraichir()` les relit
+   quand la page les a redessinés. Le dernier écran est celui qui AGIT (un bouton) : le chevron s'efface.
+   Un champ, un bouton ou un lien dans un écran garde ses touches (Espace, Entrée) : le moteur ne les vole jamais. */
+window.TOTEHM_DISCOVER = (() => {
+  const FADE = 520, VERROU = FADE + 160, SEUIL_ROUE = 36, SEUIL_DOIGT = 44;
+  const RM = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : { matches:false };
+  const CHEVRON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
+  const ACTIF = 'input,textarea,select,button,a,[contenteditable]';
+  function monter(hote, opt){
+    const o = Object.assign({ surChangement:null }, opt || {});
+    let i = 0, ecrans = [], verrou = 0, cumul = 0, tCumul = 0, y0 = null, actif = true;
+    const stage = hote.querySelector('.dc-stage'), rail = document.createElement('div'), next = document.createElement('button');
+    rail.className = 'dc-rail'; rail.setAttribute('aria-hidden', 'true');
+    next.className = 'dc-next'; next.type = 'button'; next.setAttribute('aria-label', 'Next'); next.innerHTML = CHEVRON;
+    hote.append(rail, next);
+    /* L'ILLUSTRATION tient dans son CADRE (`.dc-ill`) : son contenu passe dans `.dc-ill-in`, que le moteur RÉDUIT (largeur
+       ou hauteur) au rendu, à chaque écran et à chaque changement de taille — jamais rogné. */
+    function envelopper(){ hote.querySelectorAll('.dc-ill').forEach(f => { if(f.querySelector(':scope>.dc-ill-in')) return;
+      const n = document.createElement('div'); n.className = 'dc-ill-in'; while(f.firstChild) n.appendChild(f.firstChild); f.appendChild(n); }); }
+    function ajuster(){ hote.querySelectorAll('.dc-ill-in').forEach(n => { const f = n.parentNode, H = f.clientHeight, W = f.clientWidth; if(!H || !W) return;
+      const k = Math.min(1, H / Math.max(1, n.offsetHeight), W / Math.max(1, n.scrollWidth));
+      const v = k < .999 ? 'scale(' + k.toFixed(3) + ')' : ''; if(n.style.transform !== v) n.style.transform = v; }); }
+    function lire(){ ecrans = [...stage.querySelectorAll('.dc-s')]; rail.innerHTML = ecrans.map(() => '<span></span>').join(''); envelopper(); }
+    function peindre(instant){
+      ecrans.forEach((e, k) => { const on = k === i; e.classList.toggle('is-on', on); e.classList.toggle('is-avant', k < i); e.setAttribute('aria-hidden', String(!on));
+        if(instant) e.style.transition = 'none'; else e.style.removeProperty('transition'); });
+      if(instant) void hote.offsetWidth;
+      rail.querySelectorAll('span').forEach((s, k) => s.classList.toggle('on', k === i));
+      hote.classList.toggle('is-last', i >= ecrans.length - 1);
+      hote.dataset.i = i; hote.dataset.n = ecrans.length;
+      ajuster();
+      if(o.surChangement) o.surChangement(i, ecrans.length);
+    }
+    function aller(k, instant){
+      k = Math.max(0, Math.min(ecrans.length - 1, k)); if(k === i && !instant) return false;
+      if(verrou && !instant) return false;
+      i = k; peindre(instant || RM.matches);
+      if(!instant && !RM.matches){ verrou = setTimeout(() => { verrou = 0; }, VERROU); }
+      return true;
+    }
+    const suivant = () => aller(i + 1), precedent = () => aller(i - 1);
+    /* la molette et le pavé tactile : un geste ET son inertie = UN écran (le verrou dure plus que le fondu) */
+    hote.addEventListener('wheel', e => {
+      if(!actif || e.target.closest('[data-dc-libre]')) return;
+      const t = Date.now(); if(t - tCumul > 180) cumul = 0; tCumul = t; cumul += e.deltaY;
+      if(Math.abs(cumul) >= SEUIL_ROUE){ const d = cumul > 0 ? 1 : -1; cumul = 0; aller(i + d); }
+      e.preventDefault();
+    }, { passive:false });
+    hote.addEventListener('touchstart', e => { y0 = e.touches.length === 1 && !e.target.closest('input,textarea,select,[data-dc-libre]') ? e.touches[0].clientY : null; }, { passive:true });
+    hote.addEventListener('touchmove', e => { if(y0 !== null) e.preventDefault(); }, { passive:false });
+    hote.addEventListener('touchend', e => {
+      if(y0 === null || !e.changedTouches.length) return; const dy = y0 - e.changedTouches[0].clientY; y0 = null;
+      if(Math.abs(dy) >= SEUIL_DOIGT) aller(i + (dy > 0 ? 1 : -1));
+    }, { passive:true });
+    function touche(e){
+      if(!actif) return; const dans = e.target.closest ? e.target.closest(ACTIF) : null, champ = dans && e.target.matches('input,textarea,select');
+      let pris = true;
+      if(['ArrowDown', 'PageDown'].includes(e.key) && !champ) suivant();
+      else if(['ArrowUp', 'PageUp'].includes(e.key) && !champ) precedent();
+      else if(e.key === ' ' && !dans) suivant();
+      else pris = false;
+      /* une touche PRISE ne va pas plus loin : la page dessous (une couche par-dessus un accueil qui navigue aux flèches) ne bouge pas */
+      if(pris){ e.preventDefault(); e.stopPropagation(); }
+    }
+    /* un seul écouteur, EN CAPTURE : une page qui arrête ses flèches en route (totehm.com le fait) ne les lui vole pas.
+       Il n'écoute que si le moteur est visible, et que le focus est dedans ou nulle part. */
+    window.addEventListener('keydown', e => { if(hote.isConnected && !hote.hidden && !hote.classList.contains('hide') && (hote.contains(e.target) || document.activeElement === document.body)) touche(e); }, true);
+    next.addEventListener('click', suivant);
+    window.addEventListener('resize', () => { if(hote.isConnected) requestAnimationFrame(ajuster); });
+    if(document.fonts && document.fonts.ready) document.fonts.ready.then(ajuster);
+    lire(); peindre(true);
+    return { aller, suivant, precedent, index:() => i, total:() => ecrans.length,
+      derniere:() => aller(ecrans.length - 1, true),
+      rafraichir(garder){ const k = garder ? i : 0; lire(); i = Math.min(k, Math.max(0, ecrans.length - 1)); peindre(true); },
+      ajuster, activer(v){ actif = !!v; } };
+  }
+  return { monter };
+})();
+/* ══ fin DISCOVER ══ */
+</script>
 <script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 const SB_URL = 'https://abujjbkbbiumxrokozph.supabase.co';
@@ -867,7 +1100,7 @@ document.addEventListener('visibilitychange', () => { if(!document.hidden) ssoVe
 
 
 /* ══ L'ÉTAT — une lecture, un écran ═════════════════════════════════ */
-const BUILD = '2026-11-19-vocabulaire-boutique';
+const BUILD = '2026-11-19-discover-luxe';
 let A = null, ADM = [], SEQ = 0, BUSY = false, ME = null;
 /* Le diagnostic — des booléens et des compteurs, jamais une valeur de membre. */
 window.__totehm_luxury = () => ({ build: BUILD, signed_in: !!A?.signed_in, thp: !!A?.thp, open: !!A?.open,
@@ -878,7 +1111,7 @@ window.__totehm_luxury = () => ({ build: BUILD, signed_in: !!A?.signed_in, thp: 
   brand: !!BRAND, product: $('product').value.trim().length > 1, city: $('city').value.trim().length > 1,
   style: !!STYLE, style_ref: !!STYLE_REF, budget: BUDGET,
   papers: $('el-head')?.classList.contains('is-split') || false,
-  how: $('how')?.classList.contains('is-on') || false,
+  discover: !!(window.__totehm_lxd && window.__totehm_lxd().ouvert),
   flow: stage !== 'intro', stage, next: !!voisine(1),
   ouvertes: [...document.querySelectorAll('.stage.is-open')].map(e => e.dataset.s) });
 
@@ -1411,7 +1644,7 @@ $('st-next').addEventListener('click',()=>{feuilleter(1);});
 let rzT=null;
 addEventListener('resize',()=>{ clearTimeout(rzT); rzT=setTimeout(()=>aller(stage,false),120); });
 window.addEventListener('keydown',e=>{
-  if(document.body.classList.contains('eco-modal'))return;
+  if(document.body.classList.contains('eco-modal')||document.body.classList.contains('is-dc'))return;   /* le Discover a ses touches */
   const t=e.target;if(t&&t.closest&&t.closest('input,textarea'))return;
   const d={PageDown:1,PageUp:-1,ArrowDown:1,ArrowUp:-1}[e.key];
   if(d&&!resteDedans(d)){e.preventDefault();feuilleter(d);}
@@ -1426,6 +1659,44 @@ $('go').onclick=()=>{
   if(!A?.open){$('go-note').className='note no';$('go-note').textContent='closed for now';return;}
   OUVERT=true;$('go-note').textContent='';etape('piece');
 };
+
+/* ══ LE DISCOVER DU LUXE (19/11) — la nomenclature commune monte les écrans (`TOTEHM_DISCOVER`) ; la page ne fait que
+   l'ouvrir, le fermer, et dire SOUS CHAQUE ÉCRAN le geste du moment, celui que l'intro propose en ce moment même (se
+   connecter · Get Higher · déposer), avec le prix du dépôt en gris. « précédent » et Échap referment la couche. ══ */
+const LXD=(()=>{
+  const el=$('lxd'), cta=$('lxd-go'), prix=$('lxd-prix'), diag={ouvertures:0,gestes:0};
+  let dc=null, ouvert=false, origine=null, pousse=false, ensuite=null;
+  const vu=id=>!$(id).classList.contains('hide');
+  function geste(){
+    if(vu('s-out')) return {html:'Connect with my TOTEHM', f:()=>$('signin').click()};
+    if(vu('s-nothp')) return {html:'<span class="get">Get</span> <svg class="dc-hi" viewBox="0 0 600 200" aria-label="Higher"><use href="#higher-slogan"></use></svg>', f:()=>$('get-higher').click()};
+    if(vu('go')) return {html:'Deposit my project', f:()=>$('go').click()};
+    if(vu('s-closed')) return {html:'Closed for now', f:null};
+    return {html:'…', f:null};
+  }
+  function peindre(){ const g=geste(); cta.innerHTML=g.html; cta.disabled=!g.f; prix.textContent=$('price').textContent||''; }
+  function ouvrir(){
+    if(ouvert||!window.TOTEHM_DISCOVER) return; ouvert=true; diag.ouvertures++; origine=document.activeElement;
+    el.hidden=false; if(!dc) dc=window.TOTEHM_DISCOVER.monter(el,{}); dc.activer(true); dc.aller(0,true); peindre();
+    void el.offsetWidth; document.body.classList.add('is-dc'); el.classList.add('is-open');
+    try{ history.pushState({lxd:1},''); pousse=true; }catch(_){ pousse=false; }
+    setTimeout(()=>{ try{ $('lxd-x').focus({preventScroll:true}); }catch(_){} },60);
+  }
+  function clore(){
+    if(!ouvert) return; ouvert=false; el.classList.remove('is-open'); document.body.classList.remove('is-dc'); if(dc) dc.activer(false);
+    const f=ensuite; ensuite=null;
+    setTimeout(()=>{ if(!ouvert) el.hidden=true; if(f) f(); else try{ origine&&origine.focus({preventScroll:true}); }catch(_){} },360);
+  }
+  /* fermer par un geste de la page : on rend l'entrée d'historique posée à l'ouverture, et c'est elle qui referme */
+  function fermer(f){ if(!ouvert) return; ensuite=f||null; if(pousse){ pousse=false; history.back(); } else clore(); }
+  addEventListener('popstate',()=>{ if(ouvert){ pousse=false; clore(); } });
+  cta.addEventListener('click',()=>{ const g=geste(); if(!g.f) return; diag.gestes++; fermer(g.f); });
+  $('lxd-x').addEventListener('click',()=>fermer());
+  addEventListener('keydown',e=>{ if(ouvert&&e.key==='Escape'){ e.preventDefault(); e.stopPropagation(); fermer(); } },true);
+  $('lx-discover').addEventListener('click',ouvrir);
+  window.__totehm_lxd=()=>({ouvert, ecran:dc?dc.index():-1, total:dc?dc.total():0, ...diag});
+  return {ouvrir, fermer};
+})();
 
 /* ══ 2 · LE STYLE — l'un OU l'autre : la liste, ou la photo d'un artiste ══ */
 let STYLE=null, STYLE_REF=null, STYLES=[], stylesLus=false;
@@ -1517,7 +1788,6 @@ $('ask').onclick = async () => {
   if(['brand','product','city','photo'].includes(d.error)) etape('piece');
   if(d.error === 'budget') etape('budget');
 };
-$('how-btn').onclick = () => { const h = $('how'), on = h.classList.toggle('is-on'); $('how-btn').setAttribute('aria-expanded', String(on)); };
 $('signin').onclick = () => ssoLogin(false, '/luxury');
 $('get-higher').onclick = () => { location.href = '/discover'; };   /* 09/10 : Get Higher est ici, sur la boutique */
 $('member').onclick = () => { if(!ME) ssoLogin(false, '/luxury'); else location.href = '/#luxury'; };

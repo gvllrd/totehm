@@ -103,21 +103,33 @@ ok(plein.w === plein.W && plein.h === plein.H && plein.ouvertes.join(',') === 'i
   'le rouleau prend TOUT l\'écran, et seule l\'intro est ouverte ' + JSON.stringify(plein));
 await pg.screenshot({ path: OUT + '/lux_intro.png' });
 
-// ── HOW IT WORKS : le métier, replié puis ouvert
-ok((await pg.$eval('#how-body', e => e.getBoundingClientRect().height)) < 2, 'How it works est replié');
-await pg.click('#how-btn');
+// ── LE DISCOVER (19/11, Wah : « le discover luxury sous la même forme que les discovery de com ») : le métier se
+//    DÉCOUVRE, dans la nomenclature commune — un écran par idée, le geste du moment sous chacun.
+ok(await pg.evaluate(() => document.getElementById('lxd').hidden && !window.__totehm_lxd().ouvert), 'le Discover est fermé au départ');
+await pg.click('#lx-discover');
+await pg.waitForFunction(() => window.__totehm_lxd().ouvert);
 await pg.waitForTimeout(500);
-const how = await pg.textContent('#how-body');
+const how = await pg.textContent('#lxd .dc-stage');
 ok(/primer/i.test(how) && /local/i.test(how) && /30 days/i.test(how) && /two weeks/i.test(how) && /refunded in full/i.test(how),
-  'How it works dit l\'étude, l\'artiste local, les 30 jours, les deux semaines et le remboursement');
+  'le Discover dit l\'étude, l\'artiste local, les 30 jours, les deux semaines et le remboursement');
 ok(/100 % bespoke/i.test(how) && /that piece alone/i.test(how) && /largest private network/i.test(how)
    && /partner art gallery/i.test(how) && /TOTEHM DNA/i.test(how),
-  '12/11 · rien n\'est perdu : le 100 % sur-mesure, l\'ADN et le plus grand réseau privé sont DANS How it works');
+  '12/11 · rien n\'est perdu : le 100 % sur-mesure, l\'ADN et le plus grand réseau privé sont DANS le Discover');
+const lx = await pg.evaluate(() => ({ ...window.__totehm_lxd(), go: document.getElementById('lxd-go').textContent,
+  prix: document.getElementById('lxd-prix').textContent,
+  visibles: [...document.querySelectorAll('#lxd .dc-s')].filter(e => getComputedStyle(e).visibility === 'visible').length }));
+ok(lx.total === 10 && lx.ecran === 0 && lx.visibles === 1 && /Deposit my project/.test(lx.go) && /770/.test(lx.prix),
+  '19/11 · dix écrans, UN visible ; sous chacun, le geste du moment et le prix du dépôt ' + JSON.stringify(lx));
+await pg.keyboard.press('ArrowDown');
+await pg.waitForTimeout(700);
+ok((await pg.evaluate(() => window.__totehm_lxd().ecran)) === 1 && (await D()).stage === 'intro',
+  'une flèche tourne UN écran du Discover, et le rouleau dessous ne bouge pas');
+await pg.screenshot({ path: OUT + '/lux_discover.png' });
 
-// ── LA PORTE : elle ouvre le dépôt (elle connecte et vérifie le TotehmPaper)
-await pg.click('#go');
-await pg.waitForFunction(() => window.__totehm_luxury().stage === 'piece');
-ok((await D()).ouvertes.join(',') === 'intro,piece', 'la porte ouvre LA PIÈCE, et rien de plus');
+// ── LE GESTE DU MOMENT : il referme le Discover et ouvre le dépôt (il connecte et vérifie le TotehmPaper)
+await pg.click('#lxd-go');
+await pg.waitForFunction(() => window.__totehm_luxury().stage === 'piece' && !window.__totehm_lxd().ouvert);
+ok((await D()).ouvertes.join(',') === 'intro,piece', 'le geste du Discover ouvre LA PIÈCE, et rien de plus');
 
 // ── 1 · LA PIÈCE : UNE VIDÉO, et l'image fixe qu'on en tire
 await pg.setInputFiles('#ph-file', { name:'piece.webm', mimeType:'video/webm', buffer: WEBM });
