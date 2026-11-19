@@ -63,6 +63,35 @@ try{
   ok(!erreurs(log).length,nom+' · aucune erreur '+erreurs(log).join(' | '));
   await pg.context().close();
  }
+ /* ── 2 bis · 19/11 (Wah : « quand la page d'inscription apparaît, le scroll Discover devrait continuer de fonctionner ») ── */
+ {const{pg,log}=await page(browser,{dir:'com',origin,session:false,viewport:{width:1440,height:900},rpc:{my_landing:{signed_in:false}}});
+  await pg.goto(origin+'/totehm');
+  await pg.waitForFunction(()=>window.__totehm_lv?.().vue==='c'&&!document.body.classList.contains('ses-attente'));
+  await pg.waitForTimeout(1500);
+  await pg.click('#lvj-box');await pg.waitForTimeout(900);
+  const avant=await pg.evaluate(()=>({porte:document.body.classList.contains('is-door'),disc:window.__totehm_discover().ouvert}));
+  await pg.mouse.move(300,700);
+  for(let k=0;k<12;k++){ await pg.mouse.wheel(0,60); await pg.waitForTimeout(40); }
+  await pg.waitForTimeout(900);
+  const apres=await pg.evaluate(()=>({porte:document.body.classList.contains('is-door'),disc:window.__totehm_discover().ouvert,i:window.__totehm_discover().i,vue:window.__totehm_lv().vue}));
+  ok(avant.porte&&!avant.disc&&apres.disc&&!apres.porte&&apres.i===0&&apres.vue==='c','ordinateur · le joystick ouvre la porte, puis la MOLETTE ouvre le Discover (porte refermée, premier écran) → '+JSON.stringify({avant,apres}));
+  await pg.keyboard.press('Escape');await pg.waitForTimeout(600);
+  ok(await pg.evaluate(()=>!window.__totehm_discover().ouvert&&!document.body.classList.contains('is-door')),'Échap referme le Discover ; l\'accueil est là, porte fermée');
+  ok(!erreurs(log).length,'molette · aucune erreur '+erreurs(log).join(' | '));
+  await pg.context().close();}
+ {const{pg,log,ctx}=await page(browser,{dir:'com',origin,session:false,viewport:{width:390,height:844},hasTouch:true,rpc:{my_landing:{signed_in:false}}});
+  await pg.goto(origin+'/totehm');
+  await pg.waitForFunction(()=>window.__totehm_lv?.().vue==='c'&&!document.body.classList.contains('ses-attente'));
+  await pg.waitForTimeout(1500);
+  await pg.click('#lv-join');await pg.waitForTimeout(900);
+  const c=ctx||pg.context(), cdp=await c.newCDPSession(pg);
+  await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:195,y:640}]});
+  for(let i=1;i<=5;i++){ await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:195,y:640-220*i/5}]}); await pg.waitForTimeout(16); }
+  await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await pg.waitForTimeout(900);
+  const r=await pg.evaluate(()=>({porte:document.body.classList.contains('is-door'),disc:window.__totehm_discover().ouvert,i:window.__totehm_discover().i}));
+  ok(r.disc&&!r.porte&&r.i===0,'téléphone · la porte ouverte, un glissé du doigt ouvre le Discover (porte refermée) → '+JSON.stringify(r));
+  ok(!erreurs(log).length,'glissé · aucune erreur '+erreurs(log).join(' | '));
+  await pg.context().close();}
  /* ── 3 · mouvement réduit : pas de transition, le tronc s'ouvre d'un coup ── */
  {const{pg,log}=await page(browser,{dir:'com',origin,session:false,viewport:{width:1440,height:900},rpc:{my_landing:{signed_in:false}}});
   await pg.emulateMedia({reducedMotion:'reduce'});await pg.goto(origin+'/totehm');

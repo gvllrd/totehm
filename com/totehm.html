@@ -8801,7 +8801,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-11-19-porte-dans-le-tronc';
+const BUILD='2026-11-19-scroll-depuis-la-porte';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -14216,6 +14216,11 @@ window.addEventListener('pageshow',e=>{
        cas engage le Discover ») : SANS COMPTE (la porte et [Discover] à l'écran), au centre, TOUT SCROLL VERTICAL — molette, pavé,
        doigt, dans les deux sens — ouvre le Discover. Le visiteur n'a pas de croix (`voisin`) ; un membre la garde telle quelle. */
     const scrollDiscover=d=>(d==='h'||d==='b')&&vue==='c'&&!bouge&&mode==='mine'&&!$('lv-pitch').classList.contains('hide');
+    /* 19/11 (Wah : « quand la page d'inscription apparaît, le scroll Discover devrait continuer de fonctionner ») : la porte
+       ouverte rend l'accueil non `libre()`, sauf pour CE geste — le scroll vertical referme la porte et ouvre le Discover. */
+    const porteOuverte=()=>body.classList.contains('is-door')&&!inscrit()&&body.classList.contains('gate')&&!body.classList.contains('entered')&&!body.classList.contains('is-dc');
+    const discoverDepuisPorte=()=>{ try{ if(document.activeElement&&document.activeElement.blur) document.activeElement.blur(); }catch(_){}
+      fermerPorte(); DISC.ouvrir(true); };
     const saisie=t=>!!(t&&(t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.tagName==='SELECT'||t.isContentEditable));
     const LISTES='#chatgpt-pitch,#lv-sh,#rdr-g,#rdr-sh,.lsh-sf';
     const filDefile=(t,dy)=>{ if(!t||!t.closest||!t.closest(LISTES)) return false;
@@ -14306,19 +14311,20 @@ window.addEventListener('pageshow',e=>{
     (function trackpad(){
       let sens='', sum=0, last=0, verrou=0;
       window.addEventListener('wheel',e=>{
-        if(!libre()) return;
+        const porte=!libre()&&porteOuverte();
+        if(!libre()&&!porte) return;
         if(e.target&&e.target.closest&&e.target.closest('#rdr-map')&&SPMAP.dans(e.clientX,e.clientY)) return;   /* sur le globe, la molette le zoome */
         const f=e.deltaMode===1?16:e.deltaMode===2?innerHeight:1, x=e.deltaX*f, y=e.deltaY*f;
         const hor=Math.abs(x)>Math.abs(y)*1.25;
         if(!hor&&Math.abs(y)<=Math.abs(x)*1.25) return;
         if(!hor&&filDefile(e.target,y)){ sum=0; last=0; return; }
-        const d=hor?(x>0?'g':'d'):(y>0?'h':'b'), disc=!hor&&scrollDiscover(d), v=disc||voisin(d); if(!v) return;
+        const d=hor?(x>0?'g':'d'):(y>0?'h':'b'), disc=!hor&&scrollDiscover(d), v=disc||(!porte&&voisin(d)); if(!v) return;
         const now=Date.now();
         e.preventDefault();
         if(bouge||now<verrou){ verrou=now+260; return; }
         if(now-last>180||d!==sens) sum=0;
         sens=d; last=now; sum+=Math.min(160,Math.abs(hor?x:y));
-        if(sum>=(hor?75:70)){ sum=0; verrou=now+350; if(disc) DISC.ouvrir(true); else demander(d); }
+        if(sum>=(hor?75:70)){ sum=0; verrou=now+350; if(disc&&porte) discoverDepuisPorte(); else if(disc) DISC.ouvrir(true); else demander(d); }
       },{passive:false,capture:true});
     })();
     /* Le doigt, un manche (22/10) : glisser vers le haut va en HAUT, vers la gauche à GAUCHE. Pas sur le papier (il se retourne), ni dans un
@@ -14327,7 +14333,8 @@ window.addEventListener('pageshow',e=>{
       let p=null;
       window.addEventListener('touchstart',e=>{
         const t=e.target; p=null;
-        if(!libre()||e.touches.length>1) return;
+        const porte=!libre()&&porteOuverte();
+        if((!libre()&&!porte)||e.touches.length>1) return;
         /* La Terre (MAP) garde le doigt : il la fait tourner (l'axe s'éteint dans CETTE vue, la règle ne change pas).
            Le papier ne garde le doigt que chez lui, au repos (il s'y retourne, et son glissé vertical revient ici par
            `surVertical`) ; posé dans une autre vue, c'est un décor : le geste passe (21/10). */
@@ -14335,10 +14342,15 @@ window.addEventListener('pageshow',e=>{
         /* 27/10 — la Terre ne garde le doigt que posé SUR elle (Wah : « confrontation directe entre le joystick et la carte ») */
         if(t&&t.closest&&t.closest('#rdr-map')&&SPMAP.dans(e.touches[0].clientX,e.touches[0].clientY)) return;
         if(t&&t.closest&&t.closest('#gate-asteroid')&&PAPIER.saisit()) return;
-        p={x:e.touches[0].clientX, y:e.touches[0].clientY, t:Date.now(), el:t};
+        p={x:e.touches[0].clientX, y:e.touches[0].clientY, t:Date.now(), el:t, porte};
       },{passive:true,capture:true});
       window.addEventListener('touchend',e=>{
-        const q=p; p=null; if(!q) return; if(!libre()) return void refus('libre:'+pasLibre());
+        const q=p; p=null; if(!q) return;
+        if(q.porte){ if(!porteOuverte()||Date.now()-q.t>900) return;   /* la porte ouverte : seul le glissé vertical passe (le Discover) */
+          const dx=e.changedTouches[0].clientX-q.x, dy=e.changedTouches[0].clientY-q.y;
+          if(Math.abs(dy)>60&&Math.abs(dy)>Math.abs(dx)*1.3&&scrollDiscover(dy<0?'h':'b')) discoverDepuisPorte();
+          return; }
+        if(!libre()) return void refus('libre:'+pasLibre());
         if(Date.now()-q.t>900) return void refus('doigt:lent');
         const dx=e.changedTouches[0].clientX-q.x, dy=e.changedTouches[0].clientY-q.y;
         if(Math.abs(dy)>60&&Math.abs(dy)>Math.abs(dx)*1.3&&!filDefile(q.el,-dy)){ const d=dy<0?'h':'b';
