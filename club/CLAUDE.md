@@ -46,7 +46,7 @@ Serveur : `club_spots`, `spot_get`, `spot_rules`, `space_habits`, `spot_create_a
 - **WHEN décide de WHERE** : `now` impose `here` et ne montre aucune date ; `later` déplie la date et l'heure.
 - Ce qui vient du TOTEHM reste tel quel (Habit Box, mini-boxes OBJECTIVES / REPULSIONS). Un spot montre SA box et ses
   sous-box, jamais les médias de la box : un média prend le niveau de SA box, et c'est l'abonnement qui l'ouvre.
-- Membre du Club = une habit + un objectif + une répulsion (serveur, `_figher`). FIGHER CLUB est le niveau le plus
+- Membre du Club = une habit + un why, objectif ou vision (serveur, `_figher`) : un point de rencontre, pas le grind. FIGHER CLUB est le niveau le plus
   ouvert : il n'y a pas de PUBLIC.
 - Le coin membre (`tools/totehm_name.js` + `member_corner.*`) = CONNECT WITH MY TOTEHM en bouton normal ; connecté =
   LE TOTEHM qui TOURNE (~24 s), tap vers COM. **Pas de SORTIR ici** : sortir de totehm.com sort de partout (`sso_epoch`).

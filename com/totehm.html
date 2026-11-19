@@ -5276,7 +5276,7 @@ let MEMBERS0=(()=>{ try{ const u=new URLSearchParams(location.search); if(!u.has
 /* ══ 18/11 · LE FIGHER CLUB, LU AU SERVEUR ══ Wah : « la recherche est accessible seulement aux membres du figher.club ».
    Membre du Club = un TOTEHM avec une Habit, un objectif, une répulsion : c'est le serveur qui le dit (`figher_access().member`,
    la règle `_figher`), la page ne fait que le relire — à l'entrée d'un compte, au retour d'onglet, et à chaque refus. */
-const HORS_CLUB='Search is for Figher Club members: a TOTEHM with a Habit, an objective and a repulsion.';
+const HORS_CLUB='Search is for Figher Club members: a TOTEHM with a Habit and its why, an objective or a vision.';
 const CLUB={uid:null, member:false, t:0, seq:0};
 async function lireClub(force){
   if(!me){ CLUB.uid=null; CLUB.member=false; CLUB.seq++; return false; }
@@ -6771,7 +6771,7 @@ function creerFeed(conf){
       if(k==='t') return colsHeritees(habsOfTrip(o));
       if(k==='r') return colsHeritees(habsOfRep(o));
       if(k==='w') return colsHeritees(repsOfTeach(o).reduce((a,r)=>a.concat(habsOfRep(r)),[]));
-      return colsHeritees(tripsOfVision(o).reduce((a,t)=>a.concat(habsOfTrip(t)),[]));
+      return colsHeritees(habsOfVision(o));
     }catch(_){ return []; }
   }
   /* Les INTENTIONS d'un élément (des identifiants, pas des couleurs) : c'est sur elles que filtre la
@@ -6784,7 +6784,7 @@ function creerFeed(conf){
       const hs = k==='t' ? habsOfTrip(o)
                : k==='r' ? habsOfRep(o)
                : k==='w' ? repsOfTeach(o).reduce((a,r)=>a.concat(habsOfRep(r)),[])
-               :           tripsOfVision(o).reduce((a,t)=>a.concat(habsOfTrip(t)),[]);
+               :           habsOfVision(o);
       return [...new Set(hs.reduce((a,h)=>a.concat(desInts(h)),[]))];
     }catch(_){ return []; }
   }
@@ -7879,7 +7879,7 @@ const NSPOT=(()=>{
      WHERE (le point exact), WHEN (l'heure exacte), together + qui le voit (les bonnes personnes), le mot et
      la durée (tes conditions). Un spot n'est pas un lieu : c'est une Habit EN ACTION. */
   const DEF='A spot is your TOTEHM Habit in action: exact place, exact time, right people, your conditions.';
-  const CLUB='a habit, an objective, a repulsion — the closest thing to public.';
+  const CLUB='a habit, its why, its repulsions — the closest thing to public.';
   const AUD=[['private','private','me only'],['subscribers','my subscribers','only them'],['figher','figher club','every member']];
   const POURQUOI={signin:'sign in again', habit:'save this Habit first', location:'where', mode:'silent or social',
     duration:'the duration', video:'the photo or the video', position:'allow my location', too_many:'enough spots for now',
@@ -8800,7 +8800,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-11-18-couper-un-abonne';
+const BUILD='2026-11-19-une-seule-box-le-why';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -8838,14 +8838,16 @@ const visOf  =id=>VIS.find(v=>String(v.id)===String(id))||null;
    recopies a cinq endroits, c'est cinq endroits ou en oublier un. */
 const objetDe=(k,id)=> k==='h'?habOf(id) : k==='t'?tripOf(id) : k==='r'?repOf(id)
                      : k==='w'?teachOf(id) : k==='v'?visOf(id) : null;
-/* ══ LES LIENS CROISES · 16/09/2026 ══════════════════════════════════
-   Un objectif sert une VISION. Une repulsion s'eclaire d'une LECON.
-   Les deux tables existaient depuis le 15 ; rien ne pouvait les remplir.
-   On tient les DEUX cotes en memoire (`t.vs` et `v.os`) : sinon poser un
-   lien depuis l'objectif ne se verrait pas dans la vision avant un
-   rechargement, et l'ecran mentirait le temps d'un aller-retour. */
-const visionsOfTrip =t=>(t&&t.vs||[]).map(visOf).filter(Boolean);
-const tripsOfVision =v=>(v&&v.os||[]).map(tripOf).filter(Boolean);
+/* ══ UNE SEULE BOX POUR LE WHY · 19/11/2026 ═══════════════════════════
+   Wah : « Un objectif sans deadline est automatiquement déplacé dans la vue vision. Une vision avec
+   deadline est automatiquement déplacée dans la vue objectif. » Objectif et vision sont la MÊME box
+   (`objectives` en base, `visions` = sa vue sans date) : `TRIPS` tient les datées, `VIS` les autres,
+   le MÊME identifiant passe de l'une à l'autre (`deplacerWhy`). Le lien objectif → vision n'existe
+   plus : une Habit sert directement son why (`OBJ`), et le How d'une vision, ce sont SES Habits. */
+const whyOf        =id=>tripOf(id)||visOf(id);
+const visionsOfHab =x=>objIdsOf(x).map(visOf).filter(Boolean);
+const habsOfVision =v=>habsOfTrip(v);
+const SANS_DATE='No deadline: it moves to Vision when you close it.';
 const teachOfRep    =r=>(r&&r.ws||[]).map(teachOf).filter(Boolean);
 const repsOfTeach   =w=>REPS.filter(r=>(r.ws||[]).includes(String(w.id)));
 /* `hs` porte des TEXTES d'habitudes — c'est ce que rend le serveur. */
@@ -8953,7 +8955,7 @@ function setView(v){
      l'est plus : tout s'enregistre en écrivant. Il reste juste à POUSSER
      ce qui dort dans la minuterie, puis la boîte se referme d'elle-même.
      Zéro friction : on regarde ailleurs, on ne range pas d'abord. */
-  if(open){ pousse(); open=null; pk=null; }
+  if(open){ pousse(); basculeWhy(); open=null; pk=null; }
   /* Les objectifs et les répulsions sont des données du serveur : sans
      session il n'y a rien à montrer, et l'écran vide ne dirait pas
      pourquoi. */
@@ -8966,7 +8968,7 @@ function setView(v){
      il serait resté à l'écran dans une vue où ses deux critères ne
      veulent rien dire — et il aurait continué de filtrer en silence. */
   if(v!=='habits')filtreOuvert=false;
-  view=v; renderZone();
+  view=v; renderZone(); annonceWhy(v);
   /* ⚠️ L'ARBRE EST NÉCESSAIRE DANS LES TROIS VUES · 09/09/2026.
      Il ne se chargeait QUE hors de la vue habitudes — vrai avant la
      réécriture, quand une habitude n'affichait pas ses liens. Depuis, la
@@ -9816,12 +9818,20 @@ function boiteFiltre(){
    comprend ; « PGRST204 » ne se comprend pas, et un message qu'on ne
    comprend pas fait peur sans aider. Le detail va dans la console. */
 let ditT=null;
-function dis(mot){
+function dis(mot,ms){
   const e=$('dit'); if(!e)return;
   clearTimeout(ditT);
   if(!mot){ e.classList.remove('on'); return; }
   e.textContent=mot; e.classList.add('on');
-  ditT=setTimeout(()=>e.classList.remove('on'),3000);
+  ditT=setTimeout(()=>e.classList.remove('on'),ms||3000);
+}
+/* 19/11 — les objectifs sans date sont partis dans Vision (migration `une_seule_box_le_why`) : on le dit
+   UNE fois, la première fois qu'on ouvre Objectifs ou Vision. Une commodité locale : sans stockage, la
+   ligne revient, rien ne casse. */
+function annonceWhy(v){
+  if(RO||(v!=='objectives'&&v!=='visions')||!VIS.length) return;
+  try{ if(localStorage.getItem('totehm_why_1911')==='1') return; localStorage.setItem('totehm_why_1911','1'); }catch(_){}
+  dis('Undated objectives are now in Vision',6000);   /* une ligne, au téléphone (390 px) */
 }
 
 /* ══ LES TROIS VUES ══════════════════════════════════════════════════ */
@@ -9922,7 +9932,8 @@ function renderZone(){
    C'est le format de la boîte répulsion, dans l'autre sens. */
 function vueHabitude(x,k){
   const ouverte = !!open && open.kind==='h' && String(open.id)===String(x.id);
-  const ts=tripsOfHab(x), rs=repsOfHabX(x), l=intIds(x);
+  /* 19/11 — le WHY d'une Habit : ses objectifs datés PUIS ses visions (la même box, sans date). */
+  const ts=tripsOfHab(x), vs=visionsOfHab(x), rs=repsOfHabX(x), l=intIds(x);
   /* CE QUI MANQUE RESPIRE. Une habitude sans intention ni rythme n'est pas
      encore une habitude : les deux réglages pulsent comme le T tant qu'ils
      sont vides, et s'arrêtent dès qu'ils sont posés. */
@@ -9952,8 +9963,9 @@ function vueHabitude(x,k){
      la boîte raconte, elle ne liste pas. */
   const gO = ouverte
     ? ts.map(t=>miniDel('o',t.id,t.text,'data-unlink="o:'+esc(String(x.id))+'|'+esc(String(t.id))+'"')).join('')
-      + plus('lien','o',x.id,'objective')
-    : ts.map(t=>mini('o',t.id,t.text)).join('');
+      + vs.map(v=>miniDel('v',v.id,v.t,'data-unlink="o:'+esc(String(x.id))+'|'+esc(String(v.id))+'"')).join('')
+      + plus('lien','o',x.id,'objective or vision')
+    : ts.map(t=>mini('o',t.id,t.text)).join('') + vs.map(v=>mini('v',v.id,v.t)).join('');
   const gR = ouverte
     ? rs.map(r=>miniDel('r',r.id,r.text,'data-unlink="r:'+esc(String(x.id))+'|'+esc(String(r.id))+'"')).join('')
       + plus('lien','r',x.id,'repulsion')
@@ -9965,8 +9977,10 @@ function vueHabitude(x,k){
      toute la boîte : WHY monte vers l'objectif, TRIGGER descend vers ce
      qui fait dérailler. */
   /* Chaque lookup rejoint SON groupe — voir `groupe()`. */
+  /* Un why neuf naît sans date : c'est une vision (Wah, 19/11) — une date, dans SA box, en fera un objectif. */
   const pkO = (ouverte&&pkOn('lien','o',x.id)) ? lienPicker('o',x.id,
-      ts.map(t=>String(t.id)), TRIPS.map(t=>({id:t.id,txt:t.text})), 'a new objective','o') : '';
+      ts.concat(vs).map(t=>String(t.id)),
+      TRIPS.map(t=>({id:t.id,txt:t.text})).concat(VIS.map(v=>({id:v.id,txt:v.t}))), 'a new vision','v') : '';
   const pkR = (ouverte&&pkOn('lien','r',x.id)) ? lienPicker('r',x.id,
       rs.map(r=>String(r.id)), REPS.map(r=>({id:r.id,txt:r.text})), 'a new repulsion','r') : '';
   /* ⚠️ 16/10 · PAS D'ICÔNE DANS UNE LISTE (Wah : « [Add a media] c'est mieux, et [Add a spot] pour le
@@ -9999,31 +10013,23 @@ function vueObjectif(t,k){
   const ouverte = !!open && open.kind==='t' && String(open.id)===String(t.id);
   const hs=habsOfTrip(t), late=t.days_left!=null&&t.days_left<0;
   /* PLUS DE COMPTEUR. « 3 habits » ne raconte rien — HOW suivi des trois
-     habitudes raconte tout. La deadline reste : elle, elle périme. */
-  const vs=visionsOfTrip(t);
+     habitudes raconte tout. La deadline reste : elle, elle périme.
+     19/11 (Wah) — LA DEADLINE FAIT L'OBJECTIF : sans elle, la box part dans la vue Vision quand on la
+     referme (`basculeWhy`). Tant qu'elle manque, le champ RESPIRE et une ligne le dit, simplement. */
   const unit = ouverte&&!RO
-    ? '<input class="in date" type="date" data-date="'+esc(String(t.id))+'" value="'+esc(dateIn(t.target_at))+'">'
+    ? '<input class="in date'+(t.target_at?'':' vit')+'" type="date" data-date="'+esc(String(t.id))+'" value="'+esc(dateIn(t.target_at))+'" aria-label="deadline">'
       +(t.target_at?'<button type="button" class="v-b" data-nodate="'+esc(String(t.id))+'">no deadline</button>':'')
     : (t.days_left!=null||!RO?'<span class="v-frq'+(late?' late':'')+'">'+esc(fmtDue(t.days_left))+'</span>':'');
-  /* HOW descend vers les habitudes, TOWARDS monte vers la vision : un
-     objectif est le milieu d'une phrase, pas une liste. */
+  /* HOW descend vers les habitudes. Le grand pourquoi (la vision) n'est plus un lien : c'est la même box,
+     sans date (19/11). */
   const pkH = (ouverte&&pkOn('lien','h',t.id)) ? lienPicker('h',t.id,
       hs.map(x=>String(x.id)),
       (state.habits||[]).map(x=>({id:x.id,txt:x.t})), 'a new habit','h') : '';
-  const pkV = (ouverte&&pkOn('lien','ov',t.id)) ? lienPicker('ov',t.id,
-      vs.map(v=>String(v.id)),
-      VIS.map(v=>({id:v.id,txt:v.t})), 'a new vision','v') : '';
   const minis = groupe('how', ouverte
     ? hs.map(x=>miniDel('h',x.id,x.t,'data-unlink="ho:'+esc(String(t.id))+'|'+esc(String(x.id))+'"')).join('')
       + plus('lien','h',t.id,'habit')
-    : hs.map(x=>mini('h',x.id,x.t)).join(''), pkH)
-   /* 12/11 (Wah) — « Vision - The big why » : au-dessus d'un objectif il n'y a pas une destination, il y a
-      la RAISON de la destination. HOW descend vers les habits, le GRAND POURQUOI monte vers la vision. */
-   + groupe('vision · the big why', ouverte
-    ? vs.map(v=>miniDel('v',v.id,v.t,'data-unlink="ov:'+esc(String(t.id))+'|'+esc(String(v.id))+'"')).join('')
-      + plus('lien','ov',t.id,'vision')
-    : vs.map(v=>mini('v',v.id,v.t)).join(''), pkV);
-  let haut='', bas='';
+    : hs.map(x=>mini('h',x.id,x.t)).join(''), pkH);
+  let haut=(ouverte&&!RO&&!t.target_at)?'<span class="pk-say">'+esc(SANS_DATE)+'</span>':'', bas='';
   return ligne(boiteHTML({kind:'t',id:t.id,titre:t.text,unit,minis,cloths:groupeCloths('t',t,ouverte),ouverte,haut,bas,tue:'Delete objective'}),
     ouverte?'open':'', colsHeritees(hs), k+1, t.id, k===0, k===NB-1);
 }
@@ -10124,22 +10130,24 @@ function uniqBox(l){ const vu=new Set(), out=[];
    objectifs qui y mènent. */
 function vueVision(v,k){
   const ouverte = !!open && open.kind==='v' && String(open.id)===String(v.id);
-  const ts=tripsOfVision(v);
+  /* 19/11 (Wah) — « dans le How des box vision on retrouve les Habits » : la vision est la même box qu'un
+     objectif, sans date ; ses Habits la servent DIRECTEMENT. Une date posée ici en fait un objectif : elle
+     rejoint la vue Objectifs quand on la referme (`basculeWhy`). */
+  const hs=habsOfVision(v);
   const img = VISIMG.get(String(v.id))||null;
-  const unit = img ? '<img class="v-img" alt="" data-photo="'+esc(img)+'">' : '';
-  const pkVO = (ouverte&&pkOn('lien','vo',v.id)) ? lienPicker('vo',v.id,
-      ts.map(t=>String(t.id)),
-      TRIPS.map(t=>({id:t.id,txt:t.text})), 'a new objective','o') : '';
-  /* 12/11 (Wah) — « un HOW concernant les mini-box objectifs : une grande vision engendre plusieurs
-     objectifs », et « avant les mini-box répulsion, un intitulé Learn from ».
-     LEARN FROM est DÉDUIT, il ne s'écrit pas ici : ce sont les répulsions qui barrent la route aux habits
-     des objectifs de cette vision (vision → objectifs → habits → répulsions). Donc aucune croix, aucun
-     « + lien » — on les change là où elles vivent, et la vision n'invente aucun lien de plus. */
-  const rsV = uniqBox(ts.reduce((a,t)=>a.concat(habsOfTrip(t)),[]).reduce((a,x)=>a.concat(repsOfHabX(x)),[]));
+  const unit = (img ? '<img class="v-img" alt="" data-photo="'+esc(img)+'">' : '')
+    + (ouverte&&!RO ? '<input class="in date" type="date" data-date="'+esc(String(v.id))+'" value="'+esc(dateIn(v.target_at))+'" aria-label="give it a deadline">' : '');
+  const pkVH = (ouverte&&pkOn('lien','h',v.id)) ? lienPicker('h',v.id,
+      hs.map(x=>String(x.id)),
+      (state.habits||[]).map(x=>({id:x.id,txt:x.t})), 'a new habit','h') : '';
+  /* LEARN FROM est DÉDUIT, il ne s'écrit pas ici : ce sont les répulsions qui barrent la route aux habits
+     de cette vision (vision → habits → répulsions). Aucune croix, aucun « + lien » : on les change là où
+     elles vivent. */
+  const rsV = uniqBox(hs.reduce((a,x)=>a.concat(repsOfHabX(x)),[]));
   const minis = groupe('how', ouverte
-    ? ts.map(t=>miniDel('o',t.id,t.text,'data-unlink="vo:'+esc(String(v.id))+'|'+esc(String(t.id))+'"')).join('')
-      + plus('lien','vo',v.id,'objective')
-    : ts.map(t=>mini('o',t.id,t.text)).join(''), pkVO)
+    ? hs.map(x=>miniDel('h',x.id,x.t,'data-unlink="ho:'+esc(String(v.id))+'|'+esc(String(x.id))+'"')).join('')
+      + plus('lien','h',v.id,'habit')
+    : hs.map(x=>mini('h',x.id,x.t)).join(''), pkVH)
     + groupe('learn from', rsV.map(r=>mini('r',r.id,r.text)).join(''))
     /* 20/10 — UN SEUL GESTE POUR ILLUSTRER UNE VISION : [Add a media] (le groupe `files`). Le bouton
        « image » (une pièce jointe de plus, l'image libre de `vision_image_set`) faisait doublon : il est
@@ -10148,7 +10156,7 @@ function vueVision(v,k){
   let haut='', bas='';
   return ligne(boiteHTML({kind:'v',id:v.id,titre:v.t,unit,minis,cloths:groupeCloths('v',v,ouverte),ouverte,haut,bas,tue:'Delete vision'}),
     ouverte?'open':'',
-    colsHeritees(ts.reduce((a,t)=>a.concat(habsOfTrip(t)),[])),
+    colsHeritees(hs),
     k+1, v.id, k===0, k===NB-1);
 }
 
@@ -10209,6 +10217,7 @@ function vaVers(kind,id){
    On vient d'appuyer sur « ajouter » : le clavier est exactement ce
    qu'on attend. `neuve` le dit, et seule la création le passe. */
 function ouvrir(kind,id,neuve,focus=true){
+  if(open&&!(open.kind===kind&&String(open.id)===String(id))) basculeWhy();
   open={kind,id:String(id)}; pk=null; renderZone();
   const b=$('habits').querySelector('.habit.open');
   if(!b)return;
@@ -10271,7 +10280,36 @@ window.addEventListener('hashchange',()=>{
   if(practice){lienElement=null;pratique=practice;diagPratique.state='pending';ouvrirPreparation();}
   else if(next){pratique=null;lienElement=next;diagLien.state='pending';ouvrirLienElement();}
 });
+/* ══ LA DATE DÉCIDE DE LA VUE · 19/11/2026 ═════════════════════════════
+   Wah : « il faut l'avertir très simplement que son objectif est déplacé dans la vue vision ». Une box
+   ne disparaît jamais sous le doigt : elle change de vue quand on la REFERME (fermer, changer de vue,
+   en ouvrir une autre), et une ligne dit où elle est partie. La base a déjà rangé (même identifiant) :
+   on déplace la mémoire pour que l'écran dise vrai tout de suite, `loadTrips` confirme ensuite. */
+const diagWhy={deplaces:0};
+const joursRestants=d=>{ const t=Date.parse(d); if(!Number.isFinite(t)) return null;
+  const n=new Date(); return Math.round((t-Date.UTC(n.getFullYear(),n.getMonth(),n.getDate()))/864e5); };
+function deplacerWhy(id,versVision){
+  const k=String(id);
+  if(versVision){ const t=tripOf(k); if(!t) return false;
+    TRIPS=TRIPS.filter(z=>String(z.id)!==k);
+    VIS.push({id:k, t:t.text||'', t0:t.text||'', is:Array.isArray(t.is)?t.is:[], os:[]});
+  }else{ const v=visOf(k); if(!v||!v.target_at) return false;
+    VIS=VIS.filter(z=>String(z.id)!==k);
+    TRIPS.push({id:k, text:v.t||'', target_at:v.target_at, days_left:joursRestants(v.target_at),
+      status:'active', habits:[], is:Array.isArray(v.is)?v.is:[], vs:[]});
+  }
+  diagWhy.deplaces++; wDirty=true; return true;
+}
+function basculeWhy(){
+  if(!open||RO||estProvisoire(open.id)) return;
+  if(open.kind==='t'){ const t=tripOf(open.id);
+    if(t&&!t.target_at&&deplacerWhy(t.id,true)) dis('No deadline · moved to Vision'); }
+  else if(open.kind==='v'){ const v=visOf(open.id);
+    if(v&&v.target_at&&deplacerWhy(v.id,false)) dis('Deadline set · moved to Objectives'); }
+}
+window.__totehm_why=()=>({objectifs:TRIPS.length, visions:VIS.length, ...diagWhy});
 function fermer(){
+  basculeWhy();
   /* Il n'y a plus de brouillon de répulsion : elle naît en base comme les
      quatre autres objets. Voir `creer()`. */
   /* ⚠️ POUSSER AVANT DE RECHARGER · 09/09/2026. L'arbre revient du
@@ -10437,10 +10475,11 @@ function attache(quoi,srcId,cibleId){
      vers `tmp-3` et le serveur répondrait « not yours ». */
   if(estProvisoire(srcId)||estProvisoire(cibleId)){
     dis('one second — still saving'); return; }
-  if(quoi==='o'){ const x=habOf(srcId), t=tripOf(cibleId), k=srv(x); if(!x||!k||!t)return;
+  /* 19/11 — le why d'une Habit est un objectif daté OU une vision (la même box) : `whyOf`. */
+  if(quoi==='o'){ const x=habOf(srcId), t=whyOf(cibleId), k=srv(x); if(!x||!k||!t)return;
     OBJ[k]=(OBJ[k]||[]).concat([String(t.id)]); posePremier(x);
     apres(sb.rpc('objective_link',{p_obj:t.id,p_habit:k})); }
-  else if(quoi==='h'){ const t=tripOf(srcId), x=habOf(cibleId), k=srv(x); if(!t||!x||!k)return;
+  else if(quoi==='h'){ const t=whyOf(srcId), x=habOf(cibleId), k=srv(x); if(!t||!x||!k)return;
     OBJ[k]=(OBJ[k]||[]).concat([String(t.id)]); posePremier(x);
     apres(sb.rpc('objective_link',{p_obj:t.id,p_habit:k})); }
   else if(quoi==='r'){ const x=habOf(srcId), r=repOf(cibleId), k=srv(x); if(!x||!k||!r)return;
@@ -10449,21 +10488,8 @@ function attache(quoi,srcId,cibleId){
   else if(quoi==='hr'){ const r=repOf(srcId), x=habOf(cibleId), k=srv(x); if(!r||!x||!k)return;
     if(!(r.hs||[]).includes(k)){r.hs.push(k);
       apres(sb.rpc('repulsion_link',{p_id:r.id,p_habit:k}));} }
-  /* ══ LES DEUX LIENS CROISÉS · 16/09/2026 ═══════════════════════════
-     ⚠️ ON TIENT LES DEUX CÔTÉS EN MÉMOIRE. `t.vs` et `v.os` décrivent le
-     MÊME lien, vu de chaque bout. N'en écrire qu'un ferait qu'un lien
-     posé depuis l'objectif serait invisible depuis la vision jusqu'au
-     rechargement suivant — l'écran mentirait le temps d'un aller-retour,
-     et c'est exactement la classe de bug qu'on vient de passer trois
-     lots à éteindre. */
-  else if(quoi==='ov'||quoi==='vo'){
-    const t = quoi==='ov' ? tripOf(srcId) : tripOf(cibleId);
-    const v = quoi==='ov' ? visOf(cibleId) : visOf(srcId);
-    if(!t||!v)return;
-    if(!(t.vs||[]).includes(String(v.id)))(t.vs=t.vs||[]).push(String(v.id));
-    if(!(v.os||[]).includes(String(t.id)))(v.os=v.os||[]).push(String(t.id));
-    apres(sb.rpc('objective_vision_link',{p_obj:t.id,p_vision:v.id})); }
-  else { /* 'rw' | 'wr' */
+  /* Le lien croisé qui reste : une répulsion s'éclaire d'une LEÇON (on tient les deux côtés en mémoire). */
+  else if(quoi==='rw'||quoi==='wr'){
     const r = quoi==='rw' ? repOf(srcId) : repOf(cibleId);
     const w = quoi==='rw' ? teachOf(cibleId) : teachOf(srcId);
     if(!r||!w)return;
@@ -10485,14 +10511,7 @@ function detache(quoi,aId,bId){
   else if(quoi==='hr'){ const r=repOf(aId), x=habOf(bId), k=srv(x); if(!r||!x||!k)return;
     r.hs=(r.hs||[]).filter(t=>t!==k);
     apres(sb.rpc('repulsion_unlink',{p_id:r.id,p_habit:k})); }
-  else if(quoi==='ov'||quoi==='vo'){
-    const t = quoi==='ov' ? tripOf(aId) : tripOf(bId);
-    const v = quoi==='ov' ? visOf(bId)  : visOf(aId);
-    if(!t||!v)return;
-    t.vs=(t.vs||[]).filter(z=>z!==String(v.id));
-    v.os=(v.os||[]).filter(z=>z!==String(t.id));
-    apres(sb.rpc('objective_vision_unlink',{p_obj:t.id,p_vision:v.id})); }
-  else { /* 'rw' | 'wr' */
+  else if(quoi==='rw'||quoi==='wr'){
     const r = quoi==='rw' ? repOf(aId) : repOf(bId);
     const w = quoi==='rw' ? teachOf(bId) : teachOf(aId);
     if(!r||!w)return;
@@ -10502,10 +10521,11 @@ function detache(quoi,aId,bId){
 }
 /* Écrire du neuf ET l'attacher, d'un seul geste. */
 async function neufEtAttache(quoi,srcId,txt){
-  if(quoi==='o'||quoi==='vo'){
-    const {data,error}=await sb.rpc('objective_create',{p_text:txt,p_target:null});
-    if(error){console.error('[totehm] objective_create:',error.message);return;}
-    TRIPS.unshift({id:String(data),text:txt,target_at:null,days_left:null,habits:[],is:[],vs:[]});
+  /* 19/11 — un why écrit depuis une Habit naît SANS date : c'est une vision (la base la range ainsi). */
+  if(quoi==='o'){
+    const {data,error}=await sb.rpc('vision_create',{p_text:txt});
+    if(error){console.error('[totehm] vision_create:',error.message);return;}
+    VIS.unshift({id:String(data),t:txt,t0:txt,is:[],os:[]});
     attache(quoi,srcId,String(data));}
   else if(quoi==='r'||quoi==='wr'){
     /* ⚠️ `repulsion_set` NE SERT PLUS À CRÉER : elle lève sur un texte
@@ -10515,11 +10535,6 @@ async function neufEtAttache(quoi,srcId,txt){
     if(error){console.error('[totehm] repulsion_create:',error.message);return;}
     REPS.unshift({id:String(data),text:txt,obstacle:'',hs:[],ws:[],is:[]});
     attache(quoi,srcId,String(data));}
-  else if(quoi==='ov'){
-    const {data,error}=await sb.rpc('vision_create',{p_text:txt});
-    if(error){console.error('[totehm] vision_create:',error.message);return;}
-    VIS.unshift({id:String(data),t:txt,t0:txt,is:[],os:[]});
-    attache('ov',srcId,String(data));}
   else if(quoi==='rw'){
     const {data,error}=await sb.rpc('teaching_create',{p_text:txt});
     if(error){console.error('[totehm] teaching_create:',error.message);return;}
@@ -10701,10 +10716,12 @@ function cable(box){
     const x=habOf(e.target.dataset.edit.slice(2));if(x)refreshRhythmHint(x);
   });
   box.addEventListener('change',e=>{
-    if(e.target.dataset.date){ const t=tripOf(e.target.dataset.date); if(!t)return;
+    /* 19/11 — un objectif OU une vision : la date se pose sur la même box ; elle change de vue à la fermeture. */
+    if(e.target.dataset.date){ const t=whyOf(e.target.dataset.date); if(!t)return;
       const v=e.target.value; t.target_at = v ? v+'T00:00:00Z' : null;
+      if(tripOf(t.id)) t.days_left = t.target_at ? joursRestants(t.target_at) : null;
       apres(sb.rpc('objective_set_target',{p_obj:t.id,p_target:t.target_at}));
-      wDirty=true; }
+      wDirty=true; renderZone(); }
   });
   /* ⚠️ PERSONNE N'APPUIE SUR ENTRÉE DANS LE DEUXIÈME CHAMP. On tape le
      type, on colle le lien, on referme — et sans ceci les deux saisies
@@ -10855,7 +10872,9 @@ function tue(kind,id){
     if(!estProvisoire(id)){ apres(sb.rpc('teaching_delete',{p_id:String(id)})); emPurger('w',String(id)); } }
   else if(kind==='v'){ pousse('v:'+id); wSlots.delete('v:'+id);
     VIS=VIS.filter(z=>String(z.id)!==String(id));
-    TRIPS.forEach(t=>{t.vs=(t.vs||[]).filter(z=>z!==String(id));});
+    /* 19/11 — une vision est servie directement par ses Habits : le lien tombe avec elle, en mémoire aussi. */
+    (state.habits||[]).forEach(x=>{ const k=srv(x); if(k&&OBJ[k]){
+      OBJ[k]=OBJ[k].filter(o=>o!==String(id)); posePremier(x);} });
     if(!estProvisoire(id)){ apres(sb.rpc('vision_delete',{p_id:String(id)})); emPurger('v',String(id)); } }
   wDirty=true; fermer();
 }
