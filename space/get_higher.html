@@ -6,6 +6,7 @@
 <script src="/desktop-access.js"></script>
 <title>TOTEHM — Get Higher</title>
 <link href="https://fonts.googleapis.com/css2?family=Quantico:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/experience-back.css">
 <style>
 /* POLICES — BASE (01/10) : Space Mono et Quantico, rien d'autre ; un bouton hérite. */
 html{font-family:'Space Mono',monospace}button,input,select,textarea{font-family:inherit}
@@ -152,13 +153,6 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
 .sign:active{transform:scale(.86)}
 .sign-spin img{animation:sign-spin 18s linear infinite}
 @keyframes sign-spin{to{transform:rotate(360deg)}}
-#world-close{
-  position:absolute;top:18px;right:18px;z-index:5;
-  background:none;border:none;cursor:pointer;padding:0;
-  font-family:'Space Mono',monospace;font-size:10px;color:#9a9a9a;letter-spacing:.14em;text-transform:uppercase;
-  transition:color .15s ease;
-}
-@media(hover:hover){#world-close:hover{color:#fff}}
 
 /* ═══ SIGN XP ═══ */
 .xp{
@@ -213,13 +207,6 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
 .vb-top  {width:var(--vbs);height:var(--vbd);transform:translateY(calc(-1 * var(--vbhd))) rotateX(90deg);}
 .vb-bot  {width:var(--vbs);height:var(--vbd);transform:translateY(calc(var(--vbs) - var(--vbhd))) rotateX(-90deg);}
 @media(prefers-reduced-motion:reduce){.vbox{will-change:auto}}
-#xp-close{
-  position:absolute;top:18px;left:18px;
-  background:none;border:none;cursor:pointer;
-  font-family:'Space Mono',monospace;font-size:10px;color:#9a9a9a;letter-spacing:.14em;text-transform:uppercase;
-  transition:color .15s ease;
-}
-@media(hover:hover){#xp-close:hover{color:#fff}}
 
 /* ─── DISCOVER DOWN TRIGGER ─── */
 #down-trigger{
@@ -251,12 +238,6 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
 }
 #discover.in{opacity:1;visibility:visible;pointer-events:auto;transition-delay:0s}
 #discover:not(.in) #disc-back{visibility:hidden}
-#disc-back,#premium-case-back{
-  position:absolute;top:22px;left:14px;z-index:5;min-height:44px;
-  font:400 10px 'Space Mono',monospace;color:#9a9a9a;letter-spacing:.14em;
-  text-decoration:none;background:none;border:0;cursor:pointer;padding:10px;transition:color .15s;
-}
-@media(hover:hover){#disc-back:hover,#premium-case-back:hover{color:#fff}}
 #disc-stage{
   position:absolute;inset:0;
   display:flex;align-items:center;justify-content:center;padding:80px 24px 118px;
@@ -302,7 +283,6 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
   #disc-stage{padding:74px 23px 128px}
   #disc-stage .t-futura{font-size:clamp(15px,4vw,17px);line-height:1.5}
   #disc-stage .disc-block:first-child>.t-futura:first-child{font-size:clamp(26px,8vw,35px)}
-  #disc-back,#premium-case-back{top:14px}
 }
 @media(max-height:560px){
   #disc-stage{padding-block:60px 82px}
@@ -342,18 +322,6 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
   transition:opacity .55s ease;
 }
 #street-disc.in{opacity:1;pointer-events:auto}
-#sdisc-back{
-  position:absolute;top:14px;left:14px;z-index:5;
-  font-family:'Space Mono',monospace;font-size:10px;color:#9a9a9a;letter-spacing:.14em;text-transform:uppercase;
-  background:none;border:none;cursor:pointer;padding:0;transition:color .15s;
-}
-@media(hover:hover){#sdisc-back:hover{color:#fff}}
-#sdisc-board-close{
-  position:absolute;top:14px;right:14px;z-index:5;
-  font-family:'Space Mono',monospace;font-size:10px;color:#9a9a9a;letter-spacing:.14em;
-  background:none;border:none;cursor:pointer;padding:0;transition:color .15s;
-}
-@media(hover:hover){#sdisc-board-close:hover{color:#fff}}
 #sdisc-bg{position:absolute;inset:0;overflow:hidden;z-index:0;pointer-events:none;}
 #sdisc-stage{
   position:absolute;inset:0;z-index:1;
@@ -469,7 +437,7 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
 </style>
 <style>
 body.is-paper-view #totehm-paper{position:fixed;inset:0;margin:0!important;pointer-events:none}
-#premium-case-back{position:fixed;z-index:30;display:flex;align-items:center}
+#premium-case-back{position:fixed;z-index:30}
 body.is-discover-open :is(#premium-case-back,#premium-case-turn,#down-trigger,#terms-link){visibility:hidden}
 #premium-case-turn{position:fixed;top:22px;left:50%;transform:translateX(-50%);z-index:30;padding:8px 14px;color:#bbb;font:11px 'Space Mono',monospace;background:#111;border:1px solid #393939;border-radius:10px;cursor:pointer}
 body.is-paper-view .seq-block.active{position:fixed;inset:0;max-width:none;transform:none;opacity:1;transition:none;justify-content:flex-end;gap:8px;padding:0 20px max(26px,4vh);pointer-events:none}
@@ -595,7 +563,7 @@ body.is-paper-view:not(.is-paper-entered) :is(.seq-block>button,#premium-case-ba
 </button>
 
 <div id="discover" role="dialog" aria-modal="true" aria-label="Discover the TotehmPaper" aria-hidden="true" inert>
-  <button id="disc-back" type="button">BACK</button>
+  <button id="disc-back" class="experience-back" type="button">BACK</button>
   <div id="disc-stage" role="region" aria-label="The TotehmPaper story"></div>
   <div id="disc-rail" aria-hidden="true"></div>
   <div id="disc-hint" aria-hidden="true"><svg class="bob-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></div>
@@ -603,8 +571,8 @@ body.is-paper-view:not(.is-paper-entered) :is(.seq-block>button,#premium-case-ba
 
 <div id="street-disc">
   <div id="sdisc-bg"></div>
-  <button id="sdisc-back" type="button">Back</button>
-  <button id="sdisc-board-close" type="button" style="display:none">✕</button>
+  <button id="sdisc-back" class="experience-back" type="button">BACK</button>
+  <button id="sdisc-board-close" class="experience-back" type="button" style="display:none">BACK</button>
   <div id="sdisc-stage"></div>
   <button id="sdisc-trig" type="button" aria-label="Play the Street">
     <span class="trigger-label">When Street Art meets the quintessence of modern neurology</span>
@@ -613,12 +581,12 @@ body.is-paper-view:not(.is-paper-entered) :is(.seq-block>button,#premium-case-ba
 </div>
 
 <div class="world" id="world">
-  <button id="world-close">✕</button>
+  <button id="world-close" class="experience-back">BACK</button>
   <div class="board" id="board"></div>
 </div>
 
 <div class="xp" id="xp">
-  <button id="xp-close">Back</button>
+  <button id="xp-close" class="experience-back">BACK</button>
   <div class="vbox-scene" id="vidWrap">
     <div class="vbox" id="vidBox">
       <div class="vbf vb-back"></div>
@@ -929,7 +897,7 @@ showSlide(0,true);
 const paperViewQuery=new URLSearchParams(location.search);
 if(paperViewQuery.get('paper')==='1'){
  const embedded=window.parent!==window&&paperViewQuery.get('embedded')==='1';
- const back=document.createElement('a');back.id='premium-case-back';back.href='/lisbon-space';back.textContent='BACK';back.setAttribute('data-experience-close','');document.body.append(back);
+ const back=document.createElement('a');back.id='premium-case-back';back.className='experience-back';back.href='/lisbon-space';back.textContent='BACK';back.setAttribute('data-experience-close','');document.body.append(back);
  const turnButton=document.createElement('button');
  turnButton.id='premium-case-turn';turnButton.type='button';turnButton.textContent='Turn over';
  turnButton.setAttribute('aria-controls','premium-case-canvas');turnButton.hidden=true;document.body.append(turnButton);
@@ -1453,7 +1421,7 @@ function enterBoardMode(){
   sdiscStage.style.display='none';
   sdiscBack.style.display='none';
   sdiscTrig.style.display='none';
-  sdiscBoardClose.style.display='block';
+  sdiscBoardClose.style.display='';
   ROCKS.forEach(r=>{
     r.img.style.cursor='pointer';
     r.img.style.pointerEvents='auto';

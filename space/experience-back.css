@@ -1,0 +1,19 @@
+/* The shared return control for the Lisbon and Totehmpaper experiences. */
+.experience-back {
+  position:absolute;
+  inset:22px auto auto 14px;
+  z-index:5;
+  display:inline-flex;
+  align-items:center;
+  min-height:44px;
+  padding:10px;
+  background:none;
+  border:0;
+  color:#9a9a9a;
+  font:400 10px/1.5 'Space Mono',monospace;
+  letter-spacing:.14em;
+  text-decoration:none;
+  cursor:pointer;
+}
+@media(hover:hover){.experience-back:hover{color:#fff}}
+@media(max-width:650px){.experience-back{top:14px}}

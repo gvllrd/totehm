@@ -85,6 +85,14 @@ try{
       if(owned){
         await child.waitForFunction(()=>__totehm_controller_entry().phase==='board');
         check(await child.locator('.street-rock[role=button]').count()===22,'The confirmed owner enters the 3D board directly');
+        const boardBack=child.locator('#sdisc-board-close'),credit=child.locator('#controller-credit');
+        check(await boardBack.evaluate(button=>{
+          const style=getComputedStyle(button);
+          return button.textContent==='BACK'&&Math.abs(button.getBoundingClientRect().left-14)<1&&style.backgroundColor==='rgba(0, 0, 0, 0)';
+        }),'The active controller BACK uses the shared plain left-hand position');
+        check(await credit.isVisible()&&(await credit.textContent()).trim()==='Neurological & Digital Street Art by Wah'&&
+          await credit.locator('.wah-signature').evaluate(mark=>getComputedStyle(mark).maskImage.includes('wavywah_signature.png')),
+        'The controller credits Wah with the signature from the Totehmpaper');
         const meaning=child.getByRole('link',{name:'Get Higher to see the true meaning'});
         check(await meaning.isVisible()&&await meaning.getAttribute('href')==='/get_higher'&&await meaning.locator('use[href="#higher-slogan"]').count()===1,'The controller reveals the native Higher slogan invitation');
         check(await meaning.locator('.get-word').evaluate(word=>getComputedStyle(word).fontFamily.includes('Quantico')&&getComputedStyle(word).color==='rgb(251, 213, 202)'),'Get uses the authored Quantico coral lettering');

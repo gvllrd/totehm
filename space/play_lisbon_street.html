@@ -7,6 +7,7 @@
 <script>const streetEntry=new URLSearchParams(location.search);if(streetEntry.get('board')==='1'&&streetEntry.get('discover')!=='1')document.documentElement.classList.add('controller-deep-link');</script>
 <title>TOTEHM — Lisbon Streets Higher</title>
 <link href="https://fonts.googleapis.com/css2?family=Quantico:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/experience-back.css">
 <style>
 /* POLICES — BASE (01/10) : Space Mono et Quantico, rien d'autre ; un bouton hérite. */
 html{font-family:'Space Mono',monospace}button,input,select,textarea{font-family:inherit}
@@ -43,18 +44,6 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
 
 /* ─── STREET DISCOVER (page principale) ─── */
 #street-disc{position:fixed;inset:0;z-index:1;background:#000;}
-#sdisc-back{
-  position:absolute;top:14px;left:14px;z-index:5;
-  font-family:'Space Mono',monospace;font-size:10px;color:#9a9a9a;letter-spacing:.14em;text-transform:uppercase;
-  background:none;border:none;cursor:pointer;padding:0;transition:color .15s;
-}
-@media(hover:hover){#sdisc-back:hover{color:#fff}}
-#sdisc-board-close{
-  position:absolute;top:14px;right:14px;z-index:5;
-  font-family:'Space Mono',monospace;font-size:10px;color:#9a9a9a;letter-spacing:.14em;
-  background:none;border:none;cursor:pointer;padding:0;transition:color .15s;
-}
-@media(hover:hover){#sdisc-board-close:hover{color:#fff}}
 #sdisc-bg{position:absolute;inset:0;overflow:hidden;z-index:0;pointer-events:none;}
 #sdisc-stage{
   position:absolute;inset:0;z-index:1;
@@ -130,20 +119,13 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
 .vb-top  {width:var(--vbs);height:var(--vbd);transform:translateY(calc(-1 * var(--vbhd))) rotateX(90deg);}
 .vb-bot  {width:var(--vbs);height:var(--vbd);transform:translateY(calc(var(--vbs) - var(--vbhd))) rotateX(-90deg);}
 @media(prefers-reduced-motion:reduce){.vbox{will-change:auto}}
-#xp-close{
-  position:absolute;top:18px;left:18px;
-  background:none;border:none;cursor:pointer;
-  font-family:'Space Mono',monospace;font-size:10px;color:#9a9a9a;letter-spacing:.14em;text-transform:uppercase;
-  transition:color .15s ease;
-}
-@media(hover:hover){#xp-close:hover{color:#fff}}
 
 /* Controller works are read as a fullscreen phrase before the film plays. */
 #xp[data-sequence]{
   display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr);
   place-items:center;padding:44px 28px;gap:0
 }
-#xp[data-sequence] #xp-close{z-index:2;min-height:44px}
+#xp[data-sequence] #xp-close{z-index:2}
 #xp[data-sequence] :is(#xp-label,#xp-buy),
 #xp[data-sequence="phrase"] #vidWrap,#xp-phrase[hidden]{display:none}
 #xp-phrase{
@@ -177,12 +159,6 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
   display:flex;align-items:center;justify-content:center;
 }
 #auth-overlay.in{opacity:1;pointer-events:auto}
-#auth-back-btn{
-  position:absolute;top:14px;left:14px;
-  font-family:'Space Mono',monospace;font-size:10px;color:#9a9a9a;letter-spacing:.14em;text-transform:uppercase;
-  background:none;border:none;cursor:pointer;padding:0;transition:color .15s;
-}
-@media(hover:hover){#auth-back-btn:hover{color:#fff}}
 .mw-card{background:#131316;border:none;max-width:360px;width:100%;padding:30px 24px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:12px;}
 .line-input{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;color:#fff;background:#1f1f24;outline:none;border:6px solid transparent;border-image-source:none;border-image-slice:6 fill;border-image-repeat:round;padding:0 6px;text-align:center;caret-color:var(--coral);min-width:260px;border-radius:10px}
 .line-input::placeholder{color:rgba(255,255,255,.33)}
@@ -243,7 +219,6 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
 #sdisc-stage .disc-block>.btn-sig{font-size:12px;min-height:44px;padding:10px 18px;margin-top:22px!important;max-width:100%}
 #sdisc-bg{opacity:.2;transition:opacity .55s ease}
 body.is-street-board #sdisc-bg,body.is-snapping #sdisc-bg{opacity:1}
-#sdisc-back,#sdisc-board-close{top:22px;padding:10px;min-height:44px}
 #sdisc-rail{position:absolute;bottom:65px;left:50%;transform:translateX(-50%);display:flex;gap:6px;pointer-events:none}
 #sdisc-rail span{width:18px;height:2px;background:#242424;transition:background .3s}
 #sdisc-rail span.on{background:#bdbdbd}
@@ -251,7 +226,7 @@ body.is-street-board #sdisc-bg,body.is-snapping #sdisc-bg{opacity:1}
 #sdisc-trig{bottom:90px}
 #street-access-status{bottom:90px}
 body.is-street-board #sdisc-rail,body.is-street-board #sdisc-progress,body.is-street-board #sdisc-reading-hint,body.is-snapping #sdisc-rail,body.is-snapping #sdisc-progress,body.is-snapping #sdisc-reading-hint{display:none}
-@media(max-width:650px){#sdisc-stage{padding:74px 23px 128px}#sdisc-stage .t-futura{font-size:clamp(15px,4vw,17px);line-height:1.5}#sdisc-stage .disc-block.is-first .t-futura:first-child{font-size:clamp(26px,8vw,35px)}#sdisc-back,#sdisc-board-close{top:14px}#sdisc-progress{top:25px}#sdisc-reading-hint{padding:0 20px}}
+@media(max-width:650px){#sdisc-stage{padding:74px 23px 128px}#sdisc-stage .t-futura{font-size:clamp(15px,4vw,17px);line-height:1.5}#sdisc-stage .disc-block.is-first .t-futura:first-child{font-size:clamp(26px,8vw,35px)}#sdisc-progress{top:25px}#sdisc-reading-hint{padding:0 20px}}
 @media(prefers-reduced-motion:reduce){.disc-block,#sdisc-bg{transition:none}.bob-chev{animation:none}}
 
 
@@ -272,11 +247,27 @@ body:not(.is-street-front) #sdisc-cover-next{opacity:0;transform:translate(-50%,
 body.is-controller-forming #controller-3d-view,body.is-street-board #controller-3d-view,body.is-controller-entry #controller-3d-view{opacity:1}
 body.is-controller-forming #controller-3d-view{transition:opacity 1.05s cubic-bezier(.22,.52,.32,1) 70ms}
 body.is-controller-entry #controller-3d-view{transition:none}
-#controller-meaning{display:none;position:absolute;left:50%;bottom:clamp(18px,4vh,40px);transform:translateX(-50%);z-index:2;color:#c9c9ce;text-decoration:none;text-align:center;font-size:clamp(14px,1.25vw,19px);line-height:1.35;padding:8px 6px;max-width:calc(100% - 32px)}
+#controller-meaning{display:none;position:absolute;left:50%;bottom:clamp(58px,9vh,92px);transform:translateX(-50%);z-index:2;color:#c9c9ce;text-decoration:none;text-align:center;font-size:clamp(14px,1.25vw,19px);line-height:1.35;padding:8px 6px;max-width:calc(100% - 32px)}
 body.is-street-board #street-disc:not([inert]) #controller-meaning{display:flex;align-items:center;justify-content:center;gap:8px}
 #controller-meaning .get-word{font-family:Quantico,sans-serif;font-size:clamp(23px,2.1vw,32px);font-weight:700;color:var(--coral)}
 #controller-meaning .higher-inline{width:clamp(70px,7vw,100px)}
 #controller-meaning:hover,#controller-meaning:focus-visible{color:#fff}
+#controller-credit{
+  display:none;position:absolute;inset:auto 16px max(12px,env(safe-area-inset-bottom)) 16px;
+  z-index:2;pointer-events:none;justify-content:center;align-items:center;gap:10px;
+  margin:0;color:#c9c9ce;text-align:center;font:400 clamp(10px,1.2vw,15px)/1.4 'Space Mono',monospace;
+}
+body.is-street-board #street-disc:not([inert]) #controller-credit{display:flex}
+#controller-credit .wah-signature{
+  flex:0 0 clamp(30px,3.5vw,48px);height:clamp(36px,4.2vw,54px);background:#e4dfda;
+  mask:url('/assets/img/wavywah_signature.png') center/contain no-repeat;
+  mask-mode:luminance;
+}
+@media(max-height:500px){
+  #controller-credit{bottom:max(4px,env(safe-area-inset-bottom));font-size:10px}
+  #controller-credit .wah-signature{height:34px}
+  #controller-meaning{bottom:40px}
+}
 #controller-meaning:focus-visible{outline:1px solid #a6b5d4;border-radius:6px;outline-offset:3px}
 @media(min-width:1100px) and (min-aspect-ratio: 13/10){
  body.is-street-board #controller-meaning{left:auto;right:1.8vw;bottom:auto;top:50%;transform:translateY(-50%);width:clamp(94px,9.2vw,152px);flex-direction:column}
@@ -380,9 +371,10 @@ body.is-street-board #sdisc-bg>.street-rock:focus-visible{outline:2px solid #a6b
   <p id="street-access-status" role="status" aria-live="polite"></p>
   <div id="sdisc-bg"><div id="controller-3d-view" aria-hidden="true"></div></div>
   <button id="sdisc-cover-next" type="button">Discover ↓</button>
-  <button id="sdisc-back" data-experience-close type="button">BACK</button>
-  <button id="sdisc-board-close" type="button" aria-label="Back to the story" style="display:none">BACK</button>
+  <button id="sdisc-back" class="experience-back" data-experience-close type="button">BACK</button>
+  <button id="sdisc-board-close" class="experience-back" type="button" aria-label="Back to the story" style="display:none">BACK</button>
   <a id="controller-meaning" href="/get_higher" aria-label="Get Higher to see the true meaning"><span class="get-word">Get</span><span class="higher-inline" role="img" aria-label="Higher"><svg viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-slogan"></use></svg></span><span class="meaning-caption">to see the true meaning</span></a>
+  <p id="controller-credit">Neurological &amp; Digital Street Art by Wah <span class="wah-signature" aria-hidden="true"></span></p>
   <div id="sdisc-stage" role="region" aria-label="Discover the Lisbon Street"></div>
   <div id="sdisc-rail" aria-hidden="true"></div><p id="sdisc-reading-hint" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></p>
   <button id="sdisc-trig" type="button" aria-label="Next">
@@ -392,7 +384,7 @@ body.is-street-board #sdisc-bg>.street-rock:focus-visible{outline:2px solid #a6b
 </div>
 
 <div class="xp" id="xp" role="dialog" aria-label="Lisbon street artwork" aria-modal="true" inert aria-hidden="true">
-  <button id="xp-close" type="button">BACK</button>
+  <button id="xp-close" class="experience-back" type="button">BACK</button>
   <h1 id="xp-phrase" hidden><span id="xp-phrase-content" aria-hidden="true"></span></h1>
   <div class="vbox-scene" id="vidWrap">
     <div class="vbox" id="vidBox">
@@ -437,7 +429,7 @@ import {checkLisbonStreetAccess,requestLisbonStreetMedia} from './lisbon-street-
 import {LISBON_STREET_DISCOVER} from './lisbon-street-discover.mjs';
 import {LISBON_FRONT_SIZE,createLisbonFirstPage} from './lisbon-first-page.mjs';
 import {createLisbonControllerView} from './gallery-lisbon-controller.mjs';
-const BUILD = '2026-11-19-lisbon-reading-type';
+const BUILD = '2026-11-19-lisbon-signed-controller';
 function streetReturnPath(){const destination=new URL(location.href);destination.searchParams.delete('embedded');destination.searchParams.delete('sceneTime');return destination.pathname+destination.search;}
 // A purchase or central connection leaves the projected reader as a whole.
 function navigateStreetExperience(href){
@@ -1297,7 +1289,7 @@ function enterBoardMode(){
   sdiscStage.style.display='none';
   sdiscBack.style.display='none';
   sdiscTrig.style.display='none';
-  sdiscBoardClose.style.display='block';
+  sdiscBoardClose.style.display='';
   if(isPortraitMobile()) rotatePrompt.classList.add('active');
   sdiscBoardClose.toggleAttribute('data-experience-close',directBoardActive&&embeddedFront);
   sdiscBoardClose.setAttribute('aria-label',directBoardActive?'Return to the lounge':'Back to the story');

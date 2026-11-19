@@ -118,9 +118,14 @@ try{
   check(shot.every((coordinate,i)=>Math.abs(coordinate-L.seat.eye[i])<.001),'Clicking the brown leather chair anchors the seated view');
   await pg.screenshot({path:path.join(output,'seated.png')});
 
-  const [paper]=L.paperCases,caseWidth=world.temple.thpCounter.caseWidthMetres;
+  const counter=world.temple.thpCounter,caseWidth=counter.caseWidthMetres;
+  check(counter.attache.open&&counter.attache.leather&&counter.attache.cradles===2,'Both original cases sit in a shared leather attaché');
+  await pg.waitForFunction(()=>{const bag=__totehm_gallery().temple.thpCounter.attache;return bag.higherEmbroidered&&bag.paintedTongue;});
   const caseDepth=caseWidth*50/180,front=caseDepth/2+.0007*caseWidth;
-  const caseCentre=L.counter.position[1]+Math.abs(Math.sin(paper.angle))*caseWidth/2+Math.cos(paper.angle)*caseDepth/2+.002;
+  const paperTarget=({position:[x,z],angle})=>{
+   const centre=L.counter.position[1]+L.paperAttache.cradleHeight+Math.abs(Math.sin(angle))*caseWidth/2+Math.cos(angle)*caseDepth/2+.002;
+   return [x,centre-Math.sin(angle)*front,z+Math.cos(angle)*front];
+  };
   await pg.evaluate(()=>{
    window.caseLiftSeen=false;
    const observer=new MutationObserver(()=>{
@@ -133,7 +138,7 @@ try{
   });
   await pg.emulateMedia({reducedMotion:'no-preference'});
   await pg.waitForFunction(()=>window.__totehm_gallery().originsJourney.vessel.rotation>0);
-  await clickPoint(pg,[paper.position[0],caseCentre-Math.sin(paper.angle)*front,paper.position[1]+Math.cos(paper.angle)*front]);
+  await clickPoint(pg,paperTarget(L.paperCases[0]));
   const edition=await experience(pg,'paper');
   check(await pg.evaluate(()=>window.caseLiftSeen),'The picked premium case lifts as one physical volume');
   check(await edition.evaluate(()=>window.__totehm_paper_entry().sharedModel&&window.__totehm_paper_entry().premium&&window.__totehm_paper_entry().shown&&!window.__totehm_langue?.().joue),'The same premium case arrives fullscreen and skips the tongue');
@@ -161,6 +166,11 @@ try{
   await discoverBack.press('Escape');
   check(await paperBack.isVisible()&&!(await discoverBack.isVisible()),'Escape closes the inner Discover first and leaves the embedded case open');
   await close(pg,edition,shot);
+  await clickPoint(pg,paperTarget(L.paperCases[1]));
+  const secondEdition=await experience(pg,'paper');
+  const secondHandoff=await pg.evaluate(()=>window.__totehm_projection_expansion().handoff);
+  check(secondHandoff?.from?.length===4&&secondHandoff.from.every(([x,y],i)=>Math.hypot(x-secondHandoff.to[i][0],y-secondHandoff.to[i][1])<.1),'The second glass case also remains clickable and hands off at the same scale');
+  await close(pg,secondEdition,shot);
 
   const locked=await openStableController(guest,world.temple.controller.tableAim);
   await locked.waitForFunction(()=>document.body.classList.contains('is-controller-locked'));
