@@ -14,7 +14,7 @@ const RPC={my_landing:{signed_in:true,pseudo:'wahigher',visibility:'private',off
 const browser=await launch();
 try{
   const {pg,log}=await page(browser,{dir:'com',origin:'https://www.totehm.com',viewport:{width:390,height:844},hasTouch:true,deviceScaleFactor:3,rpc:RPC,
-    tables:{profiles:[{pseudo:'wahigher'}],totehms:[{user_id:UID,steps:STEPS,vis:'private'}]}});
+    tables:{profiles:[{pseudo:'wahigher'}],totehms:[{user_id:UID,habits:STEPS,vis:'private'}]}});
   const cdp=await pg.context().newCDPSession(pg);
   await pg.goto('https://www.totehm.com/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1500);
   await cdp.send('Emulation.setCPUThrottlingRate',{rate:4});

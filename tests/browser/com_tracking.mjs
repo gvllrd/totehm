@@ -20,7 +20,7 @@ try{
  for(const width of [390,1280]){
   let settings={timezone:'Europe/Lisbon',quiet_from:22,quiet_to:8,max_daily:2,paused:false,linked:true,share_chatgpt:false},delayed=false,release;
   const {pg,ctx,log}=await page(browser,{dir:'com',origin,viewport:{width,height:844},hasTouch:width<700,
-   tables:{profiles:[{pseudo:'fixture'}],totehms:[{user_id:USER.id,steps}]},
+   tables:{profiles:[{pseudo:'fixture'}],totehms:[{user_id:USER.id,habits:steps}]},
    rpc:{my_landing:{signed_in:true,pseudo:'fixture',telegram:true,offer:{enabled:false},higher:{active:false},sm:{}},
     my_board:{ok:true,today,tz:'Europe/Lisbon',telegram:true,habits:[],days:[],week:{},totals:{},heat:[],objectives:[{t:'Read a book',jours:10,temps:.7}],feed:[]},
     tracking_summary_for_me:async({p_days})=>{if(delayed&&p_days===28){delayed=false;await new Promise(r=>release=r);}return snapshot(p_days,settings);},tracking_settings_get:()=>({ok:true,settings}),

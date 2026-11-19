@@ -6,14 +6,14 @@ const origin='https://www.totehm.com',out=process.argv[2]||'work/telegram-practi
 const id=n=>`00000000-0000-4000-8000-${String(n).padStart(12,'0')}`;
 const habit='Écrire & lire / 読む #1',second='A different next step';
 const steps=[{t:habit,is:['express'],f:'daily',o:id(1)},{t:second,is:['flow'],f:'weekly'}];
-const tree={signed_in:true,ok:true,pseudo:'fixture',steps,objectives:[{id:id(1),text:'Publish',status:'active',habits:[habit]}],
+const tree={signed_in:true,ok:true,pseudo:'fixture',habits:steps,objectives:[{id:id(1),text:'Publish',status:'active',habits:[habit]}],
  repulsions:[{id:'1',text:'Scrolling',hs:[habit]}],visions:[{id:id(2),text:'Transmit',os:[id(1)]}],stories:[{id:id(3),text:'My words'}]};
 let checks=0;const check=(v,m)=>{assert(v,m);checks++;};
 const browser=await launch();
 async function sample({session=true,width=390,source={ok:true,habit},sdk=true}={}){
  const writes=[];
  const x=await page(browser,{dir:'com',origin,session,viewport:{width,height:844},hasTouch:width<700,
- tables:{profiles:[{pseudo:'fixture'}],totehms:[{user_id:USER.id,steps}]},
+ tables:{profiles:[{pseudo:'fixture'}],totehms:[{user_id:USER.id,habits:steps}]},
  rpc:{my_landing:{signed_in:session,pseudo:'fixture'},my_totehm:tree,element_orders_for:{ok:true,orders:{}},
   tracking_practice_for_me:source,sso_revoke_everywhere:1,habit_spaces:{ok:true,mine:true,habits:[]}},
  network:(url,req)=>{

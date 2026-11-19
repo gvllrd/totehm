@@ -40,7 +40,7 @@ const auCarre=pg=>pg.evaluate(()=>{const r=id=>document.getElementById(id).getBo
   return {bg:[bg.x,bg.y,bg.width],st:[st.x,st.y,st.width],ui:ui.width<st.width&&ui.x>st.x&&ui.y>st.y,flip:f.width>20&&f.x>st.x&&f.y>st.y&&f.y<st.y+80};});
 const memeCarre=v=>Math.abs(v.bg[0]-v.st[0])<2&&Math.abs(v.bg[1]-v.st[1])<2&&Math.abs(v.bg[2]-v.st[2])<2;
 try{
- {const {pg,log}=await page(browser,{dir:'com',origin,viewport:{width:1280,height:800},tables:{profiles:[{pseudo:'wahigher'}],totehms:[{user_id:USER.id,steps:habits}]},rpc});
+ {const {pg,log}=await page(browser,{dir:'com',origin,viewport:{width:1280,height:800},tables:{profiles:[{pseudo:'wahigher'}],totehms:[{user_id:USER.id,habits:habits}]},rpc});
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1200);
   await pg.click('#lv-tap-turn');await pg.waitForSelector('#srch.is-pret');await pg.waitForTimeout(900);
   let v=await auCarre(pg);
@@ -107,7 +107,7 @@ try{
   e=await etat(pg); ok(e.gate&&!e.verso,'Échap sur ce verso-là ramène à l\'accueil (le recto n\'était pas déployé)');
   ok(!erreurs(log).length,'ordinateur · aucune erreur '+erreurs(log).join(' | '));
   await pg.context().close();}
- {const {pg,log}=await page(browser,{dir:'com',origin,viewport:{width:390,height:844},hasTouch:true,tables:{profiles:[{pseudo:'wahigher'}],totehms:[{user_id:USER.id,steps:habits}]},rpc});
+ {const {pg,log}=await page(browser,{dir:'com',origin,viewport:{width:390,height:844},hasTouch:true,tables:{profiles:[{pseudo:'wahigher'}],totehms:[{user_id:USER.id,habits:habits}]},rpc});
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1200);
   await pg.click('#lv-tap-turn');await pg.waitForSelector('#srch.is-pret');await pg.waitForTimeout(900);
   const t=await pg.evaluate(()=>{const ui=document.getElementById('srch-ui').getBoundingClientRect();return {plein:ui.width===innerWidth&&ui.height===innerHeight,flip:getComputedStyle(document.getElementById('srch-flip')).display};});

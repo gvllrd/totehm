@@ -42,7 +42,7 @@ const lire = (pg, sel) => pg.evaluate(s => {
 }, sel);
 try{
  const { pg, log } = await page(browser, { dir:'com', origin,
-   tables:{ profiles:[{ pseudo:'wah' }], totehms:[{ user_id:UID, steps:STEPS, vis:'private' }] },
+   tables:{ profiles:[{ pseudo:'wah' }], totehms:[{ user_id:UID, habits:STEPS, vis:'private' }] },
    rpc:{ my_landing:land, my_totehm:trips, habit_spaces:{ ok:true, mine:true, habits:[] },
          my_box_audiences:{ ok:true, h:{}, t:{}, r:{}, w:{}, v:{} } } });
  await ouvrir(pg);

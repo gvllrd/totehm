@@ -13,12 +13,12 @@ const OUT=process.argv[2]||'/tmp';fs.mkdirSync(OUT,{recursive:true});
 const origin='https://www.totehm.com';
 const UID='11111111-1111-4111-8111-111111111111';
 const STEPS=[{t:'Run the hill',t0:'Run the hill',is:['fight']},{t:'Read at dawn',t0:'Read at dawn',is:['focus']},{t:'Sprint',t0:'Sprint',is:['fight','flow']}];
-const tables={profiles:[{pseudo:'wahigher'}],totehms:[{user_id:UID,steps:STEPS,vis:'private'}]};
+const tables={profiles:[{pseudo:'wahigher'}],totehms:[{user_id:UID,habits:STEPS,vis:'private'}]};
 const LAND=(o={})=>({signed_in:true,pseudo:'wahigher',visibility:'private',offer:{enabled:false,open:false},
   higher:{active:false,price_cents:700,currency:'eur',period:'month'},thp:false,subscriptions:0,subscribers:0,
   sm:{ready:true,habit:true,objective:true,higher:false,free_total:7,free_left:6,left:6},...o});
 /* Le Totehm d'un autre, lu SUR PLACE depuis MEMBERS (`totehm_read`). */
-const AUTRE={ok:true,pseudo:'kai3',steps:[{t:'Swim at dawn',i:'flow',is:['flow']},{t:'Write it down',i:'express',is:['express']}],
+const AUTRE={ok:true,pseudo:'kai3',habits:[{t:'Swim at dawn',i:'flow',is:['flow']},{t:'Write it down',i:'express',is:['express']}],
   objectives:[],objs:{},repulsions:[],stories:[],visions:[]};
 const COULEURS=['#E24B4A','#e48b31','#fcbe21','#639922','#1D9E75','#378ADD','#7F77DD'];
 const erreurs=log=>log.errors.filter(e=>e.startsWith('pageerror'));

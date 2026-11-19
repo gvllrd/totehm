@@ -1,7 +1,7 @@
 # com/CLAUDE.md — totehm.com
 
 > L'état ACTUEL et les pièges (≤ 60 lignes), réécrits en place. **Règle n° 1 : les boxes sont la marque (`BRAND.md`).**
-> Classement : `element_order_set` / `element_orders_for` ; Habits = ordre de `steps`.
+> Classement : `element_order_set` / `element_orders_for` ; Habits = ordre de `habits`.
 
 ## Les pages
 
@@ -49,7 +49,7 @@ seuls `/totehm` et `/totehm.html` autorisent les cadres Telegram (CSP). `overflo
   qu'à la confirmation, deux gestes) ; ailleurs, seulement là où le niveau BLOQUE un geste (`ouvrirLaBox` dans la prise
   d'un spot). Un MÉDIA prend le niveau de SA box (serveur). Un SPOT a ses trois niveaux (`[data-spaud]`) sous le plafond
   de sa box (`_spot_plafond_ok`, refus `box_private`).
-- `cloudSave()` réécrit `steps` en entier ; le serveur après `PAUSE_FRAPPE` (2,5 s) ou à la sortie du champ ; un refus
+- `cloudSave()` réécrit `habits` en entier ; le serveur après `PAUSE_FRAPPE` (2,5 s) ou à la sortie du champ ; un refus
   laisse la saisie en ATTENTE (`NON_CONFIRME`) ; rien avant `cloudLoad`. Ne jamais redéfinir `--perfo`.
 - `habit-rhythm.mjs` (35 langues, zéro LLM) propose un rythme à confirmer ; `f` seul règle le check-in. Telegram :
   `?telegram=1#practice=<id>` ouvre la box native (jamais d'identité par le SDK). Liens : `totehm-link.mjs`.

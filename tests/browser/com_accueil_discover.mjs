@@ -6,7 +6,7 @@ import {launch,page,ok} from './harness.mjs';
 const OUT=process.argv[2]||'.';
 const browser=await launch();const origin='https://www.totehm.com';
 const UID='11111111-1111-4111-8111-111111111111';
-const tables={profiles:[{pseudo:'wahigher'}],totehms:[{user_id:UID,steps:[{t:'Run the hill',t0:'Run the hill',is:['fight']}],vis:'private'}]};
+const tables={profiles:[{pseudo:'wahigher'}],totehms:[{user_id:UID,habits:[{t:'Run the hill',t0:'Run the hill',is:['fight']}],vis:'private'}]};
 const LAND={signed_in:true,pseudo:'wahigher',visibility:'private',offer:{enabled:false,open:false},higher:{active:false},thp:false};
 const erreurs=log=>log.errors.filter(e=>e.startsWith('pageerror'));
 const D=pg=>pg.evaluate(()=>window.__totehm_discover());

@@ -12,7 +12,7 @@ import {launch,page,ok} from './harness.mjs';
 const browser=await launch();const origin='https://www.totehm.com';
 const UID='11111111-1111-4111-8111-111111111111';
 const STEPS=[{t:'Run the hill',t0:'Run the hill',is:['fight']},{t:'Read at dawn',t0:'Read at dawn',is:['focus']}];
-const tables={profiles:[{pseudo:'wahigher'}],totehms:[{user_id:UID,steps:STEPS,vis:'private'}]};
+const tables={profiles:[{pseudo:'wahigher'}],totehms:[{user_id:UID,habits:STEPS,vis:'private'}]};
 const LAND={signed_in:true,pseudo:'wahigher',visibility:'private',offer:{enabled:false,open:false},higher:{active:false,price_cents:700,currency:'eur',period:'month'},
   thp:false,telegram:false,sm:{ready:true,habit:true,objective:true,higher:false,free_total:7,free_left:6,left:6}};
 const DASH={ok:true,subscribers:3,month_cents:1920,pending_cents:1920,currency:'eur',next_payout:'2026-11-01',threshold_cents:2500,part:80,price_cents:2400,min_cents:300,max_cents:100000};

@@ -15,7 +15,7 @@ const mine = { ok:true, mine:true, elements:[{ kind:'wisdom', ref:'w1', total:4,
   { name:'0.Try', line:'streetwear', stage:'making', test:true }] }] };
 const land = { signed_in:true, pseudo:'wah', visibility:'private', offer:{ enabled:false }, higher:{ active:false, price_cents:700, currency:'eur' }, thp:false, subscriptions:0, subscribers:0 };
 const network = url => url.host === 'www.higher.boutique' ? { status:200, contentType:'text/html', body:'<p>boutique</p>' } : null;
-const source = { ok:true, pseudo:'studio', steps:[{ t:'Deep practice', is:['focus'] }], objs:{}, objectives:[], repulsions:[],
+const source = { ok:true, pseudo:'studio', habits:[{ t:'Deep practice', is:['focus'] }], objs:{}, objectives:[], repulsions:[],
   stories:[{ id:'w9', text:'Attention is a choice', is:['focus'] }], visions:[] };
 const theirs = { ok:true, mine:false, elements:[{ kind:'wisdom', ref:'w9', total:1, cloths:[{ name:'0.Calm', line:'streetwear', stage:'production', test:false }] }] };
 

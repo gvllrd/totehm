@@ -15,7 +15,7 @@ try{
   const envois=[];
   const {pg,log}=await page(browser,{dir:'com',origin,viewport:vp,hasTouch:nom==='téléphone',rpc:MES,
     tables:{profiles:[{pseudo:'wahigher'}],totehms:(url,req)=>{ if(req.method()==='POST'){ try{envois.push(JSON.parse(req.postData()));}catch(_){} return []; }
-      return [{user_id:UID,steps:STEPS,vis:'private'}]; }}});
+      return [{user_id:UID,habits:STEPS,vis:'private'}]; }}});
   const pas=()=>envois.length, statut=()=>pg.$eval('#fv-status',e=>e.textContent);
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1000);
   await pg.click('#lv-tap-open');await pg.waitForFunction(()=>!document.body.classList.contains('gate'),null,{timeout:9000}).catch(()=>{});await pg.waitForTimeout(1200);
@@ -32,11 +32,11 @@ try{
   /* ── 2 · la pause : UN envoi, le texte entier, puis « saved » ── */
   await pg.waitForFunction(n=>window.__totehm_save().envois>n,d1.envois,{timeout:4000}).catch(()=>{});
   const s2=await statut(), e2=envois.slice(n0);
-  ok(e2.length===1&&e2[0].steps&&e2[0].steps[0].t==='Run the hill!'&&s2==='saved',nom+' · après la pause : UN envoi (le texte entier « '+(e2[0]&&e2[0].steps[0].t)+' »), puis « '+s2+' »');
+  ok(e2.length===1&&e2[0].habits&&e2[0].habits[0].t==='Run the hill!'&&s2==='saved',nom+' · après la pause : UN envoi (le texte entier « '+(e2[0]&&e2[0].habits[0].t)+' »), puis « '+s2+' »');
   /* ── 3 · Entrée : ça part tout de suite, sans attendre la pause ── */
   const n3=pas(); await pg.locator('#habits .habit.open .v-name[data-edit]').click(); await pg.keyboard.press('End');
   await pg.keyboard.type('!'); await pg.keyboard.press('Enter'); await pg.waitForTimeout(450);
-  ok(pas()-n3===1&&envois[envois.length-1].steps[0].t==='Run the hill!!',nom+' · Entrée : parti en moins de 0,5 s ('+(pas()-n3)+' envoi)');
+  ok(pas()-n3===1&&envois[envois.length-1].habits[0].t==='Run the hill!!',nom+' · Entrée : parti en moins de 0,5 s ('+(pas()-n3)+' envoi)');
   /* ── 4 · rien n'a changé : rien ne part ── */
   const n4=pas(), i4=(await pg.evaluate(()=>window.__totehm_save())).identiques;
   await pg.locator('#habits .habit.open .v-name[data-edit]').click(); await pg.keyboard.press('Enter'); await pg.waitForTimeout(1200);
@@ -75,7 +75,7 @@ try{
          if(refuse) return {status:403,contentType:'application/json',body:JSON.stringify({code:'42501',message:'permission denied for function _vis_shared'})};
          try{recus.push(JSON.parse(req.postData()));}catch(_){}
          return {status:201,contentType:'application/json',body:'[]'}; } return null; },
-     tables:{profiles:[{pseudo:'wahigher'}],totehms:[{user_id:UID,steps:STEPS,vis:'private'}]}});
+     tables:{profiles:[{pseudo:'wahigher'}],totehms:[{user_id:UID,habits:STEPS,vis:'private'}]}});
    await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1000);
    await pg.click('#lv-tap-open');await pg.waitForFunction(()=>!document.body.classList.contains('gate'),null,{timeout:9000}).catch(()=>{});await pg.waitForTimeout(1200);
    await pg.$eval('#habits .v-col[data-open]',e=>e.click());await pg.waitForTimeout(450);
@@ -89,8 +89,8 @@ try{
    await pg.waitForFunction(()=>window.__totehm_save&&window.__totehm_save().envois>=1,null,{timeout:8000}).catch(()=>{});
    const b=await pg.evaluate(()=>({d:window.__totehm_save(), c:JSON.parse(localStorage.getItem('totehm_habits_v1')||'null')}));
    const dernier=recus[recus.length-1];
-   ok(b.d.repris===1&&!!dernier&&dernier.steps[0].t==='Run far'&&b.d.nonConfirme===false&&b.c&&b.c.attente===false,
-      '01/11 · au démarrage suivant, la saisie non confirmée l\'emporte sur la copie du serveur (« Run ») et repart : « '+(dernier&&dernier.steps[0].t)+' », confirmée → '+JSON.stringify({repris:b.d.repris,envois:b.d.envois,attente:b.c&&b.c.attente}));
+   ok(b.d.repris===1&&!!dernier&&dernier.habits[0].t==='Run far'&&b.d.nonConfirme===false&&b.c&&b.c.attente===false,
+      '01/11 · au démarrage suivant, la saisie non confirmée l\'emporte sur la copie du serveur (« Run ») et repart : « '+(dernier&&dernier.habits[0].t)+' », confirmée → '+JSON.stringify({repris:b.d.repris,envois:b.d.envois,attente:b.c&&b.c.attente}));
    ok(!log.errors.filter(e=>e.startsWith('pageerror')).length,'01/11 · refus puis reprise : aucune erreur de page '+log.errors.filter(e=>e.startsWith('pageerror')).join(' | '));
    await pg.context().close(); }
  /* ── 8 · 01/11 — LE CACHE DE LA PAGE D'AVANT (`pseudo`, sans `attente`) : s'il diffère d'une copie du serveur antérieure
@@ -101,14 +101,14 @@ try{
    const {pg,log}=await page(browser,{dir:'com',origin,viewport:{width:390,height:844},hasTouch:true,rpc:MES,
      network:(url,req)=>{ if(url.pathname==='/rest/v1/totehms'&&req.method()==='POST'){ try{recus.push(JSON.parse(req.postData()));}catch(_){}
          return {status:201,contentType:'application/json',body:'[]'}; } return null; },
-     tables:{profiles:[{pseudo:'wahigher'}],totehms:[{user_id:UID,steps:STEPS,vis:'private',updated_at:recu}]}});
+     tables:{profiles:[{pseudo:'wahigher'}],totehms:[{user_id:UID,habits:STEPS,vis:'private',updated_at:recu}]}});
    await pg.addInitScript(([uid])=>{ if(sessionStorage.getItem('graine'))return; sessionStorage.setItem('graine','1');
      localStorage.setItem('totehm_habits_v1',JSON.stringify({habits:[{t:'Run uphill',t0:'Run',f:'every_morning',i:'fight',is:['fight'],o:null}],vis:'private',uid,pseudo:'wahigher'})); },[UID]);
    await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');
    await pg.waitForFunction(()=>window.__totehm_save&&(window.__totehm_save().envois>=1||document.body.classList.contains('member')),null,{timeout:8000}).catch(()=>{});
    await pg.waitForTimeout(1800);
    const d=await pg.evaluate(()=>({s:window.__totehm_save(), c:JSON.parse(localStorage.getItem('totehm_habits_v1')||'null')}));
-   const parti=recus.length?recus[recus.length-1].steps[0].t:null;
+   const parti=recus.length?recus[recus.length-1].habits[0].t:null;
    ok(d.c&&d.c.habits[0].t===attendu&&d.c.attente===false&&(attendu==='Run'?recus.length===0&&d.s.repris===0:parti===attendu&&d.s.repris===1),
       '01/11 · cache de la page d\'avant, '+cas+' : « '+(d.c&&d.c.habits[0].t)+' » gagne → '+JSON.stringify({envoye:parti,repris:d.s.repris,attente:d.c&&d.c.attente}));
    ok(!log.errors.filter(e=>e.startsWith('pageerror')).length,'01/11 · cache d\'avant ('+cas+') : aucune erreur de page '+log.errors.filter(e=>e.startsWith('pageerror')).join(' | '));

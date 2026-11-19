@@ -8,7 +8,7 @@ const OUT=process.argv[2]||'/tmp';const browser=await launch();const origin='htt
 const erreurs=log=>log.errors.filter(e=>e.startsWith('pageerror'));
 const UID='11111111-1111-4111-8111-111111111111';
 const STEPS=[{t:'Run the hill',t0:'Run the hill',is:['fight'],f:'every_morning',o:'o1'},{t:'Read at dawn',t0:'Read at dawn',is:['focus']}];
-const LU={ok:true,pseudo:'studio',steps:[{t:'Deep practice',is:['focus']}],objs:{},objectives:[],repulsions:[],stories:[],visions:[]};
+const LU={ok:true,pseudo:'studio',habits:[{t:'Deep practice',is:['focus']}],objs:{},objectives:[],repulsions:[],stories:[],visions:[]};
 const MES={my_landing:{signed_in:true,pseudo:'wahigher'},
   my_totehm:{signed_in:true,objectives:[{id:'o1',text:'Ship it',habits:['Run the hill']}],repulsions:[{id:'r1',text:'The phone',hs:['Run the hill'],habits:['Run the hill']}],
     stories:[{id:'w1',text:'Slow is smooth'}],visions:[{id:'v1',text:'A house by the sea'}]},
@@ -32,7 +32,7 @@ const pastille=pg=>pg.evaluate(()=>{const b=document.querySelector('#habits .hab
 try{
  for(const [nom,vp] of [['téléphone',{width:390,height:844}],['ordinateur',{width:1280,height:800}]]){
   {const {pg,log}=await page(browser,{dir:'com',origin,viewport:vp,hasTouch:nom==='téléphone',rpc:MES,
-     tables:{profiles:[{pseudo:'wahigher'}],totehms:[{user_id:UID,steps:STEPS,vis:'private'}]}});
+     tables:{profiles:[{pseudo:'wahigher'}],totehms:[{user_id:UID,habits:STEPS,vis:'private'}]}});
    await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1000);
    await pg.click('#lv-tap-open');await pg.waitForFunction(()=>!document.body.classList.contains('gate'),null,{timeout:9000}).catch(()=>{});await pg.waitForTimeout(1200);
    ok(await pg.evaluate(()=>window.__totehm_audb().lu&&!document.querySelector('#habits .baud')),nom+' · les niveaux sont lus avec mon arbre ; fermées, les boxes ne portent rien de plus (les boxes sont sacrées)');

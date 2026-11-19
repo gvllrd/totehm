@@ -9,13 +9,13 @@ import {launch,page,ok} from './harness.mjs';
 const OUT=process.argv[2]||'.';
 const origin='https://www.totehm.com';
 const UID='11111111-1111-4111-8111-111111111111';
-const tables={profiles:[{pseudo:'wah'}],totehms:[{user_id:UID,steps:[{t:'Run the hill',t0:'Run the hill',is:['fight']}],vis:'private'}]};
+const tables={profiles:[{pseudo:'wah'}],totehms:[{user_id:UID,habits:[{t:'Run the hill',t0:'Run the hill',is:['fight']}],vis:'private'}]};
 const LAND={signed_in:true,pseudo:'wah',visibility:'private',offer:{enabled:false,open:false},higher:{active:false},thp:false};
 const GVA={ok:true,pseudo:'gva',palette:['flow','love'],sale:{open:true,price_cents:8400,currency:'eur',period:'year'},
   viewer:{signed_in:true,me:false,subscribed:true,until:'2027-11-18T13:02:59Z',ending:false,can_read:true}};
 const KAI={ok:true,pseudo:'kai',palette:['focus'],sale:{open:true,price_cents:2400,currency:'eur',period:'year'},
   viewer:{signed_in:true,me:false,subscribed:false,until:null,ending:false,can_read:false}};
-const LU={ok:true,pseudo:'gva',steps:[{t:'Swim at dawn',i:'flow',is:['flow']},{t:'Write it down',i:'love',is:['love']}],
+const LU={ok:true,pseudo:'gva',habits:[{t:'Swim at dawn',i:'flow',is:['flow']},{t:'Write it down',i:'love',is:['love']}],
   objectives:[],objs:{},repulsions:[],stories:[],visions:[]};
 const rpc={my_landing:LAND, figher_access:{signed_in:true,member:true},
   creator_page:b=>({gva:GVA,kai:KAI})[String(b.p_pseudo||'').toLowerCase()]||{ok:false,why:'nobody'},

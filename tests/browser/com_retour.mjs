@@ -22,7 +22,7 @@ const retour=async pg=>{ await pg.goBack({timeout:4000}).catch(()=>{}); await pa
 try{
  for(const [nom,vp] of [['téléphone',{width:390,height:844}],['ordinateur',{width:1280,height:800}]]){
   const {pg,log}=await page(browser,{dir:'com',origin,viewport:vp,hasTouch:nom==='téléphone',rpc:RPC,
-    tables:{profiles:[{pseudo:'wahigher'}],totehms:[{user_id:UID,steps:STEPS,vis:'private'}]}});
+    tables:{profiles:[{pseudo:'wahigher'}],totehms:[{user_id:UID,habits:STEPS,vis:'private'}]}});
   await pg.goto(origin+'/terms');await pause(pg,300);
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pause(pg,1200);
   const e0=await etat(pg);

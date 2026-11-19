@@ -18,7 +18,7 @@ const rpc = { my_landing:land, habit_spaces:{ ok:true, mine:true, habits:[{ habi
   spot_schedule_audience:{ ok:true, id:'p9', state:'will' }, spot_box_set:{ ok:true },
   club_spots_of:b => ({ ok:true, items:b.p_period === 'future' && b.p_filters && b.p_filters.habit === 'Deep practice' ? [item('p1','spot')] : [], total:0 }),
   space_feed:{ ok:true, spots:[], more:false }, space_pulse:{ spaces_week:1, vibes_week:0 }, space_habits:{ ok:true, habits }, space_discover:{ spots:[], more:false }, spots_feed:{ spots:[], more:false } };
-const tables = { profiles:[{ pseudo:'wahigher' }], totehms:[{ user_id:'u', steps:[{ t:'Deep practice', f:'daily', is:['focus'], i:'focus' }], totehm_visibility:'private' }] };
+const tables = { profiles:[{ pseudo:'wahigher' }], totehms:[{ user_id:'u', habits:[{ t:'Deep practice', f:'daily', is:['focus'], i:'focus' }], totehm_visibility:'private' }] };
 const xo = pg => pg.evaluate(() => window.__totehm_xo());
 const browser = await launch();
 try{

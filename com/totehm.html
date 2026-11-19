@@ -276,7 +276,7 @@ body:not(.gate) #bottom-doors{display:none!important}
    Il n'y a pas de lettre pour les répulsions : TOTEHM n'en contient pas,
    et inventer un clignotement sans lettre serait du décor. La couleur des
    boîtes et le carré rouge disent déjà où l'on est. */
-/* LE LOGO RESPIRE, IL NE CLIGNOTE PAS. `steps(1,end)` allumait et
+/* LE LOGO RESPIRE, IL NE CLIGNOTE PAS. le pas-à-pas CSS (`step-end`) allumait et
    éteignait d'un coup — dur, mécanique, une alarme. `ease-in-out` sur
    2,8 s fait une RESPIRATION : la lettre s'efface et revient. C'est la
    différence entre un voyant et un être vivant.
@@ -5381,7 +5381,7 @@ try{const _rf=JSON.parse(localStorage.getItem(KEYF())||'null');
    (`PAUSE_FRAPPE`), ou tout de suite quand on quitte le champ (Entrée, curseur ailleurs, box refermée, Totehm replié,
    onglet caché). Un envoi identique au dernier ne part pas ; un seul envoi à la fois (le suivant attend, jamais deux
    réponses dans le désordre). « saved » ne s'affiche qu'une fois le serveur d'accord. Rien de tout ça n'est une Edge
-   Function : `steps` = un upsert PostgREST, les renommages = des RPC SQL. */
+   Function : `habits` = un upsert PostgREST, les renommages = des RPC SQL. */
 const PAUSE_FRAPPE=2500;
 const SAUVE={envois:0,identiques:0,rafales:0,echecs:0,repris:0};
 let dernierEnvoi=null, envoiEnVol=null, envoiEncore=false;
@@ -5404,7 +5404,7 @@ function save(o){
     else scheduleCloudSave(900); }
   else direSaved();
 }
-/* Tout ce qui dort part MAINTENANT : les renommages en minuterie (`pousse`) et l'arbre (`steps`). */
+/* Tout ce qui dort part MAINTENANT : les renommages en minuterie (`pousse`) et l'arbre (`habits`). */
 function ecrireTout(){ if(RO||!me)return; pousse(); if(cloudSaveTimer){ clearTimeout(cloudSaveTimer); cloudSaveTimer=null; cloudSave(); } }
 document.addEventListener('visibilitychange',()=>{ if(document.hidden) ecrireTout(); });
 addEventListener('pagehide',()=>ecrireTout());
@@ -5434,7 +5434,7 @@ async function cloudSave(){
       /* 01/10 : la visibilité ne voyage PLUS avec les habitudes. Elle se
          règle dans la console (`visibility_set`) : un enregistrement
          d'habitude ne doit jamais rouvrir ni refermer un Totehm. */
-      steps:state.habits,
+      habits:state.habits,
       updated_at:new Date().toISOString()
     },{onConflict:'user_id'});
     if(error)throw error;
@@ -5459,7 +5459,7 @@ async function cloudLoad(){
   /* ⚠️ `o` EST TRANSPORTÉ, PAS DÉDUIT. Il porte l'objectif que sert cette
      habitude, et il est écrit par `habit_set_trip()` côté serveur. Le
      reconstruire en `{t,f,i}` le jetait — et comme `cloudSave` réécrit
-     `steps` EN ENTIER, la liaison disparaissait à la frappe suivante.
+     `habits` EN ENTIER, la liaison disparaissait à la frappe suivante.
      Même piège que `totehms.bot` le 03/09 : un snapshot qui écrase tout
      doit transporter tout ce qu'il écrase. */
   /* ⚠️ `is` EST TRANSPORTÉ AUSSI · 09/09/2026 — même piège que `o`, et il
@@ -5469,14 +5469,14 @@ async function cloudLoad(){
      du nuage avec une seule, sans un mot.
      `t0` est le texte QUE LE SERVEUR VIENT DE DONNER : c'est ici, et
      nulle part ailleurs, qu'il se pose — le serveur est la référence. */
-  data.forEach(r=>{(Array.isArray(r.steps)?r.steps:[]).forEach(s=>{const k=norm(s.t);if(s.t&&!seen[k]){seen[k]=1;
+  data.forEach(r=>{(Array.isArray(r.habits)?r.habits:[]).forEach(s=>{const k=norm(s.t);if(s.t&&!seen[k]){seen[k]=1;
     const li=Array.isArray(s.is)?s.is.filter(z=>INT_BY_ID[z]):[];
     habits.push({t:s.t, t0:s.t, f:FREQ_BY_ID[s.f]?s.f:null, ...(timingWords(s.rhythm_text)?{rhythm_text:timingWords(s.rhythm_text)}:{}),
       i:INT_BY_ID[s.i]?s.i:(li[0]||null), is:li, o:s.o||null});}});});
   /* L'ORDRE DU MEMBRE EST UNE DONNÉE. `state` est reconstruit de zéro
      ici : sans ce report, l'ordre choisi à la main était oublié au
      premier chargement depuis le nuage. L'ordre lui-même voyage dans
-     `steps` — c'est l'ordre du tableau ; seul le DRAPEAU se perdait. */
+     `habits` — c'est l'ordre du tableau ; seul le DRAPEAU se perdait. */
   const ordonne = !!(state && state.ord);
   /* 01/11 — ce que CE téléphone a saisi sans que le serveur le confirme l'emporte, et repart tout de suite.
      Le cache de la page d'AVANT (il porte `pseudo` depuis le 21/10, jamais `attente`) ne contient, s'il diffère, que des
@@ -5527,7 +5527,7 @@ async function loadRO(){
 function poserLecture(data){
   SPOT=Object.create(null);spotSeq++; // A member's native readers never inherit the viewer's private usual places.
   const habits=[];const seen={};
-  (Array.isArray(data.steps)?data.steps:[]).forEach(x=>{
+  (Array.isArray(data.habits)?data.habits:[]).forEach(x=>{
     const k=norm(x.t); if(!x.t||seen[k])return; seen[k]=1;
     /* `is` EST TRANSPORTÉ. Sans lui, une habitude à trois intentions
        n'en montrait qu'une et le trait de gauche mentait — c'est ce
@@ -8760,7 +8760,7 @@ let POUSSE_JOY=null, DU_MANCHE=false;
 function versVoisin(d){ const v=voisin(d); if(!v)return; dernierSens=d;
   if(!DU_MANCHE&&POUSSE_JOY)POUSSE_JOY(d);
   setView(v); }
-/* Les cinq listes. `state.habits` vit en local (elle est dans `steps`),
+/* Les cinq listes. `state.habits` vit en local (elle est dans `habits`),
    les quatre autres viennent du serveur en UN appel — `my_totehm`. */
 let OBJECTIVES=[], REPULSIONS=[], STORIES=[], VIS=[], totehmLoaded=false;
 /* ══ LE SPOT · 19/09/2026 ════════════════════════════════════════════
@@ -8802,18 +8802,18 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-11-19-vocabulaire-objective';
+const BUILD='2026-11-19-vocabulaire-habits';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
    Une habitude vit dans `state.habits`, un tableau sans identifiant. On
    lui en donne un À L'AFFICHAGE : il ne sert qu'à désigner la ligne qu'on
    édite pendant cette session. Rien ne s'y rattache en base — une
-   répulsion pointe une habitude par son TEXTE, parce que `steps` est du
+   répulsion pointe une habitude par son TEXTE, parce que `habits` est du
    texte. C'est pour ça que renommer appelle `habit_rename_links`. */
 let HSEQ=0;
 /* `t0` EST LE TEXTE QUE LE SERVEUR CONNAÎT · 09/09/2026.
-   Les liens sont du TEXTE en base (`steps` est du texte). Tant que `t`
+   Les liens sont du TEXTE en base (`habits` est du texte). Tant que `t`
    était la seule vérité, taper une lettre dans un titre changeait la clé
    de tous ses liens INSTANTANÉMENT côté écran, alors que la base ne
    l'apprenait que 700 ms plus tard : les objectifs et les répulsions
@@ -8858,7 +8858,7 @@ const repsOfHab=id=>{const x=habOf(id); const k=x?(x.t0!==undefined?x.t0:x.t):''
 const habsOfRep=r=>(r.hs||[]).map(habByT).filter(Boolean);
 /* ══ UNE HABITUDE SERT PLUSIEURS OBJECTIFS · 07/09/2026 ═══════════════
    `OBJ` fait le pont : texte d'habitude → liste d'identifiants
-   d'objectifs, telle que le serveur la rend. `steps.o` reste le PREMIER
+   d'objectifs, telle que le serveur la rend. `habits.o` reste le PREMIER
    lien — celui que le bot lit déjà — mais il ne décide plus seul. */
 let OBJ={};
 /* ⚠️ `OBJ` EST INDEXÉ PAR LE TEXTE DU SERVEUR (`t0`), jamais par ce
@@ -8868,7 +8868,7 @@ const objIdsOf  =x=>{const k=x?(x.t0!==undefined?x.t0:x.t):'';
   return (k&&OBJ[k])?OBJ[k]:(x&&x.o?[String(x.o)]:[]);};
 const objectivesOfHab=x=>objIdsOf(x).map(objectiveOf).filter(Boolean);
 const habsOfObjective=t=>(state.habits||[]).filter(x=>objIdsOf(x).includes(String(t.id)));
-/* Le premier lien, celui qui voyage dans `steps` : on le tient à jour à
+/* Le premier lien, celui qui voyage dans `habits` : on le tient à jour à
    chaque attache ou détache, sinon le bot lirait un objectif effacé. */
 function posePremier(x){ const l=objIdsOf(x); x.o = l.length?l[0]:null; save(); }
 
@@ -8993,7 +8993,7 @@ const GENRE_ORDRE={habits:'habit',objectives:'objective',repulsions:'repulsion',
 function appliquerOrdres(orders){
   for(const [v,k] of Object.entries(GENRE_ORDRE)){
     const refs=orders&&orders[k]; if(!Array.isArray(refs))continue;
-    // Habits already carry their order in steps; renaming one must not move it.
+    // Habits already carry their order in habits; renaming one must not move it.
     if(v==='habits'){state.ord=true;continue;}
     const positions=new Map(refs.map((r,i)=>[String(r),i]));
     const arr=listeDe(v).slice().sort((a,b)=>(positions.get(String(a.id))??Infinity)-(positions.get(String(b.id))??Infinity));
@@ -9052,7 +9052,7 @@ async function loadTotehm(force){
     /* ⚠️ `OBJ` VIENT MAINTENANT DU SERVEUR, ET IL ARRIVE VRAIMENT.
        On lisait `h.objectives` sur chaque habitude — une clé que
        `my_totehm` n'a JAMAIS rendue. `OBJ` restait donc vide et une
-       habitude ne montrait que l'objectif porté par `steps.o`, un seul,
+       habitude ne montrait que l'objectif porté par `habits.o`, un seul,
        alors que `objective_habits` en portait plusieurs. Les liens
        étaient écrits en base et invisibles à l'écran.
        `data.objs` est la table texte-d'habitude → identifiants. */
@@ -9247,17 +9247,17 @@ function pousse(cle){
 
 /* ── LES INTENTIONS SONT PLUSIEURS ───────────────────────────────────
    Une habitude peut en porter plusieurs. `is` est la liste, `i` reste la
-   PREMIÈRE — c'est elle que le serveur et le bot lisent (`steps.i`), et
+   PREMIÈRE — c'est elle que le serveur et le bot lisent (`habits.i`), et
    la tenir à jour évite de toucher à la base. */
 const intIds=x=>!x?[]:(Array.isArray(x.is)&&x.is.length?x.is:(x.i?[x.i]:[]));
 /* ══ LES 7 INTENTIONS SE RATTACHENT AUX 5 OBJETS · 16/09/2026 ════════
    Elles ne vivaient que sur les habitudes. Une intention sur un
    objectif, une répulsion, une vision ou une leçon dit la même chose —
    à quoi ça sert dans une vie — et c'est le filtre du produit entier.
-   L'habitude s'écrit dans `steps` (donc `save()`), les quatre autres ont
+   L'habitude s'écrit dans `habits` (donc `save()`), les quatre autres ont
    une ligne en base (donc `intentions_set`). Un seul verbe côté serveur
    pour les quatre : quatre fonctions finiraient par diverger. */
-/* ⚠️ UNE INTENTION S'ÉCRIT DANS `steps`, ET NULLE PART AILLEURS.
+/* ⚠️ UNE INTENTION S'ÉCRIT DANS `habits`, ET NULLE PART AILLEURS.
    Elle appelait `intentions_set` pour les quatre objets serveur ; ces
    objets n'en portent plus. La fonction SQL reste en base — la retirer
    demanderait une migration pour supprimer du code que personne
@@ -10675,7 +10675,7 @@ function cable(box){
       /* ⚠️ ON APLATIT, MÊME CE QUI VIENT D'UN COLLER. `beforeinput`
          arrête les retours à la ligne TAPÉS ; un texte collé depuis une
          note en apporte quand même, et une habitude sur deux lignes
-         casse le lien par texte (`steps` est du texte). Une boîte porte
+         casse le lien par texte (`habits` est du texte). Une boîte porte
          UNE ligne — ici, partout, sans exception. */
       const p=t.dataset.edit.split(':'), v=t.textContent.replace(/[\r\n]+/g,' ');
       /* ⚠️ CE QU'ON TAPE SE VOIT TOUT DE SUITE, CE QUI PART EST DIFFÉRÉ.
@@ -10698,7 +10698,7 @@ function cable(box){
             if(OBJ[ancien]){OBJ[x.t]=OBJ[ancien]; delete OBJ[ancien];}
             spotSeq++;if(Object.hasOwn(SPOT,ancien)){SPOT[x.t]=SPOT[ancien];delete SPOT[ancien];}
             emRenommer(ancien,x.t);}
-          x.t0=x.t; save({maintenant:1}); }); }   /* t0 voyage dans `steps` : UN envoi, après lui */
+          x.t0=x.t; save({maintenant:1}); }); }   /* t0 voyage dans `habits` : UN envoi, après lui */
       /* ⚠️ RIEN NE PART TANT QUE L'OBJET EST PROVISOIRE. Le texte
          s'écrit en mémoire ; la minuterie est posée sur l'identifiant
          COURANT, qui sera le vrai quand elle se déclenchera (`baptise`

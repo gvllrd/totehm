@@ -40,7 +40,7 @@ try{
  for(const [nom,vp] of [['téléphone',{width:390,height:844}],['ordinateur',{width:1280,height:800}]]){
   const popups=[];
   const {pg,log}=await page(browser,{dir:'com',origin,viewport:vp,hasTouch:nom==='téléphone',rpc:RPC,
-    tables:{profiles:[{pseudo:'wahigher'}],totehms:[{user_id:UID,steps:STEPS,vis:'private'}]},
+    tables:{profiles:[{pseudo:'wahigher'}],totehms:[{user_id:UID,habits:STEPS,vis:'private'}]},
     network:(url,req)=>{ if(req.method()==='GET'&&url.pathname.includes('/storage/v1/object/sign/')){ const k=(url.pathname.match(/\/[ms]-(pay|por|car)\./)||[])[1];
       if(k) return {status:200,contentType:'image/svg+xml',body:svg(DIM[k])}; } return null; }});
   pg.on('popup',p=>popups.push(p.url()));

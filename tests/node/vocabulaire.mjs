@@ -23,11 +23,11 @@ const ANCIENS = {
 const DOSSIERS = ['com', 'club', 'boutique', 'tools', 'backend/supabase/functions'];
 const CODE = /\.(html|mjs|js|ts|css)$/;
 
-// Les plafonds du 19/11, après les lots STORY puis OBJECTIVE de com/ (le reste attend son lot). Ils ne remontent JAMAIS.
+// Les plafonds du 19/11, après les lots STORY, OBJECTIVE et HABITS de com/ (le reste attend son lot). Ils ne remontent JAMAIS.
 const PLAFONDS = {
   'com/console.html': { habit: 1 },
   'com/totehm-link.mjs': { story: 2 },                       // pont : les liens `wisdom` déjà envoyés
-  'com/totehm.html': { story: 16, habit: 22 },                // objective et repulsion : 0 depuis le 19/11
+  'com/totehm.html': { story: 16 },                           // objective, repulsion, habit : 0 depuis le 19/11
   'boutique/index.html': { story: 6 },
   'boutique/luxury.html': { story: 12, objective: 3, repulsion: 1 },
   'boutique/streetwear.html': { story: 16, objective: 4, repulsion: 1 },

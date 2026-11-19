@@ -11,10 +11,10 @@ const tree={signed_in:true,objectives:[],repulsions:[],stories:[],visions:[],obj
 async function sample(width,member=false){
  let stored=[{t:original,f:'weekly',is:['focus'],o:null}];const writes=[];
  const p=await page(browser,{dir:'com',origin,viewport:{width,height:844},hasTouch:width<700,
-  tables:{profiles:[{pseudo:'fixture'}],totehms:()=>[{user_id:USER.id,steps:stored,updated_at:'2026-11-12T12:00:00Z'}]},
-  rpc:{my_totehm:tree,totehm_read:{...tree,ok:true,pseudo:'artist',steps:stored},my_landing:{signed_in:true,pseudo:'fixture'},element_orders_for:{ok:true,orders:{}},habit_rename_links:{ok:true}},
+  tables:{profiles:[{pseudo:'fixture'}],totehms:()=>[{user_id:USER.id,habits:stored,updated_at:'2026-11-12T12:00:00Z'}]},
+  rpc:{my_totehm:tree,totehm_read:{...tree,ok:true,pseudo:'artist',habits:stored},my_landing:{signed_in:true,pseudo:'fixture'},element_orders_for:{ok:true,orders:{}},habit_rename_links:{ok:true}},
   network:(url,req)=>{if(url.pathname==='/rest/v1/totehms'&&req.method()==='POST'){
-   const body=JSON.parse(req.postData());stored=body.steps;writes.push(structuredClone(body.steps));return {status:200,contentType:'application/json',body:'[]'};
+   const body=JSON.parse(req.postData());stored=body.habits;writes.push(structuredClone(body.habits));return {status:200,contentType:'application/json',body:'[]'};
   }return null;}});
  await p.pg.goto(elementURL({kind:'habit',ref:original},member?'artist':null));
  await p.pg.waitForFunction(()=>window.__totehm_element_link?.().state==='opened',null,{timeout:15000});

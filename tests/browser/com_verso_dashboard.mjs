@@ -14,7 +14,7 @@ const rpc={my_landing:{signed_in:true,pseudo:'fixture',telegram:false,higher:{ac
  my_console:{signed_in:true,offer:{enabled:true,price_cents:2400,currency:'eur',payout_fin:'1234'},subscriptions:[]},tracking_settings_get:{ok:true,settings:{timezone:'UTC',quiet_from:22,quiet_to:8,max_daily:2,share_chatgpt:false}}};
 try{
  for(const width of [390,1280]){
-  const {pg,ctx,log}=await page(browser,{dir:'com',origin,viewport:{width,height:844},hasTouch:width<700,tables:{profiles:[{pseudo:'fixture'}],totehms:[{user_id:USER.id,steps:habits}]},rpc});
+  const {pg,ctx,log}=await page(browser,{dir:'com',origin,viewport:{width,height:844},hasTouch:width<700,tables:{profiles:[{pseudo:'fixture'}],totehms:[{user_id:USER.id,habits:habits}]},rpc});
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.click('#lv-tap-turn');await pg.waitForSelector('#srch.is-pret');
   await pg.waitForFunction(()=>document.querySelector('#vs-dash').textContent.includes('My practice'));
   check(await pg.getAttribute('#srch','data-tab')==='higher'&&await pg.isVisible('#vs-dash')&&!await pg.isVisible('#mw-creator'),'The dashboard opens first, separately from monetization');

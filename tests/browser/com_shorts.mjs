@@ -15,7 +15,7 @@ const STEPS=[{t:'Run the hill',t0:'Run the hill',is:['fight'],f:'every_morning',
 /* UN SPOT « I will be there » EST À VENIR : une date écrite en dur quitte le présent au bout d'un jour
    (mesuré le 25/10 : « yesterday 08:00 », et le banc tombait tout seul). Toujours demain, 08:00. */
 const DEMAIN=new Date(Date.now()+864e5).toISOString().slice(0,10)+'T08:00:00Z';
-const tables={profiles:[{pseudo:'wahigher'}],totehms:[{user_id:UID,steps:STEPS,vis:'private'}]};
+const tables={profiles:[{pseudo:'wahigher'}],totehms:[{user_id:UID,habits:STEPS,vis:'private'}]};
 const LAND={signed_in:true,pseudo:'wahigher',visibility:'private',offer:{enabled:false},higher:{active:false,price_cents:700,currency:'eur'},thp:false,subscriptions:0,subscribers:0,
   sm:{ready:true,habit:true,objective:true,higher:false,free_total:7,free_left:6,left:6}};
 const erreurs=log=>log.errors.filter(e=>e.startsWith('pageerror'));
@@ -536,7 +536,7 @@ try{
   ok(!erreurs(log).length,'sans compte : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
 
  // ── en lecture (le Totehm d'un autre, 20/10 sexies) : SON écosystème — ni mes fichiers ni la capture ; à gauche SES médias ──
- {const source={ok:true,pseudo:'studio',steps:[{t:'Deep practice',is:['focus']}],objs:{},objectives:[],repulsions:[],stories:[],visions:[]};
+ {const source={ok:true,pseudo:'studio',habits:[{t:'Deep practice',is:['focus']}],objs:{},objectives:[],repulsions:[],stories:[],visions:[]};
   const SID='22222222-2222-4222-8222-222222222222';
   const{pg,log}=await page(browser,{dir:'com',origin,tables,rpc:{...serveur(),totehm_read:source,habit_spaces:{ok:true,mine:false,habits:[]},
     member_media:{ok:true,items:[{id:'x1',kind:'h',ref:'Deep practice',path:SID+'/m-dddddddd-dddd-4ddd-8ddd-dddddddddddd.jpg',mime:'image/jpeg',created_at:'2026-10-18T10:00:00Z'}]},

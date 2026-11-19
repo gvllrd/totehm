@@ -13,7 +13,7 @@ import {launch,page,ok} from './harness.mjs';
 const browser=await launch();const origin='https://www.totehm.com';
 const UID='11111111-1111-4111-8111-111111111111';
 const STEPS=[{t:'Run the hill',t0:'Run the hill',is:['fight'],f:'every_morning'},{t:'Read at dawn',t0:'Read at dawn',is:['focus','love']},{t:'Call mum',t0:'Call mum',is:['love']}];
-const tables={profiles:[{pseudo:'wahigher'}],totehms:[{user_id:UID,steps:STEPS,vis:'private'}]};
+const tables={profiles:[{pseudo:'wahigher'}],totehms:[{user_id:UID,habits:STEPS,vis:'private'}]};
 const rpc={my_landing:{signed_in:true,pseudo:'wahigher'},my_totehm:{signed_in:true,objectives:[],repulsions:[],stories:[],visions:[]}};
 const erreurs=log=>log.errors.filter(e=>e.startsWith('pageerror'));
 /* Les broches, les douze trous du PAPIER (le boîtier : `--perfo`, trois par arête à 25, 50 et 75 %), et chaque trait : ses

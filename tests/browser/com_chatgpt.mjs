@@ -6,7 +6,7 @@ import {launch,page,ok,USER} from './harness.mjs';
 const origin='https://www.totehm.com',OUT=process.argv[2]||'/tmp/com-chatgpt';
 fs.mkdirSync(OUT,{recursive:true});
 const STEPS=[{t:'Draw ten minutes',is:['express'],f:'every_evening'}];
-const tables={profiles:[{pseudo:'wahigher'}],totehms:[{user_id:USER.id,steps:STEPS,vis:'private'}]};
+const tables={profiles:[{pseudo:'wahigher'}],totehms:[{user_id:USER.id,habits:STEPS,vis:'private'}]};
 const LAND={signed_in:true,pseudo:'wahigher',offer:{enabled:false},higher:{active:false},visibility:'private',thp:false,
   sm:{ready:true,habit:true,objective:true,free_total:7,free_left:6}};
 const gptFixture=fs.existsSync('work/gpt.png')?fs.readFileSync('work/gpt.png'):null;
@@ -89,7 +89,7 @@ try{
 
   // 18/11 — [Members] searches on the verso; at a member's, no top or bottom view (their offer lives on THEIR verso),
   // so my personal ChatGPT pitch can never show inside another member's ecosystem.
-  const OTHER={ok:true,pseudo:'kai3',steps:[{t:'Swim at dawn',is:['flow']}],objectives:[],objs:{},repulsions:[],stories:[],visions:[]};
+  const OTHER={ok:true,pseudo:'kai3',habits:[{t:'Swim at dawn',is:['flow']}],objectives:[],objs:{},repulsions:[],stories:[],visions:[]};
   const OFFER={ok:true,pseudo:'kai3',palette:['flow'],sale:{open:true,price_cents:2400,currency:'eur',period:'year'},
     viewer:{signed_in:true,me:false,subscribed:false,can_read:true}};
   {const {pg,ctx,log}=await page(browser,{dir:'com',origin,tables,rpc:{my_landing:LAND,figher_access:{signed_in:true,member:true},totehm_read:OTHER,creator_page:OFFER,member_media:{ok:true,items:[]},club_spots_of:{ok:true,items:[]}}});

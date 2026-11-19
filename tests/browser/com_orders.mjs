@@ -6,7 +6,7 @@ const origin='https://www.totehm.com',out=process.argv[2]||'work/orders-browser'
 fs.mkdirSync(out,{recursive:true});
 const id=n=>`00000000-0000-4000-8000-${String(n).padStart(12,'0')}`;
 const steps=[{t:'読む',is:['focus'],f:'yearly'},{t:'Créer',is:['express'],f:'daily'},{t:'مشي',is:['love'],f:'hourly'}];
-const tree={signed_in:true,ok:true,pseudo:'artist',steps,
+const tree={signed_in:true,ok:true,pseudo:'artist',habits:steps,
  objectives:[1,2,3].map(n=>({id:id(n),text:'Objective '+n,is:[],status:'active'})),
  repulsions:[1,2,3].map(n=>({id:n,text:'Repulsion '+n,hs:[],ws:[]})),
  visions:[4,5,6].map(n=>({id:id(n),text:'Vision '+n,os:[]})),
@@ -19,8 +19,8 @@ try{
   let orders={},persisted=structuredClone(steps),active=0,maxActive=0;
   const {pg,log}=await page(browser,{dir:'com',origin,viewport:{width,height:844},hasTouch:width<700,
    tables:{profiles:[{pseudo:'fixture'}],totehms:(_url,req)=>{
-    if(req.method()==='POST')persisted=JSON.parse(req.postData()).steps;
-    return [{user_id:USER.id,steps:persisted,updated_at:'2026-11-08T12:00:00Z'}];}},
+    if(req.method()==='POST')persisted=JSON.parse(req.postData()).habits;
+    return [{user_id:USER.id,habits:persisted,updated_at:'2026-11-08T12:00:00Z'}];}},
    rpc:{my_totehm:tree,totehm_read:tree,my_landing:{signed_in:true,pseudo:'fixture'},element_orders_for:()=>({ok:true,orders}),
     element_order_set:async({p_kind,p_refs})=>{active++;maxActive=Math.max(maxActive,active);await new Promise(r=>setTimeout(r,80));orders[p_kind]=p_refs;active--;return {ok:true};}}});
   let navigation=0;

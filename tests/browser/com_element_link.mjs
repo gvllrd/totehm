@@ -6,7 +6,7 @@ import {elementURL} from '../../backend/supabase/functions/_shared/chatgpt-conte
 const origin='https://www.totehm.com',out=process.argv[2]||'work/element-links';fs.mkdirSync(out,{recursive:true});
 const id=n=>`00000000-0000-4000-8000-${String(n).padStart(12,'0')}`;
 const steps=[{t:'Écrire & lire / 読む #1',is:['express'],f:'daily'}];
-const tree={signed_in:true,ok:true,pseudo:'artist',steps,objectives:[{id:id(1),text:'Publish',status:'active'}],
+const tree={signed_in:true,ok:true,pseudo:'artist',habits:steps,objectives:[{id:id(1),text:'Publish',status:'active'}],
  repulsions:[{id:1,text:'Scrolling',hs:[steps[0].t],ws:[]}],visions:[{id:id(2),text:'Transmit',os:[]}],stories:[{id:id(3),text:'My story\n\nMy words.',os:[]}]};
 const cases=[['habit',steps[0].t,'Écrire & lire / 読む #1','habits'],['objective',id(1),'Publish','objectives'],
  ['repulsion','1','Scrolling','repulsions'],['vision',id(2),'Transmit','visions'],['wisdom',id(3),'My storyMy words.','stories'],['story',id(3),'My storyMy words.','stories'],
@@ -16,7 +16,7 @@ const browser=await launch();
 async function sample({session=true,member=false,denied=false,delay=0}={}){
  const writes=[];
  const {pg,ctx,log}=await page(browser,{dir:'com',origin,session,
- tables:{profiles:[{pseudo:'fixture'}],totehms:[{user_id:USER.id,steps,updated_at:'2026-11-08T12:00:00Z'}]},
+ tables:{profiles:[{pseudo:'fixture'}],totehms:[{user_id:USER.id,habits:steps,updated_at:'2026-11-08T12:00:00Z'}]},
  rpc:{my_totehm:async()=>{if(delay)await new Promise(r=>setTimeout(r,delay));return tree;},
  totehm_read:denied?{ok:false,why:'private'}:tree,my_landing:{signed_in:session,pseudo:'fixture'},element_orders_for:{ok:true,orders:{}}},
  network:(url,req)=>{if(url.pathname==='/rest/v1/totehms'&&req.method()!=='GET')writes.push(url.pathname);return null;}});

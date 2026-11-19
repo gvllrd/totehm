@@ -13,9 +13,9 @@ async function sample({width=390,delayPlace=false,placeError=false,placeHook=nul
  let steps=[{t:habit,f:'every_evening',is:['focus']}],release;
  const placeMap=new Map([[habit,privatePlace]]),placeCalls=[],renameCalls=[],writes=[];let announce;const placeRequested=new Promise(r=>announce=r);
  const x=await page(browser,{dir:'com',origin,viewport:{width,height:844},hasTouch:width<700,
-  tables:{profiles:[{pseudo:'fixture'}],totehms:()=>[{user_id:USER.id,steps}]},
+  tables:{profiles:[{pseudo:'fixture'}],totehms:()=>[{user_id:USER.id,habits:steps}]},
   rpc:{my_landing:{signed_in:true,pseudo:'fixture'},my_totehm:tree,element_orders_for:{ok:true,orders:{}},
-   habit_spaces:{ok:true,mine:true,habits:[]},totehm_read:{...tree,ok:true,pseudo:'artist',steps:[{t:habit,is:['focus'],f:'daily'}]},
+   habit_spaces:{ok:true,mine:true,habits:[]},totehm_read:{...tree,ok:true,pseudo:'artist',habits:[{t:habit,is:['focus'],f:'daily'}]},
    creator_page:{ok:true,pseudo:'artist',palette:['focus'],sale:{open:false},viewer:{signed_in:true,can_read:true}},
    member_media:{ok:true,items:[]},club_spots_of:{ok:true,items:[]},sso_revoke_everywhere:1,
    habit_spot_set:async args=>{placeCalls.push(args);const result=await placeHook?.(args,placeCalls.length);if(result===false||result?.ok===false)return result;
@@ -30,7 +30,7 @@ async function sample({width=390,delayPlace=false,placeError=false,placeHook=nul
     return {status:placeError?503:200,contentType:'application/json',body:JSON.stringify(placeError?{message:'unavailable'}:snapshot)};
    }
    if(url.pathname==='/rest/v1/totehms'&&req.method()==='POST'){
-    steps=JSON.parse(req.postData()).steps;writes.push(structuredClone(steps));return {status:200,contentType:'application/json',body:'[]'};
+    steps=JSON.parse(req.postData()).habits;writes.push(structuredClone(steps));return {status:200,contentType:'application/json',body:'[]'};
    }
    return null;
   }});
