@@ -34,6 +34,20 @@ begin
     fails := fails || 'my_totehm rend une ancienne clé (trips · reps · wisdom)'::text;
   end if;
 
+  -- 2 ter · HABITS (19/11) : la colonne `totehms.habits` existe, et plus aucune fonction ne lit la colonne
+  --          `steps` — sauf le PONT `_totehm_habits_sync`, qui la tient identique ; aucune fonction « step »
+  if not exists (select 1 from information_schema.columns
+                  where table_schema = 'public' and table_name = 'totehms' and column_name = 'habits') then
+    fails := fails || 'totehms.habits absente'::text;
+  end if;
+  select string_agg(p.proname, ', ' order by p.proname) into v_corps from pg_proc p
+   where p.pronamespace = 'public'::regnamespace and p.prokind = 'f' and p.proname <> '_totehm_habits_sync'
+     and p.prosrc ~* '\.steps\M|coalesce\(\s*steps\M|\mselect\s+steps\s+into\M|totehms\(user_id,\s*steps\M|\mset\s+steps\s*=';
+  if v_corps is not null then fails := fails || ('lit la colonne steps: ' || v_corps); end if;
+  select string_agg(p.proname, ', ') into v_corps from pg_proc p
+   where p.pronamespace = 'public'::regnamespace and p.proname ~* 'step';
+  if v_corps is not null then fails := fails || ('fonction au nom de « step »: ' || v_corps); end if;
+
   -- 3 · les ponts encore là (à retirer quand le connecteur ChatGPT, TotehmBot et la boutique ont suivi)
   select count(*) into v_ponts_vues from pg_class c
    where c.relnamespace = 'public'::regnamespace and c.relkind = 'v'
