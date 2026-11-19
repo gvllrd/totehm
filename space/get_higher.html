@@ -246,19 +246,20 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
 /* ─── DISCOVER PANEL ─── */
 #discover{
   position:fixed;inset:0;z-index:20;background:#000;
-  opacity:0;pointer-events:none;
-  transition:opacity .55s ease;
+  opacity:0;visibility:hidden;pointer-events:none;
+  transition:opacity .55s ease,visibility 0s .55s;
 }
-#discover.in{opacity:1;pointer-events:auto}
-#disc-back{
-  position:absolute;top:14px;left:14px;z-index:5;
-  font-family:'Space Mono',monospace;font-size:10px;color:#9a9a9a;letter-spacing:.14em;text-transform:uppercase;
-  background:none;border:none;cursor:pointer;padding:0;transition:color .15s;
+#discover.in{opacity:1;visibility:visible;pointer-events:auto;transition-delay:0s}
+#discover:not(.in) #disc-back{visibility:hidden}
+#disc-back,#premium-case-back{
+  position:absolute;top:22px;left:14px;z-index:5;min-height:44px;
+  font:400 10px 'Space Mono',monospace;color:#9a9a9a;letter-spacing:.14em;
+  text-decoration:none;background:none;border:0;cursor:pointer;padding:10px;transition:color .15s;
 }
-@media(hover:hover){#disc-back:hover{color:#fff}}
+@media(hover:hover){#disc-back:hover,#premium-case-back:hover{color:#fff}}
 #disc-stage{
   position:absolute;inset:0;
-  display:flex;align-items:center;justify-content:center;padding:60px 24px 50px;
+  display:flex;align-items:center;justify-content:center;padding:80px 24px 118px;
 }
 .disc-block{
   position:absolute;width:90%;max-width:580px;text-align:center;
@@ -266,38 +267,59 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
   transition:opacity .65s ease,transform .65s cubic-bezier(.22,.61,.36,1);
   display:flex;flex-direction:column;align-items:center;gap:16px;
 }
+#disc-stage .disc-block{width:min(calc(100% - 48px),680px);max-width:680px;gap:18px}
 .disc-block.active{visibility:visible}
 .disc-block.show{opacity:1;transform:translateY(0);pointer-events:auto}
 .disc-block.instant{transition:none}
-.disc-block.show .coral-line{animation:settle .9s cubic-bezier(.22,.61,.36,1)}
-#discover .t-coral{color:#ebebeb}
-@media(prefers-reduced-motion:reduce){.disc-block.show .coral-line{animation:none}}
+#disc-stage .t-futura{
+  font:400 clamp(16px,2vw,23px)/1.6 'Space Mono',monospace;
+  letter-spacing:0;padding:0;color:#ddd;white-space:pre-line;
+}
+#disc-stage .disc-block:first-child>.t-futura:first-child{
+  font:400 clamp(26px,4vw,51px)/1.16 Quantico,sans-serif;
+}
+#disc-stage .higher-inline{width:3.1em}
 .btn-start{
-  background:none;border:none;padding:0;cursor:pointer;outline:none;
+  background:none;border:0;padding:6px 8px;cursor:pointer;min-height:44px;
   display:inline-flex;align-items:center;gap:8px;transition:transform .3s ease;
   -webkit-tap-highlight-color:transparent;
 }
-.get-text{font-family:'Quantico',sans-serif;font-weight:700;font-size:16px;color:var(--coral)}
+.get-text{font:700 clamp(24px,3vw,34px)/1 Quantico,sans-serif;color:var(--coral)}
+.btn-start .higher-svg{width:clamp(78px,8vw,112px)}
 @media(hover:hover){.btn-start:hover{transform:scale(1.05)}.btn-start:hover .get-text{color:#fff}}
 #disc-hint{
-  position:absolute;bottom:22px;left:50%;transform:translateX(-50%);
-  font-family:'Space Mono',monospace;font-size:14px;color:var(--g-mid);opacity:.6;
-  pointer-events:none;animation:bob 2.2s ease-in-out infinite;transition:opacity .5s;
+  position:absolute;bottom:18px;left:50%;transform:translateX(-50%);
+  color:#a0a0a0;pointer-events:none;
 }
-#disc-hint.gone{opacity:0}
-#disc-prog{
-  position:absolute;bottom:0;left:0;height:1px;
-  background:rgba(255,255,255,.45);width:0%;
-  transition:width .5s cubic-bezier(.65,0,.35,1);pointer-events:none;
+#disc-hint svg{display:block;width:24px;height:24px}
+#disc-rail{
+  position:absolute;bottom:65px;left:50%;transform:translateX(-50%);
+  display:flex;gap:6px;pointer-events:none;
 }
-@media(max-width:600px){.t-qp{font-size:14px}.get-text{font-size:14px}}
+#disc-rail span{width:18px;height:2px;background:#242424;transition:background .3s}
+#disc-rail span.on{background:#bdbdbd}
+@media(max-width:650px){
+  #disc-stage{padding:74px 23px 128px}
+  #disc-stage .t-futura{font-size:clamp(15px,4vw,17px);line-height:1.5}
+  #disc-stage .disc-block:first-child>.t-futura:first-child{font-size:clamp(26px,8vw,35px)}
+  #disc-back,#premium-case-back{top:14px}
+}
+@media(max-height:560px){
+  #disc-stage{padding-block:60px 82px}
+  #disc-stage .disc-block{gap:10px}
+  #disc-stage .t-futura{font-size:clamp(15px,3.1vh,18px);line-height:1.45}
+}
+@media(max-width:600px){.t-qp{font-size:14px}}
+@media(prefers-reduced-motion:reduce){
+  #discover,.disc-block,.btn-start,#disc-rail span{transition:none}
+  .bob-chev{animation:none}
+}
 
 /* ══ SURVOL — textes gris → blanc sur desktop ══ */
 @media(hover:hover){
   .t-futura:hover{color:#fff}
   .t-mono:hover{color:#fff}
   .note.dim:hover{color:#fff}
-  #discover .t-coral:hover{color:#fff}
   .note.dim a:hover{color:#fff!important}
   #auth-back:hover{color:#fff}
 }
@@ -382,8 +404,6 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
 .trigger-label:hover,
 .chev:hover,
 #disc-back:hover,
-#discover .t-coral:hover,
-#disc-hint:hover,
 #terms-link:hover,
 #sdisc-back:hover,
 #sdisc-board-close:hover,
@@ -449,14 +469,26 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
 </style>
 <style>
 body.is-paper-view #totehm-paper{position:fixed;inset:0;margin:0!important;pointer-events:none}
-#premium-case-back{position:fixed;top:28px;left:28px;z-index:30;color:#bbb;font:11px 'Space Mono',monospace}
+#premium-case-back{position:fixed;z-index:30;display:flex;align-items:center}
+body.is-discover-open :is(#premium-case-back,#premium-case-turn,#down-trigger,#terms-link){visibility:hidden}
 #premium-case-turn{position:fixed;top:22px;left:50%;transform:translateX(-50%);z-index:30;padding:8px 14px;color:#bbb;font:11px 'Space Mono',monospace;background:#111;border:1px solid #393939;border-radius:10px;cursor:pointer}
-body.is-paper-view .seq-block.active{position:fixed;inset:0;max-width:none;transform:none;opacity:1;transition:none;justify-content:flex-end;padding:0 20px max(26px,4vh);pointer-events:none}
+body.is-paper-view .seq-block.active{position:fixed;inset:0;max-width:none;transform:none;opacity:1;transition:none;justify-content:flex-end;gap:8px;padding:0 20px max(26px,4vh);pointer-events:none}
 body.is-paper-view #premium-case-canvas{display:block;width:100%;height:100%;cursor:grab;touch-action:none;pointer-events:auto}
-body.is-paper-view #down-trigger{display:none}
+body.is-paper-view #down-trigger{
+  top:50%;right:14px;bottom:auto;left:auto;transform:translateY(-50%);
+  min-height:44px;padding:10px;justify-content:center;
+}
+body.is-paper-view #down-trigger .trigger-label{display:block}
+body.is-paper-view #down-trigger .chev{display:none}
+@media(max-width:540px){body.is-paper-view #down-trigger{top:36px;transform:none}}
 body.is-paper-view #btn-buy,body.is-paper-view #btn-play-street{position:relative;z-index:1;pointer-events:auto;padding:10px 16px}
+body.is-paper-view #btn-buy[data-mode="owned"]{
+  font-size:clamp(24px,3.2vw,36px);line-height:1;gap:10px;min-height:44px;
+}
+body.is-paper-view #btn-buy[data-mode="owned"] .higher-inline{width:clamp(78px,8.2vw,112px)}
+body.is-paper-view #checkout-error:empty{display:none}
 body.is-paper-view #btn-play-street{margin-top:0!important;background:transparent}
-body.is-paper-view:not(.is-paper-entered) :is(.seq-block>button,#premium-case-back,#premium-case-turn){visibility:hidden}
+body.is-paper-view:not(.is-paper-entered) :is(.seq-block>button,#premium-case-back,#premium-case-turn,#down-trigger){visibility:hidden}
 </style>
 </head>
 <body>
@@ -562,11 +594,11 @@ body.is-paper-view:not(.is-paper-entered) :is(.seq-block>button,#premium-case-ba
   <svg class="chev bob-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
 </button>
 
-<div id="discover">
-  <button id="disc-back" type="button">Back</button>
-  <div id="disc-stage"></div>
-  <div id="disc-hint" aria-hidden="true">↓</div>
-  <div id="disc-prog"></div>
+<div id="discover" role="dialog" aria-modal="true" aria-label="Discover the TotehmPaper" aria-hidden="true" inert>
+  <button id="disc-back" type="button">BACK</button>
+  <div id="disc-stage" role="region" aria-label="The TotehmPaper story"></div>
+  <div id="disc-rail" aria-hidden="true"></div>
+  <div id="disc-hint" aria-hidden="true"><svg class="bob-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></div>
 </div>
 
 <div id="street-disc">
@@ -897,13 +929,14 @@ showSlide(0,true);
 const paperViewQuery=new URLSearchParams(location.search);
 if(paperViewQuery.get('paper')==='1'){
  const embedded=window.parent!==window&&paperViewQuery.get('embedded')==='1';
- const back=document.createElement('a');back.id='premium-case-back';back.href='/lisbon-space';back.textContent='← Back';back.setAttribute('data-experience-close','');document.body.append(back);
+ const back=document.createElement('a');back.id='premium-case-back';back.href='/lisbon-space';back.textContent='BACK';back.setAttribute('data-experience-close','');document.body.append(back);
  const turnButton=document.createElement('button');
  turnButton.id='premium-case-turn';turnButton.type='button';turnButton.textContent='Turn over';
  turnButton.setAttribute('aria-controls','premium-case-canvas');turnButton.hidden=true;document.body.append(turnButton);
  import('/premium-case-view.mjs').then(({mountPremiumCase})=>{
   document.body.classList.add('is-paper-view');if(!embedded)document.body.classList.add('is-paper-entered');
   window.__totehm_paper_entry=mountPremiumCase(document.getElementById('totehm-paper'),{embedded,turnButton});turnButton.hidden=false;
+  document.querySelector('#down-trigger .trigger-label').textContent='Discover';
  }).catch(()=>{document.body.classList.remove('is-paper-view');window.__totehm_paper_entry=()=>({ready:true,premium:true,sharedModel:false,tongue:false});initPaper();});
 }else initPaper();
 
@@ -1061,40 +1094,18 @@ const DSLIDES = [
   {parts:[G("From it emerged a brand."),C("A Dope one."),G("Its thinking?"),G("Not differently."),C("Opposite."),G("From traditional branding."),CTA_D]}
 ];
 
-const CHAR_MS = 48;
-function wrapChars(html, ci){
-  const tmp = document.createElement('div'); tmp.innerHTML = html || '';
-  function walk(n){
-    if(n.nodeType === 3){
-      const txt = n.textContent; if(!txt) return n;
-      const f = document.createDocumentFragment();
-      for(let i = 0; i < txt.length; i++){
-        const ch = txt[i];
-        if(ch === ' ' || ch === '\t' || ch === '\n'){ f.appendChild(document.createTextNode(ch)); ci.v += .8; }
-        else{ const s = document.createElement('span'); s.className = 'read-char'; s.textContent = ch;
-          s.style.animationDelay = (ci.v * CHAR_MS / 1000).toFixed(3) + 's'; ci.v++; f.appendChild(s); }
-      } return f;
-    } else if(n.nodeType === 1){
-      const cl = n.cloneNode(false); n.childNodes.forEach(ch => cl.appendChild(walk(ch))); return cl;
-    } return n;
-  }
-  const f = document.createDocumentFragment();
-  tmp.childNodes.forEach(ch => f.appendChild(walk(ch)));
-  return f;
-}
-
 function buildDisc(sl){
   const b = document.createElement('div'); b.className = 'disc-block';
   sl.parts.forEach(p => {
     if(p.t === 'cta'){
-      const btn = document.createElement('button'); btn.className = 'btn-start';
+      const btn = document.createElement('button'); btn.type = 'button'; btn.className = 'btn-start';
       btn.setAttribute('aria-label','Get Higher');
       btn.innerHTML = '<span class="get-text">Get</span><span class="higher-svg"><svg viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></span>';
       btn.onclick = closeDiscover;
       b.appendChild(btn);
     } else {
       const d = document.createElement('div');
-      d.className = p.t === 'c' ? 't-coral coral-line' : (p.t === 'm' ? 't-mono' : 't-futura');
+      d.className = 't-futura';
       d.innerHTML = (p.x || '').replace(/\n/g, '<br>');
       b.appendChild(d);
     }
@@ -1106,31 +1117,44 @@ const discoverEl  = document.getElementById('discover');
 const discStage   = document.getElementById('disc-stage');
 const discHint    = document.getElementById('disc-hint');
 const discBack    = document.getElementById('disc-back');
-const discProg    = document.getElementById('disc-prog');
+const discRail    = document.getElementById('disc-rail');
 const downTrigger = document.getElementById('down-trigger');
 let discOpen = false, discCur = 0, discLock = false;
 const DFADE = 650;
+const discoverMotion = matchMedia('(prefers-reduced-motion: reduce)');
+let discUnlock = 0, discoverReturnFocus = null;
 
 function openDiscover(){
-  if(discOpen) return; discOpen = true;
+  if(discOpen) return;
+  discOpen = true;
+  discoverReturnFocus = document.activeElement;
+  discoverEl.inert = false;
+  discoverEl.removeAttribute('aria-hidden');
   discoverEl.classList.add('in');
-  downTrigger.classList.add('gone');
   discReset();
+  discBack.focus({preventScroll:true});
+  stage.inert = true;
+  document.body.classList.add('is-discover-open');
 }
 function closeDiscover(){
-  if(!discOpen) return; discOpen = false;
+  if(!discOpen) return;
+  discOpen = false;
+  stage.inert = false;
+  document.body.classList.remove('is-discover-open');
+  const previous = discoverReturnFocus === document.body ? downTrigger : discoverReturnFocus;
+  previous?.focus({preventScroll:true});
+  discoverReturnFocus = null;
+  discoverEl.inert = true;
+  discoverEl.setAttribute('aria-hidden','true');
   discoverEl.classList.remove('in');
-  downTrigger.classList.remove('gone');
 }
 
 discBack.addEventListener('click', closeDiscover);
 downTrigger.addEventListener('click', openDiscover);
 
-let dHintGone = false;
-function discHideHint(){ if(!dHintGone){ dHintGone = true; discHint.classList.add('gone'); } }
-
 function discShowSlide(i, instant){
   discStage.querySelectorAll('.disc-block').forEach((b, idx) => {
+    b.inert = idx !== i;
     if(idx === i){
       if(instant) b.classList.add('instant');
       b.classList.add('active');
@@ -1144,18 +1168,22 @@ function discShowSlide(i, instant){
     }
   });
   discCur = i;
-  discProg.style.width = ((i + 1) / DSLIDES.length * 100) + '%';
+  Array.from(discRail.children).forEach((segment,index) => segment.classList.toggle('on',index === i));
+  discHint.hidden = i === DSLIDES.length - 1;
 }
 function discGoTo(i){
   if(discLock || i < 0 || i >= DSLIDES.length || i === discCur) return;
-  discLock = true; discShowSlide(i, false); setTimeout(() => discLock = false, DFADE);
+  const instant = discoverMotion.matches;
+  discLock = !instant;
+  discShowSlide(i, instant);
+  if(discLock) discUnlock = setTimeout(() => discLock = false, DFADE);
 }
 function discNext(){ discGoTo(discCur + 1); }
 function discPrev(){ if(discCur === 0){ closeDiscover(); return; } discGoTo(discCur - 1); }
 function discReset(){
-  discStage.innerHTML = ''; dHintGone = false; discHint.classList.remove('gone');
-  discProg.style.width = '0%';
-  DSLIDES.forEach(s => discStage.appendChild(buildDisc(s)));
+  clearTimeout(discUnlock);
+  discStage.replaceChildren(...DSLIDES.map(buildDisc));
+  discRail.replaceChildren(...DSLIDES.map(() => document.createElement('span')));
   discCur = 0; discLock = false; discShowSlide(0, true);
 }
 
@@ -1163,13 +1191,13 @@ let dlLock = false;
 discoverEl.addEventListener('wheel', e => {
   if(!discOpen || dlLock || Math.abs(e.deltaY) < 25) return;
   dlLock = true; setTimeout(() => dlLock = false, 220);
-  discHideHint(); e.deltaY > 0 ? discNext() : discPrev();
+  e.deltaY > 0 ? discNext() : discPrev();
 }, {passive:true});
 let dY0 = 0;
 discoverEl.addEventListener('touchstart', e => { dY0 = e.changedTouches[0].screenY; }, {passive:true});
 discoverEl.addEventListener('touchend', e => {
   const dy = e.changedTouches[0].screenY - dY0;
-  if(Math.abs(dy) < 35) return; discHideHint(); dy < 0 ? discNext() : discPrev();
+  if(Math.abs(dy) < 35) return; dy < 0 ? discNext() : discPrev();
 }, {passive:true});
 
 let wlLock = false;
@@ -1186,10 +1214,10 @@ window.addEventListener('touchend', e => {
 window.addEventListener('keydown', e => {
   if(e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
   if(discOpen){
-    if(e.key === 'ArrowDown'){ discHideHint(); discNext(); }
-    else if(e.key === 'ArrowUp') discPrev();
-    else if(e.key === 'Escape') closeDiscover();
-  } else if(e.key === 'ArrowDown'){ openDiscover(); }
+    if(e.key === 'ArrowDown' || e.key === 'PageDown'){ e.preventDefault(); discNext(); }
+    else if(e.key === 'ArrowUp' || e.key === 'PageUp'){ e.preventDefault(); discPrev(); }
+    else if(e.key === 'Escape'){ e.preventDefault(); closeDiscover(); }
+  } else if(e.key === 'ArrowDown'){ e.preventDefault(); openDiscover(); }
 });
 }
 

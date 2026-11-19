@@ -123,6 +123,7 @@ function openExperience({object,camera,href,type,from=null,canvas,time,width,sho
    },true);
    win.addEventListener('keydown',event=>{
     if(event.key!=='Escape')return;
+    if(type==='paper'&&win.document.getElementById('discover')?.classList.contains('in'))return;
     const sequence=win.__totehm_lisbon?.().sequence;
     if(sequence==='phrase'||sequence==='art')return;
     event.preventDefault();event.stopImmediatePropagation();close();

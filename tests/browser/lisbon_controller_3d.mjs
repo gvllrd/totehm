@@ -129,6 +129,10 @@ try{
           return state.sequence==='phrase'&&state.typewriter.typed>0&&state.typewriter.typed<state.typewriter.total;
         },null,{timeout:15000});
         check(await child.locator('#xp-phrase').getAttribute('aria-label')==='Yes, stop that sht.'&&!(await child.locator('#vidWrap').isVisible()),'The authored phrase types fullscreen before its artwork is visible');
+        check(await child.locator('#xp-phrase').evaluate(phrase=>{
+          const style=getComputedStyle(phrase);
+          return style.fontFamily.includes('Quantico')&&style.color==='rgb(251, 213, 202)'&&parseFloat(style.fontSize)>32;
+        }),'The fullscreen phrase uses large Quantico coral lettering');
         await child.waitForFunction(()=>__totehm_lisbon().activeSign==='stop'&&__totehm_lisbon().sequence==='art'&&__totehm_lisbon().playAttempted,null,{timeout:25000});
         check(logged.join(',')==='stop','The physical STOP key requests just its original signed film');
         check(await child.locator('#vid').evaluate(video=>{

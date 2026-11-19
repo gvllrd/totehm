@@ -145,6 +145,21 @@ try{
   await edition.waitForFunction(()=>__totehm_paper_entry().verso&&!__totehm_paper_entry().turning);
   check(await edition.getByRole('button',{name:'Turn to the front',exact:true}).isVisible(),'The case turns over to reveal Wah’s signature');
   await pg.screenshot({path:path.join(output,'premium-case-signed.png')});
+  const discoverButton=edition.getByRole('button',{name:'Discover',exact:true});
+  const paperBack=edition.locator('#premium-case-back');
+  const discoverBack=edition.locator('#disc-back');
+  await discoverButton.click();
+  check(await discoverBack.isVisible()&&await discoverBack.textContent()==='BACK'&&!(await paperBack.isVisible())&&
+    !(await edition.locator('#premium-case-turn').isVisible()),'Discover exposes a single plain BACK and hides the case controls');
+  check(await edition.evaluate(()=>{
+    const title=document.querySelector('#disc-stage .disc-block:first-child .t-futura');
+    return getComputedStyle(title).fontFamily.includes('Quantico')&&parseFloat(getComputedStyle(title).fontSize)>=26&&document.querySelectorAll('#disc-rail span').length===8;
+  }),'The paper Discover uses the Lisbon reading scale and retains all eight reading steps');
+  await discoverBack.click();
+  check(await paperBack.isVisible()&&!(await discoverBack.isVisible())&&await discoverButton.evaluate(button=>button===document.activeElement),'BACK restores the case and the Discover trigger');
+  await discoverButton.click();
+  await discoverBack.press('Escape');
+  check(await paperBack.isVisible()&&!(await discoverBack.isVisible()),'Escape closes the inner Discover first and leaves the embedded case open');
   await close(pg,edition,shot);
 
   const locked=await openStableController(guest,world.temple.controller.tableAim);
