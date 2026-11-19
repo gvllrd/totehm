@@ -23,14 +23,15 @@ const ANCIENS = {
 const DOSSIERS = ['com', 'club', 'boutique', 'tools', 'backend/supabase/functions'];
 const CODE = /\.(html|mjs|js|ts|css)$/;
 
-// Les plafonds du 19/11, après les lots STORY, OBJECTIVE et HABITS de com/ (le reste attend son lot). Ils ne remontent JAMAIS.
+// Les plafonds du 19/11, après les lots STORY, OBJECTIVE, HABITS de com/ et le lot de la boutique (le reste attend son
+// lot : fonctions d'argent, connecteur, bot). Ils ne remontent JAMAIS.
 const PLAFONDS = {
   'com/console.html': { habit: 1 },
   'com/totehm-link.mjs': { story: 2 },                       // pont : les liens `wisdom` déjà envoyés
-  'com/totehm.html': { story: 16 },                           // objective, repulsion, habit : 0 depuis le 19/11
-  'boutique/index.html': { story: 6 },
-  'boutique/luxury.html': { story: 12, objective: 3, repulsion: 1 },
-  'boutique/streetwear.html': { story: 16, objective: 4, repulsion: 1 },
+  'com/totehm.html': { story: 15 },                           // objective, repulsion, habit : 0 depuis le 19/11
+  'boutique/index.html': { story: 2 },                        // ponts : la base dit encore `wisdom`
+  'boutique/luxury.html': { story: 8 },                        // ponts : luxury-quote, _box_matter, projets déposés
+  'boutique/streetwear.html': { story: 9 },                    // ponts : create-checkout, _box_matter, liens d'avant
   'backend/supabase/functions/_shared/chatgpt-boutique.ts': { objective: 1 },
   'backend/supabase/functions/_shared/chatgpt-context.ts': { story: 29, habit: 11 },
   'backend/supabase/functions/_shared/chatgpt-ecosystem.ts': { story: 11, objective: 1, habit: 2, repulsion: 5 },

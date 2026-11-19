@@ -1009,16 +1009,19 @@ function morph(btn,input,note){btn.onclick=()=>{btn.classList.add('hide');input.
    L'adresse suit le Cloth ouvert (`/?decode=0.nom`) : elle se partage. */
 let DECODE_SEQ=0,DECODED=null;
 const esc=v=>{const d=document.createElement('div');d.textContent=v==null?'':String(v);return d.innerHTML;};
-const DC_VIEW={habits:['my habits','#333366'],objectives:['my objectives','#36498c'],repulsions:['my repulsions','#743169'],wisdom:['my wisdom','#743169'],visions:['my vision','#36498c']};
+/* 19/11 — la 5e vue s'appelle MY STORY (`stories`) ; PONT : la base nomme encore sa vue et son groupe de mini-box
+   `wisdom`, la page les lit sous leur nom du jour (`vueDuJour`). */
+const vueDuJour=v=>v==='wisdom'?'stories':v;
+const DC_VIEW={habits:['my habits','#333366'],objectives:['my objectives','#36498c'],repulsions:['my repulsions','#743169'],stories:['my story','#743169'],visions:['my vision','#36498c']};
 const DC_INT={fight:['Fight','#E24B4A','BODY'],flow:['Flow','#e48b31','BODY'],enrich:['Enrich','#fcbe21','MENTAL'],love:['Love','#639922','SPIRIT'],
   express:['Express','#1D9E75','SOUL'],focus:['Focus','#378ADD','MENTAL'],celebrate:['Celebrate','#7F77DD','SOUL']};
-const DC_MI={habits:'',objectives:'o',repulsions:'r',wisdom:'w',visions:'v'};
+const DC_MI={habits:'',objectives:'o',repulsions:'r',stories:'w',visions:'v'};
 /* 09/11 (Wah) : « en fonction de la box, la couleur de la card change : pour
-   objectif, répulsion et habit ça reste bleu ; vision et story / wisdom c'est
+   objectif, répulsion et habit ça reste bleu ; vision et story c'est
    respectivement bleu clair ou rouge-violet. » Ce sont les teintes du TOTEHM. */
-const DC_CARD={habits:'#333366',objectives:'#333366',repulsions:'#333366',visions:'#36498c',wisdom:'#743169'};
+const DC_CARD={habits:'#333366',objectives:'#333366',repulsions:'#333366',visions:'#36498c',stories:'#743169'};
 /* Le mot de chaque vue au-dessus de ses mini-boxes, comme dans streetwear. */
-const DC_MW={habits:'habit',objectives:'objective',repulsions:'repulsion',wisdom:'my story',visions:'vision'};
+const DC_MW={habits:'habit',objectives:'objective',repulsions:'repulsion',stories:'my story',visions:'vision'};
 const DC_STAGE={making:'in the making',production:'in production',shipped:'shipped',cancelled:'cancelled'};
 /* ══ LA PAGE D'UN CLOTH · 06/11/2026 (Wah) ════════════════════════════════
    « Le moins possible. On enlève tout le superflu qui ne sert à RIEN. »
@@ -1029,7 +1032,7 @@ const DC_STAGE={making:'in the making',production:'in production',shipped:'shipp
    ⚠️ La box est une `.bx` comme dans streetwear — même réglette, mêmes
    mini-boxes DEDANS. `tools/ecosystem_ui` lui pose sa loupe tout seul. */
 function dcBox(d){
-  const V=DC_VIEW[d.view]||['the element','#333366'];
+  const V=DC_VIEW[vueDuJour(d.view)]||['the element','#333366'];
   if(d.legacy)return '<div class="dc-bx" style="--skin:#333366"><div class="sb">the message</div><div class="nm">'+esc('“'+(d.message||'')+'”')+'</div></div>';
   if(d.level==='locked')return '<div class="dc-bx" style="--skin:'+V[1]+'"><div class="sb">'+esc(V[0])+'</div>'+
     '<div class="lock">This element is reserved for its owner and eligible collectors.</div></div>';
@@ -1039,8 +1042,8 @@ function dcBox(d){
   /* Les mini-boxes ne sont PAS dissociées de leur box-mère : elles vivent dedans,
      groupées par vue, comme au moment où le membre les a allumées. */
   const grp=d.matter&&typeof d.matter==='object'?Object.entries(d.matter).filter(([,a])=>(Array.isArray(a)?a:[]).length)
-    .map(([k,a])=>'<div class="dc-grp"><span class="w">'+esc((DC_MW[k]||k))+'</span>'+
-      a.map(x=>'<span class="dc-mi '+(DC_MI[k]||'')+'">'+esc(x&&x.text||'')+'</span>').join('')+'</div>').join(''):'';
+    .map(([k,a])=>'<div class="dc-grp"><span class="w">'+esc((DC_MW[vueDuJour(k)]||k))+'</span>'+
+      a.map(x=>'<span class="dc-mi '+(DC_MI[vueDuJour(k)]||'')+'">'+esc(x&&x.text||'')+'</span>').join('')+'</div>').join(''):'';
   return '<div class="dc-bx" style="--skin:'+V[1]+'">'+(tick?'<span class="tick">'+tick+'</span>':'')+
     '<div class="sb">'+esc(V[0])+'</div><div class="nm">'+esc(d.text||'')+'</div>'+
     (sub?'<div class="sb">'+sub+'</div>':'')+grp+'</div>';
@@ -1051,8 +1054,8 @@ function decodeHTML(d,signed){
      trouve derrière, comme une CERTIFICATION. Tout le contenu doit y rentrer. »
      DEUX FACES, UNE SEULE GÉOMÉTRIE, la même au doigt et à la souris. Le verso
      défile CHEZ LUI quand la box est longue. */
-  const V=DC_VIEW[d.view]||['the element','#333366'];
-  const skin=d.legacy?'#333366':(DC_CARD[d.view]||'#333366');
+  const V=DC_VIEW[vueDuJour(d.view)]||['the element','#333366'];
+  const skin=d.legacy?'#333366':(DC_CARD[vueDuJour(d.view)]||'#333366');
   const art='<div class="dc-art'+(d.art?'':' is-wait')+'" id="dc-art"><span>'+
     (d.art?'…':d.stage==='cancelled'?'cancelled':'The artwork lands with the cloth.')+'</span></div>';
   /* ── LE VERSO, dans l'ordre de la certification ─────────────────────── */
@@ -1070,7 +1073,7 @@ function decodeHTML(d,signed){
     /* Les mini-boxes restent DANS leur box-mère, groupées par vue. */
     if(d.matter&&typeof d.matter==='object')
       corps+=Object.entries(d.matter).filter(([,a])=>(Array.isArray(a)?a:[]).length)
-        .map(([k,a])=>'<div class="dc-f mat"><span class="k">'+esc(DC_MW[k]||k)+'</span>'+
+        .map(([k,a])=>'<div class="dc-f mat"><span class="k">'+esc(DC_MW[vueDuJour(k)]||k)+'</span>'+
           a.map(x=>'<span class="mi">'+esc(x&&x.text||'')+'</span>').join('')+'</div>').join('');
   }
   /* LES PHOTOS : dans la card, pas dessous. Un tap les ouvre en plein écran. */
@@ -1664,7 +1667,7 @@ document.querySelectorAll('[data-club]').forEach(a => a.addEventListener('click'
 }));
 
 /* Diagnostic — des booléens, jamais une valeur de membre. */
-const BUILD='2026-11-10-coin-membre';
+const BUILD='2026-11-19-vocabulaire-boutique';
 window.__totehm_boutique=()=>({ build:BUILD, page:'home', luxury_link:!!document.querySelector('a[href="/luxury"]'),
   club_links:document.querySelectorAll('[data-club]').length, logos:document.querySelectorAll('.brand-logo,img[src*="champion"]').length,
   collab:/Champion 2026/.test(document.getElementById('collab')?.textContent||''), branding_space:document.getElementById('brand-btn')?.dataset.space==='/',

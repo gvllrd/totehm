@@ -34,7 +34,7 @@ const { pg, log } = await page(browser, { dir:'boutique', origin:'https://www.hi
 await pg.goto('https://www.higher.boutique/');
 await pg.waitForFunction(() => window.__totehm_boutique && /47 pieces left/.test(document.querySelector('#sw-col-sold').textContent));
 const d = await pg.evaluate(() => window.__totehm_boutique());
-ok(d.build === '2026-11-10-coin-membre' && d.decode_first && !d.member_window, 'the physical landing page: DECODE first, no member window here');
+ok(/^20\d\d-\d\d-\d\d-[a-z0-9-]+$/.test(d.build) && d.decode_first && !d.member_window, 'the physical landing page: DECODE first, no member window here');
 // 30/10 (Wah) : « la face verso du [Higher] doit avoir EXACTEMENT les mêmes
 // perforations que la face recto — logique, on retourne la même pièce ». Donc
 // UN SEUL masque dans le document, et les deux faces le référencent.
@@ -228,7 +228,7 @@ for(const [name, re, lvl] of [['0.hill', /Run the hill/, 'member'], ['0.lock', /
   }
   if(lvl === 'locked'){
     ok(!/Run the hill/.test(await pg.textContent('#decode-msg')) && await pg.isVisible('#decode-msg [data-eco-connect]'), 'decode locked: no element text, CONNECT WITH MY TOTEHM');
-    ok(/in production/i.test(await pg.textContent('#decode-msg')) && /my wisdom/i.test(await pg.textContent('.dc-dos')), 'locked still says the view, the cloth and the stage');
+    ok(/in production/i.test(await pg.textContent('#decode-msg')) && /my story/i.test(await pg.textContent('.dc-dos')), 'locked still says the view (MY STORY, 19/11), the cloth and the stage');
     ok('#743169' === await pg.evaluate(() => getComputedStyle(document.querySelector('#dc-piece')).getPropertyValue('--skin').trim()),
        '09/11 · MY STORY fait une card rouge-violet');
   }

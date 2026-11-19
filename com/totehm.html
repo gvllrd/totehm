@@ -5832,7 +5832,7 @@ const nCloths=n=>n?'<span class="v-dots" role="img" aria-label="'+n+(n>1?' cloth
    La RÉFÉRENCE n'est pas la même pour tous : une habit n'a pas d'identifiant, son TEXTE serveur EST sa
    clé (comme `_box_matter` et `element_media_add`) ; les quatre autres portent leur id. Une box
    provisoire (créée à l'instant, pas encore en base) n'a rien à totehmiser. */
-const WEAR={h:'habit', t:'objective', r:'repulsion', w:'wisdom', v:'vision'};   /* `wisdom` : pont, la boutique ne lit pas encore `story` */
+const WEAR={h:'habit', t:'objective', r:'repulsion', w:'story', v:'vision'};   /* 19/11 : la boutique lit `story` (et l'ancien `wisdom`) */
 function clefWear(k,x){
   if(!x||!WEAR[k]) return '';
   if(k==='h'){ const r=srv(x); return r?String(r).trim():''; }
@@ -8802,7 +8802,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-11-19-vocabulaire-habits';
+const BUILD='2026-11-19-vocabulaire-boutique';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────

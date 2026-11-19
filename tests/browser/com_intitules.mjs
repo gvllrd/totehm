@@ -100,7 +100,7 @@ try{
  await vers(pg, 'ArrowLeft', 'habits'); await vers(pg, 'ArrowLeft', 'stories');
  await pg.locator('#habits [data-open="w:w1"]').evaluate(e => e.click()); await pg.waitForTimeout(500);
  const w = await lire(pg, '#habits .habit.open');
- ok(w.mots[0] === 'learned from' && w.wear === 'wisdom:w1',
+ ok(w.mots[0] === 'learned from' && w.wear === 'story:w1',
     'MY STORY : « learned from » gardé, « + totehmize » → ' + w.wear);
 
  /* ── 19/11 · UNE BOX SANS TEXTE NI DATE DISPARAÎT (Wah : « une box vide, elle disparaît ») ── */

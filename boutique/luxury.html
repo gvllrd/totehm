@@ -47,7 +47,7 @@
   --top:env(safe-area-inset-top,0px);--bot:env(safe-area-inset-bottom,0px);
   --joy-d:56px;--ease:cubic-bezier(.2,.9,.25,1);
   --bg:#000;--c1:#1f1f24;--c2:#2a2a30;--c3:#34343a;
-  --logo-navy:#333366;--logo-wisdom:#5b2652;--logo-visions:#2b3a73;
+  --logo-navy:#333366;--logo-story:#5b2652;--logo-visions:#2b3a73;
   --perfo:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 224.88 224.08' preserveAspectRatio='none'%3E%3Cdefs%3E%3Cmask id='m'%3E%3Crect x='-40' y='-40' width='310' height='310' fill='%23fff'/%3E%3Ccircle cx='56.421' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='56.421' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='112.440' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='112.440' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='168.459' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='168.459' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='56.020' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='56.020' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='112.039' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='112.039' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='168.059' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='168.059' r='13.86' fill='%23000'/%3E%3C/mask%3E%3C/defs%3E%3Crect x='0.402' y='0' width='224.076' height='224.078' fill='%23fff' mask='url(%23m)'/%3E%3C/svg%3E");
 }
 *{box-sizing:border-box;margin:0;padding:0}
@@ -249,17 +249,17 @@ button.mi.is-on{filter:none}
    3) un tap sur MY GRIND fait apparaître ses trois boutons, empilés au centre.
    Tout en `transition` : jamais une @keyframes (elle rejoue à chaque redessin). */
 #tz-papers{display:flex;gap:10px;width:100%;max-width:430px;margin:0 auto;align-self:stretch;justify-content:center;align-items:stretch}
-/* `min-width:0` : sans lui, un titre plus long (« my wisdom story ») élargit son
+/* `min-width:0` : sans lui, un titre plus long (« my repulsions ») élargit son
    papier et le logo du centre n'est plus au centre. Trois tiers exacts. */
 .pap{position:relative;flex:1 1 0;min-width:0;aspect-ratio:1/1;border:0;padding:0;cursor:pointer;color:#fff;
   -webkit-tap-highlight-color:transparent;-webkit-mask-image:var(--perfo);mask-image:var(--perfo);
   -webkit-mask-size:100% 100%;mask-size:100% 100%;display:flex;align-items:center;justify-content:center;
   transition:transform .55s var(--ease),opacity .4s ease,filter .2s ease}
-.pap-s{background:var(--logo-wisdom)}.pap-g{background:var(--logo-navy)}.pap-v{background:var(--logo-visions)}
+.pap-s{background:var(--logo-story)}.pap-g{background:var(--logo-navy)}.pap-v{background:var(--logo-visions)}
 @media(hover:hover){.pap:hover{filter:brightness(1.18)}}
 .pap.is-here{filter:brightness(1.25)}
 /* Le titre tient DANS son papier : il revient à la ligne plutôt que de se faire
-   rogner par le masque perforé (« my wisdom story » débordait des deux côtés). */
+   rogner par le masque perforé (« my repulsions » débordait des deux côtés). */
 .pap-lab{font-weight:700;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;padding:0 6px;text-align:center;
   max-width:100%;line-height:1.35;overflow-wrap:break-word;opacity:0;transition:opacity .4s ease}
 /* 0 · les deux côtés sont POSÉS SUR le centre, à sa taille : on ne voit qu'un logo */
@@ -642,7 +642,7 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
       <div class="step-h">3 · The element that totehmizes it</div>
       <div id="el-head" class="is-logo">
         <div id="tz-papers" role="group" aria-label="My TOTEHM, unfolded">
-        <button class="pap pap-s" type="button" data-v="wisdom"><span class="pap-lab">my story</span></button>
+        <button class="pap pap-s" type="button" data-v="stories"><span class="pap-lab">my story</span></button>
         <button class="pap pap-g" id="totehmize" type="button" data-g="1" aria-label="Totehmize this piece">
           <!-- LE LOGO : le fond perforé, le rail, le T, le mot. Le fond prend le
                dessus, les trois autres fondent — et MY GRIND reste. -->
@@ -867,7 +867,7 @@ document.addEventListener('visibilitychange', () => { if(!document.hidden) ssoVe
 
 
 /* ══ L'ÉTAT — une lecture, un écran ═════════════════════════════════ */
-const BUILD = '2026-11-11-atelier-local';
+const BUILD = '2026-11-19-vocabulaire-boutique';
 let A = null, ADM = [], SEQ = 0, BUSY = false, ME = null;
 /* Le diagnostic — des booléens et des compteurs, jamais une valeur de membre. */
 window.__totehm_luxury = () => ({ build: BUILD, signed_in: !!A?.signed_in, thp: !!A?.thp, open: !!A?.open,
@@ -885,7 +885,8 @@ window.__totehm_luxury = () => ({ build: BUILD, signed_in: !!A?.signed_in, thp: 
 const money = (c, cur) => (c/100).toLocaleString('en-GB', { style:'currency', currency:(cur||'eur').toUpperCase(), minimumFractionDigits: c % 100 ? 2 : 0 });
 const esc = s => { const d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; };
 const okColor = c => /^#[0-9a-f]{3,8}$/i.test(String(c || ''));
-const SKINQ = { habits:'var(--navy)', objectives:'var(--blue)', repulsions:'var(--rep)', wisdom:'var(--rep)', visions:'var(--blue)' };
+const SKINQ = { habits:'var(--navy)', objectives:'var(--blue)', repulsions:'var(--rep)', stories:'var(--rep)', visions:'var(--blue)',
+  wisdom:'var(--rep)' };   /* `wisdom` : PONT, un projet déposé avant le 19/11 porte l'ancien nom */
 const STATUS = { requested:'waiting for our answer', quoted:'deposit to pay', paid:'deposited · we study it', declined:'not this time · refunded', cancelled:'cancelled' };
 const ETATS = ['s-wait','s-out','s-nothp','s-closed','go','quotes'];
 function show(...on){ ETATS.forEach(id => $(id).classList.toggle('hide', !on.includes(id))); }
@@ -1071,7 +1072,7 @@ const INTS={fight:['Fight','#E24B4A','BODY'],flow:['Flow','#e48b31','BODY'],enri
   express:['Express','#1D9E75','SOUL'],focus:['Focus','#378ADD','MENTAL'],celebrate:['Celebrate','#7F77DD','SOUL']};
 const icol=i=>(INTS[i]||[])[1]||'#ffffff';
 const VIEWS={
-  wisdom:    {nom:'my wisdom story',sub:'what I pass on', kind:'wisdom',    skin:'#743169'},
+  stories:   {nom:'my story',       sub:'what I pass on', kind:'story',     skin:'#743169'},   /* 19/11 : MY STORY, comme partout */
   visions:   {nom:'my vision',      sub:'what I imagine', kind:'vision',    skin:'#36498c'},
   objectives:{nom:'my objectives',  sub:'what I chase',   kind:'objective', skin:'#36498c'},
   habits:    {nom:'my habits',      sub:'what I repeat',  kind:'habit',     skin:'#333366'},
@@ -1084,19 +1085,21 @@ const GRIND=['objectives','habits','repulsions'];
 let TOT=null, vue=null, PICK=null, LIE={matter:[],shots:[]}, OPEN=null, MT_SEQ=0, TOT_SEQ=0;
 async function loadTotehm(){
   const seq=++TOT_SEQ;
-  const{data,error}=await sb.rpc('my_trips');
+  const{data,error}=await sb.rpc('my_totehm');
   if(seq!==TOT_SEQ)return;
   if(error){console.error('[totehm]',error.message);return;}
   const t=data||{};
   const net=a=>(a||[]).filter(x=>(x.text||'').trim()).map(x=>({ref:x.id,text:x.text,is:x.is||[]}));
-  /* Une habit n'a pas d'identifiant : son TEXTE est sa référence (`_box_matter`). */
+  /* Une habit n'a pas d'identifiant : son TEXTE est sa référence (c'est ce que lit
+     `_box_matter`). 19/11 — TOUTES les Habits, dans leur ordre, lues dans l'arbre (`habits`) : les reconstituer
+     par les objectifs perdait celles d'une vision depuis que les objectifs sont DATÉS. */
   const hs=new Map();
-  [...(t.loose||[]),...(t.trips||[]).flatMap(o=>o.habits||[])].forEach(h=>{
+  (t.habits||[]).forEach(h=>{
     const txt=(h.t||'').trim();if(!txt||hs.has(txt))return;
-    hs.set(txt,{ref:txt,text:txt,is:h.i?[h.i]:[]});
+    hs.set(txt,{ref:txt,text:txt,is:Array.isArray(h.is)&&h.is.length?h.is:(h.i?[h.i]:[])});
   });
-  TOT={wisdom:net(t.wisdom),visions:net(t.visions),objectives:net(t.trips),
-       repulsions:net(t.reps),habits:[...hs.values()]};
+  TOT={stories:net(t.stories),visions:net(t.visions),objectives:net(t.objectives),
+       repulsions:net(t.repulsions),habits:[...hs.values()]};
 }
 const tick=l=>'<span class="tick">'+(l||[]).map(i=>'<i style="background:'+icol(i)+'"></i>').join('')+'</span>';
 function boxHTML(o,k){
@@ -1166,6 +1169,8 @@ $('tz-papers').addEventListener('click',async e=>{
   if(change)renderEl('in');
 });
 /* LA MATIÈRE — ce qui est relié à l'élément, calculé en base (`my_box_matter`). */
+/* les GROUPES de mini-box, sous les clés que rend `_box_matter` — PONT : il dit encore `wisdom` pour MY STORY, et le
+   paiement relit ces clés ; elles changent avec lui (lot des fonctions d'argent). */
 const MI={habits:['','how'],objectives:['o','why'],repulsions:['r','instead'],wisdom:['w','learned'],visions:['v','sees']};
 /* 26/10 (Wah) : tout part ÉTEINT ; un tap LIE la mini-box ou la photo à l'œuvre. */
 const estAllume=(k,x)=>LIE.matter.some(h=>h.kind===k&&h.text===x);
@@ -1198,7 +1203,9 @@ async function openEl(b){
     if(on)LIE.matter.push({kind:k,text:x});
   });
   peindrePhotos(seq,KIND[v],ref);
-  if(PICK&&PICK.ref===ref&&PICK.kind===KIND[v]){PICK.text=m.text||o.text;PICK.view=m.view||v;}
+  /* 19/11 — PONT : `_box_matter` nomme encore la vue MY STORY `wisdom` ; la page dit `stories`. */
+const vueServeur=v=>v==='wisdom'?'stories':v;
+if(PICK&&PICK.ref===ref&&PICK.kind===KIND[v]){PICK.text=m.text||o.text;PICK.view=vueServeur(m.view)||v;}
 }
 /* 26/10 (Wah) : les photos du monde de la box — ses medias (perforés) et les
    spots qu'on y a vécus. La base rend des CHEMINS (mes lignes seules) ; la page
@@ -1487,7 +1494,7 @@ $('ask').onclick = async () => {
     media: MEDIA_PATH || PHOTO, media_kind: MEDIA_KIND,
     brand: BRAND, product: $('product').value.trim(), city: $('city').value.trim(),
     style: STYLE ? STYLE.id : undefined, style_ref: STYLE_REF || undefined, budget_cents: BUDGET,
-    box: { kind: PICK.kind, ref: PICK.ref }, name: $('nm-input').value.trim(),
+    box: { kind: PICK.kind==='story' ? 'wisdom' : PICK.kind, ref: PICK.ref }, name: $('nm-input').value.trim(),   // PONT : luxury-quote attend encore `wisdom`
     pick: { matter: LIE.matter.slice(0, 60), shots: LIE.shots.slice(0, 24) } });
   if(d.ok && d.id){
     n.textContent = 'opening checkout…';

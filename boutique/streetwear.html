@@ -46,7 +46,7 @@ html{font-family:'Space Mono',monospace}button,input,select,textarea{font-family
 :root{
   --navy:#333366;--blue:#36498c;--rep:#743169;--coral:#fbd5ca;
   /* Les papiers du logo (mêmes valeurs que com/totehm.html) */
-  --logo-navy:#333366;--logo-wisdom:#5b2652;--logo-visions:#2b3a73;
+  --logo-navy:#333366;--logo-story:#5b2652;--logo-visions:#2b3a73;
   /* La tuile navy perforée des contrôles (copiée de boutique/index.html) */
   --mid:#b0b0b0;--lo:#909090;--dim:#5a5a5a;--bg:#000;--c1:#1f1f24;--c2:#2a2a30;--c3:#34343a;--ok:#639922;
   --q:'Quantico',sans-serif;--mono:'Space Mono',monospace;--ease:cubic-bezier(.22,.61,.36,1);
@@ -263,17 +263,17 @@ button.mi.is-on{filter:none}
    3) un tap sur MY GRIND fait apparaître ses trois boutons, empilés au centre.
    Tout en `transition` : jamais une @keyframes (elle rejoue à chaque redessin). */
 #tz-papers{display:flex;gap:10px;width:100%;max-width:430px;margin:0 auto;align-self:stretch;justify-content:center;align-items:stretch}
-/* `min-width:0` : sans lui, un titre plus long (« my wisdom story ») élargit son
+/* `min-width:0` : sans lui, un titre plus long (« my repulsions ») élargit son
    papier et le logo du centre n'est plus au centre. Trois tiers exacts. */
 .pap{position:relative;flex:1 1 0;min-width:0;aspect-ratio:1/1;border:0;padding:0;cursor:pointer;color:#fff;
   -webkit-tap-highlight-color:transparent;-webkit-mask-image:var(--perfo);mask-image:var(--perfo);
   -webkit-mask-size:100% 100%;mask-size:100% 100%;display:flex;align-items:center;justify-content:center;
   transition:transform .55s var(--ease),opacity .4s ease,filter .2s ease}
-.pap-s{background:var(--logo-wisdom)}.pap-g{background:var(--logo-navy)}.pap-v{background:var(--logo-visions)}
+.pap-s{background:var(--logo-story)}.pap-g{background:var(--logo-navy)}.pap-v{background:var(--logo-visions)}
 @media(hover:hover){.pap:hover{filter:brightness(1.18)}}
 .pap.is-here{filter:brightness(1.25)}
 /* Le titre tient DANS son papier : il revient à la ligne plutôt que de se faire
-   rogner par le masque perforé (« my wisdom story » débordait des deux côtés). */
+   rogner par le masque perforé (« my repulsions » débordait des deux côtés). */
 .pap-lab{font-weight:700;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;padding:0 6px;text-align:center;
   max-width:100%;line-height:1.35;overflow-wrap:break-word;opacity:0;transition:opacity .4s ease}
 /* 0 · les deux côtés sont POSÉS SUR le centre, à sa taille : on ne voit qu'un logo */
@@ -628,7 +628,7 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
   <section class="stage" id="s-element" data-s="element" aria-label="Choose an element of my TOTEHM">
     <div id="el-head" class="is-logo">
       <div id="tz-papers" role="group" aria-label="My TOTEHM, unfolded">
-        <button class="pap pap-s" type="button" data-v="wisdom"><span class="pap-lab">my story</span></button>
+        <button class="pap pap-s" type="button" data-v="stories"><span class="pap-lab">my story</span></button>
         <button class="pap pap-g" id="totehmize" type="button" data-g="1" aria-label="Totehmize this cloth">
           <!-- LE LOGO : le fond perforé, le rail, le T, le mot. Le fond prend le
                dessus, les trois autres fondent — et MY GRIND reste. -->
@@ -868,7 +868,7 @@ document.addEventListener('visibilitychange', () => { if(!document.hidden) ssoVe
 
 
 /* ══ L'ÉTAT — une pièce en cours, cinq scènes ═════════════════════════ */
-const BUILD='2026-11-11-feuilleteur';
+const BUILD='2026-11-19-vocabulaire-boutique';
 /* 02/11 (Wah) : « le style artistique en section deux, et ensuite la sélection
    de la box ». La taille, elle, a rejoint le vêtement. */
 const STAGES=['cloth','style','element','name','order','done'];
@@ -1280,7 +1280,7 @@ async function ensureTotehm(){
   if(error){console.error('[totehm_complete]',error.message);return false;}
   if(!pass?.any){
     const v=pass||{};
-    ['wisdom','visions','habits','objectives','repulsions'].forEach((k,i)=>$('pass-v').children[i].classList.toggle('is-on',!!v[k]));
+    ['stories','visions','habits','objectives','repulsions'].forEach((k,i)=>$('pass-v').children[i].classList.toggle('is-on',!!v[k]));
     $('pass-n').textContent='one box is enough';$('pass').classList.add('is-open');return false;
   }
   if(!TOT)await loadTotehm();
@@ -1316,11 +1316,10 @@ const icol=i=>(INTS[i]||[])[1]||'#ffffff';
 /* 24/10 (Wah) : les vues portent leur nom entier — « my vision, my objectives,
    my habits, my repulsions, my story ». C'est MON Totehm, jamais « la »
    vue : le possessif est la marque.
-   ⚠️ 11/11 (Wah) : la vue s'appelle **MY STORY**, comme sur totehm.com — plus
-   jamais « my wisdom story » sur un bouton de sélection. `wisdom` reste la CLÉ
-   technique (la base, `KIND`, `?wear=wisdom:…`) ; seul le mot affiché change. */
+   ⚠️ 11/11 (Wah) : la vue s'appelle **MY STORY**, comme sur totehm.com. 19/11 (Wah : « les mots que j'utilise
+   reflètent le backend ») : la clé aussi — la vue `stories`, le genre `story`. */
 const VIEWS={
-  wisdom:    {nom:'my story',       sub:'what I pass on', kind:'wisdom',    skin:'#743169', paper:'#5b2652'},
+  stories:   {nom:'my story',       sub:'what I pass on', kind:'story',     skin:'#743169', paper:'#5b2652'},
   visions:   {nom:'my vision',      sub:'what I imagine', kind:'vision',    skin:'#36498c', paper:'#263362'},
   objectives:{nom:'my objectives',  sub:'what I chase',   kind:'objective', skin:'#36498c', paper:'#22224a'},
   habits:    {nom:'my habits',      sub:'what I repeat',  kind:'habit',     skin:'#333366', paper:'#22224a'},
@@ -1333,10 +1332,14 @@ const NOM=Object.fromEntries(Object.entries(VIEWS).map(([k,v])=>[k,[v.nom,v.sub]
 const VUE_DE=Object.fromEntries(Object.entries(VIEWS).map(([k,v])=>[v.kind,k]));
 const GRIND=['objectives','habits','repulsions'];
 /* « + totehmize » d'une box de COM arrive en `?wear=<kind>:<ref>` ; une habit porte
-   son TEXTE pour référence. On ne croit rien de l'adresse : `my_trips` tranche. */
+   son TEXTE pour référence. On ne croit rien de l'adresse : `my_totehm` tranche. `wisdom` : PONT, un lien d'avant le
+   19/11 (ou de COM, tant qu'il l'envoie) dit encore l'ancien nom de `story`. */
+const genreDuJour=k=>k==='wisdom'?'story':k;
+/* 19/11 — PONT : `_box_matter` nomme encore la vue MY STORY `wisdom` ; la page dit `stories`. */
+const vueServeur=v=>v==='wisdom'?'stories':v;
 function parseWear(q){
-  const m=/^(habit|objective|repulsion|wisdom|vision):([\s\S]{1,160})$/.exec(String(q||''));
-  return m?{kind:m[1],ref:m[2]}:null;
+  const m=/^(habit|objective|repulsion|story|wisdom|vision):([\s\S]{1,160})$/.exec(String(q||''));
+  return m?{kind:genreDuJour(m[1]),ref:m[2]}:null;
 }
 function applyWant(){
   const w=F.want;if(!w||!TOT)return false;F.want=null;
@@ -1351,19 +1354,20 @@ async function arrive(want){
   if(me&&myProfile){if(!TOT)await loadTotehm();applyWant();paintCloth();save();}
 }
 async function loadTotehm(){
-  const{data,error}=await sb.rpc('my_trips');
+  const{data,error}=await sb.rpc('my_totehm');
   if(error){console.error('[totehm]',error.message);return;}
   const t=data||{};
   const net=a=>(a||[]).filter(x=>(x.text||'').trim()).map(x=>({ref:x.id,text:x.text,is:x.is||[]}));
   /* Une habit n'a pas d'identifiant : son TEXTE est sa référence (c'est ce que lit
-     `_box_matter`). Celles d'un objectif et les libres, sans doublon. */
+     `_box_matter`). 19/11 — TOUTES les Habits, dans leur ordre, lues dans l'arbre (`habits`) : les reconstituer
+     par les objectifs perdait celles d'une vision depuis que les objectifs sont DATÉS. */
   const hs=new Map();
-  [...(t.loose||[]),...(t.trips||[]).flatMap(o=>o.habits||[])].forEach(h=>{
+  (t.habits||[]).forEach(h=>{
     const txt=(h.t||'').trim();if(!txt||hs.has(txt))return;
-    hs.set(txt,{ref:txt,text:txt,is:h.i?[h.i]:[]});
+    hs.set(txt,{ref:txt,text:txt,is:Array.isArray(h.is)&&h.is.length?h.is:(h.i?[h.i]:[])});
   });
-  TOT={wisdom:net(t.wisdom),visions:net(t.visions),objectives:net(t.trips),
-       repulsions:net(t.reps),habits:[...hs.values()]};
+  TOT={stories:net(t.stories),visions:net(t.visions),objectives:net(t.objectives),
+       repulsions:net(t.repulsions),habits:[...hs.values()]};
 }
 const tick=l=>'<span class="tick">'+(l||[]).map(i=>'<i style="background:'+icol(i)+'"></i>').join('')+'</span>';
 function boxHTML(o,k){
@@ -1460,6 +1464,8 @@ $('tz-papers').addEventListener('click',e=>{
 /* Le doigt glisse sur la liste : elle défile, nativement. Plus de manette ici. */
 /* LA MATIÈRE — ce qui est relié à l'élément dans le Totehm,
    calculés en base (`my_box_matter`), jamais ici. */
+/* les GROUPES de mini-box, sous les clés que rend `_box_matter` — PONT : il dit encore `wisdom` pour MY STORY, et le
+   paiement relit ces clés ; elles changent avec lui (lot des fonctions d'argent). */
 const MI={habits:['','how'],objectives:['o','why'],repulsions:['r','instead'],wisdom:['w','learned'],visions:['v','sees']};
 let MT_SEQ=0;
 /* 24/10 (Wah) : « pas besoin de bouton wear the element, simplement cliquer sur
@@ -1514,7 +1520,7 @@ async function openEl(b){
   peindrePhotos(seq,KIND[v],ref);
   /* Le serveur a le dernier mot sur le texte et la vue — mais jamais sur un
      choix plus frais que lui (`MT_SEQ` a déjà tranché, F.el peut avoir changé). */
-  if(F.el&&F.el.ref===ref&&F.el.kind===KIND[v]){F.el.view=m.view||v;F.el.text=m.text||o.text;paintCloth();save();}
+  if(F.el&&F.el.ref===ref&&F.el.kind===KIND[v]){F.el.view=vueServeur(m.view)||v;F.el.text=m.text||o.text;paintCloth();save();}
 }
 /* 26/10 (Wah) : « affiche en-dessous de la box sélectionnée les medias photo
    (le format de la grille de gauche) et les spots photo (celui de droite) ».
@@ -1676,7 +1682,7 @@ async function order(){
   let data={},status=0;
   try{
     const r=await fetch(FN+'create-checkout',{method:'POST',headers:{'content-type':'application/json','apikey':SB_ANON,'authorization':'Bearer '+session.access_token},
-      body:JSON.stringify({garment_id:F.support.id,box:{kind:F.el.kind,ref:F.el.ref},
+      body:JSON.stringify({garment_id:F.support.id,box:{kind:F.el.kind==='story'?'wisdom':F.el.kind,ref:F.el.ref},   /* PONT : create-checkout attend encore `wisdom` */
         pick:{matter:F.pick.matter.slice(0,60),shots:F.pick.shots.slice(0,24)},
         name:F.nameRaw,size:F.size,style_id:F.style.id})});
     status=r.status;data=await r.json().catch(()=>({}));
@@ -1705,7 +1711,7 @@ window.addEventListener('keydown',e=>{
     if(m){e.preventDefault();m();}
   }else if(stage==='element'){
     /* Les flèches passent d'un papier à l'autre ; au clavier aussi on revient au logo. */
-    const ordre=['wisdom','objectives','habits','repulsions','visions'];
+    const ordre=['stories','objectives','habits','repulsions','visions'];
     if(e.key==='ArrowLeft'||e.key==='ArrowRight'){
       e.preventDefault();const i=ordre.indexOf(vue),n=ordre[(i<0?0:i+(e.key==='ArrowRight'?1:-1)+ordre.length)%ordre.length];
       if(n&&n!==vue){vue=n;renderEl('in');}
@@ -1728,10 +1734,10 @@ async function restore(fl,cancelled){
   const i=supports.findIndex(s=>String(s.id)===String(fl.sid));
   if(i<0){show('cloth');return;}
   ci=i;ai=Math.max(0,Math.min(Number(fl.ai)||0,imgs(supports[i]).length-1));ANG[ci]=ai;placeViewer();paintCloth();
-  F.support=supports[i];F.nameRaw=String(fl.nm||'');F.size=String(fl.sz||'');F.el=fl.el&&!!VUE_DE[fl.el.kind]?fl.el:null;
+  F.support=supports[i];F.nameRaw=String(fl.nm||'');F.size=String(fl.sz||'');F.el=fl.el&&!!VUE_DE[genreDuJour(fl.el.kind)]?{...fl.el,kind:genreDuJour(fl.el.kind),view:vueServeur(fl.el.view)}:null;
   F.pick={matter:Array.isArray(fl.pk?.matter)?fl.pk.matter.filter(h=>h&&typeof h.kind==='string'&&typeof h.text==='string').slice(0,60):[],
           shots:Array.isArray(fl.pk?.shots)?fl.pk.shots.map(String).slice(0,24):[]};
-  F.want=fl.wt&&!!VUE_DE[fl.wt.kind]?{kind:fl.wt.kind,ref:String(fl.wt.ref)}:null;
+  F.want=fl.wt&&!!VUE_DE[genreDuJour(fl.wt.kind)]?{kind:genreDuJour(fl.wt.kind),ref:String(fl.wt.ref)}:null;
   const target=cancelled?'order':(fl.s||'cloth');
   if(target==='cloth'||target==='done'||!me){show('cloth');return;}
   if(!myProfile){show('cloth');return;}

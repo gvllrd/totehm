@@ -16,10 +16,11 @@ const supports = [
 const NAMES = [];
 const rpc = {
   name_available: b => { NAMES.push(b.candidate); return !/taken/i.test(b.candidate); },
-  totehm_complete: { complete:true, any:true, remplies:5, habits:true, objectives:true, repulsions:true, wisdom:true, visions:true },
-  my_trips: { trips:[{ id:'o1', text:'Marathon in May', is:['flow'], days_left:200, habits:[{ t:'Run the hill', f:'every_morning', i:'fight' }] }],
-              reps:[{ id:7, text:'Scrolling at night', is:['focus'] }], loose:[{ t:'Cold shower', f:'every_morning', i:'fight' }],
-              wisdom:[{ id:'w1', text:'Slow is smooth', is:['focus'] }], visions:[{ id:'v1', text:'A studio by the sea', is:['express'] }] },
+  totehm_complete: { complete:true, any:true, remplies:5, habits:true, objectives:true, repulsions:true, stories:true, wisdom:true, visions:true },
+  my_totehm: { objectives:[{ id:'o1', text:'Marathon in May', is:['flow'], days_left:200, habits:[{ t:'Run the hill', f:'every_morning', i:'fight' }] }],
+              habits:[{ t:'Run the hill', f:'every_morning', i:'fight', o:'o1' }, { t:'Cold shower', f:'every_morning', i:'fight' }],
+              repulsions:[{ id:7, text:'Scrolling at night', is:['focus'] }], loose:[{ t:'Cold shower', f:'every_morning', i:'fight' }],
+              stories:[{ id:'w1', text:'Slow is smooth', is:['focus'] }], visions:[{ id:'v1', text:'A studio by the sea', is:['express'] }] },
   my_box_matter: b => ({
     vision:   { text:'A studio by the sea', view:'visions',    palette:['#1D9E75'], matter:{ objectives:[{ text:'Save 10k' }] }, extra:{} },
     habit:    { text:b.p_ref,               view:'habits',     palette:['#E24B4A'], matter:{ objectives:[{ text:'Marathon in May' }] }, extra:{ freq:'every_morning' } },
@@ -84,7 +85,7 @@ await pg.waitForTimeout(80);
 
 // ── 1 · CLOTH (téléphone)
 let d = await D();
-ok(d.build === '2026-11-11-feuilleteur' && d.stage === 'cloth' && !d.papers && !d.desktop, 'phone: CLOTH first, the TOTEHM still folded');
+ok(/^20\d\d-\d\d-\d\d-[a-z0-9-]+$/.test(d.build) && d.stage === 'cloth' && !d.papers && !d.desktop, 'phone: CLOTH first, the TOTEHM still folded');
 const rest = await pg.evaluate(() => { const b = document.querySelector('#cl-facts .left b'), s = getComputedStyle(b);
   const g = document.querySelector('#cl-facts .bar i'), bar = document.querySelector('#cl-facts .bar');
   return { n: b.textContent.trim(), px: Math.round(parseFloat(s.fontSize)), col: s.color, fam: s.fontFamily,
@@ -218,7 +219,7 @@ ok((await pg.evaluate(() => history.length)) === hist && (await D()).stage === '
 await pg.click('#cl-go');
 await pg.waitForFunction(() => window.__totehm_cloth().papers);
 await pg.click('.pap-s');
-await pg.waitForFunction(() => window.__totehm_cloth().view === 'wisdom');
+await pg.waitForFunction(() => window.__totehm_cloth().view === 'stories');
 ok(/Slow is smooth/.test(await pg.textContent('#el-list')) && /my story/i.test(await pg.textContent('#el-sub')), 'MY STORY · what I pass on');
 ok((await D()).seam === 1, 'the seam lights the intention of what is on screen (focus)');
 await pg.click('#el-list .bx');
@@ -258,7 +259,7 @@ ok(unTap.vue === 'visions' && !unTap.choisi && unTap.lie === 0 && unTap.photos =
   '02/11 · UN SEUL TAP sur une vue défait le choix et ouvre sa liste — plus besoin de retaper la box ' + JSON.stringify(unTap));
 // On revient sur MY WISDOM STORY et on refait le choix, pour la suite du parcours.
 await pg.click('.pap-s');
-await pg.waitForFunction(() => window.__totehm_cloth().view === 'wisdom');
+await pg.waitForFunction(() => window.__totehm_cloth().view === 'stories');
 await pg.click('#el-list .bx');
 await pg.waitForFunction(() => !!window.__totehm_cloth().element);
 await pg.waitForSelector('#matter .mi[data-k="objectives"]');
@@ -288,7 +289,7 @@ await pg.screenshot({ path: OUT + '/sw_element.png' });
 // ── 3 · NAME
 await descendre(pg, 'name');
 d = await D();
-ok(d.stage === 'name' && d.element === 'wisdom' && d.print === 1, 'NAME: the element is kept (wisdom); the print-zone photo is loaded apart');
+ok(d.stage === 'name' && d.element === 'story' && d.print === 1, 'NAME: the element is kept (story); the print-zone photo is loaded apart');
 await monter(pg, 'element');
 await pg.waitForTimeout(200);
 ok((await pg.$eval('#el-list .bx', e => e.classList.contains('is-on'))) && (await pg.$eval('#s-name', e => e.classList.contains('is-open'))),
@@ -366,7 +367,7 @@ ok(JSON.stringify(body.pick) === '{"matter":[{"kind":"objectives","text":"Marath
 await pg.goto('https://www.higher.boutique/streetwear?cancel=1');
 await pg.waitForFunction(() => window.__totehm_cloth && window.__totehm_cloth().stage === 'order');
 d = await D();
-ok(d.named && d.style && d.size && d.element === 'wisdom' && /cancelled/.test(await pg.textContent('#od-note')), 'Stripe cancelled: back on ORDER, name · style · size · element kept');
+ok(d.named && d.style && d.size && d.element === 'story' && /cancelled/.test(await pg.textContent('#od-note')), 'Stripe cancelled: back on ORDER, name · style · size · element kept');
 ok(!/cancel=/.test(pg.url()), 'the ?cancel=1 leaves the address bar');
 // 02/11 (Wah) : « full screen par full screen, pas d'entre-deux. Je ne veux pas
 // le scrolling traditionnel. » Le rouleau ne défile donc PAS : il se pose.
@@ -453,7 +454,7 @@ ok(!log.errors.length, 'phone: no page error: ' + log.errors.join(' | '));
   ok(!(await pg.$('#vw-zone')) && !(await pg.$('.pz')), 'no simulated preview anywhere on the cloth');
   await pg.screenshot({ path: OUT + '/sw_desk_papers.png' });
   await pg.click('.pap-s');
-  await pg.waitForFunction(() => window.__totehm_cloth().view === 'wisdom');
+  await pg.waitForFunction(() => window.__totehm_cloth().view === 'stories');
   await pg.click('#el-list .bx');
   await descendre(pg, 'name');
   await pg.waitForTimeout(600);
@@ -489,7 +490,7 @@ ok(!log.errors.length, 'phone: no page error: ' + log.errors.join(' | '));
   await ctx.route(SB + '/functions/v1/create-checkout', r => { sent = JSON.parse(r.request().postData()); r.fulfill({ status:200, contentType:'application/json', body:'{"url":"https://checkout.stripe.test/c","name":"0.sea"}' }); });
   await ctx.route('https://checkout.stripe.test/**', r => r.fulfill({ status:200, contentType:'text/html', body:'ok' }));
   await pg.goto('https://www.higher.boutique/streetwear?wear=wisdom:w1');
-  await pg.waitForFunction(() => window.__totehm_cloth && window.__totehm_cloth().ready && window.__totehm_cloth().element === 'wisdom');
+  await pg.waitForFunction(() => window.__totehm_cloth && window.__totehm_cloth().ready && window.__totehm_cloth().element === 'story');
   const d = await pg.evaluate(() => window.__totehm_cloth());
   // 02/11 (Wah) : « la première section concerne simplement le choix du vêtement :
   // pas besoin d'afficher la box héritée de la deuxième section ». L'élément est
@@ -497,10 +498,10 @@ ok(!log.errors.length, 'phone: no page error: ' + log.errors.join(' | '));
   const chip = await pg.evaluate(() => ({ aucune: !document.getElementById('cl-wear'),
     txt: document.getElementById('s-cloth').textContent,
     fits: document.getElementById('cl-go').getBoundingClientRect().bottom <= innerHeight }));
-  ok(d.stage === 'cloth' && !d.wanted && d.element === 'wisdom' && chip.aucune && !/Slow is smooth/.test(chip.txt),
+  ok(d.stage === 'cloth' && !d.wanted && d.element === 'story' && chip.aucune && !/Slow is smooth/.test(chip.txt),
     '02/11 · de COM : le vêtement SEUL — l\'élément est gardé mais ne s\'affiche pas dans sa section');
   ok(new URL(pg.url()).search === '' && chip.fits, 'the ?wear= leaves the address bar; the button stays on one screen');
-  ok(log.rpc.some(x => x.name === 'my_trips'), 'the element is read again in MY TOTEHM (my_trips), never trusted from the address');
+  ok(log.rpc.some(x => x.name === 'my_totehm'), 'the element is read again in MY TOTEHM (my_totehm), never trusted from the address');
   await pg.screenshot({ path: OUT + '/sw_from_com.png' });
   await pg.click('#cl-go');
   // 02/11 : le style passe devant — TOTEHMIZE ouvre donc le style, puis le nom
@@ -511,7 +512,7 @@ ok(!log.errors.length, 'phone: no page error: ' + log.errors.join(' | '));
   await descendre(pg, 'name');
   ok(/Slow is smooth/.test(await pg.textContent('#el-list')) && /my story/i.test(await pg.textContent('#el-sub')), 'de COM : la box est déjà choisie, le nom attend juste après le style');
   await monter(pg, 'element');
-  ok((await pg.evaluate(() => window.__totehm_cloth().view)) === 'wisdom', 'remonter : ELEMENT, sur MY STORY (l\'élément peut encore changer)');
+  ok((await pg.evaluate(() => window.__totehm_cloth().view)) === 'stories', 'remonter : ELEMENT, sur MY STORY (l\'élément peut encore changer)');
   await descendre(pg, 'name');
   await pg.fill('#nm-input', 'sea');
   await pg.waitForFunction(() => /available/.test(document.querySelector('#nm-note').textContent));
@@ -551,7 +552,7 @@ ok(!log.errors.length, 'phone: no page error: ' + log.errors.join(' | '));
 // ── Sans compte, arrivé de COM : l'élément voulu attend la connexion (PKCE), puis NAME
 {
   const { pg, ctx, log } = await page(browser, { dir:'boutique', origin:'https://www.higher.boutique', rpc, tables, network, session:false });
-  await pg.goto('https://www.higher.boutique/streetwear?wear=wisdom:w1');
+  await pg.goto('https://www.higher.boutique/streetwear?wear=story:w1');
   await pg.waitForFunction(() => window.__totehm_cloth && window.__totehm_cloth().ready && window.__totehm_cloth().supports === 2);
   ok((await pg.evaluate(() => window.__totehm_cloth().wanted)) && !(await pg.$('#cl-wear')), 'signed out: the wish is kept, nothing shown before the TOTEHM is read');
   // totehm.com rend la main (simulé) ; au retour, la session est là.
@@ -561,14 +562,14 @@ ok(!log.errors.length, 'phone: no page error: ' + log.errors.join(' | '));
   await pg.click('#cl-go');
   ok(new URL((await req).url()).searchParams.get('return') === '/streetwear', 'signed out: TOTEHMIZE signs in through totehm.com (PKCE), back to /streetwear');
   await pg.waitForFunction(() => window.__totehm_cloth && window.__totehm_cloth().ready && window.__totehm_cloth().stage === 'style', null, { timeout:15000 });
-  ok((await pg.evaluate(() => window.__totehm_cloth().element)) === 'wisdom', 'the wish travels through the sign-in: back with the wisdom chosen in COM, on the style');
+  ok((await pg.evaluate(() => window.__totehm_cloth().element)) === 'story', 'the wish travels through the sign-in: back with the story chosen in COM, on the style');
   ok(!log.errors.filter(e => !/totehm\.com\/auth/.test(e)).length, 'signed out from COM: no page error');
 }
 // ── Le passeport : 08/11 (Wah) « une seule box dans une vue suffit »
 {
   /* TROIS vues remplies sur cinq : ça PASSE désormais. L'ancienne règle exigeait
      les cinq et arrêtait ce membre à la porte. */
-  const { pg } = await page(browser, { dir:'boutique', origin:'https://www.higher.boutique', rpc:{ ...rpc, totehm_complete:{ complete:false, any:true, remplies:3, habits:true, objectives:true, repulsions:false, wisdom:true, visions:false } }, tables, network });
+  const { pg } = await page(browser, { dir:'boutique', origin:'https://www.higher.boutique', rpc:{ ...rpc, totehm_complete:{ complete:false, any:true, remplies:3, habits:true, objectives:true, repulsions:false, stories:true, wisdom:true, visions:false } }, tables, network });
   await pg.goto('https://www.higher.boutique/streetwear');
   await pg.waitForFunction(() => window.__totehm_cloth && window.__totehm_cloth().ready && window.__totehm_cloth().supports === 2);
   await pg.click('#cl-go');
@@ -578,7 +579,7 @@ ok(!log.errors.length, 'phone: no page error: ' + log.errors.join(' | '));
 }
 {
   /* AUCUNE box : là, et là seulement, la porte se ferme — et elle dit qu'UNE suffit. */
-  const { pg } = await page(browser, { dir:'boutique', origin:'https://www.higher.boutique', rpc:{ ...rpc, totehm_complete:{ complete:false, any:false, remplies:0, habits:false, objectives:false, repulsions:false, wisdom:false, visions:false } }, tables, network });
+  const { pg } = await page(browser, { dir:'boutique', origin:'https://www.higher.boutique', rpc:{ ...rpc, totehm_complete:{ complete:false, any:false, remplies:0, habits:false, objectives:false, repulsions:false, stories:false, wisdom:false, visions:false } }, tables, network });
   await pg.goto('https://www.higher.boutique/streetwear');
   await pg.waitForFunction(() => window.__totehm_cloth && window.__totehm_cloth().ready && window.__totehm_cloth().supports === 2);
   await pg.click('#cl-go');

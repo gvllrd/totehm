@@ -16,11 +16,12 @@ const ACCESS = { signed_in:true, thp:true, open:true, price_cents:77000, currenc
 const rpc = {
   luxury_access: () => ACCESS,
   name_available: b => String(b.candidate).toLowerCase() !== '0.taken',
-  my_trips: {
-    trips:[{ id:'o1', text:'Marathon in May', is:['flow'], habits:[{ t:'Run the hill', i:'fight' }] }],
+  my_totehm: {
+    objectives:[{ id:'o1', text:'Marathon in May', is:['flow'], habits:[{ t:'Run the hill', i:'fight' }] }],
+    habits:[{ t:'Run the hill', i:'fight', o:'o1' }, { t:'Cold shower', i:'fight' }],   // 19/11 : l'arbre rend TOUTES ses Habits
     loose:[{ t:'Cold shower', i:'fight' }],
-    reps:[{ id:'r1', text:'Scrolling at night', is:['focus'] }],
-    wisdom:[{ id:'w1', text:'Slow is smooth', is:['focus'] }],
+    repulsions:[{ id:'r1', text:'Scrolling at night', is:['focus'] }],
+    stories:[{ id:'w1', text:'Slow is smooth', is:['focus'] }],
     visions:[{ id:'v1', text:'A studio by the sea', is:['express'] }],
   },
   my_box_matter: () => ({ text:'Slow is smooth', view:'wisdom', palette:['#378ADD'],

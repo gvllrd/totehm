@@ -47,12 +47,12 @@ try{
    ok(o.n === 3 && o.noms === '0.Hill,0.Sea,0.Try', 'ouverte : trois Cloths au plus');
    ok(/shipped/.test(o.etats) && /in the making · luxury/.test(o.etats) && /in the making · test/.test(o.etats), 'chaque Cloth dit son étape (luxury, test marqués) : ' + o.etats);
    ok(o.coral === 'rgb(251, 213, 202)' && o.quantico, 'le nom 0.xxx en Quantico Coral');
-   ok(o.plus === 'wisdom:w1', '« + totehmize » porte CET élément (wisdom:w1)');
+   ok(o.plus === 'story:w1', '« + totehmize » porte CET élément (story:w1)');
    await pg.screenshot({ path:OUT + '/com_wisdom_cloths.png' });
    const nav = pg.waitForURL(/higher\.boutique/, { timeout:8000 }).then(() => pg.url(), () => '');
    await pg.click('#habits [data-totehmize]');
    const u = await nav;
-   ok(u === 'https://www.higher.boutique/streetwear?wear=wisdom%3Aw1#sso=' + CODE && log.functions.some(f => f.name === 'sso-mint' && f.body.target === 'boutique'),
+   ok(u === 'https://www.higher.boutique/streetwear?wear=story%3Aw1#sso=' + CODE && log.functions.some(f => f.name === 'sso-mint' && f.body.target === 'boutique'),
      '« + totehmize » → /streetwear avec l\'élément, par le pont SSO → ' + u);
    ok(!erreurs(log).length, 'WISDOM : aucune erreur ' + erreurs(log).join(' | ')); await pg.context().close();
  }
