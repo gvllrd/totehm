@@ -243,6 +243,7 @@ body.is-controller-locked #street-access-status{clip-path:inset(50%)}
 body.is-controller-locked #sdisc-stage{background:radial-gradient(ellipse at center,#000d 0%,#0008 35%,transparent 66%)}
 :is(.controller-deep-link,.is-controller-entry) :is(#experience-front-canvas,#sdisc-stage,#sdisc-cover-next,#sdisc-back,#sdisc-trig,#sdisc-progress,#sdisc-rail,#sdisc-reading-hint){visibility:hidden}
 body.is-street-board.has-controller-3d #sdisc-bg>.street-rock>img{opacity:0}
+body.is-street-board #sdisc-bg>.street-rock.is-key-down>img{filter:brightness(.68);transform:scale(.96)}
 #sdisc-bg .street-rock .controller-used .higher-inline{width:100%;min-width:0}
 #sdisc-bg .street-rock .controller-used{display:block;width:36%;top:72%!important;left:65%!important;}
 body.is-street-board #sdisc-bg>.street-rock:focus-visible{outline:2px solid #a6b5d4;border-radius:8px;outline-offset:4px}
@@ -343,7 +344,7 @@ body.is-street-board #sdisc-bg>.street-rock:focus-visible{outline:2px solid #a6b
   </button>
 </div>
 
-<div class="xp" id="xp">
+<div class="xp" id="xp" inert aria-hidden="true">
   <button id="xp-close">Back</button>
   <div class="vbox-scene" id="vidWrap">
     <div class="vbox" id="vidBox">
@@ -388,7 +389,7 @@ import {checkLisbonStreetAccess,requestLisbonStreetMedia} from './lisbon-street-
 import {LISBON_STREET_DISCOVER} from './lisbon-street-discover.mjs';
 import {createLisbonFirstPage} from './lisbon-first-page.mjs';
 import {createLisbonControllerView} from './gallery-lisbon-controller.mjs';
-const BUILD = '2026-11-18-lisbon-shared-3d-controller';
+const BUILD = '2026-11-19-lisbon-responsive-3d-controller';
 function streetReturnPath(){const destination=new URL(location.href);destination.searchParams.delete('embedded');destination.searchParams.delete('sceneTime');return destination.pathname+destination.search;}
 // A purchase or central connection leaves the projected reader as a whole.
 function navigateStreetExperience(href){
@@ -770,6 +771,9 @@ let resumeVideo = null;
 let activeSign = null;
 let playAttempted = false;
 let playbackBlocked = false,mediaState='idle',launchRevision=0;
+let mediaRequest=null,preparingTimer=0;
+const streetDisc=document.getElementById('street-disc');
+const streetAccessStatus=document.getElementById('street-access-status');
 refreshArtworkLabel = ()=>{
   if(activeSign && xp.classList.contains('up')) renderXpArtwork(activeSign);
 };
@@ -849,32 +853,73 @@ function renderXpArtwork(id){
   }
 }
 
-async function launchXp(id,{immediate=false,from='direct'}={}){
-  if(streetBusy || !Object.hasOwn(SIGNS,id))return false;
-  streetBusy=true;mediaState='checking';const revision=++launchRevision;
-  const media=await requestLisbonStreetMedia(id,{client:sb});
+function showArtwork(open){
+  xp.inert=!open;xp.setAttribute('aria-hidden',String(!open));
+  streetDisc.inert=open;xp.classList.toggle('up',open);
+}
+
+function cancelPreparing(){
+  clearTimeout(preparingTimer);preparingTimer=0;
+  mediaRequest?.abort();mediaRequest=null;
+}
+
+function cancelPendingArtwork(){
+  if(!mediaRequest)return false;
+  launchRevision++;cancelPreparing();
+  vid.pause();vid.removeAttribute('src');vid.load();
+  streetBusy=false;mediaState='idle';activeSign=null;lastPressedRock=null;
+  streetAccessStatus.textContent='';return true;
+}
+
+function waitForSignFrame(signal){
+  if(vid.readyState>=HTMLMediaElement.HAVE_CURRENT_DATA)return Promise.resolve('ready');
+  return new Promise(resolve=>{
+    const ready=()=>finish('ready'),failed=()=>finish('error'),aborted=()=>finish('aborted');
+    const timer=setTimeout(()=>finish('error'),9000);
+    function finish(state){
+      clearTimeout(timer);vid.removeEventListener('loadeddata',ready);vid.removeEventListener('error',failed);
+      signal.removeEventListener('abort',aborted);resolve(state);
+    }
+    vid.addEventListener('loadeddata',ready,{once:true});
+    vid.addEventListener('error',failed,{once:true});
+    signal.addEventListener('abort',aborted,{once:true});
+    if(signal.aborted)aborted();
+  });
+}
+
+async function launchXp(id,{immediate=false,from='direct',pressed=Promise.resolve()}={}){
+  if(streetBusy||!OWNED||!Object.hasOwn(SIGNS,id))return false;
+  streetBusy=true;mediaState='checking';playAttempted=false;playbackBlocked=false;
+  const revision=++launchRevision,controller=new AbortController();
+  mediaRequest=controller;streetAccessStatus.textContent='';
+  preparingTimer=setTimeout(()=>{if(revision===launchRevision)streetAccessStatus.textContent='Loading artwork…';},520);
+  const media=await requestLisbonStreetMedia(id,{client:sb,signal:controller.signal});
   if(revision!==launchRevision)return false;
   streetAccess={state:media.state,owned:media.owned};OWNED=media.owned;refreshStreetAccessUI();
-  if(!media.owned){streetBusy=false;mediaState=media.state;showAccessRequirement(streetAccess);return false;}
-  activeSign=id;lastXpFrom=from;mediaState='ready';
-  vid.muted=!!immediate;vid.controls=!!immediate;
+  if(!media.owned){
+    await pressed;
+    if(revision===launchRevision)showAccessRequirement(streetAccess);
+    return false;
+  }
+  mediaState='preparing';
+  vid.muted=!!immediate;vid.controls=!!immediate;vid.preload='auto';
   vid.src=media.url;vid.load();
-  vidWrap.classList.remove('in'); xp.classList.add('up');
-
-  // Gallery label
-  const xpLabel = document.getElementById('xp-label');
-  xpLabel.classList.remove('in');
-  setBrandedText(document.getElementById('xp-artw-phrase'), PHRASES[id]);
-  renderXpArtwork(id);
-
-  setTimeout(()=>{
-    if(revision!==launchRevision||!xp.classList.contains('up')) return;
-    vidWrap.classList.add('in');
-    xpLabel.classList.add('in');
-    if(document.hidden){ vid.controls=true; return; }
-    playSignVideo();
-    startVidBox();
-  },immediate?0:400);
+  const [frameState]=await Promise.all([waitForSignFrame(controller.signal),pressed]);
+  if(revision!==launchRevision||frameState==='aborted')return false;
+  clearTimeout(preparingTimer);preparingTimer=0;mediaRequest=null;
+  if(frameState==='error'){
+    vid.removeAttribute('src');vid.load();streetBusy=false;mediaState='error';
+    streetAccessStatus.textContent='This artwork could not load. Try again.';
+    if(!boardMode)snapToBoard();
+    return false;
+  }
+  streetAccessStatus.textContent='';
+  activeSign=id;lastXpFrom=from;mediaState='ready';
+  setBrandedText(document.getElementById('xp-artw-phrase'),PHRASES[id]);renderXpArtwork(id);
+  vidWrap.classList.add('in');document.getElementById('xp-label').classList.add('in');
+  showArtwork(true);xpClose.focus({preventScroll:true});
+  if(document.hidden){vid.controls=true;return true;}
+  playSignVideo();startVidBox();return true;
 }
 
 function playSignVideo(){
@@ -889,9 +934,9 @@ function playSignVideo(){
 
 function comeBack(){
   const revision=++launchRevision;mediaState='idle';resumeVideo=null;
-  vid.pause(); stopVidBox();
+  cancelPreparing();vid.pause();stopVidBox();streetAccessStatus.textContent='';
   if(fromSpace){ location.assign('/lisbon-space'); return; }
-  xp.classList.remove('up'); vidWrap.classList.remove('in');
+  showArtwork(false);vidWrap.classList.remove('in');document.getElementById('xp-label').classList.remove('in');
   setTimeout(()=>{
     if(revision!==launchRevision)return;vid.removeAttribute('src');vid.load();streetBusy=false;activeSign=null;
     if(lastXpFrom==='direct'){ snapToBoard(); }
@@ -902,15 +947,15 @@ function comeBack(){
         const label=lastPressedRock.uLabel;
         label.innerHTML=HIGHER_MARKUP;label.className='controller-used';label.style.opacity='1';
       }
-      lastPressedRock=null;
+      lastPressedRock?.wrap.focus({preventScroll:true});lastPressedRock=null;
     }
-  },600);
+  },reducedMotion.matches?0:560);
 }
 
 function closeAll(){
   const revision=++launchRevision;mediaState='idle';resumeVideo=null;
-  vid.pause(); stopVidBox();
-  xp.classList.remove('up'); vidWrap.classList.remove('in');
+  cancelPreparing();vid.pause();stopVidBox();
+  showArtwork(false);vidWrap.classList.remove('in');document.getElementById('xp-label').classList.remove('in');
   setTimeout(()=>{if(revision!==launchRevision)return;vid.removeAttribute('src');vid.load();streetBusy=false;activeSign=null;},300);
 }
 
@@ -1136,15 +1181,29 @@ function enterBoardMode(){
   sdiscBoardClose.setAttribute('aria-label',directBoardActive?'Return to the lounge':'Back to the story');
   ROCKS.forEach(rock=>{
     placeBoardKey(rock);
-    rock._boardClick=()=>{lastPressedRock=rock;launchXpFromDisc(rock.id);};
+    rock._boardClick=()=>launchXpFromDisc(rock);
     rock.wrap.setAttribute('role','button');
     rock.wrap.setAttribute('tabindex','0');
     rock.wrap.setAttribute('aria-label',rock.id.replace(/_/g,' '));
-    rock._boardKey=event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();rock._boardClick();}};
+    rock._boardKey=event=>{
+      if(event.key!=='Enter'&&event.key!==' ')return;
+      event.preventDefault();event.stopPropagation();
+      if(event.repeat)return;
+      if(event.key==='Enter')rock._boardClick();
+      else if(!streetBusy&&OWNED){rock._spaceHeld=true;showKeyHold(rock,true);}
+    };
+    rock._boardKeyUp=event=>{
+      if(event.key!==' '||!rock._spaceHeld)return;
+      event.preventDefault();event.stopPropagation();rock._spaceHeld=false;
+      rock._boardClick();
+    };
     rock.wrap.addEventListener('click',rock._boardClick);
     rock.wrap.addEventListener('keydown',rock._boardKey);
-    rock.wrap.onpointerdown=()=>controllerView?.feedback(rock.id,true);
-    rock.wrap.onpointerup=rock.wrap.onpointerleave=()=>controllerView?.feedback(rock.id,false);
+    rock.wrap.addEventListener('keyup',rock._boardKeyUp);
+    rock.wrap.onpointerdown=event=>{if(event.button===0&&event.isPrimary&&!streetBusy&&OWNED)showKeyHold(rock,true);};
+    const release=()=>{if(!rock._spaceHeld)showKeyHold(rock,false);};
+    rock.wrap.onpointerup=rock.wrap.onpointerleave=rock.wrap.onpointercancel=release;
+    rock.wrap.onblur=()=>{rock._spaceHeld=false;showKeyHold(rock,false);};
   });
   sdiscBoardClose.focus({preventScroll:true});
 }
@@ -1157,17 +1216,20 @@ function exitBoardMode(){
   sdiscBoardClose.style.display='none';
   ROCKS.forEach(r=>{
     r.img.style.filter=''; r.img.style.transform='rotate(0deg)';
-    r.wrap.onpointerdown=r.wrap.onpointerup=r.wrap.onpointerleave=null;
+    r.wrap.onpointerdown=r.wrap.onpointerup=r.wrap.onpointerleave=r.wrap.onpointercancel=r.wrap.onblur=null;
+    r.wrap.classList.remove('is-key-down');r._spaceHeld=false;
     r.uLabel.textContent='Useless';r.uLabel.className='';
     r.uLabel.style.cssText=r._origLabelCss;
     r._pressed=false;
     if(r._boardClick){ r.wrap.removeEventListener('click',r._boardClick); r._boardClick=null; }
     if(r._boardKey){ r.wrap.removeEventListener('keydown',r._boardKey); r._boardKey=null; }
+    if(r._boardKeyUp){r.wrap.removeEventListener('keyup',r._boardKeyUp);r._boardKeyUp=null;}
     r.wrap.removeAttribute('role'); r.wrap.removeAttribute('tabindex'); r.wrap.removeAttribute('aria-label');
   });
 }
 function returnToStory(){
-  if(snapping || streetBusy) return;
+  if(snapping)return;
+  if(streetBusy&&!cancelPendingArtwork())return;
   if(directBoardActive){
     if(!embeddedFront)location.assign('/lisbon-space');
     return;
@@ -1212,7 +1274,20 @@ async function snapToBoard(){
   if(reduced) finish(); else setTimeout(finish,1000);
 }
 
-function launchXpFromDisc(id){return launchXp(id,{from:'disc'});}
+function showKeyHold(rock,down){
+  rock.wrap.classList.toggle('is-key-down',down);
+  controllerView?.feedback(rock.id,down);
+}
+
+function launchXpFromDisc(rock){
+  if(!boardMode||!OWNED||streetBusy){showKeyHold(rock,false);return false;}
+  lastPressedRock=rock;
+  const pressed=controllerView?.feedback(rock.id,'activate')||new Promise(resolve=>{
+    rock.wrap.classList.add('is-key-down');
+    setTimeout(()=>{rock.wrap.classList.remove('is-key-down');resolve();},reducedMotion.matches?110:240);
+  });
+  return launchXp(rock.id,{from:'disc',pressed});
+}
 
 function buildSdisc(sl){
   const b=document.createElement('div'); b.className='disc-block';
@@ -1250,8 +1325,9 @@ refreshStreetAccessUI=()=>{
 function showAccessRequirement(access){
   if(requestedBoard&&firstPageActive){firstPageActive=false;document.body.classList.remove('is-street-front');}
   else beginStreetDiscover({immediate:true});
-  launchRevision++;resumeVideo=null;streetBusy=false;activeSign=null;playAttempted=false;
-  vid.pause();vid.removeAttribute('src');vid.load();stopVidBox();xp.classList.remove('up');
+  launchRevision++;cancelPreparing();resumeVideo=null;streetBusy=false;activeSign=null;playAttempted=false;
+  vid.pause();vid.removeAttribute('src');vid.load();stopVidBox();showArtwork(false);
+  vidWrap.classList.remove('in');document.getElementById('xp-label').classList.remove('in');
   if(boardMode)exitBoardMode();
   document.body.classList.remove('is-controller-entry');
   sdiscStage.style.display='';sdiscStage.style.opacity='';sdiscBack.style.display='';sdiscBack.style.opacity='';sdiscTrig.style.display='';
@@ -1335,6 +1411,7 @@ window.addEventListener('keydown',e=>{
   else if(['ArrowUp','ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();sdiscPrev();}
   else if(e.key==='Escape'){
     if(xp.classList.contains('up')) comeBack();
+    else if(cancelPendingArtwork()) e.preventDefault();
     else if(boardMode){if(directBoardActive)sdiscBoardClose.click();else returnToStory();}
     else if(!snapping){if(embeddedFront)sdiscBack.click();else window.location.href='/lisbon-space';}
   }
@@ -1359,11 +1436,11 @@ function syncMotion(){
 }
 reducedMotion.addEventListener('change',syncMotion);
 document.addEventListener('visibilitychange',syncMotion);
-window.addEventListener('pagehide',()=>{stopAsteroids();stopVidBox();pauseHiddenVideo();});
+window.addEventListener('pagehide',()=>{stopAsteroids();stopVidBox();pauseHiddenVideo();cancelPendingArtwork();});
 window.addEventListener('pageshow',syncMotion);
 window.__totehm_lisbon=()=>({
   build:BUILD,step:sdiscCur,board:boardMode,rocks:ROCKS.length,moving:!!frontRaf,firstPage:firstPage.diagnostics(),firstPageActive,
-  controller:controllerView?.model.diagnostics()||null,directBoard:directBoardActive,
+  controller:controllerView?.model.diagnostics()||null,directBoard:directBoardActive,keyFeedback:controllerView?.feedbackState()||null,
   snapping,reduced_motion:reducedMotion.matches,visible:!document.hidden,
   artwork:xp.classList.contains('up'),auth:false,
   activeSign,directSign,fromSpace,playAttempted,playbackBlocked,videoMuted:vid.muted,

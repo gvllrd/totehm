@@ -128,7 +128,7 @@ document.addEventListener('keydown',e=>{
 });
 document.addEventListener('visibilitychange',syncPreview);reduced.addEventListener('change',syncPreview);
 addEventListener('pagehide',()=>{if(listRaf)cancelAnimationFrame(listRaf);listRaf=0;});addEventListener('pageshow',syncPreview);
-window.__totehm_gallery=()=>({build:'2026-11-18-lisbon-controller-v2',place,rooms:place==='lisbon'?3:2,room,hoveredSign,activeSign,list:body.classList.contains('list-view'),fallback,reduced_motion:reduced.matches,experiences:place==='new-york'?['/think_same_but_opposite','/origin?from=new-york']:[...new Set(ROOMS.filter((w,i)=>i!==4).map(w=>w.path))],experienceNavigation:'suspended-cinema-and-original-objects-to-fullscreen',inGalleryPlayback:false,lisbon:preview.diagnostics(),...engine?.diagnostics()});
+window.__totehm_gallery=()=>({build:'2026-11-19-lisbon-street-controller',place,rooms:place==='lisbon'?3:2,room,hoveredSign,activeSign,list:body.classList.contains('list-view'),fallback,reduced_motion:reduced.matches,experiences:place==='new-york'?['/think_same_but_opposite','/origin?from=new-york']:[...new Set(ROOMS.filter((w,i)=>i!==4).map(w=>w.path))],experienceNavigation:'suspended-cinema-and-original-objects-to-fullscreen',inGalleryPlayback:false,lisbon:preview.diagnostics(),...engine?.diagnostics()});
 function useFallback(){fallback=true;body.classList.remove('is-origin-transit','in-origins-vessel');body.classList.add('no-3d','list-view');engine?.setList(true);clearInfo();syncPreview();}
 try{
  const {createGallery}=await import('./gallery-spatial.mjs');
