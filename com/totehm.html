@@ -2173,6 +2173,12 @@ body.paysage #gate-mouth{display:none}
   top:calc(100% + clamp(22px,4dvh,40px));z-index:6;
   opacity:0;transform:translateY(6px);visibility:hidden;pointer-events:none;
   transition:opacity .3s ease,transform .45s cubic-bezier(.2,.7,.2,1),visibility 0s linear .45s}
+/* 19/11 (Wah : « enlève l'image EXPENSIVE ADVISORY ; que la connexion email s'intègre dans le tronc qui s'ouvre, comme
+   l'ancienne image ») — là où l'arbre se voit (ordinateur), la porte prend la place de l'image : `placerPorte()` la pose
+   entre le papier et la manette, et le tronc s'ouvre autour d'elle. Sans arbre (téléphone), elle reste sous le papier,
+   au-dessus du clavier. */
+#gate-door.is-tronc{top:var(--porte-y)}
+body.is-door #gate-door.is-tronc{transition:opacity .4s ease .2s,transform .5s cubic-bezier(.2,.7,.2,1) .15s,visibility 0s}   /* le tronc s'écarte d'abord */
 body.is-door #gate-door{opacity:1;transform:none;visibility:visible;pointer-events:auto;
   transition:opacity .45s ease .05s,transform .55s cubic-bezier(.2,.7,.2,1),visibility 0s}
 body.gate.entered #gate-door{opacity:0;visibility:hidden}
@@ -2924,11 +2930,9 @@ body.lv-h:not(.is-door):not(.entered) #gate-mouth{opacity:1;visibility:visible;t
 #lv{position:fixed;inset:0;z-index:5;pointer-events:none}
 body:not(.gate) #lv,body.entered #lv{display:none}
 /* ⚠️ 14/11 (Wah) : « quand je fais un [sign in] dans totehm.com, je veux que ce soit EN BAS DU TOTEHM, SANS
-   ENLEVER LE CURSEUR ET L'IMAGE qui accompagnent les traits d'intention dans le tree ». La porte vidait
-   l'atterrissage entier (`#lv{display:none}`) et effaçait l'arbre (`#lv-ram{opacity:0}`) : on signait devant
-   un écran nu. Maintenant `#lv` RESTE, et seuls les textes qui occupaient la place de la porte s'effacent —
-   en `visibility`, jamais en `display` : la GÉOMÉTRIE ne bouge pas d'un pixel, donc `placerAvis()` garde
-   l'image dans le tronc et `manche()` garde la manette à sa place. */
+   ENLEVER LE CURSEUR qui accompagne les traits d'intention dans le tree ». `#lv` RESTE, et seuls les textes de
+   l'atterrissage s'effacent — en `visibility`, jamais en `display` : la GÉOMÉTRIE ne bouge pas d'un pixel, donc
+   `manche()` garde la manette à sa place ; depuis le 19/11 la porte elle-même est DANS le tronc (`placerPorte()`). */
 body.is-door #lv-c-acts,body.is-door #lv-slogan,body.is-door #lv-sell,body.is-door #lv-tap{
   visibility:hidden;pointer-events:none}
 body.is-door #lv{pointer-events:none}
@@ -3200,8 +3204,6 @@ body.gate.lv-h:not(.entered):not(.is-door) #lv-sell{opacity:1}
 /* ── LE CENTRE : « Tap to open it », Mine · Others ── */
 #lv-c-acts{position:absolute;left:50%;top:calc(var(--lv-y) + var(--sk) / 2 + 18px);transform:translateX(-50%);
   display:flex;flex-direction:column;align-items:center;gap:12px;width:min(94vw,460px)}
-#lv-parental{display:block;position:absolute;left:50%;top:var(--avis-y,64dvh);width:var(--avis-w,100px);height:auto;
-  transform:translateX(-50%);margin:0;pointer-events:none}
 body.gate:not(.member):not(.ses-attente){--lv-y:32dvh}
 @media(min-height:741px) and (max-width:699px){
  body.gate:not(.member):not(.ses-attente){--lv-y:28dvh}
@@ -4620,7 +4622,6 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
              rentre chez lui, ses traits sont ceux du membre (sa palette), son nom est sur [Members], et ici UN geste. -->
         <div id="mb-lock" aria-live="polite"></div>
       </div>
-      <img id="lv-parental" src="https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/public/com/parental.png" alt="Expensive advisory: talk is cheap" width="278" height="200">
     </section>
 
     <section class="lv-pane" id="lv-h" aria-label="Get Higher"></section>
@@ -5268,7 +5269,7 @@ let ANON_OK=false;
 /* 07/10 : l'atterrissage lit UN appel (`my_landing`) — ma vignette, la visibilité
    et l'offre de mon Totehm, mon THP, Telegram. Peint par
    la croix (`lvRefresh`), vidé au changement de compte (`lvQuitter`). */
-let LAND=null, lvRefresh=null, lvPeindre=null, lvQuitter=null, lvReglages=null, lvMembreBoot=null, lvVersMembre=null, lvAller=null, lvPeindreMode=null, lvRecherche=null, lvDire=null;
+let LAND=null, lvRefresh=null, lvPeindre=null, lvQuitter=null, lvReglages=null, lvMembreBoot=null, lvVersMembre=null, lvAller=null, lvPeindreMode=null, lvRecherche=null, lvDire=null, lvPorte=null;
 /* 18/11 — `?members[=<nom>]` : la recherche de [Members] sur le verso — un ancien lien `/search`, ou le retour de Stripe
    (`?members=<nom>&subscribed=1`). Lu une fois, puis retiré de l'adresse (`lvRecherche`). */
 let MEMBERS0=(()=>{ try{ const u=new URLSearchParams(location.search); if(!u.has('members')) return null;
@@ -8800,7 +8801,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-11-19-media-for-visualization';
+const BUILD='2026-11-19-porte-dans-le-tronc';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -12149,12 +12150,13 @@ function ouvrirPorte(then){
   LA_PORTE.voulu=true; if(then!==undefined) LA_PORTE.then=then||null;
   memberPaint();
   document.body.classList.add('is-door');
+  if(lvPorte) lvPorte();   /* 19/11 : le tronc s'ouvre autour d'elle */
   if(typeof mwReprendre==='function') mwReprendre();   /* 14/11 : un code en vol reprend à son étape */
   const champ=champPorte();
   setTimeout(()=>{ try{ champ.focus({preventScroll:true}); }catch(_){} },120);
   return true;
 }
-function fermerPorte(){ LA_PORTE.voulu=false; LA_PORTE.reste=null; document.body.classList.remove('is-door'); }
+function fermerPorte(){ LA_PORTE.voulu=false; LA_PORTE.reste=null; document.body.classList.remove('is-door'); if(lvPorte) lvPorte(); }
 /* Inscrit : la porte se ferme ; si on l'avait ouverte pour entrer, le
    papier s'ouvre — après le fondu de la porte (420 ms), pour que rien ne
    bouge encore quand le papier se pose et que `measure()` lit le logo. */
@@ -14362,7 +14364,7 @@ window.addEventListener('pageshow',e=>{
     const RAM=(()=>{
       const svg=$('lv-ram'); let sig='', cur=null, raf=0;
       const N=24;                                   /* chaque branche, rééchantillonnée : la même forme se TRANSFORME */
-      const diagR={morphs:0, vib:0, traces:0};
+      const diagR={morphs:0, vib:0, traces:0, respirations:0};
       /* Par intention : combien d'Habits, et la PLUS FRÉQUENTE — c'est elle qui donne le rythme. */
       /* 25/10 — un Totehm fermé (abonnement) : ses traits sont sa PALETTE (`creator_page`), rien de son contenu. */
       let pal=null;
@@ -14393,7 +14395,8 @@ window.addEventListener('pageshow',e=>{
       }
       /* ── L'ARBRE DE VIE : le TOTEHM est le cœur. Ses DOUZE perforations portent chacune une broche.
          Les sept intentions se divisent en 56 pointes sur ordinateur, 28 sur téléphone, toutes au bord supérieur de l'écran.
-         Sous le papier, sept rails resserrés se divisent autour du visuel ADVISORY, se rejoignent puis enveloppent la manette.
+         Sous le papier, sept rails resserrés descendent droits ; quand la porte s'ouvre (19/11), ils s'écartent autour d'elle,
+         se rejoignent, puis enveloppent la manette.
          Quatre jonctions marquent les bifurcations ; douze pastilles terminent les racines. Les jonctions restent creuses.
          `c` = le papier (centre, largeur) ; les trous viennent de `--perfo` (rayon 6,16 % du côté). */
       const TROUS=[['L',.5,'L',.5],['L',.25,'L',.75],['T',.25,'B',.25],['T',.5,'B',.5],['T',.75,'B',.75],['R',.25,'R',.75],['R',.5,'R',.5]];
@@ -14451,7 +14454,9 @@ window.addEventListener('pageshow',e=>{
         /* ── LE TRONC : de son trou du bas, chaque piste se range sous le papier (les trous des côtés contournent ses coins
            en arcs concentriques), puis toutes descendent en sept rails espacés de 8 px ── */
         const jx=J.x, jy=J.y, gT=8;
-        const avis=A||{left:cx-50,right:cx+50,top:bas+70,bottom:Math.min(jy-110,bas+142),width:100,height:72};
+        /* `A` = la place de la porte ; `A.ouvert` : elle est là, le tronc s'écarte. Fermé, les rails gardent leur écart de
+           8 px au même endroit — ouvrir et refermer ne déplacent les points que de côté (la même forme, point pour point). */
+        const avis=A||{left:cx,right:cx,top:bas+70,bottom:Math.min(jy-110,bas+142),width:0,height:72}, ouvert=!!(A&&A.ouvert);
         const y0=bas+6,yT=Math.max(y0,Math.min(bas+32,avis.top-42)),xT=i=>cx+(i-3)*gT;
         const partage=avis.top-24,retour=Math.min(avis.bottom+26,jy-76);
         function piste(T,i){
@@ -14462,11 +14467,12 @@ window.addEventListener('pageshow',e=>{
             for(let z=1;z<=6;z++){ const f=z/6*Math.PI/2; L.push([xs-s*rc+s*rc*Math.sin(f), T.p[1]+rc-rc*Math.cos(f)]); }
             A=[xs,y0]; L.push(A); }
           return L.concat(courbe(A,[0,1],[xT(i),yT],[0,1],12,(yT-A[1])*.5,(yT-A[1])*.5)); }
-        /* Le visuel appartient au tronc : les pistes contournent ses lettres puis prolongent
-           ses flancs vers les racines. Les virages restent au-dessus et au-dessous de son rectangle. */
-        const contourAvis=(i,s)=>{ const k=Math.abs(i-3),x=(s<0?avis.left:avis.right)+s*(7+k*4);
+        /* La porte appartient au tronc : ouverte, les pistes la contournent puis prolongent ses flancs vers les racines ;
+           les virages restent au-dessus et au-dessous de son rectangle. Fermée, elles descendent droites, et les 4 px qui
+           séparent le tronc de la manette se prennent en douceur jusqu'à elle (un cran se voyait sous la porte). */
+        const contourAvis=(i,s)=>{ const k=Math.abs(i-3),x=ouvert?(s<0?avis.left:avis.right)+s*(7+k*4):cx+s*k*gT;
           const debut=[xT(i),yT],fourche=[xT(i),Math.max(yT,partage-k*2)],haut=[x,avis.top-6],bas=[x,avis.bottom+6];
-          const fin=[jx+s*(4+k*8),Math.max(avis.bottom+10,retour)];
+          const fin=[jx+s*(4+k*8),Math.max(avis.bottom+10,ouvert?retour:jy-76)];
           const dy=fin[1]-bas[1];
           return [debut,fourche].concat(bez([fourche,[fourche[0],fourche[1]+8],[x,avis.top-14],haut],18),[bas],
             bez([bas,[x,bas[1]+dy*.4],[fin[0],fin[1]-dy*.4],fin],18)); };
@@ -14625,6 +14631,33 @@ window.addEventListener('pageshow',e=>{
       }
       /* LA TRANSFORMATION : chaque point de chaque piste va de sa place à sa nouvelle place (≈ 0,7 s, la course du papier).
          Les nœuds attendent l'arrivée ; une transformation interrompue repart de là où elle en était. */
+      /* 19/11 — LE TRONC S'OUVRE : la porte s'ouvre (ou se ferme) et SEULS le tronc et le demi-trait du milieu changent ;
+         chaque point glisse de côté — ouvert ou fermé, la même forme, point pour point — en 0,52 s. La couronne, les
+         racines et les pastilles restent posées : rien ne repousse. Une forme qui ne correspond pas se pose d'un coup. */
+      function respirer(G){
+        const A0=cur, gs=[...svg.children].filter(e=>e.tagName.toLowerCase()==='g'), L=f=>f.l||f;
+        const pareil=A0&&A0.length===G.length&&gs.length===G.length&&G.every((o,i)=>A0[i].B&&A0[i].B.length===o.B.length
+          &&(A0[i].fk||[]).length===(o.fk||[]).length&&(o.fk||[]).every((f,j)=>L(A0[i].fk[j]).length===L(f).length));
+        if(raf){ cancelAnimationFrame(raf); raf=0; document.body.classList.remove('ram-morph'); }
+        if(!pareil){ dessiner(G); return; }
+        const pts=l=>l.map(p=>r1(p[0])+' '+r1(p[1])).join('L');
+        const mix=(x,y,u)=>x.map((q,k)=>[q[0]+(y[k][0]-q[0])*u, q[1]+(y[k][1]-q[1])*u]);
+        const ease=u=>u<.5?4*u*u*u:1-Math.pow(-2*u+2,3)/2, D=520;
+        const bouge=G.map((o,i)=>(o.fk||[]).map((f,j)=>L(f).some((p,k)=>Math.abs(p[0]-L(A0[i].fk[j])[k][0])>.05||Math.abs(p[1]-L(A0[i].fk[j])[k][1])>.05)));
+        let t0=0; diagR.respirations++;
+        const pas=now=>{
+          if(!t0) t0=now;
+          const u=ease(Math.min(1,(now-t0)/D));
+          cur=G.map((o,i)=>{ const B=mix(A0[i].B,o.B,u), g=gs[i], d='M'+pts(o.A)+'M'+pts(B), fes=g.querySelectorAll(':scope > path.fk');
+            g.querySelectorAll(':scope > path:not(.fk)').forEach(pa=>pa.setAttribute('d',d));
+            const fk=(o.fk||[]).map((f,j)=>{ if(!bouge[i][j]) return f; const l=mix(L(A0[i].fk[j]),L(f),u);
+              if(fes[j]) fes[j].setAttribute('d','M'+pts(l)); return f.l?Object.assign({},f,{l}):l; });
+            return Object.assign({},o,{B, b:reech(B), fk}); });
+          if(u<1){ raf=requestAnimationFrame(pas); return; }
+          raf=0; dessiner(G);
+        };
+        raf=requestAnimationFrame(pas);
+      }
       function morph(A,B,o){
         if(raf) cancelAnimationFrame(raf);
         o=o||{};
@@ -14670,30 +14703,36 @@ window.addEventListener('pageshow',e=>{
       /* 31/10 — le curseur (la manette de l'atterrissage) : son centre, là où le tronc devient les racines */
       const manche=()=>{ const b=$('lvj-box'), r=b&&b.getBoundingClientRect(), m=$('lvjoy'), mr=m&&m.getBoundingClientRect();
         return r&&r.width?{x:r.left+r.width/2, y:r.top+r.height/2,w:mr&&mr.width||108,h:mr&&mr.height||108}:{x:W()/2, y:H()-66,w:108,h:108}; };
-      function placerAvis(c,J){
-        const img=$('lv-parental'),acts=$('lv-c-acts'); if(!img)return null;
-        const ar=acts&&acts.getBoundingClientRect(),paysage=H()<520&&W()>=650,maximum=W()>=700&&!paysage?120:(paysage?90:130);
-        const dansAxe=ar&&ar.left<c.x+maximum/2&&ar.right>c.x-maximum/2;
-        const haut=Math.max(c.y+(c.w||110)/2+(paysage?48:42),dansAxe?ar.bottom+40:0),bas=J.y-(paysage?88:102);
-        const hauteur=Math.max(32,Math.min(maximum*200/278,bas-haut)),largeur=hauteur*278/200;
-        const y=haut+Math.max(0,(bas-haut-hauteur)/2);
-        img.style.setProperty('--avis-w',largeur.toFixed(1)+'px');
-        img.style.setProperty('--avis-y',y.toFixed(1)+'px');
-        img.style.height=hauteur.toFixed(1)+'px';
-        return {left:c.x-largeur/2,right:c.x+largeur/2,top:y,bottom:y+hauteur,width:largeur,height:hauteur};
+      /* 19/11 — LA PORTE DANS LE TRONC (Wah : « que la connexion email s'intègre dans le tronc qui s'ouvre, comme l'ancienne
+         image ») : là où l'arbre se voit, la porte se pose à mi-chemin entre le papier et la manette — à la place de l'image —,
+         et le tronc s'écarte autour d'elle quand elle s'ouvre (`ouvert`), puis se referme avec elle. Sa place se calcule
+         même fermée : elle s'efface là où elle était. Sans arbre (téléphone, tablette), elle reste sous le papier, au-dessus
+         du clavier ; pas assez de hauteur entre le papier et la manette, pareil. */
+      const SANS_ARBRE=matchMedia('(max-width:699px), (hover:none) and (pointer:coarse)');
+      function placerPorte(c,J){
+        const d=$('gate-door'); if(!d) return null;
+        const paysage=H()<520&&W()>=650, w=d.offsetWidth||280, h=d.offsetHeight||113;
+        const haut=c.y+(c.w||110)/2+(paysage?48:42), bas=J.y-(paysage?88:102);
+        if(SANS_ARBRE.matches||bas-haut<h+12){ d.classList.remove('is-tronc'); return null; }
+        const y=haut+(bas-haut-h)/2, p=d.offsetParent, y0=p?p.getBoundingClientRect().top:0;
+        d.style.setProperty('--porte-y',(y-y0).toFixed(1)+'px'); d.classList.add('is-tronc');
+        const ouvert=document.body.classList.contains('is-door');
+        return {ouvert, left:ouvert?c.x-w/2-6:c.x, right:ouvert?c.x+w/2+6:c.x, top:y-4, bottom:y+h+4, width:ouvert?w+12:0, height:h+8};
       }
       function peindre(v,o){
         if(!svg) return;
         o=o||{};
         const vu=(v==='h'||v==='g'||v==='d'||v==='b')?v:'c', n=compte(), c=o.papier||PAPIER.chez()||{x:W()/2,y:H()*.55,w:110}, S=boite(c,o), J=manche();
         if(vu==='c')sloganPour('c');
-        const A=vu==='c'?placerAvis(c,J):null;
-        const s=vu+'|'+W()+'x'+H()+'|'+INTS.map(x=>n[x.id].n+':'+n[x.id].w).join(',')+'|'+Math.round(c.x)+','+Math.round(c.y)+','+Math.round(c.w||110)+','+Math.round(S)+'|'+Math.round(J.x)+','+Math.round(J.y)+','+Math.round(J.w)+','+Math.round(J.h)+'|'+(A?[A.left,A.top,A.width,A.height].map(Math.round).join(','):'');
+        const A=vu==='c'?placerPorte(c,J):null;
+        const s=vu+'|'+W()+'x'+H()+'|'+INTS.map(x=>n[x.id].n+':'+n[x.id].w).join(',')+'|'+Math.round(c.x)+','+Math.round(c.y)+','+Math.round(c.w||110)+','+Math.round(S)+'|'+Math.round(J.x)+','+Math.round(J.y)+','+Math.round(J.w)+','+Math.round(J.h)+'|'+(A?(A.ouvert?'o':'f')+[A.left,A.top,A.width,A.height].map(Math.round).join(','):'');
         if(s===sig&&svg.childNodes.length){ if(vu==='h') vibrer(); return; }
         const avant=sig.split('|')[0]; sig=s;
         if(vraf){ cancelAnimationFrame(vraf); vraf=0; }
         svg.setAttribute('viewBox','0 0 '+W()+' '+H());
         const G=forme(vu,n,c,S,J,A);
+        /* la porte s'ouvre ou se ferme : seul le tronc s'écarte ou se resserre — la couronne et les racines ne bougent pas */
+        if(o.respire&&vu==='c'&&avant==='c'&&cur&&svg.childNodes.length&&!RMQ.matches){ respirer(G); return; }
         if(o.anime&&cur&&cur.length===G.length&&svg.childNodes.length&&!RMQ.matches){ if((vu==='g')!==(avant==='g')&&avant) passer(G); else morph(cur,G,o); }
         else{ if(raf){ cancelAnimationFrame(raf); raf=0; document.body.classList.remove('ram-morph'); } dessiner(G); }
       }
@@ -14702,7 +14741,7 @@ window.addEventListener('pageshow',e=>{
                    noeuds:svg?svg.querySelectorAll('rect').length:0,
                    impulsions:svg?svg.querySelectorAll('.puls').length:0,
                    creux:svg?svg.querySelectorAll('.r-0').length:0, vue:sig.split('|')[0]||'', habits:sig.split('|')[2]||'',
-                   morphs:diagR.morphs, enCours:!!raf, vibre:!!vraf, vibrations:diagR.vib, traces:diagR.traces,
+                   morphs:diagR.morphs, respirations:diagR.respirations, enCours:!!raf, vibre:!!vraf, vibrations:diagR.vib, traces:diagR.traces,
                    ondes:GH?GH.map(o=>({c:o.x.id, f:Math.round(o.v.f*100)/100, cyc:Math.round(o.v.cyc*100)/100, amp:Math.round(o.v.amp*10)/10})):[]})};
     })();
 
@@ -15139,6 +15178,11 @@ window.addEventListener('pageshow',e=>{
     let landSeq=0;
     lvPeindre=()=>{ peindreCarte(); connPaint(); paintMe(); RAM.peindre(vue); peindreNav(); };
     lvPeindreMode=()=>peindreMode();
+    /* 19/11 — la porte s'ouvre, change de question (email → code → nom) ou se ferme : le tronc s'ajuste autour d'elle. En
+       voyage, la fin du voyage repeint l'arbre avec la porte telle qu'elle est. */
+    lvPorte=()=>{ if(vue==='c'&&!bouge) RAM.peindre('c',{respire:true}); };
+    if(window.ResizeObserver){ let t=0; new ResizeObserver(()=>{ cancelAnimationFrame(t);
+      t=requestAnimationFrame(()=>{ if(document.body.classList.contains('is-door')&&lvPorte) lvPorte(); }); }).observe($('gate-door')); }
     lvRefresh=async()=>{
       const seq=++landSeq, uid=me?me.id:null;
       const {data,error}=await sb.rpc('my_landing');

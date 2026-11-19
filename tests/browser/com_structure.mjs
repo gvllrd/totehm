@@ -1,7 +1,7 @@
 // COM — la structure de la vue centrale (Wah, 22/10/2026 ; refaite le 25/10).
 // 1 · (25/10) Plus de boîte noire : le TOTEHM est le BOÎTIER du processeur. (26/10) Ses DOUZE perforations sont toutes
 //     raccordées — une broche dans chaque trou — et ses sept traits forment un ARBRE DE VIE : (31/10) les branches couvrent
-//     tout le haut de l'écran ; le tronc contourne ADVISORY et ses racines enveloppent la manette.
+//     tout le haut de l'écran ; le tronc descend droit (19/11 : il s'ouvre autour de la porte) et ses racines enveloppent la manette.
 //     Le cœur (le TOTEHM) bat.
 // 2 · (25/10) Un tap sur le TOTEHM : ses traits cessent leur activité et sont ASPIRÉS dans le papier pendant qu'il se
 //     déploie (« on cesse l'activité du Totehm pour le configurer »). Ouvert : aucune boîte, aucun trait autour.
@@ -31,24 +31,20 @@ const branche=pg=>pg.evaluate(()=>{const s=document.getElementById('gate-asteroi
   const jonctions=[...document.querySelectorAll('#lv-ram circle.jonction')].map(c=>{const p=point(c);
     return {...p,liens:segments.reduce((n,sp)=>n+sp.reduce((m,q,i)=>m+(Math.hypot(p.x-q[0],p.y-q[1])<=.15?+(i>0)+ +(i<sp.length-1):0),0),0)};});
   const jb=document.getElementById('lvj-box').getBoundingClientRect();
-  const av=document.getElementById('lv-parental').getBoundingClientRect();
-  const contour=[...document.querySelectorAll('#lv-ram path:not(.puls)')].flatMap(p=>{
-    const total=p.getTotalLength(),n=Math.ceil(total/2);return Array.from({length:n+1},(_,i)=>{const q=p.getPointAtLength(total*i/Math.max(1,n));return {x:q.x,y:q.y};});});
-  const avis={l:av.left,r:av.right,t:av.top,b:av.bottom,w:av.width,h:av.height,
-    libre:!contour.some(p=>p.x>av.left-4&&p.x<av.right+4&&p.y>av.top-4&&p.y<av.bottom+4),
-    gauche:contour.some(p=>p.y>av.top&&p.y<av.bottom&&p.x<av.left-4),
-    droite:contour.some(p=>p.y>av.top&&p.y<av.bottom&&p.x>av.right+4)};
+  /* 19/11 — plus d'image ADVISORY : au repos (aucune porte ouverte), le tronc reste FERMÉ, sept rails parallèles */
+  const sansImage=!document.getElementById('lv-parental');
   const section=y=>traits.map(t=>{const l=t[1];for(let i=1;i<l.length;i++){const a=l[i-1],b=l[i];
     if(a[1]<=y&&b[1]>=y&&b[1]>a[1])return a[0]+(b[0]-a[0])*(y-a[1])/(b[1]-a[1]);}return null;});
   const largeur=xs=>xs.every(x=>x!==null)?Math.max(...xs)-Math.min(...xs):Infinity;
   const acts=document.getElementById('lv-c-acts').getBoundingClientRect(),pts=[...document.querySelectorAll('#lvj-stack i')],cap=getComputedStyle(pts[0]),gros=getComputedStyle(document.getElementById('lvj-box'));
-  const tronc={avant:largeur(section(av.top-34)),autour:largeur(section(av.top+av.height/2)),
-    apres:largeur(section(Math.min(av.bottom+26,jb.top+jb.height/2-76))),
-    avantManette:largeur(section(jb.top+jb.height/2-68)),visible:av.top-30-acts.bottom};
+  const Jy=jb.top+jb.height/2;
+  const larg=[];for(let y=acts.bottom+20;y<=Jy-76;y+=6)larg.push(largeur(section(y)));
+  const tronc={sous:largeur(section(acts.bottom+20)),elargit:larg.every((v,i)=>v>=47.5&&v<=56.5&&(!i||v>=larg[i-1]-.2)),
+    apres:largeur(section(Jy-76)),avantManette:largeur(section(Jy-68))};
   const trois={n:pts.length,manche:cap.backgroundImage,boite:gros.backgroundColor,
     puits:getComputedStyle(document.getElementById('lvj-box'),'::after').backgroundImage};
   return {pads,jonctions,rameaux:document.querySelectorAll('#lv-ram path.fk').length,s:{t:s.top,b:s.bottom,l:s.left,r:s.right,w:s.width,cx:s.left+s.width/2,cy:s.top+s.height/2},H:innerHeight,pins,trous,traits,
-    J:{x:jb.left+jb.width/2,y:jb.top+jb.height/2},avis,tronc,manche:trois,
+    J:{x:jb.left+jb.width/2,y:jb.top+jb.height/2},sansImage,tronc,manche:trois,
     coeur:getComputedStyle(document.getElementById('gate-logo')).animationName,socle:{bg:cs.backgroundColor,ombre:cs.boxShadow,puits:!!k.querySelector('.sk-well')}};});
 const pres=(p,l,t)=>l.some(q=>Math.hypot(p[0]-q[0],p[1]-q[1])<=t);
 /* L'état du réseau : aspiré ou non, son échelle, son opacité, ses impulsions. */
@@ -78,11 +74,10 @@ try{
      &&pied.some(p=>p.x<b.J.x-60)&&pied.some(p=>p.x>b.J.x+60)
      &&bouts.every(x=>pres(x[1],pied.map(p=>[p.x,p.y]),.15)),
      nom+' · les 12 racines atteignent le bord inférieur et gardent 4 vraies fourches');
-  ok(b.avis.libre&&b.avis.gauche&&b.avis.droite&&b.avis.t>b.s.b&&b.avis.b<b.J.y-54&&b.avis.w>=70,
-     nom+' · ADVISORY est dans le tronc, entre papier et manette : les pistes longent ses deux côtés à plus de 4 px');
-  ok(b.tronc.avant>=47&&b.tronc.avant<=49&&b.tronc.visible>=8&&b.tronc.autour>=b.avis.w+12
+  ok(b.sansImage,nom+' · 19/11 · plus d\'image ADVISORY dans le tronc (la porte prend sa place quand elle s\'ouvre)');
+  ok(b.tronc.sous>=47&&b.tronc.sous<=49&&b.tronc.elargit
      &&b.tronc.apres>=55&&b.tronc.apres<=57&&b.tronc.avantManette>=55&&b.tronc.avantManette<=57,
-     nom+' · le tronc large reste parallèle jusqu’au début de la manette, puis les racines se séparent → '+JSON.stringify(b.tronc));
+     nom+' · le tronc FERMÉ : sept rails parallèles (48 px) sous le papier, qui ne font que s’élargir jusqu’à la manette (56 px), puis les racines se séparent → '+JSON.stringify(b.tronc));
   ok(b.manche.n===1&&b.manche.boite==='rgba(0, 0, 0, 0)'&&b.manche.manche.includes('radial-gradient')&&b.manche.puits.includes('radial-gradient'),
      nom+' · le joystick noir rond n’a pas de boîte carrée → '+JSON.stringify(b.manche));
   ok(b.coeur==='coeur',nom+' · 26/10 · au repos, le cœur (le TOTEHM) bat → '+b.coeur);
