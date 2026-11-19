@@ -23,6 +23,17 @@ begin
      and p.prosrc ~* '\mpublic\.wisdom\M|\mrepulsion_teachings\M|\mteaching_objectives\M|\mwisdom_id\M|(from|join|into|update)\s+wisdom\M';
   if v_corps is not null then fails := fails || ('lit l''ancien stockage STORY: ' || v_corps); end if;
 
+  -- 2 bis · OBJECTIVE (19/11) : plus aucune fonction au nom de « trip », sauf le pont `my_trips` ;
+  --          l'arbre (`my_totehm`) ne rend aucune ancienne clé
+  select string_agg(p.proname, ', ') into v_corps from pg_proc p
+   where p.pronamespace = 'public'::regnamespace and p.proname ~* 'trip' and p.proname <> 'my_trips';
+  if v_corps is not null then fails := fails || ('fonction au nom de « trip »: ' || v_corps); end if;
+  if to_regprocedure('public.my_totehm()') is null then fails := fails || 'my_totehm() absente'::text;
+  elsif exists (select 1 from pg_proc p where p.oid = 'public.my_totehm()'::regprocedure
+                 and p.prosrc ~ '''(trips|reps|wisdom)''') then
+    fails := fails || 'my_totehm rend une ancienne clé (trips · reps · wisdom)'::text;
+  end if;
+
   -- 3 · les ponts encore là (à retirer quand le connecteur ChatGPT, TotehmBot et la boutique ont suivi)
   select count(*) into v_ponts_vues from pg_class c
    where c.relnamespace = 'public'::regnamespace and c.relkind = 'v'
