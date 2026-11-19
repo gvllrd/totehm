@@ -14,6 +14,8 @@ export const LISBON_KEYS=Object.freeze({
   no_uturn:[.351,.144,.098],priority:[-.375,.266,.104],crosswalk:[0,.164,.084],stop:[.375,.266,.100]
 });
 const FACE_HEIGHT=.080;
+const DISPLAY_FRAME={width:.260,depth:.158,radius:.016};
+const DISPLAY_GLASS={width:.248,depth:.146,radius:.012};
 export function lisbonControllerShot(viewportWidth,viewportHeight){
   return {
     center:[0,.037,.025],pitch:1.20,
@@ -81,7 +83,7 @@ function palmGrip(side,mobile){
 function shoulderGeometry(width,depth,side,mobile){
   const shape=new T.Shape();
   // The outside wraps around the housing, while the inside tapers toward Heli.
-  const x=value=>value*width*side,y=value=>value*width;
+  const x=value=>value*width*side,y=value=>value*width*.72;
   shape.moveTo(x(-.370),y(-.187));
   shape.bezierCurveTo(x(-.465),y(-.178),x(-.500),y(-.127),x(-.500),y(-.015));
   shape.bezierCurveTo(x(-.500),y(.109),x(-.445),y(.192),x(-.336),y(.209));
@@ -89,18 +91,18 @@ function shoulderGeometry(width,depth,side,mobile){
   shape.bezierCurveTo(x(.460),y(.173),x(.500),y(.119),x(.500),y(.039));
   shape.bezierCurveTo(x(.500),y(-.060),x(.457),y(-.115),x(.364),y(-.127));
   shape.bezierCurveTo(x(.095),y(-.150),x(-.136),y(-.219),x(-.370),y(-.187));
-  const geometry=new T.ExtrudeGeometry(shape,{depth,curveSegments:mobile?8:14,bevelEnabled:true,bevelThickness:.007,bevelSize:.006,bevelSegments:3});
+  const geometry=new T.ExtrudeGeometry(shape,{depth,curveSegments:mobile?8:14,bevelEnabled:true,bevelThickness:.0025,bevelSize:.003,bevelSegments:3});
   const positions=geometry.getAttribute('position'),uv=geometry.getAttribute('uv');
-  for(let i=0;i<positions.count;i++)uv.setXY(i,positions.getX(i)/width+.5,positions.getY(i)/(.50*width)+.5);
+  for(let i=0;i<positions.count;i++)uv.setXY(i,positions.getX(i)/width+.5,positions.getY(i)/(.36*width)+.5);
   geometry.computeBoundingBox();
   return geometry;
 }
 
 function shoulderTexture(artwork){
-  const canvas=document.createElement('canvas');canvas.width=512;canvas.height=256;
+  const canvas=document.createElement('canvas');canvas.width=512;canvas.height=184;
   const context=canvas.getContext('2d');
   context.fillStyle='#639922';context.fillRect(0,0,canvas.width,canvas.height);
-  const size=300;
+  const size=253;
   context.drawImage(artwork,(canvas.width-size)/2,(canvas.height-size)/2,size,size);
   return new T.CanvasTexture(canvas);
 }
@@ -111,6 +113,65 @@ function tintButtonEdges(geometry,intensity){
     if(materialIndex===1)colors.fill(intensity,start*3,(start+count)*3);
   }
   geometry.setAttribute('color',new T.BufferAttribute(colors,3));
+}
+
+function roundedPanel({width,depth,radius},x=0,y=0){
+  const shape=new T.Shape(),left=x-width/2,right=x+width/2,bottom=y-depth/2,top=y+depth/2;
+  shape.moveTo(left+radius,bottom);
+  shape.lineTo(right-radius,bottom);shape.quadraticCurveTo(right,bottom,right,bottom+radius);
+  shape.lineTo(right,top-radius);shape.quadraticCurveTo(right,top,right-radius,top);
+  shape.lineTo(left+radius,top);shape.quadraticCurveTo(left,top,left,top-radius);
+  shape.lineTo(left,bottom+radius);shape.quadraticCurveTo(left,bottom,left+radius,bottom);
+  return shape;
+}
+
+function mountDisplay(create,x,z,edgeInk){
+  const frame=roundedPanel(DISPLAY_FRAME);
+  frame.holes.push(roundedPanel(DISPLAY_GLASS));
+  const bezel=create(new T.ExtrudeGeometry(frame,{depth:.012,curveSegments:12,bevelEnabled:false}),edgeInk,x,FACE_HEIGHT-.011,z);
+  bezel.rotation.x=-Math.PI/2;bezel.name='Recessed display bezel';
+  const well=create(new T.ExtrudeGeometry(roundedPanel(DISPLAY_GLASS),{depth:.003,curveSegments:12,bevelEnabled:false}),edgeInk,x,FACE_HEIGHT-.009,z);
+  well.rotation.x=-Math.PI/2;well.name='Black backing beneath the LCD';
+  const glassInk=new T.MeshPhysicalMaterial({color:0xb3d4ed,transparent:true,opacity:.115,roughness:.096,metalness:.15,clearcoat:1,clearcoatRoughness:.09,depthWrite:false});
+  const glass=create(new T.ExtrudeGeometry(roundedPanel(DISPLAY_GLASS),{depth:.0015,curveSegments:12,bevelEnabled:false}),glassInk,x,FACE_HEIGHT-.001,z);
+  glass.rotation.x=-Math.PI/2;glass.name='Flush display cover glass';glass.renderOrder=2;
+  return {bezel,glass};
+}
+
+function thumbSurface(radius){return .064+.010*(radius/.061)**2;}
+
+function mountThumbStick(create,root,x,z,edgeInk,rubberInk,bezelInk){
+  const ringGeometry=new T.LatheGeometry([
+    [.056,-.005],[.065,-.005],[.069,.001],[.069,.006],[.065,.010],[.057,.010],[.053,.005],[.056,-.005]
+  ].map(([r,y])=>new T.Vector2(r,y)),56);
+  const socket=create(ringGeometry,edgeInk,x,FACE_HEIGHT,z);
+  socket.name='Thumbstick socket';
+  const bootGeometry=new T.LatheGeometry([
+    [0,0],[.056,0],[.061,.005],[.055,.007],[.049,.006],[.050,.010],[.044,.014],
+    [.040,.013],[.041,.017],[.032,.022],[.027,.020],[.026,.024],[.013,.030],[0,.030]
+  ].map(([r,y])=>new T.Vector2(r,y)),56);
+  const boot=create(bootGeometry,rubberInk,x,FACE_HEIGHT,z);
+  boot.name='Flexible thumbstick boot';
+  const pivot=new T.Group();
+  pivot.name='Thumbstick pivot';pivot.position.set(x,FACE_HEIGHT+.011,z);root.add(pivot);
+  const stem=create(new T.CylinderGeometry(.014,.019,.047,32),bezelInk,0,.030,0);
+  stem.name='Thumbstick shaft';pivot.add(stem);
+  const profile=[
+    [0,.044],[.034,.044],[.044,.048],[.053,.051],[.059,.054],[.063,.058],
+    [.062,.060],[.064,.061],[.064,.064],[.062,.065],[.064,.066],[.064,.069],
+    [.062,.073],[.059,thumbSurface(.059)],...[.052,.042,.032,.020,0].map(r=>[r,thumbSurface(r)])
+  ];
+  const cap=create(new T.LatheGeometry(profile.map(([r,y])=>new T.Vector2(r,y)),64),rubberInk,0,0,0);
+  cap.name='Concave rubber thumb cap';pivot.add(cap);
+  return {socket,boot,stem,cap,pivot};
+}
+
+function thumbArtwork(size){
+  const geometry=new T.RingGeometry(0,size/2,56,12);
+  const position=geometry.getAttribute('position');
+  for(let i=0;i<position.count;i++)position.setZ(i,thumbSurface(Math.hypot(position.getX(i),position.getY(i)))+.0007);
+  geometry.computeVertexNormals();geometry.computeBoundingBox();
+  return geometry;
 }
 
 export function createLisbonController({width=.52,mobile=false,onChange=()=>{}}={}){
@@ -125,13 +186,15 @@ export function createLisbonController({width=.52,mobile=false,onChange=()=>{}}=
   const lighting=new T.MeshBasicMaterial({color:0x8aacd6,toneMapped:false});
   for(const ink of [shellInk,edgeInk,gripInk,rubberInk,bezelInk,lighting])materials.add(ink);
   const create=(geometry,material,x,y,z)=>{geometries.add(geometry);materials.add(material);const mesh=new T.Mesh(geometry,material);mesh.position.set(x,y,z);root.add(mesh);return mesh;};
-  function shell(material,y,depth,bevel,scale=1){
-    const mesh=create(new T.ExtrudeGeometry(outline(),{depth,curveSegments:mobile?10:24,bevelEnabled:true,bevelThickness:bevel,bevelSize:bevel,bevelSegments:mobile?2:4}),material,0,y,0);
+  function shell(material,y,depth,bevel,scale,shape=outline()){
+    const mesh=create(new T.ExtrudeGeometry(shape,{depth,curveSegments:mobile?10:24,bevelEnabled:true,bevelThickness:bevel,bevelSize:bevel,bevelSegments:mobile?2:4}),material,0,y,0);
     mesh.rotation.x=-Math.PI/2;mesh.scale.set(scale,scale,1);return mesh;
   }
   const lower=shell(edgeInk,-.029,.042,.025,.958);
   const belt=shell(bezelInk,.018,.005,.007,.982);
-  const face=shell(shellInk,.031,.031,.018,.982);
+  const faceShape=outline(),faceScale=.982,displayZ=LISBON_KEYS.destination[1];
+  faceShape.holes.push(roundedPanel({width:DISPLAY_FRAME.width/faceScale,depth:DISPLAY_FRAME.depth/faceScale,radius:DISPLAY_FRAME.radius/faceScale},0,-displayZ/faceScale));
+  const face=shell(shellInk,.031,.031,.018,faceScale,faceShape);
   lower.name='Radiused controller underside';belt.name='Controller shell joint';face.name='Bevelled graphite controller shell';
   const grips=[-1,1].map(side=>{
     const mesh=create(palmGrip(side,mobile),gripInk,0,0,0);
@@ -145,8 +208,8 @@ export function createLisbonController({width=.52,mobile=false,onChange=()=>{}}=
   const shoulderMounts=[];
   for(const id of ['fire_exit','aed']){
     const [x,z]=LISBON_KEYS[id];
-    const mount=create(new T.CapsuleGeometry(.036,.127,6,mobile?10:20),edgeInk,x,.062,z-.004);
-    mount.rotation.z=Math.PI/2;mount.scale.set(1,1,1.24);mount.name='Recessed shoulder seat';
+    const mount=create(shoulderGeometry(.221,.012,x<0?1:-1,mobile),edgeInk,x,.065,z-.001);
+    mount.rotation.x=-Math.PI/2;mount.name='Recessed shoulder seat';
     const trigger=create(new T.CapsuleGeometry(.042,.118,6,mobile?10:20),gripInk,x,-.012,z-.013);
     trigger.rotation.set(.22,0,Math.PI/2);trigger.scale.set(.86,1,1.02);trigger.name='Sculpted rear trigger paddle';
     shoulderMounts.push(mount,trigger);
@@ -155,32 +218,39 @@ export function createLisbonController({width=.52,mobile=false,onChange=()=>{}}=
   light.name='Controller status line';
   const loader=globalThis.document?new T.TextureLoader():null;
   for(const [id,[x,z,size]] of Object.entries(LISBON_KEYS)){
-    const stick=id==='roundabout'||id==='left_or_straight';
+    const isStick=id==='roundabout'||id==='left_or_straight';
     const shoulder=id==='fire_exit'||id==='aed';
-    const display=id==='destination';
-    const geometry=shoulder ? shoulderGeometry(size,.034,x<0?1:-1,mobile) : createLisbonSignGeometry(id,size*(display?1:.93),stick?.030:.034);
-    tintButtonEdges(geometry,shoulder?.76:.44);
-    const keyY=FACE_HEIGHT+(shoulder?.045:stick?.064:id==='pharma'?.033:.025);
-    const baseY=keyY-geometry.boundingBox.max.z;
-    if(stick){
-      const stem=create(new T.CylinderGeometry(.019,.030,.038,24),rubberInk,x,FACE_HEIGHT+.026,z);
-      stem.name=id+' thumb-stick stem';
-    }
-    const ink=new T.MeshPhysicalMaterial({
-      color:0xffffff,vertexColors:true,roughness:display?.27:.43,metalness:.13,
-      emissive:0xffffff,emissiveIntensity:display?.40:.20,alphaTest:shoulder?0:.15,
-      clearcoat:display?.78:.30,clearcoatRoughness:.22,toneMapped:false
-    });
+    const isDisplay=id==='destination';
+    const geometry=shoulder ? shoulderGeometry(size,.012,x<0?1:-1,mobile)
+      : isStick ? thumbArtwork(size*.93)
+      : createLisbonSignGeometry(id,size*(isDisplay?1:.93),isDisplay?.0013:.034);
+    if(!isStick&&!isDisplay)tintButtonEdges(geometry,shoulder?.76:.44);
+    const stick=isStick ? mountThumbStick(create,root,x,z,edgeInk,rubberInk,bezelInk) : undefined;
+    const display=isDisplay ? mountDisplay(create,x,z,edgeInk) : undefined;
+    const keyY=FACE_HEIGHT+(shoulder?.018:isDisplay?-.002:isStick?.080:id==='pharma'?.033:.025);
+    const baseY=isStick ? 0 : keyY-geometry.boundingBox.max.z;
+    const ink=isDisplay ? new T.MeshBasicMaterial({color:0xffffff,toneMapped:false,alphaTest:.15})
+      : new T.MeshPhysicalMaterial({
+        color:0xffffff,vertexColors:!isStick,roughness:isStick?.51:.43,metalness:.13,
+        emissive:0xffffff,emissiveIntensity:.20,alphaTest:shoulder?0:.15,
+        clearcoat:.30,clearcoatRoughness:.22,toneMapped:false
+      });
     const button=create(geometry,ink,x,baseY,z);
-    button.name=shoulder ? id+' sculpted shoulder button' : id+' sculpted sign button';
+    button.name=shoulder ? id+' slim shoulder button' : isDisplay ? 'Backlit Destination display' : id+' sign surface';
     button.rotation.x=-Math.PI/2;
     button.visible=false;
+    if(stick){
+      button.position.set(0,0,0);
+      stick.pivot.add(button);
+    }
     if(loader)pending.push(new Promise(resolve=>{
       const texture=loader.load('/assets/signs/'+id+'.png',source=>{
         if(!disposed){
           const map=shoulder ? shoulderTexture(source.image) : source;
           map.colorSpace=T.SRGBColorSpace;map.anisotropy=4;
-          ink.map=map;ink.emissiveMap=map;ink.needsUpdate=true;
+          ink.map=map;
+          if(!isDisplay)ink.emissiveMap=map;
+          ink.needsUpdate=true;
           textures.add(map);
           button.visible=true;loaded++;onChange();
         }
@@ -188,7 +258,23 @@ export function createLisbonController({width=.52,mobile=false,onChange=()=>{}}=
       },undefined,resolve);
       textures.add(texture);
     }));
-    keys.set(id,{id,x,z,size,y:keyY,baseY,button,shoulder});
+    const key={id,x,z,size,y:keyY,baseY,button,shoulder,stick,display,kind:shoulder?'shoulder':isStick?'stick':isDisplay?'display':'sign'};
+    if(shoulder)key.applyPressure=(amount,motion)=>{
+      const travel=motion?.006*amount:0;
+      button.position.y=baseY-travel;
+      return {travel,tilt:0};
+    };
+    if(stick)key.applyPressure=(amount,motion)=>{
+      const tilt=motion?.27*amount:0,travel=motion?.004*amount:0;
+      stick.pivot.position.y=FACE_HEIGHT+.011-travel;
+      stick.pivot.rotation.x=tilt;stick.pivot.rotation.z=Math.sign(x)*tilt*.35;
+      return {travel,tilt};
+    };
+    if(display)key.applyPressure=amount=>{
+      ink.color.setScalar(1+.24*amount);
+      return {travel:0,tilt:0};
+    };
+    keys.set(id,key);
   }
   root.userData.kind='lisbon-controller';
   root.userData.faceCorners=[[-.54,FACE_HEIGHT,-.34],[.54,FACE_HEIGHT,-.34],[.54,FACE_HEIGHT,.39],[-.54,FACE_HEIGHT,.39]];
@@ -196,7 +282,7 @@ export function createLisbonController({width=.52,mobile=false,onChange=()=>{}}=
   const data={kind:'lisbon-controller',action:'open',href:'/play_lisbon_street?board=1'};
   for(const mesh of pickables)Object.assign(mesh.userData,data);
   return {root,hitSurface,pickables,keys,ready:Promise.all(pending),
-    diagnostics:()=>({kind:'lisbon-controller-original-3d',version:3,width,keys:keys.size,loaded,closedShell:true,physical:true,palmGrips:grips.length,thumbSticks:2,shoulderControls:4,activeShoulders:2,signShapedKeys:keys.size}),
+    diagnostics:()=>({kind:'lisbon-controller-original-3d',version:4,width,keys:keys.size,loaded,closedShell:true,physical:true,palmGrips:grips.length,thumbSticks:2,articulatedSticks:2,shoulderControls:4,activeShoulders:2,flushDisplay:true}),
     dispose(){disposed=true;root.removeFromParent();for(const geometry of geometries)geometry.dispose();for(const material of materials)material.dispose();for(const texture of textures)texture.dispose();}
   };
 }
@@ -229,6 +315,7 @@ export function createLisbonControllerView(host,{onLayout=()=>{}}={}){
   function target(id){
     const key=model.keys.get(id);if(!key)return null;
     const box=renderer.domElement.getBoundingClientRect();
+    // Use the neutral face coordinates even while the control tilts or moves.
     const project=(x,z)=>model.root.localToWorld(new T.Vector3(x,key.y,z)).project(camera);
     const {min,max}=key.button.geometry.boundingBox;
     const reachX=Math.max(-min.x,max.x),reachZ=Math.max(-min.y,max.y);
@@ -245,10 +332,22 @@ export function createLisbonControllerView(host,{onLayout=()=>{}}={}){
   }
   const presses=new Map();
   let pressFrame=0,lastFeedback=null;
-  function restoreButton(track){
-    track.key.button.position.y=track.key.baseY;
-    track.material.color.copy(track.color);
-    track.material.emissiveIntensity=track.emissive;
+  function pressureEffect(key){
+    if(key.kind==='display')return (pressure,motion)=>key.applyPressure(pressure,motion);
+    const material=key.button.material;
+    const color=material.color.clone(),emissive=material.emissiveIntensity;
+    return (pressure,motion)=>{
+      let effect;
+      if(key.applyPressure)effect=key.applyPressure(pressure,motion);
+      else{
+        const travel=motion ? .013*pressure : 0;
+        key.button.position.y=key.baseY-travel;
+        effect={travel,tilt:0};
+      }
+      material.color.copy(color).multiplyScalar(1-.32*pressure);
+      material.emissiveIntensity=emissive*(1-.38*pressure);
+      return effect;
+    };
   }
   function stepPresses(now){
     pressFrame=0;let redraw=false,running=false;
@@ -277,18 +376,16 @@ export function createLisbonControllerView(host,{onLayout=()=>{}}={}){
         pressure=T.MathUtils.lerp(track.from,track.to,T.MathUtils.smoothstep(elapsed,0,track.duration));
         finished=elapsed>=track.duration;
       }
-      const distance=track.key.shoulder ? .017 : .013;
-      const travel=track.reduced?0:distance*pressure;
-      if(pressure!==track.amount){
-        track.amount=pressure;track.key.button.position.y=track.key.baseY-travel;
-        track.material.color.copy(track.color).multiplyScalar(1-.32*pressure);
-        track.material.emissiveIntensity=track.emissive*(1-.38*pressure);
+      const motion=!track.reduced;
+      if(pressure!==track.amount||motion!==track.motion){
+        track.amount=pressure;track.motion=motion;
+        track.effect=track.applyPressure(pressure,motion);
         redraw=true;
       }
-      lastFeedback={id,pressure,travel,mode:finished&&pressure===0?'released':track.mode};
+      lastFeedback={id,kind:track.kind,pressure,...track.effect,mode:finished&&pressure===0?'released':track.mode};
       if(finished){
         track.resolve?.();track.resolve=null;
-        if(pressure===0){restoreButton(track);presses.delete(id);}
+        if(pressure===0)presses.delete(id);
       }else running=true;
     }
     if(redraw)draw();
@@ -299,8 +396,7 @@ export function createLisbonControllerView(host,{onLayout=()=>{}}={}){
     let track=presses.get(id);
     if(!track){
       if(!action)return Promise.resolve();
-      const material=key.button.material;
-      track={key,material,color:material.color.clone(),emissive:material.emissiveIntensity,amount:0};
+      track={applyPressure:pressureEffect(key),kind:key.kind||'sign',amount:0};
       presses.set(id,track);
     }
     if(track.mode==='activating'&&action!=='activate')return Promise.resolve();
@@ -322,7 +418,7 @@ export function createLisbonControllerView(host,{onLayout=()=>{}}={}){
     dispose(){
       if(drawFrame)cancelAnimationFrame(drawFrame);
       if(pressFrame)cancelAnimationFrame(pressFrame);
-      for(const track of presses.values()){track.resolve?.();restoreButton(track);}
+      for(const track of presses.values()){track.resolve?.();track.applyPressure(0,false);}
       presses.clear();removeEventListener('resize',layout);model.dispose();renderer.dispose();renderer.forceContextLoss();renderer.domElement.remove();
     }
   };

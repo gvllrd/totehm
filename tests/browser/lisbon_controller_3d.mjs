@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {launch,page} from './harness.mjs';
 import {createLisbonController} from '../../space/gallery-lisbon-controller.mjs';
-import {Mesh,Raycaster,Vector3} from '../../space/vendor/three-0.180.0.mjs';
+import {Box3,Matrix4,Mesh,Raycaster,Vector3} from '../../space/vendor/three-0.180.0.mjs';
 
 const url='https://www.totehm.space';
 const directory=process.argv[2]||'/tmp/lisbon-controller-3d';
@@ -15,6 +15,13 @@ function check(value,message){assert(value,message);checks++;console.log('PASS '
 const canonicalIds=['fire_exit','Heli','aed','green_walk','red_walk','pharma','destination','lisboa_city_hall','speed_bump_caution','crosswalk_caution','no_entry','no_parking','hospital','parking','Hotel','dead_end','roundabout','left_or_straight','no_uturn','priority','crosswalk','stop'];
 const previousSizes={fire_exit:.15,Heli:.064,aed:.15,green_walk:.056,red_walk:.056,pharma:.085,destination:.24,lisboa_city_hall:.069,speed_bump_caution:.071,crosswalk_caution:.071,no_entry:.070,no_parking:.076,hospital:.047,parking:.06,Hotel:.062,dead_end:.065,roundabout:.107,left_or_straight:.107,no_uturn:.084,priority:.09,crosswalk:.073,stop:.083};
 function dimensions(key){key.button.geometry.computeBoundingBox();return key.button.geometry.boundingBox.getSize(new Vector3());}
+function localBounds(model,object){model.root.updateMatrixWorld(true);return new Box3().setFromObject(object).applyMatrix4(new Matrix4().copy(model.root.matrixWorld).invert());}
+async function snapshotPixels(frame){
+  await frame.evaluate(()=>{const canvas=document.getElementById('controller-3d-canvas'),gl=canvas.getContext('webgl2')||canvas.getContext('webgl');const pixels=new Uint8Array(canvas.width*canvas.height*4);gl.readPixels(0,0,canvas.width,canvas.height,gl.RGBA,gl.UNSIGNED_BYTE,pixels);window.__qaControllerRestPixels=pixels;});
+}
+async function changedPixels(frame){
+  return frame.evaluate(()=>{const canvas=document.getElementById('controller-3d-canvas'),gl=canvas.getContext('webgl2')||canvas.getContext('webgl'),before=window.__qaControllerRestPixels;const pixels=new Uint8Array(canvas.width*canvas.height*4);gl.readPixels(0,0,canvas.width,canvas.height,gl.RGBA,gl.UNSIGNED_BYTE,pixels);let count=0;for(let i=0;i<pixels.length;i+=4)if(Math.abs(pixels[i]-before[i])+Math.abs(pixels[i+1]-before[i+1])+Math.abs(pixels[i+2]-before[i+2])>10)count++;delete window.__qaControllerRestPixels;return count;});
+}
 try{
   const model=createLisbonController();
   try{
@@ -22,10 +29,25 @@ try{
     console.log('PASS The revised controller retains all twenty-two original signs in their canonical order');
     checks++;
     const shoulders=['fire_exit','aed'].map(id=>model.keys.get(id));
-    check(shoulders.every(key=>key.shoulder===true&&dimensions(key).x>.19&&dimensions(key).y>.08&&dimensions(key).z>.04),'Fire Exit and AED are full sculpted shoulder buttons rather than front-face labels');
+    check(shoulders.every(key=>key.shoulder===true&&dimensions(key).x>.19&&dimensions(key).y>.06&&dimensions(key).z>.005&&dimensions(key).z<.035),'The sculpted L1/R1 signs retain their wide shoulder outline with less than three quarters of the former .048 vertical thickness');
     check(Math.abs(shoulders[0].button.position.x+shoulders[1].button.position.x)<1e-8&&Math.abs(shoulders[0].button.position.y-shoulders[1].button.position.y)<1e-8&&Math.abs(shoulders[0].button.position.z-shoulders[1].button.position.z)<1e-8,'The two upper shoulder controls are physically symmetric');
-    check([...model.keys.values()].every(key=>{const size=dimensions(key);return size.x>0&&size.y>0&&size.z>0;}),'Every sign is a genuinely volumetric button');
+    check([...model.keys.values()].filter(key=>key.id!=='destination').every(key=>{const size=dimensions(key);return size.x>0&&size.y>0&&size.z>0;}),'All physical sign controls retain genuine three-dimensional geometry');
     check(dimensions(model.keys.get('pharma')).x>.12&&dimensions(model.keys.get('destination')).x>.215,'The pharmacy cross and central destination display have visibly larger artwork surfaces');
+    const display=model.keys.get('destination'),shell=model.root.getObjectByName('Bevelled graphite controller shell');
+    check(display.kind==='display'&&display.display?.bezel?.isMesh&&display.display?.glass?.isMesh,'Destination is a distinct embedded display assembly with a physical bezel and glass');
+    const screenBounds=localBounds(model,display.button),glassBounds=localBounds(model,display.display.glass),shellBounds=localBounds(model,shell);
+    check(display.display.glass.material.transparent&&screenBounds.max.y<=glassBounds.min.y+.002,'The original destination image lies beneath the transparent glass');
+    check(Math.abs(screenBounds.max.y-shellBounds.max.y)<.025,'The mini-screen is embedded near the shell face rather than raised like a push-button');
+    const displayY=display.button.position.y,displayPressure=display.applyPressure?.(1,true);model.root.updateMatrixWorld(true);
+    check(displayPressure&&displayPressure.travel<.001&&displayPressure.tilt<.001&&Math.abs(display.button.position.y-displayY)<.001,'Press feedback keeps the glass-covered destination screen stationary');display.applyPressure(0,true);
+    for(const id of ['roundabout','left_or_straight']){
+      const key=model.keys.get(id),stick=key.stick;
+      check(key.kind==='stick'&&stick?.socket?.isMesh&&stick?.boot?.isMesh&&stick?.stem?.isMesh&&stick?.cap?.isMesh&&stick?.pivot,'The '+id+' sign sits on a true socket, rubber boot, shaft and pivoting thumb cap');
+      check(localBounds(model,stick.stem).getSize(new Vector3()).y>.02&&stick.pivot.getObjectById(key.button.id),'The '+id+' artwork belongs to the movable joystick assembly above a real shaft');
+      const rest=stick.pivot.quaternion.clone(),pressed=key.applyPressure?.(1,true);
+      check(pressed?.tilt>.15&&stick.pivot.quaternion.angleTo(rest)>.15,'The '+id+' cap visibly tilts under normal-motion input');
+      key.applyPressure(0,true);check(stick.pivot.quaternion.angleTo(rest)<.000001,'The '+id+' spring returns its cap to the exact neutral pose');
+    }
     const ordinary=[...model.keys.values()].filter(key=>!['fire_exit','aed','pharma','destination'].includes(key.id));
     check(ordinary.every(key=>key.size>=previousSizes[key.id])&&ordinary.filter(key=>key.size>previousSizes[key.id]).length>=12,'The other sign buttons grow modestly without shrinking their original artwork');
     for(const [left,right] of [['priority','stop'],['dead_end','no_uturn']]){
@@ -45,10 +67,10 @@ try{
     const fixture=await page(browser,{dir:'space',origin:url,session:owned,viewport:{width:1280,height:850},functions:{'stoner-gate':{access:owned}},network:(address,request)=>{
       if(address.pathname==='/controller-host')return {contentType:'text/html',body:'<!doctype html><style>html,body{margin:0;width:100%;height:100%;background:#000}iframe{width:100%;height:100%;border:0}</style><iframe src="/play_lisbon_street?board=1&embedded=1"></iframe>'};
       if(address.pathname==='/functions/v1/lisbon-street-media'){
-        const payload=JSON.parse(request.postData());logged.push(payload.id||payload.sign);
-        return {status:200,contentType:'application/json',body:JSON.stringify({access:true,sign:'stop',url:'https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/sign/play-signals/stop.mp4?token=controller-fixture'})};
+        const payload=JSON.parse(request.postData()),id=payload.id||payload.sign;logged.push(id);
+        return {status:200,contentType:'application/json',body:JSON.stringify({access:true,sign:id,url:'https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/sign/play-signals/'+id+'.mp4?token=controller-fixture'})};
       }
-      if(address.pathname==='/storage/v1/object/sign/play-signals/stop.mp4')return {headers:{'Access-Control-Allow-Origin':'*'},contentType:'video/mp4',body:fs.readFileSync(new URL('../../space/assets/slides/init.mp4',import.meta.url))};
+      if(address.pathname.startsWith('/storage/v1/object/sign/play-signals/'))return {headers:{'Access-Control-Allow-Origin':'*'},contentType:'video/mp4',body:fs.readFileSync(new URL('../../space/assets/slides/init.mp4',import.meta.url))};
       return null;
     }});
     try{
@@ -88,19 +110,12 @@ try{
         // Hold a real pointer down before the click. Reading the retained GPU
         // frame proves that feedback changes the rendered object itself.
         await fixture.pg.emulateMedia({reducedMotion:'no-preference'});
-        await child.evaluate(()=>{
-          const canvas=document.getElementById('controller-3d-canvas'),gl=canvas.getContext('webgl2')||canvas.getContext('webgl');
-          const pixels=new Uint8Array(canvas.width*canvas.height*4);gl.readPixels(0,0,canvas.width,canvas.height,gl.RGBA,gl.UNSIGNED_BYTE,pixels);window.__qaControllerRestPixels=pixels;
-        });
+        await snapshotPixels(child);
         const stop=await child.getByRole('button',{name:'stop',exact:true}).boundingBox();
         await fixture.pg.mouse.move(stop.x+stop.width/2,stop.y+stop.height/2);await fixture.pg.mouse.down();
         await child.waitForFunction(()=>{const f=__totehm_lisbon().keyFeedback;return f?.id==='stop'&&f.pressure>=.9&&f.travel>=.012&&f.mode==='holding';},null,{timeout:5000});
         check(logged.length===0,'Holding a depressed physical key does not request or play a private film');
-        const changed=await child.evaluate(()=>{
-          const canvas=document.getElementById('controller-3d-canvas'),gl=canvas.getContext('webgl2')||canvas.getContext('webgl'),before=window.__qaControllerRestPixels;
-          const pixels=new Uint8Array(canvas.width*canvas.height*4);gl.readPixels(0,0,canvas.width,canvas.height,gl.RGBA,gl.UNSIGNED_BYTE,pixels);
-          let count=0;for(let i=0;i<pixels.length;i+=4)if(Math.abs(pixels[i]-before[i])+Math.abs(pixels[i+1]-before[i+1])+Math.abs(pixels[i+2]-before[i+2])>10)count++;delete window.__qaControllerRestPixels;return count;
-        });
+        const changed=await changedPixels(child);
         check(changed>25,'The real STOP press visibly changes '+changed+' controller pixels');
         await fixture.pg.screenshot({path:directory+'/owned-pressed.png'});
         await fixture.pg.mouse.up();
@@ -124,6 +139,25 @@ try{
         check(logged.length===beforeEnter+1&&logged.at(-1)==='stop','Enter also activates one original clip from the physical controller');
         await child.locator('#xp-close').click();await child.waitForFunction(()=>__totehm_lisbon().activeSign===null&&__totehm_lisbon().keyFeedback.pressure<.01);
         check((await child.evaluate(()=>__totehm_controller_entry().phase))==='board','Closing a keyboard-activated work leaves a ready, unpressed controller');
+        for(const id of ['roundabout','left_or_straight']){
+          const control=child.getByRole('button',{name:id.replace(/_/g,' '),exact:true}),anchor=await control.boundingBox(),beforeTilt=logged.length;
+          await snapshotPixels(child);await fixture.pg.mouse.move(anchor.x+anchor.width/2,anchor.y+anchor.height/2);await fixture.pg.mouse.down();
+          await child.waitForFunction(id=>{const f=__totehm_lisbon().keyFeedback;return f?.id===id&&f.kind==='stick'&&f.pressure>=.9&&f.tilt>.15&&f.travel>.001&&f.mode==='holding';},id);
+          const held=await control.boundingBox(),difference=await changedPixels(child);
+          check(logged.length===beforeTilt&&difference>25,'Holding the '+id+' analog stick visibly tilts it without requesting media ('+difference+' changed pixels)');
+          check(Math.max(...['x','y','width','height'].map(axis=>Math.abs(anchor[axis]-held[axis])))<.1,'The moving '+id+' thumb cap retains its stable clickable anchor');
+          await fixture.pg.screenshot({path:directory+'/'+id+'-tilted.png'});
+          await fixture.pg.mouse.move(5,5);await fixture.pg.mouse.up();
+          await child.waitForFunction(()=>{const f=__totehm_lisbon().keyFeedback;return f.pressure<.01&&f.tilt<.01&&f.travel<.001;});
+          check(logged.length===beforeTilt,'Leaving the '+id+' stick restores its neutral spring pose without playing a film');
+          await control.click();await child.waitForFunction(id=>__totehm_lisbon().artwork&&__totehm_lisbon().activeSign===id,id);
+          check(logged.length===beforeTilt+1&&logged.at(-1)===id,'The '+id+' joystick still selects its own original signed film');
+          await child.locator('#xp-close').click();await child.waitForFunction(()=>__totehm_lisbon().activeSign===null);
+        }
+        const beforeDisplay=logged.length;await child.getByRole('button',{name:'destination',exact:true}).click();
+        await child.waitForFunction(()=>__totehm_lisbon().artwork&&__totehm_lisbon().activeSign==='destination');
+        check(logged.length===beforeDisplay+1&&logged.at(-1)==='destination','The embedded mini-screen retains its own original signed destination film');
+        await child.locator('#xp-close').click();await child.waitForFunction(()=>__totehm_lisbon().activeSign===null);
       }else{
         await child.waitForFunction(()=>document.body.classList.contains('is-controller-locked'));
         check(await child.locator('.street-rock[role=button]').count()===0&&logged.length===0,'The locked model exposes no playable keys or private media');
