@@ -239,7 +239,8 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
  host.addEventListener('pointermove',e=>{
   if(experienceFrozenAt!==null)return;
   if(!down){const h=hit(e),data=h?.object.userData;if(data?.kind==='lisbon-controller')prefetchController();host.style.cursor=h?'pointer':'grab';onSignFocus(data?.kind==='lisbon-street-sign'?{id:data.id,title:data.title}:null);return;}
-  if(Math.hypot(e.clientX-down.x,e.clientY-down.y)>6)dragged=true;
+  const dragThreshold=down.controller?13:6;
+  if(Math.hypot(e.clientX-down.x,e.clientY-down.y)>dragThreshold)dragged=true;
   if(dragged){onSignFocus(null);free();yaw-=(e.clientX-down.lx)*.004;pitch=T.MathUtils.clamp(pitch+(e.clientY-down.ly)*.003,-1.55,1.35);look();dirty=true;}
   down.lx=e.clientX;down.ly=e.clientY;
  });

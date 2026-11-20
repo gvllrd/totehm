@@ -16,7 +16,7 @@ const browser=await launch();
 let checks=0;
 function check(value,message){assert.ok(value,message);checks++;console.log('PASS '+message);}
 async function current(pg){return pg.evaluate(()=>window.__totehm_gallery?.());}
-async function clickPoint(pg,point){
+async function clickPoint(pg,point,{jitter=false}={}){
  const pixel=await pg.evaluate(async coordinates=>{
   const T=await import('/vendor/three-0.180.0.mjs');
   const view=window.__totehm_gallery().camera;
@@ -26,7 +26,11 @@ async function clickPoint(pg,point){
   return{x:(point.x+1)*innerWidth/2,y:(1-point.y)*innerHeight/2};
  },point);
  assert.ok(pixel.x>=0&&pixel.y>=0&&pixel.x<1100&&pixel.y<800,'The physical object is on screen');
- await pg.mouse.click(pixel.x,pixel.y);
+ if(!jitter){await pg.mouse.click(pixel.x,pixel.y);return;}
+ await pg.mouse.move(pixel.x,pixel.y);
+ await pg.mouse.down();
+ await pg.mouse.move(pixel.x+8,pixel.y+2);
+ await pg.mouse.up();
 }
 async function experience(pg,type){
  await pg.waitForFunction(kind=>{
@@ -72,7 +76,7 @@ async function openStableController(fixture,point,{resize=false}={}){
   const url=new URL(request.url());
   return url.pathname==='/play_lisbon_street'&&url.searchParams.get('board')==='1'&&url.searchParams.get('embedded')==='1';
  });
- await clickPoint(pg,point);await requested;
+ await clickPoint(pg,point,{jitter:true});await requested;
  await pg.waitForFunction(()=>__totehm_projection_expansion?.().stage==='preparing');
  await pg.waitForTimeout(180);
  check(await pg.evaluate(()=>{

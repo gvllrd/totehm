@@ -18,6 +18,15 @@ function roundedRectangle(width,depth,radius){
  shape.closePath();return shape;
 }
 
+// Campfire point lights flicker intentionally. The table controller keeps the
+// room environment, directional sun and its own steady spot instead.
+const tabletopLights=T.ShaderChunk.lights_fragment_begin.replace(
+ /#if \( NUM_POINT_LIGHTS > 0 \) && defined\( RE_Direct \)[\s\S]*?(?=#if \( NUM_SPOT_LIGHTS > 0 \))/,''
+);
+function useSteadyControllerLight(shader){
+ shader.fragmentShader=shader.fragmentShader.replace('#include <lights_fragment_begin>',tabletopLights);
+}
+
 const CONTROLLER_SHADOW_DEPTH=.92;
 function paintControllerShadow(shape){
  if(!globalThis.document)return null;
@@ -108,7 +117,10 @@ export function createLisbonUrbexGallery(scene,renderer,{mobile=false,onChange=(
  controller.root.rotation.set(L.controller.tablePitch,L.controller.tableYaw,0,'YXZ');
  const lowest=new T.Box3().setFromObject(controller.root,true).min.y;
  controller.root.position.y=top-lowest+.0005;
- controller.root.traverse(part=>{part.updateMatrix();part.matrixAutoUpdate=false;});
+ controller.root.traverse(part=>{
+  part.updateMatrix();part.matrixAutoUpdate=false;
+  if(part.material?.isMeshStandardMaterial)part.material.onBeforeCompile=useSteadyControllerLight;
+ });
  controller.root.updateWorldMatrix(true,true);
  // Short rubber feet keep the angled housing seated on the stone.
  const supportMaterial=material(new T.MeshStandardMaterial({color:0x09090a,roughness:.73}));
@@ -132,6 +144,12 @@ export function createLisbonUrbexGallery(scene,renderer,{mobile=false,onChange=(
    [controllerX,top+.0006,controllerZ],'Controller contact shadow');
   shadow.rotation.set(-Math.PI/2,L.controller.tableYaw,0,'YXZ');shadow.receiveShadow=false;
  }
+ // The invisible pick margin gives a small mouse movement room without
+ // enlarging the prop or letting clicks drift onto the stone.
+ const controllerClick=controller.hitSurface.clone(false);
+ controllerClick.name='Controller pointer margin';controllerClick.scale.set(1.13,1.13,1);
+ controllerClick.updateMatrix();controllerClick.matrix.premultiply(controller.root.matrix);controllerClick.matrixAutoUpdate=false;
+ root.add(controllerClick);mark(controllerClick,'lisbon-controller');
  const controllerAim=controller.root.localToWorld(new T.Vector3(0,controller.root.userData.faceCorners[0][1],0)).toArray();
  const seat=createLisbonArmchair(root,{layout:L.seat,geometry,material,texture,mark});
  solids.push(...seat.pickables);
@@ -164,7 +182,7 @@ export function createLisbonUrbexGallery(scene,renderer,{mobile=false,onChange=(
    pavement:pavement.diagnostics(),stone:stone.diagnostics(),
    seat:{leather:true,brown:true,position:seat.position,eye:seat.eye,target:seat.target,fov:seat.fov},
    thpCounter:{tables:1,low:true,antiqueLimestone:true,size:L.counter.size,height:top,packagedPapers:cases.length,caseWidthMetres:caseWidth,attache:paperAttache.diagnostics(),paperWidthMetres:caseWidth*PAPER_CASE_FACE_RATIO,signed:cases.every(item=>!!item.root.userData.signature),premiumSource:'/get_higher',position:L.counter.position,chemistryEquipment:0},
-   controller:{...controller.diagnostics(),tablePitch:L.controller.tablePitch,tableYaw:L.controller.tableYaw,contactShadow:!!contact,feet:controllerFeet.length,tableAim:controllerAim},streetSigns:{count:0,experience:22},paperLoaded,
+   controller:{...controller.diagnostics(),tablePitch:L.controller.tablePitch,tableYaw:L.controller.tableYaw,contactShadow:!!contact,feet:controllerFeet.length,steadyLight:true,tableAim:controllerAim},streetSigns:{count:0,experience:22},paperLoaded,
    performance:installation.diagnostics(),installation:installation.diagnostics(),disposed
   }),
   dispose(){
