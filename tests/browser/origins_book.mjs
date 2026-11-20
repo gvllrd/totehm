@@ -6,7 +6,7 @@ import {execFileSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
 import {launch,page} from './harness.mjs';
 import {ORIGINS} from '../../space/gallery-artworks.mjs';
-const OUT=process.argv[2]||'/tmp/totehm-production/origins-codex-book',origin='https://www.totehm.space',BUILD='2026-11-18-origins-two-sided-leaves';
+const OUT=process.argv[2]||'/tmp/totehm-production/origins-codex-book',origin='https://www.totehm.space',BUILD='origins-continuous-leaf';
 fs.mkdirSync(OUT,{recursive:true});
 const clipPath=OUT+'/portrait.mp4';if(!fs.existsSync(clipPath))execFileSync('ffmpeg',['-hide_banner','-loglevel','error','-y','-f','lavfi','-i','testsrc2=size=192x248:rate=10','-t','60','-c:v','libx264','-threads','1','-pix_fmt','yuv420p','-movflags','+faststart',clipPath]);
 const clip=fs.readFileSync(clipPath),catalogue=ORIGINS.map((a,i)=>({id:'test-art-'+(i+1),slug:'test-quantum-'+(i+1),title:a.title,price_cents:1377+i*100,currency:'eur',status:i===19?'sold':'available',sort_order:i+1}));
@@ -21,30 +21,35 @@ async function ready(pg,path='/origins'){await pg.goto(origin+path,{waitUntil:'d
 async function shot(pg,name){await pg.screenshot({path:OUT+'/'+name+'.png'});}
 async function verifyVerso(pg,key,source,phase,expectedWork){
  await pg.keyboard.press(key);
- const state=await pg.evaluate(async time=>{
-  const sheet=document.getElementById('turn-sheet'),animation=sheet.getAnimations()[0];
-  if(!animation)return{active:false};
+ await pg.waitForFunction(()=>document.getElementById('turn-sheet').getAnimations().length===1);
+ const state=await pg.evaluate(time=>{
+  const sheet=document.getElementById('turn-sheet'),animation=sheet.getAnimations()[0],image=sheet.querySelector('img');
   animation.pause();animation.currentTime=time;
-  const front=document.querySelector('#turn-front img'),back=document.querySelector('#turn-back img');
-  if(!front||!back)return{active:true,images:false};
-  await Promise.all([front.decode(),back.decode()]);
-  const face=back.parentElement,box=back.getBoundingClientRect();
-  face.style.pointerEvents='auto';
-  const visible=document.elementFromPoint(box.x+box.width/2,box.y+box.height/2)?.closest('.turn-face')===face;
-  face.style.pointerEvents='';
-  return {
-   active:true,images:true,visible,sources:[front.getAttribute('src'),back.getAttribute('src')],
-   dark:getComputedStyle(face).backgroundColor==='rgb(3, 3, 4)',
-   is3D:getComputedStyle(sheet).transformStyle==='preserve-3d'&&getComputedStyle(sheet).filter==='none'
-  };
+  const matrix=new DOMMatrix(getComputedStyle(sheet).transform),book=sheet.offsetParent.getBoundingClientRect();
+  if(!image?.complete||!image.naturalWidth)return {loaded:false};
+  const canvas=document.createElement('canvas');canvas.width=image.naturalWidth;canvas.height=image.naturalHeight;
+  const ctx=canvas.getContext('2d',{willReadFrequently:true});ctx.drawImage(image,0,0);
+  const samples=[];
+  for(let row=1;row<=9;row++)for(let col=1;col<=9;col++){
+   const u=col/10,v=row/10,rgb=Array.from(ctx.getImageData(Math.round(u*canvas.width),Math.round(v*canvas.height),1,1).data).slice(0,3);
+   if(Math.max(...rgb)<56||Math.min(...rgb)>222)continue;
+   const x=image.offsetLeft+u*image.offsetWidth,y=image.offsetTop+v*image.offsetHeight-sheet.offsetHeight/2;
+   const pos=new DOMPoint(x,y,0,1).matrixTransform(matrix);
+   samples.push({x:Math.round(book.x+sheet.offsetLeft+pos.x/pos.w),y:Math.round(book.y+sheet.offsetTop+sheet.offsetHeight/2+pos.y/pos.w),rgb});
+  }
+  return {loaded:true,source:new URL(image.src).pathname,posterCount:sheet.querySelectorAll('img').length,back:matrix.m41<0&&matrix.m11>0,dark:getComputedStyle(image.parentElement).backgroundColor==='rgb(3, 3, 4)',samples};
  },phase);
- check(state.active&&state.images&&state.sources.every(url=>new URL(url,origin).pathname===source),'both faces use the exact original poster on '+key);
- check(state.visible&&state.dark&&state.is3D,'the artwork verso is actually visible on the dark 3D leaf on '+key);
- await shot(pg,'verso-'+key);
+ check(state.loaded&&state.posterCount===1&&state.source===source,'the exact original artwork is decoded on the one turning leaf on '+key);
+ check(state.back&&state.dark,'the verso turns upright on dark paper on '+key);
+ const {width,height}=pg.viewportSize(),png=await pg.screenshot({path:OUT+'/verso-'+key+'.png',scale:'css'});
+ const pixels=execFileSync('ffmpeg',['-v','error','-f','image2pipe','-i','pipe:0','-f','rawvideo','-pix_fmt','rgb24','pipe:1'],{input:png,maxBuffer:width*height*4});
+ const inFrame=state.samples.filter(({x,y})=>x>=0&&x<width&&y>=0&&y<height);
+ const matches=inFrame.filter(({x,y,rgb})=>rgb.reduce((error,c,i)=>error+Math.abs(c-pixels[(y*width+x)*3+i]),0)/3<=28);
+ check(inFrame.length>=3&&matches.length/inFrame.length>=.7,'the verso actually paints the original artwork pixels on '+key);
  await pg.locator('#turn-sheet').evaluate(sheet=>sheet.getAnimations()[0]?.play());
  await settled(pg);
  check(await pg.evaluate(n=>__totehm_origins().work===n&&__totehm_origins().playing===0,expectedWork),'the next spread settles without autoplay on '+key);
- return state;
+ return {poster:state.source,pixels:matches.length,pixelsSampled:inFrame.length};
 }
 async function visibleBox(pg,selector){return pg.locator(selector).evaluate(e=>{const r=e.getBoundingClientRect();return{x:r.x,y:r.y,width:r.width,height:r.height,inViewport:r.x>=-1&&r.y>=-1&&r.right<=innerWidth+1&&r.bottom<=innerHeight+1};});}
 async function touchSwipe(pg,dx,dy){const box=await pg.locator('#book-stage').boundingBox(),x=box.x+box.width*.5,y=box.y+box.height*.45;const session=await pg.context().newCDPSession(pg);await session.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x,y}]});await session.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:x+dx*.5,y:y+dy*.5}]});await session.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:x+dx,y:y+dy}]});await session.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await session.detach();}
