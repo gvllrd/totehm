@@ -28,41 +28,57 @@ function copyGeometry(source){
  return copy;
 }
 
-// The same 3D model replaces the exact object in the world, then rotates and
-// grows into the camera shot used by the experience. It remains a volume.
-export function createObjectLift(object,worldCamera,{width,shot}){
+// Capture the camera and object in the same coordinate system as the displayed world.
+export function captureObjectLift(object,worldCamera){
  object.updateWorldMatrix(true,false);worldCamera.updateMatrixWorld();
- const canvas=document.createElement('canvas');canvas.setAttribute('aria-hidden','true');
- const renderer=new T.WebGLRenderer({canvas,alpha:true,antialias:true,powerPreference:'low-power'});
- renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight,false);renderer.setClearColor(0,0);
- const scene=new T.Scene(),copy=copyGeometry(object);scene.add(copy);addObjectLighting(scene);
+ const position=new T.Vector3(),rotation=new T.Quaternion(),scale=new T.Vector3();
+ new T.Matrix4().multiplyMatrices(worldCamera.matrixWorldInverse,object.matrixWorld).decompose(position,rotation,scale);
+ const projection=worldCamera.projectionMatrix.elements;
+ return {position:position.toArray(),rotation:rotation.toArray(),scale:scale.toArray(),
+  projection:[projection[0],projection[5]],viewport:[innerWidth,innerHeight]};
+}
+
+export function createObjectLiftMotion(object,pose,{width,shot,geometric=false}){
  const camera=new T.Camera();
- new T.Matrix4().multiplyMatrices(worldCamera.matrixWorldInverse,object.matrixWorld).decompose(copy.position,copy.quaternion,copy.scale);
- const fromPosition=copy.position.clone(),fromRotation=copy.quaternion.clone();
- const final=shot(innerWidth,innerHeight),toRotation=modelShotRotation(final);
- // Shot centres are specified in units of the object's nominal width.
+ const fromPosition=new T.Vector3().fromArray(pose.position),fromRotation=new T.Quaternion().fromArray(pose.rotation);
+ const [viewportWidth,viewportHeight]=pose.viewport;
+ const final=shot(viewportWidth,viewportHeight),toRotation=modelShotRotation(final);
  const center=new T.Vector3(...final.center).multiplyScalar(width).applyQuaternion(toRotation);
- const distance=Math.max(.03,-fromPosition.z),startProjection=worldCamera.projectionMatrix.elements;
- const startScaleX=startProjection[0]/distance,startScaleY=startProjection[5]/distance;
+ const distance=Math.max(.03,-fromPosition.z);
+ const [startScaleX,startScaleY]=pose.projection.map(value=>value/distance);
  const startX=fromPosition.x*startScaleX,startY=fromPosition.y*startScaleY;
- const finalScaleX=2*final.pixels/(width*innerWidth),finalScaleY=2*final.pixels/(width*innerHeight);
+ const finalScaleX=2*final.pixels/(width*viewportWidth),finalScaleY=2*final.pixels/(width*viewportHeight);
  const near=.01,far=Math.max(20,distance*3);
+ object.scale.fromArray(pose.scale);
+ const interpolate=geometric
+  ? (from,to,amount)=>from*Math.pow(to/from,amount)
+  : T.MathUtils.lerp;
  function draw(amount){
   const perspective=1-amount;
-  const xScale=T.MathUtils.lerp(startScaleX,finalScaleX,amount),yScale=T.MathUtils.lerp(startScaleY,finalScaleY,amount);
-  // Clip W is one at the model's centre throughout. At the end it is
-  // constant everywhere, exactly matching the viewer's orthographic shot.
+  const xScale=interpolate(startScaleX,finalScaleX,amount),yScale=interpolate(startScaleY,finalScaleY,amount);
+  // Clip W stays one at the model's depth while perspective eases into an orthographic view.
   const nearW=amount+perspective*near/distance,farW=amount+perspective*far/distance;
   const zScale=-(nearW+farW)/(far-near),zOffset=-nearW+near*zScale;
   camera.projectionMatrix.set(xScale,0,0,0, 0,yScale,0,0, 0,0,zScale,zOffset, 0,0,-perspective/distance,amount);
   camera.projectionMatrixInverse.copy(camera.projectionMatrix).invert();
   camera.isOrthographicCamera=amount===1;
-  copy.quaternion.slerpQuaternions(fromRotation,toRotation,amount);
-  copy.position.set(startX*perspective/xScale,startY*perspective/yScale,-distance);
-  copy.position.addScaledVector(center,-amount);
-  renderer.render(scene,camera);
+  object.quaternion.slerpQuaternions(fromRotation,toRotation,amount);
+  object.position.set(startX*perspective/xScale,startY*perspective/yScale,-distance);
+  object.position.addScaledVector(center,-amount);
  }
+ return{camera,draw,corners:()=>projectModelFace(object,camera,viewportWidth,viewportHeight)};
+}
+
+// Paper uses a dedicated temporary canvas. The controller animates in its reader's own renderer.
+export function createObjectLift(object,worldCamera,{width,shot}){
+ const pose=captureObjectLift(object,worldCamera);
+ const canvas=document.createElement('canvas');canvas.setAttribute('aria-hidden','true');
+ const renderer=new T.WebGLRenderer({canvas,alpha:true,antialias:true,powerPreference:'low-power'});
+ renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(...pose.viewport,false);renderer.setClearColor(0,0);
+ const scene=new T.Scene(),copy=copyGeometry(object);scene.add(copy);addObjectLighting(scene);
+ const motion=createObjectLiftMotion(copy,pose,{width,shot});
+ function draw(amount){motion.draw(amount);renderer.render(scene,motion.camera);}
  canvas.style.cssText='position:absolute;inset:0;width:100%;height:100%;pointer-events:none';
  draw(0);
- return{element:canvas,draw,corners:()=>projectModelFace(copy,camera,innerWidth,innerHeight),dispose(){renderer.dispose();renderer.forceContextLoss();scene.clear();}};
+ return{element:canvas,draw,corners:motion.corners,dispose(){renderer.dispose();renderer.forceContextLoss();scene.clear();}};
 }

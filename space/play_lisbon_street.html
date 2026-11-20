@@ -247,6 +247,9 @@ body:not(.is-street-front) #sdisc-cover-next{opacity:0;transform:translate(-50%,
 body.is-controller-forming #controller-3d-view,body.is-street-board #controller-3d-view,body.is-controller-entry #controller-3d-view{opacity:1}
 body.is-controller-forming #controller-3d-view{transition:opacity 1.05s cubic-bezier(.22,.52,.32,1) 70ms}
 body.is-controller-entry #controller-3d-view{transition:none}
+html.is-table-lift,html.is-table-lift body,html.is-table-lift #street-disc{background:transparent}
+html.is-table-lift #street-disc>:not(#sdisc-bg),html.is-table-lift #experience-front-canvas{visibility:hidden!important}
+html.is-table-lift #controller-3d-view{opacity:1;transition:none}
 #controller-meaning{display:none;position:absolute;left:50%;bottom:clamp(58px,9vh,92px);transform:translateX(-50%);z-index:2;color:#c9c9ce;text-decoration:none;text-align:center;font-size:clamp(14px,1.25vw,19px);line-height:1.35;padding:8px 6px;max-width:calc(100% - 32px)}
 body.is-street-board #street-disc:not([inert]) #controller-meaning{display:flex;align-items:center;justify-content:center;gap:8px}
 #controller-meaning .get-word{font-family:Quantico,sans-serif;font-size:clamp(23px,2.1vw,32px);font-weight:700;color:var(--coral)}
@@ -433,7 +436,7 @@ import {checkLisbonStreetAccess,requestLisbonStreetMedia} from './lisbon-street-
 import {LISBON_STREET_DISCOVER} from './lisbon-street-discover.mjs';
 import {LISBON_FRONT_SIZE,createLisbonFirstPage} from './lisbon-first-page.mjs';
 import {createLisbonControllerView,lisbonControllerShot,LISBON_KEYS,LISBON_PLAYED_STICKERS} from './gallery-lisbon-controller.mjs';
-const BUILD = '2026-11-20-lisbon-balanced-controller';
+const BUILD = '2026-11-20-lisbon-continuous-controller';
 function streetReturnPath(){const destination=new URL(location.href);destination.searchParams.delete('embedded');destination.searchParams.delete('sceneTime');return destination.pathname+destination.search;}
 // A purchase or central connection leaves the projected reader as a whole.
 function navigateStreetExperience(href){
@@ -1199,6 +1202,17 @@ let assembly=null,assemblyRevision=0;
 const controllerHost=document.getElementById('controller-3d-view');
 
 window.__totehm_controller_entry=()=>({ready:controllerEntryReady,owned:OWNED,phase:boardMode?'board':controllerEntryReady?'prepared':'checking',canvas:!!controllerView,model:controllerView?.model.diagnostics()||null,faceCorners:controllerView?.faceCorners()||null});
+window.__totehm_controller_lift={
+  start(pose,width){
+    if(controllerView?.model.diagnostics().loaded!==22||!controllerView.startLift(pose,width))return false;
+    document.documentElement.classList.add('is-table-lift');return true;
+  },
+  frame(amount){return controllerView?.liftFrame(amount)===true;},
+  finish(){
+    document.documentElement.classList.remove('is-table-lift');
+    if(controllerView&&!controllerView.endLift())releaseController();
+  }
+};
 function releaseController(){
   controllerPreparing++;
   clearAssembly();
@@ -1215,7 +1229,14 @@ async function prepareController({preview=false}={}){
       else assembly?.resize();
     }});
     document.body.classList.add('has-controller-3d');
-    controllerPromise=controllerView.ready.then(()=>revision===controllerPreparing?controllerView:null);
+    controllerPromise=controllerView.ready.then(()=>{
+      if(revision!==controllerPreparing)return null;
+      if(controllerView.model.diagnostics().loaded!==22){releaseController();return null;}
+      return controllerView;
+    }).catch(()=>{
+      if(revision===controllerPreparing)releaseController();
+      return null;
+    });
   } catch(error) {
     console.warn('[controller]',error?.name||'unavailable');controllerPromise=Promise.resolve(null);
   }
@@ -1604,7 +1625,7 @@ function syncMotion(){
 }
 reducedMotion.addEventListener('change',syncMotion);
 document.addEventListener('visibilitychange',syncMotion);
-window.addEventListener('pagehide',()=>{stopAsteroids();stopVidBox();pauseHiddenVideo();cancelPendingArtwork();});
+window.addEventListener('pagehide',event=>{stopAsteroids();stopVidBox();pauseHiddenVideo();cancelPendingArtwork();if(!event.persisted)releaseController();});
 window.addEventListener('pageshow',syncMotion);
 window.__totehm_lisbon=()=>({
   build:BUILD,step:sdiscCur,board:boardMode,rocks:ROCKS.length,moving:!!frontRaf,firstPage:firstPage.diagnostics(),firstPageActive,

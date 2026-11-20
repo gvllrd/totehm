@@ -1,5 +1,5 @@
 import * as T from './vendor/three-0.180.0.mjs';
-import {addObjectLighting,projectModelFace} from './gallery-object-view.mjs';
+import {addObjectLighting,createObjectLiftMotion,modelShotRotation,projectModelFace} from './gallery-object-view.mjs';
 import {createLisbonSignGeometry} from './lisbon-sign-buttons.mjs';
 
 // The V2 sign groups retain their functions. The dimensions are in
@@ -480,22 +480,41 @@ export function createLisbonControllerView(host,{onLayout=()=>{}}={}){
   renderer.setPixelRatio(Math.min(devicePixelRatio,1.75));renderer.setClearColor(0x000000,0);
   const scene=new T.Scene(),camera=new T.OrthographicCamera(-1,1,1,-1,.02,12);
   camera.position.set(0,0,3);camera.updateMatrixWorld();addObjectLighting(scene);
-  let drawFrame=0;
-  function draw(){if(drawFrame)cancelAnimationFrame(drawFrame);drawFrame=0;renderer.render(scene,camera);}
+  let drawFrame=0,lift=null;
+  function draw(){
+    if(drawFrame)cancelAnimationFrame(drawFrame);drawFrame=0;
+    if(!renderer.getContext().isContextLost())renderer.render(scene,lift?.camera||camera);
+  }
   function queueDraw(){if(!drawFrame)drawFrame=requestAnimationFrame(draw);}
   const model=createLisbonController({width:1,onChange:queueDraw});
-  const shot=lisbonControllerShot(innerWidth,innerHeight);
-  model.root.rotation.x=shot.pitch;
-  model.root.position.copy(new T.Vector3(...shot.center).applyQuaternion(model.root.quaternion)).negate();
   scene.add(model.root);
   host.replaceChildren(renderer.domElement);
   function layout(){
-    const rectangle=host.getBoundingClientRect();if(!rectangle.width||!rectangle.height)return;
-    renderer.setSize(rectangle.width,rectangle.height);
-    const shot=lisbonControllerShot(rectangle.width,rectangle.height);
-    camera.left=-rectangle.width/(2*shot.pixels);camera.right=-camera.left;
-    camera.bottom=-rectangle.height/(2*shot.pixels);camera.top=-camera.bottom;
-    camera.updateProjectionMatrix();camera.updateMatrixWorld();draw();onLayout();
+    const {width,height}=host.getBoundingClientRect();if(!width||!height)return;
+    renderer.setSize(width,height,false);
+    const shot=lisbonControllerShot(width,height);
+    camera.left=-width/(2*shot.pixels);camera.right=-camera.left;
+    camera.bottom=-height/(2*shot.pixels);camera.top=-camera.bottom;
+    camera.updateProjectionMatrix();camera.updateMatrixWorld();
+    if(lift)return;
+    model.root.scale.setScalar(1);
+    model.root.quaternion.copy(modelShotRotation(shot));
+    model.root.position.copy(new T.Vector3(...shot.center).applyQuaternion(model.root.quaternion)).negate();
+    draw();onLayout();
+  }
+  function liftFrame(amount){
+    if(!lift||renderer.getContext().isContextLost())return false;
+    lift.draw(amount);draw();return true;
+  }
+  function startLift(pose,width){
+    if(renderer.getContext().isContextLost())return false;
+    renderer.setSize(...pose.viewport,false);
+    lift=createObjectLiftMotion(model.root,pose,{width,shot:lisbonControllerShot,geometric:true});
+    return liftFrame(0);
+  }
+  function endLift(){
+    lift=null;layout();
+    return !renderer.getContext().isContextLost();
   }
   function faceRectangle(key,reachX,reachZ,minimum=0){
     const box=renderer.domElement.getBoundingClientRect();
@@ -624,8 +643,11 @@ export function createLisbonControllerView(host,{onLayout=()=>{}}={}){
     return completed;
   }
   addEventListener('resize',layout);layout();
-  return {canvas:renderer.domElement,model,ready:model.ready.then(draw),draw,layout,target,artworkTarget,setAssembly,feedback,
-    faceCorners:()=>projectModelFace(model.root,camera,renderer.domElement.clientWidth,renderer.domElement.clientHeight),
+  return {canvas:renderer.domElement,model,ready:model.ready.then(()=>{
+    if(renderer.getContext().isContextLost())throw Error('Controller renderer unavailable');
+    draw();
+  }),draw,layout,target,artworkTarget,setAssembly,feedback,startLift,liftFrame,endLift,
+    faceCorners:()=>lift?.corners()||projectModelFace(model.root,camera,renderer.domElement.clientWidth,renderer.domElement.clientHeight),
     feedbackState:()=>lastFeedback,
     dispose(){
       if(drawFrame)cancelAnimationFrame(drawFrame);

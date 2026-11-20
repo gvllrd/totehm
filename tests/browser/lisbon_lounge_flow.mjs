@@ -64,7 +64,7 @@ async function prepare(owned){
  return fixture;
 }
 
-async function openStableController(fixture,point){
+async function openStableController(fixture,point,{resize=false}={}){
  const {pg}=fixture;
  await pg.emulateMedia({reducedMotion:'no-preference'});
  fixture.delayController();
@@ -83,15 +83,23 @@ async function openStableController(fixture,point){
   window.__qaControllerLift=[];
   const observe=()=>{
    const state=__totehm_projection_expansion();
-   __qaControllerLift.push({stage:state.stage,overlays:state.overlays,visible:state.physicalPanelVisible});
+   __qaControllerLift.push({stage:state.stage,overlays:state.overlays,visible:state.physicalPanelVisible,progress:state.progress,
+    reader:state.controllerLift,extraCanvas:!!document.querySelector('#experience-projection-dialog>canvas')});
    if(state.stage!=='experience'&&state.stage!=='closed')requestAnimationFrame(observe);
   };
   requestAnimationFrame(observe);
  });
  fixture.releaseController();
+ if(resize){
+  await pg.waitForFunction(()=>{const state=__totehm_projection_expansion();return state.stage==='expanding'&&state.progress>.05;});
+  await pg.setViewportSize({width:1120,height:820});
+ }
  const frame=await experience(pg,'controller');
  const samples=await pg.evaluate(()=>window.__qaControllerLift);
- check(samples.some(sample=>sample.stage==='expanding'&&sample.overlays===1&&!sample.visible)&&samples.every(sample=>sample.overlays<=1&&!(sample.overlays&&sample.visible)),'A single physical lift replaces the tabletop prop only when the reader is ready');
+ check(samples.some(sample=>sample.reader&&sample.overlays===1&&sample.progress===0&&sample.visible)&&
+   samples.some(sample=>sample.reader&&sample.overlays===1&&sample.progress>0&&!sample.visible)&&
+   samples.every(sample=>!sample.extraCanvas&&sample.overlays<=1),
+   'The reader canvas dissolves in at the exact table pose and stays the only canvas through the lift');
  const handoff=await pg.evaluate(()=>__totehm_projection_expansion().handoff);
  check(handoff?.from?.length===4&&handoff.to?.length===4&&handoff.from.every(([x,y],i)=>Math.hypot(x-handoff.to[i][0],y-handoff.to[i][1])<.1),'The lifted controller lands on all four fullscreen face corners within a tenth of a pixel');
  check(await frame.evaluate(()=>__totehm_controller_entry().faceCorners?.length===4),'The actual fullscreen controller exposes the shared face used for its handoff');
@@ -112,9 +120,15 @@ try{
   const prop=world.temple.controller;
   check(prop.texturedShell&&prop.contactShadow&&prop.feet===2&&prop.tableYaw===L.controller.tableYaw&&prop.width===L.controller.width&&prop.width<.24,'The compact satin controller rests on two small feet and faces the chair');
   await pg.screenshot({path:path.join(output,'island.png')});
+  await pg.emulateMedia({reducedMotion:'no-preference'});
   await clickPoint(pg,[0,.96,L.seat.position[2]]);
-  await pg.waitForFunction(()=>window.__totehm_gallery().seated&&window.__totehm_gallery().camera.position[1]<1.1);
-  const shot=(await current(pg)).camera.position;
+  await pg.waitForFunction(()=>{const world=window.__totehm_gallery();return world.seated&&world.camera.position[1]<1.1;});
+  const seatedCamera=(await current(pg)).camera,shot=seatedCamera.position;
+  await pg.waitForTimeout(240);
+  const settledCamera=(await current(pg)).camera;
+  check(seatedCamera.fov===L.seat.fov&&seatedCamera.fov===settledCamera.fov&&
+   seatedCamera.position.every((v,index)=>v===settledCamera.position[index])&&seatedCamera.target.every((v,index)=>v===settledCamera.target[index]),
+   'In normal motion the seated camera finishes its zoom and stops moving as soon as the chair is reached');
   check(shot.every((coordinate,i)=>Math.abs(coordinate-L.seat.eye[i])<.001),'Clicking the brown leather chair anchors the seated view');
   await pg.screenshot({path:path.join(output,'seated.png')});
 
@@ -172,7 +186,7 @@ try{
   check(secondHandoff?.from?.length===4&&secondHandoff.from.every(([x,y],i)=>Math.hypot(x-secondHandoff.to[i][0],y-secondHandoff.to[i][1])<.1),'The second glass case also remains clickable and hands off at the same scale');
   await close(pg,secondEdition,shot);
 
-  const locked=await openStableController(guest,world.temple.controller.tableAim);
+  const locked=await openStableController(guest,world.temple.controller.tableAim,{resize:true});
   await locked.waitForFunction(()=>document.body.classList.contains('is-controller-locked'));
   check(await locked.evaluate(()=>{
    const controller=window.__totehm_controller_entry();
@@ -181,6 +195,7 @@ try{
   check(!guest.log.functions.some(entry=>entry.name==='lisbon-street-media'),'The locked controller requests no signed private media');
   await pg.screenshot({path:path.join(output,'controller-locked.png')});
   await close(pg,locked,shot);
+  await pg.setViewportSize({width:1100,height:800});
   check(await pg.evaluate(()=>{const state=__totehm_projection_expansion();return state.stage==='closed'&&state.physicalPanelVisible&&state.overlays===0;}),'Closing restores the original tabletop controller and releases its lift');
 
   await clickPoint(pg,L.play.screen);

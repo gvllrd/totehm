@@ -31,6 +31,7 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
  renderer.outputColorSpace=T.SRGBColorSpace;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1;
  renderer.setClearColor(0x030912);renderer.domElement.setAttribute('aria-hidden','true');host.append(renderer.domElement);
  const baseFov=newYork?82:mobile?88:82;
+ let viewFov=baseFov,experienceFrozenAt=null;
  const scene=new T.Scene(),camera=new T.PerspectiveCamera(baseFov,innerWidth/innerHeight,.08,9000);
  let dirty=true,frames=0,list=false,hidden=document.hidden,paused=false,lastTime=0,lastRender=0,returnReveal=false;
  let motionReduced=reduced.matches,tween=null,arrival=null,pendingVisit=null,stellarView=null,room=-1,focused=-1,down=null,yaw=0,pitch=0,dragged=false,initialized=false,inspecting=false,inspectionAmount=0,bookDestination=null;
@@ -62,7 +63,7 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
  play.onOpen?.(({href})=>openProjection(href));
  opposite=emptyInstallation('absent-other-installations');
  const walkway=newYork?ny[1].createNewYorkWalkway():createModernWalkway(architecture.obstacles),physics=newYork?ny[1].createNewYorkPhysics({x:ENTRY[0],z:ENTRY[2]}):createModernPhysics({x:ENTRY[0],z:ENTRY[2]},architecture.obstacles,architecture.roofProfile),sound=createGalleryAudio();
- const eye=new T.Vector3(...ENTRY),gaze=new T.Vector3(...LOOK),keys=new Set();
+ const eye=new T.Vector3(...ENTRY),gaze=new T.Vector3(...LOOK),renderedTarget=gaze.clone(),keys=new Set();
  const stick=document.getElementById('joystick'),knob=stick.querySelector('span');let joystick={x:0,y:0};
  const isFloor=()=>physics.diagnostics().grounded&&physics.position.y<GROUND+.2;
  const inGallery=()=>!architecture.openAir&&eye.x>-L.halfWidth&&eye.x<L.halfWidth&&eye.z<L.frontZ&&eye.z>L.backZ&&eye.y<ceiling(eye.x,eye.z);
@@ -84,7 +85,7 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
  try{const muted=localStorage.getItem('space-sound-muted')==='true';sound.setMuted(muted);fireSound?.setMuted(muted);}catch{}
  angles();
  function syncSound(){
-  const active=!hidden&&!list&&!paused,distance=Math.hypot(eye.x,eye.z-L.frontZ,eye.y-1.65);
+  const active=!hidden&&!list&&!paused&&experienceFrozenAt===null,distance=Math.hypot(eye.x,eye.z-L.frontZ,eye.y-1.65);
   const shelter=vesselMode!=='island'?.92:architecture.openAir?0:T.MathUtils.smoothstep(L.frontZ-eye.z,0,4)*T.MathUtils.smoothstep(L.halfWidth-Math.abs(eye.x),0,1.1)*T.MathUtils.smoothstep(eye.z-L.backZ,0,.8)*(1-T.MathUtils.smoothstep(eye.y,ceiling(eye.x,eye.z)-.8,ceiling(eye.x,eye.z)+.3));
   sound.update({zone:physics.position.y>3000?'void':'temple',proximity:Math.max(0,1-distance/8),exposure:T.MathUtils.clamp((physics.position.y-GROUND)/10,0,1),shelter,active});
   if(fireSound){
@@ -122,8 +123,8 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
   stopInput();cancelTravel();leaveStation();onOverview();
   const takeSeat=()=>{
    const to=new T.Vector3(...L.seat.eye),target=new T.Vector3(...L.seat.target);
-   if(motionReduced){eye.copy(to);gaze.copy(target);seated=true;angles();stationState();}
-   else seatMove={from:eye.clone(),look:gaze.clone(),to,target,start:null};
+   if(motionReduced){eye.copy(to);gaze.copy(target);viewFov=L.seat.fov;seated=true;angles();stationState();}
+   else seatMove={from:eye.clone(),look:gaze.clone(),fov:camera.fov,to,target,start:null};
    dirty=true;
   };
   return groundedTravel(new T.Vector3(...L.seat.approach),new T.Vector3(...L.seat.target),takeSeat);
@@ -147,14 +148,26 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
   if(!(index===2&&seated)&&!nearStation(index))return visit(index);
   focusStation(index);if(index===2){return openProjection();}else if(index===4)opposite.open();else if(index===1)book.open();else if(index===0){return openPaper(architecture.cases?.[0]);}dirty=true;stationState();return true;
  }
- function openProjection(href=play.screen?.userData.href){return expandProjectedExperience(play,camera,href,{reduced:motionReduced,onStart:()=>{pause();renderer.render(scene,camera);},onClose:()=>{paused=false;lastTime=0;play.reset?.();dirty=true;host.focus();syncSound();}});}
- function openObject(root,href,kind,width,shot){
-  return expandGalleryObject(root,camera,href,{kind,width,shot,reduced:motionReduced,
-   onStart:()=>{pause();renderer.render(scene,camera);},
-   onLift:()=>renderer.render(scene,camera),
-   onClose:()=>{paused=false;lastTime=0;dirty=true;host.focus();syncSound();}});
+ function freezeExperience(){
+  experienceFrozenAt=performance.now();pause();renderer.render(scene,camera);
  }
- function openController(){const model=architecture.controller;return model?openObject(model.root,'/play_lisbon_street?board=1','controller',L.controller.width,lisbonControllerShot):false;}
+ function resumeExperience(){
+  const elapsed=experienceFrozenAt===null?0:performance.now()-experienceFrozenAt;
+  if(tween)tween.start+=elapsed;
+  if(seatMove?.start!=null)seatMove.start+=elapsed;
+  experienceFrozenAt=null;paused=false;lastTime=0;dirty=true;host.focus({preventScroll:true});syncSound();
+ }
+ function openProjection(href=play.screen?.userData.href){return expandProjectedExperience(play,camera,href,{reduced:motionReduced,onStart:freezeExperience,onClose:()=>{play.reset?.();resumeExperience();}});}
+ function openObject(root,href,kind,width,shot,sourceReady){
+  return expandGalleryObject(root,camera,href,{kind,width,shot,sourceReady,reduced:motionReduced,
+   onStart:freezeExperience,onLift:()=>renderer.render(scene,camera),onClose:resumeExperience});
+ }
+ function openController(){
+  const model=architecture.controller;
+  if(!model)return false;
+  return openObject(model.root,'/play_lisbon_street?board=1','controller',L.controller.width,lisbonControllerShot,
+   ()=>{const complete=model.diagnostics().loaded===22;if(complete)renderer.render(scene,camera);return complete;});
+ }
  function openPaper(paper){return paper?openObject(paper.root,'/get_higher?paper=1','paper',paper.width,premiumCaseShot):false;}
  function openDiscover(){return openProjection();}
  async function requestStreetEntry(){
@@ -209,15 +222,22 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
   const solid=ray.intersectObjects([...(architecture.solids||[]),...(vessel?.solids||[])],false).find(h=>h.object.visible&&!h.object.material?.transparent);
   return hits.find(h=>!solid||h.distance<=solid.distance+.055);
  }
- host.addEventListener('pointerdown',e=>{if(e.button!==0)return;host.focus({preventScroll:true});host.setPointerCapture(e.pointerId);down={x:e.clientX,y:e.clientY,lx:e.clientX,ly:e.clientY};dragged=false;});
+ host.addEventListener('pointerdown',e=>{
+  if(e.button!==0||experienceFrozenAt!==null)return;
+  host.focus({preventScroll:true});host.setPointerCapture(e.pointerId);
+  const controller=!newYork&&hit(e)?.object.userData.kind==='lisbon-controller';
+  down={x:e.clientX,y:e.clientY,lx:e.clientX,ly:e.clientY,controller};dragged=false;
+ });
  host.addEventListener('pointermove',e=>{
+  if(experienceFrozenAt!==null)return;
   if(!down){const h=hit(e),data=h?.object.userData;host.style.cursor=h?'pointer':'grab';onSignFocus(data?.kind==='lisbon-street-sign'?{id:data.id,title:data.title}:null);return;}
   if(Math.hypot(e.clientX-down.x,e.clientY-down.y)>6)dragged=true;
   if(dragged){onSignFocus(null);free();yaw-=(e.clientX-down.lx)*.004;pitch=T.MathUtils.clamp(pitch+(e.clientY-down.ly)*.003,-1.55,1.35);look();dirty=true;}
   down.lx=e.clientX;down.ly=e.clientY;
  });
  host.addEventListener('pointerup',e=>{
-  if(!down)return;down=null;if(dragged||vesselMode!=='island')return;
+  if(!down)return;const startup=down;down=null;if(dragged||vesselMode!=='island'||experienceFrozenAt!==null)return;
+  if(startup.controller){openController();return;}
   const h=hit(e),data=h?.object.userData;
   if(data?.kind==='origins-vessel'){select(1);return;}
   if(data?.kind==='origins-vessel-book'){book.open();return;}
@@ -252,7 +272,7 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
  host.addEventListener('pointercancel',()=>{down=null;onSignFocus(null);});
  host.addEventListener('pointerleave',()=>onSignFocus(null));
  document.addEventListener('keydown',e=>{
-  if(e.target.closest('input,textarea,select,[contenteditable=true]')||list||hidden||paused)return;
+  if(e.target.closest('input,textarea,select,[contenteditable=true]')||list||hidden||paused||experienceFrozenAt!==null)return;
   if(vesselMode!=='island'){if(e.key==='Escape')returnIsland();return;}
   const interactive=!!e.target.closest('button,a,summary,[role=button]');
   if(focused===2&&nearStation(2)&&!interactive&&play.handleKey(e)){e.preventDefault();dirty=true;stationState();return;}
@@ -268,7 +288,7 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
  stick.addEventListener('pointerdown',e=>{e.preventDefault();stick.setPointerCapture(e.pointerId);free();stickMove(e);});
  stick.addEventListener('pointermove',e=>{if(stick.hasPointerCapture(e.pointerId))stickMove(e);});stick.addEventListener('pointerup',stopStick);stick.addEventListener('pointercancel',stopStick);
  function pause(){stopInput();paused=true;bookDestination=null;book.reset();resetPortals();quality.reset();syncSound();stationState();}
- addEventListener('blur',pause);addEventListener('focus',()=>{paused=false;lastTime=0;quality.reset();syncSound();});
+ addEventListener('blur',pause);addEventListener('focus',()=>{if(experienceFrozenAt!==null)return;paused=false;lastTime=0;quality.reset();syncSound();});
  document.addEventListener('visibilitychange',()=>{hidden=document.hidden;lastTime=0;if(hidden){stopInput();bookDestination=null;book.reset();resetPortals();}syncSound();dirty=true;lastTime=0;stationState();});
  function motionChanged(){
   motionReduced=reduced.matches;
@@ -278,19 +298,22 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
  reduced.addEventListener('change',motionChanged);
  renderer.domElement.addEventListener('webglcontextlost',e=>{e.preventDefault();pause();renderer.setAnimationLoop(null);fallback();});
  let pendingRenderRatio=null;
- addEventListener('resize',()=>{pendingRenderRatio=null;camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setPixelRatio(quality.resize(devicePixelRatio));renderer.setSize(innerWidth,innerHeight);dirty=true;});
+ addEventListener('resize',()=>{pendingRenderRatio=null;camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setPixelRatio(quality.resize(devicePixelRatio));renderer.setSize(innerWidth,innerHeight);renderer.render(scene,camera);dirty=true;});
  function viewTarget(){return gaze.clone().lerp(new T.Vector3(...L.counter.target),inspectionAmount);}
  function animate(now){
   const elapsed=lastTime?(now-lastTime)/1000:0,dt=Math.min(elapsed,.05),physicsDt=Math.min(elapsed,.5);lastTime=now;
-  if(reduced.matches!==motionReduced)motionChanged();if(list||hidden||paused)return;
+  if(list||hidden||paused||experienceFrozenAt!==null)return;
+  if(reduced.matches!==motionReduced)motionChanged();
+  let seatSettled=false;
   if(rail){rail.elapsed+=Math.min(elapsed,1);const progress=Math.min(1,rail.elapsed/rail.duration);eye.copy(rail.curve.getPointAt(progress));if(vesselMode==='outbound')vessel?.setFlight?.(eye);else if(vesselMode==='returning')vessel?.setReturnFlight?.(eye);gaze.copy(rail.curve.getPointAt(Math.min(1,progress+.025)));dirty=true;if(progress===1){const done=rail.done;rail=null;done();angles();}}
   const guiding=!!tween;
   if(vesselMode==='portal'&&portalAt!==null&&now-portalAt>(motionReduced?0:700)){portalAt=null;openExperience({href:'/origin?arrival=1&from='+place});return;}
   if(vesselMode==='island'){
   if(seatMove){
-   const move=seatMove;move.start??=now;const progress=Math.min(1,(now-move.start)/680),ease=progress*progress*(3-2*progress);
-   eye.lerpVectors(move.from,move.to,ease);gaze.lerpVectors(move.look,move.target,ease);dirty=true;
-   if(progress===1){seatMove=null;seated=true;angles();stationState();}
+   const move=seatMove;move.start??=now;const progress=motionReduced?1:Math.min(1,(now-move.start)/680),ease=progress*progress*(3-2*progress);
+   eye.lerpVectors(move.from,move.to,ease);gaze.lerpVectors(move.look,move.target,ease);
+   viewFov=T.MathUtils.lerp(move.fov,L.seat.fov,ease);dirty=true;
+   if(progress===1){seatMove=null;seated=true;seatSettled=true;angles();}
   }
   if(tween){
    const t=tween,p=T.MathUtils.clamp((now-t.start)/t.duration,0,1),ease=p*p*(3-2*p),i=t.segment,distance=Math.min(t.lengths.at(-1)*ease,t.lengths[i]),length=t.lengths[i]-t.lengths[i-1];
@@ -312,7 +335,7 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
   if(arrival&&isFloor()){const a=arrival;arrival=null;gaze.copy(a.target);angles();a.done?.();dirty=true;}
   if(vesselMode==='island'&&focused>=0&&!seated&&!nearStation(focused)){leaveStation();onOverview();}
   const altitude=Math.max(0,eye.y-1.65),near=T.MathUtils.clamp(altitude*.002,.08,12),far=altitude>100?100000:9000;
-  if(Math.abs(camera.near-near)>.0001||camera.far!==far){camera.near=near;camera.far=far;camera.updateProjectionMatrix();dirty=true;}
+  if(Math.abs(camera.near-near)>.0001||camera.far!==far)dirty=true;
   play.setProjecting?.(!vessel.diagnostics().flying);
   const changes=[cockpit?.update(['outbound','returning','portal'].includes(vesselMode)&&!!vessel?.diagnostics().flying,camera.aspect),vessel?.update(dt,eye,!motionReduced),landscape.update(dt,eye,!motionReduced),fireplace?.update(dt,eye,!motionReduced),architecture.update(dt,eye,!motionReduced),play.update(dt,eye,!motionReduced),opposite.update(dt,eye,!motionReduced),liberty?.update(dt,eye,!motionReduced)];
   if(changes.some(Boolean))dirty=true;
@@ -321,11 +344,16 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
   const nextInspection=motionReduced?inspectionTarget:T.MathUtils.damp(inspectionAmount,inspectionTarget,7,dt);
   if(Math.abs(nextInspection-inspectionAmount)>.0001){inspectionAmount=nextInspection;dirty=true;}else if(inspectionAmount!==inspectionTarget){inspectionAmount=inspectionTarget;dirty=true;}
   const targetFov=seated?(L.seat.fov||70):(mobile&&(focused===2||focused===4)?88:baseFov)-(mobile?16:10)*inspectionAmount;
-  if(Math.abs(camera.fov-targetFov)>.001){camera.fov=motionReduced?targetFov:T.MathUtils.damp(camera.fov,targetFov,7,dt);camera.updateProjectionMatrix();dirty=true;}
-  if(dirty&&now-lastRender>=32){
+  if(!seatMove&&Math.abs(viewFov-targetFov)>.001){
+   viewFov=seated||motionReduced?targetFov:T.MathUtils.damp(viewFov,targetFov,7,dt);dirty=true;
+  }
+  if(dirty&&(seatSettled||now-lastRender>=32)){
+   if(camera.fov!==viewFov||camera.near!==near||camera.far!==far){
+    camera.fov=viewFov;camera.near=near;camera.far=far;camera.updateProjectionMatrix();
+   }
    if(pendingRenderRatio!==null){renderer.setPixelRatio(pendingRenderRatio);pendingRenderRatio=null;}
    camera.position.copy(eye).add(new T.Vector3(0,.28,-.18).multiplyScalar(inspectionAmount));
-   camera.lookAt(viewTarget());camera.updateMatrixWorld();const renderStart=performance.now();renderer.render(scene,camera);const renderMs=performance.now()-renderStart;frames++;dirty=false;lastRender=now;if(returnReveal){returnReveal=false;requestAnimationFrame(()=>document.body.classList.remove('is-origin-transit'));}
+   camera.lookAt(renderedTarget.copy(viewTarget()));camera.updateMatrixWorld();const renderStart=performance.now();renderer.render(scene,camera);const renderMs=performance.now()-renderStart;frames++;dirty=false;lastRender=now;if(returnReveal){returnReveal=false;requestAnimationFrame(()=>document.body.classList.remove('is-origin-transit'));}
    const ratio=quality.sample(now,{frameMs:elapsed*1000,renderMs});if(ratio!==renderer.getPixelRatio()){pendingRenderRatio=ratio;dirty=true;}
    if(bookDestination){const href=bookDestination;sound.transition('enter');requestAnimationFrame(()=>{if(bookDestination===href){bookDestination=null;location.assign(href);}});}
   }
@@ -336,7 +364,7 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
   const points=reverseIslandFlight(vessel.journey);eye.fromArray(points.shift());gaze.fromArray(points[0]);angles();vessel.setReturnFlight(eye);returnReveal=true;document.body.classList.add('is-origin-transit');
   startJourney('returning',points.concat([ENTRY]),()=>{vesselMode='island';vessel.resetFlight();physics.reset({x:ENTRY[0],z:ENTRY[2]});eye.fromArray(ENTRY);gaze.fromArray(LOOK);angles();dirty=true;stationState();history.replaceState(history.state,'',location.pathname+location.hash);});
  }
- camera.position.copy(eye);camera.lookAt(gaze);camera.updateMatrixWorld();initialized=true;stationState();renderer.setAnimationLoop(animate);
+ camera.position.copy(eye);camera.lookAt(renderedTarget.copy(gaze));camera.updateMatrixWorld();initialized=true;stationState();renderer.setAnimationLoop(animate);
  addEventListener('pagehide',()=>{pause();if(liberty)liberty.dispose();renderer.setAnimationLoop(null);});
  addEventListener('pageshow',e=>{if(e.persisted){if(vesselMode!=='island'){vesselMode='island';rail=null;portalAt=null;document.body.classList.remove('is-origin-transit');vessel.resetFlight?.();physics.reset({x:ENTRY[0],z:ENTRY[2]});eye.fromArray(ENTRY);gaze.fromArray(LOOK);angles();}paused=false;hidden=document.hidden;bookDestination=null;book.reset();resetPortals();quality.reset();try{const muted=localStorage.getItem('space-sound-muted')==='true';sound.setMuted(muted);fireSound?.setMuted(muted);}catch{}dirty=true;lastTime=0;syncSound();renderer.setAnimationLoop(animate);}});
  return{visit,enter,enterGallery,overview,sit,stand,openController,visitLevel,invalidate,activateStreetSign,
@@ -346,5 +374,5 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
   stop(){stopInput();cancelTravel();leaveStation();dirty=true;},
   setList(value){list=!!value;stopInput();cancelTravel();leaveStation();syncSound();dirty=true;lastTime=0;},
   diagnostics:()=>({webgl:true,place:newYork?'new-york':'lisbon',zone:vesselMode!=='island'?'origins-vessel':inGallery()?'gallery':'terrace',originsJourney:{state:vesselMode,moving:!!rail,returnFromOrigin:new URLSearchParams(location.search).get('arrival')==='origin',vessel:vessel?.diagnostics()},streetAccess:{...streetAccess},seated,seatMoving:!!seatMove,room,focused,frames,position:[+eye.x.toFixed(2),+eye.z.toFixed(2)],moving:!!tween||!!pendingVisit||!!keys.size||!!joystick.x||!!joystick.y||!physics.diagnostics().grounded,visible:!hidden&&!list&&!paused,liberty:liberty?liberty.diagnostics():null,
-   camera:{position:camera.position.toArray(),target:viewTarget().toArray(),inspection:inspectionAmount,fov:camera.fov,aspect:camera.aspect,near:camera.near,far:camera.far,stellarOverview:!!stellarView&&!motionReduced,overviewAmount:stellarView?.amount??0},physics:physics.diagnostics(),temple:architecture.diagnostics(),stations:{play:play.diagnostics(),opposite:opposite.diagnostics(),book:book.diagnostics()},landscape:landscape.diagnostics(),audio:sound.diagnostics(),fireAudio:fireSound?{present:true,...fireSound.diagnostics()}:{present:false,sources:0},fireplace:fireplace?.diagnostics()||{present:false,flames:0,logs:0},projection:play.diagnostics(),render:{...quality.diagnostics(),width:renderer.domElement.width,height:renderer.domElement.height,calls:renderer.info.render.calls,triangles:renderer.info.render.triangles},navigation:{speed:2.6,minDuration:1450,maxDuration:4200,deferredArrival:!!arrival||!!pendingVisit,...walkway.diagnostics()}})};
+   camera:{position:camera.position.toArray(),target:renderedTarget.toArray(),inspection:inspectionAmount,fov:camera.fov,aspect:camera.aspect,near:camera.near,far:camera.far,stellarOverview:!!stellarView&&!motionReduced,overviewAmount:stellarView?.amount??0},physics:physics.diagnostics(),temple:architecture.diagnostics(),stations:{play:play.diagnostics(),opposite:opposite.diagnostics(),book:book.diagnostics()},landscape:landscape.diagnostics(),audio:sound.diagnostics(),fireAudio:fireSound?{present:true,...fireSound.diagnostics()}:{present:false,sources:0},fireplace:fireplace?.diagnostics()||{present:false,flames:0,logs:0},projection:play.diagnostics(),render:{...quality.diagnostics(),width:renderer.domElement.width,height:renderer.domElement.height,calls:renderer.info.render.calls,triangles:renderer.info.render.triangles},navigation:{speed:2.6,minDuration:1450,maxDuration:4200,deferredArrival:!!arrival||!!pendingVisit,...walkway.diagnostics()}})};
 }
