@@ -318,7 +318,7 @@ function rollGripEnds(geometry){
   geometry.setAttribute('uv',new T.Float32BufferAttribute(uvs,2));
 }
 
-export function createLisbonController({width=.52,mobile=false,onChange=()=>{}}={}){
+export function createLisbonController({width=.52,mobile=false,batchArtwork=false,onChange=()=>{}}={}){
   const root=new T.Group();root.name='Lisbon · original street controller';root.scale.setScalar(width);
   const materials=new Set(),geometries=new Set(),textures=new Set(),keys=new Map(),pending=[];
   let loaded=0,disposed=false;
@@ -411,7 +411,8 @@ export function createLisbonController({width=.52,mobile=false,onChange=()=>{}}=
           if(!isDisplay)ink.emissiveMap=map;
           ink.needsUpdate=true;
           textures.add(map);
-          button.visible=true;loaded++;onChange();
+          loaded++;
+          if(!batchArtwork){button.visible=true;onChange();}
         }
         resolve();
       },undefined,resolve);
@@ -466,7 +467,10 @@ export function createLisbonController({width=.52,mobile=false,onChange=()=>{}}=
   const pickables=[lower,face,hitSurface,...grips,...banks,...shoulderMounts,...[...keys.values()].map(key=>key.button)];
   const data={kind:'lisbon-controller',action:'open',href:'/play_lisbon_street?board=1'};
   for(const mesh of pickables)Object.assign(mesh.userData,data);
-  return {root,hitSurface,pickables,keys,markPlayed,ready:Promise.all(pending),
+  const ready=Promise.all(pending).then(()=>{
+    if(batchArtwork&&!disposed){for(const {button} of keys.values())button.visible=!!button.material.map;onChange();}
+  });
+  return {root,hitSurface,pickables,keys,markPlayed,ready,
     diagnostics:()=>({kind:'lisbon-controller-original-3d',version:9,width,keys:keys.size,loaded,stickers:[...keys.values()].filter(key=>key.sticker?.visible).map(key=>key.id),closedShell:true,physical:true,palmGrips:grips.length,roundBanks:banks.length,texturedShell:true,thumbSticks:2,articulatedSticks:2,shoulderControls:4,activeShoulders:2,flushDisplay:true}),
     dispose(){disposed=true;root.removeFromParent();for(const geometry of geometries)geometry.dispose();for(const material of materials)material.dispose();for(const texture of textures)texture.dispose();}
   };

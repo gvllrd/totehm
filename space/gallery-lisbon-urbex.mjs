@@ -101,13 +101,14 @@ export function createLisbonUrbexGallery(scene,renderer,{mobile=false,onChange=(
   box.traverse(object=>{if(object.isMesh)mark(object,'lisbon-paper',{paper:item});});
   return item;
  });
- const controller=createLisbonController({width:L.controller.width,mobile,onChange:changed});
+ const controller=createLisbonController({width:L.controller.width,mobile,batchArtwork:true,onChange:changed});
  const [controllerX,controllerZ]=L.controller.position;
  root.add(controller.root);
  controller.root.position.set(controllerX,0,controllerZ);
  controller.root.rotation.set(L.controller.tablePitch,L.controller.tableYaw,0,'YXZ');
  const lowest=new T.Box3().setFromObject(controller.root,true).min.y;
  controller.root.position.y=top-lowest+.0005;
+ controller.root.traverse(part=>{part.updateMatrix();part.matrixAutoUpdate=false;});
  controller.root.updateWorldMatrix(true,true);
  // Short rubber feet keep the angled housing seated on the stone.
  const supportMaterial=material(new T.MeshStandardMaterial({color:0x09090a,roughness:.73}));

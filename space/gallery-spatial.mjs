@@ -122,6 +122,7 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
   if(newYork||vesselMode!=='island'||list||paused||seated)return false;
   stopInput();cancelTravel();leaveStation();onOverview();
   const takeSeat=()=>{
+   prefetchController();
    const to=new T.Vector3(...L.seat.eye),target=new T.Vector3(...L.seat.target);
    if(motionReduced){eye.copy(to);gaze.copy(target);viewFov=L.seat.fov;seated=true;angles();stationState();}
    else seatMove={from:eye.clone(),look:gaze.clone(),fov:camera.fov,to,target,start:null};
@@ -148,8 +149,15 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
   if(!(index===2&&seated)&&!nearStation(index))return visit(index);
   focusStation(index);if(index===2){return openProjection();}else if(index===4)opposite.open();else if(index===1)book.open();else if(index===0){return openPaper(architecture.cases?.[0]);}dirty=true;stationState();return true;
  }
- function freezeExperience(){
-  experienceFrozenAt=performance.now();pause();renderer.render(scene,camera);
+ let controllerPrefetch=false;
+ function prefetchController(){
+  if(newYork||controllerPrefetch)return;
+  controllerPrefetch=true;
+  const hint=document.createElement('link');hint.rel='prefetch';hint.as='document';
+  hint.href='/play_lisbon_street?board=1&embedded=1';document.head.append(hint);
+ }
+ function freezeExperience(refresh=true){
+  experienceFrozenAt=performance.now();pause();if(refresh)renderer.render(scene,camera);
  }
  function resumeExperience(){
   const elapsed=experienceFrozenAt===null?0:performance.now()-experienceFrozenAt;
@@ -160,13 +168,13 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
  function openProjection(href=play.screen?.userData.href){return expandProjectedExperience(play,camera,href,{reduced:motionReduced,onStart:freezeExperience,onClose:()=>{play.reset?.();resumeExperience();}});}
  function openObject(root,href,kind,width,shot,sourceReady){
   return expandGalleryObject(root,camera,href,{kind,width,shot,sourceReady,reduced:motionReduced,
-   onStart:freezeExperience,onLift:()=>renderer.render(scene,camera),onClose:resumeExperience});
+   onStart:()=>freezeExperience(kind!=='controller'),onLift:()=>renderer.render(scene,camera),onClose:resumeExperience});
  }
  function openController(){
   const model=architecture.controller;
   if(!model)return false;
   return openObject(model.root,'/play_lisbon_street?board=1','controller',L.controller.width,lisbonControllerShot,
-   ()=>{const complete=model.diagnostics().loaded===22;if(complete)renderer.render(scene,camera);return complete;});
+   ()=>model.diagnostics().loaded===22);
  }
  function openPaper(paper){return paper?openObject(paper.root,'/get_higher?paper=1','paper',paper.width,premiumCaseShot):false;}
  function openDiscover(){return openProjection();}
@@ -230,7 +238,7 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
  });
  host.addEventListener('pointermove',e=>{
   if(experienceFrozenAt!==null)return;
-  if(!down){const h=hit(e),data=h?.object.userData;host.style.cursor=h?'pointer':'grab';onSignFocus(data?.kind==='lisbon-street-sign'?{id:data.id,title:data.title}:null);return;}
+  if(!down){const h=hit(e),data=h?.object.userData;if(data?.kind==='lisbon-controller')prefetchController();host.style.cursor=h?'pointer':'grab';onSignFocus(data?.kind==='lisbon-street-sign'?{id:data.id,title:data.title}:null);return;}
   if(Math.hypot(e.clientX-down.x,e.clientY-down.y)>6)dragged=true;
   if(dragged){onSignFocus(null);free();yaw-=(e.clientX-down.lx)*.004;pitch=T.MathUtils.clamp(pitch+(e.clientY-down.ly)*.003,-1.55,1.35);look();dirty=true;}
   down.lx=e.clientX;down.ly=e.clientY;
@@ -347,6 +355,8 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
   if(!seatMove&&Math.abs(viewFov-targetFov)>.001){
    viewFov=seated||motionReduced?targetFov:T.MathUtils.damp(viewFov,targetFov,7,dt);dirty=true;
   }
+  const steadyTable=architecture.controller&&(seated||seatMove||Math.hypot(eye.x-L.controller.position[0],eye.z-L.controller.position[1])<4.5);
+  if(steadyTable)pendingRenderRatio=null;
   if(dirty&&(seatSettled||now-lastRender>=32)){
    if(camera.fov!==viewFov||camera.near!==near||camera.far!==far){
     camera.fov=viewFov;camera.near=near;camera.far=far;camera.updateProjectionMatrix();
@@ -354,7 +364,7 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
    if(pendingRenderRatio!==null){renderer.setPixelRatio(pendingRenderRatio);pendingRenderRatio=null;}
    camera.position.copy(eye).add(new T.Vector3(0,.28,-.18).multiplyScalar(inspectionAmount));
    camera.lookAt(renderedTarget.copy(viewTarget()));camera.updateMatrixWorld();const renderStart=performance.now();renderer.render(scene,camera);const renderMs=performance.now()-renderStart;frames++;dirty=false;lastRender=now;if(returnReveal){returnReveal=false;requestAnimationFrame(()=>document.body.classList.remove('is-origin-transit'));}
-   const ratio=quality.sample(now,{frameMs:elapsed*1000,renderMs});if(ratio!==renderer.getPixelRatio()){pendingRenderRatio=ratio;dirty=true;}
+   if(!steadyTable){const ratio=quality.sample(now,{frameMs:elapsed*1000,renderMs});if(ratio!==renderer.getPixelRatio()){pendingRenderRatio=ratio;dirty=true;}}
    if(bookDestination){const href=bookDestination;sound.transition('enter');requestAnimationFrame(()=>{if(bookDestination===href){bookDestination=null;location.assign(href);}});}
   }
   syncSound();stationState();

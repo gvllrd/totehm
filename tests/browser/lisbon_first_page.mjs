@@ -58,7 +58,7 @@ try{
    });
    check(shared.equal&&shared.mapped,'The suspended Space texture and fullscreen experience produce exactly the same first frame at '+viewport.width);
    check(shared.moving&&shared.still,'The suspended signs float during normal motion and hold their frame with reduced motion at '+viewport.width);
-   check(shared.signs===22&&Math.abs(shared.opacity-.64)<1e-8,'The transition receives all 22 exact poses and their rendered opacity at '+viewport.width);
+   check(shared.signs===22&&shared.opacity===1,'The transition receives all 22 exact poses and their rendered opacity at '+viewport.width);
    await fixture.pg.screenshot({path:out+'/front-'+viewport.width+'.png'});
    await child.evaluate(()=>dispatchEvent(new Event('totehm:experience-enter')));
    await child.waitForFunction(()=>__totehm_experience_front().phase==='discover'&&__totehm_experience_front().reveal===1&&__totehm_experience_front().visibleSigns===22);
@@ -74,7 +74,11 @@ try{
   await owner.pg.goto('https://www.totehm.space/play_lisbon_street');
   await owner.pg.waitForFunction(()=>window.__totehm_experience_front?.().ready&&__totehm_lisbon().access.owned);
   await owner.pg.locator('#sdisc-cover-next').click();await owner.pg.waitForTimeout(700);
-  await owner.pg.locator('.disc-block.is-first [data-street-enter]').click();
+  check(await owner.pg.locator('.disc-block.is-first [data-street-enter]').count()===0,'Discover starts with copy and a single Next arrow');
+  check(await owner.pg.locator('#sdisc-trig').isVisible()&&await owner.pg.locator('#sdisc-reading-hint').count()===0,'The lower chevron is the only Discover arrow');
+  for(let step=1;step<9;step++){await owner.pg.locator('#sdisc-trig').click();await owner.pg.waitForFunction(next=>__totehm_lisbon().step===next&&document.querySelectorAll('.disc-block.active').length===1,step);}
+  check(await owner.pg.getByRole('button',{name:'Play the Lisbon Streets',exact:true}).count()===1,'Only the final slide offers Play the Lisbon Streets');
+  await owner.pg.getByRole('button',{name:'Play the Lisbon Streets',exact:true}).click();
   await owner.pg.waitForFunction(()=>__totehm_lisbon().board&&!__totehm_lisbon().snapping);
   check(await owner.pg.locator('.street-rock[role=button]').count()===22,'An entitled member transforms the same 22 signs into the original controller');
   check(!owner.log.functions.some(call=>call.name==='lisbon-street-media'),'Arranging the controller still waits for a sign gesture before requesting private media');

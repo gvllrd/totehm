@@ -40,7 +40,7 @@ function openExperience({object,camera,href,type,from=null,canvas,time,width,sho
  dialog.id='experience-projection-dialog';dialog.setAttribute('role','dialog');dialog.setAttribute('aria-modal','true');dialog.setAttribute('aria-label','Enter the original artwork');
  dialog.style.cssText='position:fixed;inset:0;z-index:100';
  veil.style.cssText='position:absolute;inset:0;background:#000;opacity:0';
- frame.title='The original TOTEHM experience';frame.style.cssText='position:absolute;inset:0;width:100%;height:100%;border:0;background:#000;visibility:hidden;pointer-events:none';
+ frame.title='The original TOTEHM experience';frame.style.cssText='position:absolute;inset:0;width:100%;height:100%;border:0;background:#000;color-scheme:dark;visibility:hidden;pointer-events:none';
  const embedded=new URL(url);embedded.searchParams.set('embedded','1');if(time!==undefined)embedded.searchParams.set('sceneTime',String(time));
  function makeLift(){
   try{return createObjectLift(object,camera,{width,shot});}
@@ -73,7 +73,7 @@ function openExperience({object,camera,href,type,from=null,canvas,time,width,sho
   if(next.protocol!=='https:'||!(next.origin===location.origin&&['/get_higher','/market','/stoner','/play_lisbon_street'].includes(next.pathname)||next.origin==='https://www.totehm.com'&&next.pathname==='/auth'))return;
   event.preventDefault();leave(next);
  }
- function fail(){if(!disposed)leave(url);}
+ function fail(){if(!disposed){if(type==='controller')close();else leave(url);}}
  async function animateController(win){
   const driver=win.__totehm_controller_lift;
   const entry=win.__totehm_controller_entry?.();
@@ -87,7 +87,7 @@ function openExperience({object,camera,href,type,from=null,canvas,time,width,sho
   try{
    if(!driver.start(pose,width)){driver.finish();return;}
    controllerLift=true;stage='expanding';
-   frame.style.background='transparent';frame.style.opacity='0';frame.style.visibility='visible';
+   frame.style.opacity='0';frame.style.visibility='visible';
    clearTimeout(timer);
    const matched=await new Promise(resolve=>{
     let previous=null,elapsed=0;
@@ -101,15 +101,13 @@ function openExperience({object,camera,href,type,from=null,canvas,time,width,sho
        pose=captureObjectLift(object,camera);
        if(!driver.start(pose,width)){complete(false);return;}
       }
-      if(previous!==null)elapsed+=Math.min(40,Math.max(0,now-previous));
+      if(previous!==null)elapsed+=Math.min(75,Math.max(0,now-previous));
       previous=now;
-      const settle=Math.min(1,elapsed/135);
+      const settle=Math.min(1,elapsed/125);
       frame.style.opacity=String(settle);
-      progress=Math.max(0,Math.min(1,(elapsed-135)/790));
-      if(progress>0&&object.visible){object.visible=false;onLift();}
+      progress=Math.max(0,Math.min(1,(elapsed-125)/700));
       const eased=progress*progress*progress*(10+progress*(-15+6*progress));
-      if(!driver.frame(eased)){complete(false);return;}
-      veil.style.opacity=String(eased);
+      if(progress>0&&!driver.frame(eased)){complete(false);return;}
       if(progress===1)complete(true);else raf=requestAnimationFrame(tick);
      }catch{complete(false);}
     };
@@ -179,10 +177,11 @@ function openExperience({object,camera,href,type,from=null,canvas,time,width,sho
    if(type==='controller'&&win.__totehm_controller_entry?.().phase==='board')doc.getElementById('sdisc-board-close')?.focus({preventScroll:true});
   }catch(error){if(!disposed){console.warn('[experience entrance]',error?.name||'unavailable');fail();}}
  }
- frame.addEventListener('load',ready);for(const [el]of siblings)el.inert=true;
+ frame.addEventListener('load',ready);frame.src=embedded.href;
+ for(const [el]of siblings)el.inert=true;
  dialog.append(veil,frame);if(visual)dialog.append(visual.element);document.body.append(dialog);
  history.pushState({...state,totehmProjection:true},'',url.href);addEventListener('totehm:experience-navigate',navigate);
- frame.src=embedded.href;
  if(visual){object.visible=false;}
- onStart();addEventListener('popstate',pop);addEventListener('keydown',escape);timer=setTimeout(fail,25000);return true;
+ onStart();if(type==='controller'){veil.style.transition='opacity .16s ease';veil.style.opacity='.09';}
+ addEventListener('popstate',pop);addEventListener('keydown',escape);timer=setTimeout(fail,25000);return true;
 }

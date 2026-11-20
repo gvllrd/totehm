@@ -84,7 +84,7 @@ async function openStableController(fixture,point,{resize=false}={}){
   const observe=()=>{
    const state=__totehm_projection_expansion();
    __qaControllerLift.push({stage:state.stage,overlays:state.overlays,visible:state.physicalPanelVisible,progress:state.progress,
-    reader:state.controllerLift,extraCanvas:!!document.querySelector('#experience-projection-dialog>canvas')});
+    reader:state.controllerLift,opaque:getComputedStyle(document.querySelector('#experience-projection-dialog>iframe')).backgroundColor==='rgb(0, 0, 0)',extraCanvas:!!document.querySelector('#experience-projection-dialog>canvas')});
    if(state.stage!=='experience'&&state.stage!=='closed')requestAnimationFrame(observe);
   };
   requestAnimationFrame(observe);
@@ -97,8 +97,8 @@ async function openStableController(fixture,point,{resize=false}={}){
  const frame=await experience(pg,'controller');
  const samples=await pg.evaluate(()=>window.__qaControllerLift);
  check(samples.some(sample=>sample.reader&&sample.overlays===1&&sample.progress===0&&sample.visible)&&
-   samples.some(sample=>sample.reader&&sample.overlays===1&&sample.progress>0&&!sample.visible)&&
-   samples.every(sample=>!sample.extraCanvas&&sample.overlays<=1),
+   samples.some(sample=>sample.reader&&sample.overlays===1&&sample.progress>0&&sample.visible)&&
+   samples.every(sample=>sample.opaque&&!sample.extraCanvas&&sample.overlays<=1),
    'The reader canvas dissolves in at the exact table pose and stays the only canvas through the lift');
  const handoff=await pg.evaluate(()=>__totehm_projection_expansion().handoff);
  check(handoff?.from?.length===4&&handoff.to?.length===4&&handoff.from.every(([x,y],i)=>Math.hypot(x-handoff.to[i][0],y-handoff.to[i][1])<.1),'The lifted controller lands on all four fullscreen face corners within a tenth of a pixel');

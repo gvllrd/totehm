@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<meta name="color-scheme" content="dark">
+<style>html,body{color-scheme:dark;background:#000}</style>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <script src="/desktop-access.js"></script>
@@ -222,11 +224,10 @@ body.is-street-board #sdisc-bg,body.is-snapping #sdisc-bg{opacity:1}
 #sdisc-rail{position:absolute;bottom:65px;left:50%;transform:translateX(-50%);display:flex;gap:6px;pointer-events:none}
 #sdisc-rail span{width:18px;height:2px;background:#242424;transition:background .3s}
 #sdisc-rail span.on{background:#bdbdbd}
-#sdisc-reading-hint{position:absolute;bottom:18px;left:0;right:0;margin:0;color:#a0a0a0;text-align:center;pointer-events:none}#sdisc-reading-hint svg{display:inline-block;width:24px;height:24px;animation:sdisc-bob 1.6s ease-in-out infinite}@keyframes sdisc-bob{0%,100%{transform:none;opacity:.4}50%{transform:translateY(6px);opacity:1}}@media(prefers-reduced-motion:reduce){#sdisc-reading-hint svg{animation:none}}
-#sdisc-trig{bottom:90px}
+#sdisc-trig{bottom:18px;min-width:44px;min-height:44px;justify-content:center}
 #street-access-status{bottom:90px}
-body.is-street-board #sdisc-rail,body.is-street-board #sdisc-progress,body.is-street-board #sdisc-reading-hint,body.is-snapping #sdisc-rail,body.is-snapping #sdisc-progress,body.is-snapping #sdisc-reading-hint{display:none}
-@media(max-width:650px){#sdisc-stage{padding:74px 23px 128px}#sdisc-stage .t-futura{font-size:clamp(15px,4vw,17px);line-height:1.5}#sdisc-stage .disc-block.is-first .t-futura:first-child{font-size:clamp(26px,8vw,35px)}#sdisc-progress{top:25px}#sdisc-reading-hint{padding:0 20px}}
+body.is-street-board #sdisc-rail,body.is-street-board #sdisc-progress,body.is-snapping #sdisc-rail,body.is-snapping #sdisc-progress{display:none}
+@media(max-width:650px){#sdisc-stage{padding:74px 23px 128px}#sdisc-stage .t-futura{font-size:clamp(15px,4vw,17px);line-height:1.5}#sdisc-stage .disc-block.is-first .t-futura:first-child{font-size:clamp(26px,8vw,35px)}#sdisc-progress{top:25px}}
 @media(prefers-reduced-motion:reduce){.disc-block,#sdisc-bg{transition:none}.bob-chev{animation:none}}
 
 
@@ -240,17 +241,17 @@ body.is-snapping #experience-front-canvas{visibility:hidden}
 body.is-snapping :is(#sdisc-stage,#sdisc-back,#sdisc-trig){opacity:0;transition:opacity .38s ease;pointer-events:none}
 #sdisc-cover-next{position:absolute;left:50%;bottom:35px;transform:translateX(-50%);z-index:3;border:1px solid #343434;border-radius:10px;background:#111;color:#aaa;font:11px 'Space Mono',monospace;padding:13px 22px;cursor:pointer;transition:opacity .4s,transform .6s}
 body:not(.is-street-front) #sdisc-cover-next{opacity:0;transform:translate(-50%,18px);pointer-events:none}
-.is-street-front #sdisc-stage,.is-street-front #sdisc-progress,.is-street-front #sdisc-rail,.is-street-front #sdisc-reading-hint,.is-street-front #sdisc-trig{opacity:0!important;visibility:hidden;pointer-events:none}
+.is-street-front #sdisc-stage,.is-street-front #sdisc-progress,.is-street-front #sdisc-rail,.is-street-front #sdisc-trig{opacity:0!important;visibility:hidden;pointer-events:none}
 #sdisc-stage{transition:opacity .7s}
 #controller-3d-view{position:fixed;inset:0;pointer-events:none;opacity:0;transition:opacity .8s ease;}
 #controller-3d-canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 body.is-controller-forming #controller-3d-view,body.is-street-board #controller-3d-view,body.is-controller-entry #controller-3d-view{opacity:1}
 body.is-controller-forming #controller-3d-view{transition:opacity 1.05s cubic-bezier(.22,.52,.32,1) 70ms}
 body.is-controller-entry #controller-3d-view{transition:none}
-html.is-table-lift,html.is-table-lift body,html.is-table-lift #street-disc{background:transparent}
+html.is-table-lift,html.is-table-lift body,html.is-table-lift #street-disc{background:#000}
 html.is-table-lift #street-disc>:not(#sdisc-bg),html.is-table-lift #experience-front-canvas{visibility:hidden!important}
 html.is-table-lift #controller-3d-view{opacity:1;transition:none}
-#controller-meaning{display:none;position:absolute;left:50%;bottom:clamp(58px,9vh,92px);transform:translateX(-50%);z-index:2;color:#c9c9ce;text-decoration:none;text-align:center;font-size:clamp(14px,1.25vw,19px);line-height:1.35;padding:8px 6px;max-width:calc(100% - 32px)}
+#controller-meaning{display:none;position:absolute;left:50%;bottom:clamp(62px,14vh,148px);transform:translateX(-50%);z-index:2;color:#c9c9ce;text-decoration:none;text-align:center;font-size:clamp(14px,1.25vw,19px);line-height:1.35;padding:8px 6px;max-width:calc(100% - 32px)}
 body.is-street-board #street-disc:not([inert]) #controller-meaning{display:flex;align-items:center;justify-content:center;gap:8px}
 #controller-meaning .get-word{font-family:Quantico,sans-serif;font-size:clamp(23px,2.1vw,32px);font-weight:700;color:var(--coral)}
 #controller-meaning .higher-inline{width:clamp(70px,7vw,100px)}
@@ -272,16 +273,12 @@ body.is-street-board #street-disc:not([inert]) #controller-credit{display:flex}
   #controller-meaning{bottom:40px}
 }
 #controller-meaning:focus-visible{outline:1px solid #a6b5d4;border-radius:6px;outline-offset:3px}
-@media(min-width:1100px) and (min-aspect-ratio: 13/10){
- body.is-street-board #controller-meaning{left:auto;right:1.8vw;bottom:auto;top:50%;transform:translateY(-50%);width:clamp(94px,9.2vw,152px);flex-direction:column}
- #controller-meaning .meaning-caption{width:100%}
-}
 body.is-controller-locked #controller-3d-view{opacity:.20}
-body.is-controller-locked :is(#experience-front-canvas,#sdisc-cover-next,#sdisc-rail,#sdisc-progress,#sdisc-reading-hint,#sdisc-trig){display:none!important}
+body.is-controller-locked :is(#experience-front-canvas,#sdisc-cover-next,#sdisc-rail,#sdisc-progress,#sdisc-trig){display:none!important}
 body.is-street-board :is(#experience-front-canvas,#sdisc-cover-next){display:none}
 body.is-controller-locked #street-access-status{clip-path:inset(50%)}
 body.is-controller-locked #sdisc-stage{background:radial-gradient(ellipse at center,#000d 0%,#0008 35%,transparent 66%)}
-:is(.controller-deep-link,.is-controller-entry) :is(#experience-front-canvas,#sdisc-stage,#sdisc-cover-next,#sdisc-back,#sdisc-trig,#sdisc-progress,#sdisc-rail,#sdisc-reading-hint){visibility:hidden}
+:is(.controller-deep-link,.is-controller-entry) :is(#experience-front-canvas,#sdisc-stage,#sdisc-cover-next,#sdisc-back,#sdisc-trig,#sdisc-progress,#sdisc-rail){visibility:hidden}
 body.is-street-board.has-controller-3d #sdisc-bg>.street-rock>img{opacity:0}
 body.is-street-board #sdisc-bg>.street-rock.is-key-down>img{filter:brightness(.68);transform:scale(.96)}
 #sdisc-bg .street-rock .played-sticker{
@@ -380,12 +377,11 @@ body.is-street-board #sdisc-bg>.street-rock:focus-visible{outline:2px solid #a6b
   <button id="sdisc-cover-next" type="button">Discover ↓</button>
   <button id="sdisc-back" class="experience-back" data-experience-close type="button">BACK</button>
   <button id="sdisc-board-close" class="experience-back" type="button" aria-label="Back to the story" style="display:none">BACK</button>
-  <a id="controller-meaning" href="/get_higher" aria-label="Get Higher to see the true meaning"><span class="get-word">Get</span><span class="higher-inline" role="img" aria-label="Higher"><svg viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-slogan"></use></svg></span><span class="meaning-caption">to see the true meaning</span></a>
+  <a id="controller-meaning" href="/get_higher?paper=1" aria-label="Get Higher to understand"><span class="get-word">Get</span><span class="higher-inline" role="img" aria-label="Higher"><svg viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-slogan"></use></svg></span><span class="meaning-caption">to understand</span></a>
   <p id="controller-credit">Neurological &amp; Digital Street Art by Wah <span class="wah-signature" aria-hidden="true"></span></p>
   <div id="sdisc-stage" role="region" aria-label="Discover the Lisbon Street"></div>
-  <div id="sdisc-rail" aria-hidden="true"></div><p id="sdisc-reading-hint" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></p>
+  <div id="sdisc-rail" aria-hidden="true"></div>
   <button id="sdisc-trig" type="button" aria-label="Next">
-    <span class="trigger-label">Discover the Lisbon Street</span>
     <svg class="chev bob-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
   </button>
 </div>
@@ -414,7 +410,7 @@ body.is-street-board #sdisc-bg>.street-rock:focus-visible{outline:2px solid #a6b
     </div>
     <div class="xp-teaser">
       <p>Get a Totehmpaper, then go through the Stoner experience to get it.</p>
-      <a id="xp-get-higher" class="btn-sig" href="/get_higher" aria-label="Get Higher to get it"><span class="get-word">Get</span> <span class="higher-inline" role="img" aria-label="Higher"><svg viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-slogan"></use></svg></span> <span>to get it</span></a>
+      <a id="xp-get-higher" class="btn-sig" href="/get_higher?paper=1" aria-label="Get Higher to get it"><span class="get-word">Get</span> <span class="higher-inline" role="img" aria-label="Higher"><svg viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-slogan"></use></svg></span> <span>to get it</span></a>
     </div>
   </div>
   <button id="xp-buy" class="btn-sig" aria-label="Get Higher"><span class="get-word">Get</span> <span class="higher-inline" role="img" aria-label="Higher"><svg viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-slogan"></use></svg></span><span class="thp-price"></span></button>
@@ -436,7 +432,7 @@ import {checkLisbonStreetAccess,requestLisbonStreetMedia} from './lisbon-street-
 import {LISBON_STREET_DISCOVER} from './lisbon-street-discover.mjs';
 import {LISBON_FRONT_SIZE,createLisbonFirstPage} from './lisbon-first-page.mjs';
 import {createLisbonControllerView,lisbonControllerShot,LISBON_KEYS,LISBON_PLAYED_STICKERS} from './gallery-lisbon-controller.mjs';
-const BUILD = '2026-11-20-lisbon-continuous-controller';
+const BUILD = '2026-11-20-lisbon-play-entry';
 function streetReturnPath(){const destination=new URL(location.href);destination.searchParams.delete('embedded');destination.searchParams.delete('sceneTime');return destination.pathname+destination.search;}
 // A purchase or central connection leaves the projected reader as a whole.
 function navigateStreetExperience(href){
@@ -489,7 +485,7 @@ fetch(PAY_FN, { method:'POST', headers:{ 'content-type':'application/json', 'api
     const p = new Intl.NumberFormat('en', { style:'currency', currency:String(j.currency).toUpperCase(), minimumFractionDigits: j.amount % 100 ? 2 : 0 }).format(j.amount/100);
     document.documentElement.style.setProperty('--thp', '" — ' + p + '"'); } })
   .catch(() => {});
-const METHOD  = '/stoner';
+const PAPER_CASE = '/get_higher?paper=1';
 const sb = createClient(SB_URL, SB_ANON);
 
 /* ══ LE PONT SSO — LE BLOC À COPIER · v2 · 30/09/2026 ═════════════════
@@ -634,7 +630,7 @@ sb.auth.onAuthStateChange(ev => {
   if(ev === 'SIGNED_IN') ssoStore(localStorage, SSO_KNOWN, '1');
   if(ev === 'SIGNED_OUT') ssoStore(localStorage, SSO_KNOWN, null);
 });
-{
+if(!(window.parent!==window&&new URLSearchParams(location.search).get('embedded')==='1')){
   const { data:{ session } } = await sb.auth.getSession();
   if(session) ssoStore(localStorage, SSO_KNOWN, '1');
   else if(ssoRead(localStorage, SSO_KNOWN) && !ssoRead(sessionStorage, SSO_TRIED)){
@@ -693,11 +689,10 @@ let OWNED=false,streetAccess={state:'checking',owned:false},accessRevision=0;
 let refreshStreetAccessUI=()=>{},revokeStreetPlayback=()=>{};
 async function refreshStreetPermission(){
   const revision=++accessRevision;
-  const next=await checkLisbonStreetAccess({client:sb});
+  const next=await checkLisbonStreetAccess({client:sb,signal:AbortSignal.timeout(4500)});
   if(revision!==accessRevision)return streetAccess;
   streetAccess=next;OWNED=next.owned;
-  if(OWNED){applyOwnedFallback();document.getElementById('xp-get-higher').href=METHOD;}
-  else{document.getElementById('xp-get-higher').href='/get_higher';revokeStreetPlayback();}
+  if(OWNED)applyOwnedFallback();else revokeStreetPlayback();
   refreshStreetAccessUI();return next;
 }
 async function hasAccess(){return (await refreshStreetPermission()).owned;}
@@ -719,28 +714,6 @@ function applyOwnedFallback(){
   b.innerHTML = GET_HIGHER_MARKUP;
 }
 
-async function toStripe(){
-  const err = document.getElementById('err-code');
-  try{
-    const { data:{ session } } = await sb.auth.getSession();
-    if(!session){ openAuth(); return; }
-    const r = await fetch(PAY_FN,{
-      method:'POST',
-      headers:{ 'Authorization':'Bearer '+session.access_token,'Content-Type':'application/json' },
-      body: JSON.stringify({ from:'method', waiver:true, waiver_ts:new Date().toISOString() })
-    });
-    const j = await r.json();
-    if(j.already){ (window.top||window).location.replace(METHOD); return; }
-    if(!j.url) throw new Error(j.error||'no url');
-    try{ (window.top||window).location.href = j.url; }
-    catch(e){ window.open(j.url,'_blank'); }
-  }catch(e){
-    console.error('checkout:',e);
-    if(err) err.textContent='Could not open checkout. Try again.';
-  }
-}
-
-function openAuth(){return ssoLogin(false,streetReturnPath());}
 
 
 /* ═══ STREET BOARD ═══ */
@@ -769,7 +742,7 @@ const PHRASES = {
   no_uturn:           "Never reverse intelligent decisions.",
   priority:           "Focus on your objectives, not the battles. They come by the way.",
   crosswalk:          "Step by step is the road to success and the safest way.",
-  stop:               "Yes, stop that sht.",
+  stop:               "Yes, stop that shit.",
 };
 
 const SIGNS = LISBON_KEYS;
@@ -1041,12 +1014,6 @@ function comeBack(){
   },reducedMotion.matches?0:560);
 }
 
-function closeAll(){
-  const revision=++launchRevision;mediaState='idle';resumeVideo=null;
-  cancelTypewriter?.();cancelPreparing();vid.pause();stopVidBox();
-  showArtwork(false);vidWrap.classList.remove('in');document.getElementById('xp-label').classList.remove('in');
-  setTimeout(()=>{if(revision!==launchRevision)return;clearArtworkSequence();vid.removeAttribute('src');vid.load();streetBusy=false;activeSign=null;},reducedMotion.matches?0:560);
-}
 
 vid.addEventListener('ended', ()=>{
   // Keep the invitation visible after the direct teaser finishes.
@@ -1055,14 +1022,9 @@ vid.addEventListener('ended', ()=>{
 });
 xpClose.addEventListener('click', comeBack);
 
-xpBuy.addEventListener('click',async()=>{
+xpBuy.addEventListener('click',()=>{
   if(xpBuy.dataset.sold==='1') return;
-  // Membre proprietaire, fallback [Get Higher] : direct vers la methode.
-  if(xpBuy.dataset.mode==='owned'){ navigateStreetExperience(METHOD); return; }
-  const artworkId = xpBuy.dataset.artworkId;
-
-  // No artwork linked → THP purchase flow
-  if(!artworkId){ closeAll(); const {data:{session}}=await sb.auth.getSession(); if(session?.user?.email){toStripe();return;} openAuth(); return; }
+  if(!xpBuy.dataset.artworkId){navigateStreetExperience(PAPER_CASE);return;}
 
   /* 30/09 — l'œuvre s'acquiert sur le marché FIGHER : un seul endroit où la
      propriété s'écrit et où elle se revend. 02/10 : même origine, la
@@ -1477,7 +1439,7 @@ function launchXpFromDisc(rock){
   return launchXp(rock.id,{from:'disc',pressed});
 }
 
-function buildSdisc(sl){
+function buildSdisc(sl,isLast){
   const b=document.createElement('div'); b.className='disc-block';
   sl.parts.forEach(p=>{
     const d=document.createElement('div');
@@ -1485,6 +1447,7 @@ function buildSdisc(sl){
     setBrandedText(d, p.x);
     b.appendChild(d);
   });
+  if(!isLast)return b;
   const btn=document.createElement('button');
   btn.className='btn-sig'; btn.style.marginTop='14px';
   btn.dataset.streetEnter='';
@@ -1492,22 +1455,21 @@ function buildSdisc(sl){
   btn.addEventListener('click',async()=>{
     await streetAccessReady;
     if(streetAccess.state==='error'){await refreshStreetPermission();if(!OWNED){showAccessRequirement(streetAccess);return;}}
-    if(!OWNED){navigateStreetExperience('/get_higher');return;}
+    if(!OWNED){navigateStreetExperience(PAPER_CASE);return;}
     if(requestedBoard&&controllerEntryReady){await prepareController();enterDirectController();}
     else snapToBoard();
   });
   b.appendChild(btn);
   return b;
 }
-SDSLIDES.forEach((sl,index)=>{const block=buildSdisc(sl);block.classList.toggle('is-first',index===0);sdiscStage.appendChild(block);document.getElementById('sdisc-rail').appendChild(document.createElement('span'));});
+SDSLIDES.forEach((sl,index)=>{const block=buildSdisc(sl,index===SDSLIDES.length-1);block.classList.toggle('is-first',index===0);sdiscStage.appendChild(block);document.getElementById('sdisc-rail').appendChild(document.createElement('span'));});
 refreshStreetAccessUI=()=>{
   document.querySelectorAll('[data-street-enter]').forEach(button=>{
     button.disabled=streetAccess.state==='checking';
     button.dataset.access=streetAccess.state;
-    if(OWNED){button.textContent='MAKE THEM USEFUL FOR YOUR BRAIN';button.setAttribute('aria-label','Arrange signs as a PlayStation controller');}
-    else if(streetAccess.state==='error'){button.textContent='Try access again';button.setAttribute('aria-label','Retry access verification');}
+    if(streetAccess.state==='error'){button.textContent='Try access again';button.setAttribute('aria-label','Retry access verification');}
     else if(streetAccess.state==='checking'){button.textContent='Checking access…';}
-    else{button.innerHTML=GET_HIGHER_MARKUP+' to enter';button.setAttribute('aria-label','Get Higher to enter');}
+    else{button.textContent='PLAY THE LISBON STREETS';button.setAttribute('aria-label','Play the Lisbon Streets');}
   });
 };
 function showAccessRequirement(access){
@@ -1531,7 +1493,8 @@ const SD_FADE=650;
 
 function showSdisc(i,instant){
   document.querySelectorAll('#sdisc-rail span').forEach((dot,n)=>dot.classList.toggle('on',n===i));
-  document.getElementById('sdisc-reading-hint').hidden=i===SDSLIDES.length-1;
+  sdiscTrig.classList.toggle('gone',i===SDSLIDES.length-1);
+  sdiscTrig.inert=i===SDSLIDES.length-1;
   sdiscStage.querySelectorAll('.disc-block').forEach((b,idx)=>{
     if(idx===i){
       if(instant)b.classList.add('instant');
@@ -1546,13 +1509,13 @@ function showSdisc(i,instant){
     }
   });
   sdiscCur=i;
-  if(i>0) sdiscTrig.classList.add('gone');
+
 }
 function sdiscReset(){
   firstPageActive=true;firstPage.setReveal(0);document.body.classList.add('is-street-front');
   const revision=++storyRevision;sdiscLock=false;
   sdiscStage.querySelectorAll('.disc-block').forEach(b=>b.classList.remove('show','active','instant'));
-  sdiscTrig.classList.remove('gone');
+  sdiscTrig.classList.remove('gone');sdiscTrig.inert=false;
   sdiscCur=0;
   requestAnimationFrame(()=>{if(revision===storyRevision)showSdisc(0,true);});
 }
@@ -1568,13 +1531,17 @@ function sdiscPrev(){
 
 /* démarrage */
 resetRocks(); sdiscReset(); startAsteroids();
+let controllerPreview=null;
+if(requestedBoard&&!discoverOnly){
+  document.body.classList.add('is-controller-entry');
+  stopAsteroids();controllerPreview=prepareController({preview:true});
+}
 streetAccessReady.then(async access=>{
   refreshStreetAccessUI();
   if(discoverOnly)return;
   if(directSign){if(access.owned){stopAsteroids();launchXp(directSign,{immediate:true});}else showAccessRequirement(access);}
   else if(requestedBoard){
-    document.body.classList.add('is-controller-entry');
-    stopAsteroids();await prepareController({preview:true});
+    await controllerPreview;
     controllerEntryReady=true;
     if(!embeddedFront)enterDirectController();
   }

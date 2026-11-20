@@ -109,8 +109,12 @@ try{
         check(await credit.isVisible()&&(await credit.textContent()).trim()==='Neurological & Digital Street Art by Wah'&&
           await credit.locator('.wah-signature').evaluate(mark=>getComputedStyle(mark).maskImage.includes('wavywah_signature.png')),
         'The controller credits Wah with the signature from the Totehmpaper');
-        const meaning=child.getByRole('link',{name:'Get Higher to see the true meaning'});
-        check(await meaning.isVisible()&&await meaning.getAttribute('href')==='/get_higher'&&await meaning.locator('use[href="#higher-slogan"]').count()===1,'The controller reveals the native Higher slogan invitation');
+        const meaning=child.getByRole('link',{name:'Get Higher to understand'});
+        check(await meaning.isVisible()&&await meaning.getAttribute('href')==='/get_higher?paper=1'&&await meaning.locator('use[href="#higher-slogan"]').count()===1,'The controller reveals the native Higher slogan invitation');
+        check(await meaning.evaluate(link=>{
+          const bounds=link.getBoundingClientRect(),credit=document.getElementById('controller-credit').getBoundingClientRect();
+          return Math.abs(bounds.x+bounds.width/2-innerWidth/2)<1&&bounds.bottom<=credit.top+1;
+        }),'The invitation is centred in the grip gap above the signed credit');
         check(await meaning.locator('.get-word').evaluate(word=>getComputedStyle(word).fontFamily.includes('Quantico')&&getComputedStyle(word).color==='rgb(251, 213, 202)'),'Get uses the authored Quantico coral lettering');
         check(await child.evaluate(()=>['experience-front-canvas','sdisc-cover-next'].every(id=>getComputedStyle(document.getElementById(id)).display==='none')),'Direct entry hides the front canvas and Discover button immediately');
         const screen=await child.locator('.street-rock[role=button]').evaluateAll(keys=>({
@@ -152,7 +156,7 @@ try{
           const state=__totehm_lisbon();
           return state.sequence==='phrase'&&state.typewriter.typed>0&&state.typewriter.typed<state.typewriter.total;
         },null,{timeout:15000});
-        check(await child.locator('#xp-phrase').getAttribute('aria-label')==='Yes, stop that sht.'&&!(await child.locator('#vidWrap').isVisible()),'The authored phrase types fullscreen before its artwork is visible');
+        check(await child.locator('#xp-phrase').getAttribute('aria-label')==='Yes, stop that shit.'&&!(await child.locator('#vidWrap').isVisible()),'The authored phrase types fullscreen before its artwork is visible');
         check(await child.locator('#xp-phrase').evaluate(phrase=>{
           const style=getComputedStyle(phrase);
           return style.fontFamily.includes('Quantico')&&style.color==='rgb(251, 213, 202)'&&parseFloat(style.fontSize)>32;

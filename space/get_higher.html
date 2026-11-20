@@ -1,6 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<meta name="color-scheme" content="dark">
+<style>html,body{color-scheme:dark;background:#000}</style>
+<script>
+{
+  const page=new URL(location.href);
+  if(page.searchParams.get('paper')!=='1'){
+    page.searchParams.set('paper','1');
+    history.replaceState(history.state,'',page.pathname+page.search+page.hash);
+  }
+}
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <script src="/desktop-access.js"></script>
@@ -455,8 +466,11 @@ body.is-paper-view #btn-buy[data-mode="owned"]{
 }
 body.is-paper-view #btn-buy[data-mode="owned"] .higher-inline{width:clamp(78px,8.2vw,112px)}
 body.is-paper-view #checkout-error:empty{display:none}
+#checkout-consent:not([hidden]){display:flex;align-items:flex-start;gap:8px;max-width:42ch;color:#aaa;text-align:left;font:10px/1.45 'Space Mono',monospace;position:relative;z-index:1;pointer-events:auto}
+#checkout-consent input{margin-top:2px;accent-color:#fff}
+#btn-buy:disabled{opacity:.5;cursor:wait}
 body.is-paper-view #btn-play-street{margin-top:0!important;background:transparent}
-body.is-paper-view:not(.is-paper-entered) :is(.seq-block>button,#premium-case-back,#premium-case-turn,#down-trigger){visibility:hidden}
+body.is-paper-view:not(.is-paper-entered) :is(.seq-block>button,#checkout-consent,#premium-case-back,#premium-case-turn,#down-trigger){visibility:hidden}
 </style>
 </head>
 <body>
@@ -603,9 +617,9 @@ body.is-paper-view:not(.is-paper-entered) :is(.seq-block>button,#premium-case-ba
 
 <script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import {checkLisbonStreetAccess} from './lisbon-street-access.mjs';
 const SB_URL  = 'https://abujjbkbbiumxrokozph.supabase.co';
 const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us';
-const GATE_FN = SB_URL + '/functions/v1/stoner-gate';
 const PAY_FN  = SB_URL + '/functions/v1/higher-checkout';
 
 /* 30/09 — LE PRIX DU THP VIENT DU SERVEUR, jamais de la page. La ligne
@@ -621,6 +635,7 @@ fetch(PAY_FN, { method:'POST', headers:{ 'content-type':'application/json', 'api
     document.documentElement.style.setProperty('--thp', '" — ' + p + '"'); } })
   .catch(() => {});
 const METHOD  = '/stoner';
+const CASE = '/get_higher?paper=1';
 const sb = createClient(SB_URL, SB_ANON);
 
 /* ══ LE PONT SSO — LE BLOC À COPIER · v2 · 30/09/2026 ═════════════════
@@ -768,7 +783,7 @@ sb.auth.onAuthStateChange(ev => {
   if(ev === 'SIGNED_IN') ssoStore(localStorage, SSO_KNOWN, '1');
   if(ev === 'SIGNED_OUT') ssoStore(localStorage, SSO_KNOWN, null);
 });
-{
+if(!(window.parent!==window&&new URLSearchParams(location.search).get('embedded')==='1')){
   const { data:{ session } } = await sb.auth.getSession();
   if(session) ssoStore(localStorage, SSO_KNOWN, '1');
   else if(ssoRead(localStorage, SSO_KNOWN) && !ssoRead(sessionStorage, SSO_TRIED)){
@@ -860,7 +875,8 @@ function buildSlide(slide){
             </div>
           </div>
         </div>
-        <button id="btn-buy" class="btn-sig">Buy a TotehmPaper {THP}<span class="thp-price"></span></button>
+        <label id="checkout-consent" hidden><input id="checkout-waiver" type="checkbox"> I ask for immediate access to this digital work and give up my 14-day withdrawal right.</label>
+        <button id="btn-buy" class="btn-sig" type="button" disabled>Checking access…</button>
         <p id="checkout-error" class="note" role="status" aria-live="polite"></p><button id="btn-play-street" class="btn-sig" style="margin-top:14px;">Make the Lisbon Streets <span class="higher-inline" style="width:54px;height:18px;vertical-align:middle;display:inline-flex;align-items:center;"><svg viewBox="0 0 600 200" style="width:100%;height:100%"><use href="#higher-slogan"></use></svg></span></button>
       `;
     }
@@ -988,64 +1004,67 @@ function initPaper(){
   scene.addEventListener('touchend', grabEnd, {passive:true});
 }
 
-async function hasAccess(){
-  try{
-    const { data:{ session } } = await sb.auth.getSession();
-    if(!session) return false;
-    const r = await fetch(GATE_FN,{ method:'POST',
-      headers:{ 'Authorization':'Bearer '+session.access_token,
-                'Content-Type':'application/json' }});
-    const j = await r.json();
-    return j.access === true;
-  }catch(e){ return false; }
+const offer=document.getElementById('btn-buy');
+const consent=document.getElementById('checkout-consent');
+const waiver=document.getElementById('checkout-waiver');
+const checkoutStatus=document.getElementById('checkout-error');
+let checkoutBusy=false;
+
+function navigateFromCase(href){
+  const target=new URL(href,location.href);
+  if(window.parent!==window&&paperViewQuery.get('embedded')==='1'){
+    if(target.origin===location.origin){
+      const event=new parent.CustomEvent('totehm:experience-navigate',{cancelable:true,detail:{href:target.href}});
+      if(!parent.dispatchEvent(event))return;
+    }
+    window.top.location.href=target.href;
+  }else location.assign(target.href);
 }
 
-(async function boot(){
-  if(!(await hasAccess())) return;
-  const btn = document.getElementById('btn-buy');
-  if(!btn) return;
-  btn.dataset.mode = 'owned';
-  btn.setAttribute('aria-label', 'Get Higher');
-  btn.innerHTML = '<span style="font-family:\'Quantico\',sans-serif;font-weight:700;color:var(--coral);letter-spacing:.02em">Get</span> <span class="higher-inline"><svg viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></span>';
-})();
-
-async function toStripe(){
-  const err = document.getElementById('checkout-error');
-  try{
-    const { data:{ session } } = await sb.auth.getSession();
-    if(!session){ await ssoLogin(false); return; }
-    const r = await fetch(PAY_FN, {
-      method:'POST',
-      headers:{ 'Authorization':'Bearer '+session.access_token,
-                'Content-Type':'application/json' },
-      body: JSON.stringify({ from: 'method', waiver: true, waiver_ts: new Date().toISOString() })
-    });
-    const j = await r.json();
-    if(j.already){ (window.top || window).location.replace(METHOD); return; }
-    if(!j.url) throw new Error(j.error || 'no url');
-    /* get_higher.html peut être affiché DANS l'iframe de totehm.html.
-       Une redirection window.location vers Stripe y est bloquée
-       (Stripe envoie X-Frame-Options) : le navigateur annule en
-       silence, rien dans la console. On sort donc vers le haut. */
-    try{ (window.top || window).location.href = j.url; }
-    catch(e){ window.open(j.url, '_blank'); }
-  }catch(e){
-    console.error('checkout:', e);
-    if(err) err.textContent = 'Could not open checkout. Try again.';
+async function readCaseAccess(){
+  const access=await checkLisbonStreetAccess({client:sb});
+  offer.dataset.mode=access.state;
+  consent.hidden=access.state!=='missing';
+  if(access.owned){
+    offer.setAttribute('aria-label','Get Higher');
+    offer.innerHTML = '<span class="get-text">Get</span> <span class="higher-inline"><svg viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></span>';
+  }else{
+    const label=access.state==='guest'?'Connect with my TOTEHM':access.state==='error'?'Check access again':'Buy a TotehmPaper {THP}';
+    offer.removeAttribute('aria-label');
+    offer.textContent=label;
+    if(access.state==='missing'){const price=document.createElement('span');price.className='thp-price';offer.append(price);}
   }
+  return access.state;
 }
+let caseAccess=readCaseAccess().then(state=>{offer.disabled=false;return state;});
 
-/* Délégation sur document plutôt que getElementById à 100 ms.
-   Si l'élément n'existait pas encore à cet instant, le `if(btnBuy)`
-   avalait l'erreur en silence : bouton visible, aucun écouteur,
-   rien dans la console. La délégation ne peut pas rater. */
-document.addEventListener('click', async (ev) => {
-  const t = ev.target.closest('#btn-buy');
-  if(!t) return;
-  if(t.dataset.mode === 'owned'){ (window.top || window).location.href = METHOD; return; }
-  const { data:{ session } } = await sb.auth.getSession();
-  if(session?.user?.email){ toStripe(); return; }
-  await ssoLogin(false);
+offer.addEventListener('click',async()=>{
+  if(checkoutBusy)return;
+  checkoutBusy=true;offer.disabled=true;checkoutStatus.textContent='';
+  try{
+    let state=await caseAccess;
+    if(state==='error')state=await (caseAccess=readCaseAccess());
+    if(state==='owned'){navigateFromCase(METHOD);return;}
+    if(state==='guest'){await ssoLogin(false,CASE);return;}
+    if(state==='error'){checkoutStatus.textContent='Could not verify access. Try again.';return;}
+    if(!waiver.checked){checkoutStatus.textContent='Confirm immediate access before continuing to checkout.';waiver.focus();return;}
+    const {data:{session}}=await sb.auth.getSession();
+    if(!session){await ssoLogin(false,CASE);return;}
+    const response=await fetch(PAY_FN,{
+      method:'POST',
+      headers:{Authorization:'Bearer '+session.access_token,'Content-Type':'application/json'},
+      body:JSON.stringify({from:'method',waiver:waiver.checked,waiver_ts:new Date().toISOString()})
+    });
+    const result=await response.json();
+    if(result.already){navigateFromCase(METHOD);return;}
+    if(response.status===401){await ssoLogin(false,CASE);return;}
+    if(result.error==='sold_out'){checkoutStatus.textContent='This edition is sold out.';return;}
+    if(!response.ok||!result.url)throw Error(result.error||'checkout');
+    navigateFromCase(result.url);
+  }catch(error){
+    console.error('[Totehmpaper checkout]',error);
+    checkoutStatus.textContent='Could not open checkout. Try again.';
+  }finally{checkoutBusy=false;offer.disabled=false;}
 });
 
 /* ═══ DISCOVER ═══ */
@@ -1317,12 +1336,7 @@ vid.addEventListener('ended', comeBack);
 xpClose.addEventListener('click', comeBack);
 worldClose.addEventListener('click', closeAll);
 
-xpBuy.addEventListener('click', async ()=>{
-  closeAll();
-  const { data:{ session } } = await sb.auth.getSession();
-  if(session?.user?.email){ toStripe(); return; }
-  await ssoLogin(false);
-});
+xpBuy.addEventListener('click',()=>navigateFromCase(CASE));
 
 /* ─── STREET DISCOVER ─── */
 const streetDisc = document.getElementById('street-disc');
