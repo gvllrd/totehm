@@ -2,13 +2,13 @@ import fs from 'node:fs';
 import {createHash} from 'node:crypto';
 import assert from 'node:assert/strict';
 import * as T from '../../space/vendor/three-0.180.0.mjs';
-import {createOriginsVessel} from '../../space/gallery-origins-vessel.mjs';
+import {createOriginsVessel,originsWalkHeight} from '../../space/gallery-origins-vessel.mjs';
 import {ORIGIN_PORTAL} from '../../space/gallery-black-hole.mjs';
 let checks=0;const check=(v,m)=>{assert(v,m);checks++;};
 for(const mobile of [false,true]){
  const scene=new T.Scene(),ship=createOriginsVessel(scene,{mobile,transitOnly:true});
- ship.update(.016,new T.Vector3(0,1.65,12),true);
- check(!ship.root.getObjectByName('ORIGINS — enclosed chamber')&&!ship.root.getObjectByName('ORIGINS — transparent dark glass corridor'),'The island contains only the saucer and galaxy portal');
+ ship.update(.016,new T.Vector3(0,1.65,27),true);
+ check(!ship.root.getObjectByName('ORIGINS — enclosed chamber')&&!ship.root.getObjectByName('ORIGINS — open walkway'),'The island contains only the saucer and galaxy portal');
  check(ship.book.pickables.length===0&&ship.diagnostics().originalWorks===0,'No book or photos remain on the island vessel');
  check(ship.journey.outbound.at(-1)[1]===ORIGIN_PORTAL.position[1]&&Math.abs(ship.journey.outbound.at(-1)[2]-ORIGIN_PORTAL.position[2])<1,'The flight really terminates inside the event horizon');
  scene.updateMatrixWorld(true);const hull=ship.root.getObjectByName('Origins metallic disk — continuous closed hull');
@@ -18,10 +18,17 @@ for(const mobile of [false,true]){
  }
  const floor=ship.root.getObjectByName('Saucer continuous black cabin floor');
  check(!floor.material.transparent&&new T.Raycaster(new T.Vector3(0,21.65,-4.2),new T.Vector3(0,-1,0),0,2).intersectObject(floor).length>0,'The passenger stands above a full opaque cabin floor');
- const canopy=ship.root.getObjectByName('Origins closed metallic cupola');check(!canopy.material.transparent&&new T.Raycaster(new T.Vector3(0,25,-4.2),new T.Vector3(0,-1,0),0,5).intersectObject(canopy).length>0,'An opaque metallic canopy visibly closes the top of the saucer');
+ const canopy=ship.root.getObjectByName('Origins metallic cupola');check(!canopy.material.transparent&&new T.Raycaster(new T.Vector3(0,25,-4.2),new T.Vector3(0,-1,0),0,5).intersectObject(canopy).length>0,'An opaque metallic canopy visibly closes the top of the saucer');
+ const firstRotation=ship.diagnostics().rotation;
+ ship.update(.1,new T.Vector3(0,1.65,13),true);
+ check(ship.diagnostics().canopy.opening&&ship.diagnostics().canopy.openness>0&&ship.diagnostics().canopy.openness<1,'The roof starts to open smoothly near island boarding');
+ for(let i=0;i<25;i++)ship.update(.1,new T.Vector3(0,21.65,-4.2),true);
+ check(ship.diagnostics().canopy.open&&canopy.parent.rotation.x>1&&ship.diagnostics().rotation>firstRotation,'The hinged roof opens while the hull keeps rotating');
  for(const origin of [[0,16,-4.2],[1,16,-3.2]]){const ray=new T.Raycaster(new T.Vector3(...origin),new T.Vector3(0,1,0),0,8),solid=ray.intersectObjects(ship.solids).find(h=>!h.object.material.transparent),hit=ray.intersectObjects(ship.pickables).find(h=>!solid||h.distance<=solid.distance+.055);check(hit?.object.userData.kind==='origins-vessel','The closed central engine cover still boards the saucer when clicked');}
  for(const p of ship.journey.outbound.slice(0,4)){ship.setFlight(new T.Vector3(...p));check(!ship.diagnostics().flying,'The ship waits while the passenger approaches above its intact hull');}
  ship.setFlight(new T.Vector3(0,60,-40));check(ship.diagnostics().flying&&ship.diagnostics().saucerPosition.join(',')==='0,58.35,-40','The saucer moves with its passenger after boarding');
+ ship.update(.016,new T.Vector3(0,60,-40),false);
+ check(ship.diagnostics().canopy.openness===0,'The roof closes during flight, including in reduced motion');
  ship.resetFlight();check(ship.diagnostics().saucerPosition.join(',')==='0,20,-4.2','Cancellation restores the physical saucer');
  check(ship.root.getObjectByName('Plain black event horizon')?.material.color.getHex()===0,'The black hole is real rendered geometry');
  ship.dispose();check(scene.children.length===0,'The island transit releases all scene objects');
@@ -30,7 +37,21 @@ for(const mobile of [false,true]){
  check(!room.pickables.some(o=>o.userData.kind==='origins-vessel-work'),'No photo or artwork frame can be selected or loaded');
  check(d.book.closed&&d.book.dimensions.join(',')==='.7,.08,.98'.split(',').map(Number).join(','),'The physical original closed book retains its dimensions');
  check(room.root.getObjectByName('Origins ceremonial reading slab').material.color.getHex()===0,'The original book stands on a pure black ceremonial support');
- const corridor=room.root.getObjectByName('ORIGINS — transparent dark glass corridor');let transparent=0;corridor.traverse(o=>{if(o.isMesh&&o.material.transparent)transparent++;});check(transparent>=4,'The floating corridor has genuine transparent sides and floor');
+ const walkway=room.root.getObjectByName('ORIGINS — open walkway');
+ check(walkway.children.every(o=>o.isMesh&&!o.material.transparent&&!/rib|roof|glass/i.test(o.name))&&d.walkway.openAir,'The walkway is open to the galaxy with no glass or ribs');
+ for(let z=-41.875;z<=-4.2;z+=.125){
+  check(originsWalkHeight(0,z)!==null,'Travel stays supported at z='+z);
+  const ray=new T.Raycaster(new T.Vector3(0,22.7,z),new T.Vector3(0,-1,0),0,3),hit=ray.intersectObjects(room.walkSurfaces)[0];
+  check(hit&&Math.abs(hit.point.y-originsWalkHeight(0,z))<.08,'Navigation follows the actual 3D surface at z='+z);
+ }
+ check(originsWalkHeight(2.8,-24)!==null&&originsWalkHeight(4,-24)===null,'The bridge allows lateral movement and ends at the open edge');
+ check(originsWalkHeight(2,-43)!==null&&originsWalkHeight(0,-43)===null,'The visitor can circle the physical book plinth');
+ room.root.position.y=3480;
+ room.update(.016,new T.Vector3(0,3501.65,-19),false);
+ check(room.diagnostics().canopy.open,'Approaching the saucer from the sanctuary opens its roof in world space');
+ room.update(.016,new T.Vector3(0,3501.65,-36),false);
+ check(room.diagnostics().closedCanopy,'The parked saucer closes when the visitor walks away');
+ room.root.position.y=0;scene.updateMatrixWorld(true);
  const solids=room.solids.filter(o=>!(Array.isArray(o.material)?o.material:[o.material]).every(m=>m.transparent)),book=new T.Vector3(...room.journey.bookPosition);
  for(const dir of [[1,0,0],[-1,0,0],[0,0,-1],[0,1,0]])check(new T.Raycaster(book,new T.Vector3(...dir),.2,30).intersectObjects(solids).length>0,'The sanctuary is physically enclosed around the book');
  room.dispose();check(scene.children.length===0,'The sanctuary resources dispose cleanly');
