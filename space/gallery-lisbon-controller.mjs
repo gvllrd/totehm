@@ -13,6 +13,30 @@ export const LISBON_KEYS=Object.freeze({
   dead_end:[-.351,.144,.080],roundabout:[-.174,.105,.118],left_or_straight:[.174,.105,.118],
   no_uturn:[.351,.144,.098],priority:[-.375,.266,.104],crosswalk:[0,.164,.084],stop:[.375,.266,.100]
 });
+// Each adhesive is positioned on the actual sign silhouette in artwork units.
+export const LISBON_PLAYED_STICKERS=Object.freeze({
+  fire_exit:Object.freeze([-0.28,0.028,0.29,-11]),
+  Heli:Object.freeze([0.095,0.005,0.187,15]),
+  aed:Object.freeze([0.29,-0.052,0.27,8]),
+  green_walk:Object.freeze([0.14,0.24,0.285,-8]),
+  red_walk:Object.freeze([-0.18,-0.195,0.25,12]),
+  pharma:Object.freeze([0.01,0.32,0.29,-9]),
+  lisboa_city_hall:Object.freeze([-0.017,0.168,0.26,7]),
+  speed_bump_caution:Object.freeze([0.12,0.279,0.28,-10]),
+  crosswalk_caution:Object.freeze([-0.21,-0.27,0.28,7]),
+  no_entry:Object.freeze([0.19,-0.19,0.3,-13]),
+  no_parking:Object.freeze([-0.19,0.21,0.3,11]),
+  hospital:Object.freeze([0.13,0.24,0.28,-10]),
+  parking:Object.freeze([-0.19,-0.24,0.27,9]),
+  Hotel:Object.freeze([0.23,0.273,0.295,12]),
+  dead_end:Object.freeze([0.195,0.218,0.31,-7]),
+  roundabout:Object.freeze([-0.17,0.17,0.33,-15]),
+  left_or_straight:Object.freeze([0.2,-0.21,0.33,13]),
+  no_uturn:Object.freeze([0.183,0.193,0.29,10]),
+  priority:Object.freeze([-0.22,-0.266,0.29,7]),
+  crosswalk:Object.freeze([-0.025,0.294,0.29,-10]),
+  stop:Object.freeze([0.158,0.218,0.306,11])
+});
 const FACE_HEIGHT=.080;
 const DISPLAY_FRAME={width:.260,depth:.158,radius:.016};
 const DISPLAY_GLASS={width:.248,depth:.146,radius:.012};
@@ -193,6 +217,22 @@ function thumbArtwork(size){
   return geometry;
 }
 
+function higherStickerGeometry(key,placement,edge=false){
+  const [horizontal,vertical,relativeWidth,degrees]=placement;
+  const diameter=key.size*(key.shoulder?1:.93),width=diameter*relativeWidth;
+  const rotation=-degrees*Math.PI/180,cos=Math.cos(rotation),sin=Math.sin(rotation);
+  const geometry=new T.PlaneGeometry(width*(edge?1.045:1),width/3*(edge?1.09:1),key.stick?8:1,key.stick?4:1);
+  const position=geometry.getAttribute('position'),surface=key.button.geometry.boundingBox.max.z;
+  for(let i=0;i<position.count;i++){
+    const u=position.getX(i),v=position.getY(i);
+    const x=horizontal*diameter+cos*u-sin*v,y=-vertical*diameter+sin*u+cos*v;
+    const height=key.stick?thumbSurface(Math.hypot(x,y))+.0007:surface;
+    position.setXYZ(i,x,y,height+(edge?.00024:.00054));
+  }
+  geometry.computeVertexNormals();
+  return geometry;
+}
+
 export function createLisbonController({width=.52,mobile=false,onChange=()=>{}}={}){
   const root=new T.Group();root.name='Lisbon · original street controller';root.scale.setScalar(width);
   const materials=new Set(),geometries=new Set(),textures=new Set(),keys=new Map(),pending=[];
@@ -297,13 +337,38 @@ export function createLisbonController({width=.52,mobile=false,onChange=()=>{}}=
     };
     keys.set(id,key);
   }
+  let stickerFace,stickerEdge,stickerLoaded=false;
+  function markPlayed(id){
+    const key=keys.get(id),placement=LISBON_PLAYED_STICKERS[id];
+    if(!key||!placement||key.sticker)return;
+    if(!stickerFace){
+      const map=loader ? loader.load('/assets/gallery/higher.svg',()=>{
+        if(disposed)return;
+        stickerLoaded=true;
+        for(const playedKey of keys.values())if(playedKey.sticker)playedKey.sticker.visible=true;
+        onChange();
+      }) : null;
+      if(map){map.colorSpace=T.SRGBColorSpace;map.anisotropy=4;textures.add(map);}
+      stickerFace=new T.MeshPhysicalMaterial({map,color:0xf5f2ef,roughness:.52,metalness:.02,
+        clearcoat:.22,clearcoatRoughness:.28,emissive:0xffffff,emissiveMap:map,emissiveIntensity:.14,alphaTest:.32,toneMapped:false});
+      stickerEdge=new T.MeshBasicMaterial({map,color:0x827b72,alphaTest:.30,toneMapped:false});
+    }
+    const film=create(higherStickerGeometry(key,placement),stickerFace,0,0,0);
+    const backing=create(higherStickerGeometry(key,placement,true),stickerEdge,0,0,0);
+    film.name=id+' · Higher vinyl sticker';
+    backing.name='Thin adhesive edge';
+    key.sticker=new T.Group();key.sticker.add(backing,film);key.sticker.visible=stickerLoaded;
+    key.button.add(key.sticker);
+    onChange();
+  }
+
   root.userData.kind='lisbon-controller';
   root.userData.faceCorners=[[-.54,FACE_HEIGHT,-.34],[.54,FACE_HEIGHT,-.34],[.54,FACE_HEIGHT,.39],[-.54,FACE_HEIGHT,.39]];
   const pickables=[lower,belt,face,hitSurface,...grips,...shoulderMounts,...[...keys.values()].map(key=>key.button)];
   const data={kind:'lisbon-controller',action:'open',href:'/play_lisbon_street?board=1'};
   for(const mesh of pickables)Object.assign(mesh.userData,data);
-  return {root,hitSurface,pickables,keys,ready:Promise.all(pending),
-    diagnostics:()=>({kind:'lisbon-controller-original-3d',version:5,width,keys:keys.size,loaded,closedShell:true,physical:true,palmGrips:grips.length,texturedShell:true,thumbSticks:2,articulatedSticks:2,shoulderControls:4,activeShoulders:2,flushDisplay:true}),
+  return {root,hitSurface,pickables,keys,markPlayed,ready:Promise.all(pending),
+    diagnostics:()=>({kind:'lisbon-controller-original-3d',version:6,width,keys:keys.size,loaded,stickers:[...keys.values()].filter(key=>key.sticker?.visible).map(key=>key.id),closedShell:true,physical:true,palmGrips:grips.length,texturedShell:true,thumbSticks:2,articulatedSticks:2,shoulderControls:4,activeShoulders:2,flushDisplay:true}),
     dispose(){disposed=true;root.removeFromParent();for(const geometry of geometries)geometry.dispose();for(const material of materials)material.dispose();for(const texture of textures)texture.dispose();}
   };
 }

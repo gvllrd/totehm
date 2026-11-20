@@ -281,8 +281,12 @@ body.is-controller-locked #sdisc-stage{background:radial-gradient(ellipse at cen
 :is(.controller-deep-link,.is-controller-entry) :is(#experience-front-canvas,#sdisc-stage,#sdisc-cover-next,#sdisc-back,#sdisc-trig,#sdisc-progress,#sdisc-rail,#sdisc-reading-hint){visibility:hidden}
 body.is-street-board.has-controller-3d #sdisc-bg>.street-rock>img{opacity:0}
 body.is-street-board #sdisc-bg>.street-rock.is-key-down>img{filter:brightness(.68);transform:scale(.96)}
-#sdisc-bg .street-rock .controller-used .higher-inline{width:100%;min-width:0}
-#sdisc-bg .street-rock .controller-used{display:block;width:36%;top:72%!important;left:65%!important;}
+#sdisc-bg .street-rock .played-sticker{
+  position:absolute;display:block;pointer-events:none;line-height:0;transform:translate(-50%,-50%) rotate(var(--angle));
+  filter:drop-shadow(0 .5px 0 #b7aea6) drop-shadow(0 1px .7px #0a0910b3);
+}
+#sdisc-bg .street-rock .played-sticker .higher-inline{width:100%;margin:0}
+body.has-controller-3d #sdisc-bg .street-rock .played-sticker{display:none}
 body.is-street-board #sdisc-bg>.street-rock:focus-visible{outline:2px solid #a6b5d4;border-radius:8px;outline-offset:4px}
 @media(prefers-reduced-motion:reduce){#controller-3d-view{transition:none}}
 
@@ -428,8 +432,8 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import {checkLisbonStreetAccess,requestLisbonStreetMedia} from './lisbon-street-access.mjs';
 import {LISBON_STREET_DISCOVER} from './lisbon-street-discover.mjs';
 import {LISBON_FRONT_SIZE,createLisbonFirstPage} from './lisbon-first-page.mjs';
-import {createLisbonControllerView} from './gallery-lisbon-controller.mjs';
-const BUILD = '2026-11-19-lisbon-signed-controller';
+import {createLisbonControllerView,LISBON_PLAYED_STICKERS} from './gallery-lisbon-controller.mjs';
+const BUILD = '2026-11-20-lisbon-applied-stickers';
 function streetReturnPath(){const destination=new URL(location.href);destination.searchParams.delete('embedded');destination.searchParams.delete('sceneTime');return destination.pathname+destination.search;}
 // A purchase or central connection leaves the projected reader as a whole.
 function navigateStreetExperience(href){
@@ -1051,11 +1055,7 @@ function comeBack(){
     if(lastXpFrom==='direct'){ snapToBoard(); }
     else{
       ROCKS.forEach(r=>{ r.img.style.filter=''; });
-      if(reachedArtwork&&lastPressedRock&&lastPressedRock.id!=='destination'){
-        lastPressedRock._pressed=true;
-        const label=lastPressedRock.uLabel;
-        label.innerHTML=HIGHER_MARKUP;label.className='controller-used';label.style.opacity='1';
-      }
+      if(reachedArtwork&&lastPressedRock)applyPlayedSticker(lastPressedRock);
       lastPressedRock?.wrap.focus({preventScroll:true});lastPressedRock=null;
     }
   },reducedMotion.matches?0:560);
@@ -1177,15 +1177,13 @@ function spawnRock(id,tl,tt,tw){
   sdiscBg.appendChild(wrap);
 
   const r={wrap,img,uLabel,x,y,vx,vy,rot,vrot,size,tl,tt,tw,id};
-  r._origLabelCss=uLabel.style.cssText;
 
   function showUseless(){ img.style.filter='brightness(0.2)'; uLabel.style.opacity='1'; }
   function hideUseless(){ img.style.filter=''; uLabel.style.opacity='0'; }
 
   wrap.addEventListener('mouseenter',()=>{
     if(id==='destination') return;
-    if(boardMode){ if(r._pressed) img.style.filter='brightness(0.2)'; }
-    else showUseless();
+    if(!boardMode)showUseless();
   });
   wrap.addEventListener('mouseleave',()=>{
     if(id==='destination') return;
@@ -1256,6 +1254,20 @@ async function prepareController({preview=false}={}){
 function controllerTarget(rock){
   const target=controllerView?.target(rock.id);if(target)return target;
   const rect=getBoardRect(),size=rock.tw*rect.w/100;return {x:rect.x+rock.tl*rect.w/100,y:rect.y+rock.tt*rect.h/100,width:size,height:size};
+}
+function applyPlayedSticker(rock){
+  const placement=LISBON_PLAYED_STICKERS[rock.id];
+  if(!placement||rock.sticker)return;
+  controllerView?.model.markPlayed(rock.id);
+  const [horizontal,vertical,width,degrees]=placement;
+  const sticker=document.createElement('span');
+  sticker.className='played-sticker';sticker.setAttribute('aria-hidden','true');
+  sticker.style.left=(horizontal+.5)*100+'%';
+  sticker.style.top=(vertical+.5)*100+'%';
+  sticker.style.width=width*100+'%';
+  sticker.style.setProperty('--angle',degrees+'deg');
+  sticker.innerHTML=HIGHER_MARKUP;
+  rock.wrap.appendChild(sticker);rock.sticker=sticker;
 }
 function placeBoardKey(rock){
   const {x,y,width,height}=controllerTarget(rock);
@@ -1332,9 +1344,7 @@ function exitBoardMode(){
     r.img.style.filter=''; r.img.style.transform='rotate(0deg)';
     r.wrap.onpointerdown=r.wrap.onpointerup=r.wrap.onpointerleave=r.wrap.onpointercancel=r.wrap.onblur=null;
     r.wrap.classList.remove('is-key-down');r._spaceHeld=false;
-    r.uLabel.textContent='Useless';r.uLabel.className='';
-    r.uLabel.style.cssText=r._origLabelCss;
-    r._pressed=false;
+    r.sticker?.remove();r.sticker=null;
     if(r._boardClick){ r.wrap.removeEventListener('click',r._boardClick); r._boardClick=null; }
     if(r._boardKey){ r.wrap.removeEventListener('keydown',r._boardKey); r._boardKey=null; }
     if(r._boardKeyUp){r.wrap.removeEventListener('keyup',r._boardKeyUp);r._boardKeyUp=null;}

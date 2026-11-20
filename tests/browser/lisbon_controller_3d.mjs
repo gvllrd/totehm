@@ -125,7 +125,7 @@ try{
         const stop=await child.getByRole('button',{name:'stop',exact:true}).boundingBox();
         await fixture.pg.mouse.move(stop.x+stop.width/2,stop.y+stop.height/2);await fixture.pg.mouse.down();
         await child.waitForFunction(()=>{const f=__totehm_lisbon().keyFeedback;return f?.id==='stop'&&f.pressure>=.9&&f.travel>=.012&&f.mode==='holding';},null,{timeout:5000});
-        check(logged.length===0,'Holding a depressed physical key does not request or play a private film');
+        check(logged.length===0&&await child.locator('.played-sticker').count()===0,'Holding a depressed physical key requests no film and leaves no sticker');
         const changed=await changedPixels(child);
         check(changed>25,'The real STOP press visibly changes '+changed+' controller pixels');
         await fixture.pg.screenshot({path:directory+'/owned-pressed.png'});
@@ -150,6 +150,10 @@ try{
         await child.locator('#vid').evaluate(video=>video.dispatchEvent(new Event('ended')));
         await child.waitForFunction(()=>{const d=__totehm_lisbon();return d.board&&d.activeSign===null&&d.keyFeedback.pressure<.01;});
         check(await child.locator('.street-rock[role=button]').count()===22,'Returning from a film releases the physical key and restores the full controller');
+        await child.waitForFunction(()=>__totehm_lisbon().controller.stickers.includes('stop'));
+        const stopSticker=child.getByRole('button',{name:'stop',exact:true}).locator('.played-sticker');
+        check(await stopSticker.count()===1&&!(await stopSticker.isVisible()),'STOP carries a real 3D sticker and its DOM fallback stays hidden over WebGL');
+        await fixture.pg.screenshot({path:directory+'/owned-sticker.png'});
         await child.getByRole('button',{name:'stop',exact:true}).focus();
         const beforeSpace=logged.length;await fixture.pg.keyboard.down('Space');
         await child.waitForFunction(()=>{const f=__totehm_lisbon().keyFeedback;return f?.id==='stop'&&f.pressure>=.9&&f.mode==='holding';});
@@ -178,6 +182,15 @@ try{
           check(logged.length===beforeTilt+1&&logged.at(-1)===id,'The '+id+' joystick still selects its own original signed film');
           await child.locator('#xp-close').click();await child.waitForFunction(()=>__totehm_lisbon().activeSign===null);
         }
+        check(await stopSticker.count()===1,'Replaying STOP keeps a single sticker');
+        const thumbStickers=['roundabout','left or straight'];
+        await child.waitForFunction(()=>['roundabout','left_or_straight'].every(id=>__totehm_lisbon().controller.stickers.includes(id)));
+        const placements=[];
+        for(const name of thumbStickers){
+          placements.push(await child.getByRole('button',{name,exact:true}).locator('.played-sticker').evaluate(el=>
+            [el.style.left,el.style.top,el.style.getPropertyValue('--angle')]));
+        }
+        check(placements[0].every((value,index)=>value!==placements[1][index]),'The concave joystick caps carry stickers at distinct positions and angles');
         const beforeDisplay=logged.length;await child.getByRole('button',{name:'destination',exact:true}).click();
         await child.waitForFunction(()=>__totehm_lisbon().artwork&&__totehm_lisbon().activeSign==='destination');
         check(logged.length===beforeDisplay+1&&logged.at(-1)==='destination','The embedded mini-screen retains its own original signed destination film');
