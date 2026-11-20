@@ -13,7 +13,7 @@ const host=document.getElementById('origin-scene'),button=document.getElementByI
 const originCity=new URLSearchParams(location.search).get('from')==='new-york'?'new-york':'lisbon',earthHref='/'+(originCity==='new-york'?'new-york':'lisbon-space')+'?arrival=origin';
 let engine=null;
 try{engine=createOriginScene();}catch(error){console.error('[origin scene]',error?.message);document.getElementById('origin-fallback').hidden=false;document.body.classList.add('no-webgl');document.body.classList.remove('is-arriving');}
-window.__totehm_origin=()=>({build:'origin-book-under-the-stars',fallback:!engine,...engine?.diagnostics()});
+window.__totehm_origin=()=>({build:'origin-side-opening-canopy',fallback:!engine,...engine?.diagnostics()});
 function createOriginScene(){
  const renderer=new T.WebGLRenderer({antialias:true,powerPreference:'high-performance'}),quality=createRenderQuality({mobile,pixelRatio:devicePixelRatio});renderer.setPixelRatio(quality.diagnostics().pixelRatio);renderer.setSize(innerWidth,innerHeight);renderer.outputColorSpace=T.SRGBColorSpace;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.setClearColor(0x000000);renderer.domElement.setAttribute('aria-hidden','true');host.append(renderer.domElement);
  const scene=new T.Scene(),camera=new T.PerspectiveCamera(mobile?80:72,innerWidth/innerHeight,.05,100000),eye=new T.Vector3(...ORIGIN_ROOM.entry),target=new T.Vector3(0,3501.1,-24);
@@ -137,6 +137,7 @@ function createOriginScene(){
   if(dirty){camera.position.set(eye.x,viewY,eye.z);camera.lookAt(target.x,target.y+viewY-eye.y,target.z);camera.updateMatrixWorld();const started=performance.now();renderer.render(scene,camera);frames++;dirty=false;const ratio=quality.sample(now,{frameMs:rawElapsed*1000,renderMs:performance.now()-started});if(ratio!==renderer.getPixelRatio()){renderer.setPixelRatio(ratio);dirty=true;}if(frames===1)requestAnimationFrame(()=>document.body.classList.remove('is-arriving'));}
  }
  if(new URLSearchParams(location.search).get('return')==='1')arrive();else{angles();paint();}
+ vessel.update(0,eye,false);
  renderer.setAnimationLoop(frame);
  addEventListener('pagehide',event=>{if(event.persisted){hidden=true;stopInput();renderer.setAnimationLoop(null);return;}disposed=true;stopInput();renderer.setAnimationLoop(null);vessel.dispose();returnPortal.dispose();cockpit.dispose();berthLight.dispose();sky.dispose();environment.dispose();pmrem.dispose();renderer.dispose();});
  addEventListener('pageshow',event=>{if(event.persisted){hidden=document.hidden;blurred=false;last=0;opening=false;vessel.book.reset();if(stage==='return-flight'||stage==='return-portal')cancelReturn();paint();dirty=true;document.body.classList.remove('is-arriving');renderer.setAnimationLoop(frame);}});

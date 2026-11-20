@@ -23,12 +23,22 @@ for(const mobile of [false,true]){
  ship.update(.1,new T.Vector3(0,1.65,13),true);
  check(ship.diagnostics().canopy.opening&&ship.diagnostics().canopy.openness>0&&ship.diagnostics().canopy.openness<1,'The roof starts to open smoothly near island boarding');
  for(let i=0;i<25;i++)ship.update(.1,new T.Vector3(0,21.65,-4.2),true);
- check(ship.diagnostics().canopy.open&&canopy.parent.rotation.x>1&&ship.diagnostics().rotation>firstRotation,'The hinged roof opens while the hull keeps rotating');
+ check(ship.diagnostics().canopy.open&&ship.diagnostics().rotation>firstRotation,'The roof opens while the hull keeps rotating');
+ scene.updateMatrixWorld(true);
+ const clearance=new T.Box3().setFromObject(canopy);
+ check(clearance.min.x>2&&Math.abs(canopy.parent.position.z)<.0001,'The open roof clears both opposing boarding routes');
+ for(const p of ship.journey.outbound.slice(2,5).concat([...ship.journey.outbound.slice(2,5)].reverse())){
+  const eye=new T.Vector3(...p);
+  check(!clearance.containsPoint(eye),'There is no canopy in the passenger lane while boarding or disembarking');
+ }
  for(const origin of [[0,16,-4.2],[1,16,-3.2]]){const ray=new T.Raycaster(new T.Vector3(...origin),new T.Vector3(0,1,0),0,8),solid=ray.intersectObjects(ship.solids).find(h=>!h.object.material.transparent),hit=ray.intersectObjects(ship.pickables).find(h=>!solid||h.distance<=solid.distance+.055);check(hit?.object.userData.kind==='origins-vessel','The closed central engine cover still boards the saucer when clicked');}
  for(const p of ship.journey.outbound.slice(0,4)){ship.setFlight(new T.Vector3(...p));check(!ship.diagnostics().flying,'The ship waits while the passenger approaches above its intact hull');}
  ship.setFlight(new T.Vector3(0,60,-40));check(ship.diagnostics().flying&&ship.diagnostics().saucerPosition.join(',')==='0,58.35,-40','The saucer moves with its passenger after boarding');
  ship.update(.016,new T.Vector3(0,60,-40),false);
  check(ship.diagnostics().canopy.openness===0,'The roof closes during flight, including in reduced motion');
+ ship.setReturnFlight(new T.Vector3(0,60,-40));
+ ship.setReturnFlight(new T.Vector3(0,21.65,-4.16));
+ check(ship.diagnostics().canopy.open,'The canopy is already clear when the parked ship hands back the gangway view');
  ship.resetFlight();check(ship.diagnostics().saucerPosition.join(',')==='0,20,-4.2','Cancellation restores the physical saucer');
  check(ship.root.getObjectByName('Plain black event horizon')?.material.color.getHex()===0,'The black hole is real rendered geometry');
  ship.dispose();check(scene.children.length===0,'The island transit releases all scene objects');
@@ -47,6 +57,12 @@ for(const mobile of [false,true]){
  check(originsWalkHeight(1.5,-24)!==null&&originsWalkHeight(2,-24)===null,'The bridge allows lateral movement and ends at the open edge');
  check(originsWalkHeight(2,-43)!==null&&originsWalkHeight(0,-43)===null,'The visitor can circle the physical book plinth');
  room.root.position.y=3480;
+ for(let i=0;i<35;i++){
+  room.update(.04,new T.Vector3(0,3502.45,-4.2),true);
+  scene.updateMatrixWorld(true);
+  const roof=new T.Box3().setFromObject(room.root.getObjectByName('Origins metallic cupola'));
+  check(roof.max.y<3502.45,'The opening roof never rises through the standing passenger');
+ }
  room.update(.016,new T.Vector3(0,3501.65,-19),false);
  check(room.diagnostics().canopy.open,'Approaching the saucer from the sanctuary opens its roof in world space');
  room.update(.016,new T.Vector3(0,3501.65,-36),false);

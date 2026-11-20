@@ -59,7 +59,7 @@ export function createOriginsVessel(scene,{mobile=false,onChange=()=>{},onOpen=(
  black.name='Origins — raw black architecture';
  const silver=material(new T.MeshPhysicalMaterial({color:0x767f83,roughness:.4,metalness:.9,clearcoat:.3,clearcoatRoughness:.2,side:T.DoubleSide}));
  silver.name='Origins — brushed metallic saucer hull';
- const canopy=material(silver.clone());canopy.side=T.FrontSide;canopy.name='Origins — hinged metallic canopy';
+ const canopy=material(silver.clone());canopy.side=T.FrontSide;canopy.name='Origins — sliding metallic canopy';
  const hullLight=new T.SpotLight(0xc8ddf2,420,55,.9,.9,2);hullLight.position.set(0,10,12);hullLight.target.position.set(0,20,-4.2);root.add(hullLight,hullLight.target);lights.push(hullLight);
  const white=material(new T.MeshBasicMaterial({color:0xc1d5e4,toneMapped:false}));
  const focus=material(new T.MeshBasicMaterial({color:0x378add,toneMapped:false}));
@@ -83,8 +83,8 @@ export function createOriginsVessel(scene,{mobile=false,onChange=()=>{},onOpen=(
  const profile=[...hullTop,[9.9,-.15],[7.4,-.50],[5,-.80],[2.7,-.96],[0,-1.02]].map(p=>new T.Vector2(...p));
  const hull=pick(mesh(spinner,geometry(new T.LatheGeometry(profile,mobile?96:144)),silver,[0,0,0],'Origins metallic disk — continuous closed hull',true),'origins-vessel',{action:'board',href:'/origin'});
  hull.userData.saucerHull=true;
- const hinge=new T.Group();hinge.name='Origins canopy hinge';hinge.position.set(0,cabinHeight,2.94);saucer.add(hinge);
- pick(mesh(hinge,geometry(new T.SphereGeometry(3,mobile?48:72,24,0,Math.PI*2,0,Math.PI/2)),canopy,[0,.62-cabinHeight,-2.94],'Origins metallic cupola',false,[1,.48,1]),'origins-vessel',{action:'board'});
+ const canopyCarrier=new T.Group();canopyCarrier.name='Origins sliding canopy carrier';saucer.add(canopyCarrier);
+ pick(mesh(canopyCarrier,geometry(new T.SphereGeometry(3,mobile?48:72,24,0,Math.PI*2,0,Math.PI/2)),canopy,[0,.62,0],'Origins metallic cupola',false,[1,.48,1]),'origins-vessel',{action:'board'});
  ring(saucer,2.96,.016,.83,0,black,'Saucer fine canopy seam');
  ring(spinner,9.92,.027,.025,0,white,'Saucer fine metallic edge highlight');
  const deck=mesh(saucer,geometry(new T.CircleGeometry(cabinRadius,mobile?64:96)),black,[0,cabinHeight,0],'Saucer continuous black cabin floor',true);deck.rotation.x=-Math.PI/2;
@@ -106,6 +106,11 @@ export function createOriginsVessel(scene,{mobile=false,onChange=()=>{},onOpen=(
  segments.instanceMatrix.needsUpdate=true;spinner.add(segments);
  let canopyRaised=false,canopyTravel=0;
  const shipCenter=new T.Vector3();
+ function placeCanopy(amount){
+  canopyTravel=amount;
+  // Retract perpendicular to both boarding routes and keep the roof below eye level on the deck.
+  canopyCarrier.position.set(5.2*amount,.18*Math.sin(Math.PI*amount)-.12*amount,0);
+ }
  function updateShip(dt,eye,motion,flying){
   if(motion)spinner.rotation.y=(spinner.rotation.y+dt*.065)%(2*Math.PI);
   saucer.getWorldPosition(shipCenter);
@@ -113,9 +118,8 @@ export function createOriginsVessel(scene,{mobile=false,onChange=()=>{},onOpen=(
   const approach=transitOnly?(eye.y<10?4.6:14):L.radius+9.2;
   canopyRaised=!flying&&distance<approach+(canopyRaised?1:0);
   const target=canopyRaised?1:0,previous=canopyTravel;
-  canopyTravel=!motion?target:T.MathUtils.damp(canopyTravel,target,3.1,dt);
-  if(Math.abs(target-canopyTravel)<.002)canopyTravel=target;
-  hinge.rotation.x=1.27*canopyTravel;
+  const travel=motion?T.MathUtils.damp(canopyTravel,target,3.1,dt):target;
+  placeCanopy(Math.abs(target-travel)<.002?target:travel);
   return canopyTravel!==previous;
  }
  const canopyState=()=>({openness:canopyTravel,open:canopyTravel>.95,opening:canopyRaised&&canopyTravel<1});
@@ -126,7 +130,7 @@ export function createOriginsVessel(scene,{mobile=false,onChange=()=>{},onOpen=(
   const book={pickables:[],open:()=>false,reset(){},update:()=>false,diagnostics:()=>({closed:true,opening:false,opened:false,absent:true})};
   return{root,pickables,solids,book,journey:{...L,outbound:[[0,1.65,13],[0,8.5,11],[0,15.8,7.5],[0,22,7.5],[0,21.65,-4.2],[0,30,-8],[0,61,-35],[0,94,-65],[0,118,-89.7]]},
    setFlight(eye){if(!flying&&(eye.y<21.7||eye.z>-4.25))return;flying=true;saucer.position.set(eye.x,eye.y-1.65,eye.z);beamMaterial.opacity=0;beamMaterial.visible=false;},
-   setReturnFlight(eye){if(eye.y>=21.64&&eye.z<=-4.19){flying=true;saucer.position.set(eye.x,eye.y-1.65,eye.z);beamMaterial.visible=false;}else{flying=false;saucer.position.copy(shipHome);beamMaterial.visible=true;}},
+   setReturnFlight(eye){if(eye.y>=21.64&&eye.z<=-4.19){flying=true;saucer.position.set(eye.x,eye.y-1.65,eye.z);beamMaterial.visible=false;}else{if(flying)placeCanopy(1);flying=false;saucer.position.copy(shipHome);beamMaterial.visible=true;}},
    resetFlight(){flying=false;saucer.position.copy(shipHome);beamMaterial.visible=true;},
    update(dt,eye,motion=true){if(disposed)return false;const step=Math.max(0,Math.min(Number(dt)||0,.1)),canopyChanged=updateShip(step,eye,motion,flying);if(motion){time+=step;beamMaterial.uniforms.uTime.value=time;}portal.update(dt,eye,motion);const result=dirty||motion||canopyChanged;dirty=false;return result;},
    diagnostics:()=>({kind:'origins-saucer-black-hole-transit',saucer:true,rotation:spinner.rotation.y,canopy:canopyState(),rotationDegreesPerSecond:.065*180/Math.PI,closedHull:true,closedUnderside:true,openShaft:false,flying,saucerPosition:saucer.position.toArray(),corridorInIsland:false,bookInIsland:false,originalWorks:0,blackHole:portal.diagnostics(),destination:ORIGIN_PORTAL.href}),
