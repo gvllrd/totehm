@@ -30,7 +30,7 @@ export const LISBON_URBEX_LAYOUT=freeze({
  entry:[3.15,1.65,11.9],look:[0,4.9,-9.1],
  inside:[-1.7,1.65,2.55],insideTarget:seat.target,
  pavement:{size:[32,36],z:-.2,boatCentre:[0,8]},
- counter,seat,play,fireplace,controller:{position:[.54,1.56],width:.47,tablePitch:.12,tableYaw:-.16},
+ counter,seat,play,fireplace,controller:{position:[.50,1.63],width:.225,tablePitch:.16,tableYaw:-.23},
  paperCaseWidth:.042,
  paperAttache:{position:[-.59,1.49],size:[.57,.334],lidHeight:.295,cradleHeight:.082},
  paperCases:[{position:[-.686,1.541],angle:-.91},{position:[-.494,1.541],angle:-.91}],

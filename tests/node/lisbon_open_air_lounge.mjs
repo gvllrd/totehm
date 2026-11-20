@@ -38,13 +38,22 @@ try{
   assert.ok(item.root.getWorldPosition(new T.Vector3()).x<0);
   assert.deepEqual(item.root.getWorldScale(new T.Vector3()).toArray().map(value=>Math.round(value*1e6)/1e6),[1,1,1]);
  }
+ const controllerBounds=new T.Box3().setFromObject(controller.root,true).getSize(new T.Vector3());
+ assert.ok(controllerBounds.x>.21&&controllerBounds.x<.245&&controllerBounds.y<.06,'the slim tabletop controller retains a handheld scale');
+ const feet=lounge.root.getObjectsByProperty('name','Controller rubber foot');
+ assert.equal(feet.length,2);
+ for(const foot of feet){
+  const bounds=new T.Box3().setFromObject(foot,true);
+  assert.ok(Math.abs(bounds.min.y-layout.counter.position[1])<1e-6&&bounds.max.y-bounds.min.y<.005,'the controller has discreet pads in contact with the stone');
+ }
  const camera=new T.PerspectiveCamera(seat.fov,16/9,.08,20000);
  camera.position.fromArray(seat.eye);camera.lookAt(...seat.target);camera.updateMatrixWorld(true);
  for(const object of [...cases.map(item=>item.front),controller.root,performance.screen]){
   const screen=object.getWorldPosition(new T.Vector3()).project(camera);
   assert.ok(Math.abs(screen.x)<.9&&Math.abs(screen.y)<.9&&screen.z>0&&screen.z<1,'every lounge object fits the anchored seated view');
  }
- const ray=new T.Raycaster();
+ const ray=new T.Raycaster(camera.position,new T.Vector3(...world.controller.tableAim).sub(camera.position).normalize());
+ assert.equal(ray.intersectObjects(lounge.pickables,false)[0]?.object.userData.kind,'lisbon-controller','the smaller controller is still directly clickable from the chair');
  for(const item of cases){
   const target=item.front.getWorldPosition(new T.Vector3());
   ray.set(camera.position,target.sub(camera.position).normalize());

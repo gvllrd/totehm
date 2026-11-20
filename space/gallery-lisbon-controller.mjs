@@ -48,31 +48,37 @@ export function lisbonControllerShot(viewportWidth,viewportHeight){
 }
 function outline(){
   const shape=new T.Shape();
-  shape.moveTo(0,.268);
-  shape.bezierCurveTo(.165,.268,.292,.314,.395,.272);
-  shape.bezierCurveTo(.481,.239,.477,.105,.501,-.043);
-  shape.bezierCurveTo(.530,-.212,.499,-.364,.418,-.377);
-  shape.bezierCurveTo(.337,-.393,.291,-.278,.245,-.204);
-  shape.bezierCurveTo(.197,-.148,.086,-.207,0,-.205);
-  shape.bezierCurveTo(-.086,-.207,-.197,-.148,-.245,-.204);
-  shape.bezierCurveTo(-.291,-.278,-.337,-.393,-.418,-.377);
-  shape.bezierCurveTo(-.499,-.364,-.530,-.212,-.501,-.043);
-  shape.bezierCurveTo(-.477,.105,-.481,.239,-.395,.272);
-  shape.bezierCurveTo(-.292,.314,-.165,.268,0,.268);
+  shape.moveTo(0,.298);
+  shape.bezierCurveTo(.112,.296,.218,.316,.306,.307);
+  shape.bezierCurveTo(.385,.302,.450,.278,.468,.215);
+  shape.bezierCurveTo(.483,.165,.469,.106,.478,.041);
+  shape.bezierCurveTo(.495,-.093,.507,-.235,.468,-.317);
+  shape.bezierCurveTo(.443,-.370,.411,-.386,.382,-.375);
+  shape.bezierCurveTo(.334,-.355,.314,-.303,.272,-.242);
+  shape.bezierCurveTo(.249,-.208,.219,-.199,.173,-.205);
+  shape.bezierCurveTo(.110,-.210,.043,-.226,0,-.220);
+  shape.bezierCurveTo(-.043,-.226,-.110,-.210,-.173,-.205);
+  shape.bezierCurveTo(-.219,-.199,-.249,-.208,-.272,-.242);
+  shape.bezierCurveTo(-.314,-.303,-.334,-.355,-.382,-.375);
+  shape.bezierCurveTo(-.411,-.386,-.443,-.370,-.468,-.317);
+  shape.bezierCurveTo(-.507,-.235,-.495,-.093,-.478,.041);
+  shape.bezierCurveTo(-.469,.106,-.483,.165,-.468,.215);
+  shape.bezierCurveTo(-.450,.278,-.385,.302,-.306,.307);
+  shape.bezierCurveTo(-.218,.316,-.112,.296,0,.298);
   return shape;
 }
 
 // Cross-sections widen under the palm and taper into the rounded tip. The
 // loft remains inside the top silhouette and has a closed underside.
 const GRIP_PROFILE=[
-  {z:-.140,x:.313,y:.012,halfWidth:.050,halfHeight:.024},
-  {z:-.040,x:.346,y:.009,halfWidth:.093,halfHeight:.038},
-  {z:.062,x:.369,y:.007,halfWidth:.105,halfHeight:.045},
-  {z:.155,x:.386,y:.004,halfWidth:.103,halfHeight:.052},
-  {z:.245,x:.402,y:.006,halfWidth:.092,halfHeight:.049},
-  {z:.307,x:.412,y:.010,halfWidth:.069,halfHeight:.039},
-  {z:.349,x:.418,y:.017,halfWidth:.035,halfHeight:.027},
-  {z:.370,x:.419,y:.024,halfWidth:.006,halfHeight:.009}
+  {z:-.154,x:.316,y:.044,halfWidth:.042,halfHeight:.020},
+  {z:-.063,x:.345,y:.036,halfWidth:.079,halfHeight:.025},
+  {z:.046,x:.372,y:.026,halfWidth:.094,halfHeight:.034},
+  {z:.146,x:.383,y:.015,halfWidth:.095,halfHeight:.041},
+  {z:.231,x:.392,y:.008,halfWidth:.085,halfHeight:.044},
+  {z:.295,x:.397,y:.012,halfWidth:.066,halfHeight:.035},
+  {z:.340,x:.398,y:.020,halfWidth:.038,halfHeight:.024},
+  {z:.364,x:.396,y:.030,halfWidth:.006,halfHeight:.009}
 ];
 
 function palmGrip(side,mobile){
@@ -238,9 +244,9 @@ export function createLisbonController({width=.52,mobile=false,onChange=()=>{}}=
   const materials=new Set(),geometries=new Set(),textures=new Set(),keys=new Map(),pending=[];
   let loaded=0,disposed=false;
   const grain=moldedGrain();textures.add(grain);
-  const shellInk=new T.MeshPhysicalMaterial({color:0x282e39,roughness:.49,metalness:.16,clearcoat:.29,clearcoatRoughness:.38,bumpMap:grain,bumpScale:.0012});
-  const edgeInk=new T.MeshPhysicalMaterial({color:0x171d26,roughness:.57,metalness:.18});
-  const gripInk=new T.MeshPhysicalMaterial({color:0x121821,roughness:.73,metalness:.03,bumpMap:grain,bumpScale:.0024});
+  const shellInk=new T.MeshPhysicalMaterial({color:0x232832,roughness:.53,metalness:.12,clearcoat:.21,clearcoatRoughness:.38,bumpMap:grain,bumpScale:.0008});
+  const edgeInk=new T.MeshPhysicalMaterial({color:0x14181f,roughness:.58,metalness:.12});
+  const gripInk=new T.MeshPhysicalMaterial({color:0x0f131a,roughness:.76,metalness:.03,bumpMap:grain,bumpScale:.0017});
   const rubberInk=new T.MeshPhysicalMaterial({color:0x151b24,roughness:.70,metalness:.03,bumpMap:grain,bumpScale:.0017});
   const bezelInk=new T.MeshPhysicalMaterial({color:0x3b4958,roughness:.36,metalness:.42});
   const lighting=new T.MeshBasicMaterial({color:0x8aacd6,toneMapped:false});
@@ -250,11 +256,11 @@ export function createLisbonController({width=.52,mobile=false,onChange=()=>{}}=
     const mesh=create(new T.ExtrudeGeometry(shape,{depth,curveSegments:mobile?10:24,bevelEnabled:true,bevelThickness:bevel,bevelSize:bevel,bevelSegments:mobile?2:4}),material,0,y,0);
     mesh.rotation.x=-Math.PI/2;mesh.scale.set(scale,scale,1);return mesh;
   }
-  const lower=shell(edgeInk,0,.025,.026,.961);
-  const belt=shell(bezelInk,.025,.003,.003,.991);
-  const faceShape=outline(),faceScale=.982,displayZ=LISBON_KEYS.destination[1];
+  const lower=shell(edgeInk,.027,.024,.014,.964);
+  const belt=shell(bezelInk,.054,.0018,.0016,.993);
+  const faceShape=outline(),faceScale=.986,displayZ=LISBON_KEYS.destination[1];
   faceShape.holes.push(roundedPanel({width:DISPLAY_FRAME.width/faceScale,depth:DISPLAY_FRAME.depth/faceScale,radius:DISPLAY_FRAME.radius/faceScale},0,-displayZ/faceScale));
-  const face=shell(shellInk,.044,.016,.020,faceScale,faceShape);
+  const face=shell(shellInk,.061,.010,.009,faceScale,faceShape);
   lower.name='Radiused controller underside';belt.name='Controller shell joint';face.name='Bevelled graphite controller shell';
   const grips=[-1,1].map(side=>{
     const mesh=create(palmGrip(side,mobile),gripInk,0,0,0);
@@ -268,26 +274,27 @@ export function createLisbonController({width=.52,mobile=false,onChange=()=>{}}=
   const shoulderMounts=[];
   for(const id of ['fire_exit','aed']){
     const [x,z]=LISBON_KEYS[id];
-    const mount=create(shoulderGeometry(.221,.012,x<0?1:-1,mobile),edgeInk,x,.065,z-.001);
+    const mount=create(shoulderGeometry(.221,.009,x<0?1:-1,mobile),edgeInk,x,.067,z-.001);
     mount.rotation.x=-Math.PI/2;mount.name='Recessed shoulder seat';
-    const trigger=create(new T.CapsuleGeometry(.042,.118,6,mobile?10:20),gripInk,x,-.012,z-.013);
-    trigger.rotation.set(.22,0,Math.PI/2);trigger.scale.set(.86,1,1.02);trigger.name='Sculpted rear trigger paddle';
+    const trigger=create(new T.CapsuleGeometry(.027,.139,6,mobile?10:20),gripInk,x,.020,z-.023);
+    trigger.rotation.set(.19,0,Math.PI/2);trigger.scale.set(.84,1,1.16);trigger.name='Sculpted rear trigger paddle';
     shoulderMounts.push(mount,trigger);
   }
-  const light=create(new T.BoxGeometry(.104,.008,.006),lighting,0,.042,-.279);
+  const light=create(new T.CapsuleGeometry(.002,.072,4,12),lighting,0,.056,-.294);
+  light.rotation.z=Math.PI/2;
   light.name='Controller status line';
   const loader=globalThis.document?new T.TextureLoader():null;
   for(const [id,[x,z,size]] of Object.entries(LISBON_KEYS)){
     const isStick=id==='roundabout'||id==='left_or_straight';
     const shoulder=id==='fire_exit'||id==='aed';
     const isDisplay=id==='destination';
-    const geometry=shoulder ? shoulderGeometry(size,.012,x<0?1:-1,mobile)
+    const geometry=shoulder ? shoulderGeometry(size,.008,x<0?1:-1,mobile)
       : isStick ? thumbArtwork(size*.93)
-      : createLisbonSignGeometry(id,size*(isDisplay?1:.93),isDisplay?.0013:.023);
+      : createLisbonSignGeometry(id,size*(isDisplay?1:.93),isDisplay?.0013:.017);
     if(!isStick&&!isDisplay)tintButtonEdges(geometry,shoulder?.76:.44);
     const stick=isStick ? mountThumbStick(create,root,x,z,edgeInk,rubberInk,bezelInk) : undefined;
     const display=isDisplay ? mountDisplay(create,x,z,edgeInk) : undefined;
-    const keyY=FACE_HEIGHT+(shoulder?.018:isDisplay?-.002:isStick?.080:id==='pharma'?.024:.019);
+    const keyY=FACE_HEIGHT+(shoulder?.014:isDisplay?-.002:isStick?.080:id==='pharma'?.021:.015);
     const baseY=isStick ? 0 : keyY-geometry.boundingBox.max.z;
     const ink=isDisplay ? new T.MeshBasicMaterial({color:0xffffff,toneMapped:false,alphaTest:.15})
       : new T.MeshPhysicalMaterial({
@@ -368,7 +375,7 @@ export function createLisbonController({width=.52,mobile=false,onChange=()=>{}}=
   const data={kind:'lisbon-controller',action:'open',href:'/play_lisbon_street?board=1'};
   for(const mesh of pickables)Object.assign(mesh.userData,data);
   return {root,hitSurface,pickables,keys,markPlayed,ready:Promise.all(pending),
-    diagnostics:()=>({kind:'lisbon-controller-original-3d',version:6,width,keys:keys.size,loaded,stickers:[...keys.values()].filter(key=>key.sticker?.visible).map(key=>key.id),closedShell:true,physical:true,palmGrips:grips.length,texturedShell:true,thumbSticks:2,articulatedSticks:2,shoulderControls:4,activeShoulders:2,flushDisplay:true}),
+    diagnostics:()=>({kind:'lisbon-controller-original-3d',version:7,width,keys:keys.size,loaded,stickers:[...keys.values()].filter(key=>key.sticker?.visible).map(key=>key.id),closedShell:true,physical:true,palmGrips:grips.length,texturedShell:true,thumbSticks:2,articulatedSticks:2,shoulderControls:4,activeShoulders:2,flushDisplay:true}),
     dispose(){disposed=true;root.removeFromParent();for(const geometry of geometries)geometry.dispose();for(const material of materials)material.dispose();for(const texture of textures)texture.dispose();}
   };
 }

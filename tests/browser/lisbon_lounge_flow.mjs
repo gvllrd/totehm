@@ -110,7 +110,7 @@ try{
   const projectionFront=world.projection.front;
   check(world.projection.bottom>0&&projectionFront.visibleSigns===22&&projectionFront.headline==='Make them useful for your brain'&&projectionFront.subtitle==='Neurological & Digital Street Art','The suspended screen shows the full Lisbon artwork and its new copy');
   const prop=world.temple.controller;
-  check(prop.texturedShell&&prop.contactShadow&&prop.tableYaw===L.controller.tableYaw&&prop.width===L.controller.width,'The satin controller is grounded on the table and aimed toward the chair');
+  check(prop.texturedShell&&prop.contactShadow&&prop.feet===2&&prop.tableYaw===L.controller.tableYaw&&prop.width===L.controller.width&&prop.width<.24,'The compact satin controller rests on two small feet and faces the chair');
   await pg.screenshot({path:path.join(output,'island.png')});
   await clickPoint(pg,[0,.96,L.seat.position[2]]);
   await pg.waitForFunction(()=>window.__totehm_gallery().seated&&window.__totehm_gallery().camera.position[1]<1.1);
