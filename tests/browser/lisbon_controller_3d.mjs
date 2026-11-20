@@ -33,6 +33,8 @@ try{
     check(Math.abs(shoulders[0].button.position.x+shoulders[1].button.position.x)<1e-8&&Math.abs(shoulders[0].button.position.y-shoulders[1].button.position.y)<1e-8&&Math.abs(shoulders[0].button.position.z-shoulders[1].button.position.z)<1e-8,'The two upper shoulder controls are physically symmetric');
     check([...model.keys.values()].filter(key=>key.id!=='destination').every(key=>{const size=dimensions(key);return size.x>0&&size.y>0&&size.z>0;}),'All physical sign controls retain genuine three-dimensional geometry');
     check(dimensions(model.keys.get('pharma')).x>.12&&dimensions(model.keys.get('destination')).x>.215,'The pharmacy cross and central destination display have visibly larger artwork surfaces');
+    const surrounds=model.root.getObjectsByProperty('name','Circular sign bank');
+    check(surrounds.length===2&&surrounds.every(well=>well.isMesh&&localBounds(model,well).getSize(new Vector3()).x>.23),'Two recessed circular surrounds frame the original banks');
     const display=model.keys.get('destination'),shell=model.root.getObjectByName('Bevelled graphite controller shell');
     check(display.kind==='display'&&display.display?.bezel?.isMesh&&display.display?.glass?.isMesh,'Destination is a distinct embedded display assembly with a physical bezel and glass');
     const screenBounds=localBounds(model,display.button),glassBounds=localBounds(model,display.display.glass),shellBounds=localBounds(model,shell);

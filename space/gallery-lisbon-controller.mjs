@@ -38,8 +38,8 @@ export const LISBON_PLAYED_STICKERS=Object.freeze({
   stop:Object.freeze([0.158,0.218,0.306,11])
 });
 const FACE_HEIGHT=.080;
-const DISPLAY_FRAME={width:.260,depth:.158,radius:.016};
-const DISPLAY_GLASS={width:.248,depth:.146,radius:.012};
+const DISPLAY_FRAME={width:.292,depth:.164,radius:.016};
+const DISPLAY_GLASS={width:.269,depth:.146,radius:.012};
 export function lisbonControllerShot(viewportWidth,viewportHeight){
   return {
     center:[0,.037,.025],pitch:1.20,
@@ -48,37 +48,40 @@ export function lisbonControllerShot(viewportWidth,viewportHeight){
 }
 function outline(){
   const shape=new T.Shape();
-  shape.moveTo(0,.298);
-  shape.bezierCurveTo(.112,.296,.218,.316,.306,.307);
-  shape.bezierCurveTo(.385,.302,.450,.278,.468,.215);
-  shape.bezierCurveTo(.483,.165,.469,.106,.478,.041);
-  shape.bezierCurveTo(.495,-.093,.507,-.235,.468,-.317);
-  shape.bezierCurveTo(.443,-.370,.411,-.386,.382,-.375);
-  shape.bezierCurveTo(.334,-.355,.314,-.303,.272,-.242);
-  shape.bezierCurveTo(.249,-.208,.219,-.199,.173,-.205);
-  shape.bezierCurveTo(.110,-.210,.043,-.226,0,-.220);
-  shape.bezierCurveTo(-.043,-.226,-.110,-.210,-.173,-.205);
-  shape.bezierCurveTo(-.219,-.199,-.249,-.208,-.272,-.242);
-  shape.bezierCurveTo(-.314,-.303,-.334,-.355,-.382,-.375);
-  shape.bezierCurveTo(-.411,-.386,-.443,-.370,-.468,-.317);
-  shape.bezierCurveTo(-.507,-.235,-.495,-.093,-.478,.041);
-  shape.bezierCurveTo(-.469,.106,-.483,.165,-.468,.215);
-  shape.bezierCurveTo(-.450,.278,-.385,.302,-.306,.307);
-  shape.bezierCurveTo(-.218,.316,-.112,.296,0,.298);
+  shape.moveTo(0,.296);
+  shape.bezierCurveTo(.110,.296,.214,.305,.289,.304);
+  shape.bezierCurveTo(.370,.315,.423,.292,.450,.240);
+  shape.bezierCurveTo(.473,.198,.471,.142,.480,.081);
+  shape.bezierCurveTo(.494,-.012,.505,-.128,.494,-.242);
+  shape.bezierCurveTo(.486,-.340,.471,-.418,.427,-.447);
+  shape.bezierCurveTo(.393,-.470,.355,-.451,.332,-.411);
+  shape.bezierCurveTo(.295,-.348,.284,-.277,.258,-.236);
+  shape.bezierCurveTo(.244,-.212,.218,-.204,.173,-.213);
+  shape.bezierCurveTo(.114,-.219,.048,-.219,0,-.219);
+  shape.bezierCurveTo(-.048,-.219,-.114,-.219,-.173,-.213);
+  shape.bezierCurveTo(-.218,-.204,-.244,-.212,-.258,-.236);
+  shape.bezierCurveTo(-.284,-.277,-.295,-.348,-.332,-.411);
+  shape.bezierCurveTo(-.355,-.451,-.393,-.470,-.427,-.447);
+  shape.bezierCurveTo(-.471,-.418,-.486,-.340,-.494,-.242);
+  shape.bezierCurveTo(-.505,-.128,-.494,-.012,-.480,.081);
+  shape.bezierCurveTo(-.471,.142,-.473,.198,-.450,.240);
+  shape.bezierCurveTo(-.423,.292,-.370,.315,-.289,.304);
+  shape.bezierCurveTo(-.214,.305,-.110,.296,0,.296);
   return shape;
 }
 
 // Cross-sections widen under the palm and taper into the rounded tip. The
 // loft remains inside the top silhouette and has a closed underside.
 const GRIP_PROFILE=[
-  {z:-.154,x:.316,y:.044,halfWidth:.042,halfHeight:.020},
-  {z:-.063,x:.345,y:.036,halfWidth:.079,halfHeight:.025},
-  {z:.046,x:.372,y:.026,halfWidth:.094,halfHeight:.034},
-  {z:.146,x:.383,y:.015,halfWidth:.095,halfHeight:.041},
-  {z:.231,x:.392,y:.008,halfWidth:.085,halfHeight:.044},
-  {z:.295,x:.397,y:.012,halfWidth:.066,halfHeight:.035},
-  {z:.340,x:.398,y:.020,halfWidth:.038,halfHeight:.024},
-  {z:.364,x:.396,y:.030,halfWidth:.006,halfHeight:.009}
+  {z:-.171,x:.323,y:.039,halfWidth:.047,halfHeight:.025},
+  {z:-.091,x:.348,y:.027,halfWidth:.079,halfHeight:.039},
+  {z:.023,x:.376,y:.010,halfWidth:.103,halfHeight:.055},
+  {z:.146,x:.393,y:-.003,halfWidth:.104,halfHeight:.067},
+  {z:.248,x:.402,y:-.011,halfWidth:.098,halfHeight:.070},
+  {z:.343,x:.406,y:-.020,halfWidth:.085,halfHeight:.065},
+  {z:.408,x:.406,y:-.024,halfWidth:.062,halfHeight:.052},
+  {z:.443,x:.405,y:-.012,halfWidth:.036,halfHeight:.025},
+  {z:.461,x:.401,y:.001,halfWidth:.004,halfHeight:.004}
 ];
 
 function palmGrip(side,mobile){
@@ -191,10 +194,11 @@ function thumbSurface(radius){return .064+.010*(radius/.061)**2;}
 
 function mountThumbStick(create,root,x,z,edgeInk,rubberInk,bezelInk){
   const ringGeometry=new T.LatheGeometry([
-    [.056,-.005],[.065,-.005],[.069,.001],[.069,.006],[.065,.010],[.057,.010],[.053,.005],[.056,-.005]
+    [.054,-.008],[.071,-.009],[.082,-.005],[.088,.003],[.089,.008],
+    [.086,.016],[.079,.022],[.071,.025],[.064,.023],[.058,.018],[.053,.009],[.054,-.008]
   ].map(([r,y])=>new T.Vector2(r,y)),56);
   const socket=create(ringGeometry,edgeInk,x,FACE_HEIGHT,z);
-  socket.name='Thumbstick socket';
+  socket.name='Rounded thumbstick well';
   const bootGeometry=new T.LatheGeometry([
     [0,0],[.056,0],[.061,.005],[.055,.007],[.049,.006],[.050,.010],[.044,.014],
     [.040,.013],[.041,.017],[.032,.022],[.027,.020],[.026,.024],[.013,.030],[0,.030]
@@ -239,33 +243,96 @@ function higherStickerGeometry(key,placement,edge=false){
   return geometry;
 }
 
+function rollGripEnds(geometry){
+  const position=geometry.getAttribute('position'),normal=geometry.getAttribute('normal'),uv=geometry.getAttribute('uv');
+  const positions=[],normals=[],uvs=[];
+  const start=.319,rollDepth=.058,span=.137,steps=6;
+  const cuts=Array.from({length:steps+1},(_,i)=>-start-span*i/steps);
+  const v=new T.Vector3();
+  function read(i){
+    return [position.getX(i),position.getY(i),position.getZ(i),normal.getX(i),normal.getY(i),normal.getZ(i),uv.getX(i),uv.getY(i)];
+  }
+  function write([x,y,z,nx,ny,nz,u,w]){
+    const t=T.MathUtils.clamp((-y-start)/span,0,1),slope=rollDepth*6*t*(1-t)/span;
+    positions.push(x,y,z-rollDepth*t*t*(3-2*t));
+    v.set(nx,ny-nz*slope,nz).normalize();normals.push(v.x,v.y,v.z);
+    uvs.push(u,w);
+  }
+  // Slice the cap before bending so the face stays flat under the original keys.
+  function split(polygon,cut){
+    const upper=[],lower=[];
+    let from=polygon[polygon.length-1],above=from[1]>=cut;
+    for(const to of polygon){
+      const nextAbove=to[1]>=cut;
+      if(above!==nextAbove){
+        const amount=(cut-from[1])/(to[1]-from[1]);
+        const hit=from.map((value,axis)=>T.MathUtils.lerp(value,to[axis],amount));
+        hit[1]=cut;upper.push(hit);lower.push(hit);
+      }
+      (nextAbove?upper:lower).push(to);from=to;above=nextAbove;
+    }
+    return [upper,lower];
+  }
+  const groups=geometry.groups.slice();geometry.clearGroups();
+  for(const group of groups){
+    const first=positions.length/3;
+    for(let i=group.start;i<group.start+group.count;i+=3){
+      const triangle=[read(i),read(i+1),read(i+2)];
+      const nearest=Math.max(triangle[0][1],triangle[1][1],triangle[2][1]);
+      const furthest=Math.min(triangle[0][1],triangle[1][1],triangle[2][1]);
+      let polygons=[triangle];
+      for(const cut of cuts){
+        if(cut<=furthest||cut>=nearest)continue;
+        polygons=polygons.flatMap(polygon=>
+          polygon.some(point=>point[1]<cut)&&polygon.some(point=>point[1]>cut)?split(polygon,cut):[polygon]);
+      }
+      for(const polygon of polygons){
+        for(let j=1;j+1<polygon.length;j++){write(polygon[0]);write(polygon[j]);write(polygon[j+1]);}
+      }
+    }
+    geometry.addGroup(first,positions.length/3-first,group.materialIndex);
+  }
+  geometry.setAttribute('position',new T.Float32BufferAttribute(positions,3));
+  geometry.setAttribute('normal',new T.Float32BufferAttribute(normals,3));
+  geometry.setAttribute('uv',new T.Float32BufferAttribute(uvs,2));
+}
+
 export function createLisbonController({width=.52,mobile=false,onChange=()=>{}}={}){
   const root=new T.Group();root.name='Lisbon · original street controller';root.scale.setScalar(width);
   const materials=new Set(),geometries=new Set(),textures=new Set(),keys=new Map(),pending=[];
   let loaded=0,disposed=false;
   const grain=moldedGrain();textures.add(grain);
-  const shellInk=new T.MeshPhysicalMaterial({color:0x232832,roughness:.53,metalness:.12,clearcoat:.21,clearcoatRoughness:.38,bumpMap:grain,bumpScale:.0008});
-  const edgeInk=new T.MeshPhysicalMaterial({color:0x14181f,roughness:.58,metalness:.12});
-  const gripInk=new T.MeshPhysicalMaterial({color:0x0f131a,roughness:.76,metalness:.03,bumpMap:grain,bumpScale:.0017});
+  const shellInk=new T.MeshPhysicalMaterial({color:0x202226,roughness:.54,metalness:.10,clearcoat:.23,clearcoatRoughness:.36,bumpMap:grain,bumpScale:.0008});
+  const edgeInk=new T.MeshPhysicalMaterial({color:0x16181d,roughness:.56,metalness:.12});
+  const gripInk=new T.MeshPhysicalMaterial({color:0x15171c,roughness:.72,metalness:.03,bumpMap:grain,bumpScale:.0019});
   const rubberInk=new T.MeshPhysicalMaterial({color:0x151b24,roughness:.70,metalness:.03,bumpMap:grain,bumpScale:.0017});
   const bezelInk=new T.MeshPhysicalMaterial({color:0x3b4958,roughness:.36,metalness:.42});
-  const lighting=new T.MeshBasicMaterial({color:0x8aacd6,toneMapped:false});
-  for(const ink of [shellInk,edgeInk,gripInk,rubberInk,bezelInk,lighting])materials.add(ink);
+  const lighting=new T.MeshBasicMaterial({color:0x5479b3,toneMapped:false});
+  const padInk=new T.MeshPhysicalMaterial({color:0x15171b,roughness:.58,metalness:.08,clearcoat:.13,bumpMap:grain,bumpScale:.0007});
+  for(const ink of [shellInk,edgeInk,gripInk,rubberInk,bezelInk,lighting,padInk])materials.add(ink);
   const create=(geometry,material,x,y,z)=>{geometries.add(geometry);materials.add(material);const mesh=new T.Mesh(geometry,material);mesh.position.set(x,y,z);root.add(mesh);return mesh;};
   function shell(material,y,depth,bevel,scale,shape=outline()){
-    const mesh=create(new T.ExtrudeGeometry(shape,{depth,curveSegments:mobile?10:24,bevelEnabled:true,bevelThickness:bevel,bevelSize:bevel,bevelSegments:mobile?2:4}),material,0,y,0);
+    const geometry=new T.ExtrudeGeometry(shape,{depth,curveSegments:mobile?10:24,bevelEnabled:true,bevelThickness:bevel,bevelSize:bevel,bevelSegments:mobile?2:4});
+    rollGripEnds(geometry);
+    const mesh=create(geometry,material,0,y,0);
     mesh.rotation.x=-Math.PI/2;mesh.scale.set(scale,scale,1);return mesh;
   }
-  const lower=shell(edgeInk,.027,.024,.014,.964);
-  const belt=shell(bezelInk,.054,.0018,.0016,.993);
+  const lower=shell(edgeInk,.017,.033,.014,.949);
   const faceShape=outline(),faceScale=.986,displayZ=LISBON_KEYS.destination[1];
   faceShape.holes.push(roundedPanel({width:DISPLAY_FRAME.width/faceScale,depth:DISPLAY_FRAME.depth/faceScale,radius:DISPLAY_FRAME.radius/faceScale},0,-displayZ/faceScale));
   const face=shell(shellInk,.061,.010,.009,faceScale,faceShape);
-  lower.name='Radiused controller underside';belt.name='Controller shell joint';face.name='Bevelled graphite controller shell';
+  lower.name='Radiused controller underside';face.name='Bevelled graphite controller shell';
   const grips=[-1,1].map(side=>{
     const mesh=create(palmGrip(side,mobile),gripInk,0,0,0);
     mesh.name=side<0?'Left sculpted palm grip':'Right sculpted palm grip';
     return mesh;
+  });
+  // Low circular surrounds give each bank a rounded shoulder without relocating its signs.
+  const banks=[[-.343,-.055,.120,.124],[.345,-.054,.119,.134]].map(([x,z,rx,rz])=>{
+    const well=create(new T.LatheGeometry([
+      [0,0],[.95,0],[1,.0015],[.983,.003],[.94,.004],[0,.004]
+    ].map(([r,y])=>new T.Vector2(r,y)),mobile?32:56),padInk,x,FACE_HEIGHT-.001,z);
+    well.scale.set(rx,1,rz);well.name='Circular sign bank';return well;
   });
   const hitGeometry=new T.ShapeGeometry(outline(),mobile?10:24);
   const hitSurface=create(hitGeometry,new T.MeshBasicMaterial({visible:false,side:T.DoubleSide}),0,.075,0);
@@ -280,7 +347,7 @@ export function createLisbonController({width=.52,mobile=false,onChange=()=>{}}=
     trigger.rotation.set(.19,0,Math.PI/2);trigger.scale.set(.84,1,1.16);trigger.name='Sculpted rear trigger paddle';
     shoulderMounts.push(mount,trigger);
   }
-  const light=create(new T.CapsuleGeometry(.002,.072,4,12),lighting,0,.056,-.294);
+  const light=create(new T.CapsuleGeometry(.00095,.174,4,12),lighting,0,FACE_HEIGHT+.001,-.215);
   light.rotation.z=Math.PI/2;
   light.name='Controller status line';
   const loader=globalThis.document?new T.TextureLoader():null;
@@ -371,11 +438,11 @@ export function createLisbonController({width=.52,mobile=false,onChange=()=>{}}=
 
   root.userData.kind='lisbon-controller';
   root.userData.faceCorners=[[-.54,FACE_HEIGHT,-.34],[.54,FACE_HEIGHT,-.34],[.54,FACE_HEIGHT,.39],[-.54,FACE_HEIGHT,.39]];
-  const pickables=[lower,belt,face,hitSurface,...grips,...shoulderMounts,...[...keys.values()].map(key=>key.button)];
+  const pickables=[lower,face,hitSurface,...grips,...banks,...shoulderMounts,...[...keys.values()].map(key=>key.button)];
   const data={kind:'lisbon-controller',action:'open',href:'/play_lisbon_street?board=1'};
   for(const mesh of pickables)Object.assign(mesh.userData,data);
   return {root,hitSurface,pickables,keys,markPlayed,ready:Promise.all(pending),
-    diagnostics:()=>({kind:'lisbon-controller-original-3d',version:7,width,keys:keys.size,loaded,stickers:[...keys.values()].filter(key=>key.sticker?.visible).map(key=>key.id),closedShell:true,physical:true,palmGrips:grips.length,texturedShell:true,thumbSticks:2,articulatedSticks:2,shoulderControls:4,activeShoulders:2,flushDisplay:true}),
+    diagnostics:()=>({kind:'lisbon-controller-original-3d',version:8,width,keys:keys.size,loaded,stickers:[...keys.values()].filter(key=>key.sticker?.visible).map(key=>key.id),closedShell:true,physical:true,palmGrips:grips.length,roundBanks:banks.length,texturedShell:true,thumbSticks:2,articulatedSticks:2,shoulderControls:4,activeShoulders:2,flushDisplay:true}),
     dispose(){disposed=true;root.removeFromParent();for(const geometry of geometries)geometry.dispose();for(const material of materials)material.dispose();for(const texture of textures)texture.dispose();}
   };
 }

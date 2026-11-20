@@ -39,7 +39,9 @@ try{
   assert.deepEqual(item.root.getWorldScale(new T.Vector3()).toArray().map(value=>Math.round(value*1e6)/1e6),[1,1,1]);
  }
  const controllerBounds=new T.Box3().setFromObject(controller.root,true).getSize(new T.Vector3());
- assert.ok(controllerBounds.x>.21&&controllerBounds.x<.245&&controllerBounds.y<.06,'the slim tabletop controller retains a handheld scale');
+ assert.ok(controllerBounds.x>.21&&controllerBounds.x<.245&&controllerBounds.y<.072,'the slim tabletop controller retains a handheld scale');
+ assert.equal(world.controller.roundBanks,2);
+ assert.ok(controllerBounds.z>.20,'the rounded grips extend beyond the bridge at handheld scale');
  const feet=lounge.root.getObjectsByProperty('name','Controller rubber foot');
  assert.equal(feet.length,2);
  for(const foot of feet){
