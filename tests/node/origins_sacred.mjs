@@ -3,9 +3,10 @@ let checks=0;const check=(v,m)=>{assert(v,m);checks++;};
 for(const mobile of [false,true]){
  const scene=new T.Scene(),room=createOriginsVessel(scene,{mobile,bookOnly:true}),d=room.diagnostics();let intentions=0,books=0;
  room.root.traverse(o=>{if(o.userData.intention)intentions++;if(o.name==='Shared original Origins cover'||o.name==='Origins — closed black cover')books++;});
- check(intentions===0,'No intention line remains on the walkway or in the chamber');
+ check(intentions===0,'No intention line remains on the walkway or on the platform');
  check(d.walkway.intentions===0&&d.chamber.intentions===0,'Architectural intention counts are zero');
- check(d.walkway.openAir&&room.root.getObjectByName('Origins exposed walkway deck'),'An open deck joins the saucer to the sacred chamber');
+ check(d.walkway.openAir&&room.root.getObjectByName('Origins exposed walkway deck'),'An open deck joins the saucer to the platform');
+ check(d.chamber.openAir&&!d.chamber.closedCeiling,'The original volume is displayed directly under the stars');
  check(books===1&&d.chamber.originalWorks===0,'One physical original volume is the only exhibited object');
  check(d.book.dimensions.join(',')==='0.7,0.08,0.98'&&d.book.coverRatio===5/7,'Physical cover dimensions and enlargement proportions remain exact');
  check(d.book.coverIntentions===7&&d.book.neonTraces,'The seven luminous intentions belong to the book only');

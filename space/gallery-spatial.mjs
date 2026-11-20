@@ -39,7 +39,7 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
  const cockpit=createSaucerCockpit(camera);if(cockpit)scene.add(camera);
  let vessel=null,vesselMode='island',rail=null,seated=false,seatMove=null,gateGeneration=0,streetAccess={state:'idle',owned:false},portalAt=null;
  const invalidate=()=>{dirty=true;};
- const landscape=createTempleLandscape(scene,renderer,{mobile,onChange:invalidate,place});
+ const landscape=createTempleLandscape(scene,renderer,{mobile,onChange:invalidate});
  architecture=(newYork?ny[0].createNewYorkGallery:createModernGallery)(scene,renderer,{mobile,onChange:invalidate});
  if(newYork){
   const {createLiberty}=await import('./gallery-liberty.mjs');

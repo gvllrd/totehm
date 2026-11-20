@@ -6,9 +6,12 @@ import {createLecternBook} from './gallery-lectern-book.mjs';
 const frozen=value=>{if(value&&typeof value==='object'){Object.values(value).forEach(frozen);Object.freeze(value);}return value;};
 export const ORIGINS_VESSEL_LAYOUT=frozen({
  saucer:[0,20,-4.2],radius:10.2,floorY:20,
- walkway:[[-13.9,1.45,20.11],[-15.3,2.45,20],[-18,3.2,20],[-29.6,3.2,20],[-32.5,2.2,20],[-33.7,2.2,20]],
+ walkway:[[-13.9,1.45,20.11],[-15.3,1.8,20],[-31.8,1.8,20],[-36.6,2.1,20]],
+ stairs:[[-36.54,-37.14,20.18],[-37.14,-37.74,20.36],[-37.74,-38.34,20.54],[-38.34,-39.55,20.72]],
+ platform:{centerZ:-43,radius:4.65,height:20.72},
+
  chamber:{center:[0,20,-43],radius:10.5,wallHeight:9},
- bookPosition:[0,21.34,-43],bookApproach:[0,21.65,-39],
+ bookPosition:[0,22.06,-43],bookApproach:[0,22.37,-40.5],
  outbound:[[0,1.65,13],[0,8.5,11],[0,15.8,5.5],[0,16,-4.2],[0,21.65,-4.2],[0,21.65,-16],[0,21.65,-28],[0,21.65,-35.5],[0,21.65,-39]],
  targets:[[0,20,-4.2],[0,20,-4.2],[0,19,-4.2],[.3,22.2,-4.7],[0,21.8,-14],[0,22,-35],[0,22,-43],[0,21.7,-43],[0,21.34,-43]],
  return:[[0,21.65,-39],[0,21.65,-28],[0,21.65,-16],[0,21.65,-5],[0,21.65,-4.2],[0,16,-4.2],[0,15.8,5.5],[0,8.5,11],[0,1.65,13]],
@@ -18,7 +21,7 @@ const L=ORIGINS_VESSEL_LAYOUT;
 
 const hullTop=[[0,.72],[1.9,.78],[3.6,.72],[5.4,.57],[7.8,.30],[9.85,.08],[L.radius,0]];
 const cabinRadius=2.95,cabinHeight=.80,doorHalfWidth=2.3;
-const daisSteps=[[2.7,.10,20.05],[2.15,.14,20.15],[1.6,.1,20.27]];
+const stairHalfWidth=2.1;
 const lerp=T.MathUtils.lerp;
 
 export function originsWalkHeight(x,z){
@@ -36,18 +39,18 @@ export function originsWalkHeight(x,z){
   if(Math.abs(x)<lerp(w0,w1,t)-.16)height=Math.max(height??-Infinity,lerp(y0,y1,t));
   break;
  }
- const chamberRadius=Math.hypot(x,z-L.chamber.center[2]);
- if(chamberRadius<1.05)return null;
- if(chamberRadius<L.chamber.radius-.32){
-  const step=daisSteps.findLast(([r])=>chamberRadius<=r);
-  height=Math.max(height??-Infinity,step?step[2]+step[1]/2:L.floorY);
+ if(Math.abs(x)<stairHalfWidth-.16){
+  for(const [front,back,top] of L.stairs)if(z<=front&&z>=back)height=Math.max(height??-Infinity,top);
  }
+ const distanceToBook=Math.hypot(x,z-L.platform.centerZ);
+ if(distanceToBook<1.05)return null;
+ if(distanceToBook<L.platform.radius-.16)height=Math.max(height??-Infinity,L.platform.height);
  return height;
 }
 
-// The open deck connects the parked saucer to the enclosed book sanctuary.
+// The path climbs to a platform suspended under the same sky as the islands.
 export function createOriginsVessel(scene,{mobile=false,onChange=()=>{},onOpen=()=>{},transitOnly=false,bookOnly=false}={}){
- const root=new T.Group();root.name='ORIGINS — vessel, open walkway and closed chamber';scene.add(root);
+ const root=new T.Group();root.name='ORIGINS — saucer and walkway to the book';scene.add(root);
  const geometries=new Set(),materials=new Set(),textures=new Set(),pickables=[],solids=[],lights=[];
  const geometry=g=>(geometries.add(g),g),material=m=>(materials.add(m),m);
  let disposed=false,dirty=true,loadedWorks=0,failedWorks=0,time=0,updates=0;
@@ -142,7 +145,7 @@ export function createOriginsVessel(scene,{mobile=false,onChange=()=>{},onOpen=(
   return mesh(walkway,shape,finish,[0,0,0],name,solid);
  }
  const walkingMetal=material(new T.MeshStandardMaterial({color:0x202934,roughness:.76,metalness:.34}));
- const edge=material(new T.MeshBasicMaterial({color:0x667888,toneMapped:false}));
+ const edge=material(new T.MeshBasicMaterial({color:0x788799,toneMapped:false}));
  const bridge=walkwayStrip((z,w,y)=>[-w,y,z],(z,w,y)=>[w,y,z],'Origins exposed walkway deck',walkingMetal,true);
  for(const side of [-1,1]){
   walkwayStrip((z,w,y)=>[side*w,y-.14,z],(z,w,y)=>[side*w,y,z],'Origins deck fascia',black);
@@ -150,29 +153,49 @@ export function createOriginsVessel(scene,{mobile=false,onChange=()=>{},onOpen=(
  }
  const dockLight=new T.PointLight(0xbacde0,36,20,2);dockLight.position.set(0,24,-15);root.add(dockLight);lights.push(dockLight);
 
- // The ceremony room keeps a single real doorway and a continuous ceiling.
- const chamber=new T.Group();chamber.name='ORIGINS — enclosed chamber';root.add(chamber);
- const centerZ=L.chamber.center[2],radius=L.chamber.radius,opening=Math.asin(doorHalfWidth/radius);
- const floor=mesh(chamber,geometry(new T.CircleGeometry(radius,mobile?96:144)),black,[0,20,centerZ],'Origins chamber closed black floor',true);floor.rotation.x=-Math.PI/2;
- mesh(chamber,geometry(new T.CylinderGeometry(radius,radius,4.8,mobile?96:144,1,true,opening,Math.PI*2-opening*2)),black,[0,22.4,centerZ],'Origins chamber wall — real corridor doorway',true);
- mesh(chamber,geometry(new T.CylinderGeometry(radius,radius,4.2,mobile?96:144,1,true)),black,[0,26.9,centerZ],'Origins chamber continuous upper wall',true);
- const ceiling=mesh(chamber,geometry(new T.SphereGeometry(radius,mobile?64:96,32,0,Math.PI*2,0,Math.PI/2)),black,[0,29,centerZ],'ORIGINS — closed chamber ceiling',true,[1,.36,1]);ceiling.userData.closedCeiling=true;
- ring(chamber,radius-.06,.018,20.06,centerZ,white,'Origins chamber quiet floor perimeter');
- ring(chamber,radius-.04,.02,28.94,centerZ,white,'Origins chamber crown perimeter');
- for(const x of [-doorHalfWidth,doorHalfWidth])block(chamber,black,[x,22.4,centerZ+Math.sqrt(radius*radius-x*x)],[.12,4.8,.16],'Origins chamber entrance jamb',true);
- if(!bookOnly)label(chamber,'ORIGINS',[0,26.5,centerZ-radius+.07],5.4,.52);
-
- // Physical edition book at the terminus, isolated by a low circular dais.
- const dais=daisSteps.map(([r,h,y])=>mesh(chamber,geometry(new T.CylinderGeometry(r,r,h,mobile?64:96)),black,[0,y,centerZ],'Origins ceremonial concentric dais',true));
- const plinth=block(chamber,black,[0,20.74,centerZ],[.78,1.0,.78],'ORIGINS — ceremonial book plinth',true);
- const slab=block(chamber,bookOnly?black:silver,[0,21.22,centerZ],[1.2,.10,1.1],'Origins ceremonial reading slab',true);slab.rotation.x=Math.PI/10;
- ring(chamber,2.69,.012,20.11,centerZ,white,'Origins book dais fine highlight');
- const book=createLecternBook(chamber,{mobile,onChange:changed,onOpen,layout:{origins:{book:L.bookPosition}}});
+ const sanctuary=new T.Group();sanctuary.name=bookOnly?'ORIGINS — open book platform':'ORIGINS — enclosed chamber';root.add(sanctuary);
+ const {centerZ,radius:platformRadius,height:platformY}=L.platform;
+ const radius=bookOnly?platformRadius:L.chamber.radius,opening=Math.asin(doorHalfWidth/radius),lift=bookOnly?platformY-L.floorY:0;
+ const bookPosition=[0,L.bookPosition[1]-(bookOnly?0:platformY-L.floorY),centerZ];
+ const floorY=L.floorY+lift;
+ const floor=mesh(sanctuary,geometry(new T.CylinderGeometry(radius,radius-.18,.28,mobile?80:128)),walkingMetal,[0,floorY-.14,centerZ],'Origins suspended platform',true);
+ const steps=[];
+ if(bookOnly){
+  for(const [front,back,top] of L.stairs){
+   const bottom=L.floorY-.12;
+   steps.push(block(sanctuary,walkingMetal,[0,(bottom+top)/2,(front+back)/2],[stairHalfWidth*2,top-bottom,front-back+.008],'Origins stair tread',true));
+   block(sanctuary,edge,[0,top+.002,front-.028],[stairHalfWidth*2-.16,.004,.034],'Origins recessed light on stair nosing');
+  }
+  ring(sanctuary,radius-.08,.012,floorY+.014,centerZ,edge,'Origins subtle platform edge');
+ }else{
+  mesh(sanctuary,geometry(new T.CylinderGeometry(radius,radius,4.8,mobile?96:144,1,true,opening,Math.PI*2-opening*2)),black,[0,22.4,centerZ],'Origins chamber wall',true);
+  mesh(sanctuary,geometry(new T.CylinderGeometry(radius,radius,4.2,mobile?96:144,1,true)),black,[0,26.9,centerZ],'Origins chamber continuous upper wall',true);
+  mesh(sanctuary,geometry(new T.SphereGeometry(radius,mobile?64:96,32,0,Math.PI*2,0,Math.PI/2)),black,[0,29,centerZ],'ORIGINS — closed chamber ceiling',true,[1,.36,1]);
+  label(sanctuary,'ORIGINS',[0,26.5,centerZ-radius+.07],5.4,.52);
+ }
+ // Light moves across the base and cover while the original book stays on its lectern.
+ mesh(sanctuary,geometry(new T.CylinderGeometry(.98,1.05,.12,80)),black,[0,floorY+.06,centerZ],'Origins pedestal foot',true);
+ block(sanctuary,black,[0,20.66+lift,centerZ],[.78,1.16,.78],'ORIGINS — ceremonial book plinth',true);
+ const slab=block(sanctuary,bookOnly?black:silver,[0,21.22+lift,centerZ],[1.2,.10,1.1],'Origins ceremonial reading slab',true);slab.rotation.x=Math.PI/10;
+ const pedestalTime={value:0},pedestalLight={value:.55};
+ if(bookOnly){
+  const lightTrace=material(new T.ShaderMaterial({transparent:true,depthWrite:false,blending:T.AdditiveBlending,toneMapped:false,
+   uniforms:{uTime:pedestalTime,uPresence:pedestalLight},
+   vertexShader:'varying vec2 vFloor;void main(){vFloor=position.xy;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
+   fragmentShader:`varying vec2 vFloor;uniform float uTime,uPresence;
+    void main(){float a=atan(vFloor.y,vFloor.x);float glow=pow(.5+.5*cos(a-uTime*.38),8.)+.38*pow(.5+.5*cos(a+uTime*.24+2.5),10.);
+     gl_FragColor=vec4(mix(vec3(.34,.64,.87),vec3(.95,.86,.67),glow*.63),(.06+.68*glow)*uPresence);
+     #include <colorspace_fragment>
+    }`
+  }));
+  const trace=mesh(sanctuary,geometry(new T.RingGeometry(1.43,1.48,96)),lightTrace,[0,floorY+.017,centerZ],'Animated light surrounding the Origins pedestal');trace.rotation.x=-Math.PI/2;
+ }
+ const book=createLecternBook(sanctuary,{mobile,onChange:changed,onOpen,layout:{origins:{book:bookPosition}}});
  for(const object of book.pickables){object.userData={...object.userData,kind:'origins-vessel-book',href:'/origins?open=1'};pickables.push(object);}
  const artWidth=1.85;
  (bookOnly?[]:ORIGINS).forEach((work,n)=>{
   const a=opening+.10+(Math.PI*2-opening*2-.2)*(n+.5)/ORIGINS.length,r=radius-.18,x=Math.sin(a)*r,z=centerZ+Math.cos(a)*r,group=new T.Group();
-  group.name='Origins chamber work — '+work.title;group.position.set(x,24.25,z);group.rotation.y=a+Math.PI;chamber.add(group);
+  group.name='Origins chamber work — '+work.title;group.position.set(x,24.25,z);group.rotation.y=a+Math.PI;sanctuary.add(group);
   const artHeight=artWidth/work.aspect;
   block(group,black,[0,0,-.055],[artWidth+.08,artHeight+.08,.10],'Origins slim black frame — '+work.id,true);
   let map=null;if(globalThis.document?.createElementNS){map=new T.TextureLoader().load(work.src,loaded=>{if(disposed)return;const image=loaded.image,maxWidth=mobile?256:512;if(image.width>maxWidth){const canvas=document.createElement('canvas');canvas.width=maxWidth;canvas.height=Math.round(maxWidth*image.height/image.width);canvas.getContext('2d').drawImage(image,0,0,canvas.width,canvas.height);loaded.image=canvas;loaded.needsUpdate=true;}loadedWorks++;changed();},undefined,()=>{if(disposed)return;failedWorks++;changed();});map.colorSpace=T.SRGBColorSpace;map.anisotropy=4;textures.add(map);}
@@ -182,21 +205,29 @@ export function createOriginsVessel(scene,{mobile=false,onChange=()=>{},onOpen=(
   label(group,work.title,[0,-artHeight/2-.24,.015],artWidth,.18);
  });
  if(!bookOnly){
-  pick(block(chamber,black,[0,21.35,centerZ+radius-.15],[2.2,.62,.08],'Origins return portal'),'origins-vessel-return',{action:'return',href:'/lisbon-space'});
-  const returnLabel=label(chamber,'RETURN TO THE SAUCER',[0,21.35,centerZ+radius-.20],2.05,.22,{rotationY:Math.PI});
+  pick(block(sanctuary,black,[0,21.35,centerZ+radius-.15],[2.2,.62,.08],'Origins return portal'),'origins-vessel-return',{action:'return',href:'/lisbon-space'});
+  const returnLabel=label(sanctuary,'RETURN TO THE SAUCER',[0,21.35,centerZ+radius-.20],2.05,.22,{rotationY:Math.PI});
   if(returnLabel)pick(returnLabel,'origins-vessel-return',{action:'return',href:'/lisbon-space'});
  }
- for(const [p,target,power] of [[[0,27,-40],[0,21,-43],150],[[-6,26,-39],[0,21,-43],70],[[6,26,-47],[0,21,-43],70]]){
-  const light=new T.SpotLight(bookOnly?0xffe7c2:0xd7e5ef,bookOnly?(power===150?230:8):power,24,bookOnly?.23:.65,.8,2);light.position.set(...p);light.target.position.set(...target);chamber.add(light,light.target);lights.push(light);
- }
- const ambient=new T.PointLight(0xb8c9dd,bookOnly?4:25,25,2);ambient.position.set(0,26,-43);chamber.add(ambient);lights.push(ambient);
+ const key=new T.SpotLight(0xffdfad,335,18,.33,.76,2);key.position.set(-1.2,floorY+5.65,centerZ+2);
+ key.target.position.set(0,bookPosition[1],centerZ);sanctuary.add(key,key.target);lights.push(key);
+ const rim=new T.SpotLight(0xa9d4ff,185,17,.39,.82,2);rim.position.set(2.65,floorY+3.1,centerZ-2.1);
+ rim.target.position.copy(key.target.position);sanctuary.add(rim,rim.target);lights.push(rim);
+ const landingLight=new T.PointLight(0xa0bdd9,47,12,2);landingLight.position.set(0,floorY+2.1,centerZ+3.6);sanctuary.add(landingLight);lights.push(landingLight);
+ const bookCenter=new T.Vector3();
  changed();
  let returnFlying=false;
- return{root,pickables,solids,book,journey:L,walkSurfaces:[deck,hull,bridge,floor,...dais],
+ return{root,pickables,solids,book,journey:L,walkSurfaces:[deck,hull,bridge,floor,...steps],
   setFlight(eye){returnFlying=true;saucer.position.set(eye.x-root.position.x,eye.y-root.position.y-1.65,eye.z-root.position.z);beamMaterial.visible=false;changed();},
   resetFlight(){returnFlying=false;saucer.position.set(...L.saucer);beamMaterial.visible=true;changed();},
-  update(dt,eye,motion=true){if(disposed)return false;const step=Math.max(0,Math.min(Number(dt)||0,.1)),canopyChanged=updateShip(step,eye,motion,returnFlying);if(motion){time+=step;updates++;beamMaterial.uniforms.uTime.value=time;}const bookChanged=book.update(dt,eye,motion),result=dirty||canopyChanged||bookChanged||!!(motion&&step>0);dirty=false;return result;},
-  diagnostics:()=>({kind:'origins-flying-saucer-destination',ready:!disposed,saucer:true,rotation:spinner.rotation.y,canopy:canopyState(),rotationDegreesPerSecond:.065*180/Math.PI,saucerRadius:L.radius,saucerPosition:saucer.getWorldPosition(new T.Vector3()).toArray(),flying:returnFlying,parked:!returnFlying,metallicDisk:true,closedCanopy:canopyTravel===0,blueBeam:true,walkway:{openAir:true,startZ:L.walkway[0][0],endZ:L.walkway.at(-1)[0],width:2*L.walkway[2][1],intentions:0},chamber:{closed:true,realDoorway:true,closedCeiling:true,center:[...L.chamber.center],radius,wallHeight:L.chamber.wallHeight,originalWorks:bookOnly?0:ORIGINS.length,intentions:0,loadedWorks,failedWorks,bookPosition:[...L.bookPosition],bookApproach:[...L.bookApproach]},book:book.diagnostics(),cameraJourney:true,bodyPhysicsRequired:false,originalMedia:true,workTextureMaximumWidth:mobile?256:512,updates,time,disposed}),
+  update(dt,eye,motion=true){if(disposed)return false;const step=Math.max(0,Math.min(Number(dt)||0,.1)),canopyChanged=updateShip(step,eye,motion,returnFlying);if(motion){time+=step;updates++;beamMaterial.uniforms.uTime.value=time;}if(bookOnly){
+   book.root.getWorldPosition(bookCenter);
+   const presence=1-T.MathUtils.smoothstep(eye.distanceTo(bookCenter),3,22),target=.46+presence*.54;
+   pedestalTime.value=time;pedestalLight.value=motion?T.MathUtils.damp(pedestalLight.value,target,2.4,step):target;
+   key.intensity=(225+135*pedestalLight.value)*(motion?1+.105*Math.sin(time*.46):1);
+   rim.intensity=(105+88*pedestalLight.value)*(motion?1+.15*Math.sin(time*.62+1.4):1);
+  }const bookChanged=book.update(dt,eye,motion),result=dirty||canopyChanged||bookChanged||!!(motion&&step>0);dirty=false;return result;},
+  diagnostics:()=>({kind:'origins-flying-saucer-destination',ready:!disposed,saucer:true,rotation:spinner.rotation.y,canopy:canopyState(),rotationDegreesPerSecond:.065*180/Math.PI,saucerRadius:L.radius,saucerPosition:saucer.getWorldPosition(new T.Vector3()).toArray(),flying:returnFlying,parked:!returnFlying,metallicDisk:true,closedCanopy:canopyTravel===0,blueBeam:true,walkway:{openAir:true,startZ:L.walkway[0][0],endZ:L.walkway.at(-1)[0],width:2*L.walkway[2][1],steps:bookOnly?L.stairs.length:0,intentions:0},chamber:{openAir:bookOnly,closed:!bookOnly,realDoorway:!bookOnly,closedCeiling:!bookOnly,center:[0,floorY,centerZ],radius,originalWorks:bookOnly?0:ORIGINS.length,intentions:0,loadedWorks,failedWorks,bookPosition:[...bookPosition],bookApproach:[...L.bookApproach],lightAnimation:bookOnly},book:book.diagnostics(),cameraJourney:true,bodyPhysicsRequired:false,originalMedia:true,workTextureMaximumWidth:mobile?256:512,updates,time,disposed}),
   dispose(){if(disposed)return;disposed=true;book.dispose();root.removeFromParent();for(const g of geometries)g.dispose();for(const m of materials)m.dispose();for(const t of textures)t.dispose();for(const light of lights)light.dispose?.();dots.dispose();segments.dispose();root.clear();}
  };
 }

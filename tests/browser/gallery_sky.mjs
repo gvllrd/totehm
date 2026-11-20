@@ -72,6 +72,21 @@ try{
     check(samples.meteor.sky.meteor,'a meteor appears in the animated sky on desktop');
     await pg.screenshot({path:OUT+'/meteor-'+viewport.width+'.png'});
    }
+   if(viewport.width>=650){
+    const catalogue=[];
+    for(const path of ['/lisbon-space','/new-york','/origin']){
+     await pg.goto(origin+path);
+     await pg.waitForFunction(()=> {
+      const scene=window.__totehm_origin?.()??window.__totehm_gallery?.();
+      return scene?.frames>0&&scene.sky?.fullSphere;
+     },null,{timeout:90000});
+     catalogue.push(await pg.evaluate(()=>{
+      const {catalogue,stars,stellarColours,moonDirection,galacticNormal,shootingStars}=(window.__totehm_origin?.()??window.__totehm_gallery()).sky;
+      return {catalogue,stars,stellarColours,moonDirection,galacticNormal,shootingStars};
+     }));
+    }
+    check(catalogue.every(sky=>JSON.stringify(sky)===JSON.stringify(catalogue[0])),'Lisbon, New York and Origins use the same celestial sphere');
+   }
    check(!log.errors.some(e=>e.startsWith('pageerror:')),'no application JavaScript errors at '+viewport.width+': '+log.errors.join(' | '));
    results.push({viewport,samples,log});
   }catch(error){

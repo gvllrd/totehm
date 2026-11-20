@@ -10,6 +10,7 @@ try{for(const viewport of [{width:1440,height:1000},{width:390,height:844}]){con
  await pg.screenshot({path:out+'/'+viewport.width+'-saucer.png',timeout:90000});
  await pg.locator('#origin-action').click();await pg.waitForFunction(()=>__totehm_origin().stage==='chamber');
  const d=await pg.evaluate(()=>__totehm_origin());check(d.book.closed&&d.exhibitedWorks===0&&d.vessel.chamber.originalWorks===0,'Only the original closed book is exhibited at '+viewport.width);
+ check(d.vessel.chamber.openAir&&d.vessel.walkway.steps===4,'The book stands at the top of four open stairs at '+viewport.width);
  check(await pg.locator('.mc,#conn-bar,input[type=email]').count()===0,'Arrival never asks for a second member connection at '+viewport.width);
  await pg.screenshot({path:out+'/'+viewport.width+'-book.png',timeout:90000});
  check(!log.network.some(u=>/\/wah\//.test(typeof u==='string'?u:JSON.stringify(u))),'No surrounding artwork image is requested in the sanctuary at '+viewport.width);

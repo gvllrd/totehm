@@ -44,7 +44,7 @@ for(const mobile of [false,true]){
   const ray=new T.Raycaster(new T.Vector3(0,22.7,z),new T.Vector3(0,-1,0),0,3),hit=ray.intersectObjects(room.walkSurfaces)[0];
   check(hit&&Math.abs(hit.point.y-originsWalkHeight(0,z))<.08,'Navigation follows the actual 3D surface at z='+z);
  }
- check(originsWalkHeight(2.8,-24)!==null&&originsWalkHeight(4,-24)===null,'The bridge allows lateral movement and ends at the open edge');
+ check(originsWalkHeight(1.5,-24)!==null&&originsWalkHeight(2,-24)===null,'The bridge allows lateral movement and ends at the open edge');
  check(originsWalkHeight(2,-43)!==null&&originsWalkHeight(0,-43)===null,'The visitor can circle the physical book plinth');
  room.root.position.y=3480;
  room.update(.016,new T.Vector3(0,3501.65,-19),false);
@@ -52,8 +52,23 @@ for(const mobile of [false,true]){
  room.update(.016,new T.Vector3(0,3501.65,-36),false);
  check(room.diagnostics().closedCanopy,'The parked saucer closes when the visitor walks away');
  room.root.position.y=0;scene.updateMatrixWorld(true);
- const solids=room.solids.filter(o=>!(Array.isArray(o.material)?o.material:[o.material]).every(m=>m.transparent)),book=new T.Vector3(...room.journey.bookPosition);
- for(const dir of [[1,0,0],[-1,0,0],[0,0,-1],[0,1,0]])check(new T.Raycaster(book,new T.Vector3(...dir),.2,30).intersectObjects(solids).length>0,'The sanctuary is physically enclosed around the book');
+ const book=new T.Vector3(...room.journey.bookPosition);
+ const headroom=new T.Raycaster(book,new T.Vector3(0,1,0),.2,30);
+ check(!headroom.intersectObjects(room.solids).length&&d.chamber.openAir,'The book stands under an unobstructed sky');
+ let prior=20;
+ for(const [front,back,top] of room.journey.stairs){
+  const z=(front+back)/2,above=new T.Raycaster(new T.Vector3(0,23,z),new T.Vector3(0,-1,0),0,3);
+  check(top>prior&&Math.abs(originsWalkHeight(0,z)-top)<.0001&&Math.abs(above.intersectObjects(room.walkSurfaces)[0].point.y-top)<.0001,'Each rising stair is a real and walkable surface');
+  prior=top;
+ }
+ check(d.walkway.steps===4&&d.chamber.lightAnimation,'The path leads up four steps to an animated pedestal');
+ const halo=room.root.getObjectByName('Animated light surrounding the Origins pedestal');
+ const phase=halo.material.uniforms.uTime.value;
+ room.update(.1,book,true);
+ check(halo.material.uniforms.uTime.value>phase,'The pedestal lights animate');
+ const frozenPhase=halo.material.uniforms.uTime.value;
+ room.update(.1,book,false);
+ check(halo.material.uniforms.uTime.value===frozenPhase,'Reduced motion holds the pedestal lighting still');
  room.dispose();check(scene.children.length===0,'The sanctuary resources dispose cleanly');
 }
 const frames=JSON.parse(fs.readFileSync(new URL('../../space/assets/gallery/book-origins/first-frames.json',import.meta.url)));check(frames.frame===0&&frames.files.length===20,'All twenty posters come from decoded frame zero');for(const frame of frames.files)check(createHash('sha256').update(fs.readFileSync(new URL('../../space/assets/gallery/book-origins/'+frame.file,import.meta.url))).digest('hex')===frame.sha256,'The verified first-frame poster matches '+frame.video);
