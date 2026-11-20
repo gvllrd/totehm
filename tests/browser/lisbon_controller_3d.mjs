@@ -13,7 +13,6 @@ function check(value,message){assert(value,message);checks++;console.log('PASS '
 // Identity/order and native cut-outs remain invariant. The new shoulder
 // controls and projected layout deliberately replace the old V2 coordinates.
 const canonicalIds=['fire_exit','Heli','aed','green_walk','red_walk','pharma','destination','lisboa_city_hall','speed_bump_caution','crosswalk_caution','no_entry','no_parking','hospital','parking','Hotel','dead_end','roundabout','left_or_straight','no_uturn','priority','crosswalk','stop'];
-const previousSizes={fire_exit:.15,Heli:.064,aed:.15,green_walk:.056,red_walk:.056,pharma:.085,destination:.24,lisboa_city_hall:.069,speed_bump_caution:.071,crosswalk_caution:.071,no_entry:.070,no_parking:.076,hospital:.047,parking:.06,Hotel:.062,dead_end:.065,roundabout:.107,left_or_straight:.107,no_uturn:.084,priority:.09,crosswalk:.073,stop:.083};
 function dimensions(key){key.button.geometry.computeBoundingBox();return key.button.geometry.boundingBox.getSize(new Vector3());}
 function localBounds(model,object){model.root.updateMatrixWorld(true);return new Box3().setFromObject(object).applyMatrix4(new Matrix4().copy(model.root.matrixWorld).invert());}
 async function snapshotPixels(frame){
@@ -50,8 +49,23 @@ try{
       check(pressed?.tilt>.15&&stick.pivot.quaternion.angleTo(rest)>.15,'The '+id+' cap visibly tilts under normal-motion input');
       key.applyPressure(0,true);check(stick.pivot.quaternion.angleTo(rest)<.000001,'The '+id+' spring returns its cap to the exact neutral pose');
     }
-    const ordinary=[...model.keys.values()].filter(key=>!['fire_exit','aed','pharma','destination'].includes(key.id));
-    check(ordinary.every(key=>key.size>=previousSizes[key.id])&&ordinary.filter(key=>key.size>previousSizes[key.id]).length>=12,'The other sign buttons grow modestly without shrinking their original artwork');
+    const rightBank=surrounds[1],ray=new Raycaster();
+    for(const id of ['speed_bump_caution','crosswalk_caution','no_entry','no_parking']){
+      const key=model.keys.get(id),vertices=key.button.geometry.getAttribute('position');
+      const b=key.button.geometry.boundingBox;
+      for(let i=0;i<vertices.count;i++){
+        if(vertices.getZ(i)<b.max.z-.00001)continue;
+        const dx=(key.x+vertices.getX(i)-rightBank.position.x)/rightBank.scale.x;
+        const dz=(key.z-vertices.getY(i)-rightBank.position.z)/rightBank.scale.z;
+        assert.ok(Math.hypot(dx,dz)<.98,id+' has space inside the circular bank');
+      }
+      key.button.position.y=key.baseY-.013;model.root.updateMatrixWorld(true);
+      const surface=key.button.localToWorld(new Vector3((b.max.x+b.min.x)/2,(b.max.y+b.min.y)/2,b.max.z));
+      ray.set(surface.clone().add(new Vector3(0,1,0)),new Vector3(0,-1,0));
+      check(ray.intersectObjects([key.button,rightBank,shell])[0]?.object===key.button,id+' stays visible at full press');
+      key.button.position.y=key.baseY;model.root.updateMatrixWorld(true);
+    }
+    check(['Heli','destination','hospital','parking','Hotel','crosswalk'].every(id=>model.keys.get(id).x===0),'The display and the central symbols share one axis');
     for(const [left,right] of [['priority','stop'],['dead_end','no_uturn']]){
       const a=model.keys.get(left),b=model.keys.get(right);
       check(Math.abs(a.button.position.z-b.button.position.z)<1e-8&&Math.abs(a.y-b.y)<1e-8,'The '+left+' and '+right+' controls share one physical row');

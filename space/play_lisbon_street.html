@@ -432,8 +432,8 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import {checkLisbonStreetAccess,requestLisbonStreetMedia} from './lisbon-street-access.mjs';
 import {LISBON_STREET_DISCOVER} from './lisbon-street-discover.mjs';
 import {LISBON_FRONT_SIZE,createLisbonFirstPage} from './lisbon-first-page.mjs';
-import {createLisbonControllerView,LISBON_PLAYED_STICKERS} from './gallery-lisbon-controller.mjs';
-const BUILD = '2026-11-20-lisbon-rounded-controller';
+import {createLisbonControllerView,lisbonControllerShot,LISBON_KEYS,LISBON_PLAYED_STICKERS} from './gallery-lisbon-controller.mjs';
+const BUILD = '2026-11-20-lisbon-balanced-controller';
 function streetReturnPath(){const destination=new URL(location.href);destination.searchParams.delete('embedded');destination.searchParams.delete('sceneTime');return destination.pathname+destination.search;}
 // A purchase or central connection leaves the projected reader as a whole.
 function navigateStreetExperience(href){
@@ -769,30 +769,7 @@ const PHRASES = {
   stop:               "Yes, stop that sht.",
 };
 
-const SIGNS = {
-  fire_exit:          [23.1,  5.5,  6.5],
-  Heli:               [46.0,  7.4,  5.2],
-  aed:                [70.1,  5.5,  6.5],
-  green_walk:         [33.7,  9.0,  3.8],
-  red_walk:           [33.7, 16.5,  3.8],
-  pharma:             [20.8, 22.5, 10.0],
-  destination:        [40.1,  9.5, 18.5],
-  lisboa_city_hall:   [60.8, 10.0,  6.2],
-  speed_bump_caution: [68.4, 15.5,  6.2],
-  crosswalk_caution:  [63.5, 27.0,  5.6],
-  no_entry:           [73.4, 27.6,  5.5],
-  no_parking:         [68.5, 37.0,  5.8],
-  hospital:           [46.8, 37.0,  3.8],
-  parking:            [46.1, 44.6,  5.2],
-  Hotel:              [46.0, 55.0,  5.6],
-  dead_end:           [20.4, 51.0,  6.9],
-  roundabout:         [32.9, 49.5, 10.2],
-  left_or_straight:   [56.9, 49.5, 10.2],
-  no_uturn:           [69.8, 49.7,  8.8],
-  priority:           [15.4, 66.8, 10.1],
-  crosswalk:          [44.5, 71.0,  8.5],
-  stop:               [73.3, 66.0, 11.6],
-};
+const SIGNS = LISBON_KEYS;
 
 // A gallery gesture may select one original animation directly. Only the
 // catalogue's exact IDs select media; no URL or return destination is accepted.
@@ -1101,7 +1078,7 @@ const G=(x)=>({t:"g",x});
 
 const SDSLIDES=LISBON_STREET_DISCOVER.map(parts=>({parts:parts.map(G)}));
 
-const SIGN_ENTRIES = Object.entries(SIGNS);
+const SIGN_IDS = Object.keys(SIGNS);
 const IMPORTANT    = new Set(['crosswalk','stop','no_entry','parking']);
 const ROCKS        = [];
 const firstPage=createLisbonFirstPage({width:1600,height:900});firstPage.canvas.id='experience-front-canvas';sdiscBg.prepend(firstPage.canvas);
@@ -1132,20 +1109,13 @@ let   snapping     = false;
 let   lastXpFrom   = 'direct';
 let   lastPressedRock = null;
 
-function getBoardRect(){
-  const W=window.innerWidth,H=window.innerHeight;
-  const desk=window.matchMedia('(hover:hover) and (min-width:900px)').matches;
-  const s=desk?.66:1;
-  const bw=Math.min(W*s,H*s*1.7778), bh=Math.min(H*s,W*s/1.7778);
-  return {x:(W-bw)/2,y:(H-bh)/2,w:bw,h:bh};
-}
 function inTextZone(x,y,size){
   const cx=window.innerWidth/2,cy=window.innerHeight/2;
   const hw=Math.min(310,window.innerWidth*.44)+size, hh=220+size;
   return x>cx-hw&&x<cx+hw&&y>cy-hh&&y<cy+hh;
 }
 const MAX_V = 0.12;
-function spawnRock(id,tl,tt,tw){
+function spawnRock(id){
   const W=window.innerWidth,H=window.innerHeight;
   const size=IMPORTANT.has(id)?44+Math.random()*12:28+Math.random()*14;
   let x,y,attempts=0;
@@ -1176,7 +1146,7 @@ function spawnRock(id,tl,tt,tw){
   wrap.appendChild(uLabel);
   sdiscBg.appendChild(wrap);
 
-  const r={wrap,img,uLabel,x,y,vx,vy,rot,vrot,size,tl,tt,tw,id};
+  const r={wrap,img,uLabel,x,y,vx,vy,rot,vrot,size,id};
 
   function showUseless(){ img.style.filter='brightness(0.2)'; uLabel.style.opacity='1'; }
   function hideUseless(){ img.style.filter=''; uLabel.style.opacity='0'; }
@@ -1215,7 +1185,7 @@ function resetRocks(){
   });
 }
 function startAsteroids(){
-  if(!ROCKS.length) SIGN_ENTRIES.forEach(([id,[l,t,w]])=>ROCKS.push(spawnRock(id,l,t,w)));
+  if(!ROCKS.length) SIGN_IDS.forEach(id=>ROCKS.push(spawnRock(id)));
   startFront();
 }
 
@@ -1253,7 +1223,9 @@ async function prepareController({preview=false}={}){
 }
 function controllerTarget(rock){
   const target=controllerView?.target(rock.id);if(target)return target;
-  const rect=getBoardRect(),size=rock.tw*rect.w/100;return {x:rect.x+rock.tl*rect.w/100,y:rect.y+rock.tt*rect.h/100,width:size,height:size};
+  const shot=lisbonControllerShot(innerWidth,innerHeight),[x,z,width]=SIGNS[rock.id],size=width*shot.pixels;
+  const screenZ=(z-shot.center[2])*Math.sin(shot.pitch)-(.095-shot.center[1])*Math.cos(shot.pitch);
+  return {x:innerWidth/2+x*shot.pixels-size/2,y:innerHeight/2+screenZ*shot.pixels-size/2,width:size,height:size};
 }
 function applyPlayedSticker(rock){
   const placement=LISBON_PLAYED_STICKERS[rock.id];

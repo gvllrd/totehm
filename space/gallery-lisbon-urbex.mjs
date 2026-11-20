@@ -18,7 +18,7 @@ function roundedRectangle(width,depth,radius){
  shape.closePath();return shape;
 }
 
-const CONTROLLER_SHADOW_DEPTH=1.08;
+const CONTROLLER_SHADOW_DEPTH=.92;
 function paintControllerShadow(shape){
  if(!globalThis.document)return null;
  const canvas=document.createElement('canvas');canvas.width=192;canvas.height=148;
@@ -115,7 +115,7 @@ export function createLisbonUrbexGallery(scene,renderer,{mobile=false,onChange=(
  const axisY=new T.Vector3(0,1,0),controllerWidth=L.controller.width;
  const controllerFeet=[];
  for(const side of [-1,1]){
-  const foot=new T.Vector3(side*.40*controllerWidth,0,.313*controllerWidth).applyAxisAngle(axisY,L.controller.tableYaw);
+  const foot=new T.Vector3(side*.40*controllerWidth,0,.258*controllerWidth).applyAxisAngle(axisY,L.controller.tableYaw);
   foot.add(new T.Vector3(controllerX,top,controllerZ));
   upward.ray.origin.copy(foot);
   const base=upward.intersectObject(controller.root,true).find(hit=>hit.object.material?.visible&&hit.object.material.side!==T.BackSide);
