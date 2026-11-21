@@ -61,7 +61,9 @@ const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY')!);
 const sb = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
   { auth: { persistSession: false } });
 
-const KINDS = ['wisdom', 'vision', 'objective', 'habit', 'repulsion'];
+const KINDS = ['story', 'vision', 'objective', 'habit', 'repulsion'];
+// PONT (21/11) : une page en cache dit encore l'ancien nom de MY STORY ; on écrit toujours `story`.
+const kindDuJour = (k?: string) => (k === 'wisdom' ? 'story' : k);
 
 // L'année de collection : 0 = juin 2026 → mai 2027 (comme compose-artwork et luxury-quote).
 function epochPrefix(): string {
@@ -89,6 +91,7 @@ Deno.serve(async (req) => {
   const size = String(body.size ?? '');
   const style_id = String(body.style_id ?? '');
   const box = (body.box ?? {}) as { kind?: string; ref?: string };
+  box.kind = kindDuJour(box.kind);
 
   if (!box.kind || !KINDS.includes(box.kind) || !box.ref) {
     return Response.json({ error: 'choose an element' }, { status: 422, headers: cors });

@@ -19,7 +19,7 @@ const BLACK = 0x000000ff;
 // et elle ne change jamais (BRAND.md).
 const CADRES: Record<string, number> = {
   habit: 0x333366ff, objective: 0x333366ff, repulsion: 0x333366ff,
-  vision: 0x36498cff, wisdom: 0x743169ff,
+  vision: 0x36498cff, story: 0x743169ff,
 };
 
 const json = (b: unknown, s = 200) => new Response(JSON.stringify(b), { status: s, headers: { 'Content-Type': 'application/json' } });

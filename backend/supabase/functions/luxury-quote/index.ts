@@ -39,7 +39,9 @@ const admin = createClient(
 );
 
 const PIECES = ["bag", "jacket", "shoes", "other"] as const;
-const KINDS = ["habit", "objective", "repulsion", "wisdom", "vision"] as const;
+const KINDS = ["habit", "objective", "repulsion", "story", "vision"] as const;
+// PONT (21/11) : une page en cache dit encore l'ancien nom de MY STORY ; on écrit toujours `story`.
+const kindDuJour = (k?: string) => (k === "wisdom" ? "story" : k);
 // 11/11 (Wah) : « le nom exact du produit, parmi les 3 marques d'exception avec
 // lesquelles nous travaillons ». Trois, pas une de plus : la page les propose,
 // le serveur les VÉRIFIE — une marque reçue qui n'est pas là est refusée.
@@ -131,6 +133,7 @@ Deno.serve(async (req) => {
     if (thp !== true) return json({ error: "thp_required" }, 402);
 
     const box = (body.box ?? {}) as { kind?: string; ref?: string };
+    box.kind = kindDuJour(box.kind);
     if (!box.kind || !KINDS.includes(box.kind as typeof KINDS[number]) || !box.ref) return json({ error: "choose_a_box" }, 422);
     const { data: snap, error: sErr } = await admin.rpc("_box_matter", { p_user: user.id, p_kind: box.kind, p_ref: String(box.ref) });
     if (sErr) { console.error("[luxury-quote] box:", sErr.message); return json({ error: "unavailable" }, 503); }
