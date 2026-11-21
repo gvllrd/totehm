@@ -58,7 +58,7 @@ check(draft.kind==='tracking','A historical private detail button remains explic
 await handleTrackingUpdate(db,message('/minutes 20'),telegram);check(calls.at(-1).args.p_field==='minutes'&&calls.at(-1).args.p_value==='20'&&!draft,'Existing explicit details still record without loss');
 await handleTrackingUpdate(db,message('/review'),telegram);check(sent.at(-1).payload.text.includes('unanswered: unknown')&&!sent.at(-1).payload.text.includes('pas done'),'English review distinguishes unknown from missed');
 await handleTrackingUpdate(db,message('/pause'),telegram);check(calls.at(-1).args.p_paused===true,'Pause uses the verified linked Telegram identity');
-check(!calls.some(c=>/repulsion|wisdom|objective|model/i.test(c.name)),'Tracking does not write the five views or run a model');
+check(!calls.some(c=>/habit|objective|repulsion|story|vision|model/i.test(c.name)),'Tracking does not write the five views or run a model');
 check(trackingReview({counts:{},trend:{state:'insufficient'}}).includes('Not enough'),'Sparse data produces no invented trend');
 check(trackingKeyboard('1').inline_keyboard.flat().map(b=>b.text).join('|')==='Done|Missed|Prepare','Default report controls are English');
 await handleTrackingUpdate(db,callback('t:d:9007199254740993:open'),telegram);
@@ -105,14 +105,14 @@ failAt=sendCount+2;await handler(req());check(tickCalls.at(-1).args.p_status==='
 // Confirmed picker wording accompanies the claim, without adding place/media data or sends.
 failAt=0;habit='Write';
 const timingMessages=async()=>{const before=deliveredMessages.length;await handler(req());return deliveredMessages.slice(before);};
-timingRows=[{steps:[{t:'OTHER HABIT',f:'daily',rhythm_text:'UNRELATED WORDING'},
+timingRows=[{habits:[{t:'OTHER HABIT',f:'daily',rhythm_text:'UNRELATED WORDING'},
  {t:habit,f:'daily',rhythm_text:'Trois fois par jour à 7h30',where:'PRIVATE PLACE',media:'PRIVATE MEDIA',notes:'PRIVATE NOTE'}]}];
 let enriched=await timingMessages();
 check(enriched.length===1&&enriched[0].text==='Write\n\nYour timing: Trois fois par jour à 7h30\n\nToday · 10 Nov 2026 (UTC)\nDid you do it?','The original confirmed wording appears before the immutable target period');
 check(!enriched[0].parse_mode&&!JSON.stringify(enriched).includes('PRIVATE')&&!JSON.stringify(enriched).includes('UNRELATED'),'Timing is plain text; usual place, media, notes and unrelated Habits are not exported');
-check(timingReads.every(r=>r.table==='totehms'&&r.columns==='steps'&&r.filters.length===1&&r.filters[0][0]==='user_id'&&r.filters[0][1]===A&&r.ordering.key==='updated_at'&&r.ordering.ascending===false&&r.ordering.nullsFirst===false&&r.limit===1&&r.afterClaim==='tracking_claim'),'Every optional read is bounded to the latest claimed owner after a real claim');
+check(timingReads.every(r=>r.table==='totehms'&&r.columns==='habits'&&r.filters.length===1&&r.filters[0][0]==='user_id'&&r.filters[0][1]===A&&r.ordering.key==='updated_at'&&r.ordering.ascending===false&&r.ordering.nullsFirst===false&&r.limit===1&&r.afterClaim==='tracking_claim'),'Every optional read is bounded to the latest claimed owner after a real claim');
 check(enriched[0].reply_markup.inline_keyboard.flat().map(x=>x.text).join('|')==='Done|Missed|Prepare','Confirmed wording keeps the same report and preparation controls');
-for(const step of [
+for(const savedHabit of [
  {t:'Write ',f:'daily',rhythm_text:'FOREIGN REF'},
  {t:habit,f:'weekly',rhythm_text:'CHANGED SAVED RHYTHM'},
  {t:habit,f:'daily',rhythm_text:123},
@@ -122,10 +122,10 @@ for(const step of [
  {t:habit,f:'daily',rhythm_text:'   '},
  {t:habit,f:'daily'}
 ]){
- timingRows=[{steps:[step]}];enriched=await timingMessages();
+ timingRows=[{habits:[savedHabit]}];enriched=await timingMessages();
  check(enriched.map(x=>x.text).join('')==='Write\n\nToday · 10 Nov 2026 (UTC)\nDid you do it?','Unknown/stale/invalid temporal metadata falls back to the original canonical check-in');
 }
-timingRows=[{steps:[{t:habit,f:'daily',rhythm_text:'First current wording'}]},{steps:[{t:habit,f:'daily',rhythm_text:'OLDER WORDING'}]}];
+timingRows=[{habits:[{t:habit,f:'daily',rhythm_text:'First current wording'}]},{habits:[{t:habit,f:'daily',rhythm_text:'OLDER WORDING'}]}];
 enriched=await timingMessages();check(enriched[0].text.includes('First current wording')&&!enriched[0].text.includes('OLDER'),'Only the latest row participates even if a client returns extra data');
 const timingLog=[],previousError=console.error;console.error=(...args)=>timingLog.push(args.join(' '));
 try{
@@ -137,7 +137,7 @@ try{
 check(timingLog.length===2&&timingLog.every(x=>x==='[tracking] timing_read_failed'),'Metadata failure logs contain neither private wording nor provider descriptions');
 const readsBeforeSkip=timingReads.length;claimEligible=false;await timingMessages();claimEligible=true;claimError=true;await timingMessages();claimError=false;
 check(timingReads.length===readsBeforeSkip,'No extra timing read occurs for a skipped or failed claim');
-habit=unicode;timingRows=[{steps:[{t:habit,f:'daily',rhythm_text:'🌍'.repeat(250)}]}];
+habit=unicode;timingRows=[{habits:[{t:habit,f:'daily',rhythm_text:'🌍'.repeat(250)}]}];
 enriched=await timingMessages();
 check(enriched.map(x=>x.text).join('')===unicode+'\n\nYour timing: '+'🌍'.repeat(250)+'\n\nToday · 10 Nov 2026 (UTC)\nDid you do it?','Complete Habit plus a maximum-length Unicode timing keeps all authored text');
 check(enriched.every(x=>x.text.length<=3500&&x.text.isWellFormed())&&enriched.slice(0,-1).every(x=>!x.reply_markup)&&!!enriched.at(-1).reply_markup,'Long text remains segmented safely, with controls only on its final segment');

@@ -21,6 +21,8 @@ Un tap sur **●** déploie le TOTEHM : HABITS · OBJECTIVES · REPULSIONS · VI
 (why · trigger · instead of · how · vision…) et porte son « + totehmize » vers higher.boutique. Le verso, c'est le
 compte : **Go Higher** (ma pratique sur 7 ou 28 jours, TotehmBot) et **Monetize my TOTEHM** (mon prix, ce que je gagne).
 Sur ordinateur, recto et verso ont le même format et se retournent l'un sur l'autre.
+Higher GPT et TotehmBot lisent les mêmes Habits, MY STORY et liens why que l'app : la date distingue l'objectif de la
+vision. Le connecteur et le bot utilisent les noms natifs ; les anciens ponts de la base restent en place jusqu'à leur lot de retrait.
 
 **Ce qui se vend.** Un seul abonnement : celui d'un membre à un autre membre, à l'année, au prix choisi par le créateur,
 80 % pour lui (versés le 1er dès 25 €). Higher my ChatGPT et TotehmBot sont gratuits. Les vêtements, le Luxe et les

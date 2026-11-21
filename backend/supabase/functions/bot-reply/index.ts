@@ -70,7 +70,7 @@ const HELP = `TotehmBot.
 /tonight — nearby events matched to your intentions
 /spot — share a Club spot
 /spots — find nearby Club spots
-/wisdom <lesson> — save a lesson
+/story <lesson> — save to MY STORY
 /objective <objective> — save an objective
 /map — open Higher Map
 /pause · /resume — pause or resume questions
@@ -128,14 +128,14 @@ async function canPost(uid: string): Promise<boolean> {
   return !!badge?.length;
 }
 
-// Les intentions réellement portées par le Totehm. `totehms.steps` est la
+// Les intentions réellement portées par le Totehm. `totehms.habits` est la
 // vérité — `totehm_events` est un journal, et il est incomplet.
 async function myIntentions(uid: string): Promise<string[]> {
   const { data } = await admin.from("totehms")
-    .select("steps").eq("user_id", uid)
+    .select("habits").eq("user_id", uid)
     .order("updated_at", { ascending: false }).limit(1);
-  const steps = (data?.[0]?.steps ?? []) as { i?: string; intention?: string }[];
-  return [...new Set(steps.map((s) => (s.i || s.intention || "").trim()).filter(Boolean))];
+  const habits = (data?.[0]?.habits ?? []) as { i?: string; intention?: string }[];
+  return [...new Set(habits.map((s) => (s.i || s.intention || "").trim()).filter(Boolean))];
 }
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -486,14 +486,16 @@ Deno.serve(async (req) => {
     }
     if (text === "/carte" || text === "/map") { await say(chat, MAP); return ok(); }
 
-    // ══ /wisdom et /objectif — une idée se note où elle arrive ═══════
-    if (text.startsWith("/wisdom") || text.startsWith("/lecon") || text.startsWith("/leçon")) {
-      const body = text.replace(/^\/(wisdom|lecon|leçon)\s*/i, "").trim();
+    // ══ /story et /objective — une idée se note où elle arrive ══════
+    // Pont d’entrée : anciennes commandes explicites, toutes écrivent une story.
+    const storyCommand = /^\/(?:story|wisdom|lecon|leçon)(?:\s+([\s\S]*))?$/i.exec(text);
+    if (storyCommand) {
+      const body = (storyCommand[1] ?? "").trim();
       if (!body) {
-        await say(chat, "Write your lesson after the command.\nExample: /wisdom sleep comes first");
+        await say(chat, "Write your lesson after the command.\nExample: /story sleep comes first");
         return ok();
       }
-      const { error } = await admin.rpc("add_wisdom_admin",
+      const { error } = await admin.rpc("add_story_admin",
         { p_user: uid, p_text: body, p_intention: null });
       await say(chat, error ? "Could not save your lesson." : "Saved to MY STORY.",
         error ? undefined : kbApp("View MY STORY"));

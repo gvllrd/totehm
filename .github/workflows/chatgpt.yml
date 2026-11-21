@@ -20,7 +20,12 @@ jobs:
         with:
           node-version: '24'
       - run: npm install --prefix tests/fn --ignore-scripts
+      - run: node tests/node/vocabulaire.mjs
       - run: npm --prefix tests/fn run test:chatgpt
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - run: deno check backend/supabase/functions/bot-reply/index.ts backend/supabase/functions/bot-tick/index.ts backend/supabase/functions/chatgpt-connector/index.ts
   browser:
     runs-on: ubuntu-latest
     timeout-minutes: 15

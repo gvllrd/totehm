@@ -21,22 +21,22 @@ export async function ecosystemRead(db: Client, grant: string, action: string, a
 }
 
 /** Convert the *authorized* totehm_read format; never accept a raw foreign table.
- * Drop edges to private elements, unsafe bigint IDs and hidden refs in step.o.
+ * Drop edges to private elements, unsafe bigint IDs and hidden refs in habits.o.
  * Five kinds: HABITS, OBJECTIVES, REPULSIONS, VISIONS, MY STORY. */
 export function memberGraph(value: unknown) {
-  const r=obj(value), objectives=list(r.trips), reps=list(r.reps), wisdom=list(r.wisdom);
+  const r=obj(value), objectives=list(r.objectives), repulsions=list(r.repulsions), stories=list(r.stories);
   const snapshot: GraphSnapshot = {
-    steps:list(r.steps),
-    objectives,
-    repulsions:reps.map(x=>({...x,id:ref(x.id),repulsion:x.text,active:true})),
-    visions:list(r.visions).map(x=>({...x,importance:x.rang})), wisdom:wisdom.map(x=>({...x,importance:x.rang})),
-    element_orders:Object.entries(obj(r.orders)).map(([kind,refs])=>({kind,refs})),
+    habits:list(r.habits),
+    // The authorized RPC separates the two views of the same native why rows.
+    objectives:[...objectives,...list(r.visions).map(x=>({...x,target_at:null,status:'active',importance:x.rang}))],
+    repulsions:repulsions.map(x=>({...x,id:ref(x.id),repulsion:x.text,active:true})),
+    stories:stories.map(x=>({...x,importance:x.rang})),
+    element_orders:Object.entries(obj(r.orders)).filter(([kind])=>['habit','objective','repulsion','vision','story'].includes(kind)).map(([kind,refs])=>({kind,refs})),
     objective_habits:Object.entries(obj(r.objs)).flatMap(([habit_text,ids])=>
       (Array.isArray(ids)?ids:[]).map(objective_id=>({habit_text,objective_id:ref(objective_id)}))),
-    repulsion_habits:reps.flatMap(x=>(Array.isArray(x.hs)?x.hs:[]).map((habit_text:string)=>({repulsion_id:ref(x.id),habit_text}))),
-    objective_visions:objectives.flatMap(x=>(Array.isArray(x.visions)?x.visions:[]).map((vision_id:string)=>({objective_id:ref(x.id),vision_id}))),
-    repulsion_teachings:reps.flatMap(x=>(Array.isArray(x.ws)?x.ws:[]).map((wisdom_id:string)=>({repulsion_id:ref(x.id),wisdom_id}))),
-    teaching_objectives:wisdom.flatMap(x=>(Array.isArray(x.os)?x.os:[]).map((objective_id:string)=>({wisdom_id:ref(x.id),objective_id}))),
+    repulsion_habits:repulsions.flatMap(x=>(Array.isArray(x.hs)?x.hs:[]).map((habit_text:string)=>({repulsion_id:ref(x.id),habit_text}))),
+    repulsion_stories:repulsions.flatMap(x=>(Array.isArray(x.ws)?x.ws:[]).map((story_id:string)=>({repulsion_id:ref(x.id),story_id}))),
+    story_objectives:stories.flatMap(x=>(Array.isArray(x.os)?x.os:[]).map((objective_id:string)=>({story_id:ref(x.id),objective_id}))),
   };
   return projectGraph(snapshot);
 }
@@ -77,7 +77,7 @@ export async function memberMedia(db:Client,grant:string,member:string,focus:Ele
   const element=await readMember(db,grant,member,{query:'',purpose:'explicit',focus,limit:1});
   if(!element.items.length)return {items:[],truncated:false,element_available:false,source:memberSource(member)};
   const r=await ecosystemRead(db,grant,'media',{p_pseudo:member});
-  const letters={habit:'h',objective:'o',repulsion:'r',vision:'v',wisdom:'w'};
+  const letters={habit:'h',objective:'o',repulsion:'r',vision:'v',story:'w'};
   const all=list(r.items).filter(x=>x.kind===letters[focus.kind]&&x.ref===focus.ref&&UUID.test(ref(x.id)));
   return {source:memberSource(member),items:all.slice(0,limit).map(x=>({
     ref:ref(x.id),element:focus,url:elementURL(focus,member),source:memberSource(member),mime:txt(x.mime,100),created_at:txt(x.created_at,80),content_shared:false,

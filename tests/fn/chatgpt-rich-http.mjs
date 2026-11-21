@@ -14,8 +14,8 @@ let ecosystem=true,revoked=false,ownerMediaUnavailable=false,cancelOnMedia=null,
 const subscribed=new Set(MEMBERS),reads=[],native=[];
 const check=(value,message)=>{assert(value,message);checks++;};
 const data={
- totehms:[{user_id:A,steps:[{t:HABIT,is:['express'],f:'daily'},{t:'Write a verse',is:['express'],f:'weekly'}]},{user_id:B,steps:[{t:'FORBIDDEN_OTHER_OWNER'}]}],
- objectives:[],repulsions:[],visions:[],wisdom:[],objective_habits:[],repulsion_habits:[],objective_visions:[],repulsion_teachings:[],teaching_objectives:[],habit_spots:[],element_orders:[],
+ totehms:[{user_id:A,habits:[{t:HABIT,is:['express'],f:'daily'},{t:'Write a verse',is:['express'],f:'weekly'}]},{user_id:B,habits:[{t:'FORBIDDEN_OTHER_OWNER'}]}],
+ objectives:[],repulsions:[],stories:[],objective_habits:[],repulsion_habits:[],repulsion_stories:[],story_objectives:[],habit_spots:[],element_orders:[],
  element_media:[{user_id:A,id:MEDIA,kind:'h',ref:HABIT,name:'Scale drill reference',mime:'image/png',bytes:123,created_at:'2026-11-01T12:00:00Z',removed_at:null,path:'FORBIDDEN_STORAGE_PATH'},
   {user_id:B,id:SPOT,kind:'h',ref:HABIT,name:'FORBIDDEN_OTHER_MEDIA',mime:'image/png',created_at:'2026-11-01',removed_at:null}],
  spot_plans:[{user_id:A,spot_id:SPOT,habit:HABIT,format:'spot',status:'published',starts_at:'2099-01-01T12:00:00Z',duration_min:60,place:'My rehearsal room',city:'Lisbon',mode:'silent',comment:'Bring the small keyboard',intentions:['express'],audience:'private',lat:38.7654321,lng:-9.1234567,photo:'FORBIDDEN_PHOTO_PATH'},
@@ -27,11 +27,12 @@ class Query{
  select(columns){this.columns=columns;return this;}
  eq(key,value){this.filters.push([key,v=>v===value]);return this;}
  is(key,value){this.filters.push([key,v=>v===value]);return this;}
+ not(key,operator,value){assert.equal(operator,'is');assert.equal(value,null);this.filters.push([key,v=>v!==null&&v!==undefined]);return this;}
  in(key,values){this.filters.push([key,v=>values.includes(v)]);return this;}
  gt(key,value){this.filters.push([key,v=>v>value]);return this;}
  gte(key,value){this.filters.push([key,v=>v>=value]);return this;}
  lte(key,value){this.filters.push([key,v=>v<=value]);return this;}
- or(value){assert.equal(value,'status.is.null,status.not.in.(achieved,abandoned,converted)');this.filters.push(['status',v=>!['achieved','abandoned','converted'].includes(v)]);return this;}
+ or(value){assert(['status.is.null,status.not.in.(achieved,abandoned,converted)','status.is.null,status.eq.active'].includes(value));this.filters.push(['status',v=>value==='status.is.null,status.eq.active'?v==null||v==='active':!['achieved','abandoned','converted'].includes(v)]);return this;}
  order(key,{ascending=true}={}){this.sort=[key,ascending];return this;}
  limit(value){this.maximum=value;return this;}
  maybeSingle(){this.single=true;return this;}
@@ -57,7 +58,7 @@ const db={from:table=>new Query(table),rpc:async(name,args)=>{
  const who=args.p_pseudo;
  assert(MEMBERS.includes(who),'Each foreign resource request names a subscribed creator');
  if(!subscribed.has(who))return {data:{ok:false,why:'unavailable'},error:null};
- if(args.p_action==='member')return {data:{ok:true,pseudo:who,steps:[HABIT,HABIT+' slowly',HABIT+' standing'].map(t=>({t,is:['express'],f:'daily'})),trips:[{id:OBJECTIVE,text:'Learn the piece',status:'active',visions:[VISION]}],reps:[],visions:[{id:VISION,text:'Play at a concert'}],wisdom:[],objs:{[HABIT]:[OBJECTIVE]}},error:null};
+ if(args.p_action==='member')return {data:{ok:true,pseudo:who,habits:[HABIT,HABIT+' slowly',HABIT+' standing'].map(t=>({t,is:['express'],f:'daily'})),objectives:[{id:OBJECTIVE,text:'Learn the piece',status:'active',target_at:'2099-01-01T00:00:00Z'}],repulsions:[],visions:[{id:VISION,text:'Play at a concert',target_at:null}],stories:[],objs:{[HABIT]:[OBJECTIVE,VISION]}},error:null};
  if(args.p_action==='media'){
   if(cancelOnMedia===who){subscribed.delete(who);return {data:{ok:false,why:'unavailable'},error:null};}
   return {data:{ok:true,items:[{id:MEDIA,kind:'h',ref:HABIT,mime:'image/png',created_at:'2026-11-01',name:'FORBIDDEN_FOREIGN_FILENAME',path:'FORBIDDEN_MEMBER_PATH',lat:38.7654321}]},error:null};
@@ -95,6 +96,7 @@ for(const flag of ['true',1,null,{}]){
 response=await tool('get_ecosystem_context',{...args,include_resources:true});
 const context=response.data.result.structuredContent;
 check(context.members.length===3,'The fixture searches at least three active subscribed creators');
+check(context.members.every(m=>m.edges.filter(e=>e.relation==='serves').some(e=>e.from==='habit:'+encodeURIComponent(HABIT)&&e.to==='objective:'+OBJECTIVE)&&m.edges.some(e=>e.relation==='serves'&&e.from==='habit:'+encodeURIComponent(HABIT)&&e.to==='vision:'+VISION)&&!m.edges.some(e=>e.relation==='towards')),'Creator Habit links directly to each authorized dated objective or undated vision');
 check(context.personal.resources.metadata_only&&context.personal.resources.scope==='selected_elements','Personal resources are a selected metadata-only bundle');
 check(context.members.filter(m=>m.resources).length===2&&!context.members[2].resources,'Only two selected creators are enriched in one ecosystem call');
 check(context.resource_coverage.attempted_members===2&&context.resource_coverage.selected_members===3&&!context.resource_coverage.complete&&!context.resource_coverage.all_selected_members_requested,'Resource coverage discloses the unenriched creator instead of claiming completeness');
@@ -137,9 +139,15 @@ response=await tool('get_ecosystem_context',{...args,include_club_spots:true});
 check(response.data.result.structuredContent.club_plan.city===null&&native.slice(noCityStart).filter(q=>q.args.p_action==='spots').every(q=>!('city' in q.args.p_filters)),'Current location is not guessed when no city is supplied');
 response=await tool('get_ecosystem_context',{...args,include_club_spots:true,club_city:''});
 check(response.data.error?.code===-32602,'A blank supplied city is not a valid location filter');
-data.objectives.push({user_id:A,id:OBJECTIVE,text:'My recorded creative direction',status:'active'});
+data.objectives.push({user_id:A,id:OBJECTIVE,text:'My recorded creative direction',status:'active',target_at:'2099-01-01T00:00:00Z'});
 response=await tool('read_element',{kind:'objective',ref:OBJECTIVE,include_boutique:true});
 check(new URL(response.data.result.structuredContent.boutique.candidates[0].url).searchParams.get('wear')==='objective:'+OBJECTIVE,'An exact personal non-text reference opens the existing native boutique selection');
+data.objectives.pop();
+data.objectives.push({user_id:A,id:VISION,text:'My open creative direction',status:'active',target_at:null});
+response=await tool('read_element',{kind:'vision',ref:VISION,include_boutique:true});
+check(response.data.result.structuredContent.items[0].kind==='vision'&&new URL(response.data.result.structuredContent.boutique.candidates[0].url).searchParams.get('wear')==='vision:'+VISION,'An undated native why opens the vision view and existing boutique locator');
+response=await tool('read_element',{kind:'objective',ref:VISION});
+check(response.data.result.structuredContent.items.length===0,'An undated why cannot masquerade as a dated objective');
 data.objectives.pop();
 response=await tool('read_member_element',{member:MEMBERS[0],kind:'habit',ref:HABIT,include_boutique:true});
 check(response.data.error?.code===-32602,'A foreign creator element cannot request a personal boutique handoff');

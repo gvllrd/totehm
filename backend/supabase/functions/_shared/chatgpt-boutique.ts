@@ -15,7 +15,7 @@ export function enrichBoutique(result:Row,requested:unknown){
   const candidates=selected.slice(0,3).map((item:any)=>{
     const element:ElementRef={kind:item.kind,ref:item.ref};
     // UUIDs/numeric IDs are unsigned locators that the boutique rechecks against
-    // my_trips after sign-in. Habit text stays out of HTTP query strings.
+    // my_totehm after sign-in. Habit text stays out of HTTP query strings.
     const preselected=item.kind!=='habit'&&item.ref.length<=160;
     return {element:{...element,url:elementURL(element)},
       url:preselected?STREETWEAR+'?'+new URLSearchParams({wear:item.kind+':'+item.ref}):STREETWEAR,

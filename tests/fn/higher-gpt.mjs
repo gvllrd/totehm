@@ -8,11 +8,11 @@ const uid='11111111-1111-4111-8111-111111111111';
 const id=n=>`00000000-0000-4000-8000-${String(n).padStart(12,'0')}`;
 let checks=0;
 const check=(v,m)=>{assert(v,m);checks++;};
-const snapshot={steps:[{t:'Lire',is:['focus'],f:'every_minute',o:id(1)},{t:'Créer',is:['express'],o:id(2)},{t:'Marcher',is:['love']}],
- objectives:[{id:id(1),text:'Publier mon livre',status:'active',target_at:'2020-01-01'},{id:id(2),text:'Totehm est fonctionnel',status:'active'}],
+const snapshot={habits:[{t:'Lire',is:['focus'],f:'every_minute',o:id(1)},{t:'Créer',is:['express'],o:id(2)},{t:'Marcher',is:['love']}],
+ objectives:[{id:id(1),text:'Publier mon livre',status:'active',target_at:'2020-01-01'},{id:id(2),text:'Totehm est fonctionnel',status:'active',target_at:'2027-01-01'},{id:id(3),text:'Partager mes idées',importance:8,target_at:null,status:'active'}],
  repulsions:[{id:'1',repulsion:'Défilement sans fin',active:true,habit_text:'Lire'}],
- visions:[{id:id(3),text:'Partager mes idées',importance:8}],wisdom:[{id:id(4),text:'Commencer petit',importance:2}],
- objective_visions:[{objective_id:id(1),vision_id:id(3)}],repulsion_teachings:[{repulsion_id:'1',wisdom_id:id(4)}],
+ stories:[{id:id(4),text:'Commencer petit',importance:2}],
+ objective_habits:[{habit_text:'Lire',objective_id:id(3)}],repulsion_stories:[{repulsion_id:'1',story_id:id(4)}],
  element_orders:[{kind:'objective',refs:[id(2),id(1)]},{kind:'vision',refs:['private',id(3)]}]};
 const graph=projectGraph(snapshot);
 for(const query of ["Qu'est-ce que je peux faire cet après-midi ?",'What could I do this afternoon?','O que posso fazer esta tarde?','¿Qué hago esta tarde?','ماذا أفعل بعد الظهر؟','今天下午做什么？','今日の午後は何をしよう？','आज दोपहर क्या करूँ?','Что делать днём?','오후에 무엇을 할까요?','บ่ายนี้ทำอะไรดี','Was kann ich heute Nachmittag machen?']){
@@ -26,30 +26,31 @@ const ranked=projectContext(graph,{query:'priorities',purpose:'direction',search
 check(ranked.items[0].ref===id(2),'Explicit member rank takes precedence over old dates');
 check(graph.items.find(x=>x.ref===id(1)).target_state==='past_target','Past target is marked as a date, not interpreted as urgency');
 check(graph.items.find(x=>x.ref===id(3)).rank===1,'Private ranking gaps are not exposed');
-check(graph.items.find(x=>x.kind==='wisdom').rank_source==='importance','Existing MY STORY importance preserved');
+check(graph.items.find(x=>x.kind==='story').rank_source==='importance','Existing MY STORY importance preserved');
+check(graph.edges.some(e=>e.relation==='serves'&&e.from==='habit:Lire'&&e.to==='vision:'+id(3))&&!graph.edges.some(e=>e.relation==='towards'),'Habit directly serves its undated why with no intermediate objective');
 check(projectContext(graph,{query:'unknown',purpose:'action',search_terms:['astronomie']}).items.length===0,'Unmatched specific topic never substitutes an unrelated goal');
 check(projectContext(graph,{query:'focus',purpose:'action',intentions:['enrich'],search_terms:[]}).items.length===0,'No intention match stays empty');
 const replacement=projectContext(graph,{query:'scrolling',purpose:'replacement',search_terms:[]});
 check(replacement.items[0].kind==='repulsion'&&replacement.edges.some(x=>x.relation==='instead'),'Replacement starts from a repulsion and returns its recorded alternative');
-const all=projectContext(graph,{query:'overview',purpose:'explicit',search_terms:[],kinds:['habit','objective','repulsion','vision','wisdom'],limit:12});
+const all=projectContext(graph,{query:'overview',purpose:'explicit',search_terms:[],kinds:['habit','objective','repulsion','vision','story'],limit:12});
 check(new Set(all.items.map(x=>x.kind)).size===5,'Explicit overview can start from every view');
-const disconnected=projectGraph({steps:[{t:'party',is:['celebrate']},{t:'art',is:['express']}]});
+const disconnected=projectGraph({habits:[{t:'party',is:['celebrate']},{t:'art',is:['express']}]});
 check(projectContext(disconnected,{query:'art',purpose:'action',search_terms:['art'],limit:1}).items[0].text==='art','Whole word matching does not confuse art with party');
 for(const label of ['読書','阅读','قراءة','पढ़ना','독서','อ่านหนังสือ','écrire','Читать']){
- const g=projectGraph({steps:[{t:label,is:['focus']}]});
+ const g=projectGraph({habits:[{t:label,is:['focus']}]});
  check(projectContext(g,{query:label,purpose:'action',search_terms:[label]}).items[0]?.text===label,'Unicode topic/ref preserved: '+label);
 }
 for(const options of [{intentions:['productive']},{intentions:'focus'},{kinds:['sixth_view']},{search_terms:['']},{include_sound:'yes'},{search_terms:Array(9).fill('x')}]){
  assert.throws(()=>projectContext(graph,{query:'x',purpose:'action',...options}));checks++;
 }
 const playlist='https://open.spotify.com/playlist/fixture?si=A%2FB&locale=ja';
-const tables={totehms:[{steps:snapshot.steps}],...snapshot,
+const tables={totehms:[{habits:snapshot.habits}],...snapshot,
  intention_music:[{intention:'focus',title:'静かな音',url:playlist,active:true},{intention:'express',title:'Jazz',url:null,active:true},{intention:'love',title:'Old',url:'https://example.test/old',active:false}],
  element_media:[]};
-tables.visions[0].image=uid+'/private-image.png';
-delete tables.steps;
+tables.objectives.find(r=>r.id===id(3)).image=uid+'/private-image.png';
+delete tables.habits;
 const reads=[];
-const db={from(table){let filters=[],n=Infinity,sort=null;const q={select(){return q},eq(k,v){filters.push(r=>k==='user_id'||r[k]===v);if(k==='user_id')assert.equal(v,uid);return q},is(k,v){filters.push(r=>r[k]===v);return q},or(v){assert.equal(v,'status.is.null,status.not.in.(achieved,abandoned,converted)');filters.push(r=>!['achieved','abandoned','converted'].includes(r.status));return q},in(k,v){filters.push(r=>v.includes(r[k]));return q},gt(k,v){filters.push(r=>r[k]>v);return q},lte(k,v){filters.push(r=>r[k]<=v);return q},limit(v){n=v;return q},order(k,{ascending=true}={}){sort=[k,ascending];return q},then(ok,no){reads.push(table);return Promise.resolve({data:(tables[table]??[]).filter(r=>filters.every(f=>f(r))).sort((a,b)=>sort?String(a[sort[0]]).localeCompare(String(b[sort[0]]))*(sort[1]?1:-1):0).slice(0,n),error:null}).then(ok,no)}};return q}};
+const db={from(table){let filters=[],n=Infinity,sort=null;const q={select(){return q},eq(k,v){filters.push(r=>k==='user_id'||r[k]===v);if(k==='user_id')assert.equal(v,uid);return q},is(k,v){filters.push(r=>r[k]===v);return q},not(k,op,v){assert.equal(op,'is');assert.equal(v,null);filters.push(r=>r[k]!==null&&r[k]!==undefined);return q},or(v){assert.ok(['status.is.null,status.not.in.(achieved,abandoned,converted)','status.is.null,status.eq.active'].includes(v));filters.push(v.endsWith('eq.active')?r=>r.status==null||r.status==='active':r=>!['achieved','abandoned','converted'].includes(r.status));return q},in(k,v){filters.push(r=>v.includes(r[k]));return q},gt(k,v){filters.push(r=>r[k]>v);return q},lte(k,v){filters.push(r=>r[k]<=v);return q},limit(v){n=v;return q},order(k,{ascending=true}={}){sort=[k,ascending];return q},then(ok,no){reads.push(table);return Promise.resolve({data:(tables[table]??[]).filter(r=>filters.every(f=>f(r))).sort((a,b)=>sort?String(a[sort[0]]).localeCompare(String(b[sort[0]]))*(sort[1]?1:-1):0).slice(0,n),error:null}).then(ok,no)}};return q}};
 const withSound=await retrieveContext(db,uid,{query:'集中したい',purpose:'action',intentions:['focus'],search_terms:[],include_sound:true});
 check(withSound.sounds.items.length===1&&withSound.sounds.items[0].url===playlist,'Selected intention returns the exact saved playlist, unchanged');
 check(withSound.sounds.items[0].content_accessed===false,'Returning a link is not listening to the playlist');
@@ -76,7 +77,7 @@ check(ownIllustration.items.length===1&&ownIllustration.items[0].element.ref==='
 check(ownIllustration.items[0].content_shared===false&&!JSON.stringify(ownIllustration).includes('private/original.png')&&!JSON.stringify(ownIllustration).includes('not shared'),'An illustrative medium remains metadata, without its pixels or private storage location');
 const creatorCalls=[];
 const creatorDb={rpc:async(name,args)=>{creatorCalls.push({name,args});return {error:null,data:name==='chatgpt_member_orders'?{ok:true,orders:{}}:
- args.p_action==='member'?{ok:true,pseudo:'writer',steps:[{t:'Lire',is:['focus']}]}:
+ args.p_action==='member'?{ok:true,pseudo:'writer',habits:[{t:'Lire',is:['focus']}]}:
  {ok:true,items:[{id:id(612),kind:'h',ref:'Lire',mime:'image/png',path:'creator/private.png'}]}};}};
 const creatorElement=await readMember(creatorDb,'checked-grant','writer',{query:'reading',purpose:'action',intentions:['focus'],search_terms:[]});
 const creatorIllustration=await memberMedia(creatorDb,'checked-grant','writer',{kind:'habit',ref:'Lire'});
