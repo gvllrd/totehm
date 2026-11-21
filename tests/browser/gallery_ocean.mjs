@@ -136,7 +136,7 @@ try{
    check(sample.entry.landscape.ocean.detailMapsLoaded===2&&sample.entry.landscape.ocean.detailMapFailures===0,'both local ocean maps finish loading '+viewport.width);
    const initialFoam=sample.entry.landscape.ocean.foamSimulation;
    check(initialFoam.supported&&initialFoam.initialized&&initialFoam.pingPong&&initialFoam.targets===2&&initialFoam.compressionDriven&&initialFoam.simulationSize===(viewport.width<650?128:256),'persistent aeration uses two actual-size compression-driven GPU targets '+viewport.width);
-   check(sample.entry.landscape.ocean.profile==='lisbon'&&sample.entry.landscape.ocean.contactFoam&&sample.entry.landscape.ocean.wavelengthMetres>590,'Lisbon has the long swell and water-surface contact foam '+viewport.width);
+   check(sample.entry.landscape.ocean.profile==='lisbon'&&sample.entry.landscape.ocean.coastalShoaling&&sample.entry.landscape.ocean.crestFaceCascades&&sample.entry.landscape.ocean.contactFoam&&sample.entry.landscape.ocean.wavelengthMetres>590,'Lisbon has the long swell and water-surface contact foam '+viewport.width);
    check(sample.entry.landscape.ocean.curledSurface&&sample.entry.landscape.ocean.mainChop===1.46&&sample.entry.landscape.ocean.littoralSpilling,'breaking crests belong to the continuous spherical water surface '+viewport.width);
    const spindrift=sample.entry.landscape.ocean.spindrift;
    check(spindrift.kind==='raymarched-sea-spindrift'&&spindrift.parentClock&&spindrift.externalFiles===0&&spindrift.textures===0&&spindrift.samplesPerRay===5&&spindrift.maximumOpacity<=.13,'windblown sea mist shares the water clock and owns no external images '+viewport.width);

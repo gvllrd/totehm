@@ -16,6 +16,8 @@ try{
  assert.ok(surfaceAttachedFoam&&water.contactFoam&&water.littoralSpilling);
  assert.equal(water.baseHeight,stillOceanHeight(0,0));
  assert.ok(water.wavelengthMetres>590&&water.crestUpperBound< -10);
+ assert.ok(water.coastalShoaling&&water.crestFaceCascades&&water.shoalCrestLift===9.5);
+ assert.equal(oceanNY.diagnostics().shoalCrestLift,0);
  assert.equal(oceanNY.diagnostics().mainChop,1.8);
  assert.equal(oceanNY.diagnostics().contactFoam,false);
  const waveBound=(42*(1+.26+.095)+9*1.18+5+3.6+2.3+1.2)*CRISTO_WAVE_SHADOW.transmission;

@@ -20,8 +20,11 @@ function charredBirch(radius, length, seed, mobile) {
   const knot = .16 * Math.exp(-((angle - 1) ** 2 / .13 + (v - .14) ** 2 / .028));
   const capWear = Math.abs(v) > .49 && Math.hypot(x, z) > .001
    ? .012 * Math.sin(angle * 4 + seed) + .005 * Math.sin(angle * 13 + v) : 0;
+  // A split log has a broad cut face, rather than a perfect round tube.
+  // Its chord varies by log; broken caps and bark remain real geometry.
+  const cutPlane=radius*(.48+.10*Math.sin(seed));
   points.setXYZ(i,
-   x * (ridge + knot - split) + .014 * Math.sin(v * 5 + seed),
+   Math.min(cutPlane,x * (ridge + knot - split) + .014 * Math.sin(v * 5 + seed)),
    y + capWear,
    z * (ridge + knot - split) + .008 * Math.cos(v * 7 + seed));
  }
@@ -31,37 +34,51 @@ function charredBirch(radius, length, seed, mobile) {
  return geometry;
 }
 
-function burningWood(clock, logLength) {
+function burningWood(clock, logLength, logRadius) {
  const material = new T.MeshStandardMaterial({color:0x302018,roughness:.96,metalness:0});
  material.name = 'Split hardwood, growth rings, scorched bark and incandescent cracks';
- material.customProgramCacheKey = () => 'outdoor-hardwoods-v1';
+ material.customProgramCacheKey = () => 'outdoor-hardwoods-v2';
  material.onBeforeCompile = shader => {
   shader.uniforms.uTimeWood = clock;
   shader.uniforms.uLogLength = {value:logLength};
+  shader.uniforms.uLogRadius = {value:logRadius};
   shader.vertexShader = shader.vertexShader
    .replace('#include <common>', '#include <common>\nvarying vec3 vWood,vWoodNormal;')
    .replace('#include <begin_vertex>', '#include <begin_vertex>\nvWood=position;vWoodNormal=normal;');
   shader.fragmentShader = shader.fragmentShader
    .replace('#include <common>', `#include <common>
-    uniform float uTimeWood,uLogLength;varying vec3 vWood,vWoodNormal;
+    uniform float uTimeWood,uLogLength,uLogRadius;varying vec3 vWood,vWoodNormal;
     float grainHash(vec2 p){p=fract(p*vec2(.1031,.11369));p+=dot(p,p.yx+19.19);return fract(p.x*p.y);}
     float grainNoise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(grainHash(i),grainHash(i+vec2(1,0)),f.x),mix(grainHash(i+vec2(0,1)),grainHash(i+vec2(1)),f.x),f.y);}`)
    .replace('#include <map_fragment>', `#include <map_fragment>
-    float angle=atan(vWood.z,vWood.x), r=length(vWood.xz), end=abs(vWood.y)*2./uLogLength;
+    vec2 grainCenter=vWood.xz-vec2(.009,-.006);
+    float angle=atan(grainCenter.y,grainCenter.x), r=length(grainCenter), end=abs(vWood.y)*2./uLogLength;
     vec2 bark=vec2(angle*5.9,vWood.y*17.2);
     float fissure=abs(sin(bark.x*5.2+grainNoise(bark*vec2(.38,.24))*5.2));
     float fine=grainNoise(bark*vec2(3.1,1.8)), relief=fissure*.0014+fine*.0009;
-    float face=smoothstep(.56,.96,abs(normalize(vWoodNormal).y));
-    float ring=sin(r*660.+grainNoise(vWood.xz*30.)*2.8+sin(angle*3.)*.7);
+    vec3 woodNormal=normalize(vWoodNormal);
+    float face=smoothstep(.56,.96,abs(woodNormal.y));
+    float splitFace=smoothstep(.82,.99,woodNormal.x)*(1.-face);
+    float ring=sin(r*440.+grainNoise(vWood.xz*30.)*2.8+sin(angle*3.)*.7);
     float ringFade=1.-smoothstep(.5,2.4,fwidth(ring));
     vec3 cut=mix(vec3(.103,.047,.018),vec3(.31,.164,.073),(.56+.36*ring*ringFade)*(.77+.23*fine));
+    float capSplit=abs(sin(angle*3.+grainNoise(vWood.xz*24.)*.7));
+    float capAA=max(fwidth(capSplit),.012);
+    float capCrack=(1.-smoothstep(.015,.048+capAA*.3,capSplit))*smoothstep(.19,.88,r/uLogRadius);
+    float charEdge=smoothstep(.55,1.03,r/uLogRadius);
+    cut=mix(cut,vec3(.024,.014,.008),clamp(charEdge*.85+capCrack*.8,0.,1.));
     float ashy=smoothstep(.48,.82,grainNoise(bark*.68))*(1.-smoothstep(.43,.95,end));
     vec3 shell=mix(vec3(.021,.010,.006),vec3(.119,.062,.029),smoothstep(.32,.98,end)*(.38+.62*fissure));
     shell=mix(shell,vec3(.20,.166,.127),ashy*.75)*(.61+.39*fine);
     float aa=max(fwidth(fissure),.018);
     float hot=(1.-smoothstep(.022,.071+aa*.17,fissure))*smoothstep(.5,.78,grainNoise(bark*.74))*pow(max(0.,1.-end),1.8)*(1.-smoothstep(.19,.55,aa))*(1.-face);
     hot*=.69+.31*sin(uTimeWood*1.1+bark.x*1.8+bark.y*2.2);
-    diffuseColor.rgb=mix(shell,cut,face);`)
+    float fibers=grainNoise(vec2(vWood.z*114.,vWood.y*3.2));
+    vec3 splitWood=mix(vec3(.20,.097,.035),vec3(.074,.032,.013),fibers);
+    float innerChar=(1.-smoothstep(.17,.87,end))*(.67+.33*grainNoise(bark*.38));
+    splitWood=mix(splitWood,shell,innerChar);
+    hot+=splitFace*innerChar*(1.-smoothstep(.025,.075+aa*.15,fissure))*.19;
+    diffuseColor.rgb=mix(mix(shell,splitWood,splitFace),cut,face);`)
    .replace('#include <normal_fragment_maps>', `#include <normal_fragment_maps>
     vec3 dxWood=dFdx(-vViewPosition),dyWood=dFdy(-vViewPosition);
     vec3 uWood=cross(dyWood,normal),vRelief=cross(normal,dxWood);
@@ -91,12 +108,45 @@ function flowTexture(mobile) {
  return {texture, edge};
 }
 
+function burningCoals(clock, flow) {
+ const material=new T.MeshStandardMaterial({color:0x130b07,roughness:1});
+ material.name='Dark charcoal crust, ash and independently breathing ember fissures';
+ material.customProgramCacheKey=()=> 'outdoor-coal-fractures-v1';
+ material.onBeforeCompile=shader=>{
+  shader.uniforms.uCoalTime=clock;
+  shader.uniforms.uCoalFlow={value:flow.texture};
+  shader.uniforms.uCoalScale={value:1/flow.edge};
+  shader.vertexShader=shader.vertexShader
+   .replace('#include <common>','#include <common>\nvarying vec3 vCoalLocal;varying float vCoalSeed;')
+   .replace('#include <begin_vertex>',`#include <begin_vertex>
+    vCoalLocal=position;vCoalSeed=0.;
+    #ifdef USE_INSTANCING
+     vCoalSeed=fract(sin(dot(instanceMatrix[3].xz,vec2(12.9898,78.233)))*43758.5453);
+    #endif`);
+  shader.fragmentShader=shader.fragmentShader
+   .replace('#include <common>',`#include <common>
+    varying vec3 vCoalLocal;varying float vCoalSeed;
+    uniform float uCoalTime,uCoalScale;uniform highp sampler3D uCoalFlow;`)
+   .replace('#include <map_fragment>',`#include <map_fragment>
+    vec3 crustField=texture(uCoalFlow,(vCoalLocal*71.+vec3(vCoalSeed*53.,vCoalSeed*19.,vCoalSeed*31.))*uCoalScale).rgb;
+    float ash=smoothstep(.53,.78,crustField.g);
+    diffuseColor.rgb=mix(vec3(.009,.006,.004),vec3(.16,.14,.115),ash)*(.65+.35*crustField.b);
+    float edge=abs(crustField.r-.52),aa=max(fwidth(edge),.008);
+    float fracture=1.-smoothstep(.016,.070+aa*.22,edge);
+    float breath=.57+.20*sin(uCoalTime*(.48+vCoalSeed*.39)+vCoalSeed*41.)+.14*sin(uCoalTime*1.83+vCoalSeed*17.);
+    float coalHeat=fracture*(.23+.77*vCoalSeed)*breath*(1.-ash*.65);`)
+   .replace('#include <emissivemap_fragment>',`#include <emissivemap_fragment>
+    totalEmissiveRadiance+=mix(vec3(1.55,.105,.002),vec3(2.45,.52,.025),smoothstep(.52,.93,coalHeat))*coalHeat;`);
+ };
+ return material;
+}
+
 function combustion(clock, flow, center, extent, maxSteps) {
  const uniforms = {
   uTime: clock, uFlow: {value:flow.texture}, uScale: {value:1/flow.edge},
   uCenter: {value:center}, uHalf: {value:extent}, uSteps: {value:maxSteps}
  };
- return new T.ShaderMaterial({uniforms, transparent:true, depthWrite:false, side:T.FrontSide,
+ return new T.ShaderMaterial({uniforms, transparent:true, depthWrite:false, side:T.BackSide, premultipliedAlpha:true, toneMapped:true,
   vertexShader:`varying vec3 vPoint;void main(){vPoint=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,
   fragmentShader:`uniform float uTime,uScale,uSteps;uniform highp sampler3D uFlow;uniform vec3 uCenter,uHalf;varying vec3 vPoint;
    vec3 flow(vec3 p){return texture(uFlow,(p+.5)*uScale).rgb;}
@@ -116,19 +166,24 @@ function combustion(clock, flow, center, extent, maxSteps) {
      vec3 small=flow(vec3(q.x*18.4+rolls.b*.7,y*9.5-uTime*6.6,q.y*19.2+rolls.r*.7));
      float breadth=mix(.235,.075,rise)*(.76+slow.g*.36);
      vec2 sweep=vec2(.086*sin(y*5.7-uTime*2.1),.07*sin(y*7.3+uTime*1.6))*rise;
-     float left=.96*spot(q,vec2(-.235,.125)+sweep,breadth*.76);
-     float right=spot(q,vec2(.225,.105)-sweep,breadth*.78);
-     float back=spot(q,vec2(.008,-.225)+sweep.yx,breadth*.94);
-     float body=max(max(left,right),back);
+     // Roots follow separate burning logs; the rising gas converges into
+     // one shifting plume. No fixed row of candle-shaped flames persists.
+     float gather=smoothstep(.12,.87,rise);
+     vec2 plume=vec2(.025,-.015)+vec2(slow.r-.5,slow.b-.5)*rise*.12;
+     float left=.96*spot(q,mix(vec2(-.235,.125),plume,gather)+sweep,breadth*.85);
+     float right=spot(q,mix(vec2(.225,.105),plume,gather)-sweep,breadth*.88);
+     float back=spot(q,mix(vec2(.008,-.225),plume,gather)+sweep.yx,breadth*.94);
+     float heart=.76*spot(q,plume,mix(.27,.075,rise))*smoothstep(.025,.22,rise);
+     float body=max(max(left,right),max(back,heart));
      float lean=.10*sin(uTime*1.65+p.x*7.1)+.19*(slow.r-.5);
      float height=1.40-.51*length(p.xz)+lean+.10*sin(uTime*2.7+p.z*8.);
      float tip=1.-smoothstep(height-.24,height+.15,y);
      float mixture=rolls.r*.68+small.g*.23+slow.g*.09;
      float edge=.365+rise*.27+.038*sin(y*23.-uTime*7.9+rolls.g*6.1);
-     float react=smoothstep(edge-.035,edge+.041,mixture);
+     float react=smoothstep(edge-.055,edge+.061,mixture);
      float strands=mix(1.,smoothstep(.32,.69,small.b+rolls.g*.19),smoothstep(.43,.82,rise));
      float boundary=(1.-smoothstep(.50,.68,length(p.xz)))*(1.-smoothstep(1.51,1.68,y));
-     float sheet=smoothstep(.035,.31,body*react);
+     float sheet=smoothstep(.024,.30,body*react);
      float density=body*sheet*tip*strands*boundary*smoothstep(.01,.13,y);
      float heat=clamp(.67+.31*react-.48*rise+.14*(small.r-.5)-.14*(1.-body),0.,1.);
      vec3 flame=mix(vec3(1.6,.075,.0014),vec3(3.4,.86,.022),smoothstep(.46,.81,heat));
@@ -136,7 +191,9 @@ function combustion(clock, flow, center, extent, maxSteps) {
      float opacity=1.-exp(-12.8*density*stride);light+=(1.-alpha)*opacity*flame;alpha+=(1.-alpha)*opacity;
     }
     if(alpha<.008)discard;
-    gl_FragColor=vec4(light/max(alpha,.001),alpha*smoothstep(.008,.115,alpha));
+    // The integrated emitted light is already weighted by its density.
+    // Tone map that light directly so thin hot filaments retain luminosity.
+    gl_FragColor=vec4(light*1.02,alpha*.86);
     #include <tonemapping_fragment>
     #include <colorspace_fragment>
    }`
@@ -180,6 +237,22 @@ export function createOutdoorCampfire(scene,{mobile=false,onChange=()=>{},layout
  scene.add(root);
  const materials = new Set(), geometries = new Set(), solids = [], pickables = [];
  const clock = {value:11.7}, flow = flowTexture(mobile), stone = createWhiteStone({mobile,onChange});
+ // Keep the photographed limestone, with soot only on the faces exposed
+ // to the fuel bed. This material belongs to this fire, never to the paving.
+ const compileStone=stone.material.onBeforeCompile, stoneKey=stone.material.customProgramCacheKey();
+ stone.material.customProgramCacheKey=()=> stoneKey+'-wood-fire-soot-v1';
+ stone.material.onBeforeCompile=shader=>{
+  compileStone(shader);
+  shader.uniforms.uHearthSootOrigin={value:new T.Vector3(x,floor,z)};
+  shader.fragmentShader=shader.fragmentShader
+   .replace('#include <common>','#include <common>\nuniform vec3 uHearthSootOrigin;')
+   .replace('#include <map_fragment>',`#include <map_fragment>
+    vec3 hearthPoint=vAncientStoneWorld-uHearthSootOrigin;
+    float inward=1.-smoothstep(.56,.79,length(hearthPoint.xz));
+    float soot=inward*(.64+.36*(1.-smoothstep(.10,.30,hearthPoint.y)));
+    soot*=.70+.30*stoneNoise(vAncientStoneWorld.xz*31.);
+    diffuseColor.rgb=mix(diffuseColor.rgb,diffuseColor.rgb*vec3(.20,.16,.13),soot);`);
+ };
  const anchor = [x,floor+.72,z], minSteps = mobile ? 16 : 24, maxSteps = mobile ? 30 : 48;
  let disposed = false, dirty = true, moving = false, updates = 0, barkMeshes = 0;
  const own = (object,solid=false,pick=false) => {
@@ -219,11 +292,11 @@ export function createOutdoorCampfire(scene,{mobile=false,onChange=()=>{},layout
  ];
  logs.forEach(([start,end,radius],i)=>{
   const low=new T.Vector3(...start), high=new T.Vector3(...end), axis=high.clone().sub(low), length=axis.length();
-  const log=mesh(charredBirch(radius,length,1.4+i*3.1,mobile),burningWood(clock,length),low.add(high).multiplyScalar(.5).toArray(),'Split charred hardwood with exposed end grain',false,true);
+  const log=mesh(charredBirch(radius,length,1.4+i*3.1,mobile),burningWood(clock,length,radius),low.add(high).multiplyScalar(.5).toArray(),'Split charred hardwood with exposed end grain',false,true);
   log.quaternion.setFromUnitVectors(UP,axis.normalize());barkMeshes++;
  });
  const coalCount=mobile?70:122,ashCount=mobile?38:68;
- const coalMaterial=new T.MeshStandardMaterial({color:0x170b07,emissive:0x4a0b01,emissiveIntensity:.85,roughness:1});
+ const coalMaterial=burningCoals(clock,flow);
  const ashMaterial=new T.MeshStandardMaterial({color:0x938679,roughness:1});
  function scatter(count,material,radius,name,ash=false){
   const geometry=new T.IcosahedronGeometry(radius,ash?0:1), particles=own(new T.InstancedMesh(geometry,material,count)), transform=new T.Object3D(), light=new T.Color();
@@ -260,7 +333,7 @@ export function createOutdoorCampfire(scene,{mobile=false,onChange=()=>{},layout
    if(moving&&Number.isFinite(dt)&&dt>0){
     clock.value+=Math.min(.1,dt);updates++;dirty=true;
     const t=clock.value;warm.intensity=8.6*(.90+.055*Math.sin(t*8.9)+.076*Math.sin(t*2.8+1.7));
-    glow.intensity=1.5*(.95+.07*Math.sin(t*4.43));coalMaterial.emissiveIntensity=.71+.16*Math.sin(t*2.39);
+    glow.intensity=1.5*(.95+.07*Math.sin(t*4.43));
    }
    if(eye){
     const distance=Math.hypot(eye.x-x,eye.y-anchor[1],eye.z-z),steps=distance>10?minSteps:distance>5?maxSteps-8:maxSteps;
@@ -269,7 +342,7 @@ export function createOutdoorCampfire(scene,{mobile=false,onChange=()=>{},layout
    const change=dirty;dirty=false;return change;
   },
   diagnostics:()=>({kind:'outdoor-lisbon-wood-fire',present:!disposed,ready:!disposed,outdoor:true,position,anchor,hearthDiameter:2*RADIUS,
-   limestoneStones:stones,charredLogs:barkMeshes,brokenEndGrain:true,barkRelief:true,volumetricFlames:true,flameBounds:FLAME_BOUNDS,
+   limestoneStones:stones,sootInsideHearth:true,charredLogs:barkMeshes,splitLogFaces:true,brokenEndGrain:true,barkRelief:true,radialEndCracks:true,volumetricFlames:true,mergingFlamePlumes:true,integratedThermalEmission:true,independentEmberHeat:true,flameBounds:FLAME_BOUNDS,
    flameSteps:flameMaterial.uniforms.uSteps.value,maxFlameSteps:maxSteps,distanceLOD:true,clearSmoke:true,smokeParticles:smokeCount,
    smokeDrift:[1.8,3.4,-.92],glassSmokeCollector:false,blackPipe:false,metalCanopy:false,instancedCoals:coalCount,ashFlakes:ashCount,sparks:sparkCount,
    warmLights:2,lightIntensity:+warm.intensity.toFixed(2),time:+clock.value.toFixed(3),updates,moving,disposed}),

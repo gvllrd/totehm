@@ -207,7 +207,9 @@ export function createDrownedSky(scene,{mobile=false,onChange=()=>{}}={}){
      graded=graded*(1.22+clouds*.06*bloom)/(1.+graded*.16);
      graded+=vec3(.00075,.0011,.0024);
      float companion=1.-.74*smoothstep(.994,.99958,dot(d,uCompanionDirection));
-     sky=mix(sky,graded,uPlateBlend*companion);
+     // Keep the photographed detail along the galactic plane.
+     float galacticBand=1.-smoothstep(.035,.195,abs(lat));
+     sky=mix(sky,graded,uPlateBlend*companion*galacticBand);
     }
     float toward=dot(d,uNebulaDirection);
     vec2 cloudUV=.5+vec2(dot(d,uNebulaEast),dot(d,uNebulaNorth))*(.5/(max(.5,toward)*uNebulaExtent));
@@ -218,7 +220,10 @@ export function createDrownedSky(scene,{mobile=false,onChange=()=>{}}={}){
      float lunarClearance=1.-.82*smoothstep(.994,.9994,dot(d,uMoonDirection));
      sky=sky*(1.-.52*nebula.a*lunarClearance)+nebula.rgb*((1.11+.13*pulse)*lunarClearance);
     }
-    gl_FragColor=vec4(sky,1.);
+    // Deepen the visible shadows while preserving bright galactic filaments.
+    float luminance=dot(sky,vec3(.2126,.7152,.0722));
+    float nightExposure=mix(.042,.98,smoothstep(.034,.205,luminance));
+    gl_FragColor=vec4(sky*nightExposure,1.);
     #include <colorspace_fragment>
    }`
  }));
