@@ -25,8 +25,8 @@ Règle indispensable : l’œuvre exposée EST la première page canonique de so
 | `gallery-saucer-projection.mjs` · `gallery-experience-expansion.mjs` · `lisbon-first-page.mjs` · `opposites-front.mjs` | panneaux et faisceaux noirs depuis les soucoupes ; premières pages partagées et agrandissement continu vers les expériences |
 | `gallery-lisbon-controller.mjs` · `lisbon-sign-buttons.mjs` · `gallery-object-view.mjs` · `premium-case-view.mjs` · `gallery-outdoor-campfire.mjs` | manette originale et coffret 3D partagés avec leur plein écran ; feu de bois et crépitement stéréo |
 | `gallery-temple-landscape.mjs` | seul piton émergé, lumière lunaire et environnement nocturne préfiltré |
-| `gallery-liberty.mjs` · `gallery-lisbon-sea.mjs` | scan 3D de la statue de la Liberté à New York ; sanctuaire Cristo Rei et Ponte 25 de Abril submergés dans la mer de Lisbonne |
-| `gallery-drowned-ocean.mjs` · `gallery-ocean-foam.mjs` · `gallery-ocean-spindrift.mjs` | océan 3D à 360°, crêtes, écume persistante et embruns volumétriques |
+| `gallery-liberty.mjs` · `gallery-lisbon-sea.mjs` | scan 3D de la statue de la Liberté à New York ; Cristo Rei sculpté et submergé jusqu’aux pieds, tablier du Ponte 25 de Abril sous la mer de Lisbonne |
+| `gallery-drowned-ocean.mjs` · `gallery-ocean-foam.mjs` · `gallery-ocean-spindrift.mjs` | océan 3D à 360°, houle de près de 600 m à Lisbonne, crêtes à rupture intermittente, écume persistante et embruns |
 | `gallery-drowned-sky.mjs` · `gallery-drowned-planet.mjs` | Voie lactée, étoiles, météore, lune et globe submergé |
 | `gallery-spatial.mjs` · `gallery-render-quality.mjs` · `gallery-black-hole.mjs` | visite, physique, vol réel de la soucoupe et trou noir vers `/origin`, adaptation du DPR |
 | `vercel.json` · `api/location.js` · `api/card.js` | géographie, diagnostic sans cache et lecteurs sociaux |

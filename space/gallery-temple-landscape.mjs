@@ -6,7 +6,7 @@ import {createDrownedPlanet} from './gallery-drowned-planet.mjs';
 
 // The temple is the last dry summit. Its stone terrace stays above a flooded
 // world, under a permanent night; no land or daytime panorama is substituted.
-export function createTempleLandscape(scene,renderer,{onChange=()=>{},now=()=>new Date(),mobile=innerWidth<650}={}){
+export function createTempleLandscape(scene,renderer,{onChange=()=>{},now=()=>new Date(),mobile=innerWidth<650,place='lisbon'}={}){
  const root=new T.Group();root.name='The last summit — a new beginning above the flood';scene.add(root);
  const geometries=new Set(),materials=new Set(),textures=new Set();
  const ownGeometry=g=>(geometries.add(g),g),ownMaterial=m=>(materials.add(m),m);
@@ -16,7 +16,7 @@ export function createTempleLandscape(scene,renderer,{onChange=()=>{},now=()=>ne
  const horizon=new T.Color(0x101e32),fog=new T.FogExp2(horizon,.00024);scene.fog=fog;
  const sky=createDrownedSky(root,{mobile,onChange:changed});
  const planet=createDrownedPlanet(root,{mobile,onChange:changed,moonDirection:sky.moonDirection});
- const ocean=createDrownedOcean(root,{mobile,renderer,onChange:changed,moonDirection:sky.moonDirection,horizonColor:horizon,environmentTexture:sky.environmentTexture});
+ const ocean=createDrownedOcean(root,{mobile,renderer,onChange:changed,moonDirection:sky.moonDirection,horizonColor:horizon,environmentTexture:sky.environmentTexture,profile:place==='lisbon'?'lisbon':'open-ocean'});
  const hemisphere=new T.HemisphereLight(0x95b5da,0x242032,.62);root.add(hemisphere);
  const moon=new T.DirectionalLight(0xc2d9ff,1.65);moon.position.copy(sky.moonDirection).multiplyScalar(100);moon.castShadow=true;
  moon.shadow.mapSize.set(mobile?512:1024,mobile?512:1024);

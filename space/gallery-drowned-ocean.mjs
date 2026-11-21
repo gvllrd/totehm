@@ -2,15 +2,23 @@ import * as T from './vendor/three-0.180.0.mjs';
 import {WORLD_RADIUS,WORLD_CENTER_Y,drownedWorldGLSL} from './gallery-drowned-planet.mjs';
 import {createOceanFoam,OCEAN_FOAM_DOMAIN,OCEAN_FOAM_GLSL} from './gallery-ocean-foam.mjs';
 import {createOceanSpindrift} from './gallery-ocean-spindrift.mjs';
+import {CRISTO_REI_LOCATION,CRISTO_WAVE_SHADOW,oceanDomain} from './gallery-lisbon-water.mjs';
 
 // A dense radial surface resolves the water beside the sanctuary and the
 // distant breakers without placing an equally expensive grid on the horizon.
 export function createDrownedOcean(scene,{
  mobile=false,renderer=null,onChange=()=>{},moonDirection=new T.Vector3(.38,.43,-.82),
- horizonColor=new T.Color(0x101e32),environmentTexture=null
+ horizonColor=new T.Color(0x101e32),environmentTexture=null,profile='open-ocean'
 }={}){
  const root=new T.Group();root.name='The great flood — rolling walls of water';scene.add(root);
- const BASE=-96,CALM=110,SPAN=24000;
+
+ const BASE=WORLD_CENTER_Y+WORLD_RADIUS,CALM=110,SPAN=24000;
+ const coastal=profile==='lisbon';
+ const mainFrequency=coastal?.0105:.0136,mainOmega=coastal?Math.sqrt(9.81*mainFrequency):.365;
+ const mainAmplitude=coastal?42:40,mainChop=coastal?1.46:1.8,mainCurl=coastal?9.5:10;
+ const second=coastal?.26:.30,third=coastal?.095:.12;
+ const [shoreX,shoreZ]=oceanDomain(CRISTO_REI_LOCATION.x,CRISTO_REI_LOCATION.z);
+ const shore=`vec2(${shoreX.toFixed(5)},${shoreZ.toFixed(5)})`;
  const innerRings=mobile?12:16,nearRings=mobile?176:256,farRings=mobile?36:48;
  const nearEdge=mobile?1250:1400,rings=innerRings+nearRings+farRings,sectors=mobile?384:512;
  const nearStep=(nearEdge-110)/nearRings;
@@ -22,9 +30,8 @@ export function createDrownedOcean(scene,{
  const textures=new Set(),loader=globalThis.document?new T.TextureLoader():null;
  function fallback(pixel){const t=new T.DataTexture(new Uint8Array(pixel),1,1);t.needsUpdate=true;textures.add(t);return t;}
  const flatNormal=fallback([128,128,255,255]),emptyFoam=fallback([0,0,128,255]);
- // Every term is bounded independently. The five-metre rolled lip is included;
- // even simultaneous constructive interference remains beneath the terrace.
- const crestUpperBound=BASE+40*(1+.30+.12)+5+9*(1+.18)+5+3.6+2.3+1.2;
+ // Keep even constructive interference below the island's dry summit.
+ const crestUpperBound=BASE+mainAmplitude*(1+second+third)+mainCurl*.5+9*(1+.18)+5+3.6+2.3+1.2;
  const uniforms={uOceanTime:{value:0},uMoon:{value:moonDirection.clone().normalize()},uHorizon:{value:horizonColor.clone()},uEnvironment:{value:environmentTexture},uHasEnvironment:{value:!!environmentTexture},uNormalMap:{value:flatNormal},uFoamMap:{value:emptyFoam}};
  function detailMap(name,uniform){
   if(!loader)return;
@@ -73,7 +80,16 @@ export function createDrownedOcean(scene,{
    float sampleStep=max(radialStep,angularStep);
    float stepDerivative=radialStep>=angularStep?(radius<${nearEdge}.?0.:farScale):${Math.PI*2/sectors};
    float e=u*u*(3.-2.*u);vec2 de=q/radius*(6.*u*(1.-u)/250.);
-   vec3 p=vec3(q.x,-96.,q.y),dx=vec3(1,0,0),dz=vec3(0,0,1);
+   ${coastal?`
+    vec2 lee=q-${shore};
+    float distanceFromPier=max(length(lee),.001);
+    float apron=clamp((distanceFromPier-${CRISTO_WAVE_SHADOW.inner}.)/${CRISTO_WAVE_SHADOW.outer-CRISTO_WAVE_SHADOW.inner}.,0.,1.);
+    float shade=mix(${CRISTO_WAVE_SHADOW.transmission},1.,apron*apron*(3.-2.*apron));
+    float edgeSlope=(1.-${CRISTO_WAVE_SHADOW.transmission})*6.*apron*(1.-apron)/${CRISTO_WAVE_SHADOW.outer-CRISTO_WAVE_SHADOW.inner}.;
+    de=de*shade+e*edgeSlope*lee/distanceFromPier;
+    e*=shade;
+    `:''}
+   vec3 p=vec3(q.x,${BASE}.,q.y),dx=vec3(1,0,0),dz=vec3(0,0,1);
    vec2 a=q-vec2(-2900.,-4500.),b=q-vec2(-6500.,-4800.);
    float ra=max(length(a),1.),rb=max(length(b),1.);vec2 da=a/ra,db=b/rb;
    vec2 dax=vec2(1.-da.x*da.x,-da.x*da.y)/ra,daz=vec2(-da.x*da.y,1.-da.y*da.y)/ra;
@@ -85,35 +101,50 @@ export function createDrownedOcean(scene,{
    float warp=.45*sin(wa)+.18*sin(wb)+.12*sin(wc)*warpFilter;
    vec2 warpGradient=vec2(.0013,.0021)*.45*cos(wa)+vec2(.004,-.002)*.18*cos(wb)
     +vec2(.544,.839)*(.00228*cos(wc)*warpFilter)+radial*(.12*sin(wc)*warpSlope);
-   float pa=ra*.0136+warp-time*.365-1.68;
+   float pa=ra*${mainFrequency}+warp-time*${mainOmega}-${coastal?2.15:1.68};
    float pb=rb*.0225+.21*sin(q.x*.0021+q.y*.0014)-time*.47+.35;
-   vec2 ga=da*.0136+warpGradient,gb=db*.0225+vec2(.0021,.0014)*.21*cos(q.x*.0021+q.y*.0014);
+   vec2 ga=da*${mainFrequency}+warpGradient,gb=db*.0225+vec2(.0021,.0014)*.21*cos(q.x*.0021+q.y*.0014);
    // Long crests rise and fall along their length, rather than drawing
    // uninterrupted parallel ribbons around the island. The envelope never
    // exceeds one; include its gradient in the actual displaced normal.
    float crossA=dot(q,vec2(-.839,.544))*.0031+time*.037;
    float modulation=.86+.14*sin(crossA);
    vec2 modulationGradient=vec2(-.839,.544)*(.000434*cos(crossA));
-   float la=bandLimit(sampleStep*.0136),lb=bandLimit(sampleStep*.0225),lc=bandLimit(sampleStep*.035);
-   float dla=bandDerivative(sampleStep*.0136)*.0136*stepDerivative;
+   float spill=1.;
+   vec2 spillGradient=vec2(0.);
+   ${coastal?`
+    const vec2 setGradient=vec2(.0022,.00115);
+    float setPhase=dot(q,setGradient)-time*.105+.8;
+    float setEnvelope=.86+.14*cos(setPhase);
+    modulationGradient=modulationGradient*setEnvelope-modulation*.14*sin(setPhase)*setGradient;
+    modulation*=setEnvelope;
+    const vec2 breakGradient=vec2(-.00284,.0021);
+    float breakPhase=dot(q,breakGradient)-time*.086+1.13;
+    float t=clamp((.5+.5*sin(breakPhase)-.25)/.60,0.,1.);
+    spill=.18+.82*t*t*(3.-2.*t);
+    spillGradient=breakGradient*(.82*6.*t*(1.-t)*.5*cos(breakPhase)/.60);
+   `:''}
+   float la=bandLimit(sampleStep*${mainFrequency}),lb=bandLimit(sampleStep*.0225),lc=bandLimit(sampleStep*.035);
+   float dla=bandDerivative(sampleStep*${mainFrequency})*${mainFrequency}*stepDerivative;
    float dlb=bandDerivative(sampleStep*.0225)*.0225*stepDerivative;
    float dlc=bandDerivative(sampleStep*.035)*.035*stepDerivative;
-   vec2 ha=vec2(bandLimit(sampleStep*.0272),bandLimit(sampleStep*.0408));
-   vec2 dha=vec2(bandDerivative(sampleStep*.0272)*.0272,bandDerivative(sampleStep*.0408)*.0408)*stepDerivative;
+   vec2 ha=vec2(bandLimit(sampleStep*${mainFrequency*2}),bandLimit(sampleStep*${mainFrequency*3}));
+   vec2 dha=vec2(bandDerivative(sampleStep*${mainFrequency*2})*${mainFrequency*2},bandDerivative(sampleStep*${mainFrequency*3})*${mainFrequency*3})*stepDerivative;
    float hb=bandLimit(sampleStep*.0450),dhb=bandDerivative(sampleStep*.0450)*.0450*stepDerivative;
-   float curlFilter=bandLimit(sampleStep*.0544),curlSlope=bandDerivative(sampleStep*.0544)*.0544*stepDerivative;
+   float curlFilter=bandLimit(sampleStep*${mainFrequency*4}),curlSlope=bandDerivative(sampleStep*${mainFrequency*4})*${mainFrequency*4}*stepDerivative;
+   vec2 curlGradient=${mainCurl.toFixed(1)}*(radial*curlSlope*spill+curlFilter*spillGradient);
    // A dominant travelling front, steepened horizontally before it spills.
    // Smaller swells follow the same storm: they ruffle long ridges instead
    // of intersecting at right angles to produce isolated conical hills.
    // The same continuous water surface rolls over its leading face. Its
    // tangents follow the fold, instead of placing separate lips above it.
-   swell(p,dx,dz,da,dax,daz,pa,ga,40.,vec2(.30,.12)*ha,1.8,10.*curlFilter,e*la*modulation,(de*la+radial*(e*dla))*modulation+e*la*modulationGradient);
-   // Include the slowly changing LOD amplitudes in the analytic normal.
-   float harmonicDerivative=40.*(.30*dha.x*sin(pa*2.)+.12*dha.y*sin(pa*3.));
+   swell(p,dx,dz,da,dax,daz,pa,ga,${mainAmplitude.toFixed(1)},vec2(${second},${third})*ha,${mainChop},${mainCurl.toFixed(1)}*curlFilter*spill,e*la*modulation,(de*la+radial*(e*dla))*modulation+e*la*modulationGradient);
+   // The normal follows both the crests and the variable spilling lip.
+   float harmonicDerivative=${mainAmplitude.toFixed(1)}*(${second}*dha.x*sin(pa*2.)+${third}*dha.y*sin(pa*3.));
    float cva=.5+.5*sin(pa+.42),lipA=pow(cva,9.);
-   vec3 curlDerivative=vec3(da.x,.5,da.y)*(10.*curlSlope*lipA);
-   dx+=e*la*modulation*(vec3(0.,harmonicDerivative*radial.x,0.)+curlDerivative*radial.x);
-   dz+=e*la*modulation*(vec3(0.,harmonicDerivative*radial.y,0.)+curlDerivative*radial.y);
+   vec3 lipDirection=vec3(da.x,.5,da.y)*lipA;
+   dx+=e*la*modulation*(vec3(0.,harmonicDerivative*radial.x,0.)+lipDirection*curlGradient.x);
+   dz+=e*la*modulation*(vec3(0.,harmonicDerivative*radial.y,0.)+lipDirection*curlGradient.y);
    swell(p,dx,dz,db,dbx,dbz,pb,gb,9.,vec2(.18*hb,0.),.28,0.,e*lb,de*lb+radial*(e*dlb));
    dx.y+=e*lb*9.*.18*dhb*sin(pb*2.)*radial.x;dz.y+=e*lb*9.*.18*dhb*sin(pb*2.)*radial.y;
    const vec2 dc=vec2(.34014,.94037);float pc=dot(q,dc)*.035-time*.586+.7;
@@ -134,12 +165,12 @@ export function createDrownedOcean(scene,{
    dz.y+=e*detail*shortGradient.y+shortEnvelopeGradient.y*shortHeight;
    float ca=.5+.5*sin(pa+.42),cb=.5+.5*sin(pb+.42);
    float compression=clamp(1.-(dx.x*dz.z-dx.z*dz.x),0.,1.);
-   float visibleCrestA=la*bandLimit(sampleStep*.0408),visibleCrestB=lb*bandLimit(sampleStep*.0675);
+   float visibleCrestA=la*bandLimit(sampleStep*${mainFrequency*3}),visibleCrestB=lb*bandLimit(sampleStep*.0675);
    // Bend the resolved sea onto the same globe as the distant drowned world.
    // Transform both true surface tangents through this map's Jacobian; merely
    // rotating its old normal would flatten the steep breaking fronts.
    float arc=max(length(p.xz),.001),theta=arc/${WORLD_RADIUS}.;
-   vec2 direction=p.xz/arc;float sn=sin(theta),cs=cos(theta),height=p.y+96.;
+   vec2 direction=p.xz/arc;float sn=sin(theta),cs=cos(theta),height=p.y-(${BASE}.);
    float curvedRadius=${WORLD_RADIUS}.+height,s=curvedRadius*sn/arc,c=curvedRadius*cs/${WORLD_RADIUS}.;
    vec3 outward=vec3(direction.x*sn,cs,direction.y*sn);
    vec3 bendX=vec3(s+(c-s)*direction.x*direction.x,-curvedRadius*sn/${WORLD_RADIUS}.*direction.x,(c-s)*direction.x*direction.y);
@@ -149,7 +180,7 @@ export function createDrownedOcean(scene,{
    OceanSurface result;result.p=p;result.normal=normalize(cross(dz,dx));result.outward=outward;result.waveHeight=height;result.phaseA=pa;result.phaseB=pb;result.gradientA=ga;
    result.shortFoam=detail*e*max(smoothstep(.36,.98,sin(phase.x))*amp.x/3.6,smoothstep(.58,.98,sin(phase.y))*amp.y/2.3*.65);
    result.energy=e*la;result.crest=e*max(pow(ca,5.)*visibleCrestA,pow(cb,5.)*.48*visibleCrestB);
-   result.breaking=e*max(pow(ca,7.)*visibleCrestA*(.46+.54*smoothstep(.10,.62,compression)),pow(cb,9.)*.38*visibleCrestB);
+   result.breaking=e*max(pow(ca,7.)*visibleCrestA*(${coastal?'.17*spill+(.23+.60*spill)*smoothstep(.10,.62,compression)':'.46+.54*smoothstep(.10,.62,compression)'}),pow(cb,9.)*.38*visibleCrestB);
    result.compression=compression;
    return result;
   }
@@ -261,6 +292,17 @@ export function createDrownedOcean(scene,{
     float freshAeration=smoothstep(.09,.55,fresh);
     vec3 aeration=mix(vec3(.23,.35,.39),vec3(.61,.68,.70),freshAeration);
     vec3 foamColour=aeration*(.38+.48*nl+.14*hemi)*(.88+.12*foamA.b);
+    ${coastal?`
+     vec2 contact=q-${shore};
+     const vec2 incoming=vec2(.51,.86);
+     float downstream=dot(contact,incoming),across=abs(dot(contact,vec2(-.86,.51)));
+     float wetEdge=exp(-pow((length(contact)-13.)/8.,2.))*(1.-smoothstep(-2.,14.,downstream));
+     float eddy=smoothstep(3.,11.,downstream)*(1.-smoothstep(15.,36.,downstream))*exp(-pow(across/(10.+max(0.,downstream)*.17),2.));
+     float flecks=smoothstep(.30,.72,foamA.g*.54+drain.g*.46);
+     float wash=clamp((wetEdge*.71+eddy*.37)*flecks*(.37+.63*foamSkin),0.,.61);
+     foam=clamp(foam+wash,0.,.95);
+     foamColour=mix(foamColour,vec3(.38,.48,.53),wash*.76);
+     `:''}
     colour=mix(colour,foamColour,foam);
     float orbital=smoothstep(1200.,4500.,cameraPosition.y);
     float haze=(1.-exp(-pow(distanceToEye*.00020,1.55)))*(1.-orbital);
@@ -303,8 +345,8 @@ export function createDrownedOcean(scene,{
   update(dt,eye,motion){if(disposed)return false;animated=!!motion;const delta=animated?Math.max(0,Math.min(Number(dt)||0,.1)):0;if(delta){time+=delta;uniforms.uOceanTime.value=time;}const foamChanged=foamSimulation.update(time,delta,animated);uniforms.uFoamState.value=foamSimulation.texture;uniforms.uFoamHistory.value=foamSimulation.diagnostics().initialized?1:0;return !!delta||foamChanged;},
   diagnostics:()=>({kind:'rolling-flood-ocean',time:+time.toFixed(4),animated,displacedGeometry:true,swells:3,waveLayers:6,
    baseHeight:BASE,crestUpperBound:+crestUpperBound.toFixed(4),centralCalmRadius:CALM,span:SPAN,
-   triangles:geometry.index.count/3+spindrift.diagnostics().triangles,surfaceTriangles:geometry.index.count/3,lod:'dense near-field / logarithmic horizon',bandLimited:true,geometryDetailRadius:1800,rings,sectors,rolledCrests:true,curledSurface:true,mainChop:1.8,analyticNormals:true,sphericalWorld:true,worldRadius:WORLD_RADIUS,worldCenterY:WORLD_CENTER_Y,
-   foam:'advected and decaying aeration from real compression',foamSimulation:foamSimulation.diagnostics(),spindrift:spindrift.diagnostics(),dominantStormFront:true,windStretchedSpindrift:true,windRippleLayers:3,subHorizonReflections:true,wetFoamAgeing:true,detailMapsLoaded,detailMapFailures,detailTextureSize:[1024,1024],detailTextureFiles:2,detailTexturesLocal:true,translucentLips:true,mainWavePeriod:+(Math.PI*2/.365).toFixed(2),sprayParticles:sprayCount,sprayOnMovingCrests:true,skyReflections:!!environmentTexture,externalTextures:0,disposed}),
+   triangles:geometry.index.count/3+spindrift.diagnostics().triangles,surfaceTriangles:geometry.index.count/3,lod:'dense near-field / logarithmic horizon',bandLimited:true,geometryDetailRadius:1800,rings,sectors,rolledCrests:true,curledSurface:true,mainChop,profile,contactFoam:coastal,littoralSpilling:coastal,wavelengthMetres:+(Math.PI*2/mainFrequency).toFixed(1),analyticNormals:true,sphericalWorld:true,worldRadius:WORLD_RADIUS,worldCenterY:WORLD_CENTER_Y,
+   foam:'advected and decaying aeration from real compression',foamSimulation:foamSimulation.diagnostics(),spindrift:spindrift.diagnostics(),dominantStormFront:true,windStretchedSpindrift:true,windRippleLayers:3,subHorizonReflections:true,wetFoamAgeing:true,detailMapsLoaded,detailMapFailures,detailTextureSize:[1024,1024],detailTextureFiles:2,detailTexturesLocal:true,translucentLips:true,mainWavePeriod:+(Math.PI*2/mainOmega).toFixed(2),sprayParticles:sprayCount,sprayOnMovingCrests:true,skyReflections:!!environmentTexture,externalTextures:0,disposed}),
   dispose(){if(disposed)return;disposed=true;animated=false;foamSimulation.dispose();spindrift.dispose();geometry.dispose();material.dispose();sprayGeometry.dispose();sprayMaterial.dispose();for(const t of textures)t.dispose();root.removeFromParent();root.clear();}
  };
 }
