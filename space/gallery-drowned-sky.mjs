@@ -15,7 +15,7 @@ export function createDrownedSky(scene,{mobile=false,onChange=()=>{}}={}){
  const normal=new T.Vector3(.05,.88,.47).normalize();
  const core=new T.Vector3(-.2,.53,-.824);core.addScaledVector(normal,-core.dot(normal)).normalize();
  const tangent=new T.Vector3().crossVectors(normal,core).normalize();
- const moonDirection=new T.Vector3(.38,.43,-.82).normalize();
+ const moonDirection=new T.Vector3(.38,.43,-.82).normalize(),moonDiameter=1.5;
  const companionDirection=new T.Vector3(-.62,.198,-.88).normalize();
  const companionEast=new T.Vector3().crossVectors(new T.Vector3(0,1,0),companionDirection).normalize().applyAxisAngle(companionDirection,.52);
  const companionNorth=new T.Vector3().crossVectors(companionDirection,companionEast);
@@ -246,27 +246,100 @@ export function createDrownedSky(scene,{mobile=false,onChange=()=>{}}={}){
  }));
  const stars=new T.Points(starGeometry,starMaterial);stars.name='Fine stellar light — warm giants and blue distant stars';stars.renderOrder=-1100;stars.frustumCulled=false;stars.onBeforeRender=renderer=>{pixelRatio.value=Math.min(renderer.getPixelRatio(),1.5);};root.add(stars);
 
+ // A comet has a broad curved dust tail and a narrower blue ion tail.
+ const cometDirection=new T.Vector3(-.59,.285,-.86).normalize();
+ const cometEast=new T.Vector3().crossVectors(cometDirection,new T.Vector3(0,1,0)).normalize();
+ const cometNorth=new T.Vector3().crossVectors(cometEast,cometDirection);
+ const cometAlong=cometEast.multiplyScalar(.998).addScaledVector(cometNorth,.045).normalize();
+ const cometAcross=new T.Vector3().crossVectors(cometAlong,cometDirection);
+ const cometWidth=516,cometHeight=220,cometHeadOffset=.085;
+ const cometGeometry=geometry(new T.PlaneGeometry(cometWidth,cometHeight).translate(cometWidth*(.5-cometHeadOffset),0,0));
+ const cometMaterial=material(new T.ShaderMaterial({uniforms:{uTime:timeUniform,uHeadOffset:{value:cometHeadOffset}},transparent:true,depthWrite:false,depthTest:true,blending:T.AdditiveBlending,toneMapped:false,fog:false,
+  vertexShader:'varying vec2 vComet;void main(){vComet=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);gl_Position.z=gl_Position.w*.999999;}',
+  fragmentShader:`varying vec2 vComet;uniform float uTime,uHeadOffset;
+   float gaussian(float value){return exp(-value*value);}
+   void main(){
+    float x=vComet.x-uHeadOffset,y=vComet.y*2.-1.;
+    float age=clamp(x/(1.-uHeadOffset),0.,1.);
+    float fade=smoothstep(-.008,.027,x)*(1.-smoothstep(.54,1.,age));
+    float curl=-age*(.09+age*.43),dustWidth=.049+.37*age,across=(y-curl)/dustWidth;
+    float detail=.86+.10*sin(across*9.+age*12.)+.04*sin(across*43.-age*9.);
+    float dust=gaussian(across)*fade*pow(1.-age,1.25)*detail;
+    float dustRim=.28*gaussian((y-curl+age*.093)/(.013+.053*age))*fade*pow(1.-age,1.7);
+    float current=.20*age+.28*age*age+(sin(age*17.-uTime*.52)+.34*sin(age*37.-uTime*.79))*age*.022;
+    float ionWidth=.011+.035*age,stream=(y-current)/ionWidth;
+    float ion=gaussian(stream)*fade*pow(1.-age,.73);
+    float ionHalo=.22*gaussian(stream*.31)*fade*pow(1.-age,1.1);
+    float ionThread=.30*gaussian((y-current-age*.036)/(.007+.019*age))*fade*pow(1.-age,.85);
+    vec2 head=vec2(x*4.69,y);
+    float headDistance=dot(head,head),nucleus=exp(-headDistance*2900.);
+    float coma=exp(-headDistance*370.)*.49,glare=exp(-headDistance*72.)*.12;
+    vec3 reflected=vec3(.81,.61,.36)*(dust*.54+dustRim*.46);
+    vec3 plasma=vec3(.23,.57,1.)*(ion*.55+ionHalo+ionThread);
+    vec3 light=reflected+plasma+vec3(1.,.93,.78)*(nucleus+coma+glare);
+    float energy=max(light.r,max(light.g,light.b));
+    if(energy<.001)discard;
+    gl_FragColor=vec4(light/max(energy,.001),min(1.,energy));
+    #include <colorspace_fragment>
+   }`
+ }));
+ const cometTrack=new T.Group();root.add(cometTrack);
+ const comet=new T.Mesh(cometGeometry,cometMaterial);comet.name='Comet with dust and ion tails';comet.renderOrder=-1095;comet.frustumCulled=false;
+ comet.position.copy(cometDirection).multiplyScalar(1198);
+ comet.quaternion.setFromRotationMatrix(new T.Matrix4().makeBasis(cometAlong,cometAcross,cometDirection.clone().negate()));
+ cometTrack.add(comet);
+
  seed=0x4d4f4f4e;
  const moonCanvas=document.createElement('canvas');moonCanvas.width=moonCanvas.height=mobile?256:512;
  const mx=moonCanvas.getContext('2d'),moonPixels=mx.createImageData(moonCanvas.width,moonCanvas.height),moonData=moonPixels.data;
- const lunarCraters=Array.from({length:34},()=>{const theta=random()*Math.PI*2,r=Math.sqrt(random())*.91;return{x:Math.cos(theta)*r,y:Math.sin(theta)*r,radius:.022+Math.pow(random(),2)*.09};});
+ const rayCraters=[
+  {x:-.17,y:-.57,radius:.081,rays:.15,phase:.48},
+  {x:-.54,y:.16,radius:.099,rays:.10,phase:1.86},
+  {x:.32,y:.30,radius:.073,rays:.11,phase:3.2}
+ ];
+ const lunarCraters=[...rayCraters,...Array.from({length:34},()=>{
+  const theta=random()*Math.PI*2,r=Math.sqrt(random())*.91;
+  return {x:Math.cos(theta)*r,y:Math.sin(theta)*r,radius:.022+Math.pow(random(),2)*.09,rays:0,phase:0};
+ })];
  for(let y=0;y<moonCanvas.height;y++)for(let x=0;x<moonCanvas.width;x++){
   const nx=(x+.5)/moonCanvas.width*2-1,ny=1-(y+.5)/moonCanvas.height*2,r=Math.hypot(nx,ny),at=(y*moonCanvas.width+x)*4;if(r>=1)continue;
-  const nz=Math.sqrt(1-r*r),grain=noise(nx*14+11,ny*14+9,nz*14+5),maria=smooth(.38,.68,noise(nx*3+7,ny*3+5,nz*3+13));
-  let craters=0;
-  for(const crater of lunarCraters){const dx=nx-crater.x,dy=ny-crater.y;if(Math.abs(dx)>crater.radius*1.4||Math.abs(dy)>crater.radius*1.4)continue;const d=Math.hypot(dx,dy)/crater.radius;craters+=Math.exp(-Math.pow((d-.89)/.14,2))*.095-Math.exp(-d*d*4)*.078;}
-  const illumination=Math.max(0,nx*-.52+ny*.24+nz*.82),brightness=(.57+grain*.36-maria*.19+craters)*(.13+illumination*.87);
-  moonData[at]=clamp(brightness*255+7,0,255);moonData[at+1]=clamp(brightness*250+8,0,255);moonData[at+2]=clamp(brightness*237+11,0,255);moonData[at+3]=(1-smooth(.983,1,r))*255;
+  const nz=Math.sqrt(1-r*r),regolith=noise(nx*19+11,ny*19+9,nz*19+5),grain=noise(nx*64+14,ny*64+8,nz*64+10);
+  const maria=smooth(.33,.71,noise(nx*3.6+7,ny*3.6+5,nz*3.6+13));
+  let relief=0;
+  for(const crater of lunarCraters){
+   const dx=(nx-crater.x)/crater.radius,dy=(ny-crater.y)/crater.radius,reach=crater.rays?4.3:1.34;
+   if(Math.abs(dx)>reach||Math.abs(dy)>reach)continue;
+   const d=Math.hypot(dx,dy);
+   if(d<1.34){
+    const slope=(dx*-.70+dy*.33)/Math.max(d,.01);
+    const rim=Math.exp(-Math.pow((d-.88)/.11,2));
+    const basin=Math.exp(-d*d*4.2);
+    relief+=rim*(.088+.14*slope)-basin*.104;
+   }
+   if(crater.rays&&d>=.76&&d<reach){
+    const angle=Math.atan2(dy,dx)+crater.phase;
+    const spokes=Math.pow(Math.max(0,.5*Math.cos(angle*17)+.5*Math.sin(angle*23)),4);
+    relief+=spokes*crater.rays*Math.exp(-d*.36)*(1-smooth(2.9,reach,d));
+   }
+  }
+  const daylight=smooth(-.012,.73,nx*-.60+ny*.25+nz*.76);
+  const limb=.62+.38*Math.sqrt(nz);
+  const brightness=clamp((.58+regolith*.24+grain*.096-maria*.23+relief)*daylight*limb);
+  const earthshine=(1-daylight)*(.59+regolith*.24-maria*.18)*limb;
+  moonData[at]=clamp(brightness*255+earthshine*21,0,255);
+  moonData[at+1]=clamp(brightness*249+earthshine*27,0,255);
+  moonData[at+2]=clamp(brightness*232+earthshine*38,0,255);
+  moonData[at+3]=(1-smooth(.983,1,r))*255;
  }
  mx.putImageData(moonPixels,0,0);const moonTexture=new T.CanvasTexture(moonCanvas);moonTexture.colorSpace=T.SRGBColorSpace;textures.add(moonTexture);
  const moonMaterial=material(new T.MeshBasicMaterial({map:moonTexture,transparent:true,depthWrite:false,depthTest:true,toneMapped:false,fog:false}));
- const moonDistance=1190,moonSize=moonDistance*Math.tan(.52*Math.PI/180)*2;
- const moon=new T.Mesh(geometry(new T.PlaneGeometry(moonSize,moonSize)),moonMaterial);moon.position.copy(moonDirection).multiplyScalar(moonDistance);moon.quaternion.setFromUnitVectors(new T.Vector3(0,0,1),moonDirection.clone().negate());moon.name='A small silver gibbous moon';moon.renderOrder=-1070;moon.frustumCulled=false;root.add(moon);
+ const moonDistance=1190,moonSize=moonDistance*Math.tan(moonDiameter*Math.PI/360)*2;
+ const moon=new T.Mesh(geometry(new T.PlaneGeometry(moonSize,moonSize)),moonMaterial);moon.position.copy(moonDirection).multiplyScalar(moonDistance);moon.quaternion.setFromUnitVectors(new T.Vector3(0,0,1),moonDirection.clone().negate());moon.name='Gibbous moon with relief and earthshine';moon.renderOrder=-1070;moon.frustumCulled=false;root.add(moon);
  const haloCanvas=document.createElement('canvas');haloCanvas.width=haloCanvas.height=128;const hx=haloCanvas.getContext('2d'),gradient=hx.createRadialGradient(64,64,0,64,64,64);
  gradient.addColorStop(0,'rgba(193,213,239,.19)');gradient.addColorStop(.12,'rgba(173,201,235,.085)');gradient.addColorStop(.43,'rgba(124,163,216,.023)');gradient.addColorStop(1,'rgba(96,137,203,0)');hx.fillStyle=gradient;hx.fillRect(0,0,128,128);
  const haloTexture=new T.CanvasTexture(haloCanvas);haloTexture.colorSpace=T.SRGBColorSpace;textures.add(haloTexture);
  const haloMaterial=material(new T.MeshBasicMaterial({map:haloTexture,transparent:true,depthWrite:false,depthTest:true,blending:T.AdditiveBlending,toneMapped:false,fog:false}));
- const halo=new T.Mesh(geometry(new T.PlaneGeometry(moonSize*9,moonSize*9)),haloMaterial);halo.position.copy(moon.position);halo.quaternion.copy(moon.quaternion);halo.renderOrder=-1080;halo.name='A restrained moon halo';halo.frustumCulled=false;root.add(halo);
+ const halo=new T.Mesh(geometry(new T.PlaneGeometry(moonSize*6.4,moonSize*6.4)),haloMaterial);halo.position.copy(moon.position);halo.quaternion.copy(moon.quaternion);halo.renderOrder=-1080;halo.name='A restrained moon halo';halo.frustumCulled=false;root.add(halo);
 
  const meteorSegments=32,meteorTrail=new Float32Array(meteorSegments*2*3),meteorAges=new Float32Array(meteorSegments*2),meteorSides=new Float32Array(meteorSegments*2),meteorIndices=[];
  for(let i=0;i<meteorSegments;i++){
@@ -305,14 +378,14 @@ export function createDrownedSky(scene,{mobile=false,onChange=()=>{}}={}){
   update(dt,eye,motion){
    if(disposed)return false;
    if(eye&&!root.position.equals(eye)){root.position.copy(eye);dirty=true;}
-   animated=!!motion;if(animated){time+=Math.max(0,Math.min(Number(dt)||0,.1));timeUniform.value=time;dirty=true;}
+   animated=!!motion;if(animated){time+=Math.max(0,Math.min(Number(dt)||0,.1));timeUniform.value=time;cometTrack.rotation.y=-time*.00019;dirty=true;}
    for(const meteor of meteors){
     const visible=animated&&(time+meteor.offset)%meteor.period<meteor.duration*1.14;
     if(meteor.mesh.visible!==visible){meteor.mesh.visible=visible;dirty=true;}
    }
    const changed=dirty;dirty=false;return changed;
   },
-  diagnostics:()=>({night:true,skyLoaded:true,textureReady:true,catalogue:'totehm-celestial-sphere',fullSphere:true,textureSize:[width,height],milkyWay:true,galacticClouds:'amber core, violet filaments and branching dust',companionGalaxy:companionDirection.toArray(),emissionNebula:{direction:nebulaDirection.toArray(),extent:nebulaExtent.toArray(),textureSize:[cloudWidth,cloudHeight]},brightAnchors:anchors.length,galacticArch:true,galacticNormal:normal.toArray(),stars:starCount,stellarDust:tinyStars,stellarProfile:'white cores, restrained halos and anchor-star diffraction',stellarColours:7,time:+time.toFixed(3),animated,moon:true,moonDirection:moonDirection.toArray(),moonDiameterDegrees:1.04,lunarCraters:lunarCraters.length,shootingStars:meteors.length,meteor:meteors.some(event=>event.mesh.visible),meteorRibbon:true,meteorTriangles:meteorIndices.length/3,externalFiles:0,disposed}),
+  diagnostics:()=>({night:true,skyLoaded:true,textureReady:true,catalogue:'totehm-celestial-sphere',fullSphere:true,textureSize:[width,height],milkyWay:true,galacticClouds:'amber core, violet filaments and branching dust',companionGalaxy:companionDirection.toArray(),emissionNebula:{direction:nebulaDirection.toArray(),extent:nebulaExtent.toArray(),textureSize:[cloudWidth,cloudHeight]},brightAnchors:anchors.length,galacticArch:true,galacticNormal:normal.toArray(),stars:starCount,stellarDust:tinyStars,stellarProfile:'white cores, restrained halos and anchor-star diffraction',stellarColours:7,time:+time.toFixed(3),animated,moon:true,moonDirection:moonDirection.toArray(),moonDiameterDegrees:moonDiameter,lunarCraters:lunarCraters.length,lunarRelief:true,comet:{direction:cometDirection.toArray(),tailCount:2,driftDegreesPerMinute:.00019*60*180/Math.PI},shootingStars:meteors.length,meteor:meteors.some(event=>event.mesh.visible),meteorRibbon:true,meteorTriangles:meteorIndices.length/3,externalFiles:0,disposed}),
   dispose(){if(disposed)return;disposed=true;for(const t of textures)t.dispose();for(const m of materials)m.dispose();for(const g of geometries)g.dispose();canvas.width=canvas.height=moonCanvas.width=moonCanvas.height=haloCanvas.width=haloCanvas.height=1;root.removeFromParent();root.clear();}
  };
 }
