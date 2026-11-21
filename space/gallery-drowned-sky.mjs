@@ -1,12 +1,25 @@
 import * as T from './vendor/three-0.180.0.mjs';
 
-// The last sanctuary has no daylight. This celestial sphere is generated once,
-// without a network image, and is also the temple's real lighting environment.
+const GALACTIC_PLATE='/assets/gallery/sky/galactic-arch.jpg';
+
+// One celestial sphere serves Lisbon, New York and Origins. Its procedural
+// environment lights the scenery as the dedicated Milky Way image loads.
 export function createDrownedSky(scene,{mobile=false,onChange=()=>{}}={}){
  const root=new T.Group();root.name='TOTEHM — the common celestial sphere';scene.add(root);
  const geometries=new Set(),materials=new Set(),textures=new Set();
  const geometry=g=>(geometries.add(g),g),material=m=>(materials.add(m),m);
- let time=0,disposed=false,dirty=true,animated=false;
+ let time=0,disposed=false,dirty=true,animated=false,plateReady=false,plateFailed=false;
+ const plateBlend={value:0};
+ const photograph=typeof document.createElementNS==='function'?new T.TextureLoader().load(GALACTIC_PLATE,()=>{
+  if(disposed)return;
+  plateReady=true;dirty=true;onChange();
+ },undefined,()=>{
+  if(disposed)return;
+  plateFailed=true;dirty=true;onChange();
+ }):null;
+ if(photograph){
+  photograph.colorSpace=T.SRGBColorSpace;photograph.wrapS=T.RepeatWrapping;photograph.anisotropy=4;textures.add(photograph);
+ }
  let seed=0x4e494748;const random=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};
  const clamp=(n,a=0,b=1)=>Math.max(a,Math.min(b,n));
  const smooth=(a,b,n)=>{const t=clamp((n-a)/(b-a));return t*t*(3-2*t);};
@@ -15,6 +28,10 @@ export function createDrownedSky(scene,{mobile=false,onChange=()=>{}}={}){
  const normal=new T.Vector3(.05,.88,.47).normalize();
  const core=new T.Vector3(-.2,.53,-.824);core.addScaledVector(normal,-core.dot(normal)).normalize();
  const tangent=new T.Vector3().crossVectors(normal,core).normalize();
+ const plateNormal=new T.Vector3(.365,.87,.35).normalize();
+ const plateCore=new T.Vector3(-.36,.45,-.82);
+ plateCore.addScaledVector(plateNormal,-plateCore.dot(plateNormal)).normalize();
+ const plateLongitude=new T.Vector3().crossVectors(plateNormal,plateCore).normalize();
  const moonDirection=new T.Vector3(.38,.43,-.82).normalize(),moonDiameter=1.5;
  const companionDirection=new T.Vector3(-.62,.198,-.88).normalize();
  const companionEast=new T.Vector3().crossVectors(new T.Vector3(0,1,0),companionDirection).normalize().applyAxisAngle(companionDirection,.52);
@@ -165,9 +182,10 @@ export function createDrownedSky(scene,{mobile=false,onChange=()=>{}}={}){
  nebulaTexture.colorSpace=T.SRGBColorSpace;nebulaTexture.generateMipmaps=true;nebulaTexture.minFilter=T.LinearMipmapLinearFilter;nebulaTexture.magFilter=T.LinearFilter;nebulaTexture.needsUpdate=true;textures.add(nebulaTexture);
 
  const timeUniform={value:0},pixelRatio={value:Math.min(globalThis.devicePixelRatio||1,1.5)};
- const skyMaterial=material(new T.ShaderMaterial({uniforms:{uMap:{value:environmentTexture},uNebula:{value:nebulaTexture},uMoonDirection:{value:moonDirection},uNebulaDirection:{value:nebulaDirection},uNebulaEast:{value:nebulaEast},uNebulaNorth:{value:nebulaNorth},uNebulaExtent:{value:nebulaExtent},uTime:timeUniform},side:T.BackSide,depthWrite:false,depthTest:false,fog:false,toneMapped:false,
+ const skyMaterial=material(new T.ShaderMaterial({uniforms:{uMap:{value:environmentTexture},uGalacticPlate:{value:photograph??environmentTexture},uPlateBlend:plateBlend,
+  uPlateNormal:{value:plateNormal},uPlateCore:{value:plateCore},uPlateLongitude:{value:plateLongitude},uCompanionDirection:{value:companionDirection},uNebula:{value:nebulaTexture},uMoonDirection:{value:moonDirection},uNebulaDirection:{value:nebulaDirection},uNebulaEast:{value:nebulaEast},uNebulaNorth:{value:nebulaNorth},uNebulaExtent:{value:nebulaExtent},uTime:timeUniform},side:T.BackSide,depthWrite:false,depthTest:false,fog:false,toneMapped:false,
   vertexShader:'varying vec3 vDirection;void main(){vDirection=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
-  fragmentShader:`varying vec3 vDirection;uniform sampler2D uMap,uNebula;uniform vec3 uMoonDirection,uNebulaDirection,uNebulaEast,uNebulaNorth;uniform vec2 uNebulaExtent;uniform float uTime;
+  fragmentShader:`varying vec3 vDirection;uniform sampler2D uMap,uNebula,uGalacticPlate;uniform float uPlateBlend;uniform vec3 uPlateNormal,uPlateCore,uPlateLongitude,uCompanionDirection;uniform vec3 uMoonDirection,uNebulaDirection,uNebulaEast,uNebulaNorth;uniform vec2 uNebulaExtent;uniform float uTime;
    void main(){vec3 d=normalize(vDirection);vec2 uv=vec2(atan(d.z,d.x)*.159154943+.5,asin(clamp(d.y,-1.,1.))*.318309886+.5);
     vec2 du=dFdx(uv),dv=dFdy(uv);du.x-=floor(du.x+.5);dv.x-=floor(dv.x+.5);
     vec3 sky=textureGrad(uMap,uv,du,dv).rgb;
@@ -176,6 +194,21 @@ export function createDrownedSky(scene,{mobile=false,onChange=()=>{}}={}){
     float gas=sin(dot(d,vec3(-12.,8.,17.))+uTime*.105);
     vec3 exposure=mix(vec3(1.),vec3(1.25+bloom*.14,1.22+bloom*.14,1.30+gas*.13),clouds);
     sky*=exposure;
+    if(uPlateBlend>0.){
+     float lat=asin(clamp(dot(d,uPlateNormal),-1.,1.));
+     float longitude=atan(dot(d,uPlateLongitude),dot(d,uPlateCore));
+     vec2 galacticUV=vec2(.5+longitude*.159154943,.5+lat*.318309886);
+     vec2 plateDX=dFdx(galacticUV),plateDY=dFdy(galacticUV);
+     plateDX.x-=floor(plateDX.x+.5);plateDY.x-=floor(plateDY.x+.5);
+     vec3 recorded=textureGrad(uGalacticPlate,galacticUV,plateDX,plateDY).rgb;
+     float light=dot(recorded,vec3(.2126,.7152,.0722));
+     float headroom=smoothstep(.12,.70,light);
+     vec3 graded=mix(recorded*vec3(1.02,1.04,1.14),light*vec3(1.05,1.,.96),headroom*.18);
+     graded=graded*(1.22+clouds*.06*bloom)/(1.+graded*.16);
+     graded+=vec3(.00075,.0011,.0024);
+     float companion=1.-.74*smoothstep(.994,.99958,dot(d,uCompanionDirection));
+     sky=mix(sky,graded,uPlateBlend*companion);
+    }
     float toward=dot(d,uNebulaDirection);
     vec2 cloudUV=.5+vec2(dot(d,uNebulaEast),dot(d,uNebulaNorth))*(.5/(max(.5,toward)*uNebulaExtent));
     vec2 cloudDX=dFdx(cloudUV),cloudDY=dFdy(cloudUV);
@@ -204,7 +237,7 @@ export function createDrownedSky(scene,{mobile=false,onChange=()=>{}}={}){
    direction=new T.Vector3(...anchors[i]).normalize();
   }else if(i%5<2){
    const longitude=random()*Math.PI*2,latitude=(random()+random()+random()-1.5)*.085;
-   direction=new T.Vector3().copy(core).multiplyScalar(Math.cos(longitude)).addScaledVector(tangent,Math.sin(longitude)).multiplyScalar(Math.cos(latitude)).addScaledVector(normal,Math.sin(latitude));
+   direction=new T.Vector3().copy(plateCore).multiplyScalar(Math.cos(longitude)).addScaledVector(plateLongitude,Math.sin(longitude)).multiplyScalar(Math.cos(latitude)).addScaledVector(plateNormal,Math.sin(latitude));
   }else{
    const dy=random()*2-1,phi=random()*Math.PI*2,r=Math.sqrt(1-dy*dy);direction=new T.Vector3(Math.cos(phi)*r,dy,Math.sin(phi)*r);
   }
@@ -378,14 +411,19 @@ export function createDrownedSky(scene,{mobile=false,onChange=()=>{}}={}){
   update(dt,eye,motion){
    if(disposed)return false;
    if(eye&&!root.position.equals(eye)){root.position.copy(eye);dirty=true;}
-   animated=!!motion;if(animated){time+=Math.max(0,Math.min(Number(dt)||0,.1));timeUniform.value=time;cometTrack.rotation.y=-time*.00019;dirty=true;}
+   const step=Math.max(0,Math.min(Number(dt)||0,.1));
+   animated=!!motion;if(animated){time+=step;timeUniform.value=time;cometTrack.rotation.y=-time*.00019;dirty=true;}
+   if(plateReady&&plateBlend.value<1){
+    const blend=motion?Math.min(1,plateBlend.value+step/1.05):1;
+    if(blend!==plateBlend.value){plateBlend.value=blend;dirty=true;}
+   }
    for(const meteor of meteors){
     const visible=animated&&(time+meteor.offset)%meteor.period<meteor.duration*1.14;
     if(meteor.mesh.visible!==visible){meteor.mesh.visible=visible;dirty=true;}
    }
    const changed=dirty;dirty=false;return changed;
   },
-  diagnostics:()=>({night:true,skyLoaded:true,textureReady:true,catalogue:'totehm-celestial-sphere',fullSphere:true,textureSize:[width,height],milkyWay:true,galacticClouds:'amber core, violet filaments and branching dust',companionGalaxy:companionDirection.toArray(),emissionNebula:{direction:nebulaDirection.toArray(),extent:nebulaExtent.toArray(),textureSize:[cloudWidth,cloudHeight]},brightAnchors:anchors.length,galacticArch:true,galacticNormal:normal.toArray(),stars:starCount,stellarDust:tinyStars,stellarProfile:'white cores, restrained halos and anchor-star diffraction',stellarColours:7,time:+time.toFixed(3),animated,moon:true,moonDirection:moonDirection.toArray(),moonDiameterDegrees:moonDiameter,lunarCraters:lunarCraters.length,lunarRelief:true,comet:{direction:cometDirection.toArray(),tailCount:2,driftDegreesPerMinute:.00019*60*180/Math.PI},shootingStars:meteors.length,meteor:meteors.some(event=>event.mesh.visible),meteorRibbon:true,meteorTriangles:meteorIndices.length/3,externalFiles:0,disposed}),
+  diagnostics:()=>({night:true,skyLoaded:true,textureReady:true,catalogue:'totehm-celestial-sphere',fullSphere:true,textureSize:[width,height],milkyWay:true,galacticClouds:'inclined panorama with an amber core, dark rifts and layered nebulae',galacticPlate:{ready:plateReady,failed:plateFailed,blend:plateBlend.value,normal:plateNormal.toArray(),core:plateCore.toArray(),size:[1774,887]},companionGalaxy:companionDirection.toArray(),emissionNebula:{direction:nebulaDirection.toArray(),extent:nebulaExtent.toArray(),textureSize:[cloudWidth,cloudHeight]},brightAnchors:anchors.length,galacticArch:true,galacticNormal:normal.toArray(),stars:starCount,stellarDust:tinyStars,stellarProfile:'white cores, restrained halos and anchor-star diffraction',stellarColours:7,time:+time.toFixed(3),animated,moon:true,moonDirection:moonDirection.toArray(),moonDiameterDegrees:moonDiameter,lunarCraters:lunarCraters.length,lunarRelief:true,comet:{direction:cometDirection.toArray(),tailCount:2,driftDegreesPerMinute:.00019*60*180/Math.PI},shootingStars:meteors.length,meteor:meteors.some(event=>event.mesh.visible),meteorRibbon:true,meteorTriangles:meteorIndices.length/3,externalFiles:0,disposed}),
   dispose(){if(disposed)return;disposed=true;for(const t of textures)t.dispose();for(const m of materials)m.dispose();for(const g of geometries)g.dispose();canvas.width=canvas.height=moonCanvas.width=moonCanvas.height=haloCanvas.width=haloCanvas.height=1;root.removeFromParent();root.clear();}
  };
 }
