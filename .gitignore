@@ -54,3 +54,4 @@ __pycache__/
 tests/browser/supabase.mjs
 tests/browser/entry.js
 tests/browser/package*.json
+graphify-out/

@@ -35,7 +35,7 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
  const scene=new T.Scene(),camera=new T.PerspectiveCamera(baseFov,innerWidth/innerHeight,.08,9000);
  let dirty=true,frames=0,list=false,hidden=document.hidden,paused=false,lastTime=0,lastRender=0,returnReveal=false;
  let motionReduced=reduced.matches,tween=null,arrival=null,pendingVisit=null,stellarView=null,room=-1,focused=-1,down=null,yaw=0,pitch=0,dragged=false,initialized=false,inspecting=false,inspectionAmount=0,bookDestination=null;
- let architecture=null,book=null,play=null,opposite=null,liberty=null,lastStationState='';
+ let architecture=null,book=null,play=null,opposite=null,liberty=null,lisbonMonuments=null,lastStationState='';
  const cockpit=createSaucerCockpit(camera);if(cockpit)scene.add(camera);
  let vessel=null,vesselMode='island',rail=null,seated=false,seatMove=null,gateGeneration=0,streetAccess={state:'idle',owned:false},portalAt=null;
  const invalidate=()=>{dirty=true;};
@@ -44,6 +44,9 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
  if(newYork){
   const {createLiberty}=await import('./gallery-liberty.mjs');
   liberty=createLiberty(scene,{mobile,onChange:invalidate,submerged:true});
+ }else{
+  const {createLisbonSeaMonuments}=await import('./gallery-lisbon-sea.mjs');
+  lisbonMonuments=createLisbonSeaMonuments(scene,{mobile,onChange:invalidate,submerged:true});
  }
  vessel=createOriginsVessel(scene,{mobile,transitOnly:true,onChange:invalidate});
  book=vessel.book;
@@ -346,7 +349,7 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
   const altitude=Math.max(0,eye.y-1.65),near=T.MathUtils.clamp(altitude*.002,.08,12),far=altitude>100?100000:9000;
   if(Math.abs(camera.near-near)>.0001||camera.far!==far)dirty=true;
   play.setProjecting?.(!vessel.diagnostics().flying);
-  const changes=[cockpit?.update(['outbound','returning','portal'].includes(vesselMode)&&!!vessel?.diagnostics().flying,camera.aspect),vessel?.update(dt,eye,!motionReduced),landscape.update(dt,eye,!motionReduced),fireplace?.update(dt,eye,!motionReduced),architecture.update(dt,eye,!motionReduced),play.update(dt,eye,!motionReduced),opposite.update(dt,eye,!motionReduced),liberty?.update(dt,eye,!motionReduced)];
+  const changes=[cockpit?.update(['outbound','returning','portal'].includes(vesselMode)&&!!vessel?.diagnostics().flying,camera.aspect),vessel?.update(dt,eye,!motionReduced),landscape.update(dt,eye,!motionReduced),fireplace?.update(dt,eye,!motionReduced),architecture.update(dt,eye,!motionReduced),play.update(dt,eye,!motionReduced),opposite.update(dt,eye,!motionReduced),liberty?.update(dt,eye,!motionReduced),lisbonMonuments?.update(dt,eye,!motionReduced)];
   if(changes.some(Boolean))dirty=true;
   // Lean toward the premium cases to inspect the protected paper editions.
   const inspectionTarget=inspecting&&focused===0?1:0;
@@ -370,13 +373,13 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
   }
   syncSound();stationState();
  }
- landscape.update(0,eye,false);architecture.update(0,eye,false);book.update(0,eye,!motionReduced);play.update(0,eye,!motionReduced);if(liberty)liberty.update(0,eye,!motionReduced);
+ landscape.update(0,eye,false);architecture.update(0,eye,false);book.update(0,eye,!motionReduced);play.update(0,eye,!motionReduced);if(liberty)liberty.update(0,eye,!motionReduced);if(lisbonMonuments)lisbonMonuments.update(0,eye,!motionReduced);
  if(new URLSearchParams(location.search).get('arrival')==='origin'){
   const points=reverseIslandFlight(vessel.journey);eye.fromArray(points.shift());gaze.fromArray(points[0]);angles();vessel.setReturnFlight(eye);returnReveal=true;document.body.classList.add('is-origin-transit');
   startJourney('returning',points.concat([ENTRY]),()=>{vesselMode='island';vessel.resetFlight();physics.reset({x:ENTRY[0],z:ENTRY[2]});eye.fromArray(ENTRY);gaze.fromArray(LOOK);angles();dirty=true;stationState();history.replaceState(history.state,'',location.pathname+location.hash);});
  }
  camera.position.copy(eye);camera.lookAt(renderedTarget.copy(gaze));camera.updateMatrixWorld();initialized=true;stationState();renderer.setAnimationLoop(animate);
- addEventListener('pagehide',()=>{pause();if(liberty)liberty.dispose();renderer.setAnimationLoop(null);});
+ addEventListener('pagehide',()=>{pause();if(liberty)liberty.dispose();if(lisbonMonuments)lisbonMonuments.dispose();renderer.setAnimationLoop(null);});
  addEventListener('pageshow',e=>{if(e.persisted){if(vesselMode!=='island'){vesselMode='island';rail=null;portalAt=null;document.body.classList.remove('is-origin-transit');vessel.resetFlight?.();physics.reset({x:ENTRY[0],z:ENTRY[2]});eye.fromArray(ENTRY);gaze.fromArray(LOOK);angles();}paused=false;hidden=document.hidden;bookDestination=null;book.reset();resetPortals();quality.reset();try{const muted=localStorage.getItem('space-sound-muted')==='true';sound.setMuted(muted);fireSound?.setMuted(muted);}catch{}dirty=true;lastTime=0;syncSound();renderer.setAnimationLoop(animate);}});
  return{visit,enter,enterGallery,overview,sit,stand,openController,visitLevel,invalidate,activateStreetSign,
   requestStreetEntry,openDiscover,visitOrigins,returnIsland,
@@ -384,6 +387,6 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
   leaveStation(){stopInput();cancelTravel();leaveStation();onOverview();dirty=true;},
   stop(){stopInput();cancelTravel();leaveStation();dirty=true;},
   setList(value){list=!!value;stopInput();cancelTravel();leaveStation();syncSound();dirty=true;lastTime=0;},
-  diagnostics:()=>({webgl:true,place:newYork?'new-york':'lisbon',zone:vesselMode!=='island'?'origins-vessel':inGallery()?'gallery':'terrace',originsJourney:{state:vesselMode,moving:!!rail,returnFromOrigin:new URLSearchParams(location.search).get('arrival')==='origin',vessel:vessel?.diagnostics()},streetAccess:{...streetAccess},seated,seatMoving:!!seatMove,room,focused,frames,position:[+eye.x.toFixed(2),+eye.z.toFixed(2)],moving:!!tween||!!pendingVisit||!!keys.size||!!joystick.x||!!joystick.y||!physics.diagnostics().grounded,visible:!hidden&&!list&&!paused,liberty:liberty?liberty.diagnostics():null,
+  diagnostics:()=>({webgl:true,place:newYork?'new-york':'lisbon',zone:vesselMode!=='island'?'origins-vessel':inGallery()?'gallery':'terrace',originsJourney:{state:vesselMode,moving:!!rail,returnFromOrigin:new URLSearchParams(location.search).get('arrival')==='origin',vessel:vessel?.diagnostics()},streetAccess:{...streetAccess},seated,seatMoving:!!seatMove,room,focused,frames,position:[+eye.x.toFixed(2),+eye.z.toFixed(2)],moving:!!tween||!!pendingVisit||!!keys.size||!!joystick.x||!!joystick.y||!physics.diagnostics().grounded,visible:!hidden&&!list&&!paused,liberty:liberty?liberty.diagnostics():null,lisbonMonuments:lisbonMonuments?lisbonMonuments.diagnostics():null,
    camera:{position:camera.position.toArray(),target:renderedTarget.toArray(),inspection:inspectionAmount,fov:camera.fov,aspect:camera.aspect,near:camera.near,far:camera.far,stellarOverview:!!stellarView&&!motionReduced,overviewAmount:stellarView?.amount??0},physics:physics.diagnostics(),temple:architecture.diagnostics(),stations:{play:play.diagnostics(),opposite:opposite.diagnostics(),book:book.diagnostics()},landscape:landscape.diagnostics(),audio:sound.diagnostics(),fireAudio:fireSound?{present:true,...fireSound.diagnostics()}:{present:false,sources:0},fireplace:fireplace?.diagnostics()||{present:false,flames:0,logs:0},projection:play.diagnostics(),render:{...quality.diagnostics(),width:renderer.domElement.width,height:renderer.domElement.height,calls:renderer.info.render.calls,triangles:renderer.info.render.triangles},navigation:{speed:2.6,minDuration:1450,maxDuration:4200,deferredArrival:!!arrival||!!pendingVisit,...walkway.diagnostics()}})};
 }

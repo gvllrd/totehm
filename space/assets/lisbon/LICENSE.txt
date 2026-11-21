@@ -1,0 +1,33 @@
+Lisbon Sea Monuments: Santuário de Cristo Rei & Ponte 25 de Abril
+==================================================================
+
+1. Santuário de Cristo Rei (Almada / Lisbon)
+--------------------------------------------
+Source: "Cristo Rei" by Cintilante
+Platform: Trimble 3D Warehouse
+URL: https://3dwarehouse.sketchup.com/model/4347da4e2cf5485b13672978e8f21fd3/Cristo-Rei
+Origin: 3D model of the monumental Santuário Nacional de Cristo Rei (Francisco Franco de Sousa / António Lino / Francisco de Oliveira Ferreira, 1959), featuring the 82 m 4-pillar reinforced concrete arched portico pedestal and the 28 m statue of Christ overlooking Lisbon and the Tagus.
+License: Trimble 3D Warehouse General Model License (Free public use and distribution)
+
+Modifications:
+- Removed flat aerial terrain plane mesh
+- Converted material models to standard PBR metallic-roughness (metalrough)
+- Calibrated to authentic 110 m monument scale and leveled at water surface
+- Optimized into Level-of-Detail GLB files (cristo_rei_l0.glb and cristo_rei_l1.glb via Meshopt)
+- Positioned emerging from the rolling open ocean off Lisbon, facing the island calçada
+
+2. Ponte 25 de Abril (Lisbon Suspension Bridge)
+-----------------------------------------------
+Source: "Ponte 25 de Abril" by Miguel B.
+Platform: Trimble 3D Warehouse
+URL: https://3dwarehouse.sketchup.com/model/7b26f4441abf1e5fe22a897723cb4341/Ponte-25-de-Abril
+Origin: Architectural 3D model of the Ponte 25 de Abril suspension bridge (American Bridge Company, 1966) spanning the Tagus estuary, with twin 190.5 m red steel lattice towers, suspension main cables, and stiffening truss.
+License: Trimble 3D Warehouse General Model License (Free public use and distribution)
+
+Modifications:
+- Stripped empty Google Earth terrain nodes
+- Converted material models to standard PBR metallic-roughness (metalrough)
+- Calibrated to authentic 190.5 m tower height and 3.7 km suspension span
+- PBR tuned with signature International Orange / deep red weathered steel patina
+- Optimized into Level-of-Detail GLB files (ponte_25_abril_l0.glb and ponte_25_abril_l1.glb via Meshopt)
+- Positioned spanning across the Atlantic horizon in the submerged ocean of Lisbon
