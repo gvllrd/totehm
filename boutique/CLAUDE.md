@@ -8,7 +8,7 @@ Des vêtements totehmisés : **n'importe quelle box** d'un membre, un style dét
 
 **Le TOTEHM est la commande** : son logo — **les quatre calques de totehm.com copiés tels quels** (`#gl-bg` perforé,
 `#gl-rail`, `#gl-t`, `#gl-wm`) — se décompose À SA PLACE : le FOND prend le dessus, le rail, le T et le mot FONDENT,
-« MY GRIND » paraît, puis deux fonds glissent DEPUIS LUI : **MY STORY** (11/11, Wah : le bouton de sélection de vue dit `my story`, comme sur totehm.com ; 19/11 : la clé aussi — vue `stories`, genre `story` ; PONTS marqués « pont » : `create-checkout` et `luxury-quote` reçoivent encore `wisdom`, `_box_matter` nomme encore sa vue et ses groupes `wisdom`, `?wear=wisdom:` d'avant reste lu) et MY VISION. Un tap sur MY GRIND empile
+« MY GRIND » paraît, puis deux fonds glissent DEPUIS LUI : **MY STORY** (11/11, Wah : le bouton de sélection de vue dit `my story`, comme sur totehm.com ; 19/11 : la clé aussi — vue `stories`, genre `story` ; PONTS marqués « pont » : la page envoie `story` à `create-checkout` et `luxury-quote`, qui traduisent encore un `wisdom` venu d'une page en cache, `_box_matter` nomme encore sa vue et ses groupes `wisdom`, `?wear=wisdom:` d'avant reste lu) et MY VISION. Un tap sur MY GRIND empile
 MY OBJECTIVES · MY HABITS · MY REPULSIONS dans son navy — les titres se LISENT (le padding cède, jamais le mot). Un tap
 sur une vue donne ses boxes ; **une box tapée EST le choix** : elle s'ouvre presque entière — ses mini-boxes
 (`my_box_matter`), le SON de son intention —, la liste se réduit à ELLE, et la retaper la rouvre. ⚠️ **UN SEUL TAP**

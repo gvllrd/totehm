@@ -255,7 +255,7 @@ ok(ASK && ASK.photo === still.path.replace('luxury-pieces/', '') && ASK.media ==
 ok(ASK.brand === 'Hermès' && ASK.product === 'Birkin 30' && ASK.city === 'Los Angeles' && ASK.budget_cents === 1000000
    && ASK.style === 'sty1' && /\.jpg$/.test(String(ASK.style_ref || '')),
   '11/11 · tout arrive AVANT le paiement : marque, produit, ville, budget, style ' + JSON.stringify({ b:ASK.brand, p:ASK.product, c:ASK.city, bu:ASK.budget_cents, s:ASK.style }));
-ok(ASK.box.kind === 'wisdom' && ASK.box.ref === 'w1' && ASK.name === 'seabag'
+ok(ASK.box.kind === 'story' && ASK.box.ref === 'w1' && ASK.name === 'seabag'
    && JSON.stringify(ASK.pick) === '{"matter":[{"kind":"objectives","text":"Marathon in May"}],"shots":["em1"]}',
   '26/10 · la box et ce qui est ALLUMÉ voyagent en RÉFÉRENCES');
 ok(CHECKOUT && CHECKOUT.quote_id === 'q1', 'le Checkout suit tout de suite, sur le devis que le serveur vient d\'écrire');

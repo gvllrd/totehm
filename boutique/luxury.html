@@ -1100,7 +1100,7 @@ document.addEventListener('visibilitychange', () => { if(!document.hidden) ssoVe
 
 
 /* ══ L'ÉTAT — une lecture, un écran ═════════════════════════════════ */
-const BUILD = '2026-11-19-discover-luxe';
+const BUILD = '2026-11-21-argent-story';
 let A = null, ADM = [], SEQ = 0, BUSY = false, ME = null;
 /* Le diagnostic — des booléens et des compteurs, jamais une valeur de membre. */
 window.__totehm_luxury = () => ({ build: BUILD, signed_in: !!A?.signed_in, thp: !!A?.thp, open: !!A?.open,
@@ -1765,7 +1765,7 @@ $('ask').onclick = async () => {
     media: MEDIA_PATH || PHOTO, media_kind: MEDIA_KIND,
     brand: BRAND, product: $('product').value.trim(), city: $('city').value.trim(),
     style: STYLE ? STYLE.id : undefined, style_ref: STYLE_REF || undefined, budget_cents: BUDGET,
-    box: { kind: PICK.kind==='story' ? 'wisdom' : PICK.kind, ref: PICK.ref }, name: $('nm-input').value.trim(),   // PONT : luxury-quote attend encore `wisdom`
+    box: { kind: PICK.kind, ref: PICK.ref }, name: $('nm-input').value.trim(),
     pick: { matter: LIE.matter.slice(0, 60), shots: LIE.shots.slice(0, 24) } });
   if(d.ok && d.id){
     n.textContent = 'opening checkout…';

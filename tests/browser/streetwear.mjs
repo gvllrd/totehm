@@ -358,8 +358,8 @@ await pg.waitForTimeout(560);
 await pg.screenshot({ path: OUT + '/sw_order.png' });
 await pg.click('#od-go');
 await pg.waitForURL(/checkout\.stripe\.test/);
-ok(body && body.garment_id === 's1' && body.box.kind === 'wisdom' && body.box.ref === 'w1' && body.name === 'hillstreet' && body.size === 'M' && body.style_id === 'st1',
-  'order sends a reference (wisdom) and the name WITHOUT prefix (the server sets 0.)');
+ok(body && body.garment_id === 's1' && body.box.kind === 'story' && body.box.ref === 'w1' && body.name === 'hillstreet' && body.size === 'M' && body.style_id === 'st1',
+  'order sends a reference (story) and the name WITHOUT prefix (the server sets 0.)');
 ok(JSON.stringify(body.pick) === '{"matter":[{"kind":"objectives","text":"Marathon in May"}],"shots":["sp1"]}' && !body.hide,
   '26/10 · ce qui est ALLUMÉ part en RÉFÉRENCES (mini-box + photo) ; le serveur relit tout lui-même ' + JSON.stringify(body.pick));
 
@@ -524,7 +524,7 @@ ok(!log.errors.length, 'phone: no page error: ' + log.errors.join(' | '));
   await descendre(pg, 'order');
   await pg.click('#od-go');
   await pg.waitForURL(/checkout\.stripe\.test/);
-  ok(sent && sent.box.kind === 'wisdom' && sent.box.ref === 'w1' && sent.name === 'sea' && sent.size === 'M', 'the order carries the element chosen in COM (wisdom · w1)');
+  ok(sent && sent.box.kind === 'story' && sent.box.ref === 'w1' && sent.name === 'sea' && sent.size === 'M', 'the order carries the element chosen in COM (an old wisdom: link → story · w1)');
   ok(!log.errors.length, 'from COM: no page error ' + log.errors.join(' | '));
 }
 // ── 23/10 · n'importe quelle box arrive de COM : une VISION, une HABIT

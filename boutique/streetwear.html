@@ -868,7 +868,7 @@ document.addEventListener('visibilitychange', () => { if(!document.hidden) ssoVe
 
 
 /* ══ L'ÉTAT — une pièce en cours, cinq scènes ═════════════════════════ */
-const BUILD='2026-11-19-vocabulaire-boutique';
+const BUILD='2026-11-21-argent-story';
 /* 02/11 (Wah) : « le style artistique en section deux, et ensuite la sélection
    de la box ». La taille, elle, a rejoint le vêtement. */
 const STAGES=['cloth','style','element','name','order','done'];
@@ -1682,7 +1682,7 @@ async function order(){
   let data={},status=0;
   try{
     const r=await fetch(FN+'create-checkout',{method:'POST',headers:{'content-type':'application/json','apikey':SB_ANON,'authorization':'Bearer '+session.access_token},
-      body:JSON.stringify({garment_id:F.support.id,box:{kind:F.el.kind==='story'?'wisdom':F.el.kind,ref:F.el.ref},   /* PONT : create-checkout attend encore `wisdom` */
+      body:JSON.stringify({garment_id:F.support.id,box:{kind:F.el.kind,ref:F.el.ref},
         pick:{matter:F.pick.matter.slice(0,60),shots:F.pick.shots.slice(0,24)},
         name:F.nameRaw,size:F.size,style_id:F.style.id})});
     status=r.status;data=await r.json().catch(()=>({}));
