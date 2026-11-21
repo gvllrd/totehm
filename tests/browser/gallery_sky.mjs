@@ -81,11 +81,11 @@ try{
       return scene?.frames>0&&scene.sky?.fullSphere;
      },null,{timeout:90000});
      catalogue.push(await pg.evaluate(()=>{
-      const {catalogue,stars,stellarColours,moonDirection,galacticNormal,companionGalaxy,brightAnchors,shootingStars}=(window.__totehm_origin?.()??window.__totehm_gallery()).sky;
-      return {catalogue,stars,stellarColours,moonDirection,galacticNormal,companionGalaxy,brightAnchors,shootingStars};
+      const {catalogue,stars,stellarColours,moonDirection,galacticNormal,companionGalaxy,emissionNebula,brightAnchors,shootingStars}=(window.__totehm_origin?.()??window.__totehm_gallery()).sky;
+      return {catalogue,stars,stellarColours,moonDirection,galacticNormal,companionGalaxy,emissionNebula,brightAnchors,shootingStars};
      }));
     }
-    check(catalogue.every(sky=>sky.companionGalaxy.length===3&&sky.brightAnchors===14&&JSON.stringify(sky)===JSON.stringify(catalogue[0])),'Lisbon, New York and Origins use the same celestial sphere');
+    check(catalogue.every(sky=>sky.companionGalaxy.length===3&&sky.emissionNebula.direction.length===3&&sky.brightAnchors===14&&sky.shootingStars>=6&&JSON.stringify(sky)===JSON.stringify(catalogue[0])),'Lisbon, New York and Origins use the same celestial sphere');
    }
    check(!log.errors.some(e=>e.startsWith('pageerror:')),'no application JavaScript errors at '+viewport.width+': '+log.errors.join(' | '));
    results.push({viewport,samples,log});

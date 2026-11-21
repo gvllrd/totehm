@@ -19,6 +19,10 @@ export function createDrownedSky(scene,{mobile=false,onChange=()=>{}}={}){
  const companionDirection=new T.Vector3(-.62,.198,-.88).normalize();
  const companionEast=new T.Vector3().crossVectors(new T.Vector3(0,1,0),companionDirection).normalize().applyAxisAngle(companionDirection,.52);
  const companionNorth=new T.Vector3().crossVectors(companionDirection,companionEast);
+ const nebulaDirection=new T.Vector3(.49,.31,-.86).normalize();
+ const nebulaEast=new T.Vector3().crossVectors(nebulaDirection,new T.Vector3(0,1,0)).normalize().applyAxisAngle(nebulaDirection,.42);
+ const nebulaNorth=new T.Vector3().crossVectors(nebulaEast,nebulaDirection);
+ const nebulaExtent=new T.Vector2(.64,.46);
  const width=mobile?1024:2048,height=width/2;
  const lattice=new Float32Array(32*32*32);for(let i=0;i<lattice.length;i++)lattice[i]=random();
  const atLattice=(x,y,z)=>lattice[(x&31)+((y&31)<<5)+((z&31)<<10)];
@@ -124,10 +128,46 @@ export function createDrownedSky(scene,{mobile=false,onChange=()=>{}}={}){
  context.putImageData(pixels,0,0);
  const environmentTexture=new T.CanvasTexture(canvas);environmentTexture.colorSpace=T.SRGBColorSpace;environmentTexture.mapping=T.EquirectangularReflectionMapping;environmentTexture.wrapS=T.RepeatWrapping;
  environmentTexture.minFilter=T.LinearMipmapLinearFilter;environmentTexture.magFilter=T.LinearFilter;textures.add(environmentTexture);
+ // Bake the emission and foreground dust into a directional layer for the visible sky.
+ // The shared environment map still supplies the scene's reflections and lighting.
+ const cloudWidth=mobile?384:768,cloudHeight=mobile?256:512;
+ const cloudPixels=new Uint8Array(cloudWidth*cloudHeight*4);
+ for(let row=0;row<cloudHeight;row++){
+  const v=(row+.5)*2/cloudHeight-1;
+  for(let col=0;col<cloudWidth;col++){
+   const u=(col+.5)*2/cloudWidth-1,i=(row*cloudWidth+col)*4;
+   const limit=1-smooth(.66,.98,Math.max(Math.abs(u),Math.abs(v)));
+   if(limit<=0)continue;
+   const coarse=noise(u*2.6+20,v*2.6+10,8.2);
+   const warp=noise(u*5.1+18,v*5.1+14,4.3);
+   const x=u+(coarse-.5)*.32,y=v+(warp-.5)*.24;
+   const folds=noise(x*8.8+12,y*10.3+16,2.7);
+   const detail=noise(x*19+10,y*22+13,7.9);
+   const grain=noise(x*56+11,y*51+7,9.1);
+   const density=smooth(.23,.77,.46*coarse+.31*folds+.16*detail+.07*grain);
+   const outline=.13+.32*Math.sin(2.7*x-.12)-.16*x*x+(folds-.5)*.18;
+   const broad=Math.exp(-Math.pow((x+.04)/.81,2)-Math.pow((y-.02)/.64,2));
+   const sculpted=Math.exp(-Math.pow((y-outline)/(.095+.12*coarse),2));
+   const lower=Math.exp(-Math.pow((y+.37-.17*Math.sin(3.2*x+.28))/.23,2));
+   const cavity=Math.exp(-Math.pow((x-.08)/.46,2)-Math.pow((y+.05-(folds-.5)*.23)/.16,2));
+   const dust=density*cavity*smooth(.26,.71,.48*warp+.38*folds+.14*grain);
+   const emissive=broad*(.32+sculpted*1.04+lower*.63)*density*(1-.84*dust);
+   const filament=broad*sculpted*Math.pow(smooth(.25,.81,folds*.52+detail*.35+grain*.13),1.5);
+   const amber=lower*smooth(-.57,.62,x)*(.55+.45*warp),violet=smooth(.15,.76,warp)*sculpted;
+   const aqua=(1-violet)*sculpted;
+   cloudPixels[i]=Math.round(clamp(limit*(emissive*(56+209*amber+75*violet)+41*filament),0,255));
+   cloudPixels[i+1]=Math.round(clamp(limit*(emissive*(94+58*aqua+40*amber)+61*filament),0,255));
+   cloudPixels[i+2]=Math.round(clamp(limit*(emissive*(143+69*violet+55*aqua-77*amber)+84*filament),0,255));
+   cloudPixels[i+3]=Math.round(limit*broad*dust*162);
+  }
+ }
+ const nebulaTexture=new T.DataTexture(cloudPixels,cloudWidth,cloudHeight,T.RGBAFormat,T.UnsignedByteType);
+ nebulaTexture.colorSpace=T.SRGBColorSpace;nebulaTexture.generateMipmaps=true;nebulaTexture.minFilter=T.LinearMipmapLinearFilter;nebulaTexture.magFilter=T.LinearFilter;nebulaTexture.needsUpdate=true;textures.add(nebulaTexture);
+
  const timeUniform={value:0},pixelRatio={value:Math.min(globalThis.devicePixelRatio||1,1.5)};
- const skyMaterial=material(new T.ShaderMaterial({uniforms:{uMap:{value:environmentTexture},uTime:timeUniform},side:T.BackSide,depthWrite:false,depthTest:false,fog:false,toneMapped:false,
+ const skyMaterial=material(new T.ShaderMaterial({uniforms:{uMap:{value:environmentTexture},uNebula:{value:nebulaTexture},uMoonDirection:{value:moonDirection},uNebulaDirection:{value:nebulaDirection},uNebulaEast:{value:nebulaEast},uNebulaNorth:{value:nebulaNorth},uNebulaExtent:{value:nebulaExtent},uTime:timeUniform},side:T.BackSide,depthWrite:false,depthTest:false,fog:false,toneMapped:false,
   vertexShader:'varying vec3 vDirection;void main(){vDirection=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
-  fragmentShader:`varying vec3 vDirection;uniform sampler2D uMap;uniform float uTime;
+  fragmentShader:`varying vec3 vDirection;uniform sampler2D uMap,uNebula;uniform vec3 uMoonDirection,uNebulaDirection,uNebulaEast,uNebulaNorth;uniform vec2 uNebulaExtent;uniform float uTime;
    void main(){vec3 d=normalize(vDirection);vec2 uv=vec2(atan(d.z,d.x)*.159154943+.5,asin(clamp(d.y,-1.,1.))*.318309886+.5);
     vec2 du=dFdx(uv),dv=dFdy(uv);du.x-=floor(du.x+.5);dv.x-=floor(dv.x+.5);
     vec3 sky=textureGrad(uMap,uv,du,dv).rgb;
@@ -136,6 +176,15 @@ export function createDrownedSky(scene,{mobile=false,onChange=()=>{}}={}){
     float gas=sin(dot(d,vec3(-12.,8.,17.))+uTime*.105);
     vec3 exposure=mix(vec3(1.),vec3(1.25+bloom*.14,1.22+bloom*.14,1.30+gas*.13),clouds);
     sky*=exposure;
+    float toward=dot(d,uNebulaDirection);
+    vec2 cloudUV=.5+vec2(dot(d,uNebulaEast),dot(d,uNebulaNorth))*(.5/(max(.5,toward)*uNebulaExtent));
+    vec2 cloudDX=dFdx(cloudUV),cloudDY=dFdy(cloudUV);
+    if(toward>.65&&all(greaterThan(cloudUV,vec2(0.)))&&all(lessThan(cloudUV,vec2(1.)))){
+     vec4 nebula=textureGrad(uNebula,cloudUV,cloudDX,cloudDY);
+     float pulse=sin(dot(d,vec3(9.,6.,-17.))+uTime*.18);
+     float lunarClearance=1.-.82*smoothstep(.994,.9994,dot(d,uMoonDirection));
+     sky=sky*(1.-.52*nebula.a*lunarClearance)+nebula.rgb*((1.11+.13*pulse)*lunarClearance);
+    }
     gl_FragColor=vec4(sky,1.);
     #include <colorspace_fragment>
    }`
@@ -225,19 +274,31 @@ export function createDrownedSky(scene,{mobile=false,onChange=()=>{}}={}){
   if(i<meteorSegments-1){const v=i*2;meteorIndices.push(v,v+2,v+1,v+1,v+2,v+3);}
  }
  const meteorGeometry=geometry(new T.BufferGeometry());meteorGeometry.setAttribute('position',new T.BufferAttribute(meteorTrail,3));meteorGeometry.setAttribute('aAge',new T.BufferAttribute(meteorAges,1));meteorGeometry.setAttribute('aSide',new T.BufferAttribute(meteorSides,1));meteorGeometry.setIndex(meteorIndices);
- function createMeteor(start,finish,period,offset,duration){
-  const meteorMaterial=material(new T.ShaderMaterial({uniforms:{uTime:timeUniform,uStart:{value:new T.Vector3(...start).normalize()},uEnd:{value:new T.Vector3(...finish).normalize()},uPeriod:{value:period},uOffset:{value:offset},uDuration:{value:duration}},side:T.DoubleSide,transparent:true,depthWrite:false,depthTest:true,blending:T.AdditiveBlending,toneMapped:false,fog:false,
+ function createMeteor(start,finish,period,offset,duration,tint=0x7ba7ed){
+  const meteorMaterial=material(new T.ShaderMaterial({uniforms:{uTime:timeUniform,uStart:{value:new T.Vector3(...start).normalize()},uEnd:{value:new T.Vector3(...finish).normalize()},uPeriod:{value:period},uOffset:{value:offset},uDuration:{value:duration},uTint:{value:new T.Color(tint)}},side:T.DoubleSide,transparent:true,depthWrite:false,depthTest:true,blending:T.AdditiveBlending,toneMapped:false,fog:false,
    vertexShader:`attribute float aAge,aSide;uniform float uTime,uPeriod,uOffset,uDuration;uniform vec3 uStart,uEnd;varying float vAlpha,vAge,vAcross;
     // CELESTIAL_METEOR_RIBBON: a tapered optical trail with a compact white head.
-    void main(){float cycle=mod(uTime+uOffset,uPeriod);float p=cycle/uDuration;float head=p-aAge*.17;vec3 start=uStart,finish=uEnd;vec3 direction=normalize(mix(start,finish,clamp(head,0.,1.)));vec3 side=normalize(cross(direction,finish-start));float width=.22+pow(1.-aAge,2.)*1.4;vAge=aAge;vAcross=aSide;vAlpha=exp(-aAge*4.5)*smoothstep(0.,.13,p)*(1.-smoothstep(.85,1.12,p));if(head<0.||head>1.)vAlpha=0.;gl_Position=projectionMatrix*modelViewMatrix*vec4(direction*1200.+side*aSide*width,1.);}`,
-   fragmentShader:`varying float vAlpha,vAge,vAcross;void main(){float core=exp(-vAcross*vAcross*3.4);vec3 colour=mix(vec3(.38,.57,.92),vec3(.92,.96,1.),pow(1.-vAge,3.));gl_FragColor=vec4(colour,core*vAlpha*.78);
+    void main(){float cycle=mod(uTime+uOffset,uPeriod);float p=cycle/uDuration;float head=p-aAge*.17;vec3 start=uStart,finish=uEnd;vec3 direction=normalize(mix(start,finish,clamp(head,0.,1.)));vec3 side=normalize(cross(direction,finish-start));float width=.23+pow(1.-aAge,1.9)*2.05;vAge=aAge;vAcross=aSide;vAlpha=exp(-aAge*4.5)*smoothstep(0.,.13,p)*(1.-smoothstep(.85,1.12,p));if(head<0.||head>1.)vAlpha=0.;gl_Position=projectionMatrix*modelViewMatrix*vec4(direction*1200.+side*aSide*width,1.);}`,
+   fragmentShader:`varying float vAlpha,vAge,vAcross;uniform vec3 uTint;
+    void main(){float crossSection=vAcross*vAcross,tip=exp(-vAge*vAge*290.);
+     float core=exp(-crossSection*6.)*(.63+.34*tip);
+     float wake=exp(-crossSection*2.)*.24*(1.-smoothstep(.63,1.,abs(vAcross)));
+     vec3 colour=mix(uTint,vec3(1.,.97,.92),pow(1.-vAge,2.5));
+     gl_FragColor=vec4(colour,(core+wake)*vAlpha);
     #include <colorspace_fragment>
    }`
   }));
   const meteor=new T.Mesh(meteorGeometry,meteorMaterial);meteor.name='Shooting star';meteor.renderOrder=-1090;meteor.frustumCulled=false;meteor.visible=false;root.add(meteor);
   return {mesh:meteor,period,offset,duration};
  }
- const meteors=[createMeteor([-.57,.59,-.72],[.02,.45,-.91],21,17,1.22),createMeteor([.86,.37,-.34],[.38,.2,-.94],33,19,.92),createMeteor([-.68,-.25,-.66],[.14,-.48,-.92],49,41,1.18)];
+ const meteors=[
+  createMeteor([-.57,.46,-.79],[.08,.43,-.91],21,17,1.22),
+  createMeteor([.86,.37,-.34],[.38,.2,-.94],33,19,.92),
+  createMeteor([-.68,-.25,-.66],[.14,-.48,-.92],49,41,1.18),
+  createMeteor([.20,.43,-.88],[.57,.22,-.80],59,52.9,1.24,0xffc18f),
+  createMeteor([.25,.38,-.89],[.46,.16,-.90],59,52.1,.84),
+  createMeteor([.18,.48,-.88],[.45,.30,-.87],59,51.45,.80,0xa69eff)
+ ];
  onChange();
  return{
   root,environmentTexture,moonDirection,
@@ -251,7 +312,7 @@ export function createDrownedSky(scene,{mobile=false,onChange=()=>{}}={}){
    }
    const changed=dirty;dirty=false;return changed;
   },
-  diagnostics:()=>({night:true,skyLoaded:true,textureReady:true,catalogue:'totehm-celestial-sphere',fullSphere:true,textureSize:[width,height],milkyWay:true,galacticClouds:'amber core, violet filaments and branching dust',companionGalaxy:companionDirection.toArray(),brightAnchors:anchors.length,galacticArch:true,galacticNormal:normal.toArray(),stars:starCount,stellarDust:tinyStars,stellarProfile:'white cores, restrained halos and anchor-star diffraction',stellarColours:7,time:+time.toFixed(3),animated,moon:true,moonDirection:moonDirection.toArray(),moonDiameterDegrees:1.04,lunarCraters:lunarCraters.length,shootingStars:meteors.length,meteor:meteors.some(event=>event.mesh.visible),meteorRibbon:true,meteorTriangles:meteorIndices.length/3,externalFiles:0,disposed}),
+  diagnostics:()=>({night:true,skyLoaded:true,textureReady:true,catalogue:'totehm-celestial-sphere',fullSphere:true,textureSize:[width,height],milkyWay:true,galacticClouds:'amber core, violet filaments and branching dust',companionGalaxy:companionDirection.toArray(),emissionNebula:{direction:nebulaDirection.toArray(),extent:nebulaExtent.toArray(),textureSize:[cloudWidth,cloudHeight]},brightAnchors:anchors.length,galacticArch:true,galacticNormal:normal.toArray(),stars:starCount,stellarDust:tinyStars,stellarProfile:'white cores, restrained halos and anchor-star diffraction',stellarColours:7,time:+time.toFixed(3),animated,moon:true,moonDirection:moonDirection.toArray(),moonDiameterDegrees:1.04,lunarCraters:lunarCraters.length,shootingStars:meteors.length,meteor:meteors.some(event=>event.mesh.visible),meteorRibbon:true,meteorTriangles:meteorIndices.length/3,externalFiles:0,disposed}),
   dispose(){if(disposed)return;disposed=true;for(const t of textures)t.dispose();for(const m of materials)m.dispose();for(const g of geometries)g.dispose();canvas.width=canvas.height=moonCanvas.width=moonCanvas.height=haloCanvas.width=haloCanvas.height=1;root.removeFromParent();root.clear();}
  };
 }
