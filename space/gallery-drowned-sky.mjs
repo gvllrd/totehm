@@ -1,24 +1,24 @@
 import * as T from './vendor/three-0.180.0.mjs';
 
-const GALACTIC_PLATE='/assets/gallery/sky/galactic-arch.jpg';
+const SKY_PAINTING='/assets/gallery/sky/painted-nebula.jpg';
 
 // One celestial sphere serves Lisbon, New York and Origins. Its procedural
-// environment lights the scenery as the dedicated Milky Way image loads.
+// environment lights the scenery as the painted night sky loads.
 export function createDrownedSky(scene,{mobile=false,onChange=()=>{}}={}){
  const root=new T.Group();root.name='TOTEHM — the common celestial sphere';scene.add(root);
  const geometries=new Set(),materials=new Set(),textures=new Set();
  const geometry=g=>(geometries.add(g),g),material=m=>(materials.add(m),m);
  let time=0,disposed=false,dirty=true,animated=false,plateReady=false,plateFailed=false;
  const plateBlend={value:0};
- const photograph=typeof document.createElementNS==='function'?new T.TextureLoader().load(GALACTIC_PLATE,()=>{
+ const painting=typeof document.createElementNS==='function'?new T.TextureLoader().load(SKY_PAINTING,()=>{
   if(disposed)return;
   plateReady=true;dirty=true;onChange();
  },undefined,()=>{
   if(disposed)return;
   plateFailed=true;dirty=true;onChange();
  }):null;
- if(photograph){
-  photograph.colorSpace=T.SRGBColorSpace;photograph.wrapS=T.RepeatWrapping;photograph.anisotropy=4;textures.add(photograph);
+ if(painting){
+  painting.colorSpace=T.SRGBColorSpace;painting.anisotropy=4;textures.add(painting);
  }
  let seed=0x4e494748;const random=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};
  const clamp=(n,a=0,b=1)=>Math.max(a,Math.min(b,n));
@@ -36,10 +36,10 @@ export function createDrownedSky(scene,{mobile=false,onChange=()=>{}}={}){
  const companionDirection=new T.Vector3(-.62,.198,-.88).normalize();
  const companionEast=new T.Vector3().crossVectors(new T.Vector3(0,1,0),companionDirection).normalize().applyAxisAngle(companionDirection,.52);
  const companionNorth=new T.Vector3().crossVectors(companionDirection,companionEast);
- const nebulaDirection=new T.Vector3(.415,.253,-.874).normalize();
- const nebulaEast=new T.Vector3().crossVectors(nebulaDirection,new T.Vector3(0,1,0)).normalize().applyAxisAngle(nebulaDirection,.42);
+ const nebulaDirection=new T.Vector3(.32,.23,-.93).normalize();
+ const nebulaEast=new T.Vector3().crossVectors(nebulaDirection,new T.Vector3(0,1,0)).normalize();
  const nebulaNorth=new T.Vector3().crossVectors(nebulaEast,nebulaDirection);
- const nebulaExtent=new T.Vector2(.64,.46);
+ const nebulaExtent=new T.Vector2(.64,.46),paintingExtent=new T.Vector2(1.04,.49);
  const width=mobile?1024:2048,height=width/2;
  const lattice=new Float32Array(32*32*32);for(let i=0;i<lattice.length;i++)lattice[i]=random();
  const atLattice=(x,y,z)=>lattice[(x&31)+((y&31)<<5)+((z&31)<<10)];
@@ -188,58 +188,45 @@ export function createDrownedSky(scene,{mobile=false,onChange=()=>{}}={}){
  nebulaTexture.colorSpace=T.SRGBColorSpace;nebulaTexture.generateMipmaps=true;nebulaTexture.minFilter=T.LinearMipmapLinearFilter;nebulaTexture.magFilter=T.LinearFilter;nebulaTexture.needsUpdate=true;textures.add(nebulaTexture);
 
  const timeUniform={value:0},pixelRatio={value:Math.min(globalThis.devicePixelRatio||1,1.5)};
- const skyMaterial=material(new T.ShaderMaterial({uniforms:{uMap:{value:environmentTexture},uGalacticPlate:{value:photograph??environmentTexture},uPlateBlend:plateBlend,
-  uPlateNormal:{value:plateNormal},uPlateCore:{value:plateCore},uPlateLongitude:{value:plateLongitude},uCompanionDirection:{value:companionDirection},uNebula:{value:nebulaTexture},uMoonDirection:{value:moonDirection},uNebulaDirection:{value:nebulaDirection},uNebulaEast:{value:nebulaEast},uNebulaNorth:{value:nebulaNorth},uNebulaExtent:{value:nebulaExtent},uTime:timeUniform},side:T.BackSide,depthWrite:false,depthTest:false,fog:false,toneMapped:false,
+ const skyMaterial=material(new T.ShaderMaterial({uniforms:{
+  uMap:{value:environmentTexture},uPainting:{value:painting??environmentTexture},uPaintingBlend:plateBlend,
+  uPaintingExtent:{value:paintingExtent},uNebula:{value:nebulaTexture},uNebulaExtent:{value:nebulaExtent},
+  uMoonDirection:{value:moonDirection},uDirection:{value:nebulaDirection},uEast:{value:nebulaEast},
+  uNorth:{value:nebulaNorth},uTime:timeUniform
+ },side:T.BackSide,depthWrite:false,depthTest:false,fog:false,toneMapped:false,
   vertexShader:'varying vec3 vDirection;void main(){vDirection=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
-  fragmentShader:`varying vec3 vDirection;uniform sampler2D uMap,uNebula,uGalacticPlate;uniform float uPlateBlend;uniform vec3 uPlateNormal,uPlateCore,uPlateLongitude,uCompanionDirection;uniform vec3 uMoonDirection,uNebulaDirection,uNebulaEast,uNebulaNorth;uniform vec2 uNebulaExtent;uniform float uTime;
-   const vec3 luminanceWeights=vec3(.2126,.7152,.0722);
-   vec3 nightRelief(vec3 light,vec3 haze,float body,float thread){
-    float lum=dot(light,luminanceWeights),blurred=dot(haze,luminanceWeights);
-    float detail=max(0.,lum-blurred-.0022);
-    float value=body*lum+thread*detail/(1.+3.1*detail);
-    return light*(value/max(lum,.002));
-   }
-   void main(){vec3 d=normalize(vDirection);vec2 uv=vec2(atan(d.z,d.x)*.159154943+.5,asin(clamp(d.y,-1.,1.))*.318309886+.5);
+  fragmentShader:`varying vec3 vDirection;
+   uniform sampler2D uMap,uNebula,uPainting;
+   uniform float uTime,uPaintingBlend;
+   uniform vec3 uDirection,uEast,uNorth,uMoonDirection;
+   uniform vec2 uNebulaExtent,uPaintingExtent;
+   void main(){
+    vec3 d=normalize(vDirection);
+    vec2 uv=vec2(atan(d.z,d.x)*.159154943+.5,asin(clamp(d.y,-1.,1.))*.318309886+.5);
     vec2 du=dFdx(uv),dv=dFdy(uv);du.x-=floor(du.x+.5);dv.x-=floor(dv.x+.5);
     vec3 distant=textureGrad(uMap,uv,du,dv).rgb;
-    vec3 diffuse=textureGrad(uMap,uv,du*10.,dv*10.).rgb;
-    float bloom=sin(dot(d,vec3(18.,-7.,11.))-uTime*.18)*sin(dot(d,vec3(5.,16.,8.))+uTime*.14);
-    vec3 sky=nightRelief(distant,diffuse,.037,.49)*(1.+.04*bloom);
-    if(uPlateBlend>0.){
-     float lat=asin(clamp(dot(d,uPlateNormal),-1.,1.));
-     float longitude=atan(dot(d,uPlateLongitude),dot(d,uPlateCore));
-     vec2 galacticUV=vec2(.5+longitude*.159154943,.5+lat*.318309886);
-     vec2 plateDX=dFdx(galacticUV),plateDY=dFdy(galacticUV);
-     plateDX.x-=floor(plateDX.x+.5);plateDY.x-=floor(plateDY.x+.5);
-     float galacticBand=1.-smoothstep(.035,.195,abs(lat));
-     if(galacticBand>0.){
-      vec3 recorded=textureGrad(uGalacticPlate,galacticUV,plateDX,plateDY).rgb;
-      vec3 soft=textureGrad(uGalacticPlate,galacticUV,plateDX*3.8,plateDY*3.8).rgb;
-      vec3 haze=textureGrad(uGalacticPlate,galacticUV,plateDX*10.,plateDY*10.).rgb;
-      vec3 graded=nightRelief(recorded,soft,.019,.76)+nightRelief(soft,haze,0.,.15);
-      float thread=dot(graded,luminanceWeights);
-      float warm=smoothstep(.022,.072,thread)*smoothstep(.028,.23,recorded.r-recorded.b);
-      vec3 indigo=thread*mix(vec3(.32,.61,1.43),vec3(.49,.49,1.52),.46+.41*sin(longitude*4.+lat*9.));
-      graded=mix(indigo,graded,.25+.73*warm)*(1.+.045*bloom);
-      float companion=1.-.74*smoothstep(.994,.99958,dot(d,uCompanionDirection));
-      sky=mix(sky,graded,uPlateBlend*companion*galacticBand);
+    vec3 ink=vec3(.00041,.00056,.00092)+distant*mix(.029,.006,uPaintingBlend);
+    float ahead=dot(d,uDirection);
+    vec2 centre=vec2(dot(d,uEast),dot(d,uNorth))/max(.49,ahead);
+    vec2 paintedUV=.5+centre*(.5/uPaintingExtent);
+    vec2 paintedDX=dFdx(paintedUV),paintedDY=dFdy(paintedUV);
+    vec2 proceduralUV=.5+centre*(.5/uNebulaExtent);
+    vec2 proceduralDX=dFdx(proceduralUV),proceduralDY=dFdy(proceduralUV);
+    float pulse=sin(dot(d,vec3(9.,6.,-17.))+uTime*.15);
+    if(ahead>.49){
+     float rim=1.-smoothstep(.73,1.,2.*max(abs(paintedUV.x-.5),abs(paintedUV.y-.5)));
+     if(uPaintingBlend>0.&&rim>0.){
+      vec3 pigment=textureGrad(uPainting,paintedUV,paintedDX,paintedDY).rgb;
+      float brightness=dot(pigment,vec3(.2126,.7152,.0722));
+      float moonSpace=1.-.38*smoothstep(.994,.99955,dot(d,uMoonDirection));
+      vec3 glaze=pigment*(1.07+.06*pulse)/(1.+.32*brightness);
+      ink=mix(ink,glaze*moonSpace,uPaintingBlend*rim*.97);
+     }
+     if(uPaintingBlend<1.&&all(greaterThan(proceduralUV,vec2(0.)))&&all(lessThan(proceduralUV,vec2(1.)))){
+      vec3 dust=textureGrad(uNebula,proceduralUV,proceduralDX,proceduralDY).rgb;
+      ink+=dust*.095*(1.-uPaintingBlend);
      }
     }
-    float toward=dot(d,uNebulaDirection);
-    vec2 cloudUV=.5+vec2(dot(d,uNebulaEast),dot(d,uNebulaNorth))*(.5/(max(.5,toward)*uNebulaExtent));
-    vec2 cloudDX=dFdx(cloudUV),cloudDY=dFdy(cloudUV);
-    if(toward>.65&&all(greaterThan(cloudUV,vec2(0.)))&&all(lessThan(cloudUV,vec2(1.)))){
-     vec4 nebula=textureGrad(uNebula,cloudUV,cloudDX,cloudDY);
-     vec3 halo=textureGrad(uNebula,cloudUV,cloudDX*8.,cloudDY*8.).rgb;
-     vec3 filaments=nightRelief(nebula.rgb,halo,.085,.64);
-     float pulse=sin(dot(d,vec3(9.,6.,-17.))+uTime*.18);
-     float lunarClearance=1.-.82*smoothstep(.994,.9994,dot(d,uMoonDirection));
-     sky=sky*(1.-.37*nebula.a*lunarClearance)+filaments*((.98+.055*pulse)*lunarClearance);
-    }
-    // A gentle shoulder limits broad light without washing out either hue or silhouette.
-    float luminance=dot(sky,luminanceWeights);
-    float shadow=mix(.30,1.,smoothstep(.004,.034,luminance));
-    vec3 ink=sky*shadow/(1.+luminance*2.75);
     gl_FragColor=vec4(ink,1.);
     #include <colorspace_fragment>
    }`
@@ -300,49 +287,6 @@ export function createDrownedSky(scene,{mobile=false,onChange=()=>{}}={}){
    }`
  }));
  const stars=new T.Points(starGeometry,starMaterial);stars.name='Fine stellar light — warm giants and blue distant stars';stars.renderOrder=-1100;stars.frustumCulled=false;stars.onBeforeRender=renderer=>{pixelRatio.value=Math.min(renderer.getPixelRatio(),1.5);};root.add(stars);
-
- // A comet has a broad curved dust tail and a narrower blue ion tail.
- const cometDirection=new T.Vector3(-.59,.285,-.86).normalize();
- const cometEast=new T.Vector3().crossVectors(cometDirection,new T.Vector3(0,1,0)).normalize();
- const cometNorth=new T.Vector3().crossVectors(cometEast,cometDirection);
- const cometAlong=cometEast.multiplyScalar(.998).addScaledVector(cometNorth,.045).normalize();
- const cometAcross=new T.Vector3().crossVectors(cometAlong,cometDirection);
- const cometWidth=516,cometHeight=220,cometHeadOffset=.085;
- const cometGeometry=geometry(new T.PlaneGeometry(cometWidth,cometHeight).translate(cometWidth*(.5-cometHeadOffset),0,0));
- const cometMaterial=material(new T.ShaderMaterial({uniforms:{uTime:timeUniform,uHeadOffset:{value:cometHeadOffset}},transparent:true,depthWrite:false,depthTest:true,blending:T.AdditiveBlending,toneMapped:false,fog:false,
-  vertexShader:'varying vec2 vComet;void main(){vComet=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);gl_Position.z=gl_Position.w*.999999;}',
-  fragmentShader:`varying vec2 vComet;uniform float uTime,uHeadOffset;
-   float gaussian(float value){return exp(-value*value);}
-   void main(){
-    float x=vComet.x-uHeadOffset,y=vComet.y*2.-1.;
-    float age=clamp(x/(1.-uHeadOffset),0.,1.);
-    float fade=smoothstep(-.008,.027,x)*(1.-smoothstep(.54,1.,age));
-    float curl=-age*(.09+age*.43),dustWidth=.049+.37*age,across=(y-curl)/dustWidth;
-    float detail=.86+.10*sin(across*9.+age*12.)+.04*sin(across*43.-age*9.);
-    float dust=gaussian(across)*fade*pow(1.-age,1.25)*detail;
-    float dustRim=.28*gaussian((y-curl+age*.093)/(.013+.053*age))*fade*pow(1.-age,1.7);
-    float current=.20*age+.28*age*age+(sin(age*17.-uTime*.52)+.34*sin(age*37.-uTime*.79))*age*.022;
-    float ionWidth=.011+.035*age,stream=(y-current)/ionWidth;
-    float ion=gaussian(stream)*fade*pow(1.-age,.73);
-    float ionHalo=.22*gaussian(stream*.31)*fade*pow(1.-age,1.1);
-    float ionThread=.30*gaussian((y-current-age*.036)/(.007+.019*age))*fade*pow(1.-age,.85);
-    vec2 head=vec2(x*4.69,y);
-    float headDistance=dot(head,head),nucleus=exp(-headDistance*2900.);
-    float coma=exp(-headDistance*370.)*.49,glare=exp(-headDistance*72.)*.12;
-    vec3 reflected=vec3(.81,.61,.36)*(dust*.54+dustRim*.46);
-    vec3 plasma=vec3(.23,.57,1.)*(ion*.55+ionHalo+ionThread);
-    vec3 light=reflected+plasma+vec3(1.,.93,.78)*(nucleus+coma+glare);
-    float energy=max(light.r,max(light.g,light.b));
-    if(energy<.001)discard;
-    gl_FragColor=vec4(light/max(energy,.001),min(1.,energy));
-    #include <colorspace_fragment>
-   }`
- }));
- const cometTrack=new T.Group();root.add(cometTrack);
- const comet=new T.Mesh(cometGeometry,cometMaterial);comet.name='Comet with dust and ion tails';comet.renderOrder=-1095;comet.frustumCulled=false;
- comet.position.copy(cometDirection).multiplyScalar(1198);
- comet.quaternion.setFromRotationMatrix(new T.Matrix4().makeBasis(cometAlong,cometAcross,cometDirection.clone().negate()));
- cometTrack.add(comet);
 
  seed=0x4d4f4f4e;
  const moonCanvas=document.createElement('canvas');moonCanvas.width=moonCanvas.height=mobile?256:512;
@@ -434,7 +378,7 @@ export function createDrownedSky(scene,{mobile=false,onChange=()=>{}}={}){
    if(disposed)return false;
    if(eye&&!root.position.equals(eye)){root.position.copy(eye);dirty=true;}
    const step=Math.max(0,Math.min(Number(dt)||0,.1));
-   animated=!!motion;if(animated){time+=step;timeUniform.value=time;cometTrack.rotation.y=-time*.00019;dirty=true;}
+   animated=!!motion;if(animated){time+=step;timeUniform.value=time;dirty=true;}
    if(plateReady&&plateBlend.value<1){
     const blend=motion?Math.min(1,plateBlend.value+step/1.05):1;
     if(blend!==plateBlend.value){plateBlend.value=blend;dirty=true;}
@@ -445,7 +389,7 @@ export function createDrownedSky(scene,{mobile=false,onChange=()=>{}}={}){
    }
    const changed=dirty;dirty=false;return changed;
   },
-  diagnostics:()=>({night:true,skyLoaded:true,textureReady:true,catalogue:'totehm-celestial-sphere',fullSphere:true,textureSize:[width,height],milkyWay:true,galacticClouds:'fine indigo and gold filaments in deep black',skyGrade:'dark-filaments',galacticPlate:{ready:plateReady,failed:plateFailed,blend:plateBlend.value,normal:plateNormal.toArray(),core:plateCore.toArray(),size:[1774,887]},companionGalaxy:companionDirection.toArray(),emissionNebula:{direction:nebulaDirection.toArray(),extent:nebulaExtent.toArray(),textureSize:[cloudWidth,cloudHeight]},brightAnchors:anchors.length,galacticArch:true,galacticNormal:normal.toArray(),stars:starCount,stellarDust:tinyStars,stellarProfile:'white cores, restrained halos and anchor-star diffraction',stellarColours:7,time:+time.toFixed(3),animated,moon:true,moonDirection:moonDirection.toArray(),moonDiameterDegrees:moonDiameter,lunarCraters:lunarCraters.length,lunarRelief:true,comet:{direction:cometDirection.toArray(),tailCount:2,driftDegreesPerMinute:.00019*60*180/Math.PI},shootingStars:meteors.length,meteor:meteors.some(event=>event.mesh.visible),meteorRibbon:true,meteorTriangles:meteorIndices.length/3,externalFiles:0,disposed}),
+  diagnostics:()=>({night:true,skyLoaded:true,textureReady:true,catalogue:'totehm-celestial-sphere',fullSphere:true,textureSize:[width,height],milkyWay:true,galacticClouds:'painted turquoise and violet with broken golden edges',skyGrade:'painted-night',galacticPlate:{ready:plateReady,failed:plateFailed,blend:plateBlend.value,projection:'directional-painting',direction:nebulaDirection.toArray(),extent:paintingExtent.toArray(),size:[1774,887]},companionGalaxy:companionDirection.toArray(),emissionNebula:{direction:nebulaDirection.toArray(),extent:nebulaExtent.toArray(),textureSize:[cloudWidth,cloudHeight]},brightAnchors:anchors.length,galacticArch:true,galacticNormal:normal.toArray(),stars:starCount,stellarDust:tinyStars,stellarProfile:'white cores, restrained halos and anchor-star diffraction',stellarColours:7,time:+time.toFixed(3),animated,moon:true,moonDirection:moonDirection.toArray(),moonDiameterDegrees:moonDiameter,lunarCraters:lunarCraters.length,lunarRelief:true,comet:false,shootingStars:meteors.length,meteor:meteors.some(event=>event.mesh.visible),meteorRibbon:true,meteorTriangles:meteorIndices.length/3,externalFiles:0,disposed}),
   dispose(){if(disposed)return;disposed=true;for(const t of textures)t.dispose();for(const m of materials)m.dispose();for(const g of geometries)g.dispose();canvas.width=canvas.height=moonCanvas.width=moonCanvas.height=haloCanvas.width=haloCanvas.height=1;root.removeFromParent();root.clear();}
  };
 }
