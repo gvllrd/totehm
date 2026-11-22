@@ -1,3 +1,4 @@
+import {linkedPracticeRows,readPracticeLinks} from './tracking-practice.ts';
 import {trackingKeyboard} from './tracking-bot.ts';
 import {createTelegramTransport,TelegramAPIError,telegramTextParts} from './tracking-telegram.ts';
 type Config={db:any;token?:string;serviceKey:string;webhookSecret?:string;projectOrigin:string;fetcher?:typeof fetch;pause?:(milliseconds:number)=>Promise<void>};
@@ -50,13 +51,16 @@ export function createTrackingTick(c:Config){
     if(claim.error){bump('claim_failed');continue;}if(!d?.send){bump(String(d?.why??'not_due'));continue;}
     if(body?.mode==='dry_run'){bump('due');continue;}
     const timing=await confirmedTiming(c.db,uid,d);
+    let linked:any[][]=[];
+    try{linked=linkedPracticeRows(await readPracticeLinks(c.db,{user_id:uid,habit:String(d.habit)}),String(d.habit),String(d.id));}
+    catch{console.error('[tracking]','linked_read_failed');}
     let state='uncertain',message:number|null=null,code='network_uncertain',partsSent=0;
     try{
      const text=String(d.habit)+'\n\n'+(timing?'Your timing: '+timing+'\n\n':'')+(d.period_label?String(d.period_label)+'\n':'')+'Did you do it?';
      const parts=telegramTextParts(text);
      for(let n=0;n<parts.length;n++){
       if(n)await pause(1100);
-      const delivered=await telegram('sendMessage',{chat_id:d.chat_id,text:parts[n],...(n===parts.length-1?{reply_markup:trackingKeyboard(String(d.id))}:{}),link_preview_options:{is_disabled:true}});
+      const delivered=await telegram('sendMessage',{chat_id:d.chat_id,text:parts[n],...(n===parts.length-1?{reply_markup:trackingKeyboard(String(d.id),'a',linked)}:{}),link_preview_options:{is_disabled:true}});
       if(!Number.isSafeInteger(delivered.result?.message_id))throw new TelegramAPIError('sendMessage',200,0,false);
       partsSent++;message=delivered.result.message_id;
      }

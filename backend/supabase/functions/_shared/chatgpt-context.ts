@@ -506,6 +506,11 @@ async function loadGraph(client: ReadClient, uid: string, focus?: ElementRef): P
   return projectGraph(snapshot);
 }
 
+// Internal callers resolve uid from their validated owner. Same bounded native reader as MCP.
+export function retrieveOwnerGraph(client: ReadClient, uid: string, focus?: ElementRef): Promise<ContextGraph> {
+  return loadGraph(client, uid, focus);
+}
+
 export async function retrieveContext(client: ReadClient, uid: string, options: ContextOptions): Promise<ContextResult> {
   validateOptions(options);
   const result = projectContext(await loadGraph(client, uid, options.focus), options);

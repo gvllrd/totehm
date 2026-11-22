@@ -71,10 +71,16 @@ check(chunks.every(s=>!/[\uD800-\uDBFF]$/.test(s)&&!/^([\uDC00-\uDFFF])/.test(s)
 
 const tickCalls=[];let sendCount=0,status=200,throwNetwork=false,bodyOk=true,habit='Write',failAt=0;const deliveredMessages=[];
 let timingRows=[],timingError=false,timingThrow=false,claimFrequency='daily',claimEligible=true,claimError=false;
-const timingReads=[];
+const timingReads=[],linkedReads=[];let linkedTables={};
 const tickDb={rpc:async(name,args)=>{tickCalls.push({name,args});return {data:name==='bot_tick_consume'?args.p_token==='purpose-token':name==='tracking_delivered'?true:{send:claimEligible,id:'9007199254740993',lease:'lease',habit,frequency:claimFrequency,chat_id:'101',period_label:'Today · 10 Nov 2026 (UTC)'},error:claimError&&name==='tracking_claim'?{message:'unavailable'}:null};},
- from(table){const filters=[];let columns,ordering;const q={select(v){columns=v;return q},eq(k,v){filters.push([k,v]);return q},order(k,v){ordering={key:k,...v};return q},range(){return Promise.resolve({data:[{user_id:A},{user_id:A}],error:null})},
- limit(n){timingReads.push({table,columns,filters,ordering,limit:n,afterClaim:tickCalls.at(-1)?.name});if(timingThrow)throw Error('private timing error');return Promise.resolve({data:timingRows,error:timingError?{message:'private timing error'}:null});}};return q;}};
+ from(table){const filters=[],conditions=[];let columns,ordering;const q={select(v){columns=v;return q},eq(k,v){filters.push([k,v]);if(k==='user_id')conditions.push(r=>r.user_id===undefined||r.user_id===v);else conditions.push(r=>r[k]===v);return q},
+ or(){conditions.push(r=>!['achieved','abandoned','converted'].includes(r.status));return q},
+ is(k,v){conditions.push(r=>(r[k]??null)===v);return q},not(k,op,v){assert.equal(op,'is');conditions.push(r=>(r[k]??null)!==v);return q},
+ in(k,v){conditions.push(r=>v.includes(r[k]));return q},order(k,v){ordering={key:k,...v};return q},range(){return Promise.resolve({data:[{user_id:A},{user_id:A}],error:null})},
+ limit(n){const timing=table==='totehms'&&columns==='habits'&&ordering?.key==='updated_at'&&n===1;
+ const read={table,columns,filters,ordering,limit:n,afterClaim:tickCalls.at(-1)?.name};(timing?timingReads:linkedReads).push(read);
+ if(timing&&timingThrow)throw Error('private timing error');
+ return Promise.resolve({data:(table==='totehms'?timingRows:linkedTables[table]??[]).filter(r=>conditions.every(f=>f(r))).slice(0,n),error:timing&&timingError?{message:'private timing error'}:null});}};return q;}};
 const fetcher=async(url,opts)=>{const name=url.split('/').at(-1);if(name==='sendMessage'){sendCount++;deliveredMessages.push(JSON.parse(opts.body));if(sendCount===failAt)return Response.json({ok:false,error_code:400},{status:400});}if(throwNetwork)throw Error('offline');
  if(name==='getMe')return Response.json({ok:true,result:{username:'TotehmBot'}});
  if(name==='getWebhookInfo')return Response.json({ok:true,result:{url:'https://project.test/functions/v1/bot-reply',pending_update_count:0}});
@@ -152,4 +158,28 @@ try{
  check((await unchanged('editMessageText',{})).unchanged,'An unchanged idempotent message edit is successful');
  check(!logs.join(' ').includes('secret-fixture')&&!logs.join(' ').includes('private-member-text'),'Provider errors log no credential or member content');
 }finally{console.error=oldError;}
+
+// Current direct links accompany an already due check-in; the Habit itself is never a selector.
+habit='Write';timingRows=[{habits:[{t:habit,f:'daily'}]}];
+const boxId=n=>`00000000-0000-4000-8000-${String(n).padStart(12,'0')}`;
+linkedTables={objectives:[{id:boxId(1),text:'Finish my book',target_at:'2027-06-01'},{id:boxId(2),text:'A life of writing',target_at:null},{id:boxId(3),text:'UNRELATED WHY',target_at:null}],
+ objective_habits:[{habit_text:habit,objective_id:boxId(1)},{habit_text:habit,objective_id:boxId(2)}],
+ repulsions:[{id:'9',repulsion:'Scroll at night',active:true,habit_text:habit},{id:'10',repulsion:'UNRELATED TRIGGER',active:true,habit_text:'Other Habit'}]};
+enriched=await timingMessages();
+const linkButtons=enriched[0].reply_markup.inline_keyboard.flat().filter(b=>b.callback_data?.startsWith('t:x:'));
+check(linkButtons.map(b=>b.text).join('|')==='Why: Finish my book|Why: A life of writing|Instead of: Scroll at night','The scheduled message shows only each direct why and replacement trigger');
+check(enriched.length===1&&enriched[0].text==='Write\n\nToday · 10 Nov 2026 (UTC)\nDid you do it?'&&enriched[0].reply_markup.inline_keyboard[0].map(b=>b.text).join('|')==='Done|Missed','Linked buttons add no message, selection menu, or change to the complete check-in');
+check(linkedReads.every(r=>r.limit<=401&&r.filters.some(([k,v])=>k==='user_id'&&v===A)&&r.afterClaim==='tracking_claim'),'Linked reads are owner-bound, physically capped and occur only after an actual due claim');
+check(!tickCalls.some(c=>/tracking_answer|tracking_correct|tracking_detail|story_create|habit_spot_set/.test(c.name)),'A scheduler lookup writes neither an observation nor any TOTEHM element');
+const initial=callback('t:a:9007199254740993:done');initial.callback_query.message.reply_markup=enriched[0].reply_markup;
+answer={...answer,status:'done'};await handleTrackingUpdate(db,initial,telegram);
+check(sent.at(-1).payload.reply_markup.inline_keyboard.flat().filter(b=>b.callback_data?.startsWith('t:x:')).length===3,'Saving Done keeps the existing Why/Instead of controls');
+const change=callback('t:e:9007199254740993:open');change.callback_query.message.reply_markup=sent.at(-1).payload.reply_markup;
+await handleTrackingUpdate(db,change,telegram);
+check(sent.at(-1).payload.reply_markup.inline_keyboard[0].every(b=>b.callback_data.startsWith('t:c:'))&&sent.at(-1).payload.reply_markup.inline_keyboard.flat().filter(b=>b.callback_data?.startsWith('t:x:')).length===3,'Change keeps the same linked controls beside Done/Missed corrections');
+const linkedBefore=linkedReads.length;claimEligible=false;await timingMessages();claimEligible=true;claimError=true;await timingMessages();claimError=false;
+check(linkedReads.length===linkedBefore,'Ineligible and failed claims do not read linked context');
+linkedTables={};enriched=await timingMessages();
+check(enriched[0].reply_markup.inline_keyboard.flat().map(b=>b.text).join('|')==='Done|Missed|Prepare','Missing current links create no Why or Instead of button');
+
 console.log(JSON.stringify({suite:'Intelligent tracking bot',checks,passed:checks}));
