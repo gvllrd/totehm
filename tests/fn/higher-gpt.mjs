@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict';
 import {projectGraph,projectContext,retrieveContext,getSounds,getMediaMetadata,getSpots} from '../../backend/supabase/functions/_shared/chatgpt-context.ts';
 import {readMember,memberMedia} from '../../backend/supabase/functions/_shared/chatgpt-ecosystem.ts';
-import {initializeResult} from '../../backend/supabase/functions/_shared/chatgpt-protocol.ts';
+import {initializeResult,MCP_PROTOCOL_VERSION} from '../../backend/supabase/functions/_shared/chatgpt-protocol.ts';
 import {CHATGPT_TOOLS} from '../../backend/supabase/functions/_shared/chatgpt-server.ts';
 const uid='11111111-1111-4111-8111-111111111111';
 const id=n=>`00000000-0000-4000-8000-${String(n).padStart(12,'0')}`;
@@ -90,4 +90,23 @@ check(CHATGPT_TOOLS.filter(t=>t.name.includes('context')).every(t=>t.inputSchema
 check(initializeResult().instructions.includes('WHERE I USUALLY DO IT')&&initializeResult().instructions.includes('not a verified address')&&initializeResult().instructions.includes('time-bound practice plan'),'Habitual places and timed spots carry distinct server instructions');
 check(initializeResult().instructions.includes('rhythm_text')&&initializeResult().instructions.includes('never recomputed')&&initializeResult().instructions.includes('does not schedule three notifications'),'Authored timing remains separate from the persisted bot cadence');
 check(initializeResult().instructions.includes('short follow-ups')&&initializeResult().instructions.includes('within each view'),'Higher GPT behavior delivered by MCP initialization');
+// Server-instruction contracts, not simulated ChatGPT answers or live web verification.
+const initialized=initializeResult(),instructions=initialized.instructions;
+check(initialized.serverInfo.version==='1.9.0'&&initialized.protocolVersion==='2025-06-18'&&MCP_PROTOCOL_VERSION==='2025-06-18','Instruction release changes the server version, not the MCP wire protocol');
+const guidance=label=>{
+ const start=instructions.indexOf(label+':');
+ assert(start>=0,'Missing instruction section: '+label);
+ return instructions.slice(start).split('\n\n')[0];
+};
+const requires=(label,patterns,message)=>check(patterns.every(pattern=>pattern.test(guidance(label))),message);
+requires('Retrieval',[/one initial context read/,/already includes personal context/,/Reuse returned elements/,/five personal tools remain sufficient/,/ten-tool ecosystem requires explicit consent/,/Never require reconnection/],'Personal planning remains available with old consent and avoids redundant ecosystem/personal reads');
+requires('Habit timing',[/freq is the saved habits.f/,/never recomputed/,/recorded cadence and available dates permit/,/rhythm_text alone never establishes/,/exact practice time or an alert/],'A stay can use supported cadence windows without turning authored timing into due facts or alerts');
+requires('Habitual place and spots',[/usual_place.text/,/not a verified address/,/Never infer a current city, neighborhood/,/stored timezone or historical spots/],'Authored habitual places, stored timezone and historical spots never supply a current location');
+requires('Places for practice',[/usual_place text and authorized spots/,/include_resources:true/,/include_club_spots:true/,/club_city from the member's explicitly supplied/,/Inspect times against the requested dates/,/not duplicate a sufficient bundle/,/read permissions never widen/],'Real-place planning composes existing authorized bundles with member-supplied city and dates');
+requires('Real-world verification',[/ChatGPT's own web search/,/opening hours, dated events and weather/,/requested day and local hour/,/travel time, duration and entry conditions/,/label the candidate and hours unverified/,/never invent open now/,/Do not reserve, purchase/],'Current venues, events and rain plans require web evidence, with explicit unavailable-web limits and no transactions');
+requires('Travel and tonight',[/Lisbon for three days/,/stay dates/,/supported due windows/,/one fitting place per eligible Habit by intention/,/authorized Club plans/,/tonight's celebrate/,/supplied city to search the web/],'Travel and tonight celebrate requests connect intentions and dated real-world choices');
+requires('Replacement and an unset place',[/trigger or INSTEAD OF/,/purpose replacement/,/saved INSTEAD Habit\/why/,/verified open at this local hour/,/Stoner wording/,/two or three venues/,/alone\/group preference, duration/,/member chooses and writes WHERE I USUALLY DO IT/,/partial context/],'Triggered replacements use recorded alternatives; an unset usual place offers feasible choices for manual entry');
+requires('Meet and creator day',[/filter authorized Club spots by the relevant intention and explicit city/,/place fitting both/,/Never read or infer the other member's tracking/,/named creator's authorized elements and linked spots/,/published time order/,/Native Habit order guides context and choices when timing is flexible/,/never move fixed spot times or claim attendance/,/travel and web-verified hours/,/Attribute their spots/,/never adoption/],'Club meetings and creator days preserve shared context, private tracking boundaries, published spot times, flexible Habit priority and attribution');
+requires('Prepare a spot',[/help decide WHEN and WHERE/,/Habit, WHEN, WHERE, who, duration, short wording/,/indoor fallback if rain/,/member chooses, enters and posts/,/never construct a prefilled spot link/,/undated Vision/,/first open stage on the 12th only if verified/,/Propose that date/,/member enters any deadline/,/decides whether it becomes an Objective in the grind/,/Do not date, convert or enroll it automatically/],'Spot preparation has the native field order and manual posting; a verified Vision date remains a member decision');
+check(instructions.includes('There is no write tool or automatic native ChatGPT memory update.')&&CHATGPT_TOOLS.length===10&&CHATGPT_TOOLS.every(t=>t.annotations.readOnlyHint===true),'Real-place guidance preserves the ten read-only tools and manual memory/edit boundary');
 console.log(JSON.stringify({suite:'Higher GPT',checks,passed:checks,query_languages:12,record_scripts:8}));
