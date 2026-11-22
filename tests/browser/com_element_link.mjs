@@ -52,6 +52,11 @@ try{
  {const x=await sample({denied:true});await x.pg.goto(elementURL({kind:'objective',ref:id(1)},'artist'));
   await x.pg.waitForFunction(()=>window.__totehm_element_link?.().state==='unavailable');
   check(await x.pg.locator('#habits .habit.open').count()===0,'Private member source stays inaccessible');await x.ctx.close();}
+ {const x=await sample({denied:true});await x.pg.goto(elementURL({kind:'habit',ref:steps[0].t},'artist'));
+  await x.pg.waitForFunction(()=>window.__totehm_element_link?.().state==='unavailable');
+  check(await x.pg.locator('#habits .habit.open').count()===0,'A refused member Habit never opens the viewer’s same-named Habit');
+  await x.pg.waitForFunction(()=>!document.body.classList.contains('ro'));
+  check(!new URL(x.pg.url()).searchParams.has('ro'),'The native refusal returns to the viewer without retaining the member source');await x.ctx.close();}
  {const x=await sample({delay:350});await x.pg.goto(elementURL({kind:'habit',ref:steps[0].t}));
   await x.pg.waitForFunction(()=>!!window.__totehm_element_link);
   await x.pg.goto(elementURL({kind:'objective',ref:id(1)}));
