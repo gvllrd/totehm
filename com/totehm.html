@@ -5912,20 +5912,29 @@ function emDe(kind,id){
   if(estProvisoire(String(id))) return null;
   return {k,ref:String(id)};
 }
+const MOTS_MEDIA={
+  viz:{groupe:'Media for visualization', ajout:'Add a media to visualize it', voir:'Visualize it'},
+  h:  {groupe:'Media of this habit',     ajout:'Add a media', voir:'View it'},
+  r:  {groupe:'Media of this repulsion',  ajout:'Add a media', voir:'View it'},
+  w:  {groupe:'Media of this story',      ajout:'Add a media', voir:'View it'}
+};
 /* Dans une boîte OUVERTE (la mienne) : ses fichiers, et « + » (photo · vidéo · fichier). */
 function fichiersHTML(kind,id){
   const e=emDe(kind,id); if(!e) return '';
   /* ⚠️ 12/11 — toutes les puces ont le MÊME format (Wah), mais le genre du fichier reste DIT par le DOM
      (`data-emk`) : un test, un style ou un futur tri ne doit pas avoir à reconnaître une icône. */
+  /* 22/11 (Wah) : « visualize » n'a de sens que pour une VISION (et un objectif) ; une Habit, une Répulsion, une Story
+     ont leurs médias, qu'on VOIT. Le genre de la box (`kind`) choisit les mots : un seul endroit. */
+  const mots=MOTS_MEDIA[(kind==='v'||kind==='t')?'viz':kind==='h'?'h':kind==='r'?'r':'w'];
   const puces=mediasDe(e.k,e.ref).map(m=>'<span class="mini m-f" data-emk="'+(emImg(m)?'image':emVid(m)?'video':'file')+'"><button type="button" class="mini-t" data-emo="'+esc(String(m.id))+'">'
       /* 20/10 — « Visualize it », jamais le nom du fichier (une suite de chiffres et de lettres, illisible).
          12/11 (Wah) — UN SEUL FORMAT : « les visualize it doivent avoir le même format, celui avec l'icône
          vidéo ». Le média se VOIT dans la visionneuse ; l'icône ne trie plus les fichiers, elle dit le geste. */
-      +ICO_VIDEO+'Visualize it</button>'
+      +ICO_VIDEO+mots.voir+'</button>'
       +'<button type="button" class="mf-x" data-emx="'+esc(String(m.id))+'" aria-label="Remove">&times;</button></span>').join('');
   /* 12/11 (Wah) : « à tous les [Add a media] je veux [Add a media to visualize it] » — le bouton dit ce
      qu'il DONNE (une visionneuse), pas ce qu'il range. */
-  return groupe('Media for visualization',puces+'<button type="button" class="dash" data-cap="'+esc(e.k+':'+e.ref)+'">Add a media to visualize it</button>');
+  return groupe(mots.groupe,puces+'<button type="button" class="dash" data-cap="'+esc(e.k+':'+e.ref)+'">'+mots.ajout+'</button>');
 }
 /* Ouvrir un fichier : la fenêtre part DANS le geste (sinon le navigateur la bloque), l'URL signée la suit. */
 async function emOuvrir(id){
@@ -6830,6 +6839,7 @@ function creerFeed(conf){
     /* 20/10 sexies — DANS L'ÉCOSYSTÈME D'UN MEMBRE, SES médias (`member_media` : ceux dont la box m'est partagée). */
     if(conf.src!=='spots') ((RO?MBM.items:EMEDIA.items)||[]).forEach(m=>{
       if(!emImg(m)&&!emVid(m)) return;
+      if(RO&&m.kind!=='v') return;           /* 22/11 (Wah) : chez un membre, ← ses médias = sa VISION seule */
       const e=de(m.kind,m.ref); if(!e) return;
       l.push(Object.assign({cle:'em:'+m.id, src:String(m.path), b:'em', vid:emVid(m), st:''},e));
     });
@@ -6842,6 +6852,8 @@ function creerFeed(conf){
               bk:'v', vue:'visions', id:String(id), txt:o?String(o.t||''):'',
               cols:colsDe('v',o), ints:intsDe('v',o)});
     });
+    /* 22/11 : chez moi, les médias d'une Vision passent en premier (tri stable). */
+    if(conf.src!=='spots'&&!RO) return l.filter(x=>x.bk==='v').concat(l.filter(x=>x.bk!=='v'));
     return l;
   }
   /* LE FILTRE : il ne redemande RIEN au serveur, il choisit dans ce qui est déjà là. */

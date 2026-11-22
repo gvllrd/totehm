@@ -56,7 +56,7 @@ try{
  const hw = h.minis.find(g => g[0] === 'why');
  ok(hw && hw[1].join(',') === 'Marathon in May,A studio by the sea',
     'HABIT : son why montre l\'objectif daté PUIS la vision qu\'elle sert directement → ' + JSON.stringify(hw && hw[1]));
- ok(h.media.some(t => t === 'Add a media to visualize it'), 'HABIT : [Add a media to visualize it] → ' + h.media.join(' | '));
+ ok(h.media.some(t => t === 'Add a media'), 'HABIT : [Add a media] (« visualize » est réservé à Vision et Objective, 22/11) → ' + h.media.join(' | '));
  ok(h.wear === 'habit:Run the hill', 'HABIT : « + totehmize » porte son TEXTE serveur → ' + h.wear);
  ok(h.baud.join(' · ') === 'private · subscribers' && h.portee === '' && !h.mots.includes('who sees this box'),
     '16/11 · la confidentialité est MINIMALE dans la box : deux mots, ni intitulé ni note au repos (la portée se dit à la confirmation) « ' + h.portee + ' »');
