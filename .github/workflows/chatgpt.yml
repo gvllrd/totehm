@@ -19,15 +19,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: Check configured production access
-        env:
-          PRODUCTION_SUPABASE_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-        run: |
-          if [ -n "$PRODUCTION_SUPABASE_TOKEN" ]; then
-            echo "SUPABASE_ACCESS_TOKEN_CONFIGURED=true"
-          else
-            echo "SUPABASE_ACCESS_TOKEN_CONFIGURED=false"
-          fi
       - run: npm install --prefix tests/fn --ignore-scripts
       - run: node tests/node/vocabulaire.mjs
       - run: npm --prefix tests/fn run test:chatgpt
