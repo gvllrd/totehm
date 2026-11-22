@@ -1,13 +1,14 @@
-import {practiceKeyboard,practiceTelegram,practiceTarget,readPreparation,practiceURL} from './tracking-practice.ts';
+import {telegramTextParts} from './tracking-telegram.ts';
+import {practiceKeyboard,practiceTelegram,practiceTarget,readPreparation,practiceURL,linkedPracticeRows,linkedPracticeText,linkedPracticeCallback,readPracticeLinks,validPracticeId} from './tracking-practice.ts';
 // Private, deterministic tracking. The caller verifies Telegram's webhook secret.
 // No model, no location collection, no automatic changes to the five TOTEHM views.
 type DB=any;
 type Telegram=(method:string,payload:Record<string,unknown>)=>Promise<any>;
 const APP='https://www.totehm.com/totehm';
 const oid=(v:unknown)=>typeof v==='string'&&/^[1-9][0-9]{0,18}$/.test(v);
-export function trackingKeyboard(id:string,action:'a'|'c'='a'){
+export function trackingKeyboard(id:string,action:'a'|'c'='a',linked:any[][]=[]){
   if(!oid(id))throw new Error('invalid_outcome');
-  return {inline_keyboard:[[{text:'Done',callback_data:`t:${action}:${id}:done`},{text:'Missed',callback_data:`t:${action}:${id}:missed`}],[{text:'Prepare',callback_data:`t:p:${id}:open`}]]};
+  return {inline_keyboard:[[{text:'Done',callback_data:`t:${action}:${id}:done`},{text:'Missed',callback_data:`t:${action}:${id}:missed`}],...linked,[{text:'Prepare',callback_data:`t:p:${id}:open`}]]};
 }
 export function trackingReview(s:any):string{
   const c=s.counts??{};
@@ -21,7 +22,7 @@ export function trackingReview(s:any):string{
   lines.push('/settings for notifications · /pause to pause questions.');
   return lines.join('\n\n');
 }
-export async function handleTrackingUpdate(db:DB,u:any,telegram:Telegram):Promise<boolean>{
+export async function handleTrackingUpdate(db:DB,u:any,telegram:Telegram,pause:(milliseconds:number)=>Promise<void> = milliseconds=>new Promise(resolve=>setTimeout(resolve,milliseconds))):Promise<boolean>{
   const cb=u?.callback_query,msg=cb?.message??u?.message,from=cb?.from??u?.message?.from;
   if(!msg||!from||msg.chat?.type!=='private'||!Number.isSafeInteger(from.id)||from.id<=0||String(msg.chat.id)!==String(from.id))return false;
   const chat=String(msg.chat.id),tg=from.id;
@@ -29,14 +30,19 @@ export async function handleTrackingUpdate(db:DB,u:any,telegram:Telegram):Promis
   const call=async(name:string,args:Record<string,unknown>)=>{const r=await db.rpc(name,args);if(r.error)throw new Error(name+'_failed');return r.data;};
   const unavailable=()=>say('This check-in is no longer available. Open your dashboard to review your practice.',{inline_keyboard:[[{text:'My dashboard',url:APP+'#settings'}]]});
   const notifications=()=>say('Your Habit check-ins arrive here automatically, within your notification settings. Read the Habit, then tap Done or Missed. No selection menu. /pause to pause questions.',{inline_keyboard:[[{text:'TotehmBot settings',url:APP+'#settings'}]]});
+  // Retain already-delivered link controls when an answer is confirmed. Their next
+  // tap revalidates owner and current links; saving a report does not read more text.
+  const deliveredLinks=(id:string)=>(Array.isArray(msg.reply_markup?.inline_keyboard)?msg.reply_markup.inline_keyboard:[])
+    .filter((row:any)=>Array.isArray(row)&&row.length&&row.every((b:any)=>typeof b.callback_data==='string'&&
+      (b.callback_data.startsWith('t:x:'+id+':')||b.callback_data.startsWith('t:k:'+id+':'))));
   const savedMessage=async(id:string,status:string)=>{
     const label=({done:'Done',missed:'Missed',partial:'In part',skipped:'Set aside'} as Record<string,string>)[status];
-    const markup={inline_keyboard:[[{text:'Change',callback_data:`t:e:${id}:open`}],[{text:'Prepare',callback_data:`t:p:${id}:open`}]]};
+    const markup={inline_keyboard:[[{text:'Change',callback_data:`t:e:${id}:open`}],...deliveredLinks(id),[{text:'Prepare',callback_data:`t:p:${id}:open`}]]};
     const original=String(msg.text??'').replace(/\n\nSaved: (Done|Missed|In part|Set aside)$/, '');
     const text=original+'\n\nSaved: '+label;
     // Legacy messages can already fill Telegram's limit. Preserve their full text.
     if(original&&text.length<=4096)await telegram('editMessageText',{chat_id:chat,message_id:msg.message_id,text,reply_markup:markup,link_preview_options:{is_disabled:true}});
-    else await telegram('editMessageReplyMarkup',{chat_id:chat,message_id:msg.message_id,reply_markup:{inline_keyboard:[[{text:'Saved: '+label+' · Change',callback_data:`t:e:${id}:open`}],[{text:'Prepare',callback_data:`t:p:${id}:open`}]]}});
+    else await telegram('editMessageReplyMarkup',{chat_id:chat,message_id:msg.message_id,reply_markup:{inline_keyboard:[[{text:'Saved: '+label+' · Change',callback_data:`t:e:${id}:open`}],...deliveredLinks(id),[{text:'Prepare',callback_data:`t:p:${id}:open`}]]}});
   };
   if(cb){
     const parts=String(cb.data??'').split(':'),legacy=parts[0]==='o';
@@ -47,6 +53,42 @@ export async function handleTrackingUpdate(db:DB,u:any,telegram:Telegram):Promis
     const op=legacy?'a':parts[1],id=legacy?parts[1]:parts[2],value=legacy?parts[2]:parts[3];
     if(op==='l'||op==='n'){await notifications();return true;}
     if(!oid(id)){await unavailable();return true;}
+    if(op==='x'||op==='k'){
+      const linkedUnavailable=()=>practiceTelegram(telegram,'sendMessage',{chat_id:chat,disable_notification:true,
+        text:'This linked box is no longer available. Open your current Habit in your TOTEHM.',
+        reply_markup:{inline_keyboard:[[{text:'Open my Habit',web_app:{url:validPracticeId(id)?practiceURL(id):practiceURL()}}]]},link_preview_options:{is_disabled:true}});
+      if(!validPracticeId(id)){await linkedUnavailable();return true;}
+      let focus:undefined|{kind:'objective'|'repulsion';ref:string};
+      if(op==='x'){
+        const ref=parts[4];
+        try{if(parts.length!==5||linkedPracticeCallback(id,value as 'w'|'r',ref)!==cb.data)throw new Error('invalid_linked_box');}
+        catch{await linkedUnavailable();return true;}
+        focus={kind:value==='w'?'objective':'repulsion',ref};
+      }else if(parts.length!==4||!(/^(0|[1-9][0-9]{0,2})$/.test(value))||Number(value)>120){await linkedUnavailable();return true;}
+      const target=await practiceTarget(db,tg,id);
+      if(!target){await linkedUnavailable();return true;}
+      const context=await readPracticeLinks(db,target,focus);
+      if(op==='k'){
+        if(!context.items.some(i=>i.kind==='habit'&&i.ref===target.habit)){await linkedUnavailable();return true;}
+        const reports=(Array.isArray(msg.reply_markup?.inline_keyboard)?msg.reply_markup.inline_keyboard:[])
+          .filter((row:any)=>Array.isArray(row)&&row.length&&row.every((b:any)=>typeof b.callback_data==='string'&&
+            ['t:a:','t:c:','t:e:'].some(prefix=>b.callback_data.startsWith(prefix+id+':'))));
+        await telegram('editMessageReplyMarkup',{chat_id:chat,message_id:msg.message_id,
+          reply_markup:{inline_keyboard:[...(reports.length?reports:[trackingKeyboard(id).inline_keyboard[0]]),
+            ...linkedPracticeRows(context,target.habit,id,Number(value)),[{text:'Prepare',callback_data:`t:p:${id}:open`}]]}});
+      }else{
+        const text=linkedPracticeText(context,target.habit,value as 'w'|'r',parts[4]);
+        if(text===null){await linkedUnavailable();return true;}
+        const segments=telegramTextParts(text);
+        for(let n=0;n<segments.length;n++){
+          if(n)await pause(1100);
+          await practiceTelegram(telegram,'sendMessage',{chat_id:chat,text:segments[n],disable_notification:true,
+            reply_parameters:{message_id:msg.message_id},link_preview_options:{is_disabled:true},
+            ...(n===segments.length-1?{reply_markup:{inline_keyboard:[[{text:'Open my Habit',web_app:{url:practiceURL(id)}}]]}}:{})});
+        }
+      }
+      return true;
+    }
     if(op==='p'&&['open','show'].includes(value)){
       const target=await practiceTarget(db,tg,id);
       if(!target){await unavailable();return true;}
@@ -75,7 +117,7 @@ export async function handleTrackingUpdate(db:DB,u:any,telegram:Telegram):Promis
     if(op==='d'||op==='e'){
       const allowed=await call('tracking_detail',{p_telegram:tg,p_outcome:id,p_field:'inspect',p_value:''});
       if(!allowed?.ok){await unavailable();return true;}
-      if(op==='e'){await telegram('editMessageReplyMarkup',{chat_id:chat,message_id:msg.message_id,reply_markup:trackingKeyboard(id,'c')});return true;}
+      if(op==='e'){await telegram('editMessageReplyMarkup',{chat_id:chat,message_id:msg.message_id,reply_markup:trackingKeyboard(id,'c',deliveredLinks(id))});return true;}
       const r=await db.from('bot_drafts').upsert({telegram_id:tg,user_id:(await db.from('profiles').select('id').eq('telegram_id',tg).maybeSingle()).data?.id,
         kind:'tracking',step:'detail',data:{outcome:id},updated_at:new Date().toISOString()},{onConflict:'telegram_id'});
       if(r.error)throw new Error('tracking_draft_failed');

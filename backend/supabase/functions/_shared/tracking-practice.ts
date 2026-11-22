@@ -1,5 +1,5 @@
 // Optional preparation after an explicit request. No report, model, media export or new push.
-import {retrieveElement,type ContextResult,type ContextItem} from './chatgpt-context.ts';
+import {retrieveElement,retrieveOwnerGraph,type ContextResult,type ContextGraph,type ContextItem,type ElementRef} from './chatgpt-context.ts';
 import {TelegramAPIError} from './tracking-telegram.ts';
 const APP='https://www.totehm.com/totehm';
 export const STONER_URL='https://www.totehm.space/stoner';
@@ -66,4 +66,49 @@ export async function practiceTarget(db:any,telegram:number,id:string){
 }
 export async function readPreparation(db:any,target:{user_id:string;habit:string}){
  return preparationText(await retrieveElement(db,target.user_id,{kind:'habit',ref:target.habit},12),target.habit);
+}
+
+// A callback carries a stable native ref, never a label or a position in a mutable list.
+// 19 outcome digits + UUID fit Telegram's 64-byte callback limit (62 bytes).
+export function linkedPracticeCallback(id:string,category:'w'|'r',ref:string):string{
+ if(!validPracticeId(id)||!((category==='w'&&/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(ref))||(category==='r'&&validPracticeId(ref))))throw new Error('invalid_linked_box');
+ return `t:x:${id}:${category}:${ref}`;
+}
+export function linkedPracticeBoxes(context:ContextGraph,habit:string):ContextItem[]{
+ const root=context.items.find(i=>i.kind==='habit'&&i.ref===habit);
+ if(!root)return [];
+ const targets=new Set(context.edges.filter(e=>e.relation==='serves'&&e.from===root.key).map(e=>e.to));
+ const triggers=new Set(context.edges.filter(e=>e.relation==='instead'&&e.to===root.key).map(e=>e.from));
+ const order=(i:ContextItem)=>i.kind==='objective'?0:i.kind==='vision'?1:2;
+ return context.items.filter(i=>((i.kind==='objective'||i.kind==='vision')&&targets.has(i.key))||(i.kind==='repulsion'&&triggers.has(i.key)))
+  .map((item,index)=>({item,index})).sort((a,b)=>order(a.item)-order(b.item)||(a.item.rank??Infinity)-(b.item.rank??Infinity)||a.index-b.index).map(x=>x.item);
+}
+export function linkedPracticeRows(context:ContextGraph,habit:string,id:string,page=0):any[][]{
+ if(!validPracticeId(id)||!Number.isInteger(page)||page<0||page>120)throw new Error('invalid_linked_page');
+ if(!context.items.some(i=>i.kind==='habit'&&i.ref===habit))return [];
+ const boxes=linkedPracticeBoxes(context,habit),last=Math.max(0,Math.ceil(boxes.length/10)-1),current=Math.min(page,last);
+ const rows:any[][]=boxes.slice(current*10,current*10+10).map(box=>[{text:(box.kind==='repulsion'?'Instead of: ':'Why: ')+excerpt(box.text,48),
+  callback_data:linkedPracticeCallback(id,box.kind==='repulsion'?'r':'w',box.ref)}]);
+ const navigation=[];
+ if(current>0)navigation.push({text:'Previous links',callback_data:`t:k:${id}:${current-1}`});
+ if(current<last)navigation.push({text:'More links',callback_data:`t:k:${id}:${current+1}`});
+ if(navigation.length)rows.push(navigation);
+ if(context.truncated)rows.push([{text:'More in my Habit',url:practiceURL(id)}]);
+ return rows;
+}
+export function linkedPracticeText(context:ContextGraph,habit:string,category:'w'|'r',ref:string):string|null{
+ const box=linkedPracticeBoxes(context,habit).find(i=>i.ref===ref&&(category==='r'?i.kind==='repulsion':i.kind==='objective'||i.kind==='vision'));
+ if(!box)return null;
+ const title=box.kind==='repulsion'?'Instead of':box.kind==='vision'?'Why · vision':'Why · Deadline: '+box.target_at;
+ const partial=box.text_truncated||(box.text_length??box.text.length)>box.text.length;
+ return title+'\n\n'+box.text+(partial?'\n\nThis text continues in the original box. Open my Habit to read it.':'');
+}
+export async function readPracticeLinks(db:any,target:{user_id:string;habit:string},focus?:ElementRef){
+ const graph=await retrieveOwnerGraph(db,target.user_id,focus??{kind:'habit',ref:target.habit});
+ // A why keeps its UUID when its deadline changes. Try the other partition only
+ // when a physical cap hid the exact current view; all reads keep owner filters.
+ if(focus?.kind==='objective'&&graph.truncated&&!graph.items.some(i=>(i.kind==='objective'||i.kind==='vision')&&i.ref===focus.ref)){
+  return retrieveOwnerGraph(db,target.user_id,{kind:'vision',ref:focus.ref});
+ }
+ return graph;
 }
