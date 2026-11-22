@@ -1,3 +1,4 @@
+import {LISBON_PROJECTOR_PORTS} from './gallery-lisbon-projector.mjs';
 import * as T from './vendor/three-0.180.0.mjs';
 import {ORIGINS} from './gallery-artworks.mjs';
 import {createBlackHolePortal,ORIGIN_PORTAL} from './gallery-black-hole.mjs';
@@ -49,7 +50,7 @@ export function originsWalkHeight(x,z){
 }
 
 // The path climbs to a platform suspended under the same sky as the islands.
-export function createOriginsVessel(scene,{mobile=false,onChange=()=>{},onOpen=()=>{},transitOnly=false,bookOnly=false}={}){
+export function createOriginsVessel(scene,{mobile=false,onChange=()=>{},onOpen=()=>{},transitOnly=false,bookOnly=false,streetProjection=false}={}){
  const root=new T.Group();root.name='ORIGINS — saucer and walkway to the book';scene.add(root);
  const geometries=new Set(),materials=new Set(),textures=new Set(),pickables=[],solids=[],lights=[];
  const geometry=g=>(geometries.add(g),g),material=m=>(materials.add(m),m);
@@ -90,6 +91,22 @@ export function createOriginsVessel(scene,{mobile=false,onChange=()=>{},onOpen=(
  const deck=mesh(saucer,geometry(new T.CircleGeometry(cabinRadius,mobile?64:96)),black,[0,cabinHeight,0],'Saucer continuous black cabin floor',true);deck.rotation.x=-Math.PI/2;
  pick(mesh(spinner,geometry(new T.CylinderGeometry(2.7,2.7,.06,mobile?64:96)),silver,[0,-1.045,0],'Saucer sealed underside engine cover',true),'origins-vessel',{action:'board',href:'/origin'});
  ring(spinner,3.12,.025,-.99,0,focus,'Saucer sealed engine fine blue seam');
+ const streetProjector=streetProjection&&transitOnly?new T.Group():null;
+ let projectionLenses=null;
+ if(streetProjector){
+  streetProjector.name='Lisbon projector — rotating 22-port optic';
+  streetProjector.position.y=-1.153;spinner.add(streetProjector);
+  const armor=mesh(streetProjector,geometry(new T.CylinderGeometry(1.59,1.44,.10,mobile?32:48)),black,[0,.037,0],'Sealed Lisbon optic housing');
+  armor.castShadow=false;
+  const rim=ring(streetProjector,1.49,.015,-.013,0,silver,'Machined projector rim');rim.castShadow=false;
+  const light=material(new T.MeshBasicMaterial({color:0x9cd5ff,toneMapped:false}));
+  const ports=geometry(new T.SphereGeometry(.041,mobile?8:12,8));
+  const lenses=new T.InstancedMesh(ports,light,LISBON_PROJECTOR_PORTS.length);
+  lenses.name='Twenty-two underside projector ports';
+  const lensMatrix=new T.Matrix4();
+  LISBON_PROJECTOR_PORTS.forEach(([x,y,z],i)=>lenses.setMatrixAt(i,lensMatrix.makeTranslation(x,y,z)));
+  lenses.instanceMatrix.needsUpdate=true;streetProjector.add(lenses);projectionLenses=lenses;
+ }
  for(const [r,y] of [[4.7,-.84],[7.4,-.51],[9.9,-.16]])ring(spinner,r,.012,y,0,black,'Saucer restrained engraved hull seam');
  const dots=new T.InstancedMesh(geometry(new T.CircleGeometry(.035,8)),focus,48),transform=new T.Object3D();dots.name='Saucer underside — forty-eight small landing lights';
  for(let i=0;i<48;i++){const a=i/48*Math.PI*2;transform.position.set(Math.sin(a)*3.35,-.95,Math.cos(a)*3.35);transform.rotation.x=Math.PI/2;transform.updateMatrix();dots.setMatrixAt(i,transform.matrix);}dots.instanceMatrix.needsUpdate=true;spinner.add(dots);
@@ -128,13 +145,13 @@ export function createOriginsVessel(scene,{mobile=false,onChange=()=>{},onOpen=(
   const portal=createBlackHolePortal(root),shipHome=new T.Vector3(...L.saucer);let flying=false;
   const cabin=new T.PointLight(0xc7dcff,12,7,2);cabin.position.set(0,1.9,0);saucer.add(cabin);lights.push(cabin);
   const book={pickables:[],open:()=>false,reset(){},update:()=>false,diagnostics:()=>({closed:true,opening:false,opened:false,absent:true})};
-  return{root,pickables,solids,book,journey:{...L,outbound:[[0,1.65,13],[0,8.5,11],[0,15.8,7.5],[0,22,7.5],[0,21.65,-4.2],[0,30,-8],[0,61,-35],[0,94,-65],[0,118,-89.7]]},
+  return{root,pickables,solids,book,streetProjector,journey:{...L,outbound:[[0,1.65,13],[0,8.5,11],[0,15.8,7.5],[0,22,7.5],[0,21.65,-4.2],[0,30,-8],[0,61,-35],[0,94,-65],[0,118,-89.7]]},
    setFlight(eye){if(!flying&&(eye.y<21.7||eye.z>-4.25))return;flying=true;saucer.position.set(eye.x,eye.y-1.65,eye.z);beamMaterial.opacity=0;beamMaterial.visible=false;},
    setReturnFlight(eye){if(eye.y>=21.64&&eye.z<=-4.19){flying=true;saucer.position.set(eye.x,eye.y-1.65,eye.z);beamMaterial.visible=false;}else{if(flying)placeCanopy(1);flying=false;saucer.position.copy(shipHome);beamMaterial.visible=true;}},
    resetFlight(){flying=false;saucer.position.copy(shipHome);beamMaterial.visible=true;},
    update(dt,eye,motion=true){if(disposed)return false;const step=Math.max(0,Math.min(Number(dt)||0,.1)),canopyChanged=updateShip(step,eye,motion,flying);if(motion){time+=step;beamMaterial.uniforms.uTime.value=time;}portal.update(dt,eye,motion);const result=dirty||motion||canopyChanged;dirty=false;return result;},
    diagnostics:()=>({kind:'origins-saucer-black-hole-transit',saucer:true,rotation:spinner.rotation.y,canopy:canopyState(),rotationDegreesPerSecond:.065*180/Math.PI,closedHull:true,closedUnderside:true,openShaft:false,flying,saucerPosition:saucer.position.toArray(),corridorInIsland:false,bookInIsland:false,originalWorks:0,blackHole:portal.diagnostics(),destination:ORIGIN_PORTAL.href}),
-   dispose(){if(disposed)return;disposed=true;portal.dispose();root.removeFromParent();for(const g of geometries)g.dispose();for(const m of materials)m.dispose();for(const t of textures)t.dispose();for(const light of lights)light.dispose?.();dots.dispose();segments.dispose();root.clear();}
+   dispose(){if(disposed)return;disposed=true;portal.dispose();root.removeFromParent();for(const g of geometries)g.dispose();for(const m of materials)m.dispose();for(const t of textures)t.dispose();for(const light of lights)light.dispose?.();dots.dispose();segments.dispose();projectionLenses?.dispose();root.clear();}
   };
  }
  // Opaque open decking with flush edge strips. The same sections define walking limits.

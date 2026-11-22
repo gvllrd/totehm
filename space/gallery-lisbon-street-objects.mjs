@@ -13,9 +13,11 @@ const sizes={
  no_uturn:[.76,'road-sign',.022],priority:[.85,'road-sign',.027],
  crosswalk:[3.55,'crosswalk-pavement',.17],stop:[.87,'road-sign',.028]
 };
-export const LISBON_STREET_OBJECTS=Object.freeze(Object.fromEntries(Object.entries(sizes).map(([id,[width,kind,depth]])=>
- [id,Object.freeze({width,height:width,kind,depth})]
-)));
+const scaleOverrides={Heli:1.24,crosswalk:1.24,destination:1.24,pharma:2.14};
+export const LISBON_STREET_OBJECTS=Object.freeze(Object.fromEntries(Object.entries(sizes).map(([id,[width,kind,depth]])=>{
+ const scale=scaleOverrides[id]??1.32;
+ return [id,Object.freeze({width:width*scale,height:width*scale*(id==='destination'?.57:1),kind,depth:depth*scale,scale})];
+})));
 
 function asphaltTexture(){
  const edge=128,data=new Uint8Array(edge*edge*4);
@@ -34,8 +36,9 @@ function asphaltTexture(){
 }
 
 export function createLisbonStreetObject(id,{mobile=false,onChange=()=>{}}={}){
- const {width,height,kind,depth}=LISBON_STREET_OBJECTS[id];
- const group=new T.Group();
+ const [width,kind,depth]=sizes[id];
+ const height=width;
+ const group=new T.Group();group.scale.setScalar(LISBON_STREET_OBJECTS[id].scale);
  group.name='Lisbon street object — '+id;
  group.userData={signId:id,streetObject:true};
  const resources=new Set(),hitTargets=[];

@@ -42,16 +42,25 @@ try{
    const shared=await fixture.pg.evaluate(async()=>{
     const {Group,PerspectiveCamera,Vector3}=await import('/vendor/three-0.180.0.mjs');
     const {createUfoLisbonSigns}=await import('/gallery-ufo-lisbon-signs.mjs');
-    const projection=createUfoLisbonSigns(new Group());
+    const projection=createUfoLisbonSigns(new Group()),projector=new Group();
+    const {LISBON_PROJECTOR_PORTS}=await import('/gallery-lisbon-projector.mjs');
+    projector.position.set(0,18.847,-4.2);projection.setProjector(projector);
     try{
      const deadline=performance.now()+8000;
      while(!projection.diagnostics().ready&&performance.now()<deadline)await new Promise(requestAnimationFrame);
      const camera=new PerspectiveCamera(82,innerWidth/innerHeight,.08,9000);
-     camera.position.set(3.15,1.65,11.9);camera.lookAt(0,4.9,-9.1);camera.updateMatrixWorld();
+     camera.position.set(3.15,1.65,11.9);camera.lookAt(0,6.5,-9.1);camera.updateMatrixWorld();
      const snapshot=()=>projection.snapshot(camera,innerWidth,innerHeight);
-     const before=snapshot();
+     const before=snapshot(),raysBefore=projection.rayEndpoints();
+     projector.rotateY(.2);
      projection.update(.1,camera.position,true);
-     const moved=snapshot();
+     const moved=snapshot(),raysAfter=projection.rayEndpoints(),point=new Vector3();
+     const moveEndpoints=raysAfter.every(({from,to},i)=>{
+      const expected=projector.localToWorld(new Vector3(...LISBON_PROJECTOR_PORTS[i]));
+      const body=projection.signs[i].hitTargets[0],{min,max}=body.geometry.boundingBox;
+      const mounted=body.localToWorld(new Vector3((min.x+max.x)/2,min.y+(max.y-min.y)*.88,max.z));
+      return point.fromArray(from).distanceTo(expected)<.001&&point.distanceTo(new Vector3(...raysBefore[i].from))>.1&&point.fromArray(to).distanceTo(mounted)<.001;
+     });
      projection.update(.1,camera.position,false);
      const still=snapshot();
      const world=projection.diagnostics();
@@ -72,12 +81,12 @@ try{
       return meshes;
      });
      projection.setHandoff(true);
-     const hidesAllBodies=visibleVolumes.every(meshes=>meshes.every(mesh=>!rendered(mesh)));
+     const hidesAllBodies=visibleVolumes.every(meshes=>meshes.every(mesh=>!rendered(mesh)))&&!projection.diagnostics().beamVisible;
      projection.setHandoff(false);
-     const restoresAllBodies=visibleVolumes.every(meshes=>meshes.every(rendered));
+     const restoresAllBodies=visibleVolumes.every(meshes=>meshes.every(rendered))&&projection.diagnostics().beamVisible;
      return {
       world,before,sources:projection.signs.map(({face})=>face.material.map?.image?.src??face.userData.source),
-      volumes:visibleVolumes.map(meshes=>meshes.length),hidesAllBodies,restoresAllBodies,
+      volumes:visibleVolumes.map(meshes=>meshes.length),hidesAllBodies,restoresAllBodies,moveEndpoints,
       moving:before.some((pose,i)=>Math.hypot(pose.x-moved[i].x,pose.y-moved[i].y)>.01),
       still:JSON.stringify(still)===JSON.stringify(moved)
      };
@@ -86,7 +95,7 @@ try{
    assert.deepEqual(shared.before.map(({id})=>id),LISBON_FRONT_NAMES);
    assert.deepEqual(shared.sources.map(src=>new URL(src,'https://www.totehm.space').pathname),LISBON_FRONT_NAMES.map(id=>'/assets/signs/'+id+'.png'));
    check(shared.world.ready&&shared.world.loaded===22&&shared.world.physicalObjects&&shared.volumes.length===22&&shared.volumes.every(count=>count>0),'Each suspended sign includes visible geometry with thickness at '+viewport.width);
-   check(shared.hidesAllBodies&&shared.restoresAllBodies,'The handoff hides and restores every object body together with its artwork at '+viewport.width);
+   check(shared.hidesAllBodies&&shared.restoresAllBodies&&shared.moveEndpoints,'All beams follow the rotating ports and their actual objects, then hide and restore with them at '+viewport.width);
    check(shared.world.headline===LISBON_FRONT_COPY.headline&&shared.world.subtitle===LISBON_FRONT_COPY.subtitle,'The world projection and fullscreen introduction retain the same copy at '+viewport.width);
    check(shared.moving&&shared.still,'The suspended signs float during normal motion and hold their poses with reduced motion at '+viewport.width);
    check(shared.before.every(({x,y,width,height,rotation,corners})=>[x,y,width,height,rotation].every(Number.isFinite)&&width>0&&height>0&&corners.length===4&&corners.every(point=>Number.isFinite(point.x)&&Number.isFinite(point.y))),'The transition can sample one projected footprint per artwork at '+viewport.width);

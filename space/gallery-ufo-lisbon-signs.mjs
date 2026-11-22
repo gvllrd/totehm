@@ -2,9 +2,10 @@ import * as T from './vendor/three-0.180.0.mjs';
 import {LISBON_FRONT_NAMES,LISBON_FRONT_COPY} from './lisbon-first-page.mjs';
 import {LISBON_URBEX_LAYOUT as L} from './gallery-lisbon-urbex-layout.mjs';
 import {createLisbonStreetObject,LISBON_STREET_OBJECTS} from './gallery-lisbon-street-objects.mjs';
+import {createLisbonSignRays} from './gallery-lisbon-projector.mjs';
 
 export const UFO_LISBON_SIGNS_LAYOUT=Object.freeze({
- position:L.play.screen,approach:Object.freeze([0,1.65,-.25]),
+ position:L.play.screen,approach:Object.freeze([0,1.65,5.8]),target:Object.freeze([0,9.6,-12.7]),
  href:'/play_lisbon_street?board=1'
 });
 
@@ -14,22 +15,22 @@ const placement={
  fire_exit:[-4.18,2.23,2.8,.19],
  Heli:[-3.9,-4.90,4.20,.12,-.96],
  aed:[4.8,1.67,3.65,-.19],
- green_walk:[-4.55,-1.75,3.1,.08],
- red_walk:[-4.55,-1.25,3.1,.08],
- pharma:[-6.65,.35,1.22,.18],
- destination:[0,3.62,-2.60,-.035],
- lisboa_city_hall:[3.92,3.42,-.52,-.13],
+ green_walk:[-4.82,-1.90,3.1,.08],
+ red_walk:[-4.82,-1.90+.5*LISBON_STREET_OBJECTS.red_walk.scale,3.1,.08],
+ pharma:[-7.13,.40,1.12,.18],
+ destination:[0,3.82,-2.85,-.035],
+ lisboa_city_hall:[4.49,3.70,-.50,-.13],
  speed_bump_caution:[-5.82,3.60,-.30,.14],
  crosswalk_caution:[3.42,-2.27,1.8,-.13],
- no_entry:[6.5,.42,1.26,-.20],
+ no_entry:[6.95,.52,1.26,-.20],
  no_parking:[.12,-1.76,2.15,-.11],
- hospital:[6.21,2.92,1.42,-.17],
+ hospital:[6.49,3.26,1.42,-.17],
  parking:[-1.66,-2.19,2.8,.09],
  Hotel:[2.37,1.85,3.65,-.12],
  dead_end:[-3.03,-1.68,2.35,.12],
  roundabout:[-6.62,-2.66,2.00,.18],
  left_or_straight:[1.71,-2.52,2.94,-.07],
- no_uturn:[5.1,-3.54,3.58,-.18],
+ no_uturn:[5.75,-3.64,3.58,-.18],
  priority:[-2.88,2.77,.79,.11],
  crosswalk:[1.55,-5.03,3.18,-.12,-1.04],
  stop:[5.55,-1.95,3.28,-.15]
@@ -40,11 +41,12 @@ export function createUfoLisbonSigns(parent,{mobile=false,onChange=()=>{},positi
  const pickables=[],objects=[],titleResources=[];
  const targetData={kind:'experience-projection',installation:'ufo-lisbon-signs',city:'lisbon',href:UFO_LISBON_SIGNS_LAYOUT.href};
  let active=false,opened=false,disposed=false,handoff=false,dirty=true,opens=0,time=0,lastPose=-1,openCallback=()=>{};
+ let projector=null,projecting=true;
  function changed(){if(!disposed){dirty=true;onChange();}}
  function makeTitle(text,width,height,y,fontSize,color){
   const geometry=new T.PlaneGeometry(width,height);
   const material=new T.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:0,alphaTest:.02,depthWrite:false,toneMapped:false});
-  const mesh=new T.Mesh(geometry,material);mesh.name=text;mesh.position.set(0,y,.14);root.add(mesh);
+  const mesh=new T.Mesh(geometry,material);mesh.name=text;mesh.renderOrder=2;mesh.position.set(0,y,.14);root.add(mesh);
   const canvas=globalThis.document?.createElement('canvas'),context=canvas?.getContext('2d');
   if(context){
    canvas.width=2304;canvas.height=Math.max(128,Math.round(canvas.width*height/width));
@@ -73,7 +75,7 @@ export function createUfoLisbonSigns(parent,{mobile=false,onChange=()=>{},positi
    hit.userData={...hit.userData,...targetData,signId:id,id};pickables.push(hit);
   }
  }
- const hitSet=new Set(pickables);
+ const hitSet=new Set(pickables),rays=createLisbonSignRays(root,objects);
 
  function pose(){
   for(const object of objects){
@@ -112,22 +114,30 @@ export function createUfoLisbonSigns(parent,{mobile=false,onChange=()=>{},positi
   if(disposed||handoff)return false;
   opened=true;opens++;changed();openCallback({href:targetData.href,signId:hit?.object.userData.signId||null});return true;
  }
+ function syncRays(){
+  rays.mesh.visible=!!projector&&projecting&&!handoff;
+  if(rays.mesh.visible)rays.update(projector,time);
+  changed();
+ }
  function setHandoff(value){
   handoff=!!value;
   for(const object of objects)object.group.visible=!handoff;
-  changed();
+  syncRays();
  }
  function diagnostics(){
   const loaded=objects.filter(({face})=>!!face.material.map?.image).length;
   const ready=loaded===LISBON_FRONT_NAMES.length&&screen.material.opacity>0;
   return{kind:'lisbon-suspended-street-objects',city:'lisbon',canonicalFirstPage:true,physicalObjects:true,
-   blackPanel:false,opticalBeam:false,independentSigns:true,signs:objects.length,loaded,ready,coverReady:ready,
+   blackPanel:false,opticalBeam:!!projector,beamVisible:rays.mesh.visible,rayCount:projector?objects.length:0,independentSigns:true,signs:objects.length,loaded,ready,coverReady:ready,
    lifeSize:true,position:root.position.toArray(),headline:LISBON_FRONT_COPY.headline,subtitle:LISBON_FRONT_COPY.subtitle,
    mounts:objects.map(({id})=>({id,...LISBON_STREET_OBJECTS[id]})),time:+time.toFixed(4),active,opened,opens,handoff,
    playing:false,videoDecoders:0,clickTargets:pickables.length,disposed};
  }
  return{root,screen,signs:objects,pickables,snapshot,acceptHit,open,setHandoff,diagnostics,
   onOpen(fn){openCallback=fn;},
+  setProjector(source){projector=source;syncRays();},
+  setProjecting(value){if(projecting!==!!value){projecting=!!value;syncRays();}},
+  rayEndpoints:()=>projector?rays.diagnostics():[],
   interact(hit){return acceptHit(hit)?open(hit):false;},
   setActive(value){active=!!value;if(!active)opened=false;},
   reset(){opened=false;setHandoff(false);},
@@ -136,11 +146,13 @@ export function createUfoLisbonSigns(parent,{mobile=false,onChange=()=>{},positi
    if(disposed)return false;
    if(motion)time+=Math.max(0,Math.min(dt,.1));
    if(time-lastPose>=1/(mobile?16:24)){pose();dirty=true;}
+   if(rays.mesh.visible&&(dirty||motion&&dt>0)){rays.update(projector,time);dirty=true;}
    const result=dirty;dirty=false;return result;
   },
   dispose(){
    if(disposed)return;
    disposed=true;
+   rays.dispose();
    for(const object of objects)object.dispose();
    for(const resource of titleResources)resource.dispose();
    root.removeFromParent();root.clear();pickables.length=0;objects.length=0;hitSet.clear();

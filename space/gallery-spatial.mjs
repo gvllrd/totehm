@@ -22,7 +22,7 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
  const newYork=place==='new-york';
  const ny=newYork?await Promise.all([import('./gallery-new-york.mjs'),import('./gallery-new-york-navigation.mjs'),import('./gallery-new-york-layout.mjs')]):null;
  const L=newYork?ny[2].NEW_YORK_LAYOUT:LISBON_LAYOUT;
- const projectionLayout=newYork?PROJECTION_LAYOUTS[place]:UFO_LISBON_SIGNS_LAYOUT,STATIONS=(newYork?NEW_YORK_STATIONS:LISBON_URBEX_STATIONS).map((station,i)=>i===2?{...station,approach:projectionLayout.approach,approachMobile:projectionLayout.approach,target:projectionLayout.position}:station);
+ const projectionLayout=newYork?PROJECTION_LAYOUTS[place]:UFO_LISBON_SIGNS_LAYOUT,STATIONS=(newYork?NEW_YORK_STATIONS:LISBON_URBEX_STATIONS).map((station,i)=>i===2?{...station,approach:projectionLayout.approach,approachMobile:projectionLayout.approach,target:projectionLayout.target||projectionLayout.position}:station);
  const ENTRY=L.entry,LOOK=L.look,GROUND=L.groundY,HEIGHT=L.eyeHeight;
  const ceiling=(x,z)=>newYork?ny[2].newYorkRoofHeight(x,z):(architecture?.roofHeight||glassRoofHeight)(x,z);
  const host=document.getElementById('space'),mobile=innerWidth<650||(matchMedia('(pointer: coarse)').matches&&Math.min(innerWidth,innerHeight)<650);
@@ -49,7 +49,7 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
   const {createLisbonSeaMonuments}=await import('./gallery-lisbon-sea.mjs');
   lisbonMonuments=createLisbonSeaMonuments(scene,{mobile,onChange:invalidate});
  }
- vessel=createOriginsVessel(scene,{mobile,transitOnly:true,onChange:invalidate});
+ vessel=createOriginsVessel(scene,{mobile,transitOnly:true,streetProjection:!newYork,onChange:invalidate});
  book=vessel.book;
  let fireplace=null,fireSound=null;
  if(!newYork){
@@ -64,6 +64,7 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
   pause();sound.setMuted(true);fireSound?.setMuted(true);renderer.setAnimationLoop(null);location.assign(href);return true;
  }
  play=newYork?createSaucerProjection(scene,{city:'new-york',mobile,onChange:invalidate}):architecture.performance;
+ play.setProjector?.(vessel.streetProjector);
  play.onOpen?.(({href})=>openProjection(href));
  opposite=emptyInstallation('absent-other-installations');
  const walkway=newYork?ny[1].createNewYorkWalkway():createModernWalkway(architecture.obstacles),physics=newYork?ny[1].createNewYorkPhysics({x:ENTRY[0],z:ENTRY[2]}):createModernPhysics({x:ENTRY[0],z:ENTRY[2]},architecture.obstacles,architecture.roofProfile),sound=createGalleryAudio();
@@ -393,5 +394,5 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
   stop(){stopInput();cancelTravel();leaveStation();dirty=true;},
   setList(value){list=!!value;stopInput();cancelTravel();leaveStation();syncSound();dirty=true;lastTime=0;},
   diagnostics:()=>({webgl:true,place:newYork?'new-york':'lisbon',zone:vesselMode!=='island'?'origins-vessel':inGallery()?'gallery':'terrace',originsJourney:{state:vesselMode,moving:!!rail,returnFromOrigin:new URLSearchParams(location.search).get('arrival')==='origin',vessel:vessel?.diagnostics()},streetAccess:{...streetAccess},seated,seatMoving:!!seatMove,room,focused,frames,position:[+eye.x.toFixed(2),+eye.z.toFixed(2)],moving:!!tween||!!pendingVisit||!!keys.size||!!joystick.x||!!joystick.y||!physics.diagnostics().grounded,visible:!hidden&&!list&&!paused,liberty:liberty?liberty.diagnostics():null,lisbonMonuments:lisbonMonuments?lisbonMonuments.diagnostics():null,
-   camera:{position:camera.position.toArray(),target:renderedTarget.toArray(),inspection:inspectionAmount,fov:camera.fov,aspect:camera.aspect,near:camera.near,far:camera.far,stellarOverview:!!stellarView&&!motionReduced,overviewAmount:stellarView?.amount??0},physics:physics.diagnostics(),temple:architecture.diagnostics(),stations:{play:play.diagnostics(),opposite:opposite.diagnostics(),book:book.diagnostics()},landscape:landscape.diagnostics(),audio:sound.diagnostics(),fireAudio:fireSound?{present:true,...fireSound.diagnostics()}:{present:false,sources:0},fireplace:fireplace?.diagnostics()||{present:false,flames:0,logs:0},projection:{...play.diagnostics(),...(!newYork?{poses:play.snapshot(camera,innerWidth,innerHeight)}:{})},render:{...quality.diagnostics(),width:renderer.domElement.width,height:renderer.domElement.height,calls:renderer.info.render.calls,triangles:renderer.info.render.triangles},navigation:{speed:2.6,minDuration:1450,maxDuration:4200,deferredArrival:!!arrival||!!pendingVisit,...walkway.diagnostics()}})};
+   camera:{position:camera.position.toArray(),target:renderedTarget.toArray(),inspection:inspectionAmount,fov:camera.fov,aspect:camera.aspect,near:camera.near,far:camera.far,stellarOverview:!!stellarView&&!motionReduced,overviewAmount:stellarView?.amount??0},physics:physics.diagnostics(),temple:architecture.diagnostics(),stations:{play:play.diagnostics(),opposite:opposite.diagnostics(),book:book.diagnostics()},landscape:landscape.diagnostics(),audio:sound.diagnostics(),fireAudio:fireSound?{present:true,...fireSound.diagnostics()}:{present:false,sources:0},fireplace:fireplace?.diagnostics()||{present:false,flames:0,logs:0},projection:{...play.diagnostics(),...(!newYork?{poses:play.snapshot(camera,innerWidth,innerHeight),rays:play.rayEndpoints()}:{})},render:{...quality.diagnostics(),width:renderer.domElement.width,height:renderer.domElement.height,calls:renderer.info.render.calls,triangles:renderer.info.render.triangles},navigation:{speed:2.6,minDuration:1450,maxDuration:4200,deferredArrival:!!arrival||!!pendingVisit,...walkway.diagnostics()}})};
 }

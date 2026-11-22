@@ -120,14 +120,16 @@ try{
   check(world.temple.thpCounter.paperWidthMetres<.03&&world.temple.thpCounter.signed,'The signed cases contain blotter-sized sheets on the table');
   check(world.fireplace.outdoor&&world.fireplace.present&&world.fireAudio.present,'Only the outdoor wood fire and its audio source are in the lounge');
   const projection=world.projection;
-  check(projection.physicalObjects&&projection.blackPanel===false&&projection.opticalBeam===false&&projection.signs===22&&projection.headline==='Make them useful for your brain'&&projection.subtitle==='Neurological & Digital Street Art','The Lisbon title is surrounded by 22 suspended street objects');
+  check(projection.physicalObjects&&projection.blackPanel===false&&projection.opticalBeam&&projection.beamVisible&&projection.rayCount===22&&projection.signs===22&&projection.headline==='Make them useful for your brain'&&projection.subtitle==='Neurological & Digital Street Art','The Lisbon title is surrounded by 22 suspended street objects');
   const prop=world.temple.controller;
   check(prop.texturedShell&&prop.contactShadow&&prop.feet===2&&prop.tableYaw===L.controller.tableYaw&&prop.width===L.controller.width&&prop.width<.24,'The compact satin controller rests on two small feet and faces the chair');
   await pg.screenshot({path:path.join(output,'island.png')});
   await pg.emulateMedia({reducedMotion:'no-preference'});
   await clickPoint(pg,[0,.96,L.seat.position[2]]);
   await pg.waitForFunction(()=>{const world=window.__totehm_gallery();return world.seated&&world.camera.position[1]<1.1;});
-  const seatedCamera=(await current(pg)).camera,shot=seatedCamera.position;
+  const seatedWorld=await current(pg),seatedCamera=seatedWorld.camera,shot=seatedCamera.position;
+  const projected=Object.fromEntries(seatedWorld.projection.poses.map(pose=>[pose.id,pose]));
+  check(projected.pharma.width>projected.stop.width*1.4,'The enlarged pharmacy cross stays dominant from the chair');
   await pg.waitForTimeout(240);
   const settledCamera=(await current(pg)).camera;
   check(seatedCamera.fov===L.seat.fov&&seatedCamera.fov===settledCamera.fov&&

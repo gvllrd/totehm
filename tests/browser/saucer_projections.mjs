@@ -67,13 +67,22 @@ try{for(const viewport of [{width:800,height:600},{width:1100,height:760}])for(c
   check(sample.initial.originsJourney.vessel.saucer&&!sample.initial.originsJourney.vessel.bookInIsland&&projection.videoDecoders===0,city+' keeps the original book in Origin and decodes no gallery video at '+viewport.width);
   if(lisbon){
    check(projection.kind==='lisbon-suspended-street-objects'&&projection.physicalObjects&&projection.signs===22&&projection.loaded===22&&projection.clickTargets>22,'Lisbon suspends 22 interactive street objects at '+viewport.width);
-   check(projection.blackPanel===false&&projection.opticalBeam===false,'Lisbon shows the objects directly in the open air');
+   check(!projection.blackPanel&&projection.opticalBeam&&projection.beamVisible&&projection.rayCount===22,'Lisbon sends an individual ray to each object in the open air');
+   assert.deepEqual(projection.rays.map(({id})=>id),LISBON_FRONT_NAMES);
+   const [sx,sy,sz]=sample.initial.originsJourney.vessel.saucerPosition;
+   check(new Set(projection.rays.map(({from})=>from.join(','))).size===22&&projection.rays.every(({from,to})=>
+    Math.abs(Math.hypot(from[0]-sx,from[2]-sz)-1.32)<.001&&from[1]<sy&&from[1]-to[1]>3
+   ),'Each beam starts on a separate underside port and reaches a street object');
+   const face=Object.fromEntries(projection.poses.map(pose=>[pose.id,pose]));
+   check(face.pharma.width>face.stop.width*1.4,'The pharmacy cross appears substantially wider than Stop at the arrival viewpoint');
+   check(projection.poses.every(({corners})=>corners.every(({x,y})=>x>0&&x<viewport.width&&y>0&&y<viewport.height)),'All 22 enlarged objects fit at arrival');
    assert.deepEqual(projection.mounts.map(({id})=>id),LISBON_FRONT_NAMES);
    check(projection.mounts.every(({width,height,kind})=>width>0&&height>0&&typeof kind==='string'),'Every street object has a physical size and mounting type');
    const mounts=Object.fromEntries(projection.mounts.map(mount=>[mount.id,mount]));
    check(mounts.destination.width>mounts.destination.height&&mounts.destination.width>mounts.stop.width,'The motorway destination board has a wider format than the roadside Stop sign');
    check(new Set(['stop','crosswalk','Hotel','aed','pharma'].map(id=>mounts[id].kind)).size>=4,'The road sign, road marking, plaques and pharmacy fixture retain their distinct physical roles');
    assert.deepEqual(projection.poses.map(({id})=>id),LISBON_FRONT_NAMES);
+   check(projection.mounts.every(mount=>mount.scale>1.2)&&mounts.pharma.width>1.9*mounts.stop.width,'Every object is enlarged with a wider architectural pharmacy cross');
    check(projection.headline===LISBON_FRONT_COPY.headline&&projection.subtitle===LISBON_FRONT_COPY.subtitle,'Lisbon keeps the canonical title and smaller caption amid the signs');
   }else{
    check(projection.beamSource.every((axis,i)=>Math.abs(axis-[0,18.9,-4.2][i])<1e-6),city+' projects from the saucer emitter at '+viewport.width);

@@ -27,7 +27,7 @@ const fireplace={position:[2.65,0,2.65],approach:[1.2,1.65,1.3],target:[2.65,.55
 
 export const LISBON_URBEX_LAYOUT=freeze({
  halfWidth:16,frontZ:16,backZ:-17.6,groundY,eyeHeight:1.74,levels:1,
- entry:[3.15,1.65,11.9],look:[0,4.9,-9.1],
+ entry:[3.15,1.65,11.9],look:[0,6.5,-9.1],
  inside:[-1.7,1.65,2.55],insideTarget:seat.target,
  pavement:{size:[32,36],z:-.2,boatCentre:[0,8]},
  counter,seat,play,fireplace,controller:{position:[.50,1.63],width:.225,tablePitch:.16,tableYaw:-.23},
