@@ -17,7 +17,7 @@ async function sample({width=390,delayPlace=false,placeError=false,placeHook=nul
   rpc:{my_landing:{signed_in:true,pseudo:'fixture'},my_totehm:tree,element_orders_for:{ok:true,orders:{}},
    habit_spaces:{ok:true,mine:true,habits:[]},totehm_read:{...tree,ok:true,pseudo:'artist',habits:[{t:habit,is:['focus'],f:'daily'}]},
    creator_page:{ok:true,pseudo:'artist',palette:['focus'],sale:{open:false},viewer:{signed_in:true,can_read:true}},
-   member_media:{ok:true,items:[]},club_spots_of:{ok:true,items:[]},sso_revoke_everywhere:1,
+   member_media:{ok:true,items:[]},club_spots_of:{ok:true,items:[]},sso_revoke_everywhere:1,figher_access:{member:true},
    habit_spot_set:async args=>{placeCalls.push(args);const result=await placeHook?.(args,placeCalls.length);if(result===false||result?.ok===false)return result;
     if(args.p_place)placeMap.set(args.p_habit,args.p_place);else placeMap.delete(args.p_habit);return result??null;},
    habit_rename_links:async args=>{renameCalls.push(args);const result=await renameHook?.(args,renameCalls.length);if(result===false||result?.ok===false)return result;
@@ -41,6 +41,7 @@ async function opened(x){await x.pg.goto(elementURL({kind:'habit',ref:habit}));a
 async function enterMember(x){
  await x.pg.click('#lv-m-members');await x.pg.waitForSelector('#mb-q:visible');
  await x.pg.fill('#mb-q','artist');await x.pg.keyboard.press('Enter');
+ await x.pg.waitForSelector('[data-mb="open"]:enabled');await x.pg.locator('[data-mb="open"]').click();
  await x.pg.waitForFunction(()=>document.body.classList.contains('lv-membre')&&!document.body.classList.contains('mb-cherche')&&!window.__totehm_lv().bouge);
 }
 try{
@@ -64,7 +65,9 @@ try{
   // Opening another native selector repaints the Habit without reloading the server graph.
   await x.pg.locator('[data-pk^="freq:h:"]').click();
   check(await x.pg.locator('[data-pk^="spot:h:"]').textContent()==='My studio','A local Habit rename preserves its habitual place through a native repaint');
-  await x.pg.locator('[data-pk^="spot:h:"]').click();await x.pg.locator('[data-spot]').fill('');await x.pg.locator('[data-spot]').press('Enter');
+  await x.pg.locator('[data-pk^="spot:h:"]').click();await x.pg.locator('[data-spot]').fill('');
+  const cleared=x.pg.waitForResponse(r=>r.url().includes('/rest/v1/rpc/habit_spot_set')&&r.request().postDataJSON()?.p_habit==='Read every evening at home'&&r.request().postDataJSON()?.p_place==='');
+  await x.pg.locator('[data-spot]').press('Enter');await cleared;
   check(x.placeCalls.at(-1).p_habit==='Read every evening at home'&&x.placeCalls.at(-1).p_place==='','Clearing the usual place detaches it from the current exact Habit');
   check(await x.pg.evaluate(()=>window.__geoCalls===0),'Habitual context never asks for a GPS position');
   check(!x.log.rpc.some(r=>/spot_(create|schedule)|tracking_(answer|open|claim)/.test(r.name)),'A usual-place edit creates neither a precise spot nor a practice report');
