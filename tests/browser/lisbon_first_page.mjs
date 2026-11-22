@@ -40,25 +40,30 @@ try{
    await child.waitForTimeout(250);
    check(await child.evaluate(()=>__totehm_experience_front().time===19&&__totehm_experience_front().phase==='front'),'The embedded first page holds the exhibition time during expansion at '+viewport.width);
    const shared=await fixture.pg.evaluate(async()=>{
-    const {Group}=await import('/vendor/three-0.180.0.mjs');
-    const {createSaucerProjection}=await import('/gallery-saucer-projection.mjs');
-    const projection=createSaucerProjection(new Group());
-    await projection.front.ready;projection.front.setTime(19);
-    const actual=document.querySelector('iframe').contentDocument.getElementById('experience-front-canvas');
-    const equal=actual.toDataURL()===projection.front.canvas.toDataURL();
-    const mapped=projection.screen.material.map.image===projection.front.canvas;
-    const start=projection.diagnostics().time,version=projection.screen.material.map.version;
-    projection.update(.1,null,true);
-    const moving=projection.diagnostics().time>start&&projection.screen.material.map.version>version;
-    const frame=projection.front.canvas.toDataURL(),time=projection.diagnostics().time;
-    projection.update(.1,null,false);
-    const still=projection.diagnostics().time===time&&projection.front.canvas.toDataURL()===frame;
-    const opacity=projection.front.getSignOpacity(),signs=projection.front.getSigns().length;
-    projection.dispose();return{equal,mapped,moving,still,opacity,signs};
+    const {Group,PerspectiveCamera}=await import('/vendor/three-0.180.0.mjs');
+    const {createUfoLisbonSigns}=await import('/gallery-ufo-lisbon-signs.mjs');
+    const projection=createUfoLisbonSigns(new Group());
+    try{
+     const deadline=performance.now()+8000;
+     while(!projection.diagnostics().ready&&performance.now()<deadline)await new Promise(requestAnimationFrame);
+     const camera=new PerspectiveCamera(82,innerWidth/innerHeight,.08,9000);
+     camera.position.set(3.15,1.65,11.9);camera.lookAt(0,4.9,-9.1);camera.updateMatrixWorld();
+     const snapshot=()=>projection.snapshot(camera,innerWidth,innerHeight);
+     const before=snapshot();
+     projection.update(.1,camera.position,true);
+     const moved=snapshot();
+     projection.update(.1,camera.position,false);
+     const still=snapshot();
+     const world=projection.diagnostics();
+     return {world,before,sources:projection.signs.map(({face})=>face.material.map?.image?.src),depths:projection.signs.map(({group})=>group.position.z),moving:before.some((pose,i)=>Math.hypot(pose.x-moved[i].x,pose.y-moved[i].y)>.01),still:JSON.stringify(still)===JSON.stringify(moved)};
+    }finally{projection.dispose();}
    });
-   check(shared.equal&&shared.mapped,'The suspended Space texture and fullscreen experience produce exactly the same first frame at '+viewport.width);
-   check(shared.moving&&shared.still,'The suspended signs float during normal motion and hold their frame with reduced motion at '+viewport.width);
-   check(shared.signs===22&&shared.opacity===1,'The transition receives all 22 exact poses and their rendered opacity at '+viewport.width);
+   assert.deepEqual(shared.before.map(({id})=>id),LISBON_FRONT_NAMES);
+   assert.deepEqual(shared.sources.map(src=>new URL(src).pathname),LISBON_FRONT_NAMES.map(id=>'/assets/signs/'+id+'.png'));
+   check(shared.world.ready&&shared.world.loaded===22&&shared.world.blackPanel===false&&shared.world.independentSigns&&new Set(shared.depths).size>1,'The suspended Space keeps the canonical catalogue on separate signs with real depth at '+viewport.width);
+   check(shared.world.headline===LISBON_FRONT_COPY.headline&&shared.world.subtitle===LISBON_FRONT_COPY.subtitle,'The world projection and fullscreen introduction retain the same copy at '+viewport.width);
+   check(shared.moving&&shared.still,'The suspended signs float during normal motion and hold their poses with reduced motion at '+viewport.width);
+   check(shared.before.every(({x,y,width,height,rotation,corners})=>[x,y,width,height,rotation].every(Number.isFinite)&&width>0&&height>0&&corners.length===4&&corners.every(point=>Number.isFinite(point.x)&&Number.isFinite(point.y))),'The transition can sample one projected footprint per artwork at '+viewport.width);
    await fixture.pg.screenshot({path:out+'/front-'+viewport.width+'.png'});
    await child.evaluate(()=>dispatchEvent(new Event('totehm:experience-enter')));
    await child.waitForFunction(()=>__totehm_experience_front().phase==='discover'&&__totehm_experience_front().reveal===1&&__totehm_experience_front().visibleSigns===22);

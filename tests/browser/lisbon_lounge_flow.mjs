@@ -61,7 +61,7 @@ async function prepare(owned){
  await fixture.pg.goto(origin+'/lisbon-space');
  await fixture.pg.waitForFunction(()=>{
   const world=window.__totehm_gallery?.();
-  return world?.frames>0&&world.projection?.ready&&world.projection.front.visibleSigns===22&&world.temple?.paperLoaded&&world.temple?.controller.loaded===22;
+  return world?.frames>0&&world.projection?.ready&&world.projection.signs===22&&world.projection.loaded===22&&world.temple?.paperLoaded&&world.temple?.controller.loaded===22;
  },null,{timeout:90000});
  fixture.delayController=()=>{holdController=true;};
  fixture.releaseController=()=>{holdController=false;releaseController?.();releaseController=null;};
@@ -119,8 +119,8 @@ try{
   check(world.temple.openAir&&world.temple.walls===0&&world.temple.floor.surfaces===1&&world.temple.floor.caravel,'Lisbon renders one open-air calçada with its caravel');
   check(world.temple.thpCounter.paperWidthMetres<.03&&world.temple.thpCounter.signed,'The signed cases contain blotter-sized sheets on the table');
   check(world.fireplace.outdoor&&world.fireplace.present&&world.fireAudio.present,'Only the outdoor wood fire and its audio source are in the lounge');
-  const projectionFront=world.projection.front;
-  check(world.projection.bottom>0&&projectionFront.visibleSigns===22&&projectionFront.headline==='Make them useful for your brain'&&projectionFront.subtitle==='Neurological & Digital Street Art','The suspended screen shows the full Lisbon artwork and its new copy');
+  const projection=world.projection;
+  check(projection.bottom>0&&projection.blackPanel===false&&projection.signs===22&&projection.headline==='Make them useful for your brain'&&projection.subtitle==='Neurological & Digital Street Art','The Lisbon saucer projects the title among all 22 individual signs');
   const prop=world.temple.controller;
   check(prop.texturedShell&&prop.contactShadow&&prop.feet===2&&prop.tableYaw===L.controller.tableYaw&&prop.width===L.controller.width&&prop.width<.24,'The compact satin controller rests on two small feet and faces the chair');
   await pg.screenshot({path:path.join(output,'island.png')});
@@ -203,14 +203,15 @@ try{
   check(await pg.evaluate(()=>{const state=__totehm_projection_expansion();return state.stage==='closed'&&state.physicalPanelVisible&&state.overlays===0;}),'Closing restores the original tabletop controller and releases its lift');
 
   await clickPoint(pg,L.play.screen);
-  const discover=await experience(pg,'screen');
-  await discover.waitForFunction(()=>window.__totehm_experience_front?.().phase==='discover');
-  check(await discover.evaluate(()=>{
+  const formation=await experience(pg,'formation');
+  await formation.waitForFunction(()=>window.__totehm_controller_entry().phase==='locked');
+  check(await formation.evaluate(()=>{
    const state=window.__totehm_lisbon();
-   return state.discoverSlides===9&&!state.board&&state.firstPage.signs===22;
-  }),'Clicking the suspended artwork enters its matching Discover with the original signs');
-  await pg.screenshot({path:path.join(output,'discover.png')});
-  await close(pg,discover,shot);
+   return state.directBoard&&!state.board&&state.firstPage.signs===22;
+  }),'Clicking the projected title from the chair assembles the controller but keeps the guest locked');
+  check(await pg.evaluate(()=>__totehm_projection_expansion().handoff?.signs===22),'All projected signs join the controller from the seated view');
+  await pg.screenshot({path:path.join(output,'saucer-controller.png')});
+  await close(pg,formation,shot);
   check(!guest.log.errors.some(error=>error.startsWith('pageerror:')),'The physical guest journey has no page exception');
  }catch(error){
   console.error('Lounge state',await pg.evaluate(()=>({url:location.pathname,expansion:window.__totehm_projection_expansion?.(),seated:window.__totehm_gallery?.()?.seated,camera:window.__totehm_gallery?.()?.camera})).catch(()=>null));
