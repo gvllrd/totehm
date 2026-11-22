@@ -40,7 +40,7 @@ try{
    await child.waitForTimeout(250);
    check(await child.evaluate(()=>__totehm_experience_front().time===19&&__totehm_experience_front().phase==='front'),'The embedded first page holds the exhibition time during expansion at '+viewport.width);
    const shared=await fixture.pg.evaluate(async()=>{
-    const {Group,PerspectiveCamera}=await import('/vendor/three-0.180.0.mjs');
+    const {Group,PerspectiveCamera,Vector3}=await import('/vendor/three-0.180.0.mjs');
     const {createUfoLisbonSigns}=await import('/gallery-ufo-lisbon-signs.mjs');
     const projection=createUfoLisbonSigns(new Group());
     try{
@@ -55,12 +55,38 @@ try{
      projection.update(.1,camera.position,false);
      const still=snapshot();
      const world=projection.diagnostics();
-     return {world,before,sources:projection.signs.map(({face})=>face.material.map?.image?.src),depths:projection.signs.map(({group})=>group.position.z),moving:before.some((pose,i)=>Math.hypot(pose.x-moved[i].x,pose.y-moved[i].y)>.01),still:JSON.stringify(still)===JSON.stringify(moved)};
+     const size=new Vector3(),scale=new Vector3();
+     const rendered=mesh=>{
+      for(let node=mesh;node;node=node.parent)if(!node.visible)return false;
+      const materials=Array.isArray(mesh.material)?mesh.material:[mesh.material];
+      return materials.some(material=>material?.visible&&material.opacity>0);
+     };
+     const visibleVolumes=projection.signs.map(({group})=>{
+      const meshes=[];
+      group.traverse(mesh=>{
+       if(!mesh.isMesh||!rendered(mesh)||mesh.userData.hitProxy)return;
+       mesh.geometry.computeBoundingBox();
+       mesh.geometry.boundingBox.getSize(size).multiply(mesh.getWorldScale(scale));
+       if(Math.min(size.x,size.y,size.z)>.001)meshes.push(mesh);
+      });
+      return meshes;
+     });
+     projection.setHandoff(true);
+     const hidesAllBodies=visibleVolumes.every(meshes=>meshes.every(mesh=>!rendered(mesh)));
+     projection.setHandoff(false);
+     const restoresAllBodies=visibleVolumes.every(meshes=>meshes.every(rendered));
+     return {
+      world,before,sources:projection.signs.map(({face})=>face.material.map?.image?.src??face.userData.source),
+      volumes:visibleVolumes.map(meshes=>meshes.length),hidesAllBodies,restoresAllBodies,
+      moving:before.some((pose,i)=>Math.hypot(pose.x-moved[i].x,pose.y-moved[i].y)>.01),
+      still:JSON.stringify(still)===JSON.stringify(moved)
+     };
     }finally{projection.dispose();}
    });
    assert.deepEqual(shared.before.map(({id})=>id),LISBON_FRONT_NAMES);
-   assert.deepEqual(shared.sources.map(src=>new URL(src).pathname),LISBON_FRONT_NAMES.map(id=>'/assets/signs/'+id+'.png'));
-   check(shared.world.ready&&shared.world.loaded===22&&shared.world.blackPanel===false&&shared.world.independentSigns&&new Set(shared.depths).size>1,'The suspended Space keeps the canonical catalogue on separate signs with real depth at '+viewport.width);
+   assert.deepEqual(shared.sources.map(src=>new URL(src,'https://www.totehm.space').pathname),LISBON_FRONT_NAMES.map(id=>'/assets/signs/'+id+'.png'));
+   check(shared.world.ready&&shared.world.loaded===22&&shared.world.physicalObjects&&shared.volumes.length===22&&shared.volumes.every(count=>count>0),'Each suspended sign includes visible geometry with thickness at '+viewport.width);
+   check(shared.hidesAllBodies&&shared.restoresAllBodies,'The handoff hides and restores every object body together with its artwork at '+viewport.width);
    check(shared.world.headline===LISBON_FRONT_COPY.headline&&shared.world.subtitle===LISBON_FRONT_COPY.subtitle,'The world projection and fullscreen introduction retain the same copy at '+viewport.width);
    check(shared.moving&&shared.still,'The suspended signs float during normal motion and hold their poses with reduced motion at '+viewport.width);
    check(shared.before.every(({x,y,width,height,rotation,corners})=>[x,y,width,height,rotation].every(Number.isFinite)&&width>0&&height>0&&corners.length===4&&corners.every(point=>Number.isFinite(point.x)&&Number.isFinite(point.y))),'The transition can sample one projected footprint per artwork at '+viewport.width);

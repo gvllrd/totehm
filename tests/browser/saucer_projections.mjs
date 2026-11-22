@@ -64,13 +64,19 @@ try{for(const viewport of [{width:800,height:600},{width:1100,height:760}])for(c
   if(city==='lisbon')check(fireplace.present&&fireplace.outdoor&&fireplace.volumetricFlames&&fireplace.charredLogs>0&&fireAudio.present&&fireAudio.woodCrackle,'Lisbon has an outdoor wood fire with volumetric flame, charred logs and crackle at '+viewport.width);
   else check(!fireplace.present&&fireplace.flames===0&&!fireAudio.present&&fireAudio.sources===0,'New York has no hearth or fire audio source at '+viewport.width);
   const projection=sample.initial.projection;
-  check(projection.beamSource.every((axis,i)=>Math.abs(axis-[0,18.9,-4.2][i])<1e-6),city+' projects from the saucer emitter at '+viewport.width);
   check(sample.initial.originsJourney.vessel.saucer&&!sample.initial.originsJourney.vessel.bookInIsland&&projection.videoDecoders===0,city+' keeps the original book in Origin and decodes no gallery video at '+viewport.width);
   if(lisbon){
-   check(projection.kind==='ufo-lisbon-floating-signs'&&projection.blackPanel===false&&projection.independentSigns&&projection.lifeSize&&projection.signs===22&&projection.loaded===22&&projection.clickTargets===23,'Lisbon projects 22 independent 3D signs at '+viewport.width);
+   check(projection.kind==='lisbon-suspended-street-objects'&&projection.physicalObjects&&projection.signs===22&&projection.loaded===22&&projection.clickTargets>22,'Lisbon suspends 22 interactive street objects at '+viewport.width);
+   check(projection.blackPanel===false&&projection.opticalBeam===false,'Lisbon shows the objects directly in the open air');
+   assert.deepEqual(projection.mounts.map(({id})=>id),LISBON_FRONT_NAMES);
+   check(projection.mounts.every(({width,height,kind})=>width>0&&height>0&&typeof kind==='string'),'Every street object has a physical size and mounting type');
+   const mounts=Object.fromEntries(projection.mounts.map(mount=>[mount.id,mount]));
+   check(mounts.destination.width>mounts.destination.height&&mounts.destination.width>mounts.stop.width,'The motorway destination board has a wider format than the roadside Stop sign');
+   check(new Set(['stop','crosswalk','Hotel','aed','pharma'].map(id=>mounts[id].kind)).size>=4,'The road sign, road marking, plaques and pharmacy fixture retain their distinct physical roles');
    assert.deepEqual(projection.poses.map(({id})=>id),LISBON_FRONT_NAMES);
    check(projection.headline===LISBON_FRONT_COPY.headline&&projection.subtitle===LISBON_FRONT_COPY.subtitle,'Lisbon keeps the canonical title and smaller caption amid the signs');
   }else{
+   check(projection.beamSource.every((axis,i)=>Math.abs(axis-[0,18.9,-4.2][i])<1e-6),city+' projects from the saucer emitter at '+viewport.width);
    check(projection.kind==='saucer-first-page-projection'&&projection.canonicalFirstPage&&projection.blackPanel&&projection.blackBeam&&projection.opticalBeam&&projection.bottom>0,'New York keeps its raised canonical screen at '+viewport.width);
    check(projection.works===6&&projection.front.count===6&&projection.front.ids.length===6&&sample.initial.temple.projectionOnly&&sample.initial.temple.legacyArtworkPickables===0&&sample.initial.temple.thpCounter.packagedPapers===0&&!sample.initial.temple.origins.lectern,'New York has only the six-work projection and saucer, without a local book or THP table at '+viewport.width);
    check(await pg.locator('.tour [data-room]').count()===2,'New York navigation offers only its projection and Origin at '+viewport.width);
@@ -121,6 +127,7 @@ try{for(const viewport of [{width:800,height:600},{width:1100,height:760}])for(c
   const close=lisbon?(owned?'#sdisc-board-close':'#sdisc-back'):'[data-experience-close]';
   await frame.locator(close).first().click({timeout:30000});
   await pg.waitForFunction(()=>__totehm_projection_expansion().stage==='closed'&&__totehm_projection_expansion().physicalPanelVisible);
+  if(lisbon)check(await pg.evaluate(()=>__totehm_gallery().projection.handoff===false),'Returning to Lisbon restores the suspended objects');
   check(await pg.locator('iframe').count()===0&&await pg.evaluate(p=>window.projectionSceneToken==='same scene'&&JSON.stringify(__totehm_gallery().camera.position)===JSON.stringify(p),sample.camera),city+' closes back to the same physical projection and camera at '+viewport.width);
   await pg.emulateMedia({reducedMotion:'reduce'});await focusProjection(pg);await pg.locator('#enter-experience').click({timeout:60000});await pg.waitForFunction(()=>__totehm_projection_expansion().stage==='experience');
   if(lisbon){

@@ -120,7 +120,7 @@ try{
   check(world.temple.thpCounter.paperWidthMetres<.03&&world.temple.thpCounter.signed,'The signed cases contain blotter-sized sheets on the table');
   check(world.fireplace.outdoor&&world.fireplace.present&&world.fireAudio.present,'Only the outdoor wood fire and its audio source are in the lounge');
   const projection=world.projection;
-  check(projection.bottom>0&&projection.blackPanel===false&&projection.signs===22&&projection.headline==='Make them useful for your brain'&&projection.subtitle==='Neurological & Digital Street Art','The Lisbon saucer projects the title among all 22 individual signs');
+  check(projection.physicalObjects&&projection.blackPanel===false&&projection.opticalBeam===false&&projection.signs===22&&projection.headline==='Make them useful for your brain'&&projection.subtitle==='Neurological & Digital Street Art','The Lisbon title is surrounded by 22 suspended street objects');
   const prop=world.temple.controller;
   check(prop.texturedShell&&prop.contactShadow&&prop.feet===2&&prop.tableYaw===L.controller.tableYaw&&prop.width===L.controller.width&&prop.width<.24,'The compact satin controller rests on two small feet and faces the chair');
   await pg.screenshot({path:path.join(output,'island.png')});

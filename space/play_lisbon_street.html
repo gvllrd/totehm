@@ -1260,7 +1260,9 @@ if(projectedBoard)window.__totehm_projection_form={
   for(const pose of source){
    if(!pose||!Object.hasOwn(SIGNS,pose.id)||poses.has(pose.id)||
      ![pose.x,pose.y,pose.width,pose.height,pose.rotation].every(Number.isFinite)||
-     pose.width<=0||pose.height<=0)return null;
+     pose.width<=0||pose.height<=0||
+     (pose.corners&&(!Array.isArray(pose.corners)||pose.corners.length!==4||
+       !pose.corners.every(point=>Number.isFinite(point?.x)&&Number.isFinite(point?.y)))))return null;
    poses.set(pose.id,pose);
   }
   snapping=true;directBoardActive=true;firstPageActive=false;
@@ -1393,6 +1395,25 @@ function assembleController(view,projection=null){
   const unit=value=>Math.max(0,Math.min(1,value));
   const smooth=value=>value*value*(3-2*value);
 
+  function artworkCorners(width,height,angle){
+    const cos=Math.cos(angle),sin=Math.sin(angle);
+    return [[-width/2,-height/2],[width/2,-height/2],[width/2,height/2],[-width/2,height/2]]
+      .map(([x,y])=>({x:x*cos-y*sin,y:x*sin+y*cos}));
+  }
+
+  function drawProjectedArtwork(image,corners){
+    const [tl,tr,br,bl]=corners;
+    function triangle(a,b,c,xx,xy,yx,yy,tx,ty){
+      context.save();
+      context.beginPath();context.moveTo(a.x,a.y);context.lineTo(b.x,b.y);context.lineTo(c.x,c.y);context.closePath();context.clip();
+      context.transform(xx,xy,yx,yy,tx,ty);
+      context.drawImage(image,0,0,1,1);
+      context.restore();
+    }
+    triangle(tl,tr,bl,tr.x-tl.x,tr.y-tl.y,bl.x-tl.x,bl.y-tl.y,tl.x,tl.y);
+    triangle(tr,br,bl,br.x-bl.x,br.y-bl.y,br.x-tr.x,br.y-tr.y,tr.x+bl.x-br.x,tr.y+bl.y-br.y);
+  }
+
   function resize(){
     const host=sdiscBg.getBoundingClientRect(),face=firstPage.canvas.getBoundingClientRect();
     canvasWidth=host.width;canvasHeight=host.height;
@@ -1411,6 +1432,13 @@ function assembleController(view,projection=null){
         x:face.left-host.left+pose.x*scaleX,y:face.top-host.top+pose.y*scaleY,
         width:pose.size*scaleX*image.naturalWidth/largestSide,height:pose.size*scaleY*image.naturalHeight/largestSide
       };
+      if(projection&&pose.corners){
+        const rectangle=artworkCorners(flight.from.width,flight.from.height,pose.rotation);
+        flight.perspective=pose.corners.map((point,i)=>({
+          x:(point.x-pose.x)*innerWidth-rectangle[i].x,
+          y:(point.y-pose.y)*innerHeight-rectangle[i].y
+        }));
+      }
       flight.to={x:target.x-host.left+target.width/2,y:target.y-host.top+target.height/2,width:target.width,height:target.height};
       const dx=flight.to.x-flight.from.x,dy=flight.to.y-flight.from.y,distance=Math.hypot(dx,dy);
       const curve=Math.min(88,distance*.16)*(index%2?1:-1)/Math.max(distance,1);
@@ -1424,7 +1452,7 @@ function assembleController(view,projection=null){
 
   function paint(){
     context.clearRect(0,0,canvasWidth,canvasHeight);levels.clear();
-    for(const {rock,pose,from,to,arcX,arcY,delay,travel} of flights){
+    for(const {rock,pose,from,to,arcX,arcY,delay,travel,perspective} of flights){
       const progress=unit((elapsed-delay)/travel),position=smooth(progress);
       const dock=smooth(unit((elapsed-delay-travel)/blendTime));
       if(dock>0)levels.set(rock.id,dock);
@@ -1434,8 +1462,17 @@ function assembleController(view,projection=null){
       context.save();
       context.globalAlpha=mix(startingOpacity,1,smooth(unit(progress*1.9)))*(1-dock);
       context.translate(mix(from.x,to.x,position)+arc*arcX,mix(from.y,to.y,position)+arc*arcY);
-      context.rotate(pose.rotation*(1-position));
-      context.drawImage(rock.img,-width/2,-height/2,width,height);
+      const angle=pose.rotation*(1-position);
+      const distortion=perspective?1-smooth(unit(progress/.34)):0;
+      if(distortion>0){
+        const quad=artworkCorners(width,height,angle).map((point,i)=>({
+          x:point.x+perspective[i].x*distortion,y:point.y+perspective[i].y*distortion
+        }));
+        drawProjectedArtwork(rock.img,quad);
+      }else{
+        context.rotate(angle);
+        context.drawImage(rock.img,-width/2,-height/2,width,height);
+      }
       context.restore();
     }
     view?.setAssembly(levels);

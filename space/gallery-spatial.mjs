@@ -1,4 +1,5 @@
 import {createSaucerProjection,PROJECTION_LAYOUTS} from './gallery-saucer-projection.mjs';
+import {UFO_LISBON_SIGNS_LAYOUT} from './gallery-ufo-lisbon-signs.mjs';
 import {expandGalleryObject,expandLisbonSignProjection,expandProjectedExperience} from './gallery-experience-expansion.mjs';
 import {premiumCaseShot} from './gallery-object-view.mjs';
 import {lisbonControllerShot} from './gallery-lisbon-controller.mjs';
@@ -21,7 +22,7 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
  const newYork=place==='new-york';
  const ny=newYork?await Promise.all([import('./gallery-new-york.mjs'),import('./gallery-new-york-navigation.mjs'),import('./gallery-new-york-layout.mjs')]):null;
  const L=newYork?ny[2].NEW_YORK_LAYOUT:LISBON_LAYOUT;
- const projectionLayout=PROJECTION_LAYOUTS[place],STATIONS=(newYork?NEW_YORK_STATIONS:LISBON_URBEX_STATIONS).map((station,i)=>i===2?{...station,approach:projectionLayout.approach,approachMobile:projectionLayout.approach,target:projectionLayout.position}:station);
+ const projectionLayout=newYork?PROJECTION_LAYOUTS[place]:UFO_LISBON_SIGNS_LAYOUT,STATIONS=(newYork?NEW_YORK_STATIONS:LISBON_URBEX_STATIONS).map((station,i)=>i===2?{...station,approach:projectionLayout.approach,approachMobile:projectionLayout.approach,target:projectionLayout.position}:station);
  const ENTRY=L.entry,LOOK=L.look,GROUND=L.groundY,HEIGHT=L.eyeHeight;
  const ceiling=(x,z)=>newYork?ny[2].newYorkRoofHeight(x,z):(architecture?.roofHeight||glassRoofHeight)(x,z);
  const host=document.getElementById('space'),mobile=innerWidth<650||(matchMedia('(pointer: coarse)').matches&&Math.min(innerWidth,innerHeight)<650);

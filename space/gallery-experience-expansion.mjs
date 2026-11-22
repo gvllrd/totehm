@@ -134,8 +134,9 @@ function openExperience({object,camera,href,type,from=null,canvas,time,width,sho
   const assemble=win.__totehm_projection_form;
   if(!assemble)return;
   const width=innerWidth,height=innerHeight;
-  const source=projection.snapshot(camera,width,height).map(({id,x,y,width:w,height:h,rotation})=>({
-   id,x:x/width,y:y/height,width:w/width,height:h/height,rotation
+  const source=projection.snapshot(camera,width,height).map(({id,x,y,width:w,height:h,rotation,corners})=>({
+   id,x:x/width,y:y/height,width:w/width,height:h/height,rotation,
+   corners:corners?.map(point=>({x:point.x/width,y:point.y/height}))
   }));
   const transition=assemble.start(source);
   if(!transition)return;
