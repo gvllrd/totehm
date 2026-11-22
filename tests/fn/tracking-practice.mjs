@@ -24,13 +24,13 @@ for(const bad of ['',0,'0','-1','01','1&token=secret','9223372036854775808','999
 check(!parsePracticeLink('#practice=1&ro=someone')&&!parsePracticeLink('#practice=1&practice=2'),'No extra values or visited-account context are accepted');
 check(STONER_URL==='https://www.totehm.space/stoner','Stoner keeps its existing native access gate');
 const habit='Lire & écrire <b>読書</b>';
-const snapshot={steps:[{t:habit,is:['express'],f:'weekly',rhythm_text:'3 times a week at 7 AM'},{t:'Unrelated Habit',f:'daily',rhythm_text:'UNRELATED TIMING'}],
+const snapshot={habits:[{t:habit,is:['express'],f:'weekly',rhythm_text:'3 times a week at 7 AM'},{t:'Unrelated Habit',f:'daily',rhythm_text:'UNRELATED TIMING'}],
  habit_spots:[{habit_text:habit,place:'My kitchen <b>読書</b>'},{habit_text:'Unrelated Habit',place:'UNRELATED PLACE'}],
- objectives:[{id:id(1),text:'Publish my book'},{id:id(2),text:'Travel unrelated'}],
+ objectives:[{id:id(1),text:'Publish my book',target_at:'2027-06-01'},{id:id(2),text:'Travel unrelated',target_at:'2027-07-01'},
+  {id:id(3),text:'Share what I learn',target_at:null},{id:id(6),text:'UNRELATED VISION',target_at:null}],
  repulsions:[{id:'1',repulsion:'Scroll instead',habit_text:habit,active:true},{id:'2',repulsion:'UNRELATED TRIGGER',habit_text:'Unrelated Habit',active:true}],
- visions:[{id:id(3),text:'Share what I learn'},{id:id(6),text:'UNRELATED VISION'}],
- wisdom:[{id:id(4),text:'MY OWN WORDS, not an inferred lesson'},{id:id(5),text:'UNRELATED STORY'}],
- objective_habits:[{habit_text:habit,objective_id:id(1)}],objective_visions:[{objective_id:id(1),vision_id:id(3)}],repulsion_teachings:[{repulsion_id:'1',wisdom_id:id(4)}]};
+ stories:[{id:id(4),text:'MY OWN WORDS, not an inferred lesson'},{id:id(5),text:'UNRELATED STORY'}],
+ objective_habits:[{habit_text:habit,objective_id:id(1)},{habit_text:habit,objective_id:id(3)}],repulsion_stories:[{repulsion_id:'1',story_id:id(4)}]};
 const context=s=>projectContext(projectGraph(s),{query:'',purpose:'explicit',focus:{kind:'habit',ref:habit},limit:12});
 const text=preparationText(context(snapshot),habit);
 check(['TRIGGER · INSTEAD OF','INSTEAD · MY HABIT','WHY','VISION · THE BIG WHY','MY STORY · LINKED TO THIS TRIGGER'].every(t=>text.includes(t)),'All native phrase directions are present');
@@ -42,15 +42,15 @@ check(text.includes('MY TIMING · MY WORDS')&&text.includes('3 times a week at 7
 for(const frequency of FREQS)check(practiceCadence(frequency.id)===frequency.label,'Telegram and native picker use the same meaning for '+frequency.id);
 check(practiceCadence('unsupported')===null&&practiceCadence(undefined)===null,'Missing/unknown cadence never invents a readable schedule');
 
-check(preparationText(context({steps:[{t:habit}]}),habit).includes('No linked why or trigger'),'Missing links remain missing instead of inventing a motivation');
-check(preparationText(context({steps:[]}),habit).includes('no longer available'),'A missing current Habit never substitutes another one');
+check(preparationText(context({habits:[{t:habit}]}),habit).includes('No linked why or trigger'),'Missing links remain missing instead of inventing a motivation');
+check(preparationText(context({habits:[]}),habit).includes('no longer available'),'A missing current Habit never substitutes another one');
 check(preparationText({...context(snapshot),coverage:{source_complete:false,omitted_related:true}},habit).includes('part of your linked context'),'Partial context is explicitly described');
 const long=structuredClone(context(snapshot));for(const row of long.items)row.text='🌍'.repeat(4000);
 const bounded=preparationText(long,habit);
 check(bounded.length<3500&&bounded.isWellFormed()&&bounded.includes('excerpts'),'Long multilingual text and emoji fit a single consented message without broken characters');
 const fullest=structuredClone(context(snapshot)),rootFull=fullest.items.find(i=>i.ref===habit);
 rootFull.rhythm_text='🌍'.repeat(500);rootFull.usual_place.text='🌍'.repeat(500);
-for(const [kind,relation,from,to] of [['repulsion','instead',null,rootFull.key],['objective','serves',rootFull.key,null],['vision','towards',fullest.items.find(i=>i.kind==='objective').key,null],['wisdom','learned_from',null,fullest.items.find(i=>i.kind==='repulsion').key]]){
+for(const [kind,relation,from,to] of [['repulsion','instead',null,rootFull.key],['objective','serves',rootFull.key,null],['vision','serves',rootFull.key,null],['story','learned_from',null,fullest.items.find(i=>i.kind==='repulsion').key]]){
  const row=fullest.items.find(i=>i.kind===kind),copy={...row,key:row.key+':second',ref:row.ref+':second',rank:2};
  fullest.items.push(copy);fullest.edges.push({from:from||copy.key,to:to||copy.key,relation,provenance:[]});
 }
@@ -63,13 +63,13 @@ maxRoot.rhythm_text='b'.repeat(500);maxRoot.usual_place.text='c'.repeat(120);max
 maximal.coverage={source_complete:false,omitted_related:true,more_matches:true};
 const maximalMessage=preparationText(maximal,habit);
 check(maximal.items.length===9&&maximalMessage.length<=3500&&maximalMessage.isWellFormed()&&maximalMessage.includes('part of your linked context'),'Two triggers, goals, visions and stories plus 500-character timing, usual place and partial coverage fit one safe Telegram message');
-const orders={...snapshot,objectives:[...snapshot.objectives,{id:id(7),text:'My ranked reason'}],objective_habits:[...snapshot.objective_habits,{habit_text:habit,objective_id:id(7)}],element_orders:[{kind:'objective',refs:[id(7),id(1)]}]};
+const orders={...snapshot,objectives:[...snapshot.objectives,{id:id(7),text:'My ranked reason',target_at:'2027-06-01'}],objective_habits:[...snapshot.objective_habits,{habit_text:habit,objective_id:id(7)}],element_orders:[{kind:'objective',refs:[id(7),id(1)]}]};
 const sorted=preparationText(context(orders),habit);check(sorted.indexOf('My ranked reason')<sorted.indexOf('Publish my book'),'Multiple reasons follow their own view order');
 const calls=[],queries=[],sent=[];let allowed=true,readError=false;
-const tables={...snapshot,totehms:[{steps:snapshot.steps}]};delete tables.steps;
+const tables={...snapshot,totehms:[{habits:snapshot.habits}]};delete tables.habits;
 const db={async rpc(name,args){calls.push({name,args});assert.equal(name,'tracking_practice_target');assert.equal(args.p_telegram,101);return {data:allowed?{ok:true,user_id:uid,habit}:{ok:false},error:null};},
- from(table){const filters=[];let n=Infinity;const q={select(){return q},eq(k,v){if(k==='user_id')assert.equal(v,uid);else filters.push(r=>r[k]===v);return q},
- or(){filters.push(r=>!['achieved','abandoned','converted'].includes(r.status));return q},in(k,v){filters.push(r=>v.includes(r[k]));return q},limit(v){n=v;return q},then(ok,no){queries.push({table,n});return Promise.resolve({data:(tables[table]||[]).filter(r=>filters.every(f=>f(r))).slice(0,n),error:readError?{message:'private detail'}:null}).then(ok,no)}};return q;}};
+ from(table){const filters=[];let n=Infinity,columns;const q={select(v){columns=v;return q},eq(k,v){if(k==='user_id')assert.equal(v,uid);else filters.push(r=>r[k]===v);return q},
+ or(){filters.push(r=>!['achieved','abandoned','converted'].includes(r.status));return q},is(k,v){filters.push(r=>(r[k]??null)===v);return q},not(k,op,v){assert.equal(op,'is');filters.push(r=>(r[k]??null)!==v);return q},in(k,v){filters.push(r=>v.includes(r[k]));return q},limit(v){n=v;return q},then(ok,no){queries.push({table,n,columns});return Promise.resolve({data:(tables[table]||[]).filter(r=>filters.every(f=>f(r))).slice(0,n),error:readError?{message:'private detail'}:null}).then(ok,no)}};return q;}};
 const telegram=async(method,payload)=>{sent.push({method,payload});return {ok:true,result:{message_id:22}};};
 const callback=(data)=>({callback_query:{id:'cb',from:{id:101},message:{message_id:22,chat:{id:101,type:'private'},text:'Prepare your next step'},data}});
 await handleTrackingUpdate(db,callback('t:p:9007199254740993:open'),telegram);
@@ -80,6 +80,7 @@ const sendCount=sent.filter(x=>x.method==='sendMessage').length;
 await handleTrackingUpdate(db,callback('t:p:9007199254740993:show'),telegram);
 check(sent.at(-1).method==='editMessageText'&&sent.filter(x=>x.method==='sendMessage').length===sendCount,'Consented text replaces the preparation prompt rather than adding notifications');
 check(sent.at(-1).payload.text===text&&!sent.at(-1).payload.parse_mode,'Exact own graph is used without evaluating markup');
+check(queries.some(q=>q.table==='totehms'&&q.columns==='habits')&&queries.some(q=>q.table==='stories')&&queries.some(q=>q.table==='repulsion_stories'),'Preparation reads the native Habit, MY STORY and recorded relation sources');
 check(queries.every(q=>q.n<=401)&&!queries.some(q=>/media|spot_plans|intention_music|grants/.test(q.table)),'Reads stay bounded; no images, sounds, public places or creator content are exported');
 check(calls.every(c=>c.name==='tracking_practice_target'),'No answer, reservation, subscription, note or TOTEHM write occurs');
 allowed=false;const beforeQueries=queries.length;await handleTrackingUpdate(db,callback('t:p:9007199254740993:show'),telegram);

@@ -130,15 +130,18 @@ try{
    ok(!log.errors.some(e=>e.startsWith('pageerror')),path+' has no runtime errors');await ctx.close();
   }
   for(const path of ['/higher']){
-   const{pg,ctx,log}=await ready(browser);await pg.goto(origin+path);await pg.waitForURL('**/chatgpt');
+   const redirect=JSON.parse(fs.readFileSync(new URL('../../com/vercel.json',import.meta.url),'utf8')).redirects.find(r=>r.source===path&&!r.has);
+   ok(redirect?.destination==='/chatgpt','The legacy Higher route is configured to open the free connector');
+   const{pg,ctx,log}=await ready(browser,{network:(url,...args)=>url.origin===origin&&url.pathname===path
+     ?{status:redirect.permanent?308:307,headers:{location:redirect.destination},body:''}:network(url,...args)});
+   await pg.goto(origin+path);await pg.waitForURL('**/chatgpt');
    ok(!log.functions.some(f=>f.name==='higher-sub')&&!log.errors.some(e=>e.startsWith('pageerror')),path+' opens free Higher GPT without checkout');await ctx.close();
   }
   {const{pg,ctx,log}=await ready(browser,{session:false,viewport:{width:1280,height:900}});await pg.goto(origin+'/monetize');await pg.waitForFunction(()=>window.__totehm_monetize?.().signed_in===false);await pg.waitForTimeout(300);
-   /* 16/10 — la page ne montre plus que SA part (la doctrine du grand livre : on affiche sa part, pas le brut),
-      et le curseur COMPTE au lieu de promettre. On vérifie donc 80 %, l'année, et le calcul — jamais « 20 % ». */
+   /* The current three-screen Discover states the annual creator offer and the owner's 80%, without a revenue promise. */
    {const t=await pg.textContent('main');
-    ok(await pg.locator('h1').count()===1&&/80%/.test(t)&&/[Oo]nce a year/.test(t)&&!/\d+ ?€ ?\/ ?year guaranteed/i.test(t)&&await pg.locator('#mz-p').count()===1,
-       'the sales page is public: the annual model, MY 80%, a slider that counts — and no promised revenue');}
+    ok(await pg.locator('h1').count()===1&&/80%/.test(t)&&/One annual payment/.test(t)&&!/\d+ ?€ ?\/ ?year guaranteed/i.test(t)&&await pg.locator('#dc .dc-s').count()===3&&await pg.locator('[data-setup]').count()===1,
+       'the sales page is public: three native Discover screens, annual payment, MY 80%, the setup CTA and no promised revenue');}
    ok(!log.rpc.some(x=>x.name==='my_console')&&await pg.getAttribute('[data-setup]','href')==='/console','visiting the public page does not read a member console or activate an offer');
    await pg.screenshot({path:OUT+'/com_monetize_desktop.png'});await ctx.close();
   }

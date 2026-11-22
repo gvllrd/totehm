@@ -32,13 +32,8 @@ const PLAFONDS = {
   'boutique/index.html': { story: 2 },                        // ponts : la base dit encore `wisdom`
   'boutique/luxury.html': { story: 6 },                        // ponts : luxury-quote, _box_matter, projets déposés
   'boutique/streetwear.html': { story: 7 },                    // ponts : create-checkout, _box_matter, liens d'avant
-  'backend/supabase/functions/_shared/chatgpt-boutique.ts': { objective: 1 },
-  'backend/supabase/functions/_shared/chatgpt-context.ts': { story: 29, habit: 11 },
-  'backend/supabase/functions/_shared/chatgpt-ecosystem.ts': { story: 11, objective: 1, habit: 2, repulsion: 5 },
-  'backend/supabase/functions/_shared/chatgpt-server.ts': { story: 1 },
-  'backend/supabase/functions/_shared/higher-gpt.ts': { story: 1, habit: 1 },
-  'backend/supabase/functions/_shared/tracking-tick.ts': { habit: 5 },
-  'backend/supabase/functions/bot-reply/index.ts': { story: 5, habit: 5 },
+  'backend/supabase/functions/_shared/chatgpt-server.ts': { story: 1 }, // pont d’entrée uniquement
+  'backend/supabase/functions/bot-reply/index.ts': { story: 1 }, // pont d’entrée uniquement
   'backend/supabase/functions/create-checkout/index.ts': { story: 1 },
   'backend/supabase/functions/higher-checkout/index.ts': { habit: 1 },
   'backend/supabase/functions/higher-map/index.ts': { habit: 4 },

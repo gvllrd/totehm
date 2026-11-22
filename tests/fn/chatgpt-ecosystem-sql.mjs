@@ -18,7 +18,7 @@ try{
   create table public.creator_subscriptions(creator_id uuid,fan_id uuid,status text);
   insert into public.creator_subscriptions values ('${B}','${A}','active');
   create function public._subscriber_of(c uuid,f uuid) returns boolean language sql as $$select exists(select 1 from public.creator_subscriptions where creator_id=c and fan_id=f and status='active')$$;
-  create function public.totehm_read(text) returns jsonb language sql as $$select jsonb_build_object('ok',true,'pseudo',$1,'viewer',auth.uid(),'steps','[{"t":"Shared"}]'::jsonb)$$;
+  create function public.totehm_read(text) returns jsonb language sql as $$select jsonb_build_object('ok',true,'pseudo',$1,'viewer',auth.uid(),'habits','[{"t":"Shared"}]'::jsonb)$$;
   create function public.member_media(text) returns jsonb language sql as $$select jsonb_build_object('items','[{"id":"${C}","kind":"h","ref":"Shared","path":"secret","mime":"image/png"}]'::jsonb)$$;
   create function public.club_spots(text,jsonb,double precision,double precision,integer,integer,timestamptz) returns jsonb language sql as $$select jsonb_build_object('ok',true,'viewer',auth.uid(),'items',jsonb_build_array(jsonb_build_object('id','${C}','creator','someone else')),'period',$1,'next_offset',$6+$5)$$;
   create function public.club_spots_of(text,text,jsonb,double precision,double precision,integer,integer,timestamptz) returns jsonb language sql as $$select public.club_spots($2,$3,$4,$5,$6,$7,$8)$$;
@@ -34,7 +34,7 @@ try{
  assert.equal(await scalar('select version from public.chatgpt_ecosystem_consents where grant_id=$1',[grant]),1);
  const read=async(action,pseudo=null)=>scalar('select public.chatgpt_read_ecosystem($1,$2,$3)',[grant,action,pseudo]);
  await db.query("select set_config('request.jwt.claim.sub',$1,false)",[B]);
- assert.equal((await read('member','artist')).viewer,A);
+ const authorized=await read('member','artist');assert.equal(authorized.viewer,A);assert.equal(authorized.habits[0].t,'Shared');
  assert.equal(await scalar('select auth.uid()'),B,'Subject claims restored after the RPC');
  const members=await read('members');
  assert.equal(members.items[0].pseudo,'artist');

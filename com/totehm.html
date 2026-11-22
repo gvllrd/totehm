@@ -5577,6 +5577,9 @@ function poserLecture(data){
    l'écran. On redevient soi (`sortirLecture`) et une ligne le dit, sous [Mine] · [Members] (`lvDire`). La croix et Échap
    replient SON TOTEHM sur SON atterrissage ; on revient à soi par [Mine] (20/10 sexies). */
 function roFail(msg){
+  // A refused member source must never reopen a same-named element in my account.
+  if(lienElement){lienElement=null;diagLien.state='unavailable';}
+  if(pratique){pratique=null;diagPratique.state='unavailable';}
   const t=msg.charAt(0).toUpperCase()+msg.slice(1)+'.';
   Promise.resolve(sortirLecture()).catch(e=>console.error('[lecture]',e)).finally(()=>{ if(lvDire) lvDire(t); });
 }

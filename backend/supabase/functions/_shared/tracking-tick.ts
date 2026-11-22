@@ -5,11 +5,11 @@ type Config={db:any;token?:string;serviceKey:string;webhookSecret?:string;projec
 // failure never prevents the already-reserved canonical check-in from arriving.
 async function confirmedTiming(db:any,uid:string,claim:any):Promise<string>{
  try{
-  const r=await db.from('totehms').select('steps').eq('user_id',uid)
+  const r=await db.from('totehms').select('habits').eq('user_id',uid)
    .order('updated_at',{ascending:false,nullsFirst:false}).limit(1);
   if(r.error)throw new Error('unavailable');
-  const steps=Array.isArray(r.data?.[0]?.steps)?r.data[0].steps:[];
-  const current=steps.find((s:any)=>s&&typeof s.t==='string'&&s.t===claim.habit);
+  const habits=Array.isArray(r.data?.[0]?.habits)?r.data[0].habits:[];
+  const current=habits.find((s:any)=>s&&typeof s.t==='string'&&s.t===claim.habit);
   if(!current||(Object.hasOwn(claim,'frequency')&&(current.f??null)!==(claim.frequency??null)))return '';
   const words=current.rhythm_text;
   if(typeof words!=='string'||words.length>500||!words.isWellFormed()||/[\u0000-\u001f\u007f-\u009f]/u.test(words))return '';

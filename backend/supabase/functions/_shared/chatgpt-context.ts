@@ -2,7 +2,7 @@
 // Deno globals or network imports: the graph/selection helpers are pure and testable.
 // The caller MUST resolve uid from its validated connector authentication.
 
-export type ElementKind = "habit" | "objective" | "repulsion" | "vision" | "wisdom";
+export type ElementKind = "habit" | "objective" | "repulsion" | "vision" | "story";
 export type ElementRef = { kind: ElementKind; ref: string };
 export type Purpose = "action" | "direction" | "replacement" | "explicit";
 export type ContextOptions = {
@@ -41,7 +41,7 @@ export type ContextItem = ElementRef & {
   rank_source?: "member_order" | "saved_order" | "importance" | "default";
   target_state?: "past_target" | "future_target";
 };
-export type Relation = "serves" | "instead" | "towards" | "learned_from" | "informs";
+export type Relation = "serves" | "instead" | "learned_from" | "informs";
 export type ContextEdge = {
   from: string;
   to: string;
@@ -63,23 +63,21 @@ export type ContextResult = ContextGraph & {
   review?: {
     complete: boolean;
     counts: Record<ElementKind, number>;
-    gaps: { element: ElementRef; missing: "habit" | "objective" | "vision"; url: string }[];
+    gaps: { element: ElementRef; missing: "habit" | "objective_or_vision"; url: string }[];
     more_gaps: boolean;
   };
 };
 
 type Row = Record<string, unknown>;
 export type GraphSnapshot = {
-  steps?: unknown[];
+  habits?: unknown[];
   objectives?: Row[];
   repulsions?: Row[];
-  visions?: Row[];
-  wisdom?: Row[];
+  stories?: Row[];
   objective_habits?: Row[];
   repulsion_habits?: Row[];
-  objective_visions?: Row[];
-  repulsion_teachings?: Row[];
-  teaching_objectives?: Row[];
+  repulsion_stories?: Row[];
+  story_objectives?: Row[];
   habit_spots?: Row[];
   element_orders?: Row[];
   truncated?: boolean;
@@ -91,6 +89,7 @@ export interface ReadQuery extends PromiseLike<{ data: unknown; error: unknown }
   select(columns: string): ReadQuery;
   eq(column: string, value: unknown): ReadQuery;
   is(column: string, value: null): ReadQuery;
+  not(column: string, operator: string, value: null): ReadQuery;
   or(filters: string): ReadQuery;
   in(column: string, values: string[]): ReadQuery;
   gt(column: string, value: string): ReadQuery;
@@ -110,7 +109,7 @@ export class ContextReadError extends Error {
 }
 
 export const INTENTIONS = ["fight", "flow", "enrich", "love", "express", "focus", "celebrate"];
-const KINDS: ElementKind[] = ["habit", "objective", "repulsion", "vision", "wisdom"];
+const KINDS: ElementKind[] = ["habit", "objective", "repulsion", "vision", "story"];
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const MAX_ROWS = 400;
 const MAX_ITEMS = 12;
@@ -197,18 +196,18 @@ export function projectGraph(snapshot: GraphSnapshot): ContextGraph {
     return item.text ? item : null;
   };
   const usualPlaces = new Map(take(snapshot.habit_spots).map((r) => [string(r.habit_text), text(r.place, 160)]));
-  const steps = take(snapshot.steps).map(own);
-  for (const step of steps) {
-    // t0 and hN belong to the browser. In persisted steps, t is the server key.
-    const ref = string(step.t);
+  const habits = take(snapshot.habits).map(own);
+  for (const habit of habits) {
+    // t0 and hN belong to the browser. In persisted habits, t is the server key.
+    const ref = string(habit.t);
     const item = make("habit", ref, ref);
     if (!item) continue;
-    const declared = intentions(step.is);
-    const legacy = intentions([step.i]);
+    const declared = intentions(habit.is);
+    const legacy = intentions([habit.i]);
     item.intentions = declared.length ? declared : legacy;
     item.intention_source = declared.length ? "explicit" : legacy.length ? "legacy" : "none";
-    if (text(step.f, 60)) item.freq = text(step.f, 60);
-    const authoredRhythm = string(step.rhythm_text).trim();
+    if (text(habit.f, 60)) item.freq = text(habit.f, 60);
+    const authoredRhythm = string(habit.rhythm_text).trim();
     if (authoredRhythm) item.rhythm_text = authoredRhythm.slice(0, textEnd(authoredRhythm, 500));
     item.rank = items.filter(i => i.kind === "habit").length + 1;
     item.rank_source = "saved_order";
@@ -219,16 +218,16 @@ export function projectGraph(snapshot: GraphSnapshot): ContextGraph {
     }
     add(item);
   }
+  // A why is one native objectives row. Its date chooses the visible kind.
+  const whys = (snapshot.objectives ?? []).filter(row => !["achieved", "abandoned", "converted"].includes(string(row.status)));
   for (const [kind, records] of [
-    ["objective", snapshot.objectives], ["repulsion", snapshot.repulsions],
-    ["vision", snapshot.visions], ["wisdom", snapshot.wisdom],
+    ["objective", whys.filter(row => row.target_at !== null && row.target_at !== undefined)],
+    ["vision", whys.filter(row => row.target_at === null || row.target_at === undefined)
+      .filter(row => !row.status || row.status === "active")],
+    ["repulsion", snapshot.repulsions?.filter(row => row.active === true)],
+    ["story", snapshot.stories],
   ] as const) {
-    // Archives must not consume the active graph's row budget.
-    const active = records?.filter(row => kind === "objective" ? !["achieved", "abandoned", "converted"].includes(string(row.status))
-      : kind === "repulsion" ? row.active === true : true);
-    for (const row of take(active)) {
-      if (kind === "objective" && ["achieved", "abandoned", "converted"].includes(string(row.status))) continue;
-      if (kind === "repulsion" && row.active !== true) continue;
+    for (const row of take(records)) {
       // bigint may arrive as a number from PostgREST; unsafe numbers cannot
       // faithfully identify a row and are omitted rather than rounded.
       const ref = typeof row.id === "number" && Number.isSafeInteger(row.id) ? String(row.id) : string(row.id);
@@ -254,26 +253,24 @@ export function projectGraph(snapshot: GraphSnapshot): ContextGraph {
     if (previous) { if (!previous.provenance.includes(provenance)) previous.provenance.push(provenance); }
     else edges.set(id, { from: a, to: b, relation, provenance: [provenance] });
   };
-  for (const step of steps) edge({ kind: "habit", ref: string(step.t) }, { kind: "objective", ref: string(step.o) }, "serves", "totehms.steps.o");
-  for (const row of take(snapshot.objective_habits)) edge({ kind: "habit", ref: string(row.habit_text) }, { kind: "objective", ref: string(row.objective_id) }, "serves", "objective_habits");
+  const whyRef = (value: unknown): ElementRef => {
+    const ref = string(value);
+    return { kind: byKey.has(elementKey({ kind: "vision", ref })) ? "vision" : "objective", ref };
+  };
+  for (const habit of habits) edge({ kind: "habit", ref: string(habit.t) }, whyRef(habit.o), "serves", "totehms.habits.o");
+  for (const row of take(snapshot.objective_habits)) edge({ kind: "habit", ref: string(row.habit_text) }, whyRef(row.objective_id), "serves", "objective_habits");
   const repRef = (v: unknown) => typeof v === "number" && Number.isSafeInteger(v) ? String(v) : string(v);
   for (const row of take(snapshot.repulsions)) edge({ kind: "repulsion", ref: repRef(row.id) }, { kind: "habit", ref: string(row.habit_text) }, "instead", "repulsions.habit_text");
   for (const row of take(snapshot.repulsion_habits)) edge({ kind: "repulsion", ref: repRef(row.repulsion_id) }, { kind: "habit", ref: string(row.habit_text) }, "instead", "repulsion_habits");
-  for (const row of take(snapshot.objective_visions)) edge({ kind: "objective", ref: string(row.objective_id) }, { kind: "vision", ref: string(row.vision_id) }, "towards", "objective_visions");
-  for (const row of take(snapshot.repulsion_teachings)) edge({ kind: "wisdom", ref: string(row.wisdom_id) }, { kind: "repulsion", ref: repRef(row.repulsion_id) }, "learned_from", "repulsion_teachings");
-  for (const row of take(snapshot.teaching_objectives)) edge({ kind: "wisdom", ref: string(row.wisdom_id) }, { kind: "objective", ref: string(row.objective_id) }, "informs", "teaching_objectives");
+  for (const row of take(snapshot.repulsion_stories)) edge({ kind: "story", ref: string(row.story_id) }, { kind: "repulsion", ref: repRef(row.repulsion_id) }, "learned_from", "repulsion_stories");
+  for (const row of take(snapshot.story_objectives)) edge({ kind: "story", ref: string(row.story_id) }, whyRef(row.objective_id), "informs", "story_objectives");
   const list = [...edges.values()];
   const habitsFor = (item: ContextItem): ContextItem[] => {
     if (item.kind === "habit") return [item];
-    const direct = item.kind === "objective" ? list.filter((e) => e.relation === "serves" && e.to === item.key).map((e) => e.from)
+    const direct = item.kind === "objective" || item.kind === "vision" ? list.filter((e) => e.relation === "serves" && e.to === item.key).map((e) => e.from)
       : item.kind === "repulsion" ? list.filter((e) => e.relation === "instead" && e.from === item.key).map((e) => e.to) : [];
-    if (item.kind === "vision") {
-      for (const e of list.filter((e) => e.relation === "towards" && e.to === item.key)) {
-        for (const h of list.filter((h) => h.relation === "serves" && h.to === e.from)) direct.push(h.from);
-      }
-    }
-    // Match UI inheritance, which follows Repulsions, not teaching_objectives.
-    if (item.kind === "wisdom") {
+    // Match UI inheritance, which follows Repulsions, not story_objectives.
+    if (item.kind === "story") {
       for (const e of list.filter((e) => e.relation === "learned_from" && e.from === item.key)) {
         for (const h of list.filter((h) => h.relation === "instead" && h.from === e.to)) direct.push(h.to);
       }
@@ -331,7 +328,7 @@ export function projectContext(graph: ContextGraph, options: ContextOptions): Co
   const excluded = new Set((options.exclude ?? []).map(elementKey));
   const byKey = new Map(graph.items.map((item) => [item.key, item]));
   const priority = (item: ContextItem): number => options.purpose === "replacement" ? (item.kind === "repulsion" ? 4 : item.kind === "habit" ? 2 : 0)
-    : options.purpose === "direction" ? (item.kind === "objective" ? 4 : item.kind === "vision" ? 3 : item.kind === "wisdom" ? 1 : 0)
+    : options.purpose === "direction" ? (item.kind === "objective" ? 4 : item.kind === "vision" ? 3 : item.kind === "story" ? 1 : 0)
     : (item.kind === "habit" ? 4 : item.kind === "objective" ? 2 : 0);
   const ranked = graph.items.map((item) => {
     const matches = terms.filter(term => [item.text, item.where ?? "", item.rhythm_text ?? "", item.obstacle ?? ""].some(value => matchesTerm(value, term))).length;
@@ -361,12 +358,11 @@ export function projectContext(graph: ContextGraph, options: ContextOptions): Co
     const gaps: NonNullable<ContextResult["review"]>["gaps"] = [];
     if (!graph.truncated) for (const kind of ["objective", "repulsion", "vision", "habit"] as ElementKind[]) {
       for (const { item } of eligible.filter(r => r.item.kind === kind)) {
-        const linked = kind === "objective" ? graph.edges.some(e => e.relation === "serves" && e.to === item.key)
+        const linked = kind === "objective" || kind === "vision" ? graph.edges.some(e => e.relation === "serves" && e.to === item.key)
           : kind === "repulsion" ? graph.edges.some(e => e.relation === "instead" && e.from === item.key)
-          : kind === "vision" ? graph.edges.some(e => e.relation === "towards" && e.to === item.key)
           : graph.edges.some(e => e.relation === "serves" && e.from === item.key);
         if (!linked) gaps.push({ element: { kind: item.kind, ref: item.ref },
-          missing: kind === "vision" || kind === "habit" ? "objective" : "habit", url: item.url ?? elementURL(item) });
+          missing: kind === "habit" ? "objective_or_vision" : "habit", url: item.url ?? elementURL(item) });
       }
     }
     review = { complete: !graph.truncated, counts, gaps: gaps.slice(0, limit), more_gaps: gaps.length > limit };
@@ -386,7 +382,7 @@ export function projectContext(graph: ContextGraph, options: ContextOptions): Co
       : eligible.slice(0, Math.min(2, limit)).map(r => r.item);
     if (seeds.length) selection = selectedIntentions.length ? "intentions" : "ranked";
   }
-  // Store shortest recorded paths, up to the full five-view chain. A path's
+  // Store shortest recorded paths through the native graph. A path's
   // intermediates must fit too: never return a vision detached from its why.
   function pathsFrom(seed: ContextItem) {
     const paths = new Map<string, string[]>([[seed.key, [seed.key]]]);
@@ -415,9 +411,9 @@ export function projectContext(graph: ContextGraph, options: ContextOptions): Co
     for (const key of paths.keys()) candidates.add(key);
     if (!addPath([seed.key])) continue;
     const kindOrder: ElementKind[] = options.purpose === "replacement"
-      ? ["habit", "wisdom", "objective", "vision", "repulsion"]
-      : options.purpose === "direction" ? ["vision", "habit", "repulsion", "wisdom", "objective"]
-      : ["objective", "vision", "repulsion", "wisdom", "habit"];
+      ? ["habit", "story", "objective", "vision", "repulsion"]
+      : options.purpose === "direction" ? ["vision", "habit", "repulsion", "story", "objective"]
+      : ["objective", "vision", "repulsion", "story", "habit"];
     for (const kind of kindOrder) {
       if ([...chosen.values()].some(i => i.kind === kind)) continue;
       const path = [...paths.values()].filter(p => byKey.get(p.at(-1)!)?.kind === kind)
@@ -450,10 +446,13 @@ export function projectContext(graph: ContextGraph, options: ContextOptions): Co
   };
 }
 
-async function ownerRows(client: ReadClient, uid: string, table: string, columns: string, refs?: string[]): Promise<{ data: Row[]; truncated: boolean }> {
+async function ownerRows(client: ReadClient, uid: string, table: string, columns: string, refs?: string[], kind?: "objective" | "vision"): Promise<{ data: Row[]; truncated: boolean }> {
   let query = client.from(table).select(columns).eq("user_id", uid);
   if (refs?.length) query = query.in("id", refs);
-  if (table === "objectives") query = query.or("status.is.null,status.not.in.(achieved,abandoned,converted)");
+  if (table === "objectives") {
+    query = query.or(kind === "vision" ? "status.is.null,status.eq.active" : "status.is.null,status.not.in.(achieved,abandoned,converted)");
+    query = kind === "vision" ? query.is("target_at", null) : query.not("target_at", "is", null);
+  }
   if (table === "repulsions") query = query.eq("active", true);
   const result = await query.limit(MAX_ROWS + 1);
   if (result.error) throw new ContextReadError("read_failed");
@@ -463,22 +462,29 @@ async function ownerRows(client: ReadClient, uid: string, table: string, columns
 
 async function loadGraph(client: ReadClient, uid: string, focus?: ElementRef): Promise<ContextGraph> {
   validateOwner(uid);
-  const tables = [
-    ["totehms", "steps"], ["objectives", "id,text,status,target_at"],
+  // The two why views read one native table, with an independent bound for
+  // each date partition so one category cannot hide the other's saved choices.
+  const sources: { slot: string; table: string; columns: string; kind?: "objective" | "vision" }[] = [
+    { slot: "totehms", table: "totehms", columns: "habits" },
+    { slot: "objectives", table: "objectives", columns: "id,text,status,target_at,importance", kind: "objective" },
+    { slot: "visions", table: "objectives", columns: "id,text,status,target_at,importance", kind: "vision" },
     // Cast bigint IDs in PostgREST output, before JSON parsing can round them.
-    ["repulsions", "id::text,repulsion,obstacle,habit_text,active"], ["visions", "id,text,importance"],
-    ["wisdom", "id,text,importance"], ["objective_habits", "objective_id,habit_text"],
-    ["repulsion_habits", "repulsion_id::text,habit_text"], ["objective_visions", "objective_id,vision_id"],
-    ["repulsion_teachings", "repulsion_id::text,wisdom_id"], ["teaching_objectives", "wisdom_id,objective_id"],
-    ["habit_spots", "habit_text,place"], ["element_orders", "kind,refs"],
+    { slot: "repulsions", table: "repulsions", columns: "id::text,repulsion,obstacle,habit_text,active" },
+    { slot: "stories", table: "stories", columns: "id,text,importance" },
+    { slot: "objective_habits", table: "objective_habits", columns: "objective_id,habit_text" },
+    { slot: "repulsion_habits", table: "repulsion_habits", columns: "repulsion_id::text,habit_text" },
+    { slot: "repulsion_stories", table: "repulsion_stories", columns: "repulsion_id::text,story_id" },
+    { slot: "story_objectives", table: "story_objectives", columns: "story_id,objective_id" },
+    { slot: "habit_spots", table: "habit_spots", columns: "habit_text,place" },
+    { slot: "element_orders", table: "element_orders", columns: "kind,refs" },
   ];
-  const results = await Promise.all(tables.map(([table, columns]) => ownerRows(client, uid, table, columns)));
+  const results = await Promise.all(sources.map(source => ownerRows(client, uid, source.table, source.columns, undefined, source.kind)));
   // A physical row cap must not hide the member's first saved choices. Bring at
   // most MAX_ITEMS priority refs plus an exact focus into each already bounded view.
-  // Every supplemental query uses the same owner and active-row filters.
-  const orders = results[tables.findIndex(([name]) => name === "element_orders")].data;
-  await Promise.all(([['objective','objectives'],['repulsion','repulsions'],['vision','visions'],['wisdom','wisdom']] as const).map(async ([kind,table]) => {
-    const index = tables.findIndex(([name]) => name === table), current = results[index];
+  // Every supplemental query uses the same owner, date and active-row filters.
+  const orders = results[sources.findIndex(source => source.slot === "element_orders")].data;
+  await Promise.all(([["objective", "objectives"], ["repulsion", "repulsions"], ["vision", "visions"], ["story", "stories"]] as const).map(async ([kind, slot]) => {
+    const index = sources.findIndex(source => source.slot === slot), current = results[index], source = sources[index];
     const saved = orders.find(row => row.kind === kind)?.refs;
     const head = Array.isArray(saved) ? saved.slice(0, MAX_ITEMS) : [];
     const wanted = [...new Set([...(focus?.kind === kind ? [focus.ref] : []), ...head]
@@ -486,15 +492,16 @@ async function loadGraph(client: ReadClient, uid: string, focus?: ElementRef): P
     const known = new Set(current.data.map(row => String(row.id)));
     const missing = wanted.filter(ref => !known.has(ref));
     if (!missing.length) return;
-    const extra = await ownerRows(client, uid, table, tables[index][1], missing);
+    const extra = await ownerRows(client, uid, source.table, source.columns, missing, source.kind);
     const seen = new Set<string>();
     const combined = [...extra.data, ...current.data].filter(row => { const ref = String(row.id); if(seen.has(ref))return false; seen.add(ref);return true; });
     results[index] = {data:combined.slice(0,MAX_ROWS),truncated:current.truncated || extra.truncated || combined.length>MAX_ROWS};
   }));
-  const snapshot: GraphSnapshot = { truncated: results.some((r) => r.truncated) };
-  tables.forEach(([table], index) => {
-    if (table === "totehms") snapshot.steps = Array.isArray(results[index].data[0]?.steps) ? results[index].data[0].steps as unknown[] : [];
-    else (snapshot as Record<string, unknown>)[table] = results[index].data;
+  const snapshot: GraphSnapshot = { truncated: results.some(result => result.truncated) };
+  sources.forEach((source, index) => {
+    if (source.slot === "totehms") snapshot.habits = Array.isArray(results[index].data[0]?.habits) ? results[index].data[0].habits as unknown[] : [];
+    else if (source.table === "objectives") snapshot.objectives = [...(snapshot.objectives ?? []), ...results[index].data];
+    else (snapshot as Record<string, unknown>)[source.slot] = results[index].data;
   });
   return projectGraph(snapshot);
 }
@@ -580,7 +587,7 @@ export async function getMediaMetadata(client: ReadClient, uid: string, focus: E
   if (!validElementRef(focus)) throw new ContextReadError("invalid_request");
   const exists = await retrieveElement(client, uid, focus, 1);
   if (!exists.items.length) return { items: [], truncated: false, element_available: false };
-  const letters: Record<ElementKind, string> = { habit: "h", objective: "o", repulsion: "r", vision: "v", wisdom: "w" };
+  const letters: Record<ElementKind, string> = { habit: "h", objective: "o", repulsion: "r", vision: "v", story: "w" };
   const limit = cap(options.limit, 4);
   const result = await client.from("element_media").select("id,kind,ref,mime,name,bytes,created_at")
     .eq("user_id", uid).eq("kind", letters[focus.kind]).eq("ref", focus.ref).is("removed_at", null)
@@ -589,7 +596,7 @@ export async function getMediaMetadata(client: ReadClient, uid: string, focus: E
   const all = rows(result.data);
   let vision_image_available = false;
   if (focus.kind === "vision") {
-    const image = await client.from("visions").select("id,image").eq("user_id", uid).eq("id", focus.ref).limit(1);
+    const image = await client.from("objectives").select("id,image").eq("user_id", uid).eq("id", focus.ref).is("target_at", null).or("status.is.null,status.eq.active").limit(1);
     if (image.error) throw new ContextReadError("read_failed");
     vision_image_available = rows(image.data).some(row => typeof row.image === "string" && !!row.image);
   }

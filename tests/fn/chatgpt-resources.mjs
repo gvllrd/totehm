@@ -6,8 +6,8 @@ const id=n=>`00000000-0000-4000-8000-${String(n).padStart(12,'0')}`;
 let checks=0;const check=(value,message)=>{assert(value,message);checks++;};
 const reads=[],rpc=[];let failedTable=null,revoked=false,hidden=false;
 const now=Date.now();
-const tables={totehms:[{user_id:A,steps:['Draw','Read','Run','Sing'].map(t=>({t,is:['express']}))}],
- objectives:[{user_id:A,id:id(1),text:'Book',status:'active'}],repulsions:[],visions:[],wisdom:[],objective_habits:[],repulsion_habits:[],objective_visions:[],repulsion_teachings:[],teaching_objectives:[],habit_spots:[],element_orders:[],
+const tables={totehms:[{user_id:A,habits:['Draw','Read','Run','Sing'].map(t=>({t,is:['express']}))}],
+ objectives:[{user_id:A,id:id(1),text:'Book',status:'active',target_at:'2030-01-01'}],repulsions:[],stories:[],objective_habits:[],repulsion_habits:[],repulsion_stories:[],story_objectives:[],habit_spots:[],element_orders:[],
  element_media:[...Array.from({length:3},(_,n)=>({user_id:A,id:id(10+n),kind:'h',ref:'Draw',name:'illustration '+n,mime:'image/png',bytes:12,created_at:new Date(now-n).toISOString(),removed_at:null,path:'PRIVATE-PATH',signed_url:'PRIVATE-URL'})),
  {user_id:A,id:id(20),kind:'h',ref:'Draw',mime:'image/png',removed_at:'2026-01-01',name:'REMOVED'},
  {user_id:A,id:id(21),kind:'h',ref:'Read',mime:'image/png',removed_at:null,name:'UNSELECTED'},
@@ -18,9 +18,9 @@ const tables={totehms:[{user_id:A,steps:['Draw','Read','Run','Sing'].map(t=>({t,
  {user_id:B,spot_id:id(33),habit:'Draw',starts_at:new Date(now+86400000).toISOString(),duration_min:60,status:'published',place:'OTHER-OWNER'},
  {user_id:A,spot_id:id(34),habit:'Draw',starts_at:new Date(now+86400000).toISOString(),duration_min:60,status:'cancelled',place:'CANCELLED'}]};
 for(const row of tables.spot_plans)row.format='spot';
-const db={from(table){const filters=[];let n=Infinity,sort=null;const q={
- select(){return q},eq(k,v){filters.push(row=>row[k]===v);return q},is(k,v){filters.push(row=>row[k]===v);return q},
- or(){filters.push(row=>!['achieved','abandoned','converted'].includes(row.status));return q},in(k,v){filters.push(row=>v.includes(row[k]));return q},
+const db={from(table){assert(!['visions','wisdom','repulsion_teachings','teaching_objectives','objective_visions'].includes(table),'Resource existence checks read native tables');const filters=[];let n=Infinity,sort=null;const q={
+ select(){return q},eq(k,v){filters.push(row=>row[k]===v);return q},is(k,v){filters.push(row=>row[k]===v);return q},not(k,op,v){assert.equal(op,'is');filters.push(row=>row[k]!==v);return q},
+ or(value){assert(['status.is.null,status.not.in.(achieved,abandoned,converted)','status.is.null,status.eq.active'].includes(value));filters.push(row=>value==='status.is.null,status.eq.active'?row.status==null||row.status==='active':!['achieved','abandoned','converted'].includes(row.status));return q},in(k,v){filters.push(row=>v.includes(row[k]));return q},
  lte(k,v){filters.push(row=>row[k]<=v);return q},gt(k,v){filters.push(row=>row[k]>v);return q},limit(value){n=value;return q},
  order(k,{ascending=true}={}){sort=[k,ascending];return q},
  then(ok,no){reads.push(table);const rows=structuredClone(tables[table]??[]).filter(row=>filters.every(f=>f(row)));
@@ -28,7 +28,7 @@ const db={from(table){const filters=[];let n=Infinity,sort=null;const q={
  return Promise.resolve(table===failedTable?{data:null,error:{message:'unavailable'}}:{data:rows.slice(0,n),error:null}).then(ok,no);}};return q;},
  async rpc(name,args){rpc.push({name,args});if(revoked)return {data:{ok:false,why:'unavailable'},error:null};
  if(name==='chatgpt_member_orders')return {data:{ok:true,orders:{}},error:null};
- if(args.p_action==='member')return {data:{ok:true,pseudo:args.p_pseudo,steps:hidden?[]:[{t:'Draw',is:['express']}]},error:null};
+ if(args.p_action==='member')return {data:{ok:true,pseudo:args.p_pseudo,habits:hidden?[]:[{t:'Draw',is:['express']}]},error:null};
  if(args.p_action==='media')return {data:{ok:true,items:[{id:id(args.p_pseudo==='artist'?40:41),kind:'h',ref:'Draw',mime:'video/mp4',created_at:'2026-11-10',path:'PRIVATE-PATH'}]},error:null};
  if(args.p_action==='spots')return {data:{ok:true,items:[{id:id(args.p_pseudo==='artist'?50:51),creator:args.p_pseudo,habit:'Draw',habit_box:{name:'Draw'},city:'Lisbon',state:args.p_period==='future'?'will':'now',exact:{place:args.p_pseudo+' studio',lat:38.123456},photo:'PRIVATE-PATH'}]},error:null};
  throw Error('unexpected RPC');}};
@@ -74,8 +74,8 @@ check(!rpc.slice(start).some(q=>q.args.p_action==='spots'),'After a refused memb
 hidden=true;start=rpc.length;const masked=await enrichMemberResources(db,'validated-grant','artist',memberResult,true);hidden=false;
 check(masked.resources.elements[0].available===false&&!masked.resources.complete,'An element made private after selection becomes unavailable');
 check(!rpc.slice(start).some(q=>['media','spots'].includes(q.args.p_action)),'A masked creator element cannot expose residual media or spots');
-const savedSteps=tables.totehms[0].steps;tables.totehms[0].steps=[];
-const ownerStart=reads.length,removed=await enrichPersonalResources(db,A,result,true);tables.totehms[0].steps=savedSteps;
+const savedHabits=tables.totehms[0].habits;tables.totehms[0].habits=[];
+const ownerStart=reads.length,removed=await enrichPersonalResources(db,A,result,true);tables.totehms[0].habits=savedHabits;
 check(removed.resources.elements[0].available===false&&!removed.resources.complete,'A removed personal element is not presented as an empty attachment collection');
 check(!reads.slice(ownerStart).includes('element_media')&&!reads.slice(ownerStart).includes('spot_plans'),'Removed personal choices do not trigger residual attachment or venue reads');
 // More items than the per-member budget are disclosed; invalid duplicates do not spend it.

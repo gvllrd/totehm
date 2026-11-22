@@ -9,7 +9,7 @@ const check=(v,msg)=>{assert(v,msg);checks++;};
 const ORIGIN='https://www.totehm.com',BASE=ORIGIN+'/functions/v1/chatgpt-connector',CALLBACK='https://chatgpt.example.test/oauth/callback',RESOURCE=ORIGIN+'/mcp';
 const A='11111111-1111-4111-8111-111111111111',B='22222222-2222-4222-8222-222222222222',O='33333333-3333-4333-8333-333333333333';
 const ownerReads=[];
-const data={totehms:[{user_id:A,steps:[{t:'Draw ten minutes',is:['express'],f:'every_evening'}]},{user_id:B,steps:[{t:'Private other member habit'}]}],objectives:[{user_id:A,id:O,text:'Finish my sketchbook',status:'active',target_at:null}],objective_habits:[{user_id:A,objective_id:O,habit_text:'Draw ten minutes'}],repulsions:[],visions:[],wisdom:[],repulsion_habits:[],objective_visions:[],repulsion_teachings:[],teaching_objectives:[],habit_spots:[],spot_plans:[],intention_music:[],element_media:[]};
+const data={totehms:[{user_id:A,habits:[{t:'Draw ten minutes',is:['express'],f:'every_evening'}]},{user_id:B,habits:[{t:'Private other member habit'}]}],objectives:[{user_id:A,id:O,text:'Finish my sketchbook',status:'active',target_at:'2099-01-01T00:00:00Z'}],objective_habits:[{user_id:A,objective_id:O,habit_text:'Draw ten minutes'}],repulsions:[],stories:[],repulsion_habits:[],repulsion_stories:[],story_objectives:[],habit_spots:[],spot_plans:[],intention_music:[],element_media:[]};
 const tableName=n=>{assert(/^[a-z_]+$/.test(n));return 'public.'+n;};
 class Query{
  constructor(table){this.table=table;this.filters=[];this.n=Infinity;}
@@ -17,7 +17,8 @@ class Query{
  insert(value){this.value=value;return this;}
  eq(k,v){this.filters.push([k,x=>x===v]);return this;}
  is(k,v){this.filters.push([k,x=>x===v]);return this;}
- or(v){assert.equal(v,'status.is.null,status.not.in.(achieved,abandoned,converted)');this.filters.push(['status',x=>!['achieved','abandoned','converted'].includes(x)]);return this;}
+ not(k,operator,v){assert.equal(operator,'is');assert.equal(v,null);this.filters.push([k,x=>x!==null&&x!==undefined]);return this;}
+ or(v){assert(['status.is.null,status.not.in.(achieved,abandoned,converted)','status.is.null,status.eq.active'].includes(v));this.filters.push(['status',x=>v==='status.is.null,status.eq.active'?x==null||x==='active':!['achieved','abandoned','converted'].includes(x)]);return this;}
  lte(k,v){this.filters.push([k,x=>x<=v]);return this;}
  gt(k,v){this.filters.push([k,x=>x>v]);return this;}
  gte(k,v){this.filters.push([k,x=>x>=v]);return this;}
@@ -89,6 +90,8 @@ try{
  r=await send('/mcp',{method:'POST',token:access,headers:mcpHeaders,body:{jsonrpc:'2.0',id:2,method:'tools/list'}});check(r.data.result.tools.length===10&&r.data.result.tools.every(t=>t.annotations.readOnlyHint),'Ten read-only tools, no publish/write tools');
  r=await tool(access,'get_context',{query:'draw',purpose:'action',limit:6});const context=r.data.result.structuredContent;check(context.items.some(x=>x.text==='Draw ten minutes'),'Tool returns the authenticated owner’s Habit');check(context.edges.some(x=>x.relation==='serves'),'Tool preserves recorded relationship provenance');check(!JSON.stringify(context).includes('Private other member'),'No other member data returned');
  check(new URL(context.items[0].url).hash.includes('element=habit'),'MCP results link the exact original element');
+ check(context.items.some(i=>i.kind==='objective'&&i.ref===O&&i.target_at==='2099-01-01T00:00:00Z'),'A dated native why is returned in the objective view');
+ check(!ownerReads.some(t=>['visions','wisdom','objective_visions','repulsion_teachings','teaching_objectives'].includes(t)),'Owner context reads native sources without retired bridge tables');
  check(practiceReads.length===0,'Ordinary context does not read practice history automatically');
  const mediaID='44444444-4444-4444-8444-444444444444',spotID='55555555-5555-4555-8555-555555555555';
  data.element_media=[{user_id:A,id:mediaID,kind:'h',ref:'Draw ten minutes',mime:'image/png',name:'My sketch reference',bytes:123,created_at:'2026-11-01',removed_at:null,path:'NEVER_PRIVATE_STORAGE_PATH'},
@@ -166,11 +169,14 @@ try{
  check(r.data.result.structuredContent.review.complete,'Explicit system review is available through the existing personal tool');
  r=await tool(access,'get_context',{query:'another option',purpose:'action',search_terms:[],exclude:[{kind:'habit',ref:'Draw ten minutes'}],kinds:['habit']});
  check(r.data.result.structuredContent.items.length===0,'Declined starting elements are not silently recommended again');
- data.wisdom=[{user_id:A,id:O,text:'My experience. '.repeat(50)+'The decisive ending.'}];
- r=await tool(access,'read_element',{kind:'wisdom',ref:O});
+ data.stories=[{user_id:A,id:O,text:'My experience. '.repeat(50)+'The decisive ending.'}];
+ r=await tool(access,'read_element',{kind:'story',ref:O});
  check(r.data.result.structuredContent.items[0].text.endsWith('The decisive ending.'),'HTTP exact read preserves a long narrative ending');
+ check(r.data.result.structuredContent.items[0].kind==='story'&&new URL(r.data.result.structuredContent.items[0].url).hash.includes('element=story'),'Native narrative results and source links use story');
+ r=await tool(access,'read_element',{kind:'wisdom',ref:O});
+ check(r.data.result.structuredContent.items[0].kind==='story'&&r.data.result.structuredContent.items[0].text.endsWith('The decisive ending.'),'A legacy incoming narrative kind is normalized to the native story response');
  const longHabit='h'.repeat(3999)+'🌍習慣 '.repeat(300)+'An exact final detail.';
- data.totehms[0].steps.push({t:longHabit,is:['focus'],f:'daily'});
+ data.totehms[0].habits.push({t:longHabit,is:['focus'],f:'daily'});
  let longRestored='',longOffset=0;
  do{
   r=await tool(access,'read_element',{kind:'habit',ref:longHabit,text_offset:longOffset});
@@ -187,10 +193,10 @@ try{
  const readsBeforeOversized=practiceReads.length;
  r=await tool(access,'read_element',{kind:'habit',ref:'x'.repeat(17000),include_tracking:true});
  check(r.status===400&&r.data.error?.code===-32600&&practiceReads.length===readsBeforeOversized,'The existing global HTTP body bound stays enforced before any practice read');
- data.totehms[0].steps.pop();
+ data.totehms[0].habits.pop();
 
  for(const invalid of [{text_offset:-1},{text_offset:'4000'},{text_offset:64001}]){
-  r=await tool(access,'read_element',{kind:'wisdom',ref:O,...invalid});check(r.data.error?.code===-32602,'Invalid continuation offsets are rejected');
+  r=await tool(access,'read_element',{kind:'story',ref:O,...invalid});check(r.data.error?.code===-32602,'Invalid continuation offsets are rejected');
  }
  r=await tool(access,'get_context',{query:'review',purpose:'action',review:true});check(r.data.error?.code===-32602,'A review must be explicitly requested as inspection');
  r=await tool(access,'list_club_spots',{period:'future',intentions:['productive']});check(r.data.error?.code===-32602,'Unknown Club intentions cannot become a broader filter');

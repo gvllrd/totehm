@@ -38,11 +38,12 @@ export function preparationText(context:ContextResult,habit:string):string{
  const root=context.items.find(i=>i.kind==='habit'&&i.ref===habit);
  if(!root)return 'This Habit is no longer available. Open your TOTEHM to choose a current step.';
  const byKey=new Map(context.items.map(i=>[i.key,i]));
- const select=(keys:string[])=>[...new Set(keys)].map(k=>byKey.get(k)).filter((x):x is ContextItem=>!!x)
+ const select=(keys:string[],kind?:ContextItem['kind'])=>[...new Set(keys)].map(k=>byKey.get(k)).filter((x):x is ContextItem=>!!x&&(!kind||x.kind===kind))
   .sort((a,b)=>(a.rank??Infinity)-(b.rank??Infinity)).slice(0,2);
  const triggers=select(context.edges.filter(e=>e.relation==='instead'&&e.to===root.key).map(e=>e.from));
- const goals=select(context.edges.filter(e=>e.relation==='serves'&&e.from===root.key).map(e=>e.to));
- const visions=select(context.edges.filter(e=>e.relation==='towards'&&goals.some(o=>o.key===e.from)).map(e=>e.to));
+ const whys=context.edges.filter(e=>e.relation==='serves'&&e.from===root.key).map(e=>e.to);
+ const goals=select(whys,'objective');
+ const visions=select(whys,'vision');
  const stories=select(context.edges.filter(e=>e.relation==='learned_from'&&triggers.some(r=>r.key===e.to)).map(e=>e.from));
  const lines=['My next step','Your recorded links · excerpts'];
  const group=(title:string,items:ContextItem[])=>{if(items.length)lines.push(title,items.map(i=>'“'+excerpt(i.text)+'”').join('\n'));};
