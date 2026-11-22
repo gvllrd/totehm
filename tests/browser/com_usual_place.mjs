@@ -42,7 +42,7 @@ async function enterMember(x){
  await x.pg.click('#lv-m-members');await x.pg.waitForSelector('#mb-q:visible');
  await x.pg.fill('#mb-q','artist');await x.pg.keyboard.press('Enter');
  await x.pg.waitForSelector('[data-mb="open"]:enabled');await x.pg.locator('[data-mb="open"]').click();
- await x.pg.waitForFunction(()=>document.body.classList.contains('lv-membre')&&!document.body.classList.contains('mb-cherche')&&!window.__totehm_lv().bouge);
+ await x.pg.waitForFunction(()=>document.body.classList.contains('lv-membre')&&!document.body.classList.contains('gate')&&!document.body.classList.contains('is-coin')&&window.__totehm_piece?.().recto&&!window.__totehm_lv().bouge);
 }
 try{
  for(const width of [390,1280]){

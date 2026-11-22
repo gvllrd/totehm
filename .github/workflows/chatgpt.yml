@@ -49,18 +49,30 @@ jobs:
       - run: tests/browser/node_modules/.bin/esbuild tests/browser/entry.js --bundle --format=esm --platform=browser --outfile=tests/browser/supabase.mjs
       - run: mkdir -p work
       - run: curl --fail --silent --show-error --output work/gpt.png https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/public/com/gpt.png
-      - run: node tests/browser/com_chatgpt.mjs work/chatgpt-view
-      - run: node tests/browser/chatgpt_connect.mjs work/chatgpt-connection
-      - run: node tests/browser/com_orders.mjs work/chatgpt-orders
-      - run: node tests/browser/com_element_link.mjs work/chatgpt-elements
-      - run: node tests/browser/com_telegram_practice.mjs work/chatgpt-practice
-      - run: node tests/browser/com_intitules.mjs work
-      - run: node tests/browser/com_habit_rhythm.mjs work/chatgpt-rhythm
-      - run: node tests/browser/com_usual_place.mjs work/chatgpt-usual-place
-      - run: node tests/browser/com_tracking.mjs work/chatgpt-tracking
-      - run: node tests/browser/com_verso_dashboard.mjs work/chatgpt-dashboard
-      - run: node tests/browser/com_member_menu.mjs work/chatgpt-menu
-      - run: node tests/browser/com_verso_loupe.mjs work/chatgpt-loupe
+      - if: ${{ !cancelled() }}
+        run: node tests/browser/com_chatgpt.mjs work/chatgpt-view
+      - if: ${{ !cancelled() }}
+        run: node tests/browser/chatgpt_connect.mjs work/chatgpt-connection
+      - if: ${{ !cancelled() }}
+        run: node tests/browser/com_orders.mjs work/chatgpt-orders
+      - if: ${{ !cancelled() }}
+        run: node tests/browser/com_element_link.mjs work/chatgpt-elements
+      - if: ${{ !cancelled() }}
+        run: node tests/browser/com_telegram_practice.mjs work/chatgpt-practice
+      - if: ${{ !cancelled() }}
+        run: node tests/browser/com_intitules.mjs work
+      - if: ${{ !cancelled() }}
+        run: node tests/browser/com_habit_rhythm.mjs work/chatgpt-rhythm
+      - if: ${{ !cancelled() }}
+        run: node tests/browser/com_usual_place.mjs work/chatgpt-usual-place
+      - if: ${{ !cancelled() }}
+        run: node tests/browser/com_tracking.mjs work/chatgpt-tracking
+      - if: ${{ !cancelled() }}
+        run: node tests/browser/com_verso_dashboard.mjs work/chatgpt-dashboard
+      - if: ${{ !cancelled() }}
+        run: node tests/browser/com_member_menu.mjs work/chatgpt-menu
+      - if: ${{ !cancelled() }}
+        run: node tests/browser/com_verso_loupe.mjs work/chatgpt-loupe
       - uses: actions/upload-artifact@v4
         if: always()
         with:
