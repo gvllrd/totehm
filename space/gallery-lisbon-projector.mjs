@@ -81,9 +81,12 @@ export function createLisbonSignRays(parent,signs){
     float fall=1.0-smoothstep(0.8,1.0,depth);
     float winding=atan(vLayer.z,vLayer.y)*2.0+depth*22.0-time*0.53;
     float curl=sin(winding)+0.10*sin(depth*33.0-time*0.31);
-    float contour=smoothstep(0.82,0.99,curl)*smoothstep(0.28,0.62,depth)*fall*vLayer.w;
-    float density=(0.025+0.095*skin)*rise*fall+0.11*contour;
-    vec3 ink=mix(vec3(0.004,0.006,0.010),vec3(0.025,0.034,0.047),contour*.76+(1.0-skin)*.13);
+    float hold=smoothstep(0.23,0.58,depth)*fall*vLayer.w;
+    float contour=smoothstep(0.73,0.98,curl)*hold;
+    float rim=(1.0-smoothstep(0.05,0.4,facing))*hold;
+    float density=(0.025+0.095*skin)*rise*fall+0.158*contour+0.037*rim;
+    float reflected=clamp(.76*contour+.31*rim+(1.0-skin)*.08,0.0,1.0);
+    vec3 ink=mix(vec3(0.004,0.006,0.010),vec3(0.084,0.108,0.139),reflected);
     gl_FragColor=vec4(ink,density);
    }
   `

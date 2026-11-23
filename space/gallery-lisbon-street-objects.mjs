@@ -16,6 +16,11 @@ const sizes={
  crosswalk:[3.55,'crosswalk-paint',0],stop:[.87,'road-sign',.028]
 };
 const scaleOverrides={Heli:1.24,crosswalk:1.24,destination:1.24,pharma:2.14};
+const exposedPostLength={
+ speed_bump_caution:1.92,crosswalk_caution:1.55,no_entry:2.02,no_parking:1.63,
+ hospital:1.52,parking:1.60,dead_end:1.47,roundabout:1.62,
+ left_or_straight:1.51,no_uturn:1.47,priority:1.78,stop:2.06
+};
 export const LISBON_STREET_OBJECTS=Object.freeze(Object.fromEntries(Object.entries(sizes).map(([id,[width,kind,depth]])=>{
  const scale=scaleOverrides[id]??1.32;
  return [id,Object.freeze({width:width*scale,height:width*scale*(id==='destination'?.57:1),kind,depth:depth*scale,scale})];
@@ -38,9 +43,9 @@ function usePaintAlpha(face,image){
 }
 
 export function createLisbonStreetObject(id,{mobile=false,onChange=()=>{}}={}){
- const [width,kind,depth]=sizes[id];
+ const [width,kind,depth]=sizes[id],{scale}=LISBON_STREET_OBJECTS[id];
  const height=width,ground=kind.endsWith('-paint');
- const group=new T.Group();group.scale.setScalar(LISBON_STREET_OBJECTS[id].scale);
+ const group=new T.Group();group.scale.setScalar(scale);
  group.name='Lisbon street object — '+id;
  group.userData={signId:id,streetObject:true};
  const resources=new Set(),hitTargets=[];
@@ -107,9 +112,17 @@ export function createLisbonStreetObject(id,{mobile=false,onChange=()=>{}}={}){
    pins([[-x,-y],[-x,y],[x,-y],[x,y]],body,.008);
   }
  }else if(!ground){
-  plate(material({color:0xa0a9ae,roughness:.61,metalness:.36}),metal);
-  const post=own(new T.CylinderGeometry(.033,.033,width*.80,mobile?10:16));
-  mesh(post,metal,0,-width*.27,-.075);
+  const panel=plate(material({color:0xa0a9ae,roughness:.61,metalness:.36}),metal);
+  const top=width*.13,bottom=panel.geometry.boundingBox.min.y-exposedPostLength[id]/scale;
+  const steel=material({color:0xa5a8aa,roughness:.63,metalness:.52});
+  const cut=material({color:0x777a78,roughness:.82,metalness:.38});
+  const segments=mobile?10:16,radius=.033,length=top-bottom;
+  const tube=own(new T.CylinderGeometry(radius,radius,length,segments));
+  const post=mesh(tube,[steel,steel,cut],0,(top+bottom)/2,-.075);
+  post.name='Galvanized street post — '+id;post.userData.streetPost=true;
+  // The base still carries the dull band that was set into the street.
+  const band=own(new T.CylinderGeometry(.034,.034,.11/scale,segments,1,true));
+  mesh(band,cut,0,bottom+.055/scale,-.075);
   rearBrackets(width*.22,width*.43,-.066);
   pins([[0,-width*.31],[0,width*.31]]);
  }

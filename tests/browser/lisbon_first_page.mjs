@@ -76,6 +76,15 @@ try{
       });
      };
      const enclosesEveryObject=raysBefore.every(encompasses)&&raysAfter.every(encompasses);
+     const mounted=projection.signs.flatMap(({id,group,hitTargets})=>{
+      const post=hitTargets.find(mesh=>mesh.userData.streetPost);
+      if(!post)return [];
+      const panel=hitTargets[0],base=post.geometry.boundingBox.min.y+post.position.y;
+      return [{id,length:(panel.geometry.boundingBox.min.y-base)*group.scale.y}];
+     });
+     const mountedIds=new Set(mounted.map(({id})=>id));
+     const raisedPosts=mounted.length===12&&mounted.every(({length})=>length>1.4)&&
+      raysAfter.filter(({id})=>mountedIds.has(id)).every(({bounds})=>bounds.every(([,y])=>y>L.groundY+.25));
      const paint=projection.signs.filter(({face})=>face.userData.groundMarking);
      const onPavement=paint.length===2&&paint.every(({face,group})=>group.children.length===1&&Math.abs(face.getWorldPosition(point).y-L.groundY)<.02);
      const paintImage=paint.find(({id})=>id==='crosswalk').face.material.map.image;
@@ -113,7 +122,7 @@ try{
      const restoresAllBodies=visibleVolumes.every(meshes=>meshes.every(rendered))&&projection.diagnostics().beamVisible;
      return {
       world,before,sources:projection.signs.map(({face})=>face.material.map?.image?.src??face.userData.source),
-      volumes:visibleVolumes.map(meshes=>meshes.length),hidesAllBodies,restoresAllBodies,moveEndpoints,enclosesEveryObject,onPavement,transparentGaps,originalColors,magnetic,paintStaysFixed,lensesStayTogether,
+      volumes:visibleVolumes.map(meshes=>meshes.length),hidesAllBodies,restoresAllBodies,moveEndpoints,enclosesEveryObject,onPavement,transparentGaps,originalColors,magnetic,paintStaysFixed,lensesStayTogether,raisedPosts,
       moving:before.some((pose,i)=>Math.hypot(pose.x-moved[i].x,pose.y-moved[i].y)>.01),
       still:JSON.stringify(still)===JSON.stringify(moved)
      };
@@ -122,6 +131,7 @@ try{
    assert.deepEqual(shared.before.map(({id})=>id),LISBON_FRONT_NAMES);
    assert.deepEqual(shared.sources.map(src=>new URL(src,'https://www.totehm.space').pathname),LISBON_FRONT_NAMES.map(id=>'/assets/signs/'+id+'.png'));
    check(shared.world.ready&&shared.world.loaded===22&&shared.world.physicalObjects&&shared.volumes.length===20&&shared.volumes.every(count=>count>0),'Each of the 20 elevated signs includes geometry with thickness at '+viewport.width);
+   check(shared.raisedPosts,'The 12 longer roadside posts are fully lifted off the paving at '+viewport.width);
    check(shared.enclosesEveryObject,'Each dark projection encloses every corner of its mounted object at '+viewport.width);
    check(shared.magnetic&&shared.paintStaysFixed&&shared.lensesStayTogether,'Twenty signs are held in curved fields, the linked signal stays rigid, and both ground marks stay fixed at '+viewport.width);
    check(shared.onPavement&&shared.transparentGaps,'The two road markings are flat decals with transparent ground between white strokes at '+viewport.width);
