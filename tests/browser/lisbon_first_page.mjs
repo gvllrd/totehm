@@ -53,6 +53,8 @@ try{
      camera.position.fromArray(L.entry);camera.lookAt(new Vector3(...L.look));camera.updateMatrixWorld();
      const snapshot=()=>projection.snapshot(camera,innerWidth,innerHeight);
      const before=snapshot(),raysBefore=projection.rayEndpoints();
+     const fields=raysBefore.filter(ray=>ray.held),floorProjections=raysBefore.filter(ray=>!ray.held);
+     const magnetic=fields.length===20&&fields.every(ray=>ray.bend>.09)&&floorProjections.length===2&&floorProjections.every(ray=>ray.bend<.001);
      projector.rotateY(.2);
      projection.update(.1,camera.position,true);
      const moved=snapshot(),raysAfter=projection.rayEndpoints(),point=new Vector3();
@@ -83,6 +85,11 @@ try{
       projection.signs.filter(({id})=>['stop','destination','priority'].includes(id)).every(({face})=>face.material.isMeshBasicMaterial&&!face.material.toneMapped);
      projection.update(.1,camera.position,false);
      const still=snapshot();
+     const floorIds=new Set(['Heli','crosswalk']);
+     const paintStaysFixed=before.every((pose,i)=>!floorIds.has(pose.id)||JSON.stringify(pose)===JSON.stringify(moved[i]));
+     const red=projection.signs.find(({id})=>id==='red_walk').group,green=projection.signs.find(({id})=>id==='green_walk').group;
+     const lensesStayTogether=red.quaternion.dot(green.quaternion)>.999999&&
+      red.position.clone().sub(green.position).distanceTo(new Vector3(0,.66,0).applyQuaternion(green.quaternion))<.001;
      const world=projection.diagnostics();
      const size=new Vector3(),scale=new Vector3();
      const rendered=mesh=>{
@@ -106,7 +113,7 @@ try{
      const restoresAllBodies=visibleVolumes.every(meshes=>meshes.every(rendered))&&projection.diagnostics().beamVisible;
      return {
       world,before,sources:projection.signs.map(({face})=>face.material.map?.image?.src??face.userData.source),
-      volumes:visibleVolumes.map(meshes=>meshes.length),hidesAllBodies,restoresAllBodies,moveEndpoints,enclosesEveryObject,onPavement,transparentGaps,originalColors,
+      volumes:visibleVolumes.map(meshes=>meshes.length),hidesAllBodies,restoresAllBodies,moveEndpoints,enclosesEveryObject,onPavement,transparentGaps,originalColors,magnetic,paintStaysFixed,lensesStayTogether,
       moving:before.some((pose,i)=>Math.hypot(pose.x-moved[i].x,pose.y-moved[i].y)>.01),
       still:JSON.stringify(still)===JSON.stringify(moved)
      };
@@ -116,6 +123,7 @@ try{
    assert.deepEqual(shared.sources.map(src=>new URL(src,'https://www.totehm.space').pathname),LISBON_FRONT_NAMES.map(id=>'/assets/signs/'+id+'.png'));
    check(shared.world.ready&&shared.world.loaded===22&&shared.world.physicalObjects&&shared.volumes.length===20&&shared.volumes.every(count=>count>0),'Each of the 20 elevated signs includes geometry with thickness at '+viewport.width);
    check(shared.enclosesEveryObject,'Each dark projection encloses every corner of its mounted object at '+viewport.width);
+   check(shared.magnetic&&shared.paintStaysFixed&&shared.lensesStayTogether,'Twenty signs are held in curved fields, the linked signal stays rigid, and both ground marks stay fixed at '+viewport.width);
    check(shared.onPavement&&shared.transparentGaps,'The two road markings are flat decals with transparent ground between white strokes at '+viewport.width);
    check(shared.originalColors,'The panels retain their native artwork colors inside the dark projection at '+viewport.width);
    check(shared.hidesAllBodies&&shared.restoresAllBodies&&shared.moveEndpoints,'All beams follow the rotating ports and their actual objects, then hide and restore with them at '+viewport.width);

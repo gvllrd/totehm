@@ -76,6 +76,7 @@ export function createUfoLisbonSigns(parent,{mobile=false,onChange=()=>{},positi
   }
  }
  const hitSet=new Set(pickables),rays=createLisbonSignRays(root,objects);
+ const signalPivot=(placement.green_walk[1]+placement.red_walk[1])/2,signalOffset=new T.Vector3();
 
  function pose(){
   for(const object of objects){
@@ -83,10 +84,15 @@ export function createUfoLisbonSigns(parent,{mobile=false,onChange=()=>{},positi
    if(face.userData.groundMarking){
     group.position.set(x,L.groundY+.008-position[1],z);group.rotation.set(-Math.PI/2,0,yaw);continue;
    }
-   const paired=id==='red_walk'||id==='green_walk',phase=paired?0:index;
-   const drift=Math.sin(time*.37+phase*1.93);
-   group.position.set(x,y+.061*drift,z+.095*Math.sin(time*.28+phase*1.32));
-   group.rotation.set(pitch,yaw+Math.sin(time*.24+phase)*.05,paired?0:drift*.017);
+   const paired=id==='red_walk'||id==='green_walk',phase=paired?0:index*1.83;
+   const size=paired?.58:LISBON_STREET_OBJECTS[id].width;
+   const response=1/(1+.34*size);
+   const lift=Math.sin(time*.57+phase)+.22*Math.sin(time*1.13-phase);
+   const correction=Math.sin(time*.36+phase*1.54);
+   const slide=Math.sin(time*.43-phase*.72);
+   group.rotation.set(pitch+.031*response*correction,yaw+.054*response*slide,.026*response*lift);
+   group.position.set(x+.072*response*slide,(paired?signalPivot:y)+.18*response*lift,z+.13*response*correction);
+   if(paired)group.position.add(signalOffset.set(0,y-signalPivot,0).applyQuaternion(group.quaternion));
    object.update?.(time);
   }
   lastPose=time;
