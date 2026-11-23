@@ -55,11 +55,21 @@ try{
       'what I earn, open or not, my price, where to pay me — read from the server → '+JSON.stringify(dash));
    ok(log.rpc.some(x=>x.name==='creator_dashboard')&&log.rpc.some(x=>x.name==='my_console'),'two reads, in parallel: creator_dashboard + my_console');
    await onglet(pg,'money');
-   await pg.$eval('#mwc-price',e=>{e.value='3600';e.dispatchEvent(new Event('input',{bubbles:true}));});
-   ok(await pg.textContent('#vs-price')==='€36 / year','the price follows the slider live');
+   /* 23/11 (Wah) : « n'importe quel montant », 0 € compris : une saisie libre en euros */
+   ok(await pg.getAttribute('#mwc-price','type')==='number','the price is typed in euros, no slider');
+   await pg.$eval('#mwc-price',e=>{e.value='36';e.dispatchEvent(new Event('input',{bubbles:true}));});
+   ok(await pg.textContent('#vs-price')==='€36 / year','the price follows the typing live');
    await pg.$eval('#mwc-price',e=>e.dispatchEvent(new Event('change',{bubbles:true})));
    await pg.waitForFunction(()=>document.getElementById('mwc-note').textContent==='saved');
-   ok(log.rpc.some(x=>x.name==='monetization_set'&&x.body.p_price_cents===3600&&x.body.p_enabled===null),'releasing the slider saves the price (monetization_set, enabled untouched) — no Save button');
+   ok(log.rpc.some(x=>x.name==='monetization_set'&&x.body.p_price_cents===3600&&x.body.p_enabled===null),'leaving the field saves the price in cents (monetization_set, enabled untouched) — no Save button');
+   for(const [v,c] of [['0',0],['999999',99999900]]){
+     await pg.$eval('#mwc-price',(e,v)=>{e.value=v;e.dispatchEvent(new Event('change',{bubbles:true}));},v);await pg.waitForTimeout(400);
+     ok(log.rpc.some(x=>x.name==='monetization_set'&&x.body.p_price_cents===c),'€'+v+' a year is accepted and sent as '+c+' cents');
+   }
+   const avant=log.rpc.filter(x=>x.name==='monetization_set').length;
+   await pg.$eval('#mwc-price',e=>{e.value='1000000';e.dispatchEvent(new Event('change',{bubbles:true}));});await pg.waitForTimeout(300);
+   ok(log.rpc.filter(x=>x.name==='monetization_set').length===avant&&/€0 to €999,999/.test(await pg.textContent('#mwc-note')),'above Stripe\'s ceiling (€999,999.99): nothing is sent, the bounds are said');
+   await pg.$eval('#mwc-price',e=>{e.value='36';e.dispatchEvent(new Event('change',{bubbles:true}));});await pg.waitForTimeout(400);
    await pg.click('#vs-open');await pg.waitForFunction(()=>/where to pay me first/.test(document.getElementById('mwc-note').textContent));
    ok(log.rpc.some(x=>x.name==='monetization_set'&&x.body.p_enabled===true)&&await pg.isVisible('#vs-pay-in'),'opening without a payout: the SERVER refuses (payout_first) and the payout field opens');
    await pg.click('[data-paym="paypal"]');ok(await pg.getAttribute('#vs-pay-in','placeholder')==='my PayPal email','IBAN / PayPal');

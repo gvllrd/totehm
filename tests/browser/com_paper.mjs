@@ -77,8 +77,8 @@ try{
   ok(!log.rpc.some(x=>x.name==='visibility_set'),'le verso n\'écrit plus la confidentialité du Totehm (elle vit sur chaque box)');
   /* 26/10 : le verso a deux parties ; le prix vit dans Monetize my TOTEHM. */
   await pg.click('#vs-tabs [data-vs-tab="money"]');await pg.waitForTimeout(100);
-  await pg.fill('#mwc-price','3600');await pg.dispatchEvent('#mwc-price','input');
-  ok(/100 subscribers/.test(await pg.textContent('#mwc-say'))&&/€36 \/ year/.test(await pg.textContent('#vs-price'))&&!await pg.locator('#mwc-save').count(),'le prix au curseur : la part se lit en direct, sans bouton Save (enregistré au lâcher, 20/10)');
+  await pg.fill('#mwc-price','36');await pg.dispatchEvent('#mwc-price','input');
+  ok(/100 subscribers/.test(await pg.textContent('#mwc-say'))&&/€36 \/ year/.test(await pg.textContent('#vs-price'))&&!await pg.locator('#mwc-save').count(),'le prix en euros, saisi librement : la part se lit en direct, sans bouton Save (23/11)');
   // focus piégé dans la feuille
   const tab=async()=>{await pg.keyboard.press('Tab');return pg.evaluate(()=>{const e=document.activeElement;return e.closest('#srch')?(e.id||e.tagName):'HORS:'+e.tagName;});};
   await pg.focus('#self-name');const ring=[];for(let i=0;i<24;i++)ring.push(await tab());

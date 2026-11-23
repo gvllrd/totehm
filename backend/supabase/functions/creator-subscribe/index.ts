@@ -101,6 +101,9 @@ Deno.serve(async (req) => {
       // Connect reviendra, ces deux lignes reviendront avec lui.
       subscription_data: { metadata: meta },
       metadata: meta,
+      // 23/11 (Wah : « on doit pouvoir mettre 0 euro ») : un abonnement à 0 € passe par Stripe comme les autres
+      // (le webhook écrit l'accès), sans demander de carte.
+      ...(offer.price_cents === 0 ? { payment_method_collection: "if_required" as const } : {}),
       // 16/11 : la session ne vit qu'une demi-heure (deux au plus), comme sa clé d'idempotence.
       expires_at: checkoutExpiresAt(now),
       success_url: depuis === "console"

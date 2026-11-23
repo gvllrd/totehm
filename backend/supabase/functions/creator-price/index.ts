@@ -18,8 +18,10 @@ const sb = createClient(
   { auth: { persistSession: false } },
 );
 
-const MIN = 300;    //  3 € — sous ce seuil les frais Stripe mangent la part
-const MAX = 50000;  // 500 € — au-delà, c'est une erreur de frappe
+// 23/11 (Wah) : n'importe quel montant, 0 € compris (les tests) ; le plafond est celui d'un montant Stripe
+// (8 chiffres : 999 999,99 €). Les mêmes bornes que `monetization_set` et `creator_price_chk`.
+const MIN = 0;
+const MAX = 99999999;
 
 Deno.serve(async (req) => {
   const cors = corsHeaders(req.headers.get("origin"), SITE_COM);

@@ -3383,7 +3383,9 @@ body.lv-b:not(.lv-membre):not(.lv-verrou) #lv-socket{opacity:0}
 .vs-row a{flex:1;min-width:0;text-align:right;font:400 11px/1.2 'Space Mono',monospace;color:#cfcfd6;text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .vs-prix{background:#000;padding-bottom:12px}
 .vs-prix .vs-row{padding-bottom:4px}
-#mwc-price{display:block;width:calc(100% - 32px);margin:4px 16px 2px;accent-color:#9a9aa2}
+/* 23/11 (Wah) : « n'importe quel montant » — une saisie libre en euros (0 € → 999 999 €), plus un curseur */
+#mwc-price{display:block;box-sizing:border-box;width:calc(100% - 32px);margin:6px 16px 2px;-moz-appearance:textfield}
+#mwc-price::-webkit-inner-spin-button,#mwc-price::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
 .mwc-say{padding:4px 16px 0;font:400 10.5px/1.4 'Space Mono',monospace;color:#b8b8c2;text-align:left}
 .mwc-say b{color:#fff}
 .vs-val,.vs-act,.vs-btn,.vs-seg button{flex:none;border:0;border-radius:10px;background:#1f1f24;color:#e4e4ea;cursor:pointer;
@@ -4813,7 +4815,7 @@ In the highest way.</p>
         <div class="vs-n"><span><b id="mwc-subs">0</b><i>subscribers</i></span><span><b id="vs-due">0</b><i>to be paid</i></span><span><b id="mwc-next">—</b><i>payout</i></span></div>
         <div class="vs-prix">
           <div class="vs-row"><i>price</i><b id="vs-price">—</b></div>
-          <input id="mwc-price" type="range" min="300" max="20000" step="100" aria-label="My yearly price">
+          <input id="mwc-price" class="vs-in" type="number" inputmode="decimal" min="0" max="999999" step="any" placeholder="my yearly price in €" aria-label="My yearly price, in euros">
           <div class="mwc-say" id="mwc-say"></div>
         </div>
         <div class="vs-row" id="vs-pay"><i>pay me</i><button class="vs-val" id="vs-pay-v" type="button">to set</button></div>
@@ -13635,7 +13637,7 @@ window.addEventListener('pageshow',e=>{
     const diagC={recherches:0, trouves:0, rectos:0, fermetures:0};
     let seq=0, d=null, lu=null, nom='', etat='vide';
     const propre=v=>String(v||'').trim().replace(/^https?:\/\/[^/]+\//i,'').replace(/^@/,'').replace(/[/?#].*$/,'').slice(0,32);
-    const prix=s=>{ if(!s||!s.open||!s.price_cents) return '';
+    const prix=s=>{ if(!s||!s.open||s.price_cents==null) return '';   /* 23/11 : 0 € est un prix (les tests) */
       const v=(s.price_cents/100).toFixed(s.price_cents%100?2:0), c=String(s.currency||'eur').toUpperCase();
       return c==='EUR'?v+' €':c==='USD'?'$'+v:v+' '+c; };
     const jour=t=>{ try{ return new Date(t).toLocaleDateString(); }catch(_){ return ''; } };
@@ -14999,16 +15001,19 @@ window.addEventListener('pageshow',e=>{
        DEUX lectures en parallèle, UNE fois par ouverture : `creator_dashboard` (les chiffres, les bornes du
        prix) et `my_console` (l'offre, le versement, mes abonnements). Le serveur dit tout ; la page ne
        recompose jamais une règle (ouvrir exige un prix ET un versement : c'est `monetization_set` qui refuse).
-       Le prix s'écrit en LÂCHANT le curseur — plus de bouton Save, plus de champ en double. ── */
+       Le prix s'écrit en euros, librement (0 € → 999 999 €), et part en quittant le champ ou par Entrée — plus de bouton Save. ── */
     const CREA=(()=>{
       const box=$('mw-creator'), r=$('mwc-price'), say=$('mwc-say'), note=$('mwc-note'), tog=$('vs-open');
       let d=null, C=null, seq=0, paym='iban';
       const fmt=(c,cur)=>{ try{ return new Intl.NumberFormat('en',{style:'currency',currency:(cur||'eur').toUpperCase(),maximumFractionDigits:c%100?2:0}).format(c/100); }catch(_){ return (c/100)+' '+(cur||''); } };
       const jour=s=>{ const t=new Date(String(s).slice(0,10)+'T12:00:00'); return Number.isNaN(t.getTime())?'—':t.toLocaleDateString('en-GB',{day:'numeric',month:'short'}); };
       const dit=(t,k)=>{ note.textContent=t||''; note.className='lv-note'+(k?' is-'+k:''); };
-      const WHY={price:'€3 to €1,000 a year',price_first:'set my price first',payout_first:'where to pay me first',signin:'sign in again'};
+      /* le prix saisi, en centimes ; null s'il est hors bornes (0 → 99 999 999, le plafond d'un montant Stripe) */
+      const cents=()=>{ const v=String(r.value).trim(); if(v==='') return null; const c=Math.round(+v.replace(',','.')*100);
+        return Number.isFinite(c)&&c>=0&&c<=99999999?c:null; };
+      const WHY={price:'€0 to €999,999 a year',price_first:'set my price first',payout_first:'where to pay me first',signin:'sign in again'};
       function dire(){
-        if(!d) return; const c=+r.value, part=d.part||80;
+        if(!d) return; const c=cents(), part=d.part||80; if(c===null) return;
         $('vs-price').textContent=fmt(c,d.currency)+' / year';
         say.innerHTML='100 subscribers = <b>'+esc(fmt(Math.floor(c*part/100)*100,d.currency))+'</b> for me';
       }
@@ -15081,7 +15086,7 @@ window.addEventListener('pageshow',e=>{
         if(a.error||!a.data?.ok){ box.classList.add('hide'); return; }
         d=a.data; C=b.error?null:(b.data||null); box.classList.remove('hide'); dit('');
         chargerFans(s);
-        const p=d.price_cents||2400; r.min=String(d.min_cents||300); r.max=String(Math.max(20000,p)); r.value=String(p);
+        const p=d.price_cents??2400; r.value=String(p/100);
         dire(); peindre();
       }
       /* Une écriture de l'offre : la réponse dit ok ou pourquoi ; puis on RELIT (le serveur décide de l'état). */
@@ -15094,8 +15099,9 @@ window.addEventListener('pageshow',e=>{
         await charger(); dit('saved','ok'); return true;
       }
       r.addEventListener('input',dire);
-      r.addEventListener('change',()=>{ if(d&&+r.value!==(d.price_cents||0)) offre(null,+r.value); });
-      tog.onclick=()=>{ if(!d) return; const o=(C&&C.offer)||{}; offre(!o.enabled,+r.value); };
+      r.addEventListener('change',()=>{ if(!d) return; const c=cents(); if(c===null){ dit(WHY.price,'no'); return; } if(c!==d.price_cents) offre(null,c); });
+      r.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); r.blur(); } });
+      tog.onclick=()=>{ if(!d) return; const o=(C&&C.offer)||{}, c=cents(); if(c===null){ dit(WHY.price,'no'); return; } offre(!o.enabled,c); };
       const ouvrirPay=()=>{ $('vs-pay-f').classList.remove('hide'); setTimeout(()=>{ try{ $('vs-pay-in').focus(); }catch(_){} },60); };
       $('vs-pay-v').onclick=()=>{ $('vs-pay-f').classList.contains('hide')?ouvrirPay():$('vs-pay-f').classList.add('hide'); };
       $('vs-pay-f').addEventListener('click',e=>{ const b=e.target.closest('[data-paym]'); if(!b) return; paym=b.dataset.paym; peindrePaym(); try{ $('vs-pay-in').focus(); }catch(_){} });
