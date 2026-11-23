@@ -1349,7 +1349,12 @@ function returnToStory(){
   exitBoardMode();
   sdiscStage.style.opacity=''; sdiscBack.style.opacity=''; sdiscTrig.style.opacity='';
   sdiscTrig.style.display='';
-  resetRocks(); sdiscReset(); startAsteroids();
+  resetRocks();
+  if(discoverOnly){
+    storyRevision++;sdiscLock=false;
+    firstPage.setReveal(1);showSdisc(SDSLIDES.length-1,true);
+  }else sdiscReset();
+  startAsteroids();
   requestAnimationFrame(()=>sdiscStage.querySelector('.disc-block.active .btn-sig')?.focus({preventScroll:true}));
 }
 sdiscBoardClose.addEventListener('click',returnToStory);
@@ -1617,6 +1622,7 @@ function sdiscPrev(){
 
 /* démarrage */
 resetRocks(); sdiscReset(); startAsteroids();
+if(discoverOnly&&!embeddedFront)beginStreetDiscover();
 let controllerPreview=null;
 if(requestedBoard&&!discoverOnly){
   document.body.classList.add('is-controller-entry');

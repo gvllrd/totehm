@@ -6,7 +6,7 @@ let current=null;
 const fronts={
  screen:{ready:'__totehm_experience_front',selector:'#experience-front-canvas',event:'totehm:experience-enter'},
  controller:{ready:'__totehm_controller_entry',event:'totehm:controller-enter'},
- formation:{ready:'__totehm_controller_entry',event:'totehm:controller-enter'},
+ discover:{ready:'__totehm_experience_front',event:'totehm:experience-enter'},
  paper:{ready:'__totehm_paper_entry',event:'totehm:paper-enter'}
 };
 function corners(rect){return [{x:rect.left,y:rect.top},{x:rect.right,y:rect.top},{x:rect.right,y:rect.bottom},{x:rect.left,y:rect.bottom}];}
@@ -25,9 +25,9 @@ export function expandProjectedExperience(projection,camera,href,options={}){
  });
 }
 
-export function expandLisbonSignProjection(projection,camera,href,options={}){
- if(!projection.snapshot||!projection.setHandoff)return false;
- return openExperience({object:projection.root,camera,href,type:'formation',projection,...options});
+export function expandLisbonDiscover(projection,href,options={}){
+ if(!projection.root||!projection.setHandoff)return false;
+ return openExperience({object:projection.root,href,type:'discover',projection,...options});
 }
 
 export function expandGalleryObject(object,camera,href,{kind,width,shot,...options}){
@@ -42,13 +42,12 @@ function openExperience({object,camera,href,type,from=null,canvas,time,width,sho
  const config=fronts[type],previous=location.href,state=history.state,wasVisible=object.visible;
  const siblings=[...document.body.children].map(el=>[el,el.inert]);
  const dialog=document.createElement('div'),veil=document.createElement('div'),frame=document.createElement('iframe');
- let disposed=false,entering=false,stage='preparing',raf=0,timer=0,progress=0,target=null,animation=null,visual=null,handoff=null,controllerLift=false,stopLift=null,forming=false;
+ let disposed=false,entering=false,stage='preparing',raf=0,timer=0,progress=0,target=null,animation=null,visual=null,handoff=null,controllerLift=false,stopLift=null,projectionHidden=false;
  dialog.id='experience-projection-dialog';dialog.setAttribute('role','dialog');dialog.setAttribute('aria-modal','true');dialog.setAttribute('aria-label','Enter the original artwork');
  dialog.style.cssText='position:fixed;inset:0;z-index:100';
  veil.style.cssText='position:absolute;inset:0;background:#000;opacity:0';
  frame.title='The original TOTEHM experience';frame.style.cssText='position:absolute;inset:0;width:100%;height:100%;border:0;background:#000;color-scheme:dark;visibility:hidden;pointer-events:none';
  const embedded=new URL(url);embedded.searchParams.set('embedded','1');if(time!==undefined)embedded.searchParams.set('sceneTime',String(time));
- if(type==='formation'){embedded.searchParams.set('projection','1');frame.style.background='transparent';}
  function makeLift(){
   try{return createObjectLift(object,camera,{width,shot});}
   catch(error){console.warn('[3D entrance]',error?.name||'unavailable');return null;}
@@ -61,13 +60,15 @@ function openExperience({object,camera,href,type,from=null,canvas,time,width,sho
  }else if(type==='paper'&&!reduced)visual=makeLift();
  const releaseVisual=()=>{visual?.element.remove();visual?.dispose();visual=null;};
  current=dialog;
- window.__totehm_projection_expansion=()=>({stage,type,progress,from,target,handoff,documentReloads:0,overlays:visual?.element.isConnected||controllerLift?1:0,controllerLift,temporaryCanvas:visual?.element.tagName==='CANVAS',physicalPanelVisible:object.visible&&!forming,forming,frames:frame.isConnected?1:0});
+ window.__totehm_projection_expansion=()=>({stage,type,progress,from,target,handoff,documentReloads:0,overlays:visual?.element.isConnected||controllerLift?1:0,controllerLift,temporaryCanvas:visual?.element.tagName==='CANVAS',physicalPanelVisible:object.visible&&!projectionHidden,frames:frame.isConnected?1:0});
  function close(fromHistory=false){
   if(disposed)return;
   disposed=true;stage='closed';clearTimeout(timer);cancelAnimationFrame(raf);animation?.cancel();stopLift?.();
   removeEventListener('popstate',pop);removeEventListener('keydown',escape);removeEventListener('totehm:experience-navigate',navigate);
-  const restoreController=type==='controller'&&object.visible!==wasVisible;
-  releaseVisual();object.visible=wasVisible;if(forming){projection.setHandoff(false);forming=false;}if(restoreController)onLift();
+  const restoreWorld=projectionHidden||type==='controller'&&object.visible!==wasVisible;
+  releaseVisual();object.visible=wasVisible;
+  if(projectionHidden){projection.setHandoff(false);projectionHidden=false;}
+  if(restoreWorld)onLift();
   dialog.remove();for(const [el,inert]of siblings)el.inert=inert;current=null;onClose();
   if(!fromHistory)history.back();
  }
@@ -80,7 +81,7 @@ function openExperience({object,camera,href,type,from=null,canvas,time,width,sho
   if(next.protocol!=='https:'||!(next.origin===location.origin&&['/get_higher','/market','/stoner','/play_lisbon_street'].includes(next.pathname)||next.origin==='https://www.totehm.com'&&next.pathname==='/auth'))return;
   event.preventDefault();leave(next);
  }
- function fail(){if(!disposed){if(type==='controller'||type==='formation')close();else leave(url);}}
+ function fail(){if(!disposed){if(type==='controller')close();else leave(url);}}
  async function animateController(win){
   const driver=win.__totehm_controller_lift;
   const entry=win.__totehm_controller_entry?.();
@@ -130,25 +131,18 @@ function openExperience({object,camera,href,type,from=null,canvas,time,width,sho
    if(!disposed)try{driver.finish();}catch{}
   }finally{controllerLift=false;}
  }
- async function formProjectedController(win){
-  const assemble=win.__totehm_projection_form;
-  if(!assemble)return;
-  const width=innerWidth,height=innerHeight;
-  const source=projection.snapshot(camera,width,height).map(({id,x,y,width:w,height:h,rotation,corners})=>({
-   id,x:x/width,y:y/height,width:w/width,height:h/height,rotation,
-   corners:corners?.map(point=>({x:point.x/width,y:point.y/height}))
-  }));
-  const transition=assemble.start(source);
-  if(!transition)return;
-  clearTimeout(timer);timer=setTimeout(fail,5000);
-  forming=true;stage='expanding';projection.setHandoff(true);
-  onLift();frame.style.visibility='visible';
+ async function revealDiscover(win){
+  stage='expanding';
+  frame.style.opacity='0';frame.style.visibility='visible';
+  win.dispatchEvent(new win.Event(config.event));
   if(!reduced){
-   animation=veil.animate([{opacity:0},{opacity:1}],{duration:560,easing:'ease-in-out',fill:'forwards'});
-  }else veil.style.opacity='1';
-  if(!await transition||disposed)return;
-  handoff={signs:source.length};
-  progress=1;
+   animation=frame.animate([{opacity:0},{opacity:1}],{duration:440,easing:'ease-in-out',fill:'forwards'});
+   await animation.finished.catch(()=>{});
+  }
+  if(disposed)return;
+  frame.style.opacity='1';animation?.cancel();
+  projectionHidden=true;projection.setHandoff(true);
+  onLift();progress=1;
  }
  async function ready(){
   try{
@@ -157,13 +151,11 @@ function openExperience({object,camera,href,type,from=null,canvas,time,width,sho
    if(disposed)return;
    const doc=win.document;
    if(type==='controller')await animateController(win);
-   else if(type==='formation'){
-    await formProjectedController(win);
-    if(!disposed)win.__totehm_projection_form?.finish();
-   }else await doc.fonts?.ready;
+   else if(type==='discover')await revealDiscover(win);
+   else await doc.fonts?.ready;
    if(disposed)return;
    if(config.selector)target=corners(doc.querySelector(config.selector).getBoundingClientRect());
-   if(type!=='controller'&&type!=='formation')stage='expanding';
+   if(type!=='controller'&&type!=='discover')stage='expanding';
    clearTimeout(timer);
    if(!reduced&&visual)await new Promise(resolve=>{
     let start;
@@ -196,15 +188,15 @@ function openExperience({object,camera,href,type,from=null,canvas,time,width,sho
    win.addEventListener('keydown',event=>{
     if(event.key!=='Escape')return;
     if(type==='paper'&&win.document.getElementById('discover')?.classList.contains('in'))return;
-    const sequence=win.__totehm_lisbon?.().sequence;
-    if(sequence==='phrase'||sequence==='art')return;
+    const lisbon=win.__totehm_lisbon?.();
+    if(lisbon?.sequence==='phrase'||lisbon?.sequence==='art'||(type==='discover'&&lisbon?.board))return;
     event.preventDefault();event.stopImmediatePropagation();close();
    },true);
    // Activate the prepared controls before the visible frame accepts input.
-   if(type!=='formation'||!win.__totehm_projection_form)win.dispatchEvent(new win.Event(config.event));
+   if(type!=='discover')win.dispatchEvent(new win.Event(config.event));
    frame.style.visibility='visible';frame.style.opacity='1';frame.style.pointerEvents='auto';
    stage='experience';frame.focus();
-   if((type==='controller'||type==='formation')&&win.__totehm_controller_entry?.().phase==='board')doc.getElementById('sdisc-board-close')?.focus({preventScroll:true});
+   if(type==='controller'&&win.__totehm_controller_entry?.().phase==='board')doc.getElementById('sdisc-board-close')?.focus({preventScroll:true});
   }catch(error){if(!disposed){console.warn('[experience entrance]',error?.name||'unavailable');fail();}}
  }
  frame.addEventListener('load',ready);frame.src=embedded.href;

@@ -1,6 +1,6 @@
 import {createSaucerProjection,PROJECTION_LAYOUTS} from './gallery-saucer-projection.mjs';
 import {UFO_LISBON_SIGNS_LAYOUT} from './gallery-ufo-lisbon-signs.mjs';
-import {expandGalleryObject,expandLisbonSignProjection,expandProjectedExperience} from './gallery-experience-expansion.mjs';
+import {expandGalleryObject,expandLisbonDiscover,expandProjectedExperience} from './gallery-experience-expansion.mjs';
 import {premiumCaseShot} from './gallery-object-view.mjs';
 import {lisbonControllerShot} from './gallery-lisbon-controller.mjs';
 import * as T from './vendor/three-0.180.0.mjs';
@@ -16,6 +16,7 @@ import {createOriginsVessel} from './gallery-origins-vessel.mjs';
 import {createSaucerCockpit} from './gallery-black-hole.mjs';
 import {reverseIslandFlight} from './origin-return-journey.mjs';
 import {checkLisbonStreetAccess} from './lisbon-street-access.mjs';
+const TABLETOP_CONTROLLER='/play_lisbon_street?board=1';
 const emptyInstallation=kind=>({pickables:[],setActive(){},reset(){},interact(){return false;},handleKey(){return false;},acceptHit(){return false;},update(){return false;},diagnostics:()=>({kind,active:false,closed:true,opening:false,opened:false})});
 
 export async function createGallery({place='lisbon',select,onOverview=()=>{},onStationState=()=>{},onArtwork=()=>{},onSignFocus=()=>{},interact=()=>{},fallback,reduced}){
@@ -127,7 +128,7 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
   if(newYork||vesselMode!=='island'||list||paused||seated)return false;
   stopInput();cancelTravel();leaveStation();onOverview();
   const takeSeat=()=>{
-   prefetchController();prefetchController(true);
+   prefetchLisbonExperience(TABLETOP_CONTROLLER);prefetchLisbonExperience(UFO_LISBON_SIGNS_LAYOUT.href);
    const to=new T.Vector3(...L.seat.eye),target=new T.Vector3(...L.seat.target);
    if(motionReduced){eye.copy(to);gaze.copy(target);viewFov=L.seat.fov;seated=true;angles();stationState();}
    else seatMove={from:eye.clone(),look:gaze.clone(),fov:camera.fov,to,target,start:null};
@@ -154,12 +155,12 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
   if(!(index===2&&seated)&&!nearStation(index))return visit(index);
   focusStation(index);if(index===2){return openProjection();}else if(index===4)opposite.open();else if(index===1)book.open();else if(index===0){return openPaper(architecture.cases?.[0]);}dirty=true;stationState();return true;
  }
- const controllerPrefetch=new Set();
- function prefetchController(projected=false){
-  if(newYork||controllerPrefetch.has(projected))return;
-  controllerPrefetch.add(projected);
+ const prefetchedLisbonExperiences=new Set();
+ function prefetchLisbonExperience(href){
+  if(newYork||prefetchedLisbonExperiences.has(href))return;
+  prefetchedLisbonExperiences.add(href);
   const hint=document.createElement('link');hint.rel='prefetch';hint.as='document';
-  hint.href='/play_lisbon_street?board=1&embedded=1'+(projected?'&projection=1':'');document.head.append(hint);
+  hint.href=href+'&embedded=1';document.head.append(hint);
  }
  function freezeExperience(refresh=true){
   experienceFrozenAt=performance.now();pause();if(refresh)renderer.render(scene,camera);
@@ -171,9 +172,9 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
   experienceFrozenAt=null;paused=false;lastTime=0;dirty=true;host.focus({preventScroll:true});syncSound();
  }
  function openProjection(href=play.screen?.userData.href){
-  const expand=newYork?expandProjectedExperience:expandLisbonSignProjection;
-  return expand(play,camera,href,{reduced:motionReduced,onStart:freezeExperience,
-   onLift:()=>renderer.render(scene,camera),onClose:()=>{play.reset?.();resumeExperience();}});
+  const options={reduced:motionReduced,onStart:freezeExperience,
+   onLift:()=>renderer.render(scene,camera),onClose:()=>{play.reset?.();resumeExperience();}};
+  return newYork?expandProjectedExperience(play,camera,href,options):expandLisbonDiscover(play,href,options);
  }
  function openObject(root,href,kind,width,shot,sourceReady){
   return expandGalleryObject(root,camera,href,{kind,width,shot,sourceReady,reduced:motionReduced,
@@ -182,11 +183,11 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
  function openController(){
   const model=architecture.controller;
   if(!model)return false;
-  return openObject(model.root,'/play_lisbon_street?board=1','controller',L.controller.width,lisbonControllerShot,
+  return openObject(model.root,TABLETOP_CONTROLLER,'controller',L.controller.width,lisbonControllerShot,
    ()=>model.diagnostics().loaded===22);
  }
  function openPaper(paper){return paper?openObject(paper.root,'/get_higher?paper=1','paper',paper.width,premiumCaseShot):false;}
- function openDiscover(){return newYork?openProjection():openExperience({href:'/play_lisbon_street?discover=1'});}
+ function openDiscover(){return openProjection();}
  async function requestStreetEntry(){
   if(newYork)return false;if(streetAccess.state==='checking')return false;
   stopInput();cancelTravel();leaveStation();interact();const request=++gateGeneration;
@@ -247,7 +248,7 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
  });
  host.addEventListener('pointermove',e=>{
   if(experienceFrozenAt!==null)return;
-  if(!down){const h=hit(e),data=h?.object.userData;if(data?.kind==='lisbon-controller')prefetchController();if(h&&!newYork&&play.acceptHit(h))prefetchController(true);host.style.cursor=h?'pointer':'grab';onSignFocus(data?.kind==='lisbon-street-sign'?{id:data.id,title:data.title}:null);return;}
+  if(!down){const h=hit(e),data=h?.object.userData;if(data?.kind==='lisbon-controller')prefetchLisbonExperience(TABLETOP_CONTROLLER);if(h&&!newYork&&play.acceptHit(h))prefetchLisbonExperience(UFO_LISBON_SIGNS_LAYOUT.href);host.style.cursor=h?'pointer':'grab';onSignFocus(data?.kind==='lisbon-street-sign'?{id:data.id,title:data.title}:null);return;}
   const dragThreshold=down.controller?13:6;
   if(Math.hypot(e.clientX-down.x,e.clientY-down.y)>dragThreshold)dragged=true;
   if(dragged){onSignFocus(null);free();yaw-=(e.clientX-down.lx)*.004;pitch=T.MathUtils.clamp(pitch+(e.clientY-down.ly)*.003,-1.55,1.35);look();dirty=true;}

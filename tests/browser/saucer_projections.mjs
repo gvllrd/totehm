@@ -34,21 +34,22 @@ async function clickSign(pg){
  await pg.mouse.click(sign.x,sign.y);
  return sign.id;
 }
-async function monitorFormation(pg){
- await pg.evaluate(()=>{
-  window.projectionSamples=[];
+async function advanceToPlay(frame){
+ const slides=await frame.evaluate(()=>__totehm_lisbon().discoverSlides);
+ for(let step=1;step<slides;step++){
+  await frame.locator('#sdisc-trig').click();
+  await frame.waitForFunction(index=>__totehm_lisbon().step===index,step);
+ }
+ return frame.getByRole('button',{name:'Play the Lisbon Streets',exact:true});
+}
+async function monitorAssembly(frame){
+ await frame.evaluate(()=>{
+  window.assemblySamples=[];
+  const deadline=performance.now()+25000;
   function sample(){
-   const entrance=window.__totehm_projection_expansion?.();
-   if(entrance?.type==='formation'){
-    const child=document.querySelector('#experience-projection-dialog>iframe')?.contentWindow;
-    const assembly=child?.__totehm_lisbon?.().assembly;
-    window.projectionSamples.push({
-     stage:entrance.stage,frames:entrance.frames,overlays:entrance.overlays,
-     physicalPanelVisible:entrance.physicalPanelVisible,assembly
-    });
-    if(entrance.stage==='experience'||entrance.stage==='closed')return;
-   }
-   requestAnimationFrame(sample);
+   const {assembly,board}=__totehm_lisbon();
+   if(assembly)window.assemblySamples.push(assembly);
+   if(!board&&performance.now()<deadline)requestAnimationFrame(sample);
   }
   requestAnimationFrame(sample);
  });
@@ -102,10 +103,7 @@ try{for(const viewport of [{width:800,height:600},{width:1100,height:760}])for(c
   check(vessel.rotationDegreesPerSecond>=3&&vessel.rotationDegreesPerSecond<=5,city+' turns the saucer slowly on its own axis at '+viewport.width);
   await pg.emulateMedia({reducedMotion:'reduce'});
   await pg.screenshot({path:out+'/'+city+'-'+viewport.width+'-world.png'});await focusProjection(pg);sample.camera=await pg.evaluate(()=>__totehm_gallery().camera.position);await pg.evaluate(()=>window.projectionSceneToken='same scene');
-  if(owned){
-   await pg.emulateMedia({reducedMotion:'no-preference'});
-   await monitorFormation(pg);
-  }
+  if(owned)await pg.emulateMedia({reducedMotion:'no-preference'});
   if(lisbon)sample.clickedSign=await clickSign(pg);
   else await clickPanel(pg);
   await pg.waitForFunction(()=>window.__totehm_projection_expansion?.().stage==='experience',null,{timeout:40000});
@@ -113,22 +111,29 @@ try{for(const viewport of [{width:800,height:600},{width:1100,height:760}])for(c
   check(!!frame,city+' opens a single full-screen experience at '+viewport.width);
   if(lisbon){
    const url=new URL(frame.url());
-   check(url.pathname==='/play_lisbon_street'&&url.searchParams.get('board')==='1'&&url.searchParams.get('projection')==='1','A floating sign enters the projected controller route');
-   await frame.waitForFunction(allowed=>__totehm_controller_entry().phase===(allowed?'board':'locked'),owned);
-   const keys=await frame.locator('.street-rock[role=button] img').evaluateAll(images=>images.map(image=>new URL(image.src).pathname.split('/').at(-1).slice(0,-4)));
-   assert.deepEqual(keys,owned?LISBON_FRONT_NAMES:[]);
+   check(url.pathname==='/play_lisbon_street'&&url.searchParams.get('discover')==='1'&&!url.searchParams.has('board'),'A floating sign opens Discover in the fullscreen frame');
+   await frame.locator('#sdisc-stage .is-first.show').waitFor();
    sample.front=await frame.evaluate(()=>__totehm_lisbon());
-   check(sample.front.access.owned===owned&&sample.front.board===owned&&sample.front.activeSign===null,'Formation checks THP access without starting a film');
-   check(!log.functions.some(call=>call.name==='lisbon-street-media'),'Opening the projected controller does not request private media');
+   check(sample.front.step===0&&!sample.front.board&&!sample.front.directBoard&&sample.front.activeSign===null,'Discover opens on its first slide for both guests and owners');
+   check(await frame.getByRole('button',{name:'Play the Lisbon Streets',exact:true}).count()===0,'Play is hidden until the final Discover slide');
+   await pg.emulateMedia({reducedMotion:'reduce'});
+   const play=await advanceToPlay(frame);
+   check(await play.isVisible()&&await frame.locator('.street-rock[role=button]').count()===0,'Reading to the end reveals the Play button while the controller stays closed');
    if(owned){
-    await pg.waitForFunction(()=>window.projectionSamples.at(-1)?.stage==='experience');
-    sample.animation=await pg.evaluate(()=>window.projectionSamples);
-    const moving=sample.animation.filter(sample=>sample.stage==='expanding'&&sample.assembly?.source==='saucer'&&sample.assembly.progress>0&&sample.assembly.progress<1);
-    check(moving.length>=2&&moving.at(-1).assembly.progress>moving[0].assembly.progress&&moving.every(sample=>sample.assembly.signs===22&&sample.overlays===0&&sample.frames===1&&!sample.physicalPanelVisible),'All 22 signs assemble over multiple frames in one live experience');
-    check(await pg.evaluate(()=>__totehm_projection_expansion().handoff?.signs===22),'The handoff passes one source pose for every controller key');
-   }else{
-    check(sample.front.reduced_motion&&sample.front.assembly===null&&await frame.getByText('A Totehmpaper is required to enter. Get Higher through Stoner first.',{exact:true}).isVisible(),'Reduced-motion guests see the requirement and no playable keys');
+    await pg.emulateMedia({reducedMotion:'no-preference'});
+    await monitorAssembly(frame);
+    await play.click();
+    await frame.waitForFunction(()=>__totehm_lisbon().board);
+    const keys=await frame.locator('.street-rock[role=button] img').evaluateAll(images=>images.map(image=>new URL(image.src).pathname.split('/').at(-1).slice(0,-4)));
+    assert.deepEqual(keys,LISBON_FRONT_NAMES);
+    sample.animation=await frame.evaluate(()=>window.assemblySamples);
+    const moving=sample.animation.filter(sample=>sample.source==='discover'&&sample.progress>0&&sample.progress<1);
+    check(moving.length>=2&&moving.at(-1).progress>moving[0].progress&&moving.every(sample=>sample.signs===22),'The final Play button assembles the 22 signs into the controller');
+    await frame.locator('#sdisc-board-close').click();
+    await frame.waitForFunction(()=>!__totehm_lisbon().board&&__totehm_lisbon().step===__totehm_lisbon().discoverSlides-1);
+    check(await play.isVisible(),'Controller Back restores the end of Discover in the same frame');
    }
+   check(!log.functions.some(call=>call.name==='lisbon-street-media'),'Discover and the controller request no private media before playing a key');
   }else{
    check(await frame.evaluate(()=>__totehm_experience_front().ready),'New York opens its ready original first page at '+viewport.width);
    sample.front=await frame.evaluate(()=>__totehm_experience_front());
@@ -137,20 +142,29 @@ try{for(const viewport of [{width:800,height:600},{width:1100,height:760}])for(c
   }
   check(await pg.evaluate(()=>window.projectionSceneToken==='same scene'&&__totehm_projection_expansion().physicalPanelVisible===false&&__totehm_projection_expansion().overlays===0&&__totehm_projection_expansion().frames===1),city+' has one live experience with the physical projection hidden at '+viewport.width);
   await pg.screenshot({path:out+'/'+city+'-'+viewport.width+'-experience.png'});
-  const close=lisbon?(owned?'#sdisc-board-close':'#sdisc-back'):'[data-experience-close]';
+  const close=lisbon?'#sdisc-back':'[data-experience-close]';
   await frame.locator(close).first().click({timeout:30000});
   await pg.waitForFunction(()=>__totehm_projection_expansion().stage==='closed'&&__totehm_projection_expansion().physicalPanelVisible);
   if(lisbon)check(await pg.evaluate(()=>__totehm_gallery().projection.handoff===false),'Returning to Lisbon restores the suspended objects');
   check(await pg.locator('iframe').count()===0&&await pg.evaluate(p=>window.projectionSceneToken==='same scene'&&JSON.stringify(__totehm_gallery().camera.position)===JSON.stringify(p),sample.camera),city+' closes back to the same physical projection and camera at '+viewport.width);
   await pg.emulateMedia({reducedMotion:'reduce'});await focusProjection(pg);await pg.locator('#enter-experience').click({timeout:60000});await pg.waitForFunction(()=>__totehm_projection_expansion().stage==='experience');
   if(lisbon){
-   const reducedFrame=pg.frames().find(fr=>new URL(fr.url()).searchParams.get('projection')==='1');
-   check(!!reducedFrame,'The gallery Enter control opens the same Lisbon sign route');
-   await reducedFrame.waitForFunction(allowed=>__totehm_controller_entry().phase===(allowed?'board':'locked'),owned);
-   check(await reducedFrame.evaluate(()=>__totehm_lisbon().reduced_motion&&__totehm_lisbon().assembly===null),'Reduced-motion entry reaches the same destination without an assembly animation');
+   const reducedFrame=pg.frames().find(fr=>new URL(fr.url()).searchParams.get('discover')==='1');
+   check(!!reducedFrame,'The gallery Enter control also opens Discover');
+   await reducedFrame.locator('#sdisc-stage .is-first.show').waitFor();
+   check(await reducedFrame.evaluate(()=>__totehm_lisbon().reduced_motion&&!__totehm_lisbon().board&&__totehm_lisbon().step===0),'Reduced-motion entry begins on the first Discover slide');
   }
   await pg.goBack();await pg.waitForFunction(()=>__totehm_projection_expansion().stage==='closed');
   check(await pg.locator('#experience-projection-dialog').count()===0&&await pg.evaluate(()=>__totehm_projection_expansion().physicalPanelVisible),city+' browser Back closes only the full-screen experience at '+viewport.width);
+  if(lisbon&&!owned){
+   await focusProjection(pg);await pg.locator('#enter-experience').click({timeout:60000});
+   await pg.waitForFunction(()=>window.__totehm_projection_expansion?.().stage==='experience');
+   const guestFrame=pg.frames().find(fr=>new URL(fr.url()).searchParams.get('discover')==='1');
+   const play=await advanceToPlay(guestFrame);
+   await play.click();
+   await pg.waitForURL(url=>url.pathname==='/get_higher'&&url.searchParams.get('paper')==='1');
+   check(!log.functions.some(call=>call.name==='lisbon-street-media'),'The guest Play button opens the Totehmpaper case without signed media');
+  }
   if(city==='new-york'){
    await pg.locator('.tour [data-room="1"]').click({timeout:60000});await pg.waitForURL(u=>u.pathname==='/origin'&&u.searchParams.get('arrival')==='1'&&u.searchParams.get('from')==='new-york',{timeout:60000});await pg.waitForFunction(()=>window.__totehm_origin?.().frames>0,null,{timeout:90000});sample.origin=await pg.evaluate(()=>__totehm_origin());check(sample.origin.originCity==='new-york'&&sample.origin.returnJourney.destination==='/new-york?arrival=origin'&&sample.origin.vessel.parked,'The New York saucer reaches Origin and remembers its home city at '+viewport.width);
    await pg.locator('#origin-return').click({timeout:60000});await pg.waitForURL(u=>u.pathname==='/new-york',{timeout:60000});await ready(pg);await pg.waitForFunction(()=>__totehm_gallery().originsJourney.state==='island');check(await pg.evaluate(()=>__totehm_gallery().place==='new-york'&&!__totehm_gallery().originsJourney.vessel.flying&&__totehm_gallery().projection.ready),'The same saucer returns from Origin to the New York island at '+viewport.width);

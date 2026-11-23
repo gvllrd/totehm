@@ -6,7 +6,7 @@ import {createLisbonSignRays} from './gallery-lisbon-projector.mjs';
 
 export const UFO_LISBON_SIGNS_LAYOUT=Object.freeze({
  position:L.play.screen,approach:Object.freeze([0,1.65,5.8]),target:Object.freeze([0,9.6,-12.7]),
- href:'/play_lisbon_street?board=1'
+ href:'/play_lisbon_street?discover=1'
 });
 
 // Road markings sit low in the foreground, and the motorway board hangs

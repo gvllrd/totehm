@@ -205,15 +205,14 @@ try{
   check(await pg.evaluate(()=>{const state=__totehm_projection_expansion();return state.stage==='closed'&&state.physicalPanelVisible&&state.overlays===0;}),'Closing restores the original tabletop controller and releases its lift');
 
   await clickPoint(pg,L.play.screen);
-  const formation=await experience(pg,'formation');
-  await formation.waitForFunction(()=>window.__totehm_controller_entry().phase==='locked');
-  check(await formation.evaluate(()=>{
+  const discover=await experience(pg,'discover');
+  await discover.locator('#sdisc-stage .is-first.show').waitFor();
+  check(await discover.evaluate(()=>{
    const state=window.__totehm_lisbon();
-   return state.directBoard&&!state.board&&state.firstPage.signs===22;
-  }),'Clicking the projected title from the chair assembles the controller but keeps the guest locked');
-  check(await pg.evaluate(()=>__totehm_projection_expansion().handoff?.signs===22),'All projected signs join the controller from the seated view');
-  await pg.screenshot({path:path.join(output,'saucer-controller.png')});
-  await close(pg,formation,shot);
+   return state.step===0&&!state.directBoard&&!state.board&&state.firstPage.signs===22;
+  }),'Clicking the projected title from the chair opens the first Discover slide in fullscreen');
+  await pg.screenshot({path:path.join(output,'saucer-discover.png')});
+  await close(pg,discover,shot);
   check(!guest.log.errors.some(error=>error.startsWith('pageerror:')),'The physical guest journey has no page exception');
  }catch(error){
   console.error('Lounge state',await pg.evaluate(()=>({url:location.pathname,expansion:window.__totehm_projection_expansion?.(),seated:window.__totehm_gallery?.()?.seated,camera:window.__totehm_gallery?.()?.camera})).catch(()=>null));
