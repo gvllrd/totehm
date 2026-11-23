@@ -4700,9 +4700,10 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
       <div id="rdr-plus" class="tlg lv-act" hidden><button type="button" class="tl tl-add" data-nspot="" aria-label="Add a spot"><span aria-hidden="true">+</span></button></div>
       <button type="button" id="rdr-pique" class="lv-act">tap the place · cancel</button>
       <p class="lv-note" id="rdr-say" role="status" aria-live="polite"></p>
-      <div id="rdr-mode" class="lv-act" role="radiogroup" aria-label="Map or grid">
+      <div id="rdr-mode" class="lv-act" role="radiogroup" aria-label="Map, grid or shorts">
         <button type="button" role="radio" data-rmode="map" aria-checked="true">Map</button>
         <button type="button" role="radio" data-rmode="grid" aria-checked="false">Grid</button>
+        <button type="button" role="radio" data-rmode="shorts" aria-checked="false">Shorts</button>
       </div>
     </section>
 
@@ -6232,7 +6233,7 @@ window.__totehm_vignette=()=>VIGNETTE.etat();
 const monPseudo=()=>((me&&myProfile&&myProfile.pseudo)||'').trim();
 const CLUBSP=(()=>{
   const PER=['past','now','future'];
-  const st={per:'now', items:[], total:0, more:false, off:0, asOf:null, seq:0, charge:false, lu:false, auto:true,
+  const st={pers:['now'], p:{}, items:[], total:0, more:false, seq:0, charge:false, lu:false, auto:true,
             err:'', pos:null, at:0, aud:'', srv:{intentions:[], type:'all', scope:'world', habit:'', rayon:50}};
   const abon=[];
   const prevenir=()=>abon.forEach(f=>{ try{ f(); }catch(e){ console.error('[clubsp]',e&&e.message||e); } });
@@ -6244,32 +6245,42 @@ const CLUBSP=(()=>{
     if(st.srv.habit) f.habit=st.srv.habit;
     return f;
   }
+  /* ⚠️ 23/11 (Wah : « on devrait pouvoir sélectionner TOUS les temps (now, later, past) comme on peut sélectionner plusieurs
+     intentions ») — `st.pers` : un ou plusieurs temps ; le serveur en lit UN par appel (`p_period`) : une lecture par temps,
+     en parallèle, chacune avec sa page (`st.p[per]` : décalage, `as_of`, suite), puis fusionnées dans l'ordre now · future · past. */
   async function lire(suite){
     if(suite&&(st.charge||!st.more)) return;
     const s=++st.seq, uid=me?me.id:null, f=filtres(), ro=RO;
     st.charge=true;
-    const args={p_period:st.per, p_filters:f,
-      p_lat:f.scope==='near'?st.pos.lat:null, p_lng:f.scope==='near'?st.pos.lng:null,
-      p_limit:20, p_offset:suite?st.off:0, p_as_of:suite?st.asOf:null};
-    /* 20/10 sexies — DANS L'ÉCOSYSTÈME D'UN MEMBRE, SES spots seulement (`club_spots_of`, les mêmes droits, filtrés par auteur).
-       27/10 (Wah : « surtout pas everyone : totehm.com, c'est l'écosystème TOTEHM de l'utilisateur ; c'est sur figher.club que
-       l'on trouve les spots rendus visibles ») : chez MOI aussi, MES spots seuls — `club_spots_of` à mon nom. */
     const qui=ro||monPseudo();
-    const {data,error}=qui?await sb.rpc('club_spots_of',Object.assign({p_pseudo:qui},args)):await sb.rpc('club_spots',args);
+    /* 20/10 sexies — DANS L'ÉCOSYSTÈME D'UN MEMBRE, SES spots seulement (`club_spots_of`, les mêmes droits, filtrés par auteur).
+       27/10 (Wah : « surtout pas everyone ») : chez MOI aussi, MES spots seuls — `club_spots_of` à mon nom. */
+    const pers=ORDRE.filter(p=>st.pers.includes(p)&&(!suite||(st.p[p]&&st.p[p].more)));
+    const reps=await Promise.all(pers.map(per=>{
+      const q=st.p[per]||{};
+      const args={p_period:per, p_filters:f,
+        p_lat:f.scope==='near'?st.pos.lat:null, p_lng:f.scope==='near'?st.pos.lng:null,
+        p_limit:20, p_offset:suite?(q.off|0):0, p_as_of:suite?(q.asOf||null):null};
+      return (qui?sb.rpc('club_spots_of',Object.assign({p_pseudo:qui},args)):sb.rpc('club_spots',args)).then(r=>({per,...r}));
+    }));
     if(s!==st.seq||(me?me.id:null)!==uid||RO!==ro) return;
     st.charge=false;
-    if(error){ console.error(qui?'[club_spots_of]':'[club_spots]',error.message); st.err='unreachable'; prevenir(); return; }
-    if(!data||!data.ok){ st.err=(data&&data.why)||'refused'; if(!suite){ st.items=[]; st.total=0; st.more=false; } prevenir(); return; }
-    const l=Array.isArray(data.items)?data.items:[];
+    const ko=reps.find(r=>r.error);
+    if(ko){ console.error(qui?'[club_spots_of]':'[club_spots]',ko.error.message); st.err='unreachable'; prevenir(); return; }
+    const non=reps.find(r=>!r.data||!r.data.ok);
+    if(non){ st.err=(non.data&&non.data.why)||'refused'; if(!suite){ st.items=[]; st.total=0; st.more=false; } prevenir(); return; }
+    const l=[].concat(...reps.map(r=>Array.isArray(r.data.items)?r.data.items:[]));
     /* RIEN MAINTENANT ? À l'ARRIVÉE seulement, on montre ce qui vient, puis ce qui a été : une vue vide
        quand le Club a des spots, c'est une vue qui ment. Un choix du membre n'est jamais contredit. */
-    if(!suite&&st.auto&&!l.length&&!Object.keys(f).length){
-      const nx=st.per==='now'?'future':st.per==='future'?'past':null;
-      if(nx){ st.per=nx; return lire(false); }
+    if(!suite&&st.auto&&!l.length&&!Object.keys(f).length&&st.pers.length===1){
+      const nx=st.pers[0]==='now'?'future':st.pers[0]==='future'?'past':null;
+      if(nx){ st.pers=[nx]; return lire(false); }
     }
     st.auto=false; st.err=''; st.lu=true; st.at=Date.now();
-    st.items=suite?st.items.concat(l.filter(x=>!st.items.some(y=>y.id===x.id))):l;
-    st.total=data.total|0; st.more=!!(data.has_more||data.more); st.off=data.next_offset|0; st.asOf=data.as_of||st.asOf;
+    if(!suite) st.p={};
+    reps.forEach(r=>{ const d=r.data; st.p[r.per]={off:d.next_offset|0, asOf:d.as_of||(st.p[r.per]&&st.p[r.per].asOf)||null, more:!!(d.has_more||d.more), total:d.total|0}; });
+    st.items=suite?st.items.concat(l.filter(x=>!st.items.some(y=>y.id===x.id))):l.filter((x,i,a)=>a.findIndex(y=>y.id===x.id)===i);
+    st.total=Object.values(st.p).reduce((a,q)=>a+(q.total|0),0); st.more=Object.values(st.p).some(q=>q.more);
     prevenir();
   }
   /* « Près de moi » demande la position : on la DEMANDE seulement ici, au geste du membre. */
@@ -6283,36 +6294,39 @@ const CLUBSP=(()=>{
   }
   /* Les trois temps (27/10, Wah : « dans le WHEN, on doit avoir : 1. Now | 2. Past | 3. Future »). */
   const NOMS={now:'now',past:'past',future:'future'}, ORDRE=['now','past','future'];
+  const vider=()=>{ st.items=[]; st.total=0; st.more=false; st.p={}; };
   return {
-    lire:()=>{ st.asOf=null; return lire(false); },
+    lire:()=>lire(false),
     /* À l'ouverture : on relit si la lecture a plus d'une minute (un spot commence, un autre finit). */
-    ouvrir(){ if(!st.lu||Date.now()-st.at>60000){ st.asOf=null; lire(false); } },
+    ouvrir(){ if(!st.lu||Date.now()-st.at>60000) lire(false); },
     suite:()=>lire(true),
-    periode(p){ if(!PER.includes(p)) return; st.auto=false; if(p===st.per) return;
-      st.per=p; st.items=[]; st.total=0; st.more=false; st.asOf=null; prevenir(); lire(false); },
+    /* un temps de plus, ou de moins — comme une intention ; il en reste toujours un */
+    periode(p){ if(!PER.includes(p)) return; st.auto=false;
+      if(st.pers.includes(p)){ if(st.pers.length===1) return; st.pers=st.pers.filter(x=>x!==p); } else st.pers=ORDRE.filter(x=>x===p||st.pers.includes(x));
+      vider(); prevenir(); lire(false); },
     /* « near me » : la position est demandée À CE GESTE, puis les spots dans le rayon choisi (serveur, `radius_km`). */
     async regler(o){
       st.err='';
       if(o.scope==='near'&&!(await position())){ st.err='location'; o.scope='world'; }
       st.srv={intentions:o.intentions||[], type:o.type||'all', scope:o.scope||'world', habit:o.habit||'', rayon:o.rayon||50};
-      st.aud=o.aud||''; st.auto=false; st.asOf=null; lire(false);
+      st.aud=o.aud||''; st.auto=false; lire(false);
       return st.srv.scope;
     },
     /* Qui le voit (mes spots : private · my subscribers · figher club) : un tri local, le serveur a déjà dit lesquels sont à moi. */
     items:()=>st.aud?st.items.filter(x=>x&&(x.audience==='public'?'figher':x.audience)===st.aud):st.items.slice(),
-    get per(){ return st.per; }, get err(){ return st.err; }, get lu(){ return st.lu; }, get charge(){ return st.charge; },
+    get per(){ return st.pers[0]; }, get pers(){ return st.pers.slice(); }, get err(){ return st.err; }, get lu(){ return st.lu; }, get charge(){ return st.charge; },
     PER, NOMS, ORDRE,
     /* un spot que je viens de publier : le temps où il vit, relu */
-    montrer(p){ if(!PER.includes(p)) return; st.auto=false; st.per=p; st.items=[]; st.total=0; st.more=false; st.asOf=null; prevenir(); return lire(false); },
+    montrer(p){ if(!PER.includes(p)) return; st.auto=false; st.pers=[p]; vider(); prevenir(); return lire(false); },
     /* Dans la barre, le temps courant, et rien d'autre : un tap ouvre le filtre (où se choisit le temps). */
-    perChip:()=>'<button type="button" class="is-on" data-f="sf" data-per="'+st.per+'">'+NOMS[st.per]+'</button>',
+    perChip:()=>'<button type="button" class="is-on" data-f="sf" data-per="'+st.pers.join(' ')+'">'+st.pers.map(p=>NOMS[p]).join(' · ')+'</button>',
     surChangement(f){ if(typeof f==='function') abon.push(f); },
     /* 25/10 — un spot que j'ai retiré (`spot_remove`) quitte la carte, la grille et le fil d'un coup. */
     retirer(id){ const n=st.items.length; st.items=st.items.filter(x=>!x||String(x.id)!==String(id));
       if(st.items.length!==n){ st.total=Math.max(0,st.total-1); prevenir(); } },
-    vider(){ st.seq++; st.items=[]; st.total=0; st.more=false; st.off=0; st.asOf=null; st.lu=false; st.auto=true;
-      st.per='now'; st.err=''; st.charge=false; st.aud=''; st.srv={intentions:[], type:'all', scope:'world', habit:'', rayon:50}; },
-    etat:()=>({periode:st.per, items:st.items.length, total:st.total, more:st.more, lu:st.lu, err:st.err,
+    vider(){ st.seq++; vider(); st.lu=false; st.auto=true;
+      st.pers=['now']; st.err=''; st.charge=false; st.aud=''; st.srv={intentions:[], type:'all', scope:'world', habit:'', rayon:50}; },
+    etat:()=>({periode:st.pers.join('+'), items:st.items.length, total:st.total, more:st.more, lu:st.lu, err:st.err,
                filtres:filtres(), aud:st.aud, charge:st.charge, rayon:st.srv.rayon})
   };
 })();
@@ -6398,10 +6412,13 @@ function calendrier(z){
 const SPOTMODE=(()=>{
   const CLE='totehm_spots_mode2'; const abonnes=[];
   let mode='map';
-  try{ const v=localStorage.getItem(CLE); if(v==='map'||v==='grid') mode=v; }catch(_){}
+  /* 23/11 (Wah : « ajouter une mention Shorts dans la vue de droite, en plus de Grid et Map, pour faire défiler ses spots ») */
+  const MODES=['map','grid','shorts'];
+  try{ const v=localStorage.getItem(CLE); if(MODES.includes(v)) mode=v; }catch(_){}
   return {
+    MODES,
     get:()=>mode,
-    set(m){ if((m!=='map'&&m!=='grid')||m===mode) return;
+    set(m){ if(!MODES.includes(m)||m===mode) return;
       mode=m; try{ localStorage.setItem(CLE,m); }catch(_){}
       abonnes.forEach(f=>{ try{ f(m); }catch(_){} }); },
     surChangement(f){ if(typeof f==='function') abonnes.push(f); }
@@ -7145,7 +7162,7 @@ function creerFeed(conf){
             return '<div class="sfb'+(on?' is-on':'')+'" role="button" tabindex="0" data-sf="box" data-v="'+esc(x.k+'|'+x.ref)+'" aria-pressed="'+on+'">'
               +(boxTotehm('h',o,{})||'<span class="lsh-t">'+esc(x.txt)+'</span>')+'</div>'; }).join('')
            :'<p class="lv-note">no habit yet</p>')+'</div></div>';
-      h+=g('When', CLUBSP.ORDRE.map(q=>c('data-sf="per" data-v="'+q+'"', CLUBSP.NOMS[q], CLUBSP.per===q)).join(''));
+      h+=g('When', CLUBSP.ORDRE.map(q=>c('data-sf="per" data-v="'+q+'"', CLUBSP.NOMS[q], CLUBSP.pers.includes(q))).join(''));
       h+=g('Intentions', INTS.map(chipInt).join(''));
       h+=g('It shows', c('data-sf="type" data-v="photo"','photo',SF.type==='photo')+c('data-sf="type" data-v="video"','video',SF.type==='video'));
       /* 27/10 — « near me » lance la localisation tout de suite, puis le rayon se choisit ; refusée, une ligne le dit. */
@@ -7480,7 +7497,7 @@ function creerFeed(conf){
     const say=$(conf.say);
     if(say) say.textContent=conf.src==='spots'
       ? (CLUBSP.err==='unreachable'?'the club is unreachable · try again':CLUBSP.err==='location'?'location refused':
-         !CLUBSP.lu?'':L.length?'':(sfCount()?'nothing with these filters':({past:'no spot yet',now:'nothing right now',future:'nothing planned'})[CLUBSP.per]))
+         !CLUBSP.lu?'':L.length?'':(sfCount()?'nothing with these filters':(CLUBSP.pers.length>1?'no spot yet':({past:'no spot yet',now:'nothing right now',future:'nothing planned'})[CLUBSP.per])))
       : (L.length?'':(tout.length?'nothing with these filters':conf.vide));
     peindreFlt();
     observer();
@@ -7745,21 +7762,23 @@ window.__totehm_sh=()=>Object.assign({},SH.etat(),{capture:CAP.etat(), places:BA
    défile vers ses voisins ; ✕ ou Échap ramène à la carte ou à la grille. Changer de mode ne redemande rien. */
 const SPOTS=(()=>{
   let ouvert=false, voit=false;
-  const grille=()=>SPOTMODE.get()==='grid';
+  /* SHORTS : la grille dort dessous, la visionneuse (`SHS`) défile les spots plein écran ; la refermer rend la grille */
+  const enShorts=()=>SPOTMODE.get()==='shorts', grille=()=>SPOTMODE.get()!=='map';
+  function shorts(){ if(!ouvert||!enShorts()||voit) return; const l=CLUBSP.items(); if(l.length&&l[0]&&l[0].id) voir('sp:'+l[0].id); }
   const actif=()=>grille()?SPGRID:SPMAP, dort=()=>grille()?SPMAP:SPGRID;
   function peindreMode(){
     document.body.classList.toggle('rdr-grid',grille());
     document.querySelectorAll('#rdr-mode [data-rmode]').forEach(b=>b.setAttribute('aria-checked',String(b.dataset.rmode===SPOTMODE.get())));
   }
   function voir(cle){ if(!ouvert||!cle) return; voit=true; relever(); document.body.classList.add('rdr-voir'); SHS.ouvrirA(cle); }
-  function fermerVoir(){ if(!voit) return; voit=false; document.body.classList.remove('rdr-voir'); SHS.fermer(); }
-  SPOTMODE.surChangement(()=>{ peindreMode(); if(!ouvert) return; fermerVoir(); dort().fermer(); actif().ouvrir(); });
+  function fermerVoir(){ if(!voit) return; voit=false; document.body.classList.remove('rdr-voir'); SHS.fermer(); if(enShorts()) SPOTMODE.set('grid'); }
+  SPOTMODE.surChangement(()=>{ peindreMode(); if(!ouvert) return; fermerVoir(); dort().fermer(); actif().ouvrir(); shorts(); });
   /* Les spots ont changé (un temps, un filtre, une page de plus) : la carte, la grille et le polaroid relisent. */
-  CLUBSP.surChangement(()=>{ SHS.flts(); if(!ouvert) return; actif().maj(); if(voit) SHS.maj(); });
+  CLUBSP.surChangement(()=>{ SHS.flts(); if(!ouvert) return; actif().maj(); if(voit) SHS.maj(); else shorts(); });
   { const m=$('rdr-mode'); if(m){
       m.addEventListener('click',e=>{ const b=e.target.closest('[data-rmode]'); if(b) SPOTMODE.set(b.dataset.rmode); });
       m.addEventListener('keydown',e=>{ if(e.key!=='ArrowLeft'&&e.key!=='ArrowRight') return; e.preventDefault(); e.stopPropagation();
-        const v=e.key==='ArrowRight'?'grid':'map'; SPOTMODE.set(v);
+        const M=SPOTMODE.MODES, i=M.indexOf(SPOTMODE.get()), v=M[Math.max(0,Math.min(M.length-1,i+(e.key==='ArrowRight'?1:-1)))]; SPOTMODE.set(v);
         const b=m.querySelector('[data-rmode="'+v+'"]'); if(b) try{ b.focus({preventScroll:true}); }catch(_){} });
   } }
   { const x=$('rdr-x'); if(x) x.addEventListener('click',fermerVoir); }
@@ -7800,7 +7819,7 @@ const SPOTS=(()=>{
   window.addEventListener('keydown',e=>{ if(e.key==='Escape'&&voit){ e.preventDefault(); e.stopImmediatePropagation(); fermerVoir(); } },{capture:true});
   peindreMode();
   return {
-    ouvrir(){ ouvert=true; peindreMode(); SHS.flts(); actif().ouvrir(); CLUBSP.ouvrir();
+    ouvrir(){ ouvert=true; peindreMode(); SHS.flts(); actif().ouvrir(); CLUBSP.ouvrir(); shorts();
       const pl=$('rdr-plus'); if(pl) pl.hidden=!me||!!RO; },
     fermer(){ fermerVoir(); ouvert=false; NSPOT.fermer(); SPMAP.fermer(); SPGRID.fermer(); },
     pause(){ SHS.pause(); },
