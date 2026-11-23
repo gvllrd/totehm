@@ -4,7 +4,7 @@ const number=v=>Number.isFinite(Number(v))?Number(v):0;
 const source=ref=>typeof ref==='string'&&ref.length>0&&ref.length<=16000&&ref===ref.trim()&&!/[\u0000-\u001f\u007f]/.test(ref)?'https://www.totehm.com/totehm#'+new URLSearchParams({element:'habit',ref}):null;
 const habitLink=(ref,label,content=esc(label))=>source(ref)?'<a class="tracking-source" href="'+esc(source(ref))+'" title="Open original">'+content+'</a>':'<div>'+content+'</div><small>Source link unavailable. Open this Habit directly in your TOTEHM.</small>';
 const higher='<svg class="vs-hi" viewBox="0 0 600 200" aria-label="Higher"><use href="#higher-badge"/></svg>';
-export const PRACTICE_REVIEW_PROMPT='Review my reported practice alongside my TOTEHM. Separate Done, Missed and missing reports. Explain what the evidence supports and suggest one small adjustment, without changing my TOTEHM.';
+export const PRACTICE_REVIEW_PROMPT='Review my reported practice alongside my TOTEHM. Separate On It, No Time, No Energy and missing answers. Explain what the evidence supports and suggest one small adjustment, without changing my TOTEHM.';
 export function renderPractice(s,{requestedDays=s.days_count,renderHabit}={}){
  const habitPreview=h=>habitLink(h.ref,h.habit,renderHabit?renderHabit(h):esc(h.habit));
  const c=s.counts??{},habits=s.habits??[],days=s.days??[],settings=s.settings??{},span=number(s.days_count)||7;
@@ -17,12 +17,12 @@ export function renderPractice(s,{requestedDays=s.days_count,renderHabit}={}){
     chiffre (un silence n'est pas un échec ; une période partielle ; une notification non livrée) — le reste est parti :
     la couverture, le décompte sous chaque box (la bande des jours le dit), « Worth a look » (la grille le montre), la
     tendance à deux semaines (« insufficient » le plus souvent). */
- html+='<div class="db-k"><div><i>Done</i><b>'+number(c.done)+'</b></div><div><i>Missed</i><b>'+number(c.missed)+'</b></div><div><i>No response</i><b>'+unanswered+'</b></div></div>'
-  +'<p class="tracking-caption">No response is never a Missed.'+(pending?' '+pending+' pending.':'')+'</p>';
- if(number(c.partial)||number(c.skipped))html+='<p class="tracking-caption">Earlier reports: '+number(c.partial)+' in part · '+number(c.skipped)+' set aside. Kept as reported.</p>';
+ /* 23/11 (Wah) : « pas Done / Missed — On It · No Time · No Energy » : la question est « est-ce que je pratique en ce moment ? » */
+ html+='<div class="db-k"><div><i>On It</i><b>'+number(c.on_it)+'</b></div><div><i>No Time</i><b>'+number(c.no_time)+'</b></div><div><i>No Energy</i><b>'+number(c.no_energy)+'</b></div><div><i>No response</i><b>'+unanswered+'</b></div></div>'
+  +'<p class="tracking-caption">No response is unknown, never a failure.'+(number(c.not_on_it)?' '+number(c.not_on_it)+' earlier « not on it ».':'')+(pending?' '+pending+' pending.':'')+'</p>';
  if(s.source_complete===false)html+='<p class="tracking-caption">This is part of the recorded practice.</p>';
  html+='</div>';
- const legacy={d:'done',m:'missed',p:'partial',s:'skipped',a:'unanswered'};
+ const legacy={o:'on_it',t:'no_time',e:'no_energy',n:'not_on_it',w:'pending',a:'unanswered'};
  /* ⚠️ 14/11 — UNE BOX EST SACRÉE, DONC ELLE N'EST PLUS UNE COLONNE (Wah : « il faut revoir le dashboard
     notamment la partie My Habits, en particulier les box qui sont écrasées au niveau de la largeur …
     son format parent hérité du totehm est respecté le plus possible dans les autres endroits où elles
@@ -37,17 +37,17 @@ export function renderPractice(s,{requestedDays=s.days_count,renderHabit}={}){
   matrix+='<div class="tracking-row"><div class="db-n tracking-name">'+habitPreview(h)+'</div>'
    +'<div class="tracking-days">';
   for(let i=0;i<days.length;i++){
-   const v=cells[i]??{},done=number(v.done),missed=number(v.missed),partial=number(v.partial),skipped=number(v.skipped),unknown=number(v.unanswered),waiting=number(v.pending);
-   const values=[done,missed,partial,skipped,unknown,waiting],labels=['done','missed','in part','set aside','unknown','pending'];
+   const v=cells[i]??{},on=number(v.on_it),time=number(v.no_time),energy=number(v.no_energy),not=number(v.not_on_it),unknown=number(v.unanswered),waiting=number(v.pending);
+   const values=[on,time,energy,not,unknown,waiting],labels=['on it','no time','no energy','not on it','unknown','pending'];
    const title=values.map((n,k)=>n?n+' '+labels[k]:'').filter(Boolean).join(' · ')||'No observation';
-   const text=values.map((n,k)=>n?['✓','×','◐','·','?','…'][k]+(n>1?n:''):'').filter(Boolean).join(' ');
-   matrix+='<span class="tracking-cell'+(done?' has-done':'')+(missed?' has-missed':'')+'" title="'+esc(days[i].day+': '+title)+'" aria-label="'+esc(days[i].day+': '+title)+'">'+esc(text||'—')+'</span>';
+   const text=values.map((n,k)=>n?['✓','⏱','⚡','·','?','…'][k]+(n>1?n:''):'').filter(Boolean).join(' ');
+   matrix+='<span class="tracking-cell'+(on?' has-done':'')+(time||energy||not?' has-missed':'')+'" title="'+esc(days[i].day+': '+title)+'" aria-label="'+esc(days[i].day+': '+title)+'">'+esc(text||'—')+'</span>';
   }
   matrix+='</div></div>';
  }
  matrix+='</div>';
  html+='<div class="db"><p class="db-t">My Habits<i>'+span+' days</i></p>'+(habits.length?matrix:'<p class="db-vide">Your first Habit starts the system.</p>')
-  +'<p class="tracking-caption">✓ Done · × Missed · ? no response · … pending'+(number(c.partial)||number(c.skipped)?' · ◐ in part · · set aside':'')+'</p></div>';
+  +'<p class="tracking-caption">✓ On It · ⏱ No Time · ⚡ No Energy · ? no response · … pending'+(number(c.not_on_it)?' · · not on it':'')+'</p></div>';
  if(number(s.delivery?.failed)||number(s.delivery?.unconfirmed))html+='<p class="tracking-caption">Some notifications could not be delivered or confirmed. They are not counted as unanswered practice.</p>';
  /* UNE rangée d'actions : la revue avec Higher GPT (le produit), puis le bot ; l'état du bot en une ligne dessous. */
  html+='<div class="db tracking-act"><div class="tracking-review"><a class="vs-act" href="/chatgpt">Review with '+higher+' ChatGPT</a><button type="button" class="vs-act" data-track-manage>TotehmBot</button></div>'

@@ -5,18 +5,18 @@ import {createTelegramTransport,TelegramAPIError,telegramTextParts} from '../../
 import {createTrackingTick} from '../../backend/supabase/functions/_shared/tracking-tick.ts';
 let checks=0;const check=(v,m)=>{assert(v,m);checks++;};
 const A='11111111-1111-4111-8111-111111111111';
-const calls=[],sent=[];let draft=null,answer={ok:true,status:'partial',id:'9007199254740993',habit:'Write'};
+const calls=[],sent=[];let draft=null,answer={ok:true,status:'no_time',id:'9007199254740993',habit:'Write'};
 const db={async rpc(name,args){calls.push({name,args});return {data:name==='tracking_list'?{ok:true,items:[{habit:'Write <script>',key:'a'.repeat(32)}],has_more:false}
  :name==='tracking_open'?{ok:true,id:'9007199254740993',habit:'Write'}
  :name==='tracking_answer'||name==='tracking_correct'?answer:name==='tracking_detail'?{ok:true}:name==='tracking_bot_pause'?{ok:true,settings:{paused:true}}
- :name==='tracking_bot_summary'?{ok:true,counts:{done:2,partial:1,missed:0,skipped:1,unanswered:2},trend:{state:'insufficient'},barriers:[],settings:{timezone:'UTC',quiet_from:22,quiet_to:8,max_daily:2}}:null,error:null};},
+ :name==='tracking_bot_summary'?{ok:true,counts:{on_it:2,no_time:1,no_energy:1,not_on_it:0,unanswered:2},trend:{state:'insufficient'},barriers:[],settings:{timezone:'UTC',quiet_from:22,quiet_to:8,max_daily:2}}:null,error:null};},
  from(table){let value,remove=false;const q={select(){return q},eq(){return q},maybeSingle(){return Promise.resolve({data:table==='profiles'?{id:A}:draft,error:null})},upsert(v){value=v;return q},delete(){remove=true;return q},then(ok,no){if(value)draft=value;if(remove)draft=null;return Promise.resolve({data:null,error:null}).then(ok,no)}};return q;}};
 let ackFailure=null;
 const telegram=async(method,payload)=>{sent.push({method,payload});if(method==='answerCallbackQuery'&&ackFailure)throw ackFailure;return {ok:true,result:{message_id:22}};};
 const message=text=>({message:{from:{id:101},chat:{id:101,type:'private'},text}});
-const callback=(data,text='Write\n\nToday · 10 Nov\nDid you do it?')=>({callback_query:{id:'cb',from:{id:101},message:{message_id:1,text,chat:{id:101,type:'private'}},data}});
+const callback=(data,text='Write\n\nToday · 10 Nov\nAre you on it?')=>({callback_query:{id:'cb',from:{id:101},message:{message_id:1,text,chat:{id:101,type:'private'}},data}});
 for(const id of ['1','9007199254740993']){
- const kb=trackingKeyboard(id);check(kb.inline_keyboard[0].length===2&&kb.inline_keyboard[1][0].text==='Prepare','Two report choices and optional preparation');
+ const kb=trackingKeyboard(id);check(kb.inline_keyboard.length===1&&kb.inline_keyboard[0].map(b=>b.text).join('|')==='On It|No Time|No Energy','23/11 · OUTPUT : On It · No Time · No Energy, plus de Prepare');
  check(kb.inline_keyboard.flat().every(b=>Buffer.byteLength(b.callback_data)<=64),'Callback identifiers fit Telegram without rounding bigint');
 }
 assert.throws(()=>trackingKeyboard('not-id'));checks++;
@@ -27,25 +27,25 @@ for(const command of ['/track','/suivi','/start tracking']){
 }
 const beforeOld=calls.length;await handleTrackingUpdate(db,callback('t:n:'+'a'.repeat(32)),telegram);
 check(calls.length===beforeOld,'An old Habit selector cannot create a new manual report');
-answer={...answer,status:'done'};let beforeSend=sent.filter(s=>s.method==='sendMessage').length;
-await handleTrackingUpdate(db,callback('t:a:9007199254740993:done'),telegram);
-check(calls.at(-1).args.p_outcome==='9007199254740993'&&calls.at(-1).args.p_status==='done','A report uses its exact string identity');
-check(sent.at(-1).method==='editMessageText'&&sent.at(-1).payload.message_id===1&&sent.at(-1).payload.text.endsWith('Saved: Done'),'A report confirms within the same message');
+answer={...answer,status:'on_it'};let beforeSend=sent.filter(s=>s.method==='sendMessage').length;
+await handleTrackingUpdate(db,callback('t:a:9007199254740993:on_it'),telegram);
+check(calls.at(-1).args.p_outcome==='9007199254740993'&&calls.at(-1).args.p_status==='on_it','A report uses its exact string identity');
+check(sent.at(-1).method==='editMessageText'&&sent.at(-1).payload.message_id===1&&sent.at(-1).payload.text.endsWith('Saved · On It'),'A report confirms within the same message');
 check(sent.filter(s=>s.method==='sendMessage').length===beforeSend,'Answering creates no follow-up messages');
-check(sent.at(-1).payload.reply_markup.inline_keyboard.flat().map(b=>b.text).join()==='Change,Prepare','Correction and optional preparation after a report');
-answer={...answer,already:true,status:'partial'};await handleTrackingUpdate(db,callback('o:9007199254740993:done'),telegram);
-check(sent.at(-1).payload.text.endsWith('Saved: In part'),'Legacy replay shows the saved fact, never the requested replacement');
-await handleTrackingUpdate(db,callback('t:e:9007199254740993:open','Write\n\nSaved: Done'),telegram);
-check(sent.at(-1).method==='editMessageReplyMarkup'&&sent.at(-1).payload.reply_markup.inline_keyboard[0].every(b=>b.callback_data.startsWith('t:c:')),'Change opens two correction buttons on the same message');
-answer={...answer,already:false,status:'missed'};await handleTrackingUpdate(db,callback('t:c:9007199254740993:missed','Write\n\nSaved: Done'),telegram);
-check(calls.at(-1).name==='tracking_correct'&&sent.at(-1).payload.text==='Write\n\nSaved: Missed','Explicit correction replaces the prior status once');
-await handleTrackingUpdate(db,callback('t:a:9007199254740993:missed','x'.repeat(4096)),telegram);
-check(sent.at(-1).method==='editMessageReplyMarkup'&&sent.at(-1).payload.reply_markup.inline_keyboard[0][0].text==='Saved: Missed · Change','A full legacy message keeps its text and confirms status in the short correction control');
+check(sent.at(-1).payload.reply_markup.inline_keyboard.flat().map(b=>b.text).join()==='Saved · On It · Change','A neutral acknowledgement with Change, no Prepare');
+answer={...answer,already:true,status:'no_time'};await handleTrackingUpdate(db,callback('o:9007199254740993:done'),telegram);
+check(sent.at(-1).payload.text.endsWith('Saved · No Time'),'Legacy replay shows the saved fact, never the requested replacement');
+await handleTrackingUpdate(db,callback('t:e:9007199254740993:open','Write\n\nSaved · On It'),telegram);
+check(sent.at(-1).method==='editMessageReplyMarkup'&&sent.at(-1).payload.reply_markup.inline_keyboard.at(-1).length===3&&sent.at(-1).payload.reply_markup.inline_keyboard.at(-1).every(b=>b.callback_data.startsWith('t:c:')),'Change opens the three answers again on the same message');
+answer={...answer,already:false,status:'no_energy'};await handleTrackingUpdate(db,callback('t:c:9007199254740993:no_energy','Write\n\nSaved · On It'),telegram);
+check(calls.at(-1).name==='tracking_correct'&&sent.at(-1).payload.text==='Write\n\nSaved · No Energy','Explicit correction replaces the prior status once');
+await handleTrackingUpdate(db,callback('t:a:9007199254740993:no_energy','x'.repeat(4096)),telegram);
+check(sent.at(-1).method==='editMessageReplyMarkup'&&sent.at(-1).payload.reply_markup.inline_keyboard.at(-1)[0].text==='Saved · No Energy · Change','A full legacy message keeps its text and confirms status in the short correction control');
 for(const failure of [new TelegramAPIError('answerCallbackQuery',400,400,true),new TelegramAPIError('answerCallbackQuery',429,429,true),new TelegramAPIError('answerCallbackQuery',0,0,false)]){
  ackFailure=failure;const writesBefore=calls.filter(c=>c.name==='tracking_answer').length;
- await handleTrackingUpdate(db,callback('t:a:9007199254740993:missed'),telegram);
+ await handleTrackingUpdate(db,callback('t:a:9007199254740993:no_energy'),telegram);
  check(calls.filter(c=>c.name==='tracking_answer').length===writesBefore+1,'A rejected, throttled or uncertain ACK cannot block an idempotent report');
- check(sent.at(-1).method==='editMessageText'&&sent.at(-1).payload.text.endsWith('Saved: Missed'),'A failed ACK still confirms the saved report in the same message');
+ check(sent.at(-1).method==='editMessageText'&&sent.at(-1).payload.text.endsWith('Saved · No Energy'),'A failed ACK still confirms the saved report in the same message');
 }
 ackFailure=null;
 const before=calls.length;
@@ -56,11 +56,11 @@ check(!await handleTrackingUpdate(db,message('an unrelated thought'),telegram),'
 await handleTrackingUpdate(db,callback('t:d:9007199254740993:open'),telegram);
 check(draft.kind==='tracking','A historical private detail button remains explicitly usable');
 await handleTrackingUpdate(db,message('/minutes 20'),telegram);check(calls.at(-1).args.p_field==='minutes'&&calls.at(-1).args.p_value==='20'&&!draft,'Existing explicit details still record without loss');
-await handleTrackingUpdate(db,message('/review'),telegram);check(sent.at(-1).payload.text.includes('unanswered: unknown')&&!sent.at(-1).payload.text.includes('pas done'),'English review distinguishes unknown from missed');
+await handleTrackingUpdate(db,message('/review'),telegram);check(sent.at(-1).payload.text.includes('unanswered: unknown')&&/2 on it · 1 no time · 1 no energy/.test(sent.at(-1).payload.text),'The review speaks On It · No Time · No Energy, and unknown stays unknown');
 await handleTrackingUpdate(db,message('/pause'),telegram);check(calls.at(-1).args.p_paused===true,'Pause uses the verified linked Telegram identity');
 check(!calls.some(c=>/habit|objective|repulsion|story|vision|model/i.test(c.name)),'Tracking does not write the five views or run a model');
 check(trackingReview({counts:{},trend:{state:'insufficient'}}).includes('Not enough'),'Sparse data produces no invented trend');
-check(trackingKeyboard('1').inline_keyboard.flat().map(b=>b.text).join('|')==='Done|Missed|Prepare','Default report controls are English');
+check(trackingKeyboard('1').inline_keyboard.flat().map(b=>b.text).join('|')==='On It|No Time|No Energy','Default report controls are On It · No Time · No Energy');
 await handleTrackingUpdate(db,callback('t:d:9007199254740993:open'),telegram);
 await handleTrackingUpdate(db,message('/energy 4'),telegram);check(calls.at(-1).args.p_field==='energy'&&calls.at(-1).args.p_value==='4'&&!draft,'English energy command remains backward compatible');
 await handleTrackingUpdate(db,callback('t:d:9007199254740993:open'),telegram);
@@ -95,15 +95,15 @@ response=await handler(req({mode:'dry_run'}));check((await response.json()).sent
 check(timingReads.length===0,'Health and dry run never read additional temporal wording');
 response=await handler(req());check((await response.json()).sent===1&&sendCount===1,'Duplicate TOTEHM rows cannot duplicate a send');
 check(tickCalls.at(-1).name==='tracking_delivered'&&tickCalls.at(-1).args.p_status==='sent','A confirmed Telegram response finalizes delivery');
-check(deliveredMessages.at(-1).text.includes('Today · 10 Nov 2026')&&deliveredMessages.at(-1).reply_markup.inline_keyboard[0].length===2,'Push includes the target period and two short report buttons');
+check(deliveredMessages.at(-1).text.includes('Today · 10 Nov 2026')&&deliveredMessages.at(-1).reply_markup.inline_keyboard.at(-1).length===3,'Push includes the target period and the three answers');
 status=403;bodyOk=false;await handler(req());check(tickCalls.at(-1).args.p_status==='failed','A definite rejection is not an unanswered practice');
 status=500;await handler(req());check(tickCalls.at(-1).args.p_status==='uncertain','Server failures are uncertain, not safe automatic retries');
 throwNetwork=true;await handler(req());check(tickCalls.at(-1).args.p_status==='uncertain','A lost response cannot trigger a duplicate');
 check((await handler(req({mode:'typo'}))).status===400,'An unknown diagnostic mode never sends messages');
 throwNetwork=false;status=200;bodyOk=true;habit=unicode;
 let start=deliveredMessages.length;await handler(req());let parts=deliveredMessages.slice(start);
-check(parts.map(x=>x.text).join('')===unicode+'\n\nToday · 10 Nov 2026 (UTC)\nDid you do it?','The push keeps the complete long Habit and target period');
-check(parts.slice(0,-1).every(x=>!x.reply_markup)&&parts.at(-1).reply_markup.inline_keyboard.flat().map(x=>x.text).join('|')==='Done|Missed|Prepare','Only the final segment has answer and optional preparation buttons');
+check(parts.map(x=>x.text).join('')===unicode+'\n\nToday · 10 Nov 2026 (UTC)\nAre you on it?','The push keeps the complete long Habit and target period');
+check(parts.slice(0,-1).every(x=>!x.reply_markup)&&parts.at(-1).reply_markup.inline_keyboard.flat().map(x=>x.text).join('|')==='On It|No Time|No Energy','Only the final segment has the answer buttons');
 check(tickCalls.at(-1).args.p_status==='sent','Full text delivery is confirmed only after all segments');
 failAt=sendCount+2;await handler(req());check(tickCalls.at(-1).args.p_status==='uncertain'&&tickCalls.at(-1).args.p_code==='telegram_partial_delivery','A definite rejection after partial text delivery cannot trigger duplicates');
 
@@ -114,10 +114,10 @@ const timingMessages=async()=>{const before=deliveredMessages.length;await handl
 timingRows=[{habits:[{t:'OTHER HABIT',f:'daily',rhythm_text:'UNRELATED WORDING'},
  {t:habit,f:'daily',rhythm_text:'Trois fois par jour à 7h30',where:'PRIVATE PLACE',media:'PRIVATE MEDIA',notes:'PRIVATE NOTE'}]}];
 let enriched=await timingMessages();
-check(enriched.length===1&&enriched[0].text==='Write\n\nYour timing: Trois fois par jour à 7h30\n\nToday · 10 Nov 2026 (UTC)\nDid you do it?','The original confirmed wording appears before the immutable target period');
+check(enriched.length===1&&enriched[0].text==='Write\n\nYour timing: Trois fois par jour à 7h30\n\nToday · 10 Nov 2026 (UTC)\nAre you on it?','The original confirmed wording appears before the immutable target period');
 check(!enriched[0].parse_mode&&!JSON.stringify(enriched).includes('PRIVATE')&&!JSON.stringify(enriched).includes('UNRELATED'),'Timing is plain text; usual place, media, notes and unrelated Habits are not exported');
 check(timingReads.every(r=>r.table==='totehms'&&r.columns==='habits'&&r.filters.length===1&&r.filters[0][0]==='user_id'&&r.filters[0][1]===A&&r.ordering.key==='updated_at'&&r.ordering.ascending===false&&r.ordering.nullsFirst===false&&r.limit===1&&r.afterClaim==='tracking_claim'),'Every optional read is bounded to the latest claimed owner after a real claim');
-check(enriched[0].reply_markup.inline_keyboard.flat().map(x=>x.text).join('|')==='Done|Missed|Prepare','Confirmed wording keeps the same report and preparation controls');
+check(enriched[0].reply_markup.inline_keyboard.flat().map(x=>x.text).join('|')==='On It|No Time|No Energy','Confirmed wording keeps the same answer controls');
 for(const savedHabit of [
  {t:'Write ',f:'daily',rhythm_text:'FOREIGN REF'},
  {t:habit,f:'weekly',rhythm_text:'CHANGED SAVED RHYTHM'},
@@ -129,7 +129,7 @@ for(const savedHabit of [
  {t:habit,f:'daily'}
 ]){
  timingRows=[{habits:[savedHabit]}];enriched=await timingMessages();
- check(enriched.map(x=>x.text).join('')==='Write\n\nToday · 10 Nov 2026 (UTC)\nDid you do it?','Unknown/stale/invalid temporal metadata falls back to the original canonical check-in');
+ check(enriched.map(x=>x.text).join('')==='Write\n\nToday · 10 Nov 2026 (UTC)\nAre you on it?','Unknown/stale/invalid temporal metadata falls back to the original canonical check-in');
 }
 timingRows=[{habits:[{t:habit,f:'daily',rhythm_text:'First current wording'}]},{habits:[{t:habit,f:'daily',rhythm_text:'OLDER WORDING'}]}];
 enriched=await timingMessages();check(enriched[0].text.includes('First current wording')&&!enriched[0].text.includes('OLDER'),'Only the latest row participates even if a client returns extra data');
@@ -137,7 +137,7 @@ const timingLog=[],previousError=console.error;console.error=(...args)=>timingLo
 try{
  for(const flag of ['error','throw']){
   timingError=flag==='error';timingThrow=flag==='throw';enriched=await timingMessages();
-  check(enriched[0].text==='Write\n\nToday · 10 Nov 2026 (UTC)\nDid you do it?'&&tickCalls.at(-1).args.p_status==='sent','A failed optional timing read never prevents delivery or becomes uncertain practice');
+  check(enriched[0].text==='Write\n\nToday · 10 Nov 2026 (UTC)\nAre you on it?'&&tickCalls.at(-1).args.p_status==='sent','A failed optional timing read never prevents delivery or becomes uncertain practice');
  }
 }finally{console.error=previousError;timingError=false;timingThrow=false;}
 check(timingLog.length===2&&timingLog.every(x=>x==='[tracking] timing_read_failed'),'Metadata failure logs contain neither private wording nor provider descriptions');
@@ -145,7 +145,7 @@ const readsBeforeSkip=timingReads.length;claimEligible=false;await timingMessage
 check(timingReads.length===readsBeforeSkip,'No extra timing read occurs for a skipped or failed claim');
 habit=unicode;timingRows=[{habits:[{t:habit,f:'daily',rhythm_text:'🌍'.repeat(250)}]}];
 enriched=await timingMessages();
-check(enriched.map(x=>x.text).join('')===unicode+'\n\nYour timing: '+'🌍'.repeat(250)+'\n\nToday · 10 Nov 2026 (UTC)\nDid you do it?','Complete Habit plus a maximum-length Unicode timing keeps all authored text');
+check(enriched.map(x=>x.text).join('')===unicode+'\n\nYour timing: '+'🌍'.repeat(250)+'\n\nToday · 10 Nov 2026 (UTC)\nAre you on it?','Complete Habit plus a maximum-length Unicode timing keeps all authored text');
 check(enriched.every(x=>x.text.length<=3500&&x.text.isWellFormed())&&enriched.slice(0,-1).every(x=>!x.reply_markup)&&!!enriched.at(-1).reply_markup,'Long text remains segmented safely, with controls only on its final segment');
 
 const logs=[],oldError=console.error;console.error=(...args)=>logs.push(args.join(' '));
@@ -167,19 +167,20 @@ linkedTables={objectives:[{id:boxId(1),text:'Finish my book',target_at:'2027-06-
  repulsions:[{id:'9',repulsion:'Scroll at night',active:true,habit_text:habit},{id:'10',repulsion:'UNRELATED TRIGGER',active:true,habit_text:'Other Habit'}]};
 enriched=await timingMessages();
 const linkButtons=enriched[0].reply_markup.inline_keyboard.flat().filter(b=>b.callback_data?.startsWith('t:x:'));
-check(linkButtons.map(b=>b.text).join('|')==='Why: Finish my book|Why: A life of writing|Instead of: Scroll at night','The scheduled message shows only each direct why and replacement trigger');
-check(enriched.length===1&&enriched[0].text==='Write\n\nToday · 10 Nov 2026 (UTC)\nDid you do it?'&&enriched[0].reply_markup.inline_keyboard[0].map(b=>b.text).join('|')==='Done|Missed','Linked buttons add no message, selection menu, or change to the complete check-in');
+const plus=enriched[0].reply_markup.inline_keyboard.flat().filter(b=>b.callback_data?.startsWith('t:k:'));
+check(linkButtons.map(b=>b.text).join('|')==='↺ Why: Finish my book|↺ Why: A life of writing'&&plus.map(b=>b.text).join()==='↺ +1 more','23/11 · REMEMBER : deux liens au plus (↺ Why · ↺ Trigger), puis « ↺ +1 more »');
+check(enriched.length===1&&enriched[0].text==='Write\n\nToday · 10 Nov 2026 (UTC)\nAre you on it?'&&enriched[0].reply_markup.inline_keyboard.at(-1).map(b=>b.text).join('|')==='On It|No Time|No Energy'&&enriched[0].reply_markup.inline_keyboard[0][0].text.startsWith('↺ '),'REMEMBER on top, OUTPUT below; linked buttons add no message, selection menu, or change to the complete check-in');
 check(linkedReads.every(r=>r.limit<=401&&r.filters.some(([k,v])=>k==='user_id'&&v===A)&&r.afterClaim==='tracking_claim'),'Linked reads are owner-bound, physically capped and occur only after an actual due claim');
 check(!tickCalls.some(c=>/tracking_answer|tracking_correct|tracking_detail|story_create|habit_spot_set/.test(c.name)),'A scheduler lookup writes neither an observation nor any TOTEHM element');
-const initial=callback('t:a:9007199254740993:done');initial.callback_query.message.reply_markup=enriched[0].reply_markup;
-answer={...answer,status:'done'};await handleTrackingUpdate(db,initial,telegram);
-check(sent.at(-1).payload.reply_markup.inline_keyboard.flat().filter(b=>b.callback_data?.startsWith('t:x:')).length===3,'Saving Done keeps the existing Why/Instead of controls');
+const initial=callback('t:a:9007199254740993:on_it');initial.callback_query.message.reply_markup=enriched[0].reply_markup;
+answer={...answer,status:'on_it'};await handleTrackingUpdate(db,initial,telegram);
+check(sent.at(-1).payload.reply_markup.inline_keyboard.flat().filter(b=>/^t:[xk]:/.test(b.callback_data||'')).length===3,'Saving On It keeps the REMEMBER controls (↺ Why · ↺ Trigger)');
 const change=callback('t:e:9007199254740993:open');change.callback_query.message.reply_markup=sent.at(-1).payload.reply_markup;
 await handleTrackingUpdate(db,change,telegram);
-check(sent.at(-1).payload.reply_markup.inline_keyboard[0].every(b=>b.callback_data.startsWith('t:c:'))&&sent.at(-1).payload.reply_markup.inline_keyboard.flat().filter(b=>b.callback_data?.startsWith('t:x:')).length===3,'Change keeps the same linked controls beside Done/Missed corrections');
+check(sent.at(-1).payload.reply_markup.inline_keyboard.at(-1).every(b=>b.callback_data.startsWith('t:c:'))&&sent.at(-1).payload.reply_markup.inline_keyboard.flat().filter(b=>/^t:[xk]:/.test(b.callback_data||'')).length===3,'Change keeps the same REMEMBER controls above the three corrections');
 const linkedBefore=linkedReads.length;claimEligible=false;await timingMessages();claimEligible=true;claimError=true;await timingMessages();claimError=false;
 check(linkedReads.length===linkedBefore,'Ineligible and failed claims do not read linked context');
 linkedTables={};enriched=await timingMessages();
-check(enriched[0].reply_markup.inline_keyboard.flat().map(b=>b.text).join('|')==='Done|Missed|Prepare','Missing current links create no Why or Instead of button');
+check(enriched[0].reply_markup.inline_keyboard.flat().map(b=>b.text).join('|')==='On It|No Time|No Energy','Missing current links create no Why or Trigger button');
 
 console.log(JSON.stringify({suite:'Intelligent tracking bot',checks,passed:checks}));

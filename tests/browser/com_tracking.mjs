@@ -8,10 +8,10 @@ const today='2026-11-10';
 function snapshot(span,settings){
  const days=Array.from({length:span},(_,i)=>{const d=new Date(today+'T12:00:00Z');d.setUTCDate(d.getUTCDate()-span+1+i);return {day:d.toISOString().slice(0,10)};});
  return {ok:true,source_complete:true,today,days_count:span,source:'self_report',settings,
-  counts:{done:span===7?2:8,partial:1,missed:2,skipped:1,unanswered:3,pending:1,attempts:5,answered:6},
+  counts:{on_it:span===7?2:8,no_time:1,no_energy:2,not_on_it:1,unanswered:3,pending:1,answered:6},
   coverage:{total_habits:5,observed_habits:1,answered:6,delivered:10,pending:1},
-  habits:[{ref:steps[0].t,habit:steps[0].t,frequency:'weekly',intentions:['focus'],done:span===7?2:8,partial:1,missed:2,skipped:1,unanswered:3,reports:10,
-   day_counts:days.map((d,i)=>({...d,done:i===0?1:0,missed:i===0?1:0,partial:i===1?1:0,skipped:i===2?1:0,unanswered:i===3?1:0,pending:i===4?1:0}))}],
+  habits:[{ref:steps[0].t,habit:steps[0].t,frequency:'weekly',intentions:['focus'],on_it:span===7?2:8,no_time:1,no_energy:2,not_on_it:1,unanswered:3,reports:10,
+   day_counts:days.map((d,i)=>({...d,on_it:i===0?1:0,no_energy:i===0?1:0,no_time:i===1?1:0,not_on_it:i===2?1:0,unanswered:i===3?1:0,pending:i===4?1:0}))}],
   days,trend:{state:'insufficient'},delivery:{failed:1,unconfirmed:0}};
 }
 const browser=await launch();let checks=0;
@@ -31,13 +31,13 @@ try{
   await pg.click('#lv-tap-turn');await pg.waitForSelector('#srch.is-pret');
   await pg.waitForFunction(()=>document.querySelector('#vs-dash')?.textContent.includes('My practice'));
   const text=await pg.locator('#vs-dash').innerText();
-  check(text.includes('7 days · self-reported')&&text.includes('No response is never a Missed')&&text.includes('Earlier reports: 1 in part · 1 set aside'),'One period, honest unknowns and unchanged historical states');
+  check(text.includes('7 days · self-reported')&&text.includes('No response is unknown, never a failure')&&text.includes('1 earlier « not on it »')&&/On It\s*2/i.test(text)&&/No Time\s*1/i.test(text)&&/No Energy\s*2/i.test(text),'23/11 · On It · No Time · No Energy ; silence is unknown ; earlier « not on it » kept');
   check(!text.includes('Habits with observations')&&!text.includes('Worth a look')&&!text.includes('Two weeks compared'),'16/11 · only the essentials: no coverage caption, no « worth a look », no trend');
-  check((await pg.locator('.tracking-cell.has-done.has-missed').count())===1&&(await pg.locator('.tracking-cell.has-done.has-missed').textContent()).includes('×'),'One successful report cannot hide a missed report on the same day');
+  check((await pg.locator('.tracking-cell.has-done.has-missed').count())===1&&(await pg.locator('.tracking-cell.has-done.has-missed').textContent()).includes('⚡'),'One « on it » cannot hide a « no energy » on the same day');
   check(!await pg.locator('#vs-dash input').count()&&!log.rpc.some(x=>/tracking_(answer|detail|open|settings_set)/.test(x.name)),'The dashboard never writes reports or consent');
   check(!await pg.locator('#vs-dash .db-n b').count()&&(await pg.locator('#vs-dash .db-n a .v-name').textContent())===steps[0].t,'The full long Unicode Habit is escaped and linked to its original');
   check(await pg.locator('.tracking-matrix .db-n').evaluate(e=>e.getBoundingClientRect().height<=200),'A very long Habit remains a readable preview, with its exact source kept intact');
-  check(!text.includes('Consider a smaller')&&!/\d+ done · \d+ missed/.test(text),'No invented cause, and no count line under each box (the day strip says it)');
+  check(!text.includes('Consider a smaller')&&!/\d+ on it · \d+ no time/.test(text),'No invented cause, and no count line under each box (the day strip says it)');
   check(text.includes('not counted as unanswered'),'Delivery failures are distinct from unknown practice');
   check(!await pg.locator('#mw-higher,#mw-higher-acts,#mw-hs-hint').count()&&(await pg.getAttribute('#mw-menu','aria-label'))==='TotehmBot configuration','Duplicate subscription markup and controls are removed');
   check(!await pg.locator('.tracking-history,.db-heat,.db-tot,.db-f').count()&&!await pg.locator('.db-o .db-bar').count(),'16/11 · no account history on the dashboard, and deadlines never mimic progress');

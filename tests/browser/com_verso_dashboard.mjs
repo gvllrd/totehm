@@ -7,8 +7,8 @@ const origin='https://www.totehm.com',today='2026-11-10',browser=await launch();
 const check=(v,m)=>{assert(v,m);checks++;};
 const habits=[{t:'Run the hill',is:['fight'],f:'daily'}];
 const board={ok:true,today,telegram:false,habits:[],days:[],week:{fait:99,manque:1,top:{serie:99}},totals:{habits:1},heat:Array(84).fill(1),
- objectives:[{t:'Run a marathon',jours:12,temps:.62}],feed:['habit','objective','repulsion','vision','story','track'].map(box=>({at:today,box,k:box==='track'?'tracked_done':box+'_added',l:'<img src=x onerror=alert(1)>',i:'fight'}))};
-const practice={ok:true,days_count:7,counts:{done:2,missed:1,unanswered:1,answered:3},coverage:{total_habits:1,observed_habits:1},habits:[{ref:'Run the hill',habit:'Run the hill',done:2,missed:1,unanswered:1,day_counts:Array.from({length:7},(_,i)=>({done:i<2?1:0,missed:i===2?1:0,unanswered:i===3?1:0}))}],days:Array.from({length:7},(_,i)=>({day:'2026-11-'+String(4+i).padStart(2,'0')})),trend:{state:'insufficient'},settings:{linked:false,share_chatgpt:false}};
+ objectives:[{t:'Run a marathon',jours:12,temps:.62}],feed:['habit','objective','repulsion','vision','story','track'].map(box=>({at:today,box,k:box==='track'?'tracked_on_it':box+'_added',l:'<img src=x onerror=alert(1)>',i:'fight'}))};
+const practice={ok:true,days_count:7,counts:{on_it:2,no_energy:1,unanswered:1,answered:3},coverage:{total_habits:1,observed_habits:1},habits:[{ref:'Run the hill',habit:'Run the hill',on_it:2,no_energy:1,unanswered:1,day_counts:Array.from({length:7},(_,i)=>({on_it:i<2?1:0,no_energy:i===2?1:0,unanswered:i===3?1:0}))}],days:Array.from({length:7},(_,i)=>({day:'2026-11-'+String(4+i).padStart(2,'0')})),trend:{state:'insufficient'},settings:{linked:false,share_chatgpt:false}};
 const rpc={my_landing:{signed_in:true,pseudo:'fixture',telegram:false,higher:{active:true}},my_board:board,tracking_summary_for_me:practice,
  creator_dashboard:{ok:true,subscribers:3,month_cents:1920,pending_cents:1920,currency:'eur',next_payout:'2026-12-01',threshold_cents:2500,part:80,price_cents:2400,min_cents:300,max_cents:100000},
  my_console:{signed_in:true,offer:{enabled:true,price_cents:2400,currency:'eur',payout_fin:'1234'},subscriptions:[]},tracking_settings_get:{ok:true,settings:{timezone:'UTC',quiet_from:22,quiet_to:8,max_daily:2,share_chatgpt:false}}};
@@ -20,7 +20,7 @@ try{
   check(await pg.getAttribute('#srch','data-tab')==='higher'&&await pg.isVisible('#vs-dash')&&!await pg.isVisible('#mw-creator'),'The dashboard opens first, separately from monetization');
   check(await pg.isVisible('#mw-menu')&&!await pg.locator('#mw-higher,[data-hsub]').count(),'Only TotehmBot configuration follows the dashboard');
   const call=log.rpc.find(r=>r.name==='my_board');check(typeof call.body.p_tz==='string'&&call.body.p_tz,'Account activity uses the browser timezone');
-  const text=await pg.locator('#vs-dash').innerText();check(text.includes('2')&&text.includes('Missed')&&!text.includes('99%')&&!await pg.locator('.db-courbe').count(),'Practice does not fall back to an obsolete percentage or streak');
+  const text=await pg.locator('#vs-dash').innerText();check(text.includes('2')&&/No Energy/i.test(text)&&!/Missed/i.test(text)&&!text.includes('99%')&&!await pg.locator('.db-courbe').count(),'Practice does not fall back to an obsolete percentage or streak');
   check(await pg.locator('.db-o .j').textContent()==='D-12'&&!await pg.locator('.db-o .db-bar').count(),'An objective deadline is not rendered as achievement progress');
   check(!await pg.locator('.tracking-history,.db-heat,.db-tot,.db-f').count(),'16/11 · the dashboard keeps only the essentials: no account history');
   check(await pg.locator('.tracking-name .tb.blk-h .v-name').textContent()==='Run the hill'&&await pg.locator('.db-o .tb.blk-o .v-name').textContent()==='Run a marathon','Practice and due objectives use native TOTEHM boxes');

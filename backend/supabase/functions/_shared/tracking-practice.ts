@@ -86,12 +86,21 @@ export function linkedPracticeBoxes(context:ContextGraph,habit:string):ContextIt
 export function linkedPracticeRows(context:ContextGraph,habit:string,id:string,page=0):any[][]{
  if(!validPracticeId(id)||!Number.isInteger(page)||page<0||page>120)throw new Error('invalid_linked_page');
  if(!context.items.some(i=>i.kind==='habit'&&i.ref===habit))return [];
- const boxes=linkedPracticeBoxes(context,habit),last=Math.max(0,Math.ceil(boxes.length/10)-1),current=Math.min(page,last);
- const rows:any[][]=boxes.slice(current*10,current*10+10).map(box=>[{text:(box.kind==='repulsion'?'Instead of: ':'Why: ')+excerpt(box.text,48),
-  callback_data:linkedPracticeCallback(id,box.kind==='repulsion'?'r':'w',box.ref)}]);
+ const boxes=linkedPracticeBoxes(context,habit),last=boxes.length>2?Math.ceil((boxes.length-2)/10):0,current=Math.min(page,last);
+ // 23/11 (Wah) : REMEMBER — « ↺ Why: » (objectif, vision) et « ↺ Trigger: » (la répulsion, méthode Stoner) ; deux au plus
+ // sous la Habit, puis « ↺ +N more » ; un tap montre le texte entier et n'enregistre rien.
+ const row=(box:any)=>[{text:(box.kind==='repulsion'?'↺ Trigger: ':'↺ Why: ')+excerpt(box.text,44),
+  callback_data:linkedPracticeCallback(id,box.kind==='repulsion'?'r':'w',box.ref)}];
+ if(current===0){
+  const rows:any[][]=boxes.slice(0,2).map(row);
+  if(boxes.length>2)rows.push([{text:'↺ +'+(boxes.length-2)+' more',callback_data:`t:k:${id}:1`}]);
+  if(context.truncated&&boxes.length<=2)rows.push([{text:'More in my Habit',url:practiceURL(id)}]);
+  return rows;
+ }
+ const rows:any[][]=boxes.slice(2+(current-1)*10,2+current*10).map(row);
  const navigation=[];
- if(current>0)navigation.push({text:'Previous links',callback_data:`t:k:${id}:${current-1}`});
- if(current<last)navigation.push({text:'More links',callback_data:`t:k:${id}:${current+1}`});
+ navigation.push({text:'Previous links',callback_data:`t:k:${id}:${current-1}`});
+ if(2+current*10<boxes.length)navigation.push({text:'More links',callback_data:`t:k:${id}:${current+1}`});
  if(navigation.length)rows.push(navigation);
  if(context.truncated)rows.push([{text:'More in my Habit',url:practiceURL(id)}]);
  return rows;
@@ -99,7 +108,7 @@ export function linkedPracticeRows(context:ContextGraph,habit:string,id:string,p
 export function linkedPracticeText(context:ContextGraph,habit:string,category:'w'|'r',ref:string):string|null{
  const box=linkedPracticeBoxes(context,habit).find(i=>i.ref===ref&&(category==='r'?i.kind==='repulsion':i.kind==='objective'||i.kind==='vision'));
  if(!box)return null;
- const title=box.kind==='repulsion'?'Instead of':box.kind==='vision'?'Why · vision':'Why · Deadline: '+box.target_at;
+ const title=box.kind==='repulsion'?'Trigger':box.kind==='vision'?'Why · vision':'Why · Deadline: '+box.target_at;
  const partial=box.text_truncated||(box.text_length??box.text.length)>box.text.length;
  return title+'\n\n'+box.text+(partial?'\n\nThis text continues in the original box. Open my Habit to read it.':'');
 }

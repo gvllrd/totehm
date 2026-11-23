@@ -4756,8 +4756,8 @@ Pick your TOTEHM spots: your habits rooted in a specific place, at an exact time
     <div class="dc-s"><div class="dc-ill dc-ill-c" aria-hidden="true"><span class="dc-gpt"><img src="https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/public/com/gpt.png" alt="" width="1024" height="1024" loading="lazy"><svg viewBox="0 0 600 200"><use href="#higher-badge"></use></svg></span></div><h2 class="dc-h" data-tw>Your TOTEHM in ChatGPT.</h2><p class="dc-p">Ask what to do next.
 It reads your TOTEHM.
 Useful.</p></div>
-    <div class="dc-s"><div class="dc-ill dc-ill-c" aria-hidden="true"><span class="dc-tg"><span class="dc-tg-who">TotehmBot</span><span class="dc-tg-t">Run 20 minutes · it's time.</span><span class="dc-tg-b"><span>Done</span><span>Missed</span></span></span></div><h2 class="dc-h">TotehmBot keeps the rhythm.</h2><p class="dc-p">One private Telegram message when a habit is due.
-Done or Missed. That's all.
+    <div class="dc-s"><div class="dc-ill dc-ill-c" aria-hidden="true"><span class="dc-tg"><span class="dc-tg-who">TotehmBot</span><span class="dc-tg-t">Run 20 minutes · it's time.</span><span class="dc-tg-b"><span>On It</span><span>No Time</span><span>No Energy</span></span></span></div><h2 class="dc-h">TotehmBot keeps the rhythm.</h2><p class="dc-p">One private Telegram message when a habit is due.
+On It · No Time · No Energy. That's all.
 Free.</p></div>
     <div class="dc-s" data-cta="money"><div class="dc-ill dc-ill-c" data-ill="money" aria-hidden="true"></div><h2 class="dc-h">Get paid for how you build.</h2><p class="dc-p">Monetize your entire TOTEHM: your 5 smart lists, with your visualizations and spots.
 Members subscribe for a year.
@@ -4876,7 +4876,7 @@ In the highest way.</p>
           <div class="lv-note" id="mw-gpt-note" role="status"></div>
         </section>
         <section class="vs" id="mw-menu" aria-label="TotehmBot configuration">
-          <header class="vs-head"><h3 class="vs-t">TotehmBot</h3><p class="vs-s">Notifications · Done or Missed</p></header>
+          <header class="vs-head"><h3 class="vs-t">TotehmBot</h3><p class="vs-s">Notifications · On It · No Time · No Energy</p></header>
           <div class="vs-item"><span class="vs-k">Telegram</span><span class="vs-h" id="mw-tg-hint">One notification, one response</span><button class="vs-act" id="mw-telegram" type="button">Connect</button></div>
           <div class="vs-item"><span class="vs-k">Configuration</span><button class="vs-act" id="tracking-manage" type="button" aria-controls="tracking-settings">Configure</button></div>
           <div class="tracking-panel"><div id="tracking-settings"></div></div>
@@ -6264,7 +6264,7 @@ const CLUBSP=(()=>{
     /* 20/10 sexies — DANS L'ÉCOSYSTÈME D'UN MEMBRE, SES spots seulement (`club_spots_of`, les mêmes droits, filtrés par auteur).
        27/10 (Wah : « surtout pas everyone ») : chez MOI aussi, MES spots seuls — `club_spots_of` à mon nom. */
     const pers=ORDRE.filter(p=>st.pers.includes(p)&&(!suite||(st.p[p]&&st.p[p].more)));
-    const reps=await Promise.all(pers.map(per=>{
+    const lectures=await Promise.all(pers.map(per=>{
       const q=st.p[per]||{};
       const args={p_period:per, p_filters:f,
         p_lat:f.scope==='near'?st.pos.lat:null, p_lng:f.scope==='near'?st.pos.lng:null,
@@ -6273,11 +6273,11 @@ const CLUBSP=(()=>{
     }));
     if(s!==st.seq||(me?me.id:null)!==uid||RO!==ro) return;
     st.charge=false;
-    const ko=reps.find(r=>r.error);
+    const ko=lectures.find(r=>r.error);
     if(ko){ console.error(qui?'[club_spots_of]':'[club_spots]',ko.error.message); st.err='unreachable'; prevenir(); return; }
-    const non=reps.find(r=>!r.data||!r.data.ok);
+    const non=lectures.find(r=>!r.data||!r.data.ok);
     if(non){ st.err=(non.data&&non.data.why)||'refused'; if(!suite){ st.items=[]; st.total=0; st.more=false; } prevenir(); return; }
-    const l=[].concat(...reps.map(r=>Array.isArray(r.data.items)?r.data.items:[]));
+    const l=[].concat(...lectures.map(r=>Array.isArray(r.data.items)?r.data.items:[]));
     /* RIEN MAINTENANT ? À l'ARRIVÉE seulement, on montre ce qui vient, puis ce qui a été : une vue vide
        quand le Club a des spots, c'est une vue qui ment. Un choix du membre n'est jamais contredit. */
     if(!suite&&st.auto&&!l.length&&!Object.keys(f).length&&st.pers.length===1){
@@ -6286,7 +6286,7 @@ const CLUBSP=(()=>{
     }
     st.auto=false; st.err=''; st.lu=true; st.at=Date.now();
     if(!suite) st.p={};
-    reps.forEach(r=>{ const d=r.data; st.p[r.per]={off:d.next_offset|0, asOf:d.as_of||(st.p[r.per]&&st.p[r.per].asOf)||null, more:!!(d.has_more||d.more), total:d.total|0}; });
+    lectures.forEach(r=>{ const d=r.data; st.p[r.per]={off:d.next_offset|0, asOf:d.as_of||(st.p[r.per]&&st.p[r.per].asOf)||null, more:!!(d.has_more||d.more), total:d.total|0}; });
     st.items=suite?st.items.concat(l.filter(x=>!st.items.some(y=>y.id===x.id))):l.filter((x,i,a)=>a.findIndex(y=>y.id===x.id)===i);
     st.total=Object.values(st.p).reduce((a,q)=>a+(q.total|0),0); st.more=Object.values(st.p).some(q=>q.more);
     prevenir();
@@ -8916,7 +8916,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-11-23-time-frequency';
+const BUILD='2026-11-23-on-it';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────

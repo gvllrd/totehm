@@ -72,30 +72,22 @@ const db={async rpc(name,args){calls.push({name,args});assert.equal(name,'tracki
  or(){filters.push(r=>!['achieved','abandoned','converted'].includes(r.status));return q},is(k,v){filters.push(r=>(r[k]??null)===v);return q},not(k,op,v){assert.equal(op,'is');filters.push(r=>(r[k]??null)!==v);return q},in(k,v){filters.push(r=>v.includes(r[k]));return q},limit(v){n=v;return q},then(ok,no){queries.push({table,n,columns});return Promise.resolve({data:(tables[table]||[]).filter(r=>filters.every(f=>f(r))).slice(0,n),error:readError?{message:'private detail'}:null}).then(ok,no)}};return q;}};
 const telegram=async(method,payload)=>{sent.push({method,payload});return {ok:true,result:{message_id:22}};};
 const callback=(data)=>({callback_query:{id:'cb',from:{id:101},message:{message_id:22,chat:{id:101,type:'private'},text:'Prepare your next step'},data}});
+/* 23/11 (Wah) : « Prepare est inutile » — un ancien bouton Prepare ouvre simplement la Habit, sans lire le texte lié ;
+   /prepare est un alias muet ; /totehm ouvre mon TOTEHM. Aucune lecture, aucune écriture. */
 await handleTrackingUpdate(db,callback('t:p:9007199254740993:open'),telegram);
-check(calls.length===1&&queries.length===0,'Prepare validates ownership without reading linked private text yet');
-check(sent.at(-1).method==='sendMessage'&&sent.at(-1).payload.reply_markup.inline_keyboard[0][0].callback_data.endsWith(':show'),'An explicit second choice is required to bring linked text into Telegram');
-check(sent.at(-1).payload.text.includes('private media')&&sent.at(-1).payload.reply_markup.inline_keyboard[1][0].web_app,'Opening private media remains in the native mini-app');
-const sendCount=sent.filter(x=>x.method==='sendMessage').length;
+check(calls.length===0&&queries.length===0&&sent.at(-1).payload.reply_markup.inline_keyboard[0][0].web_app.url===practiceURL('9007199254740993'),'An old Prepare button only opens that Habit: no lookup, no linked text');
 await handleTrackingUpdate(db,callback('t:p:9007199254740993:show'),telegram);
-check(sent.at(-1).method==='editMessageText'&&sent.filter(x=>x.method==='sendMessage').length===sendCount,'Consented text replaces the preparation prompt rather than adding notifications');
-check(sent.at(-1).payload.text===text&&!sent.at(-1).payload.parse_mode,'Exact own graph is used without evaluating markup');
-check(queries.some(q=>q.table==='totehms'&&q.columns==='habits')&&queries.some(q=>q.table==='stories')&&queries.some(q=>q.table==='repulsion_stories'),'Preparation reads the native Habit, MY STORY and recorded relation sources');
-check(queries.every(q=>q.n<=401)&&!queries.some(q=>/media|spot_plans|intention_music|grants/.test(q.table)),'Reads stay bounded; no images, sounds, public places or creator content are exported');
-check(calls.every(c=>c.name==='tracking_practice_target'),'No answer, reservation, subscription, note or TOTEHM write occurs');
-allowed=false;const beforeQueries=queries.length;await handleTrackingUpdate(db,callback('t:p:9007199254740993:show'),telegram);
-check(queries.length===beforeQueries&&sent.at(-1).payload.text.includes('no longer available'),'Revocation, deletion or another owner prevents future linked reads');
-const beforeCalls=calls.length;await handleTrackingUpdate(db,callback('t:p:9223372036854775808:show'),telegram);
-check(calls.length===beforeCalls,'A bigint overflow is rejected without calling the database');
+check(calls.length===0&&queries.length===0&&!sent.at(-1).payload.text.includes('My next step'),'An old « show linked text » button never brings linked text into Telegram');
 const group=callback('t:p:1:show');group.callback_query.message.chat.type='group';
-check(!await handleTrackingUpdate(db,group,telegram)&&queries.length===beforeQueries,'Group preparation is never allowed');
+check(!await handleTrackingUpdate(db,group,telegram),'Group messages are never handled');
 const forged=callback('t:p:1:show');forged.callback_query.from.id=202;
 check(!await handleTrackingUpdate(db,forged,telegram),'Mismatching sender and private chat cannot impersonate the linked member');
-for(const command of ['/prepare','/preparer','/préparer','/totehm']){
- await handleTrackingUpdate(db,{message:{text:command,from:{id:101},chat:{id:101,type:'private'}}},telegram);
- check(calls.length===beforeCalls&&sent.at(-1).payload.reply_markup.inline_keyboard[0][0].web_app.url===practiceURL(),'Preparation overview creates no report or data lookup');
+const sentBefore=sent.length;
+for(const command of ['/prepare','/preparer','/préparer']){
+ check(await handleTrackingUpdate(db,{message:{text:command,from:{id:101},chat:{id:101,type:'private'}}},telegram)&&sent.length===sentBefore,'/prepare is a silent alias: '+command);
 }
-allowed=true;readError=true;await assert.rejects(()=>handleTrackingUpdate(db,callback('t:p:1:show'),telegram));checks++;
+await handleTrackingUpdate(db,{message:{text:'/totehm',from:{id:101},chat:{id:101,type:'private'}}},telegram);
+check(calls.length===0&&sent.at(-1).payload.reply_markup.inline_keyboard[0][0].web_app.url===practiceURL(),'/totehm opens my TOTEHM, no report or data lookup');
 const payload={chat_id:'101',text:'Choose',reply_markup:practiceKeyboard('1',true)};
 for(const method of ['sendMessage','editMessageText']){
  const attempts=[];
@@ -140,9 +132,9 @@ check(linkedPracticeBoxes(nativeGraph,'MISSING HABIT').length===0,'A missing Hab
 const linkPages=[0,1,2].map(page=>linkedPracticeRows(nativeGraph,habit,outcome,page));
 const linkButtons=rows=>rows.flat().filter(b=>b.callback_data?.startsWith('t:x:'));
 const pagedButtons=linkPages.flatMap(linkButtons);
-check(linkPages.map(rows=>linkButtons(rows).length).join('|')==='10|10|1'&&pagedButtons.length===21,'More than twelve direct links remain reachable in bounded ten-link pages');
+check(linkPages.map(rows=>linkButtons(rows).length).join('|')==='2|10|9'&&pagedButtons.length===21,'23/11 · two REMEMBER links under the Habit, then « ↺ +N more » pages of ten: every link stays reachable');
 check(pagedButtons.map(b=>b.callback_data.split(':').at(-1)).join('|')===expectedRefs.join('|'),'Pagination preserves each native order without dropping or duplicating a box');
-check(pagedButtons.slice(0,17).every(b=>b.text.startsWith('Why: '))&&pagedButtons.slice(17).every(b=>b.text.startsWith('Instead of: ')),'The button itself states the recorded Why or Instead of phrase');
+check(pagedButtons.slice(0,17).every(b=>b.text.startsWith('↺ Why: '))&&pagedButtons.slice(17).every(b=>b.text.startsWith('↺ Trigger: '))&&linkPages[0].flat().some(b=>b.text==='↺ +19 more'),'The button itself states ↺ Why or ↺ Trigger (the Stoner method)');
 check(linkPages[0].flat().some(b=>b.callback_data==='t:k:'+outcome+':1')&&!linkPages[0].flat().some(b=>b.text==='Previous links')&&linkPages[1].flat().some(b=>b.callback_data==='t:k:'+outcome+':0')&&linkPages[2].flat().some(b=>b.callback_data==='t:k:'+outcome+':1'),'Previous and more controls preserve the exact outcome and requested link page');
 check(pagedButtons.every(b=>Buffer.byteLength(b.callback_data)<=64)&&Buffer.byteLength(linkedPracticeCallback(outcome,'w',goalRefs[0]))===62,'A nineteen-digit outcome and an unchanged UUID fit Telegram’s 64-byte callback limit');
 check(linkedPracticeCallback(outcome,'r',repRefs[1]).endsWith(':r:'+repRefs[1]),'Repulsion bigint references remain complete strings');
@@ -151,10 +143,10 @@ for(const [kind,ref] of [['w','0'],['r','01'],['r','9223372036854775808'],['w','
 const previewSnapshot=structuredClone(nativeSnapshot),previewText='👩🏽‍💻 漢字 مرحبا <b>literal</b> '.repeat(40);
 previewSnapshot.objectives[0].text=previewText;
 const previewGraph=projectGraph(previewSnapshot),previewButton=Array.from({length:3},(_,page)=>linkedPracticeRows(previewGraph,habit,outcome,page)).flatMap(linkButtons).find(b=>b.callback_data.endsWith(':w:'+goalRefs[0]));
-check(previewButton.text.isWellFormed()&&previewButton.text.length<80&&previewButton.text.startsWith('Why: 👩🏽‍💻 漢字'),'Long multilingual button previews remain short and preserve complete Unicode characters');
+check(previewButton.text.isWellFormed()&&previewButton.text.length<80&&previewButton.text.startsWith('↺ Why: 👩🏽‍💻 漢字'),'Long multilingual button previews remain short and preserve complete Unicode characters');
 const fullLinkedText=linkedPracticeText(previewGraph,habit,'w',goalRefs[0]);
 check(fullLinkedText.startsWith('Why · Deadline: 2027-06-01\n\n')&&fullLinkedText.includes(previewText.trim()),'Opening an objective returns its complete authored text with its recorded deadline');
-check(linkedPracticeText(nativeGraph,habit,'w',visionRefs[0]).startsWith('Why · vision\n\n')&&linkedPracticeText(nativeGraph,habit,'r',repRefs[0]).startsWith('Instead of\n\n'),'Undated whys state vision and repulsions keep the Instead of direction');
+check(linkedPracticeText(nativeGraph,habit,'w',visionRefs[0]).startsWith('Why · vision\n\n')&&linkedPracticeText(nativeGraph,habit,'r',repRefs[0]).startsWith('Trigger\n\n'),'Undated whys state vision and repulsions are read as a Trigger');
 check(linkedPracticeText(nativeGraph,habit,'w',id(390))===null&&linkedPracticeText(nativeGraph,habit,'w',id(391))===null&&linkedPracticeText(nativeGraph,habit,'r',goalRefs[0])===null,'Even valid owned IDs require the exact current direct relation and category');
 const shiftedSnapshot=structuredClone(nativeSnapshot);shiftedSnapshot.objectives.find(x=>x.id===goalRefs[0]).target_at=null;
 check(linkedPracticeText(projectGraph(shiftedSnapshot),habit,'w',goalRefs[0]).startsWith('Why · vision\n\n'),'The same UUID callback survives moving a why from objective to vision');
@@ -226,7 +218,7 @@ for(const [reason,mutate,kind,ref] of [
 ]){
  const changed=structuredClone(previewSnapshot);mutate(changed);const denied=makeLinkedHarness(changed);
  await invokeLinked(denied,linkedPracticeCallback(outcome,kind,ref));
- check(denied.rpcs.length===1&&denied.reads.length>0&&sentLinked(denied).every(x=>!x.payload.text.includes('Why ·')&&!x.payload.text.includes('Instead of\n\n'))&&denied.writes.length===0,reason+' prevents a stale button from opening private linked text');
+ check(denied.rpcs.length===1&&denied.reads.length>0&&sentLinked(denied).every(x=>!x.payload.text.includes('Why ·')&&!x.payload.text.includes('Trigger\n\n'))&&denied.writes.length===0,reason+' prevents a stale button from opening private linked text');
 }
 for(const ref of [id(390),id(391),id(500)]){
  linkedHarness.reset();await invokeLinked(linkedHarness,linkedPracticeCallback(outcome,'w',ref));
@@ -238,18 +230,18 @@ for(const data of ['t:x:'+outcome+':w:0','t:x:'+outcome+':w:1','t:x:'+outcome+':
 }
 
 for(const [state,controls] of [
- ['unanswered',[[{text:'Done',callback_data:'t:a:'+outcome+':done'},{text:'Missed',callback_data:'t:a:'+outcome+':missed'}],[{text:'Prepare',callback_data:'t:p:'+outcome+':open'}]]],
- ['saved',[[{text:'Change',callback_data:'t:e:'+outcome+':open'}],[{text:'Prepare',callback_data:'t:p:'+outcome+':open'}]]]
+ ['unanswered',[[{text:'On It',callback_data:'t:a:'+outcome+':on_it'},{text:'No Time',callback_data:'t:a:'+outcome+':no_time'},{text:'No Energy',callback_data:'t:a:'+outcome+':no_energy'}]]],
+ ['saved',[[{text:'Saved · On It · Change',callback_data:'t:e:'+outcome+':open'}]]]
 ]){
  const pagerHarness=makeLinkedHarness(nativeSnapshot),update=callback('t:k:'+outcome+':1');
- update.callback_query.message.text=habit+'\n\nToday · 10 Nov\nDid you do it?'+(state==='saved'?'\n\nSaved: Done':'');
+ update.callback_query.message.text=habit+'\n\nToday · 10 Nov\nAre you on it?'+(state==='saved'?'\n\nSaved · On It':'');
  update.callback_query.message.reply_markup={inline_keyboard:[...controls,...linkedPracticeRows(nativeGraph,habit,outcome,0)]};
  const originalText=update.callback_query.message.text;
  await handleTrackingUpdate(pagerHarness.db,update,pagerHarness.telegram,async()=>{});
  const edited=pagerHarness.messages.filter(x=>x.method==='editMessageReplyMarkup');
  check(pagerHarness.rpcs.length===1&&pagerHarness.reads.length>0&&edited.length===1&&sentLinked(pagerHarness).length===0,'Paging '+state+' links rechecks ownership and changes only the existing message keyboard');
  const buttons=edited[0].payload.reply_markup.inline_keyboard.flat();
- check(controls.flat().every(expected=>buttons.some(actual=>actual.callback_data===expected.callback_data&&actual.text===expected.text))&&linkButtons(edited[0].payload.reply_markup.inline_keyboard).map(b=>b.callback_data).join('|')===linkButtons(linkPages[1]).map(b=>b.callback_data).join('|'),'Paging '+state+' links keeps the exact Done/Missed or Change controls and shows the requested native-order page');
+ check(controls.flat().every(expected=>buttons.some(actual=>actual.callback_data===expected.callback_data&&actual.text===expected.text))&&linkButtons(edited[0].payload.reply_markup.inline_keyboard).map(b=>b.callback_data).join('|')===linkButtons(linkPages[1]).map(b=>b.callback_data).join('|'),'Paging '+state+' links keeps the exact answer or Change controls and shows the requested native-order page');
  check(!pagerHarness.messages.some(x=>x.method==='editMessageText')&&update.callback_query.message.text===originalText&&pagerHarness.writes.length===0,'Paging '+state+' links preserves check-in text and creates no report, detail or draft');
 }
 

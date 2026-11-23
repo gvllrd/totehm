@@ -459,7 +459,7 @@ Deno.serve(async (req) => {
       if(linkError||!linked?.ok){await say(chat,"This link has expired. Request a new one from your TOTEHM.");return ok();}
       const settings=linked.settings??{};
       await say(chat,
-        `TotehmBot connected.\n\nYour Habit check-ins arrive here automatically. Tap Done or Missed. /review to review your practice.\n\n`+
+        `TotehmBot connected.\n\nYour Habit check-ins arrive here automatically. Tap On It, No Time or No Energy. /review to review your practice.\n\n`+
         `${settings.timezone} · quiet hours ${settings.quiet_from}:00 to ${settings.quiet_to}:00 · ${settings.max_daily} questions maximum per day. /pause pauses questions.\n\n`+
         `An unanswered question stays unknown. `+(settings.share_chatgpt?'Practice sharing with ChatGPT is enabled. You can turn it off in your dashboard.':'Practice sharing with ChatGPT stays off until you enable it in your dashboard.'),
         kbApp("Open my TOTEHM"));

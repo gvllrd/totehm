@@ -56,7 +56,7 @@ export function createTrackingTick(c:Config){
     catch{console.error('[tracking]','linked_read_failed');}
     let state='uncertain',message:number|null=null,code='network_uncertain',partsSent=0;
     try{
-     const text=String(d.habit)+'\n\n'+(timing?'Your timing: '+timing+'\n\n':'')+(d.period_label?String(d.period_label)+'\n':'')+'Did you do it?';
+     const text=String(d.habit)+'\n\n'+(timing?'Your timing: '+timing+'\n\n':'')+(d.period_label?String(d.period_label)+'\n':'')+'Are you on it?';
      const parts=telegramTextParts(text);
      for(let n=0;n<parts.length;n++){
       if(n)await pause(1100);
