@@ -116,6 +116,11 @@ try{
  const why = () => pg.evaluate(() => window.__totehm_why ? window.__totehm_why() : null);
  await vers(pg, 'ArrowRight', 'visions');
  await pg.locator('#habits [data-open="v:v1"]').evaluate(e => e.click()); await pg.waitForTimeout(400);
+ /* 23/11 (Wah) : la date d'une vision ne se montre qu'après « Make it into an objective » */
+ const mk = await pg.evaluate(() => ({ b:(document.querySelector('#habits .habit.open [data-vobj="v1"]')||{}).textContent||'',
+   d:!!document.querySelector('#habits .habit.open input[data-date="v1"]') }));
+ ok(mk.b === 'Make it into an objective' && !mk.d, 'VISION : « Make it into an objective » AVANT le sélecteur de date → ' + JSON.stringify(mk));
+ await pg.locator('#habits .habit.open [data-vobj="v1"]').evaluate(e => e.click()); await pg.waitForTimeout(300);
  await pg.locator('#habits .habit.open input[data-date="v1"]').fill('2027-06-01'); await pg.waitForTimeout(300);
  ok(await pg.evaluate(() => !!document.querySelector('#habits .habit.open[data-id="v1"], #habits .habit.open')),
     'VISION datée : la box reste ouverte sous le doigt (elle change de vue à la fermeture)');

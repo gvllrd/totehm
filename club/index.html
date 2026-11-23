@@ -2264,7 +2264,8 @@ const NSPOT = (() => {
     p.addEventListener('keydown', e => { const f = e.target.closest && e.target.closest('[data-nsi="adr"]');
       if(f && e.key === 'Enter'){ e.preventDefault(); chercherAdresse(); } });
     p.addEventListener('change', e => { const f = e.target.closest('[data-nsi]'); if(!f || N.occupe) return; const k = f.dataset.nsi;
-      if(k === 'date') N.date = f.value; else if(k === 'time') N.time = f.value;
+      if(k === 'date'){ if(f.value && !/^(19|2\d)\d\d-/.test(f.value)) return; N.date = f.value; }   /* 23/11 : une année en cours de frappe n'est pas une date */
+      else if(k === 'time') N.time = f.value;
       else if(k === 'dur'){ const n = Math.round(+f.value); N.dur = n >= (RULES.duration_min || 5) && n <= (RULES.duration_max || 720) ? n : 0; }
       else return;
       peindre(); });

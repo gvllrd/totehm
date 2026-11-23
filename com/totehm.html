@@ -8249,7 +8249,8 @@ const NSPOT=(()=>{
     p.addEventListener('keydown',e=>{ const f=e.target.closest&&e.target.closest('[data-nsi="adr"]');
       if(f&&e.key==='Enter'){ e.preventDefault(); chercherAdresse(); } });
     p.addEventListener('change',e=>{ const f=e.target.closest('[data-nsi]'); if(!f||N.occupe) return; const k=f.dataset.nsi;
-      if(k==='date') N.date=f.value; else if(k==='time') N.time=f.value;
+      if(k==='date'){ if(f.value&&!/^(19|2\d)\d\d-/.test(f.value)) return; N.date=f.value; }   /* 23/11 : une année en cours de frappe n'est pas une date */
+      else if(k==='time') N.time=f.value;
       else if(k==='dur'){ const n=Math.round(+f.value); N.dur=n>=(R.duration_min||5)&&n<=(R.duration_max||720)?n:0; }
       else return;
       peindre(); });
@@ -10151,6 +10152,7 @@ function uniqBox(l){ const vu=new Set(), out=[];
 /* ── UNE VISION (MY VISION · le futur) ───────────────────────────────
    Seulement ce qu'on voit venir, et seulement le bon. Elle montre les
    objectifs qui y mènent. */
+const VOBJ=new Set();   /* les visions dont on a demandé la date (« Make it into an objective ») */
 function vueVision(v,k){
   const ouverte = !!open && open.kind==='v' && String(open.id)===String(v.id);
   /* 19/11 (Wah) — « dans le How des box vision on retrouve les Habits » : la vision est la même box qu'un
@@ -10159,7 +10161,11 @@ function vueVision(v,k){
   const hs=habsOfVision(v);
   const img = VISIMG.get(String(v.id))||null;
   const unit = (img ? '<img class="v-img" alt="" data-photo="'+esc(img)+'">' : '')
-    + (ouverte&&!RO ? '<input class="in date" type="date" data-date="'+esc(String(v.id))+'" value="'+esc(dateIn(v.target_at))+'" aria-label="give it a deadline">' : '');
+    /* 23/11 (Wah) : « avant d'afficher le sélecteur de date, un bouton préalable : Make it into an objective » —
+       la date ne se montre qu'au geste (`VOBJ`), et le sélecteur s'ouvre aussitôt. */
+    + (ouverte&&!RO ? (VOBJ.has(String(v.id))||v.target_at
+        ? '<input class="in date" type="date" data-date="'+esc(String(v.id))+'" value="'+esc(dateIn(v.target_at))+'" aria-label="give it a deadline">'
+        : '<button type="button" class="dash v-mkobj" data-vobj="'+esc(String(v.id))+'">Make it into an objective</button>') : '');
   const pkVH = (ouverte&&pkOn('lien','h',v.id)) ? lienPicker('h',v.id,
       hs.map(x=>String(x.id)),
       (state.habits||[]).map(x=>({id:x.id,txt:x.t})), 'a new habit','h') : '';
@@ -10599,9 +10605,13 @@ function cable(box){
        qui les traite existait et n'était jamais atteint. */
     const el=e.target.closest('[data-fint],[data-ffq],[data-fclear],[data-fx],'
       +'[data-open],[data-add],[data-x],[data-pk],[data-int],[data-mv],[data-go],'
-      +'[data-rhythm],[data-rhythm-ignore],[data-fq],[data-lien],[data-unlink],[data-nodate],[data-kill],[data-space],[data-spotnew],[data-cloth],[data-totehmize],[data-zoom],[data-copy],[data-cap],[data-emo],[data-emx],[data-baud]');
+      +'[data-rhythm],[data-rhythm-ignore],[data-fq],[data-lien],[data-unlink],[data-nodate],[data-kill],[data-space],[data-spotnew],[data-cloth],[data-totehmize],[data-zoom],[data-copy],[data-cap],[data-emo],[data-emx],[data-baud],[data-vobj]');
     if(!el)return;
     const d=el.dataset;
+    if(d.vobj){ e.stopPropagation(); if(RO) return; VOBJ.add(d.vobj); renderZone();
+      const i=box.querySelector('input[data-date="'+CSS.escape(d.vobj)+'"]');
+      if(i){ i.focus({preventScroll:true}); try{ i.showPicker&&i.showPicker(); }catch(_){} }
+      return; }
     if(d.baud){ e.stopPropagation(); AUDB.basculer(el); return; }
     if(d.copy){ e.stopPropagation(); copierBox(el,d.copy); return; }
     /* 27/10 (Wah) : « la prise de média se fait dans la vue de gauche ; depuis la box d'un Totehm, on est redirigé vers
@@ -10755,7 +10765,12 @@ function cable(box){
   box.addEventListener('change',e=>{
     /* 19/11 — un objectif OU une vision : la date se pose sur la même box ; elle change de vue à la fermeture. */
     if(e.target.dataset.date){ const t=whyOf(e.target.dataset.date); if(!t)return;
-      const v=e.target.value; t.target_at = v ? v+'T00:00:00Z' : null;
+      const v=e.target.value;
+      /* ⚠️ 23/11 (Wah : « je ne peux pas entrer les chiffres de l'année en entier ») — à l'ordinateur, Chrome rend une
+         date « valide » dès le PREMIER chiffre de l'année (0002-…) : on enregistrait et on redessinait la box, la frappe
+         était coupée. Une année à moins de 4 chiffres utiles n'est pas une date : on attend la suite. */
+      if(v&&!/^(19|2\d)\d\d-/.test(v)) return;
+      t.target_at = v ? v+'T00:00:00Z' : null;
       if(objectiveOf(t.id)) t.days_left = t.target_at ? joursRestants(t.target_at) : null;
       apres(sb.rpc('objective_set_target',{p_obj:t.id,p_target:t.target_at}));
       wDirty=true; renderZone(); }
