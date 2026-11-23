@@ -77,7 +77,8 @@ body.rdr-shorts::before{opacity:.55}
 .rd-top{position:relative;height:100dvh;min-height:440px}
 /* le radar laisse passer le défilement vertical : la vue glisse sous le doigt, l'anneau tourne de côté */
 #v-radar canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:pan-y}
-#rdr-g-f{padding:calc(100px + var(--top)) 5px calc(24px + var(--bot))}
+/* 23/11 : la grille descend sous la ligne de `#rdr-say` (« nothing near me yet… ») — le « + » ne la frôle plus */
+#rdr-g-f{padding:calc(124px + var(--top)) 5px calc(24px + var(--bot))}
 .empty{position:absolute;left:0;right:0;top:46%;padding:0 28px;text-align:center;font-size:10px;line-height:1.7;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
 /* SOUS LE RADAR : les spots autour de moi, du plus proche au plus loin */
 #rdr-list{display:flex;flex-direction:column;align-items:center;gap:10px;padding:0 12px calc(90px + var(--bot))}
@@ -120,10 +121,11 @@ body.rdr-shorts::before{opacity:.55}
 /* LE « + » SUR LE RADAR : en bas au centre, la place que le joystick libère — le pouce y est déjà.
    Dans la GRID, c'est la tuile « + » en tête, comme à droite de totehm.com. */
 #rdr-plus{position:fixed;left:50%;bottom:calc(16px + var(--bot));transform:translateX(-50%);z-index:66}
-#rdr-plus .tl-add{position:static;display:flex;align-items:center;gap:8px;aspect-ratio:auto;width:auto;border-radius:999px;
-  padding:11px 18px;background:rgba(21,21,26,.92);outline:1px dashed rgba(255,255,255,.3);outline-offset:-5px;
-  font:700 10px/1 var(--mono);letter-spacing:.18em;text-transform:uppercase;color:var(--lo)}
-#rdr-plus .tl-add b{font:400 17px/1 var(--mono);font-weight:400}
+/* 23/11 (Wah) : « augmenter la taille de [add a spot] dans la vue radar » */
+#rdr-plus .tl-add{position:static;display:flex;align-items:center;gap:10px;aspect-ratio:auto;width:auto;border-radius:999px;
+  padding:16px 28px;background:rgba(21,21,26,.92);outline:1px dashed rgba(255,255,255,.34);outline-offset:-6px;
+  font:700 12.5px/1 var(--mono);letter-spacing:.18em;text-transform:uppercase;color:#d2d2da}
+#rdr-plus .tl-add b{font:400 22px/1 var(--mono);font-weight:400}
 @media(hover:hover){#rdr-plus .tl-add:hover{color:#fff}}
 body.rdr-grid #rdr-plus,body.is-nspot #rdr-plus,body.is-sf #rdr-plus,body.is-detail #rdr-plus{display:none}
 
@@ -1263,7 +1265,8 @@ function radarSize(){
     RAD.W = innerWidth; RAD.H = innerHeight; RAD.dpr = dpr; c.width = RAD.W * dpr; c.height = RAD.H * dpr; RAD.dirty = null;
   }
   const bar = $('rdr-flt').getBoundingClientRect().bottom;
-  const left = 20, right = RAD.W - 20, top = bar + 30, bottom = RAD.H - 118;
+  /* 23/11 (Wah) : « descendre un peu le radar » — il s'éloigne de la barre (et de sa ligne `#rdr-say`). */
+  const left = 20, right = RAD.W - 20, top = bar + 70, bottom = RAD.H - 110;
   RAD.tx = (left + right) / 2; RAD.ty = (top + bottom) / 2;
   RAD.tr = Math.max(40, Math.min(right - left, Math.max(60, bottom - top)) / 2 * .92);
   if(!RAD.rpx){ RAD.cx = RAD.tx; RAD.cy = RAD.ty; RAD.rpx = RAD.tr; }
@@ -1354,10 +1357,15 @@ function draw(t){
     const d = hav(c, p), b = (bearing(c, p) - RAD.head) * DEG, dehors = d > RAD.range;
     const r = Math.min(1, d / RAD.range) * rpx, px = cx + Math.sin(b) * r, py = cy - Math.cos(b) * r, ici = isHere(z);
     /* 12/11 (Wah) : le point PREND TOUTES ses intentions, mélangées comme des pigments (`melange`). */
-    const col = melange(z.intentions || []), s = ici ? 6 : 5;
-    x.globalAlpha = dehors ? .35 : ici ? 1 : .6;
-    if(p.plein){ x.fillStyle = col; x.fillRect(px - s / 2, py - s / 2, s, s); }
-    else { x.strokeStyle = col; x.lineWidth = 1.4; x.strokeRect(px - s / 2, py - s / 2, s, s); }
+    /* 23/11 (Wah) : « des POINTS LUMINEUX reprenant les couleurs des intentions, comme avant » — un rond qui rayonne
+       de sa couleur mélangée ; PLEIN = point exact, ANNEAU = la ville. */
+    const col = melange(z.intentions || []), s = ici ? 4.2 : 3.6;
+    x.globalAlpha = dehors ? .4 : ici ? 1 : .8;
+    x.shadowColor = col; x.shadowBlur = dehors ? 6 : ici ? 16 : 11;
+    x.beginPath(); x.arc(px, py, s, 0, Math.PI * 2);
+    if(p.plein){ x.fillStyle = col; x.fill(); x.fill(); }
+    else { x.strokeStyle = col; x.lineWidth = 1.6; x.stroke(); }
+    x.shadowBlur = 0;
     if(ici){ x.strokeStyle = col; x.globalAlpha = .35; x.lineWidth = 1; x.beginPath();
       x.arc(px, py, 10 + 3 * Math.sin((t || 0) / 500), 0, Math.PI * 2); x.stroke(); }
     x.globalAlpha = 1; RAD.pts.push({ z, px, py });
@@ -1596,7 +1604,7 @@ const SHORTS = (() => {
     if(io){ io.disconnect(); io = null; }
     b.innerHTML = L.length ? L.map(carte).join('')
       : '<div class="sh-vide"><p class="note">' + (CLUBSP.charge ? 'reading the club…' : CLUBSP.err === 'signin' ? VIDE_CONNECT : 'no spot video ' + CLUBSP.NOMS[CLUBSP.per]) + '</p>'
-        + (me ? '<button type="button" class="sfc" data-nspot="">+ spot</button>' : '') + '</div>';
+        + '</div>';   /* 23/11 (Wah) : un seul [+ spot] en shorts — celui du bas (`#rdr-plus`) */
     io = new IntersectionObserver(es => es.forEach(en => { if(en.isIntersecting && en.intersectionRatio >= .6) jouer(en.target); }),
       { root:$('v-shorts'), threshold:[0, .6] });
     b.querySelectorAll('.sh').forEach(el => { el.dataset.vu = '1'; io.observe(el); });
@@ -1919,7 +1927,7 @@ const NSPOT = (() => {
   const POURQUOI = { signin:'sign in again', habit:'save this Habit first', location:'where', mode:'silent or social',
     duration:'the duration', video:'the photo or the video', position:'allow my location', too_many:'enough spots for now',
     city:'no city near me', audience:'who sees it', when:'a future date and time', place:'where',
-    box_private:'this Habit box is private · make it visible to my subscribers first' };
+    box_private:'this Habit box is private · make it visible to my subscribers and Figher Club members first' };
   const diag = { ouverts:0, publies:0, refus:0, medias:0, adresses:0 };
   const N = {};
   const pan = () => $('rdr-new');
@@ -2050,7 +2058,7 @@ const NSPOT = (() => {
       + ' data-ns="reh" aria-label="Change the Habit">' + box(N.h) + '</div></div>'
       + (privee(N.h) ? '<p class="ns-def ns-what">this Habit box is private, so it cannot carry a Figher Club spot. '
         + 'Opening it to my subscribers opens the box ITSELF in my TOTEHM — its media and its sub-boxes follow.</p>'
-        + '<div class="sfr">' + chip('data-ns="ouvrirbox"', 'make visible to subscribers', false, N.boxBusy ? '…' : 'one tap') + '</div>' : '')
+        + '<div class="sfr">' + chip('data-ns="ouvrirbox"', 'make visible to subscribers and Figher Club members', false, N.boxBusy ? '…' : 'one tap') + '</div>' : '')
       + '</div>';
     const hs = HABITS || [];
     return '<div class="sfg"><div class="sfl">which habit?</div><div class="sfbx">' + (hs.length
@@ -2058,7 +2066,7 @@ const NSPOT = (() => {
           /* pas d'`aria-disabled` sur l'enveloppe : son bouton, lui, DOIT rester actionnable — c'est le seul
              geste qu'elle offre. La box n'est simplement pas interactive (ni `role`, ni `tabindex`). */
           ? '<div class="sfb is-off" title="This Habit box is private">' + box(x)
-            + '<div class="sfr sfb-act">' + chip('data-ns="ouvrirbox" data-v="' + esc(x.name) + '"', 'make visible to subscribers', false) + '</div></div>'
+            + '<div class="sfr sfb-act">' + chip('data-ns="ouvrirbox" data-v="' + esc(x.name) + '"', 'make visible to subscribers and Figher Club members', false) + '</div></div>'
           : '<div class="sfb" role="button" tabindex="0" data-ns="h" data-v="' + esc(x.name) + '">' + box(x) + '</div>').join('')
       : '<p class="note">' + (HABITS ? 'write a Habit in my TOTEHM first' : 'reading my TOTEHM…') + '</p>') + '</div></div>';
   }

@@ -6479,9 +6479,12 @@ const SPMAP=(()=>{
       const [px,py,pz]=proj(o.p.lng,o.p.lat,R,cx,cy); if(pz<0) continue;
       /* 12/11 (Wah) : le point PREND TOUTES ses intentions, mélangées comme des pigments (`melange`). */
       const z=o.z, col=melange(z.intentions||((z.habit_box||{}).ints)||[]), r=(z.state==='am'?5.5:4)*d;
+      /* 23/11 (Wah) : des POINTS LUMINEUX — chaque point rayonne de sa couleur (mélangée s'il a plusieurs intentions). */
+      x.shadowColor=col; x.shadowBlur=(z.state==='am'?16:11)*d;
       x.beginPath(); x.arc(px,py,r,0,7);
-      if(o.p.plein){ x.fillStyle=col; x.fill(); }
+      if(o.p.plein){ x.fillStyle=col; x.fill(); x.fill(); }
       else{ x.strokeStyle=col; x.lineWidth=1.5*d; x.stroke(); }
+      x.shadowBlur=0;
       pts.push({x:px/d, y:py/d, cle:'sp:'+z.id});
     }
     /* le point posé pour un spot à venir : un anneau blanc, rien d'autre */
