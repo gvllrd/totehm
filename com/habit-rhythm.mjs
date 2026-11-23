@@ -268,3 +268,83 @@ export function rhythmSummary(result){
  const label=FREQS.find(f=>f.id===result.frequency)?.label??'';
  return label+' check-in'+(result.target?' · target '+result.target.count+' / '+PERIOD_LABEL[result.target.unit]:'');
 }
+
+// ══ LE TIME FREQUENCY · 23/11 (Wah) ══ « l'utilisateur entre son Time Frequency dans sa langue et boom : sélection
+// automatique parmi les 33 options, ou ce qui s'en rapproche le plus » — français, anglais, portugais, allemand, espagnol.
+// TOUJOURS une réponse (jamais « à confirmer ») : un nombre par période se ramène à l'intervalle le plus proche
+// (échelle logarithmique), un mot de moment de la journée, un jour nommé, une fête ; sinon l'analyseur ci-dessus ;
+// sinon « sometimes ». Zéro réseau, zéro centime.
+const CF_NUM={un:1,une:1,one:1,um:1,uma:1,uno:1,una:1,ein:1,eine:1,einmal:1,once:1,
+ deux:2,two:2,dois:2,duas:2,dos:2,zwei:2,zweimal:2,twice:2,
+ trois:3,three:3,tres:3,drei:3,dreimal:3,thrice:3,quatre:4,four:4,quatro:4,cuatro:4,vier:4,
+ cinq:5,five:5,cinco:5,funf:5,six:6,seis:6,sechs:6,sept:7,seven:7,sete:7,siete:7,sieben:7,huit:8,eight:8,oito:8,ocho:8,acht:8,
+ dix:10,ten:10,dez:10,diez:10,zehn:10,quinze:15,fifteen:15,quince:15,funfzehn:15};
+const CF_UNIT=[['minute',1,'minutes?|minutos?|minuten?|mins?'],['hour',60,'heures?|hours?|horas?|stunden?|h'],
+ ['day',1440,'jours?|journees?|days?|dias?|tage?n?'],['week',10080,'semaines?|weeks?|semanas?|wochen?'],
+ ['month',43200,'mois|months?|mes|meses|monate?n?'],['year',525600,'ans?|annees?|years?|anos?|jahre?n?']];
+const CF_UNIT_RE=CF_UNIT.map(u=>u[2]).join('|');
+const cfUnit=w=>CF_UNIT.find(u=>new RegExp('^(?:'+u[2]+')$').test(w));
+const CF_GENERIC=['every_minute','hourly','several_daily','daily','every_other_day','twice_week','weekly','biweekly','twice_month','monthly','quarterly','semiannual','yearly'];
+const cfNearest=minutes=>CF_GENERIC.map(id=>FREQS.find(f=>f.id===id)).reduce((a,f)=>Math.abs(Math.log(f.w/minutes))<Math.abs(Math.log(a.w/minutes))?f:a).id;
+const cfHas=(t,words)=>new RegExp('(?:^| )(?:'+words+')(?= |$)').test(t);
+const CF_RULES=[
+ ['several_daily','plusieurs fois par jour|plusieurs fois dans la journee|several times a day|many times a day|varias vezes ao dia|varias vezes por dia|varias veces al dia|varias veces por dia|mehrmals am tag|mehrmals taglich|a chaque repas|apres chaque repas|avant chaque repas|after every meal|after each meal|before each meal|depois de cada refeicao|antes de cada refeicao|despues de cada comida|antes de cada comida|nach jeder mahlzeit|vor jeder mahlzeit|a chaque fois que|chaque fois que|every time|each time|toda vez que|cada vez que|jedes mal wenn|jedes mal'],
+ ['every_other_day','un jour sur deux|tous les deux jours|every other day|every second day|dia sim dia nao|dia sim outro nao|dia si dia no|un dia si y otro no|cada dos dias|cada otro dia|jeden zweiten tag|alle zwei tage'],
+ ['every_1st_month','1er du mois|1er de chaque mois|premier du mois|premier de chaque mois|1st of the month|first of the month|first of every month|primeiro dia do mes|primeiro do mes|dia 1 de cada mes|dia primero|primero de mes|primero de cada mes|1 de cada mes|ersten des monats|ersten jedes monats|monatsanfang|debut du mois|debut de mois|beginning of the month|inicio do mes|inicio de mes|principio de mes'],
+ ['every_15th_month','15 du mois|15 de chaque mois|mi mois|milieu du mois|15th of the month|mid month|middle of the month|dia 15|meio do mes|meados do mes|15 de cada mes|mitte des monats|15 des monats'],
+ ['every_birthday','anniversaire|birthday|aniversario|cumpleanos|geburtstag'],
+ ['every_newyear','nouvel an|jour de l an|reveillon|new year|new years|ano novo|ano nuevo|neujahr|silvester'],
+ ['seasonal','saison|saisons|season|seasons|seasonal|estacao|estacoes|estacion|estaciones|jahreszeit|jahreszeiten'],
+ ['quarterly','trimestre|trimestriel|trimestrielle|quarter|quarterly|trimestral|quartal|quartalsweise|vierteljahrlich'],
+ ['semiannual','semestre|semestriel|semestrielle|semiannual|semi annual|biannual|semestral|halbjahrlich|halbjahr'],
+];
+const CF_DAYS=[['monday','lundis?|mondays?|segunda feira|segundas? feiras?|segundas|lunes|montags?'],['tuesday','mardis?|tuesdays?|terca feira|tercas? feiras?|tercas|martes|dienstags?'],
+ ['wednesday','mercredis?|wednesdays?|quarta feira|quartas? feiras?|quartas|miercoles|mittwochs?'],['thursday','jeudis?|thursdays?|quinta feira|quintas? feiras?|quintas|jueves|donnerstags?'],
+ ['friday','vendredis?|fridays?|sexta feira|sextas? feiras?|sextas|viernes|freitags?'],['saturday','samedis?|saturdays?|sabados?|samstags?|sonnabends?'],
+ ['sunday','dimanches?|sundays?|domingos?|sonntags?']];
+const CF_LATE=[
+ ['every_weekend','week end|week ends|weekend|weekends|fim de semana|fins de semana|fin de semana|fines de semana|wochenende|wochenenden'],
+ ['every_weekday','en semaine|jours ouvres|jours ouvrables|jours de semaine|weekday|weekdays|workday|workdays|dias uteis|dias de semana|dias laborables|dias habiles|entre semana|werktags?|werktagen|wochentags'],
+ ['every_morning','matin|matins|matinal|matinee|au reveil|reveil|en me levant|au lever|morning|mornings|wake up|waking up|breakfast|petit dejeuner|manha|manhas|ao acordar|acordar|cafe da manha|pequeno almoco|manana|mananas|al despertar|despertar|desayuno|morgen|morgens|fruh|aufwachen|nach dem aufstehen|aufstehen|fruhstuck'],
+ ['every_afternoon','apres midi|aprem|afternoon|afternoons|lunch|dejeuner|a tarde|as tardes|almoco|por la tarde|las tardes|almuerzo|nachmittag|nachmittags|mittag|mittags'],
+ ['every_evening','soir|soirs|soiree|evening|evenings|diner|dinner|apres le boulot|apres le travail|after work|fim do dia|depois do trabalho|fin del dia|despues del trabajo|abend|abends|feierabend|nach der arbeit'],
+ ['every_night','nuit|nuits|coucher|avant de dormir|au lit|night|nights|bedtime|before bed|before sleep|sleep|noite|noites|antes de dormir|dormir|noche|noches|acostarme|nacht|nachts|schlafen|vor dem schlafen|bett'],
+ ['hourly','toutes les heures|chaque heure|every hour|each hour|hourly|toda hora|todas as horas|a cada hora|cada hora|stundlich|jede stunde'],
+ ['every_minute','chaque minute|toutes les minutes|every minute|a cada minuto|cada minuto|jede minute|minutlich'],
+ ['randomly','au hasard|aleatoire|aleatoirement|n importe quand|random|randomly|anytime|any time|aleatorio|aleatoriamente|qualquer hora|qualquer momento|cualquier momento|en cualquier momento|zufallig|irgendwann'],
+ ['sometimes','parfois|quelquefois|de temps en temps|de temps a autre|occasionnellement|quand je peux|quand j ai le temps|sometimes|occasionally|now and then|from time to time|once in a while|when i can|as vezes|de vez em quando|ocasionalmente|quando posso|a veces|de vez en cuando|cuando puedo|manchmal|ab und zu|hin und wieder|gelegentlich|wenn ich kann'],
+ ['daily','chaque jour|tous les jours|quotidien|quotidienne|quotidiennement|journalier|every day|each day|daily|everyday|todos os dias|todo dia|todo o dia|cada dia|diariamente|diario|diaria|todos los dias|a diario|jeden tag|taglich|pro tag|am tag'],
+ ['weekly','chaque semaine|toutes les semaines|par semaine|hebdo|hebdomadaire|every week|each week|weekly|a week|per week|toda semana|todas as semanas|por semana|semanal|semanalmente|cada semana|todas las semanas|a la semana|jede woche|pro woche|wochentlich|in der woche'],
+ ['monthly','chaque mois|tous les mois|par mois|mensuel|mensuelle|every month|each month|monthly|a month|per month|todo mes|todos os meses|por mes|ao mes|mensal|mensalmente|cada mes|todos los meses|al mes|mensual|mensualmente|jeden monat|pro monat|monatlich|im monat'],
+ ['yearly','chaque annee|tous les ans|par an|une fois l an|annuel|annuelle|annuellement|every year|each year|yearly|annual|annually|a year|per year|todo ano|todos os anos|por ano|ao ano|anual|anualmente|cada ano|todos los anos|al ano|jedes jahr|pro jahr|jahrlich|im jahr'],
+];
+export function closestFrequency(value){
+ const raw=String(value??'').trim();
+ if(!raw)return null;
+ const t=' '+fold(raw).replace(/[^\p{L}\p{N}]+/gu,' ').replace(/(\d)\s*(?:x|×)(?= |$)/g,'$1 fois').trim()+' ';
+ const s=t.trim();
+ const exact=FREQS.find(f=>fold(f.label)===s||f.id===s);
+ if(exact)return exact.id;
+ const n=w=>/^\d+$/.test(w)?Number(w):CF_NUM[w];
+ // « 3 fois par semaine », « twice a month », « zweimal pro Woche », « 2x/semana » : un nombre PAR période
+ const NUMW='\\d+|'+Object.keys(CF_NUM).join('|');
+ const count=new RegExp('(?:^| )('+NUMW+')(?: (?:fois|times?|vezes|vez|veces|mal))?(?: (?:par|per|a|an|por|pro|al|ao|a la|au|in der|im|am|each|every|cada|chaque|la|le|o|el|na|en))+ ('+CF_UNIT_RE+')(?= |$)');
+ const loose=new RegExp('(?:^| )('+NUMW+') (?:fois|times?|vezes|vez|veces|mal)(?= |$)');
+ // « tous les 3 jours », « every 2 weeks », « alle zwei Wochen », « a cada 15 dias » : un INTERVALLE
+ const every=new RegExp('(?:^| )(?:tous les|toutes les|every|a cada|cada|alle|todos os|todas as|todos los|todas las|de) ('+NUMW+') ('+CF_UNIT_RE+')(?= |$)');
+ if(!CF_RULES.slice(0,2).some(([id,w])=>cfHas(s,w))){
+  let m=every.exec(t);
+  if(m){ const k=n(m[1]), u=cfUnit(m[2]); if(k&&u) return cfNearest(u[1]*k); }
+  m=count.exec(t);
+  if(m){ const k=n(m[1]), u=cfUnit(m[2]); if(k&&u) return cfNearest(u[1]/k); }
+ }
+ for(const [id,w] of CF_RULES) if(cfHas(s,w)) return id;
+ if(cfHas(s,'du lundi au vendredi|lundi au vendredi|monday to friday|monday through friday|segunda a sexta|de lunes a viernes|lunes a viernes|montag bis freitag')) return 'every_weekday';
+ for(const [id,w] of CF_DAYS) if(cfHas(s,w)) return 'every_'+id;
+ // un nombre sans période (« 3 fois ») : par semaine, la période la plus fréquente d'une Habit
+ const lm=loose.exec(t); if(lm&&n(lm[1])) return cfNearest(10080/n(lm[1]));
+ for(const [id,w] of CF_LATE) if(cfHas(s,w)) return id;
+ const p=parseHabitRhythm(raw,{mode:'rhythm'});
+ if(p.status==='matched'&&p.frequency) return p.frequency;
+ return 'sometimes';
+}

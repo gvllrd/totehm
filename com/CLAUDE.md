@@ -51,7 +51,7 @@ seuls `/totehm` et `/totehm.html` autorisent les cadres Telegram (CSP). `overflo
   de sa box (`_spot_plafond_ok`, refus `box_private`).
 - `cloudSave()` réécrit `habits` en entier ; le serveur après `PAUSE_FRAPPE` (2,5 s) ou à la sortie du champ ; un refus
   laisse la saisie en ATTENTE (`NON_CONFIRME`) ; rien avant `cloudLoad`. Ne jamais redéfinir `--perfo`.
-- `habit-rhythm.mjs` (35 langues, zéro LLM) propose un rythme à confirmer ; `f` seul règle le check-in. Telegram :
+- Le TIME FREQUENCY s'écrit dans sa langue (FR · EN · PT · DE · ES) et `closestFrequency` (`habit-rhythm.mjs`, zéro LLM) choisit SEUL l'option la plus proche des 33, allumée à la frappe, enregistrée après 700 ms, Entrée ou un tap (un tap à la main l'emporte) — `tests/node/time_frequency.mjs` ; `parseHabitRhythm` (35 langues) reste la lecture du bot ; `f` seul règle le check-in. Telegram :
   `?telegram=1#practice=<id>` ouvre la box native (jamais d'identité par le SDK). Liens : `totehm-link.mjs`.
 - La pièce TOTEHM tourne sur les pièces VISIBLES, jamais sur `:root` (21–25 images/s au déploiement → 60). Le socle
   `#lv-socket` donne la taille du boîtier : ne pas le retirer. Toute sortie de verso rend `LV.aspirer(false)`.

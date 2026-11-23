@@ -5088,7 +5088,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { parseElementLink, resolveElementLink } from '/totehm-link.mjs';
 import {parsePracticeLink,installTelegramShell} from '/telegram-practice.mjs';
 import {renderPractice,createTrackingControls,PRACTICE_REVIEW_PROMPT} from '/tracking.mjs';
-import {FREQS,parseHabitRhythm,rhythmSummary} from '/habit-rhythm.mjs';
+import {FREQS,parseHabitRhythm,rhythmSummary,closestFrequency} from '/habit-rhythm.mjs';
 installTelegramShell();
 let trackingRefresh=()=>Promise.resolve();
 let lienElement=parseElementLink(location.hash), lienEnCours=false;
@@ -8824,7 +8824,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-11-23-lot-wah';
+const BUILD='2026-11-23-time-frequency';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -9612,7 +9612,8 @@ function pkSet(q,k,id){ pk = pkOn(q,k,id) ? null : {q,k,id:String(id),...(q==='f
 const rhythmIgnored=new Map();
 const habitTiming=x=>parseHabitRhythm(x.rhythm_text||x.t,{mode:x.rhythm_text?'rhythm':'habit'});
 function rhythmHint(x){
-  if(RO||rhythmIgnored.get(String(x.id))===x.t)return '';
+  /* 23/11 : un Time Frequency écrit par le membre a déjà choisi — plus de suggestion par-dessus */
+  if(RO||x.rhythm_text||rhythmIgnored.get(String(x.id))===x.t)return '';
   const result=habitTiming(x);
   if(result.status==='matched'){
     if(result.frequency===x.f)return '';
@@ -9631,21 +9632,23 @@ function refreshRhythmHint(x){
   if(host)host.innerHTML=rhythmHint(x);
 }
 
-function timingFeedback(result,words){
-  const details=result.target?'One check-in for the whole period, not one notification per session. ':'';
-  if(result.status==='matched')return details+((result.hasClock||result.hasDuration)?'Your timing words appear in check-ins. Session length and exact times do not schedule alerts. Notifications follow your settings.':'Your timing words appear in check-ins. Notifications use the confirmed rhythm.');
-  return words.trim()?'This timing needs a manual choice. Your words can be kept with a chosen check-in; exact dates, exceptions and times are not scheduled.':'';
-}
+/* ══ 23/11 (Wah) — LE TIME FREQUENCY S'ÉCRIT DANS SA LANGUE, ET BOOM ══ « sélection automatique parmi les 33 options ou
+   ce qui s'en rapproche le plus » (FR · EN · PT · DE · ES) : `closestFrequency` rend TOUJOURS une option ; elle s'allume
+   dans la liste à la frappe et s'enregistre seule (pause de 700 ms, Entrée, ou la sortie du champ). Plus de « à confirmer ». */
 function freqFeedback(x,words){
-  const result=parseHabitRhythm(words,{mode:'rhythm'});
-  return (result.status==='matched'?'<button type="button" class="fq-hit" data-fq-suggested="1" data-fq="'+esc(String(x.id))+'|'+result.frequency+'">'+esc(rhythmSummary(result))+'</button>':'')
-    +'<span class="pk-say" role="status">'+esc(timingFeedback(result,words))+'</span>';
+  const f=String(words||'').trim()?closestFrequency(words):null;
+  return f?'<span class="pk-say" role="status">→ '+esc(flabel(f))+'</span>':'';
 }
+let fqTimer=null;
 function updateFreqInput(t){
   if(!pk||pk.q!=='freq'||String(pk.id)!==t.dataset.fqin)return;
   pk.txt=t.value;pk.dirty=true;const x=habOf(pk.id);if(!x)return;
-  const r=parseHabitRhythm(t.value,{mode:'rhythm'});pk.devine=r.status==='matched'?r.frequency:null;
-  const feedback=t.parentElement.querySelector('[data-fq-feedback]');if(feedback)feedback.innerHTML=freqFeedback(x,t.value);
+  const f=String(t.value).trim()?closestFrequency(t.value):null;pk.devine=f;
+  const w=t.closest('.pkw');
+  if(w) w.querySelectorAll('.pk-o[data-fq]').forEach(b=>b.classList.toggle('on',b.dataset.fq.split('|')[1]===(f||x.f)));
+  const feedback=w&&w.querySelector('[data-fq-feedback]');if(feedback)feedback.innerHTML=freqFeedback(x,t.value);
+  clearTimeout(fqTimer);
+  if(f) fqTimer=setTimeout(()=>{ if(habOf(x.id)===x) confirmRhythm(x,f,t.value); },700);
 }
 function confirmRhythm(x,frequency,words=''){
   x.f=frequency;const text=timingWords(words);
@@ -10677,8 +10680,8 @@ function cable(box){
       confirmRhythm(x,result.frequency,x.rhythm_text||'');pk=null;renderZone();return;
     }
     if(d.fq){ const p=d.fq.split('|'); const x=habOf(p[0]);
-      if(d.fqSuggested&&(!pk||parseHabitRhythm(pk.txt,{mode:'rhythm'}).frequency!==p[1]))return;
-      if(x&&FREQ_BY_ID[p[1]])confirmRhythm(x,p[1],(d.fqSuggested||pk?.dirty||x.f===p[1])?pk?.txt||'':'');pk=null;renderZone();return; }
+      clearTimeout(fqTimer);   /* un choix à la main l'emporte sur la frappe en attente */
+      if(x&&FREQ_BY_ID[p[1]])confirmRhythm(x,p[1],(pk?.dirty||x.f===p[1])?pk?.txt||'':'');pk=null;renderZone();return; }
     if(d.lien){ const p=d.lien.split('|'), q=p[0].split(':');
       attache(q[0],q[1],p[1]); pk=null; renderZone(); return; }
     if(d.unlink){ const p=d.unlink.split('|'), q=p[0].split(':');
@@ -10830,7 +10833,7 @@ function cable(box){
       if(!v){ pk=null; renderZone(); return true; }
       const q=t.dataset.nw.split(':'); neufEtAttache(q[0],q[1],v); return true; }
     if(t.dataset.fqin){
-      if(pk){const r=parseHabitRhythm(t.value,{mode:'rhythm'}),x=habOf(pk.id);if(x&&r.status==='matched'){confirmRhythm(x,r.frequency,t.value);pk=null;renderZone();}}
+      if(pk){const f=String(t.value).trim()?closestFrequency(t.value):null,x=habOf(pk.id);clearTimeout(fqTimer);if(x&&f){confirmRhythm(x,f,t.value);pk=null;renderZone();}}
       return true; }
     /* ⚠️ LE TITRE D'UNE BOÎTE — le cas qui manquait. Entrée POUSSE
        l'écriture différée (sinon elle dort 700 ms de plus) et rend le

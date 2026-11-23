@@ -59,34 +59,32 @@ try{
   await current.fill('Read every day at 07:30');await pg.waitForSelector('[data-rhythm-frequency="daily"]');
   check((await hint.textContent()).includes('Notifications follow your settings'),'Exact clock time is disclosed as text, without changing notification settings');
   await pg.screenshot({path:out+'/timing-'+width+'.png'});
-  // Preserve the member's own timing words and update quotas without replacing the editor.
+  // 23/11 (Wah) : le Time Frequency s'écrit dans sa langue et choisit SEUL l'option la plus proche des 33.
   await pg.locator('[data-pk^="freq:h:"]').click();
   let words=pg.locator('[data-fqin]');await words.fill('2x/week at 7am');
-  check((await pg.locator('[data-fq-feedback]').textContent()).includes('target 2 / week'),'Manual input keeps its repetition target');
+  const on=()=>pg.locator('.pk-o.on[data-fq]').evaluateAll(l=>l.map(b=>b.dataset.fq.split('|')[1]));
+  check((await pg.locator('[data-fq-feedback]').textContent()).includes('twice a week')&&(await on()).join()==='twice_week','Typing selects the closest of the 33 options at once');
   const originalEditor=await words.elementHandle();await words.fill('3x/week at 7am');
-  check((await pg.locator('[data-fq-feedback]').textContent()).includes('target 3 / week')&&await words.evaluate((e,old)=>e===old,originalEditor),'Same-cadence edits update the exact quota without replacing the editor');
+  check((await on()).join()==='every_other_day'&&await words.evaluate((e,old)=>e===old,originalEditor),'3 a week → the nearest interval (every other day), without replacing the editor');
   await words.press('Enter');await pg.waitForTimeout(1100);
-  check(stored()[0].f==='weekly'&&stored()[0].rhythm_text==='3x/week at 7am'&&stored()[0].t==='Read every day at 07:30','Confirmed timing words survive separately from the unchanged Habit and confirmed cadence');
+  check(stored()[0].f==='every_other_day'&&stored()[0].rhythm_text==='3x/week at 7am'&&stored()[0].t==='Read every day at 07:30','Enter keeps the words and the chosen rhythm, the Habit unchanged');
   await pg.goto(elementURL({kind:'habit',ref:'Read every day at 07:30'}));await pg.waitForFunction(()=>window.__totehm_element_link?.().state==='opened');
   await pg.locator('[data-pk^="freq:h:"]').click();words=pg.locator('[data-fqin]');
   check(await words.inputValue()==='3x/week at 7am','Authored timing reloads from cloud/cache through the original native box');
-  await pg.locator('[data-fq$="|weekly"]:not(.fq-hit)').click();await pg.waitForTimeout(1100);
+  await pg.locator('[data-fq$="|every_other_day"]').click();await pg.waitForTimeout(1100);
   check(stored()[0].rhythm_text==='3x/week at 7am','Selecting the existing cadence preserves the confirmed wording');
   await pg.locator('[data-pk^="freq:h:"]').click();words=pg.locator('[data-fqin]');
+  for(const [mot,id] of [['deux fois par mois','twice_month'],['todas as manhãs','every_morning'],['zweimal pro Woche','twice_week'],['los domingos','every_sunday'],['avant de dormir','every_night']]){
+    await words.fill(mot);await pg.waitForTimeout(2000);
+    check(stored()[0].f===id&&stored()[0].rhythm_text===mot,'« '+mot+' » → '+id+', saved on its own (no Enter)');
+  }
   await words.fill('2x/week');
   await words.evaluate(el=>{el.dispatchEvent(new CompositionEvent('compositionstart',{bubbles:true}));el.value='毎朝';el.dispatchEvent(new InputEvent('input',{bubbles:true,isComposing:true,inputType:'insertCompositionText'}));});
-  check(!await pg.locator('[data-fq-suggested][data-fq$="|every_morning"]').count(),'A time-frequency IME composition is not parsed mid-word');
-  await words.evaluate(el=>el.dispatchEvent(new InputEvent('beforeinput',{bubbles:true,cancelable:true,isComposing:true,inputType:'insertLineBreak'})));
-  check(await words.count()===1&&stored()[0].f==='weekly','IME candidate confirmation cannot commit timing through beforeinput');
+  check(!(await pg.locator('[data-fq-feedback]').textContent()).includes('every morning'),'A time-frequency IME composition is not parsed mid-word');
   await words.dispatchEvent('compositionend');
-  check(await words.evaluate(e=>document.activeElement===e)&&await pg.locator('[data-fq-suggested][data-fq$="|every_morning"]').count()===1,'Frequency composition completion updates feedback while keeping the caret');
-  await words.fill('every day except Sunday');
-  check(!await pg.locator('[data-fq-suggested]').count()&&(await pg.locator('[data-fq-feedback]').textContent()).includes('not scheduled'),'Exceptions produce an explicit manual choice and no invented schedule');
-  await words.fill('');await pg.locator('[data-pk^="freq:h:"]').click();
-  // Existing manual rhythm selection remains available and overrides text recognition.
-  await pg.locator('[data-pk^="freq:h:"]').click();
-  const fqin=pg.locator('[data-fqin]');await fqin.fill('nonsense without a recurrence');
-  check(!await pg.locator('[data-fq].fq-hit').count(),'Unknown manual input never defaults to sometimes');
+  check(await words.evaluate(e=>document.activeElement===e)&&(await pg.locator('[data-fq-feedback]').textContent()).includes('every morning'),'Frequency composition completion updates the choice while keeping the caret');
+  await words.fill('nonsense without a recurrence');
+  check((await on()).join()==='sometimes','Unknown words fall to the closest catch-all: sometimes');
   await pg.locator('[data-fq$="|monthly"]').click();await pg.waitForTimeout(1100);
   check(stored()[0].f==='monthly'&&!await pg.locator('[data-rhythm]').count(),'Manual override is respected for this text');
   await pg.reload();await pg.waitForFunction(()=>window.__totehm_lv);
