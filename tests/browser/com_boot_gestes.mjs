@@ -83,10 +83,11 @@ try{
   ok(a2==='c','en haut (ChatGPT), un glissé vers le bas qui part sur le papier-profil → le centre → '+a2);
   p=await centre();
   const a3=await glisse(p.x,p.y-20,p.x,p.y+150);
-  ok(a3==='h','au centre, vers le bas depuis le papier → Get Higher (le TotehmPaper, au second plan) → '+a3);
-  p=await centre();
-  const a4=await glisse(p.x,p.y+10,p.x,p.y-160);
-  ok(a4==='c','dans Get Higher (en bas), un glissé vers le haut qui part sur le papier posé sur la langue → le centre → '+a4);
+  /* 23/11 (Wah) : la vue ↓ Get Higher est retirée ; ↓ retourne le TOTEHM vers Ecosystems (le détail : com_ecosystems) */
+  ok(a3!=='h','23/11 · au centre, vers le bas : plus de Get Higher (↓ = Ecosystems) → '+a3);
+  if(await pg.evaluate(()=>document.getElementById('srch').classList.contains('is-on'))){
+    await pg.click('#srch-x'); await pg.waitForFunction(()=>!document.getElementById('srch').classList.contains('is-on'),null,{timeout:8000}).catch(()=>{}); }
+  await vers(pg,'c'); await pg.waitForTimeout(600);
   /* b · deux gestes coup sur coup : le second attend la fin du premier au lieu de se perdre */
   await vers(pg,'c');
   const d0=(await lv(pg)).enAttente;
@@ -99,13 +100,13 @@ try{
   ok((await lv(pg)).vue==='c','↑ puis ↓ au clavier, sans attendre : ChatGPT puis le centre');
   /* c · un voyage qui ne se termine pas (l'onglet se cache en route : plus d'images) rend la main tout seul */
   await pg.evaluate(()=>{ window.__cache=true; Object.defineProperty(document,'hidden',{configurable:true,get:()=>window.__cache}); });
-  await pg.evaluate(()=>window.__lvAller('h')); await pg.waitForTimeout(120);
+  await pg.evaluate(()=>window.__lvAller('b')); await pg.waitForTimeout(120);
   const bloque=(await lv(pg)).bouge;
   await pg.waitForTimeout(2600);
   const apres=await lv(pg);
   ok(bloque&&!apres.bouge&&apres.debloques===1,'voyage figé (onglet caché) : la main est rendue d\'elle-même ('+apres.debloques+' déblocage)');
   await pg.evaluate(()=>{ window.__cache=false; });
-  await pg.click('#lvn-up'); await vers(pg,'c'); await pg.waitForTimeout(300);
+  await pg.click('#lvn-dn'); await vers(pg,'c'); await pg.waitForTimeout(300);   /* depuis ChatGPT (en haut), ↓ ramène au centre */
   const fin=await lv(pg);
   ok(fin.vue==='c'&&!fin.bouge,'… et le geste suivant passe : retour au centre → '+fin.vue);
   await pg.click('#lvn-up'); await vers(pg,'b'); await pg.click('#lvn-dn'); await vers(pg,'c');
@@ -138,14 +139,14 @@ try{
      peuvent autrement relâcher après sa fin, et tester à tort une mise en attente qui n'est plus nécessaire. */
   if(delai===200){
     await pg.evaluate(()=>document.getElementById('fold-x').click());await pg.waitForTimeout(delai);
-    await pg.keyboard.press('ArrowDown');
+    await pg.keyboard.press('ArrowUp');   /* 23/11 : ↓ n'est plus un voyage (Ecosystems retourne le TOTEHM) — la file se teste vers ↑ */
   }else{
     const pendant=await pg.evaluate(delai=>new Promise(resolve=>{
       document.getElementById('fold-x').click();
       setTimeout(()=>{
         const el=document.getElementById('lvj-box'),r=el.getBoundingClientRect(),x=r.x+r.width/2,y=r.y+r.height/2;
         const folding=document.body.classList.contains('folding');
-        for(const [type,dy] of [['pointerdown',0],['pointermove',22],['pointerup',22]])
+        for(const [type,dy] of [['pointerdown',0],['pointermove',-22],['pointerup',-22]])
           el.dispatchEvent(new PointerEvent(type,{bubbles:true,pointerId:1,pointerType:'mouse',button:0,buttons:type==='pointerup'?0:1,clientX:x,clientY:y+dy}));
         resolve(folding);
       },delai);
@@ -154,7 +155,7 @@ try{
   }
   await pg.waitForTimeout(1900);
   const d=await lv(pg);
-  ok(d.vue==='h'&&d.enAttente===a0+1,'22/10 · un geste vers le bas ('+(delai===200?'clavier':'manette')+') '+delai+' ms après la croix (le TOTEHM se replie encore) attend la fin du repli, puis part → '+d.vue);
+  ok(d.vue==='b'&&d.enAttente===a0+1,'22/10 · un geste vers le haut ('+(delai===200?'clavier':'manette')+') '+delai+' ms après la croix (le TOTEHM se replie encore) attend la fin du repli, puis part → '+d.vue);
   ok(!erreurs(log).length,'repli + manette : aucune erreur '+erreurs(log).join(' | '));
   await ctx.close();}
 
@@ -196,19 +197,5 @@ try{
   ok(!erreurs(log).length,'mouchard : aucune erreur '+erreurs(log).join(' | '));
   await ctx.close();}
 
- /* ── 3 · LA VUE DU HAUT : le cerveau entier, rien ne le recouvre ── */
- for(const [w,h] of [[390,664],[375,667],[390,844],[1280,720]]){
-  const{pg,ctx}=await page(browser,{dir:'com',origin,tables,rpc:{my_landing:LAND},viewport:{width:w,height:h},hasTouch:w<500});
-  await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1000);
-  await pg.click('#lvn-dn');await vers(pg,'h');await pg.waitForTimeout(700);
-  const m=await pg.evaluate(()=>{const r=s=>{const b=document.querySelector(s).getBoundingClientRect();return {t:b.top,b:b.bottom};};
-    const ys=[...document.querySelectorAll('#lv-ram g path:first-child')].flatMap(p=>(p.getAttribute('d')||'').split(/[ML]/).filter(Boolean).map(t=>+t.trim().split(/[ ,]+/)[1])).filter(Number.isFinite);
-    return {m:r('#gate-mouth'),s:r('#lv-slogan'),v:r('#lv-sell'),j:r('#lvj-box'),cb:Math.min(...ys),cB:Math.max(...ys),bouche:(window.__totehm_lv().haut||{}).bouche};});
-  const tag=w+'×'+h;
-  ok(m.m.t<=Math.max(14,h*.02)+1,tag+' : la bouche monte contre le haut ('+Math.round(m.m.t)+' px)');
-  ok(m.v.t>=m.s.b-2&&m.v.t-m.s.b<=16,tag+' : la vente se pose juste sous « Get [Higher] » (écart '+Math.round(m.v.t-m.s.b)+' px)');
-  ok(m.cb>=m.v.b+4&&m.cB<=m.j.t+2&&m.cB-m.cb>=120,tag+' : le cerveau ENTIER entre la vente et la manette ('+Math.round(m.cb)+' → '+Math.round(m.cB)+', vente '+Math.round(m.v.b)+', manette '+Math.round(m.j.t)+')');
-  ok(m.bouche>=110,tag+' : la bouche garde au moins 110 px ('+m.bouche+')');
-  await ctx.close();
- }
+ /* 23/11 : la vue ↓ Get Higher (le TotehmPaper, le cerveau, la vente) est retirée — sa mise en page n'est plus testée */
 }finally{await browser.close();}
