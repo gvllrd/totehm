@@ -13491,7 +13491,10 @@ window.addEventListener('pageshow',e=>{
     requestAnimationFrame(()=>requestAnimationFrame(()=>{
       sansTransition(); sBg.style.transform=''; sH.style.transform='';
       const g=geometrie();
-      pleinEcran(); void sBg.offsetWidth;
+      /* ⚠️ 23/11 (Wah : « quand je ferme le TOTEHM en MEMBERS ou en DASHBOARD, il y a un genre de zoom fullscreen ») — à
+         l'ordinateur le verso est le CARRÉ du recto (`auFormat`) : le dézoom repartait du PLEIN ÉCRAN (`pleinEcran`), un
+         saut avant de rétrécir. Il part maintenant du carré tel qu'il est (au téléphone, `auFormat` = plein écran). */
+      auFormat(); void sBg.offsetWidth;
       avecTransition(); surLePapier(g);
       clearTimeout(sTimer); sTimer=setTimeout(fini,SDUR+60);
     }));

@@ -141,8 +141,13 @@ try{
   ok((await L(pg)).mode==='mine'&&!/ro=/.test(await pg.evaluate(()=>location.search)),quoi+' · [Mine] : je redeviens moi');
   await pg.click('#lv-m-members');ok(await ouvert(pg),quoi+' · [Members] rouvre la recherche');
   await pg.waitForTimeout(400);
+  /* 23/11 (Wah : « un genre de zoom fullscreen ») — mesuré image par image : le fond du verso ne GRANDIT jamais en se refermant */
+  await pg.evaluate(()=>{ const b=document.getElementById('srch-bg'); window.__largeurs=[];
+    const t0=performance.now(); (function f(){ if(document.getElementById('srch').classList.contains('is-on')) window.__largeurs.push(Math.round(b.getBoundingClientRect().width)); if(performance.now()-t0<1400) requestAnimationFrame(f); })(); });
   await pg.click('#srch-x');ok(await ferme(pg),quoi+' · la croix referme la recherche');
   await pg.waitForTimeout(900);
+  { const l=await pg.evaluate(()=>window.__largeurs), d=l.filter(Boolean), max=Math.max(...d);
+    ok(d.length>5&&max<=d[0]+2,quoi+' · la croix : le verso rétrécit depuis sa taille, sans passer par le plein écran (départ '+d[0]+' px, max '+max+' px)'); }
   const fin=await pg.evaluate(()=>({mode:window.__totehm_lv().mode,ro:document.body.classList.contains('ro'),dos:document.getElementById('ast-name').textContent,
     cherche:document.getElementById('srch').classList.contains('is-cherche')}));
   ok(fin.mode==='mine'&&!fin.ro&&fin.dos==='wah'&&!fin.cherche,quoi+' · rien trouvé : MON atterrissage, mon nom au dos, le verso redevient le mien → '+JSON.stringify(fin));
