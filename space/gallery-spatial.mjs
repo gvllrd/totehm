@@ -174,7 +174,7 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
  function openProjection(href=play.screen?.userData.href){
   const options={reduced:motionReduced,onStart:freezeExperience,
    onLift:()=>renderer.render(scene,camera),onClose:()=>{play.reset?.();resumeExperience();}};
-  return newYork?expandProjectedExperience(play,camera,href,options):expandLisbonDiscover(play,href,options);
+  return newYork?expandProjectedExperience(play,camera,href,options):expandLisbonDiscover(play,camera,href,options);
  }
  function openObject(root,href,kind,width,shot,sourceReady){
   return expandGalleryObject(root,camera,href,{kind,width,shot,sourceReady,reduced:motionReduced,

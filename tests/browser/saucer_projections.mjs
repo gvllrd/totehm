@@ -59,6 +59,20 @@ try{for(const viewport of [{width:800,height:600},{width:1100,height:760}])for(c
  const lisbon=city==='lisbon',owned=lisbon&&viewport.width===800;
  const requests=[],f=await page(browser,{dir:'space',origin,session:owned,viewport,hasTouch:false,functions:{'stoner-gate':{access:owned}},network:u=>{requests.push(u.pathname);return u.pathname==='/gallery-temple-landscape.mjs'?{contentType:'text/javascript',body:landscape}:u.pathname==='/gallery-drowned-sky.mjs'?{contentType:'text/javascript',body:sky}:null;}}),{pg,log}=f,sample={viewport,city,warnings:[]};results.push(sample);pg.on('console',message=>{if(message.type()==='warning')sample.warnings.push(message.text());});
  try{
+  if(owned)await f.ctx.addInitScript(()=>{
+   const context=CanvasRenderingContext2D.prototype,begin=context.beginPath,move=context.moveTo,line=context.lineTo,clip=context.clip;
+   let points=[];
+   context.beginPath=function(){if(this.canvas.id==='discover-sign-flight')points=[];return begin.call(this);};
+   context.moveTo=function(x,y){if(this.canvas.id==='discover-sign-flight')points.push({x,y});return move.call(this,x,y);};
+   context.lineTo=function(x,y){if(this.canvas.id==='discover-sign-flight')points.push({x,y});return line.call(this,x,y);};
+   context.clip=function(...args){
+    if(this.canvas.id==='discover-sign-flight'){
+     const first=window.discoverFirstTriangles??=[];
+     if(first.length<44)first.push(points.slice());
+    }
+    return clip.apply(this,args);
+   };
+  });
   await pg.emulateMedia({reducedMotion:'reduce'});await pg.goto(origin+(city==='lisbon'?'/lisbon-space':'/new-york'));await ready(pg);sample.initial=await state(pg);
   check(!sample.initial.fallback&&await pg.locator('#space canvas').count()===1,city+' has an actual rendered 3D gallery at '+viewport.width);
   const {fireplace,fireAudio}=sample.initial;
@@ -113,6 +127,16 @@ try{for(const viewport of [{width:800,height:600},{width:1100,height:760}])for(c
    const url=new URL(frame.url());
    check(url.pathname==='/play_lisbon_street'&&url.searchParams.get('discover')==='1'&&!url.searchParams.has('board'),'A floating sign opens Discover in the fullscreen frame');
    await frame.locator('#sdisc-stage .is-first.show').waitFor();
+   if(owned){
+    const first=await frame.evaluate(()=>window.discoverFirstTriangles);
+    const frozen=(await state(pg)).projection.poses,order=[0,1,3,1,2,3];
+    check(first?.length===44&&first.flat().every(({x,y},i)=>{
+     const point=frozen[Math.floor(i/6)].corners[order[i%6]];
+     return Math.hypot(x-point.x,y-point.y)<.5;
+    }),'The first Discover flight frame matches all 22 frozen world signs within half a CSS pixel');
+    check(await pg.evaluate(()=>__totehm_projection_expansion().handoff?.signs===22)&&
+     await frame.locator('#discover-sign-flight').count()===0,'All 22 signs land before Discover reveals the first slide');
+   }
    sample.front=await frame.evaluate(()=>__totehm_lisbon());
    check(sample.front.step===0&&!sample.front.board&&!sample.front.directBoard&&sample.front.activeSign===null,'Discover opens on its first slide for both guests and owners');
    check(await frame.getByRole('button',{name:'Play the Lisbon Streets',exact:true}).count()===0,'Play is hidden until the final Discover slide');

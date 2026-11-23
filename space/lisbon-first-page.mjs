@@ -29,8 +29,16 @@ export function createLisbonFirstPage({width=1600,height=900,onChange=()=>{}}={}
  const canvas=document.createElement('canvas');canvas.width=width;canvas.height=height;canvas.setAttribute('role','img');canvas.setAttribute('aria-label',LISBON_FRONT_COPY.headline+'. '+LISBON_FRONT_COPY.subtitle+'. 22 floating Lisbon signs.');
  const ctx=canvas.getContext('2d'),images=new Map();let time=0,reveal=0,disposed=false,loaded=false,animated=false,failures=0;
  const signOpacity=()=>1-.71*reveal;
+ function getDrawings(){
+  return lisbonFrontSigns(time).flatMap(sign=>{
+   const image=images.get(sign.name);
+   if(!image)return [];
+   const scale=sign.size/Math.max(image.naturalWidth,image.naturalHeight);
+   return [{...sign,image,width:image.naturalWidth*scale,height:image.naturalHeight*scale}];
+  });
+ }
  function draw(){if(disposed)return;ctx.setTransform(width/1600,0,0,height/900,0,0);ctx.fillStyle='#000';ctx.fillRect(0,0,1600,900);
-  for(const sign of lisbonFrontSigns(time)){const image=images.get(sign.name);if(!image)continue;const scale=Math.min(sign.size/image.naturalWidth,sign.size/image.naturalHeight);ctx.save();ctx.translate(sign.x,sign.y);ctx.rotate(sign.rotation);ctx.globalAlpha=signOpacity();ctx.drawImage(image,-image.naturalWidth*scale/2,-image.naturalHeight*scale/2,image.naturalWidth*scale,image.naturalHeight*scale);ctx.restore();}
+  for(const sign of getDrawings()){ctx.save();ctx.translate(sign.x,sign.y);ctx.rotate(sign.rotation);ctx.globalAlpha=signOpacity();ctx.drawImage(sign.image,-sign.width/2,-sign.height/2,sign.width,sign.height);ctx.restore();}
   if(reveal<1){
    ctx.save();ctx.globalAlpha=1-reveal;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='#e1e2e8';ctx.font='700 60px "Space Mono",monospace';ctx.fillText(LISBON_FRONT_COPY.headline,800,427);
    ctx.fillStyle='#999aa6';ctx.font='400 23px "Space Mono",monospace';ctx.fillText(LISBON_FRONT_COPY.subtitle,800,501);ctx.restore();
@@ -39,5 +47,5 @@ export function createLisbonFirstPage({width=1600,height=900,onChange=()=>{}}={}
  function image(src,then){return new Promise(resolve=>{const im=new Image();im.onload=()=>{if(disposed){resolve(false);return;}then(im);draw();resolve(true);};im.onerror=()=>{failures++;resolve(false);};im.src=src;});}
  const ready=Promise.all(LISBON_FRONT_NAMES.map(name=>image('/assets/signs/'+name+'.png',im=>images.set(name,im)))).then(()=>{loaded=true;draw();return!failures;});
  draw();document.fonts?.ready.then(draw);
- return{canvas,ready,update(dt,motion=true){animated=!!motion;if(!motion||disposed)return false;time+=Math.max(0,Math.min(Number(dt)||0,.1));draw();return true;},setTime(value){time=Math.max(0,Number(value)||0);draw();},setReveal(value){reveal=clamp(Number(value)||0,0,1);draw();},getSigns:()=>lisbonFrontSigns(time),getSignOpacity:signOpacity,dispose(){disposed=true;images.clear();},diagnostics:()=>({kind:'lisbon-canonical-first-page',time:+time.toFixed(4),loaded:images.size,ready:loaded,failures,signs:22,visibleSigns:images.size,titleOnly:false,headline:LISBON_FRONT_COPY.headline,subtitle:LISBON_FRONT_COPY.subtitle,animated,dimmed:reveal>0,signOpacity:signOpacity(),reveal,ratio:16/9,minimumSignSize:138,maximumSignSize:250})};
+ return{canvas,ready,update(dt,motion=true){animated=!!motion;if(!motion||disposed)return false;time+=Math.max(0,Math.min(Number(dt)||0,.1));draw();return true;},setTime(value){time=Math.max(0,Number(value)||0);draw();},setReveal(value){reveal=clamp(Number(value)||0,0,1);draw();},getSigns:()=>lisbonFrontSigns(time),getDrawings,getSignOpacity:signOpacity,dispose(){disposed=true;images.clear();},diagnostics:()=>({kind:'lisbon-canonical-first-page',time:+time.toFixed(4),loaded:images.size,ready:loaded,failures,signs:22,visibleSigns:images.size,titleOnly:false,headline:LISBON_FRONT_COPY.headline,subtitle:LISBON_FRONT_COPY.subtitle,animated,dimmed:reveal>0,signOpacity:signOpacity(),reveal,ratio:16/9,minimumSignSize:138,maximumSignSize:250})};
 }

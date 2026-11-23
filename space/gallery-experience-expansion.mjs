@@ -25,9 +25,9 @@ export function expandProjectedExperience(projection,camera,href,options={}){
  });
 }
 
-export function expandLisbonDiscover(projection,href,options={}){
- if(!projection.root||!projection.setHandoff)return false;
- return openExperience({object:projection.root,href,type:'discover',projection,...options});
+export function expandLisbonDiscover(projection,camera,href,options={}){
+ if(!projection.root||!projection.setHandoff||!projection.snapshot)return false;
+ return openExperience({object:projection.root,camera,href,type:'discover',projection,...options});
 }
 
 export function expandGalleryObject(object,camera,href,{kind,width,shot,...options}){
@@ -42,7 +42,7 @@ function openExperience({object,camera,href,type,from=null,canvas,time,width,sho
  const config=fronts[type],previous=location.href,state=history.state,wasVisible=object.visible;
  const siblings=[...document.body.children].map(el=>[el,el.inert]);
  const dialog=document.createElement('div'),veil=document.createElement('div'),frame=document.createElement('iframe');
- let disposed=false,entering=false,stage='preparing',raf=0,timer=0,progress=0,target=null,animation=null,visual=null,handoff=null,controllerLift=false,stopLift=null,projectionHidden=false;
+ let disposed=false,entering=false,stage='preparing',raf=0,timer=0,progress=0,target=null,animation=null,visual=null,handoff=null,controllerLift=false,stopLift=null,projectionHidden=false,discoverFlight=null;
  dialog.id='experience-projection-dialog';dialog.setAttribute('role','dialog');dialog.setAttribute('aria-modal','true');dialog.setAttribute('aria-label','Enter the original artwork');
  dialog.style.cssText='position:fixed;inset:0;z-index:100';
  veil.style.cssText='position:absolute;inset:0;background:#000;opacity:0';
@@ -52,6 +52,7 @@ function openExperience({object,camera,href,type,from=null,canvas,time,width,sho
   try{return createObjectLift(object,camera,{width,shot});}
   catch(error){console.warn('[3D entrance]',error?.name||'unavailable');return null;}
  }
+ if(type==='discover')frame.style.background='transparent';
  if(type==='screen'){
   const image=document.createElement('img');image.src=canvas.toDataURL();image.alt='The original experience first page';
   image.style.cssText=`position:absolute;left:0;top:0;width:${canvas.width}px;height:${canvas.height}px;max-width:none;transform-origin:0 0;pointer-events:none`;
@@ -60,10 +61,10 @@ function openExperience({object,camera,href,type,from=null,canvas,time,width,sho
  }else if(type==='paper'&&!reduced)visual=makeLift();
  const releaseVisual=()=>{visual?.element.remove();visual?.dispose();visual=null;};
  current=dialog;
- window.__totehm_projection_expansion=()=>({stage,type,progress,from,target,handoff,documentReloads:0,overlays:visual?.element.isConnected||controllerLift?1:0,controllerLift,temporaryCanvas:visual?.element.tagName==='CANVAS',physicalPanelVisible:object.visible&&!projectionHidden,frames:frame.isConnected?1:0});
+ window.__totehm_projection_expansion=()=>({stage,type,progress:discoverFlight?.diagnostics().progress??progress,from,target,handoff,documentReloads:0,overlays:visual?.element.isConnected||controllerLift?1:0,controllerLift,temporaryCanvas:visual?.element.tagName==='CANVAS',physicalPanelVisible:object.visible&&!projectionHidden,frames:frame.isConnected?1:0});
  function close(fromHistory=false){
   if(disposed)return;
-  disposed=true;stage='closed';clearTimeout(timer);cancelAnimationFrame(raf);animation?.cancel();stopLift?.();
+  disposed=true;stage='closed';clearTimeout(timer);cancelAnimationFrame(raf);animation?.cancel();stopLift?.();discoverFlight?.cancel();
   removeEventListener('popstate',pop);removeEventListener('keydown',escape);removeEventListener('totehm:experience-navigate',navigate);
   const restoreWorld=projectionHidden||type==='controller'&&object.visible!==wasVisible;
   releaseVisual();object.visible=wasVisible;
@@ -133,6 +134,23 @@ function openExperience({object,camera,href,type,from=null,canvas,time,width,sho
  }
  async function revealDiscover(win){
   stage='expanding';
+  if(!reduced&&win.__totehm_start_discover_flight){
+   const width=innerWidth,height=innerHeight;
+   const source=projection.snapshot(camera,width,height).map(({id,corners})=>({
+    id,corners:corners.map(({x,y})=>({x:x/width,y:y/height}))
+   }));
+   discoverFlight=win.__totehm_start_discover_flight(source);
+   if(discoverFlight){
+    // The first transparent frame is already painted at the frozen 3D positions.
+    projectionHidden=true;projection.setHandoff(true);onLift();
+    frame.style.opacity='1';frame.style.visibility='visible';
+    const landed=await discoverFlight.finished;
+    discoverFlight=null;
+    if(disposed)return;
+    if(landed){handoff={signs:source.length};progress=1;return;}
+    projectionHidden=false;projection.setHandoff(false);onLift();
+   }
+  }
   frame.style.opacity='0';frame.style.visibility='visible';
   win.dispatchEvent(new win.Event(config.event));
   if(!reduced){

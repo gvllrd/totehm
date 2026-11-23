@@ -243,6 +243,9 @@ body.is-street-board #sdisc-rail,body.is-street-board #sdisc-progress,body.is-sn
 #sdisc-bg>.street-rock{opacity:0;pointer-events:none}
 body.is-street-board #sdisc-bg>.street-rock{opacity:1;pointer-events:auto}
 body.is-snapping #experience-front-canvas{visibility:hidden}
+html.is-discover-flight,html.is-discover-flight body,html.is-discover-flight #street-disc{background:transparent}
+html.is-discover-flight body>:not(#street-disc),html.is-discover-flight #street-disc>:not(#sdisc-bg),html.is-discover-flight #experience-front-canvas{visibility:hidden!important}
+#discover-sign-flight{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1}
 #controller-assembly{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none;z-index:1}
 html.ufo-board-entry,html.ufo-board-entry body,html.ufo-board-entry #street-disc{background:transparent}
 html.ufo-board-entry :is(#sdisc-stage,#sdisc-cover-next,#sdisc-back,#sdisc-trig,#sdisc-progress,#sdisc-rail,#experience-front-canvas){visibility:hidden!important}
@@ -442,6 +445,7 @@ import {checkLisbonStreetAccess,requestLisbonStreetMedia} from './lisbon-street-
 import {LISBON_STREET_DISCOVER} from './lisbon-street-discover.mjs';
 import {LISBON_FRONT_SIZE,createLisbonFirstPage} from './lisbon-first-page.mjs';
 import {createLisbonCrosswalkPaint} from './lisbon-ground-markings.mjs';
+import {drawLisbonSignQuad,startLisbonDiscoverFlight} from './lisbon-discover-flight.mjs';
 import {createLisbonControllerView,lisbonControllerShot,LISBON_KEYS,LISBON_PLAYED_STICKERS} from './gallery-lisbon-controller.mjs';
 const BUILD = '2026-11-20-lisbon-play-entry';
 function streetReturnPath(){const destination=new URL(location.href);destination.searchParams.delete('embedded');destination.searchParams.delete('sceneTime');return destination.pathname+destination.search;}
@@ -1067,6 +1071,9 @@ function beginStreetDiscover({immediate=false}={}){
   firstPageActive=false;frontFrozen=false;
   const from=firstPage.diagnostics().reveal,start=performance.now(),revision=storyRevision;
   const instant=immediate||reducedMotion.matches;
+  if(from===1){
+    document.body.classList.remove('is-street-front');showSdisc(0,instant);startFront();return;
+  }
   let storyVisible=false;
   const reveal=now=>{
     if(revision!==storyRevision)return;
@@ -1078,7 +1085,16 @@ function beginStreetDiscover({immediate=false}={}){
   if(instant)reveal(start);else requestAnimationFrame(reveal);
   startFront();
 }
-window.__totehm_experience_front=()=>({...firstPage.diagnostics(),phase:firstPageActive?'front':'discover'});
+let discoverFlight=null;
+if(discoverOnly&&embeddedFront)window.__totehm_start_discover_flight=source=>{
+  if(!firstPageActive||discoverFlight)return null;
+  const flight=startLisbonDiscoverFlight(sdiscBg,firstPage,source,beginStreetDiscover);
+  if(!flight)return null;
+  discoverFlight=flight;
+  flight.finished.then(()=>{if(discoverFlight===flight)discoverFlight=null;});
+  return flight;
+};
+window.__totehm_experience_front=()=>({...firstPage.diagnostics(),phase:discoverFlight?'flight':firstPageActive?'front':'discover',flight:discoverFlight?.diagnostics()??null});
 window.addEventListener('totehm:experience-enter',beginStreetDiscover,{once:true});document.getElementById('sdisc-cover-next').addEventListener('click',beginStreetDiscover);
 firstPage.ready.then(()=>{startFront();});
 let   astRaf       = null;
@@ -1408,19 +1424,6 @@ function assembleController(view,projection=null){
       .map(([x,y])=>({x:x*cos-y*sin,y:x*sin+y*cos}));
   }
 
-  function drawProjectedArtwork(image,corners){
-    const [tl,tr,br,bl]=corners;
-    function triangle(a,b,c,xx,xy,yx,yy,tx,ty){
-      context.save();
-      context.beginPath();context.moveTo(a.x,a.y);context.lineTo(b.x,b.y);context.lineTo(c.x,c.y);context.closePath();context.clip();
-      context.transform(xx,xy,yx,yy,tx,ty);
-      context.drawImage(image,0,0,1,1);
-      context.restore();
-    }
-    triangle(tl,tr,bl,tr.x-tl.x,tr.y-tl.y,bl.x-tl.x,bl.y-tl.y,tl.x,tl.y);
-    triangle(tr,br,bl,br.x-bl.x,br.y-bl.y,br.x-tr.x,br.y-tr.y,tr.x+bl.x-br.x,tr.y+bl.y-br.y);
-  }
-
   function resize(){
     const host=sdiscBg.getBoundingClientRect(),face=firstPage.canvas.getBoundingClientRect();
     canvasWidth=host.width;canvasHeight=host.height;
@@ -1476,7 +1479,7 @@ function assembleController(view,projection=null){
         const quad=artworkCorners(width,height,angle).map((point,i)=>({
           x:point.x+perspective[i].x*distortion,y:point.y+perspective[i].y*distortion
         }));
-        drawProjectedArtwork(image,quad);
+        drawLisbonSignQuad(context,image,quad);
       }else{
         context.rotate(angle);
         context.drawImage(image,-width/2,-height/2,width,height);
