@@ -4868,6 +4868,13 @@ In the highest way.</p>
         <div class="mw-note dim" id="mw-save-note"></div>
       </div>
       <div id="settings" class="mw-dash">
+        <!-- 23/11 (Wah) : « Higher GPT dans le dashboard, AVANT la section Telegram, avec la possibilité de le configurer » -->
+        <section class="vs" id="mw-gpt" aria-label="Higher GPT configuration">
+          <header class="vs-head"><h3 class="vs-t">Higher GPT</h3><p class="vs-s">My TOTEHM in ChatGPT · read only</p></header>
+          <div class="vs-item"><span class="vs-k">ChatGPT</span><span class="vs-h" id="mw-gpt-h">not connected</span><button class="vs-act" id="mw-gpt-go" type="button">Connect</button></div>
+          <div class="vs-item"><span class="vs-k">My practice</span><span class="vs-h" id="mw-gpt-sh">kept private</span><button class="vs-act" id="mw-gpt-share" type="button" aria-pressed="false">Share</button></div>
+          <div class="lv-note" id="mw-gpt-note" role="status"></div>
+        </section>
         <section class="vs" id="mw-menu" aria-label="TotehmBot configuration">
           <header class="vs-head"><h3 class="vs-t">TotehmBot</h3><p class="vs-s">Notifications · Done or Missed</p></header>
           <div class="vs-item"><span class="vs-k">Telegram</span><span class="vs-h" id="mw-tg-hint">One notification, one response</span><button class="vs-act" id="mw-telegram" type="button">Connect</button></div>
@@ -12334,6 +12341,7 @@ const mwNote=t=>{ $('mw-menu-note').textContent=t||''; };
 function paintMe(){
   if(!me) return;
   $('mw-telegram').textContent=LAND?.telegram?'Open':'Connect';
+  try{ GPT.charger(); }catch(_){}   /* Higher GPT (23/11) : déclaré plus bas */
 }
 const trackingControls=createTrackingControls({sb,host:$('tracking-settings'),button:$('tracking-manage'),getUserId:()=>me?.id,onChange:async()=>{if(lvRefresh)await lvRefresh();await trackingRefresh();}});
 /* TotehmBot : un code de liaison (10 min), puis Telegram. */
@@ -12351,6 +12359,46 @@ async function lierTelegram(){
     return true;
   }finally{telegramLinking=false;}
 }
+/* ══ HIGHER GPT · 23/11 ══ l'état vient du serveur (`chatgpt_my_status`) ; [Connect] mène à /chatgpt ; connecté, [Disconnect]
+   coupe l'accès en DEUX gestes (`chatgpt_my_disconnect`) ; « My practice » partage — ou non — mon suivi avec ChatGPT
+   (`tracking_settings_set({share_chatgpt})`, privé par défaut). */
+const GPT=(()=>{
+  let st=null, arme=false, armeT=0, seq=0;
+  const note=t=>{ $('mw-gpt-note').textContent=t||''; };
+  const jour=t=>{ try{ return new Date(t).toLocaleDateString('en-GB',{day:'numeric',month:'short'}); }catch(_){ return ''; } };
+  function peindre(){
+    const c=!!(st&&st.connected), sh=!!(st&&st.share_tracking);
+    $('mw-gpt-h').textContent=c?'connected'+(st.since?' since '+jour(st.since):''):'not connected';
+    $('mw-gpt-go').textContent=c?(arme?'Disconnect?':'Disconnect'):'Connect';
+    $('mw-gpt-go').classList.toggle('is-sur',c&&arme);
+    $('mw-gpt-sh').textContent=sh?'shared with ChatGPT':'kept private';
+    $('mw-gpt-share').textContent=sh?'Stop sharing':'Share'; $('mw-gpt-share').setAttribute('aria-pressed',String(sh));
+  }
+  async function charger(){
+    if(!me) return; const s=++seq;
+    const {data,error}=await sb.rpc('chatgpt_my_status');
+    if(s!==seq) return;
+    if(error){ console.error('[chatgpt_my_status]',error.message); return; }
+    if(data&&data.ok){ st=data; peindre(); }
+  }
+  $('mw-gpt-go').onclick=async()=>{
+    if(!(st&&st.connected)){ location.assign('/chatgpt'); return; }
+    if(!arme){ arme=true; clearTimeout(armeT); armeT=setTimeout(()=>{ arme=false; peindre(); note(''); },6000); peindre();
+      note('ChatGPT loses access to my TOTEHM now. I can connect again anytime.'); return; }
+    clearTimeout(armeT); arme=false; note('…');
+    const {data,error}=await sb.rpc('chatgpt_my_disconnect');
+    if(error||!data||!data.ok){ if(error) console.error('[chatgpt_my_disconnect]',error.message); note('try again'); peindre(); return; }
+    note('disconnected'); await charger();
+  };
+  $('mw-gpt-share').onclick=async()=>{
+    const v=!(st&&st.share_tracking); note('…');
+    const {data,error}=await sb.rpc('tracking_settings_set',{p_changes:{share_chatgpt:v}});
+    if(error||!data||!data.ok){ if(error) console.error('[tracking_settings_set]',error.message); note('try again'); return; }
+    note(v?'my practice is shared with ChatGPT':'my practice stays private'); await charger();
+  };
+  window.__totehm_gpt=()=>({lu:!!st, connecte:!!(st&&st.connected), partage:!!(st&&st.share_tracking)});
+  return {charger};
+})();
 $('mw-telegram').onclick=async()=>{
   if(LAND&&LAND.telegram){ window.open('https://t.me/TotehmBot?start=tracking','_blank','noopener'); return; }
   mwNote(await lierTelegram()?'in Telegram, press Start':'try again');

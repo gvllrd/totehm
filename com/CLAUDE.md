@@ -40,7 +40,7 @@ seuls `/totehm` et `/totehm.html` autorisent les cadres Telegram (CSP). `overflo
 - Le verso : `ouvrirVerso()` (le papier se retourne, le nom zoome lettre pour lettre, `geometrie()`), deux onglets
   `#vs-tabs` — **Go Higher** (`const DASH=` + `tracking.mjs` : 7/28 jours, Done · Missed · No response, la grille des
   Habits en box natives, une rangée d'actions, les objectifs à échéance ; rien d'autre) et **Monetize my TOTEHM**
-  (`#mw-creator` : [Discover] · « My subscribers » par leur nom TOTEHM, [Cut off] en deux gestes → `creator-cut-off`, sans remboursement, pour toujours). Le nom en BLOC (`#ast-grid`, nomenclature carrée) ; `#ast-name` reste la LIGNE mesurée.
+  (`#mw-creator` : [Discover] · « My subscribers » par leur nom TOTEHM, [Cut off] en deux gestes → `creator-cut-off`, sans remboursement, pour toujours). Sous les onglets, les réglages : **Higher GPT** d'abord (`#mw-gpt`, `GPT` : `chatgpt_my_status` — connecté depuis ; [Disconnect] en deux gestes → `chatgpt_my_disconnect` ; « My practice » partagé ou privé → `tracking_settings_set({share_chatgpt})`), puis TotehmBot (`#mw-menu`). Le nom en BLOC (`#ast-grid`, nomenclature carrée) ; `#ast-name` reste la LIGNE mesurée.
 - **Pile ou face (≥ 700 px)** : le verso s'arrête au carré de `#stage` (`auFormat()`). LA PIÈCE : `#fold-flip`, le wordmark et
   `#srch-flip` retournent une face sur l'autre (le carré tourne jusqu'à la tranche), JAMAIS par l'atterrissage ; le recto reste
   déployé sous le verso (`open`), le refermer le retourne ; ouvert depuis l'atterrissage → `deployerDessous()` (`__totehm_piece()`).
