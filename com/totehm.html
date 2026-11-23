@@ -3222,7 +3222,6 @@ body.gate:not(.member):not(.ses-attente){--lv-y:32dvh}
  body:not(.member) #lv-c-acts{gap:8px}
  body:not(.member) #lv-pitch{gap:4px}
  body:not(.member) #lv-pitch .lvp-cta{padding:7px 14px;font-size:9px}
- #lv-title{font-size:11px}
 }
 @media(max-height:520px) and (min-width:650px){
  body.gate,body.gate.member,body.gate.ses-attente,body.gate:not(.member):not(.ses-attente){--lv-y:20dvh}
@@ -4073,12 +4072,7 @@ body.lv-d.rdr-voir #gate-asteroid,body.lv-d.rdr-voir #lvjoy,body.rdr-voir #rdr-f
 /* ── 16/11 · L'ACCUEIL : le titre de la vue centrale, le bouton discret, et le Discover en couche ──
    Le titre est une ÉTIQUETTE posée sur le circuit (fond noir, comme `#lv-tap`) : les racines de l'arbre passent derrière,
    jamais sous les lettres. Il porte la pièce (`data-tw`, le mot TOTEHM). Chez un autre membre, il s'efface. */
-#lv-title{margin:0;background:#000;border-radius:10px;padding:2px 12px;text-align:center;
-  font:700 13px/1.6 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#fff}
-body.lv-membre #lv-title,body.lv-verrou #lv-title,body.is-door #lv-title{display:none}
-/* Le mot HIGHER du titre est la place du badge [Higher] (`#lv-slogan`, posé dessus par `sloganPour('c')`) : le mot reste dans le document, hors vue. */
-#lv-title-h{display:inline-block;width:66px;height:1em;vertical-align:middle;font-size:0;line-height:0;overflow:hidden;color:transparent}
-body:not(.lv-g):not(.lv-d) #lv-slogan.is-c.is-t{opacity:1}
+/* 23/11 (Wah) : « minimalisme et mystère » — plus de titre au centre ; le badge se range au coin du socle. */
 .lvp-cta.is-quiet{background:#000;color:#b8b8c2;box-shadow:inset 0 0 0 1px #3a3a42}
 .lvp-cta.is-quiet:hover{background:#17171b;color:#fff}
 /* Le Discover prend tout l'écran PAR-DESSUS l'accueil, qui ne bouge pas dessous (`body.is-dc` : ses gestes sont rendus). */
@@ -4119,7 +4113,6 @@ body:not(.lv-g):not(.lv-d) #lv-slogan.is-c.is-t{opacity:1}
 #lvd .dc-slogan .tw{margin:0}
 @media(max-width:380px){#lvd .dc-slogan{font-size:18px;gap:6px}#lvd .dc-slogan svg{width:70px;height:23px}}
 @media(prefers-reduced-motion:reduce){#lvd .dc-gpt img{animation:none}}
-@media(max-height:520px) and (min-width:650px){#lv-title{font-size:10px;letter-spacing:.12em}}
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Tout texte devient blanc sous la souris. Les dessins, surfaces
    et contrôles désactivés gardent leur apparence. */
@@ -4614,7 +4607,6 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
              L'ATTERRISSAGE EST MINIMAL, ET IL VEND QUAND ON LE DEMANDE : sans compte, deux boutons — la porte, et
              [Discover], qui ouvre l'explication plein écran (`#lvd`, `DISC`) ; avec un compte, le geste et « Discover »
              dans la légende. La preuve (« Built with behavioral science ») et « Reach Higher » vivent dans le Discover. -->
-        <h1 id="lv-title">THE <span id="lv-title-h">HIGHER</span> WAY TO MAKE IT HAPPEN</h1>
         <div id="lv-pitch" class="hide">
           <button id="lv-join" class="lvp-cta" type="button">Open my TOTEHM</button>
           <button id="lv-discover" class="lvp-cta is-quiet" type="button">Discover</button>
@@ -4660,11 +4652,11 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
     <section class="lv-pane" id="lv-g" aria-label="My shorts">
       <div id="lv-sh" class="lv-act"><div id="lv-sh-f"></div></div>
       <!-- 19/10 — les filtres vivent HORS du conteneur qui défile : ils ne partent pas avec le feed. -->
-      <div id="lv-sh-flt" class="lsh-flt lv-act" role="group" aria-label="Filter my media"></div>
+      <div id="lv-sh-flt" class="lsh-flt lv-act" role="group" aria-label="Refine my media"></div>
       <!-- Le choix de l'élément auquel un média neuf s'attribue. Ancré EN HAUT (le clavier mange le bas). -->
       <div id="lv-sh-pick" class="lsh-pick lv-act" role="dialog" aria-label="Choose an element" hidden></div>
       <!-- 19/10 ter — le panneau de TOUS les filtres, comme sur SPACE. -->
-      <div id="lv-sh-sf" class="lsh-sf lv-act" role="dialog" aria-label="Filter my media" hidden></div>
+      <div id="lv-sh-sf" class="lsh-sf lv-act" role="dialog" aria-label="Refine my media" hidden></div>
       <p class="lv-note" id="lv-sh-say" role="status" aria-live="polite"></p>
       <!-- 20/10 quater — la visionneuse de la grille : le média en grand, sa boîte, ← → et ✕. -->
       <div id="tlv" class="tlv lv-act" role="dialog" aria-modal="true" aria-label="Media" hidden>
@@ -4686,7 +4678,7 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
       <button type="button" id="rdr-grab" class="lv-act" aria-label="Lower the spot"><i aria-hidden="true"></i></button>
       <div id="rdr-flt" class="lsh-flt lv-act" role="group" aria-label="Spots: filters"></div>
       <div id="rdr-pick" class="lsh-pick lv-act" role="dialog" aria-label="Choose a Habit" hidden></div>
-      <div id="rdr-sf" class="lsh-sf lv-act" role="dialog" aria-label="Filter the spots" hidden></div>
+      <div id="rdr-sf" class="lsh-sf lv-act" role="dialog" aria-label="Refine the spots" hidden></div>
       <!-- 27/10 : prendre un spot ICI (NOW · LATER, pas à pas), le « + » de la MAP, et la pose d'un point sur le globe -->
       <div id="rdr-new" class="lsh-sf lv-act" role="dialog" aria-label="Add a spot" hidden></div>
       <!-- 29/10 (Wah : « on doit pouvoir ajouter un spot dans le mode MAP comme dans le mode GRID ») : la MÊME tuile « + »,
@@ -7036,7 +7028,7 @@ function creerFeed(conf){
     /* Le papier n'est plus une copie dans la barre : c'est LE Totehm, docké au-dessus. 27/10 (Wah : « je veux seulement la
        box telle quelle, surtout pas un rappel en Quantico coral ») : la box choisie vit en tête des résultats, rien dans la barre. */
     h+='<button type="button" class="lsh-fb'+(n?' is-on':'')+'" data-f="sf" aria-haspopup="dialog"'
-      +' aria-expanded="'+(sfOuvert()?'true':'false')+'">'+(n?'Filter · '+n:'Filter')+'</button>';
+      +' aria-expanded="'+(sfOuvert()?'true':'false')+'">'+(n?'Refine · '+n:'Refine')+'</button>';
     if(conf.ajout) h+='<button type="button" class="fp" data-f="plus" data-v="1" aria-label="Add a media to visualize it">+</button>';
     /* ⚠️ On ne réécrit la barre QUE si elle change : un `innerHTML` à chaque passage du feed
        remplacerait le bouton sous le doigt — mesuré, il n'était plus jamais « stable ». */
@@ -8828,7 +8820,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-11-19-nomenclature-discover';
+const BUILD='2026-11-23-lot-wah';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -13619,7 +13611,7 @@ window.addEventListener('pageshow',e=>{
      sur SON atterrissage. Une réponse tardive n'écrase jamais une frappe plus récente (`seq`). */
   const CHERCHE=(()=>{
     const q=$('mb-q'), res=$('mb-res');
-    const diagC={recherches:0, trouves:0, abonnements:0, rectos:0, fermetures:0};
+    const diagC={recherches:0, trouves:0, rectos:0, fermetures:0};
     let seq=0, d=null, lu=null, nom='', etat='vide';
     const propre=v=>String(v||'').trim().replace(/^https?:\/\/[^/]+\//i,'').replace(/^@/,'').replace(/[/?#].*$/,'').slice(0,32);
     const prix=s=>{ if(!s||!s.open||!s.price_cents) return '';
@@ -13685,21 +13677,13 @@ window.addEventListener('pageshow',e=>{
       else if(p){ etat='offre';
         /* 18/11 (Wah : « ressors ici le Discover de la creator economy, qu'on ne trouve nulle part ») : [Discover] ouvre SA
            page d'abonnement en Discover (`/@nom`, 8 écrans), par-dessus le verso (`XO.univers`, porte 'verso') */
-        h='<header class="vs-head"><h3 class="vs-t">Enter their ecosystem</h3><p class="vs-s">one year · stop anytime</p></header>'
-          +'<div class="vs-top"><div class="vs-month"><b>'+esc(p)+'</b><i>per year</i></div><button class="vs-act" type="button" data-mb="sub">Subscribe</button></div>'
-          +tuiles
-          +'<div class="vs-row"><i>80 % goes to</i>'+N+'</div>'
-          +'<div class="vs-row"><i>the creator economy</i><button class="vs-act" type="button" data-mb="disc">Discover</button></div>'; }
+        /* 23/11 (Wah) : « tu gardes seulement le prix avec la possibilité d'annuler et le bouton [Discover]. Le reste à la
+           poubelle » — et la règle dite AVANT de payer : le membre peut couper l'accès (`creator-cut-off`) d'un geste. */
+        h='<div class="vs-top"><div class="vs-month"><b>'+esc(p)+'</b><i>per year · stop anytime</i></div><button class="vs-act" type="button" data-mb="disc">Discover</button></div>'
+          +'<p class="vs-s vs-cut">Respect their rules: '+N+' can cut you off at any time.</p>'; }
       else { etat='ferme';
         h='<header class="vs-head"><h3 class="vs-t">Not open yet</h3><p class="vs-s">'+N+' has not opened subscriptions</p></header>'; }
       res.innerHTML=h+'<p class="lv-note" id="mb-say" role="status"></p>';
-    }
-    async function abonner(b){
-      if(!nom) return; if(b) b.disabled=true; diagC.abonnements++;
-      let deja=false;
-      try{ await LV.abonner(nom,t=>{ if(t==='already subscribed') deja=true; noter(t); },'verso'); }
-      finally{ if(b&&b.isConnected) b.disabled=false; }
-      if(deja) trouver(nom);   /* déjà abonné (un autre onglet) : le panneau relit ce qui est vrai */
     }
     /* Le verso se retourne sur SON recto : son TOTEHM (en lecture) remplace le mien en mémoire, sous le verso, puis la
        pièce (ordinateur) ; au téléphone, le verso se referme et son TOTEHM se déploie — comme [Mine]. */
@@ -13730,7 +13714,7 @@ window.addEventListener('pageshow',e=>{
     function decouvrir(){ if(!nom) return; diagC.discover=(diagC.discover||0)+1; const n=nom;
       XO.univers(n,()=>{ if(enRecherche()&&nom===n) trouver(n); },'verso'); }
     res.addEventListener('click',e=>{ const b=e.target.closest('[data-mb]'); if(!b||b.disabled) return;
-      if(b.dataset.mb==='sub') abonner(b); else if(b.dataset.mb==='open') versRecto(); else if(b.dataset.mb==='disc') decouvrir(); });
+      if(b.dataset.mb==='open') versRecto(); else if(b.dataset.mb==='disc') decouvrir(); });
     window.__totehm_cherche=()=>({...diagC, ouvert:enRecherche()&&sOpen, etat, nom, lu:!!lu, saisie:document.activeElement===q});
     return {preparer, vider, trouver, versRecto, fermer, etat:()=>etat};
   })();
@@ -13816,10 +13800,7 @@ window.addEventListener('pageshow',e=>{
          la CSS l'efface — le feed prend tout l'écran). Un seul [Higher], une seule grammaire. */
       const v=(v0==='g'||v0==='d')?'c':v0;
       ['c','h','b'].forEach(k=>slo.classList.toggle('is-'+k,k===v));
-      /* Au centre, le badge remplace le mot HIGHER du titre (net, opaque, plus grand) ; titre absent (membre, porte) = le coin du socle. */
-      let tit=null;
-      if(v==='c'){ const th=$('lv-title-h'), r=th&&th.getBoundingClientRect(); if(r&&r.width>0) tit=r; }
-      slo.classList.toggle('is-t',!!tit);
+      /* 23/11 : plus de titre au centre — au centre, le badge se range toujours au coin du socle. */
       slo.classList.add('is-pose');
       slo.tabIndex=v==='h'?0:-1;
       if(v==='h'){
@@ -13829,8 +13810,6 @@ window.addEventListener('pageshow',e=>{
         /* Le MÊME badge glisse au centre du GPT ; seul le PNG derrière lui tourne. */
         const p=profil();
         placer(slo,p.x,p.y,p.d*.94);
-      } else if(tit){
-        placer(slo, tit.left+tit.width/2, tit.top+tit.height/2, tit.width);
       } else {
         /* AU CENTRE, le badge ne s'éteint pas : il se pose en petit au coin du processeur — 25/10 : le TOTEHM est le
            boîtier, le badge se range donc CONTRE son coin bas-droit, dehors (sur le papier, il en couvrait le coin). */

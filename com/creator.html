@@ -620,7 +620,7 @@ const audBadge = a => AUD_ICON[a] ? '<span class="audb" role="img" aria-label="'
 const audMark = (root, attr, a0) => { const a = audNorm(a0); return root?.querySelectorAll('[' + attr + ']').forEach(b => { const on = b.getAttribute(attr) === a;
   b.classList.toggle('is-on', on); b.setAttribute('aria-checked', String(on)); }); };
 /* ══ fin AUDIENCE ══ */
-const BUILD='2026-11-19-nomenclature-discover';
+const BUILD='2026-11-23-lot-wah';
 
 /* ══ EN CADRE DANS COM (`?embed=1`) ═════════════════════════════════════
    Wah, 16/10 : « il ne faut pas que ça saute entre totehm.com et totehm.com/@{Nom} ». COM ouvre cette
@@ -788,7 +788,9 @@ function paintOffer(){
   } else if(v.can_read){
     e = [ '<div class="dc-s">' + papier() + '<h2 class="dc-h">You are inside this ecosystem.</h2>' + ouvrirB + '</div>' ];
   } else if(s.open){
-    e = [ '<div class="dc-s">' + papier() + '<h2 class="dc-h">Enter ' + N + '’s ecosystem.</h2></div>', ...ecransExplication(n), ecranPrix(s, true) ];
+    /* 23/11 (Wah) : « enlève la page du début et rentre direct dans le vif du sujet » — on ouvre sur Inside the mind. */
+    const [premier, ...suite] = ecransExplication(n);   /* son nom (le papier) reste en tête du premier écran utile */
+    e = [ premier.replace('<div class="dc-s">', '<div class="dc-s">' + papier()), ...suite, ecranPrix(s, true) ];
   } else {
     e = [ '<div class="dc-s">' + papier() + '<h2 class="dc-h">Enter ' + N + '’s ecosystem.</h2><p class="dc-p">Not open yet.\n' + N + ' has not opened subscriptions.\nTheir TOTEHM keeps growing — come back.</p>' +
       '<a class="dc-lnk" href="/totehm?members=">Search another TOTEHM</a></div>' ];

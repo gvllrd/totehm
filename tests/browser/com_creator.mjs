@@ -58,11 +58,11 @@ for(const [qui, opts] of [['visitor', { session:false }], ['member', { tables:{ 
   const d0 = await pg.evaluate(() => ({ ...window.__totehm_creator().discover, on:document.querySelectorAll('#offer .dc-s.is-on').length,
     fond:getComputedStyle(document.getElementById('dc')).backgroundColor, prog:document.querySelectorAll('#dc .dc-progress,#dc .dc-hint').length,
     cache:getComputedStyle(document.querySelector('#offer .dc-s:not(.is-on)')).visibility, texte:document.querySelector('#offer .dc-s.is-on .dc-h').textContent.replace(/\s+/g,' ').trim() }));   /* 18/11 : le titre est en capitales par la police, on lit son texte */
-  ok(d0.n === 5 && d0.i === 0 && d0.on === 1 && d0.fond === 'rgb(0, 0, 0)' && d0.prog === 0 && d0.cache === 'hidden' && /Enter kai’s ecosystem\.$/.test(d0.texte),
-     '18/11 · DISCOVER : 5 écrans (son nom, puis les quatre idées de Wah), UN seul visible, fond noir, le premier dit « Enter kai’s ecosystem. » → ' + JSON.stringify(d0));
+  ok(d0.n === 4 && d0.i === 0 && d0.on === 1 && d0.fond === 'rgb(0, 0, 0)' && d0.prog === 0 && d0.cache === 'hidden' && /^Inside the mind of top performers\.$/.test(d0.texte),
+     '23/11 · DISCOVER : 4 écrans, droit dans le vif du sujet (son nom en tête), UN seul visible, fond noir, le premier dit « Inside the mind of top performers. » → ' + JSON.stringify(d0));
   await pg.keyboard.press('ArrowDown'); await pg.waitForTimeout(800);
   const d1 = await pg.evaluate(() => ({ i:window.__totehm_creator().discover.i, texte:document.querySelector('#offer .dc-s.is-on').textContent.replace(/\s+/g,' ').trim() }));
-  ok(d1.i === 1 && /^Inside the mind of top performers\./.test(d1.texte), '↓ (clavier) : l\'écran suivant, jamais deux d\'un coup → ' + JSON.stringify(d1));
+  ok(d1.i === 1 && /^Go to the spots they use\./.test(d1.texte), '↓ (clavier) : l\'écran suivant, jamais deux d\'un coup → ' + JSON.stringify(d1));
   await pg.mouse.move(200, 300); await pg.mouse.wheel(0, 120); await pg.waitForTimeout(800);
   ok(await pg.evaluate(() => window.__totehm_creator().discover.i) === 2, 'la molette : un geste = un écran');
   await pg.keyboard.press('ArrowUp'); await pg.waitForTimeout(800);
@@ -78,10 +78,10 @@ for(const [qui, opts] of [['visitor', { session:false }], ['member', { tables:{ 
      '60 / 30 / 10 : sur le dernier écran, AUCUN corail (réservé au nom et à l\'art) : noir, blanc, gris — prix et bouton compris : ' + JSON.stringify(col.couleurs));
   /* l'appel à l'action est sous CHAQUE écran : « Subscribe · €24 / year », gris */
   const cta = [];
-  for(let k = 0; k < 5; k++){ await pg.evaluate(k => window.__totehm_discover().aller(k, true), k);
+  for(let k = 0; k < 4; k++){ await pg.evaluate(k => window.__totehm_discover().aller(k, true), k);
     cta.push(await pg.evaluate(() => { const b = document.querySelector('#cta [data-do=subscribe]'); if(!b) return null; const r = b.getBoundingClientRect();
       return { t:b.textContent.trim(), vu:r.width > 40 && r.bottom <= innerHeight && getComputedStyle(b).backgroundColor }; })); }
-  ok(cta.every(x => x && x.t === 'Subscribe · €24 / year' && x.vu === 'rgb(42, 42, 42)'), 'Subscribe · €24 / year sous les 5 écrans, bouton gris normal → ' + JSON.stringify(cta[0]));
+  ok(cta.every(x => x && x.t === 'Subscribe · €24 / year' && x.vu === 'rgb(42, 42, 42)'), 'Subscribe · €24 / year sous les 4 écrans, bouton gris normal → ' + JSON.stringify(cta[0]));
   await pg.evaluate(() => window.__totehm_discover().derniere());
   const p = await propre(pg);
   ok(p.white === 0 && !p.fonts.length, 'page: no white background, Space Mono + Quantico only ' + p.fonts.join(','));

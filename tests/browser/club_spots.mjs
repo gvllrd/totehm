@@ -70,7 +70,7 @@ try{
   ok(!nu.joy&&!nu.about&&!nu.quoi&&!nu.titre&&!nu.logo&&nu.coin,
      nom+' · plus de joystick, plus de « What is a spot? », plus de TOTEHM central en haut : le coin membre suffit');
   const barre=await pg.evaluate(()=>[...document.querySelectorAll('#rdr-flt button')].map(e=>e.textContent));
-  ok(barre.join('|')==='now|Filter · 1',nom+' · la barre : le temps courant, puis Filter (near me, posé à l\'arrivée) — rien d\'autre');
+  ok(barre.join('|')==='now|Refine · 1',nom+' · la barre : le temps courant, puis Refine (near me, posé à l\'arrivée) — rien d\'autre');
   await pg.screenshot({path:OUT+'/club_radar_'+(tel?'tel':'ordi')+'.png'});
 
   // ══ 2 · RADAR | GRID, le même objet ══
@@ -102,7 +102,7 @@ try{
   await clic(pg,'#rdr-sf [data-sf="close"]'); await pg.waitForTimeout(500);
   const kin=await pg.evaluate(()=>({k:[...document.querySelectorAll('.tl-kin')].map(e=>e.textContent),
     n:(document.querySelector('#rdr-flt button:last-child')||{}).textContent}));
-  ok(kin.k.join('|')==='same habit|same intentions'&&kin.n==='Filter · 2',
+  ok(kin.k.join('|')==='same habit|same intentions'&&kin.n==='Refine · 2',
      nom+' · chaque spot DIT pourquoi il répond : '+kin.k.join(' · ')+' ; la barre compte le filtre ('+kin.n+')');
   appels=[];
   await clic(pg,'#rdr-flt button:last-child'); await pg.waitForTimeout(400);

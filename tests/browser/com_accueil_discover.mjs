@@ -15,12 +15,12 @@ try{
  /* ── 1 · SANS COMPTE : un titre, deux boutons, rien d'autre ── */
  {const{pg,ctx,log}=await page(browser,{dir:'com',origin,tables:{profiles:[]},rpc:{my_landing:{signed_in:false}},viewport:{width:390,height:844},hasTouch:true,session:false});
   await pg.goto(origin+'/totehm');await pg.waitForFunction(()=>typeof window.__totehm_lv==='function');await pg.waitForTimeout(2200);
-  const c=await pg.evaluate(()=>{const q=s=>document.querySelector(s),t=q('#lv-title'),vu=e=>!!e&&e.getClientRects().length>0&&getComputedStyle(e).visibility!=='hidden';
-    return {titre:t.textContent.replace(/\s+/g,' ').trim(),piece:t.querySelectorAll('.tw').length,vu:vu(t),
+  const c=await pg.evaluate(()=>{const q=s=>document.querySelector(s),vu=e=>!!e&&e.getClientRects().length>0&&getComputedStyle(e).visibility!=='hidden';
+    return {titre:!!q('#lv-title')||/make it happen/i.test(q('#lv-c').innerText),
       boutons:[...document.querySelectorAll('#lv-pitch button')].filter(vu).map(b=>b.textContent.trim()),
       anciens:document.querySelectorAll('.lvp-headline,.lvp-science,#lv-explore').length,
       corail:[...document.querySelectorAll('#lv-c-acts *')].filter(e=>vu(e)&&!e.closest('.tw')&&getComputedStyle(e).color==='rgb(251, 213, 202)').length};});
-  ok(c.vu&&/^THE HIGHER WAY TO MAKE IT HAPPEN$/.test(c.titre),'le titre de la vue centrale : « THE HIGHER WAY TO MAKE IT HAPPEN » → '+JSON.stringify(c));
+  ok(!c.titre,'23/11 · minimalisme et mystère : plus de « THE HIGHER WAY TO MAKE IT HAPPEN » au centre → '+JSON.stringify(c));
   ok(c.boutons.join('|')==='Open my TOTEHM|Discover'&&c.anciens===0,'sans compte : la porte et [Discover], plus de pitch à lire → '+c.boutons.join(' | '));
   ok(c.corail===0,'aucun texte corail dans les actions (le corail est réservé au nom et à l\'art)');
   /* ── 18/11 · sans compte, le SCROLL ouvre le Discover — et l'inertie du geste ne le fait pas défiler ── */
@@ -113,7 +113,7 @@ try{
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1500);
   const m=await pg.evaluate(()=>{const vu=e=>!!e&&e.getClientRects().length>0&&getComputedStyle(e).visibility!=='hidden';
     return {titre:vu(document.getElementById('lv-title')),pitch:vu(document.getElementById('lv-pitch')),legende:document.getElementById('lv-tap').textContent.replace(/\s+/g,' ').trim()};});
-  ok(m.titre&&!m.pitch&&/ · Discover$/.test(m.legende),'membre : le titre, aucun bouton de vente, « Discover » au bout de la légende → '+m.legende);
+  ok(!m.titre&&!m.pitch&&/ · Discover$/.test(m.legende),'membre : aucun titre (23/11), aucun bouton de vente, « Discover » au bout de la légende → '+m.legende);
   await pg.mouse.move(640,400);await pg.mouse.wheel(0,120);
   ok(await vers(pg,'b')&&!(await D(pg)).ouvert,'18/11 · membre : la molette mène toujours à Higher my ChatGPT, pas au Discover');
   await pg.waitForTimeout(500);await pg.keyboard.press('ArrowDown');await vers(pg,'c');await pg.waitForTimeout(800);

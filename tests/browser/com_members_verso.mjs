@@ -57,15 +57,15 @@ try{
   ok(avant===0&&(await pg.evaluate(()=>document.getElementById('mb-res').innerHTML))==='',quoi+' · taper ne lance rien : aucune liste, aucune requête');
   await pg.keyboard.press('Enter');
   await pg.waitForFunction(()=>window.__totehm_cherche().etat==='offre',null,{timeout:6000}).catch(()=>{});
-  const o=await pg.evaluate(()=>{const r=document.getElementById('mb-res');return {t:(r.querySelector('.vs-t')||{}).textContent,prix:(r.querySelector('.vs-month b')||{}).textContent,
-    bouton:(r.querySelector('[data-mb="sub"]')||{}).textContent,tuiles:r.querySelectorAll('.vs-n span').length,nom:(r.querySelector('.mbr-nom')||{}).textContent,
-    fond:getComputedStyle(r.querySelector('.vs-top')).backgroundColor,boutonFond:getComputedStyle(r.querySelector('[data-mb="sub"]')).backgroundColor};});
-  ok(o.t==='Enter their ecosystem'&&o.prix==='24 €'&&o.bouton==='Subscribe'&&o.tuiles===3&&o.nom==='kai'&&o.fond==='rgb(0, 0, 0)'&&o.boutonFond==='rgb(31, 31, 36)',
-     quoi+' · Entrée → SON offre, au format de Monetize (le prix, ce que ça ouvre, Subscribe gris) → '+JSON.stringify(o));
+  const o=await pg.evaluate(()=>{const r=document.getElementById('mb-res');return {titre:!!r.querySelector('.vs-t'),prix:(r.querySelector('.vs-month b')||{}).textContent,
+    sous:(r.querySelector('.vs-month i')||{}).textContent,bouton:(r.querySelector('.vs-top [data-mb="disc"]')||{}).textContent,sub:!!r.querySelector('[data-mb="sub"]'),
+    tuiles:r.querySelectorAll('.vs-n span').length,cut:(r.querySelector('.vs-cut')||{}).textContent,nom:(r.querySelector('.mbr-nom')||{}).textContent,
+    fond:getComputedStyle(r.querySelector('.vs-top')).backgroundColor};});
+  /* 23/11 (Wah) : « tu gardes seulement le prix avec la possibilité d'annuler et le bouton [Discover] » + la règle du cut off */
+  ok(!o.titre&&o.prix==='24 €'&&o.sous==='per year · stop anytime'&&o.bouton==='Discover'&&!o.sub&&o.tuiles===0
+     &&/can cut you off at any time/.test(o.cut)&&o.nom==='kai'&&o.fond==='rgb(0, 0, 0)',
+     quoi+' · Entrée → le prix (annulable), [Discover], et la règle du cut off — rien d\'autre → '+JSON.stringify(o));
   ok(log.rpc.filter(x=>x.name==='creator_page').length===1&&!log.rpc.some(x=>x.name==='totehm_read'),quoi+' · une lecture de son offre ; son TOTEHM fermé n\'est pas lu');
-  await pg.click('#mb-res [data-mb="sub"]');await pg.waitForTimeout(700);
-  const f=log.functions.find(x=>x.name==='creator-subscribe');
-  ok(!!f&&f.body.pseudo==='kai'&&f.body.from==='verso',quoi+' · Subscribe : le paiement part avec `from:verso` (Stripe ramène sur ce verso) → '+JSON.stringify(f&&f.body));
   /* 18/11 (Wah : « ressors ici le Discover de la creator economy, qu'on ne trouve nulle part ») : [Discover] ouvre SA page
      d'abonnement en Discover par-dessus le verso ; s'y abonner part aussi avec `from:verso` ; refermé, le verso est là */
   await pg.click('#mb-res [data-mb="disc"]');
@@ -73,10 +73,10 @@ try{
   const src=await pg.evaluate(()=>{const e=document.querySelector('#xo .xo-f.is-on');return e&&e.getAttribute('src');});
   const cadre=pg.frameLocator('#xo .xo-f.is-on');
   const dc=await cadre.locator('#offer .dc-s.is-on .dc-h').textContent({timeout:9000}).catch(()=>'');
-  ok(xo&&src==='/@kai?embed=1&from=verso'&&/Enter kai/.test(dc),quoi+' · [Discover] : le Discover de la creator economy (SA page), par-dessus le verso → '+JSON.stringify({src,dc}));
+  ok(xo&&src==='/@kai?embed=1&from=verso'&&/Inside the mind/i.test(dc),quoi+' · [Discover] : le Discover de la creator economy (SA page), par-dessus le verso → '+JSON.stringify({src,dc}));
   await cadre.locator('#cta [data-do="subscribe"]').click({timeout:8000}).catch(()=>{});await pg.waitForTimeout(800);
   const f2=log.functions.filter(x=>x.name==='creator-subscribe').at(-1);
-  ok(!!f2&&f2!==f&&f2.body.from==='verso',quoi+' · s\'abonner DANS le Discover part aussi avec `from:verso` → '+JSON.stringify(f2&&f2.body));
+  ok(!!f2&&f2.body.from==='verso'&&f2.body.pseudo==='kai',quoi+' · s\'abonner DANS le Discover part aussi avec `from:verso` → '+JSON.stringify(f2&&f2.body));
   await pg.click('#xo-x');
   await pg.waitForFunction(()=>!window.__totehm_xo().actif,null,{timeout:8000}).catch(()=>{});
   await pg.waitForFunction(()=>window.__totehm_cherche().etat==='offre',null,{timeout:6000}).catch(()=>{});
@@ -244,9 +244,13 @@ try{
   await pg.click('#lv-m-members');await ouvert(pg);await pg.waitForTimeout(400);
   await pg.keyboard.type('kai');await pg.keyboard.press('Enter');
   await pg.waitForFunction(()=>window.__totehm_cherche().etat==='offre',null,{timeout:6000}).catch(()=>{});
-  await pg.click('#mb-res [data-mb="sub"]');
-  await pg.waitForFunction(()=>/closed to you/.test((document.getElementById('mb-say')||{}).textContent||''),null,{timeout:6000}).catch(()=>{});
-  ok(/^this ecosystem is closed to you$/.test(await pg.textContent('#mb-say')),'banni : « this ecosystem is closed to you », aucun paiement ne s\'ouvre');
+  await pg.click('#mb-res [data-mb="disc"]');
+  const cadre=pg.frameLocator('#xo .xo-f.is-on');
+  await cadre.locator('#cta [data-do="subscribe"]').click({timeout:9000}).catch(()=>{});
+  const dit=await cadre.locator('#note').textContent({timeout:6000}).catch(()=>'');
+  await pg.waitForTimeout(600);
+  const dit2=await cadre.locator('#note').textContent({timeout:3000}).catch(()=>dit);
+  ok(/^this ecosystem is closed to you$/.test(dit2),'banni : « this ecosystem is closed to you » dans son Discover, aucun paiement ne s\'ouvre → '+JSON.stringify(dit2));
   ok(!erreurs(log).length,'banni : aucune erreur '+erreurs(log).join(' | '));
   await pg.context().close();}
 }finally{ await browser.close(); }
