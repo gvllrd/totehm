@@ -3499,6 +3499,15 @@ body.lv-b:not(.lv-membre):not(.lv-verrou) #lv-socket{opacity:0}
 .db-o .j{font:700 10px/1 'Space Mono',monospace;color:#fff;letter-spacing:.06em}
 .db-o .j.is-tard{color:#b8b8c2;font-weight:400}
 .db-o .db-bar{grid-column:1/-1}
+/* MY CHAPTER (23/11) : le récit de ma semaine, en haut du verso — du texte, du noir, aucun corail (le nom et l'art seulement) */
+#vs-dash .ch{display:flex;flex-direction:column;gap:8px}
+#vs-dash .ch-t{margin:2px 0 0;font:400 19px/1.25 'Quantico',sans-serif;color:#fff}
+#vs-dash .ch-k{margin:0;font:400 9px/1.3 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#8a8a92}
+#vs-dash .ch-body p{margin:0 0 9px;font:400 13.5px/1.6 'Quantico',sans-serif;color:#e6e6ea}
+#vs-dash .ch-p{margin:0;font:400 10.5px/1.55 'Space Mono',monospace;color:#b8b8c2}
+#vs-dash .ch-a{display:flex;gap:8px;flex-wrap:wrap}
+#vs-dash .ch-old{border-top:1px solid #222228;padding-top:6px}
+#vs-dash .ch-old summary{cursor:pointer;font:400 10px/1.4 'Space Mono',monospace;letter-spacing:.1em;color:#b8b8c2;list-style-position:inside}
 .vs-in{flex:1;min-width:0;border:0;border-radius:10px;background:#1f1f24;color:#fff;caret-color:#fff;outline:none;
   font:400 14px/1.2 'Quantico',sans-serif;padding:9px 12px}
 .vs-in::placeholder{color:#8c8c96}
@@ -15370,7 +15379,7 @@ window.addEventListener('pageshow',e=>{
        Deux parties : Monetize my TOTEHM · Go [Higher] (par défaut, à chaque retournement : le tableau de bord en tête). */
     const DASH=(()=>{
       const el=$('vs-dash'), srch=$('srch'), COUL=Object.fromEntries(INTS.map(x=>[x.id,x.color]));
-      let seq=0, D=null, P=null, period=7, ong='higher'; const diagD={charges:0, erreurs:0};
+      let seq=0, D=null, P=null, C=null, ecrit='', period=7, ong='higher'; const diagD={charges:0, erreurs:0, chapitres:0};
       const n=v=>Number.isFinite(+v)?+v:0, coul=i=>COUL[i]||'', jourDe=s=>new Date(String(s).slice(0,10)+'T12:00:00');
       const court=s=>{ const t=jourDe(s); return isNaN(t)?'':t.toLocaleDateString('en-GB',{day:'numeric',month:'short'}); };
       function onglet(t){
@@ -15392,7 +15401,9 @@ window.addEventListener('pageshow',e=>{
       async function charger(){
         if(!me){ D=null; el.innerHTML=''; return; }
         const s=++seq, uid=me.id; let tz=null; try{ tz=Intl.DateTimeFormat().resolvedOptions().timeZone||null; }catch(_){}
-        const [board,practice]=await Promise.all([sb.rpc('my_board',{p_tz:tz}),sb.rpc('tracking_summary_for_me',{p_days:period})]);
+        const [board,practice,chap]=await Promise.all([sb.rpc('my_board',{p_tz:tz}),sb.rpc('tracking_summary_for_me',{p_days:period}),sb.rpc('my_chapters',{p_limit:4})]);
+        if(chap.error) console.error('[my_chapters]',chap.error.message);
+        C=chap.error?C:(chap.data&&chap.data.ok?chap.data:null);
         const {data,error}=board;
         if(practice.error)console.error('[tracking_summary_for_me]',practice.error.message);
         if(s!==seq||(me?.id||null)!==uid) return;
@@ -15400,8 +15411,38 @@ window.addEventListener('pageshow',e=>{
         else D=data;
         P=practice.error?(P?{...P,stale:true}:{unavailable:true}):practice.data?.ok?practice.data:{unavailable:true}; diagD.charges++; peindre();
       }
+      /* ══ MY CHAPTER · 23/11 (Wah, décision B) ══ « un feedback en mode narratif, qui prend TOUT en compte… autobiography » :
+         le récit de MA semaine en haut, écrit par un modèle SEULEMENT après mon accord (`chapter_settings_set`), à la 1re
+         personne, avec mes mots (`my-chapter`) ; le Grind (la pratique et les objectifs) reste dessous. */
+      const jourCh=s=>{ const t=new Date(s); return isNaN(t)?'':t.toLocaleDateString('en-GB',{day:'numeric',month:'short'}); };
+      function chapitre(){
+        if(!C) return '';
+        const sem=C.week, ce=(C.chapters||[]).find(c=>String(c.from).slice(0,10)===String(sem).slice(0,10)), avant=(C.chapters||[]).filter(c=>c!==ce).slice(0,3);
+        const corps=c=>'<div class="ch-body">'+String(c.body||'').split(/\n+/).map(p=>'<p>'+esc(p)+'</p>').join('')+'</div>';
+        const fin=c=>{ const t=new Date(new Date(c.to).getTime()-864e5); return jourCh(c.from)+' – '+jourCh(t); };
+        let h='<div class="db ch" data-ch-box><p class="db-t">My Chapter<i>'+(C.enabled?'this week':'every week')+'</i></p>';
+        if(!C.enabled) return h+'<p class="ch-p">My week, told in my own words — everything I did in my TOTEHM and my answers in Telegram. Written for me alone by an AI model, from my private data, only once I turn it on.</p>'
+          +'<div class="ch-a"><button type="button" class="vs-act" data-ch="on">Turn on My Chapter</button></div><p class="ch-p" data-ch-dit role="status">'+esc(ecrit)+'</p></div>';
+        if(ce) h+='<p class="ch-t">'+esc(ce.title)+'</p><p class="ch-k">Chapter '+(ce.no|0)+' · '+esc(fin(ce))+'</p>'+corps(ce);
+        else h+='<p class="ch-p">This week’s chapter is not written yet.</p>';
+        h+='<div class="ch-a">'+(C.writes_left>0?'<button type="button" class="vs-act" data-ch="write">'+(ce?'Rewrite · '+C.writes_left+' left':'Write this week')+'</button>':'')
+          +'<button type="button" class="vs-act is-quiet" data-ch="off">Turn off</button></div><p class="ch-p" data-ch-dit role="status">'+esc(ecrit)+'</p>';
+        if(avant.length) h+=avant.map(c=>'<details class="ch-old"><summary>Chapter '+(c.no|0)+' · '+esc(c.title)+'</summary>'+corps(c)+'</details>').join('');
+        return h+'</div>';
+      }
+      async function chAction(a){
+        if(a==='on'||a==='off'){ ecrit='…'; peindre();
+          const {data,error}=await sb.rpc('chapter_settings_set',{p_enabled:a==='on'});
+          ecrit=error||!data?.ok?'try again':''; if(error) console.error('[chapter_settings_set]',error.message);
+          const r=await sb.rpc('my_chapters',{p_limit:4}); if(!r.error&&r.data?.ok) C=r.data; peindre(); return; }
+        if(a==='write'){ ecrit='writing my chapter…'; peindre();
+          const {status,d}=await fnAppel('my-chapter',{action:'write'});
+          if(status===200&&d&&d.ok){ diagD.chapitres++; ecrit=''; const r=await sb.rpc('my_chapters',{p_limit:4}); if(!r.error&&r.data?.ok) C=r.data; peindre(); return; }
+          ecrit=({quiet:'Nothing to tell yet this week.',limit:'Three versions this week — the next chapter opens on Monday.',consent:'Turn on My Chapter first.'})[d&&d.error]||'try again';
+          peindre(); }
+      }
       function peindre(){
-        let h='';
+        let h=chapitre();
 
         /* 14/11 — la box garde sa LARGEUR entière (elle n'est plus une colonne de 95 px) ; elle reste un
            aperçu en hauteur (`court`), le tableau de bord n'est pas le TOTEHM déployé. */
@@ -15420,6 +15461,7 @@ window.addEventListener('pageshow',e=>{
       }
       /* Configuration unique : le dashboard ne recueille aucune déclaration. */
       el.addEventListener('click',async e=>{
+        const ch=e.target.closest('[data-ch]'); if(ch&&!ch.disabled){ ch.disabled=true; await chAction(ch.dataset.ch); return; }
         const choice=e.target.closest('[data-track-period]');
         if(choice){const next=Number(choice.dataset.trackPeriod);if([7,28].includes(next)&&next!==period){period=next;await charger();}return;}
         if(e.target.closest('[data-track-copy]')){const status=el.querySelector('[data-track-copy-status]');try{await navigator.clipboard.writeText('Use the past '+period+' days. '+PRACTICE_REVIEW_PROMPT);if(status?.isConnected)status.textContent='Copied. Paste it in ChatGPT when you choose.';}catch{if(status?.isConnected)status.textContent='Use the past '+period+' days. '+PRACTICE_REVIEW_PROMPT;}return;}
@@ -15427,9 +15469,9 @@ window.addEventListener('pageshow',e=>{
       });
       trackingRefresh=charger;
       document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&srch.classList.contains('is-pret')&&ong==='higher')charger();});
-      return {charger, onglet, vide, vider(){ seq++; D=null; P=null; period=7; el.innerHTML=''; },
+      return {charger, onglet, vide, vider(){ seq++; D=null; P=null; C=null; ecrit=''; period=7; el.innerHTML=''; },
         etat:()=>({onglet:ong, charge:!!D||!!P?.ok, habits:P?.ok?(P.habits||[]).length:D?(D.habits||[]).length:0, cases:D?(D.habits||[]).reduce((a,x)=>a+(x.c||[]).filter(Boolean).length,0):0,
-                   jours:D?(D.days||[]).length:0, heat:D?(D.heat||[]).length:0, fil:D?(D.feed||[]).length:0, telegram:!!(D&&D.telegram),
+                   jours:D?(D.days||[]).length:0, chapitre:{actif:!!(C&&C.enabled), ecrits:(C&&C.chapters||[]).length, reste:C?C.writes_left:null, ecrit:diagD.chapitres}, heat:D?(D.heat||[]).length:0, fil:D?(D.feed||[]).length:0, telegram:!!(D&&D.telegram),
                    charges:diagD.charges, erreurs:diagD.erreurs})};
     })();
     window.__totehm_dash=()=>DASH.etat();

@@ -42,7 +42,7 @@ try{
   check(!await pg.locator('#mw-higher,#mw-higher-acts,#mw-hs-hint').count()&&(await pg.getAttribute('#mw-menu','aria-label'))==='TotehmBot configuration','Duplicate subscription markup and controls are removed');
   check(!await pg.locator('.tracking-history,.db-heat,.db-tot,.db-f').count()&&!await pg.locator('.db-o .db-bar').count(),'16/11 · no account history on the dashboard, and deadlines never mimic progress');
   await pg.locator('[data-track-period="28"]').click();await pg.waitForFunction(()=>document.querySelector('#vs-dash').textContent.includes('28 days · self-reported'));
-  check((await pg.locator('.tracking-cell').count())===28&&log.rpc.at(-1).body.p_days===28,'The selected period drives all counts and all day cells');
+  check((await pg.locator('.tracking-cell').count())===28&&log.rpc.filter(x=>x.name==='tracking_summary_for_me').at(-1).body.p_days===28,'The selected period drives all counts and all day cells');
   check(!log.rpc.some(x=>/tracking_(answer|detail|open|settings_set)/.test(x.name)),'Changing the read period is not a settings write');
   await pg.locator('[data-track-period="7"]').click();await pg.waitForFunction(()=>document.querySelector('#vs-dash').textContent.includes('7 days · self-reported'));
   delayed=true;await pg.locator('[data-track-period="28"]').click();await pg.waitForFunction(()=>true);
