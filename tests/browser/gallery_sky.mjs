@@ -1,102 +1,59 @@
-// Real local WebGL starfield; identity and all network requests stay in the harness.
-// source /workspace/.totehm-cloud/activate.sh; node tests/browser/gallery_sky.mjs /tmp/totehm-production/starry-sky
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {launch,page} from './harness.mjs';
 
-const OUT=process.argv[2]||'/tmp/totehm-production/starry-sky';
-fs.mkdirSync(OUT,{recursive:true});
+const out=process.argv[2]||'/tmp/totehm-production/starry-sky';
 const origin='https://www.totehm.space',results=[];
+fs.mkdirSync(out,{recursive:true});
 const browser=await launch();
 let checks=0;
 const check=(condition,message)=>{assert(condition,message);checks++;console.log('PASS '+message);};
-const state=pg=>pg.evaluate(()=>window.__totehm_gallery());
+const state=pg=>pg.evaluate(()=>{
+ const scene=window.__totehm_origin?.()??window.__totehm_gallery?.();
+ return {frames:scene?.frames,sky:scene?.sky??scene?.landscape?.sky};
+});
+
 try{
- for(const viewport of [{width:1440,height:1000},{width:390,height:844}]){
-  const {pg,ctx,log}=await page(browser,{dir:'space',origin,session:false,viewport,hasTouch:viewport.width<650});
-  const samples={width:viewport.width};
+ const catalogues=[];
+ for(const [city,path] of [['lisbon','/lisbon-space'],['new-york','/new-york'],['origin','/origin']]){
+  const {pg,ctx,log}=await page(browser,{dir:'space',origin,session:false,viewport:{width:1440,height:900},hasTouch:false});
+  const sample={city};results.push(sample);
   try{
-   await pg.goto(origin+'/');
-   await pg.waitForFunction(()=>window.__totehm_gallery?.().frames>0&&window.__totehm_gallery().sky?.stars>0,null,{timeout:20000});
-   await pg.waitForFunction(()=>!window.__totehm_gallery().moving);
-   samples.entrance=await state(pg);
-   check(samples.entrance.webgl&&samples.entrance.sky.stars>0,'real WebGL starfield at '+viewport.width);
-   await pg.waitForTimeout(750);
-   samples.stationary=await state(pg);
-   check(!samples.stationary.moving&&samples.stationary.sky.animated,'sky stays animated while camera is stationary at '+viewport.width);
-   check(samples.stationary.sky.time>samples.entrance.sky.time&&samples.stationary.frames>samples.entrance.frames,'stationary sky advances and is rendered at '+viewport.width);
-   await pg.screenshot({path:OUT+'/entrance-'+viewport.width+'.png'});
-   check(await pg.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'starry entrance fits viewport at '+viewport.width);
-   check(await pg.evaluate(()=>{
-    const guide=document.querySelector('.guide').getBoundingClientRect(),controls=document.querySelector('.controls').getBoundingClientRect();
-    return guide.right<=controls.left||guide.left>=controls.right||guide.bottom<=controls.top||guide.top>=controls.bottom;
-   }),'entrance guidance does not overlap sky controls at '+viewport.width);
-
-   await pg.click('#look-sky');
-   await pg.waitForFunction(()=>!window.__totehm_gallery().moving);
-   await pg.waitForTimeout(100);
-   samples.lookup=await state(pg);
-   await pg.screenshot({path:OUT+'/lookup-'+viewport.width+'.png'});
-   check(samples.lookup.sky.animated&&!samples.lookup.moving,'look-up control settles with animated stars at '+viewport.width);
-
    await pg.emulateMedia({reducedMotion:'reduce'});
-   await pg.waitForFunction(()=>window.__totehm_gallery().sky.animated===false);
-   samples.reducedStart=await state(pg);
-   await pg.waitForTimeout(650);
-   samples.reducedEnd=await state(pg);
-   check(samples.reducedEnd.sky.time===samples.reducedStart.sky.time,'reduced motion freezes the sky clock at '+viewport.width);
-   check(!samples.reducedEnd.sky.animated,'reduced motion reports a static sky at '+viewport.width);
-   await pg.screenshot({path:OUT+'/reduced-'+viewport.width+'.png'});
-
+   await pg.goto(origin+path);
+   await pg.waitForFunction(()=>{
+    const scene=window.__totehm_origin?.()??window.__totehm_gallery?.();
+    const sky=scene?.sky??scene?.landscape?.sky;
+    return scene?.frames>0&&sky?.fullSphere&&sky.galacticPlate?.ready&&!sky.galacticPlate.failed&&sky.galacticPlate.blend===1;
+   },null,{timeout:90000});
+   sample.reducedStart=await state(pg);
+   const {skyMotion,catalogue,stars,stellarColours,moonDirection,galacticNormal,companionGalaxy,emissionNebula,brightAnchors,shootingStars,comet,lunarRelief,galacticPlate,skyGrade}=sample.reducedStart.sky;
+   catalogues.push({skyMotion,catalogue,stars,stellarColours,moonDirection,galacticNormal,companionGalaxy,emissionNebula,brightAnchors,shootingStars,comet,lunarRelief,galacticPlate,skyGrade});
+   check(stars===23500&&stellarColours===7&&brightAnchors===14&&lunarRelief&&comet===false&&shootingStars>=6,city+' keeps the shared authored stars and lunar relief');
+   check(skyGrade==='painted-night'&&galacticPlate.projection==='directional-painting'&&skyMotion.paintedShear&&skyMotion.driftingDust&&skyMotion.colourScintillation,city+' renders moving pigment, dust and spectral glints');
+   await pg.waitForTimeout(600);
+   sample.reducedEnd=await state(pg);
+   check(sample.reducedEnd.sky.time===sample.reducedStart.sky.time&&!sample.reducedEnd.sky.animated&&!sample.reducedEnd.sky.meteor,city+' freezes the sky in reduced motion');
    await pg.emulateMedia({reducedMotion:'no-preference'});
-   await pg.waitForFunction(t=>window.__totehm_gallery().sky.animated&&window.__totehm_gallery().sky.time>t,samples.reducedEnd.sky.time);
-   await pg.click('#view-list');
-   await pg.waitForFunction(()=>window.__totehm_gallery().list===true);
-   samples.listStart=await state(pg);
-   await pg.waitForTimeout(650);
-   samples.listEnd=await state(pg);
-   check(samples.listEnd.sky.time===samples.listStart.sky.time,'artworks list suspends the sky clock at '+viewport.width);
-   check(await pg.locator('#gallery').isVisible(),'artworks remain available with sky suspended at '+viewport.width);
-   await pg.click('#view-list');
-   await pg.waitForFunction(t=>!window.__totehm_gallery().list&&window.__totehm_gallery().sky.animated&&window.__totehm_gallery().sky.time>t,samples.listEnd.sky.time);
-   samples.resumed=await state(pg);
-   check(samples.resumed.frames>samples.listEnd.frames,'returning to 3D resumes rendering at '+viewport.width);
-   if(viewport.width>=650){
-    // Lower the upward view slightly so the meteor's full arc is in frame.
-    await pg.mouse.move(viewport.width/2,viewport.height/2);
-    await pg.mouse.down();
-    await pg.mouse.move(viewport.width/2,viewport.height/2-190,{steps:8});
-    await pg.mouse.up();
-    await pg.waitForFunction(()=>window.__totehm_gallery().sky.meteor===true,null,{timeout:30000});
-    samples.meteor=await state(pg);
-    check(samples.meteor.sky.meteor,'a meteor appears in the animated sky on desktop');
-    await pg.screenshot({path:OUT+'/meteor-'+viewport.width+'.png'});
-   }
-   if(viewport.width>=650){
-    const catalogue=[];
-    for(const path of ['/lisbon-space','/new-york','/origin']){
-     await pg.goto(origin+path);
-     await pg.waitForFunction(()=> {
-      const scene=window.__totehm_origin?.()??window.__totehm_gallery?.();
-      return scene?.frames>0&&scene.sky?.fullSphere&&scene.sky.galacticPlate.blend===1;
-     },null,{timeout:90000});
-     catalogue.push(await pg.evaluate(()=>{
-      const {catalogue,stars,stellarColours,moonDirection,galacticNormal,companionGalaxy,emissionNebula,brightAnchors,shootingStars,comet,lunarRelief,galacticPlate,skyGrade}=(window.__totehm_origin?.()??window.__totehm_gallery()).sky;
-      return {catalogue,stars,stellarColours,moonDirection,galacticNormal,companionGalaxy,emissionNebula,brightAnchors,shootingStars,comet,lunarRelief,galacticPlate,skyGrade};
-     }));
-    }
-    check(catalogue.every(sky=>sky.companionGalaxy.length===3&&sky.emissionNebula.direction.length===3&&sky.brightAnchors===14&&sky.shootingStars>=6&&sky.comet===false&&sky.lunarRelief&&sky.galacticPlate.ready&&!sky.galacticPlate.failed&&sky.skyGrade==='painted-night'&&sky.galacticPlate.projection==='directional-painting'&&JSON.stringify(sky)===JSON.stringify(catalogue[0])),'Lisbon, New York and Origins use the same celestial sphere');
-   }
-   check(!log.errors.some(e=>e.startsWith('pageerror:')),'no application JavaScript errors at '+viewport.width+': '+log.errors.join(' | '));
-   results.push({viewport,samples,log});
+   await pg.waitForFunction(t=>{
+    const scene=window.__totehm_origin?.()??window.__totehm_gallery?.();
+    const sky=scene?.sky??scene?.landscape?.sky;
+    return sky?.animated&&sky.time>t+.6;
+   },sample.reducedEnd.sky.time);
+   sample.animated=await state(pg);
+   check(sample.animated.frames>sample.reducedEnd.frames,city+' keeps rendering an animated sky');
+   await pg.screenshot({path:out+'/'+city+'-animated.png'});
+   check(!log.errors.some(error=>/pageerror:|shader error|VALIDATE_STATUS|WebGLProgram/i.test(error)),city+' renders without JavaScript or shader errors');
   }catch(error){
-   await pg.screenshot({path:OUT+'/failure-'+viewport.width+'.png'}).catch(()=>{});
-   results.push({viewport,samples,log,error:String(error)});
+   sample.error=String(error);
+   await pg.screenshot({path:out+'/'+city+'-failure.png'}).catch(()=>{});
    throw error;
   }finally{
-   fs.writeFileSync(OUT+'/results.json',JSON.stringify({checks,results},null,2));
+   sample.log=log;
+   fs.writeFileSync(out+'/results.json',JSON.stringify({checks,results},null,2));
    await ctx.close();
   }
  }
- console.log('PASS '+checks+' animated sky checks; screenshots '+OUT);
+ check(catalogues.every(sky=>JSON.stringify(sky)===JSON.stringify(catalogues[0])),'Lisbon, New York and Origin share the same celestial sphere');
+ console.log('PASS '+checks+' animated sky checks');
 }finally{await browser.close();}

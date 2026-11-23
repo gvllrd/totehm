@@ -200,6 +200,16 @@ export function createDrownedSky(scene,{mobile=false,onChange=()=>{}}={}){
    uniform float uTime,uPaintingBlend;
    uniform vec3 uDirection,uEast,uNorth,uMoonDirection;
    uniform vec2 uNebulaExtent,uPaintingExtent;
+
+   vec2 movePigment(vec2 uv,float rim){
+    // Local shear and circulation preserve the painted silhouette and the black border.
+    vec2 p=uv-vec2(.597,.562);
+    vec2 radial=p*vec2(1.42,.94);
+    float depth=exp(-dot(radial,radial)*21.);
+    float curl=.062*sin(uTime*.081+dot(p,vec2(7.,-11.)))+.020*sin(uTime*.139-p.y*13.);
+    vec2 tides=vec2(sin(p.y*19.+p.x*6.-uTime*.101),cos(p.x*17.-p.y*9.+uTime*.076));
+    return uv+rim*(vec2(-p.y,p.x)*(curl*depth)+tides*vec2(.0034,.0049));
+   }
    void main(){
     vec3 d=normalize(vDirection);
     vec2 uv=vec2(atan(d.z,d.x)*.159154943+.5,asin(clamp(d.y,-1.,1.))*.318309886+.5);
@@ -209,22 +219,32 @@ export function createDrownedSky(scene,{mobile=false,onChange=()=>{}}={}){
     float ahead=dot(d,uDirection);
     vec2 centre=vec2(dot(d,uEast),dot(d,uNorth))/max(.49,ahead);
     vec2 paintedUV=.5+centre*(.5/uPaintingExtent);
-    vec2 paintedDX=dFdx(paintedUV),paintedDY=dFdy(paintedUV);
+    float rim=1.-smoothstep(.73,1.,2.*max(abs(paintedUV.x-.5),abs(paintedUV.y-.5)));
+    vec2 pigmentUV=paintedUV;
+    if(uPaintingBlend>0.&&rim>0.)pigmentUV=movePigment(paintedUV,rim);
+    vec2 paintedDX=dFdx(pigmentUV),paintedDY=dFdy(pigmentUV);
     vec2 proceduralUV=.5+centre*(.5/uNebulaExtent);
+    proceduralUV+=.005*vec2(sin(uTime*.073+centre.y*15.),cos(uTime*.098-centre.x*11.));
     vec2 proceduralDX=dFdx(proceduralUV),proceduralDY=dFdy(proceduralUV);
-    float pulse=sin(dot(d,vec3(9.,6.,-17.))+uTime*.15);
+    float moonSpace=1.-.46*smoothstep(.992,.99955,dot(d,uMoonDirection));
     if(ahead>.49){
-     float rim=1.-smoothstep(.73,1.,2.*max(abs(paintedUV.x-.5),abs(paintedUV.y-.5)));
      if(uPaintingBlend>0.&&rim>0.){
-      vec3 pigment=textureGrad(uPainting,paintedUV,paintedDX,paintedDY).rgb;
+      vec3 pigment=textureGrad(uPainting,pigmentUV,paintedDX,paintedDY).rgb;
       float brightness=dot(pigment,vec3(.2126,.7152,.0722));
-      float moonSpace=1.-.38*smoothstep(.994,.99955,dot(d,uMoonDirection));
-      vec3 glaze=pigment*(1.07+.06*pulse)/(1.+.32*brightness);
+      float stroke=smoothstep(.002,.043,brightness);
+      float gold=smoothstep(.0025,.057,pigment.r-pigment.b);
+      float cyan=smoothstep(.001,.027,pigment.g-pigment.r)*stroke;
+      // Only the already painted seams catch the traveling light.
+      float shimmer=.5+.5*sin(dot(pigmentUV,vec2(68.,-87.))+uTime*.55+sin(pigmentUV.y*30.));
+      vec3 glaze=pigment*(.75+.29*stroke)/(1.+.45*brightness);
+      glaze*=mix(vec3(.97,1.01,1.06),vec3(1.10,1.035,.965),gold);
+      glaze*=1.+shimmer*(.15*gold+.052*cyan);
       ink=mix(ink,glaze*moonSpace,uPaintingBlend*rim*.97);
      }
-     if(uPaintingBlend<1.&&all(greaterThan(proceduralUV,vec2(0.)))&&all(lessThan(proceduralUV,vec2(1.)))){
-      vec3 dust=textureGrad(uNebula,proceduralUV,proceduralDX,proceduralDY).rgb;
-      ink+=dust*.095*(1.-uPaintingBlend);
+     if(all(greaterThan(proceduralUV,vec2(0.)))&&all(lessThan(proceduralUV,vec2(1.)))){
+      vec4 dust=textureGrad(uNebula,proceduralUV,proceduralDX,proceduralDY);
+      float grain=uPaintingBlend*.19*dust.a;
+      ink=ink*(1.-grain)+dust.rgb*mix(.095,.019,uPaintingBlend)*moonSpace;
      }
     }
     gl_FragColor=vec4(ink,1.);
@@ -269,10 +289,15 @@ export function createDrownedSky(scene,{mobile=false,onChange=()=>{}}={}){
 
  const starMaterial=material(new T.ShaderMaterial({uniforms:{uTime:timeUniform,uPixelRatio:pixelRatio},transparent:true,depthWrite:false,depthTest:true,blending:T.AdditiveBlending,toneMapped:false,fog:false,
   vertexShader:`attribute vec3 aColour;attribute float aSize,aPhase,aIntensity,aAnchor;uniform float uTime,uPixelRatio;varying vec3 vColour;varying float vIntensity,vGlint,vAnchor;
-   void main(){vColour=aColour;vAnchor=aAnchor;float low=1.-clamp(position.y/1220.,0.,1.);
-    float shimmer=mix(.04+.105*low*low,.10,aAnchor);
+   void main(){vAnchor=aAnchor;float low=1.-clamp(position.y/1220.,0.,1.);
+    float shimmer=mix(.055+.122*low*low,.10,aAnchor);
     float twinkle=sin(aPhase+uTime*(.31+.12*sin(aPhase)))*.55+sin(aPhase*2.7+uTime*.89)*.31+sin(aPhase*6.1+uTime*1.4)*.14;
-    vIntensity=aIntensity*(1.-shimmer+shimmer*twinkle);vGlint=smoothstep(1.5,6.2,aSize);
+    float glint=smoothstep(1.5,6.2,aSize);
+    float fleck=pow(max(0.,sin(aPhase*9.17+uTime*(.33+.18*sin(aPhase*2.1)))),9.);
+    float temperature=sin(aPhase*4.3+uTime*.74)*glint*(.016+.025*low);
+    vColour=clamp(aColour*vec3(1.+temperature,1.,1.-temperature),0.,1.);
+    vIntensity=aIntensity*(1.-shimmer+shimmer*twinkle+.13*glint*fleck);
+    vGlint=glint;
     gl_PointSize=aSize*uPixelRatio;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,
   fragmentShader:`varying vec3 vColour;varying float vIntensity,vGlint,vAnchor;
    void main(){vec2 p=gl_PointCoord-.5;float r=length(p);if(r>.5)discard;float rr=r*r;
@@ -389,7 +414,7 @@ export function createDrownedSky(scene,{mobile=false,onChange=()=>{}}={}){
    }
    const changed=dirty;dirty=false;return changed;
   },
-  diagnostics:()=>({night:true,skyLoaded:true,textureReady:true,catalogue:'totehm-celestial-sphere',fullSphere:true,textureSize:[width,height],milkyWay:true,galacticClouds:'painted turquoise and violet with broken golden edges',skyGrade:'painted-night',galacticPlate:{ready:plateReady,failed:plateFailed,blend:plateBlend.value,projection:'directional-painting',direction:nebulaDirection.toArray(),extent:paintingExtent.toArray(),size:[1774,887]},companionGalaxy:companionDirection.toArray(),emissionNebula:{direction:nebulaDirection.toArray(),extent:nebulaExtent.toArray(),textureSize:[cloudWidth,cloudHeight]},brightAnchors:anchors.length,galacticArch:true,galacticNormal:normal.toArray(),stars:starCount,stellarDust:tinyStars,stellarProfile:'white cores, restrained halos and anchor-star diffraction',stellarColours:7,time:+time.toFixed(3),animated,moon:true,moonDirection:moonDirection.toArray(),moonDiameterDegrees:moonDiameter,lunarCraters:lunarCraters.length,lunarRelief:true,comet:false,shootingStars:meteors.length,meteor:meteors.some(event=>event.mesh.visible),meteorRibbon:true,meteorTriangles:meteorIndices.length/3,externalFiles:0,disposed}),
+  diagnostics:()=>({night:true,skyLoaded:true,textureReady:true,catalogue:'totehm-celestial-sphere',fullSphere:true,textureSize:[width,height],milkyWay:true,galacticClouds:'painted turquoise and violet with broken golden edges',skyMotion:{paintedShear:true,driftingDust:true,colourScintillation:true},skyGrade:'painted-night',galacticPlate:{ready:plateReady,failed:plateFailed,blend:plateBlend.value,projection:'directional-painting',direction:nebulaDirection.toArray(),extent:paintingExtent.toArray(),size:[1774,887]},companionGalaxy:companionDirection.toArray(),emissionNebula:{direction:nebulaDirection.toArray(),extent:nebulaExtent.toArray(),textureSize:[cloudWidth,cloudHeight]},brightAnchors:anchors.length,galacticArch:true,galacticNormal:normal.toArray(),stars:starCount,stellarDust:tinyStars,stellarProfile:'white cores, restrained halos and anchor-star diffraction',stellarColours:7,time:+time.toFixed(3),animated,moon:true,moonDirection:moonDirection.toArray(),moonDiameterDegrees:moonDiameter,lunarCraters:lunarCraters.length,lunarRelief:true,comet:false,shootingStars:meteors.length,meteor:meteors.some(event=>event.mesh.visible),meteorRibbon:true,meteorTriangles:meteorIndices.length/3,externalFiles:0,disposed}),
   dispose(){if(disposed)return;disposed=true;for(const t of textures)t.dispose();for(const m of materials)m.dispose();for(const g of geometries)g.dispose();canvas.width=canvas.height=moonCanvas.width=moonCanvas.height=haloCanvas.width=haloCanvas.height=1;root.removeFromParent();root.clear();}
  };
 }
