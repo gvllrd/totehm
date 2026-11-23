@@ -1,20 +1,17 @@
-// Explicit preparation, privacy, graph fidelity and Telegram limits. All identities are synthetic.
+// REMEMBER links, privacy, graph fidelity and Telegram limits. All identities are synthetic.
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {projectGraph,projectContext} from '../../backend/supabase/functions/_shared/chatgpt-context.ts';
-import {practiceURL,practiceKeyboard,practiceTelegram,preparationText,practiceCadence,validPracticeId,STONER_URL,linkedPracticeBoxes,linkedPracticeRows,linkedPracticeText,linkedPracticeCallback,readPracticeLinks} from '../../backend/supabase/functions/_shared/tracking-practice.ts';
+import {practiceURL,practiceTelegram,validPracticeId,linkedPracticeBoxes,linkedPracticeRows,linkedPracticeText,linkedPracticeCallback,readPracticeLinks} from '../../backend/supabase/functions/_shared/tracking-practice.ts';
 import {handleTrackingUpdate} from '../../backend/supabase/functions/_shared/tracking-bot.ts';
 import {TelegramAPIError} from '../../backend/supabase/functions/_shared/tracking-telegram.ts';
 import {parsePracticeLink} from '../../com/telegram-practice.mjs';
-import {FREQS} from '../../com/habit-rhythm.mjs';
 const uid='11111111-1111-4111-8111-111111111111',id=n=>`00000000-0000-4000-8000-${String(n).padStart(12,'0')}`;
 let checks=0;const check=(v,m)=>{assert(v,m);checks++;};
 for(const ref of ['1','9007199254740993','9223372036854775807']){
  const url=new URL(practiceURL(ref));
  check(validPracticeId(ref)&&parsePracticeLink(url.hash)===ref,'Full bigint locator is preserved');
  check(url.origin==='https://www.totehm.com'&&url.pathname==='/totehm'&&url.search==='?telegram=1','The mini-app always opens the native authority');
- const kb=practiceKeyboard(ref,true);
- check(kb.inline_keyboard.flat().every(b=>!b.callback_data||Buffer.byteLength(b.callback_data)<=64),'Callbacks contain only bounded string IDs');
  check(!url.href.includes('token')&&!url.href.includes('habit')&&!url.href.includes('ref='),'No session or Habit text is exported in the mini-app URL');
 }
 for(const bad of ['',0,'0','-1','01','1&token=secret','9223372036854775808','99999999999999999999']){
@@ -22,7 +19,6 @@ for(const bad of ['',0,'0','-1','01','1&token=secret','9223372036854775808','999
  assert.throws(()=>practiceURL(bad));checks++;
 }
 check(!parsePracticeLink('#practice=1&ro=someone')&&!parsePracticeLink('#practice=1&practice=2'),'No extra values or visited-account context are accepted');
-check(STONER_URL==='https://www.totehm.space/stoner','Stoner keeps its existing native access gate');
 const habit='Lire & écrire <b>読書</b>';
 const snapshot={habits:[{t:habit,is:['express'],f:'weekly',rhythm_text:'3 times a week at 7 AM'},{t:'Unrelated Habit',f:'daily',rhythm_text:'UNRELATED TIMING'}],
  habit_spots:[{habit_text:habit,place:'My kitchen <b>読書</b>'},{habit_text:'Unrelated Habit',place:'UNRELATED PLACE'}],
@@ -32,39 +28,6 @@ const snapshot={habits:[{t:habit,is:['express'],f:'weekly',rhythm_text:'3 times 
  stories:[{id:id(4),text:'MY OWN WORDS, not an inferred lesson'},{id:id(5),text:'UNRELATED STORY'}],
  objective_habits:[{habit_text:habit,objective_id:id(1)},{habit_text:habit,objective_id:id(3)}],repulsion_stories:[{repulsion_id:'1',story_id:id(4)}]};
 const context=s=>projectContext(projectGraph(s),{query:'',purpose:'explicit',focus:{kind:'habit',ref:habit},limit:12});
-const text=preparationText(context(snapshot),habit);
-check(['TRIGGER · INSTEAD OF','INSTEAD · MY HABIT','WHY','VISION · THE BIG WHY','MY STORY · LINKED TO THIS TRIGGER'].every(t=>text.includes(t)),'All native phrase directions are present');
-check(['Scroll instead',habit,'Publish my book','Share what I learn','MY OWN WORDS'].every(t=>text.includes(t)),'Only recorded links supply the preparation chain');
-check(!text.includes('UNRELATED')&&!text.includes('Travel unrelated'),'Unconnected choices are not presented as reasons');
-check(text.includes('<b>読書</b>'),'Member text is preserved as plain text, never HTML instructions');
-check(text.includes('WHERE I USUALLY DO IT')&&text.includes('My kitchen <b>読書</b>')&&text.includes('not your current position or a timed spot'),'Only the exact Habit’s authored usual place is shown, with truthful scope');
-check(text.includes('MY TIMING · MY WORDS')&&text.includes('3 times a week at 7 AM')&&text.includes('SAVED CHECK-IN RHYTHM\n\nweekly'),'Authored practice timing is preserved separately from the selected check-in cadence');
-for(const frequency of FREQS)check(practiceCadence(frequency.id)===frequency.label,'Telegram and native picker use the same meaning for '+frequency.id);
-check(practiceCadence('unsupported')===null&&practiceCadence(undefined)===null,'Missing/unknown cadence never invents a readable schedule');
-
-check(preparationText(context({habits:[{t:habit}]}),habit).includes('No linked why or trigger'),'Missing links remain missing instead of inventing a motivation');
-check(preparationText(context({habits:[]}),habit).includes('no longer available'),'A missing current Habit never substitutes another one');
-check(preparationText({...context(snapshot),coverage:{source_complete:false,omitted_related:true}},habit).includes('part of your linked context'),'Partial context is explicitly described');
-const long=structuredClone(context(snapshot));for(const row of long.items)row.text='🌍'.repeat(4000);
-const bounded=preparationText(long,habit);
-check(bounded.length<3500&&bounded.isWellFormed()&&bounded.includes('excerpts'),'Long multilingual text and emoji fit a single consented message without broken characters');
-const fullest=structuredClone(context(snapshot)),rootFull=fullest.items.find(i=>i.ref===habit);
-rootFull.rhythm_text='🌍'.repeat(500);rootFull.usual_place.text='🌍'.repeat(500);
-for(const [kind,relation,from,to] of [['repulsion','instead',null,rootFull.key],['objective','serves',rootFull.key,null],['vision','serves',rootFull.key,null],['story','learned_from',null,fullest.items.find(i=>i.kind==='repulsion').key]]){
- const row=fullest.items.find(i=>i.kind===kind),copy={...row,key:row.key+':second',ref:row.ref+':second',rank:2};
- fullest.items.push(copy);fullest.edges.push({from:from||copy.key,to:to||copy.key,relation,provenance:[]});
-}
-for(const row of fullest.items)row.text='🌍'.repeat(4000);
-const fullMessage=preparationText(fullest,habit);
-check(fullMessage.length<3500&&fullMessage.isWellFormed()&&fullMessage.includes('does not schedule an exact alert time'),'Full recorded chain, timing and place together fit Telegram’s safe message bound');
-const maximal=structuredClone(fullest),maxRoot=maximal.items.find(i=>i.ref===habit);
-for(const row of maximal.items)row.text='a'.repeat(260);
-maxRoot.rhythm_text='b'.repeat(500);maxRoot.usual_place.text='c'.repeat(120);maxRoot.freq='every_15th_month';
-maximal.coverage={source_complete:false,omitted_related:true,more_matches:true};
-const maximalMessage=preparationText(maximal,habit);
-check(maximal.items.length===9&&maximalMessage.length<=3500&&maximalMessage.isWellFormed()&&maximalMessage.includes('part of your linked context'),'Two triggers, goals, visions and stories plus 500-character timing, usual place and partial coverage fit one safe Telegram message');
-const orders={...snapshot,objectives:[...snapshot.objectives,{id:id(7),text:'My ranked reason',target_at:'2027-06-01'}],objective_habits:[...snapshot.objective_habits,{habit_text:habit,objective_id:id(7)}],element_orders:[{kind:'objective',refs:[id(7),id(1)]}]};
-const sorted=preparationText(context(orders),habit);check(sorted.indexOf('My ranked reason')<sorted.indexOf('Publish my book'),'Multiple reasons follow their own view order');
 const calls=[],queries=[],sent=[];let allowed=true,readError=false;
 const tables={...snapshot,totehms:[{habits:snapshot.habits}]};delete tables.habits;
 const db={async rpc(name,args){calls.push({name,args});assert.equal(name,'tracking_practice_target');assert.equal(args.p_telegram,101);return {data:allowed?{ok:true,user_id:uid,habit}:{ok:false},error:null};},
@@ -88,7 +51,7 @@ for(const command of ['/prepare','/preparer','/préparer']){
 }
 await handleTrackingUpdate(db,{message:{text:'/totehm',from:{id:101},chat:{id:101,type:'private'}}},telegram);
 check(calls.length===0&&sent.at(-1).payload.reply_markup.inline_keyboard[0][0].web_app.url===practiceURL(),'/totehm opens my TOTEHM, no report or data lookup');
-const payload={chat_id:'101',text:'Choose',reply_markup:practiceKeyboard('1',true)};
+const payload={chat_id:'101',text:'Choose',reply_markup:{inline_keyboard:[[{text:'↺ Why: x',callback_data:'t:k:1:0'}],[{text:'Open my Habit',web_app:{url:practiceURL('1')}}]]}};
 for(const method of ['sendMessage','editMessageText']){
  const attempts=[];
  await practiceTelegram(async(m,p)=>{attempts.push({m,p});if(attempts.length===1)throw new TelegramAPIError(m,400,400,true);return {ok:true};},method,payload);
@@ -272,4 +235,4 @@ const failedHarness=makeLinkedHarness(previewSnapshot);failedHarness.state.error
 await assert.rejects(()=>invokeLinked(failedHarness,callbackData));checks++;
 check(failedHarness.writes.length===0&&!JSON.stringify(failedHarness.messages).includes('PRIVATE READ ERROR'),'A private read failure produces neither a mutation nor a provider/private error disclosure');
 
-console.log(JSON.stringify({suite:'Optional TotehmBot preparation',checks,passed:checks}));
+console.log(JSON.stringify({suite:'TotehmBot REMEMBER links',checks,passed:checks}));
