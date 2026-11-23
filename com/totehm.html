@@ -3639,15 +3639,17 @@ body.is-tlv #gate-asteroid,body.is-tlv #lvjoy{opacity:0;pointer-events:none}
 /* Le filtre : d'abord les cinq vues en UN bloc de commande rectangle (la croix du TOTEHM) ; puis les boxes de la vue
    choisie. Les deux carrés portent les douze trous du logo (`--perfo`, la même variable que les médias). */
 .lsh-sf .sfv{border:0;border-radius:0;cursor:pointer;background:var(--skin,var(--navy));color:#fff;padding:0 8px;
-  font:700 9.5px/1.15 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;filter:brightness(.5);transition:filter .15s;
+  font:700 10.5px/1.15 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;transition:filter .15s;
   display:flex;align-items:center;justify-content:center;text-align:center;min-width:0}
-.lsh-sf .sfv.is-on{filter:none}   /* éteint = plus sombre, jamais transparent ; allumé = sa couleur pleine, SANS trait blanc (Wah, 10/11) */
+/* 23/11 (Wah) : « en full-color sans transparence (= les 3 couleurs d'origine brandées) » — plus d'assombrissement ;
+   le choisi se dit en GRANDISSANT un peu, jamais par un trait blanc (Wah, 10/11). */
+.lsh-sf .sfcmd.is-split .sfv.is-on{transform:scale(1.07);z-index:1}
 /* 24/10 (Wah) : « fusionne le filtre avec le logo, mais avant réduis la longueur des
    rectangles-couleurs de my objectives, my habits et my repulsions ». Les deux demandes
    n'en font qu'une : les trois rectangles rentrent DANS le papier du milieu, donc ils
    sont courts ; et les trois papiers, posés l'un sur l'autre, redeviennent le LOGO.
    Un tap le décompose — le fond prend le dessus, le rail, le T et le mot fondent. */
-.lsh-sf .sfcmd{--q:min(114px,26vw);display:flex;gap:3px;justify-content:center;align-items:stretch;height:var(--q);width:100%;transform-origin:50% 50%}
+.lsh-sf .sfcmd{--q:min(156px,30vw);display:flex;gap:3px;justify-content:center;align-items:stretch;height:var(--q);width:100%;transform-origin:50% 50%}
 .lsh-sf .sf-aj{margin:0;font-size:10px;color:#d8d8dd}
 body.lv-g.papier-haut.sf-nait #gate-asteroid{opacity:0}
 body.papier-haut #gate-asteroid{transition:opacity .25s ease}
@@ -3674,16 +3676,17 @@ body.papier-haut #gate-asteroid{transition:opacity .25s ease}
 .lsh-sf .sfcmd.is-melt .sf-lab{opacity:1}
 .lsh-sf .sfcmd.is-grind .sf-lab{opacity:0}
 /* 2 · les trois boutons, empilés AU CENTRE du navy — c'est là qu'ils raccourcissent */
-.lsh-sf .sfpile{position:absolute;left:7%;right:7%;top:50%;display:flex;flex-direction:column;gap:3px;
+.lsh-sf .sfpile{position:absolute;left:5%;right:5%;top:50%;display:flex;flex-direction:column;gap:5px;
   opacity:0;transform:translateY(-50%) scale(.9);pointer-events:none;transition:opacity .3s ease,transform .36s cubic-bezier(.22,.61,.36,1)}
 .lsh-sf .sfcmd.is-grind .sfpile{opacity:1;transform:translateY(-50%);pointer-events:auto}
-.lsh-sf .sfpile i{display:block;font:700 9px/1.2 'Space Mono',monospace;letter-spacing:0;text-transform:uppercase;font-style:normal;
-  padding:3px 1px;color:#fff;text-align:center;white-space:nowrap;overflow:hidden;cursor:pointer;transition:filter .2s ease}
+/* 23/11 (Wah : « quand on clique sur [Grind] c'est ensuite compliqué de sélectionner un des trois superposés ») : plus hauts */
+.lsh-sf .sfpile i{display:block;font:700 10px/1.2 'Space Mono',monospace;letter-spacing:0;text-transform:uppercase;font-style:normal;
+  padding:8px 1px;color:#fff;text-align:center;white-space:nowrap;overflow:hidden;cursor:pointer;transition:filter .2s ease}
 .lsh-sf .sfpile i[data-v=objectives]{background:#36498c}
 .lsh-sf .sfpile i[data-v=habits]{background:#3a3a70}
 .lsh-sf .sfpile i[data-v=repulsions]{background:#743169}
 /* le choisi garde sa couleur pleine, les deux autres s'assombrissent — la règle des carrés, sans trait blanc */
-.lsh-sf .sfpile:has(i.is-on) i:not(.is-on){filter:brightness(.5)}
+.lsh-sf .sfpile i.is-on{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:3px}
 @media(hover:hover){.lsh-sf .sfpile i:hover{filter:brightness(1.25)}}
 @media(prefers-reduced-motion:reduce){.lsh-sf .sfcmd .sfv,.lsh-sf .sf-lg,.lsh-sf .sfpile,.lsh-sf .sf-lab{transition:none}}
 .lsh-sf .sfbx{display:flex;flex-direction:column;gap:3px;max-height:40vh;overflow-y:auto;overscroll-behavior:contain}
@@ -3785,6 +3788,15 @@ body.lv-g #lv-socket,body.lv-d #lv-socket{opacity:0}
 .lsh-sf .sfk{background:none;color:#8a8a92;font:700 8.5px/1.3 'Space Mono',monospace;letter-spacing:.14em;
   text-transform:uppercase;padding:8px 2px}
 .lsh-sf .sfa{justify-content:space-between;margin-top:6px}
+/* 23/11 (Wah) : « j'aime quand tout est centré : vue de gauche, tout est centré et les intentions sont alignées une par
+   une verticalement. Pareil pour la vue de droite » — le REFINE des deux vues (la prise de spot garde sa colonne). */
+:is(#lv-sh-sf,#rdr-sf) .sfg{align-items:center;text-align:center}
+:is(#lv-sh-sf,#rdr-sf) .sfr{justify-content:center}
+:is(#lv-sh-sf,#rdr-sf) .sfr:has(.sfi){flex-direction:column;align-items:center;flex-wrap:nowrap}
+:is(#lv-sh-sf,#rdr-sf) .sfr:has(.sfi) .sfi{min-width:min(62vw,230px);text-align:center}
+:is(#lv-sh-sf,#rdr-sf) .sfbx{align-items:center}
+:is(#lv-sh-sf,#rdr-sf) .sfa{justify-content:center;gap:10px}
+:is(#lv-sh-sf,#rdr-sf){padding-bottom:120px}   /* la manette du bas ne couvre jamais ALL · CLOSE */
 /* 27/10 — PRENDRE UN SPOT (`NSPOT`) : le panneau du filtre ; une question à la fois, sous chaque choix son sens en petit */
 .ns-c{display:inline-flex;flex-direction:column;align-items:flex-start;gap:2px}
 .ns-c small{font-size:9px;letter-spacing:.04em;color:#8a8a92}
@@ -6619,10 +6631,10 @@ const SPGRID=(()=>{
     const b=bx(); if(!b) return;
     L=CLUBSP.items();
     etat.tuiles=L.length;
-    /* 27/10 — la box choisie au filtre, TELLE QUELLE, en tête des résultats (comme à gauche) ; le « + » d'un spot ensuite */
-    const tete=typeof SHS!=='undefined'&&SHS.tete?SHS.tete():'';
+    /* 23/11 (Wah) : « quand je sélectionne une box dans le Refine de la vue de droite, pas besoin de la ré-afficher en
+       dessous : tu la laisses DANS le Refine, comme les autres paramètres » — le « + » d'un spot en tête, puis les spots. */
     const plus=me&&!RO?'<button type="button" class="tl tl-add" data-nspot="" aria-label="Add a spot"><span aria-hidden="true">+</span></button>':'';
-    b.innerHTML='<div class="tlg">'+(tete?'<div class="tl-sel" data-f-sel="1">'+tete+'</div>':'')+plus+L.map(tuile).join('')+'</div>';
+    b.innerHTML='<div class="tlg">'+plus+L.map(tuile).join('')+'</div>';
     if(io){ io.disconnect(); io=null; }
     const s=sc(); if(!s) return;
     io=new IntersectionObserver(es=>es.forEach(en=>{ if(!en.isIntersecting) return;
@@ -6729,7 +6741,10 @@ function boxTotehm(bk,o,opts){
   let h='';
   try{ h=f(o,0); }catch(e){ console.error('[box]',e&&e.message||e); }
   finally{ open=o0; ordering=ord; pk=pk0; }
-  return inerteBox(h,bk,opts);
+  /* 23/11 (Wah) : « TOUTES les boxes héritées du TOTEHM doivent avoir leur zoom, comme dans le TOTEHM déployé — vue de
+     gauche et de droite » : la loupe des visionneuses (`loupeVue`, elle agrandit en place et ne fait rien d'autre). */
+  const ib=inerteBox(h,bk,opts);
+  return opts&&opts.sansLoupe?ib:loupeVue(ib);
 }
 /* Le MÊME rendu, rendu INERTE : plus de commande, plus de `data-*` ni de rôle. `boxTotehm` y passe une box réelle ;
    les illustrations du Discover (`DISC`) y passent une box d'exemple dessinée par les mêmes `ligne` / `boiteHTML`. */
@@ -6782,7 +6797,9 @@ function creerFeed(conf){
   const VUE_K={habits:'h',objectives:'t',repulsions:'r',stories:'w',visions:'v'};
   /* 24/10 (Wah) : « c'est my vision, my objectives, my habits, my repulsions et my wisdom story » ; 26/10 : « MY WISDOM (et pas STORY) ». */
   /* 19/11 (Wah : « les mots que j'utilise reflètent le backend ») : la 5e box s'appelle STORY, ici comme partout. */
-  const MOT={habits:'my habits',objectives:'my objectives',repulsions:'my repulsions',stories:'my story',visions:'my vision'};
+  const MOT={habits:'my habits',objectives:'my objectives',repulsions:'my repulsions',stories:'my story',visions:'my vision',grind:'my grind'};
+  /* 23/11 : GRIND = objectifs + habits + répulsions, choisissable tel quel */
+  const GRIND=['objectives','habits','repulsions'], dansVue=(v,cur)=>cur==='grind'?GRIND.includes(v):v===cur;
   const txtDe=(k,o)=>!o?'':((k==='t'||k==='r')?String(o.text||''):String(o.t||''));
   /* Les traits : ses intentions pour une Habit, celles qu'il HÉRITE pour les quatre autres — la MÊME
      chaîne que la boîte de chaque vue (une habitude qualifie un geste répété ; les autres héritent). */
@@ -6858,7 +6875,7 @@ function creerFeed(conf){
     if(conf.src==='spots') return true;          /* le serveur a déjà filtré (et `mine` est trié par CLUBSP) */
     if(SF.type==='photo'&&x.vid) return false;
     if(SF.type==='video'&&!x.vid) return false;
-    if(SF.vue&&x.vue!==SF.vue) return false;
+    if(SF.vue&&!dansVue(x.vue,SF.vue)) return false;
     if(SF.quand&&x.st!==SF.quand) return false;
     const ints=sfIntsActives();
     if(ints.size&&!(x.ints||[]).some(i=>ints.has(i))) return false;
@@ -7070,6 +7087,8 @@ function creerFeed(conf){
       /* 26/10 (Wah) : « tu cliques sur le Totehm et boom, MY WISDOM, MY GRIND et MY VISION naissent de lui » — en UN tap
          (`naitre`) ; et le « + » ouvre le même Totehm (`SF.ajout`) : la vue choisie y est `SF.ajVue`, jamais le filtre. */
       const cur=SF.ajout?SF.ajVue:SF.vue;
+      /* 23/11 (Wah) : « [Grind] doit pouvoir être tel quel : GRIND, sans obliger à choisir l'un des trois » — `grind` est une vue */
+      const gOn=cur==='grind'||GRIND.includes(cur);
       const vb=(v,cl)=>'<button type="button" class="sfv '+cl+' '+(PEAU[VUE_K[v]]||'')+(cur===v?' is-on':'')+'"'
         +' data-sf="vue" data-v="'+v+'" aria-pressed="'+(cur===v)+'"><span>'+esc(MOT[v]||v)+'</span></button>';
       const pile=['objectives','habits','repulsions'].map(v=>'<i'+(cur===v?' class="is-on"':'')
@@ -7077,17 +7096,17 @@ function creerFeed(conf){
       let h=(SF.ajout?'<p class="sfl sf-aj">+ media</p>':'')
         +'<div class="sfg"><div class="sfcmd'+(SF.plie?' is-logo':' is-melt is-split')+(SF.grind?' is-grind':'')
         +'" role="group" aria-label="My TOTEHM">'+vb('stories','sfv-sq sfv-s')
-        +'<button type="button" class="sfv sfv-sq sfv-g" style="--skin:#333366" data-sf="grind" aria-label="My grind">'
+        +'<button type="button" class="sfv sfv-sq sfv-g'+(gOn?' is-on':'')+'" style="--skin:#333366" data-sf="grind" aria-label="My grind" aria-pressed="'+gOn+'">'
         +'<span class="sf-lg" aria-hidden="true"><svg class="gl g-rail"><use href="#lg-rail"/></svg>'
         +'<svg class="gl g-t"><use href="#lg-t"/></svg><svg class="gl g-wm"><use href="#lg-wm"/></svg></span>'
         +'<span class="sf-lab">my grind</span><span class="sfpile">'+pile+'</span></button>'
         +vb('visions','sfv-sq sfv-v')+'</div></div>';
       /* 27/10 — « + » : la box choisie reste SEULE, et la capture s'ouvre dessous, dans le panneau (un tap sur elle rend la liste) */
-      const aj=SF.ajout&&SF.ajBox&&VUE[SF.ajBox.k]===cur?SF.ajBox:null;
+      const aj=SF.ajout&&SF.ajBox&&dansVue(VUE[SF.ajBox.k],cur)?SF.ajBox:null;
       if(cur){
-        const l=mesElements().filter(x=>VUE[x.k]===cur&&(!aj||(x.k===aj.k&&x.ref===aj.ref)));
+        const l=mesElements().filter(x=>dansVue(VUE[x.k],cur)&&(!aj||(x.k===aj.k&&x.ref===aj.ref)));
         h+='<div class="sfg"><div class="sfl">'+esc(MOT[cur]||cur)+'</div><div class="sfbx">'
-          +(l.length?l.map(x=>{ const on=aj?true:!SF.ajout&&b&&b.vue===cur&&b.txt===x.txt;
+          +(l.length?l.map(x=>{ const on=aj?true:!SF.ajout&&b&&b.vue===VUE[x.k]&&b.txt===x.txt;
               return '<div class="sfb'+(on?' is-on':'')+'" role="button" tabindex="0" data-sf="box" data-v="'+esc(x.k+'|'+x.ref)+'" aria-pressed="'+!!on+'">'
                 +(boxTotehm(BOX[x.k],objetBox(BOX[x.k],x.k==='h'?((state.habits||[]).find(z=>String(z.t||'').trim()===x.ref)||{}).id:x.ref),{})
                   ||'<span class="lsh-t">'+esc(x.txt)+'</span>')+'</div>'; }).join('')
@@ -7164,7 +7183,7 @@ function creerFeed(conf){
     p.hidden=!open;
     SF.ajout=!!(open&&ajout&&conf.grille); if(!SF.ajout){ SF.ajVue=''; SF.ajBox=null; } etat.ajout=SF.ajout;
     if(open){ const pk=$(conf.pick); if(pk) pk.hidden=true; }
-    if(naissance){ const v=SF.ajout?SF.ajVue:SF.vue; SF.plie=true; SF.grind=['objectives','habits','repulsions'].includes(v); }
+    if(naissance){ const v=SF.ajout?SF.ajVue:SF.vue; SF.plie=true; SF.grind=v==='grind'||GRIND.includes(v); }
     /* le Totehm docké QUITTE son dock pendant que le panneau est ouvert : c'est lui qui s'est décomposé (il revient à la fermeture) */
     if(conf.grille) document.body.classList.toggle('sf-nait',!!open);
     sfPaint(); peindreFlt();
@@ -7625,7 +7644,7 @@ function creerFeed(conf){
       const c=t.dataset.sf, v=t.dataset.v;
       if(c==='close') return sfOpen(false);
       /* le « + » : une vue, puis une box — elle ouvre la capture POUR elle ; le filtre n'est jamais touché */
-      if(SF.ajout&&c==='vue'){ SF.ajVue=SF.ajVue===v?'':v; SF.ajBox=null; sfPaint(); return; }
+      if(SF.ajout&&c==='vue'){ SF.ajVue=SF.ajVue===v?(GRIND.includes(v)?'grind':''):v; SF.ajBox=null; SF.grind=SF.ajVue==='grind'||GRIND.includes(SF.ajVue); sfPaint(); return; }
       if(SF.ajout&&c==='box'){ const [k,ref]=String(v||'').split('|'); const x=mesElements().find(z=>z.k===k&&z.ref===ref);
         if(!x) return; SF.ajBox=SF.ajBox&&SF.ajBox.k===x.k&&SF.ajBox.ref===x.ref?null:x; sfPaint(); return; }
       /* Le logo se décompose SANS repeindre le panneau : une peinture rejouerait
@@ -7637,7 +7656,11 @@ function creerFeed(conf){
           setTimeout(()=>{ cmd.classList.remove('is-logo'); cmd.classList.add('is-split'); },340);
           return;
         }
-        SF.grind=!SF.grind; cmd.classList.toggle('is-grind',SF.grind); return;
+        /* 23/11 : un tap sur GRIND le CHOISIT tel quel (ses trois boutons s'ouvrent pour affiner) ; un second le rend */
+        if(SF.ajout){ SF.ajVue=SF.ajVue==='grind'?'':'grind'; SF.ajBox=null; SF.grind=SF.ajVue==='grind'; sfPaint(); return; }
+        SF.vue=SF.vue==='grind'?'':'grind'; SF.grind=SF.vue==='grind';
+        if(SF.box&&!dansVue(SF.box.vue,SF.vue)) sfBox(null);
+        sfApply(); return;
       }
       if(c==='pick') return choix('box');
       if(c==='unbox') sfBox(null);
@@ -7648,10 +7671,11 @@ function creerFeed(conf){
       else if(c==='pil'){ SF.piliers.has(v)?SF.piliers.delete(v):SF.piliers.add(v); }
       else if(c==='freq') SF.freq=!SF.freq;
       else if(c==='type') SF.type=SF.type===v?'':v;
-      else if(c==='vue'){ SF.vue=SF.vue===v?'':v; if(conf.grille&&SF.box&&SF.box.vue!==SF.vue) sfBox(null); }
+      else if(c==='vue'){ SF.vue=SF.vue===v?(GRIND.includes(v)?'grind':''):v; SF.grind=SF.vue==='grind'||GRIND.includes(SF.vue);
+        if(conf.grille&&SF.box&&!dansVue(SF.box.vue,SF.vue)) sfBox(null); }
       else if(c==='box'){ const [k,ref]=String(v||'').split('|'); const x=mesElements().find(z=>z.k===k&&z.ref===ref);
         if(!x) return; if(SF.box&&SF.box.vue===VUE[k]&&SF.box.txt===x.txt) sfBox(null); else sfBox(x);
-        sfApply(); if(SF.box) sfOpen(false); return; }
+        sfApply(); if(SF.box&&conf.grille) sfOpen(false); else if(!conf.grille) sfPaint(); return; }   /* à droite, la box reste DANS le Refine (23/11) */
       else if(c==='per'){ CLUBSP.periode(v); sfPaint(); peindreFlt(); return; }
       else if(c==='quand')SF.quand=SF.quand===v?'':v;
       else if(c==='aud')  SF.aud=SF.aud===v?'':(v||'');
@@ -7674,8 +7698,6 @@ function creerFeed(conf){
   /* ⚠️ LA RANGÉE SE PEINT MÊME QUAND LE FEED NE TOURNE PAS : à droite, `SHS` (le polaroid) n'ouvre que sur un spot,
      mais la barre de filtres des spots doit exister sur la carte et la grille. */
   return {ouvrir:entrer, fermer:sortir, pause, maj, vider, pas, flts:peindreFlt, sf:sfOpen,
-          /* la box choisie au filtre, telle quelle (27/10) : rien quand aucune */
-          tete:()=>SF.box?(boxTotehm(SF.box.bk,objetBox(SF.box.bk,SF.box.id),{})||''):'',
           /* 27/10 — ouvrir l'ajout d'un média avec une box DÉJÀ choisie (depuis une box du Totehm) */
           ajouter:x=>sfAjouter(x),
           /* Le Totehm docké ouvre DIRECTEMENT le filtre : à gauche les vues puis leurs boxes, à droite les Habits. */
@@ -9559,8 +9581,10 @@ const loupeHTML=k=>{ const on=ZOOM.has(k);
 /* 22/10 — LA LOUPE DES VISIONNEUSES (Wah : « n'oublie pas les loupes sur les box dans les vues de gauche et de droite en
    version Shorts déployée ») : la même loupe, posée sur la box détaillée (`boxTotehm` les retire, on la rend ici seulement) ;
    elle agrandit la box EN PLACE et ne fait rien d'autre — ni ouvrir l'élément, ni changer d'écran (capture). */
-const loupeVue=h=>String(h||'').replace(/<span class="v-col( is-zoom)?">/,(m,z)=>m+'<button type="button" class="loupe" data-vz aria-pressed="'+!!z+'" aria-label="'+(z?'Smaller':'Bigger')+'">'
-  +'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6.5"/><path d="M15 15l6 6M7.5 10h5'+(z?'':'M10 7.5v5')+'"/></svg></button>');
+/* une déclaration (hissée) : `boxTotehm` la pose sur toute box héritée ; idempotente (une box n'a qu'une loupe) */
+function loupeVue(h){ h=String(h||''); if(h.includes('data-vz')) return h;
+  return h.replace(/<span class="v-col( is-zoom)?">/,(m,z)=>m+'<button type="button" class="loupe" data-vz aria-pressed="'+!!z+'" aria-label="'+(z?'Smaller':'Bigger')+'">'
+  +'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6.5"/><path d="M15 15l6 6M7.5 10h5'+(z?'':'M10 7.5v5')+'"/></svg></button>'); }
 document.addEventListener('click',e=>{ const l=e.target&&e.target.closest&&e.target.closest('.loupe[data-vz]'); if(!l) return;
   e.preventDefault(); e.stopPropagation();
   const col=l.closest('.v-col'), on=!(col&&col.classList.contains('is-zoom')); if(col) col.classList.toggle('is-zoom',on);
@@ -13883,9 +13907,8 @@ window.addEventListener('pageshow',e=>{
     }
     function poser(v){
       ['c','h','b','g','d'].forEach(k=>body.classList.toggle('lv-'+k,k===v));
-      /* Le papier est DOCKÉ en haut : un tap ouvre le filtre de la vue. */
+      /* Le papier est DOCKÉ en haut : un tap le ramène au centre et le déploie (23/11). */
       body.classList.toggle('papier-haut',v==='g'||v==='d');
-      window.__papierDock = v==='g' ? ()=>SH.box() : v==='d' ? ()=>SPOTS.box() : null;
       sloganPour(v); peindreNav();
       /* Le réseau se TRANSFORME vers la vue (20/10 sexies : « les 4 vues adjacentes sont le résultat de la transformation
          de la vue centrale ») : circuit → cerveau en haut, → rail à gauche, → méridiens autour du monde à droite. */
@@ -15397,9 +15420,11 @@ window.addEventListener('pageshow',e=>{
      et seul celui de la face visible est atteignable (`inert`). Un tap
      pendant un atterrissage ou un retournement est avalé. */
   const gs=$('gate-search-go');
-  /* Docké en haut (mes shorts, mes spots), le papier ne déplie plus : il CHOISIT une Box. */
+  /* ⚠️ 23/11 (Wah : « quand on appuie sur le petit Totehm tout en haut dans la vue de gauche et de droite, ça ne doit PAS
+     afficher le filtre — seulement réservé au bouton [Refine] — mais ça DOIT ouvrir le TOTEHM au même titre que la page
+     centrale ; le Totehm doit être accessible presque partout ») : docké en haut, un tap le ramène au centre et le DÉPLOIE. */
   const dock=()=>{ if(!body.classList.contains('papier-haut')) return false;
-                   if(typeof window.__papierDock==='function') window.__papierDock(); return true; };
+                   enter(); return true; };   /* `enter` revient lui-même au centre (`LV.aller('c')`) avant de déployer */
   /* ⚠️ LE DOCK D'ABORD : déplacé en haut, le papier est « occupé » en permanence — tester `occupe()`
      avant lui, c'est ne jamais ouvrir le choix d'une Box. */
   if(ge) ge.onclick=e=>{ e.stopPropagation(); if(dock()||PAPIER.occupe()) return; enter(); };

@@ -90,7 +90,7 @@ try{
   {const{pg,log}=await page(browser,{dir:'com',origin,tables,viewport:vp,hasTouch:nom==='téléphone',rpc:{my_landing:LAND,my_totehm:{signed_in:true,objectives:[],repulsions:[],stories:[],visions:[]},element_media_list:{ok:true,items:[]}}});
    await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1200);
    await pg.keyboard.press('ArrowLeft');await pg.waitForFunction(()=>{const d=window.__totehm_lv();return d.vue==='g'&&!d.bouge;},null,{timeout:6000});
-   await pg.evaluate(()=>window.__papierDock&&window.__papierDock());await pg.waitForTimeout(80);
+   await pg.click('#lv-sh-flt [data-f="sf"]');await pg.waitForTimeout(80);   /* 23/11 : seul [Refine] ouvre le filtre ; le petit TOTEHM ouvre le TOTEHM */
    /* 24/10 (Wah) : le bloc de commande EST le logo ; 26/10 : il NAÎT décomposé du Totehm docké, en UN tap (le docké
       s'efface : c'est lui qui s'est décomposé), et MY GRIND ouvre ses trois boutons — DANS son navy. */
    const plie=await pg.evaluate(()=>{const c=document.querySelector('.lsh-sf .sfcmd');

@@ -31,7 +31,7 @@ try{
   await pg.goto('https://www.totehm.com/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(900);
   await pg.click('#lvn-lf');await pg.waitForTimeout(800);
   const avant=await boxes(pg);
-  ok(avant.length===5&&avant.every(c=>/\btb\b/.test(c))&&avant.filter(c=>/tb-attente/.test(c)).length===4&&/blk-h/.test(avant[0])&&!/tb-attente/.test(avant[0]),
+  ok(avant.length===5&&avant.every(c=>/\btb\b/.test(c))&&avant.filter(c=>/tb-attente/.test(c)).length===4&&avant.some(c=>/blk-h/.test(c)&&!/tb-attente/.test(c))&&/blk-v/.test(avant[0]),
      nom+' · avant l\'arbre : une box sur CHAQUE vignette (la Habit de son nom, quatre en attente à leur couleur) → '+avant.join(' | '));
   await pg.waitForTimeout(3200);
   const apres=await boxes(pg);
@@ -42,13 +42,26 @@ try{
   await pg.click('#lv-sh-sf [data-sf="vue"][data-v="visions"]');await pg.waitForTimeout(500);
   const f=await pg.evaluate(()=>{const v=document.querySelector('#lv-sh-sf .sfv.is-on');return v?getComputedStyle(v).boxShadow:'absent';});
   ok(f==='none',nom+' · le filtre : la vue choisie sans trait blanc (box-shadow '+f+')');
+  /* 23/11 (Wah) : GRIND se choisit TEL QUEL (objectifs + habits + répulsions), ses trois boutons affinent ; tout en pleine couleur */
   await pg.click('#lv-sh-sf [data-sf="grind"]');await pg.waitForTimeout(600);
+  const g0=await pg.evaluate(()=>({f:window.__totehm_sh().filtre,n:window.__totehm_sh().items,on:document.querySelector('#lv-sh-sf .sfv-g').classList.contains('is-on'),
+    q:document.querySelector('#lv-sh-sf .sfv-g').getBoundingClientRect().width,pile:[...document.querySelectorAll('#lv-sh-sf .sfpile i')].map(i=>Math.round(i.getBoundingClientRect().height))}));
+  ok(g0.f==='grind'&&g0.n===3&&g0.on&&g0.pile.every(h=>h>=26),nom+' · GRIND seul : ses objectifs, habits et répulsions, sans choisir un sous-bouton ; boutons hauts → '+JSON.stringify(g0));
   await pg.click('#lv-sh-sf .sfpile i[data-v="habits"]');await pg.waitForTimeout(500);
   await pg.mouse.move(2,2);await pg.waitForTimeout(300);
-  const g=await pg.evaluate(()=>[...document.querySelectorAll('#lv-sh-sf .sfpile i')].map(i=>({on:i.classList.contains('is-on'),
-    trait:getComputedStyle(i).boxShadow,f:getComputedStyle(i).filter})));
-  ok(g.length===3&&g.every(x=>x.trait==='none')&&g.filter(x=>x.on).length===1&&g.filter(x=>!x.on).every(x=>/brightness/.test(x.f)),
-     nom+' · MY GRIND : le choisi plein, les deux autres assombris, aucun trait blanc → '+JSON.stringify(g.map(x=>x.on?'on':x.f)));
+  const g=await pg.evaluate(()=>({pile:[...document.querySelectorAll('#lv-sh-sf .sfpile i')].map(i=>({on:i.classList.contains('is-on'),
+    trait:getComputedStyle(i).boxShadow,f:getComputedStyle(i).filter})),vues:[...document.querySelectorAll('#lv-sh-sf .sfv')].map(v=>getComputedStyle(v).filter),filtre:window.__totehm_sh().filtre}));
+  ok(g.filtre==='habits'&&g.pile.length===3&&g.pile.every(x=>x.trait==='none'&&x.f==='none')&&g.pile.filter(x=>x.on).length===1&&g.vues.every(f=>f==='none'),
+     nom+' · MY HABITS affine ; tout reste en PLEINE couleur, aucun trait blanc → '+JSON.stringify(g));
+  await pg.click('#lv-sh-sf .sfpile i[data-v="habits"]');await pg.waitForTimeout(400);
+  ok(await pg.evaluate(()=>window.__totehm_sh().filtre)==='grind',nom+' · re-taper MY HABITS revient à GRIND entier');
+  /* 23/11 (Wah) : le petit TOTEHM docké en haut OUVRE LE TOTEHM (seul [Refine] ouvre le filtre) */
+  await pg.click('#lv-sh-sf [data-sf="close"]');await pg.waitForTimeout(500);
+  const loupes=await pg.evaluate(()=>[document.querySelectorAll('#lv-sh-f .tl-bx .loupe[data-vz]').length,document.querySelectorAll('#lv-sh-f .tl-bx').length]);
+  ok(loupes[1]>0&&loupes[0]===loupes[1],nom+' · chaque box héritée de la grille porte sa loupe ('+loupes.join('/')+')');
+  await pg.click('#gate-asteroid');await pg.waitForFunction(()=>!document.body.classList.contains('gate'),null,{timeout:9000}).catch(()=>{});
+  const d=await pg.evaluate(()=>({vue:window.__totehm_lv().vue,deploye:!document.body.classList.contains('gate'),filtre:!document.getElementById('lv-sh-sf').hidden,cls:document.body.className,refus:window.__totehm_lv().dernierRefus}));
+  ok(d.vue==='c'&&d.deploye&&!d.filtre,nom+' · le petit TOTEHM en haut : retour au centre et le TOTEHM se déploie, pas de filtre → '+JSON.stringify(d));
   ok(!log.errors.filter(e=>e.startsWith('pageerror')).length,nom+' · aucune erreur');
   await pg.context().close();
  }
