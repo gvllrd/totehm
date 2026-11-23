@@ -79,6 +79,12 @@
   ],
   "redirects": [
     {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "totehm.com" }],
+      "destination": "https://www.totehm.com/:path*",
+      "permanent": true
+    },
+    {
       "source": "/higher",
       "destination": "/chatgpt",
       "permanent": false

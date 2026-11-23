@@ -14,7 +14,7 @@
 | `auth.html` | `/auth` | l'autorité SSO des quatre domaines (`sso-mint`) ; toute connexion passe par `tools/otp_signin.js` (copié) |
 | `console.html` · `map.html` · `spot.html` · `terms.html` | | les retours de paiement · les liens de TotehmBot · les conditions |
 
-`vercel.json` : `/@:name` et `/search` → `creator` ; `/mcp`, discovery et `/chatgpt-api/*` → `chatgpt-connector` ;
+`vercel.json` : `totehm.com` → `https://www.totehm.com` (308 ; deux origines = deux connexions séparées) ; `/@:name` et `/search` → `creator` ; `/mcp`, discovery et `/chatgpt-api/*` → `chatgpt-connector` ;
 `/x/space` → SPACE ; `/x/club` ne sert que `spot.html` ; `/club` → figher.club ; `/higher`, `/higherself` → `/chatgpt` ;
 seuls `/totehm` et `/totehm.html` autorisent les cadres Telegram (CSP). `overflow-x:hidden` sur `html` SEUL (sur `body`, il coupait le coin membre).
 
