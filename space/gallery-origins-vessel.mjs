@@ -99,7 +99,7 @@ export function createOriginsVessel(scene,{mobile=false,onChange=()=>{},onOpen=(
   const armor=mesh(streetProjector,geometry(new T.CylinderGeometry(1.59,1.44,.10,mobile?32:48)),black,[0,.037,0],'Sealed Lisbon optic housing');
   armor.castShadow=false;
   const rim=ring(streetProjector,1.49,.015,-.013,0,silver,'Machined projector rim');rim.castShadow=false;
-  const light=material(new T.MeshBasicMaterial({color:0x9cd5ff,toneMapped:false}));
+  const light=material(new T.MeshBasicMaterial({color:0x667a91,toneMapped:false}));
   const ports=geometry(new T.SphereGeometry(.041,mobile?8:12,8));
   const lenses=new T.InstancedMesh(ports,light,LISBON_PROJECTOR_PORTS.length);
   lenses.name='Twenty-two underside projector ports';

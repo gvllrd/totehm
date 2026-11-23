@@ -441,6 +441,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import {checkLisbonStreetAccess,requestLisbonStreetMedia} from './lisbon-street-access.mjs';
 import {LISBON_STREET_DISCOVER} from './lisbon-street-discover.mjs';
 import {LISBON_FRONT_SIZE,createLisbonFirstPage} from './lisbon-first-page.mjs';
+import {createLisbonCrosswalkPaint} from './lisbon-ground-markings.mjs';
 import {createLisbonControllerView,lisbonControllerShot,LISBON_KEYS,LISBON_PLAYED_STICKERS} from './gallery-lisbon-controller.mjs';
 const BUILD = '2026-11-20-lisbon-play-entry';
 function streetReturnPath(){const destination=new URL(location.href);destination.searchParams.delete('embedded');destination.searchParams.delete('sceneTime');return destination.pathname+destination.search;}
@@ -1387,6 +1388,7 @@ function assembleController(view,projection=null){
   if(!context||reducedMotion.matches){finish();return;}
 
   const startingOpacity=projection?1:firstPage.getSignOpacity();
+  const crosswalkPaint=projection?createLisbonCrosswalkPaint():null;
   const poses=projection?.poses??new Map(firstPage.getSigns().map(pose=>[pose.name,pose]));
   const flights=ROCKS.map((rock,index)=>({rock,pose:poses.get(rock.id),index}));
   const levels=new Map(),blendTime=175;
@@ -1462,16 +1464,17 @@ function assembleController(view,projection=null){
       context.save();
       context.globalAlpha=mix(startingOpacity,1,smooth(unit(progress*1.9)))*(1-dock);
       context.translate(mix(from.x,to.x,position)+arc*arcX,mix(from.y,to.y,position)+arc*arcY);
+      const image=rock.id==='crosswalk'&&crosswalkPaint?crosswalkPaint:rock.img;
       const angle=pose.rotation*(1-position);
       const distortion=perspective?1-smooth(unit(progress/.34)):0;
       if(distortion>0){
         const quad=artworkCorners(width,height,angle).map((point,i)=>({
           x:point.x+perspective[i].x*distortion,y:point.y+perspective[i].y*distortion
         }));
-        drawProjectedArtwork(rock.img,quad);
+        drawProjectedArtwork(image,quad);
       }else{
         context.rotate(angle);
-        context.drawImage(rock.img,-width/2,-height/2,width,height);
+        context.drawImage(image,-width/2,-height/2,width,height);
       }
       context.restore();
     }

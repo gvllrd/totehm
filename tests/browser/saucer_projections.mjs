@@ -76,6 +76,10 @@ try{for(const viewport of [{width:800,height:600},{width:1100,height:760}])for(c
    const face=Object.fromEntries(projection.poses.map(pose=>[pose.id,pose]));
    check(face.pharma.width>face.stop.width*1.4,'The pharmacy cross appears substantially wider than Stop at the arrival viewpoint');
    check(projection.poses.every(({corners})=>corners.every(({x,y})=>x>0&&x<viewport.width&&y>0&&y<viewport.height)),'All 22 enlarged objects fit at arrival');
+   const corners=projection.poses.flatMap(pose=>pose.corners);
+   const span=axis=>[Math.min(...corners.map(point=>point[axis])),Math.max(...corners.map(point=>point[axis]))];
+   const [left,right]=span('x'),[top,bottom]=span('y');
+   check((right-left)/viewport.width>.48&&(bottom-top)/viewport.height>.38&&Math.abs((left+right)/2/viewport.width-.5)<.08,'The complete Lisbon exhibition fills the center of the arrival view');
    assert.deepEqual(projection.mounts.map(({id})=>id),LISBON_FRONT_NAMES);
    check(projection.mounts.every(({width,height,kind})=>width>0&&height>0&&typeof kind==='string'),'Every street object has a physical size and mounting type');
    const mounts=Object.fromEntries(projection.mounts.map(mount=>[mount.id,mount]));

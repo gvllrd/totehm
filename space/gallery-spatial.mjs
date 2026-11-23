@@ -26,12 +26,12 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
  const ENTRY=L.entry,LOOK=L.look,GROUND=L.groundY,HEIGHT=L.eyeHeight;
  const ceiling=(x,z)=>newYork?ny[2].newYorkRoofHeight(x,z):(architecture?.roofHeight||glassRoofHeight)(x,z);
  const host=document.getElementById('space'),mobile=innerWidth<650||(matchMedia('(pointer: coarse)').matches&&Math.min(innerWidth,innerHeight)<650);
- const renderer=new T.WebGLRenderer({antialias:true,alpha:false,powerPreference:'high-performance'});
+ const renderer=new T.WebGLRenderer({antialias:true,alpha:false,stencil:!newYork,powerPreference:'high-performance'});
  const quality=createRenderQuality({mobile,pixelRatio:devicePixelRatio});
  renderer.setPixelRatio(quality.diagnostics().pixelRatio);renderer.setSize(innerWidth,innerHeight);
  renderer.outputColorSpace=T.SRGBColorSpace;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1;
  renderer.setClearColor(0x030912);renderer.domElement.setAttribute('aria-hidden','true');host.append(renderer.domElement);
- const baseFov=newYork?82:mobile?88:82;
+ const baseFov=newYork?82:mobile?88:L.fov;
  let viewFov=baseFov,experienceFrozenAt=null;
  const scene=new T.Scene(),camera=new T.PerspectiveCamera(baseFov,innerWidth/innerHeight,.08,9000);
  let dirty=true,frames=0,list=false,hidden=document.hidden,paused=false,lastTime=0,lastRender=0,returnReveal=false;

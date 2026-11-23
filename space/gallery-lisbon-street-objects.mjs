@@ -1,8 +1,10 @@
 import * as T from './vendor/three-0.180.0.mjs';
 import {createLisbonSignGeometry} from './lisbon-sign-buttons.mjs';
+import {LISBON_SIGN_STENCIL_BIT} from './gallery-lisbon-projector.mjs';
+import {createLisbonCrosswalkPaint} from './lisbon-ground-markings.mjs';
 
 const sizes={
- fire_exit:[.62,'exit-lightbox',.070],Heli:[3.20,'helipad-pavement',.145],
+ fire_exit:[.62,'exit-lightbox',.070],Heli:[3.20,'helipad-paint',0],
  aed:[.47,'interior-plaque',.037],green_walk:[.36,'pedestrian-signal',.29],red_walk:[.36,'pedestrian-signal',.29],
  pharma:[1.06,'pharmacy-lightbox',.19],destination:[5.4,'motorway-board',.12],
  lisboa_city_hall:[1.45,'cast-city-emblem',.095],speed_bump_caution:[.95,'road-sign',.022],
@@ -11,7 +13,7 @@ const sizes={
  parking:[.74,'road-sign',.023],Hotel:[.48,'hotel-plaque',.048],dead_end:[.75,'road-sign',.022],
  roundabout:[.82,'road-sign',.025],left_or_straight:[.79,'road-sign',.024],
  no_uturn:[.76,'road-sign',.022],priority:[.85,'road-sign',.027],
- crosswalk:[3.55,'crosswalk-pavement',.17],stop:[.87,'road-sign',.028]
+ crosswalk:[3.55,'crosswalk-paint',0],stop:[.87,'road-sign',.028]
 };
 const scaleOverrides={Heli:1.24,crosswalk:1.24,destination:1.24,pharma:2.14};
 export const LISBON_STREET_OBJECTS=Object.freeze(Object.fromEntries(Object.entries(sizes).map(([id,[width,kind,depth]])=>{
@@ -19,25 +21,25 @@ export const LISBON_STREET_OBJECTS=Object.freeze(Object.fromEntries(Object.entri
  return [id,Object.freeze({width:width*scale,height:width*scale*(id==='destination'?.57:1),kind,depth:depth*scale,scale})];
 })));
 
-function asphaltTexture(){
- const edge=128,data=new Uint8Array(edge*edge*4);
- let seed=43791;
- for(let i=0;i<data.length;i+=4){
-  seed=(Math.imul(1664525,seed)+1013904223)>>>0;
-  const grain=seed>>>24;
-  const value=grain>237?150+grain%45:82+grain%52;
-  data.set([value,value-2,value-6,255],i);
- }
- const texture=new T.DataTexture(data,edge,edge);
- texture.colorSpace=T.SRGBColorSpace;texture.wrapS=texture.wrapT=T.RepeatWrapping;
- texture.repeat.set(2.5,2.5);texture.magFilter=T.LinearFilter;texture.minFilter=T.LinearMipmapLinearFilter;
- texture.generateMipmaps=true;texture.needsUpdate=true;
- return texture;
+function usePaintAlpha(face,image){
+ const width=image.width,height=image.height;
+ const mask=document.createElement('canvas');mask.width=width;mask.height=height;
+ const context=mask.getContext('2d',{willReadFrequently:true});
+ context.drawImage(image,0,0);
+ const {data}=context.getImageData(0,0,width,height);
+ const raycast=face.raycast.bind(face),hits=[];
+ face.raycast=(raycaster,results)=>{
+  hits.length=0;raycast(raycaster,hits);
+  for(const hit of hits){
+   const x=Math.min(width-1,Math.floor(hit.uv.x*width)),y=Math.min(height-1,Math.floor((1-hit.uv.y)*height));
+   if(data[(y*width+x)*4+3]>20)results.push(hit);
+  }
+ };
 }
 
 export function createLisbonStreetObject(id,{mobile=false,onChange=()=>{}}={}){
  const [width,kind,depth]=sizes[id];
- const height=width;
+ const height=width,ground=kind.endsWith('-paint');
  const group=new T.Group();group.scale.setScalar(LISBON_STREET_OBJECTS[id].scale);
  group.name='Lisbon street object — '+id;
  group.userData={signId:id,streetObject:true};
@@ -71,20 +73,7 @@ export function createLisbonStreetObject(id,{mobile=false,onChange=()=>{}}={}){
   for(const y of [-offset,offset])block(metal,0,y,z,length,.045,.039);
  }
 
- if(kind.endsWith('-pavement')){
-  const shape=new T.Shape();
-  const boundary=id==='Heli'
-   ?[[-.64,-.27],[-.5,-.49],[.18,-.52],[.53,-.39],[.55,.18],[.30,.49],[-.14,.52],[-.53,.36]]
-   :[[-.63,-.46],[-.18,-.50],[.47,-.47],[.53,-.06],[.47,.50],[-.28,.52],[-.56,.41],[-.64,.05]];
-  boundary.forEach(([x,y],i)=>shape[i===0?'moveTo':'lineTo'](x*width,y*height));
-  shape.closePath();
-  const asphalt=own(asphaltTexture());
-  const aggregate=material({color:0x787b7c,map:asphalt,bumpMap:asphalt,bumpScale:.027,roughness:.99});
-  const tornSide=material({color:0x515355,map:asphalt,bumpMap:asphalt,bumpScale:.035,roughness:1});
-  const slab=mesh(own(new T.ExtrudeGeometry(shape,{depth,bevelEnabled:true,bevelSegments:1,bevelSize:.02,bevelThickness:.01})),
-   [aggregate,tornSide],0,0,-depth-.011);
-  slab.castShadow=true;
- }else if(kind==='pedestrian-signal'){
+ if(kind==='pedestrian-signal'){
   block(dark,0,0,-.15,.456,.5,.30);
   block(metal,0,0,-.319,.12,.16,.06);
   const ring=own(new T.RingGeometry(.137,.166,mobile?18:32));
@@ -117,7 +106,7 @@ export function createLisbonStreetObject(id,{mobile=false,onChange=()=>{}}={}){
    const x=width*.32,y=width*.29;
    pins([[-x,-y],[-x,y],[x,-y],[x,y]],body,.008);
   }
- }else{
+ }else if(!ground){
   plate(material({color:0xa0a9ae,roughness:.61,metalness:.36}),metal);
   const post=own(new T.CylinderGeometry(.033,.033,width*.80,mobile?10:16));
   mesh(post,metal,0,-width*.27,-.075);
@@ -125,19 +114,34 @@ export function createLisbonStreetObject(id,{mobile=false,onChange=()=>{}}={}){
   pins([[0,-width*.31],[0,width*.31]]);
  }
 
- const artwork=material({color:0xffffff,roughness:kind.includes('pavement')?.92:.65,metalness:.015,alphaTest:.047});
- const face=new T.Mesh(own(new T.PlaneGeometry(width,height)),artwork);
- face.name='Original artwork — '+id;
- face.position.z=kind==='pedestrian-signal'?.024:.0025;
- face.visible=false;face.receiveShadow=true;group.add(face);
+ // Keep the printed pixels clear where another object's dark beam passes in front.
+ const ink={
+  color:0xffffff,alphaTest:.047,
+  stencilWrite:true,stencilRef:LISBON_SIGN_STENCIL_BIT,stencilWriteMask:LISBON_SIGN_STENCIL_BIT,stencilZPass:T.ReplaceStencilOp
+ };
  const emissive=kind==='exit-lightbox'||kind==='pharmacy-lightbox'||kind==='pedestrian-signal';
+ const artwork=emissive?material({...ink,roughness:.56,metalness:.015}):
+  ground?material({...ink,roughness:.98,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2}):
+   own(new T.MeshBasicMaterial({...ink,toneMapped:false}));
+ const face=new T.Mesh(own(new T.PlaneGeometry(width,height)),artwork);
+ face.name=ground?'Painted ground marking — '+id:'Original artwork — '+id;
+ face.userData={source:'/assets/signs/'+id+'.png',groundMarking:ground};
+ face.position.z=ground?0:kind==='pedestrian-signal'?.024:.0025;
+ face.visible=false;face.receiveShadow=true;group.add(face);
+ if(ground)hitTargets.push(face);
  if(globalThis.document?.createElementNS){
-  const map=own(new T.TextureLoader().load('/assets/signs/'+id+'.png',()=>{
-   if(disposed)return;
-   face.visible=true;onChange();
-  },undefined,()=>{if(!disposed)onChange();}));
-  map.colorSpace=T.SRGBColorSpace;map.anisotropy=mobile?2:6;artwork.map=map;
-  if(emissive){artwork.emissive.set(0xffffff);artwork.emissiveMap=map;artwork.emissiveIntensity=.38;}
+  if(id==='crosswalk'){
+   const paint=createLisbonCrosswalkPaint();
+   artwork.map=own(new T.CanvasTexture(paint));face.visible=true;usePaintAlpha(face,paint);
+  }else{
+   artwork.map=own(new T.TextureLoader().load(face.userData.source,map=>{
+    if(disposed)return;
+    if(ground)usePaintAlpha(face,map.image);
+    face.visible=true;onChange();
+   },undefined,()=>{if(!disposed)onChange();}));
+  }
+  artwork.map.colorSpace=T.SRGBColorSpace;artwork.map.anisotropy=mobile?2:6;
+  if(emissive){artwork.emissive.set(0xffffff);artwork.emissiveMap=artwork.map;artwork.emissiveIntensity=.38;}
  }
  return{group,face,hitTargets,update(time){
   if(kind==='pedestrian-signal'){

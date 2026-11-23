@@ -13,7 +13,7 @@ export const UFO_LISBON_SIGNS_LAYOUT=Object.freeze({
 // back above them. The traffic-light halves share position and movement.
 const placement={
  fire_exit:[-4.18,2.23,2.8,.19],
- Heli:[-3.9,-4.90,4.20,.12,-.96],
+ Heli:[-3.96,0,6.05,.12],
  aed:[4.8,1.67,3.65,-.19],
  green_walk:[-4.82,-1.90,3.1,.08],
  red_walk:[-4.82,-1.90+.5*LISBON_STREET_OBJECTS.red_walk.scale,3.1,.08],
@@ -32,7 +32,7 @@ const placement={
  left_or_straight:[1.71,-2.52,2.94,-.07],
  no_uturn:[5.75,-3.64,3.58,-.18],
  priority:[-2.88,2.77,.79,.11],
- crosswalk:[1.55,-5.03,3.18,-.12,-1.04],
+ crosswalk:[3.52,0,6.18,0],
  stop:[5.55,-1.95,3.28,-.15]
 };
 
@@ -79,7 +79,10 @@ export function createUfoLisbonSigns(parent,{mobile=false,onChange=()=>{},positi
 
  function pose(){
   for(const object of objects){
-   const {group,id,x,y,z,yaw,pitch,index}=object;
+   const {group,face,id,x,y,z,yaw,pitch,index}=object;
+   if(face.userData.groundMarking){
+    group.position.set(x,L.groundY+.008-position[1],z);group.rotation.set(-Math.PI/2,0,yaw);continue;
+   }
    const paired=id==='red_walk'||id==='green_walk',phase=paired?0:index;
    const drift=Math.sin(time*.37+phase*1.93);
    group.position.set(x,y+.061*drift,z+.095*Math.sin(time*.28+phase*1.32));
@@ -137,7 +140,7 @@ export function createUfoLisbonSigns(parent,{mobile=false,onChange=()=>{},positi
   onOpen(fn){openCallback=fn;},
   setProjector(source){projector=source;syncRays();},
   setProjecting(value){if(projecting!==!!value){projecting=!!value;syncRays();}},
-  rayEndpoints:()=>projector?rays.diagnostics():[],
+  rayEndpoints:()=>projector?rays.diagnostics(projector):[],
   interact(hit){return acceptHit(hit)?open(hit):false;},
   setActive(value){active=!!value;if(!active)opened=false;},
   reset(){opened=false;setHandoff(false);},

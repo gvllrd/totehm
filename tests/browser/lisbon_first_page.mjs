@@ -40,7 +40,7 @@ try{
    await child.waitForTimeout(250);
    check(await child.evaluate(()=>__totehm_experience_front().time===19&&__totehm_experience_front().phase==='front'),'The embedded first page holds the exhibition time during expansion at '+viewport.width);
    const shared=await fixture.pg.evaluate(async()=>{
-    const {Group,PerspectiveCamera,Vector3}=await import('/vendor/three-0.180.0.mjs');
+    const {Group,PerspectiveCamera,Vector3,ReplaceStencilOp}=await import('/vendor/three-0.180.0.mjs');
     const {createUfoLisbonSigns}=await import('/gallery-ufo-lisbon-signs.mjs');
     const projection=createUfoLisbonSigns(new Group()),projector=new Group();
     const {LISBON_PROJECTOR_PORTS}=await import('/gallery-lisbon-projector.mjs');
@@ -48,8 +48,9 @@ try{
     try{
      const deadline=performance.now()+8000;
      while(!projection.diagnostics().ready&&performance.now()<deadline)await new Promise(requestAnimationFrame);
-     const camera=new PerspectiveCamera(82,innerWidth/innerHeight,.08,9000);
-     camera.position.set(3.15,1.65,11.9);camera.lookAt(0,6.5,-9.1);camera.updateMatrixWorld();
+     const {LISBON_URBEX_LAYOUT:L}=await import('/gallery-lisbon-urbex-layout.mjs');
+     const camera=new PerspectiveCamera(L.fov,innerWidth/innerHeight,.08,9000);
+     camera.position.fromArray(L.entry);camera.lookAt(new Vector3(...L.look));camera.updateMatrixWorld();
      const snapshot=()=>projection.snapshot(camera,innerWidth,innerHeight);
      const before=snapshot(),raysBefore=projection.rayEndpoints();
      projector.rotateY(.2);
@@ -61,6 +62,25 @@ try{
       const mounted=body.localToWorld(new Vector3((min.x+max.x)/2,min.y+(max.y-min.y)*.88,max.z));
       return point.fromArray(from).distanceTo(expected)<.001&&point.distanceTo(new Vector3(...raysBefore[i].from))>.1&&point.fromArray(to).distanceTo(mounted)<.001;
      });
+     const encompasses=({from,aperture,bounds})=>{
+      const origin=new Vector3(...from),rim=aperture.map(vertex=>new Vector3(...vertex));
+      const normal=rim[1].clone().sub(rim[0]).cross(rim[2].clone().sub(rim[1])).normalize();
+      const end=rim[0].clone().sub(origin).dot(normal);
+      return bounds.every(corner=>{
+       const delta=new Vector3(...corner).sub(origin),depth=delta.dot(normal);
+       if(depth<=0||depth>end+.001)return false;
+       const projected=origin.clone().addScaledVector(delta,end/depth);
+       return rim.every((start,i)=>rim[(i+1)%rim.length].clone().sub(start).cross(projected.clone().sub(start)).dot(normal)>=-.001);
+      });
+     };
+     const enclosesEveryObject=raysBefore.every(encompasses)&&raysAfter.every(encompasses);
+     const paint=projection.signs.filter(({face})=>face.userData.groundMarking);
+     const onPavement=paint.length===2&&paint.every(({face,group})=>group.children.length===1&&Math.abs(face.getWorldPosition(point).y-L.groundY)<.02);
+     const paintImage=paint.find(({id})=>id==='crosswalk').face.material.map.image;
+     const mask=paintImage.getContext('2d').getImageData(0,0,300,300).data;
+     const transparentGaps=mask[(50*300+20)*4+3]===0&&mask[(90*300+150)*4+3]===0&&mask[(50*300+150)*4+3]===255;
+     const originalColors=projection.signs.every(({face})=>face.material.stencilWrite&&face.material.stencilZPass===ReplaceStencilOp)&&
+      projection.signs.filter(({id})=>['stop','destination','priority'].includes(id)).every(({face})=>face.material.isMeshBasicMaterial&&!face.material.toneMapped);
      projection.update(.1,camera.position,false);
      const still=snapshot();
      const world=projection.diagnostics();
@@ -70,7 +90,7 @@ try{
       const materials=Array.isArray(mesh.material)?mesh.material:[mesh.material];
       return materials.some(material=>material?.visible&&material.opacity>0);
      };
-     const visibleVolumes=projection.signs.map(({group})=>{
+     const visibleVolumes=projection.signs.filter(({face})=>!face.userData.groundMarking).map(({group})=>{
       const meshes=[];
       group.traverse(mesh=>{
        if(!mesh.isMesh||!rendered(mesh)||mesh.userData.hitProxy)return;
@@ -86,7 +106,7 @@ try{
      const restoresAllBodies=visibleVolumes.every(meshes=>meshes.every(rendered))&&projection.diagnostics().beamVisible;
      return {
       world,before,sources:projection.signs.map(({face})=>face.material.map?.image?.src??face.userData.source),
-      volumes:visibleVolumes.map(meshes=>meshes.length),hidesAllBodies,restoresAllBodies,moveEndpoints,
+      volumes:visibleVolumes.map(meshes=>meshes.length),hidesAllBodies,restoresAllBodies,moveEndpoints,enclosesEveryObject,onPavement,transparentGaps,originalColors,
       moving:before.some((pose,i)=>Math.hypot(pose.x-moved[i].x,pose.y-moved[i].y)>.01),
       still:JSON.stringify(still)===JSON.stringify(moved)
      };
@@ -94,7 +114,10 @@ try{
    });
    assert.deepEqual(shared.before.map(({id})=>id),LISBON_FRONT_NAMES);
    assert.deepEqual(shared.sources.map(src=>new URL(src,'https://www.totehm.space').pathname),LISBON_FRONT_NAMES.map(id=>'/assets/signs/'+id+'.png'));
-   check(shared.world.ready&&shared.world.loaded===22&&shared.world.physicalObjects&&shared.volumes.length===22&&shared.volumes.every(count=>count>0),'Each suspended sign includes visible geometry with thickness at '+viewport.width);
+   check(shared.world.ready&&shared.world.loaded===22&&shared.world.physicalObjects&&shared.volumes.length===20&&shared.volumes.every(count=>count>0),'Each of the 20 elevated signs includes geometry with thickness at '+viewport.width);
+   check(shared.enclosesEveryObject,'Each dark projection encloses every corner of its mounted object at '+viewport.width);
+   check(shared.onPavement&&shared.transparentGaps,'The two road markings are flat decals with transparent ground between white strokes at '+viewport.width);
+   check(shared.originalColors,'The panels retain their native artwork colors inside the dark projection at '+viewport.width);
    check(shared.hidesAllBodies&&shared.restoresAllBodies&&shared.moveEndpoints,'All beams follow the rotating ports and their actual objects, then hide and restore with them at '+viewport.width);
    check(shared.world.headline===LISBON_FRONT_COPY.headline&&shared.world.subtitle===LISBON_FRONT_COPY.subtitle,'The world projection and fullscreen introduction retain the same copy at '+viewport.width);
    check(shared.moving&&shared.still,'The suspended signs float during normal motion and hold their poses with reduced motion at '+viewport.width);
