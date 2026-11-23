@@ -3330,7 +3330,7 @@ body.lv-b:not(.lv-membre):not(.lv-verrou) #lv-socket{opacity:0}
   -webkit-appearance:none;appearance:none}
 #mb-q::placeholder{color:rgba(251,213,202,.38)}
 #mb-q::selection{background:rgba(251,213,202,.24);color:#fff}
-#srch.is-cherche :is(#self-name,#self-mail,#vs-tabs,#vs-dash,#vs-vide,#lv-card,#member-window){display:none!important}
+#srch.is-cherche :is(#self-name,#self-mail,#vs-tabs,#vs-vide,#lv-card,#member-window){display:none!important}
 #srch.is-cherche #mb-res{display:flex;flex-direction:column;gap:2px;width:min(94vw,420px);flex:none;margin-top:8px}
 #srch.is-cherche #mb-res:empty{display:none}
 #mb-res .mbr-dit{margin:0;padding:10px 2px;text-align:center}
@@ -3409,22 +3409,19 @@ body.lv-b:not(.lv-membre):not(.lv-verrou) #lv-socket{opacity:0}
 /* LA LOUPE DU VERSO · 10/11 — Wah : « le contenu des parties MONETIZE MY TOTEHM et GO Higher doit pouvoir être zoomé
    en un coup, c'est quelquefois difficilement lisible ». La loupe des boxes, au bout des deux onglets : un tap agrandit
    la partie montrée EN PLACE (+25 %, le texte se remet en page dans la même colonne), un second la rend. L'état tient
-   d'une partie à l'autre. `#vs-dash` a une largeur fixe : on la divise par le zoom pour garder la même colonne. */
+   d'une partie à l'autre. */
 #vs-tabs .vs-loupe{flex:none;width:40px;padding:0}
 #vs-tabs .vs-loupe svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round}
 #vs-tabs .vs-loupe[aria-pressed=true]{background:#3a3a42;color:#fff}
 #srch.is-loupe #mw-creator,#srch.is-loupe #settings{zoom:1.25}
-#srch.is-loupe #vs-dash{zoom:1.25;width:calc(min(94vw,420px) / 1.25)}
 #srch[data-tab="higher"] #mw-creator,
-#srch[data-tab="money"] #vs-dash,#srch[data-tab="money"] #settings{display:none}
+#srch[data-tab="money"] #settings{display:none}
 /* la partie porte déjà le nom : le titre du bloc s'efface, sa promesse reste */
 #mw-creator > .vs-head .vs-t{display:none}
 #vs-vide{margin:0;width:min(94vw,420px);background:#000;padding:16px;font:400 10px/1.4 'Space Mono',monospace;color:#d2d2da;text-align:left}
 #vs-vide.hide{display:none}
 /* ── LE TABLEAU DE BORD (24/10) : 60 % noir, les données en blanc, les SEPT INTENTIONS en point ou en trait (jamais une
    surface). Ce que le membre a écrit (ses Habits, ses objectifs) en Quantico ; tout le reste en Space Mono. ── */
-#vs-dash{width:min(94vw,420px);flex:none}
-#vs-dash:empty{display:none}
 [data-rhythm-preview]:empty{display:none}
 .tracking-period,.tracking-actions{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px}
 .tracking-period .is-on{box-shadow:inset 0 0 0 1px #fff;color:#fff}
@@ -3439,9 +3436,6 @@ body.lv-b:not(.lv-membre):not(.lv-verrou) #lv-socket{opacity:0}
 .tracking-matrix.is-week .h{font-size:9px}
 .tracking-matrix .tracking-name{min-width:0;width:100%}
 .tracking-matrix .db-n{padding:0;overflow-wrap:anywhere;white-space:normal}
-#vs-dash .tracking-source{display:block;color:inherit;text-decoration:none}
-#vs-dash .tracking-source:focus-visible{outline:2px solid #fff;outline-offset:3px}
-#vs-dash .tb .v-name{overflow-wrap:anywhere;white-space:normal}
 .tracking-matrix .tb .v-name{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden}
 .tracking-cell{font:10px/1.5 'Space Mono',monospace;text-align:center;color:#b8b8c2;min-width:0;white-space:nowrap;overflow:hidden}
 .tracking-matrix:not(.is-week) .tracking-cell{font-size:9px}
@@ -3499,10 +3493,8 @@ body.lv-b:not(.lv-membre):not(.lv-verrou) #lv-socket{opacity:0}
 .db-o .j{font:700 10px/1 'Space Mono',monospace;color:#fff;letter-spacing:.06em}
 .db-o .j.is-tard{color:#b8b8c2;font-weight:400}
 .db-o .db-bar{grid-column:1/-1}
-/* MY CHAPTER (23/11) : en haut du verso, il ouvre le récit dans Higher GPT — du texte, du noir, aucun corail */
-#vs-dash .ch{display:flex;flex-direction:column;gap:8px}
-#vs-dash .ch-p{margin:0;font:400 10.5px/1.55 'Space Mono',monospace;color:#b8b8c2}
-#vs-dash .ch-a{display:flex;gap:8px;flex-wrap:wrap}
+/* MY CHAPTER (23/11) : dans la section Higher GPT, deux boutons côte à côte */
+.vs-two{display:flex;gap:6px;flex:none}
 .vs-in{flex:1;min-width:0;border:0;border-radius:10px;background:#1f1f24;color:#fff;caret-color:#fff;outline:none;
   font:400 14px/1.2 'Quantico',sans-serif;padding:9px 12px}
 .vs-in::placeholder{color:#8c8c96}
@@ -4816,16 +4808,14 @@ In the highest way.</p>
     <p id="self-mail" class="srch-after"><span class="mw-mail" id="mw-mail"></span><span class="mw-sync" id="mw-sync"></span></p>
     <!-- 18/11 · [MEMBERS] : UN résultat, après Entrée, au format de [Monetize my TOTEHM] (`.vs-*`) : son offre, ou mon année chez lui. -->
     <section id="mb-res" class="srch-after" aria-live="polite" aria-label="The TOTEHM found"></section>
-    <!-- 26/10 — DEUX PARTIES (Wah : « Monetize my Totehm - Go Higher ») : ce que je GAGNE · ce que je FAIS et ce que
-         j'achète pour moi (le tableau de bord, puis [Higher] et TotehmBot), ouverte par défaut. Elles ne font que montrer
-         ou cacher des blocs (`#mw-creator` · `#vs-dash` + `#settings`) : chacun garde son câblage. Le tableau de bord se
-         LIT (`my_board`) ; le suivi, lui, se fait dans Telegram. -->
+    <!-- DEUX PARTIES : ce que je GAGNE (Monetize my TOTEHM) · Go Higher, ouverte par défaut : Higher GPT (My Chapter, la
+         connexion, le partage) puis TotehmBot — plus de tableau de bord (23/11). Elles ne font que montrer ou cacher des
+         blocs (`#mw-creator` · `#settings`) : chacun garde son câblage. -->
     <nav id="vs-tabs" class="srch-after" role="tablist" aria-label="My TOTEHM">
       <button type="button" role="tab" data-vs-tab="money" aria-selected="false">Monetize my TOTEHM</button>
       <button type="button" role="tab" data-vs-tab="higher" class="is-on" aria-selected="true">Go<svg class="vs-hi" viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-badge"/></svg></button>
       <button type="button" class="vs-loupe" id="vs-loupe" aria-pressed="false" aria-label="Bigger"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6.5"/><path d="M15 15l6 6M7.5 10h5M10 7.5v5"/></svg></button>
     </nav>
-    <section id="vs-dash" class="vs srch-after" role="tabpanel" aria-label="My dashboard"></section>
     <p id="vs-vide" class="srch-after hide" role="status"></p>
     <div id="lv-card" class="srch-after hide">
       <div id="ident-block">
@@ -4894,6 +4884,7 @@ In the highest way.</p>
         <!-- 23/11 (Wah) : « Higher GPT dans le dashboard, AVANT la section Telegram, avec la possibilité de le configurer » -->
         <section class="vs" id="mw-gpt" aria-label="Higher GPT configuration">
           <header class="vs-head"><h3 class="vs-t">Higher GPT</h3><p class="vs-s">My TOTEHM in ChatGPT · read only</p></header>
+          <div class="vs-item"><span class="vs-k">My Chapter</span><span class="vs-h">my week, told from everything I did</span><span class="vs-two"><button class="vs-act" type="button" data-ch="7">This week</button><button class="vs-act" type="button" data-ch="28">This month</button></span></div>
           <div class="vs-item"><span class="vs-k">ChatGPT</span><span class="vs-h" id="mw-gpt-h">not connected</span><button class="vs-act" id="mw-gpt-go" type="button">Connect</button></div>
           <div class="vs-item"><span class="vs-k">My practice</span><span class="vs-h" id="mw-gpt-sh">kept private</span><button class="vs-act" id="mw-gpt-share" type="button" aria-pressed="false">Share</button></div>
           <div class="lv-note" id="mw-gpt-note" role="status"></div>
@@ -5133,10 +5124,9 @@ In the highest way.</p>
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { parseElementLink, resolveElementLink } from '/totehm-link.mjs';
 import {parsePracticeLink,installTelegramShell} from '/telegram-practice.mjs';
-import {renderPractice,createTrackingControls,PRACTICE_REVIEW_PROMPT} from '/tracking.mjs';
+import {createTrackingControls} from '/tracking.mjs';
 import {FREQS,parseHabitRhythm,rhythmSummary,closestFrequency} from '/habit-rhythm.mjs';
 installTelegramShell();
-let trackingRefresh=()=>Promise.resolve();
 let lienElement=parseElementLink(location.hash), lienEnCours=false;
 let pratique=parsePracticeLink(location.hash), pratiqueEnCours=false;
 const diagPratique={state:pratique?'pending':'idle'};
@@ -9014,7 +9004,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-11-23-on-it';
+const BUILD='2026-11-23-sans-dashboard';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -12441,7 +12431,7 @@ function paintMe(){
   $('mw-telegram').textContent=LAND?.telegram?'Open':'Connect';
   try{ GPT.charger(); }catch(_){}   /* Higher GPT (23/11) : déclaré plus bas */
 }
-const trackingControls=createTrackingControls({sb,host:$('tracking-settings'),button:$('tracking-manage'),getUserId:()=>me?.id,onChange:async()=>{if(lvRefresh)await lvRefresh();await trackingRefresh();}});
+const trackingControls=createTrackingControls({sb,host:$('tracking-settings'),button:$('tracking-manage'),getUserId:()=>me?.id,onChange:async()=>{if(lvRefresh)await lvRefresh();}});
 /* TotehmBot : un code de liaison (10 min), puis Telegram. */
 let telegramLinking=false;
 async function lierTelegram(){
@@ -12494,7 +12484,16 @@ const GPT=(()=>{
     if(error||!data||!data.ok){ if(error) console.error('[tracking_settings_set]',error.message); note('try again'); return; }
     note(v?'my practice is shared with ChatGPT':'my practice stays private'); await charger();
   };
-  window.__totehm_gpt=()=>({lu:!!st, connecte:!!(st&&st.connected), partage:!!(st&&st.share_tracking)});
+  /* MY CHAPTER (23/11, Wah) : « tout ce qui a été fait dans le TOTEHM — spots compris — analysé par ChatGPT » : ChatGPT s'ouvre
+     avec la demande prête (copiée aussi) ; Higher GPT lit tout en lecture seule (`get_my_activity`) et raconte. */
+  let chapitres=0;
+  const DEMANDE=n=>'Use TOTEHM. Write My Chapter: the story of my last '+n+' days, from everything I did in my TOTEHM (boxes, media, spots, answers). First person, my own words, nothing invented.';
+  $('mw-gpt').addEventListener('click',async e=>{ const b=e.target.closest('[data-ch]'); if(!b) return;
+    const q=DEMANDE(b.dataset.ch==='28'?28:7); chapitres++;
+    try{ await navigator.clipboard.writeText(q); }catch(_){}
+    window.open('https://chatgpt.com/?q='+encodeURIComponent(q),'_blank','noopener');
+    note(st&&st.connected?'Opened in ChatGPT · the request is also copied.':'Opened in ChatGPT · connect Higher GPT first so it can read my TOTEHM.'); });
+  window.__totehm_gpt=()=>({lu:!!st, connecte:!!(st&&st.connected), partage:!!(st&&st.share_tracking), chapitres});
   return {charger};
 })();
 $('mw-telegram').onclick=async()=>{
@@ -15372,11 +15371,12 @@ window.addEventListener('pageshow',e=>{
        mettre sous forme de visuels » ; « le Telegram sert de tracking, pas le verso ». Le verso MONTRE, il ne coche rien :
        la base journalise tout (`totehm_journal`, ses déclencheurs) et calcule tout (`my_board`, SQL) ; la page dessine.
        Deux parties : Monetize my TOTEHM · Go [Higher] (par défaut, à chaque retournement : le tableau de bord en tête). */
+    /* ══ L'ONGLET GO HIGHER · 23/11 (Wah : « je me demande s'il ne faudrait pas retirer le dashboard… juste ChatGPT et
+       Telegram ») : plus de grille de pratique ni d'objectifs à échéance (le TOTEHM les montre, `/review` et Higher GPT
+       les racontent). L'onglet ne porte plus que Higher GPT (My Chapter, la connexion, le partage) puis TotehmBot.
+       `DASH` garde les deux onglets, la loupe et la ligne « vide » de Monetize. */
     const DASH=(()=>{
-      const el=$('vs-dash'), srch=$('srch'), COUL=Object.fromEntries(INTS.map(x=>[x.id,x.color]));
-      let seq=0, D=null, P=null, ecrit='', period=7, ong='higher'; const diagD={charges:0, erreurs:0, chapitres:0};
-      const n=v=>Number.isFinite(+v)?+v:0, coul=i=>COUL[i]||'', jourDe=s=>new Date(String(s).slice(0,10)+'T12:00:00');
-      const court=s=>{ const t=jourDe(s); return isNaN(t)?'':t.toLocaleDateString('en-GB',{day:'numeric',month:'short'}); };
+      const srch=$('srch'); let ong='higher';
       function onglet(t){
         ong=t==='money'?'money':'higher'; srch.dataset.tab=ong;
         document.querySelectorAll('#vs-tabs [data-vs-tab]').forEach(b=>{ const on=b.dataset.vsTab===ong; b.classList.toggle('is-on',on); b.setAttribute('aria-selected',on?'true':'false'); });
@@ -15393,66 +15393,7 @@ window.addEventListener('pageshow',e=>{
       $('vs-loupe').addEventListener('click',()=>{ const s=$('srch'), l=$('vs-loupe'), on=!s.classList.contains('is-loupe');
         s.classList.toggle('is-loupe',on); l.setAttribute('aria-pressed',String(on)); l.setAttribute('aria-label',on?'Smaller':'Bigger');
         const p=l.querySelector('path'); if(p) p.setAttribute('d','M15 15l6 6M7.5 10h5'+(on?'':'M10 7.5v5')); });
-      async function charger(){
-        if(!me){ D=null; el.innerHTML=''; return; }
-        const s=++seq, uid=me.id; let tz=null; try{ tz=Intl.DateTimeFormat().resolvedOptions().timeZone||null; }catch(_){}
-        const [board,practice]=await Promise.all([sb.rpc('my_board',{p_tz:tz}),sb.rpc('tracking_summary_for_me',{p_days:period})]);
-        const {data,error}=board;
-        if(practice.error)console.error('[tracking_summary_for_me]',practice.error.message);
-        if(s!==seq||(me?.id||null)!==uid) return;
-        if(error||!data||!data.ok){ if(error) console.error('[my_board]',error.message); diagD.erreurs++; D=null; }
-        else D=data;
-        P=practice.error?(P?{...P,stale:true}:{unavailable:true}):practice.data?.ok?practice.data:{unavailable:true}; diagD.charges++; peindre();
-      }
-      /* ══ MY CHAPTER · 23/11 (Wah) ══ « tout ce qui a été fait dans le TOTEHM — spots compris, vraiment tout — serait analysé
-         par ChatGPT » : le récit de MA semaine (ou de mon mois) s'écrit dans MON ChatGPT, par Higher GPT, qui lit tout le
-         TOTEHM en lecture seule (`get_my_activity`). Ici, rien n'est envoyé à un modèle : le bouton ouvre ChatGPT avec la
-         demande prête (et la copie, si ChatGPT ne la reçoit pas). Le Grind (pratique et objectifs) reste dessous. */
-      const DEMANDE=n=>'Use TOTEHM. Write My Chapter: the story of my last '+n+' days, from everything I did in my TOTEHM (boxes, media, spots, answers). First person, my own words, nothing invented.';
-      function chapitre(){
-        return '<div class="db ch" data-ch-box><p class="db-t">My Chapter<i>in Higher GPT</i></p>'
-          +'<p class="ch-p">My week, told in my own words — everything I did in my TOTEHM, spots included. Higher GPT writes it in my ChatGPT, read-only.</p>'
-          +'<div class="ch-a"><button type="button" class="vs-act" data-ch="7">This week</button><button type="button" class="vs-act" data-ch="28">This month</button></div>'
-          +'<p class="ch-p" data-ch-dit role="status">'+esc(ecrit)+'</p></div>';
-      }
-      async function chAction(a){
-        const n=a==='28'?28:7, q=DEMANDE(n); diagD.chapitres++;
-        try{ await navigator.clipboard.writeText(q); }catch(_){}
-        window.open('https://chatgpt.com/?q='+encodeURIComponent(q),'_blank','noopener');
-        ecrit='Opened in ChatGPT · the request is also copied. Higher GPT must be connected (Higher GPT, below).'; peindre();
-      }
-      function peindre(){
-        let h=chapitre();
-
-        /* 14/11 — la box garde sa LARGEUR entière (elle n'est plus une colonne de 95 px) ; elle reste un
-           aperçu en hauteur (`court`), le tableau de bord n'est pas le TOTEHM déployé. */
-        if(P?.ok)h+=renderPractice(P,{requestedDays:period,
-          renderHabit:x=>boxTotehm('h',(!RO&&(state.habits||[]).find(y=>y.t===x.ref))||{id:'',t:x.habit,t0:x.habit,is:x.intentions||[],f:x.frequency},{court:true})});
-        else h+='<p class="tracking-caption">Practice is unavailable for the moment. Your reports have not been changed.</p>';
-        if(!D){h+='<p class="tracking-caption">History temporarily unavailable.</p>';el.innerHTML=h;return;}
-        const O=D.objectives||[];
-        if(O.length) h+='<div class="db"><p class="db-t">Next objectives<i>due dates</i></p><div class="db-o">'+O.map(o=>{
-          const j=o.jours, J=j==null?'—':j<0?'late':j===0?'today':'D-'+j;
-          const found=RO?[]:OBJECTIVES.filter(t=>t.text===o.t), native=found.length===1?{...found[0],days_left:o.jours}:{id:'',text:o.t,days_left:o.jours,target_at:o.by};
-          return '<div>'+boxTotehm('t',native,{court:true})+'<span class="j'+(j!=null&&j<0?' is-tard':'')+'">'+J+'</span>'
-            +'</div>'; }).join('')+'</div></div>';
-        /* 16/11 — l'historique du compte (activité, fil, inventaire) est parti : le tableau ne garde que l'essentiel. */
-        el.innerHTML=h;
-      }
-      /* Configuration unique : le dashboard ne recueille aucune déclaration. */
-      el.addEventListener('click',async e=>{
-        const ch=e.target.closest('[data-ch]'); if(ch){ await chAction(ch.dataset.ch); return; }
-        const choice=e.target.closest('[data-track-period]');
-        if(choice){const next=Number(choice.dataset.trackPeriod);if([7,28].includes(next)&&next!==period){period=next;await charger();}return;}
-        if(e.target.closest('[data-track-copy]')){const status=el.querySelector('[data-track-copy-status]');try{await navigator.clipboard.writeText('Use the past '+period+' days. '+PRACTICE_REVIEW_PROMPT);if(status?.isConnected)status.textContent='Copied. Paste it in ChatGPT when you choose.';}catch{if(status?.isConnected)status.textContent='Use the past '+period+' days. '+PRACTICE_REVIEW_PROMPT;}return;}
-        if(e.target.closest('[data-track-manage]')){onglet('higher');trackingControls.open();}
-      });
-      trackingRefresh=charger;
-      document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&srch.classList.contains('is-pret')&&ong==='higher')charger();});
-      return {charger, onglet, vide, vider(){ seq++; D=null; P=null; ecrit=''; period=7; el.innerHTML=''; },
-        etat:()=>({onglet:ong, charge:!!D||!!P?.ok, habits:P?.ok?(P.habits||[]).length:D?(D.habits||[]).length:0, cases:D?(D.habits||[]).reduce((a,x)=>a+(x.c||[]).filter(Boolean).length,0):0,
-                   jours:D?(D.days||[]).length:0, chapitre:{ouverts:diagD.chapitres}, heat:D?(D.heat||[]).length:0, fil:D?(D.feed||[]).length:0, telegram:!!(D&&D.telegram),
-                   charges:diagD.charges, erreurs:diagD.erreurs})};
+      return {charger:()=>Promise.resolve(), onglet, vide, vider(){}, etat:()=>({onglet:ong, dashboard:false})};
     })();
     window.__totehm_dash=()=>DASH.etat();
 

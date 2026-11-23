@@ -29,46 +29,25 @@ try{
   await pg.addInitScript(()=>{window.__copied=[];Object.defineProperty(navigator,'clipboard',{value:{writeText:async text=>window.__copied.push(text)}});});
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');
   await pg.click('#lv-tap-turn');await pg.waitForSelector('#srch.is-pret');
-  await pg.waitForFunction(()=>document.querySelector('#vs-dash')?.textContent.includes('My practice'));
-  const text=await pg.locator('#vs-dash').innerText();
-  check(text.includes('7 days · self-reported')&&text.includes('No response is unknown, never a failure')&&text.includes('1 earlier « not on it »')&&/On It\s*2/i.test(text)&&/No Time\s*1/i.test(text)&&/No Energy\s*2/i.test(text),'23/11 · On It · No Time · No Energy ; silence is unknown ; earlier « not on it » kept');
-  check(!text.includes('Habits with observations')&&!text.includes('Worth a look')&&!text.includes('Two weeks compared'),'16/11 · only the essentials: no coverage caption, no « worth a look », no trend');
-  check((await pg.locator('.tracking-cell.has-done.has-missed').count())===1&&(await pg.locator('.tracking-cell.has-done.has-missed').textContent()).includes('⚡'),'One « on it » cannot hide a « no energy » on the same day');
-  check(!await pg.locator('#vs-dash input').count()&&!log.rpc.some(x=>/tracking_(answer|detail|open|settings_set)/.test(x.name)),'The dashboard never writes reports or consent');
-  check(!await pg.locator('#vs-dash .db-n b').count()&&(await pg.locator('#vs-dash .db-n a .v-name').textContent())===steps[0].t,'The full long Unicode Habit is escaped and linked to its original');
-  check(await pg.locator('.tracking-matrix .db-n').evaluate(e=>e.getBoundingClientRect().height<=200),'A very long Habit remains a readable preview, with its exact source kept intact');
-  check(!text.includes('Consider a smaller')&&!/\d+ on it · \d+ no time/.test(text),'No invented cause, and no count line under each box (the day strip says it)');
-  check(text.includes('not counted as unanswered'),'Delivery failures are distinct from unknown practice');
-  check(!await pg.locator('#mw-higher,#mw-higher-acts,#mw-hs-hint').count()&&(await pg.getAttribute('#mw-menu','aria-label'))==='TotehmBot configuration','Duplicate subscription markup and controls are removed');
-  check(!await pg.locator('.tracking-history,.db-heat,.db-tot,.db-f').count()&&!await pg.locator('.db-o .db-bar').count(),'16/11 · no account history on the dashboard, and deadlines never mimic progress');
-  await pg.locator('[data-track-period="28"]').click();await pg.waitForFunction(()=>document.querySelector('#vs-dash').textContent.includes('28 days · self-reported'));
-  check((await pg.locator('.tracking-cell').count())===28&&log.rpc.filter(x=>x.name==='tracking_summary_for_me').at(-1).body.p_days===28,'The selected period drives all counts and all day cells');
-  check(!log.rpc.some(x=>/tracking_(answer|detail|open|settings_set)/.test(x.name)),'Changing the read period is not a settings write');
-  await pg.locator('[data-track-period="7"]').click();await pg.waitForFunction(()=>document.querySelector('#vs-dash').textContent.includes('7 days · self-reported'));
-  delayed=true;await pg.locator('[data-track-period="28"]').click();await pg.waitForFunction(()=>true);
-  await pg.locator('[data-track-period="7"]').click();release();await pg.waitForTimeout(200);
-  check((await pg.locator('.tracking-cell').count())===7,'A late period response never overwrites a newer selection');
-  check((await pg.evaluate(()=>window.__copied.length))===0,'The review prompt is never copied automatically');
-  await pg.locator('[data-track-copy]').click();
-  check((await pg.evaluate(()=>window.__copied.length))===1&&(await pg.evaluate(()=>window.__copied[0])).includes('past 7 days')&&(await pg.locator('[data-track-copy-status]').textContent()).startsWith('Copied.'),'One deliberate gesture copies a generic review prompt, without personal data');
-  check((await pg.getAttribute('.tracking-review a','href'))==='/chatgpt','Higher uses the existing consent page without data in the URL');
-  await pg.locator('[data-track-manage]').click();await pg.waitForSelector('#tracking-settings form');
+  /* 23/11 (Wah : « retirer le dashboard… juste ChatGPT et Telegram ») : l'onglet Go Higher = Higher GPT puis TotehmBot */
+  await pg.waitForTimeout(800);
+  const v=await pg.evaluate(()=>{const g=document.getElementById('mw-gpt'),t=document.getElementById('mw-menu');
+    return {dash:!!document.getElementById('vs-dash'),grille:document.querySelectorAll('.tracking-matrix,.tracking-cell,.db-o').length,
+      ordre:!!(g&&t&&(g.compareDocumentPosition(t)&Node.DOCUMENT_POSITION_FOLLOWING)),chap:[...g.querySelectorAll('[data-ch]')].map(b=>b.textContent).join('|')};});
+  check(!v.dash&&v.grille===0&&v.ordre&&v.chap==='This week|This month','No dashboard: Higher GPT (My Chapter) then TotehmBot → '+JSON.stringify(v));
+  check(!log.rpc.some(x=>x.name==='my_board'||x.name==='tracking_summary_for_me'),'The verso no longer reads a dashboard');
+  await pg.locator('#tracking-manage').click();await pg.waitForSelector('#tracking-settings form');
   check(!await pg.locator('[name="share_chatgpt"]').isChecked()&&log.rpc.filter(x=>x.name==='tracking_settings_set').length===0,'Opening configuration never grants sharing');
   await pg.locator('[name="share_chatgpt"]').check();await pg.locator('[name="max_daily"]').fill('3');
   await pg.locator('#tracking-settings button[type="submit"]').click();
   await pg.waitForFunction(()=>document.querySelector('[data-track-notice]')?.textContent==='Saved.');
   check(settings.share_chatgpt&&settings.max_daily===3,'Only an explicit save changes sharing and notification limits');
-  await pg.waitForFunction(()=>document.querySelector('#vs-dash').textContent.includes('practice summaries shared with ChatGPT'));
   await pg.locator('[name="share_chatgpt"]').uncheck();await pg.locator('[name="paused"]').check();await pg.locator('#tracking-settings button[type="submit"]').click();
-  await pg.waitForFunction(()=>document.querySelector('#vs-dash').textContent.includes('Notifications paused'));
+  await pg.waitForTimeout(800);
   check(!settings.share_chatgpt&&settings.paused,'Sharing can be revoked independently of pausing notifications');
-  check(!await pg.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),'Long Habits and configuration fit the viewport');
+  check(!await pg.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),'Configuration fits the viewport');
   await pg.screenshot({path:out+'/settings-'+width+'.png'});
-  await pg.locator('#tracking-manage').click();await pg.locator('#vs-dash').evaluate(e=>e.scrollIntoView({block:'start'}));await pg.screenshot({path:out+'/dashboard-'+width+'.png'});
-  const href=await pg.locator('#vs-dash .db-n a').getAttribute('href');await pg.goto(href);
-  await pg.waitForFunction(()=>window.__totehm_element_link?.().state==='opened',null,{timeout:12000});
-  check(await pg.locator('#habits .habit.open .v-name').textContent()===steps[0].t,'The report opens the exact Habit through the native renderer');
   check(!log.errors.some(e=>e.startsWith('pageerror')),'No runtime errors');await ctx.close();
  }
- console.log(JSON.stringify({suite:'Quiet tracking dashboard',checks,passed:checks}));
+ console.log(JSON.stringify({suite:'Go Higher: Higher GPT and TotehmBot, no dashboard',checks,passed:checks}));
 }finally{await browser.close();}

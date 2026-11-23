@@ -16,37 +16,18 @@ try{
  for(const width of [390,1280]){
   const {pg,ctx,log}=await page(browser,{dir:'com',origin,viewport:{width,height:844},hasTouch:width<700,tables:{profiles:[{pseudo:'fixture'}],totehms:[{user_id:USER.id,habits:habits}]},rpc});
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.click('#lv-tap-turn');await pg.waitForSelector('#srch.is-pret');
-  await pg.waitForFunction(()=>document.querySelector('#vs-dash').textContent.includes('My practice'));
-  check(await pg.getAttribute('#srch','data-tab')==='higher'&&await pg.isVisible('#vs-dash')&&!await pg.isVisible('#mw-creator'),'The dashboard opens first, separately from monetization');
-  check(await pg.isVisible('#mw-menu')&&!await pg.locator('#mw-higher,[data-hsub]').count(),'Only TotehmBot configuration follows the dashboard');
-  const call=log.rpc.find(r=>r.name==='my_board');check(typeof call.body.p_tz==='string'&&call.body.p_tz,'Account activity uses the browser timezone');
-  const text=await pg.locator('#vs-dash').innerText();check(text.includes('2')&&/No Energy/i.test(text)&&!/Missed/i.test(text)&&!text.includes('99%')&&!await pg.locator('.db-courbe').count(),'Practice does not fall back to an obsolete percentage or streak');
-  check(await pg.locator('.db-o .j').textContent()==='D-12'&&!await pg.locator('.db-o .db-bar').count(),'An objective deadline is not rendered as achievement progress');
-  check(!await pg.locator('.tracking-history,.db-heat,.db-tot,.db-f').count(),'16/11 · the dashboard keeps only the essentials: no account history');
-  check(await pg.locator('.tracking-name .tb.blk-h .v-name').textContent()==='Run the hill'&&await pg.locator('.db-o .tb.blk-o .v-name').textContent()==='Run a marathon','Practice and due objectives use native TOTEHM boxes');
-  check(!await pg.locator('#vs-dash img').count(),'No markup from a box text is ever rendered');
-  await pg.locator('[data-track-manage]').click();await pg.waitForSelector('#tracking-settings form');
+  /* 23/11 (Wah) : plus de tableau de bord — Go Higher = Higher GPT (My Chapter) puis TotehmBot */
+  await pg.waitForTimeout(800);
+  check(await pg.getAttribute('#srch','data-tab')==='higher'&&await pg.isVisible('#mw-gpt')&&await pg.isVisible('#mw-menu')&&!await pg.isVisible('#mw-creator'),'Go Higher opens first: Higher GPT then TotehmBot, separately from monetization');
+  check(!await pg.locator('#vs-dash,.tracking-matrix,.db-o,#mw-higher,[data-hsub]').count()&&!log.rpc.some(r=>r.name==='my_board'||r.name==='tracking_summary_for_me'),'No dashboard and no dashboard read');
+  await pg.locator('#tracking-manage').click();await pg.waitForSelector('#tracking-settings form');
   check(log.rpc.filter(r=>r.name==='tracking_settings_get').length===1&&!log.rpc.some(r=>/tracking_(answer|detail|open|settings_set)/.test(r.name)),'Configuration opens without recording practice or consent');
   await pg.click('#vs-tabs [data-vs-tab="money"]');
-  check(await pg.isVisible('#mw-creator')&&!await pg.isVisible('#vs-dash')&&!await pg.isVisible('#mw-menu'),'Monetization keeps its own independent panel');
+  check(await pg.isVisible('#mw-creator')&&!await pg.isVisible('#mw-gpt')&&!await pg.isVisible('#mw-menu'),'Monetization keeps its own independent panel');
   await pg.click('#vs-tabs [data-vs-tab="higher"]');await pg.click('#vs-loupe');
-  check(!await pg.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),'Dashboard zoom remains inside the viewport');
+  check(!await pg.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),'The verso zoom remains inside the viewport');
   check(!log.errors.some(e=>e.startsWith('pageerror')),'No runtime errors');
   await pg.screenshot({path:out+'/dashboard-'+width+'.png'});await ctx.close();
  }
- const {pg,ctx,log}=await page(browser,{dir:'com',origin,tables:{profiles:[{pseudo:'fixture'}]},rpc:{...rpc,tracking_summary_for_me:null}});
- await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.click('#lv-tap-turn');await pg.waitForSelector('#srch.is-pret');
- await pg.waitForFunction(()=>document.querySelector('#vs-dash').textContent.includes('Practice is unavailable'));
- check(!await pg.locator('.db-k,.db-courbe').count(),'A missing practice reader is visible and never silently restores contradictory legacy analytics');
- check(!log.errors.some(e=>e.startsWith('pageerror')),'Unavailable practice leaves the rest of the account usable');await ctx.close();
- {const {pg,ctx,log}=await page(browser,{dir:'com',origin,tables:{profiles:[{pseudo:'fixture'}]},rpc:{...rpc,my_board:null,tracking_summary_for_me:({p_days})=>({...practice,days_count:p_days})}});
-  await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.click('#lv-tap-turn');await pg.waitForSelector('#srch.is-pret');
-  await pg.waitForFunction(()=>document.querySelector('#vs-dash').textContent.includes('My practice'));
-  check((await pg.locator('#vs-dash').innerText()).includes('7 days · self-reported')&&(await pg.locator('#vs-dash').innerText()).includes('History temporarily unavailable'),'Fresh practice remains visible when the independent history reader fails');
-  check(!await pg.locator('.db-heat,.db-tot,.tracking-history').count(),'Missing history is never replaced with invented zero activity');
-  await pg.locator('[data-track-period="28"]').click();await pg.waitForFunction(()=>document.querySelector('#vs-dash').textContent.includes('28 days · self-reported'));
-  check(log.rpc.filter(r=>r.name==='tracking_summary_for_me').at(-1).body.p_days===28,'Practice periods remain usable while history is unavailable');
-  check(!log.errors.some(e=>e.startsWith('pageerror')),'Independent history failure creates no runtime errors');await ctx.close();
- }
- console.log(JSON.stringify({suite:'Dashboard and TotehmBot configuration',checks,passed:checks}));
+ console.log(JSON.stringify({suite:'Go Higher: Higher GPT and TotehmBot',checks,passed:checks}));
 }finally{await browser.close();}
