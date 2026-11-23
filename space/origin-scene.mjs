@@ -5,6 +5,7 @@ import {createOriginsVessel,originsWalkHeight,ORIGINS_VESSEL_LAYOUT} from './gal
 import {createRenderQuality} from './gallery-render-quality.mjs';
 import {createBlackHolePortal,createSaucerCockpit} from './gallery-black-hole.mjs';
 import {ORIGIN_RETURN} from './origin-return-journey.mjs';
+import {ORIGIN_BOOK_JOURNEY,sampleOriginBookJourney,sampleOriginBookReveal} from './origin-book-journey.mjs';
 const worldOffset=3480,eyeHeight=1.65;
 const ground=(x,z)=>{const height=originsWalkHeight(x,z);return height===null?null:worldOffset+height+eyeHeight;};
 const walkPoint=(x,z)=>[x,ground(x,z),z];
@@ -13,15 +14,15 @@ const host=document.getElementById('origin-scene'),button=document.getElementByI
 const originCity=new URLSearchParams(location.search).get('from')==='new-york'?'new-york':'lisbon',earthHref='/'+(originCity==='new-york'?'new-york':'lisbon-space')+'?arrival=origin';
 let engine=null;
 try{engine=createOriginScene();}catch(error){console.error('[origin scene]',error?.message);document.getElementById('origin-fallback').hidden=false;document.body.classList.add('no-webgl');document.body.classList.remove('is-arriving');}
-window.__totehm_origin=()=>({build:'origin-side-opening-canopy',fallback:!engine,...engine?.diagnostics()});
+window.__totehm_origin=()=>({build:'origin-photographic-book-journey',fallback:!engine,...engine?.diagnostics()});
 function createOriginScene(){
  const renderer=new T.WebGLRenderer({antialias:true,powerPreference:'high-performance'}),quality=createRenderQuality({mobile,pixelRatio:devicePixelRatio});renderer.setPixelRatio(quality.diagnostics().pixelRatio);renderer.setSize(innerWidth,innerHeight);renderer.outputColorSpace=T.SRGBColorSpace;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.setClearColor(0x000000);renderer.domElement.setAttribute('aria-hidden','true');host.append(renderer.domElement);
  const scene=new T.Scene(),camera=new T.PerspectiveCamera(mobile?80:72,innerWidth/innerHeight,.05,100000),eye=new T.Vector3(...ORIGIN_ROOM.entry),target=new T.Vector3(0,3501.1,-24);
- let dirty=true,disposed=false,hidden=document.hidden,blurred=false,last=0,frames=0,stage='saucer',rail=null,yaw=0,pitch=0,down=null,dragged=false,opening=false,portalAt=null,hasLeftSaucer=false,viewY=eye.y;
+ let dirty=true,disposed=false,hidden=document.hidden,blurred=false,last=0,frames=0,stage='saucer',rail=null,yaw=0,pitch=0,down=null,dragged=false,opening=false,portalAt=null,hasLeftSaucer=false,viewY=eye.y,bookReveal=null;
  const invalidate=()=>{dirty=true;};
  const sky=createDrownedSky(scene,{mobile,onChange:invalidate});
  const pmrem=new T.PMREMGenerator(renderer),environment=pmrem.fromEquirectangular(sky.environmentTexture);scene.environment=environment.texture;scene.environmentIntensity=.12;
- const vessel=createOriginsVessel(scene,{mobile,bookOnly:true,onChange:invalidate,onOpen:()=>{opening=true;expandOriginsBook(vessel.book.root,camera,'/origins?open=1&from=origin'+(originCity==='new-york'?'&city=new-york':''),{reduced:reduced.matches,onStart:()=>{stopInput();paint();renderer.render(scene,camera);},onClose:()=>{opening=false;vessel.book.reset();paint();dirty=true;last=0;button.focus();}});}});vessel.root.position.y=ORIGIN_ROOM.offset;
+ const vessel=createOriginsVessel(scene,{mobile,bookOnly:true,onChange:invalidate,onOpen:prepareBook});vessel.root.position.y=ORIGIN_ROOM.offset;
  const returnPortal=createBlackHolePortal(scene,{position:ORIGIN_RETURN.portal,href:earthHref}),cockpit=createSaucerCockpit(camera);scene.add(camera);
  const returnLink=document.getElementById('origin-return');
  const berthLight=new T.SpotLight(0xc7ddf5,900,55,.9,.8,2);berthLight.position.set(-6,3510,-22);berthLight.target.position.set(...ORIGIN_RETURN.ship);scene.add(berthLight,berthLight.target);
@@ -34,8 +35,43 @@ function createOriginScene(){
   button.textContent=stage==='saucer'?'Leave the saucer':stage==='chamber'?'Open the book':stage==='board'?'Board the saucer · return to Earth':stage==='return-corridor'?'Returning to the saucer':stage==='boarding'?'Boarding the saucer':'Continue to the book';button.disabled=!!rail||opening||flying;
   returnLink.textContent=flying?'Cancel return':stage==='saucer'||stage==='board'?'← Return to Earth':'← Return to the saucer';
  }
+ function liftBook(){
+  const priorView=bookReveal;
+  bookReveal=null;
+  expandOriginsBook(vessel.book.root,camera,'/origins?open=1&from=origin'+(originCity==='new-york'?'&city=new-york':''),{
+   reduced:reduced.matches,
+   onStart:()=>{stopInput();paint();renderer.render(scene,camera);},
+   onClose:()=>{
+    if(priorView){
+     eye.copy(priorView.from);target.copy(priorView.startTarget);viewY=eye.y;camera.fov=priorView.startFov;
+     camera.updateProjectionMatrix();camera.position.copy(eye);camera.lookAt(target);camera.updateMatrixWorld();
+    }
+    opening=false;vessel.book.reset();angles();paint();dirty=true;last=0;button.focus();
+   }
+  });
+ }
+ function prepareBook(){
+  if(opening||rail)return;
+  opening=true;stopInput();
+  if(reduced.matches){liftBook();return;}
+  bookReveal={from:eye.clone(),startTarget:target.clone(),startFov:camera.fov,elapsed:0};
+  paint();dirty=true;
+ }
+ function cancelBookReveal(){
+  if(!bookReveal)return;
+  eye.copy(bookReveal.from);target.copy(bookReveal.startTarget);camera.fov=bookReveal.startFov;
+  camera.updateProjectionMatrix();bookReveal=null;opening=false;viewY=eye.y;
+  vessel.book.reset();angles();paint();dirty=true;last=0;
+ }
+ function finishBookReveal(){
+  if(!bookReveal)return;
+  const shot=sampleOriginBookReveal({...bookReveal,focus:new T.Vector3(...ORIGIN_ROOM.book),progress:1});
+  eye.copy(shot.position);target.copy(shot.target);viewY=eye.y;camera.fov=shot.fov;
+  camera.updateProjectionMatrix();camera.position.copy(eye);camera.lookAt(target);camera.updateMatrixWorld();
+  renderer.render(scene,camera);liftBook();
+ }
  function guide(points,duration,done,kind){
-  stopInput();rail={curve:new T.CurvePath(),elapsed:0,duration,done,kind,lookStart:[yaw,pitch]};const path=[eye.clone(),...points.map(p=>new T.Vector3(...p))];
+  stopInput();rail={curve:new T.CurvePath(),elapsed:0,duration,done,kind,lookStart:[yaw,pitch],targetStart:target.clone(),fovStart:camera.fov};const path=[eye.clone(),...points.map(p=>new T.Vector3(...p))];
   if(kind==='flight')rail.curve=new T.CatmullRomCurve3(path,false,'centripetal');else for(let i=1;i<path.length;i++)rail.curve.add(new T.LineCurve3(path[i-1],path[i]));
   if(reduced.matches||rail.curve.getLength()<.01){eye.copy(path.at(-1));rail=null;done();}paint();dirty=true;
  }
@@ -105,6 +141,7 @@ function createOriginScene(){
  function stopInput(){keys.clear();joystick={x:0,y:0};stick.querySelector('span').style.transform='';down=null;}
  document.addEventListener('keydown',event=>{
   if(hidden||blurred||event.defaultPrevented)return;
+  if(event.key==='Escape'&&bookReveal){event.preventDefault();cancelBookReveal();return;}
   if(event.key==='Escape'&&(stage==='return-flight'||stage==='return-portal')){event.preventDefault();cancelReturn();return;}
   if(event.target.closest('input,textarea,select,[contenteditable]')||stage==='return-flight'||stage==='return-portal'||opening)return;
   const key=event.key.toLowerCase();
@@ -122,14 +159,23 @@ function createOriginScene(){
  }
  function resize(){camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setPixelRatio(quality.resize(devicePixelRatio));renderer.setSize(innerWidth,innerHeight);dirty=true;}
  addEventListener('resize',resize);addEventListener('blur',()=>{blurred=true;stopInput();});addEventListener('focus',()=>{blurred=false;last=0;dirty=true;});
- document.addEventListener('visibilitychange',()=>{hidden=document.hidden;stopInput();last=0;dirty=true;});reduced.addEventListener('change',()=>{if(reduced.matches&&rail)finishRail();dirty=true;});
+ document.addEventListener('visibilitychange',()=>{hidden=document.hidden;stopInput();last=0;dirty=true;});reduced.addEventListener('change',()=>{if(reduced.matches&&rail)finishRail();if(reduced.matches&&bookReveal)finishBookReveal();dirty=true;});
  renderer.domElement.addEventListener('webglcontextlost',event=>{event.preventDefault();renderer.setAnimationLoop(null);document.getElementById('origin-fallback').hidden=false;document.body.classList.add('no-webgl');document.body.classList.remove('is-arriving');});
  function frame(now){
-  if(disposed)return;const rawElapsed=last?(now-last)/1000:0,elapsed=Math.min(rawElapsed,.25);last=now;if(hidden||blurred||opening)return;
+  if(disposed)return;const rawElapsed=last?(now-last)/1000:0,elapsed=Math.min(rawElapsed,.25);last=now;if(hidden||blurred||opening&&!bookReveal)return;
   if(stage==='return-portal'&&portalAt!==null&&now-portalAt>(reduced.matches?0:700)){portalAt=null;location.assign(earthHref);return;}
-  if(rail){rail.elapsed+=Math.min(rawElapsed,1);const p=Math.min(1,rail.elapsed/rail.duration);eye.copy(rail.curve.getPointAt(p));if(rail.kind!=='flight')eye.y=ground(eye.x,eye.z)??eye.y;if(rail.kind==='flight'){vessel.setFlight(eye);target.copy(rail.curve.getPointAt(Math.min(1,p+.03)));}else if(rail.kind==='walk')look();else if(rail.kind==='to-book')target.fromArray(ORIGIN_ROOM.book);else{const direction=new T.Vector3(...(rail.kind==='boarding'?ORIGIN_RETURN.portal:ORIGIN_RETURN.ship)).sub(eye).normalize(),toYaw=Math.atan2(-direction.x,-direction.z),turn=T.MathUtils.smoothstep(rail.elapsed,0,1.1);yaw=rail.lookStart[0]+Math.atan2(Math.sin(toYaw-rail.lookStart[0]),Math.cos(toYaw-rail.lookStart[0]))*turn;pitch=T.MathUtils.lerp(rail.lookStart[1],Math.asin(direction.y),turn);look();}dirty=true;if(p===1)finishRail();}
-  else if(stage!=='return-portal'){const forward=(keys.has('w')||keys.has('arrowup')?1:0)-(keys.has('s')||keys.has('arrowdown')?1:0)-joystick.y,side=(keys.has('d')||keys.has('arrowright')?1:0)-(keys.has('a')||keys.has('arrowleft')?1:0)+joystick.x,speed=Math.min(elapsed,.08)*3/Math.max(1,Math.hypot(forward,side));if(forward||side)move((-Math.sin(yaw)*forward+Math.cos(yaw)*side)*speed,(-Math.cos(yaw)*forward-Math.sin(yaw)*side)*speed);}
-  const fov=stage==='chamber'?(mobile?65:67):(mobile?80:72);if(Math.abs(camera.fov-fov)>.01){camera.fov=reduced.matches?fov:T.MathUtils.damp(camera.fov,fov,4,elapsed);camera.updateProjectionMatrix();dirty=true;}
+  if(rail){rail.elapsed+=Math.min(rawElapsed,1);const p=Math.min(1,rail.elapsed/rail.duration);eye.copy(rail.curve.getPointAt(p));if(rail.kind!=='flight')eye.y=ground(eye.x,eye.z)??eye.y;if(rail.kind==='flight'){vessel.setFlight(eye);target.copy(rail.curve.getPointAt(Math.min(1,p+.03)));}else if(rail.kind==='walk')look();else if(rail.kind==='to-book'){const view=sampleOriginBookJourney({eye,book:new T.Vector3(...ORIGIN_ROOM.book),startTarget:rail.targetStart,progress:p,startFov:rail.fovStart,mobile});target.copy(view.target);}else{const direction=new T.Vector3(...(rail.kind==='boarding'?ORIGIN_RETURN.portal:ORIGIN_RETURN.ship)).sub(eye).normalize(),toYaw=Math.atan2(-direction.x,-direction.z),turn=T.MathUtils.smoothstep(rail.elapsed,0,1.1);yaw=rail.lookStart[0]+Math.atan2(Math.sin(toYaw-rail.lookStart[0]),Math.cos(toYaw-rail.lookStart[0]))*turn;pitch=T.MathUtils.lerp(rail.lookStart[1],Math.asin(direction.y),turn);look();}dirty=true;if(p===1)finishRail();}
+  else if(stage!=='return-portal'&&!bookReveal){const forward=(keys.has('w')||keys.has('arrowup')?1:0)-(keys.has('s')||keys.has('arrowdown')?1:0)-joystick.y,side=(keys.has('d')||keys.has('arrowright')?1:0)-(keys.has('a')||keys.has('arrowleft')?1:0)+joystick.x,speed=Math.min(elapsed,.08)*3/Math.max(1,Math.hypot(forward,side));if(forward||side)move((-Math.sin(yaw)*forward+Math.cos(yaw)*side)*speed,(-Math.cos(yaw)*forward-Math.sin(yaw)*side)*speed);}
+  let fov=stage==='chamber'?(mobile?ORIGIN_BOOK_JOURNEY.mobileArrivalFov:ORIGIN_BOOK_JOURNEY.desktopArrivalFov):(mobile?80:72);
+  if(rail?.kind==='to-book')fov=sampleOriginBookJourney({eye,book:new T.Vector3(...ORIGIN_ROOM.book),startTarget:rail.targetStart,progress:Math.min(1,rail.elapsed/rail.duration),startFov:rail.fovStart,mobile}).fov;
+  if(bookReveal){
+   bookReveal.elapsed+=Math.min(rawElapsed,.1);
+   const progress=Math.min(1,bookReveal.elapsed/ORIGIN_BOOK_JOURNEY.revealDuration);
+   const shot=sampleOriginBookReveal({...bookReveal,focus:new T.Vector3(...ORIGIN_ROOM.book),progress});
+   eye.copy(shot.position);target.copy(shot.target);fov=shot.fov;dirty=true;
+   if(progress===1){finishBookReveal();return;}
+  }
+  if(Math.abs(camera.fov-fov)>.01){camera.fov=reduced.matches||bookReveal?fov:T.MathUtils.damp(camera.fov,fov,4,elapsed);camera.updateProjectionMatrix();dirty=true;}
   const a=sky.update(elapsed,eye,!reduced.matches),b=vessel.update(elapsed,eye,!reduced.matches),c=returnPortal.update(elapsed,eye,!reduced.matches),d=cockpit.update(stage==='return-flight'||stage==='return-portal',camera.aspect);dirty=dirty||a||b||c||d;
   const flight=stage==='return-flight'||stage==='return-portal';
   const y=flight||reduced.matches||!rawElapsed||Math.abs(viewY-eye.y)<.002?eye.y:T.MathUtils.damp(viewY,eye.y,13,elapsed);
@@ -139,7 +185,7 @@ function createOriginScene(){
  if(new URLSearchParams(location.search).get('return')==='1')arrive();else{angles();paint();}
  vessel.update(0,eye,false);
  renderer.setAnimationLoop(frame);
- addEventListener('pagehide',event=>{if(event.persisted){hidden=true;stopInput();renderer.setAnimationLoop(null);return;}disposed=true;stopInput();renderer.setAnimationLoop(null);vessel.dispose();returnPortal.dispose();cockpit.dispose();berthLight.dispose();sky.dispose();environment.dispose();pmrem.dispose();renderer.dispose();});
- addEventListener('pageshow',event=>{if(event.persisted){hidden=document.hidden;blurred=false;last=0;opening=false;vessel.book.reset();if(stage==='return-flight'||stage==='return-portal')cancelReturn();paint();dirty=true;document.body.classList.remove('is-arriving');renderer.setAnimationLoop(frame);}});
- return{diagnostics:()=>({stage,frames,originCity,reading:opening,returnJourney:{destination:earthHref,parkedShip:ORIGIN_RETURN.ship,portal:returnPortal.diagnostics(),moving:!!rail,kind:rail?.kind||null},moving:!!rail,passage:rail?{elapsed:rail.elapsed,duration:rail.duration}:null,galaxy:true,island:false,ocean:false,authPrompts:0,visible:!hidden&&!blurred,position:eye.toArray(),camera:{position:camera.position.toArray(),target:target.toArray(),fov:camera.fov},vessel:vessel.diagnostics(),sky:sky.diagnostics(),book:vessel.book.diagnostics(),originalBook:true,exhibitedWorks:0,bookOnly:true,reducedMotion:reduced.matches})};
+ addEventListener('pagehide',event=>{if(event.persisted){hidden=true;stopInput();renderer.setAnimationLoop(null);return;}disposed=true;bookReveal=null;stopInput();renderer.setAnimationLoop(null);vessel.dispose();returnPortal.dispose();cockpit.dispose();berthLight.dispose();sky.dispose();environment.dispose();pmrem.dispose();renderer.dispose();});
+ addEventListener('pageshow',event=>{if(event.persisted){hidden=document.hidden;blurred=false;last=0;bookReveal=null;opening=false;vessel.book.reset();if(stage==='return-flight'||stage==='return-portal')cancelReturn();paint();dirty=true;document.body.classList.remove('is-arriving');renderer.setAnimationLoop(frame);}});
+ return{diagnostics:()=>({stage,frames,originCity,reading:opening,bookArrival:{cinematic:true,revealing:!!bookReveal,progress:bookReveal?Math.min(1,bookReveal.elapsed/ORIGIN_BOOK_JOURNEY.revealDuration):null},returnJourney:{destination:earthHref,parkedShip:ORIGIN_RETURN.ship,portal:returnPortal.diagnostics(),moving:!!rail,kind:rail?.kind||null},moving:!!rail,passage:rail?{elapsed:rail.elapsed,duration:rail.duration}:null,galaxy:true,island:false,ocean:false,authPrompts:0,visible:!hidden&&!blurred,position:eye.toArray(),camera:{position:camera.position.toArray(),target:target.toArray(),fov:camera.fov},vessel:vessel.diagnostics(),sky:sky.diagnostics(),book:vessel.book.diagnostics(),originalBook:true,exhibitedWorks:0,bookOnly:true,reducedMotion:reduced.matches})};
 }

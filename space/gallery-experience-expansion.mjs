@@ -25,10 +25,11 @@ export function expandProjectedExperience(projection,camera,href,options={}){
  });
 }
 
-export function expandLisbonDiscover(projection,camera,href,options={}){
+export function expandSpatialDiscover(projection,camera,href,options={}){
  if(!projection.root||!projection.setHandoff||!projection.snapshot)return false;
  return openExperience({object:projection.root,camera,href,type:'discover',projection,...options});
 }
+export {expandSpatialDiscover as expandLisbonDiscover};
 
 export function expandGalleryObject(object,camera,href,{kind,width,shot,...options}){
  if(current||!object)return false;

@@ -1,13 +1,20 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import * as T from '../../space/vendor/three-0.180.0.mjs';
+import {GLTFLoader} from '../../space/vendor/GLTFLoader-0.180.0.mjs';
+import {MeshoptDecoder} from '../../space/vendor/meshopt_decoder.module.js';
 import {createLisbonSeaMonuments} from '../../space/gallery-lisbon-sea.mjs';
+import {createCristoRei,CRISTO_MODEL} from '../../space/gallery-cristo-rei.mjs';
 import {createDrownedOcean} from '../../space/gallery-drowned-ocean.mjs';
 import {
  BRIDGE_DECK_LOCAL_Y,BRIDGE_DECK_DEPTH,CRISTO_FEET_DEPTH,CRISTO_WAVE_SHADOW,
  CRISTO_REI_LOCATION,PONTE_25_ABRIL_LOCATION,stillOceanHeight,oceanDomain,bridgeHeight
 } from '../../space/gallery-lisbon-water.mjs';
 
+const bytes=fs.readFileSync('space'+CRISTO_MODEL);
+const gltf=await new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).parseAsync(bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength),'');
+const figure=createCristoRei({loader:{load(path,ready){assert.equal(path,CRISTO_MODEL);ready(gltf);}}});
+figure.root.updateMatrixWorld(true);
 const scene=new T.Scene(),monuments=createLisbonSeaMonuments(scene,{}),ocean=createDrownedOcean(scene,{profile:'lisbon',mobile:true});
 const oceanNY=createDrownedOcean(scene,{mobile:true});
 try{
@@ -22,10 +29,13 @@ try{
  assert.equal(oceanNY.diagnostics().contactFoam,false);
  const waveBound=(42*(1+.26+.095)+9*1.18+5+3.6+2.3+1.2)*CRISTO_WAVE_SHADOW.transmission;
  assert.ok(cristoRei.pedestalTopY<cristoRei.stillWaterY-waveBound-.05,'The pedestal stays under even the maximum local drawdown');
- const figure=monuments.root.getObjectByName('Cristo Rei sculpted limestone figure');
- assert.ok(figure&&figure.getObjectByName('Vertically fluted stone tunic')&&figure.getObjectByName('Carved open palm'));
- const span=new T.Box3().setFromObject(figure).getSize(new T.Vector3());
- assert.ok(span.y>95&&span.x>65,'The head and arms keep the monumental silhouette');
+ assert.ok(figure.diagnostics().loaded&&figure.diagnostics().triangles===1540);
+ const statue=figure.root.getObjectByName('cristo-rei-almada-image-statue');
+ assert.ok(statue);
+ const bounds=new T.Box3().setFromObject(statue),span=bounds.getSize(new T.Vector3());
+ assert.ok(Math.abs(bounds.min.y)<.01&&Math.abs(span.y-28)<.01&&Math.abs(span.x-28)<.01,'The authored GLB matches the statue height, span and submerged feet anchor');
+ const model=new T.Box3().setFromObject(figure.root);
+ assert.ok(Math.abs(model.min.y+82.06)<.02&&Math.abs(model.max.y-28)<.02,'The same GLB includes the whole submersed pedestal');
  const [sx,sz]=oceanDomain(CRISTO_REI_LOCATION.x,CRISTO_REI_LOCATION.z);
  assert.ok(Math.hypot(sx,sz)>Math.hypot(CRISTO_REI_LOCATION.x,CRISTO_REI_LOCATION.z));
  for(const offset of [-900,0,900]){
@@ -41,5 +51,5 @@ try{
  }
  console.log('PASS Lisbon monuments, submerged roadway, real crest envelope and shared contact waterline');
 }finally{
- monuments.dispose();ocean.dispose();oceanNY.dispose();assert.equal(scene.children.length,0);
+ figure.dispose();monuments.dispose();ocean.dispose();oceanNY.dispose();assert.equal(scene.children.length,0);
 }

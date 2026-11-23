@@ -12,32 +12,23 @@ export {CRISTO_REI_LOCATION,PONTE_25_ABRIL_LOCATION};
 
 export function createLisbonSeaMonuments(scene,{mobile=false,onChange=()=>{}}={}){
  const root=new T.Group();root.name='Submerged monuments of Lisbon';scene.add(root);
- const figure=createCristoRei({mobile}),geometries=figure.geometries,materials=figure.materials;
+ const geometries=new Set(),materials=new Set();
+ let disposed=false,dirty=true,bridgeLoaded=false,bridgeFailed=false,towerSpan=0;
+ const loader=globalThis.document?.createElementNS?new GLTFLoader():null;
+ loader?.setMeshoptDecoder(MeshoptDecoder);
+ const changed=()=>{dirty=true;onChange();};
+ const figure=createCristoRei({loader,onChange:changed});
  const cristo=CRISTO_REI_LOCATION,bridge=PONTE_25_ABRIL_LOCATION,feetY=cristoFeetHeight();
  figure.root.position.set(cristo.x,feetY,cristo.z);figure.root.scale.setScalar(cristo.scale);
  const vertical=new T.Vector3(0,1,0),localUp=new T.Vector3(cristo.x,stillOceanHeight(cristo.x,cristo.z)-WORLD_CENTER_Y,cristo.z).normalize();
  figure.root.quaternion.setFromUnitVectors(vertical,localUp).multiply(new T.Quaternion().setFromAxisAngle(vertical,cristo.yaw));
  root.add(figure.root);
 
- const pedestal=new T.Group();pedestal.name='Cristo Rei submerged stone pedestal';root.add(pedestal);
- pedestal.position.copy(figure.root.position);pedestal.quaternion.copy(figure.root.quaternion);pedestal.scale.setScalar(cristo.scale);
- const concrete=new T.MeshStandardMaterial({color:0x87877d,roughness:.98});materials.add(concrete);
- function support(geometry,x,y,z){
-  geometries.add(geometry);const stone=new T.Mesh(geometry,concrete);stone.position.set(x,y,z);pedestal.add(stone);
- }
- support(new T.BoxGeometry(6.55,2.0,5.4),0,-1.06,0);
- support(new T.BoxGeometry(8.15,4.7,7.55),0,-4.27,0);
- for(const x of [-2.5,2.5])for(const z of [-2.5,2.5]){
-  const pierTop=-4.9,pierBottom=-CRISTO_PEDESTAL_HEIGHT;
-  support(new T.CylinderGeometry(1.28,2.14,pierTop-pierBottom,8),x,(pierTop+pierBottom)/2,z);
- }
-
  const bridgeRoot=new T.Group();bridgeRoot.name='Ponte 25 de Abril under the flooded Tagus';root.add(bridgeRoot);
  const bridgeSteel=new T.MeshStandardMaterial({color:0xa93b2e,roughness:.69,metalness:.35});
  const cables=new T.MeshStandardMaterial({color:0x3b3937,roughness:.62,metalness:.58});
  const causeway=new T.MeshStandardMaterial({color:0x697075,roughness:.89});
  for(const material of [bridgeSteel,cables,causeway])materials.add(material);
- let disposed=false,dirty=true,bridgeLoaded=false,bridgeFailed=false,towerSpan=0;
  const storage=mobile?'/assets/lisbon/ponte_25_abril_l1.glb':'/assets/lisbon/ponte_25_abril_l0.glb';
  const point=new T.Vector3(),normal=new T.Vector3(),normalMatrix=new T.Matrix3(),up=new T.Vector3(0,1,0);
  const cosine=Math.cos(bridge.yaw),sine=Math.sin(bridge.yaw);
@@ -95,9 +86,7 @@ export function createLisbonSeaMonuments(scene,{mobile=false,onChange=()=>{}}={}
   for(const material of sourceMaterials)material.dispose();
   for(const texture of sourceTextures)texture.dispose();
  }
- if(globalThis.document?.createElementNS){
-  const loader=new GLTFLoader();
-  loader.setMeshoptDecoder(MeshoptDecoder);
+ if(loader){
   loader.load(storage,gltf=>attachBridge(gltf.scene),undefined,()=>{
    if(!disposed){bridgeFailed=true;dirty=true;onChange();}
   });
@@ -107,12 +96,12 @@ export function createLisbonSeaMonuments(scene,{mobile=false,onChange=()=>{}}={}
   root,
   update(){const changed=dirty&&!disposed;dirty=false;return changed;},
   diagnostics:()=>({
-   kind:'lisbon-sea-monuments',place:'lisbon',ready:bridgeLoaded||!globalThis.document?.createElementNS,loaded:bridgeLoaded,
+   kind:'lisbon-sea-monuments',place:'lisbon',ready:!loader||bridgeLoaded&&figure.diagnostics().loaded,loaded:bridgeLoaded,
    submerged:true,bridgeFailed,
    cristoRei:{
     monument:'Santuário de Cristo Rei',location:[cristo.x,feetY,cristo.z],yaw:cristo.yaw,scale:cristo.scale,
     stillWaterY:stillOceanHeight(cristo.x,cristo.z),feetY,pedestalTopY:feetY-.06*cristo.scale,
-    submergedPillars:true,sculptedStone:true,openHands:true,flutedRobe:true,
+    ...figure.diagnostics(),submergedPillars:true,measuredExterior:true,
     pedestalHeightMetres:CRISTO_PEDESTAL_HEIGHT,statueHeightMetres:CRISTO_STATUE_HEIGHT
    },
    ponte25Abril:{
@@ -124,6 +113,7 @@ export function createLisbonSeaMonuments(scene,{mobile=false,onChange=()=>{}}={}
   }),
   dispose(){
    if(disposed)return;disposed=true;
+   figure.dispose();
    for(const g of geometries)g.dispose();for(const m of materials)m.dispose();
    root.removeFromParent();root.clear();
   }

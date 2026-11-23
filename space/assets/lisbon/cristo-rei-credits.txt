@@ -1,0 +1,5 @@
+Cristo Rei (Almada), by Codriver / 9570-6198 Québec inc.
+CC BY 4.0 — https://creativecommons.org/licenses/by/4.0/
+Source: https://github.com/codriver-io/codriver-3d-assets/blob/main/public/models/buildings/cristo-rei-almada-near.glb
+Geographic data © OpenStreetMap contributors, ODbL 1.0 — https://www.openstreetmap.org/copyright
+Adaptation in TOTEHM Space: rotated to face the island, submerged up to the feet, with softened sculpture normals and a weathered stone finish. The distributed GLB itself is unchanged.

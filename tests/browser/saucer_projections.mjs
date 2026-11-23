@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {launch,page} from './harness.mjs';
 import {LISBON_FRONT_NAMES,LISBON_FRONT_COPY} from '../../space/lisbon-first-page.mjs';
+import {OPPOSITES} from '../../space/gallery-opposites.mjs';
 const out=process.argv[2]||'/tmp/saucer-projections';fs.mkdirSync(out,{recursive:true});
 const origin='https://www.totehm.space',results=[];let checks=0;const check=(v,m)=>{assert(v,m);checks++;console.log('PASS '+m);};
 const landscape="import * as T from '/vendor/three-0.180.0.mjs';export function createTempleLandscape(scene){scene.background=new T.Color(0x080c16);scene.add(new T.HemisphereLight(0xdbe6f0,0x252a33,1));return{update:()=>false,diagnostics:()=>({qa:true})};}";
@@ -11,16 +12,10 @@ const ready=pg=>pg.waitForFunction(()=>window.__totehm_gallery?.().frames>0&&__t
 const fatal=log=>log.errors.filter(e=>/pageerror:|WebGLProgram|VALIDATE_STATUS|shader error|WebGL: INVALID/i.test(e));
 const save=()=>fs.writeFileSync(out+'/results.json',JSON.stringify({checks,results},null,2));
 async function focusProjection(pg){await pg.locator('.tour [data-room="2"]').click({timeout:60000});await pg.waitForFunction(()=>__totehm_gallery().focused===2,null,{timeout:30000});await pg.waitForFunction(()=>!document.getElementById('enter-experience').disabled);}
-async function clickPanel(pg){
- const point=await pg.evaluate(async()=>{
-  const {PerspectiveCamera,Vector3}=await import('/vendor/three-0.180.0.mjs');
-  const {camera:pose,projection}=__totehm_gallery();
-  const camera=new PerspectiveCamera(pose.fov,pose.aspect,pose.near,pose.far);
-  camera.position.fromArray(pose.position);camera.lookAt(new Vector3(...pose.target));camera.updateMatrixWorld(true);
-  const point=new Vector3(...projection.position).project(camera),rect=document.getElementById('space').getBoundingClientRect();
-  return{x:rect.left+(point.x+1)*rect.width/2,y:rect.top+(1-point.y)*rect.height/2};
- });
- await pg.mouse.click(point.x,point.y);
+async function clickWork(pg,id){
+ const pose=await pg.evaluate(id=>__totehm_gallery().projection.poses.find(work=>work.id===id),id);
+ check(pose?.width>5&&pose?.height>5,'The selected original is individually clickable on the 3D canvas');
+ await pg.mouse.click(pose.x,pose.y);
 }
 async function clickSign(pg){
  const sign=await pg.evaluate(()=>{
@@ -105,8 +100,11 @@ try{for(const viewport of [{width:800,height:600},{width:1100,height:760}])for(c
    check(projection.headline===LISBON_FRONT_COPY.headline&&projection.subtitle===LISBON_FRONT_COPY.subtitle,'Lisbon keeps the canonical title and smaller caption amid the signs');
   }else{
    check(projection.beamSource.every((axis,i)=>Math.abs(axis-[0,18.9,-4.2][i])<1e-6),city+' projects from the saucer emitter at '+viewport.width);
-   check(projection.kind==='saucer-first-page-projection'&&projection.canonicalFirstPage&&projection.blackPanel&&projection.blackBeam&&projection.opticalBeam&&projection.bottom>0,'New York keeps its raised canonical screen at '+viewport.width);
-   check(projection.works===6&&projection.front.count===6&&projection.front.ids.length===6&&sample.initial.temple.projectionOnly&&sample.initial.temple.legacyArtworkPickables===0&&sample.initial.temple.thpCounter.packagedPapers===0&&!sample.initial.temple.origins.lectern,'New York has only the six-work projection and saucer, without a local book or THP table at '+viewport.width);
+   check(projection.kind==='new-york-suspended-opposites'&&projection.canonicalFirstPage&&!projection.blackPanel&&projection.independentWorks&&projection.beamVisible&&projection.rayCount===6,'Six distinct fields support the original New York artworks at '+viewport.width);
+   check(projection.works===6&&projection.loaded===6&&projection.failed===0&&sample.initial.temple.projectionOnly&&sample.initial.temple.legacyArtworkPickables===0&&sample.initial.temple.thpCounter.packagedPapers===0&&!sample.initial.temple.origins.lectern,'New York keeps the six-work installation and saucer at '+viewport.width);
+   assert.deepEqual(projection.poses.map(({id})=>id),OPPOSITES.map(({id})=>id));
+   assert.deepEqual(projection.assets,OPPOSITES.map(({image})=>image));
+   check(projection.poses.every(({corners})=>corners.every(({x,y})=>x>0&&x<viewport.width&&y>0&&y<viewport.height)),'All six suspended originals fit in the entrance view at '+viewport.width);
    check(await pg.locator('.tour [data-room]').count()===2,'New York navigation offers only its projection and Origin at '+viewport.width);
   }
   const vessel=sample.initial.originsJourney.vessel;
@@ -119,7 +117,7 @@ try{for(const viewport of [{width:800,height:600},{width:1100,height:760}])for(c
   await pg.screenshot({path:out+'/'+city+'-'+viewport.width+'-world.png'});await focusProjection(pg);sample.camera=await pg.evaluate(()=>__totehm_gallery().camera.position);await pg.evaluate(()=>window.projectionSceneToken='same scene');
   if(owned)await pg.emulateMedia({reducedMotion:'no-preference'});
   if(lisbon)sample.clickedSign=await clickSign(pg);
-  else await clickPanel(pg);
+  else await clickWork(pg,'get-higher');
   await pg.waitForFunction(()=>window.__totehm_projection_expansion?.().stage==='experience',null,{timeout:40000});
   const frame=pg.frames().find(fr=>new URL(fr.url()).searchParams.get('embedded')==='1');
   check(!!frame,city+' opens a single full-screen experience at '+viewport.width);
@@ -161,7 +159,9 @@ try{for(const viewport of [{width:800,height:600},{width:1100,height:760}])for(c
   }else{
    check(await frame.evaluate(()=>__totehm_experience_front().ready),'New York opens its ready original first page at '+viewport.width);
    sample.front=await frame.evaluate(()=>__totehm_experience_front());
-   check(sample.front.build===projection.front.build&&JSON.stringify(sample.front.ids)===JSON.stringify(projection.front.ids),'New York uses the same canonical canvas and catalogue in the scene and full-screen page');
+   assert.deepEqual(sample.front.ids,projection.ids);
+   await frame.waitForFunction(()=>__totehm_opposites().phase==='discover');
+   check(new URL(frame.url()).searchParams.get('work')==='get-higher'&&await frame.evaluate(()=>__totehm_opposites().work==='get-higher'&&__totehm_opposites().step===0),'The selected work opens its own first Discover slide');
    check(!requests.some(path=>path.startsWith('/assets/fire/')),'New York never requests a fire recording at '+viewport.width);
   }
   check(await pg.evaluate(()=>window.projectionSceneToken==='same scene'&&__totehm_projection_expansion().physicalPanelVisible===false&&__totehm_projection_expansion().overlays===0&&__totehm_projection_expansion().frames===1),city+' has one live experience with the physical projection hidden at '+viewport.width);
@@ -177,6 +177,9 @@ try{for(const viewport of [{width:800,height:600},{width:1100,height:760}])for(c
    check(!!reducedFrame,'The gallery Enter control also opens Discover');
    await reducedFrame.locator('#sdisc-stage .is-first.show').waitFor();
    check(await reducedFrame.evaluate(()=>__totehm_lisbon().reduced_motion&&!__totehm_lisbon().board&&__totehm_lisbon().step===0),'Reduced-motion entry begins on the first Discover slide');
+  }else{
+   const catalogue=pg.frames().find(fr=>new URL(fr.url()).pathname==='/think_same_but_opposite');
+   check(catalogue&&await catalogue.locator('.front-hit').count()===6&&await catalogue.evaluate(()=>__totehm_opposites().phase==='front'),'The gallery Enter control still opens the whole New York catalogue');
   }
   await pg.goBack();await pg.waitForFunction(()=>__totehm_projection_expansion().stage==='closed');
   check(await pg.locator('#experience-projection-dialog').count()===0&&await pg.evaluate(()=>__totehm_projection_expansion().physicalPanelVisible),city+' browser Back closes only the full-screen experience at '+viewport.width);
