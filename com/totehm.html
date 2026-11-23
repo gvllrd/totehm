@@ -3676,12 +3676,11 @@ body.papier-haut #gate-asteroid{transition:opacity .25s ease}
 .lsh-sf .sfcmd.is-melt .sf-lab{opacity:1}
 .lsh-sf .sfcmd.is-grind .sf-lab{opacity:0}
 /* 2 · les trois boutons, empilés AU CENTRE du navy — c'est là qu'ils raccourcissent */
-.lsh-sf .sfpile{position:absolute;left:5%;right:5%;top:50%;display:flex;flex-direction:column;gap:5px;
+.lsh-sf .sfpile{position:absolute;left:7%;right:7%;top:50%;display:flex;flex-direction:column;gap:3px;
   opacity:0;transform:translateY(-50%) scale(.9);pointer-events:none;transition:opacity .3s ease,transform .36s cubic-bezier(.22,.61,.36,1)}
 .lsh-sf .sfcmd.is-grind .sfpile{opacity:1;transform:translateY(-50%);pointer-events:auto}
-/* 23/11 (Wah : « quand on clique sur [Grind] c'est ensuite compliqué de sélectionner un des trois superposés ») : plus hauts */
-.lsh-sf .sfpile i{display:block;font:700 10px/1.2 'Space Mono',monospace;letter-spacing:0;text-transform:uppercase;font-style:normal;
-  padding:8px 1px;color:#fff;text-align:center;white-space:nowrap;overflow:hidden;cursor:pointer;transition:filter .2s ease}
+.lsh-sf .sfpile i{display:block;font:700 9px/1.2 'Space Mono',monospace;letter-spacing:0;text-transform:uppercase;font-style:normal;
+  padding:3px 1px;color:#fff;text-align:center;white-space:nowrap;overflow:hidden;cursor:pointer;transition:filter .2s ease}
 .lsh-sf .sfpile i[data-v=objectives]{background:#36498c}
 .lsh-sf .sfpile i[data-v=habits]{background:#3a3a70}
 .lsh-sf .sfpile i[data-v=repulsions]{background:#743169}
@@ -3723,11 +3722,13 @@ a.sd-tag{color:#fff;text-decoration:underline;text-decoration-color:rgba(255,255
 button.sd-tag.is-aud{border:0;cursor:pointer;color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.4)}
 button.sd-tag.is-aud[disabled]{opacity:.6;cursor:progress}
 .sd-say{margin:0;font:400 13px/1.45 'Quantico',sans-serif;color:#fff}
-.ssp-row{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:30px;
-  background:rgba(0,0,0,.86);border-radius:16px;padding:3px 3px 3px 11px}   /* posé sur l'image : lisible comme `.sdata` */
+/* 23/11 (Wah : « réduire la bande noire : pas besoin qu'elle fasse toute la largeur puisqu'il n'y a que trois boutons ») */
+.ssp-row{display:flex;align-items:center;justify-content:center;gap:8px;min-height:30px;width:fit-content;max-width:100%;margin:0 auto;
+  background:rgba(0,0,0,.86);border-radius:16px;padding:3px}
+.ssp-row:has(.ssp-par){padding-left:11px}   /* posé sur l'image : lisible comme `.sdata` */
 .ssp-par{display:flex;align-items:center;gap:7px;font:400 9px/1 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#9a9aa0}
 .ssp-by{border:0;background:none;padding:0;cursor:pointer;font:400 13px/1.2 'Quantico',sans-serif;letter-spacing:0;text-transform:none;color:#fbd5ca}
-.ssp-acts{display:flex;gap:6px;margin-left:auto}
+.ssp-acts{display:flex;gap:6px}
 .ssp-acts button{border:0;border-radius:10px;background:#1f1f24;color:#fff;cursor:pointer;padding:8px 12px;
   font:700 9.5px/1 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase}
 .ssp-acts button:focus-visible,.ssp-by:focus-visible{outline:1px solid #fff;outline-offset:2px}
@@ -6984,7 +6985,10 @@ function creerFeed(conf){
       +'<div class="sd-row">'+place+audT+(aud==='private'?'':tag('location '+(z.location==='on'?'on':'off')))
         +(z.location==='on'&&z.mode?tag(z.mode==='silent'?'silent · nobody disturb me':'social · we can talk'):'')+'</div>'
       +(z.comment?'<p class="sd-say">'+esc(String(z.comment))+'</p>':'')+'</div>';
+    /* 23/11 (Wah) : « sur les spots, un bouton [Share] — un lieu Google Maps pour y aller et un lien vers la plateforme —
+       dans la bande noire où sont déjà [Go] et [Delete] » */
     const acts=(ex?'<button type="button" data-go="'+esc(String(z.id))+'">go</button>':'')
+      +'<button type="button" data-share="'+esc(String(z.id))+'">share</button>'
       +(z.state==='will'?'<button type="button" data-ics="'+esc(String(z.id))+'">calendar</button>':'')
       +(z.mine&&!RO?'<button type="button" data-del="'+esc(String(z.id))+'">delete</button>':'');
     const par=!z.mine&&z.creator?'<span class="ssp-par"><span>by</span><button type="button" class="ssp-by" data-who="'+esc(String(z.creator))+'">'+esc(String(z.creator))+'</button></span>':'';
@@ -6992,7 +6996,7 @@ function creerFeed(conf){
                   :'<div class="ssp-box">'+loupeVue(boxSpot(z))+'</div>';
     return '<section class="lsh ssp-s'+(media?'':' is-nu')+(ici===x.cle?' is-ici':'')+'" data-lsh-k="'+esc(x.cle)+'">'
       +'<div class="ssp-c">'+(media?'<div class="ssp-m">'+media+'</div>':'')+'<div class="ssp-info">'+data
-      +((par||acts)?'<div class="ssp-row">'+(par||'<span></span>')+(acts?'<span class="ssp-acts">'+acts+'</span>':'')+'</div>':'')
+      +((par||acts)?'<div class="ssp-row">'+par+(acts?'<span class="ssp-acts">'+acts+'</span>':'')+'</div>':'')
       /* le niveau du SPOT est au-dessus (`[data-spaud]`, trois niveaux) ; celui de sa BOX se règle dans la box (16/11) */
       +box+'</div></div></section>';
   }
@@ -7610,6 +7614,8 @@ function creerFeed(conf){
         retirer(x).then(ok=>{ if(!ok){ del.disabled=false; del.classList.remove('is-sur'); del.textContent='delete'; } }); return; }
       const sa=e.target.closest('[data-spaud]');
       if(sa){ const z=(L.find(x=>x.sp&&String(x.sp.id)===String(sa.dataset.spaud))||{}).sp; if(z) spotNiveau(sa,z); return; }
+      const sh=e.target.closest('[data-share]');
+      if(sh){ const z=(L.find(x=>x.sp&&String(x.sp.id)===String(sh.dataset.share))||{}).sp; if(z) partagerSpot(sh,z); return; }
       const g=e.target.closest('[data-go],[data-ics],[data-who]');
       if(g){ const z=(L.find(x=>x.sp&&String(x.sp.id)===String(g.dataset.go||g.dataset.ics))||{}).sp;
         /* 20/10 sexies — l'auteur : son ÉCOSYSTÈME (sur place) ; sa page de vente si sa lecture demande un abonnement. */
@@ -7621,6 +7627,20 @@ function creerFeed(conf){
       const t=conf.grille&&e.target.closest('.tl[data-i]'); if(t) voir(+t.dataset.i);
     });
   } }
+  /* 23/11 — PARTAGER UN SPOT : la feuille de partage du téléphone (sinon le presse-papiers) — sa Habit, son lieu, le chemin
+     Google Maps (seulement si le point exact m'est montré) et le lien du spot (figher.club l'ouvre selon les droits). */
+  async function partagerSpot(b,z){
+    const lien='https://www.figher.club/?spot='+encodeURIComponent(String(z.id));
+    const ex=z.location==='on'&&z.exact&&typeof z.exact.lat==='number';   /* la même règle que [Go] */
+    const go=ex?'https://www.google.com/maps/dir/?api=1&destination='+(+z.exact.lat).toFixed(5)+','+(+z.exact.lng).toFixed(5):'';
+    const ou=String(ex&&z.exact.place||z.city||'').trim();
+    const texte=[String(z.habit||(z.habit_box||{}).name||'A spot').trim()+(ou?' · '+ou:''), go?'Go: '+go:''].filter(Boolean).join('\n');
+    try{
+      if(navigator.share){ await navigator.share({title:'TOTEHM · spot', text:texte, url:lien}); etat.partages=(etat.partages||0)+1; return; }
+      await navigator.clipboard.writeText(texte+'\n'+lien); etat.partages=(etat.partages||0)+1;
+      b.textContent='link copied'; setTimeout(()=>{ if(b.isConnected) b.textContent='share'; },1800);
+    }catch(e){ if(e&&e.name!=='AbortError') console.error('[share]',e&&e.message||e); }
+  }
   /* MES ÉLÉMENTS, pour attribuer un média : les cinq vues, dans l'ordre du Totehm. */
   function mesElements(){
     const l=[];

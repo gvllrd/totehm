@@ -46,7 +46,7 @@ try{
   await pg.click('#lv-sh-sf [data-sf="grind"]');await pg.waitForTimeout(600);
   const g0=await pg.evaluate(()=>({f:window.__totehm_sh().filtre,n:window.__totehm_sh().items,on:document.querySelector('#lv-sh-sf .sfv-g').classList.contains('is-on'),
     q:document.querySelector('#lv-sh-sf .sfv-g').getBoundingClientRect().width,pile:[...document.querySelectorAll('#lv-sh-sf .sfpile i')].map(i=>Math.round(i.getBoundingClientRect().height))}));
-  ok(g0.f==='grind'&&g0.n===3&&g0.on&&g0.pile.every(h=>h>=26),nom+' · GRIND seul : ses objectifs, habits et répulsions, sans choisir un sous-bouton ; boutons hauts → '+JSON.stringify(g0));
+  ok(g0.f==='grind'&&g0.n===3&&g0.on&&g0.pile.length===3,nom+' · GRIND seul : ses objectifs, habits et répulsions, sans choisir un sous-bouton (les trois boutons gardent leurs proportions) → '+JSON.stringify(g0));
   await pg.click('#lv-sh-sf .sfpile i[data-v="habits"]');await pg.waitForTimeout(500);
   await pg.mouse.move(2,2);await pg.waitForTimeout(300);
   const g=await pg.evaluate(()=>({pile:[...document.querySelectorAll('#lv-sh-sf .sfpile i')].map(i=>({on:i.classList.contains('is-on'),

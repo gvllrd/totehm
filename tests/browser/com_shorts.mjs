@@ -269,7 +269,7 @@ try{
   const lus=log.rpc.filter(x=>x.name==='club_spots_of'&&x.body.p_pseudo==='wahigher').map(x=>x.body.p_period);
   ok(lus.join(',')==='now,future'&&d.r.club.periode==='future'&&!log.rpc.some(x=>x.name==='club_spots'),
      '27/10 · → MES spots (club_spots_of à mon nom, jamais « everyone ») : rien maintenant, la vue montre ce qui VIENT ('+lus.join(' → ')+')');
-  ok(!d.radar&&d.r.mode==='map'&&d.bascule.join(' ')==='Map* Grid'&&d.basculeVue,'plus de radar : MAP · GRID, au format de MINE · MEMBERS ; la vue s\'ouvre sur la CARTE');
+  ok(!d.radar&&d.r.mode==='map'&&d.bascule.join(' ')==='Map* Grid Shorts'&&d.basculeVue,'plus de radar : MAP · GRID · SHORTS (23/11), au format de MINE · MEMBERS ; la vue s\'ouvre sur la CARTE');
   ok(d.r.carte.terres>100&&d.r.carte.points===1&&d.r.carte.villes===0,'la Terre (Natural Earth, '+d.r.carte.terres+' terres) et mon spot : un carré plein, à son point');
   ok(d.plein&&d.dock&&d.haut,'la carte prend l\'écran ; le Totehm est sorti se caler EN HAUT, centré');
   await pg.screenshot({path:OUT+'/spots_'+(tel?'tel':'ordi')+'.png'});
@@ -348,16 +348,16 @@ try{
       window.__nait.push([t, m?+m[1]:1, +getComputedStyle(s).opacity, c.classList.contains('is-split')]); }
     requestAnimationFrame(f); }; requestAnimationFrame(f); });
   const papierDock=await pg.evaluate(()=>document.getElementById('gate-asteroid').getBoundingClientRect().width);
-  await pg.click('#gate-asteroid');await pg.waitForTimeout(1200);
+  await pg.click('#lv-sh-flt [data-f="sf"]');await pg.waitForTimeout(1200);   /* 23/11 : [Refine] ouvre le filtre ; le petit TOTEHM ouvre le TOTEHM */
   const nait=await pg.evaluate(()=>window.__nait), cmdW=await pg.evaluate(()=>document.querySelector('#lv-sh-sf .sfv-g').getBoundingClientRect().width);
   const k0=nait.length?nait[0][1]:1, fin=nait[nait.length-1]||[0,0,0,false];
   ok(nait.length>15&&Math.abs(k0-papierDock/cmdW)<.08&&nait.some(x=>x[1]>k0+.05&&x[1]<.98)&&fin[1]===1&&fin[2]>.9&&fin[3],
-    '26/10 · UN tap sur le Totehm docké : le logo part de SA taille (×'+k0.toFixed(2)+'), zoome, puis MY WISDOM et MY VISION glissent de sous lui ('+nait.length+' images)');
+    '26/10 · UN tap sur [Refine] : le logo part de SA taille (×'+k0.toFixed(2)+'), zoome, puis MY WISDOM et MY VISION glissent de sous lui ('+nait.length+' images)');
   const fz=await pg.evaluate(()=>({vu:!document.getElementById("lv-sh-sf").hidden, pick:!document.getElementById('lv-sh-pick').hidden,
     papiers:document.querySelectorAll('#lv-sh-sf .sfcmd .sfv').length,
     vues:[...document.querySelectorAll('#lv-sh-sf [data-sf="vue"]')].map(e=>e.textContent), boxes:document.querySelectorAll('#lv-sh-sf .sfb').length}));
   ok(fz.vu&&!fz.pick&&fz.papiers===3&&fz.vues.length===5&&fz.boxes===0&&fz.vues[0]==='my story'&&fz.vues[fz.vues.length-1]==='my vision',
-    'le Totehm docké ouvre le FILTRE : ses trois papiers, les cinq vues ('+fz.vues.join(' · ')+') — 26/10 : MY WISDOM, plus « story »');
+    '[Refine] ouvre le FILTRE : ses trois papiers, les cinq vues ('+fz.vues.join(' · ')+') — 26/10 : MY WISDOM, plus « story »');
   const ouvert=await pg.evaluate(()=>{const c=document.querySelector('#lv-sh-sf .sfcmd'),p=c.querySelector('.sfpile'),
       g=c.querySelector('.sfv-g').getBoundingClientRect();
     return {split:c.classList.contains('is-split'), lg:+getComputedStyle(c.querySelector('.sf-lg')).opacity,
@@ -422,34 +422,28 @@ try{
   const aj=await pg.evaluate(()=>({vu:!document.getElementById('lv-sh-sf').hidden, pick:!document.getElementById('lv-sh-pick').hidden, gate:document.body.classList.contains('gate'),
     mot:(document.querySelector('#lv-sh-sf .sf-aj')||{}).textContent||'', split:!!document.querySelector('#lv-sh-sf .sfcmd.is-split'),
     groupes:[...document.querySelectorAll('#lv-sh-sf .sfl')].map(e=>e.textContent), d:window.__totehm_sh()}));
-  ok(aj.vu&&!aj.pick&&aj.gate&&aj.mot==='+ media'&&aj.split&&aj.d.ajout&&aj.d.naissances===na+1&&!aj.groupes.some(g=>/shows|Intentions/i.test(g)),
-    '26/10 · la tuile « + » fait naître le Totehm du filtre (pas le déploiement central) : ses trois parties, rien d\'autre → '+JSON.stringify({mot:aj.mot,g:aj.groupes}));
-  await pg.click('#lv-sh-sf [data-sf="grind"]');await pg.waitForTimeout(500);
-  await pg.click('#lv-sh-sf .sfpile [data-v="habits"]');await pg.waitForTimeout(400);
-  await pg.locator('#lv-sh-sf .sfb').filter({hasText:'Run the hill'}).first().click();await pg.waitForTimeout(500);
-  const cap=await pg.evaluate(()=>({o:window.__totehm_sh().capture.ouvertures, ouvert:!document.getElementById('lv-sh-sf').hidden, f:window.__totehm_sh().filtre, aj:window.__totehm_sh().ajout,
-    seule:[...document.querySelectorAll('#lv-sh-sf .sfb')].map(e=>(e.classList.contains('is-on')?'+':'')+((e.querySelector('.v-name')||{}).textContent||'')).join('|'),
-    ici:!!document.querySelector('#lv-sh-sf .sfb + *, #lv-sh-sf .sf-cap #cap-in.is-inline'), modale:document.getElementById('cap').classList.contains('is-on')}));
-  ok(cap.o>0&&cap.ouvert&&cap.aj&&cap.seule==='+Run the hill'&&cap.ici&&!cap.modale&&cap.f===fa,
-     '27/10 · … MY GRIND → MY HABITS → une box : elle reste SEULE, la capture s\'ouvre DESSOUS, dans le panneau (la continuité), le filtre n\'a pas bougé → '+JSON.stringify(cap));
-  await pg.locator('#lv-sh-sf .sfb.is-on').first().click();await pg.waitForTimeout(400);
-  ok(await pg.evaluate(()=>document.querySelectorAll('#lv-sh-sf .sfb').length>1&&!document.querySelector('#lv-sh-sf .sf-cap')&&document.getElementById('cap').contains(document.getElementById('cap-in'))),
-     '27/10 · un tap sur la box choisie rend la liste ; la capture rentre chez elle');
+  /* 23/11 (Wah : « commencer par les prises de photo / vidéo / fichier ») : le « + » ouvre la CAPTURE, dans le panneau ;
+     la box se choisit APRÈS (le parcours complet : com_grille_boxes) */
+  const capIci=await pg.evaluate(()=>!!document.querySelector('#lv-sh-sf .sf-cap #cap-in.is-inline')&&!document.querySelector('#lv-sh-sf .sfcmd')&&!document.getElementById('cap').classList.contains('is-on'));
+  ok(aj.vu&&!aj.pick&&aj.gate&&aj.mot==='+ media'&&aj.d.ajout&&capIci&&aj.d.filtre===fa,
+    '23/11 · la tuile « + » ouvre la PRISE d\'abord, dans le panneau (pas le déploiement, pas de box avant), le filtre n\'a pas bougé → '+JSON.stringify({mot:aj.mot,g:aj.groupes,capIci}));
   await pg.keyboard.press('Escape');await pg.waitForTimeout(500);
   // la vue de droite : le TOTEHM DOCKÉ ouvre le filtre — ses Habits (au format Totehm), le temps, les intentions « X [Higher] »
   await pg.click('#lvn-rt');await vers(pg,'c');await pg.click('#lvn-rt');await vers(pg,'d');await pg.waitForTimeout(1000);
-  await pg.click('#gate-asteroid');await pg.waitForTimeout(500);
+  await pg.click('#rdr-flt [data-f="sf"]');await pg.waitForTimeout(500);   /* 23/11 : [Refine] ouvre le filtre */
   const panD=await pg.evaluate(()=>({l:[...document.querySelectorAll('#rdr-sf .sfl')].map(e=>e.textContent),
     habits:[...document.querySelectorAll('#rdr-sf .sfb')].map(e=>(e.querySelector('.tb .v-name')?'':'!')+(e.querySelector('.v-name,.lsh-t')||{}).textContent.trim()),
     higher:document.querySelectorAll('#rdr-sf .sfi .sfh').length,
     quand:[...document.querySelectorAll('#rdr-sf [data-sf="per"]')].map(e=>e.textContent+(e.classList.contains('is-on')?'*':''))}));
-  ok(panD.l.join(' · ')==='Habits · When · Intentions · It shows · Where · Who sees it','à droite, le Totehm docké ouvre LE filtre : '+panD.l.join(' · '));
+  ok(panD.l.join(' · ')==='Habits · When · Intentions · It shows · Where · Who sees it','à droite, [Refine] ouvre LE filtre : '+panD.l.join(' · '));
   /* (« Read at dawn » a été renommée puis SUPPRIMÉE plus haut : il en reste deux.) */
   ok(panD.habits.join('|')==='Run the hill|Call mum','les HABITS seules, au format Totehm (un spot ne vit qu\'une Habit) : '+panD.habits.join(' · '));
   ok(panD.quand.join(' · ')==='now · past · future*'&&panD.higher===7,'27/10 · le temps : '+panD.quand.join(' · ')+' (1. Now · 2. Past · 3. Future) ; les intentions portent le badge [Higher]');
   ok(await pg.evaluate(()=>!document.querySelector('#rdr-sf [data-sf="qui"]')&&!/everyone/i.test(document.getElementById('rdr-sf').textContent)),'27/10 · plus de WHOSE ni d\'« everyone » : ce sont MES spots');
   // le passé : deux de MES spots, la ville seule — puis la GRILLE
   await pg.click('#rdr-sf [data-sf="per"][data-v="past"]');await pg.waitForTimeout(800);
+  /* 23/11 : un temps s'AJOUTE (comme une intention) — on retire « future » pour ne garder que le passé */
+  await pg.click('#rdr-sf [data-sf="per"][data-v="future"]');await pg.waitForTimeout(800);
   await pg.click('#rdr-sf [data-sf="close"]');await pg.waitForTimeout(300);
   const mp=await pg.evaluate(()=>window.__totehm_rdr().carte);
   ok(mp.villes===2&&mp.points===2,'la carte : deux spots dont je ne vois que la VILLE — deux carrés CREUX, jamais un faux point');
@@ -481,7 +475,7 @@ try{
      'la tuile ouvre MON spot en grand : sans média (les infos seules, centrées), la ville seule, sa box et ses mini-boîtes au format Totehm → '+JSON.stringify({m:pas2.mini,r:pas2.rep}));
   await pg.click('#rdr-x');await pg.waitForTimeout(500);
   // le filtre part au SERVEUR
-  await pg.click('#gate-asteroid');await pg.waitForTimeout(400);
+  if(await pg.evaluate(()=>document.getElementById('rdr-sf').hidden)) await pg.click('#rdr-flt [data-f="sf"]');await pg.waitForTimeout(400);   /* 23/11 : [Refine] ; il reste ouvert après une box */
   await pg.click('#rdr-sf [data-sf="int"][data-v="love"]');await pg.waitForTimeout(700);
   const dern=()=>log.rpc.filter(x=>x.name==='club_spots_of').pop();
   const q1=dern();
@@ -490,7 +484,7 @@ try{
   await pg.click('#rdr-sf [data-sf="box"]');await pg.waitForTimeout(700);
   const q3=dern();
   ok(q3&&q3.body.p_filters.habit==='Run the hill','une Habit choisie part au serveur (habit : '+(q3&&q3.body.p_filters.habit)+')');
-  await pg.click('#gate-asteroid');await pg.waitForTimeout(400);
+  if(await pg.evaluate(()=>document.getElementById('rdr-sf').hidden)) await pg.click('#rdr-flt [data-f="sf"]');await pg.waitForTimeout(400);   /* 23/11 : [Refine] ; il reste ouvert après une box */
   await pg.click('#rdr-sf [data-sf="ou"][data-v="near"]');await pg.waitForTimeout(900);
   const q2=dern(), ray=await pg.evaluate(()=>[...document.querySelectorAll('#rdr-sf [data-sf="rayon"]')].map(e=>e.textContent+(e.classList.contains('is-on')?'*':'')));
   ok(q2&&q2.body.p_filters.scope==='near'&&q2.body.p_filters.radius_km===50&&typeof q2.body.p_lat==='number'&&ray.join(' ')==='5 km 20 km 50 km* 200 km',

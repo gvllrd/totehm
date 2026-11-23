@@ -5,7 +5,7 @@
 import {launch,page,ok} from './harness.mjs';
 const UID='11111111-1111-4111-8111-111111111111', now=Date.now();
 const STEPS=[{t:'Run the hill',t0:'Run the hill',is:['fight']}];
-const sp=(id,per)=>({id,habit:'Run the hill',intentions:['fight'],mine:true,creator:'wahigher',city:'Lisbon',audience:'figher',mode:'social',
+const sp=(id,per)=>({id,habit:'Run the hill',intentions:['fight'],mine:true,creator:'wahigher',city:'Lisbon',audience:'figher',mode:'social',location:'on',
   starts_at:new Date(now+(per==='past'?-864e5:per==='future'?864e5:-1000)).toISOString(),ends_at:new Date(now+(per==='past'?-80e6:36e5)).toISOString(),
   exact:{lat:38.72,lng:-9.14,place:'the hill'},habit_box:{name:'Run the hill',ints:['fight'],objectives:[],repulsions:[]}});
 const PAR={now:[sp('n1','now')],future:[sp('f1','future'),sp('f2','future')],past:[sp('p1','past')]};
@@ -44,6 +44,16 @@ try{
   await pg.click('#rdr-mode [data-rmode="shorts"]');await pg.waitForTimeout(1500);
   const s=await pg.evaluate(()=>({voit:document.body.classList.contains('rdr-voir'),etat:window.__totehm_lv().spots}));
   ok(s.voit&&s.etat.mode==='shorts'&&s.etat.polaroid.on,nom+' · Shorts : les spots défilent plein écran → '+JSON.stringify({voit:s.voit,mode:s.etat.mode,on:s.etat.polaroid.on}));
+  /* 23/11 (Wah) : [Share] dans la bande noire (avec go et delete), et la bande pas plus large que ses boutons */
+  await pg.evaluate(()=>{ window.__part=null; navigator.share=d=>{ window.__part=d; return Promise.resolve(); }; });
+  const band=await pg.evaluate(()=>{ const r=document.querySelector('#rdr-sh .lsh.is-ici .ssp-row')||document.querySelector('#rdr-sh .ssp-row');
+    return r?{w:Math.round(r.getBoundingClientRect().width),W:innerWidth,b:[...r.querySelectorAll('.ssp-acts button')].map(x=>x.textContent)}:null; });
+  ok(band&&band.b.join('|')==='go|share|delete'&&band.w<band.W*0.8,nom+' · la bande noire : go · share · delete, à la largeur de ses boutons → '+JSON.stringify(band));
+  await pg.evaluate(()=>{ const b=(document.querySelector('#rdr-sh .lsh.is-ici [data-share]')||document.querySelector('#rdr-sh [data-share]')); b.click(); });
+  await pg.waitForTimeout(400);
+  const part=await pg.evaluate(()=>window.__part);
+  ok(part&&/^https:\/\/www\.figher\.club\/\?spot=/.test(part.url)&&/google\.com\/maps\/dir/.test(part.text)&&/Run the hill · the hill/.test(part.text),
+     nom+' · [Share] : la Habit et son lieu, le chemin Google Maps, et le lien vers la plateforme → '+JSON.stringify(part));
   await pg.keyboard.press('Escape');await pg.waitForTimeout(800);
   const g=await pg.evaluate(()=>({voit:document.body.classList.contains('rdr-voir'),mode:window.__totehm_lv().spots.mode}));
   ok(!g.voit&&g.mode==='grid',nom+' · refermer les Shorts rend la grille → '+JSON.stringify(g));
