@@ -59,12 +59,12 @@ try{
     return {r:[r.x,r.y,r.width,r.height].map(Math.round),o:cs.outlineStyle,c:cs.color,t:t.textContent.trim(),dessus:document.elementFromPoint(r.x+r.width/2,r.y+r.height/2)?.closest('.tl-add')===t};});
   await clic(pg,'#rdr-plus');await pg.waitForTimeout(400);
   const e0=await etapes(pg), b0=await pg.evaluate(()=>[...document.querySelectorAll('#rdr-new .sfb .v-name')].map(e=>e.textContent.trim()));
-  ok(await pg.evaluate(()=>!document.getElementById('rdr-new').hidden&&document.body.classList.contains('is-nspot'))&&e0.join('|')==='+ spot|which habit?'&&b0.join('|')==='Run the hill|Call mum',
+  ok(await pg.evaluate(()=>!document.getElementById('rdr-new').hidden&&document.body.classList.contains('is-nspot'))&&e0.join('|')==='+ spot|a photo or a video · optional · 33 s at most|which habit?'&&b0.join('|')==='Run the hill|Call mum',
      nom+' · la prise s\'ouvre sur MES Habits, au format Totehm (boxTotehm), et rien d\'autre : '+e0.join(' · ')+' → '+b0.join(' · '));
   await pg.keyboard.press('ArrowLeft');await pg.waitForTimeout(700);
   ok((await lv(pg)).vue==='d',nom+' · pendant la prise, la navigation ATTEND (← ne quitte pas la vue)');
   await pg.locator('#rdr-new .sfb').filter({hasText:'Run the hill'}).first().click();await pg.waitForTimeout(300);
-  ok((await etapes(pg)).join('|')==='+ spot|my habit|when'&&await pg.evaluate(()=>document.querySelectorAll('#rdr-new .sfb').length===1),
+  ok((await etapes(pg)).join('|')==='+ spot|a photo or a video · optional · 33 s at most|my habit|when'&&await pg.evaluate(()=>document.querySelectorAll('#rdr-new .sfb').length===1),
      nom+' · la Habit choisie reste SEULE ; vient la question suivante : NOW · LATER');
   await clic(pg,'#rdr-new [data-ns="quand"][data-v="now"]');
   await pg.waitForFunction(()=>[...document.querySelectorAll('#rdr-new .sfl')].some(e=>e.textContent==='who sees it'),null,{timeout:8000}).catch(()=>{});
@@ -150,7 +150,7 @@ try{
   await clic(pg,'#rdr-new [data-ns="quand"][data-v="later"]');await pg.waitForTimeout(250);
   const d1=await pg.evaluate(()=>({d:(document.querySelector('#rdr-new [data-nsi="date"]')||{}).value, t:(document.querySelector('#rdr-new [data-nsi="time"]')||{}).value,
     l:[...document.querySelectorAll('#rdr-new .sfl')].map(e=>e.textContent)}));
-  ok(/^\d{4}-\d{2}-\d{2}$/.test(d1.d)&&/^\d{2}:\d{2}$/.test(d1.t)&&d1.l.join('|')==='+ spot|my habit|when|the day and the hour|where'
+  ok(/^\d{4}-\d{2}-\d{2}$/.test(d1.d)&&/^\d{2}:\d{2}$/.test(d1.t)&&d1.l.join('|')==='+ spot|a photo or a video · optional · 33 s at most|my habit|when|the day and the hour|where'
      &&!d1.l.includes('who sees it'),
      nom+' · LATER : la date ET l\'heure tout de suite (demain à cette heure), puis WHERE — rien d\'autre → '+d1.d+' '+d1.t);
   const ou1=await pg.evaluate(()=>[...document.querySelectorAll('#rdr-new [data-ns="ou"]')].map(e=>e.childNodes[0].textContent));
@@ -188,8 +188,9 @@ try{
   await clic(pg,'#rdr-new [data-ns="mode"][data-v="silent"]');await pg.waitForTimeout(250);
   ok((await etapes(pg)).slice(-1)[0]==='duration',nom+' · puis la durée');
   await clic(pg,'#rdr-new [data-ns="dur"][data-v="90"]');await pg.waitForTimeout(250);
-  const l3=await pg.evaluate(()=>({l:[...document.querySelectorAll('#rdr-new .sfl')].map(e=>e.textContent).slice(-2), go:(document.querySelector('#rdr-new .ns-go')||{}).textContent}));
-  ok(l3.l.join('|')==='a word · optional|a photo or a video · optional'&&l3.go==='I WILL BE HERE',nom+' · un mot, une photo ou une vidéo (facultative), I WILL BE HERE');
+  const l3=await pg.evaluate(()=>({l:[...document.querySelectorAll('#rdr-new .sfl')].map(e=>e.textContent), go:(document.querySelector('#rdr-new .ns-go')||{}).textContent}));
+  /* 23/11 (Wah) : la prise (photo / vidéo / fichier) OUVRE la prise de spot, en tête ; un mot à la fin */
+  ok(l3.l[1]==='a photo or a video · optional · 33 s at most'&&l3.l.slice(-1)[0]==='a word · optional'&&l3.go==='I WILL BE HERE',nom+' · la photo ou la vidéo (facultative) EN TÊTE, un mot à la fin, I WILL BE HERE → '+l3.l.join(' · '));
   await pg.fill('#rdr-new input[data-nsi="place"]','the old court');
   await pg.screenshot({path:OUT+'/prise_later_'+(tel?'tel':'ordi')+'.png'});
   const u0=log.upload.filter(u=>u.method==='POST').length;

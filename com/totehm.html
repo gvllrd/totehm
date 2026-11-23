@@ -6032,7 +6032,7 @@ const CAP=(()=>{
     if(RO||!me||!k||!ref) return;
     fermer(); opt=o||null;
     cible={k,ref}; dire(''); occupe=false; arreterCam();
-    if(opt&&opt.prendre) fF.accept=ACCEPT_SPOT;
+    if(opt&&opt.prendre&&!opt.tout) fF.accept=ACCEPT_SPOT;
     if(opt&&opt.hote){
       hote=opt.hote; inn.style.setProperty('--cx','50%'); inn.style.setProperty('--cy','0px');
       hote.appendChild(inn); void inn.offsetWidth; inn.classList.add('is-inline'); diagC.ouvertures++; return;
@@ -7113,10 +7113,21 @@ function creerFeed(conf){
              :'<p class="lv-note">nothing in this view yet</p>')
           +'</div></div>';
       }
-      if(SF.ajout){ h+=(aj?'<div class="sfg sf-cap"></div>':'')
-          +'<div class="sfg"><div class="sfr sfa"><span></span><button type="button" class="sfc" data-sf="close">CLOSE</button></div></div>';
+      if(SF.ajout){
+        /* ⚠️ 23/11 (Wah : « quand j'ajoute des médias, je veux que l'on commence par les prises de photo / vidéo / fichier :
+           ces vues sont très axées sur l'instantanéité ») — le « + » ouvre la CAPTURE d'abord ; le fichier est GARDÉ
+           (`prendre`), puis on choisit sa box, et l'envoi part au tap sur elle. Depuis une box (« Add a media »), elle est déjà là. */
+        const fermerH='<div class="sfg"><div class="sfr sfa"><span></span><button type="button" class="sfc" data-sf="close">CLOSE</button></div></div>';
+        if(!aj&&!SF.ajFichier){
+          p.innerHTML='<p class="sfl sf-aj">+ media</p><div class="sfg sf-cap"></div>'+fermerH;
+          CAP.ouvrir('_','_',null,{hote:p.querySelector('.sf-cap'), tout:true,
+            prendre:(f,nom)=>{ SF.ajFichier={f,nom:nom||f.name||''}; setTimeout(sfPaint,0); return {ok:true}; }});
+          return; }
+        if(SF.ajFichier) h=h.replace('<p class="sfl sf-aj">+ media</p>','<p class="sfl sf-aj">'+esc(/^video\//.test(SF.ajFichier.f.type||'')?'video':'photo')
+          +' ready · '+(SF.ajMot?esc(SF.ajMot):'choose its box')+'</p>');
+        h+=(aj&&!SF.ajFichier?'<div class="sfg sf-cap"></div>':'')+fermerH;
         p.innerHTML=h;
-        if(aj) CAP.ouvrir(aj.k,aj.ref,null,{hote:p.querySelector('.sf-cap'), fini:()=>sfOpen(false)});
+        if(aj&&!SF.ajFichier) CAP.ouvrir(aj.k,aj.ref,null,{hote:p.querySelector('.sf-cap'), fini:()=>sfOpen(false)});
         return; }
       h+=g('It shows', c('data-sf="type" data-v="photo"','photo',SF.type==='photo')+c('data-sf="type" data-v="video"','video',SF.type==='video'));
       h+=g('Intentions', INTS.map(chipInt).join(''));
@@ -7177,11 +7188,20 @@ function creerFeed(conf){
     const y=mesElements().find(z=>z.k===x.k&&(z.ref===x.ref||z.ref===ref)); if(!y) return;
     SF.ajVue=VUE[y.k]||''; SF.ajBox=y; sfOpen(true,true);
   }
+  /* 23/11 — le fichier pris d'abord rejoint la box choisie ensuite (le même envoi que la capture, `emEnvoyer`) */
+  async function deposer(x){
+    const m=SF.ajFichier; if(!m||SF.ajEnvoi) return; SF.ajEnvoi=true; SF.ajMot='saving…'; sfPaint();
+    const r=await emEnvoyer(x.k,x.ref,m.f,m.nom).catch(e=>{ console.error('[media]',e&&e.message||e); return {ok:false}; });
+    SF.ajEnvoi=false;
+    if(r&&r.ok){ etat.depots=(etat.depots||0)+1; sfOpen(false); return; }
+    SF.ajMot=({type:'this kind of file stays outside',size:'50 MB at most',full:'2,000 files at most',not_mine:'save this element first',signin:'sign in again'})[r&&r.why]||'try again';
+    sfPaint();
+  }
   function sfOpen(open,ajout){
     const p=pan(); if(!p) return;
     const naissance=open&&conf.grille&&(p.hidden||!!ajout!==SF.ajout);
     p.hidden=!open;
-    SF.ajout=!!(open&&ajout&&conf.grille); if(!SF.ajout){ SF.ajVue=''; SF.ajBox=null; } etat.ajout=SF.ajout;
+    SF.ajout=!!(open&&ajout&&conf.grille); if(!SF.ajout){ SF.ajVue=''; SF.ajBox=null; SF.ajFichier=null; SF.ajMot=''; } etat.ajout=SF.ajout;
     if(open){ const pk=$(conf.pick); if(pk) pk.hidden=true; }
     if(naissance){ const v=SF.ajout?SF.ajVue:SF.vue; SF.plie=true; SF.grind=v==='grind'||GRIND.includes(v); }
     /* le Totehm docké QUITTE son dock pendant que le panneau est ouvert : c'est lui qui s'est décomposé (il revient à la fermeture) */
@@ -7646,7 +7666,9 @@ function creerFeed(conf){
       /* le « + » : une vue, puis une box — elle ouvre la capture POUR elle ; le filtre n'est jamais touché */
       if(SF.ajout&&c==='vue'){ SF.ajVue=SF.ajVue===v?(GRIND.includes(v)?'grind':''):v; SF.ajBox=null; SF.grind=SF.ajVue==='grind'||GRIND.includes(SF.ajVue); sfPaint(); return; }
       if(SF.ajout&&c==='box'){ const [k,ref]=String(v||'').split('|'); const x=mesElements().find(z=>z.k===k&&z.ref===ref);
-        if(!x) return; SF.ajBox=SF.ajBox&&SF.ajBox.k===x.k&&SF.ajBox.ref===x.ref?null:x; sfPaint(); return; }
+        if(!x) return;
+        if(SF.ajFichier){ deposer(x); return; }   /* 23/11 : le fichier est pris — la box choisie le reçoit */
+        SF.ajBox=SF.ajBox&&SF.ajBox.k===x.k&&SF.ajBox.ref===x.ref?null:x; sfPaint(); return; }
       /* Le logo se décompose SANS repeindre le panneau : une peinture rejouerait
          la scène à l'état final et on ne verrait jamais le papier fondre. */
       if(c==='grind'){
@@ -7942,7 +7964,7 @@ const NSPOT=(()=>{
   function neuf(){
     lacher(); seqPos++;
     const d=new Date(Date.now()+864e5);
-    Object.assign(N,{h:null, quand:'', media:null, path:'', capOuverte:false, aud:'', mode:'', ou:'',
+    Object.assign(N,{h:null, quand:'', media:null, path:'', capOuverte:true, aud:'', mode:'', ou:'',
       pt:null, ptSrc:'', ptVille:'', ptNom:'', posErr:false, posBusy:false,
       adr:'', hits:[], hit:-1, adrBusy:false, adrErr:'', adrSeq:0,
       dur:0, mot:'', date:d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()),
@@ -8069,7 +8091,7 @@ const NSPOT=(()=>{
     if(m) return '<div class="sfg"><div class="sfl">'+(m.photo?'photo':'video')+'</div><div class="ns-m">'
       +(m.photo?'<img alt="" src="'+esc(m.url)+'">':'<video src="'+esc(m.url)+'" muted loop playsinline autoplay></video>')
       +'</div><div class="sfr">'+chip('data-ns="nomedia"','change',false)+chip('data-ns="sansmedia"','remove',false)+'</div></div>';
-    const mot='a photo or a video · optional'+(direct?' · '+(R.clip_seconds||33)+' s at most':'');
+    const mot='a photo or a video · optional · '+(R.clip_seconds||33)+' s at most';
     if(direct||N.capOuverte) return '<div class="sfg"><div class="sfl">'+esc(mot)+'</div><div class="ns-cap"></div></div>';
     return grp(mot,chip('data-ns="capo"','add one',false));
   }
@@ -8135,7 +8157,10 @@ const NSPOT=(()=>{
     const p=pan(); if(!p) return;
     if(CAP.dans(p)) CAP.fermer();          /* la capture en ligne rentre chez elle AVANT la peinture */
     if(p.hidden) return;
-    let h='<p class="sfl sf-aj">+ spot</p><p class="ns-def ns-what" data-tw>'+esc(DEF)+'</p>'+habitHTML(), cap=false;
+    /* ⚠️ 23/11 (Wah : « quand j'ajoute des spots, je veux que l'on commence par les prises de photo / vidéo / fichier :
+       ces vues sont très axées sur l'instantanéité ») — la PRISE ouvre la prise de spot, juste sous sa définition ;
+       elle reste facultative ([remove] publie sans média), et le reste suit dessous. */
+    let h='<p class="sfl sf-aj">+ spot</p><p class="ns-def ns-what" data-tw>'+esc(DEF)+'</p>'+mediaHTML(false)+habitHTML(), cap=N.capOuverte&&!N.media;
     if(N.h){
       h+=quandHTML();
       const plan=N.quand==='later';
@@ -8147,12 +8172,9 @@ const NSPOT=(()=>{
           if(N.aud){
             h+=ensHTML();
             if(N.mode){
-              /* 14/11 : le média ne garde plus la suite. NOW ouvre la prise d'office, LATER la propose. */
-              if(!plan){ h+=mediaHTML(!N.media); cap=!N.media; }
               h+=durHTML();
               if(N.dur){
                 h+=motHTML();
-                if(plan){ h+=mediaHTML(false); cap=N.capOuverte&&!N.media; }
                 h+=envoiHTML(plan?'I WILL BE HERE':'I AM HERE');
               }
             }
@@ -8163,7 +8185,7 @@ const NSPOT=(()=>{
     h+='<div class="sfg"><div class="sfr sfa"><span></span><button type="button" class="sfc" data-ns="close">CLOSE</button></div></div>';
     p.innerHTML=h;
     if(cap){ const ho=p.querySelector('.ns-cap');
-      if(ho) CAP.ouvrir('h',String(N.h.t||'').trim(),null,{hote:ho, prendre, max:R.clip_seconds||33, fini:()=>peindre()}); }
+      if(ho) CAP.ouvrir('h',String(N.h&&N.h.t||'').trim()||'_',null,{hote:ho, prendre, max:R.clip_seconds||33, fini:()=>peindre()}); }
   }
   function dire(t){ N.note=t||''; const n=pan()&&pan().querySelector('.ns-note'); if(n) n.textContent=N.note; }
   /* ── OUVRIR LA BOX DEPUIS ICI (14/11, Wah) ── « On doit pouvoir changer la confidentialité d'une box
@@ -8243,7 +8265,7 @@ const NSPOT=(()=>{
       if(N.occupe) return;
       if(c==='h') N.h=(state.habits||[]).find(h=>String(h.id)===String(v))||null;
       else if(c==='reh') N.h=null;
-      else if(c==='quand'){ if(N.quand===v) return; N.quand=v; N.mode=''; N.capOuverte=false; oublierLieu();
+      else if(c==='quand'){ if(N.quand===v) return; N.quand=v; N.mode=''; oublierLieu();
         /* NOW : le lieu ne se demande pas, il se prend (logique de Wah : maintenant = ici). */
         if(v==='now'){ N.ou='ici'; localiser(); } else N.ou=''; }
       else if(c==='ou'){ if(N.ou===v) return; N.ou=v; oublierLieu(); if(v==='ici') localiser(); }

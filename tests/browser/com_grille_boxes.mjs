@@ -16,7 +16,7 @@ const ARBRE={signed_in:true,objectives:[{id:'o1',text:'Ship it',is:['express'],h
   repulsions:[{id:'r1',text:'The phone in bed',is:['focus'],hs:['Run the hill']}],
   stories:[{id:'w1',text:'I left Paris at nineteen'}],visions:[{id:'v1',text:'The studio by the sea'}]};
 const RPC={my_landing:{signed_in:true,pseudo:'wahigher',visibility:'private',offer:{enabled:false},higher:{active:false},thp:false,subscriptions:0,subscribers:0},
-  element_media_list:()=>({ok:true,items}),
+  element_media_list:()=>({ok:true,items}), element_media_add:b=>({ok:true,id:'m-new',kind:b.p_kind,ref:b.p_ref,path:b.p_path}),
   my_totehm:async()=>{ await new Promise(r=>setTimeout(r,2500)); return ARBRE; },
   habit_spaces:{ok:true,mine:true,habits:[]}, element_cloths:{ok:true,mine:true,elements:[]},
   my_visions:{ok:true,visions:[]}, my_feed_badges:{ok:true,pos:{}},
@@ -55,8 +55,25 @@ try{
      nom+' · MY HABITS affine ; tout reste en PLEINE couleur, aucun trait blanc → '+JSON.stringify(g));
   await pg.click('#lv-sh-sf .sfpile i[data-v="habits"]');await pg.waitForTimeout(400);
   ok(await pg.evaluate(()=>window.__totehm_sh().filtre)==='grind',nom+' · re-taper MY HABITS revient à GRIND entier');
-  /* 23/11 (Wah) : le petit TOTEHM docké en haut OUVRE LE TOTEHM (seul [Refine] ouvre le filtre) */
   await pg.click('#lv-sh-sf [data-sf="close"]');await pg.waitForTimeout(500);
+  /* 23/11 (Wah) : « + » commence par la PRISE (photo / vidéo / fichier), PUIS la box */
+  const up0=log.upload.length;
+  await pg.click('#lv-sh-f .tl-add');await pg.waitForTimeout(900);
+  const c0=await pg.evaluate(()=>({cap:!!document.querySelector('#lv-sh-sf .sf-cap #cap-in'),cmd:!!document.querySelector('#lv-sh-sf .sfcmd'),
+    b:[...document.querySelectorAll('#lv-sh-sf .sf-cap .cap-b')].map(e=>e.textContent.trim().toLowerCase())}));
+  ok(c0.cap&&!c0.cmd,nom+' · « + » : la capture D\'ABORD, aucune box à choisir avant → '+JSON.stringify(c0));
+  const PNG=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==','base64');
+  await pg.setInputFiles('#cap-f-file',{name:'shot.png',mimeType:'image/png',buffer:PNG});
+  await pg.waitForFunction(()=>!!document.querySelector('#lv-sh-sf .sfcmd'),null,{timeout:6000}).catch(()=>{});
+  const c1=await pg.evaluate(()=>({cmd:!!document.querySelector('#lv-sh-sf .sfcmd'),dit:(document.querySelector('#lv-sh-sf .sf-aj')||{}).textContent||''}));
+  ok(c1.cmd&&/photo ready/.test(c1.dit)&&log.upload.length===up0,nom+' · le fichier est GARDÉ, puis on choisit sa box (rien n\'est envoyé avant) → '+JSON.stringify(c1));
+  await pg.click('#lv-sh-sf [data-sf="vue"][data-v="visions"]');await pg.waitForTimeout(500);
+  await pg.click('#lv-sh-sf [data-sf="box"][data-v="v|v1"]');
+  await pg.waitForFunction(()=>document.getElementById('lv-sh-sf').hidden,null,{timeout:8000}).catch(()=>{});
+  const up=log.upload.at(-1), depot=await pg.evaluate(()=>({cache:document.getElementById('lv-sh-sf').hidden,dit:(document.querySelector('#lv-sh-sf .sf-aj')||{}).textContent||''}));
+  ok(depot.cache&&log.upload.length>up0&&/\/m-[0-9a-f-]{36}\.jpg/.test(up.path)&&log.rpc.some(r=>r.name==='element_media_add'&&JSON.stringify(r.body).includes('v1')),
+     nom+' · le tap sur la box ENVOIE le fichier pris, rangé dans CETTE box → '+JSON.stringify({depot,up,add:log.rpc.filter(r=>r.name==='element_media_add').map(r=>r.body)}));
+  /* 23/11 (Wah) : le petit TOTEHM docké en haut OUVRE LE TOTEHM (seul [Refine] ouvre le filtre) */
   const loupes=await pg.evaluate(()=>[document.querySelectorAll('#lv-sh-f .tl-bx .loupe[data-vz]').length,document.querySelectorAll('#lv-sh-f .tl-bx').length]);
   ok(loupes[1]>0&&loupes[0]===loupes[1],nom+' · chaque box héritée de la grille porte sa loupe ('+loupes.join('/')+')');
   await pg.click('#gate-asteroid');await pg.waitForFunction(()=>!document.body.classList.contains('gate'),null,{timeout:9000}).catch(()=>{});
