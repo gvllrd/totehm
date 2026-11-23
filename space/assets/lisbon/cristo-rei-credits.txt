@@ -1,5 +1,16 @@
-Cristo Rei (Almada), by Codriver / 9570-6198 Québec inc.
-CC BY 4.0 — https://creativecommons.org/licenses/by/4.0/
-Source: https://github.com/codriver-io/codriver-3d-assets/blob/main/public/models/buildings/cristo-rei-almada-near.glb
-Geographic data © OpenStreetMap contributors, ODbL 1.0 — https://www.openstreetmap.org/copyright
-Adaptation in TOTEHM Space: rotated to face the island, submerged up to the feet, with softened sculpture normals and a weathered stone finish. The distributed GLB itself is unchanged.
+Cristo Rei, Almada (sculpture by Francisco Franco da Silva).
+Official monument and dimensions: https://cristorei.pt/o-santuario/o-monumento/exterior/
+
+Photograph "Cristo Rei (36211699613)" by Deensel, CC BY 2.0:
+https://commons.wikimedia.org/wiki/File:Cristo_Rei_(36211699613).jpg
+Crop by Cristiano Tomás:
+https://commons.wikimedia.org/wiki/File:Cristo_Rei_(36211699613)_(cropped).jpg
+Licence: https://creativecommons.org/licenses/by/2.0/
+Local source for the crop: https://github.com/pedrochaim/mestre2/blob/8bd75151db0c38f5cc39f79d571021e66e6d8cd6/pipeline/trabalho/fig_esculturas_arquitetura_017/07.jpg
+TOTEHM adaptation: traced silhouette, cleaned texture edges, neutralized colour, modelled volume and estimated reverse depth. The photograph supplies the visible front detail. Statue placed facing the island with its feet at the waterline.
+
+Pedestal geometry "Cristo Rei (Almada)", by Codriver / 9570-6198 Québec inc., CC BY 4.0:
+https://github.com/codriver-io/codriver-3d-assets/blob/main/public/models/buildings/cristo-rei-almada-near.glb
+Licence: https://creativecommons.org/licenses/by/4.0/
+Geographic data © OpenStreetMap contributors, ODbL 1.0: https://www.openstreetmap.org/copyright
+TOTEHM adaptation: uses the pedestal meshes, rotated and submerged beneath the photographic sculpture.

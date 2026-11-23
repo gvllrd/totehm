@@ -27,10 +27,10 @@ try{
     return scene?.frames>0&&sky?.fullSphere&&sky.galacticPlate?.ready&&!sky.galacticPlate.failed&&sky.galacticPlate.blend===1;
    },null,{timeout:90000});
    sample.reducedStart=await state(pg);
-   const {skyMotion,catalogue,stars,stellarColours,moonDirection,galacticNormal,companionGalaxy,emissionNebula,brightAnchors,shootingStars,comet,lunarRelief,galacticPlate,skyGrade,astrophotography}=sample.reducedStart.sky;
-   catalogues.push({skyMotion,catalogue,stars,stellarColours,moonDirection,galacticNormal,companionGalaxy,emissionNebula,brightAnchors,shootingStars,comet,lunarRelief,galacticPlate,skyGrade,astrophotography});
+   const {skyMotion,catalogue,stars,stellarColours,moonDirection,galacticNormal,companionGalaxy,emissionNebula,brightAnchors,shootingStars,comet,lunarRelief,galacticPlate,skyGrade,skyPalette,astrophotography}=sample.reducedStart.sky;
+   catalogues.push({skyMotion,catalogue,stars,stellarColours,moonDirection,galacticNormal,companionGalaxy,emissionNebula,brightAnchors,shootingStars,comet,lunarRelief,galacticPlate,skyGrade,skyPalette,astrophotography});
    check(stars===23500&&stellarColours===7&&brightAnchors===14&&lunarRelief&&comet===false&&shootingStars===0,city+' keeps the shared authored stars and lunar relief');
-   check(skyGrade==='astrophotographic-night'&&galacticPlate.projection==='full-sphere-astrophotography'&&skyMotion.stellarScintillation&&astrophotography?.ready&&astrophotography.local&&astrophotography.dimensions.join(',')==='2048,1024',city+' renders the local ESO panorama and stellar scintillation');
+   check(skyGrade==='astrophotographic-night'&&skyPalette==='black-cobalt-violet-turquoise-gold'&&galacticPlate.projection==='full-sphere-astrophotography'&&skyMotion.stellarScintillation&&astrophotography?.ready&&astrophotography.local&&astrophotography.dimensions.join(',')==='2048,1024',city+' renders the night-colour ESO panorama and stellar scintillation');
    await pg.waitForTimeout(600);
    sample.reducedEnd=await state(pg);
    check(sample.reducedEnd.sky.time===sample.reducedStart.sky.time&&!sample.reducedEnd.sky.animated&&!sample.reducedEnd.sky.meteor,city+' freezes the sky in reduced motion');

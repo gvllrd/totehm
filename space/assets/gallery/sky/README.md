@@ -10,7 +10,7 @@
 - Mirror provenance and additional photographic credit: https://github.com/BastiaanOlij/godot-sky-asset/blob/31a4dcb544a0eb3ab5ac7cd0b8079781981bfe53/README.md
 - Retrieved blob SHA: `58bbcdd63a8274d5c79acdbb7f0775b6fd8cfa5f`.
 
-The JPEG bytes are unchanged from that mirror. TOTEHM adapts the displayed exposure and orientation in its shader. The fixed orientation is a shared composition for Lisbon, New York and Origin; it does not claim dated, astrometrically calibrated coordinates. The scene also retains a procedural reflection map, authored fine star points and lunar relief.
+The JPEG bytes are unchanged from that mirror. TOTEHM adapts the displayed exposure, colour and orientation in its shader. Its black point suppresses the neutral background, and the photographic dust lanes carry cobalt, violet and turquoise with warm gold limited to the bright warm detail. Star positions and dust contours come from the original panorama. The fixed orientation is a shared composition for Lisbon, New York and Origin; it does not claim dated, astrometrically calibrated coordinates. The scene also retains a procedural reflection map, authored fine star points and lunar relief.
 
 The local JPEG requires no third-party network or CORS access while rendering. If it fails to load, the shared procedural sky remains available and diagnostics report the fallback. A visible source/license credit is created by `gallery-drowned-sky.mjs` in all three scenes.
 

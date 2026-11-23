@@ -6,7 +6,7 @@ export const SKY_ASTROPHOTOGRAPH=Object.freeze({
  credit:'ESO/S. Brunier',license:'CC BY 4.0',
  licenseUrl:'https://creativecommons.org/licenses/by/4.0/',
  dimensions:Object.freeze([2048,1024]),
- adaptation:'Exposure and orientation adapted for the shared night sky; photograph pixels unchanged.'
+ adaptation:'Exposure, colour and orientation adapted for the shared night sky; photograph pixels unchanged.'
 });
 
 // Lisbon, New York and Origin share this fixed photographic celestial sphere.
@@ -139,13 +139,13 @@ export function createDrownedSky(scene,{mobile=false,onChange=()=>{}}={}){
  environmentTexture.minFilter=T.LinearMipmapLinearFilter;environmentTexture.magFilter=T.LinearFilter;textures.add(environmentTexture);
  const timeUniform={value:0},pixelRatio={value:Math.min(globalThis.devicePixelRatio||1,1.5)};
  const skyMaterial=material(new T.ShaderMaterial({uniforms:{
-  uMap:{value:environmentTexture},uPhotograph:{value:photograph??environmentTexture},uPhotographBlend:plateBlend,
+  uMap:{value:environmentTexture},uPhotograph:{value:photograph??environmentTexture},uPhotographBlend:plateBlend,uTime:timeUniform,
   uGalacticCore:{value:core},uGalacticEast:{value:tangent},uGalacticNormal:{value:normal}
  },side:T.BackSide,depthWrite:false,depthTest:false,fog:false,toneMapped:false,
   vertexShader:'varying vec3 vDirection;void main(){vDirection=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
   fragmentShader:`varying vec3 vDirection;
    uniform sampler2D uMap,uPhotograph;
-   uniform float uPhotographBlend;
+   uniform float uPhotographBlend,uTime;
    uniform vec3 uGalacticCore,uGalacticEast,uGalacticNormal;
    vec2 sphereUV(vec3 d){
     return vec2(atan(d.z,d.x)*.159154943+.5,asin(clamp(d.y,-1.,1.))*.318309886+.5);
@@ -156,18 +156,34 @@ export function createDrownedSky(scene,{mobile=false,onChange=()=>{}}={}){
     dx.x-=floor(dx.x+.5);dy.x-=floor(dy.x+.5);
     return textureGrad(image,uv,dx,dy).rgb;
    }
+   vec3 nightPigment(vec3 signal,vec3 galactic,float time){
+    float light=dot(signal,vec3(.2126,.7152,.0722));
+    float intensity=max(light-.0036,0.)*(.36+.69*smoothstep(.0045,.043,light))/(1.+.74*light);
+    float latitude=abs(galactic.y);
+    float violet=smoothstep(.22,.79,.49+.33*sin(dot(galactic,vec3(2.4,1.2,-3.1)))+.13*cos(dot(galactic,vec3(7.8,-3.3,4.1))));
+    float turquoise=smoothstep(.52,.91,.55+.37*sin(dot(galactic,vec3(-4.7,2.1,4.2))))
+     *(1.-smoothstep(.04,.42,latitude))*smoothstep(.011,.057,light);
+    float warmth=(signal.r-signal.b)/max(light,.004);
+    float gold=smoothstep(.105,.55,warmth)*smoothstep(.032,.118,light);
+    vec3 tint=mix(vec3(.255,.58,2.03),vec3(.87,.315,1.86),violet);
+    tint=mix(tint,vec3(.095,1.27,1.70),turquoise);
+    tint=mix(tint,vec3(1.94,.91,.255),gold);
+    vec3 signalHue=signal/max(light,.001);
+    tint=mix(tint,signalHue,.14);
+    float glimmer=.97+.03*sin(dot(galactic,vec3(9.3,-4.5,10.7))+time*.34);
+    vec3 dust=intensity*tint*mix(1.,glimmer,max(turquoise,gold));
+    // The brightest photographed stars retain bright cores and their native hues.
+    float star=smoothstep(.43,.93,max(signal.r,max(signal.g,signal.b)))*smoothstep(.25,.67,light);
+    return mix(dust,signal*.74,star);
+   }
    void main(){
     vec3 d=normalize(vDirection);
-    vec3 fallback=skySample(uMap,sphereUV(d))*.034;
+    vec3 fallback=skySample(uMap,sphereUV(d))*vec3(.010,.021,.047);
     // Fixed shared composition, rather than a dated astrometric model.
     vec3 galactic=vec3(dot(d,uGalacticCore),dot(d,uGalacticNormal),dot(d,uGalacticEast));
     vec3 signal=skySample(uPhotograph,sphereUV(galactic));
-    float luminance=dot(signal,vec3(.2126,.7152,.0722));
-    // Low exposure retains neutral stellar light and physical dust lanes.
-    vec3 exposure=signal*.68/(1.+.55*luminance);
-    exposure*=.76+.24*smoothstep(.0005,.025,luminance);
-    vec3 ink=mix(fallback,exposure,uPhotographBlend);
-    gl_FragColor=vec4(max(ink,vec3(.00016,.00022,.00036)),1.);
+    vec3 ink=mix(fallback,nightPigment(signal,galactic,uTime),uPhotographBlend);
+    gl_FragColor=vec4(ink,1.);
     #include <colorspace_fragment>
    }`
  }));
@@ -304,7 +320,7 @@ export function createDrownedSky(scene,{mobile=false,onChange=()=>{}}={}){
    night:true,skyLoaded:true,textureReady:true,catalogue:'totehm-celestial-sphere',fullSphere:true,
    textureSize:[width,height],milkyWay:true,galacticClouds:'photographed star clouds and dark interstellar dust lanes',
    skyMotion:{paintedShear:false,driftingDust:false,colourScintillation:false,stellarScintillation:true},
-   skyGrade:'astrophotographic-night',
+   skyGrade:'astrophotographic-night',skyPalette:'black-cobalt-violet-turquoise-gold',
    galacticPlate:{ready:plateReady,failed:plateFailed,blend:plateBlend.value,projection:'full-sphere-astrophotography',
     direction:core.toArray(),normal:normal.toArray(),size:[...SKY_ASTROPHOTOGRAPH.dimensions]},
    astrophotography:{...SKY_ASTROPHOTOGRAPH,ready:plateReady,fallback:!plateReady,local:true},
