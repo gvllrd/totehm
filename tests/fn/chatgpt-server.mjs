@@ -87,7 +87,7 @@ try{
  check((await send('?action=connection',{site:true})).data.connected===true,'Connection confirmed only after token exchange');
  r=await send('/mcp',{method:'POST',token:access,headers:mcpHeaders,body:{jsonrpc:'2.0',id:1,method:'initialize',params:{protocolVersion:'2025-06-18'}}});check(r.data.result.protocolVersion==='2025-06-18','MCP initialize negotiates supported protocol');
  r=await send('/mcp',{method:'POST',token:access,headers:mcpHeaders,body:{jsonrpc:'2.0',method:'notifications/initialized'}});check(r.status===202,'MCP notifications acknowledged without JSON-RPC response');
- r=await send('/mcp',{method:'POST',token:access,headers:mcpHeaders,body:{jsonrpc:'2.0',id:2,method:'tools/list'}});check(r.data.result.tools.length===10&&r.data.result.tools.every(t=>t.annotations.readOnlyHint),'Ten read-only tools, no publish/write tools');
+ r=await send('/mcp',{method:'POST',token:access,headers:mcpHeaders,body:{jsonrpc:'2.0',id:2,method:'tools/list'}});check(r.data.result.tools.length===11&&r.data.result.tools.every(t=>t.annotations.readOnlyHint)&&r.data.result.tools.some(t=>t.name==='get_my_activity'),'Eleven read-only tools (23/11 : get_my_activity, My Chapter), no publish/write tools');
  r=await tool(access,'get_context',{query:'draw',purpose:'action',limit:6});const context=r.data.result.structuredContent;check(context.items.some(x=>x.text==='Draw ten minutes'),'Tool returns the authenticated owner’s Habit');check(context.edges.some(x=>x.relation==='serves'),'Tool preserves recorded relationship provenance');check(!JSON.stringify(context).includes('Private other member'),'No other member data returned');
  check(new URL(context.items[0].url).hash.includes('element=habit'),'MCP results link the exact original element');
  check(context.items.some(i=>i.kind==='objective'&&i.ref===O&&i.target_at==='2099-01-01T00:00:00Z'),'A dated native why is returned in the objective view');
@@ -211,7 +211,7 @@ try{
  const gid=(await pg.query('select grant_id from public.chatgpt_tokens where token_hash=$1',[await hashOpaque(access)])).rows[0].grant_id;
  await pg.query('delete from public.chatgpt_ecosystem_consents where grant_id=$1',[gid]);
  const legacy=await send('/mcp',{method:'POST',token:access,headers:mcpHeaders,body:{jsonrpc:'2.0',id:2,method:'tools/list'}});
- check(legacy.data.result.tools.length===5,'Old grants retain only owner tools');
+ check(legacy.data.result.tools.length===6&&legacy.data.result.tools.some(t=>t.name==='get_my_activity'),'Old grants retain only owner tools (get_my_activity included)');
  const denied=await tool(access,'get_ecosystem_context',{query:'draw',purpose:'action'});
  check(denied.data.result.isError&&denied.data.result.content[0].text.includes('Reconnect'),'Broader access requires explicit renewed consent');
  await pg.query('insert into public.chatgpt_ecosystem_consents(grant_id,version) values ($1,1)',[gid]);

@@ -102,7 +102,7 @@ check(resolveElementLink({kind:'habit',ref:'Écrire mon livre'},{habits:[{id:'h7
 check(resolveElementLink(parseElementLink(habitURL.hash),{habits:[{id:'hLong',t:longHabit,t0:longHabit}]}).id==='hLong','The long Unicode Higher source locator resolves the exact native Habit without abbreviation');
 check(resolveElementLink({kind:'habit',ref:'ecrire mon livre'},{habits:[{id:'h7',t:'Écrire mon livre'}]})===null,'Opening a source never substitutes an approximately matching element');
 check(resolveElementLink({kind:'objective',ref:id(1)},{objectives:[]})===null,'A locator cannot make an unavailable/private source appear');
-check(CHATGPT_TOOLS.length===10&&CHATGPT_TOOLS.find(t=>t.name==='get_context').inputSchema.properties.review,'The same ten tools support an optional review without expanding grants');
+check(CHATGPT_TOOLS.length===11&&CHATGPT_TOOLS.find(t=>t.name==='get_context').inputSchema.properties.review,'The same eleven tools support an optional review without expanding grants');
 
 // These fixtures test the context available for place planning, not model output or live venues.
 const placeGraph=projectGraph({

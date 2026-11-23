@@ -78,7 +78,7 @@ const args={query:'help me practise',purpose:'action',intentions:['express'],sea
 const resourceReads=()=>reads.filter(r=>['element_media','spot_plans'].includes(r.table)).length+native.filter(r=>['media','spots'].includes(r.args?.p_action)).length;
 
 let response=await rpc('tools/list',{}),tools=response.data.result.tools;
-check(tools.length===10,'The ecosystem still has ten read-only tools');
+check(tools.length===11,'The ecosystem has eleven read-only tools (23/11 : get_my_activity)');
 for(const name of ['get_context','read_element','get_ecosystem_context','read_member_element'])check(tools.find(t=>t.name===name).inputSchema.properties.include_resources.type==='boolean',name+' advertises optional resource depth on its existing tool');
 let before=resourceReads();
 for(const flag of [undefined,false]){
@@ -169,7 +169,7 @@ cancelOnMedia=null;subscribed.add(MEMBERS[0]);
 
 ecosystem=false;
 response=await rpc('tools/list',{});
-check(response.data.result.tools.length===5&&!response.data.result.tools.some(t=>t.name==='get_ecosystem_context'),'A legacy grant retains exactly its five personal tools');
+check(response.data.result.tools.length===6&&!response.data.result.tools.some(t=>t.name==='get_ecosystem_context'),'A legacy grant retains exactly its six personal tools (get_my_activity included)');
 for(const name of ['get_ecosystem_context','read_member_element']){
  before=resourceReads();const nativeBefore=native.length;
  response=await tool(name,name==='read_member_element'?{member:MEMBERS[0],kind:'habit',ref:HABIT,include_resources:true}:{...args,include_resources:true});
