@@ -9,7 +9,7 @@ for(const mobile of [false,true]){
  check(d.chamber.openAir&&!d.chamber.closedCeiling,'The original volume is displayed directly under the stars');
  check(books===1&&d.chamber.originalWorks===0,'One physical original volume is the only exhibited object');
  check(d.book.dimensions.join(',')==='0.7,0.08,0.98'&&d.book.coverRatio===5/7,'Physical cover dimensions and enlargement proportions remain exact');
- check(d.book.coverIntentions===7&&d.book.neonTraces,'The seven luminous intentions belong to the book only');
+ check(d.book.coverIntentions===0&&!d.book.neonTraces,'The volume bears no luminous intention lines');
  check(room.root.getObjectByName('Origins ceremonial reading slab').material.color.getHex()===0,'The volume remains on its isolated black ceremonial support');room.dispose();
 }
-check(ORIGINS_COVER.intentions===7&&ORIGINS_COVER.neon&&ORIGINS_COVER.ratio===5/7,'The physical and reader cover have one canonical neon design');console.log('PASS '+checks+' sacred Origins book checks');
+check(ORIGINS_COVER.intentions===0&&!ORIGINS_COVER.neon&&ORIGINS_COVER.ratio===5/7&&ORIGINS_COVER.font==='Quantico'&&ORIGINS_COVER.weight===700&&ORIGINS_COVER.ink==='#fbd5ca','The physical and reader cover share a black design with bold coral Quantico');console.log('PASS '+checks+' sacred Origins book checks');

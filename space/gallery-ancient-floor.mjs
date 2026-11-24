@@ -33,16 +33,18 @@ function slabs(bounds=BOUNDS){
 }
 function makeGeometry(blocks,mobile,detail={}){
  const positions=[],uvs=[],colours=[],edges=[],indices=[],segments=detail.segments??(mobile?4:6);
- const rings=detail.rings??(mobile?[0,.008,.030,.070]:[0,.004,.014,.035,.070]);
+ const rings=detail.rings??(mobile?[0,.008,.030,.070]:[0,.004,.014,.035,.070]),coastal=detail.coastal;
+ const joint=coastal ? .012 : .006,sideSegments=coastal ? 2 : 0;
  let highest=-Infinity,lowest=Infinity;
  function vertex(x,y,z,u,v,c,edge=0){positions.push(x,y,z);uvs.push(u,v);colours.push(...c);edges.push(edge);highest=Math.max(highest,y);lowest=Math.min(lowest,y);return positions.length/3-1;}
  for(const slab of blocks){
-  const width=slab.x1-slab.x0-.006,depth=slab.z1-slab.z0-.006;
+  const width=slab.x1-slab.x0-joint,depth=slab.z1-slab.z0-joint;
   if(width<=.003||depth<=.003)continue;
   const cx=(slab.x0+slab.x1)/2,cz=(slab.z0+slab.z1)/2,small=Math.min(width,depth);
-  const bevel=Math.min(.070,small*.20),radius=Math.min(.052,small*.19);
-  const settle=slab.key*.0008,tone=.82+slab.key*.24;
-  const tint=[tone*(1.+(slab.seed-.5)*.018),tone,tone*(.98+(slab.seed-.5)*.025)];
+  const bevel=Math.min(coastal ? .093:.070,small*.20),radius=Math.min(coastal ? .042+slab.seed*.048:.052,small*.19);
+  const settle=slab.key*(coastal ? .003:.0008),tone=coastal ? .66+slab.key*.42:.82+slab.key*.24;
+  const hue=(slab.seed-.5)*(coastal ? .11:.018);
+  const tint=[tone*(1+hue),tone,tone*(.98+(coastal?-hue*.8:(slab.seed-.5)*.025))];
   const quarterTurns=Math.floor(slab.seed*4),uOffset=hash(slab.seed*37,4.8)*9.3,vOffset=hash(slab.key*19,1.3)*7.7;
   function uv(x,z){let u=(x-cx)/1.25,v=(z-cz)/1.25;for(let i=0;i<quarterTurns;i++)[u,v]=[-v,u];return[u+uOffset,v+vOffset];}
   const ringStarts=[];
@@ -54,16 +56,31 @@ function makeGeometry(blocks,mobile,detail={}){
    ringStarts.push(positions.length/3);
    const corners=[[halfX-round,halfZ-round,0],[-halfX+round,halfZ-round,Math.PI/2],[-halfX+round,-halfZ+round,Math.PI],[halfX-round,-halfZ+round,Math.PI*1.5]];
    let perimeter=0;
-   for(const [ox,oz,start]of corners)for(let i=0;i<=segments;i++){
-    const angle=start+i/segments*Math.PI/2;
-    let x=ox+Math.cos(angle)*round,z=oz+Math.sin(angle)*round;
-    const erosion=(.001+.002*(.5+.5*Math.sin(perimeter*1.73+slab.seed*97)))*(1-t*.65)*(detail.clipWear?Math.min(1,small/.08):1);
+   // Align the chipped perimeter through each bevel ring while keeping slab tops under GROUND.
+   function wornEdge(x,z){
+    const nick=.5+.5*Math.sin((x*4.6+z*3.2)*Math.PI+slab.seed*43);
+    const grain=.5+.5*Math.sin(perimeter*1.73+slab.seed*97);
+    const erosion=(coastal ? .002+.008*grain+.013*nick**4:.001+.002*grain)*(1-t*.65)*(detail.clipWear?Math.min(1,small/.08):1);
     x-=Math.sign(x)*erosion;z-=Math.sign(z)*erosion;
     const wear=.00055*(.5+.5*Math.sin(perimeter*2.1+slab.key*33))*(1-t);
     const [u,v]=uv(cx+x,cz+z);vertex(cx+x,y-wear,cz+z,u,v,tint,1-profile);perimeter++;
    }
+   for(const [corner,[ox,oz,start]] of corners.entries()){
+    for(let i=0;i<=segments;i++){
+     const angle=start+i/segments*Math.PI/2;
+     wornEdge(ox+Math.cos(angle)*round,oz+Math.sin(angle)*round);
+    }
+    if(sideSegments){
+     const angle=start+Math.PI/2,[nx,nz]=corners[(corner+1)%corners.length];
+     const x=ox+Math.cos(angle)*round,z=oz+Math.sin(angle)*round;
+     for(let i=1;i<=sideSegments;i++){
+      const portion=i/(sideSegments+1);
+      wornEdge(x+(nx-ox)*portion,z+(nz-oz)*portion);
+     }
+    }
+   }
   }
-  const count=4*(segments+1);
+  const count=4*(segments+1+sideSegments);
   for(let ring=0;ring<ringStarts.length-1;ring++)for(let i=0;i<count;i++){
    const next=(i+1)%count,a=ringStarts[ring]+i,b=ringStarts[ring]+next,c=ringStarts[ring+1]+i,d=ringStarts[ring+1]+next;
    indices.push(a,c,b,b,c,d);
@@ -99,12 +116,13 @@ export function createAncientFloor(scene,{mobile=false,anisotropy=4,onChange=()=
 // any storey, landing or inclined aisle. The original Lisbon factory above
 // keeps its exact geometry and 301 stones. A building shares one material and
 // three reference-counted scan maps, rather than loading a set per floor.
-export function createAncientStoneSurfaces(scene,{mobile=false,anisotropy=4,onChange=()=>{},surfaces=[]}={}){
- const root=new T.Group();root.name='Lisbon antique limestone throughout the gallery';scene.add(root);
- const stone=createWhiteStone({mobile,anisotropy,onChange,slabGeometry:true});
- const mortarMaterial=new T.MeshStandardMaterial({color:0x514c42,roughness:.96,metalness:0});
+export function createAncientStoneSurfaces(scene,{mobile=false,anisotropy=4,onChange=()=>{},surfaces=[],weathering}={}){
+ const coastal=weathering==='coastal';
+ const root=new T.Group();root.name=coastal?'Sea-worn limestone flagstones':'Lisbon antique limestone throughout the gallery';scene.add(root);
+ const stone=createWhiteStone({mobile,anisotropy,onChange,slabGeometry:true,coastal});
+ const mortarMaterial=new T.MeshStandardMaterial({color:coastal?0x34332c:0x514c42,roughness:.96,metalness:0});
  const geometries=new Set(),solids=[],byId=new Map(),coverage=new Map(),mortarPieces=[];
- const detail=mobile?{segments:2,rings:[0,.070],minimumCorner:.00025,clipWear:true}:{segments:3,rings:[0,.014,.070],minimumCorner:.00025,clipWear:true};
+ const detail={segments:mobile?2:3,rings:mobile?[0,.070]:[0,.014,.070],minimumCorner:.00025,clipWear:true,coastal};
  let disposed=false,totalSlabs=0,totalTriangles=0,highestDeviation=-Infinity,lowestDeviation=Infinity,surfaceCount=0;
  const finite=Number.isFinite;
  function subtract(a,b){
@@ -164,7 +182,7 @@ export function createAncientStoneSurfaces(scene,{mobile=false,anisotropy=4,onCh
  if(mortarPieces.length){const g=merge(mortarPieces,'Shared dark mortar beneath every ancient stone surface'),mortar=new T.Mesh(g,mortarMaterial);mortar.name='Narrow real mortar beneath the complete stone gallery';mortar.receiveShadow=true;mortar.userData={walkable:true,ancientMortar:true};root.add(mortar);solids.push(mortar);totalTriangles+=g.index.count/3;}
  onChange();
  return{root,solids,walkable:solids,byId,material:stone.material,
-  diagnostics:()=>({kind:'lisbon-opus-romain-on-gallery-surfaces',ready:!disposed,physicalSlabs:true,sharedWithLisbon:true,surfaces:surfaceCount,slabs:totalSlabs,triangles:totalTriangles,drawCalls:solids.length,nonOverlappingFlatSurfaces:true,highestDeviation,lowestDeviation,bevelDropMetres:.025,physicalJointMetres:.006,ramps:true,photographicMapsReady:stone.diagnostics().photographicMapsReady,stone:stone.diagnostics(),disposed}),
+  diagnostics:()=>({kind:'lisbon-opus-romain-on-gallery-surfaces',ready:!disposed,physicalSlabs:true,sharedWithLisbon:true,surfaces:surfaceCount,slabs:totalSlabs,triangles:totalTriangles,drawCalls:solids.length,nonOverlappingFlatSurfaces:true,highestDeviation,lowestDeviation,bevelDropMetres:.025,physicalJointMetres:coastal ? .012:.006,weathering:coastal?'coastal':'standard',ramps:true,photographicMapsReady:stone.diagnostics().photographicMapsReady,stone:stone.diagnostics(),disposed}),
   dispose(){if(disposed)return;disposed=true;root.removeFromParent();for(const g of geometries)g.dispose();stone.dispose();mortarMaterial.dispose();root.clear();}
  };
 }

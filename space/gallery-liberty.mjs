@@ -1,16 +1,15 @@
 import * as T from './vendor/three-0.180.0.mjs';
 import {GLTFLoader} from './vendor/GLTFLoader-0.180.0.mjs';
 import {MeshoptDecoder} from './vendor/meshopt_decoder.module.js';
+import {WORLD_CENTER_Y} from './gallery-drowned-planet.mjs';
+import {CRISTO_REI_LOCATION,cristoFeetHeight,stillOceanHeight} from './gallery-lisbon-water.mjs';
 
-// Colossal photogrammetric 3D scan of the Statue of Liberty (HAER NY-138 / Bartholdi bronze cast),
-// scaled to monumental scale (188.7 m total height, 4.2x) and positioned in the open storm ocean
-// off New York. Submerged in the rolling breakers, framed directly in the visitor's line of sight
-// upon arrival on the terrace, with crashing wave foam, windblown sea spray, and a glowing amber torch beacon.
+// Both monuments occupy the same position relative to their own island.
 export const LIBERTY_LOCATION=Object.freeze({
- x:16,
- y:-115,
- z:-130,
- yaw:-.42,
+ x:CRISTO_REI_LOCATION.x,
+ y:cristoFeetHeight(),
+ z:CRISTO_REI_LOCATION.z,
+ yaw:CRISTO_REI_LOCATION.yaw,
  scale:4.2
 });
 
@@ -18,7 +17,10 @@ export function createLiberty(scene,{mobile=false,onChange=()=>{},submerged=true
  const root=new T.Group();
  root.name='Liberty — monumental photogrammetric statue submerged in storm breakers';
  root.position.set(LIBERTY_LOCATION.x,LIBERTY_LOCATION.y,LIBERTY_LOCATION.z);
- root.rotation.y=LIBERTY_LOCATION.yaw;
+ const {x,z,yaw}=LIBERTY_LOCATION;
+ const up=new T.Vector3(0,1,0);
+ const localUp=new T.Vector3(x,stillOceanHeight(x,z)-WORLD_CENTER_Y,z).normalize();
+ root.quaternion.setFromUnitVectors(up,localUp).multiply(new T.Quaternion().setFromAxisAngle(up,yaw));
  root.scale.setScalar(LIBERTY_LOCATION.scale);
  scene.add(root);
 
@@ -27,6 +29,7 @@ export function createLiberty(scene,{mobile=false,onChange=()=>{},submerged=true
 
  // Precise center of the gilded torch flame from HAER NY-138 photogrammetry scan
  const TORCH_POS=new T.Vector3(-3.693,43.988,6.361);
+ const waterY=(stillOceanHeight(x,z)-LIBERTY_LOCATION.y)/(localUp.y*LIBERTY_LOCATION.scale);
 
  // 1. Powerful warm amber beacon light at the gilded torch flame tip
  const torchLight=new T.PointLight(0xffaa38,5400,340,2);
@@ -138,7 +141,7 @@ export function createLiberty(scene,{mobile=false,onChange=()=>{},submerged=true
  geometries.add(foamGeo);
  const foamMesh=new T.Mesh(foamGeo,foamMat);
  foamMesh.name='Crashing ocean wave foam skirt';
- foamMesh.position.set(0,8.2,1.2);
+ foamMesh.position.set(0,waterY,1.2);
  root.add(foamMesh);
 
  // 6. Wave impact spindrift & sea spray particles bursting against the drapery
@@ -204,6 +207,7 @@ export function createLiberty(scene,{mobile=false,onChange=()=>{},submerged=true
  materials.add(sprayMat);
  const sprayParticles=new T.Points(sprayGeo,sprayMat);
  sprayParticles.name='Windblown sea spray from breaking wave crests';
+ sprayParticles.position.y=waterY-8.2;
  root.add(sprayParticles);
 
  // 7. Load authentic photogrammetric 3D scan GLB
@@ -242,6 +246,12 @@ export function createLiberty(scene,{mobile=false,onChange=()=>{},submerged=true
      }
     }
    });
+   const bounds=new T.Box3().setFromObject(model);
+   if(!bounds.isEmpty()){
+    model.position.y-=bounds.min.y;
+    torchLight.position.y-=bounds.min.y;
+    if(coronaMesh)coronaMesh.position.y-=bounds.min.y;
+   }
    root.add(model);
    loaded=true;
    dirty=true;
@@ -275,7 +285,8 @@ export function createLiberty(scene,{mobile=false,onChange=()=>{},submerged=true
    place:'new-york',
    ready:loaded||!globalThis.document,
    loaded,
-   submerged:true,
+   submerged,
+   stillWaterY:stillOceanHeight(x,z),
    modelAsset:assetPath,
    photogrammetry:true,
    source:'jerryfisher / HAER NY-138',

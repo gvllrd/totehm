@@ -8,9 +8,16 @@
 <title>Think same but opposite — TOTEHM.SPACE</title>
 <link href="https://fonts.googleapis.com/css2?family=Quantico:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#000;color:#f4f4f5;font-family:'Space Mono',monospace}body{min-height:100dvh;display:flex;flex-direction:column}a{color:inherit;text-decoration:none}button{font:inherit;cursor:pointer;color:inherit}header{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:18px max(22px,env(safe-area-inset-right)) 18px max(22px,env(safe-area-inset-left));font-size:10px;letter-spacing:.08em}header a,header button{background:none;border:0;padding:8px}header a:hover,header button:hover,header a:focus-visible,header button:focus-visible{color:#fbd5ca}.progress{color:#aaa}main{flex:1;min-height:0;display:grid;grid-template-columns:minmax(150px,240px) minmax(0,1fr);align-items:center;gap:clamp(20px,6vw,120px);padding:24px clamp(24px,9vw,160px) 75px}.frame{justify-self:center;width:min(100%,240px);padding:11px;background:#080808;border:2px solid #3b3b3b;box-shadow:0 18px 60px #000}.frame img{width:100%;height:auto;aspect-ratio:200/356;display:block;object-fit:contain}.story{display:flex;flex-direction:column;justify-content:center;min-height:280px;max-width:760px}.eyebrow{font-size:10px;letter-spacing:.17em;color:#a9a9b7;text-transform:uppercase;margin:0 0 28px}#slide{min-height:155px;display:flex;flex-direction:column;justify-content:center;gap:23px;opacity:0;transform:translateY(16px);transition:opacity .65s ease,transform .65s ease}#slide.show{opacity:1;transform:none}#slide p{font:400 clamp(17px,2vw,29px)/1.46 'Space Mono',monospace;margin:0;white-space:pre-line}#slide p:first-child{color:#fff}#slide p:nth-child(2){color:#bbb}#slide.is-first p{font-family:Quantico,sans-serif;font-weight:400;line-height:1.13;font-size:clamp(26px,4.1vw,58px)}.actions{display:flex;align-items:center;flex-wrap:wrap;gap:16px;margin-top:40px}.actions button,.actions a{border:1px solid #555;padding:13px 19px;background:#14141c;font-size:11px}.actions button:hover,.actions a:hover,.actions button:focus-visible,.actions a:focus-visible{border-color:#fbd5ca;color:#fbd5ca}.actions .primary{background:#303062;border-color:#494981}.actions a[hidden],.actions button[hidden]{display:none}.hint{font-size:9px;color:#999;margin:17px 0 0}.rail{display:flex;gap:5px;align-items:center;margin-top:28px}.rail span{width:27px;height:2px;background:#555}.rail span.on{background:#fbd5ca}@media(max-width:650px){header{padding:12px 14px}.progress{font-size:9px}main{grid-template-columns:1fr;gap:18px;align-content:start;padding:10px 23px max(35px,env(safe-area-inset-bottom))}.frame{width:90px;padding:5px}.story{min-height:0}.eyebrow{margin:6px 0 20px;font-size:9px}#slide{min-height:220px;justify-content:flex-start}#slide p{font-size:17px}#slide.is-first p{font-size:clamp(24px,8vw,42px)}.actions{margin-top:22px}.hint{display:none}}
-@media(prefers-reduced-motion:reduce){#slide{transition:none}}
-
+*{box-sizing:border-box}
+html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#000;color:#f4f4f5;font-family:'Space Mono',monospace}
+a{color:inherit;text-decoration:none}
+button{font:inherit;cursor:pointer;color:inherit}
+[hidden]{display:none!important}
+header{position:fixed;inset:0 0 auto;z-index:3;padding:18px max(22px,env(safe-area-inset-left));pointer-events:none}
+header a{display:inline-flex;align-items:center;min-height:44px;padding:8px;font-size:11px;letter-spacing:.12em}
+header a,.hero-discover{pointer-events:auto}
+header a:hover,header a:focus-visible,.hero-discover:hover,.hero-discover:focus-visible{color:#fff}
+header a,.hero-discover,.front-hint{color:#bbb}
 /* ══ LE MOT TOTEHM EST LE TOTEHM — copié de tools/totehm_word.css dans chaque page (jamais importé) ══
    ⚠️ 14/11 (Wah) — ANNULATION DU REMPLACEMENT GÉNÉRAL : « annule la décision de remplacer TOUS les textes
    Totehm par le logo totehm. À la place, sélectionne seulement les textes TOTEHM les plus stratégiques et
@@ -49,82 +56,235 @@
 .tw.is-plat .tw-p{transform:none}
 @media(prefers-reduced-motion:reduce){.tw-p{transform:rotateY(180deg)}.tw.is-plat .tw-p{transform:none}}
 /* ══ fin LE MOT TOTEHM ══ */
-/* Discover uses the same full-screen reading rhythm as Play the Street. */
-html,body{width:100%;height:100%;overflow:hidden}
-body{min-height:100dvh}
-header{position:absolute;inset:0 0 auto;z-index:2}
-main{width:100%;height:100dvh;min-height:0;display:flex;align-items:center;justify-content:center;padding:64px 24px 80px}
-.frame{display:none}
-.story{width:min(100%,680px);min-height:0;max-width:none;align-items:center}
-.eyebrow{text-align:center;margin:0 0 25px}
-#slide{width:100%;min-height:0;align-items:center;text-align:center;gap:18px}
-#slide p{font:400 clamp(16px,2vw,23px)/1.6 'Space Mono',monospace}
+
+/* Each work keeps its original image above its full-screen Discover. */
+#experience-front,#artwork-hero,#discover-stage{position:fixed;inset:0;display:grid;place-items:center;background:#000}
+#experience-front,#artwork-hero{z-index:1;touch-action:none}
+#experience-front-stage{position:relative;width:min(100vw,calc(100dvh * 16 / 9));aspect-ratio:16/9}
+#experience-front-canvas{display:block;width:100%;height:100%}
+.front-hit{position:absolute;border:0;background:none;color:transparent;min-width:44px;min-height:44px;transform:translate(-50%,-50%)}
+.front-hit:focus-visible{outline:1px solid #888;outline-offset:2px}
+.front-hint,.hero-discover,.hint{position:absolute;left:50%;bottom:max(24px,env(safe-area-inset-bottom));transform:translateX(-50%);margin:0;text-align:center;font-size:10px;letter-spacing:.1em}
+.front-hint,.hint{pointer-events:none}
+#artwork-hero-image{display:block;width:auto;height:min(74dvh,calc(86vw * 1.78));max-width:86vw}
+.hero-discover{min-height:44px;background:none;border:0;padding:6px 14px;display:grid;justify-items:center;gap:3px;white-space:nowrap}
+.hero-discover svg,.hint svg{width:24px;height:24px;animation:hint-bob 1.6s ease-in-out infinite}
+@keyframes hint-bob{0%,100%{transform:none;opacity:.4}50%{transform:translateY(5px);opacity:1}}
+body.is-entering #artwork-hero{pointer-events:none}
+#discover-stage{padding:64px 24px 100px;outline:none;touch-action:none}
+.story{width:min(100%,680px);text-align:center}
+#slide{display:flex;flex-direction:column;gap:18px;opacity:0;transform:translateY(14px);transition:opacity .5s ease,transform .5s ease}
+#slide.show{opacity:1;transform:none}
+#slide p{margin:0;white-space:pre-line;font:400 clamp(16px,2vw,23px)/1.6 'Space Mono',monospace;color:#fff}
+#slide p:nth-child(2){color:#bbb}
 #slide.is-first p{font:400 clamp(26px,4vw,51px)/1.16 Quantico,sans-serif}
-.rail{position:absolute;bottom:65px;left:50%;transform:translateX(-50%);margin:0}
-.actions{position:absolute;bottom:100px;left:16px;right:16px;justify-content:center;margin:0}
-.actions #prev,.actions #next{display:none}
-.actions a{min-height:44px;display:inline-flex;align-items:center}
-.hint{position:absolute;bottom:18px;left:0;right:0;margin:0;text-align:center;color:#a0a0a0;pointer-events:none}.hint svg{display:inline-block;width:24px;height:24px;animation:hint-bob 1.6s ease-in-out infinite}@keyframes hint-bob{0%,100%{transform:none;opacity:.4}50%{transform:translateY(6px);opacity:1}}@media(prefers-reduced-motion:reduce){.hint svg{animation:none}}
+.rail,.actions{position:absolute;bottom:65px;left:50%;transform:translateX(-50%);display:flex;justify-content:center;gap:5px}
+.rail span{width:27px;height:2px;background:#444}
+.rail span.on{background:#aaa}
+.actions{bottom:98px;width:calc(100% - 32px);gap:12px;flex-wrap:wrap}
+.actions a{display:inline-flex;align-items:center;min-height:44px;padding:9px 15px;border:1px solid #555;color:#ccc;font-size:11px}
+.actions a:hover,.actions a:focus-visible{color:#fff;border-color:#aaa}
+.hint{color:#a0a0a0;bottom:18px}
 body.is-last .hint{display:none}
-@media(max-width:650px){header{padding:14px}.story{width:100%}.eyebrow{margin:0 0 22px}main{padding:65px 23px 95px;align-content:initial}.frame{display:none}#slide{min-height:0;justify-content:center}#slide p{font-size:clamp(15px,4vw,17px);line-height:1.5}#slide.is-first p{font-size:clamp(26px,8vw,35px)}.actions{bottom:92px;margin:0}.hint{display:block}}
-/* The projected artwork IS this first page, rendered by opposites-front.mjs. */
-#experience-front{position:fixed;inset:0;z-index:1;display:grid;place-items:center;background:#000;opacity:1;transition:opacity .5s ease;touch-action:none}
-#experience-front[hidden]{display:none}#experience-front-stage{position:relative;width:min(100vw,calc(100dvh * 16 / 9));aspect-ratio:16/9}#experience-front-canvas{display:block;width:100%;height:100%}
-.front-hit{position:absolute;border:0;background:none;color:transparent;cursor:pointer;min-width:44px;min-height:44px;transform:translate(-50%,-50%);border-radius:10px}.front-hit:focus-visible{outline:1px solid #888;outline-offset:2px}.front-hint{position:fixed;left:20px;right:20px;bottom:max(24px,env(safe-area-inset-bottom));font-size:10px;letter-spacing:.12em;text-align:center;color:#8c8c94;pointer-events:none}
-body.is-front main,body.is-entering main{opacity:0;pointer-events:none}main{opacity:1;transition:opacity .5s ease}body.is-front header,body.is-entering header{z-index:3}body.is-front #progress,body.is-entering #progress{visibility:hidden}body.is-entering #experience-front{pointer-events:none}body.is-entering .front-hint{opacity:0}header a:hover,header button:hover,header a:focus-visible,header button:focus-visible{color:#fff}.actions a:hover,.actions a:focus-visible{color:#fff;border-color:#aaa}.rail span.on{background:#aaa}
 .higher-inline{display:inline-block;width:3.05em;vertical-align:-.23em;margin:0 .05em;line-height:0;white-space:nowrap}
 .higher-inline img{display:block;width:100%;height:auto}
 .higher-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
-@media(prefers-reduced-motion:reduce){#experience-front,main{transition:none}}
+@media(max-width:650px){
+ header{padding:12px 14px}
+ #slide p{font-size:clamp(15px,4vw,17px);line-height:1.5}
+ #slide.is-first p{font-size:clamp(26px,8vw,35px)}
+}
+@media(prefers-reduced-motion:reduce){#slide{transition:none}.hero-discover svg,.hint svg{animation:none}}
 </style>
 </head>
-<body class="is-front">
-<header><a href="/new-york" data-experience-close>← Gallery</a><span class="progress" id="progress">THINK SAME BUT OPPOSITE</span><button id="close" data-experience-close type="button" aria-label="Close Discover">Close ×</button></header>
-<section id="experience-front" aria-label="Think same but opposite — six original artworks"><div id="experience-front-stage"></div><p class="front-hint">Choose an artwork</p></section>
-<main id="discover-stage" tabindex="-1">
- <div class="frame"><img id="image" alt=""></div>
- <section class="story" aria-label="Discover the artwork"><p class="eyebrow" id="title"></p><div id="slide" role="status" aria-live="polite"></div><div class="rail" id="rail" aria-hidden="true"></div><div class="actions"><button id="prev" type="button">← Back</button><button class="primary" id="next" type="button">Continue →</button><a id="action" hidden>Explore TOTEHM ↗</a><a id="next-work" hidden>Next artwork →</a></div><p class="hint" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></p></section>
+<body>
+<header><a href="/new-york" id="close" data-experience-close>BACK</a></header>
+<section id="experience-front" aria-label="Think same but opposite — six original artworks" hidden><div id="experience-front-stage"></div><p class="front-hint">Choose an artwork</p></section>
+<section id="artwork-hero" aria-label="Original artwork" hidden>
+ <img id="artwork-hero-image" width="200" height="356" alt="">
+ <button class="hero-discover" id="artwork-discover" type="button">Discover<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
+</section>
+<main id="discover-stage" tabindex="-1" hidden>
+ <section class="story" aria-label="Discover the artwork">
+  <div id="slide" role="status" aria-live="polite"></div>
+  <div class="rail" id="rail" aria-hidden="true"></div>
+  <div class="actions"><a id="action" hidden></a><a id="next-work" hidden>Next artwork →</a></div>
+  <p class="hint" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></p>
+ </section>
 </main>
 <script type="module">
 import {OPPOSITES,oppositeById} from './gallery-opposites.mjs';
 import {createOppositesFront} from './opposites-front.mjs';
-const $=id=>document.getElementById(id),params=new URLSearchParams(location.search),reduced=matchMedia('(prefers-reduced-motion:reduce)'),embedded=window.parent!==window&&params.get('embedded')==='1';
-let work=oppositeById(params.get('work'))||OPPOSITES[0],step=0,locked=false,touchY=null,phase='front',enteringAt=0,last=0,raf=0,hidden=document.hidden,frontFrozen=embedded;
-const front=createOppositesFront({onChange:()=>{}});front.canvas.id='experience-front-canvas';$('experience-front-stage').append(front.canvas);front.setTime(Number(params.get('sceneTime'))||0);
+
+const $=id=>document.getElementById(id);
+const params=new URLSearchParams(location.search);
+const reduced=matchMedia('(prefers-reduced-motion:reduce)');
+const embedded=window.parent!==window&&params.get('embedded')==='1';
+const frontStage=$('experience-front'),hero=$('artwork-hero'),heroImage=$('artwork-hero-image');
+const discover=$('discover-stage'),back=$('close'),slide=$('slide');
+const selected=oppositeById(params.get('work')),dots=[];
+let work=selected||OPPOSITES[0],phase='',front=null,frontFrozen=embedded,raf=0,last=0;
+let step=0,slideTimer=0,locked=false,touchY=null,fromFront=false,entrance=null;
+
 function brandedText(element,value){
  const parts=String(value).split(/(\bHIGHER\b)/gi);
  element.replaceChildren(...parts.map(part=>{
   if(!/^higher$/i.test(part))return document.createTextNode(part);
   const mark=document.createElement('span'),image=document.createElement('img'),spoken=document.createElement('span');
-  mark.className='higher-inline';mark.setAttribute('role','img');mark.setAttribute('aria-label','Higher');
-  image.src='/assets/gallery/higher.svg';image.alt='';spoken.className='higher-sr';spoken.textContent=part;
-  mark.append(image,spoken);return mark;
+  mark.className='higher-inline';mark.setAttribute('role','img');mark.setAttribute('aria-label',part);
+  image.src='/assets/gallery/higher.svg';image.alt='';spoken.className='higher-sr';spoken.textContent=part;mark.append(image,spoken);
+  return mark;
  }));
 }
-for(let i=0;i<OPPOSITES.length;i++){const item=OPPOSITES[i],button=document.createElement('button');button.type='button';button.className='front-hit';button.setAttribute('aria-label','Discover '+item.title);button.style.cssText='left:'+(23+i%3*27)+'%;top:'+(32+Math.floor(i/3)*44.5)+'%;width:25%;height:43%';button.addEventListener('click',()=>enterWork(item));button.addEventListener('focus',()=>{if(!frontFrozen)front.setHighlight(item.id);});button.addEventListener('pointerenter',()=>{if(!frontFrozen)front.setHighlight(item.id);});button.addEventListener('pointerleave',()=>{if(!frontFrozen)front.setHighlight('');});$('experience-front-stage').append(button);}
-const dots=[];
-function configure(item){work=item;step=0;locked=false;document.title=work.title+' — Think same but opposite · TOTEHM.SPACE';brandedText($('title'),work.title);$('image').src=work.image;$('image').alt=work.title+' artwork';$('action').href=work.href;brandedText($('action'),work.action+' ↗');const following=OPPOSITES[(OPPOSITES.indexOf(work)+1)%OPPOSITES.length];$('next-work').href='/think_same_but_opposite?work='+following.id;$('next-work').setAttribute('aria-label','Next artwork: '+following.title);$('rail').replaceChildren();dots.length=0;for(const slide of work.slides){const dot=document.createElement('span');$('rail').append(dot);dots.push(dot);}show(0,true);}
-function show(index,instant=false){
- if(index<0||index>=work.slides.length||locked)return;locked=true;const slide=$('slide');slide.classList.remove('show');
- const apply=()=>{step=index;slide.replaceChildren(...work.slides[step].map(text=>{const p=document.createElement('p');brandedText(p,text);return p;}));slide.classList.toggle('is-first',step===0);dots.forEach((dot,i)=>dot.classList.toggle('on',i===step));$('prev').hidden=step===0;$('next').hidden=step===work.slides.length-1;$('action').hidden=step!==work.slides.length-1;$('next-work').hidden=step!==work.slides.length-1;document.body.classList.toggle('is-last',step===work.slides.length-1);requestAnimationFrame(()=>slide.classList.add('show'));if(instant||reduced.matches)locked=false;else setTimeout(()=>locked=false,650);};
- if(instant||reduced.matches)apply();else setTimeout(apply,180);
+function makeFront(){
+ if(front)return;
+ front=createOppositesFront();front.canvas.id='experience-front-canvas';front.setTime(Number(params.get('sceneTime'))||0);
+ const stage=$('experience-front-stage');stage.append(front.canvas);
+ for(const [i,item] of OPPOSITES.entries()){
+  const button=document.createElement('button');button.type='button';button.className='front-hit';
+  button.setAttribute('aria-label','Discover '+item.title);
+  button.style.cssText='left:'+(23+i%3*27)+'%;top:'+(32+Math.floor(i/3)*44.5)+'%;width:25%;height:43%';
+  button.addEventListener('click',()=>showArtwork(item,true));
+  button.addEventListener('focus',()=>{if(!frontFrozen)front.setHighlight(item.id);});
+  button.addEventListener('pointerenter',()=>{if(!frontFrozen)front.setHighlight(item.id);});
+  button.addEventListener('pointerleave',()=>{if(!frontFrozen)front.setHighlight('');});
+  stage.append(button);
+ }
 }
-function finishEntrance(){phase='discover';document.body.classList.remove('is-front','is-entering');$('experience-front').hidden=true;$('experience-front').inert=true;$('discover-stage').style.opacity='';$('experience-front').style.opacity='';$('close').textContent='All six';$('close').removeAttribute('data-experience-close');$('discover-stage').focus({preventScroll:true});}
-function enterWork(item=work){if(phase!=='front')return;configure(item);frontFrozen=false;front.setHighlight(item.id);phase='entering';enteringAt=performance.now();document.body.classList.add('is-entering');if(reduced.matches){front.setFocus(work.id,1);finishEntrance();}}
-function returnToFront(){if(phase==='front'){if(!embedded)location.assign('/new-york');return;}if(phase!=='discover')return;phase='returning';locked=false;front.setFocus('',0);$('experience-front').hidden=false;$('experience-front').inert=false;document.body.classList.remove('is-last','is-entering');document.body.classList.add('is-front');const finish=()=>{phase='front';$('discover-stage').style.opacity='';$('experience-front').style.opacity='';$('close').textContent='Close ×';$('close').setAttribute('data-experience-close','');};if(reduced.matches){finish();return;}$('experience-front').animate([{opacity:0},{opacity:1}],{duration:450,easing:'ease'}).finished.then(finish,finish);$('discover-stage').animate([{opacity:1},{opacity:0}],{duration:450,easing:'ease'});}
-function frame(now){raf=0;if(hidden)return;const dt=last?Math.min(.1,(now-last)/1000):0;last=now;front.update(dt,!reduced.matches&&!frontFrozen&&phase!=='discover');if(phase==='entering'){const p=Math.min(1,(now-enteringAt)/1000),eased=1-(1-p)**3;front.setFocus(work.id,eased);const reveal=Math.max(0,(p-.52)/.48);$('experience-front').style.opacity=String(1-reveal);$('discover-stage').style.opacity=String(reveal);if(p===1)finishEntrance();}raf=requestAnimationFrame(frame);}
-function resume(){hidden=document.hidden;last=0;if(!hidden&&!raf)raf=requestAnimationFrame(frame);}
-document.addEventListener('visibilitychange',resume);addEventListener('pageshow',resume);addEventListener('pagehide',()=>{if(raf)cancelAnimationFrame(raf);raf=0;});
-addEventListener('totehm:experience-enter',()=>{frontFrozen=false;last=0;if(params.has('work'))enterWork(work);});
-const next=()=>phase==='front'?enterWork(work):phase==='discover'?show(step+1):false,prev=()=>{if(phase==='discover'){if(step===0)returnToFront();else show(step-1);}};
-$('next').addEventListener('click',next);$('prev').addEventListener('click',prev);$('close').addEventListener('click',returnToFront);
-$('next-work').addEventListener('click',event=>{event.preventDefault();const item=OPPOSITES[(OPPOSITES.indexOf(work)+1)%OPPOSITES.length];history.replaceState(history.state,'',location.pathname+'?work='+item.id+(embedded?'&embedded=1':''));configure(item);});
-document.addEventListener('keydown',event=>{if(event.target.closest('input,textarea,select,[contenteditable=true]')||event.repeat)return;if(['ArrowRight','ArrowDown','PageDown'].includes(event.key)||event.key===' '&&!event.target.closest('a,button')){event.preventDefault();next();}if(['ArrowLeft','ArrowUp','PageUp'].includes(event.key)){event.preventDefault();prev();}if(event.key==='Escape'){event.preventDefault();returnToFront();}});
-let wheelLock=-Infinity;addEventListener('wheel',event=>{const now=performance.now();if(now-wheelLock<680)return;wheelLock=now;if(event.deltaY>0)next();else if(event.deltaY<0)prev();},{passive:true});
-addEventListener('touchstart',event=>{touchY=event.changedTouches[0].clientY;},{passive:true});addEventListener('touchend',event=>{if(touchY===null)return;const delta=touchY-event.changedTouches[0].clientY;touchY=null;if(Math.abs(delta)>42)(delta>0?next:prev)();},{passive:true});
-window.__totehm_experience_front=()=>({...front.diagnostics(),phase,ready:front.diagnostics().ready,embedded,frozen:frontFrozen,canvas:'#experience-front-canvas'});
-window.__totehm_opposites=()=>({build:'2026-11-16-opposites-projected-front',phase,work:work.id,step,count:work.slides.length,image:$('image').complete,action:$('action').href,front:front.diagnostics()});
-configure(work);resume();
+function setPhase(value){
+ phase=value;
+ frontStage.hidden=phase!=='front';
+ hero.hidden=!['artwork','entering'].includes(phase);hero.inert=phase==='entering';
+ discover.hidden=!['discover','entering'].includes(phase);discover.inert=phase==='entering';
+ document.body.classList.toggle('is-entering',phase==='entering');
+ back.toggleAttribute('data-experience-close',phase==='front'||(phase==='artwork'&&!fromFront));
+ back.setAttribute('aria-label',phase==='discover'||phase==='entering'?'Back to artwork':phase==='artwork'&&fromFront?'Back to all six artworks':'Back to New York');
+ resume();
+}
+function configure(item){
+ clearTimeout(slideTimer);locked=false;step=0;work=item;
+ document.title=work.title+' — Think same but opposite · TOTEHM.SPACE';
+ heroImage.src=work.image;heroImage.alt=work.title;
+ $('action').href=work.href;brandedText($('action'),work.action+' ↗');
+ const following=OPPOSITES[(OPPOSITES.indexOf(work)+1)%OPPOSITES.length];
+ $('next-work').href='/think_same_but_opposite?work='+following.id;
+ $('next-work').setAttribute('aria-label','Next artwork: '+following.title);
+ $('rail').replaceChildren();dots.length=0;
+ for(const _ of work.slides){const dot=document.createElement('span');$('rail').append(dot);dots.push(dot);}
+ show(0,true);
+}
+function show(index,instant=false){
+ if(index<0||index>=work.slides.length||locked)return false;
+ locked=true;slide.classList.remove('show');
+ const apply=()=>{
+  step=index;
+  slide.replaceChildren(...work.slides[step].map(text=>{const p=document.createElement('p');brandedText(p,text);return p;}));
+  slide.classList.toggle('is-first',step===0);
+  dots.forEach((dot,i)=>dot.classList.toggle('on',i===step));
+  const last=step===work.slides.length-1;
+  $('action').hidden=!last;$('next-work').hidden=!last;
+  document.body.classList.toggle('is-last',last);
+  requestAnimationFrame(()=>slide.classList.add('show'));
+  if(instant||reduced.matches)locked=false;else slideTimer=setTimeout(()=>locked=false,460);
+ };
+ if(instant||reduced.matches)apply();else slideTimer=setTimeout(apply,160);
+ return true;
+}
+function showArtwork(item,chosenFromFront=false){
+ fromFront=chosenFromFront;
+ configure(item);
+ setPhase('artwork');
+ if(chosenFromFront)$('artwork-discover').focus({preventScroll:true});
+}
+function showFront(){
+ makeFront();front.setHighlight('');setPhase('front');
+ frontStage.querySelectorAll('.front-hit')[OPPOSITES.indexOf(work)]?.focus({preventScroll:true});
+}
+function enterDiscover(){
+ if(phase!=='artwork')return false;
+ setPhase('entering');
+ const finish=()=>{
+  if(phase!=='entering')return;
+  entrance=null;setPhase('discover');discover.focus({preventScroll:true});
+ };
+ if(reduced.matches)finish();
+ else{
+  entrance=hero.animate([{opacity:1},{opacity:0}],{duration:520,easing:'ease',fill:'forwards'});
+  entrance.finished.then(()=>{entrance?.cancel();finish();},()=>{});
+ }
+ return true;
+}
+function returnToArtwork(){
+ entrance?.cancel();entrance=null;clearTimeout(slideTimer);locked=false;
+ show(0,true);setPhase('artwork');$('artwork-discover').focus({preventScroll:true});
+ return true;
+}
+function previous(){
+ if(phase==='entering'||phase==='discover'&&step===0)return returnToArtwork();
+ if(phase==='discover')return show(step-1);
+ if(phase==='artwork'&&fromFront){showFront();return true;}
+ return false;
+}
+function next(){
+ if(phase==='front'){showArtwork(work,true);return true;}
+ return phase==='artwork'?enterDiscover():phase==='discover'&&show(step+1);
+}
+function frame(now){
+ raf=0;if(document.hidden||phase!=='front'||frontFrozen||reduced.matches)return;
+ front.update(last?Math.min(.1,(now-last)/1000):0);
+ last=now;raf=requestAnimationFrame(frame);
+}
+function resume(){
+ if(raf)cancelAnimationFrame(raf);
+ raf=0;last=0;
+ if(!document.hidden&&phase==='front'&&!frontFrozen&&!reduced.matches)raf=requestAnimationFrame(frame);
+}
+document.addEventListener('visibilitychange',resume);
+reduced.addEventListener('change',resume);
+addEventListener('pageshow',resume);
+addEventListener('pagehide',()=>{if(raf)cancelAnimationFrame(raf);raf=0;});
+addEventListener('totehm:experience-enter',()=>{
+ frontFrozen=false;resume();
+ if(phase==='artwork')$('artwork-discover').focus({preventScroll:true});
+});
+$('artwork-discover').addEventListener('click',enterDiscover);
+back.addEventListener('click',event=>{
+ if(phase==='entering'||phase==='discover'){
+  event.preventDefault();returnToArtwork();
+ }else if(phase==='artwork'&&fromFront){event.preventDefault();showFront();}
+});
+$('next-work').addEventListener('click',event=>{
+ event.preventDefault();
+ const item=OPPOSITES[(OPPOSITES.indexOf(work)+1)%OPPOSITES.length];
+ history.replaceState(history.state,'',location.pathname+'?work='+item.id+(embedded?'&embedded=1':''));
+ showArtwork(item,fromFront);
+});
+document.addEventListener('keydown',event=>{
+ if(event.target.closest('input,textarea,select,[contenteditable=true]')||event.repeat)return;
+ if(['ArrowRight','ArrowDown','PageDown'].includes(event.key)||event.key===' '&&!event.target.closest('a,button')){
+  event.preventDefault();next();
+ }else if(event.key==='Escape'){event.preventDefault();back.click();}
+ else if(['ArrowLeft','ArrowUp','PageUp'].includes(event.key)){event.preventDefault();previous();}
+});
+let wheelLock=-Infinity;
+addEventListener('wheel',event=>{
+ const now=performance.now();
+ if(Math.abs(event.deltaY)<10||Math.abs(event.deltaX)>Math.abs(event.deltaY)||now-wheelLock<650)return;
+ if((event.deltaY>0?next:previous)())wheelLock=now;
+},{passive:true});
+addEventListener('touchstart',event=>{touchY=event.changedTouches[0].clientY;},{passive:true});
+addEventListener('touchend',event=>{
+ if(touchY===null)return;
+ const delta=touchY-event.changedTouches[0].clientY;touchY=null;
+ if(Math.abs(delta)>42)(delta>0?next:previous)();
+},{passive:true});
+
+window.__totehm_experience_front=()=>{
+ const drawing=front?.diagnostics();
+ return{...drawing,phase,ready:phase==='front'?drawing?.ready:heroImage.complete&&heroImage.naturalWidth>0,embedded,frozen:frontFrozen,canvas:front?'#experience-front-canvas':null};
+};
+window.__totehm_opposites=()=>({build:'2026-11-24-opposites-solo-artwork',phase,work:work.id,step,count:work.slides.length,image:heroImage.complete&&heroImage.naturalWidth>0,action:$('action').href,front:front?.diagnostics()});
+if(selected)showArtwork(selected);else{makeFront();setPhase('front');}
 </script>
 <script>
 /* ══ LE MOT TOTEHM EST LE TOTEHM — copié de tools/totehm_word.js dans chaque page (jamais importé) ══

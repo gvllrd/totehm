@@ -28,22 +28,24 @@ function acquireSurface(mobile,anisotropy,changed){
  return{cache,release(){if(released)return;released=true;cache.callbacks.delete(changed);cache.refs--;if(cache.refs)return;cache.disposed=true;for(const texture of Object.values(cache.textures))texture.dispose();caches.delete(key);}};
 }
 
-export function createWhiteStone({mobile=false,anisotropy=4,onChange=()=>{},slabGeometry=false}={}){
+export function createWhiteStone({mobile=false,anisotropy=4,onChange=()=>{},slabGeometry=false,coastal=false}={}){
  let disposed=false,compiled=false,surface=null;
- const material=new T.MeshStandardMaterial({color:0xd6d0c4,roughness:.68,metalness:0,vertexColors:slabGeometry,normalScale:new T.Vector2(.37,.37),envMapIntensity:1.05});
- material.name='WHITE_ANTIQUE_LIMESTONE — photographed worn stone, satin mineral faces';
+ const baseColor=coastal?0xb4ad9c:0xd6d0c4;
+ const fallbackRoughness=coastal ? .84:.68,normalStrength=coastal ? .64:.37;
+ const material=new T.MeshStandardMaterial({color:baseColor,roughness:fallbackRoughness,metalness:0,vertexColors:slabGeometry,normalScale:new T.Vector2(normalStrength,normalStrength),envMapIntensity:coastal ? .81:1.05});
+ material.name=coastal?'Sea-worn limestone — mineral patina, salted and pitted flags':'WHITE_ANTIQUE_LIMESTONE — photographed worn stone, satin mineral faces';
  const changed=()=>{
   if(disposed)return;
   if(surface){
    for(const name of names)material[sources[name]]=surface.cache.loaded.has(name)?surface.cache.textures[name]:null;
-   material.color.set(surface.cache.loaded.has('color')?0xffffff:0xd6d0c4);
-   material.roughness=surface.cache.loaded.has('roughness')?1:.68;
+   material.color.set(surface.cache.loaded.has('color')?(coastal?0xe1dacb:0xffffff):baseColor);
+   material.roughness=surface.cache.loaded.has('roughness')?1:fallbackRoughness;
    material.needsUpdate=true;
   }
   onChange();
  };
  surface=acquireSurface(mobile,anisotropy,changed);
- material.customProgramCacheKey=()=> 'photographed-ancient-limestone-v2-'+(slabGeometry?'physical-slabs':'world-grain');
+ material.customProgramCacheKey=()=> 'photographed-ancient-limestone-v2-'+(slabGeometry?'physical-slabs':'world-grain')+(coastal?'-coastal':'');
  material.onBeforeCompile=shader=>{
   shader.vertexShader=shader.vertexShader.replace('#include <common>',`#include <common>
    varying vec3 vAncientStoneWorld;
@@ -75,9 +77,23 @@ export function createWhiteStone({mobile=false,anisotropy=4,onChange=()=>{},slab
     float fallbackGrain=stoneNoise(stoneProjection*52.);
     diffuseColor.rgb*=.88+.15*fallbackCloud+.035*(fallbackGrain-.5);
    #endif
+   ${coastal?`
+   // Metre-scale damp patches, small salt deposits and scattered mineral patina.
+   // The photographed grain stays intact underneath every layer.
+   vec2 coastP=vAncientStoneWorld.xz;
+   float coastWeather=stoneNoise(coastP*.51)+.31*stoneNoise(coastP*1.62+8.);
+   float coastDamp=smoothstep(.58,.99,coastWeather);
+   float coastPores=stoneNoise(coastP*19.1);
+   float coastSalt=smoothstep(.62,.84,stoneNoise(coastP*3.6+coastPores*.27))*smoothstep(.40,.68,coastPores)*(1.-coastDamp);
+   float coastPatina=coastDamp*smoothstep(.55,.79,stoneNoise(coastP*8.5+13.));
+   diffuseColor.rgb*=mix(vec3(1.04,1.02,.98),vec3(.66,.71,.72),coastDamp);
+   diffuseColor.rgb=mix(diffuseColor.rgb,diffuseColor.rgb*vec3(1.46,1.40,1.26),coastSalt*.63);
+   diffuseColor.rgb=mix(diffuseColor.rgb,diffuseColor.rgb*vec3(.78,.78,.56),coastPatina*.68);
+   ${slabGeometry?'diffuseColor.rgb*=1.-.19*vAncientEdge;':''}
+   `:''}
   `);
   if(slabGeometry)shader.fragmentShader=shader.fragmentShader.replace('#include <roughnessmap_fragment>',`#include <roughnessmap_fragment>
-   roughnessFactor=clamp(roughnessFactor+vAncientEdge*.17,.32,.95);`);
+   roughnessFactor=clamp(roughnessFactor+vAncientEdge*.17${coastal?'+.09+coastSalt*.07-coastDamp*.12':''},.32,${coastal?'.97':'.95'});`);
   compiled=true;
  };
  changed();
@@ -86,7 +102,7 @@ export function createWhiteStone({mobile=false,anisotropy=4,onChange=()=>{},slab
   diagnostics:()=>({kind:'antique-white-limestone',ready:!disposed,compiled,whiteStone:true,largeSlabs:true,aligned:true,
    stone:'photographed time-worn pale stone, real rounded opus-romain slabs',slabSizeMetres:[1.98,1.32],jointMetres:.006,
    opusRomanLayout:true,mixedSlabSizes:true,roundedWornSlabs:true,roundedCornerRadiusMetres:.052,moduleSizeMetres:3.96,slabsPerModule:11,bevelMetres:.025,
-   aged:true,wornEdges:true,mineralFossils:true,mattePores:true,satinCentres:true,worldMetres:true,faceProjection:!slabGeometry,
+   aged:true,wornEdges:true,mineralFossils:true,mattePores:true,satinCentres:true,worldMetres:true,faceProjection:!slabGeometry,coastalWeathering:coastal,
    pbr:true,photographedSurface:true,photographicMapsReady:surface?.cache.loaded.size===3,loadedMaps:surface?.cache.loaded.size||0,mapFailures:surface?.cache.failed.size||0,
    mapSize:mobile?1024:2048,sharedGPUMaps:true,normalMapOpenGL:true,mipmaps:true,anisotropy,
    source:'https://polyhaven.com/a/rock_01',license:'CC0-1.0',physicalSlabGeometry:slabGeometry,

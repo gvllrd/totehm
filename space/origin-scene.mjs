@@ -20,7 +20,7 @@ function createOriginScene(){
  const scene=new T.Scene(),camera=new T.PerspectiveCamera(mobile?80:72,innerWidth/innerHeight,.05,100000),eye=new T.Vector3(...ORIGIN_ROOM.entry),target=new T.Vector3(0,3501.1,-24);
  let dirty=true,disposed=false,hidden=document.hidden,blurred=false,last=0,frames=0,stage='saucer',rail=null,yaw=0,pitch=0,down=null,dragged=false,opening=false,portalAt=null,hasLeftSaucer=false,viewY=eye.y,bookReveal=null;
  const invalidate=()=>{dirty=true;};
- const sky=createDrownedSky(scene,{mobile,onChange:invalidate});
+ const sky=createDrownedSky(scene,{mobile,profile:'origin',arrival:new URLSearchParams(location.search).get('arrival')==='1',onChange:invalidate});
  const pmrem=new T.PMREMGenerator(renderer),environment=pmrem.fromEquirectangular(sky.environmentTexture);scene.environment=environment.texture;scene.environmentIntensity=.12;
  const vessel=createOriginsVessel(scene,{mobile,bookOnly:true,onChange:invalidate,onOpen:prepareBook});vessel.root.position.y=ORIGIN_ROOM.offset;
  const returnPortal=createBlackHolePortal(scene,{position:ORIGIN_RETURN.portal,href:earthHref}),cockpit=createSaucerCockpit(camera);scene.add(camera);

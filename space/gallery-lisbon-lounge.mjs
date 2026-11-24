@@ -47,8 +47,9 @@ function grainMap(){
  return map;
 }
 
-export function createLisbonArmchair(parent,{layout,geometry,material,texture,mark}){
- const root=new T.Group();root.name='Cognac leather club chair facing the cinema';
+export function createLisbonArmchair(parent,{layout,geometry,material,texture,mark,seats=1}){
+ const root=new T.Group();root.name=seats===1?'Cognac leather club chair facing the cinema':'Cognac leather sofa facing the six artworks';
+ const span=(seats-1)*1.22,seatOffsets=Array.from({length:seats},(_,i)=>i*1.22-span/2);
  root.position.set(...layout.position);parent.add(root);
  const grain=texture(grainMap());
  const leather=material(new T.MeshPhysicalMaterial({
@@ -81,37 +82,43 @@ export function createLisbonArmchair(parent,{layout,geometry,material,texture,ma
   }
   mesh.name=name;parent.add(mesh);
  }
- piece('Low walnut frame',[0,.19,0],[1.37,.20,1.31],.043,walnut);
- piece('Hand-upholstered leather apron',[0,.325,-.043],[1.41,.31,1.34],.095,darkLeather);
- piece('Deep sprung leather seat',[0,.523,-.133],[1.13,.205,1.09],.092,seatLeather);
- const seatSeam=seam('Seat cushion piping',[
-  [-.47,.565,-.653],[-.548,.566,-.547],[-.55,.565,-.1],[-.5,.567,.37],
-  [.48,.567,.37],[.55,.565,-.1],[.548,.566,-.547],[.47,.565,-.653]
- ]);
- stitch('Fine saddle stitching on seat',seatSeam,128);
+ piece('Low walnut frame',[0,.19,0],[1.37+span,.20,1.31],.043,walnut);
+ piece('Hand-upholstered leather apron',[0,.325,-.043],[1.41+span,.31,1.34],.095,darkLeather);
+ for(const offset of seatOffsets){
+  const cushion=new T.Group();cushion.position.x=offset;root.add(cushion);
+  piece('Deep sprung leather seat',[0,.523,-.133],[1.13,.205,1.09],.092,seatLeather,cushion);
+  const seatSeam=seam('Seat cushion piping',[
+   [-.47,.565,-.653],[-.548,.566,-.547],[-.55,.565,-.1],[-.5,.567,.37],
+   [.48,.567,.37],[.55,.565,-.1],[.548,.566,-.547],[.47,.565,-.653]
+  ],true,cushion);
+  stitch('Fine saddle stitching on seat',seatSeam,128,cushion);
+ }
  for(const side of [-1,1]){
-  piece('Sculpted leather outer arm',[side*.647,.487,-.029],[.257,.63,1.33],.092);
-  piece('Rolled arm topped in supple leather',[side*.602,.774,-.071],[.31,.236,1.238],.11,seatLeather);
+  piece('Sculpted leather outer arm',[side*(.647+span/2),.487,-.029],[.257,.63,1.33],.092);
+  piece('Rolled arm topped in supple leather',[side*(.602+span/2),.774,-.071],[.31,.236,1.238],.11,seatLeather);
   const line=seam('Outer arm leather welt',[
-   [side*.72,.788,-.604],[side*.735,.803,-.53],[side*.744,.807,-.31],
-   [side*.744,.808,.2],[side*.726,.812,.421]
+   [side*(.72+span/2),.788,-.604],[side*(.735+span/2),.803,-.53],[side*(.744+span/2),.807,-.31],
+   [side*(.744+span/2),.808,.2],[side*(.726+span/2),.812,.421]
   ],false);
   stitch('Fine saddle stitching on arm',line,42);
-  for(const z of [-.49,.498])piece('Dark tapered furniture foot',[side*.547,.085,z],[.156,.174,.171],.029,walnut);
+  for(const z of [-.49,.498])piece('Dark tapered furniture foot',[side*(.547+span/2),.085,z],[.156,.174,.171],.029,walnut);
  }
  const back=new T.Group();back.position.set(0,.86,.477);back.rotation.x=.135;root.add(back);
- piece('Hand-shaped high leather back',[0,.056,.012],[1.37,1.10,.245],.12,darkLeather,back);
- piece('Two-tone leather back cushion',[0,.08,-.132],[1.16,.964,.20],.099,leather,back);
- const backSeam=seam('Back cushion piped saddle seam',[
-  [-.44,-.368,-.185],[-.553,-.313,-.207],[-.567,.36,-.204],[-.45,.534,-.20],
-  [.45,.534,-.20],[.567,.36,-.204],[.553,-.313,-.207],[.44,-.368,-.185]
- ],true,back);
- stitch('Saddle stitches around curved back',backSeam,125,back);
- for(const side of [-1,1]){
-  const gathered=seam('Subtle gathered leather seam',[
-   [side*.07,.395,-.234],[side*.095,.22,-.235],[side*.105,-.065,-.235],[side*.14,-.25,-.227]
-  ],false,back);
-  stitch('Thread on vertical upholstery seam',gathered,20,back);
+ piece('Hand-shaped high leather back',[0,.056,.012],[1.37+span,1.10,.245],.12,darkLeather,back);
+ for(const offset of seatOffsets){
+  const cushion=new T.Group();cushion.position.x=offset;back.add(cushion);
+  piece('Two-tone leather back cushion',[0,.08,-.132],[1.16,.964,.20],.099,leather,cushion);
+  const backSeam=seam('Back cushion piped saddle seam',[
+   [-.44,-.368,-.185],[-.553,-.313,-.207],[-.567,.36,-.204],[-.45,.534,-.20],
+   [.45,.534,-.20],[.567,.36,-.204],[.553,-.313,-.207],[.44,-.368,-.185]
+  ],true,cushion);
+  stitch('Saddle stitches around curved back',backSeam,125,cushion);
+  for(const side of [-1,1]){
+   const gathered=seam('Subtle gathered leather seam',[
+    [side*.07,.395,-.234],[side*.095,.22,-.235],[side*.105,-.065,-.235],[side*.14,-.25,-.227]
+   ],false,cushion);
+   stitch('Thread on vertical upholstery seam',gathered,20,cushion);
+  }
  }
  return{root,pickables,...layout};
 }

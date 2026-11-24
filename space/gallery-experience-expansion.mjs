@@ -7,6 +7,7 @@ const fronts={
  screen:{ready:'__totehm_experience_front',selector:'#experience-front-canvas',event:'totehm:experience-enter'},
  controller:{ready:'__totehm_controller_entry',event:'totehm:controller-enter'},
  discover:{ready:'__totehm_experience_front',event:'totehm:experience-enter'},
+ artwork:{ready:'__totehm_experience_front',selector:'#artwork-hero-image',event:'totehm:experience-enter'},
  paper:{ready:'__totehm_paper_entry',event:'totehm:paper-enter'}
 };
 function corners(rect){return [{x:rect.left,y:rect.top},{x:rect.right,y:rect.top},{x:rect.right,y:rect.bottom},{x:rect.left,y:rect.bottom}];}
@@ -31,12 +32,19 @@ export function expandSpatialDiscover(projection,camera,href,options={}){
 }
 export {expandSpatialDiscover as expandLisbonDiscover};
 
+export function expandSuspendedArtwork(projection,camera,href,id,options={}){
+ if(current)return false;
+ const lift=projection.artworkLift?.(id,camera,innerWidth,innerHeight);
+ if(!lift)return expandSpatialDiscover(projection,camera,href,options);
+ return openExperience({object:lift.object,href,type:'artwork',from:lift.corners,artwork:lift.image,...options});
+}
+
 export function expandGalleryObject(object,camera,href,{kind,width,shot,...options}){
  if(current||!object)return false;
  return openExperience({object,camera,href,type:kind,width,shot,...options});
 }
 
-function openExperience({object,camera,href,type,from=null,canvas,time,width,shot,reduced=false,sourceReady=null,projection=null,onStart=()=>{},onLift=()=>{},onClose=()=>{}}){
+function openExperience({object,camera,href,type,from=null,canvas,artwork,time,width,shot,reduced=false,sourceReady=null,projection=null,onStart=()=>{},onLift=()=>{},onClose=()=>{}}){
  if(current)return false;
  const url=new URL(href,location.href);
  if(url.origin!==location.origin||!['/play_lisbon_street','/think_same_but_opposite','/get_higher'].includes(url.pathname))return false;
@@ -54,11 +62,25 @@ function openExperience({object,camera,href,type,from=null,canvas,time,width,sho
   catch(error){console.warn('[3D entrance]',error?.name||'unavailable');return null;}
  }
  if(type==='discover')frame.style.background='transparent';
+ function flatLift(element,width,height){
+  element.style.cssText=`position:absolute;left:0;top:0;width:${width}px;height:${height}px;max-width:none;transform-origin:0 0;pointer-events:none`;
+  const draw=amount=>{
+   const pose=target?from.map((point,i)=>({x:point.x+(target[i].x-point.x)*amount,y:point.y+(target[i].y-point.y)*amount})):from;
+   element.style.transform=coverTransform(pose,width,height);
+  };
+  draw(0);
+  return{element,draw,dispose(){}};
+ }
  if(type==='screen'){
   const image=document.createElement('img');image.src=canvas.toDataURL();image.alt='The original experience first page';
-  image.style.cssText=`position:absolute;left:0;top:0;width:${canvas.width}px;height:${canvas.height}px;max-width:none;transform-origin:0 0;pointer-events:none`;
-  const draw=amount=>{const pose=target?from.map((point,i)=>({x:point.x+(target[i].x-point.x)*amount,y:point.y+(target[i].y-point.y)*amount})):from;image.style.transform=coverTransform(pose,canvas.width,canvas.height);};
-  visual={element:image,draw,dispose(){}};draw(0);
+  visual=flatLift(image,canvas.width,canvas.height);
+ }else if(type==='artwork'&&!reduced){
+  const image=document.createElement('canvas'),ctx=image.getContext('2d');
+  if(ctx){
+   image.width=artwork.naturalWidth;image.height=artwork.naturalHeight;
+   ctx.drawImage(artwork,0,0);image.setAttribute('aria-hidden','true');
+   visual=flatLift(image,image.width,image.height);
+  }
  }else if(type==='paper'&&!reduced)visual=makeLift();
  const releaseVisual=()=>{visual?.element.remove();visual?.dispose();visual=null;};
  current=dialog;
@@ -67,7 +89,7 @@ function openExperience({object,camera,href,type,from=null,canvas,time,width,sho
   if(disposed)return;
   disposed=true;stage='closed';clearTimeout(timer);cancelAnimationFrame(raf);animation?.cancel();stopLift?.();discoverFlight?.cancel();
   removeEventListener('popstate',pop);removeEventListener('keydown',escape);removeEventListener('totehm:experience-navigate',navigate);
-  const restoreWorld=projectionHidden||type==='controller'&&object.visible!==wasVisible;
+  const restoreWorld=projectionHidden||(['artwork','controller'].includes(type)&&object.visible!==wasVisible);
   releaseVisual();object.visible=wasVisible;
   if(projectionHidden){projection.setHandoff(false);projectionHidden=false;}
   if(restoreWorld)onLift();
@@ -171,15 +193,19 @@ function openExperience({object,camera,href,type,from=null,canvas,time,width,sho
    const doc=win.document;
    if(type==='controller')await animateController(win);
    else if(type==='discover')await revealDiscover(win);
-   else await doc.fonts?.ready;
+   else if(type!=='artwork')await doc.fonts?.ready;
    if(disposed)return;
-   if(config.selector)target=corners(doc.querySelector(config.selector).getBoundingClientRect());
+   const targetElement=config.selector?doc.querySelector(config.selector):null;
+   if(config.selector)target=corners(targetElement.getBoundingClientRect());
    if(type!=='controller'&&type!=='discover')stage='expanding';
    clearTimeout(timer);
    if(!reduced&&visual)await new Promise(resolve=>{
-    let start;
+    let start,viewportWidth=innerWidth,viewportHeight=innerHeight;
     const tick=now=>{
      if(disposed){resolve();return;}
+     if(type==='artwork'&&(innerWidth!==viewportWidth||innerHeight!==viewportHeight)){
+      viewportWidth=innerWidth;viewportHeight=innerHeight;target=corners(targetElement.getBoundingClientRect());
+     }
      start??=now;progress=Math.min(1,(now-start)/860);const eased=1-(1-progress)**3;
      visual.draw(eased);veil.style.opacity=String(eased);
      if(progress===1)resolve();else raf=requestAnimationFrame(tick);
@@ -190,6 +216,7 @@ function openExperience({object,camera,href,type,from=null,canvas,time,width,sho
    if(paperView?.sharedModel&&visual?.corners){
     handoff={from:visual.corners(),to:paperView.faceCorners};
    }
+   if(type==='artwork'){handoff={corners:target};progress=1;}
    if(type!=='controller')frame.style.visibility='visible';
    if(type!=='screen'&&!handoff&&!reduced&&visual){
     veil.style.opacity='1';animation=visual.element.animate([{opacity:1},{opacity:0}],{duration:180,fill:'forwards'});
@@ -207,6 +234,7 @@ function openExperience({object,camera,href,type,from=null,canvas,time,width,sho
    win.addEventListener('keydown',event=>{
     if(event.key!=='Escape')return;
     if(type==='paper'&&win.document.getElementById('discover')?.classList.contains('in'))return;
+    if(['entering','discover'].includes(win.__totehm_opposites?.().phase))return;
     const lisbon=win.__totehm_lisbon?.();
     if(lisbon?.sequence==='phrase'||lisbon?.sequence==='art'||(type==='discover'&&lisbon?.board))return;
     event.preventDefault();event.stopImmediatePropagation();close();

@@ -13,17 +13,19 @@ export function expandOriginsBook(volume,camera,href,{reduced=false,onStart=()=>
  const destination=new URL(href,location.href);if(destination.origin!==location.origin||destination.pathname!=='/origins')return false;
  volume.updateWorldMatrix(true,true);camera.updateMatrixWorld();
  const stamp=volume.getObjectByName('Shared original Origins cover'),points=(stamp?[[-.35,.49,0],[.35,.49,0],[.35,-.49,0],[-.35,-.49,0]]:[[-.35,.041,-.49],[.35,.041,-.49],[.35,.041,.49],[-.35,.041,.49]]).map(p=>new Vector3(...p).applyMatrix4((stamp||volume).matrixWorld).project(camera)).map(p=>({x:(p.x+1)*innerWidth/2,y:(1-p.y)*innerHeight/2}));
- const cover=createOriginsCoverCanvas(),image=document.createElement('img'),veil=document.createElement('div'),frame=document.createElement('iframe'),dialog=document.createElement('div');
+ const physicalCover=stamp?.material.map?.image,cover=physicalCover?null:createOriginsCoverCanvas();
+ const coverCanvas=physicalCover??cover.canvas;
+ const image=document.createElement('img'),veil=document.createElement('div'),frame=document.createElement('iframe'),dialog=document.createElement('div');
  const previousURL=location.href,previousState=history.state,wasVisible=volume.visible,siblings=[...document.body.children].map(el=>[el,el.inert]);let stage='preparing',disposed=false,pushed=false,timer=0,animation=0,progress=0,targetCorners=null;
  const diagnostics=()=>({stage,progress,readerFrames:disposed?0:1,coverOverlays:disposed||!image.isConnected?0:1,physicalBookVisible:volume.visible,projectedCorners:points,targetCorners});window.__totehm_book_expansion=diagnostics;
  dialog.id='origins-reader-dialog';dialog.setAttribute('role','dialog');dialog.setAttribute('aria-modal','true');dialog.setAttribute('aria-label','Origins — the original book');dialog.style.cssText='position:fixed;inset:0;z-index:100;background:transparent';
  veil.style.cssText='position:absolute;inset:0;background:#000;opacity:0;pointer-events:none';
- image.src=cover.canvas.toDataURL();image.alt='Origins — the original book';image.style.cssText='position:absolute;left:0;top:0;width:1000px;height:1400px;max-width:none;transform-origin:0 0;pointer-events:none';image.style.transform=coverTransform(points);
+ image.src=coverCanvas.toDataURL();image.alt='Origins — the original book';image.style.cssText='position:absolute;left:0;top:0;width:1000px;height:1400px;max-width:none;transform-origin:0 0;pointer-events:none';image.style.transform=coverTransform(points);
  frame.title='Origins — read and turn the original book';frame.style.cssText='position:absolute;inset:0;width:100%;height:100%;border:0;background:#000;visibility:hidden';
  const embedded=new URL(destination);embedded.searchParams.set('embedded','1');
  active={close};
  function close(fromHistory=false){
-  if(disposed)return;disposed=true;stage='closed';clearTimeout(timer);cancelAnimationFrame(animation);removeEventListener('popstate',pop);removeEventListener('keydown',escape);dialog.remove();cover.dispose();volume.visible=wasVisible;for(const [el,inert]of siblings)el.inert=inert;active=null;onClose();
+  if(disposed)return;disposed=true;stage='closed';clearTimeout(timer);cancelAnimationFrame(animation);removeEventListener('popstate',pop);removeEventListener('keydown',escape);dialog.remove();cover?.dispose();volume.visible=wasVisible;for(const [el,inert]of siblings)el.inert=inert;active=null;onClose();
   if(pushed&&!fromHistory)history.back();
  }
  function pop(){close(true);}

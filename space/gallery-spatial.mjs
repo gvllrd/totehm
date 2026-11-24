@@ -1,5 +1,5 @@
 import {UFO_LISBON_SIGNS_LAYOUT} from './gallery-ufo-lisbon-signs.mjs';
-import {expandGalleryObject,expandSpatialDiscover} from './gallery-experience-expansion.mjs';
+import {expandGalleryObject,expandSpatialDiscover,expandSuspendedArtwork} from './gallery-experience-expansion.mjs';
 import {premiumCaseShot} from './gallery-object-view.mjs';
 import {lisbonControllerShot} from './gallery-lisbon-controller.mjs';
 import * as T from './vendor/three-0.180.0.mjs';
@@ -7,7 +7,6 @@ import {createModernGallery} from './gallery-modern.mjs';
 import {createTempleLandscape} from './gallery-temple-landscape.mjs';
 import {createModernWalkway,createModernPhysics} from './gallery-modern-navigation.mjs';
 import {LISBON_URBEX_LAYOUT as LISBON_LAYOUT,LISBON_URBEX_STATIONS,LISBON_HOLOGRAM_SIGNS} from './gallery-lisbon-urbex-layout.mjs';
-import {GALLERY_STATIONS as NEW_YORK_STATIONS} from './gallery-modern-layout.mjs';
 import {createGalleryAudio} from './gallery-audio.mjs';
 import {createRenderQuality} from './gallery-render-quality.mjs';
 import {glassRoofHeight} from './gallery-glass-shell.mjs';
@@ -22,9 +21,9 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
  const newYork=place==='new-york';
  const ny=newYork?await Promise.all([import('./gallery-new-york.mjs'),import('./gallery-new-york-navigation.mjs'),import('./gallery-new-york-layout.mjs'),import('./gallery-new-york-suspension.mjs')]):null;
  const L=newYork?ny[2].NEW_YORK_LAYOUT:LISBON_LAYOUT;
- const projectionLayout=newYork?ny[3].NEW_YORK_SUSPENSION_LAYOUT:UFO_LISBON_SIGNS_LAYOUT,STATIONS=(newYork?NEW_YORK_STATIONS:LISBON_URBEX_STATIONS).map((station,i)=>i===2?{...station,approach:projectionLayout.approach,approachMobile:projectionLayout.approach,target:projectionLayout.target||projectionLayout.position}:station);
+ const projectionLayout=newYork?ny[3].NEW_YORK_SUSPENSION_LAYOUT:UFO_LISBON_SIGNS_LAYOUT,STATIONS=(newYork?ny[2].NEW_YORK_STATIONS:LISBON_URBEX_STATIONS).map((station,i)=>i===2?{...station,approach:projectionLayout.approach,approachMobile:projectionLayout.approach,target:projectionLayout.target||projectionLayout.position}:station);
  const ENTRY=L.entry,LOOK=L.look,GROUND=L.groundY,HEIGHT=L.eyeHeight;
- const ceiling=(x,z)=>newYork?ny[2].newYorkRoofHeight(x,z):(architecture?.roofHeight||glassRoofHeight)(x,z);
+ const ceiling=(x,z)=>(architecture?.roofHeight||glassRoofHeight)(x,z);
  const host=document.getElementById('space'),mobile=innerWidth<650||(matchMedia('(pointer: coarse)').matches&&Math.min(innerWidth,innerHeight)<650);
  const renderer=new T.WebGLRenderer({antialias:true,alpha:false,stencil:!newYork,powerPreference:'high-performance'});
  const quality=createRenderQuality({mobile,pixelRatio:devicePixelRatio});
@@ -65,7 +64,7 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
  }
  play=newYork?ny[3].createNewYorkSuspension(scene,{mobile,onChange:invalidate}):architecture.performance;
  play.setProjector?.(vessel.streetProjector);
- play.onOpen?.(({href})=>openProjection(href));
+ play.onOpen?.(({href,id})=>openProjection(href,id));
  opposite=emptyInstallation('absent-other-installations');
  const walkway=newYork?ny[1].createNewYorkWalkway():createModernWalkway(architecture.obstacles),physics=newYork?ny[1].createNewYorkPhysics({x:ENTRY[0],z:ENTRY[2]}):createModernPhysics({x:ENTRY[0],z:ENTRY[2]},architecture.obstacles,architecture.roofProfile),sound=createGalleryAudio();
  const eye=new T.Vector3(...ENTRY),gaze=new T.Vector3(...LOOK),renderedTarget=gaze.clone(),keys=new Set();
@@ -124,7 +123,7 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
   physics.relocateHorizontal(new T.Vector3(x,0,z));eye.set(x,physics.position.y+HEIGHT,z);look();dirty=true;stationState();
  }
  function sit(){
-  if(newYork||vesselMode!=='island'||list||paused||seated)return false;
+  if(vesselMode!=='island'||list||paused||seated)return false;
   stopInput();cancelTravel();leaveStation();onOverview();
   const takeSeat=()=>{
    prefetchLisbonExperience(TABLETOP_CONTROLLER);prefetchLisbonExperience(UFO_LISBON_SIGNS_LAYOUT.href);
@@ -142,14 +141,14 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
   if(index===1)return visitOrigins();
   if(index===4)return false;
   if(vesselMode!=='island')return returnIsland(()=>visit(index));
-  if(index===3)index=0;if(newYork&&[0,3,4].includes(index))index=2;
+  if(index===3)index=0;if(newYork&&index===4)index=2;
   const station=STATIONS[index];if(!station||list)return false;
   cancelTravel();resetPortals();inspecting=false;architecture.setInspecting?.(false);room=index;focused=-1;
   const result=groundedTravel(new T.Vector3(...(mobile&&station.approachMobile||station.approach)),new T.Vector3(...station.target),()=>focusStation(index));stationState();return result;
  }
  function enter(index=room){
   if(index===1){if(vesselMode==='chamber')return book.open();return visitOrigins();}
-  if(index===3)index=0;if(newYork&&[0,3,4].includes(index))index=2;
+  if(index===3)index=0;if(newYork&&index===4)index=2;
   if(!STATIONS[index]||list)return false;
   if(!(index===2&&seated)&&!nearStation(index))return visit(index);
   focusStation(index);if(index===2){return openProjection();}else if(index===4)opposite.open();else if(index===1)book.open();else if(index===0){return openPaper(architecture.cases?.[0]);}dirty=true;stationState();return true;
@@ -170,10 +169,10 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
   if(seatMove?.start!=null)seatMove.start+=elapsed;
   experienceFrozenAt=null;paused=false;lastTime=0;dirty=true;host.focus({preventScroll:true});syncSound();
  }
- function openProjection(href=play.screen?.userData.href){
+ function openProjection(href=play.screen?.userData.href,id){
   const options={reduced:motionReduced,onStart:freezeExperience,
    onLift:()=>renderer.render(scene,camera),onClose:()=>{play.reset?.();resumeExperience();}};
-  return expandSpatialDiscover(play,camera,href,options);
+  return newYork&&id?expandSuspendedArtwork(play,camera,href,id,options):expandSpatialDiscover(play,camera,href,options);
  }
  function openObject(root,href,kind,width,shot,sourceReady){
   return expandGalleryObject(root,camera,href,{kind,width,shot,sourceReady,reduced:motionReduced,
@@ -265,9 +264,6 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
   if(data?.kind==='lisbon-street-sign'){
    activateStreetSign(data.id);return;
   }
-  if(data?.kind==='new-york-opposite'){
-   stopInput();cancelTravel();leaveStation();interact();openExperience({href:data.href});return;
-  }
   if(data?.kind==='origins-book'){
    if(nearStation(1)){focusStation(1);book.interact(h);dirty=true;stationState();}else select(1);return;
   }
@@ -276,7 +272,7 @@ export async function createGallery({place='lisbon',select,onOverview=()=>{},onS
   }
   if(data?.installation==='opposite'){opposite.interact(h);return;}
   if(data?.kind==='lisbon-seat'){sit();return;}
-  if(data?.kind==='lisbon-paper'){openPaper(data.paper);return;}
+  if(data?.kind==='totehmpaper'){openPaper(data.paper);return;}
   if(data?.kind==='lisbon-controller'){openController();return;}
   if(data?.kind==='experience-projection'){play.open(h);return;}
   if(data?.room!==undefined){if(data.room<0)enterGallery();else select(data.room);return;}
