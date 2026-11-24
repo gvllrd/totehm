@@ -14,7 +14,7 @@ const items=[['h','Run the hill'],['o','o1'],['r','r1'],['w','w1'],['v','v1']].m
   ({id:'m'+i,kind,ref,path:img(i+1),mime:'image/jpeg',bytes:1200,name:'x.jpg',created_at:'2026-10-15T10:0'+i+':00Z'}));
 const ARBRE={signed_in:true,objectives:[{id:'o1',text:'Ship it',is:['express'],hs:['Run the hill']}],
   repulsions:[{id:'r1',text:'The phone in bed',is:['focus'],hs:['Run the hill']}],
-  stories:[{id:'w1',text:'I left Paris at nineteen'}],visions:[{id:'v1',text:'The studio by the sea'}]};
+  stories:[{id:'w1',text:'I left Paris at nineteen'}],visions:[{id:'v1',text:'The studio by the sea'},{id:'v2',text:'The cabin in the woods'}]};
 const RPC={my_landing:{signed_in:true,pseudo:'wahigher',visibility:'private',offer:{enabled:false},higher:{active:false},thp:false,subscriptions:0,subscribers:0},
   element_media_list:()=>({ok:true,items}), element_media_add:b=>({ok:true,id:'m-new',kind:b.p_kind,ref:b.p_ref,path:b.p_path}),
   my_totehm:async()=>{ await new Promise(r=>setTimeout(r,2500)); return ARBRE; },
@@ -42,6 +42,16 @@ try{
   await pg.click('#lv-sh-sf [data-sf="vue"][data-v="visions"]');await pg.waitForTimeout(500);
   const f=await pg.evaluate(()=>{const v=document.querySelector('#lv-sh-sf .sfv.is-on');return v?getComputedStyle(v).boxShadow:'absent';});
   ok(f==='none',nom+' · le filtre : la vue choisie sans trait blanc (box-shadow '+f+')');
+  /* 24/11 (Wah) : une box choisie FERME les autres ; un tap sur elle rouvre la liste (le choix reste) */
+  const nb=()=>pg.evaluate(()=>[...document.querySelectorAll('#lv-sh-sf [data-sf="box"]')].map(e=>e.dataset.v+(e.classList.contains('is-on')?'*':'')).join(','));
+  const l0=await nb();
+  await pg.click('#lv-sh-sf [data-sf="box"][data-v="v|v1"]');await pg.waitForTimeout(500);
+  await pg.click('#lv-sh-flt [data-f="sf"]');await pg.waitForTimeout(700);
+  const l1=await nb();
+  await pg.click('#lv-sh-sf [data-sf="box"][data-v="v|v1"]');await pg.waitForTimeout(400);
+  const l2=await nb();
+  ok(l0==='v|v1,v|v2'&&l1==='v|v1*'&&l2==='v|v1*,v|v2',nom+' · la box choisie reste SEULE ; un tap rouvre la liste, le choix gardé → '+[l0,l1,l2].join(' / '));
+  await pg.click('#lv-sh-sf [data-sf="box"][data-v="v|v1"]');await pg.waitForTimeout(400);
   /* 23/11 (Wah) : GRIND se choisit TEL QUEL (objectifs + habits + répulsions), ses trois boutons affinent ; tout en pleine couleur */
   await pg.click('#lv-sh-sf [data-sf="grind"]');await pg.waitForTimeout(600);
   const g0=await pg.evaluate(()=>({f:window.__totehm_sh().filtre,n:window.__totehm_sh().items,on:document.querySelector('#lv-sh-sf .sfv-g').classList.contains('is-on'),

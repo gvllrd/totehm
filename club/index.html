@@ -172,6 +172,15 @@ body.rdr-grid #rdr-plus,body.is-nspot #rdr-plus,body.is-sf #rdr-plus,body.is-det
 .sfi i{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--c);margin-right:6px;vertical-align:1px}
 .sfi .sfh{display:inline-block;width:38px;height:13px;margin-left:5px;vertical-align:-2px}
 .sfa{justify-content:space-between;margin-top:6px}
+/* 24/11 (Wah) : le REFINE centré comme celui de totehm.com — titres, puces, boxes, ALL · CLOSE au milieu, et les
+   intentions une par une, verticalement (la prise de spot garde sa colonne). */
+#rdr-sf .sfg{align-items:center;text-align:center}
+#rdr-sf .sfr{justify-content:center}
+#rdr-sf .sfr:has(.sfi){flex-direction:column;align-items:center;flex-wrap:nowrap}
+#rdr-sf .sfr:has(.sfi) .sfi{min-width:min(62vw,230px);text-align:center}
+#rdr-sf .sfbx{align-items:center;text-align:start}   /* le centrage s'arrête AU BORD des boxes : leur rendu natif (règle n° 1) */
+#rdr-sf .ns-c{align-items:center}
+#rdr-sf .sfa{justify-content:center;gap:10px}
 .ns-c{display:inline-flex;flex-direction:column;align-items:flex-start;gap:2px}
 .ns-c small{font-size:9px;letter-spacing:.04em;color:#8a8a92}
 .ns-c.is-on small{color:#b8b8c2}
@@ -711,7 +720,7 @@ const sb = createClient(SB_URL, SB_ANON);
 const $ = id => document.getElementById(id);
 const esc = s => { const d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; };
 const COM = 'https://www.totehm.com';
-const BUILD = '2026-11-23-lot-wah';
+const BUILD = '2026-11-24-refine';
 
 /* ══ AUDIENCE — 13/10 : trois niveaux, une pastille. COPIÉ tel quel depuis tools/audience_ui.js
    (jamais importé). PRIVATE = moi · FIGHER CLUB = les membres · MY SUBSCRIBERS = mes abonnés ;
@@ -971,7 +980,7 @@ const MODE = (() => {
    partent au SERVEUR, et la PARENTÉ (`akin`) trie les plus proches de la Habit choisie d'abord. */
 const CLUBSP = (() => {
   const PER = ['past','now','future'];
-  const st = { per:'now', items:[], total:0, more:false, off:0, asOf:null, seq:0, charge:false, lu:false, auto:true, elargi:false,
+  const st = { pers:['now'], p:{}, items:[], total:0, more:false, seq:0, charge:false, lu:false, auto:true, elargi:false,
                err:'', at:0, srv:{intentions:[], type:'all', scope:'world', mode:'all', akin:'', exact:false, rayon:50} };
   const abon = [];
   const prevenir = () => abon.forEach(f => { try{ f(); }catch(e){ console.error('[clubsp]', e && e.message || e); } });
@@ -992,58 +1001,76 @@ const CLUBSP = (() => {
     if(!me){ ++st.seq; st.charge = false; st.items = []; st.total = 0; st.more = false; st.err = 'signin'; st.lu = true; prevenir(); return; }
     const s = ++st.seq, uid = me ? me.id : null, f = filtres();
     st.charge = true;
-    const args = { p_period:st.per, p_filters:f,
-      p_lat:f.scope === 'near' ? POS.lat : null, p_lng:f.scope === 'near' ? POS.lng : null,
-      p_limit:20, p_offset:suite ? st.off : 0, p_as_of:suite ? st.asOf : null };
-    const { data, error } = await sb.rpc('club_spots', args);
+    /* ⚠️ 24/11 (Wah) : plusieurs temps à la fois, comme la vue de droite de totehm.com — `st.pers` : un ou plusieurs temps ;
+       le serveur en lit UN par appel : une lecture par temps, en parallèle, chacune sa page (`st.p[per]`), fusionnées. */
+    const pers = ORDRE.filter(p => st.pers.includes(p) && (!suite || (st.p[p] && st.p[p].more)));
+    const lectures = await Promise.all(pers.map(per => {
+      const q = st.p[per] || {};
+      return sb.rpc('club_spots', { p_period:per, p_filters:f,
+        p_lat:f.scope === 'near' ? POS.lat : null, p_lng:f.scope === 'near' ? POS.lng : null,
+        p_limit:20, p_offset:suite ? (q.off | 0) : 0, p_as_of:suite ? (q.asOf || null) : null }).then(r => ({ per, ...r }));
+    }));
     if(s !== st.seq || (me ? me.id : null) !== uid) return;
     st.charge = false;
-    if(error){ console.error('[club_spots]', error.message); st.err = 'unreachable'; prevenir(); return; }
-    if(!data || !data.ok){ st.err = (data && data.why) || 'refused'; if(!suite){ st.items = []; st.total = 0; st.more = false; } prevenir(); return; }
-    const l = Array.isArray(data.items) ? data.items : [];
+    const ko = lectures.find(r => r.error);
+    if(ko){ console.error('[club_spots]', ko.error.message); st.err = 'unreachable'; prevenir(); return; }
+    const non = lectures.find(r => !r.data || !r.data.ok);
+    if(non){ st.err = (non.data && non.data.why) || 'refused'; if(!suite){ st.items = []; st.total = 0; st.more = false; } prevenir(); return; }
+    const l = [].concat(...lectures.map(r => Array.isArray(r.data.items) ? r.data.items : []));
     /* RIEN MAINTENANT ? À l'ARRIVÉE seulement, on montre ce qui vient, puis ce qui a été : une vue vide
        quand le Club a des spots, c'est une vue qui ment. Un choix du membre n'est jamais contredit. */
-    if(!suite && st.auto && !l.length && !Object.keys(f).some(k => k !== 'scope' && k !== 'radius_km')){
+    if(!suite && st.auto && !l.length && st.pers.length === 1 && !Object.keys(f).some(k => k !== 'scope' && k !== 'radius_km')){
       /* À l'arrivée, PRÈS DE MOI d'abord (Wah : « figher.club, c'est trouver un spot accompagné ») : maintenant,
          puis bientôt ; rien autour → tout le Club, et la barre le DIT. */
       if(f.scope === 'near'){
-        if(st.per === 'now'){ st.per = 'future'; return lire(false); }
-        st.srv.scope = 'world'; st.per = 'now'; st.elargi = true; return lire(false);
+        if(st.pers[0] === 'now'){ st.pers = ['future']; return lire(false); }
+        st.srv.scope = 'world'; st.pers = ['now']; st.elargi = true; return lire(false);
       }
-      const nx = st.per === 'now' ? 'future' : st.per === 'future' ? 'past' : null;
-      if(nx){ st.per = nx; return lire(false); }
+      const nx = st.pers[0] === 'now' ? 'future' : st.pers[0] === 'future' ? 'past' : null;
+      if(nx){ st.pers = [nx]; return lire(false); }
     }
     st.auto = false; st.err = ''; st.lu = true; st.at = Date.now();
-    st.items = suite ? st.items.concat(l.filter(x => !st.items.some(y => y.id === x.id))) : l;
-    st.total = data.total | 0; st.more = !!(data.has_more || data.more); st.off = data.next_offset | 0; st.asOf = data.as_of || st.asOf;
+    if(!suite) st.p = {};
+    lectures.forEach(r => { const d = r.data;
+      st.p[r.per] = { off:d.next_offset | 0, asOf:d.as_of || (st.p[r.per] && st.p[r.per].asOf) || null, more:!!(d.has_more || d.more), total:d.total | 0 }; });
+    st.items = suite ? st.items.concat(l.filter(x => !st.items.some(y => y.id === x.id))) : l.filter((x, i, a) => a.findIndex(y => y.id === x.id) === i);
+    st.total = Object.values(st.p).reduce((a, q) => a + (q.total | 0), 0); st.more = Object.values(st.p).some(q => q.more);
     prevenir();
   }
   const NOMS = { now:'now', past:'past', future:'future' }, ORDRE = ['now','past','future'];
+  const vider = () => { st.items = []; st.total = 0; st.more = false; st.p = {}; };
   return {
-    lire:()=>{ st.asOf = null; return lire(false); },
-    ouvrir(){ if(!st.lu || Date.now() - st.at > 60000){ st.asOf = null; lire(false); } },
+    lire:()=>{ st.p = {}; return lire(false); },
+    ouvrir(){ if(!st.lu || Date.now() - st.at > 60000){ st.p = {}; lire(false); } },
     suite:()=>lire(true),
-    periode(p){ if(!PER.includes(p)) return; st.auto = false; if(p === st.per) return;
-      st.per = p; st.items = []; st.total = 0; st.more = false; st.asOf = null; prevenir(); lire(false); },
+    /* un temps de plus, ou de moins — comme une intention ; il en reste toujours un */
+    periode(p){ if(!PER.includes(p)) return; st.auto = false;
+      if(st.pers.includes(p)){ if(st.pers.length === 1) return; st.pers = st.pers.filter(x => x !== p); }
+      else st.pers = ORDRE.filter(x => x === p || st.pers.includes(x));
+      vider(); prevenir(); lire(false); },
     async regler(o, auto){
       st.err = ''; st.elargi = false;
       if(o.scope === 'near' && !(await position())){ st.err = 'location'; o.scope = 'world'; }
       st.srv = { intentions:o.intentions || [], type:o.type || 'all', scope:o.scope || 'world', mode:o.mode || 'all',
                  akin:o.akin || '', exact:!!o.exact, rayon:o.rayon || 50 };
-      st.auto = !!auto; if(auto) st.per = 'now'; st.asOf = null; lire(false);
+      st.auto = !!auto; if(auto) st.pers = ['now']; st.p = {}; lire(false);
       return st.srv.scope;
     },
     items:()=>st.items.slice(),
-    get per(){ return st.per; }, get err(){ return st.err; }, get lu(){ return st.lu; }, get charge(){ return st.charge; },
+    get per(){ return st.pers[0]; }, get pers(){ return st.pers.slice(); },
+    /* les temps lus, dits en un mot : « now · past » */
+    get nom(){ return st.pers.map(p => NOMS[p]).join(' · '); },
+    get err(){ return st.err; }, get lu(){ return st.lu; }, get charge(){ return st.charge; },
     get more(){ return st.more; }, get scope(){ return st.srv.scope; }, get elargi(){ return st.elargi; },
     get akin(){ return st.srv.akin; },
     PER, NOMS, ORDRE,
-    montrer(p){ if(!PER.includes(p)) return; st.auto = false; st.per = p; st.items = []; st.total = 0; st.more = false;
-      st.asOf = null; prevenir(); return lire(false); },
+    /* un spot que je viens de publier : CE temps-là, seul, relu */
+    montrer(p){ if(!PER.includes(p)) return; st.auto = false; st.pers = [p]; vider();
+      prevenir(); return lire(false); },
     retirer(id){ const n = st.items.length; st.items = st.items.filter(x => !x || String(x.id) !== String(id));
       if(st.items.length !== n){ st.total = Math.max(0, st.total - 1); prevenir(); } },
     sur(f){ if(typeof f === 'function') abon.push(f); },
-    etat:()=>({ periode:st.per, items:st.items.length, total:st.total, more:st.more, lu:st.lu, err:st.err,
+    etat:()=>({ periode:st.pers.join('+'), pers:st.pers.slice(), items:st.items.length, total:st.total, more:st.more, lu:st.lu, err:st.err,
                 filtres:filtres(), charge:st.charge, rayon:st.srv.rayon, elargi:st.elargi })
   };
 })();
@@ -1305,7 +1332,7 @@ async function situer(){
   RAD.range = radarRange();
   const em = $('radar-empty');
   em.textContent = CLUBSP.charge ? 'reading the club…' : CLUBSP.err === 'signin' ? VIDE_CONNECT : CLUBSP.err === 'location' ? 'allow my location'
-    : CLUBSP.err ? 'the club is unreachable' : RAD.lieux.length ? '' : 'no spot ' + CLUBSP.per;
+    : CLUBSP.err ? 'the club is unreachable' : RAD.lieux.length ? '' : 'no spot ' + CLUBSP.nom;
   em.classList.toggle('hide', !em.textContent || MODE.get() !== 'radar');
   radarOn(); LISTE.peindre();
 }
@@ -1535,7 +1562,7 @@ const LISTE = (() => {
     const d = $('rdr-down');
     if(d){ d.hidden = !L.length; d.textContent = L.length + (CLUBSP.more ? '+' : '') + (L.length > 1 ? ' spots' : ' spot') + ' ↓'; }
     if(!L.length){ b.innerHTML = ''; return; }
-    b.innerHTML = '<p class="sfl">' + (POS && CLUBSP.scope === 'near' ? 'around me' : 'the club') + ' · ' + CLUBSP.NOMS[CLUBSP.per] + '</p>'
+    b.innerHTML = '<p class="sfl">' + (POS && CLUBSP.scope === 'near' ? 'around me' : 'the club') + ' · ' + CLUBSP.nom + '</p>'
       + L.map((z, i) => '<article class="rl" data-cle="' + esc(String(z.id)) + '" data-i="' + i + '" tabindex="0" role="button" aria-label="'
         + esc(z.habit || 'spot') + '">' + boxSpot(z, true) + ligneSpot(z) + '</article>').join('');
     const der = b.querySelector('.rl:last-child');
@@ -1603,7 +1630,7 @@ const SHORTS = (() => {
     arreter(); L = n; etat.cartes = L.length;
     if(io){ io.disconnect(); io = null; }
     b.innerHTML = L.length ? L.map(carte).join('')
-      : '<div class="sh-vide"><p class="note">' + (CLUBSP.charge ? 'reading the club…' : CLUBSP.err === 'signin' ? VIDE_CONNECT : 'no spot video ' + CLUBSP.NOMS[CLUBSP.per]) + '</p>'
+      : '<div class="sh-vide"><p class="note">' + (CLUBSP.charge ? 'reading the club…' : CLUBSP.err === 'signin' ? VIDE_CONNECT : 'no spot video ' + CLUBSP.nom) + '</p>'
         + '</div>';   /* 23/11 (Wah) : un seul [+ spot] en shorts — celui du bas (`#rdr-plus`) */
     io = new IntersectionObserver(es => es.forEach(en => { if(en.isIntersecting && en.intersectionRatio >= .6) jouer(en.target); }),
       { root:$('v-shorts'), threshold:[0, .6] });
@@ -1654,7 +1681,7 @@ const dire = t => { const s = $('rdr-say'); if(s) s.textContent = t || ''; };
      Intentions · It shows
    « Mood » est parti : les quatre piliers redisaient les sept intentions. Tout part au SERVEUR. */
 const RAYONS = [5, 20, 50, 200];
-const SF = { ints:new Set(), type:'', ou:'', rayon:50, mode:'', akin:'', exact:false, touche:false };
+const SF = { ints:new Set(), type:'', ou:'', rayon:50, mode:'', akin:'', exact:false, touche:false, replie:false };
 const INT_ORDRE = ['fight','flow','enrich','love','express','focus','celebrate'];   /* l'ordre de totehm.com */
 const sfCount = () => SF.ints.size + (SF.type ? 1 : 0) + (SF.ou ? 1 : 0) + (SF.mode ? 1 : 0) + (SF.akin ? 1 : 0);
 const sfOpts = () => ({ intentions:[...SF.ints], type:SF.type || 'all', scope:SF.ou || 'world', mode:SF.mode || 'all',
@@ -1663,7 +1690,7 @@ const sfOuvert = () => !$('rdr-sf').hidden;
 function peindreBarre(){
   const r = $('rdr-flt'); if(!r) return;
   const n = sfCount();
-  const h = '<button type="button" class="is-on" data-f="sf" data-per="' + CLUBSP.per + '">' + CLUBSP.NOMS[CLUBSP.per] + '</button>'
+  const h = '<button type="button" class="is-on" data-f="sf" data-per="' + CLUBSP.per + '">' + CLUBSP.nom + '</button>'
     + '<button type="button" class="' + (n ? 'is-on' : '') + '" data-f="sf" aria-haspopup="dialog" aria-expanded="' + (sfOuvert() ? 'true' : 'false') + '">'
     + (n ? 'Refine · ' + n : 'Refine') + '</button>';
   if(r.dataset.h === h) return;
@@ -1683,12 +1710,14 @@ function sfPaint(){
   if(!me) h += '<p class="ns-def">connect with my TOTEHM to find the spots of habits like mine</p>';
   else if(!HABITS) h += '<p class="ns-def">reading my TOTEHM…</p>';
   else if(!HABITS.length) h += '<p class="ns-def">write a Habit in my TOTEHM first</p>';
-  else h += HABITS.map(x => '<div class="sfb' + (SF.akin === x.name ? ' is-on' : '') + '" role="button" tabindex="0" data-sf="habit"'
+  /* 24/11 (Wah) : « quand on sélectionne une box, il faut que les autres se ferment ; quand tu rappuies sur la box
+     sélectionnée, ça rouvre la liste » — plus de lisibilité : la Habit choisie reste SEULE dans le Refine. */
+  else h += HABITS.filter(x => !(SF.akin && SF.replie) || SF.akin === x.name).map(x => '<div class="sfb' + (SF.akin === x.name ? ' is-on' : '') + '" role="button" tabindex="0" data-sf="habit"'
     + ' data-v="' + esc(x.name) + '" aria-pressed="' + (SF.akin === x.name) + '">' + boxHabit(x) + '</div>').join('');
   h += '</div></div>';
   if(SF.akin) h += g('how close', c('data-sf="near" data-v="akin"', 'akin habits', !SF.exact, 'the closest first')
     + c('data-sf="near" data-v="exact"', 'exactly this one', SF.exact, 'nothing else'));
-  h += g('When', CLUBSP.ORDRE.map(q => c('data-sf="per" data-v="' + q + '"', CLUBSP.NOMS[q], CLUBSP.per === q)).join(''));
+  h += g('When', CLUBSP.ORDRE.map(q => c('data-sf="per" data-v="' + q + '"', CLUBSP.NOMS[q], CLUBSP.pers.includes(q))).join(''));
   const pres = SF.ou === 'near' && CLUBSP.err !== 'location';
   h += g('Where', c('data-sf="ou" data-v=""', 'world', !SF.ou) + c('data-sf="ou" data-v="near"', 'near me', SF.ou === 'near')
     + (pres ? RAYONS.map(r => c('data-sf="rayon" data-v="' + r + '"', r + ' km', SF.rayon === r)).join('') : '')
@@ -1720,8 +1749,11 @@ function sfApply(){
     const t = e.target.closest('[data-sf]'); if(!t) return;
     const k = t.dataset.sf, v = t.dataset.v;
     if(k === 'close') return sfOpen(false);
-    if(k === 'all'){ SF.ints.clear(); SF.type = ''; SF.ou = ''; SF.mode = ''; SF.akin = ''; SF.exact = false; return sfApply(); }
-    if(k === 'habit'){ SF.akin = SF.akin === v ? '' : v; SF.exact = false; return sfApply(); }
+    if(k === 'all'){ SF.ints.clear(); SF.type = ''; SF.ou = ''; SF.mode = ''; SF.akin = ''; SF.exact = false; SF.replie = false; return sfApply(); }
+    /* la box choisie, repliée : un tap ROUVRE la liste (le choix reste) ; dans la liste ouverte, un tap sur elle la retire */
+    if(k === 'habit'){ if(SF.akin === v && SF.replie){ SF.replie = false; return sfPaint(); }
+      if(SF.akin === v){ SF.akin = ''; SF.replie = false; } else { SF.akin = v; SF.replie = true; }
+      SF.exact = false; return sfApply(); }
     if(k === 'near'){ SF.exact = v === 'exact'; return sfApply(); }
     if(k === 'per'){ SF.touche = true; CLUBSP.periode(v); sfPaint(); peindreBarre(); return; }
     if(k === 'int'){ SF.ints.has(v) ? SF.ints.delete(v) : SF.ints.add(v); return sfApply(); }
@@ -2330,7 +2362,7 @@ CLUBSP.sur(() => {
 
 /* ══ LE DÉMARRAGE ══ */
 window.__totehm_club = () => ({ build:BUILD, mode:MODE.get(), signed_in:!!me, located:!!POS, detail:!!DETAIL,
-  filtre:sfOuvert(), filtres:sfCount(), habits:(HABITS || []).length, akin:!!SF.akin, exact:SF.exact, ou:SF.ou || 'world',
+  filtre:sfOuvert(), filtres:sfCount(), habits:(HABITS || []).length, akin:!!SF.akin, replie:SF.replie, exact:SF.exact, ou:SF.ou || 'world',
   liste:LISTE.etat(), shorts:SHORTS.etat(), scrolled:document.body.classList.contains('is-scrolled'),
   radar:{ cx:Math.round(RAD.cx), cy:Math.round(RAD.cy), radius:Math.round(RAD.rpx), heading:Math.round(norm360(RAD.head)),
           points:RAD.pts.length, lieux:RAD.lieux.length, portee:Math.round(RAD.range) },

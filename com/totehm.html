@@ -3815,7 +3815,7 @@ body.lv-g #lv-socket,body.lv-d #lv-socket{opacity:0}
 :is(#lv-sh-sf,#rdr-sf) .sfr{justify-content:center}
 :is(#lv-sh-sf,#rdr-sf) .sfr:has(.sfi){flex-direction:column;align-items:center;flex-wrap:nowrap}
 :is(#lv-sh-sf,#rdr-sf) .sfr:has(.sfi) .sfi{min-width:min(62vw,230px);text-align:center}
-:is(#lv-sh-sf,#rdr-sf) .sfbx{align-items:center}
+:is(#lv-sh-sf,#rdr-sf) .sfbx{align-items:center;text-align:start}   /* le centrage s'arrête AU BORD des boxes : leur rendu natif (règle n° 1) */
 :is(#lv-sh-sf,#rdr-sf) .sfa{justify-content:center;gap:10px}
 :is(#lv-sh-sf,#rdr-sf){padding-bottom:120px}   /* la manette du bas ne couvre jamais ALL · CLOSE */
 /* 27/10 — PRENDRE UN SPOT (`NSPOT`) : le panneau du filtre ; une question à la fois, sous chaque choix son sens en petit */
@@ -6889,7 +6889,8 @@ function creerFeed(conf){
   const SF={box:null, on:new Set(), ints:new Set(), piliers:new Set(), freq:false, type:'', vue:'', quand:'', aud:'', ou:'', rayon:50,
             plie:true, grind:false,    /* le bloc de commande EST le logo ; il naît décomposé du TOTEHM docké (26/10) */
             ajout:false, ajVue:'',     /* 26/10 : le « + » ouvre le MÊME Totehm pour choisir l'élément d'un média */
-            ajBox:null};               /* 27/10 : la box choisie — la capture s'ouvre dessous, dans le panneau */
+            ajBox:null,                /* 27/10 : la box choisie — la capture s'ouvre dessous, dans le panneau */
+            replie:false};             /* 24/11 : la box choisie reste SEULE dans le Refine ; un tap sur elle rouvre la liste */
   const PILIERS=['BODY','MENTAL','SOUL','SPIRIT'];
   const sfCount=()=>(SF.box?SF.on.size:0)+SF.ints.size+SF.piliers.size+(SF.freq?1:0)
                    +(SF.type?1:0)+(SF.vue?1:0)+(SF.quand?1:0)+(SF.aud?1:0)+(SF.ou?1:0);
@@ -7001,6 +7002,7 @@ function creerFeed(conf){
   }
   /* Choisir une Box = l'allumer, ELLE ET TOUT CE QUI LA COMPOSE (SPACE, 11/10). */
   function sfBox(x){
+    SF.replie=!!x;
     if(!x){ SF.box=null; SF.on=new Set(); SF.freq=false; return; }
     /* LA GRILLE : la box choisie est UN élément — ses médias, et elle-même remise en tête des résultats. */
     if(conf.grille){ const bk=BOX[x.k]; if(!bk) return; const o=objetBox(bk,x.ref), vue=VUE[x.k], id=o?String(o.id):'';
@@ -7222,7 +7224,10 @@ function creerFeed(conf){
       /* 27/10 — « + » : la box choisie reste SEULE, et la capture s'ouvre dessous, dans le panneau (un tap sur elle rend la liste) */
       const aj=SF.ajout&&SF.ajBox&&dansVue(VUE[SF.ajBox.k],cur)?SF.ajBox:null;
       if(cur){
-        const l=mesElements().filter(x=>dansVue(VUE[x.k],cur)&&(!aj||(x.k===aj.k&&x.ref===aj.ref)));
+        /* 24/11 (Wah) : « quand on sélectionne une box, il faut que les autres se ferment ; quand tu rappuies sur la box
+           sélectionnée, ça rouvre la liste » — dans les deux vues ; le « + » garde sa propre liste. */
+        const l=mesElements().filter(x=>dansVue(VUE[x.k],cur)&&(!aj||(x.k===aj.k&&x.ref===aj.ref))
+          &&(SF.ajout||!SF.replie||!b||(b.vue===VUE[x.k]&&b.txt===x.txt)));
         h+='<div class="sfg"><div class="sfl">'+esc(MOT[cur]||cur)+'</div><div class="sfbx">'
           +(l.length?l.map(x=>{ const on=aj?true:!SF.ajout&&b&&b.vue===VUE[x.k]&&b.txt===x.txt;
               return '<div class="sfb'+(on?' is-on':'')+'" role="button" tabindex="0" data-sf="box" data-v="'+esc(x.k+'|'+x.ref)+'" aria-pressed="'+!!on+'">'
@@ -7259,7 +7264,7 @@ function creerFeed(conf){
     if(conf.src==='spots'){
       const hs=mesElements();
       let h='<div class="sfg"><div class="sfl">Habits</div><div class="sfbx">'
-        +(hs.length?hs.map(x=>{ const on=!!b&&b.txt===x.txt, o=(state.habits||[]).find(z=>String(z.t||'').trim()===x.ref);
+        +(hs.length?hs.filter(x=>!SF.replie||!b||b.txt===x.txt).map(x=>{ const on=!!b&&b.txt===x.txt, o=(state.habits||[]).find(z=>String(z.t||'').trim()===x.ref);
             return '<div class="sfb'+(on?' is-on':'')+'" role="button" tabindex="0" data-sf="box" data-v="'+esc(x.k+'|'+x.ref)+'" aria-pressed="'+on+'">'
               +(boxTotehm('h',o,{})||'<span class="lsh-t">'+esc(x.txt)+'</span>')+'</div>'; }).join('')
            :'<p class="lv-note">no habit yet</p>')+'</div></div>';
@@ -7833,7 +7838,9 @@ function creerFeed(conf){
       else if(c==='vue'){ SF.vue=SF.vue===v?(GRIND.includes(v)?'grind':''):v; SF.grind=SF.vue==='grind'||GRIND.includes(SF.vue);
         if(conf.grille&&SF.box&&!dansVue(SF.box.vue,SF.vue)) sfBox(null); }
       else if(c==='box'){ const [k,ref]=String(v||'').split('|'); const x=mesElements().find(z=>z.k===k&&z.ref===ref);
-        if(!x) return; if(SF.box&&SF.box.vue===VUE[k]&&SF.box.txt===x.txt) sfBox(null); else sfBox(x);
+        if(!x) return; const meme=SF.box&&SF.box.vue===VUE[k]&&SF.box.txt===x.txt;
+        if(meme&&SF.replie){ SF.replie=false; sfPaint(); return; }   /* repliée : un tap rouvre la liste, le choix reste */
+        if(meme) sfBox(null); else sfBox(x);
         sfApply(); if(SF.box&&conf.grille) sfOpen(false); else if(!conf.grille) sfPaint(); return; }   /* à droite, la box reste DANS le Refine (23/11) */
       else if(c==='per'){ CLUBSP.periode(v); sfPaint(); peindreFlt(); return; }
       else if(c==='quand')SF.quand=SF.quand===v?'':v;
@@ -9009,7 +9016,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-11-23-ecosystems';
+const BUILD='2026-11-24-refine';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────

@@ -99,6 +99,21 @@ try{
   ok(ak&&ak.p_filters.akin==='Run the hill'&&!ak.p_filters.habit&&f1.l.includes('how close')
      &&f1.proche.join('|')==='akin habits|exactly this one',
      nom+' · une Habit choisie demande au serveur ses PARENTES (`akin`), pas une égalité → '+JSON.stringify(ak&&ak.p_filters));
+  /* 24/11 (Wah) : la box choisie reste SEULE ; un tap sur elle rouvre la liste, le choix reste */
+  const boxes=()=>pg.evaluate(()=>[...document.querySelectorAll('#rdr-sf [data-sf="habit"] .v-name')].map(e=>e.textContent).join('|'));
+  const seule=await boxes();
+  await pg.$eval('#rdr-sf [data-sf="habit"]',e=>e.click()); await pg.waitForTimeout(300);
+  const rouverte=await boxes(), garde=await pg.evaluate(()=>window.__totehm_club().akin);
+  ok(seule==='Run the hill'&&rouverte==='Run the hill|Call mum|Secret'&&garde,
+     nom+' · la box choisie ferme les autres ; un tap la rouvre, le choix gardé → '+seule+' / '+rouverte);
+  /* 24/11 (Wah) : plusieurs temps à la fois, une lecture par temps */
+  appels=[];
+  await clic(pg,'#rdr-sf [data-sf="per"][data-v="past"]'); await pg.waitForTimeout(600);
+  const tps=[...new Set(appels.map(a=>a.p_period))].sort().join('+');
+  const on=await pg.evaluate(()=>[...document.querySelectorAll('#rdr-sf [data-sf="per"].is-on')].map(e=>e.dataset.v).join('+'));
+  ok(tps.includes('past')&&on.split('+').length===2&&on.includes('past'),
+     nom+' · WHEN se choisit à plusieurs (comme les intentions) → lus : '+tps+' · allumés : '+on);
+  await clic(pg,'#rdr-sf [data-sf="per"][data-v="past"]'); await pg.waitForTimeout(500);
   await clic(pg,'#rdr-sf [data-sf="close"]'); await pg.waitForTimeout(500);
   const kin=await pg.evaluate(()=>({k:[...document.querySelectorAll('.tl-kin')].map(e=>e.textContent),
     n:(document.querySelector('#rdr-flt button:last-child')||{}).textContent}));
