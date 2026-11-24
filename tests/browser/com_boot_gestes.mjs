@@ -77,10 +77,11 @@ try{
   /* a · le doigt part SUR le papier (au centre) */
   let p=await centre();
   const a1=await glisse(p.x,p.y+20,p.x,p.y-140);
-  ok(a1==='b'&&!(await lv(pg)).reglages,'22/10 · un manche, 16/11 · ↑ et ↓ inversés : un glissé VERS LE HAUT (le geste du scroll) qui part sur le papier → HIGHER MY CHATGPT → '+a1);
-  p=await centre();
-  const a2=await glisse(p.x,p.y-10,p.x,p.y+150);
-  ok(a2==='c','en haut (ChatGPT), un glissé vers le bas qui part sur le papier-profil → le centre → '+a2);
+  /* 24/11 (Wah) : ↑ n'est plus un voyage — le geste du scroll OUVRE LE RÉCIT (le Discover sert de menu), et le centre ne bouge pas. */
+  const r1=await pg.evaluate(()=>({ouvert:window.__totehm_discover().ouvert,vue:window.__totehm_lv().vue}));
+  ok(a1==='c'&&r1.ouvert&&r1.vue==='c','24/11 · un glissé VERS LE HAUT qui part sur le papier OUVRE LE RÉCIT, sans quitter le centre → '+JSON.stringify(r1));
+  await pg.keyboard.press('Escape'); await pg.waitForTimeout(700);
+  ok(!(await pg.evaluate(()=>window.__totehm_discover().ouvert)),'ÉCHAP referme le récit');
   p=await centre();
   const a3=await glisse(p.x,p.y-20,p.x,p.y+150);
   /* 23/11 (Wah) : la vue ↓ Get Higher est retirée ; ↓ retourne le TOTEHM vers Ecosystems (le détail : com_ecosystems) */
@@ -91,25 +92,26 @@ try{
   /* b · deux gestes coup sur coup : le second attend la fin du premier au lieu de se perdre */
   await vers(pg,'c');
   const d0=(await lv(pg)).enAttente;
-  await glisse(40,780,40,640,false); await pg.waitForTimeout(120); await glisse(40,640,40,780,false);
+  /* 24/11 : la file se teste à L'HORIZONTALE — ↑ ouvre le récit et ↓ retourne le TOTEHM, ni l'un ni l'autre n'est un voyage. */
+  await glisse(40,640,180,640,false); await pg.waitForTimeout(120); await glisse(180,640,40,640,false);
   await vers(pg,'c'); await pg.waitForTimeout(300);
   const d1=await lv(pg);
-  ok(d1.vue==='c'&&d1.enAttente===d0+1,'↑ puis ↓ pendant le voyage : ChatGPT, puis le retour au centre (le second geste a attendu) → '+d1.vue+' · en attente '+(d1.enAttente-d0));
-  await pg.keyboard.press('ArrowUp'); await pg.waitForTimeout(80); await pg.keyboard.press('ArrowDown');
+  ok(d1.vue==='c'&&d1.enAttente===d0+1,'← puis → pendant le voyage : mes médias, puis le retour au centre (le second geste a attendu) → '+d1.vue+' · en attente '+(d1.enAttente-d0));
+  await pg.keyboard.press('ArrowLeft'); await pg.waitForTimeout(80); await pg.keyboard.press('ArrowRight');
   await vers(pg,'c'); await pg.waitForTimeout(300);
-  ok((await lv(pg)).vue==='c','↑ puis ↓ au clavier, sans attendre : ChatGPT puis le centre');
+  ok((await lv(pg)).vue==='c','← puis → au clavier, sans attendre : mes médias puis le centre');
   /* c · un voyage qui ne se termine pas (l'onglet se cache en route : plus d'images) rend la main tout seul */
   await pg.evaluate(()=>{ window.__cache=true; Object.defineProperty(document,'hidden',{configurable:true,get:()=>window.__cache}); });
-  await pg.evaluate(()=>window.__lvAller('b')); await pg.waitForTimeout(120);
+  await pg.evaluate(()=>window.__lvAller('g')); await pg.waitForTimeout(120);
   const bloque=(await lv(pg)).bouge;
   await pg.waitForTimeout(2600);
   const apres=await lv(pg);
   ok(bloque&&!apres.bouge&&apres.debloques===1,'voyage figé (onglet caché) : la main est rendue d\'elle-même ('+apres.debloques+' déblocage)');
   await pg.evaluate(()=>{ window.__cache=false; });
-  await pg.click('#lvn-dn'); await vers(pg,'c'); await pg.waitForTimeout(300);   /* depuis ChatGPT (en haut), ↓ ramène au centre */
+  await pg.click('#lvn-rt'); await vers(pg,'c'); await pg.waitForTimeout(300);   /* depuis mes médias (à gauche), → ramène au centre */
   const fin=await lv(pg);
   ok(fin.vue==='c'&&!fin.bouge,'… et le geste suivant passe : retour au centre → '+fin.vue);
-  await pg.click('#lvn-up'); await vers(pg,'b'); await pg.click('#lvn-dn'); await vers(pg,'c');
+  await pg.click('#lvn-lf'); await vers(pg,'g'); await pg.click('#lvn-rt'); await vers(pg,'c');
   ok((await lv(pg)).vue==='c','la croix fonctionne ensuite normalement');
   /* d · le retournement à l'horizontale sur le papier reste (Turn to configure it) */
   p=await centre();
@@ -130,8 +132,10 @@ try{
     await pg.mouse.move(r.x,r.y);await pg.mouse.down();await pg.mouse.move(r.x+dx,r.y+dy,{steps:4});await pg.mouse.up();};
   if(delai===200){
     await tire(-22,0);await vers(pg,'g');const g=(await lv(pg)).vue;await tire(22,0);await vers(pg,'c');
-    await tire(0,-22);await vers(pg,'b');const h=(await lv(pg)).vue;await tire(0,22);await vers(pg,'c');
-    ok(g==='g'&&h==='b','22/10 · la manette à la souris est un manche : tirée à gauche → mes shorts, vers le haut → Higher my ChatGPT (16/11) ('+g+', '+h+')');
+    await tire(0,-22);await pg.waitForTimeout(1200);
+    const h=await pg.evaluate(()=>({ouvert:window.__totehm_discover().ouvert,vue:window.__totehm_lv().vue}));
+    if(h.ouvert){ await pg.keyboard.press('Escape'); await pg.waitForTimeout(700); }
+    ok(g==='g'&&h.ouvert&&h.vue==='c','22/10 · la manette à la souris est un manche : tirée à gauche → mes médias, vers le haut → LE RÉCIT (24/11) ('+g+', '+JSON.stringify(h)+')');
   }
   await pg.click('#lv-tap-open');await pg.waitForFunction(()=>!document.body.classList.contains('gate'),null,{timeout:6000}).catch(()=>{});await pg.waitForTimeout(500);
   const a0=(await lv(pg)).enAttente;
@@ -139,15 +143,15 @@ try{
      peuvent autrement relâcher après sa fin, et tester à tort une mise en attente qui n'est plus nécessaire. */
   if(delai===200){
     await pg.evaluate(()=>document.getElementById('fold-x').click());await pg.waitForTimeout(delai);
-    await pg.keyboard.press('ArrowUp');   /* 23/11 : ↓ n'est plus un voyage (Ecosystems retourne le TOTEHM) — la file se teste vers ↑ */
+    await pg.keyboard.press('ArrowLeft');   /* 24/11 : ni ↑ (le récit) ni ↓ (Ecosystems) ne sont des voyages — la file se teste à l'horizontale */
   }else{
     const pendant=await pg.evaluate(delai=>new Promise(resolve=>{
       document.getElementById('fold-x').click();
       setTimeout(()=>{
         const el=document.getElementById('lvj-box'),r=el.getBoundingClientRect(),x=r.x+r.width/2,y=r.y+r.height/2;
         const folding=document.body.classList.contains('folding');
-        for(const [type,dy] of [['pointerdown',0],['pointermove',-22],['pointerup',-22]])
-          el.dispatchEvent(new PointerEvent(type,{bubbles:true,pointerId:1,pointerType:'mouse',button:0,buttons:type==='pointerup'?0:1,clientX:x,clientY:y+dy}));
+        for(const [type,dx] of [['pointerdown',0],['pointermove',-22],['pointerup',-22]])
+          el.dispatchEvent(new PointerEvent(type,{bubbles:true,pointerId:1,pointerType:'mouse',button:0,buttons:type==='pointerup'?0:1,clientX:x+dx,clientY:y}));
         resolve(folding);
       },delai);
     }),delai);
@@ -155,7 +159,7 @@ try{
   }
   await pg.waitForTimeout(1900);
   const d=await lv(pg);
-  ok(d.vue==='b'&&d.enAttente===a0+1,'22/10 · un geste vers le haut ('+(delai===200?'clavier':'manette')+') '+delai+' ms après la croix (le TOTEHM se replie encore) attend la fin du repli, puis part → '+d.vue);
+  ok(d.vue==='g'&&d.enAttente===a0+1,'22/10 · un geste vers la GAUCHE ('+(delai===200?'clavier':'manette')+') '+delai+' ms après la croix (le TOTEHM se replie encore) attend la fin du repli, puis part → '+d.vue);
   ok(!erreurs(log).length,'repli + manette : aucune erreur '+erreurs(log).join(' | '));
   await ctx.close();}
 
@@ -177,8 +181,9 @@ try{
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(800);
   const sans=await pg.evaluate(()=>!document.getElementById('lv-diag'));
   await pg.goto(origin+'/totehm?diag=1');await pg.waitForSelector('body.member');await pg.waitForTimeout(1200);
-  await pg.keyboard.press('ArrowUp');await vers(pg,'b');await pg.keyboard.press('ArrowUp');await pg.waitForTimeout(200);
-  await pg.keyboard.press('ArrowDown');await vers(pg,'c');
+  /* 24/11 : ↑ ouvre le récit, ce n'est plus un voyage — le refus se teste depuis MES MÉDIAS, qui n'a pas de voisin en haut. */
+  await pg.keyboard.press('ArrowLeft');await vers(pg,'g');await pg.keyboard.press('ArrowUp');await pg.waitForTimeout(250);
+  await pg.keyboard.press('ArrowRight');await vers(pg,'c');
   /* 18/11 — [Members] retourne le TOTEHM sur son verso, en mode recherche (membre du Club), sans onglet. Sans Totehm il
      n'ouvre rien et mène à la porte (`members:sans-totehm`). Refermé, l'atterrissage reste entièrement navigable :
      aucun état ne le retient. */
@@ -188,10 +193,10 @@ try{
   const onglets=await pg.evaluate(()=>window.__ouvert.slice());
   await pg.keyboard.press('Escape');await pg.waitForFunction(()=>!document.getElementById('srch').classList.contains('is-on'),null,{timeout:8000}).catch(()=>{});
   await pg.waitForTimeout(900);
-  await pg.keyboard.press('ArrowUp');await vers(pg,'b');await pg.waitForTimeout(600);
+  await pg.waitForTimeout(600);
   const m=await pg.evaluate(()=>{const e=document.getElementById('lv-diag'),d=window.__totehm_lv();return {r:d.refus,vue:d.vue,mode:d.mode,txt:e?e.textContent:'',pe:e?getComputedStyle(e).pointerEvents:''};});
-  ok(sans&&m.r['voisin:b>h']===1&&!Object.keys(m.r).some(k=>/recherche/.test(k))&&m.vue==='b'&&m.mode==='mine'&&/refus voisin:b>h/.test(m.txt)&&m.pe==='none',
-     '22/10 · le mouchard : un geste refusé dit pourquoi (en haut — ChatGPT — sans voisin au-dessus) ; à l\'écran avec ?diag=1 seulement → '+JSON.stringify({r:m.r,vue:m.vue,mode:m.mode}));
+  ok(sans&&m.r['voisin:g>h']===1&&!Object.keys(m.r).some(k=>/recherche/.test(k))&&m.vue==='c'&&m.mode==='mine'&&/refus voisin:g>h/.test(m.txt)&&m.pe==='none',
+     '22/10 · le mouchard : un geste refusé dit pourquoi (dans mes médias, sans voisin au-dessus) ; à l\'écran avec ?diag=1 seulement → '+JSON.stringify({r:m.r,vue:m.vue,mode:m.mode}));
   ok(cherche&&onglets.length===0,
      '18/11 · [Members] retourne le TOTEHM sur son verso, en mode recherche, sans onglet → '+JSON.stringify({cherche,onglets}));
   ok(!erreurs(log).length,'mouchard : aucune erreur '+erreurs(log).join(' | '));

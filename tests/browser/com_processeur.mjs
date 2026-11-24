@@ -150,9 +150,10 @@ try{
   const a0=(await lv(pg)).allers;
   /* 21/10 — le second geste n'est plus PERDU (Wah : « quelquefois les mouvements ne fonctionnent pas ») : il attend la fin du
      premier, puis part ; jamais deux voyages à la fois. */
-  await pg.keyboard.press('ArrowUp');await pg.keyboard.press('ArrowDown');
+  /* 24/11 : ↑ ouvre le RÉCIT et ↓ retourne le TOTEHM — ni l'un ni l'autre n'est un voyage. La file se teste à l'horizontale. */
+  await pg.keyboard.press('ArrowLeft');await pg.keyboard.press('ArrowRight');
   const mid=await lv(pg);await pg.waitForFunction(a=>{const d=window.__totehm_lv();return d.allers===a&&!d.bouge;},a0+2,{timeout:6000}).catch(()=>{});
-  let d=await lv(pg);ok(mid.vue==='b'&&mid.bouge&&d.vue==='c'&&d.allers===a0+2,'↑ puis ↓ aussitôt : Higher my ChatGPT (en haut depuis le 16/11), PUIS le centre (le second attend, jamais deux à la fois)');
+  let d=await lv(pg);ok(mid.vue==='g'&&mid.bouge&&d.vue==='c'&&d.allers===a0+2,'← puis → aussitôt : mes médias, PUIS le centre (le second attend, jamais deux à la fois)');
   await pg.keyboard.press('Escape');await vers(pg,'c');
   await pg.keyboard.press('ArrowDown');await vers(pg,'h');
   await pg.keyboard.press('ArrowDown');await pg.waitForTimeout(500);

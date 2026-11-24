@@ -61,7 +61,7 @@ useful.** Quelque chose qu'on découvre, pas qu'une entreprise annonce. Jamais u
 développement personnel, un réseau social classique, une marque streetwear classique.
 - *Think same. But opposite.* : JUST DO IT → **GET HIGHER** · FIGHT CLUB → **FIGHER CLUB** · MAKE AMERICA GREAT AGAIN
   → **MAKE THE WORLD GREAT AGAIN** (pas un produit politique).
-- Chaque punchline atterrit sur une idée concrète. *Don't perform your life. · Your clothes should mean something.* - **Préférer** : GET HIGHER · BUILD YOUR SYSTEM · DECODE · TOTEHMIZE · WRITE IT · WEAR IT · PLAY THE STREET. **Jamais** :
+- Chaque punchline atterrit sur une idée concrète. *Don't perform your life. · Your clothes should mean something.* - **Préférer** : GET HIGHER · BUILD YOUR SYSTEM · DECODE · TOTEHMIZE · WRITE IT · WEAR IT · PLAY THE STREET · **YOUR GREATNESS** (24/11, le fil conducteur du Discover : toujours *your*, jamais *the* — elle lui appartient). **Jamais** :
   platform · solution · innovative · seamless · empower · next-generation · AI-powered · community-driven.
 - Interface en anglais, **le moins de mots possible : le design parle** ; un mot qu'une autre ligne dit déjà s'efface,
   et une expérience ne s'explique pas (ni « how it works », ni titre qui répète le nom de la collection). À l'écran « element », jamais « Box » ;

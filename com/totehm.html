@@ -4021,11 +4021,11 @@ body.lv-d.rdr-voir #gate-asteroid,body.lv-d.rdr-voir #lvjoy,body.rdr-voir #rdr-f
            membre et l'ART de Wah (le papier, la pièce). Ni le prix, ni le bouton : ils restent blancs et gris.
            Rien d'autre n'est coloré, jamais : ni navy, ni rouge, ni dégradé.
    L'APPEL À L'ACTION (`.dc-cta`, facultatif : la classe `has-cta` sur l'hôte) reste sous CHAQUE écran. */
-.dc{--dc-ac:#fbd5ca;position:fixed;inset:0;z-index:20;margin:0;width:auto;background:#000;color:#ddd;overflow:hidden;
+.dc{--dc-ac:#fbd5ca;--dc-ins-t:84px;--dc-ins-x:24px;--dc-ins-b:132px;position:fixed;inset:0;z-index:20;margin:0;width:auto;background:#000;color:#ddd;overflow:hidden;
   font-family:'Space Mono',monospace;-webkit-font-smoothing:antialiased;touch-action:pan-x;overscroll-behavior:none}
 .dc[hidden],.dc.hide{display:none}
 .dc-stage{position:absolute;inset:0}
-.dc-s{position:absolute;inset:84px 24px 132px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+.dc-s{position:absolute;inset:var(--dc-ins-t) var(--dc-ins-x) var(--dc-ins-b);display:flex;flex-direction:column;align-items:center;justify-content:center;
   gap:20px;text-align:center;opacity:0;visibility:hidden;transform:translateY(14px);
   transition:opacity .5s ease,transform .5s ease,visibility 0s linear .5s}
 .dc-s.is-on{opacity:1;visibility:visible;transform:none;transition:opacity .5s ease,transform .5s ease,visibility 0s}
@@ -4046,7 +4046,7 @@ body.lv-d.rdr-voir #gate-asteroid,body.lv-d.rdr-voir #lvjoy,body.rdr-voir #rdr-f
 .dc-btn:active{transform:scale(.97)}
 .dc-cta{position:absolute;left:0;right:0;bottom:146px;display:flex;flex-direction:column;align-items:center;gap:8px;padding:0 24px;z-index:2}
 .dc-cta:empty{display:none}
-.dc.has-cta .dc-s{inset:84px 24px 214px}
+.dc.has-cta{--dc-ins-b:214px}
 .dc.has-cta.is-last .dc-cta{bottom:96px}
 .dc-btn[disabled]{opacity:.45;pointer-events:none}
 .dc-btn.is-quiet{background:none;color:#bdbdbd;box-shadow:inset 0 0 0 1px #3a3a3a}
@@ -4061,8 +4061,8 @@ body.lv-d.rdr-voir #gate-asteroid,body.lv-d.rdr-voir #lvjoy,body.rdr-voir #rdr-f
    éléments NATIFS du site (box, pièce, badge), dans un CADRE de même hauteur sur tous les écrans (`--dc-ill-h`) : le titre
    ne saute pas d'un écran à l'autre, et ce qui dépasse est RÉDUIT au cadre par le moteur, jamais rogné. Le haut de l'écran
    est fixe (le cadre, puis le titre) ; seul le texte s'allonge vers le bas. `.dc-ill-c` : l'illustration en colonne. */
-.dc{--dc-ill-h:clamp(128px,22dvh,190px)}
-.dc.is-illustre .dc-s{justify-content:flex-start;padding-top:max(0px,calc((100dvh - 298px - 450px) / 2))}
+.dc{--dc-ill-h:clamp(128px,22dvh,190px);--dc-haut:max(0px,calc((100dvh - 298px - 450px) / 2))}
+.dc.is-illustre .dc-s{justify-content:flex-start;padding-top:var(--dc-haut)}
 .dc-ill{width:min(100%,340px);height:var(--dc-ill-h);flex:none;display:flex;align-items:center;justify-content:center;
   text-align:left;pointer-events:none;-webkit-user-select:none;user-select:none}
 .dc-ill-in{flex:none;width:100%;transform-origin:50% 50%}
@@ -4080,6 +4080,7 @@ body.lv-d.rdr-voir #gate-asteroid,body.lv-d.rdr-voir #lvjoy,body.rdr-voir #rdr-f
 /* la structure : rail, chevron — gris sombre, jamais de couleur. Ni numéro d'écran (« 1 / 10 »), ni consigne écrite : la flèche du bas, qui s'anime, dit le scroll */
 .dc-rail{position:absolute;bottom:72px;left:50%;transform:translateX(-50%);display:flex;gap:6px;pointer-events:none}
 .dc-rail span{width:18px;height:2px;background:#242424;transition:background .3s}
+.dc-rail{transition:opacity .4s ease}
 .dc-rail span.on{background:#bdbdbd}
 .dc-next{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);background:none;border:0;padding:10px;cursor:pointer;color:#a0a0a0;transition:color .15s,opacity .3s}
 .dc-next svg{display:block;width:24px;height:24px;animation:dc-bob 1.6s ease-in-out infinite}
@@ -4087,23 +4088,55 @@ body.lv-d.rdr-voir #gate-asteroid,body.lv-d.rdr-voir #lvjoy,body.rdr-voir #rdr-f
 .dc-x:focus-visible{outline:1px solid #fff;outline-offset:-6px}
 .dc.is-last .dc-next{opacity:0;pointer-events:none}
 @keyframes dc-bob{0%,100%{transform:none;opacity:.4}50%{transform:translateY(6px);opacity:1}}
+/* LA LIGNE FRAPPÉE (`.dc-tw`) — Wah, 24/11 : la phrase de l'écran s'écrit à la machine, en Quantico blanc, comme
+   `totehm.space/get_higher?paper=1`. C'est la VOIX du récit : une phrase par écran, au-dessus de son explication.
+   Quantico reste en graisse normale (BRAND : le gras corail n'est que le « Get ») ; le curseur est blanc, jamais corail.
+   Le moteur la frappe quand son écran arrive, une seule fois (`is-frappe` pendant la frappe) ; mouvement réduit = déjà écrite. */
+.dc-tw{margin:0;font:400 clamp(19px,3vw,30px)/1.25 Quantico,sans-serif;color:#fff;letter-spacing:.01em;min-height:1.25em}
+.dc-tw::after{content:'';display:inline-block;width:.06em;height:.95em;background:#fff;vertical-align:-.1em;margin-left:.07em;opacity:0}
+.dc-tw.is-frappe::after{animation:dc-car 1s step-end infinite}
+@keyframes dc-car{0%,50%{opacity:1}51%,100%{opacity:0}}
+/* LA PHRASE DE LA FLÈCHE (`.dc-lead`) — l'écran 0 pose la question du récit ; la flèche animée en porte la suite
+   (« Be in touch with »). Ce n'est pas une consigne de défilement (la nomenclature les refuse) : c'est le fil, et il ne
+   vit que sur le PREMIER écran. Le rail des écrans se tait là, pour que l'écran 0 ne dise qu'une chose. */
+.dc-lead{position:absolute;left:0;right:0;bottom:56px;z-index:2;padding:0 24px;text-align:center;pointer-events:none;
+  font:400 11px/1.4 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#888;
+  opacity:0;transition:opacity .4s ease}
+.dc[data-i="0"] .dc-lead{opacity:1}
+.dc:has(.dc-lead)[data-i="0"] .dc-rail{opacity:0}
+/* L'OBJET QUI VOYAGE (facultatif : `is-hero` sur l'hôte) — Wah, 24/11 : les écrans forment UN récit, « un objet ne
+   disparaît pas pour réapparaître, il se TRANSFORME » (CLAUDE.md, la continuité). Les écrans se succèdent en fondu,
+   mais l'objet, lui, VIT AU-DESSUS d'eux : une seule couche (`.dc-hero`), à la place exacte du cadre d'illustration
+   (`--dc-ins-t` + `--dc-haut`), donc le titre ne bouge toujours pas. Un objet (`.dc-o`) dit les écrans où il VIT
+   (`data-o="0 1 2"`) : le moteur l'allume (`is-on`) sur ceux-là et le laisse en place entre deux — c'est ce qui permet
+   au papier de s'ouvrir, de se retourner puis de devenir une grille SANS jamais disparaître.
+   L'écran garde un `.dc-ill` VIDE : il réserve la place, l'objet se pose dessus. La page apporte ses propres nœuds et
+   ses propres transformations (ses classes à elle, lues sur `.dc[data-i]`) ; la nomenclature ne dit que l'endroit et l'apparition. */
+.dc.is-hero .dc-hero{position:absolute;top:calc(var(--dc-ins-t) + var(--dc-haut));left:50%;transform:translateX(-50%);perspective:1000px;
+  width:min(calc(100% - 2 * var(--dc-ins-x)),340px);height:var(--dc-ill-h);z-index:1;
+  pointer-events:none;-webkit-user-select:none;user-select:none}
+.dc-o{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  opacity:0;visibility:hidden;transition:opacity .5s ease,transform .5s ease,visibility 0s linear .5s}
+.dc-o.is-on{opacity:1;visibility:visible;transition:opacity .5s ease,transform .5s ease,visibility 0s}
 @media(hover:hover){.dc-btn:hover{background:#383838;opacity:1}.dc-next:hover,.dc-x:hover{color:#fff}.dc-lnk:hover{color:#fff}}
-@media(max-width:650px){.dc-s{inset:76px 20px 140px;gap:16px}.dc.has-cta .dc-s{inset:76px 20px 214px}}
+@media(max-width:650px){.dc{--dc-ins-t:76px;--dc-ins-x:20px;--dc-ins-b:140px}.dc-s{gap:16px}}
 /* un écran BAS (fenêtre réduite, téléphone couché) : tout se resserre et rien ne se chevauche — après la règle de largeur */
 @media(max-height:620px){
-  .dc-s{inset:60px 20px 96px;gap:12px}.dc.has-cta .dc-s{inset:60px 20px 150px}
+  .dc{--dc-ins-t:60px;--dc-ins-x:20px;--dc-ins-b:96px}.dc.has-cta{--dc-ins-b:150px}.dc-s{gap:12px}
   .dc-cta,.dc.has-cta.is-last .dc-cta{bottom:84px}.dc-next{bottom:12px}.dc-next svg{width:20px;height:20px}.dc-rail{bottom:56px}
   .dc-h{font-size:clamp(13px,2vw,16px)}.dc-p{font-size:clamp(12px,1.4vw,14px);line-height:1.55}.dc-btn{min-height:42px;padding:9px 22px}
+  .dc-tw{font-size:clamp(17px,2.6vw,22px)}.dc-lead{bottom:44px}
 }
 @media(max-height:440px){
-  .dc-s{inset:50px 20px 50px}.dc.has-cta .dc-s{inset:50px 20px 100px}
-  .dc-cta,.dc.has-cta.is-last .dc-cta{bottom:44px}.dc-rail{bottom:22px}.dc-next{display:none}
+  .dc{--dc-ins-t:50px;--dc-ins-x:20px;--dc-ins-b:50px}.dc.has-cta{--dc-ins-b:100px}
+  .dc-cta,.dc.has-cta.is-last .dc-cta{bottom:44px}.dc-rail{bottom:22px}.dc-next{display:none}.dc-lead{bottom:24px}
 }
 /* un écran bas : l'illustration se resserre, puis s'efface — le texte passe avant */
 @media(max-height:760px){.dc.is-illustre .dc-s{gap:14px}}
 @media(max-height:700px){.dc{--dc-ill-h:clamp(110px,19dvh,150px)}}
-@media(max-height:600px){.dc-ill{display:none}}
-@media(prefers-reduced-motion:reduce){.dc-s,.dc-s.is-on,.dc-s.is-avant{transition:none;transform:none}.dc-next svg{animation:none}.dc.is-overlay,.dc.is-overlay.is-open{transition:none}}
+@media(max-height:600px){.dc-ill,.dc-hero{display:none}}
+@media(prefers-reduced-motion:reduce){.dc-s,.dc-s.is-on,.dc-s.is-avant{transition:none;transform:none}.dc-next svg{animation:none}.dc.is-overlay,.dc.is-overlay.is-open{transition:none}
+  .dc-o{transition:opacity .2s ease}.dc-tw.is-frappe::after{animation:none}}
 /* ══ fin DISCOVER ══ */
 /* ── 16/11 · L'ACCUEIL : le titre de la vue centrale, le bouton discret, et le Discover en couche ──
    Le titre est une ÉTIQUETTE posée sur le circuit (fond noir, comme `#lv-tap`) : les racines de l'arbre passent derrière,
@@ -4116,7 +4149,6 @@ body.lv-d.rdr-voir #gate-asteroid,body.lv-d.rdr-voir #lvjoy,body.rdr-voir #rdr-f
    couleurs natives), la pièce TOTEHM, le badge [Higher], le GPT qui tourne. Le reste reste noir, blanc, gris. */
 /* LE CADRE, LE HAUT FIXE DE L'ÉCRAN, LA RÉDUCTION : la nomenclature (`tools/discover.css`, `is-illustre`, `--dc-ill-h`).
    Ici, seulement ce que CES illustrations contiennent. */
-#lvd .dc-ill-in:has(.dc-slogan){width:max-content}
 #lvd .dc-ill .tb{width:100%}
 #lvd .dc-radar{display:block;width:var(--dc-ill-h);height:auto;aspect-ratio:1}
 /* « Visualize it » : la GRILLE DE GAUCHE (mes médias) — tuiles perforées, la box posée sur l'image, la tuile « + » */
@@ -4128,27 +4160,58 @@ body.lv-d.rdr-voir #gate-asteroid,body.lv-d.rdr-voir #lvjoy,body.rdr-voir #rdr-f
 #lvd .dc-sf .sfg{width:100%}
 #lvd .dc-sf .sfcmd{--q:min(104px,27vw)}
 #lvd .dc-sf *{pointer-events:none!important;cursor:default}
-#lvd .dc-gpt{position:relative;display:block;width:var(--dc-ill-h);aspect-ratio:1}
-#lvd .dc-gpt img{display:block;width:100%;height:100%;object-fit:contain;animation:cg-orbit 30s linear infinite}
-#lvd .dc-gpt svg{position:absolute;left:50%;top:50%;width:46%;height:auto;aspect-ratio:3;transform:translate(-50%,-50%)}
-#lvd .dc-tg{display:flex;flex-direction:column;gap:6px;width:min(100%,270px);padding:10px 12px;background:#17171b;border-radius:14px 14px 14px 4px;text-align:left}
-#lvd .dc-tg-who{font:400 9px/1.3 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#888}
-#lvd .dc-tg-t{font:400 15px/1.35 'Quantico',sans-serif;color:#fff}
-#lvd .dc-tg-b{display:flex;gap:6px;margin-top:2px}
-#lvd .dc-tg-b span{flex:1;padding:7px 0;border-radius:8px;background:#2a2a31;text-align:center;font:400 12px/1.2 'Space Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:#e8e8e8}
-#lvd .dc-pay{display:flex;flex-direction:column;gap:8px;width:min(100%,260px)}
-#lvd .dc-pay-p{font:400 32px/1 'Quantico',sans-serif;color:#fff}
-#lvd .dc-pay-p small{font:400 11px/1 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#888}
-#lvd .dc-pay-bar{display:flex;gap:3px;height:8px}
-#lvd .dc-pay-bar i:first-child{flex:80;background:#e8e8e8}
-#lvd .dc-pay-bar i:last-child{flex:20;background:#3a3a42}
-#lvd .dc-pay-l{display:flex;justify-content:space-between;font:400 9px/1.3 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#888}
-#lvd .dc-slogan{display:flex;align-items:center;gap:8px;white-space:nowrap;font:400 28px/1 'Quantico',sans-serif;color:#fff}
-#lvd .dc-slogan .dc-get{font-weight:700;color:var(--coral)}
-#lvd .dc-slogan svg{display:block;width:108px;height:36px;flex:none}
-#lvd .dc-slogan .tw{margin:0}
-@media(max-width:380px){#lvd .dc-slogan{font-size:18px;gap:6px}#lvd .dc-slogan svg{width:70px;height:23px}}
-@media(prefers-reduced-motion:reduce){#lvd .dc-gpt img{animation:none}}
+/* ══ LE RÉCIT : CE QUE L'OBJET DEVIENT · 24/11/2026 ══════════════════════
+   Six états d'UN objet, lus sur l'hôte (`#lvd[data-i]`, posé par le moteur). Chaque couche garde sa place et se
+   TRANSFORME vers la suivante — jamais un fondu sec d'une image à l'autre :
+     0 → 1  la pièce s'ouvre : les classes natives du sélecteur (`is-logo` → `is-melt` → `is-split` → `is-grind`), pilotées par `conter()`
+     1 → 2  le papier fait un demi-tour sur lui-même : son VERSO porte la recherche et son unique résultat
+     2 → 3  il rétrécit jusqu'à la première tuile de la grille, qui s'ouvre à sa place
+     3 → 4  la grille se replie sur le DOS du vêtement, où la même image perforée s'imprime
+     4 → 5  le vêtement rentre dans le radar et devient le carré plein d'un spot
+   Rien n'est coloré ici : les couleurs sont celles des éléments natifs (les box, le navy du papier, le badge). */
+#lvd .lvh{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;
+  transition:opacity .55s ease,transform .75s cubic-bezier(.22,.61,.36,1)}
+/* le papier : recto (le sélecteur des cinq vues) et verso (la recherche) sur le MÊME nœud qui tourne */
+#lvd .lvh-pp{transform-style:preserve-3d}
+#lvd .lvh-f,#lvd .lvh-b{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  backface-visibility:hidden;-webkit-backface-visibility:hidden}
+#lvd .lvh-b{transform:rotateY(180deg)}
+#lvd .lvh-pap{display:flex;flex-direction:column;justify-content:center;gap:11px;width:min(100%,256px);height:100%;
+  padding:16px 18px;background:var(--perfo) 0 0/100% 100% no-repeat}
+#lvd[data-i="0"] .lvh-pp,#lvd[data-i="1"] .lvh-pp{opacity:1}
+#lvd[data-i="2"] .lvh-pp{opacity:1;transform:rotateY(180deg)}
+#lvd[data-i="3"] .lvh-pp{opacity:0;transform:rotateY(180deg) scale(.3) translateX(34%)}
+/* le verso : le nom se frappe, PUIS son unique résultat au prix du serveur (format de [Monetize my TOTEHM]) */
+#lvd .lvh-q{width:100%;padding-bottom:7px;border-bottom:1px solid rgba(255,255,255,.38);text-align:center;
+  font:400 20px/1.2 Quantico,sans-serif;color:#fff;min-height:1.2em}
+#lvd .lvh-q i{font-style:normal}
+#lvd .lvh-q::after{content:'';display:inline-block;width:.06em;height:.9em;background:#fff;vertical-align:-.08em;margin-left:.07em;opacity:0}
+#lvd .lvh-b.is-frappe .lvh-q::after{animation:dc-car 1s step-end infinite}
+#lvd .lvh-r{display:flex;align-items:baseline;justify-content:space-between;gap:12px;width:100%;font-size:16px;opacity:0;transition:opacity .4s ease}
+#lvd .lvh-b.is-res .lvh-r{opacity:1}
+#lvd .lvh-pr{font:400 19px/1 Quantico,sans-serif;color:#fff;white-space:nowrap}
+#lvd .lvh-pr small{font:400 9px/1 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#888}
+/* la grille de mes médias : les tuiles perforées, une box posée sur chacune (la grille de gauche, telle quelle) */
+#lvd .lvh-gr .tlg{width:min(100%,318px);margin:0}
+#lvd[data-i="2"] .lvh-gr{opacity:0;transform:scale(.3) translateX(-34%)}
+#lvd[data-i="3"] .lvh-gr{opacity:1}
+#lvd[data-i="4"] .lvh-gr{opacity:0;transform:scale(.4) translate(44%,22%)}
+/* le vêtement : la face porte le badge brodé, le dos l'illustration perforée et le nom du cloth */
+#lvd .lvh-cl{gap:16px}
+#lvd .lvh-g{position:relative;width:min(40%,124px);flex:none}
+#lvd .lvh-sh{display:block;width:100%;height:auto}
+#lvd .lvh-emb{position:absolute;left:50%;top:43%;width:34%;height:auto;aspect-ratio:3;transform:translateX(-50%)}
+#lvd .lvh-prt{position:absolute;left:50%;top:40%;width:34%;aspect-ratio:1;transform:translateX(-50%);overflow:hidden;
+  -webkit-mask:var(--perfo) 0 0/100% 100% no-repeat;mask:var(--perfo) 0 0/100% 100% no-repeat}
+#lvd .lvh-prt img{display:block;width:100%;height:100%;object-fit:cover}
+#lvd .lvh-nm{position:absolute;left:0;right:0;top:70%;text-align:center;font:400 9px/1 Quantico,sans-serif;color:#fff}
+#lvd[data-i="3"] .lvh-cl{opacity:0;transform:scale(1.3)}
+#lvd[data-i="4"] .lvh-cl{opacity:1}
+#lvd[data-i="5"] .lvh-cl{opacity:0;transform:scale(.07) translate(150%,95%)}
+/* le radar du Club : le point exact où le spot a lieu */
+#lvd[data-i="4"] .lvh-rd{opacity:0;transform:scale(1.7)}
+#lvd[data-i="5"] .lvh-rd{opacity:1}
+@media(prefers-reduced-motion:reduce){#lvd .lvh{transition:opacity .2s ease}}
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Tout texte devient blanc sous la souris. Les dessins, surfaces
    et contrôles désactivés gardent leur apparence. */
@@ -4341,6 +4404,7 @@ div:not(:has(> :not(br,wbr))):hover,
 .db-vide:hover,
 .db-i i:hover,
 .db-o .j.is-tard:hover,
+#mb-res .mb-abos-t:hover,
 .lv-note.is-no:hover,
 .lv-note.is-ok:hover,
 .vs-k.vs-nom:hover,
@@ -4350,6 +4414,10 @@ div:not(:has(> :not(br,wbr))):hover,
 .vs-foot .mw-terms:hover,
 #srch-res .srch-sub:hover,
 .tlv-l:hover,
+#spass .sp-k:hover,
+#spass .sp-n:hover,
+#spass .sp-p:hover,
+#spass .sp-r i:hover,
 .lsh-sf .sf-aj:hover,
 .sd-tag:hover,
 .ssp-par:hover,
@@ -4383,12 +4451,9 @@ div:not(:has(> :not(br,wbr))):hover,
 .dc-who:hover,
 .dc-x:hover,
 .dc-next:hover,
+.dc-lead:hover,
 .lvp-cta.is-quiet:hover,
-#lvd .dc-tg-who:hover,
-#lvd .dc-tg-b span:hover,
-#lvd .dc-pay-p small:hover,
-#lvd .dc-pay-l:hover,
-#lvd .dc-slogan .dc-get:hover):where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *)){color:#fff!important}
+#lvd .lvh-pr small:hover):where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *)){color:#fff!important}
 .h-text:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::placeholder{color:#fff!important}
 .habit.open .v-name[contenteditable]:empty:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::before{color:#fff!important}
 #habits .in.nw:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::placeholder{color:#fff!important}
@@ -4744,7 +4809,7 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
          au centre. Grille à plat (pas de rangée intermédiaire : une grille ne place que ses enfants
          DIRECTS, la leçon de `#joy`). Les identités ne changent pas : `#lvn-*` restent les boutons. -->
     <div id="lvjoy" class="lv-act" role="group" aria-label="Where I am">
-      <button id="lvn-up" class="lvn lv-act" type="button" aria-label="Higher my ChatGPT"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 10 L8 5 L13 10"/></svg></button>
+      <button id="lvn-up" class="lvn lv-act" type="button" aria-label="Discover TOTEHM"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 10 L8 5 L13 10"/></svg></button>
       <button id="lvn-lf" class="lvn lvn-x lv-act" type="button" aria-label="My shorts"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 L5 8 L10 13"/></svg></button>
       <div id="lvj-box" aria-hidden="true"><div id="lvj-stack"><i></i></div></div>
       <button id="lvn-rt" class="lvn lvn-x lv-act" type="button" aria-label="My spots"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3 L11 8 L6 13"/></svg></button>
@@ -4753,47 +4818,42 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
   </div>
 </div>
 
-<!-- ══ LE DISCOVER DE L'ACCUEIL · 16/11/2026 ═══════════════════════════════
-     Wah : « j'aime ce côté minimaliste du site Supreme.com et brandé, mais je veux que les explications (les discovers)
-     soient ultra fluides, visibles et agréables partout, et ultra-vendeuses […] simple, minimaliste mais super bien
-     expliqué et vendeur QUAND L'UTILISATEUR LE SOUHAITE ». L'accueil ne dit donc qu'un titre ; [Discover] ouvre ceci :
-     une idée par écran noir, au geste (`tools/discover.*`, copié), la porte sous CHAQUE écran. Ordre de la vente (17/11) :
-     la stratégie d'une Habit → le papier (5 listes) → illustrer et pratiquer (médias, spots) → Higher GPT → TotehmBot
-     → être payé → suivre → se rencontrer (Club) → la confidentialité → la science, et le slogan. Chaque écran porte une
-     illustration faite des éléments du site (`ILL` dans `DISC` : box natives via `inerteBox`, pièce, badge, GPT).
-     60 / 30 / 10 : noir, texte, et les seules couleurs natives des illustrations (box, pièce, nom).
-     ⚠️ Rien ici n'est une promesse de résultat ni un chiffre inventé : chaque phrase dit ce que le produit FAIT. -->
-<div class="dc is-overlay is-illustre has-cta has-x" id="lvd" role="dialog" aria-modal="true" aria-label="Discover TOTEHM" hidden>
+<!-- ══ LE DISCOVER DE L'ACCUEIL — LE RÉCIT, ET LE MENU ═════════════════════
+     Wah (24/11) : « les 5 sont liés et ça forme un storytelling » · « connecté ou pas on passe dans le discover qui par
+     sa simplicité peut faire office de MENU en redirigeant vers d'autres fonctionnalités ». C'est donc la vue du HAUT
+     (↑, à la place de Higher my ChatGPT, qui vit au verso) ET ce que le scroll ouvre sans compte.
+     LE FIL CONDUCTEUR, c'est TA GREATNESS : l'écran 0 la nomme, les cinq suivants y répondent, chacun par UNE porte —
+       0 · Your greatness            la pièce, fermée : elle est là, illisible
+       1 · la stratégie              le papier s'ouvre en cinq vues        → CREATE / OPEN MY TOTEHM
+       2 · les mentors               le papier se retourne en recherche    → SUBSCRIBE TO A TOTEHM (· MONETIZE)
+       3 · la pratique               il devient la grille de mes médias    → GET [Higher]
+       4 · la porter                 une tuile s'imprime sur le vêtement   → CREATE MY TOTEHM CLOTH
+       5 · la vivre ensemble         le vêtement devient un point du radar → INTEGRATE FIGHER.CLUB
+     UN SEUL OBJET traverse les six écrans et se TRANSFORME (`.dc-hero`, la continuité de CLAUDE.md) : il ne disparaît
+     jamais pour réapparaître. Il est fait des éléments NATIFS du site (`HERO` : le sélecteur des cinq vues, la grille
+     perforée, le badge, le radar du Club) ; sa phrase se frappe à la machine (`.dc-tw`, nomenclature).
+     60 / 30 / 10 : noir, texte, et les seules couleurs natives de l'objet.
+     ⚠️ Rien ici n'est une promesse de résultat ni un chiffre inventé : chaque phrase dit ce que le produit FAIT.
+     ⚠️ Aucune étude n'est citée tant qu'elle n'est pas en main : « built on behavioral science », rien de plus. -->
+<div class="dc is-overlay is-illustre is-hero has-cta has-x" id="lvd" role="dialog" aria-modal="true" aria-label="Discover TOTEHM" hidden>
+  <!-- L'OBJET QUI VOYAGE : une seule couche, six états. Le papier s'ouvre, se retourne en recherche, devient la grille
+       de mes médias, s'imprime au dos d'un vêtement, puis n'est plus qu'un point exact sur le radar du Club.
+       Dessiné une fois à la première ouverture (`HERO`), par les MÊMES fonctions que les cinq vues. -->
+  <div class="dc-hero" aria-hidden="true"><div class="dc-o" data-o="0 1 2 3 4 5" id="lvd-o"></div></div>
   <div class="dc-stage">
-    <div class="dc-s"><div class="dc-ill" data-ill="habit" aria-hidden="true"></div><h2 class="dc-h">A habit needs a neurological strategy.</h2><p class="dc-p">What triggers it: the old habit you turn into fuel.
-What you do instead: the constructive action you repeat.
-Why you do it: the goal that anchors the habit.</p></div>
-    <div class="dc-s"><div class="dc-ill dc-ill-c" aria-hidden="true"><div class="lsh-sf dc-sf"><div class="sfg"><div class="sfcmd is-melt is-split is-grind"><span class="sfv sfv-sq sfv-s blk-w is-on"><span>my wisdom</span></span><span class="sfv sfv-sq sfv-g is-on" style="--skin:#333366"><span class="sf-lg"><svg class="gl g-rail"><use href="#lg-rail"/></svg><svg class="gl g-t"><use href="#lg-t"/></svg><svg class="gl g-wm"><use href="#lg-wm"/></svg></span><span class="sf-lab">my grind</span><span class="sfpile"><i data-v="objectives">my objectives</i><i data-v="habits">my habits</i><i data-v="repulsions">my repulsions</i></span></span><span class="sfv sfv-sq sfv-v blk-v is-on"><span>my vision</span></span></div></div></div></div><h2 class="dc-h">One paper.<br>Your whole strategy.</h2><p class="dc-p">Your Objectives.
-Your Habits and Repulsions to achieve them.
-Your Vision. Your Story.
-Five smart lists, deeply linked.</p></div>
-    <div class="dc-s"><div class="dc-ill" data-ill="practice" aria-hidden="true"></div><h2 class="dc-h">Visualize it.<br>Put it into practice.</h2><p class="dc-p">Illustrate your TOTEHM.
-Pick your TOTEHM spots: your habits rooted in a specific place, at an exact time.</p></div>
-    <div class="dc-s"><div class="dc-ill dc-ill-c" aria-hidden="true"><span class="dc-gpt"><img src="https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/public/com/gpt.png" alt="" width="1024" height="1024" loading="lazy"><svg viewBox="0 0 600 200"><use href="#higher-badge"></use></svg></span></div><h2 class="dc-h" data-tw>Your TOTEHM in ChatGPT.</h2><p class="dc-p">Ask what to do next.
-It reads your TOTEHM.
-Useful.</p></div>
-    <div class="dc-s"><div class="dc-ill dc-ill-c" aria-hidden="true"><span class="dc-tg"><span class="dc-tg-who">TotehmBot</span><span class="dc-tg-t">Run 20 minutes · it's time.</span><span class="dc-tg-b"><span>On It</span><span>No Time</span><span>No Energy</span></span></span></div><h2 class="dc-h">TotehmBot keeps the rhythm.</h2><p class="dc-p">One private Telegram message when a habit is due.
-On It · No Time · No Energy. That's all.
-Free.</p></div>
-    <div class="dc-s" data-cta="money"><div class="dc-ill dc-ill-c" data-ill="money" aria-hidden="true"></div><h2 class="dc-h">Get paid for how you build.</h2><p class="dc-p">Monetize your entire TOTEHM: your 5 smart lists, with your visualizations and spots.
-Members subscribe for a year.
-You set the price. You keep 80%.</p></div>
-    <div class="dc-s"><div class="dc-ill" data-ill="follow" aria-hidden="true"></div><h2 class="dc-h">Follow who inspires you.</h2><p class="dc-p">Subscribe to members to unlock their TOTEHM, visualizations, and spots.
-Take inspiration in one tap, their name stays on it.</p></div>
-    <div class="dc-s"><div class="dc-ill dc-ill-c" data-ill="meet" aria-hidden="true"></div><h2 class="dc-h">Meet with intention.</h2><p class="dc-p">Every spot is tied to a specific TOTEHM Habit.
-Join live or scheduled—grind in silence together, or connect socially.
-Figher Club: match with members building the exact same habit, in the exact place, at the exact time.</p></div>
-    <div class="dc-s"><div class="dc-ill" data-ill="private" aria-hidden="true"></div><h2 class="dc-h">Private by default.</h2><p class="dc-p">Every element and post is yours to control: keep it private, or share it with your subscribers.</p></div>
-    <div class="dc-s"><div class="dc-ill dc-ill-c" aria-hidden="true"><span class="dc-slogan"><span class="dc-get">Get</span><svg viewBox="0 0 600 200"><use href="#higher-badge"></use></svg><span class="dc-with">with your</span><span data-tw>TOTEHM</span></span></div><h2 class="dc-h">TOTEHM was built with behavioral science.</h2><p class="dc-p">Definitely the best digital platform to make it happen.
-In the highest way.</p>
-      <div class="dc-row"><a class="dc-lnk" href="https://www.figher.club/">Figher Club</a><a class="dc-lnk" href="https://www.higher.boutique/"><svg class="dc-hi" viewBox="0 0 600 200" role="img" aria-label="Higher"><title>Higher</title><use href="#higher-badge"></use></svg> Boutique</a><a class="dc-lnk" href="/terms" target="_blank" rel="noopener">Simple terms of use</a></div></div>
+    <div class="dc-s"><div class="dc-ill" aria-hidden="true"></div><h2 class="dc-big">Your greatness</h2></div>
+    <div class="dc-s" data-cta="totehm"><div class="dc-ill" aria-hidden="true"></div><h2 class="dc-tw">Have a strategy in mind all the time</h2><p class="dc-p">Built on behavioral science.
+Lay the path to your greatness flat, on one paper. Remember it every day with TotehmBot. Think it through with <svg class="dc-hi" viewBox="0 0 600 200" role="img" aria-label="Higher"><title>Higher</title><use href="#higher-badge"></use></svg> GPT.</p></div>
+    <div class="dc-s" data-cta="eco"><div class="dc-ill" aria-hidden="true"></div><h2 class="dc-tw">Take real inspiration and have mentors</h2><p class="dc-p">Subscribe to a member and enter their ecosystem: their whole life strategy, the private media of their mind, the spots they really use — and you can meet them there.
+Your own TOTEHM can be subscribed to too.</p></div>
+    <div class="dc-s" data-cta="gpt"><div class="dc-ill" aria-hidden="true"></div><h2 class="dc-tw">Make it happen in the best possible way</h2><p class="dc-p">Train your brain to put your strategy into practice: illustrate every element of your TOTEHM, keep it in sight, and let <svg class="dc-hi" viewBox="0 0 600 200" role="img" aria-label="Higher"><title>Higher</title><use href="#higher-badge"></use></svg> GPT prepare your next step — with your media, your spots, and real places.</p></div>
+    <div class="dc-s" data-cta="cloth"><div class="dc-ill" aria-hidden="true"></div><h2 class="dc-tw">Wear your greatness, not someone else’s</h2><p class="dc-p">Totehmize an element of your TOTEHM: <svg class="dc-hi" viewBox="0 0 600 200" role="img" aria-label="Higher"><title>Higher</title><use href="#higher-badge"></use></svg> embroidered on the front, your own illustration on the back.
+You remember your way, and the street can read what is behind it.</p></div>
+    <div class="dc-s" data-cta="club"><div class="dc-ill" aria-hidden="true"></div><h2 class="dc-tw">Grind with the right people, in the right spot, at the right time</h2><p class="dc-p">Members publish intentional spots: one Habit, one exact place, one exact time. Join theirs, or publish yours and let them join you.</p>
+      <div class="dc-row"><a class="dc-lnk" href="/terms" target="_blank" rel="noopener">Simple terms of use</a></div></div>
   </div>
-  <div class="dc-cta"><button class="dc-btn" id="lvd-cta" type="button">Open my TOTEHM</button></div>
+  <p class="dc-lead">Be in touch with</p>
+  <div class="dc-cta"><button class="dc-btn" id="lvd-cta" type="button">Create my TOTEHM</button><button class="dc-lnk hide" id="lvd-lnk" type="button">Monetize my TOTEHM</button></div>
   <button class="dc-x" id="lvd-x" type="button" aria-label="Close"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2 L12 12 M12 2 L2 12"/></svg></button>
 </div>
 
@@ -14044,17 +14104,17 @@ window.addEventListener('pageshow',e=>{
          → d · LES SPOTS    (20/10 sexies) MAP · GRID, le polaroid par-dessus (`SPOTS`)
        Les deux n'existent que pour un membre (il n'y a pas « mes shorts » sans Totehm) et jamais dans la
        galaxie, où l'horizontale fait tourner les étoiles : `voisin()` les éteint, les chevrons suivent. */
-    /* ⚠️ 16/11 — ↑ ET ↓ SONT INVERSÉS (Wah : « l'utilisateur a tendance à scroller, or le scroll, avec le fonctionnement
-       joystick, mène à l'expérience TotehmPaper, qui doit passer au second plan ; Higher GPT est un produit phare »).
-       Le geste naturel — glisser vers le haut, la molette — pousse le manche vers le HAUT : il mène donc à
-       HIGHER MY CHATGPT. Get Higher (le TotehmPaper) est en BAS. Les noms des vues ne changent pas (`h` = Get Higher,
-       `b` = ChatGPT : toute la CSS `lv-h` / `lv-b` reste vraie) ; seule la CROIX change — la direction `h` (haut) mène
-       à la vue `b`, la direction `b` (bas) à la vue `h`, et chacune revient au centre par le geste inverse. */
+    /* ⚠️ 24/11 (Wah) — ↑ EST LE DISCOVER, PAS UNE VUE : « connecté ou pas on passe dans le discover qui par sa
+       simplicité peut faire office de MENU en redirigeant vers d'autres fonctionnalités » ; « Higher GPT est dans le
+       dashboard de toute façon » (le verso, Go Higher). Le geste naturel — glisser vers le haut, la molette — ouvre
+       donc le RÉCIT (`x` → `DISC.ouvrir()`), comme ↓ ouvre Ecosystems : une direction, une action, et le centre ne
+       bouge pas. On n'y VOYAGE pas, donc rien ne se replie : refermer le Discover, c'est déjà être au centre.
+       La vue `b` et son panneau `#rf` (Higher my ChatGPT) dorment, comme la vue `h` : à retirer au ménage. */
     /* ⚠️ 23/11 (Wah) — LA VUE ↓ GET HIGHER EST RETIRÉE ; ↓ = ECOSYSTEMS (la creator economy : chercher un écosystème,
        retrouver mes abonnements). Ce n'est pas une vue de plus : le TOTEHM se RETOURNE sur son verso en mode recherche
        (`e` → `ecosystemes()`), au fil du geste (molette, trackpad, doigt : `ECO`), d'un coup au clavier et au manche. */
-    const VOISINS={c:{h:'b',b:'e',g:'g',d:'d'}, b:{b:'c'}, g:{d:'c'}, d:{g:'c'}};
-    const NOMS={c:'My TOTEHM', e:'Ecosystems', b:'Higher my ChatGPT', g:'Media', d:'Spots'};
+    const VOISINS={c:{h:'x',b:'e',g:'g',d:'d'}, b:{b:'c'}, g:{d:'c'}, d:{g:'c'}};
+    const NOMS={c:'My TOTEHM', e:'Ecosystems', x:'Discover', b:'Higher my ChatGPT', g:'Media', d:'Spots'};
     const slo=$('lv-slogan'), nUp=$('lvn-up'), nDn=$('lvn-dn'), nLf=$('lvn-lf'), nRt=$('lvn-rt'),
           sock=$('lv-socket'), BG=$('gl-bg');
     const W=()=>innerWidth, H=()=>innerHeight;
@@ -14263,6 +14323,13 @@ window.addEventListener('pageshow',e=>{
     }
     /* ── ALLER : une vue voisine, ou le centre ── */
     function aller(v,then){
+      /* ↑ : le récit, qui sert de menu — aucune vue ne s'ouvre. ⚠️ JAMAIS DANS LE TOTEHM DÉPLOYÉ (Wah, 24/11) :
+         il n'appartient qu'à L'ATTERRISSAGE, au centre, papier posé. Déployé, retourné, en voyage ou en recherche,
+         le geste est REFUSÉ comme un autre — les cinq vues du TOTEHM déployé sont les siennes, pas celles-ci. */
+      if(v==='x'){
+        if(vue!=='c'||open||moving||sOpen||sMoving||bouge||!libreMb()) return void refus('recit:'+quiOccupe());
+        if(body.classList.contains('is-door')||!body.classList.contains('gate')) return void refus('recit:porte');
+        return void DISC.ouvrir(); }
       if(v==='e') return void ecosystemes();
       if(v===vue){ if(then) then(); return; }
       if(bouge||open||moving||sMoving||sOpen) return void refus('aller:'+(open?'ouvert':sOpen?'verso':quiOccupe()));
@@ -15165,34 +15232,54 @@ window.addEventListener('pageshow',e=>{
        → la porte d'inscription ; avec un compte → ouvrir mon TOTEHM, et sur l'écran « Get paid » → Monetize (le verso).
        Ouvert, l'accueil dessous ne bouge pas : `body.is-dc` éteint ses gestes (`libre`), ÉCHAP et « précédent » referment. */
     const DISC=(()=>{
-      const el=$('lvd'), cta=$('lvd-cta'), diagD={ouvertures:0, portes:0, parScroll:0};
+      const el=$('lvd'), cta=$('lvd-cta'), lnk=$('lvd-lnk'), diagD={ouvertures:0, portes:0, parScroll:0};
       let dc=null, ouvert=false, origine=null, t=0, illus=false;
       const ecran=()=>el.querySelectorAll('.dc-s')[dc?dc.index():0];
-      /* ⚠️ 17/11 — UNE ILLUSTRATION PAR ÉCRAN, FAITE DES ÉLÉMENTS DU SITE (Wah : « ajouter une illustration pour chaque
-         slide qui reprend les éléments du site »). Règle n° 1 : une box d'exemple est dessinée par les MÊMES `ligne` /
-         `boiteHTML` / `groupe` / `mini` / `miniSpace` que les cinq vues, puis rendue inerte (`inerteBox`) — jamais une
-         imitation. Les box gardent leurs couleurs natives ; le reste de l'écran reste 60 / 30 / 10. Dessinées une fois,
-         à la première ouverture (les fonctions de la page sont prêtes). */
+      /* ⚠️ 24/11 — UN SEUL OBJET POUR LES SIX ÉCRANS (Wah : « les 5 sont liés et ça forme un storytelling »).
+         Règle n° 1 : il est fait des éléments NATIFS du site, jamais d'une imitation — le sélecteur des cinq vues
+         (`.sfcmd`, celui de la vue de gauche) avec ses états d'origine, la grille perforée de mes médias (`.tlg`, ses
+         box dessinées par `boiteHTML` puis rendues inertes), le badge [Higher], le radar du Club. Le vêtement est la
+         seule forme dessinée ici : une silhouette nue, qui ne porte que des éléments natifs (le badge brodé, une tuile
+         perforée, un nom de cloth). Dessiné une fois, à la première ouverture. */
       const exBox=(bk,titre,o)=>inerteBox(ligne(boiteHTML(Object.assign({kind:bk,id:'dc-'+bk,titre,ouverte:false},o||{})),'',(o&&o.cols)||[]),bk,{court:!!(o&&o.court)});
-      const exHab=o=>exBox('h','Run 20 minutes',Object.assign({cols:[intColor('fight')],
-        unit:intMots({i:'fight'})+'<span class="v-frq">'+esc(flabel('daily'))+'</span>'},o||{}));
-      const exSpot=(state,place,quand)=>miniSpace({id:'dc',format:'spot',state,exact:{place},starts_at:quand});
-      const ILL={
-        habit:()=>exHab({minis:groupe('why',mini('o',null,'Finish a 10K in May'))+groupe('trigger · instead of',mini('r',null,'Scrolling in bed'))}),
-        /* la grille de gauche : la tuile « + », puis des médias, chacun avec SA box posée dessus (format court, comme la grille) */
-        practice:()=>{ const fi=[intColor('fight')];
-          const T=(n,bk,titre)=>'<article class="tl"><div class="tl-ph"><img alt="" src="/assets/discover/lisbon-'+n+'.webp"></div>'
-            +'<div class="tl-bx">'+exBox(bk,titre,{court:true,cols:fi})+'</div></article>';
-          return '<div class="tlg dc-grid"><span class="tl tl-add"><span>+</span></span>'
-            +T(1,'h','Run 20 minutes')+T(2,'r','Scrolling in bed')+T(3,'t','Finish a 10K in May')+T(5,'v','Live by the sea')+T(4,'w','Rest is part of the work')+'</div>'; },
-        money:()=>'<span class="dc-pay"><span class="dc-pay-p">€60<small> / year</small></span><span class="dc-pay-bar"><i></i><i></i></span>'
-          +'<span class="dc-pay-l"><span>You · 80%</span><span>TOTEHM · 20%</span></span></span>',
-        follow:()=>'<span class="dc-who"><span class="dc-n">kai</span>’s TOTEHM</span>'
-          +exBox('h','Cold shower at 7',{cols:[intColor('focus')],unit:intMots({i:'focus'})+'<span class="v-frq">'+esc(flabel('daily'))+'</span><span class="copie">+</span>'}),
-        meet:()=>'<canvas class="dc-radar" width="400" height="400" aria-hidden="true"></canvas>',
-        private:()=>exHab({minis:groupe('why',mini('o',null,'Finish a 10K in May')),
-          bas:'<span class="mg mg-aud"><span class="baud"><svg class="baud-k" viewBox="0 0 12 12" aria-hidden="true"><rect x="2.5" y="5.5" width="7" height="5" rx="1"/><path d="M4 5.5V4a2 2 0 0 1 4 0v1.5"/></svg>'
-            +'<span class="baud-o is-on">private</span><span class="baud-s">·</span><span class="baud-o">subscribers</span></span></span>'})
+      const NOM='kai';
+      const BADGE='<svg class="dc-hi" viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-badge"></use></svg>';
+      const SILH='<svg class="lvh-sh" viewBox="0 0 120 150" aria-hidden="true"><path d="M48 16h24l26 13 10 33-17 7-5-15v80H34V54l-5 15-17-7 10-33z" fill="#17171b" stroke="#3a3a42" stroke-width="1.4" stroke-linejoin="round"/></svg>';
+      const HERO=()=>{
+        const fi=[intColor('fight')];
+        const T=(n,bk,titre)=>'<article class="tl"><div class="tl-ph"><img alt="" src="/assets/discover/lisbon-'+n+'.webp"></div>'
+          +'<div class="tl-bx">'+exBox(bk,titre,{court:true,cols:fi})+'</div></article>';
+        return '<div class="lvh lvh-pp">'
+            +'<div class="lvh-f"><div class="lsh-sf dc-sf"><div class="sfg"><div class="sfcmd is-logo" id="lvd-sf">'
+              +'<span class="sfv sfv-sq sfv-s blk-w is-on"><span>my wisdom</span></span>'
+              +'<span class="sfv sfv-sq sfv-g is-on" style="--skin:#333366"><span class="sf-lg">'
+                +'<svg class="gl g-rail"><use href="#lg-rail"/></svg><svg class="gl g-t"><use href="#lg-t"/></svg><svg class="gl g-wm"><use href="#lg-wm"/></svg>'
+              +'</span><span class="sf-lab">my grind</span><span class="sfpile">'
+                +'<i data-v="objectives">my objectives</i><i data-v="habits">my habits</i><i data-v="repulsions">my repulsions</i>'
+              +'</span></span>'
+              +'<span class="sfv sfv-sq sfv-v blk-v is-on"><span>my vision</span></span>'
+            +'</div></div></div></div>'
+            +'<div class="lvh-b"><span class="lvh-pap"><span class="lvh-q"><i></i></span><span class="lvh-r">'
+              +'<span class="dc-n">'+esc(NOM)+'</span><span class="lvh-pr">€60<small> / year</small></span></span></span></div>'
+          +'</div>'
+          +'<div class="lvh lvh-gr"><div class="tlg dc-grid"><span class="tl tl-add"><span>+</span></span>'
+            +T(1,'h','Run 20 minutes')+T(2,'r','Scrolling in bed')+'</div></div>'
+          +'<div class="lvh lvh-cl">'
+            +'<span class="lvh-g">'+SILH+'<svg class="lvh-emb" viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-badge"></use></svg></span>'
+            +'<span class="lvh-g">'+SILH+'<span class="lvh-prt"><img alt="" src="/assets/discover/lisbon-3.webp"></span>'
+              +'<span class="lvh-nm">'+esc(NOM)+'</span></span>'
+          +'</div>'
+          +'<div class="lvh lvh-rd"><canvas class="dc-radar" width="400" height="400" aria-hidden="true"></canvas></div>';
+      };
+      /* LES PORTES (Wah, 24/11 : « le discover peut faire office de MENU en redirigeant vers d'autres fonctionnalités »).
+         Un écran, UNE porte. Sans TOTEHM, toutes mènent à la même : s'inscrire. Avec un TOTEHM, chacune mène à sa
+         fonctionnalité. `a` = sans compte, `m` = avec, `aa`/`ma` = le nom lu à voix haute, `url` = un autre domaine. */
+      const PORTES={
+        totehm:{a:'Create my TOTEHM', m:'Open my TOTEHM'},
+        eco:{a:'Subscribe to a TOTEHM', m:'Find an ecosystem', lien:1},
+        gpt:{a:'Get '+BADGE, aa:'Get Higher'},
+        cloth:{a:'Create my TOTEHM Cloth', url:'https://www.higher.boutique/'},
+        club:{a:'Integrate figher.club', url:'https://www.figher.club/'}
       };
       /* ⚠️ 17/11 — LE RADAR DE FIGHER.CLUB (Wah : « intégrer le radar quand on parle du figher club, avec un point précis »).
          Les MÊMES règles de dessin que `draw()` de club/index.html : le disque en dégradé, quatre anneaux, le balayage
@@ -15238,14 +15325,54 @@ window.addEventListener('pageshow',e=>{
       })();
       function illustrer(){
         if(illus) return; illus=true;
-        el.querySelectorAll('[data-ill]').forEach(n=>{ const f=ILL[n.dataset.ill]; if(!f) return;
-          try{ n.innerHTML=f(); }catch(e){ console.error('[discover illustration]',n.dataset.ill,e&&e.message||e); } });
-        /* le cadre, l'enveloppe et la réduction de chaque illustration : le moteur de la nomenclature (`tools/discover.js`) */
+        try{ $('lvd-o').innerHTML=HERO(); }catch(e){ console.error('[discover récit]',e&&e.message||e); }
+        /* le cadre, l'enveloppe et la réduction : le moteur de la nomenclature (`tools/discover.js`) */
         if(dc) dc.rafraichir(true); }
-      function peindre(){
-        const rd=ouvert&&ecran()&&ecran().querySelector('.dc-radar'); if(rd) RADAR.on(rd); else RADAR.off();
-        const argent=inscrit()&&!guest()&&!RO&&ecran()&&ecran().dataset.cta==='money';
-        cta.textContent=argent?'Monetize my TOTEHM':'Open my TOTEHM'; cta.dataset.va=argent?'money':'open'; }
+      /* CE QUE L'OBJET DEVIENT, écran par écran. Les transformations sont en CSS (`#lvd[data-i]`) ; ici seulement ce
+         qu'elle ne sait pas faire : les états NATIFS du papier, et le nom qui se frappe au verso. */
+      let recit=0, recitQ=0, conte=-1;
+      const RMD=()=>window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      function frapperNom(bk){
+        const q=bk.querySelector('.lvh-q i'); if(!q) return;
+        bk.classList.add('is-frappe');
+        (function pas(k){
+          if(!q.isConnected||conte!==2){ bk.classList.remove('is-frappe'); return; }
+          q.textContent=NOM.slice(0,k);
+          if(k<NOM.length){ recitQ=setTimeout(()=>pas(k+1),120); return; }
+          bk.classList.remove('is-frappe');
+          recitQ=setTimeout(()=>{ if(conte===2) bk.classList.add('is-res'); },280); })(1); }
+      function conter(i){
+        const sf=$('lvd-sf'), bk=el.querySelector('.lvh-b');
+        clearTimeout(recit); clearTimeout(recitQ);
+        if(sf){
+          /* la pièce s'OUVRE : les classes natives, dans l'ordre natif (`is-melt` dilue le logo, retirer `is-logo`
+             fait glisser les deux papiers, `is-grind` dilue le mot GRIND et pose ses trois listes). */
+          if(i===0) sf.className='sfcmd is-logo';
+          else if(conte===0&&i===1&&!RMD()){
+            sf.classList.add('is-melt');
+            recit=setTimeout(()=>{ sf.classList.remove('is-logo'); sf.classList.add('is-split');
+              recit=setTimeout(()=>sf.classList.add('is-grind'),780); },340);
+          } else sf.className='sfcmd is-melt is-split is-grind';
+        }
+        if(bk){
+          bk.classList.remove('is-res','is-frappe');
+          const q=bk.querySelector('.lvh-q i');
+          if(i!==2){ if(q) q.textContent=NOM; }
+          else if(RMD()){ if(q) q.textContent=NOM; bk.classList.add('is-res'); }
+          else { if(q) q.textContent=''; recitQ=setTimeout(()=>frapperNom(bk),620); }
+        }
+        conte=i; }
+      function peindre(k){
+        const i=(typeof k==='number')?k:(dc?dc.index():0);
+        const rd=ouvert&&i===5?el.querySelector('.dc-radar'):null; if(rd) RADAR.on(rd); else RADAR.off();
+        conter(i);
+        const e=el.querySelectorAll('.dc-s')[i], cle=(e&&e.dataset.cta)||'', por=PORTES[cle],
+              moi=inscrit()&&!guest()&&!RO;
+        cta.classList.toggle('hide',!por);
+        lnk.classList.toggle('hide',!(por&&por.lien&&moi));
+        if(!por){ cta.dataset.va=''; return; }
+        cta.innerHTML=(moi&&por.m)||por.a; cta.dataset.va=cle;
+        cta.setAttribute('aria-label',(moi&&(por.ma||por.m))||por.aa||por.a); }
       /* 18/11 — ouvert PAR LE SCROLL (`scrollDiscover`) : l'inertie du même geste ne fait pas défiler le Discover. La molette
          s'y tait jusqu'à 200 ms de calme (1,5 s au plus) ; le geste suivant avance d'un écran, comme d'habitude. */
       let sourdine=0, sourdineFin=0;
@@ -15266,12 +15393,17 @@ window.addEventListener('pageshow',e=>{
         try{ if(origine&&origine.focus) origine.focus({preventScroll:true}); }catch(_){} origine=null;
         if(then) setTimeout(then,220); }
       $('lvd-x').addEventListener('click',()=>fermer());
-      cta.addEventListener('click',()=>{ const va=cta.dataset.va; diagD.portes++;
+      cta.addEventListener('click',()=>{ const va=cta.dataset.va, por=PORTES[va]; if(!por) return; diagD.portes++;
+        if(por.url) return void location.assign(por.url);     /* un autre domaine de l'écosystème : on y va */
+        const moi=inscrit()&&!guest()&&!RO;
         fermer(()=>{
-          if(!inscrit()){ ouvrirPorte(null); return; }
-          if(va==='money'){ ouvrirVerso();
-            setTimeout(()=>{ const b=document.querySelector('#vs-tabs [data-vs-tab="money"]'); if(b) b.click(); },900); }
-          else $('lv-tap-open').click(); }); });
+          if(!moi) return void ouvrirPorte(null);             /* sans TOTEHM, toutes les portes mènent à la même */
+          if(va==='eco') return void ecosystemes();           /* chercher un écosystème (la règle du Club s'applique) */
+          if(va==='gpt') return void location.assign('/chatgpt');
+          $('lv-tap-open').click(); }); });
+      lnk.addEventListener('click',()=>{ diagD.portes++;
+        fermer(()=>{ ouvrirVerso();
+          setTimeout(()=>{ const b=document.querySelector('#vs-tabs [data-vs-tab="money"]'); if(b) b.click(); },900); }); });
       window.addEventListener('keydown',e=>{ if(ouvert&&e.key==='Escape'){ e.preventDefault(); e.stopImmediatePropagation(); fermer(); } },{capture:true});
       return {ouvrir, fermer, ouvert:()=>ouvert,
         etat:()=>({...diagD, ouvert, radar:RADAR.tourne(), i:dc?dc.index():0, n:el.querySelectorAll('.dc-s').length, porte:cta.dataset.va||'open'})};
@@ -15788,12 +15920,32 @@ window.TOTEHM_DISCOVER = (() => {
     hote.append(rail, next);
     /* L'ILLUSTRATION tient dans son CADRE (`.dc-ill`) : son contenu passe dans `.dc-ill-in`, que le moteur RÉDUIT (largeur
        ou hauteur) au rendu, à chaque écran et à chaque changement de taille — jamais rogné. */
-    function envelopper(){ hote.querySelectorAll('.dc-ill').forEach(f => { if(f.querySelector(':scope>.dc-ill-in')) return;
+    function envelopper(){ hote.querySelectorAll('.dc-ill,.dc-o').forEach(f => { if(f.querySelector(':scope>.dc-ill-in')) return;
       const n = document.createElement('div'); n.className = 'dc-ill-in'; while(f.firstChild) n.appendChild(f.firstChild); f.appendChild(n); }); }
     function ajuster(){ hote.querySelectorAll('.dc-ill-in').forEach(n => { const f = n.parentNode, H = f.clientHeight, W = f.clientWidth; if(!H || !W) return;
       const k = Math.min(1, H / Math.max(1, n.offsetHeight), W / Math.max(1, n.scrollWidth));
       const v = k < .999 ? 'scale(' + k.toFixed(3) + ')' : ''; if(n.style.transform !== v) n.style.transform = v; }); }
     function lire(){ ecrans = [...stage.querySelectorAll('.dc-s')]; rail.innerHTML = ecrans.map(() => '<span></span>').join(''); envelopper(); }
+    /* L'OBJET QUI VOYAGE (`.dc-o` dans `.dc-hero`) : il dit les écrans où il VIT (`data-o="0 1 2"`) et le moteur
+       l'allume sur ceux-là. Entre deux de ses écrans il ne s'éteint jamais : il reste là et la page le transforme
+       (elle lit `data-i` sur l'hôte). C'est la continuité : un objet ne disparaît pas pour réapparaître. */
+    function objets(){ hote.querySelectorAll('.dc-o').forEach(n => {
+      const ou = (n.dataset.o || '').trim().split(/\s+/);
+      n.classList.toggle('is-on', ou.includes(String(i))); }); }
+    /* LA LIGNE FRAPPÉE (`.dc-tw`) : l'écran qui arrive écrit sa phrase à la machine, UNE fois. Revenir en arrière ne la
+       réécrit pas (on la lit, on ne l'attend pas) ; rouvrir le Discover depuis le premier écran, si (`remettre`). */
+    function frapper(){
+      const e = ecrans[i], n = e && e.querySelector('.dc-tw');
+      if(!n || n.dataset.frappe) return;
+      const txt = n.dataset.txt || (n.dataset.txt = n.textContent.trim());
+      n.dataset.frappe = '1';
+      if(RM.matches){ n.textContent = txt; return; }
+      n.textContent = ''; n.classList.add('is-frappe');
+      (function pas(k){ if(!n.isConnected) return; n.textContent = txt.slice(0, k);
+        if(k < txt.length) setTimeout(() => pas(k + 1), 21 + Math.random() * 17); else n.classList.remove('is-frappe'); })(1);
+    }
+    function remettre(){ hote.querySelectorAll('.dc-tw').forEach(n => { delete n.dataset.frappe;
+      if(n.dataset.txt) n.textContent = n.dataset.txt; }); }
     function peindre(instant){
       ecrans.forEach((e, k) => { const on = k === i; e.classList.toggle('is-on', on); e.classList.toggle('is-avant', k < i); e.setAttribute('aria-hidden', String(!on));
         if(instant) e.style.transition = 'none'; else e.style.removeProperty('transition'); });
@@ -15801,12 +15953,14 @@ window.TOTEHM_DISCOVER = (() => {
       rail.querySelectorAll('span').forEach((s, k) => s.classList.toggle('on', k === i));
       hote.classList.toggle('is-last', i >= ecrans.length - 1);
       hote.dataset.i = i; hote.dataset.n = ecrans.length;
+      objets(); frapper();
       ajuster();
       if(o.surChangement) o.surChangement(i, ecrans.length);
     }
     function aller(k, instant){
       k = Math.max(0, Math.min(ecrans.length - 1, k)); if(k === i && !instant) return false;
       if(verrou && !instant) return false;
+      if(k === 0 && instant) remettre();
       i = k; peindre(instant || RM.matches);
       if(!instant && !RM.matches){ verrou = setTimeout(() => { verrou = 0; }, VERROU); }
       return true;
