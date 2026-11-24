@@ -28,8 +28,15 @@ try{
    const reader=pg.frames().find(frame=>new URL(frame.url()).pathname==='/think_same_but_opposite');
    assert(reader);
    assert.equal(new URL(reader.url()).searchParams.get('work'),work.id);
-   await reader.waitForFunction(id=>__totehm_opposites().phase==='discover'&&__totehm_opposites().work===id,work.id);
-   check((await reader.locator('#slide').innerText()).includes(work.slides[0][0]),work.title+' opens its original Discover');
+   await reader.waitForFunction(id=>__totehm_opposites().phase==='artwork'&&__totehm_opposites().work===id,work.id);
+   check(await reader.locator('#artwork-hero-image').isVisible()&&await reader.locator('#artwork-hero-image').getAttribute('src')===work.image&&await reader.locator('#discover-stage').isHidden(),work.title+' first lifts into its original fullscreen artwork');
+   check(await pg.evaluate(()=>__totehm_projection_expansion().type==='artwork'&&__totehm_projection_expansion().documentReloads===0),work.title+' stays in the gallery handoff');
+   await pg.mouse.wheel(0,600);
+   await reader.waitForFunction(()=>__totehm_opposites().phase==='discover'&&__totehm_opposites().step===0);
+   check((await reader.locator('#slide').innerText()).includes(work.slides[0][0]),work.title+' opens its original Discover on scroll');
+   check(await reader.locator('.eyebrow').count()===0,'The prior artwork title is not repeated above the slides');
+   await reader.locator('#close').click();
+   await reader.waitForFunction(()=>__totehm_opposites().phase==='artwork');
    await reader.locator('header a[data-experience-close]').click();
    await pg.waitForFunction(()=>__totehm_projection_expansion().stage==='closed');
    const restored=await pg.evaluate(()=>__totehm_gallery());
@@ -47,12 +54,10 @@ try{
    for(const work of OPPOSITES){
     await pg.goto(origin+'/think_same_but_opposite?work='+work.id,{waitUntil:'domcontentloaded'});
     await pg.waitForFunction(()=>window.__totehm_experience_front?.().ready);
-    if((await pg.evaluate(()=>__totehm_opposites().phase))==='front'){
-     await pg.getByRole('button',{name:'Discover '+work.title,exact:true}).click();
-    }
+    check(await pg.locator('#artwork-hero-image').evaluate(img=>img.complete&&img.naturalWidth===200),work.title+' original loads at '+viewport.width);
+    await pg.getByRole('button',{name:'Discover',exact:true}).click();
     await pg.waitForFunction(id=>__totehm_opposites().phase==='discover'&&__totehm_opposites().work===id,work.id);
-    check(await pg.locator('#image').evaluate(img=>img.complete&&img.naturalWidth===200),work.title+' image loads at '+viewport.width);
-    check(await pg.locator('.frame').isHidden()&&await pg.evaluate(()=>getComputedStyle(document.body).backgroundColor==='rgb(0, 0, 0)'),work.title+' opens a full-screen black reading stage');
+    check(await pg.locator('#artwork-hero').isHidden()&&await pg.evaluate(()=>getComputedStyle(document.body).backgroundColor==='rgb(0, 0, 0)'),work.title+' opens a full-screen black reading stage');
     check((await pg.locator('#slide').innerText()).includes(work.slides[0][0]),work.title+' starts with its own comparison');
     if(viewport.width<650)bounds.push(await pg.evaluate(()=>({work:__totehm_opposites().work,step:0,slide:document.getElementById('slide').getBoundingClientRect().bottom,actions:document.querySelector('.actions').getBoundingClientRect().bottom})));
     for(let i=1;i<work.slides.length;i++){

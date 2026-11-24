@@ -15,7 +15,7 @@ const state=pg=>pg.evaluate(()=>{
 
 try{
  const catalogues=[];
- for(const [city,path] of [['lisbon','/lisbon-space'],['new-york','/new-york'],['origin','/origin']]){
+ for(const [city,path] of [['lisbon','/lisbon-space'],['new-york','/new-york'],['origin','/origin?arrival=1']]){
   const {pg,ctx,log}=await page(browser,{dir:'space',origin,session:false,viewport:{width:1440,height:900},hasTouch:false});
   const sample={city};results.push(sample);
   try{
@@ -27,10 +27,13 @@ try{
     return scene?.frames>0&&sky?.fullSphere&&sky.galacticPlate?.ready&&!sky.galacticPlate.failed&&sky.galacticPlate.blend===1;
    },null,{timeout:90000});
    sample.reducedStart=await state(pg);
-   const {skyMotion,catalogue,stars,stellarColours,moonDirection,galacticNormal,companionGalaxy,emissionNebula,brightAnchors,shootingStars,comet,lunarRelief,galacticPlate,skyGrade,skyPalette,astrophotography}=sample.reducedStart.sky;
-   catalogues.push({skyMotion,catalogue,stars,stellarColours,moonDirection,galacticNormal,companionGalaxy,emissionNebula,brightAnchors,shootingStars,comet,lunarRelief,galacticPlate,skyGrade,skyPalette,astrophotography});
+   const {skyMotion,dimension,catalogue,stars,stellarColours,moonDirection,galacticNormal,companionGalaxy,emissionNebula,brightAnchors,shootingStars,comet,lunarRelief,galacticPlate,skyGrade,skyPalette,astrophotography}=sample.reducedStart.sky;
+   catalogues.push({catalogue,stars,stellarColours,moonDirection,galacticNormal,companionGalaxy,emissionNebula,brightAnchors,shootingStars,comet,lunarRelief,galacticPlate,skyGrade,skyPalette,astrophotography});
    check(stars===23500&&stellarColours===7&&brightAnchors===14&&lunarRelief&&comet===false&&shootingStars===0,city+' keeps the shared authored stars and lunar relief');
    check(skyGrade==='astrophotographic-night'&&skyPalette==='black-cobalt-violet-turquoise-gold'&&galacticPlate.projection==='full-sphere-astrophotography'&&skyMotion.stellarScintillation&&astrophotography?.ready&&astrophotography.local&&astrophotography.dimensions.join(',')==='2048,1024',city+' renders the night-colour ESO panorama and stellar scintillation');
+   const dimensional=city==='origin';
+   check(skyMotion.paintedShear===dimensional&&skyMotion.driftingDust===dimensional&&skyMotion.colourScintillation===dimensional,city+' uses the intended sky motion');
+   check(dimensional?dimension?.refraction&&dimension?.auroras&&dimension?.parallax&&dimension?.dustLayers===3&&dimension.passage===0:dimension===null,city+' respects the dimensional boundary');
    await pg.waitForTimeout(600);
    sample.reducedEnd=await state(pg);
    check(sample.reducedEnd.sky.time===sample.reducedStart.sky.time&&!sample.reducedEnd.sky.animated&&!sample.reducedEnd.sky.meteor,city+' freezes the sky in reduced motion');
@@ -43,6 +46,11 @@ try{
    sample.animated=await state(pg);
    check(sample.animated.frames>sample.reducedEnd.frames,city+' keeps rendering an animated sky');
    await pg.screenshot({path:out+'/'+city+'-animated.png'});
+   if(dimensional){
+    check(sample.animated.sky.dimension.passage>0,'the passage from the event horizon intensifies the moving sky');
+    await pg.waitForFunction(()=>window.__totehm_origin?.().sky?.dimension?.passage===0,null,{timeout:60000});
+    check((await state(pg)).sky.animated,'Origins keeps moving after the passage settles');
+   }
    check(!log.errors.some(error=>/pageerror:|shader error|VALIDATE_STATUS|WebGLProgram/i.test(error)),city+' renders without JavaScript or shader errors');
   }catch(error){
    sample.error=String(error);
@@ -54,6 +62,6 @@ try{
    await ctx.close();
   }
  }
- check(catalogues.every(sky=>JSON.stringify(sky)===JSON.stringify(catalogues[0])),'Lisbon, New York and Origin share the same celestial sphere');
+ check(catalogues.every(sky=>JSON.stringify(sky)===JSON.stringify(catalogues[0])),'Lisbon, New York and Origin keep the same celestial catalogue and photograph');
  console.log('PASS '+checks+' animated sky checks');
 }finally{await browser.close();}

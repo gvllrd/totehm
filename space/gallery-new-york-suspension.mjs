@@ -129,18 +129,29 @@ export function createNewYorkSuspension(parent,{mobile=false,onChange=()=>{}}={}
  }
  pose();
 
+ function projectCorners(face,camera,width,height){
+  return [[-artWidth/2,artHeight/2],[artWidth/2,artHeight/2],[artWidth/2,-artHeight/2],[-artWidth/2,-artHeight/2]].map(([x,y])=>{
+   const point=new T.Vector3(x,y,0).applyMatrix4(face.matrixWorld).project(camera);
+   return{x:(point.x+1)*width/2,y:(1-point.y)*height/2};
+  });
+ }
  function snapshot(camera,width,height){
   if(!camera||disposed)return[];
   root.updateWorldMatrix(true,true);camera.updateMatrixWorld(true);
   return works.map(({id,face})=>{
-   const corners=[[-artWidth/2,artHeight/2],[artWidth/2,artHeight/2],[artWidth/2,-artHeight/2],[-artWidth/2,-artHeight/2]].map(([x,y])=>{
-    const point=new T.Vector3(x,y,0).applyMatrix4(face.matrixWorld).project(camera);
-    return{x:(point.x+1)*width/2,y:(1-point.y)*height/2};
-   });
+   const corners=projectCorners(face,camera,width,height);
    const [tl,tr,br,bl]=corners,span=(a,b)=>Math.hypot(b.x-a.x,b.y-a.y);
    return{id,x:(tl.x+tr.x+br.x+bl.x)/4,y:(tl.y+tr.y+br.y+bl.y)/4,
     width:(span(tl,tr)+span(bl,br))/2,height:(span(tl,bl)+span(tr,br))/2,corners};
   });
+ }
+ function artworkLift(id,camera,width,height){
+  const work=works.find(work=>work.id===id);
+  if(!work||disposed||!work.face.visible)return null;
+  const image=work.face.material.map?.image;
+  if(!image?.naturalWidth||!image.naturalHeight)return null;
+  work.face.updateWorldMatrix(true,false);camera.updateMatrixWorld(true);
+  return{object:work.group,image,corners:projectCorners(work.face,camera,width,height)};
  }
  function syncVisibility(){
   root.visible=projecting&&!handoff;
@@ -151,10 +162,10 @@ export function createNewYorkSuspension(parent,{mobile=false,onChange=()=>{}}={}
  }
  function open(hit){
   if(disposed||!root.visible||(hit&&!acceptHit(hit)))return false;
-  opened=true;opens++;openCallback({href:hit?.object.userData.href||href});return true;
+  opened=true;opens++;openCallback({href:hit?.object.userData.href||href,id:hit?.object.userData.id});return true;
  }
  return{
-  root,screen,pickables,snapshot,acceptHit,open,
+  root,screen,pickables,snapshot,artworkLift,acceptHit,open,
   onOpen(fn){openCallback=fn;},
   setActive(value){active=!!value;if(!active)opened=false;},
   setHandoff(value){if(handoff!==!!value){handoff=!!value;syncVisibility();}},

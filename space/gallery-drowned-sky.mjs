@@ -1,4 +1,5 @@
 import * as T from './vendor/three-0.180.0.mjs';
+import {createOriginStardust,ORIGIN_SKY_FRAGMENT,ORIGIN_STAR_MOTION} from './gallery-origin-sky.mjs';
 
 export const SKY_ASTROPHOTOGRAPH=Object.freeze({
  src:'/assets/gallery/sky/eso-milky-way-2048.jpg',
@@ -9,9 +10,10 @@ export const SKY_ASTROPHOTOGRAPH=Object.freeze({
  adaptation:'Exposure, colour and orientation adapted for the shared night sky; photograph pixels unchanged.'
 });
 
-// Lisbon, New York and Origin share this fixed photographic celestial sphere.
-// The procedural map is a local fallback and supplies stable scene reflections.
-export function createDrownedSky(scene,{mobile=false,onChange=()=>{}}={}){
+// All three spaces use the same photographed celestial sphere. At Origins
+// alone, the photograph breathes and light travels through it and in front of it.
+export function createDrownedSky(scene,{mobile=false,profile='earth',arrival=false,onChange=()=>{}}={}){
+ const origin=profile==='origin';
  const root=new T.Group();root.name='TOTEHM — the common celestial sphere';scene.add(root);
  const geometries=new Set(),materials=new Set(),textures=new Set();
  const geometry=g=>(geometries.add(g),g),material=m=>(materials.add(m),m);
@@ -137,9 +139,10 @@ export function createDrownedSky(scene,{mobile=false,onChange=()=>{}}={}){
  context.putImageData(pixels,0,0);
  const environmentTexture=new T.CanvasTexture(canvas);environmentTexture.colorSpace=T.SRGBColorSpace;environmentTexture.mapping=T.EquirectangularReflectionMapping;environmentTexture.wrapS=T.RepeatWrapping;
  environmentTexture.minFilter=T.LinearMipmapLinearFilter;environmentTexture.magFilter=T.LinearFilter;textures.add(environmentTexture);
- const timeUniform={value:0},pixelRatio={value:Math.min(globalThis.devicePixelRatio||1,1.5)};
- const skyMaterial=material(new T.ShaderMaterial({uniforms:{
-  uMap:{value:environmentTexture},uPhotograph:{value:photograph??environmentTexture},uPhotographBlend:plateBlend,uTime:timeUniform,
+ const timeUniform={value:0},passage={value:0},pixelRatio={value:Math.min(globalThis.devicePixelRatio||1,1.5)};
+ const defines=origin?{ORIGIN_SKY:1}:{};
+ const skyMaterial=material(new T.ShaderMaterial({defines,uniforms:{
+  uMap:{value:environmentTexture},uPhotograph:{value:photograph??environmentTexture},uPhotographBlend:plateBlend,uTime:timeUniform,uPassage:passage,
   uGalacticCore:{value:core},uGalacticEast:{value:tangent},uGalacticNormal:{value:normal}
  },side:T.BackSide,depthWrite:false,depthTest:false,fog:false,toneMapped:false,
   vertexShader:'varying vec3 vDirection;void main(){vDirection=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
@@ -176,13 +179,24 @@ export function createDrownedSky(scene,{mobile=false,onChange=()=>{}}={}){
     float star=smoothstep(.43,.93,max(signal.r,max(signal.g,signal.b)))*smoothstep(.25,.67,light);
     return mix(dust,signal*.74,star);
    }
+   #ifdef ORIGIN_SKY
+   ${ORIGIN_SKY_FRAGMENT}
+   #endif
    void main(){
     vec3 d=normalize(vDirection);
     vec3 fallback=skySample(uMap,sphereUV(d))*vec3(.010,.021,.047);
-    // Fixed shared composition, rather than a dated astrometric model.
+    // The same galactic coordinates anchor the photograph in all three worlds.
     vec3 galactic=vec3(dot(d,uGalacticCore),dot(d,uGalacticNormal),dot(d,uGalacticEast));
-    vec3 signal=skySample(uPhotograph,sphereUV(galactic));
+    #ifdef ORIGIN_SKY
+    vec3 photographDirection=originRefraction(galactic,uTime);
+    #else
+    vec3 photographDirection=galactic;
+    #endif
+    vec3 signal=skySample(uPhotograph,sphereUV(photographDirection));
     vec3 ink=mix(fallback,nightPigment(signal,galactic,uTime),uPhotographBlend);
+    #ifdef ORIGIN_SKY
+    ink=originLight(ink,d,galactic,uTime);
+    #endif
     gl_FragColor=vec4(ink,1.);
     #include <colorspace_fragment>
    }`
@@ -223,18 +237,20 @@ export function createDrownedSky(scene,{mobile=false,onChange=()=>{}}={}){
  }
  const starGeometry=geometry(new T.BufferGeometry());starGeometry.setAttribute('position',new T.BufferAttribute(positions,3));starGeometry.setAttribute('aColour',new T.BufferAttribute(colours,3));starGeometry.setAttribute('aSize',new T.BufferAttribute(sizes,1));starGeometry.setAttribute('aPhase',new T.BufferAttribute(phases,1));starGeometry.setAttribute('aIntensity',new T.BufferAttribute(intensities,1));starGeometry.setAttribute('aAnchor',new T.BufferAttribute(anchorsStrength,1));
 
- const starMaterial=material(new T.ShaderMaterial({uniforms:{uTime:timeUniform,uPixelRatio:pixelRatio},transparent:true,depthWrite:false,depthTest:true,blending:T.AdditiveBlending,toneMapped:false,fog:false,
-  vertexShader:`attribute vec3 aColour;attribute float aSize,aPhase,aIntensity,aAnchor;uniform float uTime,uPixelRatio;varying vec3 vColour;varying float vIntensity,vGlint,vAnchor;
+ const starMaterial=material(new T.ShaderMaterial({defines,uniforms:{uTime:timeUniform,uPixelRatio:pixelRatio,uPassage:passage},transparent:true,depthWrite:false,depthTest:true,blending:T.AdditiveBlending,toneMapped:false,fog:false,
+  vertexShader:`attribute vec3 aColour;attribute float aSize,aPhase,aIntensity,aAnchor;uniform float uTime,uPixelRatio,uPassage;varying vec3 vColour;varying float vIntensity,vGlint,vAnchor;
    void main(){vAnchor=aAnchor;float low=1.-clamp(position.y/1220.,0.,1.);
     float shimmer=mix(.018+.052*low*low,.035,aAnchor);
     float twinkle=sin(aPhase+uTime*(.21+.08*sin(aPhase)))*.55+sin(aPhase*2.7+uTime*.49)*.31+sin(aPhase*6.1+uTime*.73)*.14;
     float glint=smoothstep(1.5,6.2,aSize);
-    
-    float temperature=0.;
-    vColour=clamp(aColour*vec3(1.+temperature,1.,1.-temperature),0.,1.);
+    vColour=aColour;
     vIntensity=aIntensity*(1.-shimmer+shimmer*twinkle);
     vGlint=glint;
-    gl_PointSize=aSize*uPixelRatio;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,
+    vec3 point=position;
+    #ifdef ORIGIN_SKY
+    ${ORIGIN_STAR_MOTION}
+    #endif
+    gl_PointSize=aSize*uPixelRatio;gl_Position=projectionMatrix*modelViewMatrix*vec4(point,1.);}`,
   fragmentShader:`varying vec3 vColour;varying float vIntensity,vGlint,vAnchor;
    void main(){vec2 p=gl_PointCoord-.5;float r=length(p);if(r>.5)discard;float rr=r*r;
     float core=exp(-rr*mix(mix(31.,290.,vGlint),530.,vAnchor));
@@ -301,7 +317,7 @@ export function createDrownedSky(scene,{mobile=false,onChange=()=>{}}={}){
  const haloMaterial=material(new T.MeshBasicMaterial({map:haloTexture,transparent:true,depthWrite:false,depthTest:true,blending:T.AdditiveBlending,toneMapped:false,fog:false}));
  const halo=new T.Mesh(geometry(new T.PlaneGeometry(moonSize*6.4,moonSize*6.4)),haloMaterial);halo.position.copy(moon.position);halo.quaternion.copy(moon.quaternion);halo.renderOrder=-1080;halo.name='A restrained moon halo';halo.frustumCulled=false;root.add(halo);
 
- // No meteor ribbons, frame accumulation, camera streaks or texture drift.
+ const stardust=origin?createOriginStardust(scene,{mobile,time:timeUniform,passage}):null;
  onChange();
  return{
   root,environmentTexture,moonDirection,
@@ -310,6 +326,9 @@ export function createDrownedSky(scene,{mobile=false,onChange=()=>{}}={}){
    if(eye&&!root.position.equals(eye)){root.position.copy(eye);dirty=true;}
    const step=Math.max(0,Math.min(Number(dt)||0,.1));
    animated=!!motion;if(animated){time+=step;timeUniform.value=time;dirty=true;}
+   const nextPassage=origin&&arrival&&motion?1-smooth(.32,4.8,time):passage.value;
+   if(nextPassage!==passage.value){passage.value=nextPassage;dirty=true;}
+   if(eye)stardust?.anchor(eye);
    if(plateReady&&plateBlend.value<1){
     const blend=motion?Math.min(1,plateBlend.value+step/1.05):1;
     if(blend!==plateBlend.value){plateBlend.value=blend;dirty=true;}
@@ -319,7 +338,8 @@ export function createDrownedSky(scene,{mobile=false,onChange=()=>{}}={}){
   diagnostics:()=>({
    night:true,skyLoaded:true,textureReady:true,catalogue:'totehm-celestial-sphere',fullSphere:true,
    textureSize:[width,height],milkyWay:true,galacticClouds:'photographed star clouds and dark interstellar dust lanes',
-   skyMotion:{paintedShear:false,driftingDust:false,colourScintillation:false,stellarScintillation:true},
+   skyMotion:{paintedShear:origin,driftingDust:origin,colourScintillation:origin,stellarScintillation:true},
+   dimension:origin?{refraction:true,auroras:true,dustLayers:3,parallax:true,passage:+passage.value.toFixed(3)}:null,
    skyGrade:'astrophotographic-night',skyPalette:'black-cobalt-violet-turquoise-gold',
    galacticPlate:{ready:plateReady,failed:plateFailed,blend:plateBlend.value,projection:'full-sphere-astrophotography',
     direction:core.toArray(),normal:normal.toArray(),size:[...SKY_ASTROPHOTOGRAPH.dimensions]},
@@ -330,6 +350,6 @@ export function createDrownedSky(scene,{mobile=false,onChange=()=>{}}={}){
    moonDiameterDegrees:moonDiameter,lunarCraters:lunarCraters.length,lunarRelief:true,
    comet:false,shootingStars:0,meteor:false,meteorRibbon:false,meteorTriangles:0,externalFiles:0,disposed
   }),
-  dispose(){if(disposed)return;disposed=true;credit?.remove();for(const t of textures)t.dispose();for(const m of materials)m.dispose();for(const g of geometries)g.dispose();canvas.width=canvas.height=moonCanvas.width=moonCanvas.height=haloCanvas.width=haloCanvas.height=1;root.removeFromParent();root.clear();}
+  dispose(){if(disposed)return;disposed=true;stardust?.dispose();credit?.remove();for(const t of textures)t.dispose();for(const m of materials)m.dispose();for(const g of geometries)g.dispose();canvas.width=canvas.height=moonCanvas.width=moonCanvas.height=haloCanvas.width=haloCanvas.height=1;root.removeFromParent();root.clear();}
  };
 }

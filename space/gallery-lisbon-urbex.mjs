@@ -1,22 +1,11 @@
 import * as T from './vendor/three-0.180.0.mjs';
 import {createLisbonPavement} from './gallery-lisbon-pavement.mjs';
 import {createWhiteStone} from './gallery-white-stone.mjs';
-import {createPaperEdition,createPaperPackaging,PAPER_CASE_FACE_RATIO} from './gallery-paper-packaging.mjs';
+import {createPaperTable,roundedRectangle} from './gallery-paper-table.mjs';
 import {createLisbonHologram} from './gallery-lisbon-hologram.mjs';
-import {createLisbonPaperAttache} from './gallery-lisbon-paper-attache.mjs';
 import {createLisbonArmchair} from './gallery-lisbon-lounge.mjs';
 import {createLisbonController} from './gallery-lisbon-controller.mjs';
 import {LISBON_URBEX_LAYOUT as L,LISBON_URBEX_STATIONS,LISBON_URBEX_FURNITURE} from './gallery-lisbon-urbex-layout.mjs';
-
-function roundedRectangle(width,depth,radius){
- const x=width/2,y=depth/2,shape=new T.Shape();
- shape.moveTo(-x+radius,-y);
- shape.lineTo(x-radius,-y);shape.quadraticCurveTo(x,-y,x,-y+radius);
- shape.lineTo(x,y-radius);shape.quadraticCurveTo(x,y,x-radius,y);
- shape.lineTo(-x+radius,y);shape.quadraticCurveTo(-x,y,-x,y-radius);
- shape.lineTo(-x,-y+radius);shape.quadraticCurveTo(-x,-y,-x+radius,-y);
- shape.closePath();return shape;
-}
 
 // Campfire point lights flicker intentionally. The table controller keeps the
 // room environment, directional sun and its own steady spot instead.
@@ -48,7 +37,7 @@ export function createLisbonUrbexGallery(scene,renderer,{mobile=false,onChange=(
  const material=value=>(materials.add(value),value);
  const texture=value=>(textures.add(value),value);
  const anisotropy=Math.min(8,renderer?.capabilities?.getMaxAnisotropy?.()||4);
- let disposed=false,dirty=true,paperLoaded=false;
+ let disposed=false,dirty=true;
  function changed(){
   if(disposed)return;
   dirty=true;
@@ -74,42 +63,10 @@ export function createLisbonUrbexGallery(scene,renderer,{mobile=false,onChange=(
  apron.rotation.x=-Math.PI/2;apron.castShadow=false;
 
  const stone=createWhiteStone({mobile,anisotropy,onChange:changed});
- const [tableX,top,tableZ]=L.counter.position;
- const table=new T.Group();table.name='Low hotel coffee table carved in antique limestone';table.position.set(tableX,0,tableZ);root.add(table);
- const slabShape=roundedRectangle(...L.counter.size,.095);
- const slab=mesh(geometry(new T.ExtrudeGeometry(slabShape,{depth:.122,bevelEnabled:true,bevelSize:.018,bevelThickness:.018,bevelSegments:3,curveSegments:8})),stone.material,[0,top-.14,0],'Heavily rounded antique limestone tabletop',table);
- slab.rotation.x=-Math.PI/2;solids.push(slab);
- for(const x of [-.741,.741]){
-  const footing=roundedRectangle(.43,.74,.062);
-  const leg=mesh(geometry(new T.ExtrudeGeometry(footing,{depth:.43,bevelEnabled:true,bevelSize:.012,bevelThickness:.012,bevelSegments:2,curveSegments:8})),stone.material,[x,L.groundY+.012,0],'Recessed carved limestone leg',table);
-  leg.rotation.x=-Math.PI/2;solids.push(leg);
- }
+ const paperTable=createPaperTable(root,{layout:L,stone,geometry,material,texture,mesh,mark,solids,anisotropy,onChange:changed});
+ const {table,paperAttache,cases}=paperTable;
+ const top=L.counter.position[1];
 
- const paperAttache=createLisbonPaperAttache(root,{
-  layout:L.paperAttache,casePositions:L.paperCases,top,roundedRectangle,geometry,material,texture,mesh,anisotropy
- });
- solids.push(...paperAttache.occluders);
- const edition=createPaperEdition({anisotropy,onChange:changed});
- edition.ready.then(loaded=>{
-  if(disposed)return;
-  paperLoaded=loaded;
-  paperAttache.applyHigher(edition.badgeMaterial.map?.image);
-  changed();
- });
- const [attacheX,attacheZ]=L.paperAttache.position,caseWidth=L.paperCaseWidth;
- const pickArea=geometry(new T.PlaneGeometry(.092,.086)),pickMaterial=material(new T.MeshBasicMaterial({visible:false,side:T.DoubleSide}));
- const cases=L.paperCases.map(({position:[x,z],angle},index)=>{
-  const box=createPaperPackaging({...edition,geometry,material,width:caseWidth});
-  const depth=caseWidth*50/180;
-  const base=L.paperAttache.cradleHeight+Math.abs(Math.sin(angle))*caseWidth/2+Math.cos(angle)*depth/2+.002;
-  box.position.set(x-attacheX,base,z-attacheZ);box.rotation.x=angle;paperAttache.root.add(box);
-  const front=box.getObjectByName('Original clear premium case glass');
-  const hitArea=mesh(pickArea,pickMaterial,[0,0,front.position.z+.001],'TotehmPaper click area',box);
-  hitArea.castShadow=false;hitArea.receiveShadow=false;
-  const item={root:box,front,width:caseWidth,index,href:'/get_higher?paper=1'};
-  box.traverse(object=>{if(object.isMesh)mark(object,'lisbon-paper',{paper:item});});
-  return item;
- });
  const controller=createLisbonController({width:L.controller.width,mobile,batchArtwork:true,onChange:changed});
  const [controllerX,controllerZ]=L.controller.position;
  root.add(controller.root);
@@ -181,13 +138,13 @@ export function createLisbonUrbexGallery(scene,renderer,{mobile=false,onChange=(
    floor:{surfaces:1,material:'lisbon-calcada',caravel:true},
    pavement:pavement.diagnostics(),stone:stone.diagnostics(),
    seat:{leather:true,brown:true,position:seat.position,eye:seat.eye,target:seat.target,fov:seat.fov},
-   thpCounter:{tables:1,low:true,antiqueLimestone:true,size:L.counter.size,height:top,packagedPapers:cases.length,caseWidthMetres:caseWidth,attache:paperAttache.diagnostics(),paperWidthMetres:caseWidth*PAPER_CASE_FACE_RATIO,signed:cases.every(item=>!!item.root.userData.signature),premiumSource:'/get_higher',position:L.counter.position,chemistryEquipment:0},
-   controller:{...controller.diagnostics(),tablePitch:L.controller.tablePitch,tableYaw:L.controller.tableYaw,contactShadow:!!contact,feet:controllerFeet.length,steadyLight:true,tableAim:controllerAim},streetSigns:{count:0,experience:22},paperLoaded,
+   thpCounter:paperTable.diagnostics(),
+   controller:{...controller.diagnostics(),tablePitch:L.controller.tablePitch,tableYaw:L.controller.tableYaw,contactShadow:!!contact,feet:controllerFeet.length,steadyLight:true,tableAim:controllerAim},streetSigns:{count:0,experience:22},paperLoaded:paperTable.loaded,
    performance:installation.diagnostics(),installation:installation.diagnostics(),disposed
   }),
   dispose(){
    if(disposed)return;disposed=true;
-   controller.dispose();installation.dispose();stone.dispose();pavement.dispose();edition.dispose();
+   controller.dispose();installation.dispose();stone.dispose();pavement.dispose();paperTable.dispose();
    for(const light of lights)light.dispose();
    for(const value of geometries)value.dispose();
    for(const value of materials)value.dispose();

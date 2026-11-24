@@ -14,7 +14,7 @@ export const OPPOSITES = [
   ['HIGHER SOUNDS LIKE AILLEURS IN FRENCH: “SOMEWHERE ELSE.” That place is where two worlds meet.','In HIGHER Streetwear, choose a garment and an artistic style; bring a box from your TOTEHM. The artist’s language gives your story a form neither could have made alone.'],
   ['SAME STREETWEAR. OPPOSITE RELATIONSHIP.','The artist is seen. The wearer is heard. Culture and individual finally share the same garment. Create your Streetwear Cloth.']
  ]},
- {id:'get-higher',title:'GET HIGHER vs Just Do It',image:'/assets/getHighervsJustdoit.png',action:'Experience GET HIGHER',href:'/get_higher',slides:[
+ {id:'get-higher',title:'GET HIGHER vs Just Do It',image:'/assets/getHighervsJustdoit.png',action:'Experience GET HIGHER',href:'/get_higher?paper=1',slides:[
   ['JUST DO IT. EVEN WHEN THE THING YOU’RE ABOUT TO DO IS THE THING YOU NEED TO CHANGE?'],
   ['Nike gave hesitation a powerful answer: act. But our lives are already crowded with action.','We can move all day and still be driven by fear, anger or a habit we wish we could break.'],
   ['The Stoner Method takes its name from a stepping stone.','A thought, feeling or action that pulls you down becomes a cue: notice it, interrupt the pattern and choose a constructive opposite.'],
