@@ -18,12 +18,32 @@ window.TOTEHM_DISCOVER = (() => {
     hote.append(rail, next);
     /* L'ILLUSTRATION tient dans son CADRE (`.dc-ill`) : son contenu passe dans `.dc-ill-in`, que le moteur RÉDUIT (largeur
        ou hauteur) au rendu, à chaque écran et à chaque changement de taille — jamais rogné. */
-    function envelopper(){ hote.querySelectorAll('.dc-ill').forEach(f => { if(f.querySelector(':scope>.dc-ill-in')) return;
+    function envelopper(){ hote.querySelectorAll('.dc-ill,.dc-o').forEach(f => { if(f.querySelector(':scope>.dc-ill-in')) return;
       const n = document.createElement('div'); n.className = 'dc-ill-in'; while(f.firstChild) n.appendChild(f.firstChild); f.appendChild(n); }); }
     function ajuster(){ hote.querySelectorAll('.dc-ill-in').forEach(n => { const f = n.parentNode, H = f.clientHeight, W = f.clientWidth; if(!H || !W) return;
       const k = Math.min(1, H / Math.max(1, n.offsetHeight), W / Math.max(1, n.scrollWidth));
       const v = k < .999 ? 'scale(' + k.toFixed(3) + ')' : ''; if(n.style.transform !== v) n.style.transform = v; }); }
     function lire(){ ecrans = [...stage.querySelectorAll('.dc-s')]; rail.innerHTML = ecrans.map(() => '<span></span>').join(''); envelopper(); }
+    /* L'OBJET QUI VOYAGE (`.dc-o` dans `.dc-hero`) : il dit les écrans où il VIT (`data-o="0 1 2"`) et le moteur
+       l'allume sur ceux-là. Entre deux de ses écrans il ne s'éteint jamais : il reste là et la page le transforme
+       (elle lit `data-i` sur l'hôte). C'est la continuité : un objet ne disparaît pas pour réapparaître. */
+    function objets(){ hote.querySelectorAll('.dc-o').forEach(n => {
+      const ou = (n.dataset.o || '').trim().split(/\s+/);
+      n.classList.toggle('is-on', ou.includes(String(i))); }); }
+    /* LA LIGNE FRAPPÉE (`.dc-tw`) : l'écran qui arrive écrit sa phrase à la machine, UNE fois. Revenir en arrière ne la
+       réécrit pas (on la lit, on ne l'attend pas) ; rouvrir le Discover depuis le premier écran, si (`remettre`). */
+    function frapper(){
+      const e = ecrans[i], n = e && e.querySelector('.dc-tw');
+      if(!n || n.dataset.frappe) return;
+      const txt = n.dataset.txt || (n.dataset.txt = n.textContent.trim());
+      n.dataset.frappe = '1';
+      if(RM.matches){ n.textContent = txt; return; }
+      n.textContent = ''; n.classList.add('is-frappe');
+      (function pas(k){ if(!n.isConnected) return; n.textContent = txt.slice(0, k);
+        if(k < txt.length) setTimeout(() => pas(k + 1), 21 + Math.random() * 17); else n.classList.remove('is-frappe'); })(1);
+    }
+    function remettre(){ hote.querySelectorAll('.dc-tw').forEach(n => { delete n.dataset.frappe;
+      if(n.dataset.txt) n.textContent = n.dataset.txt; }); }
     function peindre(instant){
       ecrans.forEach((e, k) => { const on = k === i; e.classList.toggle('is-on', on); e.classList.toggle('is-avant', k < i); e.setAttribute('aria-hidden', String(!on));
         if(instant) e.style.transition = 'none'; else e.style.removeProperty('transition'); });
@@ -31,12 +51,14 @@ window.TOTEHM_DISCOVER = (() => {
       rail.querySelectorAll('span').forEach((s, k) => s.classList.toggle('on', k === i));
       hote.classList.toggle('is-last', i >= ecrans.length - 1);
       hote.dataset.i = i; hote.dataset.n = ecrans.length;
+      objets(); frapper();
       ajuster();
       if(o.surChangement) o.surChangement(i, ecrans.length);
     }
     function aller(k, instant){
       k = Math.max(0, Math.min(ecrans.length - 1, k)); if(k === i && !instant) return false;
       if(verrou && !instant) return false;
+      if(k === 0 && instant) remettre();
       i = k; peindre(instant || RM.matches);
       if(!instant && !RM.matches){ verrou = setTimeout(() => { verrou = 0; }, VERROU); }
       return true;

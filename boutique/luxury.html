@@ -366,11 +366,11 @@ button.mi.is-on{filter:none}
            membre et l'ART de Wah (le papier, la pièce). Ni le prix, ni le bouton : ils restent blancs et gris.
            Rien d'autre n'est coloré, jamais : ni navy, ni rouge, ni dégradé.
    L'APPEL À L'ACTION (`.dc-cta`, facultatif : la classe `has-cta` sur l'hôte) reste sous CHAQUE écran. */
-.dc{--dc-ac:#fbd5ca;position:fixed;inset:0;z-index:20;margin:0;width:auto;background:#000;color:#ddd;overflow:hidden;
+.dc{--dc-ac:#fbd5ca;--dc-ins-t:84px;--dc-ins-x:24px;--dc-ins-b:132px;position:fixed;inset:0;z-index:20;margin:0;width:auto;background:#000;color:#ddd;overflow:hidden;
   font-family:'Space Mono',monospace;-webkit-font-smoothing:antialiased;touch-action:pan-x;overscroll-behavior:none}
 .dc[hidden],.dc.hide{display:none}
 .dc-stage{position:absolute;inset:0}
-.dc-s{position:absolute;inset:84px 24px 132px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+.dc-s{position:absolute;inset:var(--dc-ins-t) var(--dc-ins-x) var(--dc-ins-b);display:flex;flex-direction:column;align-items:center;justify-content:center;
   gap:20px;text-align:center;opacity:0;visibility:hidden;transform:translateY(14px);
   transition:opacity .5s ease,transform .5s ease,visibility 0s linear .5s}
 .dc-s.is-on{opacity:1;visibility:visible;transform:none;transition:opacity .5s ease,transform .5s ease,visibility 0s}
@@ -391,7 +391,7 @@ button.mi.is-on{filter:none}
 .dc-btn:active{transform:scale(.97)}
 .dc-cta{position:absolute;left:0;right:0;bottom:146px;display:flex;flex-direction:column;align-items:center;gap:8px;padding:0 24px;z-index:2}
 .dc-cta:empty{display:none}
-.dc.has-cta .dc-s{inset:84px 24px 214px}
+.dc.has-cta{--dc-ins-b:214px}
 .dc.has-cta.is-last .dc-cta{bottom:96px}
 .dc-btn[disabled]{opacity:.45;pointer-events:none}
 .dc-btn.is-quiet{background:none;color:#bdbdbd;box-shadow:inset 0 0 0 1px #3a3a3a}
@@ -406,8 +406,8 @@ button.mi.is-on{filter:none}
    éléments NATIFS du site (box, pièce, badge), dans un CADRE de même hauteur sur tous les écrans (`--dc-ill-h`) : le titre
    ne saute pas d'un écran à l'autre, et ce qui dépasse est RÉDUIT au cadre par le moteur, jamais rogné. Le haut de l'écran
    est fixe (le cadre, puis le titre) ; seul le texte s'allonge vers le bas. `.dc-ill-c` : l'illustration en colonne. */
-.dc{--dc-ill-h:clamp(128px,22dvh,190px)}
-.dc.is-illustre .dc-s{justify-content:flex-start;padding-top:max(0px,calc((100dvh - 298px - 450px) / 2))}
+.dc{--dc-ill-h:clamp(128px,22dvh,190px);--dc-haut:max(0px,calc((100dvh - 298px - 450px) / 2))}
+.dc.is-illustre .dc-s{justify-content:flex-start;padding-top:var(--dc-haut)}
 .dc-ill{width:min(100%,340px);height:var(--dc-ill-h);flex:none;display:flex;align-items:center;justify-content:center;
   text-align:left;pointer-events:none;-webkit-user-select:none;user-select:none}
 .dc-ill-in{flex:none;width:100%;transform-origin:50% 50%}
@@ -425,6 +425,7 @@ button.mi.is-on{filter:none}
 /* la structure : rail, chevron — gris sombre, jamais de couleur. Ni numéro d'écran (« 1 / 10 »), ni consigne écrite : la flèche du bas, qui s'anime, dit le scroll */
 .dc-rail{position:absolute;bottom:72px;left:50%;transform:translateX(-50%);display:flex;gap:6px;pointer-events:none}
 .dc-rail span{width:18px;height:2px;background:#242424;transition:background .3s}
+.dc-rail{transition:opacity .4s ease}
 .dc-rail span.on{background:#bdbdbd}
 .dc-next{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);background:none;border:0;padding:10px;cursor:pointer;color:#a0a0a0;transition:color .15s,opacity .3s}
 .dc-next svg{display:block;width:24px;height:24px;animation:dc-bob 1.6s ease-in-out infinite}
@@ -432,23 +433,55 @@ button.mi.is-on{filter:none}
 .dc-x:focus-visible{outline:1px solid #fff;outline-offset:-6px}
 .dc.is-last .dc-next{opacity:0;pointer-events:none}
 @keyframes dc-bob{0%,100%{transform:none;opacity:.4}50%{transform:translateY(6px);opacity:1}}
+/* LA LIGNE FRAPPÉE (`.dc-tw`) — Wah, 24/11 : la phrase de l'écran s'écrit à la machine, en Quantico blanc, comme
+   `totehm.space/get_higher?paper=1`. C'est la VOIX du récit : une phrase par écran, au-dessus de son explication.
+   Quantico reste en graisse normale (BRAND : le gras corail n'est que le « Get ») ; le curseur est blanc, jamais corail.
+   Le moteur la frappe quand son écran arrive, une seule fois (`is-frappe` pendant la frappe) ; mouvement réduit = déjà écrite. */
+.dc-tw{margin:0;font:400 clamp(19px,3vw,30px)/1.25 Quantico,sans-serif;color:#fff;letter-spacing:.01em;min-height:1.25em}
+.dc-tw::after{content:'';display:inline-block;width:.06em;height:.95em;background:#fff;vertical-align:-.1em;margin-left:.07em;opacity:0}
+.dc-tw.is-frappe::after{animation:dc-car 1s step-end infinite}
+@keyframes dc-car{0%,50%{opacity:1}51%,100%{opacity:0}}
+/* LA PHRASE DE LA FLÈCHE (`.dc-lead`) — l'écran 0 pose la question du récit ; la flèche animée en porte la suite
+   (« Be in touch with »). Ce n'est pas une consigne de défilement (la nomenclature les refuse) : c'est le fil, et il ne
+   vit que sur le PREMIER écran. Le rail des écrans se tait là, pour que l'écran 0 ne dise qu'une chose. */
+.dc-lead{position:absolute;left:0;right:0;bottom:56px;z-index:2;padding:0 24px;text-align:center;pointer-events:none;
+  font:400 11px/1.4 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#888;
+  opacity:0;transition:opacity .4s ease}
+.dc[data-i="0"] .dc-lead{opacity:1}
+.dc:has(.dc-lead)[data-i="0"] .dc-rail{opacity:0}
+/* L'OBJET QUI VOYAGE (facultatif : `is-hero` sur l'hôte) — Wah, 24/11 : les écrans forment UN récit, « un objet ne
+   disparaît pas pour réapparaître, il se TRANSFORME » (CLAUDE.md, la continuité). Les écrans se succèdent en fondu,
+   mais l'objet, lui, VIT AU-DESSUS d'eux : une seule couche (`.dc-hero`), à la place exacte du cadre d'illustration
+   (`--dc-ins-t` + `--dc-haut`), donc le titre ne bouge toujours pas. Un objet (`.dc-o`) dit les écrans où il VIT
+   (`data-o="0 1 2"`) : le moteur l'allume (`is-on`) sur ceux-là et le laisse en place entre deux — c'est ce qui permet
+   au papier de s'ouvrir, de se retourner puis de devenir une grille SANS jamais disparaître.
+   L'écran garde un `.dc-ill` VIDE : il réserve la place, l'objet se pose dessus. La page apporte ses propres nœuds et
+   ses propres transformations (ses classes à elle, lues sur `.dc[data-i]`) ; la nomenclature ne dit que l'endroit et l'apparition. */
+.dc.is-hero .dc-hero{position:absolute;top:calc(var(--dc-ins-t) + var(--dc-haut));left:50%;transform:translateX(-50%);perspective:1000px;
+  width:min(calc(100% - 2 * var(--dc-ins-x)),340px);height:var(--dc-ill-h);z-index:1;
+  pointer-events:none;-webkit-user-select:none;user-select:none}
+.dc-o{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  opacity:0;visibility:hidden;transition:opacity .5s ease,transform .5s ease,visibility 0s linear .5s}
+.dc-o.is-on{opacity:1;visibility:visible;transition:opacity .5s ease,transform .5s ease,visibility 0s}
 @media(hover:hover){.dc-btn:hover{background:#383838;opacity:1}.dc-next:hover,.dc-x:hover{color:#fff}.dc-lnk:hover{color:#fff}}
-@media(max-width:650px){.dc-s{inset:76px 20px 140px;gap:16px}.dc.has-cta .dc-s{inset:76px 20px 214px}}
+@media(max-width:650px){.dc{--dc-ins-t:76px;--dc-ins-x:20px;--dc-ins-b:140px}.dc-s{gap:16px}}
 /* un écran BAS (fenêtre réduite, téléphone couché) : tout se resserre et rien ne se chevauche — après la règle de largeur */
 @media(max-height:620px){
-  .dc-s{inset:60px 20px 96px;gap:12px}.dc.has-cta .dc-s{inset:60px 20px 150px}
+  .dc{--dc-ins-t:60px;--dc-ins-x:20px;--dc-ins-b:96px}.dc.has-cta{--dc-ins-b:150px}.dc-s{gap:12px}
   .dc-cta,.dc.has-cta.is-last .dc-cta{bottom:84px}.dc-next{bottom:12px}.dc-next svg{width:20px;height:20px}.dc-rail{bottom:56px}
   .dc-h{font-size:clamp(13px,2vw,16px)}.dc-p{font-size:clamp(12px,1.4vw,14px);line-height:1.55}.dc-btn{min-height:42px;padding:9px 22px}
+  .dc-tw{font-size:clamp(17px,2.6vw,22px)}.dc-lead{bottom:44px}
 }
 @media(max-height:440px){
-  .dc-s{inset:50px 20px 50px}.dc.has-cta .dc-s{inset:50px 20px 100px}
-  .dc-cta,.dc.has-cta.is-last .dc-cta{bottom:44px}.dc-rail{bottom:22px}.dc-next{display:none}
+  .dc{--dc-ins-t:50px;--dc-ins-x:20px;--dc-ins-b:50px}.dc.has-cta{--dc-ins-b:100px}
+  .dc-cta,.dc.has-cta.is-last .dc-cta{bottom:44px}.dc-rail{bottom:22px}.dc-next{display:none}.dc-lead{bottom:24px}
 }
 /* un écran bas : l'illustration se resserre, puis s'efface — le texte passe avant */
 @media(max-height:760px){.dc.is-illustre .dc-s{gap:14px}}
 @media(max-height:700px){.dc{--dc-ill-h:clamp(110px,19dvh,150px)}}
-@media(max-height:600px){.dc-ill{display:none}}
-@media(prefers-reduced-motion:reduce){.dc-s,.dc-s.is-on,.dc-s.is-avant{transition:none;transform:none}.dc-next svg{animation:none}.dc.is-overlay,.dc.is-overlay.is-open{transition:none}}
+@media(max-height:600px){.dc-ill,.dc-hero{display:none}}
+@media(prefers-reduced-motion:reduce){.dc-s,.dc-s.is-on,.dc-s.is-avant{transition:none;transform:none}.dc-next svg{animation:none}.dc.is-overlay,.dc.is-overlay.is-open{transition:none}
+  .dc-o{transition:opacity .2s ease}.dc-tw.is-frappe::after{animation:none}}
 /* ══ fin DISCOVER ══ */
 </style>
 <style data-ecosystem-ui="2026-10-05">
@@ -882,12 +915,32 @@ window.TOTEHM_DISCOVER = (() => {
     hote.append(rail, next);
     /* L'ILLUSTRATION tient dans son CADRE (`.dc-ill`) : son contenu passe dans `.dc-ill-in`, que le moteur RÉDUIT (largeur
        ou hauteur) au rendu, à chaque écran et à chaque changement de taille — jamais rogné. */
-    function envelopper(){ hote.querySelectorAll('.dc-ill').forEach(f => { if(f.querySelector(':scope>.dc-ill-in')) return;
+    function envelopper(){ hote.querySelectorAll('.dc-ill,.dc-o').forEach(f => { if(f.querySelector(':scope>.dc-ill-in')) return;
       const n = document.createElement('div'); n.className = 'dc-ill-in'; while(f.firstChild) n.appendChild(f.firstChild); f.appendChild(n); }); }
     function ajuster(){ hote.querySelectorAll('.dc-ill-in').forEach(n => { const f = n.parentNode, H = f.clientHeight, W = f.clientWidth; if(!H || !W) return;
       const k = Math.min(1, H / Math.max(1, n.offsetHeight), W / Math.max(1, n.scrollWidth));
       const v = k < .999 ? 'scale(' + k.toFixed(3) + ')' : ''; if(n.style.transform !== v) n.style.transform = v; }); }
     function lire(){ ecrans = [...stage.querySelectorAll('.dc-s')]; rail.innerHTML = ecrans.map(() => '<span></span>').join(''); envelopper(); }
+    /* L'OBJET QUI VOYAGE (`.dc-o` dans `.dc-hero`) : il dit les écrans où il VIT (`data-o="0 1 2"`) et le moteur
+       l'allume sur ceux-là. Entre deux de ses écrans il ne s'éteint jamais : il reste là et la page le transforme
+       (elle lit `data-i` sur l'hôte). C'est la continuité : un objet ne disparaît pas pour réapparaître. */
+    function objets(){ hote.querySelectorAll('.dc-o').forEach(n => {
+      const ou = (n.dataset.o || '').trim().split(/\s+/);
+      n.classList.toggle('is-on', ou.includes(String(i))); }); }
+    /* LA LIGNE FRAPPÉE (`.dc-tw`) : l'écran qui arrive écrit sa phrase à la machine, UNE fois. Revenir en arrière ne la
+       réécrit pas (on la lit, on ne l'attend pas) ; rouvrir le Discover depuis le premier écran, si (`remettre`). */
+    function frapper(){
+      const e = ecrans[i], n = e && e.querySelector('.dc-tw');
+      if(!n || n.dataset.frappe) return;
+      const txt = n.dataset.txt || (n.dataset.txt = n.textContent.trim());
+      n.dataset.frappe = '1';
+      if(RM.matches){ n.textContent = txt; return; }
+      n.textContent = ''; n.classList.add('is-frappe');
+      (function pas(k){ if(!n.isConnected) return; n.textContent = txt.slice(0, k);
+        if(k < txt.length) setTimeout(() => pas(k + 1), 21 + Math.random() * 17); else n.classList.remove('is-frappe'); })(1);
+    }
+    function remettre(){ hote.querySelectorAll('.dc-tw').forEach(n => { delete n.dataset.frappe;
+      if(n.dataset.txt) n.textContent = n.dataset.txt; }); }
     function peindre(instant){
       ecrans.forEach((e, k) => { const on = k === i; e.classList.toggle('is-on', on); e.classList.toggle('is-avant', k < i); e.setAttribute('aria-hidden', String(!on));
         if(instant) e.style.transition = 'none'; else e.style.removeProperty('transition'); });
@@ -895,12 +948,14 @@ window.TOTEHM_DISCOVER = (() => {
       rail.querySelectorAll('span').forEach((s, k) => s.classList.toggle('on', k === i));
       hote.classList.toggle('is-last', i >= ecrans.length - 1);
       hote.dataset.i = i; hote.dataset.n = ecrans.length;
+      objets(); frapper();
       ajuster();
       if(o.surChangement) o.surChangement(i, ecrans.length);
     }
     function aller(k, instant){
       k = Math.max(0, Math.min(ecrans.length - 1, k)); if(k === i && !instant) return false;
       if(verrou && !instant) return false;
+      if(k === 0 && instant) remettre();
       i = k; peindre(instant || RM.matches);
       if(!instant && !RM.matches){ verrou = setTimeout(() => { verrou = 0; }, VERROU); }
       return true;
