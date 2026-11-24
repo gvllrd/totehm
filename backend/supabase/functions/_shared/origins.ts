@@ -14,13 +14,13 @@ export const SITE_BOUT  = "https://www.higher.boutique";
 /** Le quatrième domaine — le radar et les shorts. 17/09/2026. */
 export const SITE_CLUB  = "https://www.figher.club";
 
-/** Apex + www pour chacun des quatre domaines, plus le dev local. */
+/** Apex + www pour chacun des quatre domaines. Aucune machine locale : la
+ *  production ne sert pas une machine de dev (24/11). */
 export const ALLOWED_ORIGINS: readonly string[] = [
   SITE_COM,   "https://totehm.com",
   SITE_SPACE, "https://totehm.space",
   SITE_BOUT,  "https://higher.boutique",
   SITE_CLUB,  "https://figher.club",
-  "http://localhost:3000",
 ];
 
 /**
@@ -41,7 +41,6 @@ export const CIBLES: Record<string, readonly string[]> = {
 export function origineDe(cible: string, origin: string | null): boolean {
   const l = CIBLES[cible];
   if (!l) return false;
-  if (origin === "http://localhost:3000") return true;
   return !!origin && l.includes(origin);
 }
 
