@@ -1,3 +1,5 @@
+export const OPPOSITE_FRAME=Object.freeze({height:3.36,ratio:200/356,border:.05,color:0x14141c});
+
 // The six New York works share one order across the wall, accessible list and Discover.
 export const OPPOSITES = [
  {id:'totehm',title:'TOTEHM vs Tommy Hilfiger',image:'/assets/totehmvstommy.png',action:'Create my TOTEHM',href:'https://www.totehm.com/totehm',slides:[

@@ -29,7 +29,6 @@ export function createLiberty(scene,{mobile=false,onChange=()=>{},submerged=true
 
  // Precise center of the gilded torch flame from HAER NY-138 photogrammetry scan
  const TORCH_POS=new T.Vector3(-3.693,43.988,6.361);
- const waterY=(stillOceanHeight(x,z)-LIBERTY_LOCATION.y)/(localUp.y*LIBERTY_LOCATION.scale);
 
  // 1. Powerful warm amber beacon light at the gilded torch flame tip
  const torchLight=new T.PointLight(0xffaa38,5400,340,2);
@@ -66,151 +65,12 @@ export function createLiberty(scene,{mobile=false,onChange=()=>{},submerged=true
  moonFill.position.set(6,28,16);
  root.add(moonFill);
 
- // 4. Upward ocean-bounce fill from churning sea foam beneath the waterline
+ // 4. Reflected light from the ocean across the lower drapery
  const seaFill=new T.PointLight(0x247568,3200,160,2);
  seaFill.position.set(0,9,10);
  root.add(seaFill);
 
- // 5. Crashing wave foam skirt ("claqué par les vagues") around the submerged body
- const foamUniforms={uTime:{value:0}};
- const foamVertexShader=`
-  uniform float uTime;
-  attribute float aPhase;
-  attribute float aRadial;
-  varying vec2 vUv;
-  varying float vWave;
-  varying float vSurge;
-  void main(){
-   vUv=uv;
-   float phase=uTime*0.73+aPhase;
-   float wave=sin(phase)*2.2+sin(phase*2.1+0.8)*0.9;
-   float surge=max(0.0,sin(phase+0.42));
-   vec3 p=position;
-   p.y+=wave*aRadial+surge*2.4;
-   p.x+=cos(phase)*0.8*aRadial;
-   p.z+=sin(phase)*0.8*aRadial;
-   vWave=wave;
-   vSurge=surge;
-   gl_Position=projectionMatrix*modelViewMatrix*vec4(p,1.0);
-  }
- `;
- const foamFragmentShader=`
-  uniform float uTime;
-  varying vec2 vUv;
-  varying float vWave;
-  varying float vSurge;
-  void main(){
-   float dist=length(vUv-0.5)*2.0;
-   float lace=sin(vUv.x*48.0+uTime*1.8)*cos(vUv.y*36.0-uTime*1.4);
-   float froth=0.5+0.5*lace;
-   float edge=smoothstep(0.15,0.45,dist)*(1.0-smoothstep(0.75,0.98,dist));
-   float alpha=edge*(0.40+0.50*vSurge+0.20*froth);
-   vec3 deepWater=vec3(0.05,0.22,0.28);
-   vec3 whitecap=vec3(0.88,0.94,0.98);
-   vec3 col=mix(deepWater,whitecap,froth*0.65+vSurge*0.35);
-   col+=vec3(0.12,0.08,0.03)*max(0.0,vSurge); // warm torch glint on crest
-   if(alpha<0.01)discard;
-   gl_FragColor=vec4(col,alpha*0.88);
-  }
- `;
- const foamMat=new T.ShaderMaterial({
-  uniforms:foamUniforms,
-  vertexShader:foamVertexShader,
-  fragmentShader:foamFragmentShader,
-  transparent:true,
-  side:T.DoubleSide,
-  depthWrite:false
- });
- materials.add(foamMat);
-
- const foamRings=mobile?4:6,foamSlices=mobile?32:48;
- const foamGeo=new T.RingGeometry(5.2,22,foamSlices,foamRings);
- foamGeo.rotateX(-Math.PI/2);
- const fPos=foamGeo.attributes.position;
- const fCount=fPos.count;
- const fPhase=new Float32Array(fCount),fRadial=new Float32Array(fCount);
- for(let i=0;i<fCount;i++){
-  const px=fPos.getX(i),pz=fPos.getZ(i);
-  const r=Math.hypot(px,pz);
-  const ang=Math.atan2(pz,px);
-  fPhase[i]=ang*2.0+r*0.18;
-  fRadial[i]=Math.min(1.0,(r-5.2)/12.0);
- }
- foamGeo.setAttribute('aPhase',new T.BufferAttribute(fPhase,1));
- foamGeo.setAttribute('aRadial',new T.BufferAttribute(fRadial,1));
- geometries.add(foamGeo);
- const foamMesh=new T.Mesh(foamGeo,foamMat);
- foamMesh.name='Crashing ocean wave foam skirt';
- foamMesh.position.set(0,waterY,1.2);
- root.add(foamMesh);
-
- // 6. Wave impact spindrift & sea spray particles bursting against the drapery
- const sprayCount=mobile?240:520;
- const sprayPositions=new Float32Array(sprayCount*3);
- const sprayLife=new Float32Array(sprayCount);
- const spraySpeed=new Float32Array(sprayCount);
- const sprayDir=new Float32Array(sprayCount*3);
- for(let i=0;i<sprayCount;i++){
-  const ang=Math.PI*0.2+(Math.random()-0.5)*Math.PI*1.4;
-  const rad=5.5+Math.random()*4.5;
-  sprayPositions[i*3]=Math.cos(ang)*rad;
-  sprayPositions[i*3+1]=7.5+Math.random()*3.5;
-  sprayPositions[i*3+2]=Math.sin(ang)*rad+1.2;
-  sprayLife[i]=Math.random();
-  spraySpeed[i]=0.8+Math.random()*1.2;
-  sprayDir[i*3]=(Math.random()-0.5)*0.8+0.4;
-  sprayDir[i*3+1]=1.2+Math.random()*1.8;
-  sprayDir[i*3+2]=(Math.random()-0.5)*0.8+0.5;
- }
- const sprayGeo=new T.BufferGeometry();
- sprayGeo.setAttribute('position',new T.BufferAttribute(sprayPositions,3));
- sprayGeo.setAttribute('aLife',new T.BufferAttribute(sprayLife,1));
- sprayGeo.setAttribute('aSpeed',new T.BufferAttribute(spraySpeed,1));
- sprayGeo.setAttribute('aDirection',new T.BufferAttribute(sprayDir,3));
- geometries.add(sprayGeo);
-
- const sprayUniforms={uTime:{value:0}};
- const sprayMat=new T.ShaderMaterial({
-  uniforms:sprayUniforms,
-  transparent:true,
-  depthWrite:false,
-  blending:T.NormalBlending,
-  vertexShader:`
-   uniform float uTime;
-   attribute float aLife;
-   attribute float aSpeed;
-   attribute vec3 aDirection;
-   varying float vAlpha;
-   void main(){
-    float t=fract(aLife+uTime*0.32);
-    vec3 p=position+aDirection*(t*aSpeed*9.5);
-    p.y+=sin(t*3.14159)*9.0-t*t*6.0; // arching ballistic trajectory
-    p.x+=t*2.8; // windblown drift
-    p.z+=t*4.2;
-    vAlpha=sin(t*3.14159)*pow(1.0-t,0.65);
-    vec4 mv=modelViewMatrix*vec4(p,1.0);
-    gl_PointSize=clamp(240.0/-mv.z,2.0,36.0);
-    gl_Position=projectionMatrix*mv;
-   }
-  `,
-  fragmentShader:`
-   varying float vAlpha;
-   void main(){
-    vec2 p=gl_PointCoord-0.5;
-    float distSq=dot(p,p);
-    if(distSq>0.25)discard;
-    float soft=exp(-distSq*9.0);
-    gl_FragColor=vec4(0.86,0.92,0.96,vAlpha*soft*0.75);
-   }
-  `
- });
- materials.add(sprayMat);
- const sprayParticles=new T.Points(sprayGeo,sprayMat);
- sprayParticles.name='Windblown sea spray from breaking wave crests';
- sprayParticles.position.y=waterY-8.2;
- root.add(sprayParticles);
-
- // 7. Load authentic photogrammetric 3D scan GLB
+ // 5. Load the original photogrammetric scan
  const assetPath=mobile?'/assets/liberty/liberty_statue_l1.glb':'/assets/liberty/liberty_statue_l0.glb';
 
  if(globalThis.document){
@@ -274,8 +134,6 @@ export function createLiberty(scene,{mobile=false,onChange=()=>{},submerged=true
      const coronaScale=13+Math.sin(time*3.4)*1.6+Math.cos(time*6.8)*0.8;
      coronaMesh.scale.set(coronaScale,coronaScale,1);
     }
-    foamUniforms.uTime.value=time;
-    sprayUniforms.uTime.value=time;
     dirty=true;
    }
    const was=dirty;dirty=false;return was;
@@ -297,8 +155,8 @@ export function createLiberty(scene,{mobile=false,onChange=()=>{},submerged=true
    gildedTorch:true,
    beaconIntensity:+torchLight.intensity.toFixed(1),
    copperPatina:true,
-   crashingWaveFoam:true,
-   seaSprayParticles:sprayCount,
+   crashingWaveFoam:false,
+   seaSprayParticles:0,
    triangles,
    time:+time.toFixed(3),
    disposed

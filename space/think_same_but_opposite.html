@@ -66,13 +66,19 @@ header a,.hero-discover,.front-hint{color:#bbb}
 .front-hit:focus-visible{outline:1px solid #888;outline-offset:2px}
 .front-hint,.hero-discover,.hint{position:absolute;left:50%;bottom:max(24px,env(safe-area-inset-bottom));transform:translateX(-50%);margin:0;text-align:center;font-size:10px;letter-spacing:.1em}
 .front-hint,.hint{pointer-events:none}
-#artwork-hero-image{display:block;width:auto;height:min(74dvh,calc(86vw * 1.78));max-width:86vw}
+/* Both HTML views use the same frame proportions as the suspended works. */
+.artwork-frame{margin:0;display:grid;place-items:center;width:calc(var(--artwork-height) * var(--artwork-ratio));height:var(--artwork-height);background:var(--artwork-frame-color)}
+.artwork-frame img{display:block;width:var(--artwork-image-width);height:auto}
+#artwork-hero-frame{--artwork-height:min(74dvh,calc(86vw / var(--artwork-ratio)));transform-origin:top left}
+#discover-artwork-frame{--artwork-height:min(19dvh,164px)}
+.is-artwork-transition #artwork-hero{background:transparent;pointer-events:none}
+.is-artwork-transition #artwork-discover,.is-artwork-transition #discover-artwork-frame{visibility:hidden}
+
 .hero-discover{min-height:44px;background:none;border:0;padding:6px 14px;display:grid;justify-items:center;gap:3px;white-space:nowrap}
 .hero-discover svg,.hint svg{width:24px;height:24px;animation:hint-bob 1.6s ease-in-out infinite}
 @keyframes hint-bob{0%,100%{transform:none;opacity:.4}50%{transform:translateY(5px);opacity:1}}
-body.is-entering #artwork-hero{pointer-events:none}
-#discover-stage{padding:64px 24px 100px;outline:none;touch-action:none}
-.story{width:min(100%,680px);text-align:center}
+#discover-stage{padding:64px 24px 150px;outline:none;touch-action:none}
+.story{width:min(100%,680px);display:grid;justify-items:center;gap:clamp(12px,2.6dvh,26px);text-align:center}
 #slide{display:flex;flex-direction:column;gap:18px;opacity:0;transform:translateY(14px);transition:opacity .5s ease,transform .5s ease}
 #slide.show{opacity:1;transform:none}
 #slide p{margin:0;white-space:pre-line;font:400 clamp(16px,2vw,23px)/1.6 'Space Mono',monospace;color:#fff}
@@ -94,6 +100,7 @@ body.is-last .hint{display:none}
  #slide p{font-size:clamp(15px,4vw,17px);line-height:1.5}
  #slide.is-first p{font-size:clamp(26px,8vw,35px)}
 }
+@media(max-height:690px){#discover-stage{padding:51px 20px 119px}#discover-artwork-frame{height:min(15dvh,110px)}.actions{bottom:70px}.rail{bottom:46px}}
 @media(prefers-reduced-motion:reduce){#slide{transition:none}.hero-discover svg,.hint svg{animation:none}}
 </style>
 </head>
@@ -101,11 +108,12 @@ body.is-last .hint{display:none}
 <header><a href="/new-york" id="close" data-experience-close>BACK</a></header>
 <section id="experience-front" aria-label="Think same but opposite — six original artworks" hidden><div id="experience-front-stage"></div><p class="front-hint">Choose an artwork</p></section>
 <section id="artwork-hero" aria-label="Original artwork" hidden>
- <img id="artwork-hero-image" width="200" height="356" alt="">
+ <figure id="artwork-hero-frame" class="artwork-frame"><img id="artwork-hero-image" width="200" height="356" alt=""></figure>
  <button class="hero-discover" id="artwork-discover" type="button">Discover<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
 </section>
 <main id="discover-stage" tabindex="-1" hidden>
  <section class="story" aria-label="Discover the artwork">
+  <figure id="discover-artwork-frame" class="artwork-frame" aria-hidden="true"><img id="discover-artwork-image" width="200" height="356" alt=""></figure>
   <div id="slide" role="status" aria-live="polite"></div>
   <div class="rail" id="rail" aria-hidden="true"></div>
   <div class="actions"><a id="action" hidden></a><a id="next-work" hidden>Next artwork →</a></div>
@@ -113,7 +121,7 @@ body.is-last .hint{display:none}
  </section>
 </main>
 <script type="module">
-import {OPPOSITES,oppositeById} from './gallery-opposites.mjs';
+import {OPPOSITES,oppositeById,OPPOSITE_FRAME} from './gallery-opposites.mjs';
 import {createOppositesFront} from './opposites-front.mjs';
 
 const $=id=>document.getElementById(id);
@@ -122,6 +130,12 @@ const reduced=matchMedia('(prefers-reduced-motion:reduce)');
 const embedded=window.parent!==window&&params.get('embedded')==='1';
 const frontStage=$('experience-front'),hero=$('artwork-hero'),heroImage=$('artwork-hero-image');
 const discover=$('discover-stage'),back=$('close'),slide=$('slide');
+const heroFrame=$('artwork-hero-frame'),discoverFrame=$('discover-artwork-frame');
+const {height,ratio,border,color}=OPPOSITE_FRAME,imageWidth=height*ratio,frameWidth=imageWidth+2*border;
+const style=document.documentElement.style;
+style.setProperty('--artwork-ratio',String(frameWidth/(height+2*border)));
+style.setProperty('--artwork-image-width',100*imageWidth/frameWidth+'%');
+style.setProperty('--artwork-frame-color','#'+color.toString(16).padStart(6,'0'));
 const selected=oppositeById(params.get('work')),dots=[];
 let work=selected||OPPOSITES[0],phase='',front=null,frontFrozen=embedded,raf=0,last=0;
 let step=0,slideTimer=0,locked=false,touchY=null,fromFront=false,entrance=null;
@@ -154,17 +168,19 @@ function makeFront(){
 function setPhase(value){
  phase=value;
  frontStage.hidden=phase!=='front';
- hero.hidden=!['artwork','entering'].includes(phase);hero.inert=phase==='entering';
- discover.hidden=!['discover','entering'].includes(phase);discover.inert=phase==='entering';
- document.body.classList.toggle('is-entering',phase==='entering');
+ const moving=phase==='entering'||phase==='returning';
+ hero.hidden=phase!=='artwork'&&!moving;hero.inert=moving;
+ discover.hidden=phase!=='discover'&&!moving;discover.inert=moving;
+ document.body.classList.toggle('is-artwork-transition',moving);
  back.toggleAttribute('data-experience-close',phase==='front'||(phase==='artwork'&&!fromFront));
- back.setAttribute('aria-label',phase==='discover'||phase==='entering'?'Back to artwork':phase==='artwork'&&fromFront?'Back to all six artworks':'Back to New York');
+ back.setAttribute('aria-label',phase==='discover'||moving?'Back to artwork':phase==='artwork'&&fromFront?'Back to all six artworks':'Back to New York');
  resume();
 }
 function configure(item){
  clearTimeout(slideTimer);locked=false;step=0;work=item;
  document.title=work.title+' — Think same but opposite · TOTEHM.SPACE';
  heroImage.src=work.image;heroImage.alt=work.title;
+ $('discover-artwork-image').src=work.image;
  $('action').href=work.href;brandedText($('action'),work.action+' ↗');
  const following=OPPOSITES[(OPPOSITES.indexOf(work)+1)%OPPOSITES.length];
  $('next-work').href='/think_same_but_opposite?work='+following.id;
@@ -200,24 +216,34 @@ function showFront(){
  makeFront();front.setHighlight('');setPhase('front');
  frontStage.querySelectorAll('.front-hit')[OPPOSITES.indexOf(work)]?.focus({preventScroll:true});
 }
-function enterDiscover(){
- if(phase!=='artwork')return false;
- setPhase('entering');
- const finish=()=>{
-  if(phase!=='entering')return;
-  entrance=null;setPhase('discover');discover.focus({preventScroll:true});
- };
- if(reduced.matches)finish();
- else{
-  entrance=hero.animate([{opacity:1},{opacity:0}],{duration:520,easing:'ease',fill:'forwards'});
-  entrance.finished.then(()=>{entrance?.cancel();finish();},()=>{});
- }
+function finishArtworkMove(){
+ const toDiscover=phase==='entering';
+ entrance?.frame.cancel();entrance?.text.cancel();entrance=null;
+ if(toDiscover){setPhase('discover');discover.focus({preventScroll:true});}
+ else{show(0,true);setPhase('artwork');$('artwork-discover').focus({preventScroll:true});}
+}
+function moveArtwork(toDiscover){
+ if(phase==='returning')return false;
+ const reverse=phase==='entering'&&entrance;
+ setPhase(toDiscover?'entering':'returning');
+ if(reduced.matches){finishArtworkMove();return true;}
+ if(reverse){entrance.frame.reverse();entrance.text.reverse();return true;}
+ const large=heroFrame.getBoundingClientRect(),small=discoverFrame.getBoundingClientRect();
+ const shifted={transform:`translate(${small.left-large.left}px,${small.top-large.top}px) scale(${small.width/large.width})`};
+ const options={duration:540,easing:'ease-in-out',fill:'both',direction:toDiscover?'normal':'reverse'};
+ const frame=heroFrame.animate([{transform:'none'},shifted],options);
+ const text=slide.animate([{opacity:0,offset:0},{opacity:0,offset:.3},{opacity:1,offset:1}],options);
+ entrance={frame,text};
+ frame.onfinish=finishArtworkMove;
  return true;
 }
+function enterDiscover(){
+ return phase==='artwork'&&moveArtwork(true);
+}
 function returnToArtwork(){
- entrance?.cancel();entrance=null;clearTimeout(slideTimer);locked=false;
- show(0,true);setPhase('artwork');$('artwork-discover').focus({preventScroll:true});
- return true;
+ if(phase!=='entering'&&phase!=='discover')return false;
+ clearTimeout(slideTimer);locked=false;
+ return moveArtwork(false);
 }
 function previous(){
  if(phase==='entering'||phase==='discover'&&step===0)return returnToArtwork();
@@ -240,7 +266,8 @@ function resume(){
  if(!document.hidden&&phase==='front'&&!frontFrozen&&!reduced.matches)raf=requestAnimationFrame(frame);
 }
 document.addEventListener('visibilitychange',resume);
-reduced.addEventListener('change',resume);
+reduced.addEventListener('change',()=>{if(reduced.matches&&entrance)finishArtworkMove();resume();});
+addEventListener('resize',()=>{if(entrance)finishArtworkMove();});
 addEventListener('pageshow',resume);
 addEventListener('pagehide',()=>{if(raf)cancelAnimationFrame(raf);raf=0;});
 addEventListener('totehm:experience-enter',()=>{
@@ -249,7 +276,7 @@ addEventListener('totehm:experience-enter',()=>{
 });
 $('artwork-discover').addEventListener('click',enterDiscover);
 back.addEventListener('click',event=>{
- if(phase==='entering'||phase==='discover'){
+ if(phase==='entering'||phase==='discover'||phase==='returning'){
   event.preventDefault();returnToArtwork();
  }else if(phase==='artwork'&&fromFront){event.preventDefault();showFront();}
 });
