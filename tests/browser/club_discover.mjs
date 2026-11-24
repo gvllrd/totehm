@@ -17,7 +17,7 @@ try{
   if(!session){
     ok(r0.r.points===2&&/2 spots in the club · connect with my TOTEHM/.test(r0.say)&&!log.rpc.some(x=>x.name==='club_spots'),
        nom+' · la vitrine : les spots du Club sur le radar, sans compte et sans lecture des spots → '+JSON.stringify({points:r0.r.points,say:r0.say}));
-    await pg.mouse.click(r0.r.cx,r0.r.cy);await pg.waitForTimeout(700);
+    await pg.mouse.click(r0.r.p0[0],r0.r.p0[1]);await pg.waitForTimeout(700);
     ok((await E(pg)).ouvert,nom+' · le tap sur un point ouvre le Discover (la porte : Connect with my TOTEHM)');
     await pg.keyboard.press('Escape');await pg.waitForTimeout(600);
   } else ok(!log.rpc.some(x=>x.name==='club_vitrine'),nom+' · un membre ne lit jamais la vitrine');
