@@ -3567,8 +3567,8 @@ body.lv-b #gate-logo #gl-rail,body.lv-b #gate-logo #gl-wm{opacity:0}
 /* 21/10 bis — Wah : « les images de la grille de gauche au format PERFORÉ, avec le même nombre de trous, à la même place
    que le logo TOTEHM ». La PHOTO porte les douze trous du papier (`--perfo`, le masque du logo, 28/09) ; la box posée dessus n'est jamais
    découpée (elle est sacrée), et la tuile « + » reste une place vide en pointillé. */
-#lv-sh .tl:not(.tl-add),#lvd .dc-grid .tl:not(.tl-add){background:none}
-#lv-sh .tl:not(.tl-add) .tl-ph,#lvd .dc-grid .tl:not(.tl-add) .tl-ph{background:#0b0b0d;-webkit-mask:var(--perfo) 0 0/100% 100% no-repeat;mask:var(--perfo) 0 0/100% 100% no-repeat}
+#lv-sh .tl:not(.tl-add){background:none}
+#lv-sh .tl:not(.tl-add) .tl-ph{background:#0b0b0d;-webkit-mask:var(--perfo) 0 0/100% 100% no-repeat;mask:var(--perfo) 0 0/100% 100% no-repeat}
 .tl-ph img,.tl-ph video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
   object-position:var(--fx,50%) var(--fy,50%);display:block;opacity:0;transition:opacity .35s ease}
 .tl-ph img[src],.tl-ph video[src]{opacity:1}
@@ -4151,9 +4151,6 @@ body.lv-d.rdr-voir #gate-asteroid,body.lv-d.rdr-voir #lvjoy,body.rdr-voir #rdr-f
    Ici, seulement ce que CES illustrations contiennent. */
 #lvd .dc-ill .tb{width:100%}
 #lvd .dc-radar{display:block;width:var(--dc-ill-h);height:auto;aspect-ratio:1}
-/* « Visualize it » : la GRILLE DE GAUCHE (mes médias) — tuiles perforées, la box posée sur l'image, la tuile « + » */
-#lvd .dc-grid.tlg{width:100%;margin:0;padding:0;grid-template-columns:repeat(3,minmax(0,1fr));gap:3px}
-#lvd .dc-grid .tl{cursor:default}
 /* « One paper » : le bloc de commande du filtre de la vue de gauche (`.sfcmd`, `creerFeed`) tel quel, MY GRIND ouvert sur
    ses trois listes — le panneau `.lsh-sf` qui le porte est neutralisé, ses règles de papier restent les siennes. */
 #lvd .lsh-sf.dc-sf{position:relative;inset:auto;z-index:auto;width:100%;padding:0;background:none;overflow:visible}
@@ -4161,27 +4158,45 @@ body.lv-d.rdr-voir #gate-asteroid,body.lv-d.rdr-voir #lvjoy,body.rdr-voir #rdr-f
 #lvd .dc-sf .sfcmd{--q:min(104px,27vw)}
 #lvd .dc-sf *{pointer-events:none!important;cursor:default}
 /* ══ LE RÉCIT : CE QUE L'OBJET DEVIENT · 24/11/2026 ══════════════════════
-   Six états d'UN objet, lus sur l'hôte (`#lvd[data-i]`, posé par le moteur). Chaque couche garde sa place et se
-   TRANSFORME vers la suivante — jamais un fondu sec d'une image à l'autre :
-     0 → 1  la pièce s'ouvre : les classes natives du sélecteur (`is-logo` → `is-melt` → `is-split` → `is-grind`), pilotées par `conter()`
-     1 → 2  le papier fait un demi-tour sur lui-même : son VERSO porte la recherche et son unique résultat
-     2 → 3  il rétrécit jusqu'à la première tuile de la grille, qui s'ouvre à sa place
-     3 → 4  la grille se replie sur le DOS du vêtement, où la même image perforée s'imprime
-     4 → 5  le vêtement rentre dans le radar et devient le carré plein d'un spot
-   Rien n'est coloré ici : les couleurs sont celles des éléments natifs (les box, le navy du papier, le badge). */
+   Wah : « dès que l'utilisateur scrolle, il passe dans la slide 0 discover, QUI EST LA PAGE D'ATTERRISSAGE QUI SE
+   SIMPLIFIE ». L'écran 0 ne dessine donc rien de neuf : la pièce y est posée à la place EXACTE et à la taille exacte
+   de celle de l'atterrissage (`caler()` mesure `#gate-asteroid` et pose `--lvh-dx/dy/k`), et la question prend la
+   place de la légende (`--lvh-qy`). On ne voit aucune coupure : la page se dépouille, c'est tout.
+   Ensuite UN SEUL objet se transforme, écran par écran (`#lvd[data-i]`) :
+     0 → 1  la pièce S'OUVRE en cinq vues (classes natives du `.sfcmd`, `conter()`), avec plus d'air entre elles
+     1 → 2  elle se REFERME en repassant par le mot GRIND, redevient le TOTEHM, PUIS se retourne sur son verso :
+            on comprend qu'on va chercher la stratégie de QUELQU'UN D'AUTRE (`is-verso`, posé après le repli)
+     2 → 3  le verso revient en RECTO et la vidéo de la méthode se calque dessus, dans la forme perforée du papier
+     3 → 4  le vrai vêtement (nos photos de `totehm-cloth-support`) : le badge brodé devant, l'illustration au dos
+     4 → 5  il devient un point du radar — le VRAI radar du Club, avec ses spots lumineux
+   Rien n'est coloré ici : seules les couleurs natives (box, navy du papier, badge, intentions des spots). */
 #lvd .lvh{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;
   transition:opacity .55s ease,transform .75s cubic-bezier(.22,.61,.36,1)}
-/* le papier : recto (le sélecteur des cinq vues) et verso (la recherche) sur le MÊME nœud qui tourne */
+/* LA QUESTION, à la place exacte de la légende de l'atterrissage */
+#lvd .lvq{position:absolute;left:0;right:0;top:var(--lvh-qy,62%);margin:0;padding:0 26px;text-align:center;
+  font:400 clamp(17px,2.7vw,25px)/1.3 Quantico,sans-serif;color:#fff;opacity:0;transition:opacity .6s ease}
+#lvd[data-i="0"] .lvq{opacity:1}
+/* LE PAPIER : recto (les cinq vues, puis la vidéo) et verso (la recherche) sur le MÊME nœud qui tourne */
 #lvd .lvh-pp{transform-style:preserve-3d}
 #lvd .lvh-f,#lvd .lvh-b{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
   backface-visibility:hidden;-webkit-backface-visibility:hidden}
 #lvd .lvh-b{transform:rotateY(180deg)}
+#lvd[data-i="0"] .lvh-pp,#lvd[data-i="1"] .lvh-pp,#lvd[data-i="2"] .lvh-pp,#lvd[data-i="3"] .lvh-pp{opacity:1}
+/* l'écran 0 EST l'atterrissage : la pièce ne bouge pas d'un pixel quand le Discover s'ouvre */
+#lvd[data-i="0"] .lvh-pp{transform:translate(var(--lvh-dx,0px),var(--lvh-dy,0px)) scale(var(--lvh-k,1))}
+#lvd .lvh-pp.is-verso{transform:rotateY(180deg)}
+/* 24/11 (Wah) : « un peu plus d'espacement entre les vues ». Le repli des deux papiers suit le même écart. */
+#lvd .dc-sf .sfcmd{--q:min(96px,25vw);--sfg:11px;gap:var(--sfg)}
+#lvd .dc-sf .sfcmd.is-logo .sfv-s{transform:translateX(calc(100% + var(--sfg)))}
+#lvd .dc-sf .sfcmd.is-logo .sfv-v{transform:translateX(calc(-100% - var(--sfg)))}
+/* LA VIDÉO DE LA MÉTHODE, calquée sur le papier : elle prend sa forme perforée et ne joue que sur son écran */
+#lvd .lvh-vid{position:absolute;inset:0;z-index:2;opacity:0;transition:opacity .6s ease;pointer-events:none;
+  -webkit-mask:var(--perfo) 0 0/100% 100% no-repeat;mask:var(--perfo) 0 0/100% 100% no-repeat}
+#lvd .lvh-vid video{display:block;width:100%;height:100%;object-fit:cover}
+#lvd[data-i="3"] .lvh-vid.is-pret{opacity:1}
+/* LE VERSO : le nom se frappe, PUIS son unique résultat au prix du serveur (format de [Monetize my TOTEHM]) */
 #lvd .lvh-pap{display:flex;flex-direction:column;justify-content:center;gap:11px;width:min(100%,256px);height:100%;
   padding:16px 18px;background:var(--perfo) 0 0/100% 100% no-repeat}
-#lvd[data-i="0"] .lvh-pp,#lvd[data-i="1"] .lvh-pp{opacity:1}
-#lvd[data-i="2"] .lvh-pp{opacity:1;transform:rotateY(180deg)}
-#lvd[data-i="3"] .lvh-pp{opacity:0;transform:rotateY(180deg) scale(.3) translateX(34%)}
-/* le verso : le nom se frappe, PUIS son unique résultat au prix du serveur (format de [Monetize my TOTEHM]) */
 #lvd .lvh-q{width:100%;padding-bottom:7px;border-bottom:1px solid rgba(255,255,255,.38);text-align:center;
   font:400 20px/1.2 Quantico,sans-serif;color:#fff;min-height:1.2em}
 #lvd .lvh-q i{font-style:normal}
@@ -4191,24 +4206,18 @@ body.lv-d.rdr-voir #gate-asteroid,body.lv-d.rdr-voir #lvjoy,body.rdr-voir #rdr-f
 #lvd .lvh-b.is-res .lvh-r{opacity:1}
 #lvd .lvh-pr{font:400 19px/1 Quantico,sans-serif;color:#fff;white-space:nowrap}
 #lvd .lvh-pr small{font:400 9px/1 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#888}
-/* la grille de mes médias : les tuiles perforées, une box posée sur chacune (la grille de gauche, telle quelle) */
-#lvd .lvh-gr .tlg{width:min(100%,318px);margin:0}
-#lvd[data-i="2"] .lvh-gr{opacity:0;transform:scale(.3) translateX(-34%)}
-#lvd[data-i="3"] .lvh-gr{opacity:1}
-#lvd[data-i="4"] .lvh-gr{opacity:0;transform:scale(.4) translate(44%,22%)}
-/* le vêtement : la face porte le badge brodé, le dos l'illustration perforée et le nom du cloth */
-#lvd .lvh-cl{gap:16px}
-#lvd .lvh-g{position:relative;width:min(40%,124px);flex:none}
-#lvd .lvh-sh{display:block;width:100%;height:auto}
-#lvd .lvh-emb{position:absolute;left:50%;top:43%;width:34%;height:auto;aspect-ratio:3;transform:translateX(-50%)}
-#lvd .lvh-prt{position:absolute;left:50%;top:40%;width:34%;aspect-ratio:1;transform:translateX(-50%);overflow:hidden;
+/* LE VÊTEMENT : nos VRAIES photos (`totehm-cloth-support`), badge brodé devant, illustration perforée au dos */
+#lvd .lvh-cl{gap:10px}
+#lvd .lvh-g{position:relative;width:min(44%,138px);flex:none;aspect-ratio:1;border-radius:10px;background:#141418}
+#lvd .lvh-g img.lvh-ph{display:block;width:100%;height:100%;object-fit:contain}
+#lvd .lvh-prt{position:absolute;left:50%;top:40%;width:30%;aspect-ratio:1;transform:translateX(-50%);overflow:hidden;
   -webkit-mask:var(--perfo) 0 0/100% 100% no-repeat;mask:var(--perfo) 0 0/100% 100% no-repeat}
 #lvd .lvh-prt img{display:block;width:100%;height:100%;object-fit:cover}
-#lvd .lvh-nm{position:absolute;left:0;right:0;top:70%;text-align:center;font:400 9px/1 Quantico,sans-serif;color:#fff}
+#lvd .lvh-nm{position:absolute;left:0;right:0;top:63%;text-align:center;font:400 9px/1 Quantico,sans-serif;color:#fff}
 #lvd[data-i="3"] .lvh-cl{opacity:0;transform:scale(1.3)}
 #lvd[data-i="4"] .lvh-cl{opacity:1}
 #lvd[data-i="5"] .lvh-cl{opacity:0;transform:scale(.07) translate(150%,95%)}
-/* le radar du Club : le point exact où le spot a lieu */
+/* LE RADAR DU CLUB : le vrai, avec ses spots */
 #lvd[data-i="4"] .lvh-rd{opacity:0;transform:scale(1.7)}
 #lvd[data-i="5"] .lvh-rd{opacity:1}
 @media(prefers-reduced-motion:reduce){#lvd .lvh{transition:opacity .2s ease}}
@@ -4841,18 +4850,17 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
        Dessiné une fois à la première ouverture (`HERO`), par les MÊMES fonctions que les cinq vues. -->
   <div class="dc-hero" aria-hidden="true"><div class="dc-o" data-o="0 1 2 3 4 5" id="lvd-o"></div></div>
   <div class="dc-stage">
-    <div class="dc-s"><div class="dc-ill" aria-hidden="true"></div><h2 class="dc-big">Your greatness</h2></div>
-    <div class="dc-s" data-cta="totehm"><div class="dc-ill" aria-hidden="true"></div><h2 class="dc-tw">Have a strategy in mind all the time</h2><p class="dc-p">Built on behavioral science.
+    <div class="dc-s"><div class="dc-ill" aria-hidden="true"></div><p class="lvq">How to reach your greatness in the most efficient way?</p></div>
+    <div class="dc-s" data-cta="totehm"><div class="dc-ill" aria-hidden="true"></div><h2 class="dc-tw">Create the best strategy and have it in mind all the time</h2><p class="dc-p">Built on behavioral science.
 Lay the path to your greatness flat, on one paper. Remember it every day with TotehmBot. Think it through with <svg class="dc-hi" viewBox="0 0 600 200" role="img" aria-label="Higher"><title>Higher</title><use href="#higher-badge"></use></svg> GPT.</p></div>
     <div class="dc-s" data-cta="eco"><div class="dc-ill" aria-hidden="true"></div><h2 class="dc-tw">Take real inspiration and have mentors</h2><p class="dc-p">Subscribe to a member and enter their ecosystem: their whole life strategy, the private media of their mind, the spots they really use — and you can meet them there.
 Your own TOTEHM can be subscribed to too.</p></div>
-    <div class="dc-s" data-cta="gpt"><div class="dc-ill" aria-hidden="true"></div><h2 class="dc-tw">Make it happen in the best possible way</h2><p class="dc-p">Train your brain to put your strategy into practice: illustrate every element of your TOTEHM, keep it in sight, and let <svg class="dc-hi" viewBox="0 0 600 200" role="img" aria-label="Higher"><title>Higher</title><use href="#higher-badge"></use></svg> GPT prepare your next step — with your media, your spots, and real places.</p></div>
+    <div class="dc-s" data-cta="gpt"><div class="dc-ill" aria-hidden="true"></div><h2 class="dc-tw">Make it happen in the best possible way</h2><p class="dc-p">Train your brain to put your strategy into practice: know yourself, keep it in sight, and let <svg class="dc-hi" viewBox="0 0 600 200" role="img" aria-label="Higher"><title>Higher</title><use href="#higher-badge"></use></svg> GPT prepare your next step — with your media, your spots, and real places.</p></div>
     <div class="dc-s" data-cta="cloth"><div class="dc-ill" aria-hidden="true"></div><h2 class="dc-tw">Wear your greatness, not someone else’s</h2><p class="dc-p">Totehmize an element of your TOTEHM: <svg class="dc-hi" viewBox="0 0 600 200" role="img" aria-label="Higher"><title>Higher</title><use href="#higher-badge"></use></svg> embroidered on the front, your own illustration on the back.
 You remember your way, and the street can read what is behind it.</p></div>
     <div class="dc-s" data-cta="club"><div class="dc-ill" aria-hidden="true"></div><h2 class="dc-tw">Grind with the right people, in the right spot, at the right time</h2><p class="dc-p">Members publish intentional spots: one Habit, one exact place, one exact time. Join theirs, or publish yours and let them join you.</p>
       <div class="dc-row"><a class="dc-lnk" href="/terms" target="_blank" rel="noopener">Simple terms of use</a></div></div>
   </div>
-  <p class="dc-lead">Be in touch with</p>
   <div class="dc-cta"><button class="dc-btn" id="lvd-cta" type="button">Create my TOTEHM</button><button class="dc-lnk hide" id="lvd-lnk" type="button">Monetize my TOTEHM</button></div>
   <button class="dc-x" id="lvd-x" type="button" aria-label="Close"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2 L12 12 M12 2 L2 12"/></svg></button>
 </div>
@@ -15241,36 +15249,39 @@ window.addEventListener('pageshow',e=>{
          box dessinées par `boiteHTML` puis rendues inertes), le badge [Higher], le radar du Club. Le vêtement est la
          seule forme dessinée ici : une silhouette nue, qui ne porte que des éléments natifs (le badge brodé, une tuile
          perforée, un nom de cloth). Dessiné une fois, à la première ouverture. */
-      const exBox=(bk,titre,o)=>inerteBox(ligne(boiteHTML(Object.assign({kind:bk,id:'dc-'+bk,titre,ouverte:false},o||{})),'',(o&&o.cols)||[]),bk,{court:!!(o&&o.court)});
       const NOM='kai';
       const BADGE='<svg class="dc-hi" viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-badge"></use></svg>';
       const SILH='<svg class="lvh-sh" viewBox="0 0 120 150" aria-hidden="true"><path d="M48 16h24l26 13 10 33-17 7-5-15v80H34V54l-5 15-17-7 10-33z" fill="#17171b" stroke="#3a3a42" stroke-width="1.4" stroke-linejoin="round"/></svg>';
-      const HERO=()=>{
-        const fi=[intColor('fight')];
-        const T=(n,bk,titre)=>'<article class="tl"><div class="tl-ph"><img alt="" src="/assets/discover/lisbon-'+n+'.webp"></div>'
-          +'<div class="tl-bx">'+exBox(bk,titre,{court:true,cols:fi})+'</div></article>';
-        return '<div class="lvh lvh-pp">'
-            +'<div class="lvh-f"><div class="lsh-sf dc-sf"><div class="sfg"><div class="sfcmd is-logo" id="lvd-sf">'
-              +'<span class="sfv sfv-sq sfv-s blk-w is-on"><span>my wisdom</span></span>'
-              +'<span class="sfv sfv-sq sfv-g is-on" style="--skin:#333366"><span class="sf-lg">'
-                +'<svg class="gl g-rail"><use href="#lg-rail"/></svg><svg class="gl g-t"><use href="#lg-t"/></svg><svg class="gl g-wm"><use href="#lg-wm"/></svg>'
-              +'</span><span class="sf-lab">my grind</span><span class="sfpile">'
-                +'<i data-v="objectives">my objectives</i><i data-v="habits">my habits</i><i data-v="repulsions">my repulsions</i>'
-              +'</span></span>'
-              +'<span class="sfv sfv-sq sfv-v blk-v is-on"><span>my vision</span></span>'
-            +'</div></div></div></div>'
-            +'<div class="lvh-b"><span class="lvh-pap"><span class="lvh-q"><i></i></span><span class="lvh-r">'
-              +'<span class="dc-n">'+esc(NOM)+'</span><span class="lvh-pr">€60<small> / year</small></span></span></span></div>'
-          +'</div>'
-          +'<div class="lvh lvh-gr"><div class="tlg dc-grid"><span class="tl tl-add"><span>+</span></span>'
-            +T(1,'h','Run 20 minutes')+T(2,'r','Scrolling in bed')+'</div></div>'
-          +'<div class="lvh lvh-cl">'
-            +'<span class="lvh-g">'+SILH+'<svg class="lvh-emb" viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-badge"></use></svg></span>'
-            +'<span class="lvh-g">'+SILH+'<span class="lvh-prt"><img alt="" src="/assets/discover/lisbon-3.webp"></span>'
-              +'<span class="lvh-nm">'+esc(NOM)+'</span></span>'
-          +'</div>'
-          +'<div class="lvh lvh-rd"><canvas class="dc-radar" width="400" height="400" aria-hidden="true"></canvas></div>';
-      };
+      const HERO=()=>
+        '<div class="lvh lvh-pp">'
+          +'<div class="lvh-f"><div class="lsh-sf dc-sf"><div class="sfg"><div class="sfcmd is-logo" id="lvd-sf">'
+            +'<span class="sfv sfv-sq sfv-s blk-w is-on"><span>my wisdom</span></span>'
+            +'<span class="sfv sfv-sq sfv-g is-on" style="--skin:#333366"><span class="sf-lg">'
+              +'<svg class="gl g-rail"><use href="#lg-rail"/></svg><svg class="gl g-t"><use href="#lg-t"/></svg><svg class="gl g-wm"><use href="#lg-wm"/></svg>'
+            +'</span><span class="sf-lab">my grind</span><span class="sfpile">'
+              +'<i data-v="objectives">my objectives</i><i data-v="habits">my habits</i><i data-v="repulsions">my repulsions</i>'
+            +'</span>'
+            /* la vidéo de la méthode se calque SUR le papier : même carré, même forme perforée */
+            +'<span class="lvh-vid" id="lvd-vid"><video playsinline muted loop preload="none" aria-hidden="true"></video></span>'
+            +'</span>'
+            +'<span class="sfv sfv-sq sfv-v blk-v is-on"><span>my vision</span></span>'
+          +'</div></div></div></div>'
+          +'<div class="lvh-b"><span class="lvh-pap"><span class="lvh-q"><i></i></span><span class="lvh-r">'
+            +'<span class="dc-n">'+esc(NOM)+'</span><span class="lvh-pr">€60<small> / year</small></span></span></span></div>'
+        +'</div>'
+        /* LE VRAI VÊTEMENT : nos photos de `totehm-cloth-support` (le Higher brodé devant), l'illustration au dos */
+        +'<div class="lvh lvh-cl">'
+          +'<span class="lvh-g"><img class="lvh-ph" alt="" width="520" height="520" src="/assets/discover/cloth-front.webp"></span>'
+          +'<span class="lvh-g"><img class="lvh-ph" alt="" width="520" height="520" src="/assets/discover/cloth-back.webp">'
+            +'<span class="lvh-prt"><img alt="" src="/assets/discover/lisbon-3.webp"></span>'
+            +'<span class="lvh-nm">'+esc(NOM)+'</span></span>'
+        +'</div>'
+        +'<div class="lvh lvh-rd"><canvas class="dc-radar" width="400" height="400" aria-hidden="true"></canvas></div>';
+      /* ⚠️ LA VIDÉO DE LA MÉTHODE — une COPIE PUBLIQUE, dans le seau `com`. Le seau `stoner-method` est privé DEPUIS
+         LE 01/08 parce que ses onze films SONT le produit payant (URL signée après `stoner-gate`) : on ne l'ouvre
+         pas pour une page de vente. Tant que la copie n'est pas déposée, l'écran garde le TOTEHM recto et rien ne
+         casse — `is-pret` n'est jamais posée, aucune image cassée. */
+      const VIDEO='https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/public/com/step_0_know_yourself.mp4';
       /* LES PORTES (Wah, 24/11 : « le discover peut faire office de MENU en redirigeant vers d'autres fonctionnalités »).
          Un écran, UNE porte. Sans TOTEHM, toutes mènent à la même : s'inscrire. Avec un TOTEHM, chacune mène à sa
          fonctionnalité. `a` = sans compte, `m` = avec, `aa`/`ma` = le nom lu à voix haute, `url` = un autre domaine. */
@@ -15281,35 +15292,51 @@ window.addEventListener('pageshow',e=>{
         cloth:{a:'Create my TOTEHM Cloth', url:'https://www.higher.boutique/'},
         club:{a:'Integrate figher.club', url:'https://www.figher.club/'}
       };
-      /* ⚠️ 17/11 — LE RADAR DE FIGHER.CLUB (Wah : « intégrer le radar quand on parle du figher club, avec un point précis »).
-         Les MÊMES règles de dessin que `draw()` de club/index.html : le disque en dégradé, quatre anneaux, le balayage
-         (un tour en 14 s), l'anneau gradué N · E · S · W, moi au centre (le point blanc), et UN spot au point EXACT : un
-         carré PLEIN de la couleur de son intention (`melange`), et l'anneau qui pulse parce qu'il est LIVE (I AM HERE).
-         Il ne tourne que quand son écran est visible (`peindre`), à 30 images/s ; mouvement réduit = une image fixe. */
+      /* ⚠️ 24/11 (Wah : « le radar est à reprendre avec le vrai sur figher club ainsi que les spots ») — LE RADAR DU
+         CLUB, règle pour règle (`draw()` de `club/index.html`) : le disque en dégradé, quatre anneaux, les portées
+         écrites, le balayage (un tour en 14 s), l'anneau gradué N · E · S · W, moi au centre (le point blanc), et
+         LES SPOTS en POINTS LUMINEUX qui rayonnent de leurs intentions mélangées (`melange`) — PLEIN = un point
+         exact, ANNEAU = la ville ; celui qui est LIVE pulse (I AM HERE). Il ne tourne que sur son écran, à 30 i/s ;
+         mouvement réduit = une image fixe. */
       const RADAR=(()=>{
         let raf=0, cv=null, last=0;
         const RM=()=>window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        /* des spots comme ceux du Club : un relèvement, une part de la portée, ses intentions, exact ou ville, live */
+        const SPOTS=[
+          {b:128, d:.60, is:['fight'],            plein:true,  ici:true },
+          {b:42,  d:.34, is:['focus','fight'],    plein:true,  ici:false},
+          {b:300, d:.78, is:['flow'],             plein:false, ici:false},
+          {b:205, d:.46, is:['celebrate','love'], plein:true,  ici:false},
+          {b:85,  d:.92, is:['express'],          plein:false, ici:false},
+          {b:245, d:.22, is:['enrich'],           plein:true,  ici:false}
+        ];
         function dessiner(tps){
           raf=0; if(!cv||!cv.isConnected) return;
           if(tps-last<32&&!RM()){ raf=requestAnimationFrame(dessiner); return; } last=tps;
           const S=cv.clientWidth||180, dpr=Math.min(2,devicePixelRatio||1);
           if(cv.width!==Math.round(S*dpr)){ cv.width=cv.height=Math.round(S*dpr); }
           const x=cv.getContext('2d'); x.setTransform(dpr,0,0,dpr,0,0); x.clearRect(0,0,S,S);
-          const cx=S/2, cy=S/2, rpx=S/2-30, DEG=Math.PI/180;
+          const cx=S/2, cy=S/2, rpx=S/2-30, DEG=Math.PI/180, T=RM()?3500:tps;
           const g=x.createRadialGradient(cx,cy,0,cx,cy,rpx); g.addColorStop(0,'#16161b'); g.addColorStop(1,'#0d0d10');
           x.fillStyle=g; x.beginPath(); x.arc(cx,cy,rpx,0,Math.PI*2); x.fill();
           x.strokeStyle='rgba(255,255,255,.07)'; x.lineWidth=1;
           for(let k=1;k<=4;k++){ x.beginPath(); x.arc(cx,cy,rpx*k/4,0,Math.PI*2); x.stroke(); }
           x.font='9px "Space Mono", monospace'; x.fillStyle='rgba(255,255,255,.28)'; x.textAlign='left'; x.textBaseline='alphabetic';
           [['250 m',2],['500 m',4]].forEach(([l,k])=>x.fillText(l,cx+4,cy-rpx*k/4+11));
-          const a=((RM()?3500:tps)/14000%1)*Math.PI*2-Math.PI/2;
+          const a=(T/14000%1)*Math.PI*2-Math.PI/2;
           if(x.createConicGradient){ const sw=x.createConicGradient(a-.55,cx,cy);
             sw.addColorStop(0,'rgba(255,255,255,0)'); sw.addColorStop(.0875,'rgba(255,255,255,.07)'); sw.addColorStop(.0876,'rgba(255,255,255,0)');
             x.fillStyle=sw; x.beginPath(); x.arc(cx,cy,rpx,0,Math.PI*2); x.fill(); }
-          /* le spot : à 300 m, au sud-est (loin des étiquettes de portée) — un point exact, donc un carré PLEIN */
-          const b=128*DEG, rr=.6*rpx, px=cx+Math.sin(b)*rr, py=cy-Math.cos(b)*rr, col=melange(['fight']), s=6;
-          x.fillStyle=col; x.fillRect(px-s/2,py-s/2,s,s);
-          x.strokeStyle=col; x.globalAlpha=.35; x.lineWidth=1; x.beginPath(); x.arc(px,py,10+3*Math.sin((RM()?0:tps)/500),0,Math.PI*2); x.stroke(); x.globalAlpha=1;
+          for(const s of SPOTS){
+            const b=s.b*DEG, r=s.d*rpx, px=cx+Math.sin(b)*r, py=cy-Math.cos(b)*r, col=melange(s.is), t=s.ici?4.2:3.6;
+            x.globalAlpha=s.ici?1:.8; x.shadowColor=col; x.shadowBlur=s.ici?16:11;
+            x.beginPath(); x.arc(px,py,t,0,Math.PI*2);
+            if(s.plein){ x.fillStyle=col; x.fill(); x.fill(); } else { x.strokeStyle=col; x.lineWidth=1.6; x.stroke(); }
+            x.shadowBlur=0;
+            if(s.ici){ x.strokeStyle=col; x.globalAlpha=.35; x.lineWidth=1; x.beginPath();
+              x.arc(px,py,10+3*Math.sin((RM()?0:tps)/500),0,Math.PI*2); x.stroke(); }
+            x.globalAlpha=1;
+          }
           x.fillStyle='#fff'; x.shadowColor='#fff'; x.shadowBlur=8; x.beginPath(); x.arc(cx,cy,4,0,Math.PI*2); x.fill(); x.shadowBlur=0;
           for(let deg=0;deg<360;deg+=5){
             const an=deg*DEG, outer=rpx+12, inner=outer-(deg%45===0?10:deg%15===0?6:3);
@@ -15321,7 +15348,7 @@ window.addEventListener('pageshow',e=>{
         }
         return { on(c){ cv=c; if(!raf) raf=requestAnimationFrame(dessiner); },
                  off(){ if(raf) cancelAnimationFrame(raf); raf=0; cv=null; },
-                 tourne:()=>!!raf };
+                 tourne:()=>!!raf, spots:()=>SPOTS.length };
       })();
       function illustrer(){
         if(illus) return; illus=true;
@@ -15329,9 +15356,26 @@ window.addEventListener('pageshow',e=>{
         /* le cadre, l'enveloppe et la réduction : le moteur de la nomenclature (`tools/discover.js`) */
         if(dc) dc.rafraichir(true); }
       /* CE QUE L'OBJET DEVIENT, écran par écran. Les transformations sont en CSS (`#lvd[data-i]`) ; ici seulement ce
-         qu'elle ne sait pas faire : les états NATIFS du papier, et le nom qui se frappe au verso. */
+         qu'elle ne sait pas faire : les états NATIFS du papier dans l'ordre du récit, le nom qui se frappe au verso,
+         la vidéo qui se calque sur le recto, et le calage sur l'atterrissage. */
       let recit=0, recitQ=0, conte=-1;
       const RMD=()=>window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      /* ⚠️ 24/11 (Wah) : « la slide 0 EST la page d'atterrissage qui se simplifie ». La pièce du récit se pose donc
+         EXACTEMENT sur celle de l'atterrissage — mesurée, jamais devinée — et la question prend la place de la
+         légende. Rien ne saute quand le Discover s'ouvre : la page se dépouille, l'objet reste où il est. */
+      function caler(){
+        const a=$('gate-asteroid'), pp=el.querySelector('.lvh-pp'), sf=$('lvd-sf');
+        if(!a||!pp||!sf) return;
+        el.style.setProperty('--lvh-dx','0px'); el.style.setProperty('--lvh-dy','0px'); el.style.setProperty('--lvh-k','1');
+        void el.offsetWidth;
+        const ar=a.getBoundingClientRect(), g=sf.querySelector('.sfv-g'), sr=(g||sf).getBoundingClientRect();
+        if(!ar.width||!sr.width) return;
+        el.style.setProperty('--lvh-k',(ar.width/sr.width).toFixed(3));
+        el.style.setProperty('--lvh-dx',((ar.x+ar.width/2)-(sr.x+sr.width/2)).toFixed(1)+'px');
+        el.style.setProperty('--lvh-dy',((ar.y+ar.height/2)-(sr.y+sr.height/2)).toFixed(1)+'px');
+        const lg=$('lv-tap'), pi=$('lv-pitch'), n=(lg&&lg.getClientRects().length?lg:pi);
+        if(n&&n.getClientRects().length) el.style.setProperty('--lvh-qy',Math.round(n.getBoundingClientRect().top)+'px');
+      }
       function frapperNom(bk){
         const q=bk.querySelector('.lvh-q i'); if(!q) return;
         bk.classList.add('is-frappe');
@@ -15341,25 +15385,52 @@ window.addEventListener('pageshow',e=>{
           if(k<NOM.length){ recitQ=setTimeout(()=>pas(k+1),120); return; }
           bk.classList.remove('is-frappe');
           recitQ=setTimeout(()=>{ if(conte===2) bk.classList.add('is-res'); },280); })(1); }
+      /* la vidéo ne charge qu'à son écran, et ne joue que là */
+      function video(on){
+        const w=$('lvd-vid'), v=w&&w.querySelector('video'); if(!v) return;
+        if(!on){ try{ v.pause(); }catch(_){} return; }
+        if(!v.src){ v.addEventListener('loadeddata',()=>w.classList.add('is-pret'),{once:true});
+          v.addEventListener('error',()=>{ w.classList.remove('is-pret');
+            console.warn('[discover] la vidéo de la méthode n\'est pas lisible publiquement'); },{once:true});
+          v.src=VIDEO; }
+        try{ v.currentTime=0; const q=v.play(); if(q&&q.catch) q.catch(()=>{}); }catch(_){}
+      }
       function conter(i){
-        const sf=$('lvd-sf'), bk=el.querySelector('.lvh-b');
+        const sf=$('lvd-sf'), pp=el.querySelector('.lvh-pp'), bk=el.querySelector('.lvh-b');
         clearTimeout(recit); clearTimeout(recitQ);
+        const pose=(...c)=>{ if(sf) sf.className='sfcmd'+(c.length?' '+c.join(' '):''); };
+        const verso=v=>{ if(pp) pp.classList.toggle('is-verso',!!v); };
         if(sf){
-          /* la pièce s'OUVRE : les classes natives, dans l'ordre natif (`is-melt` dilue le logo, retirer `is-logo`
-             fait glisser les deux papiers, `is-grind` dilue le mot GRIND et pose ses trois listes). */
-          if(i===0) sf.className='sfcmd is-logo';
-          else if(conte===0&&i===1&&!RMD()){
-            sf.classList.add('is-melt');
-            recit=setTimeout(()=>{ sf.classList.remove('is-logo'); sf.classList.add('is-split');
-              recit=setTimeout(()=>sf.classList.add('is-grind'),780); },340);
-          } else sf.className='sfcmd is-melt is-split is-grind';
+          if(i===0){ pose('is-logo'); verso(false); }
+          else if(i===1){
+            verso(false);
+            if(conte===0&&!RMD()){
+              /* LA PIÈCE S'OUVRE : le logo se dilue, les deux papiers glissent, GRIND devient ses trois listes */
+              sf.classList.add('is-melt');
+              recit=setTimeout(()=>{ sf.classList.remove('is-logo'); sf.classList.add('is-split');
+                recit=setTimeout(()=>sf.classList.add('is-grind'),780); },340);
+            } else pose('is-melt','is-split','is-grind');
+          }
+          else if(i===2){
+            /* ⚠️ 24/11 (Wah) : LE MOUVEMENT INVERSE D'ABORD — les cinq vues se referment EN REPASSANT PAR LE MOT
+               GRIND, le TOTEHM se reforme, ET SEULEMENT APRÈS il se retourne : on comprend qu'on va chercher la
+               stratégie de quelqu'un d'autre. */
+            if(conte===1&&!RMD()){
+              verso(false); sf.classList.remove('is-grind');
+              recit=setTimeout(()=>{ sf.classList.add('is-logo'); sf.classList.remove('is-split');
+                recit=setTimeout(()=>{ sf.classList.remove('is-melt');
+                  recit=setTimeout(()=>verso(true),300); },340); },360);
+            } else { pose('is-logo'); verso(true); }
+          }
+          else { pose('is-logo'); verso(false); }   /* 3, 4, 5 : le TOTEHM est revenu en recto */
         }
+        video(i===3);
         if(bk){
           bk.classList.remove('is-res','is-frappe');
           const q=bk.querySelector('.lvh-q i');
           if(i!==2){ if(q) q.textContent=NOM; }
           else if(RMD()){ if(q) q.textContent=NOM; bk.classList.add('is-res'); }
-          else { if(q) q.textContent=''; recitQ=setTimeout(()=>frapperNom(bk),620); }
+          else { if(q) q.textContent=''; recitQ=setTimeout(()=>frapperNom(bk),conte===1?1500:620); }
         }
         conte=i; }
       function peindre(k){
@@ -15380,7 +15451,7 @@ window.addEventListener('pageshow',e=>{
       function ouvrir(parScroll){
         if(ouvert||!window.TOTEHM_DISCOVER) return; ouvert=true; diagD.ouvertures++; origine=document.activeElement; clearTimeout(t);
         if(parScroll===true){ diagD.parScroll++; const n=Date.now(); sourdine=n+250; sourdineFin=n+1500; }
-        el.hidden=false; illustrer();
+        el.hidden=false; illustrer(); caler();
         if(!dc) dc=window.TOTEHM_DISCOVER.monter(el,{surChangement:peindre});
         dc.activer(true); dc.aller(0,true); peindre();
         void el.offsetWidth; body.classList.add('is-dc'); el.classList.add('is-open');
@@ -15392,6 +15463,7 @@ window.addEventListener('pageshow',e=>{
         t=setTimeout(()=>{ if(!ouvert) el.hidden=true; },380);
         try{ if(origine&&origine.focus) origine.focus({preventScroll:true}); }catch(_){} origine=null;
         if(then) setTimeout(then,220); }
+      window.addEventListener('resize',()=>{ if(ouvert) requestAnimationFrame(caler); });
       $('lvd-x').addEventListener('click',()=>fermer());
       cta.addEventListener('click',()=>{ const va=cta.dataset.va, por=PORTES[va]; if(!por) return; diagD.portes++;
         if(por.url) return void location.assign(por.url);     /* un autre domaine de l'écosystème : on y va */
@@ -15406,7 +15478,8 @@ window.addEventListener('pageshow',e=>{
           setTimeout(()=>{ const b=document.querySelector('#vs-tabs [data-vs-tab="money"]'); if(b) b.click(); },900); }); });
       window.addEventListener('keydown',e=>{ if(ouvert&&e.key==='Escape'){ e.preventDefault(); e.stopImmediatePropagation(); fermer(); } },{capture:true});
       return {ouvrir, fermer, ouvert:()=>ouvert,
-        etat:()=>({...diagD, ouvert, radar:RADAR.tourne(), i:dc?dc.index():0, n:el.querySelectorAll('.dc-s').length, porte:cta.dataset.va||'open'})};
+        etat:()=>({...diagD, ouvert, radar:RADAR.tourne(), spots:RADAR.spots(), i:dc?dc.index():0,
+                   n:el.querySelectorAll('.dc-s').length, porte:cta.dataset.va||''})};
     })();
     window.__totehm_discover=()=>DISC.etat();
     {

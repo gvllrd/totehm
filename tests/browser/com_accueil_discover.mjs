@@ -15,10 +15,10 @@ const D=pg=>pg.evaluate(()=>window.__totehm_discover());
 const ecran=pg=>pg.evaluate(()=>{const h=document.getElementById('lvd'),b=document.getElementById('lvd-cta'),l=document.getElementById('lvd-lnk');
   const on=h.querySelector('.dc-s.is-on');
   return {i:+h.dataset.i, n:+h.dataset.n,
-    tw:(on.querySelector('.dc-tw')||on.querySelector('.dc-big')||{}).textContent,
+    tw:(on.querySelector('.dc-tw')||on.querySelector('.lvq')||{}).textContent,
     cta:b.classList.contains('hide')?null:b.textContent.trim(),
     lien:l.classList.contains('hide')?null:l.textContent.trim(),
-    lead:+getComputedStyle(h.querySelector('.dc-lead')).opacity,
+    lead:+getComputedStyle(h.querySelector('.lvq')).opacity,
     objets:[...h.querySelectorAll('.dc-hero .lvh')].filter(n=>+getComputedStyle(n).opacity>.5).map(n=>n.className.replace('lvh ',''))};});
 const avance=async(pg,k)=>{for(let j=0;j<k;j++){await pg.keyboard.press('ArrowDown');await pg.waitForTimeout(1150);}};
 try{
@@ -37,12 +37,14 @@ try{
    ok(s.ouvert&&s.i===0&&s.parScroll===1,'sans compte, un glissé vers le haut ouvre le Discover sur son premier écran → '+JSON.stringify(s));
    await pg.keyboard.press('Escape');await pg.waitForTimeout(700);}
   await pg.click('#lv-discover');await pg.waitForTimeout(1500);
-  /* ── l'écran 0 : LE FIL CONDUCTEUR — un mot, la flèche qui le prolonge, AUCUNE porte ── */
+  /* ── l'écran 0 : L'ATTERRISSAGE QUI SE SIMPLIFIE — la pièce ne bouge pas d'un pixel, la question prend la place de la légende ── */
   let e=await ecran(pg);
-  ok(e.n===6&&e.i===0&&/^Your greatness$/.test(e.tw.trim())&&e.cta===null&&e.lead===1,
-     'écran 0 : « Your greatness », la flèche porte « Be in touch with », aucune porte → '+JSON.stringify(e));
-  const r0=await pg.evaluate(()=>+getComputedStyle(document.querySelector('#lvd .dc-rail')).opacity);
-  ok(r0===0,'l\'écran 0 ne dit qu\'une chose : le rail des écrans s\'y tait');
+  ok(e.n===6&&e.i===0&&/^How to reach your greatness in the most efficient way\?$/.test(e.tw.trim())&&e.cta===null&&e.lead===1,
+     'écran 0 : la problématique à la place de la légende, aucune porte → '+JSON.stringify(e));
+  const cal=await pg.evaluate(()=>{const r=n=>{const q=n.getBoundingClientRect();return [Math.round(q.x),Math.round(q.y),Math.round(q.width),Math.round(q.height)];};
+    return {atterrissage:r(document.getElementById('gate-asteroid')),recit:r(document.querySelector('#lvd .lvh-pp .sfv-g'))};});
+  ok(JSON.stringify(cal.atterrissage)===JSON.stringify(cal.recit),
+     '24/11 · la slide 0 EST l\'atterrissage : la pièce est à la MÊME place, à la MÊME taille → '+JSON.stringify(cal));
   /* ── LE CADRE NE BOUGE PAS : l'objet est exactement à la place du cadre d'illustration de chaque écran ── */
   /* la place est une affaire de MISE EN PAGE (`offsetTop`), pas de l'animation d'entrée des écrans (une translation) */
   const cadre=await pg.evaluate(()=>{const h=document.getElementById('lvd'),on=h.querySelector('.dc-s.is-on');
@@ -50,28 +52,31 @@ try{
     return {colle:Math.round(hr.x)===Math.round(ir.x)&&Math.round(hr.y)===Math.round(ir.y)
       &&Math.round(hr.width)===Math.round(ir.width)&&Math.round(hr.height)===Math.round(ir.height),
       ill:[...new Set([...h.querySelectorAll('.dc-s .dc-ill')].map(n=>n.offsetTop+'×'+n.offsetHeight))],
-      tw:[...new Set([...h.querySelectorAll('.dc-s')].map(s=>(s.querySelector('.dc-tw')||s.querySelector('.dc-big')).offsetTop))].length};});
+      tw:[...new Set([...h.querySelectorAll('.dc-s .dc-tw')].map(n=>n.offsetTop))].length};});
   ok(cadre.colle&&cadre.ill.length===1&&cadre.tw===1,
      'l\'objet est posé sur le cadre, identique sur les six écrans, et la phrase ne saute pas → '+JSON.stringify(cadre));
   /* ── LE RÉCIT : un objet qui se TRANSFORME, et une porte par écran ── */
-  const attendu=[['lvh-pp',null],['lvh-pp','Create my TOTEHM'],['lvh-pp','Subscribe to a TOTEHM'],
-                 ['lvh-gr','Get'],['lvh-cl','Create my TOTEHM Cloth'],['lvh-rd','Integrate figher.club']];
+  const attendu=[['lvh-pp',null],['lvh-pp','Create my TOTEHM'],['lvh-pp is-verso','Subscribe to a TOTEHM'],
+                 ['lvh-pp','Get'],['lvh-cl','Create my TOTEHM Cloth'],['lvh-rd','Integrate figher.club']];
   const vu=[];
   for(let k=0;k<6;k++){ if(k) await avance(pg,1); const x=await ecran(pg); vu.push([x.objets.join('+'),x.cta]);
     ok(x.objets.length===1,'écran '+k+' : UN objet visible à la fois (il se transforme, il ne s\'empile pas) → '+JSON.stringify(x.objets)); }
-  ok(JSON.stringify(vu)===JSON.stringify(attendu),'le papier → son verso → la grille → le vêtement → le radar, et une porte par écran → '+JSON.stringify(vu));
+  ok(JSON.stringify(vu)===JSON.stringify(attendu),'la pièce → ouverte → refermée sur son verso → revenue en recto → le vêtement → le radar → '+JSON.stringify(vu));
   const piece=await pg.evaluate(()=>document.querySelector('#lvd .lvh-pp .sfcmd').className);
-  ok(/is-melt/.test(piece)&&/is-split/.test(piece)&&/is-grind/.test(piece)&&!/is-logo/.test(piece),
-     'la pièce s\'est OUVERTE avec ses classes natives (le logo se dilue, les papiers glissent, GRIND devient ses trois listes) → '+piece);
+  ok(/is-logo/.test(piece)&&!/is-grind/.test(piece),
+     '24/11 · le TOTEHM est REVENU en pièce (le mouvement inverse est passé par GRIND) avant de se retourner → '+piece);
   await pg.screenshot({path:OUT+'/accueil_discover.png'});
   /* le radar ne tourne que sur SON écran ; la grille et le vêtement portent bien les éléments natifs */
-  const nat=await pg.evaluate(()=>({radar:window.__totehm_discover().radar,
-    tuiles:document.querySelectorAll('#lvd .lvh-gr .tl').length, box:document.querySelectorAll('#lvd .lvh-gr .tl-bx .tb').length,
-    perfo:getComputedStyle(document.querySelector('#lvd .lvh-prt')).maskImage!=='none',
-    badge:document.querySelectorAll('#lvd .lvh-emb use[href="#higher-badge"]').length,
-    orphelins:document.querySelectorAll('#lvd .dc-hero [data-open],#lvd .dc-hero [data-go],#lvd .dc-hero button').length}));
-  ok(nat.radar&&nat.tuiles===3&&nat.box===2&&nat.perfo&&nat.badge===1&&nat.orphelins===0,
-     'éléments NATIFS et inertes : la grille et ses box, l\'illustration perforée au dos, le badge brodé, le radar qui tourne → '+JSON.stringify(nat));
+  const nat=await pg.evaluate(async()=>{
+    const im=[...document.querySelectorAll('#lvd .lvh-cl img')];
+    await Promise.all(im.map(i=>i.decode().catch(()=>null)));
+    return {radar:window.__totehm_discover().radar, spots:window.__totehm_discover().spots,
+      photos:im.filter(i=>/cloth-(front|back)\.webp$/.test(i.src)&&i.naturalWidth>0).length,
+      perfo:getComputedStyle(document.querySelector('#lvd .lvh-prt')).maskImage!=='none',
+      video:!!document.querySelector('#lvd .lvh-vid video'),
+      orphelins:document.querySelectorAll('#lvd .dc-hero [data-open],#lvd .dc-hero [data-go],#lvd .dc-hero button').length};});
+  ok(nat.radar&&nat.spots>=6&&nat.photos===2&&nat.perfo&&nat.video&&nat.orphelins===0,
+     '24/11 · les VRAIES photos du vêtement (notre stockage), l\'illustration perforée au dos, la place de la vidéo, le radar du Club et ses spots → '+JSON.stringify(nat));
   /* 60 / 30 / 10 : hors de l'objet (ses couleurs sont natives), aucune couleur */
   const coul=await pg.evaluate(()=>{const vus=new Set();for(const e of document.querySelectorAll('#lvd *')){ if(e.closest('.tw,.dc-hero')) continue; const c=getComputedStyle(e);
       for(const v of [c.color,c.backgroundColor]){ const m=v.match(/\d+(\.\d+)?/g); if(!m||(m[3]!==undefined&&+m[3]===0)) continue; const [r,g,b]=m.map(Number); if(Math.max(r,g,b)-Math.min(r,g,b)>24) vus.add(v); } } return [...vus];});
@@ -97,6 +102,8 @@ try{
   ok(JSON.stringify(portes)===JSON.stringify([[null,null],['Open my TOTEHM',null],['Find an ecosystem','Monetize my TOTEHM'],
      ['Get',null],['Create my TOTEHM Cloth',null],['Integrate figher.club',null]]),
      'le MENU d\'un membre : son TOTEHM, chercher un écosystème (· Monetize), Get Higher, la boutique, le club → '+JSON.stringify(portes));
+  const cal2=await pg.evaluate(()=>{const r=n=>{const q=n.getBoundingClientRect();return [Math.round(q.x),Math.round(q.y),Math.round(q.width)];};
+    return {a:r(document.getElementById('gate-asteroid')),d:r(document.querySelector('#lvd .lvh-pp .sfv-g'))};});
   await pg.screenshot({path:OUT+'/accueil_discover_membre.png'});
   await pg.keyboard.press('Escape');await pg.waitForTimeout(800);
   ok(await pg.evaluate(()=>!window.__totehm_discover().ouvert&&window.__totehm_lv().vue==='c'&&!document.body.classList.contains('is-dc')),
