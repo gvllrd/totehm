@@ -15,10 +15,10 @@ const D=pg=>pg.evaluate(()=>window.__totehm_discover());
 const ecran=pg=>pg.evaluate(()=>{const h=document.getElementById('lvd'),b=document.getElementById('lvd-cta'),l=document.getElementById('lvd-lnk');
   const on=h.querySelector('.dc-s.is-on');
   return {i:+h.dataset.i, n:+h.dataset.n,
-    tw:(on.querySelector('.dc-tw')||on.querySelector('.lvq')||{}).textContent,
+    tw:(on.querySelector('.dc-tw')||{}).textContent,
     cta:b.classList.contains('hide')?null:b.textContent.trim(),
     lien:l.classList.contains('hide')?null:l.textContent.trim(),
-    lead:+getComputedStyle(h.querySelector('.lvq')).opacity,
+    etape:h.dataset.etape, deep:!!on.querySelector('.dc-deep'),
     objets:[...h.querySelectorAll('.dc-hero .lvh')].filter(n=>+getComputedStyle(n).opacity>.5).map(n=>n.className.replace('lvh ',''))};});
 const avance=async(pg,k)=>{for(let j=0;j<k;j++){await pg.keyboard.press('ArrowDown');await pg.waitForTimeout(1150);}};
 try{
@@ -27,7 +27,15 @@ try{
   await pg.goto(origin+'/totehm');await pg.waitForFunction(()=>typeof window.__totehm_lv==='function');await pg.waitForTimeout(2200);
   const c=await pg.evaluate(()=>{const q=s=>document.querySelector(s),vu=e=>!!e&&e.getClientRects().length>0&&getComputedStyle(e).visibility!=='hidden';
     return {titre:!!q('#lv-title'),boutons:[...document.querySelectorAll('#lv-pitch button')].filter(vu).map(b=>b.textContent.trim())};});
-  ok(!c.titre&&c.boutons.join('|')==='Open my TOTEHM|Discover','23/11 · l\'accueil reste minimal : la porte et [Discover] → '+c.boutons.join(' | '));
+  ok(!c.titre&&c.boutons.join('|')==='Open my TOTEHM|Discover|Tree',
+     '25/11 · l\'accueil : la porte, [Discover] et [Tree] — l\'arbre est OPTIONNEL dès ici → '+c.boutons.join(' | '));
+  {const a=await pg.evaluate(()=>({off:document.body.classList.contains('no-tree'),aff:getComputedStyle(document.getElementById('lv-ram')).display}));
+   await pg.click('#lv-pitch-tree'); await pg.waitForTimeout(500);
+   const b2=await pg.evaluate(()=>({off:document.body.classList.contains('no-tree'),aff:getComputedStyle(document.getElementById('lv-ram')).display,
+     garde:localStorage.getItem('totehm_tree')}));
+   await pg.click('#lv-pitch-tree'); await pg.waitForTimeout(400);
+   ok(!a.off&&a.aff!=='none'&&b2.off&&b2.aff==='none'&&b2.garde==='0',
+      'TREE MODE : le mot éteint l\'arbre, et le choix est gardé → '+JSON.stringify({a,b:b2}));}
   /* le SCROLL ouvre le Discover, et l'inertie du même geste ne le fait pas défiler */
   {const cdp=await ctx.newCDPSession(pg);
    await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:195,y:600}]});
@@ -39,8 +47,8 @@ try{
   await pg.click('#lv-discover');await pg.waitForTimeout(1500);
   /* ── l'écran 0 : L'ATTERRISSAGE QUI SE SIMPLIFIE — la pièce ne bouge pas d'un pixel, la question prend la place de la légende ── */
   let e=await ecran(pg);
-  ok(e.n===6&&e.i===0&&/^How to reach your greatness in the most efficient way\?$/.test(e.tw.trim())&&e.cta===null&&e.lead===1,
-     'écran 0 : la problématique à la place de la légende, aucune porte → '+JSON.stringify(e));
+  ok(e.n===6&&e.i===0&&/^Make it Happen$/.test(e.tw.trim())&&e.cta===null&&!e.deep,
+     '25/11 · écran 0 : « Make it Happen », frappé, sans porte ni tiroir → '+JSON.stringify(e));
   const cal=await pg.evaluate(()=>{const r=n=>{const q=n.getBoundingClientRect();return [Math.round(q.x),Math.round(q.y),Math.round(q.width),Math.round(q.height)];};
     return {atterrissage:r(document.getElementById('gate-asteroid')),recit:r(document.querySelector('#lvd .lvh-pp .sfv-g'))};});
   ok(JSON.stringify(cal.atterrissage)===JSON.stringify(cal.recit),
@@ -51,21 +59,26 @@ try{
     const hr=h.querySelector('.dc-hero').getBoundingClientRect(), ir=on.querySelector('.dc-ill').getBoundingClientRect();
     return {colle:Math.round(hr.x)===Math.round(ir.x)&&Math.round(hr.y)===Math.round(ir.y)
       &&Math.round(hr.width)===Math.round(ir.width)&&Math.round(hr.height)===Math.round(ir.height),
-      ill:[...new Set([...h.querySelectorAll('.dc-s .dc-ill')].map(n=>n.offsetTop+'×'+n.offsetHeight))],
-      tw:[...new Set([...h.querySelectorAll('.dc-s .dc-tw')].map(n=>n.offsetTop))].length};});
-  ok(cadre.colle&&cadre.ill.length===1&&cadre.tw===1,
-     'l\'objet est posé sur le cadre, identique sur les six écrans, et la phrase ne saute pas → '+JSON.stringify(cadre));
+      /* 25/11 : les écrans sont CENTRÉS, donc le cadre ne tombe plus à la même hauteur partout — ce qui doit rester
+         identique, c'est sa TAILLE, et l'objet doit s'y poser exactement. */
+      ill:[...new Set([...h.querySelectorAll('.dc-s .dc-ill')].map(n=>n.offsetWidth+'×'+n.offsetHeight))]};});
+  ok(cadre.colle&&cadre.ill.length===1,
+     'l\'objet est posé sur le cadre de l\'écran actif, et tous les cadres ont la même taille → '+JSON.stringify(cadre));
   /* ── LE RÉCIT : un objet qui se TRANSFORME, et une porte par écran ── */
   const attendu=[['lvh-pp',null],['lvh-pp','Create my TOTEHM'],['lvh-pp is-verso','Subscribe to a TOTEHM'],
                  ['lvh-pp','Get'],['lvh-cl','Create my TOTEHM Cloth'],['lvh-rd','Integrate figher.club']];
   const vu=[];
+  const cadres=[];
   for(let k=0;k<6;k++){ if(k) await avance(pg,1); const x=await ecran(pg); vu.push([x.objets.join('+'),x.cta]);
+    cadres.push(await pg.evaluate(()=>{const f=document.querySelector('#lvd .dc-s.is-on .dc-ill').getBoundingClientRect();
+      return Math.round(f.width)+'×'+Math.round(f.height);}));
     ok(x.objets.length===1,'écran '+k+' : UN objet visible à la fois (il se transforme, il ne s\'empile pas) → '+JSON.stringify(x.objets)); }
+  ok([...new Set(cadres)].length===1&&/^(\d+)×\1$/.test(cadres[0]),
+     '25/11 · les six objets reprennent les MÊMES dimensions, un carré → '+JSON.stringify([...new Set(cadres)]));
   ok(JSON.stringify(vu)===JSON.stringify(attendu),'la pièce → ouverte → refermée sur son verso → revenue en recto → le vêtement → le radar → '+JSON.stringify(vu));
   const piece=await pg.evaluate(()=>document.querySelector('#lvd .lvh-pp .sfcmd').className);
   ok(/is-logo/.test(piece)&&!/is-grind/.test(piece),
      '24/11 · le TOTEHM est REVENU en pièce (le mouvement inverse est passé par GRIND) avant de se retourner → '+piece);
-  await pg.screenshot({path:OUT+'/accueil_discover.png'});
   /* le radar ne tourne que sur SON écran ; la grille et le vêtement portent bien les éléments natifs */
   const nat=await pg.evaluate(async()=>{
     const im=[...document.querySelectorAll('#lvd .lvh-cl img')];
@@ -84,11 +97,32 @@ try{
       prix:(document.querySelector('#lvd .vs-month b')||{}).textContent,
       an:(document.querySelector('#lvd .vs-month i')||{}).textContent,
       cut:!!document.querySelector('#lvd .vs-s.vs-cut'), disc:document.querySelectorAll('#lvd .vs-act').length};});
-   ok(v.carre&&v.corail==='rgb(251, 213, 202)'&&v.nomCorail==='rgb(251, 213, 202)'&&v.prix==='60 €'
-      &&/per year · stop anytime/.test(v.an)&&v.cut&&v.disc===0,
-      'le verso est celui du dashboard, dans le carré du papier, sans [Discover] → '+JSON.stringify(v));}
+   ok(v.carre&&v.corail==='rgb(251, 213, 202)'&&v.prix==='60 €'
+      &&/per year · stop anytime/.test(v.an)&&!v.cut&&v.disc===0,
+      '25/11 · le verso : plein navy, le prix SEUL et centré, sans [Discover] ni ligne de règles → '+JSON.stringify(v));}
   ok(nat.radar&&nat.spots>=6&&nat.photos===2&&nat.perfo&&nat.video&&nat.orphelins===0,
      '24/11 · les VRAIES photos du vêtement (notre stockage), l\'illustration perforée au dos, la place de la vidéo, le radar du Club et ses spots → '+JSON.stringify(nat));
+  /* 25/11 (Wah) : « on affiche d'abord le texte, ensuite l'animation, ensuite le tiroir et le call-to-action ». */
+  /* on ROUVRE : revenir au premier écran d'un coup remet les phrases à frapper (`remettre`), donc l'ordre se rejoue */
+  {await pg.keyboard.press('Escape');await pg.waitForTimeout(700);await pg.click('#lv-discover');
+   const vus=[]; for(let j=0;j<9;j++){ vus.push(await pg.evaluate(()=>{const h=document.getElementById('lvd');
+     return {e:h.dataset.etape, o:+getComputedStyle(h.querySelector('.dc-hero')).opacity>.5,
+       c:+getComputedStyle(h.querySelector('.dc-cta')).opacity>.5};})); await pg.waitForTimeout(400); }
+   const e0=vus.findIndex(v=>v.e==='0'), e1=vus.findIndex(v=>v.e==='1'), e2=vus.findIndex(v=>v.e==='2');
+   const io=vus.findIndex((v,k)=>k>0&&v.o), ic=vus.findIndex(v=>v.c);   /* quand chacun est VRAIMENT là, fondu compris */
+   ok(e0===0&&e1>e0&&e2>e1&&io>=e1&&ic>=e2&&io<ic,
+      'l\'ordre : la phrase se frappe (0), PUIS l\'objet (1), PUIS le tiroir et la porte (2) → '+JSON.stringify({e0,e1,e2,io,ic}));}
+  /* le tiroir : fermé d'abord, et son texte prend la police des explications de totehm.space (écran 1 : l'écran 0 n'en a pas) */
+  await avance(pg,1);
+  {const d=await pg.$('#lvd .dc-s.is-on .dc-deep');
+   const avant=await pg.evaluate(()=>Math.round(document.querySelector('#lvd .dc-s.is-on .dc-more').getBoundingClientRect().height));
+   if(d) await d.click(); await pg.waitForTimeout(750);
+   const ap=await pg.evaluate(()=>{const m=document.querySelector('#lvd .dc-s.is-on .dc-more');
+     const p=m.querySelector('.dc-p'), c=getComputedStyle(p);
+     return {h:Math.round(m.getBoundingClientRect().height), px:Math.round(parseFloat(c.fontSize)), fam:c.fontFamily, col:c.color};});
+   ok(avant===0&&ap.h>40&&ap.px>=15&&/Space Mono/.test(ap.fam)&&ap.col==='rgb(221, 221, 221)',
+      '[Deeper] : fermé au départ, puis le texte dans la police de totehm.space (Space Mono '+ap.px+' px, #ddd) → '+JSON.stringify(ap));}
+  await pg.screenshot({path:OUT+'/accueil_discover.png'});
   /* 60 / 30 / 10 : hors de l'objet (ses couleurs sont natives), aucune couleur */
   const coul=await pg.evaluate(()=>{const vus=new Set();for(const e of document.querySelectorAll('#lvd *')){ if(e.closest('.tw,.dc-hero')) continue; const c=getComputedStyle(e);
       for(const v of [c.color,c.backgroundColor]){ const m=v.match(/\d+(\.\d+)?/g); if(!m||(m[3]!==undefined&&+m[3]===0)) continue; const [r,g,b]=m.map(Number); if(Math.max(r,g,b)-Math.min(r,g,b)>24) vus.add(v); } } return [...vus];});

@@ -80,8 +80,13 @@ for(const [qui, opts] of [['visitor', { session:false }], ['member', { tables:{ 
   const cta = [];
   for(let k = 0; k < 4; k++){ await pg.evaluate(k => window.__totehm_discover().aller(k, true), k);
     cta.push(await pg.evaluate(() => { const b = document.querySelector('#cta [data-do=subscribe]'); if(!b) return null; const r = b.getBoundingClientRect();
-      return { t:b.textContent.trim(), vu:r.width > 40 && r.bottom <= innerHeight && getComputedStyle(b).backgroundColor }; })); }
-  ok(cta.every(x => x && x.t === 'Subscribe · €24 / year' && x.vu === 'rgb(42, 42, 42)'), 'Subscribe · €24 / year sous les 4 écrans, bouton gris normal → ' + JSON.stringify(cta[0]));
+      const c = getComputedStyle(b);
+      /* 25/11 — le bouton a de la PROFONDEUR (un dégradé et des ombres, nomenclature) : ce qui doit rester vrai,
+         c'est qu'il n'a AUCUNE couleur — que du noir et du gris. */
+      const teintes = (c.backgroundImage.match(/\d+, \d+, \d+/g) || []).map(s => s.split(', ').map(Number));
+      return { t:b.textContent.trim(), vu:r.width > 40 && r.bottom <= innerHeight,
+        neutre:teintes.length > 0 && teintes.every(([x,y,z]) => Math.max(x,y,z) - Math.min(x,y,z) <= 24) }; })); }
+  ok(cta.every(x => x && x.t === 'Subscribe · €24 / year' && x.vu && x.neutre), 'Subscribe · €24 / year sous les 4 écrans, bouton sans aucune couleur → ' + JSON.stringify(cta[0]));
   await pg.evaluate(() => window.__totehm_discover().derniere());
   const p = await propre(pg);
   ok(p.white === 0 && !p.fonts.length, 'page: no white background, Space Mono + Quantico only ' + p.fonts.join(','));

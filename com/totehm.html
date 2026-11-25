@@ -4040,10 +4040,30 @@ body.lv-d.rdr-voir #gate-asteroid,body.lv-d.rdr-voir #lvjoy,body.rdr-voir #rdr-f
 .dc-big small{font:400 clamp(12px,1.6vw,16px)/1 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#888;margin-left:10px}
 .dc-hi{display:inline-block;width:3.2em;height:1.07em;vertical-align:-.14em}   /* « Higher » est TOUJOURS le badge (BRAND) : jamais le mot en texte */
 .dc-fine{margin:0;font:400 11px/1.7 'Space Mono',monospace;letter-spacing:.06em;color:#888;max-width:420px}
-/* le bouton : un bouton NORMAL — gris, jamais corail (le corail est réservé au nom et à l'art) */
+/* LE BOUTON — jamais corail (le corail est réservé au nom et à l'art), mais plus une étiquette plate : il a de la
+   PROFONDEUR (Wah, 25/11 : « des boutons noirs avec une profondeur, un petit effet 3D, comme de vrais boutons
+   console, tout en gardant du minimaliste »). Noir, une arête claire en haut, une ombre portée courte ; enfoncé, il
+   descend d'un pixel et son ombre disparaît. Aucune brillance, aucune couleur : la profondeur se lit en lumière. */
 .dc-btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:12px 26px;border:0;border-radius:12px;cursor:pointer;
-  background:#2a2a2a;color:#e8e8e8;font:700 12px/1.2 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;transition:transform .15s ease,opacity .15s ease}
-.dc-btn:active{transform:scale(.97)}
+  background:linear-gradient(180deg,#232329 0%,#141418 58%,#0d0d10 100%);color:#e8e8e8;
+  font:700 12px/1.2 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.15),inset 0 -1px 0 rgba(0,0,0,.65),0 2px 5px rgba(0,0,0,.55);
+  transition:transform .12s ease,box-shadow .12s ease,opacity .15s ease}
+.dc-btn:active{transform:translateY(1px);box-shadow:inset 0 1px 0 rgba(255,255,255,.07),inset 0 2px 5px rgba(0,0,0,.7)}
+/* LA PORTE PERFORÉE (`is-perfo`) — le papier du TOTEHM et le badge [Higher] sont perforés : la porte l'est aussi.
+   Deux trous sur les côtés, et le long du bouton un trou tous les `--dcp-p` : ils suivent donc la LONGUEUR du texte,
+   comme sur le badge. Le masque mange les angles, donc le bouton garde ses coins droits. */
+.dc-btn.is-perfo{--dcp-r:5.5px;--dcp-p:26px;border-radius:0;
+  -webkit-mask:radial-gradient(circle var(--dcp-r) at 50% 0,#0000 97%,#000) 0 0/var(--dcp-p) 100% repeat-x,
+    radial-gradient(circle var(--dcp-r) at 50% 100%,#0000 97%,#000) 0 0/var(--dcp-p) 100% repeat-x,
+    radial-gradient(circle var(--dcp-r) at 0 50%,#0000 97%,#000) 0 0/100% 100% no-repeat,
+    radial-gradient(circle var(--dcp-r) at 100% 50%,#0000 97%,#000) 0 0/100% 100% no-repeat;
+  -webkit-mask-composite:source-in;
+  mask:radial-gradient(circle var(--dcp-r) at 50% 0,#0000 97%,#000) 0 0/var(--dcp-p) 100% repeat-x,
+    radial-gradient(circle var(--dcp-r) at 50% 100%,#0000 97%,#000) 0 0/var(--dcp-p) 100% repeat-x,
+    radial-gradient(circle var(--dcp-r) at 0 50%,#0000 97%,#000) 0 0/100% 100% no-repeat,
+    radial-gradient(circle var(--dcp-r) at 100% 50%,#0000 97%,#000) 0 0/100% 100% no-repeat;
+  mask-composite:intersect}
 .dc-cta{position:absolute;left:0;right:0;bottom:146px;display:flex;flex-direction:column;align-items:center;gap:8px;padding:0 24px;z-index:2}
 .dc-cta:empty{display:none}
 .dc.has-cta{--dc-ins-b:214px}
@@ -4061,8 +4081,11 @@ body.lv-d.rdr-voir #gate-asteroid,body.lv-d.rdr-voir #lvjoy,body.rdr-voir #rdr-f
    éléments NATIFS du site (box, pièce, badge), dans un CADRE de même hauteur sur tous les écrans (`--dc-ill-h`) : le titre
    ne saute pas d'un écran à l'autre, et ce qui dépasse est RÉDUIT au cadre par le moteur, jamais rogné. Le haut de l'écran
    est fixe (le cadre, puis le titre) ; seul le texte s'allonge vers le bas. `.dc-ill-c` : l'illustration en colonne. */
-.dc{--dc-ill-h:clamp(128px,22dvh,190px);--dc-haut:max(0px,calc((100dvh - 298px - 450px) / 2))}
-.dc.is-illustre .dc-s{justify-content:flex-start;padding-top:var(--dc-haut)}
+.dc{--dc-ill-h:clamp(128px,22dvh,190px)}
+.dc.is-illustre .dc-s{justify-content:center}
+/* `is-carre` : le cadre est un CARRÉ (Wah, 25/11 : les illustrations « doivent former un tout fluide, cohérent et
+   animé » — elles reprennent donc toutes les mêmes dimensions, celles du papier). */
+.dc.is-carre .dc-ill{width:var(--dc-ill-h)}
 .dc-ill{width:min(100%,340px);height:var(--dc-ill-h);flex:none;display:flex;align-items:center;justify-content:center;
   text-align:left;pointer-events:none;-webkit-user-select:none;user-select:none}
 .dc-ill-in{flex:none;width:100%;transform-origin:50% 50%}
@@ -4104,6 +4127,29 @@ body.lv-d.rdr-voir #gate-asteroid,body.lv-d.rdr-voir #lvjoy,body.rdr-voir #rdr-f
   opacity:0;transition:opacity .4s ease}
 .dc[data-i="0"] .dc-lead{opacity:1}
 .dc:has(.dc-lead)[data-i="0"] .dc-rail{opacity:0}
+/* L'ORDRE D'APPARITION (Wah, 25/11 : « on affiche d'abord le texte, ensuite vient l'animation qui illustre les
+   propos, et on affiche ensuite le bouton tiroir [Deeper] … et en même temps le bouton call-to-action »).
+   Le moteur pose l'étape sur l'hôte : 0 la phrase se frappe · 1 l'objet paraît · 2 le tiroir et la porte.
+   Mouvement réduit : tout est là d'emblée. */
+.dc.is-hero .dc-hero,.dc .dc-ill{opacity:0;transition:opacity .6s ease}
+.dc[data-etape="1"] .dc-hero,.dc[data-etape="2"] .dc-hero,
+.dc[data-etape="1"] .dc-s.is-on .dc-ill,.dc[data-etape="2"] .dc-s.is-on .dc-ill{opacity:1}
+.dc-cta{opacity:0;transition:opacity .5s ease}
+.dc[data-etape="2"] .dc-cta{opacity:1}
+/* LE TIROIR (`.dc-deep`) : « plus de détails », fermé par défaut. Son texte reprend la police des explications de
+   `totehm.space/play_lisbon_street?discover=1` (Space Mono, plus grand, plus clair) — c'est là qu'on LIT. */
+.dc-deep{display:none;align-items:center;gap:8px;margin:0;border:0;padding:9px 16px;border-radius:10px;cursor:pointer;
+  background:none;color:#9a9aa2;font:400 10px/1.2 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;
+  box-shadow:inset 0 0 0 1px #2e2e36;transition:color .15s,box-shadow .15s,opacity .5s ease;opacity:0}
+.dc[data-etape="2"] .dc-s.is-on .dc-deep{display:inline-flex;opacity:1}
+.dc-deep svg{width:9px;height:9px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;
+  transition:transform .3s ease}
+.dc-deep[aria-expanded="true"]{color:#e8e8e8;box-shadow:inset 0 0 0 1px #4a4a54}
+.dc-deep[aria-expanded="true"] svg{transform:rotate(180deg)}
+.dc-more{display:grid;grid-template-rows:0fr;margin:0;transition:grid-template-rows .42s cubic-bezier(.22,.61,.36,1)}
+.dc-more>div{overflow:hidden;min-height:0}
+.dc-deep[aria-expanded="true"]+.dc-more{grid-template-rows:1fr}
+.dc-more .dc-p{margin:14px 0 0;font:400 clamp(15px,4vw,17px)/1.5 'Space Mono',monospace;letter-spacing:0;color:#ddd}
 /* L'OBJET QUI VOYAGE (facultatif : `is-hero` sur l'hôte) — Wah, 24/11 : les écrans forment UN récit, « un objet ne
    disparaît pas pour réapparaître, il se TRANSFORME » (CLAUDE.md, la continuité). Les écrans se succèdent en fondu,
    mais l'objet, lui, VIT AU-DESSUS d'eux : une seule couche (`.dc-hero`), à la place exacte du cadre d'illustration
@@ -4112,8 +4158,8 @@ body.lv-d.rdr-voir #gate-asteroid,body.lv-d.rdr-voir #lvjoy,body.rdr-voir #rdr-f
    au papier de s'ouvrir, de se retourner puis de devenir une grille SANS jamais disparaître.
    L'écran garde un `.dc-ill` VIDE : il réserve la place, l'objet se pose dessus. La page apporte ses propres nœuds et
    ses propres transformations (ses classes à elle, lues sur `.dc[data-i]`) ; la nomenclature ne dit que l'endroit et l'apparition. */
-.dc.is-hero .dc-hero{position:absolute;top:calc(var(--dc-ins-t) + var(--dc-haut));left:50%;transform:translateX(-50%);perspective:1000px;
-  width:min(calc(100% - 2 * var(--dc-ins-x)),340px);height:var(--dc-ill-h);z-index:1;
+.dc.is-hero .dc-hero{position:absolute;top:var(--dc-hero-t,0px);left:var(--dc-hero-l,0px);perspective:1000px;
+  width:var(--dc-hero-w,0px);height:var(--dc-hero-h,var(--dc-ill-h));z-index:1;
   pointer-events:none;-webkit-user-select:none;user-select:none}
 .dc-o{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
   opacity:0;visibility:hidden;transition:opacity .5s ease,transform .5s ease,visibility 0s linear .5s}
@@ -4136,7 +4182,9 @@ body.lv-d.rdr-voir #gate-asteroid,body.lv-d.rdr-voir #lvjoy,body.rdr-voir #rdr-f
 @media(max-height:700px){.dc{--dc-ill-h:clamp(110px,19dvh,150px)}}
 @media(max-height:600px){.dc-ill,.dc-hero{display:none}}
 @media(prefers-reduced-motion:reduce){.dc-s,.dc-s.is-on,.dc-s.is-avant{transition:none;transform:none}.dc-next svg{animation:none}.dc.is-overlay,.dc.is-overlay.is-open{transition:none}
-  .dc-o{transition:opacity .2s ease}.dc-tw.is-frappe::after{animation:none}}
+  .dc-o{transition:opacity .2s ease}.dc-tw.is-frappe::after{animation:none}
+  .dc.is-hero .dc-hero,.dc .dc-ill,.dc-cta,.dc-deep{opacity:1!important;transition:none}
+  .dc[data-etape] .dc-s.is-on .dc-deep{display:inline-flex}.dc-more{transition:none}}
 /* ══ fin DISCOVER ══ */
 /* ── 16/11 · L'ACCUEIL : le titre de la vue centrale, le bouton discret, et le Discover en couche ──
    Le titre est une ÉTIQUETTE posée sur le circuit (fond noir, comme `#lv-tap`) : les racines de l'arbre passent derrière,
@@ -4144,6 +4192,16 @@ body.lv-d.rdr-voir #gate-asteroid,body.lv-d.rdr-voir #lvjoy,body.rdr-voir #rdr-f
 /* 23/11 (Wah) : « minimalisme et mystère » — plus de titre au centre ; le badge se range au coin du socle. */
 .lvp-cta.is-quiet{background:#000;color:#b8b8c2;box-shadow:inset 0 0 0 1px #3a3a42}
 .lvp-cta.is-quiet:hover{background:#17171b;color:#fff}
+/* ══ TREE MODE · 25/11/2026 (Wah : « je veux que le tree soit optionnel dès la page d'atterrissage, pour laisser à
+   l'utilisateur la possibilité d'avoir un VRAI minimalisme ») — un mot, au même endroit que les autres gestes de
+   l'atterrissage : dans la légende d'un membre, sous la porte d'un visiteur. Le choix est gardé (`totehm_tree`) et
+   posé AVANT la première image, pour que l'arbre n'apparaisse jamais pour s'effacer ensuite. L'arbre ne se voit
+   que sur ordinateur : au téléphone le mot ne change rien, et il reste honnête (il dit l'état, pas une promesse). */
+.lv-tree{background:none;border:0;padding:0;cursor:pointer;font:inherit;color:inherit;-webkit-tap-highlight-color:transparent}
+#lv-pitch .lv-tree{margin-top:10px;font:400 10px/1.3 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#6d6d74}
+.lv-tree[aria-pressed="false"]{opacity:.55;text-decoration:line-through;text-decoration-thickness:1px}
+@media(hover:hover){.lv-tree:hover{color:#fff;opacity:1}}
+body.no-tree #lv-ram{display:none}
 /* Le Discover prend tout l'écran PAR-DESSUS l'accueil, qui ne bouge pas dessous (`body.is-dc` : ses gestes sont rendus). */
 /* 17/11 — L'ILLUSTRATION D'UN ÉCRAN (`DISC`, `ILL`) : au-dessus du titre, faite des éléments du site — box natives (leurs
    couleurs natives), la pièce TOTEHM, le badge [Higher], le GPT qui tourne. Le reste reste noir, blanc, gris. */
@@ -4170,12 +4228,11 @@ body.lv-d.rdr-voir #gate-asteroid,body.lv-d.rdr-voir #lvjoy,body.rdr-voir #rdr-f
      3 → 4  le vrai vêtement (nos photos de `totehm-cloth-support`) : le badge brodé devant, l'illustration au dos
      4 → 5  il devient un point du radar — le VRAI radar du Club, avec ses spots lumineux
    Rien n'est coloré ici : seules les couleurs natives (box, navy du papier, badge, intentions des spots). */
+/* LE CARRÉ DU RÉCIT — assez grand pour que les trois vues du papier y tiennent SANS être rognées (mesuré : à 186 px
+   les intitulés « MY OBJECTIVES » et « MY REPULSIONS » se coupaient). Tous les objets reprennent ce carré. */
+#lvd{--dc-ill-h:clamp(170px,32dvh,286px)}
 #lvd .lvh{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;
   transition:opacity .55s ease,transform .75s cubic-bezier(.22,.61,.36,1)}
-/* LA QUESTION, à la place exacte de la légende de l'atterrissage */
-#lvd .lvq{position:absolute;left:0;right:0;top:var(--lvh-qy,62%);margin:0;padding:0 26px;text-align:center;
-  font:400 clamp(17px,2.7vw,25px)/1.3 Quantico,sans-serif;color:#fff;opacity:0;transition:opacity .6s ease}
-#lvd[data-i="0"] .lvq{opacity:1}
 /* LE PAPIER : recto (les cinq vues, puis la vidéo) et verso (la recherche) sur le MÊME nœud qui tourne */
 #lvd .lvh-pp{transform-style:preserve-3d}
 #lvd .lvh-f,#lvd .lvh-b{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
@@ -4185,8 +4242,13 @@ body.lv-d.rdr-voir #gate-asteroid,body.lv-d.rdr-voir #lvjoy,body.rdr-voir #rdr-f
 /* l'écran 0 EST l'atterrissage : la pièce ne bouge pas d'un pixel quand le Discover s'ouvre */
 #lvd[data-i="0"] .lvh-pp{transform:translate(var(--lvh-dx,0px),var(--lvh-dy,0px)) scale(var(--lvh-k,1))}
 #lvd .lvh-pp.is-verso{transform:rotateY(180deg)}
-/* 24/11 (Wah) : « un peu plus d'espacement entre les vues ». Le repli des deux papiers suit le même écart. */
-#lvd .dc-sf .sfcmd{--q:min(96px,25vw);--sfg:11px;gap:var(--sfg)}
+/* 24/11 (Wah) : « un peu plus d'espacement entre les vues ». Le repli des deux papiers suit le même écart.
+   25/11 : TOUT TIENT DANS LE CARRÉ. Fermé, le TOTEHM REMPLIT le carré (`--sfk`) ; en s'ouvrant il revient à sa taille
+   de mise en page et les trois vues se partagent le même carré — l'objet garde donc exactement la même empreinte
+   d'un écran à l'autre, et l'ouverture est un vrai mouvement (une transformation, pas un saut de largeur). */
+#lvd .dc-sf .sfcmd{--sfk:3.164;--q:calc(var(--dc-ill-h) / var(--sfk));--sfg:calc((var(--dc-ill-h) - 3 * var(--q)) / 2);
+  gap:var(--sfg);transform-origin:50% 50%;transition:transform .6s cubic-bezier(.22,.61,.36,1)}
+#lvd .dc-sf .sfcmd.is-logo{transform:scale(var(--sfk))}
 #lvd .dc-sf .sfcmd.is-logo .sfv-s{transform:translateX(calc(100% + var(--sfg)))}
 #lvd .dc-sf .sfcmd.is-logo .sfv-v{transform:translateX(calc(-100% - var(--sfg)))}
 /* LA VIDÉO DE LA MÉTHODE, calquée sur le papier. Elle PORTE DÉJÀ le papier perforé : on ne la masque donc pas une
@@ -4205,8 +4267,13 @@ body.lv-d.rdr-voir #gate-asteroid,body.lv-d.rdr-voir #lvjoy,body.rdr-voir #rdr-f
    le cadre de l'illustration, comme le moteur le fait du reste. */
 #lvd .lvh-pap{position:relative;height:100%;aspect-ratio:1;flex:none;background:var(--perfo) 0 0/100% 100% no-repeat}
 /* le bloc natif est HORS FLUX : il est seulement réduit et centré, et n'élargit donc pas le carré du papier */
-#lvd .lvh-vs{position:absolute;left:50%;top:50%;width:238px;display:flex;flex-direction:column;align-items:center;gap:10px;
-  transform:translate(-50%,-50%) scale(.72)}
+#lvd .lvh-vs{position:absolute;left:50%;top:50%;width:200px;display:flex;flex-direction:column;align-items:center;gap:14px;
+  transform:translate(-50%,-50%) scale(.84)}
+/* 25/11 (Wah) : « garde seulement le prix que tu centres avec le per year et le stop anytime … et tu laisses en
+   full-navy. C'est mieux pour l'illustration. » La bande noire et la ligne des règles s'en vont : le prix natif
+   (`.vs-month`) se pose à même le papier, centré. */
+#lvd .lvh-r{align-items:center;text-align:center}
+#lvd .lvh-r .vs-month{align-items:center;gap:4px}
 #lvd .lvh-q{width:100%;text-align:center;font:400 26px/1.2 Quantico,sans-serif;letter-spacing:.04em;color:#fbd5ca;min-height:1.2em}
 #lvd .lvh-q i{font-style:normal}
 #lvd .lvh-q::after{content:'';display:inline-block;width:.06em;height:.9em;background:#fbd5ca;vertical-align:-.08em;margin-left:.07em;opacity:0}
@@ -4214,8 +4281,8 @@ body.lv-d.rdr-voir #gate-asteroid,body.lv-d.rdr-voir #lvjoy,body.rdr-voir #rdr-f
 #lvd .lvh-r{display:flex;flex-direction:column;gap:2px;width:100%;opacity:0;transition:opacity .4s ease}
 #lvd .lvh-b.is-res .lvh-r{opacity:1}
 /* LE VÊTEMENT : nos VRAIES photos (`totehm-cloth-support`), badge brodé devant, illustration perforée au dos */
-#lvd .lvh-cl{gap:10px}
-#lvd .lvh-g{position:relative;width:min(44%,138px);flex:none;aspect-ratio:1;border-radius:10px;background:#141418}
+#lvd .lvh-cl{gap:6px}
+#lvd .lvh-g{position:relative;width:calc((var(--dc-ill-h) - 6px) / 2);flex:none;aspect-ratio:1;border-radius:8px;background:#141418}
 #lvd .lvh-g img.lvh-ph{display:block;width:100%;height:100%;object-fit:contain}
 #lvd .lvh-prt{position:absolute;left:50%;top:40%;width:30%;aspect-ratio:1;transform:translateX(-50%);overflow:hidden;
   -webkit-mask:var(--perfo) 0 0/100% 100% no-repeat;mask:var(--perfo) 0 0/100% 100% no-repeat}
@@ -4469,7 +4536,11 @@ div:not(:has(> :not(br,wbr))):hover,
 .dc-x:hover,
 .dc-next:hover,
 .dc-lead:hover,
+.dc-deep:hover,
+.dc-deep[aria-expanded="true"]:hover,
+.dc-more .dc-p:hover,
 .lvp-cta.is-quiet:hover,
+#lv-pitch .lv-tree:hover,
 #lvd .lvh-q:hover):where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *)){color:#fff!important}
 .h-text:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::placeholder{color:#fff!important}
 .habit.open .v-name[contenteditable]:empty:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::before{color:#fff!important}
@@ -4728,11 +4799,12 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
         <div id="lv-pitch" class="hide">
           <button id="lv-join" class="lvp-cta" type="button">Open my TOTEHM</button>
           <button id="lv-discover" class="lvp-cta is-quiet" type="button">Discover</button>
+          <button id="lv-pitch-tree" class="lv-tree" type="button" aria-pressed="true">Tree</button>
         </div>
         <!-- ⚠️ 18/10 — CHACUN FAIT CE QU'IL DIT (règle du 06/10). Depuis que `#conn-bar` est parti,
              « Turn to configure it » est la SEULE porte vers le verso quand le geste n'est pas
              disponible (mouvement réduit, clavier) : c'est donc un vrai bouton, pas une légende. -->
-        <div id="lv-tap" class="hide"><button id="lv-tap-open" type="button">Tap to open it</button><span class="lvt-sep"> · </span><button id="lv-tap-turn" type="button">Turn to configure it</button><span class="lvt-sep"> · </span><button id="lv-tap-disc" type="button">Discover</button></div>
+        <div id="lv-tap" class="hide"><button id="lv-tap-open" type="button">Tap to open it</button><span class="lvt-sep"> · </span><button id="lv-tap-turn" type="button">Turn to configure it</button><span class="lvt-sep"> · </span><button id="lv-tap-disc" type="button">Discover</button><span class="lvt-sep"> · </span><button id="lv-tap-tree" class="lv-tree" type="button" aria-pressed="true">Tree</button></div>
         <div id="lv-mode" role="radiogroup" aria-label="My TOTEHM or a member's">
           <button type="button" role="radio" id="lv-m-mine" data-mode="mine" aria-checked="true">Mine</button>
           <button type="button" role="radio" id="lv-m-members" data-mode="members" aria-checked="false"><span class="lvm-lab">Members</span><span class="lvm-who" id="lv-m-who"></span></button>
@@ -4852,24 +4924,25 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
      60 / 30 / 10 : noir, texte, et les seules couleurs natives de l'objet.
      ⚠️ Rien ici n'est une promesse de résultat ni un chiffre inventé : chaque phrase dit ce que le produit FAIT.
      ⚠️ Aucune étude n'est citée tant qu'elle n'est pas en main : « built on behavioral science », rien de plus. -->
-<div class="dc is-overlay is-illustre is-hero has-cta has-x" id="lvd" role="dialog" aria-modal="true" aria-label="Discover TOTEHM" hidden>
+<div class="dc is-overlay is-illustre is-hero is-carre has-cta has-x" id="lvd" role="dialog" aria-modal="true" aria-label="Discover TOTEHM" hidden>
   <!-- L'OBJET QUI VOYAGE : une seule couche, six états. Le papier s'ouvre, se retourne en recherche, devient la grille
        de mes médias, s'imprime au dos d'un vêtement, puis n'est plus qu'un point exact sur le radar du Club.
        Dessiné une fois à la première ouverture (`HERO`), par les MÊMES fonctions que les cinq vues. -->
   <div class="dc-hero" aria-hidden="true"><div class="dc-o" data-o="0 1 2 3 4 5" id="lvd-o"></div></div>
   <div class="dc-stage">
-    <div class="dc-s"><div class="dc-ill" aria-hidden="true"></div><p class="lvq">How to reach your greatness in the most efficient way?</p></div>
-    <div class="dc-s" data-cta="totehm"><div class="dc-ill" aria-hidden="true"></div><h2 class="dc-tw">Create the best strategy and have it in mind all the time</h2><p class="dc-p">Built on behavioral science.
-Lay the path to your greatness flat, on one paper. Remember it every day with TotehmBot. Think it through with <svg class="dc-hi" viewBox="0 0 600 200" role="img" aria-label="Higher"><title>Higher</title><use href="#higher-badge"></use></svg> GPT.</p></div>
-    <div class="dc-s" data-cta="eco"><div class="dc-ill" aria-hidden="true"></div><h2 class="dc-tw">Take real inspiration and have mentors</h2><p class="dc-p">Subscribe to a member and enter their ecosystem: their whole life strategy, the private media of their mind, the spots they really use — and you can meet them there.
-Your own TOTEHM can be subscribed to too.</p></div>
-    <div class="dc-s" data-cta="gpt"><div class="dc-ill" aria-hidden="true"></div><h2 class="dc-tw">Make it happen in the best possible way</h2><p class="dc-p">Train your brain to put your strategy into practice: know yourself, keep it in sight, and let <svg class="dc-hi" viewBox="0 0 600 200" role="img" aria-label="Higher"><title>Higher</title><use href="#higher-badge"></use></svg> GPT prepare your next step — with your media, your spots, and real places.</p></div>
-    <div class="dc-s" data-cta="cloth"><div class="dc-ill" aria-hidden="true"></div><h2 class="dc-tw">Wear your greatness, not someone else’s</h2><p class="dc-p">Totehmize an element of your TOTEHM: <svg class="dc-hi" viewBox="0 0 600 200" role="img" aria-label="Higher"><title>Higher</title><use href="#higher-badge"></use></svg> embroidered on the front, your own illustration on the back.
-You remember your way, and the street can read what is behind it.</p></div>
-    <div class="dc-s" data-cta="club"><div class="dc-ill" aria-hidden="true"></div><h2 class="dc-tw">Grind with the right people, in the right spot, at the right time</h2><p class="dc-p">Members publish intentional spots: one Habit, one exact place, one exact time. Join theirs, or publish yours and let them join you.</p>
-      <div class="dc-row"><a class="dc-lnk" href="/terms" target="_blank" rel="noopener">Simple terms of use</a></div></div>
+    <div class="dc-s"><div class="dc-ill" aria-hidden="true"></div><h2 class="dc-tw">Make it Happen</h2></div>
+    <div class="dc-s" data-cta="totehm"><div class="dc-ill" aria-hidden="true"></div><h2 class="dc-tw">Create the best strategy and have it in mind all the time</h2><button class="dc-deep" type="button" aria-expanded="false">Deeper <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 4.5 L6 8.5 L10 4.5"/></svg></button><div class="dc-more"><div><p class="dc-p">Built on behavioral science.
+Lay the path to your greatness flat, on one paper. Remember it every day with TotehmBot. Think it through with <svg class="dc-hi" viewBox="0 0 600 200" role="img" aria-label="Higher"><title>Higher</title><use href="#higher-badge"></use></svg> GPT.</p></div></div></div>
+    <div class="dc-s" data-cta="eco"><div class="dc-ill" aria-hidden="true"></div><h2 class="dc-tw">Take real inspiration and have mentors</h2><button class="dc-deep" type="button" aria-expanded="false">Deeper <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 4.5 L6 8.5 L10 4.5"/></svg></button><div class="dc-more"><div><p class="dc-p">Subscribe to a member and enter their ecosystem: their whole life strategy, the private media of their mind, the spots they really use — and you can meet them there.
+Your own TOTEHM can be subscribed to too.</p></div></div></div>
+    <div class="dc-s" data-cta="gpt"><div class="dc-ill" aria-hidden="true"></div><h2 class="dc-tw">Make it happen in the best possible way</h2><button class="dc-deep" type="button" aria-expanded="false">Deeper <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 4.5 L6 8.5 L10 4.5"/></svg></button><div class="dc-more"><div><p class="dc-p">Train your brain to put your strategy into practice: know yourself, keep it in sight, and let <svg class="dc-hi" viewBox="0 0 600 200" role="img" aria-label="Higher"><title>Higher</title><use href="#higher-badge"></use></svg> GPT prepare your next step — with your media, your spots, and real places.</p></div></div></div>
+    <div class="dc-s" data-cta="cloth"><div class="dc-ill" aria-hidden="true"></div><h2 class="dc-tw">Wear your greatness, not someone else’s</h2><button class="dc-deep" type="button" aria-expanded="false">Deeper <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 4.5 L6 8.5 L10 4.5"/></svg></button><div class="dc-more"><div><p class="dc-p">Totehmize an element of your TOTEHM: <svg class="dc-hi" viewBox="0 0 600 200" role="img" aria-label="Higher"><title>Higher</title><use href="#higher-badge"></use></svg> embroidered on the front, your own illustration on the back.
+You remember your way, and the street can read what is behind it.</p></div></div></div>
+    <div class="dc-s" data-cta="club"><div class="dc-ill" aria-hidden="true"></div><h2 class="dc-tw">Grind with the right people, in the right spot, at the right time</h2><button class="dc-deep" type="button" aria-expanded="false">Deeper <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 4.5 L6 8.5 L10 4.5"/></svg></button><div class="dc-more"><div><p class="dc-p">Members publish intentional spots: one Habit, one exact place, one exact time. Join theirs, or publish yours and let them join you.
+
+<a class="dc-lnk" href="/terms" target="_blank" rel="noopener">Simple terms of use</a></p></div></div></div>
   </div>
-  <div class="dc-cta"><button class="dc-btn" id="lvd-cta" type="button">Create my TOTEHM</button><button class="dc-lnk hide" id="lvd-lnk" type="button">Monetize my TOTEHM</button></div>
+  <div class="dc-cta"><button class="dc-btn is-perfo" id="lvd-cta" type="button">Create my TOTEHM</button><button class="dc-lnk hide" id="lvd-lnk" type="button">Monetize my TOTEHM</button></div>
   <button class="dc-x" id="lvd-x" type="button" aria-label="Close"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2 L12 12 M12 2 L2 12"/></svg></button>
 </div>
 
@@ -9093,7 +9166,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-11-25-verso';
+const BUILD='2026-11-25-ordre';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -15277,11 +15350,8 @@ window.addEventListener('pageshow',e=>{
           +'<div class="lvh-b"><span class="lvh-pap"><span class="lvh-vs">'
             +'<span class="lvh-q"><i></i></span>'
             /* le résultat, avec le balisage NATIF de `#mb-res` (voir `CHERCHE`) */
-            +'<span class="lvh-r">'
-              /* sans [Discover] : on EST déjà dans le Discover (Wah, 25/11) — la bande garde son prix seul */
-              +'<span class="vs-top"><span class="vs-month"><b>60 €</b><i>per year · stop anytime</i></span></span>'
-              +'<span class="vs-s vs-cut">Respect their rules: <span class="mbr-nom">'+esc(NOM)+'</span> can cut you off at any time.</span>'
-            +'</span>'
+            /* le prix SEUL, centré, à même le navy (25/11) : son rendu natif (`.vs-month`), rien autour */
+            +'<span class="lvh-r"><span class="vs-month"><b>60 €</b><i>per year · stop anytime</i></span></span>'
           +'</span></span></div>'
         +'</div>'
         /* LE VRAI VÊTEMENT : nos photos de `totehm-cloth-support` (le Higher brodé devant), l'illustration au dos */
@@ -15379,17 +15449,18 @@ window.addEventListener('pageshow',e=>{
          EXACTEMENT sur celle de l'atterrissage — mesurée, jamais devinée — et la question prend la place de la
          légende. Rien ne saute quand le Discover s'ouvre : la page se dépouille, l'objet reste où il est. */
       function caler(){
-        const a=$('gate-asteroid'), pp=el.querySelector('.lvh-pp'), sf=$('lvd-sf');
-        if(!a||!pp||!sf) return;
-        el.style.setProperty('--lvh-dx','0px'); el.style.setProperty('--lvh-dy','0px'); el.style.setProperty('--lvh-k','1');
-        void el.offsetWidth;
-        const ar=a.getBoundingClientRect(), g=sf.querySelector('.sfv-g'), sr=(g||sf).getBoundingClientRect();
-        if(!ar.width||!sr.width) return;
-        el.style.setProperty('--lvh-k',(ar.width/sr.width).toFixed(3));
-        el.style.setProperty('--lvh-dx',((ar.x+ar.width/2)-(sr.x+sr.width/2)).toFixed(1)+'px');
-        el.style.setProperty('--lvh-dy',((ar.y+ar.height/2)-(sr.y+sr.height/2)).toFixed(1)+'px');
-        const lg=$('lv-tap'), pi=$('lv-pitch'), n=(lg&&lg.getClientRects().length?lg:pi);
-        if(n&&n.getClientRects().length) el.style.setProperty('--lvh-qy',Math.round(n.getBoundingClientRect().top)+'px');
+        const a=$('gate-asteroid'), sf=$('lvd-sf'), g=sf&&sf.querySelector('.sfv-g');
+        if(!a||!g) return;
+        const ar=a.getBoundingClientRect(), L=el.style.getPropertyValue('--dc-hero-l'),
+              T=el.style.getPropertyValue('--dc-hero-t'), W=el.style.getPropertyValue('--dc-hero-w'),
+              H=el.style.getPropertyValue('--dc-hero-h');
+        if(!ar.width||!W) return;
+        /* Fermée, la pièce REMPLIT le cadre : l'écart et le facteur se calculent donc sur le cadre lui-même, jamais
+           sur une taille transformée — et la pièce du récit tombe sur celle de l'atterrissage au pixel. */
+        const cx=parseFloat(L)+parseFloat(W)/2, cy=parseFloat(T)+parseFloat(H)/2;
+        el.style.setProperty('--lvh-k',(ar.width/parseFloat(W)).toFixed(3));
+        el.style.setProperty('--lvh-dx',((ar.x+ar.width/2)-cx).toFixed(1)+'px');
+        el.style.setProperty('--lvh-dy',((ar.y+ar.height/2)-cy).toFixed(1)+'px');
       }
       function frapperNom(bk){
         const q=bk.querySelector('.lvh-q i'); if(!q) return;
@@ -15451,6 +15522,7 @@ window.addEventListener('pageshow',e=>{
       function peindre(k){
         const i=(typeof k==='number')?k:(dc?dc.index():0);
         const rd=ouvert&&i===5?el.querySelector('.dc-radar'):null; if(rd) RADAR.on(rd); else RADAR.off();
+        if(i===0) caler();   /* l'écran 0 se recale sur l'atterrissage à chaque passage (le cadre vient d'être posé) */
         conter(i);
         const e=el.querySelectorAll('.dc-s')[i], cle=(e&&e.dataset.cta)||'', por=PORTES[cle],
               moi=inscrit()&&!guest()&&!RO;
@@ -15466,7 +15538,7 @@ window.addEventListener('pageshow',e=>{
       function ouvrir(parScroll){
         if(ouvert||!window.TOTEHM_DISCOVER) return; ouvert=true; diagD.ouvertures++; origine=document.activeElement; clearTimeout(t);
         if(parScroll===true){ diagD.parScroll++; const n=Date.now(); sourdine=n+250; sourdineFin=n+1500; }
-        el.hidden=false; illustrer(); caler();
+        el.hidden=false; illustrer();
         if(!dc) dc=window.TOTEHM_DISCOVER.monter(el,{surChangement:peindre});
         dc.activer(true); dc.aller(0,true); peindre();
         void el.offsetWidth; body.classList.add('is-dc'); el.classList.add('is-open');
@@ -15497,6 +15569,17 @@ window.addEventListener('pageshow',e=>{
                    n:el.querySelectorAll('.dc-s').length, porte:cta.dataset.va||''})};
     })();
     window.__totehm_discover=()=>DISC.etat();
+    /* TREE MODE : un seul état, deux mots qui le disent. Le repère est lu au démarrage (plus haut, avant la peinture). */
+    {
+      const mots=[$('lv-tap-tree'),$('lv-pitch-tree')].filter(Boolean);
+      const dire=v=>{ body.classList.toggle('no-tree',!v);
+        mots.forEach(b=>b.setAttribute('aria-pressed',String(!!v))); };
+      const lu=()=>{ try{ return localStorage.getItem('totehm_tree')!=='0'; }catch(_){ return true; } };
+      dire(lu());
+      mots.forEach(b=>b.onclick=()=>{ const v=!lu();
+        try{ localStorage.setItem('totehm_tree',v?'1':'0'); }catch(_){}
+        dire(v); if(typeof RAM==='object'&&RAM&&v) try{ RAM.peindre(vue); }catch(_){} });
+    }
     {
       const join=$('lv-join');
       if(join) join.onclick=()=>{ if(typeof ouvrirPorte==='function') ouvrirPorte(null); };
@@ -16001,7 +16084,7 @@ window.TOTEHM_DISCOVER = (() => {
   const ACTIF = 'input,textarea,select,button,a,[contenteditable]';
   function monter(hote, opt){
     const o = Object.assign({ surChangement:null }, opt || {});
-    let i = 0, ecrans = [], verrou = 0, cumul = 0, tCumul = 0, y0 = null, actif = true;
+    let i = 0, ecrans = [], verrou = 0, cumul = 0, tCumul = 0, y0 = null, actif = true, tEtape = 0, frappeSeq = 0;
     const stage = hote.querySelector('.dc-stage'), rail = document.createElement('div'), next = document.createElement('button');
     rail.className = 'dc-rail'; rail.setAttribute('aria-hidden', 'true');
     next.className = 'dc-next'; next.type = 'button'; next.setAttribute('aria-label', 'Next'); next.innerHTML = CHEVRON;
@@ -16010,7 +16093,16 @@ window.TOTEHM_DISCOVER = (() => {
        ou hauteur) au rendu, à chaque écran et à chaque changement de taille — jamais rogné. */
     function envelopper(){ hote.querySelectorAll('.dc-ill,.dc-o').forEach(f => { if(f.querySelector(':scope>.dc-ill-in')) return;
       const n = document.createElement('div'); n.className = 'dc-ill-in'; while(f.firstChild) n.appendChild(f.firstChild); f.appendChild(n); }); }
-    function ajuster(){ hote.querySelectorAll('.dc-ill-in').forEach(n => { const f = n.parentNode, H = f.clientHeight, W = f.clientWidth; if(!H || !W) return;
+    /* L'objet se pose sur le `.dc-ill` de l'écran ACTIF, lu en mise en page (`offset*`) : les écrans se centrent
+       (25/11) et n'ont pas tous la même hauteur, donc la place de l'objet se MESURE au lieu de se calculer. */
+    function cadre(){
+      const e = ecrans[i], f = e && e.querySelector('.dc-ill'), h = hote.querySelector('.dc-hero');
+      if(!f || !h || !f.offsetWidth) return;
+      const v = [[ '--dc-hero-t', e.offsetTop + f.offsetTop ], [ '--dc-hero-l', e.offsetLeft + f.offsetLeft ],
+                 [ '--dc-hero-w', f.offsetWidth ], [ '--dc-hero-h', f.offsetHeight ]];
+      for(const [k, n] of v) hote.style.setProperty(k, n + 'px');
+    }
+    function ajuster(){ cadre(); hote.querySelectorAll('.dc-ill-in').forEach(n => { const f = n.parentNode, H = f.clientHeight, W = f.clientWidth; if(!H || !W) return;
       const k = Math.min(1, H / Math.max(1, n.offsetHeight), W / Math.max(1, n.scrollWidth));
       const v = k < .999 ? 'scale(' + k.toFixed(3) + ')' : ''; if(n.style.transform !== v) n.style.transform = v; }); }
     function lire(){ ecrans = [...stage.querySelectorAll('.dc-s')]; rail.innerHTML = ecrans.map(() => '<span></span>').join(''); envelopper(); }
@@ -16022,16 +16114,33 @@ window.TOTEHM_DISCOVER = (() => {
       n.classList.toggle('is-on', ou.includes(String(i))); }); }
     /* LA LIGNE FRAPPÉE (`.dc-tw`) : l'écran qui arrive écrit sa phrase à la machine, UNE fois. Revenir en arrière ne la
        réécrit pas (on la lit, on ne l'attend pas) ; rouvrir le Discover depuis le premier écran, si (`remettre`). */
-    function frapper(){
+    function frapper(fin){
       const e = ecrans[i], n = e && e.querySelector('.dc-tw');
-      if(!n || n.dataset.frappe) return;
+      if(!n){ if(fin) fin(); return; }
+      if(n.dataset.frappe){ if(fin) fin(); return; }
       const txt = n.dataset.txt || (n.dataset.txt = n.textContent.trim());
       n.dataset.frappe = '1';
-      if(RM.matches){ n.textContent = txt; return; }
+      if(RM.matches){ n.textContent = txt; if(fin) fin(); return; }
+      const mien = ++frappeSeq;
       n.textContent = ''; n.classList.add('is-frappe');
-      (function pas(k){ if(!n.isConnected) return; n.textContent = txt.slice(0, k);
-        if(k < txt.length) setTimeout(() => pas(k + 1), 21 + Math.random() * 17); else n.classList.remove('is-frappe'); })(1);
+      (function pas(k){
+        if(!n.isConnected || mien !== frappeSeq) return;
+        n.textContent = txt.slice(0, k);
+        if(k < txt.length){ setTimeout(() => pas(k + 1), 21 + Math.random() * 17); return; }
+        n.classList.remove('is-frappe'); if(fin) fin(); })(1);
     }
+    /* L'ORDRE (Wah, 25/11) : la phrase se frappe (0), PUIS l'objet l'illustre (1), PUIS le tiroir et la porte (2). */
+    function etapes(){
+      clearTimeout(tEtape);
+      const pose = k => { if(hote.dataset.etape !== String(k)) hote.dataset.etape = k; };
+      if(RM.matches){ pose(2); frapper(); return; }
+      pose(0);
+      frapper(() => { if(!hote.isConnected) return; pose(1);
+        tEtape = setTimeout(() => pose(2), 820); });
+    }
+    /* LE TIROIR : un seul écouteur sur l'hôte ; changer d'écran referme ce qui était ouvert. */
+    function tiroirs(ferme){ hote.querySelectorAll('.dc-deep').forEach(b => {
+      if(ferme || b.getAttribute('aria-expanded') === null) b.setAttribute('aria-expanded', 'false'); }); }
     function remettre(){ hote.querySelectorAll('.dc-tw').forEach(n => { delete n.dataset.frappe;
       if(n.dataset.txt) n.textContent = n.dataset.txt; }); }
     function peindre(instant){
@@ -16041,8 +16150,9 @@ window.TOTEHM_DISCOVER = (() => {
       rail.querySelectorAll('span').forEach((s, k) => s.classList.toggle('on', k === i));
       hote.classList.toggle('is-last', i >= ecrans.length - 1);
       hote.dataset.i = i; hote.dataset.n = ecrans.length;
-      objets(); frapper();
+      objets(); tiroirs(true);
       ajuster();
+      etapes();
       if(o.surChangement) o.surChangement(i, ecrans.length);
     }
     function aller(k, instant){
@@ -16081,10 +16191,16 @@ window.TOTEHM_DISCOVER = (() => {
        Il n'écoute que si le moteur est visible, et que le focus est dedans ou nulle part. */
     window.addEventListener('keydown', e => { if(hote.isConnected && !hote.hidden && !hote.classList.contains('hide') && (hote.contains(e.target) || document.activeElement === document.body)) touche(e); }, true);
     next.addEventListener('click', suivant);
+    hote.addEventListener('click', e => { const b = e.target.closest('.dc-deep'); if(!b || !hote.contains(b)) return;
+      b.setAttribute('aria-expanded', b.getAttribute('aria-expanded') === 'true' ? 'false' : 'true');
+      /* le tiroir change la hauteur de l'écran, donc son centrage : l'objet SUIT la place qui lui est réservée,
+         image par image, le temps de l'ouverture — sinon il resterait en arrière et passerait sur le texte. */
+      const fin = Date.now() + 560;
+      (function suivre(){ cadre(); if(Date.now() < fin) requestAnimationFrame(suivre); })(); });
     window.addEventListener('resize', () => { if(hote.isConnected) requestAnimationFrame(ajuster); });
     if(document.fonts && document.fonts.ready) document.fonts.ready.then(ajuster);
     lire(); peindre(true);
-    return { aller, suivant, precedent, index:() => i, total:() => ecrans.length,
+    return { aller, suivant, precedent, index:() => i, total:() => ecrans.length, etape:() => +(hote.dataset.etape || 0),
       derniere:() => aller(ecrans.length - 1, true),
       rafraichir(garder){ const k = garder ? i : 0; lire(); i = Math.min(k, Math.max(0, ecrans.length - 1)); peindre(true); },
       ajuster, activer(v){ actif = !!v; } };
