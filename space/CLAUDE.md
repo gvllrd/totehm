@@ -33,7 +33,7 @@ Règle indispensable : l’œuvre exposée EST la première page canonique de so
 | `origin-return-journey.mjs` · `origin.html` · `origin-scene.mjs` · `origin.css` · `origins.html` · `origins-book.*` · `origins-cover.mjs` · `gallery-book-expansion.mjs` | nouvelle page du sanctuaire galactique avec le seul livre original ; lecteur de ses vingt œuvres, retour au sanctuaire |
 | `get_higher.html` · `stoner.html` · `play_lisbon_street.html` · `same_but_opposite.html` · `think_same_but_opposite.html` | œuvres indépendantes et parcours Discover anglais, lecteurs et droits propres |
 
-Stoner réserve 70 % de la largeur au lecteur et 30 % aux explications neurologiques, ouvertes au départ. La bascule conserve la pose du Totehmpaper et le choix du visiteur pendant les étapes. Le texte Quantico corail révèle les lettres et le slogan SVG. Le lien My TOTEHM est centré en bas et ouvre totehm.com dans un nouvel onglet.
+Stoner réserve 70 % de la largeur au lecteur et 30 % aux explications neurologiques, ouvertes au départ. La bascule conserve la pose du Totehmpaper et le choix du visiteur pendant les étapes. Les explications reprennent la typographie Space Mono et les paragraphes de Discover, affichés d’un bloc avec le slogan SVG natif. Les deux voies vidéo se fondent sur le fond noir du lecteur. Le lien My TOTEHM est centré en bas et ouvre totehm.com dans un nouvel onglet.
 | `market.html` · `social.html` | marché, collection personnelle et lecteur ouvert par COM `/x/space` |
 | `vendor/` · `assets/` | Three.js/HLS et véritables médias locaux ; licences dans les LICENSE.txt |
 
