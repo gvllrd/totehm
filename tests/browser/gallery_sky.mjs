@@ -29,11 +29,11 @@ try{
    sample.reducedStart=await state(pg);
    const {skyMotion,dimension,catalogue,stars,stellarColours,moonDirection,galacticNormal,companionGalaxy,emissionNebula,brightAnchors,shootingStars,comet,lunarRelief,galacticPlate,skyGrade,skyPalette,astrophotography}=sample.reducedStart.sky;
    catalogues.push({catalogue,stars,stellarColours,moonDirection,galacticNormal,companionGalaxy,emissionNebula,brightAnchors,shootingStars,comet,lunarRelief,galacticPlate,skyGrade,skyPalette,astrophotography});
-   check(stars===23500&&stellarColours===7&&brightAnchors===14&&lunarRelief&&comet===false&&shootingStars===0,city+' keeps the shared authored stars and lunar relief');
+   check(stars===23500&&stellarColours===7&&brightAnchors===14&&lunarRelief&&sample.reducedStart.sky.photographicLocalContrast&&comet===false&&shootingStars===0,city+' keeps the shared authored stars and lunar relief');
    check(skyGrade==='astrophotographic-night'&&skyPalette==='black-cobalt-violet-turquoise-gold'&&galacticPlate.projection==='full-sphere-astrophotography'&&skyMotion.stellarScintillation&&astrophotography?.ready&&astrophotography.local&&astrophotography.dimensions.join(',')==='2048,1024',city+' renders the night-colour ESO panorama and stellar scintillation');
    const dimensional=city==='origin';
    check(skyMotion.paintedShear===dimensional&&skyMotion.driftingDust===dimensional&&skyMotion.colourScintillation===dimensional,city+' uses the intended sky motion');
-   check(dimensional?dimension?.refraction&&dimension?.auroras&&dimension?.parallax&&dimension?.dustLayers===3&&dimension.passage===0:dimension===null,city+' respects the dimensional boundary');
+   check(dimensional?dimension?.refraction&&dimension?.auroras&&dimension?.parallax&&dimension?.dustLayers===4&&dimension?.pairedVeils&&dimension.passage===0:dimension===null,city+' respects the dimensional boundary');
    await pg.waitForTimeout(600);
    sample.reducedEnd=await state(pg);
    check(sample.reducedEnd.sky.time===sample.reducedStart.sky.time&&!sample.reducedEnd.sky.animated&&!sample.reducedEnd.sky.meteor,city+' freezes the sky in reduced motion');

@@ -153,31 +153,44 @@ export function createDrownedSky(scene,{mobile=false,profile='earth',arrival=fal
    vec2 sphereUV(vec3 d){
     return vec2(atan(d.z,d.x)*.159154943+.5,asin(clamp(d.y,-1.,1.))*.318309886+.5);
    }
-   vec3 skySample(sampler2D image,vec2 uv){
-    // Correct derivatives across the longitude seam keep stars point-like.
-    vec2 dx=dFdx(uv),dy=dFdy(uv);
-    dx.x-=floor(dx.x+.5);dy.x-=floor(dy.x+.5);
-    return textureGrad(image,uv,dx,dy).rgb;
+   vec2 skyDerivative(vec2 delta){
+    // Crossing the longitude seam must keep the same texture footprint.
+    delta.x-=floor(delta.x+.5);
+    return delta;
    }
-   vec3 nightPigment(vec3 signal,vec3 galactic,float time){
-    float light=dot(signal,vec3(.2126,.7152,.0722));
-    float intensity=max(light-.0036,0.)*(.36+.69*smoothstep(.0045,.043,light))/(1.+.74*light);
+   vec3 skySample(sampler2D image,vec2 uv){
+    return textureGrad(image,uv,skyDerivative(dFdx(uv)),skyDerivative(dFdy(uv))).rgb;
+   }
+   vec3 nightPigment(vec3 signal,vec3 lowFrequency,vec3 galactic,float time){
+    vec3 luminance=vec3(.2126,.7152,.0722);
+    float light=dot(signal,luminance);
+    float localLight=dot(lowFrequency,luminance);
+    // Separate the photographed dust lanes from the broad glow. Suppress the
+    // plate's floor while preserving the fine variations inside those lanes.
+    float fine=clamp((light-localLight)/(localLight+.022),-.75,.8);
+    float structure=smoothstep(.006,.032,localLight)*(1.-smoothstep(.16,.52,light));
+    float floorLevel=mix(.0048,.0034,smoothstep(.014,.075,localLight));
+    float intensity=max(light-floorLevel,0.)*(.32+.73*smoothstep(.005,.039,light))/(1.+.79*light);
+    intensity*=1.+fine*structure*.91;
     float latitude=abs(galactic.y);
-    float violet=smoothstep(.22,.79,.49+.33*sin(dot(galactic,vec3(2.4,1.2,-3.1)))+.13*cos(dot(galactic,vec3(7.8,-3.3,4.1))));
-    float turquoise=smoothstep(.52,.91,.55+.37*sin(dot(galactic,vec3(-4.7,2.1,4.2))))
+    float violet=smoothstep(.22,.79,.49+.33*sin(dot(galactic,vec3(2.4,1.2,-3.1)))+.13*cos(dot(galactic,vec3(7.8,-3.3,4.1)))+fine*.09);
+    float turquoise=smoothstep(.52,.91,.55+.37*sin(dot(galactic,vec3(-4.7,2.1,4.2)))+fine*.075)
      *(1.-smoothstep(.04,.42,latitude))*smoothstep(.011,.057,light);
     float warmth=(signal.r-signal.b)/max(light,.004);
     float gold=smoothstep(.105,.55,warmth)*smoothstep(.032,.118,light);
-    vec3 tint=mix(vec3(.255,.58,2.03),vec3(.87,.315,1.86),violet);
-    tint=mix(tint,vec3(.095,1.27,1.70),turquoise);
-    tint=mix(tint,vec3(1.94,.91,.255),gold);
-    vec3 signalHue=signal/max(light,.001);
-    tint=mix(tint,signalHue,.14);
-    float glimmer=.97+.03*sin(dot(galactic,vec3(9.3,-4.5,10.7))+time*.34);
+    vec3 cobalt=mix(vec3(.20,.43,2.06),vec3(.30,.70,1.96),smoothstep(.026,.13,localLight));
+    vec3 tint=mix(cobalt,vec3(.88,.294,1.86),violet);
+    tint=mix(tint,vec3(.077,1.31,1.74),turquoise);
+    tint=mix(tint,vec3(2.06,1.00,.242),gold);
+    tint=mix(tint,signal/max(light,.001),.12);
+    float glimmer=.977+.023*sin(dot(galactic,vec3(9.3,-4.5,10.7))+time*.34);
     vec3 dust=intensity*tint*mix(1.,glimmer,max(turquoise,gold));
-    // The brightest photographed stars retain bright cores and their native hues.
-    float star=smoothstep(.43,.93,max(signal.r,max(signal.g,signal.b)))*smoothstep(.25,.67,light);
-    return mix(dust,signal*.74,star);
+    // Bright compact peaks keep their natural colours. A similarly bright
+    // cloud does not desaturate a whole region of the photograph.
+    float peak=light-localLight;
+    float star=smoothstep(.34,.85,max(signal.r,max(signal.g,signal.b)))*
+     smoothstep(.14,.56,light)*smoothstep(.018,.16,peak);
+    return mix(dust,signal*.78,star);
    }
    #ifdef ORIGIN_SKY
    ${ORIGIN_SKY_FRAGMENT}
@@ -192,8 +205,13 @@ export function createDrownedSky(scene,{mobile=false,profile='earth',arrival=fal
     #else
     vec3 photographDirection=galactic;
     #endif
-    vec3 signal=skySample(uPhotograph,sphereUV(photographDirection));
-    vec3 ink=mix(fallback,nightPigment(signal,galactic,uTime),uPhotographBlend);
+    vec2 plateUV=sphereUV(photographDirection);
+    vec2 dx=skyDerivative(dFdx(plateUV)),dy=skyDerivative(dFdy(plateUV));
+    vec3 signal=textureGrad(uPhotograph,plateUV,dx,dy).rgb;
+    vec2 workingSize=vec2(textureSize(uPhotograph,0));
+    float footprint=max(length(dx*workingSize),length(dy*workingSize));
+    vec3 lowFrequency=textureLod(uPhotograph,plateUV,max(2.05,log2(max(1.,footprint))+1.35)).rgb;
+    vec3 ink=mix(fallback,nightPigment(signal,lowFrequency,galactic,uTime),uPhotographBlend);
     #ifdef ORIGIN_SKY
     ink=originLight(ink,d,galactic,uTime);
     #endif
@@ -232,15 +250,15 @@ export function createDrownedSky(scene,{mobile=false,profile='earth',arrival=fal
   const navigation=i>=pleiades.length&&i<anchors.length;
   anchorsStrength[i]=navigation?1:i<pleiades.length?.34:0;
   colours.set(colour.toArray(),i*3);
-  sizes[i]=navigation?5.5+bright*2.2:.75+bright*3.1;
-  phases[i]=random()*Math.PI*2;intensities[i]=.08+bright*.82;
+  sizes[i]=navigation?5.5+bright*2.2:1.15+bright*3.5;
+  phases[i]=random()*Math.PI*2;intensities[i]=.055+bright*.84;
  }
  const starGeometry=geometry(new T.BufferGeometry());starGeometry.setAttribute('position',new T.BufferAttribute(positions,3));starGeometry.setAttribute('aColour',new T.BufferAttribute(colours,3));starGeometry.setAttribute('aSize',new T.BufferAttribute(sizes,1));starGeometry.setAttribute('aPhase',new T.BufferAttribute(phases,1));starGeometry.setAttribute('aIntensity',new T.BufferAttribute(intensities,1));starGeometry.setAttribute('aAnchor',new T.BufferAttribute(anchorsStrength,1));
 
  const starMaterial=material(new T.ShaderMaterial({defines,uniforms:{uTime:timeUniform,uPixelRatio:pixelRatio,uPassage:passage},transparent:true,depthWrite:false,depthTest:true,blending:T.AdditiveBlending,toneMapped:false,fog:false,
-  vertexShader:`attribute vec3 aColour;attribute float aSize,aPhase,aIntensity,aAnchor;uniform float uTime,uPixelRatio,uPassage;varying vec3 vColour;varying float vIntensity,vGlint,vAnchor;
-   void main(){vAnchor=aAnchor;float low=1.-clamp(position.y/1220.,0.,1.);
-    float shimmer=mix(.018+.052*low*low,.035,aAnchor);
+  vertexShader:`attribute vec3 aColour;attribute float aSize,aPhase,aIntensity,aAnchor;uniform float uTime,uPixelRatio,uPassage;varying vec3 vColour;varying float vIntensity,vGlint,vAnchor,vPhase;
+   void main(){vAnchor=aAnchor;vPhase=aPhase;float low=1.-smoothstep(.04,.68,position.y/1220.);
+    float shimmer=mix(.019+.046*low*low,.036,aAnchor);
     float twinkle=sin(aPhase+uTime*(.21+.08*sin(aPhase)))*.55+sin(aPhase*2.7+uTime*.49)*.31+sin(aPhase*6.1+uTime*.73)*.14;
     float glint=smoothstep(1.5,6.2,aSize);
     vColour=aColour;
@@ -250,15 +268,21 @@ export function createDrownedSky(scene,{mobile=false,profile='earth',arrival=fal
     #ifdef ORIGIN_SKY
     ${ORIGIN_STAR_MOTION}
     #endif
-    gl_PointSize=aSize*uPixelRatio;gl_Position=projectionMatrix*modelViewMatrix*vec4(point,1.);}`,
-  fragmentShader:`varying vec3 vColour;varying float vIntensity,vGlint,vAnchor;
-   void main(){vec2 p=gl_PointCoord-.5;float r=length(p);if(r>.5)discard;float rr=r*r;
-    float core=exp(-rr*mix(mix(31.,290.,vGlint),530.,vAnchor));
-    float halo=exp(-rr*17.)*(.019+vGlint*.051+vAnchor*.064)*(1.-smoothstep(.30,.50,r));
-    vec2 spike=abs(mat2(.995,.10,-.10,.995)*p);
-    float arms=(exp(-spike.x*132.-spike.y*9.)+exp(-spike.y*132.-spike.x*9.))*(.025*vGlint+.20*vAnchor);
-    float opacity=(core*.96+halo+arms)*vIntensity;
-    vec3 light=mix(vColour,vec3(1.,.986,.97),smoothstep(.22,.85,core)*(.56+.33*vAnchor));
+    gl_PointSize=max(1.25,aSize*uPixelRatio);gl_Position=projectionMatrix*modelViewMatrix*vec4(point,1.);}`,
+  fragmentShader:`varying vec3 vColour;varying float vIntensity,vGlint,vAnchor,vPhase;
+   void main(){
+    vec2 p=gl_PointCoord-.5;
+    float rr=dot(p,p);
+    if(rr>.25)discard;
+    float core=exp(-rr*mix(mix(9.5,93.,vGlint),138.,vAnchor));
+    float edge=1.-smoothstep(.14,.25,rr);
+    float halo=exp(-rr*16.)*edge*(.012+.058*vGlint+.071*vAnchor);
+    float angle=.12+.18*sin(vPhase);
+    float sine=sin(angle),cosine=cos(angle);
+    vec2 spike=abs(mat2(cosine,sine,-sine,cosine)*p);
+    float arms=(exp(-spike.x*147.-spike.y*8.)+exp(-spike.y*147.-spike.x*8.))*edge*(.016*vGlint+.119*vAnchor);
+    float opacity=(core*edge*.95+halo+arms)*vIntensity;
+    vec3 light=mix(vColour,vec3(1.,.983,.961),smoothstep(.37,.91,core)*(.48+.31*vAnchor));
     gl_FragColor=vec4(light,min(1.,opacity));
     #include <colorspace_fragment>
    }`
@@ -273,14 +297,16 @@ export function createDrownedSky(scene,{mobile=false,profile='earth',arrival=fal
   {x:-.54,y:.16,radius:.099,rays:.10,phase:1.86},
   {x:.32,y:.30,radius:.073,rays:.11,phase:3.2}
  ];
- const lunarCraters=[...rayCraters,...Array.from({length:34},()=>{
+ const lunarCraters=[...rayCraters,...Array.from({length:48},()=>{
   const theta=random()*Math.PI*2,r=Math.sqrt(random())*.91;
   return {x:Math.cos(theta)*r,y:Math.sin(theta)*r,radius:.022+Math.pow(random(),2)*.09,rays:0,phase:0};
  })];
  for(let y=0;y<moonCanvas.height;y++)for(let x=0;x<moonCanvas.width;x++){
   const nx=(x+.5)/moonCanvas.width*2-1,ny=1-(y+.5)/moonCanvas.height*2,r=Math.hypot(nx,ny),at=(y*moonCanvas.width+x)*4;if(r>=1)continue;
   const nz=Math.sqrt(1-r*r),regolith=noise(nx*19+11,ny*19+9,nz*19+5),grain=noise(nx*64+14,ny*64+8,nz*64+10);
-  const maria=smooth(.33,.71,noise(nx*3.6+7,ny*3.6+5,nz*3.6+13));
+  const mareBase=noise(nx*3.6+7,ny*3.6+5,nz*3.6+13);
+  const maria=smooth(.32,.72,mareBase*.90+grain*.10);
+  const grit=noise(nx*166+5,ny*166+10,nz*166+18);
   let relief=0;
   for(const crater of lunarCraters){
    const dx=(nx-crater.x)/crater.radius,dy=(ny-crater.y)/crater.radius,reach=crater.rays?4.3:1.34;
@@ -290,7 +316,7 @@ export function createDrownedSky(scene,{mobile=false,profile='earth',arrival=fal
     const slope=(dx*-.70+dy*.33)/Math.max(d,.01);
     const rim=Math.exp(-Math.pow((d-.88)/.11,2));
     const basin=Math.exp(-d*d*4.2);
-    relief+=rim*(.088+.14*slope)-basin*.104;
+    relief+=rim*(.083+.18*slope)-basin*(.095+.033*Math.max(slope,0));
    }
    if(crater.rays&&d>=.76&&d<reach){
     const angle=Math.atan2(dy,dx)+crater.phase;
@@ -300,7 +326,7 @@ export function createDrownedSky(scene,{mobile=false,profile='earth',arrival=fal
   }
   const daylight=smooth(-.012,.73,nx*-.60+ny*.25+nz*.76);
   const limb=.62+.38*Math.sqrt(nz);
-  const brightness=clamp((.58+regolith*.24+grain*.096-maria*.23+relief)*daylight*limb);
+  const brightness=clamp((.555+regolith*.245+grain*.088+grit*.048-maria*.244+relief)*daylight*limb);
   const earthshine=(1-daylight)*(.59+regolith*.24-maria*.18)*limb;
   moonData[at]=clamp(brightness*255+earthshine*21,0,255);
   moonData[at+1]=clamp(brightness*249+earthshine*27,0,255);
@@ -326,7 +352,7 @@ export function createDrownedSky(scene,{mobile=false,profile='earth',arrival=fal
    if(eye&&!root.position.equals(eye)){root.position.copy(eye);dirty=true;}
    const step=Math.max(0,Math.min(Number(dt)||0,.1));
    animated=!!motion;if(animated){time+=step;timeUniform.value=time;dirty=true;}
-   const nextPassage=origin&&arrival&&motion?1-smooth(.32,4.8,time):passage.value;
+   const nextPassage=origin&&arrival&&motion?1-smooth(.38,6.2,time):passage.value;
    if(nextPassage!==passage.value){passage.value=nextPassage;dirty=true;}
    if(eye)stardust?.anchor(eye);
    if(plateReady&&plateBlend.value<1){
@@ -337,15 +363,15 @@ export function createDrownedSky(scene,{mobile=false,profile='earth',arrival=fal
   },
   diagnostics:()=>({
    night:true,skyLoaded:true,textureReady:true,catalogue:'totehm-celestial-sphere',fullSphere:true,
-   textureSize:[width,height],milkyWay:true,galacticClouds:'photographed star clouds and dark interstellar dust lanes',
+   textureSize:[width,height],milkyWay:true,galacticClouds:'local contrast in photographed star clouds and dark interstellar dust lanes',
    skyMotion:{paintedShear:origin,driftingDust:origin,colourScintillation:origin,stellarScintillation:true},
-   dimension:origin?{refraction:true,auroras:true,dustLayers:3,parallax:true,passage:+passage.value.toFixed(3)}:null,
+   dimension:origin?{refraction:true,auroras:true,dustLayers:stardust.depths,parallax:true,pairedVeils:true,passage:+passage.value.toFixed(3)}:null,
    skyGrade:'astrophotographic-night',skyPalette:'black-cobalt-violet-turquoise-gold',
    galacticPlate:{ready:plateReady,failed:plateFailed,blend:plateBlend.value,projection:'full-sphere-astrophotography',
     direction:core.toArray(),normal:normal.toArray(),size:[...SKY_ASTROPHOTOGRAPH.dimensions]},
    astrophotography:{...SKY_ASTROPHOTOGRAPH,ready:plateReady,fallback:!plateReady,local:true},
    brightAnchors:anchors.length,galacticArch:true,galacticNormal:normal.toArray(),stars:starCount,
-   stellarDust:tinyStars,stellarProfile:'fine neutral cores, restrained diffraction and slow scintillation',
+   stellarDust:tinyStars,stellarProfile:'anti-aliased chromatic cores, individual diffraction and slow scintillation',photographicLocalContrast:true,
    stellarColours:7,time:+time.toFixed(3),animated,moon:true,moonDirection:moonDirection.toArray(),
    moonDiameterDegrees:moonDiameter,lunarCraters:lunarCraters.length,lunarRelief:true,
    comet:false,shootingStars:0,meteor:false,meteorRibbon:false,meteorTriangles:0,externalFiles:0,disposed
