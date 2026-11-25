@@ -24,7 +24,8 @@ try{
   assert.equal(await native.locator('use').getAttribute('href'),'#higher-slogan');
   assert.ok(await pg.locator('#step0-intro').isVisible());
   assert.equal(await pg.locator('.writing-word,.writing-glyph,.writing-logo').count(),0);
-  assert.match(await pg.locator('#step0-intro').evaluate(e=>getComputedStyle(e).fontFamily),/Space Mono/);
+  assert.match(await pg.locator('#step0-intro').evaluate(e=>getComputedStyle(e).fontFamily),/Quantico/);
+  assert.equal(await pg.locator('#step0-intro').evaluate(e=>getComputedStyle(e).color),'rgb(251, 213, 202)');
   assert.match(await pg.locator('#neuro-content .nb-p').first().evaluate(e=>getComputedStyle(e).fontFamily),/Space Mono/);
   assert.equal(await pg.locator('#vid-wrap > video').count(),2);
   assert.equal(await pg.locator('#vid-wrap .vbox,#vid-wrap .vb-front').count(),0);
@@ -39,13 +40,10 @@ try{
   await reader.click();
   assert.match(await pg.locator('#neuro-content').textContent(),/Every empire/);
   assert.equal(await pg.locator('.writing-word,.writing-glyph,.writing-logo').count(),0);
-  assert.match(await pg.locator('#tech-text').evaluate(e=>getComputedStyle(e).fontFamily),/Space Mono/);
-  const my=pg.getByRole('link',{name:'My TOTEHM',exact:true});
-  const footer=await my.boundingBox();
-  assert.ok(Math.abs(footer.x+footer.width/2-680)<1&&footer.y+footer.height>890);
-  assert.equal(await my.getAttribute('href'),'https://www.totehm.com/');
-  assert.equal(await my.getAttribute('target'),'_blank');
+  assert.match(await pg.locator('#tech-text').evaluate(e=>getComputedStyle(e).fontFamily),/Quantico/);
+  assert.equal(await pg.locator('#tech-text').evaluate(e=>getComputedStyle(e).color),'rgb(251, 213, 202)');
+  assert.equal(await pg.getByRole('link',{name:'My TOTEHM',exact:true}).count(),0);
   assert.ok(!fixture.log.errors.some(message=>message.startsWith('pageerror:')));
  }finally{await fixture.ctx.close();}
 }finally{await browser.close();}
-console.log('PASS Stoner 70/30, shared neurological panel, unframed video and static Discover typography and centred My TOTEHM');
+console.log('PASS Stoner 70/30, shared neurological panel, unframed video and Discover explanations, coral instructions and no footer link');

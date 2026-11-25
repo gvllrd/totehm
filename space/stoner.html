@@ -22,7 +22,7 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Sp
 #stage{
   --paper-size:min(54vw,62dvh,620px);
   position:fixed;inset:0;background:#000;display:grid;grid-template-columns:minmax(0,7fr) minmax(0,3fr);
-  grid-template-rows:minmax(0,1fr) auto;
+  grid-template-rows:minmax(0,1fr);
 }
 #stoner-player{position:relative;min-width:0;min-height:0;overflow:auto;overscroll-behavior:contain}
 #stoner-content{display:flex;flex-direction:column;align-items:center;min-height:100%;padding:clamp(16px,4vh,40px) 20px 16px}
@@ -38,7 +38,7 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Sp
 #neuro-content{min-height:0;overflow:auto;overscroll-behavior:contain;padding:12px 6px 22px 0;scrollbar-color:#474753 #131317}
 #neuro-content[hidden]{display:none}
 @media(max-width:760px){
-  #stage{--paper-size:min(75vw,47dvh,620px);grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,7fr) minmax(0,3fr) auto}
+  #stage{--paper-size:min(75vw,47dvh,620px);grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,7fr) minmax(0,3fr)}
   #neuro-panel,#neuro-panel.is-collapsed{border-left:0;border-top:1px solid #24242b;padding:0 20px}
   #neuro-content{padding-top:2px}
 }
@@ -95,10 +95,10 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Sp
   #btn-slogan.busy{animation:none;opacity:.6}
 }
 :is(.tech-text,#step0-intro,#step0-text,#close-tech){
-  font:400 clamp(16px,2vw,23px)/1.6 'Space Mono',monospace;color:#f4f4f5;text-align:center;
+  font:400 clamp(18px,2.65vmin,28px)/1.45 Quantico,sans-serif;color:var(--coral);text-align:center;
 }
 .tech-text .higher-inline{display:inline-flex;align-items:center;width:3.25em;vertical-align:middle;line-height:0;margin:0 2px}
-.green-text{font:400 clamp(14px,1.25vw,18px)/1.6 'Space Mono',monospace;color:#bdbdc3;text-align:center;margin-bottom:8px}
+.green-text{font:400 13px/1.45 Quantico,sans-serif;color:var(--coral);text-align:center;margin-bottom:8px;letter-spacing:.02em}
 .tech-text .higher-inline svg{display:block;width:100%;height:auto}
 
 .neuro-block{text-align:left}
@@ -182,9 +182,6 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Sp
 #loading.hidden{display:none}
 
 
-#totehm-mid{grid-column:1/-1;justify-self:center;display:flex;align-items:center;justify-content:center;gap:5px;min-height:48px;padding:2px 8px 5px;color:#ddd;text-decoration:none;font:400 13px Quantico,sans-serif}
-#totehm-mid:hover{color:#fff}
-#totehm-mid .wm-img{height:37px;width:37px;display:block;border-radius:2px}
 .mw-card{background:#131316;border:none;max-width:360px;width:100%;padding:30px 24px;text-align:center;position:relative;max-height:88vh;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scrollbar-width:none}
 .mw-card::-webkit-scrollbar{display:none}
 .mw-close{position:absolute;top:12px;right:14px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;color:#b4b4b4;background:none;border:none;cursor:pointer;padding:0}
@@ -262,7 +259,6 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Sp
 </style>
 </head>
 <body>
-<!-- Back in Time retiré : la sortie de la Méthode se fait via [My TOTEHM] -->
 <div id="loading">LOADING...</div>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -369,7 +365,6 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Sp
     <button id="neuro-toggle" type="button" aria-expanded="true" aria-controls="neuro-content">Neurological reasons</button>
     <div id="neuro-content" role="region" aria-label="Current step explanation" tabindex="0"></div>
   </aside>
-  <a id="totehm-mid" href="https://www.totehm.com/" target="_blank" rel="noopener noreferrer" aria-label="My TOTEHM"><span aria-hidden="true">My</span><img class="wm-img" src="assets/img/totehm_logo.png" alt=""></a>
 </div>
 
 <div id="free-gate" aria-label="Free experience ends here — tap to return">
