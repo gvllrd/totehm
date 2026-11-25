@@ -23,7 +23,8 @@ try{
   const native=pg.locator('#step0-intro .higher-inline svg');
   assert.equal(await native.locator('use').getAttribute('href'),'#higher-slogan');
   assert.ok(await pg.locator('#step0-intro').isVisible());
-  assert.equal(await pg.locator('.writing-word,.writing-glyph,.writing-logo').count(),0);
+  assert.ok(await pg.locator('#step0-intro .writing-glyph').count()>0);
+  assert.equal(await pg.locator('#neuro-content :is(.writing-word,.writing-glyph,.writing-logo)').count(),0);
   assert.match(await pg.locator('#step0-intro').evaluate(e=>getComputedStyle(e).fontFamily),/Quantico/);
   assert.equal(await pg.locator('#step0-intro').evaluate(e=>getComputedStyle(e).color),'rgb(251, 213, 202)');
   assert.match(await pg.locator('#neuro-content .nb-p').first().evaluate(e=>getComputedStyle(e).fontFamily),/Space Mono/);
@@ -39,11 +40,12 @@ try{
   assert.equal(await pg.locator('#tech-text .higher-inline use').getAttribute('href'),'#higher-grind');
   await reader.click();
   assert.match(await pg.locator('#neuro-content').textContent(),/Every empire/);
-  assert.equal(await pg.locator('.writing-word,.writing-glyph,.writing-logo').count(),0);
+  assert.ok(await pg.locator('#tech-text .writing-glyph').count()>0);
+  assert.equal(await pg.locator('#neuro-content :is(.writing-word,.writing-glyph,.writing-logo)').count(),0);
   assert.match(await pg.locator('#tech-text').evaluate(e=>getComputedStyle(e).fontFamily),/Quantico/);
   assert.equal(await pg.locator('#tech-text').evaluate(e=>getComputedStyle(e).color),'rgb(251, 213, 202)');
   assert.equal(await pg.getByRole('link',{name:'My TOTEHM',exact:true}).count(),0);
   assert.ok(!fixture.log.errors.some(message=>message.startsWith('pageerror:')));
  }finally{await fixture.ctx.close();}
 }finally{await browser.close();}
-console.log('PASS Stoner 70/30, shared neurological panel, unframed video and Discover explanations, coral instructions and no footer link');
+console.log('PASS Stoner 70/30, shared neurological panel, unframed video and Discover explanations, coral typewriter instructions and no footer link');

@@ -37,6 +37,11 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Sp
 #neuro-toggle[aria-expanded="false"]::before{content:'+'}
 #neuro-content{min-height:0;overflow:auto;overscroll-behavior:contain;padding:12px 6px 22px 0;scrollbar-color:#474753 #131317}
 #neuro-content[hidden]{display:none}
+.writing-word{display:inline-block;white-space:nowrap}
+.writing-glyph{opacity:0}
+.writing-glyph.written{opacity:1}
+.writing-logo{clip-path:inset(0 calc(100% - var(--written,100%)) 0 0)}
+@media(prefers-reduced-motion:reduce){.writing-glyph{opacity:1}.writing-logo{clip-path:none}}
 @media(max-width:760px){
   #stage{--paper-size:min(75vw,47dvh,620px);grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,7fr) minmax(0,3fr)}
   #neuro-panel,#neuro-panel.is-collapsed{border-left:0;border-top:1px solid #24242b;padding:0 20px}
@@ -392,6 +397,7 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Sp
    Le build UMD d'esm.sh n'expose PAS window.supabase — la page
    plantait silencieusement à la première ligne. */
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import {finishStonerWriting,writeStonerContent} from './stoner-typewriter.mjs';
 /* SB retiré le 01/08/2026 : le bucket stoner-method est passé en NON PUBLIC.
    Tous les steps (0 à 10) passent par les URLs signées de stoner-gate. */
 
@@ -765,7 +771,10 @@ function fillHead(head, idx, step){
   });
 }
 function buildTechnique(step){
-  fillHead(document.getElementById('tech-head'),currentStep,step);
+  const head=document.getElementById('tech-head');
+  finishStonerWriting(head);
+  fillHead(head,currentStep,step);
+  writeStonerContent(head);
   btnSlogan.innerHTML='<svg viewBox="0 0 600 200"><use href="#'+SLOGAN_ID[sloganFor(currentStep,step)]+'"></use></svg>';
   showNeuro(neuroFor(currentStep));
 }
@@ -899,6 +908,7 @@ function swapUI(idx){
     logoBtn.classList.remove('show');
     technique.classList.remove('show');
     step0intro.classList.add('show');
+    writeStonerContent(step0intro);
     showNeuro(NEURO[0]||'');
   }
 }
@@ -965,6 +975,8 @@ function revealStep0UI(){
   zonePlus.classList.add('show');
   zoneMinus.classList.add('show');
   step0ui.classList.add('show');
+  finishStonerWriting(step0intro);
+  writeStonerContent(document.getElementById('step0-text'));
 }
 
 /* Les deux voies écoutent ; seule celle qu'on VOIT compte. */
@@ -1005,6 +1017,8 @@ function goClose(){
   const content=document.getElementById('stoner-content');
   content.hidden=true;content.inert=true;
   closeScreen.classList.add('visible');
+  finishStonerWriting(document.getElementById('tech-head'));
+  writeStonerContent(document.getElementById('close-tech'));
   player.scrollTop=0;
   vid.pause();
   showNeuro(NEURO_CLOSE);
