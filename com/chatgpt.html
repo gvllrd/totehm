@@ -50,10 +50,30 @@
 .dc-big small{font:400 clamp(12px,1.6vw,16px)/1 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#888;margin-left:10px}
 .dc-hi{display:inline-block;width:3.2em;height:1.07em;vertical-align:-.14em}   /* « Higher » est TOUJOURS le badge (BRAND) : jamais le mot en texte */
 .dc-fine{margin:0;font:400 11px/1.7 'Space Mono',monospace;letter-spacing:.06em;color:#888;max-width:420px}
-/* le bouton : un bouton NORMAL — gris, jamais corail (le corail est réservé au nom et à l'art) */
+/* LE BOUTON — jamais corail (le corail est réservé au nom et à l'art), mais plus une étiquette plate : il a de la
+   PROFONDEUR (Wah, 25/11 : « des boutons noirs avec une profondeur, un petit effet 3D, comme de vrais boutons
+   console, tout en gardant du minimaliste »). Noir, une arête claire en haut, une ombre portée courte ; enfoncé, il
+   descend d'un pixel et son ombre disparaît. Aucune brillance, aucune couleur : la profondeur se lit en lumière. */
 .dc-btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:12px 26px;border:0;border-radius:12px;cursor:pointer;
-  background:#2a2a2a;color:#e8e8e8;font:700 12px/1.2 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;transition:transform .15s ease,opacity .15s ease}
-.dc-btn:active{transform:scale(.97)}
+  background:linear-gradient(180deg,#232329 0%,#141418 58%,#0d0d10 100%);color:#e8e8e8;
+  font:700 12px/1.2 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.15),inset 0 -1px 0 rgba(0,0,0,.65),0 2px 5px rgba(0,0,0,.55);
+  transition:transform .12s ease,box-shadow .12s ease,opacity .15s ease}
+.dc-btn:active{transform:translateY(1px);box-shadow:inset 0 1px 0 rgba(255,255,255,.07),inset 0 2px 5px rgba(0,0,0,.7)}
+/* LA PORTE PERFORÉE (`is-perfo`) — le papier du TOTEHM et le badge [Higher] sont perforés : la porte l'est aussi.
+   Deux trous sur les côtés, et le long du bouton un trou tous les `--dcp-p` : ils suivent donc la LONGUEUR du texte,
+   comme sur le badge. Le masque mange les angles, donc le bouton garde ses coins droits. */
+.dc-btn.is-perfo{--dcp-r:5.5px;--dcp-p:26px;border-radius:0;
+  -webkit-mask:radial-gradient(circle var(--dcp-r) at 50% 0,#0000 97%,#000) 0 0/var(--dcp-p) 100% repeat-x,
+    radial-gradient(circle var(--dcp-r) at 50% 100%,#0000 97%,#000) 0 0/var(--dcp-p) 100% repeat-x,
+    radial-gradient(circle var(--dcp-r) at 0 50%,#0000 97%,#000) 0 0/100% 100% no-repeat,
+    radial-gradient(circle var(--dcp-r) at 100% 50%,#0000 97%,#000) 0 0/100% 100% no-repeat;
+  -webkit-mask-composite:source-in;
+  mask:radial-gradient(circle var(--dcp-r) at 50% 0,#0000 97%,#000) 0 0/var(--dcp-p) 100% repeat-x,
+    radial-gradient(circle var(--dcp-r) at 50% 100%,#0000 97%,#000) 0 0/var(--dcp-p) 100% repeat-x,
+    radial-gradient(circle var(--dcp-r) at 0 50%,#0000 97%,#000) 0 0/100% 100% no-repeat,
+    radial-gradient(circle var(--dcp-r) at 100% 50%,#0000 97%,#000) 0 0/100% 100% no-repeat;
+  mask-composite:intersect}
 .dc-cta{position:absolute;left:0;right:0;bottom:146px;display:flex;flex-direction:column;align-items:center;gap:8px;padding:0 24px;z-index:2}
 .dc-cta:empty{display:none}
 .dc.has-cta{--dc-ins-b:214px}
@@ -71,8 +91,11 @@
    éléments NATIFS du site (box, pièce, badge), dans un CADRE de même hauteur sur tous les écrans (`--dc-ill-h`) : le titre
    ne saute pas d'un écran à l'autre, et ce qui dépasse est RÉDUIT au cadre par le moteur, jamais rogné. Le haut de l'écran
    est fixe (le cadre, puis le titre) ; seul le texte s'allonge vers le bas. `.dc-ill-c` : l'illustration en colonne. */
-.dc{--dc-ill-h:clamp(128px,22dvh,190px);--dc-haut:max(0px,calc((100dvh - 298px - 450px) / 2))}
-.dc.is-illustre .dc-s{justify-content:flex-start;padding-top:var(--dc-haut)}
+.dc{--dc-ill-h:clamp(128px,22dvh,190px)}
+.dc.is-illustre .dc-s{justify-content:center}
+/* `is-carre` : le cadre est un CARRÉ (Wah, 25/11 : les illustrations « doivent former un tout fluide, cohérent et
+   animé » — elles reprennent donc toutes les mêmes dimensions, celles du papier). */
+.dc.is-carre .dc-ill{width:var(--dc-ill-h)}
 .dc-ill{width:min(100%,340px);height:var(--dc-ill-h);flex:none;display:flex;align-items:center;justify-content:center;
   text-align:left;pointer-events:none;-webkit-user-select:none;user-select:none}
 .dc-ill-in{flex:none;width:100%;transform-origin:50% 50%}
@@ -114,6 +137,29 @@
   opacity:0;transition:opacity .4s ease}
 .dc[data-i="0"] .dc-lead{opacity:1}
 .dc:has(.dc-lead)[data-i="0"] .dc-rail{opacity:0}
+/* L'ORDRE D'APPARITION (Wah, 25/11 : « on affiche d'abord le texte, ensuite vient l'animation qui illustre les
+   propos, et on affiche ensuite le bouton tiroir [Deeper] … et en même temps le bouton call-to-action »).
+   Le moteur pose l'étape sur l'hôte : 0 la phrase se frappe · 1 l'objet paraît · 2 le tiroir et la porte.
+   Mouvement réduit : tout est là d'emblée. */
+.dc.is-hero .dc-hero,.dc .dc-ill{opacity:0;transition:opacity .6s ease}
+.dc[data-etape="1"] .dc-hero,.dc[data-etape="2"] .dc-hero,
+.dc[data-etape="1"] .dc-s.is-on .dc-ill,.dc[data-etape="2"] .dc-s.is-on .dc-ill{opacity:1}
+.dc-cta{opacity:0;transition:opacity .5s ease}
+.dc[data-etape="2"] .dc-cta{opacity:1}
+/* LE TIROIR (`.dc-deep`) : « plus de détails », fermé par défaut. Son texte reprend la police des explications de
+   `totehm.space/play_lisbon_street?discover=1` (Space Mono, plus grand, plus clair) — c'est là qu'on LIT. */
+.dc-deep{display:none;align-items:center;gap:8px;margin:0;border:0;padding:9px 16px;border-radius:10px;cursor:pointer;
+  background:none;color:#9a9aa2;font:400 10px/1.2 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;
+  box-shadow:inset 0 0 0 1px #2e2e36;transition:color .15s,box-shadow .15s,opacity .5s ease;opacity:0}
+.dc[data-etape="2"] .dc-s.is-on .dc-deep{display:inline-flex;opacity:1}
+.dc-deep svg{width:9px;height:9px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;
+  transition:transform .3s ease}
+.dc-deep[aria-expanded="true"]{color:#e8e8e8;box-shadow:inset 0 0 0 1px #4a4a54}
+.dc-deep[aria-expanded="true"] svg{transform:rotate(180deg)}
+.dc-more{display:grid;grid-template-rows:0fr;margin:0;transition:grid-template-rows .42s cubic-bezier(.22,.61,.36,1)}
+.dc-more>div{overflow:hidden;min-height:0}
+.dc-deep[aria-expanded="true"]+.dc-more{grid-template-rows:1fr}
+.dc-more .dc-p{margin:14px 0 0;font:400 clamp(15px,4vw,17px)/1.5 'Space Mono',monospace;letter-spacing:0;color:#ddd}
 /* L'OBJET QUI VOYAGE (facultatif : `is-hero` sur l'hôte) — Wah, 24/11 : les écrans forment UN récit, « un objet ne
    disparaît pas pour réapparaître, il se TRANSFORME » (CLAUDE.md, la continuité). Les écrans se succèdent en fondu,
    mais l'objet, lui, VIT AU-DESSUS d'eux : une seule couche (`.dc-hero`), à la place exacte du cadre d'illustration
@@ -122,8 +168,8 @@
    au papier de s'ouvrir, de se retourner puis de devenir une grille SANS jamais disparaître.
    L'écran garde un `.dc-ill` VIDE : il réserve la place, l'objet se pose dessus. La page apporte ses propres nœuds et
    ses propres transformations (ses classes à elle, lues sur `.dc[data-i]`) ; la nomenclature ne dit que l'endroit et l'apparition. */
-.dc.is-hero .dc-hero{position:absolute;top:calc(var(--dc-ins-t) + var(--dc-haut));left:50%;transform:translateX(-50%);perspective:1000px;
-  width:min(calc(100% - 2 * var(--dc-ins-x)),340px);height:var(--dc-ill-h);z-index:1;
+.dc.is-hero .dc-hero{position:absolute;top:var(--dc-hero-t,0px);left:var(--dc-hero-l,0px);perspective:1000px;
+  width:var(--dc-hero-w,0px);height:var(--dc-hero-h,var(--dc-ill-h));z-index:1;
   pointer-events:none;-webkit-user-select:none;user-select:none}
 .dc-o{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
   opacity:0;visibility:hidden;transition:opacity .5s ease,transform .5s ease,visibility 0s linear .5s}
@@ -146,7 +192,9 @@
 @media(max-height:700px){.dc{--dc-ill-h:clamp(110px,19dvh,150px)}}
 @media(max-height:600px){.dc-ill,.dc-hero{display:none}}
 @media(prefers-reduced-motion:reduce){.dc-s,.dc-s.is-on,.dc-s.is-avant{transition:none;transform:none}.dc-next svg{animation:none}.dc.is-overlay,.dc.is-overlay.is-open{transition:none}
-  .dc-o{transition:opacity .2s ease}.dc-tw.is-frappe::after{animation:none}}
+  .dc-o{transition:opacity .2s ease}.dc-tw.is-frappe::after{animation:none}
+  .dc.is-hero .dc-hero,.dc .dc-ill,.dc-cta,.dc-deep{opacity:1!important;transition:none}
+  .dc[data-etape] .dc-s.is-on .dc-deep{display:inline-flex}.dc-more{transition:none}}
 /* ══ fin DISCOVER ══ */
 header{position:fixed;top:0;left:0;z-index:30}
 .dc .identity{min-height:0;width:min(86vw,420px);margin:0 auto}
@@ -268,7 +316,7 @@ window.TOTEHM_DISCOVER = (() => {
   const ACTIF = 'input,textarea,select,button,a,[contenteditable]';
   function monter(hote, opt){
     const o = Object.assign({ surChangement:null }, opt || {});
-    let i = 0, ecrans = [], verrou = 0, cumul = 0, tCumul = 0, y0 = null, actif = true;
+    let i = 0, ecrans = [], verrou = 0, cumul = 0, tCumul = 0, y0 = null, actif = true, tEtape = 0, frappeSeq = 0;
     const stage = hote.querySelector('.dc-stage'), rail = document.createElement('div'), next = document.createElement('button');
     rail.className = 'dc-rail'; rail.setAttribute('aria-hidden', 'true');
     next.className = 'dc-next'; next.type = 'button'; next.setAttribute('aria-label', 'Next'); next.innerHTML = CHEVRON;
@@ -277,7 +325,16 @@ window.TOTEHM_DISCOVER = (() => {
        ou hauteur) au rendu, à chaque écran et à chaque changement de taille — jamais rogné. */
     function envelopper(){ hote.querySelectorAll('.dc-ill,.dc-o').forEach(f => { if(f.querySelector(':scope>.dc-ill-in')) return;
       const n = document.createElement('div'); n.className = 'dc-ill-in'; while(f.firstChild) n.appendChild(f.firstChild); f.appendChild(n); }); }
-    function ajuster(){ hote.querySelectorAll('.dc-ill-in').forEach(n => { const f = n.parentNode, H = f.clientHeight, W = f.clientWidth; if(!H || !W) return;
+    /* L'objet se pose sur le `.dc-ill` de l'écran ACTIF, lu en mise en page (`offset*`) : les écrans se centrent
+       (25/11) et n'ont pas tous la même hauteur, donc la place de l'objet se MESURE au lieu de se calculer. */
+    function cadre(){
+      const e = ecrans[i], f = e && e.querySelector('.dc-ill'), h = hote.querySelector('.dc-hero');
+      if(!f || !h || !f.offsetWidth) return;
+      const v = [[ '--dc-hero-t', e.offsetTop + f.offsetTop ], [ '--dc-hero-l', e.offsetLeft + f.offsetLeft ],
+                 [ '--dc-hero-w', f.offsetWidth ], [ '--dc-hero-h', f.offsetHeight ]];
+      for(const [k, n] of v) hote.style.setProperty(k, n + 'px');
+    }
+    function ajuster(){ cadre(); hote.querySelectorAll('.dc-ill-in').forEach(n => { const f = n.parentNode, H = f.clientHeight, W = f.clientWidth; if(!H || !W) return;
       const k = Math.min(1, H / Math.max(1, n.offsetHeight), W / Math.max(1, n.scrollWidth));
       const v = k < .999 ? 'scale(' + k.toFixed(3) + ')' : ''; if(n.style.transform !== v) n.style.transform = v; }); }
     function lire(){ ecrans = [...stage.querySelectorAll('.dc-s')]; rail.innerHTML = ecrans.map(() => '<span></span>').join(''); envelopper(); }
@@ -289,16 +346,33 @@ window.TOTEHM_DISCOVER = (() => {
       n.classList.toggle('is-on', ou.includes(String(i))); }); }
     /* LA LIGNE FRAPPÉE (`.dc-tw`) : l'écran qui arrive écrit sa phrase à la machine, UNE fois. Revenir en arrière ne la
        réécrit pas (on la lit, on ne l'attend pas) ; rouvrir le Discover depuis le premier écran, si (`remettre`). */
-    function frapper(){
+    function frapper(fin){
       const e = ecrans[i], n = e && e.querySelector('.dc-tw');
-      if(!n || n.dataset.frappe) return;
+      if(!n){ if(fin) fin(); return; }
+      if(n.dataset.frappe){ if(fin) fin(); return; }
       const txt = n.dataset.txt || (n.dataset.txt = n.textContent.trim());
       n.dataset.frappe = '1';
-      if(RM.matches){ n.textContent = txt; return; }
+      if(RM.matches){ n.textContent = txt; if(fin) fin(); return; }
+      const mien = ++frappeSeq;
       n.textContent = ''; n.classList.add('is-frappe');
-      (function pas(k){ if(!n.isConnected) return; n.textContent = txt.slice(0, k);
-        if(k < txt.length) setTimeout(() => pas(k + 1), 21 + Math.random() * 17); else n.classList.remove('is-frappe'); })(1);
+      (function pas(k){
+        if(!n.isConnected || mien !== frappeSeq) return;
+        n.textContent = txt.slice(0, k);
+        if(k < txt.length){ setTimeout(() => pas(k + 1), 21 + Math.random() * 17); return; }
+        n.classList.remove('is-frappe'); if(fin) fin(); })(1);
     }
+    /* L'ORDRE (Wah, 25/11) : la phrase se frappe (0), PUIS l'objet l'illustre (1), PUIS le tiroir et la porte (2). */
+    function etapes(){
+      clearTimeout(tEtape);
+      const pose = k => { if(hote.dataset.etape !== String(k)) hote.dataset.etape = k; };
+      if(RM.matches){ pose(2); frapper(); return; }
+      pose(0);
+      frapper(() => { if(!hote.isConnected) return; pose(1);
+        tEtape = setTimeout(() => pose(2), 820); });
+    }
+    /* LE TIROIR : un seul écouteur sur l'hôte ; changer d'écran referme ce qui était ouvert. */
+    function tiroirs(ferme){ hote.querySelectorAll('.dc-deep').forEach(b => {
+      if(ferme || b.getAttribute('aria-expanded') === null) b.setAttribute('aria-expanded', 'false'); }); }
     function remettre(){ hote.querySelectorAll('.dc-tw').forEach(n => { delete n.dataset.frappe;
       if(n.dataset.txt) n.textContent = n.dataset.txt; }); }
     function peindre(instant){
@@ -308,8 +382,9 @@ window.TOTEHM_DISCOVER = (() => {
       rail.querySelectorAll('span').forEach((s, k) => s.classList.toggle('on', k === i));
       hote.classList.toggle('is-last', i >= ecrans.length - 1);
       hote.dataset.i = i; hote.dataset.n = ecrans.length;
-      objets(); frapper();
+      objets(); tiroirs(true);
       ajuster();
+      etapes();
       if(o.surChangement) o.surChangement(i, ecrans.length);
     }
     function aller(k, instant){
@@ -348,10 +423,16 @@ window.TOTEHM_DISCOVER = (() => {
        Il n'écoute que si le moteur est visible, et que le focus est dedans ou nulle part. */
     window.addEventListener('keydown', e => { if(hote.isConnected && !hote.hidden && !hote.classList.contains('hide') && (hote.contains(e.target) || document.activeElement === document.body)) touche(e); }, true);
     next.addEventListener('click', suivant);
+    hote.addEventListener('click', e => { const b = e.target.closest('.dc-deep'); if(!b || !hote.contains(b)) return;
+      b.setAttribute('aria-expanded', b.getAttribute('aria-expanded') === 'true' ? 'false' : 'true');
+      /* le tiroir change la hauteur de l'écran, donc son centrage : l'objet SUIT la place qui lui est réservée,
+         image par image, le temps de l'ouverture — sinon il resterait en arrière et passerait sur le texte. */
+      const fin = Date.now() + 560;
+      (function suivre(){ cadre(); if(Date.now() < fin) requestAnimationFrame(suivre); })(); });
     window.addEventListener('resize', () => { if(hote.isConnected) requestAnimationFrame(ajuster); });
     if(document.fonts && document.fonts.ready) document.fonts.ready.then(ajuster);
     lire(); peindre(true);
-    return { aller, suivant, precedent, index:() => i, total:() => ecrans.length,
+    return { aller, suivant, precedent, index:() => i, total:() => ecrans.length, etape:() => +(hote.dataset.etape || 0),
       derniere:() => aller(ecrans.length - 1, true),
       rafraichir(garder){ const k = garder ? i : 0; lire(); i = Math.min(k, Math.max(0, ecrans.length - 1)); peindre(true); },
       ajuster, activer(v){ actif = !!v; } };

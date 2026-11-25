@@ -34,10 +34,30 @@
 .dc-big small{font:400 clamp(12px,1.6vw,16px)/1 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#888;margin-left:10px}
 .dc-hi{display:inline-block;width:3.2em;height:1.07em;vertical-align:-.14em}   /* « Higher » est TOUJOURS le badge (BRAND) : jamais le mot en texte */
 .dc-fine{margin:0;font:400 11px/1.7 'Space Mono',monospace;letter-spacing:.06em;color:#888;max-width:420px}
-/* le bouton : un bouton NORMAL — gris, jamais corail (le corail est réservé au nom et à l'art) */
+/* LE BOUTON — jamais corail (le corail est réservé au nom et à l'art), mais plus une étiquette plate : il a de la
+   PROFONDEUR (Wah, 25/11 : « des boutons noirs avec une profondeur, un petit effet 3D, comme de vrais boutons
+   console, tout en gardant du minimaliste »). Noir, une arête claire en haut, une ombre portée courte ; enfoncé, il
+   descend d'un pixel et son ombre disparaît. Aucune brillance, aucune couleur : la profondeur se lit en lumière. */
 .dc-btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:12px 26px;border:0;border-radius:12px;cursor:pointer;
-  background:#2a2a2a;color:#e8e8e8;font:700 12px/1.2 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;transition:transform .15s ease,opacity .15s ease}
-.dc-btn:active{transform:scale(.97)}
+  background:linear-gradient(180deg,#232329 0%,#141418 58%,#0d0d10 100%);color:#e8e8e8;
+  font:700 12px/1.2 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.15),inset 0 -1px 0 rgba(0,0,0,.65),0 2px 5px rgba(0,0,0,.55);
+  transition:transform .12s ease,box-shadow .12s ease,opacity .15s ease}
+.dc-btn:active{transform:translateY(1px);box-shadow:inset 0 1px 0 rgba(255,255,255,.07),inset 0 2px 5px rgba(0,0,0,.7)}
+/* LA PORTE PERFORÉE (`is-perfo`) — le papier du TOTEHM et le badge [Higher] sont perforés : la porte l'est aussi.
+   Deux trous sur les côtés, et le long du bouton un trou tous les `--dcp-p` : ils suivent donc la LONGUEUR du texte,
+   comme sur le badge. Le masque mange les angles, donc le bouton garde ses coins droits. */
+.dc-btn.is-perfo{--dcp-r:5.5px;--dcp-p:26px;border-radius:0;
+  -webkit-mask:radial-gradient(circle var(--dcp-r) at 50% 0,#0000 97%,#000) 0 0/var(--dcp-p) 100% repeat-x,
+    radial-gradient(circle var(--dcp-r) at 50% 100%,#0000 97%,#000) 0 0/var(--dcp-p) 100% repeat-x,
+    radial-gradient(circle var(--dcp-r) at 0 50%,#0000 97%,#000) 0 0/100% 100% no-repeat,
+    radial-gradient(circle var(--dcp-r) at 100% 50%,#0000 97%,#000) 0 0/100% 100% no-repeat;
+  -webkit-mask-composite:source-in;
+  mask:radial-gradient(circle var(--dcp-r) at 50% 0,#0000 97%,#000) 0 0/var(--dcp-p) 100% repeat-x,
+    radial-gradient(circle var(--dcp-r) at 50% 100%,#0000 97%,#000) 0 0/var(--dcp-p) 100% repeat-x,
+    radial-gradient(circle var(--dcp-r) at 0 50%,#0000 97%,#000) 0 0/100% 100% no-repeat,
+    radial-gradient(circle var(--dcp-r) at 100% 50%,#0000 97%,#000) 0 0/100% 100% no-repeat;
+  mask-composite:intersect}
 .dc-cta{position:absolute;left:0;right:0;bottom:146px;display:flex;flex-direction:column;align-items:center;gap:8px;padding:0 24px;z-index:2}
 .dc-cta:empty{display:none}
 .dc.has-cta{--dc-ins-b:214px}
@@ -55,8 +75,11 @@
    éléments NATIFS du site (box, pièce, badge), dans un CADRE de même hauteur sur tous les écrans (`--dc-ill-h`) : le titre
    ne saute pas d'un écran à l'autre, et ce qui dépasse est RÉDUIT au cadre par le moteur, jamais rogné. Le haut de l'écran
    est fixe (le cadre, puis le titre) ; seul le texte s'allonge vers le bas. `.dc-ill-c` : l'illustration en colonne. */
-.dc{--dc-ill-h:clamp(128px,22dvh,190px);--dc-haut:max(0px,calc((100dvh - 298px - 450px) / 2))}
-.dc.is-illustre .dc-s{justify-content:flex-start;padding-top:var(--dc-haut)}
+.dc{--dc-ill-h:clamp(128px,22dvh,190px)}
+.dc.is-illustre .dc-s{justify-content:center}
+/* `is-carre` : le cadre est un CARRÉ (Wah, 25/11 : les illustrations « doivent former un tout fluide, cohérent et
+   animé » — elles reprennent donc toutes les mêmes dimensions, celles du papier). */
+.dc.is-carre .dc-ill{width:var(--dc-ill-h)}
 .dc-ill{width:min(100%,340px);height:var(--dc-ill-h);flex:none;display:flex;align-items:center;justify-content:center;
   text-align:left;pointer-events:none;-webkit-user-select:none;user-select:none}
 .dc-ill-in{flex:none;width:100%;transform-origin:50% 50%}
@@ -98,6 +121,29 @@
   opacity:0;transition:opacity .4s ease}
 .dc[data-i="0"] .dc-lead{opacity:1}
 .dc:has(.dc-lead)[data-i="0"] .dc-rail{opacity:0}
+/* L'ORDRE D'APPARITION (Wah, 25/11 : « on affiche d'abord le texte, ensuite vient l'animation qui illustre les
+   propos, et on affiche ensuite le bouton tiroir [Deeper] … et en même temps le bouton call-to-action »).
+   Le moteur pose l'étape sur l'hôte : 0 la phrase se frappe · 1 l'objet paraît · 2 le tiroir et la porte.
+   Mouvement réduit : tout est là d'emblée. */
+.dc.is-hero .dc-hero,.dc .dc-ill{opacity:0;transition:opacity .6s ease}
+.dc[data-etape="1"] .dc-hero,.dc[data-etape="2"] .dc-hero,
+.dc[data-etape="1"] .dc-s.is-on .dc-ill,.dc[data-etape="2"] .dc-s.is-on .dc-ill{opacity:1}
+.dc-cta{opacity:0;transition:opacity .5s ease}
+.dc[data-etape="2"] .dc-cta{opacity:1}
+/* LE TIROIR (`.dc-deep`) : « plus de détails », fermé par défaut. Son texte reprend la police des explications de
+   `totehm.space/play_lisbon_street?discover=1` (Space Mono, plus grand, plus clair) — c'est là qu'on LIT. */
+.dc-deep{display:none;align-items:center;gap:8px;margin:0;border:0;padding:9px 16px;border-radius:10px;cursor:pointer;
+  background:none;color:#9a9aa2;font:400 10px/1.2 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;
+  box-shadow:inset 0 0 0 1px #2e2e36;transition:color .15s,box-shadow .15s,opacity .5s ease;opacity:0}
+.dc[data-etape="2"] .dc-s.is-on .dc-deep{display:inline-flex;opacity:1}
+.dc-deep svg{width:9px;height:9px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;
+  transition:transform .3s ease}
+.dc-deep[aria-expanded="true"]{color:#e8e8e8;box-shadow:inset 0 0 0 1px #4a4a54}
+.dc-deep[aria-expanded="true"] svg{transform:rotate(180deg)}
+.dc-more{display:grid;grid-template-rows:0fr;margin:0;transition:grid-template-rows .42s cubic-bezier(.22,.61,.36,1)}
+.dc-more>div{overflow:hidden;min-height:0}
+.dc-deep[aria-expanded="true"]+.dc-more{grid-template-rows:1fr}
+.dc-more .dc-p{margin:14px 0 0;font:400 clamp(15px,4vw,17px)/1.5 'Space Mono',monospace;letter-spacing:0;color:#ddd}
 /* L'OBJET QUI VOYAGE (facultatif : `is-hero` sur l'hôte) — Wah, 24/11 : les écrans forment UN récit, « un objet ne
    disparaît pas pour réapparaître, il se TRANSFORME » (CLAUDE.md, la continuité). Les écrans se succèdent en fondu,
    mais l'objet, lui, VIT AU-DESSUS d'eux : une seule couche (`.dc-hero`), à la place exacte du cadre d'illustration
@@ -106,8 +152,8 @@
    au papier de s'ouvrir, de se retourner puis de devenir une grille SANS jamais disparaître.
    L'écran garde un `.dc-ill` VIDE : il réserve la place, l'objet se pose dessus. La page apporte ses propres nœuds et
    ses propres transformations (ses classes à elle, lues sur `.dc[data-i]`) ; la nomenclature ne dit que l'endroit et l'apparition. */
-.dc.is-hero .dc-hero{position:absolute;top:calc(var(--dc-ins-t) + var(--dc-haut));left:50%;transform:translateX(-50%);perspective:1000px;
-  width:min(calc(100% - 2 * var(--dc-ins-x)),340px);height:var(--dc-ill-h);z-index:1;
+.dc.is-hero .dc-hero{position:absolute;top:var(--dc-hero-t,0px);left:var(--dc-hero-l,0px);perspective:1000px;
+  width:var(--dc-hero-w,0px);height:var(--dc-hero-h,var(--dc-ill-h));z-index:1;
   pointer-events:none;-webkit-user-select:none;user-select:none}
 .dc-o{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
   opacity:0;visibility:hidden;transition:opacity .5s ease,transform .5s ease,visibility 0s linear .5s}
@@ -130,5 +176,7 @@
 @media(max-height:700px){.dc{--dc-ill-h:clamp(110px,19dvh,150px)}}
 @media(max-height:600px){.dc-ill,.dc-hero{display:none}}
 @media(prefers-reduced-motion:reduce){.dc-s,.dc-s.is-on,.dc-s.is-avant{transition:none;transform:none}.dc-next svg{animation:none}.dc.is-overlay,.dc.is-overlay.is-open{transition:none}
-  .dc-o{transition:opacity .2s ease}.dc-tw.is-frappe::after{animation:none}}
+  .dc-o{transition:opacity .2s ease}.dc-tw.is-frappe::after{animation:none}
+  .dc.is-hero .dc-hero,.dc .dc-ill,.dc-cta,.dc-deep{opacity:1!important;transition:none}
+  .dc[data-etape] .dc-s.is-on .dc-deep{display:inline-flex}.dc-more{transition:none}}
 /* ══ fin DISCOVER ══ */
