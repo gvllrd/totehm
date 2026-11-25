@@ -22,23 +22,30 @@ try{
   assert.ok(await pg.locator('#neuro-content').isVisible());
   const native=pg.locator('#step0-intro .higher-inline svg');
   assert.equal(await native.locator('use').getAttribute('href'),'#higher-slogan');
-  await pg.waitForFunction(()=>document.querySelector('#step0-intro .writing-logo')?.style.getPropertyValue('--written')==='100%');
+  assert.ok(await pg.locator('#step0-intro').isVisible());
+  assert.ok(await pg.locator('#step0-intro .writing-glyph').count()>0);
+  assert.equal(await pg.locator('#neuro-content :is(.writing-word,.writing-glyph,.writing-logo)').count(),0);
+  assert.match(await pg.locator('#step0-intro').evaluate(e=>getComputedStyle(e).fontFamily),/Quantico/);
+  assert.equal(await pg.locator('#step0-intro').evaluate(e=>getComputedStyle(e).color),'rgb(251, 213, 202)');
+  assert.match(await pg.locator('#neuro-content .nb-p').first().evaluate(e=>getComputedStyle(e).fontFamily),/Space Mono/);
+  assert.equal(await pg.locator('#vid-wrap > video').count(),2);
+  assert.equal(await pg.locator('#vid-wrap .vbox,#vid-wrap .vb-front').count(),0);
   await reader.click();
   assert.equal(await reader.getAttribute('aria-expanded'),'false');
   assert.deepEqual(await paper.boundingBox(),edition);
-  await pg.locator('.vb-inner video.on').evaluate(v=>v.dispatchEvent(new Event('ended')));
+  await pg.locator('#vid-wrap > video.on').evaluate(v=>v.dispatchEvent(new Event('ended')));
   await pg.locator('#btn-low').click();
   await pg.waitForFunction(()=>__totehm_stoner().step===1&&!__totehm_stoner().busy);
   assert.equal(await reader.getAttribute('aria-expanded'),'false');
   assert.equal(await pg.locator('#tech-text .higher-inline use').getAttribute('href'),'#higher-grind');
   await reader.click();
   assert.match(await pg.locator('#neuro-content').textContent(),/Every empire/);
-  const my=pg.getByRole('link',{name:'My TOTEHM',exact:true});
-  const footer=await my.boundingBox();
-  assert.ok(Math.abs(footer.x+footer.width/2-680)<1&&footer.y+footer.height>890);
-  assert.equal(await my.getAttribute('href'),'https://www.totehm.com/');
-  assert.equal(await my.getAttribute('target'),'_blank');
+  assert.ok(await pg.locator('#tech-text .writing-glyph').count()>0);
+  assert.equal(await pg.locator('#neuro-content :is(.writing-word,.writing-glyph,.writing-logo)').count(),0);
+  assert.match(await pg.locator('#tech-text').evaluate(e=>getComputedStyle(e).fontFamily),/Quantico/);
+  assert.equal(await pg.locator('#tech-text').evaluate(e=>getComputedStyle(e).color),'rgb(251, 213, 202)');
+  assert.equal(await pg.getByRole('link',{name:'My TOTEHM',exact:true}).count(),0);
   assert.ok(!fixture.log.errors.some(message=>message.startsWith('pageerror:')));
  }finally{await fixture.ctx.close();}
 }finally{await browser.close();}
-console.log('PASS Stoner 70/30, shared neurological panel, native Higher typing and centred My TOTEHM');
+console.log('PASS Stoner 70/30, shared neurological panel, unframed video and Discover explanations, coral typewriter instructions and no footer link');
