@@ -4189,10 +4189,13 @@ body.lv-d.rdr-voir #gate-asteroid,body.lv-d.rdr-voir #lvjoy,body.rdr-voir #rdr-f
 #lvd .dc-sf .sfcmd{--q:min(96px,25vw);--sfg:11px;gap:var(--sfg)}
 #lvd .dc-sf .sfcmd.is-logo .sfv-s{transform:translateX(calc(100% + var(--sfg)))}
 #lvd .dc-sf .sfcmd.is-logo .sfv-v{transform:translateX(calc(-100% - var(--sfg)))}
-/* LA VIDÉO DE LA MÉTHODE, calquée sur le papier : elle prend sa forme perforée et ne joue que sur son écran */
-#lvd .lvh-vid{position:absolute;inset:0;z-index:2;opacity:0;transition:opacity .6s ease;pointer-events:none;
-  -webkit-mask:var(--perfo) 0 0/100% 100% no-repeat;mask:var(--perfo) 0 0/100% 100% no-repeat}
-#lvd .lvh-vid video{display:block;width:100%;height:100%;object-fit:cover}
+/* LA VIDÉO DE LA MÉTHODE, calquée sur le papier. Elle PORTE DÉJÀ le papier perforé : on ne la masque donc pas une
+   seconde fois (ce serait deux découpes l'une sur l'autre) — on la met à l'échelle pour que SON papier tombe
+   exactement sur le carré du TOTEHM. Mesuré sur ses images : le papier occupe 52,5 % de la vidéo, centré en
+   49,6 % × 40,8 % — d'où l'origine, le décalage et le facteur ci-dessous. Elle ne joue que sur son écran. */
+#lvd .lvh-vid{position:absolute;inset:0;z-index:2;opacity:0;transition:opacity .6s ease;pointer-events:none}
+#lvd .lvh-vid video{display:block;width:100%;height:100%;object-fit:cover;
+  transform-origin:49.6% 40.8%;transform:translate(.4%,9.2%) scale(1.9)}
 #lvd[data-i="3"] .lvh-vid.is-pret{opacity:1}
 /* LE VERSO : le nom se frappe, PUIS son unique résultat au prix du serveur (format de [Monetize my TOTEHM]) */
 #lvd .lvh-pap{display:flex;flex-direction:column;justify-content:center;gap:11px;width:min(100%,256px);height:100%;
@@ -9085,7 +9088,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-11-25-recit2';
+const BUILD='2026-11-25-video';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
