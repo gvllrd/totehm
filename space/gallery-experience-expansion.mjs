@@ -3,11 +3,13 @@ import {coverTransform} from './gallery-book-expansion.mjs';
 import {captureObjectLift,createObjectLift} from './gallery-object-view.mjs';
 
 let current=null;
+const artworkDuration=860;
+const artworkEase=progress=>progress*progress*(3-2*progress);
 const fronts={
  screen:{ready:'__totehm_experience_front',selector:'#experience-front-canvas',event:'totehm:experience-enter'},
  controller:{ready:'__totehm_controller_entry',event:'totehm:controller-enter'},
  discover:{ready:'__totehm_experience_front',event:'totehm:experience-enter'},
- artwork:{ready:'__totehm_experience_front',selector:'#artwork-hero-image',event:'totehm:experience-enter'},
+ artwork:{ready:'__totehm_experience_front',selector:'#artwork-hero-frame',event:'totehm:experience-enter'},
  paper:{ready:'__totehm_paper_entry',event:'totehm:paper-enter'}
 };
 function corners(rect){return [{x:rect.left,y:rect.top},{x:rect.right,y:rect.top},{x:rect.right,y:rect.bottom},{x:rect.left,y:rect.bottom}];}
@@ -34,9 +36,10 @@ export {expandSpatialDiscover as expandLisbonDiscover};
 
 export function expandSuspendedArtwork(projection,camera,href,id,options={}){
  if(current)return false;
- const lift=projection.artworkLift?.(id,camera,innerWidth,innerHeight);
+ const artworkSource=workId=>projection.artworkLift?.(workId,camera,innerWidth,innerHeight);
+ const lift=artworkSource(id);
  if(!lift)return expandSpatialDiscover(projection,camera,href,options);
- return openExperience({object:lift.object,href,type:'artwork',from:lift.corners,artwork:lift.image,...options});
+ return openExperience({object:lift.object,href,type:'artwork',from:lift.corners,artwork:lift,artworkSource,...options});
 }
 
 export function expandGalleryObject(object,camera,href,{kind,width,shot,...options}){
@@ -44,7 +47,7 @@ export function expandGalleryObject(object,camera,href,{kind,width,shot,...optio
  return openExperience({object,camera,href,type:kind,width,shot,...options});
 }
 
-function openExperience({object,camera,href,type,from=null,canvas,artwork,time,width,shot,reduced=false,sourceReady=null,projection=null,onStart=()=>{},onLift=()=>{},onClose=()=>{}}){
+function openExperience({object,camera,href,type,from=null,canvas,artwork,artworkSource,time,width,shot,reduced=false,sourceReady=null,projection=null,onStart=()=>{},onLift=()=>{},onClose=()=>{}}){
  if(current)return false;
  const url=new URL(href,location.href);
  if(url.origin!==location.origin||!['/play_lisbon_street','/think_same_but_opposite','/get_higher'].includes(url.pathname))return false;
@@ -62,42 +65,91 @@ function openExperience({object,camera,href,type,from=null,canvas,artwork,time,w
   catch(error){console.warn('[3D entrance]',error?.name||'unavailable');return null;}
  }
  if(type==='discover')frame.style.background='transparent';
- function flatLift(element,width,height){
+ function flatLift(element,width,height,origin=()=>from,destination=()=>target){
   element.style.cssText=`position:absolute;left:0;top:0;width:${width}px;height:${height}px;max-width:none;transform-origin:0 0;pointer-events:none`;
   const draw=amount=>{
-   const pose=target?from.map((point,i)=>({x:point.x+(target[i].x-point.x)*amount,y:point.y+(target[i].y-point.y)*amount})):from;
+   const start=origin(),end=destination();
+   const pose=end?start.map((point,i)=>({x:point.x+(end[i].x-point.x)*amount,y:point.y+(end[i].y-point.y)*amount})):start;
    element.style.transform=coverTransform(pose,width,height);
   };
   draw(0);
   return{element,draw,dispose(){}};
  }
+ function framedLift({image,border,color,frameWidth,frameHeight},origin,destination){
+  const canvas=document.createElement('canvas'),ctx=canvas.getContext('2d');
+  if(!ctx)return null;
+  canvas.height=image.naturalHeight*3;canvas.width=Math.round(canvas.height*frameWidth/frameHeight);
+  const insetX=canvas.width*border/frameWidth,insetY=canvas.height*border/frameHeight;
+  ctx.fillStyle='#'+color.toString(16).padStart(6,'0');ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.drawImage(image,insetX,insetY,canvas.width-2*insetX,canvas.height-2*insetY);
+  canvas.setAttribute('aria-hidden','true');
+  return flatLift(canvas,canvas.width,canvas.height,origin,destination);
+ }
  if(type==='screen'){
   const image=document.createElement('img');image.src=canvas.toDataURL();image.alt='The original experience first page';
   visual=flatLift(image,canvas.width,canvas.height);
  }else if(type==='artwork'&&!reduced){
-  const image=document.createElement('canvas'),ctx=image.getContext('2d');
-  if(ctx){
-   image.width=artwork.naturalWidth;image.height=artwork.naturalHeight;
-   ctx.drawImage(artwork,0,0);image.setAttribute('aria-hidden','true');
-   visual=flatLift(image,image.width,image.height);
-  }
+  visual=framedLift(artwork);
  }else if(type==='paper'&&!reduced)visual=makeLift();
  const releaseVisual=()=>{visual?.element.remove();visual?.dispose();visual=null;};
+ let returnSource=null,returnVisibility=true,historyReturned=false;
  current=dialog;
  window.__totehm_projection_expansion=()=>({stage,type,progress:discoverFlight?.diagnostics().progress??progress,from,target,handoff,documentReloads:0,overlays:visual?.element.isConnected||controllerLift?1:0,controllerLift,temporaryCanvas:visual?.element.tagName==='CANVAS',physicalPanelVisible:object.visible&&!projectionHidden,frames:frame.isConnected?1:0});
  function close(fromHistory=false){
   if(disposed)return;
   disposed=true;stage='closed';clearTimeout(timer);cancelAnimationFrame(raf);animation?.cancel();stopLift?.();discoverFlight?.cancel();
   removeEventListener('popstate',pop);removeEventListener('keydown',escape);removeEventListener('totehm:experience-navigate',navigate);
-  const restoreWorld=projectionHidden||(['artwork','controller'].includes(type)&&object.visible!==wasVisible);
+  const restoreWorld=projectionHidden||!!returnSource||(['artwork','controller'].includes(type)&&object.visible!==wasVisible);
   releaseVisual();object.visible=wasVisible;
+  if(returnSource)returnSource.object.visible=returnVisibility;
   if(projectionHidden){projection.setHandoff(false);projectionHidden=false;}
   if(restoreWorld)onLift();
   dialog.remove();for(const [el,inert]of siblings)el.inert=inert;current=null;onClose();
-  if(!fromHistory)history.back();
+  if(!fromHistory&&!historyReturned)history.back();
  }
- function pop(){close(true);}
- function escape(event){if(event.key==='Escape'){event.preventDefault();close();}}
+ function requestClose(fromHistory=false){
+  historyReturned||=fromHistory;
+  if(disposed||stage==='returning')return;
+  if(type!=='artwork'||reduced||stage!=='experience'){close(fromHistory);return;}
+  let source,element,origin;
+  try{
+   const win=frame.contentWindow,story=win.__totehm_opposites?.();
+   source=artworkSource(story?.work);
+   element=win.document.querySelector(story?.phase==='discover'?'#discover-artwork-frame':config.selector);
+   const rect=element.getBoundingClientRect();
+   if(source&&rect.width>0&&rect.height>0){
+    origin=corners(rect);
+    visual=framedLift(source,()=>origin,()=>source.corners);
+   }
+  }catch{}
+  if(!visual){close(fromHistory);return;}
+  stage='returning';progress=1;
+  returnVisibility=source.object===object?wasVisible:source.object.visible;
+  returnSource=source;
+  object.visible=wasVisible;source.object.visible=false;
+  onLift();
+  veil.style.opacity='1';
+  dialog.append(veil,visual.element);
+  frame.style.visibility='hidden';frame.style.pointerEvents='none';
+  let start,viewportWidth=innerWidth,viewportHeight=innerHeight;
+  const tick=now=>{
+   if(disposed)return;
+   if(innerWidth!==viewportWidth||innerHeight!==viewportHeight){
+    viewportWidth=innerWidth;viewportHeight=innerHeight;
+    const fresh=artworkSource(frame.contentWindow.__totehm_opposites?.().work);
+    if(fresh)source=fresh;
+    origin=corners(element.getBoundingClientRect());
+   }
+   start??=now;
+   progress=1-Math.min(1,(now-start)/artworkDuration);
+   const eased=artworkEase(progress);
+   visual.draw(1-eased);veil.style.opacity=String(eased);
+   if(progress===0)close();else raf=requestAnimationFrame(tick);
+  };
+  raf=requestAnimationFrame(tick);
+ }
+ function pop(){requestClose(true);}
+ function escape(event){if(event.key==='Escape'){event.preventDefault();requestClose();}}
  function leave(next){close(true);history.replaceState(state,'',previous);location.assign(next.href);}
  function navigate(event){
   if(disposed||typeof event.detail?.href!=='string')return;
@@ -205,8 +257,10 @@ function openExperience({object,camera,href,type,from=null,canvas,artwork,time,w
      if(disposed){resolve();return;}
      if(type==='artwork'&&(innerWidth!==viewportWidth||innerHeight!==viewportHeight)){
       viewportWidth=innerWidth;viewportHeight=innerHeight;target=corners(targetElement.getBoundingClientRect());
+      from=artworkSource(win.__totehm_opposites?.().work)?.corners??from;
      }
-     start??=now;progress=Math.min(1,(now-start)/860);const eased=1-(1-progress)**3;
+     start??=now;progress=Math.min(1,(now-start)/artworkDuration);
+     const eased=type==='artwork'?artworkEase(progress):1-(1-progress)**3;
      visual.draw(eased);veil.style.opacity=String(eased);
      if(progress===1)resolve();else raf=requestAnimationFrame(tick);
     };raf=requestAnimationFrame(tick);
@@ -224,7 +278,7 @@ function openExperience({object,camera,href,type,from=null,canvas,artwork,time,w
    }else releaseVisual();
    veil.remove();
    win.addEventListener('click',event=>{
-    if(event.target.closest('[data-experience-close]')){event.preventDefault();event.stopImmediatePropagation();close();return;}
+    if(event.target.closest('[data-experience-close]')){event.preventDefault();event.stopImmediatePropagation();requestClose();return;}
     const link=event.target.closest('a[href]');if(!link)return;
     const next=new URL(link.href,frame.src);
     if(['http:','https:'].includes(next.protocol)&&(next.origin!==url.origin||next.pathname!==url.pathname)){
@@ -234,10 +288,10 @@ function openExperience({object,camera,href,type,from=null,canvas,artwork,time,w
    win.addEventListener('keydown',event=>{
     if(event.key!=='Escape')return;
     if(type==='paper'&&win.document.getElementById('discover')?.classList.contains('in'))return;
-    if(['entering','discover'].includes(win.__totehm_opposites?.().phase))return;
+    if(['entering','discover','returning'].includes(win.__totehm_opposites?.().phase))return;
     const lisbon=win.__totehm_lisbon?.();
     if(lisbon?.sequence==='phrase'||lisbon?.sequence==='art'||(type==='discover'&&lisbon?.board))return;
-    event.preventDefault();event.stopImmediatePropagation();close();
+    event.preventDefault();event.stopImmediatePropagation();requestClose();
    },true);
    // Activate the prepared controls before the visible frame accepts input.
    if(type!=='discover')win.dispatchEvent(new win.Event(config.event));

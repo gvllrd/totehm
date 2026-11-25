@@ -1,9 +1,10 @@
 import * as T from './vendor/three-0.180.0.mjs';
-import {OPPOSITES} from './gallery-opposites.mjs';
+import {OPPOSITES,OPPOSITE_FRAME} from './gallery-opposites.mjs';
 
 const href='/think_same_but_opposite';
 const source=[0,18.90,-4.2];
-const artHeight=3.36,artWidth=artHeight*200/356;
+const {height:artHeight,ratio,border,color}=OPPOSITE_FRAME;
+const artWidth=artHeight*ratio,frameWidth=artWidth+2*border,frameHeight=artHeight+2*border,frameDepth=.13,frameZ=-.068;
 
 export const NEW_YORK_SUSPENSION_LAYOUT=Object.freeze({
  position:Object.freeze([0,5.88,-.85]),
@@ -71,8 +72,8 @@ export function createNewYorkSuspension(parent,{mobile=false,onChange=()=>{}}={}
  root.position.fromArray(NEW_YORK_SUSPENSION_LAYOUT.position);parent.add(root);
  const resources=new Set(),own=resource=>(resources.add(resource),resource),pickables=[];
  const artGeometry=own(new T.PlaneGeometry(artWidth,artHeight));
- const frameGeometry=own(new T.BoxGeometry(artWidth+.10,artHeight+.10,.13));
- const frameMaterial=own(new T.MeshStandardMaterial({color:0x14141c,metalness:.45,roughness:.57}));
+ const frameGeometry=own(new T.BoxGeometry(frameWidth,frameHeight,frameDepth));
+ const frameMaterial=own(new T.MeshStandardMaterial({color,metalness:.45,roughness:.57}));
  const titleGeometry=own(new T.PlaneGeometry(10.2,.65));
  const titleMaterial=own(new T.MeshBasicMaterial({transparent:true,alphaTest:.05,depthWrite:false,toneMapped:false,opacity:0}));
  const screen=new T.Mesh(titleGeometry,titleMaterial);
@@ -101,7 +102,7 @@ export function createNewYorkSuspension(parent,{mobile=false,onChange=()=>{}}={}
  const loader=globalThis.document?.createElementNS?new T.TextureLoader():null;
  const works=OPPOSITES.map((work,index)=>{
   const group=new T.Group();group.name=work.title;root.add(group);
-  const body=new T.Mesh(frameGeometry,frameMaterial);body.position.z=-.068;group.add(body);
+  const body=new T.Mesh(frameGeometry,frameMaterial);body.position.z=frameZ;group.add(body);
   const material=own(new T.MeshBasicMaterial({color:0xffffff,toneMapped:false}));
   const face=new T.Mesh(artGeometry,material);face.name='Original artwork — '+work.title;face.visible=false;group.add(face);
   const data={...targetData,id:work.id,href:href+'?work='+encodeURIComponent(work.id)};
@@ -129,9 +130,10 @@ export function createNewYorkSuspension(parent,{mobile=false,onChange=()=>{}}={}
  }
  pose();
 
- function projectCorners(face,camera,width,height){
-  return [[-artWidth/2,artHeight/2],[artWidth/2,artHeight/2],[artWidth/2,-artHeight/2],[-artWidth/2,-artHeight/2]].map(([x,y])=>{
-   const point=new T.Vector3(x,y,0).applyMatrix4(face.matrixWorld).project(camera);
+ function projectCorners(object,camera,width,height,planeWidth=artWidth,planeHeight=artHeight,z=0){
+  const w=planeWidth/2,h=planeHeight/2;
+  return [[-w,h],[w,h],[w,-h],[-w,-h]].map(([x,y])=>{
+   const point=new T.Vector3(x,y,z).applyMatrix4(object.matrixWorld).project(camera);
    return{x:(point.x+1)*width/2,y:(1-point.y)*height/2};
   });
  }
@@ -150,8 +152,9 @@ export function createNewYorkSuspension(parent,{mobile=false,onChange=()=>{}}={}
   if(!work||disposed||!work.face.visible)return null;
   const image=work.face.material.map?.image;
   if(!image?.naturalWidth||!image.naturalHeight)return null;
-  work.face.updateWorldMatrix(true,false);camera.updateMatrixWorld(true);
-  return{object:work.group,image,corners:projectCorners(work.face,camera,width,height)};
+  work.body.updateWorldMatrix(true,false);camera.updateMatrixWorld(true);
+  return{object:work.group,image,border,color,frameWidth,frameHeight,
+   corners:projectCorners(work.body,camera,width,height,frameWidth,frameHeight,frameDepth/2)};
  }
  function syncVisibility(){
   root.visible=projecting&&!handoff;

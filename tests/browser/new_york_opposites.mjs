@@ -13,7 +13,7 @@ try{
  const venue=await page(browser,{dir:'space',origin,session:false,viewport:{width:1440,height:1000},network:url=>url.pathname==='/gallery-temple-landscape.mjs'?{contentType:'text/javascript',body:neutralLandscape}:null});
  try{
   const {pg,log}=venue;
-  await pg.emulateMedia({reducedMotion:'reduce'});
+  await pg.emulateMedia({reducedMotion:'no-preference'});
   await pg.goto(origin+'/new-york',{waitUntil:'domcontentloaded'});
   await pg.waitForFunction(()=>{const d=window.__totehm_gallery?.();return d?.webgl&&d.projection?.ready&&d.frames>0;},null,{timeout:60000});
   const before=await pg.evaluate(()=>__totehm_gallery());
@@ -21,7 +21,7 @@ try{
   check(before.projection.independentWorks&&!before.projection.blackPanel,'The six original works hang separately in New York');
   await pg.screenshot({path:out+'/suspended-artworks.png'});
   for(const work of OPPOSITES){
-   const pose=before.projection.poses.find(({id})=>id===work.id);
+   const pose=(await pg.evaluate(()=>__totehm_gallery())).projection.poses.find(({id})=>id===work.id);
    check(pose&&pose.x>0&&pose.x<1440&&pose.y>0&&pose.y<1000,work.title+' is in the arrival view');
    await pg.mouse.click(pose.x,pose.y);
    await pg.waitForFunction(()=>window.__totehm_projection_expansion?.().stage==='experience',null,{timeout:25000});
@@ -31,18 +31,26 @@ try{
    await reader.waitForFunction(id=>__totehm_opposites().phase==='artwork'&&__totehm_opposites().work===id,work.id);
    check(await reader.locator('#artwork-hero-image').isVisible()&&await reader.locator('#artwork-hero-image').getAttribute('src')===work.image&&await reader.locator('#discover-stage').isHidden(),work.title+' first lifts into its original fullscreen artwork');
    check(await pg.evaluate(()=>__totehm_projection_expansion().type==='artwork'&&__totehm_projection_expansion().documentReloads===0),work.title+' stays in the gallery handoff');
+   const heroFrame=reader.locator('#artwork-hero-frame');
+   const large=await heroFrame.boundingBox();
+   check(large&&await heroFrame.evaluate(frame=>frame.getBoundingClientRect().width>frame.firstElementChild.getBoundingClientRect().width),work.title+' retains its physical frame');
    await pg.mouse.wheel(0,600);
    await reader.waitForFunction(()=>__totehm_opposites().phase==='discover'&&__totehm_opposites().step===0);
    check((await reader.locator('#slide').innerText()).includes(work.slides[0][0]),work.title+' opens its original Discover on scroll');
+   const small=await reader.locator('#discover-artwork-frame').boundingBox();
+   check(small&&small.height<large.height*.4&&await reader.locator('#discover-artwork-image').getAttribute('src')===work.image,work.title+' keeps a smaller framed artwork in Discover');
    check(await reader.locator('.eyebrow').count()===0,'The prior artwork title is not repeated above the slides');
    await reader.locator('#close').click();
+   await reader.waitForFunction(()=>__totehm_opposites().phase==='returning');
    await reader.waitForFunction(()=>__totehm_opposites().phase==='artwork');
    await reader.locator('header a[data-experience-close]').click();
+   await pg.waitForFunction(()=>{const d=__totehm_projection_expansion();return d.stage==='returning'&&d.overlays===1&&d.progress<1;});
    await pg.waitForFunction(()=>__totehm_projection_expansion().stage==='closed');
    const restored=await pg.evaluate(()=>__totehm_gallery());
    assert.deepEqual(restored.camera.position,before.camera.position);
    check(!restored.projection.handoff&&restored.projection.beamVisible,'Gallery Back restores the same six artworks');
   }
+  check(await pg.evaluate(()=>{const d=__totehm_gallery().liberty;return d&&!d.crashingWaveFoam&&d.seaSprayParticles===0;}),'Liberty has no local foam or spray effects');
   check(log.errors.filter(e=>e.startsWith('pageerror:')).length===0,'The gallery runs without JavaScript errors');
  }finally{await venue.ctx.close();}
  for(const viewport of [{width:1440,height:1000},{width:390,height:844}]){
