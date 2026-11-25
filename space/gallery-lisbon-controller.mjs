@@ -323,13 +323,15 @@ export function createLisbonController({width=.52,mobile=false,batchArtwork=fals
   const materials=new Set(),geometries=new Set(),textures=new Set(),keys=new Map(),pending=[];
   let loaded=0,disposed=false;
   const grain=moldedGrain();textures.add(grain);
-  const shellInk=new T.MeshPhysicalMaterial({color:0x171b22,roughness:.60,metalness:.07,clearcoat:.16,clearcoatRoughness:.38,bumpMap:grain,bumpScale:.0009});
-  const edgeInk=new T.MeshPhysicalMaterial({color:0x14171e,roughness:.59,metalness:.10});
-  const gripInk=new T.MeshPhysicalMaterial({color:0x14171d,roughness:.73,metalness:.03,bumpMap:grain,bumpScale:.0019});
-  const rubberInk=new T.MeshPhysicalMaterial({color:0x151b24,roughness:.70,metalness:.03,bumpMap:grain,bumpScale:.0017});
-  const bezelInk=new T.MeshPhysicalMaterial({color:0x3b4958,roughness:.36,metalness:.42});
+  // A neutral black body with low reflectance stays dark under both light rigs.
+  const housing={color:0x040404,envMapIntensity:.40,specularIntensity:.22};
+  const shellInk=new T.MeshPhysicalMaterial({...housing,roughness:.68,clearcoat:.055,clearcoatRoughness:.49,bumpMap:grain,bumpScale:.0009});
+  const edgeInk=new T.MeshPhysicalMaterial({...housing,roughness:.71});
+  const gripInk=new T.MeshPhysicalMaterial({...housing,roughness:.82,bumpMap:grain,bumpScale:.0019});
+  const rubberInk=new T.MeshPhysicalMaterial({...housing,color:0x030303,roughness:.86,bumpMap:grain,bumpScale:.0017});
+  const bezelInk=new T.MeshPhysicalMaterial({...housing,color:0x070707,roughness:.52,metalness:.18});
   const lighting=new T.MeshBasicMaterial({color:0x5479b3,toneMapped:false});
-  const padInk=new T.MeshPhysicalMaterial({color:0x23262d,roughness:.58,metalness:.08,clearcoat:.13,bumpMap:grain,bumpScale:.0007});
+  const padInk=new T.MeshPhysicalMaterial({...housing,roughness:.75,bumpMap:grain,bumpScale:.0007});
   for(const ink of [shellInk,edgeInk,gripInk,rubberInk,bezelInk,lighting,padInk])materials.add(ink);
   const create=(geometry,material,x,y,z)=>{geometries.add(geometry);materials.add(material);const mesh=new T.Mesh(geometry,material);mesh.position.set(x,y,z);root.add(mesh);return mesh;};
   function shell(material,y,depth,bevel,scale,shape=outline()){
