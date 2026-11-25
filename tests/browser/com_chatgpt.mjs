@@ -55,9 +55,13 @@ try{
     /* 24/11 (Wah : « Higher GPT est dans le dashboard de toute façon ») — ↑ N'EST PLUS UNE VUE : il ouvre le RÉCIT,
        qui sert de menu. Higher my ChatGPT se rejoint par SA porte, [Get Higher], au troisième écran — et par le verso
        (Go Higher). Le panneau `#lv-b` dort en attendant le ménage : plus aucun geste n'y mène, donc on ne le teste plus. */
-    await pg.keyboard.press('ArrowUp');await pg.waitForTimeout(1300);
+    /* 25/11 (Wah) : connecté, ↑ ouvre la PRISE RAPIDE ; le récit s'ouvre par la touche [GREATNESS]. */
+    await pg.keyboard.press('ArrowUp');await pg.waitForTimeout(1200);
+    const prise=await pg.evaluate(()=>document.getElementById('cap').classList.contains('is-on'));
+    await pg.keyboard.press('Escape');await pg.waitForTimeout(500);
+    await pg.click('#lv-great');await pg.waitForTimeout(1300);
     const recit=await pg.evaluate(()=>({ouvert:window.__totehm_discover().ouvert,vue:window.__totehm_lv().vue}));
-    ok(recit.ouvert&&recit.vue==='c',sample.name+' · ↑ opens the story, no view travel → '+JSON.stringify(recit));
+    ok(prise&&recit.ouvert&&recit.vue==='c',sample.name+' · ↑ opens the quick capture, [GREATNESS] opens the story, no view travel → '+JSON.stringify(recit));
     for(let k=0;k<3;k++){await pg.keyboard.press('ArrowDown');await pg.waitForTimeout(1150);}
     const porte=await pg.evaluate(()=>{const b=document.getElementById('lvd-cta');
       return {i:+document.getElementById('lvd').dataset.i,aria:b.getAttribute('aria-label'),badge:!!b.querySelector('use[href="#higher-badge"]')};});
@@ -84,7 +88,7 @@ try{
   {const {pg,ctx,log}=await page(browser,{dir:'com',origin,tables,rpc:{my_landing:LAND,figher_access:{signed_in:true,member:true},totehm_read:OTHER,creator_page:OFFER,member_media:{ok:true,items:[]},club_spots_of:{ok:true,items:[]}}});
     await pg.emulateMedia({reducedMotion:'reduce'});
     await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await settled(pg,'c');
-    await pg.click('#lv-m-members');
+    await pg.click('#lv-m-sel');
     await pg.waitForSelector('#mb-q:visible');await pg.fill('#mb-q','kai3');await pg.keyboard.press('Enter');
     await pg.waitForFunction(()=>{const c=window.__totehm_cherche();return c.etat==='abonne'&&c.lu;},null,{timeout:9000});
     await pg.keyboard.press('Escape');

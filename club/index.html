@@ -587,6 +587,99 @@ body.rdr-grid #club-disc,body.rdr-shorts #club-disc,body.is-scrolled #club-disc,
 body:has(.mc.is-in) #club-disc{left:auto;right:12px;transform:none;background:none;padding:4px;bottom:calc(8px + env(safe-area-inset-bottom,0px));
   font:400 8px/1.3 'Space Mono',monospace;letter-spacing:.08em;color:#707077}
 @media(hover:hover){body:has(.mc.is-in) #club-disc:hover{color:#fff}}
+/* ══ LES TOUCHES DE MANETTE — copié de tools/ps2.css dans chaque page (jamais importé) ══
+   Wah (25/11) : « tous les CLOSE / FERMER / DELETE doivent avoir une forme bouton comme la touche croix de la manette
+   PS2, c'est-à-dire une croix rouge-violet sur un fond gris-noir, légèrement 3D : il faut que l'on sente que c'est
+   une touche. » La manette est l'objet de référence de toute l'interface : on navigue au MANCHE (BRAND.md), on ferme
+   et on zoome à la TOUCHE. Une seule nomenclature, ici ; on la change ICI puis `python3 tools/recopier.py`.
+     `.k2`    une touche RONDE (close, zoom, retournement) — gris-noir bombé, une arête claire en haut, une ombre
+              courte ; enfoncée elle descend de 2 px et l'ombre disparaît. Le GLYPHE porte la couleur, jamais le fond.
+     `.k2-x`  la croix, rouge-violet `#743169`   ·   `.k2-z` la loupe, blanche   ·   `.k2-f` le retournement, navy
+     `.k2.is-s` la même touche en PLUS PETIT (dans une box : « bel et bien présente »)
+     `.k2r`   une touche RECTANGULAIRE (SELECT · START · MODE) et son intitulé DESSOUS, en Space Mono
+     `.k2j`   LE MANCHE : rond, uniforme, bombé, sans socle — plus gros et plus simple que l'ancien.
+   60 / 30 / 10 : la touche est noire, le glyphe seul est coloré. */
+.k2{display:inline-flex;align-items:center;justify-content:center;flex:none;
+  width:var(--k2-d,34px);height:var(--k2-d,34px);padding:0;border:0;border-radius:50%;cursor:pointer;
+  background:radial-gradient(circle at 50% 32%,#34343b 0 36%,#1d1d22 64%,#121216 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.16),inset 0 -2px 3px rgba(0,0,0,.8),0 2px 0 #08080a,0 4px 7px rgba(0,0,0,.55);
+  color:#d8d8e0;-webkit-tap-highlight-color:transparent;transition:transform .12s ease,box-shadow .12s ease,filter .2s ease}
+.k2>svg{width:calc(var(--k2-d,34px) * .44);height:calc(var(--k2-d,34px) * .44);display:block;fill:none;
+  stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.k2:active,.k2.is-press{transform:translateY(2px);box-shadow:inset 0 1px 0 rgba(255,255,255,.1),inset 0 -1px 2px rgba(0,0,0,.8),0 1px 3px rgba(0,0,0,.5)}
+.k2:focus-visible{outline:1px solid #fff;outline-offset:3px}
+.k2[disabled]{opacity:.45;cursor:default}
+.k2.is-s{--k2-d:22px}
+.k2.is-s>svg{stroke-width:2.4}
+.k2-x{color:#743169}
+.k2-f{color:#333366}
+.k2-z{color:#d8d8e0}
+@media(hover:hover){.k2:hover{filter:brightness(1.25)}}
+/* L'INTITULÉ SOUS LA TOUCHE — comme sur la manette : le mot est imprimé SOUS le bouton, petit, espacé, gris. */
+.k2r{display:inline-flex;flex-direction:column;align-items:center;gap:5px;background:none;border:0;padding:0;cursor:pointer;
+  -webkit-tap-highlight-color:transparent}
+.k2r .k2k{position:relative;display:block;width:var(--k2r-w,40px);height:var(--k2r-h,14px);border-radius:calc(var(--k2r-h,14px) / 2);
+  background:radial-gradient(ellipse at 50% 28%,#34343b 0 38%,#1d1d22 70%,#121216 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.16),inset 0 -2px 3px rgba(0,0,0,.8),0 2px 0 #08080a,0 4px 7px rgba(0,0,0,.55);
+  transition:transform .12s ease,box-shadow .12s ease,filter .2s ease}
+.k2r .k2l{font:400 9px/1 'Space Mono',monospace;letter-spacing:.18em;text-transform:uppercase;color:#8a8a92;
+  white-space:nowrap;transition:color .2s ease}
+.k2r:active .k2k{transform:translateY(2px);box-shadow:inset 0 1px 0 rgba(255,255,255,.1),inset 0 -1px 2px rgba(0,0,0,.8),0 1px 3px rgba(0,0,0,.5)}
+.k2r:focus-visible{outline:none}
+.k2r:focus-visible .k2k{outline:1px solid #fff;outline-offset:3px}
+.k2r[aria-pressed="false"] .k2l{opacity:.5;text-decoration:line-through;text-decoration-thickness:1px}
+.k2r.is-off{opacity:.55}
+@media(hover:hover){.k2r:hover .k2k{filter:brightness(1.25)}.k2r:hover .k2l{color:#fff}}
+/* START porte son ▶ gravé ; MODE porte sa diode. Rien d'autre ne distingue les trois touches. */
+.k2r.is-start .k2k::before{content:"";position:absolute;left:50%;top:50%;width:0;height:0;transform:translate(-50%,-50%);
+  border-left:5px solid rgba(255,255,255,.34);border-top:3.5px solid transparent;border-bottom:3.5px solid transparent}
+.k2r.is-mode .k2k::after{content:"";position:absolute;left:50%;top:50%;width:4px;height:4px;margin:-2px 0 0 -2px;border-radius:50%;
+  background:rgba(255,255,255,.18);transition:background .2s ease,box-shadow .2s ease}
+.k2r.is-mode[aria-pressed="true"] .k2k::after{background:#fff;box-shadow:0 0 5px rgba(255,255,255,.75)}
+/* ══ LE MANCHE · rond, uniforme, imposant ══ Wah (25/11) : « je veux le joystick très simple, rond uniforme très
+   inspiré par le joystick de la manette PS2, plus gros et imposant que celui actuellement et plus simple.
+   Minimalisme. » Un seul objet : le puits (l'ombre dans laquelle il est planté) et le CAPUCHON bombé, à bord net.
+   Aucune texture, aucun socle carré. Le capuchon prend sa couleur de `--k2j-c` (la vue, dans le TOTEHM). */
+.k2j{position:relative;width:var(--k2j-d,64px);height:var(--k2j-d,64px);flex:none;touch-action:none;cursor:grab;
+  -webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+.k2j:active{cursor:grabbing}
+.k2j::before{content:"";position:absolute;inset:0;border-radius:50%;
+  background:radial-gradient(circle at 50% 50%,#000 0 54%,#121214 78%,#000 100%);
+  box-shadow:inset 0 2px 5px #000,0 0 0 1px #262629}
+.k2j .k2j-c{position:absolute;left:50%;top:50%;width:calc(var(--k2j-d,64px) * .74);height:calc(var(--k2j-d,64px) * .74);
+  margin:calc(var(--k2j-d,64px) * -.37) 0 0 calc(var(--k2j-d,64px) * -.37);border-radius:50%;
+  background:radial-gradient(circle at 50% 38%,color-mix(in srgb,var(--k2j-c,#1f1f24) 72%,#fff) 0 6%,var(--k2j-c,#1f1f24) 46%,color-mix(in srgb,var(--k2j-c,#1f1f24) 72%,#000) 100%);
+  box-shadow:inset 0 2px 2px rgba(255,255,255,.14),inset 0 -3px 5px rgba(0,0,0,.6),0 3px 6px rgba(0,0,0,.65);
+  transform:translate(var(--mx,0px),var(--my,0px));transition:transform .26s cubic-bezier(.22,.9,.3,1),background-color .42s ease}
+.k2j.tenu .k2j-c{transition:none}
+/* LES TROIS POINTS VERTICAUX DE LA MARQUE, dans le capuchon (bleu · navy · rouge-violet) : la racine de l'arbre. */
+.k2j .k2j-p{position:absolute;left:50%;top:50%;width:calc(var(--k2j-d,64px) * .74);height:calc(var(--k2j-d,64px) * .74);
+  margin:calc(var(--k2j-d,64px) * -.37) 0 0 calc(var(--k2j-d,64px) * -.37);pointer-events:none;
+  transform:translate(var(--mx,0px),var(--my,0px));transition:transform .26s cubic-bezier(.22,.9,.3,1),opacity .3s ease}
+.k2j.tenu .k2j-p{transition:opacity .3s ease}
+.k2j .k2j-p i{--d:calc(var(--k2j-d,64px) * .15);position:absolute;left:50%;display:block;width:var(--d);height:var(--d);
+  margin:calc(var(--d) / -2) 0 0 calc(var(--d) / -2);border-radius:50%;background:var(--c,#fff);
+  box-shadow:0 1px 2px rgba(0,0,0,.6);transition:opacity .25s ease,transform .25s ease}
+.k2j .k2j-p .o{top:24%}.k2j .k2j-p .h{top:50%}.k2j .k2j-p .r{top:76%}
+.k2j .k2j-p i.is-current{opacity:0;transform:scale(.4)}
+.k2j.is-side .k2j-p{opacity:0}
+@media(prefers-reduced-motion:reduce){.k2,.k2r .k2k,.k2j .k2j-c,.k2j .k2j-p,.k2j .k2j-p i{transition:none}}
+/* UN MOT QUI EFFACE (delete, cut off) : la même matière, en rectangle, avec la croix rouge-violet IMPRIMÉE à gauche.
+   La croix est une image de fond : réécrire le texte du bouton (la confirmation en deux gestes) ne l'efface jamais. */
+.k2w{display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:9px;cursor:pointer;
+  padding:7px 11px 7px 26px;color:#c8c8d0;font:700 10px/1 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;
+  background:radial-gradient(ellipse at 50% 24%,#34343b 0 38%,#1d1d22 72%,#121216 100%) no-repeat,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Cpath d='M3 3 L11 11 M11 3 L3 11' stroke='%23743169' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E") 9px 50%/11px 11px no-repeat;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.16),inset 0 -2px 3px rgba(0,0,0,.8),0 2px 0 #08080a,0 4px 7px rgba(0,0,0,.55);
+  -webkit-tap-highlight-color:transparent;transition:transform .12s ease,box-shadow .12s ease,filter .2s ease}
+.k2w:active{transform:translateY(2px);box-shadow:inset 0 1px 0 rgba(255,255,255,.1),inset 0 -1px 2px rgba(0,0,0,.8),0 1px 3px rgba(0,0,0,.5)}
+.k2w:focus-visible{outline:1px solid #fff;outline-offset:3px}
+.k2w[disabled]{opacity:.5;cursor:default}
+.k2w.is-wide{width:100%}
+.k2w.is-sur{color:#fff;background:#743169 no-repeat,
+  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Cpath d='M3 3 L11 11 M11 3 L3 11' stroke='%23fff' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E") 9px 50%/11px 11px no-repeat}
+@media(hover:hover){.k2w:not([disabled]):hover{filter:brightness(1.25)}}
+/* ══ fin ps2 ══ */
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Tout texte devient blanc sous la souris. Les dessins, surfaces
    et contrôles désactivés gardent leur apparence. */
@@ -639,7 +732,17 @@ div:not(:has(> :not(br,wbr))):hover,
 .dc-who:hover,
 .dc-x:hover,
 .dc-next:hover,
-body:has(.mc.is-in) #club-disc:hover):where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *)){color:#fff!important}
+.dc-lead:hover,
+.dc-deep:hover,
+.dc-deep[aria-expanded="true"]:hover,
+.dc-more .dc-p:hover,
+body:has(.mc.is-in) #club-disc:hover,
+.k2:hover,
+.k2-x:hover,
+.k2-f:hover,
+.k2-z:hover,
+.k2r .k2l:hover,
+.k2w:hover):where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *)){color:#fff!important}
 }
 /* ══ FIN DU BLOC GÉNÉRÉ ══ */
 </style></head>
@@ -677,7 +780,7 @@ you are a member.</p>
       <div class="dc-row"><a class="dc-lnk" href="https://www.totehm.com/">totehm.com</a><a class="dc-lnk" href="https://www.totehm.com/terms" target="_blank" rel="noopener">Simple terms of use</a></div></div>
   </div>
   <div class="dc-cta"><button class="dc-btn" id="cd-cta" type="button">Connect with my TOTEHM</button></div>
-  <button class="dc-x" id="cd-x" type="button" aria-label="Close"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2 L12 12 M12 2 L2 12"/></svg></button>
+  <button data-hover-art class="dc-x k2 k2-x" id="cd-x" type="button" aria-label="Close"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2 L12 12 M12 2 L2 12"/></svg></button>
 </div>
 
 <section class="view is-on" id="v-radar" aria-label="Radar">

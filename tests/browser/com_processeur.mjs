@@ -52,7 +52,7 @@ try{
       up:q('#lvn-up').getAttribute('aria-label'),dn:q('#lvn-dn').getAttribute('aria-label'),
       lf:q('#lvn-lf').getAttribute('aria-label'),rt:q('#lvn-rt').getAttribute('aria-label'),
       cotes:['lv-g','lv-d'].filter(i=>document.getElementById(i)).length,
-      mine:q('#lv-m-mine').getAttribute('aria-checked'),others:q('#lv-m-members').getAttribute('aria-checked'),
+      mine:q('#lv-m-sel').getAttribute('aria-checked'),others:q('#lv-m-sel').getAttribute('aria-checked'),
       /* 18/10 : le nom a quitté l'atterrissage — il ne vit QUE sur la face verso du papier (Wah). */
       sigAbs:!q('#ast-sig'),connAbs:!q('#conn-bar'),
       tap:q('#lv-tap').textContent,bouche:getComputedStyle(q('#gate-mouth')).opacity,
@@ -242,7 +242,7 @@ try{
   const p0=await pg.evaluate(()=>document.getElementById('gate-asteroid').getBoundingClientRect().width);
   const habits0=(await lv(pg)).ramifications.habits;
   // 18/11 — [Members] : le TOTEHM se retourne sur son verso, en mode recherche (le même geste que [Mine]) ; refermé, rien n'a bougé
-  await pg.click('#lv-m-members');
+  await pg.click('#lv-m-sel');
   await pg.waitForFunction(()=>{const c=window.__totehm_cherche&&window.__totehm_cherche();return c&&c.ouvert;},null,{timeout:8000}).catch(()=>{});
   const o=await pg.evaluate(()=>({onglets:window.__ouvert.slice(),mode:window.__totehm_lv().mode,cherche:window.__totehm_cherche().ouvert,
     saisie:document.activeElement&&document.activeElement.id,asp:document.body.classList.contains('is-aspire')}));
@@ -289,7 +289,7 @@ try{
   await pg.keyboard.press('Escape');await pg.waitForFunction(()=>document.body.classList.contains('gate'),null,{timeout:9000}).catch(()=>{});await pg.waitForTimeout(900);
   ok(await pg.evaluate(()=>document.body.classList.contains('lv-membre')&&document.body.classList.contains('ro')),'replier SON Totehm : on reste dans son écosystème');
   // [Mine] : je redeviens moi
-  await pg.click('#lv-m-mine');await calme(pg);await pg.waitForTimeout(1200);
+  await pg.click('#lv-m-sel');await calme(pg);await pg.waitForTimeout(1200);
   const m=await pg.evaluate(()=>({d:window.__totehm_lv(),ro:document.body.classList.contains('ro'),cl:document.body.classList.contains('lv-membre')}));
   ok(m.d.mode==='mine'&&!m.ro&&!m.cl&&!/[?&]ro=/.test(pg.url()),'[Mine] : je redeviens moi, et l\'URL aussi '+JSON.stringify({mode:m.d.mode,ro:m.ro,cl:m.cl,u:pg.url().replace(origin,''),v:m.d.vue,b:m.d.bouge}));
   // le milieu est un ARRÊT : une poussée de plus pendant le retour au centre ne traverse pas (14/11)
@@ -383,7 +383,7 @@ try{
   await pg.keyboard.press('ArrowUp');await vers(pg,'b');
   const b=await pg.evaluate(()=>({tours:window.__totehm_lv().tours,anim:document.getElementById('gl-bg').getAnimations().filter(a=>a.effect&&a.effect.getKeyframes().some(k=>/rotate/.test(k.transform||''))).length}));
   await pg.keyboard.press('ArrowDown');await vers(pg,'c');
-  await pg.click('#lv-m-members');await calme(pg);await pg.waitForTimeout(600);
+  await pg.click('#lv-m-sel');await calme(pg);await pg.waitForTimeout(600);
   const g=await lv(pg);
   ok(tr.every(t=>/^0s/.test(t))&&b.tours===0&&b.anim===0,'mouvement réduit : aucune transition, #gl-bg ne tourne pas ('+tr.join(' ')+')');
   ok(await pg.evaluate(()=>window.__totehm_cherche().ouvert&&document.activeElement.id==='mb-q')&&!g.ramifications.enCours,'MEMBERS : le verso en recherche, la saisie est là, sans animation');

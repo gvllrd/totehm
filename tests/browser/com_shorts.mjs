@@ -263,13 +263,13 @@ try{
       rc=c.getBoundingClientRect(),ra=a.getBoundingClientRect(),r=window.__totehm_rdr();
     return {r,fond:getComputedStyle(c).backgroundColor,plein:Math.round(rc.width)===innerWidth&&Math.round(rc.height)>=innerHeight-2,
       dock:document.body.classList.contains('papier-haut'),radar:!!document.getElementById('rdr-c'),
-      bascule:[...document.querySelectorAll('#rdr-mode [data-rmode]')].map(e=>e.textContent+(e.getAttribute('aria-checked')==='true'?'*':'')),
+      bascule:[...document.querySelectorAll('#rdr-mode button')].map(e=>e.querySelector('.k2l').textContent),
       basculeVue:getComputedStyle(document.getElementById('rdr-mode')).display!=='none',
       haut:ra.y+ra.height/2<90&&Math.abs((ra.x+ra.width/2)-innerWidth/2)<4&&ra.width<70};});
   const lus=log.rpc.filter(x=>x.name==='club_spots_of'&&x.body.p_pseudo==='wahigher').map(x=>x.body.p_period);
   ok(lus.join(',')==='now,future'&&d.r.club.periode==='future'&&!log.rpc.some(x=>x.name==='club_spots'),
      '27/10 · → MES spots (club_spots_of à mon nom, jamais « everyone ») : rien maintenant, la vue montre ce qui VIENT ('+lus.join(' → ')+')');
-  ok(!d.radar&&d.r.mode==='map'&&d.bascule.join(' ')==='Map* Grid Shorts'&&d.basculeVue,'plus de radar : MAP · GRID · SHORTS (23/11), au format de MINE · MEMBERS ; la vue s\'ouvre sur la CARTE');
+  ok(!d.radar&&d.r.mode==='map'&&d.bascule.join(' ')==='Map'&&d.basculeVue,'25/11 · plus de radar, plus de Shorts : UNE touche SELECT (Map ⇄ Grid) ; la vue s\'ouvre sur la CARTE');
   ok(d.r.carte.terres>100&&d.r.carte.points===1&&d.r.carte.villes===0,'la Terre (Natural Earth, '+d.r.carte.terres+' terres) et mon spot : un carré plein, à son point');
   ok(d.plein&&d.dock&&d.haut,'la carte prend l\'écran ; le Totehm est sorti se caler EN HAUT, centré');
   await pg.screenshot({path:OUT+'/spots_'+(tel?'tel':'ordi')+'.png'});
@@ -292,7 +292,7 @@ try{
       cal:!!(c&&c.querySelector('.ssp-acts [data-ics]')), go:!!(c&&c.querySelector('.ssp-acts [data-go]')), x:getComputedStyle(document.getElementById('rdr-x')).display,
       ask:(()=>{const a=c&&c.querySelector('.ssp-acts [data-ask]');return a?a.dataset.ask+'|'+a.textContent+'|'+a.querySelectorAll('svg.ask-hi use[href="#higher-badge"]').length:'';})(),
       per:[...document.querySelectorAll('#rdr-flt [data-per]')].map(e=>e.textContent)};});
-  ok(sh2.voit&&sh2.d.voit&&sh2.n===1&&/y mandatory/.test(sh2.snap)&&sh2.plein&&sh2.x==='block',
+  ok(sh2.voit&&sh2.d.voit&&sh2.n===1&&/y mandatory/.test(sh2.snap)&&sh2.plein&&/^(inline-)?flex$/.test(sh2.x),
      'un tap sur le point : SON spot en grand, par-dessus la carte (un spot par écran, aimanté), ✕ pour revenir');
   ok(sh2.pol===0&&sh2.fond==='rgb(0, 0, 0)'&&sh2.src&&sh2.fit==='contain'&&sh2.rond==='0px',
      '21/10 · PLUS DE POLAROID : l\'image TELLE QU\'ELLE (contain, ni cadre ni recadrage) sur le NOIR → '+JSON.stringify({pol:sh2.pol,fond:sh2.fond,fit:sh2.fit}));
@@ -447,7 +447,7 @@ try{
   await pg.click('#rdr-sf [data-sf="close"]');await pg.waitForTimeout(300);
   const mp=await pg.evaluate(()=>window.__totehm_rdr().carte);
   ok(mp.villes===2&&mp.points===2,'la carte : deux spots dont je ne vois que la VILLE — deux carrés CREUX, jamais un faux point');
-  await pg.click('#rdr-mode [data-rmode="grid"]');await pg.waitForTimeout(1200);
+  await pg.click('#rdr-m-sel');await pg.waitForTimeout(1200);
   const gr=await pg.evaluate(()=>({d:window.__totehm_rdr(),grid:document.body.classList.contains('rdr-grid'),
     tuiles:document.querySelectorAll('#rdr-g .tl[data-cle]').length,boxes:[...document.querySelectorAll('#rdr-g .tl-bx .tb .v-name')].map(e=>e.textContent.trim()),
     plus:!!document.querySelector('#rdr-g .tl-add[data-nspot]'),
@@ -498,14 +498,14 @@ try{
   ok(au.n===1&&au.l.join(' · ')==='private · my subscribers · figher club','27/10 · « Who sees it » (les trois niveaux d\'un spot) trie MES spots : '+au.l.join(' · ')+' → '+au.n+' tuile');
   await pg.click('#rdr-sf [data-sf="all"]');await pg.waitForTimeout(600);
   await pg.keyboard.press('Escape');await pg.waitForTimeout(400);
-  await pg.click('#rdr-mode [data-rmode="map"]');await pg.waitForTimeout(700);
+  await pg.click('#rdr-m-sel');await pg.waitForTimeout(700);
   ok((await pg.evaluate(()=>window.__totehm_rdr())).mode==='map','retour à MAP : le même objet, rien de redemandé');
   await pg.screenshot({path:OUT+'/spots_grid_'+(tel?'tel':'ordi')+'.png'});
   await pg.click('#lvn-lf');await vers(pg,'c');await pg.waitForTimeout(300);
 
   // ══ 5 · PENDANT LA RECHERCHE MEMBERS (18/11 : elle vit sur le VERSO, comme mes réglages) : la croix de l'atterrissage attend
   //      sous la feuille — une flèche y déplace le curseur, jamais la vue ; refermée (Échap), la croix repart ══
-  await pg.click('#lv-m-members');
+  await pg.click('#lv-m-sel');
   await pg.waitForFunction(()=>{const c=window.__totehm_cherche&&window.__totehm_cherche();return c&&c.ouvert;},null,{timeout:8000}).catch(()=>{});
   const pendant=await pg.evaluate(()=>window.__totehm_cherche().ouvert);
   await pg.keyboard.press('ArrowRight');await pg.waitForTimeout(700);

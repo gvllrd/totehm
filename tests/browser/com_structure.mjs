@@ -35,13 +35,16 @@ const branche=pg=>pg.evaluate(()=>{const s=document.getElementById('gate-asteroi
   const section=y=>traits.map(t=>{const l=t[1];for(let i=1;i<l.length;i++){const a=l[i-1],b=l[i];
     if(a[1]<=y&&b[1]>=y&&b[1]>a[1])return a[0]+(b[0]-a[0])*(y-a[1])/(b[1]-a[1]);}return null;});
   const largeur=xs=>xs.every(x=>x!==null)?Math.max(...xs)-Math.min(...xs):Infinity;
-  const acts=document.getElementById('lv-c-acts').getBoundingClientRect(),pts=[...document.querySelectorAll('#lvj-stack i')],cap=getComputedStyle(pts[0]),gros=getComputedStyle(document.getElementById('lvj-box'));
+  const acts=document.getElementById('lv-c-acts').getBoundingClientRect(),pts=[...document.querySelectorAll('#lvj-box .k2j-c')],cap=getComputedStyle(pts[0]),gros=getComputedStyle(document.getElementById('lvj-box'));
   const Jy=jb.top+jb.height/2;
-  const larg=[];for(let y=acts.bottom+20;y<=Jy-76;y+=6)larg.push(largeur(section(y)));
+  const pad=document.getElementById('lvjoy').getBoundingClientRect();
+  const H0=pad.height/2+22, H1=pad.height/2+14;   /* au-dessus de la manette entière, mesuré SUR elle (25/11 : elle a grandi) */
+  const larg=[];for(let y=acts.bottom+20;y<=Jy-H0;y+=6)larg.push(largeur(section(y)));
   const tronc={sous:largeur(section(acts.bottom+20)),elargit:larg.every((v,i)=>v>=47.5&&v<=56.5&&(!i||v>=larg[i-1]-.2)),
-    apres:largeur(section(Jy-76)),avantManette:largeur(section(Jy-68))};
-  const trois={n:pts.length,manche:cap.backgroundImage,boite:gros.backgroundColor,
-    puits:getComputedStyle(document.getElementById('lvj-box'),'::after').backgroundImage};
+    apres:largeur(section(Jy-H0)),avantManette:largeur(section(Jy-H1))};
+  const trois={n:pts.length,manche:cap.backgroundImage,boite:gros.backgroundColor,d:pts[0].getBoundingClientRect().width,
+    puits:getComputedStyle(document.getElementById('lvj-box'),'::before').backgroundImage,
+    pointsAbs:document.querySelectorAll('#lvj-box .k2j-p').length};
   return {pads,jonctions,rameaux:document.querySelectorAll('#lv-ram path.fk').length,s:{t:s.top,b:s.bottom,l:s.left,r:s.right,w:s.width,cx:s.left+s.width/2,cy:s.top+s.height/2},H:innerHeight,pins,trous,traits,
     J:{x:jb.left+jb.width/2,y:jb.top+jb.height/2},sansImage,tronc,manche:trois,
     coeur:getComputedStyle(document.getElementById('gate-logo')).animationName,socle:{bg:cs.backgroundColor,ombre:cs.boxShadow,puits:!!k.querySelector('.sk-well')}};});
@@ -77,8 +80,11 @@ try{
   ok(b.tronc.sous>=47&&b.tronc.sous<=49&&b.tronc.elargit
      &&b.tronc.apres>=55&&b.tronc.apres<=57&&b.tronc.avantManette>=55&&b.tronc.avantManette<=57,
      nom+' · le tronc FERMÉ : sept rails parallèles (48 px) sous le papier, qui ne font que s’élargir jusqu’à la manette (56 px), puis les racines se séparent → '+JSON.stringify(b.tronc));
-  ok(b.manche.n===1&&b.manche.boite==='rgba(0, 0, 0, 0)'&&b.manche.manche.includes('radial-gradient')&&b.manche.puits.includes('radial-gradient'),
-     nom+' · le joystick noir rond n’a pas de boîte carrée → '+JSON.stringify(b.manche));
+  /* 25/11 (Wah) : « le joystick très simple, rond uniforme … plus gros et imposant … minimalisme » : UN capuchon, nu
+     (les trois points de la marque vivent dans le TOTEHM déployé, où ils disent la vue), et pas de boîte carrée. */
+  ok(b.manche.n===1&&b.manche.pointsAbs===0&&b.manche.boite==='rgba(0, 0, 0, 0)'&&b.manche.manche.includes('radial-gradient')
+     &&b.manche.puits.includes('radial-gradient')&&b.manche.d>=44,
+     nom+' · le manche rond, nu et imposant (capuchon de '+Math.round(b.manche.d)+' px) → '+JSON.stringify(b.manche));
   ok(b.coeur==='coeur',nom+' · 26/10 · au repos, le cœur (le TOTEHM) bat → '+b.coeur);
   const r0=await reseau(pg);
   /* 10/11 — au téléphone, l'arbre est INVISIBLE (`#lv-ram` en `visibility:hidden`) : ses impulsions ne tournent plus, elles

@@ -27,8 +27,9 @@ try{
   await pg.addInitScript(()=>{ try{ localStorage.setItem('totehm_spots_mode2','grid'); }catch(_){} });
   await pg.goto('https://www.totehm.com/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(900);
   await pg.click('#lvn-rt');await pg.waitForTimeout(1500);
-  const modes=await pg.evaluate(()=>[...document.querySelectorAll('#rdr-mode [data-rmode]')].map(b=>b.textContent.trim()));
-  ok(modes.join('|')==='Map|Grid|Shorts',nom+' · trois modes : Map · Grid · Shorts → '+modes.join(' · '));
+  /* 25/11 (Wah) : « pas besoin du mode SHORT dans la vue de droite, et mettre le même bouton format SELECT PS2 ». */
+  const modes=await pg.evaluate(()=>[...document.querySelectorAll('#rdr-mode button')].map(b=>b.querySelector('.k2l').textContent.trim()));
+  ok(modes.join('|')==='Grid',nom+' · UNE touche SELECT, Map ⇄ Grid (plus de Shorts) → '+modes.join(' · '));
   /* ── plusieurs temps ── */
   const tuiles=()=>pg.evaluate(()=>[...document.querySelectorAll('#rdr-g .tl[data-cle]')].map(t=>t.dataset.cle.slice(3)).join(','));
   ok(await tuiles()==='n1,k1',nom+' · à l\'arrivée : now');
@@ -46,10 +47,10 @@ try{
   await pg.click('#rdr-sf [data-sf="per"][data-v="past"]');await pg.waitForTimeout(700);
   ok(await tuiles()==='p1,k2',nom+' · il reste toujours au moins un temps');
   await pg.click('#rdr-sf [data-sf="close"]');await pg.waitForTimeout(500);
-  /* ── Shorts ── */
-  await pg.click('#rdr-mode [data-rmode="shorts"]');await pg.waitForTimeout(1500);
+  /* ── LE POLAROID : un tap sur une tuile (25/11 : il n'y a plus de mode Shorts) ── */
+  await pg.click('#rdr-g .tl[data-cle]');await pg.waitForTimeout(1500);
   const s=await pg.evaluate(()=>({voit:document.body.classList.contains('rdr-voir'),etat:window.__totehm_lv().spots}));
-  ok(s.voit&&s.etat.mode==='shorts'&&s.etat.polaroid.on,nom+' · Shorts : les spots défilent plein écran → '+JSON.stringify({voit:s.voit,mode:s.etat.mode,on:s.etat.polaroid.on}));
+  ok(s.voit&&s.etat.mode==='grid'&&s.etat.polaroid.on,nom+' · un tap sur une tuile : les spots défilent plein écran → '+JSON.stringify({voit:s.voit,mode:s.etat.mode,on:s.etat.polaroid.on}));
   /* 23/11 (Wah) : [Share] dans la bande noire (avec go et delete), et la bande pas plus large que ses boutons */
   await pg.evaluate(()=>{ window.__part=null; navigator.share=d=>{ window.__part=d; return Promise.resolve(); }; });
   const band=await pg.evaluate(()=>{ const r=document.querySelector('#rdr-sh .lsh.is-ici .ssp-row')||document.querySelector('#rdr-sh .ssp-row');

@@ -77,11 +77,11 @@ try{
   /* a · le doigt part SUR le papier (au centre) */
   let p=await centre();
   const a1=await glisse(p.x,p.y+20,p.x,p.y-140);
-  /* 24/11 (Wah) : ↑ n'est plus un voyage — le geste du scroll OUVRE LE RÉCIT (le Discover sert de menu), et le centre ne bouge pas. */
-  const r1=await pg.evaluate(()=>({ouvert:window.__totehm_discover().ouvert,vue:window.__totehm_lv().vue}));
-  ok(a1==='c'&&r1.ouvert&&r1.vue==='c','24/11 · un glissé VERS LE HAUT qui part sur le papier OUVRE LE RÉCIT, sans quitter le centre → '+JSON.stringify(r1));
+  /* 25/11 (Wah) : ↑ n'est plus un voyage — CONNECTÉ, le geste du scroll ouvre la PRISE RAPIDE, et le centre ne bouge pas. */
+  const r1=await pg.evaluate(()=>({ouvert:window.__totehm_prise().ouvertures>0,cap:document.getElementById('cap').classList.contains('is-on'),vue:window.__totehm_lv().vue}));
+  ok(a1==='c'&&r1.ouvert&&r1.cap&&r1.vue==='c','25/11 · un glissé VERS LE HAUT qui part sur le papier ouvre la PRISE RAPIDE, sans quitter le centre → '+JSON.stringify(r1));
   await pg.keyboard.press('Escape'); await pg.waitForTimeout(700);
-  ok(!(await pg.evaluate(()=>window.__totehm_discover().ouvert)),'ÉCHAP referme le récit');
+  ok(!(await pg.evaluate(()=>document.getElementById('cap').classList.contains('is-on'))),'ÉCHAP referme la prise');
   p=await centre();
   const a3=await glisse(p.x,p.y-20,p.x,p.y+150);
   /* 23/11 (Wah) : la vue ↓ Get Higher est retirée ; ↓ retourne le TOTEHM vers Ecosystems (le détail : com_ecosystems) */
@@ -133,9 +133,9 @@ try{
   if(delai===200){
     await tire(-22,0);await vers(pg,'g');const g=(await lv(pg)).vue;await tire(22,0);await vers(pg,'c');
     await tire(0,-22);await pg.waitForTimeout(1200);
-    const h=await pg.evaluate(()=>({ouvert:window.__totehm_discover().ouvert,vue:window.__totehm_lv().vue}));
+    const h=await pg.evaluate(()=>({ouvert:document.getElementById('cap').classList.contains('is-on'),vue:window.__totehm_lv().vue}));
     if(h.ouvert){ await pg.keyboard.press('Escape'); await pg.waitForTimeout(700); }
-    ok(g==='g'&&h.ouvert&&h.vue==='c','22/10 · la manette à la souris est un manche : tirée à gauche → mes médias, vers le haut → LE RÉCIT (24/11) ('+g+', '+JSON.stringify(h)+')');
+    ok(g==='g'&&h.ouvert&&h.vue==='c','25/11 · la manette à la souris est un manche : tirée à gauche → mes médias, vers le haut → LA PRISE RAPIDE ('+g+', '+JSON.stringify(h)+')');
   }
   await pg.click('#lv-tap-open');await pg.waitForFunction(()=>!document.body.classList.contains('gate'),null,{timeout:6000}).catch(()=>{});await pg.waitForTimeout(500);
   const a0=(await lv(pg)).enAttente;
@@ -167,7 +167,7 @@ try{
     répercussion sur le joystick ». Un geste venu d'ailleurs POUSSE le manche vers sa vue, puis il revient au centre. ── */
  {const{pg,ctx,log}=await page(browser,{dir:'com',origin,tables,rpc:{my_landing:LAND},viewport:{width:1280,height:800}});
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1200);
-  const my=()=>pg.$eval('#lvj-stack',e=>parseFloat(e.style.getPropertyValue('--my'))||0);
+  const my=()=>pg.$eval('#lvj-box',e=>parseFloat(e.style.getPropertyValue('--my'))||0);
   await pg.keyboard.press('ArrowDown');await pg.waitForTimeout(70);
   const pousse=await my();
   await pg.waitForTimeout(800);
@@ -188,7 +188,7 @@ try{
      n'ouvre rien et mène à la porte (`members:sans-totehm`). Refermé, l'atterrissage reste entièrement navigable :
      aucun état ne le retient. */
   await pg.evaluate(()=>{ window.__ouvert=[]; window.open=(u)=>{ window.__ouvert.push(u); return null; }; });
-  await pg.click('#lv-m-members');
+  await pg.click('#lv-m-sel');
   const cherche=await pg.waitForFunction(()=>{const c=window.__totehm_cherche&&window.__totehm_cherche();return c&&c.ouvert;},null,{timeout:8000}).then(()=>true,()=>false);
   const onglets=await pg.evaluate(()=>window.__ouvert.slice());
   await pg.keyboard.press('Escape');await pg.waitForFunction(()=>!document.getElementById('srch').classList.contains('is-on'),null,{timeout:8000}).catch(()=>{});

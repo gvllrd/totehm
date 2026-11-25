@@ -111,7 +111,8 @@ try{
   await pg.screenshot({path:OUT+'/prise_now_'+(tel?'tel':'ordi')+'.png'});
   await clic(pg,'#rdr-new .ns-go');
   await pg.waitForFunction(()=>!document.body.classList.contains('is-nspot'),null,{timeout:8000}).catch(()=>{});
-  const up=log.upload.filter(u=>u.method==='POST').pop(), cr=log.rpc.filter(r=>r.name==='spot_create_audience').pop(), bx=log.rpc.filter(r=>r.name==='spot_box_set').pop();
+  /* le MÉDIA, pas sa vignette (`<chemin>.jpg`, écrite à côté sans attendre) : on prend le dépôt qui porte le nom d'un moment */
+  const up=log.upload.filter(u=>u.method==='POST'&&MOMENT.test(u.path)).pop(), cr=log.rpc.filter(r=>r.name==='spot_create_audience').pop(), bx=log.rpc.filter(r=>r.name==='spot_box_set').pop();
   ok(up&&MOMENT.test(up.path)&&/\.jpg$/.test(up.path),nom+' · la photo part dans MON dossier du seau des spots (moments/'+(up&&up.path.split('/').slice(2).join('/'))+')');
   ok(cr&&cr.body.p_habit==='Run the hill'&&cr.body.p_duration_min===60&&'moments/'+cr.body.p_video===up.path&&cr.body.p_city==='Lisbon'&&typeof cr.body.p_lat==='number'
      &&cr.body.p_mode==='social'&&cr.body.p_location==='on'&&cr.body.p_audience==='figher'&&cr.body.p_comment==='see you up there',
@@ -139,7 +140,7 @@ try{
   }
 
   // ══ 2 · LATER, depuis la tuile « + » de la GRID, le point POSÉ sur la Terre ══
-  await clic(pg,'#rdr-mode [data-rmode="grid"]');await pg.waitForTimeout(700);
+  await clic(pg,'#rdr-m-sel');await pg.waitForTimeout(700);
   const tuileGrid=await pg.evaluate(()=>{const t=document.querySelector('#rdr-g .tl-add[data-nspot]');if(!t)return null;const r=t.getBoundingClientRect();return [r.x,r.y,r.width,r.height].map(Math.round);});
   ok(tuileMap&&tuileGrid&&tuileMap.dessus&&tuileMap.t==='+'&&tuileMap.o==='dashed'&&tuileMap.r.every((v,i)=>Math.abs(v-tuileGrid[i])<=2),
      nom+' · le « + » de la MAP EST la tuile de la GRID : même place, même taille, même trait → MAP '+JSON.stringify(tuileMap&&tuileMap.r)+' · GRID '+JSON.stringify(tuileGrid));
@@ -172,7 +173,7 @@ try{
   ok(ad.d.pt&&ad.d.ptSrc==='adresse'&&ad.ville==='Porto'&&ad.l==='who sees it',
      nom+' · l\'adresse choisie DEVIENT le point (sa ville vient de cities.json, pas du géocodeur : « '+ad.ville+' ») → '+JSON.stringify(ad.d.ptSrc));
   // ── le même geste, sur la Terre ──
-  await clic(pg,'#rdr-mode [data-rmode="map"]').catch(()=>{});
+  await clic(pg,'#rdr-m-sel').catch(()=>{});
   await clic(pg,'#rdr-new [data-ns="carte"]');await pg.waitForTimeout(700);
   const pq=await pg.evaluate(()=>({cache:document.getElementById('rdr-new').hidden, pique:document.body.classList.contains('rdr-pique'),
     aide:getComputedStyle(document.getElementById('rdr-pique')).display, mode:window.__totehm_rdr().mode}));

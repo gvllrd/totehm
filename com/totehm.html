@@ -106,7 +106,7 @@ html{font-family:'Space Mono',monospace}button,input,select,textarea{font-family
      occupe (26 + 44 + 26 et deux gouttières de 6). Tout ce qui vit au bas de l'atterrissage s'y
      accroche : rien ne se calcule deux fois, rien ne passe dessous. */
   --lvj-b:max(12px,env(safe-area-inset-bottom));
-  --lvj-h:calc(108px + var(--lvj-b));
+  --lvj-h:calc(124px + var(--lvj-b));
   --tile-btn:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
   --tile-light:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%2336498c'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
   /* Le carré perforé du logo (desktop) — même dessin que #gl-bg.
@@ -518,7 +518,7 @@ body.ordering #vnow{display:none}
 #vnow.f-b{animation:face-b .42s cubic-bezier(.22,.9,.3,1)}
 #vnow.f-h{animation:face-h .42s cubic-bezier(.22,.9,.3,1)}
 @media(prefers-reduced-motion:reduce){
-  .cur,#joy-box,#joy-stack,#joy-stack i,#lvj-box,#lvj-stack,#lvj-stack i{transition:none}
+  .cur,#joy-box,#joy-stack,#joy-stack i,#lvj-box,#lvj-stack{transition:none}
   #vnow.f-d,#vnow.f-g,#vnow.f-b,#vnow.f-h{animation:none}
 }
 
@@ -1148,6 +1148,100 @@ body.v-visions{--paper:#2b3a73}
   color:rgba(255,255,255,.5);font-size:18px;line-height:1;cursor:pointer;
   padding:2px 5px;transition:color .15s}
 .w-x:hover{color:#fff}
+/* ══ LES TOUCHES DE MANETTE — copié de tools/ps2.css dans chaque page (jamais importé) ══
+   Wah (25/11) : « tous les CLOSE / FERMER / DELETE doivent avoir une forme bouton comme la touche croix de la manette
+   PS2, c'est-à-dire une croix rouge-violet sur un fond gris-noir, légèrement 3D : il faut que l'on sente que c'est
+   une touche. » La manette est l'objet de référence de toute l'interface : on navigue au MANCHE (BRAND.md), on ferme
+   et on zoome à la TOUCHE. Une seule nomenclature, ici ; on la change ICI puis `python3 tools/recopier.py`.
+     `.k2`    une touche RONDE (close, zoom, retournement) — gris-noir bombé, une arête claire en haut, une ombre
+              courte ; enfoncée elle descend de 2 px et l'ombre disparaît. Le GLYPHE porte la couleur, jamais le fond.
+     `.k2-x`  la croix, rouge-violet `#743169`   ·   `.k2-z` la loupe, blanche   ·   `.k2-f` le retournement, navy
+     `.k2.is-s` la même touche en PLUS PETIT (dans une box : « bel et bien présente »)
+     `.k2r`   une touche RECTANGULAIRE (SELECT · START · MODE) et son intitulé DESSOUS, en Space Mono
+     `.k2j`   LE MANCHE : rond, uniforme, bombé, sans socle — plus gros et plus simple que l'ancien.
+   60 / 30 / 10 : la touche est noire, le glyphe seul est coloré. */
+.k2{display:inline-flex;align-items:center;justify-content:center;flex:none;
+  width:var(--k2-d,34px);height:var(--k2-d,34px);padding:0;border:0;border-radius:50%;cursor:pointer;
+  background:radial-gradient(circle at 50% 32%,#34343b 0 36%,#1d1d22 64%,#121216 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.16),inset 0 -2px 3px rgba(0,0,0,.8),0 2px 0 #08080a,0 4px 7px rgba(0,0,0,.55);
+  color:#d8d8e0;-webkit-tap-highlight-color:transparent;transition:transform .12s ease,box-shadow .12s ease,filter .2s ease}
+.k2>svg{width:calc(var(--k2-d,34px) * .44);height:calc(var(--k2-d,34px) * .44);display:block;fill:none;
+  stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.k2:active,.k2.is-press{transform:translateY(2px);box-shadow:inset 0 1px 0 rgba(255,255,255,.1),inset 0 -1px 2px rgba(0,0,0,.8),0 1px 3px rgba(0,0,0,.5)}
+.k2:focus-visible{outline:1px solid #fff;outline-offset:3px}
+.k2[disabled]{opacity:.45;cursor:default}
+.k2.is-s{--k2-d:22px}
+.k2.is-s>svg{stroke-width:2.4}
+.k2-x{color:#743169}
+.k2-f{color:#333366}
+.k2-z{color:#d8d8e0}
+@media(hover:hover){.k2:hover{filter:brightness(1.25)}}
+/* L'INTITULÉ SOUS LA TOUCHE — comme sur la manette : le mot est imprimé SOUS le bouton, petit, espacé, gris. */
+.k2r{display:inline-flex;flex-direction:column;align-items:center;gap:5px;background:none;border:0;padding:0;cursor:pointer;
+  -webkit-tap-highlight-color:transparent}
+.k2r .k2k{position:relative;display:block;width:var(--k2r-w,40px);height:var(--k2r-h,14px);border-radius:calc(var(--k2r-h,14px) / 2);
+  background:radial-gradient(ellipse at 50% 28%,#34343b 0 38%,#1d1d22 70%,#121216 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.16),inset 0 -2px 3px rgba(0,0,0,.8),0 2px 0 #08080a,0 4px 7px rgba(0,0,0,.55);
+  transition:transform .12s ease,box-shadow .12s ease,filter .2s ease}
+.k2r .k2l{font:400 9px/1 'Space Mono',monospace;letter-spacing:.18em;text-transform:uppercase;color:#8a8a92;
+  white-space:nowrap;transition:color .2s ease}
+.k2r:active .k2k{transform:translateY(2px);box-shadow:inset 0 1px 0 rgba(255,255,255,.1),inset 0 -1px 2px rgba(0,0,0,.8),0 1px 3px rgba(0,0,0,.5)}
+.k2r:focus-visible{outline:none}
+.k2r:focus-visible .k2k{outline:1px solid #fff;outline-offset:3px}
+.k2r[aria-pressed="false"] .k2l{opacity:.5;text-decoration:line-through;text-decoration-thickness:1px}
+.k2r.is-off{opacity:.55}
+@media(hover:hover){.k2r:hover .k2k{filter:brightness(1.25)}.k2r:hover .k2l{color:#fff}}
+/* START porte son ▶ gravé ; MODE porte sa diode. Rien d'autre ne distingue les trois touches. */
+.k2r.is-start .k2k::before{content:"";position:absolute;left:50%;top:50%;width:0;height:0;transform:translate(-50%,-50%);
+  border-left:5px solid rgba(255,255,255,.34);border-top:3.5px solid transparent;border-bottom:3.5px solid transparent}
+.k2r.is-mode .k2k::after{content:"";position:absolute;left:50%;top:50%;width:4px;height:4px;margin:-2px 0 0 -2px;border-radius:50%;
+  background:rgba(255,255,255,.18);transition:background .2s ease,box-shadow .2s ease}
+.k2r.is-mode[aria-pressed="true"] .k2k::after{background:#fff;box-shadow:0 0 5px rgba(255,255,255,.75)}
+/* ══ LE MANCHE · rond, uniforme, imposant ══ Wah (25/11) : « je veux le joystick très simple, rond uniforme très
+   inspiré par le joystick de la manette PS2, plus gros et imposant que celui actuellement et plus simple.
+   Minimalisme. » Un seul objet : le puits (l'ombre dans laquelle il est planté) et le CAPUCHON bombé, à bord net.
+   Aucune texture, aucun socle carré. Le capuchon prend sa couleur de `--k2j-c` (la vue, dans le TOTEHM). */
+.k2j{position:relative;width:var(--k2j-d,64px);height:var(--k2j-d,64px);flex:none;touch-action:none;cursor:grab;
+  -webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+.k2j:active{cursor:grabbing}
+.k2j::before{content:"";position:absolute;inset:0;border-radius:50%;
+  background:radial-gradient(circle at 50% 50%,#000 0 54%,#121214 78%,#000 100%);
+  box-shadow:inset 0 2px 5px #000,0 0 0 1px #262629}
+.k2j .k2j-c{position:absolute;left:50%;top:50%;width:calc(var(--k2j-d,64px) * .74);height:calc(var(--k2j-d,64px) * .74);
+  margin:calc(var(--k2j-d,64px) * -.37) 0 0 calc(var(--k2j-d,64px) * -.37);border-radius:50%;
+  background:radial-gradient(circle at 50% 38%,color-mix(in srgb,var(--k2j-c,#1f1f24) 72%,#fff) 0 6%,var(--k2j-c,#1f1f24) 46%,color-mix(in srgb,var(--k2j-c,#1f1f24) 72%,#000) 100%);
+  box-shadow:inset 0 2px 2px rgba(255,255,255,.14),inset 0 -3px 5px rgba(0,0,0,.6),0 3px 6px rgba(0,0,0,.65);
+  transform:translate(var(--mx,0px),var(--my,0px));transition:transform .26s cubic-bezier(.22,.9,.3,1),background-color .42s ease}
+.k2j.tenu .k2j-c{transition:none}
+/* LES TROIS POINTS VERTICAUX DE LA MARQUE, dans le capuchon (bleu · navy · rouge-violet) : la racine de l'arbre. */
+.k2j .k2j-p{position:absolute;left:50%;top:50%;width:calc(var(--k2j-d,64px) * .74);height:calc(var(--k2j-d,64px) * .74);
+  margin:calc(var(--k2j-d,64px) * -.37) 0 0 calc(var(--k2j-d,64px) * -.37);pointer-events:none;
+  transform:translate(var(--mx,0px),var(--my,0px));transition:transform .26s cubic-bezier(.22,.9,.3,1),opacity .3s ease}
+.k2j.tenu .k2j-p{transition:opacity .3s ease}
+.k2j .k2j-p i{--d:calc(var(--k2j-d,64px) * .15);position:absolute;left:50%;display:block;width:var(--d);height:var(--d);
+  margin:calc(var(--d) / -2) 0 0 calc(var(--d) / -2);border-radius:50%;background:var(--c,#fff);
+  box-shadow:0 1px 2px rgba(0,0,0,.6);transition:opacity .25s ease,transform .25s ease}
+.k2j .k2j-p .o{top:24%}.k2j .k2j-p .h{top:50%}.k2j .k2j-p .r{top:76%}
+.k2j .k2j-p i.is-current{opacity:0;transform:scale(.4)}
+.k2j.is-side .k2j-p{opacity:0}
+@media(prefers-reduced-motion:reduce){.k2,.k2r .k2k,.k2j .k2j-c,.k2j .k2j-p,.k2j .k2j-p i{transition:none}}
+/* UN MOT QUI EFFACE (delete, cut off) : la même matière, en rectangle, avec la croix rouge-violet IMPRIMÉE à gauche.
+   La croix est une image de fond : réécrire le texte du bouton (la confirmation en deux gestes) ne l'efface jamais. */
+.k2w{display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:9px;cursor:pointer;
+  padding:7px 11px 7px 26px;color:#c8c8d0;font:700 10px/1 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;
+  background:radial-gradient(ellipse at 50% 24%,#34343b 0 38%,#1d1d22 72%,#121216 100%) no-repeat,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Cpath d='M3 3 L11 11 M11 3 L3 11' stroke='%23743169' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E") 9px 50%/11px 11px no-repeat;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.16),inset 0 -2px 3px rgba(0,0,0,.8),0 2px 0 #08080a,0 4px 7px rgba(0,0,0,.55);
+  -webkit-tap-highlight-color:transparent;transition:transform .12s ease,box-shadow .12s ease,filter .2s ease}
+.k2w:active{transform:translateY(2px);box-shadow:inset 0 1px 0 rgba(255,255,255,.1),inset 0 -1px 2px rgba(0,0,0,.8),0 1px 3px rgba(0,0,0,.5)}
+.k2w:focus-visible{outline:1px solid #fff;outline-offset:3px}
+.k2w[disabled]{opacity:.5;cursor:default}
+.k2w.is-wide{width:100%}
+.k2w.is-sur{color:#fff;background:#743169 no-repeat,
+  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Cpath d='M3 3 L11 11 M11 3 L3 11' stroke='%23fff' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E") 9px 50%/11px 11px no-repeat}
+@media(hover:hover){.k2w:not([disabled]):hover{filter:brightness(1.25)}}
+/* ══ fin ps2 ══ */
+
 /* ══ LA LOUPE · 06/10/2026 ══════════════════════════════════════════════
    Wah : « une petite loupe sur chaque box de chaque vue ; on appuie, le
    contenu de la box s'agrandit un peu ». EN PLACE : la boîte grandit dans
@@ -2314,12 +2408,8 @@ body.gate.entered #terms-corner{opacity:0;pointer-events:none}
 .ns-label{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;
   color:rgba(255,255,255,.55);text-align:left}
 @media(hover:hover){.srch-row:hover .srch-name{filter:brightness(1.3)}}
-#srch-x{position:fixed;top:10px;right:10px;z-index:4;background:none;border:none;cursor:pointer;
-  padding:10px;line-height:0;-webkit-tap-highlight-color:transparent;pointer-events:none}
+#srch-x{position:fixed;top:10px;right:10px;z-index:4;pointer-events:none}
 #srch.is-open #srch-x{pointer-events:auto}
-#srch-x svg{width:20px;height:20px;color:rgba(255,255,255,.55);display:block;fill:none;
-  stroke:currentColor;stroke-width:1.7;stroke-linecap:round;transition:color .15s}
-@media(hover:hover){#srch-x:hover svg{color:#fff}}
 /* ══ 16/11 · PILE OU FACE, SUR ORDINATEUR ══ Wah : « sur ordinateur, ce serait bien d'avoir vraiment le verso du TOTEHM
    comme le recto : actuellement le verso, contrairement au recto, est en plein écran ; deux facettes facilement
    retournables de part et d'autre, pour vraiment avoir cet effet pile ou face ». Au-delà de 700 px, le verso s'arrête
@@ -2333,11 +2423,9 @@ body.gate.entered #terms-corner{opacity:0;pointer-events:none}
   #srch-ui{left:50%;top:50%;right:auto;bottom:auto;transform:translate(-50%,-50%);
     width:calc(var(--stage) - 2 * var(--pad));height:calc(var(--stage) - 2 * var(--pad));padding:30px 24px 24px}
   #srch-x{top:calc(50% - var(--stage) / 2 + var(--pad) * .5);right:calc(50% - var(--stage) / 2 + var(--pad) * .5)}
-  .flip-btn{display:block;background:none;border:none;cursor:pointer;padding:10px;line-height:0;-webkit-tap-highlight-color:transparent}
-  .flip-btn svg{width:20px;height:20px;display:block;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;
-    color:rgba(255,255,255,.5);transition:color .15s,transform .35s ease}
-  .flip-btn:hover svg{color:#fff;transform:rotate(180deg)}
-  .flip-btn:focus-visible{outline:1px solid #fff;outline-offset:2px}
+  .flip-btn{display:inline-flex}
+  .flip-btn>svg{transition:transform .35s ease}
+  .flip-btn:hover>svg{transform:rotate(180deg)}
   #srch-flip{position:fixed;z-index:4;pointer-events:none;
     top:calc(50% - var(--stage) / 2 + var(--pad) * .5);right:calc(50% - var(--stage) / 2 + var(--pad) * .5 + 44px)}
   #srch.is-open #srch-flip{pointer-events:auto}
@@ -2426,14 +2514,7 @@ body.gate.entered #filter-badge{
    tout — le badge de filtre occupe le coin haut droit, les chevrons de
    navigation vivent HORS du carré. Elle rejoue le déploiement à l'envers
    et ramène à l'atterrissage. */
-#fold-x{position:fixed;top:10px;right:10px;z-index:34;
-  background:none;border:none;cursor:pointer;padding:10px;line-height:0;
-  -webkit-tap-highlight-color:transparent}
-#fold-x svg{width:20px;height:20px;color:rgba(255,255,255,.5);display:block;
-  fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;
-  transition:color .15s}
-@media(hover:hover){#fold-x:hover svg{color:#fff}}
-#fold-x:active svg{color:#fff}
+#fold-x{position:fixed;top:10px;right:10px;z-index:34}
 
 /* ── L'ATTERRISSAGE : la Terre et la porte du monde ──
    La vidéo n'est chargée QUE si elle entre dans le champ (IntersectionObserver).
@@ -2877,11 +2958,8 @@ body.gate.entered #filter-badge{
 #xo.is-open{visibility:visible;transform:none;transition:transform .32s cubic-bezier(.22,.9,.3,1)}
 /* ⚠️ UNE SORTIE VISIBLE pour un cadre qui n'en porte pas (l'univers `/@nom`). SPACE et le Club ont
    la leur et disent `close` eux-mêmes : la croix de COM ne s'affiche que pour les autres (`is-nu`). */
-#xo-x{position:absolute;z-index:2;top:max(10px,env(safe-area-inset-top));right:12px;width:34px;height:34px;display:none;
-  align-items:center;justify-content:center;background:rgba(0,0,0,.62);border:0;border-radius:10px;color:#b0b0b0;
-  font:400 20px/1 'Space Mono',monospace;cursor:pointer;-webkit-tap-highlight-color:transparent}
-#xo.is-open.is-nu #xo-x{display:flex}
-@media(hover:hover){#xo-x:hover{color:#fff}}
+#xo-x{position:absolute;z-index:2;top:max(10px,env(safe-area-inset-top));right:12px;display:none}
+#xo.is-open.is-nu #xo-x{display:inline-flex}
 .xo-f{position:absolute;inset:0;width:100%;height:100%;border:0;display:block;background:#000;visibility:hidden}
 #xo.is-open .xo-f.is-on{visibility:visible}
 /* VX (29/10) : la couche des visionneuses prêtées au TOTEHM déployé — elle s'ouvre en fondu sur lui, le média monte de
@@ -3017,7 +3095,7 @@ body.lv-membre.lv-b #lv-slogan,body.lv-verrou.lv-b #lv-slogan{opacity:0}
    ⚠️ `position:absolute` (et non `fixed`) : les chevrons vivaient déjà ainsi dans `#gate`, et
    c'est ce qui garantit qu'ils disparaissent avec lui quand le Totehm se déplie. */
 #lvjoy{position:absolute;left:50%;bottom:var(--lvj-b);z-index:34;transform:translateX(-50%);
-  display:grid;grid-template-columns:26px 48px 26px;grid-template-rows:26px 48px 26px;gap:4px;
+  display:grid;grid-template-columns:26px 64px 26px;grid-template-rows:26px 64px 26px;gap:4px;
   align-items:center;justify-items:center;pointer-events:none}
 /* 20/10 septies — Wah : « pas besoin d'entourer les indicateurs de direction avec des boîtes grises » : les chevrons
    sont nus, gris, blancs au survol et quand le manche les vise. */
@@ -3033,23 +3111,10 @@ body.lv-membre.lv-b #lv-slogan,body.lv-verrou.lv-b #lv-slogan{opacity:0}
 .lvn-x{width:26px;height:48px}
 .lvn.is-mort{opacity:0;pointer-events:none}
 .lvn:focus-visible{outline:1px solid #fff;outline-offset:3px}
-/* Manche noir PlayStation de l'atterrissage, sans socle carré. */
-#lvj-box{width:48px;height:48px;position:relative;touch-action:none;cursor:grab;pointer-events:auto}
-#lvj-box::after{content:"";position:absolute;inset:3px;border-radius:50%;
-  background:radial-gradient(circle at 50% 60%,#020202 0 58%,#171717 66%,#080808 72%);
-  box-shadow:inset 0 2px 4px #000,0 0 0 1px #303030,0 2px 4px #000}
-#lvj-box:active{cursor:grabbing}
-#lvj-stack{position:absolute;inset:0;z-index:1;transform:translate(var(--mx,0px),var(--my,0px));
-  transition:transform .26s cubic-bezier(.22,.9,.3,1)}
-#lvj-box.tenu #lvj-stack{transition:none}
-#lvj-stack i{--d:32px;position:absolute;left:50%;top:50%;display:block;width:var(--d);height:var(--d);
-  margin:calc(var(--d) / -2) 0 0 calc(var(--d) / -2);border-radius:50%;
-  background:radial-gradient(circle at 50% 58%,#101010 0 46%,#292929 49%,#363636 55%,#1b1b1b 61%,#080808 72%);
-  box-shadow:inset 0 1px 1px #686868,0 3px 4px #000;transition:box-shadow .2s ease}
-#lvj-stack i::after{content:"";position:absolute;inset:7px;border-radius:50%;opacity:.25;
-  background:radial-gradient(#aaa .45px,transparent .7px) 0 0/3px 3px;
-  box-shadow:inset 0 2px 3px #000}
-#lvjoy.tenu #lvj-stack i{box-shadow:inset 0 1px 1px #828282,0 4px 5px #000}
+/* 25/11 — LE MANCHE DE L'ATTERRISSAGE, NU (Wah : « très simple, rond uniforme … plus gros et imposant …
+   minimalisme ») : la touche `.k2j` de `tools/ps2.css`, sans couleur et sans les trois points — ceux-là vivent
+   dans le TOTEHM déployé, où ils disent la vue. */
+#lvj-box{--k2j-d:64px;pointer-events:auto}
 #lvjoy.vers-g #lvn-lf,
 #lvjoy.vers-d #lvn-rt,
 #lvjoy.vers-h #lvn-up,
@@ -3236,14 +3301,17 @@ body.gate:not(.member):not(.ses-attente){--lv-y:32dvh}
   font:700 9.5px/1.4 'Space Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:#9a9aa2;white-space:nowrap;transition:opacity .3s ease}
 #lv-tap button{background:none;border:0;padding:0;font:inherit;letter-spacing:inherit;text-transform:inherit;color:inherit;cursor:pointer}
 #lv-tap button:focus-visible{outline:1px solid #fff;outline-offset:3px}
-#lv-mode{display:flex;gap:6px}
-#lv-mode button{position:relative;display:inline-flex;align-items:center;gap:8px;border:0;border-radius:10px;padding:8px 14px;background:#1f1f24;color:#8a8a92;
-  font:700 10px/1.3 'Space Mono',monospace;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;
-  transition:background .25s ease,color .25s ease,box-shadow .25s ease}
-#lv-mode button[aria-checked="true"]{background:#3a3a42;color:#fff;box-shadow:0 0 0 1px #fff}
-/* 14/11 — [Members] demande un TOTEHM : sans lui il se voit, atténué, et un tap mène à la porte. */
-#lv-mode button.is-locked{opacity:.55}
-#lv-mode button:focus-visible{outline:1px solid #fff;outline-offset:3px}
+/* ══ LES TOUCHES DE L'ATTERRISSAGE · 25/11/2026 ══ Wah : « enlève les deux boutons [Mine] et [MEMBERS] … à la place
+   tu mets le même rectangle SELECT de la manette (intitulé en dessous, dans la police SPACE) ; quand l'utilisateur
+   clique dessus ça change en Members, ce qui lance le mode search … ensuite le discover se lance avec le bouton
+   GREATNESS qui prend la même forme que le bouton START … seulement sur ordinateur, un autre rectangle avec le
+   mode TREE comme le bouton MODE. » Le dessin des trois touches vit dans `tools/ps2.css` (`.k2r`), nulle part ailleurs.
+   14/11 — [Members] demande un TOTEHM : sans lui la touche se voit, atténuée, et un tap mène à la porte. */
+#lv-keys{display:flex;gap:20px;align-items:flex-start;justify-content:center;
+  background:#000;border-radius:10px;padding:6px 14px 4px}   /* les touches coupent les racines, comme la légende */
+/* LA TOUCHE MODE (Tree) n'existe que sur ORDINATEUR : l'arbre ne se voit que là. */
+#lv-tree-k{display:none}
+@media(min-width:700px){#lv-tree-k{display:inline-flex}}
 /* 18/11 — la recherche est au FIGHER CLUB : un tap sur [Members] hors du Club le DIT ici, en une ligne, puis se tait */
 #lv-m-say{margin:8px auto 0;max-width:300px;font:400 10px/1.6 'Space Mono',monospace;color:#9a9aa2;text-align:center}
 #lv-m-say:empty{display:none}
@@ -3608,8 +3676,7 @@ body.lv-b #gate-logo #gl-rail,body.lv-b #gate-logo #gl-wm{opacity:0}
 .tlv-b:empty{display:none}
 .tlv-l{font:700 8.5px/1.4 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.6)}
 .tlv-l i{font-style:normal}
-.tlv-x{position:absolute;z-index:2;border:0;background:none;cursor:pointer;color:#fff;padding:10px;top:calc(max(10px,env(safe-area-inset-top)) + 4px);right:10px}
-.tlv-x svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;display:block}
+.tlv-x{position:absolute;z-index:2;top:calc(max(10px,env(safe-area-inset-top)) + 4px);right:10px}
 /* 25/10 — retirer un média (Wah : « il faut pouvoir supprimer les media dans la vue de gauche et de droite ») : DEUX
    gestes — le premier arme (`is-sur`, « delete? », 3 s), le second retire. Rien ne part sur un tap égaré. */
 /* 14/11 (Wah) : « le bouton [Delete] de la vue de droite spot est le bon » — un seul format pour les deux
@@ -3634,7 +3701,6 @@ body.lv-b #gate-logo #gl-rail,body.lv-b #gate-logo #gl-wm{opacity:0}
 #spass button.is-sur{background:var(--rep);color:#fff}
 #spass button:focus-visible{outline:1px solid #fff;outline-offset:2px}
 .ssp-acts button[data-del],.ssp-acts button[data-tlv]{font:700 10px/1 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase}
-.ssp-acts button[data-del].is-sur,.ssp-acts button[data-tlv].is-sur{background:var(--rep);color:#fff}
 .tlv-b .ssp-row{align-self:center;min-height:0;padding:3px}
 /* le niveau d'une box, PARTOUT où elle apparaît : la même ligne de mots que dans le TOTEHM, posée sous la box */
 body.is-tlv #gate-asteroid,body.is-tlv #lvjoy{opacity:0;pointer-events:none}
@@ -3893,11 +3959,8 @@ body.rdr-grid #rdr-map{display:none}
 #rdr-sh{position:absolute;inset:0;z-index:20;overflow-y:auto;overflow-x:hidden;scroll-snap-type:y mandatory;scroll-behavior:smooth;
   -webkit-overflow-scrolling:touch;overscroll-behavior:contain;display:none;background:#000}
 body.rdr-voir #rdr-sh{display:block}
-#rdr-x{position:absolute;z-index:22;top:calc(max(10px,env(safe-area-inset-top)) + 4px);right:10px;border:0;background:none;color:#fff;
-  padding:10px;cursor:pointer;display:none}
-#rdr-x svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;display:block}
-#rdr-x:focus-visible{outline:1px solid #fff;outline-offset:2px}
-body.rdr-voir #rdr-x{display:block}
+#rdr-x{position:absolute;z-index:22;top:calc(max(10px,env(safe-area-inset-top)) + 4px);right:10px;display:none}
+body.rdr-voir #rdr-x{display:inline-flex}
 /* 12/11 (Wah) — LA PRISE D'UN SPOT AGRANDI : « qu'on puisse les abaisser en mode glisser, avec un trait en
    haut de la fenêtre, comme on trouve sur les applications en général ». Le trait tient le geste à lui seul
    (`touch-action:none`), donc le fil aimanté dessous garde SON défilement. Centré par la marge, jamais par
@@ -3913,13 +3976,9 @@ body.rdr-voir #rdr-grab{display:flex}
 @media(prefers-reduced-motion:reduce){#rdr-sh,#rdr-grab{transition:none!important}}
 body.lv-d.rdr-voir #gate-asteroid,body.lv-d.rdr-voir #lvjoy,body.rdr-voir #rdr-flt,body.rdr-voir #rdr-mode{opacity:0;pointer-events:none}
 /* MAP · GRID : la bascule de MINE · MEMBERS, à la même place qu'elle, au-dessus de la manette. */
-#rdr-mode{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(var(--lvj-h,64px) + 26px);z-index:6;display:flex;gap:6px}
-#rdr-mode button{border:0;border-radius:10px;padding:8px 14px;background:#1f1f24;color:#8a8a92;cursor:pointer;
-  font:700 10px/1.3 'Space Mono',monospace;letter-spacing:.12em;text-transform:uppercase;
-  transition:background .25s ease,color .25s ease,box-shadow .25s ease}
-#rdr-mode button[aria-checked="true"]{background:#3a3a42;color:#fff;box-shadow:0 0 0 1px #fff}
-#rdr-mode button:focus-visible{outline:1px solid #fff;outline-offset:3px}
-@media(hover:hover){#rdr-mode button:hover{color:#fff}}
+/* 25/11 (Wah) : « pas besoin du mode SHORT dans la vue de droite, et mettre le même bouton format SELECT PS2 ».
+   UNE touche, deux états — MAP ⇄ GRID. Le polaroid d'un spot s'ouvre toujours d'un tap sur le spot. */
+#rdr-mode{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(var(--lvj-h,64px) + 26px);z-index:6;display:flex}
 /* L'intention + le badge Higher (« Fight [Higher] »), dans les deux panneaux de filtres. */
 .sfi .sfh{display:inline-block;width:38px;height:13px;margin-left:5px;vertical-align:-2px}
 #lv-sh-say,#rdr-say{position:absolute;left:0;right:0;z-index:3;margin:0;
@@ -3956,8 +4015,14 @@ body.lv-d.rdr-voir #gate-asteroid,body.lv-d.rdr-voir #lvjoy,body.rdr-voir #rdr-f
 #cap-shot.is-rec{background:#e0453f}
 #cap-t{position:absolute;left:10px;top:10px;font:700 10px/1 'Space Mono',monospace;letter-spacing:.14em;color:#fff;background:rgba(0,0,0,.55);padding:4px 7px;border-radius:10px}
 #cap-t:empty{display:none}
-#cap-x{position:fixed;top:10px;right:10px;background:none;border:0;cursor:pointer;padding:10px;line-height:0;color:rgba(255,255,255,.6)}
-#cap-x svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round}
+#cap-x{position:fixed;top:10px;right:10px}
+/* LA PRISE RAPIDE (25/11) : un écran noir, UNE question, deux touches. Rien d'autre. */
+#prise{position:fixed;inset:0;z-index:245;background:rgba(0,0,0,.92);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:26px}
+#prise[hidden]{display:none}
+#prise-q{margin:0;font:700 12px/1.6 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#fff}
+#prise-r{display:flex;gap:28px}
+#prise-x{position:fixed;top:10px;right:10px}
 @media(hover:hover){.cap-b:hover,#cap-x:hover{color:#fff}}
 @media (prefers-reduced-motion: reduce){#cap,#cap-in,.lsh img,.lsh video,.tl-ph img,.tl-ph video,.ssp-m img,.ssp-m video,.tlv-m img,.tlv-m video,.tl-bx,.tl{transition:none!important}
   #lv-sh{scroll-behavior:auto}.tb-attente{animation:none}}
@@ -4213,7 +4278,6 @@ body.no-tree #lv-ram{display:none}
    ses trois listes — le panneau `.lsh-sf` qui le porte est neutralisé, ses règles de papier restent les siennes. */
 #lvd .lsh-sf.dc-sf{position:relative;inset:auto;z-index:auto;width:100%;padding:0;background:none;overflow:visible}
 #lvd .dc-sf .sfg{width:100%}
-#lvd .dc-sf .sfcmd{--q:min(104px,27vw)}
 #lvd .dc-sf *{pointer-events:none!important;cursor:default}
 /* ══ LE RÉCIT : CE QUE L'OBJET DEVIENT · 24/11/2026 ══════════════════════
    Wah : « dès que l'utilisateur scrolle, il passe dans la slide 0 discover, QUI EST LA PAGE D'ATTERRISSAGE QUI SE
@@ -4230,7 +4294,13 @@ body.no-tree #lv-ram{display:none}
    Rien n'est coloré ici : seules les couleurs natives (box, navy du papier, badge, intentions des spots). */
 /* LE CARRÉ DU RÉCIT — assez grand pour que les trois vues du papier y tiennent SANS être rognées (mesuré : à 186 px
    les intitulés « MY OBJECTIVES » et « MY REPULSIONS » se coupaient). Tous les objets reprennent ce carré. */
-#lvd{--dc-ill-h:clamp(170px,32dvh,286px)}
+/* 25/11 (Wah) : « on prend comme RÉFÉRENCE ULTIME le TOTEHM de la page d'atterrissage ; tout le Discover qui suit
+   doit s'y référer … le verso de la creator economy est très gros, comme la vidéo de la méthode … je ne veux pas tes
+   effets zoom / dezoom entre les slides, surtout quand il s'agit du TOTEHM. » `--lvh-s` est la largeur MESURÉE du
+   TOTEHM de l'atterrissage (`caler()`) : la pièce garde CETTE taille du premier écran au dernier — fermée, ouverte
+   en cinq vues, retournée en recherche, sous la vidéo. Aucune échelle d'un écran à l'autre : elle se transforme,
+   elle ne grandit pas. Le cadre (`--dc-ill-h`) ne sert plus qu'au vêtement et au radar, qui ne sont pas le TOTEHM. */
+#lvd{--dc-ill-h:clamp(170px,32dvh,286px);--lvh-s:110px;--lvh-n:110}
 #lvd .lvh{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;
   transition:opacity .55s ease,transform .75s cubic-bezier(.22,.61,.36,1)}
 /* LE PAPIER : recto (les cinq vues, puis la vidéo) et verso (la recherche) sur le MÊME nœud qui tourne */
@@ -4240,15 +4310,16 @@ body.no-tree #lv-ram{display:none}
 #lvd .lvh-b{transform:rotateY(180deg)}
 #lvd[data-i="0"] .lvh-pp,#lvd[data-i="1"] .lvh-pp,#lvd[data-i="2"] .lvh-pp,#lvd[data-i="3"] .lvh-pp{opacity:1}
 /* l'écran 0 EST l'atterrissage : la pièce ne bouge pas d'un pixel quand le Discover s'ouvre */
-#lvd[data-i="0"] .lvh-pp{transform:translate(var(--lvh-dx,0px),var(--lvh-dy,0px)) scale(var(--lvh-k,1))}
+#lvd[data-i="0"] .lvh-pp{transform:translate(var(--lvh-dx,0px),var(--lvh-dy,0px))}
 #lvd .lvh-pp.is-verso{transform:rotateY(180deg)}
 /* 24/11 (Wah) : « un peu plus d'espacement entre les vues ». Le repli des deux papiers suit le même écart.
    25/11 : TOUT TIENT DANS LE CARRÉ. Fermé, le TOTEHM REMPLIT le carré (`--sfk`) ; en s'ouvrant il revient à sa taille
    de mise en page et les trois vues se partagent le même carré — l'objet garde donc exactement la même empreinte
    d'un écran à l'autre, et l'ouverture est un vrai mouvement (une transformation, pas un saut de largeur). */
-#lvd .dc-sf .sfcmd{--sfk:3.164;--q:calc(var(--dc-ill-h) / var(--sfk));--sfg:calc((var(--dc-ill-h) - 3 * var(--q)) / 2);
-  gap:var(--sfg);transform-origin:50% 50%;transition:transform .6s cubic-bezier(.22,.61,.36,1)}
-#lvd .dc-sf .sfcmd.is-logo{transform:scale(var(--sfk))}
+/* Fermée, la pièce FAIT la taille du TOTEHM de l'atterrissage ; ouverte, chacune des vues garde cette taille —
+   l'objet se DÉPLIE, il ne change pas d'échelle. Sur un écran étroit, les trois vues se partagent la largeur. */
+#lvd .dc-sf .sfcmd{--sfg:10px;--q:min(var(--lvh-s),calc((100vw - 2 * var(--dc-ins-x) - 2 * var(--sfg)) / 3));
+  gap:var(--sfg);transform-origin:50% 50%}
 #lvd .dc-sf .sfcmd.is-logo .sfv-s{transform:translateX(calc(100% + var(--sfg)))}
 #lvd .dc-sf .sfcmd.is-logo .sfv-v{transform:translateX(calc(-100% - var(--sfg)))}
 /* LA VIDÉO DE LA MÉTHODE, calquée sur le papier. Elle PORTE DÉJÀ le papier perforé : on ne la masque donc pas une
@@ -4265,16 +4336,16 @@ body.no-tree #lv-ram{display:none}
    `#mb-res` avec SON balisage natif — la bande noire `.vs-top` (le prix `.vs-month`, [Discover] `.vs-act`) et la ligne
    « Respect their rules… ». Aucune de ces classes n'est redessinée ici : le bloc est seulement RÉDUIT pour tenir dans
    le cadre de l'illustration, comme le moteur le fait du reste. */
-#lvd .lvh-pap{position:relative;height:100%;aspect-ratio:1;flex:none;background:var(--perfo) 0 0/100% 100% no-repeat}
+#lvd .lvh-pap{position:relative;width:var(--lvh-s);height:var(--lvh-s);flex:none;background:var(--perfo) 0 0/100% 100% no-repeat}
 /* le bloc natif est HORS FLUX : il est seulement réduit et centré, et n'élargit donc pas le carré du papier */
-#lvd .lvh-vs{position:absolute;left:50%;top:50%;width:200px;display:flex;flex-direction:column;align-items:center;gap:14px;
-  transform:translate(-50%,-50%) scale(.84)}
+#lvd .lvh-vs{position:absolute;left:50%;top:50%;width:230px;display:flex;flex-direction:column;align-items:center;gap:10px;
+  transform:translate(-50%,-50%) scale(calc(var(--lvh-n) / 250))}
 /* 25/11 (Wah) : « garde seulement le prix que tu centres avec le per year et le stop anytime … et tu laisses en
    full-navy. C'est mieux pour l'illustration. » La bande noire et la ligne des règles s'en vont : le prix natif
    (`.vs-month`) se pose à même le papier, centré. */
 #lvd .lvh-r{align-items:center;text-align:center}
 #lvd .lvh-r .vs-month{align-items:center;gap:4px}
-#lvd .lvh-q{width:100%;text-align:center;font:400 26px/1.2 Quantico,sans-serif;letter-spacing:.04em;color:#fbd5ca;min-height:1.2em}
+#lvd .lvh-q{width:100%;text-align:center;font:400 30px/1.2 Quantico,sans-serif;letter-spacing:.04em;color:#fbd5ca;min-height:1.2em}
 #lvd .lvh-q i{font-style:normal}
 #lvd .lvh-q::after{content:'';display:inline-block;width:.06em;height:.9em;background:#fbd5ca;vertical-align:-.08em;margin-left:.07em;opacity:0}
 #lvd .lvh-b.is-frappe .lvh-q::after{animation:dc-car 1s step-end infinite}
@@ -4282,17 +4353,19 @@ body.no-tree #lv-ram{display:none}
 #lvd .lvh-b.is-res .lvh-r{opacity:1}
 /* LE VÊTEMENT : nos VRAIES photos (`totehm-cloth-support`), badge brodé devant, illustration perforée au dos */
 #lvd .lvh-cl{gap:6px}
-#lvd .lvh-g{position:relative;width:calc((var(--dc-ill-h) - 6px) / 2);flex:none;aspect-ratio:1;border-radius:8px;background:#141418}
+/* Le vêtement PORTE le TOTEHM : ses deux photos se mesurent donc sur la même référence (25/11). Le radar, lui,
+   est le MONDE : il garde le cadre de l'illustration. */
+#lvd .lvh-g{position:relative;width:var(--lvh-s);flex:none;aspect-ratio:1;border-radius:8px;background:#141418}
 #lvd .lvh-g img.lvh-ph{display:block;width:100%;height:100%;object-fit:contain}
 #lvd .lvh-prt{position:absolute;left:50%;top:40%;width:30%;aspect-ratio:1;transform:translateX(-50%);overflow:hidden;
   -webkit-mask:var(--perfo) 0 0/100% 100% no-repeat;mask:var(--perfo) 0 0/100% 100% no-repeat}
 #lvd .lvh-prt img{display:block;width:100%;height:100%;object-fit:cover}
 #lvd .lvh-nm{position:absolute;left:0;right:0;top:63%;text-align:center;font:400 9px/1 Quantico,sans-serif;color:#fff}
-#lvd[data-i="3"] .lvh-cl{opacity:0;transform:scale(1.3)}
+#lvd[data-i="3"] .lvh-cl{opacity:0}
 #lvd[data-i="4"] .lvh-cl{opacity:1}
 #lvd[data-i="5"] .lvh-cl{opacity:0;transform:scale(.07) translate(150%,95%)}
 /* LE RADAR DU CLUB : le vrai, avec ses spots */
-#lvd[data-i="4"] .lvh-rd{opacity:0;transform:scale(1.7)}
+#lvd[data-i="4"] .lvh-rd{opacity:0}
 #lvd[data-i="5"] .lvh-rd{opacity:1}
 @media(prefers-reduced-motion:reduce){#lvd .lvh{transition:opacity .2s ease}}
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
@@ -4329,6 +4402,12 @@ div:not(:has(> :not(br,wbr))):hover,
 .snd-n:hover,
 .snd .in.faux:hover,
 .w-x:hover,
+.k2:hover,
+.k2-x:hover,
+.k2-f:hover,
+.k2-z:hover,
+.k2r .k2l:hover,
+.k2w:hover,
 .loupe:hover,
 .v-sub .copie.is-done:hover,
 .blk-lbl:hover,
@@ -4412,9 +4491,6 @@ div:not(:has(> :not(br,wbr))):hover,
 .srch-hint:hover,
 .srch-meta:hover,
 .ns-label:hover,
-#srch-x svg:hover,
-.flip-btn svg:hover,
-#fold-x svg:hover,
 #sn-home:hover,
 #conn-bar:hover,
 #conn-txt:hover,
@@ -4432,7 +4508,6 @@ div:not(:has(> :not(br,wbr))):hover,
 #srch-q:hover,
 #name-btn.claimed:hover,
 #set-name:hover,
-#xo-x:hover,
 .tracking-caption:hover,
 .tracking-form label:hover,
 .lv-mono:hover,
@@ -4444,7 +4519,6 @@ div:not(:has(> :not(br,wbr))):hover,
 .lvs-sci:hover,
 .lvs-sci b:hover,
 #lv-tap:hover,
-#lv-mode button:hover,
 #lv-m-say:hover,
 .lvm-who:hover,
 #mb-lock .mbl-t:hover,
@@ -4518,10 +4592,8 @@ div:not(:has(> :not(br,wbr))):hover,
 .ns-note-g:hover,
 .ns-hit:hover,
 #rdr-pique:hover,
-#rdr-mode button:hover,
 .mf-x:hover,
 .cap-b:hover,
-#cap-x:hover,
 .tw .tn-l:hover,
 .dc:hover,
 .dc-p:hover,
@@ -4798,16 +4870,15 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
              dans la légende. La preuve (« Built with behavioral science ») et « Reach Higher » vivent dans le Discover. -->
         <div id="lv-pitch" class="hide">
           <button id="lv-join" class="lvp-cta" type="button">Open my TOTEHM</button>
-          <button id="lv-discover" class="lvp-cta is-quiet" type="button">Discover</button>
-          <button id="lv-pitch-tree" class="lv-tree" type="button" aria-pressed="true">Tree</button>
         </div>
         <!-- ⚠️ 18/10 — CHACUN FAIT CE QU'IL DIT (règle du 06/10). Depuis que `#conn-bar` est parti,
              « Turn to configure it » est la SEULE porte vers le verso quand le geste n'est pas
              disponible (mouvement réduit, clavier) : c'est donc un vrai bouton, pas une légende. -->
-        <div id="lv-tap" class="hide"><button id="lv-tap-open" type="button">Tap to open it</button><span class="lvt-sep"> · </span><button id="lv-tap-turn" type="button">Turn to configure it</button><span class="lvt-sep"> · </span><button id="lv-tap-disc" type="button">Discover</button><span class="lvt-sep"> · </span><button id="lv-tap-tree" class="lv-tree" type="button" aria-pressed="true">Tree</button></div>
-        <div id="lv-mode" role="radiogroup" aria-label="My TOTEHM or a member's">
-          <button type="button" role="radio" id="lv-m-mine" data-mode="mine" aria-checked="true">Mine</button>
-          <button type="button" role="radio" id="lv-m-members" data-mode="members" aria-checked="false"><span class="lvm-lab">Members</span><span class="lvm-who" id="lv-m-who"></span></button>
+        <div id="lv-tap" class="hide"><button id="lv-tap-open" type="button">Tap to open it</button><span class="lvt-sep"> · </span><button id="lv-tap-turn" type="button">Turn to configure it</button></div>
+        <div id="lv-keys" class="lv-act" role="group" aria-label="Controller keys">
+          <button type="button" id="lv-m-sel" class="k2r" data-hover-art aria-label="My TOTEHM"><i class="k2k" aria-hidden="true"></i><span class="k2l"><span class="lvm-lab">Mine</span><span class="lvm-who" id="lv-m-who"></span></span></button>
+          <button type="button" id="lv-tree-k" class="k2r is-mode lv-tree" data-hover-art aria-pressed="true" aria-label="Tree"><i class="k2k" aria-hidden="true"></i><span class="k2l">Tree</span></button>
+          <button type="button" id="lv-great" class="k2r is-start" data-hover-art aria-label="Discover your greatness"><i class="k2k" aria-hidden="true"></i><span class="k2l">Greatness</span></button>
         </div>
         <p id="lv-m-say" role="status" aria-live="polite"></p>
         <!-- 25/10 — LE RÉSULTAT D'UNE RECHERCHE QUAND IL FAUT S'ABONNER (Wah : « le mode résultat recherche pour la
@@ -4853,7 +4924,7 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
         <div class="tlv-f"></div>
         <!-- 14/11 — [delete] n'est plus ici : il vit dans la rangée d'actions de CHAQUE média, au-dessus de
              sa box, au format de la vue de droite (`remplir`). -->
-        <button type="button" class="tlv-x" data-tlv="x" aria-label="Close"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2 L12 12 M12 2 L2 12"/></svg></button>
+        <button type="button" data-hover-art class="tlv-x k2 k2-x" data-tlv="x" aria-label="Close"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2 L12 12 M12 2 L2 12"/></svg></button>
       </div>
     </section>
 
@@ -4864,7 +4935,7 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
       <canvas id="rdr-map" class="lv-act" aria-label="Spots on the map"></canvas>
       <div id="rdr-g" class="lv-act"><div id="rdr-g-f"></div></div>
       <div id="rdr-sh" class="lv-act"><div id="rdr-sh-f"></div></div>
-      <button type="button" id="rdr-x" class="lv-act" aria-label="Close"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2 L12 12 M12 2 L2 12"/></svg></button>
+      <button type="button" id="rdr-x" data-hover-art class="lv-act k2 k2-x" aria-label="Close"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2 L12 12 M12 2 L2 12"/></svg></button>
       <button type="button" id="rdr-grab" class="lv-act" aria-label="Lower the spot"><i aria-hidden="true"></i></button>
       <div id="rdr-flt" class="lsh-flt lv-act" role="group" aria-label="Spots: filters"></div>
       <div id="rdr-pick" class="lsh-pick lv-act" role="dialog" aria-label="Choose a Habit" hidden></div>
@@ -4876,10 +4947,8 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
       <div id="rdr-plus" class="tlg lv-act" hidden><button type="button" class="tl tl-add" data-nspot="" aria-label="Add a spot"><span aria-hidden="true">+</span></button></div>
       <button type="button" id="rdr-pique" class="lv-act">tap the place · cancel</button>
       <p class="lv-note" id="rdr-say" role="status" aria-live="polite"></p>
-      <div id="rdr-mode" class="lv-act" role="radiogroup" aria-label="Map, grid or shorts">
-        <button type="button" role="radio" data-rmode="map" aria-checked="true">Map</button>
-        <button type="button" role="radio" data-rmode="grid" aria-checked="false">Grid</button>
-        <button type="button" role="radio" data-rmode="shorts" aria-checked="false">Shorts</button>
+      <div id="rdr-mode" class="lv-act">
+        <button type="button" id="rdr-m-sel" class="k2r" data-hover-art aria-label="Map or grid"><i class="k2k" aria-hidden="true"></i><span class="k2l">Map</span></button>
       </div>
     </section>
 
@@ -4900,7 +4969,7 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
     <div id="lvjoy" class="lv-act" role="group" aria-label="Where I am">
       <button id="lvn-up" class="lvn lv-act" type="button" aria-label="Discover TOTEHM"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 10 L8 5 L13 10"/></svg></button>
       <button id="lvn-lf" class="lvn lvn-x lv-act" type="button" aria-label="My shorts"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 L5 8 L10 13"/></svg></button>
-      <div id="lvj-box" aria-hidden="true"><div id="lvj-stack"><i></i></div></div>
+      <div id="lvj-box" class="k2j" aria-hidden="true"><span id="lvj-stack" class="k2j-c"></span></div>
       <button id="lvn-rt" class="lvn lvn-x lv-act" type="button" aria-label="My spots"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3 L11 8 L6 13"/></svg></button>
       <button id="lvn-dn" class="lvn lv-act" type="button" aria-label="Get Higher"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 6 L8 11 L13 6"/></svg></button>
     </div>
@@ -4943,7 +5012,7 @@ You remember your way, and the street can read what is behind it.</p></div></div
 <a class="dc-lnk" href="/terms" target="_blank" rel="noopener">Simple terms of use</a></p></div></div></div>
   </div>
   <div class="dc-cta"><button class="dc-btn is-perfo" id="lvd-cta" type="button">Create my TOTEHM</button><button class="dc-lnk hide" id="lvd-lnk" type="button">Monetize my TOTEHM</button></div>
-  <button class="dc-x" id="lvd-x" type="button" aria-label="Close"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2 L12 12 M12 2 L2 12"/></svg></button>
+  <button class="dc-x k2 k2-x" data-hover-art id="lvd-x" type="button" aria-label="Close"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2 L12 12 M12 2 L2 12"/></svg></button>
 </div>
 
 <!-- ══ LE VERSO DÉPLIÉ : MES RÉGLAGES · 15/10/2026 ═══════════════════════
@@ -5065,11 +5134,11 @@ You remember your way, and the street can read what is behind it.</p></div></div
   </div>
 </div>
   </div>
-  <button id="srch-x" class="srch-after" type="button" aria-label="Close my settings">
+  <button id="srch-x" data-hover-art class="srch-after k2 k2-x" type="button" aria-label="Close my settings">
     <svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2 L12 12 M12 2 L2 12"/></svg>
   </button>
   <!-- 16/11 — PILE OU FACE (ordinateur) : le verso se retourne sur le recto déployé, au même format. -->
-  <button id="srch-flip" class="srch-after flip-btn" type="button" aria-label="Turn it over · my TOTEHM" title="Turn it over">
+  <button id="srch-flip" data-hover-art class="srch-after flip-btn k2 k2-f" type="button" aria-label="Turn it over · my TOTEHM" title="Turn it over">
     <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 6.5a5 5 0 0 1 9.2-2.3M13 9.5a5 5 0 0 1-9.2 2.3"/><path d="M12.6 1.6v2.8H9.8M3.4 14.4v-2.8h2.8"/></svg>
   </button>
 </div>
@@ -5124,11 +5193,11 @@ You remember your way, and the street can read what is behind it.</p></div></div
 
 <!-- La croix : referme le Totehm et rejoue le déploiement à l'envers. -->
 
-<button id="fold-x" class="sink-el" type="button" aria-label="Close my Totehm">
+<button id="fold-x" data-hover-art class="sink-el k2 k2-x" type="button" aria-label="Close my Totehm">
   <svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2 L12 12 M12 2 L2 12"/></svg>
 </button>
 <!-- 16/11 — PILE OU FACE (ordinateur) : le recto déployé se retourne sur le verso, au même format. -->
-<button id="fold-flip" class="sink-el flip-btn" type="button" aria-label="Turn it over · my settings" title="Turn it over">
+<button id="fold-flip" data-hover-art class="sink-el flip-btn k2 k2-f" type="button" aria-label="Turn it over · my settings" title="Turn it over">
   <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 6.5a5 5 0 0 1 9.2-2.3M13 9.5a5 5 0 0 1-9.2 2.3"/><path d="M12.6 1.6v2.8H9.8M3.4 14.4v-2.8h2.8"/></svg>
 </button>
 
@@ -6588,8 +6657,8 @@ function calendrier(z){
 const SPOTMODE=(()=>{
   const CLE='totehm_spots_mode2'; const abonnes=[];
   let mode='map';
-  /* 23/11 (Wah : « ajouter une mention Shorts dans la vue de droite, en plus de Grid et Map, pour faire défiler ses spots ») */
-  const MODES=['map','grid','shorts'];
+  /* 25/11 (Wah) : « pas besoin du mode SHORT dans la vue de droite ». Deux modes, une seule touche. */
+  const MODES=['map','grid'];
   try{ const v=localStorage.getItem(CLE); if(MODES.includes(v)) mode=v; }catch(_){}
   return {
     MODES,
@@ -7239,7 +7308,7 @@ function creerFeed(conf){
       +(!z.mine&&z.creator&&me?'<button type="button" data-pass="'+esc(String(z.id))+'">pass</button>':'')
       +(z.mine&&!RO?'<button type="button" data-passes="'+esc(String(z.id))+'">passes</button>':'')
       +(z.state==='will'?'<button type="button" data-ics="'+esc(String(z.id))+'">calendar</button>':'')
-      +(z.mine&&!RO?'<button type="button" data-del="'+esc(String(z.id))+'">delete</button>':'');
+      +(z.mine&&!RO?'<button type="button" class="k2w" data-del="'+esc(String(z.id))+'">delete</button>':'');
     const par=!z.mine&&z.creator?'<span class="ssp-par"><span>by</span><button type="button" class="ssp-by" data-who="'+esc(String(z.creator))+'">'+esc(String(z.creator))+'</button></span>':'';
     const box=x.id?'<div class="ssp-box" role="button" tabindex="0" data-lsh="habits|'+esc(x.id)+'">'+loupeVue(boxSpot(z))+'</div>'
                   :'<div class="ssp-box">'+loupeVue(boxSpot(z))+'</div>';
@@ -7607,7 +7676,7 @@ function creerFeed(conf){
        vit donc dans la MÊME rangée noire qu'un spot (`.ssp-row` + `.ssp-acts`), juste au-dessus de la box,
        et plus en bouton flottant dans un coin. Le niveau de la box se règle dans la box (16/11), pas ici. */
     if(b&&!b.firstChild) b.innerHTML=(retirable(x)
-        ?'<div class="ssp-row"><span></span><span class="ssp-acts"><button type="button" data-tlv="del">delete</button></span></div>':'')
+        ?'<div class="ssp-row"><span></span><span class="ssp-acts"><button type="button" class="k2w" data-tlv="del">delete</button></span></div>':'')
       +loupeVue(boxDe(x,false));
     const m=sec.querySelector('.tlv-m'); if(!m) return;
     let el=m.firstChild;
@@ -8016,6 +8085,8 @@ function creerFeed(conf){
   return {ouvrir:entrer, fermer:sortir, pause, maj, vider, pas, flts:peindreFlt, sf:sfOpen,
           /* 27/10 — ouvrir l'ajout d'un média avec une box DÉJÀ choisie (depuis une box du Totehm) */
           ajouter:x=>sfAjouter(x),
+          /* 25/11 — la PRISE RAPIDE : le fichier est déjà pris, on ne demande plus que SA BOX */
+          prise:m=>{ if(!conf.grille||!m||!m.f) return false; sfOpen(true,true); SF.ajFichier=m; SF.ajMot=''; sfPaint(); return true; },
           /* Le Totehm docké ouvre DIRECTEMENT le filtre : à gauche les vues puis leurs boxes, à droite les Habits. */
           box:()=>sfOpen(!sfOuvert()),
           /* Le polaroid s'ouvre SUR un spot (la carte ou la grille l'ont désigné). */
@@ -8032,6 +8103,35 @@ const SHS=creerFeed({sc:'rdr-sh', bx:'rdr-sh-f', say:'rdr-say',   rail:'rdr-flt'
                      avant:()=>CLUBSP.perChip(), pick:'rdr-pick', panneau:'rdr-sf', boxes:'habits'});
 window.__totehm_sh=()=>Object.assign({},SH.etat(),{capture:CAP.etat(), places:BADGE.etat()});
 
+/* ══ LA PRISE RAPIDE · 25/11/2026 ══════════════════════════════════════════════════════════════════════
+   Wah : « quand l'utilisateur est connecté, la vue d'en haut — quand il scrolle — permet de prendre une photo,
+   une vidéo ou d'attacher un fichier (une action rapide) ; ensuite ça demande si c'est un spot ou une illustration
+   du TOTEHM, avec le questionnaire qui suit. » Le fichier est pris, PUIS on demande. Aucun questionnaire de plus :
+   ce sont les deux qui existent — `NSPOT` (Habit → WHEN → WHERE → qui → durée → mot) et le choix de la box. */
+const PRISE=(()=>{
+  const p=$('prise'); const diagP={ouvertures:0, spots:0, illustrations:0};
+  if(!p) return {ouvrir:()=>false, fermer(){}, ouverte:()=>false, etat:()=>diagP};
+  let m=null;
+  function fermer(){ p.hidden=true; document.body.classList.remove('is-prise'); m=null; }
+  function demander(f,nom){ m={f,nom:nom||(f&&f.name)||''}; p.hidden=false; document.body.classList.add('is-prise');
+    setTimeout(()=>{ try{ p.querySelector('[data-pr="spot"]').focus({preventScroll:true}); }catch(_){} },60); }
+  function ouvrir(){
+    if(!me||RO||!p.hidden) return false; diagP.ouvertures++;
+    CAP.ouvrir('_','_',null,{tout:true, prendre:(f,nom)=>{ demander(f,nom); return {ok:true}; }});
+    return true; }
+  p.addEventListener('click',e=>{
+    const b=e.target.closest('[data-pr]'); if(!b) return;
+    const c=b.dataset.pr, pris=m;
+    if(c==='x') return fermer();
+    fermer(); if(!pris) return;
+    if(c==='spot'){ diagP.spots++; if(lvAller) lvAller('d',()=>NSPOT.prise(pris.f)); return; }
+    diagP.illustrations++; if(lvAller) lvAller('g',()=>SH.prise(pris)); });
+  window.addEventListener('keydown',e=>{ if(p.hidden||e.key!=='Escape') return;
+    e.preventDefault(); e.stopImmediatePropagation(); fermer(); },{capture:true});
+  return {ouvrir, fermer, ouverte:()=>!p.hidden, etat:()=>Object.assign({ouverte:!p.hidden, fichier:!!m}, diagP)};
+})();
+window.__totehm_prise=()=>PRISE.etat();
+
 /* ══ → LES SPOTS : MAP · GRID, ET LE POLAROID PAR-DESSUS · 20/10/2026 sexies ══════════════════════════════════
    Wah : « dans la vue de droite on oublie le radar réservé au figher.club ; deux modes, MAP et GRILLE, dans le même
    format que MINE et MEMBERS ». Les deux lisent les MÊMES spots (`CLUBSP`, filtrés par le serveur) ; un tap sur un
@@ -8040,23 +8140,22 @@ window.__totehm_sh=()=>Object.assign({},SH.etat(),{capture:CAP.etat(), places:BA
 const SPOTS=(()=>{
   let ouvert=false, voit=false;
   /* SHORTS : la grille dort dessous, la visionneuse (`SHS`) défile les spots plein écran ; la refermer rend la grille */
-  const enShorts=()=>SPOTMODE.get()==='shorts', grille=()=>SPOTMODE.get()!=='map';
-  function shorts(){ if(!ouvert||!enShorts()||voit) return; const l=CLUBSP.items(); if(l.length&&l[0]&&l[0].id) voir('sp:'+l[0].id); }
+  const enShorts=()=>false, grille=()=>SPOTMODE.get()!=='map';
+  function shorts(){}
   const actif=()=>grille()?SPGRID:SPMAP, dort=()=>grille()?SPMAP:SPGRID;
   function peindreMode(){
     document.body.classList.toggle('rdr-grid',grille());
-    document.querySelectorAll('#rdr-mode [data-rmode]').forEach(b=>b.setAttribute('aria-checked',String(b.dataset.rmode===SPOTMODE.get())));
+    { const l=document.querySelector('#rdr-m-sel .k2l'); if(l) l.textContent=grille()?'Grid':'Map'; }
   }
   function voir(cle){ if(!ouvert||!cle) return; voit=true; relever(); document.body.classList.add('rdr-voir'); SHS.ouvrirA(cle); }
   function fermerVoir(){ if(!voit) return; voit=false; document.body.classList.remove('rdr-voir'); SHS.fermer(); if(enShorts()) SPOTMODE.set('grid'); }
   SPOTMODE.surChangement(()=>{ peindreMode(); if(!ouvert) return; fermerVoir(); dort().fermer(); actif().ouvrir(); shorts(); });
   /* Les spots ont changé (un temps, un filtre, une page de plus) : la carte, la grille et le polaroid relisent. */
   CLUBSP.surChangement(()=>{ SHS.flts(); if(!ouvert) return; actif().maj(); if(voit) SHS.maj(); else shorts(); });
-  { const m=$('rdr-mode'); if(m){
-      m.addEventListener('click',e=>{ const b=e.target.closest('[data-rmode]'); if(b) SPOTMODE.set(b.dataset.rmode); });
+  { const m=$('rdr-m-sel'); if(m){
+      m.addEventListener('click',()=>SPOTMODE.set(grille()?'map':'grid'));
       m.addEventListener('keydown',e=>{ if(e.key!=='ArrowLeft'&&e.key!=='ArrowRight') return; e.preventDefault(); e.stopPropagation();
-        const M=SPOTMODE.MODES, i=M.indexOf(SPOTMODE.get()), v=M[Math.max(0,Math.min(M.length-1,i+(e.key==='ArrowRight'?1:-1)))]; SPOTMODE.set(v);
-        const b=m.querySelector('[data-rmode="'+v+'"]'); if(b) try{ b.focus({preventScroll:true}); }catch(_){} });
+        SPOTMODE.set(e.key==='ArrowRight'?'grid':'map'); });
   } }
   { const x=$('rdr-x'); if(x) x.addEventListener('click',fermerVoir); }
   /* ══ ABAISSER UN SPOT AGRANDI · 12/11 ═══════════════════════════════════════════════════════════════
@@ -8606,7 +8705,11 @@ const NSPOT=(()=>{
     if(SPMAP.pique()){ e.preventDefault(); e.stopImmediatePropagation(); SPMAP.piquer(null); return; }
     const p=pan(); if(p&&!p.hidden){ e.preventDefault(); e.stopImmediatePropagation(); fermer(); }
   },{capture:true});
-  return {ouvrir, fermer, ouvert:()=>document.body.classList.contains('is-nspot'),
+  /* 25/11 — la PRISE RAPIDE : le média est déjà pris, le questionnaire s'ouvre dessus */
+  async function prise(f){ ouvrir(); const r=await prendre(f);
+    if(!r||!r.ok) dire(POURQUOI[r&&r.why]||'the photo or the video');
+    peindre(); return r; }
+  return {ouvrir, fermer, prise, ouvert:()=>document.body.classList.contains('is-nspot'),
           etat:()=>Object.assign({ouvert:document.body.classList.contains('is-nspot'), habit:!!N.h, quand:N.quand, media:!!N.media,
             aud:N.aud, ou:N.ou, mode:N.mode, pt:!!N.pt, ptSrc:N.ptSrc, hits:N.hits.length, dur:N.dur}, diag)};
 })();
@@ -14203,7 +14306,7 @@ window.addEventListener('pageshow',e=>{
        retrouver mes abonnements). Ce n'est pas une vue de plus : le TOTEHM se RETOURNE sur son verso en mode recherche
        (`e` → `ecosystemes()`), au fil du geste (molette, trackpad, doigt : `ECO`), d'un coup au clavier et au manche. */
     const VOISINS={c:{h:'x',b:'e',g:'g',d:'d'}, b:{b:'c'}, g:{d:'c'}, d:{g:'c'}};
-    const NOMS={c:'My TOTEHM', e:'Ecosystems', x:'Discover', b:'Higher my ChatGPT', g:'Media', d:'Spots'};
+    const NOMS={c:'My TOTEHM', e:'Ecosystems', x:'Quick capture', b:'Higher my ChatGPT', g:'Media', d:'Spots'};
     const slo=$('lv-slogan'), nUp=$('lvn-up'), nDn=$('lvn-dn'), nLf=$('lvn-lf'), nRt=$('lvn-rt'),
           sock=$('lv-socket'), BG=$('gl-bg');
     const W=()=>innerWidth, H=()=>innerHeight;
@@ -14418,7 +14521,8 @@ window.addEventListener('pageshow',e=>{
       if(v==='x'){
         if(vue!=='c'||open||moving||sOpen||sMoving||bouge||!libreMb()) return void refus('recit:'+quiOccupe());
         if(body.classList.contains('is-door')||!body.classList.contains('gate')) return void refus('recit:porte');
-        return void DISC.ouvrir(); }
+        /* 25/11 (Wah) : CONNECTÉ, le haut est la PRISE RAPIDE — le récit, lui, vit sur la touche GREATNESS. */
+        return void (inscrit() ? PRISE.ouvrir() : DISC.ouvrir()); }
       if(v==='e') return void ecosystemes();
       if(v===vue){ if(then) then(); return; }
       if(bouge||open||moving||sMoving||sOpen) return void refus('aller:'+(open?'ouvert':sOpen?'verso':quiOccupe()));
@@ -14462,7 +14566,7 @@ window.addEventListener('pageshow',e=>{
 
     /* ── MINE · MEMBERS (20/10 sexies) ─────────────────────────────────────────────────────────────────────────── */
     function peindreMode(){
-      document.querySelectorAll('#lv-mode [data-mode]').forEach(b=>b.setAttribute('aria-checked',String(b.dataset.mode===mode)));
+      { const l=document.querySelector('#lv-m-sel .lvm-lab'); if(l) l.textContent=mode==='members'?'Members':'Mine'; }
       $('lv-b').setAttribute('aria-label',mode==='members'?'Member offer':'Higher my ChatGPT');
       $('lv-m-who').textContent=MB.nom||MB.verrou||'';
       /* 14/11 (Wah) : « pour accéder au bouton [Member] et la partie de recherche, il faut être connecté et
@@ -14470,9 +14574,10 @@ window.addEventListener('pageshow',e=>{
          recherche (`chercherIci`) : on apprend ce qu'il faut au lieu d'appuyer sur un mort. `is-locked`
          le dit à l'œil ; jamais `aria-disabled`, qui mentirait sur ce que le tap fait. */
       /* 18/11 (Wah) : et la recherche est au FIGHER CLUB (`CLUB.member`) : hors du Club, le tap le dit sous les boutons. */
-      const mb=$('lv-m-members');
+      const mb=$('lv-m-sel');
       if(mb){ const pret=inscrit()&&CLUB.member;
-        mb.classList.toggle('is-locked',!pret);
+        mb.classList.toggle('is-off',!pret);
+        mb.setAttribute('aria-label',mode==='members'?'Find an ecosystem':'My TOTEHM');
         mb.title=pret?'':!inscrit()?'Open your TOTEHM first':HORS_CLUB; }
       if(CLUB.member&&$('lv-m-say').textContent===HORS_CLUB) direMembers('');
       { const f=$('fold-flip'); if(f) f.setAttribute('aria-label',mode==='members'?'Turn it over · their subscription':'Turn it over · my settings'); }
@@ -14622,11 +14727,11 @@ window.addEventListener('pageshow',e=>{
     }
     /* Un tap pendant un mouvement (un repli, une course) n'est jamais perdu : il attend la fin, 2 s au plus. */
     const quandLibre=(f,n=0)=>{ if((bouge||moving||sMoving)&&n<12) return void setTimeout(()=>quandLibre(f,n+1),180); f(); };
-    $('lv-mode').addEventListener('click',e=>{ const b=e.target.closest('[data-mode]'); if(b) quandLibre(()=>choisirMode(b.dataset.mode)); });
-    $('lv-mode').addEventListener('keydown',e=>{
+    /* LA TOUCHE SELECT : un seul rectangle, deux états. Mine → Members lance la recherche ; Members → Mine rentre. */
+    $('lv-m-sel').addEventListener('click',()=>quandLibre(()=>choisirMode(mode==='members'?'mine':'members')));
+    $('lv-m-sel').addEventListener('keydown',e=>{
       if(e.key!=='ArrowLeft'&&e.key!=='ArrowRight') return;
-      e.preventDefault(); const m=e.key==='ArrowRight'?'members':'mine';
-      choisirMode(m); const b=document.querySelector('#lv-mode [data-mode="'+m+'"]'); if(b) try{ b.focus({preventScroll:true}); }catch(_){}
+      e.preventDefault(); choisirMode(e.key==='ArrowRight'?'members':'mine');
     });
     /* `?ro=nom` (un lien, un retour de Stripe) : on arrive DANS l'écosystème du membre, déjà lu par `loadRO`. */
     lvMembreBoot=nom=>{ if(!nom) return; roEnPlace=true; entrerChez(nom); RAM.oublie(); RAM.peindre(vue); };
@@ -14691,7 +14796,8 @@ window.addEventListener('pageshow',e=>{
     const libre=()=>body.classList.contains('gate')&&(!body.classList.contains('entered')||body.classList.contains('folding'))&&!body.classList.contains('is-door')
       &&!sOpen&&!sMoving&&!$('member-window').classList.contains('show')&&!body.classList.contains('is-xo')
       &&!body.classList.contains('is-tlv')&&!body.classList.contains('is-nspot')    /* 27/10 : un spot en cours se finit, ou se ferme (CLOSE) */
-      &&!body.classList.contains('is-dc');                                              /* 16/11 : le Discover tient ses propres gestes */
+      &&!body.classList.contains('is-dc')                                               /* 16/11 : le Discover tient ses propres gestes */
+      &&!body.classList.contains('is-prise');                                           /* 25/11 : la prise rapide aussi */
     /* 18/11 (Wah : « l'utilisateur a tendance à scroller ; sans compte, autant y mettre le Discover » · « le scroll dans tous les
        cas engage le Discover ») : SANS COMPTE (la porte et [Discover] à l'écran), au centre, TOUT SCROLL VERTICAL — molette, pavé,
        doigt, dans les deux sens — ouvre le Discover. Le visiteur n'a pas de croix (`voisin`) ; un membre la garde telle quelle. */
@@ -14721,8 +14827,8 @@ window.addEventListener('pageshow',e=>{
       if(!jy||!bx||!st) return;
       const RAYON=10, SEUIL=6;   /* 20/10 septies : le manche ne sort pas du petit socle */
       let id=null, x0=0, y0=0, dx=0, dy=0;
-      const pose=(a,b)=>{ st.style.setProperty('--mx',a.toFixed(1)+'px');
-                          st.style.setProperty('--my',b.toFixed(1)+'px'); };
+      const pose=(a,b)=>{ bx.style.setProperty('--mx',a.toFixed(1)+'px');
+                          bx.style.setProperty('--my',b.toFixed(1)+'px'); };
       const vise=v=>{ ['g','d','h','b'].forEach(k=>jy.classList.toggle('vers-'+k,k===v)); };
       const centre=()=>{ pose(0,0); jy.classList.remove('tenu'); bx.classList.remove('tenu'); vise(null); };
       const sens=()=>{
@@ -15458,7 +15564,10 @@ window.addEventListener('pageshow',e=>{
         /* Fermée, la pièce REMPLIT le cadre : l'écart et le facteur se calculent donc sur le cadre lui-même, jamais
            sur une taille transformée — et la pièce du récit tombe sur celle de l'atterrissage au pixel. */
         const cx=parseFloat(L)+parseFloat(W)/2, cy=parseFloat(T)+parseFloat(H)/2;
-        el.style.setProperty('--lvh-k',(ar.width/parseFloat(W)).toFixed(3));
+        /* LA RÉFÉRENCE : la largeur du TOTEHM de l'atterrissage. Toute la pièce du récit s'y mesure, écran après
+           écran — plus aucun facteur d'échelle entre les slides (25/11). */
+        el.style.setProperty('--lvh-s',ar.width.toFixed(1)+'px');
+        el.style.setProperty('--lvh-n',ar.width.toFixed(1));   /* la même mesure SANS unité : une échelle est un nombre */
         el.style.setProperty('--lvh-dx',((ar.x+ar.width/2)-cx).toFixed(1)+'px');
         el.style.setProperty('--lvh-dy',((ar.y+ar.height/2)-cy).toFixed(1)+'px');
       }
@@ -15522,7 +15631,7 @@ window.addEventListener('pageshow',e=>{
       function peindre(k){
         const i=(typeof k==='number')?k:(dc?dc.index():0);
         const rd=ouvert&&i===5?el.querySelector('.dc-radar'):null; if(rd) RADAR.on(rd); else RADAR.off();
-        if(i===0) caler();   /* l'écran 0 se recale sur l'atterrissage à chaque passage (le cadre vient d'être posé) */
+        caler();   /* la référence (le TOTEHM de l'atterrissage) se remesure à chaque écran et à chaque rendu */
         conter(i);
         const e=el.querySelectorAll('.dc-s')[i], cle=(e&&e.dataset.cta)||'', por=PORTES[cle],
               moi=inscrit()&&!guest()&&!RO;
@@ -15571,7 +15680,7 @@ window.addEventListener('pageshow',e=>{
     window.__totehm_discover=()=>DISC.etat();
     /* TREE MODE : un seul état, deux mots qui le disent. Le repère est lu au démarrage (plus haut, avant la peinture). */
     {
-      const mots=[$('lv-tap-tree'),$('lv-pitch-tree')].filter(Boolean);
+      const mots=[$('lv-tree-k')].filter(Boolean);
       const dire=v=>{ body.classList.toggle('no-tree',!v);
         mots.forEach(b=>b.setAttribute('aria-pressed',String(!!v))); };
       const lu=()=>{ try{ return localStorage.getItem('totehm_tree')!=='0'; }catch(_){ return true; } };
@@ -15583,7 +15692,7 @@ window.addEventListener('pageshow',e=>{
     {
       const join=$('lv-join');
       if(join) join.onclick=()=>{ if(typeof ouvrirPorte==='function') ouvrirPorte(null); };
-      for(const id of ['lv-discover','lv-tap-disc']){ const b=$(id); if(b) b.onclick=()=>DISC.ouvrir(); }
+      { const b=$('lv-great'); if(b) b.onclick=()=>DISC.ouvrir(); }
     }
 
     /* ── LE NOM ET QUI LIT MON TOTEHM (mes réglages) — nœuds déplacés de l'espace membre (15/10) ── */
@@ -16061,15 +16170,28 @@ window.addEventListener('pageshow',e=>{
     </div>
     <div class="lv-note" id="cap-note" role="status" aria-live="polite"></div>
   </div>
-  <button id="cap-x" type="button" aria-label="Close"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2 L12 12 M12 2 L2 12"/></svg></button>
+  <button id="cap-x" type="button" data-hover-art class="k2 k2-x" aria-label="Close"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2 L12 12 M12 2 L2 12"/></svg></button>
   <input id="cap-f-photo" type="file" accept="image/*" capture="environment" hidden>
   <input id="cap-f-video" type="file" accept="video/*" capture="environment" hidden>
   <input id="cap-f-file" type="file" accept="image/jpeg,image/png,image/webp,video/mp4,video/webm,video/quicktime,application/pdf,audio/mpeg,audio/mp4,audio/webm,audio/ogg,text/plain" hidden>
 </div>
+<!-- ══ LA PRISE RAPIDE · 25/11/2026 ══ Wah : « quand l'utilisateur est connecté, la vue d'en haut — quand il
+     scrolle — permet de prendre une photo, ou une vidéo, ou d'attacher un fichier (c'est une action rapide) ;
+     ensuite ça demande si c'est un spot ou une illustration du TOTEHM, avec le questionnaire qui suit. »
+     Le fichier est PRIS d'abord, la question vient après : deux touches, et le questionnaire natif prend la suite
+     (→ `NSPOT` pour un spot, ← le choix de la box pour une illustration). -->
+<div id="prise" role="dialog" aria-modal="true" aria-label="A spot or an illustration" hidden>
+  <p id="prise-q">What is it?</p>
+  <div id="prise-r">
+    <button type="button" class="k2r" data-pr="spot" data-hover-art><i class="k2k" aria-hidden="true"></i><span class="k2l">A spot</span></button>
+    <button type="button" class="k2r" data-pr="ill" data-hover-art><i class="k2k" aria-hidden="true"></i><span class="k2l">An illustration</span></button>
+  </div>
+  <button type="button" id="prise-x" data-pr="x" data-hover-art class="k2 k2-x" aria-label="Close"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M3 3 L11 11 M11 3 L3 11"/></svg></button>
+</div>
 <!-- 12/10 : SPACE et le Club, servis par totehm.com, posés par-dessus le Totehm (`XO`). -->
 <!-- 29/10 — VX : les visionneuses ← et → viennent ici, au-dessus du TOTEHM déployé ([Visualize it], une mini-box spot). -->
 <div id="vx" role="dialog" aria-modal="true" aria-label="My TOTEHM · view" hidden></div>
-<div id="xo" aria-hidden="true"><button id="xo-x" type="button" aria-label="Close">×</button></div>
+<div id="xo" aria-hidden="true"><button id="xo-x" type="button" data-hover-art class="k2 k2-x" aria-label="Close"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M3 3 L11 11 M11 3 L3 11"/></svg></button></div>
 <script>
 /* ══ DISCOVER — copié de tools/discover.js dans chaque page (jamais importé) ══
    Le moteur du « découvrir » : des écrans `.dc-s` dans `.dc-stage`, UN visible à la fois, qui se succèdent au scroll, au

@@ -26,16 +26,12 @@ try{
  {const{pg,ctx,log}=await page(browser,{dir:'com',origin,tables:{profiles:[]},rpc:{my_landing:{signed_in:false}},viewport:{width:390,height:844},hasTouch:true,session:false});
   await pg.goto(origin+'/totehm');await pg.waitForFunction(()=>typeof window.__totehm_lv==='function');await pg.waitForTimeout(2200);
   const c=await pg.evaluate(()=>{const q=s=>document.querySelector(s),vu=e=>!!e&&e.getClientRects().length>0&&getComputedStyle(e).visibility!=='hidden';
-    return {titre:!!q('#lv-title'),boutons:[...document.querySelectorAll('#lv-pitch button')].filter(vu).map(b=>b.textContent.trim())};});
-  ok(!c.titre&&c.boutons.join('|')==='Open my TOTEHM|Discover|Tree',
-     '25/11 · l\'accueil : la porte, [Discover] et [Tree] — l\'arbre est OPTIONNEL dès ici → '+c.boutons.join(' | '));
-  {const a=await pg.evaluate(()=>({off:document.body.classList.contains('no-tree'),aff:getComputedStyle(document.getElementById('lv-ram')).display}));
-   await pg.click('#lv-pitch-tree'); await pg.waitForTimeout(500);
-   const b2=await pg.evaluate(()=>({off:document.body.classList.contains('no-tree'),aff:getComputedStyle(document.getElementById('lv-ram')).display,
-     garde:localStorage.getItem('totehm_tree')}));
-   await pg.click('#lv-pitch-tree'); await pg.waitForTimeout(400);
-   ok(!a.off&&a.aff!=='none'&&b2.off&&b2.aff==='none'&&b2.garde==='0',
-      'TREE MODE : le mot éteint l\'arbre, et le choix est gardé → '+JSON.stringify({a,b:b2}));}
+    return {titre:!!q('#lv-title'),boutons:[...document.querySelectorAll('#lv-pitch button')].filter(vu).map(b=>b.textContent.trim()),
+      touches:[...document.querySelectorAll('#lv-keys button')].filter(vu).map(b=>b.querySelector('.k2l').textContent.trim())};});
+  /* 25/11 (Wah) : la porte seule en mot ; le reste est sur les TOUCHES de la manette — SELECT (Mine · Members),
+     START (Greatness, le Discover) et, sur ordinateur seulement, MODE (Tree). */
+  ok(!c.titre&&c.boutons.join('|')==='Open my TOTEHM'&&c.touches.join('|')==='Mine|Greatness',
+     '25/11 · l\'accueil : la porte, puis les touches SELECT et START → '+c.boutons.join(' | ')+' // '+c.touches.join(' | '));
   /* le SCROLL ouvre le Discover, et l'inertie du même geste ne le fait pas défiler */
   {const cdp=await ctx.newCDPSession(pg);
    await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:195,y:600}]});
@@ -44,7 +40,7 @@ try{
    const s=await D(pg);
    ok(s.ouvert&&s.i===0&&s.parScroll===1,'sans compte, un glissé vers le haut ouvre le Discover sur son premier écran → '+JSON.stringify(s));
    await pg.keyboard.press('Escape');await pg.waitForTimeout(700);}
-  await pg.click('#lv-discover');await pg.waitForTimeout(1500);
+  await pg.click('#lv-great');await pg.waitForTimeout(1500);
   /* ── l'écran 0 : L'ATTERRISSAGE QUI SE SIMPLIFIE — la pièce ne bouge pas d'un pixel, la question prend la place de la légende ── */
   let e=await ecran(pg);
   ok(e.n===6&&e.i===0&&/^Make it Happen$/.test(e.tw.trim())&&e.cta===null&&!e.deep,
@@ -104,7 +100,7 @@ try{
      '24/11 · les VRAIES photos du vêtement (notre stockage), l\'illustration perforée au dos, la place de la vidéo, le radar du Club et ses spots → '+JSON.stringify(nat));
   /* 25/11 (Wah) : « on affiche d'abord le texte, ensuite l'animation, ensuite le tiroir et le call-to-action ». */
   /* on ROUVRE : revenir au premier écran d'un coup remet les phrases à frapper (`remettre`), donc l'ordre se rejoue */
-  {await pg.keyboard.press('Escape');await pg.waitForTimeout(700);await pg.click('#lv-discover');
+  {await pg.keyboard.press('Escape');await pg.waitForTimeout(700);await pg.click('#lv-great');
    const vus=[]; for(let j=0;j<9;j++){ vus.push(await pg.evaluate(()=>{const h=document.getElementById('lvd');
      return {e:h.dataset.etape, o:+getComputedStyle(h.querySelector('.dc-hero')).opacity>.5,
        c:+getComputedStyle(h.querySelector('.dc-cta')).opacity>.5};})); await pg.waitForTimeout(400); }
@@ -130,19 +126,38 @@ try{
   /* sans TOTEHM, toutes les portes mènent à la même : s'inscrire */
   await pg.evaluate(()=>window.__totehm_discover&&document.getElementById('lvd'));
   await pg.keyboard.press('Escape');await pg.waitForTimeout(700);
-  await pg.click('#lv-discover');await pg.waitForTimeout(900);await avance(pg,1);
+  await pg.click('#lv-great');await pg.waitForTimeout(900);await avance(pg,1);
   await pg.click('#lvd-cta');await pg.waitForTimeout(1100);
   ok(await pg.evaluate(()=>document.body.classList.contains('is-door')&&!window.__totehm_discover().ouvert),
      'sans compte, la porte du récit ouvre la porte d\'inscription');
   ok(!erreurs(log).length&&!log.rpc.some(x=>/_set|_save|_create|_delete/.test(x.name)),'visiteur : aucune erreur, aucune écriture '+erreurs(log).join(' | '));
   await ctx.close();}
 
+ /* ── 1 bis · TREE MODE : la touche MODE, sur ORDINATEUR seulement (25/11) ── */
+ {const{pg,ctx}=await page(browser,{dir:'com',origin,tables:{profiles:[]},rpc:{my_landing:{signed_in:false}},viewport:{width:1280,height:860},session:false});
+  await pg.goto(origin+'/totehm');await pg.waitForFunction(()=>typeof window.__totehm_lv==='function');await pg.waitForTimeout(2200);
+  const a=await pg.evaluate(()=>({off:document.body.classList.contains('no-tree'),aff:getComputedStyle(document.getElementById('lv-ram')).display,
+    vue:!!document.getElementById('lv-tree-k').getClientRects().length}));
+  await pg.click('#lv-tree-k'); await pg.waitForTimeout(500);
+  const b2=await pg.evaluate(()=>({off:document.body.classList.contains('no-tree'),aff:getComputedStyle(document.getElementById('lv-ram')).display,
+    garde:localStorage.getItem('totehm_tree')}));
+  await pg.click('#lv-tree-k'); await pg.waitForTimeout(400);
+  ok(a.vue&&!a.off&&a.aff!=='none'&&b2.off&&b2.aff==='none'&&b2.garde==='0',
+     'TREE MODE : sur ordinateur, la touche MODE éteint l\'arbre, et le choix est gardé → '+JSON.stringify({a,b:b2}));
+  await ctx.close();}
+
  /* ── 2 · MEMBRE : ↑ ouvre le récit (ce n'est plus une vue), et les portes deviennent SES fonctionnalités ── */
  {const{pg,ctx,log}=await page(browser,{dir:'com',origin,tables,rpc:{my_landing:LAND,figher_access:{signed_in:true,member:true}},viewport:{width:390,height:844},hasTouch:true});
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1700);
-  await pg.keyboard.press('ArrowUp');await pg.waitForTimeout(1400);
+  /* 25/11 (Wah) : CONNECTÉ, ↑ ouvre la PRISE RAPIDE (photo · vidéo · fichier) ; le récit, lui, est sur [GREATNESS]. */
+  await pg.keyboard.press('ArrowUp');await pg.waitForTimeout(1200);
+  let pr=await pg.evaluate(()=>({n:window.__totehm_prise().ouvertures,cap:document.getElementById('cap').classList.contains('is-on'),
+    disc:window.__totehm_discover().ouvert,vue:window.__totehm_lv().vue}));
+  ok(pr.n===1&&pr.cap&&!pr.disc&&pr.vue==='c','25/11 · membre : ↑ ouvre la PRISE RAPIDE, aucune vue ne s\'ouvre → '+JSON.stringify(pr));
+  await pg.keyboard.press('Escape');await pg.waitForTimeout(500);
+  await pg.click('#lv-great');await pg.waitForTimeout(1400);
   let a=await pg.evaluate(()=>({ouvert:window.__totehm_discover().ouvert,vue:window.__totehm_lv().vue,bouge:window.__totehm_lv().bouge}));
-  ok(a.ouvert&&a.vue==='c'&&!a.bouge,'24/11 · ↑ OUVRE LE RÉCIT : aucune vue ne s\'ouvre, le centre ne bouge pas → '+JSON.stringify(a));
+  ok(a.ouvert&&a.vue==='c'&&!a.bouge,'25/11 · [GREATNESS] OUVRE LE RÉCIT : aucune vue ne s\'ouvre, le centre ne bouge pas → '+JSON.stringify(a));
   const portes=[];
   for(let k=0;k<6;k++){ if(k) await avance(pg,1); const x=await ecran(pg); portes.push([x.cta,x.lien]); }
   ok(JSON.stringify(portes)===JSON.stringify([[null,null],['Open my TOTEHM',null],['Find an ecosystem','Monetize my TOTEHM'],
@@ -154,9 +169,12 @@ try{
   await pg.keyboard.press('Escape');await pg.waitForTimeout(800);
   ok(await pg.evaluate(()=>!window.__totehm_discover().ouvert&&window.__totehm_lv().vue==='c'&&!document.body.classList.contains('is-dc')),
      'ÉCHAP referme : on est déjà au centre, rien ne s\'est replié');
-  /* la molette (le geste naturel) ouvre aussi ; la porte d'un membre mène à SON TOTEHM */
-  await pg.mouse.move(195,420);await pg.mouse.wheel(0,120);await pg.waitForTimeout(1400);
-  ok((await D(pg)).ouvert,'la molette vers le bas pousse le manche vers le HAUT : le récit s\'ouvre');
+  /* la molette (le geste naturel) ouvre la PRISE chez un membre ; la porte du récit reste [GREATNESS] */
+  await pg.mouse.move(195,420);await pg.mouse.wheel(0,120);await pg.waitForTimeout(1200);
+  ok(await pg.evaluate(()=>window.__totehm_prise().ouvertures===2),'la molette vers le bas pousse le manche vers le HAUT : la prise rapide s\'ouvre');
+  await pg.keyboard.press('Escape');await pg.waitForTimeout(500);
+  await pg.click('#lv-great');await pg.waitForTimeout(1400);
+  ok((await D(pg)).ouvert,'[GREATNESS] rouvre le récit');
   await avance(pg,1);await pg.click('#lvd-cta');await pg.waitForTimeout(1400);
   ok(await pg.evaluate(()=>!window.__totehm_discover().ouvert&&(document.body.classList.contains('open')||!!document.querySelector('#stage.open')||window.__totehm_lv().papier!=null)),
      'membre : [Open my TOTEHM] referme le récit et ouvre son TOTEHM');
