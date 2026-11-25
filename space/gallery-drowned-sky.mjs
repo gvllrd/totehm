@@ -1,5 +1,5 @@
 import * as T from './vendor/three-0.180.0.mjs';
-import {createOriginStardust,ORIGIN_SKY_FRAGMENT,ORIGIN_STAR_MOTION} from './gallery-origin-sky.mjs';
+import {createOriginStardust,ORIGIN_SKY_FRAGMENT,ORIGIN_STAR_MOTION,ORIGIN_DEFORMATION_RATE} from './gallery-origin-sky.mjs';
 
 export const SKY_ASTROPHOTOGRAPH=Object.freeze({
  src:'/assets/gallery/sky/eso-milky-way-2048.jpg',
@@ -139,10 +139,10 @@ export function createDrownedSky(scene,{mobile=false,profile='earth',arrival=fal
  context.putImageData(pixels,0,0);
  const environmentTexture=new T.CanvasTexture(canvas);environmentTexture.colorSpace=T.SRGBColorSpace;environmentTexture.mapping=T.EquirectangularReflectionMapping;environmentTexture.wrapS=T.RepeatWrapping;
  environmentTexture.minFilter=T.LinearMipmapLinearFilter;environmentTexture.magFilter=T.LinearFilter;textures.add(environmentTexture);
- const timeUniform={value:0},passage={value:0},pixelRatio={value:Math.min(globalThis.devicePixelRatio||1,1.5)};
+ const timeUniform={value:0},passage={value:0},warpPassage={value:0},pixelRatio={value:Math.min(globalThis.devicePixelRatio||1,1.5)};
  const defines=origin?{ORIGIN_SKY:1}:{};
  const skyMaterial=material(new T.ShaderMaterial({defines,uniforms:{
-  uMap:{value:environmentTexture},uPhotograph:{value:photograph??environmentTexture},uPhotographBlend:plateBlend,uTime:timeUniform,uPassage:passage,
+  uMap:{value:environmentTexture},uPhotograph:{value:photograph??environmentTexture},uPhotographBlend:plateBlend,uTime:timeUniform,uPassage:passage,uWarpPassage:warpPassage,
   uGalacticCore:{value:core},uGalacticEast:{value:tangent},uGalacticNormal:{value:normal}
  },side:T.BackSide,depthWrite:false,depthTest:false,fog:false,toneMapped:false,
   vertexShader:'varying vec3 vDirection;void main(){vDirection=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
@@ -255,8 +255,8 @@ export function createDrownedSky(scene,{mobile=false,profile='earth',arrival=fal
  }
  const starGeometry=geometry(new T.BufferGeometry());starGeometry.setAttribute('position',new T.BufferAttribute(positions,3));starGeometry.setAttribute('aColour',new T.BufferAttribute(colours,3));starGeometry.setAttribute('aSize',new T.BufferAttribute(sizes,1));starGeometry.setAttribute('aPhase',new T.BufferAttribute(phases,1));starGeometry.setAttribute('aIntensity',new T.BufferAttribute(intensities,1));starGeometry.setAttribute('aAnchor',new T.BufferAttribute(anchorsStrength,1));
 
- const starMaterial=material(new T.ShaderMaterial({defines,uniforms:{uTime:timeUniform,uPixelRatio:pixelRatio,uPassage:passage},transparent:true,depthWrite:false,depthTest:true,blending:T.AdditiveBlending,toneMapped:false,fog:false,
-  vertexShader:`attribute vec3 aColour;attribute float aSize,aPhase,aIntensity,aAnchor;uniform float uTime,uPixelRatio,uPassage;varying vec3 vColour;varying float vIntensity,vGlint,vAnchor,vPhase;
+ const starMaterial=material(new T.ShaderMaterial({defines,uniforms:{uTime:timeUniform,uPixelRatio:pixelRatio,uWarpPassage:warpPassage},transparent:true,depthWrite:false,depthTest:true,blending:T.AdditiveBlending,toneMapped:false,fog:false,
+  vertexShader:`attribute vec3 aColour;attribute float aSize,aPhase,aIntensity,aAnchor;uniform float uTime,uPixelRatio,uWarpPassage;varying vec3 vColour;varying float vIntensity,vGlint,vAnchor,vPhase;
    void main(){vAnchor=aAnchor;vPhase=aPhase;float low=1.-smoothstep(.04,.68,position.y/1220.);
     float shimmer=mix(.019+.046*low*low,.036,aAnchor);
     float twinkle=sin(aPhase+uTime*(.21+.08*sin(aPhase)))*.55+sin(aPhase*2.7+uTime*.49)*.31+sin(aPhase*6.1+uTime*.73)*.14;
@@ -352,8 +352,11 @@ export function createDrownedSky(scene,{mobile=false,profile='earth',arrival=fal
    if(eye&&!root.position.equals(eye)){root.position.copy(eye);dirty=true;}
    const step=Math.max(0,Math.min(Number(dt)||0,.1));
    animated=!!motion;if(animated){time+=step;timeUniform.value=time;dirty=true;}
-   const nextPassage=origin&&arrival&&motion?1-smooth(.38,6.2,time):passage.value;
-   if(nextPassage!==passage.value){passage.value=nextPassage;dirty=true;}
+   if(origin&&arrival&&animated){
+    passage.value=1-smooth(.38,6.2,time);
+    // The light settles before the shape of the sky does.
+    warpPassage.value=1-smooth(.38,6.2,time*ORIGIN_DEFORMATION_RATE);
+   }
    if(eye)stardust?.anchor(eye);
    if(plateReady&&plateBlend.value<1){
     const blend=motion?Math.min(1,plateBlend.value+step/1.05):1;

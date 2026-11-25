@@ -1,19 +1,22 @@
 import * as T from './vendor/three-0.180.0.mjs';
 
+export const ORIGIN_DEFORMATION_RATE=.18;
+
 // A continuous spherical warp preserves the Milky Way's photographed dust
 // lanes, without stretching an image around the longitude seam or its poles.
 export const ORIGIN_SKY_FRAGMENT=`
-   uniform float uPassage;
+   uniform float uPassage,uWarpPassage;
    vec3 originRefraction(vec3 galactic,float time){
+    float drift=time*${ORIGIN_DEFORMATION_RATE};
     vec3 flowAxis=normalize(vec3(-.23,.82,.38));
-    float layer=sin(dot(galactic,vec3(6.7,-3.3,2.1))-time*.18);
-    float tide=sin(dot(galactic,vec3(-3.6,4.4,1.6))+time*.24);
-    float roll=sin(dot(galactic,vec3(2.,6.2,-1.9))-time*.12);
-    float bulge=(.55+.45*cos(galactic.x*4.9-time*.16))*(1.-.39*abs(galactic.y));
+    float layer=sin(dot(galactic,vec3(6.7,-3.3,2.1))-drift*.18);
+    float tide=sin(dot(galactic,vec3(-3.6,4.4,1.6))+drift*.24);
+    float roll=sin(dot(galactic,vec3(2.,6.2,-1.9))-drift*.12);
+    float bulge=(.55+.45*cos(galactic.x*4.9-drift*.16))*(1.-.39*abs(galactic.y));
     vec3 swirl=cross(flowAxis,galactic)*layer;
     vec3 surge=cross(vec3(.66,-.16,.72),galactic)*tide;
     vec3 fold=cross(vec3(.38,.22,-.88),galactic)*roll;
-    return normalize(galactic+(swirl*.063+surge*.028+fold*.021)*bulge*(1.+uPassage*1.10));
+    return normalize(galactic+(swirl*.063+surge*.028+fold*.021)*bulge*(1.+uWarpPassage*1.10));
    }
    float gaussianVeil(float offset,float scale){
     float width=offset/scale;
@@ -42,12 +45,13 @@ export const ORIGIN_SKY_FRAGMENT=`
     float longitude=dot(direction,vec3(.94,.05,.33));
     float altitude=dot(direction,vec3(-.12,.98,.12));
     float front=smoothstep(-.23,.65,-direction.z);
-    vec3 nearLight=prismaticVeil(longitude,altitude,front,time,1.);
+    float drift=time*${ORIGIN_DEFORMATION_RATE};
+    vec3 nearLight=prismaticVeil(longitude,altitude,front,drift,1.);
     float side=dot(direction,vec3(-.20,.14,.97));
     float high=dot(direction,vec3(.19,.91,-.34));
     float farGate=smoothstep(-.08,.62,direction.x)+.36*smoothstep(.18,.85,direction.z);
-    vec3 farLight=prismaticVeil(side,high-.22,farGate,time*-.72+12.,.65)*.64;
-    float reflected=galactic.y+.24+sin(galactic.x*7.+time*.22)*.095;
+    vec3 farLight=prismaticVeil(side,high-.22,farGate,drift*-.72+12.,.65)*.64;
+    float reflected=galactic.y+.24+sin(galactic.x*7.+drift*.22)*.095;
     float filaments=gaussianVeil(reflected,.041)*smoothstep(.04,.82,.48+.38*sin(galactic.z*13.+time*.33));
     vec3 ember=mix(vec3(.033,.09,.34),vec3(.58,.26,.016),smoothstep(.05,.82,galactic.x));
     float breathing=.94+.06*sin(time*.47+altitude*3.7);
@@ -59,8 +63,9 @@ export const ORIGIN_STAR_MOTION=`
     float pulse=.5+.5*sin(uniformFlow*3.1+aPhase);
     vIntensity*=mix(.76,1.25,pulse);
     vColour=mix(vColour,vec3(.34,.51,1.),pulse*.19*(1.-aAnchor*.8));
-    point+=(1.-aAnchor*.72)*(4.8+7.5*uPassage)*
-     vec3(sin(aPhase+uTime*.24),cos(aPhase*2.2+uTime*.18),sin(aPhase+uTime*.21));`;
+    float drift=uTime*${ORIGIN_DEFORMATION_RATE};
+    point+=(1.-aAnchor*.72)*(4.8+7.5*uWarpPassage)*
+     vec3(sin(aPhase+drift*.24),cos(aPhase*2.2+drift*.18),sin(aPhase+drift*.21));`;
 
 export function createOriginStardust(scene,{mobile,time,passage}){
  const count=mobile?1380:3560;
