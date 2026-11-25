@@ -534,7 +534,7 @@ button.mi.is-on{filter:none}
 </style>
 <style data-ecosystem-ui="2026-10-05">
 /* 05/10/2026 — copied into the four platforms. Text buttons fit their label. */
-button.eco-text-btn,a.eco-text-btn{inline-size:fit-content!important;max-inline-size:100%;min-inline-size:0!important;flex:0 1 auto!important;padding:.55em .9em!important;line-height:1.45;box-sizing:border-box}
+button.eco-text-btn,a.eco-text-btn{inline-size:fit-content!important;max-inline-size:100%;min-inline-size:0!important;flex:0 1 auto!important;padding:.65em .95em!important;line-height:1.45;box-sizing:border-box}
 .eco-connect,.eco-connect #member-txt,.eco-connect #conn-txt{font-family:'Space Mono',monospace!important;font-weight:700!important;font-size:10px!important;color:#b0b0b0!important;letter-spacing:.06em;text-transform:uppercase!important}
 button.eco-connect{background:#252529!important;border:0!important;border-radius:10px!important;cursor:pointer}
 #menu .eco-text-btn,#mmenu .eco-text-btn,.mw-card .eco-text-btn{align-self:flex-start}
@@ -663,8 +663,10 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
               courte ; enfoncée elle descend de 2 px et l'ombre disparaît. Le GLYPHE porte la couleur, jamais le fond.
      `.k2-x`  la croix, rouge-violet `#743169`   ·   `.k2-z` la loupe, blanche   ·   `.k2-f` le retournement, navy
      `.k2.is-s` la même touche en PLUS PETIT (dans une box : « bel et bien présente »)
-     `.k2r`   une touche RECTANGULAIRE (SELECT · START · MODE) et son intitulé DESSOUS, en Space Mono
-     `.k2j`   LE MANCHE : rond, uniforme, bombé, sans socle — plus gros et plus simple que l'ancien.
+     `.k2r`   une touche et son intitulé DESSOUS, en Space Mono : SELECT et MODE sont des RECTANGLES à ANGLES
+              DROITS (Wah : « le Mine c'est un rectangle sans arrondis »), START est un TRIANGLE (« le play, c'est
+              un triangle ») — la touche EST la forme, rien n'est imprimé dessus.
+     `.k2j`   LE MANCHE : rond, uniforme, bombé, SANS cerclage noir et SANS reflet blanc (Wah).
    60 / 30 / 10 : la touche est noire, le glyphe seul est coloré. */
 .k2{display:inline-flex;align-items:center;justify-content:center;flex:none;
   width:var(--k2-d,34px);height:var(--k2-d,34px);padding:0;border:0;border-radius:50%;cursor:pointer;
@@ -683,10 +685,10 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
 .k2-z{color:#d8d8e0}
 @media(hover:hover){.k2:hover{filter:brightness(1.25)}}
 /* L'INTITULÉ SOUS LA TOUCHE — comme sur la manette : le mot est imprimé SOUS le bouton, petit, espacé, gris. */
-.k2r{display:inline-flex;flex-direction:column;align-items:center;gap:5px;background:none;border:0;padding:0;cursor:pointer;
+.k2r{display:inline-flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:5px;background:none;border:0;padding:0;cursor:pointer;
   -webkit-tap-highlight-color:transparent}
-.k2r .k2k{position:relative;display:block;width:var(--k2r-w,40px);height:var(--k2r-h,14px);border-radius:calc(var(--k2r-h,14px) / 2);
-  background:radial-gradient(ellipse at 50% 28%,#34343b 0 38%,#1d1d22 70%,#121216 100%);
+.k2r .k2k{position:relative;display:block;width:var(--k2r-w,40px);height:var(--k2r-h,14px);
+  background:linear-gradient(#3a3a42 0 38%,#1d1d22 72%,#121216 100%);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.16),inset 0 -2px 3px rgba(0,0,0,.8),0 2px 0 #08080a,0 4px 7px rgba(0,0,0,.55);
   transition:transform .12s ease,box-shadow .12s ease,filter .2s ease}
 .k2r .k2l{font:400 9px/1 'Space Mono',monospace;letter-spacing:.18em;text-transform:uppercase;color:#8a8a92;
@@ -697,9 +699,12 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
 .k2r[aria-pressed="false"] .k2l{opacity:.5;text-decoration:line-through;text-decoration-thickness:1px}
 .k2r.is-off{opacity:.55}
 @media(hover:hover){.k2r:hover .k2k{filter:brightness(1.25)}.k2r:hover .k2l{color:#fff}}
-/* START porte son ▶ gravé ; MODE porte sa diode. Rien d'autre ne distingue les trois touches. */
-.k2r.is-start .k2k::before{content:"";position:absolute;left:50%;top:50%;width:0;height:0;transform:translate(-50%,-50%);
-  border-left:5px solid rgba(255,255,255,.34);border-top:3.5px solid transparent;border-bottom:3.5px solid transparent}
+/* START EST un triangle (le play de la manette) : la même matière, taillée — donc une ombre PORTÉE, qui suit la
+   découpe, au lieu d'une ombre de boîte qui dessinerait un rectangle autour. MODE garde sa diode. */
+.k2r.is-start .k2k{--k2r-w:18px;--k2r-h:16px;clip-path:polygon(0 0,100% 50%,0 100%);box-shadow:none;
+  background:linear-gradient(#3a3a42 0 30%,#1d1d22 72%,#121216 100%);
+  filter:drop-shadow(0 2px 0 #08080a) drop-shadow(0 3px 5px rgba(0,0,0,.55))}
+.k2r.is-start:active .k2k{filter:drop-shadow(0 1px 2px rgba(0,0,0,.5))}
 .k2r.is-mode .k2k::after{content:"";position:absolute;left:50%;top:50%;width:4px;height:4px;margin:-2px 0 0 -2px;border-radius:50%;
   background:rgba(255,255,255,.18);transition:background .2s ease,box-shadow .2s ease}
 .k2r.is-mode[aria-pressed="true"] .k2k::after{background:#fff;box-shadow:0 0 5px rgba(255,255,255,.75)}
@@ -710,21 +715,18 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
 .k2j{position:relative;width:var(--k2j-d,64px);height:var(--k2j-d,64px);flex:none;touch-action:none;cursor:grab;
   -webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
 .k2j:active{cursor:grabbing}
-.k2j::before{content:"";position:absolute;inset:0;border-radius:50%;
-  background:radial-gradient(circle at 50% 50%,#000 0 54%,#121214 78%,#000 100%);
-  box-shadow:inset 0 2px 5px #000,0 0 0 1px #262629}
-.k2j .k2j-c{position:absolute;left:50%;top:50%;width:calc(var(--k2j-d,64px) * .74);height:calc(var(--k2j-d,64px) * .74);
-  margin:calc(var(--k2j-d,64px) * -.37) 0 0 calc(var(--k2j-d,64px) * -.37);border-radius:50%;
-  background:radial-gradient(circle at 50% 38%,color-mix(in srgb,var(--k2j-c,#1f1f24) 72%,#fff) 0 6%,var(--k2j-c,#1f1f24) 46%,color-mix(in srgb,var(--k2j-c,#1f1f24) 72%,#000) 100%);
-  box-shadow:inset 0 2px 2px rgba(255,255,255,.14),inset 0 -3px 5px rgba(0,0,0,.6),0 3px 6px rgba(0,0,0,.65);
+/* Pas de cerclage noir, pas de reflet blanc (Wah, 25/11) : le capuchon OCCUPE le manche, et le relief ne se lit
+   que par son dégradé et l'ombre qu'il porte. */
+.k2j .k2j-c{position:absolute;inset:0;border-radius:50%;
+  background:radial-gradient(circle at 50% 34%,color-mix(in srgb,var(--k2j-c,#26262c) 78%,#6e6e78) 0 4%,var(--k2j-c,#26262c) 48%,color-mix(in srgb,var(--k2j-c,#26262c) 42%,#000) 100%);
+  box-shadow:0 4px 9px rgba(0,0,0,.7);
   transform:translate(var(--mx,0px),var(--my,0px));transition:transform .26s cubic-bezier(.22,.9,.3,1),background-color .42s ease}
 .k2j.tenu .k2j-c{transition:none}
 /* LES TROIS POINTS VERTICAUX DE LA MARQUE, dans le capuchon (bleu · navy · rouge-violet) : la racine de l'arbre. */
-.k2j .k2j-p{position:absolute;left:50%;top:50%;width:calc(var(--k2j-d,64px) * .74);height:calc(var(--k2j-d,64px) * .74);
-  margin:calc(var(--k2j-d,64px) * -.37) 0 0 calc(var(--k2j-d,64px) * -.37);pointer-events:none;
+.k2j .k2j-p{position:absolute;inset:0;pointer-events:none;
   transform:translate(var(--mx,0px),var(--my,0px));transition:transform .26s cubic-bezier(.22,.9,.3,1),opacity .3s ease}
 .k2j.tenu .k2j-p{transition:opacity .3s ease}
-.k2j .k2j-p i{--d:calc(var(--k2j-d,64px) * .15);position:absolute;left:50%;display:block;width:var(--d);height:var(--d);
+.k2j .k2j-p i{--d:calc(var(--k2j-d,64px) * .13);position:absolute;left:50%;display:block;width:var(--d);height:var(--d);
   margin:calc(var(--d) / -2) 0 0 calc(var(--d) / -2);border-radius:50%;background:var(--c,#fff);
   box-shadow:0 1px 2px rgba(0,0,0,.6);transition:opacity .25s ease,transform .25s ease}
 .k2j .k2j-p .o{top:24%}.k2j .k2j-p .h{top:50%}.k2j .k2j-p .r{top:76%}
@@ -2134,7 +2136,7 @@ await load();
     const parentButton = scope.closest(buttonSelector);
     const buttons = [...(parentButton ? [parentButton] : []),...scope.querySelectorAll(buttonSelector)];
     buttons.forEach(b => {
-      if (b.closest('#joy,#nav,#cross,.pieces,#totehm-paper,#tz-papers,#matter,#shots,.eco-sheet') || b.matches('.pick-habit,.h-T,.h-Ti,.h-x,.w-x,.cur,#totehmize,.eco-box-zoom,.mini-toggle,.rk-a')) return;
+      if (b.closest('#joy,#totehm-paper,#tz-papers,#matter,#shots,#hb,.eco-sheet') || b.matches('.pick-habit,.h-T,.h-Ti,.h-x,.w-x,.cur,#totehmize,.eco-box-zoom,.mini-toggle,.rk-a')) return;
       const text = b.textContent.trim(); if (!text || /^[×+−\-↑↓←→↔↕✕✖?°\d\s]+$/.test(text)) return;
       if (/^sign\s*in\b/i.test(text)) {
         const leaf = b.querySelector('#member-txt,#conn-txt') || b;
