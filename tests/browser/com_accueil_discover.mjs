@@ -75,6 +75,18 @@ try{
       perfo:getComputedStyle(document.querySelector('#lvd .lvh-prt')).maskImage!=='none',
       video:!!document.querySelector('#lvd .lvh-vid video'),
       orphelins:document.querySelectorAll('#lvd .dc-hero [data-open],#lvd .dc-hero [data-go],#lvd .dc-hero button').length};});
+  /* 25/11 (Wah : « ça ne reprend pas le format verso du dashboard » · « sans le Discover ! ») — le verso du récit
+     est le VRAI : papier CARRÉ, nom corail au format `#mb-q`, bande noire native (prix · per year · stop anytime),
+     la ligne « Respect their rules… », et AUCUN bouton [Discover] (on y est déjà). */
+  {const v=await pg.evaluate(()=>{const p=document.querySelector('#lvd .lvh-pap').getBoundingClientRect();
+    const q=document.querySelector('#lvd .lvh-q'), n=document.querySelector('#lvd .lvh-r .mbr-nom');
+    return {carre:Math.abs(p.width-p.height)<2, corail:getComputedStyle(q).color, nomCorail:n?getComputedStyle(n).color:null,
+      prix:(document.querySelector('#lvd .vs-month b')||{}).textContent,
+      an:(document.querySelector('#lvd .vs-month i')||{}).textContent,
+      cut:!!document.querySelector('#lvd .vs-s.vs-cut'), disc:document.querySelectorAll('#lvd .vs-act').length};});
+   ok(v.carre&&v.corail==='rgb(251, 213, 202)'&&v.nomCorail==='rgb(251, 213, 202)'&&v.prix==='60 €'
+      &&/per year · stop anytime/.test(v.an)&&v.cut&&v.disc===0,
+      'le verso est celui du dashboard, dans le carré du papier, sans [Discover] → '+JSON.stringify(v));}
   ok(nat.radar&&nat.spots>=6&&nat.photos===2&&nat.perfo&&nat.video&&nat.orphelins===0,
      '24/11 · les VRAIES photos du vêtement (notre stockage), l\'illustration perforée au dos, la place de la vidéo, le radar du Club et ses spots → '+JSON.stringify(nat));
   /* 60 / 30 / 10 : hors de l'objet (ses couleurs sont natives), aucune couleur */

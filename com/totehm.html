@@ -3335,7 +3335,7 @@ body.lv-b:not(.lv-membre):not(.lv-verrou) #lv-socket{opacity:0}
 #srch.is-cherche #mb-res{display:flex;flex-direction:column;gap:2px;width:min(94vw,420px);flex:none;margin-top:8px}
 #srch.is-cherche #mb-res:empty{display:none}
 #mb-res .mbr-dit{margin:0;padding:10px 2px;text-align:center}
-#mb-res .mbr-nom{font:400 13px/1.2 'Quantico',sans-serif;color:#fbd5ca}
+#mb-res .mbr-nom,#lvd .lvh-r .mbr-nom{font:400 13px/1.2 'Quantico',sans-serif;color:#fbd5ca}
 #mb-res .vs-act[disabled]{opacity:.45;cursor:default}
 /* ⟲ retourne le verso sur SON recto : seulement quand son TOTEHM est lu (`is-lu`) */
 #srch.is-cherche:not(.is-lu) #srch-flip{display:none}
@@ -4197,18 +4197,22 @@ body.lv-d.rdr-voir #gate-asteroid,body.lv-d.rdr-voir #lvjoy,body.rdr-voir #rdr-f
 #lvd .lvh-vid video{display:block;width:100%;height:100%;object-fit:cover;
   transform-origin:49.6% 40.8%;transform:translate(.4%,9.2%) scale(1.9)}
 #lvd[data-i="3"] .lvh-vid.is-pret{opacity:1}
-/* LE VERSO : le nom se frappe, PUIS son unique résultat au prix du serveur (format de [Monetize my TOTEHM]) */
-#lvd .lvh-pap{display:flex;flex-direction:column;justify-content:center;gap:11px;width:min(100%,256px);height:100%;
-  padding:16px 18px;background:var(--perfo) 0 0/100% 100% no-repeat}
-#lvd .lvh-q{width:100%;padding-bottom:7px;border-bottom:1px solid rgba(255,255,255,.38);text-align:center;
-  font:400 20px/1.2 Quantico,sans-serif;color:#fff;min-height:1.2em}
+/* LE VERSO — LE VRAI (Wah, 25/11 : « ça ne reprend pas le format verso du dashboard »). Le papier est CARRÉ : son dos
+   garde ses proportions, il ne s'étire pas au cadre. Dessus, la recherche telle qu'elle existe (`#srch.is-cherche`) :
+   le dos du papier VIERGE, le nom tapé au format `#mb-q` (Quantico corail, centré, sans trait), puis l'unique résultat
+   `#mb-res` avec SON balisage natif — la bande noire `.vs-top` (le prix `.vs-month`, [Discover] `.vs-act`) et la ligne
+   « Respect their rules… ». Aucune de ces classes n'est redessinée ici : le bloc est seulement RÉDUIT pour tenir dans
+   le cadre de l'illustration, comme le moteur le fait du reste. */
+#lvd .lvh-pap{position:relative;height:100%;aspect-ratio:1;flex:none;background:var(--perfo) 0 0/100% 100% no-repeat}
+/* le bloc natif est HORS FLUX : il est seulement réduit et centré, et n'élargit donc pas le carré du papier */
+#lvd .lvh-vs{position:absolute;left:50%;top:50%;width:238px;display:flex;flex-direction:column;align-items:center;gap:10px;
+  transform:translate(-50%,-50%) scale(.72)}
+#lvd .lvh-q{width:100%;text-align:center;font:400 26px/1.2 Quantico,sans-serif;letter-spacing:.04em;color:#fbd5ca;min-height:1.2em}
 #lvd .lvh-q i{font-style:normal}
-#lvd .lvh-q::after{content:'';display:inline-block;width:.06em;height:.9em;background:#fff;vertical-align:-.08em;margin-left:.07em;opacity:0}
+#lvd .lvh-q::after{content:'';display:inline-block;width:.06em;height:.9em;background:#fbd5ca;vertical-align:-.08em;margin-left:.07em;opacity:0}
 #lvd .lvh-b.is-frappe .lvh-q::after{animation:dc-car 1s step-end infinite}
-#lvd .lvh-r{display:flex;align-items:baseline;justify-content:space-between;gap:12px;width:100%;font-size:16px;opacity:0;transition:opacity .4s ease}
+#lvd .lvh-r{display:flex;flex-direction:column;gap:2px;width:100%;opacity:0;transition:opacity .4s ease}
 #lvd .lvh-b.is-res .lvh-r{opacity:1}
-#lvd .lvh-pr{font:400 19px/1 Quantico,sans-serif;color:#fff;white-space:nowrap}
-#lvd .lvh-pr small{font:400 9px/1 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#888}
 /* LE VÊTEMENT : nos VRAIES photos (`totehm-cloth-support`), badge brodé devant, illustration perforée au dos */
 #lvd .lvh-cl{gap:10px}
 #lvd .lvh-g{position:relative;width:min(44%,138px);flex:none;aspect-ratio:1;border-radius:10px;background:#141418}
@@ -4384,6 +4388,7 @@ div:not(:has(> :not(br,wbr))):hover,
 #self-name:hover,
 #srch.is-cherche #mb-q:hover,
 #mb-res .mbr-nom:hover,
+#lvd .lvh-r .mbr-nom:hover,
 #self-mail .mw-mail:hover,
 #lv-card #name-btn:hover,
 #lv-card #name-btn.claimed:hover,
@@ -4465,7 +4470,7 @@ div:not(:has(> :not(br,wbr))):hover,
 .dc-next:hover,
 .dc-lead:hover,
 .lvp-cta.is-quiet:hover,
-#lvd .lvh-pr small:hover):where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *)){color:#fff!important}
+#lvd .lvh-q:hover):where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *)){color:#fff!important}
 .h-text:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::placeholder{color:#fff!important}
 .habit.open .v-name[contenteditable]:empty:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::before{color:#fff!important}
 #habits .in.nw:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::placeholder{color:#fff!important}
@@ -9088,7 +9093,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-11-25-video';
+const BUILD='2026-11-25-verso';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -15269,8 +15274,15 @@ window.addEventListener('pageshow',e=>{
             +'</span>'
             +'<span class="sfv sfv-sq sfv-v blk-v is-on"><span>my vision</span></span>'
           +'</div></div></div></div>'
-          +'<div class="lvh-b"><span class="lvh-pap"><span class="lvh-q"><i></i></span><span class="lvh-r">'
-            +'<span class="dc-n">'+esc(NOM)+'</span><span class="lvh-pr">€60<small> / year</small></span></span></span></div>'
+          +'<div class="lvh-b"><span class="lvh-pap"><span class="lvh-vs">'
+            +'<span class="lvh-q"><i></i></span>'
+            /* le résultat, avec le balisage NATIF de `#mb-res` (voir `CHERCHE`) */
+            +'<span class="lvh-r">'
+              /* sans [Discover] : on EST déjà dans le Discover (Wah, 25/11) — la bande garde son prix seul */
+              +'<span class="vs-top"><span class="vs-month"><b>60 €</b><i>per year · stop anytime</i></span></span>'
+              +'<span class="vs-s vs-cut">Respect their rules: <span class="mbr-nom">'+esc(NOM)+'</span> can cut you off at any time.</span>'
+            +'</span>'
+          +'</span></span></div>'
         +'</div>'
         /* LE VRAI VÊTEMENT : nos photos de `totehm-cloth-support` (le Higher brodé devant), l'illustration au dos */
         +'<div class="lvh lvh-cl">'
