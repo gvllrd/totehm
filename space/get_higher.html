@@ -271,14 +271,20 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
   font:400 clamp(26px,4vw,51px)/1.16 Quantico,sans-serif;
 }
 #disc-stage .higher-inline{width:3.1em}
-.btn-start{
-  background:none;border:0;padding:6px 8px;cursor:pointer;min-height:44px;
-  display:inline-flex;align-items:center;gap:8px;transition:transform .3s ease;
-  -webkit-tap-highlight-color:transparent;
+.btn-start,#btn-buy[data-mode="owned"]{
+  --get-size:clamp(35px,min(4vw,7.5dvh),64px);
+  background:none;border:0;padding:7px 10px;cursor:pointer;min-height:44px;
+  display:inline-flex;align-items:center;gap:.24em;font-size:var(--get-size);line-height:1;
+  transition:transform .2s ease;-webkit-tap-highlight-color:transparent;
 }
-.get-text{font:700 clamp(24px,3vw,34px)/1 Quantico,sans-serif;color:var(--coral)}
-.btn-start .higher-svg{width:clamp(78px,8vw,112px)}
-@media(hover:hover){.btn-start:hover{transform:scale(1.05)}.btn-start:hover .get-text{color:#fff}}
+.btn-start{--get-size:clamp(33px,min(3.5vw,5.6dvh),49px)}
+:is(.btn-start,#btn-buy[data-mode="owned"]) .get-text{font:700 1em/1 Quantico,sans-serif;color:var(--coral)}
+:is(.btn-start,#btn-buy[data-mode="owned"]) .higher-svg{display:block;flex:none;width:3.3em}
+:is(.btn-start,#btn-buy[data-mode="owned"]):focus-visible{outline:1px solid var(--coral);outline-offset:5px}
+@media(hover:hover){
+  :is(.btn-start,#btn-buy[data-mode="owned"]):hover:not(:disabled) .get-text{color:#fff}
+  .btn-start:hover{transform:scale(1.03)}
+}
 #disc-hint{
   position:absolute;bottom:18px;left:50%;transform:translateX(-50%);
   color:#a0a0a0;pointer-events:none;
@@ -461,10 +467,6 @@ body.is-paper-view #down-trigger .trigger-label{display:block}
 body.is-paper-view #down-trigger .chev{display:none}
 @media(max-width:540px){body.is-paper-view #down-trigger{top:36px;transform:none}}
 body.is-paper-view #btn-buy,body.is-paper-view #btn-play-street{position:relative;z-index:1;pointer-events:auto;padding:10px 16px}
-body.is-paper-view #btn-buy[data-mode="owned"]{
-  font-size:clamp(24px,3.2vw,36px);line-height:1;gap:10px;min-height:44px;
-}
-body.is-paper-view #btn-buy[data-mode="owned"] .higher-inline{width:clamp(78px,8.2vw,112px)}
 body.is-paper-view #checkout-error:empty{display:none}
 #checkout-consent:not([hidden]){display:flex;align-items:flex-start;gap:8px;max-width:42ch;color:#aaa;text-align:left;font:10px/1.45 'Space Mono',monospace;position:relative;z-index:1;pointer-events:auto}
 #checkout-consent input{margin-top:2px;accent-color:#fff}
@@ -1004,6 +1006,7 @@ function initPaper(){
   scene.addEventListener('touchend', grabEnd, {passive:true});
 }
 
+const getHigherMark='<span class="get-text">Get</span><span class="higher-svg"><svg viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-slogan"></use></svg></span>';
 const offer=document.getElementById('btn-buy');
 const consent=document.getElementById('checkout-consent');
 const waiver=document.getElementById('checkout-waiver');
@@ -1027,7 +1030,7 @@ async function readCaseAccess(){
   consent.hidden=access.state!=='missing';
   if(access.owned){
     offer.setAttribute('aria-label','Get Higher');
-    offer.innerHTML = '<span class="get-text">Get</span> <span class="higher-inline"><svg viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></span>';
+    offer.innerHTML = getHigherMark;
   }else{
     const label=access.state==='guest'?'Connect with my TOTEHM':access.state==='error'?'Check access again':'Buy a TotehmPaper {THP}';
     offer.removeAttribute('aria-label');
@@ -1087,7 +1090,7 @@ function buildDisc(sl){
     if(p.t === 'cta'){
       const btn = document.createElement('button'); btn.type = 'button'; btn.className = 'btn-start';
       btn.setAttribute('aria-label','Get Higher');
-      btn.innerHTML = '<span class="get-text">Get</span><span class="higher-svg"><svg viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></span>';
+      btn.innerHTML = getHigherMark;
       btn.onclick = closeDiscover;
       b.appendChild(btn);
     } else {
