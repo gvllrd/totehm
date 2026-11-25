@@ -571,16 +571,13 @@ nav{display:flex;flex-direction:column;align-items:center;gap:30px;width:100%;ma
 .k2r.is-mode[aria-pressed="true"] .k2k::after{background:#fff;box-shadow:0 0 5px rgba(255,255,255,.75)}
 /* ══ LE MANCHE · rond, uniforme, imposant ══ Wah (25/11) : « je veux le joystick très simple, rond uniforme très
    inspiré par le joystick de la manette PS2, plus gros et imposant que celui actuellement et plus simple.
-   Minimalisme. » Un seul objet : le puits (l'ombre dans laquelle il est planté) et le CAPUCHON bombé, à bord net.
-   Aucune texture, aucun socle carré. Le capuchon prend sa couleur de `--k2j-c` (la vue, dans le TOTEHM). */
+   Minimalisme. » UN SEUL DISQUE, D'UNE SEULE COULEUR (Wah : « pas d'ombres blanches dessus et pas de noir autour ») :
+   ni reflet, ni éclairci au centre, ni bord assombri, ni ombre portée, ni cerclage, ni socle carré. Sa couleur vient
+   de `--k2j-c`. C'est tout. */
 .k2j{position:relative;width:var(--k2j-d,64px);height:var(--k2j-d,64px);flex:none;touch-action:none;cursor:grab;
   -webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
 .k2j:active{cursor:grabbing}
-/* Pas de cerclage noir, pas de reflet blanc (Wah, 25/11) : le capuchon OCCUPE le manche, et le relief ne se lit
-   que par son dégradé et l'ombre qu'il porte. */
-.k2j .k2j-c{position:absolute;inset:0;border-radius:50%;
-  background:radial-gradient(circle at 50% 34%,color-mix(in srgb,var(--k2j-c,#26262c) 78%,#6e6e78) 0 4%,var(--k2j-c,#26262c) 48%,color-mix(in srgb,var(--k2j-c,#26262c) 42%,#000) 100%);
-  box-shadow:0 4px 9px rgba(0,0,0,.7);
+.k2j .k2j-c{position:absolute;inset:0;border-radius:50%;background:var(--k2j-c,#2e2e36);
   transform:translate(var(--mx,0px),var(--my,0px));transition:transform .26s cubic-bezier(.22,.9,.3,1),background-color .42s ease}
 .k2j.tenu .k2j-c{transition:none}
 /* LES TROIS POINTS VERTICAUX DE LA MARQUE, dans le capuchon (bleu · navy · rouge-violet) : la racine de l'arbre. */

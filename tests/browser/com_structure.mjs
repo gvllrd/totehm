@@ -42,7 +42,7 @@ const branche=pg=>pg.evaluate(()=>{const s=document.getElementById('gate-asteroi
   const larg=[];for(let y=acts.bottom+20;y<=Jy-H0;y+=6)larg.push(largeur(section(y)));
   const tronc={sous:largeur(section(acts.bottom+20)),elargit:larg.every((v,i)=>v>=47.5&&v<=56.5&&(!i||v>=larg[i-1]-.2)),
     apres:largeur(section(Jy-H0)),avantManette:largeur(section(Jy-H1))};
-  const trois={n:pts.length,manche:cap.backgroundImage,boite:gros.backgroundColor,d:pts[0].getBoundingClientRect().width,
+  const trois={n:pts.length,manche:cap.backgroundImage,fond:cap.backgroundColor,boite:gros.backgroundColor,d:pts[0].getBoundingClientRect().width,
     /* 25/11 (Wah) : « pas d'ombres blanches dessus et pas de noir autour » — aucun cerclage (`::before`), aucun reflet */
     puits:getComputedStyle(document.getElementById('lvj-box'),'::before').content,
     ombre:cap.boxShadow, pointsAbs:document.querySelectorAll('#lvj-box .k2j-p').length};
@@ -83,9 +83,11 @@ try{
      nom+' · le tronc FERMÉ : sept rails parallèles (48 px) sous le papier, qui ne font que s’élargir jusqu’à la manette (56 px), puis les racines se séparent → '+JSON.stringify(b.tronc));
   /* 25/11 (Wah) : « le joystick très simple, rond uniforme … plus gros et imposant … minimalisme » : UN capuchon, nu
      (les trois points de la marque vivent dans le TOTEHM déployé, où ils disent la vue), et pas de boîte carrée. */
-  ok(b.manche.n===1&&b.manche.pointsAbs===0&&b.manche.boite==='rgba(0, 0, 0, 0)'&&b.manche.manche.includes('radial-gradient')
-     &&b.manche.puits==='none'&&!/255, 255, 255/.test(b.manche.ombre)&&b.manche.d>=60,
-     nom+' · le manche rond, nu et imposant (capuchon de '+Math.round(b.manche.d)+' px), sans cerclage noir ni reflet blanc → '+JSON.stringify(b.manche));
+  /* 25/11 (Wah) : « rond uniforme … minimalisme … pas d'ombres blanches dessus et pas de noir autour » :
+     UN disque, UNE couleur — aucun dégradé, aucune ombre, aucun cerclage. */
+  ok(b.manche.n===1&&b.manche.pointsAbs===0&&b.manche.boite==='rgba(0, 0, 0, 0)'&&b.manche.manche==='none'
+     &&b.manche.fond!=='rgba(0, 0, 0, 0)'&&b.manche.puits==='none'&&b.manche.ombre==='none'&&b.manche.d>=60,
+     nom+' · le manche : UN disque, UNE couleur ('+b.manche.fond+', '+Math.round(b.manche.d)+' px), sans dégradé, sans ombre, sans cerclage → '+JSON.stringify(b.manche));
   ok(b.coeur==='coeur',nom+' · 26/10 · au repos, le cœur (le TOTEHM) bat → '+b.coeur);
   const r0=await reseau(pg);
   /* 10/11 — au téléphone, l'arbre est INVISIBLE (`#lv-ram` en `visibility:hidden`) : ses impulsions ne tournent plus, elles
