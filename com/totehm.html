@@ -2410,6 +2410,10 @@ body.gate.entered #terms-corner{opacity:0;pointer-events:none}
 @media(hover:hover){.srch-row:hover .srch-name{filter:brightness(1.3)}}
 #srch-x{position:fixed;top:10px;right:10px;z-index:4;pointer-events:none}
 #srch.is-open #srch-x{pointer-events:auto}
+#fold-x{position:fixed;top:10px;right:10px;z-index:34}
+body.folding :is(#fold-x,#fold-flip){visibility:hidden;pointer-events:none}
+.k2.is-navy:is(#fold-x,#fold-flip):where(:not(:active,.is-press)){
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.09),inset 0 -2px 3px rgba(0,0,0,.38),0 1px 3px rgba(0,0,0,.24)}
 /* ══ 16/11 · PILE OU FACE, SUR ORDINATEUR ══ Wah : « sur ordinateur, ce serait bien d'avoir vraiment le verso du TOTEHM
    comme le recto : actuellement le verso, contrairement au recto, est en plein écran ; deux facettes facilement
    retournables de part et d'autre, pour vraiment avoir cet effet pile ou face ». Au-delà de 700 px, le verso s'arrête
@@ -2422,16 +2426,18 @@ body.gate.entered #terms-corner{opacity:0;pointer-events:none}
   #srch.is-show::before{opacity:1}
   #srch-ui{left:50%;top:50%;right:auto;bottom:auto;transform:translate(-50%,-50%);
     width:calc(var(--stage) - 2 * var(--pad));height:calc(var(--stage) - 2 * var(--pad));padding:30px 24px 24px}
-  #srch-x{top:calc(50% - var(--stage) / 2 + var(--pad) * .5);right:calc(50% - var(--stage) / 2 + var(--pad) * .5)}
+  #srch-x,#srch-flip,#fold-x,#fold-flip{
+    top:calc(50% - var(--stage) / 2 + var(--pad) * .5);
+    right:calc(50% - var(--stage) / 2 + var(--pad) * .5 + var(--flip-offset,0px))}
+  #srch-flip,#fold-flip{--flip-offset:44px}
   .flip-btn{display:inline-flex}
   .flip-btn>svg{transition:transform .35s ease}
   .flip-btn:hover>svg{transform:rotate(180deg)}
-  #srch-flip{position:fixed;z-index:4;pointer-events:none;
-    top:calc(50% - var(--stage) / 2 + var(--pad) * .5);right:calc(50% - var(--stage) / 2 + var(--pad) * .5 + 44px)}
+  #srch-flip{position:fixed;z-index:4;pointer-events:none}
   #srch.is-open #srch-flip{pointer-events:auto}
   /* 17/11 — LA PIÈCE : la croix et ⟲ ne tournent pas avec le carré (fixes) ; ils s'effacent le temps du demi-tour. */
-  body.is-coin #srch #srch-x,body.is-coin #srch #srch-flip{opacity:0;visibility:hidden;transition:none}
-  #fold-flip{position:fixed;top:10px;right:54px;z-index:34}
+  body.is-coin :is(#srch-x,#srch-flip,#fold-x,#fold-flip){opacity:0;visibility:hidden;transition:none}
+  #fold-flip{position:fixed;z-index:34}
   body.gate #fold-flip{opacity:0;pointer-events:none;transition:opacity .55s ease}
   body.gate.entered #fold-flip{opacity:1;pointer-events:auto;transition:opacity .55s ease var(--gate-reveal)}
   body.ro:not(.lv-membre) #fold-flip{display:none}   /* 18/11 : chez un membre, son recto se retourne sur SON verso */
@@ -2508,13 +2514,6 @@ body.gate.entered #filter-badge{
       plus un mot pour la dire. Il ouvre temporalité puis intention. ── */
 @keyframes t-pulse{0%,100%{opacity:1}50%{opacity:.18}}
 .h-T.blink{animation:t-pulse 2.2s ease-in-out infinite}
-
-/* ── LA CROIX DE REPLI ──
-   Sur le flanc droit du Totehm, à mi-hauteur : le seul endroit libre de
-   tout — le badge de filtre occupe le coin haut droit, les chevrons de
-   navigation vivent HORS du carré. Elle rejoue le déploiement à l'envers
-   et ramène à l'atterrissage. */
-#fold-x{position:fixed;top:10px;right:10px;z-index:34}
 
 /* ── L'ATTERRISSAGE : la Terre et la porte du monde ──
    La vidéo n'est chargée QUE si elle entre dans le champ (IntersectionObserver).
@@ -5156,6 +5155,16 @@ You remember your way, and the street can read what is behind it.</p></div></div
   </defs>
 </svg>
 
+<!-- La croix : referme le Totehm et rejoue le déploiement à l'envers. -->
+
+<button id="fold-x" data-hover-art class="sink-el k2 k2-x is-navy" type="button" aria-label="Close my Totehm">
+  <svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2 L12 12 M12 2 L2 12"/></svg>
+</button>
+<!-- 16/11 — PILE OU FACE (ordinateur) : le recto déployé se retourne sur le verso, au même format. -->
+<button id="fold-flip" data-hover-art class="sink-el flip-btn k2 k2-f is-navy" type="button" aria-label="Turn it over · my settings" title="Turn it over">
+  <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 6.5a5 5 0 0 1 9.2-2.3M13 9.5a5 5 0 0 1-9.2 2.3"/><path d="M12.6 1.6v2.8H9.8M3.4 14.4v-2.8h2.8"/></svg>
+</button>
+
 <div id="stage">
 <div id="rail" class="sink-el"></div>
 
@@ -5194,17 +5203,6 @@ You remember your way, and the street can read what is behind it.</p></div></div
      retirer un nœud sans retirer son `onclick` lève à l'évaluation du
      module — page blanche, pas « bouton mort ». -->
 
-
-
-<!-- La croix : referme le Totehm et rejoue le déploiement à l'envers. -->
-
-<button id="fold-x" data-hover-art class="sink-el k2 k2-x is-navy" type="button" aria-label="Close my Totehm">
-  <svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2 L12 12 M12 2 L2 12"/></svg>
-</button>
-<!-- 16/11 — PILE OU FACE (ordinateur) : le recto déployé se retourne sur le verso, au même format. -->
-<button id="fold-flip" data-hover-art class="sink-el flip-btn k2 k2-f is-navy" type="button" aria-label="Turn it over · my settings" title="Turn it over">
-  <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 6.5a5 5 0 0 1 9.2-2.3M13 9.5a5 5 0 0 1-9.2 2.3"/><path d="M12.6 1.6v2.8H9.8M3.4 14.4v-2.8h2.8"/></svg>
-</button>
 
 
 <!-- LE PASSÉ (gauche) et LE FUTUR (droite) — iframes préchargées, bascule sèche -->
