@@ -2370,6 +2370,8 @@ body.gate.entered #terms-corner{opacity:0;pointer-events:none}
 #srch-x{position:fixed;top:10px;right:10px;z-index:4;pointer-events:none}
 #srch.is-open #srch-x{pointer-events:auto}
 #fold-x{position:fixed;top:10px;right:10px;z-index:34}
+:is(#lv-actions,#recto-controls,#verso-controls){--k2-d:40px}
+:is(#lv-actions,#recto-controls,#verso-controls) .k2>svg{width:20px;height:20px}
 body.gate:not(.entered) #ordbtn,
 body.folding :is(#fold-x,#fold-flip,#ordbtn){visibility:hidden;pointer-events:none}
 .k2.is-navy:is(#fold-x,#fold-flip,#ordbtn):where(:not(:active,.is-press)){
@@ -2391,7 +2393,7 @@ body.folding :is(#fold-x,#fold-flip,#ordbtn){visibility:hidden;pointer-events:no
     top:var(--paper-control-inset)}
   #srch-x,#srch-flip,#fold-x,#fold-flip{right:calc(var(--paper-control-inset) + var(--flip-offset,0px))}
   #ordbtn{left:var(--paper-control-inset)}
-  #srch-flip,#fold-flip{--flip-offset:44px}
+  #srch-flip,#fold-flip{--flip-offset:calc(var(--k2-d) + 10px)}
   .flip-btn{display:inline-flex}
   .flip-btn>svg{transition:transform .35s ease}
   .flip-btn:hover>svg{transform:rotate(180deg)}
@@ -3196,15 +3198,14 @@ body.gate:not(.member):not(.ses-attente){--lv-y:32dvh}
  #lv-c-acts{left:calc(50% - 330px);top:110px;width:210px;transform:none;gap:8px}
 }
 /* Le losange garde le même pas entre centres sur les deux axes. */
-#lv-actions{display:grid;grid-template:repeat(3,40px) / repeat(3,40px);place-items:center;
-  padding:10px;background:#000;border-radius:10px;--k2-d:52px;stroke:var(--love)}
-#lv-actions .k2>svg{width:30px;height:30px;stroke:inherit;stroke-linecap:butt;stroke-linejoin:miter;overflow:visible}
+#lv-actions{display:grid;grid-template:repeat(3,32px) / repeat(3,32px);place-items:center;
+  padding:8px;background:#000;border-radius:10px;stroke:var(--love)}
+#lv-actions .k2>svg{stroke:inherit;stroke-linecap:butt;stroke-linejoin:miter;overflow:visible}
 #lv-search{grid-area:1 / 2}
 #lv-add-illustration{grid-area:2 / 1}
 #lv-add-spot{grid-area:2 / 3}
 #lv-tap-open{grid-area:3 / 2}
 body.ses-attente:not(.member) #lv-actions,body.paysage #lv-tap-open{display:none}
-:is(#lv-add-spot,#lv-add-illustration) .lv-action-icon{stroke-width:1.6}
 @media(prefers-reduced-motion:no-preference){
   body.gate.lv-c:not(.entered,.is-door,.is-dc,.searching) #lv-actions{animation:lv-intentions 42s ease-in-out infinite}
 }
@@ -3222,7 +3223,7 @@ body.ses-attente:not(.member) #lv-actions,body.paysage #lv-tap-open{display:none
   background:#000;border-radius:10px;padding:6px 14px 4px}   /* les touches coupent les racines, comme la légende */
 @media(max-height:690px) and (max-width:649px){
   #lv-c-acts{flex-flow:row wrap;justify-content:center}
-  #lv-keys{max-width:calc(100% - 152px);flex-wrap:wrap;gap:8px}
+  #lv-keys{max-width:calc(100% - 124px);flex-wrap:wrap;gap:8px}
   #lv-c-acts :is(#lv-m-say,#mb-lock){flex-basis:100%}
 }
 /* LA TOUCHE MODE (Tree) n'existe que sur ORDINATEUR : l'arbre ne se voit que là. */
@@ -4792,10 +4793,10 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
             <svg class="lv-action-icon" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="5.5"/><circle cx="8" cy="8" r="2.6"/></svg>
           </button>
           <button type="button" id="lv-add-illustration" class="k2" aria-label="Add an illustration" title="Add an illustration">
-            <svg class="lv-action-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 2H3.8a1.2 1.2 0 0 0 2.4 0H6.8a1.2 1.2 0 0 0 2.4 0H9.8a1.2 1.2 0 0 0 2.4 0H14
-              V3.8a1.2 1.2 0 0 0 0 2.4V6.8a1.2 1.2 0 0 0 0 2.4V9.8a1.2 1.2 0 0 0 0 2.4V14
-              H12.2a1.2 1.2 0 0 0-2.4 0H9.2a1.2 1.2 0 0 0-2.4 0H6.2a1.2 1.2 0 0 0-2.4 0H2
-              V12.2a1.2 1.2 0 0 0 0-2.4V9.2a1.2 1.2 0 0 0 0-2.4V6.2a1.2 1.2 0 0 0 0-2.4Z"/></svg>
+            <svg class="lv-action-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 2H3.65a1.35 1.35 0 0 0 2.7 0H6.65a1.35 1.35 0 0 0 2.7 0H9.65a1.35 1.35 0 0 0 2.7 0H14
+              V3.65a1.35 1.35 0 0 0 0 2.7V6.65a1.35 1.35 0 0 0 0 2.7V9.65a1.35 1.35 0 0 0 0 2.7V14
+              H12.35a1.35 1.35 0 0 0-2.7 0H9.35a1.35 1.35 0 0 0-2.7 0H6.35a1.35 1.35 0 0 0-2.7 0H2
+              V12.35a1.35 1.35 0 0 0 0-2.7V9.35a1.35 1.35 0 0 0 0-2.7V6.35a1.35 1.35 0 0 0 0-2.7Z"/></svg>
           </button>
         </div>
         <div id="lv-keys" class="lv-act" role="group" aria-label="Controller keys">
@@ -5059,7 +5060,7 @@ You remember your way, and the street can read what is behind it.</p></div></div
   </div>
   <div id="verso-controls" class="face-controls">
     <button id="srch-x" data-hover-art class="srch-after k2 k2-x is-navy" type="button" aria-label="Close my settings">
-      <svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2 L12 12 M12 2 L2 12"/></svg>
+      <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 3 L13 13 M13 3 L3 13"/></svg>
     </button>
     <!-- 16/11 — PILE OU FACE (ordinateur) : le verso se retourne sur le recto déployé, au même format. -->
     <button id="srch-flip" data-hover-art class="srch-after flip-btn k2 k2-f is-navy" type="button" aria-label="Turn it over · my TOTEHM" title="Turn it over">
@@ -5087,7 +5088,7 @@ You remember your way, and the street can read what is behind it.</p></div></div
   <!-- La croix : referme le Totehm et rejoue le déploiement à l'envers. -->
 
   <button id="fold-x" data-hover-art class="sink-el k2 k2-x is-navy" type="button" aria-label="Close my Totehm">
-    <svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2 L12 12 M12 2 L2 12"/></svg>
+    <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 3 L13 13 M13 3 L3 13"/></svg>
   </button>
   <!-- 16/11 — PILE OU FACE (ordinateur) : le recto déployé se retourne sur le verso, au même format. -->
   <button id="fold-flip" data-hover-art class="sink-el flip-btn k2 k2-f is-navy" type="button" aria-label="Turn it over · my settings" title="Turn it over">
