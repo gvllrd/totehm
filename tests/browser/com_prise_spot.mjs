@@ -75,7 +75,7 @@ try{
   ok((await etapes(pg)).join('|')==='+ spot|a photo or a video · optional · 33 s at most|my habit|when'&&await pg.evaluate(()=>document.querySelectorAll('#rdr-new .sfb').length===1),
      nom+' · la Habit choisie reste SEULE ; vient la question suivante : NOW · LATER');
   await clic(pg,'#rdr-new [data-ns="quand"][data-v="now"]');
-  await pg.waitForFunction(()=>[...document.querySelectorAll('#rdr-new .sfl')].some(e=>e.textContent==='who sees it'),null,{timeout:8000}).catch(()=>{});
+  await pg.locator('#rdr-new .ns-tag').filter({hasText:'Lisbon'}).waitFor({timeout:8000});
   const n1=await pg.evaluate(()=>({l:[...document.querySelectorAll('#rdr-new .sfl')].map(e=>e.textContent),
     def:(document.querySelector('#rdr-new .ns-def')||{}).textContent||'',
     ou:[...document.querySelectorAll('#rdr-new .ns-tag')].map(e=>e.textContent).join('|'),
