@@ -35,6 +35,8 @@ try{
  // ── 1 · LE CENTRE : le processeur dans son socle, sept ramifications, Mine · Others ; ni manette, ni côtés ──
  for(const [vp,tel] of [[{width:390,height:844},true],[{width:1280,height:800},false]]){
   const{pg,log}=await page(browser,{dir:'com',origin,tables,viewport:vp,hasTouch:tel,rpc:{my_landing:LAND()}});
+  /* 26/11 : l'arbre part ÉTEINT (Wah) — ce test MESURE son dessin, il l'allume donc. */
+  await pg.addInitScript(()=>{ try{ localStorage.setItem('totehm_tree','1'); }catch(_){} });
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1400);
   const c=await pg.evaluate(()=>{const q=s=>document.querySelector(s);
     const sk=q('#lv-socket').getBoundingClientRect(),pa=q('#gate-asteroid').getBoundingClientRect(),d=window.__totehm_lv();
@@ -125,6 +127,8 @@ try{
  // Le visiteur : papier, pitch et manette restent séparés, même lorsque son pitch occupe plus de place (19/11 : plus d'image).
  for(const vp of [{width:320,height:568},{width:390,height:568},{width:390,height:664},{width:390,height:844},{width:1280,height:860},{width:844,height:390}]){
   const{pg,log}=await page(browser,{dir:'com',origin,session:false,viewport:vp,rpc:{my_landing:{signed_in:false}}});
+  /* 26/11 : l'arbre part ÉTEINT (Wah) — ce test MESURE son dessin, il l'allume donc. */
+  await pg.addInitScript(()=>{ try{ localStorage.setItem('totehm_tree','1'); }catch(_){} });
   await pg.emulateMedia({reducedMotion:'reduce'});await pg.goto(origin+'/totehm');
   await pg.waitForFunction(()=>window.__totehm_lv?.().vue==='c'&&!document.body.classList.contains('ses-attente'));
   await pg.waitForTimeout(500);
@@ -140,6 +144,8 @@ try{
 
  // ── 2 · LES GESTES : ↑ ↓ Échap, ← → sans effet, une transition à la fois ; trackpad ; doigt ; chevrons ──
  {const{pg,log}=await page(browser,{dir:'com',origin,tables,viewport:{width:1280,height:800},rpc:{my_landing:LAND()}});
+  /* 26/11 : l'arbre part ÉTEINT (Wah) — ce test MESURE son dessin, il l'allume donc. */
+  await pg.addInitScript(()=>{ try{ localStorage.setItem('totehm_tree','1'); }catch(_){} });
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1000);
   await pg.keyboard.press('ArrowLeft');await vers(pg,'g');
   const g0=(await lv(pg)).vue;
@@ -173,6 +179,8 @@ try{
   ok((await lv(pg)).vue==='c'&&dn==='0','les chevrons (16/11, inversés) : ↑ Higher my ChatGPT (en haut, plus de chevron ↑), ↓ le centre');
   ok(!erreurs(log).length,'gestes : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
  {const{pg,log}=await page(browser,{dir:'com',origin,tables,viewport:{width:390,height:844},hasTouch:true,rpc:{my_landing:LAND()}});
+  /* 26/11 : l'arbre part ÉTEINT (Wah) — ce test MESURE son dessin, il l'allume donc. */
+  await pg.addInitScript(()=>{ try{ localStorage.setItem('totehm_tree','1'); }catch(_){} });
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1000);
   const cdp=await pg.context().newCDPSession(pg);
   const glisse=async(x0,y0,x1,y1)=>{await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:x0,y:y0}]});
@@ -190,6 +198,8 @@ try{
  for(const reduit of [false,true]){
   const{pg,log}=await page(browser,{dir:'com',origin,tables,viewport:{width:390,height:844},hasTouch:true,rpc:{my_landing:LAND()}});
   if(reduit) await pg.emulateMedia({reducedMotion:'reduce'});
+  /* 26/11 : l'arbre part ÉTEINT (Wah) — ce test MESURE son dessin, il l'allume donc. */
+  await pg.addInitScript(()=>{ try{ localStorage.setItem('totehm_tree','1'); }catch(_){} });
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1000);
   await pg.click('#lvn-dn');await vers(pg,'h');await pg.waitForTimeout(500);
   const h=await pg.evaluate(()=>{const q=s=>document.querySelector(s),m=q('#gate-mouth').getBoundingClientRect(),p=q('#gate-asteroid').getBoundingClientRect(),g=q('#lv-slogan').getBoundingClientRect();
@@ -238,6 +248,8 @@ try{
          totehm_read:b=>b.p_pseudo==='kai3'?AUTRE:b.p_pseudo==='lock'?{ok:false,why:'subscribe',pseudo:'lock'}:{ok:false,why:'nobody'},
          creator_page:b=>b.p_pseudo==='lock'?Object.assign({},OFFRE,{pseudo:'lock'}):OFFRE,
          member_media:{ok:true,items:[]},club_spots_of:{ok:true,items:[],total:0}}});
+  /* 26/11 : l'arbre part ÉTEINT (Wah) — ce test MESURE son dessin, il l'allume donc. */
+  await pg.addInitScript(()=>{ try{ localStorage.setItem('totehm_tree','1'); }catch(_){} });
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1000);await ouvre(pg);
   const p0=await pg.evaluate(()=>document.getElementById('gate-asteroid').getBoundingClientRect().width);
   const habits0=(await lv(pg)).ramifications.habits;
@@ -304,6 +316,8 @@ try{
 
  // ── 4 bis · LES VUES DE CÔTÉ SONT LA TRANSFORMATION DU CENTRE : les sept traits se plient pendant le voyage ──
  {const{pg,log}=await page(browser,{dir:'com',origin,tables,viewport:{width:390,height:844},hasTouch:true,rpc:{my_landing:LAND(),club_spots:{ok:true,items:[],total:0}}});
+  /* 26/11 : l'arbre part ÉTEINT (Wah) — ce test MESURE son dessin, il l'allume donc. */
+  await pg.addInitScript(()=>{ try{ localStorage.setItem('totehm_tree','1'); }catch(_){} });
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1200);
   const m0=(await lv(pg)).ramifications.morphs;
   await pg.click('#lvn-lf');await pg.waitForTimeout(260);
@@ -345,6 +359,8 @@ try{
 
  // ── 5 · EN BAS : LA CONDENSATION — seul #gl-bg tourne ; le socle devient un anneau (7 couleurs) ; le profil ──
  {const{pg,log}=await page(browser,{dir:'com',origin,tables,viewport:{width:390,height:844},hasTouch:true,rpc:{my_landing:LAND()}});
+  /* 26/11 : l'arbre part ÉTEINT (Wah) — ce test MESURE son dessin, il l'allume donc. */
+  await pg.addInitScript(()=>{ try{ localStorage.setItem('totehm_tree','1'); }catch(_){} });
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1000);
   await pg.click('#lvn-up');await pg.waitForTimeout(260);
   /* les ROTATIONS seules (les fondus du rail et du wordmark sont des transitions d'opacité) */
@@ -378,6 +394,8 @@ try{
  // ── 7 · MOUVEMENT RÉDUIT : tout marche, rien ne tourne ni ne glisse ──
  {const{pg,log}=await page(browser,{dir:'com',origin,tables,viewport:{width:390,height:844},rpc:{my_landing:LAND(),figher_access:{signed_in:true,member:true}}});
   await pg.emulateMedia({reducedMotion:'reduce'});
+  /* 26/11 : l'arbre part ÉTEINT (Wah) — ce test MESURE son dessin, il l'allume donc. */
+  await pg.addInitScript(()=>{ try{ localStorage.setItem('totehm_tree','1'); }catch(_){} });
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(900);
   const tr=await pg.evaluate(()=>['lv-socket','lv-b'].map(i=>getComputedStyle(document.getElementById(i)).transitionDuration));
   await pg.keyboard.press('ArrowUp');await vers(pg,'b');
@@ -398,6 +416,8 @@ try{
       if(e){const r=e.querySelector('svg').getBoundingClientRect(),cs=getComputedStyle(e);
         if(cs.visibility!=='hidden'&&cs.display!=='none'&&+cs.opacity>0&&r.left<20&&r.top<20)window.__coin++;}
       if(performance.now()-t0<3000)requestAnimationFrame(f);};requestAnimationFrame(f);});
+  /* 26/11 : l'arbre part ÉTEINT (Wah) — ce test MESURE son dessin, il l'allume donc. */
+  await pg.addInitScript(()=>{ try{ localStorage.setItem('totehm_tree','1'); }catch(_){} });
   await pg.goto(origin+'/totehm');await pg.waitForTimeout(3200);
   ok(await pg.evaluate(()=>window.__coin)===0,'module retardé de 1,5 s ('+vp.width+' px) : le badge [Higher] jamais au coin');
   ok(!erreurs(log).length,'chargement lent : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}

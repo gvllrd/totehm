@@ -33,6 +33,8 @@ try{
  /* ── 1–2 · ordinateur ── */
  for(const vp of [{width:1440,height:900},{width:1280,height:800}]){
   const{pg,log}=await page(browser,{dir:'com',origin,session:false,viewport:vp,rpc:{my_landing:{signed_in:false}}});
+  /* 26/11 : l'arbre part ÉTEINT (Wah) — ce test MESURE son dessin, il l'allume donc. */
+  await pg.addInitScript(()=>{ try{ localStorage.setItem('totehm_tree','1'); }catch(_){} });
   await pg.goto(origin+'/totehm');
   await pg.waitForFunction(()=>window.__totehm_lv?.().vue==='c'&&!document.body.classList.contains('ses-attente'));
   await pg.waitForTimeout(2500);
@@ -65,6 +67,8 @@ try{
  }
  /* ── 2 bis · 19/11 (Wah : « quand la page d'inscription apparaît, le scroll Discover devrait continuer de fonctionner ») ── */
  {const{pg,log}=await page(browser,{dir:'com',origin,session:false,viewport:{width:1440,height:900},rpc:{my_landing:{signed_in:false}}});
+  /* 26/11 : l'arbre part ÉTEINT (Wah) — ce test MESURE son dessin, il l'allume donc. */
+  await pg.addInitScript(()=>{ try{ localStorage.setItem('totehm_tree','1'); }catch(_){} });
   await pg.goto(origin+'/totehm');
   await pg.waitForFunction(()=>window.__totehm_lv?.().vue==='c'&&!document.body.classList.contains('ses-attente'));
   await pg.waitForTimeout(1500);
@@ -80,6 +84,8 @@ try{
   ok(!erreurs(log).length,'molette · aucune erreur '+erreurs(log).join(' | '));
   await pg.context().close();}
  {const{pg,log,ctx}=await page(browser,{dir:'com',origin,session:false,viewport:{width:390,height:844},hasTouch:true,rpc:{my_landing:{signed_in:false}}});
+  /* 26/11 : l'arbre part ÉTEINT (Wah) — ce test MESURE son dessin, il l'allume donc. */
+  await pg.addInitScript(()=>{ try{ localStorage.setItem('totehm_tree','1'); }catch(_){} });
   await pg.goto(origin+'/totehm');
   await pg.waitForFunction(()=>window.__totehm_lv?.().vue==='c'&&!document.body.classList.contains('ses-attente'));
   await pg.waitForTimeout(1500);
@@ -94,6 +100,8 @@ try{
   await pg.context().close();}
  /* ── 3 · mouvement réduit : pas de transition, le tronc s'ouvre d'un coup ── */
  {const{pg,log}=await page(browser,{dir:'com',origin,session:false,viewport:{width:1440,height:900},rpc:{my_landing:{signed_in:false}}});
+  /* 26/11 : l'arbre part ÉTEINT (Wah) — ce test MESURE son dessin, il l'allume donc. */
+  await pg.addInitScript(()=>{ try{ localStorage.setItem('totehm_tree','1'); }catch(_){} });
   await pg.emulateMedia({reducedMotion:'reduce'});await pg.goto(origin+'/totehm');
   await pg.waitForFunction(()=>window.__totehm_lv?.().vue==='c'&&!document.body.classList.contains('ses-attente'));
   await pg.waitForTimeout(1200);
@@ -105,6 +113,8 @@ try{
  /* ── 4 · téléphone : pas d'arbre, la porte reste sous le papier (au-dessus du clavier) ── */
  for(const vp of [{width:390,height:844},{width:375,height:667}]){
   const{pg,log}=await page(browser,{dir:'com',origin,session:false,viewport:vp,hasTouch:true,rpc:{my_landing:{signed_in:false}}});
+  /* 26/11 : l'arbre part ÉTEINT (Wah) — ce test MESURE son dessin, il l'allume donc. */
+  await pg.addInitScript(()=>{ try{ localStorage.setItem('totehm_tree','1'); }catch(_){} });
   await pg.goto(origin+'/totehm');
   await pg.waitForFunction(()=>window.__totehm_lv?.().vue==='c'&&!document.body.classList.contains('ses-attente'));
   await pg.waitForTimeout(1500);

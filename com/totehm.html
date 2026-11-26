@@ -99,14 +99,14 @@ html{font-family:'Space Mono',monospace}button,input,select,textarea{font-family
      Sur ORDINATEUR le contrôleur vit sous le carré, hors de la liste :
      la bande y reste à 98 px (voir le bloc `min-width:700px`), les
      trois portes et le wordmark n'ayant jamais demandé plus. */
-  --joy-d:52px;
+  --joy-d:64px;
   --joy-b:18px;
-  --band-b:calc(var(--joy-b) + var(--joy-d) + 36px + 26px);   /* 13/10 : + le nom de la vue, un mot au-dessus */
+  --band-b:calc(var(--joy-b) + var(--joy-d) + 36px + 40px + 26px);   /* 13/10 : + le nom de la vue ; 26/11 : + l'air autour du manche */
   /* 18/10 — la manette de l'ATTERRISSAGE (`#lvjoy`) : son retrait du bas, et la hauteur qu'elle
      occupe (26 + 44 + 26 et deux gouttières de 6). Tout ce qui vit au bas de l'atterrissage s'y
      accroche : rien ne se calcule deux fois, rien ne passe dessous. */
   --lvj-b:max(12px,env(safe-area-inset-bottom));
-  --lvj-h:calc(124px + var(--lvj-b));
+  --lvj-h:calc(144px + var(--lvj-b));
   --tile-btn:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
   --tile-light:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%2336498c'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
   /* Le carré perforé du logo (desktop) — même dessin que #gl-bg.
@@ -405,6 +405,7 @@ body.gate #wm-O,body.gate #wm-H,body.gate #t-foot,body.gate #ordbtn span{animati
   display:grid;
   grid-template-columns:18px var(--joy-d,60px) 18px;
   grid-template-rows:18px var(--joy-d,60px) 18px;
+  gap:20px;                                   /* 26/11 (Wah) : les flèches ne touchent pas le manche, même tiré à fond (mesuré) */
   align-items:center;justify-items:center}
 #cur-h  {grid-area:1/2/2/3}
 #cur-g  {grid-area:2/1/3/2}
@@ -435,18 +436,11 @@ body.gate #wm-O,body.gate #wm-H,body.gate #t-foot,body.gate #ordbtn span{animati
    (mesuré : une recherche de membre), un appui sur le gros point démarrait un glisser-déposer NATIF — le navigateur
    annulait alors le pointeur (`pointercancel`) au premier mouvement, et le glissé ne naviguait plus. */
 #joy-box,#joy-box *,#lvj-box,#lvj-box *{-webkit-user-select:none;user-select:none;-webkit-user-drag:none}
-#joy-box{width:48px;height:48px;position:relative;touch-action:none;cursor:grab;border-radius:50%;
-  background:var(--joy-vue,var(--navy));box-shadow:0 2px 7px rgba(0,0,0,.5);transition:background-color .42s ease}
-#joy-box:active{cursor:grabbing}
-#joy-stack{position:absolute;inset:0;z-index:1;pointer-events:none;transform:translate(calc(var(--mx,0px) * .6),calc(var(--my,0px) * .6));
-  transition:transform .26s cubic-bezier(.22,.9,.3,1),opacity .18s}
-#joy-box.tenu #joy-stack{transition:none}
-#joy-stack i{--d:10px;position:absolute;left:50%;display:block;width:var(--d);height:var(--d);
-  margin:calc(var(--d) / -2) 0 0 calc(var(--d) / -2);border-radius:50%;background:var(--c);
-  transition:opacity .18s,transform .18s}
-#joy-stack .o{top:24%;--c:var(--blue)}#joy-stack .h{top:50%;--c:var(--navy)}#joy-stack .r{top:76%;--c:var(--rep)}
-#joy-stack i.is-current{opacity:0;transform:scale(.4)}
-#joy-box.is-side #joy-stack{opacity:0}
+/* 26/11 (Wah) : LE MÊME MANCHE QU'À L'ATTERRISSAGE — le dôme de `tools/ps2.css` (`.k2j`). Ici, et ici seulement,
+   il prend la COULEUR DE LA VUE et porte les trois points de la marque. */
+#joy-box{--k2j-d:64px;--k2j-c:var(--joy-vue,var(--navy))}
+#joy-stack{z-index:1;pointer-events:none}
+#joy-stack .o{--c:var(--blue)}#joy-stack .h{--c:var(--navy)}#joy-stack .r{--c:var(--rep)}
 /* Ce qu'on vise s'allume avant qu'on lâche. L'état vit sur `#joy` : `#cur-g` PRÉCÈDE `#joy-box` dans le balisage,
    et le combinateur `~` ne regarde qu'en avant. */
 #joy.vers-g #cur-g,
@@ -1154,22 +1148,29 @@ body.v-visions{--paper:#2b3a73}
    une touche. » La manette est l'objet de référence de toute l'interface : on navigue au MANCHE (BRAND.md), on ferme
    et on zoome à la TOUCHE. Une seule nomenclature, ici ; on la change ICI puis `python3 tools/recopier.py`.
      `.k2`    une touche RONDE (close, zoom, retournement) — gris-noir bombé, une arête claire en haut, une ombre
-              courte ; enfoncée elle descend de 2 px et l'ombre disparaît. Le GLYPHE porte la couleur, jamais le fond.
+              courte. Le GLYPHE porte la couleur, jamais le fond.
      `.k2-x`  la croix, rouge-violet `#743169`   ·   `.k2-z` la loupe, blanche   ·   `.k2-f` le retournement, navy
-     `.k2.is-s` la même touche en PLUS PETIT (dans une box : « bel et bien présente »)
+     `.k2.is-s` la même touche en PLUS PETIT   ·   `.is-navy` en NAVY (le TOTEHM déployé)
      `.k2r`   une touche et son intitulé DESSOUS, en Space Mono : SELECT et MODE sont des RECTANGLES à ANGLES
               DROITS (Wah : « le Mine c'est un rectangle sans arrondis »), START est un TRIANGLE (« le play, c'est
               un triangle ») — la touche EST la forme, rien n'est imprimé dessus.
-     `.k2j`   LE MANCHE : rond, uniforme, bombé, SANS cerclage noir et SANS reflet blanc (Wah).
-   60 / 30 / 10 : la touche est noire, le glyphe seul est coloré. */
+     `.k2j`   LE MANCHE : le dôme de la manette, le blanc RÉDUIT, et AUCUN noir autour (ni cerclage, ni puits, ni
+              ombre portée). Dans le TOTEHM déployé il prend la couleur de la vue et porte les trois points.
+   **LA PORTÉE** (Wah, 26/11) : « les boutons PS2, c'est pour le FRONT des 5 vues ; après, quand on rentre dans les
+   détails, ils s'enlèvent. » Donc : l'atterrissage, le TOTEHM déployé et ce qui ferme une VUE portent la touche ;
+   un panneau de détail (la prise rapide, le questionnaire d'un spot, un filtre, une box) garde ses boutons à lui.
+   **ON SENT L'APPUI**, au doigt comme à la souris : `tools/ps2.js` pose `is-press` au `pointerdown` (le `:active`
+   d'un navigateur de téléphone n'est pas fiable), la touche s'enfonce et son ombre disparaît.
+   60 / 30 / 10 : la touche est noire (ou navy), le glyphe seul est coloré. */
 .k2{display:inline-flex;align-items:center;justify-content:center;flex:none;
   width:var(--k2-d,34px);height:var(--k2-d,34px);padding:0;border:0;border-radius:50%;cursor:pointer;
   background:radial-gradient(circle at 50% 32%,#34343b 0 36%,#1d1d22 64%,#121216 100%);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.16),inset 0 -2px 3px rgba(0,0,0,.8),0 2px 0 #08080a,0 4px 7px rgba(0,0,0,.55);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.09),inset 0 -2px 3px rgba(0,0,0,.8),0 2px 0 #08080a,0 4px 7px rgba(0,0,0,.55);
   color:#d8d8e0;-webkit-tap-highlight-color:transparent;transition:transform .12s ease,box-shadow .12s ease,filter .2s ease}
 .k2>svg{width:calc(var(--k2-d,34px) * .44);height:calc(var(--k2-d,34px) * .44);display:block;fill:none;
   stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.k2:active,.k2.is-press{transform:translateY(2px);box-shadow:inset 0 1px 0 rgba(255,255,255,.1),inset 0 -1px 2px rgba(0,0,0,.8),0 1px 3px rgba(0,0,0,.5)}
+.k2:active,.k2.is-press{transform:translateY(3px) scale(.96);
+  box-shadow:inset 0 2px 4px rgba(0,0,0,.9),inset 0 -1px 0 rgba(255,255,255,.06),0 0 0 rgba(0,0,0,0);filter:brightness(.82)}
 .k2:focus-visible{outline:1px solid #fff;outline-offset:3px}
 .k2[disabled]{opacity:.45;cursor:default}
 .k2.is-s{--k2-d:22px}
@@ -1177,41 +1178,56 @@ body.v-visions{--paper:#2b3a73}
 .k2-x{color:#743169}
 .k2-f{color:#333366}
 .k2-z{color:#d8d8e0}
+/* NAVY — dans le TOTEHM déployé (Wah, 26/11). Le corps prend le navy de la marque ; la croix reste rouge-violet,
+   et le retournement passe au BLANC (navy sur navy ne se verrait pas). */
+.k2.is-navy{background:radial-gradient(circle at 50% 32%,#3a3a6e 0 36%,#262650 64%,#15152e 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.09),inset 0 -2px 3px rgba(0,0,0,.55),0 2px 0 #15152e,0 4px 7px rgba(0,0,0,.5)}
+.k2.is-navy:active,.k2.is-navy.is-press{box-shadow:inset 0 2px 4px rgba(0,0,0,.7),inset 0 -1px 0 rgba(255,255,255,.06),0 0 0 rgba(0,0,0,0)}
+.k2.is-navy.k2-f{color:#fff}
 @media(hover:hover){.k2:hover{filter:brightness(1.25)}}
 /* L'INTITULÉ SOUS LA TOUCHE — comme sur la manette : le mot est imprimé SOUS le bouton, petit, espacé, gris. */
 .k2r{display:inline-flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:5px;background:none;border:0;padding:0;cursor:pointer;
   -webkit-tap-highlight-color:transparent}
-.k2r .k2k{position:relative;display:block;width:var(--k2r-w,40px);height:var(--k2r-h,14px);
-  background:linear-gradient(#3a3a42 0 38%,#1d1d22 72%,#121216 100%);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.16),inset 0 -2px 3px rgba(0,0,0,.8),0 2px 0 #08080a,0 4px 7px rgba(0,0,0,.55);
+.k2r .k2k{position:relative;display:block;width:var(--k2r-w,28px);height:var(--k2r-h,18px);
+  background:linear-gradient(#34343c 0 38%,#1d1d22 72%,#121216 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.09),inset 0 -2px 3px rgba(0,0,0,.8),0 2px 0 #08080a,0 4px 7px rgba(0,0,0,.55);
   transition:transform .12s ease,box-shadow .12s ease,filter .2s ease}
 .k2r .k2l{font:400 9px/1 'Space Mono',monospace;letter-spacing:.18em;text-transform:uppercase;color:#8a8a92;
   white-space:nowrap;transition:color .2s ease}
-.k2r:active .k2k{transform:translateY(2px);box-shadow:inset 0 1px 0 rgba(255,255,255,.1),inset 0 -1px 2px rgba(0,0,0,.8),0 1px 3px rgba(0,0,0,.5)}
+.k2r:active .k2k,.k2r.is-press .k2k{transform:translateY(3px) scaleY(.82);
+  box-shadow:inset 0 2px 4px rgba(0,0,0,.9),inset 0 -1px 0 rgba(255,255,255,.06),0 0 0 rgba(0,0,0,0);filter:brightness(.82)}
+.k2r.is-press .k2l{color:#fff}
 .k2r:focus-visible{outline:none}
 .k2r:focus-visible .k2k{outline:1px solid #fff;outline-offset:3px}
-.k2r[aria-pressed="false"] .k2l{opacity:.5;text-decoration:line-through;text-decoration-thickness:1px}
+.k2r[aria-pressed="false"] .k2l{opacity:.5}
 .k2r.is-off{opacity:.55}
+.k2r.is-navy .k2k{background:linear-gradient(#3a3a6e 0 38%,#262650 72%,#15152e 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.09),inset 0 -2px 3px rgba(0,0,0,.55),0 2px 0 #15152e,0 4px 7px rgba(0,0,0,.5)}
 @media(hover:hover){.k2r:hover .k2k{filter:brightness(1.25)}.k2r:hover .k2l{color:#fff}}
 /* START EST un triangle (le play de la manette) : la même matière, taillée — donc une ombre PORTÉE, qui suit la
    découpe, au lieu d'une ombre de boîte qui dessinerait un rectangle autour. MODE garde sa diode. */
-.k2r.is-start .k2k{--k2r-w:18px;--k2r-h:16px;clip-path:polygon(0 0,100% 50%,0 100%);box-shadow:none;
+.k2r.is-start .k2k{--k2r-w:24px;--k2r-h:22px;clip-path:polygon(0 0,100% 50%,0 100%);box-shadow:none;
   background:linear-gradient(#3a3a42 0 30%,#1d1d22 72%,#121216 100%);
   filter:drop-shadow(0 2px 0 #08080a) drop-shadow(0 3px 5px rgba(0,0,0,.55))}
-.k2r.is-start:active .k2k{filter:drop-shadow(0 1px 2px rgba(0,0,0,.5))}
+.k2r.is-start:active .k2k,.k2r.is-start.is-press .k2k{transform:translateY(3px) scale(.92);
+  box-shadow:none;filter:brightness(.78) drop-shadow(0 1px 2px rgba(0,0,0,.5))}
 .k2r.is-mode .k2k::after{content:"";position:absolute;left:50%;top:50%;width:4px;height:4px;margin:-2px 0 0 -2px;border-radius:50%;
   background:rgba(255,255,255,.18);transition:background .2s ease,box-shadow .2s ease}
 .k2r.is-mode[aria-pressed="true"] .k2k::after{background:#fff;box-shadow:0 0 5px rgba(255,255,255,.75)}
-/* ══ LE MANCHE · rond, uniforme, imposant ══ Wah (25/11) : « je veux le joystick très simple, rond uniforme très
-   inspiré par le joystick de la manette PS2, plus gros et imposant que celui actuellement et plus simple.
-   Minimalisme. » UN SEUL DISQUE, D'UNE SEULE COULEUR (Wah : « pas d'ombres blanches dessus et pas de noir autour ») :
-   ni reflet, ni éclairci au centre, ni bord assombri, ni ombre portée, ni cerclage, ni socle carré. Sa couleur vient
-   de `--k2j-c`. C'est tout. */
+/* ══ LE MANCHE · le dôme de la manette ══ Wah (25/11) : « je veux le joystick très simple, rond uniforme très inspiré
+   par le joystick de la manette PS2, plus gros et imposant que celui actuellement et plus simple. Minimalisme. »
+   26/11 : « en réduisant un peu le blanc si possible mais en tentant de garder au maximum les éléments de la manette
+   PS2 » · « pas de noir autour du joystick ». Donc : le dôme, dont le haut capte la lumière et le bas rentre dans
+   l'ombre — et RIEN autour : ni cerclage, ni puits, ni ombre portée, ni socle carré. Sa couleur vient de `--k2j-c`
+   (la vue, dans le TOTEHM déployé, où il porte aussi les trois points de la marque). Tenu, il s'enfonce. */
 .k2j{position:relative;width:var(--k2j-d,64px);height:var(--k2j-d,64px);flex:none;touch-action:none;cursor:grab;
   -webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
 .k2j:active{cursor:grabbing}
-.k2j .k2j-c{position:absolute;inset:0;border-radius:50%;background:var(--k2j-c,#2e2e36);
+.k2j .k2j-c{position:absolute;inset:0;border-radius:50%;
+  background:radial-gradient(circle at 50% 30%,color-mix(in srgb,var(--k2j-c,#2e2e36) 93%,#fff) 0 8%,var(--k2j-c,#2e2e36) 54%,color-mix(in srgb,var(--k2j-c,#2e2e36) 72%,#000) 100%);
+  box-shadow:inset 0 -3px 6px rgba(0,0,0,.45),inset 0 2px 3px rgba(255,255,255,.04);
   transform:translate(var(--mx,0px),var(--my,0px));transition:transform .26s cubic-bezier(.22,.9,.3,1),background-color .42s ease}
+.k2j.tenu .k2j-c,.k2j:active .k2j-c{box-shadow:inset 0 -2px 4px rgba(0,0,0,.6),inset 0 3px 5px rgba(0,0,0,.4)}
 .k2j.tenu .k2j-c{transition:none}
 /* LES TROIS POINTS VERTICAUX DE LA MARQUE, dans le capuchon (bleu · navy · rouge-violet) : la racine de l'arbre. */
 .k2j .k2j-p{position:absolute;inset:0;pointer-events:none;
@@ -1224,21 +1240,6 @@ body.v-visions{--paper:#2b3a73}
 .k2j .k2j-p i.is-current{opacity:0;transform:scale(.4)}
 .k2j.is-side .k2j-p{opacity:0}
 @media(prefers-reduced-motion:reduce){.k2,.k2r .k2k,.k2j .k2j-c,.k2j .k2j-p,.k2j .k2j-p i{transition:none}}
-/* UN MOT QUI EFFACE (delete, cut off) : la même matière, en rectangle, avec la croix rouge-violet IMPRIMÉE à gauche.
-   La croix est une image de fond : réécrire le texte du bouton (la confirmation en deux gestes) ne l'efface jamais. */
-.k2w{display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:9px;cursor:pointer;
-  padding:7px 11px 7px 26px;color:#c8c8d0;font:700 10px/1 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;
-  background:radial-gradient(ellipse at 50% 24%,#34343b 0 38%,#1d1d22 72%,#121216 100%) no-repeat,
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Cpath d='M3 3 L11 11 M11 3 L3 11' stroke='%23743169' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E") 9px 50%/11px 11px no-repeat;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.16),inset 0 -2px 3px rgba(0,0,0,.8),0 2px 0 #08080a,0 4px 7px rgba(0,0,0,.55);
-  -webkit-tap-highlight-color:transparent;transition:transform .12s ease,box-shadow .12s ease,filter .2s ease}
-.k2w:active{transform:translateY(2px);box-shadow:inset 0 1px 0 rgba(255,255,255,.1),inset 0 -1px 2px rgba(0,0,0,.8),0 1px 3px rgba(0,0,0,.5)}
-.k2w:focus-visible{outline:1px solid #fff;outline-offset:3px}
-.k2w[disabled]{opacity:.5;cursor:default}
-.k2w.is-wide{width:100%}
-.k2w.is-sur{color:#fff;background:#743169 no-repeat,
-  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Cpath d='M3 3 L11 11 M11 3 L3 11' stroke='%23fff' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E") 9px 50%/11px 11px no-repeat}
-@media(hover:hover){.k2w:not([disabled]):hover{filter:brightness(1.25)}}
 /* ══ fin ps2 ══ */
 
 /* ══ LA LOUPE · 06/10/2026 ══════════════════════════════════════════════
@@ -2556,13 +2557,12 @@ body.gate.entered #filter-badge{
     /* 78vw et pas 94vw : il faut de la place de chaque côté pour les deux
        boîtes de navigation, sinon elles sortent de la fenêtre.
        Encombrement total = --stage * (1 + 2 * (.058 + .05)) = --stage * 1.216.
-       ⚠️ 25/10 — ET LA BANDE NOIRE DU BAS TIENT TOUJOURS LA MANETTE (Wah : « remonte-la ») : sur un écran bas
-       (800 px), le carré de 640 px ne laissait que 80 px de noir et la manette (84 px) mordait la perforation du
-       milieu. Le carré cède donc juste ce qu'il faut : 12 px + la manette + 12 px, en haut comme en bas. Au-delà de
-       856 px de haut, rien ne change (640 px). */
-    --stage:min(92vh,78vw,640px,calc(100vh - 2 * (var(--lvj-b) + var(--joy-d) + 36px + 12px)));
-    /* 25/10 — le socle de l'atterrissage fait 48 px : la case aussi, les chevrons le serrent comme là-bas. */
-    --joy-d:48px;
+       ⚠️ 26/11 — LE CARRÉ NE CÈDE PLUS DE BANDE À LA MANETTE (Wah : « le joystick dans le TOTEHM comme sur mobile,
+       à droite ») : elle n'est plus centrée sous le carré, elle est posée en bas à DROITE, comme au téléphone, où elle
+       vit déjà sur le papier. Le carré reprend donc ses 640 px. */
+    --stage:min(92vh,78vw,640px);
+    /* 26/11 — le manche fait 64 px PARTOUT : sinon il débordait de sa case et touchait les flèches (mesuré). */
+    --joy-d:64px;
     /* ⚠️ ET SUR ORDINATEUR IL FAUT COMPTER LES TROUS · 22/09/2026.
        « Fais bien attention à son placement… pas sur les trous noirs
        par exemple. » Le carré porte trois perforations sur son bord
@@ -2637,12 +2637,16 @@ body.gate.entered #filter-badge{
      ⚠️ ET IL RESTE AU-DESSUS DU WORDMARK, jamais dessus : `--band-b`
      borne la bande basse, le wordmark y vit à 26 px, le contrôleur se
      pose à 20 px du bord et se centre — deux colonnes différentes. */
-  /* ⚠️ 18/10 · IL SORT DU CARRÉ (Wah : « sur version ordinateur tu peux sortir le joystick du totehm et
-     le mettre à la même place que sur la page d'atterrissage tout en bas centré dans la zone noire hors
-     des 3 couleurs »). Donc il s'ancre sur la FENÊTRE, pas sur `--stage` : une seule place pour une seule
+  /* ⚠️ 18/10 · IL SORT DU CARRÉ. Il s'ancre sur la FENÊTRE, pas sur `--stage` : une seule place pour une seule
      manette, dedans comme dehors — et plus rien à tenir d'accord avec les coins du carré.
-     25/10 : au même retrait que `#lvjoy` (`--lvj-b`), et `--stage` lui garde sa bande noire (voir plus haut). */
-  #joy{top:auto;bottom:var(--lvj-b);left:50%;right:auto;transform:translateX(-50%)}
+     25/10 : au même retrait que `#lvjoy` (`--lvj-b`), et `--stage` lui garde sa bande noire (voir plus haut).
+     ⚠️ 26/11 (Wah : « le joystick bleu navy dans le TOTEHM comme sur mobile, à droite ») : la MÊME place qu'au
+     téléphone — en bas à DROITE, sous le pouce, et non plus centré. */
+  /* ⚠️ ET IL FAUT COMPTER LES TROUS (22/09) : chaque bord porte trois perforations à 25 %, 50 % et 75 %, d'un rayon
+     de 6,19 % de la largeur du carré (13,86 / 224,08). La manette se cale donc à CE rayon + 12 px des deux bords :
+     dans le coin, dans le papier, et elle n'en couvre aucune (mesuré). */
+  #joy{top:auto;bottom:calc(50% - var(--stage) / 2 + var(--stage) * .0619 + 12px);left:auto;
+       right:calc(50% - var(--stage) / 2 + var(--stage) * .0619 + 12px);transform:none}
   /* LE TITRE VIT DANS LE TOTEHM SUR ORDINATEUR : en haut du carré, centré, juste SOUS le T (le T tient le centre du haut ;
      au-dessus, le titre tombait dans la bande des perforations — mesuré) — 27/10, Wah : « tout en haut centrée ». */
   #vnow,body.ro #vnow{top:calc(50% - var(--stage)/2 + 137px);bottom:auto;left:0;right:0}
@@ -3094,7 +3098,7 @@ body.lv-membre.lv-b #lv-slogan,body.lv-verrou.lv-b #lv-slogan{opacity:0}
    ⚠️ `position:absolute` (et non `fixed`) : les chevrons vivaient déjà ainsi dans `#gate`, et
    c'est ce qui garantit qu'ils disparaissent avec lui quand le Totehm se déplie. */
 #lvjoy{position:absolute;left:50%;bottom:var(--lvj-b);z-index:34;transform:translateX(-50%);
-  display:grid;grid-template-columns:26px 64px 26px;grid-template-rows:26px 64px 26px;gap:4px;
+  display:grid;grid-template-columns:26px 64px 26px;grid-template-rows:26px 64px 26px;gap:14px;
   align-items:center;justify-items:center;pointer-events:none}
 /* 20/10 septies — Wah : « pas besoin d'entourer les indicateurs de direction avec des boîtes grises » : les chevrons
    sont nus, gris, blancs au survol et quand le manche les vise. */
@@ -3819,6 +3823,7 @@ button.sd-tag.is-aud[disabled]{opacity:.6;cursor:progress}
   font:700 9.5px/1 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase}
 .ssp-acts button:focus-visible,.ssp-by:focus-visible{outline:1px solid #fff;outline-offset:2px}
 .ssp-acts button{white-space:nowrap}
+.ssp-acts button[data-del].is-sur,.ssp-acts button[data-tlv].is-sur{background:var(--rep);color:#fff}
 @media(max-width:420px){.ssp-acts{gap:5px}.ssp-acts button{padding:8px 9px;letter-spacing:.12em}}
 /* LE MÉDIA, TEL QU'IL EST : jamais recadré, le noir autour — la place exacte de celui de la vue de gauche. */
 .ssp-m{position:absolute;left:0;right:0;top:calc(max(10px,env(safe-area-inset-top)) + 46px);bottom:calc(max(14px,env(safe-area-inset-bottom)) + 24px);background:#000}
@@ -4014,14 +4019,14 @@ body.lv-d.rdr-voir #gate-asteroid,body.lv-d.rdr-voir #lvjoy,body.rdr-voir #rdr-f
 #cap-shot.is-rec{background:#e0453f}
 #cap-t{position:absolute;left:10px;top:10px;font:700 10px/1 'Space Mono',monospace;letter-spacing:.14em;color:#fff;background:rgba(0,0,0,.55);padding:4px 7px;border-radius:10px}
 #cap-t:empty{display:none}
-#cap-x{position:fixed;top:10px;right:10px}
+#cap-x,#prise-x{position:fixed;top:10px;right:10px;background:none;border:0;cursor:pointer;padding:10px;line-height:0;color:rgba(255,255,255,.6)}
+#cap-x svg,#prise-x svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round}
 /* LA PRISE RAPIDE (25/11) : un écran noir, UNE question, deux touches. Rien d'autre. */
 #prise{position:fixed;inset:0;z-index:245;background:rgba(0,0,0,.92);display:flex;flex-direction:column;
   align-items:center;justify-content:center;gap:26px}
 #prise[hidden]{display:none}
 #prise-q{margin:0;font:700 12px/1.6 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#fff}
-#prise-r{display:flex;gap:28px}
-#prise-x{position:fixed;top:10px;right:10px}
+#prise-r{display:flex;gap:8px;width:min(92vw,420px)}
 @media(hover:hover){.cap-b:hover,#cap-x:hover{color:#fff}}
 @media (prefers-reduced-motion: reduce){#cap,#cap-in,.lsh img,.lsh video,.tl-ph img,.tl-ph video,.ssp-m img,.ssp-m video,.tlv-m img,.tlv-m video,.tl-bx,.tl{transition:none!important}
   #lv-sh{scroll-behavior:auto}.tb-attente{animation:none}}
@@ -4406,7 +4411,6 @@ div:not(:has(> :not(br,wbr))):hover,
 .k2-f:hover,
 .k2-z:hover,
 .k2r .k2l:hover,
-.k2w:hover,
 .loupe:hover,
 .v-sub .copie.is-done:hover,
 .blk-lbl:hover,
@@ -4593,6 +4597,8 @@ div:not(:has(> :not(br,wbr))):hover,
 #rdr-pique:hover,
 .mf-x:hover,
 .cap-b:hover,
+#cap-x:hover,
+#prise-x:hover,
 .tw .tn-l:hover,
 .dc:hover,
 .dc-p:hover,
@@ -4876,7 +4882,7 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
         <div id="lv-tap" class="hide"><button id="lv-tap-open" type="button">Tap to open it</button><span class="lvt-sep"> · </span><button id="lv-tap-turn" type="button">Turn to configure it</button></div>
         <div id="lv-keys" class="lv-act" role="group" aria-label="Controller keys">
           <button type="button" id="lv-m-sel" class="k2r" data-hover-art aria-label="My TOTEHM"><i class="k2k" aria-hidden="true"></i><span class="k2l"><span class="lvm-lab">Mine</span><span class="lvm-who" id="lv-m-who"></span></span></button>
-          <button type="button" id="lv-tree-k" class="k2r is-mode lv-tree" data-hover-art aria-pressed="true" aria-label="Tree"><i class="k2k" aria-hidden="true"></i><span class="k2l">Tree</span></button>
+          <button type="button" id="lv-tree-k" class="k2r is-mode" data-hover-art aria-pressed="false" aria-label="Tree"><i class="k2k" aria-hidden="true"></i><span class="k2l">Tree</span></button>
           <button type="button" id="lv-great" class="k2r is-start" data-hover-art aria-label="Discover your greatness"><i class="k2k" aria-hidden="true"></i><span class="k2l">Greatness</span></button>
         </div>
         <p id="lv-m-say" role="status" aria-live="polite"></p>
@@ -5133,11 +5139,11 @@ You remember your way, and the street can read what is behind it.</p></div></div
   </div>
 </div>
   </div>
-  <button id="srch-x" data-hover-art class="srch-after k2 k2-x" type="button" aria-label="Close my settings">
+  <button id="srch-x" data-hover-art class="srch-after k2 k2-x is-navy" type="button" aria-label="Close my settings">
     <svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2 L12 12 M12 2 L2 12"/></svg>
   </button>
   <!-- 16/11 — PILE OU FACE (ordinateur) : le verso se retourne sur le recto déployé, au même format. -->
-  <button id="srch-flip" data-hover-art class="srch-after flip-btn k2 k2-f" type="button" aria-label="Turn it over · my TOTEHM" title="Turn it over">
+  <button id="srch-flip" data-hover-art class="srch-after flip-btn k2 k2-f is-navy" type="button" aria-label="Turn it over · my TOTEHM" title="Turn it over">
     <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 6.5a5 5 0 0 1 9.2-2.3M13 9.5a5 5 0 0 1-9.2 2.3"/><path d="M12.6 1.6v2.8H9.8M3.4 14.4v-2.8h2.8"/></svg>
   </button>
 </div>
@@ -5192,11 +5198,11 @@ You remember your way, and the street can read what is behind it.</p></div></div
 
 <!-- La croix : referme le Totehm et rejoue le déploiement à l'envers. -->
 
-<button id="fold-x" data-hover-art class="sink-el k2 k2-x" type="button" aria-label="Close my Totehm">
+<button id="fold-x" data-hover-art class="sink-el k2 k2-x is-navy" type="button" aria-label="Close my Totehm">
   <svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2 L12 12 M12 2 L2 12"/></svg>
 </button>
 <!-- 16/11 — PILE OU FACE (ordinateur) : le recto déployé se retourne sur le verso, au même format. -->
-<button id="fold-flip" data-hover-art class="sink-el flip-btn k2 k2-f" type="button" aria-label="Turn it over · my settings" title="Turn it over">
+<button id="fold-flip" data-hover-art class="sink-el flip-btn k2 k2-f is-navy" type="button" aria-label="Turn it over · my settings" title="Turn it over">
   <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 6.5a5 5 0 0 1 9.2-2.3M13 9.5a5 5 0 0 1-9.2 2.3"/><path d="M12.6 1.6v2.8H9.8M3.4 14.4v-2.8h2.8"/></svg>
 </button>
 
@@ -5270,9 +5276,9 @@ You remember your way, and the street can read what is behind it.</p></div></div
        sont donc à plat, chacune dans sa case. -->
   <button class="cur" id="cur-g" type="button">
     <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 L5 8 L10 13"/></svg></button>
-  <div id="joy-box" aria-hidden="true">
+  <div id="joy-box" class="k2j" aria-hidden="true"><span class="k2j-c"></span>
     <!-- 13/11 : le gros point de la couleur de la vue, et trois points verticaux dedans — objectifs · habitudes · répulsions. -->
-    <div id="joy-stack"><i class="o"></i><i class="h"></i><i class="r"></i></div>
+    <div id="joy-stack" class="k2j-p"><i class="o"></i><i class="h"></i><i class="r"></i></div>
   </div>
   <button class="cur" id="cur-d" type="button">
     <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3 L11 8 L6 13"/></svg></button>
@@ -7307,7 +7313,7 @@ function creerFeed(conf){
       +(!z.mine&&z.creator&&me?'<button type="button" data-pass="'+esc(String(z.id))+'">pass</button>':'')
       +(z.mine&&!RO?'<button type="button" data-passes="'+esc(String(z.id))+'">passes</button>':'')
       +(z.state==='will'?'<button type="button" data-ics="'+esc(String(z.id))+'">calendar</button>':'')
-      +(z.mine&&!RO?'<button type="button" class="k2w" data-del="'+esc(String(z.id))+'">delete</button>':'');
+      +(z.mine&&!RO?'<button type="button" data-del="'+esc(String(z.id))+'">delete</button>':'');
     const par=!z.mine&&z.creator?'<span class="ssp-par"><span>by</span><button type="button" class="ssp-by" data-who="'+esc(String(z.creator))+'">'+esc(String(z.creator))+'</button></span>':'';
     const box=x.id?'<div class="ssp-box" role="button" tabindex="0" data-lsh="habits|'+esc(x.id)+'">'+loupeVue(boxSpot(z))+'</div>'
                   :'<div class="ssp-box">'+loupeVue(boxSpot(z))+'</div>';
@@ -7675,7 +7681,7 @@ function creerFeed(conf){
        vit donc dans la MÊME rangée noire qu'un spot (`.ssp-row` + `.ssp-acts`), juste au-dessus de la box,
        et plus en bouton flottant dans un coin. Le niveau de la box se règle dans la box (16/11), pas ici. */
     if(b&&!b.firstChild) b.innerHTML=(retirable(x)
-        ?'<div class="ssp-row"><span></span><span class="ssp-acts"><button type="button" class="k2w" data-tlv="del">delete</button></span></div>':'')
+        ?'<div class="ssp-row"><span></span><span class="ssp-acts"><button type="button" data-tlv="del">delete</button></span></div>':'')
       +loupeVue(boxDe(x,false));
     const m=sec.querySelector('.tlv-m'); if(!m) return;
     let el=m.firstChild;
@@ -11929,12 +11935,12 @@ const navRight=()=>{ if(navBlocked())return; versVoisin('d'); };
   if(!jy||!bx||!st) return;          /* absent des jumeaux : on sort */
 
   /* 25/10 : le petit socle de l'atterrissage, donc ses mesures (`manetteLV`). */
-  const RAYON=10;                    /* jusqu'où le manche se laisse tirer */
+  const RAYON=15;                    /* 26/11 (Wah) : « on doit vraiment voir le déplacement du joystick » */
   const SEUIL=6;                     /* au-delà, on part                   */
   let id=null, x0=0, y0=0, dx=0, dy=0;
 
-  const pose=(a,b)=>{ st.style.setProperty('--mx',a.toFixed(1)+'px');
-                      st.style.setProperty('--my',b.toFixed(1)+'px'); };
+  const pose=(a,b)=>{ bx.style.setProperty('--mx',a.toFixed(1)+'px');
+                      bx.style.setProperty('--my',b.toFixed(1)+'px'); };
   /* ⚠️ `#joy` est repeint à chaque rendu par `jy.className='sink-el v-'+view` :
      on ne peut donc pas poser l'état du geste dans `className`. On
      ajoute et on retire, jamais on n'écrase. */
@@ -14824,7 +14830,7 @@ window.addEventListener('pageshow',e=>{
     (function manetteLV(){
       const jy=$('lvjoy'), bx=$('lvj-box'), st=$('lvj-stack');
       if(!jy||!bx||!st) return;
-      const RAYON=10, SEUIL=6;   /* 20/10 septies : le manche ne sort pas du petit socle */
+      const RAYON=15, SEUIL=6;   /* 26/11 (Wah) : le déplacement SE VOIT ; les flèches lui laissent la place */
       let id=null, x0=0, y0=0, dx=0, dy=0;
       const pose=(a,b)=>{ bx.style.setProperty('--mx',a.toFixed(1)+'px');
                           bx.style.setProperty('--my',b.toFixed(1)+'px'); };
@@ -15682,7 +15688,8 @@ window.addEventListener('pageshow',e=>{
       const mots=[$('lv-tree-k')].filter(Boolean);
       const dire=v=>{ body.classList.toggle('no-tree',!v);
         mots.forEach(b=>b.setAttribute('aria-pressed',String(!!v))); };
-      const lu=()=>{ try{ return localStorage.getItem('totehm_tree')!=='0'; }catch(_){ return true; } };
+      /* 26/11 (Wah) : « le tree ne doit pas être affiché par défaut » — éteint tant qu'on ne l'allume pas. */
+      const lu=()=>{ try{ return localStorage.getItem('totehm_tree')==='1'; }catch(_){ return false; } };
       dire(lu());
       mots.forEach(b=>b.onclick=()=>{ const v=!lu();
         try{ localStorage.setItem('totehm_tree',v?'1':'0'); }catch(_){}
@@ -16169,7 +16176,7 @@ window.addEventListener('pageshow',e=>{
     </div>
     <div class="lv-note" id="cap-note" role="status" aria-live="polite"></div>
   </div>
-  <button id="cap-x" type="button" data-hover-art class="k2 k2-x" aria-label="Close"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2 L12 12 M12 2 L2 12"/></svg></button>
+  <button id="cap-x" type="button" aria-label="Close"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2 L12 12 M12 2 L2 12"/></svg></button>
   <input id="cap-f-photo" type="file" accept="image/*" capture="environment" hidden>
   <input id="cap-f-video" type="file" accept="video/*" capture="environment" hidden>
   <input id="cap-f-file" type="file" accept="image/jpeg,image/png,image/webp,video/mp4,video/webm,video/quicktime,application/pdf,audio/mpeg,audio/mp4,audio/webm,audio/ogg,text/plain" hidden>
@@ -16182,10 +16189,10 @@ window.addEventListener('pageshow',e=>{
 <div id="prise" role="dialog" aria-modal="true" aria-label="A spot or an illustration" hidden>
   <p id="prise-q">What is it?</p>
   <div id="prise-r">
-    <button type="button" class="k2r" data-pr="spot" data-hover-art><i class="k2k" aria-hidden="true"></i><span class="k2l">A spot</span></button>
-    <button type="button" class="k2r" data-pr="ill" data-hover-art><i class="k2k" aria-hidden="true"></i><span class="k2l">An illustration</span></button>
+    <button type="button" class="cap-b" data-pr="spot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 21s7-6.3 7-11a7 7 0 1 0-14 0c0 4.7 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>A SPOT</button>
+    <button type="button" class="cap-b" data-pr="ill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 5h16v14H4z"/><path d="M4 16l5-5 4 4 3-3 4 4"/></svg>AN ILLUSTRATION</button>
   </div>
-  <button type="button" id="prise-x" data-pr="x" data-hover-art class="k2 k2-x" aria-label="Close"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M3 3 L11 11 M11 3 L3 11"/></svg></button>
+  <button type="button" id="prise-x" data-pr="x" aria-label="Close"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M3 3 L11 11 M11 3 L3 11"/></svg></button>
 </div>
 <!-- 12/10 : SPACE et le Club, servis par totehm.com, posés par-dessus le Totehm (`XO`). -->
 <!-- 29/10 — VX : les visionneuses ← et → viennent ici, au-dessus du TOTEHM déployé ([Visualize it], une mini-box spot). -->
@@ -16584,6 +16591,34 @@ window.TOTEHM_MOT = (() => {
   return api;
 })();
 /* ══ fin LE MOT TOTEHM ══ */
+</script>
+<script>
+/* ══ L'APPUI D'UNE TOUCHE — copié de tools/ps2.js dans chaque page (jamais importé) ══
+   Wah (26/11) : « sur version mobile ET ordinateur, on doit vraiment sentir que c'est des boutons quand on appuie
+   dessus. » Le `:active` d'un navigateur de téléphone n'est pas fiable : il n'arrive pas tant que le doigt n'a pas
+   été jugé immobile, et il disparaît au moindre glissement. On pose donc l'état NOUS-MÊMES, au `pointerdown`, et on
+   le retire dès que le doigt part (`pointerup`, `pointercancel`, sortie). Le dessin de l'enfoncement vit dans
+   `tools/ps2.css` (`.is-press`) ; ici, rien que le moment où il s'applique. Passif : aucun geste n'est avalé. */
+(function(){
+  var SEL='.k2,.k2r';
+  var tenue=null;
+  function poser(e){
+    var t=e.target&&e.target.closest?e.target.closest(SEL):null;
+    if(!t||t.hasAttribute('disabled')) return;
+    lacher(); tenue=t; t.classList.add('is-press');
+  }
+  function lacher(){ if(tenue){ tenue.classList.remove('is-press'); tenue=null; } }
+  document.addEventListener('pointerdown',poser,{passive:true,capture:true});
+  for(var i=0,n=['pointerup','pointercancel','pointerleave','dragstart','blur'];i<n.length;i++)
+    document.addEventListener(n[i],lacher,{passive:true,capture:true});
+  /* un glissement qui sort de la touche la relâche, comme un vrai bouton */
+  document.addEventListener('pointermove',function(e){
+    if(!tenue) return;
+    var t=e.target&&e.target.closest?e.target.closest(SEL):null;
+    if(t!==tenue) lacher();
+  },{passive:true,capture:true});
+})();
+/* ══ fin ps2.js ══ */
 </script>
 </body>
 </html>

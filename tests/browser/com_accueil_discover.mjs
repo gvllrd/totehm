@@ -142,8 +142,9 @@ try{
   const b2=await pg.evaluate(()=>({off:document.body.classList.contains('no-tree'),aff:getComputedStyle(document.getElementById('lv-ram')).display,
     garde:localStorage.getItem('totehm_tree')}));
   await pg.click('#lv-tree-k'); await pg.waitForTimeout(400);
-  ok(a.vue&&!a.off&&a.aff!=='none'&&b2.off&&b2.aff==='none'&&b2.garde==='0',
-     'TREE MODE : sur ordinateur, la touche MODE éteint l\'arbre, et le choix est gardé → '+JSON.stringify({a,b:b2}));
+  /* 26/11 (Wah) : « le tree ne doit pas être affiché par défaut » — il part ÉTEINT, la touche MODE l'allume. */
+  ok(a.vue&&a.off&&a.aff==='none'&&!b2.off&&b2.aff!=='none'&&b2.garde==='1',
+     'TREE MODE : l\'arbre part éteint ; sur ordinateur, la touche MODE l\'allume, et le choix est gardé → '+JSON.stringify({a,b:b2}));
   await ctx.close();}
 
  /* ── 2 · MEMBRE : ↑ ouvre le récit (ce n'est plus une vue), et les portes deviennent SES fonctionnalités ── */

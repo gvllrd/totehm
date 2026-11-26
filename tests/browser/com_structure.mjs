@@ -56,6 +56,8 @@ const reseau=pg=>pg.evaluate(()=>{const r=document.getElementById('lv-ram'),cs=g
 try{
  for(const [nom,vp] of [['ordinateur',{width:1280,height:800}],['téléphone',{width:390,height:844}]]){
   const{pg,log}=await page(browser,{dir:'com',origin,tables,rpc,viewport:vp,hasTouch:nom==='téléphone'});
+  /* 26/11 : l'arbre part ÉTEINT (Wah) — ce test MESURE son dessin, il l'allume donc. */
+  await pg.addInitScript(()=>{ try{ localStorage.setItem('totehm_tree','1'); }catch(_){} });
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1500);
   /* ── 1 · le TOTEHM est le boîtier ── */
   const b=await branche(pg);
@@ -83,11 +85,11 @@ try{
      nom+' · le tronc FERMÉ : sept rails parallèles (48 px) sous le papier, qui ne font que s’élargir jusqu’à la manette (56 px), puis les racines se séparent → '+JSON.stringify(b.tronc));
   /* 25/11 (Wah) : « le joystick très simple, rond uniforme … plus gros et imposant … minimalisme » : UN capuchon, nu
      (les trois points de la marque vivent dans le TOTEHM déployé, où ils disent la vue), et pas de boîte carrée. */
-  /* 25/11 (Wah) : « rond uniforme … minimalisme … pas d'ombres blanches dessus et pas de noir autour » :
-     UN disque, UNE couleur — aucun dégradé, aucune ombre, aucun cerclage. */
-  ok(b.manche.n===1&&b.manche.pointsAbs===0&&b.manche.boite==='rgba(0, 0, 0, 0)'&&b.manche.manche==='none'
-     &&b.manche.fond!=='rgba(0, 0, 0, 0)'&&b.manche.puits==='none'&&b.manche.ombre==='none'&&b.manche.d>=60,
-     nom+' · le manche : UN disque, UNE couleur ('+b.manche.fond+', '+Math.round(b.manche.d)+' px), sans dégradé, sans ombre, sans cerclage → '+JSON.stringify(b.manche));
+  /* 26/11 (Wah) : le DÔME de la manette, le blanc réduit, et RIEN autour — ni cerclage (`::before`), ni ombre
+     PORTÉE (le relief ne se lit que par des ombres INTÉRIEURES). */
+  ok(b.manche.n===1&&b.manche.pointsAbs===0&&b.manche.boite==='rgba(0, 0, 0, 0)'&&/radial-gradient/.test(b.manche.manche)
+     &&b.manche.puits==='none'&&b.manche.ombre!=='none'&&!b.manche.ombre.split(/\),/).some(s=>!/inset/.test(s))&&b.manche.d>=60,
+     nom+' · le manche : le dôme de la manette ('+Math.round(b.manche.d)+' px), sans cerclage ni ombre portée → '+JSON.stringify(b.manche));
   ok(b.coeur==='coeur',nom+' · 26/10 · au repos, le cœur (le TOTEHM) bat → '+b.coeur);
   const r0=await reseau(pg);
   /* 10/11 — au téléphone, l'arbre est INVISIBLE (`#lv-ram` en `visibility:hidden`) : ses impulsions ne tournent plus, elles

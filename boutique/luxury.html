@@ -660,22 +660,29 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
    une touche. » La manette est l'objet de référence de toute l'interface : on navigue au MANCHE (BRAND.md), on ferme
    et on zoome à la TOUCHE. Une seule nomenclature, ici ; on la change ICI puis `python3 tools/recopier.py`.
      `.k2`    une touche RONDE (close, zoom, retournement) — gris-noir bombé, une arête claire en haut, une ombre
-              courte ; enfoncée elle descend de 2 px et l'ombre disparaît. Le GLYPHE porte la couleur, jamais le fond.
+              courte. Le GLYPHE porte la couleur, jamais le fond.
      `.k2-x`  la croix, rouge-violet `#743169`   ·   `.k2-z` la loupe, blanche   ·   `.k2-f` le retournement, navy
-     `.k2.is-s` la même touche en PLUS PETIT (dans une box : « bel et bien présente »)
+     `.k2.is-s` la même touche en PLUS PETIT   ·   `.is-navy` en NAVY (le TOTEHM déployé)
      `.k2r`   une touche et son intitulé DESSOUS, en Space Mono : SELECT et MODE sont des RECTANGLES à ANGLES
               DROITS (Wah : « le Mine c'est un rectangle sans arrondis »), START est un TRIANGLE (« le play, c'est
               un triangle ») — la touche EST la forme, rien n'est imprimé dessus.
-     `.k2j`   LE MANCHE : rond, uniforme, bombé, SANS cerclage noir et SANS reflet blanc (Wah).
-   60 / 30 / 10 : la touche est noire, le glyphe seul est coloré. */
+     `.k2j`   LE MANCHE : le dôme de la manette, le blanc RÉDUIT, et AUCUN noir autour (ni cerclage, ni puits, ni
+              ombre portée). Dans le TOTEHM déployé il prend la couleur de la vue et porte les trois points.
+   **LA PORTÉE** (Wah, 26/11) : « les boutons PS2, c'est pour le FRONT des 5 vues ; après, quand on rentre dans les
+   détails, ils s'enlèvent. » Donc : l'atterrissage, le TOTEHM déployé et ce qui ferme une VUE portent la touche ;
+   un panneau de détail (la prise rapide, le questionnaire d'un spot, un filtre, une box) garde ses boutons à lui.
+   **ON SENT L'APPUI**, au doigt comme à la souris : `tools/ps2.js` pose `is-press` au `pointerdown` (le `:active`
+   d'un navigateur de téléphone n'est pas fiable), la touche s'enfonce et son ombre disparaît.
+   60 / 30 / 10 : la touche est noire (ou navy), le glyphe seul est coloré. */
 .k2{display:inline-flex;align-items:center;justify-content:center;flex:none;
   width:var(--k2-d,34px);height:var(--k2-d,34px);padding:0;border:0;border-radius:50%;cursor:pointer;
   background:radial-gradient(circle at 50% 32%,#34343b 0 36%,#1d1d22 64%,#121216 100%);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.16),inset 0 -2px 3px rgba(0,0,0,.8),0 2px 0 #08080a,0 4px 7px rgba(0,0,0,.55);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.09),inset 0 -2px 3px rgba(0,0,0,.8),0 2px 0 #08080a,0 4px 7px rgba(0,0,0,.55);
   color:#d8d8e0;-webkit-tap-highlight-color:transparent;transition:transform .12s ease,box-shadow .12s ease,filter .2s ease}
 .k2>svg{width:calc(var(--k2-d,34px) * .44);height:calc(var(--k2-d,34px) * .44);display:block;fill:none;
   stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.k2:active,.k2.is-press{transform:translateY(2px);box-shadow:inset 0 1px 0 rgba(255,255,255,.1),inset 0 -1px 2px rgba(0,0,0,.8),0 1px 3px rgba(0,0,0,.5)}
+.k2:active,.k2.is-press{transform:translateY(3px) scale(.96);
+  box-shadow:inset 0 2px 4px rgba(0,0,0,.9),inset 0 -1px 0 rgba(255,255,255,.06),0 0 0 rgba(0,0,0,0);filter:brightness(.82)}
 .k2:focus-visible{outline:1px solid #fff;outline-offset:3px}
 .k2[disabled]{opacity:.45;cursor:default}
 .k2.is-s{--k2-d:22px}
@@ -683,41 +690,56 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
 .k2-x{color:#743169}
 .k2-f{color:#333366}
 .k2-z{color:#d8d8e0}
+/* NAVY — dans le TOTEHM déployé (Wah, 26/11). Le corps prend le navy de la marque ; la croix reste rouge-violet,
+   et le retournement passe au BLANC (navy sur navy ne se verrait pas). */
+.k2.is-navy{background:radial-gradient(circle at 50% 32%,#3a3a6e 0 36%,#262650 64%,#15152e 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.09),inset 0 -2px 3px rgba(0,0,0,.55),0 2px 0 #15152e,0 4px 7px rgba(0,0,0,.5)}
+.k2.is-navy:active,.k2.is-navy.is-press{box-shadow:inset 0 2px 4px rgba(0,0,0,.7),inset 0 -1px 0 rgba(255,255,255,.06),0 0 0 rgba(0,0,0,0)}
+.k2.is-navy.k2-f{color:#fff}
 @media(hover:hover){.k2:hover{filter:brightness(1.25)}}
 /* L'INTITULÉ SOUS LA TOUCHE — comme sur la manette : le mot est imprimé SOUS le bouton, petit, espacé, gris. */
 .k2r{display:inline-flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:5px;background:none;border:0;padding:0;cursor:pointer;
   -webkit-tap-highlight-color:transparent}
-.k2r .k2k{position:relative;display:block;width:var(--k2r-w,40px);height:var(--k2r-h,14px);
-  background:linear-gradient(#3a3a42 0 38%,#1d1d22 72%,#121216 100%);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.16),inset 0 -2px 3px rgba(0,0,0,.8),0 2px 0 #08080a,0 4px 7px rgba(0,0,0,.55);
+.k2r .k2k{position:relative;display:block;width:var(--k2r-w,28px);height:var(--k2r-h,18px);
+  background:linear-gradient(#34343c 0 38%,#1d1d22 72%,#121216 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.09),inset 0 -2px 3px rgba(0,0,0,.8),0 2px 0 #08080a,0 4px 7px rgba(0,0,0,.55);
   transition:transform .12s ease,box-shadow .12s ease,filter .2s ease}
 .k2r .k2l{font:400 9px/1 'Space Mono',monospace;letter-spacing:.18em;text-transform:uppercase;color:#8a8a92;
   white-space:nowrap;transition:color .2s ease}
-.k2r:active .k2k{transform:translateY(2px);box-shadow:inset 0 1px 0 rgba(255,255,255,.1),inset 0 -1px 2px rgba(0,0,0,.8),0 1px 3px rgba(0,0,0,.5)}
+.k2r:active .k2k,.k2r.is-press .k2k{transform:translateY(3px) scaleY(.82);
+  box-shadow:inset 0 2px 4px rgba(0,0,0,.9),inset 0 -1px 0 rgba(255,255,255,.06),0 0 0 rgba(0,0,0,0);filter:brightness(.82)}
+.k2r.is-press .k2l{color:#fff}
 .k2r:focus-visible{outline:none}
 .k2r:focus-visible .k2k{outline:1px solid #fff;outline-offset:3px}
-.k2r[aria-pressed="false"] .k2l{opacity:.5;text-decoration:line-through;text-decoration-thickness:1px}
+.k2r[aria-pressed="false"] .k2l{opacity:.5}
 .k2r.is-off{opacity:.55}
+.k2r.is-navy .k2k{background:linear-gradient(#3a3a6e 0 38%,#262650 72%,#15152e 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.09),inset 0 -2px 3px rgba(0,0,0,.55),0 2px 0 #15152e,0 4px 7px rgba(0,0,0,.5)}
 @media(hover:hover){.k2r:hover .k2k{filter:brightness(1.25)}.k2r:hover .k2l{color:#fff}}
 /* START EST un triangle (le play de la manette) : la même matière, taillée — donc une ombre PORTÉE, qui suit la
    découpe, au lieu d'une ombre de boîte qui dessinerait un rectangle autour. MODE garde sa diode. */
-.k2r.is-start .k2k{--k2r-w:18px;--k2r-h:16px;clip-path:polygon(0 0,100% 50%,0 100%);box-shadow:none;
+.k2r.is-start .k2k{--k2r-w:24px;--k2r-h:22px;clip-path:polygon(0 0,100% 50%,0 100%);box-shadow:none;
   background:linear-gradient(#3a3a42 0 30%,#1d1d22 72%,#121216 100%);
   filter:drop-shadow(0 2px 0 #08080a) drop-shadow(0 3px 5px rgba(0,0,0,.55))}
-.k2r.is-start:active .k2k{filter:drop-shadow(0 1px 2px rgba(0,0,0,.5))}
+.k2r.is-start:active .k2k,.k2r.is-start.is-press .k2k{transform:translateY(3px) scale(.92);
+  box-shadow:none;filter:brightness(.78) drop-shadow(0 1px 2px rgba(0,0,0,.5))}
 .k2r.is-mode .k2k::after{content:"";position:absolute;left:50%;top:50%;width:4px;height:4px;margin:-2px 0 0 -2px;border-radius:50%;
   background:rgba(255,255,255,.18);transition:background .2s ease,box-shadow .2s ease}
 .k2r.is-mode[aria-pressed="true"] .k2k::after{background:#fff;box-shadow:0 0 5px rgba(255,255,255,.75)}
-/* ══ LE MANCHE · rond, uniforme, imposant ══ Wah (25/11) : « je veux le joystick très simple, rond uniforme très
-   inspiré par le joystick de la manette PS2, plus gros et imposant que celui actuellement et plus simple.
-   Minimalisme. » UN SEUL DISQUE, D'UNE SEULE COULEUR (Wah : « pas d'ombres blanches dessus et pas de noir autour ») :
-   ni reflet, ni éclairci au centre, ni bord assombri, ni ombre portée, ni cerclage, ni socle carré. Sa couleur vient
-   de `--k2j-c`. C'est tout. */
+/* ══ LE MANCHE · le dôme de la manette ══ Wah (25/11) : « je veux le joystick très simple, rond uniforme très inspiré
+   par le joystick de la manette PS2, plus gros et imposant que celui actuellement et plus simple. Minimalisme. »
+   26/11 : « en réduisant un peu le blanc si possible mais en tentant de garder au maximum les éléments de la manette
+   PS2 » · « pas de noir autour du joystick ». Donc : le dôme, dont le haut capte la lumière et le bas rentre dans
+   l'ombre — et RIEN autour : ni cerclage, ni puits, ni ombre portée, ni socle carré. Sa couleur vient de `--k2j-c`
+   (la vue, dans le TOTEHM déployé, où il porte aussi les trois points de la marque). Tenu, il s'enfonce. */
 .k2j{position:relative;width:var(--k2j-d,64px);height:var(--k2j-d,64px);flex:none;touch-action:none;cursor:grab;
   -webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
 .k2j:active{cursor:grabbing}
-.k2j .k2j-c{position:absolute;inset:0;border-radius:50%;background:var(--k2j-c,#2e2e36);
+.k2j .k2j-c{position:absolute;inset:0;border-radius:50%;
+  background:radial-gradient(circle at 50% 30%,color-mix(in srgb,var(--k2j-c,#2e2e36) 93%,#fff) 0 8%,var(--k2j-c,#2e2e36) 54%,color-mix(in srgb,var(--k2j-c,#2e2e36) 72%,#000) 100%);
+  box-shadow:inset 0 -3px 6px rgba(0,0,0,.45),inset 0 2px 3px rgba(255,255,255,.04);
   transform:translate(var(--mx,0px),var(--my,0px));transition:transform .26s cubic-bezier(.22,.9,.3,1),background-color .42s ease}
+.k2j.tenu .k2j-c,.k2j:active .k2j-c{box-shadow:inset 0 -2px 4px rgba(0,0,0,.6),inset 0 3px 5px rgba(0,0,0,.4)}
 .k2j.tenu .k2j-c{transition:none}
 /* LES TROIS POINTS VERTICAUX DE LA MARQUE, dans le capuchon (bleu · navy · rouge-violet) : la racine de l'arbre. */
 .k2j .k2j-p{position:absolute;inset:0;pointer-events:none;
@@ -730,21 +752,6 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
 .k2j .k2j-p i.is-current{opacity:0;transform:scale(.4)}
 .k2j.is-side .k2j-p{opacity:0}
 @media(prefers-reduced-motion:reduce){.k2,.k2r .k2k,.k2j .k2j-c,.k2j .k2j-p,.k2j .k2j-p i{transition:none}}
-/* UN MOT QUI EFFACE (delete, cut off) : la même matière, en rectangle, avec la croix rouge-violet IMPRIMÉE à gauche.
-   La croix est une image de fond : réécrire le texte du bouton (la confirmation en deux gestes) ne l'efface jamais. */
-.k2w{display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:9px;cursor:pointer;
-  padding:7px 11px 7px 26px;color:#c8c8d0;font:700 10px/1 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;
-  background:radial-gradient(ellipse at 50% 24%,#34343b 0 38%,#1d1d22 72%,#121216 100%) no-repeat,
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Cpath d='M3 3 L11 11 M11 3 L3 11' stroke='%23743169' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E") 9px 50%/11px 11px no-repeat;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.16),inset 0 -2px 3px rgba(0,0,0,.8),0 2px 0 #08080a,0 4px 7px rgba(0,0,0,.55);
-  -webkit-tap-highlight-color:transparent;transition:transform .12s ease,box-shadow .12s ease,filter .2s ease}
-.k2w:active{transform:translateY(2px);box-shadow:inset 0 1px 0 rgba(255,255,255,.1),inset 0 -1px 2px rgba(0,0,0,.8),0 1px 3px rgba(0,0,0,.5)}
-.k2w:focus-visible{outline:1px solid #fff;outline-offset:3px}
-.k2w[disabled]{opacity:.5;cursor:default}
-.k2w.is-wide{width:100%}
-.k2w.is-sur{color:#fff;background:#743169 no-repeat,
-  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Cpath d='M3 3 L11 11 M11 3 L3 11' stroke='%23fff' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E") 9px 50%/11px 11px no-repeat}
-@media(hover:hover){.k2w:not([disabled]):hover{filter:brightness(1.25)}}
 /* ══ fin ps2 ══ */
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Tout texte devient blanc sous la souris. Les dessins, surfaces
@@ -813,8 +820,7 @@ div:not(:has(> :not(br,wbr))):hover,
 .k2-x:hover,
 .k2-f:hover,
 .k2-z:hover,
-.k2r .k2l:hover,
-.k2w:hover):where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *)){color:#fff!important}
+.k2r .k2l:hover):where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *)){color:#fff!important}
 .field:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::placeholder{color:#fff!important}
 #nm-input:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::placeholder{color:#fff!important}
 }
@@ -2695,6 +2701,34 @@ window.TOTEHM_MOT = (() => {
   return api;
 })();
 /* ══ fin LE MOT TOTEHM ══ */
+</script>
+<script>
+/* ══ L'APPUI D'UNE TOUCHE — copié de tools/ps2.js dans chaque page (jamais importé) ══
+   Wah (26/11) : « sur version mobile ET ordinateur, on doit vraiment sentir que c'est des boutons quand on appuie
+   dessus. » Le `:active` d'un navigateur de téléphone n'est pas fiable : il n'arrive pas tant que le doigt n'a pas
+   été jugé immobile, et il disparaît au moindre glissement. On pose donc l'état NOUS-MÊMES, au `pointerdown`, et on
+   le retire dès que le doigt part (`pointerup`, `pointercancel`, sortie). Le dessin de l'enfoncement vit dans
+   `tools/ps2.css` (`.is-press`) ; ici, rien que le moment où il s'applique. Passif : aucun geste n'est avalé. */
+(function(){
+  var SEL='.k2,.k2r';
+  var tenue=null;
+  function poser(e){
+    var t=e.target&&e.target.closest?e.target.closest(SEL):null;
+    if(!t||t.hasAttribute('disabled')) return;
+    lacher(); tenue=t; t.classList.add('is-press');
+  }
+  function lacher(){ if(tenue){ tenue.classList.remove('is-press'); tenue=null; } }
+  document.addEventListener('pointerdown',poser,{passive:true,capture:true});
+  for(var i=0,n=['pointerup','pointercancel','pointerleave','dragstart','blur'];i<n.length;i++)
+    document.addEventListener(n[i],lacher,{passive:true,capture:true});
+  /* un glissement qui sort de la touche la relâche, comme un vrai bouton */
+  document.addEventListener('pointermove',function(e){
+    if(!tenue) return;
+    var t=e.target&&e.target.closest?e.target.closest(SEL):null;
+    if(t!==tenue) lacher();
+  },{passive:true,capture:true});
+})();
+/* ══ fin ps2.js ══ */
 </script>
 </body>
 </html>
