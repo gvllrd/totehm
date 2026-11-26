@@ -3197,7 +3197,8 @@ body.gate:not(.member):not(.ses-attente){--lv-y:32dvh}
 #lv-add-spot{grid-area:2 / 3}
 #lv-tap-open{grid-area:3 / 2}
 body.ses-attente:not(.member) #lv-actions,body.paysage #lv-tap-open{display:none}
-:is(#lv-add-spot,#lv-add-illustration) .lv-action-icon{stroke-width:1}
+#lv-add-spot .lv-action-icon{stroke-width:1}
+#lv-add-illustration .lv-action-icon{stroke-width:1.6}
 @media(prefers-reduced-motion:no-preference){
   body.gate.lv-c:not(.entered,.is-door,.is-dc,.searching) #lv-actions{animation:lv-intentions 42s ease-in-out infinite}
 }
@@ -4781,7 +4782,10 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
             <svg class="lv-action-icon" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="5.5"/><circle cx="8" cy="8" r="2.6"/></svg>
           </button>
           <button type="button" id="lv-add-illustration" class="k2" aria-label="Add an illustration" title="Add an illustration">
-            <svg class="lv-action-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 2H4.2a.8.8 0 0 0 1.6 0h1.4a.8.8 0 0 0 1.6 0h1.4a.8.8 0 0 0 1.6 0H14V4.2a.8.8 0 0 0 0 1.6v1.4a.8.8 0 0 0 0 1.6v1.4a.8.8 0 0 0 0 1.6V14H11.8a.8.8 0 0 0-1.6 0H8.8a.8.8 0 0 0-1.6 0H5.8a.8.8 0 0 0-1.6 0H2V11.8a.8.8 0 0 0 0-1.6V8.8a.8.8 0 0 0 0-1.6V5.8a.8.8 0 0 0 0-1.6Z"/></svg>
+            <svg class="lv-action-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 2H3.8a1.2 1.2 0 0 0 2.4 0H6.8a1.2 1.2 0 0 0 2.4 0H9.8a1.2 1.2 0 0 0 2.4 0H14
+              V3.8a1.2 1.2 0 0 0 0 2.4V6.8a1.2 1.2 0 0 0 0 2.4V9.8a1.2 1.2 0 0 0 0 2.4V14
+              H12.2a1.2 1.2 0 0 0-2.4 0H9.2a1.2 1.2 0 0 0-2.4 0H6.2a1.2 1.2 0 0 0-2.4 0H2
+              V12.2a1.2 1.2 0 0 0 0-2.4V9.2a1.2 1.2 0 0 0 0-2.4V6.2a1.2 1.2 0 0 0 0-2.4Z"/></svg>
           </button>
         </div>
         <div id="lv-keys" class="lv-act" role="group" aria-label="Controller keys">
