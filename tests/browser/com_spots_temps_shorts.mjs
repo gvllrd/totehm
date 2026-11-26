@@ -34,7 +34,7 @@ try{
   /* ── plusieurs temps ── */
   const tuiles=()=>pg.evaluate(()=>[...document.querySelectorAll('#rdr-g .tl[data-cle]')].map(t=>t.dataset.cle.slice(3)).join(','));
   ok(await tuiles()==='n1,k1',nom+' · à l\'arrivée : now');
-  await pg.click('#rdr-flt [data-f="sf"]');await pg.waitForTimeout(500);
+  await pg.getByRole('button',{name:'Refine',exact:true}).click();await pg.waitForTimeout(500);
   await pg.click('#rdr-sf [data-sf="per"][data-v="future"]');await pg.waitForTimeout(700);
   await pg.click('#rdr-sf [data-sf="per"][data-v="past"]');await pg.waitForTimeout(700);
   const t=await pg.evaluate(()=>({on:[...document.querySelectorAll('#rdr-sf [data-sf="per"]')].filter(b=>b.classList.contains('is-on')).map(b=>b.dataset.v),
