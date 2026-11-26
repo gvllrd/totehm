@@ -3191,11 +3191,12 @@ body.gate:not(.member):not(.ses-attente){--lv-y:32dvh}
 /* Les quatre actions reprennent l'appui des touches PS2. */
 #lv-actions{display:flex;align-items:center;justify-content:center;gap:10px;padding:4px 12px;background:#000;border-radius:10px;--k2-d:36px}
 body.ses-attente:not(.member) #lv-actions,body.paysage #lv-tap-open{display:none}
-#lv-actions .k2r{width:var(--k2-d);height:var(--k2-d);justify-content:center}
-#lv-search .k2k{background:var(--love)}
-#lv-add-spot{background:radial-gradient(circle at 50% 32%,rgba(255,255,255,.17),rgba(0,0,0,.24) 85%) var(--spot-fight)}
+#lv-actions .lv-action-icon{width:calc(var(--k2-d) * .44);height:calc(var(--k2-d) * .44)}
+#lv-search .lv-action-icon{background:var(--love);clip-path:polygon(10% 3%,96% 50%,10% 97%)}
+#lv-search.is-off .lv-action-icon{opacity:.55}
+#lv-add-spot .lv-action-icon{border-radius:50%;background:var(--spot-fight)}
 @media(prefers-reduced-motion:no-preference){
-  body.lv-c:not(.is-door):not(.is-dc):not(.searching) #lv-add-spot{animation:spot-intentions 9.8s linear infinite}
+  body.lv-c:not(.is-door):not(.is-dc):not(.searching) #lv-add-spot .lv-action-icon{animation:spot-intentions 9.8s linear infinite}
 }
 @keyframes spot-intentions{
   0%,100%{background-color:var(--spot-fight)}
@@ -3206,10 +3207,8 @@ body.ses-attente:not(.member) #lv-actions,body.paysage #lv-tap-open{display:none
   71.429%{background-color:var(--spot-focus)}
   85.714%{background-color:var(--spot-celebrate)}
 }
-#lv-add-illustration .k2k{--k2r-w:30px;--k2r-h:30px;background:var(--blue);
+#lv-add-illustration .lv-action-icon{background:var(--blue);
   -webkit-mask:var(--perfo) center/100% 100% no-repeat;mask:var(--perfo) center/100% 100% no-repeat}
-#lv-add-illustration:focus-visible{outline:1px solid #fff;outline-offset:3px}
-#lv-add-illustration:focus-visible .k2k{outline:none}
 
 #lv-keys{display:flex;gap:20px;align-items:flex-end;justify-content:center;
   background:#000;border-radius:10px;padding:6px 14px 4px}   /* les touches coupent les racines, comme la légende */
@@ -4769,12 +4768,14 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
           <button type="button" id="lv-tap-open" class="k2" aria-label="Open my TOTEHM" title="Open my TOTEHM">
             <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M8 3v10"/></svg>
           </button>
-          <button type="button" id="lv-search" class="k2r is-start" aria-label="Search a TOTEHM" title="Search a TOTEHM">
-            <i class="k2k" aria-hidden="true"></i>
+          <button type="button" id="lv-search" class="k2" aria-label="Search a TOTEHM" title="Search a TOTEHM">
+            <span class="lv-action-icon" aria-hidden="true"></span>
           </button>
-          <button type="button" id="lv-add-spot" class="k2" aria-label="Add a spot" title="Add a spot"></button>
-          <button type="button" id="lv-add-illustration" class="k2r" aria-label="Add an illustration" title="Add an illustration">
-            <i class="k2k" aria-hidden="true"></i>
+          <button type="button" id="lv-add-spot" class="k2" aria-label="Add a spot" title="Add a spot">
+            <span class="lv-action-icon" aria-hidden="true"></span>
+          </button>
+          <button type="button" id="lv-add-illustration" class="k2" aria-label="Add an illustration" title="Add an illustration">
+            <span class="lv-action-icon" aria-hidden="true"></span>
           </button>
         </div>
         <div id="lv-keys" class="lv-act" role="group" aria-label="Controller keys">
