@@ -28,8 +28,9 @@ try{
   await pg.goto('https://www.totehm.com/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(900);
   await pg.click('#lvn-rt');await pg.waitForTimeout(1500);
   /* 25/11 (Wah) : « pas besoin du mode SHORT dans la vue de droite, et mettre le même bouton format SELECT PS2 ». */
-  const modes=await pg.evaluate(()=>[...document.querySelectorAll('#rdr-mode button')].map(b=>b.querySelector('.k2l').textContent.trim()));
-  ok(modes.join('|')==='Grid',nom+' · UNE touche SELECT, Map ⇄ Grid (plus de Shorts) → '+modes.join(' · '));
+  const mode=await pg.locator('#lv-tree-k .k2l').textContent();
+  ok(mode==='Map'&&await pg.getByRole('button',{name:'Map',exact:true}).isVisible(),
+     nom+' · la touche Grid propose Map quand la grille est affichée');
   /* ── plusieurs temps ── */
   const tuiles=()=>pg.evaluate(()=>[...document.querySelectorAll('#rdr-g .tl[data-cle]')].map(t=>t.dataset.cle.slice(3)).join(','));
   ok(await tuiles()==='n1,k1',nom+' · à l\'arrivée : now');
