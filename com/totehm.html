@@ -3192,20 +3192,20 @@ body.gate:not(.member):not(.ses-attente){--lv-y:32dvh}
 #lv-actions{display:flex;align-items:center;justify-content:center;gap:10px;padding:4px 12px;background:#000;border-radius:10px;--k2-d:36px}
 body.ses-attente:not(.member) #lv-actions,body.paysage #lv-tap-open{display:none}
 #lv-actions .lv-action-icon{width:calc(var(--k2-d) * .44);height:calc(var(--k2-d) * .44)}
-#lv-search .lv-action-icon{background:var(--love);clip-path:polygon(10% 3%,96% 50%,10% 97%)}
+#lv-search .lv-action-icon{color:var(--love)}
 #lv-search.is-off .lv-action-icon{opacity:.55}
-#lv-add-spot .lv-action-icon{border-radius:50%;background:var(--spot-fight)}
+#lv-add-spot .lv-action-icon{color:var(--spot-fight)}
 @media(prefers-reduced-motion:no-preference){
   body.lv-c:not(.is-door):not(.is-dc):not(.searching) #lv-add-spot .lv-action-icon{animation:spot-intentions 9.8s linear infinite}
 }
 @keyframes spot-intentions{
-  0%,100%{background-color:var(--spot-fight)}
-  14.285%{background-color:var(--spot-flow)}
-  28.571%{background-color:var(--spot-enrich)}
-  42.857%{background-color:var(--spot-love)}
-  57.143%{background-color:var(--spot-express)}
-  71.429%{background-color:var(--spot-focus)}
-  85.714%{background-color:var(--spot-celebrate)}
+  0%,100%{color:var(--spot-fight)}
+  14.285%{color:var(--spot-flow)}
+  28.571%{color:var(--spot-enrich)}
+  42.857%{color:var(--spot-love)}
+  57.143%{color:var(--spot-express)}
+  71.429%{color:var(--spot-focus)}
+  85.714%{color:var(--spot-celebrate)}
 }
 #lv-add-illustration .lv-action-icon{background:var(--blue);
   -webkit-mask:var(--perfo) center/100% 100% no-repeat;mask:var(--perfo) center/100% 100% no-repeat}
@@ -4769,10 +4769,10 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
             <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M8 3v10"/></svg>
           </button>
           <button type="button" id="lv-search" class="k2" aria-label="Search a TOTEHM" title="Search a TOTEHM">
-            <span class="lv-action-icon" aria-hidden="true"></span>
+            <svg class="lv-action-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.536 2L14.928 8L4.536 14Z"/></svg>
           </button>
           <button type="button" id="lv-add-spot" class="k2" aria-label="Add a spot" title="Add a spot">
-            <span class="lv-action-icon" aria-hidden="true"></span>
+            <svg class="lv-action-icon" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="5.5"/></svg>
           </button>
           <button type="button" id="lv-add-illustration" class="k2" aria-label="Add an illustration" title="Add an illustration">
             <span class="lv-action-icon" aria-hidden="true"></span>
