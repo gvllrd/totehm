@@ -136,3 +136,96 @@ export function createOriginStardust(scene,{mobile,time,passage}){
   dispose(){dust.removeFromParent();geometry.dispose();material.dispose();}
  };
 }
+
+export function createOriginDeepStars(parent,{mobile,time,core,east,normal}){
+ const count=mobile?96000:224000;
+ const positions=new Float32Array(count*3),appearance=new Uint8Array(count*4);
+ const radius=1238,rotation=Math.PI*(3-Math.sqrt(5));
+ const spread=2.25/Math.sqrt(count*.50);
+ let seed=0x44454550;
+ const random=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};
+ const deepCentres=[
+  [-.35,.50,-.79],[.52,.22,-.83],[-.69,-.23,-.69],[.31,-.79,-.53],
+  [.82,.55,.15],[.76,-.48,.43],[-.47,.81,.36],[.05,.92,-.38],
+  [-.87,.14,.48],[-.41,-.83,.39],[.21,.41,.88],[.18,-.41,.89],
+  [-.69,.68,-.23],[.81,.02,-.58],[-.62,-.59,.50],[.06,-.08,1]
+ ].map(vector=>{
+  const centre=new T.Vector3(...vector).normalize();
+  const tangent=new T.Vector3().crossVectors(normal,centre).normalize();
+  const elevation=new T.Vector3().crossVectors(centre,tangent).normalize();
+  const scale=.095+.15*random(),angle=random()*Math.PI;
+  return{centre,tangent,elevation,scale,sine:Math.sin(angle),cosine:Math.cos(angle)};
+ });
+ const v=new T.Vector3(),backgroundCount=Math.floor(count*.50),beltEnd=Math.floor(count*.78);
+ for(let i=0;i<count;i++){
+  if(i<backgroundCount){
+   // Equal-area coverage with jitter on both axes. Even the empty sides of
+   // the galactic plane are peppered with the most distant stars.
+   const dy=1-2*(i+random())/backgroundCount,r=Math.sqrt(Math.max(0,1-dy*dy));
+   const phi=i*rotation+(random()-.5)*spread/Math.max(r,.05);
+   v.set(Math.cos(phi)*r,dy,Math.sin(phi)*r);
+  }else if(i<beltEnd){
+   const phase=random()*Math.PI*2,fold=.037*Math.sin(phase*3.)-.021*Math.cos(phase*5.1);
+   const latitude=fold+(random()+random()+random()-1.5)*(.145+.11*Math.sin(phase+.6)**2);
+   v.copy(core).multiplyScalar(Math.cos(phase)*Math.cos(latitude)).addScaledVector(east,Math.sin(phase)*Math.cos(latitude)).addScaledVector(normal,Math.sin(latitude));
+  }else{
+   const {centre,tangent,elevation,scale,sine,cosine}=deepCentres[i%deepCentres.length];
+   const phase=random()*Math.PI*2,gap=Math.sqrt(-Math.log(Math.max(.001,random())))*scale;
+   const x=Math.cos(phase)*gap,y=Math.sin(phase)*gap*.61;
+   v.copy(centre).addScaledVector(tangent,x*cosine-y*sine).addScaledVector(elevation,x*sine+y*cosine).normalize();
+  }
+  const pos=i*3;
+  positions[pos]=v.x*radius;positions[pos+1]=v.y*radius;positions[pos+2]=v.z*radius;
+  const magnitude=random(),fine=Math.pow(magnitude,4);
+  const strength=i<backgroundCount?.30:i<beltEnd?.51:.64;
+  const colour=i*4;
+  appearance[colour]=Math.floor(random()*255);
+  appearance[colour+1]=Math.round(255*fine);
+  appearance[colour+2]=Math.round(255*strength);
+  appearance[colour+3]=Math.floor(random()*255);
+ }
+ const geometry=new T.BufferGeometry();
+ geometry.setAttribute('position',new T.BufferAttribute(positions,3));
+ geometry.setAttribute('aStar',new T.BufferAttribute(appearance,4,true));
+ const pixelRatio={value:1};
+ const material=new T.ShaderMaterial({
+  uniforms:{uTime:time,uPixelRatio:pixelRatio},
+  transparent:true,depthWrite:false,depthTest:true,blending:T.AdditiveBlending,toneMapped:false,fog:false,
+  vertexShader:`
+   attribute vec4 aStar;
+   uniform float uTime,uPixelRatio;
+   varying vec3 vTint;
+   varying float vFlux;
+   void main(){
+    vec3 blue=vec3(.26,.43,1.),white=vec3(.88,.95,1.),amber=vec3(1.,.64,.33);
+    vTint=mix(blue,white,smoothstep(.10,.56,aStar.x));
+    vTint=mix(vTint,amber,smoothstep(.61,.99,aStar.x));
+    // Remote stars scintillate independently. The foreground dust layers
+    // supply the moving parallax while these keep an immense fixed backdrop.
+    float glimmer=.96+.04*sin(aStar.w*6.2831853+uTime*(.20+.13*aStar.x));
+    vFlux=(.044+aStar.y*.27+aStar.z*.113)*glimmer;
+    gl_PointSize=max(1.25,(1.19+aStar.y*.89)*uPixelRatio);
+    gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);
+   }`,
+  fragmentShader:`
+   varying vec3 vTint;
+   varying float vFlux;
+   void main(){
+    vec2 point=gl_PointCoord-.5;
+    float radius=dot(point,point);
+    if(radius>.25)discard;
+    float core=exp(-radius*10.4)*(1.-smoothstep(.11,.25,radius));
+    gl_FragColor=vec4(vTint,core*vFlux);
+    #include <colorspace_fragment>
+   }`
+ });
+ const stars=new T.Points(geometry,material);
+ stars.name='Origins · deep stellar field';
+ stars.renderOrder=-1140;stars.frustumCulled=false;
+ stars.onBeforeRender=renderer=>{pixelRatio.value=Math.min(renderer.getPixelRatio(),1.5);};
+ parent.add(stars);
+ return{
+  count,clusters:deepCentres.length,
+  dispose(){stars.removeFromParent();geometry.dispose();material.dispose();}
+ };
+}

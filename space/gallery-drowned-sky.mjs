@@ -1,5 +1,5 @@
 import * as T from './vendor/three-0.180.0.mjs';
-import {createOriginStardust,ORIGIN_SKY_FRAGMENT,ORIGIN_STAR_MOTION,ORIGIN_DEFORMATION_RATE} from './gallery-origin-sky.mjs';
+import {createOriginDeepStars,createOriginStardust,ORIGIN_SKY_FRAGMENT,ORIGIN_STAR_MOTION,ORIGIN_DEFORMATION_RATE} from './gallery-origin-sky.mjs';
 
 export const SKY_ASTROPHOTOGRAPH=Object.freeze({
  src:'/assets/gallery/sky/eso-milky-way-2048.jpg',
@@ -240,7 +240,8 @@ export function createDrownedSky(scene,{mobile=false,profile='earth',arrival=fal
     vec3 lowFrequency=textureLod(uPhotograph,plateUV,max(2.05,log2(max(1.,footprint))+1.35)).rgb;
     vec3 ink=mix(fallback,nightPigment(signal,lowFrequency,galactic,uTime),uPhotographBlend);
     #ifdef ORIGIN_SKY
-    ink=originLight(ink,d,galactic,uTime);
+    // Retain the unresolved stellar haze within the photographic dust lanes.
+    ink=originLight(ink*1.16,d,galactic,uTime);
     #endif
     gl_FragColor=vec4(ink,1.);
     #include <colorspace_fragment>
@@ -401,6 +402,7 @@ export function createDrownedSky(scene,{mobile=false,profile='earth',arrival=fal
  const haloMaterial=material(new T.MeshBasicMaterial({map:haloTexture,transparent:true,depthWrite:false,depthTest:true,blending:T.AdditiveBlending,toneMapped:false,fog:false}));
  const halo=new T.Mesh(geometry(new T.PlaneGeometry(moonSize*6.4,moonSize*6.4)),haloMaterial);halo.position.copy(moon.position);halo.quaternion.copy(moon.quaternion);halo.renderOrder=-1080;halo.name='A restrained moon halo';halo.frustumCulled=false;root.add(halo);
 
+ const deepStars=origin?createOriginDeepStars(root,{mobile,time:timeUniform,core,east:tangent,normal}):null;
  const stardust=origin?createOriginStardust(scene,{mobile,time:timeUniform,passage}):null;
  onChange();
  return{
@@ -430,7 +432,7 @@ export function createDrownedSky(scene,{mobile=false,profile='earth',arrival=fal
    night:true,skyLoaded:true,textureReady:true,catalogue:'totehm-celestial-sphere',fullSphere:true,
    textureSize:[width,height],milkyWay:true,galacticClouds:'local contrast in photographed star clouds and dark interstellar dust lanes',
    skyMotion:{paintedShear:origin,driftingDust:origin,colourScintillation:origin,stellarScintillation:true},
-   dimension:origin?{refraction:true,auroras:true,dustLayers:stardust.depths,parallax:true,pairedVeils:true,passage:+passage.value.toFixed(3)}:null,
+   dimension:origin?{refraction:true,auroras:true,dustLayers:stardust.depths,parallax:true,pairedVeils:true,deepField:{stars:deepStars.count,concentrations:deepStars.clusters,fullSphere:true},passage:+passage.value.toFixed(3)}:null,
    skyGrade:'astrophotographic-night',skyPalette:'black-cobalt-violet-turquoise-gold',
    galacticPlate:{ready:plateReady,failed:plateFailed,blend:plateBlend.value,projection:'full-sphere-astrophotography',
     direction:core.toArray(),normal:normal.toArray(),size:[...SKY_ASTROPHOTOGRAPH.dimensions]},
@@ -442,6 +444,6 @@ export function createDrownedSky(scene,{mobile=false,profile='earth',arrival=fal
    lunarPhotograph:{...LUNAR_SURFACE,ready:lunarReady,failed:lunarFailed,blend:lunarBlend.value},
    comet:false,shootingStars:0,meteor:false,meteorRibbon:false,meteorTriangles:0,externalFiles:0,disposed
   }),
-  dispose(){if(disposed)return;disposed=true;stardust?.dispose();credit?.remove();for(const t of textures)t.dispose();for(const m of materials)m.dispose();for(const g of geometries)g.dispose();canvas.width=canvas.height=moonCanvas.width=moonCanvas.height=haloCanvas.width=haloCanvas.height=1;root.removeFromParent();root.clear();}
+  dispose(){if(disposed)return;disposed=true;deepStars?.dispose();stardust?.dispose();credit?.remove();for(const t of textures)t.dispose();for(const m of materials)m.dispose();for(const g of geometries)g.dispose();canvas.width=canvas.height=moonCanvas.width=moonCanvas.height=haloCanvas.width=haloCanvas.height=1;root.removeFromParent();root.clear();}
  };
 }
