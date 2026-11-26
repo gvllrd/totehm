@@ -3204,10 +3204,10 @@ body.gate:not(.member):not(.ses-attente){--lv-y:32dvh}
 body:is(.lv-c,.lv-g,.lv-d):not(.is-door) #lv-c-acts{visibility:visible}
 #lv-c-acts button{pointer-events:auto}
 #lv-actions{display:grid;grid-template:repeat(3,36px) / repeat(3,50px);place-items:center;
-  padding:7px 8px 19px;background:#000;border-radius:10px}
+  padding:7px 8px;background:#000;border-radius:10px}
 #lv-actions .k2{position:relative}
 #lv-actions .k2>svg{width:50%;height:50%;stroke-linecap:butt;stroke-linejoin:miter;overflow:visible}
-.lv-key-label{position:absolute;top:calc(100% + 5px);left:50%;translate:-50% 0;
+#lv-refine-label{display:none;position:absolute;top:calc(100% + 5px);left:50%;translate:-50% 0;
   pointer-events:none;padding:2px 4px;background:#000;border-radius:4px;
   font:400 9px/1 'Space Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:#b8b8c2;white-space:nowrap}
 #lv-search path{transform-box:fill-box;transform-origin:center;transition:transform .64s var(--gate-ease)}
@@ -3224,12 +3224,11 @@ body:is(.lv-g,.lv-d) #lv-tap-open{
 body:is(.lv-g,.lv-d):not(.lv-add-visible) #lv-tap-open{visibility:hidden}
 body:is(.lv-g,.lv-d) #lv-search{left:calc(50% + 82px);top:calc(max(10px,env(safe-area-inset-top)) + 9px)}
 body:is(.lv-g,.lv-d) #lv-search path{transform:rotate(180deg)}
+body:is(.lv-g,.lv-d) #lv-refine-label{display:block}
 body:is(.lv-g,.lv-d) #lv-tree-k{left:50%;bottom:calc(var(--lvj-h,64px) + 26px)}
 body:is(.lv-g,.lv-d) #lv-tree-k .lv-tree-icon{opacity:0}
 body.lv-g #lv-tree-k .lv-grid-icon,body.lv-d:not(.rdr-grid) #lv-tree-k .lv-grid-icon,
 body.lv-d.rdr-grid #lv-tree-k .lv-map-icon{opacity:1}
-body:is(.lv-g,.lv-d) #lv-m-say{position:fixed;top:calc(max(10px,env(safe-area-inset-top)) + 62px);
-  right:max(8px,calc(50% - 210px));width:min(185px,33vw);background:#000;border-radius:4px}
 body.lv-g:has(:is(#lv-sh-pick,#lv-sh-sf,#tlv):not([hidden])) #lv-c-acts,
 body.lv-d:is(.rdr-voir,.rdr-pique,.is-nspot) #lv-c-acts,
 body.lv-d:has(:is(#rdr-pick,#rdr-sf,#rdr-new):not([hidden])) #lv-c-acts{visibility:hidden}
@@ -3793,9 +3792,6 @@ body.lv-g #lv-socket,body.lv-d #lv-socket{opacity:0}
   display:flex;align-items:center;justify-content:center}
 .lsh-tp span{font:700 14px/1 'Space Mono',monospace;color:#fff;letter-spacing:0}
 .lsh-tp.is-on{box-shadow:0 0 0 2px rgba(255,255,255,.8)}
-/* ⚠️ LE BOUTON N'EST PAS LE PANNEAU : deux objets, deux classes. `.lsh-sf` (le panneau) prenait
-   `inset:0` au bouton — mesuré, il faisait 390 px de large et passait SOUS le papier. */
-.lsh-fb{flex:none}
 /* LE PANNEAU : plein écran, ancré EN HAUT (le clavier mobile mange le bas), champ noir. */
 .lsh-sf{position:absolute;inset:0;z-index:8;background:rgba(0,0,0,.94);
   display:flex;flex-direction:column;align-items:center;gap:9px;
@@ -4797,22 +4793,19 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
       <div id="lv-actions" class="hide" role="group" aria-label="TOTEHM actions">
         <button type="button" id="lv-tap-open" class="k2" aria-label="Open my TOTEHM" title="Open my TOTEHM">
           <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M8 3v10"/></svg>
-          <span class="lv-key-label" aria-hidden="true">Open</span>
         </button>
         <button type="button" id="lv-search" class="k2" aria-label="Search a TOTEHM" title="Search a TOTEHM">
           <svg class="lv-action-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.072L14 11.464H2Z"/></svg>
-          <span class="lv-key-label" aria-hidden="true">Search</span>
+          <span id="lv-refine-label" aria-hidden="true">Refine</span>
         </button>
         <button type="button" id="lv-add-spot" class="k2" aria-label="Add a spot" title="Add a spot">
           <svg class="lv-action-icon" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="5.5"/><circle cx="8" cy="8" r="2.6"/></svg>
-          <span class="lv-key-label" aria-hidden="true">Add spot</span>
         </button>
         <button type="button" id="lv-add-illustration" class="k2" aria-label="Add an illustration" title="Add an illustration">
           <svg class="lv-action-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 2H3.65a1.35 1.35 0 0 0 2.7 0H6.65a1.35 1.35 0 0 0 2.7 0H9.65a1.35 1.35 0 0 0 2.7 0H14
             V3.65a1.35 1.35 0 0 0 0 2.7V6.65a1.35 1.35 0 0 0 0 2.7V9.65a1.35 1.35 0 0 0 0 2.7V14
             H12.35a1.35 1.35 0 0 0-2.7 0H9.35a1.35 1.35 0 0 0-2.7 0H6.35a1.35 1.35 0 0 0-2.7 0H2
             V12.35a1.35 1.35 0 0 0 0-2.7V9.35a1.35 1.35 0 0 0 0-2.7V6.35a1.35 1.35 0 0 0 0-2.7Z"/></svg>
-          <span class="lv-key-label" aria-hidden="true">Add media</span>
         </button>
       </div>
       <div id="lv-keys" class="lv-act" role="group" aria-label="Controller keys">
@@ -4858,8 +4851,6 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
          et son texte — et un tap l'ouvre DANS le Totehm, sur sa vue. Zéro appel de plus. -->
     <section class="lv-pane" id="lv-g" aria-label="My shorts">
       <div id="lv-sh" class="lv-act"><div id="lv-sh-f"></div></div>
-      <!-- 19/10 — les filtres vivent HORS du conteneur qui défile : ils ne partent pas avec le feed. -->
-      <div id="lv-sh-flt" class="lsh-flt lv-act" role="group" aria-label="Refine my media"></div>
       <!-- Le choix de l'élément auquel un média neuf s'attribue. Ancré EN HAUT (le clavier mange le bas). -->
       <div id="lv-sh-pick" class="lsh-pick lv-act" role="dialog" aria-label="Choose an element" hidden></div>
       <!-- 19/10 ter — le panneau de TOUS les filtres, comme sur SPACE. -->
@@ -7318,22 +7309,15 @@ function creerFeed(conf){
       else jouer(el,false); }); },{root:s,threshold:[0,.6]});
     b.querySelectorAll('.lsh').forEach(el=>io.observe(el));
   }
-  /* LA RANGÉE DE FILTRES : un mot quand il en faut un, des POINTS pour les sept intentions. */
-  /* LA BARRE : le papier, le nom de la Box choisie, [Filter · N], et à gauche le « + ».
-     ⚠️ 19/10 — ON AJOUTE UN MÉDIA DEPUIS LA VUE DE GAUCHE (Wah : « ou qu'il souhaite ajouter
-     directement dans la vue de gauche EN LUI ATTRIBUANT un élément de son Totehm »). Un média
-     n'existe jamais sans son élément : le « + » demande donc l'élément AVANT la caméra. */
   function peindreFlt(){
+    const triangle=$('lv-search');
+    if(triangle.getAttribute('aria-controls')===conf.panneau){
+      const n=sfCount();
+      $('lv-refine-label').textContent=n?'Refine · '+n:'Refine';
+      triangle.setAttribute('aria-expanded',String(sfOuvert()));
+    }
     const r=rail(); if(!r) return;
-    const n=sfCount();
-    let h=conf.avant?conf.avant():'';
-    /* Le papier n'est plus une copie dans la barre : c'est LE Totehm, docké au-dessus. 27/10 (Wah : « je veux seulement la
-       box telle quelle, surtout pas un rappel en Quantico coral ») : la box choisie vit en tête des résultats, rien dans la barre. */
-    h+='<button type="button" class="lsh-fb'+(n?' is-on':'')+'" data-f="sf" aria-haspopup="dialog"'
-      +' aria-expanded="'+(sfOuvert()?'true':'false')+'">'+(n?'Refine · '+n:'Refine')+'</button>';
-    if(conf.ajout) h+='<button type="button" class="fp" data-f="plus" data-v="1" aria-label="Add a media to visualize it">+</button>';
-    /* ⚠️ On ne réécrit la barre QUE si elle change : un `innerHTML` à chaque passage du feed
-       remplacerait le bouton sous le doigt — mesuré, il n'était plus jamais « stable ». */
+    const h=conf.avant?conf.avant():'';
     if(r.dataset.h===h) return;
     r.dataset.h=h; r.innerHTML=h;
   }
@@ -8038,8 +8022,8 @@ function creerFeed(conf){
                    box:SF.box?SF.box.txt:'', on:[...SF.on], n:sfCount()}),
           etat:()=>Object.assign({},etat)};
 }
-const SH =creerFeed({sc:'lv-sh',  bx:'lv-sh-f',  say:'lv-sh-say', rail:'lv-sh-flt', src:'media', vide:'no media yet',
-                     ajout:false, pick:'lv-sh-pick', panneau:'lv-sh-sf', grille:true});
+const SH =creerFeed({sc:'lv-sh',  bx:'lv-sh-f',  say:'lv-sh-say', src:'media', vide:'no media yet',
+                     pick:'lv-sh-pick', panneau:'lv-sh-sf', grille:true});
 const SHS=creerFeed({sc:'rdr-sh', bx:'rdr-sh-f', say:'rdr-say',   rail:'rdr-flt',   src:'spots', vide:'no spot yet',
                      avant:()=>CLUBSP.perChip(), pick:'rdr-pick', panneau:'rdr-sf', boxes:'habits'});
 window.__totehm_sh=()=>Object.assign({},SH.etat(),{capture:CAP.etat(), places:BADGE.etat()});
@@ -14528,9 +14512,7 @@ window.addEventListener('pageshow',e=>{
       $('lv-m-sel').classList.toggle('hide',mode!=='members');
       $('lv-b').setAttribute('aria-label',mode==='members'?'Member offer':'Higher my ChatGPT');
       $('lv-m-who').textContent=MB.nom||MB.verrou||'';
-      const recherche=$('lv-search');
-      const pret=inscrit()&&CLUB.member;
-      recherche.title=pret?'Search a TOTEHM':!inscrit()?'Open your TOTEHM first':HORS_CLUB;
+      peindreTriangle();
       if(CLUB.member&&$('lv-m-say').textContent===HORS_CLUB) direMembers('');
       { const f=$('fold-flip'); if(f) f.setAttribute('aria-label',mode==='members'?'Turn it over · their subscription':'Turn it over · my settings'); }
     }
@@ -14655,7 +14637,6 @@ window.addEventListener('pageshow',e=>{
          répulsion vient peut-être d'arriver) — le tap suivant ouvrira la recherche. */
       if(!CLUB.member){ refus('members:hors-club'); direMembers(HORS_CLUB); lireClub(true); return false; }
       direMembers('');
-      if(vue==='g'||vue==='d'){ aller('c',()=>chercherIci(nom,o)); return true; }
       diag.modes++;
       if(!ouvrirVerso({cherche:true, nom:nom||'', retour:!!(o&&o.retour)})) return false;
       if(!nom) try{ $('mb-q').focus({preventScroll:true}); }catch(_){}
@@ -14679,7 +14660,12 @@ window.addEventListener('pageshow',e=>{
     /* Un tap pendant un mouvement (un repli, une course) n'est jamais perdu : il attend la fin, 2 s au plus. */
     const quandLibre=(f,n=0)=>{ if(occupe()&&n<12) return void setTimeout(()=>quandLibre(f,n+1),180); f(); };
     $('lv-m-sel').onclick=()=>quandLibre(()=>choisirMode('mine'));
-    $('lv-search').onclick=()=>quandLibre(()=>{ if(libre()&&['c','g','d'].includes(vue)) chercherIci(); });
+    $('lv-search').onclick=()=>quandLibre(()=>{
+      if(!libre()) return;
+      if(vue==='c') chercherIci();
+      else if(vue==='g') SH.box();
+      else if(vue==='d') SPOTS.box();
+    });
     /* `?ro=nom` (un lien, un retour de Stripe) : on arrive DANS l'écosystème du membre, déjà lu par `loadRO`. */
     lvMembreBoot=nom=>{ if(!nom) return; roEnPlace=true; entrerChez(nom); RAM.oublie(); RAM.peindre(vue); };
     /* 18/11 — `?members[=<nom>]` (un ancien lien `/search`, le retour de Stripe) : le verso en recherche, une fois la session lue. */
@@ -15628,8 +15614,8 @@ window.addEventListener('pageshow',e=>{
                    n:el.querySelectorAll('.dc-s').length, porte:cta.dataset.va||''})};
     })();
     window.__totehm_discover=()=>DISC.etat();
-    const plusAccueil=$('lv-tap-open'), toucheTree=$('lv-tree-k');
-    const touchesMobiles=[plusAccueil,$('lv-search'),toucheTree];
+    const plusAccueil=$('lv-tap-open'), toucheTriangle=$('lv-search'), toucheTree=$('lv-tree-k');
+    const touchesMobiles=[plusAccueil,toucheTriangle,toucheTree];
     const cote=v=>v==='g'||v==='d';
     const grilleMedia=$('lv-sh'), grilleSpots=$('rdr-g');
     const treeActif=()=>{ try{ return localStorage.getItem('totehm_tree')==='1'; }catch(_){ return !body.classList.contains('no-tree'); } };
@@ -15648,14 +15634,27 @@ window.addEventListener('pageshow',e=>{
       plusAccueil.style.setProperty('--lv-add-x',place.left-pane.left+place.width/2+'px');
       plusAccueil.style.setProperty('--lv-add-y',y+'px');
     }
+    function peindreTriangle(){
+      if(cote(vue)){
+        toucheTriangle.title='Refine';
+        toucheTriangle.setAttribute('aria-label','Refine');
+        toucheTriangle.setAttribute('aria-haspopup','dialog');
+        toucheTriangle.setAttribute('aria-controls',vue==='g'?'lv-sh-sf':'rdr-sf');
+        (vue==='g'?SH:SHS).flts();
+        return;
+      }
+      toucheTriangle.title=inscrit()?(CLUB.member?'Search a TOTEHM':HORS_CLUB):'Open your TOTEHM first';
+      toucheTriangle.setAttribute('aria-label','Search a TOTEHM');
+      for(const attr of ['aria-haspopup','aria-controls','aria-expanded']) toucheTriangle.removeAttribute(attr);
+    }
     function peindreTouches(){
+      peindreTriangle();
       const lateral=cote(vue), carte=vue==='d'&&SPOTMODE.get()!=='map';
       const nom=lateral?(carte?'Map':'Grid'):'Tree';
       toucheTree.querySelector('.k2l').textContent=nom;
       toucheTree.setAttribute('aria-label',nom);
       if(lateral) toucheTree.removeAttribute('aria-pressed');
       else toucheTree.setAttribute('aria-pressed',String(!body.classList.contains('no-tree')));
-      plusAccueil.querySelector('.lv-key-label').textContent=vue==='g'?'Add media':vue==='d'?'Add spot':'Open';
       plusAccueil.title=vue==='g'?'Add a media':vue==='d'?'Add a spot':
         MB.verrou?'Subscribe to open it':mode==='members'?'Open this TOTEHM':'Open my TOTEHM';
       plusAccueil.setAttribute('aria-label',plusAccueil.title);
