@@ -33,7 +33,10 @@ export const ORIGIN_SKY_FRAGMENT=`
     vec3 cobalt=vec3(.032,.074,.51),violet=vec3(.35,.027,.59),turquoise=vec3(.011,.55,.56);
     float hue=smoothstep(.21,.82,.52+.23*sin(wave*1.5)+.16*fold);
     vec3 cloth=mix(cobalt,violet,hue);
+    float rose=smoothstep(.39,.89,.52+.29*sin(wave*.82-.65)+.16*pleat);
+    cloth=mix(cloth,vec3(.47,.043,.31),rose*.68);
     vec3 lip=mix(turquoise,vec3(.17,.16,.66),hue);
+    lip=mix(lip,vec3(.58,.11,.35),rose*.63);
     float shell=gaussianVeil(fall+.023,.087*breadth)*(.040+.050*transmission);
     float rim=gaussianVeil(fall-.024,.014*breadth)*(.043+.24*transmission);
     float seam=gaussianVeil(fall-.042-.009*pleat,.007*breadth)*transmission*granularity*.11;
@@ -53,7 +56,8 @@ export const ORIGIN_SKY_FRAGMENT=`
     vec3 farLight=prismaticVeil(side,high-.22,farGate,drift*-.72+12.,.65)*.64;
     float reflected=galactic.y+.24+sin(galactic.x*7.+drift*.22)*.095;
     float filaments=gaussianVeil(reflected,.041)*smoothstep(.04,.82,.48+.38*sin(galactic.z*13.+time*.33));
-    vec3 ember=mix(vec3(.033,.09,.34),vec3(.58,.26,.016),smoothstep(.05,.82,galactic.x));
+    vec3 ember=mix(vec3(.023,.18,.35),vec3(.65,.32,.027),smoothstep(.05,.82,galactic.x));
+    ember=mix(ember,vec3(.47,.057,.29),.57*smoothstep(.15,.74,-galactic.z));
     float breathing=.94+.06*sin(time*.47+altitude*3.7);
     return ink*breathing+(nearLight+farLight)*(1.+uPassage*.41)+ember*filaments*.047;
    }`;
@@ -138,7 +142,7 @@ export function createOriginStardust(scene,{mobile,time,passage}){
 }
 
 export function createOriginDeepStars(parent,{mobile,time,core,east,normal}){
- const count=mobile?96000:224000;
+ const count=mobile?144000:384000;
  const positions=new Float32Array(count*3),appearance=new Uint8Array(count*4);
  const radius=1238,rotation=Math.PI*(3-Math.sqrt(5));
  const spread=2.25/Math.sqrt(count*.50);
@@ -156,8 +160,15 @@ export function createOriginDeepStars(parent,{mobile,time,core,east,normal}){
   const scale=.095+.15*random(),angle=random()*Math.PI;
   return{centre,tangent,elevation,scale,sine:Math.sin(angle),cosine:Math.cos(angle)};
  });
- const v=new T.Vector3(),backgroundCount=Math.floor(count*.50),beltEnd=Math.floor(count*.78);
+ // Linear-light stellar colours plus the coloured light of nearby dust.
+ const palette=[
+  [.84,.92,1.], [.30,.54,1.], [.13,.80,.94], [.43,.92,.78], [.52,.24,1.],
+  [1.,.31,.61], [1.,.39,.27], [1.,.76,.43]
+ ];
+ const clusterHues=[4,2,7,1,5,3,1,4,2,6,4,7,5,3,1,6];
+ const v=new T.Vector3(),backgroundCount=Math.floor(count*.49),beltEnd=Math.floor(count*.77);
  for(let i=0;i<count;i++){
+  let regionHue=0,regionTint=.14;
   if(i<backgroundCount){
    // Equal-area coverage with jitter on both axes. Even the empty sides of
    // the galactic plane are peppered with the most distant stars.
@@ -167,9 +178,14 @@ export function createOriginDeepStars(parent,{mobile,time,core,east,normal}){
   }else if(i<beltEnd){
    const phase=random()*Math.PI*2,fold=.037*Math.sin(phase*3.)-.021*Math.cos(phase*5.1);
    const latitude=fold+(random()+random()+random()-1.5)*(.145+.11*Math.sin(phase+.6)**2);
+   const sector=Math.sin(phase*1.7+.6)+.35*Math.cos(phase*5.1);
+   regionHue=sector>.72?2:sector<-.64?7:latitude>fold?4:1;
+   regionTint=.46;
    v.copy(core).multiplyScalar(Math.cos(phase)*Math.cos(latitude)).addScaledVector(east,Math.sin(phase)*Math.cos(latitude)).addScaledVector(normal,Math.sin(latitude));
   }else{
-   const {centre,tangent,elevation,scale,sine,cosine}=deepCentres[i%deepCentres.length];
+   const field=i%deepCentres.length;
+   const {centre,tangent,elevation,scale,sine,cosine}=deepCentres[field];
+   regionHue=clusterHues[field];regionTint=.66;
    const phase=random()*Math.PI*2,gap=Math.sqrt(-Math.log(Math.max(.001,random())))*scale;
    const x=Math.cos(phase)*gap,y=Math.sin(phase)*gap*.61;
    v.copy(centre).addScaledVector(tangent,x*cosine-y*sine).addScaledVector(elevation,x*sine+y*cosine).normalize();
@@ -178,11 +194,13 @@ export function createOriginDeepStars(parent,{mobile,time,core,east,normal}){
   positions[pos]=v.x*radius;positions[pos+1]=v.y*radius;positions[pos+2]=v.z*radius;
   const magnitude=random(),fine=Math.pow(magnitude,4);
   const strength=i<backgroundCount?.30:i<beltEnd?.51:.64;
+  const temperature=random();
+  const stellar=palette[temperature<.42?0:temperature<.69?1:temperature<.86?7:temperature<.94?6:temperature<.975?4:5];
+  const region=palette[regionHue];
+  const tint=regionTint*(.75+.25*random())*(1.-fine*.34);
   const colour=i*4;
-  appearance[colour]=Math.floor(random()*255);
-  appearance[colour+1]=Math.round(255*fine);
-  appearance[colour+2]=Math.round(255*strength);
-  appearance[colour+3]=Math.floor(random()*255);
+  for(let channel=0;channel<3;channel++)appearance[colour+channel]=Math.round(255*(stellar[channel]+(region[channel]-stellar[channel])*tint));
+  appearance[colour+3]=Math.round(255*(.039+fine*.245+strength*.10));
  }
  const geometry=new T.BufferGeometry();
  geometry.setAttribute('position',new T.BufferAttribute(positions,3));
@@ -197,14 +215,14 @@ export function createOriginDeepStars(parent,{mobile,time,core,east,normal}){
    varying vec3 vTint;
    varying float vFlux;
    void main(){
-    vec3 blue=vec3(.26,.43,1.),white=vec3(.88,.95,1.),amber=vec3(1.,.64,.33);
-    vTint=mix(blue,white,smoothstep(.10,.56,aStar.x));
-    vTint=mix(vTint,amber,smoothstep(.61,.99,aStar.x));
+    vTint=aStar.rgb;
     // Remote stars scintillate independently. The foreground dust layers
     // supply the moving parallax while these keep an immense fixed backdrop.
-    float glimmer=.96+.04*sin(aStar.w*6.2831853+uTime*(.20+.13*aStar.x));
-    vFlux=(.044+aStar.y*.27+aStar.z*.113)*glimmer;
-    gl_PointSize=max(1.25,(1.19+aStar.y*.89)*uPixelRatio);
+    float phase=dot(position,vec3(.927,1.191,.693));
+    float glimmer=.96+.04*sin(phase+uTime*(.20+.13*aStar.b));
+    vFlux=aStar.w*glimmer;
+    float diameter=1.17+.92*smoothstep(.09,.36,aStar.w);
+    gl_PointSize=max(1.25,diameter*uPixelRatio);
     gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);
    }`,
   fragmentShader:`

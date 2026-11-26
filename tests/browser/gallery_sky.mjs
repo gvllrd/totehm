@@ -38,7 +38,7 @@ try{
     check(water?.photographicSkyReflection&&water.windAlignedGlints&&water.crestFoamShear,city+' uses the common panorama and directional light on the sea');
    }
    check(skyMotion.paintedShear===dimensional&&skyMotion.driftingDust===dimensional&&skyMotion.colourScintillation===dimensional,city+' uses the intended sky motion');
-   if(dimensional)check(dimension?.deepField?.fullSphere&&dimension.deepField.stars===224000&&dimension.deepField.concentrations===16,'Origins renders an independent dense star field over the whole sky');
+   if(dimensional)check(dimension?.deepField?.fullSphere&&dimension.deepField.stars===384000&&dimension.deepField.concentrations===16,'Origins renders an independent dense star field over the whole sky');
    check(dimensional?dimension?.refraction&&dimension?.auroras&&dimension?.parallax&&dimension?.dustLayers===4&&dimension?.pairedVeils&&dimension.passage===0:dimension===null,city+' respects the dimensional boundary');
    await pg.waitForTimeout(600);
    sample.reducedEnd=await state(pg);
