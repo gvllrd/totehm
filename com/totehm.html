@@ -3197,8 +3197,7 @@ body.gate:not(.member):not(.ses-attente){--lv-y:32dvh}
 #lv-add-spot{grid-area:2 / 3}
 #lv-tap-open{grid-area:3 / 2}
 body.ses-attente:not(.member) #lv-actions,body.paysage #lv-tap-open{display:none}
-#lv-add-spot .lv-action-icon{stroke-width:1}
-#lv-add-illustration .lv-action-icon{stroke-width:1.6}
+:is(#lv-add-spot,#lv-add-illustration) .lv-action-icon{stroke-width:1.6}
 @media(prefers-reduced-motion:no-preference){
   body.gate.lv-c:not(.entered,.is-door,.is-dc,.searching) #lv-actions{animation:lv-intentions 42s ease-in-out infinite}
 }
