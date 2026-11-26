@@ -3190,28 +3190,26 @@ body.gate:not(.member):not(.ses-attente){--lv-y:32dvh}
 }
 /* Le losange garde le même pas entre centres sur les deux axes. */
 #lv-actions{display:grid;grid-template:repeat(3,34px) / repeat(3,34px);place-items:center;
-  padding:9px;background:#000;border-radius:10px;--k2-d:44px}
+  padding:9px;background:#000;border-radius:10px;--k2-d:44px;stroke:var(--love)}
+#lv-actions .k2>svg{stroke:inherit}
 #lv-search{grid-area:1 / 2}
 #lv-add-illustration{grid-area:2 / 1}
 #lv-add-spot{grid-area:2 / 3}
 #lv-tap-open{grid-area:3 / 2}
 body.ses-attente:not(.member) #lv-actions,body.paysage #lv-tap-open{display:none}
-#lv-search .lv-action-icon{color:var(--love)}
-#lv-search.is-off .lv-action-icon{opacity:.55}
-#lv-add-spot .lv-action-icon{color:var(--spot-fight);stroke-width:1}
+:is(#lv-add-spot,#lv-add-illustration) .lv-action-icon{stroke-width:1}
 @media(prefers-reduced-motion:no-preference){
-  body.lv-c:not(.is-door):not(.is-dc):not(.searching) #lv-add-spot .lv-action-icon{animation:spot-intentions 9.8s steps(1,end) infinite}
+  body.gate.lv-c:not(.entered,.is-door,.is-dc,.searching) #lv-actions{animation:lv-intentions 42s ease-in-out infinite}
 }
-@keyframes spot-intentions{
-  0%,100%{color:var(--spot-fight)}
-  14.285%{color:var(--spot-flow)}
-  28.571%{color:var(--spot-enrich)}
-  42.857%{color:var(--spot-love)}
-  57.143%{color:var(--spot-express)}
-  71.429%{color:var(--spot-focus)}
-  85.714%{color:var(--spot-celebrate)}
+@keyframes lv-intentions{
+  0%,100%{stroke:var(--lv-intention-fight)}
+  14.285714%{stroke:var(--lv-intention-flow)}
+  28.571429%{stroke:var(--lv-intention-enrich)}
+  42.857143%{stroke:var(--lv-intention-love)}
+  57.142857%{stroke:var(--lv-intention-express)}
+  71.428571%{stroke:var(--lv-intention-focus)}
+  85.714286%{stroke:var(--lv-intention-celebrate)}
 }
-#lv-add-illustration .lv-action-icon{color:var(--blue);stroke-width:1}
 
 #lv-keys{display:flex;gap:20px;align-items:flex-end;justify-content:center;
   background:#000;border-radius:10px;padding:6px 14px 4px}   /* les touches coupent les racines, comme la légende */
@@ -14485,7 +14483,6 @@ window.addEventListener('pageshow',e=>{
       $('lv-m-who').textContent=MB.nom||MB.verrou||'';
       const recherche=$('lv-search');
       const pret=inscrit()&&CLUB.member;
-      recherche.classList.toggle('is-off',!pret);
       recherche.title=pret?'Search a TOTEHM':!inscrit()?'Open your TOTEHM first':HORS_CLUB;
       if(CLUB.member&&$('lv-m-say').textContent===HORS_CLUB) direMembers('');
       { const f=$('fold-flip'); if(f) f.setAttribute('aria-label',mode==='members'?'Turn it over · their subscription':'Turn it over · my settings'); }
@@ -15593,8 +15590,11 @@ window.addEventListener('pageshow',e=>{
         dire(v); if(typeof RAM==='object'&&RAM&&v) try{ RAM.peindre(vue); }catch(_){} });
     }
     $('lv-great').onclick=()=>DISC.ouvrir();
+    const actionKeys=$('lv-actions');
     const spotKey=$('lv-add-spot');
-    for(const intention of INTS) spotKey.style.setProperty('--spot-'+intention.id,intention.color);
+    for(const {id,color} of INTS){
+      actionKeys.style.setProperty('--lv-intention-'+id,'color-mix(in oklab, '+color+', transparent 0%)');
+    }
 
     /* ── LE NOM ET QUI LIT MON TOTEHM (mes réglages) — nœuds déplacés de l'espace membre (15/10) ── */
     let visSeq=0;
