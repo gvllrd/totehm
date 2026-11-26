@@ -68,7 +68,7 @@ try{
   await pg.click('#lv-sh-sf [data-sf="close"]');await pg.waitForTimeout(500);
   /* 23/11 (Wah) : « + » commence par la PRISE (photo / vidéo / fichier), PUIS la box */
   const up0=log.upload.length;
-  await pg.click('#lv-sh-f .tl-add');await pg.waitForTimeout(900);
+  await pg.getByRole('button',{name:'Add a media',exact:true}).click();await pg.waitForTimeout(900);
   const c0=await pg.evaluate(()=>({cap:!!document.querySelector('#lv-sh-sf .sf-cap #cap-in'),cmd:!!document.querySelector('#lv-sh-sf .sfcmd'),
     b:[...document.querySelectorAll('#lv-sh-sf .sf-cap .cap-b')].map(e=>e.textContent.trim().toLowerCase())}));
   ok(c0.cap&&!c0.cmd,nom+' · « + » : la capture D\'ABORD, aucune box à choisir avant → '+JSON.stringify(c0));
