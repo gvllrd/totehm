@@ -348,7 +348,7 @@ try{
       window.__nait.push([t, m?+m[1]:1, +getComputedStyle(s).opacity, c.classList.contains('is-split')]); }
     requestAnimationFrame(f); }; requestAnimationFrame(f); });
   const papierDock=await pg.evaluate(()=>document.getElementById('gate-asteroid').getBoundingClientRect().width);
-  await pg.click('#lv-sh-flt [data-f="sf"]');await pg.waitForTimeout(1200);   /* 23/11 : [Refine] ouvre le filtre ; le petit TOTEHM ouvre le TOTEHM */
+  await pg.getByRole('button',{name:'Refine',exact:true}).click();await pg.waitForTimeout(1200);   /* 23/11 : [Refine] ouvre le filtre ; le petit TOTEHM ouvre le TOTEHM */
   const nait=await pg.evaluate(()=>window.__nait), cmdW=await pg.evaluate(()=>document.querySelector('#lv-sh-sf .sfv-g').getBoundingClientRect().width);
   const k0=nait.length?nait[0][1]:1, fin=nait[nait.length-1]||[0,0,0,false];
   ok(nait.length>15&&Math.abs(k0-papierDock/cmdW)<.08&&nait.some(x=>x[1]>k0+.05&&x[1]<.98)&&fin[1]===1&&fin[2]>.9&&fin[3],
@@ -387,7 +387,7 @@ try{
   await pg.click('#lv-sh-sf [data-sf="all"]');await pg.waitForTimeout(400);
   await pg.keyboard.press('Escape');await pg.waitForTimeout(400);
   // le panneau de gauche : ce que ça montre, la vue d'origine, les intentions (la grille n'a plus d'étages)
-  await pg.click('#lv-sh-flt [data-f="sf"]');await pg.waitForTimeout(400);
+  await pg.getByRole('button',{name:'Refine',exact:true}).click();await pg.waitForTimeout(400);
   const pan=await pg.evaluate(()=>({lab:[...document.querySelectorAll('#lv-sh-sf .sfl')].map(e=>e.textContent),
     ints:document.querySelectorAll('#lv-sh-sf [data-sf="int"]').length, vues:document.querySelectorAll('#lv-sh-sf [data-sf="vue"]').length}));
   /* 21/10 — les cinq vues sont un BLOC DE COMMANDE (la croix du TOTEHM), sans libellé : le design parle. */
@@ -430,7 +430,7 @@ try{
   await pg.keyboard.press('Escape');await pg.waitForTimeout(500);
   // la vue de droite : le TOTEHM DOCKÉ ouvre le filtre — ses Habits (au format Totehm), le temps, les intentions « X [Higher] »
   await pg.click('#lvn-rt');await vers(pg,'c');await pg.click('#lvn-rt');await vers(pg,'d');await pg.waitForTimeout(1000);
-  await pg.click('#rdr-flt [data-f="sf"]');await pg.waitForTimeout(500);   /* 23/11 : [Refine] ouvre le filtre */
+  await pg.getByRole('button',{name:'Refine',exact:true}).click();await pg.waitForTimeout(500);   /* 23/11 : [Refine] ouvre le filtre */
   const panD=await pg.evaluate(()=>({l:[...document.querySelectorAll('#rdr-sf .sfl')].map(e=>e.textContent),
     habits:[...document.querySelectorAll('#rdr-sf .sfb')].map(e=>(e.querySelector('.tb .v-name')?'':'!')+(e.querySelector('.v-name,.lsh-t')||{}).textContent.trim()),
     higher:document.querySelectorAll('#rdr-sf .sfi .sfh').length,
@@ -475,7 +475,7 @@ try{
      'la tuile ouvre MON spot en grand : sans média (les infos seules, centrées), la ville seule, sa box et ses mini-boîtes au format Totehm → '+JSON.stringify({m:pas2.mini,r:pas2.rep}));
   await pg.click('#rdr-x');await pg.waitForTimeout(500);
   // le filtre part au SERVEUR
-  if(await pg.evaluate(()=>document.getElementById('rdr-sf').hidden)) await pg.click('#rdr-flt [data-f="sf"]');await pg.waitForTimeout(400);   /* 23/11 : [Refine] ; il reste ouvert après une box */
+  if(await pg.evaluate(()=>document.getElementById('rdr-sf').hidden)) await pg.getByRole('button',{name:'Refine',exact:true}).click();await pg.waitForTimeout(400);   /* 23/11 : [Refine] ; il reste ouvert après une box */
   await pg.click('#rdr-sf [data-sf="int"][data-v="love"]');await pg.waitForTimeout(700);
   const dern=()=>log.rpc.filter(x=>x.name==='club_spots_of').pop();
   const q1=dern();
@@ -484,7 +484,7 @@ try{
   await pg.click('#rdr-sf [data-sf="box"]');await pg.waitForTimeout(700);
   const q3=dern();
   ok(q3&&q3.body.p_filters.habit==='Run the hill','une Habit choisie part au serveur (habit : '+(q3&&q3.body.p_filters.habit)+')');
-  if(await pg.evaluate(()=>document.getElementById('rdr-sf').hidden)) await pg.click('#rdr-flt [data-f="sf"]');await pg.waitForTimeout(400);   /* 23/11 : [Refine] ; il reste ouvert après une box */
+  if(await pg.evaluate(()=>document.getElementById('rdr-sf').hidden)) await pg.getByRole('button',{name:'Refine',exact:true}).click();await pg.waitForTimeout(400);   /* 23/11 : [Refine] ; il reste ouvert après une box */
   await pg.click('#rdr-sf [data-sf="ou"][data-v="near"]');await pg.waitForTimeout(900);
   const q2=dern(), ray=await pg.evaluate(()=>[...document.querySelectorAll('#rdr-sf [data-sf="rayon"]')].map(e=>e.textContent+(e.classList.contains('is-on')?'*':'')));
   ok(q2&&q2.body.p_filters.scope==='near'&&q2.body.p_filters.radius_km===50&&typeof q2.body.p_lat==='number'&&ray.join(' ')==='5 km 20 km 50 km* 200 km',
