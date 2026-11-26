@@ -3188,8 +3188,13 @@ body.gate:not(.member):not(.ses-attente){--lv-y:32dvh}
  #gate-top-row{margin-top:max(0px,calc(var(--lv-y) - var(--gate-size) / 2 - 20px))}
  #lv-c-acts{left:calc(50% - 330px);top:110px;width:210px;transform:none;gap:8px}
 }
-/* Les quatre actions reprennent l'appui des touches PS2. */
-#lv-actions{display:flex;align-items:center;justify-content:center;gap:10px;padding:4px 12px;background:#000;border-radius:10px;--k2-d:36px}
+/* Le losange garde le même pas entre centres sur les deux axes. */
+#lv-actions{display:grid;grid-template:repeat(3,34px) / repeat(3,34px);place-items:center;
+  padding:9px;background:#000;border-radius:10px;--k2-d:44px}
+#lv-search{grid-area:1 / 2}
+#lv-add-illustration{grid-area:2 / 1}
+#lv-add-spot{grid-area:2 / 3}
+#lv-tap-open{grid-area:3 / 2}
 body.ses-attente:not(.member) #lv-actions,body.paysage #lv-tap-open{display:none}
 #lv-search .lv-action-icon{color:var(--love)}
 #lv-search.is-off .lv-action-icon{opacity:.55}
@@ -3210,6 +3215,11 @@ body.ses-attente:not(.member) #lv-actions,body.paysage #lv-tap-open{display:none
 
 #lv-keys{display:flex;gap:20px;align-items:flex-end;justify-content:center;
   background:#000;border-radius:10px;padding:6px 14px 4px}   /* les touches coupent les racines, comme la légende */
+@media(max-height:650px) and (max-width:649px){
+  #lv-c-acts{flex-flow:row wrap;justify-content:center}
+  #lv-keys{max-width:calc(100% - 132px);flex-wrap:wrap;gap:8px}
+  #lv-c-acts :is(#lv-m-say,#mb-lock){flex-basis:100%}
+}
 /* LA TOUCHE MODE (Tree) n'existe que sur ORDINATEUR : l'arbre ne se voit que là. */
 #lv-tree-k{display:none}
 @media(min-width:700px){#lv-tree-k{display:inline-flex}}
