@@ -60,12 +60,12 @@ try{
   await pg.click('#rdr-new [data-ns="close"]');
 
   // ══ 1 · NOW, depuis le « + » de la MAP ══
-  const plus=await pg.evaluate(()=>{const b=document.getElementById('rdr-plus');return !!b&&!b.hidden&&getComputedStyle(b).display!=='none'&&window.__totehm_rdr().mode==='map';});
-  ok(plus,nom+' · MAP : un « + » pour prendre un spot (la GRID a sa tuile)');
-  /* 29/10 (Wah : « ajouter un spot dans le mode MAP comme dans le mode GRID ») : la MÊME tuile, à la même place */
-  const tuileMap=await pg.evaluate(()=>{const t=document.querySelector('#rdr-plus .tl-add[data-nspot]');if(!t)return null;const r=t.getBoundingClientRect(),cs=getComputedStyle(t);
-    return {r:[r.x,r.y,r.width,r.height].map(Math.round),o:cs.outlineStyle,c:cs.color,t:t.textContent.trim(),dessus:document.elementFromPoint(r.x+r.width/2,r.y+r.height/2)?.closest('.tl-add')===t};});
-  await clic(pg,'#rdr-plus');await pg.waitForTimeout(400);
+  const plus=pg.getByRole('button',{name:'Add a spot',exact:true});
+  const tuileMap=await plus.boundingBox();
+  ok(Math.round(tuileMap?.width)===64&&await pg.locator('#lv-search').evaluate(e=>e.offsetWidth)===40
+    &&await pg.waitForFunction(()=>getComputedStyle(document.querySelector('#lv-search path')).transform==='matrix(-1, 0, 0, -1, 0, 0)',null,{timeout:2000}),
+    nom+' · le Plus grandit et le triangle se retourne en gardant sa taille');
+  await plus.click();await pg.waitForTimeout(400);
   const e0=await etapes(pg), b0=await pg.evaluate(()=>[...document.querySelectorAll('#rdr-new .sfb .v-name')].map(e=>e.textContent.trim()));
   ok(await pg.evaluate(()=>!document.getElementById('rdr-new').hidden&&document.body.classList.contains('is-nspot'))&&e0.join('|')==='+ spot|a photo or a video · optional · 33 s at most|which habit?'&&b0.join('|')==='Run the hill|Call mum',
      nom+' · la prise s\'ouvre sur MES Habits, au format Totehm (boxTotehm), et rien d\'autre : '+e0.join(' · ')+' → '+b0.join(' · '));
@@ -148,13 +148,12 @@ try{
   }
 
   // ══ 2 · LATER, depuis la tuile « + » de la GRID, le point POSÉ sur la Terre ══
-  await clic(pg,'#rdr-m-sel');await pg.waitForTimeout(700);
-  const tuileGrid=await pg.evaluate(()=>{const t=document.querySelector('#rdr-g .tl-add[data-nspot]');if(!t)return null;const r=t.getBoundingClientRect();return [r.x,r.y,r.width,r.height].map(Math.round);});
-  ok(tuileMap&&tuileGrid&&tuileMap.dessus&&tuileMap.t==='+'&&tuileMap.o==='dashed'&&tuileMap.r.every((v,i)=>Math.abs(v-tuileGrid[i])<=2),
-     nom+' · le « + » de la MAP EST la tuile de la GRID : même place, même taille, même trait → MAP '+JSON.stringify(tuileMap&&tuileMap.r)+' · GRID '+JSON.stringify(tuileGrid));
-  ok(await pg.evaluate(()=>!!document.querySelector('#rdr-g .tl-add[data-nspot]')&&getComputedStyle(document.getElementById('rdr-plus')).display==='none'),
-     nom+' · GRID : la tuile « + » (le « + » de la MAP s\'efface)');
-  await clic(pg,'#rdr-g .tl-add[data-nspot]');await pg.waitForTimeout(400);
+  await pg.getByRole('button',{name:'Grid',exact:true}).click();
+  const tuileGrid=await plus.boundingBox();
+  ok(tuileMap&&tuileGrid&&['x','y','width','height'].every(k=>Math.abs(tuileMap[k]-tuileGrid[k])<=2)
+    &&await pg.getByRole('button',{name:'Map',exact:true}).isVisible(),
+    nom+' · la touche passe en Grid avec le même Plus au même endroit');
+  await plus.click();await pg.waitForTimeout(400);
   await pg.locator('#rdr-new .sfb').filter({hasText:'Call mum'}).first().click();await pg.waitForTimeout(250);
   await clic(pg,'#rdr-new [data-ns="quand"][data-v="later"]');await pg.waitForTimeout(250);
   const d1=await pg.evaluate(()=>({d:(document.querySelector('#rdr-new [data-nsi="date"]')||{}).value, t:(document.querySelector('#rdr-new [data-nsi="time"]')||{}).value,
@@ -181,7 +180,6 @@ try{
   ok(ad.d.pt&&ad.d.ptSrc==='adresse'&&ad.ville==='Porto'&&ad.l==='who sees it',
      nom+' · l\'adresse choisie DEVIENT le point (sa ville vient de cities.json, pas du géocodeur : « '+ad.ville+' ») → '+JSON.stringify(ad.d.ptSrc));
   // ── le même geste, sur la Terre ──
-  await clic(pg,'#rdr-m-sel').catch(()=>{});
   await clic(pg,'#rdr-new [data-ns="carte"]');await pg.waitForTimeout(700);
   const pq=await pg.evaluate(()=>({cache:document.getElementById('rdr-new').hidden, pique:document.body.classList.contains('rdr-pique'),
     aide:getComputedStyle(document.getElementById('rdr-pique')).display, mode:window.__totehm_rdr().mode}));
