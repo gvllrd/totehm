@@ -78,7 +78,7 @@ try{
     const t=[...document.querySelectorAll('#lv-sh .tl[data-pol]')], a=document.getElementById('gate-asteroid'), ra=a.getBoundingClientRect();
     const t0=t[0], b0=t0&&t0.querySelector('.tl-bx'), hb=b0&&b0.querySelector('.tb .habit .h-body'), tk=b0&&b0.querySelector('.tb .habit .tick'),
       r0=t0&&t0.getBoundingClientRect(), g0=document.querySelector('#lv-sh .tlg');
-    return {n:t.length, add:!!document.querySelector('#lv-sh .tl-add'), carre:r0?Math.abs(r0.width-r0.height)<2:false,
+    return {n:t.length, add:!!document.querySelector('#lv-sh .tl-add-slot')&&getComputedStyle(document.getElementById('lv-tap-open')).visibility==='visible', carre:r0?Math.abs(r0.width-r0.height)<2:false,
       cols:g0?getComputedStyle(g0).gridTemplateColumns.split(' ').length:0,
       vieux:document.querySelectorAll('#lv-sh .etg,#lv-sh .pol').length,
       nom:(b0&&b0.querySelector('.v-name')||{}).textContent||'', fond:hb?getComputedStyle(hb).backgroundColor:'',
@@ -103,7 +103,7 @@ try{
     const logo=[...document.querySelectorAll('#gl-bg mask circle')].map(c=>[+(+c.getAttribute('cx')).toFixed(1),+(+c.getAttribute('cy')).toFixed(1)]);
     const k=l=>l.map(x=>x.join(',')).sort().join(' ');
     return {n:trous.length, memes:k(trous)===k(logo)&&logo.length===12, fond:t?cs(t).backgroundColor:'', boxM:mk(bx)||'none',
-      plus:mk(document.querySelector('#lv-sh .tl-add .tl-ph'))||'none'};});
+      plus:mk(document.getElementById('lv-tap-open'))||'none'};});
   ok(pf.n===12&&pf.memes&&pf.fond==='rgba(0, 0, 0, 0)'&&/none/.test(pf.boxM),
      '21/10 bis · chaque image de la grille est PERFORÉE : les 12 trous du logo, aux mêmes places ; la box posée dessus reste entière → '+JSON.stringify(pf));
   await pg.screenshot({path:OUT+'/grille_'+(tel?'tel':'ordi')+'.png'});
@@ -418,7 +418,7 @@ try{
   // la tuile « + » (26/10, Wah : « le add a media sous la forme d'un plus, avec le Totehm qui se déploie avec la même logique —
   // le déploiement du Totehm filtre, pas celui de la vue centrale ») : le MÊME Totehm naît, on choisit l'élément, la caméra suit
   const fa=await pg.evaluate(()=>window.__totehm_sh().filtre), na=await pg.evaluate(()=>window.__totehm_sh().naissances);
-  await pg.click('#lv-sh .tl-add');await pg.waitForTimeout(1000);
+  await pg.getByRole('button',{name:'Add a media',exact:true}).click();await pg.waitForTimeout(1000);
   const aj=await pg.evaluate(()=>({vu:!document.getElementById('lv-sh-sf').hidden, pick:!document.getElementById('lv-sh-pick').hidden, gate:document.body.classList.contains('gate'),
     mot:(document.querySelector('#lv-sh-sf .sf-aj')||{}).textContent||'', split:!!document.querySelector('#lv-sh-sf .sfcmd.is-split'),
     groupes:[...document.querySelectorAll('#lv-sh-sf .sfl')].map(e=>e.textContent), d:window.__totehm_sh()}));
@@ -447,10 +447,10 @@ try{
   await pg.click('#rdr-sf [data-sf="close"]');await pg.waitForTimeout(300);
   const mp=await pg.evaluate(()=>window.__totehm_rdr().carte);
   ok(mp.villes===2&&mp.points===2,'la carte : deux spots dont je ne vois que la VILLE — deux carrés CREUX, jamais un faux point');
-  await pg.click('#rdr-m-sel');await pg.waitForTimeout(1200);
+  await pg.click('#lv-tree-k');await pg.waitForTimeout(1200);
   const gr=await pg.evaluate(()=>({d:window.__totehm_rdr(),grid:document.body.classList.contains('rdr-grid'),
     tuiles:document.querySelectorAll('#rdr-g .tl[data-cle]').length,boxes:[...document.querySelectorAll('#rdr-g .tl-bx .tb .v-name')].map(e=>e.textContent.trim()),
-    plus:!!document.querySelector('#rdr-g .tl-add[data-nspot]'),
+    plus:getComputedStyle(document.getElementById('lv-tap-open')).visibility==='visible',
     navy:(()=>{const h=document.querySelector('#rdr-g .tl-bx .tb .habit .h-body');return h?getComputedStyle(h).backgroundColor:'';})(),
     rond:(()=>{const t=document.querySelector('#rdr-g .tl[data-cle]');return t?getComputedStyle(t).borderRadius:'';})(),
     vign:(document.querySelector('#rdr-g img[data-bunny]')||{}).src||''}));
@@ -498,7 +498,7 @@ try{
   ok(au.n===1&&au.l.join(' · ')==='private · my subscribers · figher club','27/10 · « Who sees it » (les trois niveaux d\'un spot) trie MES spots : '+au.l.join(' · ')+' → '+au.n+' tuile');
   await pg.click('#rdr-sf [data-sf="all"]');await pg.waitForTimeout(600);
   await pg.keyboard.press('Escape');await pg.waitForTimeout(400);
-  await pg.click('#rdr-m-sel');await pg.waitForTimeout(700);
+  await pg.click('#lv-tree-k');await pg.waitForTimeout(700);
   ok((await pg.evaluate(()=>window.__totehm_rdr())).mode==='map','retour à MAP : le même objet, rien de redemandé');
   await pg.screenshot({path:OUT+'/spots_grid_'+(tel?'tel':'ordi')+'.png'});
   await pg.click('#lvn-lf');await vers(pg,'c');await pg.waitForTimeout(300);
@@ -543,7 +543,7 @@ try{
   await pg.keyboard.press('Escape');await pg.waitForFunction(()=>document.body.classList.contains('gate'),null,{timeout:8000}).catch(()=>{});await pg.waitForTimeout(1500);
   ok(await pg.evaluate(()=>document.body.classList.contains('lv-membre')&&document.getElementById('lv-m-who').textContent==='studio'),'replié : on est dans SON écosystème ([Members] · studio)');
   await pg.click('#lvn-lf');await vers(pg,'g');await pg.waitForTimeout(900);
-  const g=await pg.evaluate(()=>({t:document.querySelectorAll('#lv-sh .tl[data-pol]').length,plus:!!document.querySelector('#lv-sh [data-add]'),
+  const g=await pg.evaluate(()=>({t:document.querySelectorAll('#lv-sh .tl[data-pol]').length,plus:getComputedStyle(document.getElementById('lv-tap-open')).visibility==='visible',
     box:(document.querySelector('#lv-sh .tl-bx .tb .v-name')||{}).textContent||''}));
   ok(g.t===1&&!g.plus&&g.box.trim()==='Deep practice','← chez lui : SES médias, avec SA box (« '+g.box.trim()+' »), et pas de « + »');
   ok(!erreurs(log).length,'lecture : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
