@@ -35,7 +35,7 @@ try{
   ok(e2.url==='/totehm'&&e2.vue==='c'&&!e2.r.garde,nom+' · « précédent » : retour au CENTRE, on reste sur le site → '+JSON.stringify({url:e2.url,vue:e2.vue}));
   /* ── la vue de droite, un spot ouvert ── */
   await pg.click('#lvn-rt');await pause(pg,1800);
-  await pg.click('#rdr-mode button:last-child').catch(()=>{});await pause(pg,700);
+  await pg.getByRole('button',{name:'Grid',exact:true}).click();await pause(pg,700);
   await pg.$eval('#rdr-g .tl:not(.tl-add)',e=>e.click()).catch(()=>{});await pause(pg,900);
   const e3=await etat(pg);
   ok(e3.vue==='d'&&e3.voir&&e3.r.garde,nom+' · vue de droite, un spot ouvert');
