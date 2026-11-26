@@ -2408,6 +2408,10 @@ body.gate.entered #terms-corner{opacity:0;pointer-events:none}
 .ns-label{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;
   color:rgba(255,255,255,.55);text-align:left}
 @media(hover:hover){.srch-row:hover .srch-name{filter:brightness(1.3)}}
+.face-buttons{position:fixed;inset:0;pointer-events:none}
+#verso-buttons{z-index:4}
+#recto-buttons{z-index:34}
+#recto-buttons button{pointer-events:auto}
 #srch-x{position:fixed;top:10px;right:10px;z-index:4;pointer-events:none}
 #srch.is-open #srch-x{pointer-events:auto}
 #fold-x{position:fixed;top:10px;right:10px;z-index:34}
@@ -2435,8 +2439,10 @@ body.folding :is(#fold-x,#fold-flip){visibility:hidden;pointer-events:none}
   .flip-btn:hover>svg{transform:rotate(180deg)}
   #srch-flip{position:fixed;z-index:4;pointer-events:none}
   #srch.is-open #srch-flip{pointer-events:auto}
-  /* 17/11 — LA PIÈCE : la croix et ⟲ ne tournent pas avec le carré (fixes) ; ils s'effacent le temps du demi-tour. */
-  body.is-coin :is(#srch-x,#srch-flip,#fold-x,#fold-flip){opacity:0;visibility:hidden;transition:none}
+  /* Chaque paire partage l'axe de rotation de son papier et reste hors des zones de défilement. */
+  body.is-coin #recto-buttons{z-index:231}
+  body.is-coin :is(#recto-buttons,#verso-buttons) :is(#fold-x,#fold-flip,#srch-x,#srch-flip){pointer-events:none}
+  body.is-coin #srch.is-on .face-buttons .srch-after{opacity:1;visibility:visible;transition:none}
   #fold-flip{position:fixed;z-index:34}
   body.gate #fold-flip{opacity:0;pointer-events:none;transition:opacity .55s ease}
   body.gate.entered #fold-flip{opacity:1;pointer-events:auto;transition:opacity .55s ease var(--gate-reveal)}
@@ -5138,13 +5144,15 @@ You remember your way, and the street can read what is behind it.</p></div></div
   </div>
 </div>
   </div>
-  <button id="srch-x" data-hover-art class="srch-after k2 k2-x is-navy" type="button" aria-label="Close my settings">
-    <svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2 L12 12 M12 2 L2 12"/></svg>
-  </button>
-  <!-- 16/11 — PILE OU FACE (ordinateur) : le verso se retourne sur le recto déployé, au même format. -->
-  <button id="srch-flip" data-hover-art class="srch-after flip-btn k2 k2-f is-navy" type="button" aria-label="Turn it over · my TOTEHM" title="Turn it over">
-    <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 6.5a5 5 0 0 1 9.2-2.3M13 9.5a5 5 0 0 1-9.2 2.3"/><path d="M12.6 1.6v2.8H9.8M3.4 14.4v-2.8h2.8"/></svg>
-  </button>
+  <div id="verso-buttons" class="face-buttons">
+    <button id="srch-x" data-hover-art class="srch-after k2 k2-x is-navy" type="button" aria-label="Close my settings">
+      <svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2 L12 12 M12 2 L2 12"/></svg>
+    </button>
+    <!-- 16/11 — PILE OU FACE (ordinateur) : le verso se retourne sur le recto déployé, au même format. -->
+    <button id="srch-flip" data-hover-art class="srch-after flip-btn k2 k2-f is-navy" type="button" aria-label="Turn it over · my TOTEHM" title="Turn it over">
+      <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 6.5a5 5 0 0 1 9.2-2.3M13 9.5a5 5 0 0 1-9.2 2.3"/><path d="M12.6 1.6v2.8H9.8M3.4 14.4v-2.8h2.8"/></svg>
+    </button>
+  </div>
 </div>
 
 
@@ -5155,15 +5163,17 @@ You remember your way, and the street can read what is behind it.</p></div></div
   </defs>
 </svg>
 
-<!-- La croix : referme le Totehm et rejoue le déploiement à l'envers. -->
+<div id="recto-buttons" class="face-buttons">
+  <!-- La croix : referme le Totehm et rejoue le déploiement à l'envers. -->
 
-<button id="fold-x" data-hover-art class="sink-el k2 k2-x is-navy" type="button" aria-label="Close my Totehm">
-  <svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2 L12 12 M12 2 L2 12"/></svg>
-</button>
-<!-- 16/11 — PILE OU FACE (ordinateur) : le recto déployé se retourne sur le verso, au même format. -->
-<button id="fold-flip" data-hover-art class="sink-el flip-btn k2 k2-f is-navy" type="button" aria-label="Turn it over · my settings" title="Turn it over">
-  <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 6.5a5 5 0 0 1 9.2-2.3M13 9.5a5 5 0 0 1-9.2 2.3"/><path d="M12.6 1.6v2.8H9.8M3.4 14.4v-2.8h2.8"/></svg>
-</button>
+  <button id="fold-x" data-hover-art class="sink-el k2 k2-x is-navy" type="button" aria-label="Close my Totehm">
+    <svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2 L12 12 M12 2 L2 12"/></svg>
+  </button>
+  <!-- 16/11 — PILE OU FACE (ordinateur) : le recto déployé se retourne sur le verso, au même format. -->
+  <button id="fold-flip" data-hover-art class="sink-el flip-btn k2 k2-f is-navy" type="button" aria-label="Turn it over · my settings" title="Turn it over">
+    <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 6.5a5 5 0 0 1 9.2-2.3M13 9.5a5 5 0 0 1-9.2 2.3"/><path d="M12.6 1.6v2.8H9.8M3.4 14.4v-2.8h2.8"/></svg>
+  </button>
+</div>
 
 <div id="stage">
 <div id="rail" class="sink-el"></div>
@@ -14027,9 +14037,11 @@ window.addEventListener('pageshow',e=>{
   /* Une face = ses calques, chacun avec sa transformation à l'angle `t` : son repos, plus la rotation. L'axe passe par le
      centre de l'écran (celui du carré). `#srch-bg` tourne AVANT son échelle : sinon sa perspective rapetissait avec lui. */
   const repos=el=>{ const m=getComputedStyle(el).transform; return m&&m!=='none'?m+' ':''; };
-  const faceRecto=()=>{ const b=repos(stage); return [[stage,t=>b+'perspective(1600px) rotateY('+t+'deg)']]; };
+  const rotation=t=>'perspective(1600px) rotateY('+t+'deg)';
+  const faceRecto=()=>{ const b=repos(stage);
+    return [[stage,t=>b+rotation(t)],[$('recto-buttons'),rotation]]; };
   const faceVerso=()=>{ const g=sBg.style.transform||'', b=repos(sUi);
-    return [[sBg,t=>'perspective(1600px) rotateY('+t+'deg) '+g],[sUi,t=>b+'perspective(1600px) rotateY('+t+'deg)']]; };
+    return [[sBg,t=>rotation(t)+' '+g],[sUi,t=>b+rotation(t)],[$('verso-buttons'),rotation]]; };
   const tourner=(face,de,a,ease,second)=>face.map(([el,f])=>el.animate([{transform:f(de)},{transform:f(a)}],
     {duration:PIECE/2, easing:ease, delay:second?PIECE/2:0, fill:'both'}));
   /* Le recto se retourne : il part vers la tranche, le verso en revient. `essai` : seulement dire si c'est possible. */

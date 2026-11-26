@@ -14,7 +14,7 @@ const rpc={my_landing:{signed_in:true,pseudo:'wahigher',telegram:false,higher:{a
 const etat=pg=>pg.evaluate(()=>({gate:document.body.classList.contains('gate'),verso:document.getElementById('srch').classList.contains('is-open')}));
 const erreurs=log=>log.errors.filter(e=>e.startsWith('pageerror'));
 /* Ce que `body` a porté pendant le geste : l'atterrissage (`gate`), son repli (`folding`) ou son déploiement (`entered`). */
-const guetter=pg=>pg.evaluate(()=>{ const vu=window.__vu={gate:false,folding:false,entered:false,max3d:0,angles:[],fantome:0};
+const guetter=pg=>pg.evaluate(()=>{ const vu=window.__vu={gate:false,folding:false,entered:false,max3d:0,angles:[],fantome:0,boutons:{recto:0,verso:0},ecartBoutons:0};
   const lire=()=>{ const c=document.body.classList; for(const k of ['gate','folding','entered']) if(c.contains(k)) vu[k]=true; };
   window.__obs&&window.__obs.disconnect(); window.__obs=new MutationObserver(lire); window.__obs.observe(document.body,{attributes:true,attributeFilter:['class']});
   /* la pièce TOURNE vraiment : une transformation 3D sur le carré ou le verso pendant le geste */
@@ -22,7 +22,25 @@ const guetter=pg=>pg.evaluate(()=>{ const vu=window.__vu={gate:false,folding:fal
   const pas=()=>{ for(const id of ['stage','srch-bg','srch-ui']){ const t=getComputedStyle(document.getElementById(id)).transform; if(t.startsWith('matrix3d')) vu.max3d++; }
     /* l'angle de la pièce, de 0 à 180°, lu sur la largeur visible de la face qui se montre */
     if(document.body.classList.contains('is-coin')){ const w=id=>document.getElementById(id).getBoundingClientRect().width;
-      vu.angles.push([performance.now(),w('stage'),w('srch-bg'),document.getElementById('stage').offsetWidth]); }
+      vu.angles.push([performance.now(),w('stage'),w('srch-bg'),document.getElementById('stage').offsetWidth]);
+      const rotation=id=>{
+        const t=getComputedStyle(document.getElementById(id)).transform;
+        if(!t.startsWith('matrix3d')) return 0;
+        const m=new DOMMatrix(t);
+        return Math.asin(Math.max(-1,Math.min(1,-m.m13/m.m22)));
+      };
+      for(const [face,papier,ids] of [
+        ['recto','stage',['fold-x','fold-flip']],['verso','srch-bg',['srch-x','srch-flip']]
+      ]){
+        const angle=rotation(papier);
+        if(Math.abs(angle)<.15||Math.abs(angle)>1.4) continue;
+        vu.ecartBoutons=Math.max(vu.ecartBoutons,Math.abs(angle-rotation(face+'-buttons')));
+        if(ids.every(id=>{
+          const c=getComputedStyle(document.getElementById(id));
+          return c.visibility==='visible'&&Number(c.opacity)>.9&&c.pointerEvents==='none';
+        })) vu.boutons[face]++;
+      }
+    }
     /* 17/11 — le FANTÔME : un contenu du verso encore visible alors que le verso est caché (il réapparaissait à plat
        sur le recto, 150 ms, le temps de son fondu) */
     const s=document.getElementById('srch');
@@ -56,6 +74,8 @@ try{
   let dt=Date.now()-t0, w=await vu(pg), e=await etat(pg), d=await pg.evaluate(()=>window.__totehm_piece());
   ok(!e.gate&&!e.verso&&d.recto,'ordinateur · ⟲ sur le verso : le recto déployé est là ('+dt+' ms)');
   ok(!w.folding&&!w.entered&&d.dessous===1&&d.versRecto===1,'ordinateur · ⟲ sur le verso : aucune animation de l\'atterrissage (le recto se déploie sous le noir, la pièce tourne)');
+  ok(w.boutons.recto>0&&w.boutons.verso>0&&w.ecartBoutons<.01,
+     'ordinateur · chaque paire de boutons reste visible et tourne avec son papier ('+JSON.stringify(w.boutons)+', écart '+w.ecartBoutons.toFixed(4)+')');
   ok(w.max3d>0,'ordinateur · ⟲ sur le verso : le carré TOURNE en 3D ('+w.max3d+' images)');
   let pas=plusGrandPas(w.angles,false);
   ok(w.angles.length>20&&pas<20,'ordinateur · ⟲ sur le verso : aucun bond à la tranche (au plus '+pas.toFixed(1)+'° par image, '+w.angles.length+' images)');
@@ -72,6 +92,8 @@ try{
   w=await vu(pg); e=await etat(pg);
   ok(!e.gate&&e.verso,'ordinateur · ⟲ sur le recto : le verso est là ('+dt+' ms)');
   ok(!w.gate&&!w.folding,'ordinateur · ⟲ sur le recto : on ne repasse PAS par l\'atterrissage');
+  ok(w.boutons.recto>0&&w.boutons.verso>0&&w.ecartBoutons<.01,
+     'ordinateur · chaque paire de boutons reste visible et tourne avec son papier ('+JSON.stringify(w.boutons)+', écart '+w.ecartBoutons.toFixed(4)+')');
   ok(w.max3d>0,'ordinateur · ⟲ sur le recto : le carré TOURNE en 3D ('+w.max3d+' images)');
   pas=plusGrandPas(w.angles,true);
   ok(w.angles.length>20&&pas<20,'ordinateur · ⟲ sur le recto : aucun bond à la tranche (au plus '+pas.toFixed(1)+'° par image, '+w.angles.length+' images)');
