@@ -56,18 +56,16 @@ window.TOTEHM_DISCOVER = (() => {
         if(k < txt.length){ setTimeout(() => pas(k + 1), 21 + Math.random() * 17); return; }
         n.classList.remove('is-frappe'); if(fin) fin(); })(1);
     }
-    /* L'ORDRE (Wah, 25/11) : la phrase se frappe (0), PUIS l'objet l'illustre (1), PUIS le tiroir et la porte (2). */
+    /* L'ORDRE (Wah, 26/11) : l'objet se transforme d'abord (0), PUIS la phrase se frappe (1), PUIS la porte (2).
+       L'objet, lui, n'attend rien et ne s'éteint jamais : il est déjà là, il change de forme. */
     function etapes(){
       clearTimeout(tEtape);
       const pose = k => { if(hote.dataset.etape !== String(k)) hote.dataset.etape = k; };
       if(RM.matches){ pose(2); frapper(); return; }
       pose(0);
-      frapper(() => { if(!hote.isConnected) return; pose(1);
-        tEtape = setTimeout(() => pose(2), 820); });
+      tEtape = setTimeout(() => { if(!hote.isConnected) return; pose(1);
+        frapper(() => { if(hote.isConnected) pose(2); }); }, 760);
     }
-    /* LE TIROIR : un seul écouteur sur l'hôte ; changer d'écran referme ce qui était ouvert. */
-    function tiroirs(ferme){ hote.querySelectorAll('.dc-deep').forEach(b => {
-      if(ferme || b.getAttribute('aria-expanded') === null) b.setAttribute('aria-expanded', 'false'); }); }
     function remettre(){ hote.querySelectorAll('.dc-tw').forEach(n => { delete n.dataset.frappe;
       if(n.dataset.txt) n.textContent = n.dataset.txt; }); }
     function peindre(instant){
@@ -77,7 +75,7 @@ window.TOTEHM_DISCOVER = (() => {
       rail.querySelectorAll('span').forEach((s, k) => s.classList.toggle('on', k === i));
       hote.classList.toggle('is-last', i >= ecrans.length - 1);
       hote.dataset.i = i; hote.dataset.n = ecrans.length;
-      objets(); tiroirs(true);
+      objets();
       ajuster();
       etapes();
       if(o.surChangement) o.surChangement(i, ecrans.length);
@@ -118,12 +116,6 @@ window.TOTEHM_DISCOVER = (() => {
        Il n'écoute que si le moteur est visible, et que le focus est dedans ou nulle part. */
     window.addEventListener('keydown', e => { if(hote.isConnected && !hote.hidden && !hote.classList.contains('hide') && (hote.contains(e.target) || document.activeElement === document.body)) touche(e); }, true);
     next.addEventListener('click', suivant);
-    hote.addEventListener('click', e => { const b = e.target.closest('.dc-deep'); if(!b || !hote.contains(b)) return;
-      b.setAttribute('aria-expanded', b.getAttribute('aria-expanded') === 'true' ? 'false' : 'true');
-      /* le tiroir change la hauteur de l'écran, donc son centrage : l'objet SUIT la place qui lui est réservée,
-         image par image, le temps de l'ouverture — sinon il resterait en arrière et passerait sur le texte. */
-      const fin = Date.now() + 560;
-      (function suivre(){ cadre(); if(Date.now() < fin) requestAnimationFrame(suivre); })(); });
     window.addEventListener('resize', () => { if(hote.isConnected) requestAnimationFrame(ajuster); });
     if(document.fonts && document.fonts.ready) document.fonts.ready.then(ajuster);
     lire(); peindre(true);

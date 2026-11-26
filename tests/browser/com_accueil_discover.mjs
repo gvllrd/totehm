@@ -18,7 +18,7 @@ const ecran=pg=>pg.evaluate(()=>{const h=document.getElementById('lvd'),b=docume
     tw:(on.querySelector('.dc-tw')||{}).textContent,
     cta:b.classList.contains('hide')?null:b.textContent.trim(),
     lien:l.classList.contains('hide')?null:l.textContent.trim(),
-    etape:h.dataset.etape, deep:!!on.querySelector('.dc-deep'),
+    etape:h.dataset.etape,
     objets:[...h.querySelectorAll('.dc-hero .lvh')].filter(n=>+getComputedStyle(n).opacity>.5).map(n=>n.className.replace('lvh ',''))};});
 const avance=async(pg,k)=>{for(let j=0;j<k;j++){await pg.keyboard.press('ArrowDown');await pg.waitForTimeout(1150);}};
 try{
@@ -41,7 +41,7 @@ try{
   await pg.click('#lv-great');await pg.waitForTimeout(1500);
   /* ── l'écran 0 : L'ATTERRISSAGE QUI SE SIMPLIFIE — la pièce ne bouge pas d'un pixel, la question prend la place de la légende ── */
   let e=await ecran(pg);
-  ok(e.n===6&&e.i===0&&/^Make it Happen$/.test(e.tw.trim())&&e.cta===null&&!e.deep,
+  ok(e.n===6&&e.i===0&&/^Make it Happen$/.test(e.tw.trim())&&e.cta===null,
      '25/11 · écran 0 : « Make it Happen », frappé, sans porte ni tiroir → '+JSON.stringify(e));
   const cal=await pg.evaluate(()=>{const r=n=>{const q=n.getBoundingClientRect();return [Math.round(q.x),Math.round(q.y),Math.round(q.width),Math.round(q.height)];};
     return {atterrissage:r(document.getElementById('gate-asteroid')),recit:r(document.querySelector('#lvd .lvh-pp .sfv-g'))};});
@@ -96,26 +96,29 @@ try{
       '25/11 · le verso : plein navy, le prix SEUL et centré, sans [Discover] ni ligne de règles → '+JSON.stringify(v));}
   ok(nat.radar&&nat.spots>=6&&nat.photos===2&&nat.perfo&&nat.video&&nat.orphelins===0,
      '24/11 · les VRAIES photos du vêtement (notre stockage), l\'illustration perforée au dos, la place de la vidéo, le radar du Club et ses spots → '+JSON.stringify(nat));
-  /* 25/11 (Wah) : « on affiche d'abord le texte, ensuite l'animation, ensuite le tiroir et le call-to-action ». */
-  /* on ROUVRE : revenir au premier écran d'un coup remet les phrases à frapper (`remettre`), donc l'ordre se rejoue */
-  {await pg.keyboard.press('Escape');await pg.waitForTimeout(700);await pg.click('#lv-great');
-   const vus=[]; for(let j=0;j<9;j++){ vus.push(await pg.evaluate(()=>{const h=document.getElementById('lvd');
-     return {e:h.dataset.etape, o:+getComputedStyle(h.querySelector('.dc-hero')).opacity>.5,
-       c:+getComputedStyle(h.querySelector('.dc-cta')).opacity>.5};})); await pg.waitForTimeout(400); }
+  /* 26/11 (Wah) : « on affiche d'abord les animations, ensuite la phrase » — et SURTOUT : « tout au long du
+     discover le totehm mute, se transforme mais ne disparaît jamais ». On le mesure image par image. */
+  {await pg.keyboard.press('Escape');await pg.waitForTimeout(700);await pg.click('#lv-great');await pg.waitForTimeout(2600);
+   await pg.evaluate(()=>{ window.__suivi=[]; const h=document.getElementById('lvd');
+     const tic=()=>{ const o=[...h.querySelectorAll('.lvh')].map(n=>+getComputedStyle(n).opacity);
+       window.__suivi.push({hero:+getComputedStyle(h.querySelector('.dc-hero')).opacity, max:Math.max(0,...o)});
+       if(window.__suivi.length<1400) requestAnimationFrame(tic); };
+     requestAnimationFrame(tic); });
+   for(let k=1;k<=5;k++){ await pg.keyboard.press('ArrowDown'); await pg.waitForTimeout(2400); }
+   const s=await pg.evaluate(()=>window.__suivi);
+   const creux=Math.min(...s.map(x=>x.max)), noir=s.filter(x=>x.hero<.98).length;
+   ok(s.length>300&&noir===0&&creux>=.4,
+      '26/11 · LE TOTEHM NE DISPARAÎT JAMAIS : '+s.length+' images, l\'objet jamais éteint ('+noir+'), cadre jamais vide (creux '+creux.toFixed(2)+')');}
+  {await pg.keyboard.press('Escape');await pg.waitForTimeout(700);await pg.click('#lv-great');await pg.waitForTimeout(2600);
+   await pg.keyboard.press('ArrowDown');
+   const vus=[]; for(let j=0;j<10;j++){ vus.push(await pg.evaluate(()=>{const h=document.getElementById('lvd'),on=h.querySelector('.dc-s.is-on');
+     return {e:h.dataset.etape, o:+getComputedStyle(h.querySelector('.dc-hero')).opacity>.9,
+       w:+getComputedStyle(on.querySelector('.dc-tw')).opacity>.5, c:+getComputedStyle(h.querySelector('.dc-cta')).opacity>.5};}));
+     await pg.waitForTimeout(320); }
    const e0=vus.findIndex(v=>v.e==='0'), e1=vus.findIndex(v=>v.e==='1'), e2=vus.findIndex(v=>v.e==='2');
-   const io=vus.findIndex((v,k)=>k>0&&v.o), ic=vus.findIndex(v=>v.c);   /* quand chacun est VRAIMENT là, fondu compris */
-   ok(e0===0&&e1>e0&&e2>e1&&io>=e1&&ic>=e2&&io<ic,
-      'l\'ordre : la phrase se frappe (0), PUIS l\'objet (1), PUIS le tiroir et la porte (2) → '+JSON.stringify({e0,e1,e2,io,ic}));}
-  /* le tiroir : fermé d'abord, et son texte prend la police des explications de totehm.space (écran 1 : l'écran 0 n'en a pas) */
-  await avance(pg,1);
-  {const d=await pg.$('#lvd .dc-s.is-on .dc-deep');
-   const avant=await pg.evaluate(()=>Math.round(document.querySelector('#lvd .dc-s.is-on .dc-more').getBoundingClientRect().height));
-   if(d) await d.click(); await pg.waitForTimeout(750);
-   const ap=await pg.evaluate(()=>{const m=document.querySelector('#lvd .dc-s.is-on .dc-more');
-     const p=m.querySelector('.dc-p'), c=getComputedStyle(p);
-     return {h:Math.round(m.getBoundingClientRect().height), px:Math.round(parseFloat(c.fontSize)), fam:c.fontFamily, col:c.color};});
-   ok(avant===0&&ap.h>40&&ap.px>=15&&/Space Mono/.test(ap.fam)&&ap.col==='rgb(221, 221, 221)',
-      '[Deeper] : fermé au départ, puis le texte dans la police de totehm.space (Space Mono '+ap.px+' px, #ddd) → '+JSON.stringify(ap));}
+   const iw=vus.findIndex(v=>v.w), ic=vus.findIndex((v,k)=>k>0&&v.c);
+   ok(e0===0&&e1>e0&&e2>e1&&vus.every(v=>v.o)&&iw>=e1&&ic>=e2&&iw<ic,
+      'l\'ordre : l\'objet se transforme (0, toujours visible), PUIS la phrase (1), PUIS la porte (2) → '+JSON.stringify({e0,e1,e2,iw,ic}));}
   await pg.screenshot({path:OUT+'/accueil_discover.png'});
   /* 60 / 30 / 10 : hors de l'objet (ses couleurs sont natives), aucune couleur */
   const coul=await pg.evaluate(()=>{const vus=new Set();for(const e of document.querySelectorAll('#lvd *')){ if(e.closest('.tw,.dc-hero')) continue; const c=getComputedStyle(e);

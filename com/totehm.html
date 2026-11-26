@@ -4089,7 +4089,7 @@ body.lv-d.rdr-voir #gate-asteroid,body.lv-d.rdr-voir #lvjoy,body.rdr-voir #rdr-f
 .dc.is-overlay.is-open{opacity:1;visibility:visible;transition:opacity .35s ease,visibility 0s}
 .dc-x{position:absolute;top:8px;right:8px;z-index:3;width:44px;height:44px;border:0;padding:0;background:none;color:#a0a0a0;cursor:pointer;
   display:flex;align-items:center;justify-content:center;transition:color .15s}
-.dc-x svg{width:16px;height:16px;fill:none;stroke:var(--rail-color);stroke-width:1.6;stroke-linecap:round}
+.dc-x svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round}
 /* la structure : rail, chevron — gris sombre, jamais de couleur. Ni numéro d'écran (« 1 / 10 »), ni consigne écrite : la flèche du bas, qui s'anime, dit le scroll */
 .dc-rail{position:absolute;bottom:72px;left:50%;transform:translateX(-50%);display:flex;gap:6px;pointer-events:none}
 .dc-rail span{width:18px;height:2px;background:#242424;transition:background .3s}
@@ -4117,29 +4117,15 @@ body.lv-d.rdr-voir #gate-asteroid,body.lv-d.rdr-voir #lvjoy,body.rdr-voir #rdr-f
   opacity:0;transition:opacity .4s ease}
 .dc[data-i="0"] .dc-lead{opacity:1}
 .dc:has(.dc-lead)[data-i="0"] .dc-rail{opacity:0}
-/* L'ORDRE D'APPARITION (Wah, 25/11 : « on affiche d'abord le texte, ensuite vient l'animation qui illustre les
-   propos, et on affiche ensuite le bouton tiroir [Deeper] … et en même temps le bouton call-to-action »).
-   Le moteur pose l'étape sur l'hôte : 0 la phrase se frappe · 1 l'objet paraît · 2 le tiroir et la porte.
+/* L'ORDRE D'APPARITION (Wah, 26/11 : « on affiche d'abord les animations, ensuite la phrase »).
+   ⚠️ L'OBJET NE DISPARAÎT JAMAIS — « tout au long du discover le totehm mute, se transforme mais ne disparaît
+   jamais ». Il n'est donc lié à AUCUNE étape : il reste là, d'un écran à l'autre, et c'est sa FORME qui change.
+   Les étapes ne gouvernent que ce qui s'écrit : 0 l'objet se transforme · 1 la phrase se frappe · 2 la porte.
    Mouvement réduit : tout est là d'emblée. */
-.dc.is-hero .dc-hero,.dc .dc-ill{opacity:0;transition:opacity .6s ease}
-.dc[data-etape="1"] .dc-hero,.dc[data-etape="2"] .dc-hero,
-.dc[data-etape="1"] .dc-s.is-on .dc-ill,.dc[data-etape="2"] .dc-s.is-on .dc-ill{opacity:1}
+.dc-tw{opacity:0;transition:opacity .4s ease}
+.dc[data-etape="1"] .dc-s.is-on .dc-tw,.dc[data-etape="2"] .dc-s.is-on .dc-tw{opacity:1}
 .dc-cta{opacity:0;transition:opacity .5s ease}
 .dc[data-etape="2"] .dc-cta{opacity:1}
-/* LE TIROIR (`.dc-deep`) : « plus de détails », fermé par défaut. Son texte reprend la police des explications de
-   `totehm.space/play_lisbon_street?discover=1` (Space Mono, plus grand, plus clair) — c'est là qu'on LIT. */
-.dc-deep{display:none;align-items:center;gap:8px;margin:0;border:0;padding:9px 16px;border-radius:10px;cursor:pointer;
-  background:none;color:#9a9aa2;font:400 10px/1.2 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;
-  box-shadow:inset 0 0 0 1px #2e2e36;transition:color .15s,box-shadow .15s,opacity .5s ease;opacity:0}
-.dc[data-etape="2"] .dc-s.is-on .dc-deep{display:inline-flex;opacity:1}
-.dc-deep svg{width:9px;height:9px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;
-  transition:transform .3s ease}
-.dc-deep[aria-expanded="true"]{color:#e8e8e8;box-shadow:inset 0 0 0 1px #4a4a54}
-.dc-deep[aria-expanded="true"] svg{transform:rotate(180deg)}
-.dc-more{display:grid;grid-template-rows:0fr;margin:0;transition:grid-template-rows .42s cubic-bezier(.22,.61,.36,1)}
-.dc-more>div{overflow:hidden;min-height:0}
-.dc-deep[aria-expanded="true"]+.dc-more{grid-template-rows:1fr}
-.dc-more .dc-p{margin:14px 0 0;font:400 clamp(15px,4vw,17px)/1.5 'Space Mono',monospace;letter-spacing:0;color:#ddd}
 /* L'OBJET QUI VOYAGE (facultatif : `is-hero` sur l'hôte) — Wah, 24/11 : les écrans forment UN récit, « un objet ne
    disparaît pas pour réapparaître, il se TRANSFORME » (CLAUDE.md, la continuité). Les écrans se succèdent en fondu,
    mais l'objet, lui, VIT AU-DESSUS d'eux : une seule couche (`.dc-hero`), à la place exacte du cadre d'illustration
@@ -4173,8 +4159,7 @@ body.lv-d.rdr-voir #gate-asteroid,body.lv-d.rdr-voir #lvjoy,body.rdr-voir #rdr-f
 @media(max-height:600px){.dc-ill,.dc-hero{display:none}}
 @media(prefers-reduced-motion:reduce){.dc-s,.dc-s.is-on,.dc-s.is-avant{transition:none;transform:none}.dc-next svg{animation:none}.dc.is-overlay,.dc.is-overlay.is-open{transition:none}
   .dc-o{transition:opacity .2s ease}.dc-tw.is-frappe::after{animation:none}
-  .dc.is-hero .dc-hero,.dc .dc-ill,.dc-cta,.dc-deep{opacity:1!important;transition:none}
-  .dc[data-etape] .dc-s.is-on .dc-deep{display:inline-flex}.dc-more{transition:none}}
+  .dc-cta,.dc-tw{opacity:1!important;transition:none}}
 /* ══ fin DISCOVER ══ */
 /* ── 16/11 · L'ACCUEIL : le titre de la vue centrale, le bouton discret, et le Discover en couche ──
    Le titre est une ÉTIQUETTE posée sur le circuit (fond noir, comme les touches de l’accueil) : les racines de l'arbre passent derrière,
@@ -4432,6 +4417,7 @@ div:not(:has(> :not(br,wbr))):hover,
 #set-name:hover,
 .tracking-caption:hover,
 .tracking-form label:hover,
+#lv-account:hover,
 .lv-mono:hover,
 .lv-btn:hover,
 .lv-note:hover,
@@ -4440,6 +4426,7 @@ div:not(:has(> :not(br,wbr))):hover,
 #lv-diag:hover,
 .lvs-sci:hover,
 .lvs-sci b:hover,
+#lv-refine-label:hover,
 #lv-m-say:hover,
 .lvm-who:hover,
 #mb-lock .mbl-t:hover,
@@ -4531,9 +4518,6 @@ div:not(:has(> :not(br,wbr))):hover,
 .dc-x:hover,
 .dc-next:hover,
 .dc-lead:hover,
-.dc-deep:hover,
-.dc-deep[aria-expanded="true"]:hover,
-.dc-more .dc-p:hover,
 .lvp-cta.is-quiet:hover,
 #lvd .lvh-q:hover):where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *)){color:#fff!important}
 .h-text:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::placeholder{color:#fff!important}
@@ -4932,16 +4916,12 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
   <div class="dc-hero" aria-hidden="true"><div class="dc-o" data-o="0 1 2 3 4 5" id="lvd-o"></div></div>
   <div class="dc-stage">
     <div class="dc-s"><div class="dc-ill" aria-hidden="true"></div><h2 class="dc-tw">Make it Happen</h2></div>
-    <div class="dc-s" data-cta="totehm"><div class="dc-ill" aria-hidden="true"></div><h2 class="dc-tw">Create the best strategy and have it in mind all the time</h2><button class="dc-deep" type="button" aria-expanded="false">Deeper <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 4.5 L6 8.5 L10 4.5"/></svg></button><div class="dc-more"><div><p class="dc-p">Built on behavioral science.
-Lay the path to your greatness flat, on one paper. Remember it every day with TotehmBot. Think it through with <svg class="dc-hi" viewBox="0 0 600 200" role="img" aria-label="Higher"><title>Higher</title><use href="#higher-badge"></use></svg> GPT.</p></div></div></div>
-    <div class="dc-s" data-cta="eco"><div class="dc-ill" aria-hidden="true"></div><h2 class="dc-tw">Take real inspiration and have mentors</h2><button class="dc-deep" type="button" aria-expanded="false">Deeper <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 4.5 L6 8.5 L10 4.5"/></svg></button><div class="dc-more"><div><p class="dc-p">Subscribe to a member and enter their ecosystem: their whole life strategy, the private media of their mind, the spots they really use — and you can meet them there.
-Your own TOTEHM can be subscribed to too.</p></div></div></div>
-    <div class="dc-s" data-cta="gpt"><div class="dc-ill" aria-hidden="true"></div><h2 class="dc-tw">Make it happen in the best possible way</h2><button class="dc-deep" type="button" aria-expanded="false">Deeper <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 4.5 L6 8.5 L10 4.5"/></svg></button><div class="dc-more"><div><p class="dc-p">Train your brain to put your strategy into practice: know yourself, keep it in sight, and let <svg class="dc-hi" viewBox="0 0 600 200" role="img" aria-label="Higher"><title>Higher</title><use href="#higher-badge"></use></svg> GPT prepare your next step — with your media, your spots, and real places.</p></div></div></div>
-    <div class="dc-s" data-cta="cloth"><div class="dc-ill" aria-hidden="true"></div><h2 class="dc-tw">Wear your greatness, not someone else’s</h2><button class="dc-deep" type="button" aria-expanded="false">Deeper <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 4.5 L6 8.5 L10 4.5"/></svg></button><div class="dc-more"><div><p class="dc-p">Totehmize an element of your TOTEHM: <svg class="dc-hi" viewBox="0 0 600 200" role="img" aria-label="Higher"><title>Higher</title><use href="#higher-badge"></use></svg> embroidered on the front, your own illustration on the back.
-You remember your way, and the street can read what is behind it.</p></div></div></div>
-    <div class="dc-s" data-cta="club"><div class="dc-ill" aria-hidden="true"></div><h2 class="dc-tw">Grind with the right people, in the right spot, at the right time</h2><button class="dc-deep" type="button" aria-expanded="false">Deeper <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 4.5 L6 8.5 L10 4.5"/></svg></button><div class="dc-more"><div><p class="dc-p">Members publish intentional spots: one Habit, one exact place, one exact time. Join theirs, or publish yours and let them join you.
-
-<a class="dc-lnk" href="/terms" target="_blank" rel="noopener">Simple terms of use</a></p></div></div></div>
+    <div class="dc-s" data-cta="totehm"><div class="dc-ill" aria-hidden="true"></div><h2 class="dc-tw">Create the best strategy and have it in mind all the time</h2></div>
+    <div class="dc-s" data-cta="eco"><div class="dc-ill" aria-hidden="true"></div><h2 class="dc-tw">Take real inspiration and have mentors</h2></div>
+    <div class="dc-s" data-cta="gpt"><div class="dc-ill" aria-hidden="true"></div><h2 class="dc-tw">Make it happen in the best possible way</h2></div>
+    <div class="dc-s" data-cta="cloth"><div class="dc-ill" aria-hidden="true"></div><h2 class="dc-tw">Wear your greatness, not someone else’s</h2></div>
+    <div class="dc-s" data-cta="club"><div class="dc-ill" aria-hidden="true"></div><h2 class="dc-tw">Grind with the right people, in the right spot, at the right time</h2>
+      <div class="dc-row"><a class="dc-lnk" href="/terms" target="_blank" rel="noopener">Simple terms of use</a></div></div>
   </div>
   <div class="dc-cta"><button class="dc-btn is-perfo" id="lvd-cta" type="button">Create my TOTEHM</button><button class="dc-lnk hide" id="lvd-lnk" type="button">Monetize my TOTEHM</button></div>
   <button class="dc-x k2 k2-x" data-hover-art id="lvd-x" type="button" aria-label="Close"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2 L12 12 M12 2 L2 12"/></svg></button>
@@ -9184,7 +9164,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-11-26-touches-accueil';
+const BUILD='2026-11-26-continu';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -16264,18 +16244,16 @@ window.TOTEHM_DISCOVER = (() => {
         if(k < txt.length){ setTimeout(() => pas(k + 1), 21 + Math.random() * 17); return; }
         n.classList.remove('is-frappe'); if(fin) fin(); })(1);
     }
-    /* L'ORDRE (Wah, 25/11) : la phrase se frappe (0), PUIS l'objet l'illustre (1), PUIS le tiroir et la porte (2). */
+    /* L'ORDRE (Wah, 26/11) : l'objet se transforme d'abord (0), PUIS la phrase se frappe (1), PUIS la porte (2).
+       L'objet, lui, n'attend rien et ne s'éteint jamais : il est déjà là, il change de forme. */
     function etapes(){
       clearTimeout(tEtape);
       const pose = k => { if(hote.dataset.etape !== String(k)) hote.dataset.etape = k; };
       if(RM.matches){ pose(2); frapper(); return; }
       pose(0);
-      frapper(() => { if(!hote.isConnected) return; pose(1);
-        tEtape = setTimeout(() => pose(2), 820); });
+      tEtape = setTimeout(() => { if(!hote.isConnected) return; pose(1);
+        frapper(() => { if(hote.isConnected) pose(2); }); }, 760);
     }
-    /* LE TIROIR : un seul écouteur sur l'hôte ; changer d'écran referme ce qui était ouvert. */
-    function tiroirs(ferme){ hote.querySelectorAll('.dc-deep').forEach(b => {
-      if(ferme || b.getAttribute('aria-expanded') === null) b.setAttribute('aria-expanded', 'false'); }); }
     function remettre(){ hote.querySelectorAll('.dc-tw').forEach(n => { delete n.dataset.frappe;
       if(n.dataset.txt) n.textContent = n.dataset.txt; }); }
     function peindre(instant){
@@ -16285,7 +16263,7 @@ window.TOTEHM_DISCOVER = (() => {
       rail.querySelectorAll('span').forEach((s, k) => s.classList.toggle('on', k === i));
       hote.classList.toggle('is-last', i >= ecrans.length - 1);
       hote.dataset.i = i; hote.dataset.n = ecrans.length;
-      objets(); tiroirs(true);
+      objets();
       ajuster();
       etapes();
       if(o.surChangement) o.surChangement(i, ecrans.length);
@@ -16326,12 +16304,6 @@ window.TOTEHM_DISCOVER = (() => {
        Il n'écoute que si le moteur est visible, et que le focus est dedans ou nulle part. */
     window.addEventListener('keydown', e => { if(hote.isConnected && !hote.hidden && !hote.classList.contains('hide') && (hote.contains(e.target) || document.activeElement === document.body)) touche(e); }, true);
     next.addEventListener('click', suivant);
-    hote.addEventListener('click', e => { const b = e.target.closest('.dc-deep'); if(!b || !hote.contains(b)) return;
-      b.setAttribute('aria-expanded', b.getAttribute('aria-expanded') === 'true' ? 'false' : 'true');
-      /* le tiroir change la hauteur de l'écran, donc son centrage : l'objet SUIT la place qui lui est réservée,
-         image par image, le temps de l'ouverture — sinon il resterait en arrière et passerait sur le texte. */
-      const fin = Date.now() + 560;
-      (function suivre(){ cadre(); if(Date.now() < fin) requestAnimationFrame(suivre); })(); });
     window.addEventListener('resize', () => { if(hote.isConnected) requestAnimationFrame(ajuster); });
     if(document.fonts && document.fonts.ready) document.fonts.ready.then(ajuster);
     lire(); peindre(true);
