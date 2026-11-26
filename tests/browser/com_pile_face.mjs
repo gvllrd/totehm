@@ -30,7 +30,7 @@ const guetter=pg=>pg.evaluate(()=>{ const vu=window.__vu={gate:false,folding:fal
         return Math.asin(Math.max(-1,Math.min(1,-m.m13/m.m22)));
       };
       for(const [face,papier,ids] of [
-        ['recto','stage',['fold-x','fold-flip','joy']],['verso','srch-bg',['srch-x','srch-flip']]
+        ['recto','stage',['fold-x','fold-flip','joy','ordbtn']],['verso','srch-bg',['srch-x','srch-flip']]
       ]){
         const angle=rotation(papier);
         if(Math.abs(angle)<.15||Math.abs(angle)>1.4) continue;

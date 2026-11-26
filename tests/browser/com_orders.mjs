@@ -38,7 +38,26 @@ try{
    await open(view);
    const beforeText=await texts();
    const before=await rowIds();check(before.length===3,'Three real rows in '+view);
-   await pg.locator('#ordbtn').click();
+   const order=pg.getByRole('button',{name:'Order by importance',pressed:false});
+   if(view==='habits'){
+    const corner=await order.evaluate(button=>{
+     const paper=document.getElementById('stage').getBoundingClientRect();
+     const close=document.getElementById('fold-x').getBoundingClientRect();
+     const b=button.getBoundingClientRect();
+     const logo=document.getElementById('bigT').getBoundingClientRect();
+     return {sameRow:b.top===close.top,sameSize:b.width===close.width&&b.height===close.height,
+      mirrored:Math.abs(b.left-paper.left-(paper.right-close.right))<1,clearOfLogo:b.right<=logo.left};
+    });
+    check(corner.sameRow&&corner.sameSize&&(width<700||corner.mirrored),'Ordering button mirrors Close in the paper corner');
+    check(corner.clearOfLogo,'Ordering button leaves room for the T logo');
+    if(width>=700){
+     await order.hover();
+     await pg.waitForFunction(()=>new DOMMatrix(getComputedStyle(document.querySelector('.order-middle')).transform).m42<-4.9);
+     check(await order.getAttribute('aria-pressed')==='false','Hover raises a bar without entering order mode');
+    }
+   }
+   await order.click();
+   check(await pg.getByRole('button',{name:'Order by importance',pressed:true}).count()===1,'Ranking toggle reports its active state');
    await pg.locator(`[data-mv="down:${before[0]}"]`).click();
    await pg.locator(`[data-mv="down:${before[0]}"]`).click();
    await pg.waitForFunction(()=>window.__totehm_order().pending===0);
@@ -55,6 +74,7 @@ try{
   // The same saved ranking is rendered when viewing an authorized member.
   await pg.goto(origin+'/totehm?ro=artist#in:visions');
   await pg.waitForFunction(()=>window.__totehm_order?.().loaded&&window.__totehm_zone?.vue==='visions');
+  check(await pg.locator('#ordbtn').isHidden(),'Ordering button stays hidden in read-only mode');
   check(JSON.stringify(await rowIds())===JSON.stringify(orders.vision),'Subscribed member view uses the same saved ranking');
   check(log.rpc.filter(x=>x.name==='element_order_set').length===writes,'Viewing a member never writes rankings');
   await pg.context().close();

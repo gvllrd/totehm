@@ -310,9 +310,8 @@ body.v-repulsions  #t-foot{animation:respire-logo 2.8s ease-in-out infinite}
    lent qu'une respiration humaine au repos, donc calme. */
 @keyframes breathe{0%,100%{opacity:1}50%{opacity:.62}}
 @keyframes wm-blink{0%,55%{opacity:1}56%,100%{opacity:.18}}
-/* 10/11 — DERRIÈRE LE PORTAIL, LE TOTEHM DÉPLOYÉ NE RESPIRE PLUS : ses lettres (des `<g>` SVG, qu'on ne peut pas composer)
-   et les trois traits du classement se repeignaient à chaque image pendant le repli, puis sous l'atterrissage, pour rien. */
-body.gate #wm-O,body.gate #wm-H,body.gate #t-foot,body.gate #ordbtn span{animation:none}
+/* Les lettres du TOTEHM déployé cessent de respirer derrière le portail. */
+body.gate #wm-O,body.gate #wm-H,body.gate #t-foot{animation:none}
 @media(prefers-reduced-motion:reduce){
   #wm-O,#wm-H,#t-foot{animation:none!important}
   body.v-objectives #wm-O,body.v-habits #wm-H,body.v-repulsions #t-foot{opacity:1}
@@ -1107,21 +1106,8 @@ body.v-visions{--paper:#2b3a73}
   .pk-o{padding:11px 12px;font-size:14px}
   .pk-list{max-height:46vh}
   .mini{font-size:12px;padding:4px 8px}
-  /* AU TÉLÉPHONE, LE RAIL SE VOYAIT À PEINE. Un trait de 3 px sur un
-     écran tenu à trente centimètres, ce n'est pas du minimalisme, c'est
-     de l'invisible. Cinq pixels — et le bouton de classement suit, sinon
-     il devient la seule chose fine de l'écran. */
   .habit .tick{width:2px}
   .habit .h-body{margin-left:calc(var(--rl) + var(--rw) + 5px)}
-  /* `span[class]` et pas `span` : la règle de base vit PLUS BAS dans la
-     feuille, et à spécificité égale c'est la dernière qui gagne. On monte
-     d'un cran plutôt que de poser un !important. */
-  /* L'ICÔNE EST TAILLÉE DANS LE RAIL — la règle vit désormais PLUS BAS,
-     hors de ce bloc (voir `#ordbtn .ob-1`). Elle était ici, donc réservée
-     au téléphone, et sur ordinateur la règle générique `#ordbtn span`
-     — postérieure dans la feuille — rendait les trois traits ÉGAUX.
-     Mesuré le 09/09 : 21,75 px les trois. Ce n'était plus un classement,
-     c'était un bloc. */
 }
 
 /* ══ CRÉER, C'EST OUVRIR UNE BOÎTE — PAS CHANGER DE MONDE ════════════
@@ -1461,46 +1447,21 @@ body.v-visions{--paper:#2b3a73}
    et la souris — Pointer Events. `touch-action:none` est OBLIGATOIRE :
    sans lui le navigateur avale le glissement vertical et le classement se
    perd une fois sur deux. */
-/* Le bouton coiffe le RAIL : trois barres blanches STRICTEMENT
-   IDENTIQUES. Chacune fait la largeur du rail (var(--rw)), même
-   épaisseur (2 px), empilées. Le rail est prolongé par trois
-   segments qui en épousent la largeur — le rail devient une pièce
-   du geste de classement.
-   Les trois respirent en harmonie comme le T (`t-slow`, 4,2 s). */
-/* ⚠️ IL DÉBORDAIT DE L'ÉCRAN PAR LA GAUCHE · MESURÉ LE 20/09. Centré
-   sur le rail (`translateX(-50%)`) avec 14 px de marge de chaque côté,
-   son bord gauche tombait à x = -14 au téléphone : un quart de la zone
-   de clic hors de l'écran, et le reste qui venait toucher le T.
-   Il s'aligne maintenant sur le BORD GAUCHE du rail et n'étend sa zone
-   de clic que vers la DROITE — là où il y a de la place. Les trois
-   barres gardent la largeur du rail, donc l'alignement ne bouge pas :
-   c'est la zone de confort qui a changé de côté, pas le dessin. */
-#ordbtn{position:absolute;
-  left:var(--rl);transform:none;
-  top:6px;padding:8px 16px 8px 0;z-index:44;
-  background:none;border:none;cursor:pointer;
-  display:flex;flex-direction:column;align-items:flex-start;gap:3px;
-  line-height:0;font-size:0;
-  -webkit-tap-highlight-color:transparent}
-/* min-height + max-height + flex:0 0 2px : ceinture ET bretelles pour
-   que les 3 barres soient RIGOUREUSEMENT identiques, même sous un flex
-   qui pourrait shrinker la première ou un rendu subpixel qui tricherait. */
-#ordbtn span{display:block;
-  width:var(--rw);height:2px;min-height:2px;max-height:2px;
-  flex:0 0 2px;
-  background:#fff;
-  transition:width .3s ease;
-  animation:t-slow 4.2s ease-in-out infinite}
-/* TROIS BARRES IDENTIQUES, LARGEUR DU RAIL · 09/09/2026. J'avais fait
-   dégressif — trois longueurs différentes disent « menu », pas
-   « classement », et l'icône ne tombait plus en face du rail. Les trois
-   font exactement `--rw` : taillée dans le rail, comme tout le reste.
-   Ces trois lignes suivent immédiatement `#ordbtn span` : à spécificité
-   supérieure ET postérieures, rien ne peut plus les écraser. */
-#ordbtn .ob-1,#ordbtn .ob-2,#ordbtn .ob-3{width:var(--rw)}
-/* En mode classement, la respiration s'arrête : on est dedans. */
-body.ordering #ordbtn span{animation:none;opacity:1}
-@media(prefers-reduced-motion:reduce){#ordbtn span{animation:none}}
+#ordbtn{position:fixed;top:10px;left:10px;z-index:34;color:#fff}
+@media(min-width:700px) and (hover:hover) and (prefers-reduced-motion:no-preference){
+  #ordbtn:hover .order-middle{animation:order-rise .42s ease both}
+  #ordbtn:hover .order-top{animation:order-yield .42s ease both}
+}
+@keyframes order-rise{
+  0%{transform:translate(0,0)}
+  32%{transform:translate(3px,0)}
+  72%{transform:translate(3px,-5px)}
+  100%{transform:translate(0,-5px)}
+}
+@keyframes order-yield{
+  0%,32%{transform:translate(0,0)}
+  72%,100%{transform:translate(0,5px)}
+}
 /* LA BARRE EST DANS LE FLUX, au-dessus de la première ligne. Posée en
    absolu elle traversait le T : le carré n'a pas de place libre en haut,
    et une bande de texte qui coupe le logo, c'est le logo qu'on abîme. */
@@ -1563,7 +1524,7 @@ body.ordering #ordbar{display:block}
 body.ordering .habit .h-body{opacity:.92}
 /* Le chiffre de classement se pose DANS LE RAIL. Le rail s'élargit
    pour le contenir : `body.ordering` redéfinit --rw à 26 px, et
-   comme #rail, .h-body, .tick et #ordbtn s'accrochent tous à --rw,
+   comme #rail, .h-body et .tick s'accrochent tous à --rw,
    toute la colonne pousse et le rail devient la piste du classement.
    Le nombre est centré sur cette piste — en Quantico (28/09). */
 /* ⚠️ MAIS LE T, LUI, NE BOUGE PAS · 22/09/2026. « Quand on appuie sur
@@ -1579,7 +1540,7 @@ body.ordering .habit .h-body{opacity:.92}
 body.ordering{--rw:34px}
 /* LA PISTE DU CLASSEMENT : ↑ · le rang · ↓, empilés dans le rail.
    Le rail s'élargit pour les contenir (`body.ordering{--rw:34px}`) et
-   comme #rail, .h-body, .tick et #ordbtn s'y accrochent tous, toute la
+   comme #rail, .h-body et .tick s'y accrochent tous, toute la
    colonne pousse — le rail DEVIENT la piste. Le nombre est en Quantico
    (28/09 : plus de Bebas Neue dans le Totehm) — c'est une prise, donc
    la police de l'action. */
@@ -2411,12 +2372,13 @@ body.gate.entered #terms-corner{opacity:0;pointer-events:none}
 .face-controls{position:fixed;inset:0;pointer-events:none}
 #verso-controls{z-index:4}
 #recto-controls{z-index:34}
-:where(#recto-controls) :is(#fold-x,#fold-flip,#joy){pointer-events:auto}
+:where(#recto-controls) :is(#fold-x,#fold-flip,#joy,#ordbtn){pointer-events:auto}
 #srch-x{position:fixed;top:10px;right:10px;z-index:4;pointer-events:none}
 #srch.is-open #srch-x{pointer-events:auto}
 #fold-x{position:fixed;top:10px;right:10px;z-index:34}
-body.folding :is(#fold-x,#fold-flip){visibility:hidden;pointer-events:none}
-.k2.is-navy:is(#fold-x,#fold-flip):where(:not(:active,.is-press)){
+body.gate:not(.entered) #ordbtn,
+body.folding :is(#fold-x,#fold-flip,#ordbtn){visibility:hidden;pointer-events:none}
+.k2.is-navy:is(#fold-x,#fold-flip,#ordbtn):where(:not(:active,.is-press)){
   box-shadow:inset 0 1px 0 rgba(255,255,255,.09),inset 0 -2px 3px rgba(0,0,0,.38),0 1px 3px rgba(0,0,0,.24)}
 /* ══ 16/11 · PILE OU FACE, SUR ORDINATEUR ══ Wah : « sur ordinateur, ce serait bien d'avoir vraiment le verso du TOTEHM
    comme le recto : actuellement le verso, contrairement au recto, est en plein écran ; deux facettes facilement
@@ -2430,9 +2392,11 @@ body.folding :is(#fold-x,#fold-flip){visibility:hidden;pointer-events:none}
   #srch.is-show::before{opacity:1}
   #srch-ui{left:50%;top:50%;right:auto;bottom:auto;transform:translate(-50%,-50%);
     width:calc(var(--stage) - 2 * var(--pad));height:calc(var(--stage) - 2 * var(--pad));padding:30px 24px 24px}
-  #srch-x,#srch-flip,#fold-x,#fold-flip{
-    top:calc(50% - var(--stage) / 2 + var(--pad) * .5);
-    right:calc(50% - var(--stage) / 2 + var(--pad) * .5 + var(--flip-offset,0px))}
+  :is(#srch-x,#srch-flip,#fold-x,#fold-flip,#ordbtn){
+    --paper-control-inset:calc(50% - var(--stage) / 2 + var(--pad) * .5);
+    top:var(--paper-control-inset)}
+  #srch-x,#srch-flip,#fold-x,#fold-flip{right:calc(var(--paper-control-inset) + var(--flip-offset,0px))}
+  #ordbtn{left:var(--paper-control-inset)}
   #srch-flip,#fold-flip{--flip-offset:44px}
   .flip-btn{display:inline-flex}
   .flip-btn>svg{transition:transform .35s ease}
@@ -2441,7 +2405,7 @@ body.folding :is(#fold-x,#fold-flip){visibility:hidden;pointer-events:none}
   #srch.is-open #srch-flip{pointer-events:auto}
   /* Les commandes partagent l'axe de rotation de leur papier et restent hors des zones de défilement. */
   body.is-coin #recto-controls{z-index:231}
-  body.is-coin :is(#recto-controls,#verso-controls) :is(#fold-x,#fold-flip,#srch-x,#srch-flip,#joy){pointer-events:none}
+  body.is-coin :is(#recto-controls,#verso-controls) :is(#fold-x,#fold-flip,#srch-x,#srch-flip,#joy,#ordbtn){pointer-events:none}
   body.is-coin #srch.is-on .face-controls .srch-after{opacity:1;visibility:visible;transition:none}
   #fold-flip{position:fixed;z-index:34}
   body.gate #fold-flip{opacity:0;pointer-events:none;transition:opacity .55s ease}
@@ -2477,14 +2441,14 @@ body.gate.entered #gate-bottom,
 /* ══ L'UI de l'app : masquée pendant l'état 1, fondu entrant pendant l'état 2 ══ */
 body.gate #rail,body.gate #bigT,body.gate #wordmark,
 body.gate #floorview,body.gate #ordbar,
-body.gate #filter-arrow,body.gate #fv-status,body.gate #fold-x,
+body.gate #filter-arrow,body.gate #fv-status,body.gate #fold-x,body.gate #ordbtn,
 body.gate #views,body.gate #vname,
 body.gate #filter-badge{
   opacity:0;pointer-events:none;transition:opacity .55s ease}
 body.gate.entered #rail,body.gate.entered #bigT,body.gate.entered #wordmark,
 body.gate.entered #floorview,
 body.gate.entered #filter-arrow,
-body.gate.entered #fv-status,body.gate.entered #fold-x,
+body.gate.entered #fv-status,body.gate.entered #fold-x,body.gate.entered #ordbtn,
 body.gate.entered #views,body.gate.entered #ordbar,
 body.gate.entered #filter-badge{
   opacity:1;pointer-events:auto;transition:opacity .55s ease var(--gate-reveal)}
@@ -2496,7 +2460,7 @@ body.gate.entered #filter-badge{
   #gate-logo .glayer,#gl-paint{transition-duration:.01ms!important}
   body.gate #rail,body.gate #bigT,body.gate #wordmark,
   body.gate #floorview,body.gate #ordbar,
-  body.gate #filter-arrow,body.gate #fv-status,body.gate #fold-x,
+  body.gate #filter-arrow,body.gate #fv-status,body.gate #fold-x,body.gate #ordbtn,
   body.gate #filter-badge{transition-duration:.01ms!important}
 }
 /* ── Gate: zone basse (Search + phrase) — margin-top:auto pousse vers le bas ── */
@@ -2639,9 +2603,6 @@ body.gate.entered #filter-badge{
   /* Le rail s'arrête au T en haut et au wordmark en bas, au lieu de courir
      d'un bord à l'autre : 30px, la même valeur que #bigT et #wordmark. */
   #rail{top:30px;bottom:30px}
-  /* #ordbtn coiffe le rail à son sommet : top:30 = même origine que le
-     rail lui-même. Le bouton est la finalité visible du rail. */
-  #ordbtn{top:30px}
   /* Les carrés sont centrés sous le T dans les deux cas : le T est plus
      petit ici (46px), la rangée remonte d'autant. */
   #vname{top:124px}
@@ -2777,42 +2738,16 @@ body.gate.entered #filter-badge{
 
 
 
-/* ══ MOBILE — COIN HAUT GAUCHE HARMONISÉ AVEC LA CROIX · 07/09/2026 ═════
-   Sur mobile, #ordbtn (classer) prend la même géométrie que #fold-x — même
-   top, même padding, même dimensions — pour créer un tout harmonieux avec
-   la croix à droite. #conn-bar quitte le coin gauche (il y a maintenant
-   l'icône classer) et se pose au-dessus du T, centré. Le T descend d'une
-   ligne pour laisser la place.
-   Le rail se colle au bord GAUCHE (var(--rl):0) : les boîtes d'habitudes
-   récupèrent la largeur qu'occupait l'espace entre le bord et le rail.
-   Le tick devient le bord gauche de la boîte : progression d'opacité
-   dans la liste, couleur d'intention pleine en haut. */
+/* Sur mobile, le rail se colle au bord gauche pour libérer la largeur des boîtes. */
 @media(max-width:699px){
-  /* LE RAIL EST LE LOGO — au téléphone il faut le VOIR. À 6 px sur un
-     écran tenu à trente centimètres, ce n'est pas du minimalisme, c'est
-     de l'invisible. `--rw` est le jeton unique : le rail, les traits du
-     bouton de classement et la marge des boîtes s'y accrochent tous, donc
-     un seul chiffre les épaissit ensemble. */
-  /* LE RAIL EST LE LOGO — au téléphone il faut le VOIR, sans le laisser
-     devenir une barre. 8 px : un cran au-dessus des 6 px d'origine, et
-     l'icône s'y accroche par `--rw`, donc les deux restent taillés dans
-     la même mesure. */
   /* ⚠️ LA BANDE HAUTE, AU TÉLÉPHONE. Un seul chiffre : `--croix-t`.
      Il y avait ici DEUX paires `#views`/`#ordbar` dans le même bloc —
      88/146 puis 112/166 — dont la première ne servait à rien : la
      seconde gagnait. C'est exactement comme ça qu'on perd la trace
      d'une mesure. Il n'en reste qu'une. */
   :root{--rl:0px;--rw:8px;--rw0:8px;--croix-t:112px}
-  /* #ordbtn hérite du positionnement de base : centré sur le rail,
-     tout en haut. Sur mobile le rail commence à left:0 : le bouton est
-     centré sur --rw/2 = 3px. Un peu plus haut qu'en desktop puisqu'il
-     n'y a pas de padding de #stage à respecter. */
-  #ordbtn{top:4px}
-  /* L'accès membre quitte le coin gauche (repris par #ordbtn) et se pose
-     au-dessus du T, centré. `body:not(.gate)` : dans l'atterrissage,
-     #conn-bar garde sa place d'origine — le logo composé du gate occupe
-     déjà le centre. */
-    #vname{top:142px}
+  #bigT{left:52px}
+  #vname{top:142px}
   /* Rail fin et sourd — une trace, pas une bande. Il tient la colonne du
      regard sans peser. */
   #rail{background:rgba(255,255,255,.16)}
@@ -3278,6 +3213,11 @@ body.gate:not(.member):not(.ses-attente){--lv-y:32dvh}
 #lv-tap{display:flex;align-items:center;justify-content:center;gap:0;background:#000;border:0;border-radius:10px;padding:4px 10px; /* la légende coupe les racines de l'arbre, comme une étiquette sur un circuit */
   font:700 9.5px/1.4 'Space Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:#9a9aa2;white-space:nowrap;transition:opacity .3s ease}
 #lv-tap button{background:none;border:0;padding:0;font:inherit;letter-spacing:inherit;text-transform:inherit;color:inherit;cursor:pointer}
+#lv-tap svg{display:none;width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+#lv-tap.is-own{gap:8px}
+#lv-tap.is-own button{display:grid;place-items:center;width:32px;height:32px}
+#lv-tap.is-own svg{display:block}
+#lv-tap.is-own :is(.lvt-label,.lvt-sep){display:none}
 #lv-tap button:focus-visible{outline:1px solid #fff;outline-offset:3px}
 /* ══ LES TOUCHES DE L'ATTERRISSAGE · 25/11/2026 ══ Wah : « enlève les deux boutons [Mine] et [MEMBERS] … à la place
    tu mets le même rectangle SELECT de la manette (intitulé en dessous, dans la police SPACE) ; quand l'utilisateur
@@ -4854,7 +4794,7 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
         <!-- ⚠️ 18/10 — CHACUN FAIT CE QU'IL DIT (règle du 06/10). Depuis que `#conn-bar` est parti,
              « Turn to configure it » est la SEULE porte vers le verso quand le geste n'est pas
              disponible (mouvement réduit, clavier) : c'est donc un vrai bouton, pas une légende. -->
-        <div id="lv-tap" class="hide"><button id="lv-tap-open" type="button">Tap to open it</button><span class="lvt-sep"> · </span><button id="lv-tap-turn" type="button">Turn to configure it</button></div>
+        <div id="lv-tap" class="hide"><button id="lv-tap-open" type="button"><span class="lvt-label">Tap to open it</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3l7 5-7 5z"/></svg></button><span class="lvt-sep"> · </span><button id="lv-tap-turn" type="button"><span class="lvt-label">Turn to configure it</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 7a5 5 0 1 1 1 5M3 3v4h4"/></svg></button></div>
         <div id="lv-keys" class="lv-act" role="group" aria-label="Controller keys">
           <button type="button" id="lv-m-sel" class="k2r" data-hover-art aria-label="My TOTEHM"><i class="k2k" aria-hidden="true"></i><span class="k2l"><span class="lvm-lab">Mine</span><span class="lvm-who" id="lv-m-who"></span></span></button>
           <button type="button" id="lv-tree-k" class="k2r is-mode" data-hover-art aria-pressed="false" aria-label="Tree"><i class="k2k" aria-hidden="true"></i><span class="k2l">Tree</span></button>
@@ -5134,6 +5074,13 @@ You remember your way, and the street can read what is behind it.</p></div></div
 </svg>
 
 <div id="recto-controls" class="face-controls">
+  <button id="ordbtn" class="sink-el k2 is-navy" type="button" aria-label="Order by importance" aria-pressed="false">
+    <svg viewBox="0 0 16 16" aria-hidden="true">
+      <path class="order-top" d="M3 3h10"/>
+      <path class="order-middle" d="M3 8h8"/>
+      <path d="M3 13h6"/>
+    </svg>
+  </button>
   <!-- La croix : referme le Totehm et rejoue le déploiement à l'envers. -->
 
   <button id="fold-x" data-hover-art class="sink-el k2 k2-x is-navy" type="button" aria-label="Close my Totehm">
@@ -5182,12 +5129,6 @@ You remember your way, and the street can read what is behind it.</p></div></div
 <div id="dit" class="sink-el" role="status" aria-live="polite"></div>
 <button id="filter-arrow" class="sink-el" aria-label="Open filter" hidden>
   <svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12 L12 3 L22 12"/></svg>
-</button>
-
-<!-- LE MODE IMPORTANCE. Trois traits dégressifs : c'est un classement,
-     pas un menu. Il vit DANS #stage — donc dans le carré sur desktop. -->
-<button id="ordbtn" class="sink-el" type="button" aria-label="Order by importance">
-  <span class="ob-1"></span><span class="ob-2"></span><span class="ob-3"></span>
 </button>
 
 <div id="bigT" class="sink-el"><svg id="ui-t" viewBox="79.832 47.921 66.789 66.932" role="img" aria-label="T"><defs><clipPath id="tut_ad60c268aa"><path d="M 0.871094 1.027344 L 67.59375 1.027344 L 67.59375 10.664062 L 0.871094 10.664062 Z M 0.871094 1.027344 " clip-rule="nonzero"/></clipPath><clipPath id="tut_f37d153e97"><path d="M 0.871094 0.0273438 L 67.59375 0.0273438 L 67.59375 9.664062 L 0.871094 9.664062 Z M 0.871094 0.0273438 " clip-rule="nonzero"/></clipPath><clipPath id="tut_0eae0d8cca"><rect x="0" width="68" y="0" height="10"/></clipPath><clipPath id="tut_d380122ed3"><path d="M 29.410156 1.027344 L 39.050781 1.027344 L 39.050781 67.75 L 29.410156 67.75 Z M 29.410156 1.027344 " clip-rule="nonzero"/></clipPath><clipPath id="tut_75ca9fbfbb"><path d="M 0.410156 0.0273438 L 10.050781 0.0273438 L 10.050781 66.75 L 0.410156 66.75 Z M 0.410156 0.0273438 " clip-rule="nonzero"/></clipPath><clipPath id="tut_92fddf9f0e"><rect x="0" width="11" y="0" height="67"/></clipPath><clipPath id="tut_1e85f52e0e"><path d="M 21.183594 63.386719 L 47.28125 63.386719 L 47.28125 67.75 L 21.183594 67.75 Z M 21.183594 63.386719 " clip-rule="nonzero"/></clipPath><clipPath id="tut_6c7bfd0f9f"><path d="M 0.183594 0.386719 L 26.28125 0.386719 L 26.28125 4.75 L 0.183594 4.75 Z M 0.183594 0.386719 " clip-rule="nonzero"/></clipPath><clipPath id="tut_7d4c700d36"><rect x="0" width="27" y="0" height="5"/></clipPath><clipPath id="tut_ffb4264ddd"><rect x="0" width="68" y="0" height="68"/></clipPath></defs><g transform="matrix(1, 0, 0, 1, 79, 47)"><g clip-path="url(#tut_ffb4264ddd)"><g clip-path="url(#tut_ad60c268aa)"><g transform="matrix(1, 0, 0, 1, 0.000000000000014211, 1)"><g clip-path="url(#tut_0eae0d8cca)"><g clip-path="url(#tut_f37d153e97)"><path fill="#ffffff" d="M 0.871094 0.0273438 L 67.582031 0.0273438 L 67.582031 9.664062 L 0.871094 9.664062 Z M 0.871094 0.0273438 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g><g clip-path="url(#tut_d380122ed3)"><g transform="matrix(1, 0, 0, 1, 29, 1)"><g clip-path="url(#tut_92fddf9f0e)"><g clip-path="url(#tut_75ca9fbfbb)"><path fill="#ffffff" d="M 10.050781 0.0273438 L 10.050781 66.738281 L 0.410156 66.738281 L 0.410156 0.0273438 Z M 10.050781 0.0273438 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g><g id="t-foot" clip-path="url(#tut_1e85f52e0e)"><g transform="matrix(1, 0, 0, 1, 21, 63)"><g clip-path="url(#tut_7d4c700d36)"><g clip-path="url(#tut_6c7bfd0f9f)"><path fill="#ffffff" d="M 26.28125 4.75 L 0.183594 4.75 L 0.183594 0.386719 L 26.28125 0.386719 Z M 26.28125 4.75 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g></g></g></svg></div>
@@ -9340,6 +9281,7 @@ function paintZone(){
   document.body.classList.toggle('v-visions',view==='visions');
   document.body.classList.toggle('o-live',!!oLive);
   document.body.classList.toggle('ordering',ordering);
+  $('ordbtn').setAttribute('aria-pressed',String(ordering));
   /* ── LE TITRE ET LES QUATRE CURSEURS ──────────────────────────────
      Tout se peint ici, à chaque rendu : un curseur qui reste affiché
      alors que sa vue n'a plus de voisin est un bouton mort. */
@@ -14563,7 +14505,8 @@ window.addEventListener('pageshow',e=>{
       if(CLUB.member&&$('lv-m-say').textContent===HORS_CLUB) direMembers('');
       { const f=$('fold-flip'); if(f) f.setAttribute('aria-label',mode==='members'?'Turn it over · their subscription':'Turn it over · my settings'); }
       const t=$('lv-tap-turn'); if(t){ const sou=window.matchMedia('(hover:hover)').matches;
-        t.textContent=(sou?'Turn':'Swipe')+(mode==='members'?' to search':' to configure it'); }
+        t.querySelector('.lvt-label').textContent=(sou?'Turn':'Swipe')+(mode==='members'?' to search':' to configure it');
+        t.setAttribute('aria-label',mode==='members'?'Search members':'Configure Totehm'); }
     }
     /* Le papier redescend chez lui et se remet sur son recto ; posé, il rend son réseau (celui du membre trouvé, ou le mien). */
     function rentrer(fini){
@@ -15685,8 +15628,12 @@ window.addEventListener('pageshow',e=>{
       /* Sans compte : ce que ça fait et pourquoi ça marche. Avec un compte : le geste, rien d'autre — chez un
          membre aussi (20/10 sexies) : tap = SON Totehm, tourner = chercher un autre membre. */
       const sou=window.matchMedia('(hover:hover)').matches;
-      $('lv-tap-open').textContent=MB.verrou?'Subscribe to open it':sou?'Click to open it':'Tap to open it';
-      $('lv-tap-turn').textContent=(sou?'Turn':'Swipe')+(chez?' to search':' to configure it');
+      const ouvrir=$('lv-tap-open'), retourner=$('lv-tap-turn');
+      ouvrir.querySelector('.lvt-label').textContent=MB.verrou?'Subscribe to open it':sou?'Click to open it':'Tap to open it';
+      retourner.querySelector('.lvt-label').textContent=(sou?'Turn':'Swipe')+(chez?' to search':' to configure it');
+      ouvrir.setAttribute('aria-label',MB.verrou?'Subscribe to open it':'Open Totehm');
+      retourner.setAttribute('aria-label',chez?'Search members':'Configure Totehm');
+      $('lv-tap').classList.toggle('is-own',m);
       $('lv-tap').classList.toggle('hide',!(m||chez));
       $('lv-pitch').classList.toggle('hide',m||chez);
       if(!m) return;

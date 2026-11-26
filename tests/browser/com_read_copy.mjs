@@ -19,7 +19,7 @@ try{
     jamais dans son Totehm déployé —, et [Members] retourne le TOTEHM sur son verso, en mode recherche (18/11). */
  {const {pg,log}=await page(browser,{dir:'com',origin,rpc:Object.assign({},rpc,{member_media:{ok:true,items:[]},club_spots_of:{ok:true,items:[]}}),tables:{profiles:[{pseudo:'wah'}]}});
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(700);
-  ok(/^(Tap|Click) to open it · (Swipe|Turn) to configure it( · Discover)?$/.test((await pg.textContent('#lv-tap')).trim())&&await pg.isVisible('#lv-tap'),'au centre : « Tap to open it · Turn to configure it » (15/10 bis)');
+  ok(!await pg.isVisible('#lv-tap .lvt-label')&&await pg.isVisible('#lv-tap-open svg')&&await pg.isVisible('#lv-tap-turn svg'),'au centre : les deux actions sont disponibles sans consigne visible');
   await pg.evaluate(()=>{window.__ouvert=[];window.open=(u)=>{window.__ouvert.push(u);return null;};});
   /* 18/11 (Wah) : [Members] retourne le TOTEHM sur son verso, en mode recherche — un verso VIERGE, pas le mien */
   await pg.click('#lv-m-sel');
