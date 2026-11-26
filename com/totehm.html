@@ -2231,6 +2231,9 @@ body.is-door #gate-door{opacity:1;transform:none;visibility:visible;pointer-even
 body.gate.entered #gate-door{opacity:0;visibility:hidden}
 #gate-door #mw-out-state,#gate-door #mw-claim-state{width:100%}
 #gate-door .mw-input{margin-bottom:0}
+#mw-email-form{display:flex;align-items:stretch;gap:6px}
+#mw-email-form .mw-input{flex:1;min-width:0}
+#mw-send-code{flex:none;padding-inline:8px;letter-spacing:.06em}
 /* 11/10 — sans email : un compte invité Supabase (anonyme), le Totehm vit dans le nuage
    sous CET appareil ; « save it with my email » le rattache au même compte. */
 .mw-guest-start{border:0;border-radius:10px;padding:9px 14px;background:#1f1f24;color:#cfcfd6;cursor:pointer;
@@ -2917,6 +2920,10 @@ body:not(.gate) #lv,body.entered #lv{display:none}
 body.is-door #lv-c-acts,body.is-door #lv-slogan,body.is-door #lv-sell{
   visibility:hidden;pointer-events:none}
 body.is-door #lv{pointer-events:none}
+#lv-account{position:absolute;top:max(14px,env(safe-area-inset-top));right:max(16px,env(safe-area-inset-right));
+  border:0;background:none;color:#b8b8c2;padding:6px;cursor:pointer;
+  font:700 10px/1.4 'Space Mono',monospace;letter-spacing:.1em;text-transform:uppercase}
+body.ses-attente #lv-account,body.is-door #lv-account{visibility:hidden;pointer-events:none}
 /* ⚠️ 23/10 — LE REPLI EST LE DÉPLOIEMENT À L'ENVERS : au départ, l'atterrissage (légende, MINE/MEMBERS, badge, manette)
    disparaît d'un coup ; au retour il ne revient qu'une fois le papier posé (fin de `folding`), en fondu — jamais par-dessus
    le papier encore grand. Les traits et la boîte (`#lv-ram`, `#lv-proc`) sont hors de `#lv` : ils rentrent avec lui. */
@@ -4698,11 +4705,14 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
        champs sont ceux de l'ancienne fenêtre membre, déplacés (mêmes
        nœuds, mêmes écouteurs). -->
   <div id="gate-door">
-    <div class="door-q" id="door-q">Sign up to open it</div>
+    <div class="door-q" id="door-q">Sign in with your email</div>
     <div id="mw-out-state">
-      <input class="mw-input" id="mw-email" type="email" placeholder="your email" autocomplete="email">
-      <input class="mw-input hide" id="mw-code" inputmode="numeric" maxlength="6" placeholder="6-digit code">
-      <div class="mw-note dim" id="mw-note"></div>
+      <form id="mw-email-form">
+        <input class="mw-input" id="mw-email" type="email" placeholder="your email" aria-label="Email" autocomplete="email" enterkeyhint="send" required>
+        <button class="mw-guest-start" id="mw-send-code" type="submit">Send code</button>
+      </form>
+      <input class="mw-input hide" id="mw-code" inputmode="numeric" placeholder="6-digit code" aria-label="Verification code" autocomplete="one-time-code">
+      <div class="mw-note dim" id="mw-note" role="status"></div>
       <button class="mw-guest-start hide" id="mw-guest" type="button">Start without email</button>
       <div class="mw-note dim hide" id="mw-guest-hint">no email · my TOTEHM stays on this device until I save it</div>
     </div>
@@ -4766,6 +4776,7 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
        gauche ni de droite : le doigt, le trackpad, la molette, les flèches et deux chevrons discrets. -->
   <div id="lv">
     <section class="lv-pane" id="lv-c" aria-label="My TOTEHM">
+      <button type="button" id="lv-account" class="lv-act">Sign in</button>
       <!-- ══ 20/10 sexies · MEMBERS ══ Wah : « quand on cherche un Totehm, on oublie la galaxie : on agrandit le TOTEHM et
            son socle processor tout en retournant le totehm en mode verso, avec l'invitation directe à entrer un
            identifiant ». La saisie vit SUR le dos du papier agrandi (`MB`), ancrée en haut (le clavier mange le bas). -->
@@ -12267,6 +12278,7 @@ function NameSearch({input,results,note,vide=true,onResults=()=>{},onRows=null,c
    Il ne reste ici que l'état `body.member`, que toute la feuille lit. */
 function connPaint(){
   document.body.classList.toggle('member',inscrit());
+  $('lv-account').textContent=inscrit()?'My account':'Sign in';
   paintAsteroid();
 }
 /* ══ LE DOS DU PAPIER PORTE LE NOM · 25/09 → 02/10/2026 ════════════
@@ -12533,7 +12545,7 @@ function champPorte(){
 }
 function peindrePorte(){
   const q=$('door-q'); if(!q) return;
-  q.textContent= !me ? ($('mw-code').classList.contains('hide')?'Sign up to open it':'The code from your email')
+  q.textContent= !me ? ($('mw-code').classList.contains('hide')?'Sign in with your email':'The code from your email')
                : !myProfile&&!guest() ? 'Name your Totehm' : '';
   peindreInvite();
   /* ⚠️ LA QUESTION CHANGE, LE CURSEUR SUIT. Le code vérifié, son champ
@@ -12692,25 +12704,43 @@ memberPaint=function(){
 $('mw-close').onclick=()=>{clearTimeout(mwNameTimer);closeMember();};
 /* 15/10 : plus de fond cliquable — le verso a sa croix, et une seule sortie vaut mieux que deux. */
 
-let mwEmail='';
-$('mw-email').addEventListener('keydown',async e=>{
-  if(e.key!=='Enter')return;
-  const v=$('mw-email').value.trim(), note=$('mw-note');
+let mwEmail='', mwSending=false, mwVerifying=false;
+const mwSendCode=$('mw-send-code');
+function mwCodeStep(){
+  $('mw-code').classList.remove('hide');
+  mwSendCode.textContent='Resend code';
+  peindrePorte();
+}
+$('mw-email-form').addEventListener('submit',async e=>{
+  e.preventDefault();
+  if(me||mwSending||mwVerifying) return;
+  const email=$('mw-email'), code=$('mw-code'), v=email.value.trim(), note=$('mw-note');
   if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)){note.className='mw-note no';note.textContent='invalid email';return;}
+  mwSending=true; mwSendCode.disabled=true; email.disabled=true; code.disabled=true;
+  peindreInvite();
   note.className='mw-note dim';note.textContent='sending…';
-  /* 14/11 — l'email EN VOL est retenu (`tools/otp_signin.js`) : un onglet déchargé pendant qu'on va lire
-     son code dans sa boîte ne perd plus l'étape du code. C'était la première cause des deux saisies. */
-  if(await TOTEHM_OTP.envoyer(sb,v)){note.className='mw-note no';note.textContent='try again in a minute';return;}
-  mwEmail=v;
+  let error;
+  try{ error=await TOTEHM_OTP.envoyer(sb,v); }
+  catch(e){ error=e; }
+  finally{
+    mwSending=false; mwSendCode.disabled=false; email.disabled=false; code.disabled=false;
+  }
+  if(error){
+    note.className='mw-note no';
+    note.textContent=error.status===429?'wait a minute, then resend the code':'could not send the code — try again';
+    peindrePorte();
+    return;
+  }
+  mwEmail=v; code.value='';
   note.className='mw-note ok';note.textContent='code sent — check your email';
-  $('mw-code').classList.remove('hide');peindrePorte();setTimeout(()=>$('mw-code').focus(),80);
+  mwCodeStep();
 });
 /* Un code demandé AVANT un rechargement : la porte reprend à l'étape du code. */
 function mwReprendre(){
   if(me||mwEmail) return;
   const a=TOTEHM_OTP.attendu(); if(!a) return;
   mwEmail=a; const e=$('mw-email'); if(e&&!e.value) e.value=a;
-  $('mw-code').classList.remove('hide');
+  mwCodeStep();
   const n=$('mw-note'); if(n&&!n.textContent){ n.className='mw-note dim'; n.textContent='enter the code sent to your email'; }
 }
 /* 11/10 — LE CODE VÉRIFIÉ NE VIDE PLUS RIEN AVANT L'ARRIVÉE DU TOTEHM.
@@ -12719,29 +12749,31 @@ function mwReprendre(){
    la fois (le collage iOS déclenche deux `input`), les champs restent remplis
    et grisés, la porte dit « opening my TOTEHM… » jusqu'à ce que la DERNIÈRE
    lecture de session soit finie (`sesWait`). */
-let mwVerifying=false;
 $('mw-code').addEventListener('input',async()=>{
   const c=$('mw-code'), t=c.value.replace(/\D/g,'').slice(0,6), note=$('mw-note');
   if(t!==c.value) c.value=t;
-  if(t.length!==6||mwVerifying)return;
-  mwVerifying=true; c.disabled=true; $('mw-email').disabled=true; document.body.classList.add('is-verifying');
+  if(t.length!==6||mwSending||mwVerifying)return;
+  mwVerifying=true; c.disabled=true; $('mw-email').disabled=true; mwSendCode.disabled=true;
+  document.body.classList.add('is-verifying');
   note.className='mw-note dim';note.textContent='verifying…';
   /* 14/11 — UN SEUL ESSAI À LA FOIS, MÊME SI LE REMPLISSAGE AUTOMATIQUE LÈVE PLUSIEURS `input` : le code
      est à usage unique, donc le deuxième appel disait « wrong code » juste après une connexion réussie.
      `TOTEHM_OTP` rend `busy` (on ignore) ou `deja` (le même code, déjà accepté). */
-  const r=await TOTEHM_OTP.verifier(sb,t,mwEmail);
-  if(r.why==='busy'||r.why==='short'){ mwVerifying=false; c.disabled=false; $('mw-email').disabled=false;
-    document.body.classList.remove('is-verifying'); return; }
+  const r=await TOTEHM_OTP.verifier(sb,t,mwEmail).catch(()=>({why:'network'}));
   if(!r.ok){ mwVerifying=false; c.disabled=false; $('mw-email').disabled=false; document.body.classList.remove('is-verifying');
+    mwSendCode.disabled=false;
+    if(r.why==='busy'||r.why==='short') return;
     note.className='mw-note no';
-    note.textContent=r.why==='expired'?'code expired — ask for a new one':r.why==='email'?'enter your email again':'wrong code';
+    note.textContent=r.why==='expired'?'code expired — resend the code':r.why==='email'?'enter your email again'
+                    :r.why==='network'?'could not verify the code — try again':'wrong code';
     if(r.why==='email'){ try{ $('mw-email').focus(); }catch(_){} } else try{ c.select(); }catch(_){}
     return; }
   note.className='mw-note ok';note.textContent='opening my TOTEHM…';
   try{ await sessionChange(); await sesWait(); }
   finally{
     mwVerifying=false; c.disabled=false; $('mw-email').disabled=false; document.body.classList.remove('is-verifying');
-    if(me){ c.value=''; $('mw-email').value=''; c.classList.add('hide'); note.textContent=''; }
+    mwSendCode.disabled=false;
+    if(me){ mwEmail=''; c.value=''; $('mw-email').value=''; c.classList.add('hide'); mwSendCode.textContent='Send code'; note.textContent=''; }
     peindrePorte();
   }
 });
@@ -12806,7 +12838,7 @@ function peindreInvite(){
   $('mw-guest').classList.toggle('hide',!on); $('mw-guest-hint').classList.toggle('hide',!on);
 }
 $('mw-guest').onclick=async()=>{
-  if(me||mwVerifying) return;
+  if(me||mwSending||mwVerifying) return;
   const note=$('mw-note'), g=$('mw-guest');
   mwVerifying=true; g.disabled=true; note.className='mw-note dim'; note.textContent='opening my TOTEHM…';
   const {error}=await sb.auth.signInAnonymously();
@@ -15789,6 +15821,11 @@ window.addEventListener('pageshow',e=>{
       quandLibre(()=>{ if(libre()&&vue==='c'&&!occupe()) enter(); });
     }
     $('lv-tap-open').onclick=ouvrirDepuisAccueil;
+    $('lv-account').onclick=()=>quandLibre(()=>{
+      if(!libre()||vue!=='c'||occupe()) return;
+      if(inscrit()) ouvrirCompte();
+      else if(ouvrirPorte(null)) LA_PORTE.reste=ouvrirCompte;
+    });
     function ajouterDepuisAccueil(v,ouvrir){
       if(!libre()||occupe()||vue!=='c'||mode!=='mine'||RO) return;
       if(!inscrit()){
