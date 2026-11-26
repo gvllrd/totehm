@@ -30,11 +30,11 @@ const guetter=pg=>pg.evaluate(()=>{ const vu=window.__vu={gate:false,folding:fal
         return Math.asin(Math.max(-1,Math.min(1,-m.m13/m.m22)));
       };
       for(const [face,papier,ids] of [
-        ['recto','stage',['fold-x','fold-flip']],['verso','srch-bg',['srch-x','srch-flip']]
+        ['recto','stage',['fold-x','fold-flip','joy']],['verso','srch-bg',['srch-x','srch-flip']]
       ]){
         const angle=rotation(papier);
         if(Math.abs(angle)<.15||Math.abs(angle)>1.4) continue;
-        vu.ecartBoutons=Math.max(vu.ecartBoutons,Math.abs(angle-rotation(face+'-buttons')));
+        vu.ecartBoutons=Math.max(vu.ecartBoutons,Math.abs(angle-rotation(face+'-controls')));
         if(ids.every(id=>{
           const c=getComputedStyle(document.getElementById(id));
           return c.visibility==='visible'&&Number(c.opacity)>.9&&c.pointerEvents==='none';
@@ -75,7 +75,7 @@ try{
   ok(!e.gate&&!e.verso&&d.recto,'ordinateur · ⟲ sur le verso : le recto déployé est là ('+dt+' ms)');
   ok(!w.folding&&!w.entered&&d.dessous===1&&d.versRecto===1,'ordinateur · ⟲ sur le verso : aucune animation de l\'atterrissage (le recto se déploie sous le noir, la pièce tourne)');
   ok(w.boutons.recto>0&&w.boutons.verso>0&&w.ecartBoutons<.01,
-     'ordinateur · chaque paire de boutons reste visible et tourne avec son papier ('+JSON.stringify(w.boutons)+', écart '+w.ecartBoutons.toFixed(4)+')');
+     'ordinateur · les boutons et le joystick restent visibles et tournent avec leur papier ('+JSON.stringify(w.boutons)+', écart '+w.ecartBoutons.toFixed(4)+')');
   ok(w.max3d>0,'ordinateur · ⟲ sur le verso : le carré TOURNE en 3D ('+w.max3d+' images)');
   let pas=plusGrandPas(w.angles,false);
   ok(w.angles.length>20&&pas<20,'ordinateur · ⟲ sur le verso : aucun bond à la tranche (au plus '+pas.toFixed(1)+'° par image, '+w.angles.length+' images)');
@@ -93,7 +93,7 @@ try{
   ok(!e.gate&&e.verso,'ordinateur · ⟲ sur le recto : le verso est là ('+dt+' ms)');
   ok(!w.gate&&!w.folding,'ordinateur · ⟲ sur le recto : on ne repasse PAS par l\'atterrissage');
   ok(w.boutons.recto>0&&w.boutons.verso>0&&w.ecartBoutons<.01,
-     'ordinateur · chaque paire de boutons reste visible et tourne avec son papier ('+JSON.stringify(w.boutons)+', écart '+w.ecartBoutons.toFixed(4)+')');
+     'ordinateur · les boutons et le joystick restent visibles et tournent avec leur papier ('+JSON.stringify(w.boutons)+', écart '+w.ecartBoutons.toFixed(4)+')');
   ok(w.max3d>0,'ordinateur · ⟲ sur le recto : le carré TOURNE en 3D ('+w.max3d+' images)');
   pas=plusGrandPas(w.angles,true);
   ok(w.angles.length>20&&pas<20,'ordinateur · ⟲ sur le recto : aucun bond à la tranche (au plus '+pas.toFixed(1)+'° par image, '+w.angles.length+' images)');

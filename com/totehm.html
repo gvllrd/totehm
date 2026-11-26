@@ -2408,10 +2408,10 @@ body.gate.entered #terms-corner{opacity:0;pointer-events:none}
 .ns-label{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;
   color:rgba(255,255,255,.55);text-align:left}
 @media(hover:hover){.srch-row:hover .srch-name{filter:brightness(1.3)}}
-.face-buttons{position:fixed;inset:0;pointer-events:none}
-#verso-buttons{z-index:4}
-#recto-buttons{z-index:34}
-#recto-buttons button{pointer-events:auto}
+.face-controls{position:fixed;inset:0;pointer-events:none}
+#verso-controls{z-index:4}
+#recto-controls{z-index:34}
+:where(#recto-controls) :is(#fold-x,#fold-flip,#joy){pointer-events:auto}
 #srch-x{position:fixed;top:10px;right:10px;z-index:4;pointer-events:none}
 #srch.is-open #srch-x{pointer-events:auto}
 #fold-x{position:fixed;top:10px;right:10px;z-index:34}
@@ -2439,10 +2439,10 @@ body.folding :is(#fold-x,#fold-flip){visibility:hidden;pointer-events:none}
   .flip-btn:hover>svg{transform:rotate(180deg)}
   #srch-flip{position:fixed;z-index:4;pointer-events:none}
   #srch.is-open #srch-flip{pointer-events:auto}
-  /* Chaque paire partage l'axe de rotation de son papier et reste hors des zones de défilement. */
-  body.is-coin #recto-buttons{z-index:231}
-  body.is-coin :is(#recto-buttons,#verso-buttons) :is(#fold-x,#fold-flip,#srch-x,#srch-flip){pointer-events:none}
-  body.is-coin #srch.is-on .face-buttons .srch-after{opacity:1;visibility:visible;transition:none}
+  /* Les commandes partagent l'axe de rotation de leur papier et restent hors des zones de défilement. */
+  body.is-coin #recto-controls{z-index:231}
+  body.is-coin :is(#recto-controls,#verso-controls) :is(#fold-x,#fold-flip,#srch-x,#srch-flip,#joy){pointer-events:none}
+  body.is-coin #srch.is-on .face-controls .srch-after{opacity:1;visibility:visible;transition:none}
   #fold-flip{position:fixed;z-index:34}
   body.gate #fold-flip{opacity:0;pointer-events:none;transition:opacity .55s ease}
   body.gate.entered #fold-flip{opacity:1;pointer-events:auto;transition:opacity .55s ease var(--gate-reveal)}
@@ -5114,7 +5114,7 @@ You remember your way, and the street can read what is behind it.</p></div></div
   </div>
 </div>
   </div>
-  <div id="verso-buttons" class="face-buttons">
+  <div id="verso-controls" class="face-controls">
     <button id="srch-x" data-hover-art class="srch-after k2 k2-x is-navy" type="button" aria-label="Close my settings">
       <svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2 L12 12 M12 2 L2 12"/></svg>
     </button>
@@ -5133,7 +5133,7 @@ You remember your way, and the street can read what is behind it.</p></div></div
   </defs>
 </svg>
 
-<div id="recto-buttons" class="face-buttons">
+<div id="recto-controls" class="face-controls">
   <!-- La croix : referme le Totehm et rejoue le déploiement à l'envers. -->
 
   <button id="fold-x" data-hover-art class="sink-el k2 k2-x is-navy" type="button" aria-label="Close my Totehm">
@@ -5143,6 +5143,25 @@ You remember your way, and the street can read what is behind it.</p></div></div
   <button id="fold-flip" data-hover-art class="sink-el flip-btn k2 k2-f is-navy" type="button" aria-label="Turn it over · my settings" title="Turn it over">
     <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 6.5a5 5 0 0 1 9.2-2.3M13 9.5a5 5 0 0 1-9.2 2.3"/><path d="M12.6 1.6v2.8H9.8M3.4 14.4v-2.8h2.8"/></svg>
   </button>
+  <div id="joy" class="sink-el" role="group" aria-label="Where I am in my Totehm">
+    <button class="cur" id="cur-h" type="button">
+      <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 10 L8 5 L13 10"/></svg></button>
+    <!-- ⚠️ PAS DE RANGÉE INTERMÉDIAIRE. `#joy` est une GRILLE, et une
+         grille ne place que ses enfants DIRECTS : enveloppés dans un
+         `#joy-row`, le carré et les deux chevrons latéraux ignoraient
+         leur `grid-area` et se posaient n'importe où. Les cinq pièces
+         sont donc à plat, chacune dans sa case. -->
+    <button class="cur" id="cur-g" type="button">
+      <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 L5 8 L10 13"/></svg></button>
+    <div id="joy-box" class="k2j" aria-hidden="true"><span class="k2j-c"></span>
+      <!-- 13/11 : le gros point de la couleur de la vue, et trois points verticaux dedans — objectifs · habitudes · répulsions. -->
+      <div id="joy-stack" class="k2j-p"><i class="o"></i><i class="h"></i><i class="r"></i></div>
+    </div>
+    <button class="cur" id="cur-d" type="button">
+      <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3 L11 8 L6 13"/></svg></button>
+    <button class="cur" id="cur-b" type="button">
+      <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 6 L8 11 L13 6"/></svg></button>
+  </div>
 </div>
 
 <div id="stage">
@@ -5240,29 +5259,6 @@ You remember your way, and the street can read what is behind it.</p></div></div
 
 </div><!-- /#stage -->
 
-<!-- ⚠️ LE JOYSTICK VIT HORS DU CARRÉ, même raison qu'hier pour les
-     curseurs : `#stage` porte un transform (il contient tout ce qui est
-     `fixed` dedans) ET `overflow:hidden` (il rogne ce qui dépasse).
-     Dedans, il serait ramené puis coupé. -->
-<div id="joy" class="sink-el" role="group" aria-label="Where I am in my Totehm">
-  <button class="cur" id="cur-h" type="button">
-    <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 10 L8 5 L13 10"/></svg></button>
-  <!-- ⚠️ PAS DE RANGÉE INTERMÉDIAIRE. `#joy` est une GRILLE, et une
-       grille ne place que ses enfants DIRECTS : enveloppés dans un
-       `#joy-row`, le carré et les deux chevrons latéraux ignoraient
-       leur `grid-area` et se posaient n'importe où. Les cinq pièces
-       sont donc à plat, chacune dans sa case. -->
-  <button class="cur" id="cur-g" type="button">
-    <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 L5 8 L10 13"/></svg></button>
-  <div id="joy-box" class="k2j" aria-hidden="true"><span class="k2j-c"></span>
-    <!-- 13/11 : le gros point de la couleur de la vue, et trois points verticaux dedans — objectifs · habitudes · répulsions. -->
-    <div id="joy-stack" class="k2j-p"><i class="o"></i><i class="h"></i><i class="r"></i></div>
-  </div>
-  <button class="cur" id="cur-d" type="button">
-    <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3 L11 8 L6 13"/></svg></button>
-  <button class="cur" id="cur-b" type="button">
-    <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 6 L8 11 L13 6"/></svg></button>
-</div>
 <!-- ⚠️ LE TITRE VIT HORS DU CONTRÔLEUR · 22/09/2026, ET C'EST OBLIGÉ.
      Il était DANS `#joy`. Or `#joy` porte un `transform` (il se centre
      par `translateX(-50%)`), et **un transform fait de l'élément le bloc
@@ -14009,9 +14005,9 @@ window.addEventListener('pageshow',e=>{
   const repos=el=>{ const m=getComputedStyle(el).transform; return m&&m!=='none'?m+' ':''; };
   const rotation=t=>'perspective(1600px) rotateY('+t+'deg)';
   const faceRecto=()=>{ const b=repos(stage);
-    return [[stage,t=>b+rotation(t)],[$('recto-buttons'),rotation]]; };
+    return [[stage,t=>b+rotation(t)],[$('recto-controls'),rotation]]; };
   const faceVerso=()=>{ const g=sBg.style.transform||'', b=repos(sUi);
-    return [[sBg,t=>rotation(t)+' '+g],[sUi,t=>b+rotation(t)],[$('verso-buttons'),rotation]]; };
+    return [[sBg,t=>rotation(t)+' '+g],[sUi,t=>b+rotation(t)],[$('verso-controls'),rotation]]; };
   const tourner=(face,de,a,ease,second)=>face.map(([el,f])=>el.animate([{transform:f(de)},{transform:f(a)}],
     {duration:PIECE/2, easing:ease, delay:second?PIECE/2:0, fill:'both'}));
   /* Le recto se retourne : il part vers la tranche, le verso en revient. `essai` : seulement dire si c'est possible. */
