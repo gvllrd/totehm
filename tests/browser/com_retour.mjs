@@ -54,7 +54,7 @@ try{
   const e8=await retour(pg);
   ok(!e8.deploye&&e8.vue==='c'&&e8.url==='/totehm'&&!e8.r.garde,nom+' · « précédent » replie le Totehm (le repli, en un mouvement) → '+JSON.stringify({deploye:e8.deploye,vue:e8.vue}));
   /* ── le verso ── */
-  await pg.click('#lv-tap-turn');await pause(pg,2600);
+  await pg.locator('#gate-enter').press('ArrowRight');await pause(pg,2600);
   const e9=await etat(pg);
   ok(e9.verso&&e9.r.garde,nom+' · le verso ouvert : une garde');
   const e10=await retour(pg);

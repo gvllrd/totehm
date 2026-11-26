@@ -49,7 +49,15 @@ try{
   let geocodes=0;
   await pg.route('**nominatim.openstreetmap.org/**',r=>{geocodes++;r.fulfill({status:200,contentType:'application/json',body:JSON.stringify(ADRESSES)});});
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1200);
-  await pg.click('#lvn-rt');await vers(pg,'d');await pg.waitForTimeout(1400);
+  await pg.click('#lv-add-illustration');
+  await pg.waitForSelector('#lv-sh-sf .sf-cap .cap-b');
+  ok((await lv(pg)).vue==='g',nom+' · la touche Illustration ouvre la capture dans la vue de gauche');
+  await pg.click('#lv-sh-sf [data-sf="close"]');
+  await pg.click('#lvn-rt');await vers(pg,'c');
+  await pg.click('#lv-add-spot');
+  await pg.waitForSelector('#rdr-new .ns-cap .cap-b');
+  ok((await lv(pg)).vue==='d',nom+' · la touche Spot ouvre la prise dans la vue de droite');
+  await pg.click('#rdr-new [data-ns="close"]');
 
   // ══ 1 · NOW, depuis le « + » de la MAP ══
   const plus=await pg.evaluate(()=>{const b=document.getElementById('rdr-plus');return !!b&&!b.hidden&&getComputedStyle(b).display!=='none'&&window.__totehm_rdr().mode==='map';});

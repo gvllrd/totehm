@@ -23,11 +23,11 @@ const dort=ms=>new Promise(r=>setTimeout(r,ms));
 /* Le profil répond tard (la base lointaine d'un téléphone) : c'est la fenêtre où la page hésitait. */
 const lent=ms=>async url=>{ if(url.pathname==='/rest/v1/profiles') await dort(ms); return null; };
 /* Ce que montre l'atterrissage, échantillonné à chaque image jusqu'à ce que le membre soit peint. */
-const film=pg=>pg.evaluate(()=>new Promise(res=>{const t0=performance.now(), vu={vente:0, connect:0, attente:0, membre:null};
+const film=pg=>pg.evaluate(()=>new Promise(res=>{const t0=performance.now(), vu={actionsAvantSession:0, porte:0, attente:0, membre:null};
   const vis=e=>!!e&&e.getClientRects().length>0&&getComputedStyle(e).visibility!=='hidden';
   (function pas(){ const b=document.body;
-    if(vis(document.getElementById('lv-pitch'))) vu.vente++;
-    if([...document.querySelectorAll('#lv-join')].some(vis)) vu.connect++;
+    if(!b.classList.contains('member')&&vis(document.getElementById('lv-actions'))) vu.actionsAvantSession++;
+    if(b.classList.contains('is-door')) vu.porte++;
     if(b.classList.contains('ses-attente')) vu.attente++;
     if(vu.membre===null&&b.classList.contains('member')) vu.membre=Math.round(performance.now()-t0);
     if(performance.now()-t0>3500||(vu.membre!==null&&performance.now()-t0>vu.membre+400)) return res(vu);
@@ -38,11 +38,11 @@ try{
   const{pg,ctx,log}=await page(browser,{dir:'com',origin,tables,rpc:{my_landing:LAND},network:lent(1800),viewport:{width:390,height:664},hasTouch:true});
   await ctx.addInitScript(([u])=>{ localStorage.setItem('totehm_habits_v1',JSON.stringify({habits:[{t:'Run the hill',is:['fight']}],vis:'private',uid:u,pseudo:'wahigher'})); },[UID]);
   await pg.goto(origin+'/totehm',{waitUntil:'commit'}); const v=await film(pg);
-  ok(v.vente===0&&v.connect===0,'membre connu : ni la vente ni CONNECT pendant la lecture de la session → '+JSON.stringify(v));
+  ok(v.actionsAvantSession===0&&v.porte===0,'membre connu : les touches attendent la session → '+JSON.stringify(v));
   ok(v.membre!==null&&v.membre<1800,'membre connu : peint AVANT la réponse du profil (1,8 s) → '+v.membre+' ms');
   await pg.waitForTimeout(2200);
-  const f=await pg.evaluate(()=>({att:document.body.classList.contains('ses-attente'),m:document.body.classList.contains('member'),tap:!document.getElementById('lv-tap').classList.contains('hide')}));
-  ok(!f.att&&f.m&&f.tap,'la base a répondu : l\'attente est levée, le membre reste, « Tap to open it » est là → '+JSON.stringify(f));
+  const f=await pg.evaluate(()=>({att:document.body.classList.contains('ses-attente'),m:document.body.classList.contains('member'),plus:!!document.getElementById('lv-tap-open').getClientRects().length}));
+  ok(!f.att&&f.m&&f.plus,'la base a répondu : la touche plus est visible → '+JSON.stringify(f));
   ok(!erreurs(log).length&&!log.rpc.some(x=>/_set|_save|_create|_delete|rename/.test(x.name)),'membre connu : aucune erreur, aucune écriture '+erreurs(log).join(' | '));
   await ctx.close();}
  {/* b · une session SANS cache (premier passage sur ce téléphone) : on attend la base, sans vendre ni ouvrir la porte */
@@ -53,17 +53,17 @@ try{
   await pg.evaluate(()=>document.getElementById('gate-enter').click());           /* un tap sur le papier, trop tôt */
   const r=await v;
   const porte=await pg.evaluate(()=>document.body.classList.contains('is-door'));
-  ok(r.vente===0&&r.connect===0&&r.attente>0,'session sans cache : l\'attente couvre la lecture, ni vente ni CONNECT → '+JSON.stringify(r));
+  ok(r.actionsAvantSession===0&&r.porte===0&&r.attente>0,'session sans cache : les touches attendent la réponse → '+JSON.stringify(r));
   ok(!porte,'un tap pendant la lecture n\'ouvre PAS la porte d\'inscription');
   await pg.waitForFunction(()=>!document.body.classList.contains('gate'),null,{timeout:8000}).catch(()=>{});
   ok(await pg.evaluate(()=>!document.body.classList.contains('gate')),'… et le Totehm s\'ouvre dès que la session est lue (le tap n\'est pas perdu)');
   ok(!erreurs(log).length,'session sans cache : aucune erreur '+erreurs(log).join(' | '));
   await ctx.close();}
- {/* c · sans session : la vente se montre, comme avant */
+ {/* c · sans session : les touches mènent à la porte */
   const{pg,ctx}=await page(browser,{dir:'com',origin,session:false,tables:{},viewport:{width:390,height:664}});
   await pg.goto(origin+'/totehm');await pg.waitForTimeout(1500);
-  const r=await pg.evaluate(()=>({att:document.body.classList.contains('ses-attente'),vente:!!document.getElementById('lv-pitch').getClientRects().length}));
-  ok(!r.att&&r.vente,'sans session : aucune attente, la vente est là → '+JSON.stringify(r));
+  const r=await pg.evaluate(()=>({att:document.body.classList.contains('ses-attente'),actions:!!document.getElementById('lv-actions').getClientRects().length}));
+  ok(!r.att&&r.actions,'sans session : les touches sont visibles → '+JSON.stringify(r));
   await ctx.close();}
 
  /* ── 1 · LES GESTES ── */
@@ -188,7 +188,7 @@ try{
      n'ouvre rien et mène à la porte (`members:sans-totehm`). Refermé, l'atterrissage reste entièrement navigable :
      aucun état ne le retient. */
   await pg.evaluate(()=>{ window.__ouvert=[]; window.open=(u)=>{ window.__ouvert.push(u); return null; }; });
-  await pg.click('#lv-m-sel');
+  await pg.click('#lv-search');
   const cherche=await pg.waitForFunction(()=>{const c=window.__totehm_cherche&&window.__totehm_cherche();return c&&c.ouvert;},null,{timeout:8000}).then(()=>true,()=>false);
   const onglets=await pg.evaluate(()=>window.__ouvert.slice());
   await pg.keyboard.press('Escape');await pg.waitForFunction(()=>!document.getElementById('srch').classList.contains('is-on'),null,{timeout:8000}).catch(()=>{});

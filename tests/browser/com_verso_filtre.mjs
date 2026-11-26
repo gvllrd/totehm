@@ -37,7 +37,7 @@ try{
    await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1200);
    const dos=await pg.$$eval('#ast-verso > *',l=>l.map(e=>e.id||e.className));
    ok(dos.length===1&&dos[0]==='ast-name',nom+' · le dos du papier ne porte que le NOM → '+dos.join(','));
-   await pg.click('#lv-tap-turn');
+   await pg.locator('#gate-enter').press('ArrowRight');
    const film=[];
    for(let i=0;i<40;i++){ film.push(await vu(pg)); if(film[film.length-1].cls.includes('is-pret')) break; await pg.waitForTimeout(60); }
    const avant=film.filter(f=>!f.cls.includes('is-pret')), fin=film[film.length-1];

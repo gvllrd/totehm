@@ -16,7 +16,7 @@ try{
   etat={ok:true,connected:true,since:'2026-11-02T10:00:00Z',ecosystem:true,share_tracking:false};
   const {pg,log}=await page(browser,{dir:'com',origin,viewport:vp,rpc,tables:{profiles:[{pseudo:'wahigher'}],totehms:[{user_id:UID,habits:[],vis:'private'}]}});
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1200);
-  await pg.click('#lv-tap-turn');await pg.waitForFunction(()=>document.getElementById('srch').classList.contains('is-open'),null,{timeout:9000});
+  await pg.locator('#gate-enter').press('ArrowRight');await pg.waitForFunction(()=>document.getElementById('srch').classList.contains('is-open'),null,{timeout:9000});
   await pg.waitForFunction(()=>window.__totehm_gpt&&window.__totehm_gpt().lu,null,{timeout:6000}).catch(()=>{});
   const a=await pg.evaluate(()=>{const g=document.getElementById('mw-gpt'),t=document.getElementById('mw-menu');
     return {avant:!!(g&&t&&(g.compareDocumentPosition(t)&Node.DOCUMENT_POSITION_FOLLOWING)),titre:(g.querySelector('.vs-t')||{}).textContent,

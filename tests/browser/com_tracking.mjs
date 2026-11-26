@@ -28,7 +28,7 @@ try{
     my_totehm:{signed_in:true,objectives:[],repulsions:[],stories:[],visions:[],objs:{}},element_orders_for:{ok:true,orders:{}}}});
   await pg.addInitScript(()=>{window.__copied=[];Object.defineProperty(navigator,'clipboard',{value:{writeText:async text=>window.__copied.push(text)}});});
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');
-  await pg.click('#lv-tap-turn');await pg.waitForSelector('#srch.is-pret');
+  await pg.locator('#gate-enter').press('ArrowRight');await pg.waitForSelector('#srch.is-pret');
   /* 23/11 (Wah : « retirer le dashboard… juste ChatGPT et Telegram ») : l'onglet Go Higher = Higher GPT puis TotehmBot */
   await pg.waitForTimeout(800);
   const v=await pg.evaluate(()=>{const g=document.getElementById('mw-gpt'),t=document.getElementById('mw-menu');

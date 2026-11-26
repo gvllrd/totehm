@@ -60,7 +60,7 @@ const memeCarre=v=>Math.abs(v.bg[0]-v.st[0])<2&&Math.abs(v.bg[1]-v.st[1])<2&&Mat
 try{
  {const {pg,log}=await page(browser,{dir:'com',origin,viewport:{width:1280,height:800},tables:{profiles:[{pseudo:'wahigher'}],totehms:[{user_id:USER.id,habits:habits}]},rpc});
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1200);
-  await pg.click('#lv-tap-turn');await pg.waitForSelector('#srch.is-pret');await pg.waitForTimeout(900);
+  await pg.locator('#gate-enter').press('ArrowRight');await pg.waitForSelector('#srch.is-pret');await pg.waitForTimeout(900);
   let v=await auCarre(pg);
   ok(memeCarre(v),'ordinateur · le verso s\'arrête au CARRÉ du recto déployé ('+Math.round(v.bg[2])+' px, au pixel près du recto)');
   ok(v.ui&&v.flip,'ordinateur · son contenu défile DANS le carré, et le bouton « retourner » est dans son coin');
@@ -123,7 +123,7 @@ try{
   e=await etat(pg); const lv=await pg.evaluate(()=>window.__totehm_lv());
   ok(e.gate&&!e.verso&&lv.vue==='c'&&!lv.bouge,'Échap sur le recto ramène à l\'accueil, et ses gestes sont libres');
   /* 6. Et depuis l'accueil, le chemin d'origine (le papier se retourne, le verso grandit) reste intact. */
-  await pg.click('#lv-tap-turn');await pg.waitForSelector('#srch.is-pret',{timeout:6000}).catch(()=>{});await pg.waitForTimeout(700);
+  await pg.locator('#gate-enter').press('ArrowRight');await pg.waitForSelector('#srch.is-pret',{timeout:6000}).catch(()=>{});await pg.waitForTimeout(700);
   v=await auCarre(pg); ok(memeCarre(v),'depuis l\'accueil, le verso s\'ouvre toujours au même carré');
   await pg.keyboard.press('Escape');await pg.waitForTimeout(1600);
   e=await etat(pg); ok(e.gate&&!e.verso,'Échap sur ce verso-là ramène à l\'accueil (le recto n\'était pas déployé)');
@@ -131,7 +131,7 @@ try{
   await pg.context().close();}
  {const {pg,log}=await page(browser,{dir:'com',origin,viewport:{width:390,height:844},hasTouch:true,tables:{profiles:[{pseudo:'wahigher'}],totehms:[{user_id:USER.id,habits:habits}]},rpc});
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1200);
-  await pg.click('#lv-tap-turn');await pg.waitForSelector('#srch.is-pret');await pg.waitForTimeout(900);
+  await pg.locator('#gate-enter').press('ArrowRight');await pg.waitForSelector('#srch.is-pret');await pg.waitForTimeout(900);
   const t=await pg.evaluate(()=>{const ui=document.getElementById('srch-ui').getBoundingClientRect();return {plein:ui.width===innerWidth&&ui.height===innerHeight,flip:getComputedStyle(document.getElementById('srch-flip')).display};});
   ok(t.plein&&t.flip==='none','téléphone · rien ne change : le verso reste plein écran, sans bouton « retourner »');
   ok(await pg.evaluate(()=>window.__totehm_piece().versVerso===0&&window.__totehm_piece().versRecto===0),'téléphone · la pièce ne tourne jamais');

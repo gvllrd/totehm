@@ -87,21 +87,13 @@ html{font-family:'Space Mono',monospace}button,input,select,textarea{font-family
      laquelle on appuie pour créer. */
   --croix-t:96px;
   --band-t:calc(var(--croix-t) + 40px);
-  /* ⚠️ LA BANDE BASSE S'ARRÊTE AU-DESSUS DU CONTRÔLEUR · 22/09/2026.
-     Le contrôleur est descendu au centre du bas : au téléphone, le
-     chevron du haut mordait de 9 px sur la dernière boîte — mesuré.
-     C'est la règle du 17/09, « aucun curseur ne couvre la liste »,
-     et elle ne se négocie pas : on ne pose pas une commande sur ce
-     qu'on est en train d'écrire.
-     La valeur se DÉDUIT du contrôleur au lieu d'être recopiée :
-     18 px du bord + le disque + les deux rangées de chevrons (2 × 18)
-     + 10 px d'air. Changer `--joy-d` déplace la liste toute seule.
-     Sur ORDINATEUR le contrôleur vit sous le carré, hors de la liste :
-     la bande y reste à 98 px (voir le bloc `min-width:700px`), les
-     trois portes et le wordmark n'ayant jamais demandé plus. */
+  /* La liste garde 10 px au-dessus de la manette, quelle que soit sa taille. */
   --joy-d:64px;
-  --joy-b:18px;
-  --band-b:calc(var(--joy-b) + var(--joy-d) + 36px + 40px + 26px);   /* 13/10 : + le nom de la vue ; 26/11 : + l'air autour du manche */
+  --joy-arrow:20px;
+  --joy-gap:8px;
+  --joy-size:calc(var(--joy-d) + 2 * (var(--joy-arrow) + var(--joy-gap)));
+  --joy-b:max(8px,env(safe-area-inset-bottom));
+  --band-b:calc(var(--joy-b) + var(--joy-size) + 10px);
   /* 18/10 — la manette de l'ATTERRISSAGE (`#lvjoy`) : son retrait du bas, et la hauteur qu'elle
      occupe (26 + 44 + 26 et deux gouttières de 6). Tout ce qui vit au bas de l'atterrissage s'y
      accroche : rien ne se calcule deux fois, rien ne passe dessous. */
@@ -223,9 +215,8 @@ body:not(.gate):not(.v-habits) #bigT{opacity:.42;cursor:default}
 /* ⚠️ 18/10 · AU TÉLÉPHONE IL PASSE À DROITE, ET LE WORDMARK GARDE LA GAUCHE (Wah : « sur version
    portable le mettre plus à droite » · « faire en sorte à ce que le joystick et le TOTEHM.svg se
    partagent l'écran de part et d'autre »). La bande du bas se partage donc en deux : le logo à
-   gauche, la manette à droite, et plus personne ne se marche dessus. Sur ordinateur, il reste
-   centré sous le carré (voir le bloc ordinateur). */
-#joy{top:auto;bottom:var(--joy-b);left:auto;right:max(14px,5vw);
+   gauche et la manette à droite. Sur ordinateur, le bloc du papier fixe son retrait. */
+#joy{top:auto;bottom:var(--joy-b);left:auto;right:max(8px,env(safe-area-inset-right));
      transform:none}
 /* Les deux portes, à droite, à la même hauteur que le wordmark et dans
    la grammaire `.btn-sig` du reste du produit. */
@@ -402,9 +393,9 @@ body.gate #wm-O,body.gate #wm-H,body.gate #t-foot{animation:none}
    m'a fait deux fois. */
 #joy{position:fixed;z-index:33;
   display:grid;
-  grid-template-columns:18px var(--joy-d,60px) 18px;
-  grid-template-rows:18px var(--joy-d,60px) 18px;
-  gap:20px;                                   /* 26/11 (Wah) : les flèches ne touchent pas le manche, même tiré à fond (mesuré) */
+  grid-template-columns:var(--joy-arrow) var(--joy-d) var(--joy-arrow);
+  grid-template-rows:var(--joy-arrow) var(--joy-d) var(--joy-arrow);
+  gap:var(--joy-gap);
   align-items:center;justify-items:center}
 #cur-h  {grid-area:1/2/2/3}
 #cur-g  {grid-area:2/1/3/2}
@@ -437,7 +428,7 @@ body.gate #wm-O,body.gate #wm-H,body.gate #t-foot{animation:none}
 #joy-box,#joy-box *,#lvj-box,#lvj-box *{-webkit-user-select:none;user-select:none;-webkit-user-drag:none}
 /* 26/11 (Wah) : LE MÊME MANCHE QU'À L'ATTERRISSAGE — le dôme de `tools/ps2.css` (`.k2j`). Ici, et ici seulement,
    il prend la COULEUR DE LA VUE et porte les trois points de la marque. */
-#joy-box{--k2j-d:64px;--k2j-c:var(--joy-vue,var(--navy))}
+#joy-box{--k2j-d:var(--joy-d);--k2j-c:var(--joy-vue,var(--navy))}
 #joy-stack{z-index:1;pointer-events:none}
 #joy-stack .o{--c:var(--blue)}#joy-stack .h{--c:var(--navy)}#joy-stack .r{--c:var(--rep)}
 /* Ce qu'on vise s'allume avant qu'on lâche. L'état vit sur `#joy` : `#cur-g` PRÉCÈDE `#joy-box` dans le balisage,
@@ -451,7 +442,7 @@ body.gate #wm-O,body.gate #wm-H,body.gate #t-foot{animation:none}
    ⚠️ JAMAIS `display:none` : un curseur sans voisin garde sa case (sinon le contrôleur se déplace). */
 .cur{background:none;border:none;padding:0;cursor:pointer;
   -webkit-tap-highlight-color:transparent;display:flex;
-  align-items:center;justify-content:center;width:20px;height:20px;
+  align-items:center;justify-content:center;width:var(--joy-arrow);height:var(--joy-arrow);
   color:#8a8a92;transition:opacity .3s ease,color .2s ease}
 /* 25/10 — comme à l'atterrissage (`.lvn.is-mort`) : un chevron sans voisin s'efface, mais garde sa case. */
 .cur.mort{opacity:0;pointer-events:none;cursor:default}
@@ -2530,13 +2521,11 @@ body.gate.entered #filter-badge{
        à droite ») : elle n'est plus centrée sous le carré, elle est posée en bas à DROITE, comme au téléphone, où elle
        vit déjà sur le papier. Le carré reprend donc ses 640 px. */
     --stage:min(92vh,78vw,640px);
-    /* 26/11 — le manche fait 64 px PARTOUT : sinon il débordait de sa case et touchait les flèches (mesuré). */
-    --joy-d:64px;
     --pad:calc(var(--stage) * .0616);   /* profondeur d'une perforation */
-    --joy-gap:12px;
-    --joy-corner:max(18px,calc(var(--pad) - 14px));
+    /* Sur un papier plus petit, on recule les flèches des dernières perforations. */
+    --joy-corner:clamp(10px,calc(var(--joy-size) + 10px - var(--stage) / 4),calc(var(--pad) + 1px));
     /* La liste est déjà en retrait de --pad par rapport au bord du papier. */
-    --band-b:calc(var(--joy-corner) - var(--pad) + var(--joy-d) + 36px + 2 * var(--joy-gap) + 10px);
+    --band-b:calc(var(--joy-corner) - var(--pad) + var(--joy-size) + 10px);
     --side:max(56px,calc(var(--stage) * .10));   /* carré élargi : chevron + intitulé */
     --side-gap:calc(var(--stage) * .085);         /* éloigné du Totehm */
     --rl:max(38px,calc(var(--stage) * .072));   /* dégage les T des perforations */
@@ -2585,7 +2574,7 @@ body.gate.entered #filter-badge{
   #wordmark{bottom:26px;left:50%;transform:translateX(-50%);top:auto;right:auto}
   /* Les flèches et le manche partagent le même retrait du coin inférieur droit du papier. */
   #joy{bottom:calc(50% - var(--stage) / 2 + var(--joy-corner));
-       right:calc(50% - var(--stage) / 2 + var(--joy-corner));gap:var(--joy-gap)}
+       right:calc(50% - var(--stage) / 2 + var(--joy-corner))}
   /* LE TITRE VIT DANS LE TOTEHM SUR ORDINATEUR : en haut du carré, centré, juste SOUS le T (le T tient le centre du haut ;
      au-dessus, le titre tombait dans la bande des perforations — mesuré) — 27/10, Wah : « tout en haut centrée ». */
   #vnow,body.ro #vnow{top:calc(50% - var(--stage)/2 + 137px);bottom:auto;left:0;right:0}
@@ -2925,7 +2914,7 @@ body:not(.gate) #lv,body.entered #lv{display:none}
    ENLEVER LE CURSEUR qui accompagne les traits d'intention dans le tree ». `#lv` RESTE, et seuls les textes de
    l'atterrissage s'effacent — en `visibility`, jamais en `display` : la GÉOMÉTRIE ne bouge pas d'un pixel, donc
    `manche()` garde la manette à sa place ; depuis le 19/11 la porte elle-même est DANS le tronc (`placerPorte()`). */
-body.is-door #lv-c-acts,body.is-door #lv-slogan,body.is-door #lv-sell,body.is-door #lv-tap{
+body.is-door #lv-c-acts,body.is-door #lv-slogan,body.is-door #lv-sell{
   visibility:hidden;pointer-events:none}
 body.is-door #lv{pointer-events:none}
 /* ⚠️ 23/10 — LE REPLI EST LE DÉPLOIEMENT À L'ENVERS : au départ, l'atterrissage (légende, MINE/MEMBERS, badge, manette)
@@ -3160,12 +3149,7 @@ body.gate.lv-c:not(.entered):not(.is-aspire):not(.folding):not(.ram-morph) #gate
 /* ── LE PREMIER CONTACT (15/10) : ce que ça fait, pourquoi ça marche, une seule porte ──
    Le titre porte le badge Higher (toujours le SVG) ; la preuve se déroule au clic, elle n'occupe
    pas l'écran d'un membre. Coral pour le nom de la marque seul ; le reste reste gris et sombre. */
-#lv-pitch{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px;width:min(92vw,470px);text-align:center}
-#lv-pitch.hide{display:none}
 #lv-explore{background:transparent;box-shadow:inset 0 0 0 1px #606068}
-/* 21/10 — une session se lit encore (`ses-attente`, posé avant le premier rendu) : rien de « hors connexion ». */
-body.ses-attente:not(.member) #lv-pitch{display:none!important}
-body.member #lv-pitch{display:none!important}   /* la vente ne parle jamais à un membre, même une image avant `peindreCarte` */
 .lvp-cta{border:0;border-radius:10px;padding:13px 20px;background:#2a2a31;color:#fff;cursor:pointer;
   font:700 11px/1.2 'Space Mono',monospace;letter-spacing:.14em;white-space:nowrap;
   transition:background .2s ease}
@@ -3180,7 +3164,7 @@ body.gate.lv-h:not(.entered):not(.is-door) #lv-sell{opacity:1}
 .lvs-hook{margin:0;font:700 13px/1.3 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#fff}
 .lvs-sci{margin:0;font:400 11.5px/1.65 'Space Mono',monospace;color:#9a9aa2}
 .lvs-sci b{font-weight:700;color:#fbd5ca}
-/* ── LE CENTRE : « Tap to open it », Mine · Others ── */
+/* ── LE CENTRE : actions, puis commandes de navigation ── */
 #lv-c-acts{position:absolute;left:50%;top:calc(var(--lv-y) + var(--sk) / 2 + 18px);transform:translateX(-50%);
   display:flex;flex-direction:column;align-items:center;gap:12px;width:min(94vw,460px)}
 body.gate:not(.member):not(.ses-attente){--lv-y:32dvh}
@@ -3190,8 +3174,6 @@ body.gate:not(.member):not(.ses-attente){--lv-y:32dvh}
 @media(max-height:740px){
  body.gate.member,body.gate.ses-attente{--lv-y:36dvh}
  body.gate:not(.member):not(.ses-attente){--lv-y:22dvh}
- body:not(.member) #lv-pitch{gap:6px}
- body:not(.member) #lv-pitch .lvp-cta{padding:9px 16px;font-size:10px}
 }
 @media(max-height:620px) and (max-width:649px){
  body.gate.member,body.gate.ses-attente{--lv-y:30dvh}
@@ -3199,32 +3181,36 @@ body.gate:not(.member):not(.ses-attente){--lv-y:32dvh}
  body.gate:not(.member):not(.ses-attente) #gate-hero{padding-top:52px}
  body.gate:not(.member):not(.ses-attente) #gate-top-row{margin-top:max(0px,calc(var(--lv-y) - var(--gate-size) / 2 - 52px))}
  body:not(.member) #lv-c-acts{gap:8px}
- body:not(.member) #lv-pitch{gap:4px}
- body:not(.member) #lv-pitch .lvp-cta{padding:7px 14px;font-size:9px}
 }
 @media(max-height:520px) and (min-width:650px){
  body.gate,body.gate.member,body.gate.ses-attente,body.gate:not(.member):not(.ses-attente){--lv-y:20dvh}
  #gate-hero{padding-top:20px}
  #gate-top-row{margin-top:max(0px,calc(var(--lv-y) - var(--gate-size) / 2 - 20px))}
  #lv-c-acts{left:calc(50% - 330px);top:110px;width:210px;transform:none;gap:8px}
- #lv-pitch{width:100%}
- #lv-tap{white-space:normal;flex-wrap:wrap;font-size:8px}
 }
-#lv-tap{display:flex;align-items:center;justify-content:center;gap:0;background:#000;border:0;border-radius:10px;padding:4px 10px; /* la légende coupe les racines de l'arbre, comme une étiquette sur un circuit */
-  font:700 9.5px/1.4 'Space Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:#9a9aa2;white-space:nowrap;transition:opacity .3s ease}
-#lv-tap button{background:none;border:0;padding:0;font:inherit;letter-spacing:inherit;text-transform:inherit;color:inherit;cursor:pointer}
-#lv-tap svg{display:none;width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
-#lv-tap.is-own{gap:8px}
-#lv-tap.is-own button{display:grid;place-items:center;width:32px;height:32px}
-#lv-tap.is-own svg{display:block}
-#lv-tap.is-own :is(.lvt-label,.lvt-sep){display:none}
-#lv-tap button:focus-visible{outline:1px solid #fff;outline-offset:3px}
-/* ══ LES TOUCHES DE L'ATTERRISSAGE · 25/11/2026 ══ Wah : « enlève les deux boutons [Mine] et [MEMBERS] … à la place
-   tu mets le même rectangle SELECT de la manette (intitulé en dessous, dans la police SPACE) ; quand l'utilisateur
-   clique dessus ça change en Members, ce qui lance le mode search … ensuite le discover se lance avec le bouton
-   GREATNESS qui prend la même forme que le bouton START … seulement sur ordinateur, un autre rectangle avec le
-   mode TREE comme le bouton MODE. » Le dessin des trois touches vit dans `tools/ps2.css` (`.k2r`), nulle part ailleurs.
-   14/11 — [Members] demande un TOTEHM : sans lui la touche se voit, atténuée, et un tap mène à la porte. */
+/* Les quatre actions reprennent l'appui des touches PS2. */
+#lv-actions{display:flex;align-items:center;justify-content:center;gap:10px;padding:4px 12px;background:#000;border-radius:10px;--k2-d:36px}
+body.ses-attente:not(.member) #lv-actions,body.paysage #lv-tap-open{display:none}
+#lv-actions .k2r{width:var(--k2-d);height:var(--k2-d);justify-content:center}
+#lv-search .k2k{background:var(--love)}
+#lv-add-spot{background:radial-gradient(circle at 50% 32%,rgba(255,255,255,.17),rgba(0,0,0,.24) 85%) var(--spot-fight)}
+@media(prefers-reduced-motion:no-preference){
+  body.lv-c:not(.is-door):not(.is-dc):not(.searching) #lv-add-spot{animation:spot-intentions 9.8s linear infinite}
+}
+@keyframes spot-intentions{
+  0%,100%{background-color:var(--spot-fight)}
+  14.285%{background-color:var(--spot-flow)}
+  28.571%{background-color:var(--spot-enrich)}
+  42.857%{background-color:var(--spot-love)}
+  57.143%{background-color:var(--spot-express)}
+  71.429%{background-color:var(--spot-focus)}
+  85.714%{background-color:var(--spot-celebrate)}
+}
+#lv-add-illustration .k2k{--k2r-w:30px;--k2r-h:30px;background:var(--blue);
+  -webkit-mask:var(--perfo) center/100% 100% no-repeat;mask:var(--perfo) center/100% 100% no-repeat}
+#lv-add-illustration:focus-visible{outline:1px solid #fff;outline-offset:3px}
+#lv-add-illustration:focus-visible .k2k{outline:none}
+
 #lv-keys{display:flex;gap:20px;align-items:flex-end;justify-content:center;
   background:#000;border-radius:10px;padding:6px 14px 4px}   /* les touches coupent les racines, comme la légende */
 /* LA TOUCHE MODE (Tree) n'existe que sur ORDINATEUR : l'arbre ne se voit que là. */
@@ -3239,7 +3225,7 @@ body.gate:not(.member):not(.ses-attente){--lv-y:32dvh}
    La recherche vit sur le VERSO (18/11, `#srch.is-cherche`, voir `CHERCHE`), pas sur l'atterrissage. Ici : `lv-mb` (je vis
    l'écosystème d'un membre : ← ses médias · ● son TOTEHM · → ses spots, sans haut ni bas) et `lv-verrou` (l'auteur d'un spot
    dont la lecture demande un abonnement : sa palette, son offre sous le papier). */
-/* Chez un membre : son NOM sur [Members], en Coral Quantico — c'est un identifiant, pas une étiquette. */
+/* Chez un membre, la touche de retour à Mine porte son nom en Coral Quantico. */
 .lvm-who{display:none;font:400 13px/1 'Quantico',sans-serif;color:#fbd5ca;text-transform:none;letter-spacing:0;
   max-width:42vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 body.lv-membre .lvm-who{display:inline}
@@ -3256,7 +3242,7 @@ body.lv-verrou.lv-b #lv-slogan{opacity:0}
 body.lv-verrou #mb-offre{display:flex}
 #mb-lock{display:none;flex-direction:column;align-items:center;gap:10px;text-align:center;margin-top:14px}
 body.lv-verrou #mb-lock{display:flex}
-/* 31/10 — l'offre se pose sur le TRONC : ses lignes sont des étiquettes sur le circuit (fond noir, comme `#lv-tap`) */
+/* 31/10 — l'offre se pose sur le TRONC : ses lignes sont des étiquettes sur le circuit (fond noir, comme les touches de l’accueil) */
 #mb-lock .mbl-t{font:700 10px/1.4 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#b8b8c2;background:#000;border-radius:8px;padding:3px 10px}
 #mb-lock .mbl-s{font:400 10px/1.5 'Space Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:#7c7c84;min-height:15px;background:#000;border-radius:8px;padding:3px 10px}
 #mb-lock .mbl-s:empty{background:none}
@@ -3520,7 +3506,7 @@ body.lv-b #gate-logo #gl-rail,body.lv-b #gate-logo #gl-wm{opacity:0}
 /* ⚠️ La vignette a quitté le haut le 16/10 (elle vit au verso, dans le compte) : la règle part avec elle. */
 #srch-res .srch-open{display:flex;align-items:center;text-decoration:none;min-width:0}
 #srch-res .srch-sub{flex:none;font:400 10.5px/1.3 'Space Mono',monospace;color:#b0b0b0;background:#1f1f24;border-radius:10px;padding:7px 10px;text-decoration:none;white-space:nowrap}
-@media (prefers-reduced-motion: reduce){#lv-slogan,#lv-slogan *,.lv-pane,#ast-front,#lv-proc,#lv-socket,#lv-socket *,#lv-ram,#lv-ram path,#lv-ram rect,#lv-tap,#gate-mouth{transition:none!important}
+@media (prefers-reduced-motion: reduce){#lv-slogan,#lv-slogan *,.lv-pane,#ast-front,#lv-proc,#lv-socket,#lv-socket *,#lv-ram,#lv-ram path,#lv-ram rect,#gate-mouth{transition:none!important}
   .lv-pane,#lv-h,#lv-b{transform:none!important}}
 /* ══ L'ATTERRISSAGE : MES SHORTS (gauche) ET MES SPOTS (droite) · 16/10/2026 bis ═════════════════════
    Wah : « non on garde seulement le mode liste [dans le Totehm] … sinon ça pète toute la structure.
@@ -4171,7 +4157,7 @@ body.lv-d.rdr-voir #gate-asteroid,body.lv-d.rdr-voir #lvjoy,body.rdr-voir #rdr-f
   .dc[data-etape] .dc-s.is-on .dc-deep{display:inline-flex}.dc-more{transition:none}}
 /* ══ fin DISCOVER ══ */
 /* ── 16/11 · L'ACCUEIL : le titre de la vue centrale, le bouton discret, et le Discover en couche ──
-   Le titre est une ÉTIQUETTE posée sur le circuit (fond noir, comme `#lv-tap`) : les racines de l'arbre passent derrière,
+   Le titre est une ÉTIQUETTE posée sur le circuit (fond noir, comme les touches de l’accueil) : les racines de l'arbre passent derrière,
    jamais sous les lettres. Il porte la pièce (`data-tw`, le mot TOTEHM). Chez un autre membre, il s'efface. */
 /* 23/11 (Wah) : « minimalisme et mystère » — plus de titre au centre ; le badge se range au coin du socle. */
 .lvp-cta.is-quiet{background:#000;color:#b8b8c2;box-shadow:inset 0 0 0 1px #3a3a42}
@@ -4182,7 +4168,6 @@ body.lv-d.rdr-voir #gate-asteroid,body.lv-d.rdr-voir #lvjoy,body.rdr-voir #rdr-f
    posé AVANT la première image, pour que l'arbre n'apparaisse jamais pour s'effacer ensuite. L'arbre ne se voit
    que sur ordinateur : au téléphone le mot ne change rien, et il reste honnête (il dit l'état, pas une promesse). */
 .lv-tree{background:none;border:0;padding:0;cursor:pointer;font:inherit;color:inherit;-webkit-tap-highlight-color:transparent}
-#lv-pitch .lv-tree{margin-top:10px;font:400 10px/1.3 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#6d6d74}
 .lv-tree[aria-pressed="false"]{opacity:.55;text-decoration:line-through;text-decoration-thickness:1px}
 @media(hover:hover){.lv-tree:hover{color:#fff;opacity:1}}
 body.no-tree #lv-ram{display:none}
@@ -4436,7 +4421,6 @@ div:not(:has(> :not(br,wbr))):hover,
 #lv-diag:hover,
 .lvs-sci:hover,
 .lvs-sci b:hover,
-#lv-tap:hover,
 #lv-m-say:hover,
 .lvm-who:hover,
 #mb-lock .mbl-t:hover,
@@ -4532,7 +4516,6 @@ div:not(:has(> :not(br,wbr))):hover,
 .dc-deep[aria-expanded="true"]:hover,
 .dc-more .dc-p:hover,
 .lvp-cta.is-quiet:hover,
-#lv-pitch .lv-tree:hover,
 #lvd .lvh-q:hover):where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *)){color:#fff!important}
 .h-text:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::placeholder{color:#fff!important}
 .habit.open .v-name[contenteditable]:empty:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::before{color:#fff!important}
@@ -4782,21 +4765,20 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
            son socle processor tout en retournant le totehm en mode verso, avec l'invitation directe à entrer un
            identifiant ». La saisie vit SUR le dos du papier agrandi (`MB`), ancrée en haut (le clavier mange le bas). -->
       <div id="lv-c-acts" class="lv-act">
-        <!-- ⚠️ 16/11 — LE TITRE DE LA VUE CENTRALE (Wah : « sur la vue Totehm, rajouter Get Higher with your TOTEHM avec TOTEHM
-             au format logo rotatif, pareil que Your TOTEHM in ChatGPT »). Pour tous — visiteur et membre ; chez un autre
-             membre il s'efface (son centre porte SON nom). La pièce est celle du mot TOTEHM (`data-tw`).
-             L'ATTERRISSAGE EST MINIMAL, ET IL VEND QUAND ON LE DEMANDE : sans compte, deux boutons — la porte, et
-             [Discover], qui ouvre l'explication plein écran (`#lvd`, `DISC`) ; avec un compte, le geste et « Discover »
-             dans la légende. La preuve (« Built with behavioral science ») et « Reach Higher » vivent dans le Discover. -->
-        <div id="lv-pitch" class="hide">
-          <button id="lv-join" class="lvp-cta" type="button">Open my TOTEHM</button>
+        <div id="lv-actions" class="hide" role="group" aria-label="TOTEHM actions">
+          <button type="button" id="lv-tap-open" class="k2" aria-label="Open my TOTEHM" title="Open my TOTEHM">
+            <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M8 3v10"/></svg>
+          </button>
+          <button type="button" id="lv-search" class="k2r is-start" aria-label="Search a TOTEHM" title="Search a TOTEHM">
+            <i class="k2k" aria-hidden="true"></i>
+          </button>
+          <button type="button" id="lv-add-spot" class="k2" aria-label="Add a spot" title="Add a spot"></button>
+          <button type="button" id="lv-add-illustration" class="k2r" aria-label="Add an illustration" title="Add an illustration">
+            <i class="k2k" aria-hidden="true"></i>
+          </button>
         </div>
-        <!-- ⚠️ 18/10 — CHACUN FAIT CE QU'IL DIT (règle du 06/10). Depuis que `#conn-bar` est parti,
-             « Turn to configure it » est la SEULE porte vers le verso quand le geste n'est pas
-             disponible (mouvement réduit, clavier) : c'est donc un vrai bouton, pas une légende. -->
-        <div id="lv-tap" class="hide"><button id="lv-tap-open" type="button"><span class="lvt-label">Tap to open it</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3l7 5-7 5z"/></svg></button><span class="lvt-sep"> · </span><button id="lv-tap-turn" type="button"><span class="lvt-label">Turn to configure it</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 7a5 5 0 1 1 1 5M3 3v4h4"/></svg></button></div>
         <div id="lv-keys" class="lv-act" role="group" aria-label="Controller keys">
-          <button type="button" id="lv-m-sel" class="k2r" data-hover-art aria-label="My TOTEHM"><i class="k2k" aria-hidden="true"></i><span class="k2l"><span class="lvm-lab">Mine</span><span class="lvm-who" id="lv-m-who"></span></span></button>
+          <button type="button" id="lv-m-sel" class="k2r hide" data-hover-art aria-label="Return to Mine"><i class="k2k" aria-hidden="true"></i><span class="k2l"><span class="lvm-lab">Mine</span><span class="lvm-who" id="lv-m-who"></span></span></button>
           <button type="button" id="lv-tree-k" class="k2r is-mode" data-hover-art aria-pressed="false" aria-label="Tree"><i class="k2k" aria-hidden="true"></i><span class="k2l">Tree</span></button>
           <button type="button" id="lv-great" class="k2r is-start" data-hover-art aria-label="Discover your greatness"><i class="k2k" aria-hidden="true"></i><span class="k2l">Greatness</span></button>
         </div>
@@ -7443,9 +7425,10 @@ function creerFeed(conf){
       +'<button type="button" class="sfc" data-sf="close">CLOSE</button></div></div>';
     p.innerHTML=h;
   }
-  /* 27/10 — depuis une box du Totehm (« Add a media ») : le « + » s'ouvre avec CETTE box déjà choisie, la capture dessous. */
+  /* L'ajout ouvre la capture, avec la box déjà choisie si l'on vient d'une box. */
   function sfAjouter(x){
-    if(!conf.grille||!x) return;
+    if(!conf.grille) return;
+    if(!x) return sfOpen(true,true);
     const hx=x.k==='h'?habByT(String(x.ref||'')):null, ref=hx?String(hx.t||'').trim():String(x.ref||'');
     const y=mesElements().find(z=>z.k===x.k&&(z.ref===x.ref||z.ref===ref)); if(!y) return;
     SF.ajVue=VUE[y.k]||''; SF.ajBox=y; sfOpen(true,true);
@@ -7847,7 +7830,7 @@ function creerFeed(conf){
       /* La box choisie, en tête des résultats : la toucher rouvre le filtre. */
       if(e.target.closest('[data-f-sel]')){ sfOpen(true); return; }
       const a=e.target.closest('[data-add]');
-      if(a){ if(conf.grille&&!a.dataset.add) return sfOpen(true,true); choix('cap',a.dataset.add||undefined); return; }
+      if(a){ if(conf.grille&&!a.dataset.add) return sfAjouter(); choix('cap',a.dataset.add||undefined); return; }
       const b=e.target.closest('[data-lsh]'); if(b){ ouvrirElement(b); return; }
       /* Les gestes d'un spot : y aller (le point exact, si je le vois), le mettre au calendrier, voir son auteur. */
       const del=e.target.closest('[data-del]');
@@ -8003,8 +7986,7 @@ function creerFeed(conf){
   /* ⚠️ LA RANGÉE SE PEINT MÊME QUAND LE FEED NE TOURNE PAS : à droite, `SHS` (le polaroid) n'ouvre que sur un spot,
      mais la barre de filtres des spots doit exister sur la carte et la grille. */
   return {ouvrir:entrer, fermer:sortir, pause, maj, vider, pas, flts:peindreFlt, sf:sfOpen,
-          /* 27/10 — ouvrir l'ajout d'un média avec une box DÉJÀ choisie (depuis une box du Totehm) */
-          ajouter:x=>sfAjouter(x),
+          ajouter:sfAjouter,
           /* 25/11 — la PRISE RAPIDE : le fichier est déjà pris, on ne demande plus que SA BOX */
           prise:m=>{ if(!conf.grille||!m||!m.f) return false; sfOpen(true,true); SF.ajFichier=m; SF.ajMot=''; sfPaint(); return true; },
           /* Le Totehm docké ouvre DIRECTEMENT le filtre : à gauche les vues puis leurs boxes, à droite les Habits. */
@@ -9189,7 +9171,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-11-25-ordre';
+const BUILD='2026-11-26-touches-accueil';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -14489,24 +14471,15 @@ window.addEventListener('pageshow',e=>{
 
     /* ── MINE · MEMBERS (20/10 sexies) ─────────────────────────────────────────────────────────────────────────── */
     function peindreMode(){
-      { const l=document.querySelector('#lv-m-sel .lvm-lab'); if(l) l.textContent=mode==='members'?'Members':'Mine'; }
+      $('lv-m-sel').classList.toggle('hide',mode!=='members');
       $('lv-b').setAttribute('aria-label',mode==='members'?'Member offer':'Higher my ChatGPT');
       $('lv-m-who').textContent=MB.nom||MB.verrou||'';
-      /* 14/11 (Wah) : « pour accéder au bouton [Member] et la partie de recherche, il faut être connecté et
-         AVOIR UN TOTEHM ». Le bouton reste donc CLIQUABLE — mais sans Totehm il mène à la PORTE, pas à la
-         recherche (`chercherIci`) : on apprend ce qu'il faut au lieu d'appuyer sur un mort. `is-locked`
-         le dit à l'œil ; jamais `aria-disabled`, qui mentirait sur ce que le tap fait. */
-      /* 18/11 (Wah) : et la recherche est au FIGHER CLUB (`CLUB.member`) : hors du Club, le tap le dit sous les boutons. */
-      const mb=$('lv-m-sel');
-      if(mb){ const pret=inscrit()&&CLUB.member;
-        mb.classList.toggle('is-off',!pret);
-        mb.setAttribute('aria-label',mode==='members'?'Find an ecosystem':'My TOTEHM');
-        mb.title=pret?'':!inscrit()?'Open your TOTEHM first':HORS_CLUB; }
+      const recherche=$('lv-search');
+      const pret=inscrit()&&CLUB.member;
+      recherche.classList.toggle('is-off',!pret);
+      recherche.title=pret?'Search a TOTEHM':!inscrit()?'Open your TOTEHM first':HORS_CLUB;
       if(CLUB.member&&$('lv-m-say').textContent===HORS_CLUB) direMembers('');
       { const f=$('fold-flip'); if(f) f.setAttribute('aria-label',mode==='members'?'Turn it over · their subscription':'Turn it over · my settings'); }
-      const t=$('lv-tap-turn'); if(t){ const sou=window.matchMedia('(hover:hover)').matches;
-        t.querySelector('.lvt-label').textContent=(sou?'Turn':'Swipe')+(mode==='members'?' to search':' to configure it');
-        t.setAttribute('aria-label',mode==='members'?'Search members':'Configure Totehm'); }
     }
     /* Le papier redescend chez lui et se remet sur son recto ; posé, il rend son réseau (celui du membre trouvé, ou le mien). */
     function rentrer(fini){
@@ -14650,13 +14623,9 @@ window.addEventListener('pageshow',e=>{
       aller('c',then);
     }
     /* Un tap pendant un mouvement (un repli, une course) n'est jamais perdu : il attend la fin, 2 s au plus. */
-    const quandLibre=(f,n=0)=>{ if((bouge||moving||sMoving)&&n<12) return void setTimeout(()=>quandLibre(f,n+1),180); f(); };
-    /* LA TOUCHE SELECT : un seul rectangle, deux états. Mine → Members lance la recherche ; Members → Mine rentre. */
-    $('lv-m-sel').addEventListener('click',()=>quandLibre(()=>choisirMode(mode==='members'?'mine':'members')));
-    $('lv-m-sel').addEventListener('keydown',e=>{
-      if(e.key!=='ArrowLeft'&&e.key!=='ArrowRight') return;
-      e.preventDefault(); choisirMode(e.key==='ArrowRight'?'members':'mine');
-    });
+    const quandLibre=(f,n=0)=>{ if(occupe()&&n<12) return void setTimeout(()=>quandLibre(f,n+1),180); f(); };
+    $('lv-m-sel').onclick=()=>quandLibre(()=>choisirMode('mine'));
+    $('lv-search').onclick=()=>quandLibre(()=>{ if(libre()&&vue==='c') chercherIci(); });
     /* `?ro=nom` (un lien, un retour de Stripe) : on arrive DANS l'écosystème du membre, déjà lu par `loadRO`. */
     lvMembreBoot=nom=>{ if(!nom) return; roEnPlace=true; entrerChez(nom); RAM.oublie(); RAM.peindre(vue); };
     /* 18/11 — `?members[=<nom>]` (un ancien lien `/search`, le retour de Stripe) : le verso en recherche, une fois la session lue. */
@@ -14725,7 +14694,7 @@ window.addEventListener('pageshow',e=>{
     /* 18/11 (Wah : « l'utilisateur a tendance à scroller ; sans compte, autant y mettre le Discover » · « le scroll dans tous les
        cas engage le Discover ») : SANS COMPTE (la porte et [Discover] à l'écran), au centre, TOUT SCROLL VERTICAL — molette, pavé,
        doigt, dans les deux sens — ouvre le Discover. Le visiteur n'a pas de croix (`voisin`) ; un membre la garde telle quelle. */
-    const scrollDiscover=d=>(d==='h'||d==='b')&&vue==='c'&&!bouge&&mode==='mine'&&!$('lv-pitch').classList.contains('hide');
+    const scrollDiscover=d=>(d==='h'||d==='b')&&vue==='c'&&!bouge&&mode==='mine'&&!inscrit();
     /* 19/11 (Wah : « quand la page d'inscription apparaît, le scroll Discover devrait continuer de fonctionner ») : la porte
        ouverte rend l'accueil non `libre()`, sauf pour CE geste — le scroll vertical referme la porte et ouvre le Discover. */
     const porteOuverte=()=>body.classList.contains('is-door')&&!inscrit()&&body.classList.contains('gate')&&!body.classList.contains('entered')&&!body.classList.contains('is-dc');
@@ -15592,7 +15561,7 @@ window.addEventListener('pageshow',e=>{
           if(!moi) return void ouvrirPorte(null);             /* sans TOTEHM, toutes les portes mènent à la même */
           if(va==='eco') return void ecosystemes();           /* chercher un écosystème (la règle du Club s'applique) */
           if(va==='gpt') return void location.assign('/chatgpt');
-          $('lv-tap-open').click(); }); });
+          ouvrirDepuisAccueil(); }); });
       lnk.addEventListener('click',()=>{ diagD.portes++;
         fermer(()=>{ ouvrirVerso();
           setTimeout(()=>{ const b=document.querySelector('#vs-tabs [data-vs-tab="money"]'); if(b) b.click(); },900); }); });
@@ -15614,28 +15583,21 @@ window.addEventListener('pageshow',e=>{
         try{ localStorage.setItem('totehm_tree',v?'1':'0'); }catch(_){}
         dire(v); if(typeof RAM==='object'&&RAM&&v) try{ RAM.peindre(vue); }catch(_){} });
     }
-    {
-      const join=$('lv-join');
-      if(join) join.onclick=()=>{ if(typeof ouvrirPorte==='function') ouvrirPorte(null); };
-      { const b=$('lv-great'); if(b) b.onclick=()=>DISC.ouvrir(); }
-    }
+    $('lv-great').onclick=()=>DISC.ouvrir();
+    const spotKey=$('lv-add-spot');
+    for(const intention of INTS) spotKey.style.setProperty('--spot-'+intention.id,intention.color);
 
     /* ── LE NOM ET QUI LIT MON TOTEHM (mes réglages) — nœuds déplacés de l'espace membre (15/10) ── */
     let visSeq=0;
     function peindreCarte(){
       const m=inscrit()&&!RO&&!MB.verrou, chez=inscrit()&&(!!RO||!!MB.verrou);
       $('lv-card').classList.toggle('hide',!m);
-      /* Sans compte : ce que ça fait et pourquoi ça marche. Avec un compte : le geste, rien d'autre — chez un
-         membre aussi (20/10 sexies) : tap = SON Totehm, tourner = chercher un autre membre. */
-      const sou=window.matchMedia('(hover:hover)').matches;
-      const ouvrir=$('lv-tap-open'), retourner=$('lv-tap-turn');
-      ouvrir.querySelector('.lvt-label').textContent=MB.verrou?'Subscribe to open it':sou?'Click to open it':'Tap to open it';
-      retourner.querySelector('.lvt-label').textContent=(sou?'Turn':'Swipe')+(chez?' to search':' to configure it');
-      ouvrir.setAttribute('aria-label',MB.verrou?'Subscribe to open it':'Open Totehm');
-      retourner.setAttribute('aria-label',chez?'Search members':'Configure Totehm');
-      $('lv-tap').classList.toggle('is-own',m);
-      $('lv-tap').classList.toggle('hide',!(m||chez));
-      $('lv-pitch').classList.toggle('hide',m||chez);
+      const ouvrir=$('lv-tap-open');
+      ouvrir.title=MB.verrou?'Subscribe to open it':chez?'Open this TOTEHM':'Open my TOTEHM';
+      ouvrir.setAttribute('aria-label',ouvrir.title);
+      spotKey.classList.toggle('hide',chez);
+      $('lv-add-illustration').classList.toggle('hide',chez);
+      $('lv-actions').classList.remove('hide');
       if(!m) return;
       /* Un invité n'a ni nom ni lecteurs : une seule porte, sauver avec l'email. */
       const g=guest();
@@ -15811,9 +15773,20 @@ window.addEventListener('pageshow',e=>{
     })();
     window.__totehm_dash=()=>DASH.etat();
 
-    /* Le centre : « Tap to open it » ouvre MON Totehm. */
-    $('lv-tap-open').onclick=()=>{ if(!PAPIER.occupe()) enter(); };
-    $('lv-tap-turn').onclick=()=>{ if(PAPIER.occupe()) return; if(mode==='members') chercherIci(MB.nom||''); else if(lvReglages) lvReglages.ouvrir(); };
+    function ouvrirDepuisAccueil(){
+      quandLibre(()=>{ if(libre()&&vue==='c'&&!occupe()) enter(); });
+    }
+    $('lv-tap-open').onclick=ouvrirDepuisAccueil;
+    function ajouterDepuisAccueil(v,ouvrir){
+      if(!libre()||occupe()||vue!=='c'||mode!=='mine'||RO) return;
+      if(!inscrit()){
+        if(ouvrirPorte(null)) LA_PORTE.reste=()=>ajouterDepuisAccueil(v,ouvrir);
+        return;
+      }
+      aller(v,ouvrir);
+    }
+    spotKey.onclick=()=>quandLibre(()=>ajouterDepuisAccueil('d',NSPOT.ouvrir));
+    $('lv-add-illustration').onclick=()=>quandLibre(()=>ajouterDepuisAccueil('g',SH.ajouter));
 
     /* ── LES DONNÉES : `my_landing()`, une réponse tardive ne gagne jamais ── */
     let landSeq=0;
@@ -15982,8 +15955,6 @@ window.addEventListener('pageshow',e=>{
      module — la page s'affiche vide, sans un mot. Deux `if` coûtent
      moins cher qu'un écran blanc. */
   const ge=$('gate-enter'), ast=$('gate-asteroid');
-  /* ⚠️ #gate-open A DISPARU · 24/09/2026 : le dos du papier dit
-     « Tap to open it ». Le geste est unique : un tap sur le papier. */
   /* ⚠️ LE DÉPLOIEMENT DOIT ÊTRE ATTEIGNABLE DE L'EXTÉRIEUR · 22/09/2026.
      `enter()` vit dans ce module et n'en sortait pas. Or la porte
      [My Higher Self] doit pouvoir DÉPLIER le Totehm sur la première vue

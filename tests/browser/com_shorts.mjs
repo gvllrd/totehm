@@ -505,7 +505,7 @@ try{
 
   // ══ 5 · PENDANT LA RECHERCHE MEMBERS (18/11 : elle vit sur le VERSO, comme mes réglages) : la croix de l'atterrissage attend
   //      sous la feuille — une flèche y déplace le curseur, jamais la vue ; refermée (Échap), la croix repart ══
-  await pg.click('#lv-m-sel');
+  await pg.click('#lv-search');
   await pg.waitForFunction(()=>{const c=window.__totehm_cherche&&window.__totehm_cherche();return c&&c.ouvert;},null,{timeout:8000}).catch(()=>{});
   const pendant=await pg.evaluate(()=>window.__totehm_cherche().ouvert);
   await pg.keyboard.press('ArrowRight');await pg.waitForTimeout(700);

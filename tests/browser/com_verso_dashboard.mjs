@@ -15,7 +15,7 @@ const rpc={my_landing:{signed_in:true,pseudo:'fixture',telegram:false,higher:{ac
 try{
  for(const width of [390,1280]){
   const {pg,ctx,log}=await page(browser,{dir:'com',origin,viewport:{width,height:844},hasTouch:width<700,tables:{profiles:[{pseudo:'fixture'}],totehms:[{user_id:USER.id,habits:habits}]},rpc});
-  await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.click('#lv-tap-turn');await pg.waitForSelector('#srch.is-pret');
+  await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.locator('#gate-enter').press('ArrowRight');await pg.waitForSelector('#srch.is-pret');
   /* 23/11 (Wah) : plus de tableau de bord — Go Higher = Higher GPT (My Chapter) puis TotehmBot */
   await pg.waitForTimeout(800);
   check(await pg.getAttribute('#srch','data-tab')==='higher'&&await pg.isVisible('#mw-gpt')&&await pg.isVisible('#mw-menu')&&!await pg.isVisible('#mw-creator'),'Go Higher opens first: Higher GPT then TotehmBot, separately from monetization');

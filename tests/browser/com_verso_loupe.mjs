@@ -25,7 +25,7 @@ try{
   const {pg,log}=await page(browser,{dir:'com',origin,tables,viewport:vp,hasTouch:nom==='téléphone',
     rpc:{my_landing:LAND,creator_dashboard:CREA,my_console:CONS,my_board:{ok:true,tz:'UTC',habits:[],days:[],week:{},intentions:{},objectives:[],heat:[],totals:{},feed:[]}}});
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1200);
-  await pg.click('#lv-tap-turn');
+  await pg.locator('#gate-enter').press('ArrowRight');
   await pg.waitForFunction(()=>document.getElementById('srch').classList.contains('is-pret'),null,{timeout:6000}).catch(()=>{});await pg.waitForTimeout(700);
   const a=await mesure(pg);
   ok(!a.on&&a.pressed==='false'&&!!a.tabs,nom+' · la loupe est au bout des deux onglets, fermée');

@@ -14,7 +14,7 @@ try{
   await pg.addInitScript(()=>{ window.__ouvert=[]; window.__copie=[]; window.open=(u)=>{ window.__ouvert.push(u); return null; };
     Object.defineProperty(navigator,'clipboard',{value:{writeText:async t=>window.__copie.push(t)}}); });
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1200);
-  await pg.click('#lv-tap-turn');await pg.waitForFunction(()=>document.getElementById('srch').classList.contains('is-open'),null,{timeout:9000});
+  await pg.locator('#gate-enter').press('ArrowRight');await pg.waitForFunction(()=>document.getElementById('srch').classList.contains('is-open'),null,{timeout:9000});
   await pg.waitForSelector('#mw-gpt [data-ch]',{timeout:8000});
   const a=await pg.evaluate(()=>{const g=document.getElementById('mw-gpt');
     return {b:[...g.querySelectorAll('[data-ch]')].map(x=>x.textContent),k:[...g.querySelectorAll('.vs-k')].map(x=>x.textContent).join('|'),dash:!!document.getElementById('vs-dash')};});

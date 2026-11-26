@@ -36,7 +36,7 @@ try{
   await pg.evaluate(()=>{window.__ouvert=[];window.open=u=>{window.__ouvert.push(u);return null;};});
 
   /* ── 1 · [Members] retourne le TOTEHM sur son verso, en mode recherche ── */
-  await pg.click('#lv-m-sel');
+  await pg.click('#lv-search');
   const focusTot=await pg.evaluate(()=>document.activeElement&&document.activeElement.id);
   ok(await ouvert(pg),quoi+' · [Members] retourne le TOTEHM sur son verso, en mode recherche');
   await pg.waitForTimeout(500);
@@ -139,7 +139,7 @@ try{
   await pg.waitForFunction(()=>window.__totehm_lv().mode==='mine'&&!document.body.classList.contains('ro'),null,{timeout:9000}).catch(()=>{});
   await pg.waitForTimeout(1200);
   ok((await L(pg)).mode==='mine'&&!/ro=/.test(await pg.evaluate(()=>location.search)),quoi+' · [Mine] : je redeviens moi');
-  await pg.click('#lv-m-sel');ok(await ouvert(pg),quoi+' · [Members] rouvre la recherche');
+  await pg.click('#lv-search');ok(await ouvert(pg),quoi+' · [Members] rouvre la recherche');
   await pg.waitForTimeout(400);
   /* 23/11 (Wah : « un genre de zoom fullscreen ») — mesuré image par image : le fond du verso ne GRANDIT jamais en se refermant */
   await pg.evaluate(()=>{ const b=document.getElementById('srch-bg'); window.__largeurs=[];
@@ -199,7 +199,7 @@ try{
  {const DASH={ok:true,price_cents:2400,min_cents:300,month_cents:0,subscribers:0,due_cents:0,open:false};
   const{pg,log}=await page(browser,{dir:'com',origin,tables,rpc:{...rpc,creator_dashboard:DASH,my_console:{signed_in:true,offer:{enabled:false}}},functions,viewport:{width:390,height:844},hasTouch:true});
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1200);
-  await pg.click('#lv-tap-turn');
+  await pg.locator('#gate-enter').press('ArrowRight');
   await pg.waitForFunction(()=>document.getElementById('srch').classList.contains('is-open'),null,{timeout:9000}).catch(()=>{});
   await pg.click('#vs-tabs [data-vs-tab="money"]');
   await pg.waitForSelector('#mwc-disc',{state:'visible',timeout:9000}).catch(()=>{});
@@ -224,7 +224,7 @@ try{
   const{pg,log}=await page(browser,{dir:'com',origin,tables,rpc:{...rpc,creator_dashboard:DASH,creator_subscribers:FANS,my_console:{signed_in:true,offer:{enabled:true,open:true}}},
     functions:{...functions,'creator-cut-off':{ok:true,pseudo:'kai',stripe:true}},viewport:{width:390,height:844},hasTouch:true});
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1200);
-  await pg.click('#lv-tap-turn');
+  await pg.locator('#gate-enter').press('ArrowRight');
   await pg.waitForFunction(()=>document.getElementById('srch').classList.contains('is-open'),null,{timeout:9000}).catch(()=>{});
   await pg.click('#vs-tabs [data-vs-tab="money"]');
   await pg.waitForSelector('#vs-fans [data-cut="kai"]',{state:'visible',timeout:9000}).catch(()=>{});
@@ -246,7 +246,7 @@ try{
  /* ── 12 · un abonné coupé retente de s'abonner : le serveur refuse (`banned`), le verso le dit ── */
  {const{pg,log}=await page(browser,{dir:'com',origin,tables,rpc,functions:{'creator-subscribe':{error:'banned'}},viewport:{width:390,height:844},hasTouch:true});
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1200);
-  await pg.click('#lv-m-sel');await ouvert(pg);await pg.waitForTimeout(400);
+  await pg.click('#lv-search');await ouvert(pg);await pg.waitForTimeout(400);
   await pg.keyboard.type('kai');await pg.keyboard.press('Enter');
   await pg.waitForFunction(()=>window.__totehm_cherche().etat==='offre',null,{timeout:6000}).catch(()=>{});
   await pg.click('#mb-res [data-mb="disc"]');

@@ -88,7 +88,7 @@ try{
   {const {pg,ctx,log}=await page(browser,{dir:'com',origin,tables,rpc:{my_landing:LAND,figher_access:{signed_in:true,member:true},totehm_read:OTHER,creator_page:OFFER,member_media:{ok:true,items:[]},club_spots_of:{ok:true,items:[]}}});
     await pg.emulateMedia({reducedMotion:'reduce'});
     await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await settled(pg,'c');
-    await pg.click('#lv-m-sel');
+    await pg.click('#lv-search');
     await pg.waitForSelector('#mb-q:visible');await pg.fill('#mb-q','kai3');await pg.keyboard.press('Enter');
     await pg.waitForFunction(()=>{const c=window.__totehm_cherche();return c.etat==='abonne'&&c.lu;},null,{timeout:9000});
     await pg.keyboard.press('Escape');

@@ -18,7 +18,7 @@ const retourner=async pg=>{
      on attend que le papier soit posé, et on retente une fois si le geste est tombé pendant. */
   for(let i=0;i<4;i++){
     await pg.waitForFunction(()=>!document.getElementById('srch').classList.contains('is-on'),null,{timeout:9000}).catch(()=>{});
-    await pg.click('#lv-tap-turn').catch(()=>{});
+    await pg.locator('#gate-enter').press('ArrowRight').catch(()=>{});
     const ok=await pg.waitForFunction(()=>document.getElementById('srch').classList.contains('is-open'),null,{timeout:3000}).then(()=>true,()=>false);
     if(ok) return;
     await pg.waitForTimeout(700);

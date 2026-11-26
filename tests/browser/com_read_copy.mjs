@@ -19,10 +19,10 @@ try{
     jamais dans son Totehm déployé —, et [Members] retourne le TOTEHM sur son verso, en mode recherche (18/11). */
  {const {pg,log}=await page(browser,{dir:'com',origin,rpc:Object.assign({},rpc,{member_media:{ok:true,items:[]},club_spots_of:{ok:true,items:[]}}),tables:{profiles:[{pseudo:'wah'}]}});
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(700);
-  ok(!await pg.isVisible('#lv-tap .lvt-label')&&await pg.isVisible('#lv-tap-open svg')&&await pg.isVisible('#lv-tap-turn svg'),'au centre : les deux actions sont disponibles sans consigne visible');
+  ok(await pg.locator('#lv-actions button:visible').count()===4&&!await pg.isVisible('#lv-m-sel'),'au centre : quatre actions, avec une touche dédiée à la recherche');
   await pg.evaluate(()=>{window.__ouvert=[];window.open=(u)=>{window.__ouvert.push(u);return null;};});
   /* 18/11 (Wah) : [Members] retourne le TOTEHM sur son verso, en mode recherche — un verso VIERGE, pas le mien */
-  await pg.click('#lv-m-sel');
+  await pg.click('#lv-search');
   await pg.waitForFunction(()=>{const c=window.__totehm_cherche&&window.__totehm_cherche();return c&&c.ouvert;},null,{timeout:8000}).catch(()=>{});
   const q=await pg.evaluate(()=>({onglets:window.__ouvert.slice(),saisie:document.activeElement&&document.activeElement.id,dos:document.getElementById('ast-name').textContent,gx:!!document.getElementById('gx-q')}));
   ok(q.onglets.length===0&&q.saisie==='mb-q'&&q.dos===''&&!q.gx,
@@ -31,9 +31,9 @@ try{
   await pg.goto(origin+'/totehm?ro=studio');await pg.waitForSelector('body.member');
   await pg.waitForFunction(()=>document.body.classList.contains('lv-membre'),null,{timeout:9000}).catch(()=>{});await pg.waitForTimeout(1200);
   const e=await pg.evaluate(()=>({who:document.getElementById('lv-m-who').textContent,ro:document.body.classList.contains('ro'),
-    gate:document.body.classList.contains('gate'),tap:document.getElementById('lv-tap').textContent.trim()}));
-  ok(e.who==='studio'&&e.ro&&e.gate&&/(Swipe|Turn) to search( · Discover)?$/.test(e.tap)&&/[?&]ro=studio/.test(pg.url()),
-     '`?ro=studio` : on vit SON écosystème sur SON atterrissage, pas dans son Totehm déployé (« '+e.tap+' »)');
+    gate:document.body.classList.contains('gate'),actions:[...document.querySelectorAll('#lv-actions button')].filter(b=>b.getClientRects().length).map(b=>b.getAttribute('aria-label'))}));
+  ok(e.who==='studio'&&e.ro&&e.gate&&e.actions.join('|')==='Open this TOTEHM|Search a TOTEHM'&&await pg.isVisible('#lv-m-sel')&&/[?&]ro=studio/.test(pg.url()),
+     '`?ro=studio` : son atterrissage en lecture, avec retour à Mine → '+e.actions.join(' | '));
   ok(log.rpc.filter(x=>x.name==='totehm_read').length===1&&log.rpc.some(x=>x.name==='member_media'&&x.body.p_pseudo==='studio'),'une lecture de son Totehm, une de ses médias (`member_media`)');
   await pg.screenshot({path:OUT+'/members_search.png'});
   ok(!erreurs(log).length,'members : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();
@@ -81,6 +81,9 @@ try{
     défilement ; la manette reste un manche ── */
  {const {pg,ctx}=await page(browser,{dir:'com',origin,rpc,tables:{profiles:[{pseudo:'wah'}]},viewport:{width:390,height:844},hasTouch:true});
   await pg.goto(origin+'/totehm?ro=studio#in');await pg.waitForSelector('body.ro:not(.gate)');await pg.waitForTimeout(900);
+  const mobile=await pg.evaluate(()=>{const joy=document.querySelector('#joy'),r=joy.getBoundingClientRect(),liste=document.querySelector('#fv-inner').getBoundingClientRect();
+    return {droite:innerWidth-r.right,bas:innerHeight-r.bottom,gap:parseFloat(getComputedStyle(joy).gap),marge:r.top-liste.bottom};});
+  ok(mobile.droite===8&&mobile.bas===8&&mobile.gap===8&&mobile.marge===10,'téléphone : manette compacte dans le coin, liste dégagée → '+JSON.stringify(mobile));
   const cdp=await ctx.newCDPSession(pg);
   const vue=()=>pg.$eval('#joy',e=>(e.className.match(/v-(\w+)/)||[])[1]);
   const glisse=async(sel,dy)=>{const p=await pg.$eval(sel,e=>{const r=e.getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2};});const a=await vue();
@@ -97,16 +100,16 @@ try{
  {const {pg}=await page(browser,{dir:'com',origin,rpc,tables:{profiles:[{pseudo:'wah'}]},viewport:{width:1280,height:800}});
   await pg.goto(origin+'/totehm?ro=studio#in');await pg.waitForSelector('body.ro:not(.gate)');await pg.waitForTimeout(600);
   const m=await pg.evaluate(()=>{const s=document.querySelector('#stage').getBoundingClientRect(),j=document.querySelector('#joy').getBoundingClientRect();
-    /* chaque bord porte trois perforations (25 %, 50 %, 75 %), d'un rayon de 6,19 % de la largeur : la manette,
-       calée dans le coin, n'en touche AUCUNE — on mesure les disques, pas seulement les abscisses. */
+    /* Les cases vides de la grille ne dessinent rien. On mesure le manche et les quatre touches. */
     const r=s.width*0.0619, tr=[];
     [.25,.5,.75].forEach(f=>{ tr.push([s.left+s.width*f,s.top],[s.left+s.width*f,s.bottom],
       [s.left,s.top+s.height*f],[s.right,s.top+s.height*f]); });
-    const touche=tr.some(([x,y])=>Math.hypot(Math.max(j.left-x,x-j.right,0),Math.max(j.top-y,y-j.bottom,0))<r);
+    const touches=[...document.querySelectorAll('#joy > *')].map(el=>el.getBoundingClientRect());
+    const touche=touches.some(t=>tr.some(([x,y])=>Math.hypot(Math.max(t.left-x,x-t.right,0),Math.max(t.top-y,y-t.bottom,0))<r));
     return {dans:j.right<=s.right+1&&j.bottom<=s.bottom+1&&j.left>=s.left&&j.top>=s.top,
       dBas:Math.round(s.bottom-j.bottom),dDroite:Math.round(s.right-j.right),
-      surUnTrou:touche, carre:Math.round(s.width)};});
-  ok(m.dans&&m.dBas>=10&&m.dDroite>=10&&!m.surUnTrou&&m.carre===640,
+      surUnTrou:touche, carre:Math.round(s.width),gap:parseFloat(getComputedStyle(document.querySelector('#joy')).gap)};});
+  ok(m.dans&&m.dBas===10&&m.dDroite===10&&!m.surUnTrou&&m.carre===640&&m.gap===8,
      '26/11 · ordinateur 1280×800 : la manette DANS le carré, dans son coin bas droit, hors des perforations '+JSON.stringify(m));
   /* 25/10 (Wah : « le joystick ne marche pas bien pour l'axe vertical ») : un geste de trackpad ET son inertie (≈ 1 s)
      faisaient sauter deux vues. 8 événements « doigt » de 30 px, puis 40 d'inertie qui décroissent. */
@@ -129,7 +132,7 @@ try{
  }
  /* ── 4 · l'espace membre (07/10) : plein écran, c'est l'utilisateur ; les boutons de higher.boutique ── */
  {const {pg,log}=await page(browser,{dir:'com',origin,rpc,tables:{profiles:[{pseudo:'wah'}]}});
-  await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(900);await pg.click('#lv-tap-turn');await pg.mouse.move(4,4);await pg.waitForTimeout(2200);
+  await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(900);await pg.locator('#gate-enter').press('ArrowRight');await pg.mouse.move(4,4);await pg.waitForTimeout(2200);
   const m=await pg.evaluate(()=>{const w=document.getElementById('member-window').getBoundingClientRect(),a=[...document.querySelectorAll('#member-window #mw-menu .vs-act')].map(e=>{const r=e.getBoundingClientRect(),cs=getComputedStyle(e);return {t:e.textContent.trim(),c:r.left+r.width/2,h:r.height,fs:cs.fontSize,ws:cs.whiteSpace,bg:cs.backgroundColor};});
     const outs=[...document.querySelectorAll('#mw-in-state .vs-foot .vs-acc:not([hidden]),#mw-in-state .vs-foot .mw-terms')].map(e=>e.textContent.trim());return {w:w.width,h:w.height,W:innerWidth,H:innerHeight,dansVerso:!!document.querySelector('#srch #member-window'),statique:getComputedStyle(document.getElementById('member-window')).position==='static',a,outs,nom:!!document.querySelector('#member-window #name-btn'),verso:!!document.querySelector('#srch #name-btn')};});
   ok(m.w>0&&m.dansVerso&&m.statique,'l\'espace membre vit dans le verso du papier (15/10 bis) — plus une fenêtre plein écran');

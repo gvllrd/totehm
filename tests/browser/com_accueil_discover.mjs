@@ -25,13 +25,11 @@ try{
  /* ── 1 · SANS COMPTE : le récit, et sa porte unique ── */
  {const{pg,ctx,log}=await page(browser,{dir:'com',origin,tables:{profiles:[]},rpc:{my_landing:{signed_in:false}},viewport:{width:390,height:844},hasTouch:true,session:false});
   await pg.goto(origin+'/totehm');await pg.waitForFunction(()=>typeof window.__totehm_lv==='function');await pg.waitForTimeout(2200);
-  const c=await pg.evaluate(()=>{const q=s=>document.querySelector(s),vu=e=>!!e&&e.getClientRects().length>0&&getComputedStyle(e).visibility!=='hidden';
-    return {titre:!!q('#lv-title'),boutons:[...document.querySelectorAll('#lv-pitch button')].filter(vu).map(b=>b.textContent.trim()),
+  const c=await pg.evaluate(()=>{const vu=e=>e.getClientRects().length>0&&getComputedStyle(e).visibility!=='hidden';
+    return {titre:!!document.querySelector('#lv-title'),actions:[...document.querySelectorAll('#lv-actions button')].filter(vu).map(b=>b.getAttribute('aria-label')),
       touches:[...document.querySelectorAll('#lv-keys button')].filter(vu).map(b=>b.querySelector('.k2l').textContent.trim())};});
-  /* 25/11 (Wah) : la porte seule en mot ; le reste est sur les TOUCHES de la manette — SELECT (Mine · Members),
-     START (Greatness, le Discover) et, sur ordinateur seulement, MODE (Tree). */
-  ok(!c.titre&&c.boutons.join('|')==='Open my TOTEHM'&&c.touches.join('|')==='Mine|Greatness',
-     '25/11 · l\'accueil : la porte, puis les touches SELECT et START → '+c.boutons.join(' | ')+' // '+c.touches.join(' | '));
+  ok(!c.titre&&c.actions.join('|')==='Open my TOTEHM|Search a TOTEHM|Add a spot|Add an illustration'&&c.touches.join('|')==='Greatness',
+     'sans compte : les quatre actions et Greatness → '+c.actions.join(' | '));
   /* le SCROLL ouvre le Discover, et l'inertie du même geste ne le fait pas défiler */
   {const cdp=await ctx.newCDPSession(pg);
    await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:195,y:600}]});

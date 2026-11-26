@@ -41,7 +41,7 @@ try{
   const nom=vp.width+'×'+vp.height;
   const r=await etat(pg);
   ok(!r.image&&!r.ouverte&&r.ecart<=5,nom+' · au repos : plus d\'image, le tronc est FERMÉ (chaque piste droite à '+r.ecart+' px près)');
-  await pg.click('#lv-join');
+  await pg.click('#lv-tap-open');
   await pg.waitForTimeout(160);
   const mi=await etat(pg);
   ok(mi.ouverte&&mi.porte.op<.35,nom+' · le tronc s\'écarte D\'ABORD : la porte n\'apparaît qu\'ensuite (opacité '+mi.porte.op+')');
@@ -89,7 +89,7 @@ try{
   await pg.goto(origin+'/totehm');
   await pg.waitForFunction(()=>window.__totehm_lv?.().vue==='c'&&!document.body.classList.contains('ses-attente'));
   await pg.waitForTimeout(1500);
-  await pg.click('#lv-join');await pg.waitForTimeout(900);
+  await pg.click('#lv-tap-open');await pg.waitForTimeout(900);
   const c=ctx||pg.context(), cdp=await c.newCDPSession(pg);
   await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:195,y:640}]});
   for(let i=1;i<=5;i++){ await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:195,y:640-220*i/5}]}); await pg.waitForTimeout(16); }
@@ -105,7 +105,7 @@ try{
   await pg.emulateMedia({reducedMotion:'reduce'});await pg.goto(origin+'/totehm');
   await pg.waitForFunction(()=>window.__totehm_lv?.().vue==='c'&&!document.body.classList.contains('ses-attente'));
   await pg.waitForTimeout(1200);
-  await pg.click('#lv-join');await pg.waitForTimeout(150);
+  await pg.click('#lv-tap-open');await pg.waitForTimeout(150);
   const o=await etat(pg);
   ok(o.respirations===0&&o.dedans===0&&o.gauche&&o.droite,'mouvement réduit : le tronc est ouvert autour de la porte dès le geste, sans transition → '+JSON.stringify({resp:o.respirations,dedans:o.dedans}));
   ok(!erreurs(log).length,'mouvement réduit · aucune erreur '+erreurs(log).join(' | '));
@@ -118,7 +118,7 @@ try{
   await pg.goto(origin+'/totehm');
   await pg.waitForFunction(()=>window.__totehm_lv?.().vue==='c'&&!document.body.classList.contains('ses-attente'));
   await pg.waitForTimeout(1500);
-  await pg.click('#lv-join');await pg.waitForTimeout(1200);
+  await pg.click('#lv-tap-open');await pg.waitForTimeout(1200);
   const o=await etat(pg);
   ok(!o.image&&o.ouverte&&!o.porte.tronc&&o.porte.t<o.papierBas+60&&o.porte.b<vp.height*.6&&o.focus==='mw-email',
      vp.width+'×'+vp.height+' · téléphone : plus d\'image, la porte reste sous le papier, au-dessus du clavier → '+JSON.stringify({papier:o.papierBas,porte:[o.porte.t,o.porte.b]}));
