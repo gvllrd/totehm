@@ -437,7 +437,7 @@ body.gate #wm-O,body.gate #wm-H,body.gate #t-foot{animation:none}
 #joy.vers-g #cur-g,
 #joy.vers-d #cur-d,
 #joy.vers-h #cur-h,
-#joy.vers-b #cur-b{color:#fff}
+#joy.vers-b #cur-b{filter:brightness(1.45)}
 
 /* ══ LES QUATRE CHEVRONS ═════════════════════════════════════════════
    ⚠️ JAMAIS `display:none` : un curseur sans voisin garde sa case (sinon le contrôleur se déplace). */
@@ -449,7 +449,7 @@ body.gate #wm-O,body.gate #wm-H,body.gate #t-foot{animation:none}
 .cur.mort{opacity:0;pointer-events:none;cursor:default}
 @media(hover:hover){.cur:not(.mort):hover{color:#fff}}
 .cur svg{width:14px;height:14px;display:block;
-  stroke:currentColor;fill:none;stroke-width:1.6;
+  stroke:var(--rail-color);fill:none;stroke-width:1.6;
   stroke-linecap:round;stroke-linejoin:round}
 
 /* ══ LE NOM DE LA VUE ════════════════════════════════════════════════
@@ -1219,6 +1219,8 @@ body.v-visions{--paper:#2b3a73}
 .k2j.is-side .k2j-p{opacity:0}
 @media(prefers-reduced-motion:reduce){.k2,.k2r .k2k,.k2j .k2j-c,.k2j .k2j-p,.k2j .k2j-p i{transition:none}}
 /* ══ fin ps2 ══ */
+.k2>svg,.k2r .k2k>svg{stroke:var(--rail-color)}
+:is(#joy,#lvjoy) button:hover svg{filter:brightness(1.3)}
 
 /* ══ LA LOUPE · 06/10/2026 ══════════════════════════════════════════════
    Wah : « une petite loupe sur chaque box de chaque vue ; on appuie, le
@@ -2372,7 +2374,7 @@ body.gate.entered #terms-corner{opacity:0;pointer-events:none}
 #srch.is-open #srch-x{pointer-events:auto}
 #fold-x{position:fixed;top:10px;right:10px;z-index:34}
 :is(#lv-actions,#recto-controls,#verso-controls){--k2-d:40px}
-:is(#lv-actions,#recto-controls,#verso-controls) .k2>svg{width:20px;height:20px}
+:is(#recto-controls,#verso-controls) .k2>svg{width:20px;height:20px}
 body.gate:not(.entered) #ordbtn,
 body.folding :is(#fold-x,#fold-flip,#ordbtn){visibility:hidden;pointer-events:none}
 .k2.is-navy:is(#fold-x,#fold-flip,#ordbtn):where(:not(:active,.is-press)){
@@ -3014,7 +3016,7 @@ body.lv-membre.lv-b #lv-slogan,body.lv-verrou.lv-b #lv-slogan{opacity:0}
 .lvn{position:static;width:48px;height:26px;border:0;border-radius:10px;padding:0;pointer-events:auto;
   background:none;color:#8a8a92;display:flex;align-items:center;justify-content:center;cursor:pointer;
   transition:opacity .3s ease,color .2s ease;-webkit-tap-highlight-color:transparent}
-.lvn svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.lvn svg{width:14px;height:14px;fill:none;stroke:var(--rail-color);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
 #lvn-up{grid-area:1/2/2/3}
 #lvn-lf{grid-area:2/1/3/2}
 #lvj-box{grid-area:2/2/3/3}
@@ -3030,7 +3032,7 @@ body.lv-membre.lv-b #lv-slogan,body.lv-verrou.lv-b #lv-slogan{opacity:0}
 #lvjoy.vers-g #lvn-lf,
 #lvjoy.vers-d #lvn-rt,
 #lvjoy.vers-h #lvn-up,
-#lvjoy.vers-b #lvn-dn{color:#fff}
+#lvjoy.vers-b #lvn-dn{filter:brightness(1.45)}
 /* ── LE SOCLE · 25/10 : PLUS DE BOÎTE NOIRE (Wah : « enlève la boîte noire de la page d'atterrissage et mets le totehm
    en version boîtier-processor »). Le TOTEHM est lui-même le boîtier du processeur : ses sept broches sont posées sur
    ses arêtes (`--sk` = le papier + 6 px). `#lv-socket` ne se voit plus ; il garde sa géométrie (les broches s'y lisent)
@@ -3174,8 +3176,9 @@ body.gate.lv-h:not(.entered):not(.is-door) #lv-sell{opacity:1}
 .lvs-hook{margin:0;font:700 13px/1.3 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#fff}
 .lvs-sci{margin:0;font:400 11.5px/1.65 'Space Mono',monospace;color:#9a9aa2}
 .lvs-sci b{font-weight:700;color:#fbd5ca}
-/* ── LE CENTRE : actions, puis commandes de navigation ── */
-#lv-c-acts{position:absolute;left:50%;top:calc(var(--lv-y) + var(--sk) / 2 + 18px);transform:translateX(-50%);
+/* Les touches restent dans la même couche pendant le voyage entre l’accueil et les vues latérales. */
+#lv-c-acts{position:absolute;left:0;right:0;margin-inline:auto;top:calc(var(--lv-y) + var(--sk) / 2 + 18px);
+  z-index:7;visibility:hidden;
   display:flex;flex-direction:column;align-items:center;gap:12px;width:min(94vw,460px)}
 body.gate:not(.member):not(.ses-attente){--lv-y:32dvh}
 @media(min-height:741px) and (max-width:699px){
@@ -3196,29 +3199,55 @@ body.gate:not(.member):not(.ses-attente){--lv-y:32dvh}
  body.gate,body.gate.member,body.gate.ses-attente,body.gate:not(.member):not(.ses-attente){--lv-y:20dvh}
  #gate-hero{padding-top:20px}
  #gate-top-row{margin-top:max(0px,calc(var(--lv-y) - var(--gate-size) / 2 - 20px))}
- #lv-c-acts{left:calc(50% - 330px);top:110px;width:210px;transform:none;gap:8px}
+ #lv-c-acts{left:calc(50% - 330px);right:auto;top:110px;width:210px;gap:8px}
 }
-/* Le losange garde le même pas entre centres sur les deux axes. */
-#lv-actions{display:grid;grid-template:repeat(3,32px) / repeat(3,32px);place-items:center;
-  padding:8px;background:#000;border-radius:10px;stroke:var(--rail-color)}
-#lv-actions .k2>svg{stroke:inherit;stroke-linecap:butt;stroke-linejoin:miter;overflow:visible}
+body:is(.lv-c,.lv-g,.lv-d):not(.is-door) #lv-c-acts{visibility:visible}
+#lv-c-acts button{pointer-events:auto}
+#lv-actions{display:grid;grid-template:repeat(3,36px) / repeat(3,50px);place-items:center;
+  padding:7px 8px 19px;background:#000;border-radius:10px}
+#lv-actions .k2{position:relative}
+#lv-actions .k2>svg{width:50%;height:50%;stroke-linecap:butt;stroke-linejoin:miter;overflow:visible}
+.lv-key-label{position:absolute;top:calc(100% + 5px);left:50%;translate:-50% 0;
+  pointer-events:none;padding:2px 4px;background:#000;border-radius:4px;
+  font:400 9px/1 'Space Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:#b8b8c2;white-space:nowrap}
+#lv-search path{transform-box:fill-box;transform-origin:center;transition:transform .64s var(--gate-ease)}
+#lv-tree-k svg{position:absolute;inset:0;margin:auto;width:14px;height:14px;fill:none;stroke-width:1.5}
+#lv-tree-k .lv-grid-icon,#lv-tree-k .lv-map-icon{opacity:0}
+#lv-tree-k svg{transition:opacity .25s ease}
+#lv-tree-k[aria-pressed="true"] .k2k{outline:1px solid var(--rail-color)}
+#lv-tree-k[aria-pressed="false"] .k2l{opacity:1}
+body:is(.lv-g,.lv-d) :is(#lv-actions,#lv-keys){display:contents}
+body:is(.lv-g,.lv-d) :is(#lv-add-spot,#lv-add-illustration,#lv-m-sel,#lv-great,#mb-lock){display:none}
+body:is(.lv-g,.lv-d) #lv-c-acts :is(#lv-tap-open,#lv-search,#lv-tree-k){position:fixed;translate:-50% 0}
+body:is(.lv-g,.lv-d) #lv-tap-open{
+  --k2-d:64px;left:var(--lv-add-x,0px);top:calc(var(--lv-add-y,0px) - var(--k2-d) / 2)}
+body:is(.lv-g,.lv-d):not(.lv-add-visible) #lv-tap-open{visibility:hidden}
+body:is(.lv-g,.lv-d) #lv-search{left:calc(50% + 82px);top:calc(max(10px,env(safe-area-inset-top)) + 9px)}
+body:is(.lv-g,.lv-d) #lv-search path{transform:rotate(180deg)}
+body:is(.lv-g,.lv-d) #lv-tree-k{left:50%;bottom:calc(var(--lvj-h,64px) + 26px)}
+body:is(.lv-g,.lv-d) #lv-tree-k .lv-tree-icon{opacity:0}
+body.lv-g #lv-tree-k .lv-grid-icon,body.lv-d:not(.rdr-grid) #lv-tree-k .lv-grid-icon,
+body.lv-d.rdr-grid #lv-tree-k .lv-map-icon{opacity:1}
+body:is(.lv-g,.lv-d) #lv-m-say{position:fixed;top:calc(max(10px,env(safe-area-inset-top)) + 62px);
+  right:max(8px,calc(50% - 210px));width:min(185px,33vw);background:#000;border-radius:4px}
+body.lv-g:has(:is(#lv-sh-pick,#lv-sh-sf,#tlv):not([hidden])) #lv-c-acts,
+body.lv-d:is(.rdr-voir,.rdr-pique,.is-nspot) #lv-c-acts,
+body.lv-d:has(:is(#rdr-pick,#rdr-sf,#rdr-new):not([hidden])) #lv-c-acts{visibility:hidden}
+@media(prefers-reduced-motion:reduce){#lv-search path,#lv-tree-k svg{transition:none}}
 #lv-search{grid-area:1 / 2}
 #lv-add-illustration{grid-area:2 / 1}
 #lv-add-illustration>.lv-action-icon{stroke-width:1.7}
 #lv-add-spot{grid-area:2 / 3}
 #lv-tap-open{grid-area:3 / 2}
-body.ses-attente:not(.member) #lv-actions,body.paysage #lv-tap-open{display:none}
+body.ses-attente:not(.member) #lv-actions,body.lv-c.paysage #lv-tap-open{display:none}
 
 #lv-keys{display:flex;gap:20px;align-items:flex-end;justify-content:center;
   background:#000;border-radius:10px;padding:6px 14px 4px}   /* les touches coupent les racines, comme la légende */
 @media(max-height:690px) and (max-width:649px){
   #lv-c-acts{flex-flow:row wrap;justify-content:center}
-  #lv-keys{max-width:calc(100% - 124px);flex-wrap:wrap;gap:8px}
+  #lv-keys{max-width:calc(100% - 178px);flex-wrap:wrap;gap:8px}
   #lv-c-acts :is(#lv-m-say,#mb-lock){flex-basis:100%}
 }
-/* LA TOUCHE MODE (Tree) n'existe que sur ORDINATEUR : l'arbre ne se voit que là. */
-#lv-tree-k{display:none}
-@media(min-width:700px){#lv-tree-k{display:inline-flex}}
 /* 18/11 — la recherche est au FIGHER CLUB : un tap sur [Members] hors du Club le DIT ici, en une ligne, puis se tait */
 #lv-m-say{margin:8px auto 0;max-width:300px;font:400 10px/1.6 'Space Mono',monospace;color:#9a9aa2;text-align:center}
 #lv-m-say:empty{display:none}
@@ -3387,7 +3416,7 @@ body.lv-b:not(.lv-membre):not(.lv-verrou) #lv-socket{opacity:0}
    la partie montrée EN PLACE (+25 %, le texte se remet en page dans la même colonne), un second la rend. L'état tient
    d'une partie à l'autre. */
 #vs-tabs .vs-loupe{flex:none;width:40px;padding:0}
-#vs-tabs .vs-loupe svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round}
+#vs-tabs .vs-loupe svg{width:15px;height:15px;fill:none;stroke:var(--rail-color);stroke-width:1.8;stroke-linecap:round}
 #vs-tabs .vs-loupe[aria-pressed=true]{background:#3a3a42;color:#fff}
 #srch.is-loupe #mw-creator,#srch.is-loupe #settings{zoom:1.25}
 #srch[data-tab="higher"] #mw-creator,
@@ -3822,14 +3851,10 @@ body.lv-g #lv-socket,body.lv-d #lv-socket{opacity:0}
 .ns-go:focus-visible{outline:1px solid #fff;outline-offset:2px}
 @media(hover:hover){.ns-go:not(:disabled):hover{background:#55555f}}
 .ns-note:empty{display:none}
-/* le « + » de la MAP = la tuile « + » de la GRID, à la même place (la même grille, une seule tuile, posée sur la Terre) ;
-   la pose d'un point : le panneau s'efface, une ligne en haut */
-#rdr-plus{position:absolute;top:0;left:0;right:0;z-index:6;pointer-events:none;padding-bottom:0;gap:5px;padding-left:5px;padding-right:5px}
-#rdr-plus[hidden]{display:none}
-#rdr-plus .tl{pointer-events:auto;border-radius:14px}
-#rdr-plus .tl-add:focus-visible{outline:1px solid #fff;outline-offset:-9px}
-@media(min-width:700px){#rdr-plus{gap:8px;padding-left:0;padding-right:0}#rdr-plus .tl{border-radius:16px}}
-body.rdr-grid #rdr-plus,body.rdr-voir #rdr-plus,body.is-nspot #rdr-plus{display:none}
+/* Réserve la même case au Plus dans la carte et les grilles. */
+.tl-add-slot{aspect-ratio:1;pointer-events:none}
+#rdr-plus-slot{position:absolute;inset:0 0 auto;pointer-events:none;padding-bottom:0}
+body.rdr-grid #rdr-plus-slot{display:none}
 #rdr-pique{position:absolute;left:50%;transform:translateX(-50%);top:calc(max(10px,env(safe-area-inset-top)) + 64px);z-index:9;
   display:none;border:0;border-radius:10px;padding:9px 14px;background:#1f1f24;color:#d8d8dd;cursor:pointer;
   font:700 9px/1.3 'Space Mono',monospace;letter-spacing:.18em;text-transform:uppercase}
@@ -3859,9 +3884,9 @@ body.is-nspot #lvjoy{opacity:0;pointer-events:none}
 #rdr-g::-webkit-scrollbar{display:none}
 body.rdr-grid #rdr-g{display:block}
 /* 21/10 — Wah : « arrondis les images de la grille dans la vue de droite ». Des tuiles rondes, séparées par le noir. */
-#rdr-g .tlg{gap:5px;padding-left:5px;padding-right:5px}
+:is(#rdr-g .tlg,#rdr-plus-slot){gap:5px;padding-left:5px;padding-right:5px}
 #rdr-g .tl{border-radius:14px}
-@media(min-width:700px){#rdr-g .tlg{gap:8px;padding-left:0;padding-right:0}#rdr-g .tl{border-radius:16px}}
+@media(min-width:700px){:is(#rdr-g .tlg,#rdr-plus-slot){gap:8px;padding-left:0;padding-right:0}#rdr-g .tl{border-radius:16px}}
 body.rdr-grid #rdr-map{display:none}
 /* Le polaroid, par-dessus : le fil TikTok, aimanté, un spot par écran. */
 #rdr-sh{position:absolute;inset:0;z-index:20;overflow-y:auto;overflow-x:hidden;scroll-snap-type:y mandatory;scroll-behavior:smooth;
@@ -3882,11 +3907,7 @@ body.rdr-voir #rdr-grab{display:flex}
 #rdr-grab:active i{background:#fff}
 #rdr-grab:focus-visible{outline:1px solid #fff;outline-offset:2px}
 @media(prefers-reduced-motion:reduce){#rdr-sh,#rdr-grab{transition:none!important}}
-body.lv-d.rdr-voir #gate-asteroid,body.lv-d.rdr-voir #lvjoy,body.rdr-voir #rdr-flt,body.rdr-voir #rdr-mode{opacity:0;pointer-events:none}
-/* MAP · GRID : la bascule de MINE · MEMBERS, à la même place qu'elle, au-dessus de la manette. */
-/* 25/11 (Wah) : « pas besoin du mode SHORT dans la vue de droite, et mettre le même bouton format SELECT PS2 ».
-   UNE touche, deux états — MAP ⇄ GRID. Le polaroid d'un spot s'ouvre toujours d'un tap sur le spot. */
-#rdr-mode{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(var(--lvj-h,64px) + 26px);z-index:6;display:flex}
+body.lv-d.rdr-voir #gate-asteroid,body.lv-d.rdr-voir #lvjoy,body.rdr-voir #rdr-flt{opacity:0;pointer-events:none}
 /* L'intention + le badge Higher (« Fight [Higher] »), dans les deux panneaux de filtres. */
 .sfi .sfh{display:inline-block;width:38px;height:13px;margin-left:5px;vertical-align:-2px}
 #lv-sh-say,#rdr-say{position:absolute;left:0;right:0;z-index:3;margin:0;
@@ -4072,7 +4093,7 @@ body.lv-d.rdr-voir #gate-asteroid,body.lv-d.rdr-voir #lvjoy,body.rdr-voir #rdr-f
 .dc.is-overlay.is-open{opacity:1;visibility:visible;transition:opacity .35s ease,visibility 0s}
 .dc-x{position:absolute;top:8px;right:8px;z-index:3;width:44px;height:44px;border:0;padding:0;background:none;color:#a0a0a0;cursor:pointer;
   display:flex;align-items:center;justify-content:center;transition:color .15s}
-.dc-x svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round}
+.dc-x svg{width:16px;height:16px;fill:none;stroke:var(--rail-color);stroke-width:1.6;stroke-linecap:round}
 /* la structure : rail, chevron — gris sombre, jamais de couleur. Ni numéro d'écran (« 1 / 10 »), ni consigne écrite : la flèche du bas, qui s'anime, dit le scroll */
 .dc-rail{position:absolute;bottom:72px;left:50%;transform:translateX(-50%);display:flex;gap:6px;pointer-events:none}
 .dc-rail span{width:18px;height:2px;background:#242424;transition:background .3s}
@@ -4168,8 +4189,7 @@ body.lv-d.rdr-voir #gate-asteroid,body.lv-d.rdr-voir #lvjoy,body.rdr-voir #rdr-f
 /* ══ TREE MODE · 25/11/2026 (Wah : « je veux que le tree soit optionnel dès la page d'atterrissage, pour laisser à
    l'utilisateur la possibilité d'avoir un VRAI minimalisme ») — un mot, au même endroit que les autres gestes de
    l'atterrissage : dans la légende d'un membre, sous la porte d'un visiteur. Le choix est gardé (`totehm_tree`) et
-   posé AVANT la première image, pour que l'arbre n'apparaisse jamais pour s'effacer ensuite. L'arbre ne se voit
-   que sur ordinateur : au téléphone le mot ne change rien, et il reste honnête (il dit l'état, pas une promesse). */
+   posé AVANT la première image, pour que l'arbre n'apparaisse jamais pour s'effacer ensuite. */
 .lv-tree{background:none;border:0;padding:0;cursor:pointer;font:inherit;color:inherit;-webkit-tap-highlight-color:transparent}
 .lv-tree[aria-pressed="false"]{opacity:.55;text-decoration:line-through;text-decoration-thickness:1px}
 @media(hover:hover){.lv-tree:hover{color:#fff;opacity:1}}
@@ -4768,39 +4788,51 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
   <div id="lv">
     <section class="lv-pane" id="lv-c" aria-label="My TOTEHM">
       <button type="button" id="lv-account" class="lv-act">Sign in</button>
-      <!-- ══ 20/10 sexies · MEMBERS ══ Wah : « quand on cherche un Totehm, on oublie la galaxie : on agrandit le TOTEHM et
-           son socle processor tout en retournant le totehm en mode verso, avec l'invitation directe à entrer un
-           identifiant ». La saisie vit SUR le dos du papier agrandi (`MB`), ancrée en haut (le clavier mange le bas). -->
-      <div id="lv-c-acts" class="lv-act">
-        <div id="lv-actions" class="hide" role="group" aria-label="TOTEHM actions">
-          <button type="button" id="lv-tap-open" class="k2" aria-label="Open my TOTEHM" title="Open my TOTEHM">
-            <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M8 3v10"/></svg>
-          </button>
-          <button type="button" id="lv-search" class="k2" aria-label="Search a TOTEHM" title="Search a TOTEHM">
-            <svg class="lv-action-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.072L14 11.464H2Z"/></svg>
-          </button>
-          <button type="button" id="lv-add-spot" class="k2" aria-label="Add a spot" title="Add a spot">
-            <svg class="lv-action-icon" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="5.5"/><circle cx="8" cy="8" r="2.6"/></svg>
-          </button>
-          <button type="button" id="lv-add-illustration" class="k2" aria-label="Add an illustration" title="Add an illustration">
-            <svg class="lv-action-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 2H3.65a1.35 1.35 0 0 0 2.7 0H6.65a1.35 1.35 0 0 0 2.7 0H9.65a1.35 1.35 0 0 0 2.7 0H14
-              V3.65a1.35 1.35 0 0 0 0 2.7V6.65a1.35 1.35 0 0 0 0 2.7V9.65a1.35 1.35 0 0 0 0 2.7V14
-              H12.35a1.35 1.35 0 0 0-2.7 0H9.35a1.35 1.35 0 0 0-2.7 0H6.35a1.35 1.35 0 0 0-2.7 0H2
-              V12.35a1.35 1.35 0 0 0 0-2.7V9.35a1.35 1.35 0 0 0 0-2.7V6.35a1.35 1.35 0 0 0 0-2.7Z"/></svg>
-          </button>
-        </div>
-        <div id="lv-keys" class="lv-act" role="group" aria-label="Controller keys">
-          <button type="button" id="lv-m-sel" class="k2r hide" data-hover-art aria-label="Return to Mine"><i class="k2k" aria-hidden="true"></i><span class="k2l"><span class="lvm-lab">Mine</span><span class="lvm-who" id="lv-m-who"></span></span></button>
-          <button type="button" id="lv-tree-k" class="k2r is-mode" data-hover-art aria-pressed="false" aria-label="Tree"><i class="k2k" aria-hidden="true"></i><span class="k2l">Tree</span></button>
-          <button type="button" id="lv-great" class="k2r is-start" data-hover-art aria-label="Discover your greatness"><i class="k2k" aria-hidden="true"></i><span class="k2l">Greatness</span></button>
-        </div>
-        <p id="lv-m-say" role="status" aria-live="polite"></p>
-        <!-- 25/10 — LE RÉSULTAT D'UNE RECHERCHE QUAND IL FAUT S'ABONNER (Wah : « le mode résultat recherche pour la
-             souscription à un Totehm … est devenu totalement obsolète »). Plus de texte au dos d'un papier géant : le papier
-             rentre chez lui, ses traits sont ceux du membre (sa palette), son nom est sur [Members], et ici UN geste. -->
-        <div id="mb-lock" aria-live="polite"></div>
-      </div>
     </section>
+
+    <!-- ══ 20/10 sexies · MEMBERS ══ Wah : « quand on cherche un Totehm, on oublie la galaxie : on agrandit le TOTEHM et
+         son socle processor tout en retournant le totehm en mode verso, avec l'invitation directe à entrer un
+         identifiant ». La saisie vit SUR le dos du papier agrandi (`MB`), ancrée en haut (le clavier mange le bas). -->
+    <div id="lv-c-acts" class="lv-act">
+      <div id="lv-actions" class="hide" role="group" aria-label="TOTEHM actions">
+        <button type="button" id="lv-tap-open" class="k2" aria-label="Open my TOTEHM" title="Open my TOTEHM">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M8 3v10"/></svg>
+          <span class="lv-key-label" aria-hidden="true">Open</span>
+        </button>
+        <button type="button" id="lv-search" class="k2" aria-label="Search a TOTEHM" title="Search a TOTEHM">
+          <svg class="lv-action-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.072L14 11.464H2Z"/></svg>
+          <span class="lv-key-label" aria-hidden="true">Search</span>
+        </button>
+        <button type="button" id="lv-add-spot" class="k2" aria-label="Add a spot" title="Add a spot">
+          <svg class="lv-action-icon" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="5.5"/><circle cx="8" cy="8" r="2.6"/></svg>
+          <span class="lv-key-label" aria-hidden="true">Add spot</span>
+        </button>
+        <button type="button" id="lv-add-illustration" class="k2" aria-label="Add an illustration" title="Add an illustration">
+          <svg class="lv-action-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 2H3.65a1.35 1.35 0 0 0 2.7 0H6.65a1.35 1.35 0 0 0 2.7 0H9.65a1.35 1.35 0 0 0 2.7 0H14
+            V3.65a1.35 1.35 0 0 0 0 2.7V6.65a1.35 1.35 0 0 0 0 2.7V9.65a1.35 1.35 0 0 0 0 2.7V14
+            H12.35a1.35 1.35 0 0 0-2.7 0H9.35a1.35 1.35 0 0 0-2.7 0H6.35a1.35 1.35 0 0 0-2.7 0H2
+            V12.35a1.35 1.35 0 0 0 0-2.7V9.35a1.35 1.35 0 0 0 0-2.7V6.35a1.35 1.35 0 0 0 0-2.7Z"/></svg>
+          <span class="lv-key-label" aria-hidden="true">Add media</span>
+        </button>
+      </div>
+      <div id="lv-keys" class="lv-act" role="group" aria-label="Controller keys">
+        <button type="button" id="lv-m-sel" class="k2r hide" data-hover-art aria-label="Return to Mine"><i class="k2k" aria-hidden="true"></i><span class="k2l"><span class="lvm-lab">Mine</span><span class="lvm-who" id="lv-m-who"></span></span></button>
+        <button type="button" id="lv-tree-k" class="k2r" data-hover-art aria-pressed="false" aria-label="Tree">
+          <i class="k2k" aria-hidden="true">
+            <svg class="lv-tree-icon" viewBox="0 0 16 16"><path d="M8 14V2M8 6l4-3M8 9 4 6M8 12l4-3"/></svg>
+            <svg class="lv-grid-icon" viewBox="0 0 16 16"><path d="M2 2h4v4H2zM10 2h4v4h-4zM2 10h4v4H2zM10 10h4v4h-4z"/></svg>
+            <svg class="lv-map-icon" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><ellipse cx="8" cy="8" rx="2.5" ry="6"/><path d="M2 8h12"/></svg>
+          </i>
+          <span class="k2l">Tree</span>
+        </button>
+        <button type="button" id="lv-great" class="k2r is-start" data-hover-art aria-label="Discover your greatness"><i class="k2k" aria-hidden="true"></i><span class="k2l">Greatness</span></button>
+      </div>
+      <p id="lv-m-say" role="status" aria-live="polite"></p>
+      <!-- 25/10 — LE RÉSULTAT D'UNE RECHERCHE QUAND IL FAUT S'ABONNER (Wah : « le mode résultat recherche pour la
+           souscription à un Totehm … est devenu totalement obsolète »). Plus de texte au dos d'un papier géant : le papier
+           rentre chez lui, ses traits sont ceux du membre (sa palette), son nom est sur [Members], et ici UN geste. -->
+      <div id="mb-lock" aria-live="polite"></div>
+    </div>
 
     <section class="lv-pane" id="lv-h" aria-label="Get Higher"></section>
 
@@ -4856,14 +4888,9 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
       <div id="rdr-sf" class="lsh-sf lv-act" role="dialog" aria-label="Refine the spots" hidden></div>
       <!-- 27/10 : prendre un spot ICI (NOW · LATER, pas à pas), le « + » de la MAP, et la pose d'un point sur le globe -->
       <div id="rdr-new" class="lsh-sf lv-act" role="dialog" aria-label="Add a spot" hidden></div>
-      <!-- 29/10 (Wah : « on doit pouvoir ajouter un spot dans le mode MAP comme dans le mode GRID ») : la MÊME tuile « + »,
-           à la même place que dans la grille. -->
-      <div id="rdr-plus" class="tlg lv-act" hidden><button type="button" class="tl tl-add" data-nspot="" aria-label="Add a spot"><span aria-hidden="true">+</span></button></div>
+      <div id="rdr-plus-slot" class="tlg" aria-hidden="true"><div class="tl-add-slot"></div></div>
       <button type="button" id="rdr-pique" class="lv-act">tap the place · cancel</button>
       <p class="lv-note" id="rdr-say" role="status" aria-live="polite"></p>
-      <div id="rdr-mode" class="lv-act">
-        <button type="button" id="rdr-m-sel" class="k2r" data-hover-art aria-label="Map or grid"><i class="k2k" aria-hidden="true"></i><span class="k2l">Map</span></button>
-      </div>
     </section>
 
     <!-- Le slogan qui voyage : en haut, LE bouton « Get [Higher] » ; en bas, « [Higher] Self » sous le profil. -->
@@ -6809,7 +6836,7 @@ const SPGRID=(()=>{
     etat.tuiles=L.length;
     /* 23/11 (Wah) : « quand je sélectionne une box dans le Refine de la vue de droite, pas besoin de la ré-afficher en
        dessous : tu la laisses DANS le Refine, comme les autres paramètres » — le « + » d'un spot en tête, puis les spots. */
-    const plus=me&&!RO?'<button type="button" class="tl tl-add" data-nspot="" aria-label="Add a spot"><span aria-hidden="true">+</span></button>':'';
+    const plus=me&&!RO?'<div class="tl-add-slot" aria-hidden="true"></div>':'';
     b.innerHTML='<div class="tlg">'+plus+L.map(tuile).join('')+'</div>';
     if(io){ io.disconnect(); io=null; }
     const s=sc(); if(!s) return;
@@ -7541,7 +7568,7 @@ function creerFeed(conf){
     etat.total=tout.length; etat.items=L.length; etat.videos=L.filter(x=>x.vid).length;
     etat.filtre=[SF.type,SF.vue,[...sfIntsActives()].join('·'),SF.box?'box':''].filter(Boolean).join('+');
     etat.n=sfCount(); etat.box=SF.box?SF.box.txt:''; etat.panneau=sfOuvert();
-    const plus=me&&!RO?'<button type="button" class="tl tl-add" data-add="" aria-label="Add a media to visualize it"><span aria-hidden="true">+</span></button>':'';
+    const plus=me&&!RO?'<div class="tl-add-slot" aria-hidden="true"></div>':'';
     /* LA BOX CHOISIE EST REMISE EN TÊTE DES RÉSULTATS (Wah), telle qu'elle est dans le Totehm. */
     const tete=SF.box?'<div class="tl-sel" data-f-sel="1">'+boxTotehm(SF.box.bk,objetBox(SF.box.bk,SF.box.id),{})+'</div>':'';
     b.innerHTML='<div class="tlg">'+tete+plus+L.map(tuile).join('')+'</div>';
@@ -8059,18 +8086,12 @@ const SPOTS=(()=>{
   const actif=()=>grille()?SPGRID:SPMAP, dort=()=>grille()?SPMAP:SPGRID;
   function peindreMode(){
     document.body.classList.toggle('rdr-grid',grille());
-    { const l=document.querySelector('#rdr-m-sel .k2l'); if(l) l.textContent=grille()?'Grid':'Map'; }
   }
   function voir(cle){ if(!ouvert||!cle) return; voit=true; relever(); document.body.classList.add('rdr-voir'); SHS.ouvrirA(cle); }
   function fermerVoir(){ if(!voit) return; voit=false; document.body.classList.remove('rdr-voir'); SHS.fermer(); if(enShorts()) SPOTMODE.set('grid'); }
   SPOTMODE.surChangement(()=>{ peindreMode(); if(!ouvert) return; fermerVoir(); dort().fermer(); actif().ouvrir(); shorts(); });
   /* Les spots ont changé (un temps, un filtre, une page de plus) : la carte, la grille et le polaroid relisent. */
   CLUBSP.surChangement(()=>{ SHS.flts(); if(!ouvert) return; actif().maj(); if(voit) SHS.maj(); else shorts(); });
-  { const m=$('rdr-m-sel'); if(m){
-      m.addEventListener('click',()=>SPOTMODE.set(grille()?'map':'grid'));
-      m.addEventListener('keydown',e=>{ if(e.key!=='ArrowLeft'&&e.key!=='ArrowRight') return; e.preventDefault(); e.stopPropagation();
-        SPOTMODE.set(e.key==='ArrowRight'?'grid':'map'); });
-  } }
   { const x=$('rdr-x'); if(x) x.addEventListener('click',fermerVoir); }
   /* ══ ABAISSER UN SPOT AGRANDI · 12/11 ═══════════════════════════════════════════════════════════════
      Wah : « il faut qu'on puisse fermer les spots une fois agrandis OU qu'on puisse les abaisser en mode
@@ -8109,8 +8130,7 @@ const SPOTS=(()=>{
   window.addEventListener('keydown',e=>{ if(e.key==='Escape'&&voit){ e.preventDefault(); e.stopImmediatePropagation(); fermerVoir(); } },{capture:true});
   peindreMode();
   return {
-    ouvrir(){ ouvert=true; peindreMode(); SHS.flts(); actif().ouvrir(); CLUBSP.ouvrir(); shorts();
-      const pl=$('rdr-plus'); if(pl) pl.hidden=!me||!!RO; },
+    ouvrir(){ ouvert=true; peindreMode(); SHS.flts(); actif().ouvrir(); CLUBSP.ouvrir(); shorts(); },
     fermer(){ fermerVoir(); ouvert=false; NSPOT.fermer(); SPMAP.fermer(); SPGRID.fermer(); },
     pause(){ SHS.pause(); },
     maj(){ if(!ouvert) return; actif().maj(); if(voit) SHS.maj(); },
@@ -8611,9 +8631,6 @@ const NSPOT=(()=>{
       peindre(); });
   } }
   { const b=$('rdr-pique'); if(b) b.addEventListener('click',()=>SPMAP.piquer(null)); }
-  { const b=$('rdr-plus'); if(b) b.addEventListener('click',()=>ouvrir()); }
-  /* la tuile « + » de la grille */
-  { const g=$('rdr-g'); if(g) g.addEventListener('click',e=>{ if(e.target.closest('[data-nspot]')){ e.stopPropagation(); ouvrir(); } }); }
   window.addEventListener('keydown',e=>{
     if(e.key!=='Escape') return;
     if(SPMAP.pique()){ e.preventDefault(); e.stopImmediatePropagation(); SPMAP.piquer(null); return; }
@@ -14345,7 +14362,7 @@ window.addEventListener('pageshow',e=>{
       ['c','h','b','g','d'].forEach(k=>body.classList.toggle('lv-'+k,k===v));
       /* Le papier est DOCKÉ en haut : un tap le ramène au centre et le déploie (23/11). */
       body.classList.toggle('papier-haut',v==='g'||v==='d');
-      sloganPour(v); peindreNav();
+      sloganPour(v); peindreNav(); peindreTouches();
       /* Le réseau se TRANSFORME vers la vue (20/10 sexies : « les 4 vues adjacentes sont le résultat de la transformation
          de la vue centrale ») : circuit → cerveau en haut, → rail à gauche, → méridiens autour du monde à droite. */
       RAM.peindre(v,{anime:true});      /* ↓ aussi (22/10) : les pistes se replient en les sept traits de l'anneau du profil */
@@ -14482,7 +14499,11 @@ window.addEventListener('pageshow',e=>{
         /* Un moteur ne tourne que dans sa vue : on ferme celui d'où l'on part, on ouvre celui où l'on va. */
         if(de==='g') SH.fermer(); else if(de==='d') SPOTS.fermer();
         if(v==='g') SH.ouvrir(); else if(v==='d') SPOTS.ouvrir();
+        const voyageTouches=(de==='c'&&cote(v))||(v==='c'&&cote(de));
+        const depart=voyageTouches&&!RMQ.matches?touchesMobiles.map(touche=>
+          getComputedStyle(touche).visibility==='visible'?touche.getBoundingClientRect():null):null;
         poser(v); socle(v);
+        if(depart) animerTouches(depart);
         let parti;
         /* ← et → : le papier SORT du centre et se cale en haut (19/10 quater) pendant que les sept traits se
            transforment (20/10 sexies) ; au centre, il rentre chez lui. */
@@ -14634,6 +14655,7 @@ window.addEventListener('pageshow',e=>{
          répulsion vient peut-être d'arriver) — le tap suivant ouvrira la recherche. */
       if(!CLUB.member){ refus('members:hors-club'); direMembers(HORS_CLUB); lireClub(true); return false; }
       direMembers('');
+      if(vue==='g'||vue==='d'){ aller('c',()=>chercherIci(nom,o)); return true; }
       diag.modes++;
       if(!ouvrirVerso({cherche:true, nom:nom||'', retour:!!(o&&o.retour)})) return false;
       if(!nom) try{ $('mb-q').focus({preventScroll:true}); }catch(_){}
@@ -14657,7 +14679,7 @@ window.addEventListener('pageshow',e=>{
     /* Un tap pendant un mouvement (un repli, une course) n'est jamais perdu : il attend la fin, 2 s au plus. */
     const quandLibre=(f,n=0)=>{ if(occupe()&&n<12) return void setTimeout(()=>quandLibre(f,n+1),180); f(); };
     $('lv-m-sel').onclick=()=>quandLibre(()=>choisirMode('mine'));
-    $('lv-search').onclick=()=>quandLibre(()=>{ if(libre()&&vue==='c') chercherIci(); });
+    $('lv-search').onclick=()=>quandLibre(()=>{ if(libre()&&['c','g','d'].includes(vue)) chercherIci(); });
     /* `?ro=nom` (un lien, un retour de Stripe) : on arrive DANS l'écosystème du membre, déjà lu par `loadRO`. */
     lvMembreBoot=nom=>{ if(!nom) return; roEnPlace=true; entrerChez(nom); RAM.oublie(); RAM.peindre(vue); };
     /* 18/11 — `?members[=<nom>]` (un ancien lien `/search`, le retour de Stripe) : le verso en recherche, une fois la session lue. */
@@ -14806,6 +14828,9 @@ window.addEventListener('pageshow',e=>{
       /* Au clavier, le papier se retourne comme à la main : ← → sur son recto ouvrent mes réglages ; c'est
          la seule chose qui passe DEVANT l'horizontale, parce que le papier a le focus. */
       if(e.key==='ArrowLeft'||e.key==='ArrowRight'){
+        if(vue==='d'&&e.target===toucheTree){
+          e.preventDefault(); SPOTMODE.set(e.key==='ArrowRight'?'grid':'map'); return;
+        }
         if(document.activeElement===$('gate-enter')&&vue==='c'){
           if(mode==='mine'){ e.preventDefault(); ouvrirVerso(); return; }
           if(MB.nom){ e.preventDefault(); chercherIci(MB.nom); return; } }
@@ -15603,18 +15628,67 @@ window.addEventListener('pageshow',e=>{
                    n:el.querySelectorAll('.dc-s').length, porte:cta.dataset.va||''})};
     })();
     window.__totehm_discover=()=>DISC.etat();
-    /* TREE MODE : un seul état, deux mots qui le disent. Le repère est lu au démarrage (plus haut, avant la peinture). */
-    {
-      const mots=[$('lv-tree-k')].filter(Boolean);
-      const dire=v=>{ body.classList.toggle('no-tree',!v);
-        mots.forEach(b=>b.setAttribute('aria-pressed',String(!!v))); };
-      /* 26/11 (Wah) : « le tree ne doit pas être affiché par défaut » — éteint tant qu'on ne l'allume pas. */
-      const lu=()=>{ try{ return localStorage.getItem('totehm_tree')==='1'; }catch(_){ return false; } };
-      dire(lu());
-      mots.forEach(b=>b.onclick=()=>{ const v=!lu();
-        try{ localStorage.setItem('totehm_tree',v?'1':'0'); }catch(_){}
-        dire(v); if(typeof RAM==='object'&&RAM&&v) try{ RAM.peindre(vue); }catch(_){} });
+    const plusAccueil=$('lv-tap-open'), toucheTree=$('lv-tree-k');
+    const touchesMobiles=[plusAccueil,$('lv-search'),toucheTree];
+    const cote=v=>v==='g'||v==='d';
+    const grilleMedia=$('lv-sh'), grilleSpots=$('rdr-g');
+    const treeActif=()=>{ try{ return localStorage.getItem('totehm_tree')==='1'; }catch(_){ return !body.classList.contains('no-tree'); } };
+    body.classList.toggle('no-tree',!treeActif());
+
+    function placerPlus(){
+      if(!cote(vue)) return;
+      const grille=vue==='g'?grilleMedia:SPOTMODE.get()==='map'?$('rdr-plus-slot'):grilleSpots;
+      const place=grille.querySelector('.tl-add-slot')?.getBoundingClientRect();
+      const pane=grille.closest('.lv-pane').getBoundingClientRect();
+      const y=place?place.top-pane.top+place.height/2:0;
+      const visible=!!place?.width&&!!me&&!RO&&mode==='mine'&&y>=128;
+      body.classList.toggle('lv-add-visible',visible);
+      if(!visible) return;
+      // Le panneau glisse aussi. Sa translation ne doit pas déplacer la case d'arrivée.
+      plusAccueil.style.setProperty('--lv-add-x',place.left-pane.left+place.width/2+'px');
+      plusAccueil.style.setProperty('--lv-add-y',y+'px');
     }
+    function peindreTouches(){
+      const lateral=cote(vue), carte=vue==='d'&&SPOTMODE.get()!=='map';
+      const nom=lateral?(carte?'Map':'Grid'):'Tree';
+      toucheTree.querySelector('.k2l').textContent=nom;
+      toucheTree.setAttribute('aria-label',nom);
+      if(lateral) toucheTree.removeAttribute('aria-pressed');
+      else toucheTree.setAttribute('aria-pressed',String(!body.classList.contains('no-tree')));
+      plusAccueil.querySelector('.lv-key-label').textContent=vue==='g'?'Add media':vue==='d'?'Add spot':'Open';
+      plusAccueil.title=vue==='g'?'Add a media':vue==='d'?'Add a spot':
+        MB.verrou?'Subscribe to open it':mode==='members'?'Open this TOTEHM':'Open my TOTEHM';
+      plusAccueil.setAttribute('aria-label',plusAccueil.title);
+      placerPlus();
+    }
+    function animerTouches(depart){
+      const easing=getComputedStyle(body).getPropertyValue('--gate-ease').trim()||'ease';
+      touchesMobiles.forEach((touche,i)=>{
+        const a=depart[i], b=touche.getBoundingClientRect();
+        if(!a?.width||!b.width||getComputedStyle(touche).visibility!=='visible') return;
+        touche.animate([
+          {transformOrigin:'top left',transform:'translate('+(a.left-b.left)+'px,'+(a.top-b.top)+'px) scale('+a.width/b.width+')'},
+          {transformOrigin:'top left',transform:'none'}
+        ],{duration:640,easing});
+      });
+    }
+    for(const grille of [grilleMedia,grilleSpots]) grille.addEventListener('scroll',placerPlus,{passive:true});
+    window.addEventListener('resize',placerPlus);
+    if(window.ResizeObserver){
+      const observerPlus=new ResizeObserver(placerPlus);
+      for(const id of ['lv-sh-f','rdr-g-f','rdr-plus-slot']) observerPlus.observe($(id));
+    }
+    SPOTMODE.surChangement(peindreTouches);
+    toucheTree.onclick=()=>quandLibre(()=>{
+      if(!libre()) return;
+      if(vue==='d'){ SPOTMODE.set(SPOTMODE.get()==='map'?'grid':'map'); return; }
+      if(vue==='g'){ grilleMedia.scrollTo({top:0,behavior:RMQ.matches?'auto':'smooth'}); return; }
+      if(vue!=='c') return;
+      const actif=body.classList.toggle('no-tree')===false;
+      try{ localStorage.setItem('totehm_tree',actif?'1':'0'); }catch(_){}
+      peindreTouches();
+      if(actif) RAM.peindre(vue);
+    });
     $('lv-great').onclick=()=>DISC.ouvrir();
     const spotKey=$('lv-add-spot');
 
@@ -15623,9 +15697,7 @@ window.addEventListener('pageshow',e=>{
     function peindreCarte(){
       const m=inscrit()&&!RO&&!MB.verrou, chez=inscrit()&&(!!RO||!!MB.verrou);
       $('lv-card').classList.toggle('hide',!m);
-      const ouvrir=$('lv-tap-open');
-      ouvrir.title=MB.verrou?'Subscribe to open it':chez?'Open this TOTEHM':'Open my TOTEHM';
-      ouvrir.setAttribute('aria-label',ouvrir.title);
+      peindreTouches();
       spotKey.classList.toggle('hide',chez);
       $('lv-add-illustration').classList.toggle('hide',chez);
       $('lv-actions').classList.remove('hide');
@@ -15807,7 +15879,13 @@ window.addEventListener('pageshow',e=>{
     function ouvrirDepuisAccueil(){
       quandLibre(()=>{ if(libre()&&vue==='c'&&!occupe()) enter(); });
     }
-    $('lv-tap-open').onclick=ouvrirDepuisAccueil;
+    plusAccueil.onclick=()=>quandLibre(()=>{
+      if(!libre()||occupe()) return;
+      if(vue==='c'){ ouvrirDepuisAccueil(); return; }
+      if(!me||RO||mode!=='mine') return;
+      if(vue==='g') SH.ajouter();
+      else if(vue==='d'&&!body.classList.contains('rdr-voir')) NSPOT.ouvrir();
+    });
     $('lv-account').onclick=()=>quandLibre(()=>{
       if(!libre()||vue!=='c'||occupe()) return;
       if(inscrit()) ouvrirCompte();
