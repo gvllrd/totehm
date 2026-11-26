@@ -263,13 +263,13 @@ try{
       rc=c.getBoundingClientRect(),ra=a.getBoundingClientRect(),r=window.__totehm_rdr();
     return {r,fond:getComputedStyle(c).backgroundColor,plein:Math.round(rc.width)===innerWidth&&Math.round(rc.height)>=innerHeight-2,
       dock:document.body.classList.contains('papier-haut'),radar:!!document.getElementById('rdr-c'),
-      bascule:[...document.querySelectorAll('#rdr-mode button')].map(e=>e.querySelector('.k2l').textContent),
-      basculeVue:getComputedStyle(document.getElementById('rdr-mode')).display!=='none',
+      bascule:document.querySelector('#lv-tree-k .k2l').textContent,
+      basculeVue:getComputedStyle(document.getElementById('lv-tree-k')).visibility==='visible',
       haut:ra.y+ra.height/2<90&&Math.abs((ra.x+ra.width/2)-innerWidth/2)<4&&ra.width<70};});
   const lus=log.rpc.filter(x=>x.name==='club_spots_of'&&x.body.p_pseudo==='wahigher').map(x=>x.body.p_period);
   ok(lus.join(',')==='now,future'&&d.r.club.periode==='future'&&!log.rpc.some(x=>x.name==='club_spots'),
      '27/10 · → MES spots (club_spots_of à mon nom, jamais « everyone ») : rien maintenant, la vue montre ce qui VIENT ('+lus.join(' → ')+')');
-  ok(!d.radar&&d.r.mode==='map'&&d.bascule.join(' ')==='Map'&&d.basculeVue,'25/11 · plus de radar, plus de Shorts : UNE touche SELECT (Map ⇄ Grid) ; la vue s\'ouvre sur la CARTE');
+  ok(!d.radar&&d.r.mode==='map'&&d.bascule==='Grid'&&d.basculeVue,'25/11 · plus de radar, plus de Shorts : UNE touche SELECT (Map ⇄ Grid) ; la vue s\'ouvre sur la CARTE');
   ok(d.r.carte.terres>100&&d.r.carte.points===1&&d.r.carte.villes===0,'la Terre (Natural Earth, '+d.r.carte.terres+' terres) et mon spot : un carré plein, à son point');
   ok(d.plein&&d.dock&&d.haut,'la carte prend l\'écran ; le Totehm est sorti se caler EN HAUT, centré');
   await pg.screenshot({path:OUT+'/spots_'+(tel?'tel':'ordi')+'.png'});
