@@ -3191,12 +3191,11 @@ body.gate:not(.member):not(.ses-attente){--lv-y:32dvh}
 /* Les quatre actions reprennent l'appui des touches PS2. */
 #lv-actions{display:flex;align-items:center;justify-content:center;gap:10px;padding:4px 12px;background:#000;border-radius:10px;--k2-d:36px}
 body.ses-attente:not(.member) #lv-actions,body.paysage #lv-tap-open{display:none}
-#lv-actions .lv-action-icon{width:calc(var(--k2-d) * .44);height:calc(var(--k2-d) * .44)}
 #lv-search .lv-action-icon{color:var(--love)}
 #lv-search.is-off .lv-action-icon{opacity:.55}
-#lv-add-spot .lv-action-icon{color:var(--spot-fight)}
+#lv-add-spot .lv-action-icon{color:var(--spot-fight);stroke-width:1}
 @media(prefers-reduced-motion:no-preference){
-  body.lv-c:not(.is-door):not(.is-dc):not(.searching) #lv-add-spot .lv-action-icon{animation:spot-intentions 9.8s linear infinite}
+  body.lv-c:not(.is-door):not(.is-dc):not(.searching) #lv-add-spot .lv-action-icon{animation:spot-intentions 9.8s steps(1,end) infinite}
 }
 @keyframes spot-intentions{
   0%,100%{color:var(--spot-fight)}
@@ -3207,8 +3206,7 @@ body.ses-attente:not(.member) #lv-actions,body.paysage #lv-tap-open{display:none
   71.429%{color:var(--spot-focus)}
   85.714%{color:var(--spot-celebrate)}
 }
-#lv-add-illustration .lv-action-icon{background:var(--blue);
-  -webkit-mask:var(--perfo) center/100% 100% no-repeat;mask:var(--perfo) center/100% 100% no-repeat}
+#lv-add-illustration .lv-action-icon{color:var(--blue);stroke-width:1}
 
 #lv-keys{display:flex;gap:20px;align-items:flex-end;justify-content:center;
   background:#000;border-radius:10px;padding:6px 14px 4px}   /* les touches coupent les racines, comme la légende */
@@ -4775,7 +4773,7 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
             <svg class="lv-action-icon" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="5.5"/></svg>
           </button>
           <button type="button" id="lv-add-illustration" class="k2" aria-label="Add an illustration" title="Add an illustration">
-            <span class="lv-action-icon" aria-hidden="true"></span>
+            <svg class="lv-action-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 2H4.2a.8.8 0 0 0 1.6 0h1.4a.8.8 0 0 0 1.6 0h1.4a.8.8 0 0 0 1.6 0H14V4.2a.8.8 0 0 0 0 1.6v1.4a.8.8 0 0 0 0 1.6v1.4a.8.8 0 0 0 0 1.6V14H11.8a.8.8 0 0 0-1.6 0H8.8a.8.8 0 0 0-1.6 0H5.8a.8.8 0 0 0-1.6 0H2V11.8a.8.8 0 0 0 0-1.6V8.8a.8.8 0 0 0 0-1.6V5.8a.8.8 0 0 0 0-1.6Z"/></svg>
           </button>
         </div>
         <div id="lv-keys" class="lv-act" role="group" aria-label="Controller keys">
