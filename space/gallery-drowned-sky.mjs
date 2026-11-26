@@ -10,6 +10,59 @@ export const SKY_ASTROPHOTOGRAPH=Object.freeze({
  adaptation:'Exposure, colour and orientation adapted for the shared night sky; photograph pixels unchanged.'
 });
 
+export const SKY_PLATE_GLSL=`
+   uniform vec3 uGalacticCore,uGalacticEast,uGalacticNormal;
+   vec3 galacticFrame(vec3 direction){
+    return vec3(dot(direction,uGalacticCore),dot(direction,uGalacticNormal),dot(direction,uGalacticEast));
+   }
+   vec2 sphereUV(vec3 d){
+    return vec2(atan(d.z,d.x)*.159154943+.5,asin(clamp(d.y,-1.,1.))*.318309886+.5);
+   }
+   vec2 skyDerivative(vec2 delta){
+    // Crossing the longitude seam must keep the same texture footprint.
+    delta.x-=floor(delta.x+.5);
+    return delta;
+   }
+   vec3 skySample(sampler2D image,vec2 uv){
+    return textureGrad(image,uv,skyDerivative(dFdx(uv)),skyDerivative(dFdy(uv))).rgb;
+   }
+   vec3 nightPigment(vec3 signal,vec3 lowFrequency,vec3 galactic,float time){
+    vec3 luminance=vec3(.2126,.7152,.0722);
+    float light=dot(signal,luminance);
+    float localLight=dot(lowFrequency,luminance);
+    // Separate the photographed dust lanes from the broad glow. Suppress the
+    // plate's floor while preserving the fine variations inside those lanes.
+    float fine=clamp((light-localLight)/(localLight+.022),-.75,.8);
+    float structure=smoothstep(.006,.032,localLight)*(1.-smoothstep(.16,.52,light));
+    float floorLevel=mix(.0048,.0034,smoothstep(.014,.075,localLight));
+    float intensity=max(light-floorLevel,0.)*(.32+.73*smoothstep(.005,.039,light))/(1.+.79*light);
+    intensity*=1.+fine*structure*.91;
+    float latitude=abs(galactic.y);
+    float violet=smoothstep(.22,.79,.49+.33*sin(dot(galactic,vec3(2.4,1.2,-3.1)))+.13*cos(dot(galactic,vec3(7.8,-3.3,4.1)))+fine*.09);
+    float turquoise=smoothstep(.52,.91,.55+.37*sin(dot(galactic,vec3(-4.7,2.1,4.2)))+fine*.075)
+     *(1.-smoothstep(.04,.42,latitude))*smoothstep(.011,.057,light);
+    float warmth=(signal.r-signal.b)/max(light,.004);
+    float gold=smoothstep(.105,.55,warmth)*smoothstep(.032,.118,light);
+    vec3 cobalt=mix(vec3(.20,.43,2.06),vec3(.30,.70,1.96),smoothstep(.026,.13,localLight));
+    vec3 tint=mix(cobalt,vec3(.88,.294,1.86),violet);
+    tint=mix(tint,vec3(.077,1.31,1.74),turquoise);
+    tint=mix(tint,vec3(2.06,1.00,.242),gold);
+    tint=mix(tint,signal/max(light,.001),.12);
+    float glimmer=.977+.023*sin(dot(galactic,vec3(9.3,-4.5,10.7))+time*.34);
+    vec3 dust=intensity*tint*mix(1.,glimmer,max(turquoise,gold));
+    // Bright compact peaks keep their natural colours. A similarly bright
+    // cloud does not desaturate a whole region of the photograph.
+    float peak=light-localLight;
+    float star=smoothstep(.34,.85,max(signal.r,max(signal.g,signal.b)))*
+     smoothstep(.14,.56,light)*smoothstep(.018,.16,peak);
+    return mix(dust,signal*.78,star);
+   }`;
+const LUNAR_SURFACE=Object.freeze({
+ src:'/assets/gallery/sky/lroc-moon-2048.jpg',
+ source:'https://svs.gsfc.nasa.gov/4720/',
+ credit:'NASA SVS · Ernie Wright · Noah Petro'
+});
+
 // All three spaces use the same photographed celestial sphere. At Origins
 // alone, the photograph breathes and light travels through it and in front of it.
 export function createDrownedSky(scene,{mobile=false,profile='earth',arrival=false,onChange=()=>{}}={}){
@@ -31,15 +84,28 @@ export function createDrownedSky(scene,{mobile=false,profile='earth',arrival=fal
   photograph.wrapS=T.RepeatWrapping;textures.add(photograph);
  }
  // The CC BY credit stays visible in each scene. Rendering uses only the local JPEG.
+ const lunarBlend={value:0};
+ let lunarReady=false,lunarFailed=false;
+ const lunarMap=typeof globalThis.document?.createElementNS==='function'?new T.TextureLoader().load(LUNAR_SURFACE.src,()=>{
+  if(disposed)return;
+  lunarReady=true;dirty=true;onChange();
+ },undefined,()=>{
+  if(disposed)return;
+  lunarFailed=true;dirty=true;onChange();
+ }):null;
+ if(lunarMap){
+  lunarMap.colorSpace=T.SRGBColorSpace;lunarMap.wrapS=T.RepeatWrapping;textures.add(lunarMap);
+ }
  let credit=null;
  if(globalThis.document?.body&&!document.querySelector?.('[data-totehm-sky-credit]')){
   credit=document.createElement('div');credit.dataset.totehmSkyCredit='';
   credit.style.cssText='position:fixed;bottom:5px;left:50%;transform:translateX(-50%);z-index:3;white-space:nowrap;font:9px/1.3 monospace;color:#89929e;pointer-events:auto';
-  const source=document.createElement('a'),license=document.createElement('a');
+  const source=document.createElement('a'),license=document.createElement('a'),lunarCredit=document.createElement('a');
   source.href=SKY_ASTROPHOTOGRAPH.source;source.textContent='Sky · '+SKY_ASTROPHOTOGRAPH.credit;
   source.title=SKY_ASTROPHOTOGRAPH.adaptation;
   license.href=SKY_ASTROPHOTOGRAPH.licenseUrl;license.textContent=' · '+SKY_ASTROPHOTOGRAPH.license;
-  for(const link of [source,license]){link.target='_blank';link.rel='noopener noreferrer';link.style.cssText='color:inherit;text-decoration:none';credit.append(link);}
+  lunarCredit.href=LUNAR_SURFACE.source;lunarCredit.textContent=' · Moon · NASA SVS';lunarCredit.title=LUNAR_SURFACE.credit;
+  for(const link of [source,license,lunarCredit]){link.target='_blank';link.rel='noopener noreferrer';link.style.cssText='color:inherit;text-decoration:none';credit.append(link);}
   document.body.append(credit);
  }
  let seed=0x4e494748;const random=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};
@@ -141,57 +207,18 @@ export function createDrownedSky(scene,{mobile=false,profile='earth',arrival=fal
  environmentTexture.minFilter=T.LinearMipmapLinearFilter;environmentTexture.magFilter=T.LinearFilter;textures.add(environmentTexture);
  const timeUniform={value:0},passage={value:0},warpPassage={value:0},pixelRatio={value:Math.min(globalThis.devicePixelRatio||1,1.5)};
  const defines=origin?{ORIGIN_SKY:1}:{};
- const skyMaterial=material(new T.ShaderMaterial({defines,uniforms:{
-  uMap:{value:environmentTexture},uPhotograph:{value:photograph??environmentTexture},uPhotographBlend:plateBlend,uTime:timeUniform,uPassage:passage,uWarpPassage:warpPassage,
+ const photographUniforms={
+  uPhotograph:{value:photograph??environmentTexture},uPhotographBlend:plateBlend,
   uGalacticCore:{value:core},uGalacticEast:{value:tangent},uGalacticNormal:{value:normal}
+ };
+ const skyMaterial=material(new T.ShaderMaterial({defines,uniforms:{
+  ...photographUniforms,uMap:{value:environmentTexture},uTime:timeUniform,uPassage:passage,uWarpPassage:warpPassage
  },side:T.BackSide,depthWrite:false,depthTest:false,fog:false,toneMapped:false,
   vertexShader:'varying vec3 vDirection;void main(){vDirection=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
   fragmentShader:`varying vec3 vDirection;
    uniform sampler2D uMap,uPhotograph;
    uniform float uPhotographBlend,uTime;
-   uniform vec3 uGalacticCore,uGalacticEast,uGalacticNormal;
-   vec2 sphereUV(vec3 d){
-    return vec2(atan(d.z,d.x)*.159154943+.5,asin(clamp(d.y,-1.,1.))*.318309886+.5);
-   }
-   vec2 skyDerivative(vec2 delta){
-    // Crossing the longitude seam must keep the same texture footprint.
-    delta.x-=floor(delta.x+.5);
-    return delta;
-   }
-   vec3 skySample(sampler2D image,vec2 uv){
-    return textureGrad(image,uv,skyDerivative(dFdx(uv)),skyDerivative(dFdy(uv))).rgb;
-   }
-   vec3 nightPigment(vec3 signal,vec3 lowFrequency,vec3 galactic,float time){
-    vec3 luminance=vec3(.2126,.7152,.0722);
-    float light=dot(signal,luminance);
-    float localLight=dot(lowFrequency,luminance);
-    // Separate the photographed dust lanes from the broad glow. Suppress the
-    // plate's floor while preserving the fine variations inside those lanes.
-    float fine=clamp((light-localLight)/(localLight+.022),-.75,.8);
-    float structure=smoothstep(.006,.032,localLight)*(1.-smoothstep(.16,.52,light));
-    float floorLevel=mix(.0048,.0034,smoothstep(.014,.075,localLight));
-    float intensity=max(light-floorLevel,0.)*(.32+.73*smoothstep(.005,.039,light))/(1.+.79*light);
-    intensity*=1.+fine*structure*.91;
-    float latitude=abs(galactic.y);
-    float violet=smoothstep(.22,.79,.49+.33*sin(dot(galactic,vec3(2.4,1.2,-3.1)))+.13*cos(dot(galactic,vec3(7.8,-3.3,4.1)))+fine*.09);
-    float turquoise=smoothstep(.52,.91,.55+.37*sin(dot(galactic,vec3(-4.7,2.1,4.2)))+fine*.075)
-     *(1.-smoothstep(.04,.42,latitude))*smoothstep(.011,.057,light);
-    float warmth=(signal.r-signal.b)/max(light,.004);
-    float gold=smoothstep(.105,.55,warmth)*smoothstep(.032,.118,light);
-    vec3 cobalt=mix(vec3(.20,.43,2.06),vec3(.30,.70,1.96),smoothstep(.026,.13,localLight));
-    vec3 tint=mix(cobalt,vec3(.88,.294,1.86),violet);
-    tint=mix(tint,vec3(.077,1.31,1.74),turquoise);
-    tint=mix(tint,vec3(2.06,1.00,.242),gold);
-    tint=mix(tint,signal/max(light,.001),.12);
-    float glimmer=.977+.023*sin(dot(galactic,vec3(9.3,-4.5,10.7))+time*.34);
-    vec3 dust=intensity*tint*mix(1.,glimmer,max(turquoise,gold));
-    // Bright compact peaks keep their natural colours. A similarly bright
-    // cloud does not desaturate a whole region of the photograph.
-    float peak=light-localLight;
-    float star=smoothstep(.34,.85,max(signal.r,max(signal.g,signal.b)))*
-     smoothstep(.14,.56,light)*smoothstep(.018,.16,peak);
-    return mix(dust,signal*.78,star);
-   }
+   ${SKY_PLATE_GLSL}
    #ifdef ORIGIN_SKY
    ${ORIGIN_SKY_FRAGMENT}
    #endif
@@ -199,7 +226,7 @@ export function createDrownedSky(scene,{mobile=false,profile='earth',arrival=fal
     vec3 d=normalize(vDirection);
     vec3 fallback=skySample(uMap,sphereUV(d))*vec3(.010,.021,.047);
     // The same galactic coordinates anchor the photograph in all three worlds.
-    vec3 galactic=vec3(dot(d,uGalacticCore),dot(d,uGalacticNormal),dot(d,uGalacticEast));
+    vec3 galactic=galacticFrame(d);
     #ifdef ORIGIN_SKY
     vec3 photographDirection=originRefraction(galactic,uTime);
     #else
@@ -334,7 +361,38 @@ export function createDrownedSky(scene,{mobile=false,profile='earth',arrival=fal
   moonData[at+3]=(1-smooth(.983,1,r))*255;
  }
  mx.putImageData(moonPixels,0,0);const moonTexture=new T.CanvasTexture(moonCanvas);moonTexture.colorSpace=T.SRGBColorSpace;textures.add(moonTexture);
- const moonMaterial=material(new T.MeshBasicMaterial({map:moonTexture,transparent:true,depthWrite:false,depthTest:true,toneMapped:false,fog:false}));
+ const moonMaterial=material(new T.ShaderMaterial({
+  uniforms:{uFallback:{value:moonTexture},uSurface:{value:lunarMap??moonTexture},uLunarBlend:lunarBlend},
+  transparent:true,depthWrite:false,depthTest:true,toneMapped:false,fog:false,
+  vertexShader:`varying vec2 vMoonUv;void main(){vMoonUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,
+  fragmentShader:`
+   varying vec2 vMoonUv;
+   uniform sampler2D uFallback,uSurface;
+   uniform float uLunarBlend;
+   void main(){
+    vec2 xy=vMoonUv*2.-1.;
+    float radius=length(xy);
+    float edge=1.-smoothstep(1.-max(fwidth(radius),.001),1.,radius);
+    if(radius>1.)discard;
+    vec3 surface=vec3(xy,sqrt(max(0.,1.-dot(xy,xy))));
+    // A small roll and libration show the familiar nearside as a lit sphere.
+    vec3 lunar=vec3(mat2(.988,.154,-.154,.988)*surface.xy,surface.z);
+    lunar=vec3(.997*lunar.x-.077*lunar.z,lunar.y,.077*lunar.x+.997*lunar.z);
+    vec2 lunarUv=vec2(atan(lunar.x,lunar.z)*.159154943+.5,asin(clamp(lunar.y,-1.,1.))*.318309886+.5);
+    vec3 albedo=texture2D(uSurface,lunarUv).rgb;
+    float incidence=dot(surface,normalize(vec3(-.60,.25,.76)));
+    float daylight=pow(max(0.,incidence),.72)*smoothstep(-.012,.026,incidence);
+    vec3 earthshine=vec3(.009,.017,.033)*(.48+.52*surface.z)*(1.-smoothstep(-.06,.35,incidence));
+    vec3 shaded=albedo*(daylight*1.96+earthshine);
+    float peak=max(shaded.r,max(shaded.g,shaded.b));
+    float highlight=max(0.,peak-.56);
+    float headroom=min(peak,.56)+.41*highlight/(.41+highlight);
+    shaded*=headroom/max(peak,.0001);
+    vec4 fallback=texture2D(uFallback,vMoonUv);
+    gl_FragColor=vec4(mix(fallback.rgb,shaded,uLunarBlend),mix(fallback.a,edge,uLunarBlend));
+    #include <colorspace_fragment>
+   }`
+ }));
  const moonDistance=1190,moonSize=moonDistance*Math.tan(moonDiameter*Math.PI/360)*2;
  const moon=new T.Mesh(geometry(new T.PlaneGeometry(moonSize,moonSize)),moonMaterial);moon.position.copy(moonDirection).multiplyScalar(moonDistance);moon.quaternion.setFromUnitVectors(new T.Vector3(0,0,1),moonDirection.clone().negate());moon.name='Gibbous moon with relief and earthshine';moon.renderOrder=-1070;moon.frustumCulled=false;root.add(moon);
  const haloCanvas=document.createElement('canvas');haloCanvas.width=haloCanvas.height=128;const hx=haloCanvas.getContext('2d'),gradient=hx.createRadialGradient(64,64,0,64,64,64);
@@ -346,7 +404,7 @@ export function createDrownedSky(scene,{mobile=false,profile='earth',arrival=fal
  const stardust=origin?createOriginStardust(scene,{mobile,time:timeUniform,passage}):null;
  onChange();
  return{
-  root,environmentTexture,moonDirection,
+  root,environmentTexture,moonDirection,photographUniforms,
   update(dt,eye,motion){
    if(disposed)return false;
    if(eye&&!root.position.equals(eye)){root.position.copy(eye);dirty=true;}
@@ -361,6 +419,10 @@ export function createDrownedSky(scene,{mobile=false,profile='earth',arrival=fal
    if(plateReady&&plateBlend.value<1){
     const blend=motion?Math.min(1,plateBlend.value+step/1.05):1;
     if(blend!==plateBlend.value){plateBlend.value=blend;dirty=true;}
+   }
+   if(lunarReady&&lunarBlend.value<1){
+    const blend=motion?Math.min(1,lunarBlend.value+step/.75):1;
+    if(blend!==lunarBlend.value){lunarBlend.value=blend;dirty=true;}
    }
    const changed=dirty;dirty=false;return changed;
   },
@@ -377,6 +439,7 @@ export function createDrownedSky(scene,{mobile=false,profile='earth',arrival=fal
    stellarDust:tinyStars,stellarProfile:'anti-aliased chromatic cores, individual diffraction and slow scintillation',photographicLocalContrast:true,
    stellarColours:7,time:+time.toFixed(3),animated,moon:true,moonDirection:moonDirection.toArray(),
    moonDiameterDegrees:moonDiameter,lunarCraters:lunarCraters.length,lunarRelief:true,
+   lunarPhotograph:{...LUNAR_SURFACE,ready:lunarReady,failed:lunarFailed,blend:lunarBlend.value},
    comet:false,shootingStars:0,meteor:false,meteorRibbon:false,meteorTriangles:0,externalFiles:0,disposed
   }),
   dispose(){if(disposed)return;disposed=true;stardust?.dispose();credit?.remove();for(const t of textures)t.dispose();for(const m of materials)m.dispose();for(const g of geometries)g.dispose();canvas.width=canvas.height=moonCanvas.width=moonCanvas.height=haloCanvas.width=haloCanvas.height=1;root.removeFromParent();root.clear();}

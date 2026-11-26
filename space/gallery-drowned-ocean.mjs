@@ -1,5 +1,6 @@
 import * as T from './vendor/three-0.180.0.mjs';
 import {WORLD_RADIUS,WORLD_CENTER_Y,drownedWorldGLSL} from './gallery-drowned-planet.mjs';
+import {SKY_PLATE_GLSL} from './gallery-drowned-sky.mjs';
 import {createOceanFoam,OCEAN_FOAM_DOMAIN,OCEAN_FOAM_GLSL} from './gallery-ocean-foam.mjs';
 import {createOceanSpindrift} from './gallery-ocean-spindrift.mjs';
 import {CRISTO_REI_LOCATION,CRISTO_WAVE_SHADOW,oceanDomain} from './gallery-lisbon-water.mjs';
@@ -8,7 +9,7 @@ import {CRISTO_REI_LOCATION,CRISTO_WAVE_SHADOW,oceanDomain} from './gallery-lisb
 // distant breakers without placing an equally expensive grid on the horizon.
 export function createDrownedOcean(scene,{
  mobile=false,renderer=null,onChange=()=>{},moonDirection=new T.Vector3(.38,.43,-.82),
- horizonColor=new T.Color(0x101e32),environmentTexture=null,profile='open-ocean'
+ horizonColor=new T.Color(0x101e32),environmentTexture=null,photographUniforms=null,profile='open-ocean'
 }={}){
  const root=new T.Group();root.name='The great flood — rolling walls of water';scene.add(root);
 
@@ -43,7 +44,7 @@ export function createDrownedOcean(scene,{
   mainPeak+=(1+2*second+3*third)*interval*.5;
  }
  const crestUpperBound=BASE+mainAmplitude*mainPeak+mainCurl*.5+shoalLift+9*(1+.18)+5+3.6+2.3+1.2;
- const uniforms={uOceanTime:{value:0},uMoon:{value:moonDirection.clone().normalize()},uHorizon:{value:horizonColor.clone()},uEnvironment:{value:environmentTexture},uHasEnvironment:{value:!!environmentTexture},uNormalMap:{value:flatNormal},uFoamMap:{value:emptyFoam}};
+ const uniforms={...photographUniforms,uOceanTime:{value:0},uMoon:{value:moonDirection.clone().normalize()},uHorizon:{value:horizonColor.clone()},uEnvironment:{value:environmentTexture},uHasEnvironment:{value:!!environmentTexture},uNormalMap:{value:flatNormal},uFoamMap:{value:emptyFoam}};
  function detailMap(name,uniform){
   if(!loader)return;
   const texture=loader.load('/assets/ocean/'+name,loaded=>{
@@ -129,9 +130,11 @@ export function createDrownedOcean(scene,{
    // Long crests rise and fall along their length, rather than drawing
    // uninterrupted parallel ribbons around the island. The envelope never
    // exceeds one; include its gradient in the actual displaced normal.
-   float crossA=dot(q,vec2(-.839,.544))*.0031+time*.037;
-   float modulation=.86+.14*sin(crossA);
-   vec2 modulationGradient=vec2(-.839,.544)*(.000434*cos(crossA));
+   const vec2 crestGradientA=vec2(-.0026009,.0016864),crestGradientB=vec2(-.00137,.00184);
+   float crossA=dot(q,crestGradientA)+time*.037;
+   float crossB=dot(q,crestGradientB)-time*.056+1.6;
+   float modulation=.86+.095*sin(crossA)+.045*cos(crossB);
+   vec2 modulationGradient=.095*cos(crossA)*crestGradientA-.045*sin(crossB)*crestGradientB;
    float spill=1.;
    vec2 spillGradient=vec2(0.);
    ${coastal?`
@@ -229,7 +232,7 @@ export function createDrownedOcean(scene,{
  `;
  const foamSimulation=createOceanFoam(renderer,{mobile,surfaceGLSL:surface,onChange});
  Object.assign(uniforms,{uFoamState:{value:foamSimulation.texture},uFoamDomain:{value:OCEAN_FOAM_DOMAIN},uFoamHistory:{value:0}});
- const material=new T.ShaderMaterial({uniforms,side:T.DoubleSide,toneMapped:true,
+ const material=new T.ShaderMaterial({uniforms,defines:photographUniforms?{PHOTOGRAPHIC_SKY:1}:{},side:T.DoubleSide,toneMapped:true,
   vertexShader:`uniform float uOceanTime;varying vec3 vWorld,vNormal;varying vec2 vOriginal,vPhase;varying float vCrest,vBreaking,vEnergy,vShortFoam,vWaveHeight;${surface}
    void main(){OceanSurface sea=oceanSurface(position.xz,uOceanTime);vWorld=sea.p;vNormal=sea.normal;vOriginal=position.xz;vPhase=vec2(sea.phaseA,sea.phaseB);vCrest=sea.crest;vBreaking=sea.breaking;vEnergy=sea.energy;vShortFoam=sea.shortFoam;vWaveHeight=sea.waveHeight;gl_Position=projectionMatrix*viewMatrix*vec4(sea.p,1.);}`,
   fragmentShader:`uniform float uOceanTime,uFoamDomain,uFoamHistory;uniform vec3 uMoon,uHorizon;uniform sampler2D uEnvironment,uNormalMap,uFoamMap,uFoamState;uniform bool uHasEnvironment;
@@ -237,6 +240,11 @@ export function createDrownedOcean(scene,{
    const float PI=3.14159265359;
    ${drownedWorldGLSL}
    ${OCEAN_FOAM_GLSL}
+   #ifdef PHOTOGRAPHIC_SKY
+   uniform sampler2D uPhotograph;
+   uniform float uPhotographBlend;
+   ${SKY_PLATE_GLSL}
+   #endif
    float phaseDistance(float p){return atan(sin(p),cos(p));}
    vec2 turn(vec2 p){return vec2(.428*p.x-.904*p.y,.904*p.x+.428*p.y);}
    vec2 unturn(vec2 p){return vec2(.428*p.x+.904*p.y,-.904*p.x+.428*p.y);}
@@ -251,12 +259,26 @@ export function createDrownedOcean(scene,{
     // Broad moonlit skylight remains present between the visible stars.
     // The stone receives this ambient light too; water must not reflect black.
     float elevation=clamp(direction.y,0.,1.);
-    vec3 fill=mix(vec3(.020,.041,.066),vec3(.014,.030,.058),pow(elevation,.55));
+    vec3 fill=mix(vec3(.013,.026,.046),vec3(.009,.019,.037),pow(elevation,.55));
+    vec3 environment=vec3(0.);
     if(uHasEnvironment){
      vec2 uv=vec2(atan(direction.z,direction.x)*.159154943+.5,asin(clamp(direction.y,-1.,1.))*.318309886+.5);
      vec2 ux=dFdx(uv),uy=dFdy(uv);ux.x-=floor(ux.x+.5);uy.x-=floor(uy.x+.5);
-     fill+=textureGrad(uEnvironment,uv,ux*exp2(roughness*7.),uy*exp2(roughness*7.)).rgb*.32;
+     environment=textureGrad(uEnvironment,uv,ux*exp2(roughness*7.),uy*exp2(roughness*7.)).rgb*.32;
     }
+    #ifdef PHOTOGRAPHIC_SKY
+    if(uPhotographBlend>0.){
+     vec3 galactic=galacticFrame(direction);
+     vec2 uv=sphereUV(galactic);
+     vec2 size=vec2(textureSize(uPhotograph,0));
+     float footprint=max(length(skyDerivative(dFdx(uv))*size),length(skyDerivative(dFdy(uv))*size));
+     float lod=max(1.45+roughness*7.5,log2(max(1.,footprint))+1.1);
+     vec3 blurred=textureLod(uPhotograph,uv,lod).rgb;
+     vec3 reflectedGalacticLight=nightPigment(blurred,blurred,galactic,uOceanTime);
+     environment=mix(environment,.52*reflectedGalacticLight,uPhotographBlend);
+    }
+    #endif
+    fill+=environment;
     float moonHalo=pow(max(dot(direction,uMoon),0.),44.);
     // A turned-over face reflects the adjacent dark water, rather than an
     // infinitely bright continuation of the sky beneath the horizon.
@@ -278,12 +300,16 @@ export function createDrownedOcean(scene,{
     vec2 slopes=detailA.xy/max(detailA.z,.3)*.95+unturn(detailB.xy/max(detailB.z,.3))*.46+unturn(detailC.xy/max(detailC.z,.3))*.92;
     slopes*=1.-smoothstep(2400.,7000.,distanceToEye);
     vec3 n=normalize(waterFrame(ng,vWorld,q)*normalize(vec3(slopes,1.)));
-    float nv=max(dot(n,view),.025),nl=max(dot(n,uMoon),0.);
+    float nv=clamp(dot(n,view),.025,1.),nl=clamp(dot(n,uMoon),0.,1.);
     float fresnel=.0204+.9796*pow(1.-nv,5.);
     // Drained foam stretches down the storm direction, instead of painting
     // evenly sized white islands across every face of a wave.
     vec2 windSpace=vec2(dot(q,vec2(.839,-.544)),dot(q,vec2(.544,.839)));
-    vec2 flow=windSpace/vec2(20.,44.)+vec2(.018,-.10)*uOceanTime;
+    float facePhase=phaseDistance(vPhase.x-1.17);
+    float sheet=smoothstep(-.22,.10,facePhase)*(1.-smoothstep(.34,1.19,facePhase))*vEnergy;
+    // The spilling water stretches the bubbles down the local face of the swell.
+    vec2 shear=vec2(.11*sin(vPhase.y+windSpace.x*.020),.25*sin(facePhase*1.8))*sheet;
+    vec2 flow=windSpace/vec2(20.,44.)+vec2(.018,-.10)*uOceanTime+shear;
     vec3 foamA=texture2D(uFoamMap,flow).rgb;
     vec3 foamB=texture2D(uFoamMap,turn(q)/157.+vec2(.012,-.009)*uOceanTime).rgb;
     float foamPatch=foamB.g*.72+foamA.g*.28;
@@ -301,14 +327,22 @@ export function createDrownedOcean(scene,{
     vec3 colour=mix(water,sky,fresnel*.94);
     // Energy-shaped moon glints break into moving facets, never a painted stripe.
     vec3 halfway=normalize(view+uMoon);
-    float nh=max(dot(n,halfway),0.),alpha=roughness*roughness,a2=alpha*alpha;
-    float denominator=nh*nh*(a2-1.)+1.,distribution=a2/(PI*denominator*denominator+.00001);
+    float nh=clamp(dot(n,halfway),0.,1.),alpha=roughness*roughness;
+    const vec3 wind=vec3(.544,0.,.839);
+    vec3 alongWind=wind-n*dot(wind,n);
+    alongWind*=inversesqrt(max(dot(alongWind,alongWind),.001));
+    vec3 acrossWind=cross(n,alongWind);
+    float ax=alpha*.75,ay=alpha*1.35;
+    vec3 weightedHalf=vec3(dot(halfway,alongWind)/ax,dot(halfway,acrossWind)/ay,nh);
+    float denominator=dot(weightedHalf,weightedHalf);
+    float distribution=1./max(PI*ax*ay*denominator*denominator,.00001);
     float k=pow(roughness+1.,2.)*.125;
     float visibility=(nv/(nv*(1.-k)+k))*(nl/(nl*(1.-k)+k));
-    float f=.0204+.9796*pow(1.-max(dot(halfway,view),0.),5.);
+    float f=.0204+.9796*pow(1.-clamp(dot(halfway,view),0.,1.),5.);
     float specular=distribution*visibility*f/max(4.*nv,.05);
     specular=specular/(1.+specular/1.2);
-    colour+=vec3(.62,.78,.96)*specular*.88;
+    float facetVisibility=smoothstep(.015,.10,dot(ng,view));
+    colour+=vec3(.60,.77,.96)*specular*.86*facetVisibility;
     // A breaking lip, scattered small whitecaps, then stretched cellular wakes.
     float crest=smoothstep(.57,.91,vBreaking);
     float foamSkin=pow(clamp(foamA.r*(.65+.35*foamA.b),0.,1.),.8);
@@ -328,7 +362,10 @@ export function createDrownedOcean(scene,{
     float bubbles=pow(clamp(drain.r*(.6+.4*drain.b),0.,1.),.72);
     float lingering=density*(.08+.62*foamSkin)*mix(.22,1.,lace)*mix(1.,.48,foamState.b);
     float historyFoam=(lingering+fresh*(.035+.25*bubbles)*lace)*(.22+.78*smoothstep(.28,.72,foamB.g));
-    float foam=clamp(mix(froth+wake,historyFoam,historyArea*uFoamHistory)+whitecaps,0.,.94);
+    float history=historyArea*uFoamHistory;
+    float freshLip=smoothstep(.32,.75,foamPatch)*foamSkin*(lip*.20+crest*.18)*history;
+    float aerated=mix(froth+wake,historyFoam,history);
+    float foam=clamp(aerated+(1.-aerated)*(freshLip+whitecaps),0.,.94);
     ${coastal?`
      // Some of the aerated water spills down the face as stretched curtains.
      // Keep the rest of the wave glassy and dark between those cascades.
@@ -341,7 +378,7 @@ export function createDrownedOcean(scene,{
     `:''}
     // Fresh aeration is silver-white; old draining foam becomes wet, darker
     // and translucent instead of leaving a coat of frost on every wave.
-    float freshAeration=smoothstep(.09,.55,fresh);
+    float freshAeration=smoothstep(.08,.48,max(fresh,freshLip*2.6));
     vec3 aeration=mix(vec3(.23,.35,.39),vec3(.61,.68,.70),freshAeration);
     vec3 foamColour=aeration*(.38+.48*nl+.14*hemi)*(.88+.12*foamA.b);
     ${coastal?`
@@ -398,7 +435,7 @@ export function createDrownedOcean(scene,{
   diagnostics:()=>({kind:'rolling-flood-ocean',time:+time.toFixed(4),animated,displacedGeometry:true,swells:3,waveLayers:6,
    baseHeight:BASE,crestUpperBound:+crestUpperBound.toFixed(4),centralCalmRadius:CALM,span:SPAN,
    triangles:geometry.index.count/3+spindrift.diagnostics().triangles,surfaceTriangles:geometry.index.count/3,lod:'dense near-field / logarithmic horizon',bandLimited:true,geometryDetailRadius:1800,rings,sectors,rolledCrests:true,curledSurface:true,mainChop,profile,contactFoam:coastal,littoralSpilling:coastal,coastalShoaling:coastal,shoalCrestLift:shoalLift,crestFaceCascades:coastal,wavelengthMetres:+(Math.PI*2/mainFrequency).toFixed(1),analyticNormals:true,sphericalWorld:true,worldRadius:WORLD_RADIUS,worldCenterY:WORLD_CENTER_Y,
-   foam:'advected and decaying aeration from real compression',foamSimulation:foamSimulation.diagnostics(),spindrift:spindrift.diagnostics(),dominantStormFront:true,windStretchedSpindrift:true,windRippleLayers:3,subHorizonReflections:true,wetFoamAgeing:true,detailMapsLoaded,detailMapFailures,detailTextureSize:[1024,1024],detailTextureFiles:2,detailTexturesLocal:true,translucentLips:true,mainWavePeriod:+(Math.PI*2/mainOmega).toFixed(2),sprayParticles:sprayCount,sprayOnMovingCrests:true,skyReflections:!!environmentTexture,externalTextures:0,disposed}),
+   foam:'advected and decaying aeration from real compression',foamSimulation:foamSimulation.diagnostics(),spindrift:spindrift.diagnostics(),dominantStormFront:true,windStretchedSpindrift:true,windRippleLayers:3,subHorizonReflections:true,wetFoamAgeing:true,detailMapsLoaded,detailMapFailures,detailTextureSize:[1024,1024],detailTextureFiles:2,detailTexturesLocal:true,translucentLips:true,mainWavePeriod:+(Math.PI*2/mainOmega).toFixed(2),sprayParticles:sprayCount,sprayOnMovingCrests:true,skyReflections:!!environmentTexture,photographicSkyReflection:!!photographUniforms,windAlignedGlints:true,crestFoamShear:true,externalTextures:0,disposed}),
   dispose(){if(disposed)return;disposed=true;animated=false;foamSimulation.dispose();spindrift.dispose();geometry.dispose();material.dispose();sprayGeometry.dispose();sprayMaterial.dispose();for(const t of textures)t.dispose();root.removeFromParent();root.clear();}
  };
 }

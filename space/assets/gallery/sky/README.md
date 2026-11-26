@@ -15,3 +15,16 @@ The JPEG bytes are unchanged from that mirror. TOTEHM adapts the displayed expos
 The local JPEG requires no third-party network or CORS access while rendering. If it fails to load, the shared procedural sky remains available and diagnostics report the fallback. A visible source/license credit is created by `gallery-drowned-sky.mjs` in all three scenes.
 
 The old `painted-nebula.jpg` is retained as an existing repository asset but is not used by the current shared sky.
+
+
+## Lunar surface
+
+`lroc-moon-2048.jpg` is NASA Scientific Visualization Studio’s 2048 × 1024 lunar colour map assembled from LRO/LROC imagery. Credit: NASA Scientific Visualization Studio, Ernie Wright (USRA) and Noah Petro (NASA/GSFC).
+
+- Source and requested credit: https://svs.gsfc.nasa.gov/4720/
+- Source JPEG: https://svs.gsfc.nasa.gov/vis/a000000/a004700/a004720/lroc_color_2k.jpg
+- NASA media-use guidelines: https://www.nasa.gov/nasa-brand-center/images-and-media/
+- Byte-for-byte mirror: https://github.com/sudoaanish/COSMOS/blob/master/assets/textures/moon-lroc-2k.jpg
+- Retrieved blob SHA: `ed05d2cbce6b1258bc06d0f74ed8bb05851a6a55`.
+
+TOTEHM projects the map onto the Moon’s nearside and lights the sphere to match the gibbous phase. The procedural disc remains the loading fallback. The sea shares the photograph, orientation and grading of the Earth sky and samples coarser levels of the panorama for rough reflections.
