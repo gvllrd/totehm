@@ -3203,8 +3203,8 @@ body.gate:not(.member):not(.ses-attente){--lv-y:32dvh}
 }
 body:is(.lv-c,.lv-g,.lv-d):not(.is-door) #lv-c-acts{visibility:visible}
 #lv-c-acts button{pointer-events:auto}
-#lv-actions{display:grid;grid-template:repeat(3,36px) / repeat(3,50px);place-items:center;
-  padding:7px 8px;background:#000;border-radius:10px}
+#lv-actions{display:grid;grid-template:repeat(3,32px) / repeat(3,32px);place-items:center;
+  padding:8px;background:#000;border-radius:10px}
 #lv-actions .k2{position:relative}
 #lv-actions .k2>svg{width:50%;height:50%;stroke-linecap:butt;stroke-linejoin:miter;overflow:visible}
 /* Une seule animation sur le groupe garde les quatre glyphes synchronisés. */
@@ -3259,7 +3259,7 @@ body.ses-attente:not(.member) #lv-actions,body.lv-c.paysage #lv-tap-open{display
   background:#000;border-radius:10px;padding:6px 14px 4px}   /* les touches coupent les racines, comme la légende */
 @media(max-height:690px) and (max-width:649px){
   #lv-c-acts{flex-flow:row wrap;justify-content:center}
-  #lv-keys{max-width:calc(100% - 178px);flex-wrap:wrap;gap:8px}
+  #lv-keys{max-width:calc(100% - 124px);flex-wrap:wrap;gap:8px}
   #lv-c-acts :is(#lv-m-say,#mb-lock){flex-basis:100%}
 }
 /* 18/11 — la recherche est au FIGHER CLUB : un tap sur [Members] hors du Club le DIT ici, en une ligne, puis se tait */
