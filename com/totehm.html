@@ -3207,6 +3207,21 @@ body:is(.lv-c,.lv-g,.lv-d):not(.is-door) #lv-c-acts{visibility:visible}
   padding:7px 8px;background:#000;border-radius:10px}
 #lv-actions .k2{position:relative}
 #lv-actions .k2>svg{width:50%;height:50%;stroke-linecap:butt;stroke-linejoin:miter;overflow:visible}
+/* Une seule animation sur le groupe garde les quatre glyphes synchronisés. */
+body.gate.lv-c:not(.entered,.is-door,.is-dc,.searching) #lv-actions{stroke:var(--love)}
+body.gate.lv-c:not(.entered,.is-door,.is-dc,.searching) #lv-actions .k2>svg{stroke:inherit}
+@media(prefers-reduced-motion:no-preference){
+  body.gate.lv-c:not(.entered,.is-door,.is-dc,.searching) #lv-actions{animation:lv-intentions 42s ease-in-out infinite}
+}
+@keyframes lv-intentions{
+  0%,100%{stroke:var(--lv-intention-fight)}
+  14.285714%{stroke:var(--lv-intention-flow)}
+  28.571429%{stroke:var(--lv-intention-enrich)}
+  42.857143%{stroke:var(--lv-intention-love)}
+  57.142857%{stroke:var(--lv-intention-express)}
+  71.428571%{stroke:var(--lv-intention-focus)}
+  85.714286%{stroke:var(--lv-intention-celebrate)}
+}
 #lv-refine-label{display:none;position:absolute;top:calc(100% + 5px);left:50%;translate:-50% 0;
   pointer-events:none;padding:2px 4px;background:#000;border-radius:4px;
   font:400 9px/1 'Space Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:#b8b8c2;white-space:nowrap}
@@ -15594,6 +15609,10 @@ window.addEventListener('pageshow',e=>{
                    n:el.querySelectorAll('.dc-s').length, porte:cta.dataset.va||''})};
     })();
     window.__totehm_discover=()=>DISC.etat();
+    const actionKeys=$('lv-actions');
+    for(const {id,color} of INTS){
+      actionKeys.style.setProperty('--lv-intention-'+id,'color-mix(in oklab, '+color+', transparent 0%)');
+    }
     const plusAccueil=$('lv-tap-open'), toucheTriangle=$('lv-search'), toucheTree=$('lv-tree-k');
     const touchesMobiles=[plusAccueil,toucheTriangle,toucheTree];
     const cote=v=>v==='g'||v==='d';
