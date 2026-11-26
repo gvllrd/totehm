@@ -2568,25 +2568,11 @@ body.gate.entered #filter-badge{
     --stage:min(92vh,78vw,640px);
     /* 26/11 — le manche fait 64 px PARTOUT : sinon il débordait de sa case et touchait les flèches (mesuré). */
     --joy-d:64px;
-    /* ⚠️ ET SUR ORDINATEUR IL FAUT COMPTER LES TROUS · 22/09/2026.
-       « Fais bien attention à son placement… pas sur les trous noirs
-       par exemple. » Le carré porte trois perforations sur son bord
-       bas, à 25 %, 50 % et 75 % de sa largeur — et le contrôleur est
-       CENTRÉ, donc pile au-dessus de celle du milieu. Mesuré : le
-       chevron du bas tombait en plein dedans.
-       Une perforation mord de `--pad` vers l'intérieur : le contrôleur
-       se pose donc au-dessus de cette bande.
-
-       ⚠️ ET `--band-b` NE REPREND PAS `--pad`, SOUS PEINE DE LE COMPTER
-       DEUX FOIS. `#joy` se mesure sur la FENÊTRE ; la liste, elle, vit
-       DÉJÀ dans le carré renfoncé de `--pad` — mesuré, son conteneur
-       s'arrête pile sur la ligne des perforations. Mettre `--pad` des
-       deux côtés coûtait 40 px de liste pour rien. C'est le même piège
-       que la croix et le contrôleur : **deux repères différents, deux
-       calculs différents**, et on ne recopie pas l'un dans l'autre. */
-    --joy-b:calc(var(--pad) + 12px);
-    --band-b:calc(12px + var(--joy-d) + 36px + 10px);
     --pad:calc(var(--stage) * .0616);   /* profondeur d'une perforation */
+    --joy-gap:12px;
+    --joy-corner:max(18px,calc(var(--pad) - 14px));
+    /* La liste est déjà en retrait de --pad par rapport au bord du papier. */
+    --band-b:calc(var(--joy-corner) - var(--pad) + var(--joy-d) + 36px + 2 * var(--joy-gap) + 10px);
     --side:max(56px,calc(var(--stage) * .10));   /* carré élargi : chevron + intitulé */
     --side-gap:calc(var(--stage) * .085);         /* éloigné du Totehm */
     --rl:max(38px,calc(var(--stage) * .072));   /* dégage les T des perforations */
@@ -2633,25 +2619,9 @@ body.gate.entered #filter-badge{
      carré, pas celui de la fenêtre. ⚠️ IL COMMENCE APRÈS LE RAIL, comme
      le T : le rail est le logo, rien ne passe dessus. */
   #wordmark{bottom:26px;left:50%;transform:translateX(-50%);top:auto;right:auto}
-  /* ⚠️ LE CONTRÔLEUR DESCEND EN BAS DU CARRÉ · 22/09/2026.
-     Il a fait le tour — bas-droite le 20/09, haut-droite le 21/09, et
-     Wah le veut en bas. Cette fois il est CENTRÉ sur le carré, et c'est
-     ce qui règle le problème pour de bon : le T tient le haut-gauche, la
-     croix le haut-droite, le wordmark le bas-gauche. Au centre du bas,
-     il ne peut croiser aucun des trois, quelle que soit la largeur.
-     ⚠️ ET IL RESTE AU-DESSUS DU WORDMARK, jamais dessus : `--band-b`
-     borne la bande basse, le wordmark y vit à 26 px, le contrôleur se
-     pose à 20 px du bord et se centre — deux colonnes différentes. */
-  /* ⚠️ 18/10 · IL SORT DU CARRÉ. Il s'ancre sur la FENÊTRE, pas sur `--stage` : une seule place pour une seule
-     manette, dedans comme dehors — et plus rien à tenir d'accord avec les coins du carré.
-     25/10 : au même retrait que `#lvjoy` (`--lvj-b`), et `--stage` lui garde sa bande noire (voir plus haut).
-     ⚠️ 26/11 (Wah : « le joystick bleu navy dans le TOTEHM comme sur mobile, à droite ») : la MÊME place qu'au
-     téléphone — en bas à DROITE, sous le pouce, et non plus centré. */
-  /* ⚠️ ET IL FAUT COMPTER LES TROUS (22/09) : chaque bord porte trois perforations à 25 %, 50 % et 75 %, d'un rayon
-     de 6,19 % de la largeur du carré (13,86 / 224,08). La manette se cale donc à CE rayon + 12 px des deux bords :
-     dans le coin, dans le papier, et elle n'en couvre aucune (mesuré). */
-  #joy{top:auto;bottom:calc(50% - var(--stage) / 2 + var(--stage) * .0619 + 12px);left:auto;
-       right:calc(50% - var(--stage) / 2 + var(--stage) * .0619 + 12px);transform:none}
+  /* Les flèches et le manche partagent le même retrait du coin inférieur droit du papier. */
+  #joy{bottom:calc(50% - var(--stage) / 2 + var(--joy-corner));
+       right:calc(50% - var(--stage) / 2 + var(--joy-corner));gap:var(--joy-gap)}
   /* LE TITRE VIT DANS LE TOTEHM SUR ORDINATEUR : en haut du carré, centré, juste SOUS le T (le T tient le centre du haut ;
      au-dessus, le titre tombait dans la bande des perforations — mesuré) — 27/10, Wah : « tout en haut centrée ». */
   #vnow,body.ro #vnow{top:calc(50% - var(--stage)/2 + 137px);bottom:auto;left:0;right:0}
