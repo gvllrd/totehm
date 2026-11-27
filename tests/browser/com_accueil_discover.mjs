@@ -39,40 +39,52 @@ try{
    ok(s.ouvert&&s.i===0&&s.parScroll===1,'sans compte, un glissé vers le haut ouvre le Discover sur son premier écran → '+JSON.stringify(s));
    await pg.keyboard.press('Escape');await pg.waitForTimeout(700);}
   await pg.click('#lv-great');await pg.waitForTimeout(1500);
-  /* ── l'écran 0 : L'ATTERRISSAGE QUI SE SIMPLIFIE — la pièce ne bouge pas d'un pixel, la question prend la place de la légende ── */
+  /* ── 27/11 · L'OBJET EST LE TOTEHM DE L'ATTERRISSAGE, assemblé de ses QUATRE SVG, et il s'ouvre en cinq vues ── */
   let e=await ecran(pg);
-  ok(e.n===6&&e.i===0&&/^Make it Happen$/.test(e.tw.trim())&&e.cta===null,
-     '25/11 · écran 0 : « Make it Happen », frappé, sans porte ni tiroir → '+JSON.stringify(e));
-  const cal=await pg.evaluate(()=>{const r=n=>{const q=n.getBoundingClientRect();return [Math.round(q.x),Math.round(q.y),Math.round(q.width),Math.round(q.height)];};
-    return {atterrissage:r(document.getElementById('gate-asteroid')),recit:r(document.querySelector('#lvd .lvh-pp .sfv-g'))};});
-  ok(JSON.stringify(cal.atterrissage)===JSON.stringify(cal.recit),
-     '24/11 · la slide 0 EST l\'atterrissage : la pièce est à la MÊME place, à la MÊME taille → '+JSON.stringify(cal));
+  ok(e.n===7&&e.i===0&&/^Create the best strategy/.test(e.tw.trim()),
+     '27/11 · sept écrans, et le premier OUVRE le TOTEHM (la slide « Make it Happen » est retirée) → '+JSON.stringify(e));
+  {const c=await pg.evaluate(()=>{const l=document.querySelector('#lvd .lvh-logo');
+     return {present:!!l, calques:l?[...l.querySelectorAll('.glayer')].map(e=>e.getAttribute('class')).join('|'):null,
+       cloneDe:!!document.getElementById('gate-logo')};});
+   ok(c.present&&c.cloneDe&&c.calques==='glayer g-bg|glayer g-rail|glayer g-t|glayer g-wm',
+      'l\'objet est un CLONE des quatre calques de `#gate-logo`, pas une imitation → '+JSON.stringify(c));}
   /* ── LE CADRE NE BOUGE PAS : l'objet est exactement à la place du cadre d'illustration de chaque écran ── */
   /* la place est une affaire de MISE EN PAGE (`offsetTop`), pas de l'animation d'entrée des écrans (une translation) */
   const cadre=await pg.evaluate(()=>{const h=document.getElementById('lvd'),on=h.querySelector('.dc-s.is-on');
     const hr=h.querySelector('.dc-hero').getBoundingClientRect(), ir=on.querySelector('.dc-ill').getBoundingClientRect();
-    return {colle:Math.round(hr.x)===Math.round(ir.x)&&Math.round(hr.y)===Math.round(ir.y)
-      &&Math.round(hr.width)===Math.round(ir.width)&&Math.round(hr.height)===Math.round(ir.height),
+    /* 27/11 : au PREMIER écran la pièce est posée sur celle de l'atterrissage, pas sur le cadre — c'est la
+       continuité même. Ce qui doit rester vrai partout, c'est que les cadres ont tous la MÊME taille. */
+    return {colle:Math.round(hr.width)===Math.round(ir.width)&&Math.round(hr.height)===Math.round(ir.height),
       /* 25/11 : les écrans sont CENTRÉS, donc le cadre ne tombe plus à la même hauteur partout — ce qui doit rester
          identique, c'est sa TAILLE, et l'objet doit s'y poser exactement. */
       ill:[...new Set([...h.querySelectorAll('.dc-s .dc-ill')].map(n=>n.offsetWidth+'×'+n.offsetHeight))]};});
   ok(cadre.colle&&cadre.ill.length===1,
      'l\'objet est posé sur le cadre de l\'écran actif, et tous les cadres ont la même taille → '+JSON.stringify(cadre));
   /* ── LE RÉCIT : un objet qui se TRANSFORME, et une porte par écran ── */
-  const attendu=[['lvh-pp',null],['lvh-pp','Create my TOTEHM'],['lvh-pp is-verso','Subscribe to a TOTEHM'],
-                 ['lvh-pp','Get'],['lvh-cl','Create my TOTEHM Cloth'],['lvh-rd','Integrate figher.club']];
+  const attendu=[['lvh-pp','Create my TOTEHM'],['lvh-pp+lvh-tg','Create my TOTEHM'],['lvh-pp+lvh-gp','Get'],
+                 ['lvh-pp','Get'],['lvh-pp is-verso','Subscribe to a TOTEHM'],
+                 ['lvh-cl','Create my TOTEHM Cloth'],['lvh-rd','Integrate figher.club']];
   const vu=[];
   const cadres=[];
-  for(let k=0;k<6;k++){ if(k) await avance(pg,1); const x=await ecran(pg); vu.push([x.objets.join('+'),x.cta]);
+  for(let k=0;k<7;k++){ if(k) await avance(pg,1); const x=await ecran(pg); vu.push([x.objets.join('+'),x.cta]);
     cadres.push(await pg.evaluate(()=>{const f=document.querySelector('#lvd .dc-s.is-on .dc-ill').getBoundingClientRect();
       return Math.round(f.width)+'×'+Math.round(f.height);}));
-    ok(x.objets.length===1,'écran '+k+' : UN objet visible à la fois (il se transforme, il ne s\'empile pas) → '+JSON.stringify(x.objets)); }
+    ok(x.objets.length>=1,'écran '+k+' : le cadre n\'est JAMAIS vide → '+JSON.stringify(x.objets)); }
   ok([...new Set(cadres)].length===1&&/^(\d+)×\1$/.test(cadres[0]),
      '25/11 · les six objets reprennent les MÊMES dimensions, un carré → '+JSON.stringify([...new Set(cadres)]));
-  ok(JSON.stringify(vu)===JSON.stringify(attendu),'la pièce → ouverte → refermée sur son verso → revenue en recto → le vêtement → le radar → '+JSON.stringify(vu));
+  ok(JSON.stringify(vu)===JSON.stringify(attendu),
+     '27/11 · le TOTEHM s\'ouvre → la bulle du bot → le badge estampé → la vidéo → le verso → le vêtement → le radar → '+JSON.stringify(vu));
   const piece=await pg.evaluate(()=>document.querySelector('#lvd .lvh-pp .sfcmd').className);
   ok(/is-logo/.test(piece)&&!/is-grind/.test(piece),
-     '24/11 · le TOTEHM est REVENU en pièce (le mouvement inverse est passé par GRIND) avant de se retourner → '+piece);
+     '24/11 · le TOTEHM est REVENU en pièce (le mouvement inverse est passé par GRIND) → '+piece);
+  /* 27/11 (Wah) : « on oublie le Get, en gardant seulement le Higher » — le badge SEUL signe chaque écran ;
+     et plus aucun bouton perforé. */
+  {const s=await pg.evaluate(()=>{const g=document.querySelector('#lvd .dc-sig'), b=document.getElementById('lvd-cta');
+     return {badge:!!g&&!!g.querySelector('use[href="#higher-badge"]'), mots:g?g.textContent.trim():null,
+       vu:!!g&&+getComputedStyle(g).opacity>.5, perfo:!!b&&b.classList.contains('is-perfo'),
+       masque:b?getComputedStyle(b).maskImage:null};});
+   ok(s.badge&&s.vu&&!s.mots&&!s.perfo&&(s.masque==='none'||!s.masque),
+      'la signature est le badge SEUL, et la porte n\'est plus perforée → '+JSON.stringify(s));}
   /* le radar ne tourne que sur SON écran ; la grille et le vêtement portent bien les éléments natifs */
   const nat=await pg.evaluate(async()=>{
     const im=[...document.querySelectorAll('#lvd .lvh-cl img')];
@@ -161,10 +173,10 @@ try{
   let a=await pg.evaluate(()=>({ouvert:window.__totehm_discover().ouvert,vue:window.__totehm_lv().vue,bouge:window.__totehm_lv().bouge}));
   ok(a.ouvert&&a.vue==='c'&&!a.bouge,'25/11 · [GREATNESS] OUVRE LE RÉCIT : aucune vue ne s\'ouvre, le centre ne bouge pas → '+JSON.stringify(a));
   const portes=[];
-  for(let k=0;k<6;k++){ if(k) await avance(pg,1); const x=await ecran(pg); portes.push([x.cta,x.lien]); }
-  ok(JSON.stringify(portes)===JSON.stringify([[null,null],['Open my TOTEHM',null],['Find an ecosystem','Monetize my TOTEHM'],
-     ['Get',null],['Create my TOTEHM Cloth',null],['Integrate figher.club',null]]),
-     'le MENU d\'un membre : son TOTEHM, chercher un écosystème (· Monetize), Get Higher, la boutique, le club → '+JSON.stringify(portes));
+  for(let k=0;k<7;k++){ if(k) await avance(pg,1); const x=await ecran(pg); portes.push([x.cta,x.lien]); }
+  ok(JSON.stringify(portes)===JSON.stringify([['Open my TOTEHM',null],['Open my TOTEHM',null],['Get',null],['Get',null],
+     ['Find an ecosystem','Monetize my TOTEHM'],['Create my TOTEHM Cloth',null],['Integrate figher.club',null]]),
+     'le MENU d\'un membre : son TOTEHM, le bot, Higher GPT, la méthode, chercher un écosystème (· Monetize), la boutique, le club → '+JSON.stringify(portes));
   const cal2=await pg.evaluate(()=>{const r=n=>{const q=n.getBoundingClientRect();return [Math.round(q.x),Math.round(q.y),Math.round(q.width)];};
     return {a:r(document.getElementById('gate-asteroid')),d:r(document.querySelector('#lvd .lvh-pp .sfv-g'))};});
   await pg.screenshot({path:OUT+'/accueil_discover_membre.png'});

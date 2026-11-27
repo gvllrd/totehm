@@ -2232,13 +2232,16 @@ body.gate.entered #gate-door{opacity:0;visibility:hidden}
 
 /* Chaque calque est cadré au plus juste sur son dessin (viewBox serré) :
    son rectangle DOM == le rectangle du glyphe -> le calcul FLIP est exact. */
-#gate-logo .glayer{position:absolute;display:block;overflow:visible;
+#gate-logo .glayer,#lvd .lvh-logo .glayer{position:absolute;display:block;overflow:visible;
   transform-origin:50% 50%;will-change:transform,opacity;backface-visibility:hidden;
   transition:transform var(--gate-dur) var(--gate-ease),opacity var(--gate-dur) var(--gate-ease)}
-#gl-bg  {left:0;      top:0;       width:100%;     height:100%;     z-index:1}
-#gl-rail{left:9.200%; top:.100%;   width:7.650%;   height:99.799%;  z-index:2}
-#gl-t   {left:35.501%;top:21.386%; width:29.700%;  height:29.870%;  z-index:3}
-#gl-wm  {left:33.349%;top:54.268%; width:34.500%;  height:20.834%;  z-index:3}
+/* ⚠️ Le RÉCIT rejoue CE logo-ci : son objet est un CLONE de `#gate-logo` (Wah, 27/11 : « on part du totehm de la page
+   d'atterrissage, assemblé en 4 svgs »). Les quatre calques gardent donc UNE seule définition, ici, et les classes
+   `.g-bg/.g-rail/.g-t/.g-wm` du clone s'y ajoutent — jamais une copie des valeurs. */
+#gl-bg  ,#lvd .lvh-logo .g-bg  {left:0;      top:0;       width:100%;     height:100%;     z-index:1}
+#gl-rail,#lvd .lvh-logo .g-rail{left:9.200%; top:.100%;   width:7.650%;   height:99.799%;  z-index:2}
+#gl-t   ,#lvd .lvh-logo .g-t   {left:35.501%;top:21.386%; width:29.700%;  height:29.870%;  z-index:3}
+#gl-wm  ,#lvd .lvh-logo .g-wm  {left:33.349%;top:54.268%; width:34.500%;  height:20.834%;  z-index:3}
 
 /* La zone cliquable qui couvre le logo (cf. #logo-btn de stoner.html) */
 #gate-enter{position:absolute;inset:0;z-index:9;background:none;border:none;padding:0;
@@ -4016,20 +4019,6 @@ body.lv-d.rdr-voir #gate-asteroid,body.lv-d.rdr-voir #lvjoy,body.rdr-voir #rdr-f
   box-shadow:inset 0 1px 0 rgba(255,255,255,.15),inset 0 -1px 0 rgba(0,0,0,.65),0 2px 5px rgba(0,0,0,.55);
   transition:transform .12s ease,box-shadow .12s ease,opacity .15s ease}
 .dc-btn:active{transform:translateY(1px);box-shadow:inset 0 1px 0 rgba(255,255,255,.07),inset 0 2px 5px rgba(0,0,0,.7)}
-/* LA PORTE PERFORÉE (`is-perfo`) — le papier du TOTEHM et le badge [Higher] sont perforés : la porte l'est aussi.
-   Deux trous sur les côtés, et le long du bouton un trou tous les `--dcp-p` : ils suivent donc la LONGUEUR du texte,
-   comme sur le badge. Le masque mange les angles, donc le bouton garde ses coins droits. */
-.dc-btn.is-perfo{--dcp-r:5.5px;--dcp-p:26px;border-radius:0;
-  -webkit-mask:radial-gradient(circle var(--dcp-r) at 50% 0,#0000 97%,#000) 0 0/var(--dcp-p) 100% repeat-x,
-    radial-gradient(circle var(--dcp-r) at 50% 100%,#0000 97%,#000) 0 0/var(--dcp-p) 100% repeat-x,
-    radial-gradient(circle var(--dcp-r) at 0 50%,#0000 97%,#000) 0 0/100% 100% no-repeat,
-    radial-gradient(circle var(--dcp-r) at 100% 50%,#0000 97%,#000) 0 0/100% 100% no-repeat;
-  -webkit-mask-composite:source-in;
-  mask:radial-gradient(circle var(--dcp-r) at 50% 0,#0000 97%,#000) 0 0/var(--dcp-p) 100% repeat-x,
-    radial-gradient(circle var(--dcp-r) at 50% 100%,#0000 97%,#000) 0 0/var(--dcp-p) 100% repeat-x,
-    radial-gradient(circle var(--dcp-r) at 0 50%,#0000 97%,#000) 0 0/100% 100% no-repeat,
-    radial-gradient(circle var(--dcp-r) at 100% 50%,#0000 97%,#000) 0 0/100% 100% no-repeat;
-  mask-composite:intersect}
 .dc-cta{position:absolute;left:0;right:0;bottom:146px;display:flex;flex-direction:column;align-items:center;gap:8px;padding:0 24px;z-index:2}
 .dc-cta:empty{display:none}
 .dc.has-cta{--dc-ins-b:214px}
@@ -4093,6 +4082,14 @@ body.lv-d.rdr-voir #gate-asteroid,body.lv-d.rdr-voir #lvjoy,body.rdr-voir #rdr-f
   opacity:0;transition:opacity .4s ease}
 .dc[data-i="0"] .dc-lead{opacity:1}
 .dc:has(.dc-lead)[data-i="0"] .dc-rail{opacity:0}
+/* LA SIGNATURE (facultative : la page pose le nœud) — Wah, 27/11 : « on oublie le "Get", en gardant seulement le
+   Higher qui veut tout dire ». Le badge SEUL, en haut, sur chaque écran : aucun mot, aucune ponctuation de marque.
+   Le second élément phare, le TOTEHM, n'a pas besoin d'être répété : il EST l'objet qui se transforme au milieu. */
+.dc-sig{position:absolute;left:0;right:0;top:24px;z-index:3;display:flex;align-items:center;justify-content:center;
+  pointer-events:none;-webkit-user-select:none;user-select:none}
+.dc-sig svg{display:block;width:64px;height:21px;flex:none;opacity:.92}
+@media(max-width:380px){.dc-sig svg{width:54px;height:18px}}
+@media(max-height:620px){.dc-sig{top:14px}}
 /* L'ORDRE D'APPARITION (Wah, 26/11 : « on affiche d'abord les animations, ensuite la phrase »).
    ⚠️ L'OBJET NE DISPARAÎT JAMAIS — « tout au long du discover le totehm mute, se transforme mais ne disparaît
    jamais ». Il n'est donc lié à AUCUNE étape : il reste là, d'un écran à l'autre, et c'est sa FORME qui change.
@@ -4163,94 +4160,95 @@ body.no-tree #lv-ram{display:none}
 #lvd .lsh-sf.dc-sf{position:relative;inset:auto;z-index:auto;width:100%;padding:0;background:none;overflow:visible}
 #lvd .dc-sf .sfg{width:100%}
 #lvd .dc-sf *{pointer-events:none!important;cursor:default}
-/* ══ LE RÉCIT : CE QUE L'OBJET DEVIENT · 24/11/2026 ══════════════════════
-   Wah : « dès que l'utilisateur scrolle, il passe dans la slide 0 discover, QUI EST LA PAGE D'ATTERRISSAGE QUI SE
-   SIMPLIFIE ». L'écran 0 ne dessine donc rien de neuf : la pièce y est posée à la place EXACTE et à la taille exacte
-   de celle de l'atterrissage (`caler()` mesure `#gate-asteroid` et pose `--lvh-dx/dy/k`), et la question prend la
-   place de la légende (`--lvh-qy`). On ne voit aucune coupure : la page se dépouille, c'est tout.
-   Ensuite UN SEUL objet se transforme, écran par écran (`#lvd[data-i]`) :
-     0 → 1  la pièce S'OUVRE en cinq vues (classes natives du `.sfcmd`, `conter()`), avec plus d'air entre elles
-     1 → 2  elle se REFERME en repassant par le mot GRIND, redevient le TOTEHM, PUIS se retourne sur son verso :
-            on comprend qu'on va chercher la stratégie de QUELQU'UN D'AUTRE (`is-verso`, posé après le repli)
-     2 → 3  le verso revient en RECTO et la vidéo de la méthode se calque dessus, dans la forme perforée du papier
-     3 → 4  le vrai vêtement (nos photos de `totehm-cloth-support`) : le badge brodé devant, l'illustration au dos
-     4 → 5  il devient un point du radar — le VRAI radar du Club, avec ses spots lumineux
-   Rien n'est coloré ici : seules les couleurs natives (box, navy du papier, badge, intentions des spots). */
-/* LE CARRÉ DU RÉCIT — assez grand pour que les trois vues du papier y tiennent SANS être rognées (mesuré : à 186 px
-   les intitulés « MY OBJECTIVES » et « MY REPULSIONS » se coupaient). Tous les objets reprennent ce carré. */
-/* 25/11 (Wah) : « on prend comme RÉFÉRENCE ULTIME le TOTEHM de la page d'atterrissage ; tout le Discover qui suit
-   doit s'y référer … le verso de la creator economy est très gros, comme la vidéo de la méthode … je ne veux pas tes
-   effets zoom / dezoom entre les slides, surtout quand il s'agit du TOTEHM. » `--lvh-s` est la largeur MESURÉE du
-   TOTEHM de l'atterrissage (`caler()`) : la pièce garde CETTE taille du premier écran au dernier — fermée, ouverte
-   en cinq vues, retournée en recherche, sous la vidéo. Aucune échelle d'un écran à l'autre : elle se transforme,
-   elle ne grandit pas. Le cadre (`--dc-ill-h`) ne sert plus qu'au vêtement et au radar, qui ne sont pas le TOTEHM. */
-#lvd{--dc-ill-h:clamp(170px,32dvh,286px);--lvh-s:110px;--lvh-n:110}
+/* ══ LE RÉCIT : CE QUE L'OBJET DEVIENT · 27/11/2026 ══════════════════════
+   Wah : « on part du TOTEHM de la page d'atterrissage, assemblé en 4 SVG ; à partir de cela on passe aux 5 vues
+   directement » — la première slide saute. L'objet du récit n'IMITE donc plus le logo : il EST le logo, un CLONE des
+   quatre calques de `#gate-logo` (`.lvh-logo`, posé DANS le panneau central natif à la place de `.sf-lg`). D'où une
+   continuité exacte avec l'atterrissage : mêmes SVG, mêmes règles de calques, même taille (`--lvh-s`, mesurée).
+   Sept écrans, un seul objet qui mute et ne s'éteint jamais :
+     0  il S'OUVRE en cinq vues (classes natives du `.sfcmd` ; les glyphes du clone se diluent comme `.sf-lg`)
+     1  il se referme, la bulle TotehmBot monte de lui          (le rappel quotidien)
+     2  la bulle devient le GPT qui tourne sous le badge        (Higher GPT)
+     3  le papier revient et la vidéo de la méthode joue dessus (Get Higher)
+     4  il se retourne sur son verso : un nom, un prix          (la creator economy)
+     5  son illustration s'imprime au dos du vrai vêtement      (higher.boutique)
+     6  le vêtement devient un point du radar du Club           (figher.club)
+   Les couleurs sont celles des éléments natifs ; le reste est noir, blanc, gris. */
+/* LE CARRÉ DU RÉCIT : assez grand pour le radar (le monde) ; le TOTEHM, lui, garde sa taille mesurée `--lvh-s`. */
+#lvd{--dc-ill-h:clamp(170px,32dvh,286px)}
 #lvd .lvh{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;
   transition:opacity .55s ease,transform .75s cubic-bezier(.22,.61,.36,1)}
-/* LE PAPIER : recto (les cinq vues, puis la vidéo) et verso (la recherche) sur le MÊME nœud qui tourne */
+/* LE PAPIER — recto (le logo cloné, puis les cinq vues, puis la vidéo) et verso (la recherche), sur le MÊME nœud */
 #lvd .lvh-pp{transform-style:preserve-3d}
 #lvd .lvh-f,#lvd .lvh-b{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
   backface-visibility:hidden;-webkit-backface-visibility:hidden}
 #lvd .lvh-b{transform:rotateY(180deg)}
-#lvd[data-i="0"] .lvh-pp,#lvd[data-i="1"] .lvh-pp,#lvd[data-i="2"] .lvh-pp,#lvd[data-i="3"] .lvh-pp{opacity:1}
-/* l'écran 0 EST l'atterrissage : la pièce ne bouge pas d'un pixel quand le Discover s'ouvre */
-#lvd[data-i="0"] .lvh-pp{transform:translate(var(--lvh-dx,0px),var(--lvh-dy,0px))}
+#lvd[data-i="0"] .lvh-pp,#lvd[data-i="1"] .lvh-pp,#lvd[data-i="3"] .lvh-pp,#lvd[data-i="4"] .lvh-pp{opacity:1}
+#lvd[data-i="2"] .lvh-pp{opacity:1}
+/* ⚠️ LE PREMIER ÉCRAN COMMENCE SUR L'ATTERRISSAGE : tant que le TOTEHM est FERMÉ (`is-logo`), il est posé à la place
+   exacte de celui de la page (`--lvh-dx/dy`, mesurés). Dès qu'il s'ouvre, la règle cesse de s'appliquer et il GLISSE
+   au centre pendant que les deux papiers sortent — c'est ce glissement qui fait la continuité, pas un fondu. */
+#lvd[data-i="0"] .lvh-pp:has(.sfcmd.is-logo){transform:translate(var(--lvh-dx,0px),var(--lvh-dy,0px))}
 #lvd .lvh-pp.is-verso{transform:rotateY(180deg)}
-/* 24/11 (Wah) : « un peu plus d'espacement entre les vues ». Le repli des deux papiers suit le même écart.
-   25/11 : TOUT TIENT DANS LE CARRÉ. Fermé, le TOTEHM REMPLIT le carré (`--sfk`) ; en s'ouvrant il revient à sa taille
-   de mise en page et les trois vues se partagent le même carré — l'objet garde donc exactement la même empreinte
-   d'un écran à l'autre, et l'ouverture est un vrai mouvement (une transformation, pas un saut de largeur). */
-/* Fermée, la pièce FAIT la taille du TOTEHM de l'atterrissage ; ouverte, chacune des vues garde cette taille —
-   l'objet se DÉPLIE, il ne change pas d'échelle. Sur un écran étroit, les trois vues se partagent la largeur. */
+/* LE CLONE DE L'ATTERRISSAGE : il occupe le panneau central, à la place de `.sf-lg`. Ses glyphes se diluent avec
+   `is-melt`, exactement comme ceux du sélecteur ; son papier, lui, EST le panneau. */
+#lvd .lvh-logo{position:absolute;inset:0;z-index:2;pointer-events:none}
+#lvd .lvh-logo .glayer{transition:opacity .45s ease,filter .5s ease,transform .5s ease}
+#lvd .sfcmd.is-melt .lvh-logo .g-rail,#lvd .sfcmd.is-melt .lvh-logo .g-t,#lvd .sfcmd.is-melt .lvh-logo .g-wm{
+  opacity:0;filter:blur(7px);transform:scale(1.14)}
+/* 24/11 : de l'air entre les vues ; 25/11 : chaque vue garde le format du TOTEHM de l'atterrissage */
 #lvd .dc-sf .sfcmd{--sfg:10px;--q:min(var(--lvh-s),calc((100vw - 2 * var(--dc-ins-x) - 2 * var(--sfg)) / 3));
-  gap:var(--sfg);transform-origin:50% 50%}
-#lvd .dc-sf .sfcmd.is-logo .sfv-s{transform:translateX(calc(100% + var(--sfg)))}
-#lvd .dc-sf .sfcmd.is-logo .sfv-v{transform:translateX(calc(-100% - var(--sfg)))}
-/* LA VIDÉO DE LA MÉTHODE, calquée sur le papier. Elle PORTE DÉJÀ le papier perforé : on ne la masque donc pas une
-   seconde fois (ce serait deux découpes l'une sur l'autre) — on la met à l'échelle pour que SON papier tombe
-   exactement sur le carré du TOTEHM. Mesuré sur ses images : le papier occupe 52,5 % de la vidéo, centré en
-   49,6 % × 40,8 % — d'où l'origine, le décalage et le facteur ci-dessous. Elle ne joue que sur son écran. */
-#lvd .lvh-vid{position:absolute;inset:0;z-index:2;opacity:0;transition:opacity .6s ease;pointer-events:none}
+  gap:var(--sfg);width:auto}
+/* LA VIDÉO DE LA MÉTHODE, calquée sur le papier. Elle PORTE déjà le papier perforé : on ne la masque pas une
+   seconde fois — on la met à l'échelle pour que SON papier tombe sur le carré (mesuré : 52,5 % de la vidéo,
+   centré en 49,6 % × 40,8 %). */
+#lvd .lvh-vid{position:absolute;inset:0;z-index:3;opacity:0;transition:opacity .6s ease;pointer-events:none}
 #lvd .lvh-vid video{display:block;width:100%;height:100%;object-fit:cover;
   transform-origin:49.6% 40.8%;transform:translate(.4%,9.2%) scale(1.9)}
 #lvd[data-i="3"] .lvh-vid.is-pret{opacity:1}
-/* LE VERSO — LE VRAI (Wah, 25/11 : « ça ne reprend pas le format verso du dashboard »). Le papier est CARRÉ : son dos
-   garde ses proportions, il ne s'étire pas au cadre. Dessus, la recherche telle qu'elle existe (`#srch.is-cherche`) :
-   le dos du papier VIERGE, le nom tapé au format `#mb-q` (Quantico corail, centré, sans trait), puis l'unique résultat
-   `#mb-res` avec SON balisage natif — la bande noire `.vs-top` (le prix `.vs-month`, [Discover] `.vs-act`) et la ligne
-   « Respect their rules… ». Aucune de ces classes n'est redessinée ici : le bloc est seulement RÉDUIT pour tenir dans
-   le cadre de l'illustration, comme le moteur le fait du reste. */
+/* TOTEHMBOT — la bulle Telegram, telle qu'elle est écrite ailleurs : le nom, la Habit due, les trois réponses */
+#lvd .lvh-tg{flex-direction:column;gap:6px;width:min(100%,270px);padding:11px 13px;background:#17171b;
+  border-radius:14px 14px 14px 4px;text-align:left;align-items:stretch;justify-content:center}
+#lvd .lvh-tg-who{font:400 9px/1.3 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#888}
+#lvd .lvh-tg-t{font:400 15px/1.35 'Quantico',sans-serif;color:#fff}
+#lvd .lvh-tg-b{display:flex;gap:6px;margin-top:2px}
+#lvd .lvh-tg-b span{flex:1;padding:7px 0;border-radius:8px;background:#2a2a31;text-align:center;
+  font:400 11px/1.2 'Space Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#e8e8e8}
+#lvd[data-i="0"] .lvh-tg{opacity:0;transform:translateY(14px) scale(.92)}
+#lvd[data-i="1"] .lvh-tg{opacity:1}
+#lvd[data-i="2"] .lvh-tg{opacity:0;transform:translateY(-16px) scale(.92)}
+/* HIGHER GPT — le badge ESTAMPÉ sur le TOTEHM : les deux éléments brandés, et rien d'extérieur. C'est exactement ce
+   que Higher GPT est — ton TOTEHM, lu ailleurs — et ça ne dépend d'aucune image hébergée. */
+#lvd .lvh-gp{pointer-events:none}
+#lvd .lvh-gp svg{display:block;width:calc(var(--lvh-s) * .78);height:auto;aspect-ratio:3;
+  filter:drop-shadow(0 2px 10px rgba(0,0,0,.65))}
+#lvd[data-i="1"] .lvh-gp{opacity:0;transform:scale(.7) translateY(10px)}
+#lvd[data-i="2"] .lvh-gp{opacity:1}
+#lvd[data-i="3"] .lvh-gp{opacity:0;transform:scale(1.35)}
+/* LE VERSO : le prix SEUL, centré, à même le navy — le papier garde son carré */
 #lvd .lvh-pap{position:relative;width:var(--lvh-s);height:var(--lvh-s);flex:none;background:var(--perfo) 0 0/100% 100% no-repeat}
-/* le bloc natif est HORS FLUX : il est seulement réduit et centré, et n'élargit donc pas le carré du papier */
 #lvd .lvh-vs{position:absolute;left:50%;top:50%;width:230px;display:flex;flex-direction:column;align-items:center;gap:10px;
   transform:translate(-50%,-50%) scale(calc(var(--lvh-n) / 250))}
-/* 25/11 (Wah) : « garde seulement le prix que tu centres avec le per year et le stop anytime … et tu laisses en
-   full-navy. C'est mieux pour l'illustration. » La bande noire et la ligne des règles s'en vont : le prix natif
-   (`.vs-month`) se pose à même le papier, centré. */
-#lvd .lvh-r{align-items:center;text-align:center}
-#lvd .lvh-r .vs-month{align-items:center;gap:4px}
 #lvd .lvh-q{width:100%;text-align:center;font:400 30px/1.2 Quantico,sans-serif;letter-spacing:.04em;color:#fbd5ca;min-height:1.2em}
 #lvd .lvh-q i{font-style:normal}
 #lvd .lvh-q::after{content:'';display:inline-block;width:.06em;height:.9em;background:#fbd5ca;vertical-align:-.08em;margin-left:.07em;opacity:0}
 #lvd .lvh-b.is-frappe .lvh-q::after{animation:dc-car 1s step-end infinite}
-#lvd .lvh-r{display:flex;flex-direction:column;gap:2px;width:100%;opacity:0;transition:opacity .4s ease}
+#lvd .lvh-r{display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px;width:100%;opacity:0;transition:opacity .4s ease}
+#lvd .lvh-r .vs-month{align-items:center;gap:4px}
 #lvd .lvh-b.is-res .lvh-r{opacity:1}
-/* LE VÊTEMENT : nos VRAIES photos (`totehm-cloth-support`), badge brodé devant, illustration perforée au dos */
+/* LE VÊTEMENT : nos VRAIES photos, à la taille du TOTEHM ; le radar, lui, est le MONDE et garde le cadre */
 #lvd .lvh-cl{gap:6px}
-/* Le vêtement PORTE le TOTEHM : ses deux photos se mesurent donc sur la même référence (25/11). Le radar, lui,
-   est le MONDE : il garde le cadre de l'illustration. */
 #lvd .lvh-g{position:relative;width:var(--lvh-s);flex:none;aspect-ratio:1;border-radius:8px;background:#141418}
 #lvd .lvh-g img.lvh-ph{display:block;width:100%;height:100%;object-fit:contain}
 #lvd .lvh-prt{position:absolute;left:50%;top:40%;width:30%;aspect-ratio:1;transform:translateX(-50%);overflow:hidden;
   -webkit-mask:var(--perfo) 0 0/100% 100% no-repeat;mask:var(--perfo) 0 0/100% 100% no-repeat}
 #lvd .lvh-prt img{display:block;width:100%;height:100%;object-fit:cover}
 #lvd .lvh-nm{position:absolute;left:0;right:0;top:63%;text-align:center;font:400 9px/1 Quantico,sans-serif;color:#fff}
-#lvd[data-i="3"] .lvh-cl{opacity:0}
-#lvd[data-i="4"] .lvh-cl{opacity:1}
-#lvd[data-i="5"] .lvh-cl{opacity:0;transform:scale(.07) translate(150%,95%)}
-/* LE RADAR DU CLUB : le vrai, avec ses spots */
-#lvd[data-i="4"] .lvh-rd{opacity:0}
-#lvd[data-i="5"] .lvh-rd{opacity:1}
+#lvd[data-i="4"] .lvh-cl{opacity:0;transform:scale(1.18)}
+#lvd[data-i="5"] .lvh-cl{opacity:1}
+#lvd[data-i="6"] .lvh-cl{opacity:0;transform:scale(.07) translate(150%,95%)}
+#lvd[data-i="5"] .lvh-rd{opacity:0;transform:scale(1.5)}
+#lvd[data-i="6"] .lvh-rd{opacity:1}
 @media(prefers-reduced-motion:reduce){#lvd .lvh{transition:opacity .2s ease}}
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Tout texte devient blanc sous la souris. Les dessins, surfaces
@@ -4400,7 +4398,7 @@ div:not(:has(> :not(br,wbr))):hover,
 #lv-diag:hover,
 .lvs-sci:hover,
 .lvs-sci b:hover,
-#lv-refine-label:hover,
+#lv-m-sel:hover,
 #lv-m-say:hover,
 .lvm-who:hover,
 #mb-lock .mbl-t:hover,
@@ -4454,6 +4452,7 @@ div:not(:has(> :not(br,wbr))):hover,
 .vs-foot .mw-terms:hover,
 #srch-res .srch-sub:hover,
 .tlv-l:hover,
+.view-close:hover,
 #spass .sp-k:hover,
 #spass .sp-n:hover,
 #spass .sp-p:hover,
@@ -4473,6 +4472,7 @@ div:not(:has(> :not(br,wbr))):hover,
 .ns-def:hover,
 .ns-note-g:hover,
 .ns-hit:hover,
+#rdr-mode .k2l span:hover,
 #rdr-pique:hover,
 .mf-x:hover,
 .cap-b:hover,
@@ -4493,6 +4493,8 @@ div:not(:has(> :not(br,wbr))):hover,
 .dc-next:hover,
 .dc-lead:hover,
 .lvp-cta.is-quiet:hover,
+#lvd .lvh-tg-who:hover,
+#lvd .lvh-tg-b span:hover,
 #lvd .lvh-q:hover):where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *)){color:#fff!important}
 .h-text:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::placeholder{color:#fff!important}
 .habit.open .v-name[contenteditable]:empty:hover:where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *))::before{color:#fff!important}
@@ -4873,17 +4875,21 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
   <!-- L'OBJET QUI VOYAGE : une seule couche, six états. Le papier s'ouvre, se retourne en recherche, devient la grille
        de mes médias, s'imprime au dos d'un vêtement, puis n'est plus qu'un point exact sur le radar du Club.
        Dessiné une fois à la première ouverture (`HERO`), par les MÊMES fonctions que les cinq vues. -->
-  <div class="dc-hero" aria-hidden="true"><div class="dc-o" data-o="0 1 2 3 4 5" id="lvd-o"></div></div>
+  <div class="dc-hero" aria-hidden="true"><div class="dc-o" data-o="0 1 2 3 4 5 6" id="lvd-o"></div></div>
+  <!-- 27/11 (Wah) : « on oublie le Get, en gardant seulement le Higher qui veut tout dire » — le badge seul signe
+       chaque écran ; le TOTEHM, lui, est l'objet au milieu. -->
+  <p class="dc-sig" aria-hidden="true"><svg viewBox="0 0 600 200"><use href="#higher-badge"></use></svg></p>
   <div class="dc-stage">
-    <div class="dc-s"><div class="dc-ill" aria-hidden="true"></div><h2 class="dc-tw">Make it Happen</h2></div>
     <div class="dc-s" data-cta="totehm"><div class="dc-ill" aria-hidden="true"></div><h2 class="dc-tw">Create the best strategy and have it in mind all the time</h2></div>
-    <div class="dc-s" data-cta="eco"><div class="dc-ill" aria-hidden="true"></div><h2 class="dc-tw">Take real inspiration and have mentors</h2></div>
+    <div class="dc-s" data-cta="totehm"><div class="dc-ill" aria-hidden="true"></div><h2 class="dc-tw">It comes back to you. Every single day.</h2></div>
+    <div class="dc-s" data-cta="gpt"><div class="dc-ill" aria-hidden="true"></div><h2 class="dc-tw">Think it through, whenever you need it</h2></div>
     <div class="dc-s" data-cta="gpt"><div class="dc-ill" aria-hidden="true"></div><h2 class="dc-tw">Make it happen in the best possible way</h2></div>
+    <div class="dc-s" data-cta="eco"><div class="dc-ill" aria-hidden="true"></div><h2 class="dc-tw">Take real inspiration and have mentors</h2></div>
     <div class="dc-s" data-cta="cloth"><div class="dc-ill" aria-hidden="true"></div><h2 class="dc-tw">Wear your greatness, not someone else’s</h2></div>
     <div class="dc-s" data-cta="club"><div class="dc-ill" aria-hidden="true"></div><h2 class="dc-tw">Grind with the right people, in the right spot, at the right time</h2>
       <div class="dc-row"><a class="dc-lnk" href="/terms" target="_blank" rel="noopener">Simple terms of use</a></div></div>
   </div>
-  <div class="dc-cta"><button class="dc-btn is-perfo" id="lvd-cta" type="button">Create my TOTEHM</button><button class="dc-lnk hide" id="lvd-lnk" type="button">Monetize my TOTEHM</button></div>
+  <div class="dc-cta"><button class="dc-btn" id="lvd-cta" type="button">Create my TOTEHM</button><button class="dc-lnk hide" id="lvd-lnk" type="button">Monetize my TOTEHM</button></div>
   <button class="dc-x" data-hover-art id="lvd-x" type="button" aria-label="Close"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2 L12 12 M12 2 L2 12"/></svg></button>
 </div>
 
@@ -9131,7 +9137,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-11-27-commandes';
+const BUILD='2026-11-27-recit7';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -15307,28 +15313,48 @@ window.addEventListener('pageshow',e=>{
       const NOM='kai';
       const BADGE='<svg class="dc-hi" viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-badge"></use></svg>';
       const SILH='<svg class="lvh-sh" viewBox="0 0 120 150" aria-hidden="true"><path d="M48 16h24l26 13 10 33-17 7-5-15v80H34V54l-5 15-17-7 10-33z" fill="#17171b" stroke="#3a3a42" stroke-width="1.4" stroke-linejoin="round"/></svg>';
+      /* ⚠️ 27/11 (Wah) : « on part du TOTEHM de la page d'atterrissage, assemblé en 4 SVG ». L'objet n'imite donc
+         plus le logo : il EST le logo. On CLONE `#gate-logo` et on le pose dans le panneau central natif, à la place
+         de `.sf-lg`. Les identifiants internes du clone sont préfixés — deux fois le même id casserait les masques du
+         papier — mais les quatre calques gardent leurs classes, dont les positions sont définies UNE fois (plus haut). */
+      function clonerLogo(){
+        const src=$('gate-logo'); if(!src) return '';
+        const n=src.cloneNode(true);
+        n.removeAttribute('id'); n.className='lvh-logo';
+        n.querySelectorAll('button').forEach(b=>b.remove());
+        const CL={'gl-bg':'g-bg','gl-rail':'g-rail','gl-t':'g-t','gl-wm':'g-wm'}, vus=new Map();
+        n.querySelectorAll('[id]').forEach(e=>{ const v=e.id;
+          if(CL[v]){ e.removeAttribute('id'); e.classList.add(CL[v]); return; }
+          vus.set(v,'lvdl-'+v); e.id='lvdl-'+v; });
+        let h=n.outerHTML;
+        h=h.replace(/url\(#([^)]+)\)/g,(m,k)=>vus.has(k)?'url(#'+vus.get(k)+')':m)
+           .replace(/(xlink:href|href)="#([^"]+)"/g,(m,b,k)=>vus.has(k)?b+'="#'+vus.get(k)+'"':m);
+        return h;
+      }
       const HERO=()=>
         '<div class="lvh lvh-pp">'
           +'<div class="lvh-f"><div class="lsh-sf dc-sf"><div class="sfg"><div class="sfcmd is-logo" id="lvd-sf">'
             +'<span class="sfv sfv-sq sfv-s blk-w is-on"><span>my wisdom</span></span>'
-            +'<span class="sfv sfv-sq sfv-g is-on" style="--skin:#333366"><span class="sf-lg">'
-              +'<svg class="gl g-rail"><use href="#lg-rail"/></svg><svg class="gl g-t"><use href="#lg-t"/></svg><svg class="gl g-wm"><use href="#lg-wm"/></svg>'
-            +'</span><span class="sf-lab">my grind</span><span class="sfpile">'
-              +'<i data-v="objectives">my objectives</i><i data-v="habits">my habits</i><i data-v="repulsions">my repulsions</i>'
-            +'</span>'
-            /* la vidéo de la méthode se calque SUR le papier : même carré, même forme perforée */
-            +'<span class="lvh-vid" id="lvd-vid"><video playsinline muted loop preload="none" aria-hidden="true"></video></span>'
+            +'<span class="sfv sfv-sq sfv-g is-on" style="--skin:#333366">'
+              + clonerLogo()
+              +'<span class="sf-lab">my grind</span><span class="sfpile">'
+                +'<i data-v="objectives">my objectives</i><i data-v="habits">my habits</i><i data-v="repulsions">my repulsions</i>'
+              +'</span>'
+              +'<span class="lvh-vid" id="lvd-vid"><video playsinline muted preload="none" aria-hidden="true"></video></span>'
             +'</span>'
             +'<span class="sfv sfv-sq sfv-v blk-v is-on"><span>my vision</span></span>'
           +'</div></div></div></div>'
           +'<div class="lvh-b"><span class="lvh-pap"><span class="lvh-vs">'
             +'<span class="lvh-q"><i></i></span>'
-            /* le résultat, avec le balisage NATIF de `#mb-res` (voir `CHERCHE`) */
-            /* le prix SEUL, centré, à même le navy (25/11) : son rendu natif (`.vs-month`), rien autour */
             +'<span class="lvh-r"><span class="vs-month"><b>60 €</b><i>per year · stop anytime</i></span></span>'
           +'</span></span></div>'
         +'</div>'
-        /* LE VRAI VÊTEMENT : nos photos de `totehm-cloth-support` (le Higher brodé devant), l'illustration au dos */
+        /* TOTEHMBOT : la bulle, telle qu'elle est écrite ailleurs */
+        +'<div class="lvh lvh-tg"><span class="lvh-tg-who">TotehmBot</span>'
+          +'<span class="lvh-tg-t">Run 20 minutes · it\'s time.</span>'
+          +'<span class="lvh-tg-b"><span>On It</span><span>No Time</span><span>No Energy</span></span></div>'
+        /* HIGHER GPT : le badge estampé sur le TOTEHM, qui reste visible dessous */
+        +'<div class="lvh lvh-gp"><svg viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-badge"></use></svg></div>'
         +'<div class="lvh lvh-cl">'
           +'<span class="lvh-g"><img class="lvh-ph" alt="" width="520" height="520" src="/assets/discover/cloth-front.webp"></span>'
           +'<span class="lvh-g"><img class="lvh-ph" alt="" width="520" height="520" src="/assets/discover/cloth-back.webp">'
@@ -15439,19 +15465,24 @@ window.addEventListener('pageshow',e=>{
         el.style.setProperty('--lvh-dx',((ar.x+ar.width/2)-cx).toFixed(1)+'px');
         el.style.setProperty('--lvh-dy',((ar.y+ar.height/2)-cy).toFixed(1)+'px');
       }
+      const ECRAN_VERSO=4;   /* l'écran où le TOTEHM est retourné : la frappe du nom n'a de sens que là */
       function frapperNom(bk){
         const q=bk.querySelector('.lvh-q i'); if(!q) return;
         bk.classList.add('is-frappe');
         (function pas(k){
-          if(!q.isConnected||conte!==2){ bk.classList.remove('is-frappe'); return; }
+          if(!q.isConnected||conte!==ECRAN_VERSO){ bk.classList.remove('is-frappe'); return; }
           q.textContent=NOM.slice(0,k);
           if(k<NOM.length){ recitQ=setTimeout(()=>pas(k+1),120); return; }
           bk.classList.remove('is-frappe');
-          recitQ=setTimeout(()=>{ if(conte===2) bk.classList.add('is-res'); },280); })(1); }
+          recitQ=setTimeout(()=>{ if(conte===ECRAN_VERSO) bk.classList.add('is-res'); },280); })(1); }
       /* la vidéo ne charge qu'à son écran, et ne joue que là */
+      /* 27/11 (Wah) : « la vidéo de la méthode doit se jouer UNE SEULE FOIS et s'arrêter à la dernière image ».
+         Pas de `loop` : arrivée au bout elle reste sur son image de fin, et on ne la rembobine qu'en revenant. */
       function video(on){
         const w=$('lvd-vid'), v=w&&w.querySelector('video'); if(!v) return;
-        if(!on){ try{ v.pause(); }catch(_){} return; }
+        if(!on){ try{ v.pause(); }catch(_){} v.dataset.vue=''; return; }
+        if(v.dataset.vue==='1'){ return; }   /* déjà jouée sur cet écran : elle garde sa dernière image */
+        v.dataset.vue='1';
         if(!v.src){ v.addEventListener('loadeddata',()=>w.classList.add('is-pret'),{once:true});
           v.addEventListener('error',()=>{ w.classList.remove('is-pret');
             console.warn('[discover] la vidéo de la méthode n\'est pas lisible publiquement'); },{once:true});
@@ -15464,41 +15495,43 @@ window.addEventListener('pageshow',e=>{
         const pose=(...c)=>{ if(sf) sf.className='sfcmd'+(c.length?' '+c.join(' '):''); };
         const verso=v=>{ if(pp) pp.classList.toggle('is-verso',!!v); };
         if(sf){
-          if(i===0){ pose('is-logo'); verso(false); }
+          if(i===0){
+            verso(false);
+            /* ⚠️ on se fie à l'ÉTAT de la pièce, pas à un compteur : `peindre` est appelé deux fois à l'ouverture
+               (le moteur, puis la page), et un compteur ratait la séquence une fois sur deux. */
+            if(sf.classList.contains('is-logo')&&!RMD()){
+              /* LE PREMIER ÉCRAN : le TOTEHM de l'atterrissage S'OUVRE en cinq vues — son logo se dilue, les deux
+                 papiers glissent, GRIND devient ses trois listes. Rien d'autre à faire : ce sont ses classes natives. */
+              pose('is-logo');
+              recit=setTimeout(()=>{ sf.classList.add('is-melt');
+                recit=setTimeout(()=>{ sf.classList.remove('is-logo'); sf.classList.add('is-split');
+                  recit=setTimeout(()=>sf.classList.add('is-grind'),780); },340); },420);
+            } else pose('is-melt','is-split','is-grind');
+          }
           else if(i===1){
             verso(false);
             if(conte===0&&!RMD()){
-              /* LA PIÈCE S'OUVRE : le logo se dilue, les deux papiers glissent, GRIND devient ses trois listes */
-              sf.classList.add('is-melt');
-              recit=setTimeout(()=>{ sf.classList.remove('is-logo'); sf.classList.add('is-split');
-                recit=setTimeout(()=>sf.classList.add('is-grind'),780); },340);
-            } else pose('is-melt','is-split','is-grind');
-          }
-          else if(i===2){
-            /* ⚠️ 24/11 (Wah) : LE MOUVEMENT INVERSE D'ABORD — les cinq vues se referment EN REPASSANT PAR LE MOT
-               GRIND, le TOTEHM se reforme, ET SEULEMENT APRÈS il se retourne : on comprend qu'on va chercher la
-               stratégie de quelqu'un d'autre. */
-            if(conte===1&&!RMD()){
-              verso(false); sf.classList.remove('is-grind');
+              /* il se REFERME en repassant par le mot GRIND, et la bulle du bot monte de lui */
+              sf.classList.remove('is-grind');
               recit=setTimeout(()=>{ sf.classList.add('is-logo'); sf.classList.remove('is-split');
-                recit=setTimeout(()=>{ sf.classList.remove('is-melt');
-                  recit=setTimeout(()=>verso(true),300); },340); },360);
-            } else { pose('is-logo'); verso(true); }
+                recit=setTimeout(()=>sf.classList.remove('is-melt'),340); },360);
+            } else pose('is-logo');
           }
-          else { pose('is-logo'); verso(false); }   /* 3, 4, 5 : le TOTEHM est revenu en recto */
+          else if(i===4){ pose('is-logo'); verso(true); }
+          else { pose('is-logo'); verso(false); }
         }
         video(i===3);
         if(bk){
           bk.classList.remove('is-res','is-frappe');
           const q=bk.querySelector('.lvh-q i');
-          if(i!==2){ if(q) q.textContent=NOM; }
+          if(i!==4){ if(q) q.textContent=NOM; }
           else if(RMD()){ if(q) q.textContent=NOM; bk.classList.add('is-res'); }
-          else { if(q) q.textContent=''; recitQ=setTimeout(()=>frapperNom(bk),conte===1?1500:620); }
+          else { if(q) q.textContent=''; recitQ=setTimeout(()=>frapperNom(bk),760); }
         }
         conte=i; }
       function peindre(k){
         const i=(typeof k==='number')?k:(dc?dc.index():0);
-        const rd=ouvert&&i===5?el.querySelector('.dc-radar'):null; if(rd) RADAR.on(rd); else RADAR.off();
+        const rd=ouvert&&i===6?el.querySelector('.dc-radar'):null; if(rd) RADAR.on(rd); else RADAR.off();
         caler();   /* la référence (le TOTEHM de l'atterrissage) se remesure à chaque écran et à chaque rendu */
         conter(i);
         const e=el.querySelectorAll('.dc-s')[i], cle=(e&&e.dataset.cta)||'', por=PORTES[cle],
@@ -15516,9 +15549,15 @@ window.addEventListener('pageshow',e=>{
         if(ouvert||!window.TOTEHM_DISCOVER) return; ouvert=true; diagD.ouvertures++; origine=document.activeElement; clearTimeout(t);
         if(parScroll===true){ diagD.parScroll++; const n=Date.now(); sourdine=n+250; sourdineFin=n+1500; }
         el.hidden=false; illustrer();
+        /* rouvrir, c'est revoir le TOTEHM de l'atterrissage s'ouvrir : on le repose FERMÉ */
+        conte=-1; { const s=$('lvd-sf'); if(s) s.className='sfcmd is-logo'; }
+        /* ⚠️ La pièce doit ÊTRE sur celle de l'atterrissage dès la première image, pas y glisser : on coupe sa
+           transition le temps que le décalage mesuré soit posé, et on la rend à l'image suivante. */
+        { const pp=el.querySelector('.lvh-pp'); if(pp) pp.style.transition='none'; }
         if(!dc) dc=window.TOTEHM_DISCOVER.monter(el,{surChangement:peindre});
         dc.activer(true); dc.aller(0,true); peindre();
         void el.offsetWidth; body.classList.add('is-dc'); el.classList.add('is-open');
+        requestAnimationFrame(()=>{ const pp=el.querySelector('.lvh-pp'); if(pp) pp.style.transition=''; });
         setTimeout(()=>{ try{ $('lvd-x').focus({preventScroll:true}); }catch(_){} },60); }
       function fermer(then){
         if(!ouvert){ if(then) then(); return; }
