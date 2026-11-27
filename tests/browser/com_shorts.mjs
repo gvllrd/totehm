@@ -292,7 +292,7 @@ try{
       snap:getComputedStyle(document.getElementById('rdr-sh')).scrollSnapType, plein:c?Math.round(c.getBoundingClientRect().height)===innerHeight:false,
       cal:!!(c&&c.querySelector('.ssp-acts [data-ics]')), go:!!(c&&c.querySelector('.ssp-acts [data-go]')), x:getComputedStyle(document.getElementById('rdr-x')).display,
       ask:(()=>{const a=c&&c.querySelector('.ssp-acts [data-ask]');return a?a.dataset.ask+'|'+a.textContent+'|'+a.querySelectorAll('svg.ask-hi use[href="#higher-badge"]').length:'';})(),
-      per:[...document.querySelectorAll('#rdr-flt [data-per]')].map(e=>e.textContent)};});
+      touches:document.querySelectorAll('#rdr-flt button').length};});
   ok(sh2.voit&&sh2.d.voit&&sh2.n===3&&/y mandatory/.test(sh2.snap)&&sh2.plein&&/^(inline-)?flex$/.test(sh2.x),
      'un tap sur le point : SON spot en grand, par-dessus la carte (un spot par écran, aimanté), ✕ pour revenir');
   ok(sh2.pol===0&&sh2.fond==='rgb(0, 0, 0)'&&sh2.src&&sh2.fit==='contain'&&sh2.rond==='0px',
@@ -305,7 +305,7 @@ try{
   ok(sh2.chips.some(t=>/\b\d{1,2} [a-z]{3}\b|today|tomorrow|yesterday/i.test(t))&&sh2.chips.some(t=>/location on/i.test(t))
      &&sh2.chips.some(t=>/social/i.test(t))&&sh2.say==='Bring a coffee'&&sh2.go&&sh2.cal,
      'les informations du spot : '+sh2.chips.join(' · ')+' — son mot, GO, CALENDAR');
-  ok(sh2.per.join(' ')==='All times','les trois temps s’affichent dans la barre sous « All times »');
+  ok(sh2.touches===1,'la barre ne contient qu’une touche Refine');
   ok(sh2.ask==='', 'le Spot conserve GO et CALENDAR sans bouton vers le chat retiré');
   /* 26/10 (Wah : « concernant les spots il y a trois niveaux d'accès : private, subscribers et figher club ») : sur MON spot, le
      niveau est un bouton ; chaque tap passe au suivant, au serveur (`spot_audience_set`), et revient au premier. */
@@ -389,18 +389,22 @@ try{
   await pg.keyboard.press('Escape');await pg.waitForTimeout(400);
   // le panneau de gauche : ce que ça montre, la vue d'origine, les intentions (la grille n'a plus d'étages)
   await pg.getByRole('button',{name:/^Refine(?: · \d+)?$/}).click();await pg.waitForTimeout(400);
-  const pan=await pg.evaluate(()=>({lab:[...document.querySelectorAll('#lv-sh-sf .sfl')].map(e=>e.textContent),
+  const etapeG=k=>pg.click('#lv-sh-sf [data-sf="etape"][data-v="'+k+'"]');
+  const pan=await pg.evaluate(()=>({lab:[...document.querySelectorAll('#lv-sh-sf .sf-nav button')].map(e=>e.textContent),
     ints:document.querySelectorAll('#lv-sh-sf [data-sf="int"]').length, vues:document.querySelectorAll('#lv-sh-sf [data-sf="vue"]').length}));
   /* 21/10 — les cinq vues sont un BLOC DE COMMANDE (la croix du TOTEHM), sans libellé : le design parle. */
-  ok(pan.ints===7&&pan.vues===5&&pan.lab.includes('It shows')&&!pan.lab.includes('Views')&&pan.lab.includes('Intentions')&&!pan.lab.includes('My Box'),
-    'le filtre de la grille : ce que ça montre, la vue, les SEPT intentions ('+pan.lab.join(' · ')+')');
+  ok(pan.ints===0&&pan.vues===5&&pan.lab.join(' · ')==='View · Intentions · Media',
+    'le filtre de la grille commence par le panneau du Totehm et propose les autres étapes');
   const avant=log.rpc.length, n0=(await pg.evaluate(()=>window.__totehm_sh())).items;
+  await etapeG('type');
   await pg.click('#lv-sh-sf [data-sf="type"][data-v="video"]');await pg.waitForTimeout(500);
   const f1=await pg.evaluate(()=>window.__totehm_sh());
   await pg.click('#lv-sh-sf [data-sf="type"][data-v="video"]');await pg.waitForTimeout(300);
+  await etapeG('box');
   await pg.click('#lv-sh-sf [data-sf="vue"][data-v="visions"]');await pg.waitForTimeout(500);
   const f2=await pg.evaluate(()=>window.__totehm_sh());
   await pg.click('#lv-sh-sf [data-sf="vue"][data-v="visions"]');await pg.waitForTimeout(300);
+  await etapeG('intentions');
   await pg.click('#lv-sh-sf [data-sf="int"][data-v="fight"]');await pg.waitForTimeout(500);
   const f3=await pg.evaluate(()=>window.__totehm_sh());
   ok(n0===2&&f1.items===0&&f2.items===1&&f3.items===1&&log.rpc.length===avant,
@@ -432,14 +436,17 @@ try{
   // la vue de droite : le TOTEHM DOCKÉ ouvre le filtre — ses Habits (au format Totehm), le temps, les intentions « X [Higher] »
   await pg.click('#lvn-rt');await vers(pg,'c');await pg.click('#lvn-rt');await vers(pg,'d');await pg.waitForTimeout(1000);
   await pg.getByRole('button',{name:/^Refine(?: · \d+)?$/}).click();await pg.waitForTimeout(500);   /* 23/11 : [Refine] ouvre le filtre */
-  const panD=await pg.evaluate(()=>({l:[...document.querySelectorAll('#rdr-sf .sfl')].map(e=>e.textContent),
-    habits:[...document.querySelectorAll('#rdr-sf .sfb')].map(e=>(e.querySelector('.tb .v-name')?'':'!')+(e.querySelector('.v-name,.lsh-t')||{}).textContent.trim()),
-    higher:document.querySelectorAll('#rdr-sf .sfi .sfh').length,
-    quand:[...document.querySelectorAll('#rdr-sf [data-sf="per"]')].map(e=>e.textContent+(e.classList.contains('is-on')?'*':''))}));
-  ok(panD.l.join(' · ')==='Habits · When · Intentions · It shows · Where · Who sees it','à droite, [Refine] ouvre LE filtre : '+panD.l.join(' · '));
+  const etapeD=k=>pg.click('#rdr-sf [data-sf="etape"][data-v="'+k+'"]');
+  const panD=await pg.evaluate(()=>({l:[...document.querySelectorAll('#rdr-sf .sf-nav button')].map(e=>e.textContent),
+    habits:[...document.querySelectorAll('#rdr-sf .sfb')].map(e=>(e.querySelector('.tb .v-name')?'':'!')+(e.querySelector('.v-name,.lsh-t')||{}).textContent.trim())}));
+  ok(panD.l.join(' · ')==='Habit · When · Intentions · Media · Where · Access','à droite, les étapes sont proposées dans Refine');
   /* (« Read at dawn » a été renommée puis SUPPRIMÉE plus haut : il en reste deux.) */
   ok(panD.habits.join('|')==='Run the hill|Call mum','les HABITS seules, au format Totehm (un spot ne vit qu\'une Habit) : '+panD.habits.join(' · '));
-  ok(panD.quand.join(' · ')==='now* · past* · future*'&&panD.higher===7,'les trois temps sont cochés par défaut ; les intentions portent le badge [Higher]');
+  await etapeD('intentions');
+  const higher=await pg.locator('#rdr-sf .sfi .sfh').count();
+  await etapeD('when');
+  const quand=await pg.locator('#rdr-sf [data-sf="per"].is-on').evaluateAll(es=>es.map(e=>e.dataset.v).join(' '));
+  ok(quand==='now past future'&&higher===7,'les trois temps sont cochés par défaut ; les intentions portent le badge [Higher]');
   ok(await pg.evaluate(()=>!document.querySelector('#rdr-sf [data-sf="qui"]')&&!/everyone/i.test(document.getElementById('rdr-sf').textContent)),'27/10 · plus de WHOSE ni d\'« everyone » : ce sont MES spots');
   // le passé : deux de MES spots, la ville seule — puis la GRILLE
   await pg.click('#rdr-sf [data-sf="per"][data-v="now"]');await pg.waitForTimeout(800);
@@ -477,15 +484,18 @@ try{
   await pg.click('#rdr-x');await pg.waitForTimeout(500);
   // le filtre part au SERVEUR
   if(await pg.evaluate(()=>document.getElementById('rdr-sf').hidden)) await pg.getByRole('button',{name:/^Refine(?: · \d+)?$/}).click();await pg.waitForTimeout(400);   /* 23/11 : [Refine] ; il reste ouvert après une box */
+  await etapeD('intentions');
   await pg.click('#rdr-sf [data-sf="int"][data-v="love"]');await pg.waitForTimeout(700);
   const dern=()=>log.rpc.filter(x=>x.name==='club_spots_of').pop();
   const q1=dern();
   ok(q1&&q1.body.p_pseudo==='wahigher'&&JSON.stringify(q1.body.p_filters.intentions)==='["love"]'&&(await pg.evaluate(()=>window.__totehm_rdr().club.items))===0,
      'une intention part au SERVEUR (club_spots_of filtre avant la pagination) : '+JSON.stringify(q1&&q1.body.p_filters));
+  await etapeD('box');
   await pg.click('#rdr-sf [data-sf="box"]');await pg.waitForTimeout(700);
   const q3=dern();
   ok(q3&&q3.body.p_filters.habit==='Run the hill','une Habit choisie part au serveur (habit : '+(q3&&q3.body.p_filters.habit)+')');
   if(await pg.evaluate(()=>document.getElementById('rdr-sf').hidden)) await pg.getByRole('button',{name:/^Refine(?: · \d+)?$/}).click();await pg.waitForTimeout(400);   /* 23/11 : [Refine] ; il reste ouvert après une box */
+  await etapeD('where');
   await pg.click('#rdr-sf [data-sf="ou"][data-v="near"]');await pg.waitForTimeout(900);
   const q2=dern(), ray=await pg.evaluate(()=>[...document.querySelectorAll('#rdr-sf [data-sf="rayon"]')].map(e=>e.textContent+(e.classList.contains('is-on')?'*':'')));
   ok(q2&&q2.body.p_filters.scope==='near'&&q2.body.p_filters.radius_km===50&&typeof q2.body.p_lat==='number'&&ray.join(' ')==='5 km 20 km 50 km* 200 km',
@@ -493,7 +503,7 @@ try{
   await pg.click('#rdr-sf [data-sf="rayon"][data-v="200"]');await pg.waitForTimeout(700);
   ok(dern().body.p_filters.radius_km===200,'le rayon choisi part au serveur (200 km)');
   await pg.click('#rdr-sf [data-sf="all"]');await pg.waitForTimeout(600);
-  await pg.click('#rdr-sf [data-sf="per"][data-v="past"]');await pg.waitForTimeout(800);
+  await etapeD('access');
   await pg.click('#rdr-sf [data-sf="aud"][data-v="subscribers"]');await pg.waitForTimeout(500);
   const au=await pg.evaluate(()=>({n:window.__totehm_rdr().grille.tuiles, l:[...document.querySelectorAll('#rdr-sf [data-sf="aud"]')].map(e=>e.textContent)}));
   ok(au.n===1&&au.l.join(' · ')==='private · my subscribers · figher club','27/10 · « Who sees it » (les trois niveaux d\'un spot) trie MES spots : '+au.l.join(' · ')+' → '+au.n+' tuile');

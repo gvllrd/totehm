@@ -51,30 +51,38 @@ try{
   const repere=await pg.locator('#rdr-sh .lsh').evaluateAll(es=>es.slice(0,5).map(e=>e.dataset.lshK));
   ok(repere.includes('sp:k2')&&!repere.includes('sp:f2'),nom+' · le repère groupé donne accès aux cinq spots de Lisbonne');
   await pg.keyboard.press('Escape');
-  /* 25/11 (Wah) : « pas besoin du mode SHORT dans la vue de droite, et mettre le même bouton format SELECT PS2 ». */
+  const locate=pg.getByRole('button',{name:'Center on my location'});
+  const zoomInitial=(await pg.evaluate(()=>window.__totehm_rdr().carte)).zoom;
+  if(!tel){
+    await pg.mouse.move(vp.width/2+68,vp.height/2);
+    await pg.mouse.wheel(0,-120);
+    await pg.waitForFunction(k=>window.__totehm_rdr().carte.zoom>k*1.5,zoomInitial);
+  }
+  await ctx.setGeolocation({latitude:41.15,longitude:-8.61});
+  if(tel) await locate.tap(); else await locate.click();
+  await pg.waitForFunction(()=>window.__totehm_rdr().carte.zoom>400&&window.__totehm_rdr().carte.points===1);
+  ok(await pg.evaluate(()=>window.__totehm_rdr().club.items===6),nom+' · la touche de position retrouve la nouvelle ville et garde tous les spots');
+
   const select=pg.getByRole('button',{name:'Grid view',exact:true});
   const refine=pg.getByRole('button',{name:'Refine',exact:true});
   const capuchon=select.locator('.k2k'), cap=await capuchon.boundingBox();
   ok(await select.isVisible()&&await select.getAttribute('aria-pressed')==='false'&&await select.locator('svg').count()===0
-    &&cap.width===30&&cap.height===18&&Math.abs((await refine.locator('.k2k').boundingBox()).width-cap.width)<1,
+    &&cap.width===30&&cap.height===18&&Math.abs((await refine.locator('.k2k').boundingBox()).width-cap.width)<1
+    &&await pg.locator('#rdr-flt button').count()===1,
     nom+' · Map est éclairé et la touche Refine reprend le rectangle SELECT');
   await select.click();
   await pg.waitForSelector('body.rdr-grid');
-  ok(await select.getAttribute('aria-pressed')==='true',
+  ok(await select.getAttribute('aria-pressed')==='true'&&!await locate.isVisible(),
      nom+' · SELECT sans icône indique que Grid est la vue active');
-  await ctx.setGeolocation({latitude:41.15,longitude:-8.61});
-  await select.click();
-  await pg.waitForFunction(()=>window.__totehm_rdr().carte.zoom>400&&window.__totehm_rdr().carte.points===1);
-  ok(await pg.evaluate(()=>window.__totehm_rdr().club.items===6),nom+' · la carte retrouve la nouvelle ville et conserve tous les spots');
-  await select.click();
   const tuile=await pg.locator('#rdr-g .tl[data-cle]').first().evaluate(e=>{
     const disque=e.getBoundingClientRect(), box=e.querySelector('.tl-bx').getBoundingClientRect();
     const trait=e.querySelector('.tl-traits path'), contour=trait.getBBox();
     return {rond:getComputedStyle(e).borderRadius, largeur:Math.abs(box.width-disque.width)<1,
-      base:Math.abs(box.bottom-disque.bottom)<1, bord:getComputedStyle(trait).stroke, haut:contour.y, bas:contour.y+contour.height};
+      base:Math.abs(box.bottom-disque.bottom)<1, fraction:box.height/disque.height, bord:getComputedStyle(trait).stroke,
+      haut:contour.y, bas:contour.y+contour.height, arc:/^M[\d.]+ 70A/.test(trait.getAttribute('d'))};
   });
-  ok(tuile.rond==='50%'&&tuile.largeur&&tuile.base&&tuile.bord==='rgb(226, 75, 74)'&&tuile.haut===56&&tuile.bas>98,
-     nom+' · le trait Fight suit le haut et l’arc du segment navy → '+JSON.stringify(tuile));
+  ok(tuile.rond==='50%'&&tuile.largeur&&tuile.base&&tuile.fraction<.31&&tuile.bord==='rgb(226, 75, 74)'&&tuile.haut===70&&tuile.bas>98&&tuile.arc,
+     nom+' · la box occupe 30 % du rond et le trait Fight suit son arc extérieur → '+JSON.stringify(tuile));
   /* ── plusieurs temps ── */
   const tuiles=()=>pg.evaluate(()=>[...document.querySelectorAll('#rdr-g .tl[data-cle]')].map(t=>t.dataset.cle.slice(3)).join(','));
   ok((await tuiles()).split(',').length===6,nom+' · la grille retrouve les six spots chargés en Map');
@@ -88,11 +96,23 @@ try{
   },null,{timeout:4000});
   if(tel) await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]}); else await pg.mouse.up();
   await pg.waitForSelector('#rdr-sf:not([hidden])');
-  const t=await pg.evaluate(()=>({on:[...document.querySelectorAll('#rdr-sf [data-sf="per"]')].filter(b=>b.classList.contains('is-on')).map(b=>b.dataset.v),
-    chip:(document.querySelector('#rdr-flt [data-per]')||{}).textContent}));
+  const etape=k=>pg.click('#rdr-sf [data-sf="etape"][data-v="'+k+'"]');
+  ok(await pg.locator('#rdr-sf .sfb .habit').count()>0&&await pg.locator('#rdr-sf [data-sf="per"]').count()===0,
+    nom+' · Refine ouvre les Habit Boxes natives, une étape à la fois');
+  await etape('intentions');
+  const trait=pg.locator('#rdr-sf [data-sf="int"][data-v="fight"] i');
+  ok(await trait.evaluate(e=>{const s=getComputedStyle(e); return s.width==='2px'&&s.borderRadius==='0px'&&e.offsetHeight>14;}),
+    nom+' · une intention se dessine par un trait');
+  await etape('where');
+  ok(await pg.locator('#rdr-sf [data-sf="rayon"]').count()===0,nom+' · le rayon attend le choix Near me');
+  await pg.click('#rdr-sf [data-sf="ou"][data-v="near"]');
+  await pg.waitForSelector('#rdr-sf [data-sf="rayon"][data-v="50"]');
+  await pg.click('#rdr-sf [data-sf="ou"][data-v=""]');
+  await etape('when');
+  const t=await pg.locator('#rdr-sf [data-sf="per"].is-on').evaluateAll(es=>es.map(b=>b.dataset.v));
   const lus=new Set(log.rpc.filter(r=>r.name==='club_spots_of').map(r=>r.body.p_period));
-  ok(t.on.join('|')==='now|past|future'&&lus.size===3&&t.chip==='All times',
-     nom+' · now + future + past ENSEMBLE : une lecture par temps, fusionnées → '+JSON.stringify({...t,tuiles:await tuiles()}));
+  ok(t.join('|')==='now|past|future'&&lus.size===3,
+     nom+' · now + future + past ENSEMBLE : une lecture par temps, fusionnées → '+t.join(' · '));
   await pg.click('#rdr-sf [data-sf="per"][data-v="now"]');await pg.waitForTimeout(700);
   ok((await tuiles()).split(',').sort().join()==='f1,f2,k2,p1',nom+' · re-taper now le retire (comme une intention)');
   await pg.click('#rdr-sf [data-sf="per"][data-v="future"]');await pg.waitForTimeout(500);
