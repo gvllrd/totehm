@@ -32,6 +32,7 @@ try{
  for(const [nom,vp,tel] of [['téléphone',{width:390,height:844},true],['ordinateur',{width:1280,height:800},false]]){
   PASSES=[{pseudo:'nia',code:'AB23CD',at:new Date(now).toISOString()}];
   const {pg,ctx,log}=await page(browser,{dir:'com',origin:'https://www.totehm.com',viewport:vp,hasTouch:tel,rpc:RPC,
+    geo:{latitude:38.75,longitude:-9.14},
     network:url=>url.hostname==='tile.openstreetmap.org'?{status:200,contentType:'image/png',body:TUILE}:null,
     functions:{'creator-cut-off':b=>{ PASSES=PASSES.filter(x=>x.pseudo!==b.pseudo); return {ok:true,pseudo:b.pseudo}; }},
     tables:{profiles:[{pseudo:'wahigher'}],totehms:[{user_id:UID,habits:STEPS,vis:'private'}]}});
@@ -45,18 +46,55 @@ try{
     &&new Set(requetes.map(b=>b.p_period)).size===3&&requetes.some(b=>b.p_period==='past'&&b.p_offset===1&&b.p_as_of===AS_OF)
     &&requetes.every(b=>b.p_lat===null&&b.p_lng===null),
     nom+' · Map zoome sur Lisbonne et charge les trois temps, toutes les pages, sans filtre de position → '+JSON.stringify(carte));
-  const [x,y]=(await pg.evaluate(()=>window.__totehm_carte()))[0];
-  if(tel) await pg.touchscreen.tap(x,y); else await pg.mouse.click(x,y);
+  const pointBlanc=await pg.evaluate(()=>{
+    const c=document.getElementById('rdr-map'), h=innerHeight;
+    const bas=Math.max(120,h-document.getElementById('lvjoy').getBoundingClientRect().top+70);
+    const x=Math.round(c.width/2), y=Math.round((118+(h-118-bas)/2)*c.height/h);
+    return [...c.getContext('2d').getImageData(x,y,1,1).data].join();
+  });
+  ok(carte.position&&pointBlanc==='255,255,255,255',nom+' · mon emplacement est un point plein blanc');
+  const tap=async([x,y])=>tel?pg.touchscreen.tap(x,y):pg.mouse.click(x,y);
+  if(!tel){
+    const [x,y]=(await pg.evaluate(()=>window.__totehm_carte()))[0];
+    await pg.evaluate(()=>{window.__zoomVu=[]; const f=()=>{window.__zoomVu.push(window.__totehm_rdr().carte.zoom);
+      if(window.__zoomVu.length<90) requestAnimationFrame(f);}; requestAnimationFrame(f);});
+    await pg.mouse.move(x,y);
+    for(let i=0;i<6;i++) await pg.mouse.wheel(0,240);
+    await pg.waitForFunction(()=>window.__totehm_rdr().carte.zoom<1.01);
+    ok(await pg.evaluate(()=>new Set(window.__zoomVu).size>12),nom+' · le dézoom du trackpad passe par des échelles intermédiaires');
+  }
+  await tap((await pg.evaluate(()=>window.__totehm_carte()))[0]);
+  await pg.waitForFunction(nb=>{
+    const r=window.__totehm_rdr(), p=window.__totehm_carte();
+    return !r.voit&&r.carte.zoom>5&&p.length===nb&&p.every(([x,y],i)=>
+      p.slice(0,i).every(([a,b])=>Math.hypot(x-a,y-b)>16));
+  },tel?5:6,{timeout:5000});
+  ok(true,nom+' · le nombre cadre la zone et sépare les spots sur la carte');
+  await tap((await pg.evaluate(()=>window.__totehm_carte()))[0]);
   await pg.waitForSelector('body.rdr-voir');
-  const repere=await pg.locator('#rdr-sh .lsh').evaluateAll(es=>es.slice(0,5).map(e=>e.dataset.lshK));
-  ok(repere.includes('sp:k2')&&!repere.includes('sp:f2'),nom+' · le repère groupé donne accès aux cinq spots de Lisbonne');
-  await pg.keyboard.press('Escape');
+  const repere=await pg.locator('#rdr-sh .lsh').evaluateAll(es=>es.map(e=>e.dataset.lshK));
+  ok(repere.includes('sp:k2')&&repere.length===6,nom+' · un spot séparé ouvre sa fiche');
+  const fermerSpot=pg.locator('#rdr-x');
+  ok(await fermerSpot.evaluate(e=>getComputedStyle(e).getPropertyValue('--joy-vue').trim()==='#0b0b0b'&&!!e.querySelector('svg')),
+    nom+' · le spot s’ouvre avec une touche croix noire');
+  await fermerSpot.click();
   const locate=pg.getByRole('button',{name:'Center on my location'});
   const zoomInitial=(await pg.evaluate(()=>window.__totehm_rdr().carte)).zoom;
-  if(!tel){
+  if(tel){
+    const doigt=await ctx.newCDPSession(pg), x=vp.width/2, y=vp.height/2;
+    const points=ecart=>[{id:1,x:x-ecart,y},{id:2,x:x+ecart,y}];
+    await doigt.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:points(65)});
+    for(const ecart of [52,42,34,27,21]){
+      await doigt.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:points(ecart)});
+      await pg.waitForTimeout(18);
+    }
+    await doigt.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+    await pg.waitForFunction(k=>window.__totehm_rdr().carte.zoom<k*.5,zoomInitial,{timeout:4000});
+    ok(true,nom+' · le pincement réduit l’échelle de la carte');
+  }else{
     await pg.mouse.move(vp.width/2+68,vp.height/2);
-    await pg.mouse.wheel(0,-120);
-    await pg.waitForFunction(k=>window.__totehm_rdr().carte.zoom>k*1.5,zoomInitial);
+    await pg.mouse.wheel(0,120);
+    await pg.waitForFunction(k=>window.__totehm_rdr().carte.zoom<k*.72,zoomInitial);
   }
   await ctx.setGeolocation({latitude:41.15,longitude:-8.61});
   if(tel) await locate.tap(); else await locate.click();
@@ -96,6 +134,9 @@ try{
   },null,{timeout:4000});
   if(tel) await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]}); else await pg.mouse.up();
   await pg.waitForSelector('#rdr-sf:not([hidden])');
+  ok(await pg.locator('#rdr-sf [data-sf="close"]').evaluate(e=>e.classList.contains('side-close')
+    &&e.getAttribute('aria-label')==='Close'&&getComputedStyle(e).getPropertyValue('--joy-vue').trim()==='#0b0b0b'),
+    nom+' · Refine se referme avec la même touche croix noire');
   const etape=k=>pg.click('#rdr-sf [data-sf="etape"][data-v="'+k+'"]');
   ok(await pg.locator('#rdr-sf .sfb .habit').count()>0&&await pg.locator('#rdr-sf [data-sf="per"]').count()===0,
     nom+' · Refine ouvre les Habit Boxes natives, une étape à la fois');

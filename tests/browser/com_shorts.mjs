@@ -22,6 +22,17 @@ const erreurs=log=>log.errors.filter(e=>e.startsWith('pageerror'));
 const lv=pg=>pg.evaluate(()=>window.__totehm_lv());
 const vers=(pg,v)=>pg.waitForFunction(v=>{const d=window.__totehm_lv();return d.vue===v&&!d.bouge;},v,{timeout:8000}).catch(()=>{});
 const ici=pg=>pg.evaluate(()=>(document.querySelector('#lv-sh .lsh.is-ici .lsh-t')||{}).textContent||null);
+async function toucherSpotSurCarte(pg,tel){
+  const lieu=async()=> (await pg.evaluate(()=>window.__totehm_carte()))[0];
+  const tap=async([x,y])=>tel?pg.touchscreen.tap(x,y):pg.mouse.click(x,y);
+  await tap(await lieu());
+  await pg.waitForFunction(()=>window.__totehm_rdr().voit||window.__totehm_rdr().carte.groupes===0);
+  if(!await pg.evaluate(()=>window.__totehm_rdr().voit)){
+    await pg.waitForTimeout(250);
+    const pos=await lieu(); await tap(pos); return pos;
+  }
+  return lieu();
+}
 function serveur(){
   let items=[{id:'m1',kind:'h',ref:'Run the hill',path:UID+'/m-aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa.jpg',mime:'image/jpeg',bytes:1200,name:'hill.jpg',created_at:'2026-10-15T10:00:00Z'}],n=1;
   return {
@@ -275,8 +286,7 @@ try{
   ok(d.plein&&d.dock&&d.haut,'la carte prend l\'écran ; le Totehm est sorti se caler EN HAUT, centré');
   await pg.screenshot({path:OUT+'/spots_'+(tel?'tel':'ordi')+'.png'});
   // un tap sur le point : SON spot en grand, par-dessus (21/10 : plus de polaroid)
-  const pt=(await pg.evaluate(()=>window.__totehm_carte()))[0];
-  if(tel) await pg.touchscreen.tap(pt[0],pt[1]); else await pg.mouse.click(pt[0],pt[1]);
+  const pt=await toucherSpotSurCarte(pg,tel);
   await pg.waitForTimeout(1100);
   const sh2=await pg.evaluate(()=>{const c=document.querySelector('#rdr-sh .ssp-s.is-ici')||document.querySelector('#rdr-sh .ssp-s'),
       info=c&&c.querySelector('.ssp-info'),m=c&&c.querySelector('.ssp-m'),sd=c&&c.querySelector('.sdata'),im=m&&m.querySelector('img'),bx=c&&c.querySelector('.ssp-box');
@@ -583,8 +593,7 @@ try{
      '25/10 · le second tap le RETIRE au serveur ('+(r1&&r1.name)+') et la grille perd sa tuile : '+n0+' → '+d2.n);
   // → mes spots : [delete] sur le mien seulement
   await pg.click('#lvn-rt');await vers(pg,'c');await pg.waitForTimeout(300);await pg.click('#lvn-rt');await vers(pg,'d');await pg.waitForTimeout(900);
-  const pt=(await pg.evaluate(()=>window.__totehm_carte()))[0];
-  await pg.mouse.click(pt[0],pt[1]);await pg.waitForTimeout(1100);
+  await toucherSpotSurCarte(pg,false);await pg.waitForTimeout(1100);
   const s0=await pg.evaluate(()=>({mien:document.querySelectorAll('#rdr-sh .ssp-s .ssp-acts [data-del="sp1"]').length,
     autres:document.querySelectorAll('#rdr-sh .ssp-s .ssp-acts [data-del]:not([data-del="sp1"])').length}));
   await pg.click('#rdr-sh .ssp-acts [data-del="sp1"]');await pg.waitForTimeout(150);

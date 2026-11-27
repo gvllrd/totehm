@@ -38,6 +38,13 @@ try{
   ok(apres.length===5&&apres.every(c=>/\btb\b/.test(c)&&!/tb-attente/.test(c))&&!(await pg.$('#lv-sh-f .tl-b')),
      nom+' · après l\'arbre : la vraie box, au format du TOTEHM, jamais l\'ancien rendu → '+apres.join(' | '));
   await pg.screenshot({path:OUT+'/grille_boxes_'+(tel?'tel':'ordi')+'.png'});
+  await pg.locator('#lv-sh .tl[data-pol]').first().click();
+  const fermerMedia=pg.locator('#tlv [data-tlv="x"]');
+  ok(await fermerMedia.isVisible()&&await fermerMedia.evaluate(e=>e.classList.contains('k2')
+    &&getComputedStyle(e).getPropertyValue('--joy-vue').trim()==='#0b0b0b'&&!!e.querySelector('svg')),
+    nom+' · la visionneuse des médias reprend la touche croix noire');
+  await fermerMedia.click();
+  await pg.locator('#tlv').waitFor({state:'hidden'});
   await pg.getByRole('button',{name:/^Refine(?: · \d+)?$/}).click();await pg.waitForTimeout(900);
   await pg.click('#lv-sh-sf [data-sf="vue"][data-v="visions"]');await pg.waitForTimeout(500);
   const f=await pg.evaluate(()=>{const v=document.querySelector('#lv-sh-sf .sfv.is-on');return v?getComputedStyle(v).boxShadow:'absent';});
