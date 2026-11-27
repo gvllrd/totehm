@@ -82,6 +82,37 @@ try{
   ok(a1==='c'&&r1.ouvert&&r1.cap&&r1.vue==='c','25/11 · un glissé VERS LE HAUT qui part sur le papier ouvre la PRISE RAPIDE, sans quitter le centre → '+JSON.stringify(r1));
   await pg.keyboard.press('Escape'); await pg.waitForTimeout(700);
   ok(!(await pg.evaluate(()=>document.getElementById('cap').classList.contains('is-on'))),'ÉCHAP referme la prise');
+  const PNG=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==','base64');
+  const capturer=async fichier=>{
+    const {x,y}=await centre();
+    await glisse(x,y+20,x,y-140);
+    const fc=pg.waitForEvent('filechooser',{timeout:5000});
+    await pg.click('#cap [data-capk="file"]');
+    await (await fc).setFiles(fichier);
+    await pg.locator('#prise').waitFor();
+  };
+  await capturer({name:'spot.png',mimeType:'image/png',buffer:PNG});
+  ok(await pg.locator('#prise .take-preview img').isVisible()&&await pg.locator('#prise [data-pr="spot"]').isVisible(),
+    'prise rapide · la photo se voit avant le choix de la destination');
+  await pg.click('#prise [data-pr="spot"]');
+  await pg.locator('#rdr-new [aria-current="step"][data-v="habit"]').waitFor();
+  ok(await pg.evaluate(()=>window.__totehm_lv().vue==='d'&&window.__totehm_nspot().media),
+    'prise rapide · le spot ouvre Habit avec la photo conservée');
+  await pg.click('#rdr-new [data-ns="close"]');
+  await pg.click('#lvn-lf'); await vers(pg,'c');
+
+  await capturer({name:'notes.pdf',mimeType:'application/pdf',buffer:Buffer.from('%PDF-1.4 test')});
+  ok(await pg.locator('#prise .take-preview figcaption').textContent()==='notes.pdf'
+    &&!await pg.locator('#prise [data-pr="spot"]').isVisible(),
+    'prise rapide · le PDF est proposé comme illustration');
+  await pg.click('#prise [data-pr="ill"]');
+  await pg.locator('#lv-sh-sf [aria-current="step"][data-v="box"]').waitFor();
+  ok(await pg.evaluate(()=>window.__totehm_lv().vue==='g'&&window.__totehm_sh().ajout)
+      &&!log.rpc.some(r=>r.name==='element_media_add'||r.name==='spot_create_audience'),
+    'prise rapide · l’illustration ouvre le choix de box sans écriture');
+  await pg.click('#lv-sh-sf [data-sf="close"]');
+  await pg.click('#lvn-rt'); await vers(pg,'c');
+
   p=await centre();
   const a3=await glisse(p.x,p.y-20,p.x,p.y+150);
   /* 23/11 (Wah) : la vue ↓ Get Higher est retirée ; ↓ retourne le TOTEHM vers Ecosystems (le détail : com_ecosystems) */

@@ -193,7 +193,7 @@ try{
   ok(l0.rows===3&&l0.sh===0&&!l0.bascule&&!l0.radar&&l0.joy==='1'&&l0.cls===0&&!l0.sorti,
      nom+' · la liste SEULE (3 Habits) : aucune bascule, aucun short, aucun radar, la manette reste, les deux moteurs à l\'arrêt');
   // ── 27/10 · [Add a media] d'une box : le Totehm se replie, la vue de GAUCHE s'ouvre sur son « + », CETTE box choisie,
-  //    et la capture se pose DANS le panneau, sous elle (Wah : « la prise de média se fait dans la vue de gauche ») ──
+  //    et la capture se pose DANS le panneau, avant le récapitulatif ──
   await pg.locator('#habits .habit.open [data-x]').first().evaluate(e=>e.click()).catch(()=>{});await pg.waitForTimeout(300);
   const h2=await pg.evaluate(()=>[...document.querySelectorAll('#habits > .habit[data-row]')][1].dataset.row);
   const rentrer=async()=>{ await pg.click('#lvn-rt');await vers(pg,'c');await pg.waitForTimeout(300);
@@ -213,11 +213,15 @@ try{
   const c=await pg.evaluate(()=>({vue:window.__totehm_lv().vue, gate:document.body.classList.contains('gate'), ajout:window.__totehm_sh().ajout,
     box:[...document.querySelectorAll('#lv-sh-sf .sfb')].map(e=>(e.classList.contains('is-on')?'+':'')+((e.querySelector('.v-name')||{}).textContent||'')),
     btn:[...document.querySelectorAll('#lv-sh-sf .sf-cap .cap-b')].map(b=>b.textContent.trim()), modale:document.getElementById('cap').classList.contains('is-on')}));
-  ok(c.vue==='g'&&c.gate&&c.ajout&&c.box.length===1&&c.box[0]==='+Read at dawn'&&c.btn.join(',')==='PHOTO,VIDEO,IMPORT'&&!c.modale,
-     '27/10 · [Add a media] → le Totehm se replie, la vue de gauche s\'ouvre sur « + », CETTE box choisie, la capture DESSOUS ('+JSON.stringify(c)+')');
+  ok(c.vue==='g'&&c.gate&&c.ajout&&c.box.length===0&&c.btn.join(',')==='PHOTO,VIDEO,IMPORT'&&!c.modale,
+     '27/10 · [Add a media] → le Totehm se replie, la vue de gauche s\'ouvre sur « + », capture AVANT le récapitulatif ('+JSON.stringify(c)+')');
   const fc=pg.waitForEvent('filechooser',{timeout:5000});
   await pg.click('#lv-sh-sf [data-capk="file"]');
   await (await fc).setFiles({name:'notes.pdf',mimeType:'application/pdf',buffer:Buffer.from('%PDF-1.4 test')});
+  const avantEnvoi=pg.locator('#lv-sh-sf .take-stage');
+  ok(await avantEnvoi.locator('.sfbx .v-name').textContent().then(t=>t.trim()==='Read at dawn')
+    &&!log.rpc.some(r=>r.name==='element_media_add'),'la box d’origine figure dans le récapitulatif avant envoi');
+  await avantEnvoi.locator('[data-sf="aj-save"]').click();
   await pg.waitForFunction(()=>document.getElementById('lv-sh-sf').hidden,null,{timeout:6000}).catch(()=>{});
   const up=log.upload.filter(u=>u.method==='POST').pop(), add=log.rpc.filter(r=>r.name==='element_media_add').pop();
   ok(up&&new RegExp('^element-media/'+UID+'/m-[0-9a-f-]{36}\\.pdf$').test(up.path),'IMPORT : le fichier part dans MON dossier, privé ('+(up&&up.path)+')');
@@ -238,6 +242,7 @@ try{
     ok(await pg.evaluate(()=>window.__totehm_sh().capture.camera),'PHOTO sur ordinateur : la caméra de l\'appareil, dans le panneau');
     await pg.waitForTimeout(500);await pg.click('#cap-shot');
   }
+  await pg.click('#lv-sh-sf [data-sf="aj-save"]');
   await pg.waitForFunction(()=>document.getElementById('lv-sh-sf').hidden,null,{timeout:8000}).catch(()=>{});
   const ph=log.rpc.filter(r=>r.name==='element_media_add').pop();
   await pg.waitForTimeout(600);
@@ -435,12 +440,12 @@ try{
   const fa=await pg.evaluate(()=>window.__totehm_sh().filtre), na=await pg.evaluate(()=>window.__totehm_sh().naissances);
   await pg.getByRole('button',{name:'Add a media',exact:true}).click();await pg.waitForTimeout(1000);
   const aj=await pg.evaluate(()=>({vu:!document.getElementById('lv-sh-sf').hidden, pick:!document.getElementById('lv-sh-pick').hidden, gate:document.body.classList.contains('gate'),
-    mot:(document.querySelector('#lv-sh-sf .sf-aj')||{}).textContent||'', split:!!document.querySelector('#lv-sh-sf .sfcmd.is-split'),
+    mot:(document.querySelector('#lv-sh-sf [aria-current="step"]')||{}).textContent||'', split:!!document.querySelector('#lv-sh-sf .sfcmd.is-split'),
     groupes:[...document.querySelectorAll('#lv-sh-sf .sfl')].map(e=>e.textContent), d:window.__totehm_sh()}));
   /* 23/11 (Wah : « commencer par les prises de photo / vidéo / fichier ») : le « + » ouvre la CAPTURE, dans le panneau ;
      la box se choisit APRÈS (le parcours complet : com_grille_boxes) */
   const capIci=await pg.evaluate(()=>!!document.querySelector('#lv-sh-sf .sf-cap #cap-in.is-inline')&&!document.querySelector('#lv-sh-sf .sfcmd')&&!document.getElementById('cap').classList.contains('is-on'));
-  ok(aj.vu&&!aj.pick&&aj.gate&&aj.mot==='+ media'&&aj.d.ajout&&capIci&&aj.d.filtre===fa,
+  ok(aj.vu&&!aj.pick&&aj.gate&&aj.mot==='Media'&&aj.d.ajout&&capIci&&aj.d.filtre===fa,
     '23/11 · la tuile « + » ouvre la PRISE d\'abord, dans le panneau (pas le déploiement, pas de box avant), le filtre n\'a pas bougé → '+JSON.stringify({mot:aj.mot,g:aj.groupes,capIci}));
   await pg.keyboard.press('Escape');await pg.waitForTimeout(500);
   // la vue de droite : le TOTEHM DOCKÉ ouvre le filtre — ses Habits (au format Totehm), le temps, les intentions « X [Higher] »

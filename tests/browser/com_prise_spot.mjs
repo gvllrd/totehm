@@ -1,17 +1,9 @@
 // 09/11/2026 — PRENDRE UN SPOT DANS LA VUE DE DROITE (Wah : « le questionnaire est intelligent : le choix d'une réponse
 // entraîne ou non d'autres choix, avec une logique implacable dans le flow »).
-//   0 · le panneau DIT d'abord ce qu'est un spot ; figher club est expliqué quand on le choisit.
-//   1 · le « + » de la MAP ouvre la prise : la Habit Box telle quelle → WHEN [now|later] → une question à la fois ;
-//       NOW : aucune date (c'est maintenant), WHERE est IMPOSÉ à [here] et la position se prend seule → qui le voit
-//       → together → la photo (capture EN LIGNE) → durée → un mot → I AM HERE ;
-//       pendant la prise, la navigation attend ; la publication la rend.
-//   2 · LATER depuis la tuile « + » de la GRID : la date ET l'heure tout de suite → WHERE [here|elsewhere] :
-//       une ADRESSE lue et placée (le géocodeur est simulé ici), ou un point POSÉ sur la Terre → qui le voit
-//       → together → durée → un mot → média facultatif → I WILL BE HERE.
-//       `location on/off` N'EXISTE PLUS : WHERE le disait déjà ; le point est toujours exact, `p_location:'on'`.
-//   3 · [Add a spot] dans une box du Totehm : le Totehm se replie, la vue de droite s'ouvre sur la prise, CETTE Habit choisie.
-//   4 · MAP au doigt : la Terre ne tourne que si le doigt est SUR elle ; ailleurs, le geste navigue.
-//   5 · le titre de la vue du Totehm déployé : en HAUT, centré.
+//   1 · NOW depuis la carte : média, Habit, date implicite, géolocalisation, accès, mode, durée et publication.
+//   2 · LATER depuis la grille : média facultatif, date valide, adresse ou carte, confidentialité et résumé.
+//   3 · Depuis une box : capture d'abord, puis l'Habit présélectionnée. Les boxes gardent leur rendu natif.
+//   4 · MAP au doigt : la Terre ne tourne que si le doigt est sur elle. 5 · Le titre du Totehm reste en haut.
 // Tout est simulé (comptes, RPC, stockage, géocodeur) : aucune écriture en production. LANCER : node com_prise_spot.mjs /tmp
 import {launch,page,ok} from './harness.mjs';
 const OUT=process.argv[2]||'/tmp';const browser=await launch();const origin='https://www.totehm.com';
@@ -39,7 +31,7 @@ const RPC={my_landing:{signed_in:true,pseudo:'wahigher'},
 const lv=pg=>pg.evaluate(()=>window.__totehm_lv());
 const innerHeightTiers=vp=>Math.round(vp.height/3);
 const vers=(pg,v)=>pg.waitForFunction(v=>{const d=window.__totehm_lv();return d.vue===v&&!d.bouge;},v,{timeout:9000}).catch(()=>{});
-const etapes=pg=>pg.evaluate(()=>[...document.querySelectorAll('#rdr-new .sfl')].map(e=>e.textContent));
+const etape=pg=>pg.locator('#rdr-new [aria-current="step"]').getAttribute('data-v');
 const clic=(pg,sel)=>pg.$eval(sel,e=>e.click());
 try{
  for(const [nom,vp,tel] of [['téléphone',{width:390,height:844},true],['ordinateur',{width:1280,height:800},false]]){
@@ -67,63 +59,72 @@ try{
   const tuileMap=await plus.boundingBox();
   ok(tuileMap&&Math.abs(tuileMap.width-tuileMap.height)<1&&await plus.evaluate(e=>getComputedStyle(e).borderRadius)==='50%',
     nom+' · la carte porte une tuile Add a spot ronde');
-  await plus.click();await pg.waitForTimeout(400);
-  const e0=await etapes(pg), b0=await pg.evaluate(()=>[...document.querySelectorAll('#rdr-new .sfb .v-name')].map(e=>e.textContent.trim()));
-  ok(await pg.evaluate(()=>!document.getElementById('rdr-new').hidden&&document.body.classList.contains('is-nspot'))&&e0.join('|')==='+ spot|a photo or a video · optional · 33 s at most|which habit?'&&b0.join('|')==='Run the hill|Call mum',
-     nom+' · la prise s\'ouvre sur MES Habits, au format Totehm (boxTotehm), et rien d\'autre : '+e0.join(' · ')+' → '+b0.join(' · '));
-  await pg.keyboard.press('ArrowLeft');await pg.waitForTimeout(700);
-  ok((await lv(pg)).vue==='d',nom+' · pendant la prise, la navigation ATTEND (← ne quitte pas la vue)');
-  await pg.locator('#rdr-new .sfb').filter({hasText:'Run the hill'}).first().click();await pg.waitForTimeout(300);
-  ok((await etapes(pg)).join('|')==='+ spot|a photo or a video · optional · 33 s at most|my habit|when'&&await pg.evaluate(()=>document.querySelectorAll('#rdr-new .sfb').length===1),
-     nom+' · la Habit choisie reste SEULE ; vient la question suivante : NOW · LATER');
-  await clic(pg,'#rdr-new [data-ns="quand"][data-v="now"]');
-  await pg.locator('#rdr-new .ns-tag').filter({hasText:'Lisbon'}).waitFor({timeout:8000});
-  const n1=await pg.evaluate(()=>({l:[...document.querySelectorAll('#rdr-new .sfl')].map(e=>e.textContent),
-    def:(document.querySelector('#rdr-new .ns-def')||{}).textContent||'',
-    ou:[...document.querySelectorAll('#rdr-new .ns-tag')].map(e=>e.textContent).join('|'),
-    fixe:!!document.querySelector('#rdr-new .sfg span.sfc.ns-c.is-on'),
-    choix:!document.querySelector('#rdr-new [data-ns="ou"]'),
-    aud:[...document.querySelectorAll('#rdr-new [data-ns="aud"]')].map(e=>e.childNodes[0].textContent)}));
-  ok(/^A spot is your TOTEHM Habit in action: exact place, exact time, right people, your conditions\.$/.test(n1.def),
-     nom+' · le panneau DIT ce qu\'est un spot, avant tout : « '+n1.def.slice(0,72)+'… »');
-  ok(!n1.l.includes('the day and the hour')&&n1.l.includes('where')&&n1.fixe&&n1.choix&&n1.ou==='Lisbon',
-     nom+' · NOW : AUCUNE date, et WHERE est imposé à [here] — la position se prend seule, la ville en découle (« '+n1.ou+' »)');
-  ok(n1.l.slice(-1)[0]==='who sees it'&&n1.aud.join(' · ')==='private · my subscribers · figher club',
-     nom+' · puis QUI LE VOIT : '+n1.aud.join(' · '));
-  await clic(pg,'#rdr-new [data-ns="aud"][data-v="figher"]');await pg.waitForTimeout(250);
-  const expl=await pg.evaluate(()=>({n:[...document.querySelectorAll('#rdr-new .ns-def')].map(e=>e.textContent),
-    l:[...document.querySelectorAll('#rdr-new .sfl')].map(e=>e.textContent)}));
-  ok(expl.n.length===2&&/a habit, its why, its repulsions/.test(expl.n[1])&&expl.l.slice(-1)[0]==='together'
-     &&!expl.l.includes('location'),
-     nom+' · figher club choisi, le Club se PRÉCISE (« '+expl.n[1]+' ») ; puis together, et plus jamais « location »');
-  await clic(pg,'#rdr-new [data-ns="mode"][data-v="social"]');await pg.waitForTimeout(300);
-  const n2=await pg.evaluate(()=>({l:[...document.querySelectorAll('#rdr-new .sfl')].map(e=>e.textContent),
-    cap:[...document.querySelectorAll('#rdr-new .ns-cap .cap-b')].map(e=>e.textContent.trim()), modale:document.getElementById('cap').classList.contains('is-on')}));
-  /* 14/11 (Wah : « un spot peut être sans media … il faut rendre cela facultatif ») : l'intitulé le DIT, la
-     prise s'ouvre quand même d'elle-même (le geste de la preuve), et la durée est DÉJÀ dessous. */
-  ok(n2.l.includes('a photo or a video · optional · 33 s at most')&&n2.cap.join(',')==='PHOTO,VIDEO,IMPORT'&&!n2.modale
-     &&n2.l.includes('duration'),
-     nom+' · NOW : la photo ou la vidéo est FACULTATIVE (capture en ligne), et la durée est déjà dessous → '+n2.l.join(' · '));
-  const fc=pg.waitForEvent('filechooser',{timeout:5000});
-  await clic(pg,'#rdr-new [data-capk="file"]');
-  const ch=await fc;ok((await ch.element().getAttribute('accept'))==='image/jpeg,image/png,image/webp,video/mp4,video/webm,video/quicktime',nom+' · IMPORT, pour un spot : une photo ou une vidéo seulement');
-  await ch.setFiles({name:'here.png',mimeType:'image/png',buffer:PNG});
-  await pg.waitForFunction(()=>!!document.querySelector('#rdr-new .ns-m img'),null,{timeout:6000}).catch(()=>{});
-  const n3=await pg.evaluate(()=>[...document.querySelectorAll('#rdr-new .sfl')].map(e=>e.textContent));
-  /* « rien n'est envoyé » = aucun POST dans le seau ; les lectures (GET) du site, elles, ont le droit de vivre. */
+  await plus.click();
+  const cap=pg.locator('#rdr-new .ns-cap .cap-b');
+  const suite=pg.locator('#rdr-new [data-ns="continue"]');
+  const rail=k=>pg.locator('#rdr-new [data-ns="stage"][data-v="'+k+'"]');
   const envois=()=>log.upload.filter(u=>u.method==='POST').length;
-  ok(n3.slice(-1)[0]==='duration'&&!envois(),
-     nom+' · la photo se montre (rien n\'est envoyé avant la publication) ; puis la durée → '+n3.join('|'));
-  await clic(pg,'#rdr-new [data-ns="dur"][data-v="60"]');await pg.waitForTimeout(250);
-  ok(await pg.evaluate(()=>!!document.querySelector('#rdr-new textarea[data-nsi="mot"]')&&document.querySelector('#rdr-new .ns-go').textContent==='I AM HERE'),
-     nom+' · puis un mot (facultatif) et I AM HERE');
+  ok(await etape(pg)==='media'&&await rail('habit').isDisabled()&&await rail('publish').isDisabled()
+    &&await cap.allTextContents().then(v=>v.map(t=>t.trim()).join('|')==='PHOTO|VIDEO|IMPORT')
+    &&await pg.locator('#rdr-new .sfb').count()===0,
+    nom+' · la prise ouvre sur le média, les étapes suivantes attendent');
+  const def=await pg.locator('#rdr-new .ns-what').textContent();
+  ok(/^A spot is your TOTEHM Habit in action: exact place, exact time, right people, your conditions\.$/.test(def),
+    nom+' · la définition précède la capture');
+  await pg.screenshot({animations:'disabled',path:OUT+'/prise_capture_'+(tel?'tel':'ordi')+'.png'});
+  await pg.keyboard.press('ArrowLeft');
+  ok((await lv(pg)).vue==='d',nom+' · la prise tient la navigation');
+
+  const fc=pg.waitForEvent('filechooser',{timeout:5000});
+  await pg.click('#rdr-new [data-capk="file"]');
+  const ch=await fc;
+  ok(await ch.element().getAttribute('accept')==='image/jpeg,image/png,image/webp,video/mp4,video/webm,video/quicktime',
+    nom+' · un spot accepte les photos et les vidéos');
+  await ch.setFiles({name:'here.png',mimeType:'image/png',buffer:PNG});
+  await pg.locator('#rdr-new .take-preview img').waitFor();
+  ok(await etape(pg)==='media'&&envois()===0,nom+' · aperçu local avant de continuer');
+  await pg.click('#rdr-new [data-ns="media-next"]');
+
+  const habits=await pg.locator('#rdr-new .sfb .tb .v-name').allTextContents();
+  ok(await etape(pg)==='habit'&&habits.join('|').trim()==='Run the hill|Call mum',
+    nom+' · les Habits se choisissent dans leurs boxes natives');
+  await pg.locator('#rdr-new .sfb').filter({hasText:'Run the hill'}).click();
+  ok(await etape(pg)==='when'&&await pg.locator('#rdr-new .sfb').count()===0,
+    nom+' · choisir l’Habit fait apparaître le choix du moment');
+  await pg.click('#rdr-new [data-ns="quand"][data-v="now"]');
+  await pg.locator('#rdr-new .ns-tag').filter({hasText:'Lisbon'}).waitFor({timeout:8000});
+  ok(await etape(pg)==='where'&&await pg.locator('#rdr-new [data-nsi="date"],#rdr-new [data-ns="ou"]').count()===0,
+    nom+' · NOW relève ma position sans demander de date ni de lieu');
+  await suite.click();
+  const niveaux=await pg.locator('#rdr-new [data-ns="aud"]').evaluateAll(v=>v.map(e=>e.childNodes[0].textContent));
+  ok(await etape(pg)==='access'&&niveaux.join('|')==='private|my subscribers|figher club',
+    nom+' · les trois niveaux de visibilité sont proposés');
+  await pg.click('#rdr-new [data-ns="aud"][data-v="figher"]');
+  ok(await pg.locator('#rdr-new .ns-note-g').textContent().then(v=>v.includes('a habit, its why, its repulsions'))
+    &&await pg.locator('#rdr-new [data-ns="mode"]').count()===0,
+    nom+' · le choix Club est expliqué avant Together');
+  await suite.click();
+  await pg.click('#rdr-new [data-ns="mode"][data-v="social"]');
+  ok(await etape(pg)==='duration'&&await pg.locator('#rdr-new [data-nsi="mot"]').count()===0,
+    nom+' · le commentaire attend la dernière étape');
+  await pg.click('#rdr-new [data-ns="dur"][data-v="60"]');
+  ok(await etape(pg)==='publish'&&await pg.locator('#rdr-new .take-summary .tb').count()===1
+    &&await pg.locator('#rdr-new .take-summary img').count()===1&&envois()===0,
+    nom+' · le récapitulatif reprend la box et le média encore local');
   const commentaire=pg.locator('#rdr-new textarea[data-nsi="mot"]');
   await commentaire.fill('see you up there');
   await commentaire.press('End');
   await commentaire.press('Enter');
   await pg.keyboard.insertText('bring water');
-  await pg.screenshot({path:OUT+'/prise_now_'+(tel?'tel':'ordi')+'.png'});
-  await clic(pg,'#rdr-new .ns-go');
+  await rail('habit').click();
+  ok(await pg.locator('#rdr-new .sfb.is-on .v-name').textContent().then(v=>v.trim()==='Run the hill'),
+    nom+' · revenir à Habit conserve la box sélectionnée');
+  await rail('media').click();
+  ok(await pg.locator('#rdr-new .take-preview img').count()===1,nom+' · le média reste dans le brouillon');
+  await rail('publish').click();
+  ok(await commentaire.inputValue()==='see you up there\nbring water',nom+' · le commentaire multiligne est conservé');
+  await pg.screenshot({animations:'disabled',path:OUT+'/prise_now_'+(tel?'tel':'ordi')+'.png'});
+  await pg.click('#rdr-new [data-ns="go"]');
   await pg.waitForFunction(()=>!document.body.classList.contains('is-nspot'),null,{timeout:8000}).catch(()=>{});
   /* le MÉDIA, pas sa vignette (`<chemin>.jpg`, écrite à côté sans attendre) : on prend le dépôt qui porte le nom d'un moment */
   const up=log.upload.filter(u=>u.method==='POST'&&MOMENT.test(u.path)).pop(), cr=log.rpc.filter(r=>r.name==='spot_create_audience').pop(), bx=log.rpc.filter(r=>r.name==='spot_box_set').pop();
@@ -133,7 +134,7 @@ try{
      nom+' · I AM HERE → spot_create_audience (le serveur décide ; le point est toujours exact) : '+JSON.stringify(cr&&Object.assign({},cr.body,{p_video:'…',p_lat:'…',p_lng:'…'})));
   ok(bx&&bx.body.p_spot==='sp9'&&JSON.stringify(bx.body.p_hide)==='{"objectives":[],"repulsions":[],"freq":false}',nom+' · un spot naît caché : spot_box_set montre sa box entière');
   const apres=await pg.evaluate(()=>({ferme:document.getElementById('rdr-new').hidden, per:window.__totehm_rdr().club.periode, d:window.__totehm_nspot()}));
-  ok(apres.ferme&&apres.per==='now+past+future'&&apres.d.publies===1&&Object.values(apres.d).every(v=>typeof v!=='string'||['now','later','ici','ailleurs','adresse','carte',''].includes(v)),
+  ok(apres.ferme&&apres.per==='now+past+future'&&apres.d.publies===1&&apres.d.etape==='media',
      nom+' · publié : le panneau se ferme et la carte garde les trois temps → '+JSON.stringify(apres.d));
 
   // ══ 4 · MAP au doigt : la Terre ne tourne que sous le doigt posé SUR elle ══
@@ -159,14 +160,19 @@ try{
   ok(tuileMap&&tuileGrid&&['x','y','width','height'].every(k=>Math.abs(tuileMap[k]-tuileGrid[k])<=2)
     &&await pg.locator('#rdr-m-sel').getAttribute('aria-pressed')==='true',
     nom+' · la tuile ronde retrouve la même place en mode Grid');
-  await plus.click();await pg.waitForTimeout(400);
-  await pg.locator('#rdr-new .sfb').filter({hasText:'Call mum'}).first().click();await pg.waitForTimeout(250);
-  await clic(pg,'#rdr-new [data-ns="quand"][data-v="later"]');await pg.waitForTimeout(250);
-  const d1=await pg.evaluate(()=>({d:(document.querySelector('#rdr-new [data-nsi="date"]')||{}).value, t:(document.querySelector('#rdr-new [data-nsi="time"]')||{}).value,
-    l:[...document.querySelectorAll('#rdr-new .sfl')].map(e=>e.textContent)}));
-  ok(/^\d{4}-\d{2}-\d{2}$/.test(d1.d)&&/^\d{2}:\d{2}$/.test(d1.t)&&d1.l.join('|')==='+ spot|a photo or a video · optional · 33 s at most|my habit|when|the day and the hour|where'
-     &&!d1.l.includes('who sees it'),
-     nom+' · LATER : la date ET l\'heure tout de suite (demain à cette heure), puis WHERE — rien d\'autre → '+d1.d+' '+d1.t);
+  await plus.click();
+  await pg.click('#rdr-new [data-ns="skip"]');
+  await pg.locator('#rdr-new .sfb').filter({hasText:'Call mum'}).click();
+  await pg.click('#rdr-new [data-ns="quand"][data-v="later"]');
+  const date=pg.locator('#rdr-new [data-nsi="date"]');
+  const demain=await date.inputValue();
+  ok(/^\d{4}-\d{2}-\d{2}$/.test(demain)
+    &&/^\d{2}:\d{2}$/.test(await pg.locator('#rdr-new [data-nsi="time"]').inputValue())
+    &&await pg.locator('#rdr-new [data-ns="ou"]').count()===0,
+    nom+' · LATER révèle la date et l’heure avant le choix du lieu');
+  await date.fill('2020-01-01');
+  ok(await suite.isDisabled()&&await rail('where').isDisabled(),nom+' · une date passée bloque la suite');
+  await date.fill(demain); await suite.click();
   const ou1=await pg.evaluate(()=>[...document.querySelectorAll('#rdr-new [data-ns="ou"]')].map(e=>e.childNodes[0].textContent));
   ok(ou1.join('|')==='here|elsewhere',nom+' · WHERE a DEUX réponses quand c\'est « later » : '+ou1.join(' · '));
   // ── l'ADRESSE : une requête par GESTE, jamais une par lettre ──
@@ -179,38 +185,47 @@ try{
   const hits=await pg.evaluate(()=>[...document.querySelectorAll('#rdr-new .ns-hit')].map(e=>e.textContent));
   ok(geocodes===1&&hits.length===2&&/Santa Catarina/.test(hits[0]),
      nom+' · [read it] : UNE requête, les lieux proposés → '+hits.join(' · '));
-  await clic(pg,'#rdr-new .ns-hit');
-  await pg.waitForFunction(()=>[...document.querySelectorAll('#rdr-new .sfl')].some(e=>e.textContent==='who sees it'),null,{timeout:6000}).catch(()=>{});
-  const ad=await pg.evaluate(()=>({d:window.__totehm_nspot(), ville:[...document.querySelectorAll('#rdr-new .ns-tag')].map(e=>e.textContent).join('|'),
-    epingle:(window.__totehm_carte()||{}).epingle, l:[...document.querySelectorAll('#rdr-new .sfl')].map(e=>e.textContent).slice(-1)[0]}));
-  ok(ad.d.pt&&ad.d.ptSrc==='adresse'&&ad.ville==='Porto'&&ad.l==='who sees it',
-     nom+' · l\'adresse choisie DEVIENT le point (sa ville vient de cities.json, pas du géocodeur : « '+ad.ville+' ») → '+JSON.stringify(ad.d.ptSrc));
+  await pg.locator('#rdr-new .ns-hit').first().click();
+  await pg.locator('#rdr-new .ns-tag').filter({hasText:'Porto'}).waitFor({timeout:8000});
+  ok(await pg.evaluate(()=>window.__totehm_nspot().ptSrc)==='adresse'&&await etape(pg)==='where',
+    nom+' · l’adresse pose le point et la ville vient de cities.json');
   // ── le même geste, sur la Terre ──
   await clic(pg,'#rdr-new [data-ns="carte"]');await pg.waitForTimeout(700);
   const pq=await pg.evaluate(()=>({cache:document.getElementById('rdr-new').hidden, pique:document.body.classList.contains('rdr-pique'),
     aide:getComputedStyle(document.getElementById('rdr-pique')).display, mode:window.__totehm_rdr().mode}));
   ok(pq.cache&&pq.pique&&pq.aide==='block'&&pq.mode==='map',nom+' · « on the map » : le panneau s\'efface, la Terre attend un tap → '+JSON.stringify(pq));
-  const cv=await pg.$eval('#rdr-map',c=>{const r=c.getBoundingClientRect();return [r.x+r.width/2, r.y+r.height*0.42];});
-  if(tel) await pg.touchscreen.tap(cv[0],cv[1]); else await pg.mouse.click(cv[0],cv[1]);
-  await pg.waitForFunction(()=>!document.getElementById('rdr-new').hidden,null,{timeout:5000}).catch(()=>{});
-  const pt=await pg.evaluate(()=>({d:window.__totehm_nspot(), on:!!document.querySelector('#rdr-new [data-ns="carte"].is-on'),
-    l:[...document.querySelectorAll('#rdr-new .sfl')].map(e=>e.textContent).slice(-1)[0]}));
-  ok(pt.d.pt&&pt.d.ptSrc==='carte'&&pt.on&&pt.l==='who sees it',nom+' · un tap sur la Terre POSE le point ; le panneau revient → '+JSON.stringify(pt.d.ptSrc));
-  await clic(pg,'#rdr-new [data-ns="aud"][data-v="private"]');await pg.waitForTimeout(250);
-  ok((await etapes(pg)).slice(-1)[0]==='together',nom+' · le point est exact, donc together est TOUJOURS demandé');
-  await clic(pg,'#rdr-new [data-ns="mode"][data-v="silent"]');await pg.waitForTimeout(250);
-  ok((await etapes(pg)).slice(-1)[0]==='duration',nom+' · puis la durée');
-  await clic(pg,'#rdr-new [data-ns="dur"][data-v="90"]');await pg.waitForTimeout(250);
-  const l3=await pg.evaluate(()=>({l:[...document.querySelectorAll('#rdr-new .sfl')].map(e=>e.textContent), go:(document.querySelector('#rdr-new .ns-go')||{}).textContent}));
-  /* 23/11 (Wah) : la prise (photo / vidéo / fichier) OUVRE la prise de spot, en tête ; un mot à la fin */
-  ok(l3.l[1]==='a photo or a video · optional · 33 s at most'&&l3.l.slice(-1)[0]==='a word · optional'&&l3.go==='I WILL BE HERE',nom+' · la photo ou la vidéo (facultative) EN TÊTE, un mot à la fin, I WILL BE HERE → '+l3.l.join(' · '));
+  const point=await pg.$eval('#rdr-map',c=>{
+    const r=c.getBoundingClientRect(), joy=document.getElementById('lvjoy').getBoundingClientRect();
+    const haut=118, bas=Math.max(120,innerHeight-joy.top+70);
+    const x=r.left+r.width/2, y=r.top+haut+(innerHeight-haut-bas)/2;
+    return {x,y,hit:document.elementFromPoint(x,y)?.id};
+  });
+  ok(point.hit==='rdr-map',nom+' · le centre du globe reçoit le geste');
+  if(tel) await pg.touchscreen.tap(point.x,point.y); else await pg.mouse.click(point.x,point.y);
+  await pg.locator('#rdr-new').waitFor({state:'visible',timeout:6000});
+  const pt=await pg.evaluate(()=>({d:window.__totehm_nspot(), on:!!document.querySelector('#rdr-new [data-ns="carte"].is-on')}));
+  ok(pt.d.pt&&pt.d.ptSrc==='carte'&&pt.on&&pt.d.etape==='where',nom+' · la carte rend le point à l’étape Where → '+JSON.stringify(pt));
   await pg.fill('#rdr-new input[data-nsi="place"]','the old court');
-  await pg.screenshot({path:OUT+'/prise_later_'+(tel?'tel':'ordi')+'.png'});
-  const u0=log.upload.filter(u=>u.method==='POST').length;
-  await clic(pg,'#rdr-new .ns-go');
+  await suite.click();
+  await pg.click('#rdr-new [data-ns="aud"][data-v="figher"]');
+  ok(await suite.isDisabled()&&await pg.locator('#rdr-new [data-ns="ouvrirbox"]').isVisible()
+    &&!log.rpc.some(r=>r.name==='box_audience_set'),nom+' · une box privée demande une confirmation explicite');
+  await pg.click('#rdr-new [data-ns="aud"][data-v="private"]');
+  await suite.click();
+  ok(await etape(pg)==='together',nom+' · le mode de rencontre reste demandé');
+  await pg.click('#rdr-new [data-ns="mode"][data-v="silent"]');
+  const minutes=pg.locator('#rdr-new input[data-nsi="dur"]');
+  await minutes.fill('2');
+  ok(await suite.isDisabled(),nom+' · une durée hors limite bloque la suite');
+  await minutes.fill('87'); await suite.click();
+  ok(await etape(pg)==='publish'&&await pg.locator('#rdr-new .take-summary .ns-tag').allTextContents().then(v=>v.includes('the old court')),
+    nom+' · le récapitulatif du spot à venir reprend le lieu');
+  await pg.screenshot({animations:'disabled',path:OUT+'/prise_later_'+(tel?'tel':'ordi')+'.png'});
+  const u0=envois();
+  await pg.click('#rdr-new [data-ns="go"]');
   await pg.waitForFunction(()=>!document.body.classList.contains('is-nspot'),null,{timeout:8000}).catch(()=>{});
   const sc=log.rpc.filter(r=>r.name==='spot_schedule_audience').pop();
-  ok(sc&&sc.body.p_habit==='Call mum'&&sc.body.p_location==='on'&&sc.body.p_mode==='silent'&&sc.body.p_audience==='private'&&sc.body.p_duration_min===90
+  ok(sc&&sc.body.p_habit==='Call mum'&&sc.body.p_location==='on'&&sc.body.p_mode==='silent'&&sc.body.p_audience==='private'&&sc.body.p_duration_min===87
      &&sc.body.p_place==='the old court'&&new Date(sc.body.p_starts_at).getTime()>Date.now()&&Math.abs(sc.body.p_lat)<=90&&Math.abs(sc.body.p_lng)<=180,
      nom+' · I WILL BE HERE → spot_schedule_audience : '+JSON.stringify(sc&&Object.assign({},sc.body,{p_lat:'…',p_lng:'…',p_starts_at:'…'})));
   ok(log.upload.filter(u=>u.method==='POST').length===u0&&!log.rpc.some(r=>r.name==='spot_video_attach'),nom+' · sans média, rien n\'est envoyé ni rattaché');
@@ -233,10 +248,13 @@ try{
   await clic(pg,'#habits .habit.open [data-spotnew]');
   await pg.waitForFunction(()=>window.__totehm_lv().vue==='d'&&!document.getElementById('rdr-new').hidden,null,{timeout:9000}).catch(()=>{});
   await pg.waitForTimeout(300);
-  const z4=await pg.evaluate(()=>({vue:window.__totehm_lv().vue, gate:document.body.classList.contains('gate'),
-    h:[...document.querySelectorAll('#rdr-new .sfb')].map(e=>(e.classList.contains('is-on')?'+':'')+((e.querySelector('.v-name')||{}).textContent||'')).join('|'),
-    l:[...document.querySelectorAll('#rdr-new .sfl')].map(e=>e.textContent).slice(-1)[0]}));
-  ok(z4.vue==='d'&&z4.gate&&z4.h==='+Call mum'&&z4.l==='when',nom+' · [Add a spot] d\'une box : le Totehm se replie, la vue de droite s\'ouvre sur la prise, CETTE Habit choisie → '+JSON.stringify(z4));
+  const z4=await pg.evaluate(()=>({vue:window.__totehm_lv().vue, gate:document.body.classList.contains('gate'), prise:window.__totehm_nspot()}));
+  ok(z4.vue==='d'&&z4.gate&&z4.prise.habit&&z4.prise.etape==='media',nom+' · depuis une box, la capture vient en premier');
+  await pg.click('#rdr-new [data-ns="skip"]');
+  ok(await etape(pg)==='when',nom+' · la box étant connue, la suite ouvre le choix du moment');
+  await rail('habit').click();
+  ok(await pg.locator('#rdr-new .sfb.is-on .v-name').textContent().then(v=>v.trim()==='Call mum'),
+    nom+' · l’Habit de départ reste présélectionnée');
   await clic(pg,'#rdr-new [data-ns="close"]');await pg.waitForTimeout(300);
   ok(await pg.evaluate(()=>document.getElementById('rdr-new').hidden&&!document.body.classList.contains('is-nspot')),nom+' · CLOSE rend la navigation');
   await pg.click('#lvn-lf');await vers(pg,'c');

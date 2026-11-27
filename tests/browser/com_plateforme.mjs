@@ -15,6 +15,7 @@ const habits = [{ name:'Deep practice', freq:'daily', ints:['focus'], objectives
 const rpc = { my_landing:land, habit_spaces:{ ok:true, mine:true, habits:[{ habit:'Deep practice', total:2, total_spaces:1, total_spots:1, spaces:[item('s1','space')], spots:[item('p1','spot')] }] },
   my_totehm:{ signed_in:true, objectives:[{ id:'o1', text:'Build a practice', is:['focus'] }], repulsions:[], stories:[], visions:[] }, element_cloths:{ ok:true, mine:true, elements:[] },
   spot_get:b => ({ ok:true, spot:item(b.p_id, b.p_id.startsWith('p') ? 'spot' : 'space') }), spot_rules:{ clip_seconds:33, duration_min:5, duration_max:720, horizon_days:90 },
+  my_box_audiences:{ok:true,h:{'Deep practice':'subscribers'},t:{},r:{},w:{},v:{}},
   spot_schedule_audience:{ ok:true, id:'p9', state:'will' }, spot_box_set:{ ok:true },
   club_spots_of:b => ({ ok:true, items:b.p_period === 'future' && b.p_filters && b.p_filters.habit === 'Deep practice' ? [item('p1','spot')] : [], total:0 }),
   space_feed:{ ok:true, spots:[], more:false }, space_pulse:{ spaces_week:1, vibes_week:0 }, space_habits:{ ok:true, habits }, space_discover:{ spots:[], more:false }, spots_feed:{ spots:[], more:false } };
@@ -75,14 +76,22 @@ try{
       (Wah : « la prise de spot se fait dans la vue de droite ») ; aucune autre page, aucun cadre */
    await pg.locator('#habits [data-spotnew]').click();
    await pg.waitForFunction(() => window.__totehm_lv().vue === 'd' && !document.getElementById('rdr-new').hidden, null, { timeout:12000 }).catch(() => {});
-   const sn = await pg.evaluate(() => ({ vue:window.__totehm_lv().vue, xo:window.__totehm_xo().actif, ancien:!!document.querySelector('[data-sn],[data-spotgo]'),
-     h:[...document.querySelectorAll('#rdr-new .sfb.is-on .v-name')].map(e => e.textContent.trim()).join('|') }));
-   ok(sn.vue === 'd' && !sn.xo && !sn.ancien && sn.h === 'Deep practice', '[Add a spot] : la prise de spot de la vue de droite, CETTE Habit choisie — pas une autre page → ' + JSON.stringify(sn));
-   await pg.click('#rdr-new [data-ns="quand"][data-v="later"]'); await pg.click('#rdr-new [data-ns="aud"][data-v="figher"]');
-   await pg.click('#rdr-new [data-ns="mode"][data-v="silent"]'); await pg.click('#rdr-new [data-ns="ici"]');
-   await pg.waitForSelector('#rdr-new [data-ns="dur"][data-v="60"]', { timeout:8000 });
-   await pg.click('#rdr-new [data-ns="dur"][data-v="60"]'); await pg.fill('#rdr-new [data-nsi="place"]', 'the hill');
-   await pg.click('#rdr-new .ns-go');
+   const sn = await pg.evaluate(() => ({ vue:window.__totehm_lv().vue, xo:window.__totehm_xo().actif,
+     ancien:!!document.querySelector('[data-sn],[data-spotgo]'), prise:window.__totehm_nspot() }));
+   ok(sn.vue==='d'&&!sn.xo&&!sn.ancien&&sn.prise.habit&&sn.prise.etape==='media',
+     'depuis la box, la vue de droite ouvre la capture, avec son Habit déjà sélectionnée');
+   const panel=pg.locator('#rdr-new'), suite=panel.locator('[data-ns="continue"]');
+   await panel.locator('[data-ns="skip"]').click();
+   await panel.locator('[data-ns="quand"][data-v="later"]').click();
+   await suite.click();
+   await panel.locator('[data-ns="ou"][data-v="ici"]').click();
+   await panel.locator('[data-nsi="place"]').fill('the hill');
+   await suite.click();
+   await panel.locator('[data-ns="aud"][data-v="figher"]').click();
+   await suite.click();
+   await panel.locator('[data-ns="mode"][data-v="silent"]').click();
+   await panel.locator('[data-ns="dur"][data-v="60"]').click();
+   await panel.locator('[data-ns="go"]').click();
    await pg.waitForFunction(() => !document.body.classList.contains('is-nspot'), null, { timeout:12000 }).catch(() => {});
    const an = log.rpc.find(r => r.name === 'spot_schedule_audience');
    ok(an && an.body.p_habit === 'Deep practice' && an.body.p_place === 'the hill' && an.body.p_audience === 'figher'

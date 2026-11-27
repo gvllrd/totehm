@@ -16,7 +16,8 @@ const ARBRE={signed_in:true,objectives:[{id:'o1',text:'Ship it',is:['express'],h
   repulsions:[{id:'r1',text:'The phone in bed',is:['focus'],hs:['Run the hill']}],
   stories:[{id:'w1',text:'I left Paris at nineteen'}],visions:[{id:'v1',text:'The studio by the sea'},{id:'v2',text:'The cabin in the woods'}]};
 const RPC={my_landing:{signed_in:true,pseudo:'wahigher',visibility:'private',offer:{enabled:false},higher:{active:false},thp:false,subscriptions:0,subscribers:0},
-  element_media_list:()=>({ok:true,items}), element_media_add:b=>({ok:true,id:'m-new',kind:b.p_kind,ref:b.p_ref,path:b.p_path}),
+  element_media_list:()=>({ok:true,items}), element_media_add:(b,log)=>log.rpc.filter(r=>r.name==='element_media_add').length===1
+    ?{ok:false,why:'retry'}:{ok:true,id:'m-new',kind:b.p_kind,ref:b.p_ref,path:b.p_path},
   my_totehm:async()=>{ await new Promise(r=>setTimeout(r,2500)); return ARBRE; },
   habit_spaces:{ok:true,mine:true,habits:[]}, element_cloths:{ok:true,mine:true,elements:[]},
   my_visions:{ok:true,visions:[]}, my_feed_badges:{ok:true,pos:{}},
@@ -82,14 +83,35 @@ try{
   const PNG=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==','base64');
   await pg.setInputFiles('#cap-f-file',{name:'shot.png',mimeType:'image/png',buffer:PNG});
   await pg.waitForFunction(()=>!!document.querySelector('#lv-sh-sf .sfcmd'),null,{timeout:6000}).catch(()=>{});
-  const c1=await pg.evaluate(()=>({cmd:!!document.querySelector('#lv-sh-sf .sfcmd'),dit:(document.querySelector('#lv-sh-sf .sf-aj')||{}).textContent||''}));
-  ok(c1.cmd&&/photo ready/.test(c1.dit)&&log.upload.length===up0,nom+' · le fichier est GARDÉ, puis on choisit sa box (rien n\'est envoyé avant) → '+JSON.stringify(c1));
-  await pg.click('#lv-sh-sf [data-sf="vue"][data-v="visions"]');await pg.waitForTimeout(500);
+  const rail=k=>pg.locator('#lv-sh-sf [data-sf="aj-stage"][data-v="'+k+'"]');
+  const save=pg.locator('#lv-sh-sf [data-sf="aj-save"]');
+  ok(await rail('box').getAttribute('aria-current')==='step'&&await rail('review').isDisabled()&&log.upload.length===up0,
+    nom+' · le média reste local pendant le choix de la box');
+  await pg.click('#lv-sh-sf [data-sf="vue"][data-v="visions"]');
   await pg.click('#lv-sh-sf [data-sf="box"][data-v="v|v1"]');
-  await pg.waitForFunction(()=>document.getElementById('lv-sh-sf').hidden,null,{timeout:8000}).catch(()=>{});
-  const up=log.upload.at(-1), depot=await pg.evaluate(()=>({cache:document.getElementById('lv-sh-sf').hidden,dit:(document.querySelector('#lv-sh-sf .sf-aj')||{}).textContent||''}));
-  ok(depot.cache&&log.upload.length>up0&&/\/m-[0-9a-f-]{36}\.jpg/.test(up.path)&&log.rpc.some(r=>r.name==='element_media_add'&&JSON.stringify(r.body).includes('v1')),
-     nom+' · le tap sur la box ENVOIE le fichier pris, rangé dans CETTE box → '+JSON.stringify({depot,up,add:log.rpc.filter(r=>r.name==='element_media_add').map(r=>r.body)}));
+  const recap=pg.locator('#lv-sh-sf .take-stage');
+  ok(await recap.locator('.take-preview img').count()===1&&await recap.locator('.sfbx .tb.blk-v').count()===1
+    &&await save.isEnabled()&&log.upload.length===up0&&!log.rpc.some(r=>r.name==='element_media_add'),
+    nom+' · la box native et l’aperçu sont visibles avant toute écriture');
+  await rail('media').click();
+  ok(await recap.locator('.take-preview figcaption').textContent()==='shot.png',nom+' · revenir à Media garde le fichier');
+  await rail('box').click();
+  ok(await recap.locator('[data-sf="box"][data-v="v|v1"]').getAttribute('aria-pressed')==='true',
+    nom+' · revenir à Box garde la sélection');
+  await pg.click('#lv-sh-sf [data-sf="box"][data-v="v|v2"]');
+  await pg.screenshot({animations:'disabled',path:OUT+'/prise_media_'+(tel?'tel':'ordi')+'.png'});
+  await save.click();
+  const statut=recap.getByRole('status');
+  await statut.filter({hasText:'try again'}).waitFor();
+  ok(await recap.locator('.take-preview img').count()===1
+    &&await recap.locator('.sfbx .v-name').textContent().then(v=>v.trim()==='The cabin in the woods')
+    &&await save.isEnabled(),nom+' · après un refus, le média et sa box restent disponibles pour réessayer');
+  await save.click();
+  await pg.locator('#lv-sh-sf').waitFor({state:'hidden'});
+  const add=log.rpc.filter(r=>r.name==='element_media_add').at(-1);
+  const up=log.upload.find(r=>r.method==='POST'&&r.path==='element-media/'+add?.body.p_path);
+  ok(!!up&&/\/m-[0-9a-f-]{36}\.jpg$/.test(up.path)&&add.body.p_ref==='v2'&&add.body.p_name==='shot.png',
+    nom+' · Save media rattache le fichier à la dernière box choisie');
   /* 23/11 (Wah) : le petit TOTEHM docké en haut OUVRE LE TOTEHM (seul [Refine] ouvre le filtre) */
   const loupes=await pg.evaluate(()=>[document.querySelectorAll('#lv-sh-f .tl-bx .loupe[data-vz]').length,document.querySelectorAll('#lv-sh-f .tl-bx').length]);
   ok(loupes[1]>0&&loupes[0]===loupes[1],nom+' · chaque box héritée de la grille porte sa loupe ('+loupes.join('/')+')');
