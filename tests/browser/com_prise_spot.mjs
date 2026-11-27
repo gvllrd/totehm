@@ -117,7 +117,11 @@ try{
   await clic(pg,'#rdr-new [data-ns="dur"][data-v="60"]');await pg.waitForTimeout(250);
   ok(await pg.evaluate(()=>!!document.querySelector('#rdr-new textarea[data-nsi="mot"]')&&document.querySelector('#rdr-new .ns-go').textContent==='I AM HERE'),
      nom+' · puis un mot (facultatif) et I AM HERE');
-  await pg.fill('#rdr-new textarea[data-nsi="mot"]','see you up there');
+  const commentaire=pg.locator('#rdr-new textarea[data-nsi="mot"]');
+  await commentaire.fill('see you up there');
+  await commentaire.press('End');
+  await commentaire.press('Enter');
+  await pg.keyboard.insertText('bring water');
   await pg.screenshot({path:OUT+'/prise_now_'+(tel?'tel':'ordi')+'.png'});
   await clic(pg,'#rdr-new .ns-go');
   await pg.waitForFunction(()=>!document.body.classList.contains('is-nspot'),null,{timeout:8000}).catch(()=>{});
@@ -125,12 +129,12 @@ try{
   const up=log.upload.filter(u=>u.method==='POST'&&MOMENT.test(u.path)).pop(), cr=log.rpc.filter(r=>r.name==='spot_create_audience').pop(), bx=log.rpc.filter(r=>r.name==='spot_box_set').pop();
   ok(up&&MOMENT.test(up.path)&&/\.jpg$/.test(up.path),nom+' · la photo part dans MON dossier du seau des spots (moments/'+(up&&up.path.split('/').slice(2).join('/'))+')');
   ok(cr&&cr.body.p_habit==='Run the hill'&&cr.body.p_duration_min===60&&'moments/'+cr.body.p_video===up.path&&cr.body.p_city==='Lisbon'&&typeof cr.body.p_lat==='number'
-     &&cr.body.p_mode==='social'&&cr.body.p_location==='on'&&cr.body.p_audience==='figher'&&cr.body.p_comment==='see you up there',
+     &&cr.body.p_mode==='social'&&cr.body.p_location==='on'&&cr.body.p_audience==='figher'&&cr.body.p_comment==='see you up there\nbring water',
      nom+' · I AM HERE → spot_create_audience (le serveur décide ; le point est toujours exact) : '+JSON.stringify(cr&&Object.assign({},cr.body,{p_video:'…',p_lat:'…',p_lng:'…'})));
   ok(bx&&bx.body.p_spot==='sp9'&&JSON.stringify(bx.body.p_hide)==='{"objectives":[],"repulsions":[],"freq":false}',nom+' · un spot naît caché : spot_box_set montre sa box entière');
   const apres=await pg.evaluate(()=>({ferme:document.getElementById('rdr-new').hidden, per:window.__totehm_rdr().club.periode, d:window.__totehm_nspot()}));
-  ok(apres.ferme&&apres.per==='now'&&apres.d.publies===1&&Object.values(apres.d).every(v=>typeof v!=='string'||['now','later','ici','ailleurs','adresse','carte',''].includes(v)),
-     nom+' · publié : le panneau se ferme, la vue montre NOW ; __totehm_nspot() : des booléens et des compteurs → '+JSON.stringify(apres.d));
+  ok(apres.ferme&&apres.per==='now+past+future'&&apres.d.publies===1&&Object.values(apres.d).every(v=>typeof v!=='string'||['now','later','ici','ailleurs','adresse','carte',''].includes(v)),
+     nom+' · publié : le panneau se ferme et la carte garde les trois temps → '+JSON.stringify(apres.d));
 
   // ══ 4 · MAP au doigt : la Terre ne tourne que sous le doigt posé SUR elle ══
   if(tel){
@@ -210,7 +214,7 @@ try{
      &&sc.body.p_place==='the old court'&&new Date(sc.body.p_starts_at).getTime()>Date.now()&&Math.abs(sc.body.p_lat)<=90&&Math.abs(sc.body.p_lng)<=180,
      nom+' · I WILL BE HERE → spot_schedule_audience : '+JSON.stringify(sc&&Object.assign({},sc.body,{p_lat:'…',p_lng:'…',p_starts_at:'…'})));
   ok(log.upload.filter(u=>u.method==='POST').length===u0&&!log.rpc.some(r=>r.name==='spot_video_attach'),nom+' · sans média, rien n\'est envoyé ni rattaché');
-  ok(await pg.evaluate(()=>window.__totehm_rdr().club.periode==='future'&&!document.body.classList.contains('rdr-pique')),nom+' · publié : la vue montre FUTURE');
+  ok(await pg.evaluate(()=>window.__totehm_rdr().club.periode.includes('future')&&!document.body.classList.contains('rdr-pique')),nom+' · publié : la vue inclut les spots à venir');
   ok(!erreurs(log).length,nom+' · aucune erreur '+erreurs(log).join(' | '));
 
   // ══ 3 · [Add a spot] dans une box du Totehm → la prise, CETTE Habit choisie ; 5 · le titre en haut ══

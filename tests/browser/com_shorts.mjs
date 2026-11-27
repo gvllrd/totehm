@@ -267,10 +267,11 @@ try{
       basculeVue:getComputedStyle(document.getElementById('rdr-m-sel')).visibility==='visible',
       haut:ra.y+ra.height/2<90&&Math.abs((ra.x+ra.width/2)-innerWidth/2)<4&&ra.width<70};});
   const lus=log.rpc.filter(x=>x.name==='club_spots_of'&&x.body.p_pseudo==='wahigher').map(x=>x.body.p_period);
-  ok(lus.join(',')==='now,future'&&d.r.club.periode==='future'&&!log.rpc.some(x=>x.name==='club_spots'),
-     '27/10 · → MES spots (club_spots_of à mon nom, jamais « everyone ») : rien maintenant, la vue montre ce qui VIENT ('+lus.join(' → ')+')');
+  ok(lus.join(',')==='now,past,future'&&d.r.club.periode==='now+past+future'&&!log.rpc.some(x=>x.name==='club_spots'),
+     '→ la carte charge MES spots des trois temps (club_spots_of) : '+lus.join(' · '));
   ok(!d.radar&&d.r.mode==='map'&&d.bascule==='false'&&d.basculeVue,'25/11 · plus de radar, plus de Shorts : UNE touche SELECT (Map ⇄ Grid) ; la vue s\'ouvre sur la CARTE');
-  ok(d.r.carte.terres>100&&d.r.carte.points===1&&d.r.carte.villes===0,'la Terre (Natural Earth, '+d.r.carte.terres+' terres) et mon spot : un carré plein, à son point');
+  ok(d.r.carte.terres>100&&d.r.carte.zoom>400&&d.r.carte.points===2&&d.r.carte.groupes===1&&d.r.carte.villes===2,
+     'la carte cadre Lisbonne et réunit les deux spots proches ; le spot de Porto reste dans les résultats');
   ok(d.plein&&d.dock&&d.haut,'la carte prend l\'écran ; le Totehm est sorti se caler EN HAUT, centré');
   await pg.screenshot({path:OUT+'/spots_'+(tel?'tel':'ordi')+'.png'});
   // un tap sur le point : SON spot en grand, par-dessus (21/10 : plus de polaroid)
@@ -292,7 +293,7 @@ try{
       cal:!!(c&&c.querySelector('.ssp-acts [data-ics]')), go:!!(c&&c.querySelector('.ssp-acts [data-go]')), x:getComputedStyle(document.getElementById('rdr-x')).display,
       ask:(()=>{const a=c&&c.querySelector('.ssp-acts [data-ask]');return a?a.dataset.ask+'|'+a.textContent+'|'+a.querySelectorAll('svg.ask-hi use[href="#higher-badge"]').length:'';})(),
       per:[...document.querySelectorAll('#rdr-flt [data-per]')].map(e=>e.textContent)};});
-  ok(sh2.voit&&sh2.d.voit&&sh2.n===1&&/y mandatory/.test(sh2.snap)&&sh2.plein&&/^(inline-)?flex$/.test(sh2.x),
+  ok(sh2.voit&&sh2.d.voit&&sh2.n===3&&/y mandatory/.test(sh2.snap)&&sh2.plein&&/^(inline-)?flex$/.test(sh2.x),
      'un tap sur le point : SON spot en grand, par-dessus la carte (un spot par écran, aimanté), ✕ pour revenir');
   ok(sh2.pol===0&&sh2.fond==='rgb(0, 0, 0)'&&sh2.src&&sh2.fit==='contain'&&sh2.rond==='0px',
      '21/10 · PLUS DE POLAROID : l\'image TELLE QU\'ELLE (contain, ni cadre ni recadrage) sur le NOIR → '+JSON.stringify({pol:sh2.pol,fond:sh2.fond,fit:sh2.fit}));
@@ -304,7 +305,7 @@ try{
   ok(sh2.chips.some(t=>/\b\d{1,2} [a-z]{3}\b|today|tomorrow|yesterday/i.test(t))&&sh2.chips.some(t=>/location on/i.test(t))
      &&sh2.chips.some(t=>/social/i.test(t))&&sh2.say==='Bring a coffee'&&sh2.go&&sh2.cal,
      'les informations du spot : '+sh2.chips.join(' · ')+' — son mot, GO, CALENDAR');
-  ok(sh2.per.join(' ')==='future','27/10 · le temps courant, dans la barre : « '+sh2.per.join(' ')+' » (now · past · future)');
+  ok(sh2.per.join(' ')==='All times','les trois temps s’affichent dans la barre sous « All times »');
   ok(sh2.ask==='', 'le Spot conserve GO et CALENDAR sans bouton vers le chat retiré');
   /* 26/10 (Wah : « concernant les spots il y a trois niveaux d'accès : private, subscribers et figher club ») : sur MON spot, le
      niveau est un bouton ; chaque tap passe au suivant, au serveur (`spot_audience_set`), et revient au premier. */
@@ -314,8 +315,8 @@ try{
     const e=log.rpc.filter(x=>x.name==='spot_audience_set').slice(n0);
     niv.push((e[0]&&e[0].body.p_spot+':'+e[0].body.p_audience)+'='+await pg.evaluate(()=>document.querySelector('#rdr-sh [data-spaud]').textContent)); }
   const autresNiv=await pg.evaluate(()=>document.querySelectorAll('#rdr-sh [data-spaud]').length);
-  ok(niv.join(' ')==='sp1:private=private sp1:subscribers=my subscribers sp1:figher=figher club'&&autresNiv===1,
-     '26/10 · MON spot : trois niveaux en boucle — '+niv.join(' · ')+' ; les spots des autres n\'ont qu\'un mot');
+  ok(niv.join(' ')==='sp1:private=private sp1:subscribers=my subscribers sp1:figher=figher club'&&autresNiv===3,
+     '26/10 · mes spots : trois niveaux en boucle — '+niv.join(' · '));
   await pg.keyboard.press('Escape');await pg.waitForTimeout(500);
   ok(await pg.evaluate(()=>!document.body.classList.contains('rdr-voir')&&window.__totehm_lv().vue==='d'),'Échap referme la vue agrandie : on est de retour sur la carte');
   /* 12/11 (Wah) — ON ABAISSE UN SPOT AGRANDI : « qu'on puisse les fermer une fois agrandis, ou qu'on puisse
@@ -438,15 +439,15 @@ try{
   ok(panD.l.join(' · ')==='Habits · When · Intentions · It shows · Where · Who sees it','à droite, [Refine] ouvre LE filtre : '+panD.l.join(' · '));
   /* (« Read at dawn » a été renommée puis SUPPRIMÉE plus haut : il en reste deux.) */
   ok(panD.habits.join('|')==='Run the hill|Call mum','les HABITS seules, au format Totehm (un spot ne vit qu\'une Habit) : '+panD.habits.join(' · '));
-  ok(panD.quand.join(' · ')==='now · past · future*'&&panD.higher===7,'27/10 · le temps : '+panD.quand.join(' · ')+' (1. Now · 2. Past · 3. Future) ; les intentions portent le badge [Higher]');
+  ok(panD.quand.join(' · ')==='now* · past* · future*'&&panD.higher===7,'les trois temps sont cochés par défaut ; les intentions portent le badge [Higher]');
   ok(await pg.evaluate(()=>!document.querySelector('#rdr-sf [data-sf="qui"]')&&!/everyone/i.test(document.getElementById('rdr-sf').textContent)),'27/10 · plus de WHOSE ni d\'« everyone » : ce sont MES spots');
   // le passé : deux de MES spots, la ville seule — puis la GRILLE
-  await pg.click('#rdr-sf [data-sf="per"][data-v="past"]');await pg.waitForTimeout(800);
-  /* 23/11 : un temps s'AJOUTE (comme une intention) — on retire « future » pour ne garder que le passé */
+  await pg.click('#rdr-sf [data-sf="per"][data-v="now"]');await pg.waitForTimeout(800);
+  /* On retire « future » pour garder le passé. */
   await pg.click('#rdr-sf [data-sf="per"][data-v="future"]');await pg.waitForTimeout(800);
   await pg.click('#rdr-sf [data-sf="close"]');await pg.waitForTimeout(300);
   const mp=await pg.evaluate(()=>window.__totehm_rdr().carte);
-  ok(mp.villes===2&&mp.points===2,'la carte : deux spots dont je ne vois que la VILLE — deux carrés CREUX, jamais un faux point');
+  ok(mp.villes===2&&mp.points===1,'la carte connaît les deux villes ; Lisbonne est dans le cadre courant');
   await pg.click('#rdr-m-sel');await pg.waitForTimeout(1200);
   const gr=await pg.evaluate(()=>({d:window.__totehm_rdr(),grid:document.body.classList.contains('rdr-grid'),
     tuiles:document.querySelectorAll('#rdr-g .tl[data-cle]').length,boxes:[...document.querySelectorAll('#rdr-g .tl-bx .tb .v-name')].map(e=>e.textContent.trim()),
@@ -557,10 +558,13 @@ try{
   await pg.click('#lvn-lf');await vers(pg,'g');await pg.waitForTimeout(700);
   const n0=await pg.evaluate(()=>document.querySelectorAll('#lv-sh .tl[data-i]').length);
   await pg.click('#lv-sh .tl[data-i="0"] .tl-bx',{force:true});await pg.waitForTimeout(500);
-  const d0=await pg.evaluate(()=>{const b=document.querySelector('#tlv [data-tlv="del"]');return {vu:!b.hidden,t:b.textContent};});
+  const d0=await pg.evaluate(()=>{
+    const b=document.querySelector('#tlv [data-tlv="del"]'), r=b.getBoundingClientRect();
+    return {vu:!b.hidden,t:b.textContent,cliquable:document.elementFromPoint(r.x+r.width/2,r.y+r.height/2)?.closest('[data-tlv="del"]')===b};
+  });
   await pg.click('#tlv [data-tlv="del"]');await pg.waitForTimeout(150);
   const d1=await pg.evaluate(()=>({t:document.querySelector('#tlv [data-tlv="del"]').textContent,ouvert:!document.getElementById('tlv').hidden}));
-  ok(d0.vu&&d0.t==='delete'&&d1.t==='delete?'&&d1.ouvert&&!log.rpc.some(r=>/element_media_remove|vision_image_set/.test(r.name)),
+  ok(d0.vu&&d0.cliquable&&d0.t==='delete'&&d1.t==='delete?'&&d1.ouvert&&!log.rpc.some(r=>/element_media_remove|vision_image_set/.test(r.name)),
      '25/10 · à gauche, [delete] sur MON média : un premier tap l\'ARME (« delete? »), rien ne part encore → '+JSON.stringify({d0,d1}));
   await pg.click('#tlv [data-tlv="del"]');await pg.waitForTimeout(800);
   const d2=await pg.evaluate(()=>({ferme:document.getElementById('tlv').hidden,n:document.querySelectorAll('#lv-sh .tl[data-i]').length}));
@@ -577,8 +581,8 @@ try{
   const arme=await pg.evaluate(()=>(document.querySelector('#rdr-sh .ssp-acts [data-del="sp1"]')||{}).textContent);
   await pg.click('#rdr-sh .ssp-acts [data-del="sp1"]');await pg.waitForTimeout(900);
   const s1=await pg.evaluate(()=>({reste:document.querySelectorAll('#rdr-sh [data-del="sp1"]').length,points:window.__totehm_carte().length}));
-  ok(s0.mien===1&&s0.autres===0&&arme==='delete?'&&retires.join()==='sp1'&&s1.reste===0&&s1.points===0,
-     '25/10 · à droite, [delete] sur MON spot seulement ; deux taps → `spot_remove`, il quitte le fil et la carte → '+JSON.stringify({s0,arme,retires,s1}));
+  ok(s0.mien===1&&s0.autres===2&&arme==='delete?'&&retires.join()==='sp1'&&s1.reste===0&&s1.points===1,
+     'à droite, deux taps sur [Delete] retirent le spot choisi et laissent les deux autres → '+JSON.stringify({s0,arme,retires,s1}));
   ok(!erreurs(log).length,'retirer : aucune erreur '+erreurs(log).join(' | '));
   await pg.context().close();}
  // ── mouvement réduit : la grille sans défilement doux, la carte sans transformation ──
@@ -594,6 +598,6 @@ try{
   ok(r.n===2&&r.sb==='auto'&&/^0s/.test(r.tr),'mouvement réduit : la grille, sans animation ni défilement doux ('+JSON.stringify(r)+')');
   await pg.click('#lvn-rt');await vers(pg,'c');await pg.click('#lvn-rt');await vers(pg,'d');await pg.waitForTimeout(600);
   const rr=await pg.evaluate(()=>({r:window.__totehm_rdr(),m:window.__totehm_lv().ramifications}));
-  ok(rr.r.carte.points===1&&rr.m.morphs===0,'mouvement réduit : la carte place ses points, et les traits ne se transforment pas');
+  ok(rr.r.club.items===3&&rr.r.carte.zoom>400&&rr.m.morphs===0,'mouvement réduit : la carte affiche directement la ville, sans transition');
   ok(!erreurs(log).length,'mouvement réduit : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
 }finally{await browser.close();}

@@ -418,7 +418,7 @@ body.gate #wm-O,body.gate #wm-H,body.gate #t-foot{animation:none}
    il prend la COULEUR DE LA VUE et porte les trois points de la marque. */
 #joy-box{--k2j-d:var(--joy-d);--k2j-c:var(--joy-vue,var(--navy))}
 #joy-stack{z-index:1;pointer-events:none}
-#joy-stack .o{--c:var(--blue)}#joy-stack .h{--c:var(--navy)}#joy-stack .r{--c:var(--rep)}
+.k2j-p .o{--c:var(--blue)}.k2j-p .h{--c:var(--navy)}.k2j-p .r{--c:var(--rep)}
 /* Ce qu'on vise s'allume avant qu'on lâche. L'état vit sur `#joy` : `#cur-g` PRÉCÈDE `#joy-box` dans le balisage,
    et le combinateur `~` ne regarde qu'en avant. */
 #joy.vers-g #cur-g,
@@ -438,6 +438,12 @@ body.gate #wm-O,body.gate #wm-H,body.gate #t-foot{animation:none}
 .cur svg{width:14px;height:14px;display:block;
   stroke:var(--rail-color);fill:none;stroke-width:1.6;
   stroke-linecap:round;stroke-linejoin:round}
+.joy-voyage{position:fixed;inset:0;z-index:209;pointer-events:none}
+.joy-voyage>*{position:absolute;transform-origin:0 0}
+.joy-voyage .k2j{position:absolute;cursor:inherit}
+.joy-voyage svg{width:100%;height:100%;display:block;stroke:var(--rail-color);fill:none;
+  stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+body.joy-en-voyage :is(#joy,#lvjoy){visibility:hidden}
 
 /* ══ LE NOM DE LA VUE ════════════════════════════════════════════════
    ⚠️ 7 px à 72 % d'opacité, c'était une note de bas de page. Le nom de
@@ -3195,8 +3201,13 @@ body.lv-c:not(.is-door) #lv-c-acts{visibility:visible}
 #lv-c-acts button{pointer-events:auto}
 #lv-keys{display:flex;gap:20px;align-items:flex-end;justify-content:center;
   background:#000;border-radius:10px;padding:6px 14px 4px}
-.k2r.is-select{--k2r-w:30px;--k2r-h:12px;min-height:44px;min-width:44px;padding:6px 2px}
+.k2r.is-select{--k2r-w:46px;--k2r-h:16px;min-height:44px;min-width:48px;padding:6px 2px;touch-action:manipulation}
+.k2r.is-select :is(.k2k,.k2l){pointer-events:none}
 .k2r.is-select[aria-pressed="false"] .k2l{opacity:1}
+.k2r.is-select .k2k{box-shadow:inset 0 1px 0 rgba(255,255,255,.16),inset 0 -2px 3px rgba(0,0,0,.8),0 3px 0 #09090d,0 5px 6px rgba(0,0,0,.55)}
+.k2r.is-select:is(:active,.is-press,.is-tap) .k2k{transform:translateY(3px) scaleY(.82);filter:brightness(.82);
+  box-shadow:inset 0 2px 4px rgba(0,0,0,.8);transition-duration:.04s}
+.k2r.is-select:is(.is-press,.is-tap) .k2l{color:#fff}
 #lv-tree-k .k2k{outline:none}
 #lv-tree-k:focus-visible .k2l,#lv-tree-k[aria-pressed="true"] .k2l{color:#fff}
 #lv-tree-k:focus-visible .k2l{text-decoration:underline;text-underline-offset:3px}
@@ -3516,7 +3527,7 @@ body.lv-b #gate-logo #gl-rail,body.lv-b #gate-logo #gl-wm{opacity:0}
    point de focalisation du membre ; la boîte de l'élément est posée DESSUS, dans sa couleur de type, avec
    son filet d'intention, et une ombre qui la soulève. Sous le papier docké et la barre de filtres. */
 .tlg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:3px;
-  padding:calc(max(10px,env(safe-area-inset-top)) + 100px) 0 calc(var(--lvj-h,64px) + 40px)}
+  padding:calc(max(10px,env(safe-area-inset-top)) + 108px) 0 calc(var(--lvj-h,64px) + 40px)}
 @media(min-width:700px){.tlg{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;width:min(100% - 32px,1080px);margin:0 auto}}
 @media(min-width:1200px){.tlg{grid-template-columns:repeat(5,minmax(0,1fr))}}
 .tl{position:relative;aspect-ratio:1;background:#0b0b0d;overflow:hidden;cursor:pointer;border:0;padding:0;
@@ -3526,7 +3537,7 @@ body.lv-b #gate-logo #gl-rail,body.lv-b #gate-logo #gl-wm{opacity:0}
 /* 21/10 bis — Wah : « les images de la grille de gauche au format PERFORÉ, avec le même nombre de trous, à la même place
    que le logo TOTEHM ». La PHOTO porte les douze trous du papier (`--perfo`, le masque du logo, 28/09) ; la box posée dessus n'est jamais
    découpée (elle est sacrée), et la tuile « + » reprend le même masque. */
-#lv-sh .tl:not(.tl-add){background:none}
+#lv-sh .tl:not(.tl-add){background:none;isolation:isolate}
 #lv-sh .tl:not(.tl-add) .tl-ph{background:#0b0b0d;-webkit-mask:var(--perfo) 0 0/100% 100% no-repeat;mask:var(--perfo) 0 0/100% 100% no-repeat}
 .tl-ph img,.tl-ph video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
   object-position:var(--fx,50%) var(--fy,50%);display:block;opacity:0;transition:opacity .35s ease}
@@ -3561,8 +3572,8 @@ body.lv-b #gate-logo #gl-rail,body.lv-b #gate-logo #gl-wm{opacity:0}
 .tlv-f{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch;
   overscroll-behavior:contain;scrollbar-width:none}
 .tlv-f::-webkit-scrollbar{display:none}
-.tlv-s{position:relative;height:100%;scroll-snap-align:start;scroll-snap-stop:always;overflow:hidden}
-.tlv-m{position:absolute;left:0;right:0;top:calc(max(10px,env(safe-area-inset-top)) + 46px);bottom:calc(max(14px,env(safe-area-inset-bottom)) + 24px)}
+.tlv-s{position:relative;height:100%;scroll-snap-align:start;scroll-snap-stop:always;overflow:hidden;isolation:isolate}
+.tlv-m{position:absolute;z-index:0;left:0;right:0;top:calc(max(10px,env(safe-area-inset-top)) + 46px);bottom:calc(max(14px,env(safe-area-inset-bottom)) + 24px)}
 .tlv-m img,.tlv-m video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:50% 0;display:block;opacity:0;transition:opacity .3s ease}
 .tlv-m img[src],.tlv-m video[src],.tlv-m video[poster]{opacity:1}
 .tlv-b{display:flex;flex-direction:column;align-items:center;gap:7px;padding:0 16px;max-width:min(100%,560px)}
@@ -3573,7 +3584,7 @@ body.lv-b #gate-logo #gl-rail,body.lv-b #gate-logo #gl-wm{opacity:0}
   background:rgba(18,18,22,.82);color:#d8d8e0;cursor:pointer}
 .view-close svg{display:block;margin:auto;width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.6}
 .view-close:focus-visible{outline:1px solid #fff;outline-offset:2px}
-.tlv-x{position:absolute;z-index:2;top:calc(max(10px,env(safe-area-inset-top)) + 4px);right:10px}
+.tlv-x{position:absolute;z-index:3;top:calc(max(10px,env(safe-area-inset-top)) + 4px);right:10px}
 /* 25/10 — retirer un média (Wah : « il faut pouvoir supprimer les media dans la vue de gauche et de droite ») : DEUX
    gestes — le premier arme (`is-sur`, « delete? », 3 s), le second retire. Rien ne part sur un tap égaré. */
 /* 14/11 (Wah) : « le bouton [Delete] de la vue de droite spot est le bon » — un seul format pour les deux
@@ -3600,7 +3611,8 @@ body.lv-b #gate-logo #gl-rail,body.lv-b #gate-logo #gl-wm{opacity:0}
 .ssp-acts button[data-del],.ssp-acts button[data-tlv]{font:700 10px/1 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase}
 .tlv-b .ssp-row{align-self:center;min-height:0;padding:3px}
 /* le niveau d'une box, PARTOUT où elle apparaît : la même ligne de mots que dans le TOTEHM, posée sous la box */
-body.is-tlv #gate-asteroid,body.is-tlv #lvjoy{opacity:0;pointer-events:none}
+/* Les descendants de la manette ont leur propre zone tactile. La visibilité la retire avec eux. */
+body.is-tlv :is(#gate-asteroid,#lvjoy){opacity:0;visibility:hidden;pointer-events:none}
 /* ══ 20/10 — LA BOX DU TOTEHM, HORS DU TOTEHM (`boxTotehm`) ═══════════════════════════════════════════
    Le rendu de la liste, sans rail : le filet d'intention (2 px) EST le bord gauche, la peau celle de sa vue. */
 .tb{--rl:0px;--rw:0px;position:relative;min-width:0}
@@ -3610,6 +3622,8 @@ body.is-tlv #gate-asteroid,body.is-tlv #lvjoy{opacity:0;pointer-events:none}
 /* Sur la tuile : la box posée sur l'image, surélevée, son nom seul (deux lignes au plus). */
 .tl-bx{position:absolute;left:6px;bottom:6px;max-width:calc(100% - 12px);pointer-events:none;
   box-shadow:0 8px 18px rgba(0,0,0,.6),0 2px 4px rgba(0,0,0,.45);transform:translateY(-3px)}
+#lv-sh .tl-ph{z-index:0}
+#lv-sh .tl-bx{z-index:1}
 .tl-bx .habit .h-body{padding:4px 7px 4px 8px}
 .tl-bx .v-name{font-size:10.5px;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;padding-right:0}
 @media(min-width:700px){.tl-bx{left:9px;bottom:9px;max-width:calc(100% - 18px)}.tl-bx .v-name{font-size:12.5px}}
@@ -3618,7 +3632,7 @@ body.is-tlv #gate-asteroid,body.is-tlv #lvjoy{opacity:0;pointer-events:none}
 .tl-sel{grid-column:1/-1;padding:2px 0 8px;cursor:pointer}
 @media(max-width:699px){.tl-sel{padding:2px 8px 8px}}
 /* La visionneuse : la box DÉTAILLÉE par-dessus le média, en bas, surélevée. */
-.tlv-s .tlv-b{position:absolute;left:50%;transform:translate(-50%,var(--dy,0px));transition:transform .38s cubic-bezier(.22,.9,.3,1);bottom:calc(max(14px,env(safe-area-inset-bottom)) + 18px);
+.tlv-s .tlv-b{position:absolute;z-index:1;left:50%;transform:translate(-50%,var(--dy,0px));transition:transform .38s cubic-bezier(.22,.9,.3,1);bottom:calc(max(14px,env(safe-area-inset-bottom)) + 18px);
   width:min(calc(100vw - 32px),520px);max-width:none;padding:0;display:block;box-shadow:0 14px 34px rgba(0,0,0,.7)}
 /* Le filtre : d'abord les cinq vues en UN bloc de commande rectangle (la croix du TOTEHM) ; puis les boxes de la vue
    choisie. Les deux carrés portent les douze trous du logo (`--perfo`, la même variable que les médias). */
@@ -3705,7 +3719,9 @@ body.papier-haut #gate-asteroid{transition:opacity .25s ease}
 a.sd-tag{color:#fff;text-decoration:underline;text-decoration-color:rgba(255,255,255,.45);text-underline-offset:3px}
 button.sd-tag.is-aud{border:0;cursor:pointer;color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.4)}
 button.sd-tag.is-aud[disabled]{opacity:.6;cursor:progress}
-.sd-say{margin:0;font:400 13px/1.45 'Quantico',sans-serif;color:#fff}
+.sd-say{margin:0;font:400 13px/1.45 'Quantico',sans-serif;color:#fff;
+  min-width:0;max-height:min(12em,28dvh);white-space:pre-wrap;overflow-wrap:anywhere;overflow:auto;overscroll-behavior:contain}
+.sd-say:focus-visible{outline:1px solid var(--rail-color);outline-offset:2px}
 /* 23/11 (Wah : « réduire la bande noire : pas besoin qu'elle fasse toute la largeur puisqu'il n'y a que trois boutons ») */
 .ssp-row{display:flex;align-items:center;justify-content:center;gap:8px;min-height:30px;width:fit-content;max-width:100%;margin:0 auto;
   background:rgba(0,0,0,.86);border-radius:16px;padding:3px}
@@ -3742,12 +3758,11 @@ button.sd-tag.is-aud[disabled]{opacity:.6;cursor:progress}
 body.papier-haut #gate-asteroid{z-index:7}
 body.lv-g #lv-socket,body.lv-d #lv-socket{opacity:0}
 .lsh-flt{position:absolute;left:0;right:0;top:calc(max(10px,env(safe-area-inset-top)) + 58px);z-index:4;
-  display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;gap:7px;padding:0 12px;pointer-events:none}
-.lsh-flt button{pointer-events:auto;border:0;border-radius:10px;padding:5px 9px;background:rgba(22,22,26,.82);
-  color:#8a8a92;font:700 8.5px/1.3 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;cursor:pointer}
-.lsh-flt button.is-on{background:#3a3a42;color:#fff}
-.lsh-flt button:focus-visible{outline:1px solid #fff;outline-offset:2px}
-.lsh-flt .fp{font-size:12px;letter-spacing:0;padding:3px 10px 5px}
+  display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;gap:12px;padding:0 12px;pointer-events:none}
+.lsh-flt .k2r{pointer-events:auto}
+.lsh-flt:has([aria-expanded="true"]){z-index:9}
+.lsh-flt .k2r:is(.is-on,[aria-expanded="true"]) .k2l{color:#fff}
+.lsh-flt .k2r:is(.is-on,[aria-expanded="true"]):not(:active,.is-press,.is-tap) .k2k{filter:brightness(1.25)}
 /* LE PAPIER : le carré navy perforé du logo, en petit. Il ne navigue pas — il CHOISIT une Box. */
 .lsh-tp{flex:none;width:34px;height:34px;padding:0;border-radius:0!important;
   background:var(--logo-navy) 0 0/100% 100% no-repeat!important;
@@ -3800,7 +3815,9 @@ body.lv-g #lv-socket,body.lv-d #lv-socket{opacity:0}
 .ns-in{border:0;outline:0;color:#fff;font-family:'Quantico',sans-serif;font-size:13px;color-scheme:dark}
 .ns-in:focus-visible{box-shadow:inset 0 0 0 1px rgba(255,255,255,.45)}
 .ns-min{width:76px}
-.ns-mot,.ns-place{width:100%;resize:none}
+.ns-place{width:100%;resize:none}
+.ns-mot{width:100%;resize:vertical;cursor:text;line-height:1.45;
+  white-space:pre-wrap;overflow-wrap:anywhere;overflow:auto;text-overflow:clip}
 .ns-m{width:min(34vw,150px);aspect-ratio:9/16;background:#0b0b0d;border-radius:10px;overflow:hidden}
 .ns-m img,.ns-m video{width:100%;height:100%;object-fit:cover;display:block}
 .ns-go{border:0;border-radius:10px;padding:13px 16px;background:#3a3a42;color:#fff;cursor:pointer;
@@ -3828,7 +3845,7 @@ body.rdr-pique #rdr-map{cursor:crosshair}
 /* la prise d'un spot tient la navigation : la manette s'efface le temps de la prise (CLOSE ou la publication la rendent) */
 #rdr-new{padding-bottom:calc(var(--lvj-h,64px) + 48px)}
 #lvjoy{transition:opacity .2s ease}
-body.is-nspot #lvjoy{opacity:0;pointer-events:none}
+body.is-nspot #lvjoy{opacity:0;visibility:hidden;pointer-events:none}
 /* Le choix de l'élément : une colonne sombre, ancrée EN HAUT, chaque élément avec ses traits. */
 .lsh-pick{position:absolute;inset:0;z-index:8;background:rgba(0,0,0,.82);
   display:flex;flex-direction:column;align-items:center;gap:6px;
@@ -3844,18 +3861,20 @@ body.is-nspot #lvjoy{opacity:0;pointer-events:none}
    ouvre le POLAROID (`#rdr-sh`, un spot par écran, TikTok) PAR-DESSUS ; ✕ ou Échap y revient. */
 #rdr-map{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:grab;background:transparent}
 #rdr-map.is-tenu{cursor:grabbing}
+#rdr-map-credit{position:absolute;right:8px;bottom:max(8px,env(safe-area-inset-bottom));z-index:1;
+  padding:3px 5px;background:#000;color:#b8b8c2;font:400 9px/1.3 'Space Mono',monospace}
+body:is(.rdr-grid,.rdr-voir,.is-nspot:not(.rdr-pique)) #rdr-map-credit{display:none}
 #rdr-g{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;
   scrollbar-width:none;display:none;background:#000}
 #rdr-g::-webkit-scrollbar{display:none}
 body.rdr-grid #rdr-g{display:block}
-/* La photo, la box et son filet partagent le même disque. */
+/* Le filet suit le bord droit et l'arc inférieur du segment navy. */
 :is(#rdr-g .tlg,#rdr-plus){gap:5px;padding-left:5px;padding-right:5px}
 :is(#rdr-g,#rdr-plus) .tl{border-radius:50%}
 @media(min-width:700px){:is(#rdr-g .tlg,#rdr-plus){gap:8px;padding-left:0;padding-right:0}}
-#rdr-g .tl[data-cle]::after{content:"";position:absolute;inset:0;z-index:3;pointer-events:none;
-  border-radius:inherit;padding:2px;background:var(--spot-traits,rgba(255,255,255,.18));
-  -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;
-  mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);mask-composite:exclude}
+#rdr-g .tl-traits{position:absolute;inset:0;width:100%;height:100%;z-index:3;pointer-events:none;
+  fill:none;stroke-width:2}
+#rdr-g .tl-traits path{vector-effect:non-scaling-stroke}
 #rdr-g .tl-bx{inset:auto 0 0;height:44%;max-width:none;background:var(--navy);box-shadow:none;transform:none}
 #rdr-g .tl-bx .habit .tick{display:none}
 #rdr-g .tl-bx .habit .h-body{padding:clamp(6px,1vw,14px) 14% 0;background:none}
@@ -3882,7 +3901,7 @@ body.rdr-voir #rdr-grab{display:flex}
 #rdr-grab:active i{background:#fff}
 #rdr-grab:focus-visible{outline:1px solid #fff;outline-offset:2px}
 @media(prefers-reduced-motion:reduce){#rdr-sh,#rdr-grab{transition:none!important}}
-body.lv-d.rdr-voir #gate-asteroid,body.lv-d.rdr-voir #lvjoy,body.rdr-voir #rdr-flt{opacity:0;pointer-events:none}
+body.lv-d.rdr-voir :is(#gate-asteroid,#lvjoy,#rdr-flt){opacity:0;visibility:hidden;pointer-events:none}
 /* L'intention + le badge Higher (« Fight [Higher] »), dans les deux panneaux de filtres. */
 .sfi .sfh{display:inline-block;width:38px;height:13px;margin-left:5px;vertical-align:-2px}
 #lv-sh-say,#rdr-say{position:absolute;left:0;right:0;z-index:3;margin:0;
@@ -4808,6 +4827,7 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
            GRILLE, dans le même format que MINE et MEMBERS ». MAP = la Terre et ses spots ; GRID = une tuile par spot.
            Un tap ouvre le POLAROID (le format TikTok, un spot par écran) : c'est ici, et ici seulement. -->
       <canvas id="rdr-map" class="lv-act" aria-label="Spots on the map"></canvas>
+      <a id="rdr-map-credit" class="lv-act" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener" hidden>© OpenStreetMap</a>
       <div id="rdr-g" class="lv-act"><div id="rdr-g-f"></div></div>
       <div id="rdr-sh" class="lv-act"><div id="rdr-sh-f"></div></div>
       <button type="button" id="rdr-x" data-hover-art class="lv-act view-close" aria-label="Close"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2 L12 12 M12 2 L2 12"/></svg></button>
@@ -6358,7 +6378,7 @@ window.__totehm_vignette=()=>VIGNETTE.etat();
 const monPseudo=()=>((me&&myProfile&&myProfile.pseudo)||'').trim();
 const CLUBSP=(()=>{
   const PER=['past','now','future'];
-  const st={pers:['now'], p:{}, items:[], total:0, more:false, seq:0, charge:false, lu:false, auto:true,
+  const st={pers:['now'], p:{}, items:[], total:0, more:false, seq:0, charge:false, lu:false, auto:true, perChoisie:false,
             err:'', pos:null, at:0, aud:'', srv:{intentions:[], type:'all', scope:'world', habit:'', rayon:50}};
   const abon=[];
   const prevenir=()=>abon.forEach(f=>{ try{ f(); }catch(e){ console.error('[clubsp]',e&&e.message||e); } });
@@ -6372,7 +6392,7 @@ const CLUBSP=(()=>{
   }
   /* ⚠️ 23/11 (Wah : « on devrait pouvoir sélectionner TOUS les temps (now, later, past) comme on peut sélectionner plusieurs
      intentions ») — `st.pers` : un ou plusieurs temps ; le serveur en lit UN par appel (`p_period`) : une lecture par temps,
-     en parallèle, chacune avec sa page (`st.p[per]` : décalage, `as_of`, suite), puis fusionnées dans l'ordre now · future · past. */
+     en parallèle, chacune avec sa page (`st.p[per]` : décalage, `as_of`, suite), puis fusionnées. */
   async function lire(suite){
     if(suite&&(st.charge||!st.more)) return;
     const s=++st.seq, uid=me?me.id:null, f=filtres(), ro=RO;
@@ -6403,8 +6423,13 @@ const CLUBSP=(()=>{
     }
     st.auto=false; st.err=''; st.lu=true; st.at=Date.now();
     if(!suite) st.p={};
-    lectures.forEach(r=>{ const d=r.data; st.p[r.per]={off:d.next_offset|0, asOf:d.as_of||(st.p[r.per]&&st.p[r.per].asOf)||null, more:!!(d.has_more||d.more), total:d.total|0}; });
-    st.items=suite?st.items.concat(l.filter(x=>!st.items.some(y=>y.id===x.id))):l.filter((x,i,a)=>a.findIndex(y=>y.id===x.id)===i);
+    lectures.forEach(r=>{
+      const d=r.data, q=st.p[r.per], off=d.next_offset|0;
+      st.p[r.per]={off, asOf:d.as_of||(q&&q.asOf)||null, more:!!(d.has_more||d.more)&&off>(q?.off||0), total:d.total|0};
+    });
+    const uniques=new Map((suite?st.items:[]).map(x=>[x.id,x]));
+    for(const x of l) if(!uniques.has(x.id)) uniques.set(x.id,x);
+    st.items=[...uniques.values()];
     st.total=Object.values(st.p).reduce((a,q)=>a+(q.total|0),0); st.more=Object.values(st.p).some(q=>q.more);
     prevenir();
   }
@@ -6422,12 +6447,20 @@ const CLUBSP=(()=>{
   const vider=()=>{ st.items=[]; st.total=0; st.more=false; st.p={}; };
   return {
     lire:()=>lire(false),
-    /* À l'ouverture : on relit si la lecture a plus d'une minute (un spot commence, un autre finit). */
-    ouvrir(){ if(!st.lu||Date.now()-st.at>60000) lire(false); },
+    /* La carte charge tous les temps par défaut et complète les pages déjà en mémoire. */
+    ouvrir(carte){
+      if(carte&&!st.perChoisie&&st.pers.length<PER.length){
+        st.pers=ORDRE.slice(); vider(); prevenir(); return lire(false);
+      }
+      if(st.charge) return;
+      if(!st.lu||Date.now()-st.at>60000) return lire(false);
+      if(carte&&!st.err) return lire(true);
+    },
     suite:()=>lire(true),
     /* un temps de plus, ou de moins — comme une intention ; il en reste toujours un */
-    periode(p){ if(!PER.includes(p)) return; st.auto=false;
-      if(st.pers.includes(p)){ if(st.pers.length===1) return; st.pers=st.pers.filter(x=>x!==p); } else st.pers=ORDRE.filter(x=>x===p||st.pers.includes(x));
+    periode(p){ if(!PER.includes(p)||(st.pers.length===1&&st.pers.includes(p))) return;
+      st.auto=false; st.perChoisie=true;
+      if(st.pers.includes(p)) st.pers=st.pers.filter(x=>x!==p); else st.pers=ORDRE.filter(x=>x===p||st.pers.includes(x));
       vider(); prevenir(); lire(false); },
     /* « near me » : la position est demandée À CE GESTE, puis les spots dans le rayon choisi (serveur, `radius_km`). */
     async regler(o){
@@ -6442,15 +6475,18 @@ const CLUBSP=(()=>{
     get per(){ return st.pers[0]; }, get pers(){ return st.pers.slice(); }, get err(){ return st.err; }, get lu(){ return st.lu; }, get charge(){ return st.charge; },
     PER, NOMS, ORDRE,
     /* un spot que je viens de publier : le temps où il vit, relu */
-    montrer(p){ if(!PER.includes(p)) return; st.auto=false; st.pers=[p]; vider(); prevenir(); return lire(false); },
-    /* Dans la barre, le temps courant, et rien d'autre : un tap ouvre le filtre (où se choisit le temps). */
-    perChip:()=>'<button type="button" class="is-on" data-f="sf" data-per="'+st.pers.join(' ')+'">'+st.pers.map(p=>NOMS[p]).join(' · ')+'</button>',
+    montrer(p){
+      if(!PER.includes(p)) return;
+      st.auto=false;
+      if(!st.pers.includes(p)) st.pers=[p];
+      vider(); prevenir(); return lire(false);
+    },
     surChangement(f){ if(typeof f==='function') abon.push(f); },
     /* 25/10 — un spot que j'ai retiré (`spot_remove`) quitte la carte, la grille et le fil d'un coup. */
     retirer(id){ const n=st.items.length; st.items=st.items.filter(x=>!x||String(x.id)!==String(id));
       if(st.items.length!==n){ st.total=Math.max(0,st.total-1); prevenir(); } },
     vider(){ st.seq++; vider(); st.lu=false; st.auto=true;
-      st.pers=['now']; st.err=''; st.charge=false; st.aud=''; st.srv={intentions:[], type:'all', scope:'world', habit:'', rayon:50}; },
+      st.pers=['now']; st.perChoisie=false; st.err=''; st.charge=false; st.aud=''; st.srv={intentions:[], type:'all', scope:'world', habit:'', rayon:50}; },
     etat:()=>({periode:st.pers.join('+'), items:st.items.length, total:st.total, more:st.more, lu:st.lu, err:st.err,
                filtres:filtres(), aud:st.aud, charge:st.charge, rayon:st.srv.rayon})
   };
@@ -6564,19 +6600,16 @@ const SPOTLIEU=(()=>{
   return {de, connu:z=>!!(z&&z.exact&&typeof z.exact.lat==='number')};
 })();
 
-/* ══ → MAP · LA TERRE ET SES SPOTS · 20/10/2026 sexies ═══════════════════════════════════════════════════════
-   Un canvas, la projection orthographique (le globe de MON MONDE du 13/10, repris), les terres de Natural Earth
-   110 m (`/assets/earth.json`, 51 ko, une fois). Le globe se tourne au doigt, se zoome à la molette et au pincement ;
-   AUCUN rAF permanent — on redessine quand quelque chose change. Autour, SEPT MÉRIDIENS aux sept couleurs : c'est
-   le réseau du centre qui s'est plié autour du monde (`RAM`, vue `d`) — ils ne tournent pas, la Terre tourne dedans.
-   Un carré par spot, à la couleur de sa première intention : PLEIN si le point m'est montré, CREUX si je ne vois
-   que la ville. Un tap sur un carré ouvre son polaroid. */
+/* Le globe Natural Earth se tourne au doigt et se zoome à la molette ou au pincement. La position du navigateur
+   cadre la ville dans le canvas. Les repères superposés comptent leurs spots et les placent à la suite dans le fil. */
 const SPMAP=(()=>{
-  const D=Math.PI/180;
-  const etat={on:false, terres:0, points:0, villes:0, sans:0, zoom:1, centre:false};
+  const D=Math.PI/180, TERRE_KM=6371, ZOOM_DETAIL=64, ZOOM_MAX=2048;
+  const etat={on:false, terres:0, points:0, groupes:0, villes:0, sans:0, zoom:1, centre:false};
   let terre=null, terreP=null, lon0=8, lat0=28, k=1, tenu=null, pinch=null, pts=[], lieux=[], seq=0, rq=0, pique=null, epingle=null;
-  const ptrs=new Map();
+  let geoSeq=0, geoAttente=false, trajet=0;
+  const ptrs=new Map(), tuiles=new Map();
   const cv=()=>$('rdr-map');
+  const longitude=l=>((l+180)%360+360)%360-180;
   /* La géométrie du globe à l'écran, PARTAGÉE avec le réseau (`RAM`) : sous le papier docké, au-dessus de la bascule. */
   function geo(){
     const w=innerWidth, h=innerHeight, jb=$('lvjoy'), haut=118;
@@ -6594,6 +6627,42 @@ const SPMAP=(()=>{
     return [cx+R*cp*Math.sin(l), cy-R*(Math.cos(p0)*Math.sin(p)-Math.sin(p0)*cp*Math.cos(l)),
             Math.sin(p0)*Math.sin(p)+Math.cos(p0)*cp*Math.cos(l)];
   }
+  /* Aux échelles locales, les tuiles du Club et les spots partagent la projection Mercator. */
+  const mercY=la=>(1-Math.asinh(Math.tan(Math.max(-85.0511,Math.min(85.0511,la))*D))/Math.PI)/2;
+  function plan(R){
+    if(k<ZOOM_DETAIL||Math.abs(lat0)>85) return null;
+    return {echelle:2*Math.PI*R*Math.cos(lat0*D), x:(lon0+180)/360, y:mercY(lat0)};
+  }
+  function dessinerTuiles(ctx,p,cx,cy,w,h,d){
+    const z=Math.max(2,Math.min(18,Math.round(Math.log2(p.echelle/(256*d))))), n=2**z, cote=p.echelle/n;
+    const dx=cx-p.x*p.echelle, dy=cy-p.y*p.echelle;
+    let peint=false;
+    ctx.save(); ctx.filter='grayscale(.8) brightness(.57)';
+    for(let y=Math.max(0,Math.floor(-dy/cote));y<=Math.min(n-1,Math.floor((h-dy)/cote));y++){
+      for(let x=Math.floor(-dx/cote);x<=Math.floor((w-dx)/cote);x++){
+        const cle=z+'/'+((x%n+n)%n)+'/'+y;
+        let im=tuiles.get(cle);
+        if(!im){
+          im=new Image(); im.referrerPolicy='strict-origin-when-cross-origin'; im.onload=kick;
+          im.src='https://tile.openstreetmap.org/'+cle+'.png';
+          tuiles.set(cle,im);
+          if(tuiles.size>128) tuiles.delete(tuiles.keys().next().value);
+        }
+        if(im.complete&&im.naturalWidth){
+          const l=Math.round(dx+x*cote), t=Math.round(dy+y*cote);
+          ctx.drawImage(im,l,t,Math.round(dx+(x+1)*cote)-l,Math.round(dy+(y+1)*cote)-t);
+          peint=true;
+        }
+      }
+    }
+    ctx.restore();
+    return peint;
+  }
+  function cadrerSpots(){
+    if(!lieux.length||etat.centre||geoAttente) return;
+    etat.centre=true;
+    lon0=lieux[0].p.lng; lat0=lieux[0].p.lat;
+  }
   /* Les spots → leurs lieux (une lecture de `cities.json` seulement si un spot n'a pas de point). */
   async function situer(){
     const s=++seq, l=CLUBSP.items();
@@ -6601,9 +6670,7 @@ const SPMAP=(()=>{
     if(s!==seq) return;
     lieux=r.filter(x=>x.p);
     etat.sans=r.length-lieux.length; etat.villes=lieux.filter(x=>!x.p.plein).length;
-    /* Le premier dessin se centre sur les spots (leur barycentre) ; ensuite, le membre tient le globe. */
-    if(lieux.length&&!etat.centre){ etat.centre=true;
-      lon0=lieux.reduce((a,x)=>a+x.p.lng,0)/lieux.length; lat0=Math.max(-55,Math.min(60,lieux.reduce((a,x)=>a+x.p.lat,0)/lieux.length)); }
+    cadrerSpots();
     kick();
   }
   function dessiner(){
@@ -6626,36 +6693,86 @@ const SPMAP=(()=>{
       }
       if(vis){ x.closePath(); x.fill(); }
     }
-    /* 20/10 septies — PLUS DE MÉRIDIENS SUR LE GLOBE (Wah : « comme sur la vue de gauche, il faut qu'ils
-       disparaissent du globe ») : les sept traits se plient autour du monde PENDANT la transformation (`#lv-ram`),
-       puis ils s'effacent ; la Terre ne garde que ses spots. */
-    /* Les spots = des POINTS (Wah : « à la place des carrés, des points ») : plein = le point exact, creux = la ville. */
+    const p=plan(R);
+    $('rdr-map-credit').hidden=!p||!!trajet||!dessinerTuiles(x,p,cx,cy,w,h,d);
+    const projeter=ll=>p
+      ?[cx+p.echelle*longitude(ll.lng-lon0)/360,cy+p.echelle*(mercY(ll.lat)-p.y),1]
+      :proj(ll.lng,ll.lat,R,cx,cy);
     pts=[];
     for(const o of lieux){
-      const [px,py,pz]=proj(o.p.lng,o.p.lat,R,cx,cy); if(pz<0) continue;
-      /* 12/11 (Wah) : le point PREND TOUTES ses intentions, mélangées comme des pigments (`melange`). */
+      const [px,py,pz]=projeter(o.p);
+      if(pz<0||px<0||py<0||px>w||py>h) continue;
+      const cle='sp:'+o.z.id, sx=px/d, sy=py/d;
+      const voisin=pts.find(a=>Math.hypot(a.x-sx,a.y-sy)<26);
+      if(!voisin) pts.push({x:sx,y:sy,cles:[cle],lieu:o});
+      else if(o.p.plein&&!voisin.lieu.p.plein){
+        voisin.x=sx; voisin.y=sy; voisin.lieu=o; voisin.cles.unshift(cle);
+      }else voisin.cles.push(cle);
+    }
+    for(const spot of pts){
+      const {lieu:o,cles}=spot, px=spot.x*d, py=spot.y*d;
       const z=o.z, col=melange(z.intentions||((z.habit_box||{}).ints)||[]), r=(z.state==='am'?5.5:4)*d;
-      /* 23/11 (Wah) : des POINTS LUMINEUX — chaque point rayonne de sa couleur (mélangée s'il a plusieurs intentions). */
       x.shadowColor=col; x.shadowBlur=(z.state==='am'?16:11)*d;
-      x.beginPath(); x.arc(px,py,r,0,7);
-      if(o.p.plein){ x.fillStyle=col; x.fill(); x.fill(); }
+      x.beginPath(); x.arc(px,py,cles.length>1?Math.max(11,5+String(cles.length).length*3)*d:r,0,7);
+      if(cles.length>1){
+        x.fillStyle='#131329'; x.fill(); x.strokeStyle=col; x.lineWidth=1.5*d; x.stroke();
+        x.shadowBlur=0; x.fillStyle='#fff'; x.font='700 '+(10*d)+'px "Space Mono", monospace';
+        x.textAlign='center'; x.textBaseline='middle'; x.fillText(String(cles.length),px,py);
+      }else if(o.p.plein){ x.fillStyle=col; x.fill(); x.fill(); }
       else{ x.strokeStyle=col; x.lineWidth=1.5*d; x.stroke(); }
       x.shadowBlur=0;
-      pts.push({x:px/d, y:py/d, cle:'sp:'+z.id});
     }
     /* le point posé pour un spot à venir : un anneau blanc, rien d'autre */
-    if(epingle){ const [px,py,pz]=proj(epingle.lng,epingle.lat,R,cx,cy);
+    if(epingle){ const [px,py,pz]=projeter(epingle);
       if(pz>=0){ x.beginPath(); x.arc(px,py,7*d,0,7); x.strokeStyle='#fff'; x.lineWidth=2*d; x.stroke();
         x.beginPath(); x.arc(px,py,2*d,0,7); x.fillStyle='#fff'; x.fill(); } }
-    etat.points=pts.length; etat.zoom=Math.round(k*100)/100;
+    etat.points=pts.reduce((n,p)=>n+p.cles.length,0);
+    etat.groupes=pts.filter(p=>p.cles.length>1).length;
+    etat.zoom=Math.round(k*100)/100;
   }
   function kick(){ if(!rq&&etat.on) rq=requestAnimationFrame(dessiner); }
+  function arreterAutoZoom(){
+    geoSeq++; geoAttente=false;
+    if(trajet){ cancelAnimationFrame(trajet); trajet=0; }
+  }
+  function zoomerIci(){
+    if(!navigator.geolocation){ cadrerSpots(); return; }
+    const s=++geoSeq; geoAttente=true;
+    navigator.geolocation.getCurrentPosition(({coords})=>{
+      if(s!==geoSeq) return;
+      geoAttente=false; etat.centre=true;
+      const {latitude,longitude:lng}=coords, la=lat0, lo=lon0, ecart=longitude(lng-lo);
+      /* Un rayon de ville de 14 km, mesuré sur le disque d'origine, quelle que soit la taille d'écran. */
+      const cible=TERRE_KM/14;
+      if(matchMedia('(prefers-reduced-motion: reduce)').matches){ lon0=lng; lat0=latitude; k=cible; kick(); return; }
+      const t0=performance.now(), doux=t=>t*t*(3-2*t);
+      const avancer=t=>{
+        const p=Math.min(1,Math.max(0,(t-t0)/1300)), f=doux(Math.min(1,p/.62));
+        lon0=longitude(lo+ecart*f); lat0=la+(latitude-la)*f; k=cible**doux(p);
+        trajet=p<1?requestAnimationFrame(avancer):0; kick();
+      };
+      trajet=requestAnimationFrame(avancer);
+    },()=>{
+      if(s!==geoSeq) return;
+      geoAttente=false; cadrerSpots(); kick();
+    },{timeout:8000,maximumAge:0});
+  }
   /* 27/10 — Wah : « on doit pouvoir bouger la map du monde seulement quand on est sur le monde ». Le doigt (ou la souris, la
      molette) ne tient la Terre que posé DANS son disque ; ailleurs, le geste reste celui de la navigation. */
-  function dansDisque(px,py){ const g=geo(); return Math.hypot(px-g.cx,py-g.cy)<=g.R0*k; }
+  function dansDisque(px,py){
+    const g=geo();
+    if(k>=ZOOM_DETAIL&&(px<12||px>innerWidth-12)) return false;
+    return Math.hypot(px-g.cx,py-g.cy)<=g.R0*k;
+  }
   /* L'inverse de `proj` : le point de l'écran → sa latitude, sa longitude (null hors du globe). Pour poser un spot à venir. */
   function inverse(px,py){
     const g=geo(), R=g.R0*k, x=(px-g.cx)/R, y=(g.cy-py)/R, rho=Math.hypot(x,y);
+    const p=plan(R);
+    if(p){
+      const lat=Math.atan(Math.sinh(Math.PI*(1-2*(p.y+(py-g.cy)/p.echelle))))/D;
+      const lng=longitude(lon0+(px-g.cx)*360/p.echelle);
+      return {lat:Math.round(lat*1e5)/1e5,lng:Math.round(lng*1e5)/1e5};
+    }
     if(rho>1) return null; if(rho<1e-9) return {lat:lat0, lng:lon0};
     const c=Math.asin(rho), p0=lat0*D, sc=Math.sin(c), cc=Math.cos(c);
     const lat=Math.asin(cc*Math.sin(p0)+y*sc*Math.cos(p0)/rho)/D;
@@ -6667,11 +6784,12 @@ const SPMAP=(()=>{
     for(const p of pts){ const dd=Math.hypot(p.x-cx0,p.y-cy0); if(dd<dm){ dm=dd; best=p; } }
     return best;
   }
-  /* Les gestes : un doigt tourne, deux doigts zooment, la molette zoome ; un tap (< 6 px) ouvre le carré visé. */
+  /* Un doigt tourne, deux doigts ou la molette zooment. Un tap ouvre le spot ou le groupe visé. */
   { const c=cv(); if(c){
     c.addEventListener('pointerdown',e=>{
       if(e.pointerType==='mouse'&&e.button!==0) return;
       { const r=c.getBoundingClientRect(); if(!ptrs.size&&!dansDisque(e.clientX-r.left,e.clientY-r.top)){ etat.horsDisque=(etat.horsDisque||0)+1; return; } }
+      arreterAutoZoom(); etat.centre=true; kick();
       ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
       try{ c.setPointerCapture(e.pointerId); }catch(_){}
       if(ptrs.size===2){ const [a,b]=[...ptrs.values()]; pinch={d:Math.hypot(a.x-b.x,a.y-b.y)||1, k}; tenu=null; return; }
@@ -6679,9 +6797,11 @@ const SPMAP=(()=>{
     });
     c.addEventListener('pointermove',e=>{
       if(!ptrs.has(e.pointerId)) return; ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
-      if(pinch&&ptrs.size===2){ const [a,b]=[...ptrs.values()]; k=Math.max(1,Math.min(8,pinch.k*(Math.hypot(a.x-b.x,a.y-b.y)/pinch.d))); kick(); return; }
+      if(pinch&&ptrs.size===2){ const [a,b]=[...ptrs.values()]; k=Math.max(1,Math.min(ZOOM_MAX,pinch.k*(Math.hypot(a.x-b.x,a.y-b.y)/pinch.d))); kick(); return; }
       if(!tenu||tenu.id!==e.pointerId) return;
-      const f=.32/k; lon0-=(e.clientX-tenu.x)*f; lat0=Math.max(-75,Math.min(75,lat0+(e.clientY-tenu.y)*f));
+      const f=1/(D*geo().R0*k);
+      lon0=longitude(lon0-(e.clientX-tenu.x)*f/Math.max(.03,Math.cos(lat0*D)));
+      lat0=Math.max(-89.9,Math.min(89.9,lat0+(e.clientY-tenu.y)*f));
       tenu.x=e.clientX; tenu.y=e.clientY; etat.tours=(etat.tours||0)+1; kick();
     });
     const fin=e=>{
@@ -6694,27 +6814,42 @@ const SPMAP=(()=>{
       if(pique){ const ll=inverse(e.clientX-r.left,e.clientY-r.top); if(!ll) return;
         epingle=ll; kick(); const f=pique; pique=null; f(ll); return; }
       const p=viser(e.clientX-r.left,e.clientY-r.top);
-      if(p) SPOTS.voir(p.cle);
+      if(p) SPOTS.voir(p.cles[0],p.cles.length>1?p.cles:null);
     };
     c.addEventListener('pointerup',fin); c.addEventListener('pointercancel',fin);
     c.addEventListener('wheel',e=>{
       const r=c.getBoundingClientRect(); if(!dansDisque(e.clientX-r.left,e.clientY-r.top)) return;   /* hors du globe : la navigation */
       e.preventDefault(); e.stopPropagation();
-      k=Math.max(1,Math.min(8,k*Math.exp(-e.deltaY*.0015))); kick(); },{passive:false});
+      arreterAutoZoom(); etat.centre=true;
+      k=Math.max(1,Math.min(ZOOM_MAX,k*Math.exp(-e.deltaY*.0015))); kick(); },{passive:false});
   } }
   window.addEventListener('resize',()=>{ if(etat.on) kick(); });
   return {
     geo,
-    ouvrir(){ etat.on=true; k=1; chargerTerre(); situer(); kick(); },
-    fermer(){ etat.on=false; tenu=null; pinch=null; ptrs.clear(); if(rq){ cancelAnimationFrame(rq); rq=0; } },
+    ouvrir(){
+      arreterAutoZoom();
+      etat.on=true; etat.centre=false; lon0=8; lat0=28; k=1;
+      chargerTerre();
+      if(!document.body.classList.contains('is-nspot')) zoomerIci();
+      situer(); kick();
+    },
+    fermer(){
+      etat.on=false; arreterAutoZoom(); tenu=null; pinch=null; ptrs.clear();
+      if(rq){ cancelAnimationFrame(rq); rq=0; }
+      cv().classList.remove('is-tenu'); $('rdr-map-credit').hidden=true;
+    },
     maj(){ if(etat.on) situer(); },
-    vider(){ seq++; lieux=[]; pts=[]; etat.centre=false; etat.points=0; },
+    vider(){ seq++; lieux=[]; pts=[]; etat.centre=false; etat.points=0; etat.groupes=0; },
     /* Pour viser au test : où se trouve un spot à l'écran (des nombres, jamais un nom). */
     ou:()=>pts.map(p=>[Math.round(p.x),Math.round(p.y)]),
     /* le doigt (coordonnées de la fenêtre) est-il SUR le globe ? — la navigation le lui laisse alors */
     dans(cx0,cy0){ const c=cv(); if(!c||!etat.on) return false; const r=c.getBoundingClientRect(); return dansDisque(cx0-r.left,cy0-r.top); },
     /* poser un point : le prochain tap sur le globe le rend à `f` ; `piquer(null)` renonce (f reçoit null) */
-    piquer(f){ const a=pique; pique=typeof f==='function'?f:null; if(a&&!pique) a(null); },
+    piquer(f){
+      const a=pique; pique=typeof f==='function'?f:null;
+      if(pique){ arreterAutoZoom(); etat.centre=true; kick(); }
+      if(a&&!pique) a(null);
+    },
     epingler(ll){ epingle=ll&&typeof ll.lat==='number'?{lat:ll.lat,lng:ll.lng}:null; kick(); },
     pique:()=>!!pique,
     etat:()=>Object.assign({},etat)
@@ -6756,19 +6891,22 @@ const SPGRID=(()=>{
   function tuile(z,i){
     const {habit}=habitDuSpot(z);
     const cols=intCols(habit);
-    const part=100/Math.max(1,cols.length);
-    const traits=cols.length>1
-      ?'conic-gradient('+cols.map((c,j)=>c+' '+j*part+'% '+(j+1)*part+'%').join(',')+')'
-      :cols[0];
+    const couleurs=cols.length?cols:['rgba(255,255,255,.18)'];
+    const part=1/couleurs.length;
+    /* Le haut de la box est à 56 % du cercle. Chaque intention suit une part de son périmètre. */
+    const traits='<svg class="tl-traits" viewBox="0 0 100 100" aria-hidden="true">'
+      +couleurs.map((c,j)=>'<path d="M1.17 56H98.83A49.2 49.2 0 0 1 1.17 56Z" pathLength="1" stroke="'+c+'"'
+        +(couleurs.length>1?' stroke-dasharray="'+part+' 1" stroke-dashoffset="'+(-j*part)+'"':'')+'/>').join('')
+      +'</svg>';
     const clip=z.clip&&z.clip.id?String(z.clip.id):'';
     const media=clip?'<img alt="" data-bunny="'+esc(clip)+'" data-spot="'+esc(String(z.id))+'">'
       :z.photo?'<img alt="" data-sh-src="'+esc(String(z.photo))+'">'
       :z.video?'<video muted playsinline preload="none" data-sh-v="'+esc(String(z.video))+'"></video>'
       :'';
     return '<article class="tl" data-cle="sp:'+esc(String(z.id))+'" data-i="'+i+'" tabindex="0" role="button" aria-label="'
-      +esc(habit.t||'spot')+'"'+(traits?' style="--spot-traits:'+traits+'"':'')+'>'
+      +esc(habit.t||'spot')+'">'
       +'<div class="tl-ph">'+media+((clip||z.video)?'<span class="tl-v" aria-hidden="true"></span>':'')+'</div>'
-      +'<div class="tl-bx">'+boxTotehm('h',habit,{court:true,sansLoupe:true})+'</div></article>';
+      +'<div class="tl-bx">'+boxTotehm('h',habit,{court:true,sansLoupe:true})+'</div>'+traits+'</article>';
   }
   async function charger(el){
     const b=el.querySelector('img[data-bunny]');
@@ -7061,7 +7199,7 @@ function creerFeed(conf){
   /* TOUT ce que j'ai posé : mes fichiers (images et vidéos), la photo d'un spot, l'image d'une VISION.
      À droite, seuls les SPOTS — c'est la vue des spots, en shorts. */
   /* 29/10 — UNE LISTE PRÊTÉE (`montrer`) : la visionneuse ouverte depuis le TOTEHM déployé montre CETTE liste-là. */
-  let ext=null, onFin=null;
+  let ext=null, onFin=null, groupe=null;
   const chez=new Map();
   function itemSpot(z){
     const hb=z.habit_box||{}, ints=Array.isArray(hb.ints)?hb.ints:(Array.isArray(z.intentions)?z.intentions:[]);
@@ -7191,7 +7329,7 @@ function creerFeed(conf){
       +'<div class="sd-row">'+tag(ET[z.state]||'','is-st')+tag(quand)+tag(duree(dur))+'</div>'
       +'<div class="sd-row">'+place+audT+(aud==='private'?'':tag('location '+(z.location==='on'?'on':'off')))
         +(z.location==='on'&&z.mode?tag(z.mode==='silent'?'silent · nobody disturb me':'social · we can talk'):'')+'</div>'
-      +(z.comment?'<p class="sd-say">'+esc(String(z.comment))+'</p>':'')+'</div>';
+      +(z.comment?'<p class="sd-say" tabindex="0">'+esc(String(z.comment))+'</p>':'')+'</div>';
     /* 23/11 (Wah) : « sur les spots, un bouton [Share] — un lieu Google Maps pour y aller et un lien vers la plateforme —
        dans la bande noire où sont déjà [Go] et [Delete] » */
     const acts=(ex?'<button type="button" data-go="'+esc(String(z.id))+'">go</button>':'')
@@ -7272,12 +7410,24 @@ function creerFeed(conf){
   }
   function peindreFlt(){
     const r=rail(); if(!r) return;
+    if(!r.firstElementChild){
+      const touche=(attr,nom)=>'<button type="button" class="k2r is-select" data-hover-art data-f="sf" '+attr
+        +' aria-haspopup="dialog" aria-controls="'+conf.panneau+'"><i class="k2k" aria-hidden="true"></i>'
+        +'<span class="k2l">'+nom+'</span></button>';
+      r.innerHTML=(conf.src==='spots'?touche('data-per=""',''):'')+touche('','Refine');
+    }
     const n=sfCount();
-    const h=(conf.avant?conf.avant():'')
-      +'<button type="button" class="'+(n?'is-on':'')+'" data-f="sf" aria-haspopup="dialog" aria-controls="'+conf.panneau+'"'
-      +' aria-expanded="'+sfOuvert()+'">'+(n?'Refine · '+n:'Refine')+'</button>';
-    if(r.dataset.h===h) return;
-    r.dataset.h=h; r.innerHTML=h;
+    const refine=r.lastElementChild, per=r.querySelector('[data-per]'), ouvre=String(sfOuvert()&&!SF.ajout);
+    refine.setAttribute('aria-expanded',ouvre);
+    refine.classList.toggle('is-on',n>0);
+    refine.querySelector('.k2l').textContent=n?'Refine · '+n:'Refine';
+    if(per){
+      const choix=CLUBSP.pers, tous=choix.length===CLUBSP.PER.length;
+      per.dataset.per=choix.join(' ');
+      per.setAttribute('aria-expanded',ouvre);
+      per.classList.toggle('is-on',!tous);
+      per.querySelector('.k2l').textContent=tous?'All times':choix.map(p=>CLUBSP.NOMS[p]).join(' · ');
+    }
   }
   /* LE PANNEAU : tout le reste, en une colonne, ancré en haut. Un groupe par question. */
   const pan=()=>conf.panneau?$(conf.panneau):null;
@@ -7580,13 +7730,15 @@ function creerFeed(conf){
     const r=$('tlv'), f=r&&r.querySelector('.tlv-f'); if(!f||!L[i]) return fermerV();
     r.hidden=false; document.body.classList.add('is-tlv');
     f.innerHTML=L.map((_,j)=>'<section class="tlv-s" data-j="'+j+'"><div class="tlv-m"></div><div class="tlv-b"></div></section>').join('');
-    VU.i=i; etat.vu=i; peindreDel();
+    VU.i=i; etat.vu=i;
     f.scrollTop=i*f.clientHeight;
     remplir(f.children[i],true);
     if(vio) vio.disconnect();
     vio=new IntersectionObserver(es=>es.forEach(en=>{
       const sec=en.target, j=+sec.dataset.j;
-      if(en.intersectionRatio>=.6){ VU.i=j; etat.vu=j; peindreDel(); remplir(sec,true);
+      if(en.intersectionRatio>=.6){
+        if(VU.i!==j){ VU.i=j; etat.vu=j; peindreDel(); }
+        remplir(sec,true);
         if(sec.nextElementSibling) remplir(sec.nextElementSibling,false);
         if(sec.previousElementSibling) remplir(sec.previousElementSibling,false); }
       else{ const v=sec.querySelector('video'); if(v) try{ v.pause(); }catch(_){} }
@@ -7596,7 +7748,7 @@ function creerFeed(conf){
   /* [delete] n'est peint que sur ce que je peux retirer (`remplir`) ; il se désarme quand on change de média. */
   function peindreDel(){
     document.querySelectorAll('#tlv [data-tlv="del"]').forEach(b=>{
-      clearTimeout(b._sur); b.classList.remove('is-sur'); b.disabled=false; b.textContent='delete'; });
+      clearTimeout(b._sur); b.classList.remove('is-sur'); b.textContent='delete'; });
   }
   /* Le voisin, au clavier : on fait défiler, l'aimant et l'observateur font le reste. */
   function voisinV(d){
@@ -7697,6 +7849,8 @@ function creerFeed(conf){
     b.querySelectorAll('video[data-bunny]').forEach(v=>BUNNY.lacher(v));
     const tout=liste();
     L=tout.filter(garder);
+    /* Un repère de carte peut réunir plusieurs spots. Ils se consultent à la suite. */
+    if(groupe) L.sort((a,b)=>(groupe.get(a.cle)??groupe.size)-(groupe.get(b.cle)??groupe.size));
     etat.total=tout.length; etat.items=L.length; etat.videos=L.filter(x=>x.vid).length;
     etat.filtre=[SF.type,SF.vue,SF.quand,[...sfIntsActives()].join('·'),SF.box?'box':''].filter(Boolean).join('+');
     etat.n=sfCount(); etat.box=SF.box?SF.box.txt:''; etat.panneau=sfOuvert();
@@ -7737,7 +7891,7 @@ function creerFeed(conf){
   }
   function sortir(){
     const s=sc(); if(s&&conf.grille) etat.y=s.scrollTop;
-    etat.on=false; pause(); fermerV(); if(io){ io.disconnect(); io=null; }
+    etat.on=false; groupe=null; pause(); fermerV(); if(io){ io.disconnect(); io=null; }
     const b=bx(); if(b) b.querySelectorAll('video[data-bunny]').forEach(v=>BUNNY.lacher(v));
   }
   function pause(){ const s=sc(); if(s) s.querySelectorAll('video').forEach(v=>{ try{ v.pause(); }catch(_){} }); }
@@ -7973,7 +8127,7 @@ function creerFeed(conf){
           /* Le Totehm docké ouvre DIRECTEMENT le filtre : à gauche les vues puis leurs boxes, à droite les Habits. */
           box:()=>sfOpen(!sfOuvert()),
           /* Le polaroid s'ouvre SUR un spot (la carte ou la grille l'ont désigné). */
-          ouvrirA:cle=>{ ici=cle; entrer(); },
+          ouvrirA:(cle,cles)=>{ groupe=cles?new Map(cles.map((c,i)=>[c,i])):null; ici=cle; entrer(); },
           items:()=>liste(), depuis:l=>(l||[]).filter(z=>z&&z.id).map(itemSpot), montrer, cacher, prete:()=>!!ext,
           flt:()=>({type:SF.type||'all', vue:SF.vue||'all', quand:SF.quand||'all',
                    ints:[...sfIntsActives()], piliers:[...SF.piliers], freq:SF.freq,
@@ -7983,7 +8137,7 @@ function creerFeed(conf){
 const SH =creerFeed({sc:'lv-sh',  bx:'lv-sh-f',  say:'lv-sh-say', rail:'lv-sh-flt', src:'media', vide:'no media yet',
                      pick:'lv-sh-pick', panneau:'lv-sh-sf', grille:true});
 const SHS=creerFeed({sc:'rdr-sh', bx:'rdr-sh-f', say:'rdr-say',   rail:'rdr-flt',   src:'spots', vide:'no spot yet',
-                     avant:()=>CLUBSP.perChip(), pick:'rdr-pick', panneau:'rdr-sf', boxes:'habits'});
+                     pick:'rdr-pick', panneau:'rdr-sf', boxes:'habits'});
 window.__totehm_sh=()=>Object.assign({},SH.etat(),{capture:CAP.etat(), places:BADGE.etat()});
 
 /* ══ LA PRISE RAPIDE · 25/11/2026 ══════════════════════════════════════════════════════════════════════
@@ -8032,11 +8186,18 @@ const SPOTS=(()=>{
   }
   $('rdr-m-sel').addEventListener('click',()=>SPOTMODE.set(grille()?'map':'grid'));
   $('rdr-plus').addEventListener('click',()=>NSPOT.ouvrir());
-  function voir(cle){ if(!ouvert||!cle) return; voit=true; relever(); document.body.classList.add('rdr-voir'); SHS.ouvrirA(cle); }
+  function voir(cle,cles){ if(!ouvert||!cle) return; voit=true; relever(); document.body.classList.add('rdr-voir'); SHS.ouvrirA(cle,cles); }
   function fermerVoir(){ if(!voit) return; voit=false; document.body.classList.remove('rdr-voir'); SHS.fermer(); if(enShorts()) SPOTMODE.set('grid'); }
-  SPOTMODE.surChangement(()=>{ peindreMode(); if(!ouvert) return; fermerVoir(); dort().fermer(); actif().ouvrir(); shorts(); });
+  SPOTMODE.surChangement(()=>{
+    peindreMode(); if(!ouvert) return;
+    fermerVoir(); dort().fermer(); actif().ouvrir(); CLUBSP.ouvrir(!grille()); shorts();
+  });
   /* Les spots ont changé (un temps, un filtre, une page de plus) : la carte, la grille et le polaroid relisent. */
-  CLUBSP.surChangement(()=>{ SHS.flts(); if(!ouvert) return; actif().maj(); if(voit) SHS.maj(); else shorts(); });
+  CLUBSP.surChangement(()=>{
+    SHS.flts(); if(!ouvert) return;
+    actif().maj(); if(voit) SHS.maj(); else shorts();
+    if(!grille()&&!CLUBSP.err) CLUBSP.suite();
+  });
   { const x=$('rdr-x'); if(x) x.addEventListener('click',fermerVoir); }
   /* ══ ABAISSER UN SPOT AGRANDI · 12/11 ═══════════════════════════════════════════════════════════════
      Wah : « il faut qu'on puisse fermer les spots une fois agrandis OU qu'on puisse les abaisser en mode
@@ -8076,7 +8237,7 @@ const SPOTS=(()=>{
   peindreMode();
   return {
     ouvrir(){
-      ouvert=true; peindreMode(); SHS.flts(); actif().ouvrir(); CLUBSP.ouvrir(); shorts();
+      ouvert=true; peindreMode(); SHS.flts(); actif().ouvrir(); CLUBSP.ouvrir(!grille()); shorts();
       $('rdr-plus').hidden=!me||!!RO;
     },
     fermer(){ fermerVoir(); ouvert=false; NSPOT.fermer(); SPMAP.fermer(); SPGRID.fermer(); },
@@ -8426,8 +8587,8 @@ const NSPOT=(()=>{
   const durHTML=()=>grp('duration',DURS.map(d=>chip('data-ns="dur" data-v="'+d+'"',dureeTxt(d),N.dur===d)).join('')
     +'<input class="sfc ns-in ns-min" type="number" inputmode="numeric" min="'+(R.duration_min||5)+'" max="'+(R.duration_max||720)
     +'" placeholder="min" aria-label="Duration in minutes" data-nsi="dur" value="'+(N.dur&&!DURS.includes(N.dur)?N.dur:'')+'">');
-  const motHTML=()=>'<div class="sfg"><div class="sfl">a word · optional</div><textarea class="sfc ns-in ns-mot" maxlength="400" rows="2"'
-    +' placeholder="A word" aria-label="A word" data-nsi="mot">'+esc(N.mot)+'</textarea></div>';
+  const motHTML=()=>'<div class="sfg"><div class="sfl">a word · optional</div><textarea class="sfc ns-in ns-mot" maxlength="400" rows="3"'
+    +' placeholder="A word" aria-label="A word" enterkeyhint="enter" data-nsi="mot">\n'+esc(N.mot)+'</textarea></div>';
   const envoiHTML=mot=>'<div class="sfg"><button type="button" class="ns-go" data-ns="go"'+(N.occupe?' disabled':'')+'>'+mot+'</button>'
     +'<p class="lv-note ns-note" role="status" aria-live="polite">'+esc(N.note)+'</p></div>';
   function peindre(){
@@ -9137,7 +9298,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-11-27-recit7';
+const BUILD='2026-11-27-carte-joystick';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -12980,6 +13141,56 @@ window.addEventListener('pageshow',e=>{
   const DUR=1050, REVEAL=520;
   let open=false, moving=false, timer=null;
 
+  /* La manette voyage au-dessus du papier. Les commandes de chaque vue gardent leurs gestes. */
+  let voyageManette=null;
+  function mesurerManette(id){
+    if(matchMedia('(prefers-reduced-motion: reduce)').matches||!Element.prototype.animate) return null;
+    const bloc=$(id), manche=bloc.querySelector('.k2j'), cap=manche.querySelector('.k2j-c');
+    const cadre=cap.getBoundingClientRect();
+    if(!cadre.width) return null;
+    const points=manche.querySelector('.k2j-p');
+    return {cadre, couleur:getComputedStyle(manche).getPropertyValue('--k2j-c').trim()||'#2e2e36', points,
+      op:points?getComputedStyle(points).opacity:'0',
+      fleches:[...bloc.querySelectorAll('button')].map(b=>{
+        const svg=b.querySelector('svg'); return {svg,cadre:svg.getBoundingClientRect(),op:getComputedStyle(b).opacity};
+      })};
+  }
+  function poserManette(){
+    voyageManette?.remove(); voyageManette=null;
+    body.classList.remove('joy-en-voyage');
+  }
+  function deplacerManette(a,b,duration,repli){
+    if(!a||!b) return;
+    const calque=document.createElement('div');
+    calque.className='joy-voyage'; calque.setAttribute('aria-hidden','true');
+    const opts={duration, easing:getComputedStyle(body).getPropertyValue(repli?'--fold-ease':'--gate-ease').trim(), fill:'both'};
+    const piece=(el,depart,arrivee,debut={},fin={})=>{
+      Object.assign(el.style,{left:arrivee.x+'px',top:arrivee.y+'px',width:arrivee.width+'px',height:arrivee.height+'px'});
+      const t='translate3d('+(depart.x-arrivee.x)+'px,'+(depart.y-arrivee.y)+'px,0) scale('+depart.width/arrivee.width+','+depart.height/arrivee.height+')';
+      calque.append(el);
+      el.animate([{transform:t,...debut},{transform:'none',...fin}],opts);
+    };
+    const manche=document.createElement('div');
+    manche.className='k2j'; manche.style.setProperty('--k2j-d',b.cadre.width+'px');
+    const dome=document.createElement('span');
+    dome.className='k2j-c'; dome.style.setProperty('--k2j-c',a.couleur); manche.append(dome);
+    const teinte=dome.cloneNode();
+    teinte.style.setProperty('--k2j-c',b.couleur); manche.append(teinte);
+    const points=(b.points||a.points)?.cloneNode(true);
+    if(points){ points.removeAttribute('id'); manche.append(points); }
+    document.body.append(calque); voyageManette=calque;
+    body.classList.add('joy-en-voyage');
+    piece(manche,a.cadre,b.cadre);
+    teinte.animate([{opacity:0},{opacity:1}],opts);
+    if(points) points.animate([{opacity:a.op},{opacity:b.op}],opts);
+    a.fleches.forEach((f,i)=>{
+      const g=b.fleches[i], icone=document.createElement('div');
+      icone.append(g.svg.cloneNode(true));
+      piece(icone,f.cadre,g.cadre,{opacity:f.op},{opacity:g.op});
+    });
+  }
+  window.addEventListener('resize',()=>{ if(voyageManette) poserManette(); });
+
   /* ══ LE TÉLÉPHONE COUCHÉ REPLIE LE TOTEHM · 22/09/2026 ═════════════
      « Retourner son téléphone a la même action que appuyer sur la croix.
      Évidemment pas possible d'ouvrir le Totehm en mode paysage. »
@@ -13637,18 +13848,21 @@ window.addEventListener('pageshow',e=>{
     PAPIER.poser(()=>{
     gate.classList.remove('no-anim');
     gate.scrollTop=0;                /* on mesure toujours depuis le haut */
+    const manche=mesurerManette('lvjoy');
     /* les traits sont aspirés dans le TOTEHM — AVANT la mesure : `is-aspire` arrête le battement du cœur (`coeur`,
        une échelle sur `#gate-logo`), sinon chaque calque partirait d'un papier grossi de 1,4 % */
     try{ LV.deployer(); }catch(err){ console.error('[déploiement]',err); }
     measure();                       /* dernière mesure juste avant le départ */
     void gate.offsetWidth;           /* reflow : garantit le point de départ  */
     body.classList.add('entered');
+    deplacerManette(manche,mesurerManette('joy'),DUR,false);
 
     clearTimeout(timer);
     timer=setTimeout(()=>{
       gate.classList.add('gate-off');
       timer=setTimeout(()=>{
         body.classList.remove('gate','entered');
+        poserManette();
         open=true; moving=false;
         if(then) then();
       },340);
@@ -13677,6 +13891,7 @@ window.addEventListener('pageshow',e=>{
   function fold(then){
     if(!open||moving) return;
     if(sOpen||sMoving) return;   /* 17/11 — le verso retourné par-dessus : on le retourne d'abord (la pièce), jamais un repli caché dessous */
+    const manche=mesurerManette('joy');
     moving=true;
     clearTimeout(timer);
     /* ⚠️ 29/10 — LE REPLI D'UN SEUL MOUVEMENT (Wah : « le déploiement inverse … bug et fait des sautages ; super fluide »).
@@ -13694,12 +13909,14 @@ window.addEventListener('pageshow',e=>{
     gate.scrollTop=0;                     /*    on mesure toujours du haut */
     void gate.offsetWidth;
     measure();                            /* 3. rect NON transformé        */
+    const cibleManette=mesurerManette('lvjoy');
     body.classList.add('entered');        /* 4. saut à la position d'UI    */
     void gate.offsetWidth;
     gate.classList.remove('no-anim');     /* 5. transitions rendues        */
     void gate.offsetWidth;
     gate.classList.remove('gate-off');    /* 6. le portail revient en fondu sur le TOTEHM ouvert… */
     body.classList.remove('entered');     /* 7. …et le papier rentre DANS le même souffle (les traits restent aspirés) */
+    deplacerManette(manche,cibleManette,DUR_REPLI,true);
     requestAnimationFrame(()=>setTimeout(ecrireTout,60));   /* replier = quitter la saisie : ce qui dort part, après la 1re image */
 
     open=false;
@@ -13708,6 +13925,7 @@ window.addEventListener('pageshow',e=>{
       LV.revenu();                        /*    mes ramifications (elles ont pu changer dedans) ressortent du TOTEHM */
     timer=setTimeout(()=>{
       body.classList.remove('folding','is-pose');   /* le défilement redevient normal */
+      poserManette();
       moving=false;
       PAPIER.reveiller();                 /* le logo est revenu : il repart */
       SH.pause(); SPOTS.pause();          /* ni vidéo ni rAF derrière l'atterrissage */
@@ -16504,6 +16722,14 @@ window.TOTEHM_MOT = (() => {
   },{passive:true,capture:true});
 })();
 /* ══ fin ps2.js ══ */
+</script>
+<script>
+document.addEventListener('click',e=>{
+  const touche=e.target.closest?.('.k2r.is-select'); if(!touche||touche.disabled) return;
+  touche.classList.add('is-tap');
+  clearTimeout(touche._tap);
+  touche._tap=setTimeout(()=>touche.classList.remove('is-tap'),100);
+},true);
 </script>
 </body>
 </html>
