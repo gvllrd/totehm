@@ -6,7 +6,7 @@ ligne une minute plus tard (Vercel).
 | site | dossier | ce que c'est |
 |---|---|---|
 | **totehm.com** | `com/` | l'écosystème : ton TOTEHM et ses cinq vues, Higher my ChatGPT, chercher l'écosystème d'un membre et s'y abonner, être payé pour le sien |
-| **figher.club** | `club/` | se rencontrer : les spots de tous les membres (radar, grille, shorts), le filtre par Habits semblables, publier un spot |
+| **figher.club** | `club/` | se rencontrer : les spots de tous les membres (Map et Grid), le filtre par Habits semblables, publier un spot |
 | **higher.boutique** | `boutique/` | les vêtements totehmisés à partir d'une box ; le Luxe, une pièce d'exception avec un artiste local |
 | **totehm.space** | `space/` | les œuvres en 3D (Lisbon, New York, Origin) et le TotehmPaper |
 | — | `backend/` | le serveur : la base Supabase, les fonctions, l'argent (Stripe), le bot, les automatisations n8n |

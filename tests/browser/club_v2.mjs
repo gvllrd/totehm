@@ -1,17 +1,10 @@
-// 10/11/2026 — FIGHER.CLUB v2 (Wah : « 1) enlève "Higher Spots", reprends le TOTEHM de la vue de droite ; 2) une vue
-// Shorts ; les trois boutons en haut à droite, la grille et le radar défilent aisément ; 3) le filtre au format de la vue
-// de droite ; 4) demander directement la localisation, montrer ce qui est pertinent autour ; publier d'ici = FIGHER CLUB »).
-//   1 · l'en-tête : coin membre · logo TOTEHM · RADAR GRID SHORTS sur UNE ligne, sans chevauchement (390 px, connecté ou non)
-//   2 · la position est demandée À L'ARRIVÉE : la première lecture est PRÈS DE MOI ; rien autour → tout le Club, dit
-//   3 · le radar défile : dessous, les spots du plus proche au plus loin ; « Simple terms of use » s'efface en glissant
-//   4 · SHORTS : les spots qui ont un média, un par écran ; un seul joue, le suivant se prépare ; la box ouvre le spot
-//   5 · la vidéo part chez Bunny (TUS) quand le compte est prêt, sinon dans `moments`
+// Présentation du Club sur téléphone et ordinateur, lecture vidéo dans une fiche et envoi Bunny ou moments.
 // Tout est simulé (comptes, RPC, Bunny, stockage) : aucune écriture en production. LANCER : node club_v2.mjs /tmp
 import fs from 'node:fs'; import {launch,page,ok} from './harness.mjs';
 const OUT=process.argv[2]||'/tmp'; fs.mkdirSync(OUT,{recursive:true});
 const VIDEO=new URL('./fixtures/spot_2s.webm',import.meta.url).pathname;
 const origin='https://www.figher.club', now=Date.now();
-const HABITS=[{name:'Run the hill',freq:'every_morning',ints:['fight'],step:{t:'Run the hill',f:'every_morning',is:['fight']},objectives:[],repulsions:[]}];
+const HABITS=[{name:'Run the hill',freq:'every_morning',ints:['fight'],audience:'subscribers',step:{t:'Run the hill',f:'every_morning',is:['fight']},objectives:[],repulsions:[]}];
 const sp=(id,extra={})=>({id,habit:'Run the hill',intentions:['fight'],freq:'every_morning',visibility:'shared',mode:'social',creator:'nia',mine:false,
   city:'Lisbon',audience:'figher',starts_at:new Date(now-1000).toISOString(),ends_at:new Date(now+36e5).toISOString(),duration_min:60,
   exact:{lat:38.80,lng:-9.20,place:'the hill'},habit_box:{name:'Run the hill',ints:['fight'],freq:'every_morning'},...extra});
@@ -36,12 +29,12 @@ try{
     await pg.goto(origin+'/'); await pg.waitForFunction(()=>window.__totehm_club?.().club.lu,null,{timeout:12000}); await pg.waitForTimeout(800);
     const m=await boite(pg,'#member'), s=await boite(pg,'#rdr-mode');
     const qui=session?'connecté':'déconnecté';
-    if(!session){ const v=await pg.evaluate(()=>({t:document.getElementById('radar-empty').textContent, loc:window.__totehm_club().located}));
+    if(!session){ const v=await pg.evaluate(()=>({t:document.getElementById('rdr-say').textContent, loc:window.__totehm_club().located}));
       ok(!lus.length&&!v.loc&&/connect with my TOTEHM/i.test(v.t),
          'téléphone déconnecté · le serveur ne montrerait rien : zéro lecture du Club, zéro demande de position, « '+v.t+' »'); }
     /* 12/11 — le TOTEHM central du haut est parti (Wah) : il reste le coin membre et la bascule. */
     ok(!croise(m,s)&&m.y<20&&s.y<20&&!(await pg.evaluate(()=>!!document.getElementById('club-logo'))),
-       'téléphone '+qui+' · coin membre et RADAR · GRID · SHORTS sur une ligne, sans chevauchement, sans TOTEHM central (bascule dès '+Math.round(s.x)+')');
+       'téléphone '+qui+' · coin membre et Map et Grid sur une ligne, sans chevauchement, sans TOTEHM central (bascule dès '+Math.round(s.x)+')');
     ok(!erreurs(log).length,'téléphone '+qui+' · aucune erreur');
     await pg.context().close();
   }
@@ -63,45 +56,38 @@ try{
     await pg.route('**/cities.json',r=>r.fulfill({status:200,contentType:'application/json',body:JSON.stringify({cities:[['Lisbon',38.7223,-9.1393,1,'PT']]})}));
     await pg.goto(origin+'/'); await pg.waitForFunction(()=>window.__totehm_club?.().club.lu,null,{timeout:12000}); await pg.waitForTimeout(1200);
     const d0=await pg.evaluate(()=>window.__totehm_club());
-    ok(appels[0]&&appels[0].p_filters.scope==='near'&&appels[0].p_lat!=null&&d0.located&&d0.ou==='near',
-       nom+' · la position est demandée À L\'ARRIVÉE : la première lecture est près de moi ('+JSON.stringify(appels[0]&&appels[0].p_filters)+')');
-
-    // ══ 3 · LE RADAR DÉFILE : la liste, du plus proche au plus loin ══
+    ok(d0.located&&d0.ou==='world'&&d0.carte.zoom>20&&new Set(appels.map(a=>a.p_period)).size===3,
+       nom+' · la carte se centre à l’arrivée avec les spots des trois temps');
+    // La liste sous la carte privilégie les spots proches.
     const li=await pg.evaluate(()=>({ids:[...document.querySelectorAll('#rdr-list .rl')].map(e=>e.dataset.cle), titre:(document.querySelector('#rdr-list .sfl')||{}).textContent,
       down:(document.getElementById('rdr-down')||{}).textContent, terms:getComputedStyle(document.getElementById('terms')).opacity}));
-    ok(li.ids.join('|')==='pres|photo|loin'&&/around me/.test(li.titre)&&/3 spots/.test(li.down),
-       nom+' · sous le radar, les spots du plus proche au plus loin : '+li.ids.join(' · ')+' (« '+li.down+' »)');
+    ok(li.ids.join('|')==='pres|photo|loin'&&/the club/.test(li.titre)&&/3 spots/.test(li.down),
+       nom+' · sous la carte, les spots du plus proche au plus loin : '+li.ids.join(' · ')+' (« '+li.down+' »)');
     await pg.$eval('#rdr-down',e=>e.click()); await pg.waitForTimeout(900);
-    const sc=await pg.evaluate(()=>({y:document.getElementById('v-radar').scrollTop, top:document.querySelector('#rdr-list .rl').getBoundingClientRect().top,
+    const sc=await pg.evaluate(()=>({y:document.getElementById('v-map').scrollTop, top:document.querySelector('#rdr-list .rl').getBoundingClientRect().top,
       scrolled:window.__totehm_club().scrolled}));
     ok(sc.y>200&&sc.top<innerHeightOf(vp)&&sc.scrolled,nom+' · « 3 spots ↓ » fait défiler jusqu\'à la liste ('+Math.round(sc.y)+' px)');
     await pg.waitForTimeout(400);
     const tz=await pg.evaluate(()=>getComputedStyle(document.getElementById('terms')).visibility);
-    ok(tz==='hidden',nom+' · le radar glisse : « Simple terms of use » s\'efface');
+    ok(tz==='hidden',nom+' · la carte défile : « Simple terms of use » s\'efface');
     await pg.$eval('#rdr-list .rl',e=>e.click()); await pg.waitForTimeout(600);
     ok((await pg.evaluate(()=>window.__totehm_club().detail)),nom+' · une ligne ouvre son spot');
     await pg.keyboard.press('Escape'); await pg.waitForTimeout(500);
 
-    // ══ 4 · SHORTS ══
-    await pg.$eval('#rdr-mode [data-rmode="shorts"]',e=>e.click()); await pg.waitForTimeout(1500);
-    const s1=await pg.evaluate(()=>({d:window.__totehm_club().shorts, ids:[...document.querySelectorAll('#rdr-sh-f .sh')].map(e=>e.dataset.cle),
-      h:document.querySelector('#rdr-sh-f .sh').getBoundingClientRect().height, snap:getComputedStyle(document.getElementById('v-shorts')).scrollSnapType}));
-    ok(s1.ids.join('|')==='loin|photo'&&Math.abs(s1.h-innerHeightOf(vp))<2&&/y/.test(s1.snap)&&s1.d.courant===0,
-       nom+' · SHORTS : les spots qui ont un média, un par écran, aimantés ('+s1.ids.join(' · ')+', '+Math.round(s1.h)+' px)');
-    const sig=log.functions.filter(f=>f.name==='bunny-video').length;
-    ok(sig>=1,nom+' · la vidéo à l\'écran se signe chez Bunny au moment de jouer ('+sig+' signature)');
-    await pg.$eval('#v-shorts',e=>e.scrollTo(0,e.clientHeight)); await pg.waitForTimeout(1200);
-    const s2=await pg.evaluate(()=>window.__totehm_club().shorts);
-    ok(s2.courant===1&&s2.joues>=2,nom+' · on glisse : l\'écran suivant prend la main (courant '+s2.courant+')');
-    await pg.$eval('#rdr-sh-f .sh:nth-child(2) .sh-b',e=>e.click()); await pg.waitForTimeout(600);
-    ok((await pg.evaluate(()=>window.__totehm_club().detail)),nom+' · la box d\'un short ouvre son spot');
-    await pg.keyboard.press('Escape'); await pg.waitForTimeout(500);
-    const tz2=await pg.evaluate(()=>getComputedStyle(document.getElementById('terms')).visibility);
-    ok(tz2==='hidden',nom+' · SHORTS défile : « Simple terms of use » absent');
-    await pg.screenshot({path:OUT+'/club_shorts_'+(tel?'tel':'ordi')+'.png'});
+    await pg.click('#rdr-select');
+    const premier=pg.locator('#rdr-g-f .tl[data-cle="loin"]');
+    await premier.click();
+    const fiche=pg.locator('#detail');
+    await fiche.locator('video[data-bunny]').waitFor();
+    ok(log.functions.some(f=>f.name==='bunny-video')&&!await pg.locator('#v-shorts').count(),
+      nom+' · la vidéo est signée depuis la fiche de la grille');
+    await fiche.getByRole('button',{name:'Previous spot'}).click();
+    ok(await fiche.locator('.v-name').textContent()==='Read in the park',
+      nom+' · la même fiche donne accès au spot voisin');
+    await fiche.getByRole('button',{name:'Close',exact:true}).click();
 
-    // ══ 5 · UNE VIDÉO PART CHEZ BUNNY ══
-    await pg.$eval('#rdr-plus [data-nspot]',e=>e.click()); await pg.waitForTimeout(700);
+    // Une vidéo part chez Bunny.
+    await pg.locator('#rdr-g-f .tl-add').click();
     await pg.locator('#rdr-new [data-ns="h"]').first().click(); await pg.waitForTimeout(300);
     await pg.$eval('#rdr-new [data-ns="quand"][data-v="now"]',e=>e.click());
     await pg.waitForFunction(()=>[...document.querySelectorAll('#rdr-new .sfl')].some(e=>e.textContent==='together'),null,{timeout:8000}).catch(()=>{});
@@ -122,10 +108,15 @@ try{
     const {pg,log}=await page(browser,{dir:'club',origin,tables:{profiles:[{pseudo:'wahigher'}]},rpc:rpcs(appels,true),
       functions:{'create-bunny-upload':{available:false},'bunny-video':{clips:[]}}});
     await pg.goto(origin+'/'); await pg.waitForFunction(()=>window.__totehm_club?.().club.lu,null,{timeout:12000}); await pg.waitForTimeout(1200);
-    const d=await pg.evaluate(()=>({c:window.__totehm_club(), say:document.getElementById('rdr-say').textContent}));
-    const suite=appels.map(a=>a.p_period+':'+(a.p_filters.scope||'world')).join(' → ');
-    ok(suite==='now:near → future:near → now:world'&&d.c.club.items===3&&d.c.ou==='world'&&/nothing near me/.test(d.say),
-       'rien près de moi : '+suite+' — tout le Club, et la barre le dit (« '+d.say+' »)');
+    await pg.click('#rdr-flt [data-f="sf"]');
+    await pg.click('#rdr-sf [data-sf="etape"][data-v="where"]');
+    await pg.click('#rdr-sf [data-sf="ou"][data-v="near"]');
+    await pg.waitForFunction(()=>window.__totehm_club().club.lu&&window.__totehm_club().club.items===0);
+    ok(appels.some(a=>a.p_filters.scope==='near')&&await pg.locator('#rdr-sf [data-sf="rayon"]').count()>0,
+      'le filtre près de moi montre le rayon même sans spot');
+    await pg.click('#rdr-sf [data-sf="all"]');
+    await pg.click('#rdr-sf [data-sf="close"]');
+    await pg.waitForFunction(()=>window.__totehm_club().club.items===3);
     await pg.$eval('#rdr-plus [data-nspot]',e=>e.click()); await pg.waitForTimeout(700);
     await pg.locator('#rdr-new [data-ns="h"]').first().click(); await pg.waitForTimeout(300);
     await pg.$eval('#rdr-new [data-ns="quand"][data-v="now"]',e=>e.click());

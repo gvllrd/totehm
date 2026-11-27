@@ -583,6 +583,7 @@ try{
   await pg.click('#lvn-lf');await vers(pg,'g');await pg.waitForTimeout(700);
   const n0=await pg.evaluate(()=>document.querySelectorAll('#lv-sh .tl[data-i]').length);
   await pg.click('#lv-sh .tl[data-i="0"] .tl-bx',{force:true});await pg.waitForTimeout(500);
+  await pg.locator('#tlv .tlv-s[data-j="0"] .card-more summary').click();
   const d0=await pg.evaluate(()=>{
     const b=document.querySelector('#tlv [data-tlv="del"]'), r=b.getBoundingClientRect();
     return {vu:!b.hidden,t:b.textContent,cliquable:document.elementFromPoint(r.x+r.width/2,r.y+r.height/2)?.closest('[data-tlv="del"]')===b};
@@ -599,6 +600,7 @@ try{
   // → mes spots : [delete] sur le mien seulement
   await pg.click('#lvn-rt');await vers(pg,'c');await pg.waitForTimeout(300);await pg.click('#lvn-rt');await vers(pg,'d');await pg.waitForTimeout(900);
   await toucherSpotSurCarte(pg,false);await pg.waitForTimeout(1100);
+  await pg.locator('#rdr-sh [data-lsh-k="sp:sp1"] .card-more summary').click();
   const s0=await pg.evaluate(()=>({mien:document.querySelectorAll('#rdr-sh .ssp-s .ssp-acts [data-del="sp1"]').length,
     autres:document.querySelectorAll('#rdr-sh .ssp-s .ssp-acts [data-del]:not([data-del="sp1"])').length}));
   await pg.click('#rdr-sh .ssp-acts [data-del="sp1"]');await pg.waitForTimeout(150);

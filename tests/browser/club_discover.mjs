@@ -10,14 +10,15 @@ try{
   const{pg,ctx,log}=await page(browser,{dir:'club',origin,session,tables:{profiles:[{pseudo:'wahigher'}]},rpc:RPC,viewport:vp,hasTouch:touch});
   await pg.goto(origin+'/');await pg.waitForTimeout(2500);
   ok(await pg.evaluate(()=>{const b=document.getElementById('club-disc'),r=b.getBoundingClientRect();return r.width>40&&r.bottom<=innerHeight&&getComputedStyle(b).visibility!=='hidden';}),nom+' · le bouton Discover the Club est là');
-  /* 24/11 (Wah) : « affiche les spots sur le radar même pour les visiteurs pour donner envie » — la VITRINE : des anneaux
+  /* 24/11 (Wah) : « affiche les spots sur la carte même pour les visiteurs pour donner envie » — la VITRINE : des anneaux
      à la ville, une ligne qui invite, et le tap sur un point ouvre le Discover ; le membre lit le Club, pas la vitrine. */
-  const r0=await pg.evaluate(()=>({r:window.__totehm_club().radar,say:document.getElementById('rdr-say').textContent,
-    vit:window.__totehm_club().radar.points}));
+  const r0=await pg.evaluate(()=>({r:window.__totehm_club().carte,say:document.getElementById('rdr-say').textContent,
+    vit:window.__totehm_club().carte.points}));
   if(!session){
-    ok(r0.r.points===2&&/2 spots in the club · connect with my TOTEHM/.test(r0.say)&&!log.rpc.some(x=>x.name==='club_spots'),
-       nom+' · la vitrine : les spots du Club sur le radar, sans compte et sans lecture des spots → '+JSON.stringify({points:r0.r.points,say:r0.say}));
-    await pg.mouse.click(r0.r.p0[0],r0.r.p0[1]);await pg.waitForTimeout(700);
+    ok(r0.r.points===2&&/2 spots in the Club · connect to join/.test(r0.say)&&!log.rpc.some(x=>x.name==='club_spots'),
+       nom+' · la vitrine : les spots du Club sur la carte, sans compte et sans lecture des spots → '+JSON.stringify({points:r0.r.points,say:r0.say}));
+    const carte=await pg.locator('#rdr-map').boundingBox();
+    await pg.mouse.click(carte.x+r0.r.p0[0],carte.y+r0.r.p0[1]);await pg.waitForTimeout(700);
     ok((await E(pg)).ouvert,nom+' · le tap sur un point ouvre le Discover (la porte : Connect with my TOTEHM)');
     await pg.keyboard.press('Escape');await pg.waitForTimeout(600);
   } else ok(!log.rpc.some(x=>x.name==='club_vitrine'),nom+' · un membre ne lit jamais la vitrine');

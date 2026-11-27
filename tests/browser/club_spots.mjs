@@ -1,11 +1,5 @@
-// 09/11/2026 — FIGHER.CLUB, LA SIXIÈME VUE (Wah : « le prolongement de totehm.com ; la configuration de la page
-// est à l'image de la vue de droite, avec le RADAR au lieu de la map, et on garde les grid »).
-//   1 · deux modes qui lisent le MÊME objet : RADAR (moi au centre, un carré par spot) et GRID (les tuiles de COM).
-//   2 · plus de joystick, plus de « What is a spot? » : la définition vit DANS la prise de spot.
-//   3 · le filtre : MES Habits → les spots dont la Habit RESSEMBLE à la mienne (`akin`, le serveur trie), et
-//       [exactly this one] referme sur elle seule (`habit`). Chaque spot DIT pourquoi il répond.
-//   4 · la prise de spot, ici : la même logique qu'à droite de COM — WHEN décide de WHERE.
-//   5 · un spot ouvert : son média, sa box, ses gestes ; GO résout les droits au moment du geste.
+// Figher Club partage le globe et les tuiles de Totehm. Map et Grid ouvrent la même fiche.
+// Le rail Refine garde les Habits personnelles, puis les autres critères. La prise reste disponible depuis la grille.
 // Tout est simulé (comptes, RPC, stockage, géocodeur) : aucune écriture en production. LANCER : node club_spots.mjs /tmp
 import fs from 'node:fs'; import {launch,page,ok} from './harness.mjs';
 const OUT=process.argv[2]||'/tmp'; fs.mkdirSync(OUT,{recursive:true});
@@ -60,8 +54,9 @@ try{
 
   // ══ 1 · LA PAGE ══
   const s0=await etat(pg);
-  ok(s0.mode==='radar'&&s0.club.items===2&&s0.radar.lieux===2&&s0.radar.radius>40,
-     nom+' · le Club se lit et le RADAR place ses spots (r='+s0.radar.radius+', lieux='+s0.radar.lieux+', portée '+s0.radar.portee+')');
+  ok(s0.mode==='map'&&s0.club.items===2&&s0.carte.points===2&&s0.carte.terres>0&&s0.carte.zoom>20
+     &&s0.club.pers.length===3&&!await pg.locator('#v-shorts').count(),
+     nom+' · la carte pointe la ville et les deux spots des trois temps');
   const nu=await pg.evaluate(()=>({joy:!!document.getElementById('joy'), about:!!document.getElementById('space-about'),
     quoi:/what is a spot/i.test(document.body.innerText), titre:!!document.getElementById('club-title'),
     /* 12/11 (Wah) : « tu peux enlever le totehm central en haut, il ne sert à rien » — le coin membre
@@ -70,24 +65,36 @@ try{
   ok(!nu.joy&&!nu.about&&!nu.quoi&&!nu.titre&&!nu.logo&&nu.coin,
      nom+' · plus de joystick, plus de « What is a spot? », plus de TOTEHM central en haut : le coin membre suffit');
   const barre=await pg.evaluate(()=>[...document.querySelectorAll('#rdr-flt button')].map(e=>e.textContent));
-  ok(barre.join('|')==='now|Refine · 1',nom+' · la barre : le temps courant, puis Refine (near me, posé à l\'arrivée) — rien d\'autre');
-  await pg.screenshot({path:OUT+'/club_radar_'+(tel?'tel':'ordi')+'.png'});
+  ok(barre.join('|')==='Refine',nom+' · une seule touche Refine');
+  await pg.screenshot({path:OUT+'/club_map_'+(tel?'tel':'ordi')+'.png'});
 
-  // ══ 2 · RADAR | GRID, le même objet ══
-  await clic(pg,'#rdr-mode [data-rmode="grid"]'); await pg.waitForTimeout(600);
+  // Le zoom et le recentrage passent par la carte.
+  await pg.waitForFunction(()=>window.__totehm_club().carte.zoom>450,null,{timeout:8000});
+  const c=await pg.locator('#rdr-map').boundingBox();
+  const avant=(await etat(pg)).carte.zoom;
+  await pg.mouse.move(c.x+c.width/2,c.y+c.height/2);
+  await pg.mouse.wheel(0,240);
+  await pg.waitForFunction(z=>window.__totehm_club().carte.zoom<z*.85,avant);
+  await pg.click('#rdr-locate');
+  await pg.waitForFunction(()=>window.__totehm_club().carte.zoom>450,null,{timeout:8000});
+  ok((await etat(pg)).carte.position,nom+' · la carte zoome à la molette et la touche retrouve le point blanc');
+
+  // ══ 2 · MAP | GRID, le même objet ══
+  await clic(pg,'#rdr-select'); await pg.waitForTimeout(600);
   const g=await pg.evaluate(()=>({t:window.__totehm_club().grille.tuiles, mode:window.__totehm_club().mode,
-    plus:!!document.querySelector('#rdr-g-f .tl-add'), box:[...document.querySelectorAll('.tl-bx .v-name')].map(e=>e.textContent)}));
-  ok(g.mode==='grid'&&g.t===2&&g.plus&&g.box.length===2,
+    plus:document.querySelector('#rdr-g-f .tlg')?.firstElementChild.classList.contains('tl-add'),
+    cols:getComputedStyle(document.querySelector('#rdr-g-f .tlg')).gridTemplateColumns.split(' ').length, box:[...document.querySelectorAll('.tl-bx .v-name')].map(e=>e.textContent)}));
+  ok(g.mode==='grid'&&g.t===2&&g.plus&&g.box.length===2&&g.cols===(tel?2:3),
      nom+' · GRID : les mêmes spots en tuiles, la box du TOTEHM posée dessus, le « + » en tête → '+g.box.join(' · '));
   await pg.screenshot({path:OUT+'/club_grid_'+(tel?'tel':'ordi')+'.png'});
 
   // ══ 3 · LE FILTRE : une Habit choisie ouvre ses PARENTES ══
   await clic(pg,'#rdr-flt button:last-child'); await pg.waitForTimeout(500);
-  const f0=await pg.evaluate(()=>({l:[...document.querySelectorAll('#rdr-sf .sfl')].map(e=>e.textContent),
+  const f0=await pg.evaluate(()=>({l:[...document.querySelectorAll('#rdr-sf .sf-nav button')].map(e=>e.textContent),
     h:[...document.querySelectorAll('#rdr-sf [data-sf="habit"] .v-name')].map(e=>e.textContent)}));
   /* le FILTRE, lui, garde toutes mes Habits : il cherche les spots des AUTRES par parenté — le niveau de MA
      box n'y change rien (seule la PRISE refuse une Habit privée). */
-  ok(f0.h.join('|')==='Run the hill|Call mum|Secret'&&f0.l.join('|')==='Habits|When|Where|Together|Intentions|It shows',
+  ok(f0.h.join('|')==='Run the hill|Call mum|Secret'&&f0.l.join('|')==='My Grind|When|Where|Together|Intentions|Media',
      nom+' · le filtre s\'ouvre sur MES Habits, au format du TOTEHM, puis : '+f0.l.slice(1).join(' · '));
   appels=[];
   await pg.$eval('#rdr-sf [data-sf="habit"]',e=>e.click());
@@ -96,8 +103,8 @@ try{
   const ak=appels.filter(a=>a.p_filters&&a.p_filters.akin).pop();
   const f1=await pg.evaluate(()=>({l:[...document.querySelectorAll('#rdr-sf .sfl')].map(e=>e.textContent),
     proche:[...document.querySelectorAll('#rdr-sf [data-sf="near"]')].map(e=>e.childNodes[0].textContent)}));
-  ok(ak&&ak.p_filters.akin==='Run the hill'&&!ak.p_filters.habit&&f1.l.includes('how close')
-     &&f1.proche.join('|')==='akin habits|exactly this one',
+  ok(ak&&ak.p_filters.akin==='Run the hill'&&!ak.p_filters.habit&&f1.l.includes('Find')
+     &&f1.proche.join('|')==='Similar habits|Exact habit',
      nom+' · une Habit choisie demande au serveur ses PARENTES (`akin`), pas une égalité → '+JSON.stringify(ak&&ak.p_filters));
   /* 24/11 (Wah) : la box choisie reste SEULE ; un tap sur elle rouvre la liste, le choix reste */
   const boxes=()=>pg.evaluate(()=>[...document.querySelectorAll('#rdr-sf [data-sf="habit"] .v-name')].map(e=>e.textContent).join('|'));
@@ -108,24 +115,27 @@ try{
      nom+' · la box choisie ferme les autres ; un tap la rouvre, le choix gardé → '+seule+' / '+rouverte);
   /* 24/11 (Wah) : plusieurs temps à la fois, une lecture par temps */
   appels=[];
+  await clic(pg,'#rdr-sf [data-sf="etape"][data-v="when"]');
   await clic(pg,'#rdr-sf [data-sf="per"][data-v="past"]'); await pg.waitForTimeout(600);
   const tps=[...new Set(appels.map(a=>a.p_period))].sort().join('+');
   const on=await pg.evaluate(()=>[...document.querySelectorAll('#rdr-sf [data-sf="per"].is-on')].map(e=>e.dataset.v).join('+'));
-  ok(tps.includes('past')&&on.split('+').length===2&&on.includes('past'),
+  ok(tps==='future+now'&&on==='now+future'&&!await pg.locator('#rdr-sf .sfb').count(),
      nom+' · WHEN se choisit à plusieurs (comme les intentions) → lus : '+tps+' · allumés : '+on);
   await clic(pg,'#rdr-sf [data-sf="per"][data-v="past"]'); await pg.waitForTimeout(500);
   await clic(pg,'#rdr-sf [data-sf="close"]'); await pg.waitForTimeout(500);
   const kin=await pg.evaluate(()=>({k:[...document.querySelectorAll('.tl-kin')].map(e=>e.textContent),
     n:(document.querySelector('#rdr-flt button:last-child')||{}).textContent}));
-  ok(kin.k.join('|')==='same habit|same intentions'&&kin.n==='Refine · 2',
+  ok(kin.k.join('|')==='same habit|same intentions'&&kin.n==='Refine · 1',
      nom+' · chaque spot DIT pourquoi il répond : '+kin.k.join(' · ')+' ; la barre compte le filtre ('+kin.n+')');
   appels=[];
   await clic(pg,'#rdr-flt button:last-child'); await pg.waitForTimeout(400);
+  await clic(pg,'#rdr-sf [data-sf="etape"][data-v="habit"]');
   await clic(pg,'#rdr-sf [data-sf="near"][data-v="exact"]'); await pg.waitForTimeout(600);
   const ex=appels.filter(a=>a.p_filters&&a.p_filters.habit).pop();
   ok(ex&&ex.p_filters.habit==='Run the hill'&&!ex.p_filters.akin,
      nom+' · [exactly this one] referme sur la Habit SEULE (`habit`) → '+JSON.stringify(ex&&ex.p_filters));
   appels=[];
+  await clic(pg,'#rdr-sf [data-sf="etape"][data-v="together"]');
   await clic(pg,'#rdr-sf [data-sf="mode"][data-v="social"]'); await pg.waitForTimeout(500);
   const md=appels.pop();
   ok(md&&md.p_filters.mode==='social',nom+' · « together » part au serveur : le Club sert à se rencontrer → mode='+(md&&md.p_filters.mode));
@@ -195,25 +205,22 @@ try{
      nom+' · I WILL BE HERE → spot_schedule_audience : '+JSON.stringify(sc&&Object.assign({},sc.body,{p_lat:'…',p_lng:'…',p_starts_at:'…'})));
   ok(log.rpc.some(r=>r.name==='spot_box_set'),nom+' · un spot naît caché : spot_box_set montre sa box entière');
 
-  // ══ 5 · UN SPOT OUVERT ══ (publié, la vue montre FUTURE : on revient à NOW par le filtre)
+  // Le Club garde les trois temps après la publication.
   await pg.waitForTimeout(700);
-  ok((await etat(pg)).club.periode==='future',nom+' · publié : la vue montre le temps où le spot vit (future)');
-  await clic(pg,'#rdr-flt button:last-child'); await pg.waitForTimeout(400);
-  await clic(pg,'#rdr-sf [data-sf="per"][data-v="now"]'); await pg.waitForTimeout(500);
-  await clic(pg,'#rdr-sf [data-sf="close"]'); await pg.waitForTimeout(600);
-  await pg.$eval('#rdr-g-f .tl[data-cle]',e=>e.click());
+  ok((await etat(pg)).club.pers.length===3,nom+' · la publication garde les trois temps');
+  await pg.$eval('#rdr-g-f .tl[data-cle="a"]',e=>e.click());
   await pg.waitForFunction(()=>window.__totehm_club().detail,null,{timeout:6000}).catch(()=>{});
   await pg.waitForTimeout(400);
   const d=await pg.evaluate(()=>({n:(document.querySelector('#detail .v-name')||{}).textContent,
     tags:[...document.querySelectorAll('#detail .sd-tag')].map(e=>e.textContent.trim()),
     acts:[...document.querySelectorAll('#detail .acts .btn')].map(e=>e.textContent)}));
-  ok(d.n==='Run the hill'&&d.tags.some(t=>/I AM HERE/.test(t))&&d.acts.includes('GO')&&d.acts.includes('CLOSE'),
+  ok(d.n==='Run the hill'&&d.tags.some(t=>/I AM HERE/.test(t))&&d.acts.includes('GO')&&await pg.locator('#detail [data-close]').isVisible(),
      nom+' · le spot ouvert : sa box, son état, ses gestes → '+d.acts.join(' · '));
   await pg.screenshot({path:OUT+'/club_spot_'+(tel?'tel':'ordi')+'.png'});
   /* 12/11 (Wah) — ON ABAISSE LA FEUILLE : le trait en haut tient le geste à lui seul ; descendue d'un
      tiers de sa hauteur, elle s'en va, et elle ne laisse aucun `--dy` posé. */
   const g0=await pg.evaluate(()=>{const g=document.querySelector('#detail .dt-grab'),c=getComputedStyle(g),r=g.getBoundingClientRect();
-    return {prise:c.touchAction, colle:c.position, x:Math.round(r.x+r.width/2), y:Math.round(r.y+r.height/2)};});
+    return {prise:c.touchAction, colle:getComputedStyle(g.parentElement).position, x:Math.round(r.x+r.width/2), y:Math.round(r.y+r.height/2)};});
   ok(g0.prise==='none'&&g0.colle==='sticky',nom+' · la feuille porte SON trait, collé en haut → '+JSON.stringify(g0));
   await pg.mouse.move(g0.x,g0.y); await pg.mouse.down();
   for(let k=1;k<=8;k++){ await pg.mouse.move(g0.x,g0.y+k*40); await pg.waitForTimeout(16); }
@@ -222,20 +229,11 @@ try{
   const ap=await pg.evaluate(()=>({detail:!!window.__totehm_club().detail, dy:document.getElementById('detail').style.getPropertyValue('--dy')}));
   ok(parseFloat(suit)>100&&!ap.detail&&!ap.dy,
      nom+' · on la descend au doigt : elle SUIT ('+suit+'), puis elle s\'en va sans rien laisser posé');
-  await pg.$eval('#rdr-g-f .tl[data-cle]',e=>e.click());
+  await pg.$eval('#rdr-g-f .tl[data-cle="a"]',e=>e.click());
   await pg.waitForFunction(()=>window.__totehm_club().detail,null,{timeout:6000}).catch(()=>{});
   await pg.waitForTimeout(400);
   await pg.keyboard.press('Escape'); await pg.waitForTimeout(500);
   ok(!(await etat(pg)).detail,nom+' · « précédent » referme le spot');
-  /* 12/11 (Wah) — « on doit pouvoir grossir ou dégrossir la portée ! » : les deux boutons du radar. */
-  await clic(pg,'#rdr-mode [data-rmode="radar"]'); await pg.waitForTimeout(600);
-  const z0=(await etat(pg)).radar.portee, mot0=await pg.$eval('#rdr-span',e=>e.textContent);
-  await clic(pg,'#rdr-out'); await clic(pg,'#rdr-out'); await pg.waitForTimeout(300);
-  const z1=(await etat(pg)).radar.portee, mot1=await pg.$eval('#rdr-span',e=>e.textContent);
-  await clic(pg,'#rdr-in'); await clic(pg,'#rdr-in'); await clic(pg,'#rdr-in'); await pg.waitForTimeout(300);
-  const z2=(await etat(pg)).radar.portee;
-  ok(z1>z0*2&&z2<z1&&mot1!==mot0&&/km|m\b|mi/i.test(mot1),
-     nom+' · la portée se grossit et se dégrossit, et elle est ÉCRITE : '+mot0+' → '+mot1+' ('+z0+' → '+z1+' → '+z2+' m)');
   ok(!erreurs(log).length,nom+' · aucune erreur '+erreurs(log).join(' | '));
   await pg.context().close();
  }

@@ -25,7 +25,7 @@ Push sur `main` = mise en ligne ; jamais réécrire l'historique.
 | domaine | dossier | fonction |
 |---|---|---|
 | totehm.com | `com/` | l'écosystème : les 5 vues, la creator economy (s'abonner à un membre = entrer dans son écosystème), la recherche d'un ÉCOSYSTÈME |
-| figher.club | `club/` | le prolongement de la vue Spots : se RENCONTRER dans un contexte et une action précis — un point de rencontre OUVERT (les 7 intentions, faire la fête compris), pas le grind : la box Habit dont il est question, avec son why (objectif ou vision) et ses répulsions. Filtrer par Habits semblables est sa raison d'être |
+| figher.club | `club/` | le prolongement de la vue Spots : se rencontrer dans une action précise. Map et Grid servent à trouver les spots autour de soi. My Grind retrouve des Habits semblables avec leur why et leurs répulsions |
 | higher.boutique | `boutique/` | les vêtements totehmisés, un style artistique choisi, à partir de toute catégorie personnelle ; une box suffit, production n8n. Le LUXE est un atelier : une pièce d'exception, un artiste LOCAL via une galerie partenaire, acompte de 770 € remboursé si aucun artiste en 30 jours |
 | totehm.space | `space/` | Ordinateur. Lisbonne à ciel ouvert sur calçada, fauteuil de cuir, feu de bois, table en pierre, THP et manette 3D. Écran suspendu depuis la soucoupe, première page et objets grandissent sans coupure au clic. New York garde château, statue engloutie et six Think same but opposite. Les deux soucoupes tournent, mènent au seul livre Origins et reviennent à leur ville |
 

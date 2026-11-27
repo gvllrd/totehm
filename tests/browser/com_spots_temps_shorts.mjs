@@ -106,7 +106,7 @@ try{
   const capuchon=select.locator('.k2k'), cap=await capuchon.boundingBox();
   ok(await select.isVisible()&&await select.getAttribute('aria-pressed')==='false'&&await select.locator('svg').count()===0
     &&cap.width===30&&cap.height===18&&Math.abs((await refine.locator('.k2k').boundingBox()).width-cap.width)<1
-    &&await pg.locator('#rdr-flt button').count()===1,
+    &&await pg.locator('#rdr-flt button:visible').count()===1,
     nom+' · Map est éclairé et la touche Refine reprend le rectangle SELECT');
   await select.click();
   await pg.waitForSelector('body.rdr-grid');
@@ -129,7 +129,7 @@ try{
   if(tel) await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:fx,y:fy}]});
   else{ await pg.mouse.move(fx,fy); await pg.mouse.down(); }
   await pg.waitForFunction(()=>{
-    const cap=document.querySelector('#rdr-flt button:last-child .k2k');
+    const cap=document.querySelector('#rdr-flt [data-f="sf"] .k2k');
     return !!cap&&new DOMMatrixReadOnly(getComputedStyle(cap).transform).m42>2.5;
   },null,{timeout:4000});
   if(tel) await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]}); else await pg.mouse.up();
@@ -164,6 +164,7 @@ try{
   await pg.click('#rdr-g .tl[data-cle]');await pg.waitForTimeout(1500);
   const s=await pg.evaluate(()=>({voit:document.body.classList.contains('rdr-voir'),etat:window.__totehm_lv().spots}));
   ok(s.voit&&s.etat.mode==='grid'&&s.etat.polaroid.on,nom+' · un tap sur une tuile : les spots défilent plein écran → '+JSON.stringify({voit:s.voit,mode:s.etat.mode,on:s.etat.polaroid.on}));
+  await pg.locator('#rdr-sh [data-lsh-k="sp:p1"] .card-more summary').click();
   const note=await pg.locator('#rdr-sh [data-lsh-k="sp:p1"] .sd-say').evaluate(e=>{
     const cadre=e.closest('.sdata').getBoundingClientRect(), texte=e.getBoundingClientRect();
     return {mot:e.textContent,lignes:getComputedStyle(e).whiteSpace,scroll:e.scrollHeight>e.clientHeight,
@@ -174,7 +175,7 @@ try{
   await pg.evaluate(()=>{ window.__part=null; navigator.share=d=>{ window.__part=d; return Promise.resolve(); }; });
   const band=await pg.evaluate(()=>{ const r=document.querySelector('#rdr-sh .lsh.is-ici .ssp-row')||document.querySelector('#rdr-sh .ssp-row');
     return r?{w:Math.round(r.getBoundingClientRect().width),W:innerWidth,b:[...r.querySelectorAll('.ssp-acts button')].map(x=>x.textContent)}:null; });
-  ok(band&&band.b.join('|')==='go|share|passes|delete'&&band.w<band.W*0.8,nom+' · la bande noire : go · share · passes · delete, à la largeur de ses boutons → '+JSON.stringify(band));
+  ok(band&&band.b.join('|')==='go|share'&&band.w<band.W*0.8,nom+' · la bande des actions immédiates : go · share → '+JSON.stringify(band));
   await pg.evaluate(()=>{ const b=(document.querySelector('#rdr-sh .lsh.is-ici [data-share]')||document.querySelector('#rdr-sh [data-share]')); b.click(); });
   await pg.waitForTimeout(400);
   const part=await pg.evaluate(()=>window.__part);

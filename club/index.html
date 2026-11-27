@@ -46,38 +46,40 @@ button,input,textarea,select{font:inherit;color:inherit;color-scheme:dark}
 /* À 390 px le coin membre et la bascule tiennent sur UNE ligne : CONNECT passe sur deux lignes avant elle. */
 #who .mc:not(.is-in){max-width:calc(62vw - 40px)!important}
 
-/* ══ LA BARRE : le temps courant, puis [Filter · N] — sous le logo, au format de la vue de droite de totehm.com ══ */
-#rdr-flt{position:fixed;top:calc(64px + var(--top));left:0;right:0;z-index:92;display:flex;flex-wrap:nowrap;
-  justify-content:center;align-items:center;gap:7px;padding:0 12px;pointer-events:none}
-#rdr-flt button{pointer-events:auto;border:0;border-radius:10px;padding:5px 9px;background:rgba(22,22,26,.82);color:#8a8a92;
-  font:700 8.5px/1.3 var(--mono);letter-spacing:.16em;text-transform:uppercase;cursor:pointer;-webkit-tap-highlight-color:transparent}
-#rdr-flt button.is-on{background:#3a3a42;color:#fff}
-#rdr-flt button:focus-visible{outline:1px solid #fff;outline-offset:2px}
-@media(min-width:700px){#rdr-flt{top:calc(68px + var(--top))}}
-#rdr-say{position:fixed;top:calc(94px + var(--top));left:0;right:0;z-index:91;text-align:center;margin:0;
-  font:400 9.5px/1.5 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--dim);pointer-events:none}
+/* Les commandes de Map et Grid partagent les touches SELECT de Totehm. */
+#rdr-mode{position:fixed;right:13px;top:calc(12px + var(--top));z-index:95}
+#rdr-flt{position:fixed;top:calc(63px + var(--top));left:0;right:0;z-index:92;display:flex;justify-content:center;pointer-events:none}
+#rdr-flt button{pointer-events:auto}
+:is(#rdr-mode,#rdr-flt) .k2r{--k2r-w:31px;--k2r-h:24px;min-width:46px}
+:is(#rdr-mode,#rdr-flt) .k2l{opacity:1;color:#b5b5c3}
+#rdr-mode .k2r[aria-pressed="true"] .k2k,#rdr-flt .k2r.is-on .k2k{background:linear-gradient(#414165,#23233c)}
+#rdr-say{position:fixed;top:calc(106px + var(--top));left:10px;right:10px;z-index:91;text-align:center;margin:0;
+  font:400 9px/1.5 var(--mono);letter-spacing:.11em;text-transform:uppercase;color:var(--dim);pointer-events:none}
 
-/* ══ RADAR · GRID · SHORTS — en haut à droite : le bas reste au pouce et la vue défile librement (Wah) ══ */
-#rdr-mode{position:fixed;right:12px;top:calc(12px + var(--top));z-index:95;display:flex;gap:4px}
-#rdr-mode button{font:700 8.5px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:#8a8a92;
-  background:#1f1f24;border:0;border-radius:10px;padding:8px 8px;cursor:pointer;-webkit-tap-highlight-color:transparent}
-#rdr-mode button.is-on{background:#3a3a42;color:#fff;box-shadow:0 0 0 1px #fff}
-#rdr-mode button:focus-visible{outline:1px solid #fff;outline-offset:3px}
-@media(min-width:700px){#rdr-mode button{padding:8px 12px;font-size:9px;letter-spacing:.16em}}
-
-/* ══ LES TROIS MODES — chacun DÉFILE librement sous l'en-tête ══ */
+/* ══ LES VUES — chacun DÉFILE librement sous l'en-tête ══ */
 .view{position:fixed;inset:0;z-index:10;visibility:hidden;opacity:0;transition:opacity .28s ease,visibility 0s .28s;
   overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
 .view.is-on{visibility:visible;opacity:1;transition:opacity .28s ease,visibility 0s}
-#v-grid,#v-shorts{z-index:12}
-/* ce qui défile passe SOUS l'en-tête : un fondu noir le garde lisible (la grille, le radar qui glisse, les shorts) */
+#v-grid{z-index:12}
+/* ce qui défile passe SOUS l'en-tête : un fondu noir le garde lisible (la grille et la liste sous la carte) */
 body::before{content:'';position:fixed;left:0;right:0;top:0;height:calc(112px + var(--top));z-index:90;pointer-events:none;
   background:linear-gradient(#000 52%,rgba(0,0,0,0));opacity:0;transition:opacity .25s ease}
 body.rdr-grid::before,body.is-scrolled::before{opacity:1}
-body.rdr-shorts::before{opacity:.55}
-.rd-top{position:relative;height:100dvh;min-height:440px}
-/* le radar laisse passer le défilement vertical : la vue glisse sous le doigt, l'anneau tourne de côté */
-#v-radar canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:pan-y}
+.rd-top{position:relative;height:100dvh;min-height:340px}
+.rd-map{position:absolute;inset:calc(132px + var(--top)) 0 calc(76px + var(--bot))}
+.rd-map canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+#rdr-base{filter:grayscale(1) invert(1) brightness(.72);pointer-events:none}
+#rdr-map{touch-action:none;cursor:grab}
+#rdr-map.is-tenu{cursor:grabbing}
+#rdr-locate{position:absolute;z-index:3;left:var(--loc-x,82%);top:var(--loc-y,75%);translate:-50% -50%;
+  --k2-d:43px;color:#85859f;touch-action:manipulation}
+#rdr-locate[aria-busy="true"] svg{opacity:.45}
+#rdr-loc-note{position:absolute;z-index:3;left:clamp(74px,var(--loc-x,80%),calc(100% - 74px));top:calc(var(--loc-y,75%) - 37px);
+  translate:-50% -50%;pointer-events:none;color:#d8d8e0;font-size:10px;background:#08080b;padding:2px 5px}
+#rdr-loc-note:empty{display:none}
+#rdr-map-credit{position:absolute;right:6px;bottom:0;background:#000;color:#b8b8c2;padding:3px 5px;font-size:9px}
+#rdr-map-credit a{color:inherit}
+#rdr-down{position:absolute;bottom:calc(28px + var(--bot));left:50%;translate:-50% 0;min-height:37px;white-space:nowrap}
 /* 23/11 : la grille descend sous la ligne de `#rdr-say` (« nothing near me yet… ») — le « + » ne la frôle plus */
 #rdr-g-f{padding:calc(124px + var(--top)) 5px calc(24px + var(--bot))}
 .empty{position:absolute;left:0;right:0;top:46%;padding:0 28px;text-align:center;font-size:10px;line-height:1.7;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
@@ -88,65 +90,41 @@ body.rdr-shorts::before{opacity:.55}
 .rl{width:min(92vw,520px);cursor:pointer;-webkit-tap-highlight-color:transparent}
 .rl .sdata{margin-top:4px}
 .rl:focus-visible{outline:1px solid #fff;outline-offset:2px}
-/* SHORTS — un spot par écran, son média à la verticale, aimanté (le format TikTok) ; l'image TELLE QU'ELLE, sur le noir */
-#v-shorts{scroll-snap-type:y mandatory;background:#000}
-.sh{position:relative;height:100dvh;scroll-snap-align:start;scroll-snap-stop:always;overflow:hidden;background:#000}
-.sh-m{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;cursor:pointer}
-.sh-m video,.sh-m img{width:100%;height:100%;object-fit:contain;background:#000;display:block}
-.sh-m .video-status{top:46%}
-.sh-b{position:absolute;left:10px;right:10px;bottom:calc(78px + var(--bot));z-index:2;max-width:520px;margin:0 auto;cursor:pointer;
-  -webkit-tap-highlight-color:transparent;filter:drop-shadow(0 8px 18px rgba(0,0,0,.7))}
-.sh-b .sdata{margin-top:6px}
-.sh-b:focus-visible{outline:1px solid #fff;outline-offset:2px}
-.sh-vide{height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:0 24px;text-align:center}
-.sh-vide .note{letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
-
-/* ══ LA GRILLE : une tuile carrée par spot, sa box posée dessus (la grammaire de COM) ══ */
+/* La grille suit le format circulaire des spots de Totehm. */
 .tlg{display:grid;grid-template-columns:repeat(2,1fr);gap:5px}
 @media(min-width:700px){.tlg{grid-template-columns:repeat(3,1fr);gap:8px}#rdr-g-f{padding-left:0;padding-right:0;max-width:980px;margin:0 auto}}
-.tl{position:relative;aspect-ratio:1;border:0;padding:0;background:var(--s2);border-radius:14px;overflow:hidden;cursor:pointer;
+.tl{position:relative;aspect-ratio:1;border:0;padding:0;background:var(--s2);border-radius:50%;overflow:hidden;cursor:pointer;
   display:block;width:100%;text-align:left;-webkit-tap-highlight-color:transparent}
 .tl-ph{position:absolute;inset:0;background:#0b0b0d}
 .tl-ph img,.tl-ph video{width:100%;height:100%;object-fit:cover;display:block}
 .tl-v{position:absolute;top:8px;right:8px;width:0;height:0;border-left:8px solid #fff;border-top:5px solid transparent;border-bottom:5px solid transparent;opacity:.85}
-.tl-bx{position:absolute;left:6px;right:6px;bottom:6px;filter:drop-shadow(0 6px 14px rgba(0,0,0,.65))}
-.tl-bx .v-name{font-size:11px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.tl-bx .v-sub{margin-top:3px;font-size:8px}
-.tl-kin{position:absolute;top:8px;left:8px;font:700 8px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;
-  color:#fff;background:rgba(0,0,0,.72);border-radius:7px;padding:4px 6px}
+.tl-bx{position:absolute;inset:auto 0 0;height:31%;background:var(--navy);padding:0 16%}
+.tl-bx .habit .tick{display:none}
+.tl-bx .habit .h-body{padding:3px 0;background:none;text-align:center}
+.tl-bx .v-name{line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.tl-kin,.tl-time{font:700 9px/1.2 var(--mono);letter-spacing:.07em;text-transform:uppercase;color:#eeeef4}
+.tl-kin{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#c9c9d6}
+.tl-meta{position:absolute;top:13%;left:50%;translate:-50% 0;display:flex;flex-direction:column;
+  justify-items:center;text-align:center;gap:3px;max-width:75%;background:rgba(5,5,8,.88);padding:4px 8px;border-bottom:1px solid #626286}
+.tl-time.is-now{color:#fff}
+.tl-traits{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:3;fill:none;stroke-width:2}
+.tl-traits path{vector-effect:non-scaling-stroke}
+.tl:not(.tl-add) .tl-v{top:21%;right:16%}
 .tl:focus-visible{outline:2px solid #fff;outline-offset:-2px}
 .tl-add{display:flex;align-items:center;justify-content:center;background:none;outline:1px dashed rgba(255,255,255,.3);outline-offset:-8px;
   color:var(--lo);font:400 26px/1 var(--mono)}
 @media(hover:hover){.tl-add:hover{color:#fff}}
 
-/* LE « + » SUR LE RADAR : en bas au centre, la place que le joystick libère — le pouce y est déjà.
+/* LE « + » SUR LA CARTE : en bas au centre, la place que le joystick libère — le pouce y est déjà.
    Dans la GRID, c'est la tuile « + » en tête, comme à droite de totehm.com. */
 #rdr-plus{position:fixed;left:50%;bottom:calc(16px + var(--bot));transform:translateX(-50%);z-index:66}
-/* 23/11 (Wah) : « augmenter la taille de [add a spot] dans la vue radar » */
+/* 23/11 (Wah) : « augmenter la taille de [add a spot] dans la vue carte » */
 #rdr-plus .tl-add{position:static;display:flex;align-items:center;gap:10px;aspect-ratio:auto;width:auto;border-radius:999px;
   padding:16px 28px;background:rgba(21,21,26,.92);outline:1px dashed rgba(255,255,255,.34);outline-offset:-6px;
   font:700 12.5px/1 var(--mono);letter-spacing:.18em;text-transform:uppercase;color:#d2d2da}
 #rdr-plus .tl-add b{font:400 22px/1 var(--mono);font-weight:400}
 @media(hover:hover){#rdr-plus .tl-add:hover{color:#fff}}
 body.rdr-grid #rdr-plus,body.is-nspot #rdr-plus,body.is-sf #rdr-plus,body.is-detail #rdr-plus{display:none}
-
-/* ══ LES OUTILS DU RADAR — dans le haut du radar : ils défilent avec lui ══ */
-#radar-tools{display:contents}
-#cmp,#rdr-here,#rdr-down{position:absolute;z-index:5;transform:translateX(-50%)}
-#radar-tools:not(.is-placed) #cmp,#radar-tools:not(.is-placed) #rdr-here,#radar-tools:not(.is-placed) #rdr-down{visibility:hidden}
-#cmp{font-size:8px;line-height:1.6;text-align:center;padding:5px 8px;white-space:nowrap}
-#rdr-here{padding:4px 10px;min-width:30px;text-align:center}
-#rdr-down{padding:6px 10px;white-space:nowrap}
-#rdr-down[hidden]{display:none}
-/* 12/11 (Wah) — « on doit pouvoir grossir ou dégrossir la portée ! » : en haut du radar, la portée ÉCRITE
-   entre deux boutons. Elle se règle aussi à deux doigts sur le disque et à la molette : le réglage est là
-   où l'œil mesure, et le chiffre change pendant le geste — c'est lui qui apprend l'échelle. */
-#rdr-zoom{position:absolute;z-index:5;transform:translateX(-50%);display:flex;align-items:center;gap:5px}
-#radar-tools:not(.is-placed) #rdr-zoom{visibility:hidden}
-#rdr-zoom button{padding:2px 10px 4px;min-width:30px;text-align:center;font-size:14px;line-height:1.2}
-#rdr-span{font-family:var(--mono);font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--lo);
-  background:rgba(22,22,26,.82);border-radius:var(--r);padding:5px 8px;white-space:nowrap;min-width:52px;text-align:center}
-#rdr-zoom button:focus-visible{outline:1px solid #fff;outline-offset:3px}
 
 /* ══ LES PANNEAUX (filtre, prise) — le format de la vue de droite de totehm.com : ancrés en HAUT, sous le logo,
    une question par groupe, la puce grise ajustée à son mot, son sens en petit dessous ══ */
@@ -276,8 +254,24 @@ body.rdr-grid #rdr-plus,body.is-nspot #rdr-plus,body.is-sf #rdr-plus,body.is-det
 @media(hover:hover){.aud button:hover,.audb:hover{color:#fff}}
 /* ══ fin AUDIENCE ══ */
 
+/* Les panneaux reprennent le rail du Refine et les choix à angles droits. */
+#rdr-sf{background:#000;gap:14px;padding-top:calc(14px + var(--top))}
+.k2.sf-close{align-self:flex-end;--k2-d:42px;color:#8585a0}
+.sf-nav{width:min(100%,470px);display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
+@media(max-width:500px){.sf-nav{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.sf-nav button,.sf-page .sfc,#detail .btn,.spot-more summary{border:0;border-bottom:2px solid #303041;border-radius:0;
+  color:#c5c5d1;background:#15151e;min-height:40px;padding:6px 7px;cursor:pointer;touch-action:manipulation}
+.sf-nav button,.spot-more summary{font:700 10px/1.3 var(--mono);letter-spacing:.07em;text-transform:uppercase}
+.sf-nav button[aria-pressed="true"],.sf-page .sfc.is-on{background:#292943;border-color:#8585a4;color:#fff;box-shadow:none}
+.sf-nav button:active,.sf-page .sfc:active,#detail .btn:active,.spot-more summary:active{transform:translateY(2px)}
+.sf-page{display:flex;flex-direction:column;align-items:center;gap:9px;width:min(100%,470px)}
+.sf-page .sfr{justify-content:center}
+.sf-page .sfl{color:#a7a7b6}
+.sf-page .sfc{padding-inline:10px}
+.sf-page .sfi>i{border-radius:0;width:8px;height:2px}
+.sf-reset{margin-top:8px;background:none;color:#b4b4c0;border:0;padding:8px;cursor:pointer;font:400 10px/1 var(--mono);text-transform:uppercase}
 /* ══ UN SPOT OUVERT — la feuille du bas, comme COM ══ */
-#detail{position:fixed;left:0;right:0;bottom:0;z-index:80;background:var(--s1);padding:0 16px calc(18px + var(--bot));
+#detail{position:fixed;left:0;right:0;bottom:0;z-index:80;background:#000;padding:0 16px calc(18px + var(--bot));
   transform:translateY(104%);transition:transform .32s var(--ease),visibility 0s .32s;visibility:hidden;max-height:84dvh;
   overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y}
 /* 12/11 (Wah) — ON ABAISSE UN SPOT OUVERT : « il faut qu'on puisse fermer les spots une fois agrandis ou
@@ -286,7 +280,21 @@ body.rdr-grid #rdr-plus,body.is-nspot #rdr-plus,body.is-sf #rdr-plus,body.is-det
    version ordinateur (centrée par `translate(-50%,…)`) suit la même ligne sans un deuxième chemin. */
 #detail.is-open{transform:translateY(var(--dy,0px));visibility:visible;transition:transform .32s var(--ease),visibility 0s}
 #detail.is-drag{transition:none}
-#detail .portrait-media{width:min(100%,calc(46dvh * 9 / 16));margin:14px auto 10px;border-radius:var(--r)}
+#detail .portrait-media{width:100%;height:min(44dvh,440px);margin:8px auto 10px}
+#detail .portrait-media :is(img,video){object-fit:contain}
+#detail .sdata{border-radius:0;padding:8px 0}
+#detail .sd-say{white-space:pre-wrap;overflow-wrap:anywhere;max-height:20dvh;overflow:auto;overscroll-behavior:contain;padding:4px 0}
+#detail .btn{min-height:37px;padding-inline:9px}
+#detail .btn.is-sur{background:var(--rep)}
+#detail .btn:focus-visible,.spot-more summary:focus-visible,.sf-nav button:focus-visible{outline:1px solid #fff;outline-offset:2px}
+.dt-tools{position:sticky;top:0;z-index:4;display:flex;align-items:center;gap:6px;background:#000;padding:5px 0}
+.dt-tools .dt-grab{position:static;margin:0;flex:1;width:auto;background:transparent}
+.k2.dt-close{--k2-d:40px;color:#8585a0}
+.spot-more summary{display:flex;justify-content:space-between;align-items:center;list-style:none}
+.spot-more summary::-webkit-details-marker{display:none}
+.spot-more summary::after{content:'';width:6px;height:6px;border:solid #b9b9ca;border-width:0 1.5px 1.5px 0;rotate:45deg}
+.spot-more[open] summary::after{rotate:225deg}
+.spot-more .sd-row{padding-top:7px}
 /* LE TRAIT : collé en haut de la feuille, il tient le geste à lui seul (`touch-action:none`), donc la
    feuille garde SON défilement dessous. Il déborde du padding pour couvrir toute la largeur. */
 .dt-grab{position:sticky;top:0;z-index:4;display:flex;align-items:center;justify-content:center;
@@ -299,13 +307,14 @@ body.rdr-grid #rdr-plus,body.is-nspot #rdr-plus,body.is-sf #rdr-plus,body.is-det
 @media(min-width:900px){#detail{left:50%;right:auto;width:min(600px,calc(100vw - 40px));border-radius:var(--r) var(--r) 0 0;transform:translate(-50%,104%)}
   #detail.is-open{transform:translate(-50%,var(--dy,0px))}}
 @media(prefers-reduced-motion:reduce){.view,#detail{transition:none!important}}
+body.is-detail .view{filter:brightness(.36);pointer-events:none}
 body.is-detail #rdr-flt,body.is-detail #rdr-mode,body.is-detail #who,body.is-detail #rdr-say,
 body.is-detail #rdr-plus{opacity:0;pointer-events:none;transition:opacity .2s ease}
 /* un panneau ouvert : tout ce qui n'est pas lui s'efface */
 body.is-nspot #rdr-flt,body.is-nspot #rdr-mode,body.is-nspot #who,body.is-nspot #rdr-say,
 body.is-sf #rdr-flt,body.is-sf #rdr-mode,body.is-sf #who,body.is-sf #rdr-say{opacity:0;pointer-events:none}
-/* « Simple terms of use » tout en bas ; une vue qui DÉFILE (la grille, les shorts, le radar dès qu'il glisse) l'efface. */
-body.rdr-grid #terms,body.rdr-shorts #terms,body.is-scrolled #terms{opacity:0;visibility:hidden;pointer-events:none;transition:opacity .25s,visibility 0s .25s}
+/* « Simple terms of use » tout en bas ; une vue qui DÉFILE (la grille ou la liste sous la carte) l'efface. */
+body.rdr-grid #terms,body.is-scrolled #terms{opacity:0;visibility:hidden;pointer-events:none;transition:opacity .25s,visibility 0s .25s}
 @media(hover:hover){#member:hover,#terms:hover,.sd-tag:hover,.note:hover,.v-sub:hover,.mg-l:hover,.by:hover,
   .empty:hover,#rdr-say:hover,#rdr-flt button:hover,#rdr-mode button:hover,.chip:hover,.ns-tag:hover,.ns-def:hover,.sfl:hover{color:#fff}}
 /* ══ LE COIN MEMBRE — copié de tools/member_corner.css dans chaque page (jamais importé), EN DERNIER dans son style ══
@@ -560,7 +569,7 @@ body.rdr-grid #terms,body.rdr-shorts #terms,body.is-scrolled #terms{opacity:0;vi
 /* ══ fin DISCOVER ══ */
 /* ── 16/11 · LE DISCOVER DU CLUB : la même grammaire que totehm.com (copié), en couche par-dessus le radar ── */
 #club-disc{position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:30}
-body.rdr-grid #club-disc,body.rdr-shorts #club-disc,body.is-scrolled #club-disc,body.is-detail #club-disc,body.is-nspot #club-disc,body.is-sf #club-disc{opacity:0;visibility:hidden;pointer-events:none}
+body.rdr-grid #club-disc,body.is-scrolled #club-disc,body.is-detail #club-disc,body.is-nspot #club-disc,body.is-sf #club-disc{opacity:0;visibility:hidden;pointer-events:none}
 #club-disc{transition:opacity .25s,visibility 0s}
 /* membre : le « + spot » tient le bas du centre — le Discover se range en bas à droite, discret (le style des conditions) */
 body:has(.mc.is-in) #club-disc{left:auto;right:12px;transform:none;background:none;padding:4px;bottom:calc(8px + env(safe-area-inset-bottom,0px));
@@ -674,14 +683,16 @@ body:has(.mc.is-in) #club-disc{left:auto;right:12px;transform:none;background:no
 div:not(:has(> :not(br,wbr))):hover,
 #terms:hover,
 #member:hover,
-#rdr-flt button:hover,
+:is(#rdr-mode,#rdr-flt) .k2l:hover,
 #rdr-say:hover,
-#rdr-mode button:hover,
+#rdr-locate:hover,
+#rdr-loc-note:hover,
+#rdr-map-credit:hover,
 .empty:hover,
-.sh-vide .note:hover,
+.tl-kin:hover,
+.tl-time:hover,
 .tl-add:hover,
 #rdr-plus .tl-add:hover,
-#rdr-span:hover,
 .sfl:hover,
 .sfc:hover,
 .ns-c small:hover,
@@ -701,6 +712,14 @@ div:not(:has(> :not(br,wbr))):hover,
 .note.no:hover,
 .aud button:hover,
 .audb:hover,
+.k2.sf-close:hover,
+.sf-nav button:hover,
+.sf-page .sfc:hover,
+#detail .btn:hover,
+.spot-more summary:hover,
+.sf-page .sfl:hover,
+.sf-reset:hover,
+.k2.dt-close:hover,
 .mc:not(.is-in):hover,
 .tn-l:hover,
 .mc-terms:hover,
@@ -718,9 +737,6 @@ div:not(:has(> :not(br,wbr))):hover,
 .dc-x:hover,
 .dc-next:hover,
 .dc-lead:hover,
-.dc-deep:hover,
-.dc-deep[aria-expanded="true"]:hover,
-.dc-more .dc-p:hover,
 body:has(.mc.is-in) #club-disc:hover,
 .k2:hover,
 .k2-x:hover,
@@ -730,14 +746,14 @@ body:has(.mc.is-in) #club-disc:hover,
 }
 /* ══ FIN DU BLOC GÉNÉRÉ ══ */
 </style></head>
-<body class="rdr-radar">
+<body class="rdr-map">
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="higher-badge" viewBox="0 0 600 200"><defs><mask id="hbmask"><rect width="600" height="200" fill="white"/><circle cx="60" cy="0" r="14" fill="black"/><circle cx="140" cy="0" r="14" fill="black"/><circle cx="220" cy="0" r="14" fill="black"/><circle cx="300" cy="0" r="14" fill="black"/><circle cx="380" cy="0" r="14" fill="black"/><circle cx="460" cy="0" r="14" fill="black"/><circle cx="540" cy="0" r="14" fill="black"/><circle cx="60" cy="200" r="14" fill="black"/><circle cx="140" cy="200" r="14" fill="black"/><circle cx="220" cy="200" r="14" fill="black"/><circle cx="300" cy="200" r="14" fill="black"/><circle cx="380" cy="200" r="14" fill="black"/><circle cx="460" cy="200" r="14" fill="black"/><circle cx="540" cy="200" r="14" fill="black"/><circle cx="0" cy="70" r="14" fill="black"/><circle cx="0" cy="130" r="14" fill="black"/><circle cx="600" cy="70" r="14" fill="black"/><circle cx="600" cy="130" r="14" fill="black"/></mask></defs><rect width="600" height="200" fill="#333366" mask="url(#hbmask)"/><g fill="#ffffff" transform="translate(34.32, 144.42)"><path transform="translate(0.000,0) scale(0.144,-0.144)" d="M596 700H832L692 0H456ZM238 0H2L142 700H378ZM523 258H274L313 452H562Z"/><path transform="translate(115.776,0) scale(0.144,-0.144)" d="M-5 0 104 547H329L220 0ZM241 591Q182 591 147.5 622.0Q113 653 113 698Q113 751 152.5 786.0Q192 821 257 821Q316 821 350.5 792.0Q385 763 385 718Q385 662 345.5 626.5Q306 591 241 591Z"/><path transform="translate(162.576,0) scale(0.144,-0.144)" d="M255 -204Q172 -204 103.5 -187.0Q35 -170 -16 -136L80 18Q113 -7 161.5 -21.5Q210 -36 259 -36Q325 -36 355.0 -8.5Q385 19 395 68L409 138L450 294L485 464L501 547H716L629 110Q596 -57 499.5 -130.5Q403 -204 255 -204ZM260 30Q200 30 146.0 58.0Q92 86 58.0 139.0Q24 192 24 266Q24 327 46.5 379.5Q69 432 109.5 472.0Q150 512 203.5 534.5Q257 557 318 557Q379 557 424.5 533.0Q470 509 490.0 451.5Q510 394 493 294Q478 204 446.0 145.5Q414 87 367.0 58.5Q320 30 260 30ZM332 207Q361 207 383.0 219.5Q405 232 417.0 255.0Q429 278 429 309Q429 340 408.5 359.5Q388 379 350 379Q321 379 299.0 366.5Q277 354 264.5 331.0Q252 308 252 277Q252 246 273.5 226.5Q295 207 332 207Z"/><path transform="translate(264.960,0) scale(0.144,-0.144)" d="M470 557Q535 557 584.0 528.5Q633 500 654.5 443.5Q676 387 659 302L599 0H373L428 275Q437 320 424.0 343.5Q411 367 375 367Q337 367 311.0 341.5Q285 316 274 263L221 0H-5L143 742H369L300 396L260 436Q299 499 356.5 528.0Q414 557 470 557Z"/><path transform="translate(366.048,0) scale(0.144,-0.144)" d="M321 -10Q231 -10 163.5 21.0Q96 52 58.0 109.0Q20 166 20 243Q20 333 62.0 404.0Q104 475 180.5 516.0Q257 557 359 557Q447 557 509.0 526.0Q571 495 604.0 441.0Q637 387 637 316Q637 291 633.5 267.0Q630 243 625 221H200L221 330H521L427 301Q435 333 426.5 355.5Q418 378 398.0 390.5Q378 403 349 403Q308 403 284.0 381.0Q260 359 249.5 324.0Q239 289 239 251Q239 200 266.5 178.5Q294 157 347 157Q378 157 409.0 166.5Q440 176 466 195L560 58Q504 20 443.5 5.0Q383 -10 321 -10Z"/><path transform="translate(459.360,0) scale(0.144,-0.144)" d="M-5 0 104 547H317L286 392L265 436Q299 501 359.5 529.0Q420 557 498 557L458 357Q444 359 432.5 360.0Q421 361 409 361Q353 361 318.5 336.0Q284 311 272 253L221 0Z"/></g></symbol></svg>
 <div id="who"><button id="member" class="mc" type="button" aria-label="Connect with my TOTEHM"><i></i><span id="member-txt">CONNECT WITH MY TOTEHM</span></button><a id="terms" class="mc-terms" href="https://www.totehm.com/terms" target="_blank" rel="noopener">Simple terms of use</a></div>
 
-<div id="rdr-mode" role="group" aria-label="Radar, grid or shorts">
-  <button type="button" data-rmode="radar" class="is-on" aria-pressed="true">radar</button>
-  <button type="button" data-rmode="grid" aria-pressed="false">grid</button>
-  <button type="button" data-rmode="shorts" aria-pressed="false">shorts</button>
+<div id="rdr-mode">
+  <button id="rdr-select" type="button" class="k2r is-select" data-hover-art aria-label="Grid view" aria-pressed="false" aria-controls="v-map v-grid">
+    <i class="k2k" aria-hidden="true"></i><span class="k2l" aria-hidden="true">Map</span>
+  </button>
 </div>
 <div id="rdr-flt" role="group" aria-label="Spots: filters"></div>
 <p id="rdr-say" role="status" aria-live="polite"></p>
@@ -749,13 +765,13 @@ body:has(.mc.is-in) #club-disc:hover,
     <div class="dc-s"><h2 class="dc-h" data-tw>A spot is your TOTEHM Habit in action.</h2><p class="dc-p">Exact place. Exact time.
 Right people. Your conditions.</p></div>
     <div class="dc-s"><h2 class="dc-h">Find habits like yours.</h2><p class="dc-p">Pick one of your Habits:
-the radar shows the spots whose Habit resembles it —
+the map shows spots with a similar Habit —
 and says why.</p></div>
     <div class="dc-s"><h2 class="dc-h">See the strategy behind the gesture.</h2><p class="dc-p">Every spot shows its Habit box,
 its objectives and its repulsions.
 Never its media.</p></div>
-    <div class="dc-s"><h2 class="dc-h">Radar. Grid. Shorts.</h2><p class="dc-p">Around you first.
-Then the whole Club.</p></div>
+    <div class="dc-s"><h2 class="dc-h">Map and Grid.</h2><p class="dc-p">See what is happening around you.
+Explore the whole Club.</p></div>
     <div class="dc-s"><h2 class="dc-h">Post a spot from here.</h2><p class="dc-p">Now or later. Here or elsewhere.
 A photo or a video if you want.
 Every member sees it.</p></div>
@@ -767,30 +783,27 @@ you are a member.</p>
   <button data-hover-art class="dc-x k2 k2-x" id="cd-x" type="button" aria-label="Close"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2 L12 12 M12 2 L2 12"/></svg></button>
 </div>
 
-<section class="view is-on" id="v-radar" aria-label="Radar">
+<section class="view is-on" id="v-map" aria-label="Spots map">
   <div class="rd-top">
-    <canvas id="canvas"></canvas>
-    <div class="empty hide" id="radar-empty"></div>
-    <div id="radar-tools" role="group" aria-label="Radar controls">
-      <button id="cmp" class="chip" type="button" aria-label="Compass">000° N<br>turn the ring</button>
-      <button id="rdr-down" class="chip" type="button" hidden>spots ↓</button>
-      <button id="rdr-here" class="chip" type="button" aria-label="My position">◎</button>
-      <div id="rdr-zoom" role="group" aria-label="Radar range">
-        <button id="rdr-out" class="chip" type="button" aria-label="See further">&minus;</button>
-        <span id="rdr-span" role="status" aria-live="polite"></span>
-        <button id="rdr-in" class="chip" type="button" aria-label="See closer">+</button>
-      </div>
+    <div class="rd-map">
+      <canvas id="rdr-base" aria-hidden="true"></canvas>
+      <canvas id="rdr-map" aria-hidden="true"></canvas>
+      <button id="rdr-locate" class="k2" type="button" data-hover-art aria-label="Center on my location" hidden>
+        <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="4"/><path d="M8 1v3m0 8v3M1 8h3m8 0h3"/></svg>
+      </button>
+      <p id="rdr-loc-note" role="status"></p>
+      <p id="rdr-map-credit" hidden><a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OpenStreetMap contributors</a></p>
     </div>
+    <button id="rdr-down" class="chip" type="button" hidden>Spots ↓</button>
   </div>
-  <div id="rdr-list" aria-label="Spots around me"></div>
+  <div id="rdr-list" aria-label="Spots"></div>
 </section>
 <div id="rdr-plus" hidden><button type="button" class="tl tl-add" data-nspot="" aria-label="Add a spot"><b aria-hidden="true">+</b><span>spot</span></button></div>
 <section class="view" id="v-grid" aria-label="Spots grid"><div id="rdr-g-f"></div></section>
-<section class="view" id="v-shorts" aria-label="Spots shorts"><div id="rdr-sh-f"></div></section>
 
 <aside id="rdr-sf" class="sf" role="dialog" aria-label="Spots: filters" hidden></aside>
 <aside id="rdr-new" class="sf" role="dialog" aria-label="Add a spot" hidden></aside>
-<aside id="detail" aria-label="Spot"></aside>
+<aside id="detail" role="dialog" aria-modal="true" aria-label="Spot"></aside>
 <!-- 12/11 — TROIS entrées, comme `#cap-f-photo` / `#cap-f-video` / `#cap-f-file` de totehm.com : au
      téléphone, PHOTO et VIDEO ouvrent la caméra (`capture`), IMPORT ouvre les fichiers. -->
 <input id="ns-f-photo" class="hide" type="file" accept="image/*" capture="environment" aria-label="A photo">
@@ -936,7 +949,7 @@ const sb = createClient(SB_URL, SB_ANON);
 const $ = id => document.getElementById(id);
 const esc = s => { const d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; };
 const COM = 'https://www.totehm.com';
-const BUILD = '2026-11-24-vitrine2';
+const BUILD = '2026-11-27-carte-grind';
 
 /* ══ AUDIENCE — 13/10 : trois niveaux, une pastille. COPIÉ tel quel depuis tools/audience_ui.js
    (jamais importé). PRIVATE = moi · FIGHER CLUB = les membres · MY SUBSCRIBERS = mes abonnés ;
@@ -1133,14 +1146,11 @@ const dayOf = d => { const n = new Date(), y = new Date(n); y.setDate(n.getDate(
 const fmtDur = m => !m ? '' : m < 60 ? m + ' min' : Math.floor(m/60) + ' h' + (m % 60 ? ' ' + pad(m % 60) : '');
 /* L'état se RECALCULE à chaque dessin : un spot passe à I WAS THERE sous les yeux. */
 const spotState = s => s.starts_at && new Date(s.starts_at).getTime() > Date.now() ? 'will' : s.ends_at ? (Date.now() < new Date(s.ends_at).getTime() ? 'am' : 'was') : s.state;
-const isHere = s => spotState(s) === 'am';
 
 /* ══ LA SPHÈRE — seulement pour les points que j'ai le droit de voir ══ */
 const EARTH_R = 6371e3, DEG = Math.PI/180;
 const hav = (a, b) => { const p1 = a.lat*DEG, p2 = b.lat*DEG, dp = p2 - p1, dl = (b.lng - a.lng)*DEG;
   const h = Math.sin(dp/2)**2 + Math.cos(p1)*Math.cos(p2)*Math.sin(dl/2)**2; return 2*EARTH_R*Math.asin(Math.min(1, Math.sqrt(h))); };
-const bearing = (a, b) => { const p1 = a.lat*DEG, p2 = b.lat*DEG, dl = (b.lng - a.lng)*DEG;
-  return (Math.atan2(Math.sin(dl)*Math.cos(p2), Math.cos(p1)*Math.sin(p2) - Math.sin(p1)*Math.cos(p2)*Math.cos(dl))/DEG + 360) % 360; };
 let UNIT = 'km';
 try{ if(/^(America\/|Pacific\/Honolulu|US\/)/.test(Intl.DateTimeFormat().resolvedOptions().timeZone || '')
         && !/America\/(Sao_Paulo|Argentina|Bogota|Lima|Santiago|Caracas|Mexico_City|Toronto|Vancouver|Montreal|Halifax)/.test(Intl.DateTimeFormat().resolvedOptions().timeZone)) UNIT = 'mi'; }catch(_){}
@@ -1151,39 +1161,45 @@ const mapsURL = (lat, lng) => 'https://www.google.com/maps/search/?api=1&query='
 /* ⚠️ JAMAIS UNE FAUSSE POSITION CALCULÉE DEPUIS UNE VILLE. Un point est un POINT (ma position, une adresse
    lue, ou la Terre) ; la VILLE s'en déduit (`cities.json`, le même fichier que totehm.com). */
 let CITIES = null, citiesLoading = null;
+const centreVille = new Map();
 const fold = t => String(t || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
 function loadCities(){
   if(CITIES) return Promise.resolve(CITIES);
   return citiesLoading ||= fetch('/cities.json').then(r => r.ok ? r.json() : {cities:[]}).then(d => d.cities || [])
     .catch(e => { console.error('[cities.json]', e && e.message || e); return []; })
-    .then(l => { CITIES = l; return l; });
+    .then(l=>{
+      CITIES=l;
+      for(const c of l){ const k=fold(c[0]); if(!centreVille.has(k)) centreVille.set(k,{lat:c[1],lng:c[2],plein:false}); }
+      return l;
+    });
 }
 async function villeDe(lat, lng){
   const L = await loadCities(); let best = null, bd = 40e3;   /* 40 km : la règle du Club */
   for(const c of L){ const d = hav({lat,lng}, {lat:c[1], lng:c[2]}); if(d < bd){ bd = d; best = c; } }
   return best ? best[0] : '';
 }
-/* Le lieu d'un spot sur le radar : son POINT s'il m'est montré, sinon le centre de SA VILLE. */
+/* Le point exact dépend des droits du lecteur. La ville sert d'approximation. */
+function pointDe(z){
+  if(Number.isFinite(z?.exact?.lat)&&Number.isFinite(z?.exact?.lng)) return {...z.exact,plein:true};
+  return centreVille.get(fold(z?.city))||null;
+}
 async function lieuDe(z){
-  if(z && z.exact && typeof z.exact.lat === 'number' && typeof z.exact.lng === 'number') return {lat:z.exact.lat, lng:z.exact.lng, plein:true};
-  const v = fold(z && z.city); if(!v) return null;
-  const L = await loadCities(); const c = L.find(x => fold(x[0]) === v);
-  return c ? {lat:c[1], lng:c[2], plein:false} : null;
+  if(z.city&&!pointDe(z)&&!CITIES) await loadCities();
+  return pointDe(z);
 }
 
 /* ══ L'ÉTAT ══ */
 const VIDE_CONNECT = 'connect with my TOTEHM to see the spots around me';
 let me = null, PSEUDO = null, POS = null;
 let RULES = { clip_seconds:33, clip_max_bytes:48000000, duration_min:5, duration_max:720, horizon_days:90 };
-let DETAIL = null, suppressClickUntil = 0;
+let DETAIL = null, DETAIL_GROUPE = null, DETAIL_RETOUR = null;
 const store = { get(k){ try{ return localStorage.getItem(k); }catch(_){ return null; } }, set(k, v){ try{ localStorage.setItem(k, v); }catch(_){} } };
 
-/* ══ LE MODE : RADAR · GRID · SHORTS ══ Le choix tient d'une visite à l'autre ; les trois lisent le MÊME objet. */
-const MODES = ['radar', 'grid', 'shorts'];
+/* Map et Grid lisent les mêmes spots. Le choix tient entre deux visites. */
+const MODES = ['map', 'grid'];
 const MODE = (() => {
   const CLE = 'figher_mode';
-  let m = 'radar';
-  try{ const v = store.get(CLE); if(MODES.includes(v)) m = v; }catch(_){}
+  let m = store.get(CLE) === 'grid' || store.get(CLE) === 'shorts' ? 'grid' : 'map';
   const abon = [];
   return { get:()=>m,
     set(x){ if(!MODES.includes(x) || x === m) return; m = x; store.set(CLE, x); abon.forEach(f => { try{ f(x); }catch(_){} }); },
@@ -1196,8 +1212,9 @@ const MODE = (() => {
    partent au SERVEUR, et la PARENTÉ (`akin`) trie les plus proches de la Habit choisie d'abord. */
 const CLUBSP = (() => {
   const PER = ['past','now','future'];
-  const st = { pers:['now'], p:{}, items:[], total:0, more:false, seq:0, charge:false, lu:false, auto:true, elargi:false,
+  const st = { pers:['now','past','future'], p:{}, items:[], total:0, more:false, seq:0, charge:false, lu:false,
                err:'', at:0, srv:{intentions:[], type:'all', scope:'world', mode:'all', akin:'', exact:false, rayon:50} };
+  let reglage = 0, lecture = null;
   const abon = [];
   const prevenir = () => abon.forEach(f => { try{ f(); }catch(e){ console.error('[clubsp]', e && e.message || e); } });
   function filtres(){
@@ -1214,9 +1231,11 @@ const CLUBSP = (() => {
     if(suite && (st.charge || !st.more)) return;
     /* Déconnecté, le serveur ne montre AUCUN spot (`_audience_ok` : FIGHER CLUB = les membres qui ont un TOTEHM) :
        rien à lire, la vue le DIT (mesuré en production le 10/11 : cinq lectures vides par visite). */
-    if(!me){ ++st.seq; st.charge = false; st.items = []; st.total = 0; st.more = false; st.err = 'signin'; st.lu = true; prevenir();
+    if(!me){ ++st.seq; lecture?.abort(); st.charge = false; st.items = []; st.total = 0; st.more = false; st.err = 'signin'; st.lu = true; prevenir();
       if(!VITRINE.length) lireVitrine(); return; }
-    const s = ++st.seq, uid = me ? me.id : null, f = filtres();
+    const s = ++st.seq, uid = me.id, f = filtres();
+    lecture?.abort();
+    const requete = lecture = new AbortController();
     st.charge = true;
     /* ⚠️ 24/11 (Wah) : plusieurs temps à la fois, comme la vue de droite de totehm.com — `st.pers` : un ou plusieurs temps ;
        le serveur en lit UN par appel : une lecture par temps, en parallèle, chacune sa page (`st.p[per]`), fusionnées. */
@@ -1225,32 +1244,25 @@ const CLUBSP = (() => {
       const q = st.p[per] || {};
       return sb.rpc('club_spots', { p_period:per, p_filters:f,
         p_lat:f.scope === 'near' ? POS.lat : null, p_lng:f.scope === 'near' ? POS.lng : null,
-        p_limit:20, p_offset:suite ? (q.off | 0) : 0, p_as_of:suite ? (q.asOf || null) : null }).then(r => ({ per, ...r }));
+        p_limit:MODE.get()==='map'?60:20, p_offset:suite ? (q.off | 0) : 0, p_as_of:suite ? (q.asOf || null) : null }).abortSignal(requete.signal).then(r => ({ per, ...r }));
     }));
-    if(s !== st.seq || (me ? me.id : null) !== uid) return;
+    if(s !== st.seq || me?.id !== uid) return;
+    lecture = null;
     st.charge = false;
     const ko = lectures.find(r => r.error);
     if(ko){ console.error('[club_spots]', ko.error.message); st.err = 'unreachable'; prevenir(); return; }
     const non = lectures.find(r => !r.data || !r.data.ok);
     if(non){ st.err = (non.data && non.data.why) || 'refused'; if(!suite){ st.items = []; st.total = 0; st.more = false; } prevenir(); return; }
     const l = [].concat(...lectures.map(r => Array.isArray(r.data.items) ? r.data.items : []));
-    /* RIEN MAINTENANT ? À l'ARRIVÉE seulement, on montre ce qui vient, puis ce qui a été : une vue vide
-       quand le Club a des spots, c'est une vue qui ment. Un choix du membre n'est jamais contredit. */
-    if(!suite && st.auto && !l.length && st.pers.length === 1 && !Object.keys(f).some(k => k !== 'scope' && k !== 'radius_km')){
-      /* À l'arrivée, PRÈS DE MOI d'abord (Wah : « figher.club, c'est trouver un spot accompagné ») : maintenant,
-         puis bientôt ; rien autour → tout le Club, et la barre le DIT. */
-      if(f.scope === 'near'){
-        if(st.pers[0] === 'now'){ st.pers = ['future']; return lire(false); }
-        st.srv.scope = 'world'; st.pers = ['now']; st.elargi = true; return lire(false);
-      }
-      const nx = st.pers[0] === 'now' ? 'future' : st.pers[0] === 'future' ? 'past' : null;
-      if(nx){ st.pers = [nx]; return lire(false); }
-    }
-    st.auto = false; st.err = ''; st.lu = true; st.at = Date.now();
+    st.err = ''; st.lu = true; st.at = Date.now();
     if(!suite) st.p = {};
-    lectures.forEach(r => { const d = r.data;
-      st.p[r.per] = { off:d.next_offset | 0, asOf:d.as_of || (st.p[r.per] && st.p[r.per].asOf) || null, more:!!(d.has_more || d.more), total:d.total | 0 }; });
-    st.items = suite ? st.items.concat(l.filter(x => !st.items.some(y => y.id === x.id))) : l.filter((x, i, a) => a.findIndex(y => y.id === x.id) === i);
+    lectures.forEach(r => {
+      const d = r.data, q = st.p[r.per], off = d.next_offset | 0;
+      st.p[r.per] = { off, asOf:d.as_of || q?.asOf || null, more:!!(d.has_more || d.more) && off > (q?.off || 0), total:d.total | 0 };
+    });
+    const uniques = new Map((suite ? st.items : []).map(z => [String(z.id), z]));
+    for(const z of l) uniques.set(String(z.id), z);
+    st.items = [...uniques.values()];
     st.total = Object.values(st.p).reduce((a, q) => a + (q.total | 0), 0); st.more = Object.values(st.p).some(q => q.more);
     prevenir();
   }
@@ -1261,44 +1273,67 @@ const CLUBSP = (() => {
     ouvrir(){ if(!st.lu || Date.now() - st.at > 60000){ st.p = {}; lire(false); } },
     suite:()=>lire(true),
     /* un temps de plus, ou de moins — comme une intention ; il en reste toujours un */
-    periode(p){ if(!PER.includes(p)) return; st.auto = false;
+    periode(p){ if(!PER.includes(p)) return;
       if(st.pers.includes(p)){ if(st.pers.length === 1) return; st.pers = st.pers.filter(x => x !== p); }
       else st.pers = ORDRE.filter(x => x === p || st.pers.includes(x));
       vider(); prevenir(); lire(false); },
-    async regler(o, auto){
-      st.err = ''; st.elargi = false;
-      if(o.scope === 'near' && !(await position())){ st.err = 'location'; o.scope = 'world'; }
-      st.srv = { intentions:o.intentions || [], type:o.type || 'all', scope:o.scope || 'world', mode:o.mode || 'all',
+    async regler(o, tousTemps=false){
+      const s = ++reglage, uid = me?.id;
+      const scope = o.scope === 'near' && me && await position() ? 'near' : 'world';
+      if(s !== reglage || uid !== me?.id) return null;
+      if(tousTemps) st.pers = ORDRE.slice();
+      st.srv = { intentions:o.intentions || [], type:o.type || 'all', scope, mode:o.mode || 'all',
                  akin:o.akin || '', exact:!!o.exact, rayon:o.rayon || 50 };
-      st.auto = !!auto; if(auto) st.pers = ['now']; st.p = {}; lire(false);
-      return st.srv.scope;
+      vider(); prevenir(); lire(false);
+      return scope;
     },
-    items:()=>st.items.slice(),
+    items(){
+      const ordre = {am:0, will:1, was:2};
+      const etats = new Map(st.items.map(z=>[z,ordre[spotState(z)]??3]));
+      const distance = new Map();
+      if(POS&&!st.srv.akin) for(const z of st.items){ const p=pointDe(z); if(p) distance.set(z,hav(POS,p)); }
+      return st.items.slice().sort((a,b)=>etats.get(a)-etats.get(b)
+        || (distance.get(a)??Infinity)-(distance.get(b)??Infinity));
+    },
+    reinitialiser(){
+      ++reglage; ++st.seq;
+      lecture?.abort(); lecture = null;
+      st.pers = ORDRE.slice(); st.lu = false; st.charge = false;
+      st.srv = { intentions:[], type:'all', scope:'world', mode:'all', akin:'', exact:false, rayon:50 };
+      vider();
+    },
     get per(){ return st.pers[0]; }, get pers(){ return st.pers.slice(); },
     /* les temps lus, dits en un mot : « now · past » */
     get nom(){ return st.pers.map(p => NOMS[p]).join(' · '); },
     get err(){ return st.err; }, get lu(){ return st.lu; }, get charge(){ return st.charge; },
-    get more(){ return st.more; }, get scope(){ return st.srv.scope; }, get elargi(){ return st.elargi; },
+    get more(){ return st.more; }, get scope(){ return st.srv.scope; },
     get akin(){ return st.srv.akin; },
     PER, NOMS, ORDRE,
-    /* un spot que je viens de publier : CE temps-là, seul, relu */
-    montrer(p){ if(!PER.includes(p)) return; st.auto = false; st.pers = [p]; vider();
+    montrer(p){ if(!PER.includes(p)) return; st.pers = ORDRE.filter(k=>k===p||st.pers.includes(k)); vider();
       prevenir(); return lire(false); },
     retirer(id){ const n = st.items.length; st.items = st.items.filter(x => !x || String(x.id) !== String(id));
       if(st.items.length !== n){ st.total = Math.max(0, st.total - 1); prevenir(); } },
     sur(f){ if(typeof f === 'function') abon.push(f); },
     etat:()=>({ periode:st.pers.join('+'), pers:st.pers.slice(), items:st.items.length, total:st.total, more:st.more, lu:st.lu, err:st.err,
-                filtres:filtres(), charge:st.charge, rayon:st.srv.rayon, elargi:st.elargi })
+                filtres:filtres(), charge:st.charge, rayon:st.srv.rayon })
   };
 })();
 /* « Près de moi » demande la position : on la DEMANDE seulement au geste du membre. */
+let positionEnCours = null;
 function position(){
-  return new Promise(ok => {
-    if(POS) return ok(true);
-    if(!navigator.geolocation) return ok(false);
-    navigator.geolocation.getCurrentPosition(q => { POS = { lat:q.coords.latitude, lng:q.coords.longitude }; ok(true); },
-      () => ok(false), { timeout:8000, maximumAge:600000 });
+  if(POS) return Promise.resolve(true);
+  if(!me||!navigator.geolocation) return Promise.resolve(false);
+  if(positionEnCours) return positionEnCours;
+  const uid=me.id;
+  const demande=new Promise(ok=>{
+    navigator.geolocation.getCurrentPosition(({coords})=>{
+      if(me?.id !== uid){ ok(false); return; }
+      POS={lat:coords.latitude,lng:coords.longitude}; ok(true);
+    },()=>ok(false),{timeout:8000,maximumAge:120000});
   });
+  positionEnCours=demande;
+  demande.finally(()=>{ if(positionEnCours===demande) positionEnCours=null; });
+  return demande;
 }
 
 /* ══ LA BOÎTE D'UN SPOT — ce que CE lecteur a le droit de voir. Ce qui vient du TOTEHM garde le format
@@ -1346,15 +1381,17 @@ function spotHTML(z){
     + (z.mode ? sdTag(z.mode === 'silent' ? 'silent · nobody disturb me' : 'social · we can talk') : '');
   return boxSpot(z)
     + '<div class="sdata" aria-label="Where and when"><div class="sd-row">' + sdTag(when, 'is-st')
-    + sdTag(state === 'am' ? 'until ' + hhmm(end) : esc(dayOf(st)) + ' ' + hhmm(st))
+    + sdTag(state === 'am' ? 'until ' + hhmm(end) : esc(dayOf(st)) + ' ' + hhmm(st)) + placeHTML(z) + '</div>'
+    + '<details class="spot-more"><summary>Details</summary><div class="sd-row">' + how
     + (z.duration_min ? sdTag(fmtDur(z.duration_min)) : '') + (kinMot(z) ? sdTag(kinMot(z)) : '') + '</div>'
-    + '<div class="sd-row">' + placeHTML(z) + how + '</div>'
-    + (z.comment ? '<p class="sd-say">' + esc(z.comment) + '</p>' : '') + '</div>'
+    + (z.comment ? '<p class="sd-say" tabindex="0">' + esc(z.comment) + '</p>' : '')
+    + (z.mine ? '<div class="acts"><button class="btn" type="button" data-del="'+esc(String(z.id))+'">Delete</button></div>'
+      + '<p class="note acts-note" hidden></p>' : '') + '</details></div>'
     + (!z.mine && z.creator ? '<div class="by"><span>by</span><button class="tname" type="button" data-com="/@'
        + encodeURIComponent(z.creator) + '">' + esc(z.creator) + '</button></div>' : '');
 }
 
-/* Une ligne : l'état, le moment, la distance (ou la ville), together, la parenté — la liste du radar et les shorts. */
+/* Une ligne : l'état, le moment, la distance (ou la ville), together, la parenté — la liste sous la carte. */
 function ligneSpot(z){
   const state = spotState(z), st = new Date(z.starts_at), end = new Date(z.ends_at || st.getTime() + (z.duration_min || 0) * 60e3);
   const when = state === 'will' ? 'I WILL BE HERE' : state === 'am' ? 'I AM HERE' : 'I WAS THERE';
@@ -1495,52 +1532,6 @@ async function urlMoments(p){
    quand rien ne bouge : la cadence tombe à 15 images/s au repos. */
 /* `z` = LA PORTÉE CHOISIE, un facteur sur la portée automatique (Wah, 12/11 : « on doit pouvoir grossir
    ou dégrossir la portée »). Gardé d'une session à l'autre : la bonne portée est celle de SA ville. */
-const RAD = { raf:0, W:0, H:0, dpr:1, cx:0, cy:0, rpx:0, tx:0, ty:0, tr:0, range:1000, pts:[], lieux:[], seq:0,
-              head:0, headTo:0, turn:null, last:0, dirty:null, centre:null, z:1, pinch:null };
-try{ const v = parseFloat(localStorage.getItem('figher_portee')); if(v >= .05 && v <= 40) RAD.z = v; }catch(_){}
-const norm360 = d => ((d % 360) + 360) % 360, norm180 = d => ((d + 540) % 360) - 180;
-const CARD = ['N','NE','E','SE','S','SW','W','NW'];
-const CMP = { on:false, src:null, target:0, last:0, timer:0,
-              available:typeof DeviceOrientationEvent !== 'undefined' && matchMedia('(pointer:coarse)').matches };
-const centre = () => POS || RAD.centre;
-function radarSize(){
-  const c = $('canvas'), dpr = Math.min(2, devicePixelRatio || 1);
-  if(RAD.W !== innerWidth || RAD.H !== innerHeight || RAD.dpr !== dpr){
-    RAD.W = innerWidth; RAD.H = innerHeight; RAD.dpr = dpr; c.width = RAD.W * dpr; c.height = RAD.H * dpr; RAD.dirty = null;
-  }
-  const bar = $('rdr-flt').getBoundingClientRect().bottom;
-  /* 23/11 (Wah) : « descendre un peu le radar » — il s'éloigne de la barre (et de sa ligne `#rdr-say`). */
-  const left = 20, right = RAD.W - 20, top = bar + 70, bottom = RAD.H - 110;
-  RAD.tx = (left + right) / 2; RAD.ty = (top + bottom) / 2;
-  RAD.tr = Math.max(40, Math.min(right - left, Math.max(60, bottom - top)) / 2 * .92);
-  if(!RAD.rpx){ RAD.cx = RAD.tx; RAD.cy = RAD.ty; RAD.rpx = RAD.tr; }
-  const em = $('radar-empty'); em.style.top = Math.round(RAD.ty) + 'px';
-}
-function radarAuto(){
-  const c = centre(); if(!c) return 1000;
-  const d = RAD.lieux.map(x => hav(c, x.p)).sort((a, b) => a - b);
-  if(!d.length) return 1000;
-  return Math.max(300, d[Math.min(d.length - 1, Math.floor(d.length * .85))] * 1.18);
-}
-/* ⚠️ LA PORTÉE AUTOMATIQUE RESTE LA BASE : le facteur du membre se pose DESSUS, donc un spot qui arrive
-   de loin ne fait plus sauter l'échelle qu'il a choisie. Bornes : 50 m à 20 000 km. */
-const radarRange = () => Math.max(50, Math.min(2e7, radarAuto() * RAD.z));
-let porteeT = 0;
-function porteeSet(z){
-  z = Math.max(.05, Math.min(40, z));
-  if(Math.abs(z - RAD.z) < 1e-4) return;
-  RAD.z = z; RAD.range = radarRange();
-  clearTimeout(porteeT);
-  porteeT = setTimeout(() => { try{ localStorage.setItem('figher_portee', String(RAD.z)); }catch(_){} }, 400);
-  const b = $('rdr-span'); if(b) b.textContent = fmtDist(RAD.range);
-  radarOn();
-}
-const portee = f => porteeSet(RAD.z * f);
-/* Les spots → leurs lieux (une lecture de `cities.json` seulement si un spot n'a pas de point). */
-/* ══ LA VITRINE · 24/11 (Wah : « affiche les spots sur le radar même pour les visiteurs pour donner envie ») ══
-   Sans compte, le radar s'allume quand même : `club_vitrine()` ne rend que la VILLE, les intentions et le temps
-   de chaque spot visible au Club — jamais le point, la Habit, l'auteur ni le média. Un ANNEAU à la ville, de sa
-   couleur ; le tap ouvre le Discover (la porte : CONNECT WITH MY TOTEHM). La liste et la grille restent aux membres. */
 let VITRINE = [];
 async function lireVitrine(){
   const { data, error } = await sb.rpc('club_vitrine');
@@ -1549,188 +1540,507 @@ async function lireVitrine(){
   const ETAT = { now:'am', future:'will', past:'was' };
   VITRINE = (!error && data && data.ok && Array.isArray(data.items) ? data.items : [])
     .map((x, i) => ({ id:'vitrine-' + i, vitrine:true, city:x.city, intentions:x.intentions || [], state:ETAT[x.when] || 'was' }));
-  situer();
+  CARTE.maj(); peindreEtatCarte();
 }
-async function situer(){
-  const s = ++RAD.seq, l = me ? CLUBSP.items() : VITRINE;
-  const r = await Promise.all(l.map(async z => ({ z, p:await lieuDe(z) })));
-  if(s !== RAD.seq) return;
-  RAD.lieux = r.filter(x => x.p);
-  /* la vitrine ne connaît que la VILLE : plusieurs spots d'une même ville s'y empileraient en UN anneau. Ils s'écartent
-     en spirale autour d'elle (400 m, puis 250 m de plus chacun) — un dessin, jamais une position. */
-  if(!me){ const n = new Map();
-    RAD.lieux = RAD.lieux.map(x => { const k = x.p.lat.toFixed(3) + ',' + x.p.lng.toFixed(3), i = n.get(k) || 0; n.set(k, i + 1);
-      if(!i) return x;
-      const d = (400 + 250 * i) / 111320, a = i * 2.39996;
-      return { z:x.z, p:{ lat:x.p.lat + d * Math.cos(a), lng:x.p.lng + d * Math.sin(a) / Math.cos(x.p.lat * Math.PI / 180), plein:false } }; }); }
-  if(RAD.lieux.length && !POS){
-    RAD.centre = { lat:RAD.lieux.reduce((a, x) => a + x.p.lat, 0) / RAD.lieux.length,
-                   lng:RAD.lieux.reduce((a, x) => a + x.p.lng, 0) / RAD.lieux.length };
-  }
-  RAD.range = radarRange();
-  const em = $('radar-empty');
-  if(!me) dire(RAD.lieux.length ? RAD.lieux.length + (RAD.lieux.length > 1 ? ' spots' : ' spot') + ' in the club · connect with my TOTEHM to join them' : '');
-  em.textContent = CLUBSP.charge ? 'reading the club…' : CLUBSP.err === 'signin' ? (RAD.lieux.length ? '' : VIDE_CONNECT) : CLUBSP.err === 'location' ? 'allow my location'
-    : CLUBSP.err ? 'the club is unreachable' : RAD.lieux.length ? '' : 'no spot ' + CLUBSP.nom;
-  em.classList.toggle('hide', !em.textContent || MODE.get() !== 'radar');
-  radarOn(); LISTE.peindre();
-}
-function paintCmp(){
-  const h = Math.round(norm360(RAD.head)) % 360;
-  const html = '<b>' + String(h).padStart(3, '0') + '° ' + CARD[Math.round(h / 45) % 8] + '</b><br>'
-    + (CMP.on ? 'compass' : Math.abs(norm180(RAD.head)) > .5 ? 'north ↺' : CMP.available ? 'align compass' : 'turn the ring');
-  const el = $('cmp'); if(el._heading !== html){ el._heading = html; el.innerHTML = html; }
-}
-function draw(t){
-  RAD.raf = 0;
-  /* Un panneau ouvert ou un spot ouvert : le radar s'ARRÊTE — rien à montrer derrière, et la batterie
-     du téléphone n'a pas à tourner pour ça. Il repart à la fermeture (`radarOn`). */
-  if(document.hidden || MODE.get() !== 'radar' || $('v-radar').scrollTop > RAD.H) return;
-  if(document.body.classList.contains('is-nspot') || document.body.classList.contains('is-sf')) return;
-  const moving = Math.abs(RAD.tx - RAD.cx) + Math.abs(RAD.ty - RAD.cy) + Math.abs(RAD.tr - RAD.rpx) > 1 || RAD.turn || RAD.headTo !== null;
-  const fps = moving ? 60 : 15;
-  if(t - RAD.last < 1000 / fps - 1){ RAD.raf = requestAnimationFrame(draw); return; }
-  const blend = 1 - Math.pow(.82, Math.min(100, t - RAD.last) / (1000 / 60)); RAD.last = t;
-  for(const [now, target] of [['cx','tx'],['cy','ty'],['rpx','tr']])
-    RAD[now] = Math.abs(RAD[target] - RAD[now]) < .04 ? RAD[target] : RAD[now] + (RAD[target] - RAD[now]) * blend;
-  if(CMP.on){ const delta = norm180(CMP.target - RAD.head); RAD.head = norm360(RAD.head + delta * .15); }
-  else if(RAD.headTo !== null){ const delta = norm180(RAD.headTo - RAD.head); RAD.head = norm360(RAD.head + delta * .16); if(Math.abs(delta) < .1) RAD.headTo = null; }
-  const tools = $('radar-tools');
-  const pos = [RAD.cx - RAD.rpx * .82, RAD.cx + RAD.rpx * .82, RAD.cy + RAD.rpx * .72, RAD.cy - RAD.rpx - 62].map(n => n.toFixed(1) + 'px');
-  const layout = pos.join('|');
-  if(tools._layout !== layout){ tools._layout = layout; tools.classList.add('is-placed');
-    $('cmp').style.left = pos[0]; $('cmp').style.top = pos[2];
-    $('rdr-here').style.left = pos[1]; $('rdr-here').style.top = pos[2];
-    $('rdr-down').style.left = RAD.cx.toFixed(1) + 'px'; $('rdr-down').style.top = pos[2];
-    const zm = $('rdr-zoom'); if(zm){ zm.style.left = RAD.cx.toFixed(1) + 'px'; zm.style.top = pos[3]; } }
-  { const b = $('rdr-span'); if(b){ const t = fmtDist(RAD.range); if(b.textContent !== t) b.textContent = t; } }
-  paintCmp();
-  const x = $('canvas').getContext('2d'), { dpr, cx, cy, rpx } = RAD;
-  x.setTransform(dpr, 0, 0, dpr, 0, 0); if(RAD.dirty) x.clearRect(...RAD.dirty);
-  RAD.dirty = [cx - rpx - 42, cy - rpx - 42, (rpx + 42) * 2, (rpx + 42) * 2];
-  const g = x.createRadialGradient(cx, cy, 0, cx, cy, rpx); g.addColorStop(0, '#16161b'); g.addColorStop(1, '#0d0d10');
-  x.fillStyle = g; x.beginPath(); x.arc(cx, cy, rpx, 0, Math.PI * 2); x.fill();
-  x.strokeStyle = 'rgba(255,255,255,.07)'; x.lineWidth = 1;
-  for(let k = 1; k <= 4; k++){ x.beginPath(); x.arc(cx, cy, rpx * k / 4, 0, Math.PI * 2); x.stroke(); }
-  x.font = '9px "Space Mono", monospace'; x.fillStyle = 'rgba(255,255,255,.28)'; x.textAlign = 'left';
-  if(centre()) for(let k = 2; k <= 4; k += 2) x.fillText(fmtDist(RAD.range * k / 4), cx + 4, cy - rpx * k / 4 + 11);
-  const a = ((t || 0) / 14000 % 1) * Math.PI * 2 - Math.PI / 2;
-  const sw = x.createConicGradient ? x.createConicGradient(a - .55, cx, cy) : null;
-  if(sw){ sw.addColorStop(0, 'rgba(255,255,255,0)'); sw.addColorStop(.0875, 'rgba(255,255,255,.07)'); sw.addColorStop(.0876, 'rgba(255,255,255,0)');
-    x.fillStyle = sw; x.beginPath(); x.arc(cx, cy, rpx, 0, Math.PI * 2); x.fill(); }
-  const c = centre(); RAD.pts = [];
-  if(c) for(const { z, p } of RAD.lieux){
-    const d = hav(c, p), b = (bearing(c, p) - RAD.head) * DEG, dehors = d > RAD.range;
-    const r = Math.min(1, d / RAD.range) * rpx, px = cx + Math.sin(b) * r, py = cy - Math.cos(b) * r, ici = isHere(z);
-    /* 12/11 (Wah) : le point PREND TOUTES ses intentions, mélangées comme des pigments (`melange`). */
-    /* 23/11 (Wah) : « des POINTS LUMINEUX reprenant les couleurs des intentions, comme avant » — un rond qui rayonne
-       de sa couleur mélangée ; PLEIN = point exact, ANNEAU = la ville. */
-    const col = melange(z.intentions || []), s = ici ? 4.2 : 3.6;
-    x.globalAlpha = dehors ? .4 : ici ? 1 : .8;
-    x.shadowColor = col; x.shadowBlur = dehors ? 6 : ici ? 16 : 11;
-    x.beginPath(); x.arc(px, py, s, 0, Math.PI * 2);
-    if(p.plein){ x.fillStyle = col; x.fill(); x.fill(); }
-    else { x.strokeStyle = col; x.lineWidth = 1.6; x.stroke(); }
-    x.shadowBlur = 0;
-    if(ici){ x.strokeStyle = col; x.globalAlpha = .35; x.lineWidth = 1; x.beginPath();
-      x.arc(px, py, 10 + 3 * Math.sin((t || 0) / 500), 0, Math.PI * 2); x.stroke(); }
-    x.globalAlpha = 1; RAD.pts.push({ z, px, py });
-  }
-  if(POS){ x.fillStyle = '#fff'; x.shadowColor = '#fff'; x.shadowBlur = 8; x.beginPath(); x.arc(cx, cy, 4, 0, Math.PI * 2); x.fill(); x.shadowBlur = 0; }
-  x.globalAlpha = 1;
-  for(let deg = 0; deg < 360; deg += 5){
-    const an = (deg - RAD.head) * DEG, outer = rpx + 12, inner = outer - (deg % 45 === 0 ? 10 : deg % 15 === 0 ? 6 : 3);
-    x.strokeStyle = deg % 45 === 0 ? 'rgba(255,255,255,.65)' : 'rgba(255,255,255,.25)';
-    x.beginPath(); x.moveTo(cx + Math.sin(an) * inner, cy - Math.cos(an) * inner); x.lineTo(cx + Math.sin(an) * outer, cy - Math.cos(an) * outer); x.stroke();
-  }
-  x.textAlign = 'center'; x.textBaseline = 'middle'; x.font = '9px "Space Mono"'; x.fillStyle = 'rgba(255,255,255,.65)';
-  for(const [deg, label] of [[0,'N'],[90,'E'],[180,'S'],[270,'W']]){
-    const an = (deg - RAD.head) * DEG; x.fillText(label, cx + Math.sin(an) * (rpx + 24), cy - Math.cos(an) * (rpx + 24));
-  }
-  RAD.raf = requestAnimationFrame(draw);
-}
-function radarOn(){ radarSize(); if(!RAD.raf) RAD.raf = requestAnimationFrame(draw); }
-function compassOff(){ if(CMP.src) removeEventListener(CMP.src, onOrient); CMP.on = false; CMP.src = null; clearTimeout(CMP.timer); }
-function onOrient(e){
-  let h = typeof e.webkitCompassHeading === 'number' ? e.webkitCompassHeading : e.absolute && typeof e.alpha === 'number' ? 360 - e.alpha : null;
-  if(h === null || !Number.isFinite(h)) return;
-  CMP.target = norm360(h + (screen.orientation?.angle || window.orientation || 0)); CMP.last = Date.now(); CMP.on = true; RAD.headTo = null;
-}
-$('cmp').onclick = async () => {
-  if(CMP.on || CMP.src || Math.abs(norm180(RAD.head)) > .5){ compassOff(); RAD.headTo = 0; return; }
-  if(!CMP.available) return;
-  try{ if(typeof DeviceOrientationEvent.requestPermission === 'function' && await DeviceOrientationEvent.requestPermission() !== 'granted') return; }
-  catch{ CMP.available = false; return; }
-  CMP.last = 0; CMP.src = 'ondeviceorientationabsolute' in window ? 'deviceorientationabsolute' : 'deviceorientation';
-  addEventListener(CMP.src, onOrient);
-  CMP.timer = setTimeout(() => { if(!CMP.last){ compassOff(); CMP.available = false; paintCmp(); } }, 3000);
-};
-$('rdr-here').onclick = async () => { if(await position()){ RAD.headTo = 0; situer(); } else dire('allow my location'); };
-{
-  const cv = $('canvas');
-  /* le repère du radar : le canevas DÉFILE avec la vue, ses coordonnées sont les siennes */
-  const ici = e => { const r = cv.getBoundingClientRect(); return { x:e.clientX - r.left, y:e.clientY - r.top }; };
-  cv.addEventListener('pointerdown', e => {
-    const q = ici(e), d = Math.hypot(q.x - RAD.cx, q.y - RAD.cy);
-    if(d < RAD.rpx - 18 || d > RAD.rpx + 35) return;
-    compassOff(); RAD.headTo = null;
-    RAD.turn = { id:e.pointerId, a:Math.atan2(q.x - RAD.cx, RAD.cy - q.y), h:RAD.head };
-    cv.setPointerCapture(e.pointerId); e.stopImmediatePropagation();
-  });
-  cv.addEventListener('pointermove', e => {
-    if(!RAD.turn || e.pointerId !== RAD.turn.id) return;
-    const q = ici(e), a = Math.atan2(q.x - RAD.cx, RAD.cy - q.y);
-    RAD.head = norm360(RAD.turn.h - (a - RAD.turn.a) / DEG); suppressClickUntil = Date.now() + 500;
-    e.preventDefault(); e.stopImmediatePropagation();
-  });
-  for(const name of ['pointerup','pointercancel'])
-    cv.addEventListener(name, e => { if(RAD.turn?.id === e.pointerId){ RAD.turn = null; suppressClickUntil = Date.now() + 500; } });
-  cv.addEventListener('click', e => {
-    if(Date.now() < suppressClickUntil || RAD.turn) return;
-    let best = null, bd = 22; const q = ici(e);
-    for(const p of RAD.pts){ const d = Math.hypot(p.px - q.x, p.py - q.y); if(d < bd){ bd = d; best = p.z; } }
-    if(best) best.vitrine ? CD.ouvrir() : ouvrirDetail(best);
-  });
-}
-/* ══ LA PORTÉE SE RÈGLE · 12/11 ══════════════════════════════════════════════════════════════════════
-   Deux boutons (× 1,6 par tap), deux doigts sur le disque, la molette sur l'ordinateur. L'anneau garde SA
-   priorité : son `pointerdown` s'arrête net (`stopImmediatePropagation`), donc tourner n'est jamais zoomer. */
-{ const cv = $('canvas'), pz = new Map();
-  const ici = e => { const r = cv.getBoundingClientRect(); return { x:e.clientX - r.left, y:e.clientY - r.top }; };
-  const dedans = q => Math.hypot(q.x - RAD.cx, q.y - RAD.cy) <= RAD.rpx + 12;
-  cv.addEventListener('pointerdown', e => {
-    if(!dedans(ici(e))) return;
-    pz.set(e.pointerId, { x:e.clientX, y:e.clientY });
-    if(pz.size === 2){ const [a, b] = [...pz.values()]; RAD.pinch = { d:Math.hypot(a.x - b.x, a.y - b.y) || 1, z:RAD.z }; }
-  });
-  cv.addEventListener('pointermove', e => {
-    if(!pz.has(e.pointerId)) return;
-    pz.set(e.pointerId, { x:e.clientX, y:e.clientY });
-    if(!RAD.pinch || pz.size !== 2) return;
-    const [a, b] = [...pz.values()], d = Math.hypot(a.x - b.x, a.y - b.y) || 1;
-    porteeSet(RAD.pinch.z * (RAD.pinch.d / d));            /* les doigts s'écartent = on voit plus près */
-    suppressClickUntil = Date.now() + 400;
-    e.preventDefault(); e.stopImmediatePropagation();
-  }, { passive:false });
-  for(const n of ['pointerup', 'pointercancel'])
-    cv.addEventListener(n, e => { pz.delete(e.pointerId); if(pz.size < 2) RAD.pinch = null; });
-  cv.addEventListener('wheel', e => {
-    if(!dedans(ici(e))) return;                            /* hors du disque : la vue défile vers la liste */
-    e.preventDefault(); e.stopPropagation();
-    portee(Math.exp(e.deltaY * .0015));
-  }, { passive:false });
-  $('rdr-out').onclick = () => portee(1.6);
-  $('rdr-in').onclick = () => portee(1 / 1.6);
-}
-addEventListener('resize', () => radarOn());
-$('v-radar').addEventListener('scroll', () => {
-  const y = $('v-radar').scrollTop;
-  document.body.classList.toggle('is-scrolled', y > 40);
-  if(y <= RAD.H) radarOn();
-}, { passive:true });
-$('rdr-down').onclick = () => $('rdr-list').scrollIntoView({ behavior:matchMedia('(prefers-reduced-motion:reduce)').matches ? 'auto' : 'smooth', block:'start' });
+/* ══ LA CARTE DES SPOTS — tools/spot_map.js ══ */
+function creerCarteSpots({spots,lieuDe,couleur,voir,geometrie,positionAuto,position,groupesOuverts=()=>true}){
+  const $=id=>document.getElementById(id);
+  const D=Math.PI/180, TERRE_KM=6371, ZOOM_VILLE=TERRE_KM/14, ZOOM_MAX=4096, ZOOM_PLAN=6;
+  const etat={on:false, terres:0, points:0, groupes:0, repartis:0, villes:0, sans:0, zoom:1, centre:false, position:false};
+  let terre=null, terreP=null, lon0=8, lat0=28, k=1, tenu=null, pinch=null, pts=[], lieux=[], seq=0, rq=0, pique=null, epingle=null;
+  let geoSeq=0, geoAttente=false, ici=null, dernierTap=null, trajet=null, roue=null, zoomDoigt=null, repartition=null;
+  let niveau=-1, niveauDepuis=0;
+  const ptrs=new Map(), tuiles=new Map();
+  const cv=()=>$('rdr-map'), fond=$('rdr-base'), loc=$('rdr-locate'), note=$('rdr-loc-note'), credit=$('rdr-map-credit');
+  const reduit=matchMedia('(prefers-reduced-motion: reduce)');
+  const borner=(v,a,b)=>Math.max(a,Math.min(b,v));
+  const longitude=l=>((l+180)%360+360)%360-180;
+  const latitude=l=>borner(l,-85,85);
+  const doux=t=>t*t*(3-2*t);
+  const mercY=la=>(1-Math.asinh(Math.tan(borner(la,-85.0511,85.0511)*D))/Math.PI)/2;
+  const latMerc=y=>Math.atan(Math.sinh(Math.PI*(1-2*y)))/D;
 
-/* ══ LA GRILLE — la même qu'à droite de COM : une tuile carrée par spot, sa box posée dessus ══ */
+  const geo=()=>geometrie(cv().clientWidth||innerWidth,cv().clientHeight||innerHeight);
+  let ancreTouche='';
+  function poserTouche(g,w,h){
+    const x=Math.round(Math.min(w-30,g.cx+g.R0*.74+12));
+    const y=Math.round(Math.min(h-30,g.cy+g.R0*.74+12));
+    const cle=x+':'+y;
+    if(cle===ancreTouche) return;
+    ancreTouche=cle;
+    for(const el of [loc,note]){
+      el.style.setProperty('--loc-x',x+'px');
+      el.style.setProperty('--loc-y',y+'px');
+    }
+  }
+  function coord(lng,lat){
+    const l=lng*D, p=lat*D, c=Math.cos(p);
+    return {lng,lat, y:mercY(lat), a:c*Math.cos(l), b:c*Math.sin(l), c:Math.sin(p)};
+  }
+  function chargerTerre(){
+    if(!terreP) terreP=fetch('/assets/earth.json').then(r=>r.ok?r.json():[])
+      .then(data=>Array.isArray(data)?data.map(r=>{
+        const polygone=[];
+        for(let i=0;i<r.length;i+=2) polygone.push(coord(r[i],r[i+1]));
+        return polygone;
+      }):[])
+      .catch(e=>{ console.error('[earth]',e&&e.message||e); return []; })
+      .then(t=>{ terre=t; etat.terres=t.length; kick(); });
+  }
+  function camera(g){
+    const r=g.R0*k, rotation=lon0*D, inclinaison=lat0*D, cos=Math.cos(inclinaison);
+    const mix=doux(borner(Math.log(k/2.4)/Math.log(ZOOM_PLAN/2.4),0,1));
+    return {cx:g.cx, cy:g.cy, r, mix, echelle:2*Math.PI*r*cos, x:(lon0+180)/360,
+      y:mercY(lat0), cos, sin:Math.sin(inclinaison), cosLon:Math.cos(rotation), sinLon:Math.sin(rotation)};
+  }
+  function projeter(q,g,cote=false){
+    const mx=g.echelle*longitude(q.lng-lon0)/360, my=g.echelle*(q.y-g.y);
+    if(g.mix===1) return [g.cx+mx,g.cy+my,1];
+    const vers=q.a*g.cosLon+q.b*g.sinLon;
+    const devant=g.sin*q.c+g.cos*vers;
+    let x=g.r*(q.b*g.cosLon-q.a*g.sinLon), y=-g.r*(g.cos*q.c-g.sin*vers);
+    if(cote&&devant<0){
+      const r=g.r/(Math.hypot(x,y)||1); x*=r; y*=r;
+    }
+    return [g.cx+x+(mx-x)*g.mix,g.cy+y+(my-y)*g.mix,devant];
+  }
+  function inverse(x,y,g){
+    const rx=(x-g.cx)/g.r, ry=(g.cy-y)/g.r, r=Math.hypot(rx,ry);
+    const ll=g.mix===0?null:{lat:latitude(latMerc(g.y+(y-g.cy)/g.echelle)),lng:longitude(lon0+(x-g.cx)*360/g.echelle)};
+    if(g.mix===1) return ll;
+    if(g.mix===0){
+      if(r>1) return null; if(r<1e-9) return {lat:lat0,lng:lon0};
+      const z=Math.sqrt(Math.max(0,1-r*r));
+      return {lat:Math.asin(borner(z*g.sin+ry*g.cos,-1,1))/D,
+        lng:longitude(lon0+Math.atan2(rx,z*g.cos-ry*g.sin)/D)};
+    }
+    /* Au milieu de la transition, inverser localement la projection mélangée. */
+    const delta=.001;
+    for(let i=0;i<4;i++){
+      const [px,py]=projeter(coord(ll.lng,ll.lat),g);
+      if(Math.hypot(x-px,y-py)<.03) break;
+      const [hx,hy]=projeter(coord(ll.lng+delta,ll.lat),g);
+      const [vx,vy]=projeter(coord(ll.lng,ll.lat+delta),g);
+      const a=hx-px, b=vx-px, c=hy-py, d=vy-py, det=a*d-b*c;
+      if(Math.abs(det)<1e-9) break;
+      ll.lng=longitude(ll.lng+delta*(d*(x-px)-b*(y-py))/det);
+      ll.lat=latitude(ll.lat+delta*(a*(y-py)-c*(x-px))/det);
+    }
+    return ll;
+  }
+  function zoomerVers(n,x,y,ancre,g){
+    k=borner(n,1,ZOOM_MAX);
+    if(!ancre) return;
+    for(let i=0;i<3;i++){
+      const sous=inverse(x,y,camera(g)); if(!sous) break;
+      lon0=longitude(lon0+longitude(ancre.lng-sous.lng));
+      lat0=latitude(lat0+ancre.lat-sous.lat);
+    }
+  }
+  function voler(lat,lng,zoom,ms,fin){
+    roue=null; zoomDoigt=null;
+    if(reduit.matches){
+      lat0=latitude(lat); lon0=longitude(lng); k=zoom; trajet=null;
+      fin?.(null); kick(); return;
+    }
+    trajet={t:performance.now(), lat:lat0, lon:lon0, k, dy:latitude(lat)-lat0, dx:longitude(lng-lon0),zoom,ms,fin};
+    kick();
+  }
+  function avancer(t,g){
+    if(trajet){
+      const v=trajet, p=borner((t-v.t)/v.ms,0,1), f=doux(p);
+      lon0=longitude(v.lon+v.dx*doux(Math.min(1,p/.78))); lat0=v.lat+v.dy*doux(Math.min(1,p/.78));
+      k=v.k*(v.zoom/v.k)**f;
+      if(p===1){ trajet=null; v.fin?.(t); }
+    }else if(zoomDoigt){
+      const {k1,x,y,ancre}=zoomDoigt; zoomDoigt=null;
+      zoomerVers(k1,x,y,ancre,g);
+    }else if(roue){
+      const w=roue, reste=Math.log(w.k/k), dt=borner(t-w.t,8,40);
+      const fini=reduit.matches||Math.abs(reste)<.002;
+      const pas=borner(reste*(1-Math.exp(-dt/53)),-dt*.013,dt*.013);
+      zoomerVers(fini?w.k:k*Math.exp(pas),w.x,w.y,w.ancre,g);
+      if(fini) roue=null; else w.t=t;
+    }
+  }
+  function tuile(z,x,y,charger){
+    const n=2**z, cle=z+'/'+((x%n+n)%n)+'/'+y;
+    let t=tuiles.get(cle);
+    if(!t&&charger){
+      t={im:new Image(), at:null};
+      t.im.referrerPolicy='strict-origin-when-cross-origin'; t.im.onload=()=>{ t.at=performance.now(); kick(); };
+      t.im.src='https://tile.openstreetmap.org/'+cle+'.png';
+      tuiles.set(cle,t);
+      if(tuiles.size>180) tuiles.delete(tuiles.keys().next().value);
+    }
+    return t;
+  }
+  /* Les tuiles déjà chargées restent visibles quand on change d'échelle. Une tuile nette remplace sa parente en fondu. */
+  function dessinerTuiles(ctx,g,w,h,t){
+    const z=borner(Math.round(Math.log2(g.echelle/256)),2,18), n=2**z, cote=g.echelle/n;
+    const dx=g.cx-g.x*g.echelle, dy=g.cy-g.y*g.echelle;
+    const x0=Math.floor(-dx/cote), x1=Math.ceil((w-dx)/cote)-1;
+    const y0=Math.floor(-dy/cote), y1=Math.ceil((h-dy)/cote)-1;
+    if(niveau!==z){ niveau=z; niveauDepuis=t; }
+    const charger=(!trajet&&!roue&&!pinch)||t-niveauDepuis>100;
+    let peint=false, couvre=y0>=0&&y1<n, fondu=false;
+    for(let y=Math.max(0,y0);y<=Math.min(n-1,y1);y++) for(let x=x0;x<=x1;x++){
+      const a=tuile(z,x,y,charger), alpha=a?.at!=null?(reduit.matches?1:borner((t-a.at)/135,0,1)):0;
+      const l=dx+x*cote, top=dy+y*cote;
+      let compte=alpha===1;
+      if(alpha<1){
+        for(let zz=z-1;zz>=Math.max(2,z-5);zz--){
+          const facteur=2**(z-zz), i=Math.floor(x/facteur), j=Math.floor(y/facteur);
+          const parent=tuile(zz,i,j,false);
+          if(parent?.at==null) continue;
+          const taille=parent.im.naturalWidth/facteur;
+          ctx.drawImage(parent.im,(x-i*facteur)*taille,(y-j*facteur)*taille,taille,taille,l,top,cote,cote);
+          peint=true; compte=true; break;
+        }
+        if(!compte&&z<18){
+          let enfants=0;
+          for(let j=0;j<2;j++) for(let i=0;i<2;i++){
+            const enfant=tuile(z+1,x*2+i,y*2+j,false);
+            if(enfant?.at==null) continue;
+            ctx.drawImage(enfant.im,l+i*cote/2,top+j*cote/2,cote/2+.25,cote/2+.25);
+            enfants++; peint=true;
+          }
+          compte=enfants===4;
+        }
+      }
+      if(a?.at!=null){
+        ctx.globalAlpha=alpha;
+        ctx.drawImage(a.im,l,top,cote+.35,cote+.35);
+        ctx.globalAlpha=1; peint=true; fondu=fondu||alpha<1;
+      }
+      couvre=couvre&&compte;
+    }
+    return {peint,couvre,fondu};
+  }
+  function dessinerTerre(ctx,g,w,h){
+    /* Les gris ci-dessous passent par le même filtre monochrome que les tuiles. */
+    if(g.mix<1){
+      ctx.beginPath(); ctx.arc(g.cx,g.cy,g.r,0,2*Math.PI);
+      ctx.strokeStyle='#dcdcdc'; ctx.globalAlpha=1-g.mix; ctx.lineWidth=1;
+      ctx.stroke(); ctx.globalAlpha=1;
+    }
+    ctx.fillStyle='#dedede';
+    for(const polygone of terre||[]){
+      let visible=g.mix===1; ctx.beginPath();
+      for(let i=0;i<polygone.length;i++){
+        const [x,y,devant]=projeter(polygone[i],g,true);
+        if(devant>=0) visible=true;
+        if(i) ctx.lineTo(x,y); else ctx.moveTo(x,y);
+      }
+      if(visible){ ctx.closePath(); ctx.fill(); }
+    }
+    ctx.fillStyle='#fbfbfb';
+    if(g.mix===1) ctx.fillRect(0,0,w,h);
+    else{ ctx.beginPath(); ctx.arc(g.cx,g.cy,g.r,0,2*Math.PI); ctx.fill(); }
+  }
+  function cadrerSpots(){
+    if(!lieux.length||etat.centre||geoAttente) return;
+    etat.centre=true; lon0=lieux[0].p.lng; lat0=latitude(lieux[0].p.lat);
+  }
+  async function situer(){
+    const s=++seq, l=spots();
+    const r=await Promise.all(l.map(async z=>{
+      const lieu=await lieuDe(z);
+      return lieu?{z, cle:'sp:'+z.id, p:{...coord(lieu.lng,lieu.lat),plein:lieu.plein}}:null;
+    }));
+    if(s!==seq) return;
+    lieux=r.filter(Boolean); etat.sans=r.length-lieux.length; etat.villes=lieux.filter(x=>!x.p.plein).length;
+    cadrerSpots(); kick();
+  }
+  function regrouper(g,w,h){
+    const groupes=[];
+    for(const lieu of lieux){
+      const [x,y,devant]=projeter(lieu.p,g);
+      if((g.mix<1&&devant<0)||x<0||y<0||x>w||y>h) continue;
+      const point={lieu,x,y};
+      const voisin=groupes.find(a=>Math.hypot(a.x-x,a.y-y)<26);
+      if(!voisin) groupes.push({...point,enfants:[point]});
+      else if(lieu.p.plein&&!voisin.lieu.p.plein){
+        Object.assign(voisin,point); voisin.enfants.unshift(point);
+      }else voisin.enfants.push(point);
+    }
+    return groupes;
+  }
+  function ecarter(ctx,marques,groupe,choisis,t,w,h){
+    const f=repartition.t==null?1:doux(borner((t-repartition.t)/210,0,1));
+    const tracer=(p,dx,dy)=>{
+      const x=p.x+(dx-p.x)*f, y=p.y+(dy-p.y)*f;
+      ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(x,y); ctx.stroke();
+      marques.push({lieu:p.lieu,x,y,enfants:[p]});
+    };
+    const n=choisis.length;
+    ctx.strokeStyle=n>12?'rgba(165,165,178,.15)':'rgba(165,165,178,.35)'; ctx.lineWidth=1;
+    if(n<=12){
+      const r=Math.min(Math.max(25,n*28/(2*Math.PI)),Math.max(6,Math.min(w,h)/2-16));
+      const cx=borner(groupe.x,r+12,w-r-12), cy=borner(groupe.y,r+16,h-r-16);
+      choisis.forEach((p,i)=>{
+        const angle=-Math.PI/2+i*2*Math.PI/n;
+        tracer(p,cx+r*Math.cos(angle),cy+r*Math.sin(angle));
+      });
+    }else{
+      /* Une grille locale garde les gros groupes cliquables, même sur un écran étroit. */
+      const largeur=Math.max(1,w-40), hauteur=Math.max(1,h-100);
+      const cols=borner(Math.ceil(Math.sqrt(n*largeur/hauteur)),1,n), rangs=Math.ceil(n/cols);
+      const pas=Math.min(28,largeur/cols,hauteur/rangs), lx=(cols-1)*pas/2, ly=(rangs-1)*pas/2;
+      const x0=borner(groupe.x,lx+20,w-lx-20)-lx, y0=borner(groupe.y,ly+50,h-ly-50)-ly;
+      choisis.forEach((p,i)=>tracer(p,x0+i%cols*pas,y0+Math.floor(i/cols)*pas));
+    }
+    return f<1;
+  }
+  function pointLumineux(ctx,x,y,col,r,halo,plein=true){
+    ctx.shadowColor=col; ctx.shadowBlur=halo;
+    ctx.beginPath(); ctx.arc(x,y,r,0,2*Math.PI);
+    if(plein){ ctx.fillStyle=col; ctx.fill(); }
+    else{ ctx.strokeStyle=col; ctx.lineWidth=1.5; ctx.stroke(); }
+    ctx.shadowBlur=0;
+  }
+  function dessiner(t){
+    rq=0; if(!etat.on) return;
+    const c=cv(), d=Math.min(2,devicePixelRatio||1), w=c.clientWidth, h=c.clientHeight;
+    if(!w||!h) return;
+    for(const el of [c,fond]){
+      const W=Math.round(w*d), H=Math.round(h*d);
+      if(el.width!==W||el.height!==H){ el.width=W; el.height=H; }
+    }
+    const geo0=geo(); poserTouche(geo0,w,h); avancer(t,geo0);
+    const g=camera(geo0), ctx=c.getContext('2d'), base=fond.getContext('2d');
+    for(const x of [ctx,base]){ x.setTransform(d,0,0,d,0,0); x.clearRect(0,0,w,h); }
+    const tuilesEnVue=g.mix===1?dessinerTuiles(base,g,w,h,t):null;
+    if(!tuilesEnVue?.couvre){
+      base.globalCompositeOperation='destination-over'; dessinerTerre(base,g,w,h); base.globalCompositeOperation='source-over';
+    }
+    credit.hidden=!tuilesEnVue?.peint;
+    etat.position=false;
+    if(ici){
+      const [x,y,devant]=projeter(ici,g);
+      if((g.mix===1||devant>=0)&&x>=0&&x<=w&&y>=0&&y<=h){
+        pointLumineux(ctx,x,y,'#fff',4,11); etat.position=true;
+      }
+    }
+    let anime=false, repartis=0;
+    pts=[];
+    for(const groupe of regrouper(g,w,h)){
+      const choisis=repartition&&groupe.enfants.filter(p=>repartition.ids.has(p.lieu.cle));
+      if(!choisis?.length||groupe.enfants.length===1){ pts.push(groupe); continue; }
+      if(choisis.length>1){ anime=ecarter(ctx,pts,groupe,choisis,t,w,h)||anime; repartis+=choisis.length; }
+      else pts.push({...choisis[0],enfants:choisis});
+      const autres=groupe.enfants.filter(p=>!repartition.ids.has(p.lieu.cle));
+      if(autres.length) pts.push({...autres[0],enfants:autres});
+    }
+    for(const {lieu,x,y,enfants} of pts){
+      const z=lieu.z, col=couleur(z.intentions||((z.habit_box||{}).ints)||[]), n=enfants.length;
+      if(n===1){ pointLumineux(ctx,x,y,col,z.state==='am'?5.5:4,z.state==='am'?16:11,lieu.p.plein); continue; }
+      ctx.fillStyle='#101010'; ctx.beginPath(); ctx.arc(x,y,Math.max(11,5+String(n).length*3),0,2*Math.PI); ctx.fill();
+      ctx.strokeStyle=col; ctx.lineWidth=1.5; ctx.shadowColor=col; ctx.shadowBlur=10; ctx.stroke(); ctx.shadowBlur=0;
+      ctx.fillStyle='#fff'; ctx.font='700 10px "Space Mono", monospace';
+      ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(String(n),x,y);
+    }
+    if(epingle){
+      const [x,y,devant]=projeter(epingle,g);
+      if(g.mix===1||devant>=0){
+        ctx.beginPath(); ctx.arc(x,y,7,0,2*Math.PI); ctx.strokeStyle='#fff'; ctx.lineWidth=2; ctx.stroke();
+        pointLumineux(ctx,x,y,'#fff',2,0);
+      }
+    }
+    etat.points=pts.reduce((n,p)=>n+p.enfants.length,0);
+    etat.groupes=pts.filter(p=>p.enfants.length>1).length;
+    etat.repartis=repartis; etat.zoom=Math.round(k*100)/100;
+    if(trajet||roue||anime||tuilesEnVue?.fondu) kick();
+  }
+  function kick(){ if(!rq&&etat.on) rq=requestAnimationFrame(dessiner); }
+  function annulerPosition(){ geoSeq++; geoAttente=false; loc.removeAttribute('aria-busy'); }
+  function interrompre(){ annulerPosition(); trajet=null; roue=null; zoomDoigt=null; }
+  function zoomerIci(clic=false){
+    if(!etat.on) return;
+    interrompre(); repartition=null; note.textContent='';
+    if(!position&&!navigator.geolocation){ if(clic) note.textContent='location unavailable'; cadrerSpots(); return; }
+    const s=++geoSeq; geoAttente=true;
+    loc.setAttribute('aria-busy','true');
+    function centrer(coords){
+      if(!coords) { indisponible(); return; }
+      if(s!==geoSeq) return;
+      annulerPosition(); etat.centre=true;
+      ici=coord(coords.longitude,coords.latitude);
+      voler(ici.lat,ici.lng,ZOOM_VILLE,clic?750:1050);
+    }
+    function indisponible(){
+      if(s!==geoSeq) return;
+      annulerPosition();
+      if(clic) note.textContent='location unavailable';
+      cadrerSpots(); kick();
+    }
+    if(position) position().then(p=>centrer(p&&{latitude:p.lat,longitude:p.lng}),indisponible);
+    else navigator.geolocation.getCurrentPosition(({coords})=>centrer(coords),indisponible,{timeout:8000,maximumAge:0});
+  }
+  loc.addEventListener('click',()=>{ if(!geoAttente) zoomerIci(true); });
+
+  function dansDisque(x,y){
+    const g=geo();
+    if(k>=ZOOM_PLAN) return x>=12&&x<=cv().clientWidth-12;
+    return Math.hypot(x-g.cx,y-g.cy)<=g.R0*k;
+  }
+  function viser(x,y){
+    let best=null, dm=22;
+    for(const p of pts){ const dd=Math.hypot(p.x-x,p.y-y); if(dd<dm){ dm=dd; best=p; } }
+    return best;
+  }
+  function ouvrirGroupe(groupe){
+    const points=groupe.enfants, repere=groupe.lieu.p.lng, g=geo(), c=cv();
+    const l=points.map(o=>longitude(o.lieu.p.lng-repere)), ys=points.map(o=>o.lieu.p.y);
+    const gauche=Math.min(...l), droite=Math.max(...l), haut=Math.min(...ys), bas=Math.max(...ys);
+    const lng=longitude(repere+(gauche+droite)/2), lat=latitude(latMerc((haut+bas)/2));
+    const dx=(droite-gauche)/360, dy=bas-haut;
+    const maximum=Math.min((c.clientWidth-84)/Math.max(dx,1e-9),(Math.max(100,c.clientHeight-320))/Math.max(dy,1e-9));
+    const cible=dx<.000025&&dy<.000025?ZOOM_VILLE:maximum/(2*Math.PI*g.R0*Math.cos(lat*D));
+    const zoom=borner(cible,k,ZOOM_MAX);
+    const ids=new Set(points.map(o=>o.lieu.cle));
+    repartition=null; etat.centre=true;
+    const placer=t=>{ repartition={ids,t}; };
+    if(Math.abs(lat-lat0)<.00001&&Math.abs(longitude(lng-lon0))<.00001&&zoom===k){
+      placer(reduit.matches?null:performance.now()); kick(); return;
+    }
+    voler(lat,lng,zoom,borner(Math.log(zoom/k)*170,620,1150),placer);
+  }
+
+  const c=cv();
+  c.addEventListener('pointerdown',e=>{
+    if(e.pointerType==='mouse'&&e.button!==0) return;
+    const r=c.getBoundingClientRect(), x=e.clientX-r.left, y=e.clientY-r.top;
+    if(!ptrs.size&&!dansDisque(x,y)){ etat.horsDisque=(etat.horsDisque||0)+1; return; }
+    interrompre(); etat.centre=true; kick();
+    ptrs.set(e.pointerId,{x,y});
+    try{ c.setPointerCapture(e.pointerId); }catch(_){}
+    if(ptrs.size===2){
+      const [a,b]=[...ptrs.values()], gx=(a.x+b.x)/2, gy=(a.y+b.y)/2;
+      pinch={d:Math.hypot(a.x-b.x,a.y-b.y)||1,k,ancre:inverse(gx,gy,camera(geo()))};
+      tenu=null; dernierTap=null; repartition=null; return;
+    }
+    tenu={id:e.pointerId,x,y,x0:x,y0:y}; c.classList.add('is-tenu');
+  });
+  c.addEventListener('pointermove',e=>{
+    if(!ptrs.has(e.pointerId)) return;
+    const r=c.getBoundingClientRect(), x=e.clientX-r.left, y=e.clientY-r.top;
+    ptrs.set(e.pointerId,{x,y});
+    if(pinch&&ptrs.size===2){
+      const [a,b]=[...ptrs.values()], ratio=Math.hypot(a.x-b.x,a.y-b.y)/pinch.d;
+      zoomDoigt={k1:pinch.k*ratio**1.6,x:(a.x+b.x)/2,y:(a.y+b.y)/2,ancre:pinch.ancre};
+      kick(); return;
+    }
+    if(!tenu||tenu.id!==e.pointerId) return;
+    const g=camera(geo()), dx=x-tenu.x, dy=y-tenu.y;
+    if(Math.hypot(x-tenu.x0,y-tenu.y0)>6) repartition=null;
+    lon0=longitude(lon0-dx*360/g.echelle);
+    lat0=latitude(lat0+(1-g.mix)*dy/(D*g.r)+g.mix*(latMerc(g.y-dy/g.echelle)-lat0));
+    tenu.x=x; tenu.y=y; etat.tours=(etat.tours||0)+1; kick();
+  });
+  const relacher=e=>{
+    ptrs.delete(e.pointerId); c.classList.remove('is-tenu');
+    if(ptrs.size<2&&pinch){ pinch=null; kick(); }
+    if(!tenu||tenu.id!==e.pointerId) return; const tenu0=tenu; tenu=null;
+    const r=c.getBoundingClientRect(), x=e.clientX-r.left, y=e.clientY-r.top;
+    if(e.type!=='pointerup'||Math.hypot(x-tenu0.x0,y-tenu0.y0)>6){ dernierTap=null; return; }
+    if(pique){
+      const ll=inverse(x,y,camera(geo())); if(!ll) return;
+      ll.lat=+ll.lat.toFixed(5); ll.lng=+ll.lng.toFixed(5);
+      epingle=coord(ll.lng,ll.lat); kick(); const f=pique; pique=null; f(ll); return;
+    }
+    const p=viser(x,y);
+    if(p){
+      dernierTap=null;
+      if(p.enfants.length>1&&groupesOuverts()) ouvrirGroupe(p);
+      else{
+        const cle=p.lieu.cle, avec=repartition?.ids.has(cle)?[cle,...[...repartition.ids].filter(o=>o!==cle)]:null;
+        voir(cle,avec);
+      }
+      return;
+    }
+    const maintenant=performance.now();
+    if(dernierTap&&maintenant-dernierTap.t<320&&Math.hypot(x-dernierTap.x,y-dernierTap.y)<22){
+      dernierTap=null; repartition=null; viserZoom(k*2.5,x,y);
+    }else dernierTap={t:maintenant,x,y};
+  };
+  c.addEventListener('pointerup',relacher);
+  c.addEventListener('pointercancel',relacher);
+  function viserZoom(k1,x,y){
+    const proche=roue&&Math.hypot(roue.x-x,roue.y-y)<2;
+    const ancre=proche?roue.ancre:inverse(x,y,camera(geo()));
+    roue={k:borner(k1,1,ZOOM_MAX),x,y,ancre,t:roue?.t??performance.now()};
+    kick();
+  }
+  c.addEventListener('wheel',e=>{
+    const r=c.getBoundingClientRect(), x=e.clientX-r.left, y=e.clientY-r.top;
+    if(!dansDisque(x,y)) return;
+    e.preventDefault(); e.stopPropagation();
+    if(!e.deltaY) return;
+    annulerPosition(); trajet=null; repartition=null; etat.centre=true;
+    const pixels=e.deltaY*(e.deltaMode===1?16:e.deltaMode===2?innerHeight:1);
+    viserZoom((roue?.k??k)*Math.exp(-borner(pixels,-240,240)*.005),x,y);
+  },{passive:false});
+  window.addEventListener('resize',kick);
+  return {
+    geo,
+    ouvrir(){
+      interrompre(); etat.on=true; etat.centre=false; lon0=8; lat0=28; k=1; ici=null; dernierTap=null; repartition=null; note.textContent='';
+      chargerTerre();
+      if(positionAuto()) zoomerIci();
+      situer(); kick();
+    },
+    fermer(){
+      etat.on=false; interrompre(); tenu=null; pinch=null; ptrs.clear();
+      if(rq){ cancelAnimationFrame(rq); rq=0; }
+      c.classList.remove('is-tenu'); credit.hidden=true;
+    },
+    maj(){ if(etat.on) situer(); },
+    rafraichir:kick,
+    vider(){ seq++; lieux=[]; pts=[]; repartition=null; etat.centre=false; etat.points=0; etat.groupes=0; etat.repartis=0; },
+    ou:()=>pts.map(p=>[Math.round(p.x),Math.round(p.y)]),
+    dans(x,y){ if(!etat.on) return false; const r=c.getBoundingClientRect(); return dansDisque(x-r.left,y-r.top); },
+    piquer(f){
+      const a=pique; pique=typeof f==='function'?f:null;
+      if(pique){ interrompre(); repartition=null; etat.centre=true; kick(); }
+      if(a&&!pique) a(null);
+    },
+    epingler(ll){ epingle=ll&&typeof ll.lat==='number'?coord(ll.lng,ll.lat):null; kick(); },
+    pique:()=>!!pique,
+    etat:()=>Object.assign({},etat)
+  };
+}
+/* ══ fin LA CARTE DES SPOTS ══ */
+
+const CARTE = creerCarteSpots({
+  spots:()=>me ? CLUBSP.items() : VITRINE, lieuDe, couleur:melange,
+  positionAuto:()=>!!me, position:()=>position().then(ok=>ok?POS:null), groupesOuverts:()=>!!me,
+  geometrie(w,h){ return {cx:w/2,cy:h/2,R0:Math.max(40,Math.min(w*.40,h*.44))}; },
+  voir(cle,cles){
+    if(!me) return CD.ouvrir();
+    const z=CLUBSP.items().find(x=>'sp:'+x.id===cle);
+    if(z) ouvrirDetail(z,cles);
+  }
+});
+function peindreEtatCarte(){
+  if(!me){
+    dire(VITRINE.length?VITRINE.length+' spots in the Club · connect to join':VIDE_CONNECT);
+    return;
+  }
+  dire(CLUBSP.err?'the club is unreachable':CLUBSP.charge?'reading the club…':CLUBSP.items().length?'':'no spots with these filters');
+}
+$('v-map').addEventListener('scroll',()=>{
+  document.body.classList.toggle('is-scrolled',MODE.get()==='map'&&$('v-map').scrollTop>40);
+});
+$('rdr-down').onclick=()=>$('rdr-list').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth'});
+
+function arcSpot(z){
+  const cols=(z.habit_box?.ints||z.intentions||[]).map(icol);
+  const couleurs=cols.length?cols:['rgba(255,255,255,.18)'], part=1/couleurs.length;
+  return '<svg class="tl-traits" viewBox="0 0 100 100" aria-hidden="true">'
+    +couleurs.map((c,i)=>'<path d="M95.4 69A49.2 49.2 0 0 1 4.6 69" pathLength="1" stroke="'+c+'"'
+      +(couleurs.length>1?' stroke-dasharray="'+part+' 1" stroke-dashoffset="'+(-i*part)+'"':'')+'/>').join('')+'</svg>';
+}
 const GRID = (() => {
   const etat = { tuiles:0 };
   let io = null, L = [];
@@ -1741,8 +2051,10 @@ const GRID = (() => {
       : z.video ? '<video muted playsinline preload="none" data-moment-v="' + esc(String(z.video)) + '"></video>' : '';
     return '<article class="tl" data-cle="' + esc(String(z.id)) + '" data-i="' + i + '" tabindex="0" role="button" aria-label="'
       + esc(z.habit || 'spot') + '"><div class="tl-ph">' + media + ((clip || z.video) ? '<span class="tl-v" aria-hidden="true"></span>' : '') + '</div>'
-      + (kinMot(z) ? '<span class="tl-kin">' + esc(kinMot(z)) + '</span>' : '')
-      + '<div class="tl-bx">' + boxSpot(z, true) + '</div></article>';
+      + '<div class="tl-meta"><span class="tl-time'+(spotState(z)==='am'?' is-now':'')+'">'
+      + ({am:'Now',will:'Later',was:'Past'}[spotState(z)]||'Spot')+'</span>'
+      + (kinMot(z) ? '<span class="tl-kin">' + esc(kinMot(z)) + '</span>' : '') + '</div>'
+      + '<div class="tl-bx">' + boxSpot(z, true) + '</div>' + arcSpot(z) + '</article>';
   }
   async function charger(el){
     const b = el.querySelector('img[data-bunny]');
@@ -1785,17 +2097,15 @@ const GRID = (() => {
     etat:()=>Object.assign({}, etat) };
 })();
 
-/* ══ SOUS LE RADAR — les spots autour de moi, du plus proche au plus loin ══ Wah : « sur la vue grid et radar on doit
-   pouvoir défiler aisément le contenu ». Le radar reste en haut ; dessous, les MÊMES spots en lignes (box + où, quand,
+/* ══ SOUS LA CARTE — les spots autour de moi, du plus proche au plus loin ══ Wah : « sur la vue grid et radar on doit
+   pouvoir défiler aisément le contenu ». La carte reste en haut ; dessous, les MÊMES spots en lignes (box + où, quand,
    together) ; un tap ouvre le spot. Pagination : la dernière ligne à l'écran demande la suite. */
 const LISTE = (() => {
   const etat = { lignes:0 };
   let L = [], io = null;
   function peindre(){
     const b = $('rdr-list'); if(!b) return;
-    const items = CLUBSP.items(), c = centre();
-    const dist = new Map(RAD.lieux.map(x => [String(x.z.id), c ? hav(c, x.p) : null]));
-    L = c ? items.slice().sort((a, z) => (dist.get(String(a.id)) ?? 1e12) - (dist.get(String(z.id)) ?? 1e12)) : items;
+    L = CLUBSP.items();
     etat.lignes = L.length;
     if(io){ io.disconnect(); io = null; }
     const d = $('rdr-down');
@@ -1806,7 +2116,7 @@ const LISTE = (() => {
         + esc(z.habit || 'spot') + '">' + boxSpot(z, true) + ligneSpot(z) + '</article>').join('');
     const der = b.querySelector('.rl:last-child');
     if(der && CLUBSP.more){ io = new IntersectionObserver(es => { if(es.some(x => x.isIntersecting)) CLUBSP.suite(); },
-      { root:$('v-radar'), rootMargin:'400px 0px' }); io.observe(der); }
+      { root:$('v-map'), rootMargin:'400px 0px' }); io.observe(der); }
   }
   { const b = $('rdr-list');
     b.addEventListener('click', e => { const t = e.target.closest('.rl[data-cle]'); if(!t) return;
@@ -1816,95 +2126,20 @@ const LISTE = (() => {
   return { peindre, etat:()=>Object.assign({}, etat) };
 })();
 
-/* ══ SHORTS — un spot par écran, son média à la verticale ══ Wah : « une vue Shorts en affichant verticalement les
-   vidéos-spot ». Les MÊMES spots que le radar et la grille (mêmes filtres), ceux qui portent un média, aimantés un par
-   écran. UN seul joue : celui qui est à l'écran ; le suivant se prépare (il démarre sans attendre) ; tout le reste
-   est LÂCHÉ (Bunny : rien ne coule hors de l'écran). Un tap sur l'image : le son ; un tap sur la box : le spot. */
-const SHORTS = (() => {
-  const etat = { cartes:0, joues:0, son:false };
-  let L = [], io = null, courant = null, tSon = 0;
-  const aMedia = z => !!((z.clip && z.clip.id) || z.photo || z.video);
-  function carte(z, i){
-    const clip = z.clip && z.clip.id ? String(z.clip.id) : '';
-    const m = clip ? '<video data-bunny="' + esc(clip) + '" data-spot="' + esc(String(z.id)) + '" playsinline muted loop preload="none"></video>'
-      : z.photo ? '<img alt="" data-moment="' + esc(String(z.photo)) + '" decoding="async">'
-      : '<video data-moment-v="' + esc(String(z.video)) + '" playsinline muted loop preload="none"></video>';
-    return '<article class="sh" data-cle="' + esc(String(z.id)) + '" data-i="' + i + '"><div class="sh-m">' + m
-      + '<span class="video-status note"></span></div><div class="sh-b" role="button" tabindex="0" aria-label="Open the spot">'
-      + boxSpot(z, true) + ligneSpot(z) + '</div></article>';
-  }
-  async function charger(el){
-    if(!el) return null;
-    const b = el.querySelector('video[data-bunny]'); if(b){ await BUNNY.poser(b); return b; }
-    const i = el.querySelector('img[data-moment]');
-    if(i){ if(!i.getAttribute('src')){ const u = await urlMoments(i.dataset.moment); if(u && i.isConnected){ i.onerror = () => i.remove(); i.src = u; } } return null; }
-    const v = el.querySelector('video[data-moment-v]');
-    if(v && !v.getAttribute('src')){ const u = await urlMoments(v.dataset.momentV); if(u && v.isConnected){ v.preload = 'auto'; v.src = u; } }
-    return v;
-  }
-  function lacher(el){ if(el) el.querySelectorAll('video').forEach(v => { try{ v.pause(); }catch(_){} if(v.dataset.bunny) BUNNY.lacher(v); }); }
-  function jouer(el){
-    if(courant === el) return;
-    const avant = courant; courant = el; etat.joues++;
-    /* l'écran d'avant se tait ; seuls lui, le précédent et le suivant gardent leur flux */
-    if(avant) avant.querySelectorAll('video').forEach(v => { try{ v.pause(); }catch(_){} });
-    const i = +el.dataset.i;
-    $('rdr-sh-f').querySelectorAll('.sh').forEach(x => { if(Math.abs(+x.dataset.i - i) > 1) lacher(x); });
-    charger(el).then(v => { if(!v || courant !== el || !v.isConnected) return; v.muted = !etat.son; v.play().catch(() => {}); });
-    charger(el.nextElementSibling);
-    if(i >= L.length - 3) CLUBSP.suite();
-  }
-  const cle = l => l.map(z => String(z.id)).join('|');
-  function peindre(){
-    const b = $('rdr-sh-f'); if(!b) return;
-    const n = CLUBSP.items().filter(aMedia);
-    /* la suite d'une page s'AJOUTE : rien ne se recharge sous le doigt */
-    if(L.length && n.length > L.length && cle(n.slice(0, L.length)) === cle(L) && b.querySelector('.sh')){
-      const plus = n.slice(L.length); L = n; etat.cartes = L.length;
-      b.insertAdjacentHTML('beforeend', plus.map((z, k) => carte(z, L.length - plus.length + k)).join(''));
-      b.querySelectorAll('.sh:not([data-vu])').forEach(el => { el.dataset.vu = '1'; if(io) io.observe(el); });
-      return;
-    }
-    if(cle(n) === cle(L) && b.childElementCount) return;
-    arreter(); L = n; etat.cartes = L.length;
-    if(io){ io.disconnect(); io = null; }
-    b.innerHTML = L.length ? L.map(carte).join('')
-      : '<div class="sh-vide"><p class="note">' + (CLUBSP.charge ? 'reading the club…' : CLUBSP.err === 'signin' ? VIDE_CONNECT : 'no spot video ' + CLUBSP.nom) + '</p>'
-        + '</div>';   /* 23/11 (Wah) : un seul [+ spot] en shorts — celui du bas (`#rdr-plus`) */
-    io = new IntersectionObserver(es => es.forEach(en => { if(en.isIntersecting && en.intersectionRatio >= .6) jouer(en.target); }),
-      { root:$('v-shorts'), threshold:[0, .6] });
-    b.querySelectorAll('.sh').forEach(el => { el.dataset.vu = '1'; io.observe(el); });
-  }
-  function arreter(){ if(courant){ lacher(courant); courant = null; } }
-  { const s = $('v-shorts');
-    s.addEventListener('click', e => {
-      if(e.target.closest('[data-nspot]')){ e.stopPropagation(); return NSPOT.ouvrir(); }
-      const bx = e.target.closest('.sh-b');
-      if(bx){ const z = L.find(x => String(x.id) === bx.closest('.sh').dataset.cle); if(z) ouvrirDetail(z); return; }
-      const m = e.target.closest('.sh-m'); if(!m) return;
-      etat.son = !etat.son; const v = m.querySelector('video');
-      if(v){ v.muted = !etat.son; if(v.paused) v.play().catch(() => {}); }
-      dire(etat.son ? 'sound on' : 'sound off'); clearTimeout(tSon); tSon = setTimeout(() => dire(''), 1200);
-    });
-    s.addEventListener('keydown', e => { const t = e.target.closest && e.target.closest('.sh-b');
-      if(t && (e.key === 'Enter' || e.key === ' ')){ e.preventDefault(); t.click(); } }); }
-  return { peindre, maj(){ if(MODE.get() === 'shorts') peindre(); }, arreter,
-    pause(){ if(courant) courant.querySelectorAll('video').forEach(v => { try{ v.pause(); }catch(_){} }); },
-    reprendre(){ if(!courant || MODE.get() !== 'shorts') return; const v = courant.querySelector('video'); if(v && v.getAttribute('src')) v.play().catch(() => {}); },
-    etat:()=>Object.assign({ courant:courant ? +courant.dataset.i : -1 }, etat) };
-})();
-
-/* ══ MES HABITS — la source du filtre ET de la prise (`space_habits` : mes boxes, telles quelles) ══ */
 let HABITS = null, habitsEnCours = null;
 function mesHabits(){
   if(HABITS) return Promise.resolve(HABITS);
   if(!me) return Promise.resolve([]);
-  return habitsEnCours ||= sb.rpc('space_habits').then(({data, error}) => {
-    habitsEnCours = null;
-    if(error){ console.error('[space_habits]', error.message); return []; }
-    HABITS = data && data.ok && Array.isArray(data.habits) ? data.habits.filter(h => String(h.name || '').trim()) : [];
+  if(habitsEnCours) return habitsEnCours;
+  const uid=me.id;
+  const req=sb.rpc('space_habits').then(({data,error})=>{
+    if(uid!==me?.id) return [];
+    if(error){ console.error('[space_habits]',error.message); return []; }
+    HABITS=data?.ok&&Array.isArray(data.habits)?data.habits.filter(h=>String(h.name||'').trim()):[];
     return HABITS;
-  });
+  }).finally(()=>{ if(habitsEnCours===req) habitsEnCours=null; });
+  habitsEnCours=req;
+  return req;
 }
 const dire = t => { const s = $('rdr-say'); if(s) s.textContent = t || ''; };
 
@@ -1920,19 +2155,22 @@ const dire = t => { const s = $('rdr-say'); if(s) s.textContent = t || ''; };
      Intentions · It shows
    « Mood » est parti : les quatre piliers redisaient les sept intentions. Tout part au SERVEUR. */
 const RAYONS = [5, 20, 50, 200];
-const SF = { ints:new Set(), type:'', ou:'', rayon:50, mode:'', akin:'', exact:false, touche:false, replie:false };
+const SF = { ints:new Set(), type:'', ou:'', rayon:50, mode:'', akin:'', exact:false, replie:false, etape:'habit', geo:'' };
+const ETAPES_SF=[['habit','My Grind'],['when','When'],['where','Where'],['together','Together'],['intentions','Intentions'],['media','Media']];
+const croixClub=attr=>'<button type="button" class="k2 k2-x '+(attr.includes('data-sf')?'sf-close':'dt-close')+'" data-hover-art '
+  +attr+' aria-label="Close"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 3 L13 13 M13 3 L3 13"/></svg></button>';
 const INT_ORDRE = ['fight','flow','enrich','love','express','focus','celebrate'];   /* l'ordre de totehm.com */
-const sfCount = () => SF.ints.size + (SF.type ? 1 : 0) + (SF.ou ? 1 : 0) + (SF.mode ? 1 : 0) + (SF.akin ? 1 : 0);
+const sfCount = () => SF.ints.size + Number(!!SF.type) + Number(!!SF.ou) + Number(!!SF.mode)
+  + Number(!!SF.akin) + Number(CLUBSP.pers.length<CLUBSP.ORDRE.length);
 const sfOpts = () => ({ intentions:[...SF.ints], type:SF.type || 'all', scope:SF.ou || 'world', mode:SF.mode || 'all',
                         akin:SF.akin, exact:SF.exact, rayon:SF.rayon });
 const sfOuvert = () => !$('rdr-sf').hidden;
 function peindreBarre(){
   const r = $('rdr-flt'); if(!r) return;
   const n = sfCount();
-  /* sans compte, la vitrine mêle les temps : pas de puce du temps */
-  const h = (me ? '<button type="button" class="is-on" data-f="sf" data-per="' + CLUBSP.per + '">' + CLUBSP.nom + '</button>' : '')
-    + '<button type="button" class="' + (n ? 'is-on' : '') + '" data-f="sf" aria-haspopup="dialog" aria-expanded="' + (sfOuvert() ? 'true' : 'false') + '">'
-    + (n ? 'Refine · ' + n : 'Refine') + '</button>';
+  const h='<button type="button" class="k2r is-select'+(n?' is-on':'')+'" data-hover-art data-f="sf"'
+    +' aria-haspopup="dialog" aria-controls="rdr-sf" aria-expanded="'+sfOuvert()+'"><i class="k2k" aria-hidden="true"></i>'
+    +'<span class="k2l">Refine'+(n?' · '+n:'')+'</span></button>';
   if(r.dataset.h === h) return;
   r.dataset.h = h; r.innerHTML = h;
 }
@@ -1946,39 +2184,56 @@ function sfPaint(){
   const chipInt = i => '<button type="button" class="sfc sfi' + (SF.ints.has(i) ? ' is-on' : '') + '" data-sf="int" data-v="' + i + '"'
     + ' aria-pressed="' + SF.ints.has(i) + '" style="--c:' + INTS[i].c + '"><i aria-hidden="true"></i>' + esc(INTS[i].n)
     + '<svg class="sfh" viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-badge"></use></svg></button>';
-  let h = '<div class="sfg"><div class="sfl">Habits</div><div class="sfbx">';
-  if(!me) h += '<p class="ns-def">connect with my TOTEHM to find the spots of habits like mine</p>';
-  else if(!HABITS) h += '<p class="ns-def">reading my TOTEHM…</p>';
-  else if(!HABITS.length) h += '<p class="ns-def">write a Habit in my TOTEHM first</p>';
-  /* 24/11 (Wah) : « quand on sélectionne une box, il faut que les autres se ferment ; quand tu rappuies sur la box
-     sélectionnée, ça rouvre la liste » — plus de lisibilité : la Habit choisie reste SEULE dans le Refine. */
-  else h += HABITS.filter(x => !(SF.akin && SF.replie) || SF.akin === x.name).map(x => '<div class="sfb' + (SF.akin === x.name ? ' is-on' : '') + '" role="button" tabindex="0" data-sf="habit"'
-    + ' data-v="' + esc(x.name) + '" aria-pressed="' + (SF.akin === x.name) + '">' + boxHabit(x) + '</div>').join('');
-  h += '</div></div>';
-  if(SF.akin) h += g('how close', c('data-sf="near" data-v="akin"', 'akin habits', !SF.exact, 'the closest first')
-    + c('data-sf="near" data-v="exact"', 'exactly this one', SF.exact, 'nothing else'));
-  h += g('When', CLUBSP.ORDRE.map(q => c('data-sf="per" data-v="' + q + '"', CLUBSP.NOMS[q], CLUBSP.pers.includes(q))).join(''));
-  const pres = SF.ou === 'near' && CLUBSP.err !== 'location';
-  h += g('Where', c('data-sf="ou" data-v=""', 'world', !SF.ou) + c('data-sf="ou" data-v="near"', 'near me', SF.ou === 'near')
-    + (pres ? RAYONS.map(r => c('data-sf="rayon" data-v="' + r + '"', r + ' km', SF.rayon === r)).join('') : '')
-    + (SF.ou === 'near' && CLUBSP.err === 'location' ? '<span class="ns-tag">allow my location</span>' : ''));
-  h += g('Together', c('data-sf="mode" data-v="social"', 'social', SF.mode === 'social', 'we can talk')
-    + c('data-sf="mode" data-v="silent"', 'silent', SF.mode === 'silent', 'nobody disturb me'));
-  h += g('Intentions', INT_ORDRE.map(chipInt).join(''));
-  h += g('It shows', c('data-sf="type" data-v="photo"', 'photo', SF.type === 'photo') + c('data-sf="type" data-v="video"', 'video', SF.type === 'video'));
-  h += '<div class="sfg"><div class="sfr sfa"><button type="button" class="sfc" data-sf="all">ALL</button>'
-    + '<button type="button" class="sfc" data-sf="close">CLOSE</button></div></div>';
-  p.innerHTML = h;
+  let h='';
+  switch(SF.etape){
+    case 'habit':{
+      h='<div class="sfg"><div class="sfbx">';
+      if(!me) h+='<p class="ns-def">Connect with my TOTEHM to find habits like mine.</p>';
+      else if(!HABITS) h+='<p class="ns-def" role="status">Reading my habits…</p>';
+      else if(!HABITS.length) h+='<p class="ns-def">Add a Habit in my TOTEHM first.</p>';
+      else h+=HABITS.filter(x=>!SF.akin||!SF.replie||SF.akin===x.name).map(x=>
+        '<div class="sfb'+(SF.akin===x.name?' is-on':'')+'" role="button" tabindex="0" data-sf="habit" data-v="'+esc(x.name)
+        +'" aria-pressed="'+(SF.akin===x.name)+'">'+boxHabit(x)+'</div>').join('');
+      h+='</div></div>';
+      if(SF.akin) h+=g('Find',c('data-sf="near" data-v="akin"','Similar habits',!SF.exact)+c('data-sf="near" data-v="exact"','Exact habit',SF.exact));
+      break;
+    }
+    case 'when': h=g('When',CLUBSP.ORDRE.map(q=>c('data-sf="per" data-v="'+q+'"',CLUBSP.NOMS[q],CLUBSP.pers.includes(q))).join('')); break;
+    case 'where':
+      h=g('Where',c('data-sf="ou" data-v=""','world',!SF.ou)+c('data-sf="ou" data-v="near"','near me',SF.ou==='near'))
+        +(SF.ou==='near'&&SF.geo==='ready'?g('Radius',RAYONS.map(r=>c('data-sf="rayon" data-v="'+r+'"',r+' km',SF.rayon===r)).join('')):'')
+        +(SF.geo==='loading'?'<p class="note" role="status">Locating…</p>':SF.geo==='failed'?'<p class="note" role="status">Location unavailable</p>':'');
+      break;
+    case 'together': h=g('Together',c('data-sf="mode" data-v="social"','social',SF.mode==='social','we can talk')
+      +c('data-sf="mode" data-v="silent"','silent',SF.mode==='silent','I’m here to focus')); break;
+    case 'intentions': h=g('Intentions',INT_ORDRE.map(chipInt).join('')); break;
+    case 'media': h=g('Media',c('data-sf="type" data-v="photo"','photo',SF.type==='photo')+c('data-sf="type" data-v="video"','video',SF.type==='video')); break;
+  }
+  const focus=p.contains(document.activeElement)?document.activeElement.dataset:null;
+  const boutons=ETAPES_SF.map(([k,nom])=>'<button type="button" data-sf="etape" data-v="'+k+'" aria-pressed="'+(SF.etape===k)
+    +'" aria-controls="club-refine-page">'+nom+'</button>').join('');
+  p.innerHTML=croixClub('data-sf="close"')+'<nav class="sf-nav" aria-label="Refine">'+boutons+'</nav>'
+    +'<div class="sf-page" id="club-refine-page">'+h+'</div><button type="button" class="sf-reset" data-sf="all">Reset</button>';
+  if(focus?.sf){
+    const b=[...p.querySelectorAll('[data-sf]')].find(n=>n.dataset.sf===focus.sf&&n.dataset.v===focus.v);
+    (b||p.querySelector('.sf-nav [aria-pressed="true"]'))?.focus({preventScroll:true});
+  }
 }
 function sfOpen(open){
   const p = $('rdr-sf'); if(!p) return;
   p.hidden = !open; document.body.classList.toggle('is-sf', !!open);
-  if(open){ p.scrollTop = 0; mesHabits().then(() => sfPaint()); } else radarOn();
+  if(open){ p.scrollTop = 0; mesHabits().then(() => sfPaint()); } else CARTE.rafraichir();
   sfPaint(); peindreBarre();
 }
-function sfApply(){
-  SF.touche = true;
-  CLUBSP.regler(sfOpts()).then(() => { if(CLUBSP.scope !== 'near' && SF.ou === 'near') SF.ou = ''; sfPaint(); peindreBarre(); });
+function sfApply(tousTemps=false){
+  if(SF.ou==='near'&&!POS) SF.geo='loading';
+  else SF.geo=SF.ou?'ready':'';
+  CLUBSP.regler(sfOpts(),tousTemps).then(scope=>{
+    if(scope===null) return;
+    if(SF.ou==='near'&&scope!=='near'){ SF.ou=''; SF.geo='failed'; }
+    else if(scope==='near') SF.geo='ready';
+    sfPaint(); peindreBarre();
+  });
   sfPaint(); peindreBarre();
 }
 {
@@ -1989,13 +2244,17 @@ function sfApply(){
     const t = e.target.closest('[data-sf]'); if(!t) return;
     const k = t.dataset.sf, v = t.dataset.v;
     if(k === 'close') return sfOpen(false);
-    if(k === 'all'){ SF.ints.clear(); SF.type = ''; SF.ou = ''; SF.mode = ''; SF.akin = ''; SF.exact = false; SF.replie = false; return sfApply(); }
+    if(k === 'etape'){ SF.etape=v; p.scrollTop=0; return sfPaint(); }
+    if(k === 'all'){
+      SF.ints.clear(); Object.assign(SF,{type:'',ou:'',mode:'',akin:'',exact:false,replie:false,rayon:50,geo:''});
+      return sfApply(true);
+    }
     /* la box choisie, repliée : un tap ROUVRE la liste (le choix reste) ; dans la liste ouverte, un tap sur elle la retire */
     if(k === 'habit'){ if(SF.akin === v && SF.replie){ SF.replie = false; return sfPaint(); }
       if(SF.akin === v){ SF.akin = ''; SF.replie = false; } else { SF.akin = v; SF.replie = true; }
       SF.exact = false; return sfApply(); }
     if(k === 'near'){ SF.exact = v === 'exact'; return sfApply(); }
-    if(k === 'per'){ SF.touche = true; CLUBSP.periode(v); sfPaint(); peindreBarre(); return; }
+    if(k === 'per'){ CLUBSP.periode(v); sfPaint(); peindreBarre(); return; }
     if(k === 'int'){ SF.ints.has(v) ? SF.ints.delete(v) : SF.ints.add(v); return sfApply(); }
     if(k === 'type'){ SF.type = SF.type === v ? '' : v; return sfApply(); }
     if(k === 'mode'){ SF.mode = SF.mode === v ? '' : v; return sfApply(); }
@@ -2012,8 +2271,6 @@ function actsHTML(z){
   if(z.exact && z.exact.lat != null) b.push('<button class="btn" type="button" data-go="' + id + '">GO</button>');
   if(spotState(z) === 'will') b.push('<button class="btn" type="button" data-ics="' + id + '">CALENDAR</button>');
   b.push('<button class="btn" type="button" data-share="' + id + '">SHARE</button>');
-  if(z.mine) b.push('<button class="btn" type="button" data-del="' + id + '">DELETE</button>');
-  b.push('<button class="btn" type="button" data-close="1">CLOSE</button>');
   return '<div class="acts">' + b.join('') + '</div><p class="note acts-note" hidden></p>';
 }
 function mediaHTML(z){
@@ -2025,12 +2282,26 @@ function mediaHTML(z){
 }
 /* le trait en tête de la feuille : la prise du geste, et rien d'autre */
 const GRAB = '<button type="button" class="dt-grab" aria-label="Lower the spot"><i aria-hidden="true"></i></button>';
-async function ouvrirDetail(z){
-  DETAIL = z; SHORTS.pause();
-  const d = $('detail');
+function voisinsSpot(){
+  const tous=CLUBSP.items();
+  return DETAIL_GROUPE?DETAIL_GROUPE.map(k=>tous.find(z=>'sp:'+z.id===k)).filter(Boolean):tous;
+}
+function voisinSpot(dir){
+  const voisins=voisinsSpot(), i=voisins.findIndex(x=>String(x.id)===String(DETAIL?.id));
+  return i<0?null:voisins[i+dir];
+}
+async function ouvrirDetail(z,cles=null){
+  if(!DETAIL) DETAIL_RETOUR=document.activeElement;
+  DETAIL=z; DETAIL_GROUPE=cles;
+  const d=$('detail');
+  d.querySelectorAll('video').forEach(v=>BUNNY.lacher(v));
   d.style.removeProperty('--dy'); d.classList.remove('is-drag');
-  d.innerHTML = GRAB + mediaHTML(z) + spotHTML(z) + actsHTML(z);
+  const voisin=(dir,nom,signe)=>voisinSpot(dir)?'<button type="button" class="btn" data-neighbor="'+dir+'" aria-label="'+nom+'">'+signe+'</button>':'';
+  d.innerHTML='<div class="dt-tools">'+voisin(-1,'Previous spot','‹')+voisin(1,'Next spot','›')+GRAB+croixClub('data-close=""')
+    +'</div>'+mediaHTML(z)+spotHTML(z)+actsHTML(z);
+  d.scrollTop=0;
   d.classList.add('is-open'); document.body.classList.add('is-detail');
+  d.querySelector('[data-close]').focus({preventScroll:true});
   const b = d.querySelector('video[data-bunny]'); if(b){ await BUNNY.poser(b); if(b.getAttribute('src')) b.play().catch(() => {}); }
   const i = d.querySelector('img[data-moment]');
   if(i){ const u = await urlMoments(i.dataset.moment); if(u && i.isConnected){ i.onerror = () => i.remove(); i.src = u; } }
@@ -2040,7 +2311,9 @@ async function ouvrirDetail(z){
 function fermerDetail(){
   const d = $('detail');
   d.querySelectorAll('video').forEach(v => BUNNY.lacher(v));
-  d.classList.remove('is-open'); document.body.classList.remove('is-detail'); DETAIL = null; SHORTS.reprendre();
+  d.classList.remove('is-open'); document.body.classList.remove('is-detail'); DETAIL = null; DETAIL_GROUPE=null; CARTE.rafraichir();
+  if(DETAIL_RETOUR?.isConnected) DETAIL_RETOUR.focus({preventScroll:true});
+  DETAIL_RETOUR=null;
   setTimeout(() => { if(!DETAIL) d.innerHTML = ''; }, 340);
 }
 function actsSay(button, text, creator){
@@ -2095,6 +2368,8 @@ function icsFor(z){
 $('detail').addEventListener('click', async e => {
   const t = e.target instanceof Element ? e.target : null; if(!t) return;
   if(t.closest('[data-close]')) return fermerDetail();
+  const voisin=t.closest('[data-neighbor]');
+  if(voisin){ const z=voisinSpot(+voisin.dataset.neighbor); if(z) ouvrirDetail(z,DETAIL_GROUPE); return; }
   const com = t.closest('[data-com]'); if(com){ e.preventDefault(); return ssoVersDomaine(sb, 'com', COM + com.dataset.com); }
   const g = t.closest('[data-go]');
   if(g){
@@ -2126,10 +2401,16 @@ $('detail').addEventListener('click', async e => {
     del.disabled = true;
     const { data, error } = await sb.rpc('spot_remove', { p_spot:del.dataset.del });
     if(error || !data?.ok){ if(error) console.error('[spot_remove]', error.message); del.disabled = false; return actsSay(del, 'Not deleted. Try again.'); }
-    CLUBSP.retirer(del.dataset.del); fermerDetail();
+    CLUBSP.retirer(del.dataset.del);
+    if(String(DETAIL?.id)===del.dataset.del) fermerDetail();
   }
 });
 addEventListener('keydown', e => {
+  if(DETAIL&&(e.key==='ArrowLeft'||e.key==='ArrowRight')&&!e.target.closest?.('video,textarea,input')){
+    const z=voisinSpot(e.key==='ArrowLeft'?-1:1);
+    if(z){ e.preventDefault(); ouvrirDetail(z,DETAIL_GROUPE); }
+    return;
+  }
   if(e.key !== 'Escape') return;
   if(!$('rdr-new').hidden){ e.preventDefault(); return NSPOT.fermer(); }
   if(sfOuvert()){ e.preventDefault(); return sfOpen(false); }
@@ -2491,7 +2772,7 @@ const NSPOT = (() => {
   function fermer(){
     const p = pan(); if(!p) return;
     document.body.classList.remove('is-nspot');
-    p.hidden = true; p.innerHTML = ''; neuf(); radarOn();
+    p.hidden = true; p.innerHTML = ''; neuf(); CARTE.rafraichir();
   }
   function oublierLieu(){ seqPos++; N.adrSeq++; N.pt = null; N.ptSrc = ''; N.ptVille = ''; N.ptNom = ''; N.posErr = false;
     N.posBusy = false; N.adrBusy = false; N.hits = []; N.hit = -1; N.adrErr = ''; N.place = ''; }
@@ -2555,7 +2836,8 @@ function paintMember(){
   $('member-txt').textContent = me ? (PSEUDO || 'MY TOTEHM') : 'CONNECT WITH MY TOTEHM';
   $('member').setAttribute('aria-label', me ? 'My TOTEHM' : 'Connect with my TOTEHM');
   $('terms').classList.toggle('hide', !!me);
-  const pl = $('rdr-plus'); if(pl) pl.hidden = !me;
+  $('rdr-plus').hidden = !me;
+  $('rdr-locate').hidden = !me;
 }
 $('member').onclick = () => me ? ssoVersDomaine(sb, 'com', COM + '/totehm#in') : ssoLogin(false);
 /* ══ LE DISCOVER DU CLUB · 16/11 ══ Un bouton, et le Club s'explique : une idée par écran (`tools/discover.*`, copié),
@@ -2582,30 +2864,30 @@ const CD = (() => {
 })();
 window.__totehm_club_discover = () => CD.etat();
 
-/* ══ LES TROIS MODES ══ */
+/* ══ LES VUES ══ */
 function peindreMode(){
-  const m = MODE.get();
-  for(const k of MODES){ document.body.classList.toggle('rdr-' + k, m === k); $('v-' + k).classList.toggle('is-on', m === k); }
-  $('rdr-mode').querySelectorAll('[data-rmode]').forEach(b => { const on = b.dataset.rmode === m;
-    b.classList.toggle('is-on', on); b.setAttribute('aria-pressed', String(on)); });
-  if(m !== 'shorts') SHORTS.arreter();
-  if(m === 'grid') GRID.peindre(); else if(m === 'shorts') SHORTS.peindre(); else { radarOn(); LISTE.peindre(); }
-  document.body.classList.toggle('is-scrolled', m === 'radar' && $('v-radar').scrollTop > 40);
+  const m=MODE.get(), grille=m==='grid', sel=$('rdr-select');
+  for(const k of MODES){ document.body.classList.toggle('rdr-'+k,m===k); $('v-'+k).classList.toggle('is-on',m===k); }
+  sel.setAttribute('aria-pressed',String(grille));
+  sel.setAttribute('aria-label',grille?'Show map':'Grid view');
+  sel.querySelector('.k2l').textContent=grille?'Grid':'Map';
+  if(grille){ CARTE.fermer(); GRID.peindre(); }
+  else{ if(!CARTE.etat().on) CARTE.ouvrir(); LISTE.peindre(); }
+  document.body.classList.toggle('is-scrolled',!grille&&$('v-map').scrollTop>40);
 }
-$('rdr-mode').addEventListener('click', e => { const b = e.target.closest('[data-rmode]'); if(b) MODE.set(b.dataset.rmode); });
-MODE.sur(() => peindreMode());
-CLUBSP.sur(() => {
-  /* rien près de moi : le Club entier, et le filtre le dit (une seule fois) */
-  if(CLUBSP.elargi && SF.ou === 'near' && !SF.touche){ SF.ou = ''; dire('nothing near me yet · the whole club'); }
-  situer(); GRID.maj(); SHORTS.maj(); peindreBarre(); if(sfOuvert()) sfPaint();
+$('rdr-select').addEventListener('click',()=>MODE.set(MODE.get()==='grid'?'map':'grid'));
+MODE.sur(peindreMode);
+CLUBSP.sur(()=>{
+  CARTE.maj(); GRID.maj();
+  if(MODE.get()==='map') LISTE.peindre();
+  peindreEtatCarte(); peindreBarre(); if(sfOuvert()) sfPaint();
 });
 
 /* ══ LE DÉMARRAGE ══ */
 window.__totehm_club = () => ({ build:BUILD, mode:MODE.get(), signed_in:!!me, located:!!POS, detail:!!DETAIL,
   filtre:sfOuvert(), filtres:sfCount(), habits:(HABITS || []).length, akin:!!SF.akin, replie:SF.replie, exact:SF.exact, ou:SF.ou || 'world',
-  liste:LISTE.etat(), shorts:SHORTS.etat(), scrolled:document.body.classList.contains('is-scrolled'),
-  radar:{ cx:Math.round(RAD.cx), cy:Math.round(RAD.cy), radius:Math.round(RAD.rpx), heading:Math.round(norm360(RAD.head)),
-          points:RAD.pts.length, p0:RAD.pts[0] ? [Math.round(RAD.pts[0].px), Math.round(RAD.pts[0].py)] : null, lieux:RAD.lieux.length, portee:Math.round(RAD.range) },
+  liste:LISTE.etat(), scrolled:document.body.classList.contains('is-scrolled'),
+  carte:{...CARTE.etat(), p0:CARTE.ou()[0]||null},
   grille:GRID.etat(), club:CLUBSP.etat(), prise:NSPOT.etat() });
 
 /* `boot` lit la session et le Club UNE fois ; le premier événement de session (INITIAL_SESSION) n'en relance pas
@@ -2621,17 +2903,14 @@ async function boot(){
     mesHabits();
   }
   paintMember(); peindreMode(); peindreBarre();
-  /* Wah : « il faut demander directement la localisation à l'utilisateur, pour le placer et lui montrer ce qui est
-     pertinent autour de lui ». Demandée À L'ARRIVÉE ; donnée vite → le Club PRÈS DE MOI d'abord ; tardive → le Club
-     entier tout de suite, puis près de moi dès qu'elle arrive — sauf si le membre a touché au filtre entre-temps. */
-  const ici = me ? position() : Promise.resolve(false);
-  const vite = await Promise.race([ici, new Promise(r => setTimeout(() => r(null), 1500))]);
   DEMARRE = true;
-  if(vite === true){ SF.ou = 'near'; await CLUBSP.regler(sfOpts(), true); }
-  else{
-    await CLUBSP.lire();
-    ici.then(ok => { if(!ok || SF.touche) return; SF.ou = 'near'; RAD.headTo = 0; CLUBSP.regler(sfOpts(), true); });
-  }
+  if(me) position().then(async ok=>{
+    const uid=me?.id;
+    if(!ok||!uid) return;
+    await loadCities();
+    if(uid===me?.id){ GRID.maj(); LISTE.peindre(); }
+  });
+  await CLUBSP.lire();
   /* Un lien partagé (`?spot=…`) ouvre CE spot, quels que soient les filtres. */
   const p = new URLSearchParams(location.search);
   if(p.get('spot')){
@@ -2647,11 +2926,13 @@ sb.auth.onAuthStateChange((ev, s) => {
   if(!DEMARRE) return;
   const id = s?.user?.id || null;
   if(id === (me ? me.id : null)) return;
-  me = s?.user || null; PSEUDO = null; HABITS = null; VITRINE = []; VID.oublier();
-  paintMember(); CLUBSP.lire();
+  me = s?.user || null; PSEUDO = null; HABITS = null; habitsEnCours=null; VITRINE = []; POS = null; positionEnCours = null; VID.oublier();
+  SF.ints.clear(); Object.assign(SF,{type:'',ou:'',mode:'',akin:'',exact:false,replie:false,rayon:50,etape:'habit'});
+  CLUBSP.reinitialiser(); CARTE.vider(); CARTE.fermer(); fermerDetail();
+  paintMember(); peindreMode(); CLUBSP.lire();
   if(me) sb.from('profiles').select('pseudo').eq('id', me.id).maybeSingle().then(({data}) => { PSEUDO = data?.pseudo || null; paintMember(); });
 });
-document.addEventListener('visibilitychange', () => { if(document.hidden){ SHORTS.pause(); return; } CLUBSP.ouvrir(); radarOn(); SHORTS.reprendre(); });
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden){ CLUBSP.ouvrir(); CARTE.rafraichir(); } });
 boot();
 </script>
 <script>
