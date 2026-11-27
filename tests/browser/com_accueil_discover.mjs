@@ -26,10 +26,10 @@ try{
  {const{pg,ctx,log}=await page(browser,{dir:'com',origin,tables:{profiles:[]},rpc:{my_landing:{signed_in:false}},viewport:{width:390,height:844},hasTouch:true,session:false});
   await pg.goto(origin+'/totehm');await pg.waitForFunction(()=>typeof window.__totehm_lv==='function');await pg.waitForTimeout(2200);
   const c=await pg.evaluate(()=>{const vu=e=>e.getClientRects().length>0&&getComputedStyle(e).visibility!=='hidden';
-    return {titre:!!document.querySelector('#lv-title'),actions:[...document.querySelectorAll('#lv-actions button')].filter(vu).map(b=>b.getAttribute('aria-label')),
-      touches:[...document.querySelectorAll('#lv-keys button')].filter(vu).map(b=>b.querySelector('.k2l').textContent.trim())};});
-  ok(!c.titre&&c.actions.join('|')==='Open my TOTEHM|Search a TOTEHM|Add a spot|Add an illustration'&&c.touches.join('|')==='Greatness',
-     'sans compte : les quatre actions et Greatness → '+c.actions.join(' | '));
+    return {titre:!!document.querySelector('#lv-title'),touchesRondes:document.querySelectorAll('#lv-c-acts .k2').length,
+      touches:[...document.querySelectorAll('#lv-keys .k2r')].filter(vu).map(b=>b.querySelector('.k2l').textContent.trim())};});
+  ok(!c.titre&&c.touchesRondes===0&&c.touches.join('|')==='Tree|Greatness',
+     'sans compte : Tree et Greatness → '+c.touches.join(' | '));
   /* le SCROLL ouvre le Discover, et l'inertie du même geste ne le fait pas défiler */
   {const cdp=await ctx.newCDPSession(pg);
    await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:195,y:600}]});
@@ -134,7 +134,7 @@ try{
   ok(!erreurs(log).length&&!log.rpc.some(x=>/_set|_save|_create|_delete/.test(x.name)),'visiteur : aucune erreur, aucune écriture '+erreurs(log).join(' | '));
   await ctx.close();}
 
- /* ── 1 bis · TREE MODE : la touche MODE, sur ORDINATEUR seulement (25/11) ── */
+ /* ── 1 bis · TREE MODE : la touche SELECT Tree ── */
  {const{pg,ctx}=await page(browser,{dir:'com',origin,tables:{profiles:[]},rpc:{my_landing:{signed_in:false}},viewport:{width:1280,height:860},session:false});
   await pg.goto(origin+'/totehm');await pg.waitForFunction(()=>typeof window.__totehm_lv==='function');await pg.waitForTimeout(2200);
   const a=await pg.evaluate(()=>({off:document.body.classList.contains('no-tree'),aff:getComputedStyle(document.getElementById('lv-ram')).display,
@@ -145,7 +145,7 @@ try{
   await pg.click('#lv-tree-k'); await pg.waitForTimeout(400);
   /* 26/11 (Wah) : « le tree ne doit pas être affiché par défaut » — il part ÉTEINT, la touche MODE l'allume. */
   ok(a.vue&&a.off&&a.aff==='none'&&!b2.off&&b2.aff!=='none'&&b2.garde==='1',
-     'TREE MODE : l\'arbre part éteint ; sur ordinateur, la touche MODE l\'allume, et le choix est gardé → '+JSON.stringify({a,b:b2}));
+     'TREE MODE : l\'arbre part éteint ; sur ordinateur, la touche Tree l\'allume, et le choix est gardé → '+JSON.stringify({a,b:b2}));
   await ctx.close();}
 
  /* ── 2 · MEMBRE : ↑ ouvre le récit (ce n'est plus une vue), et les portes deviennent SES fonctionnalités ── */

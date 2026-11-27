@@ -30,9 +30,9 @@ try{
      connAbs:!document.getElementById('conn-bar'),
      sigInPaper:!document.getElementById('ast-sig'), nameBtn:getComputedStyle(document.getElementById('name-btn')).display,
      thp:!!document.getElementById('lv-thp-say'), tag:!!document.getElementById('lv-b-tag'), build:window.__totehm_lv().build,
-     actions:[...document.querySelectorAll('#lv-actions button')].filter(b=>b.getClientRects().length).map(b=>b.getAttribute('aria-label')) }));
+     actions:[...document.querySelectorAll('#lv-keys .k2r')].filter(b=>b.getClientRects().length).map(b=>b.getAttribute('aria-label')) }));
    ok(!c.why && !c.strat && !c.thp && !c.tag, 'COM : plus de « [Higher] STRATEGY », de phrase sous lui, de texte du THP ni de slogan TotehmSM');
-   ok(c.actions.join('|')==='Open my TOTEHM|Search a TOTEHM|Add a spot|Add an illustration', 'un membre accède aux quatre actions depuis l’atterrissage');
+   ok(c.actions.join('|')==='Tree|Discover your greatness', 'Tree et Greatness sont les deux touches à l’accueil du membre');
    ok(c.connAbs && c.sigInPaper && c.nameBtn === 'none', 'le nom du Totehm ne vit QUE sur la face verso (18/10) — ni en haut de l\'atterrissage, ni sur le recto du papier');
    ok(/^20\d\d-\d\d-\d\d-[a-z0-9-]+$/.test(c.build), 'BUILD de la page (une date, puis le lot) : ' + c.build);   // il change à chaque lot : on vérifie sa forme, pas sa valeur
    await pg.screenshot({ path:OUT + '/plateforme_centre.png' });
@@ -53,7 +53,7 @@ try{
      functions:{ 'create-bunny-upload':{ available:false }, 'sso-mint':{ code:'x'.repeat(64) } } });
    await pg.emulateMedia({ reducedMotion:'reduce' });
    await pg.goto(origin + '/totehm'); await pg.waitForSelector('body.member'); await pg.waitForTimeout(600);
-   await pg.click('#lv-tap-open'); await pg.waitForFunction(() => !document.body.classList.contains('gate'), null, { timeout:8000 });
+   await pg.click('#gate-enter'); await pg.waitForFunction(() => !document.body.classList.contains('gate'), null, { timeout:8000 });
    await pg.waitForSelector('#habits [data-open]'); await pg.locator('#habits [data-open]').first().evaluate(e => e.click());
    /* ⚠️ 16/10 : il n'y a plus de SPACES dans une Habit Box — seulement des SPOTS (Wah : « on a supprimé
       tous les spaces, on garde seulement les spots »), et ANNONCER un spot ne quitte plus la boîte. */

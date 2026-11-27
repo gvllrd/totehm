@@ -49,22 +49,24 @@ try{
   let geocodes=0;
   await pg.route('**nominatim.openstreetmap.org/**',r=>{geocodes++;r.fulfill({status:200,contentType:'application/json',body:JSON.stringify(ADRESSES)});});
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1200);
-  await pg.click('#lv-add-illustration');
+  await pg.click('#lvn-lf');await vers(pg,'g');
+  await pg.getByRole('button',{name:'Add a media',exact:true}).click();
   await pg.waitForSelector('#lv-sh-sf .sf-cap .cap-b');
   ok((await lv(pg)).vue==='g',nom+' · la touche Illustration ouvre la capture dans la vue de gauche');
   await pg.click('#lv-sh-sf [data-sf="close"]');
   await pg.click('#lvn-rt');await vers(pg,'c');
-  await pg.click('#lv-add-spot');
+  await pg.click('#lvn-rt');await vers(pg,'d');
+  await pg.getByRole('button',{name:'Add a spot',exact:true}).click();
   await pg.waitForSelector('#rdr-new .ns-cap .cap-b');
   ok((await lv(pg)).vue==='d',nom+' · la touche Spot ouvre la prise dans la vue de droite');
   await pg.click('#rdr-new [data-ns="close"]');
 
   // ══ 1 · NOW, depuis le « + » de la MAP ══
   const plus=pg.getByRole('button',{name:'Add a spot',exact:true});
+  await pg.waitForFunction(()=>getComputedStyle(document.getElementById('lv-d')).transform==='none');
   const tuileMap=await plus.boundingBox();
-  ok(Math.round(tuileMap?.width)===64&&await pg.locator('#lv-search').evaluate(e=>e.offsetWidth)===40
-    &&await pg.waitForFunction(()=>getComputedStyle(document.querySelector('#lv-search path')).transform==='matrix(-1, 0, 0, -1, 0, 0)',null,{timeout:2000}),
-    nom+' · le Plus grandit et le triangle se retourne en gardant sa taille');
+  ok(tuileMap&&Math.abs(tuileMap.width-tuileMap.height)<1&&await plus.evaluate(e=>getComputedStyle(e).borderRadius)==='50%',
+    nom+' · la carte porte une tuile Add a spot ronde');
   await plus.click();await pg.waitForTimeout(400);
   const e0=await etapes(pg), b0=await pg.evaluate(()=>[...document.querySelectorAll('#rdr-new .sfb .v-name')].map(e=>e.textContent.trim()));
   ok(await pg.evaluate(()=>!document.getElementById('rdr-new').hidden&&document.body.classList.contains('is-nspot'))&&e0.join('|')==='+ spot|a photo or a video · optional · 33 s at most|which habit?'&&b0.join('|')==='Run the hill|Call mum',
@@ -148,11 +150,11 @@ try{
   }
 
   // ══ 2 · LATER, depuis la tuile « + » de la GRID, le point POSÉ sur la Terre ══
-  await pg.getByRole('button',{name:'Grid',exact:true}).click();
+  await pg.click('#rdr-m-sel');
   const tuileGrid=await plus.boundingBox();
   ok(tuileMap&&tuileGrid&&['x','y','width','height'].every(k=>Math.abs(tuileMap[k]-tuileGrid[k])<=2)
-    &&await pg.getByRole('button',{name:'Map',exact:true}).isVisible(),
-    nom+' · la touche passe en Grid avec le même Plus au même endroit');
+    &&await pg.locator('#rdr-m-sel').getAttribute('aria-pressed')==='true',
+    nom+' · la tuile ronde retrouve la même place en mode Grid');
   await plus.click();await pg.waitForTimeout(400);
   await pg.locator('#rdr-new .sfb').filter({hasText:'Call mum'}).first().click();await pg.waitForTimeout(250);
   await clic(pg,'#rdr-new [data-ns="quand"][data-v="later"]');await pg.waitForTimeout(250);
@@ -213,7 +215,7 @@ try{
 
   // ══ 3 · [Add a spot] dans une box du Totehm → la prise, CETTE Habit choisie ; 5 · le titre en haut ══
   await pg.click('#lvn-lf');await vers(pg,'c');await pg.waitForTimeout(400);
-  await pg.click('#lv-tap-open');await pg.waitForFunction(()=>!document.body.classList.contains('gate'),null,{timeout:9000}).catch(()=>{});await pg.waitForTimeout(1200);
+  await pg.click('#gate-enter');await pg.waitForFunction(()=>!document.body.classList.contains('gate'),null,{timeout:9000}).catch(()=>{});await pg.waitForTimeout(1200);
   /* en haut, centré : au-dessus de la première box (sur ordinateur, juste sous le T qui tient le centre du haut) */
   const ti=await pg.evaluate(()=>{const v=document.getElementById('vnow'), b=v.querySelector('b'), r=b.getBoundingClientRect(),
       t=document.querySelector('#bigT svg').getBoundingClientRect(), l=document.querySelector('#habits > .habit[data-row]').getBoundingClientRect();

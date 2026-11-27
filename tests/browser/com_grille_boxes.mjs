@@ -38,7 +38,7 @@ try{
   ok(apres.length===5&&apres.every(c=>/\btb\b/.test(c)&&!/tb-attente/.test(c))&&!(await pg.$('#lv-sh-f .tl-b')),
      nom+' · après l\'arbre : la vraie box, au format du TOTEHM, jamais l\'ancien rendu → '+apres.join(' | '));
   await pg.screenshot({path:OUT+'/grille_boxes_'+(tel?'tel':'ordi')+'.png'});
-  await pg.getByRole('button',{name:'Refine',exact:true}).click();await pg.waitForTimeout(900);
+  await pg.getByRole('button',{name:/^Refine(?: · \d+)?$/}).click();await pg.waitForTimeout(900);
   await pg.click('#lv-sh-sf [data-sf="vue"][data-v="visions"]');await pg.waitForTimeout(500);
   const f=await pg.evaluate(()=>{const v=document.querySelector('#lv-sh-sf .sfv.is-on');return v?getComputedStyle(v).boxShadow:'absent';});
   ok(f==='none',nom+' · le filtre : la vue choisie sans trait blanc (box-shadow '+f+')');
@@ -46,7 +46,7 @@ try{
   const nb=()=>pg.evaluate(()=>[...document.querySelectorAll('#lv-sh-sf [data-sf="box"]')].map(e=>e.dataset.v+(e.classList.contains('is-on')?'*':'')).join(','));
   const l0=await nb();
   await pg.click('#lv-sh-sf [data-sf="box"][data-v="v|v1"]');await pg.waitForTimeout(500);
-  await pg.getByRole('button',{name:'Refine',exact:true}).click();await pg.waitForTimeout(700);
+  await pg.getByRole('button',{name:/^Refine(?: · \d+)?$/}).click();await pg.waitForTimeout(700);
   const l1=await nb();
   await pg.click('#lv-sh-sf [data-sf="box"][data-v="v|v1"]');await pg.waitForTimeout(400);
   const l2=await nb();

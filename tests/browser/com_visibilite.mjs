@@ -34,7 +34,7 @@ try{
   {const {pg,log}=await page(browser,{dir:'com',origin,viewport:vp,hasTouch:nom==='téléphone',rpc:MES,
      tables:{profiles:[{pseudo:'wahigher'}],totehms:[{user_id:UID,habits:STEPS,vis:'private'}]}});
    await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1000);
-   await pg.click('#lv-tap-open');await pg.waitForFunction(()=>!document.body.classList.contains('gate'),null,{timeout:9000}).catch(()=>{});await pg.waitForTimeout(1200);
+   await pg.click('#gate-enter');await pg.waitForFunction(()=>!document.body.classList.contains('gate'),null,{timeout:9000}).catch(()=>{});await pg.waitForTimeout(1200);
    ok(await pg.evaluate(()=>window.__totehm_audb().lu&&!document.querySelector('#habits .baud')),nom+' · les niveaux sont lus avec mon arbre ; fermées, les boxes ne portent rien de plus (les boxes sont sacrées)');
    for(const [vue,touches,avant,envoi,apres] of TOUR){
     for(const k of touches){ await pg.keyboard.press(k); await pg.waitForTimeout(700); }

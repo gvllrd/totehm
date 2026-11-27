@@ -39,7 +39,7 @@ async function sample({width=390,delayPlace=false,placeError=false,placeHook=nul
 }
 async function opened(x){await x.pg.goto(elementURL({kind:'habit',ref:habit}));await x.pg.waitForFunction(()=>window.__totehm_element_link?.().state==='opened',null,{timeout:15000});}
 async function enterMember(x){
- await x.pg.click('#lv-search');await x.pg.waitForSelector('#mb-q:visible');
+ await x.pg.click('#lvn-dn');await x.pg.waitForSelector('#mb-q:visible');
  await x.pg.fill('#mb-q','artist');await x.pg.keyboard.press('Enter');
  await x.pg.waitForSelector('[data-mb="open"]:enabled');await x.pg.locator('[data-mb="open"]').click();
  await x.pg.waitForFunction(()=>document.body.classList.contains('lv-membre')&&!document.body.classList.contains('gate')&&!document.body.classList.contains('is-coin')&&window.__totehm_piece?.().recto&&!window.__totehm_lv().bouge);

@@ -18,7 +18,7 @@ try{
       return [{user_id:UID,habits:STEPS,vis:'private'}]; }}});
   const pas=()=>envois.length, statut=()=>pg.$eval('#fv-status',e=>e.textContent);
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1000);
-  await pg.click('#lv-tap-open');await pg.waitForFunction(()=>!document.body.classList.contains('gate'),null,{timeout:9000}).catch(()=>{});await pg.waitForTimeout(1200);
+  await pg.click('#gate-enter');await pg.waitForFunction(()=>!document.body.classList.contains('gate'),null,{timeout:9000}).catch(()=>{});await pg.waitForTimeout(1200);
   await pg.$eval('#habits .v-col[data-open]',e=>e.click());await pg.waitForTimeout(450);
   const n0=pas(), f0=log.functions.length;
   await pg.locator('#habits .habit.open .v-name[data-edit]').click();
@@ -77,7 +77,7 @@ try{
          return {status:201,contentType:'application/json',body:'[]'}; } return null; },
      tables:{profiles:[{pseudo:'wahigher'}],totehms:[{user_id:UID,habits:STEPS,vis:'private'}]}});
    await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1000);
-   await pg.click('#lv-tap-open');await pg.waitForFunction(()=>!document.body.classList.contains('gate'),null,{timeout:9000}).catch(()=>{});await pg.waitForTimeout(1200);
+   await pg.click('#gate-enter');await pg.waitForFunction(()=>!document.body.classList.contains('gate'),null,{timeout:9000}).catch(()=>{});await pg.waitForTimeout(1200);
    await pg.$eval('#habits .v-col[data-open]',e=>e.click());await pg.waitForTimeout(450);
    await pg.locator('#habits .habit.open .v-name[data-edit]').click(); await pg.keyboard.press('End');
    await pg.keyboard.type(' far'); await pg.keyboard.press('Enter'); await pg.waitForTimeout(900);

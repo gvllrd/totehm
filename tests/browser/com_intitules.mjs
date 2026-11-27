@@ -23,7 +23,7 @@ const land = { signed_in:true, pseudo:'wah', visibility:'private', offer:{ enabl
 
 async function ouvrir(pg){
   await pg.goto(origin + '/totehm'); await pg.waitForSelector('body.member'); await pg.waitForTimeout(700);
-  await pg.click('#lv-tap-open'); await pg.waitForFunction(() => !document.body.classList.contains('gate'), null, { timeout:6000 }).catch(() => {});
+  await pg.click('#gate-enter'); await pg.waitForFunction(() => !document.body.classList.contains('gate'), null, { timeout:6000 }).catch(() => {});
   await pg.waitForTimeout(1200);
 }
 async function vers(pg, touche, vue){

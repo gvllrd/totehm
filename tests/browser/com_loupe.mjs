@@ -35,7 +35,7 @@ try{
   {const {pg,log}=await page(browser,{dir:'com',origin,viewport:vp,hasTouch:nom==='téléphone',rpc:MES,
      tables:{profiles:[{pseudo:'wahigher'}],totehms:[{user_id:UID,habits:STEPS,vis:'private'}]}});
    await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1000);
-   await pg.click('#lv-tap-open');await pg.waitForFunction(()=>!document.body.classList.contains('gate'),null,{timeout:9000}).catch(()=>{});await pg.waitForTimeout(1200);
+   await pg.click('#gate-enter');await pg.waitForFunction(()=>!document.body.classList.contains('gate'),null,{timeout:9000}).catch(()=>{});await pg.waitForTimeout(1200);
    for(const [vue,touches] of TOUR){
     for(const k of touches){ await pg.keyboard.press(k); await pg.waitForTimeout(700); }
     const f=await mesure(pg);
@@ -52,7 +52,7 @@ try{
    }
    /* ── 2 · LA BOÎTE DU FILTRE (le T) : elle aussi ── */
    for(const k of ['ArrowLeft']){ await pg.keyboard.press(k); await pg.waitForTimeout(700); }
-   await pg.$eval('#bigT',e=>e.click());await pg.waitForTimeout(450);
+   await pg.click('#box-filter');await pg.waitForTimeout(450);
    const fl=await pg.evaluate(()=>{const l=document.querySelector('#habits .habit.filtre .v-col > .loupe'),w=document.querySelector('#habits .habit.filtre .w-x');
      if(!l) return {l:false};const a=l.getBoundingClientRect(),b=w.getBoundingClientRect(),t=document.elementFromPoint(a.x+a.width/2,a.y+a.height/2);
      return {l:true,libre:t===l||l.contains(t),cote:a.right<=b.left+1,vue:(window.__totehm_zone||{}).vue};});

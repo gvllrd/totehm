@@ -57,7 +57,7 @@ try{
       mine:q('#lv-m-sel').getClientRects().length>0,
       /* 18/10 : le nom a quitté l'atterrissage — il ne vit QUE sur la face verso du papier (Wah). */
       sigAbs:!q('#ast-sig'),connAbs:!q('#conn-bar'),
-      actions:[...document.querySelectorAll('#lv-actions button')].filter(b=>b.getClientRects().length).length,
+      actions:[...document.querySelectorAll('#lv-keys .k2r')].filter(b=>b.getClientRects().length).length,
       bouche:getComputedStyle(q('#gate-mouth')).opacity,
       /* Les pointes hautes touchent l'écran ; au repos le tronc descend DROIT (19/11 : plus d'image ADVISORY, la porte prend
          sa place quand elle s'ouvre — com_porte_tronc) et les racines enveloppent les côtés et le dessous de la manette. */
@@ -118,10 +118,10 @@ try{
   ok(!c.partis.length,'plus de manette, plus de galaxie, plus de radar (balisage retiré) '+c.partis.join(','));
   ok(c.cotes===2&&c.up==='Quick capture'&&c.dn==='Ecosystems'&&c.lf==='Media'&&c.rt==='Spots'&&!c.mine,
      'les quatre chevrons de navigation, sans retour à Mine sur son propre atterrissage');
-  ok(c.sigAbs&&c.connAbs&&c.actions===4&&c.bouche==='0',
-    'le nom reste au verso et les quatre actions sont disponibles au centre');
+  ok(c.sigAbs&&c.connAbs&&c.actions===2&&c.bouche==='0',
+    'le nom reste au verso et Tree et Greatness sont disponibles au centre');
   await pg.screenshot({path:OUT+'/proc_centre_'+(tel?'tel':'ordi')+'.png'});
-  await pg.click('#lv-tap-open');await pg.waitForFunction(()=>!document.body.classList.contains('gate'),null,{timeout:8000}).catch(()=>{});
+  await pg.click('#gate-enter');await pg.waitForFunction(()=>!document.body.classList.contains('gate'),null,{timeout:8000}).catch(()=>{});
   ok(await pg.evaluate(()=>!document.body.classList.contains('gate')),'la touche plus ouvre mon TOTEHM (la déconstruction)');
   ok(!erreurs(log).length,'centre : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
 
@@ -255,7 +255,7 @@ try{
   const p0=await pg.evaluate(()=>document.getElementById('gate-asteroid').getBoundingClientRect().width);
   const habits0=(await lv(pg)).ramifications.habits;
   // 18/11 — [Members] : le TOTEHM se retourne sur son verso, en mode recherche (le même geste que [Mine]) ; refermé, rien n'a bougé
-  await pg.click('#lv-search');
+  await pg.click('#lvn-dn');
   await pg.waitForFunction(()=>{const c=window.__totehm_cherche&&window.__totehm_cherche();return c&&c.ouvert;},null,{timeout:8000}).catch(()=>{});
   const o=await pg.evaluate(()=>({onglets:window.__ouvert.slice(),mode:window.__totehm_lv().mode,cherche:window.__totehm_cherche().ouvert,
     saisie:document.activeElement&&document.activeElement.id,asp:document.body.classList.contains('is-aspire')}));
@@ -281,21 +281,21 @@ try{
   const e=await pg.evaluate(()=>{const q=s=>document.querySelector(s),d=window.__totehm_lv(),p=q('#gate-asteroid').getBoundingClientRect();
     return {d,pw:p.width,dos:q('#gate-card').classList.contains('is-back'),ro:document.body.classList.contains('ro'),qui:q('#lv-m-who').textContent,
       quiVu:getComputedStyle(q('#lv-m-who')).display!=='none',couleur:getComputedStyle(q('#lv-m-who')).color,
-      actions:[...document.querySelectorAll('#lv-actions button')].filter(b=>b.getClientRects().length).map(b=>b.getAttribute('aria-label')),
+      actions:[...document.querySelectorAll('#lv-keys .k2r')].filter(b=>b.getClientRects().length).map(b=>b.getAttribute('aria-label')),
       pales:document.querySelectorAll('#lv-ram g.r-0').length};});
   ok(e.ro&&e.d.mode==='members'&&e.d.membre.chez&&/[?&]ro=kai3/.test(pg.url()),
     'on habite SON écosystème, sur place ('+pg.url().replace(origin,'')+')');
   ok(Math.abs(e.pw-p0)<8&&!e.dos,'le papier est chez lui, sur son recto ('+e.pw.toFixed(0)+' vs '+p0.toFixed(0)+')');
   ok(e.qui==='kai3'&&e.quiVu&&e.couleur==='rgb(251, 213, 202)','[Members] porte SON nom, en Coral');
   ok(e.d.ramifications.habits!==habits0&&e.pales===5,'le processeur est le SIEN : ses deux intentions habitées, cinq en creux');
-  ok(e.actions.join('|')==='Open this TOTEHM|Search a TOTEHM','les actions de lecture et de recherche restent disponibles chez un membre');
+  ok(e.actions.join('|')==='Tree|Discover your greatness','les deux touches restent disponibles chez un membre');
   // 18/11 (Wah) : chez un membre, le joystick = gauche · centre · droite — le haut et le bas sont à [Mine]
   await tire(pg,0,-30);await pg.waitForTimeout(1100);
   const b=await pg.evaluate(()=>({vue:window.__totehm_lv().vue,morts:['lvn-up','lvn-dn'].every(id=>document.getElementById(id).classList.contains('is-mort')),
     vivants:['lvn-lf','lvn-rt'].every(id=>!document.getElementById(id).classList.contains('is-mort'))}));
   ok(b.vue==='c'&&b.morts&&b.vivants,'18/11 · chez un membre : ↑ ne mène nulle part, ↑ ↓ effacés, ← → vivants → '+JSON.stringify(b));
   // son Totehm, en lecture, puis on replie : on reste chez lui
-  await pg.click('#lv-tap-open');await pg.waitForFunction(()=>!document.body.classList.contains('gate'),null,{timeout:9000}).catch(()=>{});
+  await pg.click('#gate-enter');await pg.waitForFunction(()=>!document.body.classList.contains('gate'),null,{timeout:9000}).catch(()=>{});
   await pg.waitForTimeout(600);
   const x=await pg.evaluate(()=>({habits:[...document.querySelectorAll('#habits [data-open]')].map(e=>e.textContent.trim().slice(0,20)),
     ecrit:document.querySelectorAll('#habits [contenteditable],#habits [data-kill],#habits [data-add]').length,qui:document.title.replace(' · TOTEHM','')}));   /* 18/11 : plus de barre de lecture — le titre de la page porte son nom */
@@ -403,7 +403,7 @@ try{
   await pg.keyboard.press('ArrowUp');await vers(pg,'b');
   const b=await pg.evaluate(()=>({tours:window.__totehm_lv().tours,anim:document.getElementById('gl-bg').getAnimations().filter(a=>a.effect&&a.effect.getKeyframes().some(k=>/rotate/.test(k.transform||''))).length}));
   await pg.keyboard.press('ArrowDown');await vers(pg,'c');
-  await pg.click('#lv-search');await calme(pg);await pg.waitForTimeout(600);
+  await pg.click('#lvn-dn');await calme(pg);await pg.waitForTimeout(600);
   const g=await lv(pg);
   ok(tr.every(t=>/^0s/.test(t))&&b.tours===0&&b.anim===0,'mouvement réduit : aucune transition, #gl-bg ne tourne pas ('+tr.join(' ')+')');
   ok(await pg.evaluate(()=>window.__totehm_cherche().ouvert&&document.activeElement.id==='mb-q')&&!g.ramifications.enCours,'MEMBERS : le verso en recherche, la saisie est là, sans animation');

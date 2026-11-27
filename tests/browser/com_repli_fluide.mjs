@@ -18,7 +18,7 @@ try{
   const cdp=await pg.context().newCDPSession(pg);
   await pg.goto('https://www.totehm.com/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1500);
   await cdp.send('Emulation.setCPUThrottlingRate',{rate:4});
-  await pg.click('#lv-tap-open');
+  await pg.click('#gate-enter');
   await pg.waitForFunction(()=>!document.body.classList.contains('gate'),null,{timeout:12000}).catch(()=>{});
   await pg.waitForTimeout(2500);
   const ev=[]; cdp.on('Tracing.dataCollected',d=>ev.push(...d.value));

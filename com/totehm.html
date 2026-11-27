@@ -94,6 +94,9 @@ html{font-family:'Space Mono',monospace}button,input,select,textarea{font-family
   --joy-gap:8px;
   --joy-size:calc(var(--joy-d) + 2 * (var(--joy-arrow) + var(--joy-gap)));
   --joy-b:max(8px,env(safe-area-inset-bottom));
+  --joy-right:max(8px,env(safe-area-inset-right));
+  --joy-bottom:var(--joy-b);
+  --joy-vue:var(--navy);
   --band-b:calc(var(--joy-b) + var(--joy-size) + 10px);
   /* 18/10 — la manette de l'ATTERRISSAGE (`#lvjoy`) : son retrait du bas, et la hauteur qu'elle
      occupe (26 + 44 + 26 et deux gouttières de 6). Tout ce qui vit au bas de l'atterrissage s'y
@@ -136,11 +139,6 @@ html,body{width:100%;height:100%;background:var(--paper);color:var(--g-light);fo
 #rail{position:fixed;top:0;bottom:0;left:var(--rl);width:var(--rw);background:rgba(255,255,255,.30);z-index:1;transition:opacity .4s}
 /* Images recadrées (contenu pur, sans marge) : la valeur CSS = la taille visuelle réelle.
    Mobile : T.png +30% et TOTEHM.png +10% par rapport au rendu précédent. */
-/* ══ LE T EST LE FILTRE ══
-   Plus de chevron, plus de geste à deviner : le T bat lentement — c'est
-   l'invitation — et il ouvre le filtre au clic, desktop comme mobile.
-   `t-slow` et non `t-pulse` : 4,2 s et un creux à .45, pas un clignotant.
-   Un signal qui bat vite dit « urgence » ; celui-ci dit « je suis vivant ». */
 /* ══ LA MARQUE SE RANGE À GAUCHE · 18/09/2026 ════════════════════════
    Le T était au centre et le TOTEHM tout en bas : le haut ne portait
    rien d'autre, et le bas portait deux choses. Les deux se rangent
@@ -151,15 +149,8 @@ html,body{width:100%;height:100%;background:var(--paper);color:var(--g-light);fo
    le T à x 20 et le bouton jusqu'à x 22 — ils se touchaient de 2 px, ce
    qui suffit à faire sale et à voler un clic. Même règle qu'à l'écran
    large : la marque commence APRÈS la colonne du rail, jamais dessus. */
-#bigT{position:fixed;top:26px;left:calc(var(--rl) + var(--rw0) + 26px);transform:none;z-index:30;user-select:none;transition:opacity .4s;line-height:0;background:none;border:none;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
-@keyframes t-slow{0%,100%{opacity:1}50%{opacity:.45}}
-/* ⚠️ LE T NE RESPIRE QUE DANS LES HABITUDES · 19/09/2026. Il EST le
-   filtre, et le filtre ne trie que des habitudes — rythme et intention
-   n'existent que là. Le voir battre dans les quatre autres vues
-   promettait une porte qui n'existe pas. */
-body:not(.gate).v-habits #bigT svg{animation:t-slow 4.2s ease-in-out infinite}
-body:not(.gate):not(.v-habits) #bigT{opacity:.42;cursor:default}
-@media(prefers-reduced-motion:reduce){body:not(.gate) #bigT svg{animation:none}}
+#bigT{position:fixed;top:26px;left:calc(var(--rl) + var(--rw0) + 26px);transform:none;z-index:30;
+  user-select:none;pointer-events:none;transition:opacity .4s;line-height:0}
 /* ⚠️ UNE SEULE RÈGLE POUR LA TAILLE DU T. Il y en avait deux, séparées
    par l'animation : la seconde gagnait sans un mot, et ma valeur de 40 px
    n'avait aucun effet. Un sélecteur écrit deux fois n'est pas une
@@ -217,8 +208,9 @@ body:not(.gate):not(.v-habits) #bigT{opacity:.42;cursor:default}
    portable le mettre plus à droite » · « faire en sorte à ce que le joystick et le TOTEHM.svg se
    partagent l'écran de part et d'autre »). La bande du bas se partage donc en deux : le logo à
    gauche et la manette à droite. Sur ordinateur, le bloc du papier fixe son retrait. */
-#joy{top:auto;bottom:var(--joy-b);left:auto;right:max(8px,env(safe-area-inset-right));
-     transform:none}
+#joy{top:auto;bottom:var(--joy-bottom);left:auto;right:var(--joy-right);transform:none}
+body:is(.v-objectives,.v-visions){--joy-vue:var(--blue)}
+body:is(.v-repulsions,.v-stories){--joy-vue:var(--rep)}
 /* Les deux portes, à droite, à la même hauteur que le wordmark et dans
    la grammaire `.btn-sig` du reste du produit. */
 /* ⚠️ LES PORTES PASSENT À GAUCHE · 18/09/2026, parce que le wordmark
@@ -314,12 +306,7 @@ body.gate #wm-O,body.gate #wm-H,body.gate #t-foot{animation:none}
 /* `#menu-arrow` a disparu · 09/09/2026 — voir `#bottom-doors`. Le
    wordmark ouvre le menu ; le petit chevron sous lui ne faisait que
    répéter ce geste, et il occupait la place des deux portes. */
-/* Petite flèche cliquable centrée juste au-dessus du T.png du haut — ouvre le filtre */
-/* ══ ANNULÉ (24/08) ══ Le chevron vers le haut disait « il y a un filtre
-   par là ». Le T le dit mieux : il clignote, et il EST le filtre. */
-#filter-arrow{display:none!important}
-#filter-arrow:hover{opacity:.7}
-#filter-arrow svg{width:22px;height:12px;color:rgba(255,255,255,.55)}
+
 /* ══ LES TROIS COUCHES — le dépliage, en haut à gauche · 05/09/2026 ═══
    REMPLACE les deux curseurs .tnav (chevrons de part et d'autre du
    wordmark). Un chevron dit « suivant », et il n'y a pas de suite : il y a
@@ -666,7 +653,6 @@ body.ordering #vnow{display:none}
    toutes les vues et en mode classement.
    `peintTraits()` et `DEGRADE` sont supprimés avec elle. */
 #habits > .habit .tick{opacity:1}
-#habits > .habit.add .tick{opacity:0}
 /* La boîte commence exactement où le tick se pose : le tick chevauche
    ses 3 premiers pixels et devient le bord gauche. `padding-left` :
    11 px, soit tick (3) + 8 px d'aération avant le contenu. Le tick
@@ -696,7 +682,7 @@ body.ordering #vnow{display:none}
 .habit .h-body{background:var(--skin);border:none;
   transition:filter .15s ease,transform .28s cubic-bezier(.22,.61,.36,1)}
 @media(hover:hover){
-  .habit:not(.add) .h-body:hover{filter:brightness(1.18)}
+  .habit .h-body:hover{filter:brightness(1.18)}
 }
 /* LA VUE CHOISIT LA PEAU — une ligne par vue, et rien d'autre ne bouge.
    La classe vit sur #stage : les boîtes en héritent, le fond l'ignore. */
@@ -724,13 +710,6 @@ body{transition:background-color .5s ease}
 body.v-stories {--paper:#5b2652}
 body.v-visions{--paper:#2b3a73}
 @media(prefers-reduced-motion:reduce){body{transition:none}}
-/* La ligne d'ajout n'est pas un objet posé : c'est une invitation. */
-/* LE POINTILLÉ D'UNE PLACE VIDE EST L'EXCEPTION DOCUMENTÉE : il ne
-   cerne pas une boîte, il dessine l'ABSENCE d'une boîte. Voir
-   « AUCUNE BORDURE AUTOUR D'UNE BOÎTE » dans CLAUDE.md. */
-.habit.add .h-body{background:none;box-shadow:none;
-  border:1px dashed rgba(255,255,255,.3);transition:border-color .15s}
-.habit.add .h-body:focus-within{border-color:#fff}
 /* Le liseré du textarea faisait doublon avec la boîte. */
 /* Le liseré du textarea faisait doublon avec la boîte : il n'existe plus
    nulle part, plutôt que d'être posé puis retiré deux règles plus bas. */
@@ -1348,8 +1327,6 @@ body.v-visions{--paper:#2b3a73}
   font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.18em;
   text-transform:uppercase;transition:border-color .15s,color .15s}
 .dash:hover{border-color:#fff;color:#fff}
-.add-box{width:100%;background:none;border:none;color:#fff;cursor:pointer;
-  text-align:left;padding:0;font-family:'Quantico',sans-serif;font-size:14px}
 /* 12/11 — L'INTITULÉ EST LA LOGIQUE DE LA BOX (Wah : « un intitulé WHY qui justifie l'action… un intitulé
    Trigger - instead of… c'est exactement en quoi consiste la Stoner method »). Le 13/10 les avait tous masqués
    au nom du minimalisme ; sans eux une box est une LISTE, avec eux c'est une PHRASE — et la phrase EST la
@@ -1360,7 +1337,6 @@ body.v-visions{--paper:#2b3a73}
 .baud-n{display:block;font:400 8px/1.5 'Space Mono',monospace;letter-spacing:.1em;text-transform:uppercase;
   color:rgba(255,255,255,.38);margin:0 0 2px}
 .baud-n:empty{display:none}
-.add-box{text-align:center;font:400 22px/1 'Space Mono',monospace;color:rgba(255,255,255,.7)}
 .ic{width:13px;height:13px;display:inline-block;vertical-align:-2px}
 .dash .ic{width:12px;height:12px}
 .v-img{display:block;width:100%;max-height:220px;object-fit:cover;margin-top:8px}
@@ -1441,7 +1417,6 @@ body.v-visions{--paper:#2b3a73}
    et la souris — Pointer Events. `touch-action:none` est OBLIGATOIRE :
    sans lui le navigateur avale le glissement vertical et le classement se
    perd une fois sur deux. */
-#ordbtn{position:fixed;top:10px;left:10px;z-index:34;color:#fff}
 @media(min-width:700px) and (hover:hover) and (prefers-reduced-motion:no-preference){
   #ordbtn:hover .order-middle{animation:order-rise .42s ease both}
   #ordbtn:hover .order-top{animation:order-yield .42s ease both}
@@ -1750,7 +1725,6 @@ body.rk-grab #fv-inner{overscroll-behavior:none}
    Tout ce qui écrit. Les CURSEURS RESTENT : on lit les cinq vues de
    quelqu'un d'autre exactement comme on lit les siennes — c'est toute
    la demande. */
-body.ro .habit.add,
 body.ro .h-x,
 body.ro #bottom-doors,
 body.ro #ordbtn,
@@ -2366,50 +2340,64 @@ body.gate.entered #terms-corner{opacity:0;pointer-events:none}
 .ns-label{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;
   color:rgba(255,255,255,.55);text-align:left}
 @media(hover:hover){.srch-row:hover .srch-name{filter:brightness(1.3)}}
-.face-controls{position:fixed;inset:0;pointer-events:none}
+.face-controls{position:fixed;inset:0;pointer-events:none;--k2-d:40px;
+  --paper-key-top:max(10px,env(safe-area-inset-top));--paper-key-edge:10px;--paper-key-gap:10px}
 #verso-controls{z-index:4}
 #recto-controls{z-index:34}
-:where(#recto-controls) :is(#fold-x,#fold-flip,#joy,#ordbtn){pointer-events:auto}
-#srch-x{position:fixed;top:10px;right:10px;z-index:4;pointer-events:none}
-#srch.is-open #srch-x{pointer-events:auto}
-#fold-x{position:fixed;top:10px;right:10px;z-index:34}
-:is(#lv-actions,#recto-controls,#verso-controls){--k2-d:40px}
-:is(#recto-controls,#verso-controls) .k2>svg{width:20px;height:20px}
-body.gate:not(.entered) #ordbtn,
-body.folding :is(#fold-x,#fold-flip,#ordbtn){visibility:hidden;pointer-events:none}
-.k2.is-navy:is(#fold-x,#fold-flip,#ordbtn):where(:not(:active,.is-press)){
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.09),inset 0 -2px 3px rgba(0,0,0,.38),0 1px 3px rgba(0,0,0,.24)}
-/* ══ 16/11 · PILE OU FACE, SUR ORDINATEUR ══ Wah : « sur ordinateur, ce serait bien d'avoir vraiment le verso du TOTEHM
-   comme le recto : actuellement le verso, contrairement au recto, est en plein écran ; deux facettes facilement
-   retournables de part et d'autre, pour vraiment avoir cet effet pile ou face ». Au-delà de 700 px, le verso s'arrête
-   au CARRÉ du recto déployé (`--stage`, ses perforations visibles), son contenu défile DEDANS, le noir autour ; et
-   chaque face porte un bouton « retourner » (`.flip-btn`) : le carré se retourne comme une PIÈCE (17/11, `pieceVersVerso`),
-   sans repasser par l'atterrissage. Au téléphone, rien ne change (le verso reste plein écran). */
-.flip-btn{display:none}
+.face-controls>.k2{position:fixed;isolation:isolate;touch-action:manipulation;
+  background:none;box-shadow:none;transform:none;filter:none}
+.face-controls>.k2[hidden]{display:none}
+.face-controls>.k2::before{content:"";position:absolute;inset:1px;z-index:-1;border-radius:inherit;
+  background-color:color-mix(in srgb,var(--joy-vue) 32%,#08080c);
+  box-shadow:inset 0 1px 0 color-mix(in srgb,var(--joy-vue) 72%,#fff),0 4px 0 var(--joy-vue),0 6px 5px rgba(0,0,0,.42);
+  transition:transform .12s ease,box-shadow .12s ease,background-color .24s ease}
+.face-controls>.k2>svg{width:20px;height:20px;transition:transform .12s ease}
+.face-controls>.k2:is(:active,.is-press,.is-tap)::before{transform:translateY(4px);
+  background-color:color-mix(in srgb,var(--joy-vue) 48%,#08080c);
+  box-shadow:inset 0 1px 2px rgba(0,0,0,.7),0 0 0 var(--joy-vue);transition-duration:.035s}
+.face-controls>.k2:is(:active,.is-press,.is-tap)>svg{transform:translateY(4px);transition-duration:.035s}
+.face-controls>.k2[aria-expanded="true"]::before,.face-controls>.k2[aria-pressed="true"]::before{
+  background-color:color-mix(in srgb,var(--joy-vue) 48%,#08080c)}
+@media(hover:hover){.face-controls>.k2:hover::before{filter:brightness(1.2)}}
+#recto-controls :is(.k2,#joy){pointer-events:auto}
+#verso-controls>.k2{pointer-events:none}
+#srch.is-open #verso-controls>.k2{pointer-events:auto}
+:is(#fold-x,#srch-x,#fold-flip,#srch-flip,#ordbtn){top:var(--paper-key-top)}
+:is(#fold-x,#srch-x){right:max(var(--paper-key-edge),env(safe-area-inset-right))}
+:is(#fold-flip,#srch-flip){right:calc(max(var(--paper-key-edge),env(safe-area-inset-right)) + var(--k2-d) + var(--paper-key-gap))}
+#ordbtn{left:var(--paper-key-edge)}
+#box-filter{left:var(--paper-key-edge);top:calc(var(--paper-key-top) + var(--k2-d) + var(--paper-key-gap))}
+#box-add{right:calc(var(--joy-right) + var(--joy-size) + 12px);
+  bottom:calc(var(--joy-bottom) + (var(--joy-size) - var(--k2-d)) / 2)}
+body.ro:not(.lv-membre) #fold-flip{display:none}
+body.gate:not(.entered) #recto-controls>.k2,body.folding #recto-controls>.k2{
+  visibility:hidden;pointer-events:none}
+/* Les commandes tournent avec leur face, hors des conteneurs qui défilent. */
+body.is-coin #recto-controls{z-index:231}
+body.is-coin :is(#recto-controls,#verso-controls) :is(.k2,#joy){pointer-events:none}
+body.is-coin #srch.is-on .face-controls .srch-after{opacity:1;visibility:visible;transition:none}
+#srch::before{content:"";position:absolute;inset:0;background:#000;opacity:0;transition:opacity .45s ease}
+#srch.is-show::before{opacity:1}
 @media(min-width:700px){
-  #srch::before{content:"";position:absolute;inset:0;background:#000;opacity:0;transition:opacity .45s ease}
-  #srch.is-show::before{opacity:1}
+  .face-controls{--paper-key-edge:calc(50% - var(--stage) / 2 + var(--pad) * .5);
+    --paper-key-top:var(--paper-key-edge)}
   #srch-ui{left:50%;top:50%;right:auto;bottom:auto;transform:translate(-50%,-50%);
     width:calc(var(--stage) - 2 * var(--pad));height:calc(var(--stage) - 2 * var(--pad));padding:30px 24px 24px}
-  :is(#srch-x,#srch-flip,#fold-x,#fold-flip,#ordbtn){
-    --paper-control-inset:calc(50% - var(--stage) / 2 + var(--pad) * .5);
-    top:var(--paper-control-inset)}
-  #srch-x,#srch-flip,#fold-x,#fold-flip{right:calc(var(--paper-control-inset) + var(--flip-offset,0px))}
-  #ordbtn{left:var(--paper-control-inset)}
-  #srch-flip,#fold-flip{--flip-offset:calc(var(--k2-d) + 10px)}
-  .flip-btn{display:inline-flex}
-  .flip-btn>svg{transition:transform .35s ease}
-  .flip-btn:hover>svg{transform:rotate(180deg)}
-  #srch-flip{position:fixed;z-index:4;pointer-events:none}
-  #srch.is-open #srch-flip{pointer-events:auto}
-  /* Les commandes partagent l'axe de rotation de leur papier et restent hors des zones de défilement. */
-  body.is-coin #recto-controls{z-index:231}
-  body.is-coin :is(#recto-controls,#verso-controls) :is(#fold-x,#fold-flip,#srch-x,#srch-flip,#joy,#ordbtn){pointer-events:none}
-  body.is-coin #srch.is-on .face-controls .srch-after{opacity:1;visibility:visible;transition:none}
-  #fold-flip{position:fixed;z-index:34}
-  body.gate #fold-flip{opacity:0;pointer-events:none;transition:opacity .55s ease}
-  body.gate.entered #fold-flip{opacity:1;pointer-events:auto;transition:opacity .55s ease var(--gate-reveal)}
-  body.ro:not(.lv-membre) #fold-flip{display:none}   /* 18/11 : chez un membre, son recto se retourne sur SON verso */
+  #box-filter{left:calc(var(--paper-key-edge) + var(--k2-d) + var(--paper-key-gap));top:var(--paper-key-top)}
+}
+@media(min-width:700px) and (max-height:500px){
+  /* Sur un papier plus court, le Plus laisse le mot en bas au centre. */
+  #box-add{bottom:calc(var(--joy-bottom) + var(--joy-size) - var(--k2-d))}
+}
+@media(max-width:699px){
+  /* Le recto et le verso gardent la taille de l’écran pendant leur demi-tour. */
+  body.is-coin{background:#000;transition:none}
+  body.is-coin #stage{position:fixed;inset:0;background:var(--paper);overflow:hidden}
+  body:not(.gate) #srch-bg{inset:0;width:100%;height:100%;margin:0;background:#2b2b57}
+  body.is-coin #srch::before{opacity:1;transition:none}
+}
+@media(prefers-reduced-motion:reduce){
+  .face-controls>.k2::before,.face-controls>.k2>svg,#srch::before{transition:none}
 }
 @media(prefers-reduced-motion:reduce){.srch-after{transition:none!important}}
 
@@ -2440,17 +2428,17 @@ body.gate.entered #gate-bottom,
 /* ══ L'UI de l'app : masquée pendant l'état 1, fondu entrant pendant l'état 2 ══ */
 body.gate #rail,body.gate #bigT,body.gate #wordmark,
 body.gate #floorview,body.gate #ordbar,
-body.gate #filter-arrow,body.gate #fv-status,body.gate #fold-x,body.gate #ordbtn,
+body.gate #fv-status,body.gate #recto-controls>.k2,
 body.gate #views,body.gate #vname,
 body.gate #filter-badge{
   opacity:0;pointer-events:none;transition:opacity .55s ease}
 body.gate.entered #rail,body.gate.entered #bigT,body.gate.entered #wordmark,
 body.gate.entered #floorview,
-body.gate.entered #filter-arrow,
-body.gate.entered #fv-status,body.gate.entered #fold-x,body.gate.entered #ordbtn,
+body.gate.entered #fv-status,body.gate.entered #recto-controls>.k2,
 body.gate.entered #views,body.gate.entered #ordbar,
 body.gate.entered #filter-badge{
   opacity:1;pointer-events:auto;transition:opacity .55s ease var(--gate-reveal)}
+body.gate.entered #bigT{pointer-events:none}
 
 /* Le rail de l'app reprend exactement le gris du logo (#626286) */
 #rail{background:var(--rail-color)}
@@ -2459,7 +2447,7 @@ body.gate.entered #filter-badge{
   #gate-logo .glayer,#gl-paint{transition-duration:.01ms!important}
   body.gate #rail,body.gate #bigT,body.gate #wordmark,
   body.gate #floorview,body.gate #ordbar,
-  body.gate #filter-arrow,body.gate #fv-status,body.gate #fold-x,body.gate #ordbtn,
+  body.gate #fv-status,body.gate #recto-controls>.k2,
   body.gate #filter-badge{transition-duration:.01ms!important}
 }
 /* ── Gate: zone basse (Search + phrase) — margin-top:auto pousse vers le bas ── */
@@ -2532,6 +2520,8 @@ body.gate.entered #filter-badge{
     --pad:calc(var(--stage) * .0616);   /* profondeur d'une perforation */
     /* Sur un papier plus petit, on recule les flèches des dernières perforations. */
     --joy-corner:clamp(10px,calc(var(--joy-size) + 10px - var(--stage) / 4),calc(var(--pad) + 1px));
+    --joy-right:calc(50% - var(--stage) / 2 + var(--joy-corner));
+    --joy-bottom:var(--joy-right);
     /* La liste est déjà en retrait de --pad par rapport au bord du papier. */
     --band-b:calc(var(--joy-corner) - var(--pad) + var(--joy-size) + 10px);
     --side:max(56px,calc(var(--stage) * .10));   /* carré élargi : chevron + intitulé */
@@ -2580,9 +2570,6 @@ body.gate.entered #filter-badge{
      carré, pas celui de la fenêtre. ⚠️ IL COMMENCE APRÈS LE RAIL, comme
      le T : le rail est le logo, rien ne passe dessus. */
   #wordmark{bottom:26px;left:50%;transform:translateX(-50%);top:auto;right:auto}
-  /* Les flèches et le manche partagent le même retrait du coin inférieur droit du papier. */
-  #joy{bottom:calc(50% - var(--stage) / 2 + var(--joy-corner));
-       right:calc(50% - var(--stage) / 2 + var(--joy-corner))}
   /* LE TITRE VIT DANS LE TOTEHM SUR ORDINATEUR : en haut du carré, centré, juste SOUS le T (le T tient le centre du haut ;
      au-dessus, le titre tombait dans la bande des perforations — mesuré) — 27/10, Wah : « tout en haut centrée ». */
   #vnow,body.ro #vnow{top:calc(50% - var(--stage)/2 + 137px);bottom:auto;left:0;right:0}
@@ -3176,7 +3163,7 @@ body.gate.lv-h:not(.entered):not(.is-door) #lv-sell{opacity:1}
 .lvs-hook{margin:0;font:700 13px/1.3 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#fff}
 .lvs-sci{margin:0;font:400 11.5px/1.65 'Space Mono',monospace;color:#9a9aa2}
 .lvs-sci b{font-weight:700;color:#fbd5ca}
-/* Les touches restent dans la même couche pendant le voyage entre l’accueil et les vues latérales. */
+/* Les commandes de l’accueil restent au centre. */
 #lv-c-acts{position:absolute;left:0;right:0;margin-inline:auto;top:calc(var(--lv-y) + var(--sk) / 2 + 18px);
   z-index:7;visibility:hidden;
   display:flex;flex-direction:column;align-items:center;gap:12px;width:min(94vw,460px)}
@@ -3201,67 +3188,18 @@ body.gate:not(.member):not(.ses-attente){--lv-y:32dvh}
  #gate-top-row{margin-top:max(0px,calc(var(--lv-y) - var(--gate-size) / 2 - 20px))}
  #lv-c-acts{left:calc(50% - 330px);right:auto;top:110px;width:210px;gap:8px}
 }
-body:is(.lv-c,.lv-g,.lv-d):not(.is-door) #lv-c-acts{visibility:visible}
+body.lv-c:not(.is-door) #lv-c-acts{visibility:visible}
 #lv-c-acts button{pointer-events:auto}
-#lv-actions{display:grid;grid-template:repeat(3,32px) / repeat(3,32px);place-items:center;
-  padding:8px;background:#000;border-radius:10px}
-#lv-actions .k2{position:relative}
-#lv-actions .k2>svg{width:50%;height:50%;stroke-linecap:butt;stroke-linejoin:miter;overflow:visible}
-/* Une seule animation sur le groupe garde les quatre glyphes synchronisés. */
-body.gate.lv-c:not(.entered,.is-door,.is-dc,.searching) #lv-actions{stroke:var(--love)}
-body.gate.lv-c:not(.entered,.is-door,.is-dc,.searching) #lv-actions .k2>svg{stroke:inherit}
-@media(prefers-reduced-motion:no-preference){
-  body.gate.lv-c:not(.entered,.is-door,.is-dc,.searching) #lv-actions{animation:lv-intentions 42s ease-in-out infinite}
-}
-@keyframes lv-intentions{
-  0%,100%{stroke:var(--lv-intention-fight)}
-  14.285714%{stroke:var(--lv-intention-flow)}
-  28.571429%{stroke:var(--lv-intention-enrich)}
-  42.857143%{stroke:var(--lv-intention-love)}
-  57.142857%{stroke:var(--lv-intention-express)}
-  71.428571%{stroke:var(--lv-intention-focus)}
-  85.714286%{stroke:var(--lv-intention-celebrate)}
-}
-#lv-refine-label{display:none;position:absolute;top:calc(100% + 5px);left:50%;translate:-50% 0;
-  pointer-events:none;padding:2px 4px;background:#000;border-radius:4px;
-  font:400 9px/1 'Space Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:#b8b8c2;white-space:nowrap}
-#lv-search path{transform-box:fill-box;transform-origin:center;transition:transform .64s var(--gate-ease)}
-#lv-tree-k svg{position:absolute;inset:0;margin:auto;width:14px;height:14px;fill:none;stroke-width:1.5}
-#lv-tree-k .lv-grid-icon,#lv-tree-k .lv-map-icon{opacity:0}
-#lv-tree-k svg{transition:opacity .25s ease}
-#lv-tree-k[aria-pressed="true"] .k2k{outline:1px solid var(--rail-color)}
-#lv-tree-k[aria-pressed="false"] .k2l{opacity:1}
-body:is(.lv-g,.lv-d) :is(#lv-actions,#lv-keys){display:contents}
-body:is(.lv-g,.lv-d) :is(#lv-add-spot,#lv-add-illustration,#lv-m-sel,#lv-great,#mb-lock){display:none}
-body:is(.lv-g,.lv-d) #lv-c-acts :is(#lv-tap-open,#lv-search,#lv-tree-k){position:fixed;translate:-50% 0}
-body:is(.lv-g,.lv-d) #lv-tap-open{
-  --k2-d:64px;left:var(--lv-add-x,0px);top:calc(var(--lv-add-y,0px) - var(--k2-d) / 2)}
-body:is(.lv-g,.lv-d):not(.lv-add-visible) #lv-tap-open{visibility:hidden}
-body:is(.lv-g,.lv-d) #lv-search{left:calc(50% + 82px);top:calc(max(10px,env(safe-area-inset-top)) + 9px)}
-body:is(.lv-g,.lv-d) #lv-search path{transform:rotate(180deg)}
-body:is(.lv-g,.lv-d) #lv-refine-label{display:block}
-body:is(.lv-g,.lv-d) #lv-tree-k{left:50%;bottom:calc(var(--lvj-h,64px) + 26px)}
-body:is(.lv-g,.lv-d) #lv-tree-k .lv-tree-icon{opacity:0}
-body.lv-g #lv-tree-k .lv-grid-icon,body.lv-d:not(.rdr-grid) #lv-tree-k .lv-grid-icon,
-body.lv-d.rdr-grid #lv-tree-k .lv-map-icon{opacity:1}
-body.lv-g:has(:is(#lv-sh-pick,#lv-sh-sf,#tlv):not([hidden])) #lv-c-acts,
-body.lv-d:is(.rdr-voir,.rdr-pique,.is-nspot) #lv-c-acts,
-body.lv-d:has(:is(#rdr-pick,#rdr-sf,#rdr-new):not([hidden])) #lv-c-acts{visibility:hidden}
-@media(prefers-reduced-motion:reduce){#lv-search path,#lv-tree-k svg{transition:none}}
-#lv-search{grid-area:1 / 2}
-#lv-add-illustration{grid-area:2 / 1}
-#lv-add-illustration>.lv-action-icon{stroke-width:1.7}
-#lv-add-spot{grid-area:2 / 3}
-#lv-tap-open{grid-area:3 / 2}
-body.ses-attente:not(.member) #lv-actions,body.lv-c.paysage #lv-tap-open{display:none}
-
 #lv-keys{display:flex;gap:20px;align-items:flex-end;justify-content:center;
-  background:#000;border-radius:10px;padding:6px 14px 4px}   /* les touches coupent les racines, comme la légende */
-@media(max-height:690px) and (max-width:649px){
-  #lv-c-acts{flex-flow:row wrap;justify-content:center}
-  #lv-keys{max-width:calc(100% - 124px);flex-wrap:wrap;gap:8px}
-  #lv-c-acts :is(#lv-m-say,#mb-lock){flex-basis:100%}
-}
+  background:#000;border-radius:10px;padding:6px 14px 4px}
+.k2r.is-select{--k2r-w:30px;--k2r-h:12px;min-height:44px;min-width:44px;padding:6px 2px}
+.k2r.is-select[aria-pressed="false"] .k2l{opacity:1}
+#lv-tree-k .k2k{outline:none}
+#lv-tree-k:focus-visible .k2l,#lv-tree-k[aria-pressed="true"] .k2l{color:#fff}
+#lv-tree-k:focus-visible .k2l{text-decoration:underline;text-underline-offset:3px}
+#lv-m-sel{background:none;border:0;padding:6px;cursor:pointer;color:#b8b8c2;
+  font:400 9px/1 'Space Mono',monospace;letter-spacing:.18em;text-transform:uppercase}
+#lv-m-sel:focus-visible{outline:1px solid currentColor;outline-offset:2px}
 /* 18/11 — la recherche est au FIGHER CLUB : un tap sur [Members] hors du Club le DIT ici, en une ligne, puis se tait */
 #lv-m-say{margin:8px auto 0;max-width:300px;font:400 10px/1.6 'Space Mono',monospace;color:#9a9aa2;text-align:center}
 #lv-m-say:empty{display:none}
@@ -3584,7 +3522,7 @@ body.lv-b #gate-logo #gl-rail,body.lv-b #gate-logo #gl-wm{opacity:0}
 .tl-ph{position:absolute;inset:0}
 /* 21/10 bis — Wah : « les images de la grille de gauche au format PERFORÉ, avec le même nombre de trous, à la même place
    que le logo TOTEHM ». La PHOTO porte les douze trous du papier (`--perfo`, le masque du logo, 28/09) ; la box posée dessus n'est jamais
-   découpée (elle est sacrée), et la tuile « + » reste une place vide en pointillé. */
+   découpée (elle est sacrée), et la tuile « + » reprend le même masque. */
 #lv-sh .tl:not(.tl-add){background:none}
 #lv-sh .tl:not(.tl-add) .tl-ph{background:#0b0b0d;-webkit-mask:var(--perfo) 0 0/100% 100% no-repeat;mask:var(--perfo) 0 0/100% 100% no-repeat}
 .tl-ph img,.tl-ph video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
@@ -3601,6 +3539,8 @@ body.lv-b #gate-logo #gl-rail,body.lv-b #gate-logo #gl-wm{opacity:0}
 .tl-add{display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.04);
   outline:1px dashed rgba(255,255,255,.3);outline-offset:-9px;color:#fff;font:400 30px/1 'Space Mono',monospace}
 @media(hover:hover){.tl-add:hover{background:rgba(255,255,255,.1)}}
+#lv-sh .tl-add{-webkit-mask:var(--perfo) 0 0/100% 100% no-repeat;mask:var(--perfo) 0 0/100% 100% no-repeat}
+#lv-sh .tl-add:focus-visible{background:rgba(255,255,255,.14)}
 /* 22/10 — Wah : « dans les grilles de gauche et de droite, au survol des images et de leur box, un effet d'agrandissement ».
    La tuile ENTIÈRE grandit (l'image et sa box ensemble, la box n'est jamais séparée de son image), au-dessus de ses voisines ;
    à gauche l'ombre suit les douze trous (`drop-shadow`), à droite les coins arrondis. Souris seulement. */
@@ -3626,6 +3566,10 @@ body.lv-b #gate-logo #gl-rail,body.lv-b #gate-logo #gl-wm{opacity:0}
 .tlv-b:empty{display:none}
 .tlv-l{font:700 8.5px/1.4 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.6)}
 .tlv-l i{font-style:normal}
+.view-close{width:38px;height:38px;padding:0;border:0;border-radius:9px;
+  background:rgba(18,18,22,.82);color:#d8d8e0;cursor:pointer}
+.view-close svg{display:block;margin:auto;width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.6}
+.view-close:focus-visible{outline:1px solid #fff;outline-offset:2px}
 .tlv-x{position:absolute;z-index:2;top:calc(max(10px,env(safe-area-inset-top)) + 4px);right:10px}
 /* 25/10 — retirer un média (Wah : « il faut pouvoir supprimer les media dans la vue de gauche et de droite ») : DEUX
    gestes — le premier arme (`is-sur`, « delete? », 3 s), le second retire. Rien ne part sur un tap égaré. */
@@ -3862,10 +3806,17 @@ body.lv-g #lv-socket,body.lv-d #lv-socket{opacity:0}
 .ns-go:focus-visible{outline:1px solid #fff;outline-offset:2px}
 @media(hover:hover){.ns-go:not(:disabled):hover{background:#55555f}}
 .ns-note:empty{display:none}
-/* Réserve la même case au Plus dans la carte et les grilles. */
-.tl-add-slot{aspect-ratio:1;pointer-events:none}
-#rdr-plus-slot{position:absolute;inset:0 0 auto;pointer-events:none;padding-bottom:0}
-body.rdr-grid #rdr-plus-slot{display:none}
+/* La carte et la grille placent la tuile d’ajout au même endroit. */
+#rdr-plus{position:absolute;inset:0 0 auto;z-index:6;pointer-events:none;padding-bottom:0}
+#rdr-plus .tl-add{pointer-events:auto}
+#rdr-plus[hidden],body:is(.rdr-grid,.rdr-voir,.is-nspot,.rdr-pique) #rdr-plus{display:none}
+#rdr-mode{position:absolute;z-index:6;left:50%;translate:-50% 0;bottom:calc(var(--lvj-h) + 20px)}
+#rdr-mode .k2l{display:flex;gap:8px}
+#rdr-mode .k2l span{color:#8a8a92}
+#rdr-m-sel[aria-pressed="false"] .rdr-map-label,#rdr-m-sel[aria-pressed="true"] .rdr-grid-label,
+#rdr-mode .is-press .k2l span,#rdr-mode :active .k2l span{color:#fff}
+body:is(.rdr-voir,.rdr-pique,.is-nspot) #rdr-mode,
+body:has(:is(#rdr-sf,#rdr-pick):not([hidden])) :is(#rdr-mode,#rdr-plus){visibility:hidden}
 #rdr-pique{position:absolute;left:50%;transform:translateX(-50%);top:calc(max(10px,env(safe-area-inset-top)) + 64px);z-index:9;
   display:none;border:0;border-radius:10px;padding:9px 14px;background:#1f1f24;color:#d8d8dd;cursor:pointer;
   font:700 9px/1.3 'Space Mono',monospace;letter-spacing:.18em;text-transform:uppercase}
@@ -3894,10 +3845,20 @@ body.is-nspot #lvjoy{opacity:0;pointer-events:none}
   scrollbar-width:none;display:none;background:#000}
 #rdr-g::-webkit-scrollbar{display:none}
 body.rdr-grid #rdr-g{display:block}
-/* 21/10 — Wah : « arrondis les images de la grille dans la vue de droite ». Des tuiles rondes, séparées par le noir. */
-:is(#rdr-g .tlg,#rdr-plus-slot){gap:5px;padding-left:5px;padding-right:5px}
-#rdr-g .tl{border-radius:14px}
-@media(min-width:700px){:is(#rdr-g .tlg,#rdr-plus-slot){gap:8px;padding-left:0;padding-right:0}#rdr-g .tl{border-radius:16px}}
+/* La photo, la box et son filet partagent le même disque. */
+:is(#rdr-g .tlg,#rdr-plus){gap:5px;padding-left:5px;padding-right:5px}
+:is(#rdr-g,#rdr-plus) .tl{border-radius:50%}
+@media(min-width:700px){:is(#rdr-g .tlg,#rdr-plus){gap:8px;padding-left:0;padding-right:0}}
+#rdr-g .tl[data-cle]::after{content:"";position:absolute;inset:0;z-index:3;pointer-events:none;
+  border-radius:inherit;padding:2px;background:var(--spot-traits,rgba(255,255,255,.18));
+  -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;
+  mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);mask-composite:exclude}
+#rdr-g .tl-bx{inset:auto 0 0;height:44%;max-width:none;background:var(--navy);box-shadow:none;transform:none}
+#rdr-g .tl-bx .habit .tick{display:none}
+#rdr-g .tl-bx .habit .h-body{padding:clamp(6px,1vw,14px) 14% 0;background:none}
+#rdr-g .tl-bx .v-col{width:100%;min-width:0}
+#rdr-g .tl-bx .v-name{text-align:center;overflow-wrap:anywhere}
+#rdr-g .tl-v{top:15%;right:18%}
 body.rdr-grid #rdr-map{display:none}
 /* Le polaroid, par-dessus : le fil TikTok, aimanté, un spot par écran. */
 #rdr-sh{position:absolute;inset:0;z-index:20;overflow-y:auto;overflow-x:hidden;scroll-snap-type:y mandatory;scroll-behavior:smooth;
@@ -4300,7 +4261,6 @@ body.no-tree #lv-ram{display:none}
 div:not(:has(> :not(br,wbr))):hover,
 .door .get:hover,
 .door:hover,
-#filter-arrow svg:hover,
 .cur:hover,
 #vnow i:hover,
 #vnow span:hover,
@@ -4341,7 +4301,6 @@ div:not(:has(> :not(br,wbr))):hover,
 .baud-o:not(.is-on):hover,
 .dash:hover,
 .baud-n:hover,
-.add-box:hover,
 .lk-add:hover,
 .int-p:hover,
 .int.on .int-p:hover,
@@ -4789,33 +4748,10 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
          son socle processor tout en retournant le totehm en mode verso, avec l'invitation directe à entrer un
          identifiant ». La saisie vit SUR le dos du papier agrandi (`MB`), ancrée en haut (le clavier mange le bas). -->
     <div id="lv-c-acts" class="lv-act">
-      <div id="lv-actions" class="hide" role="group" aria-label="TOTEHM actions">
-        <button type="button" id="lv-tap-open" class="k2" aria-label="Open my TOTEHM" title="Open my TOTEHM">
-          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M8 3v10"/></svg>
-        </button>
-        <button type="button" id="lv-search" class="k2" aria-label="Search a TOTEHM" title="Search a TOTEHM">
-          <svg class="lv-action-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.072L14 11.464H2Z"/></svg>
-          <span id="lv-refine-label" aria-hidden="true">Refine</span>
-        </button>
-        <button type="button" id="lv-add-spot" class="k2" aria-label="Add a spot" title="Add a spot">
-          <svg class="lv-action-icon" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="5.5"/><circle cx="8" cy="8" r="2.6"/></svg>
-        </button>
-        <button type="button" id="lv-add-illustration" class="k2" aria-label="Add an illustration" title="Add an illustration">
-          <svg class="lv-action-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 2H3.65a1.35 1.35 0 0 0 2.7 0H6.65a1.35 1.35 0 0 0 2.7 0H9.65a1.35 1.35 0 0 0 2.7 0H14
-            V3.65a1.35 1.35 0 0 0 0 2.7V6.65a1.35 1.35 0 0 0 0 2.7V9.65a1.35 1.35 0 0 0 0 2.7V14
-            H12.35a1.35 1.35 0 0 0-2.7 0H9.35a1.35 1.35 0 0 0-2.7 0H6.35a1.35 1.35 0 0 0-2.7 0H2
-            V12.35a1.35 1.35 0 0 0 0-2.7V9.35a1.35 1.35 0 0 0 0-2.7V6.35a1.35 1.35 0 0 0 0-2.7Z"/></svg>
-        </button>
-      </div>
       <div id="lv-keys" class="lv-act" role="group" aria-label="Controller keys">
-        <button type="button" id="lv-m-sel" class="k2r hide" data-hover-art aria-label="Return to Mine"><i class="k2k" aria-hidden="true"></i><span class="k2l"><span class="lvm-lab">Mine</span><span class="lvm-who" id="lv-m-who"></span></span></button>
-        <button type="button" id="lv-tree-k" class="k2r" data-hover-art aria-pressed="false" aria-label="Tree">
-          <i class="k2k" aria-hidden="true">
-            <svg class="lv-tree-icon" viewBox="0 0 16 16"><path d="M8 14V2M8 6l4-3M8 9 4 6M8 12l4-3"/></svg>
-            <svg class="lv-grid-icon" viewBox="0 0 16 16"><path d="M2 2h4v4H2zM10 2h4v4h-4zM2 10h4v4H2zM10 10h4v4h-4z"/></svg>
-            <svg class="lv-map-icon" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><ellipse cx="8" cy="8" rx="2.5" ry="6"/><path d="M2 8h12"/></svg>
-          </i>
-          <span class="k2l">Tree</span>
+        <button type="button" id="lv-m-sel" class="hide" data-hover-art aria-label="Return to Mine"><span class="lvm-lab">Mine</span><span class="lvm-who" id="lv-m-who"></span></button>
+        <button type="button" id="lv-tree-k" class="k2r is-select" data-hover-art aria-pressed="false" aria-label="Tree">
+          <i class="k2k" aria-hidden="true"></i><span class="k2l">Tree</span>
         </button>
         <button type="button" id="lv-great" class="k2r is-start" data-hover-art aria-label="Discover your greatness"><i class="k2k" aria-hidden="true"></i><span class="k2l">Greatness</span></button>
       </div>
@@ -4850,6 +4786,7 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
          et son texte — et un tap l'ouvre DANS le Totehm, sur sa vue. Zéro appel de plus. -->
     <section class="lv-pane" id="lv-g" aria-label="My shorts">
       <div id="lv-sh" class="lv-act"><div id="lv-sh-f"></div></div>
+      <div id="lv-sh-flt" class="lsh-flt lv-act" role="group" aria-label="Media filters"></div>
       <!-- Le choix de l'élément auquel un média neuf s'attribue. Ancré EN HAUT (le clavier mange le bas). -->
       <div id="lv-sh-pick" class="lsh-pick lv-act" role="dialog" aria-label="Choose an element" hidden></div>
       <!-- 19/10 ter — le panneau de TOUS les filtres, comme sur SPACE. -->
@@ -4860,7 +4797,7 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
         <div class="tlv-f"></div>
         <!-- 14/11 — [delete] n'est plus ici : il vit dans la rangée d'actions de CHAQUE média, au-dessus de
              sa box, au format de la vue de droite (`remplir`). -->
-        <button type="button" data-hover-art class="tlv-x k2 k2-x" data-tlv="x" aria-label="Close"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2 L12 12 M12 2 L2 12"/></svg></button>
+        <button type="button" data-hover-art class="tlv-x view-close" data-tlv="x" aria-label="Close"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2 L12 12 M12 2 L2 12"/></svg></button>
       </div>
     </section>
 
@@ -4871,14 +4808,22 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
       <canvas id="rdr-map" class="lv-act" aria-label="Spots on the map"></canvas>
       <div id="rdr-g" class="lv-act"><div id="rdr-g-f"></div></div>
       <div id="rdr-sh" class="lv-act"><div id="rdr-sh-f"></div></div>
-      <button type="button" id="rdr-x" data-hover-art class="lv-act k2 k2-x" aria-label="Close"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2 L12 12 M12 2 L2 12"/></svg></button>
+      <button type="button" id="rdr-x" data-hover-art class="lv-act view-close" aria-label="Close"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2 L12 12 M12 2 L2 12"/></svg></button>
       <button type="button" id="rdr-grab" class="lv-act" aria-label="Lower the spot"><i aria-hidden="true"></i></button>
       <div id="rdr-flt" class="lsh-flt lv-act" role="group" aria-label="Spots: filters"></div>
       <div id="rdr-pick" class="lsh-pick lv-act" role="dialog" aria-label="Choose a Habit" hidden></div>
       <div id="rdr-sf" class="lsh-sf lv-act" role="dialog" aria-label="Refine the spots" hidden></div>
       <!-- 27/10 : prendre un spot ICI (NOW · LATER, pas à pas), le « + » de la MAP, et la pose d'un point sur le globe -->
       <div id="rdr-new" class="lsh-sf lv-act" role="dialog" aria-label="Add a spot" hidden></div>
-      <div id="rdr-plus-slot" class="tlg" aria-hidden="true"><div class="tl-add-slot"></div></div>
+      <div id="rdr-plus" class="tlg" hidden>
+        <button type="button" class="tl tl-add" data-nspot="" aria-label="Add a spot"><span aria-hidden="true">+</span></button>
+      </div>
+      <div id="rdr-mode" class="lv-act">
+        <button type="button" id="rdr-m-sel" class="k2r is-select" data-hover-art aria-label="Grid view" aria-pressed="false" aria-controls="rdr-map rdr-g">
+          <i class="k2k" aria-hidden="true"></i>
+          <span class="k2l" aria-hidden="true"><span class="rdr-map-label">Map</span><span class="rdr-grid-label">Grid</span></span>
+        </button>
+      </div>
       <button type="button" id="rdr-pique" class="lv-act">tap the place · cancel</button>
       <p class="lv-note" id="rdr-say" role="status" aria-live="polite"></p>
     </section>
@@ -4939,7 +4884,7 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
       <div class="dc-row"><a class="dc-lnk" href="/terms" target="_blank" rel="noopener">Simple terms of use</a></div></div>
   </div>
   <div class="dc-cta"><button class="dc-btn is-perfo" id="lvd-cta" type="button">Create my TOTEHM</button><button class="dc-lnk hide" id="lvd-lnk" type="button">Monetize my TOTEHM</button></div>
-  <button class="dc-x k2 k2-x" data-hover-art id="lvd-x" type="button" aria-label="Close"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2 L12 12 M12 2 L2 12"/></svg></button>
+  <button class="dc-x" data-hover-art id="lvd-x" type="button" aria-label="Close"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2 L12 12 M12 2 L2 12"/></svg></button>
 </div>
 
 <!-- ══ LE VERSO DÉPLIÉ : MES RÉGLAGES · 15/10/2026 ═══════════════════════
@@ -5062,11 +5007,11 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
 </div>
   </div>
   <div id="verso-controls" class="face-controls">
-    <button id="srch-x" data-hover-art class="srch-after k2 k2-x is-navy" type="button" aria-label="Close my settings">
+    <button id="srch-x" data-hover-art class="srch-after k2 k2-x" type="button" aria-label="Close my settings">
       <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 3 L13 13 M13 3 L3 13"/></svg>
     </button>
-    <!-- 16/11 — PILE OU FACE (ordinateur) : le verso se retourne sur le recto déployé, au même format. -->
-    <button id="srch-flip" data-hover-art class="srch-after flip-btn k2 k2-f is-navy" type="button" aria-label="Turn it over · my TOTEHM" title="Turn it over">
+    <!-- Chaque touche de retournement appartient à sa face. -->
+    <button id="srch-flip" data-hover-art class="srch-after flip-btn k2 k2-f" type="button" aria-label="Turn it over · my TOTEHM" title="Turn it over">
       <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 6.5a5 5 0 0 1 9.2-2.3M13 9.5a5 5 0 0 1-9.2 2.3"/><path d="M12.6 1.6v2.8H9.8M3.4 14.4v-2.8h2.8"/></svg>
     </button>
   </div>
@@ -5081,7 +5026,7 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
 </svg>
 
 <div id="recto-controls" class="face-controls">
-  <button id="ordbtn" class="sink-el k2 is-navy" type="button" aria-label="Order by importance" aria-pressed="false">
+  <button id="ordbtn" class="sink-el k2" type="button" aria-label="Order by importance" aria-pressed="false">
     <svg viewBox="0 0 16 16" aria-hidden="true">
       <path class="order-top" d="M3 3h10"/>
       <path class="order-middle" d="M3 8h8"/>
@@ -5090,12 +5035,18 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
   </button>
   <!-- La croix : referme le Totehm et rejoue le déploiement à l'envers. -->
 
-  <button id="fold-x" data-hover-art class="sink-el k2 k2-x is-navy" type="button" aria-label="Close my Totehm">
+  <button id="fold-x" data-hover-art class="sink-el k2 k2-x" type="button" aria-label="Close my Totehm">
     <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 3 L13 13 M13 3 L3 13"/></svg>
   </button>
-  <!-- 16/11 — PILE OU FACE (ordinateur) : le recto déployé se retourne sur le verso, au même format. -->
-  <button id="fold-flip" data-hover-art class="sink-el flip-btn k2 k2-f is-navy" type="button" aria-label="Turn it over · my settings" title="Turn it over">
+
+  <button id="fold-flip" data-hover-art class="sink-el flip-btn k2 k2-f" type="button" aria-label="Turn it over · my settings" title="Turn it over">
     <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 6.5a5 5 0 0 1 9.2-2.3M13 9.5a5 5 0 0 1-9.2 2.3"/><path d="M12.6 1.6v2.8H9.8M3.4 14.4v-2.8h2.8"/></svg>
+  </button>
+  <button id="box-filter" data-hover-art class="sink-el k2" type="button" aria-label="Filter habits" aria-expanded="false" aria-controls="habits" hidden>
+    <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 5h10l-5 8Z"/></svg>
+  </button>
+  <button id="box-add" data-hover-art class="sink-el k2" type="button" data-add="h" aria-label="Add a habit" hidden>
+    <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M8 3v10"/></svg>
   </button>
   <div id="joy" class="sink-el" role="group" aria-label="Where I am in my Totehm">
     <button class="cur" id="cur-h" type="button">
@@ -5134,10 +5085,6 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
 
 <div id="ordbar" class="sink-el">order by importance — the bot follows this order</div>
 <div id="dit" class="sink-el" role="status" aria-live="polite"></div>
-<button id="filter-arrow" class="sink-el" aria-label="Open filter" hidden>
-  <svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12 L12 3 L22 12"/></svg>
-</button>
-
 <div id="bigT" class="sink-el"><svg id="ui-t" viewBox="79.832 47.921 66.789 66.932" role="img" aria-label="T"><defs><clipPath id="tut_ad60c268aa"><path d="M 0.871094 1.027344 L 67.59375 1.027344 L 67.59375 10.664062 L 0.871094 10.664062 Z M 0.871094 1.027344 " clip-rule="nonzero"/></clipPath><clipPath id="tut_f37d153e97"><path d="M 0.871094 0.0273438 L 67.59375 0.0273438 L 67.59375 9.664062 L 0.871094 9.664062 Z M 0.871094 0.0273438 " clip-rule="nonzero"/></clipPath><clipPath id="tut_0eae0d8cca"><rect x="0" width="68" y="0" height="10"/></clipPath><clipPath id="tut_d380122ed3"><path d="M 29.410156 1.027344 L 39.050781 1.027344 L 39.050781 67.75 L 29.410156 67.75 Z M 29.410156 1.027344 " clip-rule="nonzero"/></clipPath><clipPath id="tut_75ca9fbfbb"><path d="M 0.410156 0.0273438 L 10.050781 0.0273438 L 10.050781 66.75 L 0.410156 66.75 Z M 0.410156 0.0273438 " clip-rule="nonzero"/></clipPath><clipPath id="tut_92fddf9f0e"><rect x="0" width="11" y="0" height="67"/></clipPath><clipPath id="tut_1e85f52e0e"><path d="M 21.183594 63.386719 L 47.28125 63.386719 L 47.28125 67.75 L 21.183594 67.75 Z M 21.183594 63.386719 " clip-rule="nonzero"/></clipPath><clipPath id="tut_6c7bfd0f9f"><path d="M 0.183594 0.386719 L 26.28125 0.386719 L 26.28125 4.75 L 0.183594 4.75 Z M 0.183594 0.386719 " clip-rule="nonzero"/></clipPath><clipPath id="tut_7d4c700d36"><rect x="0" width="27" y="0" height="5"/></clipPath><clipPath id="tut_ffb4264ddd"><rect x="0" width="68" y="0" height="68"/></clipPath></defs><g transform="matrix(1, 0, 0, 1, 79, 47)"><g clip-path="url(#tut_ffb4264ddd)"><g clip-path="url(#tut_ad60c268aa)"><g transform="matrix(1, 0, 0, 1, 0.000000000000014211, 1)"><g clip-path="url(#tut_0eae0d8cca)"><g clip-path="url(#tut_f37d153e97)"><path fill="#ffffff" d="M 0.871094 0.0273438 L 67.582031 0.0273438 L 67.582031 9.664062 L 0.871094 9.664062 Z M 0.871094 0.0273438 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g><g clip-path="url(#tut_d380122ed3)"><g transform="matrix(1, 0, 0, 1, 29, 1)"><g clip-path="url(#tut_92fddf9f0e)"><g clip-path="url(#tut_75ca9fbfbb)"><path fill="#ffffff" d="M 10.050781 0.0273438 L 10.050781 66.738281 L 0.410156 66.738281 L 0.410156 0.0273438 Z M 10.050781 0.0273438 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g><g id="t-foot" clip-path="url(#tut_1e85f52e0e)"><g transform="matrix(1, 0, 0, 1, 21, 63)"><g clip-path="url(#tut_7d4c700d36)"><g clip-path="url(#tut_6c7bfd0f9f)"><path fill="#ffffff" d="M 26.28125 4.75 L 0.183594 4.75 L 0.183594 0.386719 L 26.28125 0.386719 Z M 26.28125 4.75 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g></g></g></svg></div>
 <div id="wordmark" class="sink-el"><svg id="ui-wm" viewBox="74.997 121.602 77.584 46.683" role="img" aria-label="TOTEHM"><defs><g/><clipPath id="tuw_98fd27636e"><rect x="0" width="84" y="0" height="39"/></clipPath></defs><g fill="#ffffff" fill-opacity="1"><g transform="translate(87.377054, 137.358137)"><g><path d="M 5.546875 -14.09375 L 0.09375 -14.09375 L 0.09375 -15.515625 L 12.640625 -15.515625 L 12.640625 -14.09375 L 7.1875 -14.09375 L 7.1875 0 L 5.546875 0 Z M 5.546875 -14.09375 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(99.483952, 137.358137)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g id="wm-O" transform="translate(104.6725, 137.358137)"><g><path d="M 9.3125 0.140625 C 7.769531 0.140625 6.375 -0.203125 5.125 -0.890625 C 3.882812 -1.578125 2.910156 -2.519531 2.203125 -3.71875 C 1.503906 -4.914062 1.15625 -6.265625 1.15625 -7.765625 C 1.15625 -9.253906 1.503906 -10.597656 2.203125 -11.796875 C 2.910156 -12.992188 3.882812 -13.9375 5.125 -14.625 C 6.375 -15.3125 7.769531 -15.65625 9.3125 -15.65625 C 10.851562 -15.65625 12.238281 -15.3125 13.46875 -14.625 C 14.707031 -13.945312 15.679688 -13.003906 16.390625 -11.796875 C 17.097656 -10.597656 17.453125 -9.253906 17.453125 -7.765625 C 17.453125 -6.265625 17.097656 -4.910156 16.390625 -3.703125 C 15.679688 -2.503906 14.707031 -1.5625 13.46875 -0.875 C 12.238281 -0.195312 10.851562 0.140625 9.3125 0.140625 Z M 9.3125 -1.328125 C 10.539062 -1.328125 11.648438 -1.601562 12.640625 -2.15625 C 13.628906 -2.71875 14.40625 -3.488281 14.96875 -4.46875 C 15.53125 -5.445312 15.8125 -6.546875 15.8125 -7.765625 C 15.8125 -8.972656 15.53125 -10.066406 14.96875 -11.046875 C 14.40625 -12.035156 13.628906 -12.804688 12.640625 -13.359375 C 11.648438 -13.910156 10.539062 -14.1875 9.3125 -14.1875 C 8.082031 -14.1875 6.96875 -13.910156 5.96875 -13.359375 C 4.976562 -12.804688 4.195312 -12.035156 3.625 -11.046875 C 3.050781 -10.066406 2.765625 -8.972656 2.765625 -7.765625 C 2.765625 -6.546875 3.050781 -5.445312 3.625 -4.46875 C 4.195312 -3.488281 4.976562 -2.71875 5.96875 -2.15625 C 6.96875 -1.601562 8.082031 -1.328125 9.3125 -1.328125 Z M 9.3125 -1.328125 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(122.655559, 137.358137)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(127.844108, 137.358137)"><g><path d="M 5.546875 -14.09375 L 0.09375 -14.09375 L 0.09375 -15.515625 L 12.640625 -15.515625 L 12.640625 -14.09375 L 7.1875 -14.09375 L 7.1875 0 L 5.546875 0 Z M 5.546875 -14.09375 "/></g></g></g><g transform="matrix(1, 0, 0, 1, 71, 138)"><g clip-path="url(#tuw_98fd27636e)"><g fill="#ffffff" fill-opacity="1"><g transform="translate(0.838799, 30.275545)"><g><path d="M 18.59375 -2.640625 L 18.59375 0 L 3.1875 0 L 3.1875 -21.234375 L 18.171875 -21.234375 L 18.171875 -18.59375 L 6.21875 -18.59375 L 6.21875 -12.078125 L 16.875 -12.078125 L 16.875 -9.5 L 6.21875 -9.5 L 6.21875 -2.640625 Z M 18.59375 -2.640625 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(19.582399, 30.275545)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g id="wm-H" transform="translate(26.163451, 30.275545)"><g><path d="M 21.453125 -21.234375 L 21.453125 0 L 18.421875 0 L 18.421875 -9.46875 L 6.21875 -9.46875 L 6.21875 0 L 3.1875 0 L 3.1875 -21.234375 L 6.21875 -21.234375 L 6.21875 -12.109375 L 18.421875 -12.109375 L 18.421875 -21.234375 Z M 21.453125 -21.234375 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(49.213997, 30.275545)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(55.79505, 30.275545)"><g><path d="M 22.875 0 L 22.84375 -15.46875 L 15.171875 -2.578125 L 13.78125 -2.578125 L 6.09375 -15.390625 L 6.09375 0 L 3.1875 0 L 3.1875 -21.234375 L 5.671875 -21.234375 L 14.53125 -6.3125 L 23.28125 -21.234375 L 25.765625 -21.234375 L 25.796875 0 Z M 22.875 0 "/></g></g></g></g></g></svg></div>
 <!-- ⚠️ [My Higher Self] EST RESSORTI DU TOTEHM · 22/09/2026.
@@ -6770,14 +6717,18 @@ const SPMAP=(()=>{
 
 /* LA HABIT BOX D'UN SPOT, au format Totehm (« les box sont sacrées ») : la mienne — avec mes liens —, ou, pour un
    autre membre, celle que le serveur me montre (`habit_box` : ce que CE lecteur a le droit de voir), ses mini-boîtes
-   WHY / TRIGGER posées dans la même grammaire que la liste. `court` : la tuile (le nom seul). */
-function boxSpot(z,court){
-  const hb=z.habit_box||{}, ints=Array.isArray(hb.ints)?hb.ints:(Array.isArray(z.intentions)?z.intentions:[]);
+   WHY / TRIGGER posées dans la même grammaire que la liste. */
+function habitDuSpot(z){
   const mien=(z.mine||RO)?habByT(String(z.habit||'')):null;
-  const o=mien||{id:'', t:String(hb.name||z.habit||''), t0:String(hb.name||z.habit||''), is:ints, i:ints[0]||null,
-                 f:FREQ_BY_ID[hb.freq]?hb.freq:null};
-  const h=boxTotehm('h',o,{court});
-  if(mien||court) return h;
+  if(mien) return {habit:mien, locale:true};
+  const hb=z.habit_box||{}, ints=Array.isArray(hb.ints)?hb.ints:(Array.isArray(z.intentions)?z.intentions:[]);
+  const nom=String(hb.name||z.habit||'');
+  return {habit:{id:'', t:nom, t0:nom, is:ints, i:ints[0]||null, f:FREQ_BY_ID[hb.freq]?hb.freq:null}, locale:false};
+}
+function boxSpot(z){
+  const hb=z.habit_box||{}, {habit,locale}=habitDuSpot(z);
+  const h=boxTotehm('h',habit);
+  if(locale) return h;
   const txts=l=>(Array.isArray(l)?l:[]).map(x=>String(x&&x.text||'').trim()).filter(Boolean);
   const g=(mot,k,l)=>l.length?'<span class="mg"><span class="mg-l">'+mot+'</span><span class="minis">'
     +l.map(t=>'<span class="mini m-'+k+'">'+esc(t)+'</span>').join('')+'</span></span>':'';
@@ -6796,16 +6747,22 @@ const SPGRID=(()=>{
   const etat={on:false, tuiles:0};
   let io=null, L=[];
   const bx=()=>$('rdr-g-f'), sc=()=>$('rdr-g');
-  const boxDe=z=>boxSpot(z,true);
   function tuile(z,i){
+    const {habit}=habitDuSpot(z);
+    const cols=intCols(habit);
+    const part=100/Math.max(1,cols.length);
+    const traits=cols.length>1
+      ?'conic-gradient('+cols.map((c,j)=>c+' '+j*part+'% '+(j+1)*part+'%').join(',')+')'
+      :cols[0];
     const clip=z.clip&&z.clip.id?String(z.clip.id):'';
     const media=clip?'<img alt="" data-bunny="'+esc(clip)+'" data-spot="'+esc(String(z.id))+'">'
       :z.photo?'<img alt="" data-sh-src="'+esc(String(z.photo))+'">'
       :z.video?'<video muted playsinline preload="none" data-sh-v="'+esc(String(z.video))+'"></video>'
       :'';
     return '<article class="tl" data-cle="sp:'+esc(String(z.id))+'" data-i="'+i+'" tabindex="0" role="button" aria-label="'
-      +esc((z.habit||'spot'))+'"><div class="tl-ph">'+media+((clip||z.video)?'<span class="tl-v" aria-hidden="true"></span>':'')+'</div>'
-      +'<div class="tl-bx">'+boxDe(z)+'</div></article>';
+      +esc(habit.t||'spot')+'"'+(traits?' style="--spot-traits:'+traits+'"':'')+'>'
+      +'<div class="tl-ph">'+media+((clip||z.video)?'<span class="tl-v" aria-hidden="true"></span>':'')+'</div>'
+      +'<div class="tl-bx">'+boxTotehm('h',habit,{court:true,sansLoupe:true})+'</div></article>';
   }
   async function charger(el){
     const b=el.querySelector('img[data-bunny]');
@@ -6822,7 +6779,7 @@ const SPGRID=(()=>{
     etat.tuiles=L.length;
     /* 23/11 (Wah) : « quand je sélectionne une box dans le Refine de la vue de droite, pas besoin de la ré-afficher en
        dessous : tu la laisses DANS le Refine, comme les autres paramètres » — le « + » d'un spot en tête, puis les spots. */
-    const plus=me&&!RO?'<div class="tl-add-slot" aria-hidden="true"></div>':'';
+    const plus=me&&!RO?'<button type="button" class="tl tl-add" data-nspot="" aria-label="Add a spot"><span aria-hidden="true">+</span></button>':'';
     b.innerHTML='<div class="tlg">'+plus+L.map(tuile).join('')+'</div>';
     if(io){ io.disconnect(); io=null; }
     const s=sc(); if(!s) return;
@@ -6832,7 +6789,10 @@ const SPGRID=(()=>{
     b.querySelectorAll('.tl[data-cle]').forEach(el=>io.observe(el));
   }
   { const s=sc(); if(s){
-    s.addEventListener('click',e=>{ const t=e.target.closest('.tl[data-cle]'); if(t) SPOTS.voir(t.dataset.cle); });
+    s.addEventListener('click',e=>{
+      if(e.target.closest('[data-nspot]')){ NSPOT.ouvrir(); return; }
+      const t=e.target.closest('.tl[data-cle]'); if(t) SPOTS.voir(t.dataset.cle);
+    });
     s.addEventListener('keydown',e=>{ const t=e.target.closest&&e.target.closest('.tl[data-cle]');
       if(t&&(e.key==='Enter'||e.key===' ')){ e.preventDefault(); SPOTS.voir(t.dataset.cle); } });
   } }
@@ -7305,14 +7265,11 @@ function creerFeed(conf){
     b.querySelectorAll('.lsh').forEach(el=>io.observe(el));
   }
   function peindreFlt(){
-    const triangle=$('lv-search');
-    if(triangle.getAttribute('aria-controls')===conf.panneau){
-      const n=sfCount();
-      $('lv-refine-label').textContent=n?'Refine · '+n:'Refine';
-      triangle.setAttribute('aria-expanded',String(sfOuvert()));
-    }
     const r=rail(); if(!r) return;
-    const h=conf.avant?conf.avant():'';
+    const n=sfCount();
+    const h=(conf.avant?conf.avant():'')
+      +'<button type="button" class="'+(n?'is-on':'')+'" data-f="sf" aria-haspopup="dialog" aria-controls="'+conf.panneau+'"'
+      +' aria-expanded="'+sfOuvert()+'">'+(n?'Refine · '+n:'Refine')+'</button>';
     if(r.dataset.h===h) return;
     r.dataset.h=h; r.innerHTML=h;
   }
@@ -7547,7 +7504,7 @@ function creerFeed(conf){
     etat.total=tout.length; etat.items=L.length; etat.videos=L.filter(x=>x.vid).length;
     etat.filtre=[SF.type,SF.vue,[...sfIntsActives()].join('·'),SF.box?'box':''].filter(Boolean).join('+');
     etat.n=sfCount(); etat.box=SF.box?SF.box.txt:''; etat.panneau=sfOuvert();
-    const plus=me&&!RO?'<div class="tl-add-slot" aria-hidden="true"></div>':'';
+    const plus=me&&!RO?'<button type="button" class="tl tl-add" data-add="" aria-label="Add a media"><span aria-hidden="true">+</span></button>':'';
     /* LA BOX CHOISIE EST REMISE EN TÊTE DES RÉSULTATS (Wah), telle qu'elle est dans le Totehm. */
     const tete=SF.box?'<div class="tl-sel" data-f-sel="1">'+boxTotehm(SF.box.bk,objetBox(SF.box.bk,SF.box.id),{})+'</div>':'';
     b.innerHTML='<div class="tlg">'+tete+plus+L.map(tuile).join('')+'</div>';
@@ -8017,7 +7974,7 @@ function creerFeed(conf){
                    box:SF.box?SF.box.txt:'', on:[...SF.on], n:sfCount()}),
           etat:()=>Object.assign({},etat)};
 }
-const SH =creerFeed({sc:'lv-sh',  bx:'lv-sh-f',  say:'lv-sh-say', src:'media', vide:'no media yet',
+const SH =creerFeed({sc:'lv-sh',  bx:'lv-sh-f',  say:'lv-sh-say', rail:'lv-sh-flt', src:'media', vide:'no media yet',
                      pick:'lv-sh-pick', panneau:'lv-sh-sf', grille:true});
 const SHS=creerFeed({sc:'rdr-sh', bx:'rdr-sh-f', say:'rdr-say',   rail:'rdr-flt',   src:'spots', vide:'no spot yet',
                      avant:()=>CLUBSP.perChip(), pick:'rdr-pick', panneau:'rdr-sf', boxes:'habits'});
@@ -8065,7 +8022,10 @@ const SPOTS=(()=>{
   const actif=()=>grille()?SPGRID:SPMAP, dort=()=>grille()?SPMAP:SPGRID;
   function peindreMode(){
     document.body.classList.toggle('rdr-grid',grille());
+    $('rdr-m-sel').setAttribute('aria-pressed',String(grille()));
   }
+  $('rdr-m-sel').addEventListener('click',()=>SPOTMODE.set(grille()?'map':'grid'));
+  $('rdr-plus').addEventListener('click',()=>NSPOT.ouvrir());
   function voir(cle){ if(!ouvert||!cle) return; voit=true; relever(); document.body.classList.add('rdr-voir'); SHS.ouvrirA(cle); }
   function fermerVoir(){ if(!voit) return; voit=false; document.body.classList.remove('rdr-voir'); SHS.fermer(); if(enShorts()) SPOTMODE.set('grid'); }
   SPOTMODE.surChangement(()=>{ peindreMode(); if(!ouvert) return; fermerVoir(); dort().fermer(); actif().ouvrir(); shorts(); });
@@ -8109,7 +8069,10 @@ const SPOTS=(()=>{
   window.addEventListener('keydown',e=>{ if(e.key==='Escape'&&voit){ e.preventDefault(); e.stopImmediatePropagation(); fermerVoir(); } },{capture:true});
   peindreMode();
   return {
-    ouvrir(){ ouvert=true; peindreMode(); SHS.flts(); actif().ouvrir(); CLUBSP.ouvrir(); shorts(); },
+    ouvrir(){
+      ouvert=true; peindreMode(); SHS.flts(); actif().ouvrir(); CLUBSP.ouvrir(); shorts();
+      $('rdr-plus').hidden=!me||!!RO;
+    },
     fermer(){ fermerVoir(); ouvert=false; NSPOT.fermer(); SPMAP.fermer(); SPGRID.fermer(); },
     pause(){ SHS.pause(); },
     maj(){ if(!ouvert) return; actif().maj(); if(voit) SHS.maj(); },
@@ -8778,11 +8741,9 @@ function applyFloorFx(){
   const st=$('stage'); if(st) st.classList.remove('z-set');
   $('floorview').style.backgroundColor='transparent';
   $('rail').style.opacity='1';
-  $('bigT').style.opacity='1';
   $('wordmark').style.opacity='1';
   /* Les portes vivent sur l'atterrissage depuis le 19/09 : plus rien à
      rétablir à l'ouverture du Totehm. */
-  $('filter-arrow').style.display='';
 }
 /* Un seul écran. La Map est partie dans map.html : plus d'étage, plus de
    machine à états verticale, plus de fondu à orchestrer. */
@@ -8885,14 +8846,13 @@ function closeHabitPeek(){$('habit-peek').classList.add('hide');$('habit-peek').
 $('habit-peek').addEventListener('click',(e)=>{if(e.target.id==='habit-peek')closeHabitPeek();});
 document.addEventListener('keydown',(e)=>{if(e.key==='Escape'&&!$('habit-peek').classList.contains('hide'))closeHabitPeek();});
 
-/* ══ FILTRE au tap sur bigT (T.png du haut) ══
-   Ouvre une modale même format que habit-peek : Time Frequency + Intention.
-   Le filtre choisi s'affiche dans un badge avec × pour retirer. */
-/* `openFilterModal()` n'est plus appelée que par la compatibilité : le
-   filtre est une BOÎTE. Elle déplie la boîte au lieu d'ouvrir la
-   fenêtre — une fonction qu'on garde doit faire la bonne chose, pas
-   l'ancienne. */
-function openFilterModal(){ filtreOuvert=true; pk=null; renderZone(); }
+/* La touche Triangle ouvre le filtre en tête des habitudes. */
+function openFilterModal(on=true){
+  if(view!=='habits') return;
+  filtreOuvert=on; pk=null; renderZone();
+  if(on) $('fv-inner').scrollTop=0;
+}
+$('box-filter').onclick=()=>{ if(!navBlocked()) openFilterModal(!filtreOuvert); };
 function openFilterModalMORT(){
   $('fm-freq-val').textContent=filterF?flabel(filterF):'any rhythm';
   if(filterI&&INT_BY_ID[filterI]){
@@ -8906,14 +8866,6 @@ function openFilterModalMORT(){
   $('filter-modal').classList.remove('hide');
 }
 function closeFilterModal(){$('filter-modal').classList.add('hide');}
-$('bigT').style.cursor='pointer';
-/* ⚠️ LE T N'OUVRE PLUS DE FENÊTRE · 15/09/2026. Il déplie la boîte
-   filtre EN TÊTE DE LISTE — dans le Totehm, avec le rail, la couleur et
-   la grammaire de boîte. Voir `boiteFiltre()`. */
-$('bigT').onclick=()=>{ if(view!=='habits')return;
-  filtreOuvert=!filtreOuvert; pk=null; renderZone();
-  if(filtreOuvert){const sc=$('fv-inner'); if(sc)sc.scrollTop=0;} };
-$('filter-arrow').onclick=()=>{ filtreOuvert=true; pk=null; renderZone(); };
 /* TOTEHM.png cliquable : ouvre le Dashboard, comme la petite flèche du bas */
 $('wordmark').style.cursor='pointer';
 $('wordmark').onclick=()=>openDashboard();
@@ -9179,7 +9131,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-11-26-continu';
+const BUILD='2026-11-27-commandes';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -9272,6 +9224,9 @@ function paintZone(){
   document.body.classList.toggle('o-live',!!oLive);
   document.body.classList.toggle('ordering',ordering);
   $('ordbtn').setAttribute('aria-pressed',String(ordering));
+  const filtre=$('box-filter');
+  filtre.hidden=view!=='habits';
+  filtre.setAttribute('aria-expanded',String(filtreOuvert));
   /* ── LE TITRE ET LES QUATRE CURSEURS ──────────────────────────────
      Tout se peint ici, à chaque rendu : un curseur qui reste affiché
      alors que sa vue n'a plus de voisin est un bouton mort. */
@@ -9298,11 +9253,6 @@ function paintZone(){
   const jy=$('joy');
   if(jy){
     jy.className='sink-el v-'+view;
-    /* 25/10 — le chapeau du manche porte la couleur de la vue (le socle, lui, reste le socle) :
-       habitudes navy · objectifs, visions bleu clair · répulsions, sagesse rouge-violet. */
-    const TEINTE={habits:'--navy', objectives:'--blue', repulsions:'--rep',
-                  stories:'--rep', visions:'--blue'};
-    jy.style.setProperty('--joy-vue', 'var('+(TEINTE[view]||'--navy')+')');
     /* 13/11 — les trois points disent l'axe vertical : le point de la vue où l'on est se fond dans le gros point ; sur les
        deux côtés (MY STORY, MY VISION) l'axe n'existe plus, les trois points s'effacent. */
     const bj=$('joy-box');
@@ -9942,12 +9892,7 @@ const rangHTML=(rank,id,prem,dern)=>'<span class="rk">'
   +(dern?' disabled':'')+' aria-label="Move down">'
   +'<svg viewBox="0 0 16 10" aria-hidden="true"><path d="M2 2 L8 8 L14 2"/></svg></button>'
   +'</span>';
-/* ⚠️ EN LECTURE, LA LIGNE [+ Add a …] NE S'ÉCRIT PAS DU TOUT · 17/09/2026.
-   Le CSS la masquait déjà (`body.ro .habit.add`), mais masquer n'est pas
-   retirer : le bouton restait dans le document, atteignable au clavier et
-   par un script. Le verrou est ici, à l'endroit qui dessine — pas chez les
-   cinq appelants, dont le sixième oublierait. */
-const ligne=(inner,cls,cols,rank,id,prem,dern)=> (RO&&cls==='add') ? '' :
+const ligne=(inner,cls,cols,rank,id,prem,dern)=>
   '<div class="habit timed '+(cls||'')+'"'
   +(id?' data-row="'+esc(String(id))+'"':'')+'>'
   + tickHTML(cols)
@@ -10250,7 +10195,10 @@ function renderZone(){
   NB=list.length;
   let h=list.map((x,k)=>PLAN.rend(x,k)).join('');
   if(!list.length) h+='<div class="void">'+(view==='habits'?((state.habits||[]).length?'—':''):(totehmLoaded?'':'…'))+'</div>';
-  h+=ligne('<button type="button" class="add-box" data-add="'+PLAN.add+'" aria-label="'+PLAN.mot+'">+</button>','add');
+  const ajouter=$('box-add');
+  ajouter.hidden=!me||!!RO;
+  ajouter.dataset.add=PLAN.add;
+  ajouter.setAttribute('aria-label',PLAN.mot);
 
   /* La bande « order by importance » a quitté le `innerHTML` : elle
      défilait avec les boîtes. Elle est fixe, sous les trois carrés. */
@@ -10292,7 +10240,7 @@ function renderZone(){
       VERSION: BUILD,
       url: location.href,
       ecran: innerWidth + 'x' + innerHeight,
-      boutonAdd: !!document.querySelector('#habits [data-add]'),
+      boutonAdd: !$('box-add').hidden,
       paysage: document.body.classList.contains('paysage'),
       asteroide: window.__totehm_lsd||null});
     try{
@@ -10965,7 +10913,7 @@ function cable(box){
        les deux flèches de classement ne faisaient rien du tout — le code
        qui les traite existait et n'était jamais atteint. */
     const el=e.target.closest('[data-fint],[data-ffq],[data-fclear],[data-fx],'
-      +'[data-open],[data-add],[data-x],[data-pk],[data-int],[data-mv],[data-go],'
+      +'[data-open],[data-x],[data-pk],[data-int],[data-mv],[data-go],'
       +'[data-rhythm],[data-rhythm-ignore],[data-fq],[data-lien],[data-unlink],[data-nodate],[data-kill],[data-space],[data-spotnew],[data-cloth],[data-totehmize],[data-zoom],[data-copy],[data-cap],[data-emo],[data-emx],[data-baud],[data-vobj]');
     if(!el)return;
     const d=el.dataset;
@@ -11019,7 +10967,6 @@ function cable(box){
        boîte ouverte, et le `closest` remonterait sinon sur elle. */
     if(d.go){ e.stopPropagation(); const p=d.go.split(':'); vaVers(p[0],p[1]); return; }
     if(d.open){ const p=d.open.split(':'); ouvrir(p[0],p[1]); return; }
-    if(d.add){ creer(d.add); return; }
     if(d.x!==undefined){ e.stopPropagation(); fermer(); return; }
     if(d.pk){ e.stopPropagation(); const p=d.pk.split(':'); pkSet(p[0],p[1],p[2]); return; }
 
@@ -11515,6 +11462,16 @@ if(location.hash === '#settings'){
 /* La croix : le Totehm se replie et l'atterrissage revient. Un seul geste, une seule chose — il n'y a
    plus de mode dont sortir d'abord (16/10 bis). */
 $('fold-x').onclick=()=>{ foldToGate(); };
+$('box-add').onclick=()=>{ if(me&&!RO&&!navBlocked()) creer($('box-add').dataset.add); };
+/* Un tap bref enfonce quand même le capuchon, au doigt comme au clavier. */
+for(const touche of document.querySelectorAll('.face-controls>.k2')){
+  let relache;
+  touche.addEventListener('click',()=>{
+    clearTimeout(relache);
+    touche.classList.add('is-tap');
+    relache=setTimeout(()=>touche.classList.remove('is-tap'),90);
+  });
+}
 
 /* ══ GESTE VERTICAL — SUPPRIMÉ · 07/09/2026 ══════════════════════════
    Les deux gestes de scroll — vers le haut au sommet pour ouvrir le
@@ -11523,7 +11480,7 @@ $('fold-x').onclick=()=>{ foldToGate(); };
    d'un cran l'atteignait souvent au pied et repliait le Totehm par
    surprise ; un doigt qui remontait au sommet ouvrait le filtre au
    moment où on essayait juste de voir la première habitude.
-   Le filtre reste accessible par le T (qui EST le filtre), le repli
+   Le filtre reste accessible par la touche Triangle, le repli
    reste accessible par la croix #fold-x et par Échap. */
 (function verticalGesture(){})();
 
@@ -11538,12 +11495,10 @@ function ouvrirCompte(apres){
      PORTE un membre dont le profil n'était pas encore revenu du serveur — un clic trop tôt, et on lui redemandait
      son email. `me` dit qu'il y a une session ; le verso sait déjà quoi montrer à un invité. */
   if(!me){ if(typeof ouvrirPorte==='function') ouvrirPorte(null); return; }
-  /* ⚠️ LE VERSO N'EXISTE QUE SUR L'ATTERRISSAGE. Depuis l'INTÉRIEUR du Totehm (un invité qui veut sauver son
-     Totehm avec son email, par exemple), on replie d'abord : sinon on ouvrait un compte que personne ne voit. */
+  /* Les réglages peuvent se déplier depuis l’accueil ou se retourner avec le papier ouvert. */
   const pret=()=>{ const c=document.body.classList;
     return c.contains('gate')&&!c.contains('entered')&&!c.contains('folding'); };
-  /* 17/11 — sur ordinateur, depuis le TOTEHM déployé, le verso arrive en RETOURNANT la pièce : plus de repli par
-     l'atterrissage (Wah). Un verso déjà ouvert (retourné) n'a rien à replier non plus. */
+  /* Depuis le Totehm déployé, le verso arrive en retournant la pièce. */
   const dejaOuvert=!!(window.__totehm_lsd&&window.__totehm_lsd.recherche);
   const piece=!pret()&&!dejaOuvert&&!!tournerLaPiece&&tournerLaPiece(true);
   if(!pret()&&!piece&&!dejaOuvert){
@@ -11654,7 +11609,7 @@ window.addEventListener('touchend',(e)=>{
      revenait à son point de départ**, exactement ce que Wah décrit — et
      symétriquement à droite, par la vision.
      Un geste né sur un contrôle appartient à ce contrôle. */
-  if(t0el&&t0el.closest&&t0el.closest('#joy,#freq-panel,#habit-peek,#filter-modal,#member-window,input,textarea,select,[contenteditable]'))return;
+  if(t0el&&t0el.closest&&t0el.closest('#recto-controls,#freq-panel,#habit-peek,#filter-modal,#member-window,input,textarea,select,[contenteditable]'))return;
   const _ae=document.activeElement;
   if(_ae&&(_ae.tagName==='TEXTAREA'||_ae.tagName==='INPUT'))return;
   if(document.body.classList.contains('gate'))return;   /* l'atterrissage défile librement */
@@ -11957,7 +11912,7 @@ window.addEventListener('keydown',(e)=>{
   }
   /* ⚠️ LES QUATRE FLÈCHES SUIVENT LA CROIX · 16/09/2026. Haut et bas
      repliaient le Totehm et ouvraient le filtre — deux gestes qui ont
-     maintenant leur propre porte (la croix `#fold-x`, le T). Sur la
+     maintenant leur propre touche (croix et triangle). Sur la
      croix, une flèche ne peut vouloir dire qu'une chose : va voir à
      côté. Quand il n'y a pas de voisin dans cette direction, on retombe
      sur l'ancien geste : c'est le seul endroit où il restait utile. */
@@ -13939,18 +13894,15 @@ window.addEventListener('pageshow',e=>{
     }));
   }
 
-  /* ══ 17/11 · LA PIÈCE (ordinateur) ══ Wah : « quand on retourne le TOTEHM sur ordinateur, on ne repasse pas par la page
-     d'atterrissage : il se retourne comme une pièce, recto / verso ». Au-delà de 700 px, le carré déployé (`#stage`, passé
-     DEVANT le noir) tourne sur son axe vertical jusqu'à la tranche, puis le verso (`#srch-bg` + `#srch-ui`, au même format)
-     finit le demi-tour ; le noir du verso monte (ou descend) pendant ce temps et efface (ou rend) la manette. Le recto reste
-     DÉPLOYÉ sous le verso (`open`) : refermer ce verso (croix, Échap, « précédent ») le retourne sur le recto. Ouvert depuis
-     l'atterrissage, le verso déploie d'abord le recto sous son noir, sans animation (`deployerDessous`), puis se retourne.
-     Au téléphone : rien ne change. Diagnostic `__totehm_piece()`. */
+  /* Le recto et le verso se retournent à leur taille dépliée. Le recto
+     reste ouvert dessous pour que le retour reprenne la même vue et son défilement. */
   /* ⚠️ LES DEUX MOITIÉS D'UNE MÊME COURBE (Wah : « le dashboard fait un petit sautage »). Mesuré image par image : avec
      un ease-in (pente infinie à la fin) puis un ease-out (pente infinie au départ), la pièce passait la tranche d'un bond
      — 86° d'un côté, 63° de l'autre, en 16 ms. Sinus entrant puis sinus sortant (`easeInOutSine` coupé en deux) : la
      même vitesse de part et d'autre de la tranche (π/2), aucun bond. */
   const PIECE=640, P_IN='cubic-bezier(.12,0,.39,0)', P_OUT='cubic-bezier(.61,1,.88,1)', stage=$('stage'), sUi=$('srch-ui');
+  const commandesRecto=$('recto-controls');
+  const bloquerRecto=on=>{ stage.inert=commandesRecto.inert=on; };
   const diagP={versVerso:0, versRecto:0, dessous:0};
   window.__totehm_piece=()=>({...diagP, recto:open&&!sOpen, verso:sOpen, tourne:document.body.classList.contains('is-coin')});
   /* Une face = ses calques, chacun avec sa transformation à l'angle `t` : son repos, plus la rotation. L'axe passe par le
@@ -13958,7 +13910,7 @@ window.addEventListener('pageshow',e=>{
   const repos=el=>{ const m=getComputedStyle(el).transform; return m&&m!=='none'?m+' ':''; };
   const rotation=t=>'perspective(1600px) rotateY('+t+'deg)';
   const faceRecto=()=>{ const b=repos(stage);
-    return [[stage,t=>b+rotation(t)],[$('recto-controls'),rotation]]; };
+    return [[stage,t=>b+rotation(t)],[commandesRecto,rotation]]; };
   const faceVerso=()=>{ const g=sBg.style.transform||'', b=repos(sUi);
     return [[sBg,t=>rotation(t)+' '+g],[sUi,t=>b+rotation(t)],[$('verso-controls'),rotation]]; };
   const tourner=(face,de,a,ease,second)=>face.map(([el,f])=>el.animate([{transform:f(de)},{transform:f(a)}],
@@ -13968,10 +13920,10 @@ window.addEventListener('pageshow',e=>{
      mode recherche, comme le mien se retourne sur mes réglages — « toujours même principe que [Mine] » (Wah). */
   function pieceVersVerso(essai,o){
     const cherche=!!(o&&o.cherche);
-    const peut=CARRE.matches&&!!me&&open&&!moving&&!sOpen&&!sMoving&&LV.vue()==='c'
+    const peut=!!me&&open&&!moving&&!sOpen&&!sMoving&&LV.vue()==='c'
       &&(cherche?(!!RO&&LV.membre()):(!RO&&LV.mode()==='mine'));
     if(essai||!peut) return peut;
-    sMoving=moving=true; diagP.versVerso++; fermerPorte();
+    sMoving=moving=true; diagP.versVerso++; fermerPorte(); bloquerRecto(true);
     document.body.classList.add('is-coin');
     srch.classList.remove('is-pret','is-prep');
     modeCherche(cherche, o&&o.nom);
@@ -14000,9 +13952,9 @@ window.addEventListener('pageshow',e=>{
   /* Le verso se retourne sur le recto déployé dessous ; ouvert depuis l'atterrissage, il le déploie d'abord sous son noir. */
   function pieceVersRecto(then){
     if(!sOpen||sMoving) return false;
-    if(!open&&!(CARRE.matches&&deployerDessous())) return false;
+    if(!open&&!deployerDessous()) return false;
     if(moving) return false;
-    sMoving=moving=true; diagP.versRecto++; clearTimeout(sTimer); sPret++;
+    sMoving=moving=true; diagP.versRecto++; clearTimeout(sTimer); sPret++; bloquerRecto(true);
     let rendre=false;
     try{ if(srch.contains(document.activeElement)){ rendre=true; document.activeElement.blur(); } }catch(_){}
     document.body.classList.add('is-coin'); document.body.classList.remove('searching');
@@ -14014,7 +13966,7 @@ window.addEventListener('pageshow',e=>{
       if(srch.classList.contains('is-cherche')){ modeCherche(false); paintAsteroid(); }   /* 18/11 : la recherche part avec le verso */
       sansTransition(); sBg.style.transform=''; sH.style.transform='';
       sOpen=false; sMoving=moving=false; window.__totehm_lsd.recherche=false;
-      document.body.classList.remove('is-coin');
+      document.body.classList.remove('is-coin'); bloquerRecto(false);
       if(rendre&&!then) try{ $('fold-flip').focus({preventScroll:true}); }catch(_){}
       if(typeof then==='function') then(); };
     if(RMQ.matches){ fin(); return true; }
@@ -14044,15 +13996,11 @@ window.addEventListener('pageshow',e=>{
 
   const enRecherche=()=>srch.classList.contains('is-cherche');
   if(sX) sX.onclick=()=>{ if(enRecherche()) CHERCHE.fermer(); else fermerVerso(); };
-  /* PILE OU FACE (ordinateur) : chaque face se retourne sur l'autre comme une pièce (ci-dessus). Les anciens chemins
-     (replier puis zoomer, dézoomer puis déployer) ne restent qu'en secours, si la pièce se refuse. En recherche (18/11),
-     ⟲ retourne le verso sur le recto du MEMBRE trouvé (`CHERCHE.versRecto`). */
-  { const f=$('srch-flip'); if(f) f.onclick=()=>{ if(enRecherche()) return void CHERCHE.versRecto();
-      if(!pieceVersRecto()) fermerVerso(()=>{ if(!open&&!moving) enter(); }); }; }
-  { const f=$('fold-flip'); if(f) f.onclick=()=>{ if(!me||!open||moving) return;
-      /* 18/11 — chez un membre, son recto se retourne sur SON verso (son offre, mon année chez lui) */
-      if(RO){ if(!LV.membre()) return; const n=LV.nomMembre(); if(!pieceVersVerso(false,{cherche:true,nom:n})) fold(()=>ouvrirVerso({cherche:true,nom:n})); return; }
-      if(!pieceVersVerso()) fold(()=>ouvrirVerso()); }; }
+  $('srch-flip').onclick=()=>{ if(enRecherche()) CHERCHE.versRecto(); else pieceVersRecto(); };
+  $('fold-flip').onclick=()=>{
+    if(navBlocked()) return;
+    pieceVersVerso(false,RO?{cherche:true,nom:LV.nomMembre()}:undefined);
+  };
   /* La feuille est modale : Tab tourne dans mes réglages, jamais vers le Totehm dessous. */
   if(srch) srch.addEventListener('keydown',e=>{
     if(e.key!=='Tab'||!sOpen) return;
@@ -14169,7 +14117,7 @@ window.addEventListener('pageshow',e=>{
       if(!lu||sMoving||moving) return false;
       diagC.rectos++;
       LV.entrer(lu);
-      if(CARRE.matches&&pieceVersRecto()) return true;
+      if(pieceVersRecto()) return true;
       fermerVerso(()=>{ if(!open&&!moving) enter(); });
       return true;
     }
@@ -14341,7 +14289,7 @@ window.addEventListener('pageshow',e=>{
       ['c','h','b','g','d'].forEach(k=>body.classList.toggle('lv-'+k,k===v));
       /* Le papier est DOCKÉ en haut : un tap le ramène au centre et le déploie (23/11). */
       body.classList.toggle('papier-haut',v==='g'||v==='d');
-      sloganPour(v); peindreNav(); peindreTouches();
+      sloganPour(v); peindreNav();
       /* Le réseau se TRANSFORME vers la vue (20/10 sexies : « les 4 vues adjacentes sont le résultat de la transformation
          de la vue centrale ») : circuit → cerveau en haut, → rail à gauche, → méridiens autour du monde à droite. */
       RAM.peindre(v,{anime:true});      /* ↓ aussi (22/10) : les pistes se replient en les sept traits de l'anneau du profil */
@@ -14478,11 +14426,7 @@ window.addEventListener('pageshow',e=>{
         /* Un moteur ne tourne que dans sa vue : on ferme celui d'où l'on part, on ouvre celui où l'on va. */
         if(de==='g') SH.fermer(); else if(de==='d') SPOTS.fermer();
         if(v==='g') SH.ouvrir(); else if(v==='d') SPOTS.ouvrir();
-        const voyageTouches=(de==='c'&&cote(v))||(v==='c'&&cote(de));
-        const depart=voyageTouches&&!RMQ.matches?touchesMobiles.map(touche=>
-          getComputedStyle(touche).visibility==='visible'?touche.getBoundingClientRect():null):null;
         poser(v); socle(v);
-        if(depart) animerTouches(depart);
         let parti;
         /* ← et → : le papier SORT du centre et se cale en haut (19/10 quater) pendant que les sept traits se
            transforment (20/10 sexies) ; au centre, il rentre chez lui. */
@@ -14507,7 +14451,6 @@ window.addEventListener('pageshow',e=>{
       $('lv-m-sel').classList.toggle('hide',mode!=='members');
       $('lv-b').setAttribute('aria-label',mode==='members'?'Member offer':'Higher my ChatGPT');
       $('lv-m-who').textContent=MB.nom||MB.verrou||'';
-      peindreTriangle();
       if(CLUB.member&&$('lv-m-say').textContent===HORS_CLUB) direMembers('');
       { const f=$('fold-flip'); if(f) f.setAttribute('aria-label',mode==='members'?'Turn it over · their subscription':'Turn it over · my settings'); }
     }
@@ -14655,12 +14598,6 @@ window.addEventListener('pageshow',e=>{
     /* Un tap pendant un mouvement (un repli, une course) n'est jamais perdu : il attend la fin, 2 s au plus. */
     const quandLibre=(f,n=0)=>{ if(occupe()&&n<12) return void setTimeout(()=>quandLibre(f,n+1),180); f(); };
     $('lv-m-sel').onclick=()=>quandLibre(()=>choisirMode('mine'));
-    $('lv-search').onclick=()=>quandLibre(()=>{
-      if(!libre()) return;
-      if(vue==='c') chercherIci();
-      else if(vue==='g') SH.box();
-      else if(vue==='d') SPOTS.box();
-    });
     /* `?ro=nom` (un lien, un retour de Stripe) : on arrive DANS l'écosystème du membre, déjà lu par `loadRO`. */
     lvMembreBoot=nom=>{ if(!nom) return; roEnPlace=true; entrerChez(nom); RAM.oublie(); RAM.peindre(vue); };
     /* 18/11 — `?members[=<nom>]` (un ancien lien `/search`, le retour de Stripe) : le verso en recherche, une fois la session lue. */
@@ -14809,7 +14746,7 @@ window.addEventListener('pageshow',e=>{
       /* Au clavier, le papier se retourne comme à la main : ← → sur son recto ouvrent mes réglages ; c'est
          la seule chose qui passe DEVANT l'horizontale, parce que le papier a le focus. */
       if(e.key==='ArrowLeft'||e.key==='ArrowRight'){
-        if(vue==='d'&&e.target===toucheTree){
+        if(vue==='d'&&e.target===$('rdr-m-sel')){
           e.preventDefault(); SPOTMODE.set(e.key==='ArrowRight'?'grid':'map'); return;
         }
         if(document.activeElement===$('gate-enter')&&vue==='c'){
@@ -15609,96 +15546,25 @@ window.addEventListener('pageshow',e=>{
                    n:el.querySelectorAll('.dc-s').length, porte:cta.dataset.va||''})};
     })();
     window.__totehm_discover=()=>DISC.etat();
-    const actionKeys=$('lv-actions');
-    for(const {id,color} of INTS){
-      actionKeys.style.setProperty('--lv-intention-'+id,'color-mix(in oklab, '+color+', transparent 0%)');
-    }
-    const plusAccueil=$('lv-tap-open'), toucheTriangle=$('lv-search'), toucheTree=$('lv-tree-k');
-    const touchesMobiles=[plusAccueil,toucheTriangle,toucheTree];
-    const cote=v=>v==='g'||v==='d';
-    const grilleMedia=$('lv-sh'), grilleSpots=$('rdr-g');
-    const treeActif=()=>{ try{ return localStorage.getItem('totehm_tree')==='1'; }catch(_){ return !body.classList.contains('no-tree'); } };
-    body.classList.toggle('no-tree',!treeActif());
-
-    function placerPlus(){
-      if(!cote(vue)) return;
-      const grille=vue==='g'?grilleMedia:SPOTMODE.get()==='map'?$('rdr-plus-slot'):grilleSpots;
-      const place=grille.querySelector('.tl-add-slot')?.getBoundingClientRect();
-      const pane=grille.closest('.lv-pane').getBoundingClientRect();
-      const y=place?place.top-pane.top+place.height/2:0;
-      const visible=!!place?.width&&!!me&&!RO&&mode==='mine'&&y>=128;
-      body.classList.toggle('lv-add-visible',visible);
-      if(!visible) return;
-      // Le panneau glisse aussi. Sa translation ne doit pas déplacer la case d'arrivée.
-      plusAccueil.style.setProperty('--lv-add-x',place.left-pane.left+place.width/2+'px');
-      plusAccueil.style.setProperty('--lv-add-y',y+'px');
-    }
-    function peindreTriangle(){
-      if(cote(vue)){
-        toucheTriangle.title='Refine';
-        toucheTriangle.setAttribute('aria-label','Refine');
-        toucheTriangle.setAttribute('aria-haspopup','dialog');
-        toucheTriangle.setAttribute('aria-controls',vue==='g'?'lv-sh-sf':'rdr-sf');
-        (vue==='g'?SH:SHS).flts();
-        return;
-      }
-      toucheTriangle.title=inscrit()?(CLUB.member?'Search a TOTEHM':HORS_CLUB):'Open your TOTEHM first';
-      toucheTriangle.setAttribute('aria-label','Search a TOTEHM');
-      for(const attr of ['aria-haspopup','aria-controls','aria-expanded']) toucheTriangle.removeAttribute(attr);
-    }
-    function peindreTouches(){
-      peindreTriangle();
-      const lateral=cote(vue), carte=vue==='d'&&SPOTMODE.get()!=='map';
-      const nom=lateral?(carte?'Map':'Grid'):'Tree';
-      toucheTree.querySelector('.k2l').textContent=nom;
-      toucheTree.setAttribute('aria-label',nom);
-      if(lateral) toucheTree.removeAttribute('aria-pressed');
-      else toucheTree.setAttribute('aria-pressed',String(!body.classList.contains('no-tree')));
-      plusAccueil.title=vue==='g'?'Add a media':vue==='d'?'Add a spot':
-        MB.verrou?'Subscribe to open it':mode==='members'?'Open this TOTEHM':'Open my TOTEHM';
-      plusAccueil.setAttribute('aria-label',plusAccueil.title);
-      placerPlus();
-    }
-    function animerTouches(depart){
-      const easing=getComputedStyle(body).getPropertyValue('--gate-ease').trim()||'ease';
-      touchesMobiles.forEach((touche,i)=>{
-        const a=depart[i], b=touche.getBoundingClientRect();
-        if(!a?.width||!b.width||getComputedStyle(touche).visibility!=='visible') return;
-        touche.animate([
-          {transformOrigin:'top left',transform:'translate('+(a.left-b.left)+'px,'+(a.top-b.top)+'px) scale('+a.width/b.width+')'},
-          {transformOrigin:'top left',transform:'none'}
-        ],{duration:640,easing});
-      });
-    }
-    for(const grille of [grilleMedia,grilleSpots]) grille.addEventListener('scroll',placerPlus,{passive:true});
-    window.addEventListener('resize',placerPlus);
-    if(window.ResizeObserver){
-      const observerPlus=new ResizeObserver(placerPlus);
-      for(const id of ['lv-sh-f','rdr-g-f','rdr-plus-slot']) observerPlus.observe($(id));
-    }
-    SPOTMODE.surChangement(peindreTouches);
-    toucheTree.onclick=()=>quandLibre(()=>{
-      if(!libre()) return;
-      if(vue==='d'){ SPOTMODE.set(SPOTMODE.get()==='map'?'grid':'map'); return; }
-      if(vue==='g'){ grilleMedia.scrollTo({top:0,behavior:RMQ.matches?'auto':'smooth'}); return; }
-      if(vue!=='c') return;
-      const actif=body.classList.toggle('no-tree')===false;
+    const toucheTree=$('lv-tree-k');
+    let treeActif=false;
+    try{ treeActif=localStorage.getItem('totehm_tree')==='1'; }catch(_){}
+    body.classList.toggle('no-tree',!treeActif);
+    toucheTree.setAttribute('aria-pressed',String(treeActif));
+    toucheTree.onclick=()=>{
+      if(vue!=='c'||!libre()) return;
+      const actif=!body.classList.toggle('no-tree');
       try{ localStorage.setItem('totehm_tree',actif?'1':'0'); }catch(_){}
-      peindreTouches();
+      toucheTree.setAttribute('aria-pressed',String(actif));
       if(actif) RAM.peindre(vue);
-    });
+    };
     $('lv-great').onclick=()=>DISC.ouvrir();
-    const spotKey=$('lv-add-spot');
 
     /* ── LE NOM ET QUI LIT MON TOTEHM (mes réglages) — nœuds déplacés de l'espace membre (15/10) ── */
     let visSeq=0;
     function peindreCarte(){
-      const m=inscrit()&&!RO&&!MB.verrou, chez=inscrit()&&(!!RO||!!MB.verrou);
+      const m=inscrit()&&!RO&&!MB.verrou;
       $('lv-card').classList.toggle('hide',!m);
-      peindreTouches();
-      spotKey.classList.toggle('hide',chez);
-      $('lv-add-illustration').classList.toggle('hide',chez);
-      $('lv-actions').classList.remove('hide');
       if(!m) return;
       /* Un invité n'a ni nom ni lecteurs : une seule porte, sauver avec l'email. */
       const g=guest();
@@ -15877,29 +15743,11 @@ window.addEventListener('pageshow',e=>{
     function ouvrirDepuisAccueil(){
       quandLibre(()=>{ if(libre()&&vue==='c'&&!occupe()) enter(); });
     }
-    plusAccueil.onclick=()=>quandLibre(()=>{
-      if(!libre()||occupe()) return;
-      if(vue==='c'){ ouvrirDepuisAccueil(); return; }
-      if(!me||RO||mode!=='mine') return;
-      if(vue==='g') SH.ajouter();
-      else if(vue==='d'&&!body.classList.contains('rdr-voir')) NSPOT.ouvrir();
-    });
     $('lv-account').onclick=()=>quandLibre(()=>{
       if(!libre()||vue!=='c'||occupe()) return;
       if(inscrit()) ouvrirCompte();
       else if(ouvrirPorte(null)) LA_PORTE.reste=ouvrirCompte;
     });
-    function ajouterDepuisAccueil(v,ouvrir){
-      if(!libre()||occupe()||vue!=='c'||mode!=='mine'||RO) return;
-      if(!inscrit()){
-        if(ouvrirPorte(null)) LA_PORTE.reste=()=>ajouterDepuisAccueil(v,ouvrir);
-        return;
-      }
-      aller(v,ouvrir);
-    }
-    spotKey.onclick=()=>quandLibre(()=>ajouterDepuisAccueil('d',NSPOT.ouvrir));
-    $('lv-add-illustration').onclick=()=>quandLibre(()=>ajouterDepuisAccueil('g',SH.ajouter));
-
     /* ── LES DONNÉES : `my_landing()`, une réponse tardive ne gagne jamais ── */
     let landSeq=0;
     lvPeindre=()=>{ peindreCarte(); connPaint(); paintMe(); RAM.peindre(vue); peindreNav(); };
@@ -16203,7 +16051,7 @@ window.addEventListener('pageshow',e=>{
 <!-- 12/10 : SPACE et le Club, servis par totehm.com, posés par-dessus le Totehm (`XO`). -->
 <!-- 29/10 — VX : les visionneuses ← et → viennent ici, au-dessus du TOTEHM déployé ([Visualize it], une mini-box spot). -->
 <div id="vx" role="dialog" aria-modal="true" aria-label="My TOTEHM · view" hidden></div>
-<div id="xo" aria-hidden="true"><button id="xo-x" type="button" data-hover-art class="k2 k2-x" aria-label="Close"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M3 3 L11 11 M11 3 L3 11"/></svg></button></div>
+<div id="xo" aria-hidden="true"><button id="xo-x" type="button" data-hover-art class="view-close" aria-label="Close"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M3 3 L11 11 M11 3 L3 11"/></svg></button></div>
 <script>
 /* ══ DISCOVER — copié de tools/discover.js dans chaque page (jamais importé) ══
    Le moteur du « découvrir » : des écrans `.dc-s` dans `.dc-stage`, UN visible à la fois, qui se succèdent au scroll, au

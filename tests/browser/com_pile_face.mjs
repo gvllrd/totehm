@@ -3,7 +3,7 @@
 // 17/11 — LA PIÈCE. Wah : « quand on retourne le TOTEHM sur ordinateur, on ne repasse pas par la page d'atterrissage :
 // il se retourne comme une pièce, recto / verso ». Au-delà de 700 px : le verso s'arrête au CARRÉ du recto déployé, et
 // chaque face se retourne sur l'autre SANS l'atterrissage (ni `gate`, ni `folding`, ni `entered` pendant le geste).
-// Au téléphone : rien ne change. Base simulée, aucune écriture. LANCER : node com_pile_face.mjs /tmp
+// Au téléphone, le papier garde son format plein écran pendant le retournement. Base simulée. LANCER : node com_pile_face.mjs /tmp
 import {launch,page,ok,USER} from './harness.mjs';
 const OUT=process.argv[2]||'.';
 const origin='https://www.totehm.com',browser=await launch();
@@ -30,7 +30,7 @@ const guetter=pg=>pg.evaluate(()=>{ const vu=window.__vu={gate:false,folding:fal
         return Math.asin(Math.max(-1,Math.min(1,-m.m13/m.m22)));
       };
       for(const [face,papier,ids] of [
-        ['recto','stage',['fold-x','fold-flip','joy','ordbtn']],['verso','srch-bg',['srch-x','srch-flip']]
+        ['recto','stage',['fold-x','fold-flip','joy','ordbtn','box-add','box-filter']],['verso','srch-bg',['srch-x','srch-flip']]
       ]){
         const angle=rotation(papier);
         if(Math.abs(angle)<.15||Math.abs(angle)>1.4) continue;
@@ -132,9 +132,24 @@ try{
  {const {pg,log}=await page(browser,{dir:'com',origin,viewport:{width:390,height:844},hasTouch:true,tables:{profiles:[{pseudo:'wahigher'}],totehms:[{user_id:USER.id,habits:habits}]},rpc});
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1200);
   await pg.locator('#gate-enter').press('ArrowRight');await pg.waitForSelector('#srch.is-pret');await pg.waitForTimeout(900);
-  const t=await pg.evaluate(()=>{const ui=document.getElementById('srch-ui').getBoundingClientRect();return {plein:ui.width===innerWidth&&ui.height===innerHeight,flip:getComputedStyle(document.getElementById('srch-flip')).display};});
-  ok(t.plein&&t.flip==='none','téléphone · rien ne change : le verso reste plein écran, sans bouton « retourner »');
-  ok(await pg.evaluate(()=>window.__totehm_piece().versVerso===0&&window.__totehm_piece().versRecto===0),'téléphone · la pièce ne tourne jamais');
+  const plein=await pg.locator('#srch-ui').evaluate(e=>e.offsetWidth===innerWidth&&e.offsetHeight===innerHeight);
+  ok(plein&&await pg.locator('#srch-flip').isVisible(),'téléphone · le verso est plein écran et porte sa touche « retourner »');
+  await pg.locator('#srch-flip').tap();
+  await pg.waitForFunction(()=>window.__totehm_piece().recto&&!window.__totehm_piece().tourne);
+  await pg.locator('#cur-d').tap();
+  await pg.waitForFunction(()=>window.__totehm_zone.vue==='visions');
+  await guetter(pg);
+  await pg.locator('#fold-flip').tap();
+  await pg.waitForSelector('#srch.is-open.is-pret');
+  const dos=await pg.locator('#srch-bg').evaluate(e=>e.offsetWidth===innerWidth&&e.offsetHeight===innerHeight);
+  let w=await vu(pg);
+  ok(dos&&w.max3d>0&&!w.gate&&!w.folding,'téléphone · le recto se retourne en 3D sur le verso plein écran');
+  await guetter(pg);
+  await pg.locator('#srch-flip').tap();
+  await pg.waitForFunction(()=>window.__totehm_piece().recto&&!window.__totehm_piece().tourne);
+  w=await vu(pg);
+  const vue=await pg.evaluate(()=>window.__totehm_zone.vue);
+  ok(w.max3d>0&&!w.gate&&!w.folding&&vue==='visions','téléphone · le retournement conserve la vue dépliée');
   ok(!erreurs(log).length,'téléphone · aucune erreur '+erreurs(log).join(' | '));
   await pg.context().close();}
 }finally{await browser.close();}

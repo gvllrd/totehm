@@ -28,13 +28,21 @@ try{
   await pg.goto('https://www.totehm.com/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(900);
   await pg.click('#lvn-rt');await pg.waitForTimeout(1500);
   /* 25/11 (Wah) : « pas besoin du mode SHORT dans la vue de droite, et mettre le même bouton format SELECT PS2 ». */
-  const mode=await pg.locator('#lv-tree-k .k2l').textContent();
-  ok(mode==='Map'&&await pg.getByRole('button',{name:'Map',exact:true}).isVisible(),
-     nom+' · la touche Grid propose Map quand la grille est affichée');
+  const select=pg.getByRole('button',{name:'Grid view',exact:true});
+  ok(await select.isVisible()&&await select.getAttribute('aria-pressed')==='true'&&await select.locator('svg').count()===0,
+     nom+' · SELECT sans icône indique que Grid est la vue active');
+  const tuile=await pg.locator('#rdr-g .tl[data-cle]').first().evaluate(e=>{
+    const disque=e.getBoundingClientRect(), box=e.querySelector('.tl-bx').getBoundingClientRect();
+    const trait=getComputedStyle(e,'::after');
+    return {rond:getComputedStyle(e).borderRadius, largeur:Math.abs(box.width-disque.width)<1,
+      base:Math.abs(box.bottom-disque.bottom)<1, bord:trait.backgroundColor, masque:trait.maskComposite};
+  });
+  ok(tuile.rond==='50%'&&tuile.largeur&&tuile.base&&tuile.bord==='rgb(226, 75, 74)'&&tuile.masque.includes('exclude'),
+     nom+' · la box remplit le bas du disque et le trait Fight entoure la tuile → '+JSON.stringify(tuile));
   /* ── plusieurs temps ── */
   const tuiles=()=>pg.evaluate(()=>[...document.querySelectorAll('#rdr-g .tl[data-cle]')].map(t=>t.dataset.cle.slice(3)).join(','));
   ok(await tuiles()==='n1,k1',nom+' · à l\'arrivée : now');
-  await pg.getByRole('button',{name:'Refine',exact:true}).click();await pg.waitForTimeout(500);
+  await pg.getByRole('button',{name:/^Refine(?: · \d+)?$/}).click();await pg.waitForTimeout(500);
   await pg.click('#rdr-sf [data-sf="per"][data-v="future"]');await pg.waitForTimeout(700);
   await pg.click('#rdr-sf [data-sf="per"][data-v="past"]');await pg.waitForTimeout(700);
   const t=await pg.evaluate(()=>({on:[...document.querySelectorAll('#rdr-sf [data-sf="per"]')].filter(b=>b.classList.contains('is-on')).map(b=>b.dataset.v),

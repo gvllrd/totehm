@@ -19,10 +19,10 @@ try{
     jamais dans son Totehm déployé —, et [Members] retourne le TOTEHM sur son verso, en mode recherche (18/11). */
  {const {pg,log}=await page(browser,{dir:'com',origin,rpc:Object.assign({},rpc,{member_media:{ok:true,items:[]},club_spots_of:{ok:true,items:[]}}),tables:{profiles:[{pseudo:'wah'}]}});
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(700);
-  ok(await pg.locator('#lv-actions button:visible').count()===4&&!await pg.isVisible('#lv-m-sel'),'au centre : quatre actions, avec une touche dédiée à la recherche');
+  ok(await pg.locator('#lv-keys .k2r:visible').count()===2&&!await pg.isVisible('#lv-m-sel'),'au centre : Tree et Greatness, avec la recherche sur la flèche du bas');
   await pg.evaluate(()=>{window.__ouvert=[];window.open=(u)=>{window.__ouvert.push(u);return null;};});
   /* 18/11 (Wah) : [Members] retourne le TOTEHM sur son verso, en mode recherche — un verso VIERGE, pas le mien */
-  await pg.click('#lv-search');
+  await pg.click('#lvn-dn');
   await pg.waitForFunction(()=>{const c=window.__totehm_cherche&&window.__totehm_cherche();return c&&c.ouvert;},null,{timeout:8000}).catch(()=>{});
   const q=await pg.evaluate(()=>({onglets:window.__ouvert.slice(),saisie:document.activeElement&&document.activeElement.id,dos:document.getElementById('ast-name').textContent,gx:!!document.getElementById('gx-q')}));
   ok(q.onglets.length===0&&q.saisie==='mb-q'&&q.dos===''&&!q.gx,
@@ -31,8 +31,8 @@ try{
   await pg.goto(origin+'/totehm?ro=studio');await pg.waitForSelector('body.member');
   await pg.waitForFunction(()=>document.body.classList.contains('lv-membre'),null,{timeout:9000}).catch(()=>{});await pg.waitForTimeout(1200);
   const e=await pg.evaluate(()=>({who:document.getElementById('lv-m-who').textContent,ro:document.body.classList.contains('ro'),
-    gate:document.body.classList.contains('gate'),actions:[...document.querySelectorAll('#lv-actions button')].filter(b=>b.getClientRects().length).map(b=>b.getAttribute('aria-label'))}));
-  ok(e.who==='studio'&&e.ro&&e.gate&&e.actions.join('|')==='Open this TOTEHM|Search a TOTEHM'&&await pg.isVisible('#lv-m-sel')&&/[?&]ro=studio/.test(pg.url()),
+    gate:document.body.classList.contains('gate'),actions:[...document.querySelectorAll('#lv-keys .k2r')].filter(b=>b.getClientRects().length).map(b=>b.getAttribute('aria-label'))}));
+  ok(e.who==='studio'&&e.ro&&e.gate&&e.actions.join('|')==='Tree|Discover your greatness'&&await pg.isVisible('#lv-m-sel')&&/[?&]ro=studio/.test(pg.url()),
      '`?ro=studio` : son atterrissage en lecture, avec retour à Mine → '+e.actions.join(' | '));
   ok(log.rpc.filter(x=>x.name==='totehm_read').length===1&&log.rpc.some(x=>x.name==='member_media'&&x.body.p_pseudo==='studio'),'une lecture de son Totehm, une de ses médias (`member_media`)');
   await pg.screenshot({path:OUT+'/members_search.png'});

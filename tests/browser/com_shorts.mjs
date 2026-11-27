@@ -78,7 +78,7 @@ try{
     const t=[...document.querySelectorAll('#lv-sh .tl[data-pol]')], a=document.getElementById('gate-asteroid'), ra=a.getBoundingClientRect();
     const t0=t[0], b0=t0&&t0.querySelector('.tl-bx'), hb=b0&&b0.querySelector('.tb .habit .h-body'), tk=b0&&b0.querySelector('.tb .habit .tick'),
       r0=t0&&t0.getBoundingClientRect(), g0=document.querySelector('#lv-sh .tlg');
-    return {n:t.length, add:!!document.querySelector('#lv-sh .tl-add-slot')&&getComputedStyle(document.getElementById('lv-tap-open')).visibility==='visible', carre:r0?Math.abs(r0.width-r0.height)<2:false,
+    return {n:t.length, add:!!document.querySelector('#lv-sh .tl-add'), carre:r0?Math.abs(r0.width-r0.height)<2:false,
       cols:g0?getComputedStyle(g0).gridTemplateColumns.split(' ').length:0,
       vieux:document.querySelectorAll('#lv-sh .etg,#lv-sh .pol').length,
       nom:(b0&&b0.querySelector('.v-name')||{}).textContent||'', fond:hb?getComputedStyle(hb).backgroundColor:'',
@@ -103,7 +103,7 @@ try{
     const logo=[...document.querySelectorAll('#gl-bg mask circle')].map(c=>[+(+c.getAttribute('cx')).toFixed(1),+(+c.getAttribute('cy')).toFixed(1)]);
     const k=l=>l.map(x=>x.join(',')).sort().join(' ');
     return {n:trous.length, memes:k(trous)===k(logo)&&logo.length===12, fond:t?cs(t).backgroundColor:'', boxM:mk(bx)||'none',
-      plus:mk(document.getElementById('lv-tap-open'))||'none'};});
+      plus:mk(document.querySelector('#lv-sh .tl-add'))||'none'};});
   ok(pf.n===12&&pf.memes&&pf.fond==='rgba(0, 0, 0, 0)'&&/none/.test(pf.boxM),
      '21/10 bis · chaque image de la grille est PERFORÉE : les 12 trous du logo, aux mêmes places ; la box posée dessus reste entière → '+JSON.stringify(pf));
   await pg.screenshot({path:OUT+'/grille_'+(tel?'tel':'ordi')+'.png'});
@@ -163,7 +163,7 @@ try{
   await pg.keyboard.press('Escape');await pg.waitForTimeout(300);
   // on entre dans le Totehm par le centre, et l'on ouvre l'Habit
   await pg.click('#lvn-rt');await vers(pg,'c');await pg.waitForTimeout(300);
-  await pg.click('#lv-tap-open');
+  await pg.click('#gate-enter');
   await pg.waitForFunction(()=>!document.body.classList.contains('gate'),null,{timeout:9000}).catch(()=>{});
   await pg.waitForTimeout(1200);
   const h1=await pg.evaluate(()=>[...document.querySelectorAll('#habits > .habit[data-row]')].find(e=>/Run the hill/.test(e.textContent))?.dataset.row);
@@ -186,7 +186,7 @@ try{
   await pg.locator('#habits .habit.open [data-x]').first().evaluate(e=>e.click()).catch(()=>{});await pg.waitForTimeout(300);
   const h2=await pg.evaluate(()=>[...document.querySelectorAll('#habits > .habit[data-row]')][1].dataset.row);
   const rentrer=async()=>{ await pg.click('#lvn-rt');await vers(pg,'c');await pg.waitForTimeout(300);
-    await pg.click('#lv-tap-open');
+    await pg.click('#gate-enter');
     await pg.waitForFunction(()=>!document.body.classList.contains('gate'),null,{timeout:9000}).catch(()=>{});await pg.waitForTimeout(1200);
     /* la box ouverte le reste au retour (elle n'a plus de `data-open`) : on ne l'ouvre que si elle est fermée */
     await pg.evaluate(h=>{ const e=document.querySelector('#habits [data-open="h:'+h+'"]'); if(e) e.click(); },h2);await pg.waitForTimeout(400); };
@@ -263,13 +263,13 @@ try{
       rc=c.getBoundingClientRect(),ra=a.getBoundingClientRect(),r=window.__totehm_rdr();
     return {r,fond:getComputedStyle(c).backgroundColor,plein:Math.round(rc.width)===innerWidth&&Math.round(rc.height)>=innerHeight-2,
       dock:document.body.classList.contains('papier-haut'),radar:!!document.getElementById('rdr-c'),
-      bascule:document.querySelector('#lv-tree-k .k2l').textContent,
-      basculeVue:getComputedStyle(document.getElementById('lv-tree-k')).visibility==='visible',
+      bascule:document.getElementById('rdr-m-sel').getAttribute('aria-pressed'),
+      basculeVue:getComputedStyle(document.getElementById('rdr-m-sel')).visibility==='visible',
       haut:ra.y+ra.height/2<90&&Math.abs((ra.x+ra.width/2)-innerWidth/2)<4&&ra.width<70};});
   const lus=log.rpc.filter(x=>x.name==='club_spots_of'&&x.body.p_pseudo==='wahigher').map(x=>x.body.p_period);
   ok(lus.join(',')==='now,future'&&d.r.club.periode==='future'&&!log.rpc.some(x=>x.name==='club_spots'),
      '27/10 · → MES spots (club_spots_of à mon nom, jamais « everyone ») : rien maintenant, la vue montre ce qui VIENT ('+lus.join(' → ')+')');
-  ok(!d.radar&&d.r.mode==='map'&&d.bascule==='Grid'&&d.basculeVue,'25/11 · plus de radar, plus de Shorts : UNE touche SELECT (Map ⇄ Grid) ; la vue s\'ouvre sur la CARTE');
+  ok(!d.radar&&d.r.mode==='map'&&d.bascule==='false'&&d.basculeVue,'25/11 · plus de radar, plus de Shorts : UNE touche SELECT (Map ⇄ Grid) ; la vue s\'ouvre sur la CARTE');
   ok(d.r.carte.terres>100&&d.r.carte.points===1&&d.r.carte.villes===0,'la Terre (Natural Earth, '+d.r.carte.terres+' terres) et mon spot : un carré plein, à son point');
   ok(d.plein&&d.dock&&d.haut,'la carte prend l\'écran ; le Totehm est sorti se caler EN HAUT, centré');
   await pg.screenshot({path:OUT+'/spots_'+(tel?'tel':'ordi')+'.png'});
@@ -348,7 +348,7 @@ try{
       window.__nait.push([t, m?+m[1]:1, +getComputedStyle(s).opacity, c.classList.contains('is-split')]); }
     requestAnimationFrame(f); }; requestAnimationFrame(f); });
   const papierDock=await pg.evaluate(()=>document.getElementById('gate-asteroid').getBoundingClientRect().width);
-  await pg.getByRole('button',{name:'Refine',exact:true}).click();await pg.waitForTimeout(1200);   /* 23/11 : [Refine] ouvre le filtre ; le petit TOTEHM ouvre le TOTEHM */
+  await pg.getByRole('button',{name:/^Refine(?: · \d+)?$/}).click();await pg.waitForTimeout(1200);   /* 23/11 : [Refine] ouvre le filtre ; le petit TOTEHM ouvre le TOTEHM */
   const nait=await pg.evaluate(()=>window.__nait), cmdW=await pg.evaluate(()=>document.querySelector('#lv-sh-sf .sfv-g').getBoundingClientRect().width);
   const k0=nait.length?nait[0][1]:1, fin=nait[nait.length-1]||[0,0,0,false];
   ok(nait.length>15&&Math.abs(k0-papierDock/cmdW)<.08&&nait.some(x=>x[1]>k0+.05&&x[1]<.98)&&fin[1]===1&&fin[2]>.9&&fin[3],
@@ -387,7 +387,7 @@ try{
   await pg.click('#lv-sh-sf [data-sf="all"]');await pg.waitForTimeout(400);
   await pg.keyboard.press('Escape');await pg.waitForTimeout(400);
   // le panneau de gauche : ce que ça montre, la vue d'origine, les intentions (la grille n'a plus d'étages)
-  await pg.getByRole('button',{name:'Refine',exact:true}).click();await pg.waitForTimeout(400);
+  await pg.getByRole('button',{name:/^Refine(?: · \d+)?$/}).click();await pg.waitForTimeout(400);
   const pan=await pg.evaluate(()=>({lab:[...document.querySelectorAll('#lv-sh-sf .sfl')].map(e=>e.textContent),
     ints:document.querySelectorAll('#lv-sh-sf [data-sf="int"]').length, vues:document.querySelectorAll('#lv-sh-sf [data-sf="vue"]').length}));
   /* 21/10 — les cinq vues sont un BLOC DE COMMANDE (la croix du TOTEHM), sans libellé : le design parle. */
@@ -430,7 +430,7 @@ try{
   await pg.keyboard.press('Escape');await pg.waitForTimeout(500);
   // la vue de droite : le TOTEHM DOCKÉ ouvre le filtre — ses Habits (au format Totehm), le temps, les intentions « X [Higher] »
   await pg.click('#lvn-rt');await vers(pg,'c');await pg.click('#lvn-rt');await vers(pg,'d');await pg.waitForTimeout(1000);
-  await pg.getByRole('button',{name:'Refine',exact:true}).click();await pg.waitForTimeout(500);   /* 23/11 : [Refine] ouvre le filtre */
+  await pg.getByRole('button',{name:/^Refine(?: · \d+)?$/}).click();await pg.waitForTimeout(500);   /* 23/11 : [Refine] ouvre le filtre */
   const panD=await pg.evaluate(()=>({l:[...document.querySelectorAll('#rdr-sf .sfl')].map(e=>e.textContent),
     habits:[...document.querySelectorAll('#rdr-sf .sfb')].map(e=>(e.querySelector('.tb .v-name')?'':'!')+(e.querySelector('.v-name,.lsh-t')||{}).textContent.trim()),
     higher:document.querySelectorAll('#rdr-sf .sfi .sfh').length,
@@ -447,16 +447,16 @@ try{
   await pg.click('#rdr-sf [data-sf="close"]');await pg.waitForTimeout(300);
   const mp=await pg.evaluate(()=>window.__totehm_rdr().carte);
   ok(mp.villes===2&&mp.points===2,'la carte : deux spots dont je ne vois que la VILLE — deux carrés CREUX, jamais un faux point');
-  await pg.click('#lv-tree-k');await pg.waitForTimeout(1200);
+  await pg.click('#rdr-m-sel');await pg.waitForTimeout(1200);
   const gr=await pg.evaluate(()=>({d:window.__totehm_rdr(),grid:document.body.classList.contains('rdr-grid'),
     tuiles:document.querySelectorAll('#rdr-g .tl[data-cle]').length,boxes:[...document.querySelectorAll('#rdr-g .tl-bx .tb .v-name')].map(e=>e.textContent.trim()),
-    plus:getComputedStyle(document.getElementById('lv-tap-open')).visibility==='visible',
-    navy:(()=>{const h=document.querySelector('#rdr-g .tl-bx .tb .habit .h-body');return h?getComputedStyle(h).backgroundColor:'';})(),
+    plus:!!document.querySelector('#rdr-g .tl-add'),
+    navy:(()=>{const h=document.querySelector('#rdr-g .tl-bx .tb .habit .h-body');return h?getComputedStyle(h.closest('.tl-bx')).backgroundColor:'';})(),
     rond:(()=>{const t=document.querySelector('#rdr-g .tl[data-cle]');return t?getComputedStyle(t).borderRadius:'';})(),
     vign:(document.querySelector('#rdr-g img[data-bunny]')||{}).src||''}));
   ok(gr.grid&&gr.d.mode==='grid'&&gr.tuiles===2&&gr.plus&&gr.boxes.join('|')==='Swim at dawn|Dance'&&gr.navy==='rgb(51, 51, 102)',
      'GRID : le « + » d\'un spot, puis une tuile par spot, et dessus SA Habit Box au format Totehm ('+gr.boxes.join(' · ')+')');
-  ok(parseFloat(gr.rond)>=14,'21/10 · les images de la grille de droite sont ARRONDIES ('+gr.rond+')');
+  ok(gr.rond==='50%','21/10 · les tuiles de la grille de droite sont rondes ('+gr.rond+')');
   if(!tel){ const t2=await pg.$('#rdr-g .tl[data-cle]'), b2=await t2.boundingBox(); await pg.mouse.move(b2.x+b2.width/2,b2.y+b2.height/2); await pg.waitForTimeout(350);
     const h2=await pg.evaluate(()=>{const cs=getComputedStyle(document.querySelector('#rdr-g .tl[data-cle]'));return cs.transform+' | '+cs.boxShadow;});
     ok(/matrix\(1\.06, 0, 0, 1\.06/.test(h2)&&/rgba\(0, 0, 0/.test(h2),'22/10 · à droite aussi, la tuile grandit au survol, son ombre suit ses coins arrondis → '+h2);
@@ -475,7 +475,7 @@ try{
      'la tuile ouvre MON spot en grand : sans média (les infos seules, centrées), la ville seule, sa box et ses mini-boîtes au format Totehm → '+JSON.stringify({m:pas2.mini,r:pas2.rep}));
   await pg.click('#rdr-x');await pg.waitForTimeout(500);
   // le filtre part au SERVEUR
-  if(await pg.evaluate(()=>document.getElementById('rdr-sf').hidden)) await pg.getByRole('button',{name:'Refine',exact:true}).click();await pg.waitForTimeout(400);   /* 23/11 : [Refine] ; il reste ouvert après une box */
+  if(await pg.evaluate(()=>document.getElementById('rdr-sf').hidden)) await pg.getByRole('button',{name:/^Refine(?: · \d+)?$/}).click();await pg.waitForTimeout(400);   /* 23/11 : [Refine] ; il reste ouvert après une box */
   await pg.click('#rdr-sf [data-sf="int"][data-v="love"]');await pg.waitForTimeout(700);
   const dern=()=>log.rpc.filter(x=>x.name==='club_spots_of').pop();
   const q1=dern();
@@ -484,7 +484,7 @@ try{
   await pg.click('#rdr-sf [data-sf="box"]');await pg.waitForTimeout(700);
   const q3=dern();
   ok(q3&&q3.body.p_filters.habit==='Run the hill','une Habit choisie part au serveur (habit : '+(q3&&q3.body.p_filters.habit)+')');
-  if(await pg.evaluate(()=>document.getElementById('rdr-sf').hidden)) await pg.getByRole('button',{name:'Refine',exact:true}).click();await pg.waitForTimeout(400);   /* 23/11 : [Refine] ; il reste ouvert après une box */
+  if(await pg.evaluate(()=>document.getElementById('rdr-sf').hidden)) await pg.getByRole('button',{name:/^Refine(?: · \d+)?$/}).click();await pg.waitForTimeout(400);   /* 23/11 : [Refine] ; il reste ouvert après une box */
   await pg.click('#rdr-sf [data-sf="ou"][data-v="near"]');await pg.waitForTimeout(900);
   const q2=dern(), ray=await pg.evaluate(()=>[...document.querySelectorAll('#rdr-sf [data-sf="rayon"]')].map(e=>e.textContent+(e.classList.contains('is-on')?'*':'')));
   ok(q2&&q2.body.p_filters.scope==='near'&&q2.body.p_filters.radius_km===50&&typeof q2.body.p_lat==='number'&&ray.join(' ')==='5 km 20 km 50 km* 200 km',
@@ -498,14 +498,14 @@ try{
   ok(au.n===1&&au.l.join(' · ')==='private · my subscribers · figher club','27/10 · « Who sees it » (les trois niveaux d\'un spot) trie MES spots : '+au.l.join(' · ')+' → '+au.n+' tuile');
   await pg.click('#rdr-sf [data-sf="all"]');await pg.waitForTimeout(600);
   await pg.keyboard.press('Escape');await pg.waitForTimeout(400);
-  await pg.click('#lv-tree-k');await pg.waitForTimeout(700);
+  await pg.click('#rdr-m-sel');await pg.waitForTimeout(700);
   ok((await pg.evaluate(()=>window.__totehm_rdr())).mode==='map','retour à MAP : le même objet, rien de redemandé');
   await pg.screenshot({path:OUT+'/spots_grid_'+(tel?'tel':'ordi')+'.png'});
   await pg.click('#lvn-lf');await vers(pg,'c');await pg.waitForTimeout(300);
 
   // ══ 5 · PENDANT LA RECHERCHE MEMBERS (18/11 : elle vit sur le VERSO, comme mes réglages) : la croix de l'atterrissage attend
   //      sous la feuille — une flèche y déplace le curseur, jamais la vue ; refermée (Échap), la croix repart ══
-  await pg.click('#lv-search');
+  await pg.click('#lvn-dn');
   await pg.waitForFunction(()=>{const c=window.__totehm_cherche&&window.__totehm_cherche();return c&&c.ouvert;},null,{timeout:8000}).catch(()=>{});
   const pendant=await pg.evaluate(()=>window.__totehm_cherche().ouvert);
   await pg.keyboard.press('ArrowRight');await pg.waitForTimeout(700);
@@ -543,7 +543,7 @@ try{
   await pg.keyboard.press('Escape');await pg.waitForFunction(()=>document.body.classList.contains('gate'),null,{timeout:8000}).catch(()=>{});await pg.waitForTimeout(1500);
   ok(await pg.evaluate(()=>document.body.classList.contains('lv-membre')&&document.getElementById('lv-m-who').textContent==='studio'),'replié : on est dans SON écosystème ([Members] · studio)');
   await pg.click('#lvn-lf');await vers(pg,'g');await pg.waitForTimeout(900);
-  const g=await pg.evaluate(()=>({t:document.querySelectorAll('#lv-sh .tl[data-pol]').length,plus:getComputedStyle(document.getElementById('lv-tap-open')).visibility==='visible',
+  const g=await pg.evaluate(()=>({t:document.querySelectorAll('#lv-sh .tl[data-pol]').length,plus:!!document.querySelector('#lv-sh .tl-add'),
     box:(document.querySelector('#lv-sh .tl-bx .tb .v-name')||{}).textContent||''}));
   ok(g.t===1&&!g.plus&&g.box.trim()==='Deep practice','← chez lui : SES médias, avec SA box (« '+g.box.trim()+' »), et pas de « + »');
   ok(!erreurs(log).length,'lecture : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}

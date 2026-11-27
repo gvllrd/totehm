@@ -45,7 +45,7 @@ try{
       if(k) return {status:200,contentType:'image/svg+xml',body:svg(DIM[k])}; } return null; }});
   pg.on('popup',p=>popups.push(p.url()));
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1000);
-  await pg.click('#lv-tap-open');await pg.waitForFunction(()=>!document.body.classList.contains('gate'),null,{timeout:9000}).catch(()=>{});await pg.waitForTimeout(1200);
+  await pg.click('#gate-enter');await pg.waitForFunction(()=>!document.body.classList.contains('gate'),null,{timeout:9000}).catch(()=>{});await pg.waitForTimeout(1200);
   await pg.$eval('#habits .v-col[data-open]',e=>e.click());await pg.waitForTimeout(500);
   const avant=await pg.evaluate(()=>({emo:document.querySelectorAll('#habits .habit.open [data-emo]').length,sp:document.querySelectorAll('#habits .habit.open [data-space]').length}));
   ok(avant.emo===3&&avant.sp===2,nom+' · la box ouverte porte ses fichiers (Visualize it ×'+avant.emo+') et ses mini-box spot (×'+avant.sp+')');

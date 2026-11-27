@@ -35,7 +35,7 @@ try{
   ok(e2.url==='/totehm'&&e2.vue==='c'&&!e2.r.garde,nom+' · « précédent » : retour au CENTRE, on reste sur le site → '+JSON.stringify({url:e2.url,vue:e2.vue}));
   /* ── la vue de droite, un spot ouvert ── */
   await pg.click('#lvn-rt');await pause(pg,1800);
-  await pg.getByRole('button',{name:'Grid',exact:true}).click();await pause(pg,700);
+  await pg.click('#rdr-m-sel');await pause(pg,700);
   await pg.$eval('#rdr-g .tl:not(.tl-add)',e=>e.click()).catch(()=>{});await pause(pg,900);
   const e3=await etat(pg);
   ok(e3.vue==='d'&&e3.voir&&e3.r.garde,nom+' · vue de droite, un spot ouvert');
@@ -44,7 +44,7 @@ try{
   const e5=await retour(pg);
   ok(e5.vue==='c'&&e5.url==='/totehm',nom+' · « précédent » encore : retour au centre');
   /* ── le TOTEHM déployé, une visionneuse au-dessus ── */
-  await pg.click('#lv-tap-open');await pg.waitForFunction(()=>!document.body.classList.contains('gate'),null,{timeout:9000}).catch(()=>{});await pause(pg,1200);
+  await pg.click('#gate-enter');await pg.waitForFunction(()=>!document.body.classList.contains('gate'),null,{timeout:9000}).catch(()=>{});await pause(pg,1200);
   await pg.$eval('#habits .v-col[data-open]',e=>e.click());await pause(pg,500);
   await pg.$eval('#habits .habit.open [data-emo="m1"]',e=>e.click());await pause(pg,700);
   const e6=await etat(pg);

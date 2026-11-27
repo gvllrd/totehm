@@ -100,7 +100,7 @@ try{
   await pg.evaluate(()=>{ window.__asp=[]; const r=document.getElementById('lv-ram'), t0=performance.now();
     const f=()=>{ const t=performance.now()-t0; if(t>1200) return; const cs=getComputedStyle(r), m=cs.transform.match(/matrix\(([-\d.e]+)/);
       window.__asp.push([t, m?+m[1]:1, +cs.opacity]); requestAnimationFrame(f); }; requestAnimationFrame(f); });
-  await pg.click('#lv-tap-open');await pg.waitForTimeout(1300);
+  await pg.click('#gate-enter');await pg.waitForTimeout(1300);
   const asp=await pg.evaluate(()=>window.__asp), ech=asp.map(x=>x[1]);
   const decroit=ech.every((v,i)=>!i||v<=ech[i-1]+1e-3), mi=asp.filter(x=>x[0]>150&&x[0]<450);
   ok(asp.length>20&&decroit&&ech[ech.length-1]<.05&&asp[asp.length-1][2]===0&&mi.some(x=>x[1]<1&&x[1]>.05),
@@ -117,7 +117,7 @@ try{
   ok(!o.proc&&o.traits===0&&o.r&&o.coeur==='none',nom+' · ouvert : le TOTEHM seul — ni boîte ni traits autour, le réseau reste aspiré, le cœur ne bat plus');
   /* ── le repli, deux fois : le portail revient en fondu, le papier rentre, l'atterrissage revient, les traits ressortent ── */
   for(const tour of [1,2]){
-   if(tour===2){ await pg.click('#lv-tap-open');await pg.waitForFunction(()=>!document.body.classList.contains('gate'),null,{timeout:6000}).catch(()=>{});await pg.waitForTimeout(400); }
+   if(tour===2){ await pg.click('#gate-enter');await pg.waitForFunction(()=>!document.body.classList.contains('gate'),null,{timeout:6000}).catch(()=>{});await pg.waitForTimeout(400); }
    await pg.evaluate(()=>{ window.__fondu=[]; const gt=document.getElementById('gate'), bg=document.getElementById('gl-bg'), lv=document.getElementById('lv'), r=document.getElementById('lv-ram'), t0=performance.now();
      /* on ne relève qu'une fois le repli parti (`gate` posé) : une image avant le clic lirait le portail absent (largeur 0) */
      const f=()=>{ const t=performance.now()-t0; if(t>1500) return; if(!document.body.classList.contains('gate')){ requestAnimationFrame(f); return; }
