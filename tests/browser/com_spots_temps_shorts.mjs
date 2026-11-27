@@ -56,8 +56,8 @@ try{
   const refine=pg.getByRole('button',{name:'Refine',exact:true});
   const capuchon=select.locator('.k2k'), cap=await capuchon.boundingBox();
   ok(await select.isVisible()&&await select.getAttribute('aria-pressed')==='false'&&await select.locator('svg').count()===0
-    &&cap.width>=44&&cap.height>=15&&Math.abs((await refine.locator('.k2k').boundingBox()).width-cap.width)<1,
-    nom+' · Map est éclairé et la touche Refine reprend le grand rectangle SELECT');
+    &&cap.width===30&&cap.height===18&&Math.abs((await refine.locator('.k2k').boundingBox()).width-cap.width)<1,
+    nom+' · Map est éclairé et la touche Refine reprend le rectangle SELECT');
   await select.click();
   await pg.waitForSelector('body.rdr-grid');
   ok(await select.getAttribute('aria-pressed')==='true',
